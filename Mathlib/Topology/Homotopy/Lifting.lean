@@ -199,8 +199,8 @@ theorem existsUnique_continuousMap_lifts [PathConnectedSpace A] [LocPathConnecte
 end IsLocalHomeomorph
 
 namespace IsCoveringMap
-variable (hp : IsCoveringMap p)
-include hp
+variable (cov : IsCoveringMap p)
+include cov
 
 section path_lifting
 variable (γ : C(I,X)) (e : E) (γ_0 : γ 0 = p e)
@@ -208,7 +208,7 @@ include γ_0
 
 /-- The path lifting property (existence) for covering maps. -/
 theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
-  choose _ q mem_base using hp
+  choose _ q mem_base using cov
   obtain ⟨t, t_0, t_mono, ⟨n_max, h_max⟩, t_sub⟩ :=
     exists_monotone_Icc_subset_open_cover_unitInterval
     (fun x ↦ (q x).open_baseSet.preimage γ.continuous) fun t _ ↦ Set.mem_iUnion.2 ⟨γ t, mem_base _⟩
@@ -240,20 +240,20 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
   · dsimp only; rwa [if_pos (t_0 ▸ t_mono n.zero_le)]
 
 /-- The lift of a path to a covering space given a lift of the left endpoint. -/
-noncomputable def liftPath : C(I,E) := (hp.exists_path_lifts γ e γ_0).choose
+noncomputable def liftPath : C(I,E) := (cov.exists_path_lifts γ e γ_0).choose
 
-lemma liftPath_lifts : p ∘ hp.liftPath γ e γ_0 = γ := (hp.exists_path_lifts γ e γ_0).choose_spec.1
-lemma liftPath_zero : hp.liftPath γ e γ_0 0 = e := (hp.exists_path_lifts γ e γ_0).choose_spec.2
+lemma liftPath_lifts : p ∘ cov.liftPath γ e γ_0 = γ := (cov.exists_path_lifts γ e γ_0).choose_spec.1
+lemma liftPath_zero : cov.liftPath γ e γ_0 0 = e := (cov.exists_path_lifts γ e γ_0).choose_spec.2
 
 variable {γ e}
-lemma eq_liftPath_iff {Γ : I → E} : Γ = hp.liftPath γ e γ_0 ↔ Continuous Γ ∧ p ∘ Γ = γ ∧ Γ 0 = e :=
-  have lifts := hp.liftPath_lifts γ e γ_0
-  have zero := hp.liftPath_zero γ e γ_0
-  ⟨fun h ↦ h ▸ ⟨(hp.liftPath γ e γ_0).2, lifts, zero⟩, fun ⟨Γ_cont, Γ_lifts, Γ_0⟩ ↦ hp.eq_of_comp_eq
-    Γ_cont (hp.liftPath γ e γ_0).continuous (Γ_lifts ▸ lifts.symm) 0 (Γ_0 ▸ zero.symm)⟩
+lemma eq_liftPath_iff {Γ : I → E} : Γ = cov.liftPath γ e γ_0 ↔ Continuous Γ ∧ p ∘ Γ = γ ∧ Γ 0 = e :=
+  have lifts := cov.liftPath_lifts γ e γ_0
+  have zero := cov.liftPath_zero γ e γ_0
+  ⟨(· ▸ ⟨(cov.liftPath γ e γ_0).2, lifts, zero⟩), fun ⟨Γ_cont, Γ_lifts, Γ_0⟩ ↦ cov.eq_of_comp_eq
+    Γ_cont (cov.liftPath γ e γ_0).continuous (Γ_lifts ▸ lifts.symm) 0 (Γ_0 ▸ zero.symm)⟩
 
 /-- Unique characterization of the lifted path. -/
-lemma eq_liftPath_iff' {Γ : C(I,E)} : Γ = hp.liftPath γ e γ_0 ↔ p ∘ Γ = γ ∧ Γ 0 = e := by
+lemma eq_liftPath_iff' {Γ : C(I,E)} : Γ = cov.liftPath γ e γ_0 ↔ p ∘ Γ = γ ∧ Γ 0 = e := by
   simp_rw [← DFunLike.coe_fn_eq, eq_liftPath_iff, and_iff_right (ContinuousMap.continuous _)]
 
 end path_lifting
@@ -265,29 +265,29 @@ variable (H : C(I × A, X)) (f : C(A, E)) (H_0 : ∀ a, H (0, a) = p (f a))
   the homotopy lifting property for covering maps.
   In other words, a covering map is a Hurewicz fibration. -/
 @[simps] noncomputable def liftHomotopy : C(I × A, E) where
-  toFun ta := hp.liftPath (H.comp <| (ContinuousMap.id I).prodMk <| .const I ta.2)
+  toFun ta := cov.liftPath (H.comp <| (ContinuousMap.id I).prodMk <| .const I ta.2)
     (f ta.2) (H_0 ta.2) ta.1
-  continuous_toFun := hp.isLocalHomeomorph.continuous_lift hp.isSeparatedMap H
-    (by ext ⟨t, a⟩; exact congr_fun (hp.liftPath_lifts ..) t)
-    (by convert f.continuous with a; exact hp.liftPath_zero ..)
-    fun a ↦ by dsimp only; exact (hp.liftPath ..).2
+  continuous_toFun := cov.isLocalHomeomorph.continuous_lift cov.isSeparatedMap H
+    (by ext ⟨t, a⟩; exact congr_fun (cov.liftPath_lifts ..) t)
+    (by convert f.continuous with a; exact cov.liftPath_zero ..)
+    fun a ↦ by dsimp only; exact (cov.liftPath ..).2
 
-lemma liftHomotopy_lifts : p ∘ hp.liftHomotopy H f H_0 = H :=
-  funext fun ⟨t, _⟩ ↦ congr_fun (hp.liftPath_lifts ..) t
+lemma liftHomotopy_lifts : p ∘ cov.liftHomotopy H f H_0 = H :=
+  funext fun ⟨t, _⟩ ↦ congr_fun (cov.liftPath_lifts ..) t
 
-lemma liftHomotopy_zero (a : A) : hp.liftHomotopy H f H_0 (0, a) = f a := hp.liftPath_zero ..
+lemma liftHomotopy_zero (a : A) : cov.liftHomotopy H f H_0 (0, a) = f a := cov.liftPath_zero ..
 
 variable {H f}
-lemma eq_liftHomotopy_iff (H' : I × A → E) : H' = hp.liftHomotopy H f H_0 ↔
+lemma eq_liftHomotopy_iff (H' : I × A → E) : H' = cov.liftHomotopy H f H_0 ↔
     (∀ a, Continuous (H' ⟨·, a⟩)) ∧ p ∘ H' = H ∧ ∀ a, H' (0, a) = f a := by
   refine ⟨?_, fun ⟨H'_cont, H'_lifts, H'_0⟩ ↦ funext fun ⟨t, a⟩ ↦ ?_⟩
-  · rintro rfl; refine ⟨fun a ↦ ?_, hp.liftHomotopy_lifts H f H_0, hp.liftHomotopy_zero H f H_0⟩
-    simp_rw [liftHomotopy_apply]; exact (hp.liftPath _ _ <| H_0 a).2
-  · apply congr_fun ((hp.eq_liftPath_iff _).mpr ⟨H'_cont a, _, H'_0 a⟩) t
+  · rintro rfl; refine ⟨fun a ↦ ?_, cov.liftHomotopy_lifts H f H_0, cov.liftHomotopy_zero H f H_0⟩
+    simp_rw [liftHomotopy_apply]; exact (cov.liftPath _ _ <| H_0 a).2
+  · apply congr_fun ((cov.eq_liftPath_iff _).mpr ⟨H'_cont a, _, H'_0 a⟩) t
     ext ⟨t, a⟩; exact congr_fun H'_lifts _
 
 lemma eq_liftHomotopy_iff' (H' : C(I × A, E)) :
-    H' = hp.liftHomotopy H f H_0 ↔ p ∘ H' = H ∧ ∀ a, H' (0, a) = f a := by
+    H' = cov.liftHomotopy H f H_0 ↔ p ∘ H' = H ∧ ∀ a, H' (0, a) = f a := by
   simp_rw [← DFunLike.coe_fn_eq, eq_liftHomotopy_iff]
   exact and_iff_right fun a ↦ H'.2.comp (.Prod.mk_left a)
 
@@ -300,20 +300,20 @@ noncomputable def liftHomotopyRel [PreconnectedSpace A]
     {f₀' f₁' : C(A, E)} (he : ∃ a ∈ S, f₀' a = f₁' a)
     (h₀ : p ∘ f₀' = f₀) (h₁ : p ∘ f₁' = f₁) : f₀'.HomotopyRel f₁' S :=
   have F_0 : ∀ a, F (0, a) = p (f₀' a) := fun a ↦ (F.apply_zero a).trans (congr_fun h₀ a).symm
-  have rel : ∀ t, ∀ a ∈ S, hp.liftHomotopy F f₀' F_0 (t, a) = f₀' a := fun t a ha ↦ by
-    rw [liftHomotopy_apply, hp.const_of_comp (ContinuousMap.continuous _) _ t 0]
-    · apply hp.liftPath_zero
-    · intro t t'; simp_rw [← p.comp_apply, hp.liftPath_lifts]
+  have rel : ∀ t, ∀ a ∈ S, cov.liftHomotopy F f₀' F_0 (t, a) = f₀' a := fun t a ha ↦ by
+    rw [liftHomotopy_apply, cov.const_of_comp (ContinuousMap.continuous _) _ t 0]
+    · apply cov.liftPath_zero
+    · intro t t'; simp_rw [← p.comp_apply, cov.liftPath_lifts]
       exact (F.prop t a ha).trans (F.prop t' a ha).symm
-  { toContinuousMap := hp.liftHomotopy F f₀' F_0
-    map_zero_left := hp.liftHomotopy_zero F f₀' F_0
+  { toContinuousMap := cov.liftHomotopy F f₀' F_0
+    map_zero_left := cov.liftHomotopy_zero F f₀' F_0
     map_one_left := by
       obtain ⟨a, ha, he⟩ := he
       simp_rw [toFun_eq_coe, ← curry_apply]
-      refine congr_fun (hp.eq_of_comp_eq
+      refine congr_fun (cov.eq_of_comp_eq
         (ContinuousMap.continuous _) f₁'.continuous ?_ a <| (rel 1 a ha).trans he)
       ext a; rw [h₁, Function.comp_apply, curry_apply]
-      exact (congr_fun (hp.liftHomotopy_lifts F f₀' _) (1, a)).trans (F.apply_one a)
+      exact (congr_fun (cov.liftHomotopy_lifts F f₀' _) (1, a)).trans (F.apply_one a)
     prop' := rel }
 
 /-- Two continuous maps from a preconnected space to the total space of a covering map
@@ -321,28 +321,28 @@ noncomputable def liftHomotopyRel [PreconnectedSpace A]
   are homotopic relative to `S`, assuming that they agree at a point in `S`. -/
 theorem homotopicRel_iff_comp [PreconnectedSpace A] {f₀ f₁ : C(A, E)} {S : Set A}
     (he : ∃ a ∈ S, f₀ a = f₁ a) : f₀.HomotopicRel f₁ S ↔
-      (ContinuousMap.comp ⟨p, hp.continuous⟩ f₀).HomotopicRel (.comp ⟨p, hp.continuous⟩ f₁) S :=
-  ⟨fun ⟨F⟩ ↦ ⟨F.compContinuousMap _⟩, fun ⟨F⟩ ↦ ⟨hp.liftHomotopyRel F he rfl rfl⟩⟩
+      (ContinuousMap.comp ⟨p, cov.continuous⟩ f₀).HomotopicRel (.comp ⟨p, cov.continuous⟩ f₁) S :=
+  ⟨fun ⟨F⟩ ↦ ⟨F.compContinuousMap _⟩, fun ⟨F⟩ ↦ ⟨cov.liftHomotopyRel F he rfl rfl⟩⟩
 
 /-- Lifting two paths that are homotopic relative to {0,1}
   starting from the same point also ends up in the same point. -/
 theorem liftPath_apply_one_eq_of_homotopicRel {γ₀ γ₁ : C(I, X)}
     (h : γ₀.HomotopicRel γ₁ {0,1}) (e : E) (h₀ : γ₀ 0 = p e) (h₁ : γ₁ 0 = p e) :
-    hp.liftPath γ₀ e h₀ 1 = hp.liftPath γ₁ e h₁ 1 := by
+    cov.liftPath γ₀ e h₀ 1 = cov.liftPath γ₁ e h₁ 1 := by
   obtain ⟨H⟩ := h
-  have := hp.liftHomotopyRel (f₀' := hp.liftPath γ₀ e h₀) (f₁' := hp.liftPath γ₁ e h₁) H
+  have := cov.liftHomotopyRel (f₀' := cov.liftPath γ₀ e h₀) (f₁' := cov.liftPath γ₁ e h₁) H
     ⟨0, .inl rfl, by simp_rw [liftPath_zero]⟩ (liftPath_lifts ..) (liftPath_lifts ..)
   rw [← this.eq_fst 0 (.inr rfl), ← this.eq_snd 0 (.inr rfl)]
 
 /-- A covering map induces an injection on all Hom-sets of the fundamental groupoid,
   in particular on the fundamental group. -/
 lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
-    Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.mapFn ⟨p, hp.continuous⟩ := by
+    Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.mapFn ⟨p, cov.continuous⟩ := by
   refine Quotient.ind₂ fun γ₀ γ₁ ↦ ?_
   dsimp only
   simp_rw [← Path.Homotopic.map_lift]
   iterate 2 rw [Quotient.eq]
-  exact (hp.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
+  exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A map `f` from a simply-connected, locally path-connected space `A` to another space `X` lifts
   uniquely through a covering map `p : E → X`. We may require that a specific point `a₀ : A` is
@@ -350,12 +350,12 @@ lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
 theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
-  refine hp.isLocalHomeomorph.existsUnique_continuousMap_lifts f a₀ e₀ he (fun γ γ_0 ↦ ?_)
+  refine cov.isLocalHomeomorph.existsUnique_continuousMap_lifts f a₀ e₀ he (fun γ γ_0 ↦ ?_)
     fun γ γ' Γ Γ' γ_0 γ'_0 Γ_0 Γ'_0 Γ_lifts Γ'_lifts γγ'1 ↦ ?_
-  · simpa [and_comm] using hp.exists_path_lifts (f.comp γ) e₀ (by simp [γ_0, he])
+  · simpa [and_comm] using cov.exists_path_lifts (f.comp γ) e₀ (by simp [γ_0, he])
   let pγ : Path a₀ (γ 1) := ⟨γ, γ_0, rfl⟩
   let pγ' : Path a₀ (γ 1) := ⟨γ', γ'_0, γγ'1.symm⟩
-  convert hp.liftPath_apply_one_eq_of_homotopicRel (ContinuousMap.HomotopicRel.comp_continuousMap
+  convert cov.liftPath_apply_one_eq_of_homotopicRel (ContinuousMap.HomotopicRel.comp_continuousMap
     (SimplyConnectedSpace.paths_homotopic pγ pγ') f) e₀ (by simp [he]) (by simp [he]) <;>
     rw [eq_liftPath_iff']
   exacts [⟨Γ_lifts, Γ_0⟩, ⟨Γ'_lifts, Γ'_0⟩]
