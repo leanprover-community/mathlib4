@@ -112,10 +112,8 @@ lemma TopologicalSpace.IsSeparable.span {R M : Type*} [AddCommMonoid M] [Semirin
 
 namespace Submodule
 
-variable {α β : Type*} [TopologicalSpace β]
-
-instance topologicalAddGroup [Ring α] [AddCommGroup β] [Module α β] [IsTopologicalAddGroup β]
-    (S : Submodule α β) : IsTopologicalAddGroup S :=
+instance topologicalAddGroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+    [TopologicalSpace M] [IsTopologicalAddGroup M] (S : Submodule R M) : IsTopologicalAddGroup S :=
   inferInstanceAs (IsTopologicalAddGroup S.toAddSubgroup)
 
 end Submodule
@@ -142,7 +140,7 @@ def Submodule.topologicalClosure (s : Submodule R M) : Submodule R M :=
   { s.toAddSubmonoid.topologicalClosure with
     smul_mem' := s.mapsTo_smul_closure }
 
-@[simp]
+@[simp, norm_cast]
 theorem Submodule.topologicalClosure_coe (s : Submodule R M) :
     (s.topologicalClosure : Set M) = closure (s : Set M) :=
   rfl
@@ -190,6 +188,54 @@ theorem Submodule.isClosed_or_dense_of_isCoatom (s : Submodule R M) (hs : IsCoat
   exact fun h ↦ h ▸ isClosed_closure
 
 end closure
+
+namespace Submodule
+
+variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
+  [∀ i, TopologicalSpace (M i)] [DecidableEq ι]
+
+/-- If `s i` is a family of submodules, each is in its module,
+then the closure of their span in the indexped product of the modules
+is the product of their closures.
+
+In case of a finite index type, this statement immediately follows from `iSup_map_single`.
+However, the statement is true for an infinite index type as well. -/
+theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
+    closure (↑(⨆ i, (s i).map (LinearMap.single R M i)) : Set (∀ i, M i)) =
+      Set.pi Set.univ fun i ↦ closure (s i) := by
+  rw [← closure_pi_set]
+  refine (closure_mono ?_).antisymm <| closure_minimal ?_ isClosed_closure
+  · norm_cast
+    refine iSup_le fun i ↦ map_le_iff_le_comap.mpr ?_
+    apply le_comap_single_pi
+  · simp only [Set.subset_def, mem_closure_iff]
+    intro x hx U hU hxU
+    rcases isOpen_pi_iff.mp hU x hxU with ⟨t, V, hV, hVU⟩
+    classical
+    refine ⟨∑ i ∈ t, Pi.single i (x i), hVU ?_, sum_mem fun i hi ↦ ?_⟩
+    · simp_all [Finset.sum_fn, Finset.sum_pi_single]
+    · exact mem_iSup_of_mem i <| mem_map_of_mem <| hx _ <| Set.mem_univ _
+
+/-- If `s i` is a family of submodules, each is in its module,
+then the closure of their span in the indexped product of the modules
+is the product of their closures.
+
+In case of a finite index type, this statement immediately follows from `iSup_map_single`.
+However, the statement is true for an infinite index type as well.
+
+This version is stated in terms of `Submodule.topologicalClosure`,
+thus assumes that `M i`s are topological modules over `R`.
+However, the statement is true without assuming continuity of the operations,
+see `closure_coe_iSup_map_single` above. -/
+theorem topologicalClosure_iSup_map_single [∀ i, ContinuousAdd (M i)]
+    [∀ i, ContinuousConstSMul R (M i)] (s : ∀ i, Submodule R (M i)) :
+    topologicalClosure (⨆ i, (s i).map (LinearMap.single R M i)) =
+      pi Set.univ fun i ↦ (s i).topologicalClosure := by
+  apply SetLike.coe_injective
+  push_cast
+  apply closure_coe_iSup_map_single
+
+end Submodule
 
 section Pi
 
