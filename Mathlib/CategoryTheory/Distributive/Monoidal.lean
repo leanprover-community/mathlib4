@@ -217,8 +217,6 @@ lemma coprodComparison_tensorRight_braiding_hom [SymmetricCategory C] {X Y Z : C
     (coprod.map (β_ Y X).hom (β_ Z X).hom) ≫ (coprodComparison (tensorLeft X) Y Z) := by
   simp [coprodComparison]
 
-
-
 /-- A left distributive symmetric monoidal category is distributive. -/
 lemma SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
     [SymmetricCategory C] [IsMonoidalLeftDistrib C] : IsMonoidalDistrib C where
