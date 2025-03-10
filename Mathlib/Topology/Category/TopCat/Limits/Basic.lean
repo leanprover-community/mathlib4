@@ -274,9 +274,6 @@ instance topCat_hasColimitsOfShape (J : Type v) [Category J] [Small.{u} J] :
     infer_instance
 
 instance topCat_hasColimitsOfSize [UnivLE.{v, u}] : HasColimitsOfSize.{w, v} TopCat.{u} where
-  has_colimits_of_shape _ := ⟨fun F ↦ by
-    rw [hasColimit_iff_small_quot]
-    infer_instance⟩
 
 instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}
