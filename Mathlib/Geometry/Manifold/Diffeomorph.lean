@@ -584,7 +584,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   {N J : Type*} [TopologicalSpace N] [ChartedSpace H N] {J : ModelWithCorners 𝕜 E' H}
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace H N']
 
-/-- The sum of two diffeomorphisms -/
+/-- The sum of two diffeomorphisms: this is `Sum.map` as a diffeomorphism. -/
 def sumCongr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     Diffeomorph I J (M ⊕ M') (N ⊕ N') n where
   toEquiv := Equiv.sumCongr φ.toEquiv ψ.toEquiv
@@ -605,7 +605,7 @@ lemma sumCongr_inr (φ : Diffeomorph I J M N n) (ψ : Diffeomorph I J M' N' n) :
     (sumCongr φ ψ) ∘ Sum.inr = Sum.inr ∘ ψ := rfl
 
 variable (I M M' n) in
-/-- The canonical diffeomorphism `M ⊕ M' → M' ⊕ M` -/
+/-- The canonical diffeomorphism `M ⊕ M' → M' ⊕ M`: this is `Sum.swap` as a diffeomorphism -/
 def sumComm : Diffeomorph I I (M ⊕ M') (M' ⊕ M) n where
   toEquiv := Equiv.sumComm M M'
   contMDiff_toFun := ContMDiff.swap
