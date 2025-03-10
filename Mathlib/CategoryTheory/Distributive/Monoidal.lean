@@ -37,7 +37,7 @@ A distributive monoidal category is a monoidal category that is both left and ri
   never right distributive). The left distributivity is tantamount to the fact that the coproduct
   in the functor categories is computed pointwise.
 
-- We show that any preadditive monoidal category with coporducts is distributive. This includes the
+- We show that any preadditive monoidal category with coproducts is distributive. This includes the
 examples of abelian groups, R-modules, and vector bundles.
 
 ## TODO
@@ -161,7 +161,6 @@ notation "∂R" => rightDistrib
 end Distributive
 
 open Distributive
-
 
 lemma IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorRight X) Y Z)] :
