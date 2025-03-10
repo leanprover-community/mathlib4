@@ -30,6 +30,7 @@ open scoped MatrixGroups
 
 /-- A general version of the slash action of the space of modular forms. -/
 class SlashAction (β G α γ : Type*) [Group G] [AddMonoid α] [SMul γ α] where
+  /-- The underlying right group action of this slash action -/
   map : β → G → α → α
   zero_slash : ∀ (k : β) (g : G), map k g 0 = 0
   slash_one : ∀ (k : β) (a : α), map k 1 a = a
@@ -37,8 +38,10 @@ class SlashAction (β G α γ : Type*) [Group G] [AddMonoid α] [SMul γ α] whe
   smul_slash : ∀ (k : β) (g : G) (a : α) (z : γ), map k g (z • a) = z • map k g a
   add_slash : ∀ (k : β) (g : G) (a b : α), map k g (a + b) = map k g a + map k g b
 
+@[inherit_doc]
 scoped[ModularForm] notation:100 f " ∣[" k ";" γ "] " a:100 => SlashAction.map γ k a f
 
+@[inherit_doc]
 scoped[ModularForm] notation:100 f " ∣[" k "] " a:100 => SlashAction.map ℂ k a f
 
 open scoped ModularForm
@@ -81,7 +84,7 @@ variable {k : ℤ} (f : ℍ → ℂ)
 section
 
 -- temporary notation until the instance is built
-local notation:100 f " ∣[" k "]" γ:100 => ModularForm.slash k γ f
+@[inherit_doc] local notation:100 f " ∣[" k "]" γ:100 => ModularForm.slash k γ f
 
 private theorem slash_mul (k : ℤ) (A B : GL(2, ℝ)⁺) (f : ℍ → ℂ) :
     f ∣[k] (A * B) = (f ∣[k] A) ∣[k] B := by

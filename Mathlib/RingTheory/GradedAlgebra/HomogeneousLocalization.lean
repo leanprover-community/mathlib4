@@ -89,8 +89,13 @@ section
 denominator with same grading such that the denominator is contained in `x`.
 -/
 structure NumDenSameDeg where
+  /-- Grading of this structure -/
   deg : ι
-  (num den : 𝒜 deg)
+  /-- Numerator of this structure -/
+  num : 𝒜 deg
+  /-- Denominator of this structure -/
+  den : 𝒜 deg
+  /-- The denominator is contained in `x` -/
   den_mem : (den : A) ∈ x
 
 end

@@ -487,6 +487,7 @@ end BooleanAlgebra
 namespace CompleteBooleanAlgebra
 
 -- See note [reducible non-instances]
+/-- Endow a complete Boolean algebra with atomicity of its type. -/
 abbrev toCompleteAtomicBooleanAlgebra {α} [CompleteBooleanAlgebra α] [IsAtomic α] :
     CompleteAtomicBooleanAlgebra α where
   __ := ‹CompleteBooleanAlgebra α›

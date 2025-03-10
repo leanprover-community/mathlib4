@@ -61,9 +61,13 @@ variable {α : Sort u} {β : Sort v} {γ : Sort w}
 
 /-- `α ≃ β` is the type of functions from `α → β` with a two-sided inverse. -/
 structure Equiv (α : Sort*) (β : Sort _) where
+  /-- The forward function -/
   protected toFun : α → β
+  /-- The inverse function -/
   protected invFun : β → α
+  /-- `invFun` is a left inverse to `toFun` -/
   protected left_inv : LeftInverse invFun toFun
+  /-- `invFun` is a right inverse to `toFun` -/
   protected right_inv : RightInverse invFun toFun
 
 @[inherit_doc]

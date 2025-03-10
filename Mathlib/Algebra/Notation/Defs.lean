@@ -216,6 +216,7 @@ end ite
 
 @[to_additive]
 class One (α : Type u) where
+  /-- The distinguished element `1` -/
   one : α
 
 @[to_additive existing Zero.toOfNat0]

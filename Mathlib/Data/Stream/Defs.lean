@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.DeprecateTo
 
 /-!
 # Definition of `Stream'` and functions on streams
@@ -70,21 +71,22 @@ def iterate (f : α → α) (a : α) : Stream' α
   | 0 => a
   | n + 1 => f (iterate f a n)
 
+/-- Corecursor for a stream, applying `f` to the iterates of `g`. -/
 def corec (f : α → β) (g : α → α) : α → Stream' β := fun a => map f (iterate g a)
 
+/-- Corecursor for a stream, applying `f` to the iterates of `g` starting from `a`. -/
 def corecOn (a : α) (f : α → β) (g : α → α) : Stream' β :=
   corec f g a
 
+@[deprecated (since := "2025-03-10")] alias unfolds := corecOn
+
+/-- Corecursor for a stream, applying `Prod.fst ∘ f` to the iterates of `Prod.snd ∘ f`. -/
 def corec' (f : α → β × α) : α → Stream' β :=
   corec (Prod.fst ∘ f) (Prod.snd ∘ f)
 
 /-- Use a state monad to generate a stream through corecursion -/
 def corecState {σ α} (cmd : StateM σ α) (s : σ) : Stream' α :=
   corec Prod.fst (cmd.run ∘ Prod.snd) (cmd.run s)
-
--- corec is also known as unfolds
-abbrev unfolds (g : α → β) (f : α → α) (a : α) : Stream' β :=
-  corec g f a
 
 /-- Interleave two streams. -/
 def interleave (s₁ s₂ : Stream' α) : Stream' α :=

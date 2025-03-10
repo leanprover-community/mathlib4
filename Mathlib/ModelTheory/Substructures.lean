@@ -90,6 +90,7 @@ variable (L) (M)
 
 /-- A substructure of a structure `M` is a set closed under application of function symbols. -/
 structure Substructure where
+  /-- The underlying set of this substructure -/
   carrier : Set M
   fun_mem : ∀ {n}, ∀ f : L.Functions n, ClosedUnder f carrier
 

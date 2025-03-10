@@ -192,7 +192,14 @@ used in the definition of a box-integrable function.
 -/
 @[ext]
 structure IntegrationParams : Type where
-  (bRiemann bHenstock bDistortion : Bool)
+  /-- If this is `true`, the filter corresponds to a Riemann-style integral, i.e.
+  there is a constant upper estimate on the size of boxes. -/
+  bRiemann : Bool
+  /-- If this is `true`, each tag must belong to its own closed box. -/
+  bHenstock : Bool
+  /-- If this is `true`, the upper estimate of the size of boxes can depend on the maximal ratio of
+  sides of the same box of a partition. -/
+  bDistortion : Bool
 
 variable {l l₁ l₂ : IntegrationParams}
 

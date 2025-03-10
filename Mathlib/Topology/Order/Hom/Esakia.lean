@@ -208,6 +208,7 @@ namespace EsakiaHom
 variable [TopologicalSpace α] [Preorder α] [TopologicalSpace β] [Preorder β] [TopologicalSpace γ]
   [Preorder γ] [TopologicalSpace δ] [Preorder δ]
 
+/-- The underlying pseudo-epimorphism of this Esakia morphism -/
 def toPseudoEpimorphism (f : EsakiaHom α β) : PseudoEpimorphism α β :=
   { f with }
 

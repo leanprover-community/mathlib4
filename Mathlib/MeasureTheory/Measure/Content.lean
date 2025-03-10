@@ -65,6 +65,7 @@ variable {G : Type w} [TopologicalSpace G]
 /-- A content is an additive function on compact sets taking values in `ℝ≥0`. It is a device
 from which one can define a measure. -/
 structure Content (G : Type w) [TopologicalSpace G] where
+  /-- The underlying additive function -/
   toFun : Compacts G → ℝ≥0
   mono' : ∀ K₁ K₂ : Compacts G, (K₁ : Set G) ⊆ K₂ → toFun K₁ ≤ toFun K₂
   sup_disjoint' :

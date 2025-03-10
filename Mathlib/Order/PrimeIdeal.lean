@@ -42,8 +42,11 @@ namespace Ideal
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
 structure PrimePair (P : Type*) [Preorder P] where
+  /-- The `Ideal` half of this pair -/
   I : Ideal P
+  /-- The `PFilter` half of this pair -/
   F : PFilter P
+  /-- `I` and `F` are complementary -/
   isCompl_I_F : IsCompl (I : Set P) F
 
 namespace PrimePair
