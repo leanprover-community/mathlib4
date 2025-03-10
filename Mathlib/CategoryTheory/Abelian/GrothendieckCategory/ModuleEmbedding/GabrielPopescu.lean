@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Preadditive.Yoneda.Limits
 # The Gabriel-Popescu theorem
 
 We prove the following Gabriel-Popescu theorem: if `C` is a Grothendieck abelian category and
-`G` is a separator, then the functor `preadditiveCoyonedaObj G : C ⥤ ModuleCat (End R)ᵐᵒᵖ` sending
+`G` is a separator, then the functor `preadditiveCoyonedaObj G : C ⥤ ModuleCat (End G)ᵐᵒᵖ` sending
 `X` to `Hom(G, X)` is fully faithful and has an exact left adjoint.
 
 We closely follow the elementary proof given by Barry Mitchell.
