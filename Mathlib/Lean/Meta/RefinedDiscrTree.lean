@@ -64,6 +64,37 @@ we have a incremental evaluation function of type
 `LazyEntry → MetaM (Option (List (Key × LazyEntry)))`, which computes the next keys
 and lazy entries, or returns `none` if the last key has been reached already.
 
+The `RefinedDiscrTree` then stores these `LazyEntries` at its leafs, and evaluates them
+only if the lookup algorithm reaches this leaf.
+
+
+## Alternative optimizations
+
+`RefinedDiscrTree` is a non-persistent lazy data-structure. Therefore, when using it, you should
+try to use it linearly (i.e. having reference count 1). This is ideal for library search purposes,
+which build the discrimination tree once, and store a reference to the tree.
+
+However, for tactics like `simp` and `fun_prop` this is less ideal, because they can't use the
+data-structure linearly, since copies of the data structure must regularly be stored in the
+environment. For `fun_prop` this is not a serious problem since it doesn't have that many
+different lemmas anyways.
+
+#### Future work:
+Make a version of `RefinedDiscrTree` that is optimal for tactics like `simp` and
+`fun_prop`. This would mean using a persistent data structure, and possibly a non-lazy strcture.
+
+
+## Matching vs Unification
+
+A discrimination tree can be used in two ways: either with (unification) or without (matching)
+allowing metavariables in the target expression to be instantiated.
+Most applications use matching, and the only common use case where unification is used is
+type class search. Since the intended applications of the `RefinedDiscrTree` currently use
+matching, the lookup algorithm is most optimized for matching.
+
+#### Future work:
+Improve the unification lookup.
+
 -/
 
 namespace Lean.Meta.RefinedDiscrTree
@@ -111,9 +142,8 @@ def findModuleMatches (moduleRef : ModuleDiscrTreeRef α) (ty : Expr) : MetaM (M
 /--
 `findMatches` combines `findImportMatches` and `findModuleMatches`.
 
-* `ext` should be an environment extension with an IO.Ref for caching the import lazy
-   discriminator tree.
-* `addEntry` is the function for creating discriminator tree entries from constants.
+* `ext` should be an environment extension with an `IO.Ref` for caching the `RefinedDiscrTree`.
+* `addEntry` is the function for creating `RefinedDiscrTree` entries from constants.
 * `ty` is the expression type.
 * `constantsPerTask` is the number of constants in imported modules to be used for each
   new task.

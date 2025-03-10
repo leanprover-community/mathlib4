@@ -21,8 +21,10 @@ namespace Lean.Meta.RefinedDiscrTree
 
 /-- Discrimination tree key. -/
 inductive Key where
+  /-- A metavariable. This key matches with anything. -/
+  | star
   /-- A metavariable. This key matches with anything. It stores an identifier. -/
-  | star (id : Nat)
+  | labelledStar (id : Nat)
   /-- An opaque variable. This key only matches with `Key.star`. -/
   | opaque
   /-- A constant. It stores the name and the arity. -/
@@ -50,21 +52,23 @@ to get the same contant name with a different arity.
 So for performance, we just use `hash name` to hash `.const name _`.
 -/
 private nonrec def Key.hash : Key → UInt64
-  | .star id             => mixHash 7883 <| hash id
-  | .opaque              => 342
+  | .star                => 0
+  | .labelledStar id     => mixHash 5 <| hash id
+  | .opaque              => 1
   | .const name _        => hash name
-  | .fvar fvarId nargs   => mixHash 8765 <| mixHash (hash fvarId) (hash nargs)
-  | .bvar idx nargs      => mixHash 4323 <| mixHash (hash idx) (hash nargs)
-  | .lit v               => mixHash 1879 <| hash v
-  | .sort                => 2411
-  | .lam                 => 4742
-  | .«forall»            => 9752
+  | .fvar fvarId nargs   => mixHash 6 <| mixHash (hash fvarId) (hash nargs)
+  | .bvar idx nargs      => mixHash 7 <| mixHash (hash idx) (hash nargs)
+  | .lit v               => mixHash 8 <| hash v
+  | .sort                => 2
+  | .lam                 => 3
+  | .«forall»            => 4
   | .proj name idx nargs => mixHash (hash nargs) <| mixHash (hash name) (hash idx)
 
 instance : Hashable Key := ⟨Key.hash⟩
 
 private def Key.format : Key → Format
-  | .star id                => f!"*{id}"
+  | .star                   => f!"*"
+  | .labelledStar id        => f!"*{id}"
   | .opaque                 => "◾"
   | .const name nargs       => f!"⟨{name}, {nargs}⟩"
   | .fvar fvarId nargs      => f!"⟨{fvarId.name}, {nargs}⟩"
@@ -182,24 +186,22 @@ structure LazyEntry where
   then instead of pushing to the stack greedily, we only extend the stack once we need to.
   So, the field `previous` is used to extend the `stack` before looking in the `stack`.
 
-  For example in `1.add (2.add 3)`, after computing the key `⟨Nat.add, 2⟩`, the stack is still
-  empty, and `previous` will be `1.add (2.add 3)`.
+  For example in `10.add (20.add 30)`, after computing the key `⟨Nat.add, 2⟩`, the stack is still
+  empty, and `previous` will be `10.add (20.add 30)`.
   -/
   previous : Option ExprInfo := none
   /--
   The stack, used to emulate recursion. It contains the list of all expressions for which the
   keys still need to be computed, in that order.
 
-  For example in `1.add (2.add 3)`, after computing the keys `⟨Nat.add, 2⟩` and `1`, the stack
-  will be a list of length 1 containing the expression `2.add 3`.
+  For example in `10.add (20.add 30)`, after computing the keys `⟨Nat.add, 2⟩` and `10`, the stack
+  will be a list of length 1 containing the expression `20.add 30`.
   -/
   stack    : List StackEntry := []
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
-  /-- The `MVarId` assignments for converting into `.star` keys. -/
-  stars    : AssocList MVarId Nat := {}
-  /-- The number to be used for the next new `.star` key. -/
-  nStars   : Nat := 0
+  /-- `MVarId`s corresponding to the `.labelledStar` labels. The index in the array is the label. -/
+  stars    : Array MVarId := #[]
   /--
   The `Key`s that have already been computed.
 
@@ -241,20 +243,22 @@ structure Trie (α : Type) where
     /-- Return values, at a leaf -/
     values : Array α
     /-- Following `Trie`s based on a `Key.star`. -/
-    stars : Std.HashMap Nat TrieIndex
+    star : Option TrieIndex
+    /-- Following `Trie`s based on a `Key.labelledStar`. -/
+    labelledStars : Std.HashMap Nat TrieIndex
     /-- Following `Trie`s based on the `Key`. -/
     children : Std.HashMap Key TrieIndex
     /-- Lazy entries that still have to be evaluated. -/
     pending : Array (LazyEntry × α)
 
-instance {α : Type} : Inhabited (Trie α) := ⟨.node #[] {} {} #[]⟩
+instance {α : Type} : Inhabited (Trie α) := ⟨.node #[] none {} {} #[]⟩
 
 end RefinedDiscrTree
 
 open RefinedDiscrTree in
 
 /--
-Discrimination tree. It is an index from expressions to values of type `α`.
+Lazy refined discrimination tree. It is an index from expressions to values of type `α`.
 
 We store all of the nodes in one `Array`, `tries`, instead of using a 'normal' inductive type.
 This is so that we can modify the tree globally, which is very useful when evaluating lazy
@@ -281,13 +285,15 @@ private partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :
     "Discrimination tree flowchart:" ++ Format.joinSep lines.toList "\n"
 where
   go (trie : TrieIndex) : Format := Id.run do
-    let { values, stars, children, pending } := tree.tries[trie]!
+    let { values, star, labelledStars, children, pending } := tree.tries[trie]!
     let mut lines := #[]
     unless pending.isEmpty do
       lines := lines.push f!"pending entries: {pending.map (·.2)}"
     unless values.isEmpty do
       lines := lines.push f!"entries: {values}"
-    lines := stars.fold (init := lines) fun lines key trie =>
+    if let some trie := star then
+      lines := lines.push (Format.nest 2 f!"* =>{Format.line}{go trie}")
+    lines := labelledStars.fold (init := lines) fun lines key trie =>
       lines.push (Format.nest 2 f!"*{key} =>{Format.line}{go trie}")
     lines := children.fold (init := lines) fun lines key trie =>
       lines.push (Format.nest 2 f!"{key} =>{Format.line}{go trie}")

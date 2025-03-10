@@ -26,13 +26,15 @@ namespace Lean.Meta.RefinedDiscrTree
 
 variable {α : Type}
 
-/-- Directly insert a `Key` `LazyEntry` pair into a `RefinedDiscrTree`. -/
-def insert (d : RefinedDiscrTree α) (k : Key) (e : LazyEntry × α) : RefinedDiscrTree α :=
-  match d.root[k]? with
-  | none =>
-    { d with root := d.root.insert k d.tries.size, tries := d.tries.push <| .node #[] {} {} #[e] }
-  | some i =>
-    { d with tries := d.tries.modify i fun (.node v s c p) => .node v s c (p.push e)}
+/-- Directly insert a `Key`, `LazyEntry` pair into a `RefinedDiscrTree`. -/
+def insert (d : RefinedDiscrTree α) (key : Key) (entry : LazyEntry × α) : RefinedDiscrTree α :=
+  if let some trie := d.root[key]? then
+    { d with
+      tries := d.tries.modify trie fun node => { node with pending := node.pending.push entry } }
+  else
+    { d with
+      root := d.root.insert key d.tries.size
+      tries := d.tries.push <| .node #[] none {} {} #[entry] }
 
 /--
 Structure for quickly initializing a lazy discrimination tree with a large number
@@ -64,15 +66,15 @@ def push (d : PreDiscrTree α) (k : Key) (e : LazyEntry × α) : PreDiscrTree α
 /-- Convert a pre-discrimination tree to a `RefinedDiscrTree`. -/
 def toRefinedDiscrTree (d : PreDiscrTree α) : RefinedDiscrTree α :=
   let { root, tries } := d
-  { root, tries := tries.map (.node #[] {} {}) }
+  { root, tries := tries.map fun pending => .node #[] none {} {} pending }
 
 /-- Merge two discrimination trees. -/
 def append (x y : PreDiscrTree α) : PreDiscrTree α :=
   let (x, y, f) :=
-        if x.root.size ≥ y.root.size then
-          (x, y, fun y x => x ++ y)
-        else
-          (y, x, fun x y => x ++ y)
+    if x.root.size ≥ y.root.size then
+      (x, y, fun y x => x ++ y)
+    else
+      (y, x, fun x y => x ++ y)
   let { root := yk, tries := ya } := y
   yk.fold (init := x) fun d k yi => d.modifyAt k (f ya[yi]!)
 
