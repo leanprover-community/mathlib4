@@ -26,7 +26,7 @@ open CategoryTheory MonoidalCategory
 open scoped Simplicial
 
 /-- The canonical monoid object of `AugmentedSimplexCategory`. -/
-def universalMonoid : Mon_ AugmentedSimplexCategory where
+def mon_ : Mon_ AugmentedSimplexCategory where
   X := .of ⦋0⦌
   one := WithInitial.homTo _
   mul := SimplexCategory.σ (Fin.last _)
