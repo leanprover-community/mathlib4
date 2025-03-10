@@ -127,7 +127,8 @@ theorem dist_pair_smul (x₁ x₂ : α) (y : β) : dist (x₁ • y) (x₂ • y
   IsBoundedSMul.dist_pair_smul' x₁ x₂ y
 
 -- see Note [lower instance priority]
-/-- The typeclass `IsBoundedSMul` on a metric-space scalar action implies continuity of the action. -/
+/-- The typeclass `IsBoundedSMul` on a metric-space scalar action implies continuity of the
+action. -/
 instance (priority := 100) IsBoundedSMul.continuousSMul : ContinuousSMul α β where
   continuous_smul := by
     rw [Metric.continuous_iff]

@@ -14,8 +14,8 @@ import Mathlib.Topology.MetricSpace.Algebra
 Lemmas which hold only in `NormedSpace α β` are provided in another file.
 
 Notably we prove that `NonUnitalSeminormedRing`s have bounded actions by left- and right-
-multiplication. This allows downstream files to write general results about `IsBoundedSMul`, and then
-deduce `const_mul` and `mul_const` results as an immediate corollary.
+multiplication. This allows downstream files to write general results about `IsBoundedSMul`, and
+then deduce `const_mul` and `mul_const` results as an immediate corollary.
 -/
 
 
@@ -53,12 +53,13 @@ theorem edist_smul_le (s : α) (x y : β) : edist (s • x) (s • y) ≤ ‖s�
 end SeminormedAddGroup
 
 /-- Left multiplication is bounded. -/
-instance NonUnitalSeminormedRing.to_isBoundedSMul [NonUnitalSeminormedRing α] : IsBoundedSMul α α where
+instance NonUnitalSeminormedRing.isBoundedSMul [NonUnitalSeminormedRing α] :
+    IsBoundedSMul α α where
   dist_smul_pair' x y₁ y₂ := by simpa [mul_sub, dist_eq_norm] using norm_mul_le x (y₁ - y₂)
   dist_pair_smul' x₁ x₂ y := by simpa [sub_mul, dist_eq_norm] using norm_mul_le (x₁ - x₂) y
 
 /-- Right multiplication is bounded. -/
-instance NonUnitalSeminormedRing.to_has_bounded_op_smul [NonUnitalSeminormedRing α] :
+instance NonUnitalSeminormedRing.isBoundedSMulOpposite [NonUnitalSeminormedRing α] :
     IsBoundedSMul αᵐᵒᵖ α where
   dist_smul_pair' x y₁ y₂ := by
     simpa [sub_mul, dist_eq_norm, mul_comm] using norm_mul_le (y₁ - y₂) x.unop

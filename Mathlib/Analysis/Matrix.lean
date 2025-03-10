@@ -184,7 +184,7 @@ protected theorem isBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [
     [IsBoundedSMul R α] : IsBoundedSMul R (Matrix m n α) :=
   Pi.instIsBoundedSMul
 
-@[deprecated (since := "2025-03-10")] alias boundedSMul := isBoundedSMul
+@[deprecated (since := "2025-03-10")] alias Matrix.boundedSMul := Matrix.isBoundedSMul
 
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 

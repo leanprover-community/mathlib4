@@ -452,7 +452,7 @@ instance as it is (as of writing) used only in the construction of the Bochner i
 protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
   IsBoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
 
-@[deprecated (since := "2025-03-10")] alias boundedSMul := isBoundedSMul
+@[deprecated (since := "2025-03-10")] alias simpleFunc.boundedSMul := simpleFunc.isBoundedSMul
 
 attribute [local instance] simpleFunc.isBoundedSMul
 
