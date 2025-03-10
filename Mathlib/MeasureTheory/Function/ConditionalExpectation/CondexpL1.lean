@@ -379,7 +379,7 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   refine EventuallyEq.trans ?_ indicatorConstLp_coeFn.symm
   refine (condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs c).trans ?_
   refine (condExpIndSMul_ae_eq_smul hm (hm s hs) hμs c).trans ?_
-  rw [lpMeas_coe, condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
+  rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
   refine (@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)).mono fun x hx => ?_
   dsimp only
   rw [hx]

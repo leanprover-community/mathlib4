@@ -128,7 +128,7 @@ end
 
 variable [Algebra K M] [IsScalarTower R K M] {x : M}
 
-/-- The `RingHom` version of `IsIntegral.minpoly_splits_tower_top`.  -/
+/-- The `RingHom` version of `IsIntegral.minpoly_splits_tower_top`. -/
 theorem IsIntegral.minpoly_splits_tower_top' (int : IsIntegral R x) {f : K →+* L}
     (h : Splits (f.comp <| algebraMap R K) (minpoly R x)) :
     Splits f (minpoly K x) :=

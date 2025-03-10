@@ -185,7 +185,7 @@ class RespectsLeft (P Q : MorphismProperty C) : Prop where
 
 /-- A morphism property `P` satisfies `P.Respects Q` if it is stable under composition on the
 left and right by morphisms satisfying `Q`. -/
-class Respects (P Q : MorphismProperty C) extends P.RespectsLeft Q, P.RespectsRight Q : Prop where
+class Respects (P Q : MorphismProperty C) : Prop extends P.RespectsLeft Q, P.RespectsRight Q where
 
 instance (P Q : MorphismProperty C) [P.RespectsLeft Q] [P.RespectsRight Q] : P.Respects Q where
 
