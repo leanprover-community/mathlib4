@@ -3,14 +3,11 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Yury Kudryashov
 -/
-import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Convex.Strict
+import Mathlib.Analysis.Convex.Topology
+import Mathlib.Analysis.Normed.Module.Convex
+import Mathlib.Analysis.Normed.Module.Ray
 import Mathlib.Analysis.Normed.Order.Basic
-import Mathlib.Analysis.NormedSpace.AddTorsor
 import Mathlib.Analysis.NormedSpace.Pointwise
-import Mathlib.Analysis.NormedSpace.AffineIsometry
-
-#align_import analysis.convex.strict_convex_space from "leanprover-community/mathlib"@"a63928c34ec358b5edcda2bf7513c50052a5230f"
 
 /-!
 # Strictly convex spaces
@@ -41,7 +38,7 @@ In a strictly convex space, we prove
 
 We also provide several lemmas that can be used as alternative constructors for `StrictConvex ℝ E`:
 
-- `StrictConvexSpace.of_strictConvex_closed_unit_ball`: if `closed_ball (0 : E) 1` is strictly
+- `StrictConvexSpace.of_strictConvex_unitClosedBall`: if `closed_ball (0 : E) 1` is strictly
   convex, then `E` is a strictly convex space;
 
 - `StrictConvexSpace.of_norm_add`: if `‖x + y‖ = ‖x‖ + ‖y‖` implies `SameRay ℝ x y` for all
@@ -57,22 +54,16 @@ formulated only for the case `𝕜 = ℝ`.
 convex, strictly convex
 -/
 
-set_option autoImplicit true
-
-
-open Set Metric
-
-open Convex Pointwise
+open Convex Pointwise Set Metric
 
 /-- A *strictly convex space* is a normed space where the closed balls are strictly convex. We only
 require balls of positive radius with center at the origin to be strictly convex in the definition,
 then prove that any closed ball is strictly convex in `strictConvex_closedBall` below.
 
-See also `StrictConvexSpace.of_strictConvex_closed_unit_ball`. -/
+See also `StrictConvexSpace.of_strictConvex_unitClosedBall`. -/
 class StrictConvexSpace (𝕜 E : Type*) [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] : Prop where
   strictConvex_closedBall : ∀ r : ℝ, 0 < r → StrictConvex 𝕜 (closedBall (0 : E) r)
-#align strict_convex_space StrictConvexSpace
 
 variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
@@ -80,19 +71,21 @@ variable (𝕜 : Type*) {E : Type*} [NormedLinearOrderedField 𝕜] [NormedAddCo
 /-- A closed ball in a strictly convex space is strictly convex. -/
 theorem strictConvex_closedBall [StrictConvexSpace 𝕜 E] (x : E) (r : ℝ) :
     StrictConvex 𝕜 (closedBall x r) := by
-  cases' le_or_lt r 0 with hr hr
+  rcases le_or_lt r 0 with hr | hr
   · exact (subsingleton_closedBall x hr).strictConvex
   rw [← vadd_closedBall_zero]
   exact (StrictConvexSpace.strictConvex_closedBall r hr).vadd _
-#align strict_convex_closed_ball strictConvex_closedBall
 
 variable [NormedSpace ℝ E]
 
 /-- A real normed vector space is strictly convex provided that the unit ball is strictly convex. -/
-theorem StrictConvexSpace.of_strictConvex_closed_unit_ball [LinearMap.CompatibleSMul E E 𝕜 ℝ]
+theorem StrictConvexSpace.of_strictConvex_unitClosedBall [LinearMap.CompatibleSMul E E 𝕜 ℝ]
     (h : StrictConvex 𝕜 (closedBall (0 : E) 1)) : StrictConvexSpace 𝕜 E :=
-  ⟨fun r hr => by simpa only [smul_closedUnitBall_of_nonneg hr.le] using h.smul r⟩
-#align strict_convex_space.of_strict_convex_closed_unit_ball StrictConvexSpace.of_strictConvex_closed_unit_ball
+  ⟨fun r hr => by simpa only [smul_unitClosedBall_of_nonneg hr.le] using h.smul r⟩
+
+@[deprecated (since := "2024-12-01")]
+alias StrictConvexSpace.of_strictConvex_closed_unit_ball :=
+  StrictConvexSpace.of_strictConvex_unitClosedBall
 
 /-- Strict convexity is equivalent to `‖a • x + b • y‖ < 1` for all `x` and `y` of norm at most `1`
 and all strictly positive `a` and `b` such that `a + b = 1`. This lemma shows that it suffices to
@@ -100,55 +93,50 @@ check this for points of norm one and some `a`, `b` such that `a + b = 1`. -/
 theorem StrictConvexSpace.of_norm_combo_lt_one
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, a + b = 1 ∧ ‖a • x + b • y‖ < 1) :
     StrictConvexSpace ℝ E := by
-  refine'
-    StrictConvexSpace.of_strictConvex_closed_unit_ball ℝ
-      ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => _)
+  refine
+    StrictConvexSpace.of_strictConvex_unitClosedBall ℝ
+      ((convex_closedBall _ _).strictConvex' fun x hx y hy hne => ?_)
   rw [interior_closedBall (0 : E) one_ne_zero, closedBall_diff_ball,
     mem_sphere_zero_iff_norm] at hx hy
   rcases h x y hx hy hne with ⟨a, b, hab, hlt⟩
   use b
   rwa [AffineMap.lineMap_apply_module, interior_closedBall (0 : E) one_ne_zero, mem_ball_zero_iff,
     sub_eq_iff_eq_add.2 hab.symm]
-#align strict_convex_space.of_norm_combo_lt_one StrictConvexSpace.of_norm_combo_lt_one
 
 theorem StrictConvexSpace.of_norm_combo_ne_one
     (h :
       ∀ x y : E,
         ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ∃ a b : ℝ, 0 ≤ a ∧ 0 ≤ b ∧ a + b = 1 ∧ ‖a • x + b • y‖ ≠ 1) :
     StrictConvexSpace ℝ E := by
-  refine' StrictConvexSpace.of_strictConvex_closed_unit_ball ℝ
-    ((convex_closedBall _ _).strictConvex _)
+  refine StrictConvexSpace.of_strictConvex_unitClosedBall ℝ
+    ((convex_closedBall _ _).strictConvex ?_)
   simp only [interior_closedBall _ one_ne_zero, closedBall_diff_ball, Set.Pairwise,
     frontier_closedBall _ one_ne_zero, mem_sphere_zero_iff_norm]
   intro x hx y hy hne
   rcases h x y hx hy hne with ⟨a, b, ha, hb, hab, hne'⟩
   exact ⟨_, ⟨a, b, ha, hb, hab, rfl⟩, mt mem_sphere_zero_iff_norm.1 hne'⟩
-#align strict_convex_space.of_norm_combo_ne_one StrictConvexSpace.of_norm_combo_ne_one
 
 theorem StrictConvexSpace.of_norm_add_ne_two
     (h : ∀ ⦃x y : E⦄, ‖x‖ = 1 → ‖y‖ = 1 → x ≠ y → ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E := by
-  refine'
+  refine
     StrictConvexSpace.of_norm_combo_ne_one fun x y hx hy hne =>
-      ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, _⟩
-  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne.def,
+      ⟨1 / 2, 1 / 2, one_half_pos.le, one_half_pos.le, add_halves _, ?_⟩
+  rw [← smul_add, norm_smul, Real.norm_of_nonneg one_half_pos.le, one_div, ← div_eq_inv_mul, Ne,
     div_eq_one_iff_eq (two_ne_zero' ℝ)]
   exact h hx hy hne
-#align strict_convex_space.of_norm_add_ne_two StrictConvexSpace.of_norm_add_ne_two
 
 theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
     (h : (sphere (0 : E) 1).Pairwise fun x y => ‖x + y‖ ≠ 2) : StrictConvexSpace ℝ E :=
   StrictConvexSpace.of_norm_add_ne_two fun _ _ hx hy =>
     h (mem_sphere_zero_iff_norm.2 hx) (mem_sphere_zero_iff_norm.2 hy)
-#align strict_convex_space.of_pairwise_sphere_norm_ne_two StrictConvexSpace.of_pairwise_sphere_norm_ne_two
 
 /-- If `‖x + y‖ = ‖x‖ + ‖y‖` implies that `x y : E` are in the same ray, then `E` is a strictly
 convex space. See also a more -/
 theorem StrictConvexSpace.of_norm_add
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E := by
-  refine' StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => _
+  refine StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => ?_
   rw [mem_sphere_zero_iff_norm] at hx hy
   exact (sameRay_iff_of_norm_eq (hx.trans hy.symm)).1 (h x y hx hy h₂)
-#align strict_convex_space.of_norm_add StrictConvexSpace.of_norm_add
 
 variable [StrictConvexSpace ℝ E] {x y z : E} {a b r : ℝ}
 
@@ -161,14 +149,12 @@ theorem combo_mem_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall 
     exact (hne (hx.trans hy.symm)).elim
   · simp only [← interior_closedBall _ hr] at hx hy ⊢
     exact strictConvex_closedBall ℝ z r hx hy hne ha hb hab
-#align combo_mem_ball_of_ne combo_mem_ball_of_ne
 
 /-- If `x ≠ y` belong to the same closed ball, then the open segment with endpoints `x` and `y` is
 included in the corresponding open ball. -/
 theorem openSegment_subset_ball_of_ne (hx : x ∈ closedBall z r) (hy : y ∈ closedBall z r)
     (hne : x ≠ y) : openSegment ℝ x y ⊆ ball z r :=
   (openSegment_subset_iff _).2 fun _ _ => combo_mem_ball_of_ne hx hy hne
-#align open_segment_subset_ball_of_ne openSegment_subset_ball_of_ne
 
 /-- If `x` and `y` are two distinct vectors of norm at most `r`, then a convex combination of `x`
 and `y` with positive coefficients has norm strictly less than `r`. -/
@@ -176,64 +162,54 @@ theorem norm_combo_lt_of_ne (hx : ‖x‖ ≤ r) (hy : ‖y‖ ≤ r) (hne : x �
     (hab : a + b = 1) : ‖a • x + b • y‖ < r := by
   simp only [← mem_ball_zero_iff, ← mem_closedBall_zero_iff] at hx hy ⊢
   exact combo_mem_ball_of_ne hx hy hne ha hb hab
-#align norm_combo_lt_of_ne norm_combo_lt_of_ne
 
 /-- In a strictly convex space, if `x` and `y` are not in the same ray, then `‖x + y‖ < ‖x‖ + ‖y‖`.
 -/
 theorem norm_add_lt_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x + y‖ < ‖x‖ + ‖y‖ := by
-  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.def] at h
+  simp only [sameRay_iff_inv_norm_smul_eq, not_or, ← Ne.eq_def] at h
   rcases h with ⟨hx, hy, hne⟩
   rw [← norm_pos_iff] at hx hy
   have hxy : 0 < ‖x‖ + ‖y‖ := add_pos hx hy
   have :=
-    combo_mem_ball_of_ne (inv_norm_smul_mem_closed_unit_ball x)
-      (inv_norm_smul_mem_closed_unit_ball y) hne (div_pos hx hxy) (div_pos hy hxy)
+    combo_mem_ball_of_ne (inv_norm_smul_mem_unitClosedBall x)
+      (inv_norm_smul_mem_unitClosedBall y) hne (div_pos hx hxy) (div_pos hy hxy)
       (by rw [← add_div, div_self hxy.ne'])
   rwa [mem_ball_zero_iff, div_eq_inv_mul, div_eq_inv_mul, mul_smul, mul_smul, smul_inv_smul₀ hx.ne',
     smul_inv_smul₀ hy.ne', ← smul_add, norm_smul, Real.norm_of_nonneg (inv_pos.2 hxy).le, ←
     div_eq_inv_mul, div_lt_one hxy] at this
-#align norm_add_lt_of_not_same_ray norm_add_lt_of_not_sameRay
 
 theorem lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : ‖x‖ - ‖y‖ < ‖x - y‖ := by
   nth_rw 1 [← sub_add_cancel x y] at h ⊢
   exact sub_lt_iff_lt_add.2 (norm_add_lt_of_not_sameRay fun H' => h <| H'.add_left SameRay.rfl)
-#align lt_norm_sub_of_not_same_ray lt_norm_sub_of_not_sameRay
 
 theorem abs_lt_norm_sub_of_not_sameRay (h : ¬SameRay ℝ x y) : |‖x‖ - ‖y‖| < ‖x - y‖ := by
-  refine' abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, _⟩
+  refine abs_sub_lt_iff.2 ⟨lt_norm_sub_of_not_sameRay h, ?_⟩
   rw [norm_sub_rev]
   exact lt_norm_sub_of_not_sameRay (mt SameRay.symm h)
-#align abs_lt_norm_sub_of_not_same_ray abs_lt_norm_sub_of_not_sameRay
 
 /-- In a strictly convex space, two vectors `x`, `y` are in the same ray if and only if the triangle
 inequality for `x` and `y` becomes an equality. -/
 theorem sameRay_iff_norm_add : SameRay ℝ x y ↔ ‖x + y‖ = ‖x‖ + ‖y‖ :=
   ⟨SameRay.norm_add, fun h => Classical.not_not.1 fun h' => (norm_add_lt_of_not_sameRay h').ne h⟩
-#align same_ray_iff_norm_add sameRay_iff_norm_add
 
 /-- If `x` and `y` are two vectors in a strictly convex space have the same norm and the norm of
 their sum is equal to the sum of their norms, then they are equal. -/
 theorem eq_of_norm_eq_of_norm_add_eq (h₁ : ‖x‖ = ‖y‖) (h₂ : ‖x + y‖ = ‖x‖ + ‖y‖) : x = y :=
   (sameRay_iff_norm_add.mpr h₂).eq_of_norm_eq h₁
-#align eq_of_norm_eq_of_norm_add_eq eq_of_norm_eq_of_norm_add_eq
 
 /-- In a strictly convex space, two vectors `x`, `y` are not in the same ray if and only if the
 triangle inequality for `x` and `y` is strict. -/
 theorem not_sameRay_iff_norm_add_lt : ¬SameRay ℝ x y ↔ ‖x + y‖ < ‖x‖ + ‖y‖ :=
   sameRay_iff_norm_add.not.trans (norm_add_le _ _).lt_iff_ne.symm
-#align not_same_ray_iff_norm_add_lt not_sameRay_iff_norm_add_lt
 
 theorem sameRay_iff_norm_sub : SameRay ℝ x y ↔ ‖x - y‖ = |‖x‖ - ‖y‖| :=
   ⟨SameRay.norm_sub, fun h =>
     Classical.not_not.1 fun h' => (abs_lt_norm_sub_of_not_sameRay h').ne' h⟩
-#align same_ray_iff_norm_sub sameRay_iff_norm_sub
 
 theorem not_sameRay_iff_abs_lt_norm_sub : ¬SameRay ℝ x y ↔ |‖x‖ - ‖y‖| < ‖x - y‖ :=
   sameRay_iff_norm_sub.not.trans <| ne_comm.trans (abs_norm_sub_norm_le _ _).lt_iff_ne.symm
-#align not_same_ray_iff_abs_lt_norm_sub not_sameRay_iff_abs_lt_norm_sub
 
 theorem norm_midpoint_lt_iff (h : ‖x‖ = ‖y‖) : ‖(1 / 2 : ℝ) • (x + y)‖ < ‖x‖ ↔ x ≠ y := by
   rw [norm_smul, Real.norm_of_nonneg (one_div_nonneg.2 zero_le_two), ← inv_eq_one_div, ←
-    div_eq_inv_mul, div_lt_iff (zero_lt_two' ℝ), mul_two, ← not_sameRay_iff_of_norm_eq h,
+    div_eq_inv_mul, div_lt_iff₀ (zero_lt_two' ℝ), mul_two, ← not_sameRay_iff_of_norm_eq h,
     not_sameRay_iff_norm_add_lt, h]
-#align norm_midpoint_lt_iff norm_midpoint_lt_iff

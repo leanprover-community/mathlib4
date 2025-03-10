@@ -3,7 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.NormNum
 
 /-! # `norm_num` extension for `Nat.fib`
@@ -103,7 +103,7 @@ theorem isNat_fib : {x nx z : ℕ} → IsNat x nx → Nat.fib nx = z → IsNat (
 
 /-- Evaluates the `Nat.fib` function. -/
 @[norm_num Nat.fib _]
-def evalNatFib : NormNumExt where eval {u α} e := do
+def evalNatFib : NormNumExt where eval {_ _} e := do
   let .app _ (x : Q(ℕ)) ← Meta.whnfR e | failure
   let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
   let ⟨ex, p⟩ ← deriveNat x sℕ
@@ -112,3 +112,7 @@ def evalNatFib : NormNumExt where eval {u α} e := do
   return .isNat sℕ ey pf'
 
 end NormNum
+
+end Meta
+
+end Mathlib

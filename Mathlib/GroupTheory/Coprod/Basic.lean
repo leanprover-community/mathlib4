@@ -3,10 +3,10 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.PUnitInstances
-import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.GroupTheory.Congruence
-import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.Group.PUnit
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.GroupTheory.Congruence.Basic
 
 /-!
 # Coproduct (free product) of two monoids or groups
@@ -117,6 +117,8 @@ There are several reasons to build an API from scratch.
 group, monoid, coproduct, free product
 -/
 
+assert_not_exists MonoidWithZero
+
 open FreeMonoid Function List Set
 
 namespace Monoid
@@ -157,7 +159,7 @@ def mk : FreeMonoid (M ⊕ N) →* M ∗ N := Con.mk' _
 theorem con_ker_mk : Con.ker mk = coprodCon M N := Con.mk'_ker _
 
 @[to_additive]
-theorem mk_surjective : Surjective (@mk M N _ _) := surjective_quot_mk _
+theorem mk_surjective : Surjective (@mk M N _ _) := Quot.mk_surjective
 
 @[to_additive (attr := simp)]
 theorem mrange_mk : MonoidHom.mrange (@mk M N _ _) = ⊤ := Con.mrange_mk'
@@ -191,9 +193,9 @@ theorem induction_on' {C : M ∗ N → Prop} (m : M ∗ N)
     (inl_mul : ∀ m x, C x → C (inl m * x))
     (inr_mul : ∀ n x, C x → C (inr n * x)) : C m := by
   rcases mk_surjective m with ⟨x, rfl⟩
-  induction x using FreeMonoid.recOn with
-  | h0 => exact one
-  | ih x xs ih =>
+  induction x using FreeMonoid.inductionOn' with
+  | one => exact one
+  | mul_of x xs ih =>
     cases x with
     | inl m => simpa using inl_mul m _ ih
     | inr n => simpa using inr_mul n _ ih
@@ -242,7 +244,7 @@ theorem clift_apply_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN w) :
 @[to_additive (attr := simp)]
 theorem clift_comp_mk (f : FreeMonoid (M ⊕ N) →* P) (hM₁ hN₁ hM hN) :
     (clift f hM₁ hN₁ hM hN).comp mk = f :=
-  FunLike.ext' rfl
+  DFunLike.ext' rfl
 
 @[to_additive (attr := simp)]
 theorem mclosure_range_inl_union_inr :
@@ -275,7 +277,7 @@ then they are equal. -/
 theorem hom_ext {f g : M ∗ N →* P} (h₁ : f.comp inl = g.comp inl) (h₂ : f.comp inr = g.comp inr) :
     f = g :=
   MonoidHom.eq_of_eqOn_denseM mclosure_range_inl_union_inr <| eqOn_union.2
-    ⟨eqOn_range.2 <| FunLike.ext'_iff.1 h₁, eqOn_range.2 <| FunLike.ext'_iff.1 h₂⟩
+    ⟨eqOn_range.2 <| DFunLike.ext'_iff.1 h₁, eqOn_range.2 <| DFunLike.ext'_iff.1 h₂⟩
 
 @[to_additive (attr := simp)]
 theorem clift_mk :
@@ -322,7 +324,7 @@ theorem map_comp_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →*
 theorem map_map {M'' N''} [MulOneClass M''] [MulOneClass N''] (f' : M' →* M'') (g' : N' →* N'')
     (f : M →* M') (g : N →* N') (x : M ∗ N) :
     map f' g' (map f g x) = map (f'.comp f) (g'.comp g) x :=
-  FunLike.congr_fun (map_comp_map f' g' f g) x
+  DFunLike.congr_fun (map_comp_map f' g' f g) x
 
 variable (M N)
 
@@ -347,7 +349,7 @@ variable {M N}
 
 @[to_additive (attr := simp)]
 theorem swap_swap (x : M ∗ N) : swap N M (swap M N x) = x :=
-  FunLike.congr_fun (swap_comp_swap _ _) x
+  DFunLike.congr_fun (swap_comp_swap _ _) x
 
 @[to_additive]
 theorem swap_comp_map (f : M →* M') (g : N →* N') :
@@ -357,7 +359,7 @@ theorem swap_comp_map (f : M →* M') (g : N →* N') :
 @[to_additive]
 theorem swap_map (f : M →* M') (g : N →* N') (x : M ∗ N) :
     swap M' N' (map f g x) = map g f (swap M N x) :=
-  FunLike.congr_fun (swap_comp_map f g) x
+  DFunLike.congr_fun (swap_comp_map f g) x
 
 @[to_additive (attr := simp)] theorem swap_comp_inl : (swap M N).comp inl = inr := rfl
 @[to_additive (attr := simp)] theorem swap_inl (x : M) : swap M N (inl x) = inr x := rfl
@@ -384,7 +386,7 @@ theorem mker_swap : MonoidHom.mker (swap M N) = ⊥ := Submonoid.ext fun _ ↦ s
 
 @[to_additive (attr := simp)]
 theorem mrange_swap : MonoidHom.mrange (swap M N) = ⊤ :=
-  MonoidHom.mrange_top_of_surjective _ swap_surjective
+  MonoidHom.mrange_eq_top_of_surjective _ swap_surjective
 
 end MulOneClass
 
@@ -436,7 +438,7 @@ theorem lift_comp_swap (f : M →* P) (g : N →* P) : (lift f g).comp (swap N M
 
 @[to_additive (attr := simp)]
 theorem lift_swap (f : M →* P) (g : N →* P) (x : N ∗ M) : lift f g (swap N M x) = lift g f x :=
-  FunLike.congr_fun (lift_comp_swap f g) x
+  DFunLike.congr_fun (lift_comp_swap f g) x
 
 @[to_additive]
 theorem comp_lift {P' : Type*} [Monoid P'] (f : P →* P') (g₁ : M →* P) (g₂ : N →* P) :
@@ -566,23 +568,23 @@ variable {G H : Type*} [Group G] [Group H]
 
 @[to_additive]
 theorem mk_of_inv_mul : ∀ x : G ⊕ H, mk (of (x.map Inv.inv Inv.inv)) * mk (of x) = 1
-  | Sum.inl _ => map_mul_eq_one inl (mul_left_inv _)
-  | Sum.inr _ => map_mul_eq_one inr (mul_left_inv _)
+  | Sum.inl _ => map_mul_eq_one inl (inv_mul_cancel _)
+  | Sum.inr _ => map_mul_eq_one inr (inv_mul_cancel _)
 
 @[to_additive]
-theorem con_mul_left_inv (x : FreeMonoid (G ⊕ H)) :
+theorem con_inv_mul_cancel (x : FreeMonoid (G ⊕ H)) :
     coprodCon G H (ofList (x.toList.map (Sum.map Inv.inv Inv.inv)).reverse * x) 1 := by
   rw [← mk_eq_mk, map_mul, map_one]
-  induction x using FreeMonoid.recOn
-  case h0 => simp [map_one mk] -- TODO: fails without `[map_one mk]`
-  case ih x xs ihx =>
+  induction x using FreeMonoid.inductionOn' with
+  | one => simp
+  | mul_of x xs ihx =>
     simp only [toList_of_mul, map_cons, reverse_cons, ofList_append, map_mul, ihx, ofList_singleton]
     rwa [mul_assoc, ← mul_assoc (mk (of _)), mk_of_inv_mul, one_mul]
 
 @[to_additive]
 instance : Inv (G ∗ H) where
   inv := Quotient.map' (fun w => ofList (w.toList.map (Sum.map Inv.inv Inv.inv)).reverse) fun _ _ ↦
-    (coprodCon G H).map_of_mul_left_rel_one _ con_mul_left_inv
+    (coprodCon G H).map_of_mul_left_rel_one _ con_inv_mul_cancel
 
 @[to_additive]
 theorem inv_def (w : FreeMonoid (G ⊕ H)) :
@@ -591,7 +593,7 @@ theorem inv_def (w : FreeMonoid (G ⊕ H)) :
 
 @[to_additive]
 instance : Group (G ∗ H) where
-  mul_left_inv := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_mul_left_inv x)
+  inv_mul_cancel := mk_surjective.forall.2 fun x => mk_eq_mk.2 (con_inv_mul_cancel x)
 
 @[to_additive (attr := simp)]
 theorem closure_range_inl_union_inr :
@@ -609,7 +611,7 @@ theorem codisjoint_range_inl_range_inr :
   codisjoint_iff.2 range_inl_sup_range_inr
 
 @[to_additive (attr := simp)] theorem range_swap : MonoidHom.range (swap G H) = ⊤ :=
-  MonoidHom.range_top_of_surjective _ swap_surjective
+  MonoidHom.range_eq_top.2 swap_surjective
 
 variable {K : Type*} [Group K]
 
@@ -637,7 +639,7 @@ variable {M N M' N' : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M']
 
 /-- Lift two monoid equivalences `e : M ≃* N` and `e' : M' ≃* N'` to a monoid equivalence
 `(M ∗ M') ≃* (N ∗ N')`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false })) "Lift two additive monoid
+@[to_additive (attr := simps! (config := .asFn)) "Lift two additive monoid
 equivalences `e : M ≃+ N` and `e' : M' ≃+ N'` to an additive monoid equivalence
 `(AddMonoid.Coprod M M') ≃+ (AddMonoid.Coprod N N')`."]
 def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
@@ -647,7 +649,7 @@ def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
 variable (M N)
 
 /-- A `MulEquiv` version of `Coprod.swap`. -/
-@[to_additive (attr := simps! (config := { fullyApplied := false }))
+@[to_additive (attr := simps! (config := .asFn))
   "An `AddEquiv` version of `AddMonoid.Coprod.swap`."]
 def coprodComm : M ∗ N ≃* N ∗ M :=
   (Coprod.swap _ _).toMulEquiv (Coprod.swap _ _) (Coprod.swap_comp_swap _ _)
@@ -694,12 +696,12 @@ theorem coprodAssoc_symm_apply_inr_inr (x : P) :
 variable (M)
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def coprodPUnit : M ∗ PUnit ≃* M :=
   MonoidHom.toMulEquiv fst inl (hom_ext rfl <| Subsingleton.elim _ _) fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def punitCoprod : PUnit ∗ M ≃* M :=
   MonoidHom.toMulEquiv snd inr (hom_ext (Subsingleton.elim _ _) rfl) snd_comp_inr
 
@@ -712,15 +714,17 @@ namespace AddEquiv
 variable {M : Type*} [AddMonoid M]
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def coprodUnit : AddMonoid.Coprod M PUnit ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.fst AddMonoid.Coprod.inl
     (AddMonoid.Coprod.hom_ext rfl <| Subsingleton.elim _ _) AddMonoid.Coprod.fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := {fullyApplied := false})]
+@[simps! (config := .asFn)]
 def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.snd AddMonoid.Coprod.inr
     (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr
 
 end AddEquiv
+
+end Monoid
