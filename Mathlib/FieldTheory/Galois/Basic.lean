@@ -205,6 +205,16 @@ lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) 
   rw [← le_iff_le]
   exact le_trans h ((le_iff_le _ _).mpr (le_refl K'.fixingSubgroup))
 
+@[simp] lemma fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
+  ext
+  simp [fixingSubgroup, mem_fixingSubgroup_iff, DFunLike.ext_iff]
+
+@[simp] lemma fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
+  ext
+  simp [fixingSubgroup, mem_fixingSubgroup_iff, mem_bot]
+
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
@@ -257,6 +267,24 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
   rw [IntermediateField.finrank_fixedField_eq_card,
     Fintype.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
+
+@[simp] lemma fixedField_bot [IsGalois F E] [FiniteDimensional F E] :
+    IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
+  rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
+
+@[simp] lemma fixingSubgroup_top [IsGalois F E] [FiniteDimensional F E] :
+    IntermediateField.fixingSubgroup (⊥ : IntermediateField F E) = ⊤ := by
+  rw [← fixedField_bot, fixingSubgroup_fixedField]
+
+theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
+    x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
+  rw [←fixedField_bot, mem_fixedField_iff]
+  simp only [Subgroup.mem_top, forall_const]
+
+theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
+    x ∈ Set.range (algebraMap F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
+  rw [<-mem_bot_iff_fixed]
+  rfl
 
 theorem card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.fixingSubgroup K)]
     [FiniteDimensional F E] [IsGalois F E] :
