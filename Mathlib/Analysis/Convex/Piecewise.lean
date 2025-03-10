@@ -32,7 +32,7 @@ variable {𝕜 E β : Type*} [OrderedSemiring 𝕜] [LinearOrderedAddCommMonoid 
 
 /-- The piecewise function `(Set.Iic e).piecewise f g` of a function `f` decreasing and convex on
 `Set.Iic e` and a function `g` increasing and convex on `Set.Ici e`, such that `f e = g e`, is
-convex on the universal set.-/
+convex on the universal set. -/
 theorem convexOn_univ_piecewise_Iic_of_antitoneOn_Iic_monotoneOn_Ici
     (hf : ConvexOn 𝕜 (Set.Iic e) f) (hg : ConvexOn 𝕜 (Set.Ici e) g)
     (h_anti : AntitoneOn f (Set.Iic e)) (h_mono : MonotoneOn g (Set.Ici e)) (h_eq : f e = g e) :
