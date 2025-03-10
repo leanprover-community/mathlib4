@@ -56,9 +56,8 @@ relative to that shift is called pretriangulated if the following hold:
   ```
   where the left square commutes, and whose rows are distinguished triangles,
   there exists a morphism `c : Z ⟶ Z'` such that `(a,b,c)` is a triangle morphism.
-
-See <https://stacks.math.columbia.edu/tag/0145>
 -/
+@[stacks 0145]
 class Pretriangulated [∀ n : ℤ, Functor.Additive (shiftFunctor C n)] where
   /-- a class of triangle which are called `distinguished` -/
   distinguishedTriangles : Set (Triangle C)
@@ -115,10 +114,8 @@ theorem inv_rot_of_distTriang (T : Triangle C) (H : T ∈ distTriang C) :
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `f ≫ g = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `f ≫ g = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁ ≫ T.mor₂ = 0 := by
   obtain ⟨c, hc⟩ :=
     complete_distinguished_triangle_morphism _ _ (contractible_distinguished T.obj₁) H (𝟙 T.obj₁)
@@ -130,10 +127,8 @@ theorem comp_distTriang_mor_zero₁₂ (T) (H : T ∈ (distTriang C)) : T.mor₁
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `g ≫ h = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `g ≫ h = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₂ ≫ T.mor₃ = 0 :=
   comp_distTriang_mor_zero₁₂ T.rotate (rot_of_distTriang T H)
@@ -143,10 +138,8 @@ theorem comp_distTriang_mor_zero₂₃ (T : Triangle C) (H : T ∈ distTriang C)
       f       g       h
   X  ───> Y  ───> Z  ───> X⟦1⟧
 ```
-the composition `h ≫ f⟦1⟧ = 0`.
-See <https://stacks.math.columbia.edu/tag/0146>
--/
-@[reassoc]
+the composition `h ≫ f⟦1⟧ = 0`. -/
+@[reassoc, stacks 0146]
 theorem comp_distTriang_mor_zero₃₁ (T : Triangle C) (H : T ∈ distTriang C) :
     T.mor₃ ≫ T.mor₁⟦1⟧' = 0 := by
   have H₂ := rot_of_distTriang T.rotate (rot_of_distTriang T H)

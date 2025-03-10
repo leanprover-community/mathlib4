@@ -17,7 +17,7 @@ embedding of `Aut F` into `∀ X, Aut (F.obj X)` where
 
 ## References
 
-- Stacks Project: Tag 0BMQ
+- [Stacks 0BMQ](https://stacks.math.columbia.edu/tag/0BMQ)
 
 -/
 
@@ -105,7 +105,7 @@ instance : ContinuousMul (Aut F) :=
 instance : ContinuousInv (Aut F) :=
   (autEmbedding_isClosedEmbedding F).isInducing.continuousInv fun _ ↦ rfl
 
-instance : TopologicalGroup (Aut F) := ⟨⟩
+instance : IsTopologicalGroup (Aut F) := ⟨⟩
 
 instance (X : C) : SMul (Aut (F.obj X)) (F.obj X) := ⟨fun σ a => σ.hom a⟩
 

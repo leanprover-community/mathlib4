@@ -56,7 +56,6 @@ noncomputable def roots (p : R[X]) : Multiset R :=
 
 theorem roots_def [DecidableEq R] (p : R[X]) [Decidable (p = 0)] :
     p.roots = if h : p = 0 then ∅ else Classical.choose (exists_multiset_roots h) := by
-  -- porting noteL `‹_›` doesn't work for instance arguments
   rename_i iR ip0
   obtain rfl := Subsingleton.elim iR (Classical.decEq R)
   obtain rfl := Subsingleton.elim ip0 (Classical.dec (p = 0))
@@ -117,7 +116,7 @@ theorem mem_roots_map_of_injective [Semiring S] {p : S[X]} {f : S →+* R}
   rw [mem_roots ((Polynomial.map_ne_zero_iff hf).mpr hp), IsRoot, eval_map]
 
 lemma mem_roots_iff_aeval_eq_zero {x : R} (w : p ≠ 0) : x ∈ roots p ↔ aeval x p = 0 := by
-  rw [aeval_def, ← mem_roots_map_of_injective (NoZeroSMulDivisors.algebraMap_injective _ _) w,
+  rw [aeval_def, ← mem_roots_map_of_injective (FaithfulSMul.algebraMap_injective _ _) w,
     Algebra.id.map_eq_id, map_id]
 
 theorem card_le_degree_of_subset_roots {p : R[X]} {Z : Finset R} (h : Z.val ⊆ p.roots) :
@@ -271,7 +270,7 @@ theorem card_roots_X_pow_sub_C {n : ℕ} (hn : 0 < n) (a : R) :
 
 section NthRoots
 
-/-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`-/
+/-- `nthRoots n a` noncomputably returns the solutions to `x ^ n = a`. -/
 def nthRoots (n : ℕ) (a : R) : Multiset R :=
   roots ((X : R[X]) ^ n - C a)
 
@@ -392,7 +391,7 @@ theorem mem_aroots' [CommRing S] [IsDomain S] [Algebra T S] {p : T[X]} {a : S} :
 theorem mem_aroots [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {p : T[X]} {a : S} : a ∈ p.aroots S ↔ p ≠ 0 ∧ aeval a p = 0 := by
   rw [mem_aroots', Polynomial.map_ne_zero_iff]
-  exact NoZeroSMulDivisors.algebraMap_injective T S
+  exact FaithfulSMul.algebraMap_injective T S
 
 theorem aroots_mul [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {p q : T[X]} (hpq : p * q ≠ 0) :
@@ -400,7 +399,7 @@ theorem aroots_mul [CommRing S] [IsDomain S] [Algebra T S]
   suffices map (algebraMap T S) p * map (algebraMap T S) q ≠ 0 by
     rw [aroots_def, Polynomial.map_mul, roots_mul this]
   rwa [← Polynomial.map_mul, Polynomial.map_ne_zero_iff
-    (NoZeroSMulDivisors.algebraMap_injective T S)]
+    (FaithfulSMul.algebraMap_injective T S)]
 
 @[simp]
 theorem aroots_X_sub_C [CommRing S] [IsDomain S] [Algebra T S]
@@ -436,7 +435,7 @@ theorem aroots_C_mul [CommRing S] [IsDomain S] [Algebra T S]
     (C a * p).aroots S = p.aroots S := by
   rw [aroots_def, Polynomial.map_mul, map_C, roots_C_mul]
   rwa [map_ne_zero_iff]
-  exact NoZeroSMulDivisors.algebraMap_injective T S
+  exact FaithfulSMul.algebraMap_injective T S
 
 @[simp]
 theorem aroots_smul_nonzero [CommRing S] [IsDomain S] [Algebra T S]
@@ -534,7 +533,7 @@ theorem mem_rootSet' {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T
 
 theorem mem_rootSet {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] {a : S} : a ∈ p.rootSet S ↔ p ≠ 0 ∧ aeval a p = 0 := by
-  rw [mem_rootSet', Polynomial.map_ne_zero_iff (NoZeroSMulDivisors.algebraMap_injective T S)]
+  rw [mem_rootSet', Polynomial.map_ne_zero_iff (FaithfulSMul.algebraMap_injective T S)]
 
 theorem mem_rootSet_of_ne {p : T[X]} {S : Type*} [CommRing S] [IsDomain S] [Algebra T S]
     [NoZeroSMulDivisors T S] (hp : p ≠ 0) {a : S} : a ∈ p.rootSet S ↔ aeval a p = 0 :=
@@ -559,7 +558,7 @@ theorem rootSet_mapsTo {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S]
     (p.rootSet S).MapsTo f (p.rootSet S') := by
   refine rootSet_maps_to' (fun h₀ => ?_) f
   obtain rfl : p = 0 :=
-    map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S') (by rwa [Polynomial.map_zero])
+    map_injective _ (FaithfulSMul.algebraMap_injective T S') (by rwa [Polynomial.map_zero])
   exact Polynomial.map_zero _
 
 theorem mem_rootSet_of_injective [CommRing S] {p : S[X]} [Algebra S R]
@@ -775,7 +774,7 @@ theorem roots_map_of_map_ne_zero_of_card_eq_natDegree [IsDomain A] [IsDomain B] 
     simpa only [Multiset.card_map, hroots] using (p.map f).card_roots'.trans natDegree_map_le
 
 theorem Monic.roots_map_of_card_eq_natDegree [IsDomain A] [IsDomain B] {p : A[X]} (hm : p.Monic)
-    (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f  = (p.map f).roots :=
+    (f : A →+* B) (hroots : p.roots.card = p.natDegree) : p.roots.map f = (p.map f).roots :=
   roots_map_of_map_ne_zero_of_card_eq_natDegree f (map_monic_ne_zero hm) hroots
 
 end

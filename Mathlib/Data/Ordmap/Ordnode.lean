@@ -120,7 +120,7 @@ instance : Singleton α (Ordnode α) :=
 
 /-- O(1). Get the size of the set.
 
-     size {2, 1, 1, 4} = 3  -/
+`size {2, 1, 1, 4} = 3` -/
 @[inline]
 def size : Ordnode α → ℕ
   | nil => 0

@@ -59,11 +59,11 @@ lemma tendsto_integral_cexp_sq_smul (hf : Integrable f) :
       AEStronglyMeasurable.smul (Continuous.aestronglyMeasurable (by fun_prop)) hf.1
   · filter_upwards [Ici_mem_atTop (0 : ℝ)] with c (hc : 0 ≤ c)
     filter_upwards with v
-    simp only [ofReal_inv, neg_mul, norm_smul, Complex.norm_eq_abs]
+    simp only [ofReal_inv, neg_mul, norm_smul]
     norm_cast
     conv_rhs => rw [← one_mul (‖f v‖)]
     gcongr
-    simp only [abs_exp, exp_le_one_iff, Left.neg_nonpos_iff]
+    simp only [norm_eq_abs, abs_exp, exp_le_one_iff, Left.neg_nonpos_iff]
     positivity
 
 variable [CompleteSpace E]
@@ -145,7 +145,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
       ofReal_cpow pi_nonneg, ofReal_cpow hc.le]
     simp [div_eq_inv_mul]
   · norm_cast
-    simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, _root_.sq_abs, neg_mul, neg_inj,
+    simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, sq_abs, neg_mul, neg_inj,
       ← rpow_natCast, ← rpow_mul hc.le, mul_assoc]
     norm_num
 

@@ -30,7 +30,6 @@ variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
---@[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported
 structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
@@ -177,9 +176,7 @@ theorem symm_comp_self (h : α ≃ᵤ β) : (h.symm : β → α) ∘ h = id :=
 theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 
-@[simp]
-theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
-  h.surjective.range_eq
+theorem range_coe (h : α ≃ᵤ β) : range h = univ := by simp
 
 theorem image_symm (h : α ≃ᵤ β) : image h.symm = preimage h :=
   funext h.symm.toEquiv.image_eq_preimage

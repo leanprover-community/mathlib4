@@ -42,7 +42,7 @@ Lebesgue decomposition theorem
 
 noncomputable section
 
-open scoped Classical MeasureTheory NNReal ENNReal
+open scoped MeasureTheory NNReal ENNReal
 
 open Set
 
@@ -129,7 +129,7 @@ theorem singularPart_mutuallySingular (s : SignedMeasure α) (μ : Measure α) :
     rw [add_apply, add_eq_zero] at hpos hneg
     exact ⟨i, hi, hpos.1, hneg.1⟩
   · rw [not_haveLebesgueDecomposition_iff] at hl
-    cases' hl with hp hn
+    rcases hl with hp | hn
     · rw [Measure.singularPart, dif_neg hp]
       exact MutuallySingular.zero_left
     · rw [Measure.singularPart, Measure.singularPart, dif_neg hn]
@@ -456,10 +456,10 @@ def rnDeriv (c : ComplexMeasure α) (μ : Measure α) : α → ℂ := fun x =>
 variable {c : ComplexMeasure α}
 
 theorem integrable_rnDeriv (c : ComplexMeasure α) (μ : Measure α) : Integrable (c.rnDeriv μ) μ := by
-  rw [← memℒp_one_iff_integrable, ← memℒp_re_im_iff]
+  rw [← memLp_one_iff_integrable, ← memLp_re_im_iff]
   exact
-    ⟨memℒp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
-      memℒp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
+    ⟨memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _),
+      memLp_one_iff_integrable.2 (SignedMeasure.integrable_rnDeriv _ _)⟩
 
 theorem singularPart_add_withDensity_rnDeriv_eq [c.HaveLebesgueDecomposition μ] :
     c.singularPart μ + μ.withDensityᵥ (c.rnDeriv μ) = c := by

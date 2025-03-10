@@ -13,6 +13,8 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   finitely many divisors.
 -/
 
+assert_not_exists Field
+
 variable {α : Type*}
 
 local infixl:50 " ~ᵤ " => Associated

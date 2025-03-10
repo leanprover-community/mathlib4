@@ -61,8 +61,6 @@ Vitali families are provided by covering theorems such as the Besicovitch coveri
 Vitali covering theorem. They make it possible to formulate general versions of theorems on
 differentiations of measure that apply in both contexts.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure VitaliFamily {m : MeasurableSpace X} (μ : Measure X) where
   /-- Sets of the family "centered" at a given point. -/
   setsAt :  X → Set (Set X)
@@ -118,7 +116,6 @@ covering of almost every `s`. -/
 protected def index : Set (X × Set X) :=
   h.exists_disjoint_covering_ae.choose
 
--- Porting note: Needed to add `(_h : FineSubfamilyOn v f s)`
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.covering p` is a set in the family,
 for `p ∈ h.index`, such that these sets form a disjoint covering of almost every `s`. -/
 @[nolint unusedArguments]

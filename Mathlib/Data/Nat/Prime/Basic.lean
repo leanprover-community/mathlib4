@@ -3,7 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Associated.Basic
+import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Data.Nat.Prime.Defs
 
@@ -117,7 +117,7 @@ theorem Prime.not_coprime_iff_dvd {m n : ℕ} : ¬Coprime m n ↔ ∃ p, Prime p
       ⟨minFac (gcd m n), minFac_prime h, (minFac_dvd (gcd m n)).trans (gcd_dvd_left m n),
         (minFac_dvd (gcd m n)).trans (gcd_dvd_right m n)⟩
   · intro h
-    cases' h with p hp
+    obtain ⟨p, hp⟩ := h
     apply Nat.not_coprime_of_dvd_of_dvd (Prime.one_lt hp.1) hp.2.1 hp.2.2
 
 theorem Prime.not_dvd_mul {p m n : ℕ} (pp : Prime p) (Hm : ¬p ∣ m) (Hn : ¬p ∣ n) : ¬p ∣ m * n :=
