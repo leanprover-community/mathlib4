@@ -31,6 +31,8 @@ universe u v
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
+attribute [local instance] Opposite.small
+
 namespace AlgebraicGeometry
 
 /-- `Spec ℤ` is the terminal object in the category of schemes. -/
