@@ -162,7 +162,6 @@ end Distributive
 
 open Distributive
 
-
 lemma IsMonoidalRightDistrib.of_isIso_coprodComparisonTensorRight
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorRight X) Y Z)] :
     IsMonoidalRightDistrib C where
