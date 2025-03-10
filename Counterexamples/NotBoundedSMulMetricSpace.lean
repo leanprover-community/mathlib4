@@ -38,7 +38,6 @@ end NormInduced
 
 open PiCountable
 
-noncomputable local instance : MetricSpace (ℕ → ℕ) := PiNat.metricSpace
 noncomputable local instance : MetricSpace (ℕ → ℝ) := PiCountable.metricSpace
 
 @[simp]
