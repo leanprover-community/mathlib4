@@ -276,10 +276,8 @@ lemma two_pow_and (n i : ℕ) : 2 ^ i &&& n = 2 ^ i * (n.testBit i).toNat := by
 macro "bitwise_assoc_tac" : tactic => set_option hygiene false in `(tactic| (
   induction n using Nat.binaryRec generalizing m k with | z => simp | f b n hn =>
   induction m using Nat.binaryRec with | z => simp | f b' m hm =>
-  induction k using Nat.binaryRec
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [hn]`
-  -- This is necessary because these are simp lemmas in mathlib
-  <;> simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
+  induction k using Nat.binaryRec <;>
+    simp [hn, Bool.or_assoc, Bool.and_assoc, Bool.bne_eq_xor]))
 
 theorem land_assoc (n m k : ℕ) : (n &&& m) &&& k = n &&& (m &&& k) := by bitwise_assoc_tac
 
