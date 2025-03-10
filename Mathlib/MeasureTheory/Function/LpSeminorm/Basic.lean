@@ -335,11 +335,13 @@ theorem eLpNorm'_const' [IsFiniteMeasure μ]
   by_cases hc : ‖c‖ₑ = ⊤
   · rw [hc, ENNReal.top_mul']
     by_cases hμ : μ Set.univ = 0
-    · by_cases hq : q < 0
+    · have hμ' : μ = 0 := by simp_all
+      by_cases hq : q < 0
       · simp_all [hμ, eLpNorm'_eq_lintegral_enorm]
-      have hq : 0 < q := sorry -- proven below
-      simp only [hμ, hq, ↓reduceIte]
-      sorry -- missing API lemma: integral over a measure zero set is always zero
+      have hq : 0 < q := by -- is there a better proof?
+        simp at hq
+        exact lt_of_le_of_ne hq hq_ne_zero.symm
+      simp_all [hμ, hμ', hq, eLpNorm'_eq_lintegral_enorm]
     · simp_all [eLpNorm'_eq_lintegral_enorm, hc]
       by_cases hq: q < 0
       · simp_all
@@ -380,16 +382,8 @@ theorem eLpNorm_const_lt_top_iff' {ε} [TopologicalSpace ε] [ENormedAddMonoid �
     {p : ℝ≥0∞} {c : ε} (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     eLpNorm (fun _ : α => c) p μ < ∞ ↔ μ Set.univ = 0 ∨ (‖c‖ₑ < ⊤ ∧ (c = 0 ∨ μ Set.univ < ∞)) := by
   by_cases hμ : μ Set.univ = 0
-  · simp [hμ]
-    -- missing API: eLpNorm is zero if μ Set.univ is zero
-    have : (∫⁻ (x : α), ‖c‖ₑ ^ p.toReal ∂μ) = 0 := by
-      rw [lintegral_eq_zero_iff]
-      sorry -- obvious: if univ has measure zero, it's a.e. equal
-      sorry -- measurable
-    rw [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top, this]
-    have : 0 < 1 / p.toReal := one_div_pos.mpr (ENNReal.toReal_pos hp_ne_zero hp_ne_top)
-    rw [ENNReal.zero_rpow_def, if_pos this]
-    simp [this]
+  · have hμ' : μ = 0 := by simp_all
+    simp [hμ, hμ']
   push_neg at hμ
   by_cases h : ‖c‖ₑ = ⊤
   · simp only [h, lt_self_iff_false, false_and, iff_false, not_lt, top_le_iff, hμ, false_or]
