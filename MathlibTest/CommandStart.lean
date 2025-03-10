@@ -8,7 +8,8 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
  section
 
 /--
-warning: Current syntax:  'mple  '
+warning:
+Current syntax:  'mple  '
 Expected syntax: 'mple : Tru'
 
 note: this linter can be disabled with `set_option linter.ppRoundtrip false`
@@ -20,7 +21,8 @@ example  : True := trivial
 warning: unused variable `a`
 note: this linter can be disabled with `set_option linter.unusedVariables false`
 ---
-warning: Current syntax:  'le (a: Nat'
+warning:
+Current syntax:  'le (a: Nat'
 Expected syntax: 'le (a : Na'
 
 note: this linter can be disabled with `set_option linter.ppRoundtrip false`
