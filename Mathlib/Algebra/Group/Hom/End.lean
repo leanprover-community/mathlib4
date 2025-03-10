@@ -38,7 +38,9 @@ lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End 
     (ofNat(n) : AddMonoid.End M) m = n • m := rfl
 
 instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
-  { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid, AddMonoid.End.instAddMonoidWithOne M with
+  { AddMonoid.End.instMonoid M,
+    AddMonoidHom.instAddCommMonoid,
+    AddMonoid.End.instAddMonoidWithOne M with
     zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,
     mul_zero := fun _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_zero _,
     left_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => AddMonoidHom.map_add _ _ _,

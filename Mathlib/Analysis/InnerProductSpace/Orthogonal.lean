@@ -33,7 +33,7 @@ namespace Submodule
 
 variable (K : Submodule 𝕜 E)
 
-/-- The subspace of vectors orthogonal to a given subspace. -/
+/-- The subspace of vectors orthogonal to a given subspace, denoted `Kᗮ`. -/
 def orthogonal : Submodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
   zero_mem' _ _ := inner_zero_right _
@@ -199,7 +199,7 @@ theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProduct
 /-!
 ### Orthogonality of submodules
 
-In this section we define `Submodule.IsOrtho U V`, with notation `U ⟂ V`.
+In this section we define `Submodule.IsOrtho U V`, denoted as `U ⟂ V`.
 
 The API roughly matches that of `Disjoint`.
 -/
@@ -207,7 +207,7 @@ The API roughly matches that of `Disjoint`.
 
 namespace Submodule
 
-/-- The proposition that two submodules are orthogonal. Has notation `U ⟂ V`. -/
+/-- The proposition that two submodules are orthogonal, denoted as `U ⟂ V`. -/
 def IsOrtho (U V : Submodule 𝕜 E) : Prop :=
   U ≤ Vᗮ
 

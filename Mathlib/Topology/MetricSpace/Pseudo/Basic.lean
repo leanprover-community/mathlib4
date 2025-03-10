@@ -256,3 +256,23 @@ theorem secondCountable_of_almost_dense_set
 end SecondCountable
 
 end Metric
+
+section Compact
+
+/-- Any compact set in a pseudometric space can be covered by finitely many balls of a given
+positive radius -/
+theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : Set α}
+    (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
+    ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ x ∈ t, ball x e :=
+  let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
+  ⟨t, hts, t.finite_toSet, ht⟩
+
+alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
+
+end Compact
+
+/-- If a map is continuous on a separable set `s`, then the image of `s` is also separable. -/
+theorem ContinuousOn.isSeparable_image [TopologicalSpace β] {f : α → β} {s : Set α}
+    (hf : ContinuousOn f s) (hs : IsSeparable s) : IsSeparable (f '' s) := by
+  rw [image_eq_range, ← image_univ]
+  exact (isSeparable_univ_iff.2 hs.separableSpace).image hf.restrict

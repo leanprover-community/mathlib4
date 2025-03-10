@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Gauge
-import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Module.Convex
 /-!
 # "Gauge rescale" homeomorphism between convex sets
 
@@ -92,7 +92,7 @@ def gaugeRescaleEquiv (s t : Set E) (hsa : Absorbent ℝ s) (hsb : IsVonNBounded
 
 end
 
-variable [TopologicalAddGroup E] [ContinuousSMul ℝ E] {s t : Set E}
+variable [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] {s t : Set E}
 
 theorem mapsTo_gaugeRescale_interior (h₀ : t ∈ 𝓝 0) (hc : Convex ℝ t) :
     MapsTo (gaugeRescale s t) (interior s) (interior t) := fun x hx ↦ by

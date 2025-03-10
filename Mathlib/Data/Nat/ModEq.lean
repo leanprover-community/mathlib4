@@ -442,7 +442,7 @@ theorem odd_of_mod_four_eq_one {n : ℕ} : n % 4 = 1 → n % 2 = 1 := by
 theorem odd_of_mod_four_eq_three {n : ℕ} : n % 4 = 3 → n % 2 = 1 := by
   simpa [ModEq] using @ModEq.of_mul_left 2 n 3 2
 
-/-- A natural number is odd iff it has residue `1` or `3` mod `4`-/
+/-- A natural number is odd iff it has residue `1` or `3` mod `4`. -/
 theorem odd_mod_four_iff {n : ℕ} : n % 2 = 1 ↔ n % 4 = 1 ∨ n % 4 = 3 :=
   have help : ∀ m : ℕ, m < 4 → m % 2 = 1 → m = 1 ∨ m = 3 := by decide
   ⟨fun hn =>

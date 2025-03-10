@@ -92,6 +92,13 @@ theorem trace_algebraMap_of_basis (b : Basis ι R S) (x : R) :
   convert Finset.sum_const x
   simp [-coe_lmul_eq_mul]
 
+
+/-- The trace map from `R` to itself is the identity map. -/
+@[simp] theorem trace_self : trace R R = LinearMap.id := by
+  ext; simpa using trace_algebraMap_of_basis (.singleton (Fin 1) R) 1
+
+theorem trace_self_apply (a) : trace R R a = a := by simp
+
 /-- If `x` is in the base field `K`, then the trace is `[L : K] * x`.
 
 (If `L` is not finite-dimensional over `K`, then `trace` and `finrank` return `0`.)
@@ -129,7 +136,7 @@ theorem trace_trace [Algebra S T] [IsScalarTower R S T]
   trace_trace_of_basis (Module.Free.chooseBasis R S) (Module.Free.chooseBasis S T) x
 
 /-- Let `T / S / R` be a tower of finite extensions of fields. Then
-$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$.-/
+$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$. -/
 @[simp, stacks 0BIJ "Trace"]
 theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Free R S] [Module.Finite R S] [Module.Free S T] [Module.Finite S T] :
@@ -155,7 +162,7 @@ section TraceForm
 variable (R S)
 
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
-It is a symmetric bilinear form and is nondegenerate if the extension is separable.-/
+It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 @[stacks 0BIK "Trace pairing"]
 noncomputable def traceForm : BilinForm R S :=
   LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)
