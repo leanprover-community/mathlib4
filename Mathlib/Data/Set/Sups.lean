@@ -62,8 +62,7 @@ protected def hasSups : HasSups (Set α) :=
   ⟨image2 (· ⊔ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasSups
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
@@ -192,8 +191,7 @@ protected def hasInfs : HasInfs (Set α) :=
   ⟨image2 (· ⊓ ·)⟩
 
 scoped[SetFamily] attribute [instance] Set.hasInfs
--- Porting note: opening SetFamily, because otherwise the Set.hasSups does not seem to be an
--- instance
+
 open SetFamily
 
 variable {s s₁ s₂ t t₁ t₂ u} {a b c : α}
