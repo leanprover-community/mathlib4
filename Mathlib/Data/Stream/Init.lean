@@ -341,19 +341,23 @@ theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1 :: corec
 
 end Corec'
 
-theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a :: unfolds g f (f a) := by
-  unfold unfolds; rw [corec_eq]
+theorem corecOn_eq (a : α) (f : α → β) (g : α → α) : corecOn a f g = f a :: corecOn (g a) f g := by
+  unfold corecOn; rw [corec_eq]
 
-theorem get_unfolds_head_tail : ∀ (n : ℕ) (s : Stream' α),
-    get (unfolds head tail s) n = get s n := by
+theorem get_corecOn_head_tail : ∀ (n : ℕ) (s : Stream' α),
+    get (corecOn s head tail) n = get s n := by
   intro n; induction' n with n' ih
   · intro s
     rfl
   · intro s
-    rw [get_succ, get_succ, unfolds_eq, tail_cons, ih]
+    rw [get_succ, get_succ, corecOn_eq, tail_cons, ih]
 
-theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =>
-  Stream'.ext fun n => get_unfolds_head_tail n s
+theorem corecOn_head_eq : ∀ s : Stream' α, corecOn s head tail = s := fun s =>
+  Stream'.ext fun n => get_corecOn_head_tail n s
+
+@[deprecated (since := "2025-03-10")] alias unfolds_eq := corecOn_eq
+@[deprecated (since := "2025-03-10")] alias get_unfolds_head_tail := get_corecOn_head_tail
+@[deprecated (since := "2025-03-10")] alias unfolds_head_eq := corecOn_head_eq
 
 theorem interleave_eq (s₁ s₂ : Stream' α) : s₁ ⋈ s₂ = head s₁::head s₂::(tail s₁ ⋈ tail s₂) := by
   let t := tail s₁ ⋈ tail s₂
