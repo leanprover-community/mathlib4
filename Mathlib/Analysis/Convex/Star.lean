@@ -96,6 +96,8 @@ theorem starConvex_iff_pointwise_add_subset :
   rintro hA a b ha hb hab w ⟨au, ⟨u, rfl : u = x, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
   exact hA hv ha hb hab
 
+alias ⟨StarConvex.set_combo_subset, _⟩ := starConvex_iff_pointwise_add_subset
+
 theorem starConvex_empty (x : E) : StarConvex 𝕜 x ∅ := fun _ hy => hy.elim
 
 theorem starConvex_univ (x : E) : StarConvex 𝕜 x univ := fun _ _ _ _ _ _ _ => trivial
