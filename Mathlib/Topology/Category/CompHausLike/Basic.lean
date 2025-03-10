@@ -128,7 +128,7 @@ section
 variable {X} {Y : Type u} [TopologicalSpace Y] [CompactSpace Y] [T2Space Y] [HasProp P Y]
 variable {Z : Type u} [TopologicalSpace Z] [CompactSpace Z] [T2Space Z] [HasProp P Z]
 
-/-- Typecheck a continous map as a morphism in the category `CompHausLike P`. -/
+/-- Typecheck a continuous map as a morphism in the category `CompHausLike P`. -/
 abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
 
 @[simp] lemma hom_ofHom (f : C(X, Y)) : ConcreteCategory.hom (ofHom P f) = f := rfl
@@ -139,18 +139,6 @@ abbrev ofHom (f : C(X, Y)) : of P X ⟶ of P Y := ConcreteCategory.ofHom f
     ofHom P (g.comp f) = ofHom _ f ≫ ofHom _ g := rfl
 
 end
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (TopologicalSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (CompactSpace X.toTop)
-
--- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
-instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
-  inferInstanceAs (T2Space X.toTop)
 
 variable {P}
 

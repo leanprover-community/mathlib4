@@ -78,14 +78,11 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
           (adjoin_le_integralClosure (hζ.isIntegral (p ^ k).pos))).isIntegral _)
   let B := hζ.subOnePowerBasis ℚ
   have hint : IsIntegral ℤ B.gen := (hζ.isIntegral (p ^ k).pos).sub isIntegral_one
--- Porting note: the following `haveI` was not needed because the locale `cyclotomic` set it
--- as instances.
   letI := IsCyclotomicExtension.finiteDimensional {p ^ k} ℚ K
   have H := discr_mul_isIntegral_mem_adjoin ℚ hint h
   obtain ⟨u, n, hun⟩ := discr_prime_pow_eq_unit_mul_pow' hζ
   rw [hun] at H
   replace H := Subalgebra.smul_mem _ H u.inv
--- Porting note: the proof is slightly different because of coercions.
   rw [← smul_assoc, ← smul_mul_assoc, Units.inv_eq_val_inv, zsmul_eq_mul, ← Int.cast_mul,
     Units.inv_mul, Int.cast_one, one_mul, smul_def, map_pow] at H
   cases k
@@ -125,9 +122,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
     IsIntegralClosure (CyclotomicRing (p ^ k) ℤ ℚ) ℤ (CyclotomicField (p ^ k) ℚ) := by
   have hζ := zeta_spec (p ^ k) ℚ (CyclotomicField (p ^ k) ℚ)
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
--- Porting note: having `.isIntegral_iff` inside the definition of `this` causes an error.
-  · have := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
-    obtain ⟨y, rfl⟩ := this.isIntegral_iff.1 h
+  · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
     simp only [PNat.pow_coe, Set.singleton_subset_iff, Set.mem_setOf_eq]
     exact hζ.pow_eq_one
@@ -204,7 +199,6 @@ lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
 
 variable [CharZero K]
 
--- Porting note: the proof changed because `simp` unfolds too much.
 @[simp]
 theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :

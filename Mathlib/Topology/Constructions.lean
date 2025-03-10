@@ -3,12 +3,13 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
-import Mathlib.Data.Finset.Piecewise
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Finset.Piecewise
+import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Maps.Basic
 import Mathlib.Topology.NhdsSet
-import Mathlib.Order.Filter.Cofinite
 
 /-!
 # Constructions of new topological spaces from old ones
@@ -39,7 +40,7 @@ noncomputable section
 open Topology TopologicalSpace Set Filter Function
 open scoped Set.Notation
 
-universe u v
+universe u v u' v'
 
 variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
 
@@ -563,6 +564,18 @@ theorem Filter.Eventually.prod_nhds {p : X → Prop} {q : Y → Prop} {x : X} {y
     (hx : ∀ᶠ x in 𝓝 x, p x) (hy : ∀ᶠ y in 𝓝 y, q y) : ∀ᶠ z : X × Y in 𝓝 (x, y), p z.1 ∧ q z.2 :=
   prod_mem_nhds hx hy
 
+theorem Filter.EventuallyEq.prodMap_nhds {α β : Type*} {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
+    {x : X} {y : Y} (hf : f₁ =ᶠ[𝓝 x] f₂) (hg : g₁ =ᶠ[𝓝 y] g₂) :
+    Prod.map f₁ g₁ =ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
+  rw [nhds_prod_eq]
+  exact hf.prod_map hg
+
+theorem Filter.EventuallyLE.prodMap_nhds {α β : Type*} [LE α] [LE β] {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
+    {x : X} {y : Y} (hf : f₁ ≤ᶠ[𝓝 x] f₂) (hg : g₁ ≤ᶠ[𝓝 y] g₂) :
+    Prod.map f₁ g₁ ≤ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
+  rw [nhds_prod_eq]
+  exact hf.prod_map hg
+
 theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap := by
   rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
 
@@ -570,6 +583,12 @@ theorem Filter.Tendsto.prod_mk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : �
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
     Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
   rw [nhds_prod_eq]; exact Filter.Tendsto.prod_mk hx hy
+
+theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y} {g : Z → W}
+    (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
+    Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
+  rw [nhds_prod_eq, nhds_prod_eq]
+  exact hf.prod_map hg
 
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
     (h : ∀ᶠ x in 𝓝 (x, y), p x) : ∀ᶠ x' in 𝓝 x, ∀ᶠ y' in 𝓝 y, p (x', y') := by
@@ -879,14 +898,18 @@ theorem continuous_sum_dom {f : X ⊕ Y → Z} :
     (t₂ := TopologicalSpace.coinduced Sum.inr _)).trans <|
     continuous_coinduced_dom.and continuous_coinduced_dom
 
-theorem continuous_sum_elim {f : X → Z} {g : Y → Z} :
+theorem continuous_sumElim {f : X → Z} {g : Y → Z} :
     Continuous (Sum.elim f g) ↔ Continuous f ∧ Continuous g :=
   continuous_sum_dom
 
+@[deprecated (since := "2025-02-20")] alias continuous_sum_elim := continuous_sumElim
+
 @[continuity, fun_prop]
-theorem Continuous.sum_elim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sumElim {f : X → Z} {g : Y → Z} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.elim f g) :=
-  continuous_sum_elim.2 ⟨hf, hg⟩
+  continuous_sumElim.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-20")] alias Continuous.sum_elim := Continuous.sumElim
 
 @[continuity, fun_prop]
 theorem continuous_isLeft : Continuous (isLeft : X ⊕ Y → Bool) :=
@@ -904,7 +927,7 @@ theorem continuous_inr : Continuous (@inr X Y) := ⟨fun _ => And.right⟩
 
 @[fun_prop, continuity]
 lemma continuous_sum_swap : Continuous (@Sum.swap X Y) :=
-  Continuous.sum_elim continuous_inr continuous_inl
+  Continuous.sumElim continuous_inr continuous_inl
 
 theorem isOpen_sum_iff {s : Set (X ⊕ Y)} : IsOpen s ↔ IsOpen (inl ⁻¹' s) ∧ IsOpen (inr ⁻¹' s) :=
   Iff.rfl
@@ -918,6 +941,12 @@ theorem isOpenMap_inl : IsOpenMap (@inl X Y) := fun u hu => by
 
 theorem isOpenMap_inr : IsOpenMap (@inr X Y) := fun u hu => by
   simpa [isOpen_sum_iff, preimage_image_eq u Sum.inr_injective]
+
+theorem isClosedMap_inl : IsClosedMap (@inl X Y) := fun u hu ↦ by
+  simpa [isClosed_sum_iff, preimage_image_eq u Sum.inl_injective]
+
+theorem isClosedMap_inr : IsClosedMap (@inr X Y) := fun u hu ↦ by
+  simpa [isClosed_sum_iff, preimage_image_eq u Sum.inr_injective]
 
 protected lemma Topology.IsOpenEmbedding.inl : IsOpenEmbedding (@inl X Y) :=
   .of_continuous_injective_isOpenMap continuous_inl inl_injective isOpenMap_inl
@@ -975,32 +1004,46 @@ theorem nhds_inr (y : Y) : 𝓝 (inr y : X ⊕ Y) = map inr (𝓝 y) :=
   (IsOpenEmbedding.inr.map_nhds_eq _).symm
 
 @[simp]
-theorem continuous_sum_map {f : X → Y} {g : Z → W} :
+theorem continuous_sumMap {f : X → Y} {g : Z → W} :
     Continuous (Sum.map f g) ↔ Continuous f ∧ Continuous g :=
-  continuous_sum_elim.trans <|
+  continuous_sumElim.trans <|
     IsEmbedding.inl.continuous_iff.symm.and IsEmbedding.inr.continuous_iff.symm
 
+@[deprecated (since := "2025-02-21")] alias continuous_sum_map := continuous_sumMap
+
 @[continuity, fun_prop]
-theorem Continuous.sum_map {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.sumMap {f : X → Y} {g : Z → W} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Sum.map f g) :=
-  continuous_sum_map.2 ⟨hf, hg⟩
+  continuous_sumMap.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-21")] alias Continuous.sum_map := Continuous.sumMap
 
 theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
   simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp_def]
 
 theorem IsOpenMap.sumMap {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
-    IsOpenMap (Sum.map f g) := by
-  exact isOpenMap_sum.2 ⟨isOpenMap_inl.comp hf,isOpenMap_inr.comp hg⟩
+    IsOpenMap (Sum.map f g) :=
+  isOpenMap_sum.2 ⟨isOpenMap_inl.comp hf, isOpenMap_inr.comp hg⟩
 
 @[simp]
-theorem isOpenMap_sum_elim {f : X → Z} {g : Y → Z} :
+theorem isOpenMap_sumElim {f : X → Z} {g : Y → Z} :
     IsOpenMap (Sum.elim f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
   simp only [isOpenMap_sum, elim_inl, elim_inr]
 
-theorem IsOpenMap.sum_elim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+@[deprecated (since := "2025-02-20")] alias isOpenMap_sum_elim := isOpenMap_sumElim
+
+theorem IsOpenMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsOpenMap f) (hg : IsOpenMap g) :
     IsOpenMap (Sum.elim f g) :=
-  isOpenMap_sum_elim.2 ⟨hf, hg⟩
+  isOpenMap_sumElim.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-02-20")] alias IsOpenMap.sum_elim := IsOpenMap.sumElim
+
+lemma IsOpenEmbedding.sumElim {f : X → Z} {g : Y → Z}
+    (hf : IsOpenEmbedding f) (hg : IsOpenEmbedding g) (h : Injective (Sum.elim f g)) :
+    IsOpenEmbedding (Sum.elim f g) := by
+  rw [isOpenEmbedding_iff_continuous_injective_isOpenMap] at hf hg ⊢
+  exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
 theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     IsClosedMap f ↔ (IsClosedMap fun a => f (.inl a)) ∧ IsClosedMap fun b => f (.inr b) := by
@@ -1012,6 +1055,25 @@ theorem isClosedMap_sum {f : X ⊕ Y → Z} :
     convert (h.1 _ hZ.1).union (h.2 _ hZ.2)
     ext
     simp only [mem_image, Sum.exists, mem_union, mem_preimage]
+
+theorem IsClosedMap.sumMap {f : X → Y} {g : Z → W} (hf : IsClosedMap f) (hg : IsClosedMap g) :
+    IsClosedMap (Sum.map f g) :=
+  isClosedMap_sum.2 ⟨isClosedMap_inl.comp hf, isClosedMap_inr.comp hg⟩
+
+@[simp]
+theorem isClosedMap_sumElim {f : X → Z} {g : Y → Z} :
+    IsClosedMap (Sum.elim f g) ↔ IsClosedMap f ∧ IsClosedMap g := by
+  simp only [isClosedMap_sum, Sum.elim_inl, Sum.elim_inr]
+
+theorem IsClosedMap.sumElim {f : X → Z} {g : Y → Z} (hf : IsClosedMap f) (hg : IsClosedMap g) :
+    IsClosedMap (Sum.elim f g) :=
+  isClosedMap_sumElim.2 ⟨hf, hg⟩
+
+lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
+    (hf : IsClosedEmbedding f) (hg : IsClosedEmbedding g) (h : Injective (Sum.elim f g)) :
+    IsClosedEmbedding (Sum.elim f g) := by
+  rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
+  exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
 
 end Sum
 
@@ -1031,8 +1093,7 @@ lemma Topology.IsInducing.of_codRestrict {f : X → Y} {t : Set Y} (ht : ∀ x, 
 lemma Topology.IsEmbedding.subtypeVal : IsEmbedding ((↑) : Subtype p → X) :=
   ⟨.subtypeVal, Subtype.coe_injective⟩
 
-@[deprecated (since := "2024-10-26")]
-alias embedding_subtype_val := IsEmbedding.subtypeVal
+@[deprecated (since := "2024-10-26")] alias embedding_subtype_val := IsEmbedding.subtypeVal
 
 theorem Topology.IsClosedEmbedding.subtypeVal (h : IsClosed {a | p a}) :
     IsClosedEmbedding ((↑) : Subtype p → X) :=
@@ -1212,6 +1273,28 @@ theorem frontier_inter_open_inter {s t : Set X} (ht : IsOpen t) :
     ht.isOpenMap_subtype_val.preimage_frontier_eq_frontier_preimage continuous_subtype_val,
     Subtype.preimage_coe_self_inter]
 
+section SetNotation
+
+open scoped Set.Notation
+
+lemma IsOpen.preimage_val {s t : Set X} (ht : IsOpen t) : IsOpen (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+lemma IsClosed.preimage_val {s t : Set X} (ht : IsClosed t) : IsClosed (s ↓∩ t) :=
+  ht.preimage continuous_subtype_val
+
+@[simp] lemma IsOpen.inter_preimage_val_iff {s t : Set X} (hs : IsOpen s) :
+    IsOpen (s ↓∩ t) ↔ IsOpen (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isOpenMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
+
+@[simp] lemma IsClosed.inter_preimage_val_iff {s t : Set X} (hs : IsClosed s) :
+    IsClosed (s ↓∩ t) ↔ IsClosed (s ∩ t) :=
+  ⟨fun h ↦ by simpa using hs.isClosedMap_subtype_val _ h,
+    fun h ↦ (Subtype.preimage_coe_self_inter _ _).symm ▸ h.preimage_val⟩
+
+end SetNotation
+
 end Subtype
 
 section Quotient
@@ -1252,6 +1335,7 @@ theorem Continuous.quotient_liftOn' {f : X → Y} (h : Continuous f)
     Continuous (fun x => Quotient.liftOn' x f hs : Quotient s → Y) :=
   h.quotient_lift hs
 
+open scoped Relator in
 @[continuity, fun_prop]
 theorem Continuous.quotient_map' {t : Setoid Y} {f : X → Y} (hf : Continuous f)
     (H : (s.r ⇒ t.r) f f) : Continuous (Quotient.map' f H) :=
@@ -1811,12 +1895,22 @@ theorem ULift.isClosed_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
   rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
 
 @[continuity]
-theorem continuous_uLift_down [TopologicalSpace X] : Continuous (ULift.down : ULift.{v, u} X → X) :=
+theorem continuous_uliftDown [TopologicalSpace X] : Continuous (ULift.down : ULift.{v, u} X → X) :=
   continuous_induced_dom
 
 @[continuity]
-theorem continuous_uLift_up [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
+theorem continuous_uliftUp [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
   continuous_induced_rng.2 continuous_id
+
+@[deprecated (since := "2025-02-10")] alias continuous_uLift_down := continuous_uliftDown
+@[deprecated (since := "2025-02-10")] alias continuous_uLift_up := continuous_uliftUp
+
+@[continuity]
+theorem continuous_uliftMap [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) (hf : Continuous f) :
+    Continuous (ULift.map f : ULift.{u'} X → ULift.{v'} Y) := by
+  change Continuous (ULift.up ∘ f ∘ ULift.down)
+  continuity
 
 lemma Topology.IsEmbedding.uliftDown [TopologicalSpace X] :
     IsEmbedding (ULift.down : ULift.{v, u} X → X) := ⟨⟨rfl⟩, ULift.down_injective⟩
@@ -1879,4 +1973,4 @@ theorem Filter.Eventually.prod_nhdsSet {p : X × Y → Prop} {px : X → Prop} {
 
 end NhdsSet
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100

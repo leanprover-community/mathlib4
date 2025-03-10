@@ -284,6 +284,13 @@ theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻
 theorem lintegral_congr {f g : α → ℝ≥0∞} (h : ∀ a, f a = g a) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
   simp only [h]
 
+lemma lintegral_eq_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : ℝ≥0∞}
+    (hf : ∀ᵐ x ∂μ, f x = c) : ∫⁻ x, f x ∂μ = c := by simp [lintegral_congr_ae hf]
+
+lemma lintegral_le_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : ℝ≥0∞}
+    (hf : ∀ᵐ x ∂μ, f x ≤ c) : ∫⁻ x, f x ∂μ ≤ c :=
+  (lintegral_mono_ae hf).trans_eq (by simp)
+
 theorem setLIntegral_congr {f : α → ℝ≥0∞} {s t : Set α} (h : s =ᵐ[μ] t) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ := by rw [Measure.restrict_congr_set h]
 
@@ -1058,7 +1065,6 @@ theorem lintegral_iInf_directed_of_measurable {mα : MeasurableSpace α} [Counta
       le_antisymm (le_iInf fun n => iInf_le _ _)
         (le_iInf fun b => iInf_le_of_le (Encodable.encode b + 1) ?_)
     exact h_directed.sequence_le b a
-  -- Porting note: used `∘` below to deal with its reduced reducibility
   calc
     ∫⁻ a, ⨅ b, f b a ∂μ
     _ = ∫⁻ a, ⨅ n, (f ∘ h_directed.sequence f) n a ∂μ := by simp only [this, Function.comp_apply]
@@ -1448,7 +1454,7 @@ section UnifTight
 such that the integral of `f` over `sᶜ` is less than a given positive number.
 
 Also used to prove an `Lᵖ`-norm version in
-`MeasureTheory.Memℒp.exists_eLpNorm_indicator_compl_le`. -/
+`MeasureTheory.MemLp.exists_eLpNorm_indicator_compl_le`. -/
 theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, f a ∂μ < ε := by
@@ -1523,8 +1529,9 @@ theorem lintegral_count [MeasurableSingletonClass α] (f : α → ℝ≥0∞) :
   congr
   exact funext fun a => lintegral_dirac a f
 
-theorem _root_.ENNReal.tsum_const_eq [MeasurableSingletonClass α] (c : ℝ≥0∞) :
-    ∑' _ : α, c = c * Measure.count (univ : Set α) := by rw [← lintegral_count, lintegral_const]
+@[deprecated ENNReal.tsum_const (since := "2025-02-06")]
+lemma _root_.ENNReal.tsum_const_eq (c : ℝ≥0∞) : ∑' _ : α, c = c * count (univ : Set α) := by
+  simp [mul_comm]
 
 /-- Markov's inequality for the counting measure with hypothesis using `tsum` in `ℝ≥0∞`. -/
 theorem _root_.ENNReal.count_const_le_le_of_tsum_le [MeasurableSingletonClass α] {a : α → ℝ≥0∞}
@@ -1653,7 +1660,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
     filter_upwards [h_bound, h_bound_finite, hf_mono] with a h_le h_fin h_mono
     have h_tendsto : Tendsto (fun i ↦ f i a) atTop atTop ∨
         ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := tendsto_of_monotone h_mono
-    cases' h_tendsto with h_absurd h_tendsto
+    rcases h_tendsto with h_absurd | h_tendsto
     · rw [tendsto_atTop_atTop_iff_of_monotone h_mono] at h_absurd
       obtain ⟨i, hi⟩ := h_absurd (F a + 1)
       refine absurd (hi.trans (h_le _)) (not_le.mpr ?_)

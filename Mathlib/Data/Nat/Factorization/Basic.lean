@@ -288,7 +288,7 @@ theorem dvd_iff_div_factorization_eq_tsub {d n : ℕ} (hd : d ≠ 0) (hdn : d �
   intro h
   rw [dvd_iff_le_div_mul n d]
   by_contra h2
-  cases' exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2) with p hp
+  obtain ⟨p, hp⟩ := exists_factorization_lt_of_lt (mul_ne_zero h1 hd) (not_le.mp h2)
   rwa [factorization_mul h1 hd, add_apply, ← lt_tsub_iff_right, h, tsub_apply,
    lt_self_iff_false] at hp
 
@@ -562,7 +562,7 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
   · exact fun p hp => Finset.mem_filter.mpr ⟨Finset.mem_range.2 <| pr.trans_le' <|
       le_of_mem_primeFactors hp, prime_of_mem_primeFactors hp⟩
   · intro p hp
-    cases' Finset.mem_sdiff.mp hp with hp1 hp2
+    obtain ⟨hp1, hp2⟩ := Finset.mem_sdiff.mp hp
     rw [← factorization_def n (Finset.mem_filter.mp hp1).2]
     simp [Finsupp.not_mem_support_iff.mp hp2]
   · intro p hp

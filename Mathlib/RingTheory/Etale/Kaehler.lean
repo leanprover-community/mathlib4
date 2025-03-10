@@ -244,7 +244,7 @@ def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.
       Module.Flat.lTensor_exact T (LinearMap.exact_subtype_ker_map _)
     obtain ⟨a, ha⟩ := (this ((Extension.tensorCotangent f halg H₂).symm x.1)).mp (by
       apply (Extension.tensorCotangentSpace f H₁).injective
-      rw [map_zero, ← x.2]
+      rw [LinearEquiv.map_zero, ← x.2]
       have : (CotangentSpace.map f).liftBaseChange T ∘ₗ P.cotangentComplex.baseChange T =
           Q.cotangentComplex ∘ₗ (Cotangent.map f).liftBaseChange T := by
         ext x; obtain ⟨x, rfl⟩ := Cotangent.mk_surjective x; dsimp
@@ -256,7 +256,7 @@ def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.
     show (h1Cotangentι ∘ₗ (H1Cotangent.map f).liftBaseChange T) _ =
       ((Cotangent.map f).liftBaseChange T ∘ₗ h1Cotangentι.baseChange T) _
     congr 1
-    ext; simp
+    ext; dsimp
 
 end Extension
 

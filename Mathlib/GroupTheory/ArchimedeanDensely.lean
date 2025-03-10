@@ -431,3 +431,18 @@ lemma LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_disc
     simp [zero_lt_iff, hb0]
 
 end WellFounded
+
+@[to_additive]
+lemma OrderMonoidIso.mulArchimedean {α β} [OrderedCommMonoid α] [OrderedCommMonoid β]
+    (e : α ≃*o β) [MulArchimedean α] : MulArchimedean β := by
+  constructor
+  intro x y hxy
+  replace hxy : 1 < e.symm y := by simp [← map_lt_map_iff e, hxy]
+  refine (MulArchimedean.arch (e.symm x) hxy).imp ?_
+  simp [← map_pow, ← map_le_map_iff e]
+
+lemma WithZero.mulArchimedean_iff {α} [OrderedCommGroup α] :
+    MulArchimedean (WithZero α) ↔ MulArchimedean α := by
+  constructor <;> intro _
+  · exact OrderMonoidIso.unitsWithZero.mulArchimedean
+  · infer_instance

@@ -153,12 +153,12 @@ lemma goursat :
     constructor
     · intro hgh
       simpa only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
-        Prod.exists, MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
         MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
         MonoidHom.coe_fst]
         using ⟨⟨h, hgh⟩, ⟨g, hgh⟩, g, h, hgh, ⟨rfl, rfl⟩⟩
     · simp only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
-        Prod.exists, MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
         MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
         MonoidHom.coe_fst, forall_exists_index, and_imp]
       rintro h₁ hgh₁ g₁ hg₁h g₂ h₂ hg₂h₂ hP hQ

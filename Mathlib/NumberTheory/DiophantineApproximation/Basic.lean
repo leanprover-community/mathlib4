@@ -100,9 +100,6 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     have hf' : ((n : ℤ) : ℝ) ≤ fract (ξ * m) * (n + 1) := hf ▸ floor_le (fract (ξ * m) * (n + 1))
     have hm₀ : 0 < m := by
       have hf₀ : f 0 = 0 := by
-        -- Porting note: was
-        -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, mul_zero, fract_zero,
-        --   zero_mul, Set.left_mem_Ico, zero_lt_one]
         simp only [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
       refine Ne.lt_of_le (fun h => n_pos.ne ?_) (mem_Icc.mp hm).1
       exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
@@ -111,8 +108,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
     refine
       ⟨le_sub_iff_add_le.mpr ?_, sub_le_iff_le_add.mpr <| le_of_lt <| (hfu m).trans <| lt_one_add _⟩
     simpa only [neg_add_cancel_comm_assoc] using hf'
-  · -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5127): added `not_and`
-    simp_rw [not_exists, not_and] at H
+  · simp_rw [not_exists, not_and] at H
     have hD : #(Ico (0 : ℤ) n) < #D := by rw [card_Icc, card_Ico]; exact lt_add_one n
     have hfu' : ∀ m, f m ≤ n := fun m => lt_add_one_iff.mp (floor_lt.mpr (mod_cast hfu m))
     have hwd : ∀ m : ℤ, m ∈ D → f m ∈ Ico (0 : ℤ) n := fun x hx =>
@@ -257,7 +253,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
   set s := {q : ℚ | |ξ - q| < 1 / (q.den : ℚ) ^ 2}
   have hinj : Function.Injective f := by
     intro a b hab
-    simp only [f, Prod.mk.inj_iff] at hab
+    simp only [f, Prod.mk_inj] at hab
     rw [← Rat.num_div_den a, ← Rat.num_div_den b, hab.1, hab.2]
   have H : f '' s ⊆ ⋃ (y : ℕ) (_ : y ∈ Ioc 0 ξ.den), Icc (⌈ξ * y⌉ - 1) (⌊ξ * y⌋ + 1) ×ˢ {y} := by
     intro xy hxy
@@ -333,16 +329,15 @@ theorem convergent_zero (ξ : ℝ) : ξ.convergent 0 = ⌊ξ⌋ :=
 @[simp]
 theorem convergent_succ (ξ : ℝ) (n : ℕ) :
     ξ.convergent (n + 1) = ⌊ξ⌋ + ((fract ξ)⁻¹.convergent n)⁻¹ :=
-  -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026): was
-  -- by simp only [convergent]
   rfl
 
 /-- All convergents of `0` are zero. -/
 @[simp]
 theorem convergent_of_zero (n : ℕ) : convergent 0 n = 0 := by
-  induction' n with n ih
-  · simp only [convergent_zero, floor_zero, cast_zero]
-  · simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
+  induction n with
+  | zero => simp only [convergent_zero, floor_zero, cast_zero]
+  | succ n ih =>
+    simp only [ih, convergent_succ, floor_zero, cast_zero, fract_zero, add_zero, inv_zero]
 
 /-- If `ξ` is an integer, all its convergents equal `ξ`. -/
 @[simp]
@@ -410,8 +405,6 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
     sub_mul, ← mul_assoc, ← mul_assoc, div_mul_cancel₀ _ hv₀.ne', abs_sub_comm, abs_lt,
     lt_sub_iff_add_lt, sub_lt_iff_lt_add, mul_assoc] at h
   have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
-    -- Porting note: this abused the definitional equality `-1 + 1 = 0`
-    -- refine' (mul_nonneg_iff_of_pos_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
     refine (mul_nonneg_iff_of_pos_right hv₁).mp ?_
     rw [← sub_one_lt_iff, zero_sub]
     replace h := h.1
@@ -436,7 +429,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   refine ⟨lt_of_le_of_ne' hu₀ fun hf => ?_, lt_of_le_of_ne hu₁ fun hf => ?_⟩ <;>
     · rw [hf] at huv_cop
       simp only [isCoprime_zero_left, isCoprime_self, isUnit_iff] at huv_cop
-      cases' huv_cop with huv_cop huv_cop <;> linarith only [hv, huv_cop]
+      rcases huv_cop with huv_cop | huv_cop <;> linarith only [hv, huv_cop]
 
 -- The key step: the relevant inequality persists in the inductive step.
 private theorem aux₃ :
@@ -485,8 +478,11 @@ private theorem invariant : ContfracLegendre.Ass (fract ξ)⁻¹ v (u - ⌊ξ⌋
   · obtain hv₀' := (aux₀ (zero_lt_two.trans_le hv)).2
     have Hv : (v * (2 * v - 1) : ℝ)⁻¹ + (v : ℝ)⁻¹ = 2 / (2 * v - 1) := by
       field_simp; ring
+    #adaptation_note
+    /-- `_root_` can be removed again after
+    https://github.com/leanprover/lean4/pull/7359 lands in nightly-2025-03-06. -/
     have Huv : (u / v : ℝ) = ⌊ξ⌋ + (v : ℝ)⁻¹ := by
-      rw [sub_eq_iff_eq_add'.mp huv]; field_simp
+      rw [_root_.sub_eq_iff_eq_add'.mp huv]; field_simp
     have h' := (abs_sub_lt_iff.mp h.2.2).1
     rw [Huv, ← sub_sub, sub_lt_iff_lt_add, self_sub_floor, Hv] at h'
     rwa [lt_sub_iff_add_lt', (by ring : (v : ℝ) + -(1 / 2) = (2 * v - 1) / 2),
@@ -527,7 +523,6 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h : ContfracLegendre.Ass ξ u v) :
           refine ⟨(fract_lt_one ξ).le, ?_⟩
           rw [fract, hξ₁, cast_sub, cast_one, lt_sub_iff_add_lt', sub_add]
           convert h₁ using 1
-          -- Porting note: added (`convert` handled this in lean 3)
           rw [sub_eq_add_neg]
           norm_num
         use 1
