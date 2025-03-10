@@ -805,9 +805,9 @@ theorem lintegral_prod (f : α × β → ℝ≥0∞) (hf : AEMeasurable f (μ.pr
   rw [A, B, lintegral_prod_of_measurable _ hf.measurable_mk]
 
 /-- **Tonelli's Theorem for set integrals**: For `ℝ≥0∞`-valued almost everywhere measurable
-  functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
-  and `t` respectively. -/
-theorem setLIntegral_prod [SFinite μ] {s : Set α} (t : Set β) (f : α × β → ENNReal)
+functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the iterated integral on `s`
+and `t` respectively. -/
+theorem setLIntegral_prod [SFinite μ] {s : Set α} {t : Set β} (f : α × β → ℝ≥0∞)
     (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
     ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ x in s, ∫⁻ y in t, f (x, y) ∂ν ∂μ := by
   rw [← Measure.prod_restrict, lintegral_prod _ (by rwa [Measure.prod_restrict])]
@@ -824,6 +824,19 @@ functions on `α × β`, the integral of `f` is equal to the iterated integral, 
 theorem lintegral_prod_symm' [SFinite μ] (f : α × β → ℝ≥0∞) (hf : Measurable f) :
     ∫⁻ z, f z ∂μ.prod ν = ∫⁻ y, ∫⁻ x, f (x, y) ∂μ ∂ν :=
   lintegral_prod_symm f hf.aemeasurable
+
+/-- The symmetric version of Tonelli's Theorem for set integrals: For `ℝ≥0∞`-valued almost
+everywhere measurable functions on `s ×ˢ t`, the integral of `f` on `s ×ˢ t` is equal to the
+iterated integral on `t` and `s` respectively. -/
+theorem setLIntegral_prod_symm [SFinite μ] {s : Set α} {t : Set β} (f : α × β → ℝ≥0∞)
+    (hf : AEMeasurable f ((μ.prod ν).restrict (s ×ˢ t))) :
+    ∫⁻ z in s ×ˢ t, f z ∂μ.prod ν = ∫⁻ y in t, ∫⁻ x in s, f (x, y) ∂μ ∂ν := by
+  rw [← Measure.prod_restrict, ← lintegral_prod_swap, Measure.prod_restrict,
+    setLIntegral_prod]
+  · rfl
+  · refine AEMeasurable.comp_measurable ?_ measurable_swap
+    convert hf
+    rw [← Measure.prod_restrict, Measure.prod_swap, Measure.prod_restrict]
 
 /-- The reversed version of **Tonelli's Theorem**. In this version `f` is in curried form, which
 makes it easier for the elaborator to figure out `f` automatically. -/
