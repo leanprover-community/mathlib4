@@ -27,7 +27,6 @@ noncomputable section
 
 open Set Fin Topology
 
--- Porting note: added explicit universes to fix compile
 universe u u' v w x
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x}
 
@@ -47,7 +46,6 @@ def FormalMultilinearSeries (𝕜 : Type*) (E : Type*) (F : Type*) [Semiring �
     [ContinuousConstSMul 𝕜 F] :=
   ∀ n : ℕ, E[×n]→L[𝕜] F
 
--- Porting note: was `deriving`
 instance : AddCommMonoid (FormalMultilinearSeries 𝕜 E F) :=
   inferInstanceAs <| AddCommMonoid <| ∀ n : ℕ, E[×n]→L[𝕜] F
 

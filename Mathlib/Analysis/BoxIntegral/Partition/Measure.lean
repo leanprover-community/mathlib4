@@ -105,7 +105,6 @@ namespace Box
 
 variable [Fintype ι]
 
--- @[simp] -- Porting note: simp normal form is `volume_apply'`
 theorem volume_apply (I : Box ι) :
     (volume : Measure (ι → ℝ)).toBoxAdditive I = ∏ i, (I.upper i - I.lower i) := by
   rw [Measure.toBoxAdditive_apply, coe_eq_pi, Real.volume_pi_Ioc_toReal I.lower_le_upper]

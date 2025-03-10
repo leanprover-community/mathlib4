@@ -192,8 +192,7 @@ theorem implicitFunction_hasStrictFDerivAt (g'inv : G →L[𝕜] E)
   have := φ.hasStrictFDerivAt.to_localInverse
   simp only [prodFun] at this
   convert this.comp (φ.rightFun φ.pt) ((hasStrictFDerivAt_const _ _).prod (hasStrictFDerivAt_id _))
-  -- Porting note: added parentheses to help `simp`
-  simp only [ContinuousLinearMap.ext_iff, (ContinuousLinearMap.comp_apply)] at hg'inv hg'invf ⊢
+  simp only [ContinuousLinearMap.ext_iff, ContinuousLinearMap.comp_apply] at hg'inv hg'invf ⊢
   simp [ContinuousLinearEquiv.eq_symm_apply, *]
 
 end ImplicitFunctionData
@@ -324,15 +323,13 @@ theorem to_implicitFunctionOfComplemented (hf : HasStrictFDerivAt f f' a) (hf' :
     (ker f').subtypeL _ _
   swap
   · ext
-    -- Porting note: added parentheses to help `simp`
     simp only [Classical.choose_spec hker, implicitFunctionDataOfComplemented,
       ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
       ContinuousLinearMap.id_apply]
   swap
   · ext
-    -- Porting note: added parentheses to help `simp`
-    simp only [(ContinuousLinearMap.comp_apply), Submodule.coe_subtypeL', Submodule.coe_subtype,
-      LinearMap.map_coe_ker, (ContinuousLinearMap.zero_apply)]
+    simp only [ContinuousLinearMap.comp_apply, Submodule.coe_subtypeL', Submodule.coe_subtype,
+      LinearMap.map_coe_ker, ContinuousLinearMap.zero_apply]
   simp only [implicitFunctionDataOfComplemented, map_sub, sub_self]
 
 end Complemented

@@ -383,7 +383,6 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     integral_cpow h'
   apply_fun Complex.re at this; convert this
   · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul]
-    -- Porting note: was `change ... with ...`
     have : Complex.re = RCLike.re := rfl
     rw [this, ← integral_re]
     · rfl
