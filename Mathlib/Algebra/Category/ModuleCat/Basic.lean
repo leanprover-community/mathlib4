@@ -535,8 +535,6 @@ instance : Module R (mkOfSMul' φ) where
 given by `R`. -/
 abbrev mkOfSMul := ModuleCat.of R (mkOfSMul' φ)
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma mkOfSMul_smul (r : R) : (mkOfSMul φ).smul r = φ r := rfl
 
 end

@@ -145,7 +145,7 @@ theorem mk_preimage_tprod :
       rw [mk_preimage_tprod l t]
 
     -- `simp [Set.TProd, TProd.mk, this]` can close this goal but is slow.
-    rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prod_mk_mem_set_prod_eq]
+    rw [Set.tprod, TProd.mk, mem_preimage, mem_pi, prodMk_mem_set_prod_eq]
     simp_rw [mem_setOf_eq, mem_cons]
     rw [forall_eq_or_imp, and_congr_right_iff]
     exact fun _ => h

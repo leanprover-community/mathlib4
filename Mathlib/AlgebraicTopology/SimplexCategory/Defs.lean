@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Order.Fin.Basic
+import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
@@ -49,7 +50,7 @@ def SimplexCategory :=
 
 namespace SimplexCategory
 
--- Porting note: the definition of `SimplexCategory` is made irreducible below
+-- The definition of `SimplexCategory` is made irreducible below.
 /-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n

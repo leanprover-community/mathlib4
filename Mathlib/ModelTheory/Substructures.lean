@@ -716,7 +716,7 @@ namespace Substructure
 def withConstants (S : L.Substructure M) {A : Set M} (h : A ⊆ S) : L[[A]].Substructure M where
   carrier := S
   fun_mem {n} f := by
-    cases' f with f f
+    obtain f | f := f
     · exact S.fun_mem f
     · cases n
       · exact fun _ _ => h f.2

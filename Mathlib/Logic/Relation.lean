@@ -222,6 +222,10 @@ lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → P
 instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
   ‹Decidable _›
 
+lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    Symmetric (Relation.Map r f f) := by
+  rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
+
 end Map
 
 variable {r : α → α → Prop} {a b c : α}
@@ -713,8 +717,5 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
-
-@[deprecated (since := "2024-08-29")] alias Quot.exact := Quot.eqvGen_exact
-@[deprecated (since := "2024-08-29")] alias Quot.EqvGen_sound := Quot.eqvGen_sound
 
 end EqvGen
