@@ -121,7 +121,7 @@ alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
   linearIndependent_iff_injective_linearCombination
 
 theorem Fintype.linearIndependent_iff_injective [Fintype ι] :
-    LinearIndependent R v ↔ Injective (Fintype.linearCombination R ℕ v) := by
+    LinearIndependent R v ↔ Injective (Fintype.linearCombination R v) := by
   simp [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearIndependent]
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by

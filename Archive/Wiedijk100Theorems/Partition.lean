@@ -141,7 +141,7 @@ theorem num_series' [Field α] (i : ℕ) :
         obtain ⟨p, hp⟩ := h
         refine ⟨((i + 1) * (p - 1), i + 1), ?_⟩
         ext ⟨a₁, a₂⟩
-        simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
+        simp only [mem_filter, Prod.mk_inj, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
           refine ⟨?_, rfl⟩
