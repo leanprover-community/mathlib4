@@ -7,7 +7,7 @@ IFS=$'\n\t'
 
 set -x
 
-# test if there are keys with non-ASCII characters
+# Test if there are keys with non-ASCII characters.
 bibtool --pass.comments=on -- 'select{$key "[^-.:A-Za-z0-9_]+"}' \
   docs/references.bib -o docs/non-ascii.bib
 
