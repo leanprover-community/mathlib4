@@ -1197,6 +1197,11 @@ abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
 theorem normAtAllPlaces_apply (x : mixedSpace K) (w : InfinitePlace K) :
     normAtAllPlaces x w = normAtPlace w x := rfl
 
+variable (K) in
+theorem continuous_normAtAllPlaces :
+    Continuous (normAtAllPlaces : mixedSpace K → realSpace K) :=
+  continuous_pi fun _ ↦ continuous_normAtPlace _
+
 theorem normAtAllPlaces_nonneg (x : mixedSpace K) (w : InfinitePlace K) :
     0 ≤ normAtAllPlaces x w := normAtPlace_nonneg _ _
 
@@ -1242,6 +1247,10 @@ theorem normAtAllPlaces_image_preimage_of_nonneg {s : Set (realSpace K)}
   refine ⟨mixedSpaceOfRealSpace x, funext fun w ↦ ?_⟩
   rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hs x hx w)]
 
+example {s : Set (realSpace K)} :
+    normAtAllPlaces⁻¹' (normAtAllPlaces '' (normAtAllPlaces⁻¹' s)) = normAtAllPlaces⁻¹' s := by
+  exact Set.preimage_image_preimage
+  sorry
 end realSpace
 
 end NumberField.mixedEmbedding
