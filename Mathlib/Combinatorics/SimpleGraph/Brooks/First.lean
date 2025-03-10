@@ -131,14 +131,13 @@ vertex other than the penultimate vertex of `p`. -/
 abbrev IsClosable (p : G.Walk u v) : Prop := ∃ x, x ∈ p.support ∧ G.Adj v x ∧ x ≠ p.penultimate
 variable [DecidableRel G.Adj]
 /-- The first vertex in the walk `p` that is adjacent to its end-vertex -/
-abbrev maxClose (p : G.Walk u v) : α := p.find (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)
+abbrev close (p : G.Walk u v) : α := p.find (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)
 
-lemma IsClosable.adj (hp : p.IsClosable) : G.Adj v p.maxClose := by
+lemma IsClosable.adj (hp : p.IsClosable) : G.Adj v p.close := by
   obtain ⟨a, ha, hp⟩ := hp
   exact (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).1
 
-
-lemma IsClosable.ne (hp : p.IsClosable) : p.maxClose ≠ p.penultimate := by
+lemma IsClosable.ne (hp : p.IsClosable) : p.close ≠ p.penultimate := by
   obtain ⟨a, ha, hp⟩ := hp
   exact (find_spec_some (P := (fun x ↦ G.Adj v x ∧ x ≠ p.penultimate)) ⟨ha, hp⟩).2
 
@@ -159,18 +158,18 @@ one neighbor then we can close `p` into a maximal cycle, where `c : G.Walk w w` 
 that all neighbors of `w` lie in `c`.
 -/
 lemma maximal_cycle_of_maximal_path (hp : p.IsPath) (hm : p.IsMaximal) (h1 : 1 < G.degree v) :
-    ((p.dropUntil p.maxClose find_mem_support).cons (hm.isClosable h1).adj).IsCycle ∧
-    ((p.dropUntil p.maxClose find_mem_support).cons (hm.isClosable h1).adj).IsMaximal := by
-  let hc :=(hm.isClosable h1)
+    ((p.dropUntil p.close find_mem_support).cons (hm.isClosable h1).adj).IsCycle ∧
+    ((p.dropUntil p.close find_mem_support).cons (hm.isClosable h1).adj).IsMaximal := by
+  let hc := hm.isClosable h1
   use hp.cons_dropUntil_isCycle hc.adj find_mem_support hc.ne
   intro y hy
   rw [support_cons] at *
   right
   by_cases hpen : y = p.penultimate
   · rw [hpen]
-    have h2 := (p.dropUntil (p.maxClose) find_mem_support).penultimate_mem_support
+    have h2 := (p.dropUntil p.close find_mem_support).penultimate_mem_support
     rwa [penultimate_dropUntil (fun hv ↦ G.loopless _ (hv ▸ hc.adj))] at h2
-  · apply mem_dropUntil_find_of_mem_prop ⟨(hm _ hy), _⟩
+  · apply (mem_dropUntil_find_of_mem_prop ⟨(hm _ hy), _⟩)
     exact ⟨hy, hpen⟩
 
 end Walk
