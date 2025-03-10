@@ -628,9 +628,8 @@ theorem card_bot (F) [Field F] (p : ℕ) [Fact p.Prime] [CharP F p] :
     FiniteField.card_of_map, Nat.card_zmod]
 
 theorem finite_bot (F) [Field F] (p : ℕ) [Fact p.Prime] [CharP F p] : Finite (⊥ : Subfield F) := by
-  have := card_bot F p
   refine Nat.finite_of_card_ne_zero ?_
-  rw [this]
+  rw [card_bot F p]
   exact (NeZero.ne' p).symm
 
 open Polynomial in
@@ -638,10 +637,10 @@ theorem splits_bot (p : ℕ) [Fact p.Prime] [CharP F p] :
     Splits (K := (⊥ : Subfield F)) (RingHom.id (⊥ : Subfield F)) (X ^ p - X) := by
   have _ := finite_bot F p
   have _ := Fintype.ofFinite (⊥ : Subfield F)
-  have h1 : roots (X ^ p - X : (⊥ : Subfield F)[X]) = Finset.univ.val := by
-    rw [← card_bot (F := F) p, ← Fintype.card_eq_nat_card]
+  have h : roots (X ^ p - X : (⊥ : Subfield F)[X]) = Finset.univ.val := by
+    rw [← card_bot F p, ← Fintype.card_eq_nat_card]
     exact FiniteField.roots_X_pow_card_sub_X (⊥ : Subfield F)
-  rw [splits_iff_card_roots, h1, ← Finset.card_def, Finset.card_univ,
+  rw [splits_iff_card_roots, h, ← Finset.card_def, Finset.card_univ,
     FiniteField.X_pow_card_sub_X_natDegree_eq (⊥ : Subfield F) (Fact.out (p := p.Prime)).one_lt,
     Fintype.card_eq_nat_card, card_bot F p]
 
