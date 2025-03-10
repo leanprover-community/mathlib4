@@ -3,6 +3,7 @@ Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.Order.Ring.IsNonarchimedean
 import Mathlib.Analysis.Normed.Order.Hom.Ultra
 import Mathlib.Analysis.Normed.Group.Ultra
 import Mathlib.Data.Nat.Choose.Sum
@@ -18,40 +19,6 @@ nonarchimedean functions.
 namespace IsNonarchimedean
 
 open IsUltrametricDist
-
-/-- A nonarchimedean function satisfies the triangle inequality. -/
-theorem add_le {α : Type*} [Add α] {f : α → ℝ} (hf : ∀ x : α, 0 ≤ f x)
-    (hna : IsNonarchimedean f) {a b : α} : f (a + b) ≤ f a + f b := by
-  apply le_trans (hna _ _)
-  rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
-  exact ⟨hf _, hf _⟩
-
-/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
-  we have `f (n • a) ≤ (f a)`. -/
-theorem nsmul_le {F α : Type*} [AddGroup α] [FunLike F α ℝ]
-    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} :
-    f (n • a) ≤ f a := by
-  let _ := AddGroupSeminormClass.toSeminormedAddGroup f
-  have := AddGroupSeminormClass.isUltrametricDist hna
-  simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
-  exact norm_nsmul_le _ _
-
-/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
-  we have `f (n * a) ≤ (f a)`. -/
-theorem nmul_le {F α : Type*} [Ring α] [FunLike F α ℝ] [AddGroupSeminormClass F α ℝ]
-    {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} : f (n * a) ≤ f a := by
-  rw [← nsmul_eq_mul]
-  exact nsmul_le hna
-
-/-- If `f` is a nonarchimedean additive group seminorm on `α` and `x y : α` are such that
-  `f x ≠ f y`, then `f (x + y) = max (f x) (f y)`. -/
-theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α ℝ]
-    [AddGroupSeminormClass F α ℝ] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
-    f (x + y) = max (f x) (f y) := by
-  let _ := AddGroupSeminormClass.toSeminormedAddGroup f
-  have := AddGroupSeminormClass.isUltrametricDist hna
-  simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq] at hne ⊢
-  exact norm_add_eq_max_of_norm_ne_norm hne
 
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
   `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
