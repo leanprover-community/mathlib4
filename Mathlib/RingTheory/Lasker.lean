@@ -33,7 +33,7 @@ section IsLasker
 variable (R : Type*) [CommSemiring R]
 
 /-- A ring `R` satisfies `IsLasker R` when any `I : Ideal R` can be decomposed into
-finitely many primary ideals.-/
+finitely many primary ideals. -/
 def IsLasker : Prop :=
   ∀ I : Ideal R, ∃ s : Finset (Ideal R), s.inf id = I ∧ ∀ ⦃J⦄, J ∈ s → J.IsPrimary
 

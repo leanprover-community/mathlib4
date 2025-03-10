@@ -33,8 +33,6 @@ universe u
 
 open CategoryTheory Limits Functor FintypeCat
 
-attribute [local instance] HasForget.instFunLike
-
 namespace Condensed
 
 variable {C : Type*} [Category C] [HasWeakSheafify (coherentTopology CompHaus.{u}) C]
@@ -53,7 +51,7 @@ open CompHausLike.LocallyConstant
 lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : CondensedSet.{u})
     (h : ∀ S : Profinite.{u}, IsColimit <|
       (profiniteToCompHaus.op ⋙ X.val).mapCocone S.asLimitCone.op) :
-    X ∈ CondensedSet.LocallyConstant.functor.essImage := by
+    CondensedSet.LocallyConstant.functor.essImage X := by
   let e : CondensedSet.{u} ≌ Sheaf (coherentTopology Profinite) _ :=
     (Condensed.ProfiniteCompHaus.equivalence (Type (u + 1))).symm
   let i : (e.functor.obj X).val ≅ (e.functor.obj (LocallyConstant.functor.obj _)).val :=
@@ -74,13 +72,14 @@ noncomputable abbrev LocallyConstant.adjunction :
 
 open Condensed
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 open CondensedSet.LocallyConstant List in
 theorem isDiscrete_tfae  (X : CondensedSet.{u}) :
     TFAE
     [ X.IsDiscrete
     , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app X)
-    , X ∈ (Condensed.discrete _).essImage
-    , X ∈ CondensedSet.LocallyConstant.functor.essImage
+    , (Condensed.discrete _).essImage X
+    , CondensedSet.LocallyConstant.functor.essImage X
     , IsIso (CondensedSet.LocallyConstant.adjunction.counit.app X)
     , Sheaf.IsConstant (coherentTopology Profinite)
         ((Condensed.ProfiniteCompHaus.equivalence _).inverse.obj X)
@@ -113,6 +112,7 @@ namespace CondensedMod
 
 variable (R : Type (u+1)) [Ring R]
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isDiscrete_iff_isDiscrete_forget (M : CondensedMod R) :
     M.IsDiscrete ↔ ((Condensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology CompHaus)
@@ -126,8 +126,8 @@ theorem isDiscrete_tfae  (M : CondensedMod.{u} R) :
     TFAE
     [ M.IsDiscrete
     , IsIso ((Condensed.discreteUnderlyingAdj _).counit.app M)
-    , M ∈ (Condensed.discrete _).essImage
-    , M ∈ (CondensedMod.LocallyConstant.functor R).essImage
+    , (Condensed.discrete _).essImage M
+    , (CondensedMod.LocallyConstant.functor R).essImage M
     , IsIso ((CondensedMod.LocallyConstant.adjunction R).counit.app M)
     , Sheaf.IsConstant (coherentTopology Profinite)
         ((Condensed.ProfiniteCompHaus.equivalence _).inverse.obj M)
@@ -180,7 +180,7 @@ namespace LightCondSet
 lemma mem_locallyConstant_essImage_of_isColimit_mapCocone (X : LightCondSet.{u})
     (h : ∀ S : LightProfinite.{u}, IsColimit <|
       X.val.mapCocone (coconeRightOpOfCone S.asLimitCone)) :
-    X ∈ LightCondSet.LocallyConstant.functor.essImage := by
+    LightCondSet.LocallyConstant.functor.essImage X := by
   let i : X.val ≅ (LightCondSet.LocallyConstant.functor.obj _).val :=
     LightCondensed.isoLocallyConstantOfIsColimit _ h
   exact ⟨_, ⟨((sheafToPresheaf _ _).preimageIso i.symm)⟩⟩
@@ -197,13 +197,14 @@ noncomputable abbrev LocallyConstant.adjunction :
     LightCondSet.LocallyConstant.functor ⊣ LightCondensed.underlying (Type u) :=
   CompHausLike.LocallyConstant.adjunction _ _
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 open LightCondSet.LocallyConstant List in
 theorem isDiscrete_tfae  (X : LightCondSet.{u}) :
     TFAE
     [ X.IsDiscrete
     , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app X)
-    , X ∈ (LightCondensed.discrete _).essImage
-    , X ∈ LightCondSet.LocallyConstant.functor.essImage
+    , (LightCondensed.discrete _).essImage X
+    , LightCondSet.LocallyConstant.functor.essImage X
     , IsIso (LightCondSet.LocallyConstant.adjunction.counit.app X)
     , ∀ S : LightProfinite.{u}, Nonempty
         (IsColimit <| X.val.mapCocone (coconeRightOpOfCone S.asLimitCone))
@@ -229,6 +230,7 @@ namespace LightCondMod
 
 variable (R : Type u) [Ring R]
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma isDiscrete_iff_isDiscrete_forget (M : LightCondMod R) :
     M.IsDiscrete ↔ ((LightCondensed.forget R).obj M).IsDiscrete  :=
   Sheaf.isConstant_iff_forget (coherentTopology LightProfinite)
@@ -239,8 +241,8 @@ theorem isDiscrete_tfae  (M : LightCondMod.{u} R) :
     TFAE
     [ M.IsDiscrete
     , IsIso ((LightCondensed.discreteUnderlyingAdj _).counit.app M)
-    , M ∈ (LightCondensed.discrete _).essImage
-    , M ∈ (LightCondMod.LocallyConstant.functor R).essImage
+    , (LightCondensed.discrete _).essImage M
+    , (LightCondMod.LocallyConstant.functor R).essImage M
     , IsIso ((LightCondMod.LocallyConstant.adjunction R).counit.app M)
     , ∀ S : LightProfinite.{u}, Nonempty
         (IsColimit <| M.val.mapCocone (coconeRightOpOfCone S.asLimitCone))

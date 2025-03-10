@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Pi
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Properties of the module `α →₀ M`
@@ -92,6 +92,9 @@ theorem lhom_ext' ⦃φ ψ : (α →₀ M) →ₗ[R] N⦄ (h : ∀ a, φ.comp (l
 /-- Interpret `fun f : α →₀ M ↦ f a` as a linear map. -/
 def lapply (a : α) : (α →₀ M) →ₗ[R] M :=
   { Finsupp.applyAddHom a with map_smul' := fun _ _ => rfl }
+
+instance [Nonempty α] [FaithfulSMul R M] : FaithfulSMul R (α →₀ M) :=
+  .of_injective (Finsupp.lsingle <| Classical.arbitrary _) (Finsupp.single_injective _)
 
 section LSubtypeDomain
 

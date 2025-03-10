@@ -132,7 +132,7 @@ lemma pderiv_rename {τ : Type*} {f : σ → τ} (hf : Function.Injective f)
       Pi.single_apply, hf.eq_iff, smul_eq_mul, mul_ite, mul_one, mul_zero, h, map_add, add_left_inj]
     split_ifs <;> simp
 
-lemma aeval_sum_elim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
+lemma aeval_sumElim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
     (p : MvPolynomial (σ ⊕ τ) R) (f : τ → S) (j : σ) :
     aeval (Sum.elim X (C ∘ f)) ((pderiv (Sum.inl j)) p) =
       (pderiv j) ((aeval (Sum.elim X (C ∘ f))) p) := by
@@ -142,6 +142,8 @@ lemma aeval_sum_elim_pderiv_inl {S τ : Type*} [CommRing S] [Algebra R S]
   · simp [hp, hq]
   · simp only [Derivation.leibniz, pderiv_X, smul_eq_mul, map_add, map_mul, aeval_X, h]
     cases q <;> simp [Pi.single_apply]
+
+@[deprecated (since := "2025-02-21")] alias aeval_sum_elim_pderiv_inl := aeval_sumElim_pderiv_inl
 
 end PDeriv
 

@@ -115,7 +115,7 @@ section Continuous
    a topology); but it seems hard to imagine cases where this extra generality would be useful, and
    allowing it would complicate matters in the most important use cases.
 -/
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
@@ -161,7 +161,7 @@ end Continuous
 
 section Fubini
 
-variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
+variable [TopologicalSpace 𝕜] [IsTopologicalRing 𝕜] [TopologicalSpace V] [BorelSpace V]
   [TopologicalSpace W] [MeasurableSpace W] [BorelSpace W]
   {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
   {ν : Measure W} [SigmaFinite μ] [SigmaFinite ν] [SecondCountableTopology V]
@@ -194,7 +194,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
         refine (Continuous.aestronglyMeasurable ?_).smul hf.1.snd
         exact he.comp (hL.comp continuous_swap).neg
       have A' : AEStronglyMeasurable (fun p ↦ (g p.1, e (-(L p.2) p.1) • f p.2) : W × V → F × E)
-        (Measure.prod ν μ) := hg.1.fst.prod_mk A
+        (Measure.prod ν μ) := hg.1.fst.prodMk A
       have B : Continuous (fun q ↦ M q.2 q.1 : F × E → G) := M.flip.continuous₂
       apply B.comp_aestronglyMeasurable A' -- `exact` works, but `apply` is 10x faster!
     · filter_upwards with ⟨ξ, x⟩
@@ -298,7 +298,8 @@ open scoped Real
 
 namespace Real
 
-/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`. -/
+/-- The standard additive character of `ℝ`, given by `fun x ↦ exp (2 * π * x * I)`.
+Denoted as `𝐞` within the `Real.FourierTransform` namespace. -/
 def fourierChar : AddChar ℝ 𝕊 where
   toFun z := .exp (2 * π * z)
   map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
@@ -372,12 +373,14 @@ open scoped RealInnerProductSpace
 variable [FiniteDimensional ℝ V]
 
 /-- The Fourier transform of a function on an inner product space, with respect to the standard
-additive character `ω ↦ exp (2 i π ω)`. -/
+additive character `ω ↦ exp (2 i π ω)`.
+Denoted as `𝓕` within the `Real.FourierTransform` namespace. -/
 def fourierIntegral (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (innerₗ V) f w
 
 /-- The inverse Fourier transform of a function on an inner product space, defined as the Fourier
-transform but with opposite sign in the exponential. -/
+transform but with opposite sign in the exponential.
+Denoted as `𝓕⁻¹` within the `Real.FourierTransform` namespace. -/
 def fourierIntegralInv (f : V → E) (w : V) : E :=
   VectorFourier.fourierIntegral 𝐞 volume (-innerₗ V) f w
 

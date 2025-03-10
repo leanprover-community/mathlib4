@@ -42,7 +42,7 @@ theorem of_near (f : ℕ → ℚ) (x : ℝ) (h : ∀ ε > 0, ∃ i, ∀ j ≥ i,
   ⟨isCauSeq_iff_lift.2 (CauSeq.of_near _ (const abs x) h),
     sub_eq_zero.1 <|
       abs_eq_zero.1 <|
-        (eq_of_le_of_forall_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
+        (eq_of_le_of_forall_lt_imp_le_of_dense (abs_nonneg _)) fun _ε ε0 =>
           mk_near_of_forall_near <| (h _ ε0).imp fun _i h j ij => le_of_lt (h j ij)⟩
 
 theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ, (z : ℝ) ≤ x → z ≤ ub :=
@@ -55,7 +55,7 @@ theorem exists_floor (x : ℝ) : ∃ ub : ℤ, (ub : ℝ) ≤ x ∧ ∀ z : ℤ,
 theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x := by
   rcases hne, hbdd with ⟨⟨L, hL⟩, ⟨U, hU⟩⟩
   have : ∀ d : ℕ, BddAbove { m : ℤ | ∃ y ∈ s, (m : ℝ) ≤ y * d } := by
-    cases' exists_int_gt U with k hk
+    obtain ⟨k, hk⟩ := exists_int_gt U
     refine fun d => ⟨k * d, fun z h => ?_⟩
     rcases h with ⟨y, yS, hy⟩
     refine Int.cast_le.1 (hy.trans ?_)
@@ -88,8 +88,8 @@ theorem exists_isLUB (hne : s.Nonempty) (hbdd : BddAbove s) : ∃ x, IsLUB s x :
     simpa using sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
   let g : CauSeq ℚ abs := ⟨fun n => f n / n, hg⟩
   refine ⟨mk g, ⟨fun x xS => ?_, fun y h => ?_⟩⟩
-  · refine le_of_forall_ge_of_dense fun z xz => ?_
-    cases' exists_nat_gt (x - z)⁻¹ with K hK
+  · refine le_of_forall_lt_imp_le_of_dense fun z xz => ?_
+    obtain ⟨K, hK⟩ := exists_nat_gt (x - z)⁻¹
     refine le_mk_of_forall_le ⟨K, fun n nK => ?_⟩
     replace xz := sub_pos.2 xz
     replace hK := hK.le.trans (Nat.cast_le.2 nK)

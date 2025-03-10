@@ -3,7 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Algebra.Ring.Action.End
+import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 
@@ -55,6 +56,10 @@ theorem ResidueField.algebraMap_eq : algebraMap R (ResidueField R) = residue R :
 instance : IsLocalHom (IsLocalRing.residue R) :=
   ⟨fun _ ha =>
     Classical.not_not.mp (Ideal.Quotient.eq_zero_iff_mem.not.mp (isUnit_iff_ne_zero.mp ha))⟩
+
+instance {R₀} [CommRing R₀] [Algebra R₀ R] [Module.Finite R₀ R] :
+    Module.Finite R₀ (ResidueField R) :=
+  .of_surjective (IsScalarTower.toAlgHom R₀ R _).toLinearMap Ideal.Quotient.mk_surjective
 
 variable {R}
 
@@ -167,16 +172,16 @@ noncomputable instance : Algebra (ResidueField R) (ResidueField S) :=
 instance : IsScalarTower R (ResidueField R) (ResidueField S) :=
   IsScalarTower.of_algebraMap_eq (congrFun rfl)
 
-instance finiteDimensional_of_noetherian [IsNoetherian R S] :
-    FiniteDimensional (ResidueField R) (ResidueField S) := by
-  apply IsNoetherian.iff_fg.mp <|
-    isNoetherian_of_tower R (S := ResidueField R) (M := ResidueField S) _
-  convert isNoetherian_of_surjective S (Ideal.Quotient.mkₐ R (maximalIdeal S)).toLinearMap
-    (LinearMap.range_eq_top.mpr Ideal.Quotient.mk_surjective)
+instance finite_of_module_finite [Module.Finite R S] :
+    Module.Finite (ResidueField R) (ResidueField S) :=
+  .of_restrictScalars_finite R _ _
+
+@[deprecated (since := "2025-01-12")]
+alias finiteDimensional_of_noetherian := finite_of_module_finite
 
 -- We want to be able to refer to `hfin`
 set_option linter.unusedVariables false in
-lemma finite_of_finite [IsNoetherian R S] (hfin : Finite (ResidueField R)) :
+lemma finite_of_finite [Module.Finite R S] (hfin : Finite (ResidueField R)) :
     Finite (ResidueField S) := Module.finite_of_finite (ResidueField R)
 
 end FiniteDimensional

@@ -3,7 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Perfect pairings of modules
@@ -203,6 +203,27 @@ protected lemma flip (h : p.IsPerfectCompl U V) :
     p.flip.IsPerfectCompl V U where
   isCompl_left := h.isCompl_right
   isCompl_right := h.isCompl_left
+
+@[simp]
+protected lemma flip_iff :
+    p.flip.IsPerfectCompl V U ↔ p.IsPerfectCompl U V :=
+  ⟨fun h ↦ h.flip, fun h ↦ h.flip⟩
+
+@[simp]
+lemma left_top_iff :
+    p.IsPerfectCompl ⊤ V ↔ V = ⊤ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · exact eq_top_of_isCompl_bot <| by simpa using h.isCompl_right
+  · rw [h]
+    exact
+      { isCompl_left := by simpa using isCompl_top_bot
+        isCompl_right := by simpa using isCompl_top_bot }
+
+@[simp]
+lemma right_top_iff :
+    p.IsPerfectCompl U ⊤ ↔ U = ⊤ := by
+  rw [← IsPerfectCompl.flip_iff]
+  exact left_top_iff
 
 end IsPerfectCompl
 

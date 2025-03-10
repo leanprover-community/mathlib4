@@ -334,7 +334,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σn : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
-    have := exists_maximal_independent R s
+    have := exists_maximal_linearIndepOn R s
     let I : Set ι := this.choose
     obtain
       ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
@@ -412,7 +412,6 @@ section SmithNormal
 /-- A Smith normal form basis for a submodule `N` of a module `M` consists of
 bases for `M` and `N` such that the inclusion map `N → M` can be written as a
 (rectangular) matrix with `a` along the diagonal: in Smith normal form. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): @[nolint has_nonempty_instance]
 structure Basis.SmithNormalForm (N : Submodule R M) (ι : Type*) (n : ℕ) where
   /-- The basis of M. -/
   bM : Basis ι R M
@@ -650,18 +649,8 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
   refine Subtype.coe_injective ?_
   simp [hi]
 
--- Porting note: can be inferred in Lean 4 so no longer necessary
-
 end Ideal
 
 end SmithNormal
 
 end PrincipalIdealDomain
-
-/-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
-independent over a subring `R` of `K`. -/
-theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type*} [CommSemiring R] [Semiring S]
-    [AddCommMonoid M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (hinj : Function.Injective (algebraMap R S)) {v : ι → M} (li : LinearIndependent S v) :
-    LinearIndependent R v :=
-  LinearIndependent.restrict_scalars (by rwa [Algebra.algebraMap_eq_smul_one'] at hinj) li

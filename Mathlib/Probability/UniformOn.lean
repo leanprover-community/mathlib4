@@ -89,11 +89,7 @@ alias finite_of_condCount_ne_zero := finite_of_uniformOn_ne_zero
 
 theorem uniformOn_univ [Fintype Ω] {s : Set Ω} :
     uniformOn Set.univ s = Measure.count s / Fintype.card Ω := by
-  rw [uniformOn, cond_apply MeasurableSet.univ, ← ENNReal.div_eq_inv_mul, Set.univ_inter]
-  congr
-  rw [← Finset.coe_univ, Measure.count_apply, Finset.univ.tsum_subtype' fun _ => (1 : ENNReal)]
-  · simp [Finset.card_univ]
-  · exact (@Finset.coe_univ Ω _).symm ▸ MeasurableSet.univ
+  simp [uniformOn, cond_apply, ← ENNReal.div_eq_inv_mul]
 
 @[deprecated (since := "2024-10-09")]
 alias condCount_univ := uniformOn_univ
@@ -115,7 +111,7 @@ theorem uniformOn_singleton (ω : Ω) (t : Set Ω) [Decidable (ω ∈ t)] :
     one_mul]
   split_ifs
   · rw [(by simpa : ({ω} : Set Ω) ∩ t = {ω}), Measure.count_singleton]
-  · rw [(by simpa : ({ω} : Set Ω) ∩ t = ∅), Measure.count_empty]
+  · simpa
 
 @[deprecated (since := "2024-10-09")]
 alias condCount_singleton := uniformOn_singleton

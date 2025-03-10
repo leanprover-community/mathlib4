@@ -80,7 +80,6 @@ instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCo
   zero_smul := by
     intros
     ext1
-    -- Porting note: not sure why `apply zero_smul` fails here.
     rw [zero_smul]
 
 end Pi

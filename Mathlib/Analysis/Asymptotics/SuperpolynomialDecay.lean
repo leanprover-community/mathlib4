@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Devon Tuma
 -/
 import Mathlib.Algebra.Polynomial.Eval.Defs
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 

@@ -218,7 +218,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
             existsUnique_eq']
         · apply_fun f at h
@@ -231,7 +231,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val :).symm
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
@@ -294,9 +294,9 @@ noncomputable def finitaryExtensiveTopCatAux (Z : TopCat.{u})
     · rintro x ⟨⟨⟩, hx⟩; refine ⟨⟨⟨x, PUnit.unit⟩, hx.symm⟩, rfl⟩
   refine ((TopCat.binaryCofan_isColimit_iff _).mpr ⟨?_, ?_, ?_⟩).some
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert f.2.1 _ isOpen_range_inl
+    convert f.hom.2.1 _ isOpen_range_inl
   · refine ⟨(Homeomorph.prodPUnit Z).isEmbedding.comp .subtypeVal, ?_⟩
-    convert f.2.1 _ isOpen_range_inr
+    convert f.hom.2.1 _ isOpen_range_inr
   · convert Set.isCompl_range_inl_range_inr.preimage f
 
 instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
@@ -310,35 +310,37 @@ instance finitaryExtensive_TopCat : FinitaryExtensive TopCat.{u} := by
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inl y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · exact ⟨val, rfl, fun y h => Sum.inl_injective h.symm⟩
         · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαY val :).symm
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
-        fun {l'} h₁ _ => ContinuousMap.ext fun x =>
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+        TopCat.isTerminalPUnit.hom_ext _ _,
+        fun {l'} h₁ _ => TopCat.ext fun x =>
           hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inl (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert s.fst.2 using 1
+      convert s.fst.hom.2 using 1
       exact (funext hl).symm
     · refine ⟨⟨hαY.symm⟩, ⟨PullbackCone.isLimitAux' _ ?_⟩⟩
       intro s
       have : ∀ x, ∃! y, s.fst x = Sum.inr y := by
         intro x
-        cases' h : s.fst x with val val
+        rcases h : s.fst x with val | val
         · apply_fun f at h
           cases ((ConcreteCategory.congr_hom s.condition x).symm.trans h).trans
             (ConcreteCategory.congr_hom hαX val :).symm
         · exact ⟨val, rfl, fun y h => Sum.inr_injective h.symm⟩
       delta ExistsUnique at this
       choose l hl hl' using this
-      refine ⟨⟨l, ?_⟩, ContinuousMap.ext fun a => (hl a).symm, TopCat.isTerminalPUnit.hom_ext _ _,
+      refine ⟨TopCat.ofHom ⟨l, ?_⟩, TopCat.ext fun a => (hl a).symm,
+        TopCat.isTerminalPUnit.hom_ext _ _,
         fun {l'} h₁ _ =>
-          ContinuousMap.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
+          TopCat.ext fun x => hl' x (l' x) (ConcreteCategory.congr_hom h₁ x).symm⟩
       apply (IsEmbedding.inr (X := X') (Y := Y')).isInducing.continuous_iff.mpr
-      convert s.fst.2 using 1
+      convert s.fst.hom.2 using 1
       exact (funext hl).symm
   · intro Z f
     exact finitaryExtensiveTopCatAux Z f
