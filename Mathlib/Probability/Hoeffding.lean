@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Kei Tsukamoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kei Tsukamoto
+Authors: Kei Tsukamoto, Kazumi Kasaura, Yuma Mizuno, Naoto Onda, Sho Sonoda
 -/
 
 import Mathlib.Probability.Moments.Basic
