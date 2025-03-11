@@ -152,7 +152,7 @@ lemma RetractArrow.rightLiftingProperty
 namespace Arrow
 
 /-- Given a morphism `φ : f ⟶ g` in the category `Arrow C`, this is an
-abbreviation for the `CommSq.LiftStruct` structure corresponding to
+abbreviation for the `CommSq.LiftStruct` structure of
 the square corresponding to `φ`. -/
 abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
 
