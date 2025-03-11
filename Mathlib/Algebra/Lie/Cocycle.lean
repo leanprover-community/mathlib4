@@ -407,10 +407,10 @@ def coboundary_second_aux {n : ℕ} (g : Fin (n + 1 + 1) → L) {i j : Fin (n + 
     Fin (n + 1) → L :=
   Fin.cons ⁅g i, g j⁆ (fun k => (i.castPred (Fin.ne_last_of_lt h)).removeNth (j.removeNth g) k)
 
+/-!
 lemma le_of_Ico {n : ℕ} {i j : Fin (n + 1)} (h : i ∈ Finset.Ico 0 j) : i < j := by
   simpa [Finset.Ico, LocallyFiniteOrder.finsetIco] using h
 
-/-!
 /-- The second sum in the Lie algebra cohomology map. Note that this is offset by one. -/
 def coboundary_second_sum (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M) (g : Fin (n + 1 + 1) → L) : M :=
   ∑ j : Fin (n + 1 + 1), ∑ i ∈ Finset.Ico 0 j, (-1: ℤˣ) ^ (i.val + j.val) •
