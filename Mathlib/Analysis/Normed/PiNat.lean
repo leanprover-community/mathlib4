@@ -13,7 +13,7 @@ When `E n` are topological spaces, the space `Π (n : ℕ), E n` is naturally a 
 (with the product topology). When `E n` are uniform spaces, it also inherits a uniform structure.
 However, it does not inherit a canonical metric space structure of the `E n`. Nevertheless, one
 can put a noncanonical metric space structure (or rather, several of them).
-This is handled in `Mathlib/Topology/MetricSpace/PiNat/Basic.lean`.
+This is handled in `Mathlib/Topology/MetricSpace/PiNat.lean`.
 Here, we extend the result to the normed additive group structure.
 
 ## Main definitions and results
