@@ -7,8 +7,6 @@ Authors: Stefan Kebekus
 import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Meromorphic.Divisor.Basic
 
-open Classical
-
 /-!
 # The Divisor of a Meromorphic Function
 
@@ -23,6 +21,8 @@ basic lemmas about those divisors.
 - Behavior under addition of functions
 - Congruence lemmas for `codiscreteWithin`
 -/
+
+open Classical
 
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
