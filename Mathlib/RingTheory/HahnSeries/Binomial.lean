@@ -254,7 +254,7 @@ theorem leadingCoeff_unitBinomial [Nontrivial R] {g g' : Γ} (hg : IsAddUnit g) 
 
 -- coefficients of powers - use embDomain_coeff and embDomain_notin_range from Basic
 
-theorem orderTop_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
+theorem orderTop_single_add_single {g g' : Γ} (hgg' : g < g') {a : R} (ha : a ≠ 0) (b : R) :
     (single g a + single g' b).orderTop = g := by
   rw [← orderTop_single ha]
   exact orderTop_add_eq_left (lt_of_eq_of_lt (orderTop_single ha)
@@ -264,7 +264,7 @@ theorem coeff_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} :
     (single g a + single g' b).coeff g = a := by
   simp_all [ne_of_lt hgg']
 
-theorem single_add_single_ne {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
+theorem single_add_single_ne {g g' : Γ} (hgg' : g < g') {a : R} (ha : a ≠ 0) (b : R) :
     single g a + single g' b ≠ 0 :=
   ne_zero_of_coeff_ne_zero (ne_of_eq_of_ne (coeff_single_add_single hgg') ha)
 
@@ -279,12 +279,15 @@ theorem single_add_single_support {g g' : Γ} {a b : R} :
 
 theorem leadingCoeff_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).leadingCoeff = a := by
-  rw [leadingCoeff, orderTop_single_add_single hgg' ha, coeffTop_eq, coeff_single_add_single hgg']
+  have hn := single_add_single_ne hgg' ha b
+  have ho := orderTop_single_add_single hgg' ha b
+  rw [orderTop_of_ne hn, WithTop.coe_eq_coe] at ho
+  rw [leadingCoeff_of_ne hn, ho, coeff_single_add_single hgg']
 
 theorem order_single_add_single {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
     (single g a + single g' b).order = g := by
   refine WithTop.coe_eq_coe.mp ?_
-  rw [order_eq_orderTop_of_ne (single_add_single_ne hgg' ha), orderTop_single_add_single hgg' ha]
+  rw [order_eq_orderTop_of_ne (single_add_single_ne hgg' ha b), orderTop_single_add_single hgg' ha]
 
 theorem isUnit_single_add_single {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') (a : Units R)
     (b : R) : IsUnit (single g a.val + single g' b) := by
@@ -312,11 +315,9 @@ theorem UnitBinimial_inv_coeff {g g' : Γ} (hg : IsAddUnit g) (hgg' : g < g') {a
     (b : R) : (UnitBinomial hg hgg' ha b).inv = sorry := --hsum
   sorry -- induction, telescoping.
 -/
-/-- A function for describing coefficients of powers of invertible binomials.-/
+/-- A function for describing coefficients of powers of invertible binomials. -/
 def UnitBinomialPow_coeff_aux {a : R} (ha : IsUnit a) (b : R) (n : ℤ) :
     ℕ → R := fun k => (IsUnit.unit ha) ^ (n - k) • b ^ k • Ring.choose n k
-
-
 
 end Binomial
 

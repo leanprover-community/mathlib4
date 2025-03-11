@@ -265,8 +265,14 @@ theorem hsum_orderTop_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha :
 theorem hsum_leadingCoeff_of_le {s : SummableFamily Γ R α} {g : Γ} {a : α} (ha : g = (s a).orderTop)
     (hg : ∀ b : α, ∀ g' ∈ (s b).support, g ≤ g') (hna : ∀b : α, b ≠ a → (s b).coeff g = 0) :
     s.hsum.leadingCoeff = (s a).coeff g := by
-  rw [leadingCoeff, hsum_orderTop_of_le ha hg hna, coeffTop_eq, coeff_hsum,
-    finsum_eq_single (fun i ↦ (s i).coeff g) a hna]
+  have := hsum_orderTop_of_le ha hg hna
+  rw [orderTop] at this
+  have hs : s.hsum ≠ 0 := by
+    by_contra h
+    simp [h] at this
+  simp only [hs, ↓reduceDIte, WithTop.coe_eq_coe] at this
+  simp only [leadingCoeff, hs, ↓reduceDIte, coeff_hsum, this]
+  rw [finsum_eq_single (fun i ↦ (s i).coeff g) a hna]
 
 end AddCommMonoid
 
@@ -753,7 +759,7 @@ theorem univ_equiv_Family {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
   simp_all
 
 /-- The equivalence between a pi-parametrized family and the corresponding finset-parametrized
-family.-/
+family. -/
 def univ_equiv_Hahn {R} [CommSemiring R] (α : σ → Type*) (g : Γ)
     {t : Π i : σ, (α i) → HahnSeries Γ R} :
     {a : (i : σ) → α i | (∏ i, (t i) (a i)).coeff g ≠ 0} ≃
@@ -1004,48 +1010,6 @@ theorem isUnit_of_isUnit_leadingCoeff_order_add_unit {x : HahnSeries Γ R}
     sorry
 -/
 
-theorem one_minus_single_mul_addUnit {x y : HahnSeries Γ R} (r : R) (hr : r * x.leadingCoeff = 1)
-    (hxy : x = y + x.leadingTerm) (hxo : IsAddUnit x.order) :
-    1 - single (IsAddUnit.addUnit hxo).neg r * x = -(single (IsAddUnit.addUnit hxo).neg r * y) := by
-  nth_rw 2 [hxy]
-  rw [mul_add, leadingTerm_eq, single_mul_single, ← leadingCoeff_eq, hr, AddUnits.neg_eq_val_neg,
-    IsAddUnit.val_neg_add, sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq]
-  exact rfl
-
-theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
-    (hxo : IsAddUnit x.order) : 0 < (1 - single (IsAddUnit.addUnit hxo).neg r * x).orderTop := by
-  let y := (x - x.leadingTerm)
-  by_cases hy : y = 0
-  · have hrx : (single (IsAddUnit.addUnit hxo).neg) r * x = 1 := by
-      nth_rw 2 [eq_of_sub_eq_zero hy] -- get a bad loop without `nth_rw`
-      simp only [AddUnits.neg_eq_val_neg, leadingTerm_eq, ← leadingCoeff_eq, single_mul_single,
-        IsAddUnit.val_neg_add, hr, single_zero_one]
-    simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
-  have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
-    fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
-  have hy' : 0 < (single (IsAddUnit.addUnit hxo).neg r * y).order := by
-    rw [(order_mul_single_of_nonzero_divisor hr' hy)]
-    refine pos_of_lt_add_right (a := x.order) ?_
-    rw [← add_assoc, add_comm x.order, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add, zero_add]
-    exact order_lt_add_single_support_order (sub_add_cancel x x.leadingTerm).symm hy
-  simp only [one_minus_single_mul_addUnit r hr (sub_add_cancel x x.leadingTerm).symm, orderTop_neg]
-  exact zero_lt_orderTop_of_order hy'
-
-theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff)
-    (hxo : IsAddUnit x.order) : IsUnit x := by
-  let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
-  rw [Units.val_mk] at h
-  rw [h] at iu
-  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu hxo)
-  rw [sub_sub_cancel] at h'
-  exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
-
-end Monoid
-
-section CommRing
-
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
-
 theorem one_minus_single_neg_mul {x y : HahnSeries Γ R} {r : R} (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + single x.order x.leadingCoeff) (hxo : IsAddUnit x.order) :
     1 - single (IsAddUnit.addUnit hxo).neg r * x = -(single (IsAddUnit.addUnit hxo).neg r * y) := by
@@ -1080,11 +1044,11 @@ theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : I
   rw [sub_sub_cancel] at h'
   exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
 
-end CommRing
+end Monoid
 
 section CommRing
 
-variable [CommRing R]
+variable [LinearOrderedAddCommGroup Γ] [CommRing R]
 
 theorem neg_eq_addUnit_neg {G : Type*} [AddGroup G] (g : G) :
     -g = (IsAddUnit.addUnit (AddGroup.isAddUnit g)).neg := by
@@ -1094,7 +1058,8 @@ theorem neg_eq_addUnit_neg {G : Type*} [AddGroup G] (g : G) :
 theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + x.leadingTerm) : 1 - single (-order x) r * x = -(single (-x.order) r * y) := by
   rw [neg_eq_addUnit_neg]
-  exact one_minus_single_mul_addUnit r hr hxy (AddGroup.isAddUnit x.order)
+  rw [leadingTerm_eq, ← leadingCoeff_eq] at hxy
+  exact one_minus_single_neg_mul hr hxy (AddGroup.isAddUnit x.order)
 
 theorem isUnit_of_isUnit_leadingCoeff {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff) :
     IsUnit x := by

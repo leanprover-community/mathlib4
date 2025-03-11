@@ -210,7 +210,7 @@ variable [OrderedCancelAddCommMonoid Γ] [OrderedCancelAddCommMonoid Γ₁]
 open HahnModule
 
 /-- The composite of two heterogeneous vertex operators acting on a vector, as an iterated Hahn
-  series.-/
+  series. -/
 @[simps]
 def compHahnSeries (A : HVertexOperator Γ R V W) (B : HVertexOperator Γ₁ R U V) (u : U) :
     HahnSeries Γ₁ (HahnSeries Γ W) where

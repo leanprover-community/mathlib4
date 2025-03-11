@@ -75,18 +75,6 @@ theorem coeff_nsmul {x : HahnSeries Γ R} {n : ℕ} : (n • x).coeff = n • x.
   | zero => simp
   | succ n ih => simp [add_nsmul, ih]
 
-theorem add_coeffTop_apply {x y : HahnSeries Γ R} {a : WithTop Γ} :
-    (x + y).coeffTop a = x.coeffTop a + y.coeffTop a := by
-  match a with
-  | ⊤ => simp
-  | (a : Γ) => simp
-
-@[simp]
-theorem add_coeffTop {x y : HahnSeries Γ R} :
-    (x + y).coeffTop = x.coeffTop + y.coeffTop := by
-  ext
-  exact add_coeffTop_apply
-
 @[simp]
 protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
     ((x + y).map f : HahnSeries Γ S) = x.map f + y.map f := by
@@ -139,7 +127,7 @@ lemma addOppositeEquiv_symm_orderTop (x : (HahnSeries Γ R)ᵃᵒᵖ) :
 @[simp]
 lemma addOppositeEquiv_leadingCoeff (x : HahnSeries Γ (Rᵃᵒᵖ)) :
     (addOppositeEquiv x).unop.leadingCoeff = x.leadingCoeff.unop := by
-  dsimp only [leadingCoeff, coeffTop]
+  dsimp only [leadingCoeff]
   aesop
 
 @[simp]
@@ -334,13 +322,6 @@ instance : AddGroup (HahnSeries Γ R) :=
 theorem coeff_neg {x : HahnSeries Γ R} : (-x).coeff = -x.coeff :=
   rfl
 
-@[simp]
-theorem coeffTop_neg {x : HahnSeries Γ R} : (-x).coeffTop = -x.coeffTop := by
-  ext g
-  match g with
-  | ⊤ => simp
-  | (g : Γ) => exact rfl
-
 @[deprecated (since := "2025-01-31")] alias neg_coeff := coeff_neg
 
 @[simp]
@@ -375,11 +356,6 @@ theorem coeff_sub {x y : HahnSeries Γ R} : (x - y).coeff = x.coeff - y.coeff :=
   ext
   simp [sub_eq_add_neg]
 
-@[simp]
-theorem coeffTop_sub {x y : HahnSeries Γ R} : (x - y).coeffTop = x.coeffTop - y.coeffTop := by
-  ext
-  simp [sub_eq_add_neg]
-
 @[deprecated (since := "2025-01-31")] alias sub_coeff := coeff_sub
 
 @[simp]
@@ -407,9 +383,17 @@ theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
 theorem sub_orderTop_ne_of_leadingCoeff_eq {x y : HahnSeries Γ R} {g : Γ}
     (hxg : x.orderTop = g) (hyg : y.orderTop = g) (hxyc : x.leadingCoeff = y.leadingCoeff) :
     (x - y).orderTop ≠ g := by
-  refine orderTop_ne_of_coeffTop_zero ?_
-  simp only [leadingCoeff] at hxyc
-  rw [coeffTop_sub, Pi.sub_apply, sub_eq_zero, ← hxg, hxyc, hxg, hyg]
+  refine orderTop_ne_of_coeff_zero ?_
+  have hx : x ≠ 0 := by
+    rw [ne_zero_iff_orderTop, hxg]
+    exact WithTop.coe_ne_top
+  rw [orderTop_of_ne hx, WithTop.coe_eq_coe] at hxg
+  have hy : y ≠ 0 := by
+    rw [ne_zero_iff_orderTop, hyg]
+    exact WithTop.coe_ne_top
+  rw [orderTop_of_ne hy, WithTop.coe_eq_coe] at hyg
+  simp only [leadingCoeff, hx, ↓reduceDIte, hy] at hxyc
+  rw [coeff_sub, Pi.sub_apply, sub_eq_zero, ← hxg, hxyc, hxg, hyg]
 
 end AddGroup
 
