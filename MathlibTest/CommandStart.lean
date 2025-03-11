@@ -104,8 +104,29 @@ local infixl:50 " ≼ " => r
 -- The two infix are needed.  They "hide" a `quotPrecheck`
 local infixl:50 " ≼ " => s
 
+/--
+warning: The `commandStart` linter had some parsing issues: feel free to silence it with `set_option linter.style.commandStart.verbose false in` and report this error!
+note: this linter can be disabled with `set_option linter.style.commandStart.verbose false`
+---
+warning: real:
+'example {a : α} (_ : a ≼ a) '
+
+real formatted:
+'example {a : α} (_ : a ≼ a) '
+
+comparison:
+'example {a : α} (_ : a ≼ a) :'
+
+format:
+'example {a : α} (_ : a ≼ a) :'
+
+note: this linter can be disabled with `set_option linter.style.commandStart.verbose false`
+-/
+#guard_msgs in
 set_option linter.style.commandStart.verbose true in
 example {a : α} (_ : a ≼ a) : 0 = 0 := rfl
+
+end List
 
 -- Test that the space between `aesop` and `(rule_sets ...)` is not linted.
 @[aesop (rule_sets := [builtin]) safe apply] example : True := trivial
