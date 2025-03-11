@@ -1,3 +1,4 @@
+import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
 
 /--
@@ -105,3 +106,20 @@ local infixl:50 " ≼ " => s
 
 set_option linter.style.commandStart.verbose true in
 example {a : α} (_ : a ≼ a) : 0 = 0 := rfl
+
+-- Test that the space between `aesop` and `(rule_sets ...)` is not linted.
+@[aesop (rule_sets := [builtin]) safe apply] example : True := trivial
+
+-- Test that `Prop` and `Type` that are not escaped with `«...»` do not cause problems.
+def Prop.Hello := 0
+def Type.Hello := 0
+
+/--
+warning: Current syntax:  'mple  '
+Expected syntax: 'mple : Tru'
+
+note: this linter can be disabled with `set_option linter.style.commandStart false`
+-/
+#guard_msgs in
+/-- Check that doc/strings do not get removed as comments. -/
+example  : True := trivial

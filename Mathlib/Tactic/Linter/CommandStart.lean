@@ -63,7 +63,9 @@ def removeComments (s : String) : String :=
     -- remove lines that begin with a comment
     if l.trim.startsWith "--" then none
     -- remove the text in a line, starting from the beginning `--`
-    else if let st::_ := l.splitOn "--" then some st.trimLeft
+    else if let st::_ := l.splitOn "--" then
+      -- make sure that we do not truncate a doc-string!
+      if st.back == '/' then some l else some st.trimLeft
     else some l
   "\n".intercalate lines
 /-
@@ -74,6 +76,9 @@ def removeComments (s : String) : String :=
 
 def furtherFormatting (s : String) : String :=
   s |>.replace "¬ " "¬"
+    |>.replace "aesop (rule_sets" "aesop(rule_sets"
+    |>.replace " Prop." " «Prop»."
+    |>.replace " Type." " «Type»."
 
 namespace Style.CommandStart
 
