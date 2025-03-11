@@ -39,25 +39,22 @@ def coconeLiftToFinsetObj (f : α → C) :
 
 @[reassoc (attr := simp)]
 theorem ι_coconeLiftToFinsetObj_app (f : α → C) {S : Finset (Discrete α)} {a : α} (ha : ⟨a⟩ ∈ S) :
-    Sigma.ι _ ⟨⟨a⟩, ha⟩ ≫ (coconeLiftToFinsetObj f).ι.app S = Sigma.ι f a := by
+    Sigma.ι (fun _ ↦ f _) ⟨⟨a⟩, ha⟩ ≫ (coconeLiftToFinsetObj f).ι.app S = Sigma.ι f a := by
   simp [coconeLiftToFinsetObj, Preadditive.comp_sum, Sigma.ι_π_assoc, dite_comp]
 
 /-- The cocone constructed in `Preadditive.coconeLiftToFinsetObj` is a colimit cocone. -/
 def isColimit (f : α → C) : IsColimit (coconeLiftToFinsetObj f) where
   desc s := Sigma.desc fun a =>
-    (Sigma.ι (fun (x : ({ ⟨a⟩ } : Finset (Discrete α))) ↦ f x.val.as)
+    (Sigma.ι (fun (x : ({ ⟨a⟩ } : Finset (Discrete α))) ↦ f x.1.as)
       ⟨⟨a⟩, Finset.mem_singleton.mpr rfl⟩) ≫ (by exact s.ι.app { ⟨a⟩ })
   uniq s m S := by
-    simp only [coconeLiftToFinsetObj]
-    ext a
-    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
-    rw [← S { ⟨a⟩ }]
-    erw [ι_coconeLiftToFinsetObj_app_assoc]
+    apply Sigma.hom_ext
+    intro a
+    simp [← S { ⟨a⟩ }]
   fac s S := by
     apply Sigma.hom_ext
     intro ⟨⟨b⟩, hb⟩
-    simp only [ι_coconeLiftToFinsetObj_app_assoc]
-    simp [← Cocone.w s (j := { ⟨b⟩ }) (j' := S) (LE.le.hom (Finset.singleton_subset_iff.mpr hb))]
+    simp [← Cocone.w s (LE.le.hom (Finset.singleton_subset_iff.mpr hb))]
 
 end
 
