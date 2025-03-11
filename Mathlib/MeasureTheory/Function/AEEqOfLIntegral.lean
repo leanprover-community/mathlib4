@@ -209,7 +209,7 @@ lemma lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
 
 /-- If two a.e.-measurable functions `α × β → ℝ≥0∞` with finite integrals have the same integral
 on every rectangle, then they are almost everywhere equal. -/
-lemma ae_eq_of_setLIntegral_prod_eq₀ {β : Type*} {mβ : MeasurableSpace β}
+lemma ae_eq_of_setLIntegral_prod_eq {β : Type*} {mβ : MeasurableSpace β}
     {μ : Measure (α × β)} {f g : α × β → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
@@ -222,16 +222,6 @@ lemma ae_eq_of_setLIntegral_prod_eq₀ {β : Type*} {mβ : MeasurableSpace β}
   · exact ⟨Set.univ, .univ, Set.univ, .univ, Set.univ_prod_univ⟩
   · rintro _ ⟨s, hs, t, ht, rfl⟩
     exact h hs ht
-
-/-- If two measurable functions `α × β → ℝ≥0∞` with finite integrals have the same integral
-on every rectangle, then they are almost everywhere equal. -/
-lemma ae_eq_of_setLIntegral_prod_eq {β : Type*} {mβ : MeasurableSpace β}
-    {μ : Measure (α × β)} {f g : α × β → ℝ≥0∞}
-    (hf : Measurable f) (hg : Measurable g) (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
-    (h : ∀ {s : Set α} (_ : MeasurableSet s) {t : Set β} (_ : MeasurableSet t),
-      ∫⁻ x in s ×ˢ t, f x ∂μ = ∫⁻ x in s ×ˢ t, g x ∂μ) :
-    f =ᵐ[μ] g :=
-  ae_eq_of_setLIntegral_prod_eq₀ hf.aemeasurable hg.aemeasurable hf_int hg_int h
 
 end PiSystem
 
