@@ -194,12 +194,6 @@ section
 
 variable {R : Type*} [CommRing R] (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
 
-theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
-    (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
-  conv_rhs => rw [← map_comap S A J, minimalPrimes_map S]
-  refine (Set.image_preimage_eq_iff.mpr ?_).symm
-  exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
-
 theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
     (J.map (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) ⁻¹' J.minimalPrimes := by
   ext p
@@ -226,6 +220,12 @@ theorem IsLocalization.minimalPrimes_map [IsLocalization S A] (J : Ideal R) :
       haveI := hI.1
       exact Ideal.map_mono (hp.2 ⟨Ideal.IsPrime.comap _, Ideal.map_le_iff_le_comap.mp hI.2⟩
         (Ideal.comap_mono e))
+
+theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
+    (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
+  conv_rhs => rw [← map_comap S A J, minimalPrimes_map S]
+  refine (Set.image_preimage_eq_iff.mpr ?_).symm
+  exact subset_trans (Ideal.minimalPrimes_comap_subset (algebraMap R A) J) (by simp)
 
 end
 
