@@ -57,7 +57,7 @@ noncomputable def divisorOn {f : 𝕜 → E} (hf : MeromorphicOn f U) :
 
 /-- Definition of the divisor. -/
 theorem divisorOn_def {f : 𝕜 → E} (hf : MeromorphicOn f U) :
-    hf.divisorOn z = if hz : z ∈ U then (hf z hz).order.untopD 0 else 0 := by rfl
+    hf.divisorOn z = if hz : z ∈ U then (hf z hz).order.untopD 0 else 0 := rfl
 
 /-- Simplifier lemma: On `U`, the divisor of a function `f` that is meromorphic on `U` evaluates to
   `order.toBase`. -/
