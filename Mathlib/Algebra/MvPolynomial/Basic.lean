@@ -385,14 +385,14 @@ theorem monomial_add_induction_on {M : MvPolynomial σ R → Prop} (p : MvPolyno
     M p :=
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 
-@[deprecated (since := "2024-11-10")]
+@[deprecated (since := "2025-03-11")]
 alias induction_on''' := monomial_add_induction_on
 
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
 In particular, this version only requires us to show
 that `M` is closed under addition of monomials not present in the support
-and for which `M` is already known to hold.
+for which `M` is already known to hold.
 -/
 theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
