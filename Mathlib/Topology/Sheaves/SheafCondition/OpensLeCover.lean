@@ -31,7 +31,7 @@ like `pairwise_intersections` and `equalizer_products`.
 -/
 
 
-universe w v u
+universe w
 
 noncomputable section
 
@@ -39,8 +39,8 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace TopologicalSpace.Open
 
 namespace TopCat
 
-variable {C : Type u} [Category.{v} C]
-variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type w} (U : ι → Opens X)
+variable {C : Type*} [Category C]
+variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type*} (U : ι → Opens X)
 
 namespace Presheaf
 
@@ -49,7 +49,7 @@ namespace SheafCondition
 /-- The category of open sets contained in some element of the cover.
 -/
 def OpensLeCover : Type w :=
-  FullSubcategory fun V : Opens X => ∃ i, V ≤ U i
+  FullSubcategory fun V : Opens X ↦ ∃ i, V ≤ U i
 
 -- Porting note: failed to derive `category`
 instance : Category (OpensLeCover U) := FullSubcategory.category _
@@ -209,22 +209,24 @@ def isLimitOpensLeEquivGenerate₂ (R : Presieve Y)
       (coveringOfPresieve.iSup_eq_of_mem_grothendieck Y R hR).symm using 1
   rw [covering_presieve_eq_self R]
 
+variable {F} in
+theorem IsSheaf.isSheafOpensLeCover (h : F.IsSheaf) :
+    Nonempty (IsLimit (F.mapCone (opensLeCoverCocone U).op)) := by
+  rw [(isLimitOpensLeEquivGenerate₁ F U rfl).nonempty_congr]
+  apply (Presheaf.isSheaf_iff_isLimit _ _).mp h
+  apply presieveOfCovering.mem_grothendieckTopology
+
 /-- A presheaf `(opens X)ᵒᵖ ⥤ C` on a topological space `X` is a sheaf on the site `opens X` iff
     it satisfies the `IsSheafOpensLeCover` sheaf condition. The latter is not the
     official definition of sheaves on spaces, but has the advantage that it does not
     require `has_products C`. -/
 theorem isSheaf_iff_isSheafOpensLeCover : F.IsSheaf ↔ F.IsSheafOpensLeCover := by
-  refine (Presheaf.isSheaf_iff_isLimit _ _).trans ?_
-  constructor
-  · intro h ι U
-    rw [(isLimitOpensLeEquivGenerate₁ F U rfl).nonempty_congr]
-    apply h
-    apply presieveOfCovering.mem_grothendieckTopology
-  · intro h Y S
-    rw [← Sieve.generate_sieve S]
-    intro hS
-    rw [← (isLimitOpensLeEquivGenerate₂ F S.1 hS).nonempty_congr]
-    apply h
+  refine ⟨fun h _ ↦ h.isSheafOpensLeCover,
+    fun h ↦ (Presheaf.isSheaf_iff_isLimit _ _).mpr fun Y S ↦ ?_⟩
+  rw [← Sieve.generate_sieve S]
+  intro hS
+  rw [← (isLimitOpensLeEquivGenerate₂ F S.1 hS).nonempty_congr]
+  apply h
 
 end
 
