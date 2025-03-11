@@ -168,6 +168,12 @@ theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g
     (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
 
+@[reassoc]
+theorem sum_comp' {P Q R S : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : J → (Q ⟶ R))
+    (h : R ⟶ S) : (∑ j ∈ s, f j ≫ g j) ≫ h = ∑ j ∈ s, f j ≫ g j ≫ h := by
+  simp only [← Category.assoc]
+  apply sum_comp
+
 instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩
 

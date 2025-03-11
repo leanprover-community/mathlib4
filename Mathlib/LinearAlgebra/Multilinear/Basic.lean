@@ -154,7 +154,7 @@ protected theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) 
 theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 := by
   classical
     have : (0 : R) • (0 : M₁ i) = 0 := by simp
-    rw [← update_eq_self i m, h, ← this, f.map_update_smul, zero_smul R (M := M₂)]
+    rw [← update_eq_self i m, h, ← this, f.map_update_smul, zero_smul]
 
 @[simp]
 theorem map_update_zero [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : f (update m i 0) = 0 :=
@@ -265,7 +265,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_update_add' _ := isEmptyElim
