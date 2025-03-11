@@ -1,14 +1,25 @@
+/-
+Copyright (c) 2025 Jakob von Raumer. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jakob von Raumer, Markus Himmel
+-/
 import Mathlib.CategoryTheory.Limits.Constructions.Filtered
---import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
+/-!
+# Constructing a colimit cocone over a functor lifted to finite sets on a discrete category
+
+-/
 
 universe w v u
 
 namespace CategoryTheory
 
+namespace Preadditive
+
 open Limits
+
 
 noncomputable section
 
@@ -17,7 +28,8 @@ variable {α : Type w} [HasColimitsOfShape (Discrete α) C] [HasFiniteCoproducts
 
 open Classical
 
-@[simps]
+/-- In a preadditive category `C`, we can construct a cocone over the any functor which results
+from lifting a functor `Discrete α ⥤ C` to `Finset (Discrete α) ⥤ C`. -/
 def coconeLiftToFinsetObj (f : α → C) :
     Cocone (CoproductsFromFiniteFiltered.liftToFinsetObj (Discrete.functor f)) where
   pt := ∐ f
@@ -25,19 +37,30 @@ def coconeLiftToFinsetObj (f : α → C) :
          naturality S₁ S₂ f := Sigma.hom_ext _ _ fun ⟨b, hb⟩ => by
            simp [Preadditive.comp_sum, Sigma.ι_π_assoc, dite_comp] }
 
+@[reassoc (attr := simp)]
+theorem ι_coconeLiftToFinsetObj_app (f : α → C) {S : Finset (Discrete α)} {a : α} (ha : ⟨a⟩ ∈ S) :
+    Sigma.ι _ ⟨⟨a⟩, ha⟩ ≫ (coconeLiftToFinsetObj f).ι.app S = Sigma.ι f a := by
+  simp [coconeLiftToFinsetObj, Preadditive.comp_sum, Sigma.ι_π_assoc, dite_comp]
+
+/-- The cocone constructed in `Preadditive.coconeLiftToFinsetObj` is a colimit cocone. -/
 def isColimit (f : α → C) : IsColimit (coconeLiftToFinsetObj f) where
-  desc s := by
-    simp
-    apply Sigma.desc
-    intro a
-    have sι := s.ι.app
-    dsimp at sι
-    sorry
-  uniq := sorry
-
-
-#check Sigma.curry_single
+  desc s := Sigma.desc fun a =>
+    (Sigma.ι (fun (x : ({ ⟨a⟩ } : Finset (Discrete α))) ↦ f x.val.as)
+      ⟨⟨a⟩, Finset.mem_singleton.mpr rfl⟩) ≫ (by exact s.ι.app { ⟨a⟩ })
+  uniq s m S := by
+    simp only [coconeLiftToFinsetObj]
+    ext a
+    simp only [colimit.ι_desc, Cofan.mk_pt, Cofan.mk_ι_app]
+    rw [← S { ⟨a⟩ }]
+    erw [ι_coconeLiftToFinsetObj_app_assoc]
+  fac s S := by
+    apply Sigma.hom_ext
+    intro ⟨⟨b⟩, hb⟩
+    simp only [ι_coconeLiftToFinsetObj_app_assoc]
+    simp [← Cocone.w s (j := { ⟨b⟩ }) (j' := S) (LE.le.hom (Finset.singleton_subset_iff.mpr hb))]
 
 end
+
+end Preadditive
 
 end CategoryTheory
