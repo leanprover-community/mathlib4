@@ -194,7 +194,7 @@ section
 
 variable {R : Type*} [CommRing R] (S : Submonoid R) (A : Type*) [CommRing A] [Algebra R A]
 
-theorem IsLocalization.minimalPrimes_comap  [IsLocalization S A] (J : Ideal A) :
+theorem IsLocalization.minimalPrimes_comap [IsLocalization S A] (J : Ideal A) :
     (J.comap (algebraMap R A)).minimalPrimes = Ideal.comap (algebraMap R A) '' J.minimalPrimes := by
   rcases eq_or_ne J ⊤ with (rfl | hJ)
   · simp_rw [Ideal.comap_top, Ideal.minimalPrimes_top, Set.image_empty]
