@@ -383,7 +383,6 @@ theorem monomial_add_induction_on {M : MvPolynomial σ R → Prop} (p : MvPolyno
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
         a ∉ f.support → b ≠ 0 → M f → M ((monomial a b) + f)) :
     M p :=
-    -- Porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 
 @[deprecated (since := "2024-11-10")]
@@ -401,7 +400,6 @@ theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) 
         a ∉ f.support → b ≠ 0 → M f → M (monomial a b) →
           M ((monomial a b) + f))
     (h_X : ∀ (p : MvPolynomial σ R) (n : σ), M p → M (p * MvPolynomial.X n)) : M p :=
-    -- Porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
   monomial_add_induction_on p h_C fun a b f ha hb hf =>
     h_add_weak a b f ha hb hf <| induction_on_monomial h_C h_X a b
 
