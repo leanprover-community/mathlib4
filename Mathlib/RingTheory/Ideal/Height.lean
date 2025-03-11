@@ -142,7 +142,7 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
   refine le_trans ?_ (Ideal.primeHeight_le_ringKrullDim (I := P))
   simpa using iInf₂_le _ hP
 
-instance (priority := 900) Ideal.finiteHeightOfFiniteRingKrullDim {I : Ideal R}
+instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R}
     [FiniteRingKrullDim R] : I.FiniteHeight := by
   by_cases h : I = ⊤
   · exact ⟨Or.inl h⟩
