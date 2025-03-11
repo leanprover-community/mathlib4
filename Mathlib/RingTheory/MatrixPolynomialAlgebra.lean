@@ -34,7 +34,7 @@ variable (R A : Type*)
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
 
-open DMatrix Matrix
+open Matrix
 
 variable {R}
 variable {n : Type w} [DecidableEq n] [Fintype n]
@@ -86,7 +86,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, DMatrix.add_apply, stdBasisMatrix_add]
+    simp [hp, hq, coeff_add, add_apply, stdBasisMatrix_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>
