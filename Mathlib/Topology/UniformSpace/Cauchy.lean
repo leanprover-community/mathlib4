@@ -229,7 +229,7 @@ theorem CauchySeq.prodMap {γ δ} [UniformSpace β] [Preorder γ] [Preorder δ] 
     (hu : CauchySeq u) (hv : CauchySeq v) : CauchySeq (Prod.map u v) := by
   simpa only [CauchySeq, prod_map_map_eq', prod_atTop_atTop_eq] using hu.prod hv
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias CauchySeq.prod_map := CauchySeq.prodMap
 
 theorem CauchySeq.prodMk {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v : γ → β}
@@ -237,7 +237,7 @@ theorem CauchySeq.prodMk {γ} [UniformSpace β] [Preorder γ] {u : γ → α} {v
   haveI := hu.1.of_map
   (Cauchy.prod hu hv).mono (tendsto_map.prodMk tendsto_map)
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias CauchySeq.prod := CauchySeq.prodMk
 
 theorem CauchySeq.eventually_eventually [SemilatticeSup β] {u : β → α} (hu : CauchySeq u)

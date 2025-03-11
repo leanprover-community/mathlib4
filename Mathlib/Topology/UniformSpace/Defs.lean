@@ -182,7 +182,7 @@ theorem prodMk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) �
     (a, b) ∈ s ○ t :=
   ⟨c, h₁, h₂⟩
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias prod_mk_mem_compRel := prodMk_mem_compRel
 
 @[simp]
