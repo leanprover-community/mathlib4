@@ -75,6 +75,18 @@ lemma weylGroup.induction {pred : (g : Aut P) → g ∈ P.weylGroup → Prop}
     rw [← weylGroup_toSubmonoid] at hx hy
     exact mul x y hx hy hx' hy'
 
+@[elab_as_elim]
+lemma weylGroup.induction' [Nonempty ι] {pred : (g : Aut P) → g ∈ P.weylGroup → Prop}
+    (mem : ∀ i, pred (Equiv.reflection P i) (P.reflection_mem_weylGroup i))
+    (mul : ∀ x y hx hy, pred x hx → pred y hy → pred (x * y) (mul_mem hx hy))
+    {x} (hx : x ∈ P.weylGroup) :
+    pred x hx := by
+  refine weylGroup.induction P mem ?_ mul hx
+  obtain ⟨i⟩ : Nonempty ι := inferInstance
+  have : (Equiv.reflection P i) ^ 2 = 1 := by
+    rw [sq, mul_eq_one_iff_inv_eq, Equiv.reflection_inv P i]
+  simpa [sq, ← this] using mul _ _ _ _ (mem i) (mem i)
+
 lemma range_weylGroup_weightHom :
     MonoidHom.range ((Equiv.weightHom P).restrict P.weylGroup) =
       Subgroup.closure (range P.reflection) := by
