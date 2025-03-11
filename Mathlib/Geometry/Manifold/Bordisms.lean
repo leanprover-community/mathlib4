@@ -285,10 +285,10 @@ instance (φ : UnorientedCobordism k s t J) : ChartedSpace H' φ.W := φ.charted
 
 instance (φ : UnorientedCobordism k s t J) : IsManifold J k φ.W := φ.isManifold
 
+/-
 /-- The cobordism between two empty singular n-manifolds. -/
 def empty [IsEmpty M] [IsEmpty M''] : UnorientedCobordism k (SingularNManifold.empty X M I)
     (SingularNManifold.empty X M'' I) I where
-  W := M
   -- XXX: generalise to any model J, by post-composing the boundary data
   bd := BoundaryManifoldData.of_boundaryless M I
   F x := (IsEmpty.false x).elim
@@ -298,6 +298,7 @@ def empty [IsEmpty M] [IsEmpty M''] : UnorientedCobordism k (SingularNManifold.e
   φ := Diffeomorph.empty
   hFf := by ext x; exact (IsEmpty.false x).elim
   hFg := by ext x; exact (IsEmpty.false x).elim
+-/
 
 /-- The disjoint union of two unoriented cobordisms (over the same model `J`). -/
 noncomputable def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) :
