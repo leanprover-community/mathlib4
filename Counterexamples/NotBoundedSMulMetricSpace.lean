@@ -5,8 +5,7 @@ Authors: Yakov Pechersky
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Data.Real.StarOrdered
-import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Analysis.Normed.Order.Basic
+import Mathlib.Topology.MetricSpace.PiNat.Normed
 
 /-! # Metric spaces are not necessarily induced by a norm.
 
@@ -41,23 +40,9 @@ open PiCountable
 
 variable {ι : Type*} [Encodable ι] {F : ι → Type*}
 
-noncomputable local instance [∀ i, MetricSpace (F i)] :
-    MetricSpace (Π i, F i) :=
-  PiCountable.metricSpace
-
-@[simp]
-lemma PiCountable.dist_translation_invariant [∀ i, NormedAddCommGroup (F i)] (x y c : Π i, F i) :
-    dist (x + c) (y + c) = dist x y := by
-  simp [dist_eq_tsum]
-
-noncomputable instance [∀ i, NormedAddCommGroup (F i)] : NormedAddCommGroup (Π i, F i) where
-  __ := PiCountable.metricSpace
-  norm x := dist x 0
-  dist_eq x y := by
-    simpa [← sub_eq_add_neg] using
-      (PiCountable.dist_translation_invariant x y (-y)).symm
-
 open Encodable
+
+attribute [local instance] PiCountable.normedAddCommGroup
 
 lemma PiCountable.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (F i)] (i : ι) (r : F i) :
     ‖(Pi.single i r : Π i, F i)‖ = (2 ^ encode i)⁻¹ ⊓ ‖r‖ := by

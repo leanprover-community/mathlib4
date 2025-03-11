@@ -5837,7 +5837,8 @@ import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.MetricSeparated
 import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.MetricSpace.Perfect
-import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Topology.MetricSpace.PiNat.Basic
+import Mathlib.Topology.MetricSpace.PiNat.Normed
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.ProperSpace.Lemmas
