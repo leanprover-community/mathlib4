@@ -293,7 +293,7 @@ theorem sumAddHom_comm {ι₁ ι₂ : Sort _} {β₁ : ι₁ → Type*} {β₂ :
     AddMonoidHom.flip_apply, Trunc.lift, toFun_eq_coe, ZeroHom.coe_mk, coe_mk']
   exact Finset.sum_comm
 
-/-- The `DFinsupp` version of `Finsupp.liftAddHom`,-/
+/-- The `DFinsupp` version of `Finsupp.liftAddHom` -/
 @[simps apply symm_apply]
 def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
     (∀ i, β i →+ γ) ≃+ ((Π₀ i, β i) →+ γ) where
@@ -306,20 +306,20 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
 -- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
 -- This applies to roughly the remainder of the file.
 
-/-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom`,-/
+/-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom` -/
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
     liftAddHom (β := β) (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
   (liftAddHom (β := β)).toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
 
-/-- The `DFinsupp` version of `Finsupp.liftAddHom_apply_single`,-/
+/-- The `DFinsupp` version of `Finsupp.liftAddHom_apply_single` -/
 theorem liftAddHom_apply_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
     (i : ι) (x : β i) : liftAddHom (β := β) f (single i x) = f i x := by simp
 
-/-- The `DFinsupp` version of `Finsupp.liftAddHom_comp_single`,-/
+/-- The `DFinsupp` version of `Finsupp.liftAddHom_comp_single` -/
 theorem liftAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
     (i : ι) : (liftAddHom (β := β) f).comp (singleAddHom β i) = f i := by simp
 
-/-- The `DFinsupp` version of `Finsupp.comp_liftAddHom`,-/
+/-- The `DFinsupp` version of `Finsupp.comp_liftAddHom` -/
 theorem comp_liftAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
     (g : γ →+ δ) (f : ∀ i, β i →+ γ) :
     g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
@@ -391,7 +391,7 @@ theorem subtypeDomain_sum {ι} {β : ι → Type v} [∀ i, AddCommMonoid (β i)
   map_sum (subtypeDomainAddMonoidHom β p) _ s
 
 theorem subtypeDomain_finsupp_sum {ι} {β : ι → Type v} {δ : γ → Type x} [DecidableEq γ]
-    [∀ c, Zero (δ c)]  [∀ (c) (x : δ c), Decidable (x ≠ 0)]
+    [∀ c, Zero (δ c)] [∀ (c) (x : δ c), Decidable (x ≠ 0)]
     [∀ i, AddCommMonoid (β i)] {p : ι → Prop} [DecidablePred p]
     {s : Π₀ c, δ c} {h : ∀ c, δ c → Π₀ i, β i} :
     (s.sum h).subtypeDomain p = s.sum fun c d => (h c d).subtypeDomain p :=

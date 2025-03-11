@@ -189,9 +189,8 @@ variable (r : R) [IsLocalization.Away r S]
 
 open IsLocalization.Away
 
-private lemma span_range_relation_eq_ker_localizationAway :
-    Ideal.span { C r * X () - 1 } =
-      RingHom.ker (aeval (S₁ := S) (Generators.localizationAway r).val) := by
+lemma _root_.Algebra.Generators.ker_localizationAway :
+    (Generators.localizationAway (S := S) r).ker = Ideal.span { C r * X () - 1 } := by
   have : aeval (S₁ := S) (Generators.localizationAway r).val =
       (mvPolynomialQuotientEquiv S r).toAlgHom.comp
         (Ideal.Quotient.mkₐ R (Ideal.span {C r * X () - 1})) := by
@@ -200,24 +199,24 @@ private lemma span_range_relation_eq_ker_localizationAway :
       AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Ideal.Quotient.mkₐ_eq_mk,
       Function.comp_apply]
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
-  rw [this]
+  rw [Generators.ker_eq_ker_aeval_val, this]
   erw [← RingHom.comap_ker]
   simp only [Generators.localizationAway_vars, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
     AlgEquiv.toAlgHom_toRingHom]
-  show Ideal.span {C r * X () - 1} = Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r))
+  show Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r)) = Ideal.span {C r * X () - 1}
   simp [RingHom.ker_equiv, ← RingHom.ker_eq_comap_bot]
 
 variable (S) in
 /-- If `S` is the localization of `R` away from `r`, we can construct a natural
 presentation of `S` as `R`-algebra with a single generator `X` and the relation `r * X - 1 = 0`. -/
-@[simps relation, simps (config := .lemmasOnly) rels]
+@[simps relation, simps -isSimp rels]
 noncomputable def localizationAway : Presentation R S where
   toGenerators := Generators.localizationAway r
   rels := Unit
   relation _ := C r * X () - 1
   span_range_relation_eq_ker := by
     simp only [Generators.localizationAway_vars, Set.range_const]
-    apply span_range_relation_eq_ker_localizationAway r
+    exact (Generators.ker_localizationAway r).symm
 
 instance localizationAway_isFinite : (localizationAway S r).IsFinite where
   finite_vars := inferInstanceAs <| Finite Unit
@@ -287,7 +286,7 @@ private lemma span_range_relation_eq_ker_baseChange :
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
-@[simps relation, simps (config := .lemmasOnly) rels]
+@[simps relation, simps -isSimp rels]
 noncomputable
 def baseChange : Presentation T (T ⊗[R] S) where
   __ := Generators.baseChange P.toGenerators
@@ -432,7 +431,7 @@ private lemma span_range_relation_eq_ker_comp : Ideal.span
 
 /-- Given presentations of `T` over `S` and of `S` over `R`,
 we may construct a presentation of `T` over `R`. -/
-@[simps rels, simps (config := .lemmasOnly) relation]
+@[simps rels, simps -isSimp relation]
 noncomputable def comp : Presentation R T where
   toGenerators := Q.toGenerators.comp P.toGenerators
   rels := Q.rels ⊕ P.rels

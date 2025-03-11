@@ -137,48 +137,42 @@ variable {X} {x : X _⦋n⦌}
 
 /-- The composition of a section of `f₁` and `f₂`. It is proven below that it
 is the identity, see `g_eq_id`. -/
-def g := hf₁.section_ ≫ f₂
+private def g := hf₁.section_ ≫ f₂
 
 variable {f₂ y₁ y₂}
 
 include hf₁ hy₁ hy₂
 
-lemma map_g_op_y₂ : X.map (g hf₁ f₂).op y₂ = y₁ := by
+private lemma map_g_op_y₂ : X.map (g hf₁ f₂).op y₂ = y₁ := by
   dsimp [g]
   rw [FunctorToTypes.map_comp_apply, ← hy₂, hy₁, ← FunctorToTypes.map_comp_apply, ← op_comp,
     SplitEpi.id, op_id, FunctorToTypes.map_id_apply]
 
-lemma isIso_factorThruImage_g :
+private lemma isIso_factorThruImage_g :
     IsIso (factorThruImage (g hf₁ f₂)) := by
   have := map_g_op_y₂ hf₁ hy₁ hy₂
   rw [← image.fac (g hf₁ f₂), op_comp, FunctorToTypes.map_comp_apply] at this
   exact X.isIso_of_nonDegenerate y₁ (factorThruImage (g hf₁ f₂)) _ this
 
-lemma mono_g : Mono (g hf₁ f₂) := by
+private lemma mono_g : Mono (g hf₁ f₂) := by
   have := isIso_factorThruImage_g hf₁ hy₁ hy₂
   rw [← image.fac (g hf₁ f₂)]
   infer_instance
 
-lemma le : m₁ ≤ m₂ := by
+private lemma le : m₁ ≤ m₂ := by
   have := isIso_factorThruImage_g hf₁ hy₁ hy₂
   exact SimplexCategory.len_le_of_mono
     (f := factorThruImage (g hf₁ f₂) ≫ image.ι _) inferInstance
 
 end
 
-section
-
-variable {X} {x : X _⦋n⦌} {m : ℕ} {f₁ : ⦋n⦌ ⟶ ⦋m⦌}
-  {y₁ : X.nonDegenerate m} (hy₁ : x = X.map f₁.op y₁)
-  {f₂ : ⦋n⦌ ⟶ ⦋m⦌} {y₂ : X _⦋m⦌} (hy₂ : x = X.map f₂.op y₂)
-
-include hy₁ hy₂
-
-lemma g_eq_id (hf₁ : SplitEpi f₁) : g hf₁ f₂ = 𝟙 _ := by
+variable {X}  in
+private lemma g_eq_id {x : X _⦋n⦌} {m : ℕ} {f₁ : ⦋n⦌ ⟶ ⦋m⦌}
+    {y₁ : X.nonDegenerate m} (hy₁ : x = X.map f₁.op y₁)
+    {f₂ : ⦋n⦌ ⟶ ⦋m⦌} {y₂ : X _⦋m⦌} (hy₂ : x = X.map f₂.op y₂) (hf₁ : SplitEpi f₁) :
+    g hf₁ f₂ = 𝟙 _ := by
   have := mono_g hf₁ hy₁ hy₂
   apply SimplexCategory.eq_id_of_mono
-
-end
 
 end unique_nonDegenerate
 

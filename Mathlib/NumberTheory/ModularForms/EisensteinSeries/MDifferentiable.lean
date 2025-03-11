@@ -37,7 +37,7 @@ lemma div_linear_zpow_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     apply differentiableOn_const
 
 /-- Auxiliary lemma showing that for any `k : ℤ` and `(a : Fin 2 → ℤ)`
-the extension of `eisSummand` is differentiable on `{z : ℂ | 0 < z.im}`.-/
+the extension of `eisSummand` is differentiable on `{z : ℂ | 0 < z.im}`. -/
 lemma eisSummand_extension_differentiableOn (k : ℤ) (a : Fin 2 → ℤ) :
     DifferentiableOn ℂ (↑ₕeisSummand k a) {z : ℂ | 0 < z.im} := by
   apply DifferentiableOn.congr (div_linear_zpow_differentiableOn k a)

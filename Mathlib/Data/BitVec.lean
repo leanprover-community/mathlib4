@@ -75,7 +75,7 @@ theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
   case succ w =>
     simp only [Int.cast, IntCast.intCast]
     unfold Int.castDef
-    cases' z with z z
+    rcases z with z | z
     · rfl
     · rw [ofInt_negSucc_eq_not_ofNat]
       simp only [Nat.cast_add, Nat.cast_one, neg_add_rev]

@@ -3,9 +3,8 @@ Copyright (c) 2018 Rohan Mitta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
-import Mathlib.Logic.Function.Iterate
+import Mathlib.Algebra.Group.End
 import Mathlib.Topology.EMetricSpace.Diam
-import Mathlib.Tactic.GCongr
 
 /-!
 # Lipschitz continuous functions
@@ -351,7 +350,7 @@ protected theorem continuous {f : α → β} (hf : LocallyLipschitz f) : Continu
   rcases (hf x) with ⟨K, t, ht, hK⟩
   exact (hK.continuousOn).continuousAt ht
 
-/-- The composition of locally Lipschitz functions is locally Lipschitz. --/
+/-- The composition of locally Lipschitz functions is locally Lipschitz. -/
 protected lemma comp  {f : β → γ} {g : α → β}
     (hf : LocallyLipschitz f) (hg : LocallyLipschitz g) : LocallyLipschitz (f ∘ g) := by
   intro x
