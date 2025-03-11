@@ -532,33 +532,40 @@ end trans
 
 end UnorientedCobordism
 
-variable {J : ModelWithCorners ℝ E' H'}
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+
+-- Let M and M' be smooth manifolds.
+variable {k : WithTop ℕ∞} {E E' H H' : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [TopologicalSpace H] [TopologicalSpace H']
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {I : ModelWithCorners ℝ E H} [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
+  [FiniteDimensional ℝ E] [FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1)
 
 variable (X k I) in
 /-- The "unordered bordism" equivalence relation: two singular n-manifolds modelled on `I`
 are equivalent iff there exists an unoriented cobordism between them. -/
 -- FIXME: remove the E' and H' arguments below, once J is actually used
-def unorientedBordismRelation (_J : ModelWithCorners ℝ E' H') :
-    SingularNManifold X k I → SingularNManifold X k I → Prop :=
-  -- errors with: failed to infer universe levels in binder type
+def unorientedBordismRelation.{u, v} (J : ModelWithCorners ℝ E' H') :
+    SingularNManifold.{u} X k I → SingularNManifold.{v} X k I → Prop :=
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
-  -- fun s t ↦ ∃ φ : UnorientedCobordism k s t J, True
-  fun _ _ ↦ true
+  fun s t ↦ ∃ _φ : UnorientedCobordism k s t J, True
 
-variable (X k I J) in -- dummy proofs, for now
-lemma uBordismRelation /-[FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1)-/ :
-    Equivalence (unorientedBordismRelation (H' := H') (E' := E') X k I J) := by
+variable (X k I J) in
+lemma uBordismRelation.{u} [FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1) :
+    Equivalence (unorientedBordismRelation.{u, u} (H' := H') (E' := E') X k I J) := by
   apply Equivalence.mk
-  · exact fun _s ↦ by trivial
+  · exact fun _s ↦ by sorry
   · intro _s _t h
-    exact h
+    exact sorry
   · intro _s _t _u _hst _htu
-    trivial
+    sorry
+
+#exit
 
 variable (X k I J) in
 /-- The `Setoid` of singular n-manifolds, with the unoriented bordism relation. -/
 def unorientedBordismSetoid : Setoid (SingularNManifold X k I) :=
-  Setoid.mk _ (uBordismRelation X k I (H' := H') (E' := E') J)
+  Setoid.mk _ (uBordismRelation X k I J)
 
 variable (X k I J) in
 /-- The type of unoriented `C^k` bordism classes on `X`. -/
