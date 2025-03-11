@@ -66,7 +66,9 @@ of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M
 We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
-to compute bordism groups; for the definition, this makes no difference.) -/
+to compute bordism groups; for the definition, this makes no difference.)
+
+This is parametrised on the universe `M` lives in; take care `u` is the first universe argument. -/
 structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
   {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
