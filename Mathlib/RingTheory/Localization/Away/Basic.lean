@@ -8,7 +8,7 @@ import Mathlib.Algebra.Algebra.Pi
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
-import Mathlib.Tactic.FieldSimp -- increase?
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Localizations away from an element
