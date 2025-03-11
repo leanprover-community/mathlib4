@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
+import Mathlib.Data.Finset.Lattice.Basic
 import Mathlib.MeasureTheory.SetSemiring
 import Mathlib.Topology.Constructions
 import Mathlib.MeasureTheory.SetAlgebra
@@ -24,6 +25,8 @@ Given a finite set `s` of indices, a cylinder is the product of a set of `∀ i 
 a product set.
 
 * `cylinder s S`: cylinder with base set `S : Set (∀ i : s, α i)` where `s` is a `Finset`
+* `squareCylinder s S`: square cylinder with base set `S : (∀ i : s, Set (α i))` where
+  `s` is a `Finset`
 * `squareCylinder s S`: square cylinder with base set `S : (∀ i : s, Set (α i))` where
   `s` is a `Finset`
 * `squareCylinders C` with `C : ∀ i, Set (Set (α i))`: set of all square cylinders such that for
@@ -56,15 +59,22 @@ def squareCylinder (s : Finset ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :
   (s : Set ι).pi t
 
 /-- The set `S` is a product of sets `t i` such that
+/-- Given a finite set `s` of indices, a square cylinder is the product of sets `t i : Set (α i)`
+for `i ∈ s` and of `univ` on the other indices. -/
+def squareCylinder (s : Finset ι) (t : ∀ i, Set (α i)) : Set (∀ i, α i) :=
+  (s : Set ι).pi t
+
+/-- The set `S` is a product of sets `t i` such that
 for all `i : s`, `t i ∈ C i`.
 `squareCylinders` is the set of all such squareCylinders. -/
 def squareCylinders (C : ∀ i, Set (Set (α i))) : Set (Set (∀ i, α i)) :=
+  {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = squareCylinder s t}
   {S | ∃ s : Finset ι, ∃ t ∈ univ.pi C, S = squareCylinder s t}
 
 theorem squareCylinders_eq_iUnion_image (C : ∀ i, Set (Set (α i))) :
     squareCylinders C = ⋃ s : Finset ι, (s : Set ι).pi  '' univ.pi C := by
   ext1 f
-  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_univ_pi,
+  simp only [squareCylinder, squareCylinders, mem_iUnion, mem_image, mem_univ_pi, exists_prop,
     mem_setOf_eq, eq_comm (a := f)]
 
 theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀ i, Nonempty (C i)) :
@@ -76,40 +86,11 @@ theorem squareCylinders_eq_iUnion_image' (C : ∀ i, Set (Set (α i))) (hC : ∀
     refine pi_image_eq_of_subset hC (subset_univ s)
   simp_rw [← mem_image, h]
 
-@[simp]
-theorem mem_squareCylinders (C : ∀ i, Set (Set (α i))) (hC : ∀ i, Nonempty (C i)) (S : _) :
-    S ∈ squareCylinders C ↔ ∃ (s t : _) (_ : ∀ i ∈ s, t i ∈ C i), S = squareCylinder s t := by
-  simp_rw [squareCylinders_eq_iUnion_image, squareCylinder]
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [mem_iUnion, mem_image, mem_pi, mem_univ, forall_const] at h
-    obtain ⟨s, t, h₀, h₁⟩ := h
-    use s, t
-    simp only [h₁, h₀, implies_true, exists_const]
-  · obtain ⟨s, t, h₀, rfl⟩ := h
-    simp only [mem_iUnion, mem_image, mem_pi, mem_univ, forall_const]
-    classical
-    use s, (fun i ↦ if i ∈ s.toSet then t i else (hC i).some)
-    refine ⟨fun i ↦ ?_ ,?_⟩
-    · by_cases h : i ∈ s <;> simp only [Finset.mem_coe, h, ↓reduceIte, Subtype.coe_prop, h₀]
-    · refine Set.pi_congr rfl (fun i hi ↦ by simp only [hi, ↓reduceIte] at *)
-
-theorem squareCylinders_subset_pi (C : ∀ i, Set (Set (α i))) (hC : ∀ i, univ ∈ C i) :
-    squareCylinders C ⊆ univ.pi '' univ.pi C := by
-  intro S hS
-  obtain ⟨s, t, h₀, h₁⟩ := hS
-  simp only [squareCylinder, mem_pi, mem_univ, forall_const] at h₀ h₁
-  classical
-  use fun i ↦ (if i ∈ s.toSet then (t i) else univ)
-  refine ⟨fun i ↦ ?_, ?_⟩
-  · simp only [mem_univ, forall_const]
-    by_cases hi : i ∈ s.toSet <;> simp only [hi, ↓reduceIte]
-    · exact h₀ i
-    · exact hC i
-  · rw [h₁, univ_pi_ite s t]
-
 theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, IsPiSystem (C i)) (hC_univ : ∀ i, univ ∈ C i) : IsPiSystem (squareCylinders C) := by
   classical
+  haveI h_nempty : ∀ i, Nonempty (C i) := fun i ↦ Nonempty.intro ⟨Set.univ, hC_univ i⟩
+  rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩  hst_nonempty
   haveI h_nempty : ∀ i, Nonempty (C i) := fun i ↦ Nonempty.intro ⟨Set.univ, hC_univ i⟩
   rintro S₁ ⟨s₁, t₁, h₁, rfl⟩ S₂ ⟨s₂, t₂, h₂, rfl⟩  hst_nonempty
   let t₁' := s₁.piecewise t₁ (fun i ↦ univ)
@@ -119,7 +100,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
     · simp only [h, Finset.piecewise_eq_of_mem, t₁']
       exact h₁ i
     · simp only [t₁']
-      rw [Finset.piecewise_eq_of_notMem s₁ t₁ (fun i ↦ univ) h]
+      rw [Finset.piecewise_eq_of_not_mem s₁ t₁ (fun i ↦ univ) h]
       exact hC_univ i
   let t₂' := s₂.piecewise t₂ (fun i ↦ univ)
   have ht₂ (i : ι) : t₂' i ∈ C i := by
@@ -127,7 +108,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
     · simp only [h, Finset.piecewise_eq_of_mem, t₂']
       exact h₂ i
     · simp only [t₂']
-      rw [Finset.piecewise_eq_of_notMem s₂ t₂ (fun i ↦ univ) h]
+      rw [Finset.piecewise_eq_of_not_mem s₂ t₂ (fun i ↦ univ) h]
       exact hC_univ i
   have h₁ : (s₁ : Set ι).pi t₁' = (s₁ : Set ι).pi t₁ := by
     refine Set.pi_congr rfl ?_
@@ -139,7 +120,7 @@ theorem isPiSystem_squareCylinders [∀ i, Inhabited (α i)] {C : ∀ i, Set (Se
       (fun i ↦ t₁' i ∩ t₂' i) := by
     rw [squareCylinder, squareCylinder, squareCylinder, Finset.coe_union, union_pi_inter, h₁, h₂]
       <;>
-    exact fun i a ↦ Finset.piecewise_eq_of_notMem _ _ (fun i ↦ Set.univ) a
+    exact fun i a ↦ Finset.piecewise_eq_of_not_mem _ _ (fun i ↦ Set.univ) a
   rw [h] at hst_nonempty ⊢
   rw [squareCylinder, squareCylinders_eq_iUnion_image' C, mem_iUnion]
   · use (s₁ ∪ s₂), (fun i ↦ t₁' i ∩ t₂' i)
@@ -169,7 +150,7 @@ theorem comap_eval_le_generateFrom_squareCylinders_singleton
     · simp only [hji, not_false_iff, dif_neg, MeasurableSet.univ]
   · simp only [eq_mpr_eq_cast, ← h]
     ext1 x
-    simp only [Function.eval, cast_eq, dite_eq_ite, ite_true, Set.mem_preimage]
+    simp only [singleton_pi, Function.eval, cast_eq, dite_eq_ite, ite_true, Set.mem_preimage]
 
 /-- The square cylinders formed from measurable sets generate the product σ-algebra. -/
 theorem generateFrom_squareCylinders [∀ i, MeasurableSpace (α i)] :
@@ -522,5 +503,6 @@ lemma measurable_restrict_cylinderEvents (Δ : Set ι) :
   rw [@measurable_pi_iff]; exact fun i ↦ measurable_cylinderEvent_apply i.2
 
 end cylinderEvents
+
 
 end MeasureTheory
