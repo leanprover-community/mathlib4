@@ -282,11 +282,6 @@ section Prod
 
 variable [TopologicalSpace X] [TopologicalSpace Y]
 
-instance Prod.instNeBotNhdsWithinIoi [Preorder X] [Preorder Y] {x : X × Y}
-    [(𝓝[>] x.1).NeBot] [(𝓝[>] x.2).NeBot] : (𝓝[>] x).NeBot :=
-  Prod.instNeBotNhdsWithinIio (X := Xᵒᵈ) (Y := Yᵒᵈ)
-    (x := (OrderDual.toDual x.1, OrderDual.toDual x.2))
-
 theorem MapClusterPt.curry_prodMap {α β : Type*}
     {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
     (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
