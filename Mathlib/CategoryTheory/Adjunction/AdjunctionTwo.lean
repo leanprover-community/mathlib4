@@ -27,17 +27,17 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   (F : C₁ ⥤ C₂ ⥤ C₃) (G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂)
 
 /-- Given bifuntors `F : C₁ ⥤ C₂ ⥤ C₃` and `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`,
-an adjunction `F ⊣₂ G` consist of the data of adjunctions
+an adjunction `F ⊣₂ G` consists of the data of adjunctions
 `F.obj X₁ ⊣ G.obj (op X₁)` for all `X₁ : C₁` which
 satisfy a naturality condition with respect to `X₁`. -/
 structure Adjunction₂ where
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
   naturality' {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) {X₂ : C₂} {X₃ : C₃}
-      (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
+    (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
       (adj X₁).homEquiv X₂ X₃ ((F.map f).app X₂ ≫ g) =
-    (adj Y₁).homEquiv X₂ X₃ g ≫ (G.map f.op).app X₃ := by aesop_cat
+        (adj Y₁).homEquiv X₂ X₃ g ≫ (G.map f.op).app X₃ := by aesop_cat
 
-/-- The notation `F ⊣ G` stands for `Adjunction₂ F G`
+/-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
 representing that the bifunctor `F` is left adjoint to `G` -/
 infixl:15 " ⊣₂ " => Adjunction₂
 
