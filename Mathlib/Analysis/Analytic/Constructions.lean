@@ -108,6 +108,8 @@ theorem AnalyticAt.fun_add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x)
   let ⟨_, hqf⟩ := hg
   (hpf.add hqf).analyticAt
 
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.add' := AnalyticAt.fun_add
+
 @[fun_prop]
 theorem AnalyticAt.add (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) : AnalyticAt 𝕜 (f + g) x :=
   hf.fun_add hg
@@ -150,6 +152,8 @@ theorem AnalyticAt.fun_neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (fun z �
 theorem AnalyticAt.neg (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (-f) x :=
   hf.fun_neg
 
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.neg' := AnalyticAt.fun_neg
+
 theorem HasFPowerSeriesWithinOnBall.sub (hf : HasFPowerSeriesWithinOnBall f pf s x r)
     (hg : HasFPowerSeriesWithinOnBall g pg s x r) :
     HasFPowerSeriesWithinOnBall (f - g) (pf - pg) s x r := by
@@ -181,6 +185,8 @@ theorem AnalyticAt.fun_sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x)
 theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x :=
   hf.fun_sub hg
+
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.sub' := AnalyticAt.fun_sub
 
 theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
@@ -217,6 +223,8 @@ theorem AnalyticAt.fun_const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (
 @[fun_prop]
 theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
   hf.fun_const_smul
+
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.const_smul' := AnalyticAt.fun_const_smul
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
@@ -645,6 +653,8 @@ lemma AnalyticAt.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F] {f : E �
     AnalyticAt 𝕜 (f • g) z :=
   hf.fun_smul hg
 
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.smul' := AnalyticAt.fun_smul
+
 /-- Scalar multiplication of one analytic function by another. -/
 lemma AnalyticOn.smul [NormedSpace 𝕝 F] [IsScalarTower 𝕜 𝕝 F]
     {f : E → 𝕝} {g : E → F} {s : Set E}
@@ -673,10 +683,13 @@ lemma AnalyticAt.fun_mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg 
     AnalyticAt 𝕜 (fun x ↦ f x * g x) z :=
   (analyticAt_mul _).comp₂ hf hg
 
+/-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 @[fun_prop]
 lemma AnalyticAt.mul {f g : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (hg : AnalyticAt 𝕜 g z) :
     AnalyticAt 𝕜 (f * g) z :=
   hf.fun_mul hg
+
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.mul' := AnalyticAt.fun_mul
 
 /-- Multiplication of analytic functions (valued in a normed `𝕜`-algebra) is analytic. -/
 lemma AnalyticOn.mul {f g : E → A} {s : Set E}
@@ -1005,6 +1018,8 @@ theorem AnalyticOn.fun_inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f 
     AnalyticOn 𝕜 (fun x ↦ (f x)⁻¹) s :=
   fun x m ↦ (fa x m).inv (f0 x m)
 
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.inv' := AnalyticAt.fun_inv
+
 /-- `(f x)⁻¹` is analytic away from `f x = 0` -/
 theorem AnalyticOn.inv {f : E → 𝕝} {s : Set E} (fa : AnalyticOn 𝕜 f s) (f0 : ∀ x ∈ s, f x ≠ 0) :
     AnalyticOn 𝕜 f⁻¹ s :=
@@ -1142,6 +1157,8 @@ theorem AnalyticAt.div {f g : E → 𝕝} {x : E}
     (fa : AnalyticAt 𝕜 f x) (ga : AnalyticAt 𝕜 g x) (g0 : g x ≠ 0) :
     AnalyticAt 𝕜 (f / g) x :=
   fa.fun_div ga g0
+
+@[deprecated (since := "2025-03-11")] alias AnalyticAt.div' := AnalyticAt.fun_div
 
 /-- `f x / g x` is analytic away from `g x = 0` -/
 theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
