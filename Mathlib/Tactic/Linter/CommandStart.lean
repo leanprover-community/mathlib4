@@ -61,11 +61,12 @@ def removeComments (s : String) : String :=
   let lines := s.splitOn "\n"
   let lines := lines.filterMap fun l =>
     -- remove lines that begin with a comment
-    if l.trim.startsWith "--" || (l.trim.startsWith "/-" && l.trim.get ⟨2⟩ != '-') then none
+    if (l.trim.startsWith "--") || (l.trim.startsWith "/-" && l.trim.get ⟨2⟩ != '-') then none
     -- remove the text in a line, starting from the beginning `--`
     else if let st::_ := l.splitOn "--" then
-      -- make sure that we do not truncate a doc-string!
-      if st.back == '/' then some l else some st.trimLeft
+      -- FIXME! make sure that we do not truncate a doc-string!
+      --if st.back == '/' then some l else some
+       st.trimLeft
     else some l
   "\n".intercalate lines
 /-
