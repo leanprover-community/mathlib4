@@ -127,6 +127,7 @@ def domainCartesianLift : ∫ F :=
   ⟨b, (F.map f.op.toLoc).obj a.fiber⟩
 
 /-- The cartesian lift of `f`. -/
+@[simps]
 def cartesianLift : domain_cartesianLift F f ⟶ a :=
   ⟨f, 𝟙 _⟩
 
