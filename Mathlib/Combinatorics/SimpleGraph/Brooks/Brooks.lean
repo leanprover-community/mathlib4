@@ -180,6 +180,8 @@ theorem copy_copy {s t u} (c : G.PartialColoring s) (hs : s = t) (ht : t = u) :
 @[simp]
 lemma copy_eq {s t} (c : G.PartialColoring s) (hs : s = t) (v : α) : (c.copy hs) v = c v := rfl
 
+
+
 variable [Fintype α] [DecidableRel G.Adj]
 open Finset
 variable {β : Type*} {s : Finset α} {b : ℕ} {i : α}
@@ -241,7 +243,8 @@ match l with
 | a :: l => ((C.Greedy_extend l).insert a).copy (by simp)
 
 @[simp]
-lemma Greedy_extend_nil (C : G.PartialColoring s) (v : α) : (C.Greedy_extend []) v = C v := by rfl
+lemma Greedy_extend_nil (C : G.PartialColoring s)  : C.Greedy_extend []  = C.copy (by simp)  :=
+  by rfl
 
 lemma Greedy_extend_cons  (C : G.PartialColoring s)  (l : List α) (a : α) (v : α) :
     (C.Greedy_extend (a :: l)) v = ite (v = a) ((C.Greedy_extend l).extend a)
@@ -259,7 +262,7 @@ lemma Greedy_extend_tail (C : G.PartialColoring s) (l : List α) (a : α) {v : �
 lemma Greedy_extend_not_mem {C : G.PartialColoring s} {l : List α} {v : α} (hv : v ∉ l) :
     (C.Greedy_extend l) v = C v := by
   induction l with
-  | nil => rw [Greedy_extend_nil]
+  | nil => simp-- [Greedy_extend_nil]
   | cons head tail ih =>
     rw [Greedy_extend_cons]
     split_ifs with h
@@ -288,24 +291,20 @@ lemma Greedy_extend_mem (C : G.PartialColoring s) (l : List α) {v : α} (hv : v
 open Walk
 variable {k : ℕ} {u v w x : α}
 
-/--
+/-
 If `C` is a `k` coloring of `s`, all degrees are at most `k`, and  `p.cons h` is a path disjoint
 from `s` then we have `k`-coloring of `s ∪ p.support` that extends `C`.
 -/
 theorem Greedy_extend_of_path {C : G.PartialColoring s} (h : G.Adj u v) {p : G.Walk v w}
-    (hbdd : ∀ v, G.degree v ≤ k) (hp : (p.cons h).IsPath) (hlt : ∀ x, C x < k)
+    (hbdd : ∀ v, G.degree v ≤ k) (hp : (p.cons h).IsPath) (hlt : ∀ y, C y < k)
     (hdisj : Disjoint s (p.cons h).support.toFinset) : (C.Greedy_extend p.support) x < k := by
   by_cases hx : x ∈ p.support
   · induction p generalizing s u  with
   | nil =>
-    rename_i y
-    simp only [support_nil, List.mem_cons, List.not_mem_nil, or_false] at hx
-    rw [support_nil, Greedy_extend_cons, if_pos hx]
-    subst_vars
-    apply lt_of_lt_of_le _ (hbdd y)
-    apply extend_lt_degree _ h.symm
-    simp only [support_cons, support_nil, List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq,
-      disjoint_insert_right, disjoint_singleton_right] at hdisj
+    rw [mem_support_nil_iff, support_nil, Greedy_extend, copy_eq, ofInsert,if_pos hx] at *
+    apply lt_of_lt_of_le (extend_lt_degree _ h.symm _) (hbdd _)
+    rw [support_cons, support_nil, List.toFinset_cons,
+      disjoint_insert_right] at hdisj
     simp [hdisj.1]
   | cons h p ih =>
     rename_i u' v' w' huv
@@ -430,13 +429,6 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       have := degreeOn_lt_degree ⟨by rwa [← mem_neighborFinset] at ha, hns⟩
       rw [← degreeOn_erase, hd _ hv] at this
       exact this.not_le (hbdd v)
-/-
-
-lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset a ∧ v ∉ s) :
-    G.degreeOn s a < G.degree a :=
-  lt_of_le_of_ne (degreeOn_le_degree s a) fun hf ↦
-     hv.2 ((degree_le_degreeOn_iff ..).1 hf.symm.le hv.1)
--/  --
     by_cases hem : s.Nonempty
     · obtain ⟨v₂, hv₂⟩ := hem
       have nc := hc <| insert v₂ (G.neighborFinset v₂ ∩ s)
@@ -464,20 +456,19 @@ lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset
         exact ⟨h1.1.ne, h3.1.ne, hne.symm⟩
       obtain ⟨vᵣ, q, hq, hss, hmax⟩ : ∃ vᵣ, ∃ q : G.Walk vᵣ v₃, (q.append v31).IsPath ∧
         (∀ y, y ∈ (q.append v31).support → y ∈ s) ∧
-          G.neighborFinset vᵣ ⊆ ((q.append v31)).support.toFinset := by
-
-        have v31s : v31.support.toFinset ⊆ s := by
-          intro x hx; rw [support_cons,List.toFinset_cons,support_cons,List.toFinset_cons,
-            support_nil, List.toFinset_cons] at hx
-          simp only [List.toFinset_nil, insert_emptyc_eq, mem_insert, mem_singleton] at hx
+          ∀ y, G.Adj vᵣ y → y ∈ ((q.append v31)).support := by
+        have v31s : ∀ y, y ∈  v31.support → y ∈ s := by
+          intro x hx; rw [support_cons, support_cons, support_nil] at hx
           aesop
         obtain ⟨vᵣ, q, hq, hs, hnb⟩ := exists_maximal_path_subset s h31 v31s
         use vᵣ, q, hq, hs
         have vrs : vᵣ ∈ s := by apply hs; simp
         intro x hx
         have := (G.degreeOn_erase s vᵣ) ▸ ((hbdd vᵣ).trans (hd vᵣ vrs).symm.le)
+        rw [← mem_neighborFinset] at hx
         rw [degree_le_degreeOn_iff] at this
-        exact hnb <| mem_inter.2 ⟨hx, this hx⟩
+        apply hnb
+        apply mem_inter.2 ⟨hx, this hx⟩
 
       by_cases hr : ((q.append v31)).support.toFinset = s
       · -- Main case 1
@@ -506,7 +497,7 @@ lemma degreeOn_lt_degree {a v : α} {s : Finset α} (hv : v ∈ G.neighborFinset
         sorry
 
       · -- Main case 2
-        replace hss := Finset.ssubset_iff_subset_ne.2 ⟨hss, hr⟩
+        --replace hss := Finset.ssubset_iff_subset_ne.2 ⟨hss, hr⟩
 
         sorry
 
