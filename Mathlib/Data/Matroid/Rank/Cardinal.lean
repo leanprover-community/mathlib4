@@ -188,7 +188,7 @@ section Invariant
 
 /-- A class stating that cardinality-valued rank is well-defined
 (i.e. all isBases are equicardinal) for a matroid `M` and its minors.
-Notably, this holds for `Finitary` matroids; see `Matroid.invariantCardinalRank_of_finitary`.  -/
+Notably, this holds for `Finitary` matroids; see `Matroid.invariantCardinalRank_of_finitary`. -/
 @[mk_iff]
 class InvariantCardinalRank (M : Matroid α) : Prop where
   forall_card_isBasis_diff :

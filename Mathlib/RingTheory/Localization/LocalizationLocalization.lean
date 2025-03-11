@@ -143,7 +143,7 @@ instance (p : Ideal (Localization M)) [p.IsPrime] :
     IsScalarTower R (Localization M) (Localization.AtPrime p) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
-instance localization_localization_atPrime_is_localization (p : Ideal (Localization M))
+instance isLocalization_atPrime_localization_atPrime (p : Ideal (Localization M))
     [p.IsPrime] : IsLocalization.AtPrime (Localization.AtPrime p) (p.comap (algebraMap R _)) :=
   isLocalization_isLocalization_atPrime_isLocalization M _ _
 

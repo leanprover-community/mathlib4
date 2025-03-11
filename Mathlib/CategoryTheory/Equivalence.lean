@@ -635,6 +635,30 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
   H.leftUnitor.symm ≪≫ isoWhiskerRight G.counitIso.symm H ≪≫ associator _ _ _
     ≪≫ isoWhiskerLeft G.inverse i
 
+/-- As a special case, given two equivalences `G` and `G'` between the same categories,
+ construct an isomorphism `G.inverse ≅ G.inverse` from an isomorphism `G.functor ≅ G.functor`. -/
+@[simps!]
+def isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) : G.inverse ≅ G'.inverse :=
+  isoCompInverse ((isoWhiskerLeft G.inverse i).symm ≪≫ G.counitIso) ≪≫ leftUnitor G'.inverse
+
+/-- As a special case, given two equivalences `G` and `G'` between the same categories,
+ construct an isomorphism `G.functor ≅ G.functor` from an isomorphism `G.inverse ≅ G.inverse`. -/
+@[simps!]
+def isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) : G.functor ≅ G'.functor :=
+  isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
+
+/-- Sanity check: `isoFunctorOfIsoInverse (isoInverseOfIsoFunctor i)` is just `i`. -/
+@[simp]
+lemma isoFunctorOfIsoInverse_isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) :
+    isoFunctorOfIsoInverse (isoInverseOfIsoFunctor i) = i := by
+  ext X
+  simp [← NatTrans.naturality]
+
+@[simp]
+lemma isoInverseOfIsoFunctor_isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) :
+    isoInverseOfIsoFunctor (isoFunctorOfIsoInverse i) = i :=
+  isoFunctorOfIsoInverse_isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
+
 end Iso
 
 end CategoryTheory

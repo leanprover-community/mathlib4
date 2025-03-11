@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Limits.Creates
-import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
+import Mathlib.CategoryTheory.ObjectProperty.ClosedUnderIsomorphisms
 
 /-!
 # Limits in full subcategories
@@ -27,32 +27,32 @@ namespace CategoryTheory.Limits
 /-- We say that a property is closed under limits of shape `J` if whenever all objects in a
     `J`-shaped diagram have the property, any limit of this diagram also has the property. -/
 def ClosedUnderLimitsOfShape {C : Type u} [Category.{v} C] (J : Type w) [Category.{w'} J]
-    (P : C → Prop) : Prop :=
+    (P : ObjectProperty C) : Prop :=
   ∀ ⦃F : J ⥤ C⦄ ⦃c : Cone F⦄ (_hc : IsLimit c), (∀ j, P (F.obj j)) → P c.pt
 
 /-- We say that a property is closed under colimits of shape `J` if whenever all objects in a
     `J`-shaped diagram have the property, any colimit of this diagram also has the property. -/
 def ClosedUnderColimitsOfShape {C : Type u} [Category.{v} C] (J : Type w) [Category.{w'} J]
-    (P : C → Prop) : Prop :=
+    (P : ObjectProperty C) : Prop :=
   ∀ ⦃F : J ⥤ C⦄ ⦃c : Cocone F⦄ (_hc : IsColimit c), (∀ j, P (F.obj j)) → P c.pt
 
 section
 
-variable {C : Type u} [Category.{v} C] {J : Type w} [Category.{w'} J] {P : C → Prop}
+variable {C : Type u} [Category.{v} C] {J : Type w} [Category.{w'} J] {P : ObjectProperty C}
 
-theorem closedUnderLimitsOfShape_of_limit [ClosedUnderIsomorphisms P]
+theorem closedUnderLimitsOfShape_of_limit [P.IsClosedUnderIsomorphisms]
     (h : ∀ {F : J ⥤ C} [HasLimit F], (∀ j, P (F.obj j)) → P (limit F)) :
     ClosedUnderLimitsOfShape J P := by
   intros F c hc hF
   have : HasLimit F := ⟨_, hc⟩
-  exact mem_of_iso P ((limit.isLimit _).conePointUniqueUpToIso hc) (h hF)
+  exact P.prop_of_iso ((limit.isLimit _).conePointUniqueUpToIso hc) (h hF)
 
-theorem closedUnderColimitsOfShape_of_colimit [ClosedUnderIsomorphisms P]
+theorem closedUnderColimitsOfShape_of_colimit [P.IsClosedUnderIsomorphisms]
     (h : ∀ {F : J ⥤ C} [HasColimit F], (∀ j, P (F.obj j)) → P (colimit F)) :
     ClosedUnderColimitsOfShape J P := by
   intros F c hc hF
   have : HasColimit F := ⟨_, hc⟩
-  exact mem_of_iso P ((colimit.isColimit _).coconePointUniqueUpToIso hc) (h hF)
+  exact P.prop_of_iso ((colimit.isColimit _).coconePointUniqueUpToIso hc) (h hF)
 
 theorem ClosedUnderLimitsOfShape.limit (h : ClosedUnderLimitsOfShape J P) {F : J ⥤ C} [HasLimit F] :
     (∀ j, P (F.obj j)) → P (limit F) :=

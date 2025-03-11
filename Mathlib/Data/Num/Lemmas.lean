@@ -372,7 +372,8 @@ instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm
   add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
-  le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
+  le_of_add_le_add_left a b c :=
+    show a + b ≤ a + c → b ≤ c by transfer_rw; apply le_of_add_le_add_left
 
 instance linearOrderedSemiring : LinearOrderedSemiring Num :=
   { Num.commSemiring,
@@ -769,16 +770,16 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
   · rw [fn0, Nat.bitwise_zero_right]
     cases g true false <;> rfl
   · rw [fnn]
-    have : ∀ (b) (n : PosNum), (cond b (↑n) 0 : ℕ) = ↑(cond b (pos n) 0 : Num) := by
-      intros b _; cases b <;> rfl
+    have this b (n : PosNum) : (cond b (↑n) 0 : ℕ) = ↑(cond b (pos n) 0 : Num) := by
+      cases b <;> rfl
+    have this' b (n : PosNum) : ↑ (pos (PosNum.bit b n)) = Nat.bit b ↑n := by
+      cases b <;> simp
     induction' m with m IH m IH generalizing n <;> obtain - | n | n := n
     any_goals simp only [show one = 1 from rfl, show pos 1 = 1 from rfl,
       show PosNum.bit0 = PosNum.bit false from rfl, show PosNum.bit1 = PosNum.bit true from rfl,
       show ((1 : Num) : ℕ) = Nat.bit true 0 from rfl]
     all_goals
-      repeat
-        rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
-          intros b _; cases b <;> simp_all]
+      repeat rw [this']
       rw [Nat.bitwise_bit gff]
     any_goals rw [Nat.bitwise_zero, p11]; cases g true true <;> rfl
     any_goals rw [Nat.bitwise_zero_left, ← Bool.cond_eq_ite, this, ← bit_to_nat, p1b]
@@ -1290,7 +1291,7 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
 instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
   { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
-    mul_assoc := by transfer
+    mul_assoc a b c := show a * b * c = a * (b * c) by transfer
     zero_mul := by transfer
     mul_zero := by transfer
     one_mul := by transfer
@@ -1304,7 +1305,7 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     mul_comm := mul_comm
     exists_pair_ne := ⟨0, 1, by decide⟩
     add_le_add_left := add_le_add_left
-    mul_pos := fun a b =>
+    mul_pos a b :=
       show 0 < a → 0 < b → 0 < a * b by
         transfer_rw
         apply mul_pos

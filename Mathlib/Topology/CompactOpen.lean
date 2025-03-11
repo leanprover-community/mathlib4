@@ -333,7 +333,7 @@ variable (X Y)
 
 /-- The coevaluation map `Y → C(X, Y × X)` sending a point `x : Y` to the continuous function
 on `X` sending `y` to `(x, y)`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def coev (b : Y) : C(X, Y × X) :=
   { toFun := Prod.mk b }
 

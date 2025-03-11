@@ -5,6 +5,7 @@ Authors: Andreas Swerdlow
 -/
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 
 /-!
 # Sesquilinear maps

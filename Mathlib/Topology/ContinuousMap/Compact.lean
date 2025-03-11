@@ -40,7 +40,7 @@ variable (α β)
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ β` are
 equivalent to `C(α, β)`.
 -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
   ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f => by
     ext
@@ -73,7 +73,7 @@ alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedO
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
-@[simps! (config := .asFn) apply symm_apply]
+@[simps! -fullyApplied apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 
@@ -88,7 +88,7 @@ instance instMetricSpace {β : Type*} [MetricSpace β] :
 /-- When `α` is compact, and `β` is a metric space, the bounded continuous maps `α →ᵇ β` are
 isometric to `C(α, β)`.
 -/
-@[simps! (config := .asFn) toEquiv apply symm_apply]
+@[simps! -fullyApplied toEquiv apply symm_apply]
 def isometryEquivBoundedOfCompact : C(α, β) ≃ᵢ (α →ᵇ β) where
   isometry_toFun _ _ := rfl
   toEquiv := equivBoundedOfCompact α β

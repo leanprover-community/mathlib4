@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.RingTheory.Algebraic.Integral
 import Mathlib.RingTheory.LocalRing.Basic
@@ -99,6 +100,22 @@ theorem aeval_of_isScalarTower (R : Type*) {K T U : Type*} [CommRing R] [Field K
   aeval_map_algebraMap K y (minpoly R x) ▸
     eval₂_eq_zero_of_dvd_of_eval₂_eq_zero (algebraMap K U) y
       (minpoly.dvd_map_of_isScalarTower R K x) hy
+
+/-- If a subfield `F` of `E` contains all the coefficients of `minpoly E a`, then
+`minpoly F a` maps to `minpoly E a` via `algebraMap F E`. -/
+theorem map_algebraMap {F E A : Type*} [Field F] [Field E] [CommRing A]
+    [Algebra F E] [Algebra E A] [Algebra F A] [IsScalarTower F E A]
+    {a : A} (ha : IsIntegral F a) (h : minpoly E a ∈ lifts (algebraMap F E)) :
+    (minpoly F a).map (algebraMap F E) = minpoly E a := by
+  refine eq_of_monic_of_dvd_of_natDegree_le (minpoly.monic ha.tower_top)
+    ((algebraMap F E).injective.monic_map_iff.mp <| minpoly.monic ha)
+    (minpoly.dvd E a (by simp)) ?_
+  obtain ⟨g, hg, hgdeg, hgmon⟩ := lifts_and_natDegree_eq_and_monic h (minpoly.monic ha.tower_top)
+  rw [natDegree_map, ← hgdeg]
+  refine natDegree_le_of_dvd (minpoly.dvd F a ?_) hgmon.ne_zero
+  rw [← aeval_map_algebraMap A, IsScalarTower.algebraMap_eq F E A, ← coe_mapRingHom,
+    ← mapRingHom_comp, RingHom.comp_apply, coe_mapRingHom, coe_mapRingHom, hg,
+    aeval_map_algebraMap, minpoly.aeval]
 
 /-- See also `minpoly.ker_eval` which relaxes the assumptions on `A` in exchange for
 stronger assumptions on `B`. -/

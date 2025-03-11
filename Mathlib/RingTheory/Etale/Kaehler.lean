@@ -219,6 +219,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
         simp
         rfl }
 
+set_option synthInstance.maxHeartbeats 100000 in
 /-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally etale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/
 noncomputable
 def tensorH1Cotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ring = f.toRingHom)

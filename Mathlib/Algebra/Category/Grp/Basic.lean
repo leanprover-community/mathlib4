@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Group.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.

@@ -11,10 +11,10 @@ import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
-import Mathlib.RingTheory.Finiteness.Cardinality
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.Finiteness.Cardinality
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # Flat modules

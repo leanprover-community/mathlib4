@@ -29,7 +29,6 @@ We also give several variations around these results.
 open scoped NNReal ENNReal Topology
 open Set MeasureTheory Filter
 
--- Porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-! ##  -/

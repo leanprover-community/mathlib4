@@ -543,7 +543,7 @@ lemma limsup_add_const (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
   (Monotone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : R) ↦ x + c)
     (fun _ _ h ↦ add_le_add_right h c) (continuous_add_right c).continuousAt bdd_above cobdd).symm
 
-/-- `liminf (c + xᵢ) = c + limsup xᵢ`. -/
+/-- `liminf (c + xᵢ) = c + liminf xᵢ`. -/
 lemma liminf_const_add (F : Filter ι) [NeBot F] [Add R] [ContinuousAdd R]
     [AddLeftMono R] (f : ι → R) (c : R)
     (cobdd : F.IsCoboundedUnder (· ≥ ·) f) (bdd_below : F.IsBoundedUnder (· ≥ ·) f) :

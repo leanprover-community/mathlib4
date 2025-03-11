@@ -29,10 +29,10 @@ open ENNReal EReal Filter Function
 
 /-! ### Definition -/
 
-/-- Lower exponential growth of a sequence of extended nonnegative real numbers.-/
+/-- Lower exponential growth of a sequence of extended nonnegative real numbers -/
 noncomputable def expGrowthInf (u : ℕ → ℝ≥0∞) : EReal := atTop.liminf fun n ↦ log (u n) / n
 
-/-- Upper exponential growth of a sequence of extended nonnegative real numbers.-/
+/-- Upper exponential growth of a sequence of extended nonnegative real numbers -/
 noncomputable def expGrowthSup (u : ℕ → ℝ≥0∞) : EReal := atTop.limsup fun n ↦ log (u n) / n
 
 /-! ### Basic properties -/
@@ -148,27 +148,27 @@ lemma le_expGrowthInf_mul {u v : ℕ → ℝ≥0∞} :
   refine le_liminf_add.trans_eq (liminf_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, ← add_div_of_nonneg_right n.cast_nonneg', log_mul_add]
 
-/-- See `expGrowthInf_mul_le'` for a version with swapped argument `u` and `v`.-/
+/-- See `expGrowthInf_mul_le'` for a version with swapped argument `u` and `v`. -/
 lemma expGrowthInf_mul_le {u v : ℕ → ℝ≥0∞} (h : expGrowthSup u ≠ ⊥ ∨ expGrowthInf v ≠ ⊤)
     (h' : expGrowthSup u ≠ ⊤ ∨ expGrowthInf v ≠ ⊥) :
     expGrowthInf (u * v) ≤ expGrowthSup u + expGrowthInf v := by
   refine (liminf_add_le h h').trans_eq' (liminf_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, ← add_div_of_nonneg_right n.cast_nonneg', log_mul_add]
 
-/-- See `expGrowthInf_mul_le` for a version with swapped argument `u` and `v`.-/
+/-- See `expGrowthInf_mul_le` for a version with swapped argument `u` and `v`. -/
 lemma expGrowthInf_mul_le' {u v : ℕ → ℝ≥0∞} (h : expGrowthInf u ≠ ⊥ ∨ expGrowthSup v ≠ ⊤)
     (h' : expGrowthInf u ≠ ⊤ ∨ expGrowthSup v ≠ ⊥) :
     expGrowthInf (u * v) ≤ expGrowthInf u + expGrowthSup v := by
   rw [mul_comm, add_comm]
   exact expGrowthInf_mul_le h'.symm h.symm
 
-/-- See `le_expGrowthSup_mul'` for a version with swapped argument `u` and `v`.-/
+/-- See `le_expGrowthSup_mul'` for a version with swapped argument `u` and `v`. -/
 lemma le_expGrowthSup_mul {u v : ℕ → ℝ≥0∞} :
     expGrowthSup u + expGrowthInf v ≤ expGrowthSup (u * v) := by
   refine le_limsup_add.trans_eq (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, log_mul_add, add_div_of_nonneg_right n.cast_nonneg']
 
-/-- See `le_expGrowthSup_mul` for a version with swapped argument `u` and `v`.-/
+/-- See `le_expGrowthSup_mul` for a version with swapped argument `u` and `v`. -/
 lemma le_expGrowthSup_mul' {u v : ℕ → ℝ≥0∞} :
     expGrowthInf u + expGrowthSup v ≤ expGrowthSup (u * v) := by
   rw [mul_comm, add_comm]
@@ -246,10 +246,10 @@ lemma expGrowthInf_inf {u v : ℕ → ℝ≥0∞} :
   rw [Pi.inf_apply, log_monotone.map_min]
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_min
 
-/-- Lower exponential growth as an `InfTopHom`.-/
+/-- Lower exponential growth as an `InfTopHom` -/
 noncomputable def expGrowthInfTopHom : InfTopHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthInf
-  map_inf' := fun u v ↦ @expGrowthInf_inf u v
+  map_inf' _ _ := expGrowthInf_inf
   map_top' := expGrowthInf_top
 
 lemma expGrowthInf_biInf {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :
@@ -269,10 +269,10 @@ lemma expGrowthSup_sup {u v : ℕ → ℝ≥0∞} :
   rw [Pi.sup_apply, log_monotone.map_max]
   exact (monotone_div_right_of_nonneg n.cast_nonneg').map_max
 
-/-- Upper exponential growth as a `SupBotHom`.-/
+/-- Upper exponential growth as a `SupBotHom` -/
 noncomputable def expGrowthSupBotHom : SupBotHom (ℕ → ℝ≥0∞) EReal where
   toFun := expGrowthSup
-  map_sup' := fun u v ↦ @expGrowthSup_sup u v
+  map_sup' _ _ := expGrowthSup_sup
   map_bot' := expGrowthSup_zero
 
 lemma expGrowthSup_biSup {α : Type*} (u : α → ℕ → ℝ≥0∞) {s : Set α} (hs : s.Finite) :

@@ -95,8 +95,8 @@ theorem tendsto_integral_mul_one_plus_inv_smul_sq_pow (g : E →ᵇ ℝ) (hε : 
       BoundedContinuousFunction.coe_add, BoundedContinuousFunction.coe_one, coe_neg,
       BoundedContinuousFunction.coe_smul, smul_eq_mul, Pi.add_apply, Pi.one_apply, Pi.neg_apply,
       norm_mul, norm_eq_abs, norm_pow]
-    refine mul_le_of_le_of_le_one' (norm_coe_le_norm g x) ?_
-      (pow_nonneg (abs_nonneg _) n) (norm_nonneg _)
+    refine (mul_le_mul_of_nonneg_right (norm_coe_le_norm g x) (pow_nonneg (abs_nonneg _) n)).trans
+      <| mul_le_of_le_one_right (norm_nonneg _) ?_
     apply pow_le_one₀ (abs_nonneg _)
     rw [mul_assoc, inv_mul_eq_div, abs_le]
     refine ⟨?_, (add_le_iff_nonpos_right 1).mpr (Left.neg_nonpos_iff.mpr

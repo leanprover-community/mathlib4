@@ -222,6 +222,8 @@ nonrec theorem IsLocalExtrOn.comp_antitone (hf : IsLocalExtrOn f s a) {g : β �
     (hg : Antitone g) : IsLocalExtrOn (g ∘ f) s a :=
   hf.comp_antitone hg
 
+open scoped Relator
+
 nonrec theorem IsLocalMin.bicomp_mono [Preorder δ] {op : β → γ → δ}
     (hop : ((· ≤ ·) ⇒ (· ≤ ·) ⇒ (· ≤ ·)) op op) (hf : IsLocalMin f a) {g : α → γ}
     (hg : IsLocalMin g a) : IsLocalMin (fun x => op (f x) (g x)) a :=

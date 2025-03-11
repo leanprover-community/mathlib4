@@ -93,6 +93,15 @@ theorem product_subset_product_left (hs : s ⊆ s') : s ×ˢ t ⊆ s' ×ˢ t :=
 theorem product_subset_product_right (ht : t ⊆ t') : s ×ˢ t ⊆ s ×ˢ t' :=
   product_subset_product (Subset.refl _) ht
 
+theorem prodMap_image_product {δ : Type*} [DecidableEq β] [DecidableEq δ]
+    (f : α → β) (g : γ → δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).image (Prod.map f g) = s.image f ×ˢ t.image g :=
+  mod_cast Set.prodMap_image_prod f g s t
+
+theorem prodMap_map_product {δ : Type*} (f : α ↪ β) (g : γ ↪ δ) (s : Finset α) (t : Finset γ) :
+    (s ×ˢ t).map (f.prodMap g) = s.map f ×ˢ t.map g := by
+  simpa [← coe_inj] using Set.prodMap_image_prod f g s t
+
 theorem map_swap_product (s : Finset α) (t : Finset β) :
     (t ×ˢ s).map ⟨Prod.swap, Prod.swap_injective⟩ = s ×ˢ t :=
   coe_injective <| by
@@ -109,13 +118,13 @@ theorem image_swap_product [DecidableEq (α × β)] (s : Finset α) (t : Finset 
 theorem product_eq_biUnion [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = s.biUnion fun a => t.image fun b => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 theorem product_eq_biUnion_right [DecidableEq (α × β)] (s : Finset α) (t : Finset β) :
     s ×ˢ t = t.biUnion fun b => s.image fun a => (a, b) :=
   ext fun ⟨x, y⟩ => by
-    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk.inj_iff, and_left_comm,
+    simp only [mem_product, mem_biUnion, mem_image, exists_prop, Prod.mk_inj, and_left_comm,
       exists_and_left, exists_eq_right, exists_eq_left]
 
 /-- See also `Finset.sup_product_left`. -/
@@ -198,12 +207,12 @@ theorem product_eq_empty {s : Finset α} {t : Finset β} : s ×ˢ t = ∅ ↔ s 
 
 @[simp]
 theorem singleton_product {a : α} :
-    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk.inj_left _⟩ := by
+    ({a} : Finset α) ×ˢ t = t.map ⟨Prod.mk a, Prod.mk_right_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
 @[simp]
-theorem product_singleton {b : β} : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk.inj_right _⟩ := by
+lemma product_singleton : s ×ˢ {b} = s.map ⟨fun i => (i, b), Prod.mk_left_injective _⟩ := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 

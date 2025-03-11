@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hughes,
   Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Logic.Function.Iterate
 
@@ -151,8 +152,8 @@ homomorphisms.
 You should also extend this typeclass when you extend `AddMonoidHom`.
 -/
 class AddMonoidHomClass (F : Type*) (M N : outParam Type*)
-    [AddZeroClass M] [AddZeroClass N] [FunLike F M N]
-    extends AddHomClass F M N, ZeroHomClass F M N : Prop
+    [AddZeroClass M] [AddZeroClass N] [FunLike F M N] : Prop
+    extends AddHomClass F M N, ZeroHomClass F M N
 
 -- Instances and lemmas are defined below through `@[to_additive]`.
 end add_zero
@@ -360,8 +361,8 @@ infixr:25 " →* " => MonoidHom
 You should also extend this typeclass when you extend `MonoidHom`. -/
 @[to_additive]
 class MonoidHomClass (F : Type*) (M N : outParam Type*) [MulOneClass M] [MulOneClass N]
-  [FunLike F M N]
-  extends MulHomClass F M N, OneHomClass F M N : Prop
+  [FunLike F M N] : Prop
+  extends MulHomClass F M N, OneHomClass F M N
 
 @[to_additive]
 instance MonoidHom.instFunLike : FunLike (M →* N) M N where
@@ -408,7 +409,7 @@ theorem map_mul_eq_one [MonoidHomClass F M N] (f : F) {a b : M} (h : a * b = 1) 
 variable [FunLike F G H]
 
 @[to_additive]
-theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MonoidHomClass F G H]
+theorem map_div' [DivInvMonoid G] [DivInvMonoid H] [MulHomClass F G H]
     (f : F) (hf : ∀ a, f a⁻¹ = (f a)⁻¹) (a b : G) : f (a / b) = f a / f b := by
   rw [div_eq_mul_inv, div_eq_mul_inv, map_mul, hf]
 
@@ -559,7 +560,7 @@ variable [Group G]
 variable [MulOneClass M]
 
 /-- Makes a group homomorphism from a proof that the map preserves multiplication. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Makes an additive group homomorphism from a proof that the map preserves addition."]
 def mk' (f : M → G) (map_mul : ∀ a b : M, f (a * b) = f a * f b) : M →* G where
   toFun := f

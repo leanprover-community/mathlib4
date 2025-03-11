@@ -129,8 +129,7 @@ end EqZeroIff
 
 open IntermediateField
 
-variable (K)
-
+variable (K) in
 theorem norm_eq_norm_adjoin [FiniteDimensional K L] [Algebra.IsSeparable K L] (x : L) :
     norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
   letI := Algebra.isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
@@ -142,8 +141,6 @@ theorem norm_eq_norm_adjoin [FiniteDimensional K L] [Algebra.IsSeparable K L] (x
   simp only [Finset.card_fin, Finset.prod_const]
   congr
   rw [← PowerBasis.finrank, AdjoinSimple.algebraMap_gen K x]
-
-variable {K}
 
 section IntermediateField
 

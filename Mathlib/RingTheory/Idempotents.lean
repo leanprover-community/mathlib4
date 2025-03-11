@@ -3,6 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Ideal.Quotient.Operations
@@ -120,7 +121,7 @@ A family `{ eᵢ }` of idempotent elements is complete orthogonal if
 2. (complete) `∑ eᵢ = 1`
 -/
 @[mk_iff]
-structure CompleteOrthogonalIdempotents (e : I → R) extends OrthogonalIdempotents e : Prop where
+structure CompleteOrthogonalIdempotents (e : I → R) : Prop extends OrthogonalIdempotents e where
   complete : ∑ i, e i = 1
 
 /-- If a family is complete orthogonal, it consists of idempotents. -/

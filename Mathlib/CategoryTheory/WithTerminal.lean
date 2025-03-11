@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
 
 /-!
@@ -273,6 +274,13 @@ instance {X : WithTerminal C} : Unique (X ⟶ star) where
 /-- `WithTerminal.star` is terminal. -/
 def starTerminal : Limits.IsTerminal (star : WithTerminal C) :=
   Limits.IsTerminal.ofUnique _
+
+instance : Limits.HasTerminal (WithTerminal C) := Limits.hasTerminal_of_unique star
+
+/-- The isomorphism between star and an abstract terminal object of `WithTerminal C` -/
+@[simps!]
+noncomputable def starIsoTerminal : star ≅ ⊤_ (WithTerminal C) :=
+    starTerminal.uniqueUpToIso (Limits.terminalIsTerminal)
 
 /-- Lift a functor `F : C ⥤ D` to `WithTerminal C ⥤ D`. -/
 @[simps]
@@ -571,6 +579,13 @@ instance {X : WithInitial C} : Unique (star ⟶ X) where
 def starInitial : Limits.IsInitial (star : WithInitial C) :=
   Limits.IsInitial.ofUnique _
 
+instance : Limits.HasInitial (WithInitial C) := Limits.hasInitial_of_unique star
+
+/-- The isomorphism between star and an abstract initial object of `WithInitial C` -/
+@[simps!]
+noncomputable def starIsoInitial : star ≅ ⊥_ (WithInitial C) :=
+    starInitial.uniqueUpToIso (Limits.initialIsInitial)
+
 /-- Lift a functor `F : C ⥤ D` to `WithInitial C ⥤ D`. -/
 @[simps]
 def lift {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : ∀ x : C, Z ⟶ F.obj x)
@@ -661,5 +676,130 @@ instance isIso_of_to_star {X : WithInitial C} (f : X ⟶ star) : IsIso f :=
   | star => ⟨f, rfl, rfl⟩
 
 end WithInitial
+
+open Opposite in
+/-- The opposite category of `WithTerminal C` is equivalent to `WithInitial Cᵒᵖ`. -/
+@[simps!]
+def WithTerminal.opEquiv : (WithTerminal C)ᵒᵖ ≌ WithInitial Cᵒᵖ where
+  functor :=
+    { obj := fun ⟨x⟩ ↦ match x with
+      | of x => .of <| op x
+      | star => .star
+      map := fun {x y} ⟨f⟩ ↦
+        match x, y, f with
+        | op (of x), op (of y), f => (WithTerminal.down f).op
+        | op star, op (of _), _ => WithInitial.starInitial.to _
+        | op star, op star, _  => 𝟙 _
+      map_id := fun ⟨x⟩ ↦ by cases x <;> rfl
+      map_comp := fun {x y z} ⟨f⟩ ⟨g⟩ ↦
+        match x, y, z, f, g with
+        | op (of x), op (of y), op (of z), f, g => rfl
+        | _, op (of y), op star, f, g => (g : PEmpty).elim
+        | op (of x), op star, _, f, _ => (f : PEmpty).elim
+        | op star, _, _, f, g => rfl }
+  inverse :=
+    { obj := fun x ↦
+      match x with
+        | .of x => op <| .of <| x.unop
+        | .star => op .star
+      map := fun {x y} f ↦
+        match x, y, f with
+        | .of (op x), .of (op y), f => WithInitial.down f
+        | .star, .of (op _), _ => op <| WithTerminal.starTerminal.from _
+        | .star, .star, _  => 𝟙 _
+      map_id := fun x ↦ by cases x <;> rfl
+      map_comp := fun {x y z} f g ↦
+        match x, y, z, f, g with
+        | .of (op x), .of (op y), .of (op z), f, g => rfl
+        | _, .of (op y), .star, f, g => (g : PEmpty).elim
+        | .of (op x), .star, _, f, _ => (f : PEmpty).elim
+        | .star, _, _, f, g => by subsingleton }
+  unitIso :=
+    NatIso.ofComponents
+      (fun ⟨x⟩ ↦ match x with
+        | .of x => Iso.refl _
+        | .star => Iso.refl _)
+      (fun {x y} ⟨f⟩ ↦ match x, y, f with
+        | op (of x), op (of y), f => by
+            simp only [Functor.id_obj, op_unop, Functor.comp_obj,
+              Functor.id_map, Iso.refl_hom, Category.comp_id, Functor.comp_map, Category.id_comp]
+            rfl
+        | op star, op (of _), _ => rfl
+        | op star, op star, _  => rfl)
+  counitIso :=
+    NatIso.ofComponents
+      (fun x ↦ match x with
+        | .of x => Iso.refl _
+        | .star => Iso.refl _)
+  functor_unitIso_comp := fun ⟨x⟩ ↦
+    match x with
+    | .of x => by
+        simp only [op_unop, Functor.id_obj, Functor.comp_obj, NatIso.ofComponents_hom_app,
+          Iso.refl_hom, Category.comp_id]
+        rfl
+    | .star => rfl
+
+open Opposite in
+/-- The opposite category of `WithInitial C` is equivalent to `WithTerminal Cᵒᵖ`. -/
+@[simps!]
+def WithInitial.opEquiv : (WithInitial C)ᵒᵖ ≌ WithTerminal Cᵒᵖ where
+  functor :=
+    { obj := fun ⟨x⟩ ↦
+        match x with
+        | of x => .of <| op x
+        | star => .star
+      map := fun {x y} ⟨f⟩ ↦
+        match x, y, f with
+        | op (of x), op (of y), f => (WithTerminal.down f).op
+        | op (of _), op star, _ => WithTerminal.starTerminal.from _
+        | op star, op star, _  => 𝟙 _
+      map_id := fun ⟨x⟩ ↦ by cases x <;> rfl
+      map_comp := fun {x y z} ⟨f⟩ ⟨g⟩ ↦
+        match x, y, z, f, g with
+        | op (of x), op (of y), op (of z), f, g => rfl
+        | _, op star, op (of y), f, g => (g : PEmpty).elim
+        | op star, op (of x), _, f, _ => (f : PEmpty).elim
+        | _, _, op star, f, g => by subsingleton }
+  inverse :=
+    { obj := fun x ↦
+        match x with
+        | .of x => op <| .of <| x.unop
+        | .star => op .star
+      map := fun {x y} f ↦
+        match x, y, f with
+        | .of (op x), .of (op y), f => WithInitial.down f
+        | .of (op _), .star, _ => op <| WithInitial.starInitial.to _
+        | .star, .star, _  => 𝟙 _
+      map_id := fun x ↦ by cases x <;> rfl
+      map_comp := fun {x y z} f g ↦
+        match x, y, z, f, g with
+        | .of (op x), .of (op y), .of (op z), f, g => rfl
+        | _, .star, .of (op y), f, g => (g : PEmpty).elim
+        | .star, .of (op x), _, f, _ => (f : PEmpty).elim
+        | _, _, .star, f, g => by rfl }
+  unitIso :=
+    NatIso.ofComponents
+      (fun ⟨x⟩ ↦ match x with
+        | .of x => Iso.refl _
+        | .star => Iso.refl _)
+      (fun {x y} f ↦ match x, y, f with
+        | op (of x), op (of y), f => by
+            simp only [Functor.id_obj, op_unop, Functor.comp_obj,
+              Functor.id_map, Iso.refl_hom, Category.comp_id, Functor.comp_map, Category.id_comp]
+            rfl
+        | op (of _), op star, _ => rfl
+        | _, op star, _ => rfl)
+  counitIso :=
+    NatIso.ofComponents
+      (fun x ↦ match x with
+        | .of x => Iso.refl _
+        | .star => Iso.refl _)
+  functor_unitIso_comp := fun ⟨x⟩ ↦
+    match x with
+    | .of x => by
+        simp only [op_unop, Functor.id_obj, Functor.comp_obj, NatIso.ofComponents_hom_app,
+          Iso.refl_hom, Category.comp_id]
+        rfl
+    | .star => rfl
 
 end CategoryTheory

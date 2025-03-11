@@ -113,8 +113,7 @@ theorem quadraticCharFun_mul (a b : F) :
       rcases FiniteField.pow_dichotomy hF ha with ha' | ha' <;>
         simp only [ha', h, neg_neg, if_true, if_false]
 
-variable (F)
-
+variable (F) in
 /-- The quadratic character as a multiplicative character. -/
 @[simps]
 def quadraticChar : MulChar F ℤ where
@@ -122,8 +121,6 @@ def quadraticChar : MulChar F ℤ where
   map_one' := quadraticCharFun_one
   map_mul' := quadraticCharFun_mul
   map_nonunit' a ha := by rw [of_not_not (mt Ne.isUnit ha)]; exact quadraticCharFun_zero
-
-variable {F}
 
 /-- The value of the quadratic character on `a` is zero iff `a = 0`. -/
 theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
@@ -196,16 +193,13 @@ theorem quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
       simp only [ha'', Int.cast_ite, Int.cast_one, Int.cast_neg, ite_eq_right_iff]
       exact Eq.symm
 
-variable (F)
-
+variable (F) in
 /-- The quadratic character is quadratic as a multiplicative character. -/
 theorem quadraticChar_isQuadratic : (quadraticChar F).IsQuadratic := by
   intro a
   by_cases ha : a = 0
   · left; rw [ha]; exact quadraticChar_zero
   · right; exact quadraticChar_dichotomy ha
-
-variable {F}
 
 /-- The quadratic character is nontrivial as a multiplicative character
 when the domain has odd characteristic. -/
@@ -239,9 +233,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
       simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero]
       ext1
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
+      simp only [s, Set.mem_toFinset, not_mem_empty, iff_false]
       rw [isSquare_iff_exists_sq] at h
       exact fun h' ↦ h ⟨_, h'.symm⟩
 

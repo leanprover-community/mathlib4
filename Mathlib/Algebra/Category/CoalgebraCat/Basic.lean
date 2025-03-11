@@ -41,15 +41,12 @@ instance : CoeSort (CoalgebraCat.{v} R) (Type v) :=
     ModuleCat.of R X.toModuleCat = X.toModuleCat :=
   rfl
 
-variable (R)
-
+variable (R) in
 /-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
 abbrev of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
     CoalgebraCat R :=
   { ModuleCat.of R X with
     instCoalgebra := (inferInstance : Coalgebra R X) }
-
-variable {R}
 
 @[simp]
 lemma of_comul {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :

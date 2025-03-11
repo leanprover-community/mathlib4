@@ -112,7 +112,7 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) :=
 section Construction
 
 /-- Construct `Generators` from an assignment `I → S` such that `R[X] → S` is surjective. -/
-@[simps val, simps (config := .lemmasOnly) vars]
+@[simps val, simps -isSimp vars]
 noncomputable
 def ofSurjective {vars} (val : vars → S) (h : Function.Surjective (aeval (R := R) val)) :
     Generators R S where
@@ -170,7 +170,7 @@ variable (r : R) [IsLocalization.Away r S]
 
 /-- If `S` is the localization of `R` away from `r`, we obtain a canonical generator mapping
 to the inverse of `r`. -/
-@[simps val, simps (config := .lemmasOnly) vars σ]
+@[simps val, simps -isSimp vars σ]
 noncomputable
 def localizationAway : Generators R S where
   vars := Unit
@@ -193,7 +193,7 @@ variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
 /-- Given two families of generators `S[X] → T` and `R[Y] → S`,
 we may construct the family of generators `R[X, Y] → T`. -/
-@[simps val, simps (config := .lemmasOnly) vars σ]
+@[simps val, simps -isSimp vars σ]
 noncomputable
 def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
   vars := Q.vars ⊕ P.vars
@@ -210,7 +210,7 @@ def comp (Q : Generators S T) (P : Generators R S) : Generators R T where
 variable (S) in
 /-- If `R → S → T` is a tower of algebras, a family of generators `R[X] → T`
 gives a family of generators `S[X] → T`. -/
-@[simps val, simps (config := .lemmasOnly) vars]
+@[simps val, simps -isSimp vars]
 noncomputable
 def extendScalars (P : Generators R T) : Generators S T where
   vars := P.vars
@@ -220,7 +220,7 @@ def extendScalars (P : Generators R T) : Generators S T where
 
 /-- If `P` is a family of generators of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural family of generators of `T ⊗[R] S` over `T`. -/
-@[simps! val, simps! (config := .lemmasOnly) vars]
+@[simps! val, simps! -isSimp vars]
 noncomputable
 def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators T (T ⊗[R] S) := by
   apply Generators.ofSurjective (fun x ↦ 1 ⊗ₜ[R] P.val x)
@@ -562,8 +562,8 @@ def kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ker) :
       Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
       Sum.elim_inl, one_mul]
     congr! with v i
-    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ]
-    rfl
+    simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ,
+      coeff]
 
 lemma ofComp_kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ker) :
     (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by

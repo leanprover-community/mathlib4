@@ -42,13 +42,13 @@ structure PreErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop w
 
 /-- A map `f : α → α` is said to be ergodic with respect to a measure `μ` if it is measure
 preserving and pre-ergodic. -/
-structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  MeasurePreserving f μ μ, PreErgodic f μ : Prop
+structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  MeasurePreserving f μ μ, PreErgodic f μ
 
 /-- A map `f : α → α` is said to be quasi ergodic with respect to a measure `μ` if it is quasi
 measure preserving and pre-ergodic. -/
-structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  QuasiMeasurePreserving f μ μ, PreErgodic f μ : Prop
+structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  QuasiMeasurePreserving f μ μ, PreErgodic f μ
 
 variable {f : α → α} {μ : Measure α}
 

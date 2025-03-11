@@ -315,8 +315,7 @@ theorem setOfIdeal_ofSet_eq_interior (s : Set X) : setOfIdeal (idealOfSet 𝕜 s
 theorem setOfIdeal_ofSet_of_isOpen {s : Set X} (hs : IsOpen s) : setOfIdeal (idealOfSet 𝕜 s) = s :=
   (setOfIdeal_ofSet_eq_interior 𝕜 s).trans hs.interior_eq
 
-variable (X)
-
+variable (X) in
 /-- The Galois insertion `ContinuousMap.opensOfIdeal : Ideal C(X, 𝕜) → Opens X` and
 `fun s ↦ ContinuousMap.idealOfSet ↑s`. -/
 @[simps]
@@ -331,8 +330,6 @@ def idealOpensGI :
         (Set.ext_iff.mp
           (isClosed_of_closure_subset <|
               (idealOfSet_ofIdeal_eq_closure I ▸ hI : I.closure ≤ I)).closure_eq)
-
-variable {X}
 
 theorem idealOfSet_isMaximal_iff (s : Opens X) :
     (idealOfSet 𝕜 (s : Set X)).IsMaximal ↔ IsCoatom s := by

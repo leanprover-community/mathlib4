@@ -47,8 +47,8 @@ open Ideal IsLocalRing
 
 /-- An integral domain is a *discrete valuation ring* (DVR) if it's a local PID which
   is not a field. -/
-class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R]
-    extends IsPrincipalIdealRing R, IsLocalRing R : Prop where
+class IsDiscreteValuationRing (R : Type u) [CommRing R] [IsDomain R] : Prop
+    extends IsPrincipalIdealRing R, IsLocalRing R where
   not_a_field' : maximalIdeal R ≠ ⊥
 
 namespace IsDiscreteValuationRing
@@ -450,6 +450,21 @@ theorem addVal_le_iff_dvd {a b : R} : addVal R a ≤ addVal R b ↔ a ∣ b := b
 
 theorem addVal_add {a b : R} : min (addVal R a) (addVal R b) ≤ addVal R (a + b) :=
   (addVal R).map_add _ _
+
+@[simp]
+lemma addVal_eq_zero_of_unit (u : Rˣ) :
+    addVal R u = 0 := by
+  obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+  rw [addVal_def (u : R) u hϖ 0] <;>
+  simp
+
+lemma addVal_eq_zero_iff {x : R} :
+    addVal R x = 0 ↔ IsUnit x := by
+  rcases eq_or_ne x 0 with rfl|hx
+  · simp
+  obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
+  obtain ⟨n, u, rfl⟩ := eq_unit_mul_pow_irreducible hx hϖ
+  simp [isUnit_pow_iff_of_not_isUnit hϖ.not_unit, hϖ]
 
 end
 

@@ -592,9 +592,9 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
   have : HasLimit X₁ := ⟨c₁, hc₁⟩
   have : HasLimit X₂ := ⟨c₂, hc₂⟩
   have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
   have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).2 hf'
   refine Arrow.isoMk
@@ -613,9 +613,9 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
   have : HasColimit X₁ := ⟨c₁, hc₁⟩
   have : HasColimit X₂ := ⟨c₂, hc₂⟩
   have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
   have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).1 hf'
   refine Arrow.isoMk

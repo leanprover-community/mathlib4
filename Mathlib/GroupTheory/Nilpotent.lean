@@ -355,14 +355,12 @@ theorem nilpotent_iff_lowerCentralSeries : IsNilpotent G ↔ ∃ n, lowerCentral
 section Classical
 
 variable [hG : IsNilpotent G]
-variable (G)
 
+variable (G) in
 open scoped Classical in
 /-- The nilpotency class of a nilpotent group is the smallest natural `n` such that
 the `n`'th term of the upper central series is `G`. -/
 noncomputable def Group.nilpotencyClass : ℕ := Nat.find (IsNilpotent.nilpotent G)
-
-variable {G}
 
 open scoped Classical in
 @[simp]

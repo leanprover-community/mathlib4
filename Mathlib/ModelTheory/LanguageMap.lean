@@ -283,14 +283,11 @@ structure LEquiv (L L' : Language) where
 -- \^L
 namespace LEquiv
 
-variable (L)
-
+variable (L) in
 /-- The identity equivalence from a first-order language to itself. -/
 @[simps]
 protected def refl : L ≃ᴸ L :=
   ⟨LHom.id L, LHom.id L, LHom.comp_id _, LHom.comp_id _⟩
-
-variable {L}
 
 instance : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩

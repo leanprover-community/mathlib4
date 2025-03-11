@@ -329,7 +329,7 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
 Mahler series with coefficients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
 -/
 lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n) f := by
-  -- First show `∑' n, mahler_term f n` converges to *something*.
+  -- First show `∑' n, mahlerTerm f n` converges to *something*.
   have : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n)
       (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
     hasSum_mahlerSeries (PadicInt.fwdDiff_tendsto_zero f)

@@ -62,15 +62,12 @@ theorem affineSegment_same (x : P) : affineSegment R x x = {x} := by
   simp_rw [affineSegment, lineMap_same, AffineMap.coe_const, Function.const,
     (Set.nonempty_Icc.mpr zero_le_one).image_const]
 
-variable {R}
-
+variable {R} in
 @[simp]
 theorem affineSegment_image (f : P →ᵃ[R] P') (x y : P) :
     f '' affineSegment R x y = affineSegment R (f x) (f y) := by
   rw [affineSegment, affineSegment, Set.image_image, ← comp_lineMap]
   rfl
-
-variable (R)
 
 @[simp]
 theorem affineSegment_const_vadd_image (x y : P) (v : V) :

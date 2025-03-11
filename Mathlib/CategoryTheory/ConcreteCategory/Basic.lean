@@ -232,12 +232,6 @@ def hasForgetToType (C : Type u) [Category.{v} C] [HasForget.{w} C] :
   forget₂ := forget C
   forget_comp := Functor.comp_id _
 
-@[simp]
-lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] [HasForget D]
-    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : F.obj X) :
-    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
-  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
-
 section ConcreteCategory
 
 /-- A concrete category is a category `C` where objects correspond to types and morphisms to
@@ -374,6 +368,13 @@ lemma ConcreteCategory.forget₂_comp_apply {C : Type u} {D : Type u'} [Category
 instance hom_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     IsIso (C := Type _) ⇑(ConcreteCategory.hom f) :=
   ((forget C).mapIso (asIso f)).isIso_hom
+
+@[simp]
+lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] {FD : D → D → Type*}
+    {CD : D → Type*} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
+    {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : ToType (F.obj X)) :
+    φ.app Y (F.map f x) = G.map f (φ.app X x) := by
+  simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x
 
 section
 

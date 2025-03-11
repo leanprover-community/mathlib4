@@ -107,21 +107,18 @@ example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g 
 
 example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by
-  -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w
   apply w
 
 end Mon
 
 example {α β : Type} (f g : α ⟶ β) (w : f = g) (a : α) : f a = g a := by
-  -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 
 
 example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a = g a := by
-  -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
@@ -214,21 +211,18 @@ example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g 
 
 example (M N K : MonCat) (f : M ⟶ N) (g : N ⟶ K) (h : M ⟶ K) (w : f ≫ g = h) (m : M) :
     g (f m) = h m := by
-  -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w
   apply w
 
 end Mon
 
 example {α β : Type} (f g : α ⟶ β) (w : f = g) (a : α) : f a = g a := by
-  -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]
 
 
 example {α β : Type} (f g : α ⟶ β) (w : f ≫ 𝟙 β = g) (a : α) : f a = g a := by
-  -- Porting note: did not port `elementwise!` tactic
   replace w := elementwise_of% w
   guard_hyp w : ∀ (x : α), f x = g x
   rw [w]

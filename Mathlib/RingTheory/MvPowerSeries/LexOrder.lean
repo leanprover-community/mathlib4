@@ -26,7 +26,7 @@ section LexOrder
 open Finsupp
 variable [LinearOrder σ] [WellFoundedGT σ]
 
-/-- The lex order on multivariate power series.  -/
+/-- The lex order on multivariate power series. -/
 noncomputable def lexOrder (φ : MvPowerSeries σ R) : (WithTop (Lex (σ →₀ ℕ))) := by
   classical
   exact if h : φ = 0 then ⊤ else by

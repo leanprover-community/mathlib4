@@ -312,16 +312,13 @@ theorem Filter.coclosedCompact_le_cofinite : coclosedCompact X ≤ cofinite :=
   le_cofinite_iff_compl_singleton_mem.2 fun _ ↦
     compl_mem_coclosedCompact.2 isCompact_closure_singleton
 
-variable (X)
-
+variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
 def Bornology.relativelyCompact : Bornology X where
   cobounded' := Filter.coclosedCompact X
   le_cofinite' := Filter.coclosedCompact_le_cofinite
-
-variable {X}
 
 theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
     @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) :=

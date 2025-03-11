@@ -639,7 +639,7 @@ variable {M N M' N' : Type*} [MulOneClass M] [MulOneClass N] [MulOneClass M']
 
 /-- Lift two monoid equivalences `e : M ≃* N` and `e' : M' ≃* N'` to a monoid equivalence
 `(M ∗ M') ≃* (N ∗ N')`. -/
-@[to_additive (attr := simps! (config := .asFn)) "Lift two additive monoid
+@[to_additive (attr := simps! -fullyApplied) "Lift two additive monoid
 equivalences `e : M ≃+ N` and `e' : M' ≃+ N'` to an additive monoid equivalence
 `(AddMonoid.Coprod M M') ≃+ (AddMonoid.Coprod N N')`."]
 def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
@@ -649,7 +649,7 @@ def coprodCongr (e : M ≃* N) (e' : M' ≃* N') : (M ∗ M') ≃* (N ∗ N') :=
 variable (M N)
 
 /-- A `MulEquiv` version of `Coprod.swap`. -/
-@[to_additive (attr := simps! (config := .asFn))
+@[to_additive (attr := simps! -fullyApplied)
   "An `AddEquiv` version of `AddMonoid.Coprod.swap`."]
 def coprodComm : M ∗ N ≃* N ∗ M :=
   (Coprod.swap _ _).toMulEquiv (Coprod.swap _ _) (Coprod.swap_comp_swap _ _)
@@ -696,12 +696,12 @@ theorem coprodAssoc_symm_apply_inr_inr (x : P) :
 variable (M)
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def coprodPUnit : M ∗ PUnit ≃* M :=
   MonoidHom.toMulEquiv fst inl (hom_ext rfl <| Subsingleton.elim _ _) fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def punitCoprod : PUnit ∗ M ≃* M :=
   MonoidHom.toMulEquiv snd inr (hom_ext (Subsingleton.elim _ _) rfl) snd_comp_inr
 
@@ -714,13 +714,13 @@ namespace AddEquiv
 variable {M : Type*} [AddMonoid M]
 
 /-- Isomorphism between `M ∗ PUnit` and `M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def coprodUnit : AddMonoid.Coprod M PUnit ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.fst AddMonoid.Coprod.inl
     (AddMonoid.Coprod.hom_ext rfl <| Subsingleton.elim _ _) AddMonoid.Coprod.fst_comp_inl
 
 /-- Isomorphism between `PUnit ∗ M` and `M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def punitCoprod : AddMonoid.Coprod PUnit M ≃+ M :=
   AddMonoidHom.toAddEquiv AddMonoid.Coprod.snd AddMonoid.Coprod.inr
     (AddMonoid.Coprod.hom_ext (Subsingleton.elim _ _) rfl) AddMonoid.Coprod.snd_comp_inr

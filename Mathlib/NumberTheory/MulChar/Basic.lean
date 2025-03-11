@@ -71,7 +71,7 @@ instance MulChar.instFunLike : FunLike (MulChar R R') R R' :=
 
 /-- This is the corresponding extension of `MonoidHomClass`. -/
 class MulCharClass (F : Type*) (R R' : outParam Type*) [CommMonoid R]
-  [CommMonoidWithZero R'] [FunLike F R R'] extends MonoidHomClass F R R' : Prop where
+    [CommMonoidWithZero R'] [FunLike F R R'] : Prop extends MonoidHomClass F R R' where
   map_nonunit : ∀ (χ : F) {a : R} (_ : ¬IsUnit a), χ a = 0
 
 initialize_simps_projections MulChar (toFun → apply, -toMonoidHom)
@@ -456,7 +456,7 @@ theorem IsQuadratic.comp {χ : MulChar R R'} (hχ : χ.IsQuadratic) (f : R' →+
   intro a
   rcases hχ a with (ha | ha | ha) <;> simp [ha]
 
-/-- The inverse of a quadratic character is itself. →  -/
+/-- The inverse of a quadratic character is itself. → -/
 theorem IsQuadratic.inv {χ : MulChar R R'} (hχ : χ.IsQuadratic) : χ⁻¹ = χ := by
   ext x
   rw [inv_apply_eq_inv]

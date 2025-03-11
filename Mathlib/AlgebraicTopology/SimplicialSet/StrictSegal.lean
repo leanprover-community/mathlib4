@@ -59,7 +59,7 @@ theorem spineInjective {n : ℕ} : Function.Injective (spineEquiv (X := X) n) :=
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
-    X.map (const ⦋0⦌ ⦋n⦌ i).op (spineToSimplex f) = f.vertex i := by
+    X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op (spineToSimplex f) = f.vertex i := by
   rw [← spine_vertex, spine_spineToSimplex]
 
 @[simp]
@@ -108,7 +108,8 @@ lemma spine_δ_vertex_lt (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)
     (h : i.castSucc < j) :
     (X.spine n (X.δ j (spineToSimplex f))).vertex i = f.vertex i.castSucc := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+    spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_castSucc_lt j i h]
@@ -120,7 +121,8 @@ lemma spine_δ_vertex_ge (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)
     (h : j ≤ i.castSucc) :
     (X.spine n (X.δ j (spineToSimplex f))).vertex i = f.vertex i.succ := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+    spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_le_castSucc j i h]
