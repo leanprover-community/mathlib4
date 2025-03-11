@@ -615,9 +615,9 @@ abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n)
 
 variable (X k I) in
 /-- The bordism class of the empty set: the neutral element for the group operation -/
-def empty : uBordismClass X k I :=
+def uBordismClass.empty.{u} : uBordismClass X k I :=
   haveI := ChartedSpace.empty
-  Quotient.mk _ (SingularNManifold.empty X Empty I)
+  Quotient.mk _ (SingularNManifold.empty.{_, _, _, u} X PEmpty I)
 
 -- TODO: better name!
 /-- The disjoint union of singular manifolds descends to bordism classes. -/
@@ -638,7 +638,7 @@ def uBordismClass.sum.{u} :
   fun s t ↦ sum (fun _ _ _ _ h h' ↦ Quotient.sound (aux h h')) s t
 
 instance : Zero (uBordismClass X k I) where
-  zero := empty X k I
+  zero := uBordismClass.empty X k I
 
 instance : Neg (uBordismClass X k I) where
   -- XXX: better name for the variable?
@@ -648,7 +648,7 @@ instance : Add (uBordismClass X k I) where
   add := uBordismClass.sum
 
 variable (X k I J) in
-private def unorientedBordismGroup_aux : AddGroup (uBordismClass X k I) := by
+private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u} X k I) := by
   apply AddGroup.ofLeftAxioms
   -- XXX: better name for the variables?
   · intro Φ Ψ Δ
@@ -656,14 +656,25 @@ private def unorientedBordismGroup_aux : AddGroup (uBordismClass X k I) := by
     -- use UnorientedBordism.sumAssoc
     sorry
   · intro Φ
-    change uBordismClass.sum (empty X k I) Φ = Φ
+    change uBordismClass.sum (uBordismClass.empty X k I) Φ = Φ
     -- change: s ⊕ ∅ is equivalent to s, i.e. bordant
     -- use UnorientedBordism.sumEmpty
     sorry
   · intro Φ
-    change uBordismClass.sum Φ Φ = empty X k I
-    -- change: s ⊕ s is equivalent to SingularNManifold X empty I, i.e. bordism
-    -- use UnorientedBordism.sum_self
+    change uBordismClass.sum Φ Φ = uBordismClass.empty X k I
+    -- Choose a representative for Φ.
+    let s := Φ.out
+    -- Then s.sum s is in the equivalence class of Φ.sum Φ.
+    rw [← Quotient.out_equiv_out]
+
+    have : Quotient.out (Φ.sum Φ) = s.sum s := sorry
+    -- Idea: s ⊕ s is equivalent to SingularNManifold X empty I,
+    -- i.e. use UnorientedBordism.sum_self.
+    haveI := ChartedSpace.empty
+    have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (s.sum s)
+       (SingularNManifold.empty.{_, _, _, u} X PEmpty I) := by
+      use UnorientedBordism.sum_self
+    -- TODO: `change almost` fails, i.e. something is still missing
     sorry
 
 instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) where
