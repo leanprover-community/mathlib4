@@ -56,18 +56,14 @@ def objEquiv {n : SimplexCategory} {m : SimplexCategoryᵒᵖ} :
     (stdSimplex.{u}.obj n).obj m ≃ (m.unop ⟶ n) :=
   Equiv.ulift.{u, 0}
 
+/-- If `x : Δ[n] _⦋d⦌` and `i : Fin (d + 1)`, we may evaluate `x i : Fin (n + 1)`. -/
 instance (n i : ℕ) : DFunLike (Δ[n] _⦋i⦌) (Fin (i + 1)) (fun _ ↦ Fin (n + 1)) where
   coe x j := (objEquiv x).toOrderHom j
-  coe_injective' j₁ j₂ h := by
-    apply objEquiv.injective
-    ext k : 3
-    exact congr_fun h k
+  coe_injective' _ _ h := objEquiv.injective (by ext : 3; apply congr_fun h)
 
 @[ext]
-lemma ext {n d : ℕ} (x y : Δ[n] _⦋d⦌) (h : ∀ (i : Fin (d + 1)), x i = y i) : x = y := by
-  apply objEquiv.injective
-  ext i : 3
-  apply h
+lemma ext {n d : ℕ} (x y : Δ[n] _⦋d⦌) (h : ∀ (i : Fin (d + 1)), x i = y i) : x = y :=
+  DFunLike.ext _ _ h
 
 @[simp]
 lemma objEquiv_toOrderHom_apply {n i : ℕ}
