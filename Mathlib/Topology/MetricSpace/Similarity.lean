@@ -76,14 +76,6 @@ alias ⟨exists_pairwise_edist_eq, _⟩ := similar_iff_exists_pairwise_edist_eq
 `similar_iff_exists_pairwise_edist_eq`. -/
 alias ⟨_, of_exists_pairwise_edist_eq⟩ := similar_iff_exists_pairwise_edist_eq
 
-/-- Similarity follows from pairwise scaled extended distance. -/
-lemma of_pairwise_exists_edist_eq
-    {r : NNReal} (hr : r ≠ 0) (h : Pairwise (fun i₁ i₂ => (edist (v₁ i₁) (v₁ i₂) =
-      r * edist (v₂ i₁) (v₂ i₂)))) :
-    v₁ ∼ v₂ := by
-  classical
-  exact ⟨r, hr, fun i₁ i₂ => if g : i₁ = i₂ then by { rw [g]; simp } else h g⟩
-
 @[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ∼ v₁ :=
   ⟨1, one_ne_zero, fun _ _ => by {norm_cast; rw [one_mul]}⟩
 
