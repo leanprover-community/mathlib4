@@ -372,8 +372,8 @@ section Instances
 variable {Y : Type*} [PseudoEMetricSpace X] [PseudoEMetricSpace Y] [SMul M X]
   [IsometricSMul M X]
 
-@[to_additive]
-instance [SMul M Y] [IsometricSMul M Y] : IsometricSMul M (X × Y) :=
+@[to_additive instIsometricVAddProd]
+instance instIsometricSMulProd [SMul M Y] [IsometricSMul M Y] : IsometricSMul M (X × Y) :=
   ⟨fun c => (isometry_smul X c).prod_map (isometry_smul Y c)⟩
 
 @[to_additive]
