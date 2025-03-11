@@ -106,7 +106,7 @@ instance instFunLike : FunLike (DPMorphism hI hJ) A B where
 
 instance coe_ringHom : CoeOut (DPMorphism hI hJ) (A →+* B) := ⟨DPMorphism.toRingHom⟩
 
-@[simp] theorem coe_toRingHom {f : DPMorphism hI hJ} : (f : A →+* B) = f := rfl
+@[simp] theorem coe_toRingHom {f : DPMorphism hI hJ} : ⇑(f : A →+* B) = f := rfl
 
 @[simp] lemma toRingHom_apply {f : DPMorphism hI hJ} {a : A} : f.toRingHom a = f a := rfl
 
