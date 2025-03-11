@@ -434,7 +434,7 @@ theorem compAlternatingMap_zero (g : N →ₗ[R] N₂) :
   AlternatingMap.ext fun _ => map_zero g
 
 @[simp]
-theorem zero_compAlternatingMap (f: M [⋀^ι]→ₗ[R] N) :
+theorem zero_compAlternatingMap (f : M [⋀^ι]→ₗ[R] N) :
     (0 : N →ₗ[R] N₂).compAlternatingMap f = 0 := rfl
 
 @[simp]
@@ -443,7 +443,7 @@ theorem compAlternatingMap_add (g : N →ₗ[R] N₂) (f₁ f₂ : M [⋀^ι]→
   AlternatingMap.ext fun _ => map_add g _ _
 
 @[simp]
-theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f: M [⋀^ι]→ₗ[R] N) :
+theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) :
     (g₁ + g₂).compAlternatingMap f = g₁.compAlternatingMap f + g₂.compAlternatingMap f := rfl
 
 @[simp]

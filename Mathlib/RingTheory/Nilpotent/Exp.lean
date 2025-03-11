@@ -46,7 +46,7 @@ It provides meaningful (non-junk) values for nilpotent elements. -/
 noncomputable def exp (a : A) : A :=
   ∑ i ∈ range (nilpotencyClass a), (i.factorial : ℚ)⁻¹ • (a ^ i)
 
-theorem exp_eq_truncated {a : A} {k : ℕ}  (h : a ^ k = 0) :
+theorem exp_eq_truncated {a : A} {k : ℕ} (h : a ^ k = 0) :
     ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) = exp a := by
   have h₁ : ∑ i ∈ range k, (i.factorial : ℚ)⁻¹ • (a ^ i) =
       ∑ i ∈ range (nilpotencyClass a), (i.factorial : ℚ)⁻¹ • (a ^ i) +
