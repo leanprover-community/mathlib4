@@ -73,6 +73,19 @@ theorem degree_list_sum_le (l : List S[X]) : degree l.sum ≤ (l.map natDegree).
     rw [List.map_eq_nil_iff] at h
     simp [h]
 
+theorem degree_list_sum_le_of_forall_degree_le (l : List S[X])
+    (n : WithBot ℕ) (hl : ∀ p ∈ l, degree p ≤ n) :
+    degree l.sum ≤ n := by
+  induction l with
+  | nil => simp
+  | cons hd tl ih =>
+    simp
+    apply le_trans (Polynomial.degree_add_le _ _) _
+    simp at hl
+    rcases hl with ⟨ht, htl⟩
+    specialize ih htl
+    exact max_le ht ih
+
 theorem natDegree_list_prod_le (l : List S[X]) : natDegree l.prod ≤ (l.map natDegree).sum := by
   induction' l with hd tl IH
   · simp
