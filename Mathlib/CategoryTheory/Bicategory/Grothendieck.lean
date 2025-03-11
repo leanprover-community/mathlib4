@@ -129,7 +129,7 @@ def domain_cartesianLift : ∫ F :=
 def cartesianLift : domain_cartesianLift F f ⟶ a :=
   ⟨f, 𝟙 _⟩
 
-lemma cartesianLift_isHomLift :
+lemma isHomLift_cartesianLift :
     IsHomLift (forget F) f (cartesianLift F f) := by
   ⟨IsHomLiftAux.map (p := forget F) (a := domain_cartesianLift F f) ⟨f, 𝟙 _⟩⟩
 
