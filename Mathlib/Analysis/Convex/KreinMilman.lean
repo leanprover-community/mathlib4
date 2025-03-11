@@ -51,10 +51,9 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 -/
 
 open Set
-open scoped Classical
 
 variable {E F : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [T2Space E]
-  [TopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] {s : Set E}
+  [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [LocallyConvexSpace ℝ E] {s : Set E}
   [AddCommGroup F] [Module ℝ F] [TopologicalSpace F] [T1Space F]
 
 /-- **Krein-Milman lemma**: In a LCTVS, any nonempty compact set has an extreme point. -/

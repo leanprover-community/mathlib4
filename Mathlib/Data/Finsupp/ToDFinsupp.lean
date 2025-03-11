@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Data.DFinsupp.Module
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Data.Finsupp.SMul
 
 /-!
 # Conversion between `Finsupp` and homogeneous `DFinsupp`
@@ -198,7 +198,7 @@ end Lemmas
 section Equivs
 
 /-- `Finsupp.toDFinsupp` and `DFinsupp.toFinsupp` together form an equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃ Π₀ _ : ι, M where
   toFun := Finsupp.toDFinsupp
@@ -208,7 +208,7 @@ def finsuppEquivDFinsupp [DecidableEq ι] [Zero M] [∀ m : M, Decidable (m ≠ 
 
 /-- The additive version of `finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def finsuppAddEquivDFinsupp [DecidableEq ι] [AddZeroClass M] [∀ m : M, Decidable (m ≠ 0)] :
     (ι →₀ M) ≃+ Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -220,8 +220,6 @@ variable (R)
 
 /-- The additive version of `Finsupp.toFinsupp`. Note that this is `noncomputable` because
 `Finsupp.add` is noncomputable. -/
--- Porting note: `simps` generated lemmas that did not pass `simpNF` lints, manually added below
---@[simps? (config := .asFn)]
 def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] : (ι →₀ M) ≃ₗ[R] Π₀ _ : ι, M :=
   { finsuppEquivDFinsupp with
@@ -230,7 +228,6 @@ def finsuppLequivDFinsupp [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     map_smul' := Finsupp.toDFinsupp_smul
     map_add' := Finsupp.toDFinsupp_add }
 
--- Porting note: `simps` generated as `↑(finsuppLequivDFinsupp R).toLinearMap = Finsupp.toDFinsupp`
 @[simp]
 theorem finsuppLequivDFinsupp_apply_apply [DecidableEq ι] [Semiring R] [AddCommMonoid M]
     [∀ m : M, Decidable (m ≠ 0)] [Module R M] :

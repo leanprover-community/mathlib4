@@ -39,7 +39,7 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   -- Hence, `f` is an affine map, `f b = f 0 + m * b`
   obtain ⟨c, H⟩ : ∃ c, ∀ b, f b = c + m * b := by
     refine ⟨f 0, fun b => ?_⟩
-    induction' b using Int.induction_on with b ihb b ihb
+    induction' b with b ihb b ihb
     · simp
     · simp [H, ihb, mul_add, add_assoc]
     · rw [← sub_eq_of_eq_add (H _)]

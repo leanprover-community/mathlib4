@@ -68,8 +68,8 @@ lemma mFourier_zero : mFourier (0 : d → ℤ) = 1 := by
 lemma mFourier_norm : ‖mFourier n‖ = 1 := by
   apply le_antisymm
   · refine (ContinuousMap.norm_le _ zero_le_one).mpr fun i ↦ ?_
-    simp only [mFourier, fourier_apply, ContinuousMap.coe_mk, norm_prod, Complex.norm_eq_abs,
-      Circle.abs_coe, Finset.prod_const_one, le_rfl]
+    simp only [mFourier, fourier_apply, ContinuousMap.coe_mk, norm_prod, Circle.norm_coe,
+      Finset.prod_const_one, le_rfl]
   · refine (le_of_eq ?_).trans ((mFourier n).norm_coe_le_norm fun _ ↦ 0)
     simp only [mFourier, ContinuousMap.coe_mk, fourier_eval_zero, Finset.prod_const_one,
       CStarRing.norm_one]

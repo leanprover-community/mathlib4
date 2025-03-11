@@ -19,8 +19,7 @@ Definitions and results that require fewer imports are in
 
 -/
 
-assert_not_exists Monoid.exponent
-assert_not_exists Module.IsTorsion
+assert_not_exists Monoid.exponent Module.IsTorsion
 
 
 universe u v v'
@@ -227,10 +226,6 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
   have : FiniteDimensional K V := .of_finrank_pos <| card_eq ▸ Fintype.card_pos
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
 
-@[deprecated (since := "2024-02-14")]
-alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
-  LinearIndependent.span_eq_top_of_card_eq_finrank
-
 /-- A linear independent family of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
 noncomputable def basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [Fintype ι]
@@ -338,9 +333,10 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
     have h_le_ker_pow : ∀ n : ℕ, n ≤ (finrank K V).succ →
         n ≤ finrank K (LinearMap.ker (f ^ n)) := by
       intro n hn
-      induction' n with n ih
-      · exact zero_le (finrank _ _)
-      · have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
+      induction n with
+      | zero => exact zero_le (finrank _ _)
+      | succ n ih =>
+        have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
           refine lt_of_le_of_ne ?_ (h_contra n (Nat.le_of_succ_le_succ hn))
           rw [pow_succ']
           apply LinearMap.ker_le_ker_comp

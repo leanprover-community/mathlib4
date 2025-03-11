@@ -50,16 +50,16 @@ section
 
 You should extend this class when you extend `PseudoEpimorphism`. -/
 class PseudoEpimorphismClass (F : Type*) (α β : outParam Type*)
-    [Preorder α] [Preorder β] [FunLike F α β]
-    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
+    [Preorder α] [Preorder β] [FunLike F α β] : Prop
+    extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 
 /-- `EsakiaHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `EsakiaHom`. -/
 class EsakiaHomClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α] [Preorder α]
-    [TopologicalSpace β] [Preorder β] [FunLike F α β]
-    extends ContinuousOrderHomClass F α β : Prop where
+    [TopologicalSpace β] [Preorder β] [FunLike F α β] : Prop
+    extends ContinuousOrderHomClass F α β where
   exists_map_eq_of_map_le (f : F) ⦃a : α⦄ ⦃b : β⦄ : f a ≤ b → ∃ c, a ≤ c ∧ f c = b
 
 end
@@ -146,10 +146,10 @@ protected def id : PseudoEpimorphism α α :=
 instance : Inhabited (PseudoEpimorphism α α) :=
   ⟨PseudoEpimorphism.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(PseudoEpimorphism.id α) = id := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id_orderHom : (PseudoEpimorphism.id α : α →o α) = OrderHom.id := rfl
 
 variable {α}
@@ -254,10 +254,10 @@ protected def id : EsakiaHom α α :=
 instance : Inhabited (EsakiaHom α α) :=
   ⟨EsakiaHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(EsakiaHom.id α) = id := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id_pseudoEpimorphism :
     (EsakiaHom.id α : PseudoEpimorphism α α) = PseudoEpimorphism.id α := rfl
 
@@ -266,7 +266,7 @@ variable {α}
 @[simp]
 theorem id_apply (a : α) : EsakiaHom.id α a = a := rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id_continuousOrderHom : (EsakiaHom.id α : α →Co α) = ContinuousOrderHom.id α := rfl
 
 /-- Composition of `EsakiaHom`s as an `EsakiaHom`. -/

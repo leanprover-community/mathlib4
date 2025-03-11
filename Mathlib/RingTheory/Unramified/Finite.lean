@@ -272,7 +272,7 @@ lemma comp_sec :
 
 /-- If `S` is an unramified `R`-algebra, then `R`-flat implies `S`-flat. Iversen I.2.7 -/
 lemma flat_of_restrictScalars [Module.Flat R M] : Module.Flat S M :=
-  Module.Flat.of_retract _ _ _ _ _ (comp_sec R S M)
+  Module.Flat.of_retract _ _ (comp_sec R S M)
 
 /-- If `S` is an unramified `R`-algebra, then `R`-projective implies `S`-projective. -/
 lemma projective_of_restrictScalars [Module.Projective R M] : Module.Projective S M :=

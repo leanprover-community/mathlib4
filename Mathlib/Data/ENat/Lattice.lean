@@ -23,6 +23,8 @@ corresponding `noshake.json` entry.
 
 -/
 
+assert_not_exists Field
+
 open Set
 
 -- Porting note: was `deriving instance` but "default handlers have not been implemented yet"

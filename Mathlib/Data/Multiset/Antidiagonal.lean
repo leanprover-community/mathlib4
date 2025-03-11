@@ -12,8 +12,7 @@ The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
 such that `t₁ + t₂ = s`. These pairs are counted with multiplicities.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Ring
+assert_not_exists OrderedCommMonoid Ring
 
 universe u
 
@@ -49,7 +48,7 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     haveI := Classical.decEq α
     simp only [revzip_powersetAux_lemma l revzip_powersetAux, h.symm, mem_coe,
       List.mem_map, mem_powersetAux]
-    cases' x with x₁ x₂
+    obtain ⟨x₁, x₂⟩ := x
     exact ⟨x₁, le_add_right _ _, by rw [add_tsub_cancel_left x₁ x₂]⟩
 
 @[simp]

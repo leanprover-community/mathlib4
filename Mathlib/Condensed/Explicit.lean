@@ -46,7 +46,7 @@ noncomputable def ofSheafStonean
     val := F
     cond := by
       rw [isSheaf_iff_preservesFiniteProducts_of_projective F]
-      exact ⟨fun _ _ ↦ inferInstance⟩ }
+      exact ⟨fun _ ↦ inferInstance⟩ }
 
 /--
 The condensed object associated to a presheaf on `Stonean` whose postcomposition with the
@@ -54,7 +54,7 @@ forgetful functor preserves finite products.
 -/
 noncomputable def ofSheafForgetStonean
     [∀ X, HasLimitsOfShape (StructuredArrow X Stonean.toCompHaus.op) A]
-    [ConcreteCategory A] [ReflectsFiniteProducts (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteProducts (CategoryTheory.forget A)]
     (F : Stonean.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)] :
     Condensed A :=
   StoneanCompHaus.equivalence A |>.functor.obj {
@@ -62,7 +62,7 @@ noncomputable def ofSheafForgetStonean
     cond := by
       apply isSheaf_coherent_of_projective_of_comp F (CategoryTheory.forget A)
       rw [isSheaf_iff_preservesFiniteProducts_of_projective]
-      exact ⟨fun _ _ ↦ inferInstance⟩ }
+      exact ⟨fun _ ↦ inferInstance⟩ }
 
 /--
 The condensed object associated to a presheaf on `Profinite` which preserves finite products and
@@ -76,7 +76,7 @@ noncomputable def ofSheafProfinite
     val := F
     cond := by
       rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-      exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩ }
+      exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩ }
 
 /--
 The condensed object associated to a presheaf on `Profinite` whose postcomposition with the
@@ -84,7 +84,7 @@ forgetful functor preserves finite products and satisfies the equalizer conditio
 -/
 noncomputable def ofSheafForgetProfinite
     [∀ X, HasLimitsOfShape (StructuredArrow X profiniteToCompHaus.op) A]
-    [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : Profinite.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) :
     Condensed A :=
@@ -93,7 +93,7 @@ noncomputable def ofSheafForgetProfinite
     cond := by
       apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
       rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-      exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩ }
+      exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩ }
 
 /--
 The condensed object associated to a presheaf on `CompHaus` which preserves finite products and
@@ -105,21 +105,21 @@ noncomputable def ofSheafCompHaus
   val := F
   cond := by
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition F]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /--
 The condensed object associated to a presheaf on `CompHaus` whose postcomposition with the
 forgetful functor preserves finite products and satisfies the equalizer condition.
 -/
 noncomputable def ofSheafForgetCompHaus
-    [ConcreteCategory A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
+    [HasForget A] [ReflectsFiniteLimits (CategoryTheory.forget A)]
     (F : CompHaus.{u}ᵒᵖ ⥤ A) [PreservesFiniteProducts (F ⋙ CategoryTheory.forget A)]
     (hF : EqualizerCondition (F ⋙ CategoryTheory.forget A)) : Condensed A where
   val := F
   cond := by
     apply isSheaf_coherent_of_hasPullbacks_of_comp F (CategoryTheory.forget A)
     rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition]
-    exact ⟨⟨fun _ _ ↦ inferInstance⟩, hF⟩
+    exact ⟨⟨fun _ ↦ inferInstance⟩, hF⟩
 
 /-- A condensed object satisfies the equalizer condition. -/
 theorem equalizerCondition (X : Condensed A) : EqualizerCondition X.val :=

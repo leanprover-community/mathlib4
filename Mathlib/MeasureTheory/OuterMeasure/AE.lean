@@ -133,7 +133,7 @@ theorem ae_le_of_ae_lt {β : Type*} [Preorder β] {f g : α → β} (h : ∀ᵐ 
 theorem ae_eq_empty : s =ᵐ[μ] (∅ : Set α) ↔ μ s = 0 :=
   eventuallyEq_empty.trans <| by simp only [ae_iff, Classical.not_not, setOf_mem_eq]
 
--- Porting note: The priority should be higher than `eventuallyEq_univ`.
+-- The priority should be higher than `eventuallyEq_univ`.
 @[simp high]
 theorem ae_eq_univ : s =ᵐ[μ] (univ : Set α) ↔ μ sᶜ = 0 :=
   eventuallyEq_univ

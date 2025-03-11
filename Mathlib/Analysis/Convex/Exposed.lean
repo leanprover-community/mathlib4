@@ -39,11 +39,7 @@ See chapter 8 of [Barry Simon, *Convexity*][simon2011]
 Prove lemmas relating exposed sets and points to the intrinsic frontier.
 -/
 
-
-open scoped Classical
-open Affine
-
-open Set
+open Affine Set
 
 section PreorderSemiring
 
@@ -140,6 +136,7 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
 
 theorem sInter [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
+  classical
   induction F using Finset.induction with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
   | @insert C F _ hF' =>
@@ -173,14 +170,11 @@ protected theorem isCompact [OrderClosedTopology 𝕜] [T2Space E] {A B : Set E}
 
 end IsExposed
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- A point is exposed with respect to `A` iff there exists a hyperplane whose intersection with
 `A` is exactly that point. -/
 def Set.exposedPoints (A : Set E) : Set E :=
   { x ∈ A | ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) }
-
-variable {𝕜}
 
 theorem exposed_point_def :
     x ∈ A.exposedPoints 𝕜 ↔ x ∈ A ∧ ∃ l : E →L[𝕜] 𝕜, ∀ y ∈ A, l y ≤ l x ∧ (l x ≤ l y → y = x) :=

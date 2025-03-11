@@ -3,11 +3,11 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Group.PUnit
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
+import Mathlib.CategoryTheory.Monoidal.Discrete
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.Algebra.PUnitInstances.Algebra
 
 /-!
 # The category of monoids in a monoidal category.
@@ -62,6 +62,13 @@ theorem mul_one (X : C) [Mon_Class X] : X ◁ η ≫ μ = (ρ_ X).hom := mul_one
 
 @[reassoc (attr := simp)]
 theorem mul_assoc (X : C) [Mon_Class X] : μ ▷ X ≫ μ = (α_ X X X).hom ≫ X ◁ μ ≫ μ := mul_assoc'
+
+@[ext]
+theorem ext {X : C} (h₁ h₂ : Mon_Class X) (H : h₁.mul = h₂.mul) : h₁ = h₂ := by
+  suffices h₁.one = h₂.one by cases h₁; cases h₂; subst H this; rfl
+  trans (λ_ _).inv ≫ (h₁.one ⊗ h₂.one) ≫ h₁.mul
+  · simp [tensorHom_def, H, ← unitors_equal]
+  · simp [tensorHom_def']
 
 end Mon_Class
 
@@ -246,14 +253,11 @@ namespace CategoryTheory.Functor
 
 variable {C} {D : Type u₂} [Category.{v₂} D] [MonoidalCategory.{v₂} D]
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/6053
-we needed to increase the `maxHeartbeats` limit.
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6053
+we needed to increase the `maxHeartbeats` limit if we didn't write an explicit proof for
+`map_id` and `map_comp`.
 
-This may indicate a configuration problem in Aesop.
--/
-set_option maxHeartbeats 400000 in
+This may indicate a configuration problem in Aesop. -/
 -- TODO: mapMod F A : Mod A ⥤ Mod (F.mapMon A)
 /-- A lax monoidal functor takes monoid objects to monoid objects.
 
@@ -284,6 +288,12 @@ def mapMon (F : C ⥤ D) [F.LaxMonoidal] : Mon_ C ⥤ Mon_ D where
       mul_hom := by
         rw [Category.assoc, μ_natural_assoc, ← F.map_comp, ← F.map_comp,
           f.mul_hom] }
+  map_id _ := by -- the `aesop_cat` autoparam solves this but it's slow
+    simp only [Mon_.id_hom', map_id]
+    rfl
+  map_comp _ _ := by -- the `aesop_cat` autoparam solves this but it's slow
+    simp only [Mon_.comp_hom', map_comp]
+    rfl
 
 variable (C D)
 
@@ -337,7 +347,6 @@ def monToLaxMonoidal : Mon_ C ⥤ LaxMonoidalFunctor (Discrete PUnit.{u + 1}) C 
 attribute [local aesop safe tactic (rule_sets := [CategoryTheory])]
   CategoryTheory.Discrete.discreteCases
 
-set_option maxHeartbeats 400000 in
 /-- Implementation of `Mon_.equivLaxMonoidalFunctorPUnit`. -/
 @[simps!]
 def unitIso :
@@ -661,6 +670,25 @@ instance : SymmetricCategory (Mon_ C) where
 end SymmetricCategory
 
 end Mon_
+
+section
+
+variable {C} [BraidedCategory.{v₁} C]
+
+/-- Predicate for a monoid object to be commutative. -/
+class IsCommMon (X : C) [Mon_Class X] where
+  mul_comm' : (β_ X X).hom ≫ μ = μ := by aesop_cat
+
+open scoped Mon_Class
+
+namespace IsCommMon
+
+@[reassoc (attr := simp)]
+theorem mul_comm (X : C) [Mon_Class X] [IsCommMon X] : (β_ X X).hom ≫ μ = μ := mul_comm'
+
+end IsCommMon
+
+end
 
 /-!
 Projects:

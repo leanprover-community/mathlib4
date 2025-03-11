@@ -3,7 +3,6 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Pi
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Set.Finite.Basic
@@ -12,8 +11,7 @@ import Mathlib.Data.Set.Finite.Basic
 # Fintype instances for pi types
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedRing MonoidWithZero
 
 open Finset Function
 
@@ -136,7 +134,7 @@ end Fintype
 /-! ### pi -/
 
 /-- A dependent product of fintypes, indexed by a fintype, is a fintype. -/
-instance Pi.fintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
+instance Pi.instFintype {α : Type*} {β : α → Type*} [DecidableEq α] [Fintype α]
     [∀ a, Fintype (β a)] : Fintype (∀ a, β a) :=
   ⟨Fintype.piFinset fun _ => univ, by simp⟩
 

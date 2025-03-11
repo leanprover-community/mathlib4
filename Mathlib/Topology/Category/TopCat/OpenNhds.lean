@@ -39,6 +39,7 @@ def OpenNhds (x : X) :=
   FullSubcategory fun U : Opens X => x ∈ U
 
 namespace OpenNhds
+variable {x : X} {U V W : OpenNhds x}
 
 instance partialOrder (x : X) : PartialOrder (OpenNhds x) where
   le U V := U.1 ≤ V.1
@@ -66,8 +67,19 @@ instance (x : X) : Inhabited (OpenNhds x) :=
 
 instance openNhdsCategory (x : X) : Category.{u} (OpenNhds x) := inferInstance
 
-instance opensNhdsHomHasCoeToFun {x : X} {U V : OpenNhds x} : CoeFun (U ⟶ V) fun _ => U.1 → V.1 :=
-  ⟨fun f x => ⟨x, f.le x.2⟩⟩
+instance opensNhds.instFunLike : FunLike (U ⟶ V) U.1 V.1 where
+  coe f := Set.inclusion f.le
+  coe_injective' := by rintro ⟨⟨_⟩⟩ _ _; congr!
+
+@[simp] lemma apply_mk (f : U ⟶ V) (y : X) (hy) : f ⟨y, hy⟩ = ⟨y, f.le hy⟩ := rfl
+
+@[simp] lemma val_apply (f : U ⟶ V) (y : U.1) : (f y : X) = y := rfl
+
+@[simp, norm_cast] lemma coe_id (f : U ⟶ U) : ⇑f = id := rfl
+
+lemma id_apply (f : U ⟶ U) (y : U.1) : f y = y := rfl
+
+@[simp] lemma comp_apply (f : U ⟶ V) (g : V ⟶ W) (x : U.1) : (f ≫ g) x = g (f x) := rfl
 
 /-- The inclusion `U ⊓ V ⟶ U` as a morphism in the category of open sets. -/
 def infLELeft {x : X} (U V : OpenNhds x) : U ⊓ V ⟶ U :=
@@ -97,7 +109,6 @@ def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
   obj U := ⟨(Opens.map f).obj U.1, U.2⟩
   map i := (Opens.map f).map i
 
--- Porting note: Changed `⟨(Opens.map f).obj U, by tidy⟩` to `⟨(Opens.map f).obj U, q⟩`
 @[simp]
 theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
   rfl

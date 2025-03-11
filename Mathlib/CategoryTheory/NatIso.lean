@@ -41,7 +41,7 @@ namespace CategoryTheory
 open NatTrans
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] {E : Type u₃}
-  [Category.{v₃} E]
+  [Category.{v₃} E] {E' : Type u₄} [Category.{v₄} E']
 
 namespace Iso
 
@@ -74,6 +74,20 @@ lemma hom_inv_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : 
 lemma inv_hom_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : D) :
     (e.inv.app X₁).app X₂ ≫ (e.hom.app X₁).app X₂ = 𝟙 _ := by
   rw [← NatTrans.comp_app, Iso.inv_hom_id_app, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma hom_inv_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
+    (X₁ : C) (X₂ : D) (X₃ : E) :
+    ((e.hom.app X₁).app X₂).app X₃ ≫ ((e.inv.app X₁).app X₂).app X₃ = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← NatTrans.comp_app, Iso.hom_inv_id_app,
+    NatTrans.id_app, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_app_app_app {F G : C ⥤ D ⥤ E ⥤ E'} (e : F ≅ G)
+    (X₁ : C) (X₂ : D) (X₃ : E) :
+    ((e.inv.app X₁).app X₂).app X₃ ≫ ((e.hom.app X₁).app X₂).app X₃ = 𝟙 _ := by
+  rw [← NatTrans.comp_app, ← NatTrans.comp_app, Iso.inv_hom_id_app,
+    NatTrans.id_app, NatTrans.id_app]
 
 end Iso
 
@@ -108,7 +122,7 @@ section
 Unfortunately we need a separate set of cancellation lemmas for components of natural isomorphisms,
 because the `simp` normal form is `α.hom.app X`, rather than `α.app.hom X`.
 
-(With the later, the morphism would be visibly part of an isomorphism, so general lemmas about
+(With the latter, the morphism would be visibly part of an isomorphism, so general lemmas about
 isomorphisms would apply.)
 
 In the future, we should consider a redesign that changes this simp norm form,
@@ -213,7 +227,7 @@ theorem ofComponents.app (app' : ∀ X : C, F.obj X ≅ G.obj X) (naturality) (X
 /-- A natural transformation is an isomorphism if all its components are isomorphisms.
 -/
 theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso α :=
-  (ofComponents (fun X => asIso (α.app X)) (by aesop)).isIso_hom
+  (ofComponents (fun X => asIso (α.app X)) (by simp)).isIso_hom
 
 /-- Horizontal composition of natural isomorphisms. -/
 @[simps]

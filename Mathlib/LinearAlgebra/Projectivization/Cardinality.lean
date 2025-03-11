@@ -91,11 +91,9 @@ variable (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 /-- Cardinality formula for the points of `ℙ k V` if `k` and `V` are finite expressed
 as a fraction. -/
 lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 1) := by
-  haveI : Fintype k := Fintype.ofFinite k
-  rw [card k]
   have : 1 < Nat.card k := Finite.one_lt_card
-  have h : 0 ≠ (Nat.card k - 1) := by omega
-  exact Nat.eq_div_of_mul_eq_left (Ne.symm h) rfl
+  rw [card k, Nat.mul_div_cancel]
+  omega
 
 lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
     Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
@@ -115,8 +113,7 @@ lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
   let e : V ≃ₗ[k] (Fin n → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
   have hc : Nat.card V = Nat.card k ^ n := by simp [Nat.card_congr e.toEquiv, Nat.card_fun]
   zify
-  have hn : 1 ≤ Nat.card k := Nat.one_le_of_lt Finite.one_lt_card
-  conv_rhs => rw [Int.natCast_sub hn, Int.natCast_one, geom_sum_mul]
+  conv_rhs => rw [Int.natCast_sub this.le, Int.natCast_one, geom_sum_mul]
   rw [← Int.natCast_mul, ← card k V, hc]
   simp
 

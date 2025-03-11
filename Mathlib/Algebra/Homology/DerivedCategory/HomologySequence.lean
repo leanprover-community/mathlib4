@@ -16,6 +16,8 @@ derived category.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w v u
 
 open CategoryTheory Pretriangulated
