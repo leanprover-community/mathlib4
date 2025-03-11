@@ -782,12 +782,6 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
     strictMono_of_le_iff_le (fun _ _ => (coeIdeal_le_coeIdeal K).symm)
       (lt_top_iff_ne_top.mpr hJ)
 
-/-- Multiplication by a nonzero ideal `J` yields an equivalence between the set of
-nonzero ideals and the set of nonzero ideal divisible by `J`. -/
-@[simps! apply]
-noncomputable def Ideal.equivDvd (I : (Ideal A)⁰) :
-    (Ideal A)⁰ ≃ {J : (Ideal A)⁰ // I ∣ J} := Equiv.dvd I
-
 section Gcd
 
 namespace Ideal

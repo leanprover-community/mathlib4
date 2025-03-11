@@ -263,9 +263,9 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
-theorem absNorm_equivDvd (I J : (Ideal S)⁰) :
-    absNorm (equivDvd I J : Ideal S) = absNorm (I : Ideal S) * absNorm (J : Ideal S) := by
-  rw [equivDvd_apply, Submonoid.coe_mul, _root_.map_mul]
+theorem absNorm_equivdvd (I J : (Ideal S)⁰) :
+    absNorm (Equiv.dvd I J : Ideal S) = absNorm (I : Ideal S) * absNorm (J : Ideal S) := by
+  rw [Equiv.dvd_apply, Submonoid.coe_mul, _root_.map_mul]
 
 variable [Module.Finite ℤ S]
 
