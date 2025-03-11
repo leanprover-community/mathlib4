@@ -222,7 +222,7 @@ lemma sum_f (s t : SingularNManifold X k I) : (s.sum t).f = Sum.elim s.f t.f := 
 end SingularNManifold
 
 variable (k) in
-/-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
+/-- An **unoriented bordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
 is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
 whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
 resp. `g` in the obvious way.
@@ -233,13 +233,13 @@ as gluing arguments require matching models to work.
 We list all the relevant variables in this definition to ensure the universe variables `u` and `v`
 describing the singular n-manifolds at the boundary are the first ones in this definition.
 -/
-structure UnorientedCobordism.{u, v} {X E H E' H' : Type*}
+structure UnorientedBordism.{u, v} {X E H E' H' : Type*}
     [TopologicalSpace X] [TopologicalSpace H] [TopologicalSpace H']
     [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E'] [NormedSpace ℝ E']
     (k : WithTop ℕ∞) {I : ModelWithCorners ℝ E H} [FiniteDimensional ℝ E]
     (s : SingularNManifold.{u} X k I) (t : SingularNManifold.{v} X k I)
     (J : ModelWithCorners ℝ E' H') where
-  /-- The underlying compact manifold of this unoriented cobordism -/
+  /-- The underlying compact manifold of this unoriented bordism -/
   W : Type (max u v) -- or: new parameter w
   /-- The manifold `W` is a topological space. -/
   [topologicalSpace: TopologicalSpace W]
@@ -251,7 +251,7 @@ structure UnorientedCobordism.{u, v} {X E H E' H' : Type*}
   -- Future: we could allow bd.M₀ to be modelled on some other model, not necessarily I:
   -- we only care that this is fixed in the type.
   bd: BoundaryManifoldData W J k I
-  /-- A continuous map `W → X` of the cobordism into the topological space we work on -/
+  /-- A continuous map `W → X` of the bordism into the topological space we work on -/
   F : W → X
   hF : Continuous F
   /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
@@ -262,7 +262,7 @@ structure UnorientedCobordism.{u, v} {X E H E' H' : Type*}
   /-- `F` restricted to `N ↪ ∂W` equals `g` -/
   hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
 
-namespace UnorientedCobordism
+namespace UnorientedBordism
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
@@ -288,17 +288,17 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 variable {s s' t t' u : SingularNManifold X k I} {J : ModelWithCorners ℝ E' H'}
 
-instance (φ : UnorientedCobordism k s t J) : TopologicalSpace φ.W := φ.topologicalSpace
+instance (φ : UnorientedBordism k s t J) : TopologicalSpace φ.W := φ.topologicalSpace
 
-instance (φ : UnorientedCobordism k s t J) : CompactSpace φ.W := φ.compactSpace
+instance (φ : UnorientedBordism k s t J) : CompactSpace φ.W := φ.compactSpace
 
-instance (φ : UnorientedCobordism k s t J) : ChartedSpace H' φ.W := φ.chartedSpace
+instance (φ : UnorientedBordism k s t J) : ChartedSpace H' φ.W := φ.chartedSpace
 
-instance (φ : UnorientedCobordism k s t J) : IsManifold J k φ.W := φ.isManifold
+instance (φ : UnorientedBordism k s t J) : IsManifold J k φ.W := φ.isManifold
 
 /-
-/-- The cobordism between two empty singular n-manifolds. -/
-def empty [IsEmpty M] [IsEmpty M''] : UnorientedCobordism k (SingularNManifold.empty X M I)
+/-- The bordism between two empty singular n-manifolds. -/
+def empty [IsEmpty M] [IsEmpty M''] : UnorientedBordism k (SingularNManifold.empty X M I)
     (SingularNManifold.empty X M'' I) I where
   -- XXX: generalise to any model J, by post-composing the boundary data
   bd := BoundaryManifoldData.of_boundaryless M I
@@ -311,9 +311,9 @@ def empty [IsEmpty M] [IsEmpty M''] : UnorientedCobordism k (SingularNManifold.e
   hFg := by ext x; exact (IsEmpty.false x).elim
 -/
 
-/-- The disjoint union of two unoriented cobordisms (over the same model `J`). -/
-noncomputable def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k s' t' J) :
-    UnorientedCobordism k (s.sum s') (t.sum t') J where
+/-- The disjoint union of two unoriented bordisms (over the same model `J`). -/
+noncomputable def sum (φ : UnorientedBordism k s t J) (ψ : UnorientedBordism k s' t' J) :
+    UnorientedBordism k (s.sum s') (t.sum t') J where
   W := φ.W ⊕ ψ.W
   bd := φ.bd.sum ψ.bd
   F := Sum.elim φ.F ψ.F
@@ -343,10 +343,10 @@ noncomputable def sum (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordi
       change (ψ.F ∘ ψ.bd.f ∘ ψ.φ ∘ Sum.inr) x = t'.f x
       rw [ψ.hFg]
 
-/-- Suppose `W` is a cobordism between `M` and `N`.
-Then a diffeomorphism `f : M'' → M` induces a cobordism between `M''` and `N`. -/
-def comap_fst (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M'' s.M k) :
-    UnorientedCobordism k (s.comap f.continuous) t J where
+/-- Suppose `W` is a bordism between `M` and `N`.
+Then a diffeomorphism `f : M'' → M` induces a bordism between `M''` and `N`. -/
+def comap_fst (φ : UnorientedBordism k s t J) (f : Diffeomorph I I M'' s.M k) :
+    UnorientedBordism k (s.comap f.continuous) t J where
   bd := φ.bd
   F := φ.F
   hF := φ.hF
@@ -354,10 +354,10 @@ def comap_fst (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M'' s.M k)
   hFf := by dsimp; rw [← φ.hFf]; congr
   hFg := by dsimp; rw [← φ.hFg]; congr
 
-/-- Suppose `W` is a cobordism between `M` and `N`.
-Then a diffeomorphism `f : N'' → N` induces a cobordism between `M` and `N''`. -/
-def comap_snd (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M t.M k) :
-    UnorientedCobordism k s (t.comap f.continuous) J where
+/-- Suppose `W` is a bordism between `M` and `N`.
+Then a diffeomorphism `f : N'' → N` induces a bordism between `M` and `N''`. -/
+def comap_snd (φ : UnorientedBordism k s t J) (f : Diffeomorph I I M t.M k) :
+    UnorientedBordism k s (t.comap f.continuous) J where
   bd := φ.bd
   F := φ.F
   hF := φ.hF
@@ -367,7 +367,7 @@ def comap_snd (φ : UnorientedCobordism k s t J) (f : Diffeomorph I I M t.M k) :
 
 variable (s) in
 /-- Each singular n-manifold is bordant to itself. -/
-def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where
+def refl : UnorientedBordism k s s (I.prod (𝓡∂ 1)) where
   W := s.M × (Set.Icc (0 : ℝ) 1)
   -- TODO: I want boundary data modelled on I, not I × (∂[0,1])
   bd := sorry -- BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
@@ -377,8 +377,8 @@ def refl : UnorientedCobordism k s s (I.prod (𝓡∂ 1)) where
   hFf := sorry
   hFg := sorry
 
-/-- Being cobordant is symmetric. -/
-def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
+/-- Being bordant is symmetric. -/
+def symm (φ : UnorientedBordism k s t J) : UnorientedBordism k t s J where
   bd := φ.bd
   F := φ.F
   hF := φ.hF
@@ -386,12 +386,11 @@ def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
   hFf := by rw [← φ.hFg]; congr
   hFg := by rw [← φ.hFf]; congr
 
--- XXX are there better names?
 /-- Replace the first singular n-manifold in an unoriented bordism by an equivalent one:
 useful to fix definitional equalities. -/
-def copy_map_fst.{u, v} (φ : UnorientedCobordism.{u, v} k s t J)
+def copy_map_fst.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
     (eq : Diffeomorph I I s'.M s.M k) (h_eq : s'.f = s.f ∘ eq) :
-    UnorientedCobordism.{u, v} k s' t J where
+    UnorientedBordism.{u, v} k s' t J where
   W := φ.W
   bd := φ.bd
   F := φ.F
@@ -402,9 +401,9 @@ def copy_map_fst.{u, v} (φ : UnorientedCobordism.{u, v} k s t J)
 
 /-- Replace the second singular n-manifold in an unoriented bordism by an equivalent one:
 useful to fix definitional equalities. -/
-def copy_map_snd.{u, v} (φ : UnorientedCobordism.{u, v} k s t J)
+def copy_map_snd.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
     (eq : Diffeomorph I I t'.M t.M k) (h_eq : t'.f = t.f ∘ eq) :
-    UnorientedCobordism.{u, v} k s t' J where
+    UnorientedBordism.{u, v} k s t' J where
   W := φ.W
   bd := φ.bd
   F := φ.F
@@ -413,13 +412,13 @@ def copy_map_snd.{u, v} (φ : UnorientedCobordism.{u, v} k s t J)
   hFf := by dsimp; rw [← φ.hFf]; congr
   hFg := by dsimp; rw [h_eq, ← φ.hFg]; congr
 
--- Note. The naive approach `almost` is not sufficient, as it would yield a cobordism
+-- Note. The naive approach `almost` is not sufficient, as it would yield a bordism
 -- from s to `s.sum (SingularNManifold.empty X M I)`,
 -- whereas I want `s.comap (Diffeomorph.sumEmpty)`... these are not *exactly* the same.
 
 /-- Each singular n-manifold is bordant to itself plus the empty manifold. -/
 def sumEmpty [IsEmpty M] :
-    UnorientedCobordism k (s.sum (SingularNManifold.empty X M I)) s (I.prod (𝓡∂ 1)) :=
+    UnorientedBordism k (s.sum (SingularNManifold.empty X M I)) s (I.prod (𝓡∂ 1)) :=
   letI almost := (refl s).comap_fst (Diffeomorph.sumEmpty I s.M (M' := M) k)
   almost.copy_map_fst (Diffeomorph.refl I _ k) (by
     ext x
@@ -428,7 +427,7 @@ def sumEmpty [IsEmpty M] :
     | inr x => exact (IsEmpty.false x).elim)
 
 /-- The direct sum of singular n-manifolds is commutative up to bordism. -/
-def sumComm : UnorientedCobordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) :=
+def sumComm : UnorientedBordism k (t.sum s) (s.sum t) (I.prod (𝓡∂ 1)) :=
   letI almost := (refl (s.sum t)).comap_fst (Diffeomorph.sumComm I s.M k t.M).symm
   almost.copy_map_fst (Diffeomorph.refl I _ k) (by
     ext x
@@ -440,14 +439,14 @@ lemma foo {α β γ X : Type*} {f : α → X} {g : β → X} {h : γ → X} :
   aesop
 
 /-- The direct sum of singular n-manifolds is associative up to bordism. -/
-def sumAssoc : UnorientedCobordism k (s.sum (t.sum u)) ((s.sum t).sum u) (I.prod (𝓡∂ 1)) := by
+def sumAssoc : UnorientedBordism k (s.sum (t.sum u)) ((s.sum t).sum u) (I.prod (𝓡∂ 1)) := by
   letI almost := (refl (s.sum (t.sum u))).comap_snd (Diffeomorph.sumAssoc I s.M k t.M u.M)
   exact almost.copy_map_snd (Diffeomorph.refl I _ k) (by
     simpa only [mfld_simps, CompTriple.comp_eq] using foo)
 
 /-- The direct sum of a manifold with itself is null-bordant. -/
 def sum_self [IsEmpty M] :
-    UnorientedCobordism k (s.sum s) (SingularNManifold.empty X M I) (I.prod (𝓡∂ 1)) where
+    UnorientedBordism k (s.sum s) (SingularNManifold.empty X M I) (I.prod (𝓡∂ 1)) where
   -- This is the same manifold as for `refl`, but with a different map.
   W := s.M × (Set.Icc (0 : ℝ) 1)
   -- TODO: I want boundary data modelled on I, not I × (∂[0,1])
@@ -516,13 +515,13 @@ section trans
 
 variable {n : ℕ} [FiniteDimensional ℝ E] [FiniteDimensional ℝ E']
 
-/-- Being cobordant is transitive: two `n+1`-dimensional cobordisms with `n`-dimensional boundary
+/-- Being bordant is transitive: two `n+1`-dimensional bordisms with `n`-dimensional boundary
 can be glued along their common boundary (thanks to the collar neighbourhood theorem). -/
 -- The proof depends on the collar neighbourhood theorem.
--- TODO: do I need a stronger definition of cobordisms, including a *choice* of collars?
+-- TODO: do I need a stronger definition of bordisms, including a *choice* of collars?
 -- At least, I need to argue that one *can* choose matching collars...
-def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J)
-    (h : finrank ℝ E' = finrank ℝ E + 1) : UnorientedCobordism k t u J :=
+def trans (φ : UnorientedBordism k s t J) (ψ : UnorientedBordism k t u J)
+    (h : finrank ℝ E' = finrank ℝ E + 1) : UnorientedBordism k t u J :=
   /- Outline of the proof:
     - using the collar neighbourhood theorem, choose matching collars for t in φ and ψ
       invert the first collar, to get a map (-ε, 0] × t.M → φ.W
@@ -542,7 +541,7 @@ def trans (φ : UnorientedCobordism k s t J) (ψ : UnorientedCobordism k t u J)
 
 end trans
 
-end UnorientedCobordism
+end UnorientedBordism
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
@@ -555,12 +554,12 @@ variable {k : WithTop ℕ∞} {E E' H H' : Type*} [NormedAddCommGroup E] [Normed
 
 variable (X k I) in
 /-- The "unordered bordism" equivalence relation: two singular n-manifolds modelled on `I`
-are equivalent iff there exists an unoriented cobordism between them. -/
+are equivalent iff there exists an unoriented bordism between them. -/
 -- FIXME: remove the E' and H' arguments below, once J is actually used
 def unorientedBordismRelation.{u, v} (J : ModelWithCorners ℝ E' H') :
     SingularNManifold.{u} X k I → SingularNManifold.{v} X k I → Prop :=
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
-  fun s t ↦ ∃ _φ : UnorientedCobordism k s t J, True
+  fun s t ↦ ∃ _φ : UnorientedBordism k s t J, True
 
 variable (X k I J) in
 lemma uBordismRelation.{u} [FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1) :
@@ -600,7 +599,7 @@ def empty : uBordismClass X k I (E' := E') (H' := H') J :=
 --     (h : unorientedBordismRelation X k I (H' := H') (E' := E') J a₁ a₂)
 --     (h' : unorientedBordismRelation X k I (H' := H') (E' := E') J b₁ b₂) :
 --     a₁.sum b₁ = a₂.sum b₂ := sorry
--- the proof is basically UnorientedCobordism.sum
+-- the proof is basically UnorientedBordism.sum
 
 def uBordismClass.sum : (uBordismClass X k I (E' := E') (H' := H') J) →
     (uBordismClass X k I (E' := E') (H' := H') J) →
@@ -634,19 +633,19 @@ def ubgroupAux : AddGroup (uBordismClass X k I (E' := E') (H' := H') J) := by
   -- XXX: better name for the variables?
   · intro Φ Ψ Δ
     change uBordismClass.sum (uBordismClass.sum Φ Ψ) Δ = uBordismClass.sum Φ (uBordismClass.sum Ψ Δ)
-    -- use UnorientedCobordism.sumAssoc
+    -- use UnorientedBordism.sumAssoc
     sorry
   · intro Φ
     change uBordismClass.sum (empty X k I J) Φ = Φ
     -- change: s ⊕ ∅ is equivalent to s, i.e. bordant
-    -- use UnorientedCobordism.sumEmpty
+    -- use UnorientedBordism.sumEmpty
     sorry
   · intro Φ
     change uBordismClass.sum Φ Φ = empty X k I J
-    -- change: s ⊕ s is equivalent to SingularNManifold X empty I, i.e. cobordism
-    -- use UnorientedCobordism.sum_self
+    -- change: s ⊕ s is equivalent to SingularNManifold X empty I, i.e. bordism
+    -- use UnorientedBordism.sum_self
     sorry
 
 instance : AddCommGroup (uBordismClass X k I (E' := E') (H' := H') J) where
   __ := ubgroupAux X k I J
-  add_comm Φ Ψ := sorry -- unfold goal, the use UnorientedCobordism.sumComm
+  add_comm Φ Ψ := sorry -- unfold goal, the use UnorientedBordism.sumComm
