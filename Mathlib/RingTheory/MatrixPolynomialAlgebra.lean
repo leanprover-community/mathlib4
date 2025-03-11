@@ -7,7 +7,6 @@ import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.DMatrix
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
