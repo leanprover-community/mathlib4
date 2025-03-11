@@ -44,8 +44,8 @@ lemma similar_iff_exists_edist_eq :
       r * edist (v₂ i₁) (v₂ i₂))) :=
   Iff.rfl
 
-/-- A similarity holds if and only if and only if all extended distances between points with
-different indices are proportional. -/
+/-- A similarity holds if and only if all extended distances between points with different
+indices are proportional. -/
 lemma similar_iff_exists_pairwise_edist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) := by
@@ -130,8 +130,8 @@ lemma similar_iff_exists_nndist_eq :
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
   fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
 
-/-- A similarity holds if and only if and only if all non-negative distances between points with
-different indices are proportional. -/
+/-- A similarity holds if and only if all non-negative distances between points with different
+indices are proportional. -/
 lemma similar_iff_exists_pairwise_nndist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
       r * nndist (v₂ i₁) (v₂ i₂))) := by
@@ -146,8 +146,8 @@ lemma similar_iff_exists_dist_eq :
   (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
     fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
 
-/-- A similarity holds if and only if and only if all distances between points with
-different indices are proportional. -/
+/-- A similarity holds if and only if all distances between points with different indices are
+proportional. -/
 lemma similar_iff_exists_pairwise_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
