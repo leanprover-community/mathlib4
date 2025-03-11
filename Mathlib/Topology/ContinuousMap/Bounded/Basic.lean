@@ -989,14 +989,14 @@ theorem norm_compContinuous_le [TopologicalSpace γ] (f : α →ᵇ β) (g : C(�
 
 end NormedAddCommGroup
 
-section BoundedSMul
+section IsBoundedSMul
 
 /-!
-### `BoundedSMul` (in particular, topological module) structure
+### `IsBoundedSMul` (in particular, topological module) structure
 
 In this section, if `β` is a metric space and a `𝕜`-module whose addition and scalar multiplication
 are compatible with the metric structure, then we show that the space of bounded continuous
-functions from `α` to `β` inherits a so-called `BoundedSMul` structure (in particular, a
+functions from `α` to `β` inherits a so-called `IsBoundedSMul` structure (in particular, a
 `ContinuousMul` structure, which is the mathlib formulation of being a topological module), by
 using pointwise operations and checking that they are compatible with the uniform distance. -/
 
@@ -1005,7 +1005,7 @@ variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [PseudoMe
 
 section SMul
 
-variable [Zero 𝕜] [Zero β] [SMul 𝕜 β] [BoundedSMul 𝕜 β]
+variable [Zero 𝕜] [Zero β] [SMul 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance instSMul : SMul 𝕜 (α →ᵇ β) where
   smul c f :=
@@ -1023,19 +1023,19 @@ theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f
 theorem smul_apply (c : 𝕜) (f : α →ᵇ β) (x : α) : (c • f) x = c • f x := rfl
 
 instance instIsScalarTower {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
-    [BoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
+    [IsBoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
     IsScalarTower 𝕜' 𝕜 (α →ᵇ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
 
 instance instSMulCommClass {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
-    [BoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
+    [IsBoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
     SMulCommClass 𝕜' 𝕜 (α →ᵇ β) where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ β] [IsCentralScalar 𝕜 β] : IsCentralScalar 𝕜 (α →ᵇ β) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
-instance instBoundedSMul : BoundedSMul 𝕜 (α →ᵇ β) where
+instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
   dist_smul_pair' c f₁ f₂ := by
     rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
     intro x
@@ -1053,7 +1053,7 @@ end SMul
 
 section MulAction
 
-variable [MonoidWithZero 𝕜] [Zero β] [MulAction 𝕜 β] [BoundedSMul 𝕜 β]
+variable [MonoidWithZero 𝕜] [Zero β] [MulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance instMulAction : MulAction 𝕜 (α →ᵇ β) :=
   DFunLike.coe_injective.mulAction _ coe_smul
@@ -1062,7 +1062,7 @@ end MulAction
 
 section DistribMulAction
 
-variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [BoundedSMul 𝕜 β]
+variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 variable [BoundedAdd β] [ContinuousAdd β]
 
 instance instDistribMulAction : DistribMulAction 𝕜 (α →ᵇ β) :=
@@ -1072,7 +1072,7 @@ end DistribMulAction
 
 section Module
 
-variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 variable [BoundedAdd β] [ContinuousAdd β]
 
@@ -1099,7 +1099,7 @@ def toContinuousMapLinearMap : (α →ᵇ β) →ₗ[𝕜] C(α, β) where
 
 end Module
 
-end BoundedSMul
+end IsBoundedSMul
 
 section NormedSpace
 
@@ -1125,7 +1125,7 @@ variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
 variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
 variable (α)
 
--- TODO does this work in the `BoundedSMul` setting, too?
+-- TODO does this work in the `IsBoundedSMul` setting, too?
 /-- Postcomposition of bounded continuous functions into a normed module by a continuous linear map
 is a continuous linear map.
 Upgraded version of `ContinuousLinearMap.compLeftContinuous`, similar to `LinearMap.compLeft`. -/
@@ -1269,9 +1269,9 @@ end NormedCommRing
 
 section NonUnitalAlgebra
 
--- these hypotheses could be generalized if we generalize `BoundedSMul` to `Bornology`.
+-- these hypotheses could be generalized if we generalize `IsBoundedSMul` to `Bornology`.
 variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalSeminormedRing β]
-variable [Zero 𝕜] [SMul 𝕜 β] [BoundedSMul 𝕜 β]
+variable [Zero 𝕜] [SMul 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →ᵇ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_mul_assoc ..
@@ -1346,8 +1346,8 @@ instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
 /- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
 shows that the space of bounded continuous functions from `α` to `β` is naturally a normed
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
-instance : BoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=
-  BoundedSMul.of_norm_smul_le fun _ _ =>
+instance : IsBoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=
+  IsBoundedSMul.of_norm_smul_le fun _ _ =>
     norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
 
 end NormedAlgebra
