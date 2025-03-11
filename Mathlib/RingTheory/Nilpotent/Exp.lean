@@ -156,6 +156,7 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       · simp only [implies_true]
   rwa [s₂.symm] at s₁
 
+-- todo rename IsNilpotent.isUnit_exp
 theorem exp_of_nilpotent_is_unit {a : A} (h : IsNilpotent a) : IsUnit (exp a) := by
   have h₁ : Commute a (-a) := Commute.neg_right rfl
   have h₂ : IsNilpotent (-a) := IsNilpotent.neg h
