@@ -956,7 +956,7 @@ theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   · exact ⟨ψ ⁻¹' B, hψ hB, Set.preimage_comp.symm⟩
 
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
-    [MeasurableNeg β'] (hfg : IndepFun f g κ μ)  :
+    [MeasurableNeg β'] (hfg : IndepFun f g κ μ) :
     IndepFun f (-g) κ μ := hfg.comp measurable_id measurable_neg
 
 theorem IndepFun.neg_left {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β]
