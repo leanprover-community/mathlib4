@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.MetricSpace.PiNat.Basic
+import Mathlib.Topology.MetricSpace.PiNat
 
 /-!
 # Normed spaces `Π (n : ℕ), E n`
@@ -46,9 +46,14 @@ attribute [local instance] PiCountable.normedAddCommGroup
 
 open Encodable
 
+lemma norm_def (f : Π i, F i) :
+    ‖f‖ = ∑' i, min ((1 / 2) ^ encode i) ‖f i‖ := by
+  rw [← sub_zero f, ← dist_eq_norm, dist_eq_tsum]
+  simp
+
 lemma norm_single [DecidableEq ι] (i : ι) (r : F i) :
     ‖(Pi.single i r : Π i, F i)‖ = (2 ^ encode i)⁻¹ ⊓ ‖r‖ := by
-  rw [← sub_zero (Pi.single _ _), ← dist_eq_norm, dist_eq_tsum, tsum_eq_single i]
+  rw [norm_def, tsum_eq_single i]
   · simp
   · simp +contextual [Pi.single_apply]
 
