@@ -78,6 +78,8 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
           (adjoin_le_integralClosure (hζ.isIntegral (p ^ k).pos))).isIntegral _)
   let B := hζ.subOnePowerBasis ℚ
   have hint : IsIntegral ℤ B.gen := (hζ.isIntegral (p ^ k).pos).sub isIntegral_one
+  -- Porting note: the following `letI` was not needed because the locale `cyclotomic` set it
+  -- as instances.
   letI := IsCyclotomicExtension.finiteDimensional {p ^ k} ℚ K
   have H := discr_mul_isIntegral_mem_adjoin ℚ hint h
   obtain ⟨u, n, hun⟩ := discr_prime_pow_eq_unit_mul_pow' hζ
@@ -248,7 +250,8 @@ theorem integralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ :
 @[simp]
 theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.dim = φ p := by
-  erw [integralPowerBasis_dim (hcycl := by rwa [pow_one]) (by rwa [pow_one]), pow_one]
+  rw [integralPowerBasis', integralPowerBasis_dim (hcycl := by rwa [pow_one]) (by rwa [pow_one]),
+    pow_one]
 
 
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic

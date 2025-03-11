@@ -127,7 +127,7 @@ theorem equiv_symm_smul : (WithLp.equiv p V).symm (c • x') = c • (WithLp.equ
 variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def linearEquiv : WithLp p V ≃ₗ[K] V :=
   { LinearEquiv.refl _ _ with
     toFun := WithLp.equiv _ _

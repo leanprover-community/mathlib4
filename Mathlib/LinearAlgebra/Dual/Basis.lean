@@ -287,7 +287,7 @@ theorem lc_coeffs (m : M) : DualBases.lc e (h.coeffs m) = m := by
   simp [LinearMap.map_sub, h.dual_lc, sub_eq_zero]
 
 /-- `(h : DualBases e ε).basis` shows the family of vectors `e` forms a basis. -/
-@[simps repr_apply, simps (config := .lemmasOnly) repr_symm_apply]
+@[simps repr_apply, simps -isSimp repr_symm_apply]
 def basis : Basis ι R M :=
   Basis.ofRepr
     { toFun := coeffs h

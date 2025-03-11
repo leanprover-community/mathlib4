@@ -77,7 +77,6 @@ theorem congr_fun {f g : P →ᴬ[R] Q} (h : f = g) (x : P) : f x = g x :=
 def toContinuousMap (f : P →ᴬ[R] Q) : C(P, Q) :=
   ⟨f, f.cont⟩
 
--- Porting note: changed to CoeHead due to difficulty with synthesization order
 instance : CoeHead (P →ᴬ[R] Q) C(P, Q) :=
   ⟨toContinuousMap⟩
 
