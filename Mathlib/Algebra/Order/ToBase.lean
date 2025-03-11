@@ -38,7 +38,7 @@ lemma WithTop.toBase_of_top [Zero α] :
     (⊤ : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase_def]
 
 @[simp]
-lemma WithTop.toBase_of_zero [Zero α] :
+lemma WithTop.toBase_zero [Zero α] :
     (0 : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase_def]
 
 @[simp]
