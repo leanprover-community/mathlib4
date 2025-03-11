@@ -49,14 +49,21 @@ namespace DividedPowers
 
 /-- Given divided power structures on the `A`-ideal `I` and the `B`-ideal `J`, a ring morphism
   `A → B` is a divided power morphism if it is compatible with these divided power structures. -/
-def IsDPMorphism {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
-    (hI : DividedPowers I) (hJ : DividedPowers J) (f : A →+* B) : Prop :=
-  I.map f ≤ J ∧ ∀ {n : ℕ}, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a)
+structure IsDPMorphism {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
+    (hI : DividedPowers I) (hJ : DividedPowers J) (f : A →+* B) : Prop where
+  ideal_comp : I.map f ≤ J
+  dpow_comp : ∀ {n : ℕ}, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a)
 
-lemma isDPMorphism_iff {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
-    (hI : DividedPowers I) (hJ : DividedPowers J) (f : A →+* B) :
+variable {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Ideal A} {J : Ideal B}
+  (hI : DividedPowers I) (hJ : DividedPowers J)
+
+lemma isDPMorphism_def (f : A →+* B) :
+    IsDPMorphism hI hJ f ↔ I.map f ≤ J ∧ ∀ {n}, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a) :=
+  ⟨fun h ↦ ⟨h.ideal_comp, h.dpow_comp⟩, fun ⟨h1, h2⟩ ↦ IsDPMorphism.mk h1 h2⟩
+
+lemma isDPMorphism_iff (f : A →+* B) :
     IsDPMorphism hI hJ f ↔ I.map f ≤ J ∧ ∀ n ≠ 0, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a) := by
-  rw [IsDPMorphism, and_congr_right_iff]
+  rw [isDPMorphism_def, and_congr_right_iff]
   refine fun hIJ ↦ ⟨fun H n _ ↦ H, fun H n ↦ ?_⟩
   by_cases hn : n = 0
   · intro _ ha
@@ -65,8 +72,7 @@ lemma isDPMorphism_iff {A B : Type*} [CommSemiring A] [CommSemiring B] {I : Idea
 
 namespace IsDPMorphism
 
-variable {A B C : Type*} [CommSemiring A] [CommSemiring B] [CommSemiring C] {I : Ideal A}
-  {J : Ideal B} {K : Ideal C} {hI : DividedPowers I} {hJ : DividedPowers J} (hK : DividedPowers K)
+variable {hI hJ} {C : Type*} [CommSemiring C] {K : Ideal C} (hK : DividedPowers K)
 
 theorem map_dpow {f : A →+* B} (hf : IsDPMorphism hI hJ f) {n : ℕ} {a : A} (ha : a ∈ I) :
     f (hI.dpow n a) = hJ.dpow n (f a) := (hf.2 a ha).symm
@@ -100,7 +106,7 @@ instance instFunLike : FunLike (DPMorphism hI hJ) A B where
 
 instance coe_ringHom : CoeOut (DPMorphism hI hJ) (A →+* B) := ⟨DPMorphism.toRingHom⟩
 
-@[simp] theorem coe_toRingHom {f : DPMorphism hI hJ} : ⇑(f : A →+* B) = f := rfl
+@[simp] theorem coe_toRingHom {f : DPMorphism hI hJ} : (f : A →+* B) = f := rfl
 
 @[simp] lemma toRingHom_apply {f : DPMorphism hI hJ} {a : A} : f.toRingHom a = f a := rfl
 
@@ -185,9 +191,8 @@ theorem on_span {f : A →+* B} {S : Set A} (hS : I = span S) (hS' : ∀ s ∈ S
   rintro b ⟨a, has, rfl⟩
   exact hS' a has
 
-theorem of_comp (f : A →+* B) (g : B →+* C) -- (h : A →+* C) (hcomp : g.comp f = h)
-    (heq : J = I.map f) (hf : IsDPMorphism hI hJ f) (hh : IsDPMorphism hI hK (g.comp f)) :
-    IsDPMorphism hJ hK g := by
+theorem of_comp (f : A →+* B) (g : B →+* C) (heq : J = I.map f) (hf : IsDPMorphism hI hJ f)
+    (hh : IsDPMorphism hI hK (g.comp f)) : IsDPMorphism hJ hK g := by
   apply on_span _ _ heq
   · rintro b ⟨a, ha, rfl⟩
     rw [← RingHom.comp_apply]
