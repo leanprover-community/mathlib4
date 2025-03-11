@@ -406,8 +406,6 @@ lemma natAbs_ediv_of_dvd (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a /
   else
     simp [natAbs_ediv, H, h]
 
-@[deprecated (since := "2025-03-10")] alias natAbs_ediv := natAbs_ediv_of_dvd
-
 lemma dvd_of_mul_dvd_mul_left (ha : a ≠ 0) (h : a * m ∣ a * n) : m ∣ n := by
   obtain ⟨b, hb⟩ := h
   rw [Int.mul_assoc, Int.mul_eq_mul_left_iff ha] at hb
