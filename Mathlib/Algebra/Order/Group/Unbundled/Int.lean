@@ -108,6 +108,8 @@ theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
 theorem emod_lt_abs (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 
+@[deprecated (since := "2025-03-10")] alias emod_lt := emod_lt_abs
+
 /-! ### properties of `/` and `%` -/
 
 theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
@@ -129,6 +131,8 @@ theorem abs_sign_of_nonzero {z : ℤ} (hz : z ≠ 0) : |z.sign| = 1 := by
 protected theorem sign_eq_ediv_abs' (a : ℤ) : sign a = a / |a| :=
   if az : a = 0 then by simp [az]
   else (Int.ediv_eq_of_eq_mul_left (mt abs_eq_zero.1 az) (sign_mul_abs _).symm).symm
+
+@[deprecated (since := "2025-03-10")] alias sign_eq_ediv_abs := Int.sign_eq_ediv_abs'
 
 protected theorem sign_eq_abs_ediv (a : ℤ) : sign a = |a| / a :=
   if az : a = 0 then by simp [az]
