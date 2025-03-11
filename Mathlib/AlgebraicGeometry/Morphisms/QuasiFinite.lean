@@ -21,19 +21,21 @@ variable {X S : Scheme.{u}} (f : X ⟶ S)
 #check Scheme.Hom
 #check pullback.lift
 
-#check re
 -- set_option trace.Meta.Tactic.simp true
 
-example {x : X} : f.fiber (f.base x) := by
-  let l := X.fromSpecResidueField x
-  let ll : Spec (X.residueField x) ⟶ Spec (S.residueField (f.base x)) := Spec.map <| f.residueFieldMap x
-  let lll : Spec (X.residueField x) ⟶ f.fiber (f.base x) := pullback.lift l ll (by
-    ext1
-    · simp only [Scheme.comp_coeBase, Scheme.Hom.Spec_map_residueFieldMap_fromSpecResidueField, l, ll]
-    · ext
-      simp? [l, ll]
-      sorry
-  )
+example {x : X.carrier} : (f.fiber (f.base x)).carrier := by
+
+  -- let l := X.fromSpecResidueField x
+  -- let ll : Spec (X.residueField x) ⟶ Spec (S.residueField (f.base x)) :=
+  --   Spec.map <| f.residueFieldMap x
+  -- let lll : Spec (X.residueField x) ⟶ f.fiber (f.base x) := pullback.lift l ll (by
+  --   ext1
+  --   · simp only [Scheme.comp_coeBase, Scheme.Hom.Spec_map_residueFieldMap_fromSpecResidueField, l, ll]
+  --   · congr 1
+  --     ·
+  --     · sorry
+  --     · sorry
+  -- )
 
 #check Scheme.Hom.app
 --
