@@ -148,7 +148,7 @@ theorem counitInv_app_functor (e : C ≌ D) (X : C) :
     e.counitInv.app (e.functor.obj X) = e.functor.map (e.unit.app X) := by
   symm
   simp only [id_obj, comp_obj, counitInv]
-  rw [← inv_app, ← Iso.comp_hom_eq_id (e.counitIso.app _), hom_app, functor_unit_comp]
+  rw [← Iso.app_inv, ← Iso.comp_hom_eq_id (e.counitIso.app _), Iso.app_hom, functor_unit_comp]
   rfl
 
 theorem counit_app_functor (e : C ≌ D) (X : C) :
@@ -163,7 +163,8 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) := by
   rw [← id_comp (e.inverse.map _), ← map_id e.inverse, ← counitInv_functor_comp, map_comp]
   dsimp
-  rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), hom_app, inv_app]
+  rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), Iso.app_hom,
+    Iso.app_inv]
   slice_lhs 2 3 => erw [e.unit.naturality]
   slice_lhs 1 2 => erw [e.unit.naturality]
   slice_lhs 4 4 =>
