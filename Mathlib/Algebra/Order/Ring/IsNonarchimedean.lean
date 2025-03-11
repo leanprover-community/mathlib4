@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 María Inés de Frutos-Fernández. All rights reserved.
+Copyright (c) 2025 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
@@ -42,8 +42,8 @@ lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f
     · exact .inl h₁
     · exact .inr <| le_trans h₂ hind
 
-/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
-  we have `f (n • a) ≤ (f a)`. -/
+/-- If `f` is a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
+  `n : ℕ` and `a : α`, we have `f (n • a) ≤ (f a)`. -/
 theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F α R]
     [NonnegHomClass F α R] {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} :
     f (n • a) ≤ f a := by
@@ -54,8 +54,8 @@ theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F 
     apply le_trans <| hna (n • a) (1 • a)
     simpa
 
-/-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
-  we have `f (n * a) ≤ (f a)`. -/
+/-- If `f` is a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
+  `n : ℕ` and `a : α`, we have `f (n * a) ≤ (f a)`. -/
 theorem nmul_le {F α : Type*} [Ring α] [FunLike F α R] [ZeroHomClass F α R] [NonnegHomClass F α R]
     {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} : f (n * a) ≤ f a := by
   rw [← nsmul_eq_mul]
@@ -67,14 +67,16 @@ lemma apply_natCast_le_one_of_isNonarchimedean {F α : Type*} [Semiring α] [Fun
   rw [← nsmul_one n]
   exact le_trans (nsmul_le hna) (le_of_eq (map_one f))
 
-lemma apply_intCast_le_one_of_isNonarchimedean {F α : Type*} [Ring α] [FunLike F α R]
+/-- If `f` is a nonarchimedean additive group seminorm on `α` with `f 1 = 1`, then for every `n : ℤ`
+  we have `f n ≤ 1`. -/
+theorem apply_intCast_le_one_of_isNonarchimedean {F α : Type*} [Ring α] [FunLike F α R]
     [AddGroupSeminormClass F α R] [OneHomClass F α R] {f : F}
     (hna : IsNonarchimedean f) {n : ℤ} : f n ≤ 1 := by
   obtain ⟨a, rfl | rfl⟩ := Int.eq_nat_or_neg n <;>
-  simp [map_neg] <;>
+  simp <;>
   exact apply_natCast_le_one_of_isNonarchimedean hna
 
-lemma apply_sum_eq_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
+lemma add_eq_right_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f x < f y) : f (x + y) = f y := by
   by_contra! h
@@ -88,7 +90,7 @@ lemma apply_sum_eq_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
       exact max_lt h_lt <| lt_of_le_of_ne h1 h
     _   = f y := max_self (f y)
 
-lemma apply_sum_eq_of_lt' {F α : Type*} [AddGroup α] [FunLike F α R]
+lemma add_eq_left_of_lt {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α}
     (h_lt : f y < f x) : f (x + y) = f x := by
   by_contra! h
@@ -108,9 +110,9 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     [AddGroupSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) {x y : α} (hne : f x ≠ f y) :
     f (x + y) = max (f x) (f y) := by
   rcases hne.lt_or_lt with h_lt | h_lt
-  · rw [apply_sum_eq_of_lt hna h_lt]
+  · rw [add_eq_right_of_lt hna h_lt]
     exact (max_eq_right_of_lt h_lt).symm
-  · rw [apply_sum_eq_of_lt' hna h_lt]
+  · rw [add_eq_left_of_lt hna h_lt]
     exact Eq.symm (max_eq_left_of_lt h_lt)
 
 end IsNonarchimedean
