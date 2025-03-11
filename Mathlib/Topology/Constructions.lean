@@ -743,8 +743,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore @[continuity]
-@[to_additive "`Pi.single i x` is continuous in `x`."]
+@[to_additive (attr := continuity) "`Pi.single i x` is continuous in `x`."]
 theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
   continuous_const.update _ continuous_id
