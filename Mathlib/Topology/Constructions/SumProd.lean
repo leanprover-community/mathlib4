@@ -7,7 +7,7 @@ import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Maps.Basic
 
 /-!
-# Direct sums and products of topological spaces
+# Disjoint unions and products of topological spaces
 
 This file constructs sums (disjoint unions) and products of topological spaces
 and sets up their basic theory, such as criteria for maps into or out of these
