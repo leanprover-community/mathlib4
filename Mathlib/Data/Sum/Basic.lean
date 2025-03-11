@@ -23,7 +23,7 @@ namespace Sum
 
 @[simp]
 theorem elim_swap {α β γ : Type*} {f : α → γ} {g : β → γ} :
-    (Sum.elim f g) ∘ (@Sum.swap β α) = Sum.elim g f := by
+    Sum.elim f g ∘ Sum.swap = Sum.elim g f := by
   ext x
   cases x with
   | inl x => simp
