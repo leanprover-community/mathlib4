@@ -154,19 +154,28 @@ section
 variable {H : Type*} [Group H] [TopologicalSpace H]
 
 /-- The product of two open subgroups as an open subgroup of the product group. -/
-@[to_additive "The product of two open subgroups as an open subgroup of the product group."]
+@[to_additive prod "The product of two open subgroups as an open subgroup of the product group."]
 def prod (U : OpenSubgroup G) (V : OpenSubgroup H) : OpenSubgroup (G × H) :=
   ⟨.prod U V, U.isOpen.prod V.isOpen⟩
 
-@[to_additive (attr := simp, norm_cast)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.OpenAddSubgroup.sum := OpenAddSubgroup.prod
+
+@[to_additive (attr := simp, norm_cast) coe_prod]
 theorem coe_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Set (G × H)) = (U : Set G) ×ˢ (V : Set H) :=
   rfl
 
-@[to_additive (attr := simp, norm_cast)]
+@[deprecated (since := "2025-03-11")]
+alias _root_.OpenAddSubgroup.coe_sum := OpenAddSubgroup.coe_prod
+
+@[to_additive (attr := simp, norm_cast) toAddSubgroup_prod]
 theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
     (U.prod V : Subgroup (G × H)) = (U : Subgroup G).prod V :=
   rfl
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.OpenAddSubgroup.toAddSubgroup_sum := OpenAddSubgroup.toAddSubgroup_prod
 
 end
 
