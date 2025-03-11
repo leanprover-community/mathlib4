@@ -176,7 +176,7 @@ theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
     (h : Odd (Module.finrank ℚ K)) : NumberField.Units.torsionOrder K = 2 := by
   classical
   refine PNat.eq (Finset.card_eq_two.2 ?_)
-  use 1 , ⟨-1, Units.neg_one_mem_torsion⟩
+  use 1 , ⟨-1, neg_one_mem_torsion⟩
   constructor
   · intro hc
     simp [← Subtype.val_inj] at hc
