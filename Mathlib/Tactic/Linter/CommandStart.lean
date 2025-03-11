@@ -90,7 +90,8 @@ if they appear in surface syntax, the linter will ignore formatting.
 Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset` notation and
 list notation.
 -/
-abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder]
+abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder,
+  `termπ__, `«term_#_»]
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
