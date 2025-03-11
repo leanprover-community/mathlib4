@@ -93,6 +93,7 @@ def BaseChangeHom : S ⊗[R] (M →ₗ[R] N) →ₗ[S] (S ⊗[R] M →ₗ[S] S �
 -- `S ⊗ Hom_R (M, X) → Hom_R (M, S ⊗ X)` and the canonical isomorphism
 -- `Hom_R (M, S ⊗ X) → Hom_S (M_S, X_S)`.
 
+/-- Scalar multiplication of an `R`-algebra `S` on Homs from `S`. -/
 local instance : SMul S (S →ₗ[R] N) where
   smul s f :=
     { toFun := fun s' => f (s * s')
@@ -103,6 +104,7 @@ local instance : SMul S (S →ₗ[R] N) where
         intro r s
         simp }
 
+/-- Module structure on Hom. -/
 local instance : Module S (S →ₗ[R] N) where
   smul s f := s • f
   one_smul f := by
