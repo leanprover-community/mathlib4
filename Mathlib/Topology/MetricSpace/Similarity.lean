@@ -25,7 +25,7 @@ Let `P₁` and `P₂` be metric spaces, let `ι` be an index set, and let `v₁ 
 
 variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
-noncomputable section
+section PseudoEMetricSpace
 
 variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
 
@@ -109,7 +109,7 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
 
 end Similar
 
-end
+end PseudoEMetricSpace
 
 section PseudoMetricSpace
 
