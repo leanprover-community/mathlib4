@@ -64,7 +64,7 @@ lemma subcomplexHorn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     omega
   rw [Finset.eq_univ_iff_forall, not_forall] at hS
   obtain ⟨k, hk⟩ := hS
-  simp [S] at hk
+  simp only [Finset.mem_insert, Finset.mem_singleton, not_or, S] at hk
   refine ⟨k, hk.1, fun a ↦ ?_⟩
   fin_cases a
   exact Ne.symm hk.2
@@ -103,7 +103,6 @@ This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
   ⟨stdSimplex.edge n a b hab, by
-    simp [subcomplexHorn_eq_iSup]
     have hS : ¬ ({i, a, b} = Finset.univ) := fun hS ↦ by
       have := Finset.card_le_card hS.symm.le
       simp only [card_univ, Fintype.card_fin] at this
@@ -111,6 +110,10 @@ def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
     rw [Finset.eq_univ_iff_forall, not_forall] at hS
     obtain ⟨k, hk⟩ := hS
     simp only [mem_insert, mem_singleton, not_or] at hk
+    -- this was produced by `simp? [subcomplexHorn_eq_iSup]`
+    simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
+      Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
+      mem_singleton, exists_prop]
     refine ⟨k, hk.1, fun a ↦ ?_⟩
     fin_cases a
     · exact Ne.symm hk.2.1
