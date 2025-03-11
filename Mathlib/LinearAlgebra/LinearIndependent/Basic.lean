@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
@@ -60,9 +61,11 @@ variable {R v}
 
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
-The implementation uses minimal assumptions about the relationship between `R`, `K` and `M`.
-The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_algebras`.
-TODO : `LinearIndepOn` version.  -/
+
+See also `LinearIndependent.restrict_scalars'` for a verison with more convenient typeclass
+assumptions.
+
+TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Injective fun r : R ↦ r • (1 : K))
     (li : LinearIndependent K v) : LinearIndependent R v := by
@@ -89,7 +92,7 @@ such that they are both injective, and compatible with the scalar
 multiplications on `M` and `M'`, then `j` sends linearly independent families of vectors to
 linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map_injOn`.
-TODO : `LinearIndepOn` version.  -/
+TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.map_of_injective_injectiveₛ {R' M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R' → R) (j : M →+ M') (hi : Injective i) (hj : Injective j)
@@ -104,7 +107,7 @@ and `j : M →+ M'` is an injective monoid map, such that the scalar multiplicat
 on `M` and `M'` are compatible, then `j` sends linearly independent families
 of vectors to linearly independent families of vectors. As a special case, taking `R = R'`
 it is `LinearIndependent.map_injOn`.
-TODO : `LinearIndepOn` version.  -/
+TODO : `LinearIndepOn` version. -/
 theorem LinearIndependent.map_of_surjective_injectiveₛ {R' M' : Type*}
     [Semiring R'] [AddCommMonoid M'] [Module R' M'] (hv : LinearIndependent R v)
     (i : R → R') (j : M →+ M') (hi : Surjective i) (hj : Injective j)
@@ -256,9 +259,6 @@ theorem LinearIndependent.linearCombination_ne_of_not_mem_support [Nontrivial R]
   rw [Finsupp.span_image_eq_map_linearCombination] at p
   simp only [not_exists, not_and, mem_map] at p -- Porting note: `mem_map` isn't currently triggered
   exact p f (f.mem_supported_support R) rfl
-
-@[deprecated (since := "2024-08-29")] alias LinearIndependent.total_ne_of_not_mem_support :=
-  LinearIndependent.linearCombination_ne_of_not_mem_support
 
 end Subtype
 

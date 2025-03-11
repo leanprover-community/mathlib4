@@ -167,6 +167,26 @@ noncomputable def ShortExact.gIsCokernel [Balanced C] {S : ShortComplex C} (hS :
   have := hS.epi_g
   exact hS.exact.gIsCokernel
 
+/-- Is `S` is an exact short complex and `h : S.HomologyData`, there is
+a short exact sequence `0 ⟶ h.left.K ⟶ S.X₂ ⟶ h.right.Q ⟶ 0`. -/
+lemma Exact.shortExact {S : ShortComplex C} (hS : S.Exact) (h : S.HomologyData) :
+    (ShortComplex.mk _ _ (h.exact_iff_i_p_zero.1 hS)).ShortExact where
+  exact := by
+    have := hS.epi_f' h.left
+    have := hS.mono_g' h.right
+    let S' := ShortComplex.mk h.left.i S.g (by simp)
+    let S'' := ShortComplex.mk _ _ (h.exact_iff_i_p_zero.1 hS)
+    let a : S ⟶ S' :=
+      { τ₁ := h.left.f'
+        τ₂ := 𝟙 _
+        τ₃ := 𝟙 _ }
+    let b : S'' ⟶ S' :=
+      { τ₁ := 𝟙 _
+        τ₂ := 𝟙 _
+        τ₃ := h.right.g' }
+    rwa [ShortComplex.exact_iff_of_epi_of_isIso_of_mono b,
+      ← ShortComplex.exact_iff_of_epi_of_isIso_of_mono a]
+
 /-- A split short complex is short exact. -/
 lemma Splitting.shortExact {S : ShortComplex C} [HasZeroObject C] (s : S.Splitting) :
     S.ShortExact where

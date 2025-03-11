@@ -98,7 +98,7 @@ instance (M : ModuleCat R) : IsIso ((forget R).map
     inferInstanceAs (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso CondensedSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage CondensedSet.LocallyConstant.functor M
 
@@ -214,7 +214,7 @@ instance (M : ModuleCat R) :
     inferInstanceAs (discrete _).Full
   rw [← Sheaf.isConstant_iff_isIso_counit_app]
   constructor
-  change _ ∈ (discrete _).essImage
+  change (discrete _).essImage _
   rw [essImage_eq_of_natIso LightCondSet.LocallyConstant.iso.symm]
   exact obj_mem_essImage LightCondSet.LocallyConstant.functor M
 

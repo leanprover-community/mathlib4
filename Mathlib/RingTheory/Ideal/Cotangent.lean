@@ -52,7 +52,7 @@ instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
   inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
 theorem map_toCotangent_ker : I.toCotangent.ker.map I.subtype = I ^ 2 := by

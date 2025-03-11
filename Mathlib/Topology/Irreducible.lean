@@ -11,8 +11,8 @@ import Mathlib.Order.Zorn
 
 ## Main definitions
 
-* `IrreducibleSpace`: a typeclass applying to topological spaces, stating that the space is not the
-  union of a nontrivial pair of disjoint opens.
+* `IrreducibleSpace`: a typeclass applying to topological spaces, stating that the space
+  is nonempty and does not admit a nontrivial pair of disjoint opens.
 * `IsIrreducible`: for a nonempty set in a topological space, the property that the set is an
   irreducible space in the subspace topology.
 
@@ -146,7 +146,7 @@ class PreirreducibleSpace (X : Type*) [TopologicalSpace X] : Prop where
 
 /-- An irreducible space is one that is nonempty
 and where there is no non-trivial pair of disjoint opens. -/
-class IrreducibleSpace (X : Type*) [TopologicalSpace X] extends PreirreducibleSpace X : Prop where
+class IrreducibleSpace (X : Type*) [TopologicalSpace X] : Prop extends PreirreducibleSpace X where
   toNonempty : Nonempty X
 
 -- see Note [lower instance priority]

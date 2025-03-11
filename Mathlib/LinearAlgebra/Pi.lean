@@ -565,7 +565,7 @@ theorem piFinTwo_apply (M : Fin 2 → Type v)
     (piFinTwo R M : ((i : Fin 2) → M i) → M 0 × M 1) = fun f => (f 0, f 1) := rfl
 
 /-- Linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def finTwoArrow : (Fin 2 → M) ≃ₗ[R] M × M :=
   { finTwoArrowEquiv M, piFinTwo R fun _ => M with }
 
@@ -585,7 +585,7 @@ noncomputable def Function.ExtendByZero.linearMap : (ι → R) →ₗ[R] η → 
 end Extend
 
 variable (R) in
-/-- `Fin.consEquiv` as a continuous linear equivalence.  -/
+/-- `Fin.consEquiv` as a continuous linear equivalence. -/
 @[simps]
 def Fin.consLinearEquiv
     {n : ℕ} (M : Fin n.succ → Type*) [Semiring R] [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] :
