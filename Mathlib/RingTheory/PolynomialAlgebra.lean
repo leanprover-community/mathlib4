@@ -196,6 +196,7 @@ attribute [local instance] Polynomial.algebra
 instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
+
 instance : Algebra.IsPushout R S R[X] S[X] := by
   constructor
   let e : S[X] ≃ₐ[S] TensorProduct R S R[X] := { __ := polyEquivTensor R S, commutes' := by simp }
