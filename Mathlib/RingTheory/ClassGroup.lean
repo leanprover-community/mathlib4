@@ -343,6 +343,11 @@ theorem ClassGroup.mk0_eq_mk0_inv_iff [IsDedekindDomain R] {I J : (Ideal R)⁰} 
   rw [this, Submodule.span_zero_singleton] at ha
   exact nonZeroDivisors.coe_ne_zero _ <| J.prop _ ha
 
+@[simp]
+theorem ClassGroup.mk0_equivDvd [IsDedekindDomain R] (I J : (Ideal R)⁰) :
+    ClassGroup.mk0 (Ideal.equivDvd I J) = ClassGroup.mk0 I * ClassGroup.mk0 J := by
+  rw [Ideal.equivDvd_apply, _root_.map_mul]
+
 /-- The class group of principal ideal domain is finite (in fact a singleton).
 
 See `ClassGroup.fintypeOfAdmissibleOfFinite` for a finiteness proof that works for rings of integers
