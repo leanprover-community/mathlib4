@@ -3,6 +3,7 @@ Copyright (c) 2025 Ben Eltschig. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.Products
 import Mathlib.CategoryTheory.Sites.ConstantSheaf
 
 /-!
@@ -52,37 +53,11 @@ instance [HasWeakSheafify J A] [HasLimitsOfShape Cᵒᵖ A] : (constantSheaf J A
 instance [HasWeakSheafify J A] [HasLimitsOfShape Cᵒᵖ A] : (Γ J A).IsRightAdjoint :=
   ⟨constantSheaf J A, ⟨constantSheafΓAdj J A⟩⟩
 
-/-- The sheaf sections functor on `X` is given by evaluation of presheaves on `X`.
-TODO: move somewhere else -/
-def sheafSectionsNatIsoEvaluation {X : C} :
-    (sheafSections J A).obj (op X) ≅ sheafToPresheaf J A ⋙ (evaluation _ _).obj (op X) :=
-  NatIso.ofComponents fun _ ↦ eqToIso rfl
-
-/-- Evaluating a terminal functor yields terminal objects.
-TODO: move somewhere else -/
-noncomputable def Limits.IsTerminal.isTerminalObj_functor {C : Type u} [Category.{v} C]
-    {D : Type u₂} [Category.{v₂} D] [HasLimits D] {F : C ⥤ D} (hF : IsTerminal F) (X : C) :
-    IsTerminal (F.obj X) :=
-  hF.isTerminalObj ((evaluation C D).obj X)
-
-/-- The limit of a functor `F : C ⥤ Type _` is naturally isomorphic to `F.sections`.
-TODO: move somewhere else -/
-noncomputable def limNatIsoSectionsFunctor :
-    (lim : (C ⥤ Type max u w) ⥤ _) ≅ Functor.sectionsFunctor _ := by
-  refine NatIso.ofComponents (fun _ ↦ (Types.limitEquivSections _).toIso) ?_
-  refine fun f ↦ funext fun x ↦ Subtype.ext ?_
-  dsimp [Types.limitEquivSections, Types.isLimitEquivSections, Types.sectionOfCone,
-    Functor.sectionsFunctor]
-  -- note: this would just be `simp` if `Types.Limit.map_π_apply'` had fewer universe constraints
-  exact funext fun _ ↦ congrFun (limMap_π f _) x
-
 /-- For functors `F : C ⥤ Type _`, `F.sections` is naturally isomorphic to the type `⊤_ _ ⟶ F`
-of natural transformations from the terminal functor to `F`.
-TODO: move somewhere else -/
+of natural transformations from the terminal functor to `F`. -/
 noncomputable def sectionsFunctorNatIsoCoyoneda :
     Functor.sectionsFunctor.{v,max u w} C ≅ coyoneda.obj (op (⊤_ _)) :=
-  let _ : ∀ X, Unique ((⊤_ C ⥤ Type max u w).obj X) := fun X ↦ (terminalIsoIsTerminal <|
-    terminalIsTerminal.isTerminalObj_functor X).symm.toEquiv.unique
+  let _ : ∀ X, Unique ((⊤_ C ⥤ Type max u w).obj X) := fun X ↦ (terminalObjIso X).toEquiv.unique
   NatIso.ofComponents fun F ↦ {
       hom s := { app X := fun _ ↦ s.1 X }
       inv s := ⟨fun X ↦ s.app X default, fun f ↦
@@ -104,7 +79,7 @@ noncomputable def Sheaf.ΓNatIsoSheafSections [HasLimitsOfShape Cᵒᵖ A] {T : 
 on presheaves. -/
 noncomputable def Sheaf.ΓNatIsoSectionsFunctor :
     Γ J (Type max u w) ≅ sheafToPresheaf J _ ⋙ Functor.sectionsFunctor _ :=
-  isoWhiskerLeft _ <| limNatIsoSectionsFunctor
+  isoWhiskerLeft _ <| Types.limNatIsoSectionsFunctor
 
 /-- For sheaves of types, the global sections functor is isomorphic to the covariant hom
 functor of the terminal sheaf. -/

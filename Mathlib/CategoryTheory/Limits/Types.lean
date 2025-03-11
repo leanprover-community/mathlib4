@@ -214,6 +214,12 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
     limit.π F j ((limitEquivSections F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
 
+/-- The limit of a functor `F : J ⥤ Type _` is naturally isomorphic to `F.sections`. -/
+noncomputable def limNatIsoSectionsFunctor :
+    (lim : (J ⥤ Type max u v) ⥤ _) ≅ Functor.sectionsFunctor _ :=
+  NatIso.ofComponents (fun _ ↦ (limitEquivSections _).toIso)
+    fun f ↦ funext fun x ↦ Subtype.ext <| funext fun _ ↦ congrFun (limMap_π f _) x
+
 -- Porting note: `limitEquivSections_symm_apply'` was removed because the linter
 --   complains it is unnecessary
 --@[simp]
