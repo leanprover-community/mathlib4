@@ -93,13 +93,35 @@ lemma find_eq_iff (h : ∃ n : ℕ, p n) : Nat.find h = m ↔ p m ∧ ∀ n < m,
 
 @[simp] lemma find_eq_zero (h : ∃ n : ℕ, p n) : Nat.find h = 0 ↔ p 0 := by simp [find_eq_iff]
 
-variable [DecidablePred q] in
-lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
-  Nat.find_min' _ (h _ (Nat.find_spec hq))
+/-- If a predicate `q` holds at some `x` and implies `p` up to that `x`, then
+the earliest `xq` such that `q xq` is at least the smallest `xp` where `p xp`.
+The stronger version of `Nat.find_mono`, since this one needs
+implication only up to `Nat.find _` while the other requires `q` implying `p` everywhere. -/
+lemma find_mono_of_le [DecidablePred q] {x : ℕ} (hx : q x) (hpq : ∀ n ≤ x, q n → p n) :
+    Nat.find ⟨x, show p x from hpq _ le_rfl hx⟩ ≤ Nat.find ⟨x, hx⟩ :=
+  Nat.find_min' _ (hpq _ (Nat.find_min' _ hx) (Nat.find_spec ⟨x, hx⟩))
 
-lemma find_congr [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : ∀ {n}, p n ↔ q n) :
+variable [DecidablePred q] in
+/-- A weak version of `Nat.find_mono_of_le`, which does not require that `q` implies `p` everywhere.
+-/
+lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
+  find_mono_of_le hq.choose_spec fun _ _ ↦ h _
+
+/-- If a predicate `p` holds at some `x` and agrees with `q` up to that `x`, then
+their `Nat.find` agree. The stronger version of `Nat.find_congr'`, since this one needs
+agreement only up to `Nat.find _` while the other requires `p = q`.
+Usage of this lemma will likely be via `obtain ⟨x, hx⟩ := hp; apply Nat.find_congr hx` to unify `q`,
+or provide it explicitly with `rw [Nat.find_congr (q := q) hx]`.
+-/
+lemma find_congr [DecidablePred q] {x : ℕ} (hx : p x) (hpq : ∀ n ≤ x, p n ↔ q n) :
+    Nat.find ⟨x, hx⟩ = Nat.find ⟨x, show q x from hpq _ le_rfl |>.1 hx⟩ :=
+  le_antisymm (find_mono_of_le (hpq _ le_rfl |>.1 hx) fun _ h ↦ (hpq _ h).mpr)
+    (find_mono_of_le hx fun _ h ↦ (hpq _ h).mp)
+
+/-- A weak version of `Nat.find_congr`, which does not require `p = q` everywhere. -/
+lemma find_congr' [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : ∀ {n}, p n ↔ q n) :
     Nat.find hp = Nat.find hq :=
-  le_antisymm (find_mono fun _ ↦ hpq.mpr) (find_mono fun _ ↦ hpq.mp)
+  find_congr hp.choose_spec fun _ _ ↦ hpq
 
 lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_refl _, hn⟩
