@@ -127,48 +127,44 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
       apply @taylor_mean_remainder_lagrange f t 0 1 ht _ _
       · simp only [Nat.cast_one]
         apply AnalyticOn.contDiffOn_of_completeSpace
-        have r : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) := analyticOn_cgf
-        rw [integrable_exp_of_ae_mem_Icc μ a b hX h] at r
-        rw [interior_univ] at r
-        apply AnalyticOn.mono r (fun ⦃a⦄ a ↦ trivial)
+        have : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) := analyticOn_cgf
+        rw [integrable_exp_of_ae_mem_Icc μ a b hX h] at this
+        rw [interior_univ] at this
+        exact AnalyticOn.mono this (fun ⦃a⦄ a ↦ trivial)
       · apply DifferentiableOn.mono
         apply ContDiffOn.differentiableOn_iteratedDerivWithin
         exact AnalyticOn.contDiffOn (n := 2) (AnalyticOn.mono analyticOn_cgf
           (fun s hs ↦ integrable_exp_set_interior_of_ae_mem_Icc μ s a b hX h)) (uniqueDiffOn_Icc ht)
-        exact Batteries.compareOfLessAndEq_eq_lt.mp rfl
+        norm_cast
         exact uniqueDiffOn_Icc ht
         exact Set.Ioo_subset_Icc_self
     obtain ⟨c, ⟨q0, qc'⟩⟩ := q'
     use c
     constructor
-    exact q0
-    simp only [taylorWithinEval_succ, taylor_within_zero_eval, CharP.cast_eq_zero, zero_add,
+    · exact q0
+    · simp only [taylorWithinEval_succ, taylor_within_zero_eval, CharP.cast_eq_zero, zero_add,
       Nat.factorial_zero, Nat.cast_one, mul_one, inv_one, sub_zero, pow_one, one_mul,
       iteratedDerivWithin_one, smul_eq_mul, Nat.reduceAdd, Nat.factorial_two, Nat.cast_ofNat] at qc'
-    have q1 : derivWithin f (Set.Icc 0 t) 0 = f' 0 := by
-      rw [DifferentiableAt.derivWithin]
-      · exact differentiableAt_cgf (integrable_exp_set_interior_of_ae_mem_Icc μ 0 a b hX h)
-      · apply uniqueDiffWithinAt_convex (convex_Icc 0 t)
-        simp only [interior_Icc, Set.nonempty_Ioo]
-        exact ht
-        simp only [closure_Icc, Set.mem_Icc, le_refl, true_and]
-        exact le_of_lt ht
-    have q2 : iteratedDerivWithin 2 f (Set.Icc 0 t) c = f'' c := by
-      have q3 : iteratedDerivWithin 2 f Set.univ c = f'' c := by
-        rw [iteratedDerivWithin_univ]
-      rw [<- q3]
-      rw [iteratedDerivWithin_eq_iteratedFDerivWithin]
-      rw [iteratedDerivWithin_eq_iteratedFDerivWithin]
-      apply congr
-      have q4 : Set.univ ∩ (Set.Icc 0 t) = (Set.Icc 0 t) := by
-        exact Set.univ_inter (Set.Icc 0 t)
-      rw [<- q4]
-      symm
-      rw [iteratedFDerivWithin_inter]
-      exact Icc_mem_nhds_iff.mpr q0
-      exact rfl
-    rw [q1, q2] at qc'
-    linarith
+      have q1 : derivWithin f (Set.Icc 0 t) 0 = f' 0 := by
+        rw [DifferentiableAt.derivWithin]
+        · exact differentiableAt_cgf (integrable_exp_set_interior_of_ae_mem_Icc μ 0 a b hX h)
+        · apply uniqueDiffWithinAt_convex (convex_Icc 0 t)
+          simp only [interior_Icc, Set.nonempty_Ioo]
+          exact ht
+          simp only [closure_Icc, Set.mem_Icc, le_refl, true_and]
+          exact le_of_lt ht
+      have q2 : iteratedDerivWithin 2 f (Set.Icc 0 t) c = f'' c := by
+        rw [<- (by rw [iteratedDerivWithin_univ] : iteratedDerivWithin 2 f Set.univ c = f'' c)]
+        rw [iteratedDerivWithin_eq_iteratedFDerivWithin]
+        rw [iteratedDerivWithin_eq_iteratedFDerivWithin]
+        apply congr
+        rw [<- (Set.univ_inter (Set.Icc 0 t))]
+        symm
+        rw [iteratedFDerivWithin_inter]
+        exact Icc_mem_nhds_iff.mpr q0
+        exact rfl
+      rw [q1, q2] at qc'
+      linarith
   rw [hf, hf'] at q
   simp only [zero_mul, add_zero, zero_add, forall_const] at q
   obtain ⟨c, ⟨_, cq'⟩⟩ := q
