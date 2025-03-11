@@ -183,12 +183,18 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
     · exact h t
   _ ≤ c * t ^ 2 / 2 := by rw [log_exp]
 
-lemma measure_univ_le_one [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) :
+lemma measure_univ_le_one (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
-  filter_upwards [h.mgf_le] with ω' h
+  filter_upwards [h.ae_integrable_exp_mul 0, h.mgf_le] with ω' h h_mgf
+  simp only [zero_mul, exp_zero, integrable_const_iff, one_ne_zero, false_or] at h
   suffices (κ ω' Set.univ).toReal ≤ 1 by
     rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
-  simpa [mgf] using h 0
+  simpa [mgf] using h_mgf 0
+
+lemma isFiniteMeasure( h : HasSubgaussianMGF X c κ ν) :
+    ∀ᵐ ω' ∂ν, IsFiniteMeasure (κ ω') := by
+  filter_upwards [h.ae_integrable_exp_mul 0, h.mgf_le] with ω' h h_mgf
+  simpa [integrable_const_iff] using h
 
 end BasicProperties
 
@@ -233,9 +239,9 @@ lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr {Y : Ω → ℝ} (
 
 section ChernoffBound
 
-lemma measure_ge_le_exp_add [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
+lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
     ∀ᵐ ω' ∂ν, ∀ t, 0 ≤ t → (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- t * ε + c * t ^ 2 / 2) := by
-  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul] with ω' h1 h2 t ht
+  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul, h.isFiniteMeasure] with ω' h1 h2 _ t ht
   calc (κ ω' {ω | ε ≤ X ω}).toReal
   _ ≤ exp (-t * ε) * mgf X (κ ω') t := measure_ge_le_exp_mul_mgf ε ht (h2 t)
   _ ≤ exp (-t * ε + c * t ^ 2 / 2) := by
@@ -244,7 +250,7 @@ lemma measure_ge_le_exp_add [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν
     exact h1 t
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma measure_ge_le [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε) :
+lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε) :
     ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   by_cases hc0 : c = 0
   · filter_upwards [h.measure_univ_le_one] with ω' h
@@ -370,7 +376,7 @@ lemma zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := fun_zer
 section ChernoffBound
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma measure_ge_le [IsFiniteMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
+lemma measure_ge_le (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   rw [HasSubgaussianMGF_iff_kernel] at h
   simpa using h.measure_ge_le hε
