@@ -122,7 +122,8 @@ def forget : ∫ F ⥤ 𝒮 where
 variable {a : ∫ F} {b : 𝒮} (f : b ⟶ (forget F).obj a)
 
 /-- The domain of the cartesian lift of `f`. -/
-def domain_cartesianLift : ∫ F :=
+@[simps]
+def domainCartesianLift : ∫ F :=
   ⟨b, (F.map f.op.toLoc).obj a.fiber⟩
 
 /-- The cartesian lift of `f`. -/
