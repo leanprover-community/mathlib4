@@ -3,11 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.RingTheory.MatrixAlgebra
-import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.DMatrix
+import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
@@ -35,7 +34,7 @@ variable (R A : Type*)
 variable [CommSemiring R]
 variable [Semiring A] [Algebra R A]
 
-open DMatrix Matrix
+open Matrix
 
 variable {R}
 variable {n : Type w} [DecidableEq n] [Fintype n]
@@ -87,7 +86,7 @@ theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
   refine Polynomial.induction_on' p ?_ ?_
   · intro p q hp hq
     ext
-    simp [hp, hq, coeff_add, DMatrix.add_apply, stdBasisMatrix_add]
+    simp [hp, hq, coeff_add, add_apply, stdBasisMatrix_add]
   · intro k x
     simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
     split_ifs <;>

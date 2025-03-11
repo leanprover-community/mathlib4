@@ -12,6 +12,9 @@ import Mathlib.RingTheory.IsTensorProduct
 Given `[CommSemiring R] [Semiring A] [Algebra R A]` we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
 
+-- This file should not become entangled with `RingTheory/MatrixAlgebra`.
+assert_not_exists Matrix
+
 universe u v w
 
 open Polynomial TensorProduct
