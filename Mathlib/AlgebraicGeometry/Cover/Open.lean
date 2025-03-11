@@ -64,6 +64,11 @@ theorem OpenCover.iSup_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
     ⨆ i, (𝒰.map i).opensRange = ⊤ :=
   Opens.ext <| by rw [Opens.coe_iSup]; exact 𝒰.iUnion_range
 
+/-- The ranges of the maps in a scheme-theoretic open cover are a topological open cover. -/
+lemma OpenCover.isOpenCover_opensRange {X : Scheme.{u}} (𝒰 : X.OpenCover) :
+    IsOpenCover fun i ↦ (𝒰.map i).opensRange :=
+  .mk 𝒰.iSup_opensRange
+
 /-- Every open cover of a quasi-compact scheme can be refined into a finite subcover.
 -/
 @[simps! obj map]

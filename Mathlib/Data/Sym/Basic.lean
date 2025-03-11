@@ -469,12 +469,12 @@ def oneEquiv : α ≃ Sym α 1 where
   toFun a := ⟨{a}, by simp⟩
   invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
       (·.length = 1) _ (fun _ ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
-    (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
+    (fun l ↦ l.1.head <| List.length_pos_iff.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
-      obtain ⟨a, rfl⟩ := List.length_eq_one.mp h
+      obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h
       exact List.eq_of_mem_singleton (perm.mem_iff.mp <| List.head_mem _)
   left_inv a := by rfl
-  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one.mp h; rfl
+  right_inv := by rintro ⟨⟨l⟩, h⟩; obtain ⟨a, rfl⟩ := List.length_eq_one_iff.mp h; rfl
 
 /-- Fill a term `m : Sym α (n - i)` with `i` copies of `a` to obtain a term of `Sym α n`.
 This is a convenience wrapper for `m.append (replicate i a)` that adjusts the term using
@@ -494,7 +494,7 @@ open Multiset
 
 /-- Remove every `a` from a given `Sym α n`.
 Yields the number of copies `i` and a term of `Sym α (n - i)`. -/
-def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym α (n - i) :=
+def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σ i : Fin (n + 1), Sym α (n - i) :=
   ⟨⟨m.1.count a, (count_le_card _ _).trans_lt <| by rw [m.2, Nat.lt_succ_iff]⟩,
     m.1.filter (a ≠ ·),
     Nat.eq_sub_of_add_eq <|
@@ -505,7 +505,7 @@ def filterNe [DecidableEq α] (a : α) (m : Sym α n) : Σi : Fin (n + 1), Sym �
           rw [← card_eq_countP_add_countP _ _])
         m.2⟩
 
-theorem sigma_sub_ext {m₁ m₂ : Σi : Fin (n + 1), Sym α (n - i)} (h : (m₁.2 : Multiset α) = m₂.2) :
+theorem sigma_sub_ext {m₁ m₂ : Σ i : Fin (n + 1), Sym α (n - i)} (h : (m₁.2 : Multiset α) = m₂.2) :
     m₁ = m₂ :=
   Sigma.subtype_ext
     (Fin.ext <| by
@@ -524,7 +524,8 @@ theorem fill_filterNe [DecidableEq α] (a : α) (m : Sym α n) :
       · rw [if_pos rfl, if_neg (not_not.2 rfl), zero_add]
       · rw [if_pos h, if_neg h, add_zero])
 
-theorem filter_ne_fill [DecidableEq α] (a : α) (m : Σi : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
+theorem filter_ne_fill
+    [DecidableEq α] (a : α) (m : Σ i : Fin (n + 1), Sym α (n - i)) (h : a ∉ m.2) :
     (m.2.fill a m.1).filterNe a = m :=
   sigma_sub_ext
     (by

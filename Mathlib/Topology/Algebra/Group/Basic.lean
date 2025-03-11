@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Monoid
 
 /-!
@@ -398,8 +399,11 @@ that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continu
 -- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
 continuous. -/
-class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
-  ContinuousAdd G, ContinuousNeg G : Prop
+class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
+    extends ContinuousAdd G, ContinuousNeg G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalAddGroup :=
+  IsTopologicalAddGroup
 
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
@@ -409,8 +413,11 @@ you should also provide an instance of `UniformSpace` and `UniformGroup` using
 `IsTopologicalGroup.toUniformSpace` and `topologicalCommGroup_isUniform`. -/
 -- Porting note: check that these ↑ names exist once they've been ported in the future.
 @[to_additive]
-class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends ContinuousMul G,
-  ContinuousInv G : Prop
+class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
+    extends ContinuousMul G, ContinuousInv G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalGroup :=
+  IsTopologicalGroup
 
 section Conj
 
@@ -451,7 +458,7 @@ instance : IsTopologicalGroup (ULift G) where
 
 section ZPow
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
   | Int.negSucc n => by simpa using (continuous_pow (n + 1)).inv
@@ -576,7 +583,8 @@ alias tendsto_inv_nhdsWithin_Iic_inv := tendsto_inv_nhdsLE_inv
 end OrderedCommGroup
 
 @[to_additive]
-instance [TopologicalSpace H] [Group H] [IsTopologicalGroup H] : IsTopologicalGroup (G × H) where
+instance Prod.instIsTopologicalGroup [TopologicalSpace H] [Group H] [IsTopologicalGroup H] :
+    IsTopologicalGroup (G × H) where
   continuous_inv := continuous_inv.prodMap continuous_inv
 
 @[to_additive]
@@ -1657,10 +1665,10 @@ instance [ContinuousMul α] : IsTopologicalGroup αˣ where
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/
-@[to_additive
+@[to_additive prodAddUnits
   "The topological group isomorphism between the additive units of a product of two
   additive monoids, and the product of the additive units of each additive monoid."]
-def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
+def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
   continuous_toFun :=
     (continuous_fst.units_map (MonoidHom.fst α β)).prod_mk
       (continuous_snd.units_map (MonoidHom.snd α β))
@@ -1669,6 +1677,12 @@ def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
       ⟨continuous_val.fst'.prod_mk continuous_val.snd',
         continuous_coe_inv.fst'.prod_mk continuous_coe_inv.snd'⟩
   toEquiv := MulEquiv.prodUnits.toEquiv
+
+@[deprecated (since := "2025-02-21")]
+alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
+
+@[deprecated (since := "2025-02-21")]
+protected alias Homeomorph.prodUnits := Homeomorph.prodUnits
 
 end Units
 
@@ -1718,13 +1732,13 @@ The additive version `AddGroupTopology α` and corresponding results are provide
 
 /-- A group topology on a group `α` is a topology for which multiplication and inversion
 are continuous. -/
-structure GroupTopology (α : Type u) [Group α] extends TopologicalSpace α, IsTopologicalGroup α :
-  Type u
+structure GroupTopology (α : Type u) [Group α] : Type u
+  extends TopologicalSpace α, IsTopologicalGroup α
 
 /-- An additive group topology on an additive group `α` is a topology for which addition and
-  negation are continuous. -/
-structure AddGroupTopology (α : Type u) [AddGroup α] extends TopologicalSpace α,
-  IsTopologicalAddGroup α : Type u
+negation are continuous. -/
+structure AddGroupTopology (α : Type u) [AddGroup α] : Type u
+    extends TopologicalSpace α, IsTopologicalAddGroup α
 
 attribute [to_additive] GroupTopology
 
@@ -1790,7 +1804,7 @@ instance : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
-        continuity
+        fun_prop
       continuous_inv := continuous_bot }⟩
 
 @[to_additive (attr := simp)]
@@ -1888,4 +1902,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
 
 end GroupTopology
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2100

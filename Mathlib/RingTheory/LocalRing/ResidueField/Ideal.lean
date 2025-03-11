@@ -49,14 +49,14 @@ def Ideal.ResidueField.mapₐ (I : Ideal R) [I.IsPrime] (J : Ideal A) [J.IsPrime
     Ideal.ResidueField.mapₐ I J hf x = Ideal.ResidueField.map I J _ hf x := rfl
 
 variable {I} in
-@[simp]
+@[simp high] -- marked `high` to override the more general `FaithfulSMul.algebraMap_eq_zero_iff`
 lemma Ideal.algebraMap_residueField_eq_zero {x} :
     algebraMap R I.ResidueField x = 0 ↔ x ∈ I := by
   rw [IsScalarTower.algebraMap_apply R (Localization.AtPrime I),
     IsLocalRing.ResidueField.algebraMap_eq, IsLocalRing.residue_eq_zero_iff]
   exact IsLocalization.AtPrime.to_map_mem_maximal_iff _ _ _
 
-@[simp]
+@[simp high] -- marked `high` to override the more general `FaithfulSMul.ker_algebraMap_eq_bot`
 lemma Ideal.ker_algebraMap_residueField :
     RingHom.ker (algebraMap R I.ResidueField) = I :=
   Ideal.ext fun _ ↦ Ideal.algebraMap_residueField_eq_zero

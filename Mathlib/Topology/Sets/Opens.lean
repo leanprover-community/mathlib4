@@ -55,16 +55,13 @@ variable {ι α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 
 namespace TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- The type of open subsets of a topological space. -/
 structure Opens where
   /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
   carrier : Set α
   /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
   is_open' : IsOpen carrier
-
-variable {α}
 
 namespace Opens
 
@@ -387,7 +384,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap (f.symm : C(β, α))
   invFun := Opens.comap (f : C(α, β))
