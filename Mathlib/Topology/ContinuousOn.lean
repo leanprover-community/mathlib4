@@ -123,11 +123,11 @@ theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = �
 theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x :=
   set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
 
-theorem preimage_nhdsWithin_coinduced' {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
-    (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
-    π ⁻¹' s ∈ 𝓝[t] a := by
+theorem preimage_nhdsWithin_coinduced' {X : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
+    (hs : s ∈ @nhds β (.coinduced (fun x : t => X x) inferInstance) (X a)) :
+    X ⁻¹' s ∈ 𝓝[t] a := by
   lift a to t using h
-  replace hs : (fun x : t => π x) ⁻¹' s ∈ 𝓝 a := preimage_nhds_coinduced hs
+  replace hs : (fun x : t => X x) ⁻¹' s ∈ 𝓝 a := preimage_nhds_coinduced hs
   rwa [← map_nhds_subtype_val, mem_map]
 
 theorem mem_nhdsWithin_of_mem_nhds {s t : Set α} {a : α} (h : s ∈ 𝓝 a) : s ∈ 𝓝[t] a :=
@@ -189,10 +189,10 @@ theorem nhdsWithin_eq_nhdsWithin {a : α} {s t u : Set α} (h₀ : a ∈ s) (h�
 theorem IsOpen.nhdsWithin_eq {a : α} {s : Set α} (h : IsOpen s) (ha : a ∈ s) : 𝓝[s] a = 𝓝 a :=
   nhdsWithin_eq_nhds.2 <| h.mem_nhds ha
 
-theorem preimage_nhds_within_coinduced {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
+theorem preimage_nhds_within_coinduced {X : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (ht : IsOpen t)
-    (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
-    π ⁻¹' s ∈ 𝓝 a := by
+    (hs : s ∈ @nhds β (.coinduced (fun x : t => X x) inferInstance) (X a)) :
+    X ⁻¹' s ∈ 𝓝 a := by
   rw [← ht.nhdsWithin_eq h]
   exact preimage_nhdsWithin_coinduced' h hs
 
@@ -306,14 +306,14 @@ alias EventuallyEq.mem_interior_iff := Filter.EventuallyEq.mem_interior_iff
 
 section Pi
 
-variable {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
+variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
-theorem nhdsWithin_pi_eq' {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
+theorem nhdsWithin_pi_eq' {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (X i)) (x : ∀ i, X i) :
     𝓝[pi I s] x = ⨅ i, comap (fun x => x i) (𝓝 (x i) ⊓ ⨅ (_ : i ∈ I), 𝓟 (s i)) := by
   simp only [nhdsWithin, nhds_pi, Filter.pi, comap_inf, comap_iInf, pi_def, comap_principal, ←
     iInf_principal_finite hI, ← iInf_inf_eq]
 
-theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
+theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (X i)) (x : ∀ i, X i) :
     𝓝[pi I s] x =
       (⨅ i ∈ I, comap (fun x => x i) (𝓝[s i] x i)) ⊓
         ⨅ (i) (_ : i ∉ I), comap (fun x => x i) (𝓝 (x i)) := by
@@ -322,30 +322,30 @@ theorem nhdsWithin_pi_eq {I : Set ι} (hI : I.Finite) (s : ∀ i, Set (π i)) (x
   rw [iInf_split _ fun i => i ∈ I, inf_right_comm]
   simp only [iInf_inf_eq]
 
-theorem nhdsWithin_pi_univ_eq [Finite ι] (s : ∀ i, Set (π i)) (x : ∀ i, π i) :
+theorem nhdsWithin_pi_univ_eq [Finite ι] (s : ∀ i, Set (X i)) (x : ∀ i, X i) :
     𝓝[pi univ s] x = ⨅ i, comap (fun x => x i) (𝓝[s i] x i) := by
   simpa [nhdsWithin] using nhdsWithin_pi_eq finite_univ s x
 
-theorem nhdsWithin_pi_eq_bot {I : Set ι} {s : ∀ i, Set (π i)} {x : ∀ i, π i} :
+theorem nhdsWithin_pi_eq_bot {I : Set ι} {s : ∀ i, Set (X i)} {x : ∀ i, X i} :
     𝓝[pi I s] x = ⊥ ↔ ∃ i ∈ I, 𝓝[s i] x i = ⊥ := by
   simp only [nhdsWithin, nhds_pi, pi_inf_principal_pi_eq_bot]
 
-theorem nhdsWithin_pi_neBot {I : Set ι} {s : ∀ i, Set (π i)} {x : ∀ i, π i} :
+theorem nhdsWithin_pi_neBot {I : Set ι} {s : ∀ i, Set (X i)} {x : ∀ i, X i} :
     (𝓝[pi I s] x).NeBot ↔ ∀ i ∈ I, (𝓝[s i] x i).NeBot := by
   simp [neBot_iff, nhdsWithin_pi_eq_bot]
 
-instance instNeBotNhdsWithinUnivPi {s : ∀ i, Set (π i)} {x : ∀ i, π i}
+instance instNeBotNhdsWithinUnivPi {s : ∀ i, Set (X i)} {x : ∀ i, X i}
     [∀ i, (𝓝[s i] x i).NeBot] : (𝓝[pi univ s] x).NeBot := by
   simpa [nhdsWithin_pi_neBot]
 
-instance Pi.instNeBotNhdsWithinIio [Nonempty ι] [∀ i, Preorder (π i)] {x : ∀ i, π i}
+instance Pi.instNeBotNhdsWithinIio [Nonempty ι] [∀ i, Preorder (X i)] {x : ∀ i, X i}
     [∀ i, (𝓝[<] x i).NeBot] : (𝓝[<] x).NeBot :=
   have : (𝓝[pi univ fun i ↦ Iio (x i)] x).NeBot := inferInstance
   this.mono <| nhdsWithin_mono _ fun _y hy ↦ lt_of_strongLT fun i ↦ hy i trivial
 
-instance Pi.instNeBotNhdsWithinIoi [Nonempty ι] [∀ i, Preorder (π i)] {x : ∀ i, π i}
+instance Pi.instNeBotNhdsWithinIoi [Nonempty ι] [∀ i, Preorder (X i)] {x : ∀ i, X i}
     [∀ i, (𝓝[>] x i).NeBot] : (𝓝[>] x).NeBot :=
-  Pi.instNeBotNhdsWithinIio (π := fun i ↦ (π i)ᵒᵈ) (x := fun i ↦ OrderDual.toDual (x i))
+  Pi.instNeBotNhdsWithinIio (X := fun i ↦ (X i)ᵒᵈ) (x := fun i ↦ OrderDual.toDual (x i))
 
 end Pi
 
@@ -1161,24 +1161,24 @@ theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} 
 ### Pi
 -/
 
-theorem continuousWithinAt_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    {f : α → ∀ i, π i} {s : Set α} {x : α} :
+theorem continuousWithinAt_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    {f : α → ∀ i, X i} {s : Set α} {x : α} :
     ContinuousWithinAt f s x ↔ ∀ i, ContinuousWithinAt (fun y => f y i) s x :=
   tendsto_pi_nhds
 
-theorem continuousOn_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    {f : α → ∀ i, π i} {s : Set α} : ContinuousOn f s ↔ ∀ i, ContinuousOn (fun y => f y i) s :=
+theorem continuousOn_pi {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    {f : α → ∀ i, X i} {s : Set α} : ContinuousOn f s ↔ ∀ i, ContinuousOn (fun y => f y i) s :=
   ⟨fun h i x hx => tendsto_pi_nhds.1 (h x hx) i, fun h x hx => tendsto_pi_nhds.2 fun i => h i x hx⟩
 
 @[fun_prop]
-theorem continuousOn_pi' {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    {f : α → ∀ i, π i} {s : Set α} (hf : ∀ i, ContinuousOn (fun y => f y i) s) :
+theorem continuousOn_pi' {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    {f : α → ∀ i, X i} {s : Set α} (hf : ∀ i, ContinuousOn (fun y => f y i) s) :
     ContinuousOn f s :=
   continuousOn_pi.2 hf
 
 @[fun_prop]
-theorem continuousOn_apply {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace (π i)]
-    (i : ι) (s) : ContinuousOn (fun p : ∀ i, π i => p i) s :=
+theorem continuousOn_apply {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
+    (i : ι) (s) : ContinuousOn (fun p : ∀ i, X i => p i) s :=
   Continuous.continuousOn (continuous_apply i)
 
 
@@ -1209,15 +1209,15 @@ protected theorem ContinuousOn.iterate {f : α → α} {s : Set α} (hcont : Con
   | (n + 1) => (hcont.iterate hmaps n).comp hcont hmaps
 
 section Fin
-variable {n : ℕ} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
+variable {n : ℕ} {X : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (X i)]
 
 theorem ContinuousWithinAt.finCons
-    {f : α → π 0} {g : α → ∀ j : Fin n, π (Fin.succ j)} {a : α} {s : Set α}
+    {f : α → X 0} {g : α → ∀ j : Fin n, X (Fin.succ j)} {a : α} {s : Set α}
     (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
     ContinuousWithinAt (fun a => Fin.cons (f a) (g a)) s a :=
   hf.tendsto.finCons hg
 
-theorem ContinuousOn.finCons {f : α → π 0} {s : Set α} {g : α → ∀ j : Fin n, π (Fin.succ j)}
+theorem ContinuousOn.finCons {f : α → X 0} {s : Set α} {g : α → ∀ j : Fin n, X (Fin.succ j)}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => Fin.cons (f a) (g a)) s := fun a ha =>
   (hf a ha).finCons (hg a ha)
@@ -1233,19 +1233,19 @@ theorem ContinuousOn.matrixVecCons {f : α → β} {g : α → Fin n → β} {s 
   (hf a ha).matrixVecCons (hg a ha)
 
 theorem ContinuousWithinAt.finSnoc
-    {f : α → ∀ j : Fin n, π (Fin.castSucc j)} {g : α → π (Fin.last _)} {a : α} {s : Set α}
+    {f : α → ∀ j : Fin n, X (Fin.castSucc j)} {g : α → X (Fin.last _)} {a : α} {s : Set α}
     (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
     ContinuousWithinAt (fun a => Fin.snoc (f a) (g a)) s a :=
   hf.tendsto.finSnoc hg
 
 theorem ContinuousOn.finSnoc
-    {f : α → ∀ j : Fin n, π (Fin.castSucc j)} {g : α → π (Fin.last _)} {s : Set α}
+    {f : α → ∀ j : Fin n, X (Fin.castSucc j)} {g : α → X (Fin.last _)} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => Fin.snoc (f a) (g a)) s := fun a ha =>
   (hf a ha).finSnoc (hg a ha)
 
 theorem ContinuousWithinAt.finInsertNth
-    (i : Fin (n + 1)) {f : α → π i} {g : α → ∀ j : Fin n, π (i.succAbove j)} {a : α} {s : Set α}
+    (i : Fin (n + 1)) {f : α → X i} {g : α → ∀ j : Fin n, X (i.succAbove j)} {a : α} {s : Set α}
     (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
     ContinuousWithinAt (fun a => i.insertNth (f a) (g a)) s a :=
   hf.tendsto.finInsertNth i hg
@@ -1254,7 +1254,7 @@ theorem ContinuousWithinAt.finInsertNth
 alias ContinuousWithinAt.fin_insertNth := ContinuousWithinAt.finInsertNth
 
 theorem ContinuousOn.finInsertNth
-    (i : Fin (n + 1)) {f : α → π i} {g : α → ∀ j : Fin n, π (i.succAbove j)} {s : Set α}
+    (i : Fin (n + 1)) {f : α → X i} {g : α → ∀ j : Fin n, X (i.succAbove j)} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => i.insertNth (f a) (g a)) s := fun a ha =>
   (hf a ha).finInsertNth i (hg a ha)
