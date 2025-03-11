@@ -3,10 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.RingTheory.MatrixAlgebra
-import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.Composition
+import Mathlib.RingTheory.MatrixAlgebra
+import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Algebra isomorphism between matrices of polynomials and polynomials of matrices
