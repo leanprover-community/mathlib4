@@ -21,85 +21,180 @@ If `r` is a relation on `α` then a relation series of length `n` is a series
 variable {α : Type*} (r : Rel α α)
 variable {β : Type*} (s : Rel β β)
 
-/--
-Let `r` be a relation on `α`, a relation series of `r` of length `n` is a series
-`a_0, a_1, ..., a_n` such that `r a_i a_{i+1}` for all `i < n`
--/
-structure RelSeries where
-  /-- The number of inequalities in the series -/
-  length : ℕ
-  /-- The underlying function of a relation series -/
-  toFun : Fin (length + 1) → α
-  /-- Adjacent elements are related -/
-  step : ∀ (i : Fin length), r (toFun (Fin.castSucc i)) (toFun i.succ)
+variable {α : Type*} {r : α → α → Prop}
+
+inductive RelSeriesH {α : Type*} (r : α → α → Prop) : (a : α) → Type _ where
+  | singleton (a : α) : RelSeriesH r a
+  | cons (a : α) {b : α} (l : RelSeriesH r b) (hb : r a b) : RelSeriesH r a
+
+variable (r) in
+def RelSeries : Type _ := (a : α) × RelSeriesH r a
 
 namespace RelSeries
 
-instance : CoeFun (RelSeries r) (fun x ↦ Fin (x.length + 1) → α) :=
-{ coe := RelSeries.toFun }
+def singleton (a : α) : RelSeries r := ⟨a , .singleton a⟩
 
-/--
-For any type `α`, each term of `α` gives a relation series with the right most index to be 0.
--/
-@[simps!] def singleton (a : α) : RelSeries r where
-  length := 0
-  toFun _ := a
-  step := Fin.elim0
+def head (l : RelSeries r) : α := l.fst
+
+def cons (a : α) (l : RelSeries r) (h : r a l.head) : RelSeries r := ⟨a, .cons a l.snd h⟩
+
+@[simp]
+lemma head_singleton (a : α) : (singleton (r := r) a).head = a := rfl
+
+@[simp]
+lemma head_cons (a : α) (l : RelSeries r) (h : r a l.head) : (l.cons a h).head = a := rfl
+
+@[elab_as_elim, induction_eliminator]
+def rec {motive : RelSeries r → Sort*} (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r),
+      ∀ h, motive l → motive (l.cons a h)) : (l : RelSeries r) → motive l
+  | ⟨_,l'⟩ => go l'
+  where
+    go : {a:α} → (l' : RelSeriesH r a) → motive ⟨a,l'⟩ := fun l' => match l' with
+    | .singleton a => leaf a
+    | .cons a l hb => fork a ⟨_,l⟩ hb (go l)
+
+@[simp]
+lemma rec_singleton {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r),∀ h, motive l →  motive (l.cons a h))
+    (a : α) : (singleton a |>.rec leaf fork) = leaf a := rfl
+
+@[simp]
+lemma rec_cons {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r),∀ h, motive l →  motive (l.cons a h))
+    (a : α) (l : RelSeries r) (ha : r a l.head) :
+    (l.cons a ha |>.rec leaf fork) = fork a l ha (RelSeries.rec leaf fork l) := rfl
+
+@[elab_as_elim]
+def recOn {motive : RelSeries r → Sort*} (l : RelSeries r) (leaf :∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive l → motive (l.cons a h)) : motive l :=
+  l.rec leaf fork
+
+@[simp]
+lemma recOn_singleton {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive l → motive (l.cons a h))
+    (a : α) : (singleton a |>.recOn leaf fork) = leaf a := rfl
+
+@[simp]
+lemma recOn_cons {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive l → motive (l.cons a h))
+    (a : α) (l : RelSeries r) (ha : r a l.head) :
+    (l.cons a ha |>.recOn leaf fork) = fork a l ha (RelSeries.rec leaf fork l) := rfl
+
+@[elab_as_elim, cases_eliminator]
+def cases {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive (l.cons a h))
+    : (l :RelSeries r) → motive l :=
+  RelSeries.rec leaf (fun _ => fork · · ·)
+
+@[simp]
+lemma cases_singleton {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive (l.cons a h))
+    (a : α) : (singleton a |>.cases leaf fork) = leaf a := rfl
+
+@[simp]
+lemma cases_cons {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive (l.cons a h))
+    (a : α) (l : RelSeries r) (ha : r a l.head) :
+    (l.cons a ha |>.cases leaf fork) = fork a l ha := rfl
+
+@[elab_as_elim]
+def casesOn {motive : RelSeries r → Sort*} (l :RelSeries r)
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive (l.cons a h))
+    : motive l :=
+  l.rec leaf (fun _ => fork · · ·)
+
+@[simp]
+lemma casesOn_singleton {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive (l.cons a h))
+    (a : α) : (singleton a |>.casesOn leaf fork) = leaf a := rfl
+
+@[simp]
+lemma casesOn_cons {motive : RelSeries r → Sort*}
+    (leaf : ∀ a, motive (.singleton a))
+    (fork : ∀ a, ∀ (l : RelSeries r), ∀ h, motive (l.cons a h))
+    (a : α) (l : RelSeries r) (ha : r a l.head) :
+    (l.cons a ha |>.casesOn leaf fork) = fork a l ha := rfl
+
+def toList (l : RelSeries r) : List α :=
+  l.rec (motive := fun _ => List α) (fun a => [a]) (fun a _ _ hl => a::hl)
+
+@[simp]
+lemma toList_singleton (a : α) : (singleton (r := r) a).toList = [a] := rfl
+
+@[simp]
+lemma toList_cons (a : α) (l : RelSeries r) (ha : r a l.head) :
+  (l.cons a ha).toList = a::l.toList := rfl
+
+@[simp]
+lemma toList_ne_nil (l : RelSeries r) : l.toList ≠ [] := by
+  cases l <;> simp
+
+lemma toList_chain' (l : RelSeries r) : l.toList.Chain' r := by
+  induction l with
+  | leaf a => exact List.chain'_singleton a
+  | fork a l ha hl =>
+    simp only [toList_cons]
+    cases l with
+    | leaf b => simpa
+    | fork b l' hb => simp only [toList_cons, List.chain'_cons]; exact ⟨ha,hl⟩
+
+lemma ext (l l' : RelSeries r) : (l.toList = l'.toList) → l = l' := by
+  induction l generalizing l' with
+  | leaf a => cases l' with
+    | leaf _ => simp only [toList_singleton, List.cons.injEq, and_true] ; rintro rfl ; rfl
+    | fork _ _ _ => simp
+  | fork _ _ _ hl =>
+    cases l' with
+    | leaf _ => simp
+    | fork _ l' _ =>
+      simp only [toList_cons, List.cons.injEq, and_imp]
+      rintro rfl heq
+      simp_rw [hl l' heq]
 
 instance [IsEmpty α] : IsEmpty (RelSeries r) where
-  false x := IsEmpty.false (x 0)
+  false x := IsEmpty.false x.head
 
 instance [Inhabited α] : Inhabited (RelSeries r) where
-  default := singleton r default
+  default := singleton default
 
 instance [Nonempty α] : Nonempty (RelSeries r) :=
-  Nonempty.map (singleton r) inferInstance
+  Nonempty.map singleton inferInstance
 
-variable {r}
+def length : RelSeries r → ℕ :=
+  rec (motive := fun _ ↦ ℕ) (fun _ ↦ 0) (fun _ _ _ m ↦ m + 1)
 
-@[ext (iff := false)]
-lemma ext {x y : RelSeries r} (length_eq : x.length = y.length)
-    (toFun_eq : x.toFun = y.toFun ∘ Fin.cast (by rw [length_eq])) : x = y := by
-  rcases x with ⟨nx, fx⟩
-  dsimp only at length_eq toFun_eq
-  subst length_eq toFun_eq
-  rfl
+@[simp]
+lemma length_singleton (x : α) : (singleton (r := r) x).length = 0 := rfl
 
-lemma rel_of_lt [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i < j) :
-    r (x i) (x j) :=
-  (Fin.liftFun_iff_succ r).mpr x.step h
-
-lemma rel_or_eq_of_le [IsTrans α r] (x : RelSeries r) {i j : Fin (x.length + 1)} (h : i ≤ j) :
-    r (x i) (x j) ∨ x i = x j :=
-  (Fin.lt_or_eq_of_le h).imp (x.rel_of_lt ·) (by rw [·])
+@[simp]
+lemma length_cons (x : α) (p : RelSeries r) (h : r x p.head) :
+    (cons x p h).length = p.length + 1 := rfl
 
 /--
 Given two relations `r, s` on `α` such that `r ≤ s`, any relation series of `r` induces a relation
 series of `s`
 -/
-@[simps!]
-def ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s where
-  length := x.length
-  toFun := x
-  step _ := h _ _ <| x.step _
-
-lemma coe_ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) :
-    (x.ofLE h : _ → _) = x := rfl
-
-/-- Every relation series gives a list -/
-def toList (x : RelSeries r) : List α := List.ofFn x
+def ofLE (x : RelSeries r) {s : Rel α α} (h : r ≤ s) : RelSeries s :=
+  -- this is a bit meh
+  rec (motive := fun p : RelSeries r ↦ (q : RelSeries s) ×' p.head = q.head)
+    (fun a ↦ ⟨singleton a, rfl⟩)
+    (fun a p hp ⟨q, hq⟩ ↦ ⟨cons a q (by rw [← hq]; exact h _ _ hp), (by simp)⟩) x |>.1
 
 @[simp]
-lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
-  List.length_ofFn _
-
-lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
-  rw [List.chain'_iff_get]
-  intros i h
-  convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
-
-lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
-  List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
+lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 := by
+  induction x
+  · simp
+  · simpa
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
@@ -208,15 +303,18 @@ theorem length_pos (irrefl : Irreflexive r) : 0 < s.length ↔ {x | x ∈ s}.Non
 lemma length_eq_zero (irrefl : Irreflexive r) : s.length = 0 ↔ {x | x ∈ s}.Subsingleton := by
   rw [← not_ne_iff, length_ne_zero irrefl, Set.not_nontrivial_iff]
 
-/-- Start of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its head is `a₀`.
-
-Since a relation series is assumed to be non-empty, this is well defined. -/
-def head (x : RelSeries r) : α := x 0
-
 /-- End of a series, i.e. for `a₀ -r→ a₁ -r→ ... -r→ aₙ`, its last element is `aₙ`.
 
 Since a relation series is assumed to be non-empty, this is well defined. -/
-def last (x : RelSeries r) : α := x <| Fin.last _
+def last (x : RelSeries r) : α :=
+  rec (fun a ↦ a) (fun _ _ _ b ↦ b) x
+
+@[simp]
+lemma last_singleton (a : α) : (singleton (r := r) a).last = a := rfl
+
+@[simp]
+lemma last_cons (a : α) (p : RelSeries r) (h : r a p.head) :
+    (cons a p h).last = p.last := rfl
 
 lemma apply_last (x : RelSeries r) : x (Fin.last <| x.length) = x.last := rfl
 
@@ -224,82 +322,45 @@ lemma head_mem (x : RelSeries r) : x.head ∈ x := ⟨_, rfl⟩
 
 lemma last_mem (x : RelSeries r) : x.last ∈ x := ⟨_, rfl⟩
 
-@[simp]
-lemma head_singleton {r : Rel α α} (x : α) : (singleton r x).head = x := by simp [singleton, head]
-
-@[simp]
-lemma last_singleton {r : Rel α α} (x : α) : (singleton r x).last = x := by simp [singleton, last]
-
 end
 
-variable {r s}
+def _root_.RelSeriesH.append {a b : α} (p : RelSeriesH r a)
+    (q : RelSeriesH r b) (connect : r (RelSeries.last ⟨a, p⟩) b) :
+    RelSeriesH r a :=
+  match p with
+  | .singleton a => .cons a q connect
+  | .cons a p ha => .cons a (p.append q connect) ha
 
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` and `b₀ -r→ b₁ -r→ ... -r→ bₘ` are two strict series
 such that `r aₙ b₀`, then there is a chain of length `n + m + 1` given by
 `a₀ -r→ a₁ -r→ ... -r→ aₙ -r→ b₀ -r→ b₁ -r→ ... -r→ bₘ`.
 -/
-@[simps length]
-def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r where
-  length := p.length + q.length + 1
-  toFun := Fin.append p q ∘ Fin.cast (by omega)
-  step i := by
-    obtain hi | rfl | hi :=
-      lt_trichotomy i (Fin.castLE (by omega) (Fin.last _ : Fin (p.length + 1)))
-    · convert p.step ⟨i.1, hi⟩ <;> convert Fin.append_left p q _ <;> rfl
-    · convert connect
-      · convert Fin.append_left p q _
-      · convert Fin.append_right p q _; rfl
-    · set x := _; set y := _
-      change r (Fin.append p q x) (Fin.append p q y)
-      have hx : x = Fin.natAdd _ ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <|
-          i.2.trans <| by omega⟩ := by
-        ext; dsimp [x, y]; rw [Nat.add_sub_cancel']; exact hi
-      have hy : y = Fin.natAdd _ ⟨i - p.length, Nat.sub_lt_left_of_lt_add (le_of_lt hi)
-          (by exact i.2)⟩ := by
-        ext
-        dsimp
-        conv_rhs => rw [Nat.add_comm p.length 1, add_assoc,
-          Nat.add_sub_cancel' <| le_of_lt (show p.length < i.1 from hi), add_comm]
-        rfl
-      rw [hx, Fin.append_right, hy, Fin.append_right]
-      convert q.step ⟨i - (p.length + 1), Nat.sub_lt_left_of_lt_add hi <| by omega⟩
-      rw [Fin.succ_mk, Nat.sub_eq_iff_eq_add (le_of_lt hi : p.length ≤ i),
-        Nat.add_assoc _ 1, add_comm 1, Nat.sub_add_cancel]
-      exact hi
+def append (p q : RelSeries r) (connect : r p.last q.head) : RelSeries r :=
+  match p, q with
+  | ⟨a, p⟩, ⟨_, q⟩ => ⟨a, p.append q connect⟩
 
-lemma append_apply_left (p q : RelSeries r) (connect : r p.last q.head)
-    (i : Fin (p.length + 1)) :
-    p.append q connect ((i.castAdd (q.length + 1)).cast (by dsimp; omega)) = p i := by
-  delta append
-  simp only [Function.comp_apply]
-  convert Fin.append_left _ _ _
+@[simp]
+lemma append_singleton (a : α) (p : RelSeries r) (connect : r a p.head) :
+    (singleton a).append p connect = cons a p connect :=
+  rfl
 
-lemma append_apply_right (p q : RelSeries r) (connect : r p.last q.head)
-    (i : Fin (q.length + 1)) :
-    p.append q connect (i.natAdd p.length + 1) = q i := by
-  delta append
-  simp only [Fin.coe_natAdd, Nat.cast_add, Function.comp_apply]
-  convert Fin.append_right _ _ _
-  ext
-  simp only [Fin.coe_cast, Fin.coe_natAdd]
-  conv_rhs => rw [add_assoc, add_comm 1, ← add_assoc]
-  change _ % _ = _
-  simp only [Nat.add_mod_mod, Nat.mod_add_mod, Nat.one_mod, Nat.mod_succ_eq_iff_lt]
-  omega
+@[simp]
+lemma append_cons (a : α) (p : RelSeries r) (h : r a p.head) (q : RelSeries r)
+    (connect : r p.last q.head) :
+    (cons a p h).append q connect = cons a (p.append q connect) h :=
+  rfl
 
-@[simp] lemma head_append (p q : RelSeries r) (connect : r p.last q.head) :
+@[simp]
+lemma head_append (p q : RelSeries r) (connect : r p.last q.head) :
     (p.append q connect).head = p.head :=
-  append_apply_left p q connect 0
+  rfl
 
 @[simp] lemma last_append (p q : RelSeries r) (connect : r p.last q.head) :
     (p.append q connect).last = q.last := by
-  delta last
-  convert append_apply_right p q connect (Fin.last _)
-  ext
-  change _ = _ % _
-  simp only [append_length, Fin.val_last, Fin.natAdd_last, Nat.one_mod, Nat.mod_add_mod,
-    Nat.mod_succ]
+  induction p with
+  | leaf _ => simp
+  | fork a p h ih => exact ih _
 
 /--
 For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves relation `r`, then an
