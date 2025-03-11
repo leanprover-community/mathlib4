@@ -192,8 +192,7 @@ theorem mem_fixedField_iff (x) :
 @[simp] lemma fixedField_bot [IsGalois F E] [FiniteDimensional F E] :
     IntermediateField.fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
   ext
-  simp_rw [mem_fixedField_iff, Subgroup.mem_bot, forall_eq,
-    one_apply, mem_top]
+  simp [mem_fixedField_iff]
 
 theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
     finrank (fixedField H) E = Fintype.card H :=
