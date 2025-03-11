@@ -33,7 +33,7 @@ section Pi
 variable [∀ i, SeminormedAddCommGroup (E i)] [∀ i, InnerProductSpace 𝕜 (E i)] {w : ι → ℝ}
 
 /-- Weighted inner product giving rise to the L2 norm, denoted as `⟪g, f⟫_[𝕜, w]`. -/
-def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • inner (f i) (g i)
+noncomputable def wInner (w : ι → ℝ) (f g : ∀ i, E i) : 𝕜 := ∑ i, w i • inner (f i) (g i)
 
 /-- The weight function making `wInner` into the compact inner product. -/
 noncomputable abbrev cWeight : ι → ℝ := Function.const _ (Fintype.card ι)⁻¹
