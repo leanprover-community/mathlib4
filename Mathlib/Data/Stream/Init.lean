@@ -11,10 +11,7 @@ import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
-
-Porting note:
-This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
-name clashes. -/
+-/
 
 open Nat Function Option
 
