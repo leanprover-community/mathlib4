@@ -7,14 +7,16 @@ import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Maps.Basic
 
 /-!
-# Constructions of new topological spaces from old ones
+# Direct sums and products of topological spaces
 
-TODO update this!
-This file constructs products, sums, subtypes and quotients of topological spaces
+This file constructs sums (disjoint unions) and products of topological spaces
 and sets up their basic theory, such as criteria for maps into or out of these
 constructions to be continuous; descriptions of the open sets, neighborhood filters,
 and generators of these constructions; and their behavior with respect to embeddings
 and other specific classes of maps.
+
+We also provide basic homeomorphisms, to show that sums and products are commutative, associative
+and distributive (up to homeomorphism).
 
 ## Implementation note
 

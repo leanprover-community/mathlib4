@@ -14,7 +14,7 @@ import Mathlib.Topology.NhdsSet
 /-!
 # Constructions of new topological spaces from old ones
 
-This file constructs products, sums, subtypes and quotients of topological spaces
+This file constructs pi types, subtypes and quotients of topological spaces
 and sets up their basic theory, such as criteria for maps into or out of these
 constructions to be continuous; descriptions of the open sets, neighborhood filters,
 and generators of these constructions; and their behavior with respect to embeddings
@@ -31,7 +31,7 @@ neighborhood filters and so on.
 
 ## Tags
 
-product, sum, disjoint union, subspace, quotient space
+product, subspace, quotient space
 
 -/
 
