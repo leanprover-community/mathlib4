@@ -918,7 +918,7 @@ theorem terminatedAt_map_iff {f : α → β} {s : Seq α} {n : ℕ} :
   simp [TerminatedAt]
 
 @[simp]
-theorem terminates_map_iff {f : α → β} {s : Seq α}  :
+theorem terminates_map_iff {f : α → β} {s : Seq α} :
     (map f s).Terminates ↔ s.Terminates := by
   simp [Terminates]
 
