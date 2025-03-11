@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
+import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Tactic.FastInstance
+import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Type of functions with finite support
@@ -76,7 +78,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-assert_not_exists Submonoid
+assert_not_exists CompleteLattice Submonoid
 
 noncomputable section
 

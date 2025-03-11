@@ -14,6 +14,8 @@ They were separated for now to minimize the porting requirements for tactics
 during the transition to mathlib4. Please feel free to reorganize these two files.
 -/
 
+assert_not_exists RelIso
+
 namespace Nat
 
 /-! ### Sets -/

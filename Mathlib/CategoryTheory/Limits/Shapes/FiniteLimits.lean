@@ -167,8 +167,8 @@ instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
-    cases' j' with j'
-    · cases' j with j
+    obtain - | j' := j'
+    · obtain - | j := j
       · exact {Hom.id none}
       · exact {Hom.term j}
     · by_cases h : some j' = j
@@ -189,8 +189,8 @@ instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
 
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
-    cases' j with j
-    · cases' j' with j'
+    obtain - | j := j
+    · obtain - | j' := j'
       · exact {Hom.id none}
       · exact {Hom.init j'}
     · by_cases h : some j = j'

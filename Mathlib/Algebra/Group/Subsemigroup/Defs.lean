@@ -46,7 +46,7 @@ numbers.
 subsemigroup, subsemigroups
 -/
 
-assert_not_exists CompleteLattice MonoidWithZero
+assert_not_exists RelIso CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 
@@ -269,6 +269,16 @@ instance toCommSemigroup {M} [CommSemigroup M] {A : Type*} [SetLike A M] [MulMem
 `AddSubsemigroup` `M` to `M`."]
 def subtype : S' →ₙ* M where
   toFun := Subtype.val; map_mul' := fun _ _ => rfl
+
+variable {S'} in
+@[to_additive (attr := simp)]
+lemma subtype_apply (x : S') :
+    MulMemClass.subtype S' x = x := rfl
+
+@[to_additive]
+lemma subtype_injective :
+    Function.Injective (MulMemClass.subtype S') :=
+  Subtype.coe_injective
 
 @[to_additive (attr := simp)]
 theorem coe_subtype : (MulMemClass.subtype S' : S' → M) = Subtype.val :=

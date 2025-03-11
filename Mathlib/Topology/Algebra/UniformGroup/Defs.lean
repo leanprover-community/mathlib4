@@ -181,7 +181,6 @@ variable [Group β]
 @[to_additive]
 theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @UniformGroup β u _) :
     @UniformGroup β (sInf us) _ :=
-  -- Porting note: {_} does not find `sInf us` instance, see `continuousSMul_sInf`
   @UniformGroup.mk β (_) _ <|
     uniformContinuous_sInf_rng.mpr fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@UniformGroup.uniformContinuous_div β u _ (h u hu))
@@ -404,13 +403,18 @@ attribute [local instance] IsTopologicalGroup.toUniformSpace
 variable {G}
 
 @[to_additive]
--- Porting note: renamed theorem to conform to naming convention
-theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
+theorem uniformGroup_of_commGroup : UniformGroup G := by
   constructor
   simp only [UniformContinuous, uniformity_prod_eq_prod, uniformity_eq_comap_nhds_one',
     tendsto_comap_iff, tendsto_map'_iff, prod_comap_comap_eq, Function.comp_def,
     div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq, Prod.mk_one_one]
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
+
+@[deprecated (since := "2027-02-28")]
+alias comm_topologicalGroup_is_uniform := uniformGroup_of_commGroup
+
+@[deprecated (since := "2027-02-28")]
+alias comm_topologicalAddGroup_is_uniform := uniformAddGroup_of_addCommGroup
 
 open Set
 
@@ -442,8 +446,7 @@ theorem tendsto_div_comap_self (de : IsDenseInducing e) (x₀ : α) :
   have comm : ((fun x : α × α => x.2 / x.1) ∘ fun t : β × β => (e t.1, e t.2)) =
       e ∘ fun t : β × β => t.2 / t.1 := by
     ext t
-    change e t.2 / e t.1 = e (t.2 / t.1)
-    rw [← map_div e t.2 t.1]
+    simp
   have lim : Tendsto (fun x : α × α => x.2 / x.1) (𝓝 (x₀, x₀)) (𝓝 (e 1)) := by
     simpa using (continuous_div'.comp (@continuous_swap α α _ _)).tendsto (x₀, x₀)
   simpa using de.tendsto_comap_nhds_nhds lim comm
