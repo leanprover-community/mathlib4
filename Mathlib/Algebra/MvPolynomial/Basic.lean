@@ -386,6 +386,9 @@ theorem monomial_add_induction_on {M : MvPolynomial σ R → Prop} (p : MvPolyno
     -- Porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 
+@[deprecated (since := "2024-11-10")]
+alias induction_on''' := monomial_add_induction_on
+
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
 In particular, this version only requires us to show
