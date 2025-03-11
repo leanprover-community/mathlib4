@@ -38,7 +38,7 @@ def Similar (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
 @[inherit_doc]
 scoped[Similar] infixl:25 " ∼ " => Similar
 
-/-- A similarity holds if and only if and only if all extended distances are proportional. -/
+/-- A similarity holds if and only if all extended distances are proportional. -/
 lemma similar_iff_exists_edist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) :=
