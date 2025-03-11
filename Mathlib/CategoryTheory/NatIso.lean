@@ -100,11 +100,15 @@ theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
   rfl
 
-theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
+theorem hom_app {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
   rfl
 
-theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
+@[deprecated (since := "2025-03-11")] alias app_hom := hom_app
+
+theorem inv_app {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
   rfl
+
+@[deprecated (since := "2025-03-11")] alias app_inv := inv_app
 
 variable {F G : C ⥤ D}
 
