@@ -47,7 +47,7 @@ open Encodable
 attribute [local instance] PiCountable.normedAddCommGroup
 
 lemma PiCountable.not_dist_homogeneous' [DecidableEq ι]
-    [∀ i, NormedLinearOrderedField (F i)] [∀ i, NormedSpace ℝ (F i)] [∀ i, BoundedSMul ℝ (F i)]
+    [∀ i, NormedLinearOrderedField (F i)] [∀ i, NormedSpace ℝ (F i)] [∀ i, IsBoundedSMul ℝ (F i)]
      (i : ι) (hi : 0 < encode i) :
     ¬ ∀ (x y : Π i, F i) (r : ℝ),
     dist (r • x) (r • y) ≤ ‖r‖ * dist x y := by
@@ -75,8 +75,7 @@ theorem not_all_dist_induced_by_norm : ¬ ∀ (𝕜 E : Type)
     [Module 𝕜 E]
     [LocallyConvexSpace 𝕜 E]
     [ContinuousSMul 𝕜 E],
-    BoundedSMul 𝕜 E
-     := by
+    IsBoundedSMul 𝕜 E := by
   intro H
   obtain ⟨H, -⟩ := H ℝ (ℕ → ℝ)
   classical
