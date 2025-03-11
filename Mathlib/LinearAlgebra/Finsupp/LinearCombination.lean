@@ -67,6 +67,21 @@ theorem linearCombination_single (c : R) (a : α) :
 theorem linearCombination_zero_apply (x : α →₀ R) : (linearCombination R (0 : α → M)) x = 0 := by
   simp [linearCombination_apply]
 
+variable (α M)
+
+@[simp]
+theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
+  LinearMap.ext (linearCombination_zero_apply R)
+
+@[simp]
+theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
+    linearCombination R (Pi.single a c) f = f a • c := by
+  rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
+  · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
+  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
+
+variable {α M}
+
 theorem linearCombination_linear_comp (f : M →ₗ[R] M') :
     linearCombination R (f ∘ v) = f ∘ₗ linearCombination R v := by
   ext
@@ -250,21 +265,6 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   intro x _ h
   contrapose! h
   simp [h]
-
-variable (α M)
-
-@[simp]
-theorem linearCombination_zero : linearCombination R (0 : α → M) = 0 :=
-  LinearMap.ext (linearCombination_zero_apply R)
-
-@[simp]
-theorem linearCombination_single_index (c : M) (a : α) (f : α →₀ R) [DecidableEq α] :
-    linearCombination R (Pi.single a c) f = f a • c := by
-  rw [linearCombination_apply, sum_eq_single a, Pi.single_eq_same]
-  · exact fun i _ hi ↦ by rw [Pi.single_eq_of_ne hi, smul_zero]
-  · exact fun _ ↦ by simp only [single_eq_same, zero_smul]
-
-variable {α M}
 
 variable [Module S M] [SMulCommClass R S M]
 
@@ -470,3 +470,25 @@ lemma span_eq_iUnion_nat (s : Set M) :
     exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩
   · rintro ⟨f, hf, rfl⟩
     exact ⟨fun i ↦ (f i).1, fun i ↦ ⟨(f i).2, (hf i)⟩, rfl⟩
+
+section Ring
+
+variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
+
+/-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
+the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
+vector (in particular, the `i`-th standard basis vector is kept invariant). -/
+def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
+  refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
+    (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
+  ext j k <;> obtain rfl | hk := eq_or_ne i k
+  · simp [h₀]
+  · simp [single_eq_of_ne hk]
+  · simp [h₀]
+  · simp [single_eq_of_ne hk]
+
+theorem Finsupp.linearCombination_comp_addSingleEquiv (v : ι → M) :
+    linearCombination R v ∘ₗ addSingleEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by
+  ext; simp [addSingleEquiv]
+
+end Ring

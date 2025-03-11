@@ -5,7 +5,8 @@ Authors: Nicolò Cavalleri
 -/
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # Continuous bundled maps
@@ -84,7 +85,7 @@ theorem coe_const (b : β) : ⇑(const α b) = Function.const α b :=
   rfl
 
 /-- `Function.const α b` as a bundled continuous function of `b`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constPi : C(β, α → β) where
   toFun b := Function.const α b
 
@@ -154,12 +155,12 @@ variable {α₁ α₂ β₁ β₂ : Type*} [TopologicalSpace α₁] [Topological
   [TopologicalSpace β₂]
 
 /-- `Prod.fst : (x, y) ↦ x` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def fst : C(α × β, α) where
   toFun := Prod.fst
 
 /-- `Prod.snd : (x, y) ↦ y` as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def snd : C(α × β, β) where
   toFun := Prod.snd
 
@@ -227,7 +228,7 @@ theorem pi_eval (f : ∀ i, C(A, X i)) (a : A) : (pi f) a = fun i : I => (f i) a
   rfl
 
 /-- Evaluation at point as a bundled continuous map. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def eval (i : I) : C(∀ j, X j, X i) where
   toFun := Function.eval i
 
