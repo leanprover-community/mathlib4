@@ -521,7 +521,7 @@ can be glued along their common boundary (thanks to the collar neighbourhood the
 -- TODO: do I need a stronger definition of bordisms, including a *choice* of collars?
 -- At least, I need to argue that one *can* choose matching collars...
 def trans (φ : UnorientedBordism k s t J) (ψ : UnorientedBordism k t u J)
-    (h : finrank ℝ E' = finrank ℝ E + 1) : UnorientedBordism k t u J :=
+    (h : finrank ℝ E' = finrank ℝ E + 1) : UnorientedBordism k s u J :=
   /- Outline of the proof:
     - using the collar neighbourhood theorem, choose matching collars for t in φ and ψ
       invert the first collar, to get a map (-ε, 0] × t.M → φ.W
@@ -555,21 +555,25 @@ variable {k : WithTop ℕ∞} {E E' H H' : Type*} [NormedAddCommGroup E] [Normed
 variable (X k I) in
 /-- The "unordered bordism" equivalence relation: two singular n-manifolds modelled on `I`
 are equivalent iff there exists an unoriented bordism between them. -/
--- FIXME: remove the E' and H' arguments below, once J is actually used
+-- FIXME: what is needed to remove the E' and H' arguments below?
 def unorientedBordismRelation.{u, v} (J : ModelWithCorners ℝ E' H') :
     SingularNManifold.{u} X k I → SingularNManifold.{v} X k I → Prop :=
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
   fun s t ↦ ∃ _φ : UnorientedBordism k s t J, True
 
-variable (X k I J) in
+-- TODO: does this hold for general models J, as opposed to I.prod 𝓡∂ 1?
+variable (X k I) in
 lemma uBordismRelation.{u} [FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1) :
-    Equivalence (unorientedBordismRelation.{u, u} (H' := H') (E' := E') X k I J) := by
+  Equivalence (unorientedBordismRelation.{_, _, _, _, _, u, u} X k I (I.prod (𝓡∂ 1))) := by
   apply Equivalence.mk
-  · exact fun _s ↦ by sorry
-  · intro _s _t h
-    exact sorry
-  · intro _s _t _u _hst _htu
-    sorry
+  · intro s; use UnorientedBordism.refl s
+  · intro s t h
+    choose φ _ using h
+    use UnorientedBordism.symm φ
+  · intro s t u hst htu
+    choose φ _ using hst
+    choose ψ _ using htu
+    use φ.trans ψ (by simp)
 
 #exit
 
