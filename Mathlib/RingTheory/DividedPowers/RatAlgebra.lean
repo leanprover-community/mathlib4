@@ -83,14 +83,14 @@ theorem dpow_add_of_lt {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) {m : ℕ} (hm
     dpow I m (x + y) = (Finset.antidiagonal m).sum (fun k ↦ dpow I k.1 x * dpow I k.2 y) := by
   rw [dpow_eq_of_mem (Ideal.add_mem I hx hy)]
   simp only [dpow]
-  rw [inverse_mul_eq_iff_eq_mul _ _ _ (natCast_factorial_isUnit_of_lt hn_fac hmn),
+  rw [inverse_mul_eq_iff_eq_mul _ _ _ (hn_fac.natCast_factorial_of_lt hmn),
     Finset.mul_sum, Commute.add_pow' (Commute.all _ _)]
   apply Finset.sum_congr rfl
   intro k hk
   rw [if_pos hx, if_pos hy]
   ring_nf
   simp only [mul_assoc]; congr; rw [← mul_assoc]
-  exact castChoose_eq (natCast_factorial_isUnit_of_lt hn_fac hmn) hk
+  exact castChoose_eq (hn_fac.natCast_factorial_of_lt hmn) hk
 
 theorem dpow_add {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) (hnI : I ^ n = 0) {m : ℕ} {x : A}
     (hx : x ∈ I) {y : A} (hy : y ∈ I) :
@@ -126,10 +126,10 @@ theorem dpow_mul_of_add_lt {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) {m k : �
     mul_assoc, ← mul_assoc (x ^ m), mul_comm (x ^ m), mul_assoc _ (x ^ m),
     ← pow_add, ← mul_assoc, ← mul_assoc]
   apply congr_arg₂ _ _ rfl
-  rw [eq_mul_inverse_iff_mul_eq _ _ _ (natCast_factorial_isUnit_of_lt hn_fac hkm),
+  rw [eq_mul_inverse_iff_mul_eq _ _ _ (hn_fac.natCast_factorial_of_lt hkm),
       mul_assoc,
-      inverse_mul_eq_iff_eq_mul _ _ _ (natCast_factorial_isUnit_of_lt hn_fac hm),
-      inverse_mul_eq_iff_eq_mul _ _ _ (natCast_factorial_isUnit_of_lt hn_fac hk)]
+      inverse_mul_eq_iff_eq_mul _ _ _ (hn_fac.natCast_factorial_of_lt hm),
+      inverse_mul_eq_iff_eq_mul _ _ _ (hn_fac.natCast_factorial_of_lt hk)]
   norm_cast; apply congr_arg
   rw [← Nat.add_choose_mul_factorial_mul_factorial, mul_comm, mul_comm _ (m !), Nat.choose_symm_add]
 
@@ -153,9 +153,9 @@ theorem dpow_comp_of_mul_lt {n : ℕ} (hn_fac : IsUnit ((n - 1) ! : A)) {m k : �
   · have hkn : k < n := lt_of_le_of_lt (Nat.le_mul_of_pos_left _ (Nat.pos_of_ne_zero hm0)) hkm
     rw [dpow_eq_of_mem hx, mul_pow, ← pow_mul, mul_comm k, ← mul_assoc, ← mul_assoc]
     apply congr_arg₂ _ _ rfl
-    rw [eq_mul_inverse_iff_mul_eq _ _ _ (natCast_factorial_isUnit_of_lt hn_fac hkm),
-      mul_assoc, inverse_mul_eq_iff_eq_mul _ _ _ (natCast_factorial_isUnit_of_lt hn_fac hmn),
-      inverse_pow_mul_eq_iff_eq_mul _ _ (natCast_factorial_isUnit_of_lt hn_fac hkn),
+    rw [eq_mul_inverse_iff_mul_eq _ _ _ (hn_fac.natCast_factorial_of_lt hkm),
+      mul_assoc, inverse_mul_eq_iff_eq_mul _ _ _ (hn_fac.natCast_factorial_of_lt hmn),
+      inverse_pow_mul_eq_iff_eq_mul _ _ (hn_fac.natCast_factorial_of_lt hkn),
       ← uniformBell_mul_eq _ hk]
     simp only [Nat.cast_mul, Nat.cast_pow]
     ring_nf
@@ -173,15 +173,15 @@ theorem dpow_comp {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^
   Proposition 1.2.7 of [B74], part (ii). -/
 noncomputable def dividedPowers {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A))
     (hnI : I ^ n = 0) : DividedPowers I where
-  dpow             := dpow I
-  dpow_null hx     := dpow_null hx
-  dpow_zero hx     := dpow_zero hx
-  dpow_one hx      := dpow_one hx
-  dpow_mem hn hx   := dpow_mem hn hx
-  dpow_add _ _ _ hx hy  := dpow_add hn_fac hnI hx hy
-  dpow_mul _ _ _        := dpow_mul
-  mul_dpow _ _ _ hx     := mul_dpow hn_fac hnI hx
-  dpow_comp _ _ _ hk hx := dpow_comp hn_fac hnI hk hx
+  dpow            := dpow I
+  dpow_null hx    := dpow_null hx
+  dpow_zero hx    := dpow_zero hx
+  dpow_one hx     := dpow_one hx
+  dpow_mem hn hx  := dpow_mem hn hx
+  dpow_add hx hy  := dpow_add hn_fac hnI hx hy
+  dpow_mul        := dpow_mul
+  mul_dpow hx     := mul_dpow hn_fac hnI hx
+  dpow_comp hk hx := dpow_comp hn_fac hnI hk hx
 
 lemma dpow_apply {n : ℕ} (hn_fac : IsUnit ((n - 1).factorial : A)) (hnI : I ^ n = 0)
     {m : ℕ} {x : A} :
@@ -215,9 +215,8 @@ variable {A : Type*} [CommRing A] {p : ℕ} [Fact (Nat.Prime p)] [CharP A p]
 /-- If `A` is a commutative ring of prime characteristic `p` and `I` is an ideal such that
   `I^p = 0`, then `I` admits a divided power structure. -/
 noncomputable def dividedPowers : DividedPowers I :=
-  OfInvertibleFactorial.dividedPowers (n := p)
-    (natCast_factorial_isUnit_of_charP p (Nat.sub_one_lt (NeZero.ne' p).symm))
-    hIp
+  OfInvertibleFactorial.dividedPowers
+    ((IsUnit.natCast_factorial_iff_of_charP p).mpr (Nat.sub_one_lt (NeZero.ne' p).symm)) hIp
 
 theorem dpow_of_prime_le {n : ℕ} (hn : p ≤ n) (a : A) : (dividedPowers hIp) n a = 0 := by
   simp only [dividedPowers, OfInvertibleFactorial.dpow_apply, ite_eq_right_iff]
@@ -252,13 +251,13 @@ noncomputable def dividedPowers : DividedPowers I where
   dpow_zero hx   := OfInvertibleFactorial.dpow_zero hx
   dpow_one hx    := OfInvertibleFactorial.dpow_one hx
   dpow_mem hn hx := OfInvertibleFactorial.dpow_mem hn hx
-  dpow_add n _ _ hx hy := OfInvertibleFactorial.dpow_add_of_lt
-    (natCast_factorial_isUnit_of_ratAlgebra _) (n.lt_succ_self) hx hy
-  dpow_mul _ _ _ hx := OfInvertibleFactorial.dpow_mul hx
+  dpow_add {n} _ _ hx hy := OfInvertibleFactorial.dpow_add_of_lt
+    (IsUnit.natCast_factorial_of_algebra ℚ _) (n.lt_succ_self) hx hy
+  dpow_mul hx := OfInvertibleFactorial.dpow_mul hx
   mul_dpow {m} k _ hx := OfInvertibleFactorial.dpow_mul_of_add_lt
-    (natCast_factorial_isUnit_of_ratAlgebra _) (m + k).lt_succ_self hx
-  dpow_comp _ _ _ hk hx := OfInvertibleFactorial.dpow_comp_of_mul_lt
-    (natCast_factorial_isUnit_of_ratAlgebra _) hk (lt_add_one _) hx
+    (IsUnit.natCast_factorial_of_algebra ℚ _) (m + k).lt_succ_self hx
+  dpow_comp hk hx := OfInvertibleFactorial.dpow_comp_of_mul_lt
+    (IsUnit.natCast_factorial_of_algebra ℚ _) hk (lt_add_one _) hx
 
 @[simp]
 lemma dpow_apply {n : ℕ} {x : R} :
@@ -269,7 +268,7 @@ omit [DecidablePred fun x ↦ x ∈ I] in
   `dpow n x = x ^ n / n!` is the only possible one. -/
 theorem dpow_eq_inv_fact_smul (hI : DividedPowers I) {n : ℕ} {x : R} (hx : x ∈ I) :
     hI.dpow n x = (inverse (n.factorial : ℚ)) • x ^ n := by
-  rw [inverse_eq_inv', ← factorial_mul_dpow_eq_pow hI n hx, ← smul_eq_mul, ← smul_assoc]
+  rw [inverse_eq_inv', ← factorial_mul_dpow_eq_pow hI hx, ← smul_eq_mul, ← smul_assoc]
   nth_rewrite 1 [← one_smul R (hI.dpow n x)]
   congr
   have aux : ((n !) : R) = (n ! : ℚ) • (1 : R) := by
@@ -286,7 +285,7 @@ variable {I}
 /-- There are no other divided power structures on an ideal of a  `ℚ`-algebra. -/
 theorem dividedPowers_unique (hI : DividedPowers I) : hI = dividedPowers I :=
   hI.ext _ (fun n x hx ↦ by rw [dpow_apply, if_pos hx, eq_comm, inverse_mul_eq_iff_eq_mul _ _ _
-      (natCast_factorial_isUnit_of_ratAlgebra n), factorial_mul_dpow_eq_pow _ _ hx])
+      (IsUnit.natCast_factorial_of_algebra ℚ n), factorial_mul_dpow_eq_pow _ hx])
 
 end RatAlgebra
 
