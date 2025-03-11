@@ -310,8 +310,8 @@ theorem norm_of_cyclotomic_irreducible [IsDomain L] [IsCyclotomicExtension {n} K
     (hirr : Irreducible (cyclotomic n K)) : norm K ζ = ite (n = 2) (-1) 1 := by
   split_ifs with hn
   · subst hn
-    convert norm_eq_neg_one_pow (K := K) hζ
-    erw [IsCyclotomicExtension.finrank _ hirr, totient_two, pow_one]
+    rw [norm_eq_neg_one_pow (K := K) hζ, IsCyclotomicExtension.finrank _ hirr]
+    norm_cast
   · exact hζ.norm_eq_one hn hirr
 
 end CommRing
