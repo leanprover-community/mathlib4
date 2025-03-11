@@ -132,7 +132,7 @@ theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg 
     (hf.mul hg).order = hf.order + hg.order :=
   hf.order_smul hg
 
-/-- The order is of the inverse is the negative of the order. -/
+/-- The order of the inverse is the negative of the order. -/
 theorem order_inv {f : 𝕜 → 𝕜} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
     hf.order = -hf.inv.order := by
   -- Trivial case: f locally zero
