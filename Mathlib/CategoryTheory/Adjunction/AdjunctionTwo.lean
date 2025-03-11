@@ -31,6 +31,7 @@ an adjunction `F ⊣₂ G` consists of the data of adjunctions
 `F.obj X₁ ⊣ G.obj (op X₁)` for all `X₁ : C₁` which
 satisfy a naturality condition with respect to `X₁`. -/
 structure Adjunction₂ where
+  /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
   naturality' {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) {X₂ : C₂} {X₃ : C₃}
     (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
@@ -46,6 +47,8 @@ namespace Adjunction₂
 variable {F G} (adj₂ : F ⊣₂ G)
   {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} {X₃ Y₃ : C₃}
 
+/-- The bijection `((F.obj X₁).obj X₂ ⟶ X₃) ≃ (X₂ ⟶ (G.obj (op X₁)).obj X₃)`
+given by an adjunction of bifunctors `adj₂ : F ⊣₂ G`. -/
 def homEquiv : ((F.obj X₁).obj X₂ ⟶ X₃) ≃ (X₂ ⟶ (G.obj (op X₁)).obj X₃) :=
   (adj₂.adj X₁).homEquiv _ _
 
