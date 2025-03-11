@@ -372,27 +372,42 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
     show P (monomial 0 0) from h1 0 0)
     fun _ _ _ _ha _hb hPf => h2 _ _ (h1 _ _) hPf
 
-/-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required. -/
-theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
+/--
+Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required.
+In particular, this version only requires us to show
+that `M` is closed under addition of nontrivial monomials not present in the support.
+-/
+theorem monomial_add_induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
+    (h_C : ∀ a, M (C a))
     (h_add_weak :
-      ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
-        a ∉ f.support → b ≠ 0 → M f → M ((show (σ →₀ ℕ) →₀ R from monomial a b) + f)) :
+      ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
+        a ∉ f.support → b ≠ 0 → M f → M ((monomial a b) + f)) :
     M p :=
     -- Porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 
-/-- Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required. -/
+/--
+Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
+In particular, this version only requires us to show
+that `M` is closed under addition of monomials not present in the support
+and for which `M` is already known to hold.
+-/
 theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
-      ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
+      ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
         a ∉ f.support → b ≠ 0 → M f → M (monomial a b) →
-          M ((show (σ →₀ ℕ) →₀ R from monomial a b) + f))
+          M ((monomial a b) + f))
     (h_X : ∀ (p : MvPolynomial σ R) (n : σ), M p → M (p * MvPolynomial.X n)) : M p :=
     -- Porting note: I had to add the `show ... from ...` above, a type ascription was insufficient.
-  induction_on''' p h_C fun a b f ha hb hf =>
+  monomial_add_induction_on p h_C fun a b f ha hb hf =>
     h_add_weak a b f ha hb hf <| induction_on_monomial h_C h_X a b
 
-/-- Analog of `Polynomial.induction_on`. -/
+/--
+Analog of `Polynomial.induction_on`.
+If a property holds for any constant polynomial
+and is preserved under addition and multiplication by variables
+then it holds for all multivariate polynomials.
+-/
 @[recursor 5]
 theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_X : ∀ p n, M p → M (p * X n)) : M p :=
