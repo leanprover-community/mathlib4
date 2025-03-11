@@ -86,7 +86,7 @@ theorem not_le_of_le_of_not_le (h₁ : a ≤ b) (h₂ : ¬ c ≤ b) : ¬ c ≤ a
   mt h₁.trans'
 
 theorem not_le_of_not_le_of_le (h₁ : ¬ b ≤ a) (h₂ : b ≤ c) : ¬ c ≤ a :=
-  fun h ↦ h₁ (le_trans h₂ h)
+  mt h₁.trans
 
 end Preorder
 
