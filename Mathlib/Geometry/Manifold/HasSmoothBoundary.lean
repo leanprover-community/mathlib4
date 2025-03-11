@@ -86,7 +86,7 @@ and being a topological embedding.
 Is a pair `(M₀, f)` of a smooth manifold `M₀` modelled over `(E₀, H₀)` and an embedding
 `f : M₀ → M` which is a smooth immersion, such that `range f = I.boundary M`.
 -/
-structure BoundaryManifoldData.{u} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+structure BoundaryManifoldData.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
     (I : ModelWithCorners ℝ E H) (k : WithTop ℕ∞) [IsManifold I k M]
     {E₀ H₀: Type*} [NormedAddCommGroup E₀] [NormedSpace ℝ E₀]
     [TopologicalSpace H₀] (I₀ : ModelWithCorners ℝ E₀ H₀) where
@@ -127,7 +127,7 @@ variable (M I) in
 -- We can just take the empty manifold, with a vacuously defined map.
 def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
     BoundaryManifoldData M I k I where
-  M₀ := Empty
+  M₀ := PEmpty
   chartedSpace := ChartedSpace.empty _ _
   f x := (IsEmpty.false x).elim
   isEmbedding := Topology.IsEmbedding.of_subsingleton _
@@ -138,7 +138,7 @@ def BoundaryManifoldData.of_boundaryless [BoundarylessManifold I M] :
       rw [ModelWithCorners.Boundaryless.iff_boundary_eq_empty]
       infer_instance
     rw [this]
-    simp [Empty.instIsEmpty]
+    simp [PEmpty.instIsEmpty]
   contMDiff x := (IsEmpty.false x).elim
 
 instance [BoundarylessManifold I M] :
