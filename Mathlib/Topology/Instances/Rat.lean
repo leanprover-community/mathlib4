@@ -118,3 +118,21 @@ nonrec theorem totallyBounded_Icc (a b : ℚ) : TotallyBounded (Icc a b) := by
       (totallyBounded_Icc (a : ℝ) b)
 
 end Rat
+
+namespace NNRat
+
+instance : MetricSpace ℚ≥0 :=
+  Subtype.metricSpace
+
+instance : IsTopologicalSemiring ℚ≥0 where
+  toContinuousAdd := continuousAdd_induced Nonneg.coeRingHom
+  toContinuousMul := continuousMul_induced Nonneg.coeRingHom
+
+instance : ContinuousSub ℚ≥0 :=
+  ⟨((continuous_subtype_val.fst'.sub continuous_subtype_val.snd').max
+      continuous_const).subtype_mk _⟩
+
+instance : OrderTopology ℚ≥0 := orderTopology_of_ordConnected (t := Set.Ici 0)
+instance : HasContinuousInv₀ ℚ≥0 := inferInstance
+
+end NNRat
