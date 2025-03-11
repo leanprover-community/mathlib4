@@ -825,8 +825,8 @@ over `𝕜`.
 -/
 
 
-variable (𝕜) {𝕜' : Type*} [NontriviallyNormedField 𝕜']
-variable [NormedAlgebra 𝕜 𝕜']
+variable (𝕜)
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}
