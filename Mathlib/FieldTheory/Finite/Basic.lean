@@ -471,13 +471,26 @@ open FiniteField
 
 namespace ZMod
 
+variable {p : ℕ} [Fact p.Prime]
+
+theorem bot_eq_top : (⊥ : Subfield (ZMod p)) = (⊤ : Subfield (ZMod p)) := by
+  ext n
+  refine (iff_true_right trivial).mpr ?_
+  have := Subfield.zsmul_one_in_bot (ZMod p) n.val
+  rwa [natCast_zsmul, Nat.smul_one_eq_cast, ZMod.natCast_zmod_val] at this
+
+theorem map_castHom_top_eq_bot (p : ℕ) [Fact p.Prime] [DivisionRing K] [CharP K p] :
+    Subfield.map (ZMod.castHom (m := p) dvd_rfl K) ⊤ = (⊥ : Subfield K) := by
+  ext x
+  rw [← Subfield.map_bot (ZMod.castHom (m := p) dvd_rfl K), bot_eq_top]
+
 /-- A variation on Fermat's little theorem. See `ZMod.pow_card_sub_one_eq_one` -/
 @[simp]
-theorem pow_card {p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p = x := by
+theorem pow_card (x : ZMod p) : x ^ p = x := by
   have h := FiniteField.pow_card x; rwa [ZMod.card p] at h
 
 @[simp]
-theorem pow_card_pow {n p : ℕ} [Fact p.Prime] (x : ZMod p) : x ^ p ^ n = x := by
+theorem pow_card_pow {n : ℕ} (x : ZMod p) : x ^ p ^ n = x := by
   induction n with
   | zero => simp
   | succ n ih => simp [pow_succ, pow_mul, ih, pow_card]
@@ -496,27 +509,27 @@ theorem units_pow_card_sub_one_eq_one (p : ℕ) [Fact p.Prime] (a : (ZMod p)ˣ) 
   rw [← card_units p, pow_card_eq_one]
 
 /-- **Fermat's Little Theorem**: for all nonzero `a : ZMod p`, we have `a ^ (p - 1) = 1`. -/
-theorem pow_card_sub_one_eq_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
+theorem pow_card_sub_one_eq_one {a : ZMod p} (ha : a ≠ 0) :
     a ^ (p - 1) = 1 := by
     have h := FiniteField.pow_card_sub_one_eq_one a ha
     rwa [ZMod.card p] at h
 
-lemma pow_card_sub_one {p : ℕ} [Fact p.Prime] (a : ZMod p) :
+lemma pow_card_sub_one (a : ZMod p) :
     a ^ (p - 1) = if a ≠ 0 then 1 else 0 := by
   split_ifs with ha
   · exact pow_card_sub_one_eq_one ha
   · simp [of_not_not ha, (Fact.out : p.Prime).one_lt, tsub_eq_zero_iff_le]
 
-theorem orderOf_units_dvd_card_sub_one {p : ℕ} [Fact p.Prime] (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
+theorem orderOf_units_dvd_card_sub_one (u : (ZMod p)ˣ) : orderOf u ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| units_pow_card_sub_one_eq_one _ _
 
-theorem orderOf_dvd_card_sub_one {p : ℕ} [Fact p.Prime] {a : ZMod p} (ha : a ≠ 0) :
+theorem orderOf_dvd_card_sub_one {a : ZMod p} (ha : a ≠ 0) :
     orderOf a ∣ p - 1 :=
   orderOf_dvd_of_pow_eq_one <| pow_card_sub_one_eq_one ha
 
 open Polynomial
 
-theorem expand_card {p : ℕ} [Fact p.Prime] (f : Polynomial (ZMod p)) :
+theorem expand_card (f : Polynomial (ZMod p)) :
     expand (ZMod p) p f = f ^ p := by have h := FiniteField.expand_card f; rwa [ZMod.card p] at h
 
 end ZMod
@@ -568,11 +581,104 @@ theorem ZMod.eq_one_or_isUnit_sub_one {n p k : ℕ} [Fact p.Prime] (hn : n = p ^
 
 section
 
+open Polynomial in
+theorem mem_of_isRoot [Field K] (F : Subfield K) {f : F[X]} (hnz : f.natDegree ≠ 0)
+    (hf : Splits (K := F) (RingHom.id F) f) {x : K} (hx : (f.map F.subtype).IsRoot x) : x ∈ F := by
+  have haev : f.aeval x = 0 := by rwa [IsRoot.def, eval_map] at hx
+  have hz : f ≠ 0 := ne_of_apply_ne natDegree fun a ↦ hnz a
+  have hint : IsIntegral (↥F) x := by
+    refine isAlgebraic_iff_isIntegral.mp <| IsAlgebraic.of_aeval f hnz ?_ (haev ▸ isAlgebraic_zero)
+    rwa [← leadingCoeff_ne_zero, ← mem_nonZeroDivisors_iff_ne_zero] at hz
+  rw [splits_iff, map_id] at hf
+  have hsplit := Or.imp_left hz hf
+  rw [false_or] at hsplit
+  have := minpoly.mem_range_of_degree_eq_one F x
+    (hsplit (minpoly.irreducible hint) (minpoly.dvd_iff.mpr haev))
+  simpa [RingHom.algebraMap_toAlgebra'] using this
+
 namespace FiniteField
 
 variable {F : Type*} [Field F]
 
 section Finite
+
+theorem mem_bot (p : ℕ) [Fact p.Prime] (K) [DivisionRing K] [CharP K p] {x : K} :
+    x ∈ (⊥ : Subfield K) ↔ ∃ n : ℤ, n = x := by
+  rw [← map_castHom_top_eq_bot p, Subfield.mem_map]
+  constructor
+  · intro hx
+    obtain ⟨n, _, hn⟩ := hx
+    use n.val
+    simp [← hn]
+  · intro hx
+    obtain ⟨n, hn⟩ := hx
+    use n
+    simp [hn]
+
+theorem card_of_map {L : Type*} [DivisionRing L] (f : F →+* L) :
+    Nat.card (Subfield.map f ⊤) = Nat.card F := by
+  simp only [Subfield.map, Subfield.mem_mk, Subring.mem_map, Subfield.mem_toSubring,
+    Subfield.mem_top, true_and]
+  exact (Nat.card_eq_of_bijective (RingHom.rangeRestrictField f) <|
+    RingHom.rangeRestrictField_bijective f).symm
+
+theorem card_bot (F) [Field F] (p : ℕ) [Fact p.Prime] [CharP F p] :
+    Nat.card (⊥ : Subfield F) = p := by
+  rw [← Subfield.map_bot (ZMod.castHom (m := p) dvd_rfl F), ZMod.bot_eq_top,
+    FiniteField.card_of_map, Nat.card_zmod]
+
+theorem finite_bot (F) [Field F] (p : ℕ) [Fact p.Prime] [CharP F p] : Finite (⊥ : Subfield F) := by
+  refine Nat.finite_of_card_ne_zero ?_
+  rw [card_bot F p]
+  exact (NeZero.ne' p).symm
+
+open Polynomial in
+theorem splits_bot (p : ℕ) [Fact p.Prime] [CharP F p] :
+    Splits (K := (⊥ : Subfield F)) (RingHom.id (⊥ : Subfield F)) (X ^ p - X) := by
+  have _ := finite_bot F p
+  have _ := Fintype.ofFinite (⊥ : Subfield F)
+  have h : roots (X ^ p - X : (⊥ : Subfield F)[X]) = Finset.univ.val := by
+    rw [← card_bot F p, ← Fintype.card_eq_nat_card]
+    exact FiniteField.roots_X_pow_card_sub_X (⊥ : Subfield F)
+  rw [splits_iff_card_roots, h, ← Finset.card_def, Finset.card_univ,
+    FiniteField.X_pow_card_sub_X_natDegree_eq (⊥ : Subfield F) (Fact.out (p := p.Prime)).one_lt,
+    Fintype.card_eq_nat_card, card_bot F p]
+
+open Polynomial in
+theorem zsmul_one_isRoot (p : ℕ) [Fact p.Prime] [CharP F p] (n : ℤ) :
+    (X ^ p - X : F[X]).IsRoot (n • (1 : F)) := by
+  induction n with
+  | hz => simp [NeZero.ne p]
+  | hp i ih =>
+    simp only [zsmul_eq_mul, Int.cast_natCast, mul_one, IsRoot.def, eval_sub, eval_pow,
+      eval_X, sub_eq_zero] at ih
+    simp only [zsmul_eq_mul, Int.cast_add, Int.cast_natCast, Int.cast_one, mul_one, IsRoot.def,
+      eval_sub, eval_pow, eval_X, add_pow_expChar, ih, one_pow]
+    abel
+  | hn i ih =>
+    simp only [neg_smul, zsmul_eq_mul, Int.cast_natCast, mul_one, IsRoot.def, eval_sub, eval_pow,
+      eval_X, sub_neg_eq_add, add_eq_zero_iff_eq_neg] at ih
+    simp only [zsmul_eq_mul, Int.cast_sub, Int.cast_neg, Int.cast_natCast, Int.cast_one, mul_one,
+      IsRoot.def, eval_sub, eval_pow, eval_X, sub_pow_expChar, ih, one_pow]
+    abel
+
+open Polynomial in
+theorem mem_bot_iff (p : ℕ) [hp : Fact p.Prime] [CharP F p] {x : F} :
+    x ∈ (⊥ : Subfield F) ↔ x ^ p = x := by
+  constructor
+  · rw [FiniteField.mem_bot p]
+    intro hx
+    obtain ⟨n, hn⟩ := hx
+    rw [← @Int.smul_one_eq_cast] at hn
+    have := zsmul_one_isRoot (F := F) p n
+    rwa [hn, IsRoot.def, eval_sub, eval_pow, eval_X, sub_eq_zero] at this
+  · intro h
+    set f := (X ^ p - X : (⊥ : Subfield F)[X]) with hs
+    have hf : (f.map (⊥ : Subfield F).subtype).IsRoot x := by
+      simp [hs, IsRoot.def, sub_eq_zero_of_eq h]
+    refine mem_of_isRoot ⊥ ?_ (splits_bot (F := F) p) hf
+    rw [FiniteField.X_pow_card_sub_X_natDegree_eq (⊥ : Subfield F) hp.out.one_lt]
+    exact (NeZero.ne' p).symm
 
 variable [Finite F]
 
