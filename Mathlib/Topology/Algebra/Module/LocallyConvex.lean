@@ -197,28 +197,9 @@ section LinearOrderedSemiring
 
 instance {R : Type*} [TopologicalSpace R] [LinearOrderedSemiring R] [OrderTopology R] :
     LocallyConvexSpace R R where
-  convex_basis := by
-    intro x
-    by_cases hl : ∃ l, l < x
-    · by_cases hu : ∃ u, x < u
-      · refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
-        · simp only [id_eq, and_imp, Prod.forall]
-          intros
-          refine ⟨_, ?_, subset_refl _⟩
-          simp_all [Ioo_mem_nhds, convex_Ioo]
-        · simp +contextual
-      · push_neg at hu
-        let _ : Top R := ⟨x⟩
-        let _ : OrderTop R := ⟨hu⟩
-        replace hu : x = ⊤ := rfl
-        rw [hu]
-        refine nhds_top_basis.to_hasBasis' ?_ ?_
-        · intros
-          refine ⟨Set.Ioi _, ?_, subset_refl _⟩
-          simp_all [Ioi_mem_nhds, convex_Ioi]
-        · simp +contextual
-    · push_neg at hl
-      let _ : Bot R := ⟨x⟩
+  convex_basis x := by
+    obtain hl | hl := isBot_or_exists_lt x
+    · let _ : Bot R := ⟨x⟩
       let _ : OrderBot R := ⟨hl⟩
       replace hu : x = ⊥ := rfl
       rw [hu]
@@ -227,6 +208,22 @@ instance {R : Type*} [TopologicalSpace R] [LinearOrderedSemiring R] [OrderTopolo
         refine ⟨Set.Iio _, ?_, subset_refl _⟩
         simp_all [Iio_mem_nhds, convex_Iio]
       · simp +contextual
+    obtain hu | hu := isTop_or_exists_gt x
+    · let _ : Top R := ⟨x⟩
+      let _ : OrderTop R := ⟨hu⟩
+      replace hu : x = ⊤ := rfl
+      rw [hu]
+      refine nhds_top_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+        simp_all [Ioi_mem_nhds, convex_Ioi]
+      · simp +contextual
+    refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
+    · simp only [id_eq, and_imp, Prod.forall]
+      intros
+      refine ⟨_, ?_, subset_refl _⟩
+      simp_all [Ioo_mem_nhds, convex_Ioo]
+    · simp +contextual
 
 instance : LocallyConvexSpace ℝ ℝ := inferInstance
 instance : LocallyConvexSpace NNReal NNReal := inferInstance
