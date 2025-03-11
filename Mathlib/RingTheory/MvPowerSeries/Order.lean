@@ -457,8 +457,7 @@ section HomogeneousComponent
 variable (w : σ → ℕ)
 
 /-- The weighted homogeneous components of an `MvPowerSeries f`. -/
-def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R
-    where
+def weightedHomogeneousComponent (p : ℕ) : MvPowerSeries σ R →ₗ[R] MvPowerSeries σ R where
   toFun f d := if weight w d = p then coeff R d f else 0
   map_add' f g := by
     ext d

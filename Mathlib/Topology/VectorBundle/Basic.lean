@@ -92,7 +92,7 @@ protected def symmₗ (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) 
 
 /-- A pretrivialization for a vector bundle defines linear equivalences between the
 fibers and the model space. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def linearEquivAt (e : Pretrivialization F (π F E)) [e.IsLinear R] (b : B) (hb : b ∈ e.baseSet) :
     E b ≃ₗ[R] F where
   toFun y := (e ⟨b, y⟩).2
@@ -365,7 +365,7 @@ namespace Trivialization
 
 /-- Forward map of `Trivialization.continuousLinearEquivAt` (only propositionally equal),
   defined everywhere (`0` outside domain). -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : E b →L[R] F :=
   { e.linearMapAt R b with
     toFun := e.linearMapAt R b -- given explicitly to help `simps`
@@ -378,7 +378,7 @@ def continuousLinearMapAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
         fun x => e.mem_source.mpr hb).snd }
 
 /-- Backwards map of `Trivialization.continuousLinearEquivAt`, defined everywhere. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b :=
   { e.symmₗ R b with
     toFun := e.symm b -- given explicitly to help `simps`
@@ -402,7 +402,7 @@ theorem continuousLinearMapAt_symmL (e : Trivialization F (π F E)) [e.IsLinear 
 variable (R) in
 /-- In a vector bundle, a trivialization in the fiber (which is a priori only linear)
 is in fact a continuous linear equiv between the fibers and the model fiber. -/
-@[simps (config := .asFn) apply symm_apply]
+@[simps -fullyApplied apply symm_apply]
 def continuousLinearEquivAt (e : Trivialization F (π F E)) [e.IsLinear R] (b : B)
     (hb : b ∈ e.baseSet) : E b ≃L[R] F :=
   { e.toPretrivialization.linearEquivAt R b hb with

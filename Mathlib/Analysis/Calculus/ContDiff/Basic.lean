@@ -467,20 +467,20 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
 product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
-theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞} (hf : HasFTaylorSeriesUpToOn n f p s)
-    {g : E → G} {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
+theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
+    (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
+    {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
   set L := fun m => ContinuousMultilinearMap.prodL 𝕜 (fun _ : Fin m => E) F G
   constructor
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
-    convert
-      (L m).hasFDerivAt.comp_hasFDerivWithinAt x
+    convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x
         ((hf.fderivWithin m hm x hx).prodMk (hg.fderivWithin m hm x hx))
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prodMk (hg.cont m hm))
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias HasFTaylorSeriesUpToOn.prod := HasFTaylorSeriesUpToOn.prodMk
 
 /-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
@@ -491,22 +491,19 @@ theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
   | ω =>
     obtain ⟨u, hu, p, hp, h'p⟩ := hf
     obtain ⟨v, hv, q, hq, h'q⟩ := hg
-    refine
-      ⟨u ∩ v, Filter.inter_mem hu hv, _,
-        (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right), fun i ↦ ?_⟩
+    refine ⟨u ∩ v, Filter.inter_mem hu hv, _,
+      (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right), fun i ↦ ?_⟩
     change AnalyticOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i)) (u ∩ v)
-    apply
-      AnalyticOnNhd.comp_analyticOn (LinearIsometryEquiv.analyticOnNhd _ _) _ (Set.mapsTo_univ _ _)
+    apply (LinearIsometryEquiv.analyticOnNhd _ _).comp_analyticOn _ (Set.mapsTo_univ _ _)
     exact ((h'p i).mono inter_subset_left).prod ((h'q i).mono inter_subset_right)
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
     rcases hg m hm with ⟨v, hv, q, hq⟩
-    exact
-      ⟨u ∩ v, Filter.inter_mem hu hv, _,
-        (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right)⟩
+    exact ⟨u ∩ v, Filter.inter_mem hu hv, _,
+      (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right)⟩
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffWithinAt.prod := ContDiffWithinAt.prodMk
 
 /-- The cartesian product of `C^n` functions on domains is `C^n`. -/
@@ -514,7 +511,7 @@ theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiff
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x : E => (f x, g x)) s := fun x hx =>
   (hf x hx).prodMk (hg x hx)
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffOn.prod := ContDiffOn.prodMk
 
 /-- The cartesian product of `C^n` functions at a point is `C^n`. -/
@@ -522,7 +519,7 @@ theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f 
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x : E => (f x, g x)) x :=
   contDiffWithinAt_univ.1 <| hf.contDiffWithinAt.prodMk hg.contDiffWithinAt
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffAt.prod := ContDiffAt.prodMk
 
 /-- The cartesian product of `C^n` functions is `C^n`. -/
@@ -530,7 +527,7 @@ theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
   contDiffOn_univ.1 <| hf.contDiffOn.prodMk hg.contDiffOn
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiff.prod := ContDiff.prodMk
 
 /-!

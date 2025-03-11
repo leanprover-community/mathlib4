@@ -380,15 +380,13 @@ theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : 
 alias Continuous.prod_mk := Continuous.prodMk
 
 @[continuity]
-theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) :=
-  continuous_const.prodMk continuous_id
+theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by fun_prop
 
 @[deprecated (since := "2025-02-21")]
 alias Continuous.Prod.mk := Continuous.prodMk_right
 
 @[continuity]
-theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) :=
-  continuous_id.prodMk continuous_const
+theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
 
 @[deprecated (since := "2025-02-21")]
 alias Continuous.Prod.mk_left := Continuous.prodMk_left
@@ -413,7 +411,7 @@ theorem Continuous.comp₄ {g : X × Y × Z × ζ → ε} (hg : Continuous g) {e
     (hl : Continuous l) : Continuous fun w => g (e w, f w, k w, l w) :=
   hg.comp₃ he hf <| hk.prodMk hl
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.prodMap {f : Z → X} {g : W → Y} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Prod.map f g) :=
   hf.fst'.prodMk hg.snd'
@@ -1913,23 +1911,23 @@ theorem ULift.isClosed_iff [TopologicalSpace X] {s : Set (ULift.{v} X)} :
     IsClosed s ↔ IsClosed (ULift.up ⁻¹' s) := by
   rw [← isOpen_compl_iff, ← isOpen_compl_iff, isOpen_iff, preimage_compl]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_uliftDown [TopologicalSpace X] : Continuous (ULift.down : ULift.{v, u} X → X) :=
   continuous_induced_dom
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_uliftUp [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
   continuous_induced_rng.2 continuous_id
 
 @[deprecated (since := "2025-02-10")] alias continuous_uLift_down := continuous_uliftDown
 @[deprecated (since := "2025-02-10")] alias continuous_uLift_up := continuous_uliftUp
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_uliftMap [TopologicalSpace X] [TopologicalSpace Y]
     (f : X → Y) (hf : Continuous f) :
     Continuous (ULift.map f : ULift.{u'} X → ULift.{v'} Y) := by
   change Continuous (ULift.up ∘ f ∘ ULift.down)
-  continuity
+  fun_prop
 
 lemma Topology.IsEmbedding.uliftDown [TopologicalSpace X] :
     IsEmbedding (ULift.down : ULift.{v, u} X → X) := ⟨⟨rfl⟩, ULift.down_injective⟩

@@ -604,7 +604,7 @@ variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
 where the parts are the setoid's equivalence classes. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) where
   parts := univ.image fun a ↦ ({b | s.r a b} : Finset α)
   supIndep := by
