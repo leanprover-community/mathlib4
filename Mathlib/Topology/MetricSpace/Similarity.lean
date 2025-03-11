@@ -23,6 +23,8 @@ Let `P₁` and `P₂` be metric spaces, let `ι` be an index set, and let `v₁ 
 * `(v₁ ∼ v₂ : Prop)` represents that `(v₁ : ι → P₁)` and `(v₂ : ι → P₂)` are similar.
 -/
 
+open scoped NNReal
+
 variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : ι → P₂} {v₃ : ι → P₃}
 
 section PseudoEMetricSpace
@@ -33,21 +35,21 @@ variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace
 Use `open scoped Similar` to access the `v₁ ∼ v₂` notation. -/
 
 def Similar (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
-  ∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))
+  ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))
 
 @[inherit_doc]
 scoped[Similar] infixl:25 " ∼ " => Similar
 
 /-- Similarity holds if and only if all extended distances are proportional. -/
 lemma similar_iff_exists_edist_eq :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) :=
   Iff.rfl
 
 /-- Similarity holds if and only if all extended distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_edist_eq :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (edist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) := by
   rw [similar_iff_exists_edist_eq]
   refine ⟨?_, ?_⟩ <;> rintro ⟨r, hr, h⟩ <;> refine ⟨r, hr, fun i₁ i₂ ↦ ?_⟩
@@ -117,7 +119,7 @@ variable [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
 
 /-- Similarity holds if and only if all non-negative distances are proportional. -/
 lemma similar_iff_exists_nndist_eq :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
       r * nndist (v₂ i₁) (v₂ i₂))) :=
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
   fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
@@ -125,14 +127,14 @@ lemma similar_iff_exists_nndist_eq :
 /-- Similarity holds if and only if all non-negative distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_nndist_eq :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
       r * nndist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_edist_eq, edist_nndist]
   exact_mod_cast Iff.rfl
 
 /-- Similarity holds if and only if all distances are proportional. -/
 lemma similar_iff_exists_dist_eq :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) :=
   similar_iff_exists_nndist_eq.trans
   (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
@@ -141,7 +143,7 @@ lemma similar_iff_exists_dist_eq :
 /-- Similarity holds if and only if all distances between points with different indices are
 proportional. -/
 lemma similar_iff_exists_pairwise_dist_eq :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
+    Similar v₁ v₂ ↔ (∃ r : ℝ≥0, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
       r * dist (v₂ i₁) (v₂ i₂))) := by
   simp_rw [similar_iff_exists_pairwise_nndist_eq, dist_nndist]
   exact_mod_cast Iff.rfl
