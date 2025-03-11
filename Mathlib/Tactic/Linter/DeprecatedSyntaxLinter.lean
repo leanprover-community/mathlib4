@@ -10,7 +10,7 @@ import Lean.Elab.Command
 import Mathlib.Tactic.Linter.Header
 
 /-!
-# Linter against superseded syntax
+# Linter against deprecated syntax
 
 `refine'` and `cases'` provide backward-compatible implementations of their unprimed equivalents
 in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
@@ -22,7 +22,7 @@ in Lean 3, `refine` and `cases`. They have been superseded by Lean 4 tactics:
 * `obtain`, `rcases` and `cases` replace `cases'`. Unlike the replacement tactics, `cases'`
   does not require the variables it introduces to be separated by case, which hinders readability.
 
-This linter is an incentive to discourage uses of such superseded syntax, without being a ban.
+This linter is an incentive to discourage uses of such deprecated syntax, without being a ban.
 It is not inherently limited to tactics.
 -/
 
@@ -30,7 +30,7 @@ open Lean Elab
 
 namespace Mathlib.Linter.Style
 
-/-- The option `linter.style.refine` of the superseded syntax linter flags usages of
+/-- The option `linter.style.refine` of the deprecated syntax linter flags usages of
 the `refine'` tactic.
 
 The tactics `refine` and `refine'` are similar, but they handle meta-variables slightly differently.
@@ -42,7 +42,7 @@ register_option linter.style.refine : Bool := {
   descr := "enable the refine linter"
 }
 
-/-- The option `linter.style.cases` of the superseded syntax linter flags usages of
+/-- The option `linter.style.cases` of the deprecated syntax linter flags usages of
 the `cases'` tactic, which is a backward-compatible version of Lean 3's `cases` tactic.
 Unlike `obtain`, `rcases` and Lean 4's `cases`, variables introduced by `cases'` are not
 required to be separated by case, which hinders readability.
@@ -52,11 +52,11 @@ register_option linter.style.cases : Bool := {
   descr := "enable the cases linter"
 }
 
-/-- `getSupersededSyntax t` returns all usages of superseded syntax in the input syntax `t`. -/
+/-- `getDeprecatedSyntax t` returns all usages of deprecated syntax in the input syntax `t`. -/
 partial
-def getSupersededSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
+def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageData)
   | stx@(.node _ kind args) =>
-    let rargs := (args.map getSupersededSyntax).flatten
+    let rargs := (args.map getDeprecatedSyntax).flatten
     if ``Lean.Parser.Tactic.refine' == kind then
       rargs.push (kind, stx,
         "The `refine'` tactic is discouraged: \
@@ -68,25 +68,25 @@ def getSupersededSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
     else rargs
   | _ => default
 
-/-- The superseded syntax linter flags usages of superseded syntax and suggests
+/-- The deprecated syntax linter flags usages of deprecated syntax and suggests
 replacement syntax.
 
 Currently `refine'` (superseded by `refine`) and `cases'` (superseded by `obtain`, `rcases` and
 `cases`) are flagged. The linter can be turned off for these cases individually with the options
 `linter.style.refine` and `linter.style.cases`.
 -/
-def supersededSyntaxLinter : Linter where run := withSetOptionIn fun stx => do
+def deprecatedSyntaxLinter : Linter where run := withSetOptionIn fun stx => do
   unless Linter.getLinterValue linter.style.refine (← getOptions) ||
       Linter.getLinterValue linter.style.cases (← getOptions) do
     return
   if (← MonadState.get).messages.hasErrors then
     return
-  for (kind, stx', msg) in getSupersededSyntax stx do
+  for (kind, stx', msg) in getDeprecatedSyntax stx do
     match kind with
     | ``Lean.Parser.Tactic.refine' => Linter.logLintIf linter.style.refine stx' msg
     | `Mathlib.Tactic.cases' => Linter.logLintIf linter.style.cases stx' msg
     | _ => continue
 
-initialize addLinter supersededSyntaxLinter
+initialize addLinter deprecatedSyntaxLinter
 
 end Mathlib.Linter.Style
