@@ -27,39 +27,24 @@ variable {ι ι' : Type*} {P₁ P₂ P₃ : Type*} {v₁ : ι → P₁} {v₂ : 
 
 noncomputable section
 
+variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
+
 /-- Similarity between indexed sets of vertices v₁ and v₂.
 Use `open scoped Similar` to access the `v₁ ∼ v₂` notation. -/
 
-def Similar (v₁ : ι → P₁) (v₂ : ι → P₂)
-    [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] : Prop :=
+def Similar (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
   ∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) = r * edist (v₂ i₁) (v₂ i₂))
 
 @[inherit_doc]
 scoped[Similar] infixl:25 " ∼ " => Similar
 
 /-- Similarity holds if and only if and only if all extended distances are proportional. -/
-lemma similar_iff_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] :
+lemma similar_iff_exists_edist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) :=
   refl _
 
-/-- Similarity holds if and only if all non-negative distances are proportional. -/
-lemma similar_iff_exists_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
-      r * nndist (v₂ i₁) (v₂ i₂))) :=
-  exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
-  fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
-
-/-- Similarity holds if and only if all distances are proportional. -/
-lemma similar_iff_exists_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂] :
-    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
-      r * dist (v₂ i₁) (v₂ i₂))) :=
-  similar_iff_exists_nndist_eq.trans
-  (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
-    fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
-
-lemma Congruent.similar [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] {v₁ : ι → P₁}
-    {v₂ : ι → P₂} (h : Congruent v₁ v₂) : Similar v₁ v₂ :=
+lemma Congruent.similar {v₁ : ι → P₁} {v₂ : ι → P₂} (h : Congruent v₁ v₂) : Similar v₁ v₂ :=
   ⟨1, one_ne_zero, fun i₁ i₂ ↦ by simpa using h i₁ i₂⟩
 
 namespace Similar
@@ -70,48 +55,13 @@ alias ⟨exists_edist_eq, _⟩ := similar_iff_exists_edist_eq
 /-- Similarity follows from scaled extended distance. -/
 alias ⟨_, of_exists_edist_eq⟩ := similar_iff_exists_edist_eq
 
-/-- Similarity scales non-negative distance. -/
-alias ⟨exists_nndist_eq, _⟩ := similar_iff_exists_nndist_eq
-
-/-- Similarity follows from scaled non-negative distance. -/
-alias ⟨_, of_exists_nndist_eq⟩ := similar_iff_exists_nndist_eq
-
-/-- Similarity scales distance. -/
-alias ⟨exists_dist_eq, _⟩ := similar_iff_exists_dist_eq
-
-/-- Similarity follows from scaled distance. -/
-alias ⟨_, of_exists_dist_eq⟩ := similar_iff_exists_dist_eq
-
 /-- Similarity follows from pairwise scaled extended distance. -/
-lemma of_pairwise_exists_edist_eq [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [DecidableEq ι]
+lemma of_pairwise_exists_edist_eq
     {r : NNReal} (hr : r ≠ 0) (h : Pairwise (fun i₁ i₂ => (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂)))) :
-    v₁ ∼ v₂ :=
-  ⟨r, hr, fun i₁ i₂ => if g : i₁ = i₂ then by { rw [g]; simp } else h g⟩
-
-/-- Similarity follows from pairwise scaled non-negative distance. -/
-lemma of_pairwise_exists_nndist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
-    [DecidableEq ι] {r : NNReal} (hr : r ≠ 0)
-    (h : Pairwise (fun i₁ i₂ => (nndist (v₁ i₁) (v₁ i₂) = r * nndist (v₂ i₁) (v₂ i₂)))) :
-    v₁ ∼ v₂ :=
-  of_pairwise_exists_edist_eq hr (fun i₁ i₂ hn => by
-    simp_rw [edist_nndist, h hn]
-    norm_cast)
-
-/-- Similarity follows from pairwise scaled distance. -/
-lemma of_pairwise_exists_dist_eq [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
-    [DecidableEq ι] {r : NNReal} (hr : r ≠ 0)
-    (h : Pairwise (fun i₁ i₂ => dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) :
-    v₁ ∼ v₂ :=
-  of_pairwise_exists_nndist_eq hr (fun i₁ i₂ hn => by
-    have := h hn
-    simp_rw [dist_nndist] at this
-    norm_cast at this)
-
-
-section PseudoEMetricSpace
-
-variable [PseudoEMetricSpace P₁] [PseudoEMetricSpace P₂] [PseudoEMetricSpace P₃]
+    v₁ ∼ v₂ := by
+  classical
+  exact ⟨r, hr, fun i₁ i₂ => if g : i₁ = i₂ then by { rw [g]; simp } else h g⟩
 
 @[refl] protected lemma refl (v₁ : ι → P₁) : v₁ ∼ v₁ :=
   ⟨1, one_ne_zero, fun _ _ => by {norm_cast; rw [one_mul]}⟩
@@ -142,6 +92,60 @@ lemma index_equiv (f : ι' ≃ ι) (v₁ : ι → P₁) (v₂ : ι → P₂) :
   refine ⟨r, hr, fun i₁ i₂ => ?_⟩
   simpa [f.right_inv i₁, f.right_inv i₂] using h (f.symm i₁) (f.symm i₂)
 
-end PseudoEMetricSpace
+end Similar
+
+end
+
+section PseudoMetricSpace
+
+variable [PseudoMetricSpace P₁] [PseudoMetricSpace P₂]
+
+/-- Similarity holds if and only if all non-negative distances are proportional. -/
+lemma similar_iff_exists_nndist_eq :
+    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (nndist (v₁ i₁) (v₁ i₂) =
+      r * nndist (v₂ i₁) (v₂ i₂))) :=
+  exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
+  fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
+
+/-- Similarity holds if and only if all distances are proportional. -/
+lemma similar_iff_exists_dist_eq :
+    Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (dist (v₁ i₁) (v₁ i₂) =
+      r * dist (v₂ i₁) (v₂ i₂))) :=
+  similar_iff_exists_nndist_eq.trans
+  (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
+    fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
+
+namespace Similar
+
+/-- Similarity scales non-negative distance. -/
+alias ⟨exists_nndist_eq, _⟩ := similar_iff_exists_nndist_eq
+
+/-- Similarity follows from scaled non-negative distance. -/
+alias ⟨_, of_exists_nndist_eq⟩ := similar_iff_exists_nndist_eq
+
+/-- Similarity scales distance. -/
+alias ⟨exists_dist_eq, _⟩ := similar_iff_exists_dist_eq
+
+/-- Similarity follows from scaled distance. -/
+alias ⟨_, of_exists_dist_eq⟩ := similar_iff_exists_dist_eq
+
+/-- Similarity follows from pairwise scaled non-negative distance. -/
+lemma of_pairwise_exists_nndist_eq {r : NNReal} (hr : r ≠ 0)
+    (h : Pairwise (fun i₁ i₂ => (nndist (v₁ i₁) (v₁ i₂) = r * nndist (v₂ i₁) (v₂ i₂)))) :
+    v₁ ∼ v₂ :=
+  of_pairwise_exists_edist_eq hr (fun i₁ i₂ hn => by
+    simp_rw [edist_nndist, h hn]
+    norm_cast)
+
+/-- Similarity follows from pairwise scaled distance. -/
+lemma of_pairwise_exists_dist_eq {r : NNReal} (hr : r ≠ 0)
+    (h : Pairwise (fun i₁ i₂ => dist (v₁ i₁) (v₁ i₂) = r * dist (v₂ i₁) (v₂ i₂))) :
+    v₁ ∼ v₂ :=
+  of_pairwise_exists_nndist_eq hr (fun i₁ i₂ hn => by
+    have := h hn
+    simp_rw [dist_nndist] at this
+    norm_cast at this)
 
 end Similar
+
+end PseudoMetricSpace
