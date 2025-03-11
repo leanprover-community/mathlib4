@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
+import Mathlib.Data.Matrix.Kronecker
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
 import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.ToLin
-import Mathlib.Data.Matrix.Kronecker
 
 /-!
 # Nonsingular inverses
