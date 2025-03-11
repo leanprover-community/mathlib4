@@ -381,16 +381,6 @@ end Multiset
 theorem List.finite_toSet (l : List α) : { x | x ∈ l }.Finite :=
   (show Multiset α from ⟦l⟧).finite_toSet
 
--- Since this simp theorem is specifically to be used when working with
--- set builder notation, we explicitly add the instance requirement
--- `[Fintype {x | x ∈ l}]` instead of making it a global instance
--- (as the proper simp-normal form of `↑ { x | p x }` is `{ x // p x }`)
-@[simp]
-theorem List.setOf_finset (l : List α) [DecidableEq α] [Fintype {x | x ∈ l}] :
-    {x | x ∈ l}.toFinset = l.toFinset := by
-  ext
-  rw [Set.mem_toFinset, mem_setOf_eq, mem_toFinset]
-
 /-! ### Finite instances
 
 There is seemingly some overlap between the following instances and the `Fintype` instances
@@ -706,11 +696,10 @@ theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} 
 theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} :
     { x | x ∈ l } = {a} ↔ l = [a] := by
   classical
-  -- We declare this instance locally. See the comment on `setOf_finset` for more information.
-  let _ : Fintype {x | x ∈ l} := inferInstanceAs (Fintype { x // x ∈ l })
   refine ⟨fun h ↦ (l.perm_singleton).mp ((List.toFinset_toList H).symm.trans ?_), by simp_all⟩
-  rw [List.perm_singleton, Finset.toList_eq_singleton_iff, ← List.setOf_finset]
-  simp_rw [h, toFinset_singleton]
+  rw [List.perm_singleton, Finset.toList_eq_singleton_iff]
+  apply Finset.coe_eq_singleton.mp
+  simp_rw [← h, List.coe_toFinset]
 
 section
 
