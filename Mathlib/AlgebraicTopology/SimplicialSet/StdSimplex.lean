@@ -161,7 +161,7 @@ attribute [local simp] image_subset_iff
 
 /-- Given `S : Finset (Fin (n + 1))`, this is the corresponding face of `Δ[n]`,
 as a subcomplex. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp obj]
 def face {n : ℕ} (S : Finset (Fin (n + 1))) : (Δ[n] : SSet.{u}).Subcomplex where
   obj U := setOf (fun f ↦ Finset.image (objEquiv f).toOrderHom ⊤ ≤ S)
   map {U V} i := by aesop
