@@ -703,21 +703,13 @@ theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} 
 @[deprecated (since := "2025-01-03")] alias Finite.induction_on' := Finite.induction_on_subset
 @[deprecated (since := "2025-01-03")] alias Finite.dinduction_on := Finite.induction_on
 
-theorem setOf_nodup_perm (l : List α) (H : l.Nodup) :
-    l.finite_toSet.toFinset.toList.Perm l := by
-  classical
-  -- We declare this instance locally. See the comment on `setOf_finset` for more information.
-  let _ : Fintype {x | x ∈ l} := inferInstanceAs (Fintype { x // x ∈ l })
-  rw [toFinite_toFinset, List.setOf_finset]
-  exact List.toFinset_toList H
-
 theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} :
     { x | x ∈ l } = {a} ↔ l = [a] := by
   classical
   -- We declare this instance locally. See the comment on `setOf_finset` for more information.
   let _ : Fintype {x | x ∈ l} := inferInstanceAs (Fintype { x // x ∈ l })
-  refine ⟨fun h ↦ (l.perm_singleton).mp ((setOf_nodup_perm l H).symm.trans ?_), by simp_all⟩
-  rw [List.perm_singleton, Finset.toList_eq_singleton_iff, toFinite_toFinset]
+  refine ⟨fun h ↦ (l.perm_singleton).mp ((List.toFinset_toList H).symm.trans ?_), by simp_all⟩
+  rw [List.perm_singleton, Finset.toList_eq_singleton_iff, ← List.setOf_finset]
   simp_rw [h, toFinset_singleton]
 
 section
