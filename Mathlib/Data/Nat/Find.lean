@@ -105,7 +105,7 @@ lemma find_mono_of_le [DecidablePred q] {x : ℕ} (hx : q x) (hpq : ∀ n ≤ x,
 -/
 lemma find_mono [DecidablePred q] (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
     Nat.find hp ≤ Nat.find hq :=
-  find_mono_of_le hq.choose_spec fun _ _ ↦ h _
+  let ⟨_, hq⟩ := hq; find_mono_of_le hq fun _ _ ↦ h _
 
 /-- If a predicate `p` holds at some `x` and agrees with `q` up to that `x`, then
 their `Nat.find` agree. The stronger version of `Nat.find_congr'`, since this one needs
@@ -121,7 +121,7 @@ lemma find_congr [DecidablePred q] {x : ℕ} (hx : p x) (hpq : ∀ n ≤ x, p n 
 /-- A weak version of `Nat.find_congr`, which does not require `p = q` everywhere. -/
 lemma find_congr' [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : ∀ {n}, p n ↔ q n) :
     Nat.find hp = Nat.find hq :=
-  find_congr hp.choose_spec fun _ _ ↦ hpq
+  let ⟨_, hp⟩ := hp; find_congr hp fun _ _ ↦ hpq
 
 lemma find_le {h : ∃ n, p n} (hn : p n) : Nat.find h ≤ n :=
   (Nat.find_le_iff _ _).2 ⟨n, le_refl _, hn⟩
