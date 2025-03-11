@@ -405,7 +405,6 @@ theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U :
   · rintro ⟨⟨x, -, rfl⟩, hx⟩
     exact ⟨x, hx, rfl⟩
 
--- Porting note: added to ease the proof of `functor_map_eq_inf`
 lemma set_range_inclusion' {X : TopCat} (U : Opens X) :
     Set.range (inclusion' U) = (U : Set X) := by
   ext x
