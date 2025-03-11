@@ -12,8 +12,8 @@ import Mathlib.Analysis.Analytic.CPolynomialDef
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
 the formal power series `f x = f a + f (x - a)`. We also prove similar results for bilinear maps.
 
-We deduce this fact from the stronger result that continuous linear maps are continuously polynomial,
-i.e., they admit a finite power series.
+We deduce this fact from the stronger result that continuous linear maps are continuously
+polynomial, i.e., they admit a finite power series.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
