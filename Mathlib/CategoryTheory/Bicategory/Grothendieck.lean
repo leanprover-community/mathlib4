@@ -152,21 +152,16 @@ lemma map_cartesianLift_isHomLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F)
 
 /-- The preFibered structure on `∫ F`, using the forgetful functor `forget F`. -/
 instance isPreFibered : IsPreFibered (forget F) := by
-  constructor; intro a b f
-  use domain_cartesianLift F f, cartesianLift F f
+  refine ⟨fun {a b} f ↦ ⟨domain_cartesianLift F f, cartesianLift F f, ?_⟩⟩
   refine {cond := (cartesianLift_isHomLift F f).cond, universal_property := ?_}
   intro a' g hfg
   refine ⟨map_cartesianLift F f g, ?_⟩
   simp only [categoryStruct_Hom, and_imp, map_cartesianLift, cartesianLift]
-  constructor
-  · constructor
-    · apply map_cartesianLift_isHomLift
-    · apply Hom.ext <;> simpa using (IsHomLift.fac' (forget F) f g).symm
+  refine ⟨⟨map_cartesianLift_isHomLift _ _ _, ?_⟩, ?_⟩
+  · exact Hom.ext _ _ (by simpa using (IsHomLift.fac' (forget F) f g).symm) (by simp)
   · rintro H K rfl
     apply Hom.ext
-    · simp only [categoryStruct_comp_base, op_comp, Quiver.Hom.comp_toLoc, id_comp, eqToHom_app,
-      assoc, categoryStruct_comp_fiber, forget_obj, Iso.app_hom, eqToIso.hom, Cat.comp_obj, map_id]
-      have := by simpa using IsHomLift.fac' (forget F) (𝟙 b) H
+    · have := by simpa using IsHomLift.fac' (forget F) (𝟙 b) H
       simp [F.mapComp_congr rfl (congrArg (fun u ↦ u.op.toLoc) this)]
     · simpa using IsHomLift.fac' (forget F) (𝟙 b) H
 
