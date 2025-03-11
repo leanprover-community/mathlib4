@@ -151,17 +151,17 @@ end Condensed
 namespace CondensedSet
 
 /-- A `CondensedSet` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u+1)) [PreservesFiniteProducts F] :
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ Type (u + 1)) [PreservesFiniteProducts F] :
     CondensedSet :=
   Condensed.ofSheafStonean F
 
 /-- A `CondensedSet` version of `Condensed.ofSheafProfinite`. -/
-noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u+1))
+noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
   Condensed.ofSheafProfinite F hF
 
 /-- A `CondensedSet` version of `Condensed.ofSheafCompHaus`. -/
-noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u+1))
+noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ Type (u + 1))
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedSet :=
   Condensed.ofSheafCompHaus F hF
 
@@ -169,22 +169,24 @@ end CondensedSet
 
 namespace CondensedMod
 
-variable (R : Type (u+1)) [Ring R]
+variable (R : Type (u + 1)) [Ring R]
 
 /-- A `CondensedMod` version of `Condensed.ofSheafStonean`. -/
-noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
+noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ ModuleCat.{u + 1} R)
     [PreservesFiniteProducts F] : CondensedMod R :=
-  haveI : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
+  haveI : HasLimitsOfSize.{u, u + 1} (ModuleCat R) :=
+    hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
   Condensed.ofSheafStonean F
 
 /-- A `CondensedMod` version of `Condensed.ofSheafProfinite`. -/
-noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
+noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ ModuleCat.{u + 1} R)
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedMod R :=
-  haveI : HasLimitsOfSize.{u, u+1} (ModuleCat R) := hasLimitsOfSizeShrink.{u, u+1, u+1, u+1} _
+  haveI : HasLimitsOfSize.{u, u + 1} (ModuleCat R) :=
+    hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
   Condensed.ofSheafProfinite F hF
 
 /-- A `CondensedMod` version of `Condensed.ofSheafCompHaus`. -/
-noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
+noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ ModuleCat.{u + 1} R)
     [PreservesFiniteProducts F] (hF : EqualizerCondition F) : CondensedMod R :=
   Condensed.ofSheafCompHaus F hF
 
