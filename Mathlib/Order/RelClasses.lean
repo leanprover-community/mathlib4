@@ -244,8 +244,8 @@ theorem wellFoundedLT_dual_iff (α : Type*) [LT α] : WellFoundedLT αᵒᵈ ↔
   ⟨fun h => ⟨h.wf⟩, fun h => ⟨h.wf⟩⟩
 
 /-- A well order is a well-founded linear order. -/
-class IsWellOrder (α : Type u) (r : α → α → Prop) extends
-  IsTrichotomous α r, IsTrans α r, IsWellFounded α r : Prop
+class IsWellOrder (α : Type u) (r : α → α → Prop) : Prop
+    extends IsTrichotomous α r, IsTrans α r, IsWellFounded α r
 
 -- see Note [lower instance priority]
 instance (priority := 100) {α} (r : α → α → Prop) [IsWellOrder α r] :

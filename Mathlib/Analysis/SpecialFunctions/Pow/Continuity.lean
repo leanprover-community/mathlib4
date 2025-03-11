@@ -225,6 +225,11 @@ theorem continuousAt_rpow_const (x : ℝ) (q : ℝ) (h : x ≠ 0 ∨ 0 ≤ q) :
 @[fun_prop]
 theorem continuous_rpow_const {q : ℝ} (h : 0 ≤ q) : Continuous (fun x : ℝ => x ^ q) :=
   continuous_iff_continuousAt.mpr fun x ↦ continuousAt_rpow_const x q (.inr h)
+
+@[fun_prop]
+lemma continuous_const_rpow {a : ℝ} (h : a ≠ 0) : Continuous (fun x : ℝ ↦ a ^ x) :=
+  continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_const_rpow h
+
 end Real
 
 section
