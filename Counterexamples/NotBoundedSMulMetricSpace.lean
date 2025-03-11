@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Data.Real.StarOrdered
 import Mathlib.Topology.MetricSpace.PiNat
+import Mathlib.Analysis.Normed.Order.Basic
 
 /-! # Metric spaces are not necessarily induced by a norm.
 
@@ -38,40 +39,49 @@ end NormInduced
 
 open PiCountable
 
-noncomputable local instance : MetricSpace (ℕ → ℝ) := PiCountable.metricSpace
+variable {ι : Type*} [Encodable ι] {F : ι → Type*}
+
+noncomputable local instance [∀ i, MetricSpace (F i)] :
+    MetricSpace (Π i, F i) :=
+  PiCountable.metricSpace
 
 @[simp]
-lemma PiCountable.dist_translation_invariant (x y c : ℕ → ℝ) :
+lemma PiCountable.dist_translation_invariant [∀ i, NormedAddCommGroup (F i)] (x y c : Π i, F i) :
     dist (x + c) (y + c) = dist x y := by
   simp [dist_eq_tsum]
 
-noncomputable instance : NormedAddCommGroup (ℕ → ℝ) where
+noncomputable instance [∀ i, NormedAddCommGroup (F i)] : NormedAddCommGroup (Π i, F i) where
   __ := PiCountable.metricSpace
   norm x := dist x 0
   dist_eq x y := by
     simpa [← sub_eq_add_neg] using
       (PiCountable.dist_translation_invariant x y (-y)).symm
 
-lemma PiCountable.norm_single (i : ℕ) (r : ℝ) :
-    ‖(Pi.single i r : ℕ → ℝ)‖ = (2 ^ i)⁻¹ ⊓ |r| := by
+open Encodable
+
+lemma PiCountable.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (F i)] (i : ι) (r : F i) :
+    ‖(Pi.single i r : Π i, F i)‖ = (2 ^ encode i)⁻¹ ⊓ ‖r‖ := by
   rw [← sub_zero (Pi.single _ _), ← dist_eq_norm, dist_eq_tsum, tsum_eq_single i]
   · simp
   · simp +contextual [Pi.single_apply]
 
-lemma PiCountable.not_dist_homogeneous' : ¬ ∀ (x y : ℕ → ℝ) (r : ℝ),
-    dist (r • x) (r • y) ≤ |r| * dist x y := by
+lemma PiCountable.not_dist_homogeneous' [DecidableEq ι]
+    [∀ i, NormedLinearOrderedField (F i)] [∀ i, NormedSpace ℝ (F i)] [∀ i, BoundedSMul ℝ (F i)]
+     (i : ι) (hi : 0 < encode i) :
+    ¬ ∀ (x y : Π i, F i) (r : ℝ),
+    dist (r • x) (r • y) ≤ ‖r‖ * dist x y := by
   intro H
-  specialize H (Pi.single 4 1) 0 2⁻¹
+  specialize H (Pi.single i 1) 0 2⁻¹
   refine H.not_lt ?_
   clear H
-  have : (2 ^ 4 : ℝ)⁻¹ < 1 := by norm_num
-  rw [dist_eq_norm]
-  simp only [sub_zero, ← Pi.single_smul, smul_eq_mul, smul_zero, dist_zero_right,
-    norm_single, abs_one, mul_one, lt_inf_iff, abs_pos, ne_eq, inv_eq_zero,
-    OfNat.ofNat_ne_zero, not_false_eq_true, mul_lt_iff_lt_one_right, inf_lt_right, not_le,
-    min_eq_left this.le, inv_pos, Nat.ofNat_pos, pow_pos, mul_lt_iff_lt_one_left, this,
-    and_true, gt_iff_lt, abs_inv]
+  have : (2 ^ encode i : ℝ)⁻¹ < 1 := by
+    rw [inv_lt_comm₀ (by simp) (by simp), inv_one]
+    simpa using pow_lt_pow_right₀ one_lt_two hi
+  simp only [norm_inv, RCLike.norm_ofNat, dist_eq_norm, sub_zero, norm_single, norm_one,
+    min_eq_left this.le, ← Pi.single_smul, smul_zero, norm_smul, lt_inf_iff, inv_pos, Nat.ofNat_pos,
+    pow_pos, mul_lt_iff_lt_one_left, two_inv_lt_one, true_and, gt_iff_lt]
   norm_num
+  exact this
 
 open PiCountable
 
@@ -82,7 +92,8 @@ theorem not_all_dist_induced_by_norm : ¬ ∀ (𝕜 E : Type) [MetricSpace 𝕜]
     [Zero 𝕜] [Zero E] [SMul 𝕜 E], BoundedSMul 𝕜 E := by
   intro H
   obtain ⟨H, -⟩ := H ℝ (ℕ → ℝ)
-  apply PiCountable.not_dist_homogeneous'
+  classical
+  apply PiCountable.not_dist_homogeneous' (ι := ℕ) (F := fun _ ↦ ℝ) 1 (by simp)
   intro f g r
   simpa using H r f g
 
