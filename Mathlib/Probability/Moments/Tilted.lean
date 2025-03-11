@@ -90,44 +90,44 @@ section Integral
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-lemma setIntegral_tilted_mul_mgf' (g : Ω → E) {s : Set Ω} (hs : MeasurableSet s) :
+lemma setIntegral_tilted_mul_eq_mgf' (g : Ω → E) {s : Set Ω} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, (exp (t * X x) / mgf X μ t) • (g x) ∂μ := by
   rw [setIntegral_tilted' _ _ hs, mgf]
 
-lemma setIntegral_tilted_mul_mgf [SFinite μ] (g : Ω → E) (s : Set Ω) :
+lemma setIntegral_tilted_mul_eq_mgf [SFinite μ] (g : Ω → E) (s : Set Ω) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, (exp (t * X x) / mgf X μ t) • (g x) ∂μ := by
   rw [setIntegral_tilted, mgf]
 
-lemma setIntegral_tilted_mul_cgf' (g : Ω → E) {s : Set Ω}
+lemma setIntegral_tilted_mul_eq_cgf' (g : Ω → E) {s : Set Ω}
     (hs : MeasurableSet s) (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, exp (t * X x - cgf X μ t) • (g x) ∂μ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
-  · simp_rw [setIntegral_tilted_mul_mgf' _ hs, exp_sub, exp_cgf ht]
+  · simp_rw [setIntegral_tilted_mul_eq_mgf' _ hs, exp_sub, exp_cgf ht]
 
-lemma setIntegral_tilted_mul_cgf [SFinite μ] (g : Ω → E) (s : Set Ω)
+lemma setIntegral_tilted_mul_eq_cgf [SFinite μ] (g : Ω → E) (s : Set Ω)
     (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     ∫ x in s, g x ∂(μ.tilted (t * X ·)) = ∫ x in s, exp (t * X x - cgf X μ t) • (g x) ∂μ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
-  · simp_rw [setIntegral_tilted_mul_mgf, exp_sub, exp_cgf ht]
+  · simp_rw [setIntegral_tilted_mul_eq_mgf, exp_sub, exp_cgf ht]
 
-lemma integral_tilted_mul_mgf (g : Ω → E) :
+lemma integral_tilted_mul_eq_mgf (g : Ω → E) :
     ∫ ω, g ω ∂(μ.tilted (t * X ·)) = ∫ ω, (exp (t * X ω) / mgf X μ t) • (g ω) ∂μ := by
   rw [integral_tilted, mgf]
 
-lemma integral_tilted_mul_cgf (g : Ω → E) (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+lemma integral_tilted_mul_eq_cgf (g : Ω → E) (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     ∫ ω, g ω ∂(μ.tilted (t * X ·)) = ∫ ω, exp (t * X ω - cgf X μ t) • (g ω) ∂μ := by
   rcases eq_zero_or_neZero μ with rfl | hμ
   · simp
-  · simp_rw [integral_tilted_mul_mgf, exp_sub]
+  · simp_rw [integral_tilted_mul_eq_mgf, exp_sub]
     rwa [exp_cgf]
 
 /-- The integral of `X` against the tilted measure `μ.tilted (t * X ·)` is the first derivative of
 the cumulant generating function of `X` at `t`. -/
 lemma integral_tilted_mul_self (ht : t ∈ interior (integrableExpSet X μ)) :
     (μ.tilted (t * X ·))[X] = deriv (cgf X μ) t := by
-  simp_rw [integral_tilted_mul_mgf, deriv_cgf ht, ← integral_div, smul_eq_mul]
+  simp_rw [integral_tilted_mul_eq_mgf, deriv_cgf ht, ← integral_div, smul_eq_mul]
   congr with ω
   ring
 
@@ -156,7 +156,7 @@ lemma variance_tilted_mul (ht : t ∈ interior (integrableExpSet X μ)) :
     Var[X; μ.tilted (t * X ·)] = iteratedDeriv 2 (cgf X μ) t := by
   rw [variance_eq_integral]
   swap; · exact (memLp_tilted_mul ht 1).aestronglyMeasurable.aemeasurable
-  rw [integral_tilted_mul_self ht, iteratedDeriv_two_cgf_eq_integral ht, integral_tilted_mul_mgf,
+  rw [integral_tilted_mul_self ht, iteratedDeriv_two_cgf_eq_integral ht, integral_tilted_mul_eq_mgf,
     ← integral_div]
   simp only [Pi.pow_apply, Pi.sub_apply, smul_eq_mul]
   congr with ω
