@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Monoid
 
 /-!
@@ -394,23 +395,30 @@ continuous. Topological additive groups are defined in the same way. Equivalentl
 that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continuous.
 -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO should this docstring be extended
--- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
-continuous. -/
-class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] extends
-  ContinuousAdd G, ContinuousNeg G : Prop
+continuous.
+
+When you declare an instance that does not already have a `UniformSpace` instance,
+you should also provide an instance of `UniformSpace` and `UniformAddGroup` using
+`IsTopologicalAddGroup.toUniformSpace` and `uniformAddGroup_of_addCommGroup`. -/
+class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
+    extends ContinuousAdd G, ContinuousNeg G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalAddGroup :=
+  IsTopologicalAddGroup
 
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `UniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `topologicalCommGroup_isUniform`. -/
--- Porting note: check that these ↑ names exist once they've been ported in the future.
+`IsTopologicalGroup.toUniformSpace` and `uniformGroup_of_commGroup`. -/
 @[to_additive]
-class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] extends ContinuousMul G,
-  ContinuousInv G : Prop
+class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
+    extends ContinuousMul G, ContinuousInv G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalGroup :=
+  IsTopologicalGroup
 
 section Conj
 
@@ -451,7 +459,7 @@ instance : IsTopologicalGroup (ULift G) where
 
 section ZPow
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
   | Int.negSucc n => by simpa using (continuous_pow (n + 1)).inv
@@ -1422,8 +1430,6 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_ne_empty_iff' }
 
--- attribute [local semireducible] MulOpposite -- Porting note: doesn't work in Lean 4
-
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
 `DiscreteTopology`.)
@@ -1725,13 +1731,13 @@ The additive version `AddGroupTopology α` and corresponding results are provide
 
 /-- A group topology on a group `α` is a topology for which multiplication and inversion
 are continuous. -/
-structure GroupTopology (α : Type u) [Group α] extends TopologicalSpace α, IsTopologicalGroup α :
-  Type u
+structure GroupTopology (α : Type u) [Group α] : Type u
+  extends TopologicalSpace α, IsTopologicalGroup α
 
 /-- An additive group topology on an additive group `α` is a topology for which addition and
-  negation are continuous. -/
-structure AddGroupTopology (α : Type u) [AddGroup α] extends TopologicalSpace α,
-  IsTopologicalAddGroup α : Type u
+negation are continuous. -/
+structure AddGroupTopology (α : Type u) [AddGroup α] : Type u
+    extends TopologicalSpace α, IsTopologicalAddGroup α
 
 attribute [to_additive] GroupTopology
 
@@ -1797,7 +1803,7 @@ instance : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
-        continuity
+        fun_prop
       continuous_inv := continuous_bot }⟩
 
 @[to_additive (attr := simp)]
@@ -1895,4 +1901,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
 
 end GroupTopology
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000

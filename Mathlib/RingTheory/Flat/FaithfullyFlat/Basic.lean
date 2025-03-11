@@ -57,7 +57,7 @@ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
 for all `R`-linear maps `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
 -/
-@[mk_iff] class FaithfullyFlat extends Module.Flat R M : Prop where
+@[mk_iff] class FaithfullyFlat : Prop extends Module.Flat R M where
   submodule_ne_top : ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
 
 namespace FaithfullyFlat

@@ -52,14 +52,14 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : BoundedSMul 𝕜 E :=
-  BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
+instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
+  IsBoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
 -- shortcut instance
-instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
-  NormedSpace.boundedSMul
+instance NormedField.to_isBoundedSMul : IsBoundedSMul 𝕜 𝕜 :=
+  NormedSpace.isBoundedSMul
 
 variable (𝕜) in
 theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
@@ -595,8 +595,9 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [Norme
 /-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
 in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
 instances from scratch on a type with no preexisting distance or topology. -/
-structure NormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [Norm E] extends SeminormedAddCommGroup.Core 𝕜 E : Prop where
+structure NormedSpace.Core (𝕜 : Type*) (E : Type*)
+    [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E] : Prop
+    extends SeminormedAddCommGroup.Core 𝕜 E where
   norm_eq_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0
 
 variable {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E]
