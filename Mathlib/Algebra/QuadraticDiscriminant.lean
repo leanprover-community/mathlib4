@@ -32,6 +32,7 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 polynomial, quadratic, discriminant, root
 -/
 
+assert_not_exists Finite Finset
 
 open Filter
 
