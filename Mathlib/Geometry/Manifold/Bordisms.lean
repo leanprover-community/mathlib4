@@ -582,7 +582,6 @@ def unorientedBordismSetoid.{u} : Setoid (SingularNManifold.{u} X k I) :=
 
 variable (X k I) in
 /-- The type of unoriented `C^k` bordism classes on `X`. -/
--- TODO: need to impose a constraint in I and J!
 abbrev uBordismClass := Quotient <| Setoid.mk _ <| uBordismRelation X k I
 
 variable (X k n) in
@@ -606,19 +605,12 @@ lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularNManifold.{u} X k I}
   choose ψ _ using h'
   use φ.sum ψ
 
-def uBordismClass.sum : (uBordismClass X k I) → (uBordismClass X k I) → uBordismClass X k I := sorry
-
--- Almost there: want to also descend the final operator to the quotient...
-def uBordismClass.sum2 :=
---Quotient (unorientedBordismSetoid X k I J) → Quotient (unorientedBordismSetoid X k I J) → Quotient (unorientedBordismSetoid X k I J) :=
-  --(uBordismClass X k I (E' := E') (H' := H') J) → (uBordismClass X k I (E' := E') (H' := H') J)
-  --  → uBordismClass X k I (E' := E') (H' := H') J := by
-  let f : (SingularNManifold X k I) → (SingularNManifold X k I) → (SingularNManifold X k I) :=
-    fun s t ↦ s.sum t
-  --Quotient.mk (unorientedBordismSetoid X k I (E' := E') (H' := H') J) <|
-  let aux := Quotient.lift₂ (s₁ := unorientedBordismSetoid X k I)
-    (s₂ := unorientedBordismSetoid X k I) (f := f) sorry
-  aux
+def uBordismClass.sum.{u} :
+    (uBordismClass.{_, _, _, u} X k I) → (uBordismClass X k I) → uBordismClass X k I :=
+  letI sum := Quotient.lift₂
+    (s₁ := unorientedBordismSetoid X k I) (s₂ := unorientedBordismSetoid X k I)
+    (f := fun s t ↦ Quotient.mk (unorientedBordismSetoid X k I) (s.sum t))
+  fun s t ↦ sum (fun _ _ _ _ h h' ↦ Quotient.sound (aux h h')) s t
 
 instance : Zero (uBordismClass X k I) where
   zero := empty X k I
