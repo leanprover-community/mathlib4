@@ -131,7 +131,7 @@ def cartesianLift : domain_cartesianLift F f ⟶ a :=
 
 lemma cartesianLift_isHomLift :
     IsHomLift (forget F) f (cartesianLift F f) := by
-  constructor; apply IsHomLiftAux.map (p := forget F) (a := domain_cartesianLift F f) ⟨f, 𝟙 _⟩
+  ⟨IsHomLiftAux.map (p := forget F) (a := domain_cartesianLift F f) ⟨f, 𝟙 _⟩⟩
 
 /-- Given some lift `g` of `f`, the canonical map from the domain of `g` to the domain of
 the cartesian lift of `f`. -/
