@@ -143,7 +143,7 @@ def map_cartesianLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F).IsHomLift f
     exact g.fiber ≫ ((eqToIso (congrArg (fun u ↦ F.map u.op.toLoc) this)).app a.fiber).hom ≫
       ((F.mapComp f.op.toLoc _).app _).hom
 
-lemma map_cartesianLift_isHomLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F).IsHomLift f g] :
+lemma isHomLift_mapCartesianLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F).IsHomLift f g] :
     (forget F).IsHomLift (𝟙 b) (map_cartesianLift F f g) := by
   apply IsHomLift.of_fac'
   · simp; rfl
