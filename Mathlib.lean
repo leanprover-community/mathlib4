@@ -4677,7 +4677,6 @@ import Mathlib.Probability.Moments.MGFAnalytic
 import Mathlib.Probability.Moments.SubGaussian
 import Mathlib.Probability.Moments.Tilted
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Posterior
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Binomial
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
