@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Algebra.Group.Pi.Notation
-import Mathlib.Algebra.Group.Prod.Notation
+import Mathlib.Algebra.Notation.Pi
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Products of `OrderedSub` types.

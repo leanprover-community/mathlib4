@@ -7,7 +7,7 @@ import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Pi.Basic
-import Mathlib.Algebra.Group.Prod.Notation
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Dependent functions with finite support
