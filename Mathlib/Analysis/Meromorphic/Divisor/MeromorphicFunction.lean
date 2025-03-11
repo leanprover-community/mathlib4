@@ -62,7 +62,7 @@ theorem divisorOn_def {f : 𝕜 → E} (hf : MeromorphicOn f U) :
 /-- Simplifier lemma: On `U`, the divisor of a function `f` that is meromorphic on `U` evaluates to
   `order.untopD`. -/
 @[simp]
-lemma divisorOn_eval_outside_domain {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
+lemma divisorOn_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
     hf.divisorOn z = (hf z hz).order.untopD 0 := by simp_all [hf.divisorOn_def, hz]
 
 /-!
