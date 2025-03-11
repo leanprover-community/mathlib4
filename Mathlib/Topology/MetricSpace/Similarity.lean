@@ -38,13 +38,13 @@ def Similar (v₁ : ι → P₁) (v₂ : ι → P₂) : Prop :=
 @[inherit_doc]
 scoped[Similar] infixl:25 " ∼ " => Similar
 
-/-- A similarity holds if and only if all extended distances are proportional. -/
+/-- Similarity holds if and only if all extended distances are proportional. -/
 lemma similar_iff_exists_edist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ ∀ (i₁ i₂ : ι), (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂))) :=
   Iff.rfl
 
-/-- A similarity holds if and only if all extended distances between points with different
+/-- Similarity holds if and only if all extended distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_edist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (edist (v₁ i₁) (v₁ i₂) =
@@ -64,7 +64,7 @@ namespace Similar
 /-- A similarity scales extended distance. Forward direction of `similar_iff_exists_edist_eq`. -/
 alias ⟨exists_edist_eq, _⟩ := similar_iff_exists_edist_eq
 
-/-- A similarity follows from scaled extended distance. Backward direction of
+/-- Similarity follows from scaled extended distance. Backward direction of
 `similar_iff_exists_edist_eq`. -/
 alias ⟨_, of_exists_edist_eq⟩ := similar_iff_exists_edist_eq
 
@@ -72,11 +72,11 @@ alias ⟨_, of_exists_edist_eq⟩ := similar_iff_exists_edist_eq
 `similar_iff_exists_pairwise_edist_eq`. -/
 alias ⟨exists_pairwise_edist_eq, _⟩ := similar_iff_exists_pairwise_edist_eq
 
-/-- A similarity follows from pairwise scaled extended distance. Backward direction of
+/-- Similarity follows from pairwise scaled extended distance. Backward direction of
 `similar_iff_exists_pairwise_edist_eq`. -/
 alias ⟨_, of_exists_pairwise_edist_eq⟩ := similar_iff_exists_pairwise_edist_eq
 
-/-- A similarity follows from pairwise scaled extended distance. -/
+/-- Similarity follows from pairwise scaled extended distance. -/
 lemma of_pairwise_exists_edist_eq
     {r : NNReal} (hr : r ≠ 0) (h : Pairwise (fun i₁ i₂ => (edist (v₁ i₁) (v₁ i₂) =
       r * edist (v₂ i₁) (v₂ i₂)))) :
@@ -130,7 +130,7 @@ lemma similar_iff_exists_nndist_eq :
   exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
   fun _ _ => by { rw [edist_nndist, edist_nndist]; norm_cast }
 
-/-- A similarity holds if and only if all non-negative distances between points with different
+/-- Similarity holds if and only if all non-negative distances between points with different
 indices are proportional. -/
 lemma similar_iff_exists_pairwise_nndist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (nndist (v₁ i₁) (v₁ i₂) =
@@ -146,7 +146,7 @@ lemma similar_iff_exists_dist_eq :
   (exists_congr <| fun _ => and_congr Iff.rfl <| forall₂_congr <|
     fun _ _ => by { rw [dist_nndist, dist_nndist]; norm_cast })
 
-/-- A similarity holds if and only if all distances between points with different indices are
+/-- Similarity holds if and only if all distances between points with different indices are
 proportional. -/
 lemma similar_iff_exists_pairwise_dist_eq :
     Similar v₁ v₂ ↔ (∃ r : NNReal, r ≠ 0 ∧ Pairwise fun i₁ i₂ ↦ (dist (v₁ i₁) (v₁ i₂) =
@@ -160,14 +160,14 @@ namespace Similar
 `similar_iff_exists_nndist_eq`. -/
 alias ⟨exists_nndist_eq, _⟩ := similar_iff_exists_nndist_eq
 
-/-- A similarity follows from scaled non-negative distance. Backward direction of
+/-- Similarity follows from scaled non-negative distance. Backward direction of
 `similar_iff_exists_nndist_eq`. -/
 alias ⟨_, of_exists_nndist_eq⟩ := similar_iff_exists_nndist_eq
 
 /-- A similarity scales distance. Forward direction of `similar_iff_exists_dist_eq`. -/
 alias ⟨exists_dist_eq, _⟩ := similar_iff_exists_dist_eq
 
-/-- A similarity follows from scaled distance. Backward direction of
+/-- Similarity follows from scaled distance. Backward direction of
 `similar_iff_exists_dist_eq`. -/
 alias ⟨_, of_exists_dist_eq⟩ := similar_iff_exists_dist_eq
 
@@ -175,7 +175,7 @@ alias ⟨_, of_exists_dist_eq⟩ := similar_iff_exists_dist_eq
 `similar_iff_exists_pairwise_nndist_eq`. -/
 alias ⟨exists_pairwise_nndist_eq, _⟩ := similar_iff_exists_pairwise_nndist_eq
 
-/-- A similarity follows from pairwise scaled non-negative distance. Backward direction of
+/-- Similarity follows from pairwise scaled non-negative distance. Backward direction of
 `similar_iff_exists_pairwise_nndist_eq`. -/
 alias ⟨_, of_exists_pairwise_nndist_eq⟩ := similar_iff_exists_pairwise_nndist_eq
 
@@ -183,7 +183,7 @@ alias ⟨_, of_exists_pairwise_nndist_eq⟩ := similar_iff_exists_pairwise_nndis
 `similar_iff_exists_pairwise_dist_eq`. -/
 alias ⟨exists_pairwise_dist_eq, _⟩ := similar_iff_exists_pairwise_dist_eq
 
-/-- A similarity follows from pairwise scaled distance. Backward direction of
+/-- Similarity follows from pairwise scaled distance. Backward direction of
 `similar_iff_exists_pairwise_dist_eq`. -/
 alias ⟨_, of_exists_pairwise_dist_eq⟩ := similar_iff_exists_pairwise_dist_eq
 
