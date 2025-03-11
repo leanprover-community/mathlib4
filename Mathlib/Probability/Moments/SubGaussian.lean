@@ -244,23 +244,19 @@ lemma measure_ge_le_exp_add [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν
     exact h1 t
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma measure_ge_le [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) {ε : ℝ}
-    (hc : 0 < c) (hε : 0 ≤ ε) :
+lemma measure_ge_le [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε) :
     ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
+  by_cases hc0 : c = 0
+  · filter_upwards [h.measure_univ_le_one] with ω' h
+    simp only [hc0, NNReal.coe_zero, mul_zero, div_zero, exp_zero]
+    refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
+    simp only [ENNReal.ofReal_one]
+    exact (measure_mono (Set.subset_univ _)).trans h
   filter_upwards [measure_ge_le_exp_add h ε] with ω' h
   calc (κ ω' {ω | ε ≤ X ω}).toReal
   -- choose the minimizer of the r.h.s. of `h` for `t ≥ 0`. That is, `t = ε / c`.
   _ ≤ exp (- (ε / c) * ε + c * (ε / c) ^ 2 / 2) := h (ε / c) (by positivity)
   _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
-
-/-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma prob_ge_le [IsZeroOrMarkovKernel κ] (h : HasSubgaussianMGF X c κ ν)
-    {ε : ℝ} (hε : 0 ≤ ε) :
-    ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
-  by_cases hc0 : c = 0
-  · refine ae_of_all _ fun ω' ↦ ?_
-    simpa [hc0] using toReal_prob_le_one
-  · exact h.measure_ge_le (lt_of_le_of_ne zero_le' (Ne.symm hc0)) hε
 
 end ChernoffBound
 
@@ -374,17 +370,10 @@ lemma zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := fun_zer
 section ChernoffBound
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma measure_ge_le [IsFiniteMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : ℝ}
-    (hc : 0 < c) (hε : 0 ≤ ε) :
+lemma measure_ge_le [IsFiniteMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   rw [HasSubgaussianMGF_iff_kernel] at h
-  simpa using h.measure_ge_le hc hε
-
-/-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma prob_ge_le [IsZeroOrProbabilityMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
-    (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
-  rw [HasSubgaussianMGF_iff_kernel] at h
-  simpa using h.prob_ge_le hε
+  simpa using h.measure_ge_le hε
 
 end ChernoffBound
 
