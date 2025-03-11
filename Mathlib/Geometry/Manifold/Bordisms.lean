@@ -561,9 +561,9 @@ def unorientedBordismRelation.{u, v} (J : ModelWithCorners ℝ E' H') :
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
   fun s t ↦ ∃ _φ : UnorientedBordism k s t J, True
 
--- TODO: does this hold for general models J, as opposed to I.prod 𝓡∂ 1?
+-- TODO: does this hold for general models J, as opposed to just I.prod 𝓡∂ 1?
 variable (X k I) in
-lemma uBordismRelation.{u} [FiniteDimensional ℝ E'] (h : finrank ℝ E' = finrank ℝ E + 1) :
+lemma uBordismRelation.{u} :
   Equivalence (unorientedBordismRelation.{_, _, _, _, _, u, u} X k I (I.prod (𝓡∂ 1))) := by
   apply Equivalence.mk
   · intro s; use UnorientedBordism.refl s
@@ -575,25 +575,23 @@ lemma uBordismRelation.{u} [FiniteDimensional ℝ E'] (h : finrank ℝ E' = finr
     choose ψ _ using htu
     use φ.trans ψ (by simp)
 
-#exit
-
-variable (X k I J) in
+variable (X k I) in
 /-- The `Setoid` of singular n-manifolds, with the unoriented bordism relation. -/
-def unorientedBordismSetoid : Setoid (SingularNManifold X k I) :=
-  Setoid.mk _ (uBordismRelation X k I J)
+def unorientedBordismSetoid.{u} : Setoid (SingularNManifold.{u} X k I) :=
+  Setoid.mk _ (uBordismRelation.{_, _, _, u} X k I)
 
-variable (X k I J) in
+variable (X k I) in
 /-- The type of unoriented `C^k` bordism classes on `X`. -/
 -- TODO: need to impose a constraint in I and J!
-abbrev uBordismClass := Quotient <| Setoid.mk _ <| uBordismRelation X k I (H' := H') (E' := E') J
+abbrev uBordismClass := Quotient <| Setoid.mk _ <| uBordismRelation X k I
 
 variable (X k n) in
 /-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
-abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n) (𝓡 (n + 1))
+abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n)
 
-variable (X k I J) in
+variable (X k I) in
 /-- The bordism class of the empty set: the neutral element for the group operation -/
-def empty : uBordismClass X k I (E' := E') (H' := H') J :=
+def empty : uBordismClass X k I :=
   haveI := ChartedSpace.empty
   Quotient.mk _ (SingularNManifold.empty X Empty I)
 
@@ -605,9 +603,7 @@ def empty : uBordismClass X k I (E' := E') (H' := H') J :=
 --     a₁.sum b₁ = a₂.sum b₂ := sorry
 -- the proof is basically UnorientedBordism.sum
 
-def uBordismClass.sum : (uBordismClass X k I (E' := E') (H' := H') J) →
-    (uBordismClass X k I (E' := E') (H' := H') J) →
-    uBordismClass X k I (E' := E') (H' := H') J := sorry
+def uBordismClass.sum : (uBordismClass X k I) → (uBordismClass X k I) → uBordismClass X k I := sorry
 
 -- Almost there: want to also descend the final operator to the quotient...
 def uBordismClass.sum2 :=
@@ -617,22 +613,22 @@ def uBordismClass.sum2 :=
   let f : (SingularNManifold X k I) → (SingularNManifold X k I) → (SingularNManifold X k I) :=
     fun s t ↦ s.sum t
   --Quotient.mk (unorientedBordismSetoid X k I (E' := E') (H' := H') J) <|
-  let aux := Quotient.lift₂ (s₁ := unorientedBordismSetoid X k I (E' := E') (H' := H') J)
-    (s₂ := unorientedBordismSetoid X k I (E' := E') (H' := H') J) (f := f) sorry
+  let aux := Quotient.lift₂ (s₁ := unorientedBordismSetoid X k I)
+    (s₂ := unorientedBordismSetoid X k I) (f := f) sorry
   aux
 
-instance : Zero (uBordismClass X k I J) where
-  zero := empty X k I J
+instance : Zero (uBordismClass X k I) where
+  zero := empty X k I
 
-instance : Neg (uBordismClass X k I J) where
+instance : Neg (uBordismClass X k I) where
   -- XXX: better name for the variable?
   neg Φ := Φ
 
-instance : Add (uBordismClass X k I J) where
+instance : Add (uBordismClass X k I) where
   add := uBordismClass.sum
 
 variable (X k I J) in
-def ubgroupAux : AddGroup (uBordismClass X k I (E' := E') (H' := H') J) := by
+def ubgroupAux : AddGroup (uBordismClass X k I) := by
   apply AddGroup.ofLeftAxioms
   -- XXX: better name for the variables?
   · intro Φ Ψ Δ
@@ -640,16 +636,16 @@ def ubgroupAux : AddGroup (uBordismClass X k I (E' := E') (H' := H') J) := by
     -- use UnorientedBordism.sumAssoc
     sorry
   · intro Φ
-    change uBordismClass.sum (empty X k I J) Φ = Φ
+    change uBordismClass.sum (empty X k I) Φ = Φ
     -- change: s ⊕ ∅ is equivalent to s, i.e. bordant
     -- use UnorientedBordism.sumEmpty
     sorry
   · intro Φ
-    change uBordismClass.sum Φ Φ = empty X k I J
+    change uBordismClass.sum Φ Φ = empty X k I
     -- change: s ⊕ s is equivalent to SingularNManifold X empty I, i.e. bordism
     -- use UnorientedBordism.sum_self
     sorry
 
-instance : AddCommGroup (uBordismClass X k I (E' := E') (H' := H') J) where
-  __ := ubgroupAux X k I J
+instance : AddCommGroup (uBordismClass X k I) where
+  __ := ubgroupAux X k I
   add_comm Φ Ψ := sorry -- unfold goal, the use UnorientedBordism.sumComm
