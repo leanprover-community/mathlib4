@@ -210,6 +210,49 @@ lemma sum_f (s t : SingularNManifold X k I) : (s.sum t).f = Sum.elim s.f t.f := 
 
 end SingularNManifold
 
+variable (k) in
+/-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
+is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
+whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
+resp. `g` in the obvious way.
+
+We prescribe the model with corners of the underlying manifold `W` as part of this type,
+as gluing arguments require matching models to work.
+
+We list all the relevant variables in this definition to ensure the universe variables `u` and `v`
+describing the singular n-manifolds at the boundary are the first ones in this definition.
+-/
+structure UnorientedCobordism.{u, v} {X E H E' H' : Type*}
+    [TopologicalSpace X] [TopologicalSpace H] [TopologicalSpace H']
+    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E'] [NormedSpace ℝ E']
+    (k : WithTop ℕ∞) {I : ModelWithCorners ℝ E H} [FiniteDimensional ℝ E]
+    (s : SingularNManifold.{u} X k I) (t : SingularNManifold.{v} X k I)
+    (J : ModelWithCorners ℝ E' H') where
+  /-- The underlying compact manifold of this unoriented cobordism -/
+  W : Type (max u v) -- or: new parameter w
+  /-- The manifold `W` is a topological space. -/
+  [topologicalSpace: TopologicalSpace W]
+  [compactSpace : CompactSpace W]
+  /-- The manifold `W` is a charted space over `H'`. -/
+  [chartedSpace: ChartedSpace H' W]
+  [isManifold: IsManifold J k W]
+  /-- The presentation of the boundary `W` as a smooth manifold -/
+  -- Future: we could allow bd.M₀ to be modelled on some other model, not necessarily I:
+  -- we only care that this is fixed in the type.
+  bd: BoundaryManifoldData W J k I
+  /-- A continuous map `W → X` of the cobordism into the topological space we work on -/
+  F : W → X
+  hF : Continuous F
+  /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
+  φ : Diffeomorph I I (s.M ⊕ t.M) bd.M₀ k
+  /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
+  `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
+  hFf : F ∘ bd.f ∘ φ ∘ Sum.inl = s.f
+  /-- `F` restricted to `N ↪ ∂W` equals `g` -/
+  hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
+
+namespace UnorientedCobordism
+
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 -- Let M and M' be smooth manifolds.
@@ -232,43 +275,6 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   [CompactSpace M] [FiniteDimensional ℝ E]
   --[CompactSpace M'] [FiniteDimensional ℝ E'] [CompactSpace M''] [FiniteDimensional ℝ E'']
 
-variable (k) in
-/-- An **unoriented cobordism** between two singular `n`-manifolds `(M,f)` and `(N,g)` on `X`
-is a compact smooth `n`-manifold `W` with a continuous map `F: W → X`
-whose boundary is diffeomorphic to the disjoint union `M ⊔ N` such that `F` restricts to `f`
-resp. `g` in the obvious way.
-
-We prescribe the model with corners of the underlying manifold `W` as part of this type,
-as glueing arguments require matching models to work. -/
-structure UnorientedCobordism.{v} (s : SingularNManifold X k I) (t : SingularNManifold X k I)
-    (J : ModelWithCorners ℝ E' H') where
-  /-- The underlying compact manifold of this unoriented cobordism -/
-  W : Type v
-  /-- The manifold `W` is a topological space. -/
-  [topologicalSpace: TopologicalSpace W]
-  [compactSpace : CompactSpace W]
-  /-- The manifold `W` is a charted space over `H'`. -/
-  [chartedSpace: ChartedSpace H' W]
-  [isManifold: IsManifold J k W]
-  /-- The presentation of the boundary `W` as a smooth manifold -/
-  -- Future: we could allow bd.M₀ to be modelled on some other model, not necessarily I:
-  -- we only care that this is fixed in the type.
-  bd: BoundaryManifoldData W J k I
-  /-- A continuous map `W → X` of the cobordism into the topological space we work on -/
-  F : W → X
-  hF : Continuous F
-  /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
-  φ : Diffeomorph I I (s.M ⊕ t.M) bd.M₀ k
-  /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
-  `f = F ∘ ι ∘ φ⁻¹ : M → X`, where `ι : ∂W → W` is the inclusion. -/
-  hFf : F ∘ bd.f ∘ φ ∘ Sum.inl = s.f
-  /-- `F` restricted to `N ↪ ∂W` equals `g` -/
-  hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
-
--- TODO: the checkUnivs linter complains that M and bd.M₀ only occur together
-
-namespace UnorientedCobordism
-
 variable {s s' t t' u : SingularNManifold X k I} {J : ModelWithCorners ℝ E' H'}
 
 instance (φ : UnorientedCobordism k s t J) : TopologicalSpace φ.W := φ.topologicalSpace
@@ -280,7 +286,7 @@ instance (φ : UnorientedCobordism k s t J) : ChartedSpace H' φ.W := φ.charted
 instance (φ : UnorientedCobordism k s t J) : IsManifold J k φ.W := φ.isManifold
 
 /-- The cobordism between two empty singular n-manifolds. -/
-def SSs [IsEmpty M] [IsEmpty M''] : UnorientedCobordism k (SingularNManifold.empty X M I)
+def empty [IsEmpty M] [IsEmpty M''] : UnorientedCobordism k (SingularNManifold.empty X M I)
     (SingularNManifold.empty X M'' I) I where
   W := M
   -- XXX: generalise to any model J, by post-composing the boundary data
@@ -371,9 +377,9 @@ def symm (φ : UnorientedCobordism k s t J) : UnorientedCobordism k t s J where
 -- XXX are there better names?
 /-- Replace the first singular n-manifold in an unoriented bordism by an equivalent one:
 useful to fix definitional equalities. -/
-def copy_map_fst (φ : UnorientedCobordism k s t J)
+def copy_map_fst.{u, v} (φ : UnorientedCobordism.{u, v} k s t J)
     (eq : Diffeomorph I I s'.M s.M k) (h_eq : s'.f = s.f ∘ eq) :
-    UnorientedCobordism k s' t J where
+    UnorientedCobordism.{u, v} k s' t J where
   W := φ.W
   bd := φ.bd
   F := φ.F
@@ -384,9 +390,9 @@ def copy_map_fst (φ : UnorientedCobordism k s t J)
 
 /-- Replace the second singular n-manifold in an unoriented bordism by an equivalent one:
 useful to fix definitional equalities. -/
-def copy_map_snd (φ : UnorientedCobordism k s t J)
+def copy_map_snd.{u, v} (φ : UnorientedCobordism.{u, v} k s t J)
     (eq : Diffeomorph I I t'.M t.M k) (h_eq : t'.f = t.f ∘ eq) :
-    UnorientedCobordism k s t' J where
+    UnorientedCobordism.{u, v} k s t' J where
   W := φ.W
   bd := φ.bd
   F := φ.F
