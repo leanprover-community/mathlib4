@@ -93,3 +93,15 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 example {alpha} [Neg alpha   ] {a : Nat} : a = a := rfl
+
+namespace List
+
+variable {α β : Type} (r : α → α → Prop) (s : β → β → Prop)
+
+-- The two infix are needed.  They "hide" a `quotPrecheck`
+local infixl:50 " ≼ " => r
+-- The two infix are needed.  They "hide" a `quotPrecheck`
+local infixl:50 " ≼ " => s
+
+set_option linter.style.commandStart.verbose true in
+example {a : α} (_ : a ≼ a) : 0 = 0 := rfl

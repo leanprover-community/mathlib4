@@ -37,6 +37,11 @@ register_option linter.style.commandStart : Bool := {
   descr := "enable the commandStart linter"
 }
 
+register_option linter.style.commandStart.verbose : Bool := {
+  defValue := false
+  descr := "enable the commandStart linter"
+}
+
 /-- `lintUpTo stx` returns the position up until the `commandStart` linter checks the formatting.
 This is every declaration until the type-specification, if there is one, or the value,
 as well as all `variable` commands.
@@ -103,12 +108,17 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
     let (real, lths) := polishSource origSubstring.toString
     let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
-      --Linter.logLint linter.style.commandStart stx
-      --  m!"The `commandStart` linter had some parsing issues: \
-      --     feel free to silence it with `set_option linter.style.commandStart false in` \
-      --     and report this error!"
-      return real))
+      Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+        m!"The `commandStart` linter had some parsing issues: \
+           feel free to silence it with `set_option linter.style.commandStart.verbose false in` \
+           and report this error!"
+      return real.trimRight ++ " :"))
     let st := polishPP fmt.pretty
+    Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+      m!"real:\n'{real}'\n\n\
+        real formatted:\n'{furtherFormatting (removeComments real)}'\n\n\
+        comparison:\n'{st}'\n\n\
+        format:\n'{fmt}'\n"
     if ! st.startsWith (furtherFormatting (removeComments real)) then
       let diff := real.firstDiffPos st
       let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
