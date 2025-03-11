@@ -101,10 +101,10 @@ lemma find_mono_of_le [DecidablePred q] {x : ℕ} (hx : q x) (hpq : ∀ n ≤ x,
     Nat.find ⟨x, show p x from hpq _ le_rfl hx⟩ ≤ Nat.find ⟨x, hx⟩ :=
   Nat.find_min' _ (hpq _ (Nat.find_min' _ hx) (Nat.find_spec ⟨x, hx⟩))
 
-variable [DecidablePred q] in
 /-- A weak version of `Nat.find_mono_of_le`, which does not require that `q` implies `p` everywhere.
 -/
-lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
+lemma find_mono [DecidablePred q] (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
+    Nat.find hp ≤ Nat.find hq :=
   find_mono_of_le hq.choose_spec fun _ _ ↦ h _
 
 /-- If a predicate `p` holds at some `x` and agrees with `q` up to that `x`, then
