@@ -157,7 +157,7 @@ theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   rcases m with m | m <;> rcases n with n | n <;>
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
              negSucc_mul_negSucc] <;>
-  simp only [negSucc_coe, bodd_neg, bodd_coe, ← Nat.bodd_mul]
+  simp only [negSucc_eq, bodd_neg, bodd_coe, ← Nat.bodd_mul]
 -- Porting note: Heavily refactored proof, used to be:
 -- `by cases m with m m; cases n with n n;`
 -- `simp [← int.mul_def, int.mul, -of_nat_eq_coe, bool.xor_comm]`
