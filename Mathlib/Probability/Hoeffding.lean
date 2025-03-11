@@ -104,6 +104,8 @@ theorem cgf_iterated_deriv_two_eq_tilted_measure_variance [IsProbabilityMeasure 
     rw [p]; exact rfl
   · exact integrable_exp_set_interior_of_ae_mem_Icc μ t a b hX h
 
+#check iteratedDerivWithin_congr
+
 theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
     (t a b : ℝ) {X : Ω → ℝ} (ht : 0 < t)
     (hX : AEMeasurable X μ)
@@ -123,100 +125,50 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
     have q' : ∃ c ∈ (Set.Ioo 0 t), f t - taylorWithinEval f 1 (Set.Icc 0 t) 0 t =
       iteratedDerivWithin (1 + 1) f (Set.Icc 0 t) c * (t - 0) ^ (1 + 1) / ↑(1 + 1).factorial := by
       apply @taylor_mean_remainder_lagrange f t 0 1 ht _ _
-      simp only [Nat.cast_one]
-      refine AnalyticOn.contDiffOn_of_completeSpace ?_
-      dsimp [f]
-      have r : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) := analyticOn_cgf
-      rw [integrable_exp_of_ae_mem_Icc μ a b hX h] at r
-      simp only [interior_univ] at r
-      apply AnalyticOn.mono r (fun ⦃a⦄ a ↦ trivial)
-      apply DifferentiableOn.mono
-      rw [differentiableOn_univ]
-      · sorry
-      · exact fun ⦃a⦄ a ↦ trivial
-    sorry
-    /-
-    let A := (f t - f 0 - f' 0 * t) * 2 / t ^ 2
-    have q0 : f t = f 0 + f' 0 * t + A * t ^ 2 / 2 := by
-      have q0' : A * t ^ 2 = (f t - f 0 - f' 0 * t) * 2 := by
-        calc
-        _ = (f t - f 0 - f' 0 * t) * 2 * t ^ 2 / t ^ 2 :=
-          Eq.symm (mul_div_right_comm ((f t - f 0 - f' 0 * t) * 2) (t ^ 2) (t ^ 2))
-        _ = (f t - f 0 - f' 0 * t) * 2 * (t ^ 2 / t ^ 2) := by ring
-        _ = (f t - f 0 - f' 0 * t) * 2 := by field_simp only
-      rw [q0']; ring
-    set g : ℝ → ℝ := fun x ↦ f t - f x - f' x * (t - x) - A * (t - x) ^ 2 / 2
-    have q1 : g 0 = 0 := by
-      dsimp only [g, A]
-      calc
-      _ = f t - f 0 - f' 0 * t - (f t - f 0 - f' 0 * t) * 2 / 2 * t ^ 2 / t ^ 2 := by field_simp
-      _ = f t - f 0 - f' 0 * t - (f t - f 0 - f' 0 * t) * 2 / 2 * (t ^ 2 / t ^ 2) := by ring
-      _ = f t - f 0 - f' 0 * t - (f t - f 0 - f' 0 * t) * 2 / 2 := by field_simp
-      _ = f t - f 0 - f' 0 * t - (f t - f 0 - f' 0 * t) := by ring
-      _ = 0 := by ring
-    have q2 : g t = 0 := by
-      dsimp only [g]
-      simp only [sub_self, mul_zero, ne_eq, OfNat.ofNat_ne_zero,
-        not_false_eq_true, zero_pow, zero_div]
-    set g' : ℝ → ℝ := fun x ↦ - f'' x * (t - x) + A * (t - x)
-    have q3 : ∀ x : ℝ, (x ∈ interior (integrableExpSet X μ)) → HasDerivAt g (g' x) x := by
-      intro x hs
-      apply HasDerivAt.add
-      · rw [← (by ring : 0 - f' x + (f' x - f'' x * (t - x)) = - f'' x * (t - x))]
-        refine HasDerivAt.add ?_ ?_
-        · refine HasDerivAt.sub ?_ ?_
-          exact hasDerivAt_const x (f t)
-          refine DifferentiableAt.hasDerivAt ?_
-          apply AnalyticAt.differentiableAt (analyticAt_cgf hs)
-        · dsimp [f', f'']
-          suffices HasDerivAt (fun x ↦ (deriv (cgf X μ) x * (x - t)))
-            (iteratedDeriv 2 (cgf X μ) x * (x - t) + deriv (cgf X μ) x * 1) x from by
-            rw [(by funext x; ring : (fun x ↦ -(deriv (cgf X μ) x * (t - x)))
-              = fun x ↦ (deriv (cgf X μ) x * (x - t)))]
-            rw [(by ring : (deriv (cgf X μ) x - iteratedDeriv 2 (cgf X μ) x * (t - x))
-              = (iteratedDeriv 2 (cgf X μ) x * (x - t) + deriv (cgf X μ) x * 1))]
-            exact this
-          apply HasDerivAt.mul
-          · rw [iteratedDeriv_succ]
-            simp only [iteratedDeriv_one, hasDerivAt_deriv_iff]
-            have r := differentiableAt_iteratedDeriv_cgf hs 1
-            simp only [iteratedDeriv_one] at r
-            exact r
-          · exact HasDerivAt.add_const (-t) (hasDerivAt_id' x)
-      · rw [(by ext x; ring : (fun x ↦ -(A * (t - x) ^ 2 / 2)) =
-          (fun x ↦ -A * ((x - t) ^ 2 / 2))),
-            (by ring : (A * (t - x)) = -A * (x - t))]
-        apply HasDerivAt.const_mul
-        rw [(by ext x; ring : (fun y ↦ (y - t) ^ 2 / 2) = (fun y ↦ (1 / 2) * (y - t) ^ 2)),
-            (by ring : x - t = (1 / 2) * (2 * (x - t)))]
-        apply HasDerivAt.const_mul
-        rw [(by ext x; ring : (fun y ↦ (y - t) ^ 2) = (fun y ↦ y ^ 2 - 2 * t * y + t ^ 2)),
-            (by ring : (2 * (x - t)) = 2 * (x ^ (2 - 1)) - 2 * t + 0)]
-        apply HasDerivAt.add
-        · apply HasDerivAt.add
-          · apply hasDerivAt_pow
-          · rw [(by ext x; ring : (fun x ↦ -(2 * t * x)) = (fun x ↦ (x * -(2 * t))))]
-            apply hasDerivAt_mul_const
-        · apply hasDerivAt_const
-    have q4 : ∃ c ∈ (Set.Ioo 0 t), g' c = 0 :=
-      exists_hasDerivAt_eq_zero ht
-        (HasDerivAt.continuousOn
-          (fun x _ => q3 _ (integrable_exp_set_interior_of_ae_mem_Icc μ x a b hX h)))
-        (by rw [q1, q2] : g 0 = g t)
-        (fun x _ => q3 _ (integrable_exp_set_interior_of_ae_mem_Icc μ x a b hX h))
-    obtain ⟨c, ⟨cq, cq'⟩⟩ := q4
-    use c; constructor
-    · exact cq
-    · dsimp only [g'] at cq';
-      have cq'' : (A - f'' c) * (t - c) = 0 := by linarith
-      have cq''' : A = f'' c := by
-        have cr : (A - f'' c) = 0 := by
-          simp only [mul_eq_zero] at cq''
-          exact cq''.elim id (by intro; obtain ⟨_, _⟩ := cq; linarith)
-        linarith
-      rw [← cq''']
-      exact q0
-  -/
+      · simp only [Nat.cast_one]
+        apply AnalyticOn.contDiffOn_of_completeSpace
+        have r : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) := analyticOn_cgf
+        rw [integrable_exp_of_ae_mem_Icc μ a b hX h] at r
+        rw [interior_univ] at r
+        apply AnalyticOn.mono r (fun ⦃a⦄ a ↦ trivial)
+      · apply DifferentiableOn.mono
+        apply ContDiffOn.differentiableOn_iteratedDerivWithin
+        exact AnalyticOn.contDiffOn (n := 2) (AnalyticOn.mono analyticOn_cgf
+          (fun s hs ↦ integrable_exp_set_interior_of_ae_mem_Icc μ s a b hX h)) (uniqueDiffOn_Icc ht)
+        exact Batteries.compareOfLessAndEq_eq_lt.mp rfl
+        exact uniqueDiffOn_Icc ht
+        exact Set.Ioo_subset_Icc_self
+    obtain ⟨c, ⟨q0, qc'⟩⟩ := q'
+    use c
+    constructor
+    exact q0
+    simp only [taylorWithinEval_succ, taylor_within_zero_eval, CharP.cast_eq_zero, zero_add,
+      Nat.factorial_zero, Nat.cast_one, mul_one, inv_one, sub_zero, pow_one, one_mul,
+      iteratedDerivWithin_one, smul_eq_mul, Nat.reduceAdd, Nat.factorial_two, Nat.cast_ofNat] at qc'
+    have q1 : derivWithin f (Set.Icc 0 t) 0 = f' 0 := by
+      rw [DifferentiableAt.derivWithin]
+      · exact differentiableAt_cgf (integrable_exp_set_interior_of_ae_mem_Icc μ 0 a b hX h)
+      · apply uniqueDiffWithinAt_convex (convex_Icc 0 t)
+        simp only [interior_Icc, Set.nonempty_Ioo]
+        exact ht
+        simp only [closure_Icc, Set.mem_Icc, le_refl, true_and]
+        exact le_of_lt ht
+    have q2 : iteratedDerivWithin 2 f (Set.Icc 0 t) c = f'' c := by
+      have q3 : iteratedDerivWithin 2 f Set.univ c = f'' c := by
+        rw [iteratedDerivWithin_univ]
+      rw [<- q3]
+      rw [iteratedDerivWithin_eq_iteratedFDerivWithin]
+      rw [iteratedDerivWithin_eq_iteratedFDerivWithin]
+      apply congr
+      have q4 : Set.univ ∩ (Set.Icc 0 t) = (Set.Icc 0 t) := by
+        exact Set.univ_inter (Set.Icc 0 t)
+      rw [<- q4]
+      symm
+      rw [iteratedFDerivWithin_inter]
+      exact Icc_mem_nhds_iff.mpr q0
+      exact rfl
+    rw [q1, q2] at qc'
+    linarith
   rw [hf, hf'] at q
   simp only [zero_mul, add_zero, zero_add, forall_const] at q
   obtain ⟨c, ⟨_, cq'⟩⟩ := q
