@@ -58,6 +58,9 @@ def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
 theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
   rfl
 
+@[simp]
+theorem map_coe_toLinearMap (f : F) (p : Submodule R M) : map (f : M →ₛₗ[σ₁₂] M₂) p = map f p := rfl
+
 theorem map_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) :=
   SetLike.coe_injective rfl
@@ -173,6 +176,9 @@ def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M�
 @[simp]
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
+
+@[simp] theorem comap_coe_toLinearMap (f : F) (p : Submodule R₂ M₂) :
+    comap (f : M →ₛₗ[σ₁₂] M₂) p = comap f p := rfl
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]

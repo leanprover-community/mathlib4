@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Algebra.Order.Interval.Set.Monoid
+import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!
 # (Pre)images of intervals

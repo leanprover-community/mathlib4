@@ -852,7 +852,7 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
 theorem castPred_zero' [NeZero n] (h := Fin.ext_iff.not.2 last_pos'.ne) :
     castPred (0 : Fin (n + 1)) h = 0 := rfl
 
-theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne)  :
+theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne) :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
 
 @[simp]

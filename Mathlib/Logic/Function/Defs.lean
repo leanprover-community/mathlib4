@@ -18,7 +18,6 @@ universe u₁ u₂ u₃ u₄ u₅
 
 namespace Function
 
--- Porting note: fix the universe of `ζ`, it used to be `u₁`
 variable {α : Sort u₁} {β : Sort u₂} {φ : Sort u₃} {δ : Sort u₄} {ζ : Sort u₅}
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
@@ -47,7 +46,7 @@ abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x 
 scoped infixl:2 " on " => onFun
 
 /-- For a two-argument function `f`, `swap f` is the same function but taking the arguments
-in the reverse order. `swap f y x = f x y`.-/
+in the reverse order. `swap f y x = f x y`. -/
 abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 
 theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl

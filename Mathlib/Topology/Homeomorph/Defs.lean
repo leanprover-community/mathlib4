@@ -97,7 +97,7 @@ theorem ext {h h' : X ≃ₜ Y} (H : ∀ x, h x = h' x) : h = h' :=
   DFunLike.ext _ _ H
 
 /-- Identity map as a homeomorphism. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 protected def refl (X : Type*) [TopologicalSpace X] : X ≃ₜ X where
   continuous_toFun := continuous_id
   continuous_invFun := continuous_id
