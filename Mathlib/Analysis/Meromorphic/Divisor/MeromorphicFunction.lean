@@ -38,7 +38,7 @@ namespace MeromorphicOn
 
 /-- The divisor of a meromorphic function `f`, mapping a point `z` to the order
   of `f` at `z`, and to zero if the order is infinite. -/
-noncomputable def divisorOn {f : 𝕜 → E} (hf : MeromorphicOn f U) :
+noncomputable def divisor (f : 𝕜 → E) (hf : MeromorphicOn f U) :
     DivisorOn U where
   toFun := fun z ↦ if hz : z ∈ U then ((hf z hz).order.untopD 0) else 0
   supportWithinDomain' := by
@@ -57,13 +57,13 @@ noncomputable def divisorOn {f : 𝕜 → E} (hf : MeromorphicOn f U) :
 
 /-- Definition of the divisor. -/
 theorem divisorOn_def {f : 𝕜 → E} (hf : MeromorphicOn f U) :
-    hf.divisorOn z = if hz : z ∈ U then (hf z hz).order.untopD 0 else 0 := rfl
+    divisor f hf z = if hz : z ∈ U then (hf z hz).order.untopD 0 else 0 := rfl
 
 /-- Simplifier lemma: On `U`, the divisor of a function `f` that is meromorphic on `U` evaluates to
   `order.untopD`. -/
 @[simp]
 lemma divisorOn_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
-    hf.divisorOn z = (hf z hz).order.untopD 0 := by simp_all [hf.divisorOn_def, hz]
+    divisor f hf z = (hf z hz).order.untopD 0 := by simp_all [hf.divisorOn_def, hz]
 
 /-!
 ## Behavior under Standard Operations
@@ -79,7 +79,7 @@ lemma divisorOn_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
 theorem divisorOn_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
-    (h₁f₁.smul h₁f₂).divisorOn = h₁f₁.divisorOn + h₁f₂.divisorOn := by
+    divisor (f₁ • f₂) (h₁f₁.smul h₁f₂) = divisor f₁ h₁f₁ + divisor f₂ h₁f₂ := by
   ext z
   by_cases hz : z ∈ U
   · simp_all [(h₁f₁ z hz).order_smul (h₁f₂ z hz)]
@@ -98,7 +98,7 @@ theorem divisorOn_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 
 theorem divisorOn_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
-    (h₁f₁.mul h₁f₂).divisorOn = h₁f₁.divisorOn + h₁f₂.divisorOn := by
+    divisor (f₁ * f₂) (h₁f₁.mul h₁f₂) = divisor f₁ h₁f₁ + divisor f₂ h₁f₂ := by
   ext z
   by_cases hz : z ∈ U
   · simp_all [(h₁f₁ z hz).order_mul (h₁f₂ z hz)]
@@ -108,15 +108,15 @@ theorem divisorOn_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁
   · simp [hz]
 
 /-- The divisor of the inverse is the negative of the divisor. -/
-theorem divisorOn_inv [CompleteSpace 𝕜] {f: 𝕜 → 𝕜} (h₁f : MeromorphicOn f U) :
-    h₁f.inv.divisorOn = -h₁f.divisorOn := by
+theorem divisorOn_inv [CompleteSpace 𝕜] {f: 𝕜 → 𝕜} (hf : MeromorphicOn f U) :
+    divisor f⁻¹ hf.inv = -divisor f hf := by
   ext z
   by_cases hz : z ∈ U
   · simp only [hz, divisorOn_apply, DivisorOn.coe_neg, Pi.neg_apply]
-    rw [(h₁f z hz).order_inv]
-    by_cases ha : (h₁f z hz).inv.order = ⊤
+    rw [(hf z hz).order_inv]
+    by_cases ha : (hf z hz).inv.order = ⊤
     · simp only [ha, WithTop.untopD_top, LinearOrderedAddCommGroupWithTop.neg_top, neg_zero]
-    lift (h₁f z hz).inv.order to ℤ using ha with a ha
+    lift (hf z hz).inv.order to ℤ using ha with a ha
     rw [(by rfl : -a = (↑(-a) : WithTop ℤ)), WithTop.untopD_coe, WithTop.untopD_coe]
     simp
   · simp [hz]
