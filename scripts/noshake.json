@@ -57,6 +57,7 @@
   "Mathlib.Mathport.Rename",
   "Mathlib.Probability.Notation",
   "Mathlib.Tactic.Abel",
+  "Mathlib.Tactic.Algebraize",
   "Mathlib.Tactic.ApplyCongr",
   "Mathlib.Tactic.ApplyFun",
   "Mathlib.Tactic.ApplyWith",
