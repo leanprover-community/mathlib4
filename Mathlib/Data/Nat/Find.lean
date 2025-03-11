@@ -97,7 +97,6 @@ variable [DecidablePred q] in
 lemma find_mono (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} : Nat.find hp ≤ Nat.find hq :=
   Nat.find_min' _ (h _ (Nat.find_spec hq))
 
-@[congr]
 lemma find_congr [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : ∀ {n}, p n ↔ q n) :
     Nat.find hp = Nat.find hq :=
   le_antisymm (find_mono fun _ ↦ hpq.mpr) (find_mono fun _ ↦ hpq.mp)
