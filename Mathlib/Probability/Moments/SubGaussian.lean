@@ -185,18 +185,17 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
     · exact h t
   _ ≤ c * t ^ 2 / 2 := by rw [log_exp]
 
-lemma measure_univ_le_one (h : HasSubgaussianMGF X c κ ν) :
-    ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
-  filter_upwards [h.ae_integrable_exp_mul 0, h.mgf_le] with ω' h h_mgf
-  simp only [zero_mul, exp_zero, integrable_const_iff, one_ne_zero, false_or] at h
-  suffices (κ ω' Set.univ).toReal ≤ 1 by
-    rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
-  simpa [mgf] using h_mgf 0
-
-lemma isFiniteMeasure( h : HasSubgaussianMGF X c κ ν) :
+lemma isFiniteMeasure (h : HasSubgaussianMGF X c κ ν) :
     ∀ᵐ ω' ∂ν, IsFiniteMeasure (κ ω') := by
   filter_upwards [h.ae_integrable_exp_mul 0, h.mgf_le] with ω' h h_mgf
   simpa [integrable_const_iff] using h
+
+lemma measure_univ_le_one (h : HasSubgaussianMGF X c κ ν) :
+    ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
+  filter_upwards [h.isFiniteMeasure, h.mgf_le] with ω' h h_mgf
+  suffices (κ ω' Set.univ).toReal ≤ 1 by
+    rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
+  simpa [mgf] using h_mgf 0
 
 end BasicProperties
 
