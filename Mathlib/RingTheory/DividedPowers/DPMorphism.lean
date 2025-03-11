@@ -31,16 +31,16 @@ power morphism* if it is compatible with these divided power structures.
 
 ## References
 
-* [P. Berthelot (1974), *Cohomologie cristalline des schémas de
+* [P. Berthelot, *Cohomologie cristalline des schémas de
 caractéristique $p$ > 0*][Berthelot-1974]
 
-* [P. Berthelot and A. Ogus (1978), *Notes on crystalline
+* [P. Berthelot and A. Ogus, *Notes on crystalline
 cohomology*][BerthelotOgus-1978]
 
-* [N. Roby (1963), *Lois polynomes et lois formelles en théorie des
+* [N. Roby, *Lois polynomes et lois formelles en théorie des
 modules*][Roby-1963]
 
-* [N. Roby (1965), *Les algèbres à puissances dividées*][Roby-1965]
+* [N. Roby, *Les algèbres à puissances dividées*][Roby-1965]
 -/
 
 open Ideal Set SetLike
@@ -122,9 +122,9 @@ def mk' {f : A →+* B} (hf : IsDPMorphism hI hJ f) : DPMorphism hI hJ :=
 
 variable (hI hJ)
 
--- Roby65, Proposition 2.
 /-- Given a ring homomorphism `A → B` and ideals `I ⊆ A` and `J ⊆ B` such that `I.map f ≤ J`,
-  this is the `A`-ideal on which `f (hI.dpow n x) = hJ.dpow n (f x)`. -/
+  this is the `A`-ideal on which `f (hI.dpow n x) = hJ.dpow n (f x)`.
+  See [N. Roby, *Les algèbres à puissances dividées* (Proposition 2)][Roby-1965]. -/
 def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J) : Ideal A where
   carrier  := {x ∈ I | ∀ n : ℕ, f (hI.dpow n (x : A)) = hJ.dpow n (f (x : A))}
   add_mem' := fun hx hy ↦ by
@@ -147,9 +147,9 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
     rw [smul_eq_mul, hI.dpow_mul hx.1, _root_.map_mul, _root_.map_mul, map_pow,
       hJ.dpow_mul (hf (mem_map_of_mem f hx.1)), hx.2 n]
 
--- Roby65, Proposition 3.
 /-- The `DPMorphism` induced by a ring morphism, given that divided powers are compatible on a
-  generating set. -/
+  generating set.
+  See [N. Roby, *Les algèbres à puissances dividées* (Proposition 3)][Roby-1965]-/
 def fromGens {f : A →+* B} {S : Set A} (hS : I = span S) (hf : I.map f ≤ J)
     (h : ∀ {n : ℕ}, ∀ x ∈ S, f (hI.dpow n x) = hJ.dpow n (f x)) : DPMorphism hI hJ where
   toRingHom          := f
@@ -227,9 +227,9 @@ theorem dpow_comp_from_gens {S : Set A} (hS : I = span S) (hS' : ∀ s ∈ S, f 
     ∀ {n}, ∀ a ∈ I, hJ.dpow n (f a) = f (hI.dpow n a) :=
   (IsDPMorphism.on_span hI hJ hS hS' hdp).2
 
--- Roby65, Corollary after Proposition 3.
 /-- If two divided power structures on the ideal `I` agree on a generating set, then they are
-  equal. -/
+  equal.
+  See [N. Roby, *Les algèbres à puissances dividées* (Corollary to Proposition 3)][Roby-1965]-/
 theorem dpow_eq_from_gens {S : Set A} (hS : I = span S)
     (hdp : ∀ {n : ℕ}, ∀ a ∈ S, hI.dpow n a = hI'.dpow n a) : hI' = hI := by
   ext n a
