@@ -1,5 +1,9 @@
 import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
+import Mathlib.adomaniLeanUtils.inspect_syntax
+
+-- The notation `0::[]` disables the linter
+variable  (h : 0::[] = [])
 
 /--
 warning: 'section' starts on column 1, but all commands should start at the beginning of the line.

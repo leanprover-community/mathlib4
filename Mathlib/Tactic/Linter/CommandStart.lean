@@ -86,9 +86,10 @@ namespace Style.CommandStart
 `unlintedNodes` contains the `SyntaxNodeKind`s for which there is no clear formatting preference:
 if they appear in surface syntax, the linter will ignore formatting.
 
-Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset` notation.
+Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset` notation and
+list notation.
 -/
-abbrev unlintedNodes := #[``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder]
+abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder]
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
