@@ -31,12 +31,20 @@ Finally, the `n`obordism group of `X` is the set of bordism classes of singular 
 
 XXX design decisions, model parameters etc.
 
-## Main definitions and results
+## Main definitions
 
 - **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
   `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝ^n`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
+
+- **UnorientedBordism**: TODO write more!
+
+- **uBordismClass X k I** is the type of unoriented `C^k` bordism classes on `X`,
+  modelled over the model `I`.
+
+## Main results
+
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
   of singular n-manifolds
 - `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X`
@@ -51,14 +59,31 @@ XXX design decisions, model parameters etc.
 - `SingularNManifold.sum`: the disjoint union of two singular `n`-manifolds
   is a singular `n`-manifold.
 
+- `UnorientedBordism.symm`: being bordant is symmetric (by "turning around" the bordism)
+- `UrorientedBordism.trans`: being bordant is transitive (provided the bordism has dimension one)
+  higher than the boundary components, and the collars of the manifolds fit together smoothly:
+  this result is only stated (as its proof requires the not yet formalised
+  collar neighbourhood theorem)
+
+- `UnorientedBordism.sum_self`: the direct sum of a manifold with itself is null-bordant:
+  this is only true for unoriented bordisms.
+- `UnorientedBordism.sumAssoc`: the direct sum of singular n-manifolds is associative up to bordism
+- `UnorientedBordism.sumComm`: the direct sum of singular n-manifolds is commutative up to bordism
+- `UnorientedBordism.sumEmpty`: each singular `n`-manifold
+  is bordant to itself plus the empty manifold
+- `UnorientedBordism.sum`: the direct sum of two bordisms (over the same model `J`) is a bordism
+- `UnorientedBordism.sumComm`: the direct sum of bordisms is commutative
+- `UnorientedBordism.comap_{fst,snd}`: TODO write!
+
+- `uBordismClass.sum`: addition of bordism classes --- the disjoint union on their representatives
+- `uBordismClass.instAddCommGroup`: bordism classes form an abelian group
+
 ## Implementation notes
 
 To be written! Document the design decisions and why they were made.
 
 ## TODO
-- prove that the bordisms relation is an equivalence relation
-- define unoriented bordisms groups (as a set of equivalence classes),
-prove they are a group
+- for bordisms on a one-point space, define multiplication and prove the bordism ring structure
 - define relative bordism groups (generalising the previous three points)
 - prove that relative unoriented bordism groups define an extraordinary homology theory
 
