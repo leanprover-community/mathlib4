@@ -78,10 +78,11 @@ lemma swap_compProd_posterior : Kernel.swap 𝓧 Ω ∘ₘ (κ ∘ₘ μ) ⊗ₘ
   rw [compProd_posterior_eq_swap_comp, Measure.comp_assoc, Kernel.swap_swap, Measure.id_comp]
 
 /-- The main property of the posterior, as equality of the following diagrams:
+```
          -- id          -- κ
 μ -- κ -|        =  μ -|
          -- κ†μ         -- id
--/
+``` -/
 lemma parallelProd_posterior_comp_copy_comp :
     (Kernel.id ∥ₖ κ†μ) ∘ₘ Kernel.copy 𝓧 ∘ₘ κ ∘ₘ μ
       = (κ ∥ₖ Kernel.id) ∘ₘ Kernel.copy Ω ∘ₘ μ := by
