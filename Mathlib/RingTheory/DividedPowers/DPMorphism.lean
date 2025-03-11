@@ -149,7 +149,7 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
 
 /-- The `DPMorphism` induced by a ring morphism, given that divided powers are compatible on a
   generating set.
-  See [N. Roby, *Les algèbres à puissances dividées* (Proposition 3)][Roby-1965]-/
+  See [N. Roby, *Les algèbres à puissances dividées* (Proposition 3)][Roby-1965]. -/
 def fromGens {f : A →+* B} {S : Set A} (hS : I = span S) (hf : I.map f ≤ J)
     (h : ∀ {n : ℕ}, ∀ x ∈ S, f (hI.dpow n x) = hJ.dpow n (f x)) : DPMorphism hI hJ where
   toRingHom          := f
@@ -229,7 +229,7 @@ theorem dpow_comp_from_gens {S : Set A} (hS : I = span S) (hS' : ∀ s ∈ S, f 
 
 /-- If two divided power structures on the ideal `I` agree on a generating set, then they are
   equal.
-  See [N. Roby, *Les algèbres à puissances dividées* (Corollary to Proposition 3)][Roby-1965]-/
+  See [N. Roby, *Les algèbres à puissances dividées* (Corollary to Proposition 3)][Roby-1965]. -/
 theorem dpow_eq_from_gens {S : Set A} (hS : I = span S)
     (hdp : ∀ {n : ℕ}, ∀ a ∈ S, hI.dpow n a = hI'.dpow n a) : hI' = hI := by
   ext n a
