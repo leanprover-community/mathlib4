@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.Normed.PiNat
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Data.Real.StarOrdered
-import Mathlib.Topology.MetricSpace.PiNat.Normed
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-! # Metric spaces are not necessarily induced by a norm.
 
@@ -65,11 +66,17 @@ lemma PiCountable.not_dist_homogeneous' [DecidableEq ι]
 
 open PiCountable
 
-/-- Not all distances on a metric space are induced by a norm. Phrased by remarking that
-one can have a `MetricSpace` and even `NormedAddCommGroup` without `BoundedSMul`, which is
-a prerequisite for `NormedSpace`. -/
-theorem not_all_dist_induced_by_norm : ¬ ∀ (𝕜 E : Type) [MetricSpace 𝕜] [MetricSpace E]
-    [Zero 𝕜] [Zero E] [SMul 𝕜 E], BoundedSMul 𝕜 E := by
+/-- Not all distances on a metric space are induced by a norm.
+Phrased by remarking that even if one has a `LocallyConvexSpace` of a `NormedAddCommGroup` over
+a `NormedLinearOrderedField`, the topology is not compatible with scalar multiplication. -/
+theorem not_all_dist_induced_by_norm : ¬ ∀ (𝕜 E : Type)
+    [NormedLinearOrderedField 𝕜]
+    [NormedAddCommGroup E]
+    [Module 𝕜 E]
+    [LocallyConvexSpace 𝕜 E]
+    [ContinuousSMul 𝕜 E],
+    BoundedSMul 𝕜 E
+     := by
   intro H
   obtain ⟨H, -⟩ := H ℝ (ℕ → ℝ)
   classical
