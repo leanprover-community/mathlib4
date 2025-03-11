@@ -128,17 +128,17 @@ def domainCartesianLift : ∫ F :=
 
 /-- The cartesian lift of `f`. -/
 @[simps]
-def cartesianLift : domain_cartesianLift F f ⟶ a :=
+def cartesianLift : domainCartesianLift F f ⟶ a :=
   ⟨f, 𝟙 _⟩
 
 lemma isHomLift_cartesianLift :
-    IsHomLift (forget F) f (cartesianLift F f) := by
-  ⟨IsHomLiftAux.map (p := forget F) (a := domain_cartesianLift F f) ⟨f, 𝟙 _⟩⟩
+    IsHomLift (forget F) f (cartesianLift F f) :=
+  ⟨IsHomLiftAux.map (p := forget F) (a := domainCartesianLift F f) ⟨f, 𝟙 _⟩⟩
 
 /-- Given some lift `g` of `f`, the canonical map from the domain of `g` to the domain of
 the cartesian lift of `f`. -/
 def map_cartesianLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F).IsHomLift f g] :
-    a' ⟶ domain_cartesianLift F f where
+    a' ⟶ domainCartesianLift F f where
   base := eqToHom <| IsHomLift.domain_eq (forget F) f g
   fiber :=
     have : g.base = eqToHom _ ≫ f := by simpa using IsHomLift.fac' (forget F) f g
@@ -154,12 +154,12 @@ lemma isHomLift_mapCartesianLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F).
 
 /-- The preFibered structure on `∫ F`, using the forgetful functor `forget F`. -/
 instance isPreFibered : IsPreFibered (forget F) := by
-  refine ⟨fun {a b} f ↦ ⟨domain_cartesianLift F f, cartesianLift F f, ?_⟩⟩
-  refine {cond := (cartesianLift_isHomLift F f).cond, universal_property := ?_}
+  refine ⟨fun {a b} f ↦ ⟨domainCartesianLift F f, cartesianLift F f, ?_⟩⟩
+  refine {cond := (isHomLift_cartesianLift F f).cond, universal_property := ?_}
   intro a' g hfg
   refine ⟨map_cartesianLift F f g, ?_⟩
   simp only [categoryStruct_Hom, and_imp, map_cartesianLift, cartesianLift]
-  refine ⟨⟨map_cartesianLift_isHomLift _ _ _, ?_⟩, ?_⟩
+  refine ⟨⟨isHomLift_mapCartesianLift _ _ _, ?_⟩, ?_⟩
   · exact Hom.ext _ _ (by simpa using (IsHomLift.fac' (forget F) f g).symm) (by simp)
   · rintro H K rfl
     apply Hom.ext
