@@ -5,13 +5,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 
 import Mathlib.Algebra.Algebra.Defs
-import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Int.GCD
+import Mathlib.Algebra.CharP.Invertible
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Nat.Prime.Basic
-import Mathlib.Algebra.Field.ZMod
 
 /-!
 # Invertibility of factorials
@@ -57,24 +53,6 @@ section CharP
 
 variable {A : Type*} [Ring A] (p : ℕ) [Fact (Nat.Prime p)] [CharP A p]
 
--- TODO: move / golf
-theorem natCast_iff_of_charP {n : ℕ} : IsUnit (n : A) ↔ ¬ (p ∣ n) := by
-  constructor
-  · rintro ⟨x, hx⟩
-    rw [← CharP.cast_eq_zero_iff (R := A), ← hx]
-    have := CharP.nontrivial_of_char_ne_one (R := A) (Nat.Prime.ne_one Fact.out : p ≠ 1)
-    exact x.ne_zero
-  · intro h
-    rw [ ← ZMod.cast_natCast' (n := p)]
-    refine ⟨⟨ZMod.cast (n : ZMod p), ZMod.cast (n⁻¹ : ZMod p), ?_, ?_⟩, rfl⟩
-    all_goals rw [← ZMod.cast_mul (m := p) dvd_rfl]
-    · rw [mul_inv_cancel₀ (G₀ := ZMod p), ZMod.cast_one']
-      rw [ne_eq, ZMod.natCast_zmod_eq_zero_iff_dvd]
-      assumption
-    · rw [inv_mul_cancel₀ (G₀ := ZMod p), ZMod.cast_one']
-      rw [ne_eq, ZMod.natCast_zmod_eq_zero_iff_dvd]
-      assumption
-
 theorem natCast_factorial_iff_of_charP {n : ℕ} : IsUnit (n ! : A) ↔ n < p := by
   have hp : p.Prime := Fact.out
   induction n with
@@ -82,12 +60,9 @@ theorem natCast_factorial_iff_of_charP {n : ℕ} : IsUnit (n ! : A) ↔ n < p :=
   | succ n ih =>
     -- TODO: why is `.symm.symm` needed here!?
     rw [factorial_succ, cast_mul, Nat.cast_commute _ _ |>.isUnit_mul_iff, ih.symm.symm,
-      ← Nat.add_one_le_iff, natCast_iff_of_charP (p := p)]
-    constructor
-    · rintro ⟨h1, h2⟩
-      exact lt_of_le_of_ne h2 (mt (· ▸ dvd_rfl) h1)
-    · intro h
-      exact ⟨not_dvd_of_pos_of_lt (Nat.succ_pos _) h, h.le⟩
+      ← Nat.add_one_le_iff, CharP.isUnit_natCast_iff hp]
+    exact ⟨fun ⟨h1, h2⟩ ↦ lt_of_le_of_ne h2 (mt (· ▸ dvd_rfl) h1),
+      fun h ↦ ⟨not_dvd_of_pos_of_lt (Nat.succ_pos _) h, h.le⟩⟩
 
 end CharP
 
