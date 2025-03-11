@@ -194,8 +194,8 @@ theorem lintegral_eq_lintegral_of_isPiSystem
       calc ∫⁻ x in t, f x ∂μ
       _ ≤ ∫⁻ x, f x ∂μ := setLIntegral_le_lintegral t _
       _ < ∞ := hf_int.lt_top
-  · intro f hfd hfm h
-    simp_rw [lintegral_iUnion hfm hfd, h]
+  · intro t htd htm h
+    simp_rw [lintegral_iUnion htm htd, h]
 
 lemma lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
     (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s) (h_univ : Set.univ ∈ s)
