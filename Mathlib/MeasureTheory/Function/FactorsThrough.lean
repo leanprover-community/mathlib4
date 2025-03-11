@@ -70,9 +70,12 @@ theorem StronglyMeasurable.measurableSet_exists_tendsto [MeasurableSpace X]
     exact mem_closure_of_tendsto hc (Eventually.of_forall fun i ↦ Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
   infer_instance
 
-theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z] [l.NeBot]
+theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z]
     (hf : ∀ i, StronglyMeasurable (f i)) :
     StronglyMeasurable (fun x ↦ limUnder l (f · x)) := by
+  obtain rfl | hl := eq_or_neBot l
+  · simp only [limUnder, Filter.map_bot]
+    exact stronglyMeasurable_const
   borelize Z
   let z_ := Classical.choice hZ
   rw [stronglyMeasurable_iff_measurable_separable]; constructor
