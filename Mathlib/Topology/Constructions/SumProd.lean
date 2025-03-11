@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Maps.Basic
+import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
 # Disjoint unions and products of topological spaces
@@ -807,6 +808,115 @@ lemma IsClosedEmbedding.sumElim {f : X → Z} {g : Y → Z}
     IsClosedEmbedding (Sum.elim f g) := by
   rw [IsClosedEmbedding.isClosedEmbedding_iff_continuous_injective_isClosedMap] at hf hg ⊢
   exact ⟨hf.1.sumElim hg.1, h, hf.2.2.sumElim hg.2.2⟩
+
+section IsInducing
+
+variable {f : X → Z} {g : Y → Z}
+
+/-- If `Sum.elim f g` is an inducing map, then so is `f`. -/
+lemma Topology.IsInducing.sumElim_left (h : IsInducing (Sum.elim f g)) : IsInducing f :=
+  elim_comp_inl f g ▸ h.comp IsEmbedding.inl.isInducing
+
+/-- If `Sum.elim f g` is an inducing map, then so is `g`. -/
+lemma Topology.IsInducing.sumElim_right (h : IsInducing (Sum.elim f g)) : IsInducing g :=
+  elim_comp_inr f g ▸ h.comp IsEmbedding.inr.isInducing
+
+/-- If `f` and `g` are inducing maps whose ranges are separated, then `Sum.elim f g` is inducing. -/
+theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
+    (hFg : Disjoint (closure (range f)) (range g)) (hfG : Disjoint (range f) (closure (range g))) :
+    IsInducing (Sum.elim f g) := by
+  rw [← disjoint_principal_nhdsSet] at hFg
+  rw [← disjoint_nhdsSet_principal] at hfG
+  rw [isInducing_iff_nhds]
+  intro x
+  apply le_antisymm ((hf.continuous.sumElim hg.continuous).tendsto x).le_comap
+  intro s hs
+  rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ]
+  simp_rw [image_union, ← image_comp, elim_comp_inl, elim_comp_inr, preimage_compl, compl_union,
+    inter_mem_iff, ← mem_comap_iff_compl]
+  obtain x | x := x <;>
+  simp only [nhds_inl, nhds_inr, mem_map] at hs <;>
+  simp only [elim_inl, elim_inr, ← hf.nhds_eq_comap, ← hg.nhds_eq_comap, hs, true_and, and_true] <;>
+  convert mem_bot <;>
+  rw [comap_eq_bot_iff_compl_range]
+  · rw [← disjoint_principal_right]
+    exact hfG.mono_left (nhds_le_nhdsSet (mem_range_self x))
+  · rw [← disjoint_principal_left]
+    exact hFg.mono_right (nhds_le_nhdsSet (mem_range_self x))
+
+/-- If `Sum.elim f g` is inducing, `closure (range f)` and `range g` must be disjoint.
+This is an auxiliary result towards proving `isInducing_sumElim`. -/
+theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f g)) :
+    Disjoint (closure (range f)) (range g) := by
+  simp_rw [isInducing_iff_nhds, Filter.ext_iff] at h
+  have h (x : X ⊕ Y) : map inl (comap f (𝓝 (Sum.elim f g x))) ⊔
+      map inr (comap g (𝓝 (Sum.elim f g x))) = 𝓝 x := by
+    ext s
+    rw [h x s]
+    simp_rw [mem_sup, mem_map, mem_comap_iff_compl, ← inter_mem_iff]
+    rw [← image_preimage_inl_union_image_preimage_inr sᶜ, image_union]
+    simp_rw [image_image, elim_inl, elim_inr, preimage_compl, compl_union]
+  simp only [disjoint_principal_left, disjoint_principal_right,
+    ← disjoint_principal_nhdsSet, ← disjoint_nhdsSet_principal, mem_nhdsSet_iff_forall]
+  rintro _ ⟨x, rfl⟩
+  rw [← comap_eq_bot_iff_compl_range]
+  specialize h (inr x)
+  rw [nhds_inr, elim_inr] at h
+  apply_fun (map inl ⊤ ⊓ ·) at h
+  simpa only [map_inl_inf_map_inr, inf_sup_left, sup_bot_eq, ← map_inf, inl_injective, top_inf_eq,
+    map_eq_bot_iff] using h
+
+-- has a one-line proof, except for an import cycle: (Homeomorph.sumComm X Y).isOpenEmbedding
+theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap Y X) := sorry
+
+theorem IsInducing.sumSwap : IsInducing (@Sum.swap Y X) := IsOpenEmbedding.sumSwap.isInducing
+
+theorem isInducing_sumElim :
+    IsInducing (Sum.elim f g) ↔ IsInducing f ∧ IsInducing g ∧
+      Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) :=
+  ⟨fun h ↦ ⟨h.sumElim_left, h.sumElim_right, h.disjoint_of_sumElim_aux,
+    ((Sum.elim_swap ▸ h.comp IsInducing.sumSwap).disjoint_of_sumElim_aux ).symm⟩,
+    fun ⟨hf, hg, hFg, hfG⟩ ↦ hf.sumElim hg hFg hfG⟩
+
+lemma Topology.IsInducing.sumElim_of_separatedNhds
+    (hf : IsInducing f) (hg : IsInducing g) (hsep : SeparatedNhds (range f) (range g)) :
+    IsInducing (Sum.elim f g) :=
+  hf.sumElim hg hsep.disjoint_closure_left hsep.disjoint_closure_right
+
+/-- If `Sum.elim f g` is an embedding, then so is `f`. -/
+lemma Topology.IsEmbedding.sumElim_left (h : IsEmbedding (Sum.elim f g)) : IsEmbedding f :=
+  elim_comp_inl f g ▸ h.comp IsEmbedding.inl
+
+/-- If `Sum.elim f g` is an embedding, then so is `g`. -/
+lemma Topology.IsEmbedding.sumElim_right (h : IsEmbedding (Sum.elim f g)) : IsEmbedding g :=
+  elim_comp_inr f g ▸ h.comp IsEmbedding.inr
+
+theorem isEmbedding_sumElim :
+    IsEmbedding (Sum.elim f g) ↔ IsEmbedding f ∧ IsEmbedding g ∧
+      Disjoint (closure (range f)) (range g) ∧ Disjoint (range f) (closure (range g)) := by
+  simp_rw [isEmbedding_iff, isInducing_sumElim]
+  constructor
+  · intro ⟨⟨hf₁, hg₁, hFg, hfG⟩, hfg⟩
+    have hf₂ : Injective f := Sum.elim_comp_inl f g ▸ hfg.comp inl_injective
+    have hg₂ : Injective g := Sum.elim_comp_inr f g ▸ hfg.comp inr_injective
+    exact ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, ⟨hFg, hfG⟩⟩
+  · intro ⟨⟨hf₁, hf₂⟩, ⟨hg₁, hg₂⟩, hFg, hfG⟩
+    use ⟨hf₁, hg₁, hFg, hfG⟩
+    apply hf₂.sumElim hg₂
+    exact fun a b ↦ hfG.ne_of_mem (mem_range_self a) (subset_closure (mem_range_self b))
+
+/-- If `f` and `g` are embeddings whose ranges are separated, `Sum.elim f g` is an embedding. -/
+theorem Topology.IsEmbedding.sumElim (hf : IsEmbedding f) (hg : IsEmbedding g)
+    (hFg : Disjoint (closure (range f)) (range g)) (hfG : Disjoint (range f) (closure (range g))) :
+    IsEmbedding (Sum.elim f g) :=
+  isEmbedding_sumElim.mpr ⟨hf, hg, hFg, hfG⟩
+
+lemma Topology.IsEmbedding.sumElim_of_separatedNhds
+    (hf : IsEmbedding f) (hg : IsEmbedding g) (hsep : SeparatedNhds (range f) (range g)) :
+    IsEmbedding (Sum.elim f g) :=
+  hf.sumElim hg hsep.disjoint_closure_left hsep.disjoint_closure_right
+
+end IsInducing
 
 end Sum
 

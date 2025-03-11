@@ -10,7 +10,6 @@ import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.NhdsSet
-import Mathlib.Topology.Separation.SeparatedNhds
 
 /-!
 # Constructions of new topological spaces from old ones
