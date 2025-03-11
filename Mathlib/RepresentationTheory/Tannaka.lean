@@ -101,15 +101,9 @@ lemma leftRegular_apply (s t : G) (f : G → k) : leftRegular s f t = f (s⁻¹ 
 
 variable [Fintype G]
 
-variable (k G) in
 /-- The right regular representation `rightRegular` on `G → k` as a `FDRep k G`. -/
 @[simp]
 def rightFDRep : FDRep k G := FDRep.of rightRegular
-
-/-- Map sending `η : Aut (forget k G)` to its component at `rightFDRep k G` as a linear map. -/
-@[simp]
-def toRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₗ[k] (G → k) :=
-  (η.hom.hom.app (rightFDRep k G)).hom
 
 end definitions
 
@@ -117,7 +111,7 @@ variable [Fintype G]
 
 lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom k G) := by
   intro s t h
-  apply_fun (fun x ↦ (toRightFDRepComp x) (single t 1) 1) at h
+  apply_fun (fun x ↦ (x.hom.hom.app rightFDRep).hom (single t 1) 1) at h
   simp_all [single_apply]
 
 end FiniteGroup
