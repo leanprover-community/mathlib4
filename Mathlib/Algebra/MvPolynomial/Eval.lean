@@ -728,7 +728,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     · exact hs i hi
     · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
       exact zero_mem s
-  induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
+  induction' p using MvPolynomial.monomial_add_induction_on with a a b f ha _ ih
   · simpa using hs 0
   rw [eval₂_add, eval₂_monomial]
   refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
