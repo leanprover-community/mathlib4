@@ -101,7 +101,7 @@ def partialSum (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (x : E) : F :=
 theorem partialSum_continuous (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
     Continuous (p.partialSum n) := by
   unfold partialSum
-  continuity
+  fun_prop
 
 end FormalMultilinearSeries
 

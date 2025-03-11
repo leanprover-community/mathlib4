@@ -859,7 +859,6 @@ Adding a `⊥` to a locally finite `OrderBot` keeps it locally finite.
 
 namespace WithTop
 
--- TODO: WithBot variant
 /-- Given a finset on `α`, lift it to being a finset on `WithTop α`
 using `WithTop.some` and then insert `⊤`. -/
 def insertTop : Finset α ↪o Finset (WithTop α) :=
@@ -937,6 +936,21 @@ theorem Ioo_coe_coe : Ioo (a : WithTop α) b = (Ioo a b).map Embedding.some :=
 end WithTop
 
 namespace WithBot
+
+/-- Given a finset on `α`, lift it to being a finset on `WithBot α`
+using `WithBot.some` and then insert `⊥`. -/
+def insertBot : Finset α ↪o Finset (WithBot α) :=
+  OrderEmbedding.ofMapLEIff
+    (fun s => cons ⊥ (s.map Embedding.coeWithBot) <| by simp)
+    (fun s t => by rw [le_iff_subset, cons_subset_cons, map_subset_map, le_iff_subset])
+
+@[simp]
+theorem some_mem_insertBot {s : Finset α} {a : α} : ↑a ∈ insertBot s ↔ a ∈ s := by
+  simp [insertBot]
+
+@[simp]
+theorem bot_mem_insertBot {s : Finset α} : ⊥ ∈ insertBot s := by
+  simp [insertBot]
 
 variable (α) [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α]
 

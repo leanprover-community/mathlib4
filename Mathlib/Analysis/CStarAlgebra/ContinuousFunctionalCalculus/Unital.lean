@@ -6,10 +6,11 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Tactic.ContinuousFunctionalCalculus
+import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Topology.Algebra.Star.Real
 import Mathlib.Topology.ContinuousMap.Ordered
+import Mathlib.Topology.ContinuousMap.Star
 
 /-!
 # The continuous functional calculus
@@ -700,7 +701,7 @@ protected lemma IsSelfAdjoint.cfc [ContinuousFunctionalCalculus R (IsSelfAdjoint
   cfc_predicate _ _
 
 @[simp]
-lemma cfc_nonneg_of_predicate [PartialOrder A]
+lemma cfc_nonneg_of_predicate [LE A]
     [ContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} : 0 ≤ cfc f a :=
   cfc_predicate _ _
 
