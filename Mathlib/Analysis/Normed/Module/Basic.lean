@@ -232,6 +232,8 @@ class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [Seminorme
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
+attribute [instance 100] NormedAlgebra.toAlgebra
+
 variable (𝕜')
 variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
