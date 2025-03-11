@@ -406,6 +406,8 @@ lemma natAbs_ediv_of_dvd (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a /
   else
     simp [natAbs_ediv, H, h]
 
+@[deprecated (since := "2025-03-10")] alias natAbs_ediv := natAbs_ediv_of_dvd
+
 lemma dvd_of_mul_dvd_mul_left (ha : a ≠ 0) (h : a * m ∣ a * n) : m ∣ n := by
   obtain ⟨b, hb⟩ := h
   rw [Int.mul_assoc, Int.mul_eq_mul_left_iff ha] at hb
@@ -488,7 +490,7 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 
 attribute [simp] natCast_pow
 
--- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
+/-- For use in `Mathlib.Tactic.NormNum.Pow` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
 end Int
