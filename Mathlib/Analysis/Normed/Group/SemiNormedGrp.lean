@@ -358,15 +358,6 @@ theorem coe_comp {M N K : SemiNormedGrp₁} (f : M ⟶ N) (g : N ⟶ K) :
 instance : Inhabited SemiNormedGrp₁ :=
   ⟨of PUnit⟩
 
-/-- This instance allows type class synthesis to "see through" `SemiNormedGrp₁.of` to
-the underlying type when attempting synthesis on `Unique (SemiNormedGrp₁.of _)`.
-
-It is scoped because its discrimination tree keys are `Unique _` allowing
-Lean to attempt it in *any* search for `Unique α`. -/
-scoped instance ofUnique (V : Type u) [SeminormedAddCommGroup V] [i : Unique V] :
-    Unique (SemiNormedGrp₁.of V) :=
-  i
-
 instance (X Y : SemiNormedGrp₁) : Zero (X ⟶ Y) where
   zero := ⟨0, NormedAddGroupHom.NormNoninc.zero⟩
 
