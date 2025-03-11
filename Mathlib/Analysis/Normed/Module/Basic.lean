@@ -251,17 +251,17 @@ theorem dist_algebraMap (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
   simp only [dist_eq_norm, ← map_sub, norm_algebraMap]
 
-/-- This is a simpler version of `norm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
+/-- This is a simpler version of `norm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 
-/-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
+/-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
 
-/-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
+/-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem dist_algebraMap' [NormOneClass 𝕜'] (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y := by
@@ -595,8 +595,9 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [Norme
 /-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
 in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
 instances from scratch on a type with no preexisting distance or topology. -/
-structure NormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [Norm E] extends SeminormedAddCommGroup.Core 𝕜 E : Prop where
+structure NormedSpace.Core (𝕜 : Type*) (E : Type*)
+    [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E] : Prop
+    extends SeminormedAddCommGroup.Core 𝕜 E where
   norm_eq_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0
 
 variable {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E]

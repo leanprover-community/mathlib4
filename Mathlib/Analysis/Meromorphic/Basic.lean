@@ -43,9 +43,8 @@ theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} 
   rcases h.eventually_eq_zero_or_eventually_ne_zero with h₁ | h₂
   · left
     filter_upwards [nhdsWithin_le_nhds h₁, self_mem_nhdsWithin] with y h₁y h₂y
-    rcases (smul_eq_zero.1 h₁y) with h₃ | h₄
-    · exact False.elim (h₂y (sub_eq_zero.1 (pow_eq_zero_iff'.1 h₃).1))
-    · assumption
+    rw [Set.mem_compl_iff, Set.mem_singleton_iff, ← sub_eq_zero] at h₂y
+    exact smul_eq_zero_iff_right (pow_ne_zero n h₂y) |>.mp h₁y
   · right
     filter_upwards [h₂, self_mem_nhdsWithin] with y h₁y h₂y
     exact (smul_ne_zero_iff.1 h₁y).2
@@ -203,7 +202,7 @@ lemma pow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
 
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
-  induction n with
+  cases n with
   | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
+import Mathlib.Tactic.FunProp
 
 /-!
 # Measurable embeddings and equivalences
@@ -366,35 +367,35 @@ variable [MeasurableSpace δ] in
 def prodCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α × γ ≃ᵐ β × δ where
   toEquiv := .prodCongr ab.toEquiv cd.toEquiv
   measurable_toFun :=
-    (ab.measurable_toFun.comp measurable_id.fst).prod_mk
+    (ab.measurable_toFun.comp measurable_id.fst).prodMk
       (cd.measurable_toFun.comp measurable_id.snd)
   measurable_invFun :=
-    (ab.measurable_invFun.comp measurable_id.fst).prod_mk
+    (ab.measurable_invFun.comp measurable_id.fst).prodMk
       (cd.measurable_invFun.comp measurable_id.snd)
 
 /-- Products of measurable spaces are symmetric. -/
 def prodComm : α × β ≃ᵐ β × α where
   toEquiv := .prodComm α β
-  measurable_toFun := measurable_id.snd.prod_mk measurable_id.fst
-  measurable_invFun := measurable_id.snd.prod_mk measurable_id.fst
+  measurable_toFun := measurable_id.snd.prodMk measurable_id.fst
+  measurable_invFun := measurable_id.snd.prodMk measurable_id.fst
 
 /-- Products of measurable spaces are associative. -/
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
-  measurable_toFun := measurable_fst.fst.prod_mk <| measurable_fst.snd.prod_mk measurable_snd
-  measurable_invFun := (measurable_fst.prod_mk measurable_snd.fst).prod_mk measurable_snd.snd
+  measurable_toFun := measurable_fst.fst.prodMk <| measurable_fst.snd.prodMk measurable_snd
+  measurable_invFun := (measurable_fst.prodMk measurable_snd.fst).prodMk measurable_snd.snd
 
 /-- `PUnit` is a left identity for product of measurable spaces up to a measurable equivalence. -/
 def punitProd : PUnit × α ≃ᵐ α where
   toEquiv := Equiv.punitProd α
   measurable_toFun := measurable_snd
-  measurable_invFun := measurable_prod_mk_left
+  measurable_invFun := measurable_prodMk_left
 
 /-- `PUnit` is a right identity for product of measurable spaces up to a measurable equivalence. -/
 def prodPUnit : α × PUnit ≃ᵐ α where
   toEquiv := Equiv.prodPUnit α
   measurable_toFun := measurable_fst
-  measurable_invFun := measurable_prod_mk_right
+  measurable_invFun := measurable_prodMk_right
 
 variable [MeasurableSpace δ] in
 /-- Sums of measurable spaces are symmetric. -/
@@ -407,9 +408,9 @@ def sumCongr (ab : α ≃ᵐ β) (cd : γ ≃ᵐ δ) : α ⊕ γ ≃ᵐ β ⊕ �
 def Set.prod (s : Set α) (t : Set β) : ↥(s ×ˢ t) ≃ᵐ s × t where
   toEquiv := Equiv.Set.prod s t
   measurable_toFun :=
-    measurable_id.subtype_val.fst.subtype_mk.prod_mk measurable_id.subtype_val.snd.subtype_mk
+    measurable_id.subtype_val.fst.subtype_mk.prodMk measurable_id.subtype_val.snd.subtype_mk
   measurable_invFun :=
-    Measurable.subtype_mk <| measurable_id.fst.subtype_val.prod_mk measurable_id.snd.subtype_val
+    Measurable.subtype_mk <| measurable_id.fst.subtype_val.prodMk measurable_id.snd.subtype_val
 
 /-- `univ α ≃ α` as measurable spaces. -/
 def Set.univ (α : Type*) [MeasurableSpace α] : (univ : Set α) ≃ᵐ α where
@@ -456,8 +457,8 @@ def sumProdDistrib (α β γ) [MeasurableSpace α] [MeasurableSpace β] [Measura
       refine (prodCongr Set.rangeInr (Set.univ _)).symm.measurable_comp_iff.1 ?_
       exact measurable_inr
   measurable_invFun :=
-    measurable_sum ((measurable_inl.comp measurable_fst).prod_mk measurable_snd)
-      ((measurable_inr.comp measurable_fst).prod_mk measurable_snd)
+    measurable_sum ((measurable_inl.comp measurable_fst).prodMk measurable_snd)
+      ((measurable_inr.comp measurable_fst).prodMk measurable_snd)
 
 /-- Products distribute over sums (on the left) as measurable spaces. -/
 def prodSumDistrib (α β γ) [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ] :
@@ -501,20 +502,13 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
 /-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
 def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
-  __ := Equiv.arrowProdEquivProdArrow α β γ
-  measurable_toFun _ h := by
-    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_mk]
-    #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
-    we need provide the type hints `(a : γ → α × β)`, to avoid unification issues.
-    -/
-    exact MeasurableSet.preimage h (Measurable.prod_mk
-        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).1)
-          fun a ↦ (measurable_pi_apply a).fst)
-        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).2)
-          fun a ↦ (measurable_pi_apply a).snd))
-  measurable_invFun _ h := by
-    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_symm_mk]
-    exact MeasurableSet.preimage h (by measurability)
+  __ := Equiv.arrowProdEquivProdArrow γ _ _
+  measurable_toFun := by
+    dsimp [Equiv.arrowProdEquivProdArrow]
+    fun_prop
+  measurable_invFun := by
+    dsimp [Equiv.arrowProdEquivProdArrow]
+    fun_prop
 
 /-- The measurable equivalence `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂`. -/
 def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [MeasurableSpace β₁] [MeasurableSpace β₂]
@@ -569,7 +563,7 @@ Measurable version of `Fin.insertNthEquiv`. -/
 def piFinSuccAbove {n : ℕ} (α : Fin (n + 1) → Type*) [∀ i, MeasurableSpace (α i)]
     (i : Fin (n + 1)) : (∀ j, α j) ≃ᵐ α i × ∀ j, α (i.succAbove j) where
   toEquiv := (Fin.insertNthEquiv α i).symm
-  measurable_toFun := (measurable_pi_apply i).prod_mk <| measurable_pi_iff.2 fun _ =>
+  measurable_toFun := (measurable_pi_apply i).prodMk <| measurable_pi_iff.2 fun _ =>
     measurable_pi_apply _
   measurable_invFun := measurable_pi_iff.2 <| i.forall_iff_succAbove.2
     ⟨by simp [measurable_fst], fun j => by simpa using (measurable_pi_apply _).comp measurable_snd⟩

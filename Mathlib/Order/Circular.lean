@@ -84,6 +84,7 @@ and the circular order of months. Is `α →c β` a good notation?
 circular order, cyclic order, circularly ordered set, cyclically ordered set
 -/
 
+assert_not_exists RelIso
 
 /-- Syntax typeclass for a betweenness relation. -/
 class Btw (α : Type*) where

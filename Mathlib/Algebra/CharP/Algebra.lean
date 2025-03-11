@@ -28,6 +28,23 @@ Instances constructed from this result:
 
 -/
 
+/-- Given `R →+* A`, then `char A ∣ char R`. -/
+theorem CharP.dvd_of_ringHom {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]
+    (f : R →+* A) (p q : ℕ) [CharP R p] [CharP A q] : q ∣ p := by
+  refine (CharP.cast_eq_zero_iff A q p).mp ?_
+  rw [← map_natCast f p, CharP.cast_eq_zero, map_zero]
+
+/-- Given `R →+* A`, where `R` is a domain with `char R > 0`, then `char A = char R`. -/
+theorem CharP.of_ringHom_of_ne_zero {R A : Type*} [Ring R] [NoZeroDivisors R]
+    [NonAssocSemiring A] [Nontrivial A]
+    (f : R →+* A) (p : ℕ) (hp : p ≠ 0) [CharP R p] : CharP A p := by
+  have := f.domain_nontrivial
+  have H := (CharP.char_is_prime_or_zero R p).resolve_right hp
+  obtain ⟨q, hq⟩ := CharP.exists A
+  obtain ⟨k, e⟩ := dvd_of_ringHom f p q
+  have := Nat.isUnit_iff.mp ((H.2 q k e).resolve_left (Nat.isUnit_iff.not.mpr (char_ne_one A q)))
+  rw [this, mul_one] at e
+  exact e ▸ hq
 
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same characteristic as `R`. -/
 theorem charP_of_injective_ringHom {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]

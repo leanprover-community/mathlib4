@@ -79,7 +79,7 @@ theorem σ_comp_πSummand_id_eq_zero {n : ℕ} (i : Fin (n + 1)) :
   omega
 
 /-- If a simplicial object `X` in an additive category is split,
-then `PInfty` vanishes on all the summands of `X _[n]` which do
+then `PInfty` vanishes on all the summands of `X _⦋n⦌` which do
 not correspond to the identity of `⦋n⦌`. -/
 theorem cofan_inj_comp_PInfty_eq_zero {X : SimplicialObject C} (s : SimplicialObject.Splitting X)
     {n : ℕ} (A : SimplicialObject.Splitting.IndexSet (op ⦋n⦌)) (hA : ¬A.EqId) :
@@ -87,7 +87,7 @@ theorem cofan_inj_comp_PInfty_eq_zero {X : SimplicialObject C} (s : SimplicialOb
   rw [SimplicialObject.Splitting.IndexSet.eqId_iff_mono] at hA
   rw [SimplicialObject.Splitting.cofan_inj_eq, assoc, degeneracy_comp_PInfty X n A.e hA, comp_zero]
 
-theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _[n]) :
+theorem comp_PInfty_eq_zero_iff {Z : C} {n : ℕ} (f : Z ⟶ X _⦋n⦌) :
     f ≫ PInfty.f n = 0 ↔ f ≫ s.πSummand (IndexSet.id (op ⦋n⦌)) = 0 := by
   constructor
   · intro h
@@ -125,7 +125,8 @@ theorem πSummand_comp_cofan_inj_id_comp_PInfty_eq_PInfty (n : ℕ) :
     s.πSummand (IndexSet.id (op ⦋n⦌)) ≫ (s.cofan _).inj (IndexSet.id (op ⦋n⦌)) ≫ PInfty.f n =
       PInfty.f n := by
   conv_rhs => rw [← id_comp (PInfty.f n)]
-  erw [s.decomposition_id, Preadditive.sum_comp]
+  dsimp only [AlternatingFaceMapComplex.obj_X]
+  rw [s.decomposition_id, Preadditive.sum_comp]
   rw [Fintype.sum_eq_single (IndexSet.id (op ⦋n⦌)), assoc]
   rintro A (hA : ¬A.EqId)
   rw [assoc, s.cofan_inj_comp_PInfty_eq_zero A hA, comp_zero]
@@ -188,8 +189,9 @@ noncomputable def toKaroubiNondegComplexIsoN₁ :
           comm' := fun i j _ => by
             dsimp
             slice_rhs 1 1 => rw [← id_comp (K[X].d i j)]
-            erw [s.decomposition_id]
-            rw [sum_comp, sum_comp, Finset.sum_eq_single (IndexSet.id (op ⦋i⦌)), assoc, assoc]
+            dsimp only [AlternatingFaceMapComplex.obj_X]
+            rw [s.decomposition_id, sum_comp, sum_comp, Finset.sum_eq_single (IndexSet.id (op ⦋i⦌)),
+                assoc, assoc]
             · intro A _ hA
               simp only [assoc, s.ιSummand_comp_d_comp_πSummand_eq_zero _ _ _ hA, comp_zero]
             · simp only [Finset.mem_univ, not_true, IsEmpty.forall_iff] }
