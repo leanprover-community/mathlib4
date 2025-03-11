@@ -34,15 +34,12 @@ open MvPolynomial
 
 noncomputable section
 
-variable (p)
-
+variable (p) in
 /-- `wittMulN p n` is the family of polynomials that computes
 the coefficients of `x * n` in terms of the coefficients of the Witt vector `x`. -/
 noncomputable def wittMulN : ℕ → ℕ → MvPolynomial ℕ ℤ
   | 0 => 0
   | n + 1 => fun k => bind₁ (Function.uncurry <| ![wittMulN n, X]) (wittAdd p k)
-
-variable {p}
 
 theorem mulN_coeff (n : ℕ) (x : 𝕎 R) (k : ℕ) :
     (x * n).coeff k = aeval x.coeff (wittMulN p n k) := by
