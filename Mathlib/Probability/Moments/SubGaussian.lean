@@ -577,7 +577,7 @@ lemma prob_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
     (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ s, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ s, c i)) :=
-  (sum_of_iIndepFun h_indep h_meas h_subG).prob_ge_le hε
+  (sum_of_iIndepFun h_indep h_meas h_subG).measure_ge_le hε
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma prob_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
@@ -586,7 +586,7 @@ lemma prob_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
     {n : ℕ} (h_subG : ∀ i < n, HasSubgaussianMGF (X i) c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * n * c)) := by
   have h := (sum_of_iIndepFun h_indep h_meas (c := fun _ ↦ c)
-    (s := Finset.range n) (by simpa)).prob_ge_le hε
+    (s := Finset.range n) (by simpa)).measure_ge_le hε
   simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul, NNReal.coe_mul,
     NNReal.coe_natCast] at h
   rwa [← mul_assoc] at h
@@ -615,7 +615,7 @@ lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
     rw [h_eq]
     refine HasSubgaussianMGF.of_map ?_ this
     exact @Measurable.aemeasurable _ _ _ (m.prod mΩ) _ _
-      ((measurable_id'' hm).prod_mk measurable_id)
+      ((measurable_id'' hm).prodMk measurable_id)
   rw [HasSubgaussianMGF_iff_kernel] at hX ⊢
   have hY' : Kernel.HasSubgaussianMGF Y cY (condExpKernel μ m)
       (Kernel.const Unit (μ.trim hm) ∘ₘ Measure.dirac ()) := by simpa
@@ -649,10 +649,8 @@ lemma prob_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}).toReal
       ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
-  (HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF h_adapted h_subG n).prob_ge_le hε
+  (HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF h_adapted h_subG n).measure_ge_le hε
 
 end Martingale
-
-end HasSubgaussianMGF
 
 end ProbabilityTheory
