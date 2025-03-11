@@ -5,9 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 -/
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Topology.Connected.LocallyConnected
-import Mathlib.Topology.Constructions.SumProd -- nneded?
 import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Further properties of homeomorphisms
