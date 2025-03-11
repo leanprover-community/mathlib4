@@ -623,7 +623,7 @@ instance : Add (uBordismClass X k I) where
   add := uBordismClass.sum
 
 variable (X k I J) in
-private def unorientedBordismGroup_aux : AddGroup (uBordismClass X k I) := by
+def ubgroupAux : AddGroup (uBordismClass X k I) := by
   apply AddGroup.ofLeftAxioms
   -- XXX: better name for the variables?
   · intro Φ Ψ Δ
@@ -632,15 +632,15 @@ private def unorientedBordismGroup_aux : AddGroup (uBordismClass X k I) := by
     sorry
   · intro Φ
     change uBordismClass.sum (empty X k I) Φ = Φ
-    -- Morally: show s ⊕ ∅ is equivalent to s, i.e. bordant; use UnorientedBordism.sumEmpty.
-    -- The following proof already works, because an empty type is never inhabited...
-    exact congrFun J Φ
+    -- change: s ⊕ ∅ is equivalent to s, i.e. bordant
+    -- use UnorientedBordism.sumEmpty
+    sorry
   · intro Φ
     change uBordismClass.sum Φ Φ = empty X k I
     -- change: s ⊕ s is equivalent to SingularNManifold X empty I, i.e. bordism
     -- use UnorientedBordism.sum_self
     sorry
 
-instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) where
-  __ := unorientedBordismGroup_aux X k I
+instance : AddCommGroup (uBordismClass X k I) where
+  __ := ubgroupAux X k I
   add_comm Φ Ψ := sorry -- unfold goal, the use UnorientedBordism.sumComm
