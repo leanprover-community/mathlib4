@@ -41,6 +41,7 @@ information about the computation process, refer to `Algebra.ContinuedFractions.
   `v = (GenContFract.of v).convs n` if `GenContFract.of v` terminated at position `n`.
 -/
 
+assert_not_exists Finset
 
 namespace GenContFract
 

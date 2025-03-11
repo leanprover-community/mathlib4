@@ -59,8 +59,8 @@ homomorphisms.
 Deprecated and changed from a `class` to a `structure`.
 Use `[AddMonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
 structure ContinuousAddMonoidHomClass (A B : outParam Type*) [AddMonoid A] [AddMonoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
-    extends AddMonoidHomClass F A B, ContinuousMapClass F A B : Prop
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B] : Prop
+    extends AddMonoidHomClass F A B, ContinuousMapClass F A B
 
 /-- `ContinuousMonoidHomClass F A B` states that `F` is a type of continuous monoid
 homomorphisms.
@@ -70,8 +70,8 @@ Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead. -/
 @[to_additive (attr := deprecated "Use `[MonoidHomClass F A B] [ContinuousMapClass F A B]` instead."
   (since := "2024-10-08"))]
 structure ContinuousMonoidHomClass (A B : outParam Type*) [Monoid A] [Monoid B]
-    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B]
-    extends MonoidHomClass F A B, ContinuousMapClass F A B : Prop
+    [TopologicalSpace A] [TopologicalSpace B] [FunLike F A B] : Prop
+    extends MonoidHomClass F A B, ContinuousMapClass F A B
 
 end
 

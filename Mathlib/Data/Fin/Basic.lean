@@ -70,17 +70,6 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-@[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
-@[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
-
-@[simp] theorem mk_eq_zero {n a : Nat} {ha : a < n} [NeZero n] :
-    (⟨a, ha⟩ : Fin n) = 0 ↔ a = 0 :=
-  mk.inj_iff
-
-@[simp] theorem zero_eq_mk {n a : Nat} {ha : a < n} [NeZero n] :
-    0 = (⟨a, ha⟩ : Fin n) ↔ a = 0 := by
-  simp [eq_comm]
-
 @[simp] theorem mk_eq_one {n a : Nat} {ha : a < n + 2} :
     (⟨a, ha⟩ : Fin (n + 2)) = 1 ↔ a = 1 :=
   mk.inj_iff
@@ -834,11 +823,27 @@ theorem castPred_mk (i : ℕ) (h₁ : i < n) (h₂ := h₁.trans (Nat.lt_succ_se
     (h₃ : ⟨i, h₂⟩ ≠ last _ := (ne_iff_vne _ _).mpr (val_last _ ▸ h₁.ne)) :
   castPred ⟨i, h₂⟩ h₃ = ⟨i, h₁⟩ := rfl
 
+@[simp]
 theorem castPred_le_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi ≤ castPred j hj ↔ i ≤ j := Iff.rfl
 
+/-- A version of the right-to-left implication of `castPred_le_castPred_iff`
+that deduces `i ≠ last n` from `i ≤ j` and `j ≠ last n`. -/
+@[gcongr]
+theorem castPred_le_castPred {i j : Fin (n + 1)} (h : i ≤ j) (hj : j ≠ last n) :
+    castPred i (by rw [← lt_last_iff_ne_last] at hj ⊢; exact Fin.lt_of_le_of_lt h hj) ≤
+      castPred j hj :=
+  h
+
+@[simp]
 theorem castPred_lt_castPred_iff {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi < castPred j hj ↔ i < j := Iff.rfl
+
+/-- A version of the right-to-left implication of `castPred_lt_castPred_iff`
+that deduces `i ≠ last n` from `i < j`. -/
+@[gcongr]
+theorem castPred_lt_castPred {i j : Fin (n + 1)} (h : i < j) (hj : j ≠ last n) :
+    castPred i (ne_last_of_lt h) < castPred j hj := h
 
 theorem castPred_lt_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     castPred i hi < j ↔ i < castSucc j := by
@@ -856,6 +861,7 @@ theorem le_castPred_iff {j : Fin n} {i : Fin (n + 1)} (hi : i ≠ last n) :
     j ≤ castPred i hi ↔ castSucc j ≤ i := by
   rw [← castSucc_le_castSucc_iff, castSucc_castPred]
 
+@[simp]
 theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n} :
     castPred i hi = castPred j hj ↔ i = j := by
   simp_rw [Fin.ext_iff, le_antisymm_iff, ← le_def, castPred_le_castPred_iff]
@@ -863,7 +869,7 @@ theorem castPred_inj {i j : Fin (n + 1)} {hi : i ≠ last n} {hj : j ≠ last n}
 theorem castPred_zero' [NeZero n] (h := Fin.ext_iff.not.2 last_pos'.ne) :
     castPred (0 : Fin (n + 1)) h = 0 := rfl
 
-theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne)  :
+theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne) :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
 
 @[simp]

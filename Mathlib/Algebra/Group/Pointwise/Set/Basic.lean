@@ -5,10 +5,9 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.MinImports
 
 /-!
 # Pointwise operations of sets
@@ -54,7 +53,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists MonoidWithZero OrderedAddCommMonoid
+assert_not_exists MulAction MonoidWithZero OrderedAddCommMonoid
 
 library_note "pointwise nat action"/--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
@@ -982,13 +981,20 @@ lemma vsub_iInter₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
 
 end VSub
 
-open Pointwise
-
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :
     (∀ b, f (a • b) = a • f b) → f '' (a • s) = a • f '' s := image_comm
 
-open Pointwise
+section SMul
+variable [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
+
+-- TODO: replace hypothesis and conclusion with a typeclass
+@[to_additive]
+lemma op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
+    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
+  ext; simp [mem_smul, mem_smul_set, h]
+
+end SMul
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
 note [pointwise nat action]. -/
