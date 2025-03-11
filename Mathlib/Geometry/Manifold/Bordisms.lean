@@ -11,15 +11,27 @@ import Mathlib.Algebra.Group.MinimalAxioms
 /-!
 ## (Unoriented) bordism theory
 
-This file defines the beginnings of (unoriented) bordism theory. For the full definition of
-smooth oriented bordism groups, a number of prerequisites are missing from mathlib. However,
-a significant amount of this work is already possible.
+This file defines the beginnings of (unoriented) bordism theory. We define singular n-manifolds,
+unoriented bordisms and the bordism groups of a topological space.
+We only sorry the proof of transitivity (as this requires the collar neighbourhood theorem,
+which is a fair amount of work from the current state of mathlib).
 
-Currently, this file only contains the definition of *singular *n*-manifolds*:
-bordism classes are the equivalence classes of singular n-manifolds w.r.t. the (co)bordism relation
-and will be added in a future PR, as well as the definition of the (unoriented) bordism groups.
+The basic concept of bordism theory are *singular *n*-manifolds*: a singular n-manifold on a
+topological space `X` is a closed n-dimensional smooth manifold `M` together with and a continuous
+map `M → F`. (The word *singular* does not refer to singularities, but is by analogy to singular
+n-chains in the definition of singular homology.)
 
-## Main definitions
+The next key concept is the definition of (unoriented) bordisms between singular n-manifolds:
+given two singular n-manifolds `s` and `t`, a bordism between `s` and `t` is a compact smooth
+`n+1`-dimensional manifold whose boundary is (diffeomorphic to) the disjoint union of `s` and `t`,
+together with a map which restricts to the maps on `s` and `t`.
+We call `s` and `t` bordant if there exists a bordism between them: this turns out to define an
+equivalence relation. (Transitivity is the hardest part, and uses the collar neighbourhood theorem.)
+Finally, the `n`obordism group of `X` is the set of bordism classes of singular `n`-manifolds on`X`.
+
+XXX design decisions, model parameters etc.
+
+## Main definitions and results
 
 - **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
   `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
@@ -44,8 +56,7 @@ and will be added in a future PR, as well as the definition of the (unoriented) 
 To be written! Document the design decisions and why they were made.
 
 ## TODO
-- define cobordisms and the cobordism relation
-- prove that the cobordisms relation is an equivalence relation
+- prove that the bordisms relation is an equivalence relation
 - define unoriented bordisms groups (as a set of equivalence classes),
 prove they are a group
 - define relative bordism groups (generalising the previous three points)
@@ -53,7 +64,7 @@ prove they are a group
 
 ## Tags
 
-singular n-manifold, cobordism
+singular n-manifold, bordism, bordism group
 -/
 
 open scoped Manifold
