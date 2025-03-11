@@ -23,6 +23,7 @@ if `X` satisfies one of those properties with constant `K`, then it satisfies an
 constant at most `CK`.
 
 If `𝔼[X] = 0` then properties (i)-(iv) are equivalent to (v) in that same sense.
+Property (v) implies that `X` has expectation zero.
 
 The name sub-Gaussian is used by various authors to refer to any one of (i)-(v). We will say that a
 random variable has sub-Gaussian moment generating function (mgf) with constant `K₅` to mean that
@@ -122,7 +123,8 @@ variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'
 
 /-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
 with respect to a kernel `κ` and a measure `ν` if for `ν`-almost all `ω'`, for all `t : ℝ`,
-the moment generating function of `X` with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`. -/
+the moment generating function of `X` with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`.
+This implies in particular that `X` has expectation 0. -/
 structure Kernel.HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
     (κ : Kernel Ω' Ω) (ν : Measure Ω' := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) (κ ∘ₘ ν)
@@ -282,6 +284,7 @@ variable (m) (hm) in
 with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all `t : ℝ`,
 `exp (t * X)` is `μ`-integrable and the moment generating function of `X` conditioned on `m` is
 almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+This implies in particular that `X` has expectation 0.
 
 The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
 sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
@@ -337,6 +340,7 @@ variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω →
 /-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
 with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and
 the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+This implies in particular that `X` has expectation 0.
 
 This is equivalent to `Kernel.HasSubgaussianMGF X c (Kernel.const Unit μ) (Measure.dirac ())`,
 as proved in `HasSubgaussianMGF_iff_kernel`.
