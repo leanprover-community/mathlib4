@@ -106,7 +106,7 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
     · exact False.elim (IsPrime.ne_top ‹_› hl)
     · rw [Ideal.height_eq_primeHeight] at hr ⊢
       apply lt_of_le_of_lt (Ideal.primeHeight_mono (le_of_lt h)) (by rwa [lt_top_iff_ne_top])
-  refine Order.height_strictMono h (Ideal.primeHeight_lt_top _)
+  exact Order.height_strictMono h (Ideal.primeHeight_lt_top _)
 
 @[gcongr]
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
