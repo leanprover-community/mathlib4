@@ -189,7 +189,7 @@ theorem mem_fixedField_iff (x) :
   show x ∈ MulAction.fixedPoints H E ↔ _
   simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
 
-@[simp] lemma fixedField_bot [IsGalois F E] [FiniteDimensional F E] :
+@[simp] lemma fixedField_bot :
     IntermediateField.fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
   ext
   simp [mem_fixedField_iff]
