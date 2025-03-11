@@ -276,45 +276,29 @@ instance Module.Dual.instLieModule : LieModule R L (M →ₗ[R] R) where
   smul_lie := fun t x m ↦ by ext n; simp
   lie_smul := fun t x m ↦ by ext n; simp
 
-/-- Every LieRing is a NonUnitalNonAssocSemiring. This is useful for proving general distributivity
-theorems about the Lie-bracket. -/
-local instance LieRing.instNonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring L where
-  add x y := x + y
-  add_assoc := by exact fun a b c ↦ add_assoc a b c
-  zero := 0
-  zero_add := by exact fun a ↦ AddZeroClass.zero_add a
-  add_zero := by exact fun a ↦ AddMonoid.add_zero a
-  nsmul := nsmulRec
-  add_comm := by exact fun a b ↦ AddCommMagma.add_comm a b
-  mul a b := ⁅a, b⁆
-  left_distrib := by exact fun a b c ↦ lie_add a b c
-  right_distrib := by exact fun a b c ↦ add_lie a b c
-  zero_mul := zero_lie
-  mul_zero := lie_zero
+variable (L) in
+/-- It is sometimes useful to regard a `LieRing` as a `NonUnitalNonAssocRing`. -/
+def LieRing.toNonUnitalNonAssocRing : NonUnitalNonAssocRing L :=
+  { mul := Bracket.bracket
+    left_distrib := lie_add
+    right_distrib := add_lie
+    zero_mul := zero_lie
+    mul_zero := lie_zero }
 
-variable {ι: Type*} {κ : Type*}
+variable {ι κ : Type*}
 
-theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ := by
-  letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
-  calc
-    ⁅∑ i ∈ s, f i, a⁆ = (∑ i ∈ s, f i) * a := by rfl
-    _ = ∑ i ∈ s, f i * a := by rw [Finset.sum_mul]
-    _ = ∑ i ∈ s, ⁅f i, a⁆ := by rfl
+theorem sum_lie (s : Finset ι) (f : ι → L) (a : L) : ⁅∑ i ∈ s, f i, a⁆ = ∑ i ∈ s, ⁅f i, a⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul f a
 
-theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ := by
-  letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
-  calc
-    ⁅a, ∑ i ∈ s, f i⁆ = a * (∑ i ∈ s, f i) := by rfl
-    _ = ∑ i ∈ s, a * f i := by rw [Finset.mul_sum]
-    _ = ∑ i ∈ s, ⁅a, f i⁆ := by rfl
+theorem lie_sum (s : Finset ι) (f : ι → L) (a : L) : ⁅a, ∑ i ∈ s, f i⁆ = ∑ i ∈ s, ⁅a, f i⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.mul_sum f a
 
 theorem sum_lie_sum {κ : Type*} (s : Finset ι) (t : Finset κ) (f : ι → L) (g : κ → L) :
-    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by
-  letI : NonUnitalNonAssocSemiring L := LieRing.instNonUnitalNonAssocSemiring
-  calc
-    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = (∑ i ∈ s, f i) * ∑ j ∈ t, g j := by rfl
-    _ = ∑ i ∈ s, ∑ j ∈ t, f i * g j := by rw [Finset.sum_mul_sum]
-    _ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ := by rfl
+    ⁅(∑ i ∈ s, f i), ∑ j ∈ t, g j⁆ = ∑ i ∈ s, ∑ j ∈ t, ⁅f i, g j⁆ :=
+  let _i := LieRing.toNonUnitalNonAssocRing L
+  s.sum_mul_sum t f g
 
 end BasicProperties
 
