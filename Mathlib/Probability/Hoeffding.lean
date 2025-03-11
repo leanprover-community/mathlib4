@@ -104,8 +104,6 @@ theorem cgf_iterated_deriv_two_eq_tilted_measure_variance [IsProbabilityMeasure 
     rw [p]; exact rfl
   · exact integrable_exp_set_interior_of_ae_mem_Icc μ t a b hX h
 
-#check iteratedDerivWithin_congr
-
 theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
     (t a b : ℝ) {X : Ω → ℝ} (ht : 0 < t)
     (hX : AEMeasurable X μ)
