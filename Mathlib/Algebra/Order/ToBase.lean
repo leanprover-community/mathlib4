@@ -70,7 +70,7 @@ lemma toBase_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
 ## Simplifying Lemmas in cases where α is a LinearOrderedCommRing
 -/
 @[simp]
-lemma toBase_mul [LinearOrderedCommRing α] (a b : WithTop α) :
+lemma toBase_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).toBase = a.toBase * b.toBase := by
   by_cases h₁a : a = 0
   · simp [h₁a]
