@@ -1425,6 +1425,7 @@ import Mathlib.Analysis.Convex.KreinMilman
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.PartitionOfUnity
+import Mathlib.Analysis.Convex.Piecewise
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Radon
 import Mathlib.Analysis.Convex.Segment
@@ -1697,6 +1698,7 @@ import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
+import Mathlib.Analysis.SpecialFunctions.Pochhammer
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
