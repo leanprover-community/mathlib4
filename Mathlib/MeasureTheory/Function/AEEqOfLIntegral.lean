@@ -195,9 +195,7 @@ theorem lintegral_eq_lintegral_of_isPiSystem
       _ ≤ ∫⁻ x, f x ∂μ := setLIntegral_le_lintegral t _
       _ < ∞ := hf_int.lt_top
   · intro f hfd hfm h
-    simp_rw [lintegral_iUnion hfm hfd]
-    congr with i
-    exact h i
+    simp_rw [lintegral_iUnion hfm hfd, h]
 
 lemma lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
     (h_eq : m0 = MeasurableSpace.generateFrom s) (h_inter : IsPiSystem s) (h_univ : Set.univ ∈ s)
@@ -206,7 +204,7 @@ lemma lintegral_eq_lintegral_of_isPiSystem_of_univ_mem
     {t : Set α} (ht : MeasurableSet t) :
     ∫⁻ x in t, f x ∂μ = ∫⁻ x in t, g x ∂μ := by
   refine lintegral_eq_lintegral_of_isPiSystem h_eq h_inter basic ?_ hf_int hg_int t ht
-  rw [← setLIntegral_univ, ← setLIntegral_univ (f := g)]
+  rw [← setLIntegral_univ, ← setLIntegral_univ g]
   exact basic _ h_univ
 
 /-- If two a.e.-measurable functions `α × β → ℝ≥0∞` with finite integrals have the same integral
@@ -215,14 +213,13 @@ lemma ae_eq_of_setLIntegral_prod_eq₀ {β : Type*} {mβ : MeasurableSpace β}
     {μ : Measure (α × β)} {f g : α × β → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
     (hf_int : ∫⁻ x, f x ∂μ ≠ ∞) (hg_int : ∫⁻ x, g x ∂μ ≠ ∞)
-    (h : ∀ {s : Set α} (_ : MeasurableSet s) {t : Set β} (_ : MeasurableSet t),
+    (h : ∀ ⦃s : Set α⦄ (_ : MeasurableSet s) ⦃t : Set β⦄ (_ : MeasurableSet t),
       ∫⁻ x in s ×ˢ t, f x ∂μ = ∫⁻ x in s ×ˢ t, g x ∂μ) :
     f =ᵐ[μ] g := by
   refine AEMeasurable.ae_eq_of_forall_setLIntegral_eq hf hg hf_int hg_int fun s hs _ ↦ ?_
   refine lintegral_eq_lintegral_of_isPiSystem_of_univ_mem generateFrom_prod.symm isPiSystem_prod
     ?_ ?_ hf_int hg_int hs
-  · simp only [Set.mem_image2, Set.mem_setOf_eq]
-    exact ⟨Set.univ, .univ, Set.univ, .univ, Set.univ_prod_univ⟩
+  · exact ⟨Set.univ, .univ, Set.univ, .univ, Set.univ_prod_univ⟩
   · rintro _ ⟨s, hs, t, ht, rfl⟩
     exact h hs ht
 
