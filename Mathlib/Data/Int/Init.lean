@@ -502,7 +502,7 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 
 attribute [simp] natCast_pow
 
--- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
+/-- For use in `Mathlib.Tactic.NormNum.Pow` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
 end Int
