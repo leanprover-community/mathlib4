@@ -44,12 +44,6 @@ open Encodable
 
 attribute [local instance] PiCountable.normedAddCommGroup
 
-lemma PiCountable.norm_single [DecidableEq ι] [∀ i, NormedAddCommGroup (F i)] (i : ι) (r : F i) :
-    ‖(Pi.single i r : Π i, F i)‖ = (2 ^ encode i)⁻¹ ⊓ ‖r‖ := by
-  rw [← sub_zero (Pi.single _ _), ← dist_eq_norm, dist_eq_tsum, tsum_eq_single i]
-  · simp
-  · simp +contextual [Pi.single_apply]
-
 lemma PiCountable.not_dist_homogeneous' [DecidableEq ι]
     [∀ i, NormedLinearOrderedField (F i)] [∀ i, NormedSpace ℝ (F i)] [∀ i, BoundedSMul ℝ (F i)]
      (i : ι) (hi : 0 < encode i) :

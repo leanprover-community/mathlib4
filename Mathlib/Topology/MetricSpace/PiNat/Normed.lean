@@ -30,11 +30,6 @@ variable {ι : Type*} [Encodable ι] {F : ι → Type*} [∀ i, NormedAddCommGro
 
 attribute [local instance] PiCountable.metricSpace
 
-@[simp]
-lemma dist_add_right (x y c : Π i, F i) :
-    dist (x + c) (y + c) = dist x y := by
-  simp [dist_eq_tsum]
-
 /-- Given a countable family of normed additive groups, one may put a norm on their product
 `Π i, E i`, defining the right topology and uniform structure and matching the metric space.
 It is highly non-canonical, though, and therefore not registered as a global instance.
@@ -42,7 +37,20 @@ The distance we use here is `dist x y = ∑' n, min (1/2)^(encode i) (dist (x n)
 protected def normedAddCommGroup : NormedAddCommGroup (Π i, F i) where
   __ := PiCountable.metricSpace
   norm x := dist x 0
-  dist_eq x y := by simpa [← sub_eq_add_neg] using (dist_add_right x y (-y)).symm
+  dist_eq x y := by
+    have key : ∀ (x y c : Π i, F i), dist (x + c) (y + c) = dist x y := by
+      simp [dist_eq_tsum]
+    simpa [← sub_eq_add_neg] using (key x y (-y)).symm
+
+attribute [local instance] PiCountable.normedAddCommGroup
+
+open Encodable
+
+lemma norm_single [DecidableEq ι] (i : ι) (r : F i) :
+    ‖(Pi.single i r : Π i, F i)‖ = (2 ^ encode i)⁻¹ ⊓ ‖r‖ := by
+  rw [← sub_zero (Pi.single _ _), ← dist_eq_norm, dist_eq_tsum, tsum_eq_single i]
+  · simp
+  · simp +contextual [Pi.single_apply]
 
 end PiCountable
 
