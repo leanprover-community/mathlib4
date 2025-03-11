@@ -107,7 +107,7 @@ theorem proof₂ (M : ℝ)
   calc 18 ^ 2 * 2 * α
       = 18 ^ 2 * α ^ 2 * α := by linear_combination -324 * α * hα
     _ = abs (-(18 ^ 2 * α ^ 2 * α)) := by rw [abs_neg, abs_of_nonneg]; positivity
-    _ = |a * 2 * (a ^ 2 - 2 ^ 2) + 2 * c * (2 ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| := by ring_nf
+    _ = |a * 2 * (a ^ 2 - 2 ^ 2) + 2 * c * (2 ^ 2 - c ^ 2) + c * a * (c ^ 2 - a ^ 2)| := by ring_nf!
     _ ≤ M * (a ^ 2 + 2 ^ 2 + c ^ 2) ^ 2 := by apply h
     _ = M * 48 ^ 2 := by linear_combination (324 * α ^ 2 + 1080) * M * hα
 
