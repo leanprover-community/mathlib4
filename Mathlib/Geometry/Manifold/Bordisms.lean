@@ -595,13 +595,16 @@ def empty : uBordismClass X k I :=
   haveI := ChartedSpace.empty
   Quotient.mk _ (SingularNManifold.empty X Empty I)
 
--- cannot even state this, universe constraints...
--- The disjoint union of singular manifolds descends to bordism classes.
--- lemma aux {a₁ b₁ a₂ b₂ : SingularNManifold X k I}
---     (h : unorientedBordismRelation X k I (H' := H') (E' := E') J a₁ a₂)
---     (h' : unorientedBordismRelation X k I (H' := H') (E' := E') J b₁ b₂) :
---     a₁.sum b₁ = a₂.sum b₂ := sorry
--- the proof is basically UnorientedBordism.sum
+-- TODO: better name!
+/-- The disjoint union of singular manifolds descends to bordism classes. -/
+lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularNManifold.{u} X k I}
+    (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) a₁ a₂)
+    (h' : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) b₁ b₂) :
+    unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) (a₁.sum b₁) (a₂.sum b₂) := by
+  simp only [unorientedBordismRelation]
+  choose φ _ using h
+  choose ψ _ using h'
+  use φ.sum ψ
 
 def uBordismClass.sum : (uBordismClass X k I) → (uBordismClass X k I) → uBordismClass X k I := sorry
 
