@@ -3,10 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Independence.Basic
-import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.Condexp
-import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Moments.MGFAnalytic
 
 /-!
@@ -26,6 +23,7 @@ if `X` satisfies one of those properties with constant `K`, then it satisfies an
 constant at most `CK`.
 
 If `𝔼[X] = 0` then properties (i)-(iv) are equivalent to (v) in that same sense.
+Property (v) implies that `X` has expectation zero.
 
 The name sub-Gaussian is used by various authors to refer to any one of (i)-(v). We will say that a
 random variable has sub-Gaussian moment generating function (mgf) with constant `K₅` to mean that
@@ -57,7 +55,7 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
   `exp (c * t ^ 2 / 2)`.
 * `HasCondSubgaussianMGF`: a random variable `X` has a conditionally sub-Gaussian moment generating
   function with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all
-  `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X` contioned
+  `t : ℝ`, `exp (t * X)` is `μ`-integrable and the moment generating function of `X` conditioned
   on `m` is almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
   The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
   sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
@@ -92,7 +90,7 @@ with respect to `κ ω'` for `ν`-almost all `ω'`, but integrability with respe
 This is a stronger condition, as the weaker one did not allow to prove interesting results about
 the sum of two sub-Gaussian random variables.
 
-Fo the conditional case, that integrability condition reduces to integrability of `exp (t * X)`
+For the conditional case, that integrability condition reduces to integrability of `exp (t * X)`
 with respect to `μ`.
 
 ### Definition of `HasCondSubgaussianMGF`
@@ -132,7 +130,8 @@ variable {Ω Ω' : Type*} {mΩ : MeasurableSpace Ω} {mΩ' : MeasurableSpace Ω'
 
 /-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
 with respect to a kernel `κ` and a measure `ν` if for `ν`-almost all `ω'`, for all `t : ℝ`,
-the moment generating function of `X` with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`. -/
+the moment generating function of `X` with respect to `κ ω'` is bounded by `exp (c * t ^ 2 / 2)`.
+This implies in particular that `X` has expectation 0. -/
 structure Kernel.HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0)
     (κ : Kernel Ω' Ω) (ν : Measure Ω' := by volume_tac) : Prop where
   integrable_exp_mul : ∀ t, Integrable (fun ω ↦ exp (t * X ω)) (κ ∘ₘ ν)
@@ -192,6 +191,18 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
     · exact mgf_pos' h0 (h_int t)
     · exact h t
   _ ≤ c * t ^ 2 / 2 := by rw [log_exp]
+
+lemma isFiniteMeasure (h : HasSubgaussianMGF X c κ ν) :
+    ∀ᵐ ω' ∂ν, IsFiniteMeasure (κ ω') := by
+  filter_upwards [h.ae_integrable_exp_mul 0, h.mgf_le] with ω' h h_mgf
+  simpa [integrable_const_iff] using h
+
+lemma measure_univ_le_one (h : HasSubgaussianMGF X c κ ν) :
+    ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
+  filter_upwards [h.isFiniteMeasure, h.mgf_le] with ω' h h_mgf
+  suffices (κ ω' Set.univ).toReal ≤ 1 by
+    rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
+  simpa [mgf] using h_mgf 0
 
 end BasicProperties
 
@@ -268,9 +279,9 @@ lemma id_map (hX : Measurable X) :
 
 section ChernoffBound
 
-lemma measure_ge_le_exp_add [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
+lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
     ∀ᵐ ω' ∂ν, ∀ t, 0 ≤ t → (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- t * ε + c * t ^ 2 / 2) := by
-  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul] with ω' h1 h2 t ht
+  filter_upwards [h.mgf_le, h.ae_forall_integrable_exp_mul, h.isFiniteMeasure] with ω' h1 h2 _ t ht
   calc (κ ω' {ω | ε ≤ X ω}).toReal
   _ ≤ exp (-t * ε) * mgf X (κ ω') t := measure_ge_le_exp_mul_mgf ε ht (h2 t)
   _ ≤ exp (-t * ε + c * t ^ 2 / 2) := by
@@ -279,23 +290,19 @@ lemma measure_ge_le_exp_add [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν
     exact h1 t
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma measure_ge_le [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) {ε : ℝ}
-    (hc : 0 < c) (hε : 0 ≤ ε) :
+lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε) :
     ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
+  by_cases hc0 : c = 0
+  · filter_upwards [h.measure_univ_le_one] with ω' h
+    simp only [hc0, NNReal.coe_zero, mul_zero, div_zero, exp_zero]
+    refine ENNReal.toReal_le_of_le_ofReal zero_le_one ?_
+    simp only [ENNReal.ofReal_one]
+    exact (measure_mono (Set.subset_univ _)).trans h
   filter_upwards [measure_ge_le_exp_add h ε] with ω' h
   calc (κ ω' {ω | ε ≤ X ω}).toReal
   -- choose the minimizer of the r.h.s. of `h` for `t ≥ 0`. That is, `t = ε / c`.
   _ ≤ exp (- (ε / c) * ε + c * (ε / c) ^ 2 / 2) := h (ε / c) (by positivity)
   _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
-
-/-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma prob_ge_le [IsZeroOrMarkovKernel κ] (h : HasSubgaussianMGF X c κ ν)
-    {ε : ℝ} (hε : 0 ≤ ε) :
-    ∀ᵐ ω' ∂ν, (κ ω' {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
-  by_cases hc0 : c = 0
-  · refine ae_of_all _ fun ω' ↦ ?_
-    simpa [hc0] using toReal_prob_le_one
-  · exact h.measure_ge_le (lt_of_le_of_ne zero_le' (Ne.symm hc0)) hε
 
 end ChernoffBound
 
@@ -386,8 +393,9 @@ variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {hm : m ≤ mΩ} [StandardBor
 variable (m) (hm) in
 /-- A random variable `X` has a conditionally sub-Gaussian moment generating function
 with parameter `c` with respect to a sigma-algebra `m` and a measure `μ` if for all `t : ℝ`,
-`exp (t * X)` is `μ`-integrable and the moment generating function of `X` contioned on `m` is
+`exp (t * X)` is `μ`-integrable and the moment generating function of `X` conditioned on `m` is
 almost surely bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+This implies in particular that `X` has expectation 0.
 
 The actual definition uses `Kernel.HasSubgaussianMGF`: `HasCondSubgaussianMGF` is defined as
 sub-Gaussian with respect to the conditional expectation kernel for `m` and the restriction of `μ`
@@ -443,6 +451,7 @@ variable {Ω : Type*} {m mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω →
 /-- A random variable `X` has a sub-Gaussian moment generating function with parameter `c`
 with respect to a measure `μ` if for all `t : ℝ`, `exp (t * X)` is `μ`-integrable and
 the moment generating function of `X` is bounded by `exp (c * t ^ 2 / 2)` for all `t : ℝ`.
+This implies in particular that `X` has expectation 0.
 
 This is equivalent to `Kernel.HasSubgaussianMGF X c (Kernel.const Unit μ) (Measure.dirac ())`,
 as proved in `HasSubgaussianMGF_iff_kernel`.
@@ -516,17 +525,10 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
 section ChernoffBound
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma measure_ge_le [IsFiniteMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : ℝ}
-    (hc : 0 < c) (hε : 0 ≤ ε) :
+lemma measure_ge_le (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
   rw [HasSubgaussianMGF_iff_kernel] at h
-  simpa using h.measure_ge_le hc hε
-
-/-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
-lemma prob_ge_le [IsZeroOrProbabilityMeasure μ] (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
-    (μ {ω | ε ≤ X ω}).toReal ≤ exp (- ε ^ 2 / (2 * c)) := by
-  rw [HasSubgaussianMGF_iff_kernel] at h
-  simpa using h.prob_ge_le hε
+  simpa using h.measure_ge_le hε
 
 end ChernoffBound
 
@@ -650,5 +652,7 @@ lemma prob_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
   (HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF h_adapted h_subG n).prob_ge_le hε
 
 end Martingale
+
+end HasSubgaussianMGF
 
 end ProbabilityTheory

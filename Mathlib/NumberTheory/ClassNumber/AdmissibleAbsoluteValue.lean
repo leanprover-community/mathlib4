@@ -38,16 +38,13 @@ variable (abv : AbsoluteValue R ℤ)
 structure and a large enough set of elements in `R^n` will contain a pair of
 elements whose remainders are pointwise close together. -/
 structure IsAdmissible extends IsEuclidean abv where
+  /-- The cardinality required for a given `ε`. -/
   protected card : ℝ → ℕ
   /-- For all `ε > 0` and finite families `A`, we can partition the remainders of `A` mod `b`
   into `abv.card ε` sets, such that all elements in each part of remainders are close together. -/
   exists_partition' :
     ∀ (n : ℕ) {ε : ℝ} (_ : 0 < ε) {b : R} (_ : b ≠ 0) (A : Fin n → R),
       ∃ t : Fin n → Fin (card ε), ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε
-
--- Porting note: no docstrings for IsAdmissible
-attribute [nolint docBlame] IsAdmissible.card
-
 
 namespace IsAdmissible
 
