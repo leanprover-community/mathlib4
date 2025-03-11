@@ -44,7 +44,7 @@ variable (p : PerfectPairing R M N) (root : ι ↪ M) (coroot : ι ↪ N) (i j :
   (h : ∀ i, MapsTo (preReflection (root i) (p.toLin.flip (coroot i))) (range root) (range root))
 include h
 
-private theorem exist_eq_reflection_of_mapsTo  :
+private theorem exist_eq_reflection_of_mapsTo :
     ∃ k, root k = (preReflection (root i) (p.flip (coroot i))) (root j) :=
   h i (mem_range_self j)
 
