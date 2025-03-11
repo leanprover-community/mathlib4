@@ -1425,6 +1425,7 @@ import Mathlib.Analysis.Convex.KreinMilman
 import Mathlib.Analysis.Convex.Measure
 import Mathlib.Analysis.Convex.Mul
 import Mathlib.Analysis.Convex.PartitionOfUnity
+import Mathlib.Analysis.Convex.Piecewise
 import Mathlib.Analysis.Convex.Quasiconvex
 import Mathlib.Analysis.Convex.Radon
 import Mathlib.Analysis.Convex.Segment
@@ -1697,6 +1698,7 @@ import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSq
 import Mathlib.Analysis.SpecialFunctions.MulExpNegMulSqIntegral
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
+import Mathlib.Analysis.SpecialFunctions.Pochhammer
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
 import Mathlib.Analysis.SpecialFunctions.PolynomialExp
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
@@ -5178,6 +5180,8 @@ import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.SetTheory.Cardinal.Finsupp
 import Mathlib.SetTheory.Cardinal.Free
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
+import Mathlib.SetTheory.Cardinal.Pigeonhole
+import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
 import Mathlib.SetTheory.Cardinal.Subfield
 import Mathlib.SetTheory.Cardinal.ToNat
@@ -5763,7 +5767,8 @@ import Mathlib.Topology.Gluing
 import Mathlib.Topology.Hom.ContinuousEval
 import Mathlib.Topology.Hom.ContinuousEvalConst
 import Mathlib.Topology.Hom.Open
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Homotopy.Basic
 import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.Homotopy.Equiv
