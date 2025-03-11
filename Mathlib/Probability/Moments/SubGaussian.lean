@@ -137,13 +137,6 @@ lemma aestronglyMeasurable (h : HasSubgaussianMGF X c κ ν) :
   have h_int := h.integrable_exp_mul 1
   simpa using (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
-lemma measure_univ_le_one [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) :
-    ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
-  filter_upwards [h.mgf_le] with ω' h
-  suffices (κ ω' Set.univ).toReal ≤ 1 by
-    rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
-  simpa [mgf] using h 0
-
 lemma ae_integrable_exp_mul (h : HasSubgaussianMGF X c κ ν) (t : ℝ) :
     ∀ᵐ ω' ∂ν, Integrable (fun y ↦ exp (t * X y)) (κ ω') :=
   Measure.ae_integrable_of_integrable_comp (h.integrable_exp_mul t)
@@ -189,6 +182,13 @@ lemma cgf_le (h : HasSubgaussianMGF X c κ ν) :
     · exact mgf_pos' h0 (h_int t)
     · exact h t
   _ ≤ c * t ^ 2 / 2 := by rw [log_exp]
+
+lemma measure_univ_le_one [IsFiniteKernel κ] (h : HasSubgaussianMGF X c κ ν) :
+    ∀ᵐ ω' ∂ν, κ ω' Set.univ ≤ 1 := by
+  filter_upwards [h.mgf_le] with ω' h
+  suffices (κ ω' Set.univ).toReal ≤ 1 by
+    rwa [← ENNReal.ofReal_one, ENNReal.le_ofReal_iff_toReal_le (measure_ne_top _ _) zero_le_one]
+  simpa [mgf] using h 0
 
 end BasicProperties
 
