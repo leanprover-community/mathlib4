@@ -648,7 +648,7 @@ instance : Add (uBordismClass X k I) where
   add := uBordismClass.sum
 
 variable (X k I J) in
-def ubgroupAux : AddGroup (uBordismClass X k I) := by
+private def unorientedBordismGroup_aux : AddGroup (uBordismClass X k I) := by
   apply AddGroup.ofLeftAxioms
   -- XXX: better name for the variables?
   · intro Φ Ψ Δ
@@ -666,6 +666,6 @@ def ubgroupAux : AddGroup (uBordismClass X k I) := by
     -- use UnorientedBordism.sum_self
     sorry
 
-instance : AddCommGroup (uBordismClass X k I) where
-  __ := ubgroupAux X k I
+instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) where
+  __ := unorientedBordismGroup_aux X k I
   add_comm Φ Ψ := sorry -- unfold goal, the use UnorientedBordism.sumComm
