@@ -4636,6 +4636,7 @@ import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.MeasurableLIntegral
+import Mathlib.Probability.Kernel.Posterior
 import Mathlib.Probability.Kernel.Proper
 import Mathlib.Probability.Kernel.RadonNikodym
 import Mathlib.Probability.Kernel.SetIntegral
@@ -4652,7 +4653,6 @@ import Mathlib.Probability.Moments.ComplexMGF
 import Mathlib.Probability.Moments.IntegrableExpMul
 import Mathlib.Probability.Moments.MGFAnalytic
 import Mathlib.Probability.Notation
-import Mathlib.Probability.Posterior
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Binomial
 import Mathlib.Probability.ProbabilityMassFunction.Constructions
