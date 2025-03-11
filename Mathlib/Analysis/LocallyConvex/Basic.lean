@@ -180,7 +180,7 @@ theorem Absorbs.eventually_nhds_zero (h : Absorbs 𝕜 s t) (h₀ : 0 ∈ s) :
     ∀ᶠ c : 𝕜 in 𝓝 0, MapsTo (c • ·) t s :=
   (absorbs_iff_eventually_nhds_zero h₀).1 h
 
-variable [NormedRing 𝕝] [Module 𝕜 𝕝] [BoundedSMul 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
+variable [NormedRing 𝕝] [Module 𝕜 𝕝] [IsBoundedSMul 𝕜 𝕝] [SMulWithZero 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
   {a b : 𝕜} {x : E}
 
 /-- Scalar multiplication (by possibly different types) of a balanced set is monotone. -/
