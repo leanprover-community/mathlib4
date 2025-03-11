@@ -7,7 +7,7 @@ import Mathlib.Tactic.Linter.Header
 import Mathlib.Tactic.Linter.Lint
 import Mathlib.Tactic.Linter.Multigoal
 import Mathlib.Tactic.Linter.OldObtain
-import Mathlib.Tactic.Linter.SupersededTacticLinter
+import Mathlib.Tactic.Linter.SupersededSyntaxLinter
 -- The following import contains the environment extension for the unused tactic linter.
 import Mathlib.Tactic.Linter.UnusedTacticExtension
 import Mathlib.Tactic.Linter.UnusedTactic

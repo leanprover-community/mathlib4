@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Cases
-import Mathlib.Tactic.Linter.SupersededTacticLinter
+import Mathlib.Tactic.Linter.SupersededSyntaxLinter
 
 set_option linter.style.refine true
 /--
