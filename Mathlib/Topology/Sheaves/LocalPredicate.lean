@@ -278,11 +278,13 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
     exact iU
   · exact ⟨colimit_sound iU.op (Subtype.eq rfl), colimit_sound iV.op (Subtype.eq (funext w).symm)⟩
 
+universe u
+
 /-- Some repackaging:
 the presheaf of functions satisfying `continuousPrelocal` is just the same thing as
 the presheaf of continuous functions.
 -/
-def subpresheafContinuousPrelocalIsoPresheafToTop (T : TopCat) :
+def subpresheafContinuousPrelocalIsoPresheafToTop {X : TopCat.{u}} (T : TopCat.{u}) :
     subpresheafToTypes (continuousPrelocal X T) ≅ presheafToTop X T :=
   NatIso.ofComponents fun X ↦
     { hom := by rintro ⟨f, c⟩; exact ofHom ⟨f, c⟩
