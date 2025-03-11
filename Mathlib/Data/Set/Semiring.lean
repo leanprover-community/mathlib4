@@ -22,6 +22,9 @@ open Pointwise
 
 variable {α β : Type*}
 
+-- The following instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 /-- An alias for `Set α`, which has a semiring structure given by `∪` as "addition" and pointwise
   multiplication `*` as "multiplication". -/
 def SetSemiring (α : Type*) : Type _ :=
