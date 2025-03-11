@@ -192,18 +192,25 @@ lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decida
   simp [setValue]
 
 /-- Embedding into `Option α` using `some`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 
 /-- A version of `Option.map` for `Function.Embedding`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 
 /-- Embedding of a `Subtype`. -/
 def subtype {α} (p : α → Prop) : Subtype p ↪ α :=
   ⟨Subtype.val, fun _ _ => Subtype.ext⟩
+
+@[simp]
+theorem subtype_apply {α} {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective {α} (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype {α} (p : α → Prop) : ↑(subtype p) = Subtype.val :=
@@ -356,7 +363,6 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
   left_inv _ := rfl
   right_inv _ := rfl
 
--- Porting note: in Lean 3 this had `@[congr]`
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]

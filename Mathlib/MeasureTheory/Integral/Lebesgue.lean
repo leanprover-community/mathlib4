@@ -287,6 +287,10 @@ theorem lintegral_congr {f g : α → ℝ≥0∞} (h : ∀ a, f a = g a) : ∫�
 lemma lintegral_eq_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : ℝ≥0∞}
     (hf : ∀ᵐ x ∂μ, f x = c) : ∫⁻ x, f x ∂μ = c := by simp [lintegral_congr_ae hf]
 
+lemma lintegral_le_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : ℝ≥0∞}
+    (hf : ∀ᵐ x ∂μ, f x ≤ c) : ∫⁻ x, f x ∂μ ≤ c :=
+  (lintegral_mono_ae hf).trans_eq (by simp)
+
 theorem setLIntegral_congr {f : α → ℝ≥0∞} {s t : Set α} (h : s =ᵐ[μ] t) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ := by rw [Measure.restrict_congr_set h]
 

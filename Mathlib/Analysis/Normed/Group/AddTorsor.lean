@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
 import Mathlib.Topology.MetricSpace.IsometricSMul
 import Mathlib.Topology.Metrizable.Uniformity
@@ -43,7 +43,7 @@ instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAdd
 variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
-instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
+instance (priority := 100) NormedAddTorsor.to_isIsIsometricVAdd : IsIsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
     simp [NormedAddTorsor.dist_eq_norm']⟩
 

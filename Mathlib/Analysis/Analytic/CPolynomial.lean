@@ -55,7 +55,7 @@ theorem CPolynomialAt.add (hf : CPolynomialAt 𝕜 f x) (hg : CPolynomialAt 𝕜
     CPolynomialAt 𝕜 (f + g) x :=
   let ⟨_, _, hpf⟩ := hf
   let ⟨_, _, hqf⟩ := hg
-  (hpf.add hqf).cPolynomialAt
+  (hpf.add hqf).cpolynomialAt
 
 theorem HasFiniteFPowerSeriesOnBall.neg (hf : HasFiniteFPowerSeriesOnBall f pf x n r) :
     HasFiniteFPowerSeriesOnBall (-f) (-pf) x n r :=
@@ -68,7 +68,7 @@ theorem HasFiniteFPowerSeriesAt.neg (hf : HasFiniteFPowerSeriesAt f pf x n) :
 
 theorem CPolynomialAt.neg (hf : CPolynomialAt 𝕜 f x) : CPolynomialAt 𝕜 (-f) x :=
   let ⟨_, _, hpf⟩ := hf
-  hpf.neg.cPolynomialAt
+  hpf.neg.cpolynomialAt
 
 theorem HasFiniteFPowerSeriesOnBall.sub (hf : HasFiniteFPowerSeriesOnBall f pf x n r)
     (hg : HasFiniteFPowerSeriesOnBall g pg x m r) :
@@ -114,12 +114,14 @@ protected theorem hasFiniteFPowerSeriesOnBall :
     · intro m _ ne; rw [toFormalMultilinearSeries, dif_neg ne.symm]; rfl
 
 lemma cpolynomialAt  : CPolynomialAt 𝕜 f x :=
-  f.hasFiniteFPowerSeriesOnBall.cPolynomialAt_of_mem
+  f.hasFiniteFPowerSeriesOnBall.cpolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 
-lemma cpolyomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
+lemma cpolynomialOn : CPolynomialOn 𝕜 f s := fun _ _ ↦ f.cpolynomialAt
 
-lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolyomialOn.analyticOnNhd
+@[deprecated (since := "2025-02-15")] alias cpolyomialOn := cpolynomialOn
+
+lemma analyticOnNhd : AnalyticOnNhd 𝕜 f s := f.cpolynomialOn.analyticOnNhd
 
 lemma analyticOn : AnalyticOn 𝕜 f s := f.analyticOnNhd.analyticOn
 
@@ -167,7 +169,7 @@ protected theorem hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear :
 
 lemma cpolynomialAt_uncurry_of_multilinear :
     CPolynomialAt 𝕜 (fun (p : G × (Π i, Em i)) ↦ f p.1 p.2) x :=
-  f.hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear.cPolynomialAt_of_mem
+  f.hasFiniteFPowerSeriesOnBall_uncurry_of_multilinear.cpolynomialAt_of_mem
     (by simp only [Metric.emetric_ball_top, Set.mem_univ])
 
 lemma cpolyomialOn_uncurry_of_multilinear :
