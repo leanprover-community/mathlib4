@@ -10,30 +10,32 @@ import Mathlib.CategoryTheory.Adjunction.AdjunctionTwo
 /-!
 # Lifting properties and adjunctions of bifunctors
 
+Let `F : C₁ ⥤ C₂ ⥤ C₃`. Given morphisms `f₁ : X₁ ⟶ Y₁` in `C₁`
+and `f₂ : X₂ ⟶ Y₂` in `C₂`, we introduce a structure
+`F.PushoutObjObj f₁ f₂` which contains the data of a
+pushout of `(F.obj Y₁).obj X₂` and `(F.obj X₁).obj Y₂`
+along `(F.obj X₁).obj X₂`. If `sq₁₂ : F.PushoutObjObj f₁ f₂`,
+we have a canonical "inclusion" `sq₁₂.ι : sq₁₂.pt ⟶ (F.obj Y₁).obj Y₂`.
+
+Similarly, if we have a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and
+morphisms `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₂`,
+we introduce a structure `F.PullbackObjObj f₁ f₃` which
+contains the data of a pullback of `(G.obj (op X₁)).obj X₃`
+and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`.
+If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
+projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.
+
+Now, if we have `adj₂ : F ⊣₂ G`, `sq₁₂ : F.PushoutObjObj f₁ f₂`
+and `sq₁₃ : G.PullbackObjObj f₁ f₃`, we show that
+`sq₁₂.ι` has the left lifting property with respect to `f₃` if and
+only if `f₂` has the left lifting property with respect to `sq₁₃.π`:
+this is the lemma `Adjunction₂.hasLiftingProperty_iff`.
+
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
-
-namespace Arrow
-
-universe v u
-
-variable {C : Type u} [Category.{v} C]
-
-abbrev LiftStruct {f g : Arrow C} (φ : f ⟶ g) := (CommSq.mk φ.w).LiftStruct
-
-lemma hasLiftingProperty_iff {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) :
-    HasLiftingProperty i p ↔ ∀ (φ : Arrow.mk i ⟶ Arrow.mk p), Nonempty (LiftStruct φ) := by
-  constructor
-  · intro _ φ
-    have sq : CommSq φ.left i p φ.right := (CommSq.mk φ.w)
-    exact ⟨{ l := sq.lift }⟩
-  · intro h
-    exact ⟨fun {f g} sq ↦ ⟨h (Arrow.homMk f g sq.w)⟩⟩
-
-end Arrow
 
 open Opposite Limits
 
@@ -47,14 +49,22 @@ section
 
 variable {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₂ Y₂ : C₂} (f₂ : X₂ ⟶ Y₂)
 
+/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, and morphisms`f₁ : X₁ ⟶ Y₁` in `C₁`
+and `f₂ : X₂ ⟶ Y₂` in `C₂`, this structure contains the data of
+a pushout of `(F.obj Y₁).obj X₂` and `(F.obj X₁).obj Y₂`
+along `(F.obj X₁).obj X₂`. -/
 structure PushoutObjObj where
+  /-- the pushout -/
   pt : C₃
+  /-- the first inclusion -/
   inl : (F.obj Y₁).obj X₂ ⟶ pt
+  /-- the second inclusion -/
   inr : (F.obj X₁).obj Y₂ ⟶ pt
   isPushout : IsPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂) inl inr
 
 namespace PushoutObjObj
 
+/-- The `PushoutObjObj` structure given by the pushout of the colimits API. -/
 @[simps]
 noncomputable def ofHasPushout
     [HasPushout ((F.map f₁).app X₂) ((F.obj X₁).map f₂)] :
@@ -63,10 +73,8 @@ noncomputable def ofHasPushout
 
 variable {F f₁ f₂} (sq : F.PushoutObjObj f₁ f₂)
 
-@[reassoc]
-lemma w : (F.map f₁).app X₂ ≫ sq.inl = (F.obj X₁).map f₂ ≫ sq.inr :=
-  sq.isPushout.w
-
+/-- The "inclusion" `sq.pt ⟶ (F.obj Y₁).obj Y₂` when
+`sq : F.PushoutObjObj f₁ f₂`. -/
 noncomputable def ι : sq.pt ⟶ (F.obj Y₁).obj Y₂ :=
   sq.isPushout.desc ((F.obj Y₁).map f₂) ((F.map f₁).app Y₂) (by simp)
 
@@ -84,15 +92,31 @@ section
 
 variable {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₃ Y₃ : C₃} (f₃ : X₃ ⟶ Y₃)
 
+/-Similarly, if we have a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and
+morphisms `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₂`,
+we introduce a structure `F.PullbackObjObj f₁ f₃` which
+contains the data of a pullback of `(G.obj (op X₁)).obj X₃`
+and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`.
+If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
+projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.-/
+
+/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and morphisms`f₁ : X₁ ⟶ Y₁` in `C₁`
+and `f₃ : X₃ ⟶ Y₃` in `C₃`, this structure contains the data of
+a pullback of `(G.obj (op X₁)).obj X₃`
+and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`. -/
 structure PullbackObjObj where
+  /-- the pullback -/
   pt : C₂
+  /-- the first projection -/
   fst : pt ⟶ (G.obj (op X₁)).obj X₃
+  /-- the second projection -/
   snd : pt ⟶ (G.obj (op Y₁)).obj Y₃
   isPullback : IsPullback fst snd ((G.obj (op X₁)).map f₃)
     ((G.map f₁.op).app Y₃)
 
 namespace PullbackObjObj
 
+/-- The `PullbackObjObj` structure given by the pullback of the limits API. -/
 @[simps]
 noncomputable def ofHasPullback
     [HasPullback ((G.obj (op X₁)).map f₃) ((G.map f₁.op).app Y₃)] :
@@ -101,11 +125,8 @@ noncomputable def ofHasPullback
 
 variable {G f₁ f₃} (sq : G.PullbackObjObj f₁ f₃)
 
-@[reassoc]
-lemma w : sq.fst ≫ (G.obj (op X₁)).map f₃ =
-    sq.snd ≫ (G.map f₁.op).app Y₃ :=
-  sq.isPullback.w
-
+/-- The projection `(G.obj (op Y₁)).obj X₃ ⟶ sq.pt` when
+`sq : G.PullbackObjObj f₁ f₃`. -/
 noncomputable def π : (G.obj (op Y₁)).obj X₃ ⟶ sq.pt :=
   sq.isPullback.lift ((G.map f₁.op).app X₃) ((G.obj (op Y₁)).map f₃) (by simp)
 
@@ -128,6 +149,10 @@ variable {F G} (adj₂ : F ⊣₂ G)
   {X₃ Y₃ : C₃} {f₃ : X₃ ⟶ Y₃}
   (sq₁₂ : F.PushoutObjObj f₁ f₂) (sq₁₃ : G.PullbackObjObj f₁ f₃)
 
+/-- Given an adjunction `F ⊣₂ G` of bifunctors, and structures
+`sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`, there are
+as many commutative squares with left map `sq₁₂.ι` and right map `f₃`
+as commutative squares with left map `f₂` and right map `sq₁₃.π`. -/
 @[simps! -isSimp apply_left apply_right symm_apply_left symm_apply_right]
 noncomputable def arrowHomEquiv :
     (Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) ≃
@@ -140,7 +165,7 @@ noncomputable def arrowHomEquiv :
           apply sq₁₃.isPullback.hom_ext
           · simp [← adj₂.homEquiv_naturality_two,
               ← adj₂.homEquiv_naturality_one,
-              sq₁₂.w_assoc]
+              sq₁₂.isPushout.w_assoc]
           · simp [← adj₂.homEquiv_naturality_two,
               ← adj₂.homEquiv_naturality_three])
   invFun β := Arrow.homMk
@@ -161,7 +186,7 @@ noncomputable def arrowHomEquiv :
           simp [← adj₂.homEquiv_symm_naturality_two,
             ← adj₂.homEquiv_symm_naturality_three, this]
         · simp [← adj₂.homEquiv_symm_naturality_one,
-            ← adj₂.homEquiv_symm_naturality_three, sq₁₃.w])
+            ← adj₂.homEquiv_symm_naturality_three, sq₁₃.isPullback.w])
   left_inv α := by
     ext
     · apply sq₁₂.isPushout.hom_ext <;> simp
@@ -174,6 +199,11 @@ noncomputable def arrowHomEquiv :
 attribute [local simp] arrowHomEquiv_apply_left arrowHomEquiv_apply_right
   arrowHomEquiv_symm_apply_left arrowHomEquiv_symm_apply_right
 
+/-- Given an adjunction `F ⊣₂ G` of bifunctors, structures
+`sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`,
+there are as many liftings for the commutative square given by a
+map `α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃` as there are liftings
+for the square given by the corresponding map `Arrow.mk f₂ ⟶ Arrow.mk sq₁₃.π`. -/
 def liftStructEquiv (α : Arrow.mk sq₁₂.ι ⟶ Arrow.mk f₃) :
     Arrow.LiftStruct α ≃ Arrow.LiftStruct (adj₂.arrowHomEquiv sq₁₂ sq₁₃ α) where
   toFun l :=
