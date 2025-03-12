@@ -101,14 +101,14 @@ variable [UniformSpace X]
 variable (X) in
 /-- A uniform space is ultrametric if the uniformity `𝓤 X` has a basis of equivalence relations. -/
 class IsUltraUniformity : Prop where
-  has_basis : (𝓤 X).HasBasis
+  hasBasis : (𝓤 X).HasBasis
     (fun s : Set (X × X) => s ∈ 𝓤 X ∧ IsSymmetricRel s ∧ IsTransitiveRel s) id
 
 lemma IsUltraUniformity.mk_of_hasBasis {ι : Type*} {p : ι → Prop} {s : ι → Set (X × X)}
     (h_basis : (𝓤 X).HasBasis p s) (h_symm : ∀ i, p i → IsSymmetricRel (s i))
     (h_trans : ∀ i, p i → IsTransitiveRel (s i)) :
     IsUltraUniformity X where
-  has_basis := h_basis.to_hasBasis'
+  hasBasis := h_basis.to_hasBasis'
     (fun i hi ↦ ⟨s i, ⟨h_basis.mem_of_mem hi, h_symm i hi, h_trans i hi⟩, subset_rfl⟩)
     (fun _ hs ↦ hs.1)
 
@@ -139,7 +139,7 @@ variable [IsUltraUniformity X]
 
 lemma nhds_basis_clopens (x : X) :
     (𝓝 x).HasBasis (fun s : Set X => x ∈ s ∧ IsClopen s) id := by
-  refine (nhds_basis_uniformity' (IsUltraUniformity.has_basis)).to_hasBasis' ?_ ?_
+  refine (nhds_basis_uniformity' (IsUltraUniformity.hasBasis)).to_hasBasis' ?_ ?_
   · intro V ⟨hV, h_symm, h_trans⟩
     refine ⟨ball x V, ⟨?_,
       isClopen_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity _ h_symm h_trans hV⟩,
