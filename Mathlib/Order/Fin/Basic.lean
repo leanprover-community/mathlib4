@@ -74,7 +74,7 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance instPartialOrder : PartialOrder (Fin n) := inferInstance
-instance instLattice      : Lattice (Fin n)      := inferInstance
+instance instLattice : Lattice (Fin n) := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 

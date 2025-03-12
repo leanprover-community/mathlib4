@@ -394,7 +394,7 @@ theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
     #(P.bind Q).parts = ∑ A ∈ P.parts.attach, #(Q _ A.2).parts := by
   apply card_biUnion
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
-  rw [Finset.disjoint_left]
+  rw [Function.onFun, Finset.disjoint_left]
   rintro d hdb hdc
   rw [Ne, Subtype.mk_eq_mk] at hbc
   exact
