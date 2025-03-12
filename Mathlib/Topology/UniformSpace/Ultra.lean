@@ -57,31 +57,22 @@ def IsTransitiveRel (V : Set (X × X)) : Prop :=
 
 lemma IsTransitiveRel.comp_subset_self {s : Set (X × X)}
     (h : IsTransitiveRel s) :
-    s ○ s ⊆ s := by
-  intro ⟨x, y⟩
-  simp only [mem_compRel, forall_exists_index, and_imp]
-  intro z
-  exact @h x z y
+    s ○ s ⊆ s :=
+  fun ⟨_, _⟩ ⟨_, hxz, hzy⟩ ↦ h hxz hzy
 
 lemma isTransitiveRel_empty : IsTransitiveRel (X := X) ∅ := by
-  intro
-  simp
+  simp [IsTransitiveRel]
 
 lemma isTransitiveRel_univ : IsTransitiveRel (X := X) Set.univ := by
-  intro
-  simp
+  simp [IsTransitiveRel]
 
 lemma isTransitiveRel_singleton (x y : X) : IsTransitiveRel {(x, y)} := by
-  intro
-  simp +contextual
+  simp +contextual [IsTransitiveRel]
 
 lemma IsTransitiveRel.symmetrizeRel {s : Set (X × X)}
     (h : IsTransitiveRel s) :
-    IsTransitiveRel (symmetrizeRel s) := by
-  intro x y z
-  simp only [_root_.symmetrizeRel, mem_inter_iff, mem_preimage, Prod.swap_prod_mk, and_imp]
-  intro hxy hyx hyz hzy
-  exact ⟨h hxy hyz, h hzy hyx⟩
+    IsTransitiveRel (symmetrizeRel s) :=
+  fun _ _ _ hxy hyz ↦ ⟨h hxy.1 hyz.1, h hyz.2 hxy.2⟩
 
 lemma IsTransitiveRel.comp_eq_of_idRel_subset {s : Set (X × X)}
     (h : IsTransitiveRel s) (h' : idRel ⊆ s) :
@@ -130,18 +121,8 @@ lemma isClosed_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
     (x : X) {V : Set (X × X)} (h_symm : IsSymmetricRel V)
     (h_trans : IsTransitiveRel V) (h' : V ∈ 𝓤 X) :
     IsClosed (ball x V) := by
-  rw [← isOpen_compl_iff, isOpen_uniformity]
-  simp only [mem_compl_iff, mem_setOf_eq]
-  intro z hz
-  rw [hasBasis_symmetric.mem_iff]
-  refine ⟨V, ⟨h', h_symm⟩, ?_⟩
-  rintro ⟨a, b⟩
-  simp only [id_eq, mem_setOf_eq]
-  rintro hab rfl
-  replace hab : b ∈ ball a V := hab
-  contrapose! hz
-  rwa [ball_eq_of_mem_of_isSymmetricRel_of_isTransitiveRel ‹_› ‹_› hz,
-    mem_ball_symmetry h_symm]
+  rw [← isOpen_compl_iff, isOpen_iff_ball_subset]
+  exact fun y hy ↦ ⟨V, h', fun z hyz hxz ↦ hy <| h_trans hxz <| h_symm.mk_mem_comm.mp hyz⟩
 
 lemma isClopen_ball_of_isSymmetricRel_of_isTransitiveRel_of_mem_uniformity
     (x : X) {V : Set (X × X)} (h_symm : IsSymmetricRel V)
