@@ -82,20 +82,10 @@ theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L
     FiniteDimensional K (⊥ : IntermediateField K L) :=
   .of_rank_eq_one IntermediateField.rank_bot
 
-/-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
-theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
-  ext f
-  refine ⟨fun _ => Subgroup.mem_top _, fun _ => ?_⟩
-  rintro ⟨x, hx : x ∈ (⊥ : IntermediateField K L)⟩
-  rw [IntermediateField.mem_bot] at hx
-  rcases hx with ⟨y, rfl⟩
-  exact f.commutes y
-
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L` -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
-  ⟨⊥, IntermediateField.finiteDimensional_bot K L, IntermediateField.fixingSubgroup.bot⟩
+  ⟨⊥, IntermediateField.finiteDimensional_bot K L, IntermediateField.fixingSubgroup_bot⟩
 
 /-- If `E1` and `E2` are finite-dimensional intermediate fields, then so is their compositum.
 This rephrases a result already in mathlib so that it is compatible with our type classes -/
@@ -103,11 +93,6 @@ theorem finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E1 E2 : IntermediateField K L) (_ : FiniteDimensional K E1) (_ : FiniteDimensional K E2) :
     FiniteDimensional K (↥(E1 ⊔ E2)) :=
   IntermediateField.finiteDimensional_sup E1 E2
-
-/-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`. -/
-theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
-    (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
-  ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
 
 /-- The map `E ↦ Gal(L/E)` is inclusion-reversing -/
 theorem IntermediateField.fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
