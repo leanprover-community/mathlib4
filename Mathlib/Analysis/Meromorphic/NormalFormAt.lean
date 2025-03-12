@@ -128,7 +128,7 @@ theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
     apply MeromorphicAt.congr _ (Filter.EventuallyEq.filter_mono h₃g nhdsWithin_le_nhds).symm
     fun_prop
 
-/- If a function is meromorphic in normal form at `x` and has non-negative
+/-- If a function is meromorphic in normal form at `x` and has non-negative
 order, then it is analytic -/
 theorem MeromorphicNFAt.analyticAt (h₁f : MeromorphicNFAt f x)
     (h₂f : 0 ≤ h₁f.meromorphicAt.order) :
@@ -149,7 +149,7 @@ theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 ## Continuous extension and conversion to normal form
 -/
 
-/- Convert a meromorphic function to normal form at `x` by changing its value. -/
+/-- Convert a meromorphic function to normal form at `x` by changing its value at `x`. -/
 noncomputable def MeromorphicAt.toNF (hf : MeromorphicAt f x) :
     𝕜 → E := by
   classical -- do not complain about decidability issues in Function.update
@@ -159,17 +159,17 @@ noncomputable def MeromorphicAt.toNF (hf : MeromorphicAt f x) :
     exact (Classical.choose h₁f) x
   · exact 0
 
-/- Conversion to normal form at `x` by changes the value only at x. -/
+/-- Conversion to normal form at `x` by changes the value only at x. -/
 lemma MeromorphicAt.toNF_id_on_complement (hf : MeromorphicAt f x) :
     Set.EqOn f hf.toNF {x}ᶜ :=
   fun _ _ ↦ by simp_all [MeromorphicAt.toNF]
 
-/- Conversion to normal form at `x` by changes the value only at x. -/
+/-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.toNF_id_on_nhdNE (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] hf.toNF :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.toNF_id_on_complement hz)
 
-/- After conversion to normal form at `x`, the function has normal form. -/
+/-- After conversion to normal form at `x`, the function has normal form. -/
 theorem MeromorphicAt.MeromorphicNFAt_of_toNF (hf : MeromorphicAt f x) :
     MeromorphicNFAt hf.toNF x := by
   by_cases h₂f : hf.order = ⊤
@@ -200,7 +200,7 @@ theorem MeromorphicAt.MeromorphicNFAt_of_toNF (hf : MeromorphicAt f x) :
       · simp_rw [← hn, WithTop.coe_zero, WithTop.coe_eq_zero] at *
         simp [h₃f, zero_zpow n h₃f]
 
-/- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
+/-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
     f = hf.meromorphicAt.toNF := by
   funext z
