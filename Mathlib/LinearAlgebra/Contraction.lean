@@ -138,8 +138,7 @@ theorem toMatrix_dualTensorHom {m : Type*} {n : Type*} [Fintype m] [Finite n] [D
 
 /-- If the identity linear map lies in the range of the canonical map `M* ⊗[R] M → Hom_R(M, M)`,
 then `M` is a finite projective `R`-module. -/
-theorem finite_projective_of_dualTensorHom_surjective
-    (h : .id ∈ Set.range (dualTensorHom R M M)) :
+theorem finite_projective_of_id_mem_range_dualTensorHom (h : .id ∈ range (dualTensorHom R M M)) :
     Module.Finite R M ∧ Projective R M := by
   have ⟨t, eq⟩ := h
   obtain ⟨s, rfl⟩ := TensorProduct.exists_finset t
@@ -193,17 +192,17 @@ theorem dualTensorHomEquivOfBasis_symm_cancel_right (x : M →ₗ[R] N) :
   rw [← dualTensorHomEquivOfBasis_apply b, LinearEquiv.apply_symm_apply]
 
 theorem dualTensorHom_finsupp :
-    dualTensorHom R M (ι →₀ N) =
-      _ ∘ₗ Finsupp.mapRange.linearMap (dualTensorHom R M N) ∘ₗ (finsuppRight R _ N ι).toLinearMap := by
-  _
+    dualTensorHom R M (ι →₀ N) = sorry ∘ₗ
+      Finsupp.mapRange.linearMap (dualTensorHom R M N) ∘ₗ (finsuppRight R _ N ι).toLinearMap := by
+  sorry
 
-theorem dualTensorHom_bijective_of_finite_projective [Module.Finite R N] [Projective R N] :
+/-theorem dualTensorHom_bijective_of_finite_projective [Module.Finite R N] [Projective R N] :
     Function.Bijective (dualTensorHom R M N) := by
   have ⟨n, f, g⟩ := Finite.exists_comp_eq_id_of_projective R N
   have := dualTensorHomEquivOfBasis (M := M) (N := N) (Pi.basisFun R <| Fin n)
   constructor
   sorry
-  sorry
+  sorry -/
 
 theorem dualTensorHom_bijective [Projective R M] [Module.Finite R M] :
     Function.Bijective (dualTensorHom R M N) := by
@@ -216,7 +215,7 @@ theorem dualTensorHom_bijective [Projective R M] [Module.Finite R M] :
     refine (EquivLike.injective _).comp ?_
     refine injective_of_comp_eq_id _ (rTensor _ g.dualMap) ?_
     rw [← rTensor_comp, dualMap_comp_dualMap g f]
-
+    sorry
   sorry
 
 variable (R M N) in
