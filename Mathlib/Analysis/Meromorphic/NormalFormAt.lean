@@ -136,13 +136,12 @@ order, then it is analytic -/
 theorem MeromorphicNFAt.analyticAt (h₁f : MeromorphicNFAt f x)
     (h₂f : 0 ≤ h₁f.meromorphicAt.order) :
     AnalyticAt 𝕜 f x := by
-  have h₃f := h₁f.meromorphicAt
   rw [MeromorphicAt.meromorphicNFAt_iff] at h₁f
   rcases h₁f with h | h
   · exact h
   · by_contra h'
-    obtain ⟨h₄f, h₅f, h₆f⟩ := h
-    exact lt_irrefl 0 (lt_of_le_of_lt h₂f h₅f)
+    obtain ⟨h₃f, h₄f, h₅f⟩ := h
+    exact lt_irrefl 0 (lt_of_le_of_lt h₂f h₄f)
 
 /-- Analytic functions are meromorphic in normal form. -/
 theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
