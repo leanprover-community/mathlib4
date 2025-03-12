@@ -718,7 +718,7 @@ instance [hasGMul F F_lt] : DirectSum.Gmodule (GradedPiece F F_lt) (GradedPiece 
 
 open DirectSum in
 instance [hasGMul F F_lt] [DecidableEq ι] [DecidableEq ιM] :
-    Module (⨁ i, GradedPiece F F_lt i) (⨁ i, GradedPiece FM FM_lt i) :=
+    Module (AssociatedGraded F F_lt) (AssociatedGraded FM FM_lt) :=
   Gmodule.module (GradedPiece F F_lt) (GradedPiece FM FM_lt)
 
 end gradedSMul
