@@ -575,6 +575,7 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
 
 variable {m : ℕ}
 
+/-- Change `n` in `(c : Composition n)` to a propositionally equal value. -/
 @[simps]
 protected def cast (c : Composition m) (hmn : m = n) : Composition n where
   __ := c
@@ -590,6 +591,7 @@ theorem cast_eq_cast (c : Composition m) (hmn : m = n) :
   subst m
   rfl
 
+/-- Append two compositions to get a composition of the sum of numbers. -/
 @[simps]
 def append (c₁ : Composition m) (c₂ : Composition n) : Composition (m + n) where
   blocks := c₁.blocks ++ c₂.blocks
@@ -599,6 +601,7 @@ def append (c₁ : Composition m) (c₂ : Composition n) : Composition (m + n) w
     exact hi.elim c₁.blocks_pos c₂.blocks_pos
   blocks_sum := by simp
 
+/-- Reverse the order of blocks in a composition. -/
 @[simps]
 def reverse (c : Composition n) : Composition n where
   blocks := c.blocks.reverse
@@ -637,33 +640,37 @@ lemma reverse_append (c₁ : Composition m) (c₂ : Composition n) :
     reverse (append c₁ c₂) = (append c₂.reverse c₁.reverse).cast (add_comm _ _) :=
   Composition.ext <| by simp
 
--- @[elab_as_elim]
+/-- Induction (recursion) principle on `c : Composition _`
+that corresponds to the usual induction on the list of blocks of `c`. -/
+@[elab_as_elim]
 def recOnSingleAppend {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
     (zero : motive 0 (ones 0))
     (single_append : ∀ k n c, motive n c →
       motive (k + 1 + n) (append (single (k + 1) k.succ_pos) c)) :
     motive n c :=
   match n, c with
-  | _, ⟨[], _, rfl⟩ => zero
-  | _, ⟨0 :: _, h, rfl⟩ => by simp at h
-  | _, ⟨(k + 1) :: l, h, rfl⟩ =>
-    single_append k l.sum ⟨l, fun hi ↦ h <| mem_cons_of_mem _ hi, rfl⟩ <|
-      recOnSingleAppend _ zero single_append
+  | _, ⟨blocks, blocks_pos, rfl⟩ =>
+    match blocks with
+    | [] => zero
+    | 0 :: _ => by simp at blocks_pos
+    | (k + 1) :: l =>
+      single_append k l.sum ⟨l, fun hi ↦ blocks_pos <| mem_cons_of_mem _ hi, rfl⟩ <|
+        recOnSingleAppend _ zero single_append
   decreasing_by simp
 
--- @[elab_as_elim]
--- def recOnAppendSingle {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
---     (zero : motive 0 (ones 0))
---     (append_single : ∀ k n c, motive n c →
---       motive (n + (k + 1)) (append c (single (k + 1) k.succ_pos))) :
---     motive n c :=
---   reverse_reverse c ▸
---     c.reverse.recOnSingleAppend zero fun k n c ih ↦ by
---       simp only
---       convert append_single k n c.reverse ih using 1
---       · apply add_comm
---       · rw [reverse_append, reverse_single]
---         apply cast_heq
+/-- Induction (recursion) principle on `c : Composition _`
+that corresponds to the reverse induction on the list of blocks of `c`. -/
+@[elab_as_elim]
+def recOnAppendSingle {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
+    (zero : motive 0 (ones 0))
+    (append_single : ∀ k n c, motive n c →
+      motive (n + (k + 1)) (append c (single (k + 1) k.succ_pos))) :
+    motive n c :=
+  reverse_reverse c ▸ c.reverse.recOnSingleAppend zero fun k n c ih ↦ by
+    convert append_single k n c.reverse ih using 1
+    · apply add_comm
+    · rw [reverse_append, reverse_single]
+      apply cast_heq
 
 end Composition
 
@@ -1063,3 +1070,4 @@ instance compositionFintype (n : ℕ) : Fintype (Composition n) :=
 theorem composition_card (n : ℕ) : Fintype.card (Composition n) = 2 ^ (n - 1) := by
   rw [← compositionAsSet_card n]
   exact Fintype.card_congr (compositionEquiv n)
+#lint
