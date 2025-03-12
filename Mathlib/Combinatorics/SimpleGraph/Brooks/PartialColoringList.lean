@@ -8,95 +8,95 @@ variable {α : Type*} {G : SimpleGraph α}
 open Finset
 variable (G)
 @[ext]
-structure PartialColoring (s : Finset α)  where
+structure PartialColoringL (s : List α)  where
 col : α → ℕ
 valid : ∀ ⦃v w⦄, v ∈ s → w ∈ s → G.Adj v w → col v ≠ col w
 
-instance (s : Finset α): FunLike (G.PartialColoring s) α  ℕ where
-  coe := PartialColoring.col
-  coe_injective' := fun _ _ h ↦ PartialColoring.ext h
+instance (s : List α): FunLike (G.PartialColoringL s) α  ℕ where
+  coe := PartialColoringL.col
+  coe_injective' := fun _ _ h ↦ PartialColoringL.ext h
 
-def ofEmpty : G.PartialColoring ∅ where
+def ofNil : G.PartialColoringL [] where
   col := fun _ ↦ 0
   valid := fun _ _ h  _ ↦ False.elim <| not_mem_empty _ h
 
-def ofNotAdj [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) : G.PartialColoring {u, v} where
+def ofNotAdj [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) : G.PartialColoringL [u, v] where
   col := fun _ ↦ 0
   valid := fun x y hx hy hadj heq ↦ by
-    simp only [mem_insert, mem_singleton] at hx hy
+    simp only [List.mem_cons, List.not_mem_nil, or_false] at hx hy
     cases hx <;> cases hy <;> subst_vars
     · exact G.loopless _ hadj
     · exact h hadj
     · exact h hadj.symm
     · exact G.loopless _ hadj
 
-namespace PartialColoring
+namespace PartialColoringL
 @[simp]
-lemma ofEmpty_eq (v : α): G.ofEmpty v = 0 := rfl
+lemma ofNil_eq (v : α): G.ofNil v = 0 := rfl
 variable {G}
 
 @[simp]
 lemma ofNotAdj_eq [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) (w : α): (G.ofNotAdj h) w = 0 := rfl
 
-protected def copy {s t} (c : G.PartialColoring s) (h : s = t) : G.PartialColoring t where
+protected def copy {s t} (c : G.PartialColoringL s) (h : s = t) : G.PartialColoringL t where
   col := c.col
   valid := fun _ _ hv hw hadj => c.valid (h ▸ hv) (h ▸ hw) hadj
 
 @[simp]
-theorem copy_rfl {s} (c : G.PartialColoring s)  : c.copy rfl = c := rfl
+theorem copy_rfl {s} (c : G.PartialColoringL s)  : c.copy rfl = c := rfl
 
 @[simp]
-theorem copy_copy {s t u} (c : G.PartialColoring s) (hs : s = t) (ht : t = u) :
+theorem copy_copy {s t u} (c : G.PartialColoringL s) (hs : s = t) (ht : t = u) :
     (c.copy hs).copy ht = c.copy (hs.trans ht) := by
   subst_vars
   rfl
 
 @[simp]
-lemma copy_eq {s t} (c : G.PartialColoring s) (hs : s = t) (v : α) : (c.copy hs) v = c v := rfl
+lemma copy_eq {s t} (c : G.PartialColoringL s) (hs : s = t) (v : α) : (c.copy hs) v = c v := rfl
 
 
 variable [Fintype α] [DecidableRel G.Adj]
 open Finset
 variable {s : Finset α} {b : ℕ} {i : α}
 
-/-- A PartialColoring of `univ` is a Coloring -/
-def toColoring (C : G.PartialColoring univ) : G.Coloring ℕ :=
+/-- A PartialColoringL of `univ` is a Coloring -/
+def toColoring (C : G.PartialColoringL univ) : G.Coloring ℕ :=
     ⟨C, fun hab ↦ C.valid (mem_univ _) (mem_univ _) hab⟩
 
 variable [DecidableEq α]
-lemma next (C : G.PartialColoring s) (a : α)  :
+lemma next (C : G.PartialColoringL s) (a : α)  :
     (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).Nonempty := by
   apply card_pos.1 <| (Nat.sub_pos_of_lt _).trans_le <| le_card_sdiff _ _
   apply card_image_le.trans_lt
   rw [card_range, degreeOn]
   apply Nat.lt_succ_of_le le_rfl
 
-def extend (C : G.PartialColoring s) (a : α) : ℕ := min' _ <| C.next a
+def extend (C : G.PartialColoringL s) (a : α) : ℕ := min' _ <| C.next a
 
-lemma extend_def (C : G.PartialColoring s) (a : α) : C.extend a =
+lemma extend_def (C : G.PartialColoringL s) (a : α) : C.extend a =
     (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).min' (C.next a) := rfl
 
 @[simp]
-lemma copy_extend (C : G.PartialColoring s) {t : Finset α} (a : α) (h : s = t) :
+lemma copy_extend (C : G.PartialColoringL s) {t : Finset α} (a : α) (h : s = t) :
      (C.copy h).extend a = C.extend a := by
   rw [extend_def, extend_def]
   congr <;>
   exact h.symm
 
-lemma extend_le_degreeOn (C : G.PartialColoring s) (a : α) : C.extend a ≤ G.degreeOn s a := by
+lemma extend_le_degreeOn (C : G.PartialColoringL s) (a : α) : C.extend a ≤ G.degreeOn s a := by
   have ⟨h1, _⟩ := mem_sdiff.1 <| min'_mem _ <| C.next a
   simpa [Nat.lt_succ] using h1
 
-lemma extend_lt_degree (C : G.PartialColoring s) {a v : α} (h1 : G.Adj a v) (h2 : v ∉ s) :
+lemma extend_lt_degree (C : G.PartialColoringL s) {a v : α} (h1 : G.Adj a v) (h2 : v ∉ s) :
     C.extend a < G.degree a :=
   (extend_le_degreeOn _ _).trans_lt (degreeOn_lt_degree ⟨(mem_neighborFinset ..).2 h1, h2⟩)
 
-lemma extend_not_mem_image (C : G.PartialColoring s) (a : α) :
+lemma extend_not_mem_image (C : G.PartialColoringL s) (a : α) :
     C.extend a ∉ ((G.neighborFinset a) ∩ s).image C := by
   have ⟨_, h2⟩ := mem_sdiff.1 <| min'_mem _ <| C.next a
   exact h2
 
-protected def insert (C : G.PartialColoring s) (a : α) : G.PartialColoring (insert a s) where
+protected def insert (C : G.PartialColoringL s) (a : α) : G.PartialColoringL (insert a s) where
   col   := fun v ↦ ite (v = a) (C.extend a) (C v)
   valid := by
     intro x y hx hy hadj
@@ -114,32 +114,32 @@ protected def insert (C : G.PartialColoring s) (a : α) : G.PartialColoring (ins
     · exact C.valid (mem_of_mem_insert_of_ne hx hxi) (mem_of_mem_insert_of_ne hy hyi) hadj
 
 
-lemma ofInsert (C : G.PartialColoring s) (a : α) (v : α) :
+lemma ofInsert (C : G.PartialColoringL s) (a : α) (v : α) :
     (C.insert a) v = ite (v = a) (C.extend a) (C v) := rfl
 
-def Greedy_extend (C : G.PartialColoring s) (l : List α)  : G.PartialColoring (s ∪ l.toFinset) :=
+def Greedy_extend (C : G.PartialColoringL s) (l : List α)  : G.PartialColoringL (s ∪ l.toFinset) :=
 match l with
 | [] => C.copy (by simp)
 | a :: l => ((C.Greedy_extend l).insert a).copy (by simp)
 
 @[simp]
-lemma Greedy_extend_nil (C : G.PartialColoring s)  : C.Greedy_extend []  = C.copy (by simp)  :=
+lemma Greedy_extend_nil (C : G.PartialColoringL s)  : C.Greedy_extend []  = C.copy (by simp)  :=
   by rfl
 
-lemma Greedy_extend_cons  (C : G.PartialColoring s)  (l : List α) (a : α) (v : α) :
+lemma Greedy_extend_cons  (C : G.PartialColoringL s)  (l : List α) (a : α) (v : α) :
     (C.Greedy_extend (a :: l)) v = ite (v = a) ((C.Greedy_extend l).extend a)
       ((C.Greedy_extend l) v) := rfl
 
 @[simp]
-lemma Greedy_extend_head (C : G.PartialColoring s) (l : List α) (a : α) :
+lemma Greedy_extend_head (C : G.PartialColoringL s) (l : List α) (a : α) :
     (C.Greedy_extend (a :: l)) a = extend (C.Greedy_extend l) a := by
   rw [Greedy_extend_cons, if_pos rfl]
 
-lemma Greedy_extend_tail (C : G.PartialColoring s) (l : List α) (a : α) {v : α} (hv : v ≠ a) :
+lemma Greedy_extend_tail (C : G.PartialColoringL s) (l : List α) (a : α) {v : α} (hv : v ≠ a) :
     (C.Greedy_extend (a :: l)) v = (C.Greedy_extend l) v := by
   rw [Greedy_extend_cons, if_neg hv]
 
-lemma Greedy_extend_not_mem {C : G.PartialColoring s} {l : List α} {v : α} (hv : v ∉ l) :
+lemma Greedy_extend_not_mem {C : G.PartialColoringL s} {l : List α} {v : α} (hv : v ∉ l) :
     (C.Greedy_extend l) v = C v := by
   induction l with
   | nil => simp-- [Greedy_extend_nil]
@@ -150,7 +150,7 @@ lemma Greedy_extend_not_mem {C : G.PartialColoring s} {l : List α} {v : α} (hv
     · apply ih
       simp_all
 
-lemma Greedy_extend_mem (C : G.PartialColoring s) (l : List α) {v : α} (hv : v ∈ l) (hnd : l.Nodup):
+lemma Greedy_extend_mem (C : G.PartialColoringL s) (l : List α) {v : α} (hv : v ∈ l) (hnd : l.Nodup):
     ∃ k m : List α, l = k ++ v :: m ∧ (C.Greedy_extend l) v = extend (C.Greedy_extend m) v := by
   obtain ⟨k, m, h⟩ := List.mem_iff_append.mp hv
   use k, m, h
@@ -175,10 +175,9 @@ variable {k : ℕ} {u v w x : α}
 If `C` is a `k` coloring of `s`, all degrees are at most `k`, and  `p.cons h` is a path disjoint
 from `s` then we have `k`-coloring of `s ∪ p.support` that extends `C`.
 -/
-theorem Greedy_extend_of_cons_path (C : G.PartialColoring s) {h : G.Adj u v} {p : G.Walk v w}
+theorem Greedy_extend_of_cons_path (C : G.PartialColoringL s) {h : G.Adj u v} {p : G.Walk v w}
     (hbdd : ∀ v, G.degree v ≤ k) (hp : (p.cons h).IsPath) (hlt : ∀ y, C y < k)
-    (hdisj : Disjoint s (p.cons h).support.toFinset) (x : α) :
-    (C.Greedy_extend p.support) x < k := by
+    (hdisj : Disjoint s (p.cons h).support.toFinset) : (C.Greedy_extend p.support) x < k := by
   by_cases hx : x ∈ p.support
   · induction p generalizing s u  with
   | nil =>
@@ -222,7 +221,7 @@ theorem Greedy_extend_of_cons_path (C : G.PartialColoring s) {h : G.Adj u v} {p 
     exact hlt x
 
 
-theorem Greedy_extend_of_concat_path (C : G.PartialColoring s) {p : G.Walk u v} {h : G.Adj v w}
+theorem Greedy_extend_of_concat_path (C : G.PartialColoringL s) {p : G.Walk u v} {h : G.Adj v w}
     (hbdd : ∀ v, G.degree v ≤ k) (hp : (p.concat h).IsPath) (hlt : ∀ y, C y < k)
     (hdisj : Disjoint s (p.concat h).support.toFinset) :
     (C.Greedy_extend p.reverse.support) x < k := by
@@ -231,20 +230,16 @@ theorem Greedy_extend_of_concat_path (C : G.PartialColoring s) {p : G.Walk u v} 
   apply Greedy_extend_of_cons_path C hbdd hp hlt _
   rwa [support_reverse, List.toFinset_reverse] at hdisj
 
-
-
-
-
-lemma insert_lt_of_lt {k : ℕ} {C : G.PartialColoring s} {a : α} (h : ∀ v, v ∈ s → C v < k)
+lemma insert_lt_of_lt {k : ℕ} {C : G.PartialColoringL s} {a : α} (h : ∀ v, v ∈ s → C v < k)
     (hg : C.extend a < k) {w : α} (hw : w ∈ insert a s) : (C.insert a).col w < k := by
-  rw [PartialColoring.insert]; dsimp
+  rw [PartialColoringL.insert]; dsimp
   by_cases ha : w = a
   · rwa [if_pos ha]
   · cases mem_insert.1 hw with
     |inl hw => contradiction
     |inr hw => rw [if_neg ha]; exact h w hw
 
-lemma extend_eq_degreeOn {C : G.PartialColoring s} {a : α} (h : C.extend a = G.degreeOn s a) :
+lemma extend_eq_degreeOn {C : G.PartialColoringL s} {a : α} (h : C.extend a = G.degreeOn s a) :
      ((G.neighborFinset a ∩ s) : Set α).InjOn C := by
   let t := range (G.degreeOn s a + 1)
   let u := (G.neighborFinset a ∩ s).image C
@@ -270,7 +265,7 @@ lemma extend_eq_degreeOn {C : G.PartialColoring s} {a : α} (h : C.extend a = G.
 
 /-- If two neighbors of `a` have the same color in `s` then greedily coloring `a` uses a color
 less-than the `degreeOn s` of `a` -/
-lemma extend_lt_of_not_injOn {C : G.PartialColoring s} {a : α} {u v : α} (hus : u ∈ s) (hvs : v ∈ s)
+lemma extend_lt_of_not_injOn {C : G.PartialColoringL s} {a : α} {u v : α} (hus : u ∈ s) (hvs : v ∈ s)
     (hu : G.Adj a u) (hv : G.Adj a v) (hne : u ≠ v) (hc : C u = C v) :
     C.extend a < G.degreeOn s a := by
     apply lt_of_le_of_ne (C.extend_le_degreeOn _)
@@ -278,34 +273,12 @@ lemma extend_lt_of_not_injOn {C : G.PartialColoring s} {a : α} {u v : α} (hus 
     apply hne
     apply extend_eq_degreeOn hf <;> simp_all
 
-
-theorem Greedy_extend_of_cons_path_notInj {x y : α} (C : G.PartialColoring s) {h : G.Adj u v}
-    {p : G.Walk v w} (hbdd : ∀ v, G.degree v ≤ k) (hp : (p.cons h).IsPath) (hlt : ∀ y, C y < k)
-    (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj u x) (huy : G.Adj u y) (hne : x ≠ y)
-    (heq : C x = C y) (hnx : x ∉ p.support) (hny : y ∉ p.support)
-    (hdisj : Disjoint s (p.cons h).support.toFinset) :
-    (C.Greedy_extend (p.cons h).support) x < k := by
-  by_cases hx : x ∈ (p.cons h).support
-  · have :=Greedy_extend_of_cons_path C hbdd hp hlt hdisj
-    rw [support_cons] at *
-    rw [Greedy_extend_cons]
-    by_cases hu : x = u
-    · rw [if_pos hu]
-      have heq : (C.Greedy_extend p.support) x = (C.Greedy_extend p.support) y := by
-        rwa [Greedy_extend_not_mem hnx, Greedy_extend_not_mem hny]
-      apply (extend_lt_of_not_injOn (mem_union_left _ hxs) (mem_union_left _ hys)
-        hux huy hne heq).trans_le <| (degreeOn_le_degree ..).trans (hbdd u)
-    · rw [if_neg hu]
-      exact this x
-
-  · rw [Greedy_extend_not_mem hx]
-    exact hlt x
 /- If `a` has an uncolored neighbor then greedily coloring `a` uses a color less-than
   the degree of `a`-/
--- lemma extend_lt_of_not_colored {C : G.PartialColoring s} {a : α} {u : α} (hu : G.Adj a u)
+-- lemma extend_lt_of_not_colored {C : G.PartialColoringL s} {a : α} {u : α} (hu : G.Adj a u)
 --     (h : u ∉ s) : C.extend a < G.degree a := lt_of_le_of_ne (C.extend_le_degree _)
 --         fun hf ↦ h <| (next_eq_degree hf).2 <| (mem_neighborFinset ..).mpr hu
 
-end PartialColoring
+end PartialColoringL
 end partialcol
 end SimpleGraph
