@@ -123,9 +123,13 @@ end IsLieTower
 
 section BasicProperties
 
+theorem LieAlgebra.toModule_injective (L : Type*) [LieRing L] :
+    Function.Injective (@LieAlgebra.toModule _ _ _ _ : LieAlgebra ℚ L → Module ℚ L) := by
+  rintro ⟨h₁⟩ ⟨h₂⟩ heq
+  congr
+
 instance (L : Type*) [LieRing L] : Subsingleton (LieAlgebra ℚ L) :=
-  ⟨fun P Q ↦ LieAlgebra.ext <| funext₂ fun q x ↦
-    map_rat_smul (_instM := P.toModule) (_instM₂ := Q.toModule) (AddMonoidHom.id L) q x⟩
+  LieAlgebra.toModule_injective L |>.subsingleton
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
