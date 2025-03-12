@@ -83,7 +83,7 @@ theorem IntermediateField.finiteDimensional_bot (K L : Type*) [Field K] [Field L
   .of_rank_eq_one IntermediateField.rank_bot
 
 /-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L` -/
-@[deprecated "use `IntermediateField.fixingSubgroup_bot` instead" (since := "2025-03-12")]
+@[deprecated IntermediateField.fixingSubgroup_bot (since := "2025-03-12")]
 theorem IntermediateField.fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
     IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
   ext f
