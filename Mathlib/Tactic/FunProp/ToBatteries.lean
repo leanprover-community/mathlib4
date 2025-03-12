@@ -50,19 +50,16 @@ Swaps bvars indices `i` and `j`
 
 NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
 they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
-
-TODO: This has to have a better implementation, but I'm still beyond confused with how bvar
-indices work
 -/
-def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr :=
-
-  let swapBVarArray : Array Expr := Id.run do
-    let mut a : Array Expr := .mkEmpty e.looseBVarRange
-    for k in [0:e.looseBVarRange] do
-      a := a.push (.bvar (if k = i then j else if k = j then i else k))
-    a
-
-  e.instantiate swapBVarArray
+def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr := match e with
+| .bvar n => if n = i then .bvar j else if n = j then .bvar i else .bvar n
+| .forallE _ t b _ => e.updateForallE! (t.swapBVars i j) (b.swapBVars (i + 1) (j + 1))
+| .letE _ t v b _ => e.updateLet! (t.swapBVars i j) (v.swapBVars i j) (b.swapBVars (i + 1) (j + 1))
+| .lam _ t b _ => e.updateLambdaE! (t.swapBVars i j) (b.swapBVars (i + 1) (j + 1))
+| .app f a => e.updateApp! (f.swapBVars i j) (a.swapBVars i j)
+| .proj _ _ b => e.updateProj! (b.swapBVars i j)
+| .mdata _ b => e.updateMData! (b.swapBVars i j)
+| _ => e
 
 /--
 For `#[x₁, .., xₙ]` create `(x₁, .., xₙ)`.
