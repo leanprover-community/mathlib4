@@ -217,6 +217,15 @@ theorem IsPath.reverse {u v : V} {p : G.Walk u v} (h : p.IsPath) : p.reverse.IsP
 theorem isPath_reverse_iff {u v : V} (p : G.Walk u v) : p.reverse.IsPath ↔ p.IsPath := by
   constructor <;> intro h <;> convert h.reverse; simp
 
+@[simp]
+theorem concat_isPath_iff {u v w : V} (p : G.Walk u v) (h : G.Adj v w)  :
+    (p.concat h).IsPath ↔ p.IsPath ∧ w ∉ p.support := by
+  rw [← isPath_reverse_iff, reverse_concat]
+  simp
+
+protected lemma IsPath.concat {p : G.Walk u v} {h : G.Adj v w} (hp : p.IsPath) (hu : w ∉ p.support)
+    : (p.concat h).IsPath := (concat_isPath_iff _ _).2 ⟨hp, hu⟩
+
 theorem IsPath.of_append_left {u v w : V} {p : G.Walk u v} {q : G.Walk v w} :
     (p.append q).IsPath → p.IsPath := by
   simp only [isPath_def, support_append]

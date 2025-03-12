@@ -56,6 +56,7 @@ We consider two cases:
    `k` greedily is at `vₘ`, but this is fine since `vₘ` has 2 neighbors of the same color, namely
    `w` and `vₘ₊₁`.
 --------------------------------------------/
+set_option maxHeartbeats 2000000
 open PartialColoring Walk
 variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α]
 theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)
@@ -106,12 +107,26 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         simp only [cons_isPath_iff, isPath_iff_eq_nil, support_nil, List.mem_cons, List.not_mem_nil,
           or_false, true_and, support_cons, not_or]
         exact ⟨⟨h1.1.ne, h3.1.ne, hne.symm⟩, h24.symm.ne, h4 ,fun hf ↦ hnadj (hf ▸ h24.symm)⟩
+      have v41sup : v41.support = [v₄, v₃, v₂, v₁] := by
+        rw [support_cons, support_cons, support_cons, support_nil]
+      have v41s : ∀ y, y ∈  v41.support → y ∈ s := by
+        intro x hx; rw [support_cons, support_cons, support_cons, support_nil] at hx
+        cases hx with
+        | head as => exact hins _ h3.2 _ h24
+        | tail b hx =>
+          cases hx with
+          | head as => exact h3.2
+          | tail b hx =>
+            cases hx with
+            | head as => exact hv₂
+            | tail b hx =>
+              cases hx with
+              | head as => exact h1.2
+              | tail b _ => contradiction
       obtain ⟨vᵣ, q, hq, hss, hmax⟩ : ∃ vᵣ, ∃ q : G.Walk vᵣ v₄, (q.append v41).IsPath ∧
         (∀ y, y ∈ (q.append v41).support → y ∈ s) ∧
           ∀ y, G.Adj vᵣ y → y ∈ ((q.append v41)).support := by
-        have v41s : ∀ y, y ∈  v41.support → y ∈ s := by
-          intro x hx; rw [support_cons, support_cons, support_cons, support_nil] at hx
-          aesop
+
         obtain ⟨vᵣ, q, hq, hs, hnb⟩ := exists_maximal_path_subset s h41 v41s
         use vᵣ, q, hq, hs
         have vrs : vᵣ ∈ s := by apply hs; simp
@@ -121,7 +136,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         rw [degree_le_degreeOn_iff] at this
         apply hnb
         apply mem_inter.2 ⟨hx, this hx⟩
-
+      have hdisj2 := (append_isPath_iff.1 hq).2.2
       by_cases hr : ((q.append v41)).support.toFinset = s
       · -- Main case 1
         -- TODO work out what the last ∧ condition should be below
@@ -157,11 +172,40 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         · subst vⱼ
           --obtain ⟨v₅, q', h₅₄, heq⟩ := q.exists_eq_concat_of_ne h4r
           let C₂ := C₁.Greedy_extend q.reverse.support
-          have h2r : (q.concat hj.1.symm).IsPath := by sorry
-          have (x) : C₂ x < k := C₁.Greedy_extend_of_concat_path hbdd h2r
-            (fun y ↦ (ofNotAdj_eq hnadj _) ▸ (Nat.zero_lt_of_lt hk)) (by sorry)
-          rw [support_reverse, List.toFinset_reverse] at C₂
-          sorry
+          have h2r : (q.concat hj.1.symm).IsPath := by
+            apply hq.of_append_left.concat
+            intro h2
+            rw [isPath_def, support_append, List.nodup_append] at hq
+            apply hq.2.2 h2 (by rw [support_cons, support_cons, support_cons, List.tail]; simp)
+          have hc2 x : C₂ x < k := by
+
+            apply C₁.Greedy_extend_of_concat_path hbdd h2r
+               (fun y ↦ (ofNotAdj_eq hnadj _) ▸ (Nat.zero_lt_of_lt hk))
+            rw [append_isPath_iff, v41sup, List.tail] at hq
+            aesop
+          have heq : ({v₁, v₃} ∪ q.reverse.support.toFinset) ∪ [v₂].toFinset = s := by
+            rw [← hr, support_append, v41sup, List.tail, support_reverse]
+            aesop
+          use (C₂.Greedy_extend [v₂]).copy heq
+          have : C₂.extend v₂ < k := by
+            apply (extend_lt_of_not_injOn _ _  h1.1 h3.1.symm hne _).trans_le <|
+              (degreeOn_le_degree ..).trans (hbdd v₂)
+            · simp
+            · simp
+            · rw [v41sup, List.tail] at hdisj2
+              rw [Greedy_extend_not_mem, Greedy_extend_not_mem]
+              · rfl
+              · intro hf; rw [support_reverse,List.mem_reverse] at hf; apply hdisj2 hf
+                simp
+              · intro hf; rw [support_reverse,List.mem_reverse] at hf; apply hdisj2 hf
+                simp
+          simp_rw [copy_eq]
+          intro x hx
+          by_cases hxv₂ : x = v₂
+          · rw [hxv₂, C₂.Greedy_extend_head, C₂.Greedy_extend_nil]
+            rwa [copy_extend]
+          · rw [Greedy_extend_not_mem (by simpa using hxv₂)]
+            exact hc2 _
         ·          -- NEXT decide whether concat/cons is correct
           let q₁ := q.takeUntil vⱼ vjm
           let q₂ := q.dropUntil vⱼ vjm

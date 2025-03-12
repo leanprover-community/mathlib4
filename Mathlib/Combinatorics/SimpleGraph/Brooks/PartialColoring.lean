@@ -54,6 +54,7 @@ theorem copy_copy {s t u} (c : G.PartialColoring s) (hs : s = t) (ht : t = u) :
 @[simp]
 lemma copy_eq {s t} (c : G.PartialColoring s) (hs : s = t) (v : α) : (c.copy hs) v = c v := rfl
 
+
 variable [Fintype α] [DecidableRel G.Adj]
 open Finset
 variable {s : Finset α} {b : ℕ} {i : α}
@@ -74,6 +75,13 @@ def extend (C : G.PartialColoring s) (a : α) : ℕ := min' _ <| C.next a
 
 lemma extend_def (C : G.PartialColoring s) (a : α) : C.extend a =
     (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).min' (C.next a) := rfl
+
+@[simp]
+lemma copy_extend (C : G.PartialColoring s) {t : Finset α} (a : α) (h : s = t) :
+     (C.copy h).extend a = C.extend a := by
+  rw [extend_def, extend_def]
+  congr <;>
+  exact h.symm
 
 lemma extend_le_degreeOn (C : G.PartialColoring s) (a : α) : C.extend a ≤ G.degreeOn s a := by
   have ⟨h1, _⟩ := mem_sdiff.1 <| min'_mem _ <| C.next a
