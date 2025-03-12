@@ -255,8 +255,6 @@ lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FR FR_lt i):
 lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f] = Gr(i)[g.comp f] :=
   FilteredAddGroupHom.GradedPieceHom_comp g.1 f.1 i
 
-section DirectSum
-
 open DirectSum
 
 variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
@@ -316,8 +314,6 @@ lemma AssociatedGradedRingHom_apply_of {i : ι} (x : GradedPiece FR FR_lt i) :
 theorem AssociatedGradedRingHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
   (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
-
-end DirectSum
 
 end FilteredRingHom
 
