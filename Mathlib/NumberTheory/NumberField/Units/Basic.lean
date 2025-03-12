@@ -173,19 +173,12 @@ theorem torsion_eq_one_or_neg_one_of_odd_finrank [NumberField K]
       simp [← Units.eq_iff, ← Units.eq_iff, Units.val_neg, Units.val_one, hi]
 
 theorem torsionOrder_eq_two_of_odd_finrank [NumberField K]
-    (h : Odd (Module.finrank ℚ K)) : NumberField.Units.torsionOrder K = 2 := by
+    (h : Odd (Module.finrank ℚ K)) : torsionOrder K = 2 := by
   classical
-  refine PNat.eq (Finset.card_eq_two.2 ?_)
-  use 1 , ⟨-1, neg_one_mem_torsion⟩
-  constructor
-  · intro hc
-    simp [← Subtype.val_inj] at hc
-  · ext x
-    constructor
-    · intro hx
-      rw [Finset.mem_insert, Finset.mem_singleton, ← Subtype.val_inj, ← Subtype.val_inj]
-      exact torsion_eq_one_or_neg_one_of_odd_finrank h x
-    · simp
+  refine PNat.eq (Finset.card_eq_two.2 ⟨1, ⟨-1, neg_one_mem_torsion⟩,
+    by simp [← Subtype.coe_ne_coe], Finset.ext fun x ↦ ⟨fun _ ↦ ?_, fun _ ↦ Finset.mem_univ _⟩⟩)
+  rw [Finset.mem_insert, Finset.mem_singleton, ← Subtype.val_inj, ← Subtype.val_inj]
+  exact torsion_eq_one_or_neg_one_of_odd_finrank h x
 
 end odd
 
