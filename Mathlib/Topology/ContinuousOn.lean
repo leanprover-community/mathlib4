@@ -420,7 +420,7 @@ theorem eventuallyEq_nhdsWithin_iff {f g : α → β} {s : Set α} {a : α} :
     f =ᶠ[𝓝[s] a] g ↔ ∀ᶠ x in 𝓝 a, x ∈ s → f x = g x :=
   mem_inf_principal
 
-/-- The functions agree on a neighborhood of `x` if they agree at `x` and in a punctured
+/-- Two functions agree on a neighborhood of `x` if they agree at `x` and in a punctured
 neighborhood. -/
 theorem eventuallyEq_nhds_of_eventuallyEq_nhdsNE {f g : α → β} {a : α} (h₁ : f =ᶠ[𝓝[≠] a] g)
     (h₂ : f a = g a) :
