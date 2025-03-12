@@ -5743,6 +5743,7 @@ import Mathlib.Topology.EMetricSpace.Diam
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.EMetricSpace.Paracompact
 import Mathlib.Topology.EMetricSpace.Pi
+import Mathlib.Topology.EtaleSpace
 import Mathlib.Topology.ExtendFrom
 import Mathlib.Topology.Exterior
 import Mathlib.Topology.ExtremallyDisconnected

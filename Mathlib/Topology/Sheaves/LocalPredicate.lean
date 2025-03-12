@@ -219,37 +219,31 @@ end subpresheafToTypes
 def subsheafToTypes (P : LocalPredicate T) : Sheaf (Type _) X :=
   ⟨subpresheafToTypes P.toPrelocalPredicate, subpresheafToTypes.isSheaf P⟩
 
-/-- There is a canonical map from the stalk to the original fiber, given by evaluating sections.
--/
-def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.stalk x ⟶ T x := by
-  refine
-    colimit.desc _
-      { pt := T x
-        ι :=
-          { app := fun U f ↦ ?_
-            naturality := ?_ } }
-  · exact f.1 ⟨x, (unop U).2⟩
-  · aesop
+/-- There is a canonical map from the stalk to the original fiber, given by evaluating sections. -/
+def stalkToFiber (P : PrelocalPredicate T) (x : X) : (subpresheafToTypes P).stalk x → T x :=
+  ULift.down ∘ colimit.desc _
+    { pt := ULift (T x)
+      ι := { app := fun U f ↦ ⟨by exact f.1 ⟨x, (unop U).2⟩⟩ } }
 
-theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
-    stalkToFiber P x ((subsheafToTypes P).presheaf.germ U x hx f) = f.1 ⟨x, hx⟩ := by
-  simp [Presheaf.germ, stalkToFiber]
+theorem stalkToFiber_germ (P : PrelocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
+    stalkToFiber P x ((subpresheafToTypes P).germ U x hx f) = f.1 ⟨x, hx⟩ := by
+  simp [stalkToFiber, Presheaf.germ, Colimit.ι_desc_apply]
 
 /-- The `stalkToFiber` map is surjective at `x` if
 every point in the fiber `T x` has an allowed section passing through it.
 -/
-theorem stalkToFiber_surjective (P : LocalPredicate T) (x : X)
+theorem stalkToFiber_surjective (P : PrelocalPredicate T) (x : X)
     (w : ∀ t : T x, ∃ (U : OpenNhds x) (f : ∀ y : U.1, T y) (_ : P.pred f), f ⟨x, U.2⟩ = t) :
     Function.Surjective (stalkToFiber P x) := fun t ↦ by
   rcases w t with ⟨U, f, h, rfl⟩
   fconstructor
-  · exact (subsheafToTypes P).presheaf.germ _ x U.2 ⟨f, h⟩
+  · exact (subpresheafToTypes P).germ _ x U.2 ⟨f, h⟩
   · exact stalkToFiber_germ P U.1 x U.2 ⟨f, h⟩
 
 /-- The `stalkToFiber` map is injective at `x` if any two allowed sections which agree at `x`
 agree on some neighborhood of `x`.
 -/
-theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
+theorem stalkToFiber_injective (P : PrelocalPredicate T) (x : X)
     (w :
       ∀ (U V : OpenNhds x) (fU : ∀ y : U.1, T y) (_ : P.pred fU) (fV : ∀ y : V.1, T y)
         (_ : P.pred fV) (_ : fU ⟨x, U.2⟩ = fV ⟨x, V.2⟩),
@@ -259,9 +253,8 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   -- We promise to provide all the ingredients of the proof later:
   let Q :
     ∃ (W : (OpenNhds x)ᵒᵖ) (s : ∀ w : (unop W).1, T w) (hW : P.pred s),
-      tU = (subsheafToTypes P).presheaf.germ _ x (unop W).2 ⟨s, hW⟩ ∧
-        tV = (subsheafToTypes P).presheaf.germ _ x (unop W).2 ⟨s, hW⟩ :=
-    ?_
+      tU = (subpresheafToTypes P).germ _ x (unop W).2 ⟨s, hW⟩ ∧
+        tV = (subpresheafToTypes P).germ _ x (unop W).2 ⟨s, hW⟩ := ?_
   · choose W s hW e using Q
     exact e.1.trans e.2.symm
   -- Then use induction to pick particular representatives of `tU tV : stalk x`
@@ -269,7 +262,7 @@ theorem stalkToFiber_injective (P : LocalPredicate T) (x : X)
   obtain ⟨V, ⟨fV, hV⟩, rfl⟩ := jointly_surjective' tV
   -- Decompose everything into its constituent parts:
   dsimp
-  simp only [stalkToFiber, Types.Colimit.ι_desc_apply'] at h
+  simp_rw [stalkToFiber, Function.comp_apply, Colimit.ι_desc_apply] at h
   specialize w (unop U) (unop V) fU hU fV hV h
   rcases w with ⟨W, iU, iV, w⟩
   -- and put it back together again in the correct order.
