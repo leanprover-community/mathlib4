@@ -245,7 +245,7 @@ lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr {Y : Ω → ℝ} (
     HasSubgaussianMGF X c κ ν ↔ HasSubgaussianMGF Y c κ ν :=
   ⟨fun hX ↦ congr hX h, fun hY ↦ congr hY (ae_eq_symm h)⟩
 
-protected lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''}
+lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''}
     {Y : Ω'' → Ω} {X : Ω → ℝ} (hY : Measurable Y) (h : HasSubgaussianMGF X c (κ.map Y) ν) :
     HasSubgaussianMGF (X ∘ Y) c κ ν where
   integrable_exp_mul t := by
@@ -343,8 +343,7 @@ variable on the measurable space `Ω × Ω''`) has a sub-Gaussian mgf with respe
 lemma add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) :
     HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ η) ν := by
-  refine .of_rat (integrable_exp_add_compProd hX hY) ?_
-  intro q
+  refine .of_rat (integrable_exp_add_compProd hX hY) fun q ↦ ?_
   filter_upwards [hX.mgf_le, hX.ae_integrable_exp_mul q, Measure.ae_ae_of_ae_compProd hY.mgf_le,
     Measure.ae_integrable_of_integrable_comp <| integrable_exp_add_compProd hX hY q]
     with ω' hX_mgf hX_int hY_mgf h_int_mul
@@ -499,7 +498,7 @@ lemma id_map_iff (hX : AEMeasurable X μ) :
     · fun_prop
   · simpa [Kernel.map_apply _, mgf_id_map hX] using h2
 
-protected lemma trim (hm : m ≤ mΩ) (hXm : Measurable[m] X) (hX : HasSubgaussianMGF X c μ) :
+lemma trim (hm : m ≤ mΩ) (hXm : Measurable[m] X) (hX : HasSubgaussianMGF X c μ) :
     HasSubgaussianMGF X c (μ.trim hm) where
   integrable_exp_mul t := by
     refine (hX.integrable_exp_mul t).trim hm ?_
