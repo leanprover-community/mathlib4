@@ -957,7 +957,7 @@ theorem CPolynomialAt.comp {g : F → G} {f : E → F} {x : E}
 
 /-- If two functions `g` and `f` are continuously polynomial respectively at `f x` and `x`,
 then `g ∘ f` is continuously polynomial at `x`. -/
-theorem CPolynomialAt.comp' {g : F → G} {f : E → F} {x : E}
+theorem CPolynomialAt.fun_comp {g : F → G} {f : E → F} {x : E}
     (hg : CPolynomialAt 𝕜 g (f x)) (hf : CPolynomialAt 𝕜 f x) :
     CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
   hg.comp hf
@@ -969,7 +969,7 @@ theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg
   exact hg.comp hf
 
 /-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
-theorem CPolynomialAt.comp_of_eq' {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
+theorem CPolynomialAt.fun_comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
     (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (fun z ↦ g (f z)) x := by
   apply hg.comp_of_eq hf hy
 
