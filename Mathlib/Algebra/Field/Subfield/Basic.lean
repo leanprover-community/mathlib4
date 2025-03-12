@@ -6,6 +6,7 @@ Authors: Anne Baanen
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.RingTheory.SimpleRing.Basic
 

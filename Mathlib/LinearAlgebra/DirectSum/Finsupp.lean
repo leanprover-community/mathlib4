@@ -276,7 +276,7 @@ theorem finsuppTensorFinsupp_apply (f : ι →₀ M) (g : κ →₀ N) (i : ι) 
     simp [tmul_add, hg₁, hg₂]
   intro k' n
   classical
-  simp_rw [finsuppTensorFinsupp_single, Finsupp.single_apply, Prod.mk.inj_iff, ite_and]
+  simp_rw [finsuppTensorFinsupp_single, Finsupp.single_apply, Prod.mk_inj, ite_and]
   split_ifs <;> simp
 
 @[simp]

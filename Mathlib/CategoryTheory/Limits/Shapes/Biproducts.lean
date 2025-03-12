@@ -374,19 +374,19 @@ instance (priority := 100) hasBiproductsOfShape_finite [HasFiniteBiproducts C] [
 
 instance (priority := 100) hasFiniteProducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasFiniteProducts C where
-  out _ := ⟨fun _ => hasLimitOfIso Discrete.natIsoFunctor.symm⟩
+  out _ := ⟨fun _ => hasLimit_of_iso Discrete.natIsoFunctor.symm⟩
 
 instance (priority := 100) hasFiniteCoproducts_of_hasFiniteBiproducts [HasFiniteBiproducts C] :
     HasFiniteCoproducts C where
-  out _ := ⟨fun _ => hasColimitOfIso Discrete.natIsoFunctor⟩
+  out _ := ⟨fun _ => hasColimit_of_iso Discrete.natIsoFunctor⟩
 
 instance (priority := 100) hasProductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
     HasProductsOfShape J C where
-  has_limit _ := hasLimitOfIso Discrete.natIsoFunctor.symm
+  has_limit _ := hasLimit_of_iso Discrete.natIsoFunctor.symm
 
 instance (priority := 100) hasCoproductsOfShape_of_hasBiproductsOfShape [HasBiproductsOfShape J C] :
     HasCoproductsOfShape J C where
-  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
+  has_colimit _ := hasColimit_of_iso Discrete.natIsoFunctor
 
 variable {C}
 

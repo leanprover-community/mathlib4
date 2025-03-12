@@ -86,12 +86,6 @@ theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
 
 variable [Fintype m]
 
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.single_one_vecMul (since := "2024-08-09")]
-theorem Matrix.vecMul_stdBasis [DecidableEq m] (M : Matrix m n R) (i j) :
-    (LinearMap.stdBasis R (fun _ ↦ R) i 1 ᵥ* M) j = M i j :=
-  congr_fun (Matrix.single_one_vecMul ..) j
-
 theorem range_vecMulLinear (M : Matrix m n R) :
     LinearMap.range M.vecMulLinear = span R (range M) := by
   letI := Classical.decEq m
@@ -259,18 +253,6 @@ theorem Matrix.mulVecLin_mul [Fintype m] (M : Matrix l m R) (N : Matrix m n R) :
 theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
     (LinearMap.ker M.mulVecLin) = ⊥ ↔ ∀ v, M *ᵥ v = 0 → v = 0 := by
   simp only [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
-
-set_option linter.deprecated false in
-@[deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
-theorem Matrix.mulVec_stdBasis [DecidableEq n] (M : Matrix m n R) (i j) :
-    (M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1) i = M i j :=
-  congr_fun (Matrix.mulVec_single_one ..) i
-
-set_option linter.deprecated false in
-@[simp, deprecated Matrix.mulVec_single_one (since := "2024-08-09")]
-theorem Matrix.mulVec_stdBasis_apply [DecidableEq n] (M : Matrix m n R) (j) :
-    M *ᵥ LinearMap.stdBasis R (fun _ ↦ R) j 1 = Mᵀ j :=
-  Matrix.mulVec_single_one ..
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
@@ -966,7 +948,7 @@ by finite types `ι₁` and `ι₂`,
 then `Basis.linearMap b₁ b₂` is the basis of `M₁ →ₗ[R] M₂` indexed by `ι₂ × ι₁`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
-@[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
+@[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
 def linearMap (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) :
     Basis (ι₂ × ι₁) R (M₁ →ₗ[R] M₂) :=
@@ -992,7 +974,7 @@ If `M` is a module with basis `b` indexed by a finite type `ι`,
 then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
-@[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
+@[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
 abbrev _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b

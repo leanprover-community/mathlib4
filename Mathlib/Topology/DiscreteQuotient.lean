@@ -5,6 +5,7 @@ Authors: Calle Sönne, Adam Topaz
 -/
 import Mathlib.Data.Setoid.Partition
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 
@@ -150,7 +151,7 @@ instance : Inhabited (DiscreteQuotient X) := ⟨⊤⟩
 
 instance inhabitedQuotient [Inhabited X] : Inhabited S := ⟨S.proj default⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
+-- TODO: add instances about `Nonempty (Quot _)`/`Nonempty (Quotient _)`
 instance [Nonempty X] : Nonempty S := Nonempty.map S.proj ‹_›
 
 /-- The quotient by `⊤ : DiscreteQuotient X` is a `Subsingleton`. -/

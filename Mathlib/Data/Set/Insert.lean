@@ -3,8 +3,8 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.One.Defs
+import Mathlib.Algebra.Notation.Defs
+import Mathlib.Data.Set.Disjoint
 
 /-!
 # Lemmas about insertion, singleton, and pairs
@@ -130,8 +130,6 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
     (x) (h : x ∈ insert a s) : P x :=
   h.elim (fun e => e.symm ▸ ha) (H _)
 
-/- Porting note: ∃ x ∈ insert a s, P x is parsed as ∃ x, x ∈ insert a s ∧ P x,
- where in Lean3 it was parsed as `∃ x, ∃ (h : x ∈ insert a s), P x` -/
 theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
@@ -184,7 +182,7 @@ theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
 
 -- TODO: again, annotation needed
---Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute
+-- Not `@[simp]` since `mem_singleton_iff` proves it.
 theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 
@@ -514,7 +512,6 @@ namespace Set
 
 variable {α : Type u} (s t : Set α) (a b : α)
 
--- Porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
   inferInstanceAs (Decidable (a = b))
 

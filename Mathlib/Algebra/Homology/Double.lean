@@ -152,7 +152,7 @@ end
 /-- Let `c : ComplexShape ι`, and `i₀` and `i₁` be distinct indices such
 that `hi₀₁ : c.Rel i₀ i₁`, then for any `X : C`, the functor which sends
 `K : HomologicalComplex C c` to `X ⟶ K.X i` is corepresentable by `double (𝟙 X) hi₀₁`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def evalCompCoyonedaCorepresentableByDoubleId (h : i₀ ≠ i₁) (X : C) :
     (eval C c i₀ ⋙ coyoneda.obj (op X)).CorepresentableBy (double (𝟙 X) hi₀₁) where
   homEquiv {K} :=
@@ -172,7 +172,7 @@ variable {ι : Type*} (c : ComplexShape ι)
 /-- If `i` has no successor for the complex shape `c`,
 then for any `X : C`, the functor which sends `K : HomologicalComplex C c`
 to `X ⟶ K.X i` is corepresentable by `(single C c i).obj X`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq ι]
     (hi : ∀ (j : ι), ¬ c.Rel i j) (X : C) :
     (eval C c i ⋙ coyoneda.obj (op X)).CorepresentableBy ((single C c i).obj X) where

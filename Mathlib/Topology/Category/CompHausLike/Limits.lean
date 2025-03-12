@@ -137,7 +137,7 @@ attribute [instance] HasExplicitFiniteCoproducts.hasProp
 
 instance [HasExplicitFiniteCoproducts.{w} P] (α : Type w) [Finite α] :
     HasColimitsOfShape (Discrete α) (CompHausLike P) where
-  has_colimit _ := hasColimitOfIso Discrete.natIsoFunctor
+  has_colimit _ := hasColimit_of_iso Discrete.natIsoFunctor
 
 instance [HasExplicitFiniteCoproducts.{w} P] : HasFiniteCoproducts (CompHausLike.{max u w} P) where
   out n := by
@@ -311,7 +311,7 @@ class HasExplicitPullbacks : Prop where
 attribute [instance] HasExplicitPullbacks.hasProp
 
 instance [HasExplicitPullbacks P] : HasPullbacks (CompHausLike P) where
-  has_limit F := hasLimitOfIso (diagramIsoCospan F).symm
+  has_limit F := hasLimit_of_iso (diagramIsoCospan F).symm
 
 variable (P) in
 /--

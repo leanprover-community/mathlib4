@@ -35,7 +35,6 @@ namespace Trivial
 
 variable (B : Type*) (F : Type*)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added name for this instance.
 -- TODO: use `TotalSpace.toProd`
 instance topologicalSpace [t₁ : TopologicalSpace B]
     [t₂ : TopologicalSpace F] : TopologicalSpace (TotalSpace F (Trivial B F)) :=
@@ -54,7 +53,6 @@ def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
 
 /-- Local trivialization for trivial bundle. -/
 def trivialization : Trivialization F (π F (Bundle.Trivial B F)) where
-  -- Porting note: golfed
   toPartialHomeomorph := (homeomorphProd B F).toPartialHomeomorph
   baseSet := univ
   open_baseSet := isOpen_univ
@@ -148,7 +146,7 @@ theorem Prod.continuous_to_fun : ContinuousOn (Prod.toFun' e₁ e₂)
   · rw [e₁.source_eq, e₂.source_eq]
     exact mapsTo_preimage _ _
   rintro ⟨b, v₁, v₂⟩ ⟨hb₁, _⟩
-  simp only [f₁, f₂, f₃, Prod.toFun', Prod.mk.inj_iff, Function.comp_apply, and_true]
+  simp only [f₁, f₂, f₃, Prod.toFun', Prod.mk_inj, Function.comp_apply, and_true]
   rw [e₁.coe_fst]
   rw [e₁.source_eq, mem_preimage]
   exact hb₁
@@ -298,7 +296,6 @@ theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberB
 variable {E F}
 variable [∀ _b, Zero (E _b)] {K : Type U} [FunLike K B' B] [ContinuousMapClass K B' B]
 
--- Porting note: universe levels are explicitly provided
 /-- A fiber bundle trivialization can be pulled back to a trivialization on the pullback bundle. -/
 noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K) :
     Trivialization F (π F ((f : B' → B) *ᵖ E)) where
@@ -309,7 +306,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   target := (f ⁻¹' e.baseSet) ×ˢ univ
   map_source' x h := by
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj] at h
-    simp_rw [prod_mk_mem_set_prod_eq, mem_univ, and_true, mem_preimage, h]
+    simp_rw [prodMk_mem_set_prod_eq, mem_univ, and_true, mem_preimage, h]
   map_target' y h := by
     rw [mem_prod, mem_preimage] at h
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj, h.1]

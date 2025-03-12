@@ -122,10 +122,20 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
 
 namespace Submonoid
 
+/-- The actual `Submonoid` obtained from an element of a `SubmonoidClass` -/
+@[to_additive "The actual `AddSubmonoid` obtained from an element of a `AddSubmonoidClass`"]
+def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
+  ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
+
 @[to_additive]
 instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
+
+@[to_additive]
+instance : CanLift (Set M) (Submonoid M) (↑)
+    (fun s ↦ 1 ∈ s ∧ ∀ {x y}, x ∈ s → y ∈ s → x * y ∈ s) where
+  prf s h := ⟨{ carrier := s, one_mem' := h.1, mul_mem' := h.2 }, rfl⟩
 
 @[to_additive]
 instance : SubmonoidClass (Submonoid M) M where

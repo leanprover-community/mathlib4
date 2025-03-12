@@ -25,6 +25,8 @@ for `PseudoMetricSpace`s in `PseudoMetric.lean`.
 metric, pseudo_metric, dist
 -/
 
+assert_not_exists Finset.sum
+
 open Set Filter Bornology
 open scoped NNReal Uniformity
 

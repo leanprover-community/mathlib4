@@ -122,7 +122,6 @@ filter `p` if, for any entourage of the diagonal `u`, one has `p`-eventually
 def TendstoUniformly (F : ι → α → β) (f : α → β) (p : Filter ι) :=
   ∀ u ∈ 𝓤 β, ∀ᶠ n in p, ∀ x : α, (f x, F n x) ∈ u
 
--- Porting note: moved from below
 theorem tendstoUniformlyOn_univ : TendstoUniformlyOn F f p univ ↔ TendstoUniformly F f p := by
   simp [TendstoUniformlyOn, TendstoUniformly]
 
@@ -163,8 +162,6 @@ theorem TendstoUniformlyOn.tendsto_at (h : TendstoUniformlyOn F f p s) {x : α} 
 theorem TendstoUniformly.tendsto_at (h : TendstoUniformly F f p) (x : α) :
     Tendsto (fun n => F n x) p <| 𝓝 (f x) :=
   h.tendstoUniformlyOnFilter.tendsto_at le_top
-
--- Porting note: tendstoUniformlyOn_univ moved up
 
 theorem TendstoUniformlyOnFilter.mono_left {p'' : Filter ι} (h : TendstoUniformlyOnFilter F f p p')
     (hp : p'' ≤ p) : TendstoUniformlyOnFilter F f p'' p' := fun u hu =>
@@ -608,7 +605,6 @@ theorem TendstoLocallyUniformlyOn.mono (h : TendstoLocallyUniformlyOn F f p s) (
   rcases h u hu x (h' hx) with ⟨t, ht, H⟩
   exact ⟨t, nhdsWithin_mono x h' ht, H.mono fun n => id⟩
 
--- Porting note: generalized from `Type` to `Sort`
 theorem tendstoLocallyUniformlyOn_iUnion {ι' : Sort*} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
     (h : ∀ i, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i, S i) :=
@@ -632,8 +628,6 @@ theorem TendstoLocallyUniformlyOn.union {s₁ s₂ : Set α} (hs₁ : IsOpen s�
     TendstoLocallyUniformlyOn F f p (s₁ ∪ s₂) := by
   rw [← sUnion_pair]
   refine tendstoLocallyUniformlyOn_sUnion _ ?_ ?_ <;> simp [*]
-
--- Porting note: tendstoLocallyUniformlyOn_univ moved up
 
 protected theorem TendstoLocallyUniformly.tendstoLocallyUniformlyOn
     (h : TendstoLocallyUniformly F f p) : TendstoLocallyUniformlyOn F f p s :=

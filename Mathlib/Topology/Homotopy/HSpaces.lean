@@ -70,7 +70,6 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
--- Porting note: opening `HSpaces` so that the above notation works
 open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
@@ -78,7 +77,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
   hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
-    simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
+    simp only [ContinuousMap.coe_mk, Prod.mk_inj]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
@@ -89,7 +88,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
@@ -100,7 +99,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 
 

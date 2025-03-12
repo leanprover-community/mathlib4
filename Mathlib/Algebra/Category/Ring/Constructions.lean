@@ -332,16 +332,15 @@ open CategoryTheory.Limits.WalkingParallelPair Opposite
 
 open CategoryTheory.Limits.WalkingParallelPairHom
 
-instance equalizer_ι_is_local_ring_hom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
+instance equalizer_ι_isLocalHom' (F : WalkingParallelPairᵒᵖ ⥤ CommRingCat.{u}) :
     IsLocalHom (limit.π F (Opposite.op WalkingParallelPair.one)).hom := by
-  have : _ = limit.π F (walkingParallelPairOpEquiv.functor.obj _) :=
-    (limit.isoLimitCone_inv_π
-        ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
-        WalkingParallelPair.zero :)
-  erw [← this]
+  have := limit.isoLimitCone_inv_π
+    ⟨_, IsLimit.whiskerEquivalence (limit.isLimit F) walkingParallelPairOpEquiv⟩
+        WalkingParallelPair.zero
+  dsimp at this
+  rw [← this]
   -- note: this was not needed before https://github.com/leanprover-community/mathlib4/pull/19757
-  haveI : IsLocalHom (limit.π (walkingParallelPairOpEquiv.functor ⋙ F) zero).hom := by
-    infer_instance
+  have : IsLocalHom (limit.π (walkingParallelPairOp ⋙ F) zero).hom := by infer_instance
   infer_instance
 
 end Equalizer

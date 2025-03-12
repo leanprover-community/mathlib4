@@ -391,7 +391,7 @@ theorem subtypeDomain_sum {ι} {β : ι → Type v} [∀ i, AddCommMonoid (β i)
   map_sum (subtypeDomainAddMonoidHom β p) _ s
 
 theorem subtypeDomain_finsupp_sum {ι} {β : ι → Type v} {δ : γ → Type x} [DecidableEq γ]
-    [∀ c, Zero (δ c)]  [∀ (c) (x : δ c), Decidable (x ≠ 0)]
+    [∀ c, Zero (δ c)] [∀ (c) (x : δ c), Decidable (x ≠ 0)]
     [∀ i, AddCommMonoid (β i)] {p : ι → Prop} [DecidablePred p]
     {s : Π₀ c, δ c} {h : ∀ c, δ c → Π₀ i, β i} :
     (s.sum h).subtypeDomain p = s.sum fun c d => (h c d).subtypeDomain p :=

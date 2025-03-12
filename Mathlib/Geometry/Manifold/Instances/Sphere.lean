@@ -561,8 +561,7 @@ instance : LieGroup (𝓡 1) ω Circle where
     -- Porting note: needed to fill in first 3 arguments or could not figure out typeclasses
     suffices h₁ : ContMDiff ((𝓡 1).prod (𝓡 1)) (𝓘(ℝ, ℂ).prod 𝓘(ℝ, ℂ)) ω (Prod.map c c) from
       h₂.comp h₁
-    apply ContMDiff.prod_map <;>
-    exact contMDiff_coe_sphere
+    apply ContMDiff.prodMap <;> exact contMDiff_coe_sphere
   contMDiff_inv := by
     apply ContMDiff.codRestrict_sphere
     simp only [← Circle.coe_inv, Circle.coe_inv_eq_conj]

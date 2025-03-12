@@ -299,12 +299,17 @@ lemma add_lt_add_iff_right {k : ℕ∞} (h : k ≠ ⊤) : n + k < m + k ↔ n < 
 lemma add_lt_add_iff_left {k : ℕ∞} (h : k ≠ ⊤) : k + n < k + m ↔ n < m :=
   WithTop.add_lt_add_iff_left h
 
-protected lemma exists_nat_gt {n : ℕ∞} (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
-  lift n to ℕ using hn
-  obtain ⟨m, hm⟩ := exists_gt n
-  exact ⟨m, Nat.cast_lt.2 hm⟩
+lemma ne_top_iff_exists : n ≠ ⊤ ↔ ∃ m : ℕ, ↑m = n := WithTop.ne_top_iff_exists
 
-lemma ne_top_iff_exists {x : ℕ∞} : x ≠ ⊤ ↔ ∃ a : ℕ, ↑a = x := WithTop.ne_top_iff_exists
+lemma eq_top_iff_forall_ne : (∀ m : ℕ, ↑m ≠ n) ↔ n = ⊤ := WithTop.forall_ne_iff_eq_top
+
+lemma eq_top_iff_forall_lt : (∀ m : ℕ, m < n) ↔ n = ⊤ := WithTop.forall_gt_iff_eq_top
+
+lemma eq_top_iff_forall_le : (∀ m : ℕ, m ≤ n) ↔ n = ⊤ := WithTop.forall_ge_iff_eq_top
+
+protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
+  simp_rw [lt_iff_not_ge n]
+  exact not_forall.mp <| eq_top_iff_forall_le.mp.mt hn
 
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
@@ -398,7 +403,7 @@ protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F ℕ 
   WithTop.map_add f a b
 
 /-- A version of `ENat.map` for `OneHom`s. -/
--- @[to_additive (attr := simps (config := .asFn))
+-- @[to_additive (attr := simps -fullyApplied)
 --   "A version of `ENat.map` for `ZeroHom`s"]
 protected def _root_.OneHom.ENatMap {N : Type*} [One N] (f : OneHom ℕ N) :
     OneHom ℕ∞ (WithTop N) where
@@ -412,20 +417,20 @@ protected def _root_.ZeroHom.ENatMap {N : Type*} [Zero N] (f : ZeroHom ℕ N) :
   map_zero' := by simp
 
 /-- A version of `WithTop.map` for `AddHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddHom.ENatMap {N : Type*} [Add N] (f : AddHom ℕ N) :
     AddHom ℕ∞ (WithTop N) where
   toFun := ENat.map f
   map_add' := ENat.map_add f
 
 /-- A version of `WithTop.map` for `AddMonoidHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.AddMonoidHom.ENatMap {N : Type*} [AddZeroClass N]
     (f : ℕ →+ N) : ℕ∞ →+ WithTop N :=
   { ZeroHom.ENatMap f.toZeroHom, AddHom.ENatMap f.toAddHom with toFun := ENat.map f }
 
 /-- A version of `ENat.map` for `MonoidWithZeroHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [DecidableEq S]
     [Nontrivial S] (f : ℕ →*₀ S)
     (hf : Function.Injective f) : ℕ∞ →*₀ WithTop S :=
@@ -447,7 +452,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
         simp only [map_coe, ← coe_mul, map_mul, WithTop.coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def _root_.RingHom.ENatMap {S : Type*} [OrderedCommSemiring S] [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}

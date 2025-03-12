@@ -195,7 +195,7 @@ def preordToPartOrdForgetAdjunction :
 -- The `simpNF` linter would complain as `Functor.comp_obj`, `Preord.dual_obj` both apply to LHS
 -- of `preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_hom_app_coe`
 /-- `PreordToPartOrd` and `OrderDual` commute. -/
-@[simps! inv_app_hom_coe, simps! (config := .lemmasOnly) hom_app_hom_coe]
+@[simps! inv_app_hom_coe, simps! -isSimp hom_app_hom_coe]
 def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
     preordToPartOrd.{u} ⋙ PartOrd.dual ≅ Preord.dual ⋙ preordToPartOrd :=
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)

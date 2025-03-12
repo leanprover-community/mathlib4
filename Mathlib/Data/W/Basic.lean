@@ -75,7 +75,7 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β where
 def elim (γ : Type*) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
   | ⟨a, f⟩ => fγ ⟨a, fun b => elim γ fγ (f b)⟩
 
-theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
+theorem elim_injective (γ : Type*) (fγ : (Σ a : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
   | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)

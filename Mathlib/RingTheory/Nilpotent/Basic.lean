@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
 import Mathlib.RingTheory.Nilpotent.Defs

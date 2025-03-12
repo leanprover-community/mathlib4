@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp, Yury Kudryashov, Yaël Dillies
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Synonym
+import Mathlib.Algebra.Ring.Action.Pointwise.Set
 import Mathlib.Analysis.Convex.Star
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.NoncommRing
@@ -647,7 +648,7 @@ section OrderedRing
 variable (𝕜) [OrderedRing 𝕜]
 
 /-- The standard one-dimensional simplex in `Fin 2 → 𝕜` is equivalent to the unit interval. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
   toFun f := ⟨f.1 0, f.2.1 _, f.2.2 ▸
     Finset.single_le_sum (fun i _ ↦ f.2.1 i) (Finset.mem_univ _)⟩

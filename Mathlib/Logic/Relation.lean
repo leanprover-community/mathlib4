@@ -187,8 +187,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
-    -- Porting note: Lean 3 did not need the motive
-    ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
+    ⟨a', by simp_all [InvImage], he⟩
 
 end Fibration
 
@@ -221,6 +220,10 @@ lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → P
 
 instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
   ‹Decidable _›
+
+lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    Symmetric (Relation.Map r f f) := by
+  rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
 
 end Map
 
@@ -713,8 +716,5 @@ theorem Equivalence.eqvGen_iff (h : Equivalence r) : EqvGen r a b ↔ r a b :=
 
 theorem Equivalence.eqvGen_eq (h : Equivalence r) : EqvGen r = r :=
   funext fun _ ↦ funext fun _ ↦ propext <| h.eqvGen_iff
-
-@[deprecated (since := "2024-08-29")] alias Quot.exact := Quot.eqvGen_exact
-@[deprecated (since := "2024-08-29")] alias Quot.EqvGen_sound := Quot.eqvGen_sound
 
 end EqvGen

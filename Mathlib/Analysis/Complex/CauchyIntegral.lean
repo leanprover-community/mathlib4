@@ -583,6 +583,10 @@ protected theorem _root_.DifferentiableOn.contDiffOn {s : Set ℂ} {f : ℂ → 
     (hd : DifferentiableOn ℂ f s) (hs : IsOpen s) : ContDiffOn ℂ n f s :=
   (hd.analyticOnNhd hs).contDiffOn_of_completeSpace
 
+theorem _root_.DifferentiableOn.deriv {s : Set ℂ} {f : ℂ → E} (hd : DifferentiableOn ℂ f s)
+    (hs : IsOpen s) : DifferentiableOn ℂ (deriv f) s :=
+  (hd.analyticOnNhd hs).deriv.differentiableOn
+
 /-- A complex differentiable function `f : ℂ → E` is analytic at every point. -/
 protected theorem _root_.Differentiable.analyticAt {f : ℂ → E} (hf : Differentiable ℂ f) (z : ℂ) :
     AnalyticAt ℂ f z :=

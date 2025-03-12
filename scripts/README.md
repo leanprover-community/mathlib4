@@ -14,7 +14,7 @@ to learn about it as well!
   https://leanprover-community.github.io/install/macos.html
   If these web pages are deprecated or removed, we should remove these scripts.
 
-**Tool for manual maintenance**
+**Tools for manual maintenance**
 - `fix_unused.py`
   Bulk processing of unused variable warnings, replacing them with `_`.
 - `add_deprecations.sh` is a text-based script that automatically adds deprecation statements.
@@ -71,6 +71,11 @@ to learn about it as well!
   and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
   It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
   If there are more conflicts, it will bail.
+
+**Managing downstream repos**
+- `downstream_repos.yml` contains basic information about significant downstream repositories.
+- `downstream-tags.py` is a script to check whether a given tag exists on the downstream
+  repositories listed in `downstream_repos.yml`.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`

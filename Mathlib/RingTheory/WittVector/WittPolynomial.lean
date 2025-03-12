@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Expand
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
 

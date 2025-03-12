@@ -3,10 +3,10 @@ Copyright (c) 2018 Mitchell Rowett. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Rowett, Kim Morrison
 -/
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Quotient
 import Mathlib.Data.Fintype.Card
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Coset.Defs
 
@@ -227,13 +227,16 @@ theorem leftRel_r_eq_leftCosetEquivalence :
   rw [leftRel_eq]
   exact (leftCoset_eq_iff s).symm
 
-@[to_additive]
+@[to_additive leftRel_prod]
 lemma leftRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
     leftRel (s.prod s') = (leftRel s).prod (leftRel s') := by
   refine Setoid.ext fun x y ↦ ?_
   rw [Setoid.prod_apply]
   simp_rw [leftRel_apply]
   rfl
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.QuotientAddGroup.leftRel_sum := QuotientAddGroup.leftRel_prod
 
 @[to_additive]
 lemma leftRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :
@@ -247,13 +250,16 @@ theorem rightRel_r_eq_rightCosetEquivalence :
   rw [rightRel_eq]
   exact (rightCoset_eq_iff s).symm
 
-@[to_additive]
+@[to_additive rightRel_prod]
 lemma rightRel_prod {β : Type*} [Group β] (s' : Subgroup β) :
     rightRel (s.prod s') = (rightRel s).prod (rightRel s') := by
   refine Setoid.ext fun x y ↦ ?_
   rw [Setoid.prod_apply]
   simp_rw [rightRel_apply]
   rfl
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.QuotientAddGroup.rightRel_sum := QuotientAddGroup.rightRel_prod
 
 @[to_additive]
 lemma rightRel_pi {ι : Type*} {β : ι → Type*} [∀ i, Group (β i)] (s' : ∀ i, Subgroup (β i)) :

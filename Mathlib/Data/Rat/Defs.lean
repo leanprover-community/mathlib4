@@ -440,11 +440,15 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 end Casts
 
 /--
-A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as `cases' q` for `q : Rat`.
+A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as
+```lean
+cases r with
+| div p q nonzero coprime =>
+```
 -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def divCasesOn {C : ℚ → Sort*} (a : ℚ)
-    (h : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
-  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact h n d nz red
+    (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
+  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
 
 end Rat

@@ -93,7 +93,10 @@ theorem IsPushout.isVanKampen_iff (H : IsPushout f g h i) :
       · dsimp; simp only [Functor.map_id, Category.comp_id, Category.id_comp]
       exacts [hf.w, hg.w]
     · ext (_ | _ | _)
-      · dsimp; rw [PushoutCocone.condition_zero]; erw [Category.assoc, hh.w, hf.w_assoc]
+      · dsimp
+        rw [PushoutCocone.condition_zero, Category.assoc]
+        erw [hh.w]
+        rw [hf.w_assoc]
       exacts [hh.w.symm, hi.w.symm]
     · rintro i _ (_ | _ | _)
       · dsimp; simp_rw [Functor.map_id]
@@ -128,14 +131,20 @@ theorem is_coprod_iff_isPushout {X E Y YE : C} (c : BinaryCofan X E) (hc : IsCol
     · exact fun s => H.isColimit.desc (PushoutCocone.mk s.inr _ <|
         (hc.fac (BinaryCofan.mk (f ≫ s.inr) s.inl) ⟨WalkingPair.left⟩).symm)
     · intro s
-      erw [Category.assoc, H.isColimit.fac _ WalkingSpan.right, hc.fac]; rfl
+      rw [Category.assoc]
+      erw [H.isColimit.fac _ WalkingSpan.right]
+      erw [hc.fac]
+      rfl
     · intro s; exact H.isColimit.fac _ WalkingSpan.left
     · intro s m e₁ e₂
       apply PushoutCocone.IsColimit.hom_ext H.isColimit
       · symm; exact (H.isColimit.fac _ WalkingSpan.left).trans e₂.symm
       · rw [H.isColimit.fac _ WalkingSpan.right]
         apply BinaryCofan.IsColimit.hom_ext hc
-        · erw [hc.fac, ← H.w_assoc, e₂]; rfl
+        · erw [hc.fac]
+          erw [← H.w_assoc]
+          rw [e₂]
+          rfl
         · refine ((Category.assoc _ _ _).symm.trans e₁).trans ?_; symm; exact hc.fac _ _
 
 theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryExtensive C]
