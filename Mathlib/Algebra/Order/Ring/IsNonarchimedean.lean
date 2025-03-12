@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández, Fabrizio Barroero
 -/
 
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Hom.Basic
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Nat.Choose.Sum
 
 /-!
 # Nonarchimedean functions
@@ -114,5 +113,76 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
     exact (max_eq_right_of_lt h_lt).symm
   · rw [add_eq_left_of_lt hna h_lt]
     exact Eq.symm (max_eq_left_of_lt h_lt)
+
+
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
+  `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
+  `f (t.sum g) ≤ f (g b)` . -/
+theorem finset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
+    (g : β → α) (t : Finset β) :
+    ∃ b : β, (t.Nonempty → b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
+  by_cases h : ¬ t.Nonempty;
+  · simp_all
+  · rw [not_not] at h
+    have := apply_sum_le_sup_of_isNonarchimedean (l := g) hna h
+    obtain ⟨b, hb⟩ := Finset.exists_mem_eq_sup' h (fun i => f (g i))
+    refine ⟨b, fun _ ↦ hb.1, ?_⟩
+    rw [← hb.2]
+    exact this
+
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
+  nonempty finset `t : Finset β`, we can always find `b : β` belonging to `t` such that
+  `f (t.sum g) ≤ f (g b)` . -/
+theorem finset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
+    (g : β → α) {t : Finset β} (ht : t.Nonempty) :
+    ∃ b : β, (b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
+  obtain ⟨b, hbt, hbf⟩ := finset_image_add hna g t
+  exact ⟨b, hbt ht, hbf⟩
+
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
+  multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
+  such that `f (s.sum g) ≤ f (g b)` . -/
+theorem multiset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
+    (g : β → α) (s : Multiset β) :
+    ∃ b : β, (s ≠ 0 → b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons a s h =>
+    simp only [ne_eq, Multiset.cons_ne_zero, not_false_eq_true, Multiset.mem_cons, forall_const,
+      Multiset.map_cons, Multiset.sum_cons, exists_eq_or_imp]
+    by_cases h1 : s = 0
+    · simp [h1]
+    · obtain ⟨w, h2, h3⟩ := h
+      rcases le_max_iff.mp <| hna (g a) (Multiset.map g s).sum with h4 | h4
+      · exact .inl h4
+      · exact .inr ⟨w, h2 h1, le_trans h4 h3⟩
+
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
+  nonempty multiset `s : Multiset β`, we can always find `b : β` belonging to `s` such that
+  `f (t.sum g) ≤ f (g b)` . -/
+theorem multiset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
+    (g : β → α) {s : Multiset β} (hs : s ≠ 0) :
+    ∃ b : β, (b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
+  obtain ⟨b, hbs, hbf⟩ := multiset_image_add hna g s
+  exact ⟨b, hbs hs, hbf⟩
+
+/-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
+  `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
+  `f ((a + b) ^ n) ≤ (f (a ^ m)) * (f (b ^ (n - m)))`. -/
+theorem add_pow_le {F α : Type*} [CommRing α] [FunLike F α R]
+    [RingSeminormClass F α R] {f : F} (hna : IsNonarchimedean f) (n : ℕ) (a b : α) :
+    ∃ m < n + 1, f ((a + b) ^ n) ≤ f (a ^ m) * f (b ^ (n - m)) := by
+  obtain ⟨m, hm_lt, hM⟩ := finset_image_add hna
+    (fun m => a ^ m * b ^ (n - m) * ↑(n.choose m)) (Finset.range (n + 1))
+  simp only [Finset.nonempty_range_iff, ne_eq, Nat.succ_ne_zero, not_false_iff, Finset.mem_range,
+    if_true, forall_true_left] at hm_lt
+  refine ⟨m, hm_lt, ?_⟩
+  simp only [← add_pow] at hM
+  rw [mul_comm] at hM
+  exact le_trans hM (le_trans (nmul_le hna) (map_mul_le_mul _ _ _))
 
 end IsNonarchimedean
