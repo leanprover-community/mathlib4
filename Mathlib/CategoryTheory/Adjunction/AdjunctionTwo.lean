@@ -14,6 +14,15 @@ this file introduces adjunctions `F ⊣₂ G`.
 (See `MonoidalClosed.internalHomAdjunction₂` in the file
 `CategoryTheory.Closed.Monoidal` for an example of such an adjunction.)
 
+Note: this notion is weaker than the notion of
+"adjunction of two variables" which appear in the mathematical literature.
+In order to have an adjunction of two variables, we would need
+a third functor `H : C₂ᵒᵖ ⥤ C₃ ⥤ C₁` and two adjunctions of
+bifunctors `F ⊣₂ G` and `F.flip ⊣₂ H`.
+
+## References
+* https://ncatlab.org/nlab/show/two-variable+adjunction
+
 -/
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
@@ -37,6 +46,7 @@ structure Adjunction₂ where
     (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
       (adj X₁).homEquiv X₂ X₃ ((F.map f).app X₂ ≫ g) =
         (adj Y₁).homEquiv X₂ X₃ g ≫ (G.map f.op).app X₃ := by aesop_cat
+
 
 /-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
 representing that the bifunctor `F` is left adjoint to `G` -/
