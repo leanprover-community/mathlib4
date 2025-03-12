@@ -133,6 +133,15 @@ theorem eventually_eq_or_eventually_ne (hf : AnalyticAt 𝕜 f z₀) (hg : Analy
     (∀ᶠ z in 𝓝 z₀, f z = g z) ∨ ∀ᶠ z in 𝓝[≠] z₀, f z ≠ g z := by
   simpa [sub_eq_zero] using (hf.sub hg).eventually_eq_zero_or_eventually_ne_zero
 
+/-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood. -/
+theorem eventuallyEq_nhd_iff_eventuallyEq_nhdNE (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+  f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g := by
+  constructor <;> intro hfg
+  · rcases ((hf.sub hg).eventually_eq_zero_or_eventually_ne_zero) with h | h
+    · exact Filter.eventuallyEq_iff_sub.2 h
+    · simpa using (Filter.eventually_and.2 ⟨Filter.eventuallyEq_iff_sub.mp hfg, h⟩).exists
+  · exact hfg.filter_mono nhdsWithin_le_nhds
+
 theorem frequently_zero_iff_eventually_zero {f : 𝕜 → E} {w : 𝕜} (hf : AnalyticAt 𝕜 f w) :
     (∃ᶠ z in 𝓝[≠] w, f z = 0) ↔ ∀ᶠ z in 𝓝 w, f z = 0 :=
   ⟨hf.eventually_eq_zero_or_eventually_ne_zero.resolve_right, fun h =>
