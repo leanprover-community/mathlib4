@@ -84,6 +84,14 @@ theorem range_finsetBasis [IsNoetherian K V] :
 
 variable {K V}
 
+-- should this go in a namespace?
+-- finite_dimensional would be natural,
+-- but we don't assume it...
+theorem _root_.card_eq_pow_finrank [Fintype K] [Fintype V] :
+    Fintype.card V = Fintype.card K ^ Module.finrank K V := by
+  let b := IsNoetherian.finsetBasis K V
+  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
+
 /-- A module over a division ring is noetherian if and only if it is finitely generated. -/
 theorem iff_fg : IsNoetherian K V ↔ Module.Finite K V := by
   constructor
