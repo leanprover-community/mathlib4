@@ -14,6 +14,12 @@ import Mathlib.Tactic.TautoSet
 This module defines a `norm_num` extension for `Irrational x^y` for rational `x` and `y`. It also
 supports `Irrational √x` expressions.
 
+## Implementation details
+To prove that `(a / b)^(p / q)` is irrational, we reduce the problem to showing that `(a / b)^p` is
+not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a^p` or
+`b^p` is not a `q`-th power of a natural number. To show that a given `n : ℕ` is not a `q`-th power,
+we find a natural number `k` such that `k^q < n < (k + 1)^q`, using binary search.
+
 ## TODO
 Disprove `Irrational x` for rational `x`.
 
@@ -30,59 +36,15 @@ section lemmas
 private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
     (h : ¬ ∃ p : ℚ, q^a = p^b) (hb : 0 < b) (hq : 0 ≤ q) :
     Irrational (Real.rpow q (a / b : ℚ)) := by
-  simp at h
-  simp [Irrational]
+  simp only [not_exists] at h
+  simp only [Irrational, Rat.cast_div, Rat.cast_natCast, Real.rpow_eq_pow, Set.mem_range,
+    not_exists]
   intro x hx
-  specialize h x
-  absurd h
+  absurd h x
   rify
-  rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀]
-  · simp
-  · simp
-    omega
-  · simpa
-
-private theorem irrational_rpow_nat_of_not_power_aux {n : ℕ} {a b : ℕ}
-    (h : ¬ ∃ m : ℤ, n^a = m^b) (hb : 0 < b) :
-    Irrational (Real.rpow n (a / b : ℚ)) := by
-  simp at h
-  simp [Irrational]
-  intro q hq
-  have h' : q ^ b = (n ^ a : ℕ) := by
-    rify
-    rw [hq, ← Real.rpow_mul_natCast, div_mul_cancel₀]
-    · simp
-    · simp; omega
-    · simp
-  have : (q ^ b).den = 1 := by simp [h']
-  rw [Rat.den_pow] at this
-  simp [show b ≠ 0 by omega] at this
-  rw [Rat.den_eq_one_iff] at this
-  rw [← this] at h'
-  specialize h q.num
-  qify at h
-  simp [h'] at h
-
-private theorem irrational_rpow_nat_of_not_power {n : ℕ} {a b : ℕ}
-    (h : ¬ ∃ m : ℕ, n^a = m^b) (hb : 0 < b) :
-    Irrational (Real.rpow n (a / b : ℚ)) := by
-  apply irrational_rpow_nat_of_not_power_aux _ hb
-  intro ⟨m, hm⟩
-  push_neg at h
-  specialize h m.natAbs
-  zify at h
-  by_cases hm' : 0 ≤ m
-  · rw [← abs_of_nonneg hm'] at hm
-    contradiction
-  rw [abs_of_neg (by linarith)] at h
-  rcases b.even_or_odd with (h_even | h_odd)
-  · rw [h_even.neg_pow] at h
-    contradiction
-  · have : 0 ≤ m ^ b := by
-      rw [← hm]
-      positivity
-    rw [h_odd.pow_nonneg_iff] at this
-    contradiction
+  rw [hx, ← Real.rpow_mul_natCast, div_mul_cancel₀] <;> simp
+  · omega
+  · assumption
 
 private theorem not_power_nat_of_bounds {n k d : ℕ}
     (h_left : k^d < n)
@@ -90,10 +52,11 @@ private theorem not_power_nat_of_bounds {n k d : ℕ}
     ¬ ∃ m, n = m^d := by
   intro ⟨m, h⟩
   rw [h] at h_left h_right
-  have : k < m := by exact lt_of_pow_lt_pow_left' d h_left
-  have : m < k + 1 := by exact lt_of_pow_lt_pow_left' d h_right
+  have : k < m := lt_of_pow_lt_pow_left' d h_left
+  have : m < k + 1 := lt_of_pow_lt_pow_left' d h_right
   omega
 
+/-- Weaker version of `not_power_rat_of_num_aux` with extra `q ≥ 0` assumption. -/
 private theorem not_power_rat_of_num_aux {a b d : ℕ}
     (h_coprime : a.Coprime b)
     (ha : ¬ ∃ x, a = x^d) :
@@ -239,37 +202,19 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
     Irrational (x^y) := by
   rcases hx_isRat with ⟨hx_inv, hx_eq⟩
   apply Irrational.of_inv
-  rw [← Real.inv_rpow]
-  swap
-  · simp [hx_eq]
-    positivity
+  rw [← Real.inv_rpow (by simp [hx_eq]; positivity)]
   apply irrational_rpow_rat_rat_of_num (x_num := x_den) (x_den := x_num) _ hy_isRat
     (Nat.coprime_comm.mp hx_coprime) hd1 hd2
-  constructor
-  · simp [hx_eq]
-  · apply invertibleOfNonzero
-    intro
-    simp_all
+  refine ⟨invertibleOfNonzero (fun _ ↦ ?_), by simp [hx_eq]⟩
+  simp_all
 
 private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     (hx_isNat : IsNat x x_num)
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
     (hn1 : k^y_den < x_num^y_num)
     (hn2 : x_num^y_num < (k + 1)^y_den) :
-    Irrational (x^y) := by
-  rcases hx_isNat with ⟨hx_eq⟩
-  rcases hy_isRat with ⟨hy_inv, hy_eq⟩
-  have h1 : ((Int.ofNat y_num) * ⅟(y_den : ℝ) : ℝ) = ((y_num / y_den : ℚ) : ℝ) := by
-    simp
-    rfl
-  rw [hx_eq, hy_eq, h1]
-  apply irrational_rpow_nat_of_not_power
-  · apply not_power_nat_of_bounds hn1 hn2
-  · by_contra hy_den
-    replace hy_den : y_den = 0 := by omega
-    have : (y_den : ℝ) ≠ 0 := by apply hy_inv.ne_zero
-    simp at this
-    contradiction
+    Irrational (x^y) :=
+  irrational_rpow_rat_rat_of_num hx_isNat.to_isRat hy_isRat (by simp) hn1 hn2
 
 private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isRat : IsRat x (Int.ofNat num) den)
@@ -279,12 +224,7 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     Irrational (Real.sqrt x) := by
   rw [Real.sqrt_eq_rpow]
   apply irrational_rpow_rat_rat_of_num hx_isRat (y_num := 1) (y_den := 2) <;> try simpa
-  constructor
-  · simp
-  · constructor
-    rotate_right
-    · exact (1/2 : ℝ)
-    all_goals simp
+  exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
 private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hx_isRat : IsRat x (Int.ofNat num) den)
@@ -294,30 +234,14 @@ private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     Irrational (Real.sqrt x) := by
   rw [Real.sqrt_eq_rpow]
   apply irrational_rpow_rat_rat_of_den hx_isRat (y_num := 1) (y_den := 2) <;> try simpa
-  constructor
-  · simp
-  · constructor
-    rotate_right
-    · exact (1/2 : ℝ)
-    all_goals simp
+  exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
 private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
     (hx_isNat : IsNat x n)
     (hn1 : k^2 < n)
     (hn2 : n < (k + 1)^2) :
-    Irrational (Real.sqrt x) := by
-  rw [Real.sqrt_eq_rpow]
-  apply irrational_rpow_nat_rat hx_isNat (y_num := 1) (y_den := 2)
-  · constructor
-    · simp
-    · constructor
-      rotate_right
-      · exact (1/2 : ℝ)
-      all_goals simp
-  · simp
-    exact hn1
-  · simp
-    exact hn2
+    Irrational (Real.sqrt x) :=
+  irrational_sqrt_rat_of_num hx_isNat.to_isRat (by simp) hn1 hn2
 
 end lemmas
 
