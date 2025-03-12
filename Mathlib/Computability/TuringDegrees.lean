@@ -93,6 +93,9 @@ f is turing reducible to g if f is recursive in g
 abbrev TuringReducible (f g : ℕ →. ℕ) : Prop :=
   RecursiveIn {g} f
 
+/--
+We use ≤ᵀ to denote Turing reducibility.
+-/
 infix:50 "≤ᵀ" => TuringReducible
 
 /--
@@ -200,9 +203,9 @@ instance : IsPreorder (ℕ →. ℕ) TuringReducible where
   refl := TuringReducible.refl
 
 /--
-Instance declaring that `TuringEquivalent` is an equivalence relation.
+Proof that `TuringEquivalent` is an equivalence relation.
 -/
-instance TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
+theorem TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
 
 /--
