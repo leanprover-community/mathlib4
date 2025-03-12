@@ -27,20 +27,6 @@ theorem add_le {α : Type*} [Add α] {f : α → R} (hf : ∀ x : α, 0 ≤ f x)
   rw [max_le_iff, le_add_iff_nonneg_right, le_add_iff_nonneg_left]
   exact ⟨hf _, hf _⟩
 
-open Finset in
-/-- Ultrametric inequality with `Finset.Sum`. -/
-lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
-    (nonarch : IsNonarchimedean f) {s : Finset β} (hnonempty : s.Nonempty) {l : β → α} :
-    f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
-  induction hnonempty using Nonempty.cons_induction with
-  | singleton i => simp
-  | cons i s _ hs hind =>
-    simp only [sum_cons, le_sup'_iff, mem_cons, exists_eq_or_imp]
-    rw [← le_sup'_iff hs]
-    rcases le_max_iff.mp <| nonarch (l i) (∑ i ∈ s, l i) with h₁ | h₂
-    · exact .inl h₁
-    · exact .inr <| le_trans h₂ hind
-
 /-- If `f` is a nonegative nonarchimedean function `α → R` such that `f 0 = 0`, then for every
   `n : ℕ` and `a : α`, we have `f (n • a) ≤ (f a)`. -/
 theorem nsmul_le {F α : Type*} [AddMonoid α] [FunLike F α R] [ZeroHomClass F α R]
@@ -114,33 +100,6 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α R]
   · rw [add_eq_left_of_lt hna h_lt]
     exact Eq.symm (max_eq_left_of_lt h_lt)
 
-
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
-  `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
-  `f (t.sum g) ≤ f (g b)` . -/
-theorem finset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α R]
-    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
-    (g : β → α) (t : Finset β) :
-    ∃ b : β, (t.Nonempty → b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
-  by_cases h : ¬ t.Nonempty;
-  · simp_all
-  · rw [not_not] at h
-    have := apply_sum_le_sup_of_isNonarchimedean (l := g) hna h
-    obtain ⟨b, hb⟩ := Finset.exists_mem_eq_sup' h (fun i => f (g i))
-    refine ⟨b, fun _ ↦ hb.1, ?_⟩
-    rw [← hb.2]
-    exact this
-
-/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
-  nonempty finset `t : Finset β`, we can always find `b : β` belonging to `t` such that
-  `f (t.sum g) ≤ f (g b)` . -/
-theorem finset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α R]
-    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
-    (g : β → α) {t : Finset β} (ht : t.Nonempty) :
-    ∃ b : β, (b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
-  obtain ⟨b, hbt, hbf⟩ := finset_image_add hna g t
-  exact ⟨b, hbt ht, hbf⟩
-
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
   such that `f (s.sum g) ≤ f (g b)` . -/
@@ -169,6 +128,42 @@ theorem multiset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunL
     ∃ b : β, (b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
   obtain ⟨b, hbs, hbf⟩ := multiset_image_add hna g s
   exact ⟨b, hbs hs, hbf⟩
+
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
+  `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
+  `f (t.sum g) ≤ f (g b)` . -/
+theorem finset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
+    (g : β → α) (t : Finset β) :
+    ∃ b : β, (t.Nonempty → b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
+  have h1 : t.Nonempty ↔ t.val ≠ 0 := by simp [Finset.nonempty_iff_ne_empty]
+  rw [h1]
+  exact multiset_image_add hna g t.1
+
+/-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
+  nonempty finset `t : Finset β`, we can always find `b : β` belonging to `t` such that
+  `f (t.sum g) ≤ f (g b)` . -/
+theorem finset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
+    (g : β → α) {t : Finset β} (ht : t.Nonempty) :
+    ∃ b : β, (b ∈ t) ∧ f (t.sum g) ≤ f (g b) := by
+  obtain ⟨b, hbt, hbf⟩ := finset_image_add hna g t
+  exact ⟨b, hbt ht, hbf⟩
+
+open Finset in
+/-- Ultrametric inequality with `Finset.Sum`. -/
+lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
+    (nonarch : IsNonarchimedean f) {s : Finset β} (hnonempty : s.Nonempty) {l : β → α} :
+    f (∑ i ∈ s, l i) ≤ s.sup' hnonempty fun i => f (l i) := by
+
+  induction hnonempty using Nonempty.cons_induction with
+  | singleton i => simp
+  | cons i s _ hs hind =>
+    simp only [sum_cons, le_sup'_iff, mem_cons, exists_eq_or_imp]
+    rw [← le_sup'_iff hs]
+    rcases le_max_iff.mp <| nonarch (l i) (∑ i ∈ s, l i) with h₁ | h₂
+    · exact .inl h₁
+    · exact .inr <| le_trans h₂ hind
 
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
