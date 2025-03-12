@@ -1003,7 +1003,7 @@ def singleContinuousLinearMap [Fact (1 ≤ p)] (i : α) : E i →L[𝕜] lp E p 
   cont := isometry_single i |>.continuous
 
 @[simp]
-theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)](i : α) (x : E i) :
+theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] (i : α) (x : E i) :
     singleContinuousLinearMap 𝕜 E p i x = lp.single p i x :=
   rfl
 
