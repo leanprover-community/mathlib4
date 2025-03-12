@@ -15,9 +15,9 @@ this file introduces adjunctions `F ⊣₂ G`.
 `CategoryTheory.Closed.Monoidal` for an example of such an adjunction.)
 
 Note: this notion is weaker than the notion of
-"adjunction of two variables" which appear in the mathematical literature.
-In order to have an adjunction of two variables, we would need
-a third functor `H : C₂ᵒᵖ ⥤ C₃ ⥤ C₁` and two adjunctions of
+"adjunction of two variables" which appears in the mathematical literature.
+In order to have an adjunction of two variables, we need
+a third functor `H : C₂ᵒᵖ ⥤ C₃ ⥤ C₁` and two adjunctions between
 bifunctors `F ⊣₂ G` and `F.flip ⊣₂ H`.
 
 ## References
