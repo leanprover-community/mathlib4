@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Nat.Cast.Field
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Algebra.Algebra.Bilinear
-import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Exponential map on algebras
@@ -61,11 +62,7 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
 theorem exp_zero_eq_one : exp (0 : A) = 1 := by
-  have h₁ := exp_eq_sum (pow_one (0 : A))
-  rwa [range_one, sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero,
-    one_smul] at h₁
-
-variable [SMulCommClass ℚ A A] [IsScalarTower ℚ A A]
+  simpa using exp_eq_sum (pow_one (0 : A))
 
 theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp (a + b) = exp a * exp b := by
@@ -188,7 +185,33 @@ theorem isNilpotent_rTensor_of_isNilpotent (f : Module.End R M) (hf : IsNilpoten
 
 open IsNilpotent TensorProduct
 
-variable [Algebra ℚ R] [Module ℚ M] [Module ℚ N] [IsScalarTower ℚ R M] [IsScalarTower ℚ R N]
+variable [Module ℚ M]
+
+variable (N) in
+theorem rTensor_exp (f : Module.End R M) (hf : IsNilpotent f) :
+    exp (f.rTensor N) = (exp f).rTensor N := by
+  obtain ⟨k, hk⟩ := isNilpotent_rTensor_of_isNilpotent N f hf
+  obtain ⟨l, hl⟩ := hf
+  let kl := max k l
+  replace hk : (f.rTensor N) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
+  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
+  ext m n
+  simp [exp_eq_sum hk, exp_eq_sum hl, sum_tmul, smul_tmul']
+
+variable [Module ℚ N]
+
+variable (M) in
+theorem lTensor_exp (f : Module.End R N) (hf : IsNilpotent f) :
+    exp (f.lTensor M) = (exp f).lTensor M := by
+  obtain ⟨k, hk⟩ := isNilpotent_lTensor_of_isNilpotent M f hf
+  obtain ⟨l, hl⟩ := hf
+  let kl := max k l
+  replace hk : (f.lTensor M) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
+  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
+  ext m n
+  have aux (i j : ℕ) : (i : ℚ)⁻¹ • m ⊗ₜ[R] (f ^ j) n = m ⊗ₜ[R] ((i : ℚ)⁻¹ • (f ^ j) n) := by
+    rw [← (TensorProduct.comm R M N).apply_eq_iff_eq, map_inv_natCast_smul _ ℚ ℚ]; rfl
+  simp [exp_eq_sum hk, exp_eq_sum hl, tmul_sum, aux]
 
 theorem commute_exp_left_of_commute
     {fM : Module.End R M} {fN : Module.End R N} {g : M →ₗ[R] N}
@@ -204,34 +227,10 @@ theorem commute_exp_left_of_commute
   replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
     simpa using LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute h i) m
-  simp [LinearMap.coe_comp, Function.comp_apply, exp_eq_sum hfM, exp_eq_sum hfN, this]
-
-variable (M) in
-theorem lTensor_exp (f : Module.End R N) (hf : IsNilpotent f) :
-    exp (f.lTensor M) = (exp f).lTensor M := by
-  obtain ⟨k, hk⟩ := isNilpotent_lTensor_of_isNilpotent M f hf
-  obtain ⟨l, hl⟩ := hf
-  let kl := max k l
-  replace hk : (f.lTensor M) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
-  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
-  ext m n
-  simp [exp_eq_sum hk, exp_eq_sum hl, tmul_sum]
-
-omit [Module ℚ N] [IsScalarTower ℚ R N] in
-variable (N) in
-theorem rTensor_exp (f : Module.End R M) (hf : IsNilpotent f) :
-    exp (f.rTensor N) = (exp f).rTensor N := by
-  obtain ⟨k, hk⟩ := isNilpotent_rTensor_of_isNilpotent N f hf
-  obtain ⟨l, hl⟩ := hf
-  let kl := max k l
-  replace hk : (f.rTensor N) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
-  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
-  ext m n
-  simp [exp_eq_sum hk, exp_eq_sum hl, sum_tmul, smul_tmul']
+  simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_inv_natCast_smul _ ℚ ℚ]
 
 theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing B]
-    [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
-    [Module ℚ B] [Algebra ℚ R] [IsScalarTower ℚ R B]
+    [Module R B] [SMulCommClass R B B] [IsScalarTower R B B] [Module ℚ B]
     (D : B →ₗ[R] B) (h_der : ∀ x y, D (x * y) = x * D y + (D x) * y)
     (h_nil : IsNilpotent D) (x y : B) :
     exp D (x * y) = (exp D x) * (exp D y) := by
