@@ -33,7 +33,7 @@ and data can be recovered from the distribution of the data and the posterior.
 * `posterior_posterior`: `(κ†μ)†(κ ∘ₘ μ) =ᵐ[μ] κ`
 * `posterior_comp`: `(η ∘ₖ κ)†μ =ᵐ[η ∘ₘ κ ∘ₘ μ] κ†μ ∘ₖ η†(κ ∘ₘ μ)`
 
-* `posterior_ae_eq_withDensity`: If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`,
+* `posterior_eq_withDensity`: If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`,
   then for `κ ∘ₘ μ`-almost every `x`,
   `κ†μ x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x)`.
   The condition is true for countable `Ω`: see `absolutelyContinuous_comp_of_countable`.
@@ -152,7 +152,7 @@ lemma deterministic_comp_posterior [MeasurableSpace.CountablyGenerated 𝓧]
     rw [Measure.compProd_id_eq_copy_comp, ← Measure.comp_assoc,
       Measure.deterministic_comp_eq_map]
 
-lemma posterior_ac_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
+lemma absolutelyContinuous_posterior {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
     ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ := by
   suffices (κ ∘ₘ μ) ⊗ₘ (κ†μ) ≪ ν.prod μ by
     rw [← Measure.compProd_const] at this
@@ -204,7 +204,7 @@ section CountableOrCountablyGenerated
 
 variable [MeasurableSpace.CountableOrCountablyGenerated Ω 𝓧]
 
-lemma ac_of_posterior_ac (h_ac : ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) :
+lemma absolutelyContinuous_of_posterior (h_ac : ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) :
     ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
   suffices μ ⊗ₘ κ ≪ μ.prod (κ ∘ₘ μ) by
     rw [← Measure.compProd_const] at this
@@ -216,15 +216,15 @@ lemma ac_of_posterior_ac (h_ac : ∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ)
   refine Measure.AbsolutelyContinuous.compProd_right ?_
   simpa
 
-lemma posterior_ac_iff : (∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) ↔ ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ :=
-  ⟨ac_of_posterior_ac, posterior_ac_of_ac⟩
+lemma absolutelyContinuous_posterior_iff : (∀ᵐ b ∂(κ ∘ₘ μ), (κ†μ) b ≪ μ) ↔ ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ :=
+  ⟨absolutelyContinuous_of_posterior, absolutelyContinuous_posterior⟩
 
-lemma Kernel.ac_comp_of_ac {ν : Measure 𝓧} [SFinite ν] (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
+lemma Kernel.absolutelyContinuous_comp_of_absolutelyContinuous {ν : Measure 𝓧} [SFinite ν]
+    (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ ν) :
     ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
-  rw [← posterior_ac_iff]
-  exact posterior_ac_of_ac h_ac
+  rw [← absolutelyContinuous_posterior_iff]
+  exact absolutelyContinuous_posterior h_ac
 
--- todo: docstring. This is a form of Bayes' rule.
 lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ p ∂(μ.prod (κ ∘ₘ μ)),
       (κ†μ).rnDeriv (Kernel.const _ μ) p.2 p.1 = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) p.1 p.2 := by
@@ -239,7 +239,7 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
       Measure.map_apply measurable_swap (hs.prod ht), Set.preimage_swap_prod,
       Measure.compProd_apply_prod ht hs]
     refine lintegral_congr_ae <| ae_restrict_of_ae ?_
-    filter_upwards [posterior_ac_of_ac h_ac] with x h_ac'
+    filter_upwards [absolutelyContinuous_posterior h_ac] with x h_ac'
     change ∫⁻ ω in s, (κ†μ).rnDeriv (Kernel.const 𝓧 μ) x ω ∂(Kernel.const 𝓧 μ x) = _
     rw [Kernel.setLIntegral_rnDeriv h_ac' hs]
   have h2 {s : Set Ω} {t : Set 𝓧} (hs : MeasurableSet s) (ht : MeasurableSet t) :
@@ -260,7 +260,6 @@ lemma rnDeriv_posterior_ae_prod (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ)
   · intro s hs t ht
     rw [h1 hs ht, h2 hs ht]
 
--- todo: docstring. This is a form of Bayes' rule.
 lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ ω ∂μ, ∀ᵐ x ∂(κ ∘ₘ μ),
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
@@ -277,9 +276,13 @@ lemma rnDeriv_posterior_symm (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
   · fun_prop
   · exact measurableSet_eq_fun' (by fun_prop) (by fun_prop)
 
-lemma posterior_ae_eq_withDensity (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
+/-- If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`, then for `κ ∘ₘ μ`-almost every `x`,
+`κ†μ x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x)`.
+This is a form of **Bayes' theorem**.
+The condition is true for example for countable `Ω`. -/
+lemma posterior_eq_withDensity (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x) := by
-  have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := posterior_ac_of_ac h_ac
+  have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := absolutelyContinuous_posterior h_ac
   filter_upwards [rnDeriv_posterior_symm h_ac, h_ac'] with x h h_ac'
   ext s hs
   rw [← Measure.setLIntegral_rnDeriv h_ac', withDensity_apply _ hs]
