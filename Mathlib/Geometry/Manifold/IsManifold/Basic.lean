@@ -7,6 +7,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
+import Mathlib.Geometry.Manifold.IsManifold.ModelWithCornersDef
 
 /-!
 # `C^n` manifolds (possibly with boundary or corners)
@@ -136,93 +137,12 @@ open scoped Manifold Topology ContDiff
 /-! ### Models with corners. -/
 
 
-/-- A structure containing information on the way a space `H` embeds in a
-model vector space `E` over the field `𝕜`. This is all what is needed to
-define a `C^n` manifold with model space `H`, and model vector space `E`.
-
-We require two conditions `uniqueDiffOn'` and `target_subset_closure_interior`, which
-are satisfied in the relevant cases (where `range I = univ` or a half space or a quadrant) and
-useful for technical reasons. The former makes sure that manifold derivatives are uniquely
-defined, the latter ensures that for `C^2` maps the second derivatives are symmetric even for points
-on the boundary, as these are limit points of interior points where symmetry holds. If further
-conditions turn out to be useful, they can be added here.
--/
-@[ext]
-structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
-    PartialEquiv H E where
-  source_eq : source = univ
-  uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
-  target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
-
-attribute [simp, mfld_simps] ModelWithCorners.source_eq
-
-/-- A vector space is a model with corners, denoted as `𝓘(𝕜, E)` within the `Manifold` namespace. -/
-def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
-  toPartialEquiv := PartialEquiv.refl E
-  source_eq := rfl
-  uniqueDiffOn' := uniqueDiffOn_univ
-  target_subset_closure_interior := by simp
-  continuous_toFun := continuous_id
-  continuous_invFun := continuous_id
-
-@[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
-
-/-- A normed field is a model with corners. -/
-scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
-
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
 
 namespace ModelWithCorners
-
-/-- Coercion of a model with corners to a function. We don't use `e.toFun` because it is actually
-`e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`. While we may want to
-switch to this behavior later, doing it mid-port will break a lot of proofs. -/
-@[coe] def toFun' (e : ModelWithCorners 𝕜 E H) : H → E := e.toFun
-
-instance : CoeFun (ModelWithCorners 𝕜 E H) fun _ => H → E := ⟨toFun'⟩
-
-/-- The inverse to a model with corners, only registered as a `PartialEquiv`. -/
-protected def symm : PartialEquiv E H :=
-  I.toPartialEquiv.symm
-
-/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-because it is a composition of multiple projections. -/
-def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
-  I
-
-/-- See Note [custom simps projection] -/
-def Simps.symm_apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : E → H :=
-  I.symm
-
-initialize_simps_projections ModelWithCorners (toFun → apply, invFun → symm_apply)
-
--- Register a few lemmas to make sure that `simp` puts expressions in normal form
-@[simp, mfld_simps]
-theorem toPartialEquiv_coe : (I.toPartialEquiv : H → E) = I :=
-  rfl
-
-@[simp, mfld_simps]
-theorem mk_coe (e : PartialEquiv H E) (a b c d d') :
-    ((ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H) : H → E) = (e : H → E) :=
-  rfl
-
-@[simp, mfld_simps]
-theorem toPartialEquiv_coe_symm : (I.toPartialEquiv.symm : E → H) = I.symm :=
-  rfl
-
-@[simp, mfld_simps]
-theorem mk_symm (e : PartialEquiv H E) (a b c d d') :
-    (ModelWithCorners.mk e a b c d d' : ModelWithCorners 𝕜 E H).symm = e.symm :=
-  rfl
 
 @[continuity]
 protected theorem continuous : Continuous I :=
@@ -247,20 +167,11 @@ theorem continuousWithinAt_symm {s x} : ContinuousWithinAt I.symm s x :=
 theorem continuousOn_symm {s} : ContinuousOn I.symm s :=
   I.continuous_symm.continuousOn
 
-@[simp, mfld_simps]
-theorem target_eq : I.target = range (I : H → E) := by
-  rw [← image_univ, ← I.source_eq]
-  exact I.image_source_eq_target.symm
-
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
   I.target_eq ▸ I.uniqueDiffOn'
 
 @[deprecated (since := "2024-09-30")]
 protected alias unique_diff := ModelWithCorners.uniqueDiffOn
-
-theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
-  rw [← I.target_eq]
-  exact I.target_subset_closure_interior
 
 @[simp, mfld_simps]
 protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
@@ -396,45 +307,6 @@ end
 end
 
 section ModelWithCornersProd
-
-/-- Given two model_with_corners `I` on `(E, H)` and `I'` on `(E', H')`, we define the model with
-corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular for the manifold
-structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
-`(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
-vs `H × H'`. -/
-@[simps -isSimp]
-def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-    {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') :
-    ModelWithCorners 𝕜 (E × E') (ModelProd H H') :=
-  { I.toPartialEquiv.prod I'.toPartialEquiv with
-    toFun := fun x => (I x.1, I' x.2)
-    invFun := fun x => (I.symm x.1, I'.symm x.2)
-    source := { x | x.1 ∈ I.source ∧ x.2 ∈ I'.source }
-    source_eq := by simp only [setOf_true, mfld_simps]
-    uniqueDiffOn' := I.uniqueDiffOn'.prod I'.uniqueDiffOn'
-    target_subset_closure_interior := by
-      simp only [PartialEquiv.prod_target, target_eq, interior_prod_eq, closure_prod_eq]
-      exact Set.prod_mono I.range_subset_closure_interior I'.range_subset_closure_interior
-    continuous_toFun := I.continuous_toFun.prodMap I'.continuous_toFun
-    continuous_invFun := I.continuous_invFun.prodMap I'.continuous_invFun }
-
-/-- Given a finite family of `ModelWithCorners` `I i` on `(E i, H i)`, we define the model with
-corners `pi I` on `(Π i, E i, ModelPi H)`. See note [Manifold type tags] for explanation about
-`ModelPi H`. -/
-def ModelWithCorners.pi {𝕜 : Type u} [NontriviallyNormedField 𝕜] {ι : Type v} [Fintype ι]
-    {E : ι → Type w} [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {H : ι → Type u'}
-    [∀ i, TopologicalSpace (H i)] (I : ∀ i, ModelWithCorners 𝕜 (E i) (H i)) :
-    ModelWithCorners 𝕜 (∀ i, E i) (ModelPi H) where
-  toPartialEquiv := PartialEquiv.pi fun i => (I i).toPartialEquiv
-  source_eq := by simp only [pi_univ, mfld_simps]
-  uniqueDiffOn' := UniqueDiffOn.pi ι E _ _ fun i _ => (I i).uniqueDiffOn'
-  target_subset_closure_interior := by
-    simp only [PartialEquiv.pi_target, target_eq, finite_univ, interior_pi_set, closure_pi_set]
-    exact Set.pi_mono (fun i _ ↦ (I i).range_subset_closure_interior)
-  continuous_toFun := continuous_pi fun i => (I i).continuous.comp (continuous_apply i)
-  continuous_invFun := continuous_pi fun i => (I i).continuous_symm.comp (continuous_apply i)
 
 /-- Special case of product model with corners, which is trivial on the second factor. This shows up
 as the model to tangent bundles. -/

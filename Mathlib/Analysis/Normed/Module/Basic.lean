@@ -10,6 +10,7 @@ import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Module.Rat
 import Mathlib.Analysis.Normed.Field.Lemmas
 import Mathlib.Analysis.Normed.MulAction
+import Mathlib.Geometry.Manifold.IsManifold.ModelWithCornersDef
 
 /-!
 # Normed spaces
@@ -43,6 +44,9 @@ typeclass can be used for "semi normed spaces" too, just as `Module` can be used
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
   norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
+  /-- The canonical model with corners associated to a normed vector space. -/
+  modelWithCornersSelf : ModelWithCorners 𝕜 E E := modelWithCornersSelfId 𝕜 E
+  modelWithCornersSelf_eq_id : modelWithCornersSelf = modelWithCornersSelfId 𝕜 E := by rfl
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
 
@@ -50,6 +54,15 @@ end Prio
 
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
+
+variable (𝕜 E) in
+/-- The canonical model with corners associated to a normed vector space. -/
+def modelWithCornersSelf : ModelWithCorners 𝕜 E E := NormedSpace.modelWithCornersSelf
+
+@[inherit_doc] scoped[Manifold] notation "𝓘(" 𝕜 ", " E ")" => modelWithCornersSelf 𝕜 E
+
+/-- A normed field is a model with corners. -/
+scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
@@ -104,21 +117,6 @@ instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
     __ := ULift.module'
     norm_smul_le := fun s x => (norm_smul_le s x.down :) }
 
-/-- The product of two normed spaces is a normed space, with the sup norm. -/
-instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
-  { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
-    norm_smul_le := fun s x => by
-      simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
-        mul_max_of_nonneg, norm_nonneg, le_rfl] }
-
-/-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
-instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
-    [∀ i, NormedSpace 𝕜 (E i)] : NormedSpace 𝕜 (∀ i, E i) where
-  norm_smul_le a f := by
-    simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
-      NNReal.mul_finset_sup]
-    exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
-
 instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotient E) where
   norm_smul_le := norm_smul_le
 
@@ -148,7 +146,8 @@ abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [Ad
     [SeminormedAddCommGroup G] [NormedSpace 𝕜 G] [FunLike F E G] [LinearMapClass F 𝕜 E G] (f : F) :
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
   let _ := SeminormedAddCommGroup.induced E G f
-  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
+  ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b),
+  modelWithCornersSelfId 𝕜 E, rfl⟩
 
 section NontriviallyNormedSpace
 
@@ -307,17 +306,6 @@ instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
 
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }
-
-/-- The product of two normed algebras is a normed algebra, with the sup norm. -/
-instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
-    [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
-  { Prod.normedSpace, Prod.algebra 𝕜 E F with }
-
--- Porting note: Lean 3 could synth the algebra instances for Pi Pr
-/-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
-instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
-    [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
-  { Pi.normedSpace, Pi.algebra _ E with }
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 

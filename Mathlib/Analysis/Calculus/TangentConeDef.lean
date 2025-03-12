@@ -32,12 +32,11 @@ here.
 
 assert_not_exists NormedSpace
 
-variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
+open Filter Set Topology NormedField
 
-open Filter Set
+section
 
-open Topology
-
+variable (𝕜 : Type*) [NormedField 𝕜]
 variable {E : Type*} [AddCommMonoid E] [Module 𝕜 E] [TopologicalSpace E]
 
 /-- The set of all tangent directions to the set `s` at the point `x`. -/
@@ -65,14 +64,12 @@ unique, hence this name. The uniqueness it asserts is proved in `UniqueDiffOn.eq
 def UniqueDiffOn (s : Set E) : Prop :=
   ∀ x ∈ s, UniqueDiffWithinAt 𝕜 s x
 
-variable {𝕜}
-variable {E F G : Type*}
+end
 
--- This section is devoted to the properties of the tangent cone.
+section
 
-open NormedField
-
-variable [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+variable {E : Type*} [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
 variable {x y : E} {s t : Set E}
 
 theorem mem_tangentConeAt_of_pow_smul {r : 𝕜} (hr₀ : r ≠ 0) (hr : ‖r‖ < 1)
@@ -102,8 +99,7 @@ theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
 theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
   fun _ _ => uniqueDiffWithinAt_univ
 
-theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
-  fun _ hx => hx.elim
-
 theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
+
+end
