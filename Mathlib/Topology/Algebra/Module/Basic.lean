@@ -218,13 +218,13 @@ theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
 then the closure of their span in the indexped product of the modules
 is the product of their closures.
 
-In case of a finite index type, this statement immediately follows from `iSup_map_single`.
+In case of a finite index type, this statement immediately follows from `Submodule.iSup_map_single`.
 However, the statement is true for an infinite index type as well.
 
 This version is stated in terms of `Submodule.topologicalClosure`,
 thus assumes that `M i`s are topological modules over `R`.
 However, the statement is true without assuming continuity of the operations,
-see `closure_coe_iSup_map_single` above. -/
+see `Submodule.closure_coe_iSup_map_single` above. -/
 theorem topologicalClosure_iSup_map_single [∀ i, ContinuousAdd (M i)]
     [∀ i, ContinuousConstSMul R (M i)] (s : ∀ i, Submodule R (M i)) :
     topologicalClosure (⨆ i, (s i).map (LinearMap.single R M i)) =
