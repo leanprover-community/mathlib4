@@ -2595,11 +2595,8 @@ import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMConfig
 import Mathlib.Computability.TMToPartrec
-<<<<<<< HEAD
-=======
 import Mathlib.Computability.Tape
 import Mathlib.Computability.TuringDegrees
->>>>>>> a3c1a2a4c9 (Oracle Computability Definitions)
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.AB
 import Mathlib.Condensed.Basic
