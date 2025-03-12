@@ -189,8 +189,7 @@ def fixedField : IntermediateField F E :=
   show x ∈ MulAction.fixedPoints H E ↔ _
   simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
 
-@[simp] lemma fixedField_bot :
-    IntermediateField.fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
+@[simp] lemma fixedField_bot : fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
   ext
   simp
 
@@ -275,7 +274,7 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
   exact (card_aut_eq_finrank K E).symm
 
 @[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
-    IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
+    fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
   rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
 
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
