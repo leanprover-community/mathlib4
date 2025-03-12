@@ -345,18 +345,19 @@ theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolyno
 lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : R) := by
   simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
 
-theorem induction_on_monomial {M : MvPolynomial σ R → Prop} (h_C : ∀ a, M (C a))
-    (h_X : ∀ p n, M p → M (p * X n)) : ∀ s a, M (monomial s a) := by
+theorem induction_on_monomial {M : MvPolynomial σ R → Prop}
+    (C : ∀ a, M (C a))
+    (mul_X : ∀ p n, M p → M (p * X n)) : ∀ s a, M (monomial s a) := by
   intro s a
   apply @Finsupp.induction σ ℕ _ _ s
   · show M (monomial 0 a)
-    exact h_C a
+    exact C a
   · intro n e p _hpn _he ih
     have : ∀ e : ℕ, M (monomial p a * X n ^ e) := by
       intro e
       induction e with
       | zero => simp [ih]
-      | succ e e_ih => simp [ih, pow_succ, (mul_assoc _ _ _).symm, h_X, e_ih]
+      | succ e e_ih => simp [ih, pow_succ, (mul_assoc _ _ _).symm, mul_X, e_ih]
     simp [add_comm, monomial_add_single, this]
 
 /-- Analog of `Polynomial.induction_on'`.
@@ -379,12 +380,12 @@ that `M` is closed under addition of nontrivial monomials not present in the sup
 -/
 @[elab_as_elim]
 theorem monomial_add_induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
-    (h_C : ∀ a, M (C a))
-    (h_add_weak :
+    (C : ∀ a, M (C a))
+    (monomial_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
         a ∉ f.support → b ≠ 0 → M f → M ((monomial a b) + f)) :
     M p :=
-  Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
+  Finsupp.induction p (C_0.rec <| C 0) monomial_add_weak
 
 @[deprecated (since := "2025-03-11")]
 alias induction_on''' := monomial_add_induction_on
@@ -395,14 +396,15 @@ In particular, this version only requires us to show
 that `M` is closed under addition of monomials not present in the support
 for which `M` is already known to hold.
 -/
-theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
-    (h_add_weak :
+theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
+    (C : ∀ a, M (C a))
+    (monomial_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
         a ∉ f.support → b ≠ 0 → M f → M (monomial a b) →
           M ((monomial a b) + f))
-    (h_X : ∀ (p : MvPolynomial σ R) (n : σ), M p → M (p * MvPolynomial.X n)) : M p :=
-  monomial_add_induction_on p h_C fun a b f ha hb hf =>
-    h_add_weak a b f ha hb hf <| induction_on_monomial h_C h_X a b
+    (mul_X : ∀ (p : MvPolynomial σ R) (n : σ), M p → M (p * MvPolynomial.X n)) : M p :=
+  monomial_add_induction_on p C fun a b f ha hb hf =>
+    monomial_add_weak a b f ha hb hf <| induction_on_monomial C mul_X a b
 
 /--
 Analog of `Polynomial.induction_on`.
@@ -411,9 +413,11 @@ and is preserved under addition and multiplication by variables
 then it holds for all multivariate polynomials.
 -/
 @[recursor 5]
-theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
-    (h_add : ∀ p q, M p → M q → M (p + q)) (h_X : ∀ p n, M p → M (p * X n)) : M p :=
-  induction_on'' p h_C (fun a b f _ha _hb hf hm => h_add (monomial a b) f hm hf) h_X
+theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
+    (C : ∀ a, M (C a))
+    (add : ∀ p q, M p → M q → M (p + q))
+    (mul_X : ∀ p n, M p → M (p * X n)) : M p :=
+  induction_on'' p C (fun a b f _ha _hb hf hm => add (monomial a b) f hm hf) mul_X
 
 theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
     (hC : ∀ r, f (C r) = g (C r)) (hX : ∀ i, f (X i) = g (X i)) : f = g := by
@@ -465,9 +469,9 @@ theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
   refine top_unique fun p hp => ?_; clear hp
   induction p using MvPolynomial.induction_on with
-  | h_C => exact S.algebraMap_mem _
-  | h_add p q hp hq => exact S.add_mem hp hq
-  | h_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
+  | C => exact S.algebraMap_mem _
+  | add p q hp hq => exact S.add_mem hp hq
+  | mul_X p i hp => exact S.mul_mem hp (Algebra.subset_adjoin <| mem_range_self _)
 
 @[ext]
 theorem linearMap_ext {M : Type*} [AddCommMonoid M] [Module R M] {f g : MvPolynomial σ R →ₗ[R] M}
