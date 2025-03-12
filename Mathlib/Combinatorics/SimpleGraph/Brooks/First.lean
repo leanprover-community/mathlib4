@@ -6,6 +6,31 @@ variable {α : Type*} {G : SimpleGraph α}
 
 section Walks
 namespace Walk
+open Finset
+section LFDEq
+variable[LocallyFinite G] [DecidableEq α]
+lemma exists_maximal_path_subset {u v : α} (s : Finset α) {q : G.Walk u v} (hq : q.IsPath)
+    (hs : ∀ y , y ∈ q.support → y ∈ s) : ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧
+  (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
+∀ y, y ∈ G.neighborFinset x ∩ s → y ∈ (p.append q).support := by
+  by_contra! hf
+  have : ∀ n, ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ x, x ∈ (p.append q).support → x ∈ s) ∧
+    n ≤ (p.append q).length := by
+    intro n
+    induction n with
+    | zero =>
+      use u, Walk.nil; simpa using ⟨hq, hs⟩
+    | succ n ih =>
+      obtain ⟨x, p, hp, hs, hc⟩ := ih
+      obtain ⟨y, hy⟩ := hf x p hp hs
+      rw [mem_inter, mem_neighborFinset] at hy
+      use y, p.cons hy.1.1.symm
+      aesop
+  obtain ⟨_, _, hp, hc⟩ := this #s
+  simp_rw [← List.mem_toFinset] at hc
+  have := length_support _ ▸ ((List.toFinset_card_of_nodup hp.2) ▸ (card_le_card hc.1))
+  exact Nat.not_succ_le_self _ (this.trans hc.2)
+end LFDEq
 
 variable {u v w x a b : α} {p : G.Walk u v}
 lemma IsPath.eq_snd_of_start_mem_edge (hp : p.IsPath) (hs : s(x, u) ∈ p.edges) : x = p.snd := by
@@ -22,8 +47,8 @@ lemma IsPath.eq_penultimate_of_end_mem_edge (hp : p.IsPath) (hs : s(x, v) ∈ p.
   p.snd_reverse.symm ▸
     hp.reverse.eq_snd_of_start_mem_edge (p.edges_reverse ▸ (List.mem_reverse.mpr hs))
 
-/-- The first vertex in a walk that satisfies a given predicate or
-its  end vertex if no such vertex exists. -/
+/-- The first vertex in a walk `p` that satisfies a predicate `P` or its end vertex if no such
+ vertex exists. -/
 def find {u v : α} (p : G.Walk u v) (P : α → Prop) [DecidablePred P] : α :=
   match p with
   | nil => u
@@ -190,10 +215,6 @@ lemma IsMaxCycle.dropUntil_of_isClosableMaxPath (hp : p.IsCloseableMaxPath) :
   · apply (mem_dropUntil_find_of_mem_prop ⟨(hp.max _ hy), _⟩)
     exact ⟨hy, hpen⟩
 
-
-
 end Walk
-
 end Walks
-
 end SimpleGraph

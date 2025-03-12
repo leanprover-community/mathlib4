@@ -250,6 +250,11 @@ theorem exists_concat_eq_cons {u v w : V} :
   | nil, h => ⟨_, h, nil, rfl⟩
   | cons h' p, h => ⟨_, h', Walk.concat p h, concat_cons _ _ _⟩
 
+theorem exists_eq_concat_of_ne {u v : V} (hne : u ≠ v) :
+    ∀ (p : G.Walk u v), ∃ (w : V) (p' : G.Walk u w) (h : G.Adj w v) , p = p'.concat h
+  | nil => (hne rfl).elim
+  | cons h p => exists_cons_eq_concat h p
+
 @[simp]
 theorem reverse_nil {u : V} : (nil : G.Walk u u).reverse = nil := rfl
 
