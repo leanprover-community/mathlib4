@@ -364,10 +364,18 @@ instance instSMulPosStrictMono {α} [Zero α] [Preorder α] [MulAction ℝ α] [
 
 /-- If `a` is a nonnegative real number, then the closed interval `[0, a]` in `ℝ` is order
 isomorphic to the interval `Set.Iic a`. -/
-@[simps! apply_coe_coe]
+-- TODO: if we use `@[simps!]` it will look through the `NNReal = Subtype _` definition,
+-- but if we use `@[simps]` it will not look through the `Equiv.Set.sep` definition.
+-- Turning `NNReal` into a structure may be the best way to go here.
+-- @[simps!? apply_coe_coe]
 def orderIsoIccZeroCoe (a : ℝ≥0) : Set.Icc (0 : ℝ) a ≃o Set.Iic a where
   toEquiv := Equiv.Set.sep (Set.Ici 0) fun x : ℝ => x ≤ a
   map_rel_iff' := Iff.rfl
+
+@[simp]
+theorem orderIsoIccZeroCoe_apply_coe_coe (a : ℝ≥0) (b : Set.Icc (0 : ℝ) a) :
+    (orderIsoIccZeroCoe a b : ℝ) = b :=
+  rfl
 
 @[simp]
 theorem orderIsoIccZeroCoe_symm_apply_coe (a : ℝ≥0) (b : Set.Iic a) :
