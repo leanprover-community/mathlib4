@@ -53,7 +53,7 @@ theorem meromorphicNFAt_def :
 /-- A meromorphic function has normal form at `x` iff it is either analytic
 there, or if it has a pole at `x` and takes the default value `0`. -/
 theorem MeromorphicAt.meromorphicNFAt_iff (hf : MeromorphicAt f x) :
-    MeromorphicNFAt f x ↔ (AnalyticAt 𝕜 f x) ∨ (hf.order < 0 ∧ f x = 0) := by
+    MeromorphicNFAt f x ↔ AnalyticAt 𝕜 f x ∨ hf.order < 0 ∧ f x = 0 := by
   constructor
   · intro h₁f
     rcases h₁f with h | h
