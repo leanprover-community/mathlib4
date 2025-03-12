@@ -121,14 +121,14 @@ structure Methods where
 
 variable {α : Type*} {a b a' b' : α}
 
-theorem of_not_lt_left [LinearOrder α] (h : ¬(a:α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
-theorem of_not_lt_right [LinearOrder α] (h : ¬(a:α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
-theorem of_not_le_left [LE α] (h : ¬(a:α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
-theorem of_not_le_right [LE α] (h : ¬(a:α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
-theorem of_lt_left [LinearOrder α] (h : (a:α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
-theorem of_lt_right [LinearOrder α] (h : (a:α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
-theorem of_le_left [LE α] (h : (a:α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
-theorem of_le_right [LE α] (h : (a:α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
+theorem of_not_lt_left [LinearOrder α] (h : ¬(a : α) < b) (eq : a = a') : b ≤ a' := eq ▸ not_lt.1 h
+theorem of_not_lt_right [LinearOrder α] (h : ¬(a : α) < b) (eq : b = b') : b' ≤ a := eq ▸ not_lt.1 h
+theorem of_not_le_left [LE α] (h : ¬(a : α) ≤ b) (eq : a = a') : ¬a' ≤ b := eq ▸ h
+theorem of_not_le_right [LE α] (h : ¬(a : α) ≤ b) (eq : b = b') : ¬a ≤ b' := eq ▸ h
+theorem of_lt_left [LinearOrder α] (h : (a : α) < b) (eq : a = a') : ¬b ≤ a' := eq ▸ not_le.2 h
+theorem of_lt_right [LinearOrder α] (h : (a : α) < b) (eq : b = b') : ¬b' ≤ a := eq ▸ not_le.2 h
+theorem of_le_left [LE α] (h : (a : α) ≤ b) (eq : a = a') : a' ≤ b := eq ▸ h
+theorem of_le_right [LE α] (h : (a : α) ≤ b) (eq : b = b') : a ≤ b' := eq ▸ h
 
 /--
 Given a proof `pf`, attempts to parse it as an upper (`lb = false`) or lower (`lb = true`)

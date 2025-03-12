@@ -208,6 +208,9 @@ theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ
 def IsSymmetricRel (V : Set (α × α)) : Prop :=
   Prod.swap ⁻¹' V = V
 
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel := IsSymmetricRel
+
 /-- The maximal symmetric relation contained in a given relation. -/
 def symmetrizeRel (V : Set (α × α)) : Set (α × α) :=
   V ∩ Prod.swap ⁻¹' V
@@ -226,11 +229,20 @@ theorem IsSymmetricRel.mk_mem_comm {V : Set (α × α)} (hV : IsSymmetricRel V) 
     (x, y) ∈ V ↔ (y, x) ∈ V :=
   Set.ext_iff.1 hV (y, x)
 
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel.mk_mem_comm := IsSymmetricRel.mk_mem_comm
+
 theorem IsSymmetricRel.eq {U : Set (α × α)} (hU : IsSymmetricRel U) : Prod.swap ⁻¹' U = U :=
   hU
 
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel.eq := IsSymmetricRel.eq
+
 theorem IsSymmetricRel.inter {U V : Set (α × α)} (hU : IsSymmetricRel U) (hV : IsSymmetricRel V) :
     IsSymmetricRel (U ∩ V) := by rw [IsSymmetricRel, preimage_inter, hU.eq, hV.eq]
+
+@[deprecated (since := "2025-03-05")]
+alias SymmetricRel.inter := IsSymmetricRel.inter
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
@@ -315,7 +327,7 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
 /-- Notation for the uniformity filter with respect to a non-standard `UniformSpace` instance. -/
 scoped[Uniformity] notation "𝓤[" u "]" => @uniformity _ u
 
-@[inherit_doc] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should we drop the `uniformity` def?
+@[inherit_doc]
 scoped[Uniformity] notation "𝓤" => uniformity
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure

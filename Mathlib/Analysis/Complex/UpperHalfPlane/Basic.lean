@@ -54,7 +54,6 @@ scoped notation:1024 "↑ₘ[" R "]" A:1024 =>
 /-- Canonical embedding of the upper half-plane into `ℂ`. -/
 @[coe] protected def coe (z : ℍ) : ℂ := z.1
 
--- Porting note: added to replace `deriving`
 instance : CoeOut ℍ ℂ := ⟨UpperHalfPlane.coe⟩
 
 instance : Inhabited ℍ :=
