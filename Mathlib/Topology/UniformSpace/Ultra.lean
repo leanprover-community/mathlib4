@@ -60,6 +60,10 @@ lemma IsTransitiveRel.comp_subset_self {s : Set (X × X)}
     s ○ s ⊆ s :=
   fun ⟨_, _⟩ ⟨_, hxz, hzy⟩ ↦ h hxz hzy
 
+lemma isTransitiveRel_iff_comp_subset_self {s : Set (X × X)} :
+    IsTransitiveRel s ↔ s ○ s ⊆ s :=
+  ⟨IsTransitiveRel.comp_subset_self, fun h _ _ _ hx hy ↦ h ⟨_, hx, hy⟩⟩
+
 lemma isTransitiveRel_empty : IsTransitiveRel (X := X) ∅ := by
   simp [IsTransitiveRel]
 
