@@ -60,7 +60,8 @@ theorem natCast_factorial_iff_of_charP {n : ℕ} : IsUnit (n ! : A) ↔ n < p :=
   | zero => simp [hp.pos]
   | succ n ih =>
     -- TODO: why is `.symm.symm` needed here!?
-    rw [factorial_succ, cast_mul, Nat.cast_commute _ _ |>.isUnit_mul_iff, ih.symm.symm,
+    change IsUnit (n ! : A) ↔ n < p at ih
+    rw [factorial_succ, cast_mul, Nat.cast_commute _ _ |>.isUnit_mul_iff, ih,
       ← Nat.add_one_le_iff, CharP.isUnit_natCast_iff hp]
     exact ⟨fun ⟨h1, h2⟩ ↦ lt_of_le_of_ne h2 (mt (· ▸ dvd_rfl) h1),
       fun h ↦ ⟨not_dvd_of_pos_of_lt (Nat.succ_pos _) h, h.le⟩⟩
