@@ -115,27 +115,30 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     let stx := capSyntax stx finalLintPos.1
     let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
     let (real, lths) := polishSource origSubstring.toString
-    let fmt ← (liftCoreM do PrettyPrinter.ppCategory `command stx <|> (do
+    let fmt : Option Format := ←
+        try
+          liftCoreM <| PrettyPrinter.ppCategory `command stx
+        catch _ =>
+          Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+            m!"The `commandStart` linter had some parsing issues: \
+              feel free to silence it and report this error!"
+          return none
+    if let some fmt := fmt then
+      let st := polishPP fmt.pretty
       Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-        m!"The `commandStart` linter had some parsing issues: \
-           feel free to silence it with `set_option linter.style.commandStart.verbose false in` \
-           and report this error!"
-      return real.trimRight ++ " :"))
-    let st := polishPP fmt.pretty
-    Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-      m!"real:\n'{real}'\n\n\
-        real formatted:\n'{furtherFormatting (removeComments real)}'\n\n\
-        comparison:\n'{st}'\n\n\
-        format:\n'{fmt}'\n"
-    if ! st.startsWith (furtherFormatting (removeComments real)) then
-      let diff := real.firstDiffPos st
-      let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
-      let f := origSubstring.str.drop (pos)
-      let extraLth := (f.takeWhile (· != st.get diff)).length
-      let srcCtxt := zoomString real diff.1 5
-      let ppCtxt  := zoomString st diff.1 5
-      Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
-        m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
+        m!"real:\n'{real}'\n\n\
+          real formatted:\n'{furtherFormatting (removeComments real)}'\n\n\
+          comparison:\n'{st}'\n\n\
+          format:\n'{fmt}'\n"
+      if ! st.startsWith (furtherFormatting (removeComments real)) then
+        let diff := real.firstDiffPos st
+        let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
+        let f := origSubstring.str.drop (pos)
+        let extraLth := (f.takeWhile (· != st.get diff)).length
+        let srcCtxt := zoomString real diff.1 5
+        let ppCtxt  := zoomString st diff.1 5
+        Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
+          m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
 
 initialize addLinter commandStartLinter
 
