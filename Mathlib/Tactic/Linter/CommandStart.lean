@@ -7,9 +7,9 @@ Authors: Damiano Testa
 import Mathlib.Tactic.Linter.PPRoundtrip
 
 /-!
-#  The "commandStart" linter
+#  The `commandStart` linter
 
-The "commandStart" linter emits a warning if
+The `commandStart` linter emits a warning if
 * a command does not start at the beginning of a line;
 * the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 -/
@@ -19,7 +19,7 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /--
-The "commandStart" linter emits a warning if
+The `commandStart` linter emits a warning if
 * a command does not start at the beginning of a line;
 * the "hypotheses segment" of a declaration does not coincide with its pretty-printed version.
 
@@ -128,10 +128,10 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     if let some fmt := fmt then
       let st := polishPP fmt.pretty
       Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-        m!"real:\n'{real}'\n\n\
-          real formatted:\n'{furtherFormatting (removeComments real)}'\n\n\
-          comparison:\n'{st}'\n\n\
-          format:\n'{fmt}'\n"
+        m!"slightly polished source:\n'{real}'\n\n\
+          actually used source:\n'{furtherFormatting (removeComments real)}'\n\n\
+          reference formatting:\n'{st}'\n\n\
+          intermediate reference formatting:\n'{fmt}'\n"
       if ! st.startsWith (furtherFormatting (removeComments real)) then
         let diff := real.firstDiffPos st
         let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
