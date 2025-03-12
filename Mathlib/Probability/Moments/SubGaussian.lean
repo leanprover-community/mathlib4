@@ -69,9 +69,9 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 
 ## Main statements
 
-* `prob_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of indepedent sub-Gaussian
+* `measure_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of indepedent sub-Gaussian
   random variables.
-* `prob_sum_ge_le_of_HasCondSubgaussianMGF`: the Azuma-Hoeffding inequality for sub-Gaussian
+* `measure_sum_ge_le_of_HasCondSubgaussianMGF`: the Azuma-Hoeffding inequality for sub-Gaussian
   random variables.
 
 ## Implementation notes
@@ -572,7 +572,7 @@ lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
       rw [Finset.sum_apply]
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
-lemma prob_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
+lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
     {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) {ε : ℝ} (hε : 0 ≤ ε) :
@@ -580,7 +580,7 @@ lemma prob_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
   (sum_of_iIndepFun h_indep h_meas h_subG).measure_ge_le hε
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
-lemma prob_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
+lemma measure_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
     {X : ℕ → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {n : ℕ} (h_subG : ∀ i < n, HasSubgaussianMGF (X i) c μ) {ε : ℝ} (hε : 0 ≤ ε) :
@@ -643,7 +643,7 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
       ((h_adapted m).mono (ℱ.mono (Finset.mem_range_le hm))).measurable
 
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
-lemma prob_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
+lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : Adapted ℱ Y)
     (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y i) (cY i) μ) (n : ℕ)
     {ε : ℝ} (hε : 0 ≤ ε) :
