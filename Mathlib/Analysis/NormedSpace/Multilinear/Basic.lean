@@ -501,8 +501,8 @@ instance seminormedAddCommGroup' :
     SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 (fun _ : ι => G) G') :=
   ContinuousMultilinearMap.seminormedAddCommGroup
 
-instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) :=
-  ⟨fun c f => f.opNorm_smul_le c⟩
+instance normedSpace : NormedSpace 𝕜' (ContinuousMultilinearMap 𝕜 E G) where
+  norm_smul_le c f := f.opNorm_smul_le c
 
 /-- An alias of `ContinuousMultilinearMap.normedSpace` with non-dependent types to help typeclass
 search. -/
