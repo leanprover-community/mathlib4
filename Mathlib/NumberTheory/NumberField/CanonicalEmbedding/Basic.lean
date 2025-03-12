@@ -773,7 +773,7 @@ theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
     rw [← Set.range_comp]
     exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))
   have h₂ : Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) := by
-    ext; simp [mem_span_basisOfFractionalIdeal]]
+    ext; simp [mem_span_basisOfFractionalIdeal]
   rw [h₁, ← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe, h₂, AlgHom.coe_toLinearMap,
     RingHom.coe_toIntAlgHom]
 
