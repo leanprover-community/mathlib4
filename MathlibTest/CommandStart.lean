@@ -109,21 +109,7 @@ local infixl:50 " ≼ " => r
 local infixl:50 " ≼ " => s
 
 /--
-warning: The `commandStart` linter had some parsing issues: feel free to silence it with `set_option linter.style.commandStart.verbose false in` and report this error!
-note: this linter can be disabled with `set_option linter.style.commandStart.verbose false`
----
-warning: real:
-'example {a : α} (_ : a ≼ a) '
-
-real formatted:
-'example {a : α} (_ : a ≼ a) '
-
-comparison:
-'example {a : α} (_ : a ≼ a) :'
-
-format:
-'example {a : α} (_ : a ≼ a) :'
-
+warning: The `commandStart` linter had some parsing issues: feel free to silence it and report this error!
 note: this linter can be disabled with `set_option linter.style.commandStart.verbose false`
 -/
 #guard_msgs in
