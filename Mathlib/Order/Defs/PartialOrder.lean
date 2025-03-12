@@ -79,10 +79,6 @@ lemma le_rfl : a ≤ a := le_refl a
 @[order_dual ge_trans]
 lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
 
--- lemma ge_trans' : a ≥ b → b ≥ c → a ≥ c := ge_trans
-
--- attribute [order_dual existing (attr := trans) ge_trans] le_trans
-
 @[order_dual existing (reorder := 3 4) lt_iff_le_not_le]
 lemma lt_iff_le_not_le : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_le _ _
 
@@ -110,20 +106,23 @@ alias LE.le.not_lt := not_lt_of_le
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_lt h le_rfl
 lemma gt_irrefl (a : α) : ¬a > a := lt_irrefl _
 
-@[order_dual (attr := trans) gt_of_gt_of_ge]
+-- @[order_dual (attr := trans) gt_of_gt_of_ge]
 lemma lt_of_lt_of_le (hab : a < b) (hbc : b ≤ c) : a < c :=
   lt_of_le_not_le (le_trans (le_of_lt hab) hbc) fun hca ↦ not_le_of_lt hab (le_trans hbc hca)
 
-@[order_dual (attr := trans) gt_of_ge_of_gt]
+-- @[order_dual (attr := trans) gt_of_ge_of_gt]
 lemma lt_of_le_of_lt (hab : a ≤ b) (hbc : b < c) : a < c :=
   lt_of_le_not_le (le_trans hab (le_of_lt hbc)) fun hca ↦ not_le_of_lt hbc (le_trans hca hab)
 
--- @[trans] lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
--- @[trans] lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
+-- don't use order_dual to generate theorems which have short proofs
+@[order_dual existing (attr := trans) lt_of_lt_of_le]
+lemma gt_of_gt_of_ge (h₁ : a > b) (h₂ : b ≥ c) : a > c := lt_of_le_of_lt h₂ h₁
+@[order_dual existing (attr := trans) lt_of_le_of_lt]
+lemma gt_of_ge_of_gt (h₁ : a ≥ b) (h₂ : b > c) : a > c := lt_of_lt_of_le h₂ h₁
 
-@[order_dual (attr := trans) gt_trans]
 lemma lt_trans (hab : a < b) (hbc : b < c) : a < c := lt_of_lt_of_le hab (le_of_lt hbc)
--- @[trans] lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
+@[order_dual existing (attr := trans) lt_trans]
+lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h₁
 
 @[order_dual ne_of_gt]
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
@@ -180,9 +179,6 @@ This lemma only exists to serve as an order dual counterpart to `Preorder.le_ant
 @[order_dual existing PartialOrder.le_antisymm]
 lemma PartialOrder.le_antisymm' (h₁ : b ≤ a) (h₂ : a ≤ b) : a = b :=
 PartialOrder.le_antisymm _ _ h₂ h₁
-
--- attribute [order_dual existing (reorder := 3 4,5 6) PartialOrder.le_antisymm']
--- PartialOrder.le_antisymm
 
 @[order_dual le_antisymmOD]
 lemma le_antisymm : a ≤ b → b ≤ a → a = b := PartialOrder.le_antisymm _ _

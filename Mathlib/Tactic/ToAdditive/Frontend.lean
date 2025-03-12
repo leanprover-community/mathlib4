@@ -158,6 +158,11 @@ syntax toAdditiveOption := toAdditiveParenthesizedOption <|> &"existing"
 /-- Remaining arguments of `to_additive`. -/
 syntax toAdditiveRest := (ppSpace toAdditiveOption)* (ppSpace ident)? (ppSpace str)?
 
+/-- Options to `order_dual`. -/
+syntax orderDualOption := toAdditiveParenthesizedOption <|> &"existing" <|> &"self"
+/-- Remaining arguments of `order_dual`. -/
+syntax orderDualRest := (ppSpace orderDualOption)* (ppSpace ident)? (ppSpace str)?
+
 /-- The attribute `to_additive` can be used to automatically transport theorems
 and definitions (but not inductive types and structures) from a multiplicative
 theory to an additive theory.
@@ -375,10 +380,10 @@ macro "to_additive?" rest:toAdditiveRest : attr => `(attr| to_additive ? $rest)
 /--
 order_dual syntax
 -/
-syntax (name := order_dual) "order_dual" "?"? toAdditiveRest : attr
+syntax (name := order_dual) "order_dual" "?"? orderDualRest : attr
 
 @[inherit_doc order_dual]
-macro "order_dual?" rest:toAdditiveRest : attr => `(attr| order_dual ? $rest)
+macro "order_dual?" rest:orderDualRest : attr => `(attr| order_dual ? $rest)
 
 /-- A set of strings of names that end in a capital letter.
 * If the string contains a lowercase letter, the string should be split between the first occurrence
@@ -661,6 +666,7 @@ structure Config : Type where
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
   existing : Option Bool := none
+  -- TODO: split into `order_dual` version and add `self` config?
   deriving Repr
 
 /-- Implementation function for `additiveTest`.
@@ -1499,19 +1505,21 @@ def elabToAdditive : Syntax → CoreM Config
 
 /-- Elaboration of the configuration options for `to_additive`. -/
 def elabOrderDual : Syntax → CoreM Config
-  | `(attr| order_dual%$tk $[?%$trace]? $[$opts:toAdditiveOption]* $[$tgt]? $[$doc]?) => do
+  | `(attr| order_dual%$tk $[?%$trace]? $[$opts:orderDualOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
     let mut reorder := []
     let mut existing := some false
+    let mut self := some false
     for stx in opts do
       match stx with
-      -- TODO: add `order_dual self` syntax here?
-      | `(toAdditiveOption| (attr := $[$stxs],*)) =>
+      | `(orderDualOption| (attr := $[$stxs],*)) =>
         attrs := attrs ++ stxs
-      | `(toAdditiveOption| (reorder := $[$[$reorders:num]*],*)) =>
+      | `(orderDualOption| (reorder := $[$[$reorders:num]*],*)) =>
         reorder := reorder ++ reorders.toList.map (·.toList.map (·.raw.isNatLit?.get! - 1))
-      | `(toAdditiveOption| existing) =>
+      | `(orderDualOption| existing) =>
         existing := some true
+      | `(orderDualOption| self) =>
+        self := some true
       | _ => throwUnsupportedSyntax
     reorder := reorder.reverse
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
