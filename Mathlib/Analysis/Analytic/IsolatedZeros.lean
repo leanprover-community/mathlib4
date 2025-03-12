@@ -135,7 +135,7 @@ theorem eventually_eq_or_eventually_ne (hf : AnalyticAt 𝕜 f z₀) (hg : Analy
 
 /-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood. -/
 theorem eventuallyEq_nhdNE_iff_eventuallyEq_nhd (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-  f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g := by
+    f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g := by
   constructor <;> intro hfg
   · rcases ((hf.sub hg).eventually_eq_zero_or_eventually_ne_zero) with h | h
     · exact Filter.eventuallyEq_iff_sub.2 h
