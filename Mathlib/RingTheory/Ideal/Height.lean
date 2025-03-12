@@ -206,6 +206,7 @@ theorem IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim [IsLocalRing R] :
   rfl
 
 /-- The height of the maximal ideal equals the Krull dimension in a local ring. -/
+@[simp]
 theorem IsLocalRing.maximalIdeal_height_eq_ringKrullDim [IsLocalRing R] :
     (IsLocalRing.maximalIdeal R).height = ringKrullDim R := by
   rw [Ideal.height_eq_primeHeight, IsLocalRing.maximalIdeal_primeHeight_eq_ringKrullDim]
