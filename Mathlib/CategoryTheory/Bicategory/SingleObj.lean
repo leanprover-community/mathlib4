@@ -51,8 +51,8 @@ instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp X Y := tensorObj X Y
-  whiskerLeft X _ _ f := X ◁ f
-  whiskerRight f Z := f ▷ Z
+  whiskerLeft X _ _ f := MonoidalCategory.whiskerLeft X f
+  whiskerRight f Z := MonoidalCategory.whiskerRight f Z
   associator X Y Z := α_ X Y Z
   leftUnitor X := λ_ X
   rightUnitor X := ρ_ X

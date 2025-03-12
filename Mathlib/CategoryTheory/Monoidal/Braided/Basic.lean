@@ -161,21 +161,21 @@ theorem yang_baxter' (X Y Z : C) :
   all_goals monoidal
 
 theorem yang_baxter_iso (X Y Z : C) :
-    (α_ X Y Z).symm ≪≫ whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫
-    whiskerLeftIso Y (β_ X Z) ≪≫ (α_ Y Z X).symm ≪≫
-    whiskerRightIso (β_ Y Z) X ≪≫ (α_ Z Y X) =
-      whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫
-      whiskerRightIso (β_ X Z) Y ≪≫ α_ Z X Y ≪≫
-      whiskerLeftIso Z (β_ X Y) := Iso.ext (yang_baxter X Y Z)
+    (α_ X Y Z).symm ≪≫ β_ X Y ▷ Z ≪≫ α_ Y X Z ≪≫
+    Y ◁ β_ X Z ≪≫ (α_ Y Z X).symm ≪≫
+    β_ Y Z ▷ X ≪≫ (α_ Z Y X) =
+      X ◁ β_ Y Z ≪≫ (α_ X Z Y).symm ≪≫
+      β_ X Z ▷ Y ≪≫ α_ Z X Y ≪≫
+      Z ◁ β_ X Y := Iso.ext (yang_baxter X Y Z)
 
 theorem hexagon_forward_iso (X Y Z : C) :
     α_ X Y Z ≪≫ β_ X (Y ⊗ Z) ≪≫ α_ Y Z X =
-      whiskerRightIso (β_ X Y) Z ≪≫ α_ Y X Z ≪≫ whiskerLeftIso Y (β_ X Z) :=
+      β_ X Y ▷ Z ≪≫ α_ Y X Z ≪≫ Y ◁ β_ X Z :=
   Iso.ext (hexagon_forward X Y Z)
 
 theorem hexagon_reverse_iso (X Y Z : C) :
     (α_ X Y Z).symm ≪≫ β_ (X ⊗ Y) Z ≪≫ (α_ Z X Y).symm =
-      whiskerLeftIso X (β_ Y Z) ≪≫ (α_ X Z Y).symm ≪≫ whiskerRightIso (β_ X Z) Y :=
+      X ◁ β_ Y Z ≪≫ (α_ X Z Y).symm ≪≫ β_ X Z ▷ Y :=
   Iso.ext (hexagon_reverse X Y Z)
 
 @[reassoc]

@@ -170,7 +170,7 @@ instance (priority := 10) exponentialIdeal_of_preservesBinaryProducts
   let q : i.obj (L.obj (A ⟹ i.obj B)) ⟶ A ⟹ i.obj B := by
     apply CartesianClosed.curry (ir.homEquiv _ _ _)
     apply _ ≫ (ir.homEquiv _ _).symm ((exp.ev A).app (i.obj B))
-    exact prodComparison L A _ ≫ (_ ◁ (ε.app _)) ≫ inv (prodComparison _ _ _)
+    exact prodComparison L A _ ≫ _ ◁ ε.app _ ≫ inv (prodComparison _ _ _)
   have : η.app (A ⟹ i.obj B) ≫ q = 𝟙 (A ⟹ i.obj B) := by
     dsimp
     rw [← curry_natural_left, curry_eq_iff, uncurry_id_eq_ev, ← ir.homEquiv_naturality_left,

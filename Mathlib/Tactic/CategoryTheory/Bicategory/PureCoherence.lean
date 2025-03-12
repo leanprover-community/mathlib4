@@ -27,13 +27,10 @@ universe w v u
 
 variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
-local infixr:81 " ◁ " => Bicategory.whiskerLeftIso
-local infixl:81 " ▷ " => Bicategory.whiskerRightIso
-
 /-- The composition of the normalizing isomorphisms `η_f : p ≫ f ≅ pf` and `η_g : pf ≫ g ≅ pfg`. -/
 abbrev normalizeIsoComp {p : a ⟶ b} {f : b ⟶ c} {g : c ⟶ d} {pf : a ⟶ c} {pfg : a ⟶ d}
     (η_f : p ≫ f ≅ pf) (η_g : pf ≫ g ≅ pfg) :=
-  (α_ _ _ _).symm ≪≫ whiskerRightIso η_f g ≪≫ η_g
+  (α_ _ _ _).symm ≪≫ η_f ▷ g ≪≫ η_g
 
 theorem naturality_associator
     {p : a ⟶ b} {f : b ⟶ c} {g : c ⟶ d} {h : d ⟶ e} {pf : a ⟶ c} {pfg : a ⟶ d} {pfgh : a ⟶ e}
@@ -222,8 +219,8 @@ theorem of_normalize_eq {f g f' : a ⟶ b} {η θ : f ≅ g} (η_f : 𝟙 a ≫ 
 theorem mk_eq_of_naturality {f g f' : a ⟶ b} {η θ : f ⟶ g} {η' θ' : f ≅ g}
     (η_f : 𝟙 a ≫ f ≅ f') (η_g : 𝟙 a ≫ g ≅ f')
     (Hη : η'.hom = η) (Hθ : θ'.hom = θ)
-    (Hη' : whiskerLeftIso (𝟙 a) η' ≪≫ η_g = η_f)
-    (Hθ' : whiskerLeftIso (𝟙 a) θ' ≪≫ η_g = η_f) : η = θ :=
+    (Hη' : 𝟙 a ◁ η' ≪≫ η_g = η_f)
+    (Hθ' : 𝟙 a ◁ θ' ≪≫ η_g = η_f) : η = θ :=
   calc
     η = η'.hom := Hη.symm
     _ = (λ_ f).inv ≫ η_f.hom ≫ η_g.inv ≫ (λ_ g).hom := by
@@ -256,8 +253,8 @@ instance : MkEqOfNaturality BicategoryM where
     have η_g : Q(𝟙 $a ≫ $g ≅ $f') := η_g.e
     have η_hom : Q(Iso.hom $η'_e = $η) := ηIso.eq
     have Θ_hom : Q(Iso.hom $θ'_e = $θ) := θIso.eq
-    have Hη : Q(whiskerLeftIso (𝟙 $a) $η'_e ≪≫ $η_g = $η_f) := Hη
-    have Hθ : Q(whiskerLeftIso (𝟙 $a) $θ'_e ≪≫ $η_g = $η_f) := Hθ
+    have Hη : Q(𝟙 $a ◁ $η'_e ≪≫ $η_g = $η_f) := Hη
+    have Hθ : Q(𝟙 $a ◁ $θ'_e ≪≫ $η_g = $η_f) := Hθ
     return q(mk_eq_of_naturality $η_f $η_g $η_hom $Θ_hom $Hη $Hθ)
 
 open Elab.Tactic

@@ -76,7 +76,7 @@ def expComparison (A : C) : TwoSquare (exp A) F F (exp (F.obj A)) :=
   mateEquiv (exp.adjunction A) (exp.adjunction (F.obj A)) (prodComparisonNatIso F A).inv
 
 theorem expComparison_ev (A B : C) :
-    F.obj A ◁ ((expComparison F A).natTrans.app B) ≫ (exp.ev (F.obj A)).app (F.obj B) =
+    F.obj A ◁ (expComparison F A).natTrans.app B ≫ (exp.ev (F.obj A)).app (F.obj B) =
       inv (prodComparison F _ _) ≫ F.map ((exp.ev _).app _) := by
   convert mateEquiv_counit _ _ (prodComparisonNatIso F A).inv B using 2
   apply IsIso.inv_eq_of_hom_inv_id -- Porting note: was `ext`
