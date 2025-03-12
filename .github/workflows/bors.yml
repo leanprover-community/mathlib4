@@ -107,7 +107,7 @@ jobs:
       - name: cleanup .cache/mathlib
         run: |
           # Define the cache directory path
-          CACHE_DIR="~/.cache/mathlib"
+          CACHE_DIR="$HOME/.cache/mathlib"
 
           # Check if directory exists
           if [ ! -d "$CACHE_DIR" ]; then
