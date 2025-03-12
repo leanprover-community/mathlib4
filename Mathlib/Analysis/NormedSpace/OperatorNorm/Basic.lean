@@ -320,8 +320,8 @@ instance toSeminormedAddCommGroup : SeminormedAddCommGroup (E →SL[σ₁₂] F)
   dist_eq _ _ := rfl
 
 instance toNormedSpace {𝕜' : Type*} [NormedField 𝕜'] [NormedSpace 𝕜' F] [SMulCommClass 𝕜₂ 𝕜' F] :
-    NormedSpace 𝕜' (E →SL[σ₁₂] F) :=
-  ⟨opNorm_smul_le⟩
+    NormedSpace 𝕜' (E →SL[σ₁₂] F) where
+  norm_smul_le := opNorm_smul_le
 
 /-- The operator norm is submultiplicative. -/
 theorem opNorm_comp_le (f : E →SL[σ₁₂] F) : ‖h.comp f‖ ≤ ‖h‖ * ‖f‖ :=
