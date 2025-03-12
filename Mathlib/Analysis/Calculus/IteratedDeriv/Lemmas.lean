@@ -35,16 +35,16 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     exact derivWithin_congr (IH hfg) (IH hfg hy)
 
 theorem iteratedDerivWithin_eq_iteratedDeriv
-(hf : ContDiff 𝕜 (⊤ : ℕ∞) f) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s):
+(hf : ContDiff 𝕜 n f) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s):
 iteratedDerivWithin n f s x = iteratedDeriv n f x := by
-  revert x; induction' n with n hn
-  · simp
-  · intro x hx
-    rw [iteratedDerivWithin_succ, iteratedDeriv_succ, derivWithin, deriv]
-    rw [fderivWithin_congr @hn (@hn x hx)]
-    rw [fderivWithin_eq_fderiv (UniqueDiffOn.uniqueDiffWithinAt hs hx)]
-    apply Differentiable.differentiableAt
-          (ContDiff.differentiable_iteratedDeriv n hf (Batteries.compareOfLessAndEq_eq_lt.mp rfl))
+  induction n generalizing x with
+  | zero => simp
+  | succ n hn =>
+    have : ∀ x ∈ s, iteratedDerivWithin n f s x = iteratedDeriv n f x :=
+      fun _ hy => hn (ContDiff.of_le hf (by norm_cast; simp)) hy
+    rw [iteratedDerivWithin_succ, iteratedDeriv_succ, derivWithin, deriv,
+      fderivWithin_congr this (this _ hx), fderivWithin_eq_fderiv (hs.uniqueDiffWithinAt hx)]
+    apply (hf.differentiable_iteratedDeriv n (by norm_cast; simp)).differentiableAt
 
 include h hx in
 theorem iteratedDerivWithin_add
