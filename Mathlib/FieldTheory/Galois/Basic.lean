@@ -284,9 +284,8 @@ theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
   simp only [Subgroup.mem_top, forall_const]
 
 theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
-    x ∈ Set.range (algebraMap F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
-  rw [<- mem_bot_iff_fixed]
-  rfl
+    x ∈ Set.range (algebraMap F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x :=
+  mem_bot_iff_fixed x
 
 theorem card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.fixingSubgroup K)]
     [FiniteDimensional F E] [IsGalois F E] :
