@@ -144,9 +144,9 @@ instance : IsFractionRing A K where
 /-- The value group of the valuation associated to `A`. Note: it is actually a group with zero. -/
 def ValueGroup :=
   ValuationRing.ValueGroup A K
--- deriving LinearOrderedCommGroupWithZero
+-- The `LinearOrderedCommGroupWithZero` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : LinearOrderedCommGroupWithZero (ValueGroup A) := by
   unfold ValueGroup
   infer_instance
