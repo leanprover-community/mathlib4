@@ -39,11 +39,9 @@ protected theorem hasFiniteFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries]
   finite := by
     intro m hm
-    cases' m with m
-    · linarith
-    cases' m with m
-    · linarith
-    simp [fpowerSeries]
+    match m with
+    | 0 | 1 => linarith
+    | n + 2 => simp [fpowerSeries]
 
 protected theorem hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesOnBall f (f.fpowerSeries x) x ∞ :=
