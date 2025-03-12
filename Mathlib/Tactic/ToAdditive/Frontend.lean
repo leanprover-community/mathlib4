@@ -666,7 +666,8 @@ structure Config : Type where
     raise a linter error.
     Note: the linter will never raise an error for inductive types and structures. -/
   existing : Option Bool := none
-  -- TODO: split into `order_dual` version and add `self` config?
+  -- TODO: split into `order_dual` version and put `self` there?
+  self : Bool := false
   deriving Repr
 
 /-- Implementation function for `additiveTest`.
@@ -1509,7 +1510,7 @@ def elabOrderDual : Syntax → CoreM Config
     let mut attrs := #[]
     let mut reorder := []
     let mut existing := some false
-    let mut self := some false
+    let mut self := false
     for stx in opts do
       match stx with
       | `(orderDualOption| (attr := $[$stxs],*)) =>
@@ -1519,7 +1520,7 @@ def elabOrderDual : Syntax → CoreM Config
       | `(orderDualOption| existing) =>
         existing := some true
       | `(orderDualOption| self) =>
-        self := some true
+        self := true
       | _ => throwUnsupportedSyntax
     reorder := reorder.reverse
     trace[to_additive_detail] "attributes: {attrs}; reorder arguments: {reorder}"
@@ -1530,6 +1531,7 @@ def elabOrderDual : Syntax → CoreM Config
              attrs
              reorder
              existing
+             self
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
@@ -1673,8 +1675,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
     b.relevantArgAttr.add src firstMultArg
   insertTranslation b src tgt alreadyExists
   let nestedNames ←
-    if alreadyExists then
-      -- TODO: for `order_dual self`: generate and validate declaration?
+    if alreadyExists && !cfg.self then
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
@@ -1683,6 +1684,10 @@ partial def addToAdditiveAttr (b : BundledExtensions)
     else
       -- tgt doesn't exist, so let's make it
       transformDecl b nameDict fixAbbreviation cfg src tgt
+  -- for `order_dual self`: validate declaration
+  if cfg.self then
+    -- isDefEq tgt src
+    trace[to_additive] "TODO: check `self`"
   -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
   -- (the information will be over the attribute of no additive name is given)
   pushInfoLeaf <| .ofTermInfo {
