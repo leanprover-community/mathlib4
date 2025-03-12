@@ -28,7 +28,7 @@ noncomputable def WithTop.toBase [Zero α] (a : WithTop α) : α := a.untopD 0
 -/
 
 @[simp]
-lemma WithTop.toBase_eq_zero_iff [Zero α] (a : WithTop α) :
+lemma WithTop.toBase_eq_zero [Zero α] (a : WithTop α) :
     a.toBase = 0 ↔ a = 0 ∨ a = ⊤ := by simp_all [WithTop.toBase_def]
 
 @[simp]
