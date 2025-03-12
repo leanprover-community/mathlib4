@@ -209,10 +209,9 @@ theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
   · simp only [Set.subset_def, mem_closure_iff]
     intro x hx U hU hxU
     rcases isOpen_pi_iff.mp hU x hxU with ⟨t, V, hV, hVU⟩
-    classical
-    refine ⟨∑ i ∈ t, Pi.single i (x i), hVU ?_, sum_mem fun i hi ↦ ?_⟩
-    · simp_all [Finset.sum_fn, Finset.sum_pi_single]
-    · exact mem_iSup_of_mem i <| mem_map_of_mem <| hx _ <| Set.mem_univ _
+    refine ⟨∑ i ∈ t, Pi.single i (x i), hVU ?_, ?_⟩
+    · simp_all [Finset.sum_pi_single]
+    · exact sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_map_of_mem <| hx _ <| Set.mem_univ _
 
 /-- If `s i` is a family of submodules, each is in its module,
 then the closure of their span in the indexped product of the modules
@@ -228,10 +227,8 @@ see `Submodule.closure_coe_iSup_map_single` above. -/
 theorem topologicalClosure_iSup_map_single [∀ i, ContinuousAdd (M i)]
     [∀ i, ContinuousConstSMul R (M i)] (s : ∀ i, Submodule R (M i)) :
     topologicalClosure (⨆ i, (s i).map (LinearMap.single R M i)) =
-      pi Set.univ fun i ↦ (s i).topologicalClosure := by
-  apply SetLike.coe_injective
-  push_cast
-  apply closure_coe_iSup_map_single
+      pi Set.univ fun i ↦ (s i).topologicalClosure :=
+  SetLike.coe_injective <| closure_coe_iSup_map_single _
 
 end Submodule
 
