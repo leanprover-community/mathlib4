@@ -505,11 +505,11 @@ In this section we define the associated graded module to a filtered module.
 
 section GradedModule
 
-variable {R ι σ : Type*} [OrderedCancelAddCommMonoid ι] [Ring R] [SetLike σ R]
+variable {R ι σ : Type*} [OrderedAddCommMonoid ι] [Ring R] [SetLike σ R]
 
 variable (F : ι → σ) (F_lt : outParam <| ι → σ)
 
-variable {M : Type*} {ιM : Type*} [OrderedCancelAddCommMonoid ιM] [AddAction ι ιM]
+variable {M : Type*} {ιM : Type*} [OrderedAddCommMonoid ιM] [AddAction ι ιM]
   {σM : Type*} [SetLike σM M]
 
 section hasGSMul
