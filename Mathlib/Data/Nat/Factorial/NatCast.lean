@@ -6,9 +6,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Order.Antidiag.Nat
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Nat.Factorial.Basic
+import Mathlib.Data.Finset.NatAntidiagonal
 
 
 /-!
