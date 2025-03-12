@@ -47,7 +47,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`
+    -- Porting note: proof was `simp`
     dsimp only
     rw [Prod.ext_iff]
     simp
@@ -62,7 +62,7 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
     -- Porting note: was `simpa [graph] using h`
     simp only [graph, Finset.mem_image, Finset.mem_univ, true_and] at h
     obtain ⟨i', hi'⟩ := h
-    obtain ⟨-, rfl⟩ := Prod.mk.inj_iff.mp hi'
+    obtain ⟨-, rfl⟩ := Prod.mk_inj.mp hi'
     simpa
 
 @[simp]
