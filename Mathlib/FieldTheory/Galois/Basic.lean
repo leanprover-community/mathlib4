@@ -184,7 +184,7 @@ namespace IntermediateField
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 
-theorem mem_fixedField_iff (x) :
+@[simp] lemma mem_fixedField_iff (x) :
     x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
   show x ∈ MulAction.fixedPoints H E ↔ _
   simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
@@ -192,8 +192,7 @@ theorem mem_fixedField_iff (x) :
 @[simp] lemma fixedField_bot :
     IntermediateField.fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
   ext
-  simp only [mem_fixedField_iff, Subgroup.mem_bot,
-    forall_eq, one_apply, mem_top]
+  simp
 
 theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
     finrank (fixedField H) E = Fintype.card H :=
@@ -278,6 +277,7 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
 @[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
     IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
   rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
+
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
   rw [← fixedField_top, mem_fixedField_iff]
