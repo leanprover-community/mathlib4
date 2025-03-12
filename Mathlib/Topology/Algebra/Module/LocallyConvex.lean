@@ -228,12 +228,4 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
       simp_all [Ioo_mem_nhds, convex_Ioo]
     · simp +contextual
 
-/-- A shortcut instance that avoids the `NormedSpace` import. -/
-instance : LocallyConvexSpace ℝ ℝ := inferInstance
-
-/-- The nonnegatives of a linearly ordered field are a locally convex space.
-`NormedSpace ℝ E` implies `LocallyConvexSpace ℝ E`, but `NormedSpace` requires `E`
-to be a `SeminormedAddCommGroup`, which the nonnegatives cannot satisfy. -/
-instance : LocallyConvexSpace NNReal NNReal := inferInstance
-
 end LinearOrderedSemiring
