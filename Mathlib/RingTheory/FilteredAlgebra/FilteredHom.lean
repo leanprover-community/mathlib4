@@ -17,70 +17,23 @@ them.
 both the main and auxiliary filtered structures. This class describes a structure-preserving map
 between two filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
 
-* `FilteredHom.comp` : The composition of two filtered morphisms
-`f : FilteredHom FA FA_lt FB FB_lt` and `g : FilteredHom FB FB_lt FC FC_lt`, resulting in a new
-morphism `f.comp g : FilteredHom FA FA_lt FC FC_lt`.
+* `FilteredHom.piece_wise_hom` : The filtered abelian group morphism obtained from the
+restriction of a `FilteredHom` to its `i`-th filtration.
+
+* `FilteredHom.IsStrict` : A filtered morphism `f : FilteredHom FA FA_lt FB FB_lt` `IsStrict` if
+it strictly map the `p`-th filtration of `FA` and `FA_lt` to the intersection of the image of `f`
+with the `p`-th filtration of `FB` and `FB_lt` respectively, for every `p : ι`.
 
 * `FilteredAddGroupHom` : A morphism between filtered abelian groups that preserves both the
-group and filtered morphism structures.
+group and filtered structures.
 
-* `FilteredAddGroupHom.comp` : The composition of filtered ring morphisms. Given two filtered
-abelian group morphisms `f : FilteredAddGroupHom FA FA_lt FB FB_lt` and
-`g : FilteredAddGroupHom FB FB_lt FC FC_lt`, their composition `g.comp  f` is defined by composing
-the underlying group homomorphisms and ensuring compatibility with the filtration structures.
-
-* `FilteredAddGroupHom.GradedPieceHom` :
-The induced morphism on the `i`-th graded piece of the associated graded group
-(written as `Gr(i)[f]`, where `f` is the filtered abelian group morphism).
-Given a filtered abelian group homomorphism `f : FilteredAddGroupHom FA FA_lt FB FB_lt`, this
-function takes an element in the `i`-th graded piece of `FA` (represented as a quotient
-`FA i / FA_lt i`) and maps it to the corresponding graded piece of `FB` by applying the group
-homomorphism `f`, ensuring that the result lies within the `i`-th filtration layer of `FB`.
-The construction respects the quotient equivalence relation, making it a well-defined additive
-group homomorphism.
+* `FilteredAddGroupHom.GradedPieceHom` : Additive group homomorphism between graded pieces,
+induced by the `piece_wise_hom` of a `FilteredAddGroupHom`.
 
 * `FilteredAddGroupHom.AssociatedGradedAddMonoidHom` :
-The induced graded group morphism between associated graded groups by giving
-the component-wise map `GradedPieceHom f`
-(Mathematically, it is `Gr[f] = ⨁ Gr(i)[f]`).
+The induced graded additive group morphism between associated graded additive groups,
+obtained from the component-wise map `GradedPieceHom f`.
 
-* `FilteredRingHom` : A morphism between filtered rings that preserves both the ring and
-filtered morphism structures. This class combines the properties of a ring homomorphism and a
-filtered morphism, ensuring that both the structure of the ring and its filtration are maintained
-under the morphism.
-
-`R →+* S` retrieves the ring homomorphism component of a filtered ring homomorphism,
-which is responsible for preserving the ring structure between the source and target rings.
-It allows direct access to the ring-theoretic aspects of the morphism, enabling operations
-and proofs that focus on the algebraic structure independent of the filtration layers.
-
-* `FilteredRingHom.IsStrict` : A strict filtered ring morphism, which is a filtered ring
-morphism `f` between filtered rings `IsRingFiltration FR FR_lt` and `IsRingFiltration FS FS_lt`
-alongside with the property that `∀ p : ι`, the image of the `p`-th filtration layer of `FR`
-and `FR_lt` under `f` is exactly the intersection of the image of `f` with the `p`-th
-filtration layer of `FS` and `FS_lt` respectively.
-
-* `FilteredRingHom.comp` : The composition of filtered ring morphisms. Given two filtered
-ring morphisms `f : FilteredRingHom FR FR_lt FS FS_lt` and `g : FilteredRingHom FS FS_lt FT FT_lt`,
-their composition `g.comp  f` is defined by composing the underlying ring homomorphisms and ensuring
-compatibility with the filtration structures.
-
-* `FilteredRingHom.GradedPieceHom` :
-The induced morphism on the `i`-th graded piece of the associated graded ring
-(written as `Gr(i)[f]`, where `f` is the filtered ring morphism).
-Given a filtered ring homomorphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function takes an
-element in the `i`-th graded piece of `FR` (represented as a quotient `FR i / FR_lt i`) and maps it
-to the corresponding graded piece of `FS` by applying the ring homomorphism `f`, ensuring that the
-result lies within the `i`-th filtration layer of `FS`. The construction respects the quotient
-equivalence relation, making it a well-defined additive group homomorphism.
-
-* `FilteredRingHom.AssociatedGradedRingHom` :
-The induced graded ring morphism between associated graded rings
-(Mathematically, it is `Gr[f] = ⨁ Gr(i)[f]`).
-Specifically, given a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`, this function
-constructs an AddSubgroup homomorphism `Gr[f]` between the associated graded modules
-`⨁ (FR i / FR_lt i)` and `⨁ (FS i / FS_lt i)` by applying `Gr(i)[f]` component-wise to each graded
-piece and combining the results into a direct sum of additive group homomorphisms.
 -/
 section
 
@@ -92,7 +45,7 @@ variable (FC : ι → γ) (FC_lt : outParam <| ι → γ) [IsFiltration FC FC_lt
 
 /-- A morphism between general filtration (filtration of sets) that preserves both the main
 and auxiliary filtered structures. This class describes a structure-preserving map between two
-filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).-/
+filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`). -/
 @[ext]
 class FilteredHom where
   /-- It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and
@@ -111,20 +64,21 @@ variable (g : FilteredHom FB FB_lt FC FC_lt) (f : FilteredHom FA FA_lt FB FB_lt)
 
 variable {FA FB FC FA_lt FB_lt FC_lt} in
 
-/-- Filtered morphism restricted to its `i`-th filtration layer.-/
+/-- The filtered abelian group morphism obtained from the
+restriction of a `FilteredHom` to its `i`-th filtration. -/
 def piece_wise_hom (i : ι) : FA i → FB i :=
   Subtype.map f (fun _ ha ↦ f.pieces_wise ha)
 
 /-- The composition of two filtered morphisms,
-obtained from the composition of the underlying function.-/
+obtained from the composition of the underlying function. -/
 def comp : FilteredHom FA FA_lt FC FC_lt := {
   toFun := g.1.comp f.1
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
   pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha) }
 
 /-- A filtered morphism `f : FilteredHom FA FA_lt FB FB_lt` `IsStrict` if it strictly map
-the `p`-th filtration layer of `FA` and `FA_lt` to intersection of the image of `f` with the `p`-th
-filtration layer of `FB` and `FB_lt` respectively, for every `p : ι`.-/
+the `p`-th filtration of `FA` and `FA_lt` to the intersection of the image of `f` with
+the `p`-th filtration of `FB` and `FB_lt` respectively, for every `p : ι`. -/
 class IsStrict (f : outParam <| FilteredHom FA FA_lt FB FB_lt) : Prop where
   strict {p y} : y ∈ (FB p) → y ∈ Set.range f.toFun → y ∈ f.toFun '' (FA p)
   strict_lt {p y} : y ∈ (FB_lt p) → y ∈ Set.range f.toFun → y ∈ f.toFun '' (FA_lt p)
@@ -144,7 +98,7 @@ variable (FB : ι → β) (FB_lt : outParam <| ι → β)
 variable (FC : ι → γ) (FC_lt : outParam <| ι → γ)
 
 /-- A morphism between filtered abelian groups that preserves both the
-group and filtered morphism structures. -/
+group and filtered structures. -/
 class FilteredAddGroupHom extends FilteredHom FA FA_lt FB FB_lt, A →+ B
 
 /-- Reinterpret a `FilteredAddGroupHom` as a `AddMonoidHom`. -/
@@ -163,7 +117,7 @@ variable  (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom F
 variable {FA FB FC FA_lt FB_lt FC_lt}
 
 /-- The composition of filtered abelian group morphisms,
-obtained from the composition of underlying group homomorphisms.-/
+obtained from the composition of underlying group homomorphisms. -/
 def comp : FilteredAddGroupHom FA FA_lt FC FC_lt where
   __ := g.toAddMonoidHom.comp f.toAddMonoidHom
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
@@ -181,14 +135,14 @@ lemma IsStrict.strict_lt [FilteredHom.IsStrict FA FA_lt FB FB_lt f] {p y} :
 
 variable [AddSubgroupClass β B] [AddSubgroupClass γ C]
 
-/-- A filtered abelian group morphism restricted to its `i`-th filtration layer.-/
+/-- The `AddMonoidHom` version of `FilteredHom.piece_wise_hom`. -/
 abbrev piece_wise_hom (i : ι) : FA i →+ FB i where
   toFun := FilteredHom.piece_wise_hom f.toFilteredHom i
   map_zero' := SetCoe.ext f.toAddMonoidHom.map_zero
   map_add' a b := SetCoe.ext (f.toAddMonoidHom.map_add a b)
 
-/-- Additive group homomorphism between graded pieces induced by
-`f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
+/-- Additive group homomorphism between graded pieces,
+induced by the `piece_wise_hom` of a `FilteredAddGroupHom`. -/
 def GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →+ GradedPiece FB FB_lt i :=
   QuotientAddGroup.map _ _ (f.piece_wise_hom i)
     (fun x hx ↦ by simpa using f.pieces_wise_lt hx)
@@ -209,8 +163,8 @@ lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f]  = Gr(i)[g.comp f] :
   ext x
   exact GradedPieceHom_comp_apply g f i x
 
-/-- Additive group homomorphism (between direct sum of graded pieces) induced by
-`GradedPieceHom i f` where `f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
+/-- The induced graded additive group morphism between associated graded additive groups,
+obtained from the component-wise map `GradedPieceHom f`. -/
 noncomputable def AssociatedGradedAddMonoidHom :
     (AssociatedGraded FA FA_lt) →+ (AssociatedGraded FB FB_lt) :=
   DirectSum.map (GradedPieceHom f)
