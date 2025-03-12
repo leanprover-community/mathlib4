@@ -259,7 +259,7 @@ variable [ContinuousAdd M₂] {σ : R →+* S} {l : Filter α}
 
 /-- Constructs a bundled linear map from a function and a proof that this function belongs to the
 closure of the set of linear maps. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
     (hf : f ∈ closure (Set.range ((↑) : (M₁ →ₛₗ[σ] M₂) → M₁ → M₂))) : M₁ →ₛₗ[σ] M₂ :=
   { addMonoidHomOfMemClosureRangeCoe f hf with
@@ -267,7 +267,7 @@ def linearMapOfMemClosureRangeCoe (f : M₁ → M₂)
       (Set.range_subset_iff.2 LinearMap.map_smulₛₗ) hf }
 
 /-- Construct a bundled linear map from a pointwise limit of linear maps -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def linearMapOfTendsto (f : M₁ → M₂) (g : α → M₁ →ₛₗ[σ] M₂) [l.NeBot]
     (h : Tendsto (fun a x => g a x) l (𝓝 f)) : M₁ →ₛₗ[σ] M₂ :=
   linearMapOfMemClosureRangeCoe f <|
