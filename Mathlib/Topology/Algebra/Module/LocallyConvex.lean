@@ -197,7 +197,8 @@ end LatticeOps
 
 section LinearOrderedSemiring
 
-instance {R : Type*} [TopologicalSpace R] [LinearOrderedSemiring R] [OrderTopology R] :
+instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpace R]
+    [LinearOrderedSemiring R] [OrderTopology R] :
     LocallyConvexSpace R R where
   convex_basis x := by
     obtain hl | hl := isBot_or_exists_lt x
