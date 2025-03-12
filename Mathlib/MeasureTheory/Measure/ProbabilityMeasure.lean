@@ -189,8 +189,6 @@ protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
   simpa [← ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
     using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure)
 
-/-- The (total) mass of a finite measure `μ` is `μ univ`, i.e., the cast to `NNReal` of
-
 @[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
   simpa using apply_mono μ (subset_univ s)
 
