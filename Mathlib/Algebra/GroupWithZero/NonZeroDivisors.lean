@@ -139,6 +139,16 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
 
+instance [IsLeftCancelMulZero M₀] :
+    LeftCancelMonoid M₀⁰ where
+  mul_left_cancel _ _ _ h :=  Subtype.ext <|
+    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by simpa [Subtype.ext_iff] using h)
+
+instance [IsRightCancelMulZero M₀] :
+    RightCancelMonoid M₀⁰ where
+  mul_right_cancel _ _ _ h := Subtype.ext <|
+    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by simpa [Subtype.ext_iff] using h)
+
 end Nontrivial
 
 section NoZeroDivisors
@@ -235,6 +245,12 @@ lemma mul_mem_nonZeroDivisors : a * b ∈ M₀⁰ ↔ a ∈ M₀⁰ ∧ b ∈ M�
     apply ha
     apply hb
     rw [mul_assoc, hx]
+
+theorem nonZeroDivisors_dvd_iff_dvd_coe {a b : M₀⁰} :
+    a ∣ b ↔ (a : M₀) ∣ (b : M₀) :=
+  ⟨fun ⟨c, hc⟩ ↦ by simp_rw [hc, Submonoid.coe_mul, dvd_mul_right],
+  fun ⟨c, hc⟩ ↦ ⟨⟨c, (mul_mem_nonZeroDivisors.mp (hc ▸ b.prop)).2⟩,
+    by simp_rw [Subtype.ext_iff, Submonoid.coe_mul, hc]⟩⟩
 
 end CommMonoidWithZero
 
