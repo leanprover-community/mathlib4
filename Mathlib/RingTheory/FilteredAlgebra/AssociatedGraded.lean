@@ -515,7 +515,7 @@ variable {M : Type*} {ιM : Type*} [OrderedCancelAddCommMonoid ιM] [AddAction �
 section hasGSMul
 
 /-- The class of filtrations that can obtain a well defined `GradedSMul`
-from the multiplication `F i → FM j → FM (i +ᵥ j)`.-/
+from the multiplication `F i → FM j → FM (i +ᵥ j)`. -/
 class hasGSMul [AddCommMonoid M] [Module R M] [isfil : IsRingFiltration F F_lt] (FM : ιM → σM)
     (FM_lt : outParam <| ιM → σM) : Prop extends IsModuleFiltration F F_lt FM FM_lt where
   F_lt_smul_mem {i : ι} {j : ιM} {x y} : x ∈ F_lt i → y ∈ FM j → x • y ∈ FM_lt (i +ᵥ j)
@@ -564,7 +564,7 @@ variable [IsRingFiltration F F_lt] (FM : ιM → σM) (FM_lt : outParam <| ιM �
 open AddSubgroup
 
 /-- The scalar multiplication `F i → FM j → FM (i +ᵥ j)` defined as
-the scalar multiplication of its value.-/
+the scalar multiplication of its value. -/
 def IsModuleFiltration.hSMul [IsModuleFiltration F F_lt FM FM_lt] (i : ι) (j : ιM)
     (x : ofClass (F i)) (y : ofClass (FM j)) : ofClass (FM (i +ᵥ j)) where
   val := x.1 • y
@@ -590,7 +590,7 @@ theorem hasGSMul.mul_equiv_mul {i : ι} {j : ιM} ⦃x₁ x₂ : ofClass (F i)�
 
 /-- The scalar multiplication
 `GradedPiece F F_lt i → GradedPiece FM FM_lt j → GradedPiece FM FM_lt (i +ᵥ j)`
-lifted from the multiplication `F i → FM j → F (i +ᵥ j)`.-/
+lifted from the multiplication `F i → FM j → F (i +ᵥ j)`. -/
 def hasGSMul.gradedSMul {i : ι} {j : ιM} : GradedPiece F F_lt i → GradedPiece FM FM_lt j →
     GradedPiece FM FM_lt (i +ᵥ j) :=
   Quotient.map₂ (· • ·) (hasGSMul.mul_equiv_mul F F_lt FM FM_lt)
