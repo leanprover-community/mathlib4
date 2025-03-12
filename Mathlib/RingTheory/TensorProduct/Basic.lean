@@ -1048,30 +1048,39 @@ theorem leftComm_symm_tmul (m : A) (n : B) (p : C) :
 theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
-variable (R A B C D) in
+variable (R S A B C D) in
+set_option maxSynthPendingDepth 2 in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
-This is the algebra version of `TensorProduct.tensorTensorTensorComm`. -/
-def tensorTensorTensorComm : (A ⊗[R] B) ⊗[R] C ⊗[R] D ≃ₐ[R] (A ⊗[R] C) ⊗[R] B ⊗[R] D :=
-  let e₁ := Algebra.TensorProduct.assoc R A B (C ⊗[R] D)
-  let e₂ := congr (1 : A ≃ₐ[R] A) (leftComm R B C D)
-  let e₃ := (Algebra.TensorProduct.assoc R A C (B ⊗[R] D)).symm
-  e₁.trans (e₂.trans e₃)
+This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/
+def tensorTensorTensorComm : (A ⊗[R] B) ⊗[S] C ⊗[R] D ≃ₐ[S] (A ⊗[S] C) ⊗[R] B ⊗[R] D :=
+  AlgEquiv.ofLinearEquiv (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D)
+    rfl (LinearMap.map_mul_iff _ |>.mpr <| by ext; simp)
 
 @[simp]
 theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
-    tensorTensorTensorComm R A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+    tensorTensorTensorComm R S A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
 @[simp]
+theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
+    (tensorTensorTensorComm R S A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
+  rfl
+
 theorem tensorTensorTensorComm_symm :
-    (tensorTensorTensorComm R A B C D).symm = tensorTensorTensorComm R A C B D := by
+    (tensorTensorTensorComm R R A B C D).symm = tensorTensorTensorComm R R A C B D := by
   ext; rfl
 
-@[simp]
 theorem tensorTensorTensorComm_toLinearEquiv :
-    (tensorTensorTensorComm R A B C D : _ ≃ₗ[R] _) =
-      _root_.TensorProduct.tensorTensorTensorComm R A B C D := rfl
+    (tensorTensorTensorComm R S A B C D).toLinearEquiv =
+      TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
+
+@[simp]
+theorem toLinearEquiv_tensorTensorTensorComm :
+    (tensorTensorTensorComm R R A B C D).toLinearEquiv =
+      _root_.TensorProduct.tensorTensorTensorComm R A B C D := by
+  apply LinearEquiv.toLinearMap_injective
+  ext; simp
 
 end
 
@@ -1197,17 +1206,6 @@ lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommGroup M]
 end TensorProduct
 
 end Algebra
-
-namespace LinearMap
-
-open Algebra.TensorProduct
-
-variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
-  [Fintype ι] [Finite ι₂] [DecidableEq ι]
-  [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
-
-end LinearMap
 
 lemma Algebra.baseChange_lmul {R B : Type*} [CommSemiring R] [Semiring B] [Algebra R B]
     {A : Type*} [CommSemiring A] [Algebra R A] (f : B) :
@@ -1387,3 +1385,14 @@ theorem mul'_comp_tensorTensorTensorComm :
 end Lemmas
 
 end TensorProduct.Algebra
+
+open LinearMap in
+lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
+    [Module R Q] {I : Submodule R R} :
+    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q) = I • ⊤ := by
+  rw [← map_top, ← map_coe_toLinearMap, ← Submodule.map_comp, map_top]
+  refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
+    (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
+  rintro _ ⟨t, rfl⟩
+  exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
+    (by simp +contextual [add_mem])

@@ -37,14 +37,14 @@ variable {ι β : Type*} [LinearOrder ι] [mβ : MeasurableSpace β] [NormedAddC
   [BorelSpace β] {f : ι → Ω → β} {i j : ι} {s : ι → Set Ω}
 
 theorem iIndepFun.indep_comap_natural_of_lt (hf : ∀ i, StronglyMeasurable (f i))
-    (hfi : iIndepFun (fun _ => mβ) f μ) (hij : i < j) :
+    (hfi : iIndepFun f μ) (hij : i < j) :
     Indep (MeasurableSpace.comap (f j) mβ) (Filtration.natural f hf i) μ := by
   suffices Indep (⨆ k ∈ ({j} : Set ι), MeasurableSpace.comap (f k) mβ)
       (⨆ k ∈ {k | k ≤ i}, MeasurableSpace.comap (f k) mβ) μ by rwa [iSup_singleton] at this
   exact indep_iSup_of_disjoint (fun k => (hf k).measurable.comap_le) hfi (by simpa)
 
 theorem iIndepFun.condExp_natural_ae_eq_of_lt [SecondCountableTopology β] [CompleteSpace β]
-    [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun (fun _ => mβ) f μ)
+    [NormedSpace ℝ β] (hf : ∀ i, StronglyMeasurable (f i)) (hfi : iIndepFun f μ)
     (hij : i < j) : μ[f j|Filtration.natural f hf i] =ᵐ[μ] fun _ => μ[f j] := by
   have : IsProbabilityMeasure μ := hfi.isProbabilityMeasure
   exact condExp_indep_eq (hf j).measurable.comap_le (Filtration.le _ _)

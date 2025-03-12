@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.Group.Action.End
-import Mathlib.Algebra.Group.Action.Pointwise.Set
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
@@ -564,7 +564,7 @@ theorem equivPair_head_smul_equivPair_tail {i : ι} (w : Word M) :
   rw [← rcons_eq_smul, ← equivPair_symm, Equiv.symm_apply_apply]
 
 theorem equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
-    [∀i, DecidableEq (G i)] {i} (w : Word G) :
+    [∀ i, DecidableEq (G i)] {i} (w : Word G) :
     (equivPair i w).tail = (of (equivPair i w).head)⁻¹ • w :=
   Eq.symm <| inv_smul_eq_iff.2 (equivPair_head_smul_equivPair_tail w).symm
 

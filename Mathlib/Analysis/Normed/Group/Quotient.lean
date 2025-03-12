@@ -417,9 +417,9 @@ nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {
 theorem Submodule.Quotient.norm_mk_le (m : M) : ‖(Submodule.Quotient.mk m : M ⧸ S)‖ ≤ ‖m‖ :=
   quotient_norm_mk_le S.toAddSubgroup m
 
-instance Submodule.Quotient.instBoundedSMul (𝕜 : Type*)
-    [SeminormedCommRing 𝕜] [Module 𝕜 M] [BoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
-    BoundedSMul 𝕜 (M ⧸ S) :=
+instance Submodule.Quotient.instIsBoundedSMul (𝕜 : Type*)
+    [SeminormedCommRing 𝕜] [Module 𝕜 M] [IsBoundedSMul 𝕜 M] [SMul 𝕜 R] [IsScalarTower 𝕜 R M] :
+    IsBoundedSMul 𝕜 (M ⧸ S) :=
   .of_norm_smul_le fun k x =>
     -- Porting note: this is `QuotientAddGroup.norm_lift_apply_le` for `f : M → M ⧸ S` given by
     -- `x ↦ mk (k • x)`; todo: add scalar multiplication as `NormedAddGroupHom`, use it here

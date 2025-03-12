@@ -76,12 +76,11 @@ def Cofan.inj {f : β → C} (p : Cofan f) (j : β) : f j ⟶ p.pt :=
   p.ι.app (Discrete.mk j)
 
 @[simp]
-theorem fan_mk_proj {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) (j : β) : (Fan.mk P p).proj j = p j :=
+theorem fan_mk_proj {f : β → C} (P : C) (p : ∀ b, P ⟶ f b) : (Fan.mk P p).proj = p :=
   rfl
 
 @[simp]
-theorem cofan_mk_inj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) (j : β) :
-    (Cofan.mk P p).inj j = p j :=
+theorem cofan_mk_inj {f : β → C} (P : C) (p : ∀ b, f b ⟶ P) : (Cofan.mk P p).inj = p :=
   rfl
 
 /-- An abbreviation for `HasLimit (Discrete.functor f)`. -/
