@@ -699,7 +699,7 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
       (Finset.univ.filter fun x : G => x ^ n = 1).card := by
   refine (Finset.card_biUnion ?_).symm.trans ?_
-  · simp +contextual [disjoint_iff, Finset.ext_iff]
+  · simp +contextual [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]
   · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]
