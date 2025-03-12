@@ -72,10 +72,10 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       convert this
       rw [insert_erase hv]
     push_neg at hd
-    replace hd : ∀ v ∈ s, G.degreeOn (s.erase v) v = k := by
-      intro v hv
-      apply le_antisymm ((degreeOn_le_degree _ _).trans (hbdd v)) <| hd _ hv
-    have hbdd' : ∀ v, G.degree v = k := by sorry
+    replace hd : ∀ v ∈ s, G.degreeOn (s.erase v) v = k := fun v hv ↦ le_antisymm
+          ((degreeOn_le_degree ..).trans (hbdd v)) <| hd _ hv
+    have hbdd' : ∀ v, v ∈ s → G.degree v = k := fun v hv ↦ le_antisymm (hbdd v)
+          <| hd v hv ▸ degreeOn_le_degree ..
     have hins : ∀ v ∈ s, ∀ w, G.Adj v w → w ∈ s := by
       by_contra! hf
       obtain ⟨v, hv, w, ha, hns⟩ := hf
@@ -97,14 +97,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         apply card_pos.1
         apply lt_of_lt_of_le _ (le_card_sdiff {v₂} (G.neighborFinset v₃))
         rw [card_neighborFinset_eq_degree, card_singleton, tsub_pos_iff_lt]
-        exact (Nat.lt_of_succ_lt hk).trans_le (hbdd' v₃).symm.le
-      -- have ⟨v₄, hv₄⟩ : ∃ v₄, G.Adj v₃ v₄ ∧ v₄ ≠ v₂ := by
-      --   simp_rw [← mem_neighborFinset, Ne, ← mem_singleton, ← mem_sdiff]
-      --   apply card_pos.1
-      --   apply lt_of_lt_of_le _ (le_card_sdiff {v₂} (G.neighborFinset v₃))
-
-
-      --   sorry
+        exact (Nat.lt_of_succ_lt hk).trans_le (hbdd' v₃ (mem_inter.1 h3).2).symm.le
       rw [mem_inter, mem_neighborFinset] at h1 h3
       rw [adj_comm] at h3
       let v41 := ((Walk.cons h1.1 nil).cons h3.1).cons h24.symm
@@ -148,13 +141,30 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
           exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
         let C₁ := G.ofNotAdj hnadj
-        have ms : ∀ v, v ∈ s → v ≠ v₁ → v ≠ v₂ → v ∈ q.support := by sorry
-        have vjm :=(ms vⱼ hj.2.2.2 hj.2.1 hj.1.symm.ne)
-        let q₁ := q.takeUntil vⱼ vjm
-        let q₂ := q.dropUntil vⱼ vjm
+        have ms : ∀ v, v ∈ s → v ≠ v₁ → v ≠ v₂ → v ≠ v₃ → v ∈ q.support := by
+          intro v hv hv1 hv2 hv3
+          have := hr.symm.le hv
+          rw [support_append, support_cons, support_cons, support_cons, support_nil, List.tail,
+            List.mem_toFinset] at this
+          rw [List.mem_append] at this
+          cases this with
+          | inl h => exact h
+          | inr h => simp_all only [ne_eq, mem_support_append_iff, List.mem_cons, List.not_mem_nil,
+            or_self]
+        have vjm :=(ms vⱼ hj.2.2.2 hj.2.1 hj.1.symm.ne hj.2.2.1)
+        have h4r : vᵣ ≠ v₄ := by sorry
         by_cases h4j : vⱼ = v₄
-        · sorry
+        · subst vⱼ
+          --obtain ⟨v₅, q', h₅₄, heq⟩ := q.exists_eq_concat_of_ne h4r
+          let C₂ := C₁.Greedy_extend q.reverse.support
+          have h2r : (q.concat hj.1.symm).IsPath := by sorry
+          have (x) : C₂ x < k := C₁.Greedy_extend_of_concat_path hbdd h2r
+            (fun y ↦ (ofNotAdj_eq hnadj _) ▸ (Nat.zero_lt_of_lt hk)) (by sorry)
+          rw [support_reverse, List.toFinset_reverse] at C₂
+          sorry
         ·          -- NEXT decide whether concat/cons is correct
+          let q₁ := q.takeUntil vⱼ vjm
+          let q₂ := q.dropUntil vⱼ vjm
           obtain ⟨vⱼ', q₂',h1, heq⟩ := q₂.exists_eq_concat_of_ne h4j
 
           have hqp :=hq.of_append_left
