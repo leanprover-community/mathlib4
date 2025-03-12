@@ -533,7 +533,7 @@ instance [OrderedCancelAddCommMonoid ι] [IsRingFiltration F F_lt] : hasGMul F F
 
 variable [OrderedAddCommMonoid ι]
 
-/--The `algebraMap` for associated graded algebra. -/
+/-- The `algebraMap` for associated graded algebra. -/
 def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt 0 where
   toFun r := (mk F F_lt (r • (1 : F 0)))
   map_zero' := by simp
