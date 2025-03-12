@@ -108,7 +108,6 @@ open Set Topology Filter
 
 variable {ι : Type*}
 variable (R : ι → Type*) (A : (i : ι) → Set (R i))
-variable (R' : ι → Type*) (A' : (i : ι) → Set (R' i))
 
 /-!
 ## Definition and elementary maps
@@ -200,49 +199,49 @@ To avoid any unnecessary coercions, we use subobject classes for the subset `A i
 -/
 
 variable {S S' : ι → Type*} -- subobject types
-variable [Π i, SetLike (S i) (R i)] [Π i, SetLike (S' i) (R' i)]
-variable {A : Π i, S i} {A' : Π i, S' i}
+variable [Π i, SetLike (S i) (R i)]
+variable {B : Π i, S i}
 
 @[to_additive]
-instance [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] : One (Πʳ i, [R i, A i]_[𝓕]) where
+instance [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] : One (Πʳ i, [R i, B i]_[𝓕]) where
   one := ⟨fun _ ↦ 1, .of_forall fun _ ↦ one_mem _⟩
 
 @[to_additive]
-instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] : Inv (Πʳ i, [R i, A i]_[𝓕]) where
+instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] : Inv (Πʳ i, [R i, B i]_[𝓕]) where
   inv x := ⟨fun i ↦ (x i)⁻¹, x.2.mono fun _ ↦ inv_mem⟩
 
 @[to_additive]
-instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] : Mul (Πʳ i, [R i, A i]_[𝓕]) where
+instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] : Mul (Πʳ i, [R i, B i]_[𝓕]) where
   mul x y := ⟨fun i ↦ x i * y i, y.2.mp (x.2.mono fun _ ↦ mul_mem)⟩
 
 @[to_additive]
 instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)] :
-    SMul G (Πʳ i, [R i, A i]_[𝓕]) where
+    SMul G (Πʳ i, [R i, B i]_[𝓕]) where
   smul g x := ⟨fun i ↦ g • (x i), x.2.mono fun _ ↦ SMulMemClass.smul_mem g⟩
 
 @[to_additive]
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
-    Div (Πʳ i, [R i, A i]_[𝓕]) where
+    Div (Πʳ i, [R i, B i]_[𝓕]) where
   div x y := ⟨fun i ↦ x i / y i, y.2.mp (x.2.mono fun _ ↦ div_mem)⟩
 
 instance [Π i, Monoid (R i)] [∀ i, SubmonoidClass (S i) (R i)] :
-    Pow (Πʳ i, [R i, A i]_[𝓕]) ℕ where
+    Pow (Πʳ i, [R i, B i]_[𝓕]) ℕ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ pow_mem hi n⟩
 
 instance [Π i, DivInvMonoid (R i)] [∀ i, SubgroupClass (S i) (R i)] :
-    Pow (Πʳ i, [R i, A i]_[𝓕]) ℤ where
+    Pow (Πʳ i, [R i, B i]_[𝓕]) ℤ where
   pow x n := ⟨fun i ↦ x i ^ n, x.2.mono fun _ hi ↦ zpow_mem hi n⟩
 
 instance [Π i, AddMonoidWithOne (R i)] [∀ i, AddSubmonoidWithOneClass (S i) (R i)] :
-    NatCast (Πʳ i, [R i, A i]_[𝓕]) where
+    NatCast (Πʳ i, [R i, B i]_[𝓕]) where
   natCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ natCast_mem _ n⟩
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
-    IntCast (Πʳ i, [R i, A i]_[𝓕]) where
+    IntCast (Πʳ i, [R i, B i]_[𝓕]) where
   intCast n := ⟨fun _ ↦ n, .of_forall fun _ ↦ intCast_mem _ n⟩
 
 instance [Π i, AddGroup (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
-    AddGroup (Πʳ i, [R i, A i]_[𝓕]) :=
+    AddGroup (Πʳ i, [R i, B i]_[𝓕]) :=
   haveI : ∀ i, SMulMemClass (S i) ℤ (R i) := fun _ ↦ AddSubgroupClass.zsmulMemClass
   haveI : ∀ i, SMulMemClass (S i) ℕ (R i) := fun _ ↦ AddSubmonoidClass.nsmulMemClass
   DFunLike.coe_injective.addGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
@@ -250,12 +249,12 @@ instance [Π i, AddGroup (R i)] [∀ i, AddSubgroupClass (S i) (R i)] :
 
 @[to_additive existing]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] :
-    Group (Πʳ i, [R i, A i]_[𝓕]) :=
+    Group (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.group _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] :
-    Ring (Πʳ i, [R i, A i]_[𝓕]) :=
+    Ring (Πʳ i, [R i, B i]_[𝓕]) :=
   DFunLike.coe_injective.ring _ rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
@@ -298,7 +297,7 @@ these instances to principal and cofinite filters if necessary.
 
 variable {R A R' A'}
 variable {𝓕 : Filter ι}
-variable [∀ i, TopologicalSpace (R i)] [∀ i, TopologicalSpace (R' i)]
+variable [∀ i, TopologicalSpace (R i)]
 
 variable (R A 𝓕) in
 instance topologicalSpace : TopologicalSpace (Πʳ i, [R i, A i]_[𝓕]) :=
@@ -487,7 +486,7 @@ This fact, which is **not true** for a general inductive limit, will allow us to
 of functions of two variables (e.g algebraic operations), which would otherwise be inaccessible.
 -/
 
-variable (hAopen : ∀ i, IsOpen (A i)) (hAopen' : ∀ i, IsOpen (A' i))
+variable (hAopen : ∀ i, IsOpen (A i))
 
 include hAopen in
 theorem isOpen_forall_imp_mem_of_principal {S : Set ι} (hS : cofinite ≤ 𝓟 S) {p : ι → Prop} :
@@ -611,13 +610,15 @@ theorem continuous_dom_prod_left {X Y : Type*} [TopologicalSpace X] [Topological
     ← map_id (f := 𝓝 y), prod_map_map_eq, ← nhds_prod_eq, tendsto_map'_iff]
   exact H S hS |>.tendsto ⟨y, x'⟩
 
-include hAopen hAopen' in
+include hAopen in
 /-- A map from `Πʳ i, [R i, A i] × Πʳ i, [R' i, A' i]` is continuous
 *iff* its restriction to each `Πʳ i, [R i, A i]_[𝓟 S] × Πʳ i, [R' i, A' i]_[𝓟 S]`
 (with `S` cofinite) is continuous.
 
 This is the key result for continuity of multiplication and addition. -/
-theorem continuous_dom_prod {X : Type*} [TopologicalSpace X]
+theorem continuous_dom_prod {R' : ι → Type*} {A' : (i : ι) → Set (R' i)}
+    [∀ i, TopologicalSpace (R' i)] (hAopen' : ∀ i, IsOpen (A' i))
+    {X : Type*} [TopologicalSpace X]
     {f : Πʳ i, [R i, A i] × Πʳ i, [R' i, A' i] → X} :
     Continuous f ↔ ∀ (S : Set ι) (hS : cofinite ≤ 𝓟 S),
       Continuous (f ∘ (Prod.map (inclusion R A hS) (inclusion R' A' hS))) := by
@@ -638,32 +639,32 @@ section Compatibility
 ## Compatibility properties between algebra and topology
 -/
 
-variable {S S' : ι → Type*} -- subobject types
-variable [Π i, SetLike (S i) (R i)] [Π i, SetLike (S' i) (R' i)]
-variable {A : Π i, S i} {A' : Π i, S' i}
+variable {S : ι → Type*} -- subobject types
+variable [Π i, SetLike (S i) (R i)]
+variable {B : Π i, S i}
 variable {T : Set ι} {𝓕 : Filter ι}
-variable [Π i, TopologicalSpace (R i)] [Π i, TopologicalSpace (R' i)]
+variable [Π i, TopologicalSpace (R i)]
 
 section general
 
 @[to_additive]
 instance [Π i, Inv (R i)] [∀ i, InvMemClass (S i) (R i)] [∀ i, ContinuousInv (R i)] :
-    ContinuousInv (Πʳ i, [R i, A i]_[𝓕]) where
+    ContinuousInv (Πʳ i, [R i, B i]_[𝓕]) where
   continuous_inv := by
     rw [continuous_dom]
     intro T hT
-    haveI : ContinuousInv (Πʳ i, [R i, A i]_[𝓟 T]) :=
+    haveI : ContinuousInv (Πʳ i, [R i, B i]_[𝓟 T]) :=
       isEmbedding_coe_of_principal.continuousInv fun _ ↦ rfl
     exact (continuous_inclusion hT).comp continuous_inv
 
 @[to_additive]
 instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
     [∀ i, ContinuousConstSMul G (R i)] :
-    ContinuousConstSMul G (Πʳ i, [R i, A i]_[𝓕]) where
+    ContinuousConstSMul G (Πʳ i, [R i, B i]_[𝓕]) where
   continuous_const_smul g := by
     rw [continuous_dom]
     intro T hT
-    haveI : ContinuousConstSMul G (Πʳ i, [R i, A i]_[𝓟 T]) :=
+    haveI : ContinuousConstSMul G (Πʳ i, [R i, B i]_[𝓟 T]) :=
       isEmbedding_coe_of_principal.continuousConstSMul id rfl
     exact (continuous_inclusion hT).comp (continuous_const_smul g)
 
@@ -673,8 +674,8 @@ section principal
 
 @[to_additive]
 instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] [∀ i, ContinuousMul (R i)] :
-    ContinuousMul (Πʳ i, [R i, A i]_[𝓟 T]) :=
-  let φ : Πʳ i, [R i, A i]_[𝓟 T] →ₙ* Π i, R i :=
+    ContinuousMul (Πʳ i, [R i, B i]_[𝓟 T]) :=
+  let φ : Πʳ i, [R i, B i]_[𝓟 T] →ₙ* Π i, R i :=
   { toFun := (↑)
     map_mul' := fun _ _ ↦ rfl }
   isEmbedding_coe_of_principal.continuousMul φ
@@ -682,58 +683,57 @@ instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] [∀ i, ContinuousMu
 @[to_additive]
 instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
     [∀ i, ContinuousSMul G (R i)] :
-    ContinuousSMul G (Πʳ i, [R i, A i]_[𝓟 T]) :=
+    ContinuousSMul G (Πʳ i, [R i, B i]_[𝓟 T]) :=
   isEmbedding_coe_of_principal.continuousSMul continuous_id rfl
 
 @[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)] :
-    IsTopologicalGroup (Πʳ i, [R i, A i]_[𝓟 T]) where
+    IsTopologicalGroup (Πʳ i, [R i, B i]_[𝓟 T]) where
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, IsTopologicalRing (R i)] :
-    IsTopologicalRing (Πʳ i, [R i, A i]_[𝓟 T]) where
+    IsTopologicalRing (Πʳ i, [R i, B i]_[𝓟 T]) where
 
 end principal
 
 section cofinite
 
 theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
-    (hAopen : ∀ i, IsOpen (A i : Set (R i))) (hT : cofinite ≤ 𝓟 T) :
-    (𝓝 (inclusion R (fun i ↦ A i) hT 0)) = map (inclusion R (fun i ↦ A i) hT) (𝓝 0) :=
-  nhds_eq_map_inclusion hAopen hT 0
+    (hBopen : ∀ i, IsOpen (B i : Set (R i))) (hT : cofinite ≤ 𝓟 T) :
+    (𝓝 (inclusion R (fun i ↦ B i) hT 0)) = map (inclusion R (fun i ↦ B i) hT) (𝓝 0) :=
+  nhds_eq_map_inclusion hBopen hT 0
 
 theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
-    (hAopen : ∀ i, IsOpen (A i : Set (R i))) :
-    (𝓝 (structureMap R (fun i ↦ A i) cofinite 0)) =
-      map (structureMap R (fun i ↦ A i) cofinite) (𝓝 0) :=
-  nhds_eq_map_structureMap hAopen 0
+    (hBopen : ∀ i, IsOpen (B i : Set (R i))) :
+    (𝓝 (structureMap R (fun i ↦ B i) cofinite 0)) =
+      map (structureMap R (fun i ↦ B i) cofinite) (𝓝 0) :=
+  nhds_eq_map_structureMap hBopen 0
 
 -- TODO: Make `IsOpen` a class like `IsClosed` ?
-variable [hAopen : Fact (∀ i, IsOpen (A i : Set (R i)))]
-variable [hAopen' : Fact (∀ i, IsOpen (A' i : Set (R' i)))]
+variable [hBopen : Fact (∀ i, IsOpen (B i : Set (R i)))]
 
 @[to_additive]
 instance [Π i, Mul (R i)] [∀ i, MulMemClass (S i) (R i)] [∀ i, ContinuousMul (R i)] :
-    ContinuousMul (Πʳ i, [R i, A i]) where
+    ContinuousMul (Πʳ i, [R i, B i]) where
   continuous_mul := by
-    rw [continuous_dom_prod hAopen.out hAopen.out]
+    rw [continuous_dom_prod hBopen.out hBopen.out]
     exact fun S hS ↦ (continuous_inclusion hS).comp continuous_mul
 
 @[to_additive]
 instance continuousSMul {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)]
     [∀ i, SMulMemClass (S i) G (R i)] [∀ i, ContinuousSMul G (R i)] :
-    ContinuousSMul G (Πʳ i, [R i, A i]) where
+    ContinuousSMul G (Πʳ i, [R i, B i]) where
   continuous_smul := by
-    rw [continuous_dom_prod_left hAopen.out]
+    rw [continuous_dom_prod_left hBopen.out]
     exact fun S hS ↦ (continuous_inclusion hS).comp continuous_smul
 
 @[to_additive]
 instance isTopologicalGroup [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
     [∀ i, IsTopologicalGroup (R i)] :
-    IsTopologicalGroup (Πʳ i, [R i, A i]) where
+    IsTopologicalGroup (Πʳ i, [R i, B i]) where
 
 instance isTopologicalRing [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)]
     [∀ i, IsTopologicalRing (R i)] :
-    IsTopologicalRing (Πʳ i, [R i, A i]) where
+    IsTopologicalRing (Πʳ i, [R i, B i]) where
 
 /-- Assume that each `R i` is a locally compact group with `A i` an open subgroup.
 Assume also that all but finitely many `A i`s are compact.
@@ -744,21 +744,21 @@ Assume also that all but finitely many `A i`s are compact.
 Then the restricted product `Πʳ i, [R i, A i]` is a locally compact additive group."]
 theorem locallyCompactSpace_of_group [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)]
     [∀ i, IsTopologicalGroup (R i)] [∀ i, LocallyCompactSpace (R i)]
-    (hAcompact : ∀ᶠ i in cofinite, IsCompact (A i : Set (R i))) :
-    LocallyCompactSpace (Πʳ i, [R i, A i]) :=
-  haveI : WeaklyLocallyCompactSpace (Πʳ i, [R i, A i]) :=
-    weaklyLocallyCompactSpace_of_cofinite hAopen.out hAcompact
+    (hBcompact : ∀ᶠ i in cofinite, IsCompact (B i : Set (R i))) :
+    LocallyCompactSpace (Πʳ i, [R i, B i]) :=
+  haveI : WeaklyLocallyCompactSpace (Πʳ i, [R i, B i]) :=
+    weaklyLocallyCompactSpace_of_cofinite hBopen.out hBcompact
   inferInstance
 
 open Pointwise in
 @[to_additive]
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, IsTopologicalGroup (R i)]
-    [hAcompact : ∀ i, CompactSpace (A i)] : LocallyCompactSpace (Πʳ i, [R i, A i]) :=
+    [hAcompact : ∀ i, CompactSpace (B i)] : LocallyCompactSpace (Πʳ i, [R i, B i]) :=
   -- TODO: extract as a lemma
   haveI : ∀ i, WeaklyLocallyCompactSpace (R i) := fun i ↦ .mk fun x ↦
-    ⟨x • (A i : Set (R i)), .smul _ (isCompact_iff_compactSpace.mpr inferInstance),
-      hAopen.out i |>.smul _ |>.mem_nhds <| by
-      simpa using smul_mem_smul_set (a := x) (one_mem (A i))⟩
+    ⟨x • (B i : Set (R i)), .smul _ (isCompact_iff_compactSpace.mpr inferInstance),
+      hBopen.out i |>.smul _ |>.mem_nhds <| by
+      simpa using smul_mem_smul_set (a := x) (one_mem (B i))⟩
   locallyCompactSpace_of_group _ <| .of_forall fun _ ↦ isCompact_iff_compactSpace.mpr inferInstance
 
 end cofinite
