@@ -568,9 +568,9 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    simp [divisorsAntidiag]
-    norm_cast
-    aesop
+    simp [divisorsAntidiag, eq_comm]
+    rw [Int.negSucc]
+    sorry
   | .negSucc n, ((x : ℕ), (y : ℕ)) => by
     simp [divisorsAntidiag]
     norm_cast
