@@ -262,17 +262,14 @@ protected lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kerne
 
 lemma id_map_iff (hX : Measurable X) :
     HasSubgaussianMGF id c (κ.map X) ν ↔ HasSubgaussianMGF X c κ ν := by
-  have h_map : (κ.map X) ∘ₘ ν = (κ ∘ₘ ν).map X := by
-    rw [← deterministic_comp_eq_map hX, ← Measure.comp_assoc, Measure.deterministic_comp_eq_map]
   refine ⟨fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩, fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩⟩
   · specialize h1 t
-    rw [h_map] at h1
-    rwa [integrable_map_measure] at h1
+    rwa [← Measure.map_comp ν κ hX, integrable_map_measure] at h1
     · exact Measurable.aestronglyMeasurable <| by fun_prop
     · fun_prop
   · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h2
   · specialize h1 t
-    rwa [h_map, integrable_map_measure]
+    rwa [← Measure.map_comp ν κ hX, integrable_map_measure]
     · exact Measurable.aestronglyMeasurable <| by fun_prop
     · fun_prop
   · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h2
