@@ -969,9 +969,10 @@ theorem CPolynomialAt.comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg
   exact hg.comp hf
 
 /-- Version of `CPolynomialAt.comp` where point equality is a separate hypothesis. -/
-theorem CPolynomialAt.fun_comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E} (hg : CPolynomialAt 𝕜 g y)
-    (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) : CPolynomialAt 𝕜 (fun z ↦ g (f z)) x := by
-  apply hg.comp_of_eq hf hy
+theorem CPolynomialAt.fun_comp_of_eq {g : F → G} {f : E → F} {y : F} {x : E}
+    (hg : CPolynomialAt 𝕜 g y) (hf : CPolynomialAt 𝕜 f x) (hy : f x = y) :
+    CPolynomialAt 𝕜 (fun z ↦ g (f z)) x :=
+  hg.comp_of_eq hf hy
 
 /-- If two functions `g` and `f` are continuously polynomial respectively on `s.image f` and `s`,
 then `g ∘ f` is continuously polynomial on `s`. -/
