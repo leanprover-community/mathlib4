@@ -20,7 +20,8 @@ exact.
 
 # Main definitions
 
-* `IsExhaustiveFiltration` : `F`, `F_lt` is a filtration of `A`, `F` is exhaustive if `A = ⋃ F n`
+* `IsExhaustiveFiltration` : For `IsFiltration F F_lt`,
+  the filtration is exhaustive if `Set.univ = ⋃ F i`.
 -/
 
 namespace FilteredAddGroupHom
@@ -79,7 +80,7 @@ section ExhaustiveFiltration
 
 variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 
-/-- `F`, `F_lt` is a filtration of `A`, `F` is exhaustive if `A = ⋃ F n`-/
+/-- For `IsFiltration F F_lt`, the filtration is exhaustive if `Set.univ = ⋃ F i`. -/
 class IsExhaustiveFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_lt] : Prop where
   exhaustive : ⋃ i, (F i : Set A) = Set.univ
 
@@ -92,11 +93,11 @@ open FilteredAddGroupHom
 
 variable {ι R S T σR σS σT : Type*}
 
-variable [Ring R] [SetLike σR R] [AddSubgroupClass σR R]
+variable [AddCommGroup R] [SetLike σR R] [AddSubgroupClass σR R]
 
-variable [Ring S] [SetLike σS S] [AddSubgroupClass σS S]
+variable [AddCommGroup S] [SetLike σS S] [AddSubgroupClass σS S]
 
-variable [Ring T] [SetLike σT T] [AddSubgroupClass σT T]
+variable [AddCommGroup T] [SetLike σT T] [AddSubgroupClass σT T]
 
 variable {FR : ι → σR} {FS : ι → σS} {FT : ι → σT}
 
