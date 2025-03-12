@@ -22,24 +22,20 @@ noncomputable section
 
 namespace Real
 
--- Porting note: can't derive `NormedAddCommGroup, Inhabited`
 /-- The type of angles -/
 def Angle : Type :=
   AddCircle (2 * π)
+-- The `NormedAddCommGroup, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace Angle
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : NormedAddCommGroup Angle :=
   inferInstanceAs (NormedAddCommGroup (AddCircle (2 * π)))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
 instance : Inhabited Angle :=
   inferInstanceAs (Inhabited (AddCircle (2 * π)))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added due to missing instances due to no deriving
--- also, without this, a plain `QuotientAddGroup.mk`
--- causes coerced terms to be of type `ℝ ⧸ AddSubgroup.zmultiples (2 * π)`
 /-- The canonical map from `ℝ` to the quotient `Angle`. -/
 @[coe]
 protected def coe (r : ℝ) : Angle := QuotientAddGroup.mk r
