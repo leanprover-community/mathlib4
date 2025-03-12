@@ -233,9 +233,9 @@ theorem finset_sum {ι} (s : Finset ι) {f : ι → ∀ i, E i} (hf : ∀ i ∈ 
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
 
-section BoundedSMul
+section IsBoundedSMul
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c • f) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -262,7 +262,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
 theorem const_mul {f : α → 𝕜} (hf : Memℓp f p) (c : 𝕜) : Memℓp (fun x => c * f x) p :=
   hf.const_smul c
 
-end BoundedSMul
+end IsBoundedSMul
 
 end Memℓp
 
@@ -547,7 +547,7 @@ theorem norm_le_of_forall_sum_le (hp : 0 < p.toReal) {C : ℝ} (hC : 0 ≤ C) {f
 
 end ComparePointwise
 
-section BoundedSMul
+section IsBoundedSMul
 
 variable [NormedRing 𝕜] [NormedRing 𝕜']
 variable [∀ i, Module 𝕜 (E i)] [∀ i, Module 𝕜' (E i)]
@@ -564,7 +564,7 @@ instance [SMul 𝕜' 𝕜] [∀ i, IsScalarTower 𝕜' 𝕜 (E i)] : IsScalarTow
 instance [∀ i, Module 𝕜ᵐᵒᵖ (E i)] [∀ i, IsCentralScalar 𝕜 (E i)] : IsCentralScalar 𝕜 (PreLp E) :=
   Pi.isCentralScalar
 
-variable [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, BoundedSMul 𝕜' (E i)]
+variable [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜' (E i)]
 
 theorem mem_lp_const_smul (c : 𝕜) (f : lp E p) : c • (f : PreLp E) ∈ lp E p :=
   (lp.memℓp f).const_smul c
@@ -630,14 +630,14 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     gcongr
     apply nnnorm_smul_le
 
-instance [Fact (1 ≤ p)] : BoundedSMul 𝕜 (lp E p) :=
-  BoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
+instance [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (lp E p) :=
+  IsBoundedSMul.of_norm_smul_le <| norm_const_smul_le (zero_lt_one.trans_le <| Fact.out).ne'
 
-end BoundedSMul
+end IsBoundedSMul
 
 section DivisionRing
 
-variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
   obtain rfl | hc := eq_or_ne c 0
@@ -701,7 +701,7 @@ instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
     · simp only [lp.norm_eq_tsum_rpow h, lp.star_apply, norm_star]
 
 variable [Star 𝕜] [NormedRing 𝕜]
-variable [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
+variable [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)] [∀ i, StarModule 𝕜 (E i)]
 
 instance : StarModule 𝕜 (lp E p) where
   star_smul _r _f := ext <| star_smul (A := ∀ i, E i) _ _
@@ -750,11 +750,11 @@ instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRi
   mul_comm _ _ := ext <| mul_comm ..
 
 -- we also want a `NonUnitalNormedCommRing` instance, but this has to wait for https://github.com/leanprover-community/mathlib3/pull/13719
-instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
+instance infty_isScalarTower {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, IsScalarTower 𝕜 (B i) (B i)] : IsScalarTower 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_assoc (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
-instance infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, BoundedSMul 𝕜 (B i)]
+instance infty_smulCommClass {𝕜} [NormedRing 𝕜] [∀ i, Module 𝕜 (B i)] [∀ i, IsBoundedSMul 𝕜 (B i)]
     [∀ i, SMulCommClass 𝕜 (B i) (B i)] : SMulCommClass 𝕜 (lp B ∞) (lp B ∞) :=
   ⟨fun r f g => lp.ext <| smul_comm (N := ∀ i, B i) (α := ∀ i, B i) r (⇑f) (⇑g)⟩
 
@@ -879,7 +879,7 @@ end Algebra
 
 section Single
 
-variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMul 𝕜 (E i)]
+variable [NormedRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, IsBoundedSMul 𝕜 (E i)]
 variable [DecidableEq α]
 
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
@@ -1003,7 +1003,7 @@ def singleContinuousLinearMap [Fact (1 ≤ p)] (i : α) : E i →L[𝕜] lp E p 
   cont := isometry_single i |>.continuous
 
 @[simp]
-theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)](i : α) (x : E i) :
+theorem singleContinuousLinearMap_apply [Fact (1 ≤ p)] (i : α) (x : E i) :
     singleContinuousLinearMap 𝕜 E p i x = lp.single p i x :=
   rfl
 

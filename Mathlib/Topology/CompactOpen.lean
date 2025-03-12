@@ -5,6 +5,7 @@ Authors: Reid Barton
 -/
 import Mathlib.Topology.Hom.ContinuousEval
 import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The compact-open topology
@@ -333,7 +334,7 @@ variable (X Y)
 
 /-- The coevaluation map `Y → C(X, Y × X)` sending a point `x : Y` to the continuous function
 on `X` sending `y` to `(x, y)`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def coev (b : Y) : C(X, Y × X) :=
   { toFun := Prod.mk b }
 
