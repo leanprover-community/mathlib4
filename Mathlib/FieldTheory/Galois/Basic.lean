@@ -211,15 +211,16 @@ lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) 
   rw [← le_iff_le]
   exact le_trans h ((le_iff_le _ _).mpr (le_refl K'.fixingSubgroup))
 
-@[simp] lemma fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
-  ext
-  simp [fixingSubgroup, mem_fixingSubgroup_iff, DFunLike.ext_iff]
+@[simp] lemma mem_fixingSubgroup_iff (σ) : σ ∈ fixingSubgroup K ↔ ∀ x ∈ K, σ x = x :=
+  _root_.mem_fixingSubgroup_iff _
 
-@[simp] lemma fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
+@[simp] lemma fixingSubgroup_top : fixingSubgroup (⊤ : IntermediateField F E) = ⊥ := by
   ext
-  simp [fixingSubgroup, mem_fixingSubgroup_iff, mem_bot]
+  simp [DFunLike.ext_iff]
+
+@[simp] lemma fixingSubgroup_bot : fixingSubgroup (⊥ : IntermediateField F E) = ⊤ := by
+  ext
+  simp [mem_bot]
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
