@@ -329,7 +329,7 @@ theorem normAtPlace_nonneg (w : InfinitePlace K) (x : mixedSpace K) :
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> exact norm_nonneg _
 
-theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K)  :
+theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K) :
     normAtPlace w (- x) = normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> simp
@@ -1028,7 +1028,7 @@ theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (p
       (neg_of_mem_negA_plusPart A hx' hw.1).trans (pos_of_not_mem_negAt_plusPart A hx hw.2)
 
 -- We will assume from now that `A` is symmetric at real places
-variable  (hA : ∀ x, x ∈ A ↔ (fun w ↦ |x.1 w|, x.2) ∈ A)
+variable (hA : ∀ x, x ∈ A ↔ (fun w ↦ |x.1 w|, x.2) ∈ A)
 
 include hA in
 theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0) :
