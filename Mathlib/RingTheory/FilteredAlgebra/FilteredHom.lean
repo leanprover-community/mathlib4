@@ -240,7 +240,7 @@ def comp : FilteredRingHom FR FR_lt FT FT_lt where
 
 variable [AddSubgroupClass γ R] [AddSubgroupClass σ S] [AddSubgroupClass τ T]
 
-/-- A filtered ring morphism restricted to its `i`-th filtration. -/
+/-- The `AddMonoidHom` version of `FilteredHom.piece_wise_hom`. -/
 abbrev piece_wise_hom (i : ι) : FR i →+ FS i :=
   FilteredAddGroupHom.piece_wise_hom f.toFilteredAddGroupHom i
 
