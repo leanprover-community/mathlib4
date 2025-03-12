@@ -43,12 +43,12 @@ noncomputable def _root_.Finsupp.sym2Mul (f : α →₀ R) :
     (fun p => mul (p.map f)) mem_sym2_support_of_mul_ne_zero
 
 lemma support_mulFinsupp_subset (f : α →₀ R) :
-    f.sym2_mul.support ⊆ f.support.sym2 := fun p hp => by
+    f.sym2Mul.support ⊆ f.support.sym2 := fun p hp => by
   apply mem_sym2_support_of_mul_ne_zero
   simp_all only [Finsupp.mem_support_iff, ne_eq]
   exact hp
 
-lemma mulFinsupp_eq_mul_comp_map (l : α →₀ R) : l.sym2_mul = mul ∘ map l := rfl
+lemma mulFinsupp_eq_mul_comp_map (l : α →₀ R) : l.sym2Mul = mul ∘ map l := rfl
 
 end Sym2
 
