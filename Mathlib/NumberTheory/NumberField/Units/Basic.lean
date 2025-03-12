@@ -6,7 +6,6 @@ Authors: Xavier Roblot
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.GroupTheory.Torsion
-import Mathlib.Algebra.CharP.NeTwo
 
 /-!
 # Units of a number field
