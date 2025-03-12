@@ -10,6 +10,7 @@ import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Tactic.FieldSimp
 
 /-!
@@ -209,9 +210,7 @@ theorem lTensor_exp (f : Module.End R N) (hf : IsNilpotent f) :
   replace hk : (f.lTensor M) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
   replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
   ext m n
-  have aux (i j : ℕ) : (i : ℚ)⁻¹ • m ⊗ₜ[R] (f ^ j) n = m ⊗ₜ[R] ((i : ℚ)⁻¹ • (f ^ j) n) := by
-    rw [← (TensorProduct.comm R M N).apply_eq_iff_eq, map_inv_natCast_smul _ ℚ ℚ]; rfl
-  simp [exp_eq_sum hk, exp_eq_sum hl, tmul_sum, aux]
+  simp [exp_eq_sum hk, exp_eq_sum hl, tmul_sum]
 
 theorem commute_exp_left_of_commute
     {fM : Module.End R M} {fN : Module.End R N} {g : M →ₗ[R] N}
