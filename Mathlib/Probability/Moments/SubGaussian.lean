@@ -322,7 +322,7 @@ lemma prodMkLeft_compProd {η : Kernel Ω Ω''} (h : HasSubgaussianMGF Y cY η (
 
 lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) (t : ℝ) :
-    Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) (⇑(κ ⊗ₖ η) ∘ₘ ν) := by
+    Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) ((κ ⊗ₖ η) ∘ₘ ν) := by
   simp_rw [mul_add, exp_add]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
   · have h := hX.memLp_exp_mul t 2
@@ -340,7 +340,7 @@ has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable
 a sub-Gaussian mgf with respect to `η` and `ν ⊗ₘ κ : Measure (Ω' × Ω)`, then `X + Y` (random
 variable on the measurable space `Ω × Ω''`) has a sub-Gaussian mgf with respect to
 `κ ⊗ₖ η : Kernel Ω' (Ω × Ω'')` and `ν`. -/
-lemma add {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
+lemma add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) :
     HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ η) ν := by
   refine .of_rat (integrable_exp_add_compProd hX hY) ?_
@@ -369,10 +369,10 @@ has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable
 a sub-Gaussian mgf with respect to `η` and `κ ∘ₘ ν : Measure Ω`, then `X + Y` (random
 variable on the measurable space `Ω × Ω''`) has a sub-Gaussian mgf with respect to
 `κ ⊗ₖ prodMkLeft Ω' η : Kernel Ω' (Ω × Ω'')` and `ν`. -/
-lemma add' {η : Kernel Ω Ω''} [IsMarkovKernel η]
+lemma add_comp {η : Kernel Ω Ω''} [IsMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
     HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ prodMkLeft Ω' η) ν :=
-  hX.add hY.prodMkLeft_compProd
+  hX.add_compProd hY.prodMkLeft_compProd
 
 end Add
 
@@ -616,7 +616,7 @@ lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
   rw [HasSubgaussianMGF_iff_kernel] at hX ⊢
   have hY' : Kernel.HasSubgaussianMGF Y cY (condExpKernel μ m)
       (Kernel.const Unit (μ.trim hm) ∘ₘ Measure.dirac ()) := by simpa
-  convert hX.add' hY'
+  convert hX.add_comp hY'
   ext
   rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
 
