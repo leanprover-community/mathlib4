@@ -46,10 +46,17 @@ def MeromorphicNFAt (f : 𝕜 → E) (x : 𝕜) :=
 
 /-- A meromorphic function has normal form at `x` iff it is either analytic
 there, or if it has a pole at `x` and takes the default value `0`. -/
-theorem MeromorphicAt.meromorphicNFAt_iff (hf : MeromorphicAt f x) :
-    MeromorphicNFAt f x ↔ AnalyticAt 𝕜 f x ∨ hf.order < 0 ∧ f x = 0 := by
+theorem MeromorphicAt.meromorphicNFAt_iff :
+    MeromorphicNFAt f x ↔ AnalyticAt 𝕜 f x ∨ ∃ hf : MeromorphicAt f x, hf.order < 0 ∧ f x = 0 := by
   constructor
   · intro h₁f
+    have hf : MeromorphicAt f x := by
+      rcases h₁f with h | h
+      · have : f =ᶠ[𝓝[≠] x] 0 := Filter.EventuallyEq.filter_mono h nhdsWithin_le_nhds
+        exact analyticAt_const.meromorphicAt.congr this.symm
+      · obtain ⟨n, g, h₁g, _, h₃g⟩ := h
+        apply MeromorphicAt.congr _ (Filter.EventuallyEq.filter_mono h₃g nhdsWithin_le_nhds).symm
+        fun_prop
     rcases h₁f with h | h
     · simp [(analyticAt_congr h).2 analyticAt_const]
     · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h
@@ -61,10 +68,12 @@ theorem MeromorphicAt.meromorphicNFAt_iff (hf : MeromorphicAt f x) :
       · left
         rw [analyticAt_congr h₃g]
         apply (AnalyticAt.zpow_nonneg (by fun_prop) hn).smul h₁g
-      · simp [this, WithTop.coe_lt_zero.2 (not_le.1 hn), h₃g.eq_of_nhds,
+      · right
+        use hf
+        simp [this, WithTop.coe_lt_zero.2 (not_le.1 hn), h₃g.eq_of_nhds,
           zero_zpow n (ne_of_not_le hn).symm]
   · intro h₁f
-    rcases h₁f with h | ⟨h₁, h₂⟩
+    rcases h₁f with h | ⟨h₁, h₂, h₃⟩
     · by_cases h₂f : h.order = ⊤
       · rw [AnalyticAt.order_eq_top_iff] at h₂f
         tauto
@@ -76,16 +85,17 @@ theorem MeromorphicAt.meromorphicNFAt_iff (hf : MeromorphicAt f x) :
         use g, h₁g, h₂g
         simpa
     · right
-      lift hf.order to ℤ using LT.lt.ne_top h₁ with n hn
-      obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff n).1 hn.symm
+      lift h₁.order to ℤ using LT.lt.ne_top h₂ with n hn
+      obtain ⟨g, h₁g, h₂g, h₃g⟩ := (h₁.order_eq_int_iff n).1 hn.symm
       use n, g, h₁g, h₂g
       filter_upwards [eventually_nhdsWithin_iff.1 h₃g]
       intro z hz
       by_cases h₁z : z = x
       · simp only [h₁z, h₂, Pi.smul_apply', Pi.pow_apply, sub_self]
+        rw [h₃]
         apply (smul_eq_zero_of_left (zero_zpow n _) (g x)).symm
         by_contra hCon
-        simp [hCon] at h₁
+        simp [hCon] at h₂
       · exact hz h₁z
 
 /-- Meromorphicity in normal form is a local property. -/
@@ -115,12 +125,11 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
 /-- If a function is meromorphic in normal form at `x`, then it is meromorphic at `x`. -/
 theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
     MeromorphicAt f x := by
+  rw [MeromorphicAt.meromorphicNFAt_iff] at hf
   rcases hf with h | h
-  · have : f =ᶠ[𝓝[≠] x] 0 := Filter.EventuallyEq.filter_mono h nhdsWithin_le_nhds
-    exact analyticAt_const.meromorphicAt.congr this.symm
-  · obtain ⟨n, g, h₁g, _, h₃g⟩ := h
-    apply MeromorphicAt.congr _ (Filter.EventuallyEq.filter_mono h₃g nhdsWithin_le_nhds).symm
-    fun_prop
+  · exact h.meromorphicAt
+  · obtain ⟨hf, _⟩ := h
+    exact hf
 
 /-- If a function is meromorphic in normal form at `x` and has non-negative
 order, then it is analytic -/
@@ -128,16 +137,17 @@ theorem MeromorphicNFAt.analyticAt (h₁f : MeromorphicNFAt f x)
     (h₂f : 0 ≤ h₁f.meromorphicAt.order) :
     AnalyticAt 𝕜 f x := by
   have h₃f := h₁f.meromorphicAt
-  rw [h₃f.meromorphicNFAt_iff] at h₁f
+  rw [MeromorphicAt.meromorphicNFAt_iff] at h₁f
   rcases h₁f with h | h
   · exact h
   · by_contra h'
-    exact lt_irrefl 0 (lt_of_le_of_lt h₂f h.1)
+    obtain ⟨h₄f, h₅f, h₆f⟩ := h
+    exact lt_irrefl 0 (lt_of_le_of_lt h₂f h₅f)
 
 /-- Analytic functions are meromorphic in normal form. -/
 theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
     MeromorphicNFAt f x := by
-  simp [hf.meromorphicAt.meromorphicNFAt_iff, hf]
+  simp [MeromorphicAt.meromorphicNFAt_iff, hf]
 
 /-!
 ## Continuous extension and conversion to normal form
