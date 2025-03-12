@@ -135,7 +135,7 @@ theorem eq_of_irreducible_of_monic [Nontrivial B] {p : A[X]} (hp1 : Irreducible 
     mul_one (minpoly A x) ▸ hq.symm ▸ Associated.mul_left _
       (associated_one_iff_isUnit.2 <| (hp1.isUnit_or_isUnit hq).resolve_left <| not_isUnit A x)
 
-theorem eq_iff_aeval_eq_zero [Nontrivial B] {p : A[X]} (irr: Irreducible p) (monic: p.Monic) :
+theorem eq_iff_aeval_eq_zero [Nontrivial B] {p : A[X]} (irr : Irreducible p) (monic : p.Monic) :
     p = minpoly A x ↔ Polynomial.aeval x p = 0 :=
   ⟨(· ▸ aeval A x), (eq_of_irreducible_of_monic irr · monic)⟩
 
