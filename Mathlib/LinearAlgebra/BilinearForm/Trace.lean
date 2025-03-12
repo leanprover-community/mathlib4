@@ -75,8 +75,8 @@ def trace : BilinForm ℝ M →ₗ[ℝ] ℝ :=
   else
     0
 
-/-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
-theorem trace_eq_matrix_trace_of_finset {s : Finset M} [DecidableEq M]
+/-- Auxiliary lemma for `trace_eq_matrixTrace`. -/
+theorem trace_eq_matrixTrace_of_finset {s : Finset M} [DecidableEq M]
     (b : OrthonormalBasis s ℝ M) (f : BilinForm ℝ M) :
     trace f = Matrix.trace (LinearMap.toMatrix₂ b.toBasis b.toBasis f) := by
   have : ∃ s : Finset M, Nonempty (OrthonormalBasis s ℝ M) := ⟨s, ⟨b⟩⟩
@@ -85,12 +85,12 @@ theorem trace_eq_matrix_trace_of_finset {s : Finset M} [DecidableEq M]
   convert traceAux_orthonormalBasis_congr _ _
 
 /-- Any choice of orthonormal basis can be used to expand the trace -/
-theorem trace_eq_matrix_trace (b : OrthonormalBasis ι ℝ M) (f : BilinForm ℝ M) :
+theorem trace_eq_matrixTrace (b : OrthonormalBasis ι ℝ M) (f : BilinForm ℝ M) :
     trace f = Matrix.trace (LinearMap.toMatrix₂ b.toBasis b.toBasis f) := by
   classical
   have : OrthonormalBasis (Finset.univ.image b) ℝ M :=
     b.reindex (Equiv.ofInjective b b.toBasis.injective |>.trans <| .subtypeEquivProp <| by simp)
-  rw [trace_eq_matrix_trace_of_finset this, ← traceAux_apply, ← traceAux_apply,
+  rw [trace_eq_matrixTrace_of_finset this, ← traceAux_apply, ← traceAux_apply,
     traceAux_orthonormalBasis_congr this b]
 
 end InnerProductSpace
