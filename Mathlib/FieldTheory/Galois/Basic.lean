@@ -277,8 +277,6 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
 @[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
     IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
   rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
-
-
 theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
     x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
   rw [← fixedField_top, mem_fixedField_iff]
