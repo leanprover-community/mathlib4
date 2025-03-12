@@ -168,15 +168,17 @@ lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
 /-- A simple graph having no edges is contained in any simple graph having sufficent vertices. -/
-theorem isContained_of_isEmpty_edgeSet [IsEmpty A.edgeSet] [Fintype α] [Fintype β]
-    (h : card α ≤ card β) : A ⊑ B := by
-  haveI := Function.Embedding.nonempty_of_card_le h
-  let ι : α ↪ β := Classical.arbitrary (α ↪ β)
-  exact ⟨⟨ι, isEmptyElim ∘ fun hadj ↦ (⟨s(_, _), hadj⟩ : A.edgeSet)⟩, ι.injective⟩
+lemma bot_isContained_of_embedding (f : α ↪ β) : (⊥ : SimpleGraph α) ⊑ B :=
+  ⟨⟨f, False.elim⟩, f.injective⟩
 
-lemma bot_isContained (f : α ↪ β) : (⊥ : SimpleGraph α) ⊑ B := ⟨⟨f, False.elim⟩, f.injective⟩
+protected alias IsContained.bot_of_embedding := bot_isContained_of_embedding
 
-protected alias IsContained.bot := bot_isContained
+@[inherit_doc bot_isContained_of_embedding]
+lemma bot_isContained_of_card_le [Fintype α] [Fintype β] (h : card α ≤ card β) :
+    (⊥ : SimpleGraph α) ⊑ B :=
+  bot_isContained_of_embedding (Function.Embedding.nonempty_of_card_le h).some
+
+protected alias IsContained.bot_of_card_le := bot_isContained_of_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
