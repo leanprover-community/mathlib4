@@ -743,8 +743,11 @@ def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
   mem_chart_source x := (IsEmpty.false x).elim
   chart_mem_atlas x := (IsEmpty.false x).elim
 
-/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. -/
-instance chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
+/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. We do
+*not* register this as an instance, as for product spaces we rather want to use the product charted
+space as the default. We will register as an instance that a vector space is a charted space over
+itself, but the defeqs will be suitably adjusted through forgetful inheritance. -/
+def chartedSpaceSelf (H : Type*) [TopologicalSpace H] : ChartedSpace H H where
   atlas := {PartialHomeomorph.refl H}
   chartAt _ := PartialHomeomorph.refl H
   mem_chart_source x := mem_univ x
@@ -785,69 +788,11 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
 
 section Products
 
-library_note "Manifold type tags" /-- For technical reasons we introduce two type tags:
-
-* `ModelProd H H'` is the same as `H × H'`;
-* `ModelPi H` is the same as `∀ i, H i`, where `H : ι → Type*` and `ι` is a finite type.
-
-In both cases the reason is the same, so we explain it only in the case of the product. A charted
-space `M` with model `H` is a set of charts from `M` to `H` covering the space. Every space is
-registered as a charted space over itself, using the only chart `id`, in `chartedSpaceSelf`. You
-can also define a product of charted space `M` and `M'` (with model space `H × H'`) by taking the
-products of the charts. Now, on `H × H'`, there are two charted space structures with model space
-`H × H'` itself, the one coming from `chartedSpaceSelf`, and the one coming from the product of
-the two `chartedSpaceSelf` on each component. They are equal, but not defeq (because the product
-of `id` and `id` is not defeq to `id`), which is bad as we know. This expedient of renaming `H × H'`
-solves this problem. -/
-
-
-/-- Same thing as `H × H'`. We introduce it for technical reasons,
-see note [Manifold type tags]. -/
-def ModelProd (H : Type*) (H' : Type*) :=
-  H × H'
-
-/-- Same thing as `∀ i, H i`. We introduce it for technical reasons,
-see note [Manifold type tags]. -/
-def ModelPi {ι : Type*} (H : ι → Type*) :=
-  ∀ i, H i
-
-section
-
--- attribute [local reducible] ModelProd -- Porting note: not available in Lean4
-
-instance modelProdInhabited [Inhabited H] [Inhabited H'] : Inhabited (ModelProd H H') :=
-  instInhabitedProd
-
-instance (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H'] :
-    TopologicalSpace (ModelProd H H') :=
-  instTopologicalSpaceProd
-
--- Next lemma shows up often when dealing with derivatives, so we register it as simp lemma.
-@[simp, mfld_simps]
-theorem modelProd_range_prod_id {H : Type*} {H' : Type*} {α : Type*} (f : H → α) :
-    (range fun p : ModelProd H H' ↦ (f p.1, p.2)) = range f ×ˢ (univ : Set H') := by
-  rw [prod_range_univ_eq]
-  rfl
-
-end
-
-section
-
-variable {ι : Type*} {Hi : ι → Type*}
-
-instance modelPiInhabited [∀ i, Inhabited (Hi i)] : Inhabited (ModelPi Hi) :=
-  Pi.instInhabited
-
-instance [∀ i, TopologicalSpace (Hi i)] : TopologicalSpace (ModelPi Hi) :=
-  Pi.topologicalSpace
-
-end
-
 /-- The product of two charted spaces is naturally a charted space, with the canonical
 construction of the atlas of product maps. -/
 instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
-    [ChartedSpace H' M'] : ChartedSpace (ModelProd H H') (M × M') where
+    [ChartedSpace H' M'] : ChartedSpace (H × H') (M × M') where
   atlas := image2 PartialHomeomorph.prod (atlas H M) (atlas H' M')
   chartAt x := (chartAt H x.1).prod (chartAt H' x.2)
   mem_chart_source x := ⟨mem_chart_source H x.1, mem_chart_source H' x.2⟩
@@ -855,16 +800,12 @@ instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [Topologi
 
 section prodChartedSpace
 
-@[ext]
-theorem ModelProd.ext {x y : ModelProd H H'} (h₁ : x.1 = y.1) (h₂ : x.2 = y.2) : x = y :=
-  Prod.ext h₁ h₂
-
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace H']
   [TopologicalSpace M'] [ChartedSpace H' M'] {x : M × M'}
 
 @[simp, mfld_simps]
 theorem prodChartedSpace_chartAt :
-    chartAt (ModelProd H H') x = (chartAt H x.fst).prod (chartAt H' x.snd) :=
+    chartAt (H × H') x = (chartAt H x.fst).prod (chartAt H' x.snd) :=
   rfl
 
 theorem chartedSpaceSelf_prod : prodChartedSpace H H H' H' = chartedSpaceSelf (H × H') := by

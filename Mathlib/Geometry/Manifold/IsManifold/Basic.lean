@@ -167,8 +167,11 @@ theorem continuousWithinAt_symm {s x} : ContinuousWithinAt I.symm s x :=
 theorem continuousOn_symm {s} : ContinuousOn I.symm s :=
   I.continuous_symm.continuousOn
 
-protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
-  I.target_eq ▸ I.uniqueDiffOn'
+protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) := by
+  rw [← I.target_eq]
+  rcases I.uniqueDiffOn' with hI | hI
+  · exact hI.uniqueDiffOn
+  · exact hI
 
 @[deprecated (since := "2024-09-30")]
 protected alias unique_diff := ModelWithCorners.uniqueDiffOn
@@ -209,7 +212,6 @@ alias closedEmbedding := isClosedEmbedding
 
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
-
 
 theorem range_eq_closure_interior : range I = closure (interior (range I)) :=
   Subset.antisymm I.range_subset_closure_interior I.isClosed_range.closure_interior_subset
@@ -291,16 +293,16 @@ variable (𝕜 E)
 
 /-- In the trivial model with corners, the associated `PartialEquiv` is the identity. -/
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_partialEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E :=
-  rfl
+theorem modelWithCornersSelf_partialEquiv : 𝓘(𝕜, E).toPartialEquiv = PartialEquiv.refl E := by
+  ext <;> simp
 
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_coe : (𝓘(𝕜, E) : E → E) = id :=
-  rfl
+theorem modelWithCornersSelf_coe : (𝓘(𝕜, E) : E → E) = id := by
+  ext; simp
 
 @[simp, mfld_simps]
-theorem modelWithCornersSelf_coe_symm : (𝓘(𝕜, E).symm : E → E) = id :=
-  rfl
+theorem modelWithCornersSelf_coe_symm : (𝓘(𝕜, E).symm : E → E) = id := by
+  ext; simp
 
 end
 
@@ -338,13 +340,7 @@ theorem modelWithCorners_prod_coe_symm (I : ModelWithCorners 𝕜 E H)
     ((I.prod I').symm : _ × _ → _ × _) = Prod.map I.symm I'.symm :=
   rfl
 
-/-- This lemma should be erased, or at least burn in hell, as it uses bad defeq: the left model
-with corners is for `E times F`, the right one for `ModelProd E F`, and there's a good reason
-we are distinguishing them. -/
-theorem modelWithCornersSelf_prod : 𝓘(𝕜, E × F) = 𝓘(𝕜, E).prod 𝓘(𝕜, F) := by ext1 <;> simp
-
-theorem ModelWithCorners.range_prod : range (I.prod J) = range I ×ˢ range J := by
-  simp_rw [← ModelWithCorners.target_eq]; rfl
+theorem modelWithCornersSelf_prod : 𝓘(𝕜, E × F) = 𝓘(𝕜, E).prod 𝓘(𝕜, F) := rfl
 
 end ModelWithCornersProd
 
