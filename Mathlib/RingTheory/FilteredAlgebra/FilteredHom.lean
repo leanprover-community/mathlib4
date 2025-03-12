@@ -34,6 +34,13 @@ induced by the `piece_wise_hom` of a `FilteredAddGroupHom`.
 The induced graded additive group morphism between associated graded additive groups,
 obtained from the component-wise map `GradedPieceHom f`.
 
+* `FilteredRingHom` : A morphism between filtered rings that preserves both the ring and
+filtered structures.
+
+* `FilteredRingHom.AssociatedGradedRingHom` :
+The induced graded ring morphism between associated graded rings,
+obtained from the `AssociatedGradedAddMonoidHom` of a filtered ring morphism.
+
 -/
 section
 
@@ -198,7 +205,7 @@ variable [Ring S] (FS : ι → σ) (FS_lt : outParam <| ι → σ) [SetLike σ S
 variable [Ring T] (FT : ι → τ) (FT_lt : outParam <| ι → τ) [SetLike τ T]
 
 /-- A morphism between filtered rings that preserves both the ring and
-filtered morphism structures.-/
+filtered structures. -/
 class FilteredRingHom extends FilteredAddGroupHom FR FR_lt FS FS_lt, R →+* S
 
 /-- Reinterpret a `FilteredRingHom` as a `RingHom`. -/
@@ -217,7 +224,7 @@ variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt F
 variable {FR FS FT FR_lt FS_lt FT_lt}
 
 /-- The composition of filtered ring morphisms,
-obtained from the composition of the underlying ring homomorphisms.-/
+obtained from the composition of the underlying ring homomorphisms. -/
 def comp : FilteredRingHom FR FR_lt FT FT_lt where
   __ := g.toRingHom.comp f.toRingHom
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
@@ -225,12 +232,11 @@ def comp : FilteredRingHom FR FR_lt FT FT_lt where
 
 variable [AddSubgroupClass γ R] [AddSubgroupClass σ S] [AddSubgroupClass τ T]
 
-/-- A filtered ring morphism restricted to its `i`-th filtration layer.-/
+/-- A filtered ring morphism restricted to its `i`-th filtration. -/
 abbrev piece_wise_hom (i : ι) : FR i →+ FS i :=
   FilteredAddGroupHom.piece_wise_hom f.toFilteredAddGroupHom i
 
-/-- Additive group homomorphism (between direct sum of graded pieces) induced by
-`f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
+/-- The `FilteredRingHom` version of `FilteredAddGroupHom.GradedPieceHom`. -/
 abbrev GradedPieceHom (i : ι) : GradedPiece FR FR_lt i →+ GradedPiece FS FS_lt i :=
   f.1.GradedPieceHom i
 
@@ -255,8 +261,8 @@ open DirectSum
 
 variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt] [hasGMul FS FS_lt] [hasGMul FT FT_lt]
 
-/-- The induced graded ring morphism between associated graded rings
-from a filtered ring morphism `f : FilteredRingHom FR FR_lt FS FS_lt`.-/
+/-- The induced graded ring morphism between associated graded rings,
+obtained from the `AssociatedGradedAddMonoidHom` of a filtered ring morphism. -/
 noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     (AssociatedGraded FR FR_lt) →+* (AssociatedGraded FS FS_lt) where
   __ := f.1.AssociatedGradedAddMonoidHom
