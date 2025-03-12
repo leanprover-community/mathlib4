@@ -41,8 +41,8 @@ variable
 or if it can locally be written as `fun z ↦ (z - x) ^ n • g` where `g` is
 analytic and does not vanish at `x`. -/
 def MeromorphicNFAt (f : 𝕜 → E) (x : 𝕜) :=
-  (f =ᶠ[𝓝 x] 0) ∨ (∃ (n : ℤ), ∃ g : 𝕜 → E, (AnalyticAt 𝕜 g x) ∧ (g x ≠ 0) ∧
-    (f =ᶠ[𝓝 x] (· - x) ^ n • g ))
+  f =ᶠ[𝓝 x] 0 ∨
+    ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ f =ᶠ[𝓝 x] (· - x) ^ n • g
 
 /-- Reformulation of the definition for convenience -/
 theorem meromorphicNFAt_def :
