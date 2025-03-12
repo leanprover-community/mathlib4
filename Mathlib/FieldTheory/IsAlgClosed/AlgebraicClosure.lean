@@ -170,9 +170,9 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
       let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
       rw [← hp]
       induction p using MvPolynomial.induction_on generalizing z with
-        | h_C => exact isIntegral_algebraMap
-        | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
-        | h_X p fi ih =>
+        | C => exact isIntegral_algebraMap
+        | add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
+        | mul_X p fi ih =>
           rw [map_mul]
           refine (ih _ rfl).mul ⟨_, fi.1.2, ?_⟩
           simp_rw [← eval_map, Monics.map_eq_prod, eval_prod, Polynomial.map_sub, eval_sub]
