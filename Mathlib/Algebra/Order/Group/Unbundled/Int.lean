@@ -108,8 +108,6 @@ theorem emod_abs (a b : ℤ) : a % |b| = a % b :=
 theorem emod_lt_abs (a : ℤ) {b : ℤ} (H : b ≠ 0) : a % b < |b| := by
   rw [← emod_abs]; exact emod_lt_of_pos _ (abs_pos.2 H)
 
-@[deprecated (since := "2025-03-10")] alias emod_lt := emod_lt_abs
-
 /-! ### properties of `/` and `%` -/
 
 theorem abs_ediv_le_abs : ∀ a b : ℤ, |a / b| ≤ |a| :=
