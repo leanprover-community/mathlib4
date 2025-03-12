@@ -146,9 +146,10 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
 
 /-- Given a type `M` with a multiplication, a congruence relation `c` on `M`, and elements of `M`
     `x, y`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`. -/
-@[to_additive "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
+@[to_additive instMembershipProd
+  "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`."]
-instance : Membership (M × M) (Con M) :=
+instance instMembershipProd : Membership (M × M) (Con M) :=
   ⟨fun c x => c x.1 x.2⟩
 
 variable {c}

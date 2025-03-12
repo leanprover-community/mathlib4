@@ -1062,7 +1062,6 @@ theorem tensorTensorTensorComm_tmul (m : A) (n : B) (p : C) (q : D) :
     tensorTensorTensorComm R S A B C D (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
   rfl
 
-set_option maxSynthPendingDepth 2 in
 @[simp]
 theorem tensorTensorTensorComm_symm_tmul (m : A) (n : C) (p : B) (q : D) :
     (tensorTensorTensorComm R S A B C D).symm (m ⊗ₜ n ⊗ₜ (p ⊗ₜ q)) = m ⊗ₜ p ⊗ₜ (n ⊗ₜ q) :=
@@ -1072,7 +1071,6 @@ theorem tensorTensorTensorComm_symm :
     (tensorTensorTensorComm R R A B C D).symm = tensorTensorTensorComm R R A C B D := by
   ext; rfl
 
-set_option maxSynthPendingDepth 2 in
 theorem tensorTensorTensorComm_toLinearEquiv :
     (tensorTensorTensorComm R S A B C D).toLinearEquiv =
       TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S A B C D := rfl
@@ -1208,17 +1206,6 @@ lemma mk_one_injective_of_isScalarTower (M : Type*) [AddCommGroup M]
 end TensorProduct
 
 end Algebra
-
-namespace LinearMap
-
-open Algebra.TensorProduct
-
-variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
-  [Fintype ι] [Finite ι₂] [DecidableEq ι]
-  [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
-
-end LinearMap
 
 lemma Algebra.baseChange_lmul {R B : Type*} [CommSemiring R] [Semiring B] [Algebra R B]
     {A : Type*} [CommSemiring A] [Algebra R A] (f : B) :
@@ -1398,3 +1385,14 @@ theorem mul'_comp_tensorTensorTensorComm :
 end Lemmas
 
 end TensorProduct.Algebra
+
+open LinearMap in
+lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
+    [Module R Q] {I : Submodule R R} :
+    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q) = I • ⊤ := by
+  rw [← map_top, ← map_coe_toLinearMap, ← Submodule.map_comp, map_top]
+  refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
+    (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
+  rintro _ ⟨t, rfl⟩
+  exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
+    (by simp +contextual [add_mem])

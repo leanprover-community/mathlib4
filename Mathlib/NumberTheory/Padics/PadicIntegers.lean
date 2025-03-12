@@ -340,9 +340,6 @@ section Units
 
 /-! ### Units of `ℤ_[p]` -/
 
--- Porting note: `reducible` cannot be local and making it global breaks a lot of things
--- attribute [local reducible] PadicInt
-
 theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
   | ⟨k, _⟩, h => by
     have hk : k ≠ 0 := fun h' => zero_ne_one' ℚ_[p] (by simp [h'] at h)

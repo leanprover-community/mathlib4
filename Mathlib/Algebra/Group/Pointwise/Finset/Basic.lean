@@ -6,7 +6,9 @@ Authors: Floris van Doorn, Yaël Dillies
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Data.Finset.Density
+import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
@@ -55,7 +57,9 @@ pointwise subtraction
 
 -- TODO
 -- assert_not_exists MonoidWithZero
-assert_not_exists MulAction Cardinal
+assert_not_exists Cardinal
+assert_not_exists Finset.dens
+assert_not_exists MulAction
 
 open Function MulOpposite
 
@@ -283,9 +287,6 @@ theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.tra
 
 @[to_additive (attr := simp)]
 theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
-
-@[to_additive (attr := simp)]
-lemma dens_inv [Fintype α] (s : Finset α) : s⁻¹.dens = s.dens := by simp [dens]
 
 @[to_additive (attr := simp)]
 theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) inv_injective.injOn = s⁻¹ :=
