@@ -652,8 +652,8 @@ theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l
     simp
 
 @[simp]
-theorem lists_nil : lists (@nil α) = [([] : List α)] := by
-  rw [nil, lists_coe, cyclicPermutations_nil]
+theorem lists_nil : lists (@nil α) = {([] : List α)} := by
+  rw [nil, lists_coe, cyclicPermutations_nil, Multiset.coe_singleton]
 
 section Decidable
 
