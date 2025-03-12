@@ -124,10 +124,7 @@ jobs:
 
           # Calculate directory size in bytes
           DIR_SIZE=$(du -sb "$CACHE_DIR" | cut -f1)
-
-          # Convert to gigabytes for comparison and display (with decimal precision)
-          DIR_SIZE_GB=$(echo "scale=2; $DIR_SIZE / 1024 / 1024 / 1024" | bc)
-          echo "Cache directory size: ${DIR_SIZE_GB}GB"
+          printf 'Cache size (in bytes): %s\n' "$DIR_SIZE"
 
           # Check if size exceeds 10GB
           if [ "$DIR_SIZE" -gt "10737418240" ]; then
