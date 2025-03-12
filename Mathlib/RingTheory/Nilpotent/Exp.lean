@@ -7,8 +7,9 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
 # Exponential map on algebras
