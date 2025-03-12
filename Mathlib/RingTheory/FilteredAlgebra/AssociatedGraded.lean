@@ -17,7 +17,7 @@ In this file we define `GradedPiece` for `IsFiltration F F_lt` on abelian groups
 
 * `GradedPiece` : Direct summand of the associated graded abelian group to `IsFiltration F F_lt`
   with every `F i` of some `AddSubgroupClass`, defined as `F i` quotient by `F_lt i`.
-
+1
 * `AssociatedGraded` : The direct sum of `GradedPiece`s.
 
 -/
@@ -41,7 +41,7 @@ abbrev GradedPiece (i : ι) :=
   (AddSubgroup.ofClass (F i)) ⧸
     (AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i))
 
-/-- Direct sum of `GradedPiece`s.-/
+/-- Direct sum of `GradedPiece`s. -/
 abbrev AssociatedGraded := DirectSum ι (GradedPiece F F_lt)
 
 namespace AssociatedGraded
@@ -54,7 +54,7 @@ abbrev mk [DecidableEq ι] (s : Finset ι) :
 
 variable {F F_lt}
 
-/-- The natrual inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`-/
+/-- The natrual inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`. -/
 abbrev of [DecidableEq ι] {i : ι} : GradedPiece F F_lt i →+ AssociatedGraded F F_lt :=
   DirectSum.of (GradedPiece F F_lt) i
 
@@ -118,7 +118,7 @@ open AddSubgroup
 
 namespace GradedPiece
 
-/-- Obtaining an element of `GradedPiece i` from an element of `F i`.-/
+/-- Obtaining an element of `GradedPiece i` from an element of `F i`. -/
 def mk {i : ι} : (ofClass (F i)) →+ GradedPiece F F_lt i :=
   QuotientAddGroup.mk' ((ofClass (F_lt i)).addSubgroupOf (ofClass (F i)))
 
