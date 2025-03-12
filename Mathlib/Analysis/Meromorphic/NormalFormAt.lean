@@ -47,8 +47,8 @@ def MeromorphicNFAt (f : 𝕜 → E) (x : 𝕜) :=
 /-- Reformulation of the definition for convenience -/
 theorem meromorphicNFAt_def :
     MeromorphicNFAt f x ↔ (f =ᶠ[𝓝 x] 0) ∨
-    (∃ (n : ℤ), ∃ g : 𝕜 → E, (AnalyticAt 𝕜 g x) ∧ (g x ≠ 0) ∧ (f =ᶠ[𝓝 x] (· - x) ^ n • g )) := by
-  rfl
+    (∃ (n : ℤ), ∃ g : 𝕜 → E, (AnalyticAt 𝕜 g x) ∧ (g x ≠ 0) ∧ (f =ᶠ[𝓝 x] (· - x) ^ n • g)) :=
+  .rfl
 
 /-- A meromorphic function has normal form at `x` iff it is either analytic
 there, or if has a pole `x` and take the default value `0`. -/
