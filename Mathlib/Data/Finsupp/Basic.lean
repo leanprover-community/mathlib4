@@ -1350,7 +1350,7 @@ namespace Finsupp
 
 section Sigma
 
-variable {αs : ι → Type*} [Zero M] (l : (Σi, αs i) →₀ M)
+variable {αs : ι → Type*} [Zero M] (l : (Σ i, αs i) →₀ M)
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ (i : ι), αs i` to `M` and
 an index element `i : ι`, `split l i` is the `i`th component of `l`,
@@ -1396,7 +1396,7 @@ theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).su
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
   tauto
 
-theorem sigma_sum [AddCommMonoid N] (f : (Σi : ι, αs i) → M → N) :
+theorem sigma_sum [AddCommMonoid N] (f : (Σ i : ι, αs i) → M → N) :
     l.sum f = ∑ i ∈ splitSupport l, (split l i).sum fun (a : αs i) b => f ⟨i, a⟩ b := by
   simp only [sum, sigma_support, sum_sigma, split_apply]
 
@@ -1406,7 +1406,7 @@ variable {η : Type*} [Fintype η] {ιs : η → Type*} [Zero α]
 and `Π j, (ιs j →₀ α)`.
 
 This is the `Finsupp` version of `Equiv.Pi_curry`. -/
-noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
+noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σ j, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
     onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun _ hg =>
@@ -1419,7 +1419,7 @@ noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ 
     simp [split]
 
 @[simp]
-theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σj, ιs j) →₀ α) (j i) :
+theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σ j, ιs j) →₀ α) (j i) :
     sigmaFinsuppEquivPiFinsupp f j i = f ⟨j, i⟩ :=
   rfl
 
@@ -1429,7 +1429,7 @@ theorem sigmaFinsuppEquivPiFinsupp_apply (f : (Σj, ιs j) →₀ α) (j i) :
 This is the `AddEquiv` version of `Finsupp.sigmaFinsuppEquivPiFinsupp`.
 -/
 noncomputable def sigmaFinsuppAddEquivPiFinsupp {α : Type*} {ιs : η → Type*} [AddMonoid α] :
-    ((Σj, ιs j) →₀ α) ≃+ ∀ j, ιs j →₀ α :=
+    ((Σ j, ιs j) →₀ α) ≃+ ∀ j, ιs j →₀ α :=
   { sigmaFinsuppEquivPiFinsupp with
     map_add' := fun f g => by
       ext
@@ -1437,7 +1437,7 @@ noncomputable def sigmaFinsuppAddEquivPiFinsupp {α : Type*} {ιs : η → Type*
 
 @[simp]
 theorem sigmaFinsuppAddEquivPiFinsupp_apply {α : Type*} {ιs : η → Type*} [AddMonoid α]
-    (f : (Σj, ιs j) →₀ α) (j i) : sigmaFinsuppAddEquivPiFinsupp f j i = f ⟨j, i⟩ :=
+    (f : (Σ j, ιs j) →₀ α) (j i) : sigmaFinsuppAddEquivPiFinsupp f j i = f ⟨j, i⟩ :=
   rfl
 
 end Sigma
