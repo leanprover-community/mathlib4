@@ -184,7 +184,7 @@ protected alias IsContained.bot_of_card_le := bot_isContained_of_card_le
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
 
 /-- The isomorphism from `Subgraph A` to its map under a copy `Copy A B`. -/
-noncomputable def Subgraph.isoMap (f : Copy A B) (A' : A.Subgraph) :
+noncomputable def Subgraph.Copy.map (f : Copy A B) (A' : A.Subgraph) :
     A'.coe ≃g (A'.map f.toHom).coe := by
   use Equiv.Set.image f.toHom _ f.injective
   simp_rw [map_verts, Equiv.Set.image_apply, coe_adj, map_adj, Relation.map_apply,
@@ -193,7 +193,7 @@ noncomputable def Subgraph.isoMap (f : Copy A B) (A' : A.Subgraph) :
 /-- `B` contains `A` if and only if `B` has a subgraph `B'` and `B'` is isomorphic to `A`. -/
 theorem isContained_iff_exists_iso_subgraph :
     A ⊑ B ↔ ∃ B' : B.Subgraph, Nonempty (A ≃g B'.coe) :=
-  ⟨fun ⟨f⟩ ↦ ⟨Subgraph.map f.toHom ⊤, ⟨(Subgraph.isoMap f ⊤).comp Subgraph.topIso.symm⟩⟩,
+  ⟨fun ⟨f⟩ ↦ ⟨Subgraph.map f.toHom ⊤, ⟨(Subgraph.Copy.map f ⊤).comp Subgraph.topIso.symm⟩⟩,
     fun ⟨B', ⟨e⟩⟩ ↦ B'.coe_isContained.trans' ⟨e.toCopy⟩⟩
 
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
