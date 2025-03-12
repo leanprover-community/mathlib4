@@ -12,8 +12,8 @@ import Mathlib.Analysis.Analytic.CPolynomialDef
 In this file we prove that a `ContinuousLinearMap` defines an analytic function with
 the formal power series `f x = f a + f (x - a)`. We also prove similar results for bilinear maps.
 
-We deduce this fact from the stronger result that continuous linear map are continuously polynomial,
-i.e., they admit a finite power series.
+We deduce this fact from the stronger result that continuous linear maps are continuously
+polynomial, i.e., they admit a finite power series.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -39,11 +39,9 @@ protected theorem hasFiniteFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     simp [Finset.sum_range_succ, ← sub_sub, hasSum_zero, fpowerSeries]
   finite := by
     intro m hm
-    cases' m with m
-    · linarith
-    cases' m with m
-    · linarith
-    simp [fpowerSeries]
+    match m with
+    | 0 | 1 => linarith
+    | n + 2 => simp [fpowerSeries]
 
 protected theorem hasFPowerSeriesOnBall (f : E →L[𝕜] F) (x : E) :
     HasFPowerSeriesOnBall f (f.fpowerSeries x) x ∞ :=
@@ -175,7 +173,7 @@ alias analyticWithinOn_id := analyticOn_id
 theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
   (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
-theorem analyticWithinAt_fst  : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
+theorem analyticWithinAt_fst : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
   analyticAt_fst.analyticWithinAt
 
 /-- `snd` is analytic -/

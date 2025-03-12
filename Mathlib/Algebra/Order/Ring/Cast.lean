@@ -114,8 +114,8 @@ open OrderDual
 
 namespace OrderDual
 
-instance instIntCast             [IntCast R]             : IntCast Rᵒᵈ             := ‹_›
-instance instAddGroupWithOne     [AddGroupWithOne R]     : AddGroupWithOne Rᵒᵈ     := ‹_›
+instance instIntCast [IntCast R] : IntCast Rᵒᵈ := ‹_›
+instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne Rᵒᵈ := ‹_›
 instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne Rᵒᵈ := ‹_›
 
 end OrderDual
@@ -128,8 +128,8 @@ end OrderDual
 
 namespace Lex
 
-instance instIntCast             [IntCast R]             : IntCast (Lex R)             := ‹_›
-instance instAddGroupWithOne     [AddGroupWithOne R]     : AddGroupWithOne (Lex R)     := ‹_›
+instance instIntCast [IntCast R] : IntCast (Lex R) := ‹_›
+instance instAddGroupWithOne [AddGroupWithOne R] : AddGroupWithOne (Lex R) := ‹_›
 instance instAddCommGroupWithOne [AddCommGroupWithOne R] : AddCommGroupWithOne (Lex R) := ‹_›
 
 end Lex
