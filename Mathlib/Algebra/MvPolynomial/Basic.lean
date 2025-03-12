@@ -345,6 +345,7 @@ theorem monomial_eq : monomial s a = C a * (s.prod fun n e => X n ^ e : MvPolyno
 lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : R) := by
   simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
 
+@[elab_as_elim]
 theorem induction_on_monomial {M : MvPolynomial σ R → Prop}
     (C : ∀ a, M (C a))
     (mul_X : ∀ p n, M p → M (p * X n)) : ∀ s a, M (monomial s a) := by
