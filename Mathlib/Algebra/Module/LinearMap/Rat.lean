@@ -30,3 +30,13 @@ theorem AddMonoidHom.toRatLinearMap_injective [AddCommGroup M] [Module ℚ M] [A
 theorem AddMonoidHom.coe_toRatLinearMap [AddCommGroup M] [Module ℚ M] [AddCommGroup M₂]
     [Module ℚ M₂] (f : M →+ M₂) : ⇑f.toRatLinearMap = f :=
   rfl
+
+instance {R M N : Type*} [Ring R] [AddCommGroup M] [AddCommGroup N]
+    [Module R M] [Module R N] [Module ℚ M] [Module ℚ N] :
+    MulActionHomClass (M →ₗ[R] N) ℚ M N where
+  map_smulₛₗ f q m := by
+    suffices q.den • f (q • m) = q.den • (q • f m) from
+      smul_right_injective N (c := q.den) q.den_nz <| by norm_cast
+    simp only [← map_nsmul, ← smul_assoc, nsmul_eq_mul, Rat.den_mul_eq_num]
+    norm_cast
+    rw [map_zsmul]

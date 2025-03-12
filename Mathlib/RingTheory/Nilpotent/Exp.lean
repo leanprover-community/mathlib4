@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Nilpotent.Basic
@@ -226,7 +227,7 @@ theorem commute_exp_left_of_commute
   replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
     simpa using LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute h i) m
-  simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_inv_natCast_smul _ ℚ ℚ]
+  simp [exp_eq_sum hfM, exp_eq_sum hfN, this]
 
 theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing B]
     [Module R B] [SMulCommClass R B B] [IsScalarTower R B B] [Module ℚ B]
