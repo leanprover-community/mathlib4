@@ -80,23 +80,23 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
 
 
 attribute [order_dual existing] LinearOrder.toMax
-attribute [order_dual existing (reorder := 3 4) LinearOrder.le_total] LinearOrder.le_total
-attribute [order_dual existing (reorder := 3 4) LinearOrder.decidableLE] LinearOrder.decidableLE
-attribute [order_dual existing (reorder := 3 4) LinearOrder.decidableLT] LinearOrder.decidableLT
+attribute [order_dual self (reorder := 3 4)] LinearOrder.le_total
+attribute [order_dual self (reorder := 3 4)] LinearOrder.decidableLE
+attribute [order_dual self (reorder := 3 4)] LinearOrder.decidableLT
 attribute [order_dual existing] LinearOrder.min_def
 
 variable [LinearOrder α] {a b c : α}
 
 attribute [local instance] LinearOrder.decidableLE
 
-@[order_dual existing (reorder := 3 4) le_total]
+@[order_dual self (reorder := 3 4)]
 lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
 
-@[order_dual existing (reorder := 3 4) le_of_not_ge]
+@[order_dual self (reorder := 3 4)]
 lemma le_of_not_ge : ¬a ≥ b → a ≤ b := (le_total b a).resolve_left
-@[order_dual existing (reorder := 3 4) le_of_not_le]
+@[order_dual self (reorder := 3 4)]
 lemma le_of_not_le : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
-@[order_dual existing (reorder := 3 4) lt_of_not_ge]
+@[order_dual self (reorder := 3 4)]
 lemma lt_of_not_ge (h : ¬a ≥ b) : a < b := lt_of_le_not_le (le_of_not_ge h) h
 
 @[order_dual lt_trichotomyOD]
@@ -109,14 +109,14 @@ lemma lt_trichotomy (a b : α) : a < b ∨ a = b ∨ b < a :=
     Or.elim (Decidable.lt_or_eq_of_le h) (fun h : b < a => Or.inr (Or.inr h)) fun h : b = a =>
       Or.inr (Or.inl h.symm)
 
-@[order_dual existing (reorder := 3 4) le_of_not_lt]
+@[order_dual self (reorder := 3 4)]
 lemma le_of_not_lt (h : ¬b < a) : a ≤ b :=
   match lt_trichotomy a b with
   | Or.inl hlt => le_of_lt hlt
   | Or.inr (Or.inl HEq) => HEq ▸ le_refl a
   | Or.inr (Or.inr hgt) => absurd hgt h
 
-@[order_dual existing (reorder := 3 4) le_of_not_gt]
+@[order_dual self (reorder := 3 4)]
 lemma le_of_not_gt : ¬a > b → a ≤ b := le_of_not_lt
 
 @[order_dual lt_or_leOD]
@@ -136,19 +136,19 @@ lemma lt_or_gt_of_ne (h : a ≠ b) : a < b ∨ a > b := by simpa [h] using lt_tr
 @[order_dual ne_iff_lt_or_gtOD]
 lemma ne_iff_lt_or_gt : a ≠ b ↔ a < b ∨ a > b := ⟨lt_or_gt_of_ne, (Or.elim · ne_of_lt ne_of_gt)⟩
 
-@[order_dual existing (reorder := 3 4) lt_iff_not_ge]
+@[order_dual self (reorder := 3 4)]
 lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_not_ge⟩
 
-@[order_dual existing (attr := simp) (reorder := 3 4) not_lt]
+@[order_dual self (attr := simp) (reorder := 3 4)]
 lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
-@[order_dual existing (attr := simp) (reorder := 3 4) not_le]
+@[order_dual self (attr := simp) (reorder := 3 4)]
 lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
 -- TODO: names??
-@[order_dual existing (reorder := 3 4) LOdecidableLT]
+@[order_dual self (reorder := 3 4)]
 instance (priority := 900) LOdecidableLT (a b : α) : Decidable (a < b) :=
 LinearOrder.decidableLT a b
-@[order_dual existing (reorder := 3 4) LOdecidableLE]
+@[order_dual self (reorder := 3 4)]
 instance (priority := 900) LOdecidableLE (a b : α) : Decidable (a ≤ b) :=
 LinearOrder.decidableLE a b
 instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidableEq a b
@@ -179,7 +179,7 @@ protected def ltByCases {a b : Nat} {C : Sort*} (h₁ : a < b → C) (h₂ : a =
 
 end Nat
 
-@[order_dual existing (reorder := 5 6, 7 8) le_imp_le_of_lt_imp_lt]
+@[order_dual self (reorder := 5 6, 7 8)]
 theorem le_imp_le_of_lt_imp_lt {α β} [Preorder α] [LinearOrder β] {a b : α} {c d : β}
     (H : d < c → b < a) (h : a ≤ b) : c ≤ d :=
   le_of_not_lt fun h' => not_le_of_gt (H h') h

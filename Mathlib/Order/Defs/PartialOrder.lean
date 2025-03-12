@@ -25,20 +25,20 @@ section Preorder
 ### Definition of `Preorder` and lemmas about types with a `Preorder`
 -/
 
-attribute [order_dual existing (reorder := 3 4) LE.le] LE.le
-attribute [order_dual existing (reorder := 3 4) LT.lt] LT.lt
-attribute [order_dual existing (reorder := 3 4) GE.ge] GE.ge
-attribute [order_dual existing (reorder := 3 4) GT.gt] GT.gt
+attribute [order_dual self (reorder := 3 4)] LE.le
+attribute [order_dual self (reorder := 3 4)] LT.lt
+attribute [order_dual self (reorder := 3 4)] GE.ge
+attribute [order_dual self (reorder := 3 4)] GT.gt
 
 -- Core lemmas that need order_dual tags
 
 -- @[simp] theorem ge_iff_le [LE α] {x y : α} : x ≥ y ↔ y ≤ x := Iff.rfl
 set_option linter.existingAttributeWarning false in
-attribute [order_dual existing (reorder := 3 4) ge_iff_le] ge_iff_le
+attribute [order_dual self (reorder := 3 4)] ge_iff_le
 
 -- @[simp] theorem gt_iff_lt [LT α] {x y : α} : x > y ↔ y < x := Iff.rfl
 set_option linter.existingAttributeWarning false in
-attribute [order_dual existing (reorder := 3 4) gt_iff_lt] gt_iff_lt
+attribute [order_dual self (reorder := 3 4)] gt_iff_lt
 
 -- theorem le_of_eq_of_le {a b c : α} [LE α] (h₁ : a = b) (h₂ : b ≤ c) : a ≤ c := h₁ ▸ h₂
 attribute [order_dual le_of_eq_of_leOD] le_of_eq_of_le
@@ -59,7 +59,7 @@ class Preorder (α : Type*) extends LE α, LT α where
   lt := fun a b => a ≤ b ∧ ¬b ≤ a
   lt_iff_le_not_le : ∀ a b : α, a < b ↔ a ≤ b ∧ ¬b ≤ a := by intros; rfl
 
-attribute [order_dual existing (reorder := 3 4) Preorder.lt_iff_le_not_le] Preorder.lt_iff_le_not_le
+attribute [order_dual self (reorder := 3 4)] Preorder.lt_iff_le_not_le
 
 variable [Preorder α] {a b c : α}
 
@@ -79,28 +79,28 @@ lemma le_rfl : a ≤ a := le_refl a
 @[order_dual ge_trans]
 lemma le_trans : a ≤ b → b ≤ c → a ≤ c := Preorder.le_trans _ _ _
 
-@[order_dual existing (reorder := 3 4) lt_iff_le_not_le]
+@[order_dual self (reorder := 3 4)]
 lemma lt_iff_le_not_le : a < b ↔ a ≤ b ∧ ¬b ≤ a := Preorder.lt_iff_le_not_le _ _
 
-@[order_dual existing (reorder := 3 4) lt_of_le_not_le]
+@[order_dual self (reorder := 3 4)]
 lemma lt_of_le_not_le (hab : a ≤ b) (hba : ¬ b ≤ a) : a < b := lt_iff_le_not_le.2 ⟨hab, hba⟩
 
 @[order_dual le_of_eqOD]
 lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]
-@[order_dual existing (reorder := 3 4) le_of_lt]
+@[order_dual self (reorder := 3 4)]
 lemma le_of_lt (hab : a < b) : a ≤ b := (lt_iff_le_not_le.1 hab).1
-@[order_dual existing (reorder := 3 4) not_le_of_lt]
+@[order_dual self (reorder := 3 4)]
 lemma not_le_of_lt (hab : a < b) : ¬ b ≤ a := (lt_iff_le_not_le.1 hab).2
-@[order_dual existing (reorder := 3 4) not_le_of_gt]
+@[order_dual self (reorder := 3 4)]
 lemma not_le_of_gt (hab : a > b) : ¬a ≤ b := not_le_of_lt hab
-@[order_dual existing (reorder := 3 4) not_lt_of_le]
+@[order_dual self (reorder := 3 4)]
 lemma not_lt_of_le (hab : a ≤ b) : ¬ b < a := imp_not_comm.1 not_le_of_lt hab
-@[order_dual existing (reorder := 3 4) not_lt_of_ge]
+@[order_dual self (reorder := 3 4)]
 lemma not_lt_of_ge (hab : a ≥ b) : ¬a < b := not_lt_of_le hab
 
-@[order_dual existing (reorder := 3 4) LT.lt.not_le]
+@[order_dual self (reorder := 3 4)]
 alias LT.lt.not_le := not_le_of_lt
-@[order_dual existing (reorder := 3 4) LE.le.not_lt]
+@[order_dual self (reorder := 3 4)]
 alias LE.le.not_lt := not_lt_of_le
 
 lemma lt_irrefl (a : α) : ¬a < a := fun h ↦ not_le_of_lt h le_rfl
@@ -127,12 +127,12 @@ lemma gt_trans : a > b → b > c → a > c := fun h₁ h₂ => lt_trans h₂ h�
 @[order_dual ne_of_gt]
 lemma ne_of_lt (h : a < b) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
 -- lemma ne_of_gt (h : b < a) : a ≠ b := fun he => absurd h (he ▸ lt_irrefl a)
-@[order_dual existing (reorder := 3 4) lt_asymm]
+@[order_dual self (reorder := 3 4)]
 lemma lt_asymm (h : a < b) : ¬b < a := fun h1 : b < a => lt_irrefl a (lt_trans h h1)
 
-@[order_dual existing (reorder := 3 4) not_lt_of_gt]
+@[order_dual self (reorder := 3 4)]
 alias not_lt_of_gt := lt_asymm
-@[order_dual existing (reorder := 3 4) not_lt_of_lt]
+@[order_dual self (reorder := 3 4)]
 alias not_lt_of_lt := lt_asymm
 
 @[order_dual le_of_lt_or_eqOD]

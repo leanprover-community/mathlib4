@@ -1416,6 +1416,11 @@ def targetName (b : BundledExtensions)
     (nameDict : String → List String) (fixAbbreviation : List String → List String)
     (cfg : Config) (src : Name) : CoreM Name := do
   let .str pre s := src | throwError "to_additive: can't transport {src}"
+  if cfg.self then
+    -- warn the user if they provide a target name (that will get ignored)?
+    if cfg.tgt != .anonymous then
+      log m!"order_dual self will ignore the provided target name"
+    return src
   trace[to_additive_detail] "The name {s} splits as {s.splitCase}"
   let tgt_auto := guessName nameDict fixAbbreviation s
   let depth := cfg.tgt.getNumParts
@@ -1649,7 +1654,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
   withOptions (· |>.updateBool `trace.to_additive (cfg.trace || ·)) <| do
   let tgt ← targetName b nameDict fixAbbreviation cfg src
   let alreadyExists := (← getEnv).contains tgt
-  if cfg.existing == some !alreadyExists && !(← isInductive src) then
+  if cfg.existing == some !alreadyExists && !(← isInductive src) && !cfg.self then
     Linter.logLintIf linter.toAdditiveExisting cfg.ref <|
       if alreadyExists then
         m!"The additive declaration already exists. Please specify this explicitly using \

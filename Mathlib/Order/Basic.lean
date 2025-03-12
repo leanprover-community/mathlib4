@@ -83,7 +83,7 @@ theorem lt_of_le_of_lt' : b ≤ c → a < b → a < c :=
 theorem lt_of_lt_of_le' : b < c → a ≤ b → a < c :=
   flip lt_of_le_of_lt
 
-@[order_dual existing (reorder := 3 4) not_lt_iff_not_le_or_ge]
+@[order_dual self (reorder := 3 4)]
 theorem not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
   rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
 
@@ -135,7 +135,7 @@ alias LE.le.lt_of_ne := lt_of_le_of_ne
 
 -- alias LE.le.lt_of_ne' := lt_of_le_of_ne'
 
-@[order_dual existing (reorder := 3 4) LE.le.lt_of_not_le]
+@[order_dual self (reorder := 3 4)]
 alias LE.le.lt_of_not_le := lt_of_le_not_le
 
 @[order_dual lt_or_eqOD]
@@ -144,7 +144,7 @@ alias LE.le.lt_or_eq := lt_or_eq_of_le
 @[order_dual lt_or_eq_decOD]
 alias LE.le.lt_or_eq_dec := Decidable.lt_or_eq_of_le
 
-@[order_dual existing (reorder := 3 4) LT.lt.le]
+@[order_dual self (reorder := 3 4)]
 alias LT.lt.le := le_of_lt
 
 @[order_dual transOD]
@@ -162,10 +162,10 @@ alias LT.lt.trans_le' := lt_of_lt_of_le'
 @[order_dual ne']
 alias LT.lt.ne := ne_of_lt
 
-@[order_dual existing (reorder := 3 4) LT.lt.asymm]
+@[order_dual self (reorder := 3 4)]
 alias LT.lt.asymm := lt_asymm
 
-@[order_dual existing (reorder := 3 4) LT.lt.not_lt]
+@[order_dual self (reorder := 3 4)]
 alias LT.lt.not_lt := lt_asymm
 
 @[order_dual Eq.leOD]
@@ -246,11 +246,11 @@ end Eq
 section
 
 variable [Preorder α] {a b : α}
-@[order_dual existing (attr := simp) (reorder := 3 4) le_of_subsingleton]
+@[order_dual self (attr := simp) (reorder := 3 4)]
 lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
 -- Making this a @[simp] lemma causes confluences problems downstream.
-@[order_dual existing (reorder := 3 4) not_lt_of_subsingleton]
+@[order_dual self (reorder := 3 4)]
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 end
@@ -259,7 +259,7 @@ namespace LE.le
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
-@[order_dual existing (reorder := 3 4) LE.le.ge]
+@[order_dual self (reorder := 3 4)]
 protected theorem ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x :=
   h
 
@@ -311,7 +311,7 @@ namespace LT.lt
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
-@[order_dual existing (reorder := 3 4) LT.lt.gt]
+@[order_dual self (reorder := 3 4)]
 protected theorem gt [LT α] {x y : α} (h : x < y) : y > x :=
   h
 
@@ -332,13 +332,13 @@ end LT.lt
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
-@[order_dual existing (reorder := 3 4) GE.ge.le]
+@[order_dual self (reorder := 3 4)]
 protected theorem GE.ge.le [LE α] {x y : α} (h : x ≥ y) : y ≤ x :=
   h
 
 -- see Note [nolint_ge]
 -- Porting note: linter not found @[nolint ge_or_gt]
-@[order_dual existing (reorder := 3 4) GT.gt.lt]
+@[order_dual self (reorder := 3 4)]
 protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
   h
 
