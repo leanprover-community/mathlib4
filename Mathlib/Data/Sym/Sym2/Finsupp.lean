@@ -37,7 +37,7 @@ lemma mem_sym2_support_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul 
 /--
 The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`
 -/
-noncomputable def _root_.Finsupp.sym2_mul (f : α →₀ R) :
+noncomputable def _root_.Finsupp.sym2Mul (f : α →₀ R) :
     Sym2 α →₀ R := Finsupp.onFinset
       f.support.sym2
     (fun p => mul (p.map f)) mem_sym2_support_of_mul_ne_zero
