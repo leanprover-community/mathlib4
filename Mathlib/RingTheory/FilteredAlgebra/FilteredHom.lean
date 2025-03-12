@@ -318,3 +318,81 @@ theorem AssociatedGradedRingHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
 end FilteredRingHom
 
 end
+
+section
+
+variable (R : Type*) {ι M N L σ σM σN σL : Type*}
+
+variable [Ring R] [SetLike σ R] (FR : ι → σ) (FR_lt : outParam <| ι → σ)
+variable [AddCommGroup M] [Module R M] [SetLike σM M] (FM : ι → σM) (FM_lt : outParam <| ι → σM)
+variable [AddCommGroup N] [Module R N] [SetLike σN N] (FN : ι → σN) (FN_lt : outParam <| ι → σN)
+variable [AddCommGroup L] [Module R L] [SetLike σL L] (FL : ι → σL) (FL_lt : outParam <| ι → σL)
+
+/-- A morphism between filtered modules that preserves both the module and
+filtered structures. -/
+class FilteredModuleHom extends FilteredAddGroupHom FM FM_lt FN FN_lt, M →ₗ[R] N
+
+/-- Reinterpret a `FilteredModuleHom` as a `LinearMap`. -/
+add_decl_doc FilteredModuleHom.toLinearMap
+
+instance : CoeOut (FilteredModuleHom R FM FM_lt FN FN_lt) (FilteredAddGroupHom FM FM_lt FN FN_lt) :=
+  ⟨fun a ↦ a.toFilteredAddGroupHom⟩
+
+instance : CoeOut (FilteredModuleHom R FM FM_lt FN FN_lt) (M →ₗ[R] N) :=
+  ⟨fun a ↦ a.toLinearMap⟩
+
+namespace FilteredModuleHom
+
+variable (g : FilteredModuleHom R FN FN_lt FL FL_lt) (f : FilteredModuleHom R FM FM_lt FN FN_lt)
+
+variable {R FR FM FN FL FR_lt FM_lt FN_lt FL_lt}
+
+/-- The composition of filtered ring morphisms,
+obtained from the composition of the underlying ring homomorphisms. -/
+def comp : FilteredModuleHom R FM FM_lt FL FL_lt where
+  __ := g.toLinearMap.comp f.toLinearMap
+  map_zero' := (g.toLinearMap.comp f.toLinearMap).map_zero
+  pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
+  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
+
+variable [AddSubgroupClass σ R]
+variable [AddSubgroupClass σM M] [AddSubgroupClass σN N] [AddSubgroupClass σL L]
+
+/-- The `AddMonoidHom` version of `FilteredHom.piece_wise_hom`. -/
+abbrev piece_wise_hom (i : ι) : FM i →+ FN i :=
+  FilteredAddGroupHom.piece_wise_hom f.toFilteredAddGroupHom i
+
+/-- The `FilteredModuleHom` version of `FilteredAddGroupHom.GradedPieceHom`. -/
+abbrev GradedPieceHom (i : ι) : GradedPiece FM FM_lt i →+ GradedPiece FN FN_lt i :=
+  f.1.GradedPieceHom i
+
+@[inherit_doc]
+scoped[FilteredModuleHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+
+@[simp]
+lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FM i) :
+    Gr(i)[f] (GradedPiece.mk FM FM_lt x) = (GradedPiece.mk FN FN_lt (f.piece_wise_hom i x)) :=
+  rfl
+
+lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FM FM_lt i):
+    Gr(i)[g] (Gr(i)[f] x) = Gr(i)[g.comp f] x :=
+  FilteredAddGroupHom.GradedPieceHom_comp_apply g.1 f.1 i x
+
+lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f] = Gr(i)[g.comp f] :=
+  FilteredAddGroupHom.GradedPieceHom_comp g.1 f.1 i
+
+open DirectSum
+
+variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt]
+variable [hasGSMul FR FR_lt FM FM_lt] [hasGSMul FR FR_lt FN FN_lt] [hasGSMul FR FR_lt FL FL_lt]
+
+/-- The induced graded module morphism between associated graded modules,
+obtained from the `AssociatedGradedAddMonoidHom` of a filtered module morphism. -/
+noncomputable def AssociatedGradedModuleHom [DecidableEq ι] :
+    (AssociatedGraded FM FM_lt) →ₗ[AssociatedGraded FR FR_lt] (AssociatedGraded FN FN_lt) where
+  __ := f.1.AssociatedGradedAddMonoidHom
+  map_smul' := sorry
+
+end FilteredModuleHom
+
+end
