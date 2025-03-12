@@ -127,7 +127,7 @@ theorem le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P)
 theorem le_comap_of_ramificationIdx_ne_zero (h : ramificationIdx f p P ≠ 0) : p ≤ comap f P :=
   Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx.trans <| Ideal.pow_le_self <| h
 
-variable {S₁: Type*} [CommRing S₁] [Algebra R S₁]
+variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
 
 variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :

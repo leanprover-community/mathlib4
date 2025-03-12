@@ -208,7 +208,7 @@ theorem appendFun_comp_splitFun {α γ : TypeVec n} {β δ : Type*} {ε : TypeVe
     appendFun f₁ g₁ ⊚ splitFun f₀ g₀ = splitFun (α' := γ.append1 δ) (f₁ ⊚ f₀) (g₁ ∘ g₀) :=
   (splitFun_comp _ _ _ _).symm
 
-theorem appendFun_comp  {α₀ α₁ α₂ : TypeVec n}
+theorem appendFun_comp {α₀ α₁ α₂ : TypeVec n}
     {β₀ β₁ β₂ : Type*}
     (f₀ : α₀ ⟹ α₁) (f₁ : α₁ ⟹ α₂)
     (g₀ : β₀ → β₁) (g₁ : β₁ → β₂) :
