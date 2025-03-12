@@ -141,7 +141,7 @@ abbrev IsContained (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (Copy A
 protected theorem IsContained.rfl : G ⊑ G := IsContained.refl G
 
 /-- A simple graph contains its subgraphs. -/
-theorem isContained_of_le (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨Copy.ofLE G₁ G₂ h⟩
+theorem IsContained.of_le (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨.ofLE G₁ G₂ h⟩
 
 /-- If `A` contains `B` and `B` contains `C`, then `A` contains `C`. -/
 theorem IsContained.trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
@@ -150,12 +150,12 @@ theorem IsContained.trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g�
 theorem IsContained.trans' : B ⊑ C → A ⊑ B → A ⊑ C := flip IsContained.trans
 
 lemma IsContained.mono_right {B' : SimpleGraph β} (h_isub : A ⊑ B) (h_sub : B ≤ B') : A ⊑ B' :=
-  h_isub.trans <| isContained_of_le h_sub
+  h_isub.trans <| IsContained.of_le h_sub
 
 alias IsContained.trans_le := IsContained.mono_right
 
 lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A' ⊑ B) : A ⊑ B :=
-  (isContained_of_le h_sub).trans h_isub
+  (IsContained.of_le h_sub).trans h_isub
 
 alias IsContained.trans_le' := IsContained.mono_left
 
