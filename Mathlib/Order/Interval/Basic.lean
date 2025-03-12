@@ -264,7 +264,7 @@ To convert intervals to the set of elements between these endpoints, use the coe
 `Interval α → Set α`. -/
 -- Porting note: added reducible, it seems to help with coercions
 abbrev Interval (α : Type*) [LE α] :=
-  WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
+  WithBot (NonemptyInterval α)
 
 namespace Interval
 
@@ -272,7 +272,8 @@ section LE
 
 variable [LE α]
 
--- Porting note: previously found using `deriving`
+-- The `Inhabited, LE, OrderBot` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Inhabited (Interval α) := WithBot.inhabited
 instance : LE (Interval α) := WithBot.le
 instance : OrderBot (Interval α) := WithBot.orderBot

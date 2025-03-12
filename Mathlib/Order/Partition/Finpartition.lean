@@ -394,7 +394,7 @@ theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
     #(P.bind Q).parts = ∑ A ∈ P.parts.attach, #(Q _ A.2).parts := by
   apply card_biUnion
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
-  rw [Finset.disjoint_left]
+  rw [Function.onFun, Finset.disjoint_left]
   rintro d hdb hdc
   rw [Ne, Subtype.mk_eq_mk] at hbc
   exact
@@ -604,7 +604,7 @@ variable [Fintype α]
 
 /-- A setoid over a finite type induces a finpartition of the type's elements,
 where the parts are the setoid's equivalence classes. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def ofSetoid (s : Setoid α) [DecidableRel s.r] : Finpartition (univ : Finset α) where
   parts := univ.image fun a ↦ ({b | s.r a b} : Finset α)
   supIndep := by

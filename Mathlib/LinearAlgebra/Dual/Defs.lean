@@ -365,6 +365,11 @@ theorem mem_dualCoannihilator {Φ : Submodule R (Module.Dual R M)} (x : M) :
     x ∈ Φ.dualCoannihilator ↔ ∀ φ ∈ Φ, (φ x : R) = 0 := by
   simp_rw [dualCoannihilator, mem_comap, mem_dualAnnihilator, Module.Dual.eval_apply]
 
+lemma dualAnnihilator_map_dualMap_le {N : Type*} [AddCommMonoid N] [Module R N]
+    (W : Submodule R M) (f : N →ₗ[R] M) :
+    W.dualAnnihilator.map f.dualMap ≤ (W.comap f).dualAnnihilator := by
+  intro; aesop
+
 theorem comap_dualAnnihilator (Φ : Submodule R (Module.Dual R M)) :
     Φ.dualAnnihilator.comap (Module.Dual.eval R M) = Φ.dualCoannihilator := rfl
 
