@@ -33,8 +33,9 @@ variable (T)
      squares in `T`. -/
 def Arrow :=
   Comma.{v, v, v} (𝟭 T) (𝟭 T)
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
-/- Porting note: could not derive `Category` above so this instance works in its place -/
 instance : Category (Arrow T) := commaCategory
 
 -- Satisfying the inhabited linter
@@ -302,7 +303,7 @@ A  → X
 ↓i   Y             --> A → Y
      ↓g                ↓i  ↓g
 B  → Z                 B → Z
- -/
+-/
 @[simps]
 def squareToSnd {X Y Z : C} {i : Arrow C} {f : X ⟶ Y} {g : Y ⟶ Z} (sq : i ⟶ Arrow.mk (f ≫ g)) :
     i ⟶ Arrow.mk g where

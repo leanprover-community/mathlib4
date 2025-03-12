@@ -27,6 +27,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 * `FinVec.etaExpand`
 -/
 
+assert_not_exists Field
 
 namespace FinVec
 

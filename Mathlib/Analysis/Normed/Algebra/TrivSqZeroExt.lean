@@ -30,7 +30,7 @@ we could keep the collection of instances behind an `open scoped`.
   * `TrivSqZeroExt.instL1SeminormedAddCommGroup`
   * `TrivSqZeroExt.instL1SeminormedRing`
   * `TrivSqZeroExt.instL1SeminormedCommRing`
-  * `TrivSqZeroExt.instL1BoundedSMul`
+  * `TrivSqZeroExt.instL1IsBoundedSMul`
   * `TrivSqZeroExt.instL1NormedAddCommGroup`
   * `TrivSqZeroExt.instL1NormedRing`
   * `TrivSqZeroExt.instL1NormedCommRing`
@@ -63,7 +63,7 @@ variable [Field 𝕜] [Ring R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 @[simp] theorem fst_expSeries (x : tsze R M) (n : ℕ) :
     fst (expSeries 𝕜 (tsze R M) n fun _ => x) = expSeries 𝕜 R n fun _ => x.fst := by
@@ -76,7 +76,7 @@ variable [Field 𝕜] [CharZero 𝕜] [Ring R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M] [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 theorem snd_expSeries_of_smul_comm
     (x : tsze R M) (hx : MulOpposite.op x.fst • x.snd = x.fst • x.snd) (n : ℕ) :
@@ -141,7 +141,7 @@ variable [Field 𝕜] [CharZero 𝕜] [CommRing R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 variable [T2Space R] [T2Space M]
 
@@ -169,7 +169,7 @@ variable [Field 𝕜] [CharZero 𝕜] [Field R] [AddCommGroup M]
   [Algebra 𝕜 R] [Module 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
   [IsCentralScalar R M] [IsScalarTower 𝕜 R M]
   [TopologicalSpace R] [TopologicalSpace M]
-  [TopologicalRing R] [TopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
+  [IsTopologicalRing R] [IsTopologicalAddGroup M] [ContinuousSMul R M] [ContinuousSMul Rᵐᵒᵖ M]
 
 variable [T2Space R] [T2Space M]
 
@@ -193,7 +193,7 @@ noncomputable section Seminormed
 section Ring
 variable [SeminormedCommRing S] [SeminormedRing R] [SeminormedAddCommGroup M]
 variable [Algebra S R] [Module S M]
-variable [BoundedSMul S R] [BoundedSMul S M]
+variable [IsBoundedSMul S R] [IsBoundedSMul S M]
 
 instance instL1SeminormedAddCommGroup : SeminormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| SeminormedAddCommGroup (WithLp 1 <| R × M)
@@ -216,7 +216,7 @@ theorem nnnorm_def (x : tsze R M) : ‖x‖₊ = ‖fst x‖₊ + ‖snd x‖₊
 @[simp] theorem nnnorm_inl (r : R) : ‖(inl r : tsze R M)‖₊ = ‖r‖₊ := by simp [nnnorm_def]
 @[simp] theorem nnnorm_inr (m : M) : ‖(inr m : tsze R M)‖₊ = ‖m‖₊ := by simp [nnnorm_def]
 
-variable [Module R M] [BoundedSMul R M] [Module Rᵐᵒᵖ M] [BoundedSMul Rᵐᵒᵖ M]
+variable [Module R M] [IsBoundedSMul R M] [Module Rᵐᵒᵖ M] [IsBoundedSMul Rᵐᵒᵖ M]
   [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1SeminormedRing : SeminormedRing (tsze R M) where
@@ -237,8 +237,8 @@ instance instL1SeminormedRing : SeminormedRing (tsze R M) where
   __ : SeminormedAddCommGroup (tsze R M) := inferInstance
   __ : Ring (tsze R M) := inferInstance
 
-instance instL1BoundedSMul : BoundedSMul S (tsze R M) :=
-  inferInstanceAs <| BoundedSMul S (WithLp 1 <| R × M)
+instance instL1IsBoundedSMul : IsBoundedSMul S (tsze R M) :=
+  inferInstanceAs <| IsBoundedSMul S (WithLp 1 <| R × M)
 
 instance [NormOneClass R] : NormOneClass (tsze R M) where
   norm_one := by rw [norm_def, fst_one, snd_one, norm_zero, norm_one, add_zero]
@@ -250,7 +250,7 @@ section CommRing
 
 variable [SeminormedCommRing R] [SeminormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
-variable [BoundedSMul R M]
+variable [IsBoundedSMul R M]
 
 instance instL1SeminormedCommRing : SeminormedCommRing (tsze R M) where
   __ : CommRing (tsze R M) := inferInstance
@@ -265,7 +265,7 @@ noncomputable section Normed
 section Ring
 
 variable [NormedRing R] [NormedAddCommGroup M] [Module R M] [Module Rᵐᵒᵖ M]
-variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 
 instance instL1NormedAddCommGroup : NormedAddCommGroup (tsze R M) :=
   inferInstanceAs <| NormedAddCommGroup (WithLp 1 <| R × M)
@@ -280,7 +280,7 @@ section CommRing
 
 variable [NormedCommRing R] [NormedAddCommGroup M]
 variable [Module R M] [Module Rᵐᵒᵖ M] [IsCentralScalar R M]
-variable [BoundedSMul R M]
+variable [IsBoundedSMul R M]
 
 instance instL1NormedCommRing : NormedCommRing (tsze R M) where
   __ : CommRing (tsze R M) := inferInstance
@@ -292,7 +292,7 @@ section Algebra
 
 variable [NormedField 𝕜] [NormedRing R] [NormedAddCommGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
-variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 
 instance instL1NormedSpace : NormedSpace 𝕜 (tsze R M) :=
@@ -310,7 +310,7 @@ section
 
 variable [RCLike 𝕜] [NormedRing R] [NormedAddCommGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
-variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+variable [IsBoundedSMul R M] [IsBoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]
 variable [CompleteSpace R] [CompleteSpace M]
 

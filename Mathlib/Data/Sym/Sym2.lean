@@ -3,10 +3,11 @@ Copyright (c) 2020 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
-import Mathlib.Data.SetLike.Basic
 
 /-!
 # The symmetric square
@@ -172,7 +173,7 @@ theorem eq_iff {x y z w : α} : s(x, y) = s(z, w) ↔ x = z ∧ y = w ∨ x = w 
 theorem mk_eq_mk_iff {p q : α × α} : Sym2.mk p = Sym2.mk q ↔ p = q ∨ p = q.swap := by
   cases p
   cases q
-  simp only [eq_iff, Prod.mk.inj_iff, Prod.swap_prod_mk]
+  simp only [eq_iff, Prod.mk_inj, Prod.swap_prod_mk]
 
 /-- The universal property of `Sym2`; symmetric functions of two arguments are equivalent to
 functions from `Sym2`. Note that when `β` is `Prop`, it can sometimes be more convenient to use
@@ -267,6 +268,14 @@ def mkEmbedding (a : α) : α ↪ Sym2 α where
 def _root_.Function.Embedding.sym2Map (f : α ↪ β) : Sym2 α ↪ Sym2 β where
   toFun := map f
   inj' := map.injective f.injective
+
+lemma lift_comp_map {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) :
+    lift f ∘ map g = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ :=
+  lift.symm_apply_eq.mp rfl
+
+lemma lift_map_apply {g : γ → α} (f : {f : α → α → β // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁}) (p : Sym2 γ) :
+    lift f (map g p) = lift ⟨fun (c₁ c₂ : γ) => f.val (g c₁) (g c₂), fun _ _ => f.prop _ _⟩ p := by
+  conv_rhs => rw [← lift_comp_map, comp_apply]
 
 section Membership
 
@@ -560,6 +569,14 @@ theorem mem_fromRel_irrefl_other_ne {sym : Symmetric r} (irrefl : Irreflexive r)
 instance fromRel.decidablePred (sym : Symmetric r) [h : DecidableRel r] :
     DecidablePred (· ∈ Sym2.fromRel sym) := fun z => z.recOnSubsingleton fun _ => h _ _
 
+lemma fromRel_relationMap {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    fromRel (Relation.map_symmetric hr f) = Sym2.map f '' Sym2.fromRel hr := by
+  ext ⟨a, b⟩
+  simp only [fromRel_proj_prop, Relation.Map, Set.mem_image, Sym2.exists, map_pair_eq, Sym2.eq,
+    rel_iff', Prod.mk.injEq, Prod.swap_prod_mk, and_or_left, exists_or, iff_self_or,
+    forall_exists_index, and_imp]
+  exact fun c d hcd hc hd ↦ ⟨d, c, hr hcd, hd, hc⟩
+
 /-- The inverse to `Sym2.fromRel`. Given a set on `Sym2 α`, give a symmetric relation on `α`
 (see `Sym2.toRel_symmetric`). -/
 def ToRel (s : Set (Sym2 α)) (x y : α) : Prop :=
@@ -614,14 +631,14 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
     Quot.map fromVector
       (by
         rintro ⟨x, hx⟩ ⟨y, hy⟩ h
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; · simp at hx
-        cases' x with _ x; swap
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; · simp at hx
+        rcases x with - | ⟨_, x⟩; swap
         · exfalso
           simp at hx
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; · simp at hy
-        cases' y with _ y; swap
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; · simp at hy
+        rcases y with - | ⟨_, y⟩; swap
         · exfalso
           simp at hy
         rcases perm_card_two_iff.mp h with (⟨rfl, rfl⟩ | ⟨rfl, rfl⟩)
@@ -630,12 +647,12 @@ def sym2EquivSym' : Equiv (Sym2 α) (Sym' α 2) where
   left_inv := by apply Sym2.ind; aesop (add norm unfold [Sym2.fromVector])
   right_inv x := by
     refine x.recOnSubsingleton fun x => ?_
-    cases' x with x hx
-    cases' x with _ x
+    obtain ⟨x, hx⟩ := x
+    obtain - | ⟨-, x⟩ := x
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     · simp at hx
-    cases' x with _ x
+    rcases x with - | ⟨_, x⟩
     swap
     · exfalso
       simp at hx
@@ -768,5 +785,21 @@ instance [Nontrivial α] : Nontrivial (Sym2 α) :=
 -- TODO: use a sort order if available, https://github.com/leanprover-community/mathlib/issues/18166
 unsafe instance [Repr α] : Repr (Sym2 α) where
   reprPrec s _ := f!"s({repr s.unquot.1}, {repr s.unquot.2})"
+
+lemma lift_smul_lift {α R N} [SMul R N] (f : { f : α → α → R // ∀ a₁ a₂, f a₁ a₂ = f a₂ a₁ })
+    (g : { g : α → α → N // ∀ a₁ a₂, g a₁ a₂ = g a₂ a₁ }) :
+    lift f • lift g = lift ⟨f.val • g.val, fun _ _ => by
+      rw [Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', Pi.smul_apply', f.prop, g.prop]⟩ := by
+  ext ⟨i,j⟩
+  simp_all only [Pi.smul_apply', lift_mk]
+
+/--
+Multiplication as a function from `Sym2`.
+-/
+def mul {M} [CommMagma M] : Sym2 M → M := lift ⟨(· * ·), mul_comm⟩
+
+@[simp]
+lemma mul_mk {M} [CommMagma M] (xy : M × M) :
+    mul (.mk xy) = xy.1 * xy.2 := rfl
 
 end Sym2

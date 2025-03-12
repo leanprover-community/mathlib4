@@ -83,7 +83,7 @@ lemma isIso_of_comp_eq_sigmaSpec {V : Scheme}
     infer_instance
   obtain ⟨I, e, rfl⟩ := IsClosedImmersion.Spec_iff.mp this
   obtain rfl := eq_bot_of_comp_quotientMk_eq_sigmaSpec R I (f ≫ e.hom) (by rwa [Category.assoc])
-  show IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
+  convert_to IsIso (e.hom ≫ Spec.map (RingEquiv.quotientBot _).toCommRingCatIso.inv)
   infer_instance
 
 variable (X : Scheme)

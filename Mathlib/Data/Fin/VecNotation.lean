@@ -143,7 +143,6 @@ theorem tail_cons (x : α) (u : Fin m → α) : vecTail (vecCons x u) = u := by
   ext
   simp [vecTail]
 
-@[simp]
 theorem empty_val' {n' : Type*} (j : n') : (fun i => (![] : Fin 0 → n' → α) i j) = ![] :=
   empty_eq _
 
@@ -219,7 +218,7 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
       have et : Q(Fin $n → $eα) := toExpr (vecTail v)
       q(vecCons $eh $et) }
 
--- Porting note: the next decl is commented out. TODO(eric-wieser)
+-- TODO(eric-wieser): the next decl is commented out.
 
 -- /-- Convert a vector of pexprs to the pexpr constructing that vector. -/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
@@ -312,7 +311,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) :
   simp_rw [Function.comp, vecAlt1, vecAppend_eq_ite]
   cases n with
   | zero =>
-    cases' i with i hi
+    obtain ⟨i, hi⟩ := i
     simp only [Nat.zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> congr

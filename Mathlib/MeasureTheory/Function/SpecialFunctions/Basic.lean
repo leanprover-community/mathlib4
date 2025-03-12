@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
 /-!
 # Measurability of real and complex functions
@@ -117,9 +118,9 @@ theorem measurable_cosh : Measurable cosh :=
 
 @[measurability]
 theorem measurable_arg : Measurable arg :=
-  have A : Measurable fun x : ℂ => Real.arcsin (x.im / Complex.abs x) :=
+  have A : Measurable fun x : ℂ => Real.arcsin (x.im / ‖x‖) :=
     Real.measurable_arcsin.comp (measurable_im.div measurable_norm)
-  have B : Measurable fun x : ℂ => Real.arcsin ((-x).im / Complex.abs x) :=
+  have B : Measurable fun x : ℂ => Real.arcsin ((-x).im / ‖x‖) :=
     Real.measurable_arcsin.comp ((measurable_im.comp measurable_neg).div measurable_norm)
   Measurable.ite (isClosed_le continuous_const continuous_re).measurableSet A <|
     Measurable.ite (isClosed_le continuous_const continuous_im).measurableSet (B.add_const _)

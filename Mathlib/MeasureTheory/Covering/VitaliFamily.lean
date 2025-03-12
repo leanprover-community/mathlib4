@@ -116,7 +116,6 @@ covering of almost every `s`. -/
 protected def index : Set (X × Set X) :=
   h.exists_disjoint_covering_ae.choose
 
--- Porting note: Needed to add `(_h : FineSubfamilyOn v f s)`
 /-- Given `h : v.FineSubfamilyOn f s`, then `h.covering p` is a set in the family,
 for `p ∈ h.index`, such that these sets form a disjoint covering of almost every `s`. -/
 @[nolint unusedArguments]

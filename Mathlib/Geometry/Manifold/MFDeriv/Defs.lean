@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
@@ -253,7 +253,6 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
   rw [MDifferentiableAt, liftPropAt_iff]
   congrm _ ∧ ?_
   simp [DifferentiableWithinAtProp, Set.univ_inter]
-  -- Porting note: `rfl` wasn't needed
   rfl
 
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :

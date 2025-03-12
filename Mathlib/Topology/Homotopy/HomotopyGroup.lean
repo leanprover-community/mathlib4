@@ -210,7 +210,7 @@ def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
-    · cases' Hj with Hj Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
+    · rcases Hj with Hj | Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
 
 theorem continuous_fromLoop (i : N) : Continuous (@fromLoop N X _ x _ i) :=
@@ -351,7 +351,6 @@ end GenLoop
 def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 
--- Porting note: in Lean 3 this instance was derived
 instance : Inhabited (HomotopyGroup N X x) :=
   inferInstanceAs <| Inhabited <| Quotient (GenLoop.Homotopic.setoid N x)
 
@@ -490,7 +489,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
+    -- TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep (Classical.arbitrary N) q, ← fromLoop_trans_toLoop]
   apply Quotient.sound

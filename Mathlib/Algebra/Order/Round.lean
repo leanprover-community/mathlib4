@@ -63,7 +63,6 @@ theorem round_add_int (x : α) (y : ℤ) : round (x + y) = round x + y := by
 
 @[simp]
 theorem round_add_one (a : α) : round (a + 1) = round a + 1 := by
-  -- Porting note: broken `convert round_add_int a 1`
   rw [← round_add_int a 1, cast_one]
 
 @[simp]
@@ -74,7 +73,6 @@ theorem round_sub_int (x : α) (y : ℤ) : round (x - y) = round x - y := by
 
 @[simp]
 theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
-  -- Porting note: broken `convert round_sub_int a 1`
   rw [← round_sub_int a 1, cast_one]
 
 @[simp]
@@ -110,7 +108,7 @@ theorem round_ofNat_add (n : ℕ) [n.AtLeastTwo] (x : α) :
 
 theorem abs_sub_round_eq_min (x : α) : |x - round x| = min (fract x) (1 - fract x) := by
   simp_rw [round, min_def_lt, two_mul, ← lt_tsub_iff_left]
-  cases' lt_or_ge (fract x) (1 - fract x) with hx hx
+  rcases lt_or_ge (fract x) (1 - fract x) with hx | hx
   · rw [if_pos hx, if_pos hx, self_sub_floor, abs_fract]
   · have : 0 < fract x := by
       replace hx : 0 < fract x + fract x := lt_of_lt_of_le zero_lt_one (tsub_le_iff_left.mp hx)
@@ -138,7 +136,7 @@ variable [LinearOrderedField α] [FloorRing α]
 
 theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   simp_rw [round, (by simp only [lt_div_iff₀', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
-  cases' lt_or_le (fract x) (1 / 2) with hx hx
+  rcases lt_or_le (fract x) (1 / 2) with hx | hx
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_int_add]
     rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
     constructor
@@ -205,10 +203,6 @@ variable [LinearOrderedField α] [LinearOrderedField β] [FloorRing α] [FloorRi
 variable [FunLike F α β] [RingHomClass F α β] {a : α} {b : β}
 
 theorem map_round (f : F) (hf : StrictMono f) (a : α) : round (f a) = round a := by
-  have H : f 2 = 2 := map_natCast f 2
-  simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, H]
-  -- Porting note: was
-  -- simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_bit0, map_one]
-  -- Would have thought that `map_natCast` would replace `map_bit0, map_one` but seems not
+  simp_rw [round_eq, ← map_floor _ hf, map_add, one_div, map_inv₀, map_ofNat]
 
 end Int

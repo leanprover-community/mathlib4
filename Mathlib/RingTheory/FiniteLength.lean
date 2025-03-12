@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.SimpleModule
 
 /-!
 # Modules of finite length
@@ -12,20 +11,19 @@ import Mathlib.RingTheory.SimpleModule
 We define modules of finite length (`IsFiniteLength`) to be finite iterated extensions of
 simple modules, and show that a module is of finite length iff it is both Noetherian and Artinian,
 iff it admits a composition series.
+
 We do not make `IsFiniteLength` a class, instead we use `[IsNoetherian R M] [IsArtinian R M]`.
 
-## Tag
+## Tags
 
 Finite length, Composition series
 -/
-
-universe u
 
 variable (R : Type*) [Ring R]
 
 /-- A module of finite length is either trivial or a simple extension of a module known
 to be of finite length. -/
-inductive IsFiniteLength : ∀ (M : Type u) [AddCommGroup M] [Module R M], Prop
+inductive IsFiniteLength : ∀ (M : Type*) [AddCommGroup M] [Module R M], Prop
   | of_subsingleton {M} [AddCommGroup M] [Module R M] [Subsingleton M] : IsFiniteLength M
   | of_simple_quotient {M} [AddCommGroup M] [Module R M] {N : Submodule R M}
       [IsSimpleModule R (M ⧸ N)] : IsFiniteLength N → IsFiniteLength M

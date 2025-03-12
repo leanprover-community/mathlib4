@@ -89,7 +89,7 @@ namespace bernstein
 -/
 def z {n : ℕ} (k : Fin (n + 1)) : I :=
   ⟨(k : ℝ) / n, by
-    cases' n with n
+    rcases n with - | n
     · norm_num
     · have h₁ : 0 < (n.succ : ℝ) := mod_cast Nat.succ_pos _
       have h₂ : ↑k ≤ n.succ := mod_cast Fin.le_last k
