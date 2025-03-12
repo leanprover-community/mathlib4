@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Nailin Guan. All rights reserved.
+Copyright (c) 2025 Nailin Guan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan, Wanyi He, Jiedong Jiang
 -/
@@ -21,13 +21,13 @@ over a ring also have a ring structure. i.e. the associated graded ring to a fil
 
 # Main definitions and results
 
-* `GradedPiece` : `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
-with every `F i` of some `AddSubgroupClass` is defined as `F i` quotient by `F_lt i`
+* `GradedPiece` : Direct summand of the associated graded abelian group to `IsFiltration F F_lt`
+  with every `F i` of some `AddSubgroupClass`, defined as `F i` quotient by `F_lt i`.
 
-* `AssociatedGraded` : The direct sum of `GradedPiece`s
+* `AssociatedGraded` : The direct sum of `GradedPiece`s.
 
 * `hasGMul` : The class of filtrations that can obtain
-  a well defined graded multiplication over `GradedPiece`
+  a well defined graded multiplication over `GradedPiece`.
 
 * `instGRingGradedPieceOfHasGMul` : `GradedPiece` satisfies `DirectSum.GRing`
 
@@ -49,13 +49,13 @@ instance [Preorder ι] [IsFiltration F F_lt] (i : ι) : Setoid (AddSubgroup.ofCl
   QuotientAddGroup.leftRel
     ((AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i)))
 
-/-- `GradedPiece i` of the associated graded abelian group to `IsFiltration F F_lt`
-with every `F j` `AddSubgroup`s is defined as `F i` quotient by `F_lt i`. -/
+/-- Direct summand of the associated graded abelian group to `IsFiltration F F_lt`
+  with every `F i` of some `AddSubgroupClass`, defined as `F i` quotient by `F_lt i`. -/
 abbrev GradedPiece (i : ι) :=
   (AddSubgroup.ofClass (F i)) ⧸
     (AddSubgroup.ofClass (F_lt i)).addSubgroupOf (AddSubgroup.ofClass (F i))
 
-/-- Direct sum of `GradedPiece`s.-/
+/-- Direct sum of `GradedPiece`s. -/
 abbrev AssociatedGraded := DirectSum ι (GradedPiece F F_lt)
 
 namespace AssociatedGraded
@@ -68,7 +68,7 @@ abbrev mk [DecidableEq ι] (s : Finset ι) :
 
 variable {F F_lt}
 
-/-- The natrual inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`-/
+/-- The natrual inclusion map from `GradedPiece F F_lt i` to `AssociatedGraded F F_lt`. -/
 abbrev of [DecidableEq ι] {i : ι} : GradedPiece F F_lt i →+ AssociatedGraded F F_lt :=
   DirectSum.of (GradedPiece F F_lt) i
 
@@ -132,7 +132,7 @@ open AddSubgroup
 
 namespace GradedPiece
 
-/-- Obtaining an element of `GradedPiece i` from an element of `F i`.-/
+/-- Obtaining an element of `GradedPiece i` from an element of `F i`. -/
 def mk {i : ι} : (ofClass (F i)) →+ GradedPiece F F_lt i :=
   QuotientAddGroup.mk' ((ofClass (F_lt i)).addSubgroupOf (ofClass (F i)))
 
@@ -428,7 +428,7 @@ lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt 
     rfl
   simpa only [this] using zero_mem (F_lt (i + j))
 
-/-- The nat scalar multiple in `GradedPiece F F_lt 0`.-/
+/-- The nat scalar multiple in `GradedPiece F F_lt 0`. -/
 def GradedPiece.natCast [IsRingFiltration F F_lt] (n : ℕ) : GradedPiece F F_lt 0 :=
   mk F F_lt (n • (1 : F 0))
 
@@ -454,7 +454,7 @@ instance [hasGMul F F_lt] : DirectSum.GSemiring (GradedPiece F F_lt) :=
   natCast_zero := GradedPiece.natCast_zero F F_lt
   natCast_succ := GradedPiece.natCast_succ F F_lt }
 
-/-- The int scalar multiple in `GradedPiece F F_lt 0`.-/
+/-- The int scalar multiple in `GradedPiece F F_lt 0`. -/
 def GradedPiece.intCast [IsRingFiltration F F_lt] (n : ℤ) : GradedPiece F F_lt 0 :=
   mk F F_lt (n • (1 : F 0))
 
@@ -533,7 +533,7 @@ instance [OrderedCancelAddCommMonoid ι] [IsRingFiltration F F_lt] : hasGMul F F
 
 variable [OrderedAddCommMonoid ι]
 
-/--The `algebraMap` for associated graded algebra. -/
+/-- The `algebraMap` for associated graded algebra. -/
 def GradedPiece.algebraMap [IsRingFiltration F F_lt] : R →+ GradedPiece F F_lt 0 where
   toFun r := (mk F F_lt (r • (1 : F 0)))
   map_zero' := by simp
