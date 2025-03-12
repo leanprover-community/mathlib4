@@ -174,40 +174,85 @@ variable {B : Type u} [Bicategory.{w, v} B] {a b c d e : B}
 
 @[reassoc (attr := simp)]
 theorem whiskerLeft_hom_inv (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
-    f ◁ η.hom ≫ f ◁ η.inv = 𝟙 (f ≫ g) := by rw [← whiskerLeft_comp, hom_inv_id, whiskerLeft_id]
-
+    whiskerLeft f η.hom ≫ whiskerLeft f η.inv = 𝟙 (f ≫ g) := by
+  rw [← whiskerLeft_comp, hom_inv_id, whiskerLeft_id]
 @[reassoc (attr := simp)]
 theorem hom_inv_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
-    η.hom ▷ h ≫ η.inv ▷ h = 𝟙 (f ≫ h) := by rw [← comp_whiskerRight, hom_inv_id, id_whiskerRight]
+    whiskerRight η.hom h ≫ whiskerRight η.inv h = 𝟙 (f ≫ h) := by
+  rw [← comp_whiskerRight, hom_inv_id, id_whiskerRight]
 
 @[reassoc (attr := simp)]
 theorem whiskerLeft_inv_hom (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) :
-    f ◁ η.inv ≫ f ◁ η.hom = 𝟙 (f ≫ h) := by rw [← whiskerLeft_comp, inv_hom_id, whiskerLeft_id]
+    whiskerLeft f η.inv ≫ whiskerLeft f η.hom = 𝟙 (f ≫ h) := by
+  rw [← whiskerLeft_comp, inv_hom_id, whiskerLeft_id]
 
 @[reassoc (attr := simp)]
 theorem inv_hom_whiskerRight {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) :
-    η.inv ▷ h ≫ η.hom ▷ h = 𝟙 (g ≫ h) := by rw [← comp_whiskerRight, inv_hom_id, id_whiskerRight]
+    whiskerRight η.inv h ≫ whiskerRight η.hom h = 𝟙 (g ≫ h) := by
+  rw [← comp_whiskerRight, inv_hom_id, id_whiskerRight]
 
 /-- The left whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps]
 def whiskerLeftIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ≅ h) : f ≫ g ≅ f ≫ h where
-  hom := f ◁ η.hom
-  inv := f ◁ η.inv
-
-instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] : IsIso (f ◁ η) :=
-  (whiskerLeftIso f (asIso η)).isIso_hom
-
-@[simp]
-theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
-    inv (f ◁ η) = f ◁ inv η := by
-  apply IsIso.inv_eq_of_hom_inv_id
-  simp only [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
+  hom := whiskerLeft f η.hom
+  inv := whiskerLeft f η.inv
 
 /-- The right whiskering of a 2-isomorphism is a 2-isomorphism. -/
 @[simps!]
 def whiskerRightIso {f g : a ⟶ b} (η : f ≅ g) (h : b ⟶ c) : f ≫ h ≅ g ≫ h where
-  hom := η.hom ▷ h
-  inv := η.inv ▷ h
+  hom := whiskerRight η.hom h
+  inv := whiskerRight η.inv h
+
+open Lean Elab Term Meta Batteries.ExtendedBinder Qq
+
+/-- Return `true` if `expectedType?` is `some (Finset ?α)`, throws `throwUnsupportedSyntax` if it is
+`some (Set ?α)`, and returns `false` otherwise. -/
+def knownToBeIsoNotHom (expectedType? : Option Expr) : TermElabM Bool :=
+  match expectedType? with
+  | some expectedType =>
+    match_expr expectedType with
+    -- If the expected type is known to be `Finset ?α`, return `true`.
+    | Finset _ => pure true
+    -- If the expected type is known to be `Set ?α`, give up.
+    | Set _ => throwUnsupportedSyntax
+    -- If the expected type is known to not be `Finset ?α` or `Set ?α`, return `false`.
+    | _ => pure false
+  -- If the expected type is not known, return `false`.
+  | none => pure false
+
+scoped syntax:81 (name := whiskerLeftSyn) term:80 " ◁ " term:81 : term
+scoped syntax:81 (name := whiskerRightSyn) term:81 " ▷ " term:80 : term
+
+/-- Elaborate notation for left whiskering.
+
+If the expected type is `_ ≅ _`, elaborate as `whiskerLeftIso`. Else elaborate as `whiskerLeftHom`.
+-/
+@[term_elab whiskerLeftSyn]
+def elabWhiskerLeftSyn : TermElab
+  | `($f ◁ $X), expectedType? => do
+    match expectedType? with
+    | none => elabTerm (← `(whiskerLeft $f $X)) none
+    | some e =>
+      let ⟨u, α, e⟩ ← inferTypeQ e
+      let .succ u := u | failure
+      match α with
+      | ~q(@Iso (_ ⟶ _) $instC (_ ≫ $g) (_ ≫ $h)) => _
+      | _ => _
+    --   match_expr e with
+    --   | CategoryTheory.Iso _ _ => elabTerm (← `(whiskerLeftIso $f $X)) none
+    --   | _ => throwUnsupportedSyntax
+    -- -- If the expected type is known to be `_ ≅ _`, give up. If it is not known to be `Set ?α` or
+    -- -- `Finset ?α`, check the expected type of `s`.
+    -- let ty ← try whnfR (← inferType (← elabTerm s none)) catch _ => throwUnsupportedSyntax
+    -- -- If the expected type of `s` is not known to be `Finset ?α`, give up.
+    -- match_expr ty with
+    -- | Finset _ => pure ()
+    -- | _ => throwUnsupportedSyntax
+    -- -- Finally, we can elaborate the syntax as a finset.
+    -- -- TODO: Seems a bit wasteful to have computed the expected type but still use `expectedType?`.
+    elabTerm (← `(Finset.filter (fun $x:ident ↦ $p) $s)) expectedType?
+  | _, _ => throwUnsupportedSyntax
+
 
 /-- Notation for the `whiskerLeftIso` isomorphism of bicategories -/
 scoped infixr:81 " ◁ " => whiskerLeftIso
@@ -215,8 +260,17 @@ scoped infixr:81 " ◁ " => whiskerLeftIso
 /-- Notation for the `whiskerRightIso` isomorphism of bicategories -/
 scoped infixl:81 " ▷ " => whiskerRightIso
 
+instance whiskerLeft_isIso (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] : IsIso (f ◁ η) :=
+  (f ◁ asIso η).isIso_hom
+
 instance whiskerRight_isIso {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] : IsIso (η ▷ h) :=
   (asIso η ▷ h).isIso_hom
+
+@[simp]
+theorem inv_whiskerLeft (f : a ⟶ b) {g h : b ⟶ c} (η : g ⟶ h) [IsIso η] :
+    inv (f ◁ η) = f ◁ inv η := by
+  apply IsIso.inv_eq_of_hom_inv_id
+  simp only [← whiskerLeft_comp, whiskerLeft_id, IsIso.hom_inv_id]
 
 @[simp]
 theorem inv_whiskerRight {f g : a ⟶ b} (η : f ⟶ g) (h : b ⟶ c) [IsIso η] :
