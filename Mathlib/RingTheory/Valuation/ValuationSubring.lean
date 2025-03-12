@@ -267,22 +267,18 @@ instance prime_idealOfLE (R S : ValuationSubring K) (h : R ≤ S) : (idealOfLE R
 /-- The coarsening of a valuation ring associated to a prime ideal. -/
 def ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : ValuationSubring K :=
   ofLE A (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors).toSubring
-    -- Porting note: added `Subalgebra.mem_toSubring.mpr`
     fun a ha => Subalgebra.mem_toSubring.mpr <|
       Subalgebra.algebraMap_mem
         (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors) (⟨a, ha⟩ : A)
 
 instance ofPrimeAlgebra (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
     Algebra A (A.ofPrime P) :=
-  -- Porting note: filled in the argument
   Subalgebra.algebra (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_scalar_tower (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
     letI : SMul A (A.ofPrime P) := SMulZeroClass.toSMul
     IsScalarTower A (A.ofPrime P) K :=
   IsScalarTower.subalgebra' A K K
-    -- Porting note: filled in the argument
     (Localization.subalgebra.ofField K _ P.primeCompl_le_nonZeroDivisors)
 
 instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] :
@@ -292,7 +288,6 @@ instance ofPrime_localization (A : ValuationSubring K) (P : Ideal A) [P.IsPrime]
       P.primeCompl_le_nonZeroDivisors
 
 theorem le_ofPrime (A : ValuationSubring K) (P : Ideal A) [P.IsPrime] : A ≤ ofPrime A P :=
-  -- Porting note: added `Subalgebra.mem_toSubring.mpr`
   fun a ha => Subalgebra.mem_toSubring.mpr <| Subalgebra.algebraMap_mem _ (⟨a, ha⟩ : A)
 
 theorem ofPrime_valuation_eq_one_iff_mem_primeCompl (A : ValuationSubring K) (P : Ideal A)
