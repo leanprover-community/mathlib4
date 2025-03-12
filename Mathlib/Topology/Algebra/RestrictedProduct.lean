@@ -202,7 +202,6 @@ To avoid any unnecessary coercions, we use subobject classes for the subset `A i
 variable {S S' : ι → Type*} -- subobject types
 variable [Π i, SetLike (S i) (R i)] [Π i, SetLike (S' i) (R' i)]
 variable {A : Π i, S i} {A' : Π i, S' i}
-variable {𝓕 : Filter ι}
 
 @[to_additive]
 instance [Π i, One (R i)] [∀ i, OneMemClass (S i) (R i)] : One (Πʳ i, [R i, A i]_[𝓕]) where
@@ -476,7 +475,7 @@ section cofinite
 ### Topological facts in the case where `𝓕 = cofinite` and all `A i`s are open
 
 The classical restricted product, associated to the cofinite filter, satisfies more topological
-property when each `A i` is an open subset of `R i`. The key fact is that each
+properties when each `A i` is an open subset of `R i`. The key fact is that each
 `Πʳ i, [R i, A i]_[𝓟 S]` (with `S` cofinite) then embeds **as an open subset** in
 `Πʳ i, [R i, A i]`.
 
