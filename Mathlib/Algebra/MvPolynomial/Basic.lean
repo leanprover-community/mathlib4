@@ -377,6 +377,7 @@ Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is requir
 In particular, this version only requires us to show
 that `M` is closed under addition of nontrivial monomials not present in the support.
 -/
+@[elab_as_elim]
 theorem monomial_add_induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
     (h_C : ∀ a, M (C a))
     (h_add_weak :
