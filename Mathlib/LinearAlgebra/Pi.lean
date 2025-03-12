@@ -383,11 +383,14 @@ theorem le_comap_single_pi [DecidableEq ι] (p : (i : ι) → Submodule R (φ i)
   rintro j -
   rcases eq_or_ne j i with rfl | hne <;> simp [*]
 
+theorem iSup_map_single_le [DecidableEq ι] :
+    ⨆ i, map (LinearMap.single R φ i) (p i) ≤ pi I p :=
+  iSup_le fun _ => map_le_iff_le_comap.mpr <| le_comap_single_pi _
+
 theorem iSup_map_single [DecidableEq ι] [Finite ι] :
     ⨆ i, map (LinearMap.single R φ i : φ i →ₗ[R] (i : ι) → φ i) (p i) = pi Set.univ p := by
   cases nonempty_fintype ι
-  refine (iSup_le fun i => map_le_iff_le_comap.mpr <| le_comap_single_pi _).antisymm ?_
-  intro x hx
+  refine iSup_map_single_le.antisymm fun x hx => ?_
   rw [← Finset.univ_sum_single x]
   exact sum_mem_iSup fun i => mem_map_of_mem (hx i trivial)
 

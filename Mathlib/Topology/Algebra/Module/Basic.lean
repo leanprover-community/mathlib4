@@ -195,19 +195,17 @@ variable {ι R : Type*} {M : ι → Type*} [Semiring R] [∀ i, AddCommMonoid (M
   [∀ i, TopologicalSpace (M i)] [DecidableEq ι]
 
 /-- If `s i` is a family of submodules, each is in its module,
-then the closure of their span in the indexped product of the modules
+then the closure of their span in the indexed product of the modules
 is the product of their closures.
 
-In case of a finite index type, this statement immediately follows from `iSup_map_single`.
+In case of a finite index type, this statement immediately follows from `Submodule.iSup_map_single`.
 However, the statement is true for an infinite index type as well. -/
 theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
     closure (↑(⨆ i, (s i).map (LinearMap.single R M i)) : Set (∀ i, M i)) =
-      Set.pi Set.univ fun i ↦ closure (s i) := by
+      Set.univ.pi fun i ↦ closure (s i) := by
   rw [← closure_pi_set]
   refine (closure_mono ?_).antisymm <| closure_minimal ?_ isClosed_closure
-  · norm_cast
-    refine iSup_le fun i ↦ map_le_iff_le_comap.mpr ?_
-    apply le_comap_single_pi
+  · exact SetLike.coe_mono <| iSup_map_single_le
   · simp only [Set.subset_def, mem_closure_iff]
     intro x hx U hU hxU
     rcases isOpen_pi_iff.mp hU x hxU with ⟨t, V, hV, hVU⟩
