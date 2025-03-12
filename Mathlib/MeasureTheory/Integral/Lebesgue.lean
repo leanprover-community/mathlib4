@@ -1320,7 +1320,7 @@ theorem lintegral_add_compl (f : α → ℝ≥0∞) {A : Set α} (hA : Measurabl
     ∫⁻ x in A, f x ∂μ + ∫⁻ x in Aᶜ, f x ∂μ = ∫⁻ x, f x ∂μ := by
   rw [← lintegral_add_measure, Measure.restrict_add_restrict_compl hA]
 
-lemma  (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ j, Decidable (j ∈ s)] :
+lemma lintegral_piecewise (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ j, Decidable (j ∈ s)] :
     ∫⁻ a, s.piecewise f g a ∂μ = ∫⁻ a in s, f a ∂μ + ∫⁻ a in sᶜ, g a ∂μ := by
   rw [← lintegral_add_compl _ hs]
   congr 1
