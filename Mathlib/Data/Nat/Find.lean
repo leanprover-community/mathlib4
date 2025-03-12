@@ -101,7 +101,7 @@ lemma find_mono_of_le [DecidablePred q] {x : ℕ} (hx : q x) (hpq : ∀ n ≤ x,
     Nat.find ⟨x, show p x from hpq _ le_rfl hx⟩ ≤ Nat.find ⟨x, hx⟩ :=
   Nat.find_min' _ (hpq _ (Nat.find_min' _ hx) (Nat.find_spec ⟨x, hx⟩))
 
-/-- A weak version of `Nat.find_mono_of_le`, which does not require that `q` implies `p` everywhere.
+/-- A weak version of `Nat.find_mono_of_le`, requiring `q` implies `p` everywhere.
 -/
 lemma find_mono [DecidablePred q] (h : ∀ n, q n → p n) {hp : ∃ n, p n} {hq : ∃ n, q n} :
     Nat.find hp ≤ Nat.find hq :=
@@ -118,7 +118,7 @@ lemma find_congr [DecidablePred q] {x : ℕ} (hx : p x) (hpq : ∀ n ≤ x, p n 
   le_antisymm (find_mono_of_le (hpq _ le_rfl |>.1 hx) fun _ h ↦ (hpq _ h).mpr)
     (find_mono_of_le hx fun _ h ↦ (hpq _ h).mp)
 
-/-- A weak version of `Nat.find_congr`, which does not require `p = q` everywhere. -/
+/-- A weak version of `Nat.find_congr`, requiring `p = q` everywhere. -/
 lemma find_congr' [DecidablePred q] {hp : ∃ n, p n} {hq : ∃ n, q n} (hpq : ∀ {n}, p n ↔ q n) :
     Nat.find hp = Nat.find hq :=
   let ⟨_, hp⟩ := hp; find_congr hp fun _ _ ↦ hpq
