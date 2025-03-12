@@ -60,6 +60,12 @@ abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :
 
 attribute [local instance] Vector.Perm.isSetoid
 
+-- Copy over the `DecidableRel` instance across the definition.
+-- (Although `List.Vector.Perm.isSetoid` is an `abbrev`, `List.isSetoid` is not.)
+instance {α : Type*} {n : ℕ} [DecidableEq α] :
+    DecidableRel (· ≈ · : List.Vector α n → List.Vector α n → Prop) :=
+  fun _ _ => List.decidablePerm _ _
+
 namespace Sym
 
 variable {α β : Type*} {n n' m : ℕ} {s : Sym α n} {a b : α}
