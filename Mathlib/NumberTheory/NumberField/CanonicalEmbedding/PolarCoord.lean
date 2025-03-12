@@ -329,6 +329,202 @@ theorem lintegral_comp_polarSpaceCoord_symm [NumberField K] (f : mixedSpace K �
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsReal,
     homeoRealMixedSpacePolarSpace_apply_fst_ofIsComplex, homeoRealMixedSpacePolarSpace_apply_snd]
 
+theorem injective_mixedSpaceOfRealSpace :
+    Function.Injective (mixedSpaceOfRealSpace : realSpace K → mixedSpace K) := by
+  refine (injective_iff_map_eq_zero mixedSpaceOfRealSpace).mpr fun _ h ↦ ?_
+  rw [mixedSpaceOfRealSpace_apply, Prod.mk_eq_zero, funext_iff, funext_iff] at h
+  ext w
+  obtain hw | hw := isReal_or_isComplex w
+  · exact h.1 ⟨w, hw⟩
+  · exact Complex.ofReal_inj.mp <| h.2 ⟨w, hw⟩
+
+variable {K}
+
+open scoped Classical in
+/-- The map from the `mixedSpace K` to `realSpace K` that sends the values at complex places
+to their norm. -/
+abbrev normAtComplexPlaces (x : mixedSpace K) : realSpace K :=
+    fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else normAtPlace w x
+
+@[simp]
+theorem normAtComplexPlaces_apply_ofIsReal {x : mixedSpace K} (w : {w // IsReal w}) :
+    normAtComplexPlaces x w = x.1 w := by
+  rw [normAtComplexPlaces, dif_pos]
+
+@[simp]
+theorem normAtComplexPlaces_apply_ofIsComplex {x : mixedSpace K} (w : {w // IsComplex w}) :
+    normAtComplexPlaces x w = ‖x.2 w‖ := by
+  rw [normAtComplexPlaces, dif_neg (not_isReal_iff_isComplex.mpr w.prop),
+    normAtPlace_apply_of_isComplex]
+
+theorem normAtComplexPlaces_eq_normAtComplexPlaces_iff {x y : mixedSpace K} :
+    normAtComplexPlaces x = normAtComplexPlaces y ↔
+      (⟨x.1, fun w ↦ ‖x.2 w‖⟩ : mixedSpace K) = ⟨y.1, fun w ↦ ‖y.2 w‖⟩ := by
+  simp [(injective_mixedSpaceOfRealSpace K).eq_iff.symm, mixedSpaceOfRealSpace]
+
+open scoped Classical in
+/-- The map on the `realSpace K` that is the identity at real places and the norm at
+complex places. -/
+abbrev realSpaceNormAtComplexPlaces (x : realSpace K) : realSpace K :=
+    fun w ↦ if w.IsReal then x w else ‖x w‖
+
+theorem realSpaceNormAtComplexPlaces_apply_ofIsReal {x : realSpace K} (w : {w // IsReal w}) :
+    realSpaceNormAtComplexPlaces x w = x w.1 := by
+  rw [realSpaceNormAtComplexPlaces, if_pos w.prop]
+
+theorem realSpaceNormAtComplexPlaces_apply_ofIsComplex {x : realSpace K} (w : {w // IsComplex w}) :
+    realSpaceNormAtComplexPlaces x w  = ‖x w.1‖ := by
+  rw [realSpaceNormAtComplexPlaces, if_neg (not_isReal_iff_isComplex.mpr w.prop)]
+
+theorem normAtComplexPlaces_mixedSpaceOfReal (x : realSpace K) :
+    normAtComplexPlaces (mixedSpaceOfRealSpace x) = realSpaceNormAtComplexPlaces x := by
+  ext w
+  obtain hw | hw := isReal_or_isComplex w
+  · rw [mixedSpaceOfRealSpace_apply, normAtComplexPlaces_apply_ofIsReal ⟨w, hw⟩,
+      realSpaceNormAtComplexPlaces_apply_ofIsReal ⟨w, hw⟩]
+  · rw [mixedSpaceOfRealSpace_apply, normAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩,
+      realSpaceNormAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩, Complex.norm_real]
+
+theorem normMapComplex_polarSpaceCoord [NumberField K] {x : polarSpace K} :
+    normAtComplexPlaces ((polarSpaceCoord K).symm x) = realSpaceNormAtComplexPlaces x.1 := by
+  ext w
+  simp_rw [polarSpaceCoord_symm_apply]
+  obtain hw | hw := isReal_or_isComplex w
+  · rw [normAtComplexPlaces_apply_ofIsReal ⟨w, hw⟩,
+      realSpaceNormAtComplexPlaces_apply_ofIsReal ⟨w, hw⟩]
+  · simp_rw [normAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩,
+      realSpaceNormAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩, Pi.map_apply,
+      Complex.norm_polarCoord_symm, Real.norm_eq_abs]
+
+variable {A : Set (mixedSpace K)}
+
+open scoped Classical in
+private theorem volume_eq_two_pi_pow_mul_integral_aux₁
+    (hA : ∀ x, x ∈ A ↔ ⟨x.1, fun w ↦ ‖x.2 w‖⟩ ∈ A) :
+    normAtComplexPlaces '' A =
+      (mixedSpaceOfRealSpace⁻¹' A) ∩
+        Set.univ.pi fun w ↦ if w.IsReal then Set.univ else Set.Ici 0 := by
+  ext x
+  simp_rw [Set.mem_inter_iff, Set.mem_image, Set.mem_preimage, mixedSpaceOfRealSpace_apply,
+    Set.mem_univ_pi, Set.mem_ite_univ_left, not_isReal_iff_isComplex]
+  refine ⟨fun ⟨a, ha₁, ha₂⟩ ↦ ⟨?_, fun w hw ↦ ?_⟩, fun ⟨h₁, h₂⟩ ↦
+    ⟨⟨fun w ↦ x w, fun w ↦ ‖x w‖⟩, ?_, funext fun w ↦ ?_⟩⟩
+  · simpa only [← ha₂, normAtComplexPlaces_apply_ofIsReal, normAtComplexPlaces_apply_ofIsComplex,
+      ← hA] using ha₁
+  · simpa only [← ha₂, normAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩] using norm_nonneg _
+  · simpa only [← Complex.norm_real] using (hA _).mp h₁
+  · obtain hw | hw := isReal_or_isComplex w
+    · rw [normAtComplexPlaces_apply_ofIsReal ⟨w, hw⟩]
+    · rw [normAtComplexPlaces_apply_ofIsComplex ⟨w, hw⟩, Complex.norm_real, norm_norm,
+        Real.norm_of_nonneg (h₂ _ hw)]
+
+private theorem volume_eq_two_pi_pow_mul_integral_aux₂
+    (hA : ∀ x, x ∈ A ↔ ⟨x.1, fun w ↦ ‖x.2 w‖⟩ ∈ A) :
+    realSpaceNormAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = mixedSpaceOfRealSpace⁻¹' A := by
+    ext x
+    rw [Set.mem_preimage, Set.mem_preimage, Set.mem_image, hA]
+    simp_rw [← normAtComplexPlaces_mixedSpaceOfReal, normAtComplexPlaces_eq_normAtComplexPlaces_iff]
+    exact ⟨fun ⟨a, ha₁, ha₂⟩ ↦ by rwa [← ha₂, ← hA], fun h ↦ ⟨_, h, by simp⟩⟩
+
+theorem normAtComplexPlaces_preimage_image_eq (hA : ∀ x, x ∈ A ↔ ⟨x.1, fun w ↦ ‖x.2 w‖⟩ ∈ A) :
+      normAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A) = A := by
+  refine subset_antisymm (fun x ⟨a, ha₁, ha₂⟩ ↦ ?_) (Set.subset_preimage_image _ _)
+  rwa [hA, ← normAtComplexPlaces_eq_normAtComplexPlaces_iff.mp ha₂, ← hA]
+
+open scoped Classical in
+theorem volume_eq_two_pi_pow_mul_integral [NumberField K]
+    (hA : ∀ x, x ∈ A ↔ ⟨x.1, fun w ↦ ‖x.2 w‖⟩ ∈ A) (hm : MeasurableSet A) :
+    volume A = .ofReal (2 * π) ^ nrComplexPlaces K *
+      ∫⁻ x in normAtComplexPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
+  have hm' : MeasurableSet (realSpaceNormAtComplexPlaces ⁻¹' (normAtComplexPlaces '' A)) := by
+    rw [volume_eq_two_pi_pow_mul_integral_aux₂ hA]
+    convert hm.preimage mixedSpaceOfRealSpace.measurable
+  have h_ind {x} : (A.indicator 1 x : ℝ≥0∞) =
+      (normAtComplexPlaces '' A).indicator 1 (normAtComplexPlaces x) := by
+    simp_rw [← Set.indicator_comp_right, Function.comp_def, Pi.one_def,
+      normAtComplexPlaces_preimage_image_eq hA]
+  rw [← lintegral_indicator_one hm, ← lintegral_comp_polarSpaceCoord_symm, polarSpaceCoord_target',
+    Measure.volume_eq_prod, setLIntegral_prod]
+  · simp_rw [h_ind, normMapComplex_polarSpaceCoord, lintegral_const, restrict_apply
+      MeasurableSet.univ, Set.univ_inter, volume_pi, Measure.pi_pi, volume_Ioo, sub_neg_eq_add,
+      ← two_mul, Finset.prod_const, Finset.card_univ, ← Set.indicator_const_mul,
+      ← Set.indicator_comp_right, Function.comp_def, Pi.one_apply, mul_one]
+    rw [lintegral_mul_const' _ _ (ne_of_beq_false rfl).symm, mul_comm]
+    erw [setLIntegral_indicator hm'] -- rw doesn't work here
+    rw [volume_eq_two_pi_pow_mul_integral_aux₁ hA]
+    refine congr_arg (_ * ·) <| setLIntegral_congr <| ae_eq_set_inter ?_ ?_
+    · rw [← volume_eq_two_pi_pow_mul_integral_aux₁ hA, volume_eq_two_pi_pow_mul_integral_aux₂ hA]
+    · refine Measure.ae_eq_set_pi fun w _ ↦ ?_
+      split_ifs
+      exacts [ae_eq_rfl, Ioi_ae_eq_Ici]
+  · exact (Measurable.mul (by fun_prop)
+      <| measurable_const.indicator <| hm.preimage (measurable_polarSpaceCoord_symm K)).aemeasurable
+
+theorem forall_mem_iff_normAtAllPlaces_mem {s : Set (realSpace K)}
+    (hs : A = normAtAllPlaces ⁻¹' s) :
+    ∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A := fun _ ↦ by
+  rw [hs, Set.mem_preimage, Set.mem_preimage, normAtAllPlaces_normAtAllPlaces]
+
+theorem mem_iff_normAtAllPlaces_mem_iff :
+    (∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A) ↔
+      A = normAtAllPlaces ⁻¹' (normAtAllPlaces '' A) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ forall_mem_iff_normAtAllPlaces_mem h⟩
+  exact subset_antisymm (Set.subset_preimage_image _ _) fun  x ⟨_, _, h₁⟩ ↦ by rwa [h, ← h₁, ← h]
+
+/-- The set of points in the `realSpace` that are equal to `0` at a fixed place has volume zero. -/
+theorem realSpace.volume_eq_zero [NumberField K] (w : InfinitePlace K) :
+    volume ({x : realSpace K | x w = 0}) = 0 := by
+  let A : AffineSubspace ℝ (realSpace K) :=
+    Submodule.toAffineSubspace (Submodule.mk ⟨⟨{x | x w = 0}, by aesop⟩, rfl⟩ (by aesop))
+  convert Measure.addHaar_affineSubspace volume A fun h ↦ ?_
+  simpa [A] using (h ▸ Set.mem_univ _ : 1 ∈ A)
+
+theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux₁
+    (hA₁ : ∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A)
+    (hA₂ : ∀ x, x ∈ plusPart A ↔ (x.1, fun w ↦ ↑‖x.2 w‖) ∈ plusPart A) :
+    normAtAllPlaces '' A ∩ (⋂ w : {w // IsReal w}, {x | x w.1 ≠ 0}) =
+      normAtComplexPlaces '' plusPart A := by
+  rw [volume_eq_two_pi_pow_mul_integral_aux₁ hA₂]
+  ext x
+  simp only [Set.mem_inter_iff, Set.mem_preimage, Set.mem_image, Set.mem_pi, Set.mem_univ,
+    Set.mem_ite_univ_left, not_isReal_iff_isComplex, forall_const, Set.mem_iInter, Set.mem_Ici,
+    Set.mem_setOf_eq]
+  refine ⟨?_, fun ⟨⟨hx₁, hx₂⟩, hx₃⟩ ↦ ⟨⟨mixedSpaceOfRealSpace x, hx₁, ?_⟩, fun w ↦ (hx₂ w).ne'⟩⟩
+  · rintro ⟨⟨a, ha₁, rfl⟩, ha₂⟩
+    exact ⟨⟨by rwa [← hA₁], fun w ↦ lt_of_le_of_ne' (normAtPlace_nonneg _ _) (ha₂ w)⟩,
+      fun _ _ ↦ normAtPlace_nonneg _ _⟩
+  · ext w
+    rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace]
+    obtain hw | hw := isReal_or_isComplex w
+    · exact (hx₂ ⟨w, hw⟩).le
+    · exact hx₃ w hw
+
+open scoped Classical in
+theorem volume_eq_two_pow_mul_two_pi_pow_mul_integral [NumberField K]
+    (hA : ∀ x, x ∈ A ↔ mixedSpaceOfRealSpace (normAtAllPlaces x) ∈ A) (hm : MeasurableSet A) :
+    volume A = 2 ^ nrRealPlaces K * .ofReal (2 * π) ^ nrComplexPlaces K *
+      ∫⁻ x in normAtAllPlaces '' A, ∏ w : {w // IsComplex w}, ENNReal.ofReal (x w.1) := by
+  have hA₁ (x : mixedSpace K) : x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A := by
+    rw [hA, hA (fun w ↦ ‖x.1 w‖, x.2)]
+    simp [mixedSpaceOfRealSpace_apply, normAtAllPlaces,
+      normAtPlace_apply_of_isReal (Subtype.prop _), normAtPlace_apply_of_isComplex (Subtype.prop _)]
+  have hA₂ (x : mixedSpace K) : x ∈ A ↔ ⟨x.1, fun w ↦ ‖x.2 w‖⟩ ∈ A := by
+    rw [hA, hA ⟨x.1, fun w ↦ ‖x.2 w‖⟩]
+    simp [mixedSpaceOfRealSpace_apply, normAtAllPlaces,
+      normAtPlace_apply_of_isReal (Subtype.prop _), normAtPlace_apply_of_isComplex (Subtype.prop _),
+      Complex.norm_real]
+  have hA₃ (x : mixedSpace K) : x ∈ plusPart A ↔ (x.1, fun w ↦ ↑‖x.2 w‖) ∈ plusPart A := by
+    rw [Set.mem_inter_iff, Set.mem_inter_iff, ← hA₂]
+    simp
+  rw [volume_eq_two_pow_mul_volume_plusPart hA₁ hm, volume_eq_two_pi_pow_mul_integral hA₃
+    (measurableSet_plusPart hm), ← mul_assoc]
+  refine congr_arg (_ * _ * ·) <| setLIntegral_congr ?_
+  rw [← volume_eq_two_pow_mul_two_pi_pow_mul_integral_aux₁ hA hA₃]
+  refine inter_ae_eq_left_of_ae_eq_univ <| ae_eq_univ.mpr
+    <| Set.compl_iInter _ ▸ measure_iUnion_null_iff.mpr fun w ↦ ?_
+  rw [show {x : realSpace K | x w.1 ≠ 0}ᶜ = {x | x w.1 = 0} by ext; simp]
+  exact realSpace.volume_eq_zero w.1
+
 end polarSpace
 
 end NumberField.mixedEmbedding

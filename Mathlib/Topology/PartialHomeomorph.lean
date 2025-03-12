@@ -946,7 +946,7 @@ variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace 
   [∀ i, TopologicalSpace (Y i)] (ei : ∀ i, PartialHomeomorph (X i) (Y i))
 
 /-- The product of a finite family of `PartialHomeomorph`s. -/
-@[simps toPartialEquiv]
+@[simps! toPartialEquiv apply symm_apply source target]
 def pi : PartialHomeomorph (∀ i, X i) (∀ i, Y i) where
   toPartialEquiv := PartialEquiv.pi fun i => (ei i).toPartialEquiv
   open_source := isOpen_set_pi finite_univ fun i _ => (ei i).open_source
