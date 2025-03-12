@@ -42,6 +42,13 @@ filtered structures.
 The induced graded ring morphism between associated graded rings,
 obtained from the `AssociatedGradedAddMonoidHom` of a filtered ring morphism.
 
+* `FilteredAlgHom` : A morphism between filtered rings that preserves both the algebra and
+filtered morphism structures.
+
+* `FilteredAlgHom.AssociatedGradedAlgHom` :
+The induced graded algebra morphism between associated graded algebras,
+obtained from the `AssociatedGradedRingHom` of a filtered algebra morphism.
+
 -/
 section
 
@@ -334,7 +341,7 @@ variable (FB : ι → Submodule R B) (FB_lt : outParam <| ι → Submodule R B)
 variable (FC : ι → Submodule R C) (FC_lt : outParam <| ι → Submodule R C)
 
 /-- A morphism between filtered rings that preserves both the algebra and
-filtered morphism structures.-/
+filtered morphism structures. -/
 class FilteredAlgHom extends FilteredRingHom FA FA_lt FB FB_lt, A →ₐ[R] B
 
 /-- Reinterpret a `FilteredAlgHom` as a `AlgHom`. -/
@@ -349,20 +356,19 @@ variable (g : FilteredAlgHom FB FB_lt FC FC_lt) (f : FilteredAlgHom FA FA_lt FB 
 
 variable {FA FB FC FA_lt FB_lt FC_lt}
 
-/-- The composition of filtered ring morphisms,
-obtained from the composition of the underlying ring homomorphisms.-/
+/-- The composition of filtered algebra homomorphism,
+obtained from the composition of the underlying `AlgHom`. -/
 def comp : FilteredAlgHom FA FA_lt FC FC_lt where
   __ := g.toAlgHom.comp f.toAlgHom
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
   pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
 
-/-- A filtered ring morphism restricted to its `i`-th filtration layer.-/
+/-- A filtered algebra morphism restricted to its `i`-th filtration. -/
 abbrev piece_wise_hom (i : ι) : FA i →ₗ[R] FB i where
   __ := f.1.piece_wise_hom i
   map_smul' r x := SetCoe.ext (f.toAlgHom.map_smul_of_tower r x)
 
-/-- Additive group homomorphism (between direct sum of graded pieces) induced by
-`f : FilteredAddGroupHom FA FA_lt FB FB_lt`. -/
+/-- `LinearMap` version of `FilteredAddGroupHom.piece_wise_hom`. -/
 abbrev GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →ₗ[R] GradedPiece FB FB_lt i :=
   Submodule.mapQ ((FA_lt i).comap (FA i).subtype) ((FB_lt i).comap (FB i).subtype)
     (f.piece_wise_hom i) (fun x hx ↦ by simpa using f.pieces_wise_lt hx)
@@ -381,8 +387,8 @@ lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f] = Gr(i)[g.comp f] :=
 variable [OrderedAddCommMonoid ι] [hasGMul FA FA_lt] [hasGMul FB FB_lt] [hasGMul FC FC_lt]
 
 open FilteredAddGroupHom in
-/-- The induced graded algebra morphism between associated graded algebras
-from a filtered algebra morphism `f : FilteredRingHom FR FR_lt FS FS_lt`.-/
+/-- The induced graded algebra morphism between associated graded algebras,
+obtained from the `AssociatedGradedRingHom` of a filtered algebra morphism. -/
 noncomputable def AssociatedGradedAlgHom [DecidableEq ι] :
     (AssociatedGraded FA FA_lt) →ₐ[R] (AssociatedGraded FB FB_lt) where
   __ := f.1.AssociatedGradedRingHom
