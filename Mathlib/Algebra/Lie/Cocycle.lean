@@ -116,7 +116,7 @@ lemma cons_eq_update_cons {L : Type*} {n : ℕ} (y z : L) (g : Fin n → L) :
     simp
 
 -- I get a diamond later if I leave out the `DecidableEq` here.
-lemma removeNth_update_of_gt {n : ℕ} [DecidableEq (Fin (n + 1))] {α : Sort*} {p q : Fin (n + 1)}
+lemma removeNth_update_of_gt {n : ℕ} {α : Sort*} {p q : Fin (n + 1)}
     (hpq : p < q) (x : α) (f : Fin (n + 1) → α) (h' := Fin.ne_last_of_lt hpq) :
     removeNth q (Function.update f p x) = Function.update (removeNth q f) (p.castPred h') x := by
   ext i
@@ -127,7 +127,7 @@ lemma removeNth_update_of_gt {n : ℕ} [DecidableEq (Fin (n + 1))] {α : Sort*} 
     simp [this, h]
 
 -- I get a diamond later if I leave out the `DecidableEq` here.
-lemma removeNth_update_of_lt {n : ℕ} [DecidableEq (Fin (n + 1))] {α : Sort*} {p q : Fin (n + 1)}
+lemma removeNth_update_of_lt {n : ℕ} {α : Sort*} {p q : Fin (n + 1)}
     (hqp : q < p) (x : α) (f : Fin (n + 1) → α) (h' := Fin.ne_zero_of_lt hqp) :
     removeNth q (Function.update f p x) = Function.update (removeNth q f) (p.pred h') x := by
   ext i
@@ -281,7 +281,7 @@ lemma cons_zero {n : ℕ} (g : Fin n → L)
     f (Fin.cons 0 g) = 0 :=
   map_coord_zero f 0 rfl
 
-lemma removeNth_map_update_add {n : ℕ} [DecidableEq (Fin (n + 1))]
+lemma removeNth_map_update_add {n : ℕ}
     (f : MultilinearMap R (fun _ : Fin n => L) M)
     {i j : Fin (n + 1)} (h : i ≠ j) (x y : L) (g : Fin (n + 1) → L):
   f (i.removeNth (Function.update g j (x + y))) =
@@ -339,7 +339,8 @@ variable {L M R : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup
 def coboundary_first_summand {n : ℕ} (f : MultilinearMap R (fun _ : Fin n => L) M)
     (i : Fin (n + 1)) : MultilinearMap R (fun _ : Fin (n + 1) => L) M where
   toFun g := (Int.negOnePow i.val • ⁅g i, f (i.removeNth g)⁆)
-  map_update_add' g j x y := by
+  map_update_add' {inst} g j x y := by
+    cases Subsingleton.elim inst (instDecidableEqFin (n + 1))
     simp_rw [← smul_add]
     congr 1
     by_cases hij : j = i
@@ -348,7 +349,8 @@ def coboundary_first_summand {n : ℕ} (f : MultilinearMap R (fun _ : Fin n => L
       simp only [Function.update, hij, ↓reduceDIte, eq_rec_constant, this, add_lie]
     · simp only [Function.update_of_ne (fun a ↦ hij a.symm), ← lie_add,
         MultilinearMap.removeNth_map_update_add f (Ne.symm hij) x y g]
-  map_update_smul' g j r x := by
+  map_update_smul' {inst} g j r x := by
+    cases Subsingleton.elim inst (instDecidableEqFin (n + 1))
     simp only
     rw [smul_comm]
     congr 1
@@ -424,7 +426,8 @@ def coboundary_second_sum (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M) (g : Fi
 def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→ₗ[R] M)
     {i j : Fin (n + 1 + 1)} (h : i < j) : MultilinearMap R (fun _ : Fin (n + 1 + 1) => L) M where
   toFun g := Int.negOnePow (i.val + j.val) • f (coboundary_second_aux g h)
-  map_update_add' g k x y := by
+  map_update_add' {inst} g k x y := by
+    cases Subsingleton.elim inst (instDecidableEqFin (n + 1 + 1))
     simp only [coboundary_second_aux]
     rw [← smul_add]
     congr 1
@@ -461,7 +464,8 @@ def coboundary_second_summand_multilinear (n : ℕ) (f : L [⋀^Fin (n + 1)]→�
             simp only [hjk, ↓reduceIte, Fin.removeNth_update_of_gt hjk']
             have : k.castPred (Fin.ne_last_of_lt hjk') < i.castPred (Fin.ne_last_of_lt h) := hik'
             simp [Fin.removeNth_update_of_gt this]
-  map_update_smul' g k r x := by
+  map_update_smul' {inst} g k r x := by
+    cases Subsingleton.elim inst (instDecidableEqFin (n + 1 + 1))
     simp only [coboundary_second_aux]
     rw [smul_comm r (Int.negOnePow (i.val + j.val)) _]
     congr 1

@@ -38,6 +38,49 @@ suppress_compilation
 
 variable {Γ R A : Type*}
 
+namespace MonoidAlgebra
+
+variable [Ring R]
+
+/-- A unit monomial minus a unit monomial. -/
+def single_sub_single (g g' : Γ) : MonoidAlgebra R Γ := single g 1 - single g' 1
+
+@[simp]
+theorem single_sub_single_of_subsingleton [Subsingleton R] (g g' : Γ) :
+    single_sub_single g g' = (0 : MonoidAlgebra R Γ) :=
+  Subsingleton.eq_zero (single_sub_single g g')
+
+@[simp]
+theorem single_sub_single_eq_zero_iff [Nontrivial R] (g g' : Γ) :
+    single_sub_single g g' = (0 : MonoidAlgebra R Γ) ↔ g = g' := by
+  refine ⟨?_, fun h ↦ (by simp [single_sub_single, h])⟩
+  intro h
+  by_contra hgg'
+  rw [single_sub_single, sub_eq_zero, MonoidAlgebra.ext_iff] at h
+  specialize h g
+  rw [single_apply, single_apply] at h
+  simp [Ne.symm hgg'] at h
+
+theorem single_sub_single_neg (g g' : Γ) :
+    - single_sub_single g g' (R := R) = single_sub_single g' g := by
+  simp [single_sub_single]
+/-!
+theorem single_sub_single_pow [CommMonoid Γ] (g g' : Γ) (n : ℕ) :
+    (single_sub_single g g' (R := R)) ^ n = ∑ i : range (n + 1),
+      Int.negOnePow i.1 • n.choose i.1 • single (g ^ i.1 * g' ^ (n - i.1)) 1 := by
+  induction n with
+  | zero =>
+    simp [one_def]
+  | succ n ih =>
+    rw [pow_succ, ih, sum_mul, single_sub_single]
+   -- simp_rw [mul_sub, smul_mul_assoc, single_mul_single, ← mul_rotate, ← pow_succ, mul_rotate]
+
+    sorry
+
+-/
+
+end MonoidAlgebra
+
 namespace HahnSeries
 
 /-! We consider integral powers of binomials with invertible leading term.  Also, we consider more
