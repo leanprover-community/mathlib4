@@ -91,7 +91,7 @@ Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset`
 list notation.
 -/
 abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder,
-  `termπ__, `«term_#_»]
+  `Bundle.termπ__, `Finset.«term_#_»]
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -109,6 +109,8 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- We only lint up to the position given by `lintUpTo`
   if let some finalLintPos := lintUpTo stx then
     if let some stype := stx.find? (unlintedNodes.contains ·.getKind) then
+      Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+        m!"Found '{stype.getKind}' in '{stype}'"
       if let some pos := stype.getPos? then
         if pos.1 ≤ finalLintPos.1 then
           return
