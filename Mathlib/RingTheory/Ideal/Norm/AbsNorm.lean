@@ -263,6 +263,10 @@ theorem span_singleton_absNorm {I : Ideal S} (hI : (Ideal.absNorm I).Prime) :
   · rw [Ne, span_singleton_eq_bot]
     exact Int.ofNat_ne_zero.mpr hI.ne_zero
 
+theorem absNorm_equivdvd (I J : (Ideal S)⁰) :
+    absNorm (Equiv.dvd I J : Ideal S) = absNorm (I : Ideal S) * absNorm (J : Ideal S) := by
+  rw [Equiv.dvd_apply, Submonoid.coe_mul, _root_.map_mul]
+
 variable [Module.Finite ℤ S]
 
 /-- Let `e : S ≃ I` be an additive isomorphism (therefore a `ℤ`-linear equiv).
@@ -418,6 +422,12 @@ theorem finite_setOf_absNorm_le [CharZero S] (n : ℕ) :
     (⋃ i ∈ Set.Icc 0 n, {I : Ideal S | Ideal.absNorm I = i}) by ext; simp]
   refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
 
+theorem finite_setOf_absNorm_le₀ [CharZero S] (n : ℕ) :
+    {I : (Ideal S)⁰ | Ideal.absNorm (I : Ideal S) ≤ n}.Finite := by
+  have : Finite {I : Ideal S // I ∈ (Ideal S)⁰ ∧ absNorm I ≤ n} :=
+    (finite_setOf_absNorm_le n).subset fun _ ⟨_, h⟩ ↦ h
+  exact Finite.of_equiv _ (Equiv.subtypeSubtypeEquivSubtypeInter _ (fun I ↦ absNorm I ≤ n)).symm
+
 theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) [CharZero S] :
     Nat.card {I : Ideal S // absNorm I ≤ n} =
       Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by
@@ -440,6 +450,8 @@ theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) [CharZero S] :
     rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors, ne_eq, not_not, and_iff_left_iff_imp.mpr
       (fun h ↦ by rw [h]; exact Nat.zero_le n), absNorm_eq_zero_iff]
   rw [Nat.card_unique]
+
+
 
 theorem norm_dvd_iff {x : S} (hx : Prime (Algebra.norm ℤ x)) {y : ℤ} :
     Algebra.norm ℤ x ∣ y ↔ x ∣ y := by
