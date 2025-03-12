@@ -64,9 +64,9 @@ lemma IsAccessibleCategory.exists_cardinal [IsAccessibleCategory.{w} C] :
       IsCardinalAccessibleCategory C κ :=
   exists_cardinal'
 
-instance [h : IsLocallyPresentable.{w} C] : IsAccessibleCategory.{w} C where
+instance [IsLocallyPresentable.{w} C] : IsAccessibleCategory.{w} C where
   exists_cardinal' := by
-    obtain ⟨κ, hκ, h'⟩ := h.exists_cardinal
+    obtain ⟨κ, hκ, h'⟩ := IsLocallyPresentable.exists_cardinal C
     exact ⟨κ, hκ, inferInstance⟩
 
 instance [IsAccessibleCategory.{w} C] (X : C) : IsPresentable.{w} X := by
