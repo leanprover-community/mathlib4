@@ -26,8 +26,6 @@ noncomputable def WithTop.toBase [Zero α] (a : WithTop α) : α := a.untopD 0
 /-!
 ## Simplifying Lemmas in cases where α is an Instance of Zero
 -/
-lemma WithTop.toBase_def [Zero α] (a : WithTop α) :
-    a.toBase = a.untopD 0 := rfl
 
 @[simp]
 lemma WithTop.toBase_eq_zero_iff [Zero α] (a : WithTop α) :
