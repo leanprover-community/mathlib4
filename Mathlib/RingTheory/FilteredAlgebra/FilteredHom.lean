@@ -386,12 +386,58 @@ open DirectSum
 variable [OrderedAddCommMonoid ι] [hasGMul FR FR_lt]
 variable [hasGSMul FR FR_lt FM FM_lt] [hasGSMul FR FR_lt FN FN_lt] [hasGSMul FR FR_lt FL FL_lt]
 
+variable (FR FR_lt) in
 /-- The induced graded module morphism between associated graded modules,
 obtained from the `AssociatedGradedAddMonoidHom` of a filtered module morphism. -/
 noncomputable def AssociatedGradedModuleHom [DecidableEq ι] :
     (AssociatedGraded FM FM_lt) →ₗ[AssociatedGraded FR FR_lt] (AssociatedGraded FN FN_lt) where
   __ := f.1.AssociatedGradedAddMonoidHom
-  map_smul' := sorry
+  map_smul' r' m' := DirectSum.induction_on r' (by simp)
+    (DirectSum.induction_on m' (by simp)
+      (fun j m' i r' ↦ QuotientAddGroup.induction_on r' <| QuotientAddGroup.induction_on m' <|
+          fun m r ↦ by
+          simp only [Gmodule.smul_def, Gmodule.smulAddMonoidHom_apply_of_of, vadd_eq_add,
+            ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+            FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of, RingHom.id_apply]
+          congr
+          show Gr(i + j)[f] (GradedPiece.mk FM FM_lt ⟨r.1 • m.1, _⟩) =
+            GradedPiece.mk FN FN_lt ⟨r.1 • f.toLinearMap m.1, _⟩
+          simp only [FilteredAddGroupHom.GradedPieceHom_apply_mk_eq_mk_piece_wise_hom,
+            AddMonoidHom.coe_mk, ZeroHom.coe_mk, LinearMap.coe_mk, AddHom.coe_mk]
+          congr
+          exact SetCoe.ext (map_smul f.toLinearMap r.1 m.1))
+      (by intro m1 m2 h1 h2 i x
+          simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+            RingHom.id_apply, smul_add, map_add] at h1 h2 ⊢
+          rw [h1 i x, h2 i x]))
+    (DirectSum.induction_on m' (by simp)
+      (by intro i x m1 m2 h1 h2
+          simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+            RingHom.id_apply, add_smul, map_add] at h1 h2 ⊢
+          rw [h1, h2])
+      (by intro m1 m2 h1 h2 r1 r2
+          simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+            RingHom.id_apply, map_add]
+          intro h3 h4
+          rw [add_smul, map_add, h3, h4, add_smul]))
+
+variable [DecidableEq ι]
+
+@[simp]
+theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FM FM_lt) (i : ι) :
+    ((AssociatedGradedModuleHom FR FR_lt f) x) i = Gr(i)[f] (x i) := rfl
+
+@[simp]
+lemma AssociatedGradedRingHom_apply_of {i : ι} (x : GradedPiece FM FM_lt i) :
+    ((AssociatedGradedModuleHom FR FR_lt f) (AssociatedGraded.of x)) =
+    AssociatedGraded.of (Gr(i)[f] x) :=
+  f.1.AssociatedGradedAddMonoidHom_apply_of x
+
+theorem AssociatedGradedRingHom_comp_eq_comp :
+    (AssociatedGradedModuleHom FR FR_lt g).comp (AssociatedGradedModuleHom FR FR_lt f) =
+    AssociatedGradedModuleHom FR FR_lt (g.comp f) :=
+  LinearMap.ext <| fun x ↦ congrFun
+  (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
 
 end FilteredModuleHom
 
