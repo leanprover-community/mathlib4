@@ -282,8 +282,7 @@ This is a form of **Bayes' theorem**.
 The condition is true for example for countable `Ω`. -/
 lemma posterior_eq_withDensity (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x = μ.withDensity (fun ω ↦ κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x) := by
-  have h_ac' : ∀ᵐ x ∂(κ ∘ₘ μ), (κ†μ) x ≪ μ := absolutelyContinuous_posterior h_ac
-  filter_upwards [rnDeriv_posterior_symm h_ac, h_ac'] with x h h_ac'
+  filter_upwards [rnDeriv_posterior_symm h_ac, absolutelyContinuous_posterior h_ac] with x h h_ac'
   ext s hs
   rw [← Measure.setLIntegral_rnDeriv h_ac', withDensity_apply _ hs]
   refine setLIntegral_congr_fun hs ?_
