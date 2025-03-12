@@ -172,17 +172,35 @@ namespace LinearMap
 variable {R M N : Type*} [CommRing R]
   [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
+open TensorProduct
+
+-- Move me
+variable (R M N) in
+noncomputable def lTensorAlgHom : (Module.End R M) →ₐ[R] (Module.End R (N ⊗[R] M)) :=
+  { lTensorHom (R := R) (M := N) (N := M) (P := M) with
+    map_one' := lTensor_id N M
+    map_mul' f g := lTensor_mul N f g
+    commutes' r := by ext; simp
+    map_zero' := lTensor_zero N }
+
+-- Move me
+variable (R M N) in
+noncomputable def rTensorAlgHom : (Module.End R M) →ₐ[R] (Module.End R (M ⊗[R] N)) :=
+  { rTensorHom (R := R) (M := N) (N := M) (P := M) with
+    map_one' := rTensor_id N M
+    map_mul' f g := rTensor_mul N f g
+    commutes' r := by ext; simp [smul_tmul]
+    map_zero' := rTensor_zero N }
+
 variable (M) in
-theorem isNilpotent_lTensor_of_isNilpotent (f : Module.End R N) (hf : IsNilpotent f) :
-    IsNilpotent (f.lTensor M) := by
-  obtain ⟨k, hk⟩ := hf
-  exact ⟨k, by ext; simp [hk]⟩
+theorem _root_.IsNilpotent.linearMapLTensor {f : Module.End R N} (hf : IsNilpotent f) :
+    IsNilpotent (f.lTensor M) :=
+  hf.map <| lTensorAlgHom R N M
 
 variable (N) in
-theorem isNilpotent_rTensor_of_isNilpotent (f : Module.End R M) (hf : IsNilpotent f) :
-    IsNilpotent (f.rTensor N) := by
-  obtain ⟨k, hk⟩ := hf
-  exact ⟨k, by ext; simp [hk]⟩
+theorem _root_.IsNilpotent.linearMapRTensor {f : Module.End R M} (hf : IsNilpotent f) :
+    IsNilpotent (f.rTensor N) :=
+  hf.map <| rTensorAlgHom R M N
 
 open IsNilpotent TensorProduct
 
@@ -191,7 +209,7 @@ variable [Module ℚ M]
 variable (N) in
 theorem rTensor_exp (f : Module.End R M) (hf : IsNilpotent f) :
     exp (f.rTensor N) = (exp f).rTensor N := by
-  obtain ⟨k, hk⟩ := isNilpotent_rTensor_of_isNilpotent N f hf
+  obtain ⟨k, hk⟩ := hf.linearMapRTensor N
   obtain ⟨l, hl⟩ := hf
   let kl := max k l
   replace hk : (f.rTensor N) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
@@ -204,7 +222,7 @@ variable [Module ℚ N]
 variable (M) in
 theorem lTensor_exp (f : Module.End R N) (hf : IsNilpotent f) :
     exp (f.lTensor M) = (exp f).lTensor M := by
-  obtain ⟨k, hk⟩ := isNilpotent_lTensor_of_isNilpotent M f hf
+  obtain ⟨k, hk⟩ := hf.linearMapLTensor M
   obtain ⟨l, hl⟩ := hf
   let kl := max k l
   replace hk : (f.lTensor M) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
@@ -235,8 +253,8 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
     exp D (x * y) = (exp D x) * (exp D y) := by
   let DL : Module.End R (B ⊗[R] B) := D.lTensor B
   let DR : Module.End R (B ⊗[R] B) := D.rTensor B
-  have h_nilL : IsNilpotent DL := isNilpotent_lTensor_of_isNilpotent B D h_nil
-  have h_nilR : IsNilpotent DR := isNilpotent_rTensor_of_isNilpotent B D h_nil
+  have h_nilL : IsNilpotent DL := h_nil.linearMapLTensor B
+  have h_nilR : IsNilpotent DR := h_nil.linearMapRTensor B
   have h_comm : Commute DL DR := by ext; simp [DL, DR]
   let m : B ⊗[R] B →ₗ[R] B := lift <| LinearMap.mul R B
   have hm (x y : B) : m (x ⊗ₜ[R] y) = x * y := rfl
