@@ -283,7 +283,7 @@ protected theorem Measurable.complex_ofReal {α : Type*} {m : MeasurableSpace α
   Complex.measurable_ofReal.comp hf
 
 @[measurability, fun_prop]
-protected theorem AEMeasurable.complex_ofReal {α : Type*} {m : MeasurableSpace α}  {μ : Measure α}
+protected theorem AEMeasurable.complex_ofReal {α : Type*} {m : MeasurableSpace α} {μ : Measure α}
     {f : α → ℝ} (hf : AEMeasurable f μ) :
     AEMeasurable (fun x ↦ (f x : ℂ)) μ :=
   Complex.measurable_ofReal.comp_aemeasurable hf
