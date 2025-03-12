@@ -192,7 +192,6 @@ import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.CharP.LinearMaps
 import Mathlib.Algebra.CharP.LocalRing
 import Mathlib.Algebra.CharP.MixedCharZero
-import Mathlib.Algebra.CharP.NeTwo
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Reduced
