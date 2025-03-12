@@ -104,6 +104,26 @@ jobs:
               : # Do nothing on failure, but suppress errors
           fi
 
+      - name: cleanup .cache/mathlib
+        run: |
+          # Define the cache directory path
+          CACHE_DIR="~/.cache/mathlib"
+
+          # Check if directory exists
+          if [ ! -d "$CACHE_DIR" ]; then
+            echo "::warning::Cache directory does not exist: $CACHE_DIR"
+            exit 0
+          fi
+
+          # Calculate directory size in bytes
+          DIR_SIZE=$(du -sb "$CACHE_DIR" | cut -f1)
+
+          # Check if size exceeds 10GB
+          if [ "$DIR_SIZE" -gt "10737418240" ]; then
+            echo "Cache size exceeds threshold, running lake exe cache clean"
+            lake exe cache clean
+          fi
+
       # The Hoskinson runners may not have jq installed, so do that now.
       - name: 'Setup jq'
         uses: dcarbone/install-jq-action@v2.1.0
