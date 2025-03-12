@@ -34,6 +34,16 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     rw [iteratedDerivWithin_succ, iteratedDerivWithin_succ]
     exact derivWithin_congr (IH hfg) (IH hfg hy)
 
+theorem iteratedDerivWithin_eq_iteratedDeriv
+(hf : ContDiff 𝕜 (⊤ : ℕ∞) f) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s):
+iteratedDerivWithin d f s x = iteratedDeriv d f x := by
+  induction' d with d hd
+  · simp
+  · rw [iteratedDerivWithin_succ (UniqueDiffOn.uniqueDiffWithinAt hs hx), iteratedDeriv_succ, derivWithin, deriv]
+    rw [fderivWithin_congr hd (hd x hx)]
+    rw [fderivWithin_eq_fderiv (UniqueDiffOn.uniqueDiffWithinAt hs hx)]
+    apply Differentiable.differentiableAt (ContDiff.differentiable_iteratedDeriv d hf (Batteries.compareOfLessAndEq_eq_lt.mp rfl))
+
 include h hx in
 theorem iteratedDerivWithin_add
     (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
