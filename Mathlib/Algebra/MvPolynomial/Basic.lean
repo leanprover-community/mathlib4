@@ -346,15 +346,15 @@ lemma prod_X_pow_eq_monomial : ∏ x ∈ s.support, X x ^ s x = monomial s (1 : 
   simp only [monomial_eq, map_one, one_mul, Finsupp.prod]
 
 @[elab_as_elim]
-theorem induction_on_monomial {M : MvPolynomial σ R → Prop}
-    (C : ∀ a, M (C a))
-    (mul_X : ∀ p n, M p → M (p * X n)) : ∀ s a, M (monomial s a) := by
+theorem induction_on_monomial {motive : MvPolynomial σ R → Prop}
+    (C : ∀ a, motive (C a))
+    (mul_X : ∀ p n, motive p → motive (p * X n)) : ∀ s a, motive (monomial s a) := by
   intro s a
   apply @Finsupp.induction σ ℕ _ _ s
-  · show M (monomial 0 a)
+  · show motive (monomial 0 a)
     exact C a
   · intro n e p _hpn _he ih
-    have : ∀ e : ℕ, M (monomial p a * X n ^ e) := by
+    have : ∀ e : ℕ, motive (monomial p a * X n ^ e) := by
       intro e
       induction e with
       | zero => simp [ih]
@@ -377,15 +377,15 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
 /--
 Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required.
 In particular, this version only requires us to show
-that `M` is closed under addition of nontrivial monomials not present in the support.
+that `motive` is closed under addition of nontrivial monomials not present in the support.
 -/
 @[elab_as_elim]
-theorem monomial_add_induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
-    (C : ∀ a, M (C a))
+theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
+    (C : ∀ a, motive (C a))
     (monomial_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
-        a ∉ f.support → b ≠ 0 → M f → M ((monomial a b) + f)) :
-    M p :=
+        a ∉ f.support → b ≠ 0 → motive f → motive ((monomial a b) + f)) :
+    motive p :=
   Finsupp.induction p (C_0.rec <| C 0) monomial_add_weak
 
 @[deprecated (since := "2025-03-11")]
@@ -394,16 +394,17 @@ alias induction_on''' := monomial_add_induction_on
 /--
 Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.
 In particular, this version only requires us to show
-that `M` is closed under addition of monomials not present in the support
-for which `M` is already known to hold.
+that `motive` is closed under addition of monomials not present in the support
+for which `motive` is already known to hold.
 -/
-theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
-    (C : ∀ a, M (C a))
+theorem induction_on'' {motive : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
+    (C : ∀ a, motive (C a))
     (monomial_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
-        a ∉ f.support → b ≠ 0 → M f → M (monomial a b) →
-          M ((monomial a b) + f))
-    (mul_X : ∀ (p : MvPolynomial σ R) (n : σ), M p → M (p * MvPolynomial.X n)) : M p :=
+        a ∉ f.support → b ≠ 0 → motive f → motive (monomial a b) →
+          motive ((monomial a b) + f))
+    (mul_X : ∀ (p : MvPolynomial σ R) (n : σ), motive p → motive (p * MvPolynomial.X n)) :
+    motive p :=
   monomial_add_induction_on p C fun a b f ha hb hf =>
     monomial_add_weak a b f ha hb hf <| induction_on_monomial C mul_X a b
 
@@ -414,10 +415,10 @@ and is preserved under addition and multiplication by variables
 then it holds for all multivariate polynomials.
 -/
 @[recursor 5]
-theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
-    (C : ∀ a, M (C a))
-    (add : ∀ p q, M p → M q → M (p + q))
-    (mul_X : ∀ p n, M p → M (p * X n)) : M p :=
+theorem induction_on {motive : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
+    (C : ∀ a, motive (C a))
+    (add : ∀ p q, motive p → motive q → motive (p + q))
+    (mul_X : ∀ p n, motive p → motive (p * X n)) : motive p :=
   induction_on'' p C (fun a b f _ha _hb hf hm => add (monomial a b) f hm hf) mul_X
 
 theorem ringHom_ext {A : Type*} [Semiring A] {f g : MvPolynomial σ R →+* A}
