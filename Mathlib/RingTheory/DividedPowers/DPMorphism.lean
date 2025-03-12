@@ -28,6 +28,12 @@ power morphism* if it is compatible with these divided power structures.
 * `DividedPowers.dpow_eq_from_gens` : if two divided power structures on an ideal `I` agree on a
   generating set, then they are equal.
 
+## Implementation remarks
+
+We provided both a bundled and an unbundled definition of divided power morphisms. For developing
+the basic theory, the unbundled version `IsDPMorphism` is more convenient. However, we anticipate
+that the bundled version `DPMorphism` will be better for the development of crystalline 
+cohomology.
 
 ## References
 
