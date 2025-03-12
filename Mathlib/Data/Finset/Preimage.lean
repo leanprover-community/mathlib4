@@ -108,18 +108,18 @@ theorem subset_map_iff {f : α ↪ β} {s : Finset β} {t : Finset α} :
   classical
   simp_rw [map_eq_image, subset_image_iff, eq_comm]
 
-theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) (t : Finset α) :
+theorem sigma_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) (t : Finset α) :
     (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
       s.filter fun a => a.1 ∈ t := by
   ext x
   simp [and_comm]
 
-theorem sigma_preimage_mk_of_subset {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a))
+theorem sigma_preimage_mk_of_subset {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a))
     {t : Finset α} (ht : s.image Sigma.fst ⊆ t) :
     (t.sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) = s := by
   rw [sigma_preimage_mk, filter_true_of_mem <| image_subset_iff.1 ht]
 
-theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σa, β a)) :
+theorem sigma_image_fst_preimage_mk {β : α → Type*} [DecidableEq α] (s : Finset (Σ a, β a)) :
     ((s.image Sigma.fst).sigma fun a => s.preimage (Sigma.mk a) sigma_mk_injective.injOn) =
       s :=
   s.sigma_preimage_mk_of_subset (Subset.refl _)
