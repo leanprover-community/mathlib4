@@ -128,8 +128,8 @@ theorem subset_tangentCone_prod_right {t : Set F} {y : F} (hs : x ∈ closure s)
 
 /-- The tangent cone of a product contains the tangent cone of each factor. -/
 theorem mapsTo_tangentCone_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)} {x : ∀ i, E i}
-    {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
+    [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] {s : ∀ i, Set (E i)}
+    {x : ∀ i, E i} {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
     MapsTo (LinearMap.single 𝕜 E i) (tangentConeAt 𝕜 (s i) (x i))
       (tangentConeAt 𝕜 (Set.pi univ s) x) := by
   rintro w ⟨c, d, hd, hc, hy⟩
@@ -319,13 +319,21 @@ lemma tangentConeAt_closure : tangentConeAt 𝕜 (closure s) x = tangentConeAt �
     abel
   choose! e es he using this
   refine ⟨c, e, eventually_atTop.2 ⟨N, es⟩ , hc, ?_⟩
-
-
-
-
-
-#exit
-
+  have : Tendsto (fun n ↦ c n • (e n - d n)) atTop (𝓝 0) := by
+    rw [tendsto_zero_iff_norm_tendsto_zero]
+    apply squeeze_zero' (.of_forall (fun n ↦ norm_nonneg _)) _ hc.inv_tendsto_atTop
+    apply eventually_atTop.2 ⟨N, fun n hn ↦ ?_⟩
+    simp only [norm_smul, Pi.inv_apply]
+    calc ‖c n‖ * ‖e n - d n‖
+    _ ≤ ‖c n‖ * (1 / ‖c n‖ ^ 2) := by
+      gcongr
+      rw [norm_sub_rev]
+      exact he n hn
+    _ = ‖c n‖⁻¹ := by
+      have : ‖c n‖ ≠ 0 := ne_of_gt (zero_lt_one.trans_le (hN n hn).2)
+      field_simp
+      ring
+  simpa [smul_sub] using h.add this
 
 end Normed
 
@@ -385,6 +393,16 @@ theorem UniqueDiffOn.inter (hs : UniqueDiffOn 𝕜 s) (ht : IsOpen t) : UniqueDi
 theorem IsOpen.uniqueDiffOn (hs : IsOpen s) : UniqueDiffOn 𝕜 s :=
   fun _ hx => IsOpen.uniqueDiffWithinAt hs hx
 
+theorem uniqueDiffWithinAt_closure :
+    UniqueDiffWithinAt 𝕜 (closure s) x ↔ UniqueDiffWithinAt 𝕜 s x := by
+  simp [uniqueDiffWithinAt_iff, closure_closure, tangentConeAt_closure]
+
+theorem Dense.uniqueDiffOn (hs : Dense s) : UniqueDiffOn 𝕜 s := by
+  intro x hx
+  rw [dense_iff_closure_eq] at hs
+  rw [← uniqueDiffWithinAt_closure, hs]
+  exact uniqueDiffOn_univ x (mem_univ _)
+
 /-- The product of two sets of unique differentiability at points `x` and `y` has unique
 differentiability at `(x, y)`. -/
 theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt 𝕜 s x)
@@ -398,8 +416,9 @@ theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt �
   exact (hs.1.prod ht.1).mono this
 
 theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
-    (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) : UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
+    [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i))
+    (x : ∀ i, E i) (h : ∀ i, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
+    UniqueDiffWithinAt 𝕜 (Set.pi univ s) x := by
   classical
   simp only [uniqueDiffWithinAt_iff, closure_pi_set] at h ⊢
   refine ⟨(dense_pi univ fun i _ => (h i).1).mono ?_, fun i _ => (h i).2⟩
@@ -409,8 +428,8 @@ theorem UniqueDiffWithinAt.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
   exact fun i => (mapsTo_tangentCone_pi fun j _ => (h j).2).mono Subset.rfl Submodule.subset_span
 
 theorem UniqueDiffWithinAt.pi (ι : Type*) [Finite ι] (E : ι → Type*)
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i)
-    (I : Set ι) (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
+    [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i))
+    (x : ∀ i, E i) (I : Set ι) (h : ∀ i ∈ I, UniqueDiffWithinAt 𝕜 (s i) (x i)) :
     UniqueDiffWithinAt 𝕜 (Set.pi I s) x := by
   classical
   rw [← Set.univ_pi_piecewise_univ]
@@ -424,7 +443,7 @@ theorem UniqueDiffOn.prod {t : Set F} (hs : UniqueDiffOn 𝕜 s) (ht : UniqueDif
 
 /-- The finite product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
-theorem UniqueDiffOn.pi (ι : Type*) [Finite ι] (E : ι → Type*) [∀ i, NormedAddCommGroup (E i)]
+theorem UniqueDiffOn.pi (ι : Type*) [Finite ι] (E : ι → Type*) [∀ i, SeminormedAddCommGroup (E i)]
     [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i)) (I : Set ι)
     (h : ∀ i ∈ I, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi I s) :=
   fun x hx => UniqueDiffWithinAt.pi _ _ _ _ _ fun i hi => h i hi (x i) (hx i hi)
@@ -432,7 +451,7 @@ theorem UniqueDiffOn.pi (ι : Type*) [Finite ι] (E : ι → Type*) [∀ i, Norm
 /-- The finite product of a family of sets of unique differentiability is a set of unique
 differentiability. -/
 theorem UniqueDiffOn.univ_pi (ι : Type*) [Finite ι] (E : ι → Type*)
-    [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i))
+    [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)] (s : ∀ i, Set (E i))
     (h : ∀ i, UniqueDiffOn 𝕜 (s i)) : UniqueDiffOn 𝕜 (Set.pi univ s) :=
   UniqueDiffOn.pi _ _ _ _ fun i _ => h i
 
@@ -444,15 +463,6 @@ variable {𝕝 : Type*} [h𝕝 : NormedField 𝕝] {E F : Type*}
 [SeminormedAddCommGroup E] [NormedSpace 𝕝 E]
 [SeminormedAddCommGroup F] [NormedSpace 𝕝 F]
 variable {s : Set E} {t : Set F} {x : E}
-
-variable (𝕝 E) in
-@[simp] theorem uniqueDiffOn_empty : UniqueDiffOn 𝕝 (∅ : Set E) :=
-  fun _ hx ↦ False.elim hx
-
-
-#exit
-
-
 
 open scoped Pointwise
 
@@ -476,11 +486,7 @@ lemma UniqueDiffOn.eq_empty_or_dense_of_of_triviallyNormed
   apply closure_mono
   simp [hx]
 
-theorem Dense.uniqueDiffOn (hs : Dense s) : UniqueDiffOn 𝕝 s := sorry
-
-#exit
-
-theorem UniqueDiffOn.prod_or_dense
+theorem UniqueDiffOn.dense_or_prod
     (hs : Dense s ∨ UniqueDiffOn 𝕝 s) (ht : Dense t ∨ UniqueDiffOn 𝕝 t) :
     Dense (s ×ˢ t) ∨ UniqueDiffOn 𝕝 (s ×ˢ t) := by
   by_cases h : ∃ x : 𝕝, 1 < ‖x‖
@@ -512,11 +518,30 @@ theorem UniqueDiffOn.prod_or_dense
     rw [dense_iff_closure_eq] at h's h't ⊢
     simp [closure_prod_eq, h's, h't]
 
-
+theorem UniqueDiffOn.dense_or_pi {ι : Type*} [Finite ι] {E : ι → Type*}
+    [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕝 (E i)] {s : ∀ i, Set (E i)} {I : Set ι}
+    (hs : ∀ i ∈ I, Dense (s i) ∨ UniqueDiffOn 𝕝 (s i)) :
+    Dense (Set.pi I s) ∨ UniqueDiffOn 𝕝 (Set.pi I s) := by
+  by_cases h : ∃ x : 𝕝, 1 < ‖x‖
+  · let A : NontriviallyNormedField 𝕝 := ⟨h⟩
+    have h' i (hi : i ∈ I) : UniqueDiffOn 𝕝 (s i) := by
+      rcases hs i hi with hs | hs
+      · exact hs.uniqueDiffOn
+      · exact hs
+    exact Or.inr (UniqueDiffOn.pi _ _ s I h')
+  · by_cases H : ∃ i ∈ I, s i = ∅
+    · rcases H with ⟨i, hi⟩
+      simp only [Set.pi_eq_empty hi.1 hi.2]
+      exact Or.inr (fun x hx ↦ False.elim hx)
+    have h's i (hi : i ∈ I) : Dense (s i) := by
+      rcases hs i hi with hs | hs
+      · exact hs
+      · simp only [not_exists, not_and] at H
+        simpa [H i hi] using hs.eq_empty_or_dense_of_of_triviallyNormed h
+    left
+    exact dense_pi _ h's
 
 end
-
-#exit
 
 section RealNormed
 variable [SeminormedAddCommGroup G] [NormedSpace ℝ G]

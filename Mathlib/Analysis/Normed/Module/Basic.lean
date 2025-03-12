@@ -64,6 +64,18 @@ def modelWithCornersSelf : ModelWithCorners 𝕜 E E := NormedSpace.modelWithCor
 /-- A normed field is a model with corners. -/
 scoped[Manifold] notation "𝓘(" 𝕜 ")" => modelWithCornersSelf 𝕜 𝕜
 
+@[simp] lemma modelWithCornersSelf_apply (x : E) :
+    modelWithCornersSelf 𝕜 E x = x := by
+  simp [modelWithCornersSelf, NormedSpace.modelWithCornersSelf_eq_id]
+
+@[simp] lemma modelWithCornersSelf_symm_apply (x : E) :
+    (modelWithCornersSelf 𝕜 E).symm x = x := by
+  simp [modelWithCornersSelf, NormedSpace.modelWithCornersSelf_eq_id]
+
+@[simp] lemma range_modelWithCornersSelf :
+    range (modelWithCornersSelf 𝕜 E) = univ := by
+  simp [modelWithCornersSelf, NormedSpace.modelWithCornersSelf_eq_id]
+
 -- see Note [lower instance priority]
 instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
   IsBoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le

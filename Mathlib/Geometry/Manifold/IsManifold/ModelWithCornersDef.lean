@@ -141,31 +141,23 @@ useful for technical reasons. The former makes sure that manifold derivatives ar
 defined, the latter ensures that for `C^2` maps the second derivatives are symmetric even for points
 on the boundary, as these are limit points of interior points where symmetry holds. If further
 conditions turn out to be useful, they can be added here.
+
+In `uniqueDiffOn'`, we allow the target set to be dense. This implies unique differentiability
+when the field is nontrivially normed, but it makes it possible to also have model with corners
+over trivially normed field. This is important as our definition of normed space includes a
+model with corner.
 -/
 @[ext]
 structure ModelWithCorners (𝕜 : Type*) [NormedField 𝕜] (E : Type*)
     [SeminormedAddCommGroup E] [Module 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
-  uniqueDiffOn' : toPartialEquiv.target = univ ∨ UniqueDiffOn 𝕜 toPartialEquiv.target
+  uniqueDiffOn' : Dense toPartialEquiv.target ∨ UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
-
-/-- A topological vector space is a model with corners, using the identity. Do *not* use this one,
-but instead the one provided in the definition of normed space, called `modelWithCornersSelf` and
-which enjoys better defeq properties. -/
-def modelWithCornersSelfId (𝕜 : Type*) [NormedField 𝕜] (E : Type*)
-    [SeminormedAddCommGroup E] [Module 𝕜 E] : ModelWithCorners 𝕜 E E where
-  toPartialEquiv := PartialEquiv.refl E
-  source_eq := rfl
-  uniqueDiffOn' := by simp
-  target_subset_closure_interior := by simp
-  continuous_toFun := continuous_id
-  continuous_invFun := continuous_id
-
 
 section
 
@@ -229,3 +221,21 @@ theorem range_subset_closure_interior : range I ⊆ closure (interior (range I))
 end ModelWithCorners
 
 end
+
+/-- A topological vector space is a model with corners, using the identity. Do *not* use this one,
+but instead the one provided in the definition of normed space, called `modelWithCornersSelf` and
+which enjoys better defeq properties (but is propositionally equal to this one). -/
+@[simps!]
+def modelWithCornersSelfId (𝕜 : Type*) [NormedField 𝕜] (E : Type*)
+    [SeminormedAddCommGroup E] [Module 𝕜 E] : ModelWithCorners 𝕜 E E where
+  toPartialEquiv := PartialEquiv.refl E
+  source_eq := rfl
+  uniqueDiffOn' := by simp
+  target_subset_closure_interior := by simp
+  continuous_toFun := continuous_id
+  continuous_invFun := continuous_id
+
+@[simp] lemma range_modelWithCornersSelfId (𝕜 : Type*) [NormedField 𝕜] (E : Type*)
+    [SeminormedAddCommGroup E] [Module 𝕜 E] :
+    range (modelWithCornersSelfId 𝕜 E) = univ := by
+  simp [← ModelWithCorners.target_eq]

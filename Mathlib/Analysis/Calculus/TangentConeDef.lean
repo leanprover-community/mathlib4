@@ -99,6 +99,9 @@ theorem uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 univ x := by
 theorem uniqueDiffOn_univ : UniqueDiffOn 𝕜 (univ : Set E) :=
   fun _ _ => uniqueDiffWithinAt_univ
 
+theorem uniqueDiffOn_empty : UniqueDiffOn 𝕜 (∅ : Set E) :=
+  fun _ hx ↦ False.elim hx
+
 theorem UniqueDiffWithinAt.congr_pt (h : UniqueDiffWithinAt 𝕜 s x) (hy : x = y) :
     UniqueDiffWithinAt 𝕜 s y := hy ▸ h
 
