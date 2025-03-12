@@ -214,7 +214,7 @@ theorem closure_coe_iSup_map_single (s : ∀ i, Submodule R (M i)) :
     · exact sum_mem fun i hi ↦ mem_iSup_of_mem i <| mem_map_of_mem <| hx _ <| Set.mem_univ _
 
 /-- If `s i` is a family of submodules, each is in its module,
-then the closure of their span in the indexped product of the modules
+then the closure of their span in the indexed product of the modules
 is the product of their closures.
 
 In case of a finite index type, this statement immediately follows from `Submodule.iSup_map_single`.
