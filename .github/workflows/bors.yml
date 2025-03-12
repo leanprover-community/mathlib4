@@ -147,7 +147,7 @@ jobs:
           # Check if size exceeds 10GB
           if [ "$DIR_SIZE" -gt "10737418240" ]; then
             echo "Cache size exceeds threshold, running lake exe cache clean"
-            lake exe cache clean
+            lake exe cache clean || echo "lake did not work"
           fi
 
       - name: build cache
