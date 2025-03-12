@@ -57,7 +57,7 @@ lemma toBase_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ 
 -/
 @[simp]
 lemma toBase_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
-    (-a).toBase = -a.toBase  := by
+    (-a).toBase = -a.toBase := by
   by_cases ha : a = ⊤
   · simp [ha]
   · lift a to α using ha
