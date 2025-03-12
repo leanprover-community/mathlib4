@@ -149,11 +149,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     conv_lhs => rw [← ENNReal.add_halves ε]
     abel
 
--- Porting note: errors with
--- `ambiguous identifier 'eapproxDiff', possible interpretations:`
--- `[SimpleFunc.eapproxDiff, SimpleFunc.eapproxDiff]`
--- open SimpleFunc (eapproxDiff tsum_eapproxDiff)
-
+open SimpleFunc in
 /-- Given a measurable function `f` with values in `ℝ≥0`, there exists a lower semicontinuous
 function `g ≥ f` with integral arbitrarily close to that of `f`. Formulation in terms of
 `lintegral`.
@@ -166,15 +162,15 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   have :
     ∀ n,
       ∃ g : α → ℝ≥0,
-        (∀ x, SimpleFunc.eapproxDiff f n x ≤ g x) ∧
+        (∀ x, eapproxDiff f n x ≤ g x) ∧
           LowerSemicontinuous g ∧
-            (∫⁻ x, g x ∂μ) ≤ (∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n :=
+            (∫⁻ x, g x ∂μ) ≤ (∫⁻ x, eapproxDiff f n x ∂μ) + δ n :=
     fun n =>
-    SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge μ (SimpleFunc.eapproxDiff f n)
+    SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge μ (eapproxDiff f n)
       (δpos n).ne'
   choose g f_le_g gcont hg using this
   refine ⟨fun x => ∑' n, g n x, fun x => ?_, ?_, ?_⟩
-  · rw [← SimpleFunc.tsum_eapproxDiff f hf]
+  · rw [← tsum_eapproxDiff f hf]
     exact ENNReal.tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
   · refine lowerSemicontinuous_tsum fun n => ?_
     exact
@@ -183,12 +179,12 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
   · calc
       ∫⁻ x, ∑' n : ℕ, g n x ∂μ = ∑' n, ∫⁻ x, g n x ∂μ := by
         rw [lintegral_tsum fun n => (gcont n).measurable.coe_nnreal_ennreal.aemeasurable]
-      _ ≤ ∑' n, ((∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n) := ENNReal.tsum_le_tsum hg
-      _ = ∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
+      _ ≤ ∑' n, ((∫⁻ x, eapproxDiff f n x ∂μ) + δ n) := ENNReal.tsum_le_tsum hg
+      _ = ∑' n, ∫⁻ x, eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by
         refine add_le_add ?_ hδ.le
         rw [← lintegral_tsum]
-        · simp_rw [SimpleFunc.tsum_eapproxDiff f hf, le_refl]
+        · simp_rw [tsum_eapproxDiff f hf, le_refl]
         · intro n; exact (SimpleFunc.measurable _).coe_nnreal_ennreal.aemeasurable
 
 /-- Given a measurable function `f` with values in `ℝ≥0` in a sigma-finite space, there exists a
