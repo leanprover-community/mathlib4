@@ -5,7 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.Option
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Logic.Equiv.Fintype
 
 /-!

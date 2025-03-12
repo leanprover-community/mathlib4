@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 
