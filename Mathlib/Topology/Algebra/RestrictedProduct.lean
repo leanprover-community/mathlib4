@@ -10,12 +10,19 @@ import Mathlib.Topology.Algebra.Ring.Basic
 
 We define the **restricted product** of `R : ι → Type*` of types, relative to
 a family of subsets `A : (i : ι) → Set (R i)` and a filter `𝓕 : Filter ι`. This
-is the set of all `x : Π i, R i` such that `x j ∈ A j` eventually along `𝓕`,
-which we denote by `Πʳ i, [R i, A i]_[𝓕]`.
+is the set of all `x : Π i, R i` such that the set `{j | x j ∈ A j}` belongs to `𝓕`.
+We denote it by `Πʳ i, [R i, A i]_[𝓕]`.
 
 The main case of interest, which we shall refer to as the "classical restricted product",
-is that of `𝓕 = cofinite`, where the restricted product is the set of all `x : Π i, R i` such that
+is that of `𝓕 = cofinite`. Recall that this is the filter of all subsets of `ι`, which are
+*cofinite* in the sense that they have finite complement.
+Hence, the associated restricted product is the set of all `x : Π i, R i` such that
 `x j ∈ A j` for all but finitely many `j`s. We denote it simply by `Πʳ i, [R i, A i]`.
+
+Another notable case is that of the principal filter `𝓕 = 𝓟 s` corresponding to some subset `s`
+of `ι`. The associated restricted product `Πʳ i, [R i, A i]_[𝓟 s]` is the set of all
+`x : Π i, R i` such that `x j ∈ A j` for all `j ∈ s`. Put another way, this is just
+`(Π i ∈ s, A i) × (Π i ∉ s, R i)`, modulo the obvious isomorphism.
 
 We endow these types with the obvious algebraic structures, as well as their natural topology,
 which we describe below. We also show various compatibility results.
@@ -37,16 +44,16 @@ of `Π i, R i` using the `DFunLike` machinery.
 ## Topology on the restricted product
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
-1. If `𝓕` is some principal filter `𝓟 s`, we take the topology induced by the product topology
-on `Π i, R i`.
+1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
+identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
 then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
 inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`
-(that is, sets with finite complement).
+taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
 `s` belongs to the indexing set of the inductive limit.
 
@@ -115,7 +122,7 @@ variable (R : ι → Type*) (A : (i : ι) → Set (R i))
 
 /-- The **restricted product** of a family `R : ι → Type*` of types, relative to subsets
 `A : (i : ι) → Set (R i)` and the filter `𝓕 : Filter ι`, is the set of all `x : Π i, R i`
-such that `x j ∈ A j` eventually along `𝓕`. We denote it by `Πʳ i, [R i, A i]_[𝓕]`.
+such that the set `{j | x j ∈ A j}` belongs to `𝓕`. We denote it by `Πʳ i, [R i, A i]_[𝓕]`.
 
 The most common use case is with `𝓕 = cofinite`, in which case the restricted product is the set
 of all `x : Π i, R i` such that `x j ∈ A j` for all but finitely many `j`. We denote it simply
@@ -195,10 +202,10 @@ section Algebra
 ## Algebraic instances on restricted products
 
 In this section, we endow the restricted product with its algebraic instances.
-To avoid any unnecessary coercions, we use subobject classes for the subset `A i` of each `R i`.
+To avoid any unnecessary coercions, we use subobject classes for the subset `B i` of each `R i`.
 -/
 
-variable {S S' : ι → Type*} -- subobject types
+variable {S : ι → Type*} -- subobject type
 variable [Π i, SetLike (S i) (R i)]
 variable {B : Π i, S i}
 
@@ -265,16 +272,16 @@ section Topology
 ## Topology on the restricted product
 
 The topology on the restricted product `Πʳ i, [R i, A i]_[𝓕]` is defined in the following way:
-1. If `𝓕` is some principal filter `𝓟 s`, we take the topology induced by the product topology
-on `Π i, R i`.
+1. If `𝓕` is some principal filter `𝓟 s`, recall that `Πʳ i, [R i, A i]_[𝓟 s]` is canonically
+identified with `(Π i ∈ s, A i) × (Π i ∉ s, R i)`. We endow it with the product topology,
+which is also the topology induced from the full product `Π i, R i`.
 2. In general, we note that `𝓕` is the infimum of the principal filters coarser than `𝓕`. We
 then endow `Πʳ i, [R i, A i]_[𝓕]` with the inductive limit / final topology associated to the
 inclusion maps `Πʳ i, [R i, A i]_[𝓟 s] → Πʳ i, [R i, A i]_[𝓕]` where `𝓕 ≤ 𝓟 s`.
 
 In particular:
 * On the classical restricted product, with respect to the cofinite filter, this corresponds to
-taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`
-(that is, sets with finite complement).
+taking the inductive limit of the `Πʳ i, [R i, A i]_[𝓟 s]` over all *cofinite* sets `s : Set ι`.
 * If `𝓕 = 𝓟 s` is a principal filter, this second step clearly does not change the topology, since
 `s` belongs to the indexing set of the inductive limit.
 
@@ -639,7 +646,7 @@ section Compatibility
 ## Compatibility properties between algebra and topology
 -/
 
-variable {S : ι → Type*} -- subobject types
+variable {S : ι → Type*} -- subobject type
 variable [Π i, SetLike (S i) (R i)]
 variable {B : Π i, S i}
 variable {T : Set ι} {𝓕 : Filter ι}
