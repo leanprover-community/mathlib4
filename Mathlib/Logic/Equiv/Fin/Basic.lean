@@ -271,69 +271,6 @@ theorem finAddFlip_apply_mk_right {k : ℕ} (h₁ : m ≤ k) (h₂ : k < m + n) 
   convert @finAddFlip_apply_natAdd n ⟨k - m, by omega⟩ m
   simp [Nat.add_sub_cancel' h₁]
 
-/-- Rotate `Fin n` one step to the right. -/
-def finRotate : ∀ n, Equiv.Perm (Fin n)
-  | 0 => Equiv.refl _
-  | n + 1 => finAddFlip.trans (finCongr (Nat.add_comm 1 n))
-
-@[simp] lemma finRotate_zero : finRotate 0 = Equiv.refl _ := rfl
-
-lemma finRotate_succ (n : ℕ) :
-    finRotate (n + 1) = finAddFlip.trans (finCongr (Nat.add_comm 1 n)) := rfl
-
-theorem finRotate_of_lt {k : ℕ} (h : k < n) :
-    finRotate (n + 1) ⟨k, h.trans_le n.le_succ⟩ = ⟨k + 1, Nat.succ_lt_succ h⟩ := by
-  ext
-  dsimp [finRotate_succ]
-  simp [finAddFlip_apply_mk_left h, Nat.add_comm]
-
-theorem finRotate_last' : finRotate (n + 1) ⟨n, by omega⟩ = ⟨0, Nat.zero_lt_succ _⟩ := by
-  dsimp [finRotate_succ]
-  rw [finAddFlip_apply_mk_right le_rfl]
-  simp
-
-theorem finRotate_last : finRotate (n + 1) (Fin.last _) = 0 :=
-  finRotate_last'
-
-theorem Fin.snoc_eq_cons_rotate {α : Type*} (v : Fin n → α) (a : α) :
-    @Fin.snoc _ (fun _ => α) v a = fun i => @Fin.cons _ (fun _ => α) a v (finRotate _ i) := by
-  ext ⟨i, h⟩
-  by_cases h' : i < n
-  · rw [finRotate_of_lt h', Fin.snoc, Fin.cons, dif_pos h']
-    rfl
-  · have h'' : n = i := by
-      simp only [not_lt] at h'
-      exact (Nat.eq_of_le_of_lt_succ h' h).symm
-    subst h''
-    rw [finRotate_last', Fin.snoc, Fin.cons, dif_neg (lt_irrefl _)]
-    rfl
-
-@[simp]
-theorem finRotate_one : finRotate 1 = Equiv.refl _ :=
-  Subsingleton.elim _ _
-
-@[simp] theorem finRotate_succ_apply (i : Fin (n + 1)) : finRotate (n + 1) i = i + 1 := by
-  cases n
-  · exact @Subsingleton.elim (Fin 1) _ _ _
-  obtain rfl | h := Fin.eq_or_lt_of_le i.le_last
-  · simp [finRotate_last]
-  · cases i
-    simp only [Fin.lt_iff_val_lt_val, Fin.val_last, Fin.val_mk] at h
-    simp [finRotate_of_lt h, Fin.ext_iff, Fin.add_def, Nat.mod_eq_of_lt (Nat.succ_lt_succ h)]
-
-theorem finRotate_apply_zero : finRotate n.succ 0 = 1 := by
-  simp
-
-theorem coe_finRotate_of_ne_last {i : Fin n.succ} (h : i ≠ Fin.last n) :
-    (finRotate (n + 1) i : ℕ) = i + 1 := by
-  rw [finRotate_succ_apply]
-  have : (i : ℕ) < n := Fin.val_lt_last h
-  exact Fin.val_add_one_of_lt this
-
-theorem coe_finRotate (i : Fin n.succ) :
-    (finRotate n.succ i : ℕ) = if i = Fin.last n then (0 : ℕ) else i + 1 := by
-  rw [finRotate_succ_apply, Fin.val_add_one i]
-
 /-- Equivalence between `Fin m × Fin n` and `Fin (m * n)` -/
 @[simps]
 def finProdFinEquiv : Fin m × Fin n ≃ Fin (m * n) where

@@ -7,7 +7,7 @@ import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Equivalences between polynomial rings
