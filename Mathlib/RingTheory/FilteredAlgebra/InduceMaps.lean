@@ -36,7 +36,7 @@ general and applicable to multiple algebraic structures, such as  `AddSubroup`, 
 However, their excessive structural freedom implies overly weak constraints, making it difficult to
 support meaningful conclusions (e.g. Without constraints, σ = { ⊥ } would be entirely possible).
 This class introduces the necessary conditions to describe `σA` and `σB`, ensure `f` can induce a
-map from σA → σB.-/
+map from `σA → σB`. -/
 class SetLikeHom (σA : Type*) [SetLike σA A] {B : Type*} (σB : Type*) [SetLike σB B]
  (f : A → B) where
   /-- It is the corresponding map from σA → σB with `coe_map` property -/
@@ -54,8 +54,7 @@ def FB (FA : ι → σA) (f : A → B) [SetLikeHom σA σB f]: ι → σB := fun
 def FB_lt (FA_lt : ι → σA) (f : A → B) [SetLikeHom σA σB f] : outParam <| ι → σB :=
  fun i ↦ map f (FA_lt i)
 
-/-- When FA and FA_lt is a filtration of A, then f: A → B induce a filtration of B which is called
-`FB` and `FB_lt`-/
+/-- The filtration on `B` induced by `f : A → B` when given `IsFiltration FA FA_lt` on `A`. -/
 instance HomtoFil (FA FA_lt : ι → σA) (f : A → B) [fil : IsFiltration FA FA_lt]
 [SetLikeHom σA σB f] : IsFiltration (FB σA σB FA f) (FB_lt σA σB FA_lt f) (ι := ι) where
   mono {i j i_le_j}:= by
@@ -79,8 +78,8 @@ section RingHomtoFil
 variable {R : Type*} [Ring R] (σR : Type*) [SetLike σR R] [AddSubgroupClass σR R] {S : Type*}
  [Ring S] (σS : Type*) [SetLike σS S] [AddSubgroupClass σS S]
 
-/-- It is `F` part of the ring filtration induced by f: A →+* B -/
-def FS (FR : ι → σR)(f : R →+* S)[SetLikeHom σR σS f] :  ι → σS := FB σR σS FR f
+/-- It is `F` part of the ring filtration induced by `f : A →+* B`. -/
+def FS (FR : ι → σR) (f : R →+* S) [SetLikeHom σR σS f] :  ι → σS := FB σR σS FR f
 
 /-- It is `F_lt` part of the ring filtration induced by f: A →+* B -/
 def FS_lt (FR_lt : ι → σR) (f : R →+* S) [SetLikeHom σR σS f] :
@@ -91,7 +90,7 @@ variable (FR : ι → σR) (FR_lt : outParam <| ι → σR) (f : R →+* S) [IsR
 
 open SetLikeHom Set
 /- When FA and FA_lt is a ring filtration of A, then ring hom f: A →+* B induce a ring filtration
- of B which is called `FB` and `FB_lt` -/
+ of B which is called `FB` and `FB_lt`. -/
 instance RingHomtoFil (FR FR_lt: ι → σR) [fil : IsRingFiltration FR FR_lt] :
     IsRingFiltration (FS σR σS FR f) (FS_lt σR σS FR_lt f) where
   __ := HomtoFil σR σS FR FR_lt f
@@ -137,7 +136,7 @@ def FN_lt (FM_lt : ι → σM) (f : M →ₗ[R] N) [SetLikeHom σM σN f] : outP
  FB_lt σM σN FM_lt f
 
 /- When FM and FM_lt is a filtration of M, then module hom f: M → N induce a module filtration of B
- which is called `FB` and `FB_lt`-/
+ which is called `FB` and `FB_lt`. -/
 open SetLikeHom
 instance ModuleHomtoFil [SetLikeHom σM σN f] :
     IsModuleFiltration FR FR_lt (FN σM σN FM f) (FN_lt σM σN FM_lt f) where
