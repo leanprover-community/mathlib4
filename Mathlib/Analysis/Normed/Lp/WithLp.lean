@@ -84,58 +84,62 @@ instance instModuleFinite
   ‹Module.Finite K V›
 
 variable {K V}
-variable [AddCommGroup V] [Semiring K] [Module K V]
+-- variable [SMul K V] [AddCommGroup V] [Semiring K] [Module K V]
 variable (c : K) (x y : WithLp p V) (x' y' : V)
 
 /-! `WithLp.equiv` preserves the module structure. -/
 
 @[simp]
-theorem equiv_zero : WithLp.equiv p V 0 = 0 :=
+theorem equiv_zero [AddCommGroup V] : WithLp.equiv p V 0 = 0 :=
   rfl
 
 @[simp]
-theorem equiv_symm_zero : (WithLp.equiv p V).symm 0 = 0 :=
+theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
   rfl
 
 @[simp]
-theorem equiv_add : WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
+theorem equiv_add [AddCommGroup V] :
+    WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
   rfl
 
 @[simp]
-theorem equiv_symm_add :
+theorem equiv_symm_add [AddCommGroup V] :
     (WithLp.equiv p V).symm (x' + y') = (WithLp.equiv p V).symm x' + (WithLp.equiv p V).symm y' :=
   rfl
 
 @[simp]
-theorem equiv_sub : WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
+theorem equiv_sub [AddCommGroup V] :
+    WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
   rfl
 
 @[simp]
-theorem equiv_symm_sub :
+theorem equiv_symm_sub [AddCommGroup V] :
     (WithLp.equiv p V).symm (x' - y') = (WithLp.equiv p V).symm x' - (WithLp.equiv p V).symm y' :=
   rfl
 
 @[simp]
-theorem equiv_neg : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
+theorem equiv_neg [AddCommGroup V] : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
   rfl
 
 @[simp]
-theorem equiv_symm_neg : (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
+theorem equiv_symm_neg [AddCommGroup V] :
+    (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
   rfl
 
 @[simp]
-theorem equiv_smul : WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
+theorem equiv_smul [SMul K V] : WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
   rfl
 
 @[simp]
-theorem equiv_symm_smul : (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
+theorem equiv_symm_smul [SMul K V] :
+    (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
   rfl
 
 variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
 @[simps (config := .asFn)]
-protected def linearEquiv : WithLp p V ≃ₗ[K] V :=
+protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V :=
   { LinearEquiv.refl _ _ with
     toFun := WithLp.equiv _ _
     invFun := (WithLp.equiv _ _).symm }
