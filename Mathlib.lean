@@ -347,6 +347,8 @@ import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Invertible.Defs
+import Mathlib.Algebra.Group.Irreducible.Defs
+import Mathlib.Algebra.Group.Irreducible.Lemmas
 import Mathlib.Algebra.Group.MinimalAxioms
 import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Nat.Even
