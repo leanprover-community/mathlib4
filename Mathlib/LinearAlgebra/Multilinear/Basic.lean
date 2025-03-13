@@ -265,7 +265,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) :
 variable (M₁) {M₂}
 
 /-- The constant map is multilinear when `ι` is empty. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : M₂) : MultilinearMap R M₁ M₂ where
   toFun := Function.const _ m
   map_update_add' _ := isEmptyElim
@@ -789,7 +789,7 @@ theorem compMultilinearMap_zero (g : M₂ →ₗ[R] M₃) :
   MultilinearMap.ext fun _ => map_zero g
 
 @[simp]
-theorem zero_compMultilinearMap (f: MultilinearMap R M₁ M₂) :
+theorem zero_compMultilinearMap (f : MultilinearMap R M₁ M₂) :
     (0 : M₂ →ₗ[R] M₃).compMultilinearMap f = 0 := rfl
 
 @[simp]
@@ -798,7 +798,7 @@ theorem compMultilinearMap_add (g : M₂ →ₗ[R] M₃) (f₁ f₂ : Multilinea
   MultilinearMap.ext fun _ => map_add g _ _
 
 @[simp]
-theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f: MultilinearMap R M₁ M₂) :
+theorem add_compMultilinearMap (g₁ g₂ : M₂ →ₗ[R] M₃) (f : MultilinearMap R M₁ M₂) :
     (g₁ + g₂).compMultilinearMap f = g₁.compMultilinearMap f + g₂.compMultilinearMap f := rfl
 
 @[simp]

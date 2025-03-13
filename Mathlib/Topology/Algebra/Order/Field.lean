@@ -287,7 +287,7 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
 instance (priority := 100) LinearOrderedField.toTopologicalDivisionRing :
     TopologicalDivisionRing 𝕜 := ⟨⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `GroupWithZero`
+-- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
   congr 1

@@ -329,7 +329,7 @@ theorem normAtPlace_nonneg (w : InfinitePlace K) (x : mixedSpace K) :
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> exact norm_nonneg _
 
-theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K)  :
+theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K) :
     normAtPlace w (- x) = normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> simp
@@ -778,7 +778,7 @@ theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
       exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
-        ext; erw [mem_span_basisOfFractionalIdeal]]
+        ext; simp [mem_span_basisOfFractionalIdeal]]
   rfl
 
 theorem span_idealLatticeBasis :
@@ -1028,7 +1028,7 @@ theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (p
       (neg_of_mem_negA_plusPart A hx' hw.1).trans (pos_of_not_mem_negAt_plusPart A hx hw.2)
 
 -- We will assume from now that `A` is symmetric at real places
-variable  (hA : ∀ x, x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A)
+variable (hA : ∀ x, x ∈ A ↔ (fun w ↦ ‖x.1 w‖, x.2) ∈ A)
 
 include hA in
 theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0) :

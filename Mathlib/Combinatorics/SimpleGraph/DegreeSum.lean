@@ -87,7 +87,7 @@ theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * #G.edgeFinset 
   classical
   rw [← card_univ]
   rw [@card_eq_sum_card_fiberwise _ _ _ Dart.edge _ G.edgeFinset fun d _h =>
-      by rw [mem_edgeFinset]; apply Dart.edge_mem]
+      by rw [mem_coe, mem_edgeFinset]; apply Dart.edge_mem]
   rw [← mul_comm, sum_const_nat]
   intro e h
   apply G.dart_edge_fiber_card e
