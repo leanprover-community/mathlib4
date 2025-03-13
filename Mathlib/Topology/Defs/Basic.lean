@@ -99,8 +99,8 @@ irreducible_def nhdsWithoutAtlas (x : X) : Filter X :=
 variable (X Y) in
 /-- Partial homeomorphisms, defined on open subsets of the space -/
 structure PartialHomeomorph extends PartialEquiv X Y where
-  open_source : TopologicalSpaceWithoutAtlas.IsOpen source
-  open_target : TopologicalSpaceWithoutAtlas.IsOpen target
+  open_source' : TopologicalSpaceWithoutAtlas.IsOpen source
+  open_target' : TopologicalSpaceWithoutAtlas.IsOpen target
   /-- `toFun` is continuous on `source`, written by hand as the definitions have not been given. -/
   continuousOn_toFun : ∀ x ∈ source, Tendsto toFun (nhdsWithoutAtlas x ⊓ 𝓟 source)
     (nhdsWithoutAtlas (toFun x))

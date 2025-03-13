@@ -82,7 +82,7 @@ lemma TopologicalSpaceWithoutAtlas.ext :
       @TopologicalSpaceWithoutAtlas.IsOpen _ f = @TopologicalSpaceWithoutAtlas.IsOpen _ g → f = g
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
-theorem TopologicalSpace.mk_eq {f g : TopologicalSpaceWithoutAtlas X} (a b c d)
+protected theorem TopologicalSpace.mk_eq {f g : TopologicalSpaceWithoutAtlas X} (a b c d)
     (h : f = g) : @TopologicalSpace.mk X f a b = @TopologicalSpace.mk X g c d := by
   subst h
   congr

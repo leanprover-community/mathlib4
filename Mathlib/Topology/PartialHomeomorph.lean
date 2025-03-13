@@ -56,24 +56,15 @@ then it should use `e.source ∩ s` or `e.target ∩ t`, not `s ∩ e.source` or
 
 open Function Set Filter Topology
 
-variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
-  [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
-  [TopologicalSpace Z] [TopologicalSpace Z']
-
-/-- Partial homeomorphisms, defined on open subsets of the space -/
-structure PartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
-  [TopologicalSpace Y] extends PartialEquiv X Y where
-  open_source : IsOpen source
-  open_target : IsOpen target
-  continuousOn_toFun : ContinuousOn toFun source
-  continuousOn_invFun : ContinuousOn invFun target
-
 namespace PartialHomeomorph
 
-variable (e : PartialHomeomorph X Y)
+section Setup
+
+variable {X Y : Type*} [TopologicalSpaceWithoutAtlas X] [TopologicalSpaceWithoutAtlas Y]
+(e : PartialHomeomorph X Y)
 
 /-! Basic properties; inverse (symm instance) -/
-section Basic
+
 /-- Coercion of a partial homeomorphisms to a function. We don't use `e.toFun` because it is
 actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`.
 While we may want to switch to this behavior later, doing it mid-port will break a lot of proofs. -/
@@ -101,6 +92,18 @@ def Simps.apply (e : PartialHomeomorph X Y) : X → Y := e
 def Simps.symm_apply (e : PartialHomeomorph X Y) : Y → X := e.symm
 
 initialize_simps_projections PartialHomeomorph (toFun → apply, invFun → symm_apply)
+
+end Setup
+
+variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
+  [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y] [TopologicalSpace Y']
+  [TopologicalSpace Z] [TopologicalSpace Z']
+
+variable (e : PartialHomeomorph X Y)
+
+protected theorem open_source : IsOpen e.source := e.open_source'
+
+protected theorem open_target : IsOpen e.target := e.open_target'
 
 protected theorem continuousOn : ContinuousOn e e.source :=
   e.continuousOn_toFun
@@ -183,8 +186,6 @@ protected theorem bijOn : BijOn e e.source e.target :=
 
 protected theorem surjOn : SurjOn e e.source e.target :=
   e.bijOn.surjOn
-
-end Basic
 
 /-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
 to an open set `s` in the domain and to `t` in the codomain. -/
