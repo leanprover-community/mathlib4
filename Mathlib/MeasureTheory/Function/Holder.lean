@@ -39,6 +39,7 @@ variable {α 𝕜 E F G : Type*} {m : MeasurableSpace α} {μ : Measure α}
 
 namespace ContinuousLinearMap
 
+variable (r) in
 /-- The map between `MeasuryTheory.Lp` spaces satisfying `ENNReal.HolderTriple`
 induced by a continuous bilinear map on the underlying spaces. -/
 def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
@@ -48,44 +49,44 @@ def holder (f : Lp E p μ) (g : Lp F q μ) : Lp G r μ :=
     exact B.aestronglyMeasurable_comp₂ (Lp.memLp f).1 (Lp.memLp g).1
 
 lemma coeFn_holder (f : Lp E p μ) (g : Lp F q μ) :
-    (B.holder f g : Lp G r μ) =ᵐ[μ] fun x ↦ B (f x) (g x) := by
+    B.holder r f g =ᵐ[μ] fun x ↦ B (f x) (g x) := by
   rw [holder]
   exact MemLp.coeFn_toLp _
 
 lemma nnnorm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
-    ‖(B.holder f g : Lp G r μ)‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
+    ‖B.holder r f g‖₊ ≤ ‖B‖₊ * ‖f‖₊ * ‖g‖₊ := by
   simp_rw [← ENNReal.coe_le_coe, ENNReal.coe_mul, ← enorm_eq_nnnorm, Lp.enorm_def]
   apply eLpNorm_congr_ae (coeFn_holder B f g) |>.trans_le
   exact eLpNorm_le_eLpNorm_mul_eLpNorm_of_nnnorm (Lp.memLp f).1 (Lp.memLp g).1 (B · ·) ‖B‖₊
     (.of_forall fun _ ↦ B.le_opNorm₂ _ _)
 
 lemma norm_holder_apply_apply_le (f : Lp E p μ) (g : Lp F q μ) :
-    ‖(B.holder f g : Lp G r μ)‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
+    ‖B.holder r f g‖ ≤ ‖B‖ * ‖f‖ * ‖g‖ :=
   NNReal.coe_le_coe.mpr <| nnnorm_holder_apply_apply_le B f g
 
 lemma holder_add_left (f₁ f₂ : Lp E p μ) (g : Lp F q μ) :
-    (B.holder (f₁ + f₂) g : Lp G r μ) = B.holder f₁ g + B.holder f₂ g := by
+    B.holder r (f₁ + f₂) g = B.holder r f₁ g + B.holder r f₂ g := by
   simp only [holder, ← MemLp.toLp_add]
   apply MemLp.toLp_congr
   filter_upwards [AEEqFun.coeFn_add f₁.val f₂.val] with x hx
   simp [hx]
 
 lemma holder_add_right (f : Lp E p μ) (g₁ g₂ : Lp F q μ) :
-    (B.holder f (g₁ + g₂) : Lp G r μ) = B.holder f g₁ + B.holder f g₂ := by
+    B.holder r f (g₁ + g₂) = B.holder r f g₁ + B.holder r f g₂ := by
   simp only [holder, ← MemLp.toLp_add]
   apply MemLp.toLp_congr
   filter_upwards [AEEqFun.coeFn_add g₁.val g₂.val] with x hx
   simp [hx]
 
 lemma holder_smul_left (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
-    (B.holder (c • f) g : Lp G r μ) = c • B.holder f g := by
+    B.holder r (c • f) g = c • B.holder r f g := by
   simp only [holder, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c f] with x hx
   simp [hx]
 
 lemma holder_smul_right (c : 𝕜) (f : Lp E p μ) (g : Lp F q μ) :
-    (B.holder f (c • g) : Lp G r μ) = c • B.holder f g := by
+    B.holder r f (c • g) = c • B.holder r f g := by
   simp only [holder, ← MemLp.toLp_const_smul]
   apply MemLp.toLp_congr
   filter_upwards [Lp.coeFn_smul c g] with x hx
@@ -95,7 +96,7 @@ variable (μ p q r) in
 /-- `MeasureTheory.Lp.holder` as a bilinear map. -/
 @[simps! apply_apply]
 def holderₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
-  .mk₂ 𝕜 B.holder B.holder_add_left B.holder_smul_left
+  .mk₂ 𝕜 (B.holder r) B.holder_add_left B.holder_smul_left
     B.holder_add_right B.holder_smul_right
 
 variable [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
@@ -162,17 +163,17 @@ lemma smul_def {f : Lp 𝕜 p μ} {g : Lp E q μ} :
     f • g = ((Lp.memLp g).smul (Lp.memLp f)).toLp (⇑f • ⇑g) :=
   rfl
 
-lemma coeFn_lp_smul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
+lemma coeFn_lpSMul (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     (f • g : Lp E r μ) =ᵐ[μ] ⇑f • g := by
   rw [smul_def]
   exact MemLp.coeFn_toLp _
 
 protected lemma norm_smul_le (f : Lp 𝕜 p μ) (g : Lp E q μ) :
     ‖f • g‖ ≤ ‖f‖ * ‖g‖ := by
-  simp only [Lp.norm_def, ← ENNReal.toReal_mul, coeFn_lp_smul]
+  simp only [Lp.norm_def, ← ENNReal.toReal_mul, coeFn_lpSMul]
   refine ENNReal.toReal_mono ?_ ?_
   · exact ENNReal.mul_ne_top (eLpNorm_ne_top f) (eLpNorm_ne_top g)
-  · rw [eLpNorm_congr_ae (coeFn_lp_smul f g)]
+  · rw [eLpNorm_congr_ae (coeFn_lpSMul f g)]
     exact eLpNorm_smul_le_mul_eLpNorm (Lp.aestronglyMeasurable g) (Lp.aestronglyMeasurable f)
 
 end MulActionWithZero
