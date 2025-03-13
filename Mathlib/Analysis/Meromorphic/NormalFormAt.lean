@@ -199,9 +199,8 @@ theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
     simp only [WithTop.coe_zero, ne_eq, Function.update_self]
     have h₀f := hf
     rcases hf with h₁f | h₁f
-    · simp only [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds),
-        LinearOrderedAddCommGroupWithTop.top_ne_zero, ↓reduceDIte]
-      exact Filter.EventuallyEq.eq_of_nhds h₁f
+    · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)] 
+        using h₁f.eq_of_nhds
     · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h₁f
       rw [Filter.EventuallyEq.eq_of_nhds h₃g]
       have : h₀f.meromorphicAt.order = n := by
