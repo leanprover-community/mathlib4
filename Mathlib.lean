@@ -4808,6 +4808,7 @@ import Mathlib.RingTheory.Finiteness.Nilpotent
 import Mathlib.RingTheory.Finiteness.Prod
 import Mathlib.RingTheory.Finiteness.Projective
 import Mathlib.RingTheory.Finiteness.Quotient
+import Mathlib.RingTheory.Finiteness.Small
 import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Fintype
 import Mathlib.RingTheory.Flat.Basic
@@ -5112,6 +5113,7 @@ import Mathlib.RingTheory.Support
 import Mathlib.RingTheory.SurjectiveOnStalks
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.TensorProduct.DirectLimit.FG
+import Mathlib.RingTheory.TensorProduct.DirectLimit.Small
 import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
