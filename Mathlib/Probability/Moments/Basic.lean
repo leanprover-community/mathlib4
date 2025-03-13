@@ -29,7 +29,8 @@ import Mathlib.Probability.IdentDistrib
   Chernoff bound on the upper (resp. lower) tail of a random variable. For `t` nonnegative such that
   the cgf exists, `ℙ(ε ≤ X) ≤ exp(- t*ε + cgf X ℙ t)`. See also
   `ProbabilityTheory.measure_ge_le_exp_mul_mgf` and
-  `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead.
+  `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
+  of `cgf`.
 -/
 
 
