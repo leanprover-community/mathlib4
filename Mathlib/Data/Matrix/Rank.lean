@@ -29,9 +29,9 @@ namespace Matrix
 
 open Module Cardinal Set Submodule
 
-universe um um₀ un un₀ uR uo ul
-variable {m : Type um} {m₀ : Type um₀} {n : Type un} {n₀ : Type un₀} {R : Type uR} {o : Type uo}
-    {l : Type ul}
+universe ul um um₀ un un₀ uo uR
+variable {l : Type ul} {m : Type um} {m₀ : Type um₀} {n : Type un} {n₀ : Type un₀} {o : Type uo}
+variable {R : Type uR}
 
 section Infinite
 
