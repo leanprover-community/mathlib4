@@ -133,7 +133,7 @@ def setoid [DirectedSystem G fun i j h => f i j h] [IsDirected ι (· ≤ ·)] :
         assumption⟩
 
 /-- The structure on the `Σ`-type which becomes the structure on the direct limit after quotienting.
- -/
+-/
 noncomputable def sigmaStructure [IsDirected ι (· ≤ ·)] [Nonempty ι] : L.Structure (Σˣ f) where
   funMap F x :=
     ⟨_,

@@ -143,12 +143,12 @@ theorem initial.to_comp [HasInitial C] {P Q : C} (f : P ⟶ Q) : initial.to P �
   simp [eq_iff_true_of_subsingleton]
 
 /-- The (unique) isomorphism between the chosen initial object and any other initial object. -/
-@[simp]
+@[simps!]
 def initialIsoIsInitial [HasInitial C] {P : C} (t : IsInitial P) : ⊥_ C ≅ P :=
   initialIsInitial.uniqueUpToIso t
 
 /-- The (unique) isomorphism between the chosen terminal object and any other terminal object. -/
-@[simp]
+@[simps!]
 def terminalIsoIsTerminal [HasTerminal C] {P : C} (t : IsTerminal P) : ⊤_ C ≅ P :=
   terminalIsTerminal.uniqueUpToIso t
 

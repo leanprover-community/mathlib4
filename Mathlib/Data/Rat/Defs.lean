@@ -3,12 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Batteries.Data.Rat.Lemmas
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Int.Defs
 import Mathlib.Data.Rat.Init
 import Mathlib.Order.Basic
 import Mathlib.Tactic.Common
-import Batteries.Data.Rat.Lemmas
+import Mathlib.Data.Int.Init
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Basics for the Rational Numbers
@@ -439,11 +440,15 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 end Casts
 
 /--
-A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as `cases' q` for `q : Rat`.
+A version of `Rat.casesOn` that uses `/` instead of `Rat.mk'`. Use as
+```lean
+cases r with
+| div p q nonzero coprime =>
+```
 -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def divCasesOn {C : ℚ → Sort*} (a : ℚ)
-    (h : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
-  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact h n d nz red
+    (div : ∀ (n : ℤ) (d : ℕ), d ≠ 0 → n.natAbs.Coprime d → C (n / d)) : C a :=
+  a.casesOn fun n d nz red => by rw [Rat.mk'_eq_divInt, Rat.divInt_eq_div]; exact div n d nz red
 
 end Rat

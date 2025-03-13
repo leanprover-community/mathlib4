@@ -728,7 +728,7 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.succ q), s, K'.elim (trList [n]) [] c d⟩
       ⟨some q, none, K'.elim (trList [n.succ]) [] c d⟩ := by
   simp only [TM2.step, trList, trNat.eq_1, Nat.cast_succ, Num.add_one]
-  cases' (n : Num) with a
+  rcases (n : Num) with - | a
   · refine TransGen.head rfl ?_
     simp only [Option.mem_def, TM2.stepAux, elim_main, decide_false, elim_update_main, ne_eq,
       Function.update_of_ne, elim_rev, elim_update_rev, decide_true, Function.update_self,
@@ -771,7 +771,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   refine ⟨none, ?_⟩
   simp only [TM2.step, trList, trNat.eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
     List.tail_cons, List.headI_cons]
-  cases' (n : Num) with a
+  rcases (n : Num) with - | a
   · simp only [trPosNum, Num.succ', List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
     rw [tr]; simp only [pop', TM2.stepAux, cond_false]
@@ -871,7 +871,7 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
       else
         natEnd (trList v).head?.iget = false ∧
           (trList v).tail = (trNat v.headI).tail ++ Γ'.cons :: trList v.tail := by
-      cases' v with n
+      obtain - | n := v
       · exact ⟨rfl, rfl⟩
       rcases n with - | n
       · simp

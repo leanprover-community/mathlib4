@@ -167,7 +167,8 @@ def isCDot? : Syntax → Bool
   | _ => false
 
 /--
-`findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`. -/
+`findCDot stx` extracts from `stx` the syntax nodes of `kind` `Lean.Parser.Term.cdot` or `cdotTk`.
+-/
 partial
 def findCDot : Syntax → Array Syntax
   | stx@(.node _ kind args) =>

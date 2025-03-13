@@ -5,11 +5,12 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.UnivLE
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
@@ -31,7 +32,9 @@ We define cardinal numbers as a quotient of types under the equivalence relation
 * Multiplication `c₁ * c₂` is defined by `Cardinal.mul_def : #α * #β = #(α × β)`.
 * The order `c₁ ≤ c₂` is defined by `Cardinal.le_def α β : #α ≤ #β ↔ Nonempty (α ↪ β)`.
 * Exponentiation `c₁ ^ c₂` is defined by `Cardinal.power_def α β : #α ^ #β = #(β → α)`.
-* `Cardinal.isLimit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
+* `Order.IsSuccLimit c` means that `c` is a (weak) limit cardinal: `c ≠ 0 ∧ ∀ x < c, succ x < c`.
+* `Cardinal.IsStrongLimit c` means that `c` is a strong limit cardinal:
+  `c ≠ 0 ∧ ∀ x < c, 2 ^ x < c`.
 * `Cardinal.aleph0` or `ℵ₀` is the cardinality of `ℕ`. This definition is universe polymorphic:
   `Cardinal.aleph0.{u} : Cardinal.{u}` (contrast with `ℕ : Type`, which lives in a specific
   universe). In some cases the universe level has to be given explicitly.
@@ -574,7 +577,7 @@ theorem power_ne_zero {a : Cardinal} (b : Cardinal) : a ≠ 0 → a ^ b ≠ 0 :=
     mk_ne_zero_iff.2 ⟨fun _ => a⟩
 
 theorem mul_power {a b c : Cardinal} : (a * b) ^ c = a ^ c * b ^ c :=
-  inductionOn₃ a b c fun α β γ => mk_congr <| Equiv.arrowProdEquivProdArrow α β γ
+  inductionOn₃ a b c fun _ _ γ => mk_congr <| Equiv.arrowProdEquivProdArrow γ _ _
 
 theorem power_mul {a b c : Cardinal} : a ^ (b * c) = (a ^ b) ^ c := by
   rw [mul_comm b c]
@@ -804,6 +807,8 @@ theorem lift_succ (a) : lift.{v, u} (succ a) = succ (lift.{v, u} a) :=
       exact h.not_lt (lt_succ _))
     (succ_le_of_lt <| lift_lt.2 <| lt_succ a)
 
+/-! ### Limit cardinals -/
+
 /-- A cardinal is a limit if it is not zero or a successor cardinal. Note that `ℵ₀` is a limit
   cardinal by this definition, but `0` isn't.
 Deprecated. Use `Order.IsSuccLimit` instead. -/
@@ -845,6 +850,25 @@ theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
 alias isSuccLimit_zero := isSuccPrelimit_zero
 
 end deprecated
+
+/-- A cardinal is a strong limit if it is not zero and it is closed under powersets.
+Note that `ℵ₀` is a strong limit by this definition. -/
+structure IsStrongLimit (c : Cardinal) : Prop where
+  ne_zero : c ≠ 0
+  two_power_lt ⦃x⦄ : x < c → 2 ^ x < c
+
+protected theorem IsStrongLimit.isSuccLimit {c} (H : IsStrongLimit c) : IsSuccLimit c := by
+  rw [Cardinal.isSuccLimit_iff]
+  exact ⟨H.ne_zero, isSuccPrelimit_of_succ_lt fun x h ↦
+    (succ_le_of_lt <| cantor x).trans_lt (H.two_power_lt h)⟩
+
+protected theorem IsStrongLimit.isSuccPrelimit {c} (H : IsStrongLimit c) : IsSuccPrelimit c :=
+  H.isSuccLimit.isSuccPrelimit
+
+set_option linter.deprecated false in
+@[deprecated IsStrongLimit.isSuccLimit (since := "2024-09-17")]
+theorem IsStrongLimit.isLimit {c} (H : IsStrongLimit c) : IsLimit c :=
+  ⟨H.ne_zero, H.isSuccPrelimit⟩
 
 /-! ### Indexed cardinal `sum` -/
 
@@ -1030,6 +1054,17 @@ theorem bddAbove_range_comp {ι : Type u} {f : ι → Cardinal.{v}} (hf : BddAbo
     (g : Cardinal.{v} → Cardinal.{max v w}) : BddAbove (range (g ∘ f)) := by
   rw [range_comp]
   exact bddAbove_image g hf
+
+/-- The type of cardinals in universe `u` is not `Small.{u}`. This is a version of the Burali-Forti
+paradox. -/
+theorem _root_.not_small_cardinal : ¬ Small.{u} Cardinal.{max u v} := by
+  intro h
+  have := small_lift.{_, v} Cardinal.{max u v}
+  rw [← small_univ_iff, ← bddAbove_iff_small] at this
+  exact not_bddAbove_univ this
+
+instance uncountable : Uncountable Cardinal.{u} :=
+  Uncountable.of_not_small not_small_cardinal.{u}
 
 /-! ### Bounds on suprema -/
 
@@ -1518,6 +1553,14 @@ theorem not_isSuccLimit_of_lt_aleph0 {c : Cardinal} (h : c < ℵ₀) : ¬ IsSucc
 theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤ c := by
   contrapose! h
   exact not_isSuccLimit_of_lt_aleph0 h
+
+theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
+  refine ⟨aleph0_ne_zero, fun x hx ↦ ?_⟩
+  obtain ⟨n, rfl⟩ := lt_aleph0.1 hx
+  exact_mod_cast nat_lt_aleph0 _
+
+theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
+  aleph0_le_of_isSuccLimit H.isSuccLimit
 
 section deprecated
 
@@ -2193,4 +2236,4 @@ end Cardinal
 
 -- end Tactic
 
-set_option linter.style.longFile 2300
+set_option linter.style.longFile 2400

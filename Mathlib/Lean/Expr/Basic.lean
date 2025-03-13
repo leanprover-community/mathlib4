@@ -45,9 +45,9 @@ def mapPrefix (f : Name → Option Name) (n : Name) : Name := Id.run do
   | str n' s => mkStr (mapPrefix f n') s
   | num n' i => mkNum (mapPrefix f n') i
 
-/-- Build a name from components. For example ``from_components [`foo, `bar]`` becomes
-  ``` `foo.bar```.
-  It is the inverse of `Name.components` on list of names that have single components. -/
+/-- Build a name from components.
+For example, ``from_components [`foo, `bar]`` becomes ``` `foo.bar```.
+It is the inverse of `Name.components` on list of names that have single components. -/
 def fromComponents : List Name → Name := go .anonymous where
   /-- Auxiliary for `Name.fromComponents` -/
   go : Name → List Name → Name
@@ -66,16 +66,16 @@ def lastComponentAsString : Name → String
   | .num _ n => toString n
   | .anonymous => ""
 
-/-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`, i.e.
-  `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
-  Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
+/-- `nm.splitAt n` splits a name `nm` in two parts, such that the *second* part has depth `n`,
+i.e. `(nm.splitAt n).2.getNumParts = n` (assuming `nm.getNumParts ≥ n`).
+Example: ``splitAt `foo.bar.baz.back.bat 1 = (`foo.bar.baz.back, `bat)``. -/
 def splitAt (nm : Name) (n : Nat) : Name × Name :=
   let (nm2, nm1) := nm.componentsRev.splitAt n
   (.fromComponents <| nm1.reverse, .fromComponents <| nm2.reverse)
 
 /-- `isPrefixOf? pre nm` returns `some post` if `nm = pre ++ post`.
-  Note that this includes the case where `nm` has multiple more namespaces.
-  If `pre` is not a prefix of `nm`, it returns `none`. -/
+Note that this includes the case where `nm` has multiple more namespaces.
+If `pre` is not a prefix of `nm`, it returns `none`. -/
 def isPrefixOf? (pre nm : Name) : Option Name :=
   if pre == nm then
     some anonymous
@@ -201,19 +201,14 @@ def eraseProofs (e : Expr) : MetaM Expr :=
       else
         return .continue)
 
-/-- If an `Expr` has form `.fvar n`, then returns `some n`, otherwise `none`. -/
-def fvarId? : Expr → Option FVarId
-  | .fvar n => n
-  | _ => none
-
 /-- If an `Expr` has the form `Type u`, then return `some u`, otherwise `none`. -/
 def type? : Expr → Option Level
   | .sort u => u.dec
   | _ => none
 
 /-- `isConstantApplication e` checks whether `e` is syntactically an application of the form
-  `(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
-  it does a syntactic check that the expression does not depend on `yₙ`. -/
+`(fun x₁ ⋯ xₙ => H) y₁ ⋯ yₙ` where `H` does not contain the variable `xₙ`. In other words,
+it does a syntactic check that the expression does not depend on `yₙ`. -/
 def isConstantApplication (e : Expr) :=
   e.isApp && aux e.getAppNumArgs'.pred e.getAppFn' e.getAppNumArgs'
 where
@@ -252,11 +247,11 @@ def ofInt (α : Expr) : Int → MetaM Expr
 section recognizers
 
 /--
-  Return `some n` if `e` is one of the following
-  - A nat literal (numeral)
-  - `Nat.zero`
-  - `Nat.succ x` where `isNumeral x`
-  - `OfNat.ofNat _ x _` where `isNumeral x` -/
+Return `some n` if `e` is one of the following
+- a nat literal (numeral)
+- `Nat.zero`
+- `Nat.succ x` where `isNumeral x`
+- `OfNat.ofNat _ x _` where `isNumeral x` -/
 partial def numeral? (e : Expr) : Option Nat :=
   if let some n := e.rawNatLit? then n
   else
@@ -450,9 +445,9 @@ def rewriteType (e eq : Expr) : MetaM Expr := do
   mkEqMP (← (← inferType e).rewrite eq) e
 
 /-- Given `(hNotEx : Not ex)` where `ex` is of the form `Exists x, p x`,
-    return a `forall x, Not (p x)` and a proof for it.
+return a `forall x, Not (p x)` and a proof for it.
 
-    This function handles nested existentials. -/
+This function handles nested existentials. -/
 partial def forallNot_of_notExists (ex hNotEx : Expr) : MetaM (Expr × Expr) := do
   let .app (.app (.const ``Exists [lvl]) A) p := ex | failure
   go lvl A p hNotEx
@@ -482,7 +477,7 @@ where
 end Expr
 
 /-- Get the projections that are projections to parent structures. Similar to `getParentStructures`,
-  except that this returns the (last component of the) projection names instead of the parent names.
+except that this returns the (last component of the) projection names instead of the parent names.
 -/
 def getFieldsToParents (env : Environment) (structName : Name) : Array Name :=
   getStructureFields env structName |>.filter fun fieldName =>

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Reid Barton, Simon Hudon, Kenny Lau
 -/
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Small.Defs
 
 /-!
 # Opposites
@@ -26,9 +27,8 @@ variable (α : Sort u)
 -- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
 /-- The type of objects of the opposite of `α`; used to define the opposite category.
 
-  Now that Lean 4 supports definitional eta equality for records,
-  both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
-
+Now that Lean 4 supports definitional eta equality for records,
+both `unop (op X) = X` and `op (unop X) = X` are definitional equalities.
 -/
 structure Opposite where
   /-- The canonical map `α → αᵒᵖ`. -/
@@ -110,5 +110,11 @@ The `@[induction_eliminator]` attribute makes it the default induction principle
 so you don't need to use `induction x using Opposite.rec'`. -/
 @[simp, induction_eliminator]
 protected def rec' {F : αᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+
+/-- If `X` is `u`-small, also `Xᵒᵖ` is `u`-small.
+Note: This is not an instance, because it tends to mislead typeclass search. -/
+lemma small {X : Type v} [Small.{u} X] : Small.{u} Xᵒᵖ := by
+  obtain ⟨S, ⟨e⟩⟩ := Small.equiv_small (α := X)
+  exact ⟨S, ⟨equivToOpposite.symm.trans e⟩⟩
 
 end Opposite

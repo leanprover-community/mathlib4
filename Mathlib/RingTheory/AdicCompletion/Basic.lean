@@ -6,6 +6,7 @@ Authors: Kenny Lau, Judith Ludwig, Christian Merten
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.SModEq
 import Mathlib.RingTheory.Jacobson.Ideal
+import Mathlib.RingTheory.Ideal.Quotient.PowTransition
 
 /-!
 # Completion of a module with respect to an ideal.
@@ -43,7 +44,7 @@ class IsPrecomplete : Prop where
     ∃ L : M, ∀ n, f n ≡ L [SMOD (I ^ n • ⊤ : Submodule R M)]
 
 /-- A module `M` is `I`-adically complete if it is Hausdorff and precomplete. -/
-class IsAdicComplete extends IsHausdorff I M, IsPrecomplete I M : Prop
+class IsAdicComplete : Prop extends IsHausdorff I M, IsPrecomplete I M
 
 variable {I M}
 
@@ -54,6 +55,13 @@ theorem IsHausdorff.haus (_ : IsHausdorff I M) :
 theorem isHausdorff_iff :
     IsHausdorff I M ↔ ∀ x : M, (∀ n : ℕ, x ≡ 0 [SMOD (I ^ n • ⊤ : Submodule R M)]) → x = 0 :=
   ⟨IsHausdorff.haus, fun h => ⟨h⟩⟩
+
+theorem IsHausdorff.eq_iff_smodEq [IsHausdorff I M] {x y : M} :
+    x = y ↔ ∀ n, x ≡ y [SMOD (I ^ n • ⊤ : Submodule R M)] := by
+  refine ⟨fun h _ ↦ h ▸ rfl, fun h ↦ ?_⟩
+  rw [← sub_eq_zero]
+  apply IsHausdorff.haus' (I := I) (x - y)
+  simpa [SModEq.sub_mem] using h
 
 theorem IsPrecomplete.prec (_ : IsPrecomplete I M) {f : ℕ → M} :
     (∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]) →
@@ -75,11 +83,7 @@ abbrev Hausdorffification : Type _ :=
 
 /-- The canonical linear map `M ⧸ (I ^ n • ⊤) →ₗ[R] M ⧸ (I ^ m • ⊤)` for `m ≤ n` used
 to define `AdicCompletion`. -/
-def AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) :
-    M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
-  liftQ (I ^ n • ⊤ : Submodule R M) (mkQ (I ^ m • ⊤ : Submodule R M)) (by
-    rw [ker_mkQ]
-    exact smul_mono (Ideal.pow_le_pow_right hmn) le_rfl)
+abbrev AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) := factorPow I M hmn
 
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
@@ -92,14 +96,11 @@ namespace IsHausdorff
 instance bot : IsHausdorff (⊥ : Ideal R) M :=
   ⟨fun x hx => by simpa only [pow_one ⊥, bot_smul, SModEq.bot] using hx 1⟩
 
-variable {M}
-
+variable {M} in
 protected theorem subsingleton (h : IsHausdorff (⊤ : Ideal R) M) : Subsingleton M :=
   ⟨fun x y => eq_of_sub_eq_zero <| h.haus (x - y) fun n => by
     rw [Ideal.top_pow, top_smul]
     exact SModEq.top⟩
-
-variable (M)
 
 instance (priority := 100) of_subsingleton [Subsingleton M] : IsHausdorff I M :=
   ⟨fun _ _ => Subsingleton.elim _ _⟩
@@ -329,31 +330,6 @@ instance : IsHausdorff I (AdicCompletion I M) where
     · simp only [val_add_apply, hx, val_zero_apply, hy, add_zero]
 
 @[simp]
-theorem transitionMap_mk {m n : ℕ} (hmn : m ≤ n) (x : M) :
-    transitionMap I M hmn
-      (Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R M)) x) =
-      Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) x := by
-  rfl
-
-@[simp]
-theorem transitionMap_eq (n : ℕ) : transitionMap I M (Nat.le_refl n) = LinearMap.id := by
-  ext
-  simp
-
-@[simp]
-theorem transitionMap_comp {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
-    transitionMap I M hmn ∘ₗ transitionMap I M hnk = transitionMap I M (hmn.trans hnk) := by
-  ext
-  simp
-
-@[simp]
-theorem transitionMap_comp_apply {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k)
-    (x : M ⧸ (I ^ k • ⊤ : Submodule R M)) :
-    transitionMap I M hmn (transitionMap I M hnk x) = transitionMap I M (hmn.trans hnk) x := by
-  change (transitionMap I M hmn ∘ₗ transitionMap I M hnk) x = transitionMap I M (hmn.trans hnk) x
-  simp
-
-@[simp]
 theorem transitionMap_comp_eval_apply {m n : ℕ} (hmn : m ≤ n) (x : AdicCompletion I M) :
     transitionMap I M hmn (x.val n) = x.val m :=
   x.property hmn
@@ -477,7 +453,7 @@ def AdicCauchySequence.mk (f : ℕ → M)
 def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f n), by
     intro m n hmn
-    simp only [mkQ_apply, transitionMap_mk]
+    simp only [mkQ_apply, factor_mk]
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
@@ -499,7 +475,9 @@ theorem mk_surjective : Function.Surjective (mk I M) := by
   choose a ha using fun n ↦ Submodule.Quotient.mk_surjective _ (x.val n)
   refine ⟨⟨a, ?_⟩, ?_⟩
   · intro m n hmn
-    rw [SModEq.def, ha m, ← transitionMap_mk I M hmn, ha n, x.property hmn]
+    rw [SModEq.def, ha m, ← mkQ_apply,
+      ← factor_mk (Submodule.smul_mono_left (Ideal.pow_le_pow_right hmn)) (a n),
+      mkQ_apply,  ha n, x.property hmn]
   · ext n
     simp [ha n]
 
