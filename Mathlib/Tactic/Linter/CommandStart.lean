@@ -68,10 +68,10 @@ partial
 def findString (s pattern : String) : String × String :=
   if pattern.isEmpty then (s, pattern) else
   if s.length < pattern.length then (s, pattern) else
-  let candidatePos := s.find (· == pattern.get ⟨0⟩)
-  let notContains := s.take candidatePos.1
-  let rest := s.drop candidatePos.1
-  --dbg_trace "notContains: '{notContains}'\nrest: '{rest}'"
+  let candidatePos := s.find ("".push · == pattern.take 1)
+  let notContains := {s.toSubstring with stopPos := candidatePos}.toString
+  let rest := {s.toSubstring with startPos := candidatePos}.toString
+  --dbg_trace "notContains: '{notContains}' vs '{s.take candidatePos.1}'\nrest: '{rest}'"
   if rest.startsWith pattern then
     (notContains, rest)
   else
@@ -83,29 +83,32 @@ def trimComments (s : String) : String :=
   if s.length ≤ 1 then s else
   let (beforeFirstDash, rest) := findString s "-"
   if rest.length ≤ 1 then s else
-  match beforeFirstDash.back, rest.get ⟨1⟩ with
-  | '/', '-' => -- this is a doc-string
-    dbg_trace "rest before: '{rest}'\n"
+  match beforeFirstDash.takeRight 1, (rest.take 2).drop 1 with
+  | "/", "-" => -- this is a doc-string
+    --dbg_trace "rest before: '{rest}'\n"
     let (takeDocs, rest) := findString (rest.drop 2) "-/"
-    dbg_trace "doc '{beforeFirstDash.back}--{takeDocs}'\n\nrest: {rest}"
+    --dbg_trace "doc '{beforeFirstDash.back}--{takeDocs}'\n\nrest: {rest}"
     beforeFirstDash ++ "--" ++ takeDocs ++ trimComments rest
-  | '/', _ => -- this is a multiline comment
-    dbg_trace "multiline comment '{beforeFirstDash}'"
+  | "/", _ => -- this is a multiline comment
+    --dbg_trace "multiline comment '{beforeFirstDash}'"
     let (_comment, rest) := findString (rest.drop 2) "-/"
     --let rest := if rest.startsWith "-/" then rest.drop 2 else rest
     (beforeFirstDash.dropRight 1).trimRight ++ trimComments (rest.drop 2)
-  | _, '-' => -- this is a single line comment
-    dbg_trace "comment"
+  | _, "-" => -- this is a single line comment
+    --dbg_trace "comment"
     let dropComment := rest.dropWhile (· != '\n')
     beforeFirstDash.trimRight ++ trimComments dropComment
   | _, _ => beforeFirstDash ++ "-" ++ trimComments (rest.drop 1)
 
 #eval show TermElabM _ from do
-  let src := "/-- ≫-/ a"
-  dbg_trace "'{src.get ⟨5⟩}'"
-  let fs := findString src "-/"
+  let src := "/-- ≫|/ a"
+  dbg_trace "'{src.get ⟨4⟩}'"
+  dbg_trace src.find (· == '|')
+  let fs := findString src "|/"
   logInfo m!"{fs.1}\n\n{fs.2}"
-  guard <| fs.2 == "-/"
+/-
+  guard <| fs.2 == "|/"
+-/
 
 #eval do
   logInfo <| trimComments "/-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
