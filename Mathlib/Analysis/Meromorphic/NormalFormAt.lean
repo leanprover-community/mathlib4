@@ -10,7 +10,7 @@ import Mathlib.Analysis.Meromorphic.Order
 
 If a function `f` is meromorphic on `U` and if `g` differs from `f` only along a
 set that is codiscrete within `U`, then `g` is likewise meromorphic. The set of
-meromorphic functions is therefore huge, and `=ᶠ[codiscreteWithinU]` defines an
+meromorphic functions is therefore huge, and `=ᶠ[codiscreteWithin U]` defines an
 equivalence relation.
 
 This file implements continuous extension to provide an API that allows picking
