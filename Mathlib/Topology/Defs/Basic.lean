@@ -113,8 +113,8 @@ variable (X) in
 /-- The identity on the whole space as a partial homeomorphism. -/
 protected def PartialHomeomorph.refl : PartialHomeomorph X X :=
   { PartialEquiv.refl X with
-    open_source := TopologicalSpaceWithoutAtlas.isOpen_univ
-    open_target := TopologicalSpaceWithoutAtlas.isOpen_univ
+    open_source' := TopologicalSpaceWithoutAtlas.isOpen_univ
+    open_target' := TopologicalSpaceWithoutAtlas.isOpen_univ
     continuousOn_toFun := by
       intro x hx
       simp only [Tendsto, map, PartialEquiv.refl_coe, preimage_id_eq,

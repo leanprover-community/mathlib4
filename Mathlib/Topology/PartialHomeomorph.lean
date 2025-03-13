@@ -208,8 +208,8 @@ def _root_.Homeomorph.toPartialHomeomorph (e : X ≃ₜ Y) : PartialHomeomorph X
 def replaceEquiv (e : PartialHomeomorph X Y) (e' : PartialEquiv X Y) (h : e.toPartialEquiv = e') :
     PartialHomeomorph X Y where
   toPartialEquiv := e'
-  open_source := h ▸ e.open_source
-  open_target := h ▸ e.open_target
+  open_source' := h ▸ e.open_source
+  open_target' := h ▸ e.open_target
   continuousOn_toFun := h ▸ e.continuousOn_toFun
   continuousOn_invFun := h ▸ e.continuousOn_invFun
 
