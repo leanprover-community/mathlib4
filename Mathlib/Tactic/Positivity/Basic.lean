@@ -253,9 +253,9 @@ where `a` and `b` are integers. -/
 private theorem pow_zero_pos [OrderedSemiring α] [Nontrivial α] (a : α) : 0 < a ^ 0 :=
   zero_lt_one.trans_le (pow_zero a).ge
 
-/-- The `positivity` extension which identifies expressions of the form `a ^ (0:ℕ)`.
+/-- The `positivity` extension which identifies expressions of the form `a ^ (0 : ℕ)`.
 This extension is run in addition to the general `a ^ b` extension (they are overlapping). -/
-@[positivity _ ^ (0:ℕ)]
+@[positivity _ ^ (0 : ℕ)]
 def evalPowZeroNat : PositivityExt where eval {u α} _zα _pα e := do
   let .app (.app _ (a : Q($α))) _ ← withReducible (whnf e) | throwError "not ^"
   _ ← synthInstanceQ (q(OrderedSemiring $α) : Q(Type u))

@@ -131,7 +131,7 @@ original sublist of index `i` if `A` is the sum of the lengths of sublists of in
 
 See `List.drop_take_succ_flatten_eq_getElem` for the corresponding statement using `List.sum`. -/
 @[deprecated "Use `List.drop_take_succ_flatten_eq_getElem`." (since := "2024-10-17")]
-theorem drop_take_succ_flatten_eq_getElem' (L : List (List α)) (i : Nat) (h : i <  L.length) :
+theorem drop_take_succ_flatten_eq_getElem' (L : List (List α)) (i : Nat) (h : i < L.length) :
     (L.flatten.take (Nat.sum ((L.map length).take (i + 1)))).drop
       (Nat.sum ((L.map length).take i)) = L[i] := by
   have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
