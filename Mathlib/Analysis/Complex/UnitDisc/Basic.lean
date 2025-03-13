@@ -23,14 +23,14 @@ local notation "conj'" => starRingEnd ℂ
 namespace Complex
 
 /-- The complex unit disc, denoted as `𝔻` withinin the Complex namespace -/
-def UnitDisc : Type :=
-  ball (0 : ℂ) 1 deriving TopologicalSpace
+def UnitDisc : Type := ball (0 : ℂ) 1
 
 @[inherit_doc] scoped[UnitDisc] notation "𝔻" => Complex.UnitDisc
 open UnitDisc
 
 namespace UnitDisc
 
+instance : TopologicalSpace UnitDisc := inferInstanceAs (TopologicalSpace (ball (0 : ℂ) 1))
 instance instCommSemigroup : CommSemigroup UnitDisc := by unfold UnitDisc; infer_instance
 instance instHasDistribNeg : HasDistribNeg UnitDisc := by unfold UnitDisc; infer_instance
 instance instCoe : Coe UnitDisc ℂ := ⟨Subtype.val⟩

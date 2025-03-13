@@ -60,7 +60,7 @@ have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
 structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
-  open_target : IsOpen target
+  open_target' : IsOpen target
   baseSet : Set B
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
@@ -761,9 +761,9 @@ def liftCM (T : Trivialization F proj) : C(T.source × T.baseSet, T.source) wher
   toFun ex := ⟨T.lift ex.1 ex.2, T.map_target (by simp [mem_target])⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
-    refine T.continuousOn_invFun.comp_continuous ?_ (by simp [mem_target])
+    refine T.toPartialHomeomorph.continuousOn_symm.comp_continuous ?_ (by simp [mem_target])
     refine .prod_mk (by fun_prop) (.snd ?_)
-    exact T.continuousOn_toFun.comp_continuous (by fun_prop) (by simp)
+    exact T.toPartialHomeomorph.continuousOn.comp_continuous (by fun_prop) (by simp)
 
 variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]
   {γ : C(ι, T.baseSet)} {i : ι} {e : T.source}

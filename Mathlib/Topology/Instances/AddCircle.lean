@@ -267,7 +267,7 @@ theorem continuousAt_equivIoc (hx : x ≠ a) : ContinuousAt (equivIoc p a) x := 
     fun x hx ↦ congrArg _ ((equivIco p a).apply_symm_apply ⟨x, Ioo_subset_Ico_self hx⟩)
   right_inv' := fun x _ ↦ (equivIco p a).symm_apply_apply x
   open_source' := isOpen_Ioo
-  open_target' := isOpen_compl_singleton
+  open_target' := by simp [isClosed_singleton]
   continuousOn_toFun := (AddCircle.continuous_mk' p).continuousOn
   continuousOn_invFun := by
     exact continuousOn_of_forall_continuousAt
