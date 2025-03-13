@@ -457,6 +457,7 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
   open_target' := ((Z.isOpen_baseSet i).inter (Z.isOpen_baseSet j)).prod isOpen_univ
   continuousOn_toFun := continuous_fst.continuousOn.prod (Z.continuousOn_coordChange i j)
   continuousOn_invFun := by
+    rw [tendsto_nhdsWithoutAtlas_inf_principal]
     simpa [inter_comm] using continuous_fst.continuousOn.prod (Z.continuousOn_coordChange j i)
 
 @[simp, mfld_simps]
@@ -552,7 +553,7 @@ def localTriv (i : ι) : Trivialization F Z.proj where
   open_source' := Z.open_source' i
   open_target' := (Z.isOpen_baseSet i).prod isOpen_univ
   continuousOn_toFun := by
-    rw [continuousOn_open_iff (Z.open_source' i)]
+    rw [tendsto_nhdsWithoutAtlas_inf_principal, continuousOn_open_iff (Z.open_source' i)]
     intro s s_open
     apply TopologicalSpace.GenerateOpen.basic
     simp only [exists_prop, mem_iUnion, mem_singleton_iff]

@@ -31,7 +31,7 @@ def PontryaginDual :=
   ContinuousMonoidHom A Circle
 
 -- Porting note: `deriving` doesn't derive these instances
-instance : TopologicalSpace (PontryaginDual A) :=
+noncomputable instance : TopologicalSpace (PontryaginDual A) :=
   (inferInstance : TopologicalSpace (ContinuousMonoidHom A Circle))
 
 instance : T2Space (PontryaginDual A) :=
