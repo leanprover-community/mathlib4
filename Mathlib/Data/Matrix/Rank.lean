@@ -41,7 +41,9 @@ noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range Aᵀ)) := rfl
 
-lemma cRank_mono_col (A : Matrix m n R) (c : n₀ → n) : (A.submatrix id c).cRank ≤ A.cRank := by
+lemma cRank_mono_col.{u,v,v₀,w} {m : Type u} {n : Type v} {n₀ : Type v₀} {R : Type w} [Semiring R]
+    (A : Matrix m n R) (c : n₀ → n) :
+    (A.submatrix id c).cRank ≤ A.cRank := by
   apply Submodule.rank_mono <| span_mono ?_
   rintro _ ⟨x, rfl⟩
   exact ⟨c x, rfl⟩
@@ -57,6 +59,15 @@ lemma cRank_lift_mono_row.{u,u₀,v} {m : Type u} {m₀ : Type u₀} {R : Type v
   have hwin := lift_rank_map_le f (span R (range Aᵀ))
   simp_rw [← lift_umax] at hwin ⊢
   exact hwin
+
+lemma cRank_submatrix_le.{u,u₀,v,v₀,w}
+    {m : Type u} {m₀ : Type u₀} {n : Type v} {n₀ : Type v₀} {R : Type w} [Semiring R]
+    (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+    lift.{u, max u₀ w} (A.submatrix r c).cRank ≤ lift.{u₀, max u w} A.cRank := by
+  apply le_trans _ (cRank_lift_mono_row _ r)
+  apply Cardinal.lift_monotone
+  apply le_trans _ (cRank_mono_col _ c)
+  simp [A.submatrix_submatrix]
 
 lemma cRank_mono_row.{u} {m m₀ : Type u} (A : Matrix m n R) (r : m₀ → m) :
     (A.submatrix r id).cRank ≤ A.cRank  := by
