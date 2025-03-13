@@ -74,6 +74,12 @@ theorem baseChange_tmul (a : A) (x : M) : f.baseChange A (a ⊗ₜ x) = a ⊗ₜ
 theorem baseChange_eq_ltensor : (f.baseChange A : A ⊗ M → A ⊗ N) = f.lTensor A :=
   rfl
 
+theorem rTensor_comp_baseChange_comm_apply
+    {S : Type*} [CommSemiring S] [Algebra R S] {S' : Type*} [CommSemiring S'] [Algebra R S']
+    (φ : S →ₗ[R] S') (t : S ⊗[R] M) (f : M →ₗ[R] N) :
+    (φ.rTensor N) (f.baseChange S t)  = (f.baseChange S') (φ.rTensor M t) := by
+  simp [baseChange_eq_ltensor, ← comp_apply, ← map_comp]
+
 @[simp]
 theorem baseChange_add : (f + g).baseChange A = f.baseChange A + g.baseChange A := by
   ext
@@ -1396,3 +1402,4 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
   rintro _ ⟨t, rfl⟩
   exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
     (by simp +contextual [add_mem])
+
