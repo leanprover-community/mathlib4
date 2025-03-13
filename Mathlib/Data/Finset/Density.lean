@@ -67,15 +67,11 @@ lemma dens_eq_card_div_card (s : Finset α) : dens s = s.card / Fintype.card α 
 @[simp] lemma dens_singleton (a : α) : dens ({a} : Finset α) = (Fintype.card α : ℚ≥0)⁻¹ := by
   simp [dens]
 
-#adaptation_note
-/-- Remove `_root_.` before merging. -/
 @[simp] lemma dens_cons (h : a ∉ s) : (s.cons a h).dens = dens s + (Fintype.card α : ℚ≥0)⁻¹ := by
-  simp [dens, _root_.add_div]
+  simp [dens, add_div]
 
-#adaptation_note
-/-- Remove `_root_.` before merging. -/
 @[simp] lemma dens_disjUnion (s t : Finset α) (h) : dens (s.disjUnion t h) = dens s + dens t := by
-  simp_rw [dens, card_disjUnion, Nat.cast_add, _root_.add_div]
+  simp_rw [dens, card_disjUnion, Nat.cast_add, add_div]
 
 @[simp] lemma dens_eq_zero : dens s = 0 ↔ s = ∅ := by
   simp +contextual [dens, Fintype.card_eq_zero_iff, eq_empty_of_isEmpty]
@@ -158,11 +154,9 @@ end Nonempty
 section Lattice
 variable [DecidableEq α]
 
-#adaptation_note
-/-- Remove `_root_.` before merging. -/
 lemma dens_union_add_dens_inter (s t : Finset α) :
     dens (s ∪ t) + dens (s ∩ t) = dens s + dens t := by
-  simp_rw [dens, ← _root_.add_div, ← Nat.cast_add, card_union_add_card_inter]
+  simp_rw [dens, ← add_div, ← Nat.cast_add, card_union_add_card_inter]
 
 lemma dens_inter_add_dens_union (s t : Finset α) :
     dens (s ∩ t) + dens (s ∪ t) = dens s + dens t := by rw [add_comm, dens_union_add_dens_inter]
@@ -170,10 +164,8 @@ lemma dens_inter_add_dens_union (s t : Finset α) :
 @[simp] lemma dens_union_of_disjoint (h : Disjoint s t) : dens (s ∪ t) = dens s + dens t := by
   rw [← disjUnion_eq_union s t h, dens_disjUnion _ _ _]
 
-#adaptation_note
-/-- Remove `_root_.` before merging. -/
 lemma dens_sdiff_add_dens_eq_dens (h : s ⊆ t) : dens (t \ s) + dens s = dens t := by
-  simp [dens, ← card_sdiff_add_card_eq_card h, _root_.add_div]
+  simp [dens, ← card_sdiff_add_card_eq_card h, add_div]
 
 lemma dens_sdiff_add_dens (s t : Finset α) : dens (s \ t) + dens t = (s ∪ t).dens := by
   rw [← dens_union_of_disjoint sdiff_disjoint, sdiff_union_self_eq_union]
