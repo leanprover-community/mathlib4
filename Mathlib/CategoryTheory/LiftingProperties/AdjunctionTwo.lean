@@ -100,7 +100,7 @@ and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`.
 If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
 projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.-/
 
-/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and morphisms`f₁ : X₁ ⟶ Y₁` in `C₁`
+/-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and morphisms `f₁ : X₁ ⟶ Y₁` in `C₁`
 and `f₃ : X₃ ⟶ Y₃` in `C₃`, this structure contains the data of
 a pullback of `(G.obj (op X₁)).obj X₃`
 and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`. -/
