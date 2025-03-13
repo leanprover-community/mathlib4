@@ -49,17 +49,14 @@ there, or if it has a pole at `x` and takes the default value `0`. -/
 theorem MeromorphicAt.meromorphicNFAt_iff :
     MeromorphicNFAt f x ↔ AnalyticAt 𝕜 f x ∨ ∃ hf : MeromorphicAt f x, hf.order < 0 ∧ f x = 0 := by
   constructor
-  · intro h₁f
-    have hf : MeromorphicAt f x := by
-      rcases h₁f with h | h
-      · have : f =ᶠ[𝓝[≠] x] 0 := Filter.EventuallyEq.filter_mono h nhdsWithin_le_nhds
+  · rintro (h | ⟨n, g, h₁g, h₂g, h₃g⟩)
+    · have hf : MeromorphicAt f x := by
+        have : f =ᶠ[𝓝[≠] x] 0 := Filter.EventuallyEq.filter_mono h nhdsWithin_le_nhds
         exact analyticAt_const.meromorphicAt.congr this.symm
-      · obtain ⟨n, g, h₁g, _, h₃g⟩ := h
-        apply MeromorphicAt.congr _ (Filter.EventuallyEq.filter_mono h₃g nhdsWithin_le_nhds).symm
+      simp [(analyticAt_congr h).2 analyticAt_const]
+    · have hf : MeromorphicAt f x := by
+        apply MeromorphicAt.congr _ (h₃g.filter_mono nhdsWithin_le_nhds).symm
         fun_prop
-    rcases h₁f with h | h
-    · simp [(analyticAt_congr h).2 analyticAt_const]
-    · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h
       have : hf.order = n := by
         rw [hf.order_eq_int_iff]
         use g, h₁g, h₂g
@@ -72,8 +69,7 @@ theorem MeromorphicAt.meromorphicNFAt_iff :
         use hf
         simp [this, WithTop.coe_lt_zero.2 (not_le.1 hn), h₃g.eq_of_nhds,
           zero_zpow n (ne_of_not_le hn).symm]
-  · intro h₁f
-    rcases h₁f with h | ⟨h₁, h₂, h₃⟩
+  · rintro (h | ⟨h₁, h₂, h₃⟩)
     · by_cases h₂f : h.order = ⊤
       · rw [AnalyticAt.order_eq_top_iff] at h₂f
         tauto
@@ -199,7 +195,7 @@ theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
     simp only [WithTop.coe_zero, ne_eq, Function.update_self]
     have h₀f := hf
     rcases hf with h₁f | h₁f
-    · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)] 
+    · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)]
         using h₁f.eq_of_nhds
     · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h₁f
       rw [Filter.EventuallyEq.eq_of_nhds h₃g]
