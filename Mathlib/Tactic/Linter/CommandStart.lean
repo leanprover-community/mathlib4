@@ -78,8 +78,14 @@ def findString (s pattern : String) : String × String :=
     let (init, tail) := findString (rest.drop 1) pattern
     (notContains.push (pattern.get ⟨0⟩) ++ init, tail)
 
+/--
+`TrimComments s` eliminates comments from `s`, disregarding nesting.
+
+If `compressDocs` is `true`, then it also compresses doc-strings that might be present in `s`,
+by collapsing consecutive sequences of at least one space into a single space.
+-/
 partial
-def trimComments (s : String) : String :=
+def trimComments (s : String) (compressDocs : Bool) : String :=
   if s.length ≤ 1 then s else
   let (beforeFirstDash, rest) := findString s "-"
   if rest.length ≤ 1 then s else
@@ -88,22 +94,26 @@ def trimComments (s : String) : String :=
     --dbg_trace "rest before: '{rest}'\n"
     let (takeDocs, rest) := findString (rest.drop 2) "-/"
     --dbg_trace "doc '{beforeFirstDash.back}--{takeDocs}'\n\nrest: {rest}"
-    -- Replace each consecutive group of at least one space in `takeDocs` with a single space.
-    -- The begin/end `|`-markers take care of preserving initial and terminal spaces, if there
-    -- were any.  We remove them in the next step.
-    let compressDocs := ("|" ++ takeDocs ++ "|").splitOn " " |>.filter (!·.isEmpty)
-    let compressDocs := " ".intercalate compressDocs |>.drop 1 |>.dropRight 1
-    beforeFirstDash ++ "--" ++ compressDocs ++ trimComments rest
+    let finalDocs :=
+      -- Replace each consecutive group of at least one space in `takeDocs` with a single space.
+      -- The begin/end `|`-markers take care of preserving initial and terminal spaces, if there
+      -- are any.  We remove them in the next step.
+      if compressDocs then
+        let intermediate := ("|" ++ takeDocs ++ "|").splitOn " " |>.filter (!·.isEmpty)
+        " ".intercalate intermediate |>.drop 1 |>.dropRight 1
+      else
+        takeDocs
+    beforeFirstDash ++ "--" ++ finalDocs ++ trimComments rest compressDocs
   | "/", _ => -- this is a multiline comment
     --dbg_trace "multiline comment '{beforeFirstDash}'"
     let (_comment, rest) := findString (rest.drop 2) "-/"
     --let rest := if rest.startsWith "-/" then rest.drop 2 else rest
-    (beforeFirstDash.dropRight 1).trimRight ++ trimComments (rest.drop 2)
+    (beforeFirstDash.dropRight 1).trimRight ++ trimComments (rest.drop 2) compressDocs
   | _, "-" => -- this is a single line comment
     --dbg_trace "comment"
     let dropComment := rest.dropWhile (· != '\n')
-    beforeFirstDash.trimRight ++ trimComments dropComment
-  | _, _ => beforeFirstDash ++ "-" ++ trimComments (rest.drop 1)
+    beforeFirstDash.trimRight ++ trimComments dropComment compressDocs
+  | _, _ => beforeFirstDash ++ "-" ++ trimComments (rest.drop 1) compressDocs
 
 #eval show TermElabM _ from do
   let src := "/-- ≫|/ a"
@@ -120,7 +130,7 @@ def trimComments (s : String) : String :=
 `f ≫ g = f ≫ h` implies `g = h`. -/
 @[stacks 003B]
 class Epi (f : X ⟶ Y) : Prop where
-"
+ " true
 
 
 def removeComments (s : String) : String :=
@@ -179,7 +189,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
         m!"Found '{stype.getKind}' in '{stype}'"
       if let some pos := stype.getPos? then
-        if pos.1 ≤ finalLintPos.1 then
+        if pos ≤ finalLintPos then
           return
     let stx := capSyntax stx finalLintPos.1
     let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
@@ -196,10 +206,10 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let st := polishPP fmt.pretty
       Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
         m!"slightly polished source:\n'{real}'\n\n\
-          actually used source:\n'{furtherFormatting (trimComments real)}'\n\n\
+          actually used source:\n'{furtherFormatting (trimComments real true)}'\n\n\
           reference formatting:\n'{st}'\n\n\
           intermediate reference formatting:\n'{fmt}'\n\nremoveComments:\n'{removeComments real}'"
-      if ! st.startsWith (furtherFormatting (trimComments real)) then
+      if ! st.startsWith (furtherFormatting (trimComments real true)) then
         let diff := real.firstDiffPos st
         let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
         let f := origSubstring.str.drop (pos)
