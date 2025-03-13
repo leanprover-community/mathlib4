@@ -511,7 +511,7 @@ protected lemma IsSelfAdjoint.cfcₙ
   cfcₙ_predicate _ _
 
 @[simp]
-lemma cfcₙ_nonneg_of_predicate [PartialOrder A]
+lemma cfcₙ_nonneg_of_predicate [LE A]
     [NonUnitalContinuousFunctionalCalculus R (fun (a : A) => 0 ≤ a)] {f : R → R} {a : A} :
     0 ≤ cfcₙ f a :=
   cfcₙ_predicate _ _

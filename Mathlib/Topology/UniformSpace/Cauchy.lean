@@ -298,7 +298,6 @@ theorem Filter.HasBasis.cauchySeq_iff' {γ} [Nonempty β] [SemilatticeSup β] {u
 theorem cauchySeq_of_controlled [SemilatticeSup β] [Nonempty β] (U : β → Set (α × α))
     (hU : ∀ s ∈ 𝓤 α, ∃ n, U n ⊆ s) {f : β → α}
     (hf : ∀ ⦃N m n : β⦄, N ≤ m → N ≤ n → (f m, f n) ∈ U N) : CauchySeq f :=
-    -- Porting note: changed to semi-implicit arguments
   cauchySeq_iff_tendsto.2
     (by
       intro s hs
@@ -470,7 +469,7 @@ theorem Filter.HasBasis.totallyBounded_iff {ι} {p : ι → Prop} {U : ι → Se
     h.imp fun _ ht => ⟨ht.1, ht.2.trans <| iUnion₂_mono fun _ _ _ hy => hUV hy⟩
 
 theorem totallyBounded_of_forall_symm {s : Set α}
-    (h : ∀ V ∈ 𝓤 α, SymmetricRel V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y V) :
+    (h : ∀ V ∈ 𝓤 α, IsSymmetricRel V → ∃ t : Set α, Set.Finite t ∧ s ⊆ ⋃ y ∈ t, ball y V) :
     TotallyBounded s :=
   UniformSpace.hasBasis_symmetric.totallyBounded_iff.2 fun V hV => by
     simpa only [ball_eq_of_symmetry hV.2] using h V hV.1 hV.2
@@ -694,7 +693,6 @@ noncomputable section
 
 /-- An auxiliary sequence of sets approximating a Cauchy filter. -/
 def setSeqAux (n : ℕ) : { s : Set α // s ∈ f ∧ s ×ˢ s ⊆ U n } :=
-  -- Porting note: changed `∃ _ : s ∈ f, ..` to `s ∈ f ∧ ..`
   Classical.indefiniteDescription _ <| (cauchy_iff.1 hf).2 (U n) (U_mem n)
 
 /-- Given a Cauchy filter `f` and a sequence `U` of entourages, `set_seq` provides
@@ -780,7 +778,7 @@ theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → 
 
 variable (α)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to `Topology.UniformSpace.Basic`
+-- TODO: move to `Topology.UniformSpace.Basic`
 instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
   ⟨fun a => by rw [nhds_eq_comap_uniformity]; infer_instance⟩
 
@@ -792,7 +790,7 @@ from second countable spaces to separable spaces, and we want to avoid loops. -/
 theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopology α := by
   rcases exists_countable_dense α with ⟨s, hsc, hsd⟩
   obtain
-    ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ SymmetricRel (t i),
+    ⟨t : ℕ → Set (α × α), hto : ∀ i : ℕ, t i ∈ (𝓤 α).sets ∧ IsOpen (t i) ∧ IsSymmetricRel (t i),
       h_basis : (𝓤 α).HasAntitoneBasis t⟩ :=
     (@uniformity_hasBasis_open_symmetric α _).exists_antitone_subbasis
   choose ht_mem hto hts using hto

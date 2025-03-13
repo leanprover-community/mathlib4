@@ -192,7 +192,6 @@ theorem prod_add_index [∀ i, AddCommMonoid (β i)] [∀ (i) (x : β i), Decida
 
 @[to_additive (attr := simp)]
 theorem prod_eq_prod_fintype [Fintype ι] [∀ i, Zero (β i)] [∀ (i : ι) (x : β i), Decidable (x ≠ 0)]
-    -- Porting note: `f` was a typeclass argument
     [CommMonoid γ] (v : Π₀ i, β i) {f : ∀ i, β i → γ} (hf : ∀ i, f i 0 = 1) :
     v.prod f = ∏ i, f i (DFinsupp.equivFunOnFintype v i) := by
   suffices (∏ i ∈ v.support, f i (v i)) = ∏ i, f i (v i) by simp [DFinsupp.prod, this]
@@ -303,39 +302,36 @@ def liftAddHom [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
   right_inv ψ := by ext; simp
   map_add' F G := by ext; simp
 
--- Porting note: The elaborator is struggling with `liftAddHom`. Passing it `β` explicitly helps.
--- This applies to roughly the remainder of the file.
-
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_singleAddHom` -/
 theorem liftAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
-    liftAddHom (β := β) (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
-  (liftAddHom (β := β)).toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
+    liftAddHom (singleAddHom β) = AddMonoidHom.id (Π₀ i, β i) :=
+  liftAddHom.toEquiv.apply_eq_iff_eq_symm_apply.2 rfl
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_apply_single` -/
 theorem liftAddHom_apply_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
-    (i : ι) (x : β i) : liftAddHom (β := β) f (single i x) = f i x := by simp
+    (i : ι) (x : β i) : liftAddHom f (single i x) = f i x := by simp
 
 /-- The `DFinsupp` version of `Finsupp.liftAddHom_comp_single` -/
 theorem liftAddHom_comp_single [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (f : ∀ i, β i →+ γ)
-    (i : ι) : (liftAddHom (β := β) f).comp (singleAddHom β i) = f i := by simp
+    (i : ι) : (liftAddHom f).comp (singleAddHom β i) = f i := by simp
 
 /-- The `DFinsupp` version of `Finsupp.comp_liftAddHom` -/
 theorem comp_liftAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] [AddCommMonoid δ]
     (g : γ →+ δ) (f : ∀ i, β i →+ γ) :
-    g.comp (liftAddHom (β := β) f) = liftAddHom (β := β) fun a => g.comp (f a) :=
-  (liftAddHom (β := β)).symm_apply_eq.1 <|
+    g.comp (liftAddHom f) = liftAddHom fun a => g.comp (f a) :=
+  liftAddHom.symm_apply_eq.1 <|
     funext fun a => by
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 
 @[simp]
 theorem sumAddHom_zero [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] :
     (sumAddHom fun i => (0 : β i →+ γ)) = 0 :=
-  map_zero (liftAddHom (β := β))
+  map_zero liftAddHom
 
 @[simp]
 theorem sumAddHom_add [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] (g : ∀ i, β i →+ γ)
     (h : ∀ i, β i →+ γ) : (sumAddHom fun i => g i + h i) = sumAddHom g + sumAddHom h :=
-  map_add (liftAddHom (β := β)) _ _
+  map_add liftAddHom _ _
 
 @[simp]
 theorem sumAddHom_singleAddHom [∀ i, AddCommMonoid (β i)] :
@@ -349,7 +345,7 @@ theorem comp_sumAddHom {δ : Type*} [∀ i, AddZeroClass (β i)] [AddCommMonoid 
 theorem sum_sub_index [∀ i, AddGroup (β i)] [∀ (i) (x : β i), Decidable (x ≠ 0)] [AddCommGroup γ]
     {f g : Π₀ i, β i} {h : ∀ i, β i → γ} (h_sub : ∀ i b₁ b₂, h i (b₁ - b₂) = h i b₁ - h i b₂) :
     (f - g).sum h = f.sum h - g.sum h := by
-  have := (liftAddHom (β := β) fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
+  have := (liftAddHom fun a => AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
   rw [liftAddHom_apply, sumAddHom_apply, sumAddHom_apply, sumAddHom_apply] at this
   exact this
 
@@ -391,7 +387,7 @@ theorem subtypeDomain_sum {ι} {β : ι → Type v} [∀ i, AddCommMonoid (β i)
   map_sum (subtypeDomainAddMonoidHom β p) _ s
 
 theorem subtypeDomain_finsupp_sum {ι} {β : ι → Type v} {δ : γ → Type x} [DecidableEq γ]
-    [∀ c, Zero (δ c)]  [∀ (c) (x : δ c), Decidable (x ≠ 0)]
+    [∀ c, Zero (δ c)] [∀ (c) (x : δ c), Decidable (x ≠ 0)]
     [∀ i, AddCommMonoid (β i)] {p : ι → Prop} [DecidablePred p]
     {s : Π₀ c, δ c} {h : ∀ c, δ c → Π₀ i, β i} :
     (s.sum h).subtypeDomain p = s.sum fun c d => (h c d).subtypeDomain p :=

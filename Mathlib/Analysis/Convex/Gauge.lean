@@ -196,8 +196,7 @@ theorem Convex.gauge_le (hs : Convex ℝ s) (h₀ : (0 : E) ∈ s) (absorbs : Ab
   by_cases ha : 0 ≤ a
   · rw [gauge_le_eq (hs.starConvex h₀) absorbs ha]
     exact convex_iInter₂ fun i _ => hs.smul i
-  · -- Porting note: `convert` needed help
-    convert convex_empty (𝕜 := ℝ) (E := E)
+  · convert convex_empty
     exact eq_empty_iff_forall_not_mem.2 fun x hx => ha <| (gauge_nonneg _).trans hx
 
 theorem StarConvex.gauge_le (hs : StarConvex ℝ 0 s) (absorbs : Absorbent ℝ s) (a : ℝ) :
@@ -516,9 +515,7 @@ protected theorem Seminorm.gauge_ball (p : Seminorm ℝ E) : gauge (p.ball 0 1) 
     rw [p.mem_ball_zero] at hy
     rw [map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos hr]
     exact mul_le_of_le_one_right hr.le hy.le
-  · have hpε : 0 < p x + ε :=
-      -- Porting note: was `by positivity`
-      add_pos_of_nonneg_of_pos (apply_nonneg _ _) hε
+  · have hpε : 0 < p x + ε := by positivity
     refine hr ⟨hpε, (p x + ε)⁻¹ • x, ?_, smul_inv_smul₀ hpε.ne' _⟩
     rw [p.mem_ball_zero, map_smul_eq_mul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hpε),
       inv_mul_lt_iff₀ hpε, mul_one]

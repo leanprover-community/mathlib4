@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Data.Real.Star
 import Mathlib.Topology.Algebra.Module.Star
 
 /-!

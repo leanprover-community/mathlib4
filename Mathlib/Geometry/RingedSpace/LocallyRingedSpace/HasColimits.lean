@@ -20,26 +20,28 @@ It then follows that `LocallyRingedSpace` has all colimits, and
 
 namespace AlgebraicGeometry
 
-universe v u
+universe w' w v u
 
 open CategoryTheory CategoryTheory.Limits Opposite TopologicalSpace
 
+attribute [local instance] Opposite.small
+
 namespace SheafedSpace
 
-variable {C : Type u} [Category.{v} C] [HasLimits C]
-variable {J : Type v} [Category.{v} J] (F : J ⥤ SheafedSpace.{_, _, v} C)
+variable {C : Type u} [Category.{v} C]
+variable {J : Type w} [Category.{w'} J] [Small.{v} J] (F : J ⥤ SheafedSpace.{_, _, v} C)
 
-theorem isColimit_exists_rep {c : Cocone F} (hc : IsColimit c) (x : c.pt) :
+theorem isColimit_exists_rep [HasLimitsOfShape Jᵒᵖ C] {c : Cocone F} (hc : IsColimit c) (x : c.pt) :
     ∃ (i : J) (y : F.obj i), (c.ι.app i).base y = x :=
   Concrete.isColimit_exists_rep (F ⋙ forget C) (isColimitOfPreserves (forget C) hc) x
 
 -- Porting note: argument `C` of colimit need to be made explicit, odd
-theorem colimit_exists_rep (x : colimit (C := SheafedSpace C) F) :
+theorem colimit_exists_rep [HasLimitsOfShape Jᵒᵖ C] (x : colimit (C := SheafedSpace C) F) :
     ∃ (i : J) (y : F.obj i), (colimit.ι F i).base y = x :=
   Concrete.isColimit_exists_rep (F ⋙ SheafedSpace.forget C)
     (isColimitOfPreserves (SheafedSpace.forget _) (colimit.isColimit F)) x
 
-instance {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := by
+instance [HasLimits C] {X Y : SheafedSpace C} (f g : X ⟶ Y) : Epi (coequalizer.π f g).base := by
   rw [← show _ = (coequalizer.π f g).base from
       ι_comp_coequalizerComparison f g (SheafedSpace.forget C),
       ← PreservesCoequalizer.iso_hom]
@@ -51,7 +53,7 @@ namespace LocallyRingedSpace
 
 section HasCoproducts
 
-variable {ι : Type u} (F : Discrete ι ⥤ LocallyRingedSpace.{u})
+variable {ι : Type v} [Small.{u} ι] (F : Discrete ι ⥤ LocallyRingedSpace.{u})
 
 /-- The explicit coproduct for `F : discrete ι ⥤ LocallyRingedSpace`. -/
 noncomputable def coproduct : LocallyRingedSpace where
@@ -102,11 +104,10 @@ noncomputable def coproductCofanIsColimit : IsColimit (coproductCofan F) where
       (IsColimit.uniq _ (forgetToSheafedSpace.mapCocone s) f.toShHom fun j =>
         congr_arg LocallyRingedSpace.Hom.toShHom (h j))
 
-instance : HasCoproducts.{u} LocallyRingedSpace.{u} := fun _ =>
+instance : HasColimitsOfShape (Discrete ι) LocallyRingedSpace.{u} :=
   ⟨fun F => ⟨⟨⟨_, coproductCofanIsColimit F⟩⟩⟩⟩
 
-noncomputable instance (J : Type _) :
-    PreservesColimitsOfShape (Discrete.{u} J) forgetToSheafedSpace.{u} :=
+noncomputable instance : PreservesColimitsOfShape (Discrete.{v} ι) forgetToSheafedSpace.{u} :=
   ⟨fun {G} =>
     preservesColimit_of_preserves_colimit_cocone (coproductCofanIsColimit G)
       ((colimit.isColimit (C := SheafedSpace.{u+1, u, u} CommRingCat.{u}) _).ofIsoColimit
