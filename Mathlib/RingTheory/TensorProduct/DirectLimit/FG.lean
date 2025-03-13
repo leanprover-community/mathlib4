@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Antoine Chambert-Loir, María-Inés de Frutos-Fernández. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Antoine Chambert-Loir, Maria-Inés de Frutos-Fernandez
+-/
 import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Adjoin.FG
@@ -8,7 +13,7 @@ import Mathlib.RingTheory.Ideal.Quotient.Operations
 
 import Mathlib.Algebra.DirectSum.Internal
 
-/- # Tensor products and finitely generated submodules
+/-! # Tensor products and finitely generated submodules
 
 * `DirectedSystem.Submodule_fg`: the directed system of finitely generated submodules,
 with respect to the inclusion maps.
@@ -74,7 +79,7 @@ universe u v
 variable {R : Type u} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 /-- The directed system of finitely generated submodules of `M` -/
-def DirectedSystem.Submodule_fg :
+theorem DirectedSystem.Submodule_fg :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (F := fun P ↦ P.val)
     (f := fun ⦃P Q⦄ (h : P ≤ Q) ↦ Submodule.inclusion h) where
   map_self := fun _ _ ↦ rfl
@@ -130,7 +135,7 @@ theorem rTensor_fg_directedSystem :
     (fun ⦃_ _⦄ h ↦ LinearMap.rTensor N (Submodule.inclusion h)) :=
   DirectedSystem.rTensor R N DirectedSystem.Submodule_fg
 
-/-- A tensor product `M ⊗[R] N` is the direct limit of the modules `P ⊗[R] N`,
+/-- The tensor product `M ⊗[R] N` is the direct limit of the modules `P ⊗[R] N`,
 where `P` ranges over all finitely generated submodules of `M`. -/
 noncomputable def rTensor_fg_equiv [DecidableEq {P : Submodule R M // P.FG}] :
     Module.DirectLimit (R := R) (ι := {P : Submodule R M // P.FG}) (fun P ↦ P.val ⊗[R] N)
@@ -182,6 +187,8 @@ theorem lTensor_fg_directedSystem :
       (fun _ _ hPQ ↦ LinearMap.lTensor M (Submodule.inclusion hPQ)) :=
   DirectedSystem.lTensor R M DirectedSystem.Submodule_fg
 
+/-- The module `M ⊗[R] N` is the direct limit of the modules `M ⊗[R] Q`,
+where `Q` runs over finitely generated submodules of `N`. -/
 noncomputable def lTensor_fgEquiv [DecidableEq {Q : Submodule R N // Q.FG}] :
     Module.DirectLimit (R := R) (ι := {Q : Submodule R N // Q.FG}) (fun Q ↦ M ⊗[R] Q.val)
       (fun _ _ hPQ ↦ (Submodule.inclusion hPQ).lTensor M) ≃ₗ[R] M ⊗[R] N :=
