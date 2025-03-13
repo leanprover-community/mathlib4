@@ -392,8 +392,7 @@ theorem orderOf_frobeniusAlgEquivOfAlgebraic :
 theorem bijective_frobeniusAlgHom_pow :
     Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.1 :=
   let e := (finCongr <| orderOf_frobeniusAlgHom K L).symm.trans <|
-    finEquivPowers (frobeniusAlgHom K L)
-      (orderOf_pos_iff.mp <| by rw [orderOf_frobeniusAlgHom]; exact Module.finrank_pos)
+    finEquivPowers (orderOf_pos_iff.mp <| orderOf_frobeniusAlgHom K L ▸ Module.finrank_pos)
   (Subtype.val_injective.comp e.injective).bijective_of_nat_card_le
     ((card_algHom_le_finrank K L L).trans_eq <| by simp)
 
