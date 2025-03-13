@@ -37,6 +37,8 @@ register_option linter.style.commandStart : Bool := {
   descr := "enable the commandStart linter"
 }
 
+/-- If the `linter.style.commandStart.verbose` is `true`< the `commandStart` linter
+reports some helpful diagnostic information. -/
 register_option linter.style.commandStart.verbose : Bool := {
   defValue := false
   descr := "enable the commandStart linter"
