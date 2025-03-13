@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.GCDMonoid.Multiset
+import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
-import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Closure
-import Mathlib.Algebra.GCDMonoid.Nat
+import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.Tactic.NormNum.GCD
 
 /-!
@@ -106,7 +107,7 @@ theorem two_le_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType
 theorem one_lt_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType) : 1 < n :=
   two_le_of_mem_cycleType h
 
-theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = [σ.support.card] :=
+theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = {σ.support.card} :=
   cycleType_eq [σ] (mul_one σ) (fun _τ hτ => (congr_arg IsCycle (List.mem_singleton.mp hτ)).mpr hσ)
     (List.pairwise_singleton Disjoint σ)
 
@@ -146,7 +147,7 @@ theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cy
 theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   induction σ using cycle_induction_on with
   | base_one => simp
-  | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
+  | base_cycles σ hσ => rw [hσ.cycleType, Multiset.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
 
 theorem card_fixedPoints (σ : Equiv.Perm α) :
@@ -207,6 +208,14 @@ theorem cycleType_prime_order {σ : Perm α} (hσ : (orderOf σ).Prime) :
   · exact (hσ.eq_one_or_self_of_dvd n (dvd_of_mem_cycleType hn)).resolve_left
       (one_lt_of_mem_cycleType hn).ne'
 
+theorem pow_prime_eq_one_iff {σ : Perm α} {p : ℕ} [hp : Fact (Nat.Prime p)] :
+    σ ^ p = 1 ↔ ∀ c ∈ σ.cycleType, c = p := by
+  rw [← orderOf_dvd_iff_pow_eq_one, ← lcm_cycleType, Multiset.lcm_dvd]
+  apply forall_congr'
+  exact fun c ↦ ⟨fun hc h ↦ Or.resolve_left (hp.elim.eq_one_or_self_of_dvd c (hc h))
+       (Nat.ne_of_lt' (one_lt_of_mem_cycleType h)),
+     fun hc h ↦ by rw [hc h]⟩
+
 theorem isCycle_of_prime_order {σ : Perm α} (h1 : (orderOf σ).Prime)
     (h2 : σ.support.card < 2 * orderOf σ) : σ.IsCycle := by
   obtain ⟨n, hn⟩ := cycleType_prime_order h1
@@ -264,8 +273,7 @@ theorem isConj_of_cycleType_eq {σ τ : Perm α} (h : cycleType σ = cycleType �
     have hτ := card_cycleType_eq_one.2 hσ
     rw [h, card_cycleType_eq_one] at hτ
     apply hσ.isConj hτ
-    rw [hσ.cycleType, hτ.cycleType, coe_eq_coe, List.singleton_perm] at h
-    exact List.singleton_injective h
+    rwa [hσ.cycleType, hτ.cycleType, Multiset.singleton_inj] at h
   | induction_disjoint σ π hd hc hσ hπ =>
     rw [hd.cycleType] at h
     have h' : σ.support.card ∈ τ.cycleType := by
@@ -325,7 +333,7 @@ theorem cycleType_of_card_le_mem_cycleType_add_two {n : ℕ} {g : Perm α}
     (hn2 : Fintype.card α < n + 2) (hng : n ∈ g.cycleType) : g.cycleType = {n} := by
   obtain ⟨c, g', rfl, hd, hc, rfl⟩ := mem_cycleType_iff.1 hng
   suffices g'1 : g' = 1 by
-    rw [hd.cycleType, hc.cycleType, coe_singleton, g'1, cycleType_one, add_zero]
+    rw [hd.cycleType, hc.cycleType, g'1, cycleType_one, add_zero]
   contrapose! hn2 with g'1
   apply le_trans _ (c * g').support.card_le_univ
   rw [hd.card_support_mul]

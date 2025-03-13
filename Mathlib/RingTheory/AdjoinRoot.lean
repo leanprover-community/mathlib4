@@ -137,13 +137,10 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
 theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
   rfl
 
-variable (S)
-
+variable (S) in
 theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
-
-variable {S}
 
 theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
   (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
@@ -581,7 +578,7 @@ such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `Adjo
 Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
 guaranteed to be identical to `g`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
   { AdjoinRoot.liftHom g pb.gen h₂ with
@@ -659,7 +656,7 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
   exact Ideal.quotEquivOfEq_mk _ _
 
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
-  for `α` a root of `f : R[X]` and `I : Ideal R`-/
+  for `α` a root of `f : R[X]` and `I : Ideal R` -/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk :
     AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span ({f} : Set R[X]))) ≃+*
       (R[X] ⧸ I.map (C : R →+* R[X])) ⧸
@@ -680,7 +677,7 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk (p : R[X]) :
   rfl
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
-  `f : R[X]` and `I : Ideal R`-/
+  `f : R[X]` and `I : Ideal R` -/
 def Polynomial.quotQuotEquivComm :
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) ≃+*
       (R[X] ⧸ (I.map C)) ⧸ span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))) :=

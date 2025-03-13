@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
 
 /-!
@@ -148,7 +147,7 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   ext ⟨i, j⟩
   simpa using aux₂ i j
 
-/-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. --/
+/-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. -/
 @[simps]
 def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
   toFun := fun ⟨⟨i, _⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩

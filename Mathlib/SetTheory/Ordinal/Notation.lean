@@ -197,13 +197,13 @@ theorem NFBelow.oadd {e n a b} : NF e → NFBelow a (repr e) → repr e < b → 
   | ⟨⟨_, h⟩⟩ => NFBelow.oadd' h
 
 theorem NFBelow.fst {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NF e := by
-  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact ⟨⟨_, h₁⟩⟩
+  obtain - | ⟨h₁, h₂, h₃⟩ := h; exact ⟨⟨_, h₁⟩⟩
 
 theorem NF.fst {e n a} : NF (oadd e n a) → NF e
   | ⟨⟨_, h⟩⟩ => h.fst
 
 theorem NFBelow.snd {e n a b} (h : NFBelow (ONote.oadd e n a) b) : NFBelow a (repr e) := by
-  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₂
+  obtain - | ⟨h₁, h₂, h₃⟩ := h; exact h₂
 
 theorem NF.snd' {e n a} : NF (oadd e n a) → NFBelow a (repr e)
   | ⟨⟨_, h⟩⟩ => h.snd
@@ -218,7 +218,7 @@ instance NF.oadd_zero (e n) [h : NF e] : NF (ONote.oadd e n 0) :=
   h.oadd _ NFBelow.zero
 
 theorem NFBelow.lt {e n a b} (h : NFBelow (ONote.oadd e n a) b) : repr e < b := by
-  cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact h₃
+  obtain - | ⟨h₁, h₂, h₃⟩ := h; exact h₃
 
 theorem NFBelow_zero : ∀ {o}, NFBelow o 0 ↔ o = 0
   | 0 => ⟨fun _ => rfl, fun _ => NFBelow.zero⟩
@@ -246,7 +246,7 @@ theorem NFBelow.mono {o b₁ b₂} (bb : b₁ ≤ b₂) (h : NFBelow o b₁) : N
 
 theorem NF.below_of_lt {e n a b} (H : repr e < b) :
     NF (ONote.oadd e n a) → NFBelow (ONote.oadd e n a) b
-  | ⟨⟨b', h⟩⟩ => by (cases' h with _ _ _ _ eb _ h₁ h₂ h₃; exact NFBelow.oadd' h₁ h₂ H)
+  | ⟨⟨b', h⟩⟩ => by (obtain - | ⟨h₁, h₂, h₃⟩ := h; exact NFBelow.oadd' h₁ h₂ H)
 
 theorem NF.below_of_lt' : ∀ {o b}, repr o < ω ^ b → NF o → NFBelow o b
   | 0, _, _, _ => NFBelow.zero
@@ -412,7 +412,7 @@ theorem add_nfBelow {b} : ∀ {o₁ o₂}, NFBelow o₁ b → NFBelow o₂ b →
   | 0, _, _, h₂ => h₂
   | oadd e n a, o, h₁, h₂ => by
     have h' := add_nfBelow (h₁.snd.mono <| le_of_lt h₁.lt) h₂
-    simp only [oadd_add]; revert h'; cases' a + o with e' n' a' <;> intro h'
+    simp only [oadd_add]; revert h'; obtain - | ⟨e', n', a'⟩ := a + o <;> intro h'
     · exact NFBelow.oadd h₁.fst NFBelow.zero h₁.lt
     have : ((e.cmp e').Compares e e') := @cmp_compares _ _ h₁.fst h'.fst
     cases h : cmp e e' <;> dsimp [addAux] <;> simp only [h]
@@ -437,7 +437,7 @@ theorem repr_add : ∀ (o₁ o₂) [NF o₁] [NF o₂], repr (o₁ + o₂) = rep
     have nf := ONote.add_nf a o
     conv at nf => simp [HAdd.hAdd, Add.add]
     conv in _ + o => simp [HAdd.hAdd, Add.add]
-    cases' h : add a o with e' n' a' <;>
+    rcases h : add a o with - | ⟨e', n', a'⟩ <;>
       simp only [Add.add, add, addAux, h'.symm, h, add_assoc, repr_zero, repr] at nf h₁ ⊢
     have := h₁.fst; haveI := nf.fst; have ee := cmp_compares e e'
     cases he : cmp e e' <;> simp only [he, Ordering.compares_gt, Ordering.compares_lt,
@@ -749,7 +749,7 @@ instance nf_opow (o₁ o₂) [NF o₁] [NF o₂] : NF (o₁ ^ o₂) := by
   have na := (nf_repr_split e₁).1
   rcases e₂ : split' o₂ with ⟨b', k⟩
   haveI := (nf_repr_split' e₂).1
-  cases' a with a0 n a'
+  obtain - | ⟨a0, n, a'⟩ := a
   · rcases m with - | m
     · by_cases o₂ = 0 <;> simp only [(· ^ ·), Pow.pow, opow, opowAux2, *] <;> decide
     · by_cases m = 0
@@ -887,7 +887,7 @@ end
 theorem repr_opow (o₁ o₂) [NF o₁] [NF o₂] : repr (o₁ ^ o₂) = repr o₁ ^ repr o₂ := by
   rcases e₁ : split o₁ with ⟨a, m⟩
   obtain ⟨N₁, r₁⟩ := nf_repr_split e₁
-  cases' a with a0 n a'
+  obtain - | ⟨a0, n, a'⟩ := a
   · rcases m with - | m
     · by_cases h : o₂ = 0 <;> simp [opow_def, opowAux2, opow, e₁, h, r₁]
       have := mt repr_inj.1 h
@@ -1225,7 +1225,7 @@ actually be defined this way due to conflicting dependencies. -/
 @[elab_as_elim]
 def recOn {C : NONote → Sort*} (o : NONote) (H0 : C 0)
     (H1 : ∀ e n a h, C e → C a → C (oadd e n a h)) : C o := by
-  cases' o with o h; induction' o with e n a IHe IHa
+  obtain ⟨o, h⟩ := o; induction' o with e n a IHe IHa
   · exact H0
   · exact H1 ⟨e, h.fst⟩ n ⟨a, h.snd⟩ h.snd' (IHe _) (IHa _)
 

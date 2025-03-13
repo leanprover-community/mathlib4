@@ -3,6 +3,7 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -74,8 +75,7 @@ alias _root_.Inducing.noetherianSpace := IsInducing.noetherianSpace
 instance NoetherianSpace.set [NoetherianSpace α] (s : Set α) : NoetherianSpace s :=
   IsInducing.subtypeVal.noetherianSpace
 
-variable (α)
-
+variable (α) in
 open List in
 theorem noetherianSpace_TFAE :
     TFAE [NoetherianSpace α,
@@ -89,8 +89,6 @@ theorem noetherianSpace_TFAE :
   tfae_have 1 → 3 := @NoetherianSpace.isCompact α _
   tfae_have 3 → 4 := fun h s => h s
   tfae_finish
-
-variable {α}
 
 theorem noetherianSpace_iff_isCompact : NoetherianSpace α ↔ ∀ s : Set α, IsCompact s :=
   (noetherianSpace_TFAE α).out 0 2

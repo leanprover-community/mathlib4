@@ -98,7 +98,7 @@ theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
     intro q
     refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [h]; rfl
-    · rw [← coe_to_affineMap, h]; rfl
+    · rw [← coe_toAffineMap, h]; rfl
   simp_rw [h₁, h₂]
   exact (f : P →ᵃ[R] Q).linear_eq_zero_iff_exists_const
 
@@ -181,7 +181,6 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           rw [h₂]
           rfl }
 
-set_option maxSynthPendingDepth 2 in
 instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
   norm_smul_le t f := by
     simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,

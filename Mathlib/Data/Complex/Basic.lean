@@ -419,8 +419,8 @@ end
 
 /-! ### Cast lemmas -/
 
-noncomputable instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
-noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal q
+instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
+instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 
 @[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ofReal ofNat(n) = ofNat(n) := rfl
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl

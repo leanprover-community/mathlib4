@@ -127,7 +127,7 @@ instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
   Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
@@ -177,7 +177,7 @@ theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
 @[simp]
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
     @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
-  cases' n with n h
+  obtain ⟨n, h⟩ := n
   cases n <;> [exact absurd h (by decide); rfl]
 
 @[simp]

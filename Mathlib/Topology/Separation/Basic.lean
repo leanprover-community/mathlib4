@@ -312,16 +312,13 @@ theorem Filter.coclosedCompact_le_cofinite : coclosedCompact X ≤ cofinite :=
   le_cofinite_iff_compl_singleton_mem.2 fun _ ↦
     compl_mem_coclosedCompact.2 isCompact_closure_singleton
 
-variable (X)
-
+variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
 def Bornology.relativelyCompact : Bornology X where
   cobounded' := Filter.coclosedCompact X
   le_cofinite' := Filter.coclosedCompact_le_cofinite
-
-variable {X}
 
 theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
     @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) :=
@@ -552,7 +549,6 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the proof was `hs.induction_on (by simp) fun x => by simp`
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
@@ -564,6 +560,14 @@ theorem subsingleton_closure [T1Space X] {s : Set X} : (closure s).Subsingleton 
 theorem isClosedMap_const {X Y} [TopologicalSpace X] [TopologicalSpace Y] [T1Space Y] {y : Y} :
     IsClosedMap (Function.const X y) :=
   IsClosedMap.of_nonempty fun s _ h2s => by simp_rw [const, h2s.image_const, isClosed_singleton]
+
+lemma isClosedMap_prodMk_left [TopologicalSpace Y] [T1Space X] (x : X) :
+    IsClosedMap (fun y : Y ↦ Prod.mk x y) :=
+  fun _K hK ↦ Set.singleton_prod ▸ isClosed_singleton.prod hK
+
+lemma isClosedMap_prodMk_right [TopologicalSpace Y] [T1Space Y] (y : Y) :
+    IsClosedMap (fun x : X ↦ Prod.mk x y) :=
+  fun _K hK ↦ Set.prod_singleton ▸ hK.prod isClosed_singleton
 
 theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y) :
     𝓝[insert y s] x = 𝓝[s] x := by

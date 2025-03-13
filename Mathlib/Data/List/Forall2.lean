@@ -160,7 +160,7 @@ theorem forall₂_iff_zip {l₁ l₂} :
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     obtain ⟨h₁, h₂⟩ := h
     induction' l₁ with a l₁ IH generalizing l₂
-    · cases length_eq_zero.1 h₁.symm
+    · cases length_eq_zero_iff.1 h₁.symm
       constructor
     · rcases l₂ with - | ⟨b, l₂⟩
       · simp at h₁
@@ -290,7 +290,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
     | cons _ _ ih => intro l₁ hl1; exact SublistForall₂.cons_right (ih hl1)
     | cons₂ _ _ ih =>
       intro l₁ hl1
-      cases' hl1 with _ _ _ _ hr hl _
+      obtain - | ⟨hr, hl⟩ := hl1
       exact SublistForall₂.cons hr (ih hl)
 
 instance SublistForall₂.is_refl [IsRefl α Rₐ] : IsRefl (List α) (SublistForall₂ Rₐ) :=
@@ -306,10 +306,10 @@ instance SublistForall₂.is_trans [IsTrans α Rₐ] : IsTrans (List α) (Sublis
       exact h1
     | cons _ _ ih =>
       rintro a b h1 h2
-      cases' h2 with _ _ _ _ _ hbc tbc _ _ y1 btc
+      obtain - | ⟨hbc, tbc⟩ | btc := h2
       · cases h1
         exact SublistForall₂.nil
-      · cases' h1 with _ _ _ _ _ hab tab _ _ _ atb
+      · obtain - | ⟨hab, tab⟩ | atb := h1
         · exact SublistForall₂.nil
         · exact SublistForall₂.cons (_root_.trans hab hbc) (ih _ _ tab tbc)
         · exact SublistForall₂.cons_right (ih _ _ atb tbc)

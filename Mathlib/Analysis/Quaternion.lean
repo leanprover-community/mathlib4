@@ -72,15 +72,11 @@ theorem norm_coe (a : ℝ) : ‖(a : ℍ)‖ = ‖a‖ := by
 theorem nnnorm_coe (a : ℝ) : ‖(a : ℍ)‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_coe a
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
+-- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem norm_star (a : ℍ) : ‖star a‖ = ‖a‖ := by
   simp_rw [norm_eq_sqrt_real_inner, inner_self, normSq_star]
 
--- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
--- simp cannot prove this
-@[simp, nolint simpNF]
+-- This does not need to be `@[simp]`, as it is a consequence of later simp lemmas.
 theorem nnnorm_star (a : ℍ) : ‖star a‖₊ = ‖a‖₊ :=
   Subtype.ext <| norm_star a
 

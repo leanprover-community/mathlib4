@@ -446,12 +446,12 @@ theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
 
 theorem root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : f.eval₂ ϕ α = 0 := by
-  cases' EuclideanDomain.gcd_dvd_left f g with p hp
+  obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_left f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
 theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : g.eval₂ ϕ α = 0 := by
-  cases' EuclideanDomain.gcd_dvd_right f g with p hp
+  obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_right f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
 theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]

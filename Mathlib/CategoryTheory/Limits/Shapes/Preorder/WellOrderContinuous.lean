@@ -5,9 +5,12 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.PrincipalSeg
+import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.Interval.Set.InitialSeg
+import Mathlib.Order.Interval.Set.Limit
 import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
@@ -75,5 +78,29 @@ instance (F : J ⥤ C) {J' : Type w'} [PartialOrder J'] (e : J' ≃o J)
     [F.IsWellOrderContinuous] :
     (e.equivalence.functor ⋙ F).IsWellOrderContinuous :=
   inferInstanceAs (e.toInitialSeg.monotone.functor ⋙ F).IsWellOrderContinuous
+
+instance IsWellOrderContinuous.restriction_setIci
+    {J : Type w} [LinearOrder J]
+    {F : J ⥤ C} [F.IsWellOrderContinuous] (j : J) :
+    ((Subtype.mono_coe (Set.Ici j)).functor ⋙ F).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨by
+    let f : Set.Iio m → Set.Iio m.1 := fun ⟨⟨a, ha⟩, ha'⟩ ↦ ⟨a, ha'⟩
+    have hf : Monotone f := fun _ _ h ↦ h
+    have : hf.functor.Final := by
+      rw [Monotone.final_functor_iff]
+      rintro ⟨j', hj'⟩
+      simp only [Set.mem_Iio] at hj'
+      dsimp only [f]
+      by_cases h : j' ≤ j
+      · refine ⟨⟨⟨j, le_refl j⟩, ?_⟩, h⟩
+        by_contra!
+        simp only [Set.mem_Iio, not_lt] at this
+        apply hm.1
+        rintro ⟨k, hk⟩ hkm
+        exact this.trans hk
+      · simp only [not_le] at h
+        exact ⟨⟨⟨j', h.le⟩, hj'⟩, by rfl⟩
+    exact (Functor.Final.isColimitWhiskerEquiv (F := hf.functor) _).2
+      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe m hm))⟩
 
 end CategoryTheory.Functor

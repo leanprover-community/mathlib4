@@ -380,8 +380,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt (hn : n ≠ ∞) :
       exact Hp.analyticOn (H'p rfl 0)
     apply (contDiffWithinAt_iff_of_ne_infty hn).2
     refine ⟨u, ?_, fun y : E => (p y).shift, ?_⟩
-    · -- Porting note: without the explicit argument Lean is not sure of the type.
-      convert @self_mem_nhdsWithin _ _ x u
+    · convert @self_mem_nhdsWithin _ _ x u
       have : x ∈ insert x s := by simp
       exact insert_eq_of_mem (mem_of_mem_nhdsWithin this hu)
     · rw [hasFTaylorSeriesUpToOn_succ_iff_right] at Hp
@@ -696,7 +695,7 @@ theorem ContDiffWithinAt.eventually_hasFTaylorSeriesUpToOn {f : E → F} {s : Se
 
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
 successive derivatives are also analytic. This does not require completeness of the space. See
-also `AnalyticOn.contDiffOn_of_completeSpace`.-/
+also `AnalyticOn.contDiffOn_of_completeSpace`. -/
 theorem AnalyticOn.contDiffOn (h : AnalyticOn 𝕜 f s) (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 n f s := by
   suffices ContDiffOn 𝕜 ω f s from this.of_le le_top

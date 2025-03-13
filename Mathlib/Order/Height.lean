@@ -123,7 +123,7 @@ theorem chainHeight_eq_top_iff : s.chainHeight = ⊤ ↔ ∀ n, ∃ l ∈ s.subc
 @[simp]
 theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight ↔ s.Nonempty := by
   rw [← Nat.cast_one, Set.le_chainHeight_iff]
-  simp only [length_eq_one, @and_comm (_ ∈ _), @eq_comm _ _ [_], exists_exists_eq_and,
+  simp only [length_eq_one_iff, @and_comm (_ ∈ _), @eq_comm _ _ [_], exists_exists_eq_and,
     singleton_mem_subchain_iff, Set.Nonempty]
 
 @[simp]
@@ -242,7 +242,7 @@ theorem chainHeight_eq_iSup_Ici : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Ici i)
       cases hi
       · exact left_mem_Ici
       rename_i hi
-      cases' chain'_iff_pairwise.mp h.1 with _ _ h'
+      obtain - | h' := chain'_iff_pairwise.mp h.1
       exact (h' _ hi).le
   · exact iSup₂_le fun i _ ↦ chainHeight_mono Set.inter_subset_left
 
@@ -264,7 +264,7 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
       refine ⟨ys, ⟨h'.2.1.1, fun i hi ↦ ?_⟩, by simp⟩
       apply (h'.2.1.2 i hi).resolve_left
       rintro rfl
-      cases' chain'_iff_pairwise.mp h.1 with _ _ hy
+      obtain - | hy := chain'_iff_pairwise.mp h.1
       rcases h'.1 with h' | h'
       exacts [(hy _ hi).ne h', not_le_of_gt (hy _ hi) (hx _ h').le]
   · intro l hl
