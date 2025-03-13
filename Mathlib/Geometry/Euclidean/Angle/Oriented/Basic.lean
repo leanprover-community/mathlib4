@@ -519,7 +519,8 @@ theorem oangle_map (x y : V') (f : V ≃ₗᵢ[ℝ] V') :
 
 @[simp]
 protected theorem _root_.Complex.oangle (w z : ℂ) :
-    Complex.orientation.oangle w z = Complex.arg (conj w * z) := by simp [oangle]
+    Complex.orientation.oangle w z = Complex.arg (conj w * z) := by
+  simp [oangle, mul_comm z]
 
 /-- The oriented angle on an oriented real inner product space of dimension 2 can be evaluated in
 terms of a complex-number representation of the space. -/
