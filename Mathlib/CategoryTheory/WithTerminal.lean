@@ -398,7 +398,7 @@ functor `WithTerminal C ⥤ D`. -/
 def ofCommaObject (c : Comma (𝟭 (C ⥤ D)) (Functor.const C)) : WithTerminal C ⥤ D :=
   lift (Z := c.right) c.left (fun x ↦ c.hom.app x) (fun x y f ↦ by simp)
 
-/-- An morphism in `Comma (𝟭 (C ⥤ D)) (Functor.const C)` gives a morphism between the associated
+/-- A morphism in `Comma (𝟭 (C ⥤ D)) (Functor.const C)` gives a morphism between the associated
 functors `WithTerminal C ⥤ D`. -/
 @[simps!]
 def ofCommaMorphism {c c': Comma (𝟭 (C ⥤ D)) (Functor.const C)} (φ : c ⟶ c') :
@@ -785,7 +785,7 @@ def ofCommaObject (c : Comma (Functor.const C) (𝟭 (C ⥤ D))) : WithInitial C
   lift (Z := c.left) c.right (fun x ↦ c.hom.app x)
     (fun x y f ↦ by simpa using (c.hom.naturality f).symm)
 
-/-- An morphism in `Comma (Functor.const C) (𝟭 (C ⥤ D))` gives a morphism between the associated
+/-- A morphism in `Comma (Functor.const C) (𝟭 (C ⥤ D))` gives a morphism between the associated
 functors `WithInitial C ⥤ D`. -/
 @[simps!]
 def ofCommaMorphism {c c': Comma (Functor.const C) (𝟭 (C ⥤ D))} (φ : c ⟶ c') :

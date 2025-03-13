@@ -585,7 +585,7 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
 theorem map_div_of_coprime [CommGroupWithZero R] {f : ArithmeticFunction R}
-    (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l/d).Coprime d) (hd : f d ≠ 0) :
+    (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l / d).Coprime d) (hd : f d ≠ 0) :
     f (l / d) = f l / f d := by
   apply (div_eq_of_eq_mul hd ..).symm
   rw [← hf.right hl, Nat.div_mul_cancel hdl]

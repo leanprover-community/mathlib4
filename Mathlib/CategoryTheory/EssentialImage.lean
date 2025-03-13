@@ -75,8 +75,9 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : essImage F (F.obj Y) :=
 -- Porting note: no hasNonEmptyInstance linter yet
 def EssImageSubcategory (F : C ⥤ D) :=
   FullSubcategory F.essImage
+-- The `Category` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving Category` is not able to derive this instance
 instance : Category (EssImageSubcategory F) :=
   (inferInstance : Category.{v₂} (FullSubcategory _))
 
@@ -84,12 +85,12 @@ instance : Category (EssImageSubcategory F) :=
 @[simps!]
 def essImageInclusion (F : C ⥤ D) : F.EssImageSubcategory ⥤ D :=
   fullSubcategoryInclusion _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving Full` is not able to derive this instance
 instance : Full (essImageInclusion F) :=
   (inferInstance : Full (fullSubcategoryInclusion _))
 
--- Porting note: `deriving Faithful` is not able to derive this instance
 instance : Faithful (essImageInclusion F) :=
   (inferInstance : Faithful (fullSubcategoryInclusion _))
 
