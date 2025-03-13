@@ -387,6 +387,7 @@ variable (FC : ι → Submodule R C) (FC_lt : outParam <| ι → Submodule R C)
 
 /-- A morphism between filtered rings that preserves both the algebra and
 filtered morphism structures. -/
+@[ext]
 class FilteredAlgHom extends FilteredRingHom FA FA_lt FB FB_lt, A →ₐ[R] B
 
 /-- Reinterpret a `FilteredAlgHom` as a `AlgHom`. -/
@@ -395,7 +396,28 @@ add_decl_doc FilteredAlgHom.toAlgHom
 instance : Coe (FilteredAlgHom FA FA_lt FB FB_lt) (FilteredRingHom FA FA_lt FB FB_lt) :=
   ⟨fun a ↦ a.toFilteredRingHom⟩
 
+instance : FunLike (FilteredAlgHom FA FA_lt FB FB_lt) A B where
+  coe f := f.toFun
+  coe_injective' _ _ h := FilteredAlgHom.ext h
+
+instance : AlgHomClass (FilteredAlgHom FA FA_lt FB FB_lt) R A B where
+  map_mul f := f.map_mul
+  map_one f := f.map_one
+  map_add f := f.map_add
+  map_zero f := f.map_zero
+  commutes f := f.commutes
+
+instance : FilteredHomClass (FilteredAlgHom FA FA_lt FB FB_lt) FA FA_lt FB FB_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
+
 namespace FilteredAlgHom
+
+/-- The identity map as a `FilteredAlgHom` of same filtration. -/
+def id : FilteredAlgHom FA FA_lt FA FA_lt where
+  __ := AlgHom.id R A
+  pieces_wise ha := ha
+  pieces_wise_lt ha := ha
 
 variable (g : FilteredAlgHom FB FB_lt FC FC_lt) (f : FilteredAlgHom FA FA_lt FB FB_lt)
 
