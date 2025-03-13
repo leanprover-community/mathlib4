@@ -13,7 +13,7 @@ import Mathlib.LinearAlgebra.Quotient.Pi
 
 ## Main results
 
- - `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
+ * `Submodule.quotientEquivPiSpan`: `M ⧸ N`, if `M` is free finite module over a PID `R` and `N`
   is a submodule of full rank, can be written as a product of quotients of `R` by principal ideals.
 
 -/
@@ -74,7 +74,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
     exact this
 
 /--
-Quotients by submodule of full rank of free finite `ℤ`-modules are isomorphic
+Quotients by submodules of full rank of free finite `ℤ`-modules are isomorphic
 to a direct product of `ZMod`.
 -/
 noncomputable def quotientEquivPiZMod (N : Submodule ℤ M) (b : Basis ι ℤ M)
