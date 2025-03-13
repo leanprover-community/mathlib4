@@ -124,7 +124,8 @@ theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ 
   set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
 
 theorem preimage_nhdsWithin_coinduced' {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
-    (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
+    (hs : s ∈ @nhds β (TopologicalSpace.coinduced (fun x : t => π x)
+      inferInstance).toTopologicalSpaceWithoutAtlas (π a)) :
     π ⁻¹' s ∈ 𝓝[t] a := by
   lift a to t using h
   replace hs : (fun x : t => π x) ⁻¹' s ∈ 𝓝 a := preimage_nhds_coinduced hs
@@ -191,7 +192,8 @@ theorem IsOpen.nhdsWithin_eq {a : α} {s : Set α} (h : IsOpen s) (ha : a ∈ s)
 
 theorem preimage_nhds_within_coinduced {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (ht : IsOpen t)
-    (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
+    (hs : s ∈ @nhds β (TopologicalSpace.coinduced (fun x : t => π x)
+      inferInstance).toTopologicalSpaceWithoutAtlas (π a)) :
     π ⁻¹' s ∈ 𝓝 a := by
   rw [← ht.nhdsWithin_eq h]
   exact preimage_nhdsWithin_coinduced' h hs
@@ -602,16 +604,22 @@ theorem continuousOn_iff' :
 /-- If a function is continuous on a set for some topologies, then it is
 continuous on the same set with respect to any finer topology on the source space. -/
 theorem ContinuousOn.mono_dom {α β : Type*} {t₁ t₂ : TopologicalSpace α} {t₃ : TopologicalSpace β}
-    (h₁ : t₂ ≤ t₁) {s : Set α} {f : α → β} (h₂ : @ContinuousOn α β t₁ t₃ f s) :
-    @ContinuousOn α β t₂ t₃ f s := fun x hx _u hu =>
-  map_mono (inf_le_inf_right _ <| nhds_mono h₁) (h₂ x hx hu)
+    (h₁ : t₂ ≤ t₁) {s : Set α} {f : α → β}
+    (h₂ : @ContinuousOn α β t₁.toTopologicalSpaceWithoutAtlas
+      t₃.toTopologicalSpaceWithoutAtlas f s) :
+    @ContinuousOn α β t₂.toTopologicalSpaceWithoutAtlas t₃.toTopologicalSpaceWithoutAtlas f s :=
+  fun x hx _u hu =>
+    map_mono (inf_le_inf_right _ <| nhds_mono h₁) (h₂ x hx hu)
 
 /-- If a function is continuous on a set for some topologies, then it is
 continuous on the same set with respect to any coarser topology on the target space. -/
 theorem ContinuousOn.mono_rng {α β : Type*} {t₁ : TopologicalSpace α} {t₂ t₃ : TopologicalSpace β}
-    (h₁ : t₂ ≤ t₃) {s : Set α} {f : α → β} (h₂ : @ContinuousOn α β t₁ t₂ f s) :
-    @ContinuousOn α β t₁ t₃ f s := fun x hx _u hu =>
-  h₂ x hx <| nhds_mono h₁ hu
+    (h₁ : t₂ ≤ t₃) {s : Set α} {f : α → β}
+    (h₂ : @ContinuousOn α β t₁.toTopologicalSpaceWithoutAtlas
+      t₂.toTopologicalSpaceWithoutAtlas f s) :
+    @ContinuousOn α β t₁.toTopologicalSpaceWithoutAtlas t₃.toTopologicalSpaceWithoutAtlas f s :=
+  fun x hx _u hu =>
+    h₂ x hx <| nhds_mono h₁ hu
 
 theorem continuousOn_iff_isClosed :
     ContinuousOn f s ↔ ∀ t : Set β, IsClosed t → ∃ u, IsClosed u ∧ f ⁻¹' t ∩ s = u ∩ s := by
@@ -683,7 +691,8 @@ theorem continuousOn_of_locally_continuousOn
   rwa [ContinuousWithinAt, ← nhdsWithin_restrict _ xt open_t] at this
 
 theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α → β} :
-    @ContinuousOn α β _ (.generateFrom T) f s ↔ ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
+    @ContinuousOn α β _ (TopologicalSpace.generateFrom T).toTopologicalSpaceWithoutAtlas f s ↔
+      ∀ x ∈ s, ∀ t ∈ T, f x ∈ t → f ⁻¹' t ∈ 𝓝[s] x :=
   forall₂_congr fun x _ => by
     delta ContinuousWithinAt
     simp only [TopologicalSpace.nhds_generateFrom, tendsto_iInf, tendsto_principal, mem_setOf_eq,
@@ -692,7 +701,7 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
 
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
-    @ContinuousOn α β _ (.generateFrom T) f s :=
+    @ContinuousOn α β _ (TopologicalSpace.generateFrom T).toTopologicalSpaceWithoutAtlas f s :=
   continuousOn_to_generateFrom_iff.2 fun _x hx t ht hxt => mem_nhdsWithin.2
     ⟨_, h t ht, ⟨hx, hxt⟩, fun _y hy => hy.1.2⟩
 
