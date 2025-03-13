@@ -10,20 +10,22 @@ import Mathlib.RingTheory.Finiteness.Small
 
 /-! # Tensor products and small submodules
 
+* `DirectedSystem.Submodules_small`: the directed system of small submodules of a module
+
 * `Submodules_small_equiv` proves that a module is the direct limit
 of its finitely generated submodules, with respect to the inclusion maps
 
 * `rTensor_smallEquiv` deduces that a tensor product `M ⊗[R] N`
 is the direct limit of the modules `P ⊗[R] N`, for all finitely generated
-submodules `P`, with respect to the maps deduced from the inclusions
+submodules `P` of `M`, with respect to the maps deduced from the inclusions
+
+* `lTensor_smallEquiv` deduces that a tensor product `M ⊗[R] N`
+is the direct limit of the modules `M ⊗[R] Q`, for all finitely generated
+submodules `Q` of `N`, with respect to the maps deduced from the inclusions
 
 ## TODO
 
 * Fix namespaces, add docstrings
-
-* The results are valid in the context of `AddCommMonoid M` over a `Semiring`.
-However,  tensor products in mathlib require commutativity of the scalars,
-and direct limits of modules are restricted to modules over rings.
 
 * Provide the analogous result both sides at the same time.
 
@@ -85,5 +87,3 @@ noncomputable def lTensor_small_equiv
     Module.DirectLimit (R := R) (ι := {Q : Submodule R N // Small.{v} Q}) (fun Q ↦ M ⊗[R] Q.val)
       (fun ⦃P Q⦄ (h : P ≤ Q)  ↦ (Submodule.inclusion h).lTensor M) ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.directLimitRight _ M).symm.trans ((Submodules_small_equiv R N).lTensor M)
-
-end TensorProduct
