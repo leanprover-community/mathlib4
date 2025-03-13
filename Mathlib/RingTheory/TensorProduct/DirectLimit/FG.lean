@@ -36,12 +36,12 @@ of the tensor products `M ⊗[R] Q`, for finitely generated submodules `Q` of `
 * `TensorProduct.exists_rTensor_of_fg`: any element `t:  M ⊗[R] N`  can be lifted
 to some `P ⊗[R] N`, for fome finitely generated submodule `P` of `M`.
 
-* `TensorProduct.eq_of_fg_of_subtype_eq` ;
+* `TensorProduct.eq_of_fg_of_subtype_eq`;
 given a finitely generated submodule `P` of `M` and `t, t' : P ⊗[R] N`
 which have the same image in `M ⊗[R] N`, there exists a finitely generated submodule `Q` of `M`
 which contains `P` such that `t` and `t'` have the same image in `Q ⊗[R] N`.
 
-* `TensorProduct.eq_of_fg_of_subtype_eq₂` ;
+* `TensorProduct.eq_of_fg_of_subtype_eq₂`;
 given finitely generated submodules `P` and `P'`of `M`, `t : P ⊗[R] N` and `t' : P' ⊗[R] N`
 which have the same image in `M ⊗[R] N`, there exists a finitely generated submodule `Q` of `M`
 which contains `P` and `P'` and such that `t` and `t'` have the same image in `Q ⊗[R] N`.
