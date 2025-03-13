@@ -54,11 +54,6 @@ attribute [coe] toPointedCone
 instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
   ⟨toPointedCone⟩
 
--- Porting note: now a syntactic tautology
--- @[simp]
--- theorem toConvexCone_eq_coe (K : ProperCone 𝕜 E) : K.toConvexCone = K :=
---   rfl
-
 theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) :=
   fun S T h => by cases S; cases T; congr
 
