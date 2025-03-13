@@ -544,5 +544,4 @@ lemma integral_integral_swap_of_hasCompactSupport
 
 end
 
-
 end MeasureTheory
