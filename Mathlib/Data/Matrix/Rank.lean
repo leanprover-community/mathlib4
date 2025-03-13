@@ -42,12 +42,6 @@ noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range Aᵀ)) := rfl
 
-lemma cRank_mono_col (A : Matrix n o R) (c : m → o) :
-    (A.submatrix id c).cRank ≤ A.cRank := by
-  apply Submodule.rank_mono <| span_mono ?_
-  rintro _ ⟨x, rfl⟩
-  exact ⟨c x, rfl⟩
-
 lemma lift_cRank_submatrix_le
     (A : Matrix n o R) (r : l → n) (c : m → o) :
     lift.{un} (A.submatrix r c).cRank ≤ lift.{ul} A.cRank := by
@@ -93,13 +87,12 @@ lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
 lemma eRank_submatrix_le (A : Matrix n o R) (r : l → n) (c : m → o) :
     (A.submatrix r c).eRank ≤ A.eRank := by
   obtain hle | hlt := le_or_lt aleph0 (A.submatrix id c).cRank
-  · simp [eRank, toENat_eq_top.2 <| hle.trans <| A.cRank_mono_col c]
-  refine le_trans ?_ <| OrderHomClass.mono _ <| A.cRank_mono_col c
+  · simp [eRank, toENat_eq_top.2 <| hle.trans <| A.cRank_submatrix_le id c]
+  refine le_trans ?_ <| OrderHomClass.mono _ <| A.cRank_submatrix_le id c
   simpa using (toENat_le_iff_of_lt_aleph0 (by simpa)).2 <|
     (A.submatrix id c).lift_cRank_submatrix_le r id
 
 lemma eRank_le_card_col [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
-  classical
   wlog hfin : Finite n
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite n
