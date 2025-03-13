@@ -29,8 +29,9 @@ namespace Matrix
 
 open Module Cardinal Set Submodule
 
-universe ul um un uo uR
-variable {l : Type ul} {m : Type um} {n : Type un} {o : Type uo} {R : Type uR}
+universe um um₀ un un₀ uR uo ul
+variable {m : Type um} {m₀ : Type um₀} {n : Type un} {n₀ : Type un₀} {R : Type uR} {o : Type uo}
+    {l : Type ul}
 
 section Infinite
 
@@ -61,8 +62,20 @@ lemma cRank_lift_mono_row.{u,u₀,v} {m : Type u} {m₀ : Type u₀} {R : Type v
   simp_rw [← lift_umax] at hwin ⊢
   exact hwin
 
-/-- A copy of `lift_cRank_submatrix_le` for when `l` and `n` are in the same universe. -/
-lemma cRank_submatrix_le.{uln} {l n : Type uln} (A : Matrix n o R) (r : l → n) (c : m → o) :
+lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+    lift.{um, max um₀ uR} (A.submatrix r c).cRank ≤ lift.{um₀, max um uR} A.cRank := by
+  refine (Cardinal.lift_monotone <| (A.submatrix r id).cRank_mono_col c).trans ?_
+  let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
+  have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
+    rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
+    aesop
+  rw [cRank, ← h_eq]
+  have hwin := lift_rank_map_le f (span R (range Aᵀ))
+  simp_rw [← lift_umax] at hwin ⊢
+  exact hwin
+
+/-- A copy of `lift_cRank_submatrix_le` for when `m₀` and `m` are in the same universe. -/
+lemma cRank_submatrix_le {m m₀ : Type um} (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     (A.submatrix r c).cRank ≤ A.cRank := by
   simpa using lift_cRank_submatrix_le A r c
 
@@ -85,7 +98,7 @@ lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
     A.eRank.toNat = Module.finrank R (span R (range Aᵀ)) :=
   toNat_toENat ..
 
-lemma eRank_submatrix_le (A : Matrix n o R) (r : l → n) (c : m → o) :
+lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     (A.submatrix r c).eRank ≤ A.eRank := by
   simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat <| lift_cRank_submatrix_le A r c
 
