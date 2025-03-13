@@ -403,6 +403,7 @@ variable (σ₁₃ : outParam <| FilteredRingHom FR FR_lt FT FT_lt)
 
 /-- A morphism between filtered modules that preserves both the module and
 filtered structures. -/
+@[ext]
 class FilteredModuleHom extends FilteredAddGroupHom FM FM_lt FN FN_lt, M →ₛₗ[σ₁₂.toRingHom] N
 
 /-- Reinterpret a `FilteredModuleHom` as a `LinearMap`. -/
@@ -412,9 +413,19 @@ instance : CoeOut (FilteredModuleHom FR FR_lt FS FS_lt FM FM_lt FN FN_lt σ₁�
     (FilteredAddGroupHom FM FM_lt FN FN_lt) :=
   ⟨fun a ↦ a.toFilteredAddGroupHom⟩
 
-instance : CoeOut (FilteredModuleHom FR FR_lt FS FS_lt FM FM_lt FN FN_lt σ₁₂)
-    (M →ₛₗ[σ₁₂.toRingHom] N) :=
-  ⟨fun a ↦ a.toLinearMap⟩
+instance : FunLike (FilteredModuleHom FR FR_lt FS FS_lt FM FM_lt FN FN_lt σ₁₂) M N where
+  coe f := f.toFun
+  coe_injective' _ _ h := FilteredModuleHom.ext h
+
+instance : SemilinearMapClass (FilteredModuleHom FR FR_lt FS FS_lt FM FM_lt FN FN_lt σ₁₂)
+    σ₁₂.toRingHom M N where
+  map_add f := f.map_add
+  map_smulₛₗ f := f.map_smul'
+
+instance : FilteredHomClass (FilteredModuleHom FR FR_lt FS FS_lt FM FM_lt FN FN_lt σ₁₂)
+    FM FM_lt FN FN_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
 
 namespace FilteredModuleHom
 
