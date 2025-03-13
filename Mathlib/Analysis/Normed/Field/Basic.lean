@@ -5,7 +5,6 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Field.Subfield.Defs
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.Algebra.Ring.Regular
 import Mathlib.Analysis.Normed.Ring.Basic
 
 /-!
@@ -38,21 +37,20 @@ class NormedDivisionRing (α : Type*) extends Norm α, DivisionRing α, MetricSp
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is multiplicative. -/
-  norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
+  protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a normed ring. -/
 instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionRing α] :
     NormedRing α :=
-  { β with norm_mul := fun a b => (NormedDivisionRing.norm_mul' a b).le }
+  { β with norm_mul_le a b := (NormedDivisionRing.norm_mul a b).le }
 
 section NormedDivisionRing
 
 variable [NormedDivisionRing α] {a b : α}
 
 @[simp]
-theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
-  NormedDivisionRing.norm_mul' a b
+theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ := NormedDivisionRing.norm_mul a b
 
 instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α :=
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
@@ -192,7 +190,7 @@ class NormedField (α : Type*) extends Norm α, Field α, MetricSpace α where
   /-- The distance is induced by the norm. -/
   dist_eq : ∀ x y, dist x y = norm (x - y)
   /-- The norm is multiplicative. -/
-  norm_mul' : ∀ a b, norm (a * b) = norm a * norm b
+  protected norm_mul : ∀ a b, norm (a * b) = norm a * norm b
 
 /-- A nontrivially normed field is a normed field in which there is an element of norm different
 from `0` and `1`. This makes it possible to bring any element arbitrarily close to `0` by
@@ -226,7 +224,7 @@ instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
-  { ‹NormedField α› with norm_mul := fun a b => (norm_mul a b).le }
+  { ‹NormedField α› with norm_mul_le a b := (norm_mul a b).le }
 
 @[simp]
 theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=
@@ -319,7 +317,7 @@ def NontriviallyNormedField.ofNormNeOne {𝕜 : Type*} [h' : NormedField 𝕜]
 
 noncomputable instance Real.normedField : NormedField ℝ :=
   { Real.normedAddCommGroup, Real.field with
-    norm_mul' := abs_mul }
+    norm_mul := abs_mul }
 
 noncomputable instance Real.denselyNormedField : DenselyNormedField ℝ where
   lt_norm_lt _ _ h₀ hr :=
@@ -351,9 +349,7 @@ See note [reducible non-instances] -/
 abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
   { NormedAddCommGroup.induced R S f hf, ‹DivisionRing R› with
-    norm_mul' := fun x y => by
-      show ‖f (x * y)‖ = ‖f x‖ * ‖f y‖
-      exact (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
+    norm_mul x y := show ‖f _‖ = _ from (map_mul f x y).symm ▸ norm_mul (f x) (f y) }
 
 /-- An injective non-unital ring homomorphism from a `Field` to a `NormedRing` induces a
 `NormedField` structure on the domain.
@@ -385,6 +381,6 @@ namespace AbsoluteValue
 noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
   toField := inferInstanceAs (Field K)
   __ := v.toNormedRing
-  norm_mul' := v.map_mul
+  norm_mul := v.map_mul
 
 end AbsoluteValue
