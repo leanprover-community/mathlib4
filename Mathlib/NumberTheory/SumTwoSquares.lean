@@ -159,7 +159,7 @@ theorem ZMod.isSquare_neg_one_of_eq_sq_add_sq_of_isCoprime {n x y : ℤ} (h : n 
     linear_combination -u ^ 2 * h + (n * v - u * x - 1) * huv
   refine ⟨u * y, ?_⟩
   conv_rhs => tactic => norm_cast
-  rw [(by norm_cast : (-1 : ZMod n.natAbs) = (-1 : ℤ))]
+  rw [(by simp : (-1 : ZMod n.natAbs) = (-1 : ℤ))]
   exact (ZMod.intCast_eq_intCast_iff_dvd_sub _ _ _).mpr (Int.natAbs_dvd.mpr ⟨_, H⟩)
 
 /-- If the natural number `n` is a sum of two squares of coprime natural numbers, then

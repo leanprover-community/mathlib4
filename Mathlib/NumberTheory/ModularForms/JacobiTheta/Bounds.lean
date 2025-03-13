@@ -212,7 +212,7 @@ lemma f_int_ofNat (k : ℕ) {a : ℝ} (ha : 0 ≤ a) (t : ℝ) (n : ℕ) :
 
 lemma f_int_negSucc (k : ℕ) {a : ℝ} (ha : a ≤ 1) (t : ℝ) (n : ℕ) :
     f_int k a t (Int.negSucc n) = f_nat k (1 - a) t n := by
-  have : (Int.negSucc n) + a = -(n + (1 - a)) := by { push_cast; ring }
+  have : (Int.negSucc n) + a = -(n + (1 - a)) := by { simp [Int.negSucc_eq]; ring }
   rw [f_int, f_nat, this, abs_neg, neg_sq, abs_of_nonneg (by linarith)]
 
 lemma summable_f_int (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_int k a t) := by

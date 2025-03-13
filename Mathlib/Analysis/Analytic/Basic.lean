@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
 import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Tactic.Bound.Attribute
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 
@@ -1103,7 +1103,6 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
     have hAB : ∀ n, ‖A (n + 2)‖ ≤ B n := fun n =>
       calc
         ‖A (n + 2)‖ ≤ ‖p (n + 2)‖ * ↑(n + 2) * ‖y - (x, x)‖ ^ (n + 1) * ‖y.1 - y.2‖ := by
-          -- Porting note: `pi_norm_const` was `pi_norm_const (_ : E)`
           simpa only [Fintype.card_fin, pi_norm_const, Prod.norm_def, Pi.sub_def,
             Prod.fst_sub, Prod.snd_sub, sub_sub_sub_cancel_right] using
             (p <| n + 2).norm_image_sub_le (fun _ => y.1 - x) fun _ => y.2 - x
@@ -1124,7 +1123,7 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
       simp only [add_mul]
       have : ‖a‖ < 1 := by simp only [Real.norm_eq_abs, abs_of_pos ha.1, ha.2]
       rw [div_eq_mul_inv, div_eq_mul_inv]
-      exact (hasSum_coe_mul_geometric_of_norm_lt_one this).add  -- Porting note: was `convert`!
+      exact (hasSum_coe_mul_geometric_of_norm_lt_one this).add
           ((hasSum_geometric_of_norm_lt_one this).mul_left 2)
     exact hA.norm_le_of_bounded hBL hAB
   suffices L =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
