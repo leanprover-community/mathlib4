@@ -33,7 +33,7 @@ the following lemmas assert the necessity
 * `Continuous.tendsto_apply_variables_zero_of_cofinite`:
   when `a s` tends to  zero for the filter of cofinite subsets of `σ`.
 
-* `MvPowerSeries.eval₂_domain` : the `Prop`-valued structure
+* `MvPowerSeries.HasEval` : the `Prop`-valued structure
 that is required to evaluate power series
 
 * `MvPowerSeries.uniformContinuous_eval₂` : uniform continuity of the evaluation
@@ -117,11 +117,6 @@ theorem HasEval.hasEval_X :
     HasEval (fun s ↦ (MvPowerSeries.X s : MvPowerSeries σ R)) where
   hpow := fun s ↦ tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
-
-theorem Continuous.on_scalars {ε : MvPowerSeries σ R →+* S} (hε : Continuous ε) :
-    Continuous (ε.comp (C σ R)) := by
-  rw [coe_comp]
-  exact Continuous.comp hε MvPowerSeries.WithPiTopology.continuous_C
 
 /-- The inclusion of polynomials into power series has dense image -/
 theorem _root_.MvPolynomial.coeToMvPowerSeries_denseRange :
