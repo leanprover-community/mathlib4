@@ -36,34 +36,35 @@ for two reasons:
 
 This means that there are twelve different classes, corresponding to the choices of scalar ring
 (`ℂ`, `ℝ`, or `ℝ≥0`), unital or non-unital algebras, isometric or not. The relationship between
-these is documented in the diagram below, with arrows indicating always available instances,
-and dashed arrows requiring the additional instances `PartialOrder A`, `StarOrderedRing A`,
-`NonnegSpectrumClass ℝ A`.
+these is documented in the diagram below, with arrows indicating always available instances.
+The dotted arrow requires the presence of instances `PartialOrder A`, `StarOrderedRing A` and
+`NonnegSpectrumClass ℝ A`. Note that the instances which change scalar rings occur *within* each
+class (i.e., `ContinuousFunctionalCalculus`, `IsometricContinuousFunctionalCalculus`, etc.), so a
+more accurate diagram would have the chain on the left embedded withing each node of the graph
+on the right.
 
-```mermaid
- graph LR
-    subgraph Isometric-Unital
-    direction TB
-      IC1[ℂ] --> IR1[ℝ]
-      IR1[ℝ] -.-> IN1[ℝ≥0]
-    end
-    subgraph Isometric-non-unital
-    direction TB
-      IC[ℂ] --> IR[ℝ]
-      IR[ℝ] -.-> IN[ℝ≥0]
-    end
-    subgraph Unital
-    direction TB
-      C1[ℂ] --> R1[ℝ]
-      R1[ℝ] -.-> N1[ℝ≥0]
-    end
-    subgraph Non-unital
-    direction TB
-      C[ℂ] --> R[ℝ]
-      R[ℝ] -.-> N[ℝ≥0]
-    end
-    Isometric-Unital --> Unital & Isometric-non-unital
-    Unital & Isometric-non-unital --> Non-unital
+```
+┌─────────┐     ┌──────────────────────┐
+│         │     │                      │
+│ Complex │     │   Isometric unital   ├──────────┐
+│         │     │                      │          │
+└────┬────┘     └───────────┬──────────┘          │
+     │                      │                     │
+     │                      │                     │
+     ▼                      ▼                     ▼
+┌─────────┐     ┌──────────────────────┐     ┌────────┐
+│         │     │                      │     │        │
+│   Real  │     │ Isometric non-unital │     │ Unital │
+│         │     │                      │     │        │
+└────┬────┘     └───────────┬──────────┘     └────┬───┘
+     :                      │                     │
+     :                      │                     │
+     ▼                      ▼                     │
+┌─────────┐     ┌──────────────────────┐          │
+│         │     │                      │          │
+│  NNReal │     │      Non-unital      │◄─────────┘
+│         │     │                      │
+└─────────┘     └──────────────────────┘
 ```
 
 ## Developing general theory
@@ -90,7 +91,7 @@ source code less readable. Instead, the correct pattern is to assume the version
 add these extra three classes as needed to get the instance over `ℝ≥0`.
 
 There are three questions that an author should ask themselves when developing general theory
-in order to determine the correct hypotheses to have in context. These are:
+in order to determine the correct `variable`s to have in context. These are:
 
 1. Does this work for arbitrary scalar (semi)rings? Only `ℂ`, or is `ℝ` sufficient?
 
@@ -169,5 +170,7 @@ the continuous functional calculus is whether the import
 instances of the continuous functional calculus for `CStarAlgebra`, and therefore pulls in many
 imports. If this import is not needed, then the file should be placed in the directory
 `Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus`. If this import is needed, then
-the appropriate location is `Mathlib.Analysis.CStarAlgebra.SpecialFunctions`.
+the appropriate location is `Mathlib.Analysis.CStarAlgebra.SpecialFunctions`. If, as is often the
+case, some results need the import and others do not, there should be two files, one in each
+location.
 -/
