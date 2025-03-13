@@ -683,7 +683,7 @@ open LinearMap (BilinMap)
 section Semiring
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable {N' : Type*}  [AddCommMonoid N'] [Module R N']
+variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where

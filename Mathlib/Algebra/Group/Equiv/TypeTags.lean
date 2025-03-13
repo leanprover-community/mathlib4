@@ -3,13 +3,15 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.TypeTags.Hom
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Additive and multiplicative equivalences associated to `Multiplicative` and `Additive`.
 -/
 
+assert_not_exists Finite Fintype
 
 variable {ι G H : Type*}
 
