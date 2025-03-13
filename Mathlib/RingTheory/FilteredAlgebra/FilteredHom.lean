@@ -13,9 +13,7 @@ them.
 
 # Main definitions
 
-* `FilteredHom` : A morphism between general filtration (filtration of sets) that preserves
-both the main and auxiliary filtered structures. This class describes a structure-preserving map
-between two filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
+* `FilteredHom` : Function that preserve the filtered structrue.
 
 * `FilteredHom.piece_wise_hom` : The filtered abelian group morphism obtained from the
 restriction of a `FilteredHom` to its `i`-th filtration.
@@ -46,6 +44,7 @@ section
 
 section
 
+/-- The class of functions that preserve the filtered structrue. -/
 class FilteredHomClass (F : Type*) {A B α β ι : Type*} [FunLike F A B]
     [SetLike α A] (FA : ι → α) (FA_lt : outParam <| ι → α)
     [SetLike β B] (FB : ι → β) (FB_lt : outParam <| ι → β) : Prop where
@@ -60,9 +59,7 @@ variable (FA : ι → α) (FA_lt : outParam <| ι → α)
 variable (FB : ι → β) (FB_lt : outParam <| ι → β)
 variable (FC : ι → γ) (FC_lt : outParam <| ι → γ)
 
-/-- A morphism between general filtration (filtration of sets) that preserves both the main
-and auxiliary filtered structures. This class describes a structure-preserving map between two
-filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`). -/
+/-- Function that preserve the filtered structrue. -/
 @[ext]
 class FilteredHom where
   /-- It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and
