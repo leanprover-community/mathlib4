@@ -178,21 +178,16 @@ theorem MeromorphicAt.MeromorphicNFAt_of_toNF (hf : MeromorphicAt f x) :
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff n).1 hn.symm
     right
     use n, g, h₁g, h₂g
-    apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
-    · exact hf.toNF_id_on_nhdNE.symm.trans h₃g
-    · unfold MeromorphicAt.toNF
-      simp only [WithTop.coe_zero, ne_eq, Function.update_self, Pi.smul_apply', Pi.pow_apply,
-        sub_self]
-      by_cases h₃f : hf.order = (0 : ℤ)
-      · simp only [h₃f, WithTop.coe_zero, ↓reduceDIte, WithTop.untopD_zero, zpow_zero, one_smul]
-        obtain ⟨h₁G, h₂G, h₃G⟩  := Classical.choose_spec ((hf.order_eq_int_iff 0).1 h₃f)
-        simp only [zpow_zero, ne_eq, one_smul] at h₃G
-        apply Filter.EventuallyEq.eq_of_nhds
-        apply (AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₁G (by fun_prop)).1
-        filter_upwards [h₃g, h₃G]
-        simp_all
-      · simp_rw [← hn, WithTop.coe_zero, WithTop.coe_eq_zero] at *
-        simp [h₃f, zero_zpow n h₃f]
+    apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.toNF_id_on_nhdNE.symm.trans h₃g)
+    simp only [MeromorphicAt.toNF, ne_eq, Function.update_self, Pi.smul_apply',
+      Pi.pow_apply, sub_self, ← hn, WithTop.coe_eq_coe]
+    split_ifs with h₃f
+    · obtain ⟨h₁G, _, h₃G⟩ := Classical.choose_spec ((hf.order_eq_int_iff 0).1 (h₃f ▸ hn.symm))
+      apply Filter.EventuallyEq.eq_of_nhds
+      rw [← h₁G.eventuallyEq_nhdNE_iff_eventuallyEq_nhd (by fun_prop)]
+      filter_upwards [h₃g, h₃G]
+      simp_all
+    · simp [h₃f, zero_zpow]
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
