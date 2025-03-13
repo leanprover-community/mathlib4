@@ -77,12 +77,26 @@ variable {X : Type u} {Y : Type v} {ι : Sort w} {α β : Type*}
 
 open Topology
 
-lemma isOpen_mk {p h₁ h₂ h₃} : IsOpen[⟨p, h₁, h₂, h₃⟩] s ↔ p s := Iff.rfl
+lemma TopologicalSpaceWithoutAtlas.ext :
+    ∀ {f g : TopologicalSpaceWithoutAtlas X},
+      @TopologicalSpaceWithoutAtlas.IsOpen _ f = @TopologicalSpaceWithoutAtlas.IsOpen _ g → f = g
+  | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+
+theorem TopologicalSpace.mk_eq {f g : TopologicalSpaceWithoutAtlas X} (a b c d)
+    (h : f = g) : @TopologicalSpace.mk X f a b = @TopologicalSpace.mk X g c d := by
+  subst h
+  congr
+  rw [b, d]
 
 @[ext (iff := false)]
 protected theorem TopologicalSpace.ext :
-    ∀ {f g : TopologicalSpace X}, IsOpen[f] = IsOpen[g] → f = g
-  | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
+    ∀ {f g : TopologicalSpace X}, IsOpen[f] = IsOpen[g] → f = g := by
+  rintro f g hfg
+  rcases f with ⟨a, b⟩
+  rcases g with ⟨a', b'⟩
+  apply TopologicalSpace.mk_eq
+  apply TopologicalSpaceWithoutAtlas.ext
+  exact hfg
 
 section
 
@@ -695,8 +709,11 @@ theorem compl_frontier_eq_union_interior :
 ### Neighborhoods
 -/
 
+theorem nhds_def'' (x : X) : 𝓝 x = ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s := by
+  simp [nhds_def]
+
 theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 s := by
-  simp only [nhds_def, mem_setOf_eq, @and_comm (x ∈ _), iInf_and]
+  simp only [nhds_def'', mem_setOf_eq, @and_comm (x ∈ _), iInf_and]
 
 /-- The open sets containing `x` are a basis for the neighborhood filter. See `nhds_basis_opens'`
 for a variant using open neighborhoods instead. -/
@@ -721,7 +738,9 @@ theorem Filter.HasBasis.nhds_interior {x : X} {p : ι → Prop} {s : ι → Set 
   lift'_nhds_interior x ▸ h.lift'_interior
 
 /-- A filter lies below the neighborhood filter at `x` iff it contains every open set around `x`. -/
-theorem le_nhds_iff {f} : f ≤ 𝓝 x ↔ ∀ s : Set X, x ∈ s → IsOpen s → s ∈ f := by simp [nhds_def]
+theorem le_nhds_iff {f} : f ≤ 𝓝 x ↔ ∀ s : Set X, x ∈ s → IsOpen s → s ∈ f := by
+  simp only [nhds_def, mem_setOf_eq, le_iInf_iff, le_principal_iff, and_imp]
+  rfl
 
 /-- To show a filter is above the neighborhood filter at `x`, it suffices to show that it is above
 the principal filter of some open set `s` containing `x`. -/
@@ -1068,8 +1087,9 @@ theorem isOpen_iff_nhds : IsOpen s ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s :=
     _ ↔ ∀ x ∈ s, 𝓝 x ≤ 𝓟 s := by simp_rw [interior_eq_nhds, subset_def, mem_setOf]
 
 theorem TopologicalSpace.ext_iff_nhds {X} {t t' : TopologicalSpace X} :
-    t = t' ↔ ∀ x, @nhds _ t x = @nhds _ t' x :=
-  ⟨fun H _ ↦ congrFun (congrArg _ H) _, fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
+    t = t' ↔ ∀ x, @nhds _ t.toTopologicalSpaceWithoutAtlas x =
+      @nhds _ t'.toTopologicalSpaceWithoutAtlas x :=
+  ⟨fun H _ ↦ by simp [H], fun H ↦ by ext; simp_rw [@isOpen_iff_nhds _ _ _, H]⟩
 
 alias ⟨_, TopologicalSpace.ext_nhds⟩ := TopologicalSpace.ext_iff_nhds
 

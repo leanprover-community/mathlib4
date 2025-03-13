@@ -204,6 +204,9 @@ theorem IsOpen.inter (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) :=
 theorem isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (⋃₀ s) :=
   TopologicalSpaceWithoutAtlas.isOpen_sUnion s h
 
+@[simp] theorem TopologicalSpaceWithoutAtlas.isOpen_iff :
+    TopologicalSpaceWithoutAtlas.IsOpen s ↔ IsOpen s := Iff.rfl
+
 /-- A set is closed if its complement is open -/
 class IsClosed (s : Set X) : Prop where
   /-- The complement of a closed set is an open set. -/
