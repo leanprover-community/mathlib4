@@ -21,27 +21,27 @@ simplifier lemmas, akin to those that already exists for `ENat.toNat`.
 namespace WithTop
 variable {α : Type*}
 
-/-- Conversion from `WithTop.toBase` to `α`, mapping `⊤` to zero. -/
-def WithTop.toBase [Zero α] (a : WithTop α) : α := a.untopD 0
+/-- Conversion from `WithTop α` to `α`, mapping `⊤` to zero. -/
+def toBase [Zero α] (a : WithTop α) : α := a.untopD 0
 
 /-!
 ## Simplifying Lemmas in cases where α is an Instance of Zero
 -/
 
 @[simp]
-lemma WithTop.toBase_eq_zero [Zero α] (a : WithTop α) :
+lemma toBase_eq_zero [Zero α] (a : WithTop α) :
     a.toBase = 0 ↔ a = 0 ∨ a = ⊤ := by simp_all [WithTop.toBase]
 
 @[simp]
-lemma WithTop.toBase_top [Zero α] :
+lemma toBase_top [Zero α] :
     (⊤ : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase]
 
 @[simp]
-lemma WithTop.toBase_zero [Zero α] :
+lemma toBase_zero [Zero α] :
     (0 : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase]
 
 @[simp]
-lemma WithTop.toBase_coe [Zero α] (a : α) : (a : WithTop α).toBase = a := rfl
+lemma toBase_coe [Zero α] (a : α) : (a : WithTop α).toBase = a := rfl
 
 /-!
 ## Simplifying Lemmas in cases where α is an AddMonoid
@@ -54,19 +54,7 @@ lemma toBase_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ 
   simp [← WithTop.coe_add]
 
 /-!
-## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
--/
-@[simp]
-lemma toBase_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
-    (-a).toBase = -a.toBase := by
-  by_cases ha : a = ⊤
-  · simp [ha]
-  · lift a to α using ha
-    rw [(by rfl : -a = (↑(-a) : WithTop α)), WithTop.toBase_coe]
-    simp
-
-/-!
-## Simplifying Lemmas in cases where α is a LinearOrderedCommRing
+## Simplifying Lemmas in cases where α is a MulZeroClass
 -/
 @[simp]
 lemma toBase_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
@@ -82,3 +70,17 @@ lemma toBase_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
   lift a to α using h₂a
   lift b to α using h₂b
   simp [← WithTop.coe_mul]
+
+/-!
+## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
+-/
+@[simp]
+lemma toBase_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
+    (-a).toBase = -a.toBase := by
+  by_cases ha : a = ⊤
+  · simp [ha]
+  · lift a to α using ha
+    rw [(by rfl : -a = (↑(-a) : WithTop α)), WithTop.toBase_coe]
+    simp
+
+end WithTop
