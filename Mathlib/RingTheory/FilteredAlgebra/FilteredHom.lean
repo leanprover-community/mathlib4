@@ -311,7 +311,7 @@ lemma AssociatedGradedRingHom_apply_of {i : ι} (x : GradedPiece FR FR_lt i) :
     (Gr+*[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr+*(i)[f] x) :=
   f.1.AssociatedGradedAddMonoidHom_apply_of x
 
-theorem AssociatedGradedRingHom_comp_eq_comp: Gr+*[g].comp Gr+*[f] = Gr+*[g.comp f] :=
+theorem AssociatedGradedRingHom_comp_eq_comp : Gr+*[g].comp Gr+*[f] = Gr+*[g.comp f] :=
   RingHom.ext <| fun x ↦ congrFun
   (congrArg DFunLike.coe (FilteredAddGroupHom.AssociatedGradedAddMonoidHom_comp_eq_comp g.1 f.1)) x
 
