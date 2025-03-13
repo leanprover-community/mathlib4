@@ -84,7 +84,7 @@ theorem cgf_deriv_eq_tilted_measure_expectation {X : Ω → ℝ} (t : ℝ)
 
 theorem cgf_iterated_deriv_two_eq_tilted_measure_variance [IsProbabilityMeasure μ]
     {X : Ω → ℝ} (t a b : ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b):
-    iteratedDeriv 2 (cgf X μ) t = Var[X ; μ.tilted fun ω ↦ t * X ω] := by
+    iteratedDeriv 2 (cgf X μ) t = Var[X; μ.tilted fun ω ↦ t * X ω] := by
   rw [iteratedDeriv_two_cgf]
   · have p : (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ (X ω) ^ 2] =
       (μ[fun ω ↦ (X ω) ^ 2 * rexp (t * X ω)]) / mgf X μ t := by
