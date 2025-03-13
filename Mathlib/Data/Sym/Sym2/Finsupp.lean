@@ -6,60 +6,49 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Defs
-import Mathlib.Data.Sym.Sym2
 
 /-!
 # Finitely Supported Commutative multiplication
-
 -/
 
-section
+open Sym2
 
-variable {α R}
-
-variable [CommMonoidWithZero R]
+variable {α M₀ : Type*} [CommMonoidWithZero M₀] {f : α →₀ M₀}
 
 namespace Sym2
 
-lemma sym2_support_eq_preimage_support_mul [NoZeroDivisors R] (f : α →₀ R) :
-    f.support.sym2 = map f ⁻¹' mul.support := by
-  ext ⟨a,b⟩
-  simp_all
+lemma sym2_support_eq_preimage_support_mul [NoZeroDivisors M₀] (f : α →₀ M₀) :
+    f.support.sym2 = map f ⁻¹' mul.support := by ext ⟨a, b⟩; simp
 
-lemma mem_sym2_support_of_mul_ne_zero {f : α →₀ R} (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
+lemma mem_sym2_support_of_mul_ne_zero (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
     p ∈ f.support.sym2 := by
-  obtain ⟨a,b⟩ := p
+  obtain ⟨a, b⟩ := p
   simp only [Finset.mem_sym2_iff, mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
     forall_eq]
   simp only [map_pair_eq, mul_mk, ne_eq] at hp
   aesop
 
-/--
-The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`
--/
-noncomputable def _root_.Finsupp.sym2Mul (f : α →₀ R) :
-    Sym2 α →₀ R := Finsupp.onFinset
-      f.support.sym2
-    (fun p => mul (p.map f)) mem_sym2_support_of_mul_ne_zero
-
-lemma support_mulFinsupp_subset (f : α →₀ R) :
-    f.sym2Mul.support ⊆ f.support.sym2 := fun p hp => by
-  apply mem_sym2_support_of_mul_ne_zero
-  simp_all only [Finsupp.mem_support_iff, ne_eq]
-  exact hp
-
-lemma mulFinsupp_eq_mul_comp_map (l : α →₀ R) : l.sym2Mul = mul ∘ map l := rfl
-
 end Sym2
+
+namespace Finsupp
+
+/-- The composition of a `Finsupp` with `Sym2.mul` as a `Finsupp`. -/
+noncomputable def sym2Mul (f : α →₀ M₀) : Sym2 α →₀ M₀ :=
+  .onFinset f.support.sym2 (fun p ↦ mul (p.map f)) mem_sym2_support_of_mul_ne_zero
+
+lemma support_sym2Mul_subset : f.sym2Mul.support ⊆ f.support.sym2 := support_onFinset_subset
+
+@[simp, norm_cast] lemma coe_sym2Mul (f : α →₀ M₀) : f.sym2Mul = mul ∘ map f := rfl
 
 variable [DecidableEq α]
 
-/--
-Off-diagonal multiplication as a `Finsupp`
--/
-noncomputable def Finsupp.sym2OffDiag (f : α →₀ R) :
-    Sym2 α →₀ R := Finsupp.onFinset {p ∈ f.support.sym2 | ¬ p.IsDiag}
+/-- Off-diagonal multiplication as a `Finsupp` -/
+noncomputable def sym2OffDiagMul (f : α →₀ M₀) : Sym2 α →₀ M₀ :=
+  onFinset {p ∈ f.support.sym2 | ¬ p.IsDiag}
     (Sym2.lift ⟨fun a b ↦ if a = b then 0 else f a * f b, by simp [eq_comm, mul_comm]⟩)
     (by simp +contextual [Sym2.forall]; aesop)
 
-end
+lemma support_sym2OffDiagMul_subset :
+    f.sym2OffDiagMul.support ⊆ {p ∈ f.support.sym2 | ¬ p.IsDiag} := support_onFinset_subset
+
+end Finsupp
