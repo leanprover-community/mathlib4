@@ -5,9 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Topology.Defs.Basic
 import Mathlib.Data.Setoid.Basic
-import Mathlib.Logic.Equiv.PartialEquiv
 import Mathlib.Order.Filter.Defs
-import Mathlib.Order.Filter.Tendsto
 import Mathlib.Tactic.IrreducibleDef
 
 /-!
@@ -118,6 +116,22 @@ variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
 open Filter
 open scoped Topology
 
+/-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
+neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
+infimum over the principal filters of all open sets containing `x`. -/
+def nhds (x : X) : Filter X := nhdsWithoutAtlas x
+
+@[inherit_doc]
+scoped[Topology] notation "𝓝" => nhds
+
+/-- The "neighborhood within" filter. Elements of `𝓝[s] x` are sets containing the
+intersection of `s` and a neighborhood of `x`. -/
+def nhdsWithin (x : X) (s : Set X) : Filter X :=
+  𝓝 x ⊓ 𝓟 s
+
+@[inherit_doc]
+scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
+
 /-- Notation for the filter of punctured neighborhoods of a point. -/
 scoped[Topology] notation3 (name := nhdsNE) "𝓝[≠] " x:100 =>
   nhdsWithin x (@singleton _ (Set _) Set.instSingletonSet x)ᶜ
@@ -152,6 +166,18 @@ if `f x` tends to `f x₀` when `x` tends to `x₀`. -/
 @[fun_prop]
 def ContinuousAt (f : X → Y) (x : X) :=
   Tendsto f (𝓝 x) (𝓝 (f x))
+
+/-- A function between topological spaces is continuous at a point `x₀` within a subset `s`
+if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. -/
+@[fun_prop]
+def ContinuousWithinAt (f : X → Y) (s : Set X) (x : X) : Prop :=
+  Tendsto f (𝓝[s] x) (𝓝 (f x))
+
+/-- A function between topological spaces is continuous on a subset `s`
+when it's continuous at every point of `s` within `s`. -/
+@[fun_prop]
+def ContinuousOn (f : X → Y) (s : Set X) : Prop :=
+  ∀ x ∈ s, ContinuousWithinAt f s x
 
 /-- `x` specializes to `y` (notation: `x ⤳ y`) if either of the following equivalent properties
 hold:

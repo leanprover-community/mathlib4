@@ -91,44 +91,22 @@ variable [TopologicalSpaceWithoutAtlas X] [TopologicalSpaceWithoutAtlas Y] {s t 
 
 open Filter
 
-/-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
-neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
-infimum over the principal filters of all open sets containing `x`. -/
-irreducible_def nhds (x : X) : Filter X :=
+/-- Temporary neighborhood definition, before setting up topological spaces. *Do not use*.
+Use instead `nhds`. -/
+irreducible_def nhdsWithoutAtlas (x : X) : Filter X :=
   ⨅ s ∈ { s : Set X | x ∈ s ∧ TopologicalSpaceWithoutAtlas.IsOpen s }, 𝓟 s
-
-@[inherit_doc]
-scoped[Topology] notation "𝓝" => nhds
-
-open scoped Topology
-
-/-- The "neighborhood within" filter. Elements of `𝓝[s] x` are sets containing the
-intersection of `s` and a neighborhood of `x`. -/
-def nhdsWithin (x : X) (s : Set X) : Filter X :=
-  𝓝 x ⊓ 𝓟 s
-
-@[inherit_doc]
-scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
-
-/-- A function between topological spaces is continuous at a point `x₀` within a subset `s`
-if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. -/
-@[fun_prop]
-def ContinuousWithinAt (f : X → Y) (s : Set X) (x : X) : Prop :=
-  Tendsto f (𝓝[s] x) (𝓝 (f x))
-
-/-- A function between topological spaces is continuous on a subset `s`
-when it's continuous at every point of `s` within `s`. -/
-@[fun_prop]
-def ContinuousOn (f : X → Y) (s : Set X) : Prop :=
-  ∀ x ∈ s, ContinuousWithinAt f s x
 
 variable (X Y) in
 /-- Partial homeomorphisms, defined on open subsets of the space -/
 structure PartialHomeomorph extends PartialEquiv X Y where
   open_source : TopologicalSpaceWithoutAtlas.IsOpen source
   open_target : TopologicalSpaceWithoutAtlas.IsOpen target
-  continuousOn_toFun : ContinuousOn toFun source
-  continuousOn_invFun : ContinuousOn invFun target
+  /-- `toFun` is continuous on `source`, written by hand as the definitions have not been given. -/
+  continuousOn_toFun : ∀ x ∈ source, Tendsto toFun (nhdsWithoutAtlas x ⊓ 𝓟 source)
+    (nhdsWithoutAtlas (toFun x))
+  /-- `invFun` is continuous on `target`, written by hand as the definitions have not been given. -/
+  continuousOn_invFun : ∀ x ∈ target, Tendsto invFun (nhdsWithoutAtlas x ⊓ 𝓟 target)
+    (nhdsWithoutAtlas (invFun x))
 
 open Filter in
 variable (X) in
@@ -139,14 +117,14 @@ protected def PartialHomeomorph.refl : PartialHomeomorph X X :=
     open_target := TopologicalSpaceWithoutAtlas.isOpen_univ
     continuousOn_toFun := by
       intro x hx
-      simp only [ContinuousWithinAt, Tendsto, map, PartialEquiv.refl_coe, preimage_id_eq,
-        nhdsWithin, PartialEquiv.refl_source, id_eq, le_def, Filter.mem_mk, Filter.mem_sets]
+      simp only [Tendsto, map, PartialEquiv.refl_coe, preimage_id_eq,
+        PartialEquiv.refl_source, id_eq, le_def, Filter.mem_mk, Filter.mem_sets]
       intro s hs
       exact ⟨s, hs, univ, by simp, by simp⟩
     continuousOn_invFun := by
       intro x hx
-      simp only [ContinuousWithinAt, Tendsto, map, PartialEquiv.refl_coe, preimage_id_eq,
-        nhdsWithin, PartialEquiv.refl_source, id_eq, le_def, Filter.mem_mk, Filter.mem_sets]
+      simp only [Tendsto, map, PartialEquiv.refl_coe, preimage_id_eq,
+        PartialEquiv.refl_source, id_eq, le_def, Filter.mem_mk, Filter.mem_sets]
       intro s hs
       exact ⟨s, hs, univ, by simp, by simp⟩ }
 
@@ -179,7 +157,11 @@ def chartedSpaceSelfId (H : Type*) [TopologicalSpaceWithoutAtlas H] : ChartedSpa
   mem_chart_source x := Set.mem_univ x
   chart_mem_atlas _ := Set.mem_singleton _
 
-/-- A topology on `X`. -/
+/-- A topology on `X`.
+
+We include the data of an atlas on `X` made only of the identity map, to avoid diamond problems
+when defining the product of two manifolds.
+-/
 @[to_additive existing TopologicalSpace]
 class TopologicalSpace (X : Type u) extends TopologicalSpaceWithoutAtlas X where
   chartedSpaceSelf : ChartedSpace X X := chartedSpaceSelfId X
