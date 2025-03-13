@@ -3,7 +3,7 @@ Copyright (c) 2023 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Ruben Van de Velde
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Analysis.Calculus.Deriv.Shift
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
@@ -35,7 +35,8 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     exact derivWithin_congr (IH hfg) (IH hfg hy)
 
 include h hx in
-theorem iteratedDerivWithin_add (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
+theorem iteratedDerivWithin_add
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     iteratedDerivWithin n (f + g) s x =
       iteratedDerivWithin n f s x + iteratedDerivWithin n g s x := by
   simp_rw [iteratedDerivWithin, iteratedFDerivWithin_add_apply hf hg h hx,
@@ -94,7 +95,8 @@ theorem iteratedDerivWithin_neg' :
 
 include h hx
 
-theorem iteratedDerivWithin_sub (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn 𝕜 n g s) :
+theorem iteratedDerivWithin_sub
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
     iteratedDerivWithin n (f - g) s x =
       iteratedDerivWithin n f s x - iteratedDerivWithin n g s x := by
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
@@ -128,11 +130,10 @@ theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : �
 
 end
 
-lemma iteratedDeriv_add (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+lemma iteratedDeriv_add (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ
-      (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
+    iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ hf hg
 
 theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c + f z) x = iteratedDeriv n f x := by
@@ -146,11 +147,10 @@ lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
   simpa only [← iteratedDerivWithin_univ] using iteratedDerivWithin_neg f
 
-lemma iteratedDeriv_sub (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+lemma iteratedDeriv_sub (hf : ContDiffAt 𝕜 n f x) (hg : ContDiffAt 𝕜 n g x) :
     iteratedDeriv n (f - g) x = iteratedDeriv n f x - iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ
-      (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
+    iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ hf hg
 
 theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiffAt 𝕜 n f x) (c : 𝕜) :
     iteratedDeriv n (c • f) x = c • iteratedDeriv n f x := by

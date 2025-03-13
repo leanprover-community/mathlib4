@@ -44,7 +44,6 @@ that the sets one uses are nonempty and bounded above as these are only conditio
 open scoped NNReal ENNReal Topology UniformConvergence
 open Set Filter
 
--- Porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
@@ -416,7 +415,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       · apply Finset.sum_le_sum_of_subset _
         rintro i hi
         simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        cases' hi with hi hi
+        rcases hi with hi | hi
         · exact lt_of_lt_of_le hi (n.le_succ.trans (n.succ.le_add_right m))
         · exact hi.2
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_

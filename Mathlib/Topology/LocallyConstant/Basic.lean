@@ -3,8 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.GroupWithZero.Indicator
+import Mathlib.Algebra.Group.Indicator
 import Mathlib.Tactic.FinCases
+import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Sets.Closeds
 
 /-!
@@ -140,7 +141,7 @@ theorem eq_const [PreconnectedSpace X] {f : X → Y} (hf : IsLocallyConstant f) 
 
 theorem exists_eq_const [PreconnectedSpace X] [Nonempty Y] {f : X → Y} (hf : IsLocallyConstant f) :
     ∃ y, f = Function.const X y := by
-  cases' isEmpty_or_nonempty X with h h
+  rcases isEmpty_or_nonempty X with h | h
   · exact ⟨Classical.arbitrary Y, funext <| h.elim⟩
   · exact ⟨f (Classical.arbitrary X), hf.eq_const _⟩
 

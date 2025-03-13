@@ -5,6 +5,7 @@ Authors: Joseph Myers
 -/
 import Mathlib.Analysis.Convex.Between
 import Mathlib.Analysis.Convex.StrictConvexSpace
+import Mathlib.Analysis.Normed.Affine.AddTorsor
 import Mathlib.Analysis.Normed.Affine.Isometry
 
 /-!

@@ -153,6 +153,11 @@ structure RepresentableBy (F : Cᵒᵖ ⥤ Type v) (Y : C) where
   homEquiv_comp {X X' : C} (f : X ⟶ X') (g : X' ⟶ Y) :
     homEquiv (f ≫ g) = F.map f.op (homEquiv g)
 
+lemma RepresentableBy.comp_homEquiv_symm {F : Cᵒᵖ ⥤ Type v} {Y : C}
+    (e : F.RepresentableBy Y) {X X' : C} (x : F.obj (op X')) (f : X ⟶ X') :
+    f ≫ e.homEquiv.symm x = e.homEquiv.symm (F.map f.op x) :=
+  e.homEquiv.injective (by simp [homEquiv_comp])
+
 /-- If `F ≅ F'`, and `F` is representable, then `F'` is representable. -/
 def RepresentableBy.ofIso {F F' : Cᵒᵖ ⥤ Type v} {Y : C} (e : F.RepresentableBy Y) (e' : F ≅ F') :
     F'.RepresentableBy Y where
@@ -168,6 +173,11 @@ structure CorepresentableBy (F : C ⥤ Type v) (X : C) where
   homEquiv {Y : C} : (X ⟶ Y) ≃ F.obj Y
   homEquiv_comp {Y Y' : C} (g : Y ⟶ Y') (f : X ⟶ Y) :
     homEquiv (f ≫ g) = F.map g (homEquiv f)
+
+lemma CorepresentableBy.homEquiv_symm_comp {F : C ⥤ Type v} {X : C}
+    (e : F.CorepresentableBy X) {Y Y' : C} (y : F.obj Y) (g : Y ⟶ Y') :
+    e.homEquiv.symm y ≫ g = e.homEquiv.symm (F.map g y) :=
+  e.homEquiv.injective (by simp [homEquiv_comp])
 
 /-- If `F ≅ F'`, and `F` is corepresentable, then `F'` is corepresentable. -/
 def CorepresentableBy.ofIso {F F' : C ⥤ Type v} {X : C} (e : F.CorepresentableBy X)

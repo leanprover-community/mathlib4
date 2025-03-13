@@ -6,7 +6,7 @@ María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Tu
 Francesco Veneziano
 -/
 
-import Mathlib.Algebra.Order.AbsoluteValue.Equivalence
+import Mathlib.Analysis.AbsoluteValue.Equivalence
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -144,7 +144,7 @@ lemma exists_minimal_nat_zero_lt_and_lt_one :
 variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m)
 
 include hp0 hp1 hmin in
-/-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
+/-- The minimal positive integer with absolute value smaller than 1 is a prime number. -/
 lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
   rw [← Nat.irreducible_iff_nat_prime]
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.
@@ -311,7 +311,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   contrapose! notbdd with h
   intro n
   have h_ineq1 {m : ℕ} (hm : 1 ≤ m) : f m ≤ n₀ * (logb n₀ m + 1) := by
-    /- L is the string of digits of `n` in the base `n₀`-/
+    /- L is the string of digits of `n` in the base `n₀` -/
     set L := Nat.digits n₀ m
     calc
     f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := apply_le_sum_digits m hn₀
@@ -319,12 +319,12 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       simp only [List.mapIdx_eq_zipIdx_map, List.map_map]
       refine List.sum_le_sum fun ⟨i, a⟩ _ ↦ ?_
       simp only [Function.comp_apply, Function.uncurry_apply_pair]
-      exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one₀ (by positivity) h)
-        (by positivity) (by positivity)
+      exact (mul_le_mul_of_nonneg_right (mod_cast le_refl n₀) (by positivity)).trans <|
+        mul_le_of_le_one_right (by positivity) (pow_le_one₀ (by positivity) h)
     _ = n₀ * (Nat.log n₀ m + 1) := by
       rw [List.mapIdx_eq_zipIdx_map, List.eq_replicate_of_mem (a := (n₀ : ℝ)) (l := L.zipIdx.map _),
         List.sum_replicate, List.length_map, List.length_zipIdx, nsmul_eq_mul, mul_comm,
-        Nat.digits_len n₀ m hn₀ (not_eq_zero_of_lt hm), Nat.cast_add_one]
+        Nat.digits_len n₀ m hn₀ (ne_zero_of_lt hm), Nat.cast_add_one]
       simp +contextual
     _ ≤ n₀ * (logb n₀ m + 1) := by gcongr; exact natLog_le_logb ..
   -- For h_ineq2 we need to exclude the case n = 0.
@@ -376,7 +376,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ f m ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
       rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
-        ← Nat.digits_len m n hm (not_eq_zero_of_lt hn)]
+        ← Nat.digits_len m n hm (ne_zero_of_lt hn)]
     _ ≤ m * ((f m ^ (d + 1)) / (f m - 1)) := by
       gcongr
       · linarith only [one_lt_of_not_bounded notbdd hm]
@@ -406,11 +406,11 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
     exact (tendsto_const_rpow_inv (expr_pos hm notbdd)).mul_const _
   exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x:= f ↑n)) this <|
-    eventually_atTop.mpr ⟨2, fun b hb ↦ param_upperbound hm hn notbdd (not_eq_zero_of_lt hb)⟩
+    eventually_atTop.mpr ⟨2, fun b hb ↦ param_upperbound hm hn notbdd (ne_zero_of_lt hb)⟩
 
 include hm hn notbdd in
 /-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
+private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : t ≤ s := by
   rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
   apply le_trans <| le_pow_log hm hn notbdd
   rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),
@@ -440,8 +440,8 @@ theorem equiv_real_of_unbounded : f ≈ real := by
     have : (logb (↑m) (f ↑m))⁻¹ ≠ 0 := by
       simp only [ne_eq, inv_eq_zero, logb_eq_zero, Nat.cast_eq_zero, Nat.cast_eq_one, map_eq_zero,
         not_or]
-      exact ⟨not_eq_zero_of_lt oneltm, oneltm.ne', by norm_cast,
-        not_eq_zero_of_lt oneltm, ne_of_not_le hm, by linarith only [apply_nonneg f ↑m]⟩
+      exact ⟨ne_zero_of_lt oneltm, oneltm.ne', by norm_cast,
+        ne_zero_of_lt oneltm, ne_of_not_le hm, by linarith only [apply_nonneg f ↑m]⟩
     simp [hs, this]
   · simp
   · simp only [real_eq_abs, abs_cast, Rat.cast_natCast]
@@ -452,7 +452,7 @@ theorem equiv_real_of_unbounded : f ≈ real := by
       rw [rpow_logb (mod_cast zero_lt_of_lt oneltm) (mod_cast oneltm.ne') (by linarith only [hm])]
     have hfn : f n = n ^ logb n (f n) := by
       rw [rpow_logb (mod_cast zero_lt_of_lt h) (mod_cast h.ne')
-        (by apply map_pos_of_ne_zero; exact_mod_cast not_eq_zero_of_lt h)]
+        (by apply map_pos_of_ne_zero; exact_mod_cast ne_zero_of_lt h)]
     rwa [← hs, eq_of_eq_pow oneltm h notbdd hfm hfn]
 
 end Archimedean

@@ -133,7 +133,46 @@ def previousInstName : Name → Name
     .str init newTail
   | nm => nm
 
-/--`getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/--
+`getDeclName cmd id` takes a `Syntax` input `cmd` and returns the `Name` of the declaration defined
+by `cmd`.
+-/
+def getDeclName (cmd : Syntax) : CommandElabM Name := do
+  let ns ← getCurrNamespace
+  let id1 ← getId cmd
+  let id2 := mkIdentFrom id1 (previousInstName id1.getId)
+  let some declStx := cmd.find? (·.isOfKind ``Parser.Command.declaration) | pure default
+  let some modifiersStx := declStx.find? (·.isOfKind ``Parser.Command.declModifiers) | pure default
+  let modifiers : TSyntax ``Parser.Command.declModifiers := ⟨modifiersStx⟩
+  -- the `get`/`set` state catches issues with elaboration of, for instance, `scoped` attributes
+  let s ← get
+  let modifiers ← elabModifiers modifiers
+  set s
+  liftCoreM do (
+    -- Try applying the algorithm in `Lean.mkDeclName` to attach a namespace to the name.
+    -- Unfortunately calling `Lean.mkDeclName` directly won't work: it will complain that there is
+    -- already a declaration with this name.
+    (do
+      let shortName := id1.getId
+      let view := extractMacroScopes shortName
+      let name := view.name
+      let isRootName := (`_root_).isPrefixOf name
+      let mut fullName := if isRootName then
+        { view with name := name.replacePrefix `_root_ Name.anonymous }.review
+      else
+        ns ++ shortName
+      -- Apply name visibility rules: private names get mangled.
+      match modifiers.visibility with
+      | .private => return mkPrivateName (← getEnv) fullName
+      | _ => return fullName) <|>
+    -- try the visible name or the current "nameless" `instance` name
+    realizeGlobalConstNoOverload id1 <|>
+    -- otherwise, guess what the previous "nameless" `instance` name was
+    realizeGlobalConstNoOverload id2 <|>
+    -- failing everything, use the current namespace followed by the visible name
+    return ns ++ id1.getId)
+
+/-- `getAllDependencies cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 declaration names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),
@@ -149,23 +188,14 @@ you can use `Lean.NameSet.transitivelyUsedConstants` to get those.
 def getAllDependencies (cmd id : Syntax) :
     CommandElabM NameSet := do
   let env ← getEnv
-  let id1 ← getId cmd
-  let ns ← getCurrNamespace
-  let id2 := mkIdentFrom id1 (previousInstName id1.getId)
-  let nm ← liftCoreM do (
-    -- try the visible name or the current "nameless" `instance` name
-    realizeGlobalConstNoOverload id1 <|>
-    -- otherwise, guess what the previous "nameless" `instance` name was
-    realizeGlobalConstNoOverload id2 <|>
-    -- failing everything, use the current namespace followed by the visible name
-    return ns ++ id1.getId)
+  let nm ← getDeclName cmd
   -- We collect the implied declaration names, the `SyntaxNodeKinds` and the attributes.
   return getVisited env nm
               |>.append (getVisited env id.getId)
               |>.append (getSyntaxNodeKinds cmd)
               |>.append (getAttrs env cmd)
 
-/--`getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
+/-- `getAllImports cmd id` takes a `Syntax` input `cmd` and returns the `NameSet` of all the
 module names that are implied by
 * the `SyntaxNodeKinds`,
 * the attributes of `cmd` (if there are any),

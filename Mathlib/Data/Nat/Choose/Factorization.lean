@@ -57,9 +57,9 @@ theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factori
 
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
     (hn : n < 3 * p) : (choose n k).factorization p = 0 := by
-  cases' em' p.Prime with hp hp
+  rcases em' p.Prime with hp | hp
   · exact factorization_eq_zero_of_non_prime (choose n k) hp
-  cases' lt_or_le n k with hnk hkn
+  rcases lt_or_le n k with hnk | hkn
   · simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn),
     ← emultiplicity_eq_zero_iff_multiplicity_eq_zero]
@@ -118,9 +118,7 @@ theorem le_two_mul_of_factorization_centralBinom_pos
 /-- A binomial coefficient is the product of its prime factors, which are at most `n`. -/
 theorem prod_pow_factorization_choose (n k : ℕ) (hkn : k ≤ n) :
     (∏ p ∈ Finset.range (n + 1), p ^ (Nat.choose n k).factorization p) = choose n k := by
-  conv => -- Porting note: was `nth_rw_rhs`
-    rhs
-    rw [← factorization_prod_pow_eq_self (choose_pos hkn).ne']
+  conv_rhs => rw [← factorization_prod_pow_eq_self (choose_pos hkn).ne']
   rw [eq_comm]
   apply Finset.prod_subset
   · intro p hp

@@ -99,10 +99,10 @@ private theorem hasProduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasProduct f
 
 /-- If `C` has a terminal object and binary products, then it has finite products. -/
 theorem hasFiniteProducts_of_has_binary_and_terminal : HasFiniteProducts C :=
-  ⟨fun n => ⟨fun K =>
-    let this := hasProduct_fin n fun n => K.obj ⟨n⟩
+  ⟨fun n => ⟨fun K => by
     let that : (Discrete.functor fun n => K.obj ⟨n⟩) ≅ K := Discrete.natIso fun ⟨_⟩ => Iso.refl _
-    @hasLimitOfIso _ _ _ _ _ _ this that⟩⟩
+    rw [← hasLimit_iff_of_iso that]
+    apply hasProduct_fin⟩⟩
 
 
 end
@@ -156,12 +156,11 @@ lemma preservesShape_fin_of_preserves_binary_and_terminal (n : ℕ) :
     apply preservesLimit_of_iso_diagram F that
 
 /-- If `F` preserves the terminal object and binary products then it preserves finite products. -/
-lemma preservesFiniteProducts_of_preserves_binary_and_terminal (J : Type*) [Fintype J] :
-    PreservesLimitsOfShape (Discrete J) F := by
-  classical
-    let e := Fintype.equivFin J
-    haveI := preservesShape_fin_of_preserves_binary_and_terminal F (Fintype.card J)
-    apply preservesLimitsOfShape_of_equiv (Discrete.equivalence e).symm
+lemma preservesFiniteProducts_of_preserves_binary_and_terminal (J : Type*) [Finite J] :
+    PreservesLimitsOfShape (Discrete J) F :=
+  let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  have := preservesShape_fin_of_preserves_binary_and_terminal F n
+  preservesLimitsOfShape_of_equiv (Discrete.equivalence e).symm _
 
 end Preserves
 
@@ -232,10 +231,10 @@ private theorem hasCoproduct_fin : ∀ (n : ℕ) (f : Fin n → C), HasCoproduct
 
 /-- If `C` has an initial object and binary coproducts, then it has finite coproducts. -/
 theorem hasFiniteCoproducts_of_has_binary_and_initial : HasFiniteCoproducts C :=
-  ⟨fun n => ⟨fun K =>
-    letI := hasCoproduct_fin n fun n => K.obj ⟨n⟩
+  ⟨fun n => ⟨fun K => by
     let that : K ≅ Discrete.functor fun n => K.obj ⟨n⟩ := Discrete.natIso fun ⟨_⟩ => Iso.refl _
-    @hasColimitOfIso _ _ _ _ _ _ this that⟩⟩
+    rw [hasColimit_iff_of_iso that]
+    apply hasCoproduct_fin⟩⟩
 
 end
 
@@ -287,12 +286,11 @@ lemma preservesShape_fin_of_preserves_binary_and_initial (n : ℕ) :
     apply preservesColimit_of_iso_diagram F that
 
 /-- If `F` preserves the initial object and binary coproducts then it preserves finite products. -/
-lemma preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Fintype J] :
-    PreservesColimitsOfShape (Discrete J) F := by
-  classical
-    let e := Fintype.equivFin J
-    haveI := preservesShape_fin_of_preserves_binary_and_initial F (Fintype.card J)
-    apply preservesColimitsOfShape_of_equiv (Discrete.equivalence e).symm
+lemma preservesFiniteCoproductsOfPreservesBinaryAndInitial (J : Type*) [Finite J] :
+    PreservesColimitsOfShape (Discrete J) F :=
+  let ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin J
+  have := preservesShape_fin_of_preserves_binary_and_initial F n
+  preservesColimitsOfShape_of_equiv (Discrete.equivalence e).symm _
 
 end Preserves
 
