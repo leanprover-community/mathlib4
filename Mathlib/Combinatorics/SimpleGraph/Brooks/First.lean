@@ -8,9 +8,9 @@ section Walks
 namespace Walk
 open Finset
 section LFDEq
-variable[LocallyFinite G] [DecidableEq α]
-lemma exists_maximal_path_subset {u v : α} (s : Finset α) {q : G.Walk u v} (hq : q.IsPath)
-    (hs : ∀ y , y ∈ q.support → y ∈ s) : ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧
+variable [DecidableEq α]
+lemma exists_maximal_path_subset {u v : α} [LocallyFinite G] (s : Finset α) {q : G.Walk u v}
+(hq : q.IsPath) (hs : ∀ y , y ∈ q.support → y ∈ s) : ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧
   (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
 ∀ y, y ∈ G.neighborFinset x ∩ s → y ∈ (p.append q).support := by
   by_contra! hf
@@ -30,6 +30,13 @@ lemma exists_maximal_path_subset {u v : α} (s : Finset α) {q : G.Walk u v} (hq
   simp_rw [← List.mem_toFinset] at hc
   have := length_support _ ▸ ((List.toFinset_card_of_nodup hp.2) ▸ (card_le_card hc.1))
   exact Nat.not_succ_le_self _ (this.trans hc.2)
+
+open List
+lemma IsPath.support_takeUntil_disjoint_dropUntil_tail {u v x : α} {p : G.Walk u v} (hp : p.IsPath)
+   (hx : x ∈ p.support) : Disjoint (p.takeUntil x hx).support (p.dropUntil x hx).support.tail := by
+  rw [← p.take_spec hx, append_isPath_iff] at hp
+  exact hp.2.2
+
 end LFDEq
 
 variable {u v w x a b : α} {p : G.Walk u v}
@@ -46,6 +53,7 @@ lemma IsPath.eq_penultimate_of_end_mem_edge (hp : p.IsPath) (hs : s(x, v) ∈ p.
      x = p.penultimate :=
   p.snd_reverse.symm ▸
     hp.reverse.eq_snd_of_start_mem_edge (p.edges_reverse ▸ (List.mem_reverse.mpr hs))
+
 
 /-- The first vertex in a walk `p` that satisfies a predicate `P` or its end vertex if no such
  vertex exists. -/
