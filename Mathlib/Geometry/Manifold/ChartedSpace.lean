@@ -515,7 +515,7 @@ theorem closedUnderRestriction_iff_id_le (G : StructureGroupoid H) :
     -- rw [hs.interior_eq]
     -- simp only [mfld_simps]
     ext
-    · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, id, ofSet_apply, id_eq]
+    · rw [PartialHomeomorph.restr_apply, PartialHomeomorph.refl_apply, ofSet_apply, id_eq]
     · simp [hs]
     · simp [hs.interior_eq]
   · intro h
@@ -747,7 +747,7 @@ We keep this as a definition (not an instance) to avoid instance search trying t
 `DiscreteTopology` or `Unique` instances.
 -/
 def ChartedSpace.of_discreteTopology [TopologicalSpace M] [TopologicalSpace H]
-    [DiscreteTopology M] [h: Unique H] : ChartedSpace H M where
+    [DiscreteTopology M] [h : Unique H] : ChartedSpace H M where
   atlas :=
     letI f := fun x : M ↦ PartialHomeomorph.const
       (isOpen_discrete {x}) (isOpen_discrete {h.default})

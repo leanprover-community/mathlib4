@@ -747,7 +747,7 @@ theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializ
 theorem isOpen_source (e : Pretrivialization F (π F E)) :
     IsOpen[a.totalSpaceTopology] e.source := by
   refine isOpen_iSup_iff.mpr fun e' => isOpen_iSup_iff.mpr fun _ => ?_
-  refine isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target, ?_⟩)
+  refine isOpen_coinduced.mpr (isOpen_induced_iff.mpr ⟨e.target, e.open_target', ?_⟩)
   ext ⟨x, hx⟩
   simp only [mem_preimage, Pretrivialization.setSymm, restrict, e.mem_target, e.mem_source,
     e'.proj_symm_apply hx]
@@ -759,14 +759,14 @@ theorem isOpen_target_of_mem_pretrivializationAtlas_inter (e e' : Pretrivializat
   obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_symm_of_mem_pretrivializationAtlas he')
     e.source (a.isOpen_source e)
   rw [inter_comm, hu2]
-  exact hu1.inter e'.open_target
+  exact hu1.inter e'.open_target'
 
 /-- Promotion from a `Pretrivialization` to a `Trivialization`. -/
 def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @Trivialization B F _ _ _ a.totalSpaceTopology (π F E) :=
   let _ := a.totalSpaceTopology
   { e with
-    open_source := a.isOpen_source e,
+    open_source' := a.isOpen_source e,
     continuousOn_toFun := by
       refine continuousOn_iff'.mpr fun s hs => ⟨e ⁻¹' s ∩ e.source,
         isOpen_iSup_iff.mpr fun e' => ?_, by rw [inter_assoc, inter_self]; rfl⟩

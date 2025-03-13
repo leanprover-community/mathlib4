@@ -492,7 +492,7 @@ private noncomputable def normedAddCommGroupAux : NormedAddCommGroup (CStarMatri
 
 attribute [local instance] normedAddCommGroupAux
 
-private def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
+private noncomputable def normedSpaceAux : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
 /- In this `Aux` section, we locally activate the following instances: a norm on `CStarMatrix`
@@ -591,7 +591,7 @@ noncomputable instance instNormedAddCommGroup :
     CStarMatrix.uniformity_eq_aux.symm
       fun _ => Filter.ext_iff.1 CStarMatrix.cobounded_eq_aux.symm _
 
-instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
+noncomputable instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
   .ofCore CStarMatrix.normedSpaceCore
 
 noncomputable instance instNonUnitalNormedRing :
