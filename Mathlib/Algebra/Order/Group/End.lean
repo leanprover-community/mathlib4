@@ -10,6 +10,7 @@ import Mathlib.Order.RelIso.Basic
 # Relation isomorphisms form a group
 -/
 
+assert_not_exists MulAction MonoidWithZero
 
 variable {α : Type*} {r : α → α → Prop}
 
