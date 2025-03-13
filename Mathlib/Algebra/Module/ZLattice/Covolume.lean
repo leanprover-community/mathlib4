@@ -156,38 +156,6 @@ theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     LinearEquiv.symm_symm, Function.comp_apply, LinearEquiv.trans_apply,
     ContinuousLinearEquiv.coe_toLinearEquiv, ContinuousLinearEquiv.apply_symm_apply]
 
--- section subZLattice
-
--- protected def relindex {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E]
---     (L L' : Submodule ℤ E) : ℕ := AddSubgroup.relindex L.toAddSubgroup L'.toAddSubgroup
-
--- example  {ι : Type*} [Fintype ι] [DecidableEq ι] (L L' : Submodule ℤ (ι → ℝ))
---     [DiscreteTopology L] [IsZLattice ℝ L] [DiscreteTopology L'] [IsZLattice ℝ L'] (h : L' ≤ L) :
---     ZLattice.relindex L' L = covolume L / covolume L' := by
---   let e₀ : Free.ChooseBasisIndex ℤ L ≃ ι := sorry
---   let b₀ := (Module.Free.chooseBasis ℤ L).reindex e₀
---   let N := L'.comap L.subtype
---   obtain ⟨n, S⟩ := Submodule.smithNormalForm b₀ N
---   let b₁ := S.bN
---   let b := S.bM
---   let e₁ : ι ≃ Fin n := sorry
---   let b' : Basis ι ℤ L' := by
---     refine Basis.mk (v := ?_) ?_ ?_
---     intro i
---     let a := b₁ (e₁ i)
---     have : (a : L) ∈ N := by
---       exact coe_mem a
---     unfold N at this
---     simp_rw [mem_comap] at this
---     refine ⟨L.subtype a, this⟩
---     sorry
---     sorry
---   rw [covolume_eq_det L b, covolume_eq_det L' b']
-
---   sorry
-
--- end subZLattice
-
 end Basic
 
 namespace covolume
