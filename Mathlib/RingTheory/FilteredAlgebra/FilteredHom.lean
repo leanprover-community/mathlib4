@@ -155,18 +155,18 @@ def GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →+ GradedPiece FB FB_lt i
     (fun x hx ↦ by simpa using f.pieces_wise_lt hx)
 
 @[inherit_doc]
-scoped[FilteredAddGroupHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+scoped[FilteredAddGroupHom] notation:9000 "Gr+(" i ")[" f "]" => GradedPieceHom f i
 
 @[simp]
 lemma GradedPieceHom_apply_mk_eq_mk_piece_wise_hom {i : ι} (x : FA i) :
-    Gr(i)[f] (GradedPiece.mk FA FA_lt x) = (GradedPiece.mk FB FB_lt (f.piece_wise_hom i x)) :=
+    Gr+(i)[f] (GradedPiece.mk FA FA_lt x) = (GradedPiece.mk FB FB_lt (f.piece_wise_hom i x)) :=
   rfl
 
 lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FA FA_lt i) :
-    Gr(i)[g] (Gr(i)[f] x) = Gr(i)[g.comp f] x :=
+    Gr+(i)[g] (Gr+(i)[f] x) = Gr+(i)[g.comp f] x :=
   QuotientAddGroup.induction_on x (fun _ ↦ rfl)
 
-lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f]  = Gr(i)[g.comp f] := by
+lemma GradedPieceHom_comp (i : ι) : Gr+(i)[g].comp Gr+(i)[f]  = Gr+(i)[g.comp f] := by
   ext x
   exact GradedPieceHom_comp_apply g f i x
 
@@ -177,18 +177,18 @@ noncomputable def AssociatedGradedAddMonoidHom :
   DirectSum.map (GradedPieceHom f)
 
 @[inherit_doc]
-scoped[FilteredAddGroupHom] notation:9000 "Gr[" f "]" => AssociatedGradedAddMonoidHom f
+scoped[FilteredAddGroupHom] notation:9000 "Gr+[" f "]" => AssociatedGradedAddMonoidHom f
 
 @[simp]
 lemma AssociatedGradedAddMonoidHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
-    (Gr[f] x) i = Gr(i)[f] (x i) := rfl
+    (Gr+[f] x) i = Gr+(i)[f] (x i) := rfl
 
 @[simp]
 lemma AssociatedGradedAddMonoidHom_apply_of [DecidableEq ι] {i : ι} (x : GradedPiece FA FA_lt i) :
-    (Gr[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr(i)[f] x) :=
+    (Gr+[f] (AssociatedGraded.of x)) = AssociatedGraded.of (Gr+(i)[f] x) :=
   DirectSum.map_of (GradedPieceHom f) i x
 
-theorem AssociatedGradedAddMonoidHom_comp_eq_comp: Gr[g].comp Gr[f] = Gr[g.comp f] := by
+theorem AssociatedGradedAddMonoidHom_comp_eq_comp: Gr+[g].comp Gr+[f] = Gr+[g.comp f] := by
   apply Eq.trans (DirectSum.map_comp (GradedPieceHom f) (GradedPieceHom g)).symm
   simp only [GradedPieceHom_comp, AssociatedGradedAddMonoidHom]
 
