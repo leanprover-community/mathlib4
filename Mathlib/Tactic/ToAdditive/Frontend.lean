@@ -1417,7 +1417,7 @@ def targetName (b : BundledExtensions)
     (cfg : Config) (src : Name) : CoreM Name := do
   let .str pre s := src | throwError "to_additive: can't transport {src}"
   if cfg.self then
-    -- warn the user if they provide a target name (that will get ignored)?
+    -- warn the user if they provide a target name (that will get ignored)
     if cfg.tgt != .anonymous then
       log m!"order_dual self will ignore the provided target name"
     return src
@@ -1509,7 +1509,7 @@ def elabToAdditive : Syntax → CoreM Config
              ref := (tgt.map (·.raw)).getD tk }
   | _ => throwUnsupportedSyntax
 
-/-- Elaboration of the configuration options for `to_additive`. -/
+/-- Elaboration of the configuration options for `order_dual`. -/
 def elabOrderDual : Syntax → CoreM Config
   | `(attr| order_dual%$tk $[?%$trace]? $[$opts:orderDualOption]* $[$tgt]? $[$doc]?) => do
     let mut attrs := #[]
