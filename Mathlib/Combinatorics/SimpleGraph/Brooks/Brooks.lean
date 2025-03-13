@@ -61,11 +61,12 @@ open PartialColoring Walk
 variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α] {s : Finset α}
 /-- Essentially the first main case of Brooks theorem, applied with `s = {x₁, x₃}`
 This gives a `k`-coloring of `s ∪ p.support.toFinset ∪ {x₂}` -/
-theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ a : α} {p : G.Walk xᵣ x₄} (hk : 0 < k)
-    {hc : G.Adj xⱼ x₂} (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support)
+theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} (hk : 0 < k)
+    (hc : G.Adj xⱼ x₂) (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support)
     (hs1 : x₁ ∈ s) (hs3 : x₃ ∈ s) (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃)
     (hne : x₁ ≠ x₃) (heq : ¬ G.Adj x₁ x₃) (hdisj : Disjoint s p.support.toFinset)
-    (h2disjp : x₂ ∉ p.support) : ((G.ofNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
+    (h2disjp : x₂ ∉ p.support) (a : α) :
+    ((G.ofNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
         ((p.takeUntil _ hj).concat hc).reverse.support a < k := by
   have hx1p : x₁ ∉ p.support := fun hf ↦ (disjoint_left.1 hdisj hs1 (List.mem_toFinset.2 hf))
   have hx3p : x₃ ∉ p.support := fun hf ↦ (disjoint_left.1 hdisj hs3 (List.mem_toFinset.2 hf))
@@ -103,24 +104,35 @@ theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ a : α} {p : G.Walk xᵣ x₄} (h
   · apply mem_union_left  _ (by simp)
   · apply mem_union_left  _ (by simp)
 
-
-
-
-set_option maxHeartbeats 2000000
+theorem Brooks1' {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} (p : G.Walk xᵣ x₄) (hk : 3 ≤ k) (hc : G.Adj xⱼ x₂)
+    (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support) (h21 : G.Adj x₂ x₁)
+    (h23 : G.Adj x₂ x₃) (hne : x₁ ≠ x₃) (heq : ¬ G.Adj x₁ x₃)
+    (h1d : Disjoint {x₁, x₃} p.support.toFinset) (h2d : x₂ ∉ p.support) :
+  ∃ (C : G.PartialColoring ({x₁, x₂, x₃} ∪ p.support.toFinset)), ∀ a, C a < k := by
+  let C':= ((G.ofNotAdj heq).Greedy (p.dropUntil _ hj).support.tail).Greedy
+        ((p.takeUntil _ hj).concat hc).reverse.support
+  have st : {x₁, x₃} ∪ (p.dropUntil xⱼ hj).support.tail.toFinset ∪
+  ((p.takeUntil xⱼ hj).concat hc).reverse.support.toFinset = {x₁, x₂, x₃} ∪ p.support.toFinset := by
+    rw [support_reverse, List.toFinset_reverse, support_concat]
+    nth_rw 3 [← take_spec p hj]
+    rw [support_append]
+    aesop
+  use C'.copy st
+  simp_rw [copy_eq]
+  exact  Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
 
 theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)
-    (s : Finset α) : ∃ C : G.PartialColoring s, ∀ v, v ∈ s → C v < k := by
-  have H  (n : ℕ) (hn : #s ≤ n) : ∃ C : G.PartialColoring s, ∀ v, v ∈ s → C v < k := by
+    (s : Finset α) : ∃ C : G.PartialColoring s, ∀ v, C v < k := by
+  have H  (n : ℕ) (hn : #s ≤ n) : ∃ C : G.PartialColoring s, ∀ v,  C v < k := by
     induction n using Nat.strong_induction_on generalizing s with
     | h n ih =>
     by_cases hd : ∃ v ∈ s, G.degreeOn (s.erase v) v < k
     · obtain ⟨v, hv, hlt⟩ := hd
       obtain ⟨C, hC⟩:= ih _ (Nat.lt_of_lt_of_le (card_erase_lt_of_mem hv) hn) _ le_rfl
       have hvlt : C.extend v < k := (C.extend_le_degreeOn _).trans_lt hlt
-      have (w : α) (hw : w ∈ insert v (s.erase v)) := insert_lt_of_lt hC hvlt hw
+      have (w : α)  := insert_lt_of_lt hC hvlt w
       use (C.insert_extend v).copy (by simp_all)
-      convert this
-      rw [insert_erase hv]
+      exact this
     push_neg at hd
     replace hd : ∀ v ∈ s, G.degreeOn (s.erase v) v = k := fun v hv ↦ le_antisymm
           ((degreeOn_le_degree ..).trans (hbdd v)) <| hd _ hv
@@ -153,8 +165,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       let v41 := ((Walk.cons h1.1 nil).cons h3.1).cons h24.symm
       have h41 : v41.IsPath := by
         rw [cons_isPath_iff]
-        simp only [cons_isPath_iff, isPath_iff_eq_nil, support_nil, List.mem_cons, List.not_mem_nil,
-          or_false, true_and, support_cons, not_or]
+        simp only [cons_isPath_iff, isPath_iff_eq_nil, support_nil, List.mem_cons,
+         List.not_mem_nil, or_false, true_and, support_cons, not_or]
         exact ⟨⟨h1.1.ne, h3.1.ne, hne.symm⟩, h24.symm.ne, h4 ,fun hf ↦ hnadj (hf ▸ h24.symm)⟩
       have v41sup : v41.support = [v₄, v₃, v₂, v₁] := by
         rw [support_cons, support_cons, support_cons, support_nil]
@@ -188,6 +200,9 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       have hdisj2 := (append_isPath_iff.1 hq).2.2
       by_cases hr : ((q.append v41)).support.toFinset = s
       · -- Main case 1
+        rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
+        simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
+        rw [v41sup, List.tail] at hdisj2
         -- TODO work out what the last ∧ condition should be below
         obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
           have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
@@ -204,70 +219,15 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           use vⱼ
           simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
           exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
-        let C₁ := G.ofNotAdj hnadj
-        have ms : ∀ v, v ∈ s → v ≠ v₁ → v ≠ v₂ → v ≠ v₃ → v ∈ q.support := by
-          intro v hv hv1 hv2 hv3
-          have := hr.symm.le hv
-          rw [support_append, support_cons, support_cons, support_cons, support_nil, List.tail,
-            List.mem_toFinset] at this
-          rw [List.mem_append] at this
-          cases this with
-          | inl h => exact h
-          | inr h => simp_all only [ne_eq, mem_support_append_iff, List.mem_cons, List.not_mem_nil,
-            or_self]
-        have vjm :=(ms vⱼ hj.2.2.2 hj.2.1 hj.1.symm.ne hj.2.2.1)
-        have h4r : vᵣ ≠ v₄ := by sorry
-        by_cases h4j : vⱼ = v₄
-        · subst vⱼ
-          --obtain ⟨v₅, q', h₅₄, heq⟩ := q.exists_eq_concat_of_ne h4r
-          let C₂ := C₁.Greedy q.reverse.support
-          have h2r : (q.concat hj.1.symm).IsPath := by
-            apply hq.of_append_left.concat
-            intro h2
-            rw [isPath_def, support_append, List.nodup_append] at hq
-            apply hq.2.2 h2 (by rw [support_cons, support_cons, support_cons, List.tail]; simp)
-          have hc2 x : C₂ x < k := by
+        have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
+          rw [←hr, union_comm]
+          congr! 1
+          rw [insert_comm, insert_comm v₁]
+          congr! 1
+          exact pair_comm _ _
+        convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne hnadj
+           (by aesop)  (by aesop)
 
-            apply C₁.Greedy_of_concat_path hbdd h2r
-               (fun y ↦ (ofNotAdj_eq hnadj _) ▸ (Nat.zero_lt_of_lt hk))
-            rw [append_isPath_iff, v41sup, List.tail] at hq
-            aesop
-          have heq : ({v₁, v₃} ∪ q.reverse.support.toFinset) ∪ [v₂].toFinset = s := by
-            rw [← hr, support_append, v41sup, List.tail, support_reverse]
-            aesop
-          use (C₂.Greedy [v₂]).copy heq
-          have : C₂.extend v₂ < k := by
-            apply (extend_lt_of_not_injOn _ _  h1.1 h3.1.symm hne _).trans_le <|
-              (degreeOn_le_degree ..).trans (hbdd v₂)
-            · simp
-            · simp
-            · rw [v41sup, List.tail] at hdisj2
-              rw [Greedy_not_mem, Greedy_not_mem]
-              · rfl
-              · intro hf; rw [support_reverse,List.mem_reverse] at hf; apply hdisj2 hf
-                simp
-              · intro hf; rw [support_reverse,List.mem_reverse] at hf; apply hdisj2 hf
-                simp
-          simp_rw [copy_eq]
-          intro x hx
-          by_cases hxv₂ : x = v₂
-          · rw [hxv₂, C₂.Greedy_head, C₂.Greedy_nil]
-            rwa [copy_extend]
-          · rw [Greedy_not_mem (by simpa using hxv₂)]
-            exact hc2 _
-        ·          -- NEXT decide whether concat/cons is correct
-          let q₁ := q.takeUntil vⱼ vjm
-          let q₂ := q.dropUntil vⱼ vjm
-          obtain ⟨vⱼ', q₂',h1, heq⟩ := q₂.exists_eq_concat_of_ne h4j
-
-          have hqp :=hq.of_append_left
-          have hqp : q₁.IsPath ∧ q₂.IsPath := by
-            rw [← take_spec _ vjm] at hqp
-            exact ⟨hqp.of_append_left, hqp.of_append_right⟩
-          let C₂ := C₁.Greedy q₂'.reverse.support
-          have (x) : C₂ x < k := C₁.Greedy_of_concat_path hbdd (heq ▸ hqp.2)
-            (fun y ↦ (ofNotAdj_eq hnadj _) ▸ (Nat.zero_lt_of_lt hk)) (by sorry)
-          sorry
       · -- Main case 2
         --replace hss := Finset.ssubset_iff_subset_ne.2 ⟨hss, hr⟩
 
@@ -279,7 +239,6 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       rw [copy_eq, ofEmpty_eq]
       exact Nat.zero_lt_of_lt hk
   exact H #s le_rfl
-#check Finset.two_lt_card
 
 
 

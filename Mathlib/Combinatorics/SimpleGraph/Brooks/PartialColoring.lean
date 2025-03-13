@@ -231,14 +231,12 @@ theorem Greedy_of_concat_path (C : G.PartialColoring s) {p : G.Walk u v} {h : G.
   rwa [support_reverse, List.toFinset_reverse] at hdisj
 
 
-lemma insert_lt_of_lt {k : ℕ} {C : G.PartialColoring s} {a : α} (h : ∀ v, v ∈ s → C v < k)
-    (hg : C.extend a < k) {w : α} (hw : w ∈ insert a s) : (C.insert_extend a).col w < k := by
+lemma insert_lt_of_lt {k : ℕ} {C : G.PartialColoring s} {a : α} (h : ∀ v,  C v < k)
+    (hg : C.extend a < k) (w : α) : (C.insert_extend a).col w < k := by
   rw [insert_extend]; dsimp
   by_cases ha : w = a
   · rwa [if_pos ha]
-  · cases mem_insert.1 hw with
-    |inl hw => contradiction
-    |inr hw => rw [if_neg ha]; exact h w hw
+  · rw [if_neg ha]; exact h w
 
 lemma extend_eq_degreeOn {C : G.PartialColoring s} {a : α} (h : C.extend a = G.degreeOn s a) :
      ((G.neighborFinset a ∩ s) : Set α).InjOn C := by
