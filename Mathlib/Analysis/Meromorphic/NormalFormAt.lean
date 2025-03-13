@@ -132,7 +132,7 @@ theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
     exact hf
 
 /-- If a function is meromorphic in normal form at `x` and has non-negative
-order, then it is analytic -/
+order, then it is analytic. -/
 theorem MeromorphicNFAt.analyticAt (h₁f : MeromorphicNFAt f x)
     (h₂f : 0 ≤ h₁f.meromorphicAt.order) :
     AnalyticAt 𝕜 f x := by
