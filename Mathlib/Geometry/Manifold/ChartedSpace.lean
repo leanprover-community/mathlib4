@@ -535,16 +535,6 @@ end Groupoid
 
 /-! ### Charted spaces -/
 
-/-- The atlas of charts in a `ChartedSpace`. -/
-abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
-    [ChartedSpace H M] : Set (PartialHomeomorph M H) :=
-  ChartedSpace.atlas
-
-/-- The preferred chart at a point `x` in a charted space `M`. -/
-abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
-    [ChartedSpace H M] (x : M) : PartialHomeomorph M H :=
-  ChartedSpace.chartAt x
-
 @[simp, mfld_simps]
 lemma mem_chart_source (H : Type*) {M : Type*} [TopologicalSpace H] [TopologicalSpace M]
     [ChartedSpace H M] (x : M) : x ∈ (chartAt H x).source :=
@@ -725,24 +715,6 @@ def ChartedSpace.empty (H : Type*) [TopologicalSpace H]
   mem_chart_source x := (IsEmpty.false x).elim
   chart_mem_atlas x := (IsEmpty.false x).elim
 
-instance instChartedSpaceSelf (H : Type*) [h : TopologicalSpace H] : ChartedSpace H H :=
-  h.chartedSpaceSelf
-
-/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
-the atlas members are just the identity. -/
-@[simp, mfld_simps]
-theorem chartedSpaceSelf_atlas {H : Type*} [h : TopologicalSpace H] {e : PartialHomeomorph H H} :
-    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H := by
-  simp only [instChartedSpaceSelf, h.chartedSpaceSelf_eq_id]
-  exact Iff.rfl
-
-/-- In the model space, `chartAt` is always the identity. -/
-@[simp, mfld_simps]
-theorem chartAt_self_eq {H : Type*} [h : TopologicalSpace H] {x : H} :
-    chartAt H x = PartialHomeomorph.refl H := by
-  simp only [instChartedSpaceSelf, h.chartedSpaceSelf_eq_id]
-  rfl
-
 /-- Any discrete space is a charted space over a singleton set.
 We keep this as a definition (not an instance) to avoid instance search trying to search for
 `DiscreteTopology` or `Unique` instances.
@@ -776,6 +748,10 @@ instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [Topologi
   chartAt x := (chartAt H x.1).prod (chartAt H' x.2)
   mem_chart_source x := ⟨mem_chart_source H x.1, mem_chart_source H' x.2⟩
   chart_mem_atlas x := mem_image2_of_mem (chart_mem_atlas H x.1) (chart_mem_atlas H' x.2)
+
+/-- Check that there is no diamond for charted spaces on products -/
+example (H H' : Type*) [TopologicalSpace H] [TopologicalSpace H'] :
+    prodChartedSpace H H H' H' = instChartedSpaceSelf (H × H') := rfl
 
 section prodChartedSpace
 

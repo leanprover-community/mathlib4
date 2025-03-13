@@ -39,15 +39,197 @@ open Topology TopologicalSpace Set Filter Function
 
 universe u v u' v'
 
+
+open Function Set Filter Topology
+
+namespace PartialHomeomorph
+
+variable {X Y : Type*} [TopologicalSpaceWithoutAtlas X] [TopologicalSpaceWithoutAtlas Y]
+(e : PartialHomeomorph X Y)
+
+/-! Basic properties; inverse (symm instance) -/
+
+/-- Coercion of a partial homeomorphisms to a function. We don't use `e.toFun` because it is
+actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`.
+While we may want to switch to this behavior later, doing it mid-port will break a lot of proofs. -/
+@[coe] def toFun' : X → Y := e.toFun
+
+/-- Coercion of a `PartialHomeomorph` to function.
+Note that a `PartialHomeomorph` is not `DFunLike`. -/
+instance : CoeFun (PartialHomeomorph X Y) fun _ => X → Y :=
+  ⟨fun e => e.toFun'⟩
+
+/-- The inverse of a partial homeomorphism -/
+@[symm]
+protected def symm : PartialHomeomorph Y X where
+  toPartialEquiv := e.toPartialEquiv.symm
+  open_source' := e.open_target'
+  open_target' := e.open_source'
+  continuousOn_toFun := e.continuousOn_invFun
+  continuousOn_invFun := e.continuousOn_toFun
+
+/-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
+  because it is a composition of multiple projections. -/
+def Simps.apply (e : PartialHomeomorph X Y) : X → Y := e
+
+/-- See Note [custom simps projection] -/
+def Simps.symm_apply (e : PartialHomeomorph X Y) : Y → X := e.symm
+
+initialize_simps_projections PartialHomeomorph (toFun → apply, invFun → symm_apply)
+
+
+theorem toPartialEquiv_injective :
+    Injective (toPartialEquiv : PartialHomeomorph X Y → PartialEquiv X Y)
+  | ⟨_, _, _, _, _⟩, ⟨_, _, _, _, _⟩, rfl => rfl
+
+/-- Two partial homeomorphisms are equal when they have equal `toFun`, `invFun` and `source`.
+It is not sufficient to have equal `toFun` and `source`, as this only determines `invFun` on
+the target. This would only be true for a weaker notion of equality, arguably the right one,
+called `EqOnSource`. -/
+@[ext]
+protected theorem ext (e' : PartialHomeomorph X Y) (h : ∀ x, e x = e' x)
+    (hinv : ∀ x, e.symm x = e'.symm x) (hs : e.source = e'.source) : e = e' :=
+  toPartialEquiv_injective (PartialEquiv.ext h hinv hs)
+
+end PartialHomeomorph
+
+
 variable {X : Type u} {Y : Type v} {W Z ε ζ : Type*}
 
 instance instTopologicalSpaceSum [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
     TopologicalSpace (X ⊕ Y) :=
   coinduced Sum.inl t₁ ⊔ coinduced Sum.inr t₂
 
-instance instTopologicalSpaceProd [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
+section
+
+variable (X Y) in
+def instTopologicalSpaceProdAux [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
     TopologicalSpace (X × Y) :=
   induced Prod.fst t₁ ⊓ induced Prod.snd t₂
+
+attribute [local instance] instTopologicalSpaceProdAux
+
+def instTopologicalSpaceProdWithoutAtlasAux [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
+    TopologicalSpaceWithoutAtlas (X × Y) :=
+  (induced Prod.fst t₁ ⊓ induced Prod.snd t₂).toTopologicalSpaceWithoutAtlas
+
+attribute [local instance] instTopologicalSpaceProdWithoutAtlasAux
+
+variable {X X' Y Y' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y]
+[TopologicalSpace Y'] [TopologicalSpace Z]
+
+private theorem continuous_prod_mk_withoutAtlas {f : X → Y} {g : X → Z} :
+    (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
+  (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
+    (TopologicalSpace.induced Prod.snd _)).trans <|
+    continuous_induced_rng.and continuous_induced_rng
+
+private theorem continuous_fst_withoutAtlas : Continuous (@Prod.fst X Y) :=
+  (continuous_prod_mk_withoutAtlas.1 continuous_id).1
+
+private theorem continuous_snd_withoutAtlas : Continuous (@Prod.snd X Y) :=
+  (continuous_prod_mk_withoutAtlas.1 continuous_id).2
+
+lemma nhdsWithoutAtlas_eq_nhds (x : X) : nhdsWithoutAtlas x = 𝓝 x := rfl
+
+private theorem nhdsWithoutAtlas_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
+  rw [prod_eq_inf, instTopologicalSpaceProdAux, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
+    (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
+
+private theorem ContinuousWithinAt.prodMap_withoutAtlas
+    {f : X → Y} {g : X' → Y'} {s : Set X} {t : Set X'} {x : X} {y : X'}
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g t y) :
+    ContinuousWithinAt (Prod.map f g) (s ×ˢ t) (x, y) := by
+  unfold ContinuousWithinAt at *
+  simp only [nhdsWithin, nhdsWithoutAtlas_prod_eq, ← prod_inf_prod, ← prod_principal_principal]
+  rw [Prod.map, nhdsWithoutAtlas_prod_eq, prod_inf_prod]
+  exact hf.prod_map hg
+
+/-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
+def PartialHomeomorph.prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
+    PartialHomeomorph (X × Y) (X' × Y') where
+  open_source' := (IsOpen.preimage continuous_fst_withoutAtlas eX.open_source').inter
+      (IsOpen.preimage continuous_snd_withoutAtlas eY.open_source')
+  open_target' := (IsOpen.preimage continuous_fst_withoutAtlas eX.open_target').inter
+      (IsOpen.preimage continuous_snd_withoutAtlas eY.open_target')
+  continuousOn_toFun := by
+    rintro ⟨x, y⟩ hxy
+    simp only [PartialEquiv.prod_source, mem_prod] at hxy
+    exact ContinuousWithinAt.prodMap_withoutAtlas
+      (eX.continuousOn_toFun x hxy.1) (eY.continuousOn_toFun y hxy.2)
+  continuousOn_invFun := by
+    rintro ⟨x, y⟩ hxy
+    simp only [PartialEquiv.prod_target, mem_prod] at hxy
+    exact ContinuousWithinAt.prodMap_withoutAtlas
+      (eX.continuousOn_invFun x hxy.1) (eY.continuousOn_invFun y hxy.2)
+  toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
+
+def prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
+    [h : ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
+    [h' : ChartedSpace H' M'] : ChartedSpace (H × H') (M × M') where
+  atlas := image2 PartialHomeomorph.prod h.atlas h'.atlas
+  chartAt x := (h.chartAt x.1).prod (h'.chartAt x.2)
+  mem_chart_source x := ⟨h.mem_chart_source x.1, h'.mem_chart_source x.2⟩
+  chart_mem_atlas x := mem_image2_of_mem (h.chart_mem_atlas x.1) (h'.chart_mem_atlas x.2)
+
+end
+
+
+instance instChartedSpaceSelf (H : Type*) [h : TopologicalSpace H] : ChartedSpace H H :=
+  h.chartedSpaceSelf
+
+
+/-- The atlas of charts in a `ChartedSpace`. -/
+abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
+    [ChartedSpace H M] : Set (PartialHomeomorph M H) :=
+  ChartedSpace.atlas
+
+
+/-- The preferred chart at a point `x` in a charted space `M`. -/
+abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : PartialHomeomorph M H :=
+  ChartedSpace.chartAt x
+
+
+/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
+the atlas members are just the identity. -/
+@[simp, mfld_simps]
+theorem chartedSpaceSelf_atlas {H : Type*} [h : TopologicalSpace H] {e : PartialHomeomorph H H} :
+    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H := by
+  simp only [instChartedSpaceSelf, h.chartedSpaceSelf_eq_id]
+  exact Iff.rfl
+
+/-- In the model space, `chartAt` is always the identity. -/
+@[simp, mfld_simps]
+theorem chartAt_self_eq {H : Type*} [h : TopologicalSpace H] {x : H} :
+    chartAt H x = PartialHomeomorph.refl H := by
+  simp only [instChartedSpaceSelf, h.chartedSpaceSelf_eq_id]
+  rfl
+
+attribute [local instance] instTopologicalSpaceProdWithoutAtlasAux
+
+variable (X Y) in
+instance instTopologicalSpaceProd [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
+    TopologicalSpace (X × Y) where
+  toTopologicalSpaceWithoutAtlas :=
+    (induced Prod.fst t₁ ⊓ induced Prod.snd t₂).toTopologicalSpaceWithoutAtlas
+  chartedSpaceSelf := prodChartedSpace X X Y Y
+  chartedSpaceSelf_eq_id := by
+    have A : (PartialHomeomorph.refl X).prod (PartialHomeomorph.refl Y) =
+        (PartialHomeomorph.refl (X × Y)) := by
+      ext : 1
+      · rfl
+      · rfl
+      · simp [PartialHomeomorph.prod, PartialHomeomorph.refl]
+    simp [prodChartedSpace, chartedSpaceSelfId, t₁.chartedSpaceSelf_eq_id,
+      t₂.chartedSpaceSelf_eq_id]
+    ext : 2
+    · simp [t₁.chartedSpaceSelf_eq_id, t₂.chartedSpaceSelf_eq_id, A, eq_comm]
+    · simp [A]
+
+lemma instTopologicalSpaceProd_eq_aux [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
+    instTopologicalSpaceProd X Y = instTopologicalSpaceProdAux X Y :=
+  ext_iff_nhds.mpr (congrFun rfl)
 
 section Prod
 
@@ -56,8 +238,9 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [Topolog
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean 4 fails to deduce implicit args
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
-    (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
-  (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
+    (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g := by
+  rw [instTopologicalSpaceProd_eq_aux]
+  exact (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
     (TopologicalSpace.induced Prod.snd _)).trans <|
     continuous_induced_rng.and continuous_induced_rng
 
@@ -241,7 +424,8 @@ theorem IsOpen.prod {s : Set X} {t : Set Y} (hs : IsOpen s) (ht : IsOpen t) : Is
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean fails to find `t₁` and `t₂` by unification
 theorem nhds_prod_eq {x : X} {y : Y} : 𝓝 (x, y) = 𝓝 x ×ˢ 𝓝 y := by
-  rw [prod_eq_inf, instTopologicalSpaceProd, nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
+  rw [prod_eq_inf, instTopologicalSpaceProd_eq_aux,
+    nhds_inf (t₁ := TopologicalSpace.induced Prod.fst _)
     (t₂ := TopologicalSpace.induced Prod.snd _), nhds_induced, nhds_induced]
 
 theorem nhdsWithin_prod_eq (x : X) (y : Y) (s : Set X) (t : Set Y) :
@@ -383,9 +567,10 @@ alias Continuous.along_snd := Continuous.curry_right
 theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : Set (Set Y)}
     (hs : ⋃₀ s = univ) (ht : ⋃₀ t = univ) :
     @instTopologicalSpaceProd X Y (generateFrom s) (generateFrom t) =
-      generateFrom (image2 (·  ×ˢ ·) s t) :=
+      generateFrom (image2 (·  ×ˢ ·) s t) := by
+  rw [@instTopologicalSpaceProd_eq_aux]
   let G := generateFrom (image2  (·  ×ˢ ·) s t)
-  le_antisymm
+  exact le_antisymm
     (le_generateFrom fun _ ⟨_, hu, _, hv, g_eq⟩ =>
       g_eq.symm ▸
         @IsOpen.prod _ _ (generateFrom s) (generateFrom t) _ _ (GenerateOpen.basic _ hu)
@@ -412,9 +597,10 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
 
 -- todo: use the previous lemma?
 theorem prod_eq_generateFrom :
-    instTopologicalSpaceProd =
-      generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
-  le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
+    instTopologicalSpaceProd X Y =
+      generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } := by
+  rw [@instTopologicalSpaceProd_eq_aux]
+  exact le_antisymm (le_generateFrom fun _ ⟨_, _, hs, ht, g_eq⟩ => g_eq.symm ▸ hs.prod ht)
     (le_inf
       (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨t, univ, by simpa [Set.prod_eq] using ht⟩)
@@ -430,8 +616,9 @@ theorem isOpen_prod_iff {s : Set (X × Y)} :
 /-- A product of induced topologies is induced by the product map -/
 theorem prod_induced_induced {X Z} (f : X → Y) (g : Z → W) :
     @instTopologicalSpaceProd X Z (induced f ‹_›) (induced g ‹_›) =
-      induced (fun p => (f p.1, g p.2)) instTopologicalSpaceProd := by
-  delta instTopologicalSpaceProd
+      induced (fun p => (f p.1, g p.2)) (instTopologicalSpaceProd Y W) := by
+  simp only [@instTopologicalSpaceProd_eq_aux]
+  delta instTopologicalSpaceProdAux
   simp_rw [induced_inf, induced_compose]
   rfl
 
@@ -562,16 +749,16 @@ lemma Topology.IsInducing.prodMap {f : X → Y} {g : Z → W} (hf : IsInducing f
 @[simp]
 lemma Topology.isInducing_const_prod {x : X} {f : Y → Z} :
     IsInducing (fun x' => (x, f x')) ↔ IsInducing f := by
-  simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
-    Function.comp_def, induced_const, top_inf_eq]
+  simp_rw [isInducing_iff, instTopologicalSpaceProd_eq_aux, instTopologicalSpaceProdAux,
+    induced_inf, induced_compose, Function.comp_def, induced_const, top_inf_eq]
 
 @[deprecated (since := "2024-10-28")] alias inducing_const_prod := isInducing_const_prod
 
 @[simp]
 lemma Topology.isInducing_prod_const {y : Y} {f : X → Z} :
     IsInducing (fun x => (f x, y)) ↔ IsInducing f := by
-  simp_rw [isInducing_iff, instTopologicalSpaceProd, induced_inf, induced_compose,
-    Function.comp_def, induced_const, inf_top_eq]
+  simp_rw [isInducing_iff, instTopologicalSpaceProd_eq_aux, instTopologicalSpaceProdAux,
+    induced_inf, induced_compose, Function.comp_def, induced_const, inf_top_eq]
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_const := isInducing_prod_const
 
