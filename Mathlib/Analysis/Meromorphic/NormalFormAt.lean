@@ -50,10 +50,7 @@ theorem MeromorphicAt.meromorphicNFAt_iff :
     MeromorphicNFAt f x ↔ AnalyticAt 𝕜 f x ∨ ∃ hf : MeromorphicAt f x, hf.order < 0 ∧ f x = 0 := by
   constructor
   · rintro (h | ⟨n, g, h₁g, h₂g, h₃g⟩)
-    · have hf : MeromorphicAt f x := by
-        have : f =ᶠ[𝓝[≠] x] 0 := Filter.EventuallyEq.filter_mono h nhdsWithin_le_nhds
-        exact analyticAt_const.meromorphicAt.congr this.symm
-      simp [(analyticAt_congr h).2 analyticAt_const]
+    · simp [(analyticAt_congr h).2 analyticAt_const]
     · have hf : MeromorphicAt f x := by
         apply MeromorphicAt.congr _ (h₃g.filter_mono nhdsWithin_le_nhds).symm
         fun_prop
