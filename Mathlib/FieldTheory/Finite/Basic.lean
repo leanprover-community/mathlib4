@@ -401,8 +401,10 @@ theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
   ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
     simpa only [Function.comp_def, map_pow] using bijective_frobeniusAlgHom_pow K L
 
-instance (K L) [Finite K] [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
-  exists_zpow_surjective := have := Fintype.ofFinite K
+instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
+  exists_zpow_surjective :=
+    have := Finite.of_injective_finite_range (RingHom.injective <| algebraMap K L)
+    have := Fintype.ofFinite K
     ⟨frobeniusAlgEquivOfAlgebraic K L,
       fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
 
