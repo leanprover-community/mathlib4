@@ -30,12 +30,10 @@ The type synonym `Lex (Π₀ i, α i)` has an order given by `DFinsupp.Lex (· <
 protected def Lex (r : ι → ι → Prop) (s : ∀ i, α i → α i → Prop) (x y : Π₀ i, α i) : Prop :=
   Pi.Lex r (s _) x y
 
--- Porting note: Added `_root_` to match more closely with Lean 3. Also updated `s`'s type.
 theorem _root_.Pi.lex_eq_dfinsupp_lex {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop}
     (a b : Π₀ i, α i) : Pi.Lex r (s _) (a : ∀ i, α i) b = DFinsupp.Lex r s a b :=
   rfl
 
--- Porting note: Updated `s`'s type.
 theorem lex_def {r : ι → ι → Prop} {s : ∀ i, α i → α i → Prop} {a b : Π₀ i, α i} :
     DFinsupp.Lex r s a b ↔ ∃ j, (∀ d, r d j → a d = b d) ∧ s j (a j) (b j) :=
   Iff.rfl
@@ -99,11 +97,6 @@ irreducible_def Lex.decidableLE : DecidableLE (Lex (Π₀ i, α i)) :=
 /-- The less-than relation for the lexicographic ordering is decidable. -/
 irreducible_def Lex.decidableLT : DecidableLT (Lex (Π₀ i, α i)) :=
   lt_trichotomy_rec (fun h ↦ isTrue h) (fun h ↦ isFalse h.not_lt) fun h ↦ isFalse h.asymm
-
--- Porting note: Added `DecidableEq` for `LinearOrder`.
-instance : DecidableEq (Lex (Π₀ i, α i)) :=
-  lt_trichotomy_rec (fun h ↦ isFalse fun h' ↦ h'.not_lt h) isTrue
-    fun h ↦ isFalse fun h' ↦ h'.symm.not_lt h
 
 /-- The linear order on `DFinsupp`s obtained by the lexicographic ordering. -/
 instance Lex.linearOrder : LinearOrder (Lex (Π₀ i, α i)) where

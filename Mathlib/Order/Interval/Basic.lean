@@ -262,9 +262,8 @@ end NonemptyInterval
 We represent intervals either as `⊥` or a nonempty interval given by its endpoints `fst`, `snd`.
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
--- Porting note: added reducible, it seems to help with coercions
 abbrev Interval (α : Type*) [LE α] :=
-  WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
+  WithBot (NonemptyInterval α)
 
 namespace Interval
 
@@ -272,7 +271,8 @@ section LE
 
 variable [LE α]
 
--- Porting note: previously found using `deriving`
+-- The `Inhabited, LE, OrderBot` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Inhabited (Interval α) := WithBot.inhabited
 instance : LE (Interval α) := WithBot.le
 instance : OrderBot (Interval α) := WithBot.orderBot
@@ -588,7 +588,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
         le_sSup := fun s s ha => by
-          dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
+          dsimp only
           split_ifs with h
           · exact (h ha).le
           cases s
@@ -602,7 +602,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
               exact ha
             · exact le_iSup₂_of_le _ ha le_rfl
         sSup_le := fun s s ha => by
-          dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
+          dsimp only
           split_ifs with h
           · exact bot_le
           obtain ⟨b, hs, hb⟩ := not_subset.1 h
@@ -622,7 +622,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
         sInf_le := fun s₁ s ha => by
-          dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
+          dsimp only
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
@@ -635,7 +635,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
           cases s with
           | bot => exact bot_le
           | coe s =>
-            dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227): added a `dsimp`
+            dsimp only
             split_ifs with h
             · exact WithBot.coe_le_coe.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
@@ -659,9 +659,7 @@ noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Inter
 
 @[simp, norm_cast]
 theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) : ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
-  classical -- Porting note: added
-  -- Porting note: this `change` was
-  -- change ↑ (dite _ _ _) = _
+  classical
   change ((dite _ _ _ : Interval α) : Set α) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
   · ext

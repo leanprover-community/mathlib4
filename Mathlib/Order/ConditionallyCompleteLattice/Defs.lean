@@ -49,7 +49,6 @@ class ConditionallyCompleteLattice (α : Type*) extends Lattice α, SupSet α, I
   /-- `a ≤ sInf s` for all `a ∈ lowerBounds s`. -/
   le_csInf : ∀ s a, Set.Nonempty s → a ∈ lowerBounds s → a ≤ sInf s
 
--- Porting note: mathlib3 used `renaming`
 /-- A conditionally complete linear order is a linear order in which
 every nonempty subset which is bounded above has a supremum, and
 every nonempty subset which is bounded below has an infimum.
