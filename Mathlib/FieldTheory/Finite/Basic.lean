@@ -476,7 +476,7 @@ variable {p : ℕ} [Fact p.Prime]
 theorem bot_eq_top : (⊥ : Subfield (ZMod p)) = (⊤ : Subfield (ZMod p)) := by
   ext n
   refine (iff_true_right trivial).mpr ?_
-  have := Subfield.zsmul_one_in_bot (ZMod p) n.val
+  have := Subfield.zsmul_one_mem_bot (ZMod p) n.val
   rwa [natCast_zsmul, Nat.smul_one_eq_cast, ZMod.natCast_zmod_val] at this
 
 instance : Subsingleton (Subfield (ZMod p)) := subsingleton_of_bot_eq_top bot_eq_top
