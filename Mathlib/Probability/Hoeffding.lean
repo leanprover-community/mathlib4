@@ -167,7 +167,7 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
       linarith
   rw [hf, hf'] at q
   simp only [zero_mul, add_zero, zero_add, forall_const] at q
-  obtain ⟨c, ⟨_, cq'⟩⟩ := q
+  obtain ⟨c, _, cq'⟩ := q
   have s : f t ≤ t^2 * (b - a)^2 / 8 := by
     rw [cq']
     calc
