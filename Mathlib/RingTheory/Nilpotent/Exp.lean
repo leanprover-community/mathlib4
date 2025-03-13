@@ -207,8 +207,7 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
   have h_nilL : IsNilpotent DL := h_nil.map <| lTensorAlgHom R B B
   have h_nilR : IsNilpotent DR := h_nil.map <| rTensorAlgHom R B B
   have h_comm : Commute DL DR := by ext; simp [DL, DR]
-  let m : B ⊗[R] B →ₗ[R] B := LinearMap.mul' R B
-  have hm (x y : B) : m (x ⊗ₜ[R] y) = x * y := rfl
+  set m : B ⊗[R] B →ₗ[R] B := LinearMap.mul' R B with hm
   have h₁ : exp D (x * y) = m (exp (DL + DR) (x ⊗ₜ[R] y)) := by
     suffices exp D ∘ₗ m = m ∘ₗ exp (DL + DR) by simpa using LinearMap.congr_fun this (x ⊗ₜ[R] y)
     apply commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
