@@ -377,6 +377,7 @@ noncomputable def ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : 
   (LinearEquiv.ofBijective ↑f
         ⟨LinearMap.ker_eq_bot.mp hinj,
           LinearMap.range_eq_top.mp hsurj⟩).toContinuousLinearEquivOfContinuous
+    -- Porting note: `by convert` was not previously needed. Why is it needed now?
     (by convert f.continuous)
 
 @[simp]
