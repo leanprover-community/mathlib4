@@ -124,6 +124,10 @@ def mk {i : ι} : (ofClass (F i)) →+ GradedPiece F F_lt i :=
 
 section
 
+lemma induction_on {i : ι} {C : GradedPiece F F_lt i → Prop} (x : GradedPiece F F_lt i)
+    (H : ∀ z, C (GradedPiece.mk F F_lt z)) : C x :=
+  QuotientAddGroup.induction_on x H
+
 lemma mk_eq {i : ι} (x : F i) : mk F F_lt x = ⟦x⟧ := rfl
 
 lemma HEq_rfl {i j : ι} {r : A} (h : i = j) (hi : r ∈ ofClass (F i)) (hj : r ∈ ofClass (F j)) :
