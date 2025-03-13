@@ -170,6 +170,11 @@ structure IsCloseableMaxPath {u v : α} (p : G.Walk u v) [Fintype (G.neighborSet
   IsMaxPath p where
 /-- The end vertex has at least one other neighbor -/
   one_lt_degree : 1 < G.degree v
+  
+omit [DecidableEq α] in
+lemma IsCloseableMaxPath.mk' {u v : α} [Fintype (G.neighborSet v)] {p : G.Walk u v}
+    (hp : p.IsPath) (hmax : ∀ y, G.Adj v y → y ∈ p.support)
+    (h1 : 1 < G.degree v) : IsCloseableMaxPath p := ⟨⟨hp, by rwa [IsMaximal.iff]⟩, h1⟩
 
 
 /-- A walk `IsMaxCycle` if it contains all neighbors of its end-vertex. -/

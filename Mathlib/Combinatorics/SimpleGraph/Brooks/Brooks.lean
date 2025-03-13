@@ -170,7 +170,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         exact ⟨⟨h1.1.ne, h3.1.ne, hne.symm⟩, h24.symm.ne, h4 ,fun hf ↦ hnadj (hf ▸ h24.symm)⟩
       have v41sup : v41.support = [v₄, v₃, v₂, v₁] := by
         rw [support_cons, support_cons, support_cons, support_nil]
-      have v41s : ∀ y, y ∈  v41.support → y ∈ s := by
+      have v41s : ∀ y, y ∈ v41.support → y ∈ s := by
         intro x hx; rw [support_cons, support_cons, support_cons, support_nil] at hx
         cases hx with
         | head as => exact hins _ h3.2 _ h24
@@ -199,39 +199,42 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         apply mem_inter.2 ⟨hx, this hx⟩
       have hdisj2 := (append_isPath_iff.1 hq).2.2
       by_cases hr : ((q.append v41)).support.toFinset = s
-      · -- Main case 1
-        rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
-        simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
-        rw [v41sup, List.tail] at hdisj2
-        -- TODO work out what the last ∧ condition should be below
-        obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
-          have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
-          rw [← card_neighborFinset_eq_degree] at this
-          have :  1 ≤ #((G.neighborFinset v₂) \ {v₁, v₃}) := by
-            rw [card_sdiff]
-            · rw [card_pair hne]
-              omega
-            · intro x hx; simp only [mem_insert, mem_singleton, mem_neighborFinset] at *
-              cases hx with
-              | inl h => exact h ▸ h1.1
-              | inr h => exact h ▸ h3.1.symm
-          obtain ⟨vⱼ, hj⟩ := card_pos.1 this
-          use vⱼ
-          simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
-          exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
-        have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
-          rw [←hr, union_comm]
-          congr! 1
-          rw [insert_comm, insert_comm v₁]
-          congr! 1
-          exact pair_comm _ _
-        convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne hnadj
-           (by aesop)  (by aesop)
-
+      ·  sorry
+      -- Main case 1
+      --   rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
+      --   simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
+      --   rw [v41sup, List.tail] at hdisj2
+      --   obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
+      --     have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
+      --     rw [← card_neighborFinset_eq_degree] at this
+      --     have :  1 ≤ #((G.neighborFinset v₂) \ {v₁, v₃}) := by
+      --       rw [card_sdiff]
+      --       · rw [card_pair hne]
+      --         omega
+      --       · intro x hx; simp only [mem_insert, mem_singleton, mem_neighborFinset] at *
+      --         cases hx with
+      --         | inl h => exact h ▸ h1.1
+      --         | inr h => exact h ▸ h3.1.symm
+      --     obtain ⟨vⱼ, hj⟩ := card_pos.1 this
+      --     use vⱼ
+      --     simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
+      --     exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
+      --   have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
+      --     rw [←hr, union_comm]
+      --     congr! 1
+      --     rw [insert_comm, insert_comm v₁]
+      --     congr! 1
+      --     exact pair_comm _ _
+      --   convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
+      --    hnadj (by aesop)  (by aesop)
       · -- Main case 2
         --replace hss := Finset.ssubset_iff_subset_ne.2 ⟨hss, hr⟩
-
-        sorry
+        by_cases h1 : G.degree vᵣ ≤ 1
+        · sorry
+        · push_neg at h1
+          have := IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hq.reverse
+            (by simp_rw [support_reverse, List.mem_reverse]; exact hmax) h1
+          sorry
 
     · rw [not_nonempty_iff_eq_empty] at hem
       use (ofEmpty G).copy hem.symm
