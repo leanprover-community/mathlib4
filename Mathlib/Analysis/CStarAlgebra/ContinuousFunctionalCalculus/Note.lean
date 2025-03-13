@@ -153,7 +153,7 @@ In general, lemmas about the continuous functional calculus should be written us
 wherever possible for these kinds of goals. These arguments should be placed *last*, at least among
 the explicit arguments. Moreover, if the arguments `f` and `a` cannot be inferred from other
 explicit arguments (i.e., those which are not `autoParam`s), then they should also be *explicit*
-rather than implicit, despite the fact that they appear in the types of the `autoParam` arguments. .
+rather than implicit, despite the fact that they appear in the types of the `autoParam` arguments.
 The reason is that it is often necessary to supply these arguments in order for the `autoParam`
 arguments to fire.
 
