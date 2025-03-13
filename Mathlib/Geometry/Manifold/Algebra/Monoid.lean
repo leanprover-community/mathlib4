@@ -257,7 +257,7 @@ theorem smoothRightMul_one : (𝑹 I g') 1 = g' :=
 end
 
 -- Instance of product
-@[to_additive]
+@[to_additive prod]
 instance ContMDiffMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (G : Type*) [TopologicalSpace G] [ChartedSpace H G] [Mul G]

@@ -46,14 +46,14 @@ variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : BoundedSMul 𝕜 E :=
-  BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
+instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
+  IsBoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
 -- shortcut instance
-instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
-  NormedSpace.boundedSMul
+instance NormedField.to_isBoundedSMul : IsBoundedSMul 𝕜 𝕜 :=
+  NormedSpace.isBoundedSMul
 
 variable (𝕜) in
 theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by

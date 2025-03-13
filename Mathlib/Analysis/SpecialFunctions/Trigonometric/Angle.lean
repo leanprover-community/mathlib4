@@ -25,6 +25,8 @@ namespace Real
 /-- The type of angles -/
 def Angle : Type :=
   AddCircle (2 * π)
+-- The `NormedAddCommGroup, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace Angle
 

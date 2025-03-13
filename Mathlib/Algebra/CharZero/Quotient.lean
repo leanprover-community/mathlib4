@@ -33,7 +33,7 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
     simp_rw [← h]
     refine ⟨⟨(k % z).toNat, ?_⟩, k / z, ?_⟩
     · rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
-      exact (Int.emod_lt _ hz).trans_eq (Int.abs_eq_natAbs _)
+      exact (Int.emod_lt_abs _ hz).trans_eq (Int.abs_eq_natAbs _)
     rw [Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
     nth_rewrite 3 [← Int.ediv_add_emod k z]
     rfl
