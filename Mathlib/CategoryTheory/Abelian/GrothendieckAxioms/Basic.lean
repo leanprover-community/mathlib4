@@ -62,7 +62,7 @@ A category `C` is said to have exact colimits of shape `J` provided that colimit
 exist and are exact (in the sense that they preserve finite limits).
 -/
 class HasExactColimitsOfShape (J : Type u') [Category.{v'} J] (C : Type u) [Category.{v} C]
-    [HasColimitsOfShape J C]  where
+    [HasColimitsOfShape J C] where
   /-- Exactness of `J`-shaped colimits stated as `colim : (J ⥤ C) ⥤ C` preserving finite limits. -/
   preservesFiniteLimits : PreservesFiniteLimits (colim (J := J) (C := C))
 

@@ -82,7 +82,6 @@ def haarAddCircle : Measure (AddCircle T) :=
 
 -- The `IsAddHaarMeasure` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
-
 instance : IsAddHaarMeasure (@haarAddCircle T _) :=
   Measure.isAddHaarMeasure_addHaarMeasure ⊤
 
