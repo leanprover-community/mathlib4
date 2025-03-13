@@ -997,14 +997,15 @@ def updateDecl (b : BundledExtensions)
   return decl
 
 /-- Run applyReplacementFun on the type of given `srcDecl` and return the resulting `Expr` -/
-def updateDeclType (b : BundledExtensions)
-    (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
-    MetaM Expr := do
+def checkDeclType (b : BundledExtensions)
+    (tgt : Name) (srcDecl tgtDecl : ConstantInfo) (reorder : List (List Nat) := []) :
+    MetaM (Expr × Bool) := do
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  applyReplacementFun b <| ← reorderForall reorder
+  let exp ← applyReplacementFun b <| ← reorderForall reorder
     <| ← expand b <| ← unfoldAuxLemmas decl.type
+  return ⟨exp, ← isDefEq exp tgtDecl.type⟩
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (b : BundledExtensions)
@@ -1676,9 +1677,9 @@ partial def addToAdditiveAttr (b : BundledExtensions)
   if b.attrName = `order_dual && alreadyExists then
     let tgtDecl ← getConstInfo tgt
     let srcDecl ← getConstInfo src
-    let genType : Expr ←
-      MetaM.run' <| updateDeclType b `_order_dual_private srcDecl cfg.reorder
-    if ! (← MetaM.run' <| isDefEq genType tgtDecl.type) then
+    let ⟨genType, defEqResult⟩ ←
+      MetaM.run' <| checkDeclType b `_order_dual_private srcDecl tgtDecl cfg.reorder
+    if ! defEqResult then
       log m!"order_dual failed validation!\ntgt type:\n{tgtDecl.type},\
         \ntransformed type:\n{genType}"
   if cfg.reorder != [] then
