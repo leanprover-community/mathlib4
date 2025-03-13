@@ -2369,11 +2369,13 @@ import Mathlib.CategoryTheory.Sites.EffectiveEpimorphic
 import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.CategoryTheory.Sites.Equivalence
+import Mathlib.CategoryTheory.Sites.GlobalSections
 import Mathlib.CategoryTheory.Sites.Grothendieck
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Limits
+import Mathlib.CategoryTheory.Sites.LocalSite
 import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.LocallyFullyFaithful
