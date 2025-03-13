@@ -22,7 +22,7 @@ assert_not_exists AddChar comap_norm_atTop DilationEquiv Finset.sup_mul_le_mul_s
   IsOfFinOrder Isometry.norm_map_of_map_one NNReal.isOpen_Ico_zero Rat.norm_cast_real
   RestrictScalars
 
-variable {α β ι : Type*}
+variable {G α β ι : Type*}
 
 open Filter
 open scoped Topology NNReal
@@ -147,14 +147,12 @@ export NormOneClass (norm_one)
 attribute [simp] norm_one
 
 section SeminormedAddCommGroup
+variable [SeminormedAddCommGroup G] [One G] [NormOneClass G]
 
-variable [SeminormedAddCommGroup α] [One α] [NormOneClass α]
+@[simp] lemma nnnorm_one : ‖(1 : G)‖₊ = 1 := NNReal.eq norm_one
+@[simp] lemma enorm_one : ‖(1 : G)‖ₑ = 1 := by simp [enorm]
 
-@[simp] lemma nnnorm_one : ‖(1 : α)‖₊ = 1 := NNReal.eq norm_one
-
-@[simp] lemma enorm_one : ‖(1 : α)‖ₑ = 1 := by simp [enorm]
-
-theorem NormOneClass.nontrivial : Nontrivial α :=
+theorem NormOneClass.nontrivial : Nontrivial G :=
   nontrivial_of_ne 0 1 <| ne_of_apply_ne norm <| by simp
 
 end SeminormedAddCommGroup
@@ -331,6 +329,7 @@ instance (priority := 75) SubalgebraClass.normedRing {S 𝕜 E : Type*} [CommRin
     (s : S) : NormedRing s :=
   { seminormedRing s with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
+
 
 theorem Nat.norm_cast_le : ∀ n : ℕ, ‖(n : α)‖ ≤ n * ‖(1 : α)‖
   | 0 => by simp
