@@ -50,11 +50,13 @@ satisfy a naturality condition with respect to `X₁`. -/
 structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
+  /-- the naturality of the bijections of the given adjunctions
+  in the first variable (it should not be used directly:
+  use `homEquiv_naturality_one` instead) -/
   naturality' {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) {X₂ : C₂} {X₃ : C₃}
     (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
       (adj X₁).homEquiv X₂ X₃ ((F.map f).app X₂ ≫ g) =
         (adj Y₁).homEquiv X₂ X₃ g ≫ (G.map f.op).app X₃ := by aesop_cat
-
 
 /-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
 representing that the bifunctor `F` is the left adjoint to `G`
