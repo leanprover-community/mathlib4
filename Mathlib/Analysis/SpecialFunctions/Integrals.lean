@@ -7,7 +7,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.ArctanDeriv
-import Mathlib.MeasureTheory.Integral.FundThmCalculus
+import Mathlib.MeasureTheory.Integral.IntegrationByParts
 
 /-!
 # Integration of specific interval integrals
@@ -383,7 +383,6 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     integral_cpow h'
   apply_fun Complex.re at this; convert this
   · simp_rw [intervalIntegral_eq_integral_uIoc, Complex.real_smul, Complex.re_ofReal_mul]
-    -- Porting note: was `change ... with ...`
     have : Complex.re = RCLike.re := rfl
     rw [this, ← integral_re]
     · rfl
@@ -492,7 +491,7 @@ lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * 
   · exact ht
   · intro s ⟨hs, _ ⟩
     simpa using (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
-  · simpa [mul_comm] using ((tendsto_log_mul_rpow_nhds_zero zero_lt_one).sub
+  · simpa [mul_comm] using ((tendsto_log_mul_rpow_nhdsGT_zero zero_lt_one).sub
       (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id))
   · exact tendsto_nhdsWithin_of_tendsto_nhds (ContinuousAt.tendsto (by fun_prop))
 

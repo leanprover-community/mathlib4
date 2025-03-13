@@ -35,6 +35,9 @@ theorem sort_val (s : Finset α) : Multiset.sort r s.val = sort r s :=
   rfl
 
 @[simp]
+theorem sort_mk {s : Multiset α} (h : s.Nodup) : sort r ⟨s, h⟩ = s.sort r := rfl
+
+@[simp]
 theorem sort_sorted (s : Finset α) : List.Sorted r (sort r s) :=
   Multiset.sort_sorted _ _
 
@@ -185,8 +188,25 @@ theorem range_orderEmbOfFin (s : Finset α) {k : ℕ} (h : s.card = k) :
     Set.range (s.orderEmbOfFin h) = s := by
   simp only [orderEmbOfFin, Set.range_comp ((↑) : _ → α) (s.orderIsoOfFin h),
   RelEmbedding.coe_trans, Set.image_univ, Finset.orderEmbOfFin, RelIso.range_eq,
-    OrderEmbedding.subtype_apply, OrderIso.coe_toOrderEmbedding, eq_self_iff_true,
+    OrderEmbedding.coe_subtype, OrderIso.coe_toOrderEmbedding, eq_self_iff_true,
     Subtype.range_coe_subtype, Finset.setOf_mem, Finset.coe_inj]
+
+@[simp]
+theorem image_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.image (s.orderEmbOfFin h) Finset.univ = s := by
+  apply Finset.coe_injective
+  simp
+
+@[simp]
+theorem map_orderEmbOfFin_univ (s : Finset α) {k : ℕ} (h : s.card = k) :
+    Finset.map (s.orderEmbOfFin h).toEmbedding Finset.univ = s := by
+  simp [map_eq_image]
+
+@[simp]
+theorem listMap_orderEmbOfFin_finRange (s : Finset α) {k : ℕ} (h : s.card = k) :
+    (List.finRange k).map (s.orderEmbOfFin h) = s.sort (· ≤ ·) := by
+  obtain rfl : k = (s.sort (· ≤ ·)).length := by simp [h]
+  exact List.finRange_map_getElem (s.sort (· ≤ ·))
 
 /-- The bijection `orderEmbOfFin s h` sends `0` to the minimum of `s`. -/
 theorem orderEmbOfFin_zero {s : Finset α} {k : ℕ} (h : s.card = k) (hz : 0 < k) :

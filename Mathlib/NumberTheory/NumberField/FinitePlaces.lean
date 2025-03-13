@@ -166,7 +166,7 @@ theorem RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max (x y : K) :
     adicAbv v (x + y) ≤ (adicAbv v x) ⊔ (adicAbv v y) := by
   simp [← FinitePlace.norm_def]
 
- @[deprecated (since := "2025-02-28")] alias vadicAbv_add_le_max :=
+@[deprecated (since := "2025-02-28")] alias vadicAbv_add_le_max :=
   RingOfIntegers.HeightOneSpectrum.adicAbv_add_le_max
 
 /-- The `v`-adic absolute value of a natural number is `≤ 1`. -/
@@ -206,7 +206,7 @@ theorem FinitePlace.norm_eq_one_iff_not_mem (x : 𝓞 (WithVal (v.valuation K)))
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
-  erw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_absNorm_nnreal v),
+  rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_absNorm_nnreal v),
     intValuation_lt_one_iff_dvd]
   exact dvd_span_singleton
 

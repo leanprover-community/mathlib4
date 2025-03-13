@@ -128,8 +128,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMea
   lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
 
 theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
-    (s : Finset ι) (X : ι → Ω → ℝ≥0∞)
-    (hX : iIndepFun (fun _ ↦ ENNReal.measurableSpace) X μ)
+    (s : Finset ι) (X : ι → Ω → ℝ≥0∞) (hX : iIndepFun X μ)
     (x_mea : ∀ i, Measurable (X i)) :
     ∫⁻ ω, ∏ i ∈ s, (X i ω) ∂μ = ∏ i ∈ s, ∫⁻ ω, X i ω ∂μ := by
   have : IsProbabilityMeasure μ := hX.isProbabilityMeasure

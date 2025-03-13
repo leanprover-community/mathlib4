@@ -329,7 +329,7 @@ theorem normAtPlace_nonneg (w : InfinitePlace K) (x : mixedSpace K) :
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> exact norm_nonneg _
 
-theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K)  :
+theorem normAtPlace_neg (w : InfinitePlace K) (x : mixedSpace K) :
     normAtPlace w (- x) = normAtPlace w x := by
   rw [normAtPlace, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk]
   split_ifs <;> simp
@@ -684,7 +684,7 @@ instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
 open Classical in
 instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   simp_rw [← span_latticeBasis]
-  exact ZSpan.isZLattice (latticeBasis K)
+  infer_instance
 
 open Classical in
 theorem fundamentalDomain_integerLattice :
@@ -778,7 +778,7 @@ theorem mem_span_fractionalIdealLatticeBasis {x : (mixedSpace K)} :
       exact congr_arg Set.range (funext (fun i ↦ fractionalIdealLatticeBasis_apply K I i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
   rw [show Submodule.span ℤ (Set.range (basisOfFractionalIdeal K I)) = (I : Set K) by
-        ext; erw [mem_span_basisOfFractionalIdeal]]
+        ext; simp [mem_span_basisOfFractionalIdeal]]
   rfl
 
 theorem span_idealLatticeBasis :
@@ -795,7 +795,7 @@ instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
 open Classical in
 instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
   simp_rw [← span_idealLatticeBasis]
-  exact ZSpan.isZLattice (fractionalIdealLatticeBasis K I)
+  infer_instance
 
 open Classical in
 theorem fundamentalDomain_idealLattice :
@@ -1028,7 +1028,7 @@ theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (p
       (neg_of_mem_negA_plusPart A hx' hw.1).trans (pos_of_not_mem_negAt_plusPart A hx hw.2)
 
 -- We will assume from now that `A` is symmetric at real places
-variable  (hA : ∀ x, x ∈ A ↔ (fun w ↦ |x.1 w|, x.2) ∈ A)
+variable (hA : ∀ x, x ∈ A ↔ (fun w ↦ |x.1 w|, x.2) ∈ A)
 
 include hA in
 theorem mem_negAt_plusPart_of_mem (hx₁ : x ∈ A) (hx₂ : ∀ w, x.1 w ≠ 0) :
@@ -1107,5 +1107,56 @@ theorem volume_eq_two_pow_mul_volume_plusPart (hm : MeasurableSet A) :
     Nat.cast_pow, Nat.cast_ofNat, nrRealPlaces]
 
 end plusPart
+
+noncomputable section realSpace
+
+/--
+The `realSpace` associated to a number field `K` is the real vector space indexed by the
+infinite places of `K`.
+-/
+abbrev realSpace := InfinitePlace K → ℝ
+
+variable {K}
+
+/--
+The continuous linear map from `realSpace K` to `mixedSpace K` which is the identity at real
+places and the natural map `ℝ → ℂ` at complex places.
+-/
+def mixedSpaceOfRealSpace : realSpace K →L[ℝ] mixedSpace K :=
+  .prod (.pi fun w ↦ .proj w.1) (.pi fun w ↦ Complex.ofRealCLM.comp (.proj w.1))
+
+theorem mixedSpaceOfRealSpace_apply (x : realSpace K) :
+    mixedSpaceOfRealSpace x = ⟨fun w ↦ x w.1, fun w ↦ x w.1⟩ := rfl
+
+theorem normAtPlace_mixedSpaceOfRealSpace {x : realSpace K} {w : InfinitePlace K} (hx : 0 ≤ x w) :
+    normAtPlace w (mixedSpaceOfRealSpace x) = x w := by
+  simp only [mixedSpaceOfRealSpace_apply]
+  obtain hw | hw := isReal_or_isComplex w
+  · rw [normAtPlace_apply_of_isReal hw, Real.norm_of_nonneg hx]
+  · rw [normAtPlace_apply_of_isComplex hw, Complex.norm_of_nonneg hx]
+
+/--
+The map from the `mixedSpace K` to `realSpace K` that sends each component to its norm.
+-/
+abbrev normAtAllPlaces (x : mixedSpace K) : realSpace K :=
+    fun w ↦ normAtPlace w x
+
+@[simp]
+theorem normAtAllPlaces_apply (x : mixedSpace K) (w : InfinitePlace K) :
+    normAtAllPlaces x w = normAtPlace w x := rfl
+
+theorem normAtAllPlaces_nonneg (x : mixedSpace K) (w : InfinitePlace K) :
+    0 ≤ normAtAllPlaces x w := normAtPlace_nonneg _ _
+
+theorem normAtAllPlaces_mixedSpaceOfRealSpace {x : realSpace K} (hx : ∀ w, 0 ≤ x w) :
+    normAtAllPlaces (mixedSpaceOfRealSpace x) = x := by
+  ext
+  rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hx _)]
+
+theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
+    normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
+  normAtAllPlaces_mixedSpaceOfRealSpace fun _ ↦ (normAtAllPlaces_nonneg _ _)
+
+end realSpace
 
 end NumberField.mixedEmbedding

@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.Over.Pullback
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Monomorphisms over a fixed object
@@ -110,7 +111,9 @@ instance isThin {X : C} : Quiver.IsThin (MonoOver X) := fun f g =>
   ⟨by
     intro h₁ h₂
     apply Over.OverMorphism.ext
-    erw [← cancel_mono g.arrow, Over.w h₁, Over.w h₂]⟩
+    rw [← cancel_mono g.arrow]
+    erw [Over.w h₁]
+    erw [Over.w h₂]⟩
 
 @[reassoc]
 theorem w {f g : MonoOver X} (k : f ⟶ g) : k.left ≫ g.arrow = f.arrow :=
@@ -218,6 +221,31 @@ theorem pullback_obj_arrow (f : X ⟶ Y) (g : MonoOver Y) :
   rfl
 
 end Pullback
+
+section IsPullback
+
+/--
+Given two monomorphisms `S` and `T` over `X` and `Y` and two morphisms `f` and `f'` between them
+forming the following pullback square:
+
+```
+(T : C) -f'-> (S : C)
+   |             |
+T.arrow       S.arrow
+   |             |
+   v             v
+   Y -----f----> X
+```
+
+we get an isomorphism between `T` and the pullback of `S` along `f` through the `pullback` functor.
+-/
+def pullbackObjIsoOfIsPullback [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (S : MonoOver X)
+    (T : MonoOver Y) (f' : (T : C) ⟶ (S : C))
+    (h : IsPullback f' T.arrow S.arrow f) :
+    (pullback f).obj S ≅ T :=
+  isoMk ((IsPullback.isoPullback h).symm) (by simp)
+
+end IsPullback
 
 section Map
 
@@ -356,10 +384,8 @@ def imageForgetAdj : image ⊣ forget X :=
             · apply image.lift_fac
           left_inv := fun _ => Subsingleton.elim _ _
           right_inv := fun k => by
-            ext1
-            change factorThruImage _ ≫ image.lift _ = _
-            rw [← cancel_mono g.arrow, assoc, image.lift_fac, image.fac f.hom]
-            exact (Over.w k).symm } }
+            ext
+            simp } }
 
 instance : (forget X).IsRightAdjoint :=
   ⟨_, ⟨imageForgetAdj⟩⟩

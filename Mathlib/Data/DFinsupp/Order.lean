@@ -49,9 +49,8 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
 @[simp, norm_cast]
 lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
--- Porting note: we added implicit arguments here in https://github.com/leanprover-community/mathlib4/pull/3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
-    (@orderEmbeddingToFun ι α _ _ f) i = f i :=
+    orderEmbeddingToFun f i = f i :=
   rfl
 
 end LE
@@ -176,9 +175,7 @@ end Module
 
 section PartialOrder
 
--- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
-variable (α)
-variable [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
+variable (α) [∀ i, AddCommMonoid (α i)] [∀ i, PartialOrder (α i)] [∀ i, CanonicallyOrderedAdd (α i)]
 
 instance : OrderBot (Π₀ i, α i) where
   bot := 0
@@ -226,9 +223,7 @@ theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} :
 
 end LE
 
--- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
-variable (α)
-variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
+variable (α) [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 
 /-- This is called `tsub` for truncated subtraction, to distinguish it with subtraction in an
 additive group. -/

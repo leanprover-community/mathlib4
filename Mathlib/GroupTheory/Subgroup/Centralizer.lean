@@ -3,13 +3,15 @@ Copyright (c) 2020 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.Group.Action.End
 import Mathlib.GroupTheory.Subgroup.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
 
 /-!
 # Centralizers of subgroups
 -/
+
+assert_not_exists MonoidWithZero
 
 variable {G G' : Type*} [Group G] [Group G']
 
