@@ -57,7 +57,7 @@ lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → 
   simp_rw [← lift_umax] at hwin ⊢
   exact hwin
 
-/-- A copy of `lift_cRank_submatrix_le` for when `m₀` and `m` are in the same universe. -/
+/-- A special case of `lift_cRank_submatrix_le` for when `m₀` and `m` are in the same universe. -/
 lemma cRank_submatrix_le {m m₀ : Type um} (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     (A.submatrix r c).cRank ≤ A.cRank := by
   simpa using lift_cRank_submatrix_le A r c
