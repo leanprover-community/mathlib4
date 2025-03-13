@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Adjunction.AdjunctionTwo
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Closed monoidal categories
