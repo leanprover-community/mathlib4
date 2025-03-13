@@ -479,6 +479,8 @@ theorem bot_eq_top : (⊥ : Subfield (ZMod p)) = (⊤ : Subfield (ZMod p)) := by
   have := Subfield.zsmul_one_in_bot (ZMod p) n.val
   rwa [natCast_zsmul, Nat.smul_one_eq_cast, ZMod.natCast_zmod_val] at this
 
+instance : Subsingleton (Subfield (ZMod p)) := subsingleton_of_bot_eq_top bot_eq_top
+
 theorem map_castHom_top_eq_bot (p : ℕ) [Fact p.Prime] [DivisionRing K] [CharP K p] :
     Subfield.map (ZMod.castHom (m := p) dvd_rfl K) ⊤ = (⊥ : Subfield K) := by
   ext x
@@ -645,22 +647,29 @@ theorem splits_bot (p : ℕ) [Fact p.Prime] [CharP F p] :
     Fintype.card_eq_nat_card, card_bot F p]
 
 open Polynomial in
-theorem zsmul_one_isRoot (p : ℕ) [Fact p.Prime] [CharP F p] (n : ℤ) :
+@[simp]
+theorem isRoot_neg_iff {p : ℕ} [Fact p.Prime] [CharP F p] {x : F} :
+    (X ^ p - X : F[X]).IsRoot (-x) ↔ (X ^ p - X : F[X]).IsRoot x := by
+  simp only [IsRoot.def, eval_sub, eval_pow, eval_X, sub_neg_eq_add]
+  rw [add_eq_zero_iff_eq_neg', sub_eq_zero, eq_comm]
+  refine Eq.congr ?_ rfl
+  simp [neg_eq_iff_add_eq_zero, ← add_pow_expChar, Nat.Prime.ne_zero Fact.out]
+
+open Polynomial in
+theorem nsmul_one_isRoot (p : ℕ) [Fact p.Prime] [CharP F p] (n : ℕ) :
     (X ^ p - X : F[X]).IsRoot (n • (1 : F)) := by
   induction n with
-  | hz => simp [NeZero.ne p]
-  | hp i ih =>
-    simp only [zsmul_eq_mul, Int.cast_natCast, mul_one, IsRoot.def, eval_sub, eval_pow,
-      eval_X, sub_eq_zero] at ih
-    simp only [zsmul_eq_mul, Int.cast_add, Int.cast_natCast, Int.cast_one, mul_one, IsRoot.def,
-      eval_sub, eval_pow, eval_X, add_pow_expChar, ih, one_pow]
-    abel
-  | hn i ih =>
-    simp only [neg_smul, zsmul_eq_mul, Int.cast_natCast, mul_one, IsRoot.def, eval_sub, eval_pow,
-      eval_X, sub_neg_eq_add, add_eq_zero_iff_eq_neg] at ih
-    simp only [zsmul_eq_mul, Int.cast_sub, Int.cast_neg, Int.cast_natCast, Int.cast_one, mul_one,
-      IsRoot.def, eval_sub, eval_pow, eval_X, sub_pow_expChar, ih, one_pow]
-    abel
+  | zero => simp [NeZero.ne p]
+  | succ n ih => simpa [add_pow_expChar] using ih
+
+open Polynomial in
+theorem zsmul_one_isRoot (p : ℕ) [Fact p.Prime] [CharP F p] (n : ℤ) :
+    (X ^ p - X : F[X]).IsRoot (n • (1 : F)) := by
+  rcases n.natAbs_eq with h|h
+  · rw [h]
+    exact_mod_cast nsmul_one_isRoot (F := F) p _
+  · rw [h, neg_zsmul, isRoot_neg_iff]
+    exact_mod_cast nsmul_one_isRoot (F := F) p _
 
 open Polynomial in
 theorem mem_bot_iff (p : ℕ) [hp : Fact p.Prime] [CharP F p] {x : F} :

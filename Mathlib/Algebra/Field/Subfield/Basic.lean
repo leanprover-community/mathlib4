@@ -283,18 +283,21 @@ instance : CompleteLattice (Subfield K) :=
     inf_le_right := fun _ _ _ => And.right
     le_inf := fun _ _ _ h₁ h₂ _ hx => ⟨h₁ hx, h₂ hx⟩ }
 
-theorem zsmul_one_in_bot (K) [DivisionRing K] (n : ℤ) :
+theorem nsmul_one_mem_bot (K) [DivisionRing K] (n : ℕ) :
     n • (1 : K) ∈ (⊥ : Subfield K) := by
   induction n with
-  | hz =>
-    rw [zero_zsmul]
+  | zero =>
+    rw [zero_nsmul]
     exact Subfield.zero_mem ⊥
-  | hp i ih =>
-    rw [add_one_zsmul]
+  | succ i ih =>
+    rw [succ_nsmul]
     exact Subfield.add_mem ⊥ ih <| Subfield.one_mem ⊥
-  | hn i ih =>
-    rw [sub_one_zsmul]
-    exact Subfield.add_mem ⊥ ih <| Subfield.neg_mem ⊥ <| Subfield.one_mem ⊥
+
+theorem zsmul_one_mem_bot (K) [DivisionRing K] (n : ℤ) :
+    n • (1 : K) ∈ (⊥ : Subfield K) := by
+  rcases n.natAbs_eq with h|h <;>
+  · rw [h]
+    simpa using nsmul_one_mem_bot K _
 
 /-! # subfield closure of a subset -/
 
