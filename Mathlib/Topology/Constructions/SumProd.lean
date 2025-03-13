@@ -56,8 +56,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [Topolog
 
 @[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
-  continuous_inf_rng.trans <|
-    continuous_induced_rng.and continuous_induced_rng
+  continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
 
 @[continuity]
 theorem continuous_fst : Continuous (@Prod.fst X Y) :=
