@@ -88,7 +88,12 @@ def trimComments (s : String) : String :=
     --dbg_trace "rest before: '{rest}'\n"
     let (takeDocs, rest) := findString (rest.drop 2) "-/"
     --dbg_trace "doc '{beforeFirstDash.back}--{takeDocs}'\n\nrest: {rest}"
-    beforeFirstDash ++ "--" ++ takeDocs ++ trimComments rest
+    -- Replace each consecutive group of at least one space in `takeDocs` with a single space.
+    -- The begin/end `|`-markers take care of preserving initial and terminal spaces, if there
+    -- were any.  We remove them in the next step.
+    let compressDocs := ("|" ++ takeDocs ++ "|").splitOn " " |>.filter (!·.isEmpty)
+    let compressDocs := " ".intercalate compressDocs |>.drop 1 |>.dropRight 1
+    beforeFirstDash ++ "--" ++ compressDocs ++ trimComments rest
   | "/", _ => -- this is a multiline comment
     --dbg_trace "multiline comment '{beforeFirstDash}'"
     let (_comment, rest) := findString (rest.drop 2) "-/"
@@ -193,7 +198,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"slightly polished source:\n'{real}'\n\n\
           actually used source:\n'{furtherFormatting (trimComments real)}'\n\n\
           reference formatting:\n'{st}'\n\n\
-          intermediate reference formatting:\n'{fmt}'\n"
+          intermediate reference formatting:\n'{fmt}'\n\nremoveComments:\n'{removeComments real}'"
       if ! st.startsWith (furtherFormatting (trimComments real)) then
         let diff := real.firstDiffPos st
         let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
