@@ -18,6 +18,7 @@ For settings where `α` has additional structure, we provide a large number of
 simplifier lemmas, akin to those that already exists for `ENat.toNat`.
 -/
 
+namespace WithTop
 variable {α : Type*}
 
 /-- Conversion from `WithTop.toBase` to `α`, mapping `⊤` to zero. -/
