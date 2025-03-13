@@ -32,7 +32,7 @@ power morphism* if it is compatible with these divided power structures.
 
 We provided both a bundled and an unbundled definition of divided power morphisms. For developing
 the basic theory, the unbundled version `IsDPMorphism` is more convenient. However, we anticipate
-that the bundled version `DPMorphism` will be better for the development of crystalline 
+that the bundled version `DPMorphism` will be better for the development of crystalline
 cohomology.
 
 ## References
