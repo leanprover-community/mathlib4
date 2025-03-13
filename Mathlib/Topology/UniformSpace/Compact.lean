@@ -42,16 +42,16 @@ theorem lebesgue_number_lemma {ι : Sort*} {U : ι → Set α} (hK : IsCompact K
   exact ⟨ind y y.2, fun z hz ↦ hWU _ _ ⟨x, hxy, mem_iInter₂.1 hz _ hyt⟩⟩
 
 theorem lebesgue_number_lemma_nhds' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
-    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ⊆ U y y.2 :=
-  (lebesgue_number_lemma (U := fun x : K => interior (U x x.2)) hK (fun _ => isOpen_interior)
-    (fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩)).imp
-    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
+    (hU : ∀ x hx, U x hx ∈ 𝓝 x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ⊆ U y y.2 := by
+  rcases lebesgue_number_lemma (U := fun x : K => interior (U x x.2)) hK (fun _ => isOpen_interior)
+    (fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
+  exact ⟨V, V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
 
 theorem lebesgue_number_lemma_nhds {U : α → Set α} (hK : IsCompact K) (hU : ∀ x ∈ K, U x ∈ 𝓝 x) :
-    ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ⊆ U y :=
-  (lebesgue_number_lemma (U := fun x => interior (U x)) hK (fun _ => isOpen_interior)
-    (fun x hx => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x hx)⟩)).imp
-    fun _ ⟨V_uni, hV⟩ => ⟨V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
+    ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y, ball x V ⊆ U y := by
+  rcases lebesgue_number_lemma (U := fun x => interior (U x)) hK (fun _ => isOpen_interior)
+    (fun x hx => mem_iUnion.2 ⟨x, mem_interior_iff_mem_nhds.2 (hU x hx)⟩) with ⟨V, V_uni, hV⟩
+  exact ⟨V, V_uni, fun x hx => (hV x hx).imp fun _ hy => hy.trans interior_subset⟩
 
 theorem lebesgue_number_lemma_nhdsWithin' {U : (x : α) → x ∈ K → Set α} (hK : IsCompact K)
     (hU : ∀ x hx, U x hx ∈ 𝓝[K] x) : ∃ V ∈ 𝓤 α, ∀ x ∈ K, ∃ y : K, ball x V ∩ K ⊆ U y y.2 :=
