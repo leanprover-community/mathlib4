@@ -67,7 +67,7 @@ variable [Preorder α] {a b c : α}
 This lemma only exists to serve as an order dual counterpart to `Preorder.le_trans`.
 -/
 @[order_dual existing Preorder.le_trans]
-lemma Preorder.le_trans' (h₁ : b ≤ a) (h₂ : c ≤ b) : c ≤ a := Preorder.le_trans c b a h₂ h₁
+lemma Preorder.le_trans' (a b c : α) (h₁ : b ≤ a) (h₂ : c ≤ b) : c ≤ a := Preorder.le_trans c b a h₂ h₁
 
 /-- The relation `≤` on a preorder is reflexive. -/
 @[refl, simp] lemma le_refl : ∀ a : α, a ≤ a := Preorder.le_refl

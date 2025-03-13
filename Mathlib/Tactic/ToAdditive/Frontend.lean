@@ -996,6 +996,16 @@ def updateDecl (b : BundledExtensions)
         <| ← unfoldAuxLemmas info.value }
   return decl
 
+/-- Run applyReplacementFun on the type of given `srcDecl` and return the resulting `Expr` -/
+def updateDeclType (b : BundledExtensions)
+    (tgt : Name) (srcDecl : ConstantInfo) (reorder : List (List Nat) := []) :
+    MetaM Expr := do
+  let mut decl := srcDecl.updateName tgt
+  if 0 ∈ reorder.flatten then
+    decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
+  applyReplacementFun b <| ← reorderForall reorder
+    <| ← expand b <| ← unfoldAuxLemmas decl.type
+
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
 def findTargetName (env : Environment) (b : BundledExtensions)
     (src pre tgt_pre : Name) : CoreM Name :=
@@ -1661,6 +1671,16 @@ partial def addToAdditiveAttr (b : BundledExtensions)
            `@[to_additive existing]`."
       else
         "The additive declaration doesn't exist. Please remove the option `existing`."
+  -- for `order_dual self` / `order_dual existing`:
+  -- validate type of declaration that would be generated using order_dual
+  if b.attrName = `order_dual && alreadyExists then
+    let tgtDecl ← getConstInfo tgt
+    let srcDecl ← getConstInfo src
+    let genType : Expr ←
+      MetaM.run' <| updateDeclType b `_order_dual_private srcDecl cfg.reorder
+    if ! (← MetaM.run' <| isDefEq genType tgtDecl.type) then
+      log m!"order_dual failed validation!\ntgt type:\n{tgtDecl.type},\
+        \ntransformed type:\n{genType}"
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} according to \
       {cfg.reorder}."
@@ -1680,19 +1700,17 @@ partial def addToAdditiveAttr (b : BundledExtensions)
     b.relevantArgAttr.add src firstMultArg
   insertTranslation b src tgt alreadyExists
   let nestedNames ←
-    if alreadyExists && !cfg.self then
+    if alreadyExists then
       -- since `tgt` already exists, we just need to copy metadata and
       -- add translations `src.x ↦ tgt.x'` for any subfields.
       trace[to_additive_detail] "declaration {tgt} already exists."
       proceedFields b src tgt
       copyMetaData b nameDict fixAbbreviation cfg src tgt
+      -- TODO: for order_dual validate that the existing declaration has the correct type
+      -- HACK: special case order_dual
     else
       -- tgt doesn't exist, so let's make it
       transformDecl b nameDict fixAbbreviation cfg src tgt
-  -- for `order_dual self`: validate declaration
-  if cfg.self then
-    -- isDefEq tgt src
-    trace[to_additive] "TODO: check `self`"
   -- add pop-up information when mousing over `additive_name` of `@[to_additive additive_name]`
   -- (the information will be over the attribute of no additive name is given)
   pushInfoLeaf <| .ofTermInfo {
