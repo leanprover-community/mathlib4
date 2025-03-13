@@ -59,7 +59,8 @@ We consider two cases:
 
 open PartialColoring Walk
 variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α] {s : Finset α}
-/-- Essentially the first main case of Brooks theorem, applied with `s = {x₁, x₃}` -/
+/-- Essentially the first main case of Brooks theorem, applied with `s = {x₁, x₃}`
+This gives a `k`-coloring of `s ∪ p.support.toFinset ∪ {x₂}` -/
 theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ a : α} {p : G.Walk xᵣ x₄} (hk : 0 < k)
     {hc : G.Adj xⱼ x₂} (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hj : xⱼ ∈ p.support)
     (hs1 : x₁ ∈ s) (hs3 : x₃ ∈ s) (h21 : G.Adj x₂ x₁) (h23 : G.Adj x₂ x₃)
@@ -83,12 +84,9 @@ theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ a : α} {p : G.Walk xᵣ x₄} (h
     exact disjoint_of_subset_left hd' <| (disjoint_of_subset_right hd) hdisj
   let C₂ := C₁.Greedy ((p.takeUntil _ hj).concat hc).reverse.support
   have hc13 : C₁ x₁ = C₁ x₃ := by
-    rw [Greedy_not_mem, Greedy_not_mem]
-    · rfl
-    · intro hf
-      apply hx3p <| (support_dropUntil_subset _ hj) (List.mem_of_mem_tail hf)
-    · intro hf
-      apply hx1p <| (support_dropUntil_subset _ hj) (List.mem_of_mem_tail hf)
+    rw [Greedy_not_mem (fun hf ↦ hx3p <| (support_dropUntil_subset _ hj) (List.mem_of_mem_tail hf)),
+        Greedy_not_mem (fun hf ↦ hx1p <| (support_dropUntil_subset _ hj) (List.mem_of_mem_tail hf))]
+    rfl
   apply C₁.Greedy_of_path_concat_notInj hbdd htp this _ _ h21 h23 hne hc13
   · simp_all only [ne_eq, concat_isPath_iff, insert_union, support_concat, List.concat_eq_append,
     List.toFinset_append, List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq,
