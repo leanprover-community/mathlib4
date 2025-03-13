@@ -3,12 +3,14 @@ Copyright (c) 2025 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
-import Mathlib.Algebra.GroupWithZero.Defs
+import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Data.Finset.Sym
 import Mathlib.Data.Finsupp.Defs
 
 /-!
-# Finitely Supported Commutative multiplication
+# Finitely supported functions from the symmetric square
+
+This file lifts functions `α →₀ M₀` to functions `Sym2 α →₀ M₀` by precomposing with multiplication.
 -/
 
 open Sym2
@@ -23,10 +25,8 @@ lemma sym2_support_eq_preimage_support_mul [NoZeroDivisors M₀] (f : α →₀ 
 lemma mem_sym2_support_of_mul_ne_zero (p : Sym2 α) (hp : mul (p.map f) ≠ 0) :
     p ∈ f.support.sym2 := by
   obtain ⟨a, b⟩ := p
-  simp only [Finset.mem_sym2_iff, mem_iff, Finsupp.mem_support_iff, ne_eq, forall_eq_or_imp,
-    forall_eq]
   simp only [map_pair_eq, mul_mk, ne_eq] at hp
-  aesop
+  simpa using .intro (left_ne_zero_of_mul hp) (right_ne_zero_of_mul hp)
 
 end Sym2
 
