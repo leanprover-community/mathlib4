@@ -11,7 +11,6 @@ import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Finiteness.Basic
 
-
 /-! # Smallness properties of modules and algebras -/
 
 universe u
