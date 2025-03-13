@@ -14,9 +14,7 @@ them.
 
 # Main definitions
 
-* `FilteredHom` : A morphism between general filtration (filtration of sets) that preserves
-both the main and auxiliary filtered structures. This class describes a structure-preserving map
-between two filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`).
+* `FilteredHom` : Function that preserve the filtered structrue.
 
 * `FilteredHom.piece_wise_hom` : The filtered abelian group morphism obtained from the
 restriction of a `FilteredHom` to its `i`-th filtration.
@@ -52,15 +50,24 @@ obtained from the `AssociatedGradedRingHom` of a filtered algebra morphism.
 -/
 section
 
-variable {ι A B C α β γ: Type*} [Preorder ι] [SetLike α A] [SetLike β B] [SetLike γ C]
+section
 
-variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt]
-variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
-variable (FC : ι → γ) (FC_lt : outParam <| ι → γ) [IsFiltration FC FC_lt]
+/-- The class of functions that preserve the filtered structrue. -/
+class FilteredHomClass (F : Type*) {A B α β ι : Type*} [FunLike F A B]
+    [SetLike α A] (FA : ι → α) (FA_lt : outParam <| ι → α)
+    [SetLike β B] (FB : ι → β) (FB_lt : outParam <| ι → β) : Prop where
+  pieces_wise (f : F) {i a} : a ∈ FA i → f a ∈ FB i
+  pieces_wise_lt (f : F) {i a} : a ∈ FA_lt i → f a ∈ FB_lt i
 
-/-- A morphism between general filtration (filtration of sets) that preserves both the main
-and auxiliary filtered structures. This class describes a structure-preserving map between two
-filtered sets `IsFiltration FA FA_lt` and `IsFiltration FB FB_lt` (types `A` and `B`). -/
+end
+
+variable {ι A B C α β γ: Type*} [SetLike α A] [SetLike β B] [SetLike γ C]
+
+variable (FA : ι → α) (FA_lt : outParam <| ι → α)
+variable (FB : ι → β) (FB_lt : outParam <| ι → β)
+variable (FC : ι → γ) (FC_lt : outParam <| ι → γ)
+
+/-- Function that preserve the filtered structrue. -/
 @[ext]
 class FilteredHom where
   /-- It is a map from `A` to `B` which maps each `FA i` pieces to corresponding `FB i` pieces, and
@@ -73,23 +80,33 @@ instance : FunLike (FilteredHom FA FA_lt FB FB_lt) A B where
   coe f := f.toFun
   coe_injective' _ _ hfg := FilteredHom.ext hfg
 
+instance : FilteredHomClass (FilteredHom FA FA_lt FB FB_lt) FA FA_lt FB FB_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
+
 namespace FilteredHom
 
 variable (g : FilteredHom FB FB_lt FC FC_lt) (f : FilteredHom FA FA_lt FB FB_lt)
 
-variable {FA FB FC FA_lt FB_lt FC_lt} in
-
+variable {FA FB FA_lt FB_lt} in
 /-- The filtered abelian group morphism obtained from the
 restriction of a `FilteredHom` to its `i`-th filtration. -/
 def piece_wise_hom (i : ι) : FA i → FB i :=
   Subtype.map f (fun _ ha ↦ f.pieces_wise ha)
 
+/-- The identity map as a `FilteredHom` of same filtration. -/
+def id : FilteredHom FA FA_lt FA FA_lt where
+  toFun := _root_.id
+  pieces_wise ha := ha
+  pieces_wise_lt ha := ha
+
+variable {FA FB FC FA_lt FB_lt FC_lt} in
 /-- The composition of two filtered morphisms,
 obtained from the composition of the underlying function. -/
-def comp : FilteredHom FA FA_lt FC FC_lt := {
+def comp : FilteredHom FA FA_lt FC FC_lt where
   toFun := g.1.comp f.1
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
-  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha) }
+  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
 
 /-- A filtered morphism `f : FilteredHom FA FA_lt FB FB_lt` `IsStrict` if it strictly map
 the `p`-th filtration of `FA` and `FA_lt` to the intersection of the image of `f` with
@@ -114,6 +131,7 @@ variable (FC : ι → γ) (FC_lt : outParam <| ι → γ)
 
 /-- A morphism between filtered abelian groups that preserves both the
 group and filtered structures. -/
+@[ext]
 class FilteredAddGroupHom extends FilteredHom FA FA_lt FB FB_lt, A →+ B
 
 /-- Reinterpret a `FilteredAddGroupHom` as a `AddMonoidHom`. -/
@@ -122,10 +140,25 @@ add_decl_doc FilteredAddGroupHom.toAddMonoidHom
 instance : Coe (FilteredAddGroupHom FA FA_lt FB FB_lt) (FilteredHom FA FA_lt FB FB_lt) :=
   ⟨fun a ↦ a.toFilteredHom⟩
 
-instance : CoeOut (FilteredAddGroupHom FA FA_lt FB FB_lt) (A →+ B) :=
-  ⟨fun a ↦ a.toAddMonoidHom⟩
+instance : FunLike (FilteredAddGroupHom FA FA_lt FB FB_lt) A B where
+  coe f := f.toFun
+  coe_injective' _ _ h := FilteredAddGroupHom.ext h
+
+instance : AddMonoidHomClass (FilteredAddGroupHom FA FA_lt FB FB_lt) A B where
+  map_add f := map_add f.toAddMonoidHom
+  map_zero f := map_zero f.toAddMonoidHom
+
+instance : FilteredHomClass (FilteredAddGroupHom FA FA_lt FB FB_lt) FA FA_lt FB FB_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
 
 namespace FilteredAddGroupHom
+
+/-- The identity map as a `FilteredAddGroupHom` of same filtration. -/
+def id : FilteredAddGroupHom FA FA_lt FA FA_lt where
+  __ := AddMonoidHom.id A
+  pieces_wise ha := ha
+  pieces_wise_lt ha := ha
 
 variable  (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom FA FA_lt FB FB_lt)
 
@@ -214,6 +247,7 @@ variable [Ring T] (FT : ι → τ) (FT_lt : outParam <| ι → τ) [SetLike τ T
 
 /-- A morphism between filtered rings that preserves both the ring and
 filtered structures. -/
+@[ext]
 class FilteredRingHom extends FilteredAddGroupHom FR FR_lt FS FS_lt, R →+* S
 
 /-- Reinterpret a `FilteredRingHom` as a `RingHom`. -/
@@ -222,10 +256,27 @@ add_decl_doc FilteredRingHom.toRingHom
 instance : Coe (FilteredRingHom FR FR_lt FS FS_lt) (FilteredAddGroupHom FR FR_lt FS FS_lt) :=
   ⟨fun a ↦ a.toFilteredAddGroupHom⟩
 
-instance : CoeOut (FilteredRingHom FR FR_lt FS FS_lt) (R →+* S) :=
-  ⟨fun a ↦ a.toRingHom⟩
+instance : FunLike (FilteredRingHom FR FR_lt FS FS_lt) R S where
+  coe f := f.toFun
+  coe_injective' _ _ h := FilteredRingHom.ext h
+
+instance : RingHomClass (FilteredRingHom FR FR_lt FS FS_lt) R S where
+  map_mul f := f.map_mul
+  map_one f := f.map_one
+  map_add f := f.map_add
+  map_zero f := f.map_zero
+
+instance : FilteredHomClass  (FilteredRingHom FR FR_lt FS FS_lt) FR FR_lt FS FS_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
 
 namespace FilteredRingHom
+
+/-- The identity map as a `FilteredRingHom` of same filtration. -/
+def id : FilteredRingHom FR FR_lt FR FR_lt where
+  __ := RingHom.id R
+  pieces_wise ha := ha
+  pieces_wise_lt ha := ha
 
 variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt FS FS_lt)
 
@@ -282,15 +333,13 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     simp [RingHom.map_one f.toRingHom]
   map_mul' a b := DirectSum.induction_on a (by simp)
     (DirectSum.induction_on b (by simp)
-      (fun j y' i x' ↦ QuotientAddGroup.induction_on x' <| QuotientAddGroup.induction_on y' <|
-          fun y x ↦ by
+      (fun j y' i x' ↦ by
+          induction x' using GradedPiece.induction_on
+          induction y' using GradedPiece.induction_on
+          rename_i x y
           simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, DirectSum.of_mul_of,
-            FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
-          congr
-          show Gr+*(i + j)[f] (GradedPiece.mk FR FR_lt ⟨x.1 * y.1, _⟩) =
-            GradedPiece.mk FS FS_lt ⟨f.toRingHom x.1 * f.toRingHom y.1, _⟩
-          simp only [FilteredAddGroupHom.GradedPieceHom, GradedPiece.mk_eq,
-            QuotientAddGroup.map_mk]
+            FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of, GradedMonoid.GMul.mul,
+            GradedPiece.gradedMul_def, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
           congr
           exact SetCoe.ext (map_mul f.toRingHom x.1 y.1))
       (by intro x y h1 h2 i z
