@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ben Eltschig
 -/
 import Mathlib.Analysis.InnerProductSpace.EuclideanDist
+import Mathlib.Tactic.FunProp.ContDiff
 
 /-!
 # Diffeological spaces
@@ -109,6 +110,7 @@ def DTop : TopologicalSpace X := DiffeologicalSpace.dTopology
 
 /-- A map `p : Eucl n → X` is called a plot iff it is part of the diffeology on `X`. This is
 equivalent to `p` being smooth with respect to the standard diffeology on `Eucl n`. -/
+@[fun_prop]
 def IsPlot {n : ℕ} (p : Eucl n → X) : Prop := p ∈ DiffeologicalSpace.plots n
 
 /-- A function between diffeological spaces is smooth iff composition with it preserves
@@ -134,12 +136,22 @@ protected theorem DiffeologicalSpace.ext {X : Type*} {d₁ d₂ : DiffeologicalS
   congr 1; ext s
   exact ((show p₁ = p₂ by exact h) ▸ @h₁ s).trans (@h₂ s).symm
 
+@[fun_prop]
 lemma isPlot_const {n : ℕ} {x : X} : IsPlot (fun _ ↦ x : Eucl n → X) :=
   DiffeologicalSpace.constant_plots x
 
 lemma isPlot_reparam {n m : ℕ} {p : Eucl m → X} {f : Eucl n → Eucl m}
     (hp : IsPlot p) (hf : ContDiff ℝ ∞ f) : IsPlot (p ∘ f) :=
   DiffeologicalSpace.plot_reparam hp hf
+
+protected lemma IsPlot.dsmooth_comp {n : ℕ} {p : Eucl n → X} {f : X → Y}
+    (hp : IsPlot p) (hf : DSmooth f) : IsPlot (f ∘ p) :=
+  hf n p hp
+
+@[fun_prop]
+protected lemma IsPlot.dsmooth_comp' {n : ℕ} {p : Eucl n → X} {f : X → Y}
+    (hp : IsPlot p) (hf : DSmooth f) : IsPlot fun x ↦ f (p x) :=
+  hf n p hp
 
 lemma isOpen_iff_preimages_plots {u : Set X} :
     IsOpen[DTop] u ↔ ∀ (n : ℕ) (p : Eucl n → X), IsPlot p → IsOpen (p ⁻¹' u) :=
@@ -316,14 +328,21 @@ example {ι : Type*} [Fintype ι] : IsContDiffCompatible (EuclideanSpace ℝ ι)
 
 example {ι : Type*} [Fintype ι] : IsDTopCompatible (EuclideanSpace ℝ ι) := inferInstance
 
+@[fun_prop]
 protected theorem IsPlot.dsmooth {n : ℕ} {p : Eucl n → X} (hp : IsPlot p) : DSmooth p :=
   fun _ _ ↦ isPlot_reparam hp
 
+@[fun_prop]
 protected theorem DSmooth.isPlot {n : ℕ} {p : Eucl n → X} (hp : DSmooth p) : IsPlot p :=
   hp n id <| @contDiff_id ℝ _ (Eucl n) _ _ ∞
 
 theorem isPlot_iff_dsmooth {n : ℕ} {p : Eucl n → X} : IsPlot p ↔ DSmooth p :=
   ⟨IsPlot.dsmooth, DSmooth.isPlot⟩
+
+lemma isPlot_id {n : ℕ} : IsPlot (@id (Eucl n)) := contDiff_id (n := ∞)
+
+@[fun_prop]
+lemma isPlot_id' {n : ℕ} : IsPlot fun x : Eucl n ↦ x := isPlot_id
 
 variable {X Y : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [DiffeologicalSpace X]
   [IsContDiffCompatible X] [NormedAddCommGroup Y] [NormedSpace ℝ Y] [DiffeologicalSpace Y]
@@ -332,16 +351,32 @@ variable {X Y : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [Diffeological
 theorem isPlot_iff_contDiff {n : ℕ} {p : Eucl n → X} : IsPlot p ↔ ContDiff ℝ ∞ p :=
   IsContDiffCompatible.isPlot_iff
 
-protected theorem ContDiff.dsmooth {f : X → Y} (hf: ContDiff ℝ ∞ f) : DSmooth f :=
-  fun _ _ hp ↦ isPlot_iff_contDiff.2 (hf.comp (isPlot_iff_contDiff.1 hp))
+@[fun_prop]
+protected theorem ContDiff.isPlot {n : ℕ} {p : Eucl n → X} (hp : ContDiff ℝ ∞ p) : IsPlot p :=
+  isPlot_iff_contDiff.2 hp
 
+@[fun_prop]
+protected theorem IsPlot.contDiff {n : ℕ} {p : Eucl n → X} (hp : IsPlot p) : ContDiff ℝ ∞ p :=
+  isPlot_iff_contDiff.1 hp
+
+@[fun_prop]
+protected theorem ContDiff.dsmooth {f : X → Y} (hf: ContDiff ℝ ∞ f) : DSmooth f :=
+  fun _ _ hp ↦ (hf.comp hp.contDiff).isPlot
+
+@[fun_prop]
 protected theorem DSmooth.contDiff [FiniteDimensional ℝ X] {f : X → Y} (hf : DSmooth f) :
     ContDiff ℝ ∞ f := by
   let g := toEuclidean (E := X)
   rw [← Function.comp_id f, ← g.symm_comp_self]
-  exact (isPlot_iff_contDiff.1 <| hf _ _ (g.symm.contDiff.dsmooth.isPlot)).comp g.contDiff
+  exact (hf _ _ (g.symm.contDiff.isPlot)).contDiff.comp g.contDiff
 
 theorem dsmooth_iff_contDiff [FiniteDimensional ℝ X] {f : X → Y} : DSmooth f ↔ ContDiff ℝ ∞ f :=
   ⟨DSmooth.contDiff, ContDiff.dsmooth⟩
+
+/-- Verifies that `fun_prop` is set up correctly. -/
+example {X Y : Type*} [DiffeologicalSpace X] [DiffeologicalSpace Y] {n m : ℕ} {f : Eucl n → Eucl m}
+    {p : Eucl m → X} {g : X → Y} (hf : ContDiff ℝ ∞ f) (hp : IsPlot p) (hg : DSmooth g) :
+    IsPlot (g ∘ p ∘ f) := by
+  fun_prop
 
 end FiniteDimensionalNormedSpace
