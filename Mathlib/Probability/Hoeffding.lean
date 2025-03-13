@@ -187,7 +187,7 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
 
 /-! ### Hoeffding's lemma restricted to t ≥ 0 -/
 
-theorem hoeffding_nonneg [IsProbabilityMeasure μ]
+private theorem hoeffding_nonneg [IsProbabilityMeasure μ]
     (t a b : ℝ) {X : Ω → ℝ} (ht : 0 ≤ t) (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) (h0 : μ[X] = 0) :
     mgf X μ t ≤ exp (t^2 * (b - a)^2 / 8) := by
