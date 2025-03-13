@@ -647,7 +647,6 @@ theorem splits_bot (p : ℕ) [Fact p.Prime] [CharP F p] :
     Fintype.card_eq_nat_card, card_bot F p]
 
 open Polynomial in
-@[simp]
 theorem isRoot_neg_iff {p : ℕ} [Fact p.Prime] [CharP F p] {x : F} :
     (X ^ p - X : F[X]).IsRoot (-x) ↔ (X ^ p - X : F[X]).IsRoot x := by
   simp only [IsRoot.def, eval_sub, eval_pow, eval_X, sub_neg_eq_add]
