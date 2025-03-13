@@ -99,7 +99,7 @@ def trimComments (s : String) (compressDocs : Bool) : String :=
       -- are any.  We remove them in the next step.
       if compressDocs then
         let intermediate := ("|" ++ takeDocs ++ "|").splitOn " " |>.filter (!·.isEmpty)
-        " ".intercalate intermediate |>.drop 1 |>.dropRight 1
+        " ".intercalate intermediate |>.drop 1 |>.dropRight 1 |>.replace "¬" "¬ "
       else
         takeDocs
     beforeFirstDash ++ "--" ++ finalDocs ++ trimComments rest compressDocs
@@ -133,7 +133,7 @@ Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset`
 list notation.
 -/
 abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder,
-  `Bundle.termπ__, `Finset.«term_#_»]
+  `Bundle.termπ__, `Finset.«term_#_», ``«term{}»]
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
