@@ -29,11 +29,12 @@ namespace Matrix
 
 open Module Cardinal Set Submodule
 
-variable {l m n o R : Type*}
+universe ul um un uo uR
+variable {l : Type ul} {m : Type um} {n : Type un} {o : Type uo} {R : Type uR}
 
 section Infinite
 
-variable {m₀ n₀ : Type*} [Semiring R] {A : Matrix m n R}
+variable [Semiring R] {A : Matrix m n R}
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
 noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range Aᵀ
@@ -41,37 +42,38 @@ noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range Aᵀ)) := rfl
 
-lemma cRank_mono_col.{u,v,v₀,w} {m : Type u} {n : Type v} {n₀ : Type v₀} {R : Type w} [Semiring R]
-    (A : Matrix m n R) (c : n₀ → n) :
+lemma cRank_mono_col (A : Matrix n o R) (c : m → o) :
     (A.submatrix id c).cRank ≤ A.cRank := by
   apply Submodule.rank_mono <| span_mono ?_
   rintro _ ⟨x, rfl⟩
   exact ⟨c x, rfl⟩
 
-lemma cRank_lift_mono_row.{u,u₀,v} {m : Type u} {m₀ : Type u₀} {R : Type v} [Semiring R]
-    (A : Matrix m n R) (r : m₀ → m) :
-    lift.{u, max u₀ v} (A.submatrix r id).cRank ≤ lift.{u₀, max u v} A.cRank := by
-  let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
-  have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
-    rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
-    aesop
-  rw [cRank, ← h_eq]
-  have hwin := lift_rank_map_le f (span R (range Aᵀ))
-  simp_rw [← lift_umax] at hwin ⊢
-  exact hwin
+lemma lift_cRank_submatrix_le
+    (A : Matrix n o R) (r : l → n) (c : m → o) :
+    lift.{un} (A.submatrix r c).cRank ≤ lift.{ul} A.cRank := by
+  trans lift.{un} <| lift.{ul} (A.submatrix r id).cRank
+  · refine Cardinal.lift_monotone ?_
+    trans lift.{ul} ((A.submatrix r id).submatrix id c).cRank
+    · rw [@lift_id'.{ul, uR}, submatrix_submatrix]
+      simp
+    · refine Cardinal.lift_monotone <| Submodule.rank_mono <| span_mono ?_
+      rintro _ ⟨x, rfl⟩
+      exact ⟨c x, rfl⟩
+  · rw [Cardinal.lift_lift]
+    let f : (_ → R) →ₗ[R] (_ → R) := LinearMap.funLeft R R r
+    have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
+      rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
+      aesop
+    rw [cRank, ← h_eq]
+    have hwin := lift_rank_map_le f (span R (range Aᵀ))
+    simp_rw [← lift_umax] at hwin ⊢
+    exact hwin
 
-lemma cRank_submatrix_le.{u,u₀,v,v₀,w}
-    {m : Type u} {m₀ : Type u₀} {n : Type v} {n₀ : Type v₀} {R : Type w} [Semiring R]
-    (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
-    lift.{u, max u₀ w} (A.submatrix r c).cRank ≤ lift.{u₀, max u w} A.cRank := by
-  apply le_trans _ (cRank_lift_mono_row _ r)
-  apply Cardinal.lift_monotone
-  apply le_trans _ (cRank_mono_col _ c)
-  simp [A.submatrix_submatrix]
-
-lemma cRank_mono_row.{u} {m m₀ : Type u} (A : Matrix m n R) (r : m₀ → m) :
-    (A.submatrix r id).cRank ≤ A.cRank  := by
-  simpa using A.cRank_lift_mono_row r
+/-- A copy of `lift_cRank_submatrix_le` for when `l` and `n` are in the same universe. -/
+lemma cRank_submatrix_le.{uln} {l n : Type uln}
+    (A : Matrix n o R) (r : l → n) (c : m → o) :
+    (A.submatrix r c).cRank ≤ A.cRank := by
+  simpa using lift_cRank_submatrix_le A r c
 
 lemma cRank_le_card_row [StrongRankCondition R] [Fintype m] (A : Matrix m n R) :
     A.cRank ≤ Fintype.card m :=
@@ -88,12 +90,13 @@ lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
     A.eRank.toNat = Module.finrank R (span R (range Aᵀ)) :=
   toNat_toENat ..
 
-lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+lemma eRank_submatrix_le (A : Matrix n o R) (r : l → n) (c : m → o) :
     (A.submatrix r c).eRank ≤ A.eRank := by
   obtain hle | hlt := le_or_lt aleph0 (A.submatrix id c).cRank
   · simp [eRank, toENat_eq_top.2 <| hle.trans <| A.cRank_mono_col c]
   refine le_trans ?_ <| OrderHomClass.mono _ <| A.cRank_mono_col c
-  simpa using (toENat_le_iff_of_lt_aleph0 (by simpa)).2 <| (A.submatrix id c).cRank_lift_mono_row r
+  simpa using (toENat_le_iff_of_lt_aleph0 (by simpa)).2 <|
+    (A.submatrix id c).lift_cRank_submatrix_le r id
 
 lemma eRank_le_card_col [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
   classical
