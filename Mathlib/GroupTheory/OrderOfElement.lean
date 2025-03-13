@@ -346,7 +346,8 @@ theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
   orderOf_injective (Units.coeHom G) Units.ext y
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) "If the additive order of `x` is finite, then `x` is an additive
+unit with inverse `(addOrderOf x - 1) • x`. "]
 noncomputable def IsOfFinOrder.unit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : Mˣ :=
   ⟨x, x ^ (orderOf x - 1),
     by rw [← _root_.pow_succ', tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one],
@@ -484,18 +485,18 @@ end PPrime
 /-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i` -/
 @[to_additive "The equivalence between `Fin (addOrderOf a)` and
 `AddSubmonoid.multiples a`, sending `i` to `i • a`"]
-noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=
+noncomputable def finEquivPowers {x : G} (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=
   Equiv.ofBijective (fun n ↦ ⟨x ^ (n : ℕ), ⟨n, rfl⟩⟩) ⟨fun ⟨_, h₁⟩ ⟨_, h₂⟩ ij ↦
     Fin.ext (pow_injOn_Iio_orderOf h₁ h₂ (Subtype.mk_eq_mk.1 ij)), fun ⟨_, i, rfl⟩ ↦
       ⟨⟨i % orderOf x, mod_lt _ hx.orderOf_pos⟩, Subtype.eq <| pow_mod_orderOf _ _⟩⟩
 
 @[to_additive (attr := simp)]
-lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
-    finEquivPowers x hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
+lemma finEquivPowers_apply {x : G} (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
+    finEquivPowers hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
 
 @[to_additive (attr := simp)]
-lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
-    (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
+lemma finEquivPowers_symm_apply {x : G} (hx : IsOfFinOrder x) (n : ℕ) :
+    (finEquivPowers hx).symm ⟨x ^ n, _, rfl⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
   rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
 
 variable {x n} (hx : IsOfFinOrder x)

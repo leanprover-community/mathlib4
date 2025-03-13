@@ -328,28 +328,28 @@ private noncomputable def frobeniusAlgHomAux [Nontrivial R] :
     fun k ↦ (iterateFrobenius_def ..).trans <| by rw [← map_pow, ← n.2.2, pow_card]⟩,
     fun r ↦ (iterateFrobenius_def ..).trans <| by rw [← n.2.2]⟩
 
-/-- If R is an algebra over a finite field K, the Frobenius K-algebra endomorphism of R is
-  given by raising every element of R to its #K-th power. -/
+/-- If `R` is an algebra over a finite field `K`, the Frobenius `K`-algebra endomorphism of `R` is
+  given by raising every element of `R` to its `#K`-th power. -/
 @[simps!] def frobeniusAlgHom : R →ₐ[K] R where
   __ := powMonoidHom q
   map_zero' := zero_pow Fintype.card_pos.ne'
-  map_add' _ _ := show _ ^ _ = _ ^ _ + _ ^ _ by
+  map_add' _ _ := by
+    simp_rw [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply]
     nontriviality R
     simp_rw [← (frobeniusAlgHomAux K R).2]
     apply map_add
-  commutes' _ := show _ ^ _ = _ by
+  commutes' _ := by
     nontriviality R
-    rw [← (frobeniusAlgHomAux K R).2]
-    apply AlgHom.commutes
+    exact ((frobeniusAlgHomAux K R).2 _).symm.trans (AlgHom.commutes ..)
 
 theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 
-/-- If R is a perfect ring and an algebra over a finite field K, the Frobenius K-algebra
-  endomorphism of R is an automorphism. -/
+/-- If `R` is a perfect ring and an algebra over a finite field `K`, the Frobenius `K`-algebra
+  endomorphism of `R` is an automorphism. -/
 @[simps!] noncomputable def frobeniusAlgEquiv (p : ℕ) [ExpChar R p] [PerfectRing R p] : R ≃ₐ[K] R :=
-  .ofBijective (frobeniusAlgHom K R) <| show Function.Bijective (· ^ q) by
+  .ofBijective (frobeniusAlgHom K R) <| by
     obtain ⟨p', _, n, hp, card_eq⟩ := card' K
-    rw [card_eq]
+    rw [coe_frobeniusAlgHom, card_eq]
     have : ExpChar K p' := ExpChar.prime hp
     nontriviality R
     have := ExpChar.eq ‹_› (expChar_of_injective_algebraMap (algebraMap K R).injective p')
@@ -358,10 +358,10 @@ theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 
 variable (L : Type*) [Field L] [Algebra K L]
 
-/-- If L/K is an algebraic extension of a finite field, the Frobenius K-algebra endomorphism of
-  L is an automorphism. -/
+/-- If `L/K` is an algebraic extension of a finite field, the Frobenius `K`-algebra endomorphism
+  of `L` is an automorphism. -/
 @[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : L ≃ₐ[K] L :=
-  .ofBijective (frobeniusAlgHom K L) <| Algebra.IsAlgebraic.algHom_bijective _
+  (Algebra.IsAlgebraic.algEquivEquivAlgHom K L).symm (frobeniusAlgHom K L)
 
 theorem coe_frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] :
     ⇑(frobeniusAlgEquivOfAlgebraic K L) = (· ^ q) := rfl
@@ -387,10 +387,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
 
 theorem orderOf_frobeniusAlgEquivOfAlgebraic :
     orderOf (frobeniusAlgEquivOfAlgebraic K L) = Module.finrank K L := by
-  have := orderOf_frobeniusAlgHom K L
-  simp_rw [orderOf_eq_iff Module.finrank_pos, Ne, DFunLike.ext_iff,
-    AlgHom.coe_pow, AlgEquiv.coe_pow] at this ⊢
-  exact this
+  simpa [orderOf_eq_iff Module.finrank_pos, DFunLike.ext_iff] using orderOf_frobeniusAlgHom K L
 
 theorem bijective_frobeniusAlgHom_pow :
     Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.1 :=

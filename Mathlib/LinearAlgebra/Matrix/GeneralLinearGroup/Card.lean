@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran Wu
 -/
 import Mathlib.Data.Matrix.Rank
-import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!

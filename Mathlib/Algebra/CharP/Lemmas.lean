@@ -311,7 +311,7 @@ lemma iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_it
 variable (R)
 
 lemma iterateFrobenius_eq_pow : iterateFrobenius R p n = frobenius R p ^ n := by
-  ext; simp only [iterateFrobenius_def, RingHom.coe_pow, iterate_frobenius]
+  ext; simp [iterateFrobenius_def, iterate_frobenius]
 
 lemma coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
   (pow_iterate p n).symm
