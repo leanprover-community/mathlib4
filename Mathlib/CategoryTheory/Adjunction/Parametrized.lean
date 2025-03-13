@@ -21,6 +21,13 @@ In order to have an adjunction of two variables, we need
 a third functor `H : C₂ᵒᵖ ⥤ C₃ ⥤ C₁` and two adjunctions with
 a parameter `F ⊣₂ G` and `F.flip ⊣₂ H`.
 
+## TODO
+
+Show that given `F : C₁ ⥤ C₂ ⥤ C₃`, if `F.obj X₁` has a right adjoint
+`G X₁ : C₃ ⥤ C₂` for any `X₁ : C₁`, then `G` extends as a
+bifunctor `G' : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` with `F ⊣₂ G'` (and similarly for
+left adjoints).
+
 ## References
 * https://ncatlab.org/nlab/show/two-variable+adjunction
 
@@ -40,7 +47,7 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
 an adjunction with parameter `F ⊣₂ G` consists of the data of
 adjunctions `F.obj X₁ ⊣ G.obj (op X₁)` for all `X₁ : C₁` which
 satisfy a naturality condition with respect to `X₁`. -/
-structure Adjunction₂ where
+structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
   naturality' {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) {X₂ : C₂} {X₃ : C₃}
@@ -52,9 +59,9 @@ structure Adjunction₂ where
 /-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
 representing that the bifunctor `F` is the left adjoint to `G`
 in an adjunction with a parameter. -/
-infixl:15 " ⊣₂ " => Adjunction₂
+infixl:15 " ⊣₂ " => ParametrizedAdjunction
 
-namespace Adjunction₂
+namespace ParametrizedAdjunction
 
 variable {F G} (adj₂ : F ⊣₂ G)
   {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} {X₃ Y₃ : C₃}
@@ -103,6 +110,6 @@ lemma homEquiv_symm_naturality_three
       adj₂.homEquiv.symm g ≫ f₃ :=
   adj₂.homEquiv.injective (by simp [homEquiv_naturality_three])
 
-end Adjunction₂
+end ParametrizedAdjunction
 
 end CategoryTheory
