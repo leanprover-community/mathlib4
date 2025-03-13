@@ -290,9 +290,6 @@ lemma mul_right_eq_self_iff (ha : 0 < a) : a * b = a ↔ b = 1 := mul_eq_left <|
 
 lemma mul_left_eq_self_iff (hb : 0 < b) : a * b = b ↔ a = 1 := mul_eq_right <| ne_of_gt hb
 
-protected lemma le_of_mul_le_mul_right (h : a * c ≤ b * c) (hc : 0 < c) : a ≤ b :=
-  Nat.le_of_mul_le_mul_left (by simpa [Nat.mul_comm]) hc
-
 protected alias mul_sub := Nat.mul_sub_left_distrib
 protected alias sub_mul := Nat.mul_sub_right_distrib
 

@@ -129,8 +129,6 @@ def succ (a : ℤ) := a + 1
 /-- Immediate predecessor of an integer: `pred n = n - 1` -/
 def pred (a : ℤ) := a - 1
 
-lemma natCast_succ (n : ℕ) : (Nat.succ n : ℤ) = Int.succ n := rfl
-
 lemma pred_succ (a : ℤ) : pred (succ a) = a := Int.add_sub_cancel _ _
 
 lemma succ_pred (a : ℤ) : succ (pred a) = a := Int.sub_add_cancel _ _
@@ -422,7 +420,7 @@ lemma eq_mul_div_of_mul_eq_mul_of_dvd_left (hb : b ≠ 0) (hbc : b ∣ c) (h : b
 
 lemma ofNat_add_negSucc_of_ge {m n : ℕ} (h : n.succ ≤ m) :
     ofNat m + -[n+1] = ofNat (m - n.succ) := by
-  rw [negSucc_eq, ofNat_eq_natCast, ofNat_eq_natCast, ← natCast_one, ← natCast_add,
+  rw [negSucc_eq, ofNat_eq_natCast, ofNat_eq_natCast, ← Int.natCast_one, ← Int.natCast_add,
     ← Int.sub_eq_add_neg, ← Int.natCast_sub h]
 
 /-! #### `/` and ordering -/
@@ -448,9 +446,7 @@ lemma sign_natCast_of_ne_zero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_
 
 lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign = n.sign := by
   have : (1 : ℤ) ≠ -1 := by decide
-  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm, Int.negSucc_add_negSucc]
-  rw [Int.sign_eq_one_iff_pos]
-  omega
+  rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm] <;> omega
 
 /-! ### toNat -/
 
@@ -472,7 +468,7 @@ lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
   (toNat_lt_toNat <| lt_toNat.1 <| Nat.lt_of_le_of_lt (Nat.zero_le _) h).1 h
 
 @[simp] lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
-  simp only [lt_toNat, Nat.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
+  simp only [lt_toNat, Int.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
 theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (Int.sub_nonneg_of_le h)
@@ -486,7 +482,7 @@ def natMod (m n : ℤ) : ℕ := (m % n).toNat
 lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
   (toNat_lt'' hn).2 <| emod_lt_of_pos _ <| by omega
 
-attribute [simp] natCast_pow
+attribute [simp] Int.natCast_pow
 
 /-- For use in `Mathlib.Tactic.NormNum.Pow` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl

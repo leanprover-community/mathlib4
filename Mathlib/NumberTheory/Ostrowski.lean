@@ -440,7 +440,7 @@ theorem equiv_real_of_unbounded : f ≈ real := by
     have : (logb (↑m) (f ↑m))⁻¹ ≠ 0 := by
       simp only [ne_eq, inv_eq_zero, logb_eq_zero, Nat.cast_eq_zero, Nat.cast_eq_one, map_eq_zero,
         not_or]
-      exact ⟨ne_zero_of_lt oneltm, oneltm.ne', by norm_cast,
+      exact ⟨ne_zero_of_lt oneltm, oneltm.ne', by norm_cast; simp,
         ne_zero_of_lt oneltm, ne_of_not_le hm, by linarith only [apply_nonneg f ↑m]⟩
     simp [hs, this]
   · simp

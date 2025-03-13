@@ -45,7 +45,7 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
-@[simp, norm_cast squash]
+@[simp]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 -- expected `n` to be implicit, and `HasLiftT`
