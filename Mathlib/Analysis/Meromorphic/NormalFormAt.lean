@@ -160,8 +160,16 @@ lemma MeromorphicAt.toNF_id_on_nhdNE (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] hf.toNF :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.toNF_id_on_complement hz)
 
+-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood.
+private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E} {z₀ : 𝕜}
+  (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) (hfg : f =ᶠ[𝓝[≠] z₀] g) :
+    f =ᶠ[𝓝 z₀] g := by
+  rcases ((hf.sub hg).eventually_eq_zero_or_eventually_ne_zero) with h | h
+  · exact Filter.eventuallyEq_iff_sub.2 h
+  · simpa using (Filter.eventually_and.2 ⟨Filter.eventuallyEq_iff_sub.mp hfg, h⟩).exists
+
 /-- After conversion to normal form at `x`, the function has normal form. -/
-theorem MeromorphicAt.MeromorphicNFAt_of_toNF (hf : MeromorphicAt f x) :
+theorem MeromorphicAt.MeromorphicNFAt_toNF (hf : MeromorphicAt f x) :
     MeromorphicNFAt hf.toNF x := by
   by_cases h₂f : hf.order = ⊤
   · have : hf.toNF =ᶠ[𝓝 x] 0 := by
@@ -181,7 +189,7 @@ theorem MeromorphicAt.MeromorphicNFAt_of_toNF (hf : MeromorphicAt f x) :
     split_ifs with h₃f
     · obtain ⟨h₁G, _, h₃G⟩ := Classical.choose_spec ((hf.order_eq_int_iff 0).1 (h₃f ▸ hn.symm))
       apply Filter.EventuallyEq.eq_of_nhds
-      rw [← h₁G.eventuallyEq_nhdNE_iff_eventuallyEq_nhd (by fun_prop)]
+      apply h₁G.eventuallyEq_nhdNE_iff_eventuallyEq_nhd (by fun_prop)
       filter_upwards [h₃g, h₃G]
       simp_all
     · simp [h₃f, zero_zpow]
@@ -214,7 +222,7 @@ theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
         have : g =ᶠ[𝓝 x] (Classical.choose ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)) := by
           obtain ⟨h₀, h₁, h₂⟩ := Classical.choose_spec
             ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)
-          apply (h₁g.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₀).1
+          apply h₁g.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₀
           rw [hn] at h₃g
           simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂
           exact (h₃g.filter_mono nhdsWithin_le_nhds).symm.trans h₂
