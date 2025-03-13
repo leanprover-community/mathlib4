@@ -155,25 +155,20 @@ private theorem _root_.Acc.shortlex {a : α} {b : List α} (aca : Acc r a)
           rw [List.length_cons, ← h2len]
           exact hl
 
-theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := by
-  suffices h : ∀ n, ∀ (a : List α), a.length = n → Acc (Shortlex r) a from
-    WellFounded.intro (fun a => h a.length a rfl)
-  intro n a len_a
-  induction n using Nat.strongRecOn generalizing a with
+theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := .intro fun a => by
+  induction len_a : a.length using Nat.caseStrongRecOn generalizing a with
+  | zero =>
+    rw [List.length_eq_zero_iff] at len_a
+    rw [len_a]
+    exact Acc.intro _ <| fun _ ylt => (Shortlex.not_nil_right ylt).elim
   | ind n ih =>
-    cases n with
-    | zero =>
-      rw [List.length_eq_zero_iff] at len_a
-      rw [len_a]
-      exact Acc.intro _ <| fun _ ylt => (Shortlex.not_nil_right ylt).elim
-    | succ n =>
-      obtain ⟨head, tail, rfl⟩ := List.exists_of_length_succ a len_a
-      rw [List.length_cons, add_left_inj] at len_a
-      apply Acc.shortlex (WellFounded.apply h head) (ih n (lt_add_one n) _ len_a)
-      intro l ll
-      apply ih l.length _ _ rfl
-      rw [← len_a]
-      exact ll
+    obtain ⟨head, tail, rfl⟩ := List.exists_of_length_succ a len_a
+    rw [List.length_cons, add_left_inj] at len_a
+    apply Acc.shortlex (WellFounded.apply h head) (ih n le_rfl tail len_a)
+    intro l ll
+    apply ih l.length _ _ rfl
+    rw [← len_a]
+    exact Nat.le_of_lt_succ ll
 
 end WellFounded
 
