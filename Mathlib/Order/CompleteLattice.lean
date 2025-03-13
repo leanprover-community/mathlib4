@@ -290,6 +290,8 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
   completeLatticeOfSup α fun s => isLUB_sSup s
 
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
+-- Note that we do not use `extends LinearOrder α`,
+-- and instead construct the forgetful instance manually.
 class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
