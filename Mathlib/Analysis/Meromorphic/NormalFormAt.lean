@@ -200,8 +200,7 @@ theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
   funext z
   by_cases hz : z = x
   · rw [hz]
-    unfold MeromorphicAt.toNF
-    simp only [WithTop.coe_zero, ne_eq, Function.update_self]
+    simp only [MeromorphicAt.toNF, WithTop.coe_zero, ne_eq, Function.update_self]
     have h₀f := hf
     rcases hf with h₁f | h₁f
     · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)]
