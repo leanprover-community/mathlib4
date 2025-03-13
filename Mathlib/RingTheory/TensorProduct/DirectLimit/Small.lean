@@ -25,7 +25,7 @@ submodules `P`, with respect to the maps deduced from the inclusions
 However,  tensor products in mathlib require commutativity of the scalars,
 and direct limits of modules are restricted to modules over rings.
 
-* Provide the analogous results for `lTensor`, and both sides at the same time.
+* Provide the analogous result both sides at the same time.
 
 -/
 
@@ -37,7 +37,7 @@ universe u v
 variable {R : Type u} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 -- The directed system of small submodules of `M`
-def DirectedSystem.Submodules_small :
+theorem DirectedSystem.Submodules_small :
     DirectedSystem (ι := {P : Submodule R M // Small.{v} P}) (F := fun P ↦ P.val)
     (f := fun ⦃P Q⦄ (h : P ≤ Q) ↦ Submodule.inclusion h) where
   map_self := fun _ _ ↦ rfl
@@ -59,8 +59,6 @@ noncomputable def Submodules_small_equiv
 
 end Semiring
 
-section TensorProducts
-
 open TensorProduct
 
 universe v
@@ -80,4 +78,12 @@ noncomputable def rTensor_small_equiv
       (fun ⦃P Q⦄ (h : P ≤ Q)  ↦ (Submodule.inclusion h).rTensor N) ≃ₗ[R] M ⊗[R] N :=
   (TensorProduct.directLimitLeft _ N).symm.trans ((Submodules_small_equiv R M).rTensor N)
 
-end TensorProducts
+/-- A tensor product `M ⊗[R] N` is the direct limit of the modules `M ⊗[R] Q`,
+where `Q` ranges over all small submodules of `N`. -/
+noncomputable def lTensor_small_equiv
+    [Small.{v} R]  [DecidableEq {Q : Submodule R N // Small.{v} Q}] :
+    Module.DirectLimit (R := R) (ι := {Q : Submodule R N // Small.{v} Q}) (fun Q ↦ M ⊗[R] Q.val)
+      (fun ⦃P Q⦄ (h : P ≤ Q)  ↦ (Submodule.inclusion h).lTensor M) ≃ₗ[R] M ⊗[R] N :=
+  (TensorProduct.directLimitRight _ M).symm.trans ((Submodules_small_equiv R N).lTensor M)
+
+end TensorProduct
