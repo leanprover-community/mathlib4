@@ -876,9 +876,9 @@ import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Algebra.Order.SuccPred.TypeTags
 import Mathlib.Algebra.Order.SuccPred.WithBot
 import Mathlib.Algebra.Order.Sum
-import Mathlib.Algebra.Order.ToBase
 import Mathlib.Algebra.Order.ToIntervalMod
 import Mathlib.Algebra.Order.UpperLower
+import Mathlib.Algebra.Order.WithTop.ToBase
 import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Pointwise.Stabilizer
