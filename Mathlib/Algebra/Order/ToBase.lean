@@ -29,15 +29,15 @@ noncomputable def WithTop.toBase [Zero α] (a : WithTop α) : α := a.untopD 0
 
 @[simp]
 lemma WithTop.toBase_eq_zero [Zero α] (a : WithTop α) :
-    a.toBase = 0 ↔ a = 0 ∨ a = ⊤ := by simp_all [WithTop.toBase_def]
+    a.toBase = 0 ↔ a = 0 ∨ a = ⊤ := by simp_all [WithTop.toBase]
 
 @[simp]
 lemma WithTop.toBase_top [Zero α] :
-    (⊤ : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase_def]
+    (⊤ : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase]
 
 @[simp]
 lemma WithTop.toBase_zero [Zero α] :
-    (0 : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase_def]
+    (0 : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase]
 
 @[simp]
 lemma WithTop.toBase_coe [Zero α] (a : α) : (a : WithTop α).toBase = a := rfl
