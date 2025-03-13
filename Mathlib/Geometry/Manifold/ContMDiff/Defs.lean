@@ -368,7 +368,7 @@ theorem contMDiffWithinAt_iff_of_mem_maximalAtlas {x : M} (he : e ∈ maximalAtl
   (contDiffWithinAt_localInvariantProp n).liftPropWithinAt_indep_chart he hx he' hy
 
 /-- An alternative formulation of `contMDiffWithinAt_iff_of_mem_maximalAtlas`
-  if the set if `s` lies in `e.source`. -/
+if the set if `s` lies in `e.source`. -/
 theorem contMDiffWithinAt_iff_image {x : M} (he : e ∈ maximalAtlas I n M)
     (he' : e' ∈ maximalAtlas I' n M')
     (hs : s ⊆ e.source) (hx : x ∈ e.source) (hy : f x ∈ e'.source) :
@@ -434,10 +434,10 @@ theorem contMDiffOn_iff_of_mem_maximalAtlas' (he : e ∈ maximalAtlas I n M)
     (e.continuousOn_writtenInExtend_iff hs h2s).1 h.continuousOn
 
 /-- If the set where you want `f` to be `C^n` lies entirely in a single chart, and `f` maps it
-  into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
-  these charts.
-  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
-  that this set lies in `(extChartAt I x).target`. -/
+into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
+these charts.
+Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+that this set lies in `(extChartAt I x).target`. -/
 theorem contMDiffOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H x).source)
     (h2s : MapsTo f s (chartAt H' y).source) :
     ContMDiffOn I I' n f s ↔
@@ -447,10 +447,10 @@ theorem contMDiffOn_iff_of_subset_source {x : M} {y : M'} (hs : s ⊆ (chartAt H
     h2s
 
 /-- If the set where you want `f` to be `C^n` lies entirely in a single chart, and `f` maps it
-  into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
-  these charts.
-  Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
-  that this set lies in `(extChartAt I x).target`. -/
+into a single chart, the fact that `f` is `C^n` on that set can be expressed by purely looking in
+these charts.
+Note: this lemma uses `extChartAt I x '' s` instead of `(extChartAt I x).symm ⁻¹' s` to ensure
+that this set lies in `(extChartAt I x).target`. -/
 theorem contMDiffOn_iff_of_subset_source' {x : M} {y : M'} (hs : s ⊆ (extChartAt I x).source)
     (h2s : MapsTo f s (extChartAt I' y).source) :
     ContMDiffOn I I' n f s ↔

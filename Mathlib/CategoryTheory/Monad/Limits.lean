@@ -134,7 +134,7 @@ variable {D : J ⥤ Algebra T} (c : Cocone (D ⋙ forget T)) (t : IsColimit c)
 /-- (Impl)
 The natural transformation given by the algebra structure maps, used to construct a cocone `c` with
 point `colimit (D ⋙ forget T)`.
- -/
+-/
 @[simps]
 def γ : (D ⋙ forget T) ⋙ ↑T ⟶ D ⋙ forget T where app j := (D.obj j).a
 
@@ -465,7 +465,7 @@ variable {D : J ⥤ Coalgebra T} (c : Cone (D ⋙ forget T)) (t : IsLimit c)
 /-- (Impl)
 The natural transformation given by the coalgebra structure maps, used to construct a cone `c` with
 point `limit (D ⋙ forget T)`.
- -/
+-/
 @[simps]
 def γ : D ⋙ forget T ⟶ (D ⋙ forget T) ⋙ ↑T where app j := (D.obj j).a
 

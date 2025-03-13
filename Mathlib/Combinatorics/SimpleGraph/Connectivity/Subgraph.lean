@@ -267,6 +267,9 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
 
+lemma mem_support_of_adj_toSubgraph {u v u' v' : V} {p : G.Walk u v} (hp : p.toSubgraph.Adj u' v') :
+    u' ∈ p.support := p.mem_verts_toSubgraph.mp (p.toSubgraph.edge_vert hp)
+
 namespace IsPath
 
 lemma neighborSet_toSubgraph_startpoint {u v} {p : G.Walk u v}
@@ -393,6 +396,56 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
     exact ⟨h.reverse, hr.symm, by rw [toSubgraph_reverse _]⟩
 
 end IsCycle
+
+/-- This lemma considers the `SimpleGraph.Walk` until any vertex in a given set. You could
+interpret this as being `takeUntilSet`, but defining this is slightly involved due to not
+knowing what the final vertex is. This could be done by defining a function to obtain
+the first encountered vertex and then use that to define `takeUntilSet`. That direction
+could be worthwhile if this concept is used a lot more widely. -/
+lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq V] {p : G.Walk u v}
+    {s : Set V} (hs : s.Finite) (h : (s ∩ p.support.toFinset).Nonempty) :
+    ∃ x ∈ s, ∃ (hx : x ∈ p.support),
+      ∀ t ∈ s, ∀ w ∈ s, ¬(p.takeUntil x hx).toSubgraph.Adj t w := by
+  classical
+  obtain ⟨x, hx⟩ := h
+  simp only [List.coe_toFinset, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
+  by_cases hxe : ((s \ {x}) ∩ (p.takeUntil x hx.2).support.toFinset).Nonempty
+  · have := p.length_takeUntil_le hx.2
+    have : 0 < s.ncard := (Set.ncard_pos hs).mpr ⟨x, hx.1⟩
+    obtain ⟨x', hx', hx'p, h⟩ :=
+      (p.takeUntil x hx.2).exists_mem_support_forall_not_adj_toSubgraph_takeUntil hs.diff hxe
+    use x', hx'.1, (p.support_takeUntil_subset _ hx'p)
+    simp only [takeUntil_takeUntil, Set.mem_diff] at h
+    intro t ht r hr
+    by_cases htrx : t = x ∨ r = x
+    · have : x ∉ (p.takeUntil x' (p.support_takeUntil_subset _ hx'p)).support := by
+        rw [← takeUntil_takeUntil]
+        exact not_mem_support_takeUntil_takeUntil hx'.2 hx.2 hx'p
+      intro htr
+      have := mem_support_of_adj_toSubgraph htr
+      have := mem_support_of_adj_toSubgraph htr.symm
+      aesop
+    push_neg at htrx
+    exact h t ⟨ht, by simp [htrx.1]⟩ r ⟨hr, by simp [htrx.2]⟩
+  use x, hx.1, hx.2
+  intro t ht r hr
+  by_cases htrx : t = x ∧ r = x
+  · exact fun hadj ↦ hadj.ne (htrx.2 ▸ htrx.1)
+  by_cases htx : t = x
+  · subst htx
+    have : r ∈ s \ {t} := by simp [not_and.mp htrx rfl, hr]
+    simp only [List.coe_toFinset,Set.not_nonempty_iff_eq_empty,
+      ← Set.disjoint_iff_inter_eq_empty] at hxe
+    exact fun hadj ↦ Set.disjoint_left.mp hxe this (mem_support_of_adj_toSubgraph hadj.symm)
+  have : t ∈ s \ {x} := by simp [htx, ht]
+  simp only [List.coe_toFinset,Set.not_nonempty_iff_eq_empty,
+    ← Set.disjoint_iff_inter_eq_empty] at hxe
+  exact fun hadj ↦ Set.disjoint_left.mp hxe this (mem_support_of_adj_toSubgraph hadj)
+termination_by p.length + s.ncard
+decreasing_by
+  simp_wf
+  simp only [Set.ncard_diff (by simp [hx.1] : {x} ⊆ s), Set.ncard_singleton, gt_iff_lt]
+  omega
 
 end Walk
 

@@ -692,7 +692,7 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 The converse can be found in `GroupTheory.FreeAbelianGroupFinsupp`,
 as `Equiv.of_freeGroupEquiv`
- -/
+-/
 @[to_additive (attr := simps apply)
   "Equivalent types give rise to additively equivalent additive free groups."]
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where

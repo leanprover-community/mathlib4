@@ -3,9 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
 
@@ -194,7 +193,7 @@ protected def symm : PartialEquiv E H :=
   I.toPartialEquiv.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
   I
@@ -480,8 +479,8 @@ end ModelWithCornersProd
 section Boundaryless
 
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
-  differs from the more general `BoundarylessManifold`, which requires every point on the manifold
-  to be an interior point. -/
+differs from the more general `BoundarylessManifold`, which requires every point on the manifold
+to be an interior point. -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -569,7 +568,7 @@ def contDiffPregroupoid : Pregroupoid H where
 
 variable (n I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of invertible `C^n` transformations
-  of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
+of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
 def contDiffGroupoid : StructureGroupoid H :=
   Pregroupoid.groupoid (contDiffPregroupoid n I)
 

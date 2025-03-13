@@ -1014,6 +1014,32 @@ theorem support_update_ne_zero (p : R[X]) (n : ℕ) {a : R} (ha : a ≠ 0) :
 
 end Update
 
+/-- The finset of nonzero coefficients of a polynomial. -/
+def coeffs (p : R[X]) : Finset R :=
+  letI := Classical.decEq R
+  Finset.image (fun n => p.coeff n) p.support
+
+@[simp]
+theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
+  rfl
+
+theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
+  simp [coeffs, eq_comm, (Finset.mem_image)]
+
+theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
+  classical
+  simp_rw [coeffs, Finset.image_subset_iff]
+  simp_all [coeff_one]
+
+theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
+  classical
+  simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
+  exact ⟨n, h, rfl⟩
+
+theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
+  rw [coeffs, support_monomial n hc]
+  simp
+
 end Semiring
 
 section CommSemiring

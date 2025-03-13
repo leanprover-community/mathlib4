@@ -218,6 +218,9 @@ end Fintype
 instance Bool.fintype : Fintype Bool :=
   ⟨⟨{true, false}, by simp⟩, fun x => by cases x <;> simp⟩
 
+instance Ordering.fintype : Fintype Ordering :=
+  ⟨⟨{.lt, .eq, .gt}, by simp⟩, fun x => by cases x <;> simp⟩
+
 instance OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
   ‹Fintype α›
 

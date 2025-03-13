@@ -396,8 +396,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
       · simp
-      · refine linearIndependent_singleton ?_
-        simpa using hne
+      · exact LinearIndepOn.id_singleton _ <| by simpa using hne
 
 end Simplex
 

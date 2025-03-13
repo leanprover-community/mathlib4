@@ -76,7 +76,7 @@ import Mathlib.Tactic.OfNat
 -- import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.ProjectionNotation
 import Mathlib.Tactic.Propose
-import Mathlib.Tactic.PushNeg
+import Mathlib.Tactic.Push
 import Mathlib.Tactic.RSuffices
 import Mathlib.Tactic.Recover
 import Mathlib.Tactic.Relation.Rfl

@@ -37,7 +37,7 @@ We define ideal sheaves of schemes and provide various constructors for it.
 Ideal sheaves are not yet defined in this file as actual subsheaves of `𝒪ₓ`.
 Instead, for the ease of development and application,
 we define the structure `IdealSheafData` containing all necessary data to uniquely define an
-ideal sheaf. This should be refectored as a constructor for ideal sheaves once they are introduced
+ideal sheaf. This should be refactored as a constructor for ideal sheaves once they are introduced
 into mathlib.
 
 -/

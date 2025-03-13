@@ -697,6 +697,12 @@ lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : F
     ker (f.comp g) = RingHom.ker g := by
   rw [← RingHom.comap_ker, (injective_iff_ker_eq_bot f).mp hf, RingHom.ker]
 
+/-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
+@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+    RingHom.ker (e : A →+* B) = ⊥ :=
+  RingHom.ker_coe_equiv (e.toRingEquiv)
+
 end Ring
 
 section RingRing
@@ -1069,7 +1075,9 @@ namespace AlgHom
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
-lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+
+@[deprecated (since := "2025-02-24")] alias coe_ker := ker_coe
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl

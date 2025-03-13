@@ -292,8 +292,8 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank 
     · apply le_ciSup (Cardinal.bddAbove_range _)
       exact
         ⟨Set.range v, by
+          rw [LinearIndepOn]
           convert v.reindexRange.linearIndependent
-          ext
           simp⟩
     · exact (Cardinal.mk_range_eq v v.injective).ge
   · apply ciSup_le'
@@ -342,8 +342,7 @@ theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 
-theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → M)) :
-    Module.rank R ↑(span R s) = #s := by
+theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R ↑(span R s) = #s := by
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
 
@@ -434,10 +433,10 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
 
 noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
     {s t : Set M} [Module.Finite R (span R t)]
-    (hs : LinearIndependent R ((↑) : s → M)) (hst : s ⊆ t) :
+    (hs : LinearIndepOn R id s) (hst : s ⊆ t) :
     Fintype (hs.extend hst) := by
   refine Classical.choice (Cardinal.lt_aleph0_iff_fintype.1 ?_)
-  rw [← rank_span_set (hs.linearIndependent_extend hst), hs.span_extend_eq_span]
+  rw [← rank_span_set (hs.linearIndepOn_extend hst), hs.span_extend_eq_span]
   exact Module.rank_lt_aleph0 ..
 
 /-- If `M` is finite, `finrank M = rank M`. -/

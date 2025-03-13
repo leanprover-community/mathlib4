@@ -1218,6 +1218,12 @@ theorem comp_eq_snd_compProd (η : Kernel β γ) [IsSFiniteKernel η] (κ : Kern
   · exact measurable_snd hs
   simp only [Set.mem_setOf_eq, Set.setOf_mem_eq, prodMkLeft_apply' _ _ s]
 
+lemma ae_ae_of_ae_comp {κ : Kernel α β} {η : Kernel β γ} [IsSFiniteKernel κ] [IsSFiniteKernel η]
+    {p : γ → Prop} {a : α} (h : ∀ᵐ c ∂(η ∘ₖ κ) a, p c) :
+    ∀ᵐ b ∂κ a, ∀ᵐ c ∂η b, p c := by
+  rw [Kernel.comp_eq_snd_compProd] at h
+  convert Kernel.ae_ae_of_ae_compProd (ae_of_ae_map (measurable_snd.aemeasurable) h)
+
 theorem lintegral_comp (η : Kernel β γ) (κ : Kernel α β) (a : α) {g : γ → ℝ≥0∞}
     (hg : Measurable g) : ∫⁻ c, g c ∂(η ∘ₖ κ) a = ∫⁻ b, ∫⁻ c, g c ∂η b ∂κ a := by
   rw [comp_apply, Measure.lintegral_bind (Kernel.measurable _) hg]

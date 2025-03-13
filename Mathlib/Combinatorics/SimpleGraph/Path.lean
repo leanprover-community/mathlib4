@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 import Mathlib.Combinatorics.SimpleGraph.Walk
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
@@ -267,6 +268,17 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
   mp h := by simpa using h.reverse
   mpr := .reverse
 
+lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
+    (hcyc : (p.append q).IsCycle) : q.IsPath := by
+  have := hcyc.2
+  rw [tail_support_append, List.nodup_append] at this
+  rw [isPath_def, support_eq_cons, List.nodup_cons]
+  exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
+
+lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.Nil)
+    (hcyc : (p.append q).IsCycle) : p.IsPath :=
+  p.isPath_reverse_iff.mp ((reverse_append _ _ ▸ hcyc.reverse).isPath_of_append_right (by simpa))
+
 lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   cases p with
   | nil => simp
@@ -440,6 +452,25 @@ protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h 
   refine ⟨hc.isCircuit.rotate _, ?_⟩
   rw [List.IsRotated.nodup_iff (support_rotate _ _)]
   exact hc.support_nodup
+
+lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
+    (c.takeUntil w h).IsPath := by
+  by_cases hvw : v = w
+  · subst hvw
+    simp
+  rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
+  exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
+
+lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
+    (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
+  intro hv
+  rw [Walk.mem_support_iff_exists_getVert] at hv
+  obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
+  rw [getVert_takeUntil hw hnl] at hn
+  have := p.length_takeUntil_lt hw h.symm
+  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+    (hn.symm ▸ p.getVert_length.symm)
+  omega
 
 end WalkDecomp
 
@@ -1194,6 +1225,26 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
   simp only [Set.mem_univ, iff_true, mem_supp_iff, ← hw]
   apply SimpleGraph.ConnectedComponent.sound
   exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
+
+lemma reachable_induce_supp {v w} {c : ConnectedComponent G} (hv : v ∈ c.supp) (hw : w ∈ c.supp)
+    (p : G.Walk v w) : (G.induce c.supp).Reachable ⟨v, hv⟩ ⟨w, hw⟩ := by
+  induction p with
+  | nil => rfl
+  | @cons u v w h p ih =>
+    have : v ∈ c.supp := (c.mem_supp_congr_adj h).mp hv
+    obtain ⟨q⟩ := ih this hw
+    have hadj : (G.induce c.supp).Adj ⟨u, hv⟩ ⟨v, this⟩ := h
+    use q.cons hadj
+
+lemma connected_induce_supp (c : ConnectedComponent G) : (G.induce c.supp).Connected := by
+  rw [connected_iff_exists_forall_reachable]
+  use ⟨c.out, c.out_eq⟩
+  intro w
+  have hwc := (c.mem_supp_iff w).mp (Subtype.coe_prop w)
+  obtain ⟨p⟩ := ConnectedComponent.exact
+    (show G.connectedComponentMk c.out = G.connectedComponentMk w from by
+      simp [← hwc, connectedComponentMk])
+  exact c.reachable_induce_supp c.out_eq hwc p
 
 end ConnectedComponent
 

@@ -445,7 +445,7 @@ theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (
 
 theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ≥0∞ | x ≠ ∞ } := by
   rw [show (fun x => a - x) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨a, x⟩ by rfl]
-  apply ContinuousOn.comp continuousOn_sub (Continuous.continuousOn (Continuous.Prod.mk a))
+  apply continuousOn_sub.comp (by fun_prop)
   rintro _ h (_ | _)
   exact h none_eq_top
 
@@ -453,7 +453,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   by_cases a_infty : a = ∞
   · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
-    apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
+    apply continuousOn_sub.comp_continuous (by fun_prop)
     intro x
     simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false, not_false_iff]
 
@@ -1355,8 +1355,9 @@ lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone
   exact ne_top_of_le_ne_top t_ne_top (min_le_left _ _)
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
+@[fun_prop]
 lemma continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Continuous (truncateToReal t) := by
-  apply continuousOn_toReal.comp_continuous (continuous_min.comp (Continuous.Prod.mk t))
+  apply continuousOn_toReal.comp_continuous (by fun_prop)
   simp [t_ne_top]
 
 end truncateToReal

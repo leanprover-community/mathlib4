@@ -240,10 +240,7 @@ def pullback.lift {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f 
     Z ⟶ pullback f g :=
   TopCat.ofHom
   { toFun := fun z ↦ ⟨⟨a z, b z⟩, by apply_fun (fun q ↦ q z) at w; exact w⟩
-    continuous_toFun := by
-      apply Continuous.subtype_mk
-      rw [continuous_prod_mk]
-      exact ⟨a.hom.continuous, b.hom.continuous⟩ }
+    continuous_toFun := by fun_prop }
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHausLike P} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :

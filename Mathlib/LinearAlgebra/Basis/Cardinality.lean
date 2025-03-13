@@ -98,8 +98,8 @@ theorem union_support_maximal_linearIndependent_eq_range_basis {ι : Type w} (b 
   have r' : b i ∉ range v := fun ⟨k, p⟩ ↦ by simpa [w] using congr(b.repr $p i)
   have r'' : range v ≠ range v' := (r' <| · ▸ ⟨none, rfl⟩)
   -- The key step in the proof is checking that this strictly larger family is linearly independent.
-  have i' : LinearIndependent R ((↑) : range v' → M) := by
-    apply LinearIndependent.to_subtype_range
+  have i' : LinearIndepOn R id (range v') := by
+    apply LinearIndependent.linearIndepOn_id
     rw [linearIndependent_iffₛ]
     intro l l' z
     simp_rw [linearCombination_option, v', Option.elim'] at z

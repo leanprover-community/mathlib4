@@ -5,11 +5,9 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Logic.Function.Iterate
 
 /-!
 # Maps (semi)conjugating a shift to a shift

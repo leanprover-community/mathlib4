@@ -524,8 +524,9 @@ instance [T1Space X] : T1Space (OnePoint X) where
     · rw [← image_singleton, isClosed_image_coe]
       exact ⟨isClosed_singleton, isCompact_singleton⟩
 
-/-- The one point compactification of a locally compact R₁ space is a normal topological space. -/
-instance [LocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
+/-- The one point compactification of a weakly locally compact R₁ space
+is a normal topological space. -/
+instance [WeaklyLocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
   suffices R1Space (OnePoint X) by infer_instance
   have key : ∀ z : X, Disjoint (𝓝 (some z)) (𝓝 ∞) := fun z ↦ by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,

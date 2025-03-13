@@ -76,7 +76,7 @@ latter is convergent. This is constructed as a linear combination of Hurwitz zet
 
 Note that this is not the same as `LSeries Φ`: they agree in the convergence range, but
 `LSeries Φ s` is defined to be `0` if `re s ≤ 1`.
- -/
+-/
 noncomputable def LFunction (Φ : ZMod N → ℂ) (s : ℂ) : ℂ :=
   N ^ (-s) * ∑ j : ZMod N, Φ j * hurwitzZeta (toAddCircle j) s
 

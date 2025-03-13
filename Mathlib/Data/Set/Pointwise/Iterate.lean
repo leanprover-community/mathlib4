@@ -3,7 +3,6 @@ Copyright (c) 2022 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Dynamics.FixedPoints.Basic
 

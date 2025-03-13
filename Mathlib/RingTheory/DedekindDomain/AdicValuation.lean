@@ -78,7 +78,6 @@ def intValuationDef (r : R) : ℤₘ₀ :=
     ↑(Multiplicative.ofAdd
       (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
 
-
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
   if_pos hr
 
@@ -222,7 +221,6 @@ def intValuation : Valuation R ℤₘ₀ where
   map_mul' := intValuation.map_mul' v
   map_add_le_max' := intValuation.map_add_le_max' v
 
-
 theorem intValuation_apply {r : R} (v : IsDedekindDomain.HeightOneSpectrum R) :
     intValuation v r = intValuationDef v r := rfl
 
@@ -261,7 +259,7 @@ theorem intValuation_singleton {r : R} (hr : r ≠ 0) (hv : v.asIdeal = Ideal.sp
 
 /-! ### Adic valuations on the field of fractions `K` -/
 
-
+variable (K) in
 /-- The `v`-adic valuation of `x ∈ K` is the valuation of `r` divided by the valuation of `s`,
 where `r` and `s` are chosen so that `x = r/s`. -/
 def valuation (v : HeightOneSpectrum R) : Valuation K ℤₘ₀ :=
@@ -269,41 +267,45 @@ def valuation (v : HeightOneSpectrum R) : Valuation K ℤₘ₀ :=
     (fun r hr => Set.mem_compl <| v.intValuation_ne_zero' ⟨r, hr⟩) K
 
 theorem valuation_def (x : K) :
-    v.valuation x =
+    v.valuation K x =
       v.intValuation.extendToLocalization
         (fun r hr => Set.mem_compl (v.intValuation_ne_zero' ⟨r, hr⟩)) K x :=
   rfl
 
 /-- The `v`-adic valuation of `r/s ∈ K` is the valuation of `r` divided by the valuation of `s`. -/
 theorem valuation_of_mk' {r : R} {s : nonZeroDivisors R} :
-    v.valuation (IsLocalization.mk' K r s) = v.intValuation r / v.intValuation s := by
+    v.valuation K (IsLocalization.mk' K r s) = v.intValuation r / v.intValuation s := by
   erw [valuation_def, (IsLocalization.toLocalizationMap (nonZeroDivisors R) K).lift_mk',
     div_eq_mul_inv, mul_eq_mul_left_iff]
   left
   rw [Units.val_inv_eq_inv_val, inv_inj]
   rfl
 
+open scoped algebraMap in
 /-- The `v`-adic valuation on `K` extends the `v`-adic valuation on `R`. -/
-theorem valuation_of_algebraMap (r : R) : v.valuation (algebraMap R K r) = v.intValuation r := by
+theorem valuation_of_algebraMap (r : R) : v.valuation K r = v.intValuation r := by
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
 
 open scoped algebraMap in
-lemma valuation_eq_intValuationDef (r : R) : v.valuation (r : K) = v.intValuationDef r :=
+lemma valuation_eq_intValuationDef (r : R) : v.valuation K r = v.intValuationDef r :=
   Valuation.extendToLocalization_apply_map_apply ..
 
+open scoped algebraMap in
 /-- The `v`-adic valuation on `R` is bounded above by 1. -/
-theorem valuation_le_one (r : R) : v.valuation (algebraMap R K r) ≤ 1 := by
+theorem valuation_le_one (r : R) : v.valuation K r ≤ 1 := by
   rw [valuation_of_algebraMap]; exact v.intValuation_le_one r
 
+open scoped algebraMap in
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
 theorem valuation_lt_one_iff_dvd (r : R) :
-    v.valuation (algebraMap R K r) < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
+    v.valuation K r < 1 ↔ v.asIdeal ∣ Ideal.span {r} := by
   rw [valuation_of_algebraMap]; exact v.intValuation_lt_one_iff_dvd r
 
 variable (K)
 
 /-- There exists `π ∈ K` with `v`-adic valuation `Multiplicative.ofAdd (-1)`. -/
-theorem valuation_exists_uniformizer : ∃ π : K, v.valuation π = Multiplicative.ofAdd (-1 : ℤ) := by
+theorem valuation_exists_uniformizer : ∃ π : K,
+    v.valuation K π = Multiplicative.ofAdd (-1 : ℤ) := by
   obtain ⟨r, hr⟩ := v.intValuation_exists_uniformizer
   use algebraMap R K r
   rw [valuation_def, Valuation.extendToLocalization_apply_map_apply]
@@ -315,7 +317,7 @@ theorem valuation_uniformizer_ne_zero : Classical.choose (v.valuation_exists_uni
   (Valuation.ne_zero_iff _).mp (ne_of_eq_of_ne hu WithZero.coe_ne_zero)
 
 theorem mem_integers_of_valuation_le_one (x : K)
-    (h : ∀ v : HeightOneSpectrum R, v.valuation x ≤ 1) : x ∈ (algebraMap R K).range := by
+    (h : ∀ v : HeightOneSpectrum R, v.valuation K x ≤ 1) : x ∈ (algebraMap R K).range := by
   obtain ⟨⟨n, d, hd⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors R) x
   obtain rfl : x = IsLocalization.mk' K n ⟨d, hd⟩ := IsLocalization.eq_mk'_iff_mul_eq.mpr hx
   obtain rfl | hn0 := eq_or_ne n 0
@@ -352,9 +354,9 @@ variable {K}
 
 /-- `K` as a valued field with the `v`-adic valuation. -/
 def adicValued : Valued K ℤₘ₀ :=
-  Valued.mk' v.valuation
+  Valued.mk' (v.valuation K)
 
-theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation x :=
+theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
 variable (K)
@@ -501,13 +503,13 @@ open scoped algebraMap in -- to make the coercions from `R` fire
 /-- The valuation on the completion agrees with the global valuation on elements of the
 integer ring. -/
 theorem valuedAdicCompletion_eq_valuation (r : R) :
-    Valued.v (r : v.adicCompletion K) = v.valuation (r : K) := by
+    Valued.v (r : v.adicCompletion K) = v.valuation K r := by
   convert Valued.valuedCompletion_apply (r : K)
 
 variable {R K} in
 /-- The valuation on the completion agrees with the global valuation on elements of the field. -/
 theorem valuedAdicCompletion_eq_valuation' (k : K) :
-    Valued.v (k : v.adicCompletion K) = v.valuation k := by
+    Valued.v (k : v.adicCompletion K) = v.valuation K k := by
   convert Valued.valuedCompletion_apply k
 
 variable {R K} in

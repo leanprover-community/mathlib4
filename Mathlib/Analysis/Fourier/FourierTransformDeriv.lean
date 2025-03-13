@@ -223,7 +223,7 @@ theorem hasFDerivAt_fourierIntegral
   have h3 : AEStronglyMeasurable (F' w) μ := by
     refine .smul ?_ hf.1.fourierSMulRight
     refine (continuous_fourierChar.comp ?_).aestronglyMeasurable
-    exact (L.continuous₂.comp (Continuous.Prod.mk_left w)).neg
+    fun_prop
   have h4 : (∀ᵐ v ∂μ, ∀ (w' : W), w' ∈ Metric.ball w 1 → ‖F' w' v‖ ≤ B v) := by
     filter_upwards with v w' _
     rw [Circle.norm_smul _ (fourierSMulRight L f v)]

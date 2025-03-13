@@ -22,7 +22,7 @@ where `w` runs through the infinite places distinct from `w'`.
 
 ## Tags
 number field, units, regulator
- -/
+-/
 
 open scoped NumberField
 

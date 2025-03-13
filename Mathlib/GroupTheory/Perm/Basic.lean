@@ -6,7 +6,6 @@ Authors: Leonardo de Moura, Mario Carneiro
 import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Units.Equiv
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Tactic.Common
 

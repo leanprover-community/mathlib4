@@ -3,7 +3,7 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Kevin Buzzard
 -/
-import Mathlib.CategoryTheory.Preadditive.Projective
+import Mathlib.CategoryTheory.Preadditive.Projective.Basic
 
 /-!
 # Injective objects and categories with enough injectives
@@ -14,11 +14,7 @@ An object `J` is injective iff every morphism into `J` can be obtained by extend
 
 noncomputable section
 
-open CategoryTheory
-
-open CategoryTheory.Limits
-
-open Opposite
+open CategoryTheory Limits Opposite
 
 universe v v₁ v₂ u₁ u₂
 
