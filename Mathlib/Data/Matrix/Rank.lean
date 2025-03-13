@@ -43,15 +43,12 @@ noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R
 lemma cRank_toNat_eq_finrank (A : Matrix m n R) :
     A.cRank.toNat = Module.finrank R (span R (range Aᵀ)) := rfl
 
-lemma cRank_mono_col (A : Matrix m n R) (c : n₀ → n) : (A.submatrix id c).cRank ≤ A.cRank := by
-  apply Submodule.rank_mono <| span_mono ?_
-  rintro _ ⟨x, rfl⟩
-  exact ⟨c x, rfl⟩
-
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
-  refine (Cardinal.lift_monotone <| (A.submatrix r id).cRank_mono_col c).trans ?_
-  let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
+  have h : ((A.submatrix r id).submatrix id c).cRank ≤ (A.submatrix r id).cRank :=
+    Submodule.rank_mono <| span_mono <| by rintro _ ⟨x, rfl⟩; exact ⟨c x, rfl⟩
+  refine (Cardinal.lift_monotone h).trans ?_
+  let f : (m → R) →ₗ[R] (m₀ → R) := LinearMap.funLeft R R r
   have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
     rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
     aesop
