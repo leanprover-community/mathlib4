@@ -35,7 +35,7 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   [Category.{v₁} C₁] [Category.{v₂} C₂] [Category.{v₃} C₃]
   (F : C₁ ⥤ C₂ ⥤ C₃) (G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂)
 
-/-- Given bifuntors `F : C₁ ⥤ C₂ ⥤ C₃` and `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`,
+/-- Given bifunctors `F : C₁ ⥤ C₂ ⥤ C₃` and `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`,
 an adjunction `F ⊣₂ G` consists of the data of adjunctions
 `F.obj X₁ ⊣ G.obj (op X₁)` for all `X₁ : C₁` which
 satisfy a naturality condition with respect to `X₁`. -/
