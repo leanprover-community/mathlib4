@@ -141,8 +141,9 @@ theorem bodd_add (m n : ℤ) : bodd (m + n) = xor (bodd m) (bodd n) := by
 theorem bodd_mul (m n : ℤ) : bodd (m * n) = (bodd m && bodd n) := by
   rcases m with m | m <;> rcases n with n | n <;>
   simp only [ofNat_eq_coe, ofNat_mul_negSucc, negSucc_mul_ofNat, ofNat_mul_ofNat,
-             negSucc_mul_negSucc] <;>
-  simp only [negSucc_eq, bodd_neg, bodd_coe, Nat.bodd_mul]
+    negSucc_mul_negSucc, negSucc_eq, Int.mul_neg, Int.neg_mul, bodd_neg, bodd_coe] <;>
+  · norm_cast
+    simp only [Nat.bodd_mul]
 
 theorem bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
   | (n : ℕ) => by

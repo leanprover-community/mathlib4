@@ -359,6 +359,10 @@ def adicValued : Valued K ℤₘ₀ :=
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
+@[simp]
+theorem adicValued_apply' (x : WithVal (v.valuation K)) : v.adicValued.v x = v.valuation K x :=
+  rfl
+
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/
@@ -534,7 +538,7 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
       toAdd_ofAdd, toAdd_one,
       show d.natAbs • (-1) = (d.natAbs : ℤ) • (-1) by simp only [nsmul_eq_mul,
         Int.natCast_natAbs, smul_eq_mul],
-      ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
+      ← Int.eq_natAbs_of_nonneg ha.le, smul_eq_mul]
     -- and now it's easy
     omega
 
