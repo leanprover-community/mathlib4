@@ -18,6 +18,8 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Quotient
 
 -/
 
+section Submodule
+
 variable {M : Type*} [AddCommGroup M] [Module.Free ℤ M] [Module.Finite ℤ M]
 
 open Submodule
@@ -86,3 +88,16 @@ theorem Submodule.natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq
     (b.det (N.subtype ∘ bN)).natAbs = (LinearMap.det (N.subtype ∘ₗ (e : M →ₗ[ℤ] N))).natAbs := by
       rw [Basis.det_comp_basis]
     _ = _ := natAbs_det_equiv N e
+
+end Submodule
+
+section AddSubgroup
+
+theorem AddSubgroup.natAbs_det_basis_change {E : Type*} [AddCommGroup E] {ι : Type*}
+    [DecidableEq ι] [Fintype ι] (bE : Basis ι ℤ E) (N : AddSubgroup E) (bN : Basis ι ℤ N) :
+    (bE.det (bN ·)).natAbs = N.index :=
+  have : Module.Free ℤ E := Module.Free.of_basis bE
+  have : Module.Finite ℤ E := Module.Finite.of_basis bE
+  Submodule.natAbs_det_basis_change bE N.toIntSubmodule bN
+
+end AddSubgroup

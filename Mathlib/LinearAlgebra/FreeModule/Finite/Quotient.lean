@@ -31,7 +31,7 @@ by principal ideals.
 -/
 noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
     (h : Module.finrank R N = Module.finrank R M) :
-    (M ⧸ N) ≃ₗ[R] ∀ i, R ⧸ Ideal.span ({smithNormalFormCoeffs b h i} : Set R) := by
+    (M ⧸ N) ≃ₗ[R] Π i, R ⧸ Ideal.span ({smithNormalFormCoeffs b h i} : Set R) := by
   haveI := Fintype.ofFinite ι
   -- Choose `e : M ≃ₗ N` and a basis `b'` for `M` that turns the map
   -- `f := ((Submodule.subtype N).comp e` into a diagonal matrix:
