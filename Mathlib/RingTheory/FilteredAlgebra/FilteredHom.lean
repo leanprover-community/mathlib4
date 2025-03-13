@@ -370,13 +370,13 @@ abbrev GradedPieceHom (i : ι) : GradedPiece FA FA_lt i →ₗ[R] GradedPiece FB
     (f.piece_wise_hom i) (fun x hx ↦ by simpa using f.pieces_wise_lt hx)
 
 @[inherit_doc]
-scoped[FilteredAlgHom] notation:9000 "Gr(" i ")[" f "]" => GradedPieceHom f i
+scoped[FilteredAlgHom] notation:9000 "Grₐ(" i ")[" f "]" => GradedPieceHom f i
 
 lemma GradedPieceHom_comp_apply (i : ι) (x : GradedPiece FA FA_lt i):
-    Gr(i)[g] (Gr(i)[f] x) = Gr(i)[g.comp f] x :=
+    Grₐ(i)[g] (Grₐ(i)[f] x) = Grₐ(i)[g.comp f] x :=
   FilteredRingHom.GradedPieceHom_comp_apply g.1 f.1 i x
 
-lemma GradedPieceHom_comp (i : ι) : Gr(i)[g].comp Gr(i)[f] = Gr(i)[g.comp f] := by
+lemma GradedPieceHom_comp (i : ι) : Grₐ(i)[g].comp Grₐ(i)[f] = Grₐ(i)[g.comp f] := by
   ext x
   exact GradedPieceHom_comp_apply g f i x
 
@@ -398,15 +398,15 @@ noncomputable def AssociatedGradedAlgHom [DecidableEq ι] :
     exact SetCoe.ext f.map_one.symm
 
 @[inherit_doc]
-scoped[FilteredAlgHom] notation:9000 "Gr[" f "]" => AssociatedGradedAlgHom f
+scoped[FilteredAlgHom] notation:9000 "Grₐ[" f "]" => AssociatedGradedAlgHom f
 
 variable [DecidableEq ι]
 
 @[simp]
 theorem AssociatedGradedRingHom_apply (x : AssociatedGraded FA FA_lt) (i : ι) :
-    (Gr[f] x) i = Gr(i)[f] (x i) := rfl
+    (Grₐ[f] x) i = Grₐ(i)[f] (x i) := rfl
 
-theorem AssociatedGradedRingHom_comp: Gr[g].comp Gr[f] = Gr[g.comp f] :=
+theorem AssociatedGradedRingHom_comp: Grₐ[g].comp Grₐ[f] = Grₐ[g.comp f] :=
   AlgHom.ext <| fun x ↦ congrFun
     (congrArg DFunLike.coe (FilteredRingHom.AssociatedGradedRingHom_comp_eq_comp g.1 f.1)) x
 
