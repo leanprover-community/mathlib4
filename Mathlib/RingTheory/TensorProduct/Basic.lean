@@ -1414,20 +1414,14 @@ namespace LinearMap
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
+@[simps!]
 noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
-  { lTensorHom (R := R) (M := N) (N := M) (P := M) with
-    map_one' := lTensor_id N M
-    map_mul' f g := lTensor_mul N f g
-    commutes' r := by ext; simp
-    map_zero' := lTensor_zero N }
+  .ofLinearMap (lTensorHom (M := N)) (lTensor_id N M) (lTensor_mul N)
 
 /-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
+@[simps!]
 noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
-  { rTensorHom (R := R) (M := N) (N := M) (P := M) with
-    map_one' := rTensor_id N M
-    map_mul' f g := rTensor_mul N f g
-    commutes' r := by ext; simp [smul_tmul]
-    map_zero' := rTensor_zero N }
+  .ofLinearMap (rTensorHom (M := N)) (rTensor_id N M) (rTensor_mul N)
 
 end LinearMap
 
