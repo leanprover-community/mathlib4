@@ -73,12 +73,11 @@ def findString (s pattern : String) : String × String :=
   let candidatePos := s.find ("".push · == pattern.take 1)
   let notContains := {s.toSubstring with stopPos := candidatePos}.toString
   let rest := {s.toSubstring with startPos := candidatePos}.toString
-  --dbg_trace "notContains: '{notContains}' vs '{s.take candidatePos.1}'\nrest: '{rest}'"
   if rest.startsWith pattern then
     (notContains, rest)
   else
     let (init, tail) := findString (rest.drop 1) pattern
-    (notContains.push (pattern.get ⟨0⟩) ++ init, tail)
+    (notContains ++ (pattern.take 1) ++ init, tail)
 
 /--
 `TrimComments s` eliminates comments from `s`, disregarding nesting.
@@ -93,9 +92,7 @@ def trimComments (s : String) (compressDocs : Bool) : String :=
   if rest.length ≤ 1 then s else
   match beforeFirstDash.takeRight 1, (rest.take 2).drop 1 with
   | "/", "-" => -- this is a doc-string
-    --dbg_trace "rest before: '{rest}'\n"
     let (takeDocs, rest) := findString (rest.drop 2) "-/"
-    --dbg_trace "doc '{beforeFirstDash.back}--{takeDocs}'\n\nrest: {rest}"
     let finalDocs :=
       -- Replace each consecutive group of at least one space in `takeDocs` with a single space.
       -- The begin/end `|`-markers take care of preserving initial and terminal spaces, if there
@@ -107,12 +104,10 @@ def trimComments (s : String) (compressDocs : Bool) : String :=
         takeDocs
     beforeFirstDash ++ "--" ++ finalDocs ++ trimComments rest compressDocs
   | "/", _ => -- this is a multiline comment
-    --dbg_trace "multiline comment '{beforeFirstDash}'"
     let (_comment, rest) := findString (rest.drop 2) "-/"
     --let rest := if rest.startsWith "-/" then rest.drop 2 else rest
     (beforeFirstDash.dropRight 1).trimRight ++ trimComments (rest.drop 2) compressDocs
   | _, "-" => -- this is a single line comment
-    --dbg_trace "comment"
     let dropComment := rest.dropWhile (· != '\n')
     beforeFirstDash.trimRight ++ trimComments dropComment compressDocs
   | _, _ => beforeFirstDash ++ "-" ++ trimComments (rest.drop 1) compressDocs
