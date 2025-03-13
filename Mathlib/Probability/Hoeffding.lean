@@ -15,7 +15,7 @@ import Mathlib.Analysis.Calculus.Taylor
 /-!
 # Hoeffding's lemma
 
-This file states Hoeffding's lemma.
+This file states Hoeffding's lemma, which says that bounded random variables are subgaussian.
 
 ## Main results
 
