@@ -31,8 +31,8 @@ reflective. Since the category of simplicial sets is cocomplete, we conclude in
 
 namespace CategoryTheory
 
-open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve Truncated
-open SimplexCategory.Truncated SimplicialObject.Truncated
+open Category Functor Limits Opposite SimplexCategory Simplicial SSet Nerve
+open SSet.Truncated SimplexCategory.Truncated SimplicialObject.Truncated
 universe v u v' u'
 
 section
