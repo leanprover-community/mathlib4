@@ -1,6 +1,47 @@
 import Aesop.Frontend.Attribute
 import Mathlib.Tactic.Linter.CommandStart
-import Mathlib.adomaniLeanUtils.inspect_syntax
+
+section tests
+open Mathlib.Linter Style.CommandStart
+
+set_option linter.hashCommand false
+#guard
+  let s := "abcdeacd"
+  findString s "a" == ("", "abcdeacd")
+
+#guard
+  let s := "abcdeacd"
+  findString s "b" == ("a", "bcdeacd")
+
+#guard
+  let s := "abcdeacd"
+  findString s "ab" == ("", "abcdeacd")
+
+#guard
+  let s := "abcdeacd"
+  findString s "ac" == ("abcde", "acd")
+
+#guard
+  let s := "text /- /-- -/"
+  let pattern := "/--"
+  findString s pattern == ("text /- ", "/-- -/")
+
+#guard findString "/-- ≫|/ a" "|/" == ("/-- ≫", "|/ a")
+
+#guard trimComments "- /-/\ncontinuing on -/\n and more text" false ==
+                    "-\n and more text"
+#guard trimComments "text /- I am a comment -/ more text" false ==
+                    "text more text"
+#guard trimComments  "text /- I am a comment -/   more text" false ==
+                    "text   more text"
+#guard trimComments "text -- /- I am a comment -/   more text" false ==
+                    "text"
+#guard trimComments  "text /- comment /- nested -/-/" false == -- comment nesting is not implemented
+                      "text-/"
+#guard trimComments "text /-- doc-string -/" false ==
+                    "text /-- doc-string -/"
+
+end tests
 
 -- The notation `0::[]` disables the linter
 variable  (h : 0::[] = [])

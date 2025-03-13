@@ -115,42 +115,10 @@ def trimComments (s : String) (compressDocs : Bool) : String :=
     beforeFirstDash.trimRight ++ trimComments dropComment compressDocs
   | _, _ => beforeFirstDash ++ "-" ++ trimComments (rest.drop 1) compressDocs
 
-#eval show TermElabM _ from do
-  let src := "/-- ≫|/ a"
-  dbg_trace "'{src.get ⟨4⟩}'"
-  dbg_trace src.find (· == '|')
-  let fs := findString src "|/"
-  logInfo m!"{fs.1}\n\n{fs.2}"
-/-
-  guard <| fs.2 == "|/"
+/--
+These are some replacements that we do to align the input syntax with the pretty-printed one,
+mostly in cases where there is not real rule for what style to use.
 -/
-
-#eval do
-  logInfo <| trimComments "/-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
-`f ≫ g = f ≫ h` implies `g = h`. -/
-@[stacks 003B]
-class Epi (f : X ⟶ Y) : Prop where
- " true
-
-
-def removeComments (s : String) : String :=
-  let lines := s.splitOn "\n"
-  let lines := lines.filterMap fun l =>
-    -- remove lines that begin with a comment
-    if (l.trim.startsWith "--") || (l.trim.startsWith "/-" && l.trim.get ⟨2⟩ != '-') then none
-    -- remove the text in a line, starting from the beginning `--`
-    else if let st::_ := l.splitOn "--" then
-      -- FIXME! make sure that we do not truncate a doc-string!
-      --if st.back == '/' then some l else some
-       st.trimLeft
-    else some l
-  "\n".intercalate lines
-/-
-#eval do
-  let s := "Hi\n  -- this is a comment\nthere there is some -- another comment -- with more\ntext"
-  IO.println <| removeComments s
--/
-
 def furtherFormatting (s : String) : String :=
   s |>.replace "¬ " "¬"
                -- https://github.com/leanprover-community/aesop/pull/203/files
@@ -208,7 +176,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
         m!"slightly polished source:\n'{real}'\n\n\
           actually used source:\n'{furtherFormatting (trimComments real true)}'\n\n\
           reference formatting:\n'{st}'\n\n\
-          intermediate reference formatting:\n'{fmt}'\n\nremoveComments:\n'{removeComments real}'"
+          intermediate reference formatting:\n'{fmt}'\n"
       if ! st.startsWith (furtherFormatting (trimComments real true)) then
         let diff := real.firstDiffPos st
         let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
@@ -224,81 +192,3 @@ initialize addLinter commandStartLinter
 end Style.CommandStart
 
 end Mathlib.Linter
-#exit
-section tests
-open Mathlib.Linter Style.CommandStart
-
-set_option linter.hashCommand false
-#guard
-  let s := "abcdeacd"
-  findString s "a" == ("", "abcdeacd")
-
-#guard
-  let s := "abcdeacd"
-  findString s "b" == ("a", "bcdeacd")
-
-#guard
-  let s := "abcdeacd"
-  findString s "ab" == ("", "abcdeacd")
-
-#guard
-  let s := "abcdeacd"
-  --dbg_trace findString s "ac"
-  findString s "ac" == ("abcde", "acd")
-
-#guard
-  let s := "text /- /-- -/"
-  let pattern := "/--"
-  --dbg_trace findString s pattern
-  findString s pattern == ("text /- ", "/-- -/")
-
-#eval
-  let s := "- /-/\ncontinuing on -/\n and more text"
-  trimComments s
-
-#guard trimComments "text /- I am a comment -/ more text" ==
-                    "text more text"
-#eval trimComments  "text /- I am a comment -/   more text"
--- ==                      "text more text"
-#guard trimComments "text -- /- I am a comment -/   more text" ==
-                    "text" -- bonus if it removes the space after `text`
-#eval trimComments  "text /- comment /- nested -/-/"
- --==                      "text" -- but ok if it ignores nesting
-#guard trimComments "text /-- doc-string -/" ==
-                    "text /-- doc-string -/"
-
-end tests
-
-
-/-
-
-partial
-def trimCommentsAux (dat : String × String) : String × String := Id.run do
-  let mut (settled, rest) := dat
-  if rest.isEmpty then (settled, rest) else
-  let upToDash := rest.takeWhile (· != '-')
-  let lth := upToDash.length
-  match rest.get ⟨lth - 1⟩, rest.get ⟨lth + 1⟩ with
-  | '/', '-' => -- this is a doc-string
-    default
-  | '/', _ => -- this is a multiline comment
-    default
-  | _, '-' => -- this is a single line comment
-    settled := settled ++ upToDash.trimRight
-    rest := rest.drop (lth + 2) |>.dropWhile (· != '\n')
-  | _, _ => default
-  trimCommentsAux (settled, rest)
-
-def trimComments (s : String) : String := Id.run do
-  let mut settled := ""
-  let mut inProgress := ""
-  let mut rest := ""
-  -- `within` is either
-  -- `""` (not a comment),
-  -- `"--"` (a single line comment),
-  -- `"/-"` (a possibly multiline comment).
-  let mut within := ""
-
-  return settled
--/
--/
