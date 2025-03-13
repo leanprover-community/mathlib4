@@ -128,6 +128,11 @@ theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
   rw [isOfFinOrder_iff_pow_eq_one, isOfFinOrder_iff_pow_eq_one]
   norm_cast
 
+theorem IsConj.isOfFinOrder (h : IsConj x y) : IsOfFinOrder x → IsOfFinOrder y := by
+  simp_rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, n_gt_0, eq'⟩
+  exact ⟨n, n_gt_0, by rw [← isConj_one_right, ← eq']; exact h.pow n⟩
+
 /-- The image of an element of finite order has finite order. -/
 @[to_additive "The image of an element of finite additive order has finite additive order."]
 theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :
@@ -694,7 +699,7 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
       (Finset.univ.filter fun x : G => x ^ n = 1).card := by
   refine (Finset.card_biUnion ?_).symm.trans ?_
-  · simp +contextual [disjoint_iff, Finset.ext_iff]
+  · simp +contextual [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]
   · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]

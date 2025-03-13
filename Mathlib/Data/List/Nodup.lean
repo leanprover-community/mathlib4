@@ -27,6 +27,7 @@ protected theorem Pairwise.nodup {l : List α} {r : α → α → Prop} [IsIrref
     Nodup l :=
   h.imp ne_of_irrefl
 
+open scoped Relator in
 theorem rel_nodup {r : α → β → Prop} (hr : Relator.BiUnique r) : (Forall₂ r ⇒ (· ↔ ·)) Nodup Nodup
   | _, _, Forall₂.nil => by simp only [nodup_nil]
   | _, _, Forall₂.cons hab h => by
@@ -76,7 +77,6 @@ theorem nodup_iff_injective_getElem {l : List α} :
       · exact (h j i hj hi hji hg.symm).elim,
       fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem nodup_iff_injective_get {l : List α} :
     Nodup l ↔ Function.Injective l.get := by
   rw [nodup_iff_injective_getElem]
@@ -305,8 +305,8 @@ protected theorem Nodup.product {l₂ : List β} (d₁ : l₁.Nodup) (d₂ : l�
         rcases mem_map.1 h₂ with ⟨b₂, mb₂, ⟨⟩⟩
         exact n rfl⟩
 
-theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a , List (σ a)} (d₁ : Nodup l₁)
-    (d₂ : ∀ a , Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
+theorem Nodup.sigma {σ : α → Type*} {l₂ : ∀ a, List (σ a)} (d₁ : Nodup l₁)
+    (d₂ : ∀ a, Nodup (l₂ a)) : (l₁.sigma l₂).Nodup :=
   nodup_flatMap.2
     ⟨fun a _ => (d₂ a).map fun b b' h => by injection h with _ h,
       d₁.imp fun {a₁ a₂} n x h₁ h₂ => by
@@ -375,7 +375,7 @@ theorem Nodup.pairwise_of_forall_ne {l : List α} {r : α → α → Prop} (hl :
     exact heq
 
 theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (hl : l.Nodup)
-    (h : { x | x ∈ l }.Pairwise r) : l.Pairwise r :=
+    (h : {x | x ∈ l}.Pairwise r) : l.Pairwise r :=
   hl.pairwise_of_forall_ne h
 
 @[simp]

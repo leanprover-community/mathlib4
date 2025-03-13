@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Topology.ContinuousMap.Lattice
 
 /-! # Continuous functions as a star-ordered ring
 

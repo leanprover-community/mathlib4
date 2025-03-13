@@ -353,9 +353,6 @@ theorem real_inner_self_eq_norm_mul_norm (x : F) : ⟪x, x⟫_ℝ = ‖x‖ * �
 theorem real_inner_self_eq_norm_sq (x : F) : ⟪x, x⟫_ℝ = ‖x‖ ^ 2 := by
   rw [pow_two, real_inner_self_eq_norm_mul_norm]
 
--- Porting note: this was present in mathlib3 but seemingly didn't do anything.
--- variable (𝕜)
-
 /-- Expand the square -/
 theorem norm_add_sq (x y : E) : ‖x + y‖ ^ 2 = ‖x‖ ^ 2 + 2 * re ⟪x, y⟫ + ‖y‖ ^ 2 := by
   repeat' rw [sq (M := ℝ), ← @inner_self_eq_norm_mul_norm 𝕜]
@@ -666,8 +663,8 @@ theorem norm_inner_eq_norm_tfae (x y : E) :
       try positivity
     simp only [@norm_sq_eq_inner 𝕜] at h
     letI : InnerProductSpace.Core 𝕜 E := InnerProductSpace.toCore
-    erw [← InnerProductSpace.Core.cauchy_schwarz_aux (𝕜 := 𝕜) (F := E),
-      InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
+    erw [← InnerProductSpace.Core.cauchy_schwarz_aux (𝕜 := 𝕜) (F := E)] at h
+    rw [InnerProductSpace.Core.normSq_eq_zero, sub_eq_zero] at h
     rw [div_eq_inv_mul, mul_smul, h, inv_smul_smul₀]
     rwa [inner_self_ne_zero]
   tfae_have 2 → 3 := fun h => h.imp_right fun h' => ⟨_, h'⟩

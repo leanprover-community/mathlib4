@@ -41,8 +41,8 @@ notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 from `A` to `B`. -/
 class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
-    extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
+    extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B
 
 namespace CoalgEquivClass
 

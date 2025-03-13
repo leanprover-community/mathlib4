@@ -310,7 +310,7 @@ variable {X Y} in
 lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun j => by
   have α : Discrete.functor (X.mapObjFun p j) ≅ Discrete.functor (Y.mapObjFun p j) :=
     Discrete.natIso (fun ⟨i, _⟩ => (GradedObject.eval i).mapIso e)
-  exact hasColimitOfIso α.symm
+  exact hasColimit_of_iso α.symm
 
 section
 variable [X.HasMap p] [Y.HasMap p]

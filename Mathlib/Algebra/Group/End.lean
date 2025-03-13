@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -209,7 +210,7 @@ def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (α ⊕ β) where
 
 theorem sumCongrHom_injective {α β : Type*} : Function.Injective (sumCongrHom α β) := by
   rintro ⟨⟩ ⟨⟩ h
-  rw [Prod.mk.inj_iff]
+  rw [Prod.mk_inj]
   constructor <;> ext i
   · simpa using Equiv.congr_fun h (Sum.inl i)
   · simpa using Equiv.congr_fun h (Sum.inr i)
@@ -269,7 +270,7 @@ def subtypeCongrHom (p : α → Prop) [DecidablePred p] :
 theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
     Function.Injective (subtypeCongrHom p) := by
   rintro ⟨⟩ ⟨⟩ h
-  rw [Prod.mk.inj_iff]
+  rw [Prod.mk_inj]
   constructor <;> ext i <;> simpa using Equiv.congr_fun h i
 
 /-- If `e` is also a permutation, we can write `permCongr`

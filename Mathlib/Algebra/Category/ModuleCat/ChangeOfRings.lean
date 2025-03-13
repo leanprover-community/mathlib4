@@ -682,8 +682,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     · ext x
       apply mul_smul (f r) s (g x)
   · intros z₁ z₂
-    change lift _ (z₁ + z₂) = lift _ z₁ + lift _ z₂
-    rw [map_add]
+    simp
   · intro s z
     change lift _ (s • z) = s • lift _ z
     induction z using TensorProduct.induction_on with
@@ -740,7 +739,6 @@ def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
     map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
     map_smul' := fun r x => by
       letI m1 : Module R S := Module.compHom S f
-      -- Porting note: used to be rfl
       dsimp; rw [← TensorProduct.smul_tmul,TensorProduct.smul_tmul'] }
 
 /--

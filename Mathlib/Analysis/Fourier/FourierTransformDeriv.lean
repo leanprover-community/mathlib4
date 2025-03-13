@@ -197,7 +197,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
   have aux0 : Continuous fun p : (W →L[ℝ] ℝ) × E ↦ p.1.smulRight p.2 :=
     (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
-    L.continuous.aestronglyMeasurable.prod_mk hf
+    L.continuous.aestronglyMeasurable.prodMk hf
   -- Elaboration without the expected type is faster here:
   exact (aux0.comp_aestronglyMeasurable aux1 :)
 
@@ -332,7 +332,6 @@ lemma norm_fourierPowSMulRight_le (f : V → E) (v : V) (n : ℕ) :
   _ = (2 * π * ‖L‖) ^ n * ‖v‖ ^ n * ‖f v‖ * ∏ i : Fin n, ‖m i‖ := by
       simp [Finset.prod_mul_distrib, mul_pow]; ring
 
-set_option maxSynthPendingDepth 2 in
 /-- The iterated derivative of a function multiplied by `(L v ⬝) ^ n` can be controlled in terms
 of the iterated derivatives of the initial function. -/
 lemma norm_iteratedFDeriv_fourierPowSMulRight
@@ -799,10 +798,10 @@ theorem fourierIntegral_deriv
     RCLike.inner_apply, conj_trivial, mul_one, neg_smul, smul_neg, neg_neg, neg_mul, ← coe_smul]
 
 theorem iteratedDeriv_fourierIntegral {f : ℝ → E} {N : ℕ∞} {n : ℕ}
-    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x^n • f x)) (hn : n ≤ N) :
+    (hf : ∀ (n : ℕ), n ≤ N → Integrable (fun x ↦ x ^ n • f x)) (hn : n ≤ N) :
     iteratedDeriv n (𝓕 f) = 𝓕 (fun x : ℝ ↦ (-2 * π * I * x) ^ n • f x) := by
   ext x : 1
-  have A (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖^n * ‖f v‖) := by
+  have A (n : ℕ) (hn : n ≤ N) : Integrable (fun v ↦ ‖v‖ ^ n * ‖f v‖) := by
     convert (hf n hn).norm with x
     simp [norm_smul]
   have B : AEStronglyMeasurable f := by simpa using (hf 0 (zero_le _)).1
