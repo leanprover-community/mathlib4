@@ -138,8 +138,6 @@ For a version bundled as `LinearIsometryEquiv`, see
 `ContinuousLinearMap.flipL`. -/
 def flip (f : E →SL[σ₁₃] F →SL[σ₂₃] G) : F →SL[σ₂₃] E →SL[σ₁₃] G :=
   LinearMap.mkContinuous₂
-    -- Porting note: the `simp only`s below used to be `rw`.
-    -- Now that doesn't work as we need to do some beta reduction along the way.
     (LinearMap.mk₂'ₛₗ σ₂₃ σ₁₃ (fun y x => f x y) (fun x y z => (f z).map_add x y)
       (fun c y x => (f x).map_smulₛₗ c y) (fun z x y => by simp only [f.map_add, add_apply])
         (fun c y x => by simp only [f.map_smulₛₗ, smul_apply]))

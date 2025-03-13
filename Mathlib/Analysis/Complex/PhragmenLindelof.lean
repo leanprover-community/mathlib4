@@ -349,7 +349,6 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     refine ⟨log z, ?_, exp_log hzne⟩
     rw [log_im]
     exact ⟨arg_nonneg_iff.2 hz_im, arg_le_pi_div_two_iff.2 (Or.inl hz_re)⟩
-  -- Porting note: failed to clear `clear hz_re hz_im hzne`
   -- We are going to apply `PhragmenLindelof.horizontal_strip` to `f ∘ Complex.exp` and `ζ`.
   change ‖(f ∘ exp) ζ‖ ≤ C
   have H : MapsTo exp (im ⁻¹' Ioo 0 (π / 2)) (Ioi 0 ×ℂ Ioi 0) := fun z hz ↦ by
@@ -359,7 +358,6 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
       Real.sin_pos_of_mem_Ioo ⟨hz.1, hz.2.trans (half_lt_self Real.pi_pos)⟩
     constructor <;> positivity
   refine horizontal_strip (hd.comp differentiable_exp.diffContOnCl H) ?_ ?_ ?_ hζ.1 hζ.2
-  -- Porting note: failed to clear hζ ζ
   · -- The estimate `hB` on `f` implies the required estimate on
     -- `f ∘ exp` with the same `c` and `B' = max B 0`.
     rw [sub_zero, div_div_cancel₀ Real.pi_pos.ne']
