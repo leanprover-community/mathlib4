@@ -44,11 +44,21 @@ obtained from the `AssociatedGradedAddMonoidHom` of a filtered ring morphism.
 -/
 section
 
-variable {ι A B C α β γ: Type*} [Preorder ι] [SetLike α A] [SetLike β B] [SetLike γ C]
+section
 
-variable (FA : ι → α) (FA_lt : outParam <| ι → α) [IsFiltration FA FA_lt]
-variable (FB : ι → β) (FB_lt : outParam <| ι → β) [IsFiltration FB FB_lt]
-variable (FC : ι → γ) (FC_lt : outParam <| ι → γ) [IsFiltration FC FC_lt]
+class FilteredHomClass (F : Type*) {A B α β ι : Type*} [FunLike F A B]
+    [SetLike α A] (FA : ι → α) (FA_lt : outParam <| ι → α)
+    [SetLike β B] (FB : ι → β) (FB_lt : outParam <| ι → β) : Prop where
+  pieces_wise (f : F) {i a} : a ∈ FA i → f a ∈ FB i
+  pieces_wise_lt (f : F) {i a} : a ∈ FA_lt i → f a ∈ FB_lt i
+
+end
+
+variable {ι A B C α β γ: Type*} [SetLike α A] [SetLike β B] [SetLike γ C]
+
+variable (FA : ι → α) (FA_lt : outParam <| ι → α)
+variable (FB : ι → β) (FB_lt : outParam <| ι → β)
+variable (FC : ι → γ) (FC_lt : outParam <| ι → γ)
 
 /-- A morphism between general filtration (filtration of sets) that preserves both the main
 and auxiliary filtered structures. This class describes a structure-preserving map between two
@@ -65,23 +75,33 @@ instance : FunLike (FilteredHom FA FA_lt FB FB_lt) A B where
   coe f := f.toFun
   coe_injective' _ _ hfg := FilteredHom.ext hfg
 
+instance : FilteredHomClass (FilteredHom FA FA_lt FB FB_lt) FA FA_lt FB FB_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
+
 namespace FilteredHom
 
 variable (g : FilteredHom FB FB_lt FC FC_lt) (f : FilteredHom FA FA_lt FB FB_lt)
 
-variable {FA FB FC FA_lt FB_lt FC_lt} in
-
+variable {FA FB FA_lt FB_lt} in
 /-- The filtered abelian group morphism obtained from the
 restriction of a `FilteredHom` to its `i`-th filtration. -/
 def piece_wise_hom (i : ι) : FA i → FB i :=
   Subtype.map f (fun _ ha ↦ f.pieces_wise ha)
 
+/-- The identity map as a `FilteredHom` of same filtration. -/
+def id : FilteredHom FA FA_lt FA FA_lt where
+  toFun := _root_.id
+  pieces_wise ha := ha
+  pieces_wise_lt ha := ha
+
+variable {FA FB FC FA_lt FB_lt FC_lt} in
 /-- The composition of two filtered morphisms,
 obtained from the composition of the underlying function. -/
-def comp : FilteredHom FA FA_lt FC FC_lt := {
+def comp : FilteredHom FA FA_lt FC FC_lt where
   toFun := g.1.comp f.1
   pieces_wise ha := g.pieces_wise (f.pieces_wise ha)
-  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha) }
+  pieces_wise_lt ha := g.pieces_wise_lt (f.pieces_wise_lt ha)
 
 /-- A filtered morphism `f : FilteredHom FA FA_lt FB FB_lt` `IsStrict` if it strictly map
 the `p`-th filtration of `FA` and `FA_lt` to the intersection of the image of `f` with
@@ -106,6 +126,7 @@ variable (FC : ι → γ) (FC_lt : outParam <| ι → γ)
 
 /-- A morphism between filtered abelian groups that preserves both the
 group and filtered structures. -/
+@[ext]
 class FilteredAddGroupHom extends FilteredHom FA FA_lt FB FB_lt, A →+ B
 
 /-- Reinterpret a `FilteredAddGroupHom` as a `AddMonoidHom`. -/
@@ -114,10 +135,25 @@ add_decl_doc FilteredAddGroupHom.toAddMonoidHom
 instance : Coe (FilteredAddGroupHom FA FA_lt FB FB_lt) (FilteredHom FA FA_lt FB FB_lt) :=
   ⟨fun a ↦ a.toFilteredHom⟩
 
-instance : CoeOut (FilteredAddGroupHom FA FA_lt FB FB_lt) (A →+ B) :=
-  ⟨fun a ↦ a.toAddMonoidHom⟩
+instance : FunLike (FilteredAddGroupHom FA FA_lt FB FB_lt) A B where
+  coe f := f.toFun
+  coe_injective' _ _ h := FilteredAddGroupHom.ext h
+
+instance : AddMonoidHomClass (FilteredAddGroupHom FA FA_lt FB FB_lt) A B where
+  map_add f := map_add f.toAddMonoidHom
+  map_zero f := map_zero f.toAddMonoidHom
+
+instance : FilteredHomClass (FilteredAddGroupHom FA FA_lt FB FB_lt) FA FA_lt FB FB_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
 
 namespace FilteredAddGroupHom
+
+/-- The identity map as a `FilteredAddGroupHom` of same filtration. -/
+def id : FilteredAddGroupHom FA FA_lt FA FA_lt where
+  __ := AddMonoidHom.id A
+  pieces_wise ha := ha
+  pieces_wise_lt ha := ha
 
 variable  (g : FilteredAddGroupHom FB FB_lt FC FC_lt) (f : FilteredAddGroupHom FA FA_lt FB FB_lt)
 
