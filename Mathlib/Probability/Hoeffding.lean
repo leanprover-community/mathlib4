@@ -93,7 +93,7 @@ theorem cgf_iterated_deriv_two_eq_tilted_measure_variance [IsProbabilityMeasure 
     rw [<- p, cgf_deriv_eq_tilted_measure_expectation _ t
       (mem_interior_integrableExpSet_of_ae_mem_Icc μ t a b hX h)]
     dsimp only
-    have p : Var[X ; μ.tilted fun ω ↦ t * X ω] =
+    have p : Var[X; μ.tilted fun ω ↦ t * X ω] =
         (μ.tilted fun ω ↦ t * X ω)[X ^ 2] - ((μ.tilted fun ω ↦ t * X ω)[X]) ^ 2 := by
       have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
         isProbabilityMeasure_tilted
