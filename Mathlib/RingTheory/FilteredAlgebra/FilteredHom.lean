@@ -239,6 +239,7 @@ variable [Ring T] (FT : ι → τ) (FT_lt : outParam <| ι → τ) [SetLike τ T
 
 /-- A morphism between filtered rings that preserves both the ring and
 filtered structures. -/
+@[ext]
 class FilteredRingHom extends FilteredAddGroupHom FR FR_lt FS FS_lt, R →+* S
 
 /-- Reinterpret a `FilteredRingHom` as a `RingHom`. -/
@@ -247,10 +248,27 @@ add_decl_doc FilteredRingHom.toRingHom
 instance : Coe (FilteredRingHom FR FR_lt FS FS_lt) (FilteredAddGroupHom FR FR_lt FS FS_lt) :=
   ⟨fun a ↦ a.toFilteredAddGroupHom⟩
 
-instance : CoeOut (FilteredRingHom FR FR_lt FS FS_lt) (R →+* S) :=
-  ⟨fun a ↦ a.toRingHom⟩
+instance : FunLike (FilteredRingHom FR FR_lt FS FS_lt) R S where
+  coe f := f.toFun
+  coe_injective' _ _ h := FilteredRingHom.ext h
+
+instance : RingHomClass (FilteredRingHom FR FR_lt FS FS_lt) R S where
+  map_mul f := f.map_mul
+  map_one f := f.map_one
+  map_add f := f.map_add
+  map_zero f := f.map_zero
+
+instance : FilteredHomClass  (FilteredRingHom FR FR_lt FS FS_lt) FR FR_lt FS FS_lt where
+  pieces_wise f := f.pieces_wise
+  pieces_wise_lt f := f.pieces_wise_lt
 
 namespace FilteredRingHom
+
+/-- The identity map as a `FilteredRingHom` of same filtration. -/
+def id : FilteredRingHom FR FR_lt FR FR_lt where
+  __ := RingHom.id R
+  pieces_wise ha := ha
+  pieces_wise_lt ha := ha
 
 variable (g : FilteredRingHom FS FS_lt FT FT_lt) (f : FilteredRingHom FR FR_lt FS FS_lt)
 
