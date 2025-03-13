@@ -118,17 +118,18 @@ theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
   · obtain ⟨hf, _⟩ := h
     exact hf
 
-/-- If a function is meromorphic in normal form at `x` and has non-negative
-order, then it is analytic. -/
-theorem MeromorphicNFAt.analyticAt (h₁f : MeromorphicNFAt f x)
-    (h₂f : 0 ≤ h₁f.meromorphicAt.order) :
-    AnalyticAt 𝕜 f x := by
-  rw [MeromorphicAt.meromorphicNFAt_iff] at h₁f
-  rcases h₁f with h | h
-  · exact h
-  · by_contra h'
-    obtain ⟨h₃f, h₄f, h₅f⟩ := h
-    exact lt_irrefl 0 (lt_of_le_of_lt h₂f h₄f)
+/-- If a function is meromorphic in normal form at `x`, then it has non-negative order iff it is
+analytic. -/
+theorem MeromorphicNFAt.nonneg_order_iff_analyticAt (hf : MeromorphicNFAt f x) :
+    0 ≤ hf.meromorphicAt.order ↔ AnalyticAt 𝕜 f x := by
+  constructor <;> intro h₂f
+  · rw [MeromorphicAt.meromorphicNFAt_iff] at hf
+    rcases hf with h | ⟨_, h₃f, _⟩
+    · exact h
+    · by_contra h'
+      exact lt_irrefl 0 (lt_of_le_of_lt h₂f h₃f)
+  · rw [h₂f.meromorphicAt_order]
+    simp
 
 /-- Analytic functions are meromorphic in normal form. -/
 theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
