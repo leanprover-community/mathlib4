@@ -18,7 +18,6 @@ namespace ENat
 
 instance instNatCast : NatCast ℕ∞ := ⟨WithTop.some⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition copied from `WithTop`
 /-- Recursor for `ENat` using the preferred forms `⊤` and `↑a`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
 def recTopCoe {C : ℕ∞ → Sort*} (top : C ⊤) (coe : ∀ a : ℕ, C a) : ∀ n : ℕ∞, C n

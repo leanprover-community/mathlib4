@@ -48,7 +48,6 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   · exact Finset.card_fin _
   · intro _ _
     -- Porting note: proof was `simp`
-    dsimp only
     rw [Prod.ext_iff]
     simp
 
