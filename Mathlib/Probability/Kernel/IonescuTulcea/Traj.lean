@@ -10,6 +10,7 @@ import Mathlib.MeasureTheory.OuterMeasure.OfAddContent
 import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 import Mathlib.Probability.Kernel.SetIntegral
+import Mathlib.Probability.Kernel.Disintegration.Basic
 
 /-!
 # Ionescu-Tulcea theorem

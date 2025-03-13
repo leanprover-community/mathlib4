@@ -5,9 +5,12 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Condexp
 import Mathlib.MeasureTheory.MeasurableSpace.PreorderRestrict
+import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 
 /-!
 # UCB
+
+`α` is the arm space.
 
 ## Main definitions
 
@@ -41,47 +44,79 @@ variable {α : Type*} {mα : MeasurableSpace α} {ν : Kernel α ℝ} {k : ℕ �
 
 section MeasureSpace
 
-noncomputable
-def stepKernel (ν : Kernel α ℝ) (policy : (n : ℕ) → Kernel (Iic n → α × ℝ) α) (n : ℕ) :
-    Kernel (Iic n → α × ℝ) (α × ℝ) :=
-  (policy n) ⊗ₖ ν.prodMkLeft (Iic n → α × ℝ)
-
-noncomputable def traj (ν : Kernel α ℝ) (policy : (n : ℕ) → Kernel (Iic n → α × ℝ) α) (n : ℕ) :
-    Kernel (Iic n → α × ℝ) (ℕ → α × ℝ) :=
-  sorry
-
 structure Bandit (α : Type*) [MeasurableSpace α] where
   ν : Kernel α ℝ -- conditional distribution of the rewards given the arm pulled
   hν : IsMarkovKernel ν
   policy : (n : ℕ) → Kernel (Iic n → α × ℝ) α  -- distribution of the next pull
+  h_policy n : IsMarkovKernel (policy n)
   p0 : Measure α  -- distribution of the first pull
+  hp0 : IsProbabilityMeasure p0
+
+instance (b : Bandit α) : IsMarkovKernel b.ν := b.hν
+
+instance (b : Bandit α) (n : ℕ) : IsMarkovKernel (b.policy n) := b.h_policy n
+
+instance (b : Bandit α) : IsProbabilityMeasure b.p0 := b.hp0
+
+namespace Bandit
 
 noncomputable
-def Bandit.measure (b : Bandit α) :
-    Measure (ℕ → α × ℝ) := by
-  let traj0 := traj b.ν b.policy 0
-  let step0 := b.p0 ⊗ₘ b.ν
-  have h_equiv : (Iic 0 → α × ℝ) ≃ᵐ α × ℝ := by
-    sorry
-  let step0' := step0.map h_equiv.symm
-  exact traj0 ∘ₘ step0'
+def stepKernel (b : Bandit α) (n : ℕ) : Kernel (Iic n → α × ℝ) (α × ℝ) :=
+  (b.policy n) ⊗ₖ b.ν.prodMkLeft (Iic n → α × ℝ)
 
-instance (b : Bandit α) : IsProbabilityMeasure b.measure := sorry
+instance (b : Bandit α) (n : ℕ) : IsMarkovKernel (b.stepKernel n) := by
+  rw [stepKernel]
+  infer_instance
+
+noncomputable def traj (b : Bandit α) (n : ℕ) : Kernel (Iic n → α × ℝ) (ℕ → α × ℝ) :=
+  ProbabilityTheory.Kernel.traj (X := fun _ ↦ α × ℝ) b.stepKernel n
+
+instance (b : Bandit α) (n : ℕ) : IsMarkovKernel (b.traj n) := by
+  rw [traj]
+  infer_instance
+
+def MeasurableEquiv.piIicZero (α : Type*) [MeasurableSpace α] :
+    (Iic 0 → α) ≃ᵐ α := by
+  sorry
+
+noncomputable
+def measure (b : Bandit α) : Measure (ℕ → α × ℝ) :=
+  (b.traj 0) ∘ₘ ((b.p0 ⊗ₘ b.ν).map (MeasurableEquiv.piIicZero _).symm)
+
+instance (b : Bandit α) : IsProbabilityMeasure b.measure := by
+  rw [Bandit.measure]
+  have : IsProbabilityMeasure ((b.p0 ⊗ₘ b.ν).map (MeasurableEquiv.piIicZero _).symm) :=
+    isProbabilityMeasure_map <| by fun_prop
+  infer_instance
+
+end Bandit
 
 /-- `A n` is the arm pulled at time `n`. This is a random variable on the measurable space
-`ℕ → α × ℝ`-/
+`ℕ → α × ℝ`. -/
 def A (n : ℕ) (h : ℕ → α × ℝ) : α := (h n).1
 
 /-- `X n` is the reward at time `n`. This is a random variable on the measurable space
-`ℕ → α × ℝ`-/
+`ℕ → α × ℝ`. -/
 def X (n : ℕ) (h : ℕ → α × ℝ) : ℝ := (h n).2
+
+/-- `H n` is the history up to time `n`. This is a random variable on the measurable space
+`ℕ → α × ℝ`. -/
+def H (n : ℕ) (h : ℕ → α × ℝ) : Iic n → α × ℝ := fun i ↦ h i
 
 def ℱ (α : Type*) [MeasurableSpace α] :
     Filtration ℕ (inferInstance : MeasurableSpace (ℕ → α × ℝ)) :=
   MeasureTheory.Filtration.piLE (X := fun _ ↦ α × ℝ)
 
+lemma condDistrib_AX [StandardBorelSpace α] [Nonempty α] (b : Bandit α) (n : ℕ) :
+    condDistrib (fun h ↦ (A n h, X n h)) (H n) b.measure = b.stepKernel n := by
+  sorry
+
 lemma condDistrib_X (b : Bandit α) (n : ℕ) :
     condDistrib (X n) (A n) b.measure = ν := by
+  sorry
+
+lemma condDistrib_A [StandardBorelSpace α] [Nonempty α] (b : Bandit α) (n : ℕ) :
+    condDistrib (A n) (H n) b.measure = b.policy n := by
   sorry
 
 end MeasureSpace
