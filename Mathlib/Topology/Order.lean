@@ -71,7 +71,8 @@ theorem isOpen_generateFrom_of_mem {g : Set (Set α)} {s : Set α} (hs : s ∈ g
   GenerateOpen.basic s hs
 
 theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
-    @nhds α (generateFrom g) a = ⨅ s ∈ { s | a ∈ s ∧ s ∈ g }, 𝓟 s := by
+    @nhds α (generateFrom g).toTopologicalSpaceWithoutAtlas a
+      = ⨅ s ∈ { s | a ∈ s ∧ s ∈ g }, 𝓟 s := by
   letI := generateFrom g
   rw [nhds_def]
   refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) <| le_iInf₂ ?_
@@ -85,7 +86,8 @@ theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     exact (hS t htS hat).trans (principal_mono.2 <| subset_sUnion_of_mem htS)
 
 lemma tendsto_nhds_generateFrom_iff {β : Type*} {m : α → β} {f : Filter α} {g : Set (Set β)}
-    {b : β} : Tendsto m f (@nhds β (generateFrom g) b) ↔ ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f := by
+    {b : β} : Tendsto m f (@nhds β (generateFrom g).toTopologicalSpaceWithoutAtlas b) ↔
+      ∀ s ∈ g, b ∈ s → m ⁻¹' s ∈ f := by
   simp only [nhds_generateFrom, @forall_swap (b ∈ _), tendsto_iInf, mem_setOf_eq, and_imp,
     tendsto_principal]; rfl
 
@@ -100,7 +102,7 @@ protected def mkOfNhds (n : α → Filter α) : TopologicalSpace α where
 theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p : ∀ a, ι a → Prop}
     {s : ∀ a, ι a → Set α} (hb : ∀ a, (n a).HasBasis (p a) (s a))
     (hpure : ∀ a i, p a i → a ∈ s a i) (hopen : ∀ a i, p a i → ∀ᶠ x in n a, s a i ∈ n x) (a : α) :
-    @nhds α (.mkOfNhds n) a = n a := by
+    @nhds α (TopologicalSpace.mkOfNhds n).toTopologicalSpaceWithoutAtlas a = n a := by
   let t : TopologicalSpace α := .mkOfNhds n
   apply le_antisymm
   · intro U hU
@@ -112,11 +114,11 @@ theorem nhds_mkOfNhds_of_hasBasis {n : α → Filter α} {ι : α → Sort*} {p 
 
 theorem nhds_mkOfNhds (n : α → Filter α) (a : α) (h₀ : pure ≤ n)
     (h₁ : ∀ a, ∀ s ∈ n a, ∀ᶠ y in n a, s ∈ n y) :
-    @nhds α (TopologicalSpace.mkOfNhds n) a = n a :=
+    @nhds α (TopologicalSpace.mkOfNhds n).toTopologicalSpaceWithoutAtlas a = n a :=
   nhds_mkOfNhds_of_hasBasis (fun a ↦ (n a).basis_sets) h₀ h₁ _
 
 theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : pure a₀ ≤ l) (b : α) :
-    @nhds α (TopologicalSpace.mkOfNhds (update pure a₀ l)) b =
+    @nhds α (TopologicalSpace.mkOfNhds (update pure a₀ l)).toTopologicalSpaceWithoutAtlas b =
       (update pure a₀ l : α → Filter α) b := by
   refine nhds_mkOfNhds _ _ (le_update_iff.mpr ⟨h, fun _ _ => le_rfl⟩) fun a s hs => ?_
   rcases eq_or_ne a a₀ with (rfl | ha)
@@ -128,7 +130,8 @@ theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : p
 
 theorem nhds_mkOfNhds_filterBasis (B : α → FilterBasis α) (a : α) (h₀ : ∀ x, ∀ n ∈ B x, x ∈ n)
     (h₁ : ∀ x, ∀ n ∈ B x, ∃ n₁ ∈ B x, ∀ x' ∈ n₁, ∃ n₂ ∈ B x', n₂ ⊆ n) :
-    @nhds α (TopologicalSpace.mkOfNhds fun x => (B x).filter) a = (B a).filter :=
+    @nhds α (TopologicalSpace.mkOfNhds fun x => (B x).filter).toTopologicalSpaceWithoutAtlas a
+      = (B a).filter :=
   nhds_mkOfNhds_of_hasBasis (fun a ↦ (B a).hasBasis) h₀ h₁ a
 
 section Lattice
@@ -282,7 +285,8 @@ theorem mem_nhds_discrete {x : α} {s : Set α} :
 
 end DiscreteTopology
 
-theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁ x ≤ @nhds α t₂ x) : t₁ ≤ t₂ := fun s => by
+theorem le_of_nhds_le_nhds (h : ∀ x, @nhds α t₁.toTopologicalSpaceWithoutAtlas x ≤
+    @nhds α t₂.toTopologicalSpaceWithoutAtlas x) : t₁ ≤ t₂ := fun s => by
   rw [@isOpen_iff_mem_nhds _ _ t₁, @isOpen_iff_mem_nhds α _ t₂]
   exact fun hs a ha => h _ (hs _ ha)
 
@@ -357,7 +361,8 @@ theorem isClosed_coinduced {t : TopologicalSpace α} {s : Set β} {f : α → β
   simp only [← isOpen_compl_iff, isOpen_coinduced (f := f), preimage_compl]
 
 theorem preimage_nhds_coinduced [TopologicalSpace α] {π : α → β} {s : Set β} {a : α}
-    (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›) (π a)) : π ⁻¹' s ∈ 𝓝 a := by
+    (hs : s ∈ @nhds β (TopologicalSpace.coinduced π ‹_›).toTopologicalSpaceWithoutAtlas (π a)) :
+    π ⁻¹' s ∈ 𝓝 a := by
   letI := TopologicalSpace.coinduced π ‹_›
   rcases mem_nhds_iff.mp hs with ⟨V, hVs, V_op, mem_V⟩
   exact mem_nhds_iff.mpr ⟨π ⁻¹' V, Set.preimage_mono hVs, V_op, mem_V⟩
@@ -545,24 +550,26 @@ def nhdsAdjoint (a : α) (f : Filter α) : TopologicalSpace α where
   isOpen_inter := fun _s _t hs ht ⟨has, hat⟩ => inter_mem (hs has) (ht hat)
   isOpen_sUnion := fun _k hk ⟨u, hu, hau⟩ => mem_of_superset (hk u hu hau) (subset_sUnion_of_mem hu)
 
-theorem gc_nhds (a : α) : GaloisConnection (nhdsAdjoint a) fun t => @nhds α t a := fun f t => by
+theorem gc_nhds (a : α) : GaloisConnection (nhdsAdjoint a)
+    fun t => @nhds α t.toTopologicalSpaceWithoutAtlas a := fun f t => by
   rw [le_nhds_iff]
   exact ⟨fun H s hs has => H _ has hs, fun H s has hs => H _ hs has⟩
 
 theorem nhds_mono {t₁ t₂ : TopologicalSpace α} {a : α} (h : t₁ ≤ t₂) :
-    @nhds α t₁ a ≤ @nhds α t₂ a :=
+    @nhds α t₁.toTopologicalSpaceWithoutAtlas a ≤ @nhds α t₂.toTopologicalSpaceWithoutAtlas a :=
   (gc_nhds a).monotone_u h
 
 theorem le_iff_nhds {α : Type*} (t t' : TopologicalSpace α) :
-    t ≤ t' ↔ ∀ x, @nhds α t x ≤ @nhds α t' x :=
-  ⟨fun h _ => nhds_mono h, le_of_nhds_le_nhds⟩
+    t ≤ t' ↔ ∀ x, @nhds α t.toTopologicalSpaceWithoutAtlas x ≤
+      @nhds α t'.toTopologicalSpaceWithoutAtlas x :=
+  ⟨fun h _ => nhds_mono h, fun h ↦ le_of_nhds_le_nhds h⟩
 
 theorem isOpen_singleton_nhdsAdjoint {α : Type*} {a b : α} (f : Filter α) (hb : b ≠ a) :
     IsOpen[nhdsAdjoint a f] {b} := fun h ↦
   absurd h hb.symm
 
 theorem nhds_nhdsAdjoint_same (a : α) (f : Filter α) :
-    @nhds α (nhdsAdjoint a f) a = pure a ⊔ f := by
+    @nhds α (nhdsAdjoint a f).toTopologicalSpaceWithoutAtlas a = pure a ⊔ f := by
   let _ := nhdsAdjoint a f
   apply le_antisymm
   · rintro t ⟨hat : a ∈ t, htf : t ∈ f⟩
@@ -570,37 +577,42 @@ theorem nhds_nhdsAdjoint_same (a : α) (f : Filter α) :
   · exact sup_le (pure_le_nhds _) ((gc_nhds a).le_u_l f)
 
 theorem nhds_nhdsAdjoint_of_ne {a b : α} (f : Filter α) (h : b ≠ a) :
-    @nhds α (nhdsAdjoint a f) b = pure b :=
+    @nhds α (nhdsAdjoint a f).toTopologicalSpaceWithoutAtlas b = pure b :=
   let _ := nhdsAdjoint a f
   (isOpen_singleton_iff_nhds_eq_pure _).1 <| isOpen_singleton_nhdsAdjoint f h
 
 theorem nhds_nhdsAdjoint [DecidableEq α] (a : α) (f : Filter α) :
-    @nhds α (nhdsAdjoint a f) = update pure a (pure a ⊔ f) :=
+    @nhds α (nhdsAdjoint a f).toTopologicalSpaceWithoutAtlas = update pure a (pure a ⊔ f) :=
   eq_update_iff.2 ⟨nhds_nhdsAdjoint_same .., fun _ ↦ nhds_nhdsAdjoint_of_ne _⟩
 
 theorem le_nhdsAdjoint_iff' {a : α} {f : Filter α} {t : TopologicalSpace α} :
-    t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, @nhds α t b = pure b := by
+    t ≤ nhdsAdjoint a f ↔ @nhds α t.toTopologicalSpaceWithoutAtlas a ≤ pure a ⊔ f ∧
+      ∀ b ≠ a, @nhds α t.toTopologicalSpaceWithoutAtlas b = pure b := by
   classical
   simp_rw [le_iff_nhds, nhds_nhdsAdjoint, forall_update_iff, (pure_le_nhds _).le_iff_eq]
 
 theorem le_nhdsAdjoint_iff {α : Type*} (a : α) (f : Filter α) (t : TopologicalSpace α) :
-    t ≤ nhdsAdjoint a f ↔ @nhds α t a ≤ pure a ⊔ f ∧ ∀ b ≠ a, IsOpen[t] {b} := by
+    t ≤ nhdsAdjoint a f ↔
+      @nhds α t.toTopologicalSpaceWithoutAtlas a ≤ pure a ⊔ f ∧ ∀ b ≠ a, IsOpen[t] {b} := by
   simp only [le_nhdsAdjoint_iff', @isOpen_singleton_iff_nhds_eq_pure α t]
 
 theorem nhds_iInf {ι : Sort*} {t : ι → TopologicalSpace α} {a : α} :
-    @nhds α (iInf t) a = ⨅ i, @nhds α (t i) a :=
+    @nhds α (iInf t).toTopologicalSpaceWithoutAtlas a =
+      ⨅ i, @nhds α (t i).toTopologicalSpaceWithoutAtlas a :=
   (gc_nhds a).u_iInf
 
 theorem nhds_sInf {s : Set (TopologicalSpace α)} {a : α} :
-    @nhds α (sInf s) a = ⨅ t ∈ s, @nhds α t a :=
+    @nhds α (sInf s).toTopologicalSpaceWithoutAtlas a =
+      ⨅ t ∈ s, @nhds α t.toTopologicalSpaceWithoutAtlas a :=
   (gc_nhds a).u_sInf
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: timeouts without `b₁ := t₁`
 theorem nhds_inf {t₁ t₂ : TopologicalSpace α} {a : α} :
-    @nhds α (t₁ ⊓ t₂) a = @nhds α t₁ a ⊓ @nhds α t₂ a :=
+    @nhds α (t₁ ⊓ t₂).toTopologicalSpaceWithoutAtlas a =
+      @nhds α t₁.toTopologicalSpaceWithoutAtlas a ⊓ @nhds α t₂.toTopologicalSpaceWithoutAtlas a :=
   (gc_nhds a).u_inf (b₁ := t₁)
 
-theorem nhds_top {a : α} : @nhds α ⊤ a = ⊤ :=
+theorem nhds_top {a : α} : @nhds α (⊤ : TopologicalSpace α).toTopologicalSpaceWithoutAtlas a = ⊤ :=
   (gc_nhds a).u_top
 
 theorem isOpen_sup {t₁ t₂ : TopologicalSpace α} {s : Set α} :
@@ -724,7 +736,8 @@ theorem continuous_id_of_le {t t' : TopologicalSpace α} (h : t ≤ t') : Contin
 
 -- 𝓝 in the induced topology
 theorem mem_nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) (s : Set β) :
-    s ∈ @nhds β (TopologicalSpace.induced f T) a ↔ ∃ u ∈ 𝓝 (f a), f ⁻¹' u ⊆ s := by
+    s ∈ @nhds β (TopologicalSpace.induced f T).toTopologicalSpaceWithoutAtlas a ↔
+      ∃ u ∈ 𝓝 (f a), f ⁻¹' u ⊆ s := by
   letI := T.induced f
   simp_rw [mem_nhds_iff, isOpen_induced_iff]
   constructor
@@ -734,7 +747,8 @@ theorem mem_nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) (s :
     exact ⟨f ⁻¹' v, (Set.preimage_mono vsubu).trans finvsub, ⟨⟨v, openv, rfl⟩, amem⟩⟩
 
 theorem nhds_induced [T : TopologicalSpace α] (f : β → α) (a : β) :
-    @nhds β (TopologicalSpace.induced f T) a = comap f (𝓝 (f a)) := by
+    @nhds β (TopologicalSpace.induced f T).toTopologicalSpaceWithoutAtlas a
+      = comap f (𝓝 (f a)) := by
   ext s
   rw [mem_nhds_induced, mem_comap]
 
@@ -743,7 +757,8 @@ theorem induced_iff_nhds_eq [tα : TopologicalSpace α] [tβ : TopologicalSpace 
   simp only [ext_iff_nhds, nhds_induced]
 
 theorem map_nhds_induced_of_surjective [T : TopologicalSpace α] {f : β → α} (hf : Surjective f)
-    (a : β) : map f (@nhds β (TopologicalSpace.induced f T) a) = 𝓝 (f a) := by
+    (a : β) : map f (@nhds β (TopologicalSpace.induced f T).toTopologicalSpaceWithoutAtlas a)
+      = 𝓝 (f a) := by
   rw [nhds_induced, map_comap_of_surjective hf]
 
 theorem continuous_nhdsAdjoint_dom [TopologicalSpace β] {f : α → β} {a : α} {l : Filter α} :
@@ -771,11 +786,13 @@ theorem isOpen_induced_eq {s : Set α} :
 theorem isOpen_induced {s : Set β} (h : IsOpen s) : IsOpen[induced f t] (f ⁻¹' s) :=
   ⟨s, h, rfl⟩
 
-theorem map_nhds_induced_eq (a : α) : map f (@nhds α (induced f t) a) = 𝓝[range f] f a := by
+theorem map_nhds_induced_eq (a : α) :
+    map f (@nhds α (induced f t).toTopologicalSpaceWithoutAtlas a) = 𝓝[range f] f a := by
   rw [nhds_induced, Filter.map_comap, nhdsWithin]
 
 theorem map_nhds_induced_of_mem {a : α} (h : range f ∈ 𝓝 (f a)) :
-    map f (@nhds α (induced f t) a) = 𝓝 (f a) := by rw [nhds_induced, Filter.map_comap_of_mem h]
+    map f (@nhds α (induced f t).toTopologicalSpaceWithoutAtlas a) = 𝓝 (f a) := by
+  rw [nhds_induced, Filter.map_comap_of_mem h]
 
 theorem closure_induced {f : α → β} {a : α} {s : Set α} :
     a ∈ @closure α (t.induced f) s ↔ f a ∈ closure (f '' s) := by

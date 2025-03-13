@@ -290,7 +290,8 @@ theorem UniformSpace.Core.ext :
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, rfl => rfl
 
 theorem UniformSpace.Core.nhds_toTopologicalSpace {α : Type u} (u : Core α) (x : α) :
-    @nhds α u.toTopologicalSpace x = comap (Prod.mk x) u.uniformity := by
+    @nhds α u.toTopologicalSpace.toTopologicalSpaceWithoutAtlas x =
+      comap (Prod.mk x) u.uniformity := by
   apply TopologicalSpace.nhds_mkOfNhds_of_hasBasis (fun _ ↦ (basis_sets _).comap _)
   · exact fun a U hU ↦ u.refl hU rfl
   · intro a U hU
