@@ -34,7 +34,7 @@ variable {l : Type ul} {m : Type um} {n : Type un} {o : Type uo} {R : Type uR}
 
 section Infinite
 
-variable [Semiring R] {A : Matrix m n R}
+variable [Semiring R]
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
 noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range Aᵀ
