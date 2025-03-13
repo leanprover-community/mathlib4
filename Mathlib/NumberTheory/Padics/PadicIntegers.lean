@@ -197,33 +197,13 @@ instance : NormedCommRing ℤ_[p] where
   dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
   norm_mul_le := by simp [norm_def]
 
-instance : NormOneClass ℤ_[p] :=
-  ⟨norm_def.trans norm_one⟩
-
-instance isAbsoluteValue : IsAbsoluteValue fun z : ℤ_[p] => ‖z‖ where
-  abv_nonneg' := norm_nonneg
-  abv_eq_zero' := by simp [norm_eq_zero]
-  abv_add' := fun ⟨_, _⟩ ⟨_, _⟩ => norm_add_le _ _
-  abv_mul' _ _ := by simp only [norm_def, padicNormE.mul, PadicInt.coe_mul]
+instance : NormMulClass ℤ_[p] := ⟨fun x y ↦ by simp [norm_def]⟩
 
 variable {p}
-
-instance : IsDomain ℤ_[p] := Function.Injective.isDomain (subring p).subtype Subtype.coe_injective
 
 /-! ### Norm -/
 
 theorem norm_le_one (z : ℤ_[p]) : ‖z‖ ≤ 1 := z.2
-
-@[simp]
-theorem norm_mul (z1 z2 : ℤ_[p]) : ‖z1 * z2‖ = ‖z1‖ * ‖z2‖ := by simp [norm_def]
-
-@[simp]
-theorem norm_pow (z : ℤ_[p]) : ∀ n : ℕ, ‖z ^ n‖ = ‖z‖ ^ n
-  | 0 => by simp
-  | k + 1 => by
-    rw [pow_succ, pow_succ, norm_mul]
-    congr
-    apply norm_pow
 
 theorem nonarchimedean (q r : ℤ_[p]) : ‖q + r‖ ≤ max ‖q‖ ‖r‖ := padicNormE.nonarchimedean _ _
 

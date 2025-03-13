@@ -67,13 +67,13 @@ theorem eventually_nhds_norm_smul_sub_lt (c : 𝕜) (x : E) {ε : ℝ} (h : 0 < 
 
 theorem Filter.Tendsto.zero_smul_isBoundedUnder_le {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : Tendsto f l (𝓝 0)) (hg : IsBoundedUnder (· ≤ ·) l (Norm.norm ∘ g)) :
-    Tendsto (fun x => f x • g x) l (𝓝 0) :=
+    Tendsto (fun x ↦ f x • g x) l (𝓝 0) :=
   hf.op_zero_isBoundedUnder_le hg (· • ·) norm_smul_le
 
 theorem Filter.IsBoundedUnder.smul_tendsto_zero {f : α → 𝕜} {g : α → E} {l : Filter α}
     (hf : IsBoundedUnder (· ≤ ·) l (norm ∘ f)) (hg : Tendsto g l (𝓝 0)) :
-    Tendsto (fun x => f x • g x) l (𝓝 0) :=
-  hg.op_zero_isBoundedUnder_le hf (flip (· • ·)) fun x y =>
+    Tendsto (fun x ↦ f x • g x) l (𝓝 0) :=
+  hg.op_zero_isBoundedUnder_le hf (flip (· • ·)) fun x y ↦
     (norm_smul_le y x).trans_eq (mul_comm _ _)
 
 instance NormedSpace.discreteTopology_zmultiples
@@ -93,17 +93,15 @@ instance NormedSpace.discreteTopology_zmultiples
 
 open NormedField
 
-instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
-  { __ := ULift.seminormedAddCommGroup (E := E),
-    __ := ULift.module'
-    norm_smul_le := fun s x => (norm_smul_le s x.down :) }
+instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) where
+  __ := ULift.seminormedAddCommGroup (E := E)
+  __ := ULift.module'
+  norm_smul_le s x := norm_smul_le s x.down
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
 instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
   { Prod.seminormedAddCommGroup (E := E) (F := F), Prod.instModule with
-    norm_smul_le := fun s x => by
-      simp only [norm_smul, Prod.norm_def, Prod.smul_snd, Prod.smul_fst,
-        mul_max_of_nonneg, norm_nonneg, le_rfl] }
+    norm_smul_le s x := by simp [norm_smul] }
 
 /-- The product of finitely many normed spaces is a normed space, with the sup norm. -/
 instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedAddCommGroup (E i)]
@@ -111,7 +109,7 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
   norm_smul_le a f := by
     simp_rw [← coe_nnnorm, ← NNReal.coe_mul, NNReal.coe_le_coe, Pi.nnnorm_def,
       NNReal.mul_finset_sup]
-    exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
+    exact Finset.sup_mono_fun fun _ _ ↦ nnnorm_smul_le a _
 
 instance SeparationQuotient.instNormedSpace : NormedSpace 𝕜 (SeparationQuotient E) where
   norm_smul_le := norm_smul_le
@@ -159,7 +157,7 @@ theorem NormedSpace.exists_lt_norm (c : ℝ) : ∃ x : E, c < ‖x‖ := by
   rwa [norm_smul, ← div_lt_iff₀]
   rwa [norm_pos_iff]
 
-protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h =>
+protected theorem NormedSpace.unbounded_univ : ¬Bornology.IsBounded (univ : Set E) := fun h ↦
   let ⟨R, hR⟩ := isBounded_iff_forall_norm_le.1 h
   let ⟨x, hx⟩ := NormedSpace.exists_lt_norm 𝕜 E R
   hx.not_le (hR x trivial)
@@ -220,18 +218,17 @@ variable [NormedField 𝕜] [NonUnitalSeminormedRing 𝕜']
 variable [NormedSpace 𝕜 𝕜'] [SMulCommClass 𝕜 𝕜' 𝕜'] [IsScalarTower 𝕜 𝕜' 𝕜']
 ```
 -/
-class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜'] extends
-  Algebra 𝕜 𝕜' where
-  norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
+class NormedAlgebra (𝕜 : Type*) (𝕜' : Type*) [NormedField 𝕜] [SeminormedRing 𝕜']
+    extends Algebra 𝕜 𝕜' where
+  protected norm_smul_le : ∀ (r : 𝕜) (x : 𝕜'), ‖r • x‖ ≤ ‖r‖ * ‖x‖
 
 attribute [inherit_doc NormedAlgebra] NormedAlgebra.norm_smul_le
 
 variable (𝕜')
 variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
-instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
-  { NormedAlgebra.toAlgebra.toModule with
-  norm_smul_le := NormedAlgebra.norm_smul_le }
+instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' where
+  norm_smul_le := NormedAlgebra.norm_smul_le
 
 theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
@@ -278,7 +275,7 @@ variable (𝕜)
 
 /-- In a normed algebra, the inclusion of the base field in the extended field is an isometry. -/
 theorem algebraMap_isometry [NormOneClass 𝕜'] : Isometry (algebraMap 𝕜 𝕜') := by
-  refine Isometry.of_dist_eq fun x y => ?_
+  refine Isometry.of_dist_eq fun x y ↦ ?_
   rw [dist_eq_norm, dist_eq_norm, ← RingHom.map_sub, norm_algebraMap']
 
 instance NormedAlgebra.id : NormedAlgebra 𝕜 𝕜 :=
@@ -353,45 +350,26 @@ section RestrictScalars
 
 section NormInstances
 
-instance [I : SeminormedAddCommGroup E] :
-    SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [SeminormedAddCommGroup E] : SeminormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : NormedAddCommGroup E] :
-    NormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [NormedAddCommGroup E] : NormedAddCommGroup (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : NonUnitalSeminormedRing E] :
-    NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [NonUnitalSeminormedRing E] : NonUnitalSeminormedRing (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : NonUnitalNormedRing E] :
-    NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [NonUnitalNormedRing E] : NonUnitalNormedRing (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : SeminormedRing E] :
-    SeminormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [SeminormedRing E] : SeminormedRing (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : NormedRing E] :
-    NormedRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [NormedRing E] : NormedRing (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : NonUnitalSeminormedCommRing E] :
-    NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [NonUnitalSeminormedCommRing E] : NonUnitalSeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
+  ‹_›
 
-instance [I : NonUnitalNormedCommRing E] :
-    NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [NonUnitalNormedCommRing E] : NonUnitalNormedCommRing (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : SeminormedCommRing E] :
-    SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [SeminormedCommRing E] : SeminormedCommRing (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
-instance [I : NormedCommRing E] :
-    NormedCommRing (RestrictScalars 𝕜 𝕜' E) :=
-  I
+instance [NormedCommRing E] : NormedCommRing (RestrictScalars 𝕜 𝕜' E) := ‹_›
 
 end NormInstances
 
@@ -405,7 +383,7 @@ variable [NormedField 𝕜] [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 `RestrictScalars.module` is additionally a `NormedSpace`. -/
 instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 𝕜' E) :=
   { RestrictScalars.module 𝕜 𝕜' E with
-    norm_smul_le := fun c x =>
+    norm_smul_le c x :=
       (norm_smul_le (algebraMap 𝕜 𝕜' c) (_ : E)).trans_eq <| by rw [norm_algebraMap'] }
 
 -- If you think you need this, consider instead reproducing `RestrictScalars.lsmul`
@@ -413,9 +391,9 @@ instance RestrictScalars.normedSpace : NormedSpace 𝕜 (RestrictScalars 𝕜 �
 /-- The action of the original normed_field on `RestrictScalars 𝕜 𝕜' E`.
 This is not an instance as it would be contrary to the purpose of `RestrictScalars`.
 -/
-def Module.RestrictScalars.normedSpaceOrig {𝕜 : Type*} {𝕜' : Type*} {E : Type*} [NormedField 𝕜']
-    [SeminormedAddCommGroup E] [I : NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
-  I
+def Module.RestrictScalars.normedSpaceOrig {𝕜 𝕜' E : Type*} [NormedField 𝕜']
+    [SeminormedAddCommGroup E] [NormedSpace 𝕜' E] : NormedSpace 𝕜' (RestrictScalars 𝕜 𝕜' E) :=
+  ‹_›
 
 /-- Warning: This declaration should be used judiciously.
 Please consider using `IsScalarTower` and/or `RestrictScalars 𝕜 𝕜' E` instead.
@@ -653,7 +631,7 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 
     (hbounded : IsBounded (f '' s)) : Continuous f := by
   obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
   obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_subset f hUε)
-  refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) => ?_)
+  refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) ↦ ?_)
   simp only [dist_zero_right, _root_.map_zero, exists_prop]
   simp only [subset_def, mem_image, mem_ball, dist_zero_right, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂] at hC
@@ -661,7 +639,7 @@ lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 
   obtain ⟨n, hn⟩ := exists_nat_gt (C / ε)
   have hnpos : 0 < (n : ℝ) := (div_pos hC₀ hε).trans hn
   have hn₀ : n ≠ 0 := by rintro rfl; simp at hnpos
-  refine ⟨δ / n, div_pos hδ hnpos, fun {x} hxδ => ?_⟩
+  refine ⟨δ / n, div_pos hδ hnpos, fun {x} hxδ ↦ ?_⟩
   calc
     ‖f x‖
     _ = ‖(n : ℝ)⁻¹ • f (n • x)‖ := by simp [← Nat.cast_smul_eq_nsmul ℝ, hn₀]
