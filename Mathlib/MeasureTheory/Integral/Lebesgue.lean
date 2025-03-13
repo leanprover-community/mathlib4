@@ -1324,10 +1324,8 @@ lemma lintegral_piecewise (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ 
     ∫⁻ a, s.piecewise f g a ∂μ = ∫⁻ a in s, f a ∂μ + ∫⁻ a in sᶜ, g a ∂μ := by
   rw [← lintegral_add_compl _ hs]
   congr 1
-  · refine setLIntegral_congr_fun hs ?_
-    exact ae_of_all μ (fun a ha ↦ Set.piecewise_eq_of_mem _ _ _ ha)
-  · refine setLIntegral_congr_fun hs.compl ?_
-    exact ae_of_all μ (fun a ha ↦ Set.piecewise_eq_of_not_mem _ _ _ ha)
+  · exact setLIntegral_congr_fun hs <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_mem _ _ _
+  · exact setLIntegral_congr_fun hs.compl <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_not_mem _ _ _
 
 theorem setLintegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
