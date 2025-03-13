@@ -38,14 +38,14 @@ variable {Ω : Type u} [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac)
 
 lemma integrable_exp_of_ae_le_const [IsFiniteMeasure μ] {X : Ω → ℝ} (b : ℝ)
     (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
-    ∀ (t : ℝ), 0 ≤ t → t ∈ integrableExpSet X μ := by
+    ∀ t, 0 ≤ t → t ∈ integrableExpSet X μ := by
   intro t ht
   refine .of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) ?_
   filter_upwards [hb] with ω hb using ⟨by positivity, by gcongr⟩
 
 lemma integrable_exp_of_ae_const_le [IsFiniteMeasure μ] {X : Ω → ℝ} (a : ℝ)
     (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, a ≤ X ω) :
-    ∀ (t : ℝ), t ≤ 0 → t ∈ integrableExpSet X μ := by
+    ∀ t, t ≤ 0 → t ∈ integrableExpSet X μ := by
   intro t ht
   dsimp [integrableExpSet]
   rw [(by funext ω; simp only [mul_neg, neg_mul, neg_neg]:
@@ -55,7 +55,7 @@ lemma integrable_exp_of_ae_const_le [IsFiniteMeasure μ] {X : Ω → ℝ} (a : �
   · filter_upwards [hb] with ω hb using neg_le_neg_iff.mpr hb
   · exact neg_nonneg.mpr ht
 
-lemma integrable_exp_of_ae_mem_Icc [IsFiniteMeasure μ] {X : Ω → ℝ} (a b : ℝ)
+lemma integrableExpSet_of_ae_mem_Icc [IsFiniteMeasure μ] {X : Ω → ℝ} (a b : ℝ)
     (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     integrableExpSet X μ = Set.univ := by
   apply Set.eq_univ_iff_forall.mpr
@@ -68,10 +68,10 @@ lemma integrable_exp_of_ae_mem_Icc [IsFiniteMeasure μ] {X : Ω → ℝ} (a b : 
     apply integrable_exp_of_ae_const_le _ _  hX
       (by filter_upwards [hb] with ω hb using hb.1) _ (le_of_not_ge sign_t)
 
-theorem integrable_exp_set_interior_of_ae_mem_Icc  [IsFiniteMeasure μ] {X : Ω → ℝ} (t a b : ℝ)
+theorem mem_interior_integrableExpSet_of_ae_mem_Icc  [IsFiniteMeasure μ] {X : Ω → ℝ} (t a b : ℝ)
     (hX : AEMeasurable X μ)
     (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b) : t ∈ interior (integrableExpSet X μ) := by
-  rw [integrable_exp_of_ae_mem_Icc μ a b hX h]
+  rw [integrableExpSet_of_ae_mem_Icc μ a b hX h]
   apply mem_interior_iff_mem_nhds.mpr Filter.univ_mem
 
 theorem cgf_deriv_eq_tilted_measure_expectation {X : Ω → ℝ} (t : ℝ)
@@ -84,25 +84,26 @@ theorem cgf_deriv_eq_tilted_measure_expectation {X : Ω → ℝ} (t : ℝ)
 
 theorem cgf_iterated_deriv_two_eq_tilted_measure_variance [IsProbabilityMeasure μ]
     {X : Ω → ℝ} (t a b : ℝ) (hX : AEMeasurable X μ) (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b):
-    iteratedDeriv 2 (cgf X μ) t = Var[X; μ.tilted fun ω ↦ t * X ω] := by
+    iteratedDeriv 2 (cgf X μ) t = Var[X ; μ.tilted fun ω ↦ t * X ω] := by
   rw [iteratedDeriv_two_cgf]
   · have p : (μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ (X ω) ^ 2] =
       (μ[fun ω ↦ (X ω) ^ 2 * rexp (t * X ω)]) / mgf X μ t := by
       rw [MeasureTheory.integral_tilted, ← integral_div]
       simp only [smul_eq_mul, mgf]; congr with ω; ring
     rw [<- p, cgf_deriv_eq_tilted_measure_expectation _ t
-      (integrable_exp_set_interior_of_ae_mem_Icc μ t a b hX h)]
+      (mem_interior_integrableExpSet_of_ae_mem_Icc μ t a b hX h)]
     dsimp only
-    have p : Var[X; μ.tilted fun ω ↦ t * X ω] =
+    have p : Var[X ; μ.tilted fun ω ↦ t * X ω] =
         (μ.tilted fun ω ↦ t * X ω)[X ^ 2] - ((μ.tilted fun ω ↦ t * X ω)[X]) ^ 2 := by
       have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ t * X ω) :=
         isProbabilityMeasure_tilted
-        (by rw [integrable_exp_of_ae_mem_Icc μ a b hX h]; exact trivial : t ∈ integrableExpSet X μ)
+        (by rw [integrableExpSet_of_ae_mem_Icc μ a b hX h]; exact trivial :
+          t ∈ integrableExpSet X μ)
       have hμ := tilted_absolutelyContinuous μ fun ω ↦ t * X ω
       apply variance_def' <|
         memLp_of_bounded (hμ h) (AEMeasurable.aestronglyMeasurable (hX.mono_ac hμ)) 2
     rw [p]; exact rfl
-  · exact integrable_exp_set_interior_of_ae_mem_Icc μ t a b hX h
+  · exact mem_interior_integrableExpSet_of_ae_mem_Icc μ t a b hX h
 
 theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
     (t a b : ℝ) {X : Ω → ℝ} (ht : 0 < t)
@@ -118,7 +119,7 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
     rw [deriv_cgf_zero]
     · simp only [measure_univ, ENNReal.one_toReal, div_one, f']
       exact h0
-    · exact integrable_exp_set_interior_of_ae_mem_Icc μ 0 a b hX h
+    · exact mem_interior_integrableExpSet_of_ae_mem_Icc μ 0 a b hX h
   have q : ∃ c ∈ (Set.Ioo 0 t), f t = f 0 + f' 0 * t + f'' c * t ^ 2 / 2 := by
     have q' : ∃ c ∈ (Set.Ioo 0 t), f t - taylorWithinEval f 1 (Set.Icc 0 t) 0 t =
       iteratedDerivWithin (1 + 1) f (Set.Icc 0 t) c * (t - 0) ^ (1 + 1) / ↑(1 + 1).factorial := by
@@ -126,13 +127,14 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
       · simp only [Nat.cast_one]
         apply AnalyticOn.contDiffOn_of_completeSpace
         have : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) := analyticOn_cgf
-        rw [integrable_exp_of_ae_mem_Icc μ a b hX h] at this
+        rw [integrableExpSet_of_ae_mem_Icc μ a b hX h] at this
         rw [interior_univ] at this
         exact AnalyticOn.mono this (fun ⦃a⦄ a ↦ trivial)
       · apply DifferentiableOn.mono
         apply ContDiffOn.differentiableOn_iteratedDerivWithin
         exact AnalyticOn.contDiffOn (n := 2) (AnalyticOn.mono analyticOn_cgf
-          (fun s hs ↦ integrable_exp_set_interior_of_ae_mem_Icc μ s a b hX h)) (uniqueDiffOn_Icc ht)
+          (fun s hs ↦ mem_interior_integrableExpSet_of_ae_mem_Icc μ s a b hX h))
+          (uniqueDiffOn_Icc ht)
         norm_cast
         exact uniqueDiffOn_Icc ht
         exact Set.Ioo_subset_Icc_self
@@ -145,7 +147,7 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
       iteratedDerivWithin_one, smul_eq_mul, Nat.reduceAdd, Nat.factorial_two, Nat.cast_ofNat] at qc'
       have q1 : derivWithin f (Set.Icc 0 t) 0 = f' 0 := by
         rw [DifferentiableAt.derivWithin]
-        · exact differentiableAt_cgf (integrable_exp_set_interior_of_ae_mem_Icc μ 0 a b hX h)
+        · exact differentiableAt_cgf (mem_interior_integrableExpSet_of_ae_mem_Icc μ 0 a b hX h)
         · apply uniqueDiffWithinAt_convex (convex_Icc 0 t)
           simp only [interior_Icc, Set.nonempty_Ioo]
           exact ht
@@ -175,7 +177,7 @@ theorem cgf_le_bound_of_ae_mem_Icc_and_mean_zero [IsProbabilityMeasure μ]
         dsimp [f'']
         rw [cgf_iterated_deriv_two_eq_tilted_measure_variance _ c a b hX h]
         · have _ : IsProbabilityMeasure (μ.tilted fun ω ↦ c * X ω) := isProbabilityMeasure_tilted
-            (by rw [integrable_exp_of_ae_mem_Icc μ a b hX h]; exact trivial :
+            (by rw [integrableExpSet_of_ae_mem_Icc μ a b hX h]; exact trivial :
               c ∈ integrableExpSet X μ)
           exact variance_le_sq_of_bounded
             ((tilted_absolutelyContinuous μ fun ω ↦ c * X ω) h)
@@ -201,7 +203,8 @@ private theorem hoeffding_nonneg [IsProbabilityMeasure μ]
     rw [<- log_le_iff_le_exp]
     exact this
     apply mgf_pos' (Ne.symm (NeZero.ne' μ))
-      (by rw [integrable_exp_of_ae_mem_Icc μ a b hX h]; exact trivial : (t ∈ integrableExpSet X μ))
+      (by rw [integrableExpSet_of_ae_mem_Icc μ a b hX h]; exact trivial :
+      (t ∈ integrableExpSet X μ))
   exact cgf_le_bound_of_ae_mem_Icc_and_mean_zero μ t a b
     (lt_of_le_of_ne ht fun a ↦ w (id (Eq.symm a))) hX h h0
 
