@@ -21,7 +21,7 @@ simplifier lemmas, akin to those that already exists for `ENat.toNat`.
 variable {α : Type*}
 
 /-- Conversion from `WithTop.toBase` to `α`, mapping `⊤` to zero. -/
-noncomputable def WithTop.toBase [Zero α] (a : WithTop α) : α := a.untopD 0
+def WithTop.toBase [Zero α] (a : WithTop α) : α := a.untopD 0
 
 /-!
 ## Simplifying Lemmas in cases where α is an Instance of Zero
