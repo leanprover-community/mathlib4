@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.LinearIndependent.Defs
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Pigeonhole
 
 /-!
 # Results relating bases and cardinality.

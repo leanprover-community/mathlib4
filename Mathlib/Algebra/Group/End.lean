@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms

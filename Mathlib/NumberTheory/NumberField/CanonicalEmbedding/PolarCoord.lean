@@ -120,7 +120,7 @@ theorem polarCoordReal_symm_target_ae_eq_univ :
   exact set_prod_ae_eq (by rfl) pi_polarCoord_symm_target_ae_eq_univ
 
 open scoped Classical in
-theorem integral_comp_polarCoordReal_symm  {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+theorem integral_comp_polarCoordReal_symm {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     (f : realMixedSpace K → E) :
     ∫ x in (polarCoordReal K).target, (∏ w : {w // IsComplex w}, (x.2 w).1) •
       f ((polarCoordReal K).symm x) = ∫ x, f x := by

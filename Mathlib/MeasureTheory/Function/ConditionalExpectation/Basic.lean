@@ -82,8 +82,9 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 open scoped Classical in
 variable (m) in
-/-- Conditional expectation of a function. It is defined as 0 if any one of the following conditions
-is true:
+/-- Conditional expectation of a function, with notation `μ[f|m]`.
+
+It is defined as 0 if any one of the following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
@@ -97,8 +98,20 @@ noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : �
 
 @[deprecated (since := "2025-01-21")] alias condexp := condExp
 
--- We define notation `μ[f|m]` for the conditional expectation of `f` with respect to `m`.
-@[inherit_doc] scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
+@[inherit_doc MeasureTheory.condExp]
+scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
+  `(MeasureTheory.condExp $m $μ $f)
+
+/-- Unexpander for `μ[f|m]` notation. -/
+@[app_unexpander MeasureTheory.condExp]
+def condExpUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $m $μ $f) => `($μ[$f|$m])
+  | _ => throw ()
+
+/-- info: μ[f|m] : α → E -/
+#guard_msgs in #check μ[f | m]
+/-- info: μ[f|m] sorry : E -/
+#guard_msgs in #check μ[f | m] (sorry : α)
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
