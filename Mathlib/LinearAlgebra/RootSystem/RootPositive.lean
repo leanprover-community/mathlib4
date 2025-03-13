@@ -52,6 +52,16 @@ lemma two_mul_apply_root_root_of_isOrthogonal (P : RootPairing ι R M N)
   rw [reflection_apply, reflection_apply_self, root_coroot'_eq_pairing, LinearMap.map_sub₂,
     LinearMap.map_smul₂, smul_eq_mul, LinearMap.map_neg, LinearMap.map_neg, mul_neg, neg_sub_neg]
 
+lemma pairing_mul_eq_pairing_mul_swap (P : RootPairing ι R M N)
+    (B : LinearMap.BilinForm R M)
+    (hB : B.IsSymm)
+    (i j : ι)
+    (hi : B.IsOrthogonal (P.reflection i))
+    (hj : B.IsOrthogonal (P.reflection j)) :
+    P.pairing j i * B (P.root i) (P.root i) = P.pairing i j * B (P.root j) (P.root j) := by
+  rw [← P.two_mul_apply_root_root_of_isOrthogonal B i j hj,
+    ← P.two_mul_apply_root_root_of_isOrthogonal B j i hi, ← hB.eq, RingHom.id_apply]
+
 variable (S) in
 /-- Given a root pairing, this is an invariant symmetric bilinear form satisfying a positivity
 condition. -/

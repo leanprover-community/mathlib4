@@ -5,6 +5,7 @@ Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.LinearAlgebra.RootSystem.RootPositive
+import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 /-!
 # The canonical bilinear form on a finite root pairing
@@ -37,7 +38,6 @@ Weyl group.
  * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 ## TODO (possibly in other files)
- * Weyl-invariance
  * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
 -/
 
@@ -147,6 +147,32 @@ lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
   exact Fintype.sum_equiv (P.reflection_perm i)
     (fun j ↦ (P.coroot' (P.reflection_perm i j) x) * (P.coroot' (P.reflection_perm i j) y))
     (fun j ↦ P.coroot' j x * P.coroot' j y) (congrFun rfl)
+
+lemma rootForm_isOrthogonal_reflection (i : ι) :
+    P.RootForm.IsOrthogonal (P.reflection i) :=
+  P.rootForm_reflection_reflection_apply i
+
+lemma pairing_mul_eq_pairing_mul_swap' (i j : ι) :
+    P.pairing j i * P.RootForm (P.root i) (P.root i) =
+    P.pairing i j * P.RootForm (P.root j) (P.root j) :=
+  P.pairing_mul_eq_pairing_mul_swap P.RootForm P.rootForm_symmetric i j
+    (P.rootForm_isOrthogonal_reflection i) (P.rootForm_isOrthogonal_reflection j)
+
+@[simp]
+lemma rootForm_weylGroup_apply (g : P.weylGroup) (x y : M) :
+    P.RootForm (g • x) (g • y) = P.RootForm x y := by
+  revert x y
+  obtain ⟨g, hg⟩ := g
+  induction hg using weylGroup.induction with
+  | mem i => simp
+  | one => simp
+  | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
+    intro x y
+    -- TODO Right way to avoid this `change`?
+    change P.RootForm
+      (((⟨g₁, hg₁⟩ : P.weylGroup) * (⟨g₂, hg₂⟩ : P.weylGroup)) • x)
+      (((⟨g₁, hg₁⟩ : P.weylGroup) * (⟨g₂, hg₂⟩ : P.weylGroup)) • y) = P.RootForm x y
+    rw [mul_smul, mul_smul, hg₁', hg₂']
 
 /-- This is SGA3 XXI Lemma 1.2.1 (10), key for proving nondegeneracy and positivity. -/
 lemma rootForm_self_smul_coroot (i : ι) :

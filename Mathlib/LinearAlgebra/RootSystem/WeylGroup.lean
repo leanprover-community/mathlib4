@@ -175,4 +175,12 @@ def weylGroupRootRep : Representation R P.weylGroup M :=
 def weylGroupCorootRep : Representation R P.weylGroup.op N :=
   Representation.ofDistribMulAction R P.weylGroup.op N
 
+lemma weylGroup_apply_root (g : P.weylGroup) (i : ι) :
+    g • P.root i = P.root (P.weylGroupToPerm g i) := by
+  -- Gross proof: poor API here, needs fixing
+  obtain ⟨e, h⟩ := g
+  simp only [Subgroup.mk_smul, MonoidHom.restrict_apply, Equiv.indexHom_apply]
+  change e.weightMap (P.root i) = _
+  rw [Hom.root_weightMap_apply]
+
 end RootPairing
