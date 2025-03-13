@@ -196,17 +196,17 @@ theorem liftPropOn_univ : LiftPropOn P g univ ↔ LiftProp P g := by
   simp [LiftPropOn, LiftProp, LiftPropAt]
 
 theorem liftPropWithinAt_self {f : H → H'} {s : Set H} {x : H} :
-    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P f s x :=
-  liftPropWithinAt_iff' ..
+    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P f s x := by
+  simp [liftPropWithinAt_iff']
 
 theorem liftPropWithinAt_self_source {f : H → M'} {s : Set H} {x : H} :
-    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P (chartAt H' (f x) ∘ f) s x :=
-  liftPropWithinAt_iff' ..
+    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P (chartAt H' (f x) ∘ f) s x := by
+  simp [liftPropWithinAt_iff']
 
 theorem liftPropWithinAt_self_target {f : M → H'} :
     LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧
-      P (f ∘ (chartAt H x).symm) ((chartAt H x).symm ⁻¹' s) (chartAt H x x) :=
-  liftPropWithinAt_iff' ..
+      P (f ∘ (chartAt H x).symm) ((chartAt H x).symm ⁻¹' s) (chartAt H x x) := by
+  simp [liftPropWithinAt_iff']
 
 namespace LocalInvariantProp
 

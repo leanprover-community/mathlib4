@@ -737,6 +737,7 @@ theorem chartedSpaceSelf_atlas {H : Type*} [h : TopologicalSpace H] {e : Partial
   exact Iff.rfl
 
 /-- In the model space, `chartAt` is always the identity. -/
+@[simp, mfld_simps]
 theorem chartAt_self_eq {H : Type*} [h : TopologicalSpace H] {x : H} :
     chartAt H x = PartialHomeomorph.refl H := by
   simp only [instChartedSpaceSelf, h.chartedSpaceSelf_eq_id]

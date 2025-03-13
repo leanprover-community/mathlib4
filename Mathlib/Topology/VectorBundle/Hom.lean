@@ -122,7 +122,7 @@ def continuousLinearMap :
     dsimp only [comp_apply]
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
     exacts [h₁, h₂]
-  open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
+  open_target' := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
   baseSet := e₁.baseSet ∩ e₂.baseSet
   open_baseSet := e₁.open_baseSet.inter e₂.open_baseSet
   source_eq := rfl

@@ -196,12 +196,12 @@ noncomputable def prod : Trivialization (F₁ × F₂) (π (F₁ × F₂) (E₁ 
   map_target' _ h := h.1
   left_inv' _ := Prod.left_inv
   right_inv' _ := Prod.right_inv
-  open_source := by
+  open_source' := by
     convert (e₁.open_source.prod e₂.open_source).preimage
         (FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous
     ext x
     simp only [Trivialization.source_eq, mfld_simps]
-  open_target := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
+  open_target' := (e₁.open_baseSet.inter e₂.open_baseSet).prod isOpen_univ
   continuousOn_toFun := Prod.continuous_to_fun
   continuousOn_invFun := Prod.continuous_inv_fun
   baseSet := e₁.baseSet ∩ e₂.baseSet
@@ -316,10 +316,10 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   right_inv' x h := by
     simp_rw [mem_prod, mem_preimage, mem_univ, and_true] at h
     simp_rw [Pullback.lift_mk, e.apply_mk_symm h]
-  open_source := by
+  open_source' := by
     simp_rw [e.source_eq, ← preimage_comp]
     exact e.open_baseSet.preimage ((map_continuous f).comp <| Pullback.continuous_proj F E f)
-  open_target := ((map_continuous f).isOpen_preimage _ e.open_baseSet).prod isOpen_univ
+  open_target' := ((map_continuous f).isOpen_preimage _ e.open_baseSet).prod isOpen_univ
   open_baseSet := (map_continuous f).isOpen_preimage _ e.open_baseSet
   continuousOn_toFun :=
     (Pullback.continuous_proj F E f).continuousOn.prod
@@ -327,6 +327,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
         e.continuousOn.comp (Pullback.continuous_lift F E f).continuousOn Subset.rfl)
   continuousOn_invFun := by
     dsimp only
+    rw [tendsto_nhdsWithoutAtlas_inf_principal]
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp_def,
       pullbackTotalSpaceEmbedding]
     refine

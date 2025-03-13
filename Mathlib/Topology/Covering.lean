@@ -100,9 +100,9 @@ protected theorem isLocalHomeomorphOn (hf : IsCoveringMapOn f s) :
           invFun := fun p => ⟨p, x, rfl⟩
           source := e.baseSet ×ˢ ({⟨x, rfl⟩} : Set (f ⁻¹' {f x}))
           target := e.baseSet
-          open_source :=
+          open_source' :=
             e.open_baseSet.prod (singletons_open_iff_discrete.2 (hf (f x) hx).1 ⟨x, rfl⟩)
-          open_target := e.open_baseSet
+          open_target' := e.open_baseSet
           map_source' := fun p => And.left
           map_target' := fun p hp => ⟨hp, rfl⟩
           left_inv' := fun p hp => Prod.ext rfl hp.2.symm
@@ -164,7 +164,7 @@ protected theorem isSeparatedMap : IsSeparatedMap f :=
     refine ⟨t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₁).2}, t.source ∩ (Prod.snd ∘ t) ⁻¹' {(t e₂).2},
       ?_, ?_, ⟨he₁, rfl⟩, ⟨he₂, rfl⟩, Set.disjoint_left.mpr fun x h₁ h₂ ↦ hne (t.injOn he₁ he₂ ?_)⟩
     iterate 2
-      exact t.continuousOn_toFun.isOpen_inter_preimage t.open_source
+      exact t.toPartialHomeomorph.continuousOn.isOpen_inter_preimage t.open_source
         (continuous_snd.isOpen_preimage _ <| isOpen_discrete _)
     refine Prod.ext ?_ (h₁.2.symm.trans h₂.2)
     rwa [t.proj_toFun e₁ he₁, t.proj_toFun e₂ he₂]

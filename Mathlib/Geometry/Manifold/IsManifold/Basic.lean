@@ -314,7 +314,7 @@ section ModelWithCornersProd
 as the model to tangent bundles. -/
 abbrev ModelWithCorners.tangent {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (ModelProd H E) :=
+    (I : ModelWithCorners 𝕜 E H) : ModelWithCorners 𝕜 (E × E) (H × E) :=
   I.prod 𝓘(𝕜, E)
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -380,7 +380,7 @@ instance ModelWithCorners.range_eq_univ_prod {𝕜 : Type u} [NontriviallyNormed
     [NormedSpace 𝕜 E'] {H' : Type w'} [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H')
     [I'.Boundaryless] : (I.prod I').Boundaryless := by
   constructor
-  dsimp [ModelWithCorners.prod, ModelProd]
+  dsimp [ModelWithCorners.prod]
   rw [← prod_range_range_eq, ModelWithCorners.Boundaryless.range_eq_univ,
     ModelWithCorners.Boundaryless.range_eq_univ, univ_prod_univ]
 
