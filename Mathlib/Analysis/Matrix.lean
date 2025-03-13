@@ -325,7 +325,7 @@ the norm of a matrix. -/
 protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
     NonUnitalSeminormedRing (Matrix n n α) :=
   { Matrix.linftyOpSeminormedAddCommGroup, Matrix.instNonUnitalRing with
-    norm_mul := linfty_opNorm_mul }
+    norm_mul_le := linfty_opNorm_mul }
 
 /-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
 carries no data. -/
@@ -597,7 +597,7 @@ matrix. -/
 def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
   { Matrix.frobeniusSeminormedAddCommGroup, Matrix.instRing with
     norm := Norm.norm
-    norm_mul := frobenius_norm_mul
+    norm_mul_le := frobenius_norm_mul
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Normed algebra instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not
