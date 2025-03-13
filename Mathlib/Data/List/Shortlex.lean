@@ -135,11 +135,10 @@ private theorem _root_.Acc.shortlex {a : α} {b : List α} (aca : Acc r a)
   | intro xa _ iha =>
     induction acb with
     | intro xb _ ihb =>
-      refine Acc.intro ([xa] ++ xb) fun p lt => ?_
+      refine Acc.intro (xa :: xb) fun p lt => ?_
       rcases shortlex_def.mp lt with h1 | ⟨h2len, h2lex⟩
       · exact ih _ h1
-      · simp only [cons_append, nil_append, length_cons] at h2len h2lex
-        cases h2lex with
+      · cases h2lex with
         | nil => simp at h2len
         | @cons x xs _ h =>
           simp only [length_cons, add_left_inj] at h2len
@@ -148,8 +147,7 @@ private theorem _root_.Acc.shortlex {a : α} {b : List α} (aca : Acc r a)
           rw [List.length_cons, ← h2len]
           exact hl
         | @rel x xs _ _ h =>
-          simp only [List.length_cons, Nat.succ_eq_add_one, List.singleton_append,
-            add_left_inj] at h2len
+          simp only [List.length_cons, List.singleton_append, add_left_inj] at h2len
           refine iha _ h (ih xs (by rw [h2len]; simp)) fun l hl => ?_
           apply ih
           rw [List.length_cons, ← h2len]
