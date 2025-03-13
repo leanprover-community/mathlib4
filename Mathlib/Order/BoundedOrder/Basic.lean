@@ -420,8 +420,7 @@ abbrev OrderTop.lift [LE α] [Top α] [LE β] [OrderTop β] (f : α → β)
   ⟨fun a =>
     map_le _ _ <| by
       rw [map_top]
-      -- Porting note: lean3 didn't need the type annotation
-      exact @le_top β _ _ _⟩
+      exact le_top _⟩
 
 -- See note [reducible non-instances]
 /-- Pullback an `OrderBot`. -/
@@ -430,8 +429,7 @@ abbrev OrderBot.lift [LE α] [Bot α] [LE β] [OrderBot β] (f : α → β)
   ⟨fun a =>
     map_le _ _ <| by
       rw [map_bot]
-      -- Porting note: lean3 didn't need the type annotation
-      exact @bot_le β _ _ _⟩
+      exact bot_le _⟩
 
 -- See note [reducible non-instances]
 /-- Pullback a `BoundedOrder`. -/

@@ -138,7 +138,7 @@ theorem equiv_symm_smul [SMul K V] :
 variable (K V)
 
 /-- `WithLp.equiv` as a linear equivalence. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def linearEquiv [Semiring K] [AddCommGroup V] [Module K V] : WithLp p V ≃ₗ[K] V :=
   { LinearEquiv.refl _ _ with
     toFun := WithLp.equiv _ _

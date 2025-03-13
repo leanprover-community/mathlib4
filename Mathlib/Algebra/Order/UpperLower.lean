@@ -103,15 +103,15 @@ instance : Div (UpperSet α) :=
 instance : SMul α (UpperSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_one : ((1 : UpperSet α) : Set α) = Set.Ici 1 :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : UpperSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div (s t : UpperSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
@@ -163,11 +163,11 @@ instance : Div (LowerSet α) :=
 instance : SMul α (LowerSet α) :=
   ⟨fun a s ↦ ⟨(a • ·) '' s, s.2.smul⟩⟩
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_mul (s t : LowerSet α) : (↑(s * t) : Set α) = s * t :=
   rfl
 
-@[to_additive (attr := simp,norm_cast)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_div (s t : LowerSet α) : (↑(s / t) : Set α) = s / t :=
   rfl
 
