@@ -597,84 +597,56 @@ section
 
 lemma GradedPiece.HEq_one_smul {i : ιM} (x : GradedPiece FM FM_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) • x) x := by
-  let rx := Quotient.out x
-  have : (1 : F 0).1 • rx.1 = rx.1 := MulAction.one_smul rx.1
-  apply HEq_eq_mk_eq FM FM_lt (zero_vadd ι i) this
-  · rw [← Quotient.out_eq' x]
-    exact gradedSMul_def F F_lt FM FM_lt (1 : F 0) rx
-  · exact (Quotient.out_eq' x).symm
+  induction x using GradedPiece.induction_on
+  rename_i rx
+  exact HEq_eq_mk_eq FM FM_lt (zero_vadd ι i) (MulAction.one_smul rx.1) _ _
+    (gradedSMul_def F F_lt FM FM_lt (1 : F 0) rx) rfl
 
 theorem GradedPiece.smul_add {i : ι} {j : ιM} (a : GradedPiece F F_lt i)
     (b c : GradedPiece FM FM_lt j) : a • (b + c) = a • b + a • c := by
-  induction a using Quotient.ind'
-  induction b using Quotient.ind'
-  induction c using Quotient.ind'
-  rename_i a1 a2 a3
-  show Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp [QuotientAddGroup.leftRel_apply, AddSubgroup.mem_addSubgroupOf]
-  have : -(a1 • (a2 + a3)).1 + ((a1 • a2).1 + (a1 • a3).1) = 0 := by
-    have : -(a1.1 • (a2.1 + a3.1)) + (a1.1 • a2.1 + a1.1 • a3.1) = 0 := by
-      simp only [_root_.smul_add]
-      abel
-    rw [← this]
-    rfl
-  simpa only [this] using zero_mem (FM_lt (i +ᵥ j))
+  induction a using GradedPiece.induction_on
+  induction b using GradedPiece.induction_on
+  induction c using GradedPiece.induction_on
+  rename_i ra rb rc
+  simp only [← map_add, mk_smul]
+  congr
+  exact SetCoe.ext (_root_.smul_add ra.1 rb.1 rc.1)
 
 theorem GradedPiece.add_smul {i : ι} {j : ιM} (a b : GradedPiece F F_lt i)
     (c : GradedPiece FM FM_lt j) : (a + b) • c = a • c + b • c := by
-  induction a using Quotient.ind'
-  induction b using Quotient.ind'
-  induction c using Quotient.ind'
-  rename_i a1 a2 a3
-  show Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp only [QuotientAddGroup.leftRel_apply, mem_addSubgroupOf, coe_add, NegMemClass.coe_neg]
-  have : -((a1 + a2) • a3).1 + ((a1 • a3).1 + (a2 • a3).1) = 0 := by
-    have : -((a1.1 + a2.1) • a3.1) + (a1.1 • a3.1 + a2.1 • a3.1) = 0 := by
-      simp only [_root_.add_smul, neg_add_rev]
-      abel
-    rw [← this]
-    rfl
-  simpa only [this] using zero_mem (FM_lt (i +ᵥ j))
+  induction a using GradedPiece.induction_on
+  induction b using GradedPiece.induction_on
+  induction c using GradedPiece.induction_on
+  rename_i ra rb rc
+  simp only [← map_add, mk_smul]
+  congr
+  exact SetCoe.ext (_root_.add_smul ra.1 rb.1 rc.1)
 
 theorem GradedPiece.smul_zero {i : ι} {j : ιM} (a : GradedPiece F F_lt i) :
     a • (0 : GradedPiece FM FM_lt j) = (0 : GradedPiece FM FM_lt (i +ᵥ j)) := by
-  rw [← QuotientAddGroup.mk_zero, ← QuotientAddGroup.mk_zero]
-  induction a using Quotient.ind'
-  show Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp only [ZeroMemClass.coe_zero, mul_zero, QuotientAddGroup.leftRel_apply, add_zero, neg_mem_iff]
-  show (_ : R) • (0 : M) ∈ (FM_lt (i +ᵥ j))
-  simpa only [_root_.smul_zero] using zero_mem (FM_lt (i +ᵥ j))
+  rw [← map_zero (GradedPiece.mk FM FM_lt), ← map_zero (GradedPiece.mk FM FM_lt)]
+  induction a using GradedPiece.induction_on
+  rw [GradedPiece.mk_smul]
+  congr
+  exact SetCoe.ext (_root_.smul_zero _)
 
 theorem GradedPiece.zero_smul  {i : ι} {j : ιM} (a : GradedPiece FM FM_lt j) :
     (0 : GradedPiece F F_lt i) • a = (0 : GradedPiece FM FM_lt (i +ᵥ j)) := by
-  rw [← QuotientAddGroup.mk_zero, ← QuotientAddGroup.mk_zero]
-  induction a using Quotient.ind'
-  show Quotient.mk'' _ = Quotient.mk'' _
-  rw [Quotient.eq'']
-  simp only [ZeroMemClass.coe_zero, zero_mul, QuotientAddGroup.leftRel_apply, add_zero, neg_mem_iff]
-  show (0 : R) • (_ : M) ∈ (FM_lt (i +ᵥ j))
-  simpa only [_root_.zero_smul] using zero_mem (FM_lt (i +ᵥ j))
+  rw [← map_zero (GradedPiece.mk FM FM_lt), ← map_zero (GradedPiece.mk F F_lt)]
+  induction a using GradedPiece.induction_on
+  rw [GradedPiece.mk_smul]
+  congr
+  exact SetCoe.ext (_root_.zero_smul R _)
 
 lemma GradedPiece.HEq_mul_smul [hasGMul F F_lt] {i j : ι} {k : ιM}
     (a : GradedPiece F F_lt i) (b : GradedPiece F F_lt j) (c : GradedPiece FM FM_lt k) :
     HEq ((a * b) • c) (a • (b • c)) := by
-  let ra := Quotient.out a
-  let rb := Quotient.out b
-  let rc := Quotient.out c
-  apply HEq_eq_mk_eq FM FM_lt (add_vadd i j k) (mul_smul ra.1 rb.1 rc.1)
-  · show (a * b) • c = ⟦(ra * rb) • rc⟧
-    rw [← Quotient.out_eq' c]
-    convert gradedSMul_def F F_lt FM FM_lt (ra * rb) rc
-    rw [← Quotient.out_eq' a, ← Quotient.out_eq' b]
-    exact (gradedMul_def F F_lt ra rb).symm
-  · show a • (b • c) = ⟦ra • (rb • rc)⟧
-    rw [← Quotient.out_eq' a]
-    convert gradedSMul_def F F_lt FM FM_lt ra (rb • rc)
-    rw [← Quotient.out_eq' b, ← Quotient.out_eq' c]
-    exact gradedSMul_def F F_lt FM FM_lt rb rc
+  induction a using GradedPiece.induction_on
+  induction b using GradedPiece.induction_on
+  induction c using GradedPiece.induction_on
+  rename_i ra rb rc
+  exact HEq_eq_mk_eq FM FM_lt (add_vadd i j k) (mul_smul ra.1 rb.1 rc.1) _ _
+    (gradedSMul_def F F_lt FM FM_lt (ra * rb) rc) (gradedSMul_def F F_lt FM FM_lt ra (rb • rc))
 
 end
 
