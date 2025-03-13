@@ -32,8 +32,6 @@ The following notation is declared in locale `SimpleGraph`:
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 -/
 
-open Fintype
-
 namespace SimpleGraph
 
 variable {V α β γ : Type*} {G G₁ G₂ G₃ : SimpleGraph V}
@@ -168,17 +166,17 @@ lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
 /-- A simple graph having no edges is contained in any simple graph having sufficent vertices. -/
-lemma bot_isContained_of_embedding (f : α ↪ β) : (⊥ : SimpleGraph α) ⊑ B :=
-  ⟨⟨f, False.elim⟩, f.injective⟩
+lemma bot_isContained_iff_nonempty : (⊥ : SimpleGraph α) ⊑ B ↔ Nonempty (α ↪ β) :=
+  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding⟩, fun ⟨f⟩ ↦ ⟨⟨f, False.elim⟩, f.injective⟩⟩
 
-protected alias IsContained.bot_of_embedding := bot_isContained_of_embedding
+protected alias IsContained.bot_iff_nonempty := bot_isContained_iff_nonempty
 
-@[inherit_doc bot_isContained_of_embedding]
-lemma bot_isContained_of_card_le [Fintype α] [Fintype β] (h : card α ≤ card β) :
-    (⊥ : SimpleGraph α) ⊑ B :=
-  bot_isContained_of_embedding (Function.Embedding.nonempty_of_card_le h).some
+@[inherit_doc bot_isContained_iff_nonempty]
+lemma bot_isContained_iff_card_le [Fintype α] [Fintype β] :
+    (⊥ : SimpleGraph α) ⊑ B ↔ Fintype.card α ≤ Fintype.card β :=
+  bot_isContained_iff_nonempty.trans Function.Embedding.nonempty_iff_card_le
 
-protected alias IsContained.bot_of_card_le := bot_isContained_of_card_le
+protected alias IsContained.bot_iff_card_le := bot_isContained_iff_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
