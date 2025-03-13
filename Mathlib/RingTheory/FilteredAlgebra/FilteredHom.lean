@@ -422,21 +422,17 @@ noncomputable def AssociatedGradedModuleHom [DecidableEq ι] [DecidableEq ιM] :
   __ := f.1.AssociatedGradedAddMonoidHom
   map_smul' r' m' := DirectSum.induction_on r' (by simp)
     (DirectSum.induction_on m' (by simp)
-      (fun j m' i r' ↦ QuotientAddGroup.induction_on r' <| QuotientAddGroup.induction_on m' <|
-          fun m r ↦ by
-          simp only [Gmodule.smul_def, Gmodule.smulAddMonoidHom_apply_of_of,
-            ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-            FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of,
-            AssociatedGradedRingHom_apply_of]
-          congr
-          show Grₛₗ(i +ᵥ j)[f] _ =
-            GradedPiece.mk FN FN_lt ⟨(σ₁₂.toRingHom r.1) • (f.toAddMonoidHom m.1), _⟩
-          simp only [GradedMonoid.GSMul.smul, hasGSMul.gradedSMul, Quotient.map₂_mk, RingHom.coe_mk,
-            MonoidHom.coe_mk, OneHom.coe_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-          have : ⟦r • m⟧ = GradedPiece.mk FM FM_lt ⟨r.1 • m.1, _⟩ := rfl
-          rw [this, FilteredAddGroupHom.GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
-          congr
-          exact SetCoe.ext (f.toLinearMap.map_smul' r.1 m.1))
+      (fun j m' i r' ↦ by
+        induction r' using GradedPiece.induction_on
+        induction m' using GradedPiece.induction_on
+        rename_i r m
+        simp only [Gmodule.smul_def, Gmodule.smulAddMonoidHom_apply_of_of, GradedMonoid.GSMul.smul,
+          gradedSMul_def, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+          FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of,
+          FilteredAddGroupHom.GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, AddMonoidHom.coe_mk,
+          ZeroHom.coe_mk, AssociatedGradedRingHom_apply_of]
+        congr
+        exact SetCoe.ext (f.toLinearMap.map_smul' r.1 m.1))
       (by intro m1 m2 h1 h2 i x
           simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, smul_add, map_add] at h1 h2 ⊢
           rw [h1 i x, h2 i x]))
