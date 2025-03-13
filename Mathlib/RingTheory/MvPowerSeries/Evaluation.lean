@@ -68,7 +68,7 @@ structure EvalDomain (a : σ → S) : Prop where
   tendsto_zero : Tendsto a cofinite (𝓝 0)
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
-def EvalDomain_ideal [IsTopologicalRing S] [IsLinearTopology S S] :
+def evalDomainIdeal [IsTopologicalRing S] [IsLinearTopology S S] :
     Ideal (σ → S) where
   carrier := {a | EvalDomain a}
   add_mem' {a} {b} ha hb := {
@@ -146,16 +146,15 @@ private instance : UniformSpace (MvPolynomial σ R) :=
 private instance [UniformAddGroup R] : UniformAddGroup (MvPolynomial σ R) :=
   UniformAddGroup.comap coeToMvPowerSeries.ringHom
 
-theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformInducing :
+theorem _root_.MvPolynomial.coeToMvPowerSeries_isUniformInducing :
     IsUniformInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
   (isUniformInducing_iff ⇑coeToMvPowerSeries.ringHom).mpr rfl
 
-theorem _root_.MvPolynomial.coeToMvPowerSeries_denseInducing :
+theorem _root_.MvPolynomial.coeToMvPowerSeries_isDenseInducing :
     IsDenseInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
   coeToMvPowerSeries_uniformInducing.isDenseInducing coeToMvPowerSeries_denseRange
 
 variable {a : σ → S}
-
 
 /- The evaluation map on multivariate polynomials is uniformly continuous
 for the uniform structure induced by that on multivariate power series. -/
@@ -276,7 +275,7 @@ theorem eval₂_coe (f : MvPolynomial σ R) :
     MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
   have : ∃ p : MvPolynomial σ R, (p : MvPowerSeries σ R) = f := ⟨f, rfl⟩
   rw [eval₂, dif_pos this]
-  apply _root_.congr_arg
+  congr
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 
 theorem eval₂_C (r : R) :
@@ -301,7 +300,7 @@ noncomputable def eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :
     coeToMvPowerSeries_denseRange
     (coeToMvPowerSeries_uniformContinuous hφ ha)
 
-theorem eval₂Hom_apply (hφ : Continuous φ) (ha : EvalDomain a) (f : MvPowerSeries σ R) :
+theorem eval₂Hom_eq_extend (hφ : Continuous φ) (ha : EvalDomain a) (f : MvPowerSeries σ R) :
     eval₂Hom hφ ha f =
       coeToMvPowerSeries_denseInducing.extend (MvPolynomial.eval₂ φ a) f :=
   rfl
@@ -309,7 +308,6 @@ theorem eval₂Hom_apply (hφ : Continuous φ) (ha : EvalDomain a) (f : MvPowerS
 theorem coe_eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :
     ⇑(eval₂Hom hφ ha) = eval₂ φ a := by
   ext f
-  let hf := fun (p : MvPolynomial σ R) ↦ p = f
   simp only [eval₂Hom_apply, eval₂]
   split_ifs with h
   · obtain ⟨p, rfl⟩ := h
@@ -318,6 +316,9 @@ theorem coe_eval₂Hom (hφ : Continuous φ) (ha : EvalDomain a) :
         (coeToMvPowerSeries_uniformContinuous hφ ha).continuous p
   · rfl
 
+-- Note: this is still true without the `T2Space` hypothesis, by arguing that the case
+-- disjunction in the definition of `eval₂` only replaces some values by topologically
+-- inseparable ones.
 theorem uniformContinuous_eval₂ (hφ : Continuous φ) (ha : EvalDomain a) :
     UniformContinuous (eval₂ φ a) := by
   rw [← coe_eval₂Hom hφ ha]
@@ -330,7 +331,7 @@ theorem continuous_eval₂ (hφ : Continuous φ) (ha : EvalDomain a) :
     Continuous (eval₂ φ a : MvPowerSeries σ R → S) :=
   (uniformContinuous_eval₂ hφ ha).continuous
 
-theorem hasSum_eval₂ (hφ : Continuous φ) (ha : EvalDomain a)(f : MvPowerSeries σ R) :
+theorem hasSum_eval₂ (hφ : Continuous φ) (ha : EvalDomain a) (f : MvPowerSeries σ R) :
     HasSum
     (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e => (a s) ^ e))
     (MvPowerSeries.eval₂ φ a f) := by
@@ -340,13 +341,13 @@ theorem hasSum_eval₂ (hφ : Continuous φ) (ha : EvalDomain a)(f : MvPowerSeri
     eval₂_coe, eval₂_monomial]
   · rw [coe_eval₂Hom]; exact continuous_eval₂ hφ ha
 
-theorem eval₂_eq_sum (hφ : Continuous φ) (ha : EvalDomain a)(f : MvPowerSeries σ R) :
+theorem eval₂_eq_tsum (hφ : Continuous φ) (ha : EvalDomain a) (f : MvPowerSeries σ R) :
     MvPowerSeries.eval₂ φ a f =
-      tsum (fun (d : σ →₀ ℕ) ↦ φ (coeff R d f) * (d.prod fun s e => (a s) ^ e)) :=
+      ∑' (d : σ →₀ ℕ), φ (coeff R d f) * (d.prod fun s e => (a s) ^ e) :=
   (hasSum_eval₂ hφ ha f).tsum_eq.symm
 
 theorem eval₂_unique (hφ : Continuous φ) (ha : EvalDomain a)
-    {ε : MvPowerSeries σ R →+* S} (hε : Continuous ε)
+    {ε : MvPowerSeries σ R → S} (hε : Continuous ε)
     (h : ∀ p : MvPolynomial σ R, ε p = MvPolynomial.eval₂ φ a p) :
     ε = eval₂ φ a := by
   rw [← coe_eval₂Hom hφ ha]
@@ -357,14 +358,11 @@ theorem comp_eval₂ (hφ : Continuous φ) (ha : EvalDomain a)
     [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [UniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
-  rw [← coe_eval₂Hom hφ ha, ← coe_comp]
   apply eval₂_unique _ (ha.comp hε)
-  · simp only [coe_comp, coe_eval₂Hom hφ ha]
-    exact Continuous.comp hε (continuous_eval₂ hφ ha)
+  · exact Continuous.comp hε (continuous_eval₂ hφ ha)
   · intro p
-    simp only [coe_comp, Function.comp_apply, eval₂_coe]
-    rw [coe_eval₂Hom hφ ha, eval₂_coe φ a, ← MvPolynomial.coe_eval₂Hom, ← comp_apply,
-    MvPolynomial.comp_eval₂Hom]
+    simp only [Function.comp_apply, eval₂_coe]
+    rw [← MvPolynomial.coe_eval₂Hom, ← comp_apply, MvPolynomial.comp_eval₂Hom]
     rfl
   · simp only [coe_comp, Continuous.comp hε hφ]
 
@@ -395,17 +393,9 @@ theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε)
   rw [coe_aeval]
   apply eval₂_unique (continuous_algebraMap R S) _ hε
   · intro p
-    induction p using MvPolynomial.induction_on with
-    | h_C r =>
-      simp only [AlgHom.toRingHom_eq_coe, coe_C, coe_coe, MvPolynomial.eval₂_C]
-      rw [c_eq_algebraMap, AlgHom.commutes]
-    | h_add p q hp hq =>
-      simp only [AlgHom.toRingHom_eq_coe, coe_coe] at hp hq
-      simp only [AlgHom.toRingHom_eq_coe, coe_add, map_add, coe_coe, eval₂_add, hp, hq]
-    | h_X p s h =>
-      simp only [AlgHom.toRingHom_eq_coe, coe_coe] at h
-      simp only [AlgHom.toRingHom_eq_coe, MvPolynomial.coe_mul, coe_X, map_mul, coe_coe, eval₂_mul,
-        MvPolynomial.eval₂_X, h]
+    change ε.comp (coeToMvPowerSeries.algHom R) p = _
+    conv_lhs => rw [← p.aeval_X_left_apply, MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
+    simp [MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
   · exact EvalDomain.evalDomain_X.comp hε
 
 theorem hasSum_aeval (ha : EvalDomain a) (f : MvPowerSeries σ R) :
@@ -425,12 +415,11 @@ theorem comp_aeval (ha : EvalDomain a)
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε)  := by
-  apply DFunLike.coe_injective
+  apply DFunLike.ext'
   simp only [AlgHom.coe_comp, coe_aeval ha]
   erw [comp_eval₂ (continuous_algebraMap R S) ha hε, coe_aeval]
-  apply congr_arg₂
-  · simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.coe_coe]
-  · rfl
+  congr!
+  simp only [AlgHom.toRingHom_eq_coe, AlgHom.comp_algebraMap_of_tower, RingHom.coe_coe]
 
 end Evaluation
 
