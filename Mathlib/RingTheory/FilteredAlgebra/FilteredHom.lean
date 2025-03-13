@@ -274,15 +274,13 @@ noncomputable def AssociatedGradedRingHom [DecidableEq ι] :
     simp [RingHom.map_one f.toRingHom]
   map_mul' a b := DirectSum.induction_on a (by simp)
     (DirectSum.induction_on b (by simp)
-      (fun j y' i x' ↦ QuotientAddGroup.induction_on x' <| QuotientAddGroup.induction_on y' <|
-          fun y x ↦ by
+      (fun j y' i x' ↦ by
+          induction x' using GradedPiece.induction_on
+          induction y' using GradedPiece.induction_on
+          rename_i x y
           simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, DirectSum.of_mul_of,
-            FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of]
-          congr
-          show Gr+*(i + j)[f] (GradedPiece.mk FR FR_lt ⟨x.1 * y.1, _⟩) =
-            GradedPiece.mk FS FS_lt ⟨f.toRingHom x.1 * f.toRingHom y.1, _⟩
-          simp only [FilteredAddGroupHom.GradedPieceHom, GradedPiece.mk_eq,
-            QuotientAddGroup.map_mk]
+            FilteredAddGroupHom.AssociatedGradedAddMonoidHom_apply_of, GradedMonoid.GMul.mul,
+            GradedPiece.gradedMul_def, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
           congr
           exact SetCoe.ext (map_mul f.toRingHom x.1 y.1))
       (by intro x y h1 h2 i z
