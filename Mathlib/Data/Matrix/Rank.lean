@@ -48,9 +48,11 @@ lemma cRank_mono_col.{u,v,v₀,w} {m : Type u} {n : Type v} {n₀ : Type v₀} {
   rintro _ ⟨x, rfl⟩
   exact ⟨c x, rfl⟩
 
-lemma cRank_lift_mono_row.{u,u₀,v} {m : Type u} {m₀ : Type u₀} {R : Type v} [Semiring R]
-    (A : Matrix m n R) (r : m₀ → m) :
-    lift.{u, max u₀ v} (A.submatrix r id).cRank ≤ lift.{u₀, max u v} A.cRank := by
+lemma lift_cRank_submatrix_le.{um,um₀,un,un₀,uR}
+    {m : Type um} {m₀ : Type um₀} {n : Type un} {n₀ : Type un₀} {R : Type uR} [Semiring R]
+    (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+    lift.{um, max um₀ uR} (A.submatrix r c).cRank ≤ lift.{um₀, max um uR} A.cRank := by
+  refine (Cardinal.lift_monotone <| (A.submatrix r id).cRank_mono_col c).trans ?_
   let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
   have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
     rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
@@ -60,18 +62,14 @@ lemma cRank_lift_mono_row.{u,u₀,v} {m : Type u} {m₀ : Type u₀} {R : Type v
   simp_rw [← lift_umax] at hwin ⊢
   exact hwin
 
-lemma cRank_submatrix_le.{u,u₀,v,v₀,w}
-    {m : Type u} {m₀ : Type u₀} {n : Type v} {n₀ : Type v₀} {R : Type w} [Semiring R]
-    (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
-    lift.{u, max u₀ w} (A.submatrix r c).cRank ≤ lift.{u₀, max u w} A.cRank := by
-  apply le_trans _ (cRank_lift_mono_row _ r)
-  apply Cardinal.lift_monotone
-  apply le_trans _ (cRank_mono_col _ c)
-  simp [A.submatrix_submatrix]
+/-- A copy of `lift_cRank_submatrix_le` for when `l` and `n` are in the same universe. -/
+lemma cRank_submatrix_le.{uln} {l n : Type uln} (A : Matrix n o R) (r : l → n) (c : m → o) :
+    (A.submatrix r c).cRank ≤ A.cRank := by
+  simpa using lift_cRank_submatrix_le A r c
 
 lemma cRank_mono_row.{u} {m m₀ : Type u} (A : Matrix m n R) (r : m₀ → m) :
     (A.submatrix r id).cRank ≤ A.cRank  := by
-  simpa using A.cRank_lift_mono_row r
+  simpa using A.lift_cRank_submatrix_le r id
 
 lemma cRank_le_card_row [StrongRankCondition R] [Fintype m] (A : Matrix m n R) :
     A.cRank ≤ Fintype.card m :=
@@ -90,10 +88,7 @@ lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
 
 lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     (A.submatrix r c).eRank ≤ A.eRank := by
-  obtain hle | hlt := le_or_lt aleph0 (A.submatrix id c).cRank
-  · simp [eRank, toENat_eq_top.2 <| hle.trans <| A.cRank_mono_col c]
-  refine le_trans ?_ <| OrderHomClass.mono _ <| A.cRank_mono_col c
-  simpa using (toENat_le_iff_of_lt_aleph0 (by simpa)).2 <| (A.submatrix id c).cRank_lift_mono_row r
+  simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat <| lift_cRank_submatrix_le A r c
 
 lemma eRank_le_card_col [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
   classical
