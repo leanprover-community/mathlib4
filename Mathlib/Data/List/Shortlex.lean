@@ -85,7 +85,7 @@ theorem singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
     false_or]
 
 instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
-  InvImage.trichotomous (by simp [Function.Injective])
+  ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
 
 
 instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) :=
@@ -163,7 +163,7 @@ theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := by
   | ind n ih =>
     cases n with
     | zero =>
-      rw [List.length_eq_zero] at len_a
+      rw [List.length_eq_zero_iff] at len_a
       rw [len_a]
       exact Acc.intro _ <| fun _ ylt => (Shortlex.not_nil_right ylt).elim
     | succ n =>
