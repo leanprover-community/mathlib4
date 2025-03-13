@@ -38,7 +38,7 @@ info: Try this: rw [mul_eq_right]
 -/
 #guard_msgs in
 example [Group G] (h : G) : 1 * h = h := by
-  rw? [-mul_left_eq_self]
+  rw? [-mul_left_eq_self] -- exclude deprecated name for mul_eq_right, it is found first otherwise
 
 #adaptation_note /-- nightly-2024-03-27
 `rw?` upstream no longer uses `MVarId.applyRefl`, so it can't deal with `Iff` goals.
