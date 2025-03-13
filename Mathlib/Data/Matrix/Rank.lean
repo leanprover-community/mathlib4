@@ -49,7 +49,7 @@ lemma cRank_mono_col (A : Matrix m n R) (c : n₀ → n) : (A.submatrix id c).cR
   exact ⟨c x, rfl⟩
 
 lemma lift_cRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
-    lift.{um, max um₀ uR} (A.submatrix r c).cRank ≤ lift.{um₀, max um uR} A.cRank := by
+    lift.{um} (A.submatrix r c).cRank ≤ lift.{um₀} A.cRank := by
   refine (Cardinal.lift_monotone <| (A.submatrix r id).cRank_mono_col c).trans ?_
   let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
   have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
