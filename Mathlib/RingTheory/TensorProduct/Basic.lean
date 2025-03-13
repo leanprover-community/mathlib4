@@ -204,6 +204,25 @@ end liftBaseChange
 
 end LinearMap
 
+namespace Module.End
+
+open LinearMap
+
+variable (R M N : Type*)
+  [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+
+/-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
+@[simps!]
+noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
+  .ofLinearMap (lTensorHom (M := N)) (lTensor_id N M) (lTensor_mul N)
+
+/-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
+@[simps!]
+noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
+  .ofLinearMap (rTensorHom (M := N)) (rTensor_id N M) (rTensor_mul N)
+
+end Module.End
+
 namespace Algebra
 
 namespace TensorProduct
@@ -1406,23 +1425,3 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
   rintro _ ⟨t, rfl⟩
   exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
     (by simp +contextual [add_mem])
-
-section MoveMe
-
-namespace LinearMap
-
-variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-/-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
-@[simps!]
-noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
-  .ofLinearMap (lTensorHom (M := N)) (lTensor_id N M) (lTensor_mul N)
-
-/-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
-@[simps!]
-noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
-  .ofLinearMap (rTensorHom (M := N)) (rTensor_id N M) (rTensor_mul N)
-
-end LinearMap
-
-end MoveMe

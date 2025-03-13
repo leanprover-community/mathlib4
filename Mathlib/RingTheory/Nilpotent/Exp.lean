@@ -174,7 +174,7 @@ theorem map_exp {B F : Type*} [Ring B] [FunLike F A B] [RingHomClass F A B] [Mod
 
 end IsNilpotent
 
-namespace LinearMap
+namespace Module.End
 
 variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   [Module ℚ M] [Module ℚ N]
@@ -207,11 +207,11 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
   have h_nilL : IsNilpotent DL := h_nil.map <| lTensorAlgHom R B B
   have h_nilR : IsNilpotent DR := h_nil.map <| rTensorAlgHom R B B
   have h_comm : Commute DL DR := by ext; simp [DL, DR]
-  let m : B ⊗[R] B →ₗ[R] B := lift <| LinearMap.mul R B
+  let m : B ⊗[R] B →ₗ[R] B := LinearMap.mul' R B
   have hm (x y : B) : m (x ⊗ₜ[R] y) = x * y := rfl
   have h₁ : exp D (x * y) = m (exp (DL + DR) (x ⊗ₜ[R] y)) := by
     suffices exp D ∘ₗ m = m ∘ₗ exp (DL + DR) by simpa using LinearMap.congr_fun this (x ⊗ₜ[R] y)
-    apply LinearMap.commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
+    apply commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
     ext
     simp [DL, DR, hm, h_der]
   let aux := h_nil.map_exp (lTensorAlgHom R B B)
@@ -219,4 +219,4 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
   have h₃ : exp DR = (exp D).rTensor B := (h_nil.map_exp (rTensorAlgHom R B B)).symm
   simp [h₁, exp_add_of_commute h_comm h_nilL h_nilR, h₂, h₃, hm]
 
-end LinearMap
+end Module.End
