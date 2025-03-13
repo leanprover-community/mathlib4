@@ -232,8 +232,10 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         by_cases h1 : G.degree vᵣ ≤ 1
         · sorry
         · push_neg at h1
-          have := IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hq.reverse
-            (by simp_rw [support_reverse, List.mem_reverse]; exact hmax) h1
+          set p := (q.append v41).reverse with hpq
+          have hp : p.IsPath := hq.reverse
+          have := IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hp
+            (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
           sorry
 
     · rw [not_nonempty_iff_eq_empty] at hem
