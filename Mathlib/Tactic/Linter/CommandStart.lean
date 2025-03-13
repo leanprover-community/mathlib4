@@ -133,7 +133,7 @@ Currently, the unlined nodes are mostly related to `Subtype`, `Set` and `Finset`
 list notation.
 -/
 abbrev unlintedNodes := #[``«term_::_», ``«term{_:_//_}», `«term{_}», `Mathlib.Meta.setBuilder,
-  `Bundle.termπ__, `Finset.«term_#_», ``«term{}»]
+  `Bundle.termπ__, `Finset.«term_#_», ``«term{}», `ToAdditive.toAdditiveRest]
 
 @[inherit_doc Mathlib.Linter.linter.style.commandStart]
 def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
@@ -152,9 +152,17 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some finalLintPos := lintUpTo stx then
     if let some stype := stx.find? (unlintedNodes.contains ·.getKind) then
       Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-        m!"Found '{stype.getKind}' in '{stype}'"
+        m!"Found a '{stype.getKind}' node in '{stype}'"
       if let some pos := stype.getPos? then
-        if pos ≤ finalLintPos then
+        if pos ≤ finalLintPos && stype.getKind != `ToAdditive.toAdditiveRest then
+          return
+      -- we allow the linter to inspect declarations with a `to_additive` doc-string, as long as
+      -- it fits in a single line.  Otherwise, getting the right formatting is hard.
+      if stype.getKind == `ToAdditive.toAdditiveRest then
+        let addDoc :=  stype.find? (·.isAtom) |>.map (·.getAtomVal) |>.getD ""
+        if addDoc.contains '\n' then
+          Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+            m!"Stop linting, since {addDoc} is a multiline additive docstring"
           return
     let stx := capSyntax stx finalLintPos.1
     let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
