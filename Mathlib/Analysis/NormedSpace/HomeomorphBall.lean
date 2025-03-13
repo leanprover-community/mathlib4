@@ -57,8 +57,8 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
     have : 0 < 1 - ‖y‖ ^ 2 := by nlinarith [norm_nonneg y, mem_ball_zero_iff.1 hy]
     field_simp [norm_smul, smul_smul, this.ne', sq_abs, Real.sq_sqrt this.le,
       ← Real.sqrt_div this.le]
-  open_source := isOpen_univ
-  open_target := isOpen_ball
+  open_source' := isOpen_univ
+  open_target' := isOpen_ball
   continuousOn_toFun := by
     suffices Continuous fun (x : E) => (√(1 + ‖x‖ ^ 2))⁻¹
      from (this.smul continuous_id).continuousOn

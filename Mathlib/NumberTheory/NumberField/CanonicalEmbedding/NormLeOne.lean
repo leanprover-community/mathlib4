@@ -119,8 +119,8 @@ def expMap_single (w : InfinitePlace K) : PartialHomeomorph ℝ ℝ where
   invFun := fun x ↦ w.mult * Real.log x
   source := Set.univ
   target := Set.Ioi 0
-  open_source := isOpen_univ
-  open_target := isOpen_Ioi
+  open_source' := isOpen_univ
+  open_target' := isOpen_Ioi
   map_source' _ _ := Real.exp_pos _
   map_target' _ _ := trivial
   left_inv' _ _ := by simp only [Real.log_exp, mul_inv_cancel_left₀ mult_coe_ne_zero]

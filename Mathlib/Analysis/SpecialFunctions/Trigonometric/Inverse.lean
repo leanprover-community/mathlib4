@@ -246,8 +246,8 @@ def sinPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   map_target' _ hy := ⟨neg_pi_div_two_lt_arcsin.2 hy.1, arcsin_lt_pi_div_two.2 hy.2⟩
   left_inv' _ hx := arcsin_sin hx.1.le hx.2.le
   right_inv' _ hy := sin_arcsin hy.1.le hy.2.le
-  open_source := isOpen_Ioo
-  open_target := isOpen_Ioo
+  open_source' := isOpen_Ioo
+  open_target' := isOpen_Ioo
   continuousOn_toFun := continuous_sin.continuousOn
   continuousOn_invFun := continuous_arcsin.continuousOn
 

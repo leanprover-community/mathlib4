@@ -295,8 +295,8 @@ def tanPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   map_target' y _ := arctan_mem_Ioo y
   left_inv' _ hx := arctan_tan hx.1 hx.2
   right_inv' y _ := tan_arctan y
-  open_source := isOpen_Ioo
-  open_target := isOpen_univ
+  open_source' := isOpen_Ioo
+  open_target' := isOpen_univ
   continuousOn_toFun := continuousOn_tan_Ioo
   continuousOn_invFun := continuous_arctan.continuousOn
 

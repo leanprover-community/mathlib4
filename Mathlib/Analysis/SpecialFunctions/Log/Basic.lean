@@ -408,8 +408,8 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
   map_target' _ _ := mem_univ _
   left_inv' _ _ := by simp
   right_inv' _ hx := exp_log hx
-  open_source := isOpen_univ
-  open_target := isOpen_Ioi
+  open_source' := isOpen_univ
+  open_target' := isOpen_Ioi
   continuousOn_toFun := continuousOn_exp
   continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 

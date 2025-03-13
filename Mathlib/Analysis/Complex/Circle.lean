@@ -40,7 +40,6 @@ open ComplexConjugate
 
 /-- The unit circle in `ℂ`. -/
 def Circle : Type := Submonoid.unitSphere ℂ
-deriving TopologicalSpace
 
 namespace Circle
 variable {x y : Circle}

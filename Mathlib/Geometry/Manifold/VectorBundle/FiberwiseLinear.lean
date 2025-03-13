@@ -41,8 +41,8 @@ def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
   map_target' _x hx := mk_mem_prod hx.1 (mem_univ _)
   left_inv' _ _ := Prod.ext rfl (ContinuousLinearEquiv.symm_apply_apply _ _)
   right_inv' _ _ := Prod.ext rfl (ContinuousLinearEquiv.apply_symm_apply _ _)
-  open_source := hU.prod isOpen_univ
-  open_target := hU.prod isOpen_univ
+  open_source' := hU.prod isOpen_univ
+  open_target' := hU.prod isOpen_univ
   continuousOn_toFun :=
     have : ContinuousOn (fun p : B × F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       hφ.prod_map continuousOn_id

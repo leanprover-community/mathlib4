@@ -35,8 +35,8 @@ noncomputable def sqPartialHomeomorph : PartialHomeomorph ℝ ℝ where
   map_target' _ h := mem_Ioi.2 (sqrt_pos.2 h)
   left_inv' _ h := sqrt_sq (le_of_lt h)
   right_inv' _ h := sq_sqrt (le_of_lt h)
-  open_source := isOpen_Ioi
-  open_target := isOpen_Ioi
+  open_source' := isOpen_Ioi
+  open_target' := isOpen_Ioi
   continuousOn_toFun := (continuous_pow 2).continuousOn
   continuousOn_invFun := continuousOn_id.sqrt
 

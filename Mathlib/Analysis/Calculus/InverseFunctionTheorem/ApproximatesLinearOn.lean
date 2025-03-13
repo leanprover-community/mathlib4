@@ -384,8 +384,8 @@ returns a partial homeomorphism with `toFun = f` and `source = s`. -/
 def toPartialHomeomorph (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) (hs : IsOpen s) : PartialHomeomorph E F where
   toPartialEquiv := hf.toPartialEquiv hc
-  open_source := hs
-  open_target := hf.open_image f'.toNonlinearRightInverse hs <| by
+  open_source' := hs
+  open_target' := hf.open_image f'.toNonlinearRightInverse hs <| by
     rwa [f'.toEquiv.subsingleton_congr] at hc
   continuousOn_toFun := hf.continuousOn
   continuousOn_invFun := hf.inverse_continuousOn hc

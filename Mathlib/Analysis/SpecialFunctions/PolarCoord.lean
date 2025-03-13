@@ -70,8 +70,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
       mul_assoc] at Z
     simp [A]
-  open_target := isOpen_Ioi.prod isOpen_Ioo
-  open_source :=
+  open_target' := isOpen_Ioi.prod isOpen_Ioo
+  open_source' :=
     (isOpen_lt continuous_const continuous_fst).union
       (isOpen_ne_fun continuous_snd continuous_const)
   continuousOn_invFun := by fun_prop

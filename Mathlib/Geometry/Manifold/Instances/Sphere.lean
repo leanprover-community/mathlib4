@@ -259,8 +259,8 @@ def stereographic (hv : ‖v‖ = 1) : PartialHomeomorph (sphere (0 : E) 1) (ℝ
     dsimp
     exact h)
   right_inv' w _ := stereo_right_inv hv w
-  open_source := isOpen_compl_singleton
-  open_target := isOpen_univ
+  open_source' := isOpen_compl_singleton
+  open_target' := isOpen_univ
   continuousOn_toFun :=
     continuousOn_stereoToFun.comp continuous_subtype_val.continuousOn fun w h => by
       dsimp

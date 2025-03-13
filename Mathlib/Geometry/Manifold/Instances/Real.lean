@@ -279,10 +279,10 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
     have A : x + z 0 ≤ y := by linarith
     rw [Subsingleton.elim i 0]
     simp only [A, add_comm, add_sub_cancel_left, min_eq_left]
-  open_source :=
+  open_source' :=
     haveI : IsOpen { z : ℝ | z < y } := isOpen_Iio
     this.preimage continuous_subtype_val
-  open_target := by
+  open_target' := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)
@@ -354,10 +354,10 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have A : x ≤ y - z 0 := by linarith
     rw [Subsingleton.elim i 0]
     simp only [A, sub_sub_cancel, max_eq_left]
-  open_source :=
+  open_source' :=
     haveI : IsOpen { z : ℝ | x < z } := isOpen_Ioi
     this.preimage continuous_subtype_val
-  open_target := by
+  open_target' := by
     have : IsOpen { z : ℝ | z < y - x } := isOpen_Iio
     have : IsOpen { z : EuclideanSpace ℝ (Fin 1) | z 0 < y - x } :=
       this.preimage (@continuous_apply (Fin 1) (fun _ => ℝ) _ 0)

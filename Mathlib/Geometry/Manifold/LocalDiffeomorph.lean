@@ -100,8 +100,8 @@ variable (Φ : PartialDiffeomorph I J M N n)
 /-- A partial diffeomorphism is also a local homeomorphism. -/
 def toPartialHomeomorph : PartialHomeomorph M N where
   toPartialEquiv := Φ.toPartialEquiv
-  open_source := Φ.open_source
-  open_target := Φ.open_target
+  open_source' := Φ.open_source
+  open_target' := Φ.open_target
   continuousOn_toFun := Φ.contMDiffOn_toFun.continuousOn
   continuousOn_invFun := Φ.contMDiffOn_invFun.continuousOn
 

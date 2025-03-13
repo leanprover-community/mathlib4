@@ -665,6 +665,9 @@ theorem refl_symm : (PartialHomeomorph.refl X).symm = PartialHomeomorph.refl X :
 @[simp, mfld_simps]
 theorem coe_refl : (PartialHomeomorph.refl X : X → X) = id := rfl
 
+@[simp, mfld_simps]
+theorem refl_apply (x : X) : (PartialHomeomorph.refl X) x = x := rfl
+
 /-! const: `PartialEquiv.const` as a partial homeomorphism -/
 section const
 

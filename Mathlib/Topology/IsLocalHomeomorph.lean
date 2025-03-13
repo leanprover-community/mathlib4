@@ -245,7 +245,7 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
     refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,
-      ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuousOn_invFun.mono fun _ h ↦ h.1)⟩,
+      ⟨_, continuousOn_iff_continuous_restrict.mp (f.continuousOn_symm.mono fun _ h ↦ h.1)⟩,
       ?_, (Set.range_restrict _ _).trans ?_⟩, ⟨hxf, hx⟩, fun _ h ↦ h.2⟩
     · ext y; exact f.right_inv y.2.1
     · apply (f.symm_image_target_inter_eq _).trans
