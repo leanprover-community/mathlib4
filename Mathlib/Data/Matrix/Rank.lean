@@ -29,11 +29,12 @@ namespace Matrix
 
 open Module Cardinal Set Submodule
 
-variable {l m n o R : Type*}
+universe ul um un uo uR
+variable {l : Type ul} {m : Type um} {n : Type un} {o : Type uo} {R : Type uR}
 
 section Infinite
 
-variable {m₀ n₀ : Type*} [Semiring R] {A : Matrix m n R}
+variable [Semiring R]
 
 /-- The rank of a matrix, defined as the dimension of its column space, as a cardinal. -/
 noncomputable def cRank (A : Matrix m n R) : Cardinal := Module.rank R <| span R <| range Aᵀ
@@ -48,11 +49,9 @@ lemma cRank_mono_col.{u,v,v₀,w} {m : Type u} {n : Type v} {n₀ : Type v₀} {
   rintro _ ⟨x, rfl⟩
   exact ⟨c x, rfl⟩
 
-lemma lift_cRank_submatrix_le.{um,um₀,un,un₀,uR}
-    {m : Type um} {m₀ : Type um₀} {n : Type un} {n₀ : Type un₀} {R : Type uR} [Semiring R]
-    (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
-    lift.{um, max um₀ uR} (A.submatrix r c).cRank ≤ lift.{um₀, max um uR} A.cRank := by
-  refine (Cardinal.lift_monotone <| (A.submatrix r id).cRank_mono_col c).trans ?_
+lemma cRank_lift_mono_row.{u,u₀,v} {m : Type u} {m₀ : Type u₀} {R : Type v} [Semiring R]
+    (A : Matrix m n R) (r : m₀ → m) :
+    lift.{u, max u₀ v} (A.submatrix r id).cRank ≤ lift.{u₀, max u v} A.cRank := by
   let f : (m → R) →ₗ[R] (m₀ → R) := (LinearMap.funLeft R R r)
   have h_eq : Submodule.map f (span R (range Aᵀ)) = span R (range (A.submatrix r id)ᵀ) := by
     rw [LinearMap.map_span, ← image_univ, image_image, transpose_submatrix]
@@ -86,12 +85,11 @@ lemma eRank_toNat_eq_finrank (A : Matrix m n R) :
     A.eRank.toNat = Module.finrank R (span R (range Aᵀ)) :=
   toNat_toENat ..
 
-lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
+lemma eRank_submatrix_le (A : Matrix n o R) (r : l → n) (c : m → o) :
     (A.submatrix r c).eRank ≤ A.eRank := by
   simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat <| lift_cRank_submatrix_le A r c
 
 lemma eRank_le_card_col [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
-  classical
   wlog hfin : Finite n
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite n
