@@ -60,7 +60,8 @@ variable (p : ℕ) [Fact p.Prime] (n : ℕ)
 Every field with the same cardinality is (non-canonically)
 isomorphic to this field. -/
 def GaloisField := SplittingField (X ^ p ^ n - X : (ZMod p)[X])
--- deriving Field -- Porting note: see https://github.com/leanprover-community/mathlib4/issues/5020
+-- The `Field` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance : Field (GaloisField p n) :=
   inferInstanceAs (Field (SplittingField _))

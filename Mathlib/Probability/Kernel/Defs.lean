@@ -60,10 +60,10 @@ structure Kernel (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] where
   measurable' : Measurable toFun
 
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Kernel[" mα "]" α:arg β:arg => @Kernel α β mα _
+scoped notation "Kernel[" mα "] " α:arg β:arg => @Kernel α β mα _
 
 /-- Notation for `Kernel` with respect to a non-standard σ-algebra in the domain and codomain. -/
-scoped notation "Kernel[" mα ", " mβ "]" α:arg β:arg => @Kernel α β mα mβ
+scoped notation "Kernel[" mα ", " mβ "] " α:arg β:arg => @Kernel α β mα mβ
 
 variable {α β ι : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β}
 
