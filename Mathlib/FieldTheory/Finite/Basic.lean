@@ -646,13 +646,17 @@ theorem splits_bot (p : ℕ) [Fact p.Prime] [CharP F p] :
     FiniteField.X_pow_card_sub_X_natDegree_eq (⊥ : Subfield F) (Fact.out (p := p.Prime)).one_lt,
     Fintype.card_eq_nat_card, card_bot F p]
 
-open Polynomial in
-theorem isRoot_neg_iff {p : ℕ} [Fact p.Prime] [CharP F p] {x : F} :
-    (X ^ p - X : F[X]).IsRoot (-x) ↔ (X ^ p - X : F[X]).IsRoot x := by
-  simp only [IsRoot.def, eval_sub, eval_pow, eval_X, sub_neg_eq_add]
+@[simp]
+theorem neg_pow_add_self_eq_zero_iff {p : ℕ} [Fact p.Prime] [CharP F p] {x : F} :
+    (-x) ^ p + x = 0 ↔ x ^ p - x = 0 := by
   rw [add_eq_zero_iff_eq_neg', sub_eq_zero, eq_comm]
   refine Eq.congr ?_ rfl
   simp [neg_eq_iff_add_eq_zero, ← add_pow_expChar, Nat.Prime.ne_zero Fact.out]
+
+open Polynomial in
+theorem isRoot_neg_iff {p : ℕ} [Fact p.Prime] [CharP F p] {x : F} :
+    (X ^ p - X : F[X]).IsRoot (-x) ↔ (X ^ p - X : F[X]).IsRoot x := by
+  simp
 
 open Polynomial in
 theorem nsmul_one_isRoot (p : ℕ) [Fact p.Prime] [CharP F p] (n : ℕ) :
