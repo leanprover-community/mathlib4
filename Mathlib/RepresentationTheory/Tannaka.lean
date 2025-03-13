@@ -144,7 +144,7 @@ def mulRepHom : (rightFDRep : FDRep k G) ⊗ rightFDRep ⟶ rightFDRep where
     refine TensorProduct.induction_on u rfl (fun _ _ ↦ rfl) (fun _ _ hx hy ↦ ?_)
     simp only [map_add, hx, hy]
 
-/-- For `η : Aut (forget k G)`, `toRightFDRepComp η` preserves multiplication -/
+/-- The `rightFDRep` component of `η : Aut (forget k G)` preserves multiplication -/
 lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
     let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
     α (f * g) = (α f) * (α g) := by
@@ -155,7 +155,7 @@ lemma map_mul_toRightFDRepComp (η : Aut (forget k G)) (f g : G → k) :
   apply_fun (Hom.hom · (f ⊗ₜ[k] g)) at nat
   exact nat
 
-/-- For `η : Aut (forget k G)`, `toRightFDRepComp η` gives rise to
+/-- The `rightFDRep` component of `η : Aut (forget k G)` gives rise to
 an algebra morphism `(G → k) →ₐ[k] (G → k)`. -/
 def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → k) := by
   let α : (G → k) →ₗ[k] (G → k) := (η.hom.hom.app rightFDRep).hom
