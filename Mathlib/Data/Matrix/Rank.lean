@@ -48,7 +48,7 @@ lemma lift_cRank_submatrix_le
   trans lift.{un} <| lift.{ul} (A.submatrix r id).cRank
   · refine Cardinal.lift_monotone ?_
     trans lift.{ul} ((A.submatrix r id).submatrix id c).cRank
-    · rw [@lift_id'.{ul, uR}, submatrix_submatrix]
+    · rw [lift_id'.{ul, uR}, submatrix_submatrix]
       simp
     · refine Cardinal.lift_monotone <| Submodule.rank_mono <| span_mono ?_
       rintro _ ⟨x, rfl⟩
