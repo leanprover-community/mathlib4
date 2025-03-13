@@ -7,6 +7,11 @@ import Mathlib.Order.SetNotation
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
 import Mathlib.Tactic.MkIffOfInductiveProp
+import Mathlib.Data.Setoid.Basic
+import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Order.Filter.Defs
+import Mathlib.Tactic.IrreducibleDef
+
 /-!
 # Basic definitions about topological spaces
 
@@ -59,9 +64,12 @@ assert_not_exists Monoid
 universe u v
 open Set
 
-/-- A topology on `X`. -/
-@[to_additive existing TopologicalSpace]
-class TopologicalSpace (X : Type u) where
+/-- An auxiliary class towards a topological space structure on `X`. *Do not use.*
+For forgetful inheritance reasons, we will endow each topological space with an atlas to itself
+made only of the identity. To build up this `TopologicalSpace` class, we need the current class
+as an auxiliary device. -/
+@[to_additive existing TopologicalSpaceWithoutAtlas]
+class TopologicalSpaceWithoutAtlas (X : Type u) where
   /-- A predicate saying that a set is an open set. Use `IsOpen` in the root namespace instead. -/
   protected IsOpen : Set X → Prop
   /-- The set representing the whole space is an open set.
@@ -75,6 +83,110 @@ class TopologicalSpace (X : Type u) where
 
 variable {X : Type u} {Y : Type v}
 
+/-! ### Setting up an atlas definition as quickly as possible -/
+
+section Atlas
+
+variable [TopologicalSpaceWithoutAtlas X] [TopologicalSpaceWithoutAtlas Y] {s t : Set X}
+
+open Filter
+
+/-- A set is called a neighborhood of `x` if it contains an open set around `x`. The set of all
+neighborhoods of `x` forms a filter, the neighborhood filter at `x`, is here defined as the
+infimum over the principal filters of all open sets containing `x`. -/
+irreducible_def nhds (x : X) : Filter X :=
+  ⨅ s ∈ { s : Set X | x ∈ s ∧ TopologicalSpaceWithoutAtlas.IsOpen s }, 𝓟 s
+
+@[inherit_doc]
+scoped[Topology] notation "𝓝" => nhds
+
+open scoped Topology
+
+/-- The "neighborhood within" filter. Elements of `𝓝[s] x` are sets containing the
+intersection of `s` and a neighborhood of `x`. -/
+def nhdsWithin (x : X) (s : Set X) : Filter X :=
+  𝓝 x ⊓ 𝓟 s
+
+@[inherit_doc]
+scoped[Topology] notation "𝓝[" s "] " x:100 => nhdsWithin x s
+
+/-- A function between topological spaces is continuous at a point `x₀` within a subset `s`
+if `f x` tends to `f x₀` when `x` tends to `x₀` while staying within `s`. -/
+@[fun_prop]
+def ContinuousWithinAt (f : X → Y) (s : Set X) (x : X) : Prop :=
+  Tendsto f (𝓝[s] x) (𝓝 (f x))
+
+/-- A function between topological spaces is continuous on a subset `s`
+when it's continuous at every point of `s` within `s`. -/
+@[fun_prop]
+def ContinuousOn (f : X → Y) (s : Set X) : Prop :=
+  ∀ x ∈ s, ContinuousWithinAt f s x
+
+variable (X Y) in
+/-- Partial homeomorphisms, defined on open subsets of the space -/
+structure PartialHomeomorph extends PartialEquiv X Y where
+  open_source : TopologicalSpaceWithoutAtlas.IsOpen source
+  open_target : TopologicalSpaceWithoutAtlas.IsOpen target
+  continuousOn_toFun : ContinuousOn toFun source
+  continuousOn_invFun : ContinuousOn invFun target
+
+open Filter in
+variable (X) in
+/-- The identity on the whole space as a partial homeomorphism. -/
+protected def PartialHomeomorph.refl : PartialHomeomorph X X :=
+  { PartialEquiv.refl X with
+    open_source := TopologicalSpaceWithoutAtlas.isOpen_univ
+    open_target := TopologicalSpaceWithoutAtlas.isOpen_univ
+    continuousOn_toFun := by
+      intro x hx
+      simp only [ContinuousWithinAt, Tendsto, map, PartialEquiv.refl_coe, preimage_id_eq,
+        nhdsWithin, PartialEquiv.refl_source, id_eq, le_def, Filter.mem_mk, Filter.mem_sets]
+      intro s hs
+      exact ⟨s, hs, univ, by simp, by simp⟩
+    continuousOn_invFun := by
+      intro x hx
+      simp only [ContinuousWithinAt, Tendsto, map, PartialEquiv.refl_coe, preimage_id_eq,
+        nhdsWithin, PartialEquiv.refl_source, id_eq, le_def, Filter.mem_mk, Filter.mem_sets]
+      intro s hs
+      exact ⟨s, hs, univ, by simp, by simp⟩ }
+
+/-- A charted space is a topological space endowed with an atlas, i.e., a set of local
+homeomorphisms taking value in a model space `H`, called charts, such that the domains of the charts
+cover the whole space. We express the covering property by choosing for each `x` a member
+`chartAt x` of the atlas containing `x` in its source: in the smooth case, this is convenient to
+construct the tangent bundle in an efficient way.
+The model space is written as an explicit parameter as there can be several model spaces for a
+given topological space. For instance, a complex manifold (modelled over `ℂ^n`) will also be seen
+sometimes as a real manifold over `ℝ^(2n)`.
+-/
+@[ext]
+class ChartedSpace (H : Type*) [TopologicalSpaceWithoutAtlas H]
+    (M : Type*) [TopologicalSpaceWithoutAtlas M] where
+  /-- The atlas of charts in the `ChartedSpace`. -/
+  protected atlas : Set (PartialHomeomorph M H)
+  /-- The preferred chart at each point in the charted space. -/
+  protected chartAt : M → PartialHomeomorph M H
+  protected mem_chart_source : ∀ x, x ∈ (chartAt x).source
+  protected chart_mem_atlas : ∀ x, chartAt x ∈ atlas
+
+/-- Any space is a `ChartedSpace` modelled over itself, by just using the identity chart. We do
+*not* register this as an instance, as for product spaces we rather want to use the product charted
+space as the default. We will instead embed in the definition of a topological space
+a charted space structure which is propositionally equal to this one. -/
+def chartedSpaceSelfId (H : Type*) [TopologicalSpaceWithoutAtlas H] : ChartedSpace H H where
+  atlas := {PartialHomeomorph.refl H}
+  chartAt _ := PartialHomeomorph.refl H
+  mem_chart_source x := Set.mem_univ x
+  chart_mem_atlas _ := Set.mem_singleton _
+
+/-- A topology on `X`. -/
+@[to_additive existing TopologicalSpace]
+class TopologicalSpace (X : Type u) extends TopologicalSpaceWithoutAtlas X where
+  chartedSpaceSelf : ChartedSpace X X := chartedSpaceSelfId X
+  chartedSpaceSelf_eq_id : chartedSpaceSelf = chartedSpaceSelfId X := by rfl
+
+end Atlas
+
 /-! ### Predicates on sets -/
 
 section Defs
@@ -82,15 +194,15 @@ section Defs
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
 /-- `IsOpen s` means that `s` is open in the ambient topological space on `X` -/
-def IsOpen : Set X → Prop := TopologicalSpace.IsOpen
+def IsOpen : Set X → Prop := TopologicalSpaceWithoutAtlas.IsOpen
 
-@[simp] theorem isOpen_univ : IsOpen (univ : Set X) := TopologicalSpace.isOpen_univ
+@[simp] theorem isOpen_univ : IsOpen (univ : Set X) := TopologicalSpaceWithoutAtlas.isOpen_univ
 
 theorem IsOpen.inter (hs : IsOpen s) (ht : IsOpen t) : IsOpen (s ∩ t) :=
-  TopologicalSpace.isOpen_inter s t hs ht
+  TopologicalSpaceWithoutAtlas.isOpen_inter s t hs ht
 
 theorem isOpen_sUnion {s : Set (Set X)} (h : ∀ t ∈ s, IsOpen t) : IsOpen (⋃₀ s) :=
-  TopologicalSpace.isOpen_sUnion s h
+  TopologicalSpaceWithoutAtlas.isOpen_sUnion s h
 
 /-- A set is closed if its complement is open -/
 class IsClosed (s : Set X) : Prop where
