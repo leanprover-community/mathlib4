@@ -577,7 +577,7 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply completely_normal <;> rw [← preimage_mk_closure]
-    exacts [hd₁.preimage mk, hd₂.preimage mk]
+    exacts [hd₁.preimage SeparationQuotient.mk, hd₂.preimage SeparationQuotient.mk]
 
 end CompletelyNormal
 

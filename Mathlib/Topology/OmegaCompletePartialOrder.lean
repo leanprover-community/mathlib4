@@ -98,7 +98,7 @@ def notBelow :=
 
 theorem notBelow_isOpen : IsOpen (notBelow y) := by
   have h : Monotone (notBelow y) := fun x z hle ↦ mt hle.trans
-  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
+  dsimp only [IsOpen, TopologicalSpaceWithoutAtlas.IsOpen, Scott.IsOpen]
   rw [ωScottContinuous_iff_monotone_map_ωSup]
   refine ⟨h, fun c ↦ eq_of_forall_ge_iff fun z ↦ ?_⟩
   simp only [ωSup_le_iff, notBelow, mem_setOf_eq, le_Prop_eq, OrderHom.coe_mk, Chain.map_coe,
@@ -137,6 +137,6 @@ theorem continuous_of_scottContinuous {α β} [OmegaCompletePartialOrder α]
     (hf : ωScottContinuous f) : Continuous f := by
   rw [continuous_def]
   intro s hs
-  dsimp only [IsOpen, TopologicalSpace.IsOpen, Scott.IsOpen]
+  dsimp only [IsOpen, TopologicalSpaceWithoutAtlas.IsOpen, Scott.IsOpen]
   simp_rw [mem_preimage, mem_def, ← Function.comp_def]
   apply ωScottContinuous.comp hs hf
