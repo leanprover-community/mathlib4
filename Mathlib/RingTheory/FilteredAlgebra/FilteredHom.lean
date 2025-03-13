@@ -431,11 +431,10 @@ noncomputable def AssociatedGradedModuleHom [DecidableEq ι] [DecidableEq ιM] :
           congr
           show Grₛₗ(i +ᵥ j)[f] _ =
             GradedPiece.mk FN FN_lt ⟨(σ₁₂.toRingHom r.1) • (f.toAddMonoidHom m.1), _⟩
-          have : GradedMonoid.GSMul.smul (GradedPiece.mk FR FR_lt r) (GradedPiece.mk FM FM_lt m) =
-            (GradedPiece.mk FM FM_lt ⟨r.1 • m.1, _⟩) := rfl
-          erw [this]
-          simp only [FilteredAddGroupHom.GradedPieceHom_apply_mk_eq_mk_piece_wise_hom,
-            AddMonoidHom.coe_mk, ZeroHom.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+          simp only [GradedMonoid.GSMul.smul, hasGSMul.gradedSMul, Quotient.map₂_mk, RingHom.coe_mk,
+            MonoidHom.coe_mk, OneHom.coe_mk, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+          have : ⟦r • m⟧ = GradedPiece.mk FM FM_lt ⟨r.1 • m.1, _⟩ := rfl
+          rw [this, FilteredAddGroupHom.GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
           congr
           exact SetCoe.ext (f.toLinearMap.map_smul' r.1 m.1))
       (by intro m1 m2 h1 h2 i x
