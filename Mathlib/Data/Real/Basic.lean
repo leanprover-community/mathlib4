@@ -35,9 +35,6 @@ structure Real where ofCauchy ::
 @[inherit_doc]
 notation "ℝ" => Real
 
--- Porting note: unknown attribute
--- attribute [pp_using_anonymous_constructor] Real
-
 namespace CauSeq.Completion
 
 -- this can't go in `Data.Real.CauSeqCompletion` as the structure on `ℚ` isn't available

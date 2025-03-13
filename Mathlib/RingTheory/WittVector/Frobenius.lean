@@ -290,7 +290,7 @@ theorem frobenius_zmodp (x : 𝕎 (ZMod p)) : frobenius x = x := by
 variable (R)
 
 /-- `WittVector.frobenius` as an equiv. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def frobeniusEquiv [PerfectRing R p] : WittVector p R ≃+* WittVector p R :=
   { (WittVector.frobenius : WittVector p R →+* WittVector p R) with
     toFun := WittVector.frobenius

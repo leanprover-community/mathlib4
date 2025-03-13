@@ -187,8 +187,7 @@ theorem _root_.Acc.of_downward_closed (dc : ∀ {a b}, rβ b (f a) → ∃ c, f 
     (ha : Acc (InvImage rβ f) a) : Acc rβ (f a) :=
   ha.of_fibration f fun a _ h ↦
     let ⟨a', he⟩ := dc h
-    -- Porting note: Lean 3 did not need the motive
-    ⟨a', he.substr (p := fun x ↦ rβ x (f a)) h, he⟩
+    ⟨a', by simp_all [InvImage], he⟩
 
 end Fibration
 
@@ -221,6 +220,10 @@ lemma map_apply_apply (hf : Injective f) (hg : Injective g) (r : α → β → P
 
 instance [Decidable (∃ a b, r a b ∧ f a = c ∧ g b = d)] : Decidable (Relation.Map r f g c d) :=
   ‹Decidable _›
+
+lemma map_symmetric {r : α → α → Prop} (hr : Symmetric r) (f : α → β) :
+    Symmetric (Relation.Map r f f) := by
+  rintro _ _ ⟨x, y, hxy, rfl, rfl⟩; exact ⟨_, _, hr hxy, rfl, rfl⟩
 
 end Map
 
