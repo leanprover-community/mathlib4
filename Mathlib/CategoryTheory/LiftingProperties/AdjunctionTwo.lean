@@ -49,7 +49,7 @@ section
 
 variable {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₂ Y₂ : C₂} (f₂ : X₂ ⟶ Y₂)
 
-/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, and morphisms`f₁ : X₁ ⟶ Y₁` in `C₁`
+/-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃`, and morphisms `f₁ : X₁ ⟶ Y₁` in `C₁`
 and `f₂ : X₂ ⟶ Y₂` in `C₂`, this structure contains the data of
 a pushout of `(F.obj Y₁).obj X₂` and `(F.obj X₁).obj Y₂`
 along `(F.obj X₁).obj X₂`. -/
