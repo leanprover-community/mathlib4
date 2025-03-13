@@ -165,70 +165,21 @@ theorem exp_of_nilpotent_is_unit {a : A} (h : IsNilpotent a) : IsUnit (exp a) :=
   refine ⟨exp (-a), h₃.symm, ?_⟩
   rw [← exp_add_of_commute h₁.symm h₂ h, neg_add_cancel a, exp_zero_eq_one]
 
+theorem map_exp {B F : Type*} [Ring B] [FunLike F A B] [RingHomClass F A B] [Module ℚ B]
+    {a : A} (ha : IsNilpotent a) (f : F) :
+    f (exp a) = exp (f a) := by
+  obtain ⟨k, hk⟩ := ha
+  have hk' : (f a) ^ k = 0 := by simp [← map_pow, hk]
+  simp [exp_eq_sum hk, exp_eq_sum hk', map_rat_smul]
+
 end IsNilpotent
 
 namespace LinearMap
 
-variable {R M N : Type*} [CommRing R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-open TensorProduct
-
--- Move me
-variable (R M N) in
-noncomputable def lTensorAlgHom : (Module.End R M) →ₐ[R] (Module.End R (N ⊗[R] M)) :=
-  { lTensorHom (R := R) (M := N) (N := M) (P := M) with
-    map_one' := lTensor_id N M
-    map_mul' f g := lTensor_mul N f g
-    commutes' r := by ext; simp
-    map_zero' := lTensor_zero N }
-
--- Move me
-variable (R M N) in
-noncomputable def rTensorAlgHom : (Module.End R M) →ₐ[R] (Module.End R (M ⊗[R] N)) :=
-  { rTensorHom (R := R) (M := N) (N := M) (P := M) with
-    map_one' := rTensor_id N M
-    map_mul' f g := rTensor_mul N f g
-    commutes' r := by ext; simp [smul_tmul]
-    map_zero' := rTensor_zero N }
-
-variable (M) in
-theorem _root_.IsNilpotent.linearMapLTensor {f : Module.End R N} (hf : IsNilpotent f) :
-    IsNilpotent (f.lTensor M) :=
-  hf.map <| lTensorAlgHom R N M
-
-variable (N) in
-theorem _root_.IsNilpotent.linearMapRTensor {f : Module.End R M} (hf : IsNilpotent f) :
-    IsNilpotent (f.rTensor N) :=
-  hf.map <| rTensorAlgHom R M N
+variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  [Module ℚ M] [Module ℚ N]
 
 open IsNilpotent TensorProduct
-
-variable [Module ℚ M]
-
-variable (N) in
-theorem rTensor_exp (f : Module.End R M) (hf : IsNilpotent f) :
-    exp (f.rTensor N) = (exp f).rTensor N := by
-  obtain ⟨k, hk⟩ := hf.linearMapRTensor N
-  obtain ⟨l, hl⟩ := hf
-  let kl := max k l
-  replace hk : (f.rTensor N) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
-  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
-  ext m n
-  simp [exp_eq_sum hk, exp_eq_sum hl, sum_tmul, smul_tmul']
-
-variable [Module ℚ N]
-
-variable (M) in
-theorem lTensor_exp (f : Module.End R N) (hf : IsNilpotent f) :
-    exp (f.lTensor M) = (exp f).lTensor M := by
-  obtain ⟨k, hk⟩ := hf.linearMapLTensor M
-  obtain ⟨l, hl⟩ := hf
-  let kl := max k l
-  replace hk : (f.lTensor M) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
-  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
-  ext m n
-  simp [exp_eq_sum hk, exp_eq_sum hl, tmul_sum]
 
 theorem commute_exp_left_of_commute
     {fM : Module.End R M} {fN : Module.End R N} {g : M →ₗ[R] N}
@@ -253,8 +204,8 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
     exp D (x * y) = (exp D x) * (exp D y) := by
   let DL : Module.End R (B ⊗[R] B) := D.lTensor B
   let DR : Module.End R (B ⊗[R] B) := D.rTensor B
-  have h_nilL : IsNilpotent DL := h_nil.linearMapLTensor B
-  have h_nilR : IsNilpotent DR := h_nil.linearMapRTensor B
+  have h_nilL : IsNilpotent DL := h_nil.map <| lTensorAlgHom R B B
+  have h_nilR : IsNilpotent DR := h_nil.map <| rTensorAlgHom R B B
   have h_comm : Commute DL DR := by ext; simp [DL, DR]
   let m : B ⊗[R] B →ₗ[R] B := lift <| LinearMap.mul R B
   have hm (x y : B) : m (x ⊗ₜ[R] y) = x * y := rfl
@@ -263,8 +214,9 @@ theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing 
     apply LinearMap.commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
     ext
     simp [DL, DR, hm, h_der]
-  have h₂ : exp DL = (exp D).lTensor B := lTensor_exp B D h_nil
-  have h₃ : exp DR = (exp D).rTensor B := rTensor_exp B D h_nil
+  let aux := h_nil.map_exp (lTensorAlgHom R B B)
+  have h₂ : exp DL = (exp D).lTensor B := (h_nil.map_exp (lTensorAlgHom R B B)).symm
+  have h₃ : exp DR = (exp D).rTensor B := (h_nil.map_exp (rTensorAlgHom R B B)).symm
   simp [h₁, exp_add_of_commute h_comm h_nilL h_nilR, h₂, h₃, hm]
 
 end LinearMap

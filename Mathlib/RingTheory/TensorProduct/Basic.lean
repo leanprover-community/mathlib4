@@ -1406,3 +1406,29 @@ lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMon
   rintro _ ⟨t, rfl⟩
   exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
     (by simp +contextual [add_mem])
+
+section MoveMe
+
+namespace LinearMap
+
+variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+
+/-- The map `LinearMap.lTensorHom` which sends `f ↦ 1 ⊗ f` as a morphism of algebras. -/
+noncomputable def lTensorAlgHom : Module.End R M →ₐ[R] Module.End R (N ⊗[R] M) :=
+  { lTensorHom (R := R) (M := N) (N := M) (P := M) with
+    map_one' := lTensor_id N M
+    map_mul' f g := lTensor_mul N f g
+    commutes' r := by ext; simp
+    map_zero' := lTensor_zero N }
+
+/-- The map `LinearMap.rTensorHom` which sends `f ↦ f ⊗ 1` as a morphism of algebras. -/
+noncomputable def rTensorAlgHom : Module.End R M →ₐ[R] Module.End R (M ⊗[R] N) :=
+  { rTensorHom (R := R) (M := N) (N := M) (P := M) with
+    map_one' := rTensor_id N M
+    map_mul' f g := rTensor_mul N f g
+    commutes' r := by ext; simp [smul_tmul]
+    map_zero' := rTensor_zero N }
+
+end LinearMap
+
+end MoveMe
