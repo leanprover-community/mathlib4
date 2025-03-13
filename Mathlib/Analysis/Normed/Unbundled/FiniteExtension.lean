@@ -243,4 +243,4 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
       (seminormFromBounded_of_mul_is_mul hg_nonneg hg_bdd (hg_mul k))
   exact ⟨F, isPowMul_smoothingFun f hf_1, hF_ext, isNonarchimedean_smoothingFun f hf_1 hf_na⟩
 
-  end Field
+end Field
