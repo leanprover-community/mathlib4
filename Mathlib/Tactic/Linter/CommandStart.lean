@@ -57,6 +57,64 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
     stx.getTailPos?
   else none
 
+/--
+Returns the pair consisting of
+* longest initial segment of `s` that does not contain `pattern` as a substring;
+* the rest of the string `s`.
+
+In particular, concatenating the two factors yields `s`.
+-/
+partial
+def findString (s pattern : String) : String × String :=
+  if pattern.isEmpty then (s, pattern) else
+  if s.length < pattern.length then (s, pattern) else
+  let candidatePos := s.find (· == pattern.get ⟨0⟩)
+  let notContains := s.take candidatePos.1
+  let rest := s.drop candidatePos.1
+  --dbg_trace "notContains: '{notContains}'\nrest: '{rest}'"
+  if rest.startsWith pattern then
+    (notContains, rest)
+  else
+    let (init, tail) := findString (rest.drop 1) pattern
+    (notContains.push (pattern.get ⟨0⟩) ++ init, tail)
+
+partial
+def trimComments (s : String) : String :=
+  if s.length ≤ 1 then s else
+  let (beforeFirstDash, rest) := findString s "-"
+  if rest.length ≤ 1 then s else
+  match beforeFirstDash.back, rest.get ⟨1⟩ with
+  | '/', '-' => -- this is a doc-string
+    dbg_trace "rest before: '{rest}'\n"
+    let (takeDocs, rest) := findString (rest.drop 2) "-/"
+    dbg_trace "doc '{beforeFirstDash.back}--{takeDocs}'\n\nrest: {rest}"
+    beforeFirstDash ++ "--" ++ takeDocs ++ trimComments rest
+  | '/', _ => -- this is a multiline comment
+    dbg_trace "multiline comment '{beforeFirstDash}'"
+    let (_comment, rest) := findString (rest.drop 2) "-/"
+    --let rest := if rest.startsWith "-/" then rest.drop 2 else rest
+    (beforeFirstDash.dropRight 1).trimRight ++ trimComments (rest.drop 2)
+  | _, '-' => -- this is a single line comment
+    dbg_trace "comment"
+    let dropComment := rest.dropWhile (· != '\n')
+    beforeFirstDash.trimRight ++ trimComments dropComment
+  | _, _ => beforeFirstDash ++ "-" ++ trimComments (rest.drop 1)
+
+#eval show TermElabM _ from do
+  let src := "/-- ≫-/ a"
+  dbg_trace "'{src.get ⟨5⟩}'"
+  let fs := findString src "-/"
+  logInfo m!"{fs.1}\n\n{fs.2}"
+  guard <| fs.2 == "-/"
+
+#eval do
+  logInfo <| trimComments "/-- A morphism `f` is an epimorphism if it can be cancelled when precomposed:
+`f ≫ g = f ≫ h` implies `g = h`. -/
+@[stacks 003B]
+class Epi (f : X ⟶ Y) : Prop where
+"
+
+
 def removeComments (s : String) : String :=
   let lines := s.splitOn "\n"
   let lines := lines.filterMap fun l =>
@@ -77,6 +135,7 @@ def removeComments (s : String) : String :=
 
 def furtherFormatting (s : String) : String :=
   s |>.replace "¬ " "¬"
+               -- https://github.com/leanprover-community/aesop/pull/203/files
     |>.replace "aesop (rule_sets" "aesop(rule_sets"
     |>.replace " Prop." " «Prop»."
     |>.replace " Type." " «Type»."
@@ -129,10 +188,10 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       let st := polishPP fmt.pretty
       Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
         m!"slightly polished source:\n'{real}'\n\n\
-          actually used source:\n'{furtherFormatting (removeComments real)}'\n\n\
+          actually used source:\n'{furtherFormatting (trimComments real)}'\n\n\
           reference formatting:\n'{st}'\n\n\
           intermediate reference formatting:\n'{fmt}'\n"
-      if ! st.startsWith (furtherFormatting (removeComments real)) then
+      if ! st.startsWith (furtherFormatting (trimComments real)) then
         let diff := real.firstDiffPos st
         let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
         let f := origSubstring.str.drop (pos)
@@ -147,3 +206,81 @@ initialize addLinter commandStartLinter
 end Style.CommandStart
 
 end Mathlib.Linter
+#exit
+section tests
+open Mathlib.Linter Style.CommandStart
+
+set_option linter.hashCommand false
+#guard
+  let s := "abcdeacd"
+  findString s "a" == ("", "abcdeacd")
+
+#guard
+  let s := "abcdeacd"
+  findString s "b" == ("a", "bcdeacd")
+
+#guard
+  let s := "abcdeacd"
+  findString s "ab" == ("", "abcdeacd")
+
+#guard
+  let s := "abcdeacd"
+  --dbg_trace findString s "ac"
+  findString s "ac" == ("abcde", "acd")
+
+#guard
+  let s := "text /- /-- -/"
+  let pattern := "/--"
+  --dbg_trace findString s pattern
+  findString s pattern == ("text /- ", "/-- -/")
+
+#eval
+  let s := "- /-/\ncontinuing on -/\n and more text"
+  trimComments s
+
+#guard trimComments "text /- I am a comment -/ more text" ==
+                    "text more text"
+#eval trimComments  "text /- I am a comment -/   more text"
+-- ==                      "text more text"
+#guard trimComments "text -- /- I am a comment -/   more text" ==
+                    "text" -- bonus if it removes the space after `text`
+#eval trimComments  "text /- comment /- nested -/-/"
+ --==                      "text" -- but ok if it ignores nesting
+#guard trimComments "text /-- doc-string -/" ==
+                    "text /-- doc-string -/"
+
+end tests
+
+
+/-
+
+partial
+def trimCommentsAux (dat : String × String) : String × String := Id.run do
+  let mut (settled, rest) := dat
+  if rest.isEmpty then (settled, rest) else
+  let upToDash := rest.takeWhile (· != '-')
+  let lth := upToDash.length
+  match rest.get ⟨lth - 1⟩, rest.get ⟨lth + 1⟩ with
+  | '/', '-' => -- this is a doc-string
+    default
+  | '/', _ => -- this is a multiline comment
+    default
+  | _, '-' => -- this is a single line comment
+    settled := settled ++ upToDash.trimRight
+    rest := rest.drop (lth + 2) |>.dropWhile (· != '\n')
+  | _, _ => default
+  trimCommentsAux (settled, rest)
+
+def trimComments (s : String) : String := Id.run do
+  let mut settled := ""
+  let mut inProgress := ""
+  let mut rest := ""
+  -- `within` is either
+  -- `""` (not a comment),
+  -- `"--"` (a single line comment),
+  -- `"/-"` (a possibly multiline comment).
+  let mut within := ""
+
+  return settled
+-/
+-/
