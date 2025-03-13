@@ -473,11 +473,9 @@ theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
-  cases n with
-  | ofNat n => apply single_one_eq_pow
-  | negSucc n =>
-    simp only [Int.negSucc_eq]
-    norm_cast
+  match n with
+  | (n : ℕ) => apply single_one_eq_pow
+  | -(n + 1 : ℕ) =>
     rw [← Nat.cast_one, ← inv_one, single_inv _ one_ne_zero, zpow_neg, ← Nat.cast_one, Nat.cast_one,
       inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
