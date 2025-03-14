@@ -92,17 +92,14 @@ theorem HasEval.add [IsTopologicalRing S] [IsLinearTopology S S]
 theorem HasEval.zero [IsTopologicalRing S] [IsLinearTopology S S] : HasEval (0 : σ → S) :=
   hasEvalIdeal.zero_mem'
 
-theorem HasEval.smul_mem [IsTopologicalRing S] [IsLinearTopology S S]
-    (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (c • x) :=
-  hasEvalIdeal.smul_mem' c hx
+theorem HasEval.mul_left [IsTopologicalRing S] [IsLinearTopology S S]
+    (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (c * x) :=
+  hasEvalIdeal.mul_mem_left c hx
 
-theorem HasEval.comp {a : σ → R} (ha : HasEval a) {ε : R →+* S} (hε : Continuous ε) :
-    HasEval (ε ∘ a) where
-  hpow s := by
-    unfold IsTopologicallyNilpotent
-    convert (Continuous.tendsto' hε 0 0 (map_zero ε)).comp (ha.hpow s) using 2
-    simp only [Function.comp_apply, map_pow]
-  tendsto_zero := (Continuous.tendsto' hε 0 0 (map_zero ε)).comp ha.tendsto_zero
+theorem HasEval.mul_right [IsTopologicalRing S] [IsLinearTopology S S]
+    (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (x * c) :=
+  hasEvalIdeal.mul_mem_right c hx
+
 
 /-- [Bourbaki, *Algebra*, chap. 4, §4, n°3, Prop. 4 (i) (a & b)](bourbaki1981). -/
 theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
@@ -110,7 +107,7 @@ theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
   hpow := fun s ↦ IsTopologicallyNilpotent.map hφ (ha.hpow s)
   tendsto_zero := (map_zero φ ▸ hφ.tendsto 0).comp ha.tendsto_zero
 
-theorem HasEval.hasEval_X :
+protected theorem HasEval.X:
     HasEval (fun s ↦ (MvPowerSeries.X s : MvPowerSeries σ R)) where
   hpow := fun s ↦ tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
