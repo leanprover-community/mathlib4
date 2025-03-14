@@ -199,45 +199,83 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         apply mem_inter.2 ⟨hx, this hx⟩
       have hdisj2 := (append_isPath_iff.1 hq).2.2
       by_cases hr : ((q.append v41)).support.toFinset = s
-      ·  sorry
-      -- Main case 1
-      --   rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
-      --   simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
-      --   rw [v41sup, List.tail] at hdisj2
-      --   obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
-      --     have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
-      --     rw [← card_neighborFinset_eq_degree] at this
-      --     have :  1 ≤ #((G.neighborFinset v₂) \ {v₁, v₃}) := by
-      --       rw [card_sdiff]
-      --       · rw [card_pair hne]
-      --         omega
-      --       · intro x hx; simp only [mem_insert, mem_singleton, mem_neighborFinset] at *
-      --         cases hx with
-      --         | inl h => exact h ▸ h1.1
-      --         | inr h => exact h ▸ h3.1.symm
-      --     obtain ⟨vⱼ, hj⟩ := card_pos.1 this
-      --     use vⱼ
-      --     simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
-      --     exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
-      --   have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
-      --     rw [←hr, union_comm]
-      --     congr! 1
-      --     rw [insert_comm, insert_comm v₁]
-      --     congr! 1
-      --     exact pair_comm _ _
-      --   convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
-      --    hnadj (by aesop)  (by aesop)
-      · -- Main case 2
-        --replace hss := Finset.ssubset_iff_subset_ne.2 ⟨hss, hr⟩
-        by_cases h1 : G.degree vᵣ ≤ 1
-        · sorry
-        · push_neg at h1
-          set p := (q.append v41).reverse with hpq
-          have hp : p.IsPath := hq.reverse
-          have := IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hp
-            (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
-          sorry
+      · --sorry
+        -- Main case 1
 
+        rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
+        simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
+        rw [v41sup, List.tail] at hdisj2
+        obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
+          have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
+          rw [← card_neighborFinset_eq_degree] at this
+          have :  1 ≤ #((G.neighborFinset v₂) \ {v₁, v₃}) := by
+            rw [card_sdiff]
+            · rw [card_pair hne]
+              omega
+            · intro x hx; simp only [mem_insert, mem_singleton, mem_neighborFinset] at *
+              cases hx with
+              | inl h => exact h ▸ h1.1
+              | inr h => exact h ▸ h3.1.symm
+          obtain ⟨vⱼ, hj⟩ := card_pos.1 this
+          use vⱼ
+          simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
+          exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
+        have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
+          rw [←hr, union_comm]
+          congr! 1
+          rw [insert_comm, insert_comm v₁]
+          congr! 1
+          exact pair_comm _ _
+        convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
+          hnadj (by aesop)  (by aesop)
+
+      · -- Main case 2
+        have hssf :(q.append v41).support.toFinset ⊂ s :=
+          Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| List.mem_toFinset.1 hy, hr⟩
+        have  h1 : 1 < G.degree vᵣ := Nat.lt_of_succ_lt <| hk.trans
+          (hbdd' _ <| hss _ <| start_mem_support ..).symm.le
+        set p := (q.append v41).reverse with hpq
+        have hp : p.IsPath := hq.reverse
+        have hcmp :=  IsCloseableMaxPath.mk' hp
+          (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
+        have hps : p.support = (q.append v41).support.reverse :=by rw [support_reverse]
+        have ⟨hcy, hcym⟩:= IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hp
+          (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
+        rw [IsMaximal.iff] at hcym
+        let c:= ((p.dropUntil p.close find_mem_support).cons hcmp.isClosable.adj)
+        have hsub : c.support.toFinset ⊂ s := by
+          apply Finset.ssubset_of_subset_of_ssubset _ hssf
+          intro y hy
+          rw [List.mem_toFinset] at *
+          rw [support_cons] at hy
+          cases hy with
+          | head as => exact start_mem_support ..
+          | tail b hy =>
+            have := (support_dropUntil_subset _ _) hy
+            rw [support_reverse] at this
+            rwa [List.mem_reverse] at this
+        have hnemp : 0 < #c.support.toFinset := by
+          apply card_pos.2;
+          use vᵣ
+          rw [List.mem_toFinset]
+          exact start_mem_support ..
+        have hccard : #c.support.toFinset < n := (card_lt_card hsub).trans_le hn
+        have hsdcard : #(s \ c.support.toFinset) < n := by
+          rw [card_sdiff hsub.1]
+          apply lt_of_lt_of_le _ hn
+          rw [Nat.sub_lt_iff_lt_add (card_le_card hsub.1)]
+          exact Nat.lt_add_of_pos_left hnemp
+         -- Two cases either cycle has no neighbors outside of c
+        by_cases hnbc : ∃ x₁, x₁ ∈ c.support ∧ ∃ x₃, x₃ ∈ s \ c.support.toFinset ∧ G.Adj x₁ x₃
+        · 
+          sorry
+        ·  -- Can now color `c` and `s \ c` by induction
+          obtain ⟨C₁, hC₁⟩:= ih _ hccard  _ le_rfl
+          obtain ⟨C₂, hC₂⟩:= ih _ hsdcard _ le_rfl
+          push_neg at hnbc
+          use (C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1)
+          intro v; rw [copy_eq]
+          apply C₁.join_lt_of_lt hC₁ hC₂
     · rw [not_nonempty_iff_eq_empty] at hem
       use (ofEmpty G).copy hem.symm
       intros

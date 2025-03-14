@@ -95,6 +95,42 @@ lemma ofinsertNotAdj_new {a b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ 
 lemma ofinsertNotAdj_old {a b v : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj v b)
     (hv : v ≠ b) : (C.insertNotAdj h a) v = (C v) := if_neg hv
 
+variable {t : Finset α }
+def join (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
+    (h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w) : G.PartialColoring (s ∪ t) where
+  col   := fun v ↦ ite (v ∈ s) (C₁ v) (C₂ v)
+  valid := by
+    simp only [mem_union, ne_eq]
+    intro v w hv hw hadj hf
+    cases hv with
+    | inl hv =>
+      cases hw with
+      | inl hw => rw [if_pos hv, if_pos hw] at hf; exact C₁.valid hv hw hadj hf
+      | inr hw => exact h _  hv _ hw hadj
+    | inr hv =>
+      cases hw with
+      | inl hw => exact h _  hw _ hv hadj.symm
+      | inr hw =>
+        split_ifs at hf with h1 h2 h3
+        · exact h _  h1 _ hw hadj
+        · exact h _  h1 _ hw hadj
+        · exact h _  h3 _ hv hadj.symm
+        · exact C₂.valid hv hw hadj hf
+
+
+lemma join_eq {v : α} (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
+    (h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w) :
+    (C₁.join C₂ h) v = ite (v ∈ s) (C₁ v) (C₂ v) := rfl
+
+
+lemma join_lt_of_lt {k : ℕ} {v : α} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
+    {h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w} (h1 : ∀  v, C₁ v < k) (h2 : ∀  v, C₂ v < k) :
+    (C₁.join C₂ h) v < k := by
+  rw [join_eq]
+  split_ifs
+  · exact h1 _
+  · exact h2 _
+
 variable [Fintype α] [DecidableRel G.Adj]
 
 /-- A PartialColoring of `univ` is a Coloring -/
