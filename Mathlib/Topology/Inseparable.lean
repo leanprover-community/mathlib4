@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury Kudryashov
 -/
 import Mathlib.Tactic.TFAE
+import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.Maps.OpenQuotient
 import Mathlib.Order.UpperLower.Basic

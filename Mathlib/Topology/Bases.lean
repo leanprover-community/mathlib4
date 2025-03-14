@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.Set.Constructions
 import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
 import Mathlib.Topology.Constructions
-import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.ContinuousOnMore
 
 /-!
 # Bases of topologies. Countability axioms.
@@ -267,8 +267,9 @@ theorem IsTopologicalBasis.inf_induced {γ} [s : TopologicalSpace β] {B₁ : Se
 
 protected theorem IsTopologicalBasis.prod {β} [TopologicalSpace β] {B₁ : Set (Set α)}
     {B₂ : Set (Set β)} (h₁ : IsTopologicalBasis B₁) (h₂ : IsTopologicalBasis B₂) :
-    IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) :=
-  h₁.inf_induced h₂ Prod.fst Prod.snd
+    IsTopologicalBasis (image2 (· ×ˢ ·) B₁ B₂) := by
+  rw [instTopologicalSpaceProd_eq_induced]
+  exact h₁.inf_induced h₂ Prod.fst Prod.snd
 
 theorem isTopologicalBasis_of_cover {ι} {U : ι → Set α} (Uo : ∀ i, IsOpen (U i))
     (Uc : ⋃ i, U i = univ) {b : ∀ i, Set (Set (U i))} (hb : ∀ i, IsTopologicalBasis (b i)) :

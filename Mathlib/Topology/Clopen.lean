@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Constructions
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Topology.Constructions.SumProd
 
 /-!
 # Clopen sets

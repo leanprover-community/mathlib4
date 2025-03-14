@@ -98,12 +98,6 @@ protected theorem TopologicalSpace.ext :
   apply TopologicalSpaceWithoutAtlas.ext
   exact hfg
 
-section
-
-variable [TopologicalSpace X]
-
-end
-
 protected theorem TopologicalSpace.ext_iff {t t' : TopologicalSpace X} :
     t = t' ↔ ∀ s, IsOpen[t] s ↔ IsOpen[t'] s :=
   ⟨fun h _ => h ▸ Iff.rfl, fun h => by ext; exact h _⟩
@@ -709,8 +703,10 @@ theorem compl_frontier_eq_union_interior :
 ### Neighborhoods
 -/
 
+@[simp] lemma nhdsWithoutAtlas_eq_nhds (x : X) : nhdsWithoutAtlas x = 𝓝 x := rfl
+
 theorem nhds_def (x : X) : 𝓝 x = ⨅ s ∈ { s : Set X | x ∈ s ∧ IsOpen s }, 𝓟 s := by
-  simp [nhds, nhdsWithoutAtlas_def]
+  simp only [nhds, nhdsWithoutAtlas_def, TopologicalSpaceWithoutAtlas.isOpen_iff]
 
 theorem nhds_def' (x : X) : 𝓝 x = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 s := by
   simp only [nhds_def, mem_setOf_eq, @and_comm (x ∈ _), iInf_and]
@@ -1657,6 +1653,37 @@ theorem DenseRange.mem_nhds (h : DenseRange f) (hs : s ∈ 𝓝 x) :
 end DenseRange
 
 end Continuous
+
+/-! ### Charted space structure wrt itself on a topological space -/
+
+instance instChartedSpaceSelf (H : Type*) [h : TopologicalSpace H] : ChartedSpace H H :=
+  h.chartedSpaceSelf
+
+/-- The atlas of charts in a `ChartedSpace`. -/
+abbrev atlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
+    [ChartedSpace H M] : Set (PartialHomeomorph M H) :=
+  ChartedSpace.atlas
+
+/-- The preferred chart at a point `x` in a charted space `M`. -/
+abbrev chartAt (H : Type*) [TopologicalSpace H] {M : Type*} [TopologicalSpace M]
+    [ChartedSpace H M] (x : M) : PartialHomeomorph M H :=
+  ChartedSpace.chartAt x
+
+/-- In the trivial `ChartedSpace` structure of a space modelled over itself through the identity,
+the atlas members are just the identity. -/
+@[simp, mfld_simps]
+theorem chartedSpaceSelf_atlas {H : Type*} [h : TopologicalSpace H] {e : PartialHomeomorph H H} :
+    e ∈ atlas H H ↔ e = PartialHomeomorph.refl H := by
+  simp only [instChartedSpaceSelf, h.chartedSpaceSelf_eq_id]
+  exact Iff.rfl
+
+/-- In the model space, `chartAt` is always the identity. -/
+@[simp, mfld_simps]
+theorem chartAt_self_eq {H : Type*} [h : TopologicalSpace H] {x : H} :
+    chartAt H x = PartialHomeomorph.refl H := by
+  simp only [instChartedSpaceSelf, h.chartedSpaceSelf_eq_id]
+  rfl
+
 
 library_note "continuity lemma statement"/--
 The library contains many lemmas stating that functions/operations are continuous. There are many

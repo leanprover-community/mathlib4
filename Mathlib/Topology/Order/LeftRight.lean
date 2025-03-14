@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Order.Antichain
 import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Constructions
 
 /-!
 # Left and right continuity

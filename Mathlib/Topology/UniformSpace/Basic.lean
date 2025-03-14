@@ -3,7 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
+import Mathlib.Algebra.Group.TypeTags.Basic
+import Mathlib.Order.Filter.CountablyGenerated
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Topology.Constructions
+import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.UniformSpace.Defs
 
@@ -645,8 +649,12 @@ open UniformSpace
 
 /- a similar product space is possible on the function space (uniformity of pointwise convergence),
   but we want to have the uniformity of uniform convergence on function spaces -/
-instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] : UniformSpace (α × β) :=
-  u₁.comap Prod.fst ⊓ u₂.comap Prod.snd
+instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] :
+    UniformSpace (α × β) := by
+  refine UniformSpace.ofCoreEq (u₁.comap Prod.fst ⊓ u₂.comap Prod.snd).toCore
+    instTopologicalSpaceProd ?_
+  rw [instTopologicalSpaceProd_eq_induced, UniformSpace.toCore_toTopologicalSpace]
+  rfl
 
 -- check the above produces no diamond for `simp` and typeclass search
 example [UniformSpace α] [UniformSpace β] :
