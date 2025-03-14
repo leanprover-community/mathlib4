@@ -128,7 +128,7 @@ theorem analyticGroupoid_prod {E A : Type} [NormedAddCommGroup E] [NormedSpace �
     {f : PartialHomeomorph A A} {g : PartialHomeomorph B B}
     (fa : f ∈ analyticGroupoid I) (ga : g ∈ analyticGroupoid J) :
     f.prod g ∈ analyticGroupoid (I.prod J) := by
-  have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod
+  have pe : range (I.prod J) = (range I).prod (range J) := I.range_prod J
   simp only [mem_analyticGroupoid, Function.comp, image_subset_iff] at fa ga ⊢
   exact ⟨AnalyticOn.prod
       (fa.1.comp analyticOn_fst fun _ m ↦ ⟨m.1.1, (pe ▸ m.2).1⟩)
@@ -158,6 +158,7 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
     AnalyticManifold (I.prod J) (M × N) where
   compatible := by
     intro f g ⟨f1, f2, hf1, hf2, fe⟩ ⟨g1, g2, hg1, hg2, ge⟩
+    simp only [PartialHomeomorph.prodWithoutAtlas_eq_prod] at fe ge
     rw [← fe, ← ge, PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
     exact analyticGroupoid_prod (m.toHasGroupoid.compatible f2 g2)
       (n.toHasGroupoid.compatible hf2 hg2)

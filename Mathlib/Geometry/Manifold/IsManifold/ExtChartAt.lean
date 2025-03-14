@@ -730,28 +730,21 @@ theorem writtenInExtChartAt_extChartAt_symm {x : M} {y : E} (h : y ∈ (extChart
 
 variable (𝕜)
 
-theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I :=
-  rfl
+theorem extChartAt_self_eq {x : H} : ⇑(extChartAt I x) = I := by simp
 
-theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y :=
-  rfl
+theorem extChartAt_self_apply {x y : H} : extChartAt I x y = I y := by simp
 
 /-- In the case of the manifold structure on a vector space, the extended charts are just the
 identity. -/
 theorem extChartAt_model_space_eq_id (x : E) : extChartAt 𝓘(𝕜, E) x = PartialEquiv.refl E := by
   simp only [mfld_simps]
 
-theorem ext_chart_model_space_apply {x y : E} : extChartAt 𝓘(𝕜, E) x y = y :=
-  rfl
+theorem ext_chart_model_space_apply {x y : E} : extChartAt 𝓘(𝕜, E) x y = y := by simp
 
 variable {𝕜}
 
 theorem extChartAt_prod (x : M × M') :
-    extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by
-  simp only [mfld_simps]
-  -- Porting note: `simp` can't use `PartialEquiv.prod_trans` here because of a type
-  -- synonym
-  rw [PartialEquiv.prod_trans]
+    extChartAt (I.prod I') x = (extChartAt I x.1).prod (extChartAt I' x.2) := by simp
 
 theorem extChartAt_comp [ChartedSpace H H'] (x : M') :
     (letI := ChartedSpace.comp H H' M'; extChartAt I x) =
