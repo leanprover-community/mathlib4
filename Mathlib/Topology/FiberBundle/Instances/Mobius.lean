@@ -9,7 +9,6 @@ import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Topology.FiberBundle.Basic
 
 set_option linter.style.longLine false
-set_option linter.style.cdot false
 
 open Function Set
 
@@ -250,8 +249,8 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
                     have h5 : y.val = xh.val := by
                       ext i
                       fin_cases i
-                      . simp [hpos, h3]
-                      . simp [hy1, h4]
+                      · simp [hpos, h3]
+                      · simp [hy1, h4]
                     have h6 : y.val = xh.val ∨ y.val = ug.val := Or.inl h5
                     exact h6
       | inr hneg => have h3 : ug.val 0 = -1 := rfl
@@ -259,10 +258,9 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
                     have h5 : y.val = ug.val := by
                       ext i
                       fin_cases i
-                      . simp [hneg, h3]
-                      . simp [hy1, h4]
-                    have h6 : y.val = xh.val ∨ y.val = ug.val := Or.inr h5
-                    exact h6
+                      · simp [hneg, h3]
+                      · simp [hy1, h4]
+                    exact Or.inr h5
 
     have bar5b : y.val = xh.val ∨ y.val = ug.val -> y.val 1 = 0 := by
       intro h
@@ -313,15 +311,11 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
         cases h with
         | inl hxh_neg => right; rw [bar7] at hxh_neg; exact hxh_neg
         | inr hug_neg => left; rw [← bar7, neg_neg] at hug_neg; exact hug_neg
-
     exact chat2
-
-  have hz : { x | x.val 1 = 0 }ᶜ = { -xh, -ug }ᶜ := by rw [h3]
-
   have hq : U.source ∩ V.source = { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := by
     calc U.source ∩ V.source = { x | x ≠ -xh } ∩ { x | x ≠ -ug } := ha
          _ = { -xh, -ug }ᶜ := h2
-         _ = { x | x.val 1 = 0 }ᶜ := hz.symm
+         _ = { x | x.val 1 = 0 }ᶜ := by rw [← h3]
          _ =  { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := h1.symm
   simp [hq]
 
@@ -388,17 +382,14 @@ theorem t01 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V
     dsimp [f, s1] at hx ⊢
     rw [if_pos hx]
 
-  have hz1' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s1 := by
-    exact hz1
+  have hz1' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s1 := hz1
 
   have hz2 : ContinuousOn f s2 := by
     apply continuous_snd.neg.continuousOn.congr
     intro x hx
     dsimp [f, s2] at hx ⊢
     rw [if_neg (not_lt_of_gt hx)]
-
-  have hz2' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s2 := by
-    exact hz2
+  have hz2' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s2 := hz2
 
   have h5 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) (s1 ∪ s2) := continuous_on_union_of_open (fun p => MyCoordChange 0 1 p.1 p.2) s1 s2 s1_is_open s2_is_open hz1' hz2'
   rw [h1]

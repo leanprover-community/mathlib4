@@ -7,7 +7,6 @@ import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.LinearAlgebra.UnitaryGroup
 
 set_option linter.style.longLine false
-set_option linter.style.cdot false
 
 open Set
 
