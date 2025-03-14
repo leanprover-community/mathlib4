@@ -150,12 +150,7 @@ lemma nhds_basis_clopens (x : X) :
 
 /-- A uniform space with a nonarchimedean uniformity is zero-dimensional. -/
 lemma _root_.TopologicalSpace.isTopologicalBasis_clopens :
-    TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s} := by
-  apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds fun U (hU : IsClopen U) => hU.2
-  intro x U hxU U_op
-  have : U ∈ 𝓝 x := IsOpen.mem_nhds U_op hxU
-  rcases (nhds_basis_clopens x).mem_iff.mp this with ⟨V, ⟨hxV, hV⟩, hVU : V ⊆ U⟩
-  use V
-  tauto
+    TopologicalSpace.IsTopologicalBasis {s : Set X | IsClopen s} :=
+  .of_hasBasis_nhds fun x ↦ by simpa [and_comm] using nhds_basis_clopens x
 
 end UniformSpace
