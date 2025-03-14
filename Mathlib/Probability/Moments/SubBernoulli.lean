@@ -24,7 +24,7 @@ open scoped ENNReal
 
 namespace ProbabilityTheory
 
-variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {a b x t : ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {a b x t : ℝ} {ω : Ω}
 
 lemma eq_mul_add_mul_of_mem_Icc (hx : x ∈ Icc a b) :
     x = (1 - (x - a) / (b - a)) * a + (x - a) / (b - a) * b := by
@@ -85,25 +85,25 @@ lemma mgf_le_of_mem_Icc [IsProbabilityMeasure μ] (hXm : AEMeasurable X μ)
     · simp
     all_goals { fun_prop }
 
-lemma aemeasurable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} {ω : Ω} :
+lemma aemeasurable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} :
     AEMeasurable f (Measure.dirac ω) :=
   ⟨fun _ ↦ f ω, measurable_const, by simp only [ae_dirac_eq]; rfl⟩
 
-lemma aestronglyMeasurable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} {ω : Ω} :
+lemma aestronglyMeasurable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} :
     AEStronglyMeasurable f (Measure.dirac ω) :=
   ⟨fun _ ↦ f ω, stronglyMeasurable_const, by simp only [ae_dirac_eq]; rfl⟩
 
 @[fun_prop]
-lemma integrable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} {ω : Ω} :
+lemma integrable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} :
     Integrable f (Measure.dirac ω) := by
   refine ⟨aestronglyMeasurable_dirac, ?_⟩
   simp [HasFiniteIntegral, lintegral_dirac]
 
 lemma mgf_id_dirac : mgf id (Measure.dirac x) t = exp (t * x) := by rw [mgf, integral_dirac, id_eq]
 
-lemma mgf_dirac' [MeasurableSingletonClass Ω] {ω : Ω} (hX : Measurable X) :
+lemma mgf_dirac' [MeasurableSingletonClass Ω] :
     mgf X (Measure.dirac ω) t = exp (t * X ω) := by
-  rw [← mgf_id_map aemeasurable_dirac, Measure.map_dirac hX, mgf_id_dirac]
+  rw [mgf, integral_dirac]
 
 lemma mgf_add_measure {ν : Measure Ω}
     (hμ : Integrable (fun ω ↦ exp (t * X ω)) μ) (hν : Integrable (fun ω ↦ exp (t * X ω)) ν) :
