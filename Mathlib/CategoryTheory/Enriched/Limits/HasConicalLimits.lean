@@ -76,5 +76,53 @@ abbrev HasConicalLimits : Prop := HasConicalLimitsOfSize.{v, v} V C
 
 end Definitions
 
+section Results
+
+variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
+namespace HasConicalLimit
+
+variable {C} {F G : J ⥤ C} [HasConicalLimit V F]
+
+/-- ensure existence of a conical limit implies existence of a limit -/
+example : HasLimit F := inferInstance
+
+end HasConicalLimit
+
+namespace HasConicalLimitsOfShape
+
+variable [HasConicalLimitsOfShape J V C]
+
+/-- existence of conical limits (of shape) implies existence of limits (of shape) -/
+instance : HasLimitsOfShape J C where
+  has_limit _ := inferInstance
+
+end HasConicalLimitsOfShape
+
+namespace HasConicalLimitsOfSize
+
+variable [HasConicalLimitsOfSize.{v₁, u₁} V C]
+
+/-- existence of conical limits (of size) implies existence of limits (of size) -/
+instance hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+    HasLimitsOfSize.{v₁, u₁} C where
+  has_limits_of_shape := inferInstance
+
+end HasConicalLimitsOfSize
+
+end Results
+namespace HasConicalLimits
+
+-- Note that `Category.{v, v} J` is deliberately chosen this way, see `HasConicalLimits`.
+variable (J : Type v) [Category.{v, v} J]
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
+variable [HasConicalLimits V C]
+
+/-- ensure existence of (small) conical limits implies existence of (small) limits -/
+example : HasLimits C := inferInstance
+
+end HasConicalLimits
 
 end CategoryTheory.Enriched
