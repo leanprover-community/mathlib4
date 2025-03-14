@@ -973,12 +973,12 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   forallTelescope src fun xs e => do
     if let some maxReorder := reorder.flatten.max? then
       if xs.size > maxReorder then
-        mkLambdaFVars (xs.permute! reorder) e
+        mkForallFVars (xs.permute! reorder) e
       else
         dbg_trace "reorderForall tried to reorder a list that was too small: {src} {xs} {reorder}"
-        mkLambdaFVars xs e
+        mkForallFVars xs e
     else
-      mkLambdaFVars xs e
+      mkForallFVars xs e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
