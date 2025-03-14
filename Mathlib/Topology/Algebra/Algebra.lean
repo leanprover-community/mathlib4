@@ -404,7 +404,7 @@ theorem coe_snd' : ⇑(snd R A B) = Prod.snd :=
   rfl
 
 @[simp]
-theorem fst_prod_snd  : (fst R A B).prod (snd R A B) = ContinuousAlgHom.id R (A × B) :=
+theorem fst_prod_snd : (fst R A B).prod (snd R A B) = ContinuousAlgHom.id R (A × B) :=
   ext fun ⟨_x, _y⟩ => rfl
 
 @[simp]

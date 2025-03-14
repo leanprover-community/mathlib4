@@ -1154,7 +1154,6 @@ theorem norm_fderiv_le_of_lip' {f : E → F} {x₀ : E}
 /-- Converse to the mean value inequality: if `f` is `C`-lipschitz
 on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C`.
 Version using `fderiv`. -/
--- Porting note: renamed so that dot-notation makes sense
 theorem norm_fderiv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
     {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C := by
   refine norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg ?_

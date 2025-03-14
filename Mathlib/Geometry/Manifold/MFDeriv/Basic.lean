@@ -1229,7 +1229,7 @@ theorem mfderiv_comp_apply (hg : MDifferentiableAt I' I'' g (f x))
   rfl
 
 theorem mfderiv_comp_apply_of_eq {y : M'} (hg : MDifferentiableAt I' I'' g y)
-    (hf : MDifferentiableAt I I' f x)  (hy : f x = y) (v : TangentSpace I x) :
+    (hf : MDifferentiableAt I I' f x) (hy : f x = y) (v : TangentSpace I x) :
     mfderiv I I'' (g ∘ f) x v = (mfderiv I' I'' g y) ((mfderiv I I' f x) v) := by
   subst hy; exact mfderiv_comp_apply _ hg hf v
 

@@ -3054,6 +3054,7 @@ import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.Factorial.BigOperators
 import Mathlib.Data.Nat.Factorial.Cast
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
+import Mathlib.Data.Nat.Factorial.NatCast
 import Mathlib.Data.Nat.Factorial.SuperFactorial
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Factorization.Defs
@@ -3219,7 +3220,6 @@ import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Data.Set.Pointwise.Iterate
 import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.SMulAntidiagonal
@@ -3305,6 +3305,7 @@ import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.Dynamics.Ergodic.Function
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.Dynamics.FixedPoints.Basic
+import Mathlib.Dynamics.FixedPoints.Prufer
 import Mathlib.Dynamics.FixedPoints.Topology
 import Mathlib.Dynamics.Flow
 import Mathlib.Dynamics.Minimal
@@ -3906,7 +3907,8 @@ import Mathlib.Logic.Equiv.Array
 import Mathlib.Logic.Equiv.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Logic.Equiv.List
@@ -3953,6 +3955,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metrizable
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.MeasureTheory.Constructions.ClosedCompactCylinders
 import Mathlib.MeasureTheory.Constructions.Cylinders
 import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
@@ -4511,6 +4514,7 @@ import Mathlib.Order.Interval.Multiset
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.Fin
 import Mathlib.Order.Interval.Set.Final
 import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.Interval.Set.Infinite
@@ -4656,6 +4660,7 @@ import Mathlib.Probability.Kernel.IonescuTulcea.PartialTraj
 import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.MeasurableLIntegral
+import Mathlib.Probability.Kernel.Posterior
 import Mathlib.Probability.Kernel.Proper
 import Mathlib.Probability.Kernel.RadonNikodym
 import Mathlib.Probability.Kernel.SetIntegral
@@ -4671,6 +4676,8 @@ import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.ComplexMGF
 import Mathlib.Probability.Moments.IntegrableExpMul
 import Mathlib.Probability.Moments.MGFAnalytic
+import Mathlib.Probability.Moments.SubGaussian
+import Mathlib.Probability.Moments.Tilted
 import Mathlib.Probability.Notation
 import Mathlib.Probability.ProbabilityMassFunction.Basic
 import Mathlib.Probability.ProbabilityMassFunction.Binomial
@@ -4697,6 +4704,7 @@ import Mathlib.RepresentationTheory.Invariants
 import Mathlib.RepresentationTheory.Maschke
 import Mathlib.RepresentationTheory.Rep
 import Mathlib.RepresentationTheory.Submodule
+import Mathlib.RepresentationTheory.Tannaka
 import Mathlib.RingTheory.AdicCompletion.Algebra
 import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 import Mathlib.RingTheory.AdicCompletion.Basic
@@ -4774,6 +4782,7 @@ import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.DiscreteValuationRing.TFAE
 import Mathlib.RingTheory.Discriminant
 import Mathlib.RingTheory.DividedPowers.Basic
+import Mathlib.RingTheory.DividedPowers.DPMorphism
 import Mathlib.RingTheory.DualNumber
 import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EssentialFiniteness
@@ -5721,6 +5730,7 @@ import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.Compact
 import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.ContinuousMap.ContinuousMapZero
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 import Mathlib.Topology.ContinuousMap.Defs
 import Mathlib.Topology.ContinuousMap.Ideals
 import Mathlib.Topology.ContinuousMap.Interval

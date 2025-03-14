@@ -429,11 +429,14 @@ instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
 variable [TopologicalSpace G] [Inv G] [Mul G] [ContinuousMul G]
 
 /-- Conjugation is jointly continuous on `G × G` when both `mul` and `inv` are continuous. -/
-@[to_additive
+@[to_additive continuous_addConj_prod
   "Conjugation is jointly continuous on `G × G` when both `add` and `neg` are continuous."]
 theorem IsTopologicalGroup.continuous_conj_prod [ContinuousInv G] :
     Continuous fun g : G × G => g.fst * g.snd * g.fst⁻¹ :=
   continuous_mul.mul (continuous_inv.comp continuous_fst)
+
+@[deprecated (since := "2025-03-11")]
+alias IsTopologicalAddGroup.continuous_conj_sum := IsTopologicalAddGroup.continuous_addConj_prod
 
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
 @[to_additive (attr := continuity)

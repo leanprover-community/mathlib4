@@ -639,11 +639,11 @@ protected theorem tsum_eq_iSup_sum' {ι : Type*} (s : ι → Finset α) (hs : �
   exact (Finset.sum_mono_set f).iSup_comp_eq hs
 
 protected theorem tsum_sigma {β : α → Type*} (f : ∀ a, β a → ℝ≥0∞) :
-    ∑' p : Σa, β a, f p.1 p.2 = ∑' (a) (b), f a b :=
+    ∑' p : Σ a, β a, f p.1 p.2 = ∑' (a) (b), f a b :=
   tsum_sigma' (fun _ => ENNReal.summable) ENNReal.summable
 
-protected theorem tsum_sigma' {β : α → Type*} (f : (Σa, β a) → ℝ≥0∞) :
-    ∑' p : Σa, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
+protected theorem tsum_sigma' {β : α → Type*} (f : (Σ a, β a) → ℝ≥0∞) :
+    ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
   tsum_sigma' (fun _ => ENNReal.summable) ENNReal.summable
 
 protected theorem tsum_prod {f : α → β → ℝ≥0∞} : ∑' p : α × β, f p.1 p.2 = ∑' (a) (b), f a b :=

@@ -454,7 +454,7 @@ theorem Ideal.Quotient.norm_mk_le (r : R) : ‖Ideal.Quotient.mk I r‖ ≤ ‖r
 instance Ideal.Quotient.semiNormedCommRing : SeminormedCommRing (R ⧸ I) where
   dist_eq := dist_eq_norm
   mul_comm := _root_.mul_comm
-  norm_mul x y := le_of_forall_pos_le_add fun ε hε => by
+  norm_mul_le x y := le_of_forall_pos_le_add fun ε hε => by
     have := ((nhds_basis_ball.prod_nhds nhds_basis_ball).tendsto_iff nhds_basis_ball).mp
       (continuous_mul.tendsto (‖x‖, ‖y‖)) ε hε
     simp only [Set.mem_prod, mem_ball, and_imp, Prod.forall, exists_prop, Prod.exists] at this
