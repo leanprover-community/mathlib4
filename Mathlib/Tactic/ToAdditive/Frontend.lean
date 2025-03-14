@@ -970,7 +970,7 @@ def expand (b : BundledExtensions)
 def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if reorder == [] then
     return src
-  forallTelescope src fun xs e => do
+  forallBoundedTelescope src none fun xs e => do
     if let some maxReorder := reorder.flatten.max? then
       if xs.size > maxReorder then
         mkForallFVars (xs.permute! reorder) e
