@@ -1,0 +1,44 @@
+/-
+Copyright (c) 2025 Jon Eugster. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dagur Asgeirsson, Jon Eugster, Emily Riehl
+-/
+import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
+
+/-!
+# HasConicalProducts
+
+
+-/
+
+universe w v' v u u'
+
+namespace CategoryTheory.Enriched
+
+open Limits
+
+/-- Has conical products if all discrete diagrams of bounded size have conical products. -/
+class HasConicalProducts
+    (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
+    (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C] : Prop where
+  /-- All discrete diagrams of bounded size have conical products. -/
+  hasConicalLimitsOfShape : ∀ J : Type w, HasConicalLimitsOfShape (Discrete J) V C := by
+    infer_instance
+
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
+
+/-- An abbreviation for `HasConicalLimit (Discrete.functor f)`. -/
+abbrev HasConicalProduct {I : Type w} (f : I → C) :=
+  HasConicalLimit V (Discrete.functor f)
+
+attribute [instance] HasConicalProducts.hasConicalLimitsOfShape
+
+namespace HasConicalProducts
+
+/-- ensure products exists of existence of conical products -/
+example [HasConicalProducts.{w} V C] : HasProducts.{w} C := inferInstance
+
+end HasConicalProducts
+
+end CategoryTheory.Enriched
