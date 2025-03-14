@@ -165,7 +165,7 @@ lemma biUnion_subset {s' : Finset β} : s.biUnion t ⊆ s' ↔ ∀ x ∈ s, t x 
 
 @[simp]
 lemma singleton_biUnion {a : α} : Finset.biUnion {a} t = t a := by
-  classical rw [← insert_emptyc_eq, biUnion_insert, biUnion_empty, union_empty]
+  classical rw [← insert_empty_eq, biUnion_insert, biUnion_empty, union_empty]
 
 lemma biUnion_inter (s : Finset α) (f : α → Finset β) (t : Finset β) :
     s.biUnion f ∩ t = s.biUnion fun x ↦ f x ∩ t := by

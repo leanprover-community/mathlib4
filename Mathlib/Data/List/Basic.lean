@@ -124,7 +124,7 @@ instance instSingletonList : Singleton α (List α) := ⟨fun x => [x]⟩
 instance [DecidableEq α] : Insert α (List α) := ⟨List.insert⟩
 
 instance [DecidableEq α] : LawfulSingleton α (List α) :=
-  { insert_emptyc_eq := fun x =>
+  { insert_empty_eq := fun x =>
       show (if x ∈ ([] : List α) then [] else [x]) = [x] from if_neg (not_mem_nil _) }
 
 theorem singleton_eq (x : α) : ({x} : List α) = [x] :=
