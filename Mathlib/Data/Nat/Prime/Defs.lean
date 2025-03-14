@@ -86,7 +86,7 @@ theorem Prime.ne_one {p : ℕ} (hp : p.Prime) : p ≠ 1 :=
 theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m ∣ p) :
     m = 1 ∨ m = p := by
   obtain ⟨n, hn⟩ := hm
-  have := pp.isUnit_or_isUnit hn.symm
+  have := pp.isUnit_or_isUnit hn
   rw [Nat.isUnit_iff, Nat.isUnit_iff] at this
   apply Or.imp_right _ this
   rintro rfl
