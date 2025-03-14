@@ -1168,13 +1168,12 @@ instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
-  { instSeminormedAddCommGroup with
-    norm_mul := fun f g =>
-      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _))
-        (fun x ↦ (norm_mul_le _ _).trans <|
-          mul_le_mul (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
-    left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc }
+instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
+  __ := instSeminormedAddCommGroup
+  __ := instNonUnitalRing
+  norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
+    (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
+      (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
 
 end Seminormed
 
@@ -1249,7 +1248,6 @@ In this section, if `R` is a normed commutative ring, then we show that the spac
 continuous functions from `α` to `R` inherits a normed commutative ring structure, by using
 pointwise operations and checking that they are compatible with the uniform distance. -/
 
-
 variable [TopologicalSpace α] {R : Type*}
 
 instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
@@ -1257,13 +1255,11 @@ instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
 
 instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
   __ := instCommRing
-  __ := instSeminormedAddCommGroup
-  norm_mul := norm_mul_le
+  __ := instNonUnitalSeminormedRing
 
 instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
-  __ := instCommRing
+  __ := instSeminormedCommRing
   __ := instNormedAddCommGroup
-  norm_mul := norm_mul_le
 
 end NormedCommRing
 

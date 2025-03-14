@@ -119,6 +119,6 @@ theorem range_mkQ_cokernelIsoRangeQuotient_inv :
 theorem cokernel_π_ext {M N : ModuleCat.{u} R} (f : M ⟶ N) {x y : N} (m : M) (w : x = y + f m) :
     cokernel.π f x = cokernel.π f y := by
   subst w
-  simpa only [map_add, add_right_eq_self] using cokernel.condition_apply f m
+  simpa only [map_add, add_eq_left] using cokernel.condition_apply f m
 
 end ModuleCat

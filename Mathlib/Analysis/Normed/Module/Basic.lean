@@ -27,10 +27,6 @@ open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
-section Prio
-
--- set_option extends_priority 920 -- Porting note: option unsupported
-
 -- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
 -- to take precedence over `Semiring.toModule` as this leads to instance paths with better
 -- unification properties.
@@ -43,14 +39,12 @@ typeclass can be used for "semi normed spaces" too, just as `Module` can be used
 "semi modules". -/
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
-  norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
+  protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
   /-- The canonical model with corners associated to a normed vector space. -/
   modelWithCornersSelf : ModelWithCorners 𝕜 E E := modelWithCornersSelfId 𝕜 E
   modelWithCornersSelf_eq_id : modelWithCornersSelf = modelWithCornersSelfId 𝕜 E := by rfl
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
-
-end Prio
 
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
@@ -247,7 +241,6 @@ variable (𝕜')
 variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
-  -- Porting note: previous Lean could figure out what we were extending
   { NormedAlgebra.toAlgebra.toModule with
   norm_smul_le := NormedAlgebra.norm_smul_le }
 
@@ -319,6 +312,16 @@ instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }
 
+/-- The product of two normed algebras is a normed algebra, with the sup norm. -/
+instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
+    [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
+  { Prod.normedSpace, Prod.algebra 𝕜 E F with }
+
+/-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
+instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
+    [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
+  { Pi.normedSpace, Pi.algebra _ E with }
+
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
@@ -343,7 +346,6 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
   letI := SeminormedRing.induced R S f
   ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 
--- Porting note: failed to synth NonunitalAlgHomClass
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
