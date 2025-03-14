@@ -432,6 +432,20 @@ lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedd
 /-! product of two partial homeomorphisms -/
 section Prod
 
+/-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
+@[simps! (config := mfld_cfg) toPartialEquiv apply,
+  simps! -isSimp source target symm_apply]
+def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
+    PartialHomeomorph (X × Y) (X' × Y') where
+  open_source' := eX.open_source.prod eY.open_source
+  open_target' := eX.open_target.prod eY.open_target
+  continuousOn_toFun := eX.continuousOn.prod_map eY.continuousOn
+  continuousOn_invFun := eX.continuousOn_symm.prod_map eY.continuousOn_symm
+  toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
+
+@[simp] lemma prodWithoutAtlas_eq_prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
+    (eX.prod_withoutAtlas eY) = (eX.prod' eY) := rfl
+
 @[simp, mfld_simps]
 theorem prod_symm (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     (eX.prod eY).symm = eX.symm.prod eY.symm :=

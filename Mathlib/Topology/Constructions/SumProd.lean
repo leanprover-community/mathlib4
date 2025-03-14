@@ -113,8 +113,10 @@ def topologicalSpaceProdWithoutAtlasAux [t₁ : TopologicalSpace X] [t₂ : Topo
 
 attribute [local instance] topologicalSpaceProdWithoutAtlasAux
 
-/-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
-def PartialHomeomorph.prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
+/-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. Use
+instead `PartialHomeomorph.prod`, done for topological spaces (and defeq to this one). -/
+def PartialHomeomorph.prod_withoutAtlas
+    (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     PartialHomeomorph (X × Y) (X' × Y') where
   open_source' := by
       letI := topologicalSpaceProdAux (X := X) (Y := Y)
@@ -140,8 +142,8 @@ def PartialHomeomorph.prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph
 def prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [h : ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
     [h' : ChartedSpace H' M'] : ChartedSpace (H × H') (M × M') where
-  atlas := image2 PartialHomeomorph.prod h.atlas h'.atlas
-  chartAt x := (h.chartAt x.1).prod (h'.chartAt x.2)
+  atlas := image2 PartialHomeomorph.prod_withoutAtlas h.atlas h'.atlas
+  chartAt x := (h.chartAt x.1).prod_withoutAtlas (h'.chartAt x.2)
   mem_chart_source x := ⟨h.mem_chart_source x.1, h'.mem_chart_source x.2⟩
   chart_mem_atlas x := mem_image2_of_mem (h.chart_mem_atlas x.1) (h'.chart_mem_atlas x.2)
 
@@ -154,12 +156,9 @@ instance instTopologicalSpaceProd [t₁ : TopologicalSpace X] [t₂ : Topologica
   chartedSpaceSelf := prodChartedSpace X X Y Y
   chartedSpaceSelf_eq_id := by
     letI := topologicalSpaceProdAux (X := X) (Y := Y)
-    have A : (PartialHomeomorph.refl X).prod (PartialHomeomorph.refl Y) =
-        (PartialHomeomorph.refl (X × Y)) := by
-      ext : 1
-      · rfl
-      · rfl
-      · simp [PartialHomeomorph.prod, PartialHomeomorph.refl]
+    have A : (PartialHomeomorph.refl X).prod_withoutAtlas (PartialHomeomorph.refl Y) =
+        (PartialHomeomorph.refl (X × Y)) :=
+      PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) univ_prod_univ
     simp only [prodChartedSpace, chartAt_self_eq, chartedSpaceSelfId]
     ext : 2
     · simp [t₁.chartedSpaceSelf_eq_id, t₂.chartedSpaceSelf_eq_id, A, eq_comm]
