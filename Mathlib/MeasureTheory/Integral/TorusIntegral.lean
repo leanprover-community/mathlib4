@@ -65,7 +65,7 @@ open Complex Set MeasureTheory Function Filter TopologicalSpace
 
 open scoped Real
 
-local syntax:arg term:max noWs superscript(term) : term
+local syntax:arg term:max noWs superscriptTerm : term
 local macro_rules | `($t:term$n:superscript) => `(Fin $n → $t)
 
 /-!
