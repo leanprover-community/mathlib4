@@ -6,7 +6,7 @@ Authors: Jon Eugster, Dagur Asgeirsson, Emily Riehl
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 
 /-!
-# HasConicalLimits
+# Existence of conical limits
 
 This file contains different statements about the (non-constructive) existence of conical limits.
 
