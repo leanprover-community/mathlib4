@@ -429,9 +429,8 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift X` is homeomorphic to `X`. -/
-def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X where
+def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   continuous_toFun := continuous_uliftDown
   continuous_invFun := continuous_uliftUp
   toEquiv := Equiv.ulift
@@ -529,7 +528,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 -/
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: by continuity!
+  -- TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s

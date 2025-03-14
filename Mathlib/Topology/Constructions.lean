@@ -685,7 +685,6 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
               isOpen_iUnion fun u =>
                 isOpen_iUnion fun hu => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩))
 
--- todo: use the previous lemma?
 theorem prod_eq_generateFrom :
     instTopologicalSpaceProd =
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
@@ -696,7 +695,7 @@ theorem prod_eq_generateFrom :
       (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align with `mem_nhds_prod_iff'`
+-- TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
     IsOpen s ↔ ∀ a b, (a, b) ∈ s →
       ∃ u v, IsOpen u ∧ IsOpen v ∧ a ∈ u ∧ b ∈ v ∧ u ×ˢ v ⊆ s :=
@@ -1523,8 +1522,7 @@ theorem continuous_update [DecidableEq ι] (i : ι) :
   continuous_fst.update i continuous_snd
 
 /-- `Pi.mulSingle i x` is continuous in `x`. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore @[continuity]
-@[to_additive "`Pi.single i x` is continuous in `x`."]
+@[to_additive (attr := continuity) "`Pi.single i x` is continuous in `x`."]
 theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
   continuous_const.update _ continuous_id
