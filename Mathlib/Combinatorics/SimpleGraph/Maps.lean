@@ -546,8 +546,8 @@ lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
 protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding where
   toFun := f
   invFun := f.symm
-  left_inv := f.left_inv
-  right_inv := f.right_inv
+  left_inv := f.left_inv'
+  right_inv := f.right_inv'
   map_rel_iff' := by simp
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
@@ -556,8 +556,8 @@ protected def completeGraph {α β : Type*} (f : α ≃ β) :
     (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) where
   toFun := f
   invFun := f.symm
-  left_inv := f.left_inv
-  right_inv := f.right_inv
+  left_inv := f.left_inv'
+  right_inv := f.right_inv'
   map_rel_iff' := by simp
 
 theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
