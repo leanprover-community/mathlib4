@@ -19,12 +19,12 @@ open CategoryTheory Simplicial Opposite
 
 namespace SSet
 
-/-- `horn n i` (or `Λ[n, i]`) is the `i`-th horn of the `n`-th standard simplex, where `i : n`.
-It consists of all `m`-simplices `α` of `Δ[n]`
+/-- `horn n i` (or `Λ[n, i]`) is the `i`-th horn of the `n`-th standard simplex,
+where `i : n`. It consists of all `m`-simplices `α` of `Δ[n]`
 for which the union of `{i}` and the range of `α` is not all of `n`
 (when viewing `α` as monotone function `m → n`). -/
-@[simps (config := .lemmasOnly)]
-def subcomplexHorn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
+@[simps -isSimp obj]
+def horn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex where
   obj _ := setOf (fun s ↦ Set.range (stdSimplex.asOrderHom s) ∪ {i} ≠ Set.univ)
   map φ s hs h := hs (by
     rw [Set.eq_univ_iff_forall] at h ⊢; intro j
@@ -33,26 +33,26 @@ def subcomplexHorn (n : ℕ) (i : Fin (n + 1)) : (Δ[n] : SSet.{u}).Subcomplex w
     exact Set.range_comp_subset_range _ _ hj)
 
 /-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
-scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.subcomplexHorn (n : ℕ) i
+scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
-lemma subcomplexHorn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
-    subcomplexHorn.{u} n i =
+lemma horn_eq_iSup (n : ℕ) (i : Fin (n + 1)) :
+    horn.{u} n i =
       ⨆ (j : ({i}ᶜ : Set (Fin (n + 1)))), stdSimplex.face {j.1}ᶜ := by
   ext m j
-  simp [stdSimplex.face_obj, subcomplexHorn, Set.eq_univ_iff_forall]
+  simp [stdSimplex.face_obj, horn, Set.eq_univ_iff_forall]
   rfl
 
-lemma face_le_subcomplexHorn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
-    stdSimplex.face.{u} {i}ᶜ ≤ subcomplexHorn n j := by
-  rw [subcomplexHorn_eq_iSup]
+lemma face_le_horn {n : ℕ} (i j : Fin (n + 1)) (h : i ≠ j) :
+    stdSimplex.face.{u} {i}ᶜ ≤ horn n j := by
+  rw [horn_eq_iSup]
   exact le_iSup (fun (k : ({j}ᶜ : Set (Fin (n + 1)))) ↦ stdSimplex.face.{u} {k.1}ᶜ) ⟨i, h⟩
 
 @[simp]
-lemma subcomplexHorn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
-    (subcomplexHorn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
+lemma horn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
+    (horn.{u} (n + 2) i).obj (op (.mk 0)) = ⊤ := by
   ext j
-  -- this was produced using `simp? [subcomplexHorn_eq_iSup]`
-  simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
+  -- this was produced using `simp? [horn_eq_iSup]`
+  simp only [horn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
     Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, Finset.mem_compl, Finset.mem_singleton, exists_prop, Set.top_eq_univ,
     Set.mem_univ, iff_true]
@@ -64,16 +64,13 @@ lemma subcomplexHorn_obj_zero (n : ℕ) (i : Fin (n + 3)) :
     omega
   rw [Finset.eq_univ_iff_forall, not_forall] at hS
   obtain ⟨k, hk⟩ := hS
-  simp [S] at hk
+  simp only [Finset.mem_insert, Finset.mem_singleton, not_or, S] at hk
   refine ⟨k, hk.1, fun a ↦ ?_⟩
   fin_cases a
   exact Ne.symm hk.2
 
-@[deprecated (since := "2025-01-26")]
-alias horn := subcomplexHorn
-
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
-@[deprecated subcomplexHorn (since := "2025-01-26")]
+@[deprecated horn (since := "2025-01-26")]
 abbrev hornInclusion (n : ℕ) (i : Fin (n + 1)) : (Λ[n, i] : SSet.{u}) ⟶ Δ[n] := Λ[n, i].ι
 
 namespace horn
@@ -103,7 +100,6 @@ This edge only exists if `{i, a, b}` has cardinality less than `n`. -/
 def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
   ⟨stdSimplex.edge n a b hab, by
-    simp [subcomplexHorn_eq_iSup]
     have hS : ¬ ({i, a, b} = Finset.univ) := fun hS ↦ by
       have := Finset.card_le_card hS.symm.le
       simp only [card_univ, Fintype.card_fin] at this
@@ -111,6 +107,10 @@ def edge (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : #{i, a, b} ≤ n) :
     rw [Finset.eq_univ_iff_forall, not_forall] at hS
     obtain ⟨k, hk⟩ := hS
     simp only [mem_insert, mem_singleton, not_or] at hk
+    -- this was produced by `simp? [horn_eq_iSup]`
+    simp only [horn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set, Set.mem_compl_iff,
+      Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff, Nat.reduceAdd, mem_compl,
+      mem_singleton, exists_prop]
     refine ⟨k, hk.1, fun a ↦ ?_⟩
     fin_cases a
     · exact Ne.symm hk.2.1
@@ -121,7 +121,7 @@ assuming `3 ≤ n`. -/
 @[simps!]
 def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
-  horn.edge n i a b hab <| Finset.card_le_three.trans H
+  edge n i a b hab <| Finset.card_le_three.trans H
 
 /-- The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
 
@@ -131,7 +131,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 def primitiveEdge {n : ℕ} {i : Fin (n+1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ := by
-  refine horn.edge n i j.castSucc j.succ ?_ ?_
+  refine edge n i j.castSucc j.succ ?_ ?_
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
   obtain rfl|hn : n = 2 ∨ 2 < n := by
@@ -151,8 +151,8 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     (n := n+3) ⟨k, by omega⟩ ⟨k+1, by omega⟩ ⟨k+2, by omega⟩ ?_ ?_, ?_⟩
   · simp only [Fin.mk_le_mk, le_add_iff_nonneg_right, zero_le]
   · simp only [Fin.mk_le_mk, add_le_add_iff_left, one_le_two]
-  -- this was produced using `simp? [subcomplexHorn_eq_iSup]`
-  simp only [subcomplexHorn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
+  -- this was produced using `simp? [horn_eq_iSup]`
+  simp only [horn_eq_iSup, Subpresheaf.iSup_obj, Set.iUnion_coe_set,
     Set.mem_compl_iff, Set.mem_singleton_iff, Set.mem_iUnion, stdSimplex.mem_face_iff,
     Nat.reduceAdd, mem_compl, mem_singleton, exists_prop]
   have hS : ¬ ({i, (⟨k, by omega⟩ : Fin (n + 4)), (⟨k + 1, by omega⟩ : Fin (n + 4)),
@@ -171,24 +171,23 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     · have := Finset.mem_univ (0 : Fin (n + 4))
       rw [← hS] at this
       -- this was produced using `simp? [Fin.ext_iff] at this`
-      simp only [mem_insert, Fin.ext_iff, Fin.val_zero, self_eq_add_left,
+      simp only [mem_insert, Fin.ext_iff, Fin.val_zero, right_eq_add,
         AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, mem_singleton,
         OfNat.ofNat_ne_zero, or_self, or_false] at this
       obtain rfl | rfl := this <;> tauto
   rw [Finset.eq_univ_iff_forall, not_forall] at hS
   obtain ⟨l, hl⟩ := hS
   simp only [mem_insert, mem_singleton, not_or] at hl
-  refine ⟨l, ?_, fun a ↦ ?_⟩
-  · exact hl.1
-  · fin_cases a
-    · exact Ne.symm hl.2.1
-    · exact Ne.symm hl.2.2.1
-    · exact Ne.symm hl.2.2.2
+  refine ⟨l, hl.1, fun a ↦ ?_⟩
+  fin_cases a
+  · exact Ne.symm hl.2.1
+  · exact Ne.symm hl.2.2.1
+  · exact Ne.symm hl.2.2.2
 
 /-- The `j`th face of codimension `1` of the `i`-th horn. -/
 def face {n : ℕ} (i j : Fin (n+2)) (h : j ≠ i) : (Λ[n+1, i] : SSet.{u}) _⦋n⦌ :=
   yonedaEquiv (Subpresheaf.lift (stdSimplex.δ j) (by
-    simpa using face_le_subcomplexHorn _ _ h))
+    simpa using face_le_horn _ _ h))
 
 /-- Two morphisms from a horn are equal if they are equal on all suitable faces. -/
 protected
@@ -197,7 +196,7 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : (Λ[n+1, i] : 
     σ₁ = σ₂ := by
   rw [← Subpresheaf.equalizer_eq_iff]
   apply le_antisymm (Subpresheaf.equalizer_le σ₁ σ₂)
-  simp only [subcomplexHorn_eq_iSup, iSup_le_iff,
+  simp only [horn_eq_iSup, iSup_le_iff,
     Subtype.forall, Set.mem_compl_iff, Set.mem_singleton_iff,
     ← stdSimplex.ofSimplex_yonedaEquiv_δ, Subcomplex.ofSimplex_le_iff]
   intro j hj

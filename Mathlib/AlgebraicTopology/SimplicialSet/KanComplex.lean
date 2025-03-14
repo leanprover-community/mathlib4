@@ -3,7 +3,6 @@ Copyright (c) 2023 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Joël Riou
 -/
-
 import Mathlib.AlgebraicTopology.ModelCategory.IsCofibrant
 import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
 import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
@@ -11,7 +10,10 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Subcomplex
 /-!
 # Kan complexes
 
-In this file we give the definition of Kan complexes.
+In this file, the abbreviation `KanComplex` is introduced for
+fibrant objects in the category `SSet` which is equipped with
+Kan fibrations.
+
 In `Mathlib/AlgebraicTopology/Quasicategory/Basic.lean`
 we show that every Kan complex is a quasicategory.
 
@@ -37,7 +39,7 @@ every map of simplicial sets `σ₀ : Λ[n, i] → S` can be extended to a map `
 lemma KanComplex.hornFilling {S : SSet.{u}} [KanComplex S]
     {n : ℕ} {i : Fin (n + 2)} (σ₀ : (Λ[n + 1, i] : SSet) ⟶ S) :
     ∃ σ : Δ[n + 1] ⟶ S, σ₀ = Λ[n + 1, i].ι ≫ σ := by
-  have sq : CommSq σ₀ Λ[n + 1, i].ι (terminal.from S) (terminal.from _) := ⟨by simp⟩
-  exact ⟨sq.lift, by simp⟩
+  have sq' : CommSq σ₀ Λ[n + 1, i].ι (terminal.from S) (terminal.from _) := ⟨by simp⟩
+  exact ⟨sq'.lift, by simp⟩
 
 end SSet

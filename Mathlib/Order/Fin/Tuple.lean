@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Order.Fin.Basic
 import Mathlib.Order.PiLex
 import Mathlib.Order.Interval.Set.Defs
@@ -52,6 +52,7 @@ open Set Fin Matrix Function
 
 variable {α : Type*}
 
+open scoped Relator in
 lemma liftFun_vecCons {n : ℕ} (r : α → α → Prop) [IsTrans α r] {f : Fin (n + 1) → α} {a : α} :
     ((· < ·) ⇒ r) (vecCons a f) (vecCons a f) ↔ r a (f 0) ∧ ((· < ·) ⇒ r) f f := by
   simp only [liftFun_iff_succ r, forall_iff_succ, cons_val_succ, cons_val_zero, ← succ_castSucc,
@@ -165,8 +166,7 @@ lemma finSuccAboveOrderIso_apply (p : Fin (n + 1)) (i : Fin n) :
 lemma finSuccAboveOrderIso_symm_apply_last (x : { x : Fin (n + 1) // x ≠ Fin.last n }) :
     (finSuccAboveOrderIso (Fin.last n)).symm x = Fin.castLT x.1 (Fin.val_lt_last x.2) := by
   rw [← Option.some_inj]
-  simpa [finSuccAboveOrderIso, finSuccAboveEquiv, OrderIso.symm]
-    using finSuccEquiv'_last_apply x.property
+  simp [finSuccAboveOrderIso, finSuccAboveEquiv, OrderIso.symm]
 
 lemma finSuccAboveOrderIso_symm_apply_ne_last {p : Fin (n + 1)} (h : p ≠ Fin.last n)
     (x : { x : Fin (n + 1) // x ≠ p }) :

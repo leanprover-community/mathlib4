@@ -27,32 +27,29 @@ namespace modelCategory
 
 /-- The generating cofibrations. -/
 def I : MorphismProperty SSet.{u} :=
-  .ofHoms (fun (n : ℕ) ↦ (subcomplexBoundary.{u} n).ι)
+  .ofHoms (fun (n : ℕ) ↦ (boundary.{u} n).ι)
 
 lemma subcomplexBoundary_ι_mem_I (n : ℕ) :
-    I (subcomplexBoundary.{u} n).ι := by constructor
+    I (boundary.{u} n).ι := by constructor
 
 /-- The generating trivial cofibrations. -/
 def J : MorphismProperty SSet.{u} :=
-  ⨆ n, .ofHoms (fun i ↦ (subcomplexHorn.{u} (n + 1) i).ι)
+  ⨆ n, .ofHoms (fun i ↦ (horn.{u} (n + 1) i).ι)
 
 lemma subcomplexHorn_ι_mem_J (n : ℕ) (i : Fin (n + 2)):
-    J (subcomplexHorn.{u} (n + 1) i).ι := by
+    J (horn.{u} (n + 1) i).ι := by
   simp only [J, iSup_iff]
   exact ⟨n, ⟨i⟩⟩
 
 lemma I_le_monomorphisms : I.{u} ≤ monomorphisms _ := by
   rintro _ _ _ ⟨n⟩
-  simp only [monomorphisms.iff]
-  have : Mono (Subpresheaf.ι (subcomplexBoundary.{u} n)) := inferInstance
-  infer_instance
+  exact monomorphisms.infer_property _
 
 lemma J_le_monomorphisms : J.{u} ≤ monomorphisms _ := by
   rintro _ _ _ h
   simp only [J, iSup_iff] at h
   obtain ⟨n, ⟨i⟩⟩ := h
-  simp only [monomorphisms.iff]
-  infer_instance
+  exact monomorphisms.infer_property _
 
 instance : CategoryWithCofibrations SSet.{u} where
   cofibrations := .monomorphisms _
@@ -81,7 +78,7 @@ instance [Cofibration f] : Mono f := by rwa [← cofibration_iff]
 lemma cofibration_of_mono [Mono f] : Cofibration f := by rwa [cofibration_iff]
 
 instance [hf : Fibration f] {n : ℕ} (i : Fin (n + 2)) :
-    HasLiftingProperty (subcomplexHorn (n + 1) i).ι f := by
+    HasLiftingProperty (horn (n + 1) i).ι f := by
   rw [fibration_iff] at hf
   exact hf _ (subcomplexHorn_ι_mem_J _ _)
 

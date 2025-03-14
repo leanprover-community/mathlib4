@@ -83,20 +83,20 @@ alias condexpIndL1Fin_ae_eq_condexpIndSMul := condExpIndL1Fin_ae_eq_condExpIndSM
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
--- Porting note: this lemma fills the hole in `refine' (Memℒp.coeFn_toLp _) ...`
+-- Porting note: this lemma fills the hole in `refine' (MemLp.coeFn_toLp _) ...`
 -- which is not automatically filled in Lean 4
 private theorem q {hs : MeasurableSet s} {hμs : μ s ≠ ∞} {x : G} :
-    Memℒp (condExpIndSMul hm hs hμs x) 1 μ := by
-  rw [memℒp_one_iff_integrable]; apply integrable_condExpIndSMul
+    MemLp (condExpIndSMul hm hs hμs x) 1 μ := by
+  rw [memLp_one_iff_integrable]; apply integrable_condExpIndSMul
 
 theorem condExpIndL1Fin_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : G) :
     condExpIndL1Fin hm hs hμs (x + y) =
     condExpIndL1Fin hm hs hμs x + condExpIndL1Fin hm hs hμs y := by
   ext1
-  refine (Memℒp.coeFn_toLp q).trans ?_
+  refine (MemLp.coeFn_toLp q).trans ?_
   refine EventuallyEq.trans ?_ (Lp.coeFn_add _ _).symm
   refine EventuallyEq.trans ?_
-    (EventuallyEq.add (Memℒp.coeFn_toLp q).symm (Memℒp.coeFn_toLp q).symm)
+    (EventuallyEq.add (MemLp.coeFn_toLp q).symm (MemLp.coeFn_toLp q).symm)
   rw [condExpIndSMul_add]
   refine (Lp.coeFn_add _ _).trans (Eventually.of_forall fun a => ?_)
   rfl
@@ -106,7 +106,7 @@ theorem condExpIndL1Fin_add (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x y : 
 theorem condExpIndL1Fin_smul (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (c : ℝ) (x : G) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
-  refine (Memℒp.coeFn_toLp q).trans ?_
+  refine (MemLp.coeFn_toLp q).trans ?_
   refine EventuallyEq.trans ?_ (Lp.coeFn_smul _ _).symm
   rw [condExpIndSMul_smul hs hμs c x]
   refine (Lp.coeFn_smul _ _).trans ?_
@@ -119,7 +119,7 @@ theorem condExpIndL1Fin_smul' [NormedSpace ℝ F] [SMulCommClass ℝ 𝕜 F] (hs
     (hμs : μ s ≠ ∞) (c : 𝕜) (x : F) :
     condExpIndL1Fin hm hs hμs (c • x) = c • condExpIndL1Fin hm hs hμs x := by
   ext1
-  refine (Memℒp.coeFn_toLp q).trans ?_
+  refine (MemLp.coeFn_toLp q).trans ?_
   refine EventuallyEq.trans ?_ (Lp.coeFn_smul _ _).symm
   rw [condExpIndSMul_smul' hs hμs c x]
   refine (Lp.coeFn_smul _ _).trans ?_
@@ -133,7 +133,7 @@ theorem norm_condExpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
   rw [L1.norm_eq_integral_norm, ← ENNReal.toReal_ofReal (norm_nonneg x), ← ENNReal.toReal_mul,
     ← ENNReal.ofReal_le_iff_le_toReal (ENNReal.mul_ne_top hμs ENNReal.ofReal_ne_top),
     ofReal_integral_norm_eq_lintegral_enorm]
-  swap; · rw [← memℒp_one_iff_integrable]; exact Lp.memℒp _
+  swap; · rw [← memLp_one_iff_integrable]; exact Lp.memLp _
   have h_eq :
     ∫⁻ a, ‖condExpIndL1Fin hm hs hμs x a‖ₑ ∂μ = ∫⁻ a, ‖condExpIndSMul hm hs hμs x a‖ₑ ∂μ := by
     refine lintegral_congr_ae ?_
@@ -272,8 +272,6 @@ alias condexpIndL1_disjoint_union := condExpIndL1_disjoint_union
 
 end CondexpIndL1
 
--- Porting note: `G` is not automatically inferred in `condExpInd` in Lean 4;
--- to avoid repeatedly typing `(G := ...)` it is made explicit.
 variable (G)
 
 /-- Conditional expectation of the indicator of a set, as a linear map from `G` to L1. -/
@@ -381,7 +379,7 @@ theorem condExpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞)
   refine EventuallyEq.trans ?_ indicatorConstLp_coeFn.symm
   refine (condExpInd_ae_eq_condExpIndSMul hm (hm s hs) hμs c).trans ?_
   refine (condExpIndSMul_ae_eq_smul hm (hm s hs) hμs c).trans ?_
-  rw [lpMeas_coe, condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
+  rw [condExpL2_indicator_of_measurable hm hs hμs (1 : ℝ)]
   refine (@indicatorConstLp_coeFn α _ _ 2 μ _ s (hm s hs) hμs (1 : ℝ)).mono fun x hx => ?_
   dsimp only
   rw [hx]
@@ -405,8 +403,6 @@ section CondexpL1
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
   {f g : α → F'} {s : Set α}
 
--- Porting note: `F'` is not automatically inferred in `condExpL1CLM` in Lean 4;
--- to avoid repeatedly typing `(F' := ...)` it is made explicit.
 variable (F')
 
 /-- Conditional expectation of a function as a linear map from `α →₁[μ] F'` to itself. -/

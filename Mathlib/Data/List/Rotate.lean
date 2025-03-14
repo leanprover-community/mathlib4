@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yakov Pechersky
 -/
 import Mathlib.Data.List.Nodup
-import Mathlib.Data.Nat.Defs
 import Mathlib.Data.List.Infix
 
 /-!
@@ -93,7 +92,7 @@ theorem rotate'_mod (l : List α) (n : ℕ) : l.rotate' (n % l.length) = l.rotat
     _ = l.rotate' n := by rw [rotate'_rotate', length_rotate', Nat.mod_add_div]
 
 theorem rotate_eq_rotate' (l : List α) (n : ℕ) : l.rotate n = l.rotate' n :=
-  if h : l.length = 0 then by simp_all [length_eq_zero]
+  if h : l.length = 0 then by simp_all [length_eq_zero_iff]
   else by
     rw [← rotate'_mod,
         rotate'_eq_drop_append_take (le_of_lt (Nat.mod_lt _ (Nat.pos_of_ne_zero h)))]
@@ -150,7 +149,7 @@ theorem rotate_perm (l : List α) (n : ℕ) : l.rotate n ~ l := by
   rw [rotate_eq_rotate']
   induction' n with n hn generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate'_cons_succ]
       exact (hn _).trans (perm_append_singleton _ _)
@@ -163,7 +162,7 @@ theorem nodup_rotate {l : List α} {n : ℕ} : Nodup (l.rotate n) ↔ Nodup l :=
 theorem rotate_eq_nil_iff {l : List α} {n : ℕ} : l.rotate n = [] ↔ l = [] := by
   induction' n with n hn generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [rotate_cons_succ, hn]
 
@@ -211,25 +210,35 @@ theorem getElem_rotate (l : List α) (n : ℕ) (k : Nat) (h : k < (l.rotate n).l
   rw [← Option.some_inj, ← getElem?_eq_getElem, ← getElem?_eq_getElem, getElem?_rotate]
   exact h.trans_eq (length_rotate _ _)
 
+set_option linter.deprecated false in
+@[deprecated getElem?_rotate (since := "2025-02-14")]
 theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
     (l.rotate n).get? m = l.get? ((m + n) % l.length) := by
   simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
   rw [← getElem?_eq_getElem]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
 
 theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotate n) = l[n]? := by
-  rw [← get?_zero, get?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h,
-    get?_eq_getElem?]
+  rw [head?_eq_getElem?, getElem?_rotate (n.zero_le.trans_lt h), Nat.zero_add, Nat.mod_eq_of_lt h]
 
 theorem get_rotate_one (l : List α) (k : Fin (l.rotate 1).length) :
     (l.rotate 1).get k = l.get ⟨(k + 1) % l.length, mod_lt _ (length_rotate l 1 ▸ k.pos)⟩ :=
   get_rotate l 1 k
 
-@[deprecated (since := "2024-08-19")] alias nthLe_rotate_one := get_rotate_one
+/-- A version of `List.getElem_rotate` that represents `l[k]` in terms of
+`(List.rotate l n)[⋯]`, not vice versa. Can be used instead of rewriting `List.getElem_rotate`
+from right to left. -/
+theorem getElem_eq_getElem_rotate (l : List α) (n : ℕ) (k : Nat) (hk : k < l.length) :
+    l[k] = ((l.rotate n)[(l.length - n % l.length + k) % l.length]'
+      ((Nat.mod_lt _ (k.zero_le.trans_lt hk)).trans_eq (length_rotate _ _).symm)) := by
+  rw [getElem_rotate]
+  refine congr_arg l.get (Fin.eq_of_val_eq ?_)
+  simp only [mod_add_mod]
+  rw [← add_mod_mod, Nat.add_right_comm, Nat.sub_add_cancel, add_mod_left, mod_eq_of_lt]
+  exacts [hk, (mod_lt _ (k.zero_le.trans_lt hk)).le]
 
 /-- A version of `List.get_rotate` that represents `List.get l` in terms of
 `List.get (List.rotate l n)`, not vice versa. Can be used instead of rewriting `List.get_rotate`
@@ -292,7 +301,7 @@ theorem reverse_rotate (l : List α) (n : ℕ) :
   rw [← length_reverse l, ← rotate_eq_iff]
   induction' n with n hn generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · rw [rotate_cons_succ, ← rotate_rotate, hn]
       simp
@@ -304,9 +313,9 @@ theorem rotate_reverse (l : List α) (n : ℕ) :
     length_reverse]
   rw [← length_reverse l]
   let k := n % l.reverse.length
-  cases' hk' : k with k'
+  rcases hk' : k with - | k'
   · simp_all! [k, length_reverse, ← rotate_rotate]
-  · cases' l with x l
+  · rcases l with - | ⟨x, l⟩
     · simp
     · rw [Nat.mod_eq_of_lt, Nat.sub_add_cancel, rotate_length]
       · exact Nat.sub_le _ _
@@ -316,7 +325,7 @@ theorem map_rotate {β : Type*} (f : α → β) (l : List α) (n : ℕ) :
     map f (l.rotate n) = (map f l).rotate n := by
   induction' n with n hn IH generalizing l
   · simp
-  · cases' l with hd tl
+  · rcases l with - | ⟨hd, tl⟩
     · simp
     · simp [hn]
 
@@ -360,7 +369,7 @@ theorem IsRotated.refl (l : List α) : l ~r l :=
 @[symm]
 theorem IsRotated.symm (h : l ~r l') : l' ~r l := by
   obtain ⟨n, rfl⟩ := h
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · exists 0
   · use (hd :: tl).length * n - n
     rw [rotate_rotate, Nat.add_sub_cancel', rotate_length_mul]
@@ -432,7 +441,7 @@ theorem isRotated_reverse_iff : l.reverse ~r l'.reverse ↔ l ~r l' := by
 theorem isRotated_iff_mod : l ~r l' ↔ ∃ n ≤ l.length, l.rotate n = l' := by
   refine ⟨fun h => ?_, fun ⟨n, _, h⟩ => ⟨n, h⟩⟩
   obtain ⟨n, rfl⟩ := h
-  cases' l with hd tl
+  rcases l with - | ⟨hd, tl⟩
   · simp
   · refine ⟨n % (hd :: tl).length, ?_, rotate_mod _ _⟩
     refine (Nat.mod_lt _ ?_).le
@@ -444,8 +453,6 @@ theorem isRotated_iff_mem_map_range : l ~r l' ↔ l' ∈ (List.range (l.length +
     ⟨fun ⟨n, hn, h⟩ => ⟨n, Nat.lt_succ_of_le hn, h⟩,
       fun ⟨n, hn, h⟩ => ⟨n, Nat.le_of_lt_succ hn, h⟩⟩
 
--- Porting note: @[congr] only works for equality.
--- @[congr]
 theorem IsRotated.map {β : Type*} {l₁ l₂ : List α} (h : l₁ ~r l₂) (f : α → β) :
     map f l₁ ~r map f l₂ := by
   obtain ⟨n, rfl⟩ := h

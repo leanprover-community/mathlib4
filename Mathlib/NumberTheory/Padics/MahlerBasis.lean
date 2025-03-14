@@ -200,17 +200,17 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
 /--
 Explicit bound for the decay rate of the Mahler coefficients of a continuous function on `ℤ_[p]`.
 This will be used to prove Mahler's theorem.
- -/
+-/
 lemma fwdDiff_iter_le_of_forall_le {f : C(ℤ_[p], E)} {s t : ℕ}
     (hst : ∀ x y : ℤ_[p], ‖x - y‖ ≤ p ^ (-t : ℤ) → ‖f x - f y‖ ≤ ‖f‖ / p ^ s) (n : ℕ) :
     ‖Δ_[1]^[n + s * p ^ t] f 0‖ ≤ ‖f‖ / p ^ s := by
   -- We show the following more general statement by induction on `k`:
   suffices ∀ {k : ℕ}, k ≤ s → ‖Δ_[1]^[n + k * p ^ t] f 0‖ ≤ ‖f‖ / p ^ k from this le_rfl
   intro k hk
-  induction' k with k IH generalizing n
-  · -- base case just says that `‖Δ^[·] (⇑f) 0‖` is bounded by `‖f‖`
+  induction k generalizing n with
+  | zero => -- base case just says that `‖Δ^[·] (⇑f) 0‖` is bounded by `‖f‖`
     simpa only [zero_mul, pow_zero, add_zero, div_one] using norm_fwdDiff_iter_apply_le 1 f 0 n
-  · -- induction is the "step 2" lemma above
+  | succ k IH => -- induction is the "step 2" lemma above
     rw [add_mul, one_mul, ← add_assoc]
     refine (bojanic_mahler_step2 hst (n + k * p ^ t)).trans (max_le ?_ ?_)
     · rw [← coe_nnnorm, ← NNReal.coe_natCast, ← NNReal.coe_pow, ← NNReal.coe_div, NNReal.coe_le_coe]
@@ -329,7 +329,7 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
 Mahler series with coefficients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
 -/
 lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n) f := by
-  -- First show `∑' n, mahler_term f n` converges to *something*.
+  -- First show `∑' n, mahlerTerm f n` converges to *something*.
   have : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n)
       (mahlerSeries (Δ_[1]^[·] f 0) : C(ℤ_[p], E)) :=
     hasSum_mahlerSeries (PadicInt.fwdDiff_tendsto_zero f)

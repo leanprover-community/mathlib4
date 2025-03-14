@@ -57,7 +57,7 @@ lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategory�
 @[simps]
 def const {X Y : SSet.{u}} (y : Y _⦋0⦌) : X ⟶ Y where
   app n _ := Y.map (n.unop.const _ 0).op y
-  naturality n m f := by
+  naturality _ _ _ := by
     ext
     dsimp
     rw [← FunctorToTypes.map_comp_apply]
@@ -128,11 +128,11 @@ end
 
 section adjunctions
 
-/-- The adjunction between the n-skeleton and n-truncation.-/
+/-- The adjunction between the n-skeleton and n-truncation. -/
 noncomputable def skAdj (n : ℕ) : Truncated.sk n ⊣ truncation.{u} n :=
   SimplicialObject.skAdj n
 
-/-- The adjunction between n-truncation and the n-coskeleton.-/
+/-- The adjunction between n-truncation and the n-coskeleton. -/
 noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ Truncated.cosk n :=
   SimplicialObject.coskAdj n
 
@@ -144,7 +144,7 @@ instance cosk_reflective (n) : IsIso (coskAdj n).counit :=
 instance sk_coreflective (n) : IsIso (skAdj n).unit :=
   SimplicialObject.Truncated.sk_coreflective n
 
-/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it. -/
 noncomputable def cosk.fullyFaithful (n) :
     (Truncated.cosk n).FullyFaithful :=
   SimplicialObject.Truncated.cosk.fullyFaithful n
@@ -158,7 +158,7 @@ instance cosk.faithful (n) : (Truncated.cosk n).Faithful :=
 noncomputable instance coskAdj.reflective (n) : Reflective (Truncated.cosk n) :=
   SimplicialObject.Truncated.coskAdj.reflective n
 
-/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it. -/
 noncomputable def sk.fullyFaithful (n) :
     (Truncated.sk n).FullyFaithful := SimplicialObject.Truncated.sk.fullyFaithful n
 

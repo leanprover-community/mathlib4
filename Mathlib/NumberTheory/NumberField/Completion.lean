@@ -5,7 +5,7 @@ Authors: Salvatore Mercuri
 -/
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.Analysis.Normed.Field.WithAbs
 import Mathlib.NumberTheory.NumberField.Embeddings
 
 /-!

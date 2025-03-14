@@ -28,7 +28,7 @@ namespace SSet.StrictSegal
 instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
-  use spineToSimplex <| Path.map (subcomplexHorn.spineId i h₀ hₙ) σ₀
+  use spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
   intro j hj
   apply spineInjective
   ext k
@@ -65,7 +65,7 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
         horn.primitiveTriangle i h₀ hₙ k (by omega)
       /- The interval spanning from `k` to `k + 2` is equivalently the spine
       of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
-      have hi : ((subcomplexHorn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
+      have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
         dsimp [spine_arrow, Path.interval, Path.map]

@@ -3,8 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -14,6 +15,7 @@ This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardina
 intervals as finsets and fintypes.
 -/
 
+assert_not_exists Field
 
 open Finset Int
 

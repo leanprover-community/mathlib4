@@ -7,10 +7,10 @@ open CategoryTheory ProfiniteGrp
 set_option maxHeartbeats 10000
 set_option synthInstance.maxHeartbeats 2000
 
-variable {X Y Z : Type u} [Group X] [TopologicalSpace X] [TopologicalGroup X]
+variable {X Y Z : Type u} [Group X] [TopologicalSpace X] [IsTopologicalGroup X]
     [CompactSpace X] [TotallyDisconnectedSpace X] [Group Y] [TopologicalSpace Y]
-    [TopologicalGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y] [Group Z]
-    [TopologicalSpace Z] [TopologicalGroup Z] [CompactSpace Z] [TotallyDisconnectedSpace Z]
+    [IsTopologicalGroup Y] [CompactSpace Y] [TotallyDisconnectedSpace Y] [Group Z]
+    [TopologicalSpace Z] [IsTopologicalGroup Z] [CompactSpace Z] [TotallyDisconnectedSpace Z]
 
 /- We test if all the coercions and `map_add` lemmas trigger correctly. -/
 
