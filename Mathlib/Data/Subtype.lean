@@ -74,8 +74,7 @@ theorem coe_mk (a h) : (@mk α p a h : α) = a :=
   rfl
 
 /-- Restatement of `subtype.mk.injEq` as an iff. -/
-theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' :=
-  Subtype.ext_iff
+theorem mk_eq_mk {a h a' h'} : @mk α p a h = @mk α p a' h' ↔ a = a' := by simp
 
 theorem coe_eq_of_eq_mk {a : { a // p a }} {b : α} (h : ↑a = b) : a = ⟨b, h ▸ a.2⟩ :=
   Subtype.ext h
