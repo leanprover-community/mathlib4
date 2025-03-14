@@ -217,20 +217,11 @@ theorem rank_submatrix [Fintype n₀] (A : Matrix m n R) (em : m₀ ≃ m) (en :
     rank (A.submatrix em en) = rank A := by
   simpa only [reindex_apply] using rank_reindex em.symm en.symm A
 
-theorem lift_cRank_reindex {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
-    lift.{um} (cRank (A.reindex em en)) = lift.{um₀} (cRank A) :=
-  (A.lift_cRank_submatrix_le em.symm en.symm).antisymm
-    <| by simpa using ((A.reindex em en).lift_cRank_submatrix_le em en)
-
-/-- A special case of `lift_cRank_reindex` for when the row types are in the same universe. -/
-theorem cRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
-    cRank (A.reindex em en) = cRank A := by
-  simpa using A.lift_cRank_reindex em en
-
 @[simp]
 theorem lift_cRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
-    lift.{um} (cRank (A.submatrix em en)) = lift.{um₀} (cRank A) := by
-  simp [← lift_cRank_reindex _ em.symm en.symm]
+    lift.{um} (cRank (A.submatrix em en)) = lift.{um₀} (cRank A) :=
+  (A.lift_cRank_submatrix_le em en).antisymm
+    <| by simpa using ((A.reindex em.symm en.symm).lift_cRank_submatrix_le em.symm en.symm)
 
 /-- A special case of `lift_cRank_submatrix` for when the row types are in the same universe. -/
 @[simp]
@@ -238,14 +229,23 @@ theorem cRank_submatrix {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : 
     (en : n₀ ≃ n) : cRank (A.submatrix em en) = cRank A := by
   simpa [-lift_cRank_submatrix] using A.lift_cRank_submatrix em en
 
-theorem eRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
-    eRank (A.reindex em en) = eRank A := by
-  simp [eRank]
+theorem lift_cRank_reindex {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
+    lift.{um} (cRank (A.reindex em en)) = lift.{um₀} (cRank A) :=
+  lift_cRank_submatrix ..
+
+/-- A special case of `lift_cRank_reindex` for when the row types are in the same universe. -/
+theorem cRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
+    cRank (A.reindex em en) = cRank A :=
+  cRank_submatrix ..
 
 @[simp]
 theorem eRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
     eRank (A.submatrix em en) = eRank A := by
-  simpa [-lift_cRank_submatrix] using congr_arg Cardinal.toENat (A.lift_cRank_submatrix em en)
+  simpa [-lift_cRank_submatrix] using congr_arg Cardinal.toENat <| A.lift_cRank_submatrix em en
+
+theorem eRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
+    eRank (A.reindex em en) = eRank A :=
+  eRank_submatrix ..
 
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [AddCommGroup M₁]
     [AddCommGroup M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R) (v₁ : Basis m R M₁)
