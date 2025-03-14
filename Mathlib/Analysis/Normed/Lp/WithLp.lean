@@ -54,6 +54,8 @@ namespace WithLp
 back and forth between the representations. -/
 protected def equiv : WithLp p V ≃ V := Equiv.refl _
 
+/-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
+
 instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
 instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
 instance instDecidableEq [DecidableEq V] : DecidableEq (WithLp p V) := ‹DecidableEq V›
@@ -65,8 +67,6 @@ instance instDistribMulAction [Monoid K] [AddCommGroup V] [DistribMulAction K V]
     DistribMulAction K (WithLp p V) := ‹DistribMulAction K V›
 instance instModule [Semiring K] [AddCommGroup V] [Module K V] : Module K (WithLp p V) :=
   ‹Module K V›
-
-/-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
 @[to_additive instVAddAssocClass]
 instance instIsScalarTower [SMul K K'] [SMul K V] [SMul K' V] [IsScalarTower K K' V] :
