@@ -40,7 +40,7 @@ these is documented in the diagram below, with arrows indicating always availabl
 The dotted arrow requires the presence of instances `PartialOrder A`, `StarOrderedRing A` and
 `NonnegSpectrumClass ℝ A`. Note that the instances which change scalar rings occur *within* each
 class (i.e., `ContinuousFunctionalCalculus`, `IsometricContinuousFunctionalCalculus`, etc.), so a
-more accurate diagram would have the chain on the left embedded withing each node of the graph
+more accurate diagram would have the chain on the left embedded within each node of the graph
 on the right.
 
 ```
