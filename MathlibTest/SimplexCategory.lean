@@ -20,11 +20,11 @@ section delaborator
 #guard_msgs in #check ⦋m⦌ₙ
 
 /-- info: ⦋m⦌ₙ ₊ ₁ : CategoryTheory.FullSubcategory fun a => a.len ≤ n + 1 -/
-#guard_msgs in #check ⦋m⦌ₙ₊₁
+#guard_msgs in #check ⦋m⦌ₙ ₊ ₁
 
 /-- info: ⦋m⦌ₙ ₊ ₍₄ ₋ ₍₂ ₊ ₁₎₎ :
 CategoryTheory.FullSubcategory fun a => a.len ≤ n + (4 - (2 + 1)) -/
-#guard_msgs in #check ⦋m⦌ₙ₊₍₄₋₍₂₊₁₎₎
+#guard_msgs in #check ⦋m⦌ₙ ₊ ₍₄ ₋ ₍₂ ₊ ₁₎₎
 
 section no_subscript
 variable (b : ℕ) (hb : m ≤ b)
