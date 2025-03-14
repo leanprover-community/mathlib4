@@ -3,11 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Topology.Instances.Nat
 import Mathlib.Topology.MetricSpace.PiNat
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.Metrizable.CompletelyMetrizable
 import Mathlib.Topology.Sets.Opens
 
@@ -23,9 +19,6 @@ In this file, we establish the basic properties of Polish spaces.
 * `PolishSpace α` is a mixin typeclass on a topological space, requiring that the topology is
   second-countable and compatible with a complete metric. To endow the space with such a metric,
   use in a proof `letI := upgradeCompletelyMetrizable α`.
-  We register an instance from complete second-countable metric spaces to Polish spaces, not the
-  other way around.
-* We register that countable products and sums of Polish spaces are Polish.
 * `IsClosed.polishSpace`: a closed subset of a Polish space is Polish.
 * `IsOpen.polishSpace`: an open subset of a Polish space is Polish.
 * `exists_nat_nat_continuous_surjective`: any nonempty Polish space is the continuous image
@@ -75,6 +68,15 @@ instance [TopologicalSpace α] [SeparableSpace α] [CompletelyMetrizableSpace α
 
 @[deprecated (since := "2025-03-14")] alias UpgradedPolishSpace :=
   UpgradedCompletelyMetrizableSpace
+
+@[deprecated (since := "2025-03-14")] alias polishSpaceMetric :=
+  completelyMetrizableMetric
+
+@[deprecated (since := "2025-03-14")] alias complete_polishSpaceMetric :=
+  complete_completelyMetrizableMetric
+
+@[deprecated (since := "2025-03-14")] alias upgradePolishSpace :=
+  upgradeCompletelyMetrizable
 
 namespace PolishSpace
 
@@ -157,11 +159,6 @@ To prove this fact, one needs to construct another metric, giving rise to the sa
 for which the open subset is complete. This is not obvious, as for instance `(0,1) ⊆ ℝ` is not
 complete for the usual metric of `ℝ`: one should build a new metric that blows up close to the
 boundary.
-
-Porting note: definitions and lemmas in this section now take `(s : Opens α)` instead of
-`{s : Set α} (hs : IsOpen s)` so that we can turn various definitions and lemmas into instances.
-Also, some lemmas used to assume `Set.Nonempty sᶜ` in Lean 3. In fact, this assumption is not
-needed, so it was dropped.
 -/
 
 namespace TopologicalSpace.Opens
@@ -177,7 +174,6 @@ namespace CompleteCopy
 /-- A distance on an open subset `s` of a metric space, designed to make it complete.  It is given
 by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the second term blows up close to
 the boundary to ensure that Cauchy sequences for `dist'` remain well inside `s`. -/
--- Porting note: in mathlib3 this was only a local instance.
 instance instDist : Dist (CompleteCopy s) where
   dist x y := dist x.1 y.1 + abs (1 / infDist x.1 sᶜ - 1 / infDist y.1 sᶜ)
 
@@ -193,14 +189,15 @@ instance [SecondCountableTopology α] : SecondCountableTopology (CompleteCopy s)
   inferInstanceAs (SecondCountableTopology s)
 instance : T0Space (CompleteCopy s) := inferInstanceAs (T0Space s)
 
-/-- A metric space structure on a subset `s` of a metric space, designed to make it complete
+/--
+A metric space structure on a subset `s` of a metric space, designed to make it complete
 if `s` is open. It is given by `dist' x y = dist x y + |1 / dist x sᶜ - 1 / dist y sᶜ|`, where the
 second term blows up close to the boundary to ensure that Cauchy sequences for `dist'` remain well
 inside `s`.
 
-Porting note: the definition changed to ensure that the `TopologicalSpace` structure on
-`TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one. -/
--- Porting note: in mathlib3 this was only a local instance.
+This definition ensures the `TopologicalSpace` structure on
+`TopologicalSpace.Opens.CompleteCopy s` is definitionally equal to the original one.
+-/
 instance instMetricSpace : MetricSpace (CompleteCopy s) := by
   refine @MetricSpace.ofT0PseudoMetricSpace (CompleteCopy s)
     (.ofDistTopology dist (fun _ ↦ ?_) (fun _ _ ↦ ?_) (fun x y z ↦ ?_) fun t ↦ ?_) _
@@ -226,8 +223,6 @@ instance instMetricSpace : MetricSpace (CompleteCopy s) := by
         exact x.2
       simp only [dist_self, sub_self, abs_zero, zero_add] at this
       exact mem_of_superset (this <| gt_mem_nhds ε0) hε
-
--- Porting note: no longer needed because the topologies are defeq
 
 instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) := by
   refine Metric.complete_of_convergent_controlled_sequences ((1 / 2) ^ ·) (by simp) fun u hu ↦ ?_
@@ -317,7 +312,7 @@ theorem _root_.IsOpen.isClopenable [TopologicalSpace α] [PolishSpace α] {s : S
     (hs : IsOpen s) : IsClopenable s := by
   simpa using hs.isClosed_compl.isClopenable.compl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
+-- TODO: generalize for free to `[Countable ι] {s : ι → Set α}`
 theorem IsClopenable.iUnion [t : TopologicalSpace α] [PolishSpace α] {s : ℕ → Set α}
     (hs : ∀ n, IsClopenable (s n)) : IsClopenable (⋃ n, s n) := by
   choose m mt m_polish _ m_open using hs
