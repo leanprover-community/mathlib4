@@ -685,7 +685,7 @@ lemma wcovBy_iff_exists_left_eq [Nonempty ι] [DecidableEq ι] :
   · rintro ⟨i, x, h, rfl⟩
     exact ⟨i, by simpa +contextual⟩
 
-lemma covBy_iff_exists_left_eq [Nonempty ι] [DecidableEq ι] :
+lemma covBy_iff_exists_left_eq [DecidableEq ι] :
     a ⋖ b ↔ ∃ i x, x ⋖ b i ∧ a = Function.update b i x := by
   rw [covBy_iff]
   constructor
