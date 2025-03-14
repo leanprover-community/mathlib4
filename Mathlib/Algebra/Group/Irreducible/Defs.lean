@@ -21,12 +21,11 @@ assert_not_exists MonoidWithZero OrderedCommMonoid Multiset
 variable {M : Type*}
 
 /-- `Irreducible p` states that `p` is non-unit and only factors into units. -/
-@[mk_iff]
 structure AddIrreducible [AddMonoid M] (p : M) : Prop where
   /-- An irreducible element is not a unit. -/
   not_isAddUnit : ¬IsAddUnit p
   /-- If an irreducible elements factors, then one factor is a unit. -/
-  isAddUnit_or_isAddUnit ⦃a b⦄ : a + b = p → IsAddUnit a ∨ IsAddUnit b
+  isAddUnit_or_isAddUnit ⦃a b⦄ : p = a + b → IsAddUnit a ∨ IsAddUnit b
 
 section Monoid
 variable [Monoid M] {p q x y : M}
@@ -35,14 +34,17 @@ variable [Monoid M] {p q x y : M}
 
 We explicitly avoid stating that `p` is non-zero, this would require a semiring. Assuming only a
 monoid allows us to reuse irreducible for associated elements. -/
-@[to_additive, mk_iff]
+@[to_additive]
 structure Irreducible (p : M) : Prop where
   /-- An irreducible element is not a unit. -/
   not_isUnit : ¬IsUnit p
   /-- If an irreducible elements factors, then one factor is a unit. -/
-  isUnit_or_isUnit ⦃a b⦄ : a * b = p → IsUnit a ∨ IsUnit b
+  isUnit_or_isUnit ⦃a b⦄ : p = a * b → IsUnit a ∨ IsUnit b
 
-attribute [to_additive existing] irreducible_iff
+@[to_additive] lemma irreducible_iff :
+    Irreducible p ↔ ¬IsUnit p ∧ ∀ ⦃a b⦄, p = a * b → IsUnit a ∨ IsUnit b where
+  mp hp := ⟨hp.not_isUnit, hp.isUnit_or_isUnit⟩
+  mpr hp := ⟨hp.1, hp.2⟩
 
 @[deprecated (since := "2025-03-13")] alias Irreducible.not_unit := Irreducible.not_isUnit
 
@@ -60,7 +62,7 @@ lemma of_irreducible_mul : Irreducible (x * y) → IsUnit x ∨ IsUnit y | ⟨_,
 
 @[to_additive]
 lemma irreducible_or_factor (hp : ¬IsUnit p) :
-    Irreducible p ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = p := by
-  simpa [irreducible_iff, hp, and_rotate] using em (∀ a b, a * b = p → IsUnit a ∨ IsUnit b)
+    Irreducible p ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ p = a * b := by
+  simpa [irreducible_iff, hp, and_rotate] using em (∀ a b, p = a * b → IsUnit a ∨ IsUnit b)
 
 end Monoid

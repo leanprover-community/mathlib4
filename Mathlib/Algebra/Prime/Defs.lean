@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker
 -/
-import Mathlib.Algebra.Group.Irreducible
+import Mathlib.Algebra.Group.Irreducible.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
 
 /-!
@@ -99,7 +99,7 @@ theorem Irreducible.not_dvd_one [CommMonoid M] {p : M} (hp : Irreducible p) : ¬
 @[simp]
 theorem not_irreducible_zero [MonoidWithZero M] : ¬Irreducible (0 : M)
   | ⟨hn0, h⟩ =>
-    have : IsUnit (0 : M) ∨ IsUnit (0 : M) := h (mul_zero 0)
+    have : IsUnit (0 : M) ∨ IsUnit (0 : M) := h (mul_zero _).symm
     this.elim hn0 hn0
 
 theorem Irreducible.ne_zero [MonoidWithZero M] : ∀ {p : M}, Irreducible p → p ≠ 0
