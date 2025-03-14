@@ -5,7 +5,7 @@ Authors: Dagur Asgeirsson
 -/
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.CategoryTheory.Functor.OfSequence
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
@@ -42,12 +42,12 @@ variable (M N) in
 noncomputable def functorObj : ℕ → C :=
   fun n ↦ ∏ᶜ (fun m ↦ if _ : m < n then M m else N m)
 
-/-- The projection map from `functorObj M N n` to `M m`, when `m < n`  -/
+/-- The projection map from `functorObj M N n` to `M m`, when `m < n` -/
 noncomputable def functorObjProj_pos (n m : ℕ) (h : m < n) :
     functorObj M N n ⟶ M m :=
   Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_pos (by omega))
 
-/-- The projection map from `functorObj M N n` to `N m`, when `m ≥ n`  -/
+/-- The projection map from `functorObj M N n` to `N m`, when `m ≥ n` -/
 noncomputable def functorObjProj_neg (n m : ℕ) (h : ¬(m < n)) :
     functorObj M N n ⟶ N m :=
   Pi.π (fun m ↦ if _ : m < n then M m else N m) m ≫ eqToHom (functorObj_eq_neg (by omega))

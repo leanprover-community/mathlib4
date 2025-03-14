@@ -57,7 +57,7 @@ the addition and negation operations are `C^n`. -/
 class LieAddGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : WithTop ℕ∞) (G : Type*)
-    [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] extends ContMDiffAdd I n G : Prop where
+    [AddGroup G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffAdd I n G where
   /-- Negation is smooth in an additive Lie group. -/
   contMDiff_neg : ContMDiff I I n fun a : G => -a
 
@@ -68,7 +68,7 @@ the multiplication and inverse operations are `C^n`. -/
 class LieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
     (n : WithTop ℕ∞) (G : Type*)
-    [Group G] [TopologicalSpace G] [ChartedSpace H G] extends ContMDiffMul I n G : Prop where
+    [Group G] [TopologicalSpace G] [ChartedSpace H G] : Prop extends ContMDiffMul I n G where
   /-- Inversion is smooth in a Lie group. -/
   contMDiff_inv : ContMDiff I I n fun a : G => a⁻¹
 
@@ -199,14 +199,14 @@ section Product
 
 -- Instance of product group
 @[to_additive]
-instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
+instance Prod.instLieGroup {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞}
     {H : Type*} [TopologicalSpace H] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {G : Type*}
     [TopologicalSpace G] [ChartedSpace H G] [Group G] [LieGroup I n G] {E' : Type*}
     [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} {G' : Type*} [TopologicalSpace G'] [ChartedSpace H' G']
     [Group G'] [LieGroup I' n G'] : LieGroup (I.prod I') n (G × G') :=
-  { ContMDiffMul.prod _ _ _ _ with contMDiff_inv := contMDiff_fst.inv.prod_mk contMDiff_snd.inv }
+  { ContMDiffMul.prod _ _ _ _ with contMDiff_inv := contMDiff_fst.inv.prodMk contMDiff_snd.inv }
 
 end Product
 
