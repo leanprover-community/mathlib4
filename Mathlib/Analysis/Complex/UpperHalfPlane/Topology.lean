@@ -9,7 +9,7 @@ import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Complex.Convex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
-import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.PartialHomeomorphMore
 
 /-!
 # Topology on the upper half plane

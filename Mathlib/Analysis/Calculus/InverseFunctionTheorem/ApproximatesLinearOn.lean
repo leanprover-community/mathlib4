@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.PartialHomeomorphMore
 /-!
 # Non-linear maps close to affine maps
 
