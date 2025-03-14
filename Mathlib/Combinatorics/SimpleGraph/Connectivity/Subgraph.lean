@@ -431,10 +431,9 @@ lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq 
   intro t ht r hr
   by_cases htrx : t = x ∧ r = x
   · exact fun hadj ↦ hadj.ne (htrx.2 ▸ htrx.1)
-  by_cases htx : t = x
-  · subst htx
-    have : r ∈ s \ {t} := by simp [not_and.mp htrx rfl, hr]
-    simp only [List.coe_toFinset,Set.not_nonempty_iff_eq_empty,
+  obtain rfl | htx := eq_or_ne t x
+  · have : r ∈ s \ {t} := by simp [not_and.mp htrx rfl, hr]
+    simp only [List.coe_toFinset, Set.not_nonempty_iff_eq_empty,
       ← Set.disjoint_iff_inter_eq_empty] at hxe
     exact fun hadj ↦ Set.disjoint_left.mp hxe this (mem_support_of_adj_toSubgraph hadj.symm)
   have : t ∈ s \ {x} := by simp [htx, ht]
