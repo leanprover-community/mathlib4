@@ -289,7 +289,7 @@ theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [UniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
-  apply eval₂_unique _ (ha.comp hε)
+  apply eval₂_unique _ (ha.map hε)
   · exact Continuous.comp hε (continuous_eval₂ hφ ha)
   · intro p
     simp only [Function.comp_apply, eval₂_coe]
@@ -319,15 +319,14 @@ theorem aeval_coe (ha : HasEval a) (p : MvPolynomial σ R) :
   rw [coe_aeval, aeval_def, eval₂_coe]
 
 theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε) :
-    ε = aeval (HasEval.hasEval_X.map hε) := by
+    ε = aeval (HasEval.X.map hε) := by
   apply DFunLike.ext'
   rw [coe_aeval]
-  apply eval₂_unique (continuous_algebraMap R S) _ hε
-  · intro p
-    change ε.comp (coeToMvPowerSeries.algHom R) p = _
-    conv_lhs => rw [← p.aeval_X_left_apply, MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
-    simp [MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
-  · exact HasEval.hasEval_X.comp hε
+  apply eval₂_unique (continuous_algebraMap R S) (HasEval.X.map hε) hε
+  intro p
+  change ε.comp (coeToMvPowerSeries.algHom R) p = _
+  conv_lhs => rw [← p.aeval_X_left_apply, MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
+  simp [MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]
 
 theorem hasSum_aeval (ha : HasEval a) (f : MvPowerSeries σ R) :
     HasSum (fun (d : σ →₀ ℕ) ↦ (coeff R d f) • (d.prod fun s e => (a s) ^ e))
