@@ -5,6 +5,7 @@ Authors: Raghuram Sundararajan
 -/
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Algebra.Group.Ext
+import Mathlib.Tactic.CongrM
 
 /-!
 # Extensionality lemmas for rings and similar structures
@@ -77,7 +78,12 @@ namespace NonUnitalSemiring
 
 theorem toNonUnitalNonAssocSemiring_injective :
     Function.Injective (@toNonUnitalNonAssocSemiring R) := by
-  rintro ⟨⟩ ⟨⟩ _; congr
+  intro R₁ R₂ h
+  have h' : R₁.toSemigroup = R₂.toSemigroup := Semigroup.ext congr($(h).mul)
+  have := congr($(h').ppow)
+  rcases R₁ with ⟨⟩
+  rcases R₂ with ⟨⟩
+  congr
 
 @[ext] theorem ext ⦃inst₁ inst₂ : NonUnitalSemiring R⦄
     (h_add : local_hAdd[R, inst₁] = local_hAdd[R, inst₂])
@@ -187,6 +193,9 @@ namespace NonUnitalRing
     inst₁ = inst₂ := by
   have : inst₁.toNonUnitalNonAssocRing = inst₂.toNonUnitalNonAssocRing := by
     ext : 1 <;> assumption
+  have : inst₁.toSemigroup = inst₂.toSemigroup := by
+    ext : 1 <;> assumption
+  have := congr($(this).ppow)
   -- Split into fields and prove they are equal using the above.
   cases inst₁; cases inst₂
   congr

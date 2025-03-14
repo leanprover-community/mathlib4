@@ -48,14 +48,18 @@ instance nonUnitalSemiring [NonUnitalSemiring α] : NonUnitalSemiring (ULift α)
   { zero := (0 : ULift α), add := (· + ·), mul := (· * ·), nsmul := AddMonoid.nsmul,
     add_assoc, zero_add, add_zero, add_comm, left_distrib, right_distrib, zero_mul, mul_zero,
     mul_assoc, nsmul_zero := fun _ => AddMonoid.nsmul_zero _,
-    nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _ }
+    nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _,
+    ppow := Semigroup.ppow, ppow_one := fun _ => Semigroup.ppow_one _,
+    ppow_succ := fun _ _ => Semigroup.ppow_succ _ _ }
 
 instance semiring [Semiring α] : Semiring (ULift α) :=
   { ULift.addMonoidWithOne with
       nsmul := AddMonoid.nsmul,
       npow := Monoid.npow, natCast := fun n => ULift.up n, add_comm, left_distrib, right_distrib,
       zero_mul, mul_zero, mul_assoc, one_mul, mul_one, npow_zero := fun _ => Monoid.npow_zero _,
-      npow_succ := fun _ _ => Monoid.npow_succ _ _ }
+      npow_succ := fun _ _ => Monoid.npow_succ _ _,
+      ppow := Semigroup.ppow, ppow_one := fun _ => Semigroup.ppow_one _,
+      ppow_succ := fun _ _ => Semigroup.ppow_succ _ _ }
 
 /-- The ring equivalence between `ULift α` and `α`. -/
 def ringEquiv [NonUnitalNonAssocSemiring α] : ULift α ≃+* α where
@@ -70,7 +74,9 @@ instance nonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemirin
   { zero := (0 : ULift α), add := (· + ·), mul := (· * ·), nsmul := AddMonoid.nsmul, add_assoc,
     zero_add, add_zero, add_comm, left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc,
     mul_comm, nsmul_zero := fun _ => AddMonoid.nsmul_zero _,
-    nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _ }
+    nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _,
+    ppow := Semigroup.ppow, ppow_one := fun _ => Semigroup.ppow_one _,
+    ppow_succ := fun _ _ => Semigroup.ppow_succ _ _ }
 
 instance commSemiring [CommSemiring α] : CommSemiring (ULift α) :=
   { ULift.semiring with
@@ -89,6 +95,8 @@ instance nonUnitalRing [NonUnitalRing α] : NonUnitalRing (ULift α) :=
   { zero := (0 : ULift α), add := (· + ·), mul := (· * ·), sub := Sub.sub, neg := Neg.neg,
     nsmul := AddMonoid.nsmul, zsmul := SubNegMonoid.zsmul, add_assoc, zero_add, add_zero, add_comm,
     neg_add_cancel, left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc, sub_eq_add_neg
+    ppow := Semigroup.ppow, ppow_one := fun _ => Semigroup.ppow_one _,
+    ppow_succ := fun _ _ => Semigroup.ppow_succ _ _,
     nsmul_zero := fun _ => AddMonoid.nsmul_zero _,
     nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _,
     zsmul_zero' := SubNegMonoid.zsmul_zero', zsmul_succ' := SubNegMonoid.zsmul_succ',
@@ -113,6 +121,8 @@ instance ring [Ring α] : Ring (ULift α) :=
     intCast_ofNat := addGroupWithOne.intCast_ofNat, add_assoc, zero_add, add_zero, add_comm,
     left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc, one_mul, mul_one, sub_eq_add_neg,
     neg_add_cancel, nsmul_zero := fun _ => AddMonoid.nsmul_zero _, natCast := fun n => ULift.up n,
+    ppow := Semigroup.ppow, ppow_one := fun _ => Semigroup.ppow_one _,
+    ppow_succ := fun _ _ => Semigroup.ppow_succ _ _,
     intCast := fun n => ULift.up n, nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _,
     natCast_zero := AddMonoidWithOne.natCast_zero, natCast_succ := AddMonoidWithOne.natCast_succ,
     npow_zero := fun _ => Monoid.npow_zero _, npow_succ := fun _ _ => Monoid.npow_succ _ _,
@@ -125,6 +135,8 @@ instance nonUnitalCommRing [NonUnitalCommRing α] : NonUnitalCommRing (ULift α)
     mul_zero, left_distrib, right_distrib, add_comm, mul_assoc, mul_comm,
     nsmul_zero := fun _ => AddMonoid.nsmul_zero _, neg_add_cancel,
     nsmul_succ := fun _ _ => AddMonoid.nsmul_succ _ _, sub_eq_add_neg,
+    ppow := Semigroup.ppow, ppow_one := fun _ => Semigroup.ppow_one _,
+    ppow_succ := fun _ _ => Semigroup.ppow_succ _ _,
     zsmul_zero' := SubNegMonoid.zsmul_zero',
     zsmul_succ' := SubNegMonoid.zsmul_succ',
     zsmul_neg' := SubNegMonoid.zsmul_neg'.. }

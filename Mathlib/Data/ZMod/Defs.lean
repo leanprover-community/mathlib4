@@ -147,6 +147,14 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   nsmul_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).nsmul_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).nsmul_succ
+  psmul := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).psmul fun n => (inferInstanceAs (CommRing (Fin n.succ))).psmul
+  psmul_one := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).psmul_one
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).psmul_one
+  psmul_succ := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).psmul_succ
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).psmul_succ
   -- Porting note: `match` didn't work here
   neg_add_cancel := Nat.casesOn n (@neg_add_cancel Int _) fun n => @neg_add_cancel (Fin n.succ) _
   add_comm := Nat.casesOn n (@add_comm Int _) fun n => @add_comm (Fin n.succ) _
@@ -178,6 +186,14 @@ instance commRing (n : ℕ) : CommRing (ZMod n) where
   npow_succ := Nat.casesOn n
     (inferInstanceAs (CommRing ℤ)).npow_succ
     fun n => (inferInstanceAs (CommRing (Fin n.succ))).npow_succ
+  ppow := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).ppow fun n => (inferInstanceAs (CommRing (Fin n.succ))).ppow
+  ppow_one := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).ppow_one
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).ppow_one
+  ppow_succ := Nat.casesOn n
+    (inferInstanceAs (CommRing ℤ)).ppow_succ
+    fun n => (inferInstanceAs (CommRing (Fin n.succ))).ppow_succ
 
 instance inhabited (n : ℕ) : Inhabited (ZMod n) :=
   ⟨0⟩
