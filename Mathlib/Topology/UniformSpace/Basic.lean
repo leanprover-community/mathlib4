@@ -656,6 +656,11 @@ instance instUniformSpaceProd [u₁ : UniformSpace α] [u₂ : UniformSpace β] 
   rw [instTopologicalSpaceProd_eq_induced, UniformSpace.toCore_toTopologicalSpace]
   rfl
 
+lemma instUniformSpaceProd_eq_comap [u₁ : UniformSpace α] [u₂ : UniformSpace β] :
+    instUniformSpaceProd = u₁.comap Prod.fst ⊓ u₂.comap Prod.snd := by
+  rw [instUniformSpaceProd]
+  exact ofCoreEq_toCore _ _ _
+
 -- check the above produces no diamond for `simp` and typeclass search
 example [UniformSpace α] [UniformSpace β] :
     (instTopologicalSpaceProd : TopologicalSpace (α × β)) = UniformSpace.toTopologicalSpace := by

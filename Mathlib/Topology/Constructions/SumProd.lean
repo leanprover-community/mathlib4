@@ -69,15 +69,6 @@ def topologicalSpaceProdAux [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace
 
 attribute [local instance] topologicalSpaceProdAux
 
-/-- A temporary topological space structure without atlas on a product space. *Do not use*: it is
-just a building block on the road to constructing a good topology on the product of topological
-spaces. -/
-def topologicalSpaceProdWithoutAtlasAux [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
-    TopologicalSpaceWithoutAtlas (X × Y) :=
-  (induced Prod.fst t₁ ⊓ induced Prod.snd t₂).toTopologicalSpaceWithoutAtlas
-
-attribute [local instance] topologicalSpaceProdWithoutAtlasAux
-
 variable {X X' Y Y' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y]
 [TopologicalSpace Y'] [TopologicalSpace Z]
 
@@ -106,13 +97,33 @@ private theorem ContinuousWithinAt.prodMap_withoutAtlas
   rw [Prod.map, nhdsWithoutAtlas_prod_eq, prod_inf_prod]
   exact hf.prod_map hg
 
+end Temporary
+
+section Temporary2
+
+variable {X X' Y Y' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Y]
+[TopologicalSpace Y'] [TopologicalSpace Z]
+
+/-- A temporary topological space structure without atlas on a product space. *Do not use*: it is
+just a building block on the road to constructing a good topology on the product of topological
+spaces. -/
+def topologicalSpaceProdWithoutAtlasAux [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
+    TopologicalSpaceWithoutAtlas (X × Y) :=
+  (induced Prod.fst t₁ ⊓ induced Prod.snd t₂).toTopologicalSpaceWithoutAtlas
+
+attribute [local instance] topologicalSpaceProdWithoutAtlasAux
+
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
 def PartialHomeomorph.prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     PartialHomeomorph (X × Y) (X' × Y') where
-  open_source' := (IsOpen.preimage continuous_fst_withoutAtlas eX.open_source').inter
-      (IsOpen.preimage continuous_snd_withoutAtlas eY.open_source')
-  open_target' := (IsOpen.preimage continuous_fst_withoutAtlas eX.open_target').inter
-      (IsOpen.preimage continuous_snd_withoutAtlas eY.open_target')
+  open_source' := by
+      letI := topologicalSpaceProdAux (X := X) (Y := Y)
+      exact (IsOpen.preimage continuous_fst_withoutAtlas eX.open_source').inter
+        (IsOpen.preimage continuous_snd_withoutAtlas eY.open_source')
+  open_target' := by
+      letI := topologicalSpaceProdAux (X := X') (Y := Y')
+      exact (IsOpen.preimage continuous_fst_withoutAtlas eX.open_target').inter
+        (IsOpen.preimage continuous_snd_withoutAtlas eY.open_target')
   continuousOn_toFun := by
     rintro ⟨x, y⟩ hxy
     simp only [PartialEquiv.prod_source, mem_prod] at hxy
@@ -134,7 +145,7 @@ def prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSp
   mem_chart_source x := ⟨h.mem_chart_source x.1, h'.mem_chart_source x.2⟩
   chart_mem_atlas x := mem_image2_of_mem (h.chart_mem_atlas x.1) (h'.chart_mem_atlas x.2)
 
-end Temporary
+end Temporary2
 
 instance instTopologicalSpaceProd [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
     TopologicalSpace (X × Y) where

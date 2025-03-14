@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Data.Bundle
 import Mathlib.Data.Set.Image
 import Mathlib.Topology.CompactOpen
-import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.PartialHomeomorphMore
 import Mathlib.Topology.Order.Basic
 
 /-!

@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.Sets.Opens
 
 /-!
 # Bla
@@ -14,8 +15,8 @@ import Mathlib.Topology.PartialHomeomorph
 open Function Set Filter Topology
 
 
-variable {X Y Z Z' : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
-[TopologicalSpace Z']
+variable {X Y Y' Z Z' : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Y']
+[TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace PartialHomeomorph
 
@@ -430,17 +431,6 @@ lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedd
 
 /-! product of two partial homeomorphisms -/
 section Prod
-
-/-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
-@[simps! (config := mfld_cfg) toPartialEquiv apply,
-  simps! -isSimp source target symm_apply]
-def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
-    PartialHomeomorph (X × Y) (X' × Y') where
-  open_source' := eX.open_source.prod eY.open_source
-  open_target' := eX.open_target.prod eY.open_target
-  continuousOn_toFun := eX.continuousOn.prod_map eY.continuousOn
-  continuousOn_invFun := eX.continuousOn_symm.prod_map eY.continuousOn_symm
-  toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
 @[simp, mfld_simps]
 theorem prod_symm (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
