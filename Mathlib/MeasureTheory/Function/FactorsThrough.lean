@@ -52,61 +52,6 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
 variable {ι : Type*} [MetricSpace Z] [CompleteSpace Z] [Countable ι] {l : Filter ι}
   [l.IsCountablyGenerated] {f : ι → X → Z}
 
-theorem StronglyMeasurable.measurableSet_exists_tendsto [MeasurableSpace X]
-    (hf : ∀ i, StronglyMeasurable (f i)) :
-    MeasurableSet {x | ∃ c, Tendsto (f · x) l (𝓝 c)} := by
-  by_cases hl : l.NeBot
-  swap; · simp_all
-  let s := closure (⋃ i, range (f i))
-  have : PolishSpace s :=
-    { toSecondCountableTopology := @UniformSpace.secondCountable_of_separable s _ _
-        (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
-      complete := ⟨inferInstance, rfl, isClosed_closure.completeSpace_coe⟩ }
-  let g i x : s := ⟨f i x, subset_closure <| Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩⟩
-  borelize Z
-  have mg i : Measurable (g i) := (hf i).measurable.subtype_mk
-  convert MeasureTheory.measurableSet_exists_tendsto mg with x
-  · refine ⟨fun ⟨c, hc⟩ ↦ ⟨⟨c, ?_⟩, tendsto_subtype_rng.2 hc⟩,
-      fun ⟨c, hc⟩ ↦ ⟨c, tendsto_subtype_rng.1 hc⟩⟩
-    exact mem_closure_of_tendsto hc (Eventually.of_forall fun i ↦ Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
-  infer_instance
-
-theorem stronglyMeasurable_limUnder [MeasurableSpace X] [hZ : Nonempty Z]
-    (hf : ∀ i, StronglyMeasurable (f i)) :
-    StronglyMeasurable (fun x ↦ limUnder l (f · x)) := by
-  obtain rfl | hl := eq_or_neBot l
-  · simp only [limUnder, Filter.map_bot]
-    exact stronglyMeasurable_const
-  borelize Z
-  let z_ := Classical.choice hZ
-  rw [stronglyMeasurable_iff_measurable_separable]; constructor
-  · let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
-    have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
-    have : (fun x ↦ limUnder l (f · x)) = ((↑) : conv → X).extend
-        (fun x : conv ↦ limUnder l (f · x)) (fun _ ↦ z_) := by
-      ext x
-      by_cases hx : x ∈ conv
-      · rw [Function.extend_val_apply hx]
-      · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
-    rw [this]
-    refine (MeasurableEmbedding.subtype_coe mconv).measurable_extend ?_ measurable_const
-    refine measurable_of_tendsto_metrizable' l
-      (fun i ↦ (hf i).measurable.comp measurable_subtype_coe)
-      (tendsto_pi_nhds.2 fun ⟨x, ⟨c, hc⟩⟩ ↦ ?_)
-    rwa [hc.limUnder_eq]
-  · let s := closure (⋃ i, range (f i)) ∪ {z_}
-    have hs : IsSeparable s := (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.union
-      (finite_singleton z_).isSeparable
-    refine hs.mono ?_
-    rintro - ⟨x, rfl⟩
-    by_cases hx : ∃ c, Tendsto (f · x) l (𝓝 c)
-    · obtain ⟨c, hc⟩ := hx
-      simp_rw [hc.limUnder_eq]
-      exact subset_union_left <| mem_closure_of_tendsto hc
-        (Eventually.of_forall fun i ↦ Set.mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩)
-    · simp_rw [limUnder_of_not_tendsto hx]
-      exact subset_union_right (mem_singleton z_)
-
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/
 theorem exists_eq_measurable_comp {Z : Type*} [Nonempty Z] [MeasurableSpace Z]
