@@ -223,7 +223,7 @@ theorem lift_cRank_reindex {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (e
   (A.lift_cRank_submatrix_le em.symm en.symm).antisymm
     <| by simpa using ((A.reindex em en).lift_cRank_submatrix_le em en)
 
-/-- A version of `lift_cRank_reindex` for when the row types are in the same universe. -/
+/-- A special case of `lift_cRank_reindex` for when the row types are in the same universe. -/
 @[simp]
 theorem cRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
     cRank (A.reindex em en) = cRank A := by
@@ -233,7 +233,7 @@ theorem lift_cRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) 
     lift.{um} (cRank (A.submatrix em en)) = lift.{um₀} (cRank A) := by
   simp [← lift_cRank_reindex _ em.symm en.symm]
 
-/-- A version of `lift_cRank_submatrix` for when the row types are in the same universe. -/
+/-- A special case of `lift_cRank_submatrix` for when the row types are in the same universe. -/
 @[simp]
 theorem cRank_submatrix {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m)
     (en : n₀ ≃ n) : cRank (A.submatrix em en) = cRank A := by
@@ -316,11 +316,10 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     ext ⟨j, hj⟩ k
     simp [w', diagonal, hj, Pi.single_apply, eq_comm]
   have hrw : insert 0 (range (diagonal w)ᵀ) = insert 0 (range w') := by
-    suffices ∀ a, diagonal w a = 0 ∨ ∃ a_1, ¬w a_1 = 0 ∧ diagonal w a_1 = diagonal w a
+    suffices ∀ a, diagonal w a = 0 ∨ ∃ b, w b ≠ 0 ∧ diagonal w b = diagonal w a
       by simpa [subset_antisymm_iff, subset_def, w']
-    simp only [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
-    intro i hi
-    simp [funext_iff, diagonal, hi i rfl]
+    simp_rw [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
+    simp +contextual [funext_iff, diagonal, or_iff_not_imp_right]
   rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,
     ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 

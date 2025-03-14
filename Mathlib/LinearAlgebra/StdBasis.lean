@@ -76,13 +76,13 @@ theorem linearIndependent_single [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, M
 theorem linearIndependent_single_one (ι R : Type*) [Ring R] [DecidableEq ι] :
     LinearIndependent R (fun i : ι ↦ Pi.single i (1 : R)) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact @Pi.linearIndependent_single R ι (fun _ ↦ Unit) (fun _ ↦ R) _ _ _ _ (fun _ _ ↦ 1)
+  exact Pi.linearIndependent_single (fun (_ : ι) (_ : Unit) ↦ (1 : R))
     <| by simp +contextual [Fintype.linearIndependent_iff]
 
 theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors R] [DecidableEq ι]
     {v : ι → R} (hv : ∀ i, v i ≠ 0) : LinearIndependent R (fun i : ι ↦ Pi.single i (v i)) := by
   rw [← linearIndependent_equiv (Equiv.sigmaPUnit ι)]
-  exact @Pi.linearIndependent_single R ι (fun _ ↦ Unit) (fun _ ↦ R) _ _ _ _ (fun i _ ↦ v i)
+  exact Pi.linearIndependent_single (fun i (_ : Unit) ↦ v i)
     <| by simp +contextual [Fintype.linearIndependent_iff, hv]
 
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
