@@ -78,7 +78,7 @@ theorem mk_mem_graph (f : α →₀ M) {a : α} (ha : a ∈ f.support) : (a, f a
 theorem apply_eq_of_mem_graph {a : α} {m : M} {f : α →₀ M} (h : (a, m) ∈ f.graph) : f a = m :=
   (mem_graph_iff.1 h).1
 
-@[simp 1100] -- Porting note: change priority to appease `simpNF`
+@[simp 1100] -- Higher priority shortcut instance for `mem_graph_iff`.
 theorem not_mem_graph_snd_zero (a : α) (f : α →₀ M) : (a, (0 : M)) ∉ f.graph := fun h =>
   (mem_graph_iff.1 h).2.irrefl
 
@@ -185,7 +185,9 @@ variable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N]
 def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N where
   toFun := (mapRange f f.map_zero : (α →₀ M) → α →₀ N)
   map_zero' := mapRange_zero
-  map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- Porting note: `dsimp` needed
+  -- Porting note: need either `dsimp only` or to specify `hf`:
+  -- see also: https://github.com/leanprover-community/mathlib4/issues/12129
+  map_add' := mapRange_add (hf := f.map_zero) f.map_add
 
 @[simp]
 theorem mapRange.addMonoidHom_id :
@@ -1359,8 +1361,7 @@ a finitely supported function from `as i` to `M`.
 This is the `Finsupp` version of `Sigma.curry`.
 -/
 def split (i : ι) : αs i →₀ M :=
-  l.comapDomain (Sigma.mk i) fun _ _ _ _ hx => heq_iff_eq.1 (Sigma.mk.inj_iff.mp hx).2
-  -- Porting note: it seems like Lean 4 never generated the `Sigma.mk.inj` lemma?
+  l.comapDomain (Sigma.mk i) fun _ _ _ _ hx => heq_iff_eq.1 (Sigma.mk.inj hx).2
 
 theorem split_apply (i : ι) (x : αs i) : split l i x = l ⟨i, x⟩ := by
   dsimp only [split]
@@ -1373,9 +1374,8 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
   l.support.image Sigma.fst
 
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
-  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne, ← support_eq_empty, ← Ne, ←
-    Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
+  classical rw [splitSupport, mem_image, Ne, ← support_eq_empty, ← Ne,
+    ← Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 
@@ -1391,9 +1391,8 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
     rw [mem_splitSupport_iff_nonzero, not_iff_not, hg]
 
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
-  simp only [Finset.ext_iff, splitSupport, split, comapDomain, @mem_image _ _ (Classical.decEq _),
-    mem_preimage, Sigma.forall, mem_sigma]
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
+  simp only [Finset.ext_iff, splitSupport, split, comapDomain, mem_image, mem_preimage,
+    Sigma.forall, mem_sigma]
   tauto
 
 theorem sigma_sum [AddCommMonoid N] (f : (Σ i : ι, αs i) → M → N) :

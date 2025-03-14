@@ -44,9 +44,9 @@ variable (R : Type u) [Ring R]
 /-- Define `FGModuleCat` as the subtype of `ModuleCat.{u} R` of finitely generated modules. -/
 def FGModuleCat :=
   FullSubcategory fun V : ModuleCat.{u} R => Module.Finite R V
--- Porting note: still no derive handler via `dsimp`.
--- see https://github.com/leanprover-community/mathlib4/issues/5020
--- deriving LargeCategory, HasForget,Preadditive
+-- The `LargeCategory, HasForget, Preadditive` instances should be constructed by a deriving
+-- handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 variable {R}
 

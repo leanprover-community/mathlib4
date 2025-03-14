@@ -4,12 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Janos Wolosz
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Data.Nat.Cast.Field
-import Mathlib.RingTheory.Nilpotent.Basic
-import Mathlib.Tactic.FieldSimp
 import Mathlib.Algebra.Algebra.Bilinear
+import Mathlib.Algebra.BigOperators.GroupWithZero.Action
+import Mathlib.Algebra.Module.Rat
+import Mathlib.Data.Nat.Cast.Field
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Tactic.FieldSimp
 
 /-!
 # Exponential map on algebras
@@ -61,11 +63,7 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
 theorem exp_zero_eq_one : exp (0 : A) = 1 := by
-  have h₁ := exp_eq_sum (pow_one (0 : A))
-  rwa [range_one, sum_singleton, Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero,
-    one_smul] at h₁
-
-variable [SMulCommClass ℚ A A] [IsScalarTower ℚ A A]
+  simpa using exp_eq_sum (pow_one (0 : A))
 
 theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp (a + b) = exp a * exp b := by
@@ -167,28 +165,26 @@ theorem exp_of_nilpotent_is_unit {a : A} (h : IsNilpotent a) : IsUnit (exp a) :=
   refine ⟨exp (-a), h₃.symm, ?_⟩
   rw [← exp_add_of_commute h₁.symm h₂ h, neg_add_cancel a, exp_zero_eq_one]
 
+theorem map_exp {B F : Type*} [Ring B] [FunLike F A B] [RingHomClass F A B] [Module ℚ B]
+    {a : A} (ha : IsNilpotent a) (f : F) :
+    f (exp a) = exp (f a) := by
+  obtain ⟨k, hk⟩ := ha
+  have hk' : (f a) ^ k = 0 := by simp [← map_pow, hk]
+  simp [exp_eq_sum hk, exp_eq_sum hk', map_rat_smul]
+
+theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
+    (g : G) {a : A} (ha : IsNilpotent a) :
+    exp (g • a) = g • exp a :=
+  (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
+
 end IsNilpotent
 
-namespace LinearMap
+namespace Module.End
 
-variable {R M N : Type*} [CommRing R]
-  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-variable (M) in
-theorem isNilpotent_lTensor_of_isNilpotent (f : Module.End R N) (hf : IsNilpotent f) :
-    IsNilpotent (f.lTensor M) := by
-  obtain ⟨k, hk⟩ := hf
-  exact ⟨k, by ext; simp [hk]⟩
-
-variable (N) in
-theorem isNilpotent_rTensor_of_isNilpotent (f : Module.End R M) (hf : IsNilpotent f) :
-    IsNilpotent (f.rTensor N) := by
-  obtain ⟨k, hk⟩ := hf
-  exact ⟨k, by ext; simp [hk]⟩
+variable {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  [Module ℚ M] [Module ℚ N]
 
 open IsNilpotent TensorProduct
-
-variable [Algebra ℚ R] [Module ℚ M] [Module ℚ N] [IsScalarTower ℚ R M] [IsScalarTower ℚ R N]
 
 theorem commute_exp_left_of_commute
     {fM : Module.End R M} {fN : Module.End R N} {g : M →ₗ[R] N}
@@ -204,51 +200,26 @@ theorem commute_exp_left_of_commute
   replace hfN : fN ^ kl = 0 := pow_eq_zero_of_le (by omega) hfN
   have (i : ℕ) : (fN ^ i) (g m) = g ((fM ^ i) m) := by
     simpa using LinearMap.congr_fun (LinearMap.commute_pow_left_of_commute h i) m
-  simp [LinearMap.coe_comp, Function.comp_apply, exp_eq_sum hfM, exp_eq_sum hfN, this]
-
-variable (M) in
-theorem lTensor_exp (f : Module.End R N) (hf : IsNilpotent f) :
-    exp (f.lTensor M) = (exp f).lTensor M := by
-  obtain ⟨k, hk⟩ := isNilpotent_lTensor_of_isNilpotent M f hf
-  obtain ⟨l, hl⟩ := hf
-  let kl := max k l
-  replace hk : (f.lTensor M) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
-  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
-  ext m n
-  simp [exp_eq_sum hk, exp_eq_sum hl, tmul_sum]
-
-omit [Module ℚ N] [IsScalarTower ℚ R N] in
-variable (N) in
-theorem rTensor_exp (f : Module.End R M) (hf : IsNilpotent f) :
-    exp (f.rTensor N) = (exp f).rTensor N := by
-  obtain ⟨k, hk⟩ := isNilpotent_rTensor_of_isNilpotent N f hf
-  obtain ⟨l, hl⟩ := hf
-  let kl := max k l
-  replace hk : (f.rTensor N) ^ kl = 0 := pow_eq_zero_of_le (by omega) hk
-  replace hl : f ^ kl = 0 := pow_eq_zero_of_le (by omega) hl
-  ext m n
-  simp [exp_eq_sum hk, exp_eq_sum hl, sum_tmul, smul_tmul']
+  simp [exp_eq_sum hfM, exp_eq_sum hfN, this, map_rat_smul]
 
 theorem exp_mul_of_derivation (R B : Type*) [CommRing R] [NonUnitalNonAssocRing B]
-    [Module R B] [SMulCommClass R B B] [IsScalarTower R B B]
-    [Module ℚ B] [Algebra ℚ R] [IsScalarTower ℚ R B]
+    [Module R B] [SMulCommClass R B B] [IsScalarTower R B B] [Module ℚ B]
     (D : B →ₗ[R] B) (h_der : ∀ x y, D (x * y) = x * D y + (D x) * y)
     (h_nil : IsNilpotent D) (x y : B) :
     exp D (x * y) = (exp D x) * (exp D y) := by
   let DL : Module.End R (B ⊗[R] B) := D.lTensor B
   let DR : Module.End R (B ⊗[R] B) := D.rTensor B
-  have h_nilL : IsNilpotent DL := isNilpotent_lTensor_of_isNilpotent B D h_nil
-  have h_nilR : IsNilpotent DR := isNilpotent_rTensor_of_isNilpotent B D h_nil
+  have h_nilL : IsNilpotent DL := h_nil.map <| lTensorAlgHom R B B
+  have h_nilR : IsNilpotent DR := h_nil.map <| rTensorAlgHom R B B
   have h_comm : Commute DL DR := by ext; simp [DL, DR]
-  let m : B ⊗[R] B →ₗ[R] B := lift <| LinearMap.mul R B
-  have hm (x y : B) : m (x ⊗ₜ[R] y) = x * y := rfl
+  set m : B ⊗[R] B →ₗ[R] B := LinearMap.mul' R B with hm
   have h₁ : exp D (x * y) = m (exp (DL + DR) (x ⊗ₜ[R] y)) := by
     suffices exp D ∘ₗ m = m ∘ₗ exp (DL + DR) by simpa using LinearMap.congr_fun this (x ⊗ₜ[R] y)
-    apply LinearMap.commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
+    apply commute_exp_left_of_commute (h_comm.isNilpotent_add h_nilL h_nilR) h_nil
     ext
     simp [DL, DR, hm, h_der]
-  have h₂ : exp DL = (exp D).lTensor B := lTensor_exp B D h_nil
-  have h₃ : exp DR = (exp D).rTensor B := rTensor_exp B D h_nil
+  have h₂ : exp DL = (exp D).lTensor B := (h_nil.map_exp (lTensorAlgHom R B B)).symm
+  have h₃ : exp DR = (exp D).rTensor B := (h_nil.map_exp (rTensorAlgHom R B B)).symm
   simp [h₁, exp_add_of_commute h_comm h_nilL h_nilR, h₂, h₃, hm]
 
-end LinearMap
+end Module.End

@@ -505,8 +505,7 @@ lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X
   · refine Set.Subset.trans ht ?_
     simp only [Set.iUnion_subset_iff]
     intro i hi
-    erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
-    exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, Finset.mem_image_of_mem _ hi⟩
+    simpa using subset_iUnion₂ (s := fun i _ => b (f' i)) i hi
   · apply Set.iUnion₂_subset
     rintro i hi
     obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
