@@ -481,6 +481,7 @@ lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
     f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
+@[simps]
 def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
 
 /-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/

@@ -768,10 +768,14 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
   constructor
   · intro h x y xspecy
     rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
-  · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+  · -- TODO is there are better way to do this,
+    -- so the case split produces `SeparationQuotient.mk` directly, rather than `Quot.mk`?
+    -- Currently we need the `change` statement to recover this.
+    rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+    change mk _ = mk _
     have xspecy : x ⤳ y := isInducing_mk.specializes_iff.mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
-    erw [mk_eq_mk, inseparable_iff_specializes_and]
+    rw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
 
 lemma Set.Subsingleton.isClosed [T1Space X] {A : Set X} (h : A.Subsingleton) : IsClosed A := by
