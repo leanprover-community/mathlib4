@@ -140,7 +140,8 @@ theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 -/
 
 variable (f) (x) in
-/-- Convert a meromorphic function to normal form at `x` by changing its value at `x`. -/
+/-- If `f` is meromorphic at `x`, convert `f` to normal form at `x` by changing its value at `x`.
+Otherwise, returns the 0 function. -/
 noncomputable def Function.toMeromorphicNFAt :
     𝕜 → E := by
   by_cases hf : MeromorphicAt f x
