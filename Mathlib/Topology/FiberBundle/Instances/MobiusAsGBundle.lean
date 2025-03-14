@@ -1,7 +1,11 @@
+/-
+Copyright (c) 2025 Dominic Steinitz. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Dominic Steinitz
+-/
 import Mathlib.Topology.FiberBundle.Instances.GBundleDefs
 import Mathlib.Topology.FiberBundle.Instances.Mobius
 
-set_option linter.style.header false
 set_option linter.style.longLine false
 set_option linter.style.lambdaSyntax false
 set_option linter.style.cdot false
