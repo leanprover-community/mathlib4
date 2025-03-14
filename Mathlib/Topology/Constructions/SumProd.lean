@@ -335,7 +335,7 @@ theorem Filter.Tendsto.prodMk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
     Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
   rw [nhds_prod_eq]
-  exact Filter.Tendsto.prodMk hx hy
+  exact hx.prodMk hy
 
 @[deprecated (since := "2025-03-10")]
 alias Filter.Tendsto.prod_mk_nhds := Filter.Tendsto.prodMk_nhds
