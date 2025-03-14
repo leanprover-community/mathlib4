@@ -80,7 +80,7 @@ theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
   have : f = MvPolynomial.pUnitAlgEquiv R g := by
     simp only [g, ← AlgEquiv.symm_apply_eq]
   simp only [this]
-  simp only [PowerSeries.eval₂, MvPowerSeries.eval₂_coe, ← MvPolynomial.pUnitAlgEquiv_eval₂]
+  simp only [PowerSeries.eval₂, MvPowerSeries.eval₂_coe, MvPolynomial.eval₂_pUnitAlgEquiv]
   rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
   rw [MvPowerSeries.eval₂_coe]
 
@@ -138,7 +138,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : IsTopologicallyNilpotent a)
     ε = eval₂ φ a := by
   apply MvPowerSeries.eval₂_unique hφ (hasEval ha) hε
   intro p
-  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, MvPolynomial.eval₂_pUnitAlgEquiv_symm]
+  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_pUnitAlgEquiv_symm]
   congr
   rw [AlgEquiv.symm_apply_apply]
 

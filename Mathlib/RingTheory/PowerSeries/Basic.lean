@@ -871,7 +871,7 @@ theorem coe_eq_one_iff : (φ : PowerSeries R) = 1 ↔ φ = 1 := by rw [← coe_o
 
 variable (φ ψ)
 
-theorem MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
+theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
   induction f using MvPolynomial.induction_on' with
   | h1 d r =>
@@ -885,7 +885,7 @@ theorem MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
       simp [← h']
   | h2 f g hf hg => simp [hf, hg]
 
-theorem MvPolynomial.pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
+theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
     ((f.toPowerSeries) : MvPowerSeries PUnit R)
       = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
   set g := (MvPolynomial.pUnitAlgEquiv R).symm f
