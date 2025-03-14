@@ -30,7 +30,7 @@ def untop₀ [Zero α] (a : WithTop α) : α := a.untopD 0
 
 @[simp]
 lemma untop₀_eq_zero [Zero α] (a : WithTop α) :
-    a.untop₀ = 0 ↔ a = 0 ∨ a = ⊤ := by simp_all [WithTop.untop₀]
+    a.untop₀ = 0 ↔ a = 0 ∨ a = ⊤ := by simp [WithTop.untop₀]
 
 @[simp]
 lemma untop₀_top [Zero α] :
