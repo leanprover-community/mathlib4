@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
 import Mathlib.Dynamics.PeriodicPts.Defs
+import Mathlib.Data.Fintype.Card
 
 /-!
 # Extra lemmas about periodic points
@@ -15,7 +16,7 @@ import Mathlib.Dynamics.PeriodicPts.Defs
 open Nat Set
 
 namespace Function
-variable {α : Type*} {f : α → α} {x y : α}
+variable {α : Type*} {f : α → α} {x : α}
 
 open Function (Commute)
 
@@ -55,6 +56,50 @@ theorem Commute.minimalPeriod_of_comp_eq_mul_of_coprime {g : α → α} (h : Com
   refine hco.dvd_of_dvd_mul_left (IsPeriodicPt.left_of_comp h ?_ ?_).minimalPeriod_dvd
   · exact (isPeriodicPt_minimalPeriod _ _).const_mul _
   · exact (isPeriodicPt_minimalPeriod _ _).mul_const _
+
+section Fintype
+
+variable [Fintype α]
+
+open Fintype
+
+theorem minimalPeriod_le_card : minimalPeriod f x ≤ card α := by
+  have : (periodicOrbit f x).Nodup := nodup_periodicOrbit
+  have h := List.Nodup.length_le_card this
+  simp at h; exact h
+
+theorem isPeriodicPt_factorial_of_mem_periodicPts (h : x ∈ periodicPts f) :
+    IsPeriodicPt f (card α)! x := by
+  haveI : Nonempty α := ⟨x⟩
+  match h₁ : card α with
+  | 0 => exact False.elim (card_ne_zero h₁)
+  | n + 1 =>
+    rw [isPeriodicPt_iff_minimalPeriod_dvd]
+    refine Nat.dvd_factorial (minimalPeriod_pos_of_mem_periodicPts h) ?_
+    exact (succ_eq_add_one _ ▸ h₁) ▸ minimalPeriod_le_card
+
+theorem mem_periodicPts_of_isPeriodicPt_factorial (h : IsPeriodicPt f (card α)! x) :
+    x ∈ periodicPts f := by
+  rw [← minimalPeriod_pos_iff_mem_periodicPts]
+  have h₁ := Function.IsPeriodicPt.minimalPeriod_dvd h
+  by_contra h'; simp only [not_lt, nonpos_iff_eq_zero] at h'
+  rw [h', Nat.zero_dvd] at h₁
+  exact Nat.factorial_ne_zero _ h₁
+
+@[simp]
+theorem isPeriodicPt_factorial_iff_mem_periodicPts :
+    IsPeriodicPt f (card α)! x ↔ x ∈ periodicPts f :=
+  ⟨mem_periodicPts_of_isPeriodicPt_factorial, isPeriodicPt_factorial_of_mem_periodicPts⟩
+
+theorem mem_periodicPts_of_bijective (h : Bijective f) : x ∈ periodicPts f := by
+  sorry
+
+theorem periodicPts_eq_univ_of_bijective (h : Bijective f) : periodicPts f = univ := by
+  ext x; refine ⟨fun _ ↦ mem_univ _, fun h' ↦ ?_⟩; clear h'
+  rw [← isPeriodicPt_factorial_iff_mem_periodicPts, isPeriodicPt_iff_minimalPeriod_dvd]
+  sorry
+
+end Fintype
 
 end Function
 
