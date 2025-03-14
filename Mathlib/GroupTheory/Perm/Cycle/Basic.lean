@@ -8,6 +8,7 @@ import Mathlib.Algebra.Module.BigOperators
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
+import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Cycles of a permutation
