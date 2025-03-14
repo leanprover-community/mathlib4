@@ -81,13 +81,13 @@ theorem contDiffWithinAtProp_self_source {f : E → H'} {s : Set E} {x : E} :
     modelWithCornersSelf_coe_symm, CompTriple.comp_eq, preimage_id_eq, id_eq]
 
 theorem contDiffWithinAtProp_self {f : E → E'} {s : Set E} {x : E} :
-    ContDiffWithinAtProp 𝓘(𝕜, E) 𝓘(𝕜, E') n f s x ↔ ContDiffWithinAt 𝕜 n f s x :=
-  contDiffWithinAtProp_self_source
+    ContDiffWithinAtProp 𝓘(𝕜, E) 𝓘(𝕜, E') n f s x ↔ ContDiffWithinAt 𝕜 n f s x := by
+  simp [ContDiffWithinAtProp]
 
 theorem contDiffWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H} :
     ContDiffWithinAtProp I 𝓘(𝕜, E') n f s x ↔
-      ContDiffWithinAt 𝕜 n (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) :=
-  Iff.rfl
+      ContDiffWithinAt 𝕜 n (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) := by
+  simp [ContDiffWithinAtProp]
 
 /-- Being `Cⁿ` in the model space is a local property, invariant under `Cⁿ` maps. Therefore,
 it lifts nicely to manifolds. -/
@@ -291,7 +291,7 @@ theorem contMDiffWithinAt_iff_target :
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, ContDiffWithinAtProp, extChartAt, PartialHomeomorph.extend, PartialEquiv.coe_trans,
     ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, PartialHomeomorph.refl_apply, id_comp]
+    chartAt_self_eq, id_comp]
   rfl
 
 @[deprecated (since := "2024-11-20")] alias smoothWithinAt_iff := contMDiffWithinAt_iff
@@ -348,7 +348,10 @@ theorem contMDiffWithinAt_iff_target_of_mem_source
   simp_rw [((chartAt H' y).continuousAt hy).comp_continuousWithinAt hf]
   rw [← extChartAt_source (I := I')] at hy
   simp_rw [(continuousAt_extChartAt' hy).comp_continuousWithinAt hf]
-  rfl
+  simp only [ContDiffWithinAtProp, true_and, modelWithCornersSelf_coe, extChartAt,
+    PartialHomeomorph.extend, PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, CompTriple.comp_eq]
+  exact Iff.rfl
 
 theorem contMDiffAt_iff_target_of_mem_source
     [IsManifold I' n M'] {x : M} {y : M'} (hy : f x ∈ (chartAt H' y).source) :
@@ -512,13 +515,14 @@ theorem contMDiffOn_iff_target :
   simp only [contMDiffOn_iff, ModelWithCorners.source_eq, chartAt_self_eq,
     PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_trans, extChartAt,
     PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
+  --simp
   intro h
   constructor
-  · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
+  · refine fun h' y ↦ ⟨?_, fun x ↦ by simpa using h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
     convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
-  · exact fun h' x y => (h' y).2 x 0
+  · exact fun h' x y => by simpa using (h' y).2 x 0
 
 @[deprecated (since := "2024-11-20")] alias smoothOn_iff := contMDiffOn_iff
 

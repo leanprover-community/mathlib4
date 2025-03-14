@@ -184,6 +184,7 @@ def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
   right_inv' _ hx := update_eq_iff.2 ⟨max_eq_left hx, fun _ _ => rfl⟩
   source_eq := rfl
   uniqueDiffOn' := by
+    right
     have : UniqueDiffOn ℝ _ :=
       UniqueDiffOn.pi (Fin n) (fun _ => ℝ) _ _ fun i (_ : i ∈ ({0} : Set (Fin n))) =>
         uniqueDiffOn_Ici 0
@@ -208,6 +209,7 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
   right_inv' x hx := by ext1 i; simp only [hx i, max_eq_left]
   source_eq := rfl
   uniqueDiffOn' := by
+    right
     have this : UniqueDiffOn ℝ _ :=
       UniqueDiffOn.univ_pi (Fin n) (fun _ => ℝ) _ fun _ => uniqueDiffOn_Ici 0
     simpa only [pi_univ_Ici] using this

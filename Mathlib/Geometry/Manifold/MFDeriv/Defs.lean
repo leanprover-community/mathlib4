@@ -136,13 +136,13 @@ theorem differentiableWithinAtProp_self_source {f : E → H'} {s : Set E} {x : E
     modelWithCornersSelf_coe_symm, CompTriple.comp_eq, preimage_id_eq, id_eq]
 
 theorem DifferentiableWithinAtProp_self {f : E → E'} {s : Set E} {x : E} :
-    DifferentiableWithinAtProp 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x :=
-  differentiableWithinAtProp_self_source
+    DifferentiableWithinAtProp 𝓘(𝕜, E) 𝓘(𝕜, E') f s x ↔ DifferentiableWithinAt 𝕜 f s x := by
+  simp [DifferentiableWithinAtProp]
 
 theorem differentiableWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H} :
     DifferentiableWithinAtProp I 𝓘(𝕜, E') f s x ↔
-      DifferentiableWithinAt 𝕜 (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) :=
-  Iff.rfl
+      DifferentiableWithinAt 𝕜 (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) := by
+  simp [DifferentiableWithinAtProp]
 
 /-- Being differentiable in the model space is a local property, invariant under smooth maps.
 Therefore, it will lift nicely to manifolds. -/
