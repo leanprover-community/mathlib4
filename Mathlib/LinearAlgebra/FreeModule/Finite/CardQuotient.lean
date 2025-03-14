@@ -25,7 +25,7 @@ variable {M : Type*} [AddCommGroup M] [Module.Free ℤ M] [Module.Finite ℤ M]
 open Submodule
 
 /-- Let `e : M ≃ N` be an additive isomorphism (therefore a `ℤ`-linear equiv).
-Then an alternative way to compute the cardinal of the quotient `M ⧸ N` is given by taking
+Then an alternative way to compute the cardinality of the quotient `M ⧸ N` is given by taking
 the determinant of `e`.
 See `natAbs_det_basis_change` for a more familiar formulation of this result. -/
 theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike E M N]
@@ -78,7 +78,7 @@ theorem Submodule.natAbs_det_equiv (N : Submodule ℤ M) {E : Type*} [EquivLike 
   simp_rw [Nat.card_congr (quotientEquivPiZMod N b h).toEquiv, Nat.card_pi, Nat.card_zmod, a]
 
 /-- Let `b` be a basis for `M` over `ℤ` and `bN` a basis for `N` over `ℤ` of the same dimension.
-Then an alternative way to compute the cardinal of `M ⧸ N` is given by taking the determinant
+Then an alternative way to compute the cardinality of `M ⧸ N` is given by taking the determinant
 of `bN` over `b`. -/
 theorem Submodule.natAbs_det_basis_change {ι : Type*} [Fintype ι] [DecidableEq ι] (b : Basis ι ℤ M)
     (N : Submodule ℤ M) (bN : Basis ι ℤ N) :

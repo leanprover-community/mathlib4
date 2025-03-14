@@ -598,11 +598,11 @@ theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
 /--
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
 we can find basis for `M` and `N` with the same indexing such that the inclusion map
-is a square diagonal matrix; this is the basis for `M`.
-See `Submodule.smithNormalFormBotBasis` for the basis on `N`,
-see `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
-and `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
-forms a square diagonal matrix.
+is a square diagonal matrix; this is the basis for `M`. See:
+* `Submodule.smithNormalFormBotBasis` for the basis on `N`,
+* `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
   (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
@@ -611,11 +611,11 @@ noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
 /--
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
 we can find basis for `M` and `N` with the same indexing such that the inclusion map
-is a square diagonal matrix; this is the basis for `N`.
-See `Submodule.smithNormalFormTopBasis` for the basis on `M`,
-see `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
-and `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
-forms a square diagonal matrix.
+is a square diagonal matrix; this is the basis for `N`. See:
+* `Submodule.smithNormalFormTopBasis` for the basis on `M`,
+* `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
   (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
@@ -624,11 +624,11 @@ noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
 /--
 If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
 we can find basis for `M` and `N` with the same indexing such that the inclusion map
-is a square diagonal matrix; these are the entries of the diagonal matrix.
-See `Submodule.smithNormalFormTopBasis` for the basis on `M`,
-See `Submodule.smithNormalFormBotBasis` for the basis on `N`,
-and `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
-forms a square diagonal matrix.
+is a square diagonal matrix; these are the entries of the diagonal matrix. See:
+* `Submodule.smithNormalFormTopBasis` for the basis on `M`,
+* `Submodule.smithNormalFormBotBasis` for the basis on `N`,
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
 -/
 noncomputable def Submodule.smithNormalFormCoeffs (b : Basis ι R M)
   (h : Module.finrank R N = Module.finrank R M) : ι → R :=
@@ -697,10 +697,10 @@ theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; this is the basis for `S`.
-See `Ideal.selfBasis` for the basis on `I`,
-see `Ideal.smithCoeffs` for the entries of the diagonal matrix
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; this is the basis for `S`. See
+* `Ideal.selfBasis` for the basis on `I`,
+* `Ideal.smithCoeffs` for the entries of the diagonal matrix
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R S :=
   (Ideal.exists_smith_normal_form b I hI).choose
@@ -708,10 +708,10 @@ noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; this is the basis for `I`.
-See `Ideal.ringBasis` for the basis on `S`,
-see `Ideal.smithCoeffs` for the entries of the diagonal matrix
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; this is the basis for `I`. See:
+* `Ideal.ringBasis` for the basis on `S`,
+* `Ideal.smithCoeffs` for the entries of the diagonal matrix
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R I :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose
@@ -719,10 +719,10 @@ noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; these are the entries of the diagonal matrix.
-See `Ideal.ringBasis` for the basis on `S`,
-see `Ideal.selfBasis` for the basis on `I`,
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; these are the entries of the diagonal matrix. See :
+* `Ideal.ringBasis` for the basis on `S`,
+* `Ideal.selfBasis` for the basis on `I`,
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.smithCoeffs (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : ι → R :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose
