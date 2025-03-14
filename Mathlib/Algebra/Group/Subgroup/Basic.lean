@@ -339,10 +339,6 @@ section Normalizer
 variable {H}
 
 @[to_additive]
-instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).Normal :=
-  ⟨fun x xH g => by simpa only [mem_subgroupOf] using (g.2 x.1).1 xH⟩
-
-@[to_additive]
 theorem normalizer_eq_top_iff : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
     ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
@@ -352,13 +348,6 @@ variable (H) in
 @[to_additive]
 theorem normalizer_eq_top [h : H.Normal] : H.normalizer = ⊤ :=
   normalizer_eq_top_iff.mpr h
-
-@[to_additive]
-theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
-  fun x hx y =>
-  ⟨fun yH => hK.conj_mem ⟨y, HK yH⟩ yH ⟨x, hx⟩, fun yH => by
-    simpa [mem_subgroupOf, mul_assoc] using
-      hK.conj_mem ⟨x * y * x⁻¹, HK yH⟩ yH ⟨x⁻¹, K.inv_mem hx⟩⟩
 
 variable {N : Type*} [Group N]
 
@@ -406,6 +395,14 @@ theorem normal_subgroupOf_iff_le_normalizer (h : H ≤ K) :
 theorem normal_subgroupOf_iff_le_normalizer_inf :
     (H.subgroupOf K).Normal ↔ K ≤ (H ⊓ K).normalizer :=
   inf_subgroupOf_right H K ▸ normal_subgroupOf_iff_le_normalizer inf_le_right
+
+@[to_additive]
+instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).Normal :=
+  (normal_subgroupOf_iff_le_normalizer H.le_normalizer).mpr le_rfl
+
+@[to_additive]
+theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
+  (normal_subgroupOf_iff_le_normalizer HK).mp hK
 
 @[to_additive]
 theorem inf_normalizer_le_normalizer_inf : H.normalizer ⊓ K.normalizer ≤ (H ⊓ K).normalizer :=
@@ -848,14 +845,14 @@ alias _root_.AddSubgroup.sum_normal := AddSubgroup.prod_normal
 theorem inf_subgroupOf_inf_normal_of_right (A B' B : Subgroup G)
     [hN : (B'.subgroupOf B).Normal] : ((A ⊓ B').subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
-  rw [inf_inf_inf_comm, inf_eq_left.mpr le_rfl]
+  rw [inf_inf_inf_comm, inf_self]
   exact le_trans (inf_le_inf A.le_normalizer hN) (inf_normalizer_le_normalizer_inf)
 
 @[to_additive]
 theorem inf_subgroupOf_inf_normal_of_left {A' A : Subgroup G} (B : Subgroup G)
     [hN : (A'.subgroupOf A).Normal] : ((A' ⊓ B).subgroupOf (A ⊓ B)).Normal := by
   rw [normal_subgroupOf_iff_le_normalizer_inf] at hN ⊢
-  rw [inf_inf_inf_comm, inf_eq_left.mpr le_rfl]
+  rw [inf_inf_inf_comm, inf_self]
   exact le_trans (inf_le_inf hN B.le_normalizer) (inf_normalizer_le_normalizer_inf)
 
 @[to_additive]
