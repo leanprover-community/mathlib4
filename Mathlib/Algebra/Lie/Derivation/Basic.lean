@@ -405,7 +405,7 @@ noncomputable def exp_nilpotent_derivation (h : IsNilpotent D.toLinearMap) :
       let _i := LieRing.toNonUnitalNonAssocRing L
       haveI : SMulCommClass R L L := LieAlgebra.smulCommClass R L
       haveI : IsScalarTower R L L := LieAlgebra.isScalarTower R L
-      exact LinearMap.exp_mul_of_derivation R L D.toLinearMap D.apply_lie_eq_add h
+      exact Module.End.exp_mul_of_derivation R L D.toLinearMap D.apply_lie_eq_add h
     invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l
     left_inv := by
       have h₁ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl
