@@ -1315,7 +1315,7 @@ theorem setIntegral_withDensity_eq_setIntegral_smul₀ {f : X → ℝ≥0} {s : 
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 
 theorem setIntegral_withDensity_eq_setIntegral_smul₀' [SFinite μ] {f : X → ℝ≥0} (s : Set X)
-    (hf : AEMeasurable f (μ.restrict s)) (g : X → E)  :
+    (hf : AEMeasurable f (μ.restrict s)) (g : X → E) :
     ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity' s, integral_withDensity_eq_integral_smul₀ hf]
 

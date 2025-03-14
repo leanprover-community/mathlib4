@@ -6,10 +6,11 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Adjunction.Basic
 
 /-!
-# Adjunctions between bifunctors
+# Adjunctions with a parameter
 
 Given bifunctors `F : C₁ ⥤ C₂ ⥤ C₃` and `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`,
-this file introduces adjunctions `F ⊣₂ G`.
+this file introduces the notation `F ⊣₂ G` for the adjunctions
+with a parameter (in `C₁`) between `F` and `G`.
 
 (See `MonoidalClosed.internalHomAdjunction₂` in the file
 `CategoryTheory.Closed.Monoidal` for an example of such an adjunction.)
@@ -17,8 +18,15 @@ this file introduces adjunctions `F ⊣₂ G`.
 Note: this notion is weaker than the notion of
 "adjunction of two variables" which appears in the mathematical literature.
 In order to have an adjunction of two variables, we need
-a third functor `H : C₂ᵒᵖ ⥤ C₃ ⥤ C₁` and two adjunctions between
-bifunctors `F ⊣₂ G` and `F.flip ⊣₂ H`.
+a third functor `H : C₂ᵒᵖ ⥤ C₃ ⥤ C₁` and two adjunctions with
+a parameter `F ⊣₂ G` and `F.flip ⊣₂ H`.
+
+## TODO
+
+Show that given `F : C₁ ⥤ C₂ ⥤ C₃`, if `F.obj X₁` has a right adjoint
+`G X₁ : C₃ ⥤ C₂` for any `X₁ : C₁`, then `G` extends as a
+bifunctor `G' : C₁ᵒᵖ ⥤ C₃ ⥤ C₂` with `F ⊣₂ G'` (and similarly for
+left adjoints).
 
 ## References
 * https://ncatlab.org/nlab/show/two-variable+adjunction
@@ -36,29 +44,32 @@ variable {C₁ : Type u₁} {C₂ : Type u₂} {C₃ : Type u₃}
   (F : C₁ ⥤ C₂ ⥤ C₃) (G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂)
 
 /-- Given bifunctors `F : C₁ ⥤ C₂ ⥤ C₃` and `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`,
-an adjunction `F ⊣₂ G` consists of the data of adjunctions
-`F.obj X₁ ⊣ G.obj (op X₁)` for all `X₁ : C₁` which
+an adjunction with parameter `F ⊣₂ G` consists of the data of
+adjunctions `F.obj X₁ ⊣ G.obj (op X₁)` for all `X₁ : C₁` which
 satisfy a naturality condition with respect to `X₁`. -/
-structure Adjunction₂ where
+structure ParametrizedAdjunction where
   /-- a family of adjunctions -/
   adj (X₁ : C₁) : F.obj X₁ ⊣ G.obj (op X₁)
+  /-- the naturality of the bijections of the given adjunctions
+  in the first variable (it should not be used directly:
+  use `homEquiv_naturality_one` instead) -/
   naturality' {X₁ Y₁ : C₁} (f : X₁ ⟶ Y₁) {X₂ : C₂} {X₃ : C₃}
     (g : (F.obj Y₁).obj X₂ ⟶ X₃) :
       (adj X₁).homEquiv X₂ X₃ ((F.map f).app X₂ ≫ g) =
         (adj Y₁).homEquiv X₂ X₃ g ≫ (G.map f.op).app X₃ := by aesop_cat
 
-
 /-- The notation `F ⊣₂ G` stands for `Adjunction₂ F G`
-representing that the bifunctor `F` is left adjoint to `G` -/
-infixl:15 " ⊣₂ " => Adjunction₂
+representing that the bifunctor `F` is the left adjoint to `G`
+in an adjunction with a parameter. -/
+infixl:15 " ⊣₂ " => ParametrizedAdjunction
 
-namespace Adjunction₂
+namespace ParametrizedAdjunction
 
 variable {F G} (adj₂ : F ⊣₂ G)
   {X₁ Y₁ : C₁} {X₂ Y₂ : C₂} {X₃ Y₃ : C₃}
 
 /-- The bijection `((F.obj X₁).obj X₂ ⟶ X₃) ≃ (X₂ ⟶ (G.obj (op X₁)).obj X₃)`
-given by an adjunction of bifunctors `adj₂ : F ⊣₂ G`. -/
+given by an adjunction with a parameter `adj₂ : F ⊣₂ G`. -/
 def homEquiv : ((F.obj X₁).obj X₂ ⟶ X₃) ≃ (X₂ ⟶ (G.obj (op X₁)).obj X₃) :=
   (adj₂.adj X₁).homEquiv _ _
 
@@ -101,6 +112,6 @@ lemma homEquiv_symm_naturality_three
       adj₂.homEquiv.symm g ≫ f₃ :=
   adj₂.homEquiv.injective (by simp [homEquiv_naturality_three])
 
-end Adjunction₂
+end ParametrizedAdjunction
 
 end CategoryTheory

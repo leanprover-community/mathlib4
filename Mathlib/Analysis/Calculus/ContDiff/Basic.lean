@@ -952,8 +952,6 @@ theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
     ContDiffWithinAt 𝕜 n (fun x => (f x) (g x)) s x :=
   isBoundedBilinearMap_apply.contDiff.comp₂_contDiffWithinAt hf hg
 
--- Porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
--- to speed up elaboration. In Lean 4 this isn't necessary anymore.
 theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
   isBoundedBilinearMap_smulRight.contDiff.comp₂ (g := fun p => p.1.smulRight p.2) hf hg

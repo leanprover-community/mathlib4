@@ -7,6 +7,7 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent.Basic
 import Mathlib.LinearAlgebra.Pi
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module

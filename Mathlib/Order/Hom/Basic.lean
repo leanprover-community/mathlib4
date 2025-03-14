@@ -171,20 +171,18 @@ section LE
 
 variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
--- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert (map_le_map_iff f (a := EquivLike.inv f b) (b := a)).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 theorem map_inv_le_map_inv_iff (f : F) {a b : β} :
     EquivLike.inv f b ≤ EquivLike.inv f a ↔ b ≤ a := by
   simp
 
--- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f a ≤ b := by
-  convert (map_le_map_iff f (a := a) (b := EquivLike.inv f b)).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv _ _).symm
 
 end LE
@@ -233,7 +231,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: all other DFunLike classes use `apply` instead of `coe`
+/- TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
