@@ -1084,7 +1084,7 @@ theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
 @[simp]
 theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
   ext ⟨a, b⟩
-  simp only [Finsupp.uncurry_apply_pair, curry_apply]
+  rw [Finsupp.uncurry_apply_pair, curry_apply]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
