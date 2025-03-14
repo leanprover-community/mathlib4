@@ -79,10 +79,9 @@ theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 �
     divisor (f₁ • f₂) (h₁f₁.smul h₁f₂) = divisor f₁ h₁f₁ + divisor f₂ h₁f₂ := by
   ext z
   by_cases hz : z ∈ U
-  · simp_all [(h₁f₁ z hz).order_smul (h₁f₂ z hz)]
-    lift (h₁f₁ z hz).order to ℤ using (h₂f₁ z hz) with a₁ ha₁
+  · lift (h₁f₁ z hz).order to ℤ using (h₂f₁ z hz) with a₁ ha₁
     lift (h₁f₂ z hz).order to ℤ using (h₂f₂ z hz) with a₂ ha₂
-    exact rfl
+    simp [hz, (h₁f₁ z hz).order_smul (h₁f₂ z hz), ← ha₁, ← ha₂, ← WithTop.coe_add]
   · simp [hz]
 
 /-- If orders are finite, the divisor of the product of two meromorphic
