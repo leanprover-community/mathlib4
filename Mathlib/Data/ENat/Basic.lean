@@ -42,8 +42,8 @@ deriving instance Zero, OrderedCommSemiring, Nontrivial,
 -- instances should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting Note: In `Data.Nat.ENatPart` proofs timed out when having
--- the `deriving AddCommMonoidWithOne`, and it seems to work without.
+-- In `Mathlib.Data.Nat.PartENat` proofs timed out when we included `deriving AddCommMonoidWithOne`,
+-- and it seems to work without.
 
 namespace ENat
 
@@ -458,8 +458,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
       induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (_root_.map_zero f)] using hx
         simp [mul_top hx, WithTop.mul_top this]
-      · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `simp [← coe_mul]` times out
-        simp only [map_coe, ← coe_mul, map_mul, WithTop.coe_mul] }
+      · simp [← Nat.cast_mul, ← coe_mul] }
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps -fullyApplied]

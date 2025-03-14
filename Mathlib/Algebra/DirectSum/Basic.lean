@@ -398,7 +398,7 @@ variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMon
 variable [∀ i, AddCommMonoid (β i)] (f : ∀ (i : ι), α i →+ β i)
 
 /-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
-def map : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
+def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
 
 @[simp] lemma map_of [DecidableEq ι] (i : ι) (x : α i) : map f (of α i x) = of β i (f i x) :=
   DFinsupp.mapRange_single (hf := fun _ => map_zero _)

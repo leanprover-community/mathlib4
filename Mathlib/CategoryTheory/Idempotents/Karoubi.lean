@@ -115,8 +115,7 @@ See also the functor `toKaroubi`. -/
 instance coe : CoeTC C (Karoubi C) :=
   ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 
--- Porting note: removed @[simp] as the linter complains
-theorem coe_X (X : C) : (X : Karoubi C).X = X := rfl
+theorem coe_X (X : C) : (X : Karoubi C).X = X := by simp
 
 @[simp]
 theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
