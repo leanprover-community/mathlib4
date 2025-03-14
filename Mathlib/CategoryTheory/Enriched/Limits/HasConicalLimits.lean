@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Dagur Asgeirsson, Emily Riehl
 -/
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
+import Mathlib.CategoryTheory.Limits.Final
 
 /-!
 # HasConicalLimits
@@ -98,7 +99,7 @@ instance hasConicalLimit_of_equiv (e : J' ≌ J) :
     let cone : Cone (e.functor ⋙ F) := Cone.whisker e.functor (getLimitCone F).cone
     have isLimit : IsLimit cone := IsLimit.whiskerEquivalence (getLimitCone F).isLimit e
     ⟨cone, isLimit⟩
-  preservesLimit_eCoyoneda X := preservesLimit_of_equiv e (eCoyoneda V X)
+  preservesLimit_eCoyoneda _ := inferInstance
 
 omit [HasConicalLimit V F] in
 
