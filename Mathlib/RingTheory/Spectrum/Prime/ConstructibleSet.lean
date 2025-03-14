@@ -26,8 +26,11 @@ variable (R) in
 /-- The data of a basic constructible set `s` is a tuple `(f, g₁, ..., gₙ)` -/
 @[ext]
 structure BasicConstructibleSetData where
+  /-- Given the data of a basic constructible set `s = V(g₁, ..., gₙ) \ V(f)`, return `f`. -/
   protected f : R
+  /-- Given the data of a basic constructible set `s = V(g₁, ..., gₙ) \ V(f)`, return `n`. -/
   protected n : ℕ
+  /-- Given the data of a basic constructible set `s = V(g₁, ..., gₙ) \ V(f)`, return `g`. -/
   protected g : Fin n → R
 
 namespace BasicConstructibleSetData
@@ -90,7 +93,7 @@ that `s = ⋃ (f, g₁, ..., gₙ), V(g₁, ..., gₙ) \ V(f)`, return `s`. -/
 def toSet (S : ConstructibleSetData R) : Set (PrimeSpectrum R) := ⋃ C ∈ S, C.toSet
 
 @[simp]
-lemma toSet_map [DecidableEq S] (f : R →+* S) (s : ConstructibleSetData R) :
+lemma toSet_map (f : R →+* S) (s : ConstructibleSetData R) :
     (s.map f).toSet = comap f ⁻¹' s.toSet := by
   unfold toSet map
   rw [set_biUnion_finset_image]
