@@ -30,12 +30,10 @@ namespace CategoryTheory.Enriched
 
 open Limits
 
-variable {J : Type u₁} [Category.{v₁} J]
-variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
-
 section Definitions
 
 -- note: for the classes it seems that instance inference wants `V` to be an `outParam`.
+variable {J : Type u₁} [Category.{v₁} J]
 variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
@@ -77,5 +75,6 @@ hom-sets. -/
 abbrev HasConicalLimits : Prop := HasConicalLimitsOfSize.{v, v} V C
 
 end Definitions
+
 
 end CategoryTheory.Enriched
