@@ -6,7 +6,6 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 
 import Mathlib.RingTheory.TensorProduct.DirectLimit.FG
 import Mathlib.RingTheory.Finiteness.Small
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.Logic.Small.Set
 import Mathlib.RingTheory.FiniteType
 import Mathlib.RingTheory.Ideal.Quotient.Operations
