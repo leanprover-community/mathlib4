@@ -85,13 +85,6 @@ theorem linearIndependent_single_ne_zero {ι R : Type*} [Ring R] [NoZeroDivisors
   exact @Pi.linearIndependent_single R ι (fun _ ↦ Unit) (fun _ ↦ R) _ _ _ _ (fun i _ ↦ v i)
     <| by simp +contextual [Fintype.linearIndependent_iff, hv]
 
-set_option linter.deprecated false in
-@[deprecated linearIndependent_single (since := "2024-08-09")]
-theorem linearIndependent_stdBasis [Ring R] [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
-    [DecidableEq η] (v : ∀ j, ιs j → Ms j) (hs : ∀ i, LinearIndependent R (v i)) :
-    LinearIndependent R fun ji : Σj, ιs j => stdBasis R Ms ji.1 (v ji.1 ji.2) :=
-  linearIndependent_single _ hs
-
 variable [Semiring R] [∀ i, AddCommMonoid (Ms i)] [∀ i, Module R (Ms i)]
 
 section Fintype
