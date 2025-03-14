@@ -323,7 +323,7 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
 
 theorem eRank_diagonal [DecidableEq m] (w : m → R) :
     (diagonal w).eRank = {i | (w i) ≠ 0}.encard := by
-  simp [eRank, cRank_diagonal]
+  simp [eRank, cRank_diagonal, toENat_cardinalMk_subtype]
 
 end Field
 
