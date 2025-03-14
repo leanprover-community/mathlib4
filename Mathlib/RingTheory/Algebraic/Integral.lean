@@ -325,7 +325,7 @@ def Subalgebra.algebraicClosure [IsDomain R] : Subalgebra R S where
   algebraMap_mem' := isAlgebraic_algebraMap
 
 theorem Subalgebra.mem_algebraicClosure_iff [IsDomain R] {s : S} :
-    s ∈ Subalgebra.algebraicClosure R S ↔ IsAlgebraic R s := rfl
+    s ∈ Subalgebra.algebraicClosure R S ↔ IsAlgebraic R s := Iff.rfl
 
 theorem integralClosure_le_algebraicClosure [IsDomain R] :
     integralClosure R S ≤ Subalgebra.algebraicClosure R S :=
@@ -418,11 +418,32 @@ instance [NoZeroDivisors S] : Algebra.IsAlgebraic R[X] S[X] := by
   rw [← Polynomial.map_injective_iff] at h
   exact Algebra.isAlgebraic_of_not_injective h
 
+theorem Polynomial.exists_dvd_map_of_isAlgebraic {f : S[X]} (hf : f ∈ S[X]⁰) :
+    ∃ g : R[X], g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
+  IsAlgebraic.exists_nonzero_dvd (Algebra.IsAlgebraic.isAlgebraic _) hf
+
 attribute [local instance] MvPolynomial.algebraMvPolynomial
 
 instance {σ} [NoZeroDivisors R] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) where
   isAlgebraic p := by
-    refine p.induction_on' (fun _ _ ↦ ?_) fun _ _ ↦ .add
-    sorry
+    refine p.induction_on (fun a ↦ ?_) (fun _ _ ↦ .add) fun p n h ↦ h.mul ?_
+    · have ⟨q, ne, eq⟩ := alg.1 a
+      refine ⟨q.mapRingHom MvPolynomial.C,
+        (map_ne_zero_iff _ (map_injective _ <| MvPolynomial.C_injective ..)).2 ne, ?_⟩
+      simpa [MvPolynomial.map_C_aeval_C]
+    convert isAlgebraic_algebraMap (x := MvPolynomial.X n)
+    · simp
+    · have := alg.nontrivial; infer_instance
+
+instance {σ} [NoZeroDivisors S] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) := by
+  by_cases h : Function.Injective (algebraMap R S)
+  · have := h.noZeroDivisors _ (map_zero _) (map_mul _); infer_instance
+  rw [← MvPolynomial.map_injective_iff] at h
+  exact Algebra.isAlgebraic_of_not_injective h
+
+theorem MvPolynomial.exists_dvd_map_of_isAlgebraic {σ} {f : MvPolynomial σ S}
+    (hf : (MvPolynomial σ S)⁰) :
+    ∃ g : MvPolynomial σ R, g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
+  IsAlgebraic.exists_nonzero_dvd (Algebra.IsAlgebraic.isAlgebraic _) hf
 
 end Polynomial

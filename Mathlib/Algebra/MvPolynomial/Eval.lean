@@ -399,6 +399,9 @@ theorem map_injective (hf : Function.Injective f) :
   intro m
   exact hf (h m)
 
+theorem map_injective_iff : Function.Injective (map (σ := σ) f) ↔ Function.Injective f :=
+  ⟨fun h r r' eq ↦ by simpa using h (a₁ := C r) (a₂ := C r') (by simpa), map_injective f⟩
+
 theorem map_surjective (hf : Function.Surjective f) :
     Function.Surjective (map f : MvPolynomial σ R → MvPolynomial σ S₁) := fun p => by
   induction' p using MvPolynomial.induction_on' with i fr a b ha hb
@@ -407,6 +410,10 @@ theorem map_surjective (hf : Function.Surjective f) :
   · obtain ⟨a, rfl⟩ := ha
     obtain ⟨b, rfl⟩ := hb
     exact ⟨a + b, RingHom.map_add _ _ _⟩
+
+theorem map_surjective_iff : Function.Surjective (map (σ := σ) f) ↔ Function.Surjective f :=
+  ⟨fun h s ↦ let ⟨p, h⟩ := h (C s); ⟨p.coeff 0, by simpa [coeff_map] using congr(coeff 0 $h)⟩,
+    map_surjective f⟩
 
 /-- If `f` is a left-inverse of `g` then `map f` is a left-inverse of `map g`. -/
 theorem map_leftInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.LeftInverse f g) :
