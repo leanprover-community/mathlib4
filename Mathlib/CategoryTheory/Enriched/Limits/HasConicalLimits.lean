@@ -30,12 +30,10 @@ namespace CategoryTheory.Enriched
 
 open Limits
 
-variable {J : Type u₁} [Category.{v₁} J]
-variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
-
 section Definitions
 
 -- note: for the classes it seems that instance inference wants `V` to be an `outParam`.
+variable {J : Type u₁} [Category.{v₁} J]
 variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
@@ -77,5 +75,102 @@ hom-sets. -/
 abbrev HasConicalLimits : Prop := HasConicalLimitsOfSize.{v, v} V C
 
 end Definitions
+
+namespace HasConicalLimit
+
+variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
+variable {F G : J ⥤ C} [HasConicalLimit V F]
+
+/-- If a functor `F` has a conical limit, so does any naturally isomorphic functor. -/
+lemma of_iso (e : F ≅ G) :
+    HasConicalLimit V G where
+  toHasLimit := hasLimit_of_iso e
+  preservesLimit_eCoyoneda X :=
+    preservesLimit_of_iso_diagram (eCoyoneda V X) e
+
+variable (F)
+
+instance hasConicalLimit_of_equiv (e : J' ≌ J) :
+    HasConicalLimit V (e.functor ⋙ F) where
+  exists_limit :=
+    let cone : Cone (e.functor ⋙ F) := Cone.whisker e.functor (getLimitCone F).cone
+    have isLimit : IsLimit cone := IsLimit.whiskerEquivalence (getLimitCone F).isLimit e
+    ⟨cone, isLimit⟩
+  preservesLimit_eCoyoneda X := preservesLimit_of_equiv e (eCoyoneda V X)
+
+omit [HasConicalLimit V F] in
+
+/-- If a `e ⋙ F` has a limit, and `e` is an equivalence, we can construct a limit of `F`. -/
+theorem hasConicalLimit_of_equiv_comp (e : J' ≌ J) [HasConicalLimit V (e.functor ⋙ F)] :
+    HasConicalLimit V F := by
+  have : HasConicalLimit V (e.inverse ⋙ e.functor ⋙ F) :=
+    hasConicalLimit_of_equiv V _ e.symm
+  apply HasConicalLimit.of_iso V (e.invFunIdAssoc F)
+
+end HasConicalLimit
+
+namespace HasConicalLimitsOfShape
+
+variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
+variable [HasConicalLimitsOfShape J V C]
+
+instance : HasLimitsOfShape J C where
+  has_limit _ := inferInstance
+
+/-- We can transport conical limits of shape `J` along an equivalence `J ≌ J'`. -/
+theorem of_equiv (e : J ≌ J') : HasConicalLimitsOfShape J' V C := by
+  constructor
+  intro F
+  apply HasConicalLimit.hasConicalLimit_of_equiv_comp V _ e
+
+end HasConicalLimitsOfShape
+
+namespace HasConicalLimitsOfSize
+
+variable {J : Type u₁} [Category.{v₁} J]
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
+variable [HasConicalLimitsOfSize.{v₁, u₁} V C]
+
+instance hasLimitsOfSize [h_inst : HasConicalLimitsOfSize.{v₁, u₁} V C] :
+    HasLimitsOfSize.{v₁, u₁} C where
+  has_limits_of_shape := inferInstance
+
+/-- A category that has larger conical limits also has smaller conical limits. -/
+theorem hasConicalLimitsOfSize_of_univLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}] :
+    HasConicalLimitsOfSize.{v₂, u₂} V C where
+  hasConicalLimitsOfShape J {_} := HasConicalLimitsOfShape.of_equiv V C
+    ((ShrinkHoms.equivalence J).trans (Shrink.equivalence _)).symm
+
+omit [HasConicalLimitsOfSize.{v₁, u₁} V C] in
+
+/-- `HasConicalLimitsOfSize.shrink.{v, u} C` tries to obtain `HasConicalLimitsOfSize.{v, u} C`
+from some other `HasConicalLimitsOfSize.{v₁, u₁} C`.
+-/
+theorem shrink [HasConicalLimitsOfSize.{max v₁ v₂, max u₁ u₂} V C] :
+    HasConicalLimitsOfSize.{v₁, u₁} V C :=
+  hasConicalLimitsOfSize_of_univLE.{max v₁ v₂, max u₁ u₂} V C
+
+end HasConicalLimitsOfSize
+
+namespace HasConicalLimits
+
+-- Note that `Category.{v, v} J` is deliberately chosen this way, see `HasConicalLimits`.
+variable (J : Type v) [Category.{v, v} J]
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
+variable [HasConicalLimits V C]
+
+instance (priority := 100) hasSmallestConicalLimitsOfHasConicalLimits :
+    HasConicalLimitsOfSize.{0, 0} V C :=
+  HasConicalLimitsOfSize.shrink.{0, 0} V C
+
+instance : HasConicalLimitsOfShape J V C := HasConicalLimitsOfSize.hasConicalLimitsOfShape J
+
+end HasConicalLimits
 
 end CategoryTheory.Enriched
