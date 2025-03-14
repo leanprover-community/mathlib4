@@ -95,7 +95,7 @@ namespace HasConicalLimitsOfShape
 variable [HasConicalLimitsOfShape J V C]
 
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
-instance : HasLimitsOfShape J C where
+instance instHasLimitsOfShape : HasLimitsOfShape J C where
   has_limit _ := inferInstance
 
 end HasConicalLimitsOfShape
@@ -105,7 +105,7 @@ namespace HasConicalLimitsOfSize
 variable [HasConicalLimitsOfSize.{v₁, u₁} V C]
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
-instance hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+instance instHasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
   has_limits_of_shape := inferInstance
 
