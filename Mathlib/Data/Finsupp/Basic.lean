@@ -1071,23 +1071,20 @@ protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
 
 @[simp]
 theorem uncurry_apply (f : α →₀ β →₀ M) (x : α) (y : β) : f.uncurry (x, y) = f x y := by
-  have h_curry_apply := curry_apply (f.uncurry) x y
-  have curry_uncurry : f.uncurry.curry = f := by
-    simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, sum_zero_index, sum_add_index,
-        sum_single_index, single_zero, single_add, eq_self_iff_true, forall_true_iff,
-        forall₃_true_iff, (single_sum _ _ _).symm, sum_single]
-  simp only [curry_uncurry] at h_curry_apply
-  rw [← h_curry_apply]
+  rw [← curry_apply (f.uncurry) x y]
+  simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
+    forall_true_iff, sum_single_index, single_zero, (single_sum _ _ _).symm,
+    sum_single]
 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
   ext a b
-  simp
+  simp only [curry_apply, uncurry_apply]
 
 @[simp]
 theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
   ext ⟨a, b⟩
-  simp
+  simp only [uncurry_apply, curry_apply]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
