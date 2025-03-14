@@ -241,6 +241,21 @@ lemma preservesLimitOfPreservesLimitCone {F : C ⥤ D} {t : Cone K} (h : IsLimit
     (hF : IsLimit (F.mapCone t)) : PreservesLimit K F :=
 preservesLimit_of_preserves_limit_cone h hF
 
+lemma preservesLimit_of_equiv
+    {J' : Type w₂} [Category.{w₂'} J'] (e : J' ≌ J) (F : C ⥤ D)
+    [PreservesLimit K F] : PreservesLimit (e.functor ⋙ K) F where
+  preserves {c} hc := by
+    constructor
+    replace hc := hc.whiskerEquivalence e.symm
+    let equ := e.invFunIdAssoc K
+    replace hc := (IsLimit.postcomposeHomEquiv equ _).symm hc
+    replace hc := (isLimitOfPreserves F hc)
+    apply IsLimit.ofIsoLimit (hc.whiskerEquivalence e)
+    refine Cones.ext (Iso.refl _) fun j => ?_
+    have := c.w (e.unit.app j)
+    simp at this
+    simp [equ, ← this, ← Functor.map_comp]
+
 /-- Transfer preservation of limits along a natural isomorphism in the diagram. -/
 lemma preservesLimit_of_iso_diagram {K₁ K₂ : J ⥤ C} (F : C ⥤ D) (h : K₁ ≅ K₂)
     [PreservesLimit K₁ F] : PreservesLimit K₂ F where
