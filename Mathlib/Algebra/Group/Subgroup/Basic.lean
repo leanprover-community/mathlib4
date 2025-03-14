@@ -637,6 +637,13 @@ theorem comap_normalizer_eq_of_surjective (H : Subgroup G) {f : N →* G}
     (hf : Function.Surjective f) : H.normalizer.comap f = (H.comap f).normalizer :=
   comap_normalizer_eq_of_le_range fun x _ ↦ hf x
 
+@[deprecated (since := "2025-03-13")]
+alias comap_normalizer_eq_of_injective_of_le_range := comap_normalizer_eq_of_le_range
+
+@[deprecated (since := "2025-03-13")]
+alias _root_.AddSubgroup.comap_normalizer_eq_of_injective_of_le_range :=
+  AddSubgroup.comap_normalizer_eq_of_le_range
+
 /-- The image of the normalizer is equal to the normalizer of the image of an isomorphism. -/
 @[to_additive
       "The image of the normalizer is equal to the normalizer of the image of an
