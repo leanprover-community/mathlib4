@@ -22,6 +22,12 @@ The main constructions are the following.
 * [Kelly G.M., *Basic concepts of enriched category theory*][kelly2005]:
   See section 3.8 for a similar treatment, although the content of this file is not directly
   adapted from there.
+
+## Implementation notes
+
+It seems that instance inference would work much smoother when `V` would be made
+an `(V : outParam <| Type u')` for the `class`es below. However, this might
+cause other problems, for example maybe if different `[MonoidalCategory _]` are in scope.
 -/
 
 universe v₁ u₁ v₂ u₂ w v' v u u'
@@ -34,7 +40,7 @@ section Definitions
 
 -- note: for the classes it seems that instance inference wants `V` to be an `outParam`.
 variable {J : Type u₁} [Category.{v₁} J]
-variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 variable {C} in
@@ -95,7 +101,8 @@ namespace HasConicalLimitsOfShape
 variable [HasConicalLimitsOfShape J V C]
 
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
-instance instHasLimitsOfShape : HasLimitsOfShape J C where
+-- TODO: errors if made an `instance`.
+def hasLimitsOfShape : HasLimitsOfShape J C where
   has_limit _ := inferInstance
 
 end HasConicalLimitsOfShape
@@ -105,9 +112,12 @@ namespace HasConicalLimitsOfSize
 variable [HasConicalLimitsOfSize.{v₁, u₁} V C]
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
-instance instHasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+-- TODO: errors if made an `instance`.
+def hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
-  has_limits_of_shape := inferInstance
+  has_limits_of_shape _ :=
+    -- TODO: use `inferInstance` instead
+    HasConicalLimitsOfShape.hasLimitsOfShape V C
 
 end HasConicalLimitsOfSize
 
@@ -121,7 +131,10 @@ variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimits V C]
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
-example : HasLimits C := inferInstance
+-- TODO: errors if made an `instance`.
+def hasLimits : HasLimits C :=
+  -- TODO: use `inferInstance` instead
+  HasConicalLimitsOfSize.hasLimitsOfSize V C
 
 end HasConicalLimits
 
