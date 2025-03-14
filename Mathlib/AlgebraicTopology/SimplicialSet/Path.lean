@@ -155,7 +155,7 @@ def horn.spineId {n : ℕ} (i : Fin (n + 3))
     fin_cases a <;> rfl)
 
 @[simp]
-lemma subcomplexHorn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
+lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path.map (horn.spineId.{u} i h₀ hₙ) Λ[n + 2, i].ι =
       stdSimplex.spineId (n + 2) := rfl
