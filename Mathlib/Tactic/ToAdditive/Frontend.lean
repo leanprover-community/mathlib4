@@ -1680,7 +1680,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
     let ⟨genType, defEqResult⟩ ←
       MetaM.run' <| checkDeclType b `_order_dual_private srcDecl tgtDecl cfg.reorder
     if ! defEqResult then
-      log m!"order_dual failed validation!\ntgt type:\n{tgtDecl.type},\
+      logInfo m!"order_dual failed validation!\ntgt type:\n{tgtDecl.type},\
         \ntransformed type:\n{genType}"
   if cfg.reorder != [] then
     trace[to_additive] "@[to_additive] will reorder the arguments of {tgt} according to \
