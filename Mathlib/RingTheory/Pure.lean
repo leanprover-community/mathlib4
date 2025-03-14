@@ -41,6 +41,7 @@ namespace Submodule
 
 open AlgHom LinearMap Function Submodule MvPolynomial
 
+/-- The class of pure submodules of a module -/
 class IsPure {R : Type u} [CommSemiring R]
     {M : Type v} [AddCommMonoid M] [Module R M] (N : Submodule R M) where
   baseChange_injective' (S : Type u) [CommSemiring S] [Algebra R S] :

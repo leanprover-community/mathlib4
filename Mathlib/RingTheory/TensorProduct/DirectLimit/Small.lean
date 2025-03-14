@@ -37,7 +37,7 @@ universe u v
 variable {R : Type u} [Semiring R] {M : Type*} [AddCommMonoid M] [Module R M]
 
 -- The directed system of small submodules of `M`
-def DirectedSystem.Submodules_small :
+theorem DirectedSystem.Submodules_small :
     DirectedSystem (ι := {P : Submodule R M // Small.{v} P}) (F := fun P ↦ P.val)
     (f := fun ⦃P Q⦄ (h : P ≤ Q) ↦ Submodule.inclusion h) where
   map_self := fun _ _ ↦ rfl
