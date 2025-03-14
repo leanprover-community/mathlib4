@@ -382,7 +382,7 @@ that `motive` is closed under addition of nontrivial monomials not present in th
 @[elab_as_elim]
 theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
     (C : ∀ a, motive (C a))
-    (monomial_add_weak :
+    (monomial_add :
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
         a ∉ f.support → b ≠ 0 → motive f → motive ((monomial a b) + f)) :
     motive p :=
