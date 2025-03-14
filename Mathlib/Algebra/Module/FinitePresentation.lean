@@ -53,8 +53,6 @@ For finitely presented algebras, see `Algebra.FinitePresentation`
 in file `Mathlib.RingTheory.FinitePresentation`.
 -/
 
-universe u v
-
 open Finsupp
 
 section Semiring
@@ -78,6 +76,7 @@ section Ring
 
 section
 
+universe u v
 variable (R : Type u) (M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
 theorem Module.FinitePresentation.exists_fin [fp : Module.FinitePresentation R M] :
