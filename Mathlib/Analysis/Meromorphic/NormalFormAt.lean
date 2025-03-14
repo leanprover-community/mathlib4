@@ -19,7 +19,9 @@ means that the representative can locally near any point `x` be written 'in
 normal form', as `f =ᶠ[𝓝 x] fun z ↦ (z - x) ^ n • g` where `g` is analytic and
 does not vanish at `x`.
 
-TODO: Establish further properties of meromorphic functions in normal form, such
+## TODO
+
+Establish further properties of meromorphic functions in normal form, such
 as a local identity theorem. Establish the analogous notion `MeromorphicNFOn`.
 -/
 
