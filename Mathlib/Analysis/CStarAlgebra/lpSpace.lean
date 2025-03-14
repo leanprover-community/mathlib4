@@ -27,7 +27,7 @@ instance [∀ i, NonUnitalCommCStarAlgebra (A i)] : NonUnitalCommCStarAlgebra (l
 -- aside from `∀ i, NormOneClass (A i)`, this holds automatically for C⋆-algebras though.
 instance [∀ i, Nontrivial (A i)] [∀ i, CStarAlgebra (A i)] : NormedRing (lp A ∞) where
   dist_eq := dist_eq_norm
-  norm_mul := norm_mul_le
+  norm_mul_le := norm_mul_le
 
 instance [∀ i, Nontrivial (A i)] [∀ i, CommCStarAlgebra (A i)] : CommCStarAlgebra (lp A ∞) where
   mul_comm := mul_comm
