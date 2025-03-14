@@ -140,7 +140,8 @@ theorem Tendsto.prodMk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ} (h�
     (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
   tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-@[deprecated (since := "2025-02-20")] alias Tendsto.prod_mk := Tendsto.prodMk
+@[deprecated (since := "2025-03-10")]
+alias Tendsto.prod_mk := Tendsto.prodMk
 
 theorem tendsto_prod_swap : Tendsto (Prod.swap : α × β → β × α) (f ×ˢ g) (g ×ˢ f) :=
   tendsto_snd.prodMk tendsto_fst
@@ -161,7 +162,7 @@ theorem EventuallyEq.prodMap {δ} {la : Filter α} {fa ga : α → γ} (ha : fa 
     {fb gb : β → δ} (hb : fb =ᶠ[lb] gb) : Prod.map fa fb =ᶠ[la ×ˢ lb] Prod.map ga gb :=
   (Eventually.prod_mk ha hb).mono fun _ h => Prod.ext h.1 h.2
 
-@[deprecated (since := "2025-02-20")]
+@[deprecated (since := "2025-03-10")]
 alias EventuallyEq.prod_map := EventuallyEq.prodMap
 
 theorem EventuallyLE.prodMap {δ} [LE γ] [LE δ] {la : Filter α} {fa ga : α → γ} (ha : fa ≤ᶠ[la] ga)
@@ -169,7 +170,7 @@ theorem EventuallyLE.prodMap {δ} [LE γ] [LE δ] {la : Filter α} {fa ga : α �
     Prod.map fa fb ≤ᶠ[la ×ˢ lb] Prod.map ga gb :=
   Eventually.prod_mk ha hb
 
-@[deprecated (since := "2025-02-20")]
+@[deprecated (since := "2025-03-10")]
 alias EventuallyLE.prod_map := EventuallyLE.prodMap
 
 theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Prop}
@@ -336,7 +337,7 @@ theorem Tendsto.prodMap {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter
   rw [Tendsto, Prod.map_def, ← prod_map_map_eq]
   exact Filter.prod_mono hf hg
 
-@[deprecated (since := "2025-02-20")]
+@[deprecated (since := "2025-03-10")]
 alias Tendsto.prod_map := Tendsto.prodMap
 
 protected theorem map_prod (m : α × β → γ) (f : Filter α) (g : Filter β) :
@@ -489,7 +490,7 @@ theorem map_prodMap_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β
   rintro ⟨⟨u₁, hu₁, h₁⟩, u₂, hu₂, h₂⟩
   refine ⟨⟨m₁ ⁻¹' u₁, hu₁, fun _ hx => h₁ ?_⟩, ⟨m₂ ⁻¹' u₂, hu₂, fun _ hx => h₂ ?_⟩⟩ <;> convert hx
 
-@[deprecated (since := "2025-02-20")]
+@[deprecated (since := "2025-03-10")]
 alias map_prod_map_coprod_le := map_prodMap_coprod_le
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
@@ -521,7 +522,7 @@ theorem map_prodMap_const_id_principal_coprod_principal {α β ι : Type*} (a : 
     use (a, i')
     simpa using h₁.symm
 
-@[deprecated (since := "2025-02-20")]
+@[deprecated (since := "2025-03-10")]
 alias map_prod_map_const_id_principal_coprod_principal :=
   map_prodMap_const_id_principal_coprod_principal
 
@@ -530,7 +531,7 @@ theorem Tendsto.prodMap_coprod {δ : Type*} {f : α → γ} {g : β → δ} {a :
     Tendsto (Prod.map f g) (a.coprod b) (c.coprod d) :=
   map_prodMap_coprod_le.trans (coprod_mono hf hg)
 
-@[deprecated (since := "2025-02-20")]
+@[deprecated (since := "2025-03-10")]
 alias Tendsto.prod_map_coprod := Tendsto.prodMap_coprod
 
 end Coprod

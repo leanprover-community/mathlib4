@@ -237,7 +237,7 @@ theorem ContDiffOn.neg {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s) :
 
 variable {i : ℕ}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: define `Neg` instance on `ContinuousLinearEquiv`,
+-- TODO: define `Neg` instance on `ContinuousLinearEquiv`,
 -- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
@@ -453,7 +453,7 @@ end SMul
 
 /-! ### Constant scalar multiplication
 
-Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize results in this section.
+TODO: generalize results in this section.
 
 1. It should be possible to assume `[Monoid R] [DistribMulAction R F] [SMulCommClass 𝕜 R F]`.
 2. If `c` is a unit (or `R` is a group), then one can drop `ContDiff*` assumptions in some
@@ -522,7 +522,7 @@ theorem ContDiffWithinAt.prodMap' {s : Set E} {t : Set E'} {f : E → F} {g : E'
   (hf.comp p contDiffWithinAt_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp p contDiffWithinAt_snd (prod_subset_preimage_snd _ _))
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffWithinAt.prod_map' := ContDiffWithinAt.prodMap'
 
 theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' → F'} {x : E} {y : E'}
@@ -530,7 +530,7 @@ theorem ContDiffWithinAt.prodMap {s : Set E} {t : Set E'} {f : E → F} {g : E' 
     ContDiffWithinAt 𝕜 n (Prod.map f g) (s ×ˢ t) (x, y) :=
   ContDiffWithinAt.prodMap' hf hg
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffWithinAt.prod_map := ContDiffWithinAt.prodMap
 
 /-- The product map of two `C^n` functions on a set is `C^n` on the product set. -/
@@ -540,7 +540,7 @@ theorem ContDiffOn.prodMap {E' : Type*} [NormedAddCommGroup E'] [NormedSpace �
   (hf.comp contDiffOn_fst (prod_subset_preimage_fst _ _)).prodMk
     (hg.comp contDiffOn_snd (prod_subset_preimage_snd _ _))
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffOn.prod_map := ContDiffOn.prodMap
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
@@ -550,7 +550,7 @@ theorem ContDiffAt.prodMap {f : E → F} {g : E' → F'} {x : E} {y : E'} (hf : 
   rw [ContDiffAt] at *
   simpa only [univ_prod_univ] using hf.prodMap hg
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffAt.prod_map := ContDiffAt.prodMap
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
@@ -559,7 +559,7 @@ theorem ContDiffAt.prodMap' {f : E → F} {g : E' → F'} {p : E × E'} (hf : Co
     (hg : ContDiffAt 𝕜 n g p.2) : ContDiffAt 𝕜 n (Prod.map f g) p :=
   hf.prodMap hg
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiffAt.prod_map' := ContDiffAt.prodMap'
 
 /-- The product map of two `C^n` functions is `C^n`. -/
@@ -568,19 +568,19 @@ theorem ContDiff.prodMap {f : E → F} {g : E' → F'} (hf : ContDiff 𝕜 n f) 
   rw [contDiff_iff_contDiffAt] at *
   exact fun ⟨x, y⟩ => (hf x).prodMap (hg y)
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias ContDiff.prod_map := ContDiff.prodMap
 
 theorem contDiff_prodMk_left (f₀ : F) : ContDiff 𝕜 n fun e : E => (e, f₀) :=
   contDiff_id.prodMk contDiff_const
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias contDiff_prod_mk_left := contDiff_prodMk_left
 
 theorem contDiff_prodMk_right (e₀ : E) : ContDiff 𝕜 n fun f : F => (e₀, f) :=
   contDiff_const.prodMk contDiff_id
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-09")]
 alias contDiff_prod_mk_right := contDiff_prodMk_right
 
 end prodMap
@@ -825,9 +825,8 @@ over `𝕜`.
 -/
 
 
-variable (𝕜) {𝕜' : Type*} [NontriviallyNormedField 𝕜']
--- Porting note: this couldn't be on the same line as the binder type update of `𝕜`
-variable [NormedAlgebra 𝕜 𝕜']
+variable (𝕜)
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
 variable [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
 variable [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
 variable {p' : E → FormalMultilinearSeries 𝕜' E F}

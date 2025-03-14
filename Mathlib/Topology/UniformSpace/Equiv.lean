@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
 
@@ -88,7 +88,7 @@ theorem ext {h h' : α ≃ᵤ β} (H : ∀ x, h x = h' x) : h = h' :=
   toEquiv_injective <| Equiv.ext H
 
 /-- Identity map as a uniform isomorphism. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 protected def refl (α : Type*) [UniformSpace α] : α ≃ᵤ α where
   uniformContinuous_toFun := uniformContinuous_id
   uniformContinuous_invFun := uniformContinuous_id
@@ -269,14 +269,13 @@ def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
   uniformContinuous_toFun :=
     (uniformContinuous_fst.comp uniformContinuous_fst).prodMk
       ((uniformContinuous_snd.comp uniformContinuous_fst).prodMk uniformContinuous_snd)
-  uniformContinuous_invFun := by -- Porting note: the `rw` was not necessary in Lean 3
-    rw [Equiv.invFun, Equiv.prodAssoc]
-    exact (uniformContinuous_fst.prodMk (uniformContinuous_fst.comp
-    uniformContinuous_snd)).prodMk (uniformContinuous_snd.comp uniformContinuous_snd)
+  uniformContinuous_invFun :=
+    (uniformContinuous_fst.prodMk (uniformContinuous_fst.comp
+      uniformContinuous_snd)).prodMk (uniformContinuous_snd.comp uniformContinuous_snd)
   toEquiv := Equiv.prodAssoc α β γ
 
 /-- `α × {*}` is uniformly isomorphic to `α`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def prodPunit : α × PUnit ≃ᵤ α where
   toEquiv := Equiv.prodPUnit α
   uniformContinuous_toFun := uniformContinuous_fst
@@ -337,14 +336,14 @@ def ulift : ULift.{v, u} α ≃ᵤ α :=
 end
 
 /-- If `ι` has a unique element, then `ι → α` is uniformly isomorphic to `α`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def funUnique (ι α : Type*) [Unique ι] [UniformSpace α] : (ι → α) ≃ᵤ α where
   toEquiv := Equiv.funUnique ι α
   uniformContinuous_toFun := Pi.uniformContinuous_proj _ _
   uniformContinuous_invFun := uniformContinuous_pi.mpr fun _ => uniformContinuous_id
 
 /-- Uniform isomorphism between dependent functions `Π i : Fin 2, α i` and `α 0 × α 1`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i) ≃ᵤ α 0 × α 1 where
   toEquiv := piFinTwoEquiv α
   uniformContinuous_toFun := (Pi.uniformContinuous_proj _ 0).prodMk (Pi.uniformContinuous_proj _ 1)
@@ -352,8 +351,7 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 
 /-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
--- Porting note: made `α` explicit
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
 

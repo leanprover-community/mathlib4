@@ -67,10 +67,10 @@ theorem HasProd.prodMk {f : β → α} {g : β → γ} {a : α} {b : γ} (hf : H
     (hg : HasProd g b) : HasProd (fun x ↦ (⟨f x, g x⟩ : α × γ)) ⟨a, b⟩ := by
   simp [HasProd, ← prod_mk_prod, Filter.Tendsto.prodMk_nhds hf hg]
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias HasSum.prod_mk := HasSum.prodMk
 
-@[to_additive existing HasSum.prodMk, deprecated (since := "2025-02-21")]
+@[to_additive existing HasSum.prodMk, deprecated (since := "2025-03-10")]
 alias HasProd.prod_mk := HasProd.prodMk
 
 end ProdCodomain
@@ -120,7 +120,7 @@ theorem HasProd.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β
   use u.image Sigma.fst, trivial
   intro bs hbs
   simp only [Set.mem_preimage, Finset.le_iff_subset] at hu
-  have : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t with p.1 ∈ bs, f p) atTop
+  have : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ bs, f p) atTop
       (𝓝 <| ∏ b ∈ bs, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
     refine tendsto_finset_prod _ fun b _ ↦ ?_
@@ -139,7 +139,7 @@ theorem HasProd.prod_fiberwise {f : β × γ → α} {g : β → α} {a : α} (h
   HasProd.sigma ((Equiv.sigmaEquivProd β γ).hasProd_iff.2 ha) hf
 
 @[to_additive]
-theorem Multipliable.sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f)
+theorem Multipliable.sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α} (ha : Multipliable f)
     (hf : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) : Multipliable fun b ↦ ∏' c, f ⟨b, c⟩ :=
   (ha.hasProd.sigma fun b ↦ (hf b).hasProd).multipliable
 
@@ -150,12 +150,12 @@ section T3Space
 variable [T3Space α]
 
 @[to_additive]
-theorem HasProd.sigma_of_hasProd {γ : β → Type*} {f : (Σb : β, γ b) → α} {g : β → α}
+theorem HasProd.sigma_of_hasProd {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β → α}
     {a : α} (ha : HasProd g a) (hf : ∀ b, HasProd (fun c ↦ f ⟨b, c⟩) (g b)) (hf' : Multipliable f) :
     HasProd f a := by simpa [(hf'.hasProd.sigma hf).unique ha] using hf'.hasProd
 
 @[to_additive]
-theorem tprod_sigma' {γ : β → Type*} {f : (Σb : β, γ b) → α}
+theorem tprod_sigma' {γ : β → Type*} {f : (Σ b : β, γ b) → α}
     (h₁ : ∀ b, Multipliable fun c ↦ f ⟨b, c⟩) (h₂ : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   (h₂.hasProd.sigma fun b ↦ (h₁ b).hasProd).tprod_eq.symm
@@ -195,7 +195,7 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
   obtain ⟨t0, st0, ht0⟩ : ∃ t0, ∏ i ∈ t0, g i ∈ v ∧ s.image Sigma.fst ⊆ t0 := by
     have A : ∀ᶠ t0 in (atTop : Filter (Finset β)), ∏ i ∈ t0, g i ∈ v := hg (v_open.mem_nhds hv)
     exact (A.and (Ici_mem_atTop _)).exists
-  have L : Tendsto (fun t : Finset (Σb, γ b) ↦ ∏ p ∈ t with p.1 ∈ t0, f p) atTop
+  have L : Tendsto (fun t : Finset (Σ b, γ b) ↦ ∏ p ∈ t with p.1 ∈ t0, f p) atTop
       (𝓝 <| ∏ b ∈ t0, g b) := by
     simp only [← sigma_preimage_mk, prod_sigma]
     refine tendsto_finset_prod _ fun b _ ↦ ?_
@@ -211,13 +211,13 @@ theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g :
 variable [CompleteSpace α]
 
 @[to_additive]
-theorem Multipliable.sigma_factor {γ : β → Type*} {f : (Σb : β, γ b) → α}
+theorem Multipliable.sigma_factor {γ : β → Type*} {f : (Σ b : β, γ b) → α}
     (ha : Multipliable f) (b : β) :
     Multipliable fun c ↦ f ⟨b, c⟩ :=
   ha.comp_injective sigma_mk_injective
 
 @[to_additive]
-theorem Multipliable.sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f) :
+theorem Multipliable.sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} (ha : Multipliable f) :
     Multipliable fun b ↦ ∏' c, f ⟨b, c⟩ :=
   ha.sigma' fun b ↦ ha.sigma_factor b
 
@@ -242,7 +242,7 @@ section CompleteT0Space
 variable [T0Space α]
 
 @[to_additive]
-theorem tprod_sigma {γ : β → Type*} {f : (Σb : β, γ b) → α} (ha : Multipliable f) :
+theorem tprod_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} (ha : Multipliable f) :
     ∏' p, f p = ∏' (b) (c), f ⟨b, c⟩ :=
   tprod_sigma' (fun b ↦ ha.sigma_factor b) ha
 
@@ -315,8 +315,6 @@ theorem hasSum_unop {f : β → αᵐᵒᵖ} {a : αᵐᵒᵖ} :
 theorem summable_op : (Summable fun a ↦ op (f a)) ↔ Summable f :=
   ⟨Summable.unop, Summable.op⟩
 
--- Porting note: This theorem causes a loop easily in Lean 4, so the priority should be `low`.
-@[simp low]
 theorem summable_unop {f : β → αᵐᵒᵖ} : (Summable fun a ↦ unop (f a)) ↔ Summable f :=
   ⟨Summable.op, Summable.unop⟩
 

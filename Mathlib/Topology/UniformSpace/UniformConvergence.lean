@@ -122,7 +122,6 @@ filter `p` if, for any entourage of the diagonal `u`, one has `p`-eventually
 def TendstoUniformly (F : ι → α → β) (f : α → β) (p : Filter ι) :=
   ∀ u ∈ 𝓤 β, ∀ᶠ n in p, ∀ x : α, (f x, F n x) ∈ u
 
--- Porting note: moved from below
 theorem tendstoUniformlyOn_univ : TendstoUniformlyOn F f p univ ↔ TendstoUniformly F f p := by
   simp [TendstoUniformlyOn, TendstoUniformly]
 
@@ -163,8 +162,6 @@ theorem TendstoUniformlyOn.tendsto_at (h : TendstoUniformlyOn F f p s) {x : α} 
 theorem TendstoUniformly.tendsto_at (h : TendstoUniformly F f p) (x : α) :
     Tendsto (fun n => F n x) p <| 𝓝 (f x) :=
   h.tendstoUniformlyOnFilter.tendsto_at le_top
-
--- Porting note: tendstoUniformlyOn_univ moved up
 
 theorem TendstoUniformlyOnFilter.mono_left {p'' : Filter ι} (h : TendstoUniformlyOnFilter F f p p')
     (hp : p'' ≤ p) : TendstoUniformlyOnFilter F f p'' p' := fun u hu =>
@@ -252,7 +249,7 @@ theorem TendstoUniformlyOnFilter.prodMap {ι' α' β' : Type*} [UniformSpace β'
   rw [uniformity_prod_eq_comap_prod, tendsto_comap_iff, ← map_swap4_prod, tendsto_map'_iff]
   simpa using h.prodMap h'
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias TendstoUniformlyOnFilter.prod_map := TendstoUniformlyOnFilter.prodMap
 
 theorem TendstoUniformlyOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' : ι' → α' → β'}
@@ -263,7 +260,7 @@ theorem TendstoUniformlyOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' 
   rw [tendstoUniformlyOn_iff_tendstoUniformlyOnFilter] at h h' ⊢
   simpa only [prod_principal_principal] using h.prodMap h'
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias TendstoUniformlyOn.prod_map := TendstoUniformlyOn.prodMap
 
 theorem TendstoUniformly.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' : ι' → α' → β'}
@@ -272,7 +269,7 @@ theorem TendstoUniformly.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' : 
   rw [← tendstoUniformlyOn_univ, ← univ_prod_univ] at *
   exact h.prodMap h'
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias TendstoUniformly.prod_map := TendstoUniformly.prodMap
 
 theorem TendstoUniformlyOnFilter.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
@@ -282,7 +279,7 @@ theorem TendstoUniformlyOnFilter.prodMk {ι' β' : Type*} [UniformSpace β'] {F'
       (p ×ˢ q) p' :=
   fun u hu => ((h.prodMap h') u hu).diag_of_prod_right
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias TendstoUniformlyOnFilter.prod := TendstoUniformlyOnFilter.prodMk
 
 protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
@@ -292,7 +289,7 @@ protected theorem TendstoUniformlyOn.prodMk {ι' β' : Type*} [UniformSpace β']
       s :=
   (congr_arg _ s.inter_self).mp ((h.prodMap h').comp fun a => (a, a))
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias TendstoUniformlyOn.prod := TendstoUniformlyOn.prodMk
 
 theorem TendstoUniformly.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'} {f' : α → β'}
@@ -300,7 +297,7 @@ theorem TendstoUniformly.prodMk {ι' β' : Type*} [UniformSpace β'] {F' : ι' �
     TendstoUniformly (fun (i : ι × ι') a => (F i.1 a, F' i.2 a)) (fun a => (f a, f' a)) (p ×ˢ p') :=
   (h.prodMap h').comp fun a => (a, a)
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias TendstoUniformly.prod := TendstoUniformly.prodMk
 
 /-- Uniform convergence on a filter `p'` to a constant function is equivalent to convergence in
@@ -489,7 +486,7 @@ theorem UniformCauchySeqOn.prodMap {ι' α' β' : Type*} [UniformSpace β'] {F' 
   intro x hx a b ha hb
   exact hvw ⟨_, mk_mem_prod (hx.1 a ha) (hx.2 b hb), rfl⟩
 
-@[deprecated (since := "2025-02-22")]
+@[deprecated (since := "2025-03-10")]
 alias UniformCauchySeqOn.prod_map := UniformCauchySeqOn.prodMap
 
 theorem UniformCauchySeqOn.prod {ι' β' : Type*} [UniformSpace β'] {F' : ι' → α → β'}
@@ -628,7 +625,6 @@ theorem TendstoLocallyUniformlyOn.mono (h : TendstoLocallyUniformlyOn F f p s) (
   rcases h u hu x (h' hx) with ⟨t, ht, H⟩
   exact ⟨t, nhdsWithin_mono x h' ht, H.mono fun n => id⟩
 
--- Porting note: generalized from `Type` to `Sort`
 theorem tendstoLocallyUniformlyOn_iUnion {ι' : Sort*} {S : ι' → Set α} (hS : ∀ i, IsOpen (S i))
     (h : ∀ i, TendstoLocallyUniformlyOn F f p (S i)) :
     TendstoLocallyUniformlyOn F f p (⋃ i, S i) :=
@@ -652,8 +648,6 @@ theorem TendstoLocallyUniformlyOn.union {s₁ s₂ : Set α} (hs₁ : IsOpen s�
     TendstoLocallyUniformlyOn F f p (s₁ ∪ s₂) := by
   rw [← sUnion_pair]
   refine tendstoLocallyUniformlyOn_sUnion _ ?_ ?_ <;> simp [*]
-
--- Porting note: tendstoLocallyUniformlyOn_univ moved up
 
 protected theorem TendstoLocallyUniformly.tendstoLocallyUniformlyOn
     (h : TendstoLocallyUniformly F f p) : TendstoLocallyUniformlyOn F f p s :=

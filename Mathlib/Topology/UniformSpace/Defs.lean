@@ -182,7 +182,7 @@ theorem prodMk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) �
     (a, b) ∈ s ○ t :=
   ⟨c, h₁, h₂⟩
 
-@[deprecated (since := "2025-02-21")]
+@[deprecated (since := "2025-03-10")]
 alias prod_mk_mem_compRel := prodMk_mem_compRel
 
 @[simp]
@@ -330,7 +330,7 @@ def uniformity (α : Type u) [UniformSpace α] : Filter (α × α) :=
 /-- Notation for the uniformity filter with respect to a non-standard `UniformSpace` instance. -/
 scoped[Uniformity] notation "𝓤[" u "]" => @uniformity _ u
 
-@[inherit_doc] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should we drop the `uniformity` def?
+@[inherit_doc]
 scoped[Uniformity] notation "𝓤" => uniformity
 
 /-- Construct a `UniformSpace` from a `u : UniformSpace.Core` and a `TopologicalSpace` structure

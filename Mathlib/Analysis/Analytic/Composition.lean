@@ -612,8 +612,6 @@ theorem compChangeOfVariables_sum {α : Type*} [AddCommMonoid α] (m M N : ℕ)
   -- 1 - show that the image belongs to `compPartialSumTarget m N N`
   · rintro ⟨k, blocks_fun⟩ H
     rw [mem_compPartialSumSource_iff] at H
-    -- Porting note: added
-    simp only at H
     simp only [mem_compPartialSumTarget_iff, Composition.length, Composition.blocks, H.left,
       map_ofFn, length_ofFn, true_and, compChangeOfVariables]
     intro j
@@ -1079,7 +1077,6 @@ theorem sizeUpTo_sizeUpTo_add (a : Composition n) (b : Composition a.length) {i 
     sizeUpTo a (sizeUpTo b i + j) =
       sizeUpTo (a.gather b) i +
         sizeUpTo (sigmaCompositionAux a b ⟨i, (length_gather a b).symm ▸ hi⟩) j := by
-  -- Porting note: `induction'` left a spurious `hj` in the context
   induction j with
   | zero =>
     show

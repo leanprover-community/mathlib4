@@ -654,7 +654,7 @@ theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
     (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := by
   obtain ⟨a, ha⟩ := hs.exists_eq_add_of_fderiv_eq hs' hf hg hf'
-  obtain rfl := self_eq_add_right.mp (hfgx.symm.trans (ha hx))
+  obtain rfl := left_eq_add.mp (hfgx.symm.trans (ha hx))
   simpa using ha
 
 theorem _root_.eq_of_fderiv_eq
