@@ -139,24 +139,27 @@ theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 ## Continuous extension and conversion to normal form
 -/
 
+variable (f) (x) in
 /-- Convert a meromorphic function to normal form at `x` by changing its value at `x`. -/
-noncomputable def MeromorphicAt.toNF (hf : MeromorphicAt f x) :
+noncomputable def Function.toMeromorphicNFAt :
     𝕜 → E := by
-  classical -- do not complain about decidability issues in Function.update
-  apply Function.update f x
-  by_cases h₁f : hf.order = (0 : ℤ)
-  · rw [hf.order_eq_int_iff] at h₁f
-    exact (Classical.choose h₁f) x
+  by_cases hf : MeromorphicAt f x
+  · classical -- do not complain about decidability issues in Function.update
+    apply Function.update f x
+    by_cases h₁f : hf.order = (0 : ℤ)
+    · rw [hf.order_eq_int_iff] at h₁f
+      exact (Classical.choose h₁f) x
+    · exact 0
   · exact 0
 
 /-- Conversion to normal form at `x` by changes the value only at x. -/
 lemma MeromorphicAt.eqOn_compl_singleton_toNF (hf : MeromorphicAt f x) :
-    Set.EqOn f hf.toNF {x}ᶜ :=
-  fun _ _ ↦ by simp_all [MeromorphicAt.toNF]
+    Set.EqOn f (f.toMeromorphicNFAt x) {x}ᶜ :=
+  fun _ _ ↦ by simp_all [Function.toMeromorphicNFAt]
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.toNF_id_on_nhdNE (hf : MeromorphicAt f x) :
-    f =ᶠ[𝓝[≠] x] hf.toNF :=
+    f =ᶠ[𝓝[≠] x] f.toMeromorphicNFAt x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toNF hz)
 
 -- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood.
@@ -169,12 +172,12 @@ private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E
 
 /-- After conversion to normal form at `x`, the function has normal form. -/
 theorem MeromorphicAt.MeromorphicNFAt_toNF (hf : MeromorphicAt f x) :
-    MeromorphicNFAt hf.toNF x := by
+    MeromorphicNFAt (f.toMeromorphicNFAt x) x := by
   by_cases h₂f : hf.order = ⊤
-  · have : hf.toNF =ᶠ[𝓝 x] 0 := by
+  · have : f.toMeromorphicNFAt x =ᶠ[𝓝 x] 0 := by
       apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
       · exact hf.toNF_id_on_nhdNE.symm.trans (hf.order_eq_top_iff.1 h₂f)
-      · simp [h₂f, MeromorphicAt.toNF]
+      · simp [h₂f, Function.toMeromorphicNFAt, hf]
     apply AnalyticAt.MeromorphicNFAt
     rw [analyticAt_congr this]
     exact analyticAt_const
@@ -183,8 +186,8 @@ theorem MeromorphicAt.MeromorphicNFAt_toNF (hf : MeromorphicAt f x) :
     right
     use n, g, h₁g, h₂g
     apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.toNF_id_on_nhdNE.symm.trans h₃g)
-    simp only [MeromorphicAt.toNF, ne_eq, Function.update_self, Pi.smul_apply',
-      Pi.pow_apply, sub_self, ← hn, WithTop.coe_eq_coe]
+    simp only [Function.toMeromorphicNFAt, hf, ↓reduceDIte, ← hn, WithTop.coe_zero,
+      WithTop.coe_eq_zero, ne_eq, Function.update_self, sub_self]
     split_ifs with h₃f
     · obtain ⟨h₁G, _, h₃G⟩ := Classical.choose_spec ((hf.order_eq_int_iff 0).1 (h₃f ▸ hn.symm))
       apply Filter.EventuallyEq.eq_of_nhds
@@ -195,11 +198,12 @@ theorem MeromorphicAt.MeromorphicNFAt_toNF (hf : MeromorphicAt f x) :
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
-    f = hf.meromorphicAt.toNF := by
+    f = f.toMeromorphicNFAt x := by
   funext z
   by_cases hz : z = x
   · rw [hz]
-    simp only [MeromorphicAt.toNF, WithTop.coe_zero, ne_eq, Function.update_self]
+    simp only [Function.toMeromorphicNFAt, hf.meromorphicAt, WithTop.coe_zero, ne_eq,
+      Function.update_self]
     have h₀f := hf
     rcases hf with h₁f | h₁f
     · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)]
@@ -224,8 +228,10 @@ theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
           rw [hn] at h₃g
           simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂
           exact (h₃g.filter_mono nhdsWithin_le_nhds).symm.trans h₂
+        simp only [Function.update_self]
         exact Filter.EventuallyEq.eq_of_nhds this
-      · simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte, smul_eq_zero]
+      · simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte, smul_eq_zero,
+          Function.update_self, smul_eq_zero]
         left
         apply zero_zpow n
         by_contra hn
