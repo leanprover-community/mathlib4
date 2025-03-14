@@ -150,14 +150,14 @@ noncomputable def MeromorphicAt.toNF (hf : MeromorphicAt f x) :
   · exact 0
 
 /-- Conversion to normal form at `x` by changes the value only at x. -/
-lemma MeromorphicAt.toNF_id_on_complement (hf : MeromorphicAt f x) :
+lemma MeromorphicAt.eqOn_compl_singleton_toNF (hf : MeromorphicAt f x) :
     Set.EqOn f hf.toNF {x}ᶜ :=
   fun _ _ ↦ by simp_all [MeromorphicAt.toNF]
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.toNF_id_on_nhdNE (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] hf.toNF :=
-  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.toNF_id_on_complement hz)
+  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toNF hz)
 
 -- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood.
 private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E} {z₀ : 𝕜}
@@ -231,4 +231,4 @@ theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
         by_contra hn
         rw [hn] at this
         tauto
-  · exact (MeromorphicNFAt.meromorphicAt hf).toNF_id_on_complement hz
+  · exact hf.meromorphicAt.eqOn_compl_singleton_toNF hz
