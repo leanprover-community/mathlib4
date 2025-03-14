@@ -58,12 +58,14 @@ instance epi_as_hom''_mkQ (U : Submodule R X) : Epi (ModuleCat.ofHom U.mkQ) :=
 
 instance forget_preservesEpimorphisms : (forget (ModuleCat.{v} R)).PreservesEpimorphisms where
     preserves f hf := by
-      erw [CategoryTheory.epi_iff_surjective, ← epi_iff_surjective]
+      rw [CategoryTheory.epi_iff_surjective, ConcreteCategory.forget_map_eq_coe,
+        ← epi_iff_surjective]
       exact hf
 
 instance forget_preservesMonomorphisms : (forget (ModuleCat.{v} R)).PreservesMonomorphisms where
     preserves f hf := by
-      erw [CategoryTheory.mono_iff_injective, ← mono_iff_injective]
+      rw [CategoryTheory.mono_iff_injective, ConcreteCategory.forget_map_eq_coe,
+        ← mono_iff_injective]
       exact hf
 
 end ModuleCat

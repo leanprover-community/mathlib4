@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu-Ming Zhang
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Matrix.Diagonal
 
@@ -46,8 +46,7 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Field Star
 
 universe u u' v w
 
@@ -141,11 +140,13 @@ theorem dotProduct_add : u ⬝ᵥ (v + w) = u ⬝ᵥ v + u ⬝ᵥ w := by
 @[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_add := dotProduct_add
 
 @[simp]
-theorem sum_elim_dotProduct_sum_elim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ v + x ⬝ᵥ y := by
+theorem sumElim_dotProduct_sumElim : Sum.elim u x ⬝ᵥ Sum.elim v y = u ⬝ᵥ v + x ⬝ᵥ y := by
   simp [dotProduct]
 
 @[deprecated (since := "2024-12-12")]
-protected alias Matrix.sum_elim_dotProduct_sum_elim := sum_elim_dotProduct_sum_elim
+protected alias Matrix.sum_elim_dotProduct_sum_elim := sumElim_dotProduct_sumElim
+@[deprecated (since := "2025-02-21")]
+alias sum_elim_dotProduct_sum_elim := sumElim_dotProduct_sumElim
 
 /-- Permuting a vector on the left of a dot product can be transferred to the right. -/
 @[simp]
@@ -643,6 +644,13 @@ theorem mul_apply_eq_vecMul [Fintype n] (A : Matrix m n α) (B : Matrix n o α) 
     (A * B) i = A i ᵥ* B :=
   rfl
 
+theorem vecMul_eq_sum [Fintype m] (v : m → α) (M : Matrix m n α) : v ᵥ* M = ∑ i, v i • M i :=
+  (Finset.sum_fn ..).symm
+
+theorem mulVec_eq_sum [Fintype n] (v : n → α) (M : Matrix m n α) :
+    M *ᵥ v = ∑ i, MulOpposite.op (v i) • Mᵀ i :=
+  (Finset.sum_fn ..).symm
+
 theorem mulVec_diagonal [Fintype m] [DecidableEq m] (v w : m → α) (x : m) :
     (diagonal v *ᵥ w) x = v x * w x :=
   diagonal_dotProduct v w x
@@ -716,12 +724,12 @@ theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [Distri
 
 @[simp]
 theorem mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (j : n) (x : R) : M *ᵥ Pi.single j x = fun i => M i j * x :=
+    (j : n) (x : R) : M *ᵥ Pi.single j x = MulOpposite.op x • Mᵀ j :=
   funext fun _ => dotProduct_single _ _ _
 
 @[simp]
 theorem single_vecMul [Fintype m] [DecidableEq m] [NonUnitalNonAssocSemiring R] (M : Matrix m n R)
-    (i : m) (x : R) : Pi.single i x ᵥ* M = fun j => x * M i j :=
+    (i : m) (x : R) : Pi.single i x ᵥ* M = x • M i :=
   funext fun _ => single_dotProduct _ _ _
 
 theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
@@ -730,16 +738,14 @@ theorem mulVec_single_one [Fintype n] [DecidableEq n] [NonAssocSemiring R]
 
 theorem single_one_vecMul [Fintype m] [DecidableEq m] [NonAssocSemiring R]
     (i : m) (M : Matrix m n R) :
-    Pi.single i 1 ᵥ* M = M i := by simp
+    Pi.single i 1 ᵥ* M = M i := by ext; simp
 
--- @[simp] -- Porting note: not in simpNF
 theorem diagonal_mulVec_single [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : diagonal v *ᵥ Pi.single j x = Pi.single j (v j * x) := by
   ext i
   rw [mulVec_diagonal]
   exact Pi.apply_single (fun i x => v i * x) (fun i => mul_zero _) j x i
 
--- @[simp] -- Porting note: not in simpNF
 theorem single_vecMul_diagonal [Fintype n] [DecidableEq n] [NonUnitalNonAssocSemiring R] (v : n → R)
     (j : n) (x : R) : (Pi.single j x) ᵥ* (diagonal v) = Pi.single j (x * v j) := by
   ext i
@@ -777,11 +783,27 @@ section NonAssocSemiring
 
 variable [NonAssocSemiring α]
 
-theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = fun i => ∑ j, A i j := by
+theorem mulVec_one [Fintype n] (A : Matrix m n α) : A *ᵥ 1 = ∑ j, Aᵀ j := by
   ext; simp [mulVec, dotProduct]
 
-theorem vec_one_mul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = fun j => ∑ i, A i j := by
+theorem one_vecMul [Fintype m] (A : Matrix m n α) : 1 ᵥ* A = ∑ i, A i := by
   ext; simp [vecMul, dotProduct]
+
+@[deprecated (since := "2025-01-26")] alias vec_one_mul := one_vecMul
+
+lemma ext_of_mulVec_single [DecidableEq n] [Fintype n] {M N : Matrix m n α}
+    (h : ∀ i, M *ᵥ Pi.single i 1 = N *ᵥ Pi.single i 1) :
+    M = N := by
+  ext i j
+  simp_rw [mulVec_single_one] at h
+  exact congrFun (h j) i
+
+lemma ext_of_single_vecMul [DecidableEq m] [Fintype m] {M N : Matrix m n α}
+    (h : ∀ i, Pi.single i 1 ᵥ* M = Pi.single i 1 ᵥ* N) :
+    M = N := by
+  ext i j
+  simp_rw [single_one_vecMul] at h
+  exact congrFun (h i) j
 
 variable [Fintype m] [Fintype n] [DecidableEq m]
 
@@ -814,16 +836,14 @@ theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x :
   vecMul_diagonal_const _ _
 
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
-    OfNat.ofNat (no_index x) *ᵥ v = (OfNat.ofNat x : α) • v :=
+    ofNat(x) *ᵥ v = (OfNat.ofNat x : α) • v :=
   natCast_mulVec _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
-    v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
+    v ᵥ* ofNat(x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
   vecMul_natCast _ _
 
 end NonAssocSemiring
@@ -891,6 +911,24 @@ theorem vecMul_mulVec [Fintype m] [Fintype n] (A : Matrix m n α) (B : Matrix m 
     (A *ᵥ x) ᵥ* B = x ᵥ* (Aᵀ * B) := by rw [← vecMul_vecMul, vecMul_transpose]
 
 end NonUnitalCommSemiring
+
+section Semiring
+
+variable [Semiring R]
+
+lemma mulVec_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
+    (ha : IsUnit A) : Function.Injective A.mulVec := by
+  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
+  intro x y hxy
+  simpa [hBr] using congrArg B.mulVec hxy
+
+lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
+    (ha : IsUnit A) : Function.Injective A.vecMul := by
+  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
+  intro x y hxy
+  simpa [hBl] using congrArg B.vecMul hxy
+
+end Semiring
 
 section CommSemiring
 

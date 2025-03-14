@@ -377,7 +377,7 @@ theorem submatrix_cons_row (A : Matrix m' n' α) (i : m') (row : Fin m → m') (
 @[simp]
 theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' → α) (f : o' → n')
     (i : Fin m.succ) : (A.updateRow i v).submatrix i.succAbove f = A.submatrix i.succAbove f :=
-  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) : _)
+  ext fun r s => (congr_fun (updateRow_ne (Fin.succAbove_ne i r) : _ = A _) (f s) :)
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
@@ -418,16 +418,14 @@ theorem natCast_fin_three (n : ℕ) :
   ext i j
   fin_cases i <;> fin_cases j <;> rfl
 
--- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_two (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 2) (Fin 2) α) =
-      !![OfNat.ofNat n, 0; 0, OfNat.ofNat n] :=
+    (ofNat(n) : Matrix (Fin 2) (Fin 2) α) =
+      !![ofNat(n), 0; 0, ofNat(n)] :=
   natCast_fin_two _
 
--- See note [no_index around OfNat.ofNat]
 theorem ofNat_fin_three (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : Matrix (Fin 3) (Fin 3) α) =
-      !![OfNat.ofNat n, 0, 0; 0, OfNat.ofNat n, 0; 0, 0, OfNat.ofNat n] :=
+    (ofNat(n) : Matrix (Fin 3) (Fin 3) α) =
+      !![ofNat(n), 0, 0; 0, ofNat(n), 0; 0, 0, ofNat(n)] :=
   natCast_fin_three _
 
 end AddMonoidWithOne

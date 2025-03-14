@@ -16,6 +16,7 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
   occurs in the `normalizedFactors`.
 -/
 
+assert_not_exists Field
 
 variable {α : Type*}
 
@@ -127,10 +128,5 @@ theorem count_normalizedFactors_eq' [DecidableEq R] {p x : R} (hp : p = 0 ∨ Ir
   · exact count_normalizedFactors_eq hp hnorm hle hlt
 
 end multiplicity
-
-/-- Deprecated. Use `WfDvdMonoid.max_power_factor` instead. -/
-@[deprecated WfDvdMonoid.max_power_factor (since := "2024-03-01")]
-theorem max_power_factor {a₀ x : R} (h : a₀ ≠ 0) (hx : Irreducible x) :
-    ∃ n : ℕ, ∃ a : R, ¬x ∣ a ∧ a₀ = x ^ n * a := WfDvdMonoid.max_power_factor h hx
 
 end UniqueFactorizationMonoid

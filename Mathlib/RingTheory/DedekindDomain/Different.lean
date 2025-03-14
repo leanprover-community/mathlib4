@@ -120,7 +120,7 @@ variable [IsFractionRing A K]
 
 variable (A K) in
 lemma map_equiv_traceDual [IsDomain A] [IsFractionRing B L] [IsDomain B]
-    [NoZeroSMulDivisors A B] (I : Submodule B (FractionRing B)) :
+    [FaithfulSMul A B] (I : Submodule B (FractionRing B)) :
     (traceDual A (FractionRing A) I).map (FractionRing.algEquiv B L) =
       traceDual A K (I.map (FractionRing.algEquiv B L)) := by
   show Submodule.map (FractionRing.algEquiv B L).toLinearEquiv.toLinearMap _ =
@@ -462,7 +462,7 @@ open Submodule
 
 lemma differentialIdeal_le_fractionalIdeal_iff
     {I : FractionalIdeal B⁰ L} (hI : I ≠ 0) [NoZeroSMulDivisors A B] :
-    differentIdeal A B ≤ I ↔ (((I⁻¹ : _) : Submodule B L).restrictScalars A).map
+    differentIdeal A B ≤ I ↔ (((I⁻¹ :) : Submodule B L).restrictScalars A).map
       ((Algebra.trace K L).restrictScalars A) ≤ 1 := by
   rw [coeIdeal_differentIdeal A K L B, FractionalIdeal.inv_le_comm (by simp) hI,
     ← FractionalIdeal.coe_le_coe, FractionalIdeal.coe_dual_one]
@@ -580,7 +580,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
     (hP : P ^ e ∣ p.map (algebraMap A B)) : P ^ (e - 1) ∣ differentIdeal A B := by
   obtain ⟨a, ha⟩ := (pow_dvd_pow _ (Nat.sub_le e 1)).trans hP
   have hp' := (Ideal.map_eq_bot_iff_of_injective
-    (NoZeroSMulDivisors.algebraMap_injective A B)).not.mpr hp
+    (FaithfulSMul.algebraMap_injective A B)).not.mpr hp
   have habot : a ≠ ⊥ := fun ha' ↦ hp' (by simpa [ha'] using ha)
   have hPbot : P ≠ ⊥ := by
     rintro rfl; apply hp'
@@ -594,7 +594,7 @@ lemma pow_sub_one_dvd_differentIdeal_aux [IsFractionRing B L] [IsDedekindDomain 
     rw [pow_add, hb, mul_assoc, mul_right_inj' (pow_ne_zero _ hPbot), pow_one, mul_comm] at ha
     exact ⟨_, ha.symm⟩
   suffices ∀ x ∈ a, intTrace A B x ∈ p by
-    have hP : ((P ^ (e - 1) : _)⁻¹ : FractionalIdeal B⁰ L) = a / p.map (algebraMap A B) := by
+    have hP : ((P ^ (e - 1) :)⁻¹ : FractionalIdeal B⁰ L) = a / p.map (algebraMap A B) := by
       apply inv_involutive.injective
       simp only [inv_inv, ha, FractionalIdeal.coeIdeal_mul, inv_div, ne_eq,
           FractionalIdeal.coeIdeal_eq_zero, mul_div_assoc]

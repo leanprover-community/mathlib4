@@ -169,7 +169,6 @@ lemma biUnion_image_sup_left : s.biUnion (fun a ↦ t.image (a ⊔ ·)) = s ⊻ 
 
 lemma biUnion_image_sup_right : t.biUnion (fun b ↦ s.image (· ⊔ b)) = s ⊻ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_sup_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊔ ·)) = s ⊻ t :=
   image_uncurry_product _ _ _
 
@@ -314,7 +313,6 @@ lemma biUnion_image_inf_left : s.biUnion (fun a ↦ t.image (a ⊓ ·)) = s ⊼ 
 
 lemma biUnion_image_inf_right : t.biUnion (fun b ↦ s.image (· ⊓ b)) = s ⊼ t := biUnion_image_right
 
--- Porting note: simpNF linter doesn't like @[simp]
 theorem image_inf_product (s t : Finset α) : (s ×ˢ t).image (uncurry (· ⊓ ·)) = s ⊼ t :=
   image_uncurry_product _ _ _
 
@@ -469,14 +467,7 @@ theorem disjSups_inter_subset_right : s ○ (t₁ ∩ t₂) ⊆ s ○ t₁ ∩ s
 variable (s t)
 
 theorem disjSups_comm : s ○ t = t ○ s := by
-  ext
-  rw [mem_disjSups, mem_disjSups]
-  -- Porting note: `exists₂_comm` no longer works with `∃ _ ∈ _, ∃ _ ∈ _, _`
-  constructor <;>
-  · rintro ⟨a, ha, b, hb, hd, hs⟩
-    rw [disjoint_comm] at hd
-    rw [sup_comm] at hs
-    exact ⟨b, hb, a, ha, hd, hs⟩
+  aesop (add simp disjoint_comm, simp sup_comm)
 
 instance : @Std.Commutative (Finset α) (· ○ ·) := ⟨disjSups_comm⟩
 

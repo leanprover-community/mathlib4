@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Gabriel Ebner
 -/
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Cast of integers (additional theorems)
@@ -72,7 +73,7 @@ theorem cast_one : ((1 : ℤ) : R) = 1 := by
 
 @[simp, norm_cast]
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
-  | (0 : ℕ) => by erw [cast_zero, neg_zero]
+  | (0 : ℕ) => by simp
   | (n + 1 : ℕ) => by erw [cast_natCast, cast_negSucc]
   | -[n+1] => by erw [cast_natCast, cast_negSucc, neg_neg]
 -- type had `HasLiftT`

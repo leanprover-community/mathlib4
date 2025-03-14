@@ -5,12 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
-import Mathlib.Algebra.CharP.Two
-import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.Data.ZMod.Basic
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 import Mathlib.LinearAlgebra.CliffordAlgebra.Contraction
-import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.MvPolynomial.Ideal
 
@@ -139,7 +134,7 @@ theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 
 Our source uses $αx - βy - γz$, though since this is characteristic two we just use $αx + βy + γz$.
- -/
+-/
 @[simps!]
 def lFunc : (Fin 3 → K) →ₗ[K] K :=
   letI proj : Fin 3 → (Fin 3 → K) →ₗ[K] K := LinearMap.proj

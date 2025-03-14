@@ -50,7 +50,6 @@ free commutative ring, free ring
 
 noncomputable section
 
-open scoped Classical
 open Polynomial
 
 universe u v
@@ -60,8 +59,9 @@ variable (α : Type u)
 /-- `FreeCommRing α` is the free commutative ring on the type `α`. -/
 def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
+-- The `CommRing, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: two instances below couldn't be derived
 instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
   delta FreeCommRing; infer_instance
 
@@ -224,6 +224,7 @@ end Restriction
 theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   suffices IsSupported (of p) s → p ∈ s from ⟨this, fun hps => Subring.subset_closure ⟨p, hps, rfl⟩⟩
   fun hps : IsSupported (of p) s => by
+  classical
   haveI := Classical.decPred s
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by

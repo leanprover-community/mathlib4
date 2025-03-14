@@ -681,7 +681,7 @@ variable [HasKernels C] [HasCokernels C] [HasKernels D] [HasCokernels D]
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ cyclesFunctor D ≅ cyclesFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def cyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.cyclesFunctor D ≅
       ShortComplex.cyclesFunctor C ⋙ F :=
@@ -690,7 +690,7 @@ noncomputable def cyclesFunctorIso [F.PreservesHomology] :
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ leftHomologyFunctor D ≅ leftHomologyFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.leftHomologyFunctor D ≅
       ShortComplex.leftHomologyFunctor C ⋙ F :=
@@ -699,7 +699,7 @@ noncomputable def leftHomologyFunctorIso [F.PreservesHomology] :
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ opcyclesFunctor D ≅ opcyclesFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.opcyclesFunctor D ≅
       ShortComplex.opcyclesFunctor C ⋙ F :=
@@ -708,7 +708,7 @@ noncomputable def opcyclesFunctorIso [F.PreservesHomology] :
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ rightHomologyFunctor D ≅ rightHomologyFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def rightHomologyFunctorIso [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.rightHomologyFunctor D ≅
       ShortComplex.rightHomologyFunctor C ⋙ F :=
@@ -719,7 +719,7 @@ end
 
 /-- The natural isomorphism
 `F.mapShortComplex ⋙ homologyFunctor D ≅ homologyFunctor C ⋙ F`
-for a functor `F : C ⥤ D` which preserves homology. --/
+for a functor `F : C ⥤ D` which preserves homology. -/
 noncomputable def homologyFunctorIso
     [CategoryWithHomology C] [CategoryWithHomology D] [F.PreservesHomology] :
     F.mapShortComplex ⋙ ShortComplex.homologyFunctor D ≅
@@ -834,7 +834,7 @@ lemma preservesLeftHomology_of_zero_g (hg : S.g = 0)
     f' := by
       have := h.isIso_i hg
       let e : parallelPair h.f' 0 ≅ parallelPair S.f 0 :=
-        parallelPair.ext (Iso.refl _) (asIso h.i) (by aesop_cat) (by aesop_cat)
+        parallelPair.ext (Iso.refl _) (asIso h.i) (by simp) (by simp)
       exact Limits.preservesColimit_of_iso_diagram F e.symm}⟩
 
 /-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
@@ -848,7 +848,7 @@ lemma preservesRightHomology_of_zero_f (hf : S.f = 0)
     g' := by
       have := h.isIso_p hf
       let e : parallelPair S.g 0 ≅ parallelPair h.g' 0 :=
-        parallelPair.ext (asIso h.p) (Iso.refl _) (by aesop_cat) (by aesop_cat)
+        parallelPair.ext (asIso h.p) (Iso.refl _) (by simp) (by simp)
       exact Limits.preservesLimit_of_iso_diagram F e }⟩
 
 end Functor

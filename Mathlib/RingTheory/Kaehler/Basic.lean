@@ -207,8 +207,8 @@ def KaehlerDifferential.D : Derivation R S (Ω[S⁄R]) :=
       -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]),
         ← LinearMap.map_smul_of_tower (M₂ := Ω[S⁄R]), ← map_add, Ideal.toCotangent_eq, pow_two]
-      convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a : _)
-        (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b : _) using 1
+      convert Submodule.mul_mem_mul (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R a :)
+        (KaehlerDifferential.one_smul_sub_smul_one_mem_ideal R b :) using 1
       simp only [AddSubgroupClass.coe_sub, Submodule.coe_add, Submodule.coe_mk,
         TensorProduct.tmul_mul_tmul, mul_sub, sub_mul, mul_comm b, Submodule.coe_smul_of_tower,
         smul_sub, TensorProduct.smul_tmul', smul_eq_mul, mul_one]
@@ -565,10 +565,6 @@ theorem KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination :
   conv_rhs => rw [← Finsupp.smul_single_one a b, LinearMap.map_smul]
   simp [KaehlerDifferential.derivationQuotKerTotal_apply]
 
-@[deprecated (since := "2024-08-29")] alias
-  KaehlerDifferential.derivationQuotKerTotal_lift_comp_total :=
-  KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination
-
 theorem KaehlerDifferential.kerTotal_eq :
     LinearMap.ker (Finsupp.linearCombination S (KaehlerDifferential.D R S)) =
       KaehlerDifferential.kerTotal R S := by
@@ -583,9 +579,6 @@ theorem KaehlerDifferential.linearCombination_surjective :
     Function.Surjective (Finsupp.linearCombination S (KaehlerDifferential.D R S)) := by
   rw [← LinearMap.range_eq_top, range_linearCombination, span_range_derivation]
 
-@[deprecated (since := "2024-08-29")] alias KaehlerDifferential.total_surjective :=
-  KaehlerDifferential.linearCombination_surjective
-
 /-- `Ω[S⁄R]` is isomorphic to `S` copies of `S` with kernel `KaehlerDifferential.kerTotal`. -/
 @[simps!]
 noncomputable def KaehlerDifferential.quotKerTotalEquiv :
@@ -599,7 +592,7 @@ noncomputable def KaehlerDifferential.quotKerTotalEquiv :
       obtain ⟨x, rfl⟩ := Submodule.mkQ_surjective _ x
       exact
         LinearMap.congr_fun
-          (KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination R S : _) x
+          (KaehlerDifferential.derivationQuotKerTotal_lift_comp_linearCombination R S :) x
     right_inv := by
       intro x
       obtain ⟨x, rfl⟩ := KaehlerDifferential.linearCombination_surjective R S x

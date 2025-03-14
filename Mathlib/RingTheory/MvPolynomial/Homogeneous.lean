@@ -183,9 +183,6 @@ lemma _root_.MvPolynomial.isHomogeneous_C_mul_X (r : R) (i : σ) :
     (C r * X i).IsHomogeneous 1 :=
   (isHomogeneous_X _ _).C_mul _
 
-@[deprecated (since := "2024-03-21")]
-alias _root_.MvPolynomial.C_mul_X := _root_.MvPolynomial.isHomogeneous_C_mul_X
-
 lemma pow (hφ : φ.IsHomogeneous m) (n : ℕ) : (φ ^ n).IsHomogeneous (m * n) := by
   rw [show φ ^ n = ∏ _i ∈ Finset.range n, φ by simp]
   rw [show m * n = ∑ _i ∈ Finset.range n, m by simp [mul_comm]]
@@ -447,7 +444,7 @@ open Finset Finsupp
 
 variable (n : ℕ) (φ ψ : MvPolynomial σ R)
 
-theorem homogeneousComponent_mem  :
+theorem homogeneousComponent_mem :
     homogeneousComponent n φ ∈ homogeneousSubmodule σ R n :=
   weightedHomogeneousComponent_mem _ φ n
 

@@ -60,7 +60,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by
-  apply @tsub_le_self _ _ _ _ (1 : ℝ≥0∞)
+  apply tsub_le_self (α := ℝ≥0∞)
 
 theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
     thickenedIndicatorAux δ E x < ∞ :=

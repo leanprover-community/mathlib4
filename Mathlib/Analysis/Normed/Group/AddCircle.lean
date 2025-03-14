@@ -133,7 +133,6 @@ theorem norm_half_period_eq : ‖(↑(p / 2) : AddCircle p)‖ = |p| / 2 := by
 theorem norm_coe_eq_abs_iff {x : ℝ} (hp : p ≠ 0) : ‖(x : AddCircle p)‖ = |x| ↔ |x| ≤ |p| / 2 := by
   refine ⟨fun hx => hx ▸ norm_le_half_period p hp, fun hx => ?_⟩
   suffices ∀ p : ℝ, 0 < p → |x| ≤ p / 2 → ‖(x : AddCircle p)‖ = |x| by
-    -- Porting note: replaced `lt_trichotomy` which had trouble substituting `p = 0`.
     rcases hp.symm.lt_or_lt with (hp | hp)
     · rw [abs_eq_self.mpr hp.le] at hx
       exact this p hp hx
@@ -165,9 +164,7 @@ theorem closedBall_eq_univ_of_half_period_le (hp : p ≠ 0) (x : AddCircle p) {�
 theorem coe_real_preimage_closedBall_period_zero (x ε : ℝ) :
     (↑) ⁻¹' closedBall (x : AddCircle (0 : ℝ)) ε = closedBall x ε := by
   ext y
-  -- Porting note: squeezed the simp
-  simp only [Set.mem_preimage, dist_eq_norm, AddCircle.norm_eq_of_zero, iff_self,
-    ← QuotientAddGroup.mk_sub, Metric.mem_closedBall, Real.norm_eq_abs]
+  simp [dist_eq_norm, ← QuotientAddGroup.mk_sub]
 
 theorem coe_real_preimage_closedBall_eq_iUnion (x ε : ℝ) :
     (↑) ⁻¹' closedBall (x : AddCircle p) ε = ⋃ z : ℤ, closedBall (x + z • p) ε := by
@@ -191,11 +188,7 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
       simp only [not_lt.mpr hε, coe_real_preimage_closedBall_period_zero, abs_zero, zero_div,
         if_false, inter_eq_right]
       exact hs.trans (closedBall_subset_closedBall <| by simp [hε])
-    -- Porting note: was
-    -- simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
-    simp only [not_lt.mpr hε, ite_false, inter_eq_right]
-    rw [closedBall_eq_univ_of_half_period_le p hp (↑x : ℝ ⧸ zmultiples p) hε, preimage_univ]
-    apply subset_univ
+    simp [closedBall_eq_univ_of_half_period_le p hp (↑x) hε, not_lt.mpr hε]
   · suffices ∀ z : ℤ, closedBall (x + z • p) ε ∩ s = if z = 0 then closedBall x ε ∩ s else ∅ by
       simp [-zsmul_eq_mul, ← QuotientAddGroup.mk_zero, coe_real_preimage_closedBall_eq_iUnion,
         iUnion_inter, iUnion_ite, this, hε]
@@ -207,14 +200,14 @@ theorem coe_real_preimage_closedBall_inter_eq {x ε : ℝ} (s : Set ℝ)
     rintro y ⟨⟨hy₁, hy₂⟩, hy₀⟩
     obtain ⟨hy₃, hy₄⟩ := hs hy₀
     rcases lt_trichotomy 0 p with (hp | (rfl : 0 = p) | hp)
-    · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
+    · rcases Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' | hz'
       · have : ↑z * p ≤ -p := by nlinarith
         linarith [abs_eq_self.mpr hp.le]
       · have : p ≤ ↑z * p := by nlinarith
         linarith [abs_eq_self.mpr hp.le]
     · simp only [mul_zero, add_zero, abs_zero, zero_div] at hy₁ hy₂ hε
       linarith
-    · cases' Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' hz'
+    · rcases Int.cast_le_neg_one_or_one_le_cast_of_ne_zero ℝ hz with hz' | hz'
       · have : -p ≤ ↑z * p := by nlinarith
         linarith [abs_eq_neg_self.mpr hp.le]
       · have : ↑z * p ≤ p := by nlinarith
@@ -228,9 +221,6 @@ theorem norm_div_natCast {m n : ℕ} :
     ‖(↑(↑m / ↑n * p) : AddCircle p)‖ = p * (↑(min (m % n) (n - m % n)) / n) := by
   have : p⁻¹ * (↑m / ↑n * p) = ↑m / ↑n := by rw [mul_comm _ p, inv_mul_cancel_left₀ hp.out.ne.symm]
   rw [norm_eq' p hp.out, this, abs_sub_round_div_natCast_eq]
-
-@[deprecated (since := "2024-04-17")]
-alias norm_div_nat_cast := norm_div_natCast
 
 theorem exists_norm_eq_of_isOfFinAddOrder {u : AddCircle p} (hu : IsOfFinAddOrder u) :
     ∃ k : ℕ, ‖u‖ = p * (k / addOrderOf u) := by

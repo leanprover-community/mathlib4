@@ -93,7 +93,6 @@ theorem lift_projectSubobject [HasFiniteLimits C] [PreservesFiniteLimits T]
 /-- If `A : S → T.obj B` is a structured arrow for `S : D` and `T : C ⥤ D`, then we can explicitly
     describe the subobjects of `A` as the subobjects `P` of `B` in `C` for which `A.hom` factors
     through the image of `P` under `T`. -/
-@[simps!]
 def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : StructuredArrow S T) :
     Subobject A ≃o { P : Subobject A.right // ∃ q, q ≫ T.map P.arrow = A.hom } where
   toFun P := ⟨projectSubobject P, projectSubobject_factors P⟩
@@ -107,13 +106,9 @@ def subobjectEquiv [HasFiniteLimits C] [PreservesFiniteLimits T] (A : Structured
     refine ⟨fun h => Subobject.mk_le_mk_of_comm ?_ ?_, fun h => ?_⟩
     · exact homMk (Subobject.ofMkLEMk _ _ h)
         ((cancel_mono (T.map g.right)).1 (by simp [← T.map_comp]))
-    · aesop_cat
+    · simp
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
-  CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
 
 /-- If `C` is well-powered and complete and `T` preserves limits, then `StructuredArrow S T` is
     well-powered. -/
@@ -187,7 +182,7 @@ theorem lift_projectQuotient [HasFiniteColimits C] [PreservesFiniteColimits S]
         · exact (Subobject.underlyingIso f.unop.left.op).unop
         · refine (cancel_epi (S.map f.unop.left)).1 ?_
           simpa [← Category.assoc, ← S.map_comp] using hq
-      · exact Quiver.Hom.unop_inj (by aesop_cat))
+      · exact Quiver.Hom.unop_inj (by simp))
 
 /-- Technical lemma for `quotientEquiv`. -/
 theorem unop_left_comp_ofMkLEMk_unop {A : CostructuredArrow S T} {P Q : (CostructuredArrow S T)ᵒᵖ}

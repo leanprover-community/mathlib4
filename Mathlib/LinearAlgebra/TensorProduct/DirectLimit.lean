@@ -54,7 +54,6 @@ variable {M} in
 /--
 the map `(limᵢ Gᵢ) ⊗ M → limᵢ (Gᵢ ⊗ M)` from the bilinear map `limᵢ Gᵢ → M → limᵢ (Gᵢ ⊗ M)` given
 by the family of maps `Gᵢ → M → limᵢ (Gᵢ ⊗ M)` where `gᵢ ↦ m ↦ [gᵢ ⊗ m]`
-
 -/
 noncomputable def toDirectLimit : DirectLimit G f ⊗[R] M →ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) :=
   TensorProduct.lift <| Module.DirectLimit.lift _ _ _ _
@@ -89,6 +88,10 @@ noncomputable def directLimitLeft :
     (directLimitLeft f M).symm (of _ _ _ _ _ (g ⊗ₜ m)) = of _ _ _ f _ g ⊗ₜ m :=
   fromDirectLimit_of_tmul f g m
 
+lemma directLimitLeft_rTensor_of {i : ι} (x : G i ⊗[R] M) :
+    directLimitLeft f M (LinearMap.rTensor M (of ..) x) = of _ _ _ (f ▷ M) _ x :=
+  x.induction_on (by simp) (by simp+contextual) (by simp+contextual)
+
 /--
 `M ⊗ (limᵢ Gᵢ)` and `limᵢ (M ⊗ Gᵢ)` are isomorphic as modules
 -/
@@ -105,5 +108,19 @@ noncomputable def directLimitRight :
 @[simp] lemma directLimitRight_symm_of_tmul {i : ι} (m : M) (g : G i) :
     (directLimitRight f M).symm (of _ _ _ _ _ (m ⊗ₜ g)) = m ⊗ₜ of _ _ _ f _ g := by
   simp [directLimitRight, congr_symm_apply_of]
+
+variable [DirectedSystem G (f · · ·)]
+
+instance : DirectedSystem (G · ⊗[R] M) (f ▷ M) where
+  map_self i x := by
+    convert LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
+  map_map _ _ _ _ _ x := by
+    convert ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+
+instance : DirectedSystem (M ⊗[R] G ·) (M ◁ f) where
+  map_self i x := by
+    convert LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
+  map_map _ _ _ h₁ h₂ x := by
+    convert ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
 
 end TensorProduct
