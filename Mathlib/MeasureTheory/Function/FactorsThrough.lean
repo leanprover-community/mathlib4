@@ -138,13 +138,11 @@ theorem exists_eq_measurable_comp' [Nonempty Z] {f : X → Y} {g : X → Z}
   classical
   let mX : MeasurableSpace X := mY.comap f
   apply hg.induction' (fun g ↦ ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f)
-  · intro c
-    refine ⟨fun _ ↦ c, stronglyMeasurable_const, ?_⟩
+  · refine fun c ↦ ⟨fun _ ↦ c, stronglyMeasurable_const, ?_⟩
     ext x
     rw [SimpleFunc.coe_const, Function.const_apply, Function.comp_apply]
-  · rintro f' g' s s_mes f_mes' g_mes' ⟨F, F_mes, F_f⟩ ⟨G, G_mes, G_g⟩
-    rw [MeasurableSpace.measurableSet_comap] at s_mes
-    obtain ⟨s', s_mes', f_s⟩ := s_mes
+  · rintro f' g' s s_mes _ _ ⟨F, F_mes, F_f⟩ ⟨G, G_mes, G_g⟩
+    obtain ⟨s', s_mes', f_s⟩ := MeasurableSpace.measurableSet_comap.1 s_mes
     refine ⟨s'.piecewise F G, F_mes.piecewise s_mes' G_mes, ?_⟩
     rw [piecewise_comp, f_s, F_f, G_g]
   · rintro gn g gn_mes gn_Gn g_mes gn_g
@@ -154,8 +152,6 @@ theorem exists_eq_measurable_comp' [Nonempty Z] {f : X → Y} {g : X → Z}
     rw [Function.comp_apply, Tendsto.limUnder_eq]
     refine Filter.Tendsto.congr (f₁ := fun n ↦ gn n x) (fun n ↦ ?_) (gn_g x)
     simp only [Gn_gn n, Function.comp_apply]
-
-#check exists_eq_measurable_comp'
 
 end FactorsThrough
 

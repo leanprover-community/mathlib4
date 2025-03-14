@@ -157,23 +157,20 @@ open scoped Classical in
 theorem induction' [MeasurableSpace α] [Nonempty β] (P : (α → β) → Prop)
     (ind : ∀ (c), P (SimpleFunc.const _ c))
     (pcw : ∀ ⦃f g : α → β⦄ {s}, MeasurableSet s → StronglyMeasurable f →
-      StronglyMeasurable g → P f → P g → P (Set.piecewise s f g))
+      StronglyMeasurable g → P f → P g → P (s.piecewise f g))
     (lim : ∀ ⦃f : ℕ → α → β⦄ ⦃g : α → β⦄,
       (∀ n, StronglyMeasurable (f n)) → (∀ n, P (f n)) → StronglyMeasurable g →
       (∀ x, Tendsto (f · x) atTop (𝓝 (g x))) → P g)
     (f : α → β) (hf : StronglyMeasurable f) : P f := by
-  classical
   let s := hf.approx
   have ms n := (s n).stronglyMeasurable
   have hs x : Tendsto (s · x) atTop (𝓝 (f x)) := hf.tendsto_approx x
   refine lim ms (fun n ↦ ?_) hf hs
   induction s n using SimpleFunc.induction' with
-  | h_ind c => exact ind c
-  | @h_add f g s hs Pf Pg =>
+  | ind c => exact ind c
+  | @pcw f g s hs Pf Pg =>
     rw [SimpleFunc.coe_piecewise]
     exact pcw hs f.stronglyMeasurable g.stronglyMeasurable Pf Pg
-
-#check induction'
 
 /-- Similar to `stronglyMeasurable.approx`, but enforces that the norm of every function in the
 sequence is less than `c` everywhere. If `‖f x‖ ≤ c` this sequence of simple functions verifies
