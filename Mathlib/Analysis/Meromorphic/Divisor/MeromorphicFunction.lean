@@ -106,8 +106,7 @@ theorem divisor_inv [CompleteSpace 𝕜] {f: 𝕜 → 𝕜} (hf : MeromorphicOn 
     by_cases ha : (hf z hz).inv.order = ⊤
     · simp only [ha, WithTop.untopD_top, LinearOrderedAddCommGroupWithTop.neg_top, neg_zero]
     lift (hf z hz).inv.order to ℤ using ha with a ha
-    rw [(by rfl : -a = (↑(-a) : WithTop ℤ)), WithTop.untopD_coe, WithTop.untopD_coe]
-    simp
+    simp [eq_comm (a := a), neg_eq_iff_eq_neg, WithTop.untopD_eq_iff]
   · simp [hz]
 
 end MeromorphicOn
