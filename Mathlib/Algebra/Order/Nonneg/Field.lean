@@ -3,7 +3,7 @@ Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Field.Canonical.Defs
+import Mathlib.Algebra.Order.Field.Canonical
 import Mathlib.Algebra.Order.Field.InjSurj
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Data.Nat.Cast.Order.Ring
@@ -94,19 +94,15 @@ instance instNNRatSMul : SMul ℚ≥0 {x : α // 0 ≤ x} where
     (⟨q • a, by rw [NNRat.smul_def]; exact mul_nonneg q.cast_nonneg ha⟩ : {x : α // 0 ≤ x}) =
       q • a := rfl
 
-instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :=
+instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } := fast_instance%
   Subtype.coe_injective.linearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) coe_nnqsmul Nonneg.coe_pow
     Nonneg.coe_zpow Nonneg.coe_natCast coe_nnratCast (fun _ _ => rfl) fun _ _ => rfl
 
 end LinearOrderedSemifield
 
-instance canonicallyLinearOrderedSemifield [LinearOrderedField α] :
-    CanonicallyLinearOrderedSemifield { x : α // 0 ≤ x } :=
-  { Nonneg.linearOrderedSemifield, Nonneg.canonicallyOrderedCommSemiring with }
-
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  inferInstance
+  LinearOrderedSemifield.toLinearOrderedCommGroupWithZero
 
 end Nonneg

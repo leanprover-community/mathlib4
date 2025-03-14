@@ -19,6 +19,8 @@ exact sequence in the heart of a t-structure
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w v u
 
 namespace CategoryTheory

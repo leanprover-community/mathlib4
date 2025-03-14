@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.SplitIfs
+import Mathlib.Logic.Basic
 
 /-!
 # Typeclasses for groups with an adjoined zero element
@@ -71,8 +71,8 @@ theorem mul_left_injective₀ (hb : b ≠ 0) : Function.Injective fun a => a * b
 end IsRightCancelMulZero
 
 /-- A mixin for cancellative multiplication by nonzero elements. -/
-class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
-  extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀ : Prop
+class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀] : Prop
+  extends IsLeftCancelMulZero M₀, IsRightCancelMulZero M₀
 
 export MulZeroClass (zero_mul mul_zero)
 attribute [simp] zero_mul mul_zero
@@ -94,6 +94,20 @@ class MulZeroOneClass (M₀ : Type u) extends MulOneClass M₀, MulZeroClass M�
 /-- A type `M₀` is a “monoid with zero” if it is a monoid with zero element, and `0` is left
 and right absorbing. -/
 class MonoidWithZero (M₀ : Type u) extends Monoid M₀, MulZeroOneClass M₀, SemigroupWithZero M₀
+
+section MonoidWithZero
+
+variable [MonoidWithZero M₀]
+
+/-- If `x` is multiplicative with respect to `f`, then so is any `x^n`. -/
+theorem pow_mul_apply_eq_pow_mul {M : Type*} [Monoid M] (f : M₀ → M) {x : M₀}
+    (hx : ∀ y : M₀, f (x * y) = f x * f y) (n : ℕ) :
+    ∀ (y : M₀), f (x ^ n * y) = f x ^ n * f y := by
+  induction n with
+  | zero => intro y; rw [pow_zero, pow_zero, one_mul, one_mul]
+  | succ n hn => intro y; rw [pow_succ', pow_succ', mul_assoc, mul_assoc, hx, hn]
+
+end MonoidWithZero
 
 /-- A type `M` is a `CancelMonoidWithZero` if it is a monoid with zero element, `0` is left
 and right absorbing, and left/right multiplication by a non-zero element is injective. -/
@@ -273,5 +287,13 @@ theorem zero_eq_mul_self : 0 = a * a ↔ a = 0 := by simp
 theorem mul_self_ne_zero : a * a ≠ 0 ↔ a ≠ 0 := mul_self_eq_zero.not
 
 theorem zero_ne_mul_self : 0 ≠ a * a ↔ a ≠ 0 := zero_eq_mul_self.not
+
+theorem mul_eq_zero_iff_left (ha : a ≠ 0) : a * b = 0 ↔ b = 0 := by simp [ha]
+
+theorem mul_eq_zero_iff_right (hb : b ≠ 0) : a * b = 0 ↔ a = 0 := by simp [hb]
+
+theorem mul_ne_zero_iff_left (ha : a ≠ 0) : a * b ≠ 0 ↔ b ≠ 0 := by simp [ha]
+
+theorem mul_ne_zero_iff_right (hb : b ≠ 0) : a * b ≠ 0 ↔ a ≠ 0 := by simp [hb]
 
 end MulZeroClass

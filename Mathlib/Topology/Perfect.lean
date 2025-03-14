@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Felix Weilacher
 -/
 
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Perfect Sets
@@ -150,7 +150,7 @@ This is the main inductive step in the proof of the Cantor-Bendixson Theorem. -/
 theorem Perfect.splitting [T25Space α] (hC : Perfect C) (hnonempty : C.Nonempty) :
     ∃ C₀ C₁ : Set α,
     (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C) ∧ (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C) ∧ Disjoint C₀ C₁ := by
-  cases' hnonempty with y yC
+  obtain ⟨y, yC⟩ := hnonempty
   obtain ⟨x, xC, hxy⟩ : ∃ x ∈ C, x ≠ y := by
     have := hC.acc _ yC
     rw [accPt_iff_nhds] at this

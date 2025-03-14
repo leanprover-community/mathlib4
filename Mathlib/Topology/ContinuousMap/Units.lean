@@ -27,7 +27,6 @@ variable [Monoid M] [TopologicalSpace M] [ContinuousMul M]
 and the units of the monoid of continuous maps. -/
 -- `simps` generates some lemmas here with LHS not in simp normal form,
 -- so we write them out manually below.
--- https://github.com/leanprover-community/mathlib4/issues/18942
 @[to_additive (attr := simps apply_val_apply symm_apply_apply_val)
 "Equivalence between continuous maps into the additive units of an additive monoid with continuous
 addition and the additive units of the additive monoid of continuous maps."]
@@ -73,7 +72,6 @@ theorem continuous_isUnit_unit {f : C(X, R)} (h : ∀ x, IsUnit (f x)) :
   simp only
   simp only [← Ring.inverse_unit, IsUnit.unit_spec] at this ⊢
   exact this.comp (f.continuousAt x)
--- Porting note: this had the worst namespace: `NormedRing`
 
 /-- Construct a continuous map into the group of units of a normed ring from a function into the
 normed ring and a proof that every element of the range is a unit. -/

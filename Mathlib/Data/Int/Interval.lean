@@ -3,8 +3,9 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Order.Ring.Int
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Order.Interval.Finset.Basic
 
 /-!
@@ -14,6 +15,7 @@ This file proves that `ℤ` is a `LocallyFiniteOrder` and calculates the cardina
 intervals as finsets and fintypes.
 -/
 
+assert_not_exists Field
 
 open Finset Int
 
@@ -134,24 +136,20 @@ theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
   simp
   omega
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
-  rw [← card_Icc, Fintype.card_ofFinset]
+  simp
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
-  rw [← card_Ico, Fintype.card_ofFinset]
+  simp
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
-  rw [← card_Ioc, Fintype.card_ofFinset]
+  simp
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
-  rw [← card_Ioo, Fintype.card_ofFinset]
+  simp
 
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
-  rw [← card_uIcc, Fintype.card_ofFinset]
+  simp
 
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   rw [card_fintype_Icc, toNat_sub_of_le h]

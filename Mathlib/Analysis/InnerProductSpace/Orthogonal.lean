@@ -3,7 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.LinearAlgebra.SesquilinearForm
 
 /-!
@@ -33,7 +33,7 @@ namespace Submodule
 
 variable (K : Submodule 𝕜 E)
 
-/-- The subspace of vectors orthogonal to a given subspace. -/
+/-- The subspace of vectors orthogonal to a given subspace, denoted `Kᗮ`. -/
 def orthogonal : Submodule 𝕜 E where
   carrier := { v | ∀ u ∈ K, ⟪u, v⟫ = 0 }
   zero_mem' _ _ := inner_zero_right _
@@ -199,7 +199,7 @@ theorem bilinFormOfRealInner_orthogonal {E} [NormedAddCommGroup E] [InnerProduct
 /-!
 ### Orthogonality of submodules
 
-In this section we define `Submodule.IsOrtho U V`, with notation `U ⟂ V`.
+In this section we define `Submodule.IsOrtho U V`, denoted as `U ⟂ V`.
 
 The API roughly matches that of `Disjoint`.
 -/
@@ -207,7 +207,7 @@ The API roughly matches that of `Disjoint`.
 
 namespace Submodule
 
-/-- The proposition that two submodules are orthogonal. Has notation `U ⟂ V`. -/
+/-- The proposition that two submodules are orthogonal, denoted as `U ⟂ V`. -/
 def IsOrtho (U V : Submodule 𝕜 E) : Prop :=
   U ≤ Vᗮ
 
@@ -350,6 +350,7 @@ theorem IsOrtho.comap_iff (f : E ≃ₗᵢ[𝕜] F) {U V : Submodule 𝕜 F} : U
 
 end Submodule
 
+open scoped Function in -- required for scoped `on` notation
 theorem orthogonalFamily_iff_pairwise {ι} {V : ι → Submodule 𝕜 E} :
     (OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) ↔ Pairwise ((· ⟂ ·) on V) :=
   forall₃_congr fun _i _j _hij =>

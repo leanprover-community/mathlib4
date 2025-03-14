@@ -48,8 +48,6 @@ The main definitions are in the `AdjoinRoot` namespace.
 
 noncomputable section
 
-open scoped Classical
-
 open Polynomial
 
 universe u v w
@@ -139,13 +137,10 @@ instance [CommSemiring S] [Algebra S R] : Algebra S (AdjoinRoot f) :=
 theorem algebraMap_eq : algebraMap R (AdjoinRoot f) = of f :=
   rfl
 
-variable (S)
-
+variable (S) in
 theorem algebraMap_eq' [CommSemiring S] [Algebra S R] :
     algebraMap S (AdjoinRoot f) = (of f).comp (algebraMap S R) :=
   rfl
-
-variable {S}
 
 theorem finiteType : Algebra.FiniteType R (AdjoinRoot f) :=
   (Algebra.FiniteType.polynomial R).of_surjective _ (Ideal.Quotient.mkₐ_surjective R _)
@@ -506,7 +501,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
     rw [natDegree_mul hf, natDegree_C, add_zero]
     · rwa [Ne, C_eq_zero, inv_eq_zero, leadingCoeff_eq_zero]
   have minpoly_eq : minpoly K (root f) = f' := minpoly_root hf
-  apply @Basis.mk _ _ _ fun i : Fin f.natDegree => root f ^ i.val
+  apply Basis.mk (v := fun i : Fin f.natDegree ↦ root f ^ i.val)
   · rw [← deg_f', ← minpoly_eq]
     exact linearIndependent_pow (root f)
   · rintro y -
@@ -519,7 +514,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
 
 /-- The power basis `1, root f, ..., root f ^ (d - 1)` for `AdjoinRoot f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
-@[simps!]  -- Porting note: was `[simps]`
+@[simps!]
 def powerBasis (hf : f ≠ 0) : PowerBasis K (AdjoinRoot f) where
   gen := root f
   dim := f.natDegree
@@ -583,7 +578,7 @@ such that `pb.gen` has a minimal polynomial `g`, then `S` is isomorphic to `Adjo
 Compare `PowerBasis.equivOfRoot`, which would require
 `h₂ : aeval pb.gen (minpoly R (root g)) = 0`; that minimal polynomial is not
 guaranteed to be identical to `g`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def equiv' (h₁ : aeval (root g) (minpoly R pb.gen) = 0) (h₂ : aeval pb.gen g = 0) :
     AdjoinRoot g ≃ₐ[R] S :=
   { AdjoinRoot.liftHom g pb.gen h₂ with
@@ -661,7 +656,7 @@ theorem quotMapOfEquivQuotMapCMapSpanMk_symm_mk (x : AdjoinRoot f) :
   exact Ideal.quotEquivOfEq_mk _ _
 
 /-- The natural isomorphism `R[α]/((I[x] ⊔ (f)) / (f)) ≅ (R[x]/I[x])/((f) ⊔ I[x] / I[x])`
-  for `α` a root of `f : R[X]` and `I : Ideal R`-/
+  for `α` a root of `f : R[X]` and `I : Ideal R` -/
 def quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk :
     AdjoinRoot f ⧸ (I.map (C : R →+* R[X])).map (Ideal.Quotient.mk (span ({f} : Set R[X]))) ≃+*
       (R[X] ⧸ I.map (C : R →+* R[X])) ⧸
@@ -682,7 +677,7 @@ theorem quotMapCMapSpanMkEquivQuotMapCQuotMapSpanMk_symm_quotQuotMk (p : R[X]) :
   rfl
 
 /-- The natural isomorphism `(R/I)[x]/(f mod I) ≅ (R[x]/I*R[x])/(f mod I[x])` where
-  `f : R[X]` and `I : Ideal R`-/
+  `f : R[X]` and `I : Ideal R` -/
 def Polynomial.quotQuotEquivComm :
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (Polynomial (R ⧸ I))) ≃+*
       (R[X] ⧸ (I.map C)) ⧸ span ({(Ideal.Quotient.mk (I.map C)) f} : Set (R[X] ⧸ (I.map C))) :=
@@ -833,3 +828,11 @@ theorem Irreducible.exists_dvd_monic_irreducible_of_isIntegral {K L : Type*}
   have h2 := isIntegral_trans (R := K) _ (AdjoinRoot.isIntegral_root h)
   have h3 := (AdjoinRoot.minpoly_root h) ▸ minpoly.dvd_map_of_isScalarTower K L (AdjoinRoot.root f)
   exact ⟨_, minpoly.monic h2, minpoly.irreducible h2, dvd_of_mul_right_dvd h3⟩
+
+variable (R) in
+theorem Polynomial.exists_dvd_map_of_isAlgebraic [CommRing R] [CommRing S] [NoZeroDivisors S]
+    [Algebra R S] [Algebra.IsAlgebraic R S] (f : S[X]) (hf : f ≠ 0) :
+    ∃ g : R[X], g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
+  have ⟨g, ne, eq⟩ := (id ⟨f, hf, by simp⟩ : IsAlgebraic S (AdjoinRoot.root f)).restrictScalars R
+  ⟨g, ne, by rwa [aeval_def, IsScalarTower.algebraMap_eq R S, ← eval₂_map, ← aeval_def,
+    AdjoinRoot.aeval_eq, AdjoinRoot.mk_eq_zero] at eq⟩

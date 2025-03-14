@@ -11,16 +11,16 @@ Usage: cache [COMMAND]
 
 Commands:
   # No privilege required
-  get  [ARGS]  Download linked files missing on the local cache and decompress
-  get! [ARGS]  Download all linked files and decompress
-  get- [ARGS]  Download linked files missing to the local cache, but do no compress
-  pack         Compress non-compressed build files into the local cache
-  pack!        Compress build files into the local cache (no skipping)
-  unpack       Decompress linked already downloaded files
-  unpack!      Decompress linked already downloaded files (no skipping)
-  clean        Delete non-linked files
-  clean!       Delete everything on the local cache
-  lookup       Show information about cache files for the given lean files
+  get  [ARGS]   Download linked files missing on the local cache and decompress
+  get! [ARGS]   Download all linked files and decompress
+  get- [ARGS]   Download linked files missing to the local cache, but do not decompress
+  pack          Compress non-compressed build files into the local cache
+  pack!         Compress build files into the local cache (no skipping)
+  unpack        Decompress linked already downloaded files
+  unpack!       Decompress linked already downloaded files (no skipping)
+  clean         Delete non-linked files
+  clean!        Delete everything on the local cache
+  lookup [ARGS] Show information about cache files for the given lean files
 
   # Privilege required
   put          Run 'mk' then upload linked files missing on the server
@@ -33,9 +33,9 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get' and 'get!'
+# The arguments for 'get', 'get!' and 'get-'
 
-'get' and 'get!' can process list of paths, allowing the user to be more
+'get', 'get!' and 'get-' can process a list of paths, allowing the user to be more
 specific about what should be downloaded. For example, with automatic glob
 expansion in shell, one can call:
 
@@ -57,9 +57,11 @@ def toPaths (args : List String) : List FilePath :=
     else
       mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
+/-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
+/-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 

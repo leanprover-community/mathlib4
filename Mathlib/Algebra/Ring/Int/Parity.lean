@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Basic parity lemmas for the ring `ℤ`
@@ -12,8 +13,7 @@ import Mathlib.Algebra.Ring.Int.Defs
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists Set.Subsingleton
+assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 
@@ -32,12 +32,6 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, emod_two_ne_one]
 @[simp] lemma not_odd_iff_even : ¬Odd n ↔ Even n := by rw [not_odd_iff, even_iff]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
 
-@[deprecated not_odd_iff_even (since := "2024-08-21")]
-lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
-
-@[deprecated not_even_iff_odd (since := "2024-08-21")]
-lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
-
 lemma even_or_odd (n : ℤ) : Even n ∨ Odd n := Or.imp_right not_even_iff_odd.1 <| em <| Even n
 
 lemma even_or_odd' (n : ℤ) : ∃ k, n = 2 * k ∨ n = 2 * k + 1 := by
@@ -52,7 +46,7 @@ lemma even_xor'_odd' (n : ℤ) : ∃ k, Xor' (n = 2 * k) (n = 2 * k + 1) := by
   rcases even_or_odd n with (⟨k, rfl⟩ | ⟨k, rfl⟩) <;> use k
   · simpa only [← two_mul, Xor', true_and, eq_self_iff_true, not_true, or_false,
       and_false] using (succ_ne_self (2 * k)).symm
-  · simp only [Xor', add_right_eq_self, false_or, eq_self_iff_true, not_true, not_false_iff,
+  · simp only [Xor', add_eq_left, false_or, eq_self_iff_true, not_true, not_false_iff,
       one_ne_zero, and_self_iff]
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ not_even_iff_odd
@@ -113,20 +107,7 @@ lemma four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     4 ∣ a + b ∨ 4 ∣ a - b := by
   obtain ⟨m, rfl⟩ := ha
   obtain ⟨n, rfl⟩ := hb
-  obtain h | h := Int.even_or_odd (m + n)
-  · right
-    rw [Int.even_add, ← Int.even_sub] at h
-    obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 k using 1
-    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel_right, ← two_mul, ← mul_assoc]
-    rfl
-  · left
-    obtain ⟨k, hk⟩ := h
-    convert dvd_mul_right 4 (k + 1) using 1
-    rw [eq_sub_of_add_eq hk, add_right_comm, ← add_sub, mul_add, mul_sub, add_assoc, add_assoc,
-      sub_add, add_assoc, ← sub_sub (2 * n), sub_self, zero_sub, sub_neg_eq_add, ← mul_assoc,
-      mul_add]
-    rfl
+  omega
 
 lemma two_mul_ediv_two_add_one_of_odd : Odd n → 2 * (n / 2) + 1 = n := by
   rintro ⟨c, rfl⟩
@@ -154,10 +135,9 @@ theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℤ) ↔ IsSquare n := by
   · exact ⟨x.natAbs, (natAbs_mul_natAbs_eq h.symm).symm⟩
   · exact ⟨x, mod_cast h⟩
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem isSquare_ofNat_iff {n : ℕ} :
-    IsSquare (no_index (OfNat.ofNat n) : ℤ) ↔ IsSquare (OfNat.ofNat n : ℕ) :=
+    IsSquare (ofNat(n) : ℤ) ↔ IsSquare (ofNat(n) : ℕ) :=
   isSquare_natCast_iff
 
 end Int

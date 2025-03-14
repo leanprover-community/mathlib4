@@ -30,12 +30,12 @@ The approach taken here is inspired by `Mathlib/Algebra/Opposites.lean`. We use 
 
 open Function
 
-/-- The symmetrized algebra has the same underlying space as the original algebra.
--/
+/-- The symmetrized algebra (denoted as `αˢʸᵐ`)
+has the same underlying space as the original algebra `α`. -/
 def SymAlg (α : Type*) : Type _ :=
   α
 
-postfix:max "ˢʸᵐ" => SymAlg
+@[inherit_doc] postfix:max "ˢʸᵐ" => SymAlg
 
 namespace SymAlg
 
@@ -257,13 +257,11 @@ instance nonAssocSemiring [Semiring α] [Invertible (2 : α)] : NonAssocSemiring
     one_mul := fun _ => by
       rw [mul_def, unsym_one, mul_one, one_mul, ← two_mul, invOf_mul_cancel_left, sym_unsym]
     left_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
       abel
     right_distrib := fun a b c => by
-      -- Porting note: rewrote previous proof which used `match` in a way that seems unsupported.
       rw [mul_def, mul_def, mul_def, ← sym_add, ← mul_add, unsym_add, add_mul]
       congr 2
       rw [mul_add]
@@ -293,12 +291,10 @@ instance [Ring α] [Invertible (2 : α)] : CommMagma αˢʸᵐ where
 instance [Ring α] [Invertible (2 : α)] : IsCommJordan αˢʸᵐ where
   lmul_comm_rmul_rmul a b := by
     have commute_half_left := fun a : α => by
-      -- Porting note: mathlib3 used `bit0_left`
       have := (Commute.one_left a).add_left (Commute.one_left a)
       rw [one_add_one_eq_two] at this
       exact this.invOf_left.eq
 
-    -- Porting note: introduced `calc` block to make more robust
     calc a * b * (a * a)
       _ = sym (⅟2 * ⅟2 * (unsym a * unsym b * unsym (a * a) +
           unsym b * unsym a * unsym (a * a) +

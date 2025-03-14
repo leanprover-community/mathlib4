@@ -33,11 +33,6 @@ open CategoryTheory.Abelian CategoryTheory CategoryTheory.Limits ModuleCat Linea
 
 namespace Counterexample
 
-/-
-Porting note: this file was rewritten to use categorical notation
-such as `𝟙 _` instead of `ofHom id`. This way, `simp` found it easier to prove things.
--/
-
 noncomputable section
 
 open CategoryTheory.Abelian.Pseudoelement
@@ -93,7 +88,7 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
     Preadditive.add_comp, BinaryBicone.inl_snd, BinaryBicone.inr_snd, zero_add, two_smul] at ha₂
   erw [add_apply, ModuleCat.id_apply] at ha₂
   subst ha₁
-  simp only [self_eq_add_right] at ha₂
+  simp only [left_eq_add] at ha₂
   exact one_ne_zero' ℚ ha₂
 
 attribute [local instance] Pseudoelement.setoid

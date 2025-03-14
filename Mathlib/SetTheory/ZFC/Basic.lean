@@ -147,8 +147,8 @@ instance : IsRefl PSet (· ⊆ ·) :=
 
 instance : IsTrans PSet (· ⊆ ·) :=
   ⟨fun x y z hxy hyz a => by
-    cases' hxy a with b hb
-    cases' hyz b with c hc
+    obtain ⟨b, hb⟩ := hxy a
+    obtain ⟨c, hc⟩ := hyz b
     exact ⟨c, hb.trans hc⟩⟩
 
 theorem Equiv.ext : ∀ x y : PSet, Equiv x y ↔ x ⊆ y ∧ y ⊆ x
@@ -234,7 +234,7 @@ private theorem mem_wf_aux : ∀ {x y : PSet.{u}}, Equiv x y → Acc (· ∈ ·)
   | ⟨α, A⟩, ⟨β, B⟩, H =>
     ⟨_, by
       rintro ⟨γ, C⟩ ⟨b, hc⟩
-      cases' H.exists_right b with a ha
+      obtain ⟨a, ha⟩ := H.exists_right b
       have H := ha.trans hc.symm
       rw [mk_func] at H
       exact mem_wf_aux H⟩
@@ -307,6 +307,9 @@ instance : Inhabited PSet :=
 
 instance : IsEmpty («Type» ∅) :=
   ⟨PEmpty.elim⟩
+
+theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
+  simp [EmptyCollection.emptyCollection, PSet.empty]
 
 @[simp]
 theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
@@ -759,7 +762,7 @@ instance small_toSet (x : ZFSet.{u}) : Small.{u} x.toSet :=
     suffices Function.Surjective f by exact small_of_surjective this
     rintro ⟨y, hb⟩
     induction y using Quotient.inductionOn
-    cases' hb with i h
+    obtain ⟨i, h⟩ := hb
     exact ⟨i, Subtype.coe_injective (Quotient.sound h.symm)⟩
 
 /-- A nonempty set is one that contains some element. -/
@@ -1005,7 +1008,7 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
     induction' ea : A a with γ Γ
     induction' eb : B b with δ Δ
     rw [ea, eb] at hb
-    cases' hb with γδ δγ
+    obtain ⟨γδ, δγ⟩ := hb
     let c : (A a).Type := c
     let ⟨d, hd⟩ := γδ (by rwa [ea] at c)
     use ⟨b, Eq.ndrec d (Eq.symm eb)⟩
@@ -1209,25 +1212,24 @@ theorem toSet_image (f : ZFSet → ZFSet) [Definable₁ f] (x : ZFSet) :
   ext
   simp
 
-/-- The range of an indexed family of sets. The universes allow for a more general index type
-  without manual use of `ULift`. -/
-noncomputable def range {α : Type u} (f : α → ZFSet.{max u v}) : ZFSet.{max u v} :=
-  ⟦⟨ULift.{v} α, Quotient.out ∘ f ∘ ULift.down⟩⟧
+/-- The range of a type-indexed family of sets. -/
+noncomputable def range {α} [Small.{u} α] (f : α → ZFSet.{u}) : ZFSet.{u} :=
+  ⟦⟨_, Quotient.out ∘ f ∘ (equivShrink α).symm⟩⟧
 
 @[simp]
-theorem mem_range {α : Type u} {f : α → ZFSet.{max u v}} {x : ZFSet.{max u v}} :
-    x ∈ range.{u, v} f ↔ x ∈ Set.range f :=
+theorem mem_range {α} [Small.{u} α] {f : α → ZFSet.{u}} {x : ZFSet.{u}} :
+    x ∈ range f ↔ x ∈ Set.range f :=
   Quotient.inductionOn x fun y => by
     constructor
     · rintro ⟨z, hz⟩
-      exact ⟨z.down, Quotient.eq_mk_iff_out.2 hz.symm⟩
+      exact ⟨(equivShrink α).symm z, Quotient.eq_mk_iff_out.2 hz.symm⟩
     · rintro ⟨z, hz⟩
-      use ULift.up z
+      use equivShrink α z
       simpa [hz] using PSet.Equiv.symm (Quotient.mk_out y)
 
 @[simp]
-theorem toSet_range {α : Type u} (f : α → ZFSet.{max u v}) :
-    (range.{u, v} f).toSet = Set.range f := by
+theorem toSet_range {α} [Small.{u} α] (f : α → ZFSet.{u}) :
+    (range f).toSet = Set.range f := by
   ext
   simp
 
@@ -1369,7 +1371,8 @@ instance : Insert ZFSet Class :=
 
 namespace Class
 
--- Porting note: this is no longer an automatically derived instance.
+-- Porting note: this used to be a `deriving HasSep Set` instance,
+-- it should probably be turned into notation.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
   {y | A y ∧ p y}

@@ -60,25 +60,25 @@ lemma injective_germ_basicOpen (U : X.Opens) (hU : IsAffineOpen U)
     (x : X) (hx : x ∈ U) (f : Γ(X, U))
     (hf : x ∈ X.basicOpen f)
     (H : Function.Injective (X.presheaf.germ U x hx)) :
-      Function.Injective (X.presheaf.germ (X.basicOpen f) x hf) := by
+    Function.Injective (X.presheaf.germ (X.basicOpen f) x hf) := by
   rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at H ⊢
   intros t ht
   have := hU.isLocalization_basicOpen f
   obtain ⟨t, s, rfl⟩ := IsLocalization.mk'_surjective (.powers f) t
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
-    RingHom.mem_ker, RingHom.algebraMap_toAlgebra, CommRingCat.germ_res_apply] at ht
+    RingHom.mem_ker, RingHom.algebraMap_toAlgebra, TopCat.Presheaf.germ_res_apply] at ht
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
   rw [H _ ht, IsLocalization.mk'_zero]
 
 lemma Scheme.exists_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInjectiveAt x] :
     ∃ (U : X.Opens) (hx : x ∈ U),
-        IsAffineOpen U ∧ Function.Injective (X.presheaf.germ U x hx) :=
+      IsAffineOpen U ∧ Function.Injective (X.presheaf.germ U x hx) :=
   Scheme.IsGermInjectiveAt.cond
 
 lemma Scheme.exists_le_and_germ_injective (X : Scheme.{u}) (x : X) [X.IsGermInjectiveAt x]
     (V : X.Opens) (hxV : x ∈ V) :
     ∃ (U : X.Opens) (hx : x ∈ U),
-        IsAffineOpen U ∧ U ≤ V ∧ Function.Injective (X.presheaf.germ U x hx) := by
+      IsAffineOpen U ∧ U ≤ V ∧ Function.Injective (X.presheaf.germ U x hx) := by
   obtain ⟨U, hx, hU, H⟩ := Scheme.IsGermInjectiveAt.cond (x := x)
   obtain ⟨f, hf, hxf⟩ := hU.exists_basicOpen_le ⟨x, hxV⟩ hx
   exact ⟨X.basicOpen f, hxf, hU.basicOpen f, hf, injective_germ_basicOpen U hU x hx f hxf H⟩
@@ -94,7 +94,7 @@ instance (x : X) [X.IsGermInjectiveAt x] [IsOpenImmersion f] :
   simpa
 
 variable {f} in
-lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f]:
+lemma isGermInjectiveAt_iff_of_isOpenImmersion {x : X} [IsOpenImmersion f] :
     Y.IsGermInjectiveAt (f.base x) ↔ X.IsGermInjectiveAt x := by
   refine ⟨fun H ↦ ?_, fun _ ↦ inferInstance⟩
   obtain ⟨U, hxU, hU, hU', H⟩ :=
@@ -126,8 +126,9 @@ lemma Scheme.IsGermInjective.of_openCover
 
 protected
 lemma Scheme.IsGermInjective.Spec
-    (H : ∀ I : Ideal R, I.IsPrime → ∃ f : R, f ∉ I ∧ ∀ (x y : R)
-        (_ : y * x = 0) (_ : y ∉ I), ∃ n, f ^ n * x = 0) : (Spec R).IsGermInjective := by
+    (H : ∀ I : Ideal R, I.IsPrime →
+      ∃ f : R, f ∉ I ∧ ∀ (x y : R), y * x = 0 → y ∉ I → ∃ n, f ^ n * x = 0) :
+    (Spec R).IsGermInjective := by
   refine fun p ↦ ⟨?_⟩
   obtain ⟨f, hf, H⟩ := H p.asIdeal p.2
   refine ⟨PrimeSpectrum.basicOpen f, hf, ?_, ?_⟩
@@ -140,6 +141,8 @@ lemma Scheme.IsGermInjective.Spec
   rw [← RingHom.mem_ker, IsLocalization.mk'_eq_mul_mk'_one, Ideal.mul_unit_mem_iff_mem,
     RingHom.mem_ker, RingHom.algebraMap_toAlgebra] at hx
   swap; · exact @isUnit_of_invertible _ _ _ (@IsLocalization.invertible_mk'_one ..)
+  -- There is an `Opposite.unop (Opposite.op _)` in `hx` which doesn't seem removable using
+  -- `simp`/`rw`.
   erw [StructureSheaf.germ_toOpen] at hx
   obtain ⟨⟨y, hy⟩, hy'⟩ := (IsLocalization.map_eq_zero_iff p.asIdeal.primeCompl
     ((Spec.structureSheaf R).presheaf.stalk p) _).mp hx
@@ -210,7 +213,7 @@ lemma spread_out_unique_of_isGermInjective {x : X} [X.IsGermInjectiveAt x]
     congr 2
     apply this <;> simp
   rintro U V rfl rfl
-  have := ConcreteCategory.mono_of_injective (C := CommRingCat) _ HU
+  have := ConcreteCategory.mono_of_injective _ HU
   rw [← cancel_mono (X.presheaf.germ U x hxU)]
   simp only [Scheme.Hom.appLE, Category.assoc, X.presheaf.germ_res', ← Scheme.stalkMap_germ, H]
   simp only [TopCat.Presheaf.germ_stalkSpecializes_assoc, Scheme.stalkMap_germ]
@@ -291,7 +294,7 @@ lemma exists_lift_of_germInjective {x : X} [X.IsGermInjectiveAt x] {U : X.Opens}
     rw [RingEquiv.apply_symm_apply]
     ext
     show X.presheaf.germ _ _ _ (X.presheaf.map _ _) = (φRA ≫ φ) a
-    rw [CommRingCat.germ_res_apply, ‹φRA ≫ φ = _›]
+    rw [TopCat.Presheaf.germ_res_apply, ‹φRA ≫ φ = _›]
     rfl
 
 /--

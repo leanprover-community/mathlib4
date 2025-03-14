@@ -7,7 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Injective
 import Mathlib.Algebra.Category.Grp.EnoughInjectives
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Category of $R$-modules has enough injectives
@@ -28,7 +28,7 @@ lemma ModuleCat.enoughInjectives : EnoughInjectives (ModuleCat.{max v u} R) :=
   EnoughInjectives.of_adjunction (ModuleCat.restrictCoextendScalarsAdj.{max v u} (algebraMap ℤ R))
 
 open ModuleCat in
-instance [UnivLE.{u,v}] : EnoughInjectives (ModuleCat.{v} R) :=
+instance [UnivLE.{u, v}] : EnoughInjectives (ModuleCat.{v} R) :=
   letI := (equivShrink.{v} R).symm.ring
   letI := enoughInjectives.{v} (Shrink.{v} R)
   EnoughInjectives.of_equivalence (restrictScalars (equivShrink R).symm.ringEquiv.toRingHom)

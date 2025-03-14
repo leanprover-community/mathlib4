@@ -23,8 +23,9 @@ universe v w w'
 
 variable {A : Type v} {B : Type w} {C : Type w'}
 
-/-- A sub star semigroup is a subset of a magma which is closed under the `star`-/
-structure SubStarSemigroup (M : Type v) [Mul M] [Star M] extends Subsemigroup M : Type v where
+/-- A sub star semigroup is a subset of a magma which is closed under the `star`. -/
+structure SubStarSemigroup (M : Type v) [Mul M] [Star M] : Type v
+    extends Subsemigroup M where
   /-- The `carrier` of a `StarSubset` is closed under the `star` operation. -/
   star_mem' : ∀ {a : M} (_ha : a ∈ carrier), star a ∈ carrier
 
@@ -33,8 +34,8 @@ add_decl_doc SubStarSemigroup.toSubsemigroup
 
 /-- A non-unital star subsemiring is a non-unital subsemiring which also is closed under the
 `star` operation. -/
-structure NonUnitalStarSubsemiring (R : Type v) [NonUnitalNonAssocSemiring R] [Star R]
-    extends NonUnitalSubsemiring R : Type v where
+structure NonUnitalStarSubsemiring (R : Type v) [NonUnitalNonAssocSemiring R] [Star R] : Type v
+    extends NonUnitalSubsemiring R where
   /-- The `carrier` of a `NonUnitalStarSubsemiring` is closed under the `star` operation. -/
   star_mem' : ∀ {a : R} (_ha : a ∈ carrier), star a ∈ carrier
 
@@ -51,8 +52,8 @@ instance instSetLike : SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
-instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalStarSubsemiring R) R
-    where
+instance instNonUnitalSubsemiringClass :
+    NonUnitalSubsemiringClass (NonUnitalStarSubsemiring R) R where
   add_mem {s} := s.add_mem'
   mul_mem {s} := s.mul_mem'
   zero_mem {s} := s.zero_mem'

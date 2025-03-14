@@ -30,7 +30,6 @@ noncomputable section
 
 universe v₁ v₂ u₁ u₂
 
--- Porting note: need Functor namespace for mapCone
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits CategoryTheory.Functor
 
 namespace CategoryTheory.Limits
@@ -114,7 +113,7 @@ lemma preservesPullback_symmetry : PreservesLimit (cospan g f) G where
         infer_instance
     · exact
         (c.π.naturality WalkingCospan.Hom.inr).symm.trans
-          (c.π.naturality WalkingCospan.Hom.inl : _)⟩
+          (c.π.naturality WalkingCospan.Hom.inl :)⟩
 
 theorem hasPullback_of_preservesPullback [HasPullback f g] : HasPullback (G.map f) (G.map g) :=
   ⟨⟨⟨_, isLimitPullbackConeMapOfIsLimit G _ (pullbackIsPullback _ _)⟩⟩⟩

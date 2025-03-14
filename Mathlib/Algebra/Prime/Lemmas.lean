@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Prime.Defs
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 
 /-!
 # Associated, prime, and irreducible elements.
@@ -28,8 +28,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists Multiset
+assert_not_exists OrderedCommMonoid Multiset
 
 variable {M N : Type*}
 
@@ -53,9 +52,11 @@ theorem comap_prime (hinv : ∀ a, g (f a : N) = a) (hp : Prime (f p)) : Prime p
       · intro h
         convert ← map_dvd g h <;> apply hinv⟩
 
-theorem MulEquiv.prime_iff (e : M ≃* N) : Prime p ↔ Prime (e p) :=
-  ⟨fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h,
-    comap_prime e e.symm fun a => by simp⟩
+theorem MulEquiv.prime_iff {E : Type*} [EquivLike E M N] [MulEquivClass E M N] (e : E) :
+    Prime (e p) ↔ Prime p := by
+  let e := MulEquivClass.toMulEquiv e
+  exact ⟨comap_prime e e.symm fun a => by simp,
+    fun h => (comap_prime e.symm e fun a => by simp) <| (e.symm_apply_apply p).substr h⟩
 
 end Map
 
