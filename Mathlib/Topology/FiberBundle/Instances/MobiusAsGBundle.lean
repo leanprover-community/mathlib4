@@ -45,8 +45,8 @@ instance {n : ℕ} : MulAction (orthogonalGroup (Fin n) ℝ) (EuclideanSpace ℝ
   one_smul x := by
     change (1 : orthogonalGroup (Fin n) ℝ).1.mulVec x = x
     simp [Matrix.mulVec_one]
-  mul_smul g x := by
-    show (f * g).1.mulVec x = f.1.mulVec (g.1.mulVec x)
+  mul_smul f g x := by
+    change (f * g).1.mulVec x = f.1.mulVec (g.1.mulVec x)
     simp [Matrix.mulVec_mulVec]
 
 lemma orthGroupInv {n} {v : (EuclideanSpace ℝ (Fin n))} : (-1 : (orthogonalGroup (Fin n) ℝ)) • v = -v := by
