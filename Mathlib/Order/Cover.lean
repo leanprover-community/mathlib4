@@ -582,20 +582,14 @@ lemma _root_.WCovBy.eval (h : a ⩿ b) (i : ι) : a i ⩿ b i := by
 
 lemma exists_forall_antisymmRel_of_covBy (h : a ⋖ b) :
     ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  classical
   simp only [CovBy, Pi.lt_def, not_and, and_imp, forall_exists_index, not_exists] at h
   obtain ⟨⟨hab, ⟨i, hi⟩⟩, h⟩ := h
-  use i
-  intro j hj
-  classical
+  refine ⟨i, fun j hj ↦ ?_⟩
   let c : (i : ι) → α i := Function.update a i (b i)
-  have h₁ : a ≤ c := by simp [c, hi.le]
-  have h₂ : a i < c i := by simpa [c]
-  have h₃ : c ≤ b := by simpa [update_le_iff, c] using fun k hk ↦ hab k
-  have h₄ : ¬ c j < b j := h h₁ i h₂ h₃ j
-  have h₅ : ¬ a j < b j := by simpa [c, hj] using h₄
-  have h₆ : a j ≤ b j := hab j
-  refine ⟨h₆, ?_⟩
-  simpa [lt_iff_le_not_le, h₆] using h₅
+  have h₁ : c ≤ b := by simpa [update_le_iff, c] using fun k hk ↦ hab k
+  have h₂ : ¬ c j < b j := h (by simp [c, hi.le]) i (by simpa [c]) h₁ j
+  exact ⟨hab j, by simpa [lt_iff_le_not_le, hab j, c, hj] using h₂⟩
 
 lemma exists_forall_antisymmRel_of_wcovBy [Nonempty ι] (h : a ⩿ b) :
     ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
@@ -614,26 +608,17 @@ lemma wcovBy_iff' [Nonempty ι] :
   constructor
   · intro h
     obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h
-    use i
-    exact ⟨h.eval _, hi⟩
+    exact ⟨i, h.eval _, hi⟩
   rintro ⟨i, hab, h⟩
-  refine ⟨?_, fun c hac hcb ↦ ?_⟩
-  · intro j
-    obtain rfl | hj := eq_or_ne j i
-    · exact hab.1
-    · exact (h j hj).1
+  refine ⟨fun j ↦ (eq_or_ne j i).elim (· ▸ hab.1) (h j · |>.1), fun c hac hcb ↦ ?_⟩
   have haci : a i < c i := by
-    rw [Pi.lt_def] at hac
-    obtain ⟨hac, j, hj⟩ := hac
-    obtain rfl | hj' := eq_or_ne j i
-    · exact hj
-    cases (lt_of_antisymmRel_of_lt (h j hj').symm hj).not_le (hcb.le j)
+    obtain ⟨hac, j, hj⟩ := Pi.lt_def.1 hac
+    exact (eq_or_ne j i).elim (· ▸ hj) fun hj' ↦
+      ((lt_of_antisymmRel_of_lt (h j hj').symm hj).not_le (hcb.le j)).elim
   have hcbi : c i < b i := by
-    rw [Pi.lt_def] at hcb
-    obtain ⟨hcb, j, hj⟩ := hcb
-    obtain rfl | hj' := eq_or_ne j i
-    · exact hj
-    cases (lt_of_lt_of_antisymmRel hj (h j hj').symm).not_le (hac.le j)
+    obtain ⟨hcb, j, hj⟩ := Pi.lt_def.1 hcb
+    exact (eq_or_ne j i).elim (· ▸ hj) fun hj' ↦
+      ((lt_of_lt_of_antisymmRel hj (h j hj').symm).not_le (hac.le j)).elim
   exact hab.2 haci hcbi
 
 /--
@@ -647,14 +632,10 @@ lemma covBy_iff' : a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, AntisymmRel (
     have : Nonempty ι := ⟨j⟩
     obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h.wcovBy
     obtain rfl : i = j := by_contra fun this ↦ (hi j (Ne.symm this)).2.not_lt hj
-    refine ⟨i, ?_, hi⟩
-    rw [covBy_iff_wcovBy_and_lt]
-    refine ⟨h.wcovBy.eval i, ?_⟩
-    exact hj
+    exact ⟨i, covBy_iff_wcovBy_and_lt.2 ⟨h.wcovBy.eval i, hj⟩, hi⟩
   rintro ⟨i, hi, h⟩
   have : Nonempty ι := ⟨i⟩
-  rw [covBy_iff_wcovBy_and_lt]
-  refine ⟨wcovBy_iff'.2 ⟨i, hi.wcovBy, h⟩, ?_⟩
+  refine covBy_iff_wcovBy_and_lt.2 ⟨wcovBy_iff'.2 ⟨i, hi.wcovBy, h⟩, ?_⟩
   exact Pi.lt_def.2 ⟨fun j ↦ (eq_or_ne j i).elim (· ▸ hi.1.le) (h j · |>.1), i, hi.1⟩
 
 end Preorder
