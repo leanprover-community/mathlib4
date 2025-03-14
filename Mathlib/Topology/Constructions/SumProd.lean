@@ -923,8 +923,8 @@ lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z
 
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
-  continuous_toFun := continuous_snd.prod_mk continuous_fst
-  continuous_invFun := continuous_snd.prod_mk continuous_fst
+  continuous_toFun := continuous_snd.prodMk continuous_fst
+  continuous_invFun := continuous_snd.prodMk continuous_fst
   toEquiv := Equiv.prodComm X Y
 
 @[simp]
@@ -937,8 +937,8 @@ theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
 
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
-  continuous_toFun := continuous_fst.fst.prod_mk (continuous_fst.snd.prod_mk continuous_snd)
-  continuous_invFun := (continuous_fst.prod_mk continuous_snd.fst).prod_mk continuous_snd.snd
+  continuous_toFun := continuous_fst.fst.prodMk (continuous_fst.snd.prodMk continuous_snd)
+  continuous_invFun := (continuous_fst.prodMk continuous_snd.fst).prodMk continuous_snd.snd
   toEquiv := Equiv.prodAssoc X Y Z
 
 @[simp]
@@ -965,7 +965,7 @@ theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdCo
 def prodPUnit : X × PUnit ≃ₜ X where
   toEquiv := Equiv.prodPUnit X
   continuous_toFun := continuous_fst
-  continuous_invFun := continuous_id.prod_mk continuous_const
+  continuous_invFun := .prodMk_left _
 
 /-- `{*} × X` is homeomorphic to `X`. -/
 def punitProd : PUnit × X ≃ₜ X :=
