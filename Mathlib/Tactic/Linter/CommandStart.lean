@@ -61,9 +61,8 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
 
 structure FormatError where
   srcPos : Nat
-  srcCtx : String := default
   fmtPos : Nat := default
-  fmtCtx : String := default
+  msg : String := default
 
 partial
 def parallelScanAux : Nat → Array FormatError → List Char → List Char → Array FormatError
@@ -71,32 +70,29 @@ def parallelScanAux : Nat → Array FormatError → List Char → List Char → 
     if m.isWhitespace then
       parallelScanAux (n + 1) as ls (ms.dropWhile (·.isWhitespace))
     else
-      --dbg_trace "extra space at {n}"
-      parallelScanAux (n + 1) (as.push {srcPos := n}) ls (m::ms)
+      parallelScanAux (n + 1) (as.push {srcPos := n, msg := "extra space"}) ls (m::ms)
   | n, as, '\n'::ls, m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
       parallelScanAux (n + lth + 1) as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
     else
-      --dbg_trace "missing space at {n}"
-      parallelScanAux (n + lth + 1) (as.push {srcPos := n}) (ls.drop lth) (m::ms)
+      parallelScanAux
+        (n + lth + 1) (as.push {srcPos := n, msg := "remove line break"}) (ls.drop lth) (m::ms)
   | n, as, l::ls, m::ms => -- `l` is not whitespace
     if l == m then
       parallelScanAux (n + 1) as ls ms
     else
       if m.isWhitespace then
-        --dbg_trace "missing space at {n}"
-        parallelScanAux n (as.push {srcPos := n}) (l::ls) (ms.dropWhile (·.isWhitespace))
+        parallelScanAux n (as.push {srcPos := n, msg := "missing space"})
+          (l::ls) (ms.dropWhile (·.isWhitespace))
     else
-      --dbg_trace "{n}: oh no!"
-      as.push {srcPos := n}
+      as.push {srcPos := n, msg := "Oh no! (Unreachable?)"}
   | _, as, _, [] => as
   | n, as, [], ms =>
     if ms.all (·.isWhitespace) then
       as
     else
-      dbg_trace "formatted finished early!"
-      as.push {srcPos := n}
+      as.push {srcPos := n, msg := "The formatted string finished early! (Unreachable?)"}
 
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux 0 ∅ src.toList fmt.toList
@@ -207,7 +203,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     for s in scan do
       let rg : String.Range :=
         ⟨origSubstring.startPos + ⟨s.srcPos⟩, origSubstring.startPos + ⟨s.srcPos + 1⟩⟩
-      logInfoAt (.ofRange rg) m!"{s.srcPos}"
+      logInfoAt (.ofRange rg) m!"{s.msg}"
     --if !scan.isEmpty then logInfo m!"{scan}"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
