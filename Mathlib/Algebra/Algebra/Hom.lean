@@ -48,6 +48,12 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
+/-- The algebra morphism underlying `algebraMap` -/
+def Algebra.algHom (R : Type*) [CommSemiring R] (S : Type*) [Semiring S] [Algebra R S] :
+    R →ₐ[R] S where
+  toRingHom := algebraMap R S
+  commutes' := fun _ ↦ rfl
+
 namespace AlgHomClass
 
 variable {R A B F : Type*} [CommSemiring R] [Semiring A] [Semiring B]
