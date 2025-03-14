@@ -19,9 +19,6 @@ In this file, we establish the basic properties of Polish spaces.
 * `PolishSpace α` is a mixin typeclass on a topological space, requiring that the topology is
   second-countable and compatible with a complete metric. To endow the space with such a metric,
   use in a proof `letI := upgradeCompletelyMetrizable α`.
-  We register an instance from complete second-countable metric spaces to Polish spaces, not the
-  other way around.
-* We register that countable products and sums of Polish spaces are Polish.
 * `IsClosed.polishSpace`: a closed subset of a Polish space is Polish.
 * `IsOpen.polishSpace`: an open subset of a Polish space is Polish.
 * `exists_nat_nat_continuous_surjective`: any nonempty Polish space is the continuous image
