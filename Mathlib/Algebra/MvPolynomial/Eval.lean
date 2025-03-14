@@ -731,7 +731,7 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
   induction p using MvPolynomial.monomial_add_induction_on with
   | C a =>
     simpa using hs 0
-  | monomial_add_weak a b f ha _ ih =>
+  | monomial_add a b f ha _ ih =>
     rw [eval₂_add, eval₂_monomial]
     refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
     · have := hs a -- Porting note: was `simpa only [...]`
