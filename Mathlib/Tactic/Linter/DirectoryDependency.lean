@@ -22,6 +22,21 @@ def Lean.Name.findPrefix {α} (f : Name → Option α) (n : Name) : Option α :=
     | str n' _ => n'.findPrefix f
     | num n' _ => n'.findPrefix f
 
+/-- Make a `NameSet` containing all prefixes of `n`. -/
+def Lean.Name.prefixes (n : Name) : NameSet :=
+  NameSet.insert (n := n) <| match n with
+    | anonymous => ∅
+    | str n' _ => n'.prefixes
+    | num n' _ => n'.prefixes
+
+/-- Collect all prefixes of names in `ns` into a single `NameSet`. -/
+def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
+  ns.foldl (fun ns n => ns.union n.prefixes) ∅
+
+/-- Find a name in `ns` that starts with prefix `p`. -/
+def Lean.Name.prefixToName (p : Name) (ns : Array Name) : Option Name :=
+  ns.find? p.isPrefixOf
+
 namespace Mathlib.Linter
 
 /--
@@ -69,6 +84,21 @@ def find (r : NamePrefixRel) (n₁ n₂ : Name) : Option (Name × Name) :=
       then (n₁', n₂')
       else none
 
+/-- Get a prefix of `n₁` that is related to any prefix of the names in `ns`; return the prefixes.
+
+This should be more efficient than iterating over all names in `ns` and calling `find`,
+since it doesn't need to worry about overlapping prefixes.
+-/
+def findAny (r : NamePrefixRel) (n₁ : Name) (ns : Array Name) : Option (Name × Name) :=
+  let prefixes := Lean.Name.collectPrefixes ns
+  n₁.findPrefix fun n₁' => do
+    let ns ← r.find? n₁'
+    for n₂' in prefixes do
+      if ns.contains n₂'
+      then return (n₁', n₂')
+      else pure ()
+    none
+
 /-- Is a prefix of `n₁` related to a prefix of `n₂`? -/
 def contains (r : NamePrefixRel) (n₁ n₂ : Name) : Bool := (r.find n₁ n₂).isSome
 
@@ -112,11 +142,14 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageD
   unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
     return none
   let env ← getEnv
-  for imported in env.allImportedModuleNames do
-    match forbiddenImportDirs.find mainModule imported with
-    | some (n₁, n₂) => do
+  let imports := env.allImportedModuleNames
+  match forbiddenImportDirs.findAny mainModule imports with
+  | some (n₁, n₂) => do
+    if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
         return some m!"This module depends on {imported}, but modules starting with {n₁} are not allowed to import modules starting with {n₂} (exceptions can be added to `overrideAllowedImportDirs`)."
+      else
+        return some m!"Internal error in `directoryDependency` linter: this module claims to depend on a module starting with {n₂} but a module with that prefix was not found in the import graph."
   | none => pure ()
   return none
 
