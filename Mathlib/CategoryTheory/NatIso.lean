@@ -100,9 +100,11 @@ theorem trans_app {F G H : C ⥤ D} (α : F ≅ G) (β : G ≅ H) (X : C) :
     (α ≪≫ β).app X = α.app X ≪≫ β.app X :=
   rfl
 
+@[deprecated Iso.app_hom (since := "2025-03-11")]
 theorem app_hom {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).hom = α.hom.app X :=
   rfl
 
+@[deprecated Iso.app_hom (since := "2025-03-11")]
 theorem app_inv {F G : C ⥤ D} (α : F ≅ G) (X : C) : (α.app X).inv = α.inv.app X :=
   rfl
 
@@ -122,7 +124,7 @@ section
 Unfortunately we need a separate set of cancellation lemmas for components of natural isomorphisms,
 because the `simp` normal form is `α.hom.app X`, rather than `α.app.hom X`.
 
-(With the later, the morphism would be visibly part of an isomorphism, so general lemmas about
+(With the latter, the morphism would be visibly part of an isomorphism, so general lemmas about
 isomorphisms would apply.)
 
 In the future, we should consider a redesign that changes this simp norm form,
