@@ -103,24 +103,21 @@ def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
 ]
 
+end DirectoryDependency
+
+open DirectoryDependency
+
 @[inherit_doc Mathlib.Linter.linter.directoryDependency]
-def directoryDependencyLinter : Linter where run := withSetOptionIn fun stx ↦ do
+def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageData) := do
   unless Linter.getLinterValue linter.directoryDependency (← getOptions) do
-    return
-  if (← get).messages.hasErrors then
-    return
-  let mainModule ← getMainModule
+    return none
   let env ← getEnv
   for imported in env.allImportedModuleNames do
     match forbiddenImportDirs.find mainModule imported with
     | some (n₁, n₂) => do
       if !overrideAllowedImportDirs.contains mainModule imported then
-        Linter.logLint linter.directoryDependency stx
-          m!"This module depends on {imported}, but modules starting with {n₁} are not allowed to import modules starting with {n₂} (exceptions can be added to `overrideAllowedImportDirs`)."
-    | none => pure ()
-
-initialize addLinter directoryDependencyLinter
-
-end DirectoryDependency
+        return some m!"This module depends on {imported}, but modules starting with {n₁} are not allowed to import modules starting with {n₂} (exceptions can be added to `overrideAllowedImportDirs`)."
+  | none => pure ()
+  return none
 
 end Mathlib.Linter
