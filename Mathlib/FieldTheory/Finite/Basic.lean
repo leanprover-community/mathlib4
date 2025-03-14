@@ -316,31 +316,19 @@ section frobenius
 
 variable (R) [CommRing R] [Algebra K R]
 
-open Classical (indefiniteDescription) in
-private noncomputable def frobeniusAlgHomAux [Nontrivial R] :
-    {f : R →ₐ[K] R // ∀ r, f r = r ^ q} :=
-  let p := indefiniteDescription _ (card' K)
-  let n := indefiniteDescription _ p.2.2
-  have := p.2.1
-  have : ExpChar K p := ExpChar.prime n.2.1
-  have := expChar_of_injective_algebraMap (algebraMap K R).injective p
-  ⟨⟨iterateFrobenius R p n,
-    fun k ↦ (iterateFrobenius_def ..).trans <| by rw [← map_pow, ← n.2.2, pow_card]⟩,
-    fun r ↦ (iterateFrobenius_def ..).trans <| by rw [← n.2.2]⟩
-
 /-- If `R` is an algebra over a finite field `K`, the Frobenius `K`-algebra endomorphism of `R` is
   given by raising every element of `R` to its `#K`-th power. -/
 @[simps!] def frobeniusAlgHom : R →ₐ[K] R where
   __ := powMonoidHom q
   map_zero' := zero_pow Fintype.card_pos.ne'
   map_add' _ _ := by
-    simp_rw [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply]
+    obtain ⟨p, _, _, hp, card_eq⟩ := card' K
     nontriviality R
-    simp_rw [← (frobeniusAlgHomAux K R).2]
-    apply map_add
-  commutes' _ := by
-    nontriviality R
-    exact ((frobeniusAlgHomAux K R).2 _).symm.trans (AlgHom.commutes ..)
+    have : CharP R p := charP_of_injective_algebraMap' K R p
+    have : ExpChar R p := .prime hp
+    simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
+    exact add_pow_expChar_pow ..
+  commutes' _ := by simp [← RingHom.map_pow, pow_card]
 
 theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
 
