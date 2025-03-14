@@ -231,7 +231,7 @@ def ensureProxyEquiv (config : ProxyEquivConfig) (indVal : InductiveVal) : TermE
           type := ← inferType equiv'
           value := equiv' }
       setProtected config.proxyEquivName
-      addDocString config.proxyEquivName s!"An equivalence between the \"proxy type\" \
+      addDocStringCore config.proxyEquivName s!"An equivalence between the \"proxy type\" \
         `{config.proxyName}` and `{indVal.name}`. The proxy type is a reducible definition \
         that represents the inductive type using `Unit`, `PLift`, `Sigma`, `Empty`, and `Sum` \
         (and whatever other inductive types appear within the inductive type), and the \
