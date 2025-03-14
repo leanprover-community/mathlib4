@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Equiv.Basic
+import Mathlib.Algebra.Module.Rat
 import Mathlib.Data.Bracket
 import Mathlib.Tactic.Abel
 
@@ -65,7 +66,7 @@ class LieRing (L : Type v) extends AddCommGroup L, Bracket L L where
 
 /-- A Lie algebra is a module with compatible product, known as the bracket, satisfying the Jacobi
 identity. Forgetting the scalar multiplication, every Lie algebra is a Lie ring. -/
-class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
+@[ext] class LieAlgebra (R : Type u) (L : Type v) [CommRing R] [LieRing L] extends Module R L where
   /-- A Lie algebra bracket is compatible with scalar multiplication in its second argument.
 
   The compatibility in the first argument is not a class property, but follows since every
@@ -121,6 +122,14 @@ lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M]
 end IsLieTower
 
 section BasicProperties
+
+theorem LieAlgebra.toModule_injective (L : Type*) [LieRing L] :
+    Function.Injective (@LieAlgebra.toModule _ _ _ _ : LieAlgebra ℚ L → Module ℚ L) := by
+  rintro ⟨h₁⟩ ⟨h₂⟩ heq
+  congr
+
+instance (L : Type*) [LieRing L] : Subsingleton (LieAlgebra ℚ L) :=
+  LieAlgebra.toModule_injective L |>.subsingleton
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
 variable [CommRing R] [LieRing L] [LieAlgebra R L]

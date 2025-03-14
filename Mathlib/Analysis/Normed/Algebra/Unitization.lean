@@ -232,7 +232,7 @@ noncomputable instance instMetricSpace : MetricSpace (Unitization 𝕜 A) :=
 algebra homomorphism `Unitization.splitMul 𝕜 A`. -/
 noncomputable instance instNormedRing : NormedRing (Unitization 𝕜 A) where
   dist_eq := normedRingAux.dist_eq
-  norm_mul := normedRingAux.norm_mul
+  norm_mul_le := normedRingAux.norm_mul_le
   norm := normedRingAux.norm
 
 /-- Pull back the normed algebra structure from `𝕜 × (A →L[𝕜] A)` to `Unitization 𝕜 A` using the

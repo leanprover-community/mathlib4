@@ -587,7 +587,7 @@ instance (priority := 100) isAtomic_of_complementedLattice [ComplementedLattice 
 /-- See [Lemma 5.1][calugareanu]. -/
 instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLattice α] :
     IsAtomistic α :=
-  ⟨fun b =>
+  CompleteLattice.isAtomistic_iff.2 fun b =>
     ⟨{ a | IsAtom a ∧ a ≤ b }, by
       symm
       have hle : sSup { a : α | IsAtom a ∧ a ≤ b } ≤ b := sSup_le fun _ => And.right
@@ -600,7 +600,7 @@ instance (priority := 100) isAtomistic_of_complementedLattice [ComplementedLatti
         rw [eq_bot_iff]
         apply le_trans (le_inf _ hac) hc.disjoint.le_bot
         rw [← Subtype.coe_le_coe, Subtype.coe_mk]
-        exact le_sSup ⟨ha.of_isAtom_coe_Iic, a.2⟩, fun _ => And.left⟩⟩
+        exact le_sSup ⟨ha.of_isAtom_coe_Iic, a.2⟩, fun _ => And.left⟩
 
 /-!
 Now we will prove that a compactly generated modular atomistic lattice is a complemented lattice.

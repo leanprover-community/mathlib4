@@ -41,7 +41,6 @@ theorem tendsto_atTop_finset_of_monotone [Preorder β] {f : β → Finset α} (h
 
 alias _root_.Monotone.tendsto_atTop_finset := tendsto_atTop_finset_of_monotone
 
--- Porting note: add assumption `DecidableEq β` so that the lemma applies to any instance
 theorem tendsto_finset_image_atTop_atTop [DecidableEq β] {i : β → γ} {j : γ → β}
     (h : Function.LeftInverse j i) : Tendsto (Finset.image j) atTop atTop :=
   (Finset.image_mono j).tendsto_atTop_finset fun a =>
