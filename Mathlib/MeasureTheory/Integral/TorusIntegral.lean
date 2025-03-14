@@ -62,6 +62,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 noncomputable section
 
 open Complex Set MeasureTheory Function Filter TopologicalSpace
+open Mathlib.Tactic (superscriptTerm)
 
 open scoped Real
 
