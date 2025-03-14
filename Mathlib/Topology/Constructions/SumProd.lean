@@ -139,7 +139,7 @@ def PartialHomeomorph.prod_withoutAtlas
   toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
 /-- The product of two charted space structures -/
-def prodChartedSpace_withoutAtlas (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
+def prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
     [h : ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
     [h' : ChartedSpace H' M'] : ChartedSpace (H × H') (M × M') where
   atlas := image2 PartialHomeomorph.prod_withoutAtlas h.atlas h'.atlas
@@ -153,13 +153,13 @@ instance instTopologicalSpaceProd [t₁ : TopologicalSpace X] [t₂ : Topologica
     TopologicalSpace (X × Y) where
   toTopologicalSpaceWithoutAtlas :=
     (induced Prod.fst t₁ ⊓ induced Prod.snd t₂).toTopologicalSpaceWithoutAtlas
-  chartedSpaceSelf := prodChartedSpace_withoutAtlas X X Y Y
+  chartedSpaceSelf := prodChartedSpace X X Y Y
   chartedSpaceSelf_eq_id := by
     letI := topologicalSpaceProdAux (X := X) (Y := Y)
     have A : (PartialHomeomorph.refl X).prod_withoutAtlas (PartialHomeomorph.refl Y) =
         (PartialHomeomorph.refl (X × Y)) :=
       PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) univ_prod_univ
-    simp only [prodChartedSpace_withoutAtlas, chartAt_self_eq, chartedSpaceSelfId]
+    simp only [prodChartedSpace, chartAt_self_eq, chartedSpaceSelfId]
     ext : 2
     · simp [t₁.chartedSpaceSelf_eq_id, t₂.chartedSpaceSelf_eq_id, A, eq_comm]
     · simp [A]
@@ -167,6 +167,13 @@ instance instTopologicalSpaceProd [t₁ : TopologicalSpace X] [t₂ : Topologica
 lemma instTopologicalSpaceProd_eq_induced [t₁ : TopologicalSpace X] [t₂ : TopologicalSpace Y] :
     instTopologicalSpaceProd (X := X) (Y := Y) = induced Prod.fst t₁ ⊓ induced Prod.snd t₂ :=
   ext_iff_nhds.mpr (congrFun rfl)
+
+attribute [instance] prodChartedSpace
+
+/-- Check that there is no diamond for charted spaces on products -/
+example (H H' : Type*) [TopologicalSpace H] [TopologicalSpace H'] :
+    prodChartedSpace H H H' H' = instChartedSpaceSelf (H × H') := by
+  with_reducible_and_instances rfl
 
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]

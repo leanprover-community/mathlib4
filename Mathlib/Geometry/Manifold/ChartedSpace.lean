@@ -739,21 +739,6 @@ lemma chartedSpace_of_discreteTopology_chartAt [TopologicalSpace M] [Topological
 
 section Products
 
-/-- The product of two charted spaces is naturally a charted space, with the canonical
-construction of the atlas of product maps. -/
-instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [TopologicalSpace M]
-    [ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
-    [ChartedSpace H' M'] : ChartedSpace (H × H') (M × M') where
-  atlas := image2 PartialHomeomorph.prod (atlas H M) (atlas H' M')
-  chartAt x := (chartAt H x.1).prod (chartAt H' x.2)
-  mem_chart_source x := ⟨mem_chart_source H x.1, mem_chart_source H' x.2⟩
-  chart_mem_atlas x := mem_image2_of_mem (chart_mem_atlas H x.1) (chart_mem_atlas H' x.2)
-
-/-- Check that there is no diamond for charted spaces on products -/
-example (H H' : Type*) [TopologicalSpace H] [TopologicalSpace H'] :
-    prodChartedSpace H H H' H' = instChartedSpaceSelf (H × H') := by
-  with_reducible_and_instances rfl
-
 section prodChartedSpace
 
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [TopologicalSpace H']
