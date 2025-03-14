@@ -218,9 +218,8 @@ theorem mdifferentiableWithinAt_iff_target :
         ContinuousWithinAt f s x :=
       and_iff_left_of_imp <| (continuousAt_extChartAt _).comp_continuousWithinAt
   simp_rw [cont, DifferentiableWithinAtProp, extChartAt, PartialHomeomorph.extend,
-    PartialEquiv.coe_trans,
-    ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe, modelWithCornersSelf_coe,
-    chartAt_self_eq, PartialHomeomorph.refl_apply]
+    PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe, PartialHomeomorph.coe_coe,
+    modelWithCornersSelf_coe, chartAt_self_eq]
   rfl
 
 theorem mdifferentiableAt_iff_target {x : M} :
@@ -276,6 +275,9 @@ theorem mdifferentiableWithinAt_iff_target_of_mem_source
   simp_rw [((chartAt H' y).continuousAt hy).comp_continuousWithinAt hf]
   rw [← extChartAt_source I'] at hy
   simp_rw [(continuousAt_extChartAt' hy).comp_continuousWithinAt hf]
+  simp only [DifferentiableWithinAtProp, true_and, modelWithCornersSelf_coe, extChartAt,
+    PartialHomeomorph.extend, PartialEquiv.coe_trans, ModelWithCorners.toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, CompTriple.comp_eq]
   rfl
 
 theorem mdifferentiableAt_iff_target_of_mem_source
@@ -430,11 +432,11 @@ theorem mdifferentiableOn_iff_target :
     PartialHomeomorph.extend, Set.preimage_univ, Set.inter_univ, and_congr_right_iff]
   intro h
   constructor
-  · refine fun h' y => ⟨?_, fun x _ => h' x y⟩
+  · refine fun h' y => ⟨?_, fun x _ => by simpa using h' x y⟩
     have h'' : ContinuousOn _ univ := (ModelWithCorners.continuous I').continuousOn
     convert (h''.comp_inter (chartAt H' y).continuousOn_toFun).comp_inter h
     simp
-  · exact fun h' x y => (h' y).2 x 0
+  · exact fun h' x y => by simpa using (h' y).2 x 0
 
 /-- One can reformulate smoothness as continuity and smoothness in any extended chart. -/
 theorem mdifferentiable_iff :

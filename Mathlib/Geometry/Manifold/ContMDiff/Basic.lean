@@ -390,7 +390,7 @@ lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     simp only [mfld_simps]
     have : I.symm z ∈ range e := by
       rw [ModelWithCorners.symm, ← mem_preimage]
-      exact hz.2.1
+      simpa using hz.2.1
     rw [h.toPartialHomeomorph_right_inv e this]
     apply I.right_inv
     exact mem_of_subset_of_mem (extChartAt_target_subset_range _) hz.1
