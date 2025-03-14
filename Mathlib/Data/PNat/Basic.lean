@@ -127,7 +127,7 @@ instance addLeftReflectLT : AddLeftReflectLT ℕ+ :=
   Positive.addLeftReflectLT
 
 /-- The order isomorphism between ℕ and ℕ+ given by `succ`. -/
-@[simps! (config := .asFn) apply]
+@[simps! -fullyApplied apply]
 def _root_.OrderIso.pnatIsoNat : ℕ+ ≃o ℕ where
   toEquiv := Equiv.pnatEquivNat
   map_rel_iff' := natPred_le_natPred
@@ -153,9 +153,9 @@ def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
     (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
   apply strongInductionOn a
   rintro ⟨k, kprop⟩ hk
-  cases' k with k
+  rcases k with - | k
   · exact (lt_irrefl 0 kprop).elim
-  cases' k with k
+  rcases k with - | k
   · exact hz
   exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
 
@@ -166,7 +166,7 @@ def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (
   rcases n with ⟨n, h⟩
   induction' n with n IH
   · exact absurd h (by decide)
-  · cases' n with n
+  · rcases n with - | n
     · exact one
     · exact succ _ (IH n.succ_pos)
 
@@ -177,7 +177,7 @@ theorem recOn_one {p} (one succ) : @PNat.recOn 1 p one succ = one :=
 @[simp]
 theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (one succ) :
     @PNat.recOn (n + 1) p one succ = succ n (@PNat.recOn n p one succ) := by
-  cases' n with n h
+  obtain ⟨n, h⟩ := n
   cases n <;> [exact absurd h (by decide); rfl]
 
 @[simp]
@@ -313,8 +313,6 @@ theorem mod_le (m k : ℕ+) : mod m k ≤ m ∧ mod m k ≤ k := by
     · rw [h₁, mul_zero] at hm
       exact (lt_irrefl _ hm).elim
     · let h₂ : (k : ℕ) * 1 ≤ k * (m / k) :=
-        -- Porting note: Specified type of `h₂` explicitly because `rw` could not unify
-        -- `succ 0` with `1`.
         Nat.mul_le_mul_left (k : ℕ) (Nat.succ_le_of_lt (Nat.pos_of_ne_zero h₁))
       rw [mul_one] at h₂
       exact ⟨h₂, le_refl (k : ℕ)⟩

@@ -148,6 +148,11 @@ def edge : SimpleGraph V := fromEdgeSet {s(s, t)}
 lemma edge_adj (v w : V) : (edge s t).Adj v w ↔ (v = s ∧ w = t ∨ v = t ∧ w = s) ∧ v ≠ w := by
   rw [edge, fromEdgeSet_adj, Set.mem_singleton_iff, Sym2.eq_iff]
 
+lemma adj_edge {v w : V} : (edge s t).Adj v w ↔ s(s, t) = s(v, w) ∧ v ≠ w := by
+  simp only [edge_adj, ne_eq, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk,
+    and_congr_left_iff]
+  tauto
+
 lemma edge_comm : edge s t = edge t s := by
   rw [edge, edge, Sym2.eq_swap]
 
@@ -174,6 +179,15 @@ lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,
     mem_edgeSet]
+
+lemma disjoint_edge {u v : V} : Disjoint G (edge u v) ↔ ¬G.Adj u v := by
+  by_cases h : u = v
+  · subst h
+    simp [edge_self_eq_bot]
+  simp [← disjoint_edgeSet, edge_edgeSet_of_ne h]
+
+lemma sdiff_edge {u v : V} (h : ¬G.Adj u v) : G \ edge u v = G := by
+  simp [disjoint_edge, h]
 
 theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
     H.spanningCoe ≤ G := by

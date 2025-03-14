@@ -86,21 +86,21 @@ end Field
 
 section
 
-variable (K L : Type*) {R S A : Type*}
+variable (K L R : Type*) {A : Type*}
 
 section Ring
 
-variable [CommRing K] [Nontrivial K] [Ring A] [Algebra K A]
+variable [CommRing R] [Nontrivial R] [Ring A] [Algebra R A]
 
-theorem IsAlgebraic.of_finite (e : A) [Module.Finite K A] : IsAlgebraic K e :=
-  (IsIntegral.of_finite K e).isAlgebraic
+theorem IsAlgebraic.of_finite (e : A) [Module.Finite R A] : IsAlgebraic R e :=
+  (IsIntegral.of_finite R e).isAlgebraic
 
 variable (A)
 
 /-- A field extension is algebraic if it is finite. -/
 @[stacks 09GG "first part"]
-instance Algebra.IsAlgebraic.of_finite [Module.Finite K A] : Algebra.IsAlgebraic K A :=
-  (IsIntegral.of_finite K A).isAlgebraic
+instance Algebra.IsAlgebraic.of_finite [Module.Finite R A] : Algebra.IsAlgebraic R A :=
+  (IsIntegral.of_finite R A).isAlgebraic
 
 end Ring
 

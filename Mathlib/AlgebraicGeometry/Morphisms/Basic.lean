@@ -642,4 +642,21 @@ end HasAffineProperty
 
 end targetAffineLocally
 
+open MorphismProperty
+
+lemma hasOfPostcompProperty_isOpenImmersion_of_morphismRestrict (P : MorphismProperty Scheme)
+    [P.RespectsIso] (H : ∀ {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens), P f → P (f ∣_ U)) :
+    P.HasOfPostcompProperty @IsOpenImmersion where
+  of_postcomp {X Y Z} f g hg hfg := by
+    have : (f ≫ g) ⁻¹ᵁ g.opensRange = ⊤ := by simp
+    have : f = X.topIso.inv ≫ (X.isoOfEq this).inv ≫ (f ≫ g) ∣_ g.opensRange ≫
+        (IsOpenImmersion.isoOfRangeEq g.opensRange.ι g (by simp)).hom := by
+      simp [← cancel_mono g]
+    simp_rw [this, cancel_left_of_respectsIso (P := P), cancel_right_of_respectsIso (P := P)]
+    exact H _ _ hfg
+
+instance (P : MorphismProperty Scheme) [P.IsStableUnderBaseChange] :
+    P.HasOfPostcompProperty @IsOpenImmersion :=
+  HasOfPostcompProperty.of_le P (.monomorphisms Scheme) (fun _ _ f _ ↦ inferInstanceAs (Mono f))
+
 end AlgebraicGeometry

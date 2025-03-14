@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Pi
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Filter.Defs
 
@@ -432,8 +432,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
         rcases h a b with ⟨c, ha, hb⟩
         exact ⟨c, inter_mem (ha hx) (hb hy)⟩ }
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
-  -- Porting note: it was just `congr_arg filter.sets this.symm`
-  (congr_arg Filter.sets this.symm).trans <| by simp only [u]
+  congr_arg Filter.sets this.symm
 
 theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
@@ -591,8 +590,6 @@ protected theorem Eventually.and {p q : α → Prop} {f : Filter α} :
 theorem Eventually.of_forall {p : α → Prop} {f : Filter α} (hp : ∀ x, p x) : ∀ᶠ x in f, p x :=
   univ_mem' hp
 
-@[deprecated (since := "2024-08-02")] alias eventually_of_forall := Eventually.of_forall
-
 @[simp]
 theorem eventually_false_iff_eq_bot {f : Filter α} : (∀ᶠ _ in f, False) ↔ f = ⊥ :=
   empty_mem_iff_bot
@@ -701,8 +698,6 @@ theorem Eventually.frequently {f : Filter α} [NeBot f] {p : α → Prop} (h : �
 theorem Frequently.of_forall {f : Filter α} [NeBot f] {p : α → Prop} (h : ∀ x, p x) :
     ∃ᶠ x in f, p x :=
   Eventually.frequently (Eventually.of_forall h)
-
-@[deprecated (since := "2024-08-02")] alias frequently_of_forall := Frequently.of_forall
 
 theorem Frequently.mp {p q : α → Prop} {f : Filter α} (h : ∃ᶠ x in f, p x)
     (hpq : ∀ᶠ x in f, p x → q x) : ∃ᶠ x in f, q x :=
@@ -1107,7 +1102,7 @@ theorem Eventually.ne_of_lt [Preorder β] {l : Filter α} {f g : α → β} (h :
     ∀ᶠ x in l, f x ≠ g x :=
   h.mono fun _ hx => hx.ne
 
-theorem Eventually.ne_top_of_lt [PartialOrder β] [OrderTop β] {l : Filter α} {f g : α → β}
+theorem Eventually.ne_top_of_lt [Preorder β] [OrderTop β] {l : Filter α} {f g : α → β}
     (h : ∀ᶠ x in l, f x < g x) : ∀ᶠ x in l, f x ≠ ⊤ :=
   h.mono fun _ hx => hx.ne_top
 

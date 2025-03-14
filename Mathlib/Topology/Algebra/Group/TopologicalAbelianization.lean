@@ -26,7 +26,7 @@ group, topological abelianization
 
 -/
 
-variable (G : Type*) [Group G] [TopologicalSpace G] [TopologicalGroup G]
+variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 
 instance instNormalCommutatorClosure : (commutator G).topologicalClosure.Normal :=
   Subgroup.is_normal_topologicalClosure (commutator G)

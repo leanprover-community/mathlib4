@@ -59,7 +59,8 @@ end TensorAlgebra
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
 
--- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
+-- The `Inhabited, Semiring, Algebra` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
 instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
 
@@ -190,8 +191,6 @@ theorem induction {C : TensorAlgebra R M → Prop}
       mul_mem' := @mul
       add_mem' := @add
       algebraMap_mem' := algebraMap }
-  -- Porting note: Added `h`. `h` is needed for `of`.
-  let h : AddCommMonoid s := inferInstanceAs (AddCommMonoid (Subalgebra.toSubmodule s))
   let of : M →ₗ[R] s := (TensorAlgebra.ι R).codRestrict (Subalgebra.toSubmodule s) ι
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (TensorAlgebra R M) = s.val.comp (lift R of) := by
