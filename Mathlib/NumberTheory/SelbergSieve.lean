@@ -60,7 +60,9 @@ class BoundingSieve where
   /-- The set of natural numbers that is to be sifted. The fundamental lemma yields an upper bound
     on the size of this set after the multiples of small primes have been removed. -/
   support : Finset ℕ
-  /-- The finite set of prime numbers whose multiples are to be sifted from `support`. -/
+  /-- The finite set of prime numbers whose multiples are to be sifted from `support`. We work with
+    their product because it lets us treat `nu` as a multiplicative arithmetic function. It also
+    plays well with Moebius inversion. -/
   prodPrimes : ℕ
   prodPrimes_squarefree : Squarefree prodPrimes
   /-- A sequence representing how much each element of `support` should be weighted. -/
@@ -176,7 +178,7 @@ def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 @[inherit_doc rem]
 scoped [SelbergSieve.Notation] notation3 "R" => rem
 
-/-- The weight of all the elements that are not a multiples of any of our finite set of primes. -/
+/-- The weight of all the elements that are not a multiple of any of our finite set of primes. -/
 def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
 
 /-- `X * mainSum μ⁺` is the main term in the upper bound on `sifted_sum`-/
@@ -197,10 +199,10 @@ theorem siftedsum_eq_sum_support_mul_ite :
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
   coefficients then yield an upper bound on the sifted sum.-/
-def UpperMoebius (muPlus : ℕ → ℝ) : Prop :=
+def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
-theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muPlus) :
+theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := by
   have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d := h
   calc siftedSum ≤
@@ -221,7 +223,7 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebiu
     rw [sum_comm]
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
-theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muPlus) :
+theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ X * mainSum muPlus + errSum muPlus := by
   calc siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := siftedSum_le_sum_of_upperMoebius _ h
    _ ≤ X * ∑ d ∈ divisors P, muPlus d * ν d + ∑ d ∈ divisors P, muPlus d * R d := ?caseA
