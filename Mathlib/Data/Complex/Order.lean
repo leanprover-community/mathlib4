@@ -44,7 +44,6 @@ protected def partialOrder : PartialOrder ℂ where
 
 namespace _root_.ComplexOrder
 
--- Porting note: made section into namespace to allow scoping
 scoped[ComplexOrder] attribute [instance] Complex.partialOrder
 
 end _root_.ComplexOrder
