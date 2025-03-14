@@ -523,8 +523,8 @@ theorem Acc.list_chain' {l : List.chains r} (acc : ∀ a ∈ l.val.head?, Acc r 
       apply Acc.intro
       rintro ⟨_ | ⟨b, m⟩, hm⟩ (_ | hr | hr)
       · apply Acc.intro; rintro ⟨_⟩ ⟨_⟩
-      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
       · apply ih b hr
+      · apply ihl ⟨m, (List.chain'_cons'.1 hm).2⟩ hr
 
 /-- If `r` is well-founded, the lexicographic order on `r`-decreasing chains is also. -/
 theorem WellFounded.list_chain' (hwf : WellFounded r) :

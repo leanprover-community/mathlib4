@@ -39,7 +39,7 @@ Retrieve all names in the environment satisfying a predicate,
 gathered together into a `HashMap` according to the module they are defined in.
 -/
 def allNamesByModule (p : Name → Bool) : CoreM (Std.HashMap Name (Array Name)) := do
-  (← getEnv).constants.foldM (init := Std.HashMap.empty) fun names n _ => do
+  (← getEnv).constants.foldM (init := ∅) fun names n _ => do
     if p n && !(← isBlackListed n) then
       let some m ← findModuleOf? n | return names
       -- TODO use `modify` and/or `alter` when available
