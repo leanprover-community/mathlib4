@@ -3943,7 +3943,6 @@ import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
-import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 import Mathlib.MeasureTheory.Constructions.Projective
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient

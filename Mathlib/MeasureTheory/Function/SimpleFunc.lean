@@ -1137,7 +1137,7 @@ It is possible to make the hypotheses in `h_add` a bit stronger, and such condit
 once we need them (for example it is only necessary to consider the case where `g` is a multiple
 of a characteristic function, and that this multiple doesn't appear in the image of `f`) -/
 @[elab_as_elim]
-protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : SimpleFunc α γ → Prop}
+protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : SimpleFunc α γ → Prop}
     (h_ind :
       ∀ (c) {s} (hs : MeasurableSet s),
         P (SimpleFunc.piecewise s hs (SimpleFunc.const _ c) (SimpleFunc.const _ 0)))
