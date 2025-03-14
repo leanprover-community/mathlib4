@@ -646,7 +646,7 @@ theorem Ideal.isPrime_of_prime {P : Ideal A} (h : Prime P) : IsPrime P := by
   refine ⟨?_, fun hxy => ?_⟩
   · rintro rfl
     rw [← Ideal.one_eq_top] at h
-    exact h.not_isUnit isUnit_one
+    exact h.not_unit isUnit_one
   · simp only [← Ideal.dvd_span_singleton, ← Ideal.span_singleton_mul_span_singleton] at hxy ⊢
     exact h.dvd_or_dvd hxy
 
