@@ -23,10 +23,11 @@ structure GBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Type*)
   coordChange_structure_group :
     ∀ i j, ∀ x ∈ baseSet i ∩ baseSet j, ∃ g : G, ∀ v : F, coordChange i j x v = g • v
 
-instance {n : ℕ} : MulAction (orthogonalGroup (Fin n) ℝ) (Fin n -> ℝ) where
+-- TODO: move to better location
+instance {α : Type*} [DecidableEq α] [Fintype α] : MulAction (orthogonalGroup α ℝ) (α -> ℝ) where
   smul g x := g.1.mulVec x
   one_smul x := by
-    change (1 : orthogonalGroup (Fin n) ℝ).1.mulVec x = x
+    change (1 : orthogonalGroup α ℝ).1.mulVec x = x
     simp [Matrix.mulVec_one]
   mul_smul := fun f g x => by
     show (f * g).1.mulVec x = f.1.mulVec (g.1.mulVec x)
