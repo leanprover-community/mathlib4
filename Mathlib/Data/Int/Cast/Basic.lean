@@ -45,7 +45,9 @@ namespace Int
 
 variable {R : Type u} [AddGroupWithOne R]
 
-@[simp]
+-- TODO: I don't like that `norm_cast` is used here, because it results in `norm_cast`
+-- introducing the "implementation detail" `Int.negSucc`.
+@[simp, norm_cast squash]
 theorem cast_negSucc (n : ℕ) : (-[n+1] : R) = -(n + 1 : ℕ) :=
   AddGroupWithOne.intCast_negSucc n
 -- expected `n` to be implicit, and `HasLiftT`

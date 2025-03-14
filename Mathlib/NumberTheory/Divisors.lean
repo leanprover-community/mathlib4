@@ -568,7 +568,13 @@ lemma mem_divisorsAntidiag :
     norm_cast
     aesop
   | (n : ℕ), (negSucc x, (y : ℕ)) => by
-    simp [divisorsAntidiag, eq_comm, negSucc_eq]
+    -- simp? [divisorsAntidiag, eq_comm, negSucc_eq] generates this monstrosity:
+    simp only [divisorsAntidiag, disjUnion_eq_union, negSucc_eq, neg_add_rev, reduceNeg, mem_union,
+      mem_map, Nat.mem_divisorsAntidiagonal, eq_comm, ne_eq, Function.Embedding.coe_prodMap,
+      Prod.exists, Prod.map_apply, Nat.castEmbedding_apply, Prod.mk.injEq, Nat.cast_inj,
+      exists_eq_right_right', Function.Embedding.trans_apply, Equiv.coe_toEmbedding,
+      Equiv.neg_apply, Nat.cast_eq_neg_cast, existsAndEq, mul_zero, and_not_self, and_true,
+      false_and, exists_const, or_false, Nat.cast_eq_zero]
     simp only [← Int.neg_add, Int.add_comm 1, Int.neg_mul, Int.add_mul]
     norm_cast
     match n with
