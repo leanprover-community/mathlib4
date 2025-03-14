@@ -370,12 +370,15 @@ lemma spine_δ_arrow_eq (h : j = i.succ.castSucc) :
 end StrictSegal
 end SSet
 
+namespace CategoryTheory.Nerve
+
 open SSet
+
+variable (C : Type u) [Category.{v} C]
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine.
 Indeed, this property describes the essential image of the nerve functor. -/
-noncomputable def CategoryTheory.Nerve.strictSegal
-  (C : Type u) [Category.{v} C] : StrictSegal (nerve C) where
+noncomputable def strictSegal : StrictSegal (nerve C) where
   spineToSimplex {n} F :=
     ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)
       (fun i ↦ eqToHom (Functor.congr_obj (F.arrow_src i).symm 0) ≫
@@ -396,3 +399,8 @@ noncomputable def CategoryTheory.Nerve.strictSegal
     · intro i hi
       dsimp
       exact ComposableArrows.mkOfObjOfMapSucc_map_succ _ _ i hi
+
+instance isStrictSegal : IsStrictSegal (nerve C) :=
+  strictSegal C |>.isStrictSegal
+
+end CategoryTheory.Nerve
