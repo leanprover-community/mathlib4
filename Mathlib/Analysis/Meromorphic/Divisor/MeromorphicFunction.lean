@@ -49,8 +49,7 @@ noncomputable def divisor (f : 𝕜 → E) (hf : MeromorphicOn f U) :
   supportDiscreteWithinDomain' := by
     filter_upwards [mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
       hf.codiscrete_setOf_order_eq_zero_or_top]
-    intro _ _
-    simp_all only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_right,
+    simp only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_right,
       exists_eq_right, Pi.zero_apply, dite_eq_right_iff, WithTop.untopD_eq_self_iff,
       WithTop.coe_zero]
     tauto
