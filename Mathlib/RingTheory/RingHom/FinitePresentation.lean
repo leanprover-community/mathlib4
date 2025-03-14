@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.RingTheory.Localization.Finiteness
-import Mathlib.RingTheory.MvPolynomial.Localization
 import Mathlib.RingTheory.RingHom.FiniteType
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
 
@@ -118,8 +117,6 @@ lemma of_span_eq_top_target (s : Set S) (hs : Ideal.span (s : Set S) = ⊤)
 end Algebra.FinitePresentation
 
 namespace RingHom
-
-attribute [local instance] MvPolynomial.algebraMvPolynomial
 
 /-- Being finitely-presented is stable under composition. -/
 theorem finitePresentation_stableUnderComposition : StableUnderComposition @FinitePresentation := by
