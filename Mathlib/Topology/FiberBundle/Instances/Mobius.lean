@@ -27,32 +27,41 @@ theorem g : u ∈  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
 def xh := ((⟨x, h⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
 def ug := ((⟨u, g⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
 
-noncomputable
-def V := chartAt (EuclideanSpace ℝ (Fin 1)) (⟨u, g⟩ : ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)))
-noncomputable
-def U := chartAt (EuclideanSpace ℝ (Fin 1)) (⟨x, h⟩ : ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)))
+/-- The constructed chart at u in the standard unit sphere S². -/
+noncomputable def V := chartAt (EuclideanSpace ℝ (Fin 1))
+  (⟨u, g⟩ : ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)))
+
+/-- The constructed chart at x in the standard unit sphere S². -/
+noncomputable def U := chartAt (EuclideanSpace ℝ (Fin 1))
+  (⟨x, h⟩ : ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)))
 
 instance : Fact (Module.finrank ℝ (EuclideanSpace ℝ (Fin 2)) = 1 + 1) :=
   ⟨(finrank_euclideanSpace_fin : Module.finrank ℝ (EuclideanSpace ℝ (Fin 2)) = 2)⟩
 
-lemma h8 : U.source = { x | x ≠ -xh} := by
-    calc U.source = (chartAt (EuclideanSpace ℝ (Fin 1)) xh).source := rfl
-         _ = (stereographic' 1 (-xh)).source := rfl
-         _ = {-xh}ᶜ := stereographic'_source (-xh)
-         _ = { x | x ≠ -xh } := rfl
+lemma h8 : U.source = { x | x ≠ -xh } :=
+  calc U.source = (chartAt (EuclideanSpace ℝ (Fin 1)) xh).source := rfl
+    _ = (stereographic' 1 (-xh)).source := rfl
+    _ = {-xh}ᶜ := stereographic'_source (-xh)
+    _ = { x | x ≠ -xh } := rfl
 
-lemma h9 : V.source = { x | x ≠ -ug} := by
-    calc V.source = (chartAt (EuclideanSpace ℝ (Fin 1)) ug).source := rfl
-         _ = (stereographic' 1 (-ug)).source := rfl
-         _ = {-ug}ᶜ := stereographic'_source (-ug)
-         _ = { x | x ≠ -ug } := rfl
+lemma h9 : V.source = { x | x ≠ -ug} :=
+  calc V.source = (chartAt (EuclideanSpace ℝ (Fin 1)) ug).source := rfl
+    _ = (stereographic' 1 (-ug)).source := rfl
+    _ = {-ug}ᶜ := stereographic'_source (-ug)
+    _ = { x | x ≠ -ug } := rfl
 
 noncomputable
 def MyCoordChange : Fin 2 → Fin 2 → (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) → EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
-      | 0, 0, _, α => α
-      | 0, 1, x, α => if (x.val 1) > 0 then α else -α
-      | 1, 0, x, α => if (x.val 1) > 0 then α else -α
-      | 1, 1, _, α => α
+  | 0, 0, _, α => α
+  | 0, 1, x, α => if (x.val 1) > 0 then α else -α
+  | 1, 0, x, α => if (x.val 1) > 0 then α else -α
+  | 1, 1, _, α => α
+
+theorem MyCoordChange_self_left :
+    ∀ x ∈ U.source,
+    ∀ (v : EuclideanSpace ℝ (Fin 1)), MyCoordChange 0 0 x v = v := by
+  intro x h v
+  rfl
 
 theorem MyCoordChange_self : ∀ (i : Fin 2),
     ∀ x ∈ (fun i => if i = 0 then U.source else V.source) i,
@@ -64,40 +73,19 @@ theorem MyCoordChange_self : ∀ (i : Fin 2),
         | 1 => rfl
     exact h
 
-noncomputable
-def f : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) → EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
-   | x, α => if (x.val 1) > 0 then α else -α
+noncomputable def f : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) → EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
+  | x, α => if (x.val 1) > 0 then α else -α
 
 lemma l (x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) (v : EuclideanSpace ℝ (Fin 1)) : f x (f x v) = v := by
-    by_cases h : x.val 1 > 0
-    case pos =>
-      simp [f, h]
-    case neg =>
-      simp [f, h]
+  by_cases h : x.val 1 > 0 <;> simp [f, h]
 
 theorem t1001 (x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)) (v : EuclideanSpace ℝ (Fin 1)) :
- MyCoordChange 1 0 x (MyCoordChange 0 1 x v) = v := by
-  have h3 : ∀ v, f x v = MyCoordChange 0 1 x v := by
-   intro h
-   rfl
-  have h4 : ∀ v, f x v = MyCoordChange 1 0 x v := by
-    intro h
-    rfl
-  have h8 : f x (f x v) = MyCoordChange 1 0 x (MyCoordChange 0 1 x v) := by rw [h3 v, h4]
-  have h9 : MyCoordChange 1 0 x (MyCoordChange 0 1 x v) = v := by rw [<-h8, l]
-  exact h9
+    MyCoordChange 1 0 x (MyCoordChange 0 1 x v) = v := by
+  simp_all only [MyCoordChange, Fin.isValue, ↓reduceIte, neg_neg, ite_self]
 
 theorem t0110 (x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)) (v : EuclideanSpace ℝ (Fin 1)) :
- MyCoordChange 0 1 x (MyCoordChange 1 0 x v) = v := by
-  have h3 : ∀ v, f x v = MyCoordChange 0 1 x v := by
-   intro h
-   rfl
-  have h4 : ∀ v, f x v = MyCoordChange 1 0 x v := by
-    intro h
-    rfl
-  have h8 : f x (f x v) = MyCoordChange 1 0 x (MyCoordChange 0 1 x v) := by rw [h3 v, h4]
-  have h9 : MyCoordChange 1 0 x (MyCoordChange 0 1 x v) = v := by rw [<-h8, l]
-  exact h9
+    MyCoordChange 0 1 x (MyCoordChange 1 0 x v) = v := by
+  simp_all [MyCoordChange]
 
 theorem MyCoordChange_comp : ∀ (i j k : Fin 2),
   ∀ x ∈ (fun i => if i = 0 then U.source else V.source) i ∩
@@ -117,29 +105,16 @@ theorem MyCoordChange_comp : ∀ (i j k : Fin 2),
         | 1, 1, 1 => rfl
     exact h
 
-theorem tOpen : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 } := by
-  let V := { x : EuclideanSpace ℝ (Fin 2) | x 1 > 0 }
-  have h1 : Continuous (fun (x: EuclideanSpace ℝ (Fin 2)) ↦ (0 : (fun x => ℝ) 1)) := continuous_const
-  have h2 :  ∀ (i : Fin 2), Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x i := continuous_apply
-  have h3 : Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x 1 := h2 1
-  have h4 : IsOpen V := isOpen_lt h1 h3
-  let U := { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 > 0 }
-  exact isOpen_induced_iff.mpr ⟨V, h4, rfl⟩
+theorem tOpen : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 } :=
+  isOpen_induced_iff.mpr ⟨{ x : EuclideanSpace ℝ (Fin 2) | x 1 > 0 },
+    isOpen_lt continuous_const (continuous_apply 1), rfl⟩
 
 theorem tOpen' : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 } := by
-  let V := { x : EuclideanSpace ℝ (Fin 2) | x 1 < 0 }
-  have h1 : Continuous (fun (x: EuclideanSpace ℝ (Fin 2)) => (0 : (fun x => ℝ) 1)) := continuous_const
-  have h2 :  ∀ (i : Fin 2), Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x i := continuous_apply
-  have h3 : Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x 1 := h2 1
-  have h4 : IsOpen V := isOpen_lt h3 h1
-  let U := { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 < 0 }
-  exact isOpen_induced_iff.mpr ⟨V, h4, rfl⟩
+  have h2 (i : Fin 2) : Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x i := continuous_apply i
+  exact isOpen_induced_iff.mpr ⟨{ x : EuclideanSpace ℝ (Fin 2) | x 1 < 0 },
+    isOpen_lt (h2 1) continuous_const, rfl⟩
 
-theorem t00 : ContinuousOn (fun p => MyCoordChange 0 0 p.1 p.2) (U.source ×ˢ univ) := by
-  have h1 : (fun (p : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) =>
-    MyCoordChange 0 0 p.fst p.snd) = (fun p => p.snd) := by rfl
-  rw [h1]
-  exact continuousOn_snd
+theorem t00 : ContinuousOn (fun p => MyCoordChange 0 0 p.1 p.2) (U.source ×ˢ univ) := continuousOn_snd
 
 lemma myNeg (a b : ℝ) : -!₂[a, b] = !₂[-a, -b] := by
   let x := ![a, b]
@@ -147,9 +122,8 @@ lemma myNeg (a b : ℝ) : -!₂[a, b] = !₂[-a, -b] := by
   have fleeg : -(![a, b]) = ![-a, -b] := by simp
   have flarg : -x = y := by rw [fleeg]
   have flurg : (WithLp.equiv 2 (Fin 2 → ℝ)) (-x) = -(WithLp.equiv 2 (Fin 2 → ℝ)) x := WithLp.equiv_neg 2 x
-  have florg : (WithLp.equiv 2 (Fin 2 → ℝ)) y = -(WithLp.equiv 2 (Fin 2 → ℝ)) x := by rw [flarg] at flurg; exact flurg
-  have flarq : !₂[-a, -b] = -!₂[a, b] := by exact florg
-  exact flarq.symm
+  rw [flarg] at flurg
+  exact flurg.symm
 
 theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := by
   let xh := ((⟨x, h⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
@@ -198,24 +172,26 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
       fun h => by
         have : (y.val 0) ^ 2 + (y.val 1) ^ 2 = 1 := h3da
         cases h with
-        | inl pos1 => rw [pos1, one_pow, ←sub_eq_zero, add_comm] at this
-                      have h1 : (y.val 1 ^ 2 + 1) + (- 1) = 0 := this
-                      have h2 : y.val 1 ^ 2 + (1 - 1) = (y.val 1 ^ 2 + 1) + (- 1) := by rw [add_assoc, sub_eq_add_neg]
-                      have h3 : y.val 1 ^ 2 + (1 - 1) = y.val 1 ^ 2 := by rw [sub_self, add_zero]
-                      have h4 : y.val 1 ^ 2 = 0 := by
-                        calc y.val 1 ^ 2 = y.val 1 ^ 2 + (1 - 1) := by rw [h3]
-                             _ = (y.val 1 ^ 2 + 1) + (- 1) := by rw [h2]
-                             _ = 0 := by rw [h1]
-                      exact sq_eq_zero_iff.mp h4
-        | inr neg1 => rw [neg1, neg_one_sq, ←sub_eq_zero, add_comm] at this
-                      have h1 : (y.val 1 ^ 2 + 1) + (- 1) = 0 := this
-                      have h2 : y.val 1 ^ 2 + (1 - 1) = (y.val 1 ^ 2 + 1) + (- 1) := by rw [add_assoc, sub_eq_add_neg]
-                      have h3 : y.val 1 ^ 2 + (1 - 1) = y.val 1 ^ 2 := by rw [sub_self, add_zero]
-                      have h4 : y.val 1 ^ 2 = 0 := by
-                        calc y.val 1 ^ 2 = y.val 1 ^ 2 + (1 - 1) := by rw [h3]
-                             _ = (y.val 1 ^ 2 + 1) + (- 1) := by rw [h2]
-                             _ = 0 := by rw [h1]
-                      exact sq_eq_zero_iff.mp h4⟩
+        | inl pos1 =>
+          rw [pos1, one_pow, ←sub_eq_zero, add_comm] at this
+          have h1 : (y.val 1 ^ 2 + 1) + (- 1) = 0 := this
+          have h2 : y.val 1 ^ 2 + (1 - 1) = (y.val 1 ^ 2 + 1) + (- 1) := by rw [add_assoc, sub_eq_add_neg]
+          have h3 : y.val 1 ^ 2 + (1 - 1) = y.val 1 ^ 2 := by rw [sub_self, add_zero]
+          have h4 : y.val 1 ^ 2 = 0 := by
+            calc y.val 1 ^ 2 = y.val 1 ^ 2 + (1 - 1) := by rw [h3]
+                  _ = (y.val 1 ^ 2 + 1) + (- 1) := by rw [h2]
+                  _ = 0 := by rw [h1]
+          exact sq_eq_zero_iff.mp h4
+        | inr neg1 =>
+          rw [neg1, neg_one_sq, ←sub_eq_zero, add_comm] at this
+          have h1 : (y.val 1 ^ 2 + 1) + (- 1) = 0 := this
+          have h2 : y.val 1 ^ 2 + (1 - 1) = (y.val 1 ^ 2 + 1) + (- 1) := by rw [add_assoc, sub_eq_add_neg]
+          have h3 : y.val 1 ^ 2 + (1 - 1) = y.val 1 ^ 2 := by rw [sub_self, add_zero]
+          have h4 : y.val 1 ^ 2 = 0 := by
+            calc y.val 1 ^ 2 = y.val 1 ^ 2 + (1 - 1) := by rw [h3]
+                  _ = (y.val 1 ^ 2 + 1) + (- 1) := by rw [h2]
+                  _ = 0 := by rw [h1]
+          exact sq_eq_zero_iff.mp h4⟩
 
     have bar1 : xh.val = !₂[1, 0]  := rfl
     have bar2 : ug.val = !₂[-1, 0] := rfl
@@ -225,15 +201,15 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
       intro hy1
       have h1 : y.val 0 = 1 ∨ y.val 0 = -1 := bar4.mp hy1
       cases h1 with
-      | inl hpos => have h3 : xh.val 0 = 1 := rfl
-                    have h4 : xh.val 1 = 0 := rfl
-                    have h5 : y.val = xh.val := by
-                      ext i
-                      fin_cases i
-                      · simp [hpos, h3]
-                      · simp [hy1, h4]
-                    have h6 : y.val = xh.val ∨ y.val = ug.val := Or.inl h5
-                    exact h6
+      | inl hpos =>
+        have h3 : xh.val 0 = 1 := rfl
+        have h4 : xh.val 1 = 0 := rfl
+        have h5 : y.val = xh.val := by
+          ext i
+          fin_cases i
+          · simp [hpos, h3]
+          · simp [hy1, h4]
+        exact Or.inl h5
       | inr hneg => have h3 : ug.val 0 = -1 := rfl
                     have h4 : ug.val 1 = 0 := rfl
                     have h5 : y.val = ug.val := by
@@ -246,19 +222,12 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
     have bar5b : y.val = xh.val ∨ y.val = ug.val -> y.val 1 = 0 := by
       intro h
       cases h with
-      | inl left => have h2 : y.val 1 = xh.val 1 := by rw [left]
-                    have h3 : xh.val 1 = 0 :=rfl
-                    have h4 : y.val 1 = 0 := by
-                      calc y.val 1 = xh.val 1 := h2
-                           _ = 0 := h3
-                    exact h4
-      | inr right => have h2 : y.val 1 = ug.val 1 := by rw [right]
-                     have h3 : ug.val 1 = 0 :=rfl
-                     have h4 : y.val 1 = 0 := by
-                      calc y.val 1 = ug.val 1 := h2
-                           _ = 0 := h3
-                     exact h4
-
+      | inl left =>
+        have h3 : xh.val 1 = 0 := rfl
+        rw [left, h3]
+      | inr right =>
+        have h3 : ug.val 1 = 0 := rfl
+        rw [right, h3]
     have bar5 : y.val 1 = 0 <-> y.val = xh.val ∨ y.val = ug.val := ⟨bar5a, bar5b⟩
     have fooo1 : y.val = (xh).val -> y = xh := Subtype.eq
     have fooo2 : y.val = (ug).val -> y = ug := Subtype.eq
@@ -286,8 +255,7 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
         have chit : y = -ug ∨ y = -xh := by cases h with
         | inl hxh => left; rw [bar8] at hxh; exact hxh
         | inr hug => right; rw [<-bar7] at hug; exact hug
-        have chot :  y = -xh ∨ y = -ug := or_comm.mp chit
-        exact chot
+        exact or_comm.mp chit
       · intro h
         cases h with
         | inl hxh_neg => right; rw [bar7] at hxh_neg; exact hxh_neg
@@ -301,16 +269,15 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
   simp [hq]
 
 lemma continuous_on_union_of_open {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-  (f : X → Y) :
-  ∀ (s t : Set X), IsOpen s → IsOpen t → ContinuousOn f s → ContinuousOn f t → ContinuousOn f (s ∪ t) := by
-  intro s t hso hto hcs hct
-  rw [continuousOn_open_iff (IsOpen.union hso hto)]
+    {f : X → Y} {s t : Set X} (hs : IsOpen s) (ht : IsOpen t)
+    (hfs : ContinuousOn f s) (hft : ContinuousOn f t) :
+    ContinuousOn f (s ∪ t) := by
+  rw [continuousOn_open_iff (IsOpen.union hs ht)]
   intro u hu
-  have h1 : ∀ u, IsOpen u → IsOpen (s ∩ f ⁻¹' u) := (continuousOn_open_iff hso).mp hcs
-  have h2 : ∀ u, IsOpen u → IsOpen (t ∩ f ⁻¹' u) := (continuousOn_open_iff hto).mp hct
   rw [inter_comm, Set.inter_union_distrib_left, inter_comm]
-  have h3 : IsOpen (f ⁻¹' u ∩ t) := by rw [Set.inter_comm]; exact h2 u hu
-  exact IsOpen.union (h1 u hu) h3
+  apply ((continuousOn_open_iff hs).mp hfs u hu).union
+  rw [Set.inter_comm]
+  exact (continuousOn_open_iff ht).mp hft u hu
 
 def s1 : Set ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) := { x | 0 < x.1.val 1 }
 
@@ -323,10 +290,8 @@ lemma barr : { x | 0 < x.1.val 1 } ⊆ {(x : (Metric.sphere (0 : EuclideanSpace 
   exact ⟨hx, trivial⟩
 
 lemma s1_is_open : IsOpen s1 := by
-  have h1 : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 } := tOpen
-  have h2 : IsOpen ({ x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 }×ˢ (univ : Set (EuclideanSpace ℝ (Fin 1)))) := IsOpen.prod h1 isOpen_univ
-  have h3 : ({(x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)) | x.val 1 > 0} ×ˢ univ) = s1 := HasSubset.Subset.antisymm fooo barr
-  rw [h3] at h2
+  have h2 : IsOpen ({ x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 }×ˢ (univ : Set (EuclideanSpace ℝ (Fin 1)))) := tOpen.prod isOpen_univ
+  rw [HasSubset.Subset.antisymm fooo barr] at h2
   exact h2
 
 def s2 : Set ((Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) := { x | 0 > x.1.val 1 }
@@ -340,10 +305,8 @@ lemma bar' : { x | 0 > x.1.val 1 } ⊆ {(x : (Metric.sphere (0 : EuclideanSpace 
   exact ⟨hx, trivial⟩
 
 lemma s2_is_open : IsOpen s2 := by
-  have h1 : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 } := tOpen'
-  have h2 : IsOpen ({ x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 }×ˢ (univ : Set (EuclideanSpace ℝ (Fin 1)))) := IsOpen.prod h1 isOpen_univ
-  have h3 : ({(x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1)) | x.val 1 < 0} ×ˢ univ) = s2 := HasSubset.Subset.antisymm foo' bar'
-  rw [h3] at h2
+  have h2 : IsOpen ({ x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 }×ˢ (univ : Set (EuclideanSpace ℝ (Fin 1)))) := tOpen'.prod isOpen_univ
+  rw [HasSubset.Subset.antisymm foo' bar'] at h2
   exact h2
 
 theorem t01 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V.source) ×ˢ univ) := by
@@ -362,20 +325,13 @@ theorem t01 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V
     intro x hx
     dsimp [f, s1] at hx ⊢
     rw [if_pos hx]
-
-  have hz1' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s1 := hz1
-
   have hz2 : ContinuousOn f s2 := by
     apply continuous_snd.neg.continuousOn.congr
     intro x hx
     dsimp [f, s2] at hx ⊢
     rw [if_neg (not_lt_of_gt hx)]
-  have hz2' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s2 := hz2
-
-  have h5 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) (s1 ∪ s2) := continuous_on_union_of_open (fun p => MyCoordChange 0 1 p.1 p.2) s1 s2 s1_is_open s2_is_open hz1' hz2'
-  rw [h1]
-  rw [h6] at h5
-  exact h5
+  rw [h1, ← h6]
+  exact continuous_on_union_of_open s1_is_open s2_is_open hz1 hz2
 
  theorem t10 : ContinuousOn (fun p => MyCoordChange 1 0 p.1 p.2) ((V.source ∩ U.source) ×ˢ univ) := by
   have h1 : MyCoordChange 1 0 = MyCoordChange 0 1 := rfl
@@ -397,7 +353,7 @@ theorem MyContinuousOn_coordChange : ∀ (i j : Fin 2), ContinuousOn (fun p => M
     intro i j
     fin_cases i
     · fin_cases j
-      · simp; exact t00
+      · simp [t00]
       · exact t01
     · fin_cases j
       · exact t10
@@ -407,65 +363,47 @@ theorem my_mem_baseSet_at : ∀ (x : ↑(Metric.sphere 0 1)),
   x ∈ (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x):= by
   intro x
   by_cases h : (x.val 0) > 0
-  case pos => have h5 : xh.val 0 = 1 := rfl
-              have h7 : x ≠ -xh := by
-                intro h_eq
-                have h_val_eq : x.val = -xh.val := congrArg Subtype.val h_eq
-                have h_contra : x.val 0 = -xh.val 0 := congrFun h_val_eq 0
-                rw [h5] at h_contra
-                linarith
-              have h2 : (fun x ↦ if x.val 0 > 0 then (0 : Fin 2) else 1) x = 0 := if_pos h
-              have h3 : (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x) =
-                        U.source := by
-                          rw [h2]
-                          exact if_pos rfl
-              have hz : x ∈ (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x) := by
-                rw [h3]
-                rw [h8]
-                exact h7
-              exact hz
-  case neg => have h1 : ug.val 0 = -1 := rfl
-              have h7 : x ≠ -ug := by
-                intro h_eq
-                have h_val_eq : x.val = -ug.val := congrArg Subtype.val h_eq
-                have h_contra : x.val 0 = -ug.val 0 := congrFun h_val_eq 0
-                rw [h1] at h_contra
-                linarith
-              have h2 : (fun x ↦ if x.val 0 > 0 then (0 : Fin 2) else 1) x = 1 := if_neg h
-              have h3 : (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x) =
-                        V.source := by
-                          rw [h2]
-                          exact if_neg (by exact one_ne_zero)
-              have hz : x ∈ (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x) := by
-                rw [h3]
-                rw [h9]
-                exact h7
-              exact hz
+  case pos =>
+    have h5 : xh.val 0 = 1 := rfl
+    have h7 : x ≠ -xh := by
+      intro h_eq
+      have h_contra : x.val 0 = -xh.val 0 := congrFun (congrArg Subtype.val h_eq) 0
+      rw [h5] at h_contra
+      linarith
+    have h2 : (fun x ↦ if x.val 0 > 0 then (0 : Fin 2) else 1) x = 0 := if_pos h
+    have h3 :
+      (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x) = U.source := by
+        rw [h2]
+        exact if_pos rfl
+    rw [h3, h8]
+    exact h7
+  case neg =>
+    have h1 : ug.val 0 = -1 := rfl
+    have h7 : x ≠ -ug := by
+      intro h_eq
+      have h_val_eq : x.val = -ug.val := congrArg Subtype.val h_eq
+      have h_contra : x.val 0 = -ug.val 0 := congrFun h_val_eq 0
+      rw [h1] at h_contra
+      linarith
+    have h2 : (fun x ↦ if x.val 0 > 0 then (0 : Fin 2) else 1) x = 1 := if_neg h
+    have h3 : (fun (i : Fin 2) ↦ if i = 0 then U.source else V.source) ((fun x ↦ if x.val 0 > 0 then 0 else 1) x) =
+              V.source := by
+                rw [h2]
+                exact if_neg (by exact one_ne_zero)
+    rw [h3, h9]
+    exact h7
 
 noncomputable
-def Mobius : FiberBundleCore (Fin 2) (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) (EuclideanSpace ℝ (Fin 1)) :=
-{
-  baseSet := fun i => if i = 0 then U.source
-                             else V.source,
-
-  isOpen_baseSet := by
-    intro i
+def Mobius : FiberBundleCore (Fin 2) (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) (EuclideanSpace ℝ (Fin 1)) where
+  baseSet i := if i = 0 then U.source else V.source
+  isOpen_baseSet i := by
     dsimp only
     split
     · exact U.open_source
     · exact V.open_source
-
-  indexAt := fun x => if (x.val 0) > 0 then 0 else 1,
-
-  mem_baseSet_at := my_mem_baseSet_at,
-
-  coordChange := MyCoordChange,
-
-  coordChange_self := MyCoordChange_self,
-
-  continuousOn_coordChange := by
-    intro i j
-    exact MyContinuousOn_coordChange i j
-
+  indexAt x := if (x.val 0) > 0 then 0 else 1
+  mem_baseSet_at := my_mem_baseSet_at
+  coordChange := MyCoordChange
+  coordChange_self := MyCoordChange_self
+  continuousOn_coordChange := MyContinuousOn_coordChange
   coordChange_comp := MyCoordChange_comp
-}
