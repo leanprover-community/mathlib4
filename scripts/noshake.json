@@ -329,6 +329,8 @@
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
+  "Mathlib.RingTheory.PolynomialLaw.Basic":
+  ["Mathlib.Algebra.MvPolynomial.Basic"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
   ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
@@ -474,7 +476,6 @@
   ["Mathlib.Util.Superscript"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
-  "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
   "Mathlib.Algebra.Order.Ring.Nat": ["Mathlib.Algebra.Order.Group.Nat"],
@@ -484,6 +485,7 @@
   "Mathlib.Algebra.Order.Field.Subfield":
   ["Mathlib.Algebra.Order.Field.InjSurj"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
+  "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Algebra.MonoidAlgebra.Basic":
   ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.Algebra.Module.Submodule.Order":
