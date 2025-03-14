@@ -1136,7 +1136,7 @@ addition (of functions with disjoint support).
 It is possible to make the hypotheses in `h_add` a bit stronger, and such conditions can be added
 once we need them (for example it is only necessary to consider the case where `g` is a multiple
 of a characteristic function, and that this multiple doesn't appear in the image of `f`) -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : SimpleFunc α γ → Prop}
     (h_ind :
       ∀ (c) {s} (hs : MeasurableSet s),
