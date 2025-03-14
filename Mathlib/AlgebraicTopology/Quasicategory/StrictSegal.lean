@@ -28,7 +28,7 @@ namespace SSet.StrictSegal
 instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
-  use spineToSimplex <| Path.map (subcomplexHorn.spineId i h₀ hₙ) σ₀
+  use spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
   intro j hj
   apply spineInjective
   ext k
@@ -40,7 +40,7 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
     dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
     apply congr_arg
     apply Subtype.ext
-    dsimp [subcomplexHorn.face, CosimplicialObject.δ]
+    dsimp [horn.face, CosimplicialObject.δ]
     rw [Subcomplex.yonedaEquiv_coe, Subpresheaf.lift_ι, stdSimplex.map_apply,
       Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_lt hlt]
@@ -49,7 +49,7 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
     dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
     apply congr_arg
     apply Subtype.ext
-    dsimp [subcomplexHorn.face, CosimplicialObject.δ]
+    dsimp [horn.face, CosimplicialObject.δ]
     rw [Subcomplex.yonedaEquiv_coe, Subpresheaf.lift_ι, stdSimplex.map_apply,
       Quiver.Hom.unop_op, stdSimplex.yonedaEquiv_map, Equiv.apply_symm_apply,
       mkOfSucc_δ_gt hgt]
@@ -62,10 +62,10 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
       it suffices to inhabit `Λ[n + 3, i] _⦋2⦌`. -/
       let triangle : (Λ[n + 3, i] : SSet.{u}) _⦋2⦌ :=
-        subcomplexHorn.primitiveTriangle i h₀ hₙ k (by omega)
+        horn.primitiveTriangle i h₀ hₙ k (by omega)
       /- The interval spanning from `k` to `k + 2` is equivalently the spine
       of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
-      have hi : ((subcomplexHorn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
+      have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
           X.spine 2 (σ₀.app _ triangle) := by
         ext m
         dsimp [spine_arrow, Path.interval, Path.map]
@@ -80,7 +80,7 @@ instance quasicategory {X : SSet.{u}} [StrictSegal X] : Quasicategory X := by
       apply congr_arg
       apply Subtype.ext
       ext z : 1
-      dsimp [subcomplexHorn.face]
+      dsimp [horn.face]
       rw [Subcomplex.yonedaEquiv_coe, Subpresheaf.lift_ι, stdSimplex.map_apply,
         Quiver.Hom.unop_op, stdSimplex.map_apply, Quiver.Hom.unop_op]
       dsimp [CosimplicialObject.δ]
