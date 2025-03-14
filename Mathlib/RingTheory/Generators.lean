@@ -523,7 +523,7 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
         simp_all
       rw [Finset.sum_filter, ← finsum_eq_sum_of_support_subset _ (this x)]
       induction x using MvPolynomial.induction_on' with
-      | h1 v a =>
+      | monomial v a =>
         rw [finsum_eq_sum_of_support_subset _ (this _), ← Finset.sum_filter]
         obtain ⟨v, rfl⟩ := e.symm.surjective v
         erw [ofComp_toAlgHom_monomial_sumElim]
@@ -536,7 +536,7 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
         split
         · simp only [zero_smul, coeff_zero, *, map_zero, ite_self]
         · congr
-      | h2 p q hp hq =>
+      | add p q hp hq =>
         simp only [coeff_add, map_add, ite_add_zero]
         rw [finsum_add_distrib, hp, hq]
         · refine (((support p).map e).finite_toSet.subset ?_)
