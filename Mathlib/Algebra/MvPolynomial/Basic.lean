@@ -367,12 +367,12 @@ it suffices to show the condition is closed under taking sums,
 and it holds for monomials. -/
 @[elab_as_elim]
 theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
-    (h1 : ∀ (u : σ →₀ ℕ) (a : R), P (monomial u a))
-    (h2 : ∀ p q : MvPolynomial σ R, P p → P q → P (p + q)) : P p :=
+    (monomial : ∀ (u : σ →₀ ℕ) (a : R), P (monomial u a))
+    (add : ∀ p q : MvPolynomial σ R, P p → P q → P (p + q)) : P p :=
   Finsupp.induction p
-    (suffices P (monomial 0 0) by rwa [monomial_zero] at this
-    show P (monomial 0 0) from h1 0 0)
-    fun _ _ _ _ha _hb hPf => h2 _ _ (h1 _ _) hPf
+    (suffices P (MvPolynomial.monomial 0 0) by rwa [monomial_zero] at this
+    show P (MvPolynomial.monomial 0 0) from monomial 0 0)
+    fun _ _ _ _ha _hb hPf => add _ _ (monomial _ _) hPf
 
 /--
 Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required.
@@ -386,7 +386,7 @@ theorem monomial_add_induction_on {motive : MvPolynomial σ R → Prop} (p : MvP
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
         a ∉ f.support → b ≠ 0 → motive f → motive ((monomial a b) + f)) :
     motive p :=
-  Finsupp.induction p (C_0.rec <| C 0) monomial_add_weak
+  Finsupp.induction p (C_0.rec <| C 0) monomial_add
 
 @[deprecated (since := "2025-03-11")]
 alias induction_on''' := monomial_add_induction_on
@@ -406,7 +406,7 @@ theorem induction_on'' {motive : MvPolynomial σ R → Prop} (p : MvPolynomial �
     (mul_X : ∀ (p : MvPolynomial σ R) (n : σ), motive p → motive (p * MvPolynomial.X n)) :
     motive p :=
   monomial_add_induction_on p C fun a b f ha hb hf =>
-    monomial_add_weak a b f ha hb hf <| induction_on_monomial C mul_X a b
+    monomial_add a b f ha hb hf <| induction_on_monomial C mul_X a b
 
 /--
 Analog of `Polynomial.induction_on`.
