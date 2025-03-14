@@ -345,7 +345,8 @@ lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
   exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A map `f` from a simply-connected, locally path-connected space `A` to another space `X` lifts
-  uniquely through a covering map `p : E → X`, after specifying any lift `e₀ : E` of any point `a₀ : A`. -/
+  uniquely through a covering map `p : E → X`, after specifying any lift `e₀ : E` of any point
+  `a₀ : A`. -/
 theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
