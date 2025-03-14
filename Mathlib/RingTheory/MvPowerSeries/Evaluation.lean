@@ -23,24 +23,26 @@ consisting of ideals.
 
 * `MvPowerSeries.eval₂` : Given `φ : R →+* S` and `a : σ → S`,
 this file defines an evaluation of `f : MvPowerSeries σ R`,
-that extends the evaluation of polynomials at `a`, by density,
-provided `φ` and `a` satisfy certain conditions of which
+that extends the evaluation of polynomials at `a`, by density.
+If `f` is not a polynomial, then this evaluation has no good properties
+unless `φ` is continuous and `a` satisfies the two conditions of which
 the following lemmas assert the necessity
 
-* `Continuous.on_scalars` : The map `φ` is continuous
 * `Continuous.tendsto_apply_pow_zero_of_constantCoeff_zero` :
   for all `s : σ`, `(a s) ^ n` tends to 0 when `n` tends to infinity
 * `Continuous.tendsto_apply_variables_zero_of_cofinite`:
   when `a s` tends to  zero for the filter of cofinite subsets of `σ`.
 
-* `MvPowerSeries.HasEval` : the `Prop`-valued structure
-that is required to evaluate power series
+* `MvPowerSeries.HasEval a` : for `a : σ → S`, the `Prop`-valued structure that bundles
+these two conditions.
 
-* `MvPowerSeries.uniformContinuous_eval₂` : uniform continuity of the evaluation
+Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properties of evaluation:
 
-* `MvPowerSeries.continuous_eval₂` : continuity of the evaluation
-
-* `MvPowerSeries.aeval` : the evaluation map as an algebra map
+* `MvPowerSeries.eval₂Hom`: the evaluation of multivariate power series, as a ring morphism,
+* `MvPowerSeries.aeval`: the evaluation map as an algebra map
+* `MvPowerSeries.uniformContinuous_eval₂`: uniform continuity of the evaluation
+* `MvPowerSeries.continuous_eval₂`: continuity of the evaluation
+* `MvPowerSeries.eval₂_eq_tsum`:  the evaluation is given by the sum of its monomials, evaluated.
 
 -/
 
