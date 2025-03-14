@@ -33,7 +33,7 @@ def PontryaginDual :=
 -- constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
-instance : TopologicalSpace (PontryaginDual A) :=
+noncomputable instance : TopologicalSpace (PontryaginDual A) :=
   (inferInstance : TopologicalSpace (A →ₜ* Circle))
 
 instance : T2Space (PontryaginDual A) :=

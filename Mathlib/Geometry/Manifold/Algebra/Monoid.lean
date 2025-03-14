@@ -265,9 +265,12 @@ instance ContMDiffMul.prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Ty
     [TopologicalSpace H'] (I' : ModelWithCorners 𝕜 E' H') (G' : Type*) [TopologicalSpace G']
     [ChartedSpace H' G'] [Mul G'] [ContMDiffMul I' n G'] : ContMDiffMul (I.prod I') n (G × G') :=
   { IsManifold.prod G G' with
-    contMDiff_mul :=
-      ((contMDiff_fst.comp contMDiff_fst).mul (contMDiff_fst.comp contMDiff_snd)).prodMk
-        ((contMDiff_snd.comp contMDiff_fst).mul (contMDiff_snd.comp contMDiff_snd)) }
+    contMDiff_mul := by
+      apply ContMDiff.prodMk
+      · apply ContMDiff.mul (contMDiff_fst.comp contMDiff_fst)
+        exact contMDiff_fst.comp contMDiff_snd
+      · apply (contMDiff_snd.comp contMDiff_fst).mul
+        exact (contMDiff_snd.comp contMDiff_snd) }
 
 end ContMDiffMul
 
@@ -488,7 +491,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCom
 
 instance instContMDiffAddSelf : ContMDiffAdd 𝓘(𝕜, E) n E := by
   constructor
-  rw [← modelWithCornersSelf_prod, chartedSpaceSelf_prod]
   exact contDiff_add.contMDiff
 
 end

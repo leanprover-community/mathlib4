@@ -96,22 +96,29 @@ gives the same instance.
 -/
 --attribute [local reducible] ModelProd
 
+
+/- The next instance is dangerous: if `B` is modelled on `HB`, and `TotalSpace F E` is charted
+on `B × F`, then one gets a charted structure on `HB × F` by composition.
+*But*: as `B` is modelled on itself, this gives a new charted structure on `B × F`, different
+from the original one.
+We lower the priority to make sure that, in this case, the instance is not picked
+and the good `chartedSpace'` is used. -/
 /-- Let `B` be a charted space modelled on `HB`.  Then a fiber bundle `E` over a base `B` with model
 fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
-instance FiberBundle.chartedSpace : ChartedSpace (ModelProd HB F) (TotalSpace F E) :=
-  ChartedSpace.comp _ (B × F) _
+instance (priority := 100) FiberBundle.chartedSpace : ChartedSpace (HB × F) (TotalSpace F E) :=
+  ChartedSpace.comp (HB × F) (B × F) (TotalSpace F E)
 
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
-    chartAt (ModelProd HB F) x =
+    chartAt (HB × F) x =
       (trivializationAt F E x.proj).toPartialHomeomorph ≫ₕ
         (chartAt HB x.proj).prod (PartialHomeomorph.refl F) := by
-  dsimp only [chartAt_comp, prodChartedSpace_chartAt, FiberBundle.chartedSpace'_chartAt,
-    chartAt_self_eq]
+  dsimp only [chartAt_comp, prodChartedSpace_chartAt, FiberBundle.chartedSpace'_chartAt]
+  simp only [chartAt_self_eq]
   rw [Trivialization.coe_coe, Trivialization.coe_fst' _ (mem_baseSet_trivializationAt F E x.proj)]
 
-theorem FiberBundle.chartedSpace_chartAt_symm_fst (x : TotalSpace F E) (y : ModelProd HB F)
-    (hy : y ∈ (chartAt (ModelProd HB F) x).target) :
-    ((chartAt (ModelProd HB F) x).symm y).proj = (chartAt HB x.proj).symm y.1 := by
+theorem FiberBundle.chartedSpace_chartAt_symm_fst (x : TotalSpace F E) (y : HB × F)
+    (hy : y ∈ (chartAt (HB × F) x).target) :
+    ((chartAt (HB × F) x).symm y).proj = (chartAt HB x.proj).symm y.1 := by
   simp only [FiberBundle.chartedSpace_chartAt, mfld_simps] at hy ⊢
   exact (trivializationAt F E x.proj).proj_symm_apply hy.2
 
@@ -134,8 +141,6 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
         (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [PartialEquiv.trans_assoc, mfld_simps]
-  -- Porting note: should not be needed
-  rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
 
 protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
     (extChartAt (IB.prod 𝓘(𝕜, F)) x).target =
@@ -144,7 +149,7 @@ protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
   rw [FiberBundle.extChartAt, PartialEquiv.trans_target, Trivialization.target_eq, inter_prod]
   rfl
 
-theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y}
+theorem FiberBundle.writtenInExtChartAt_trivializationAt {x : TotalSpace F E} {y : EB × F}
     (hy : y ∈ (extChartAt (IB.prod 𝓘(𝕜, F)) x).target) :
     writtenInExtChartAt (IB.prod 𝓘(𝕜, F)) (IB.prod 𝓘(𝕜, F)) x
       (trivializationAt F E x.proj) y = y :=
@@ -174,7 +179,7 @@ theorem contMDiffWithinAt_totalSpace (f : M → TotalSpace F E) {s : Set M} {x�
   intro hf
   simp_rw [modelWithCornersSelf_prod, FiberBundle.extChartAt, Function.comp_def,
     PartialEquiv.trans_apply, PartialEquiv.prod_coe, PartialEquiv.refl_coe,
-    extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def, ← chartedSpaceSelf_prod]
+    extChartAt_self_apply, modelWithCornersSelf_coe, Function.id_def]
   refine (contMDiffWithinAt_prod_iff _).trans (and_congr ?_ Iff.rfl)
   have h1 : (fun x => (f x).proj) ⁻¹' (trivializationAt F E (f x₀).proj).baseSet ∈ 𝓝[s] x₀ :=
     ((FiberBundle.continuous_proj F E).continuousWithinAt.comp hf (mapsTo_image f s))
