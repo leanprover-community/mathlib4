@@ -84,6 +84,9 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable {F G : J ⥤ C} [HasConicalLimit V F]
 
+/-- ensure existence of a conical limit implies existence of a limit -/
+example : HasLimit F := inferInstance
+
 /-- If a functor `F` has a conical limit, so does any naturally isomorphic functor. -/
 lemma of_iso (e : F ≅ G) :
     HasConicalLimit V G where
@@ -119,6 +122,7 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimitsOfShape J V C]
 
+/-- existence of conical limits (of shape) implies existence of limits (of shape) -/
 instance : HasLimitsOfShape J C where
   has_limit _ := inferInstance
 
@@ -137,7 +141,8 @@ variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimitsOfSize.{v₁, u₁} V C]
 
-instance hasLimitsOfSize [h_inst : HasConicalLimitsOfSize.{v₁, u₁} V C] :
+/-- existence of conical limits (of size) implies existence of limits (of size) -/
+instance hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
   has_limits_of_shape := inferInstance
 
@@ -165,6 +170,9 @@ variable (J : Type v) [Category.{v, v} J]
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimits V C]
+
+/-- ensure existence of (small) conical limits implies existence of (small) limits -/
+example : HasLimits C := inferInstance
 
 instance (priority := 100) hasSmallestConicalLimitsOfHasConicalLimits :
     HasConicalLimitsOfSize.{0, 0} V C :=
