@@ -11,7 +11,7 @@ import Mathlib.Algebra.Order.Ring.WithTop
 # Conversion from WithTop to Base Type
 
 For types α that are instances of `Zero`, we provide a convenient conversion,
-`WithTop.toBase`, that maps elements `a : WithTop α` to `α`, by mapping `⊤` to
+`WithTop.untop₀`, that maps elements `a : WithTop α` to `α`, by mapping `⊤` to
 zero.
 
 For settings where `α` has additional structure, we provide a large number of
@@ -22,33 +22,33 @@ namespace WithTop
 variable {α : Type*}
 
 /-- Conversion from `WithTop α` to `α`, mapping `⊤` to zero. -/
-def toBase [Zero α] (a : WithTop α) : α := a.untopD 0
+def untop₀ [Zero α] (a : WithTop α) : α := a.untopD 0
 
 /-!
 ## Simplifying Lemmas in cases where α is an Instance of Zero
 -/
 
 @[simp]
-lemma toBase_eq_zero [Zero α] (a : WithTop α) :
-    a.toBase = 0 ↔ a = 0 ∨ a = ⊤ := by simp_all [WithTop.toBase]
+lemma untop₀_eq_zero [Zero α] (a : WithTop α) :
+    a.untop₀ = 0 ↔ a = 0 ∨ a = ⊤ := by simp_all [WithTop.untop₀]
 
 @[simp]
-lemma toBase_top [Zero α] :
-    (⊤ : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase]
+lemma untop₀_top [Zero α] :
+    (⊤ : WithTop α).untop₀ = (0 : α) := by simp_all [WithTop.untop₀]
 
 @[simp]
-lemma toBase_zero [Zero α] :
-    (0 : WithTop α).toBase = (0 : α) := by simp_all [WithTop.toBase]
+lemma untop₀_zero [Zero α] :
+    (0 : WithTop α).untop₀ = (0 : α) := by simp_all [WithTop.untop₀]
 
 @[simp]
-lemma toBase_coe [Zero α] (a : α) : (a : WithTop α).toBase = a := rfl
+lemma untop₀_coe [Zero α] (a : α) : (a : WithTop α).untop₀ = a := rfl
 
 /-!
 ## Simplifying Lemmas in cases where α is an AddMonoid
 -/
 @[simp]
-lemma toBase_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
-    (a + b).toBase = a.toBase + b.toBase := by
+lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    (a + b).untop₀ = a.untop₀ + b.untop₀ := by
   lift a to α using ha
   lift b to α using hb
   simp [← WithTop.coe_add]
@@ -57,8 +57,8 @@ lemma toBase_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ 
 ## Simplifying Lemmas in cases where α is a MulZeroClass
 -/
 @[simp]
-lemma toBase_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
-    (a * b).toBase = a.toBase * b.toBase := by
+lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
+    (a * b).untop₀ = a.untop₀ * b.untop₀ := by
   by_cases h₁a : a = 0
   · simp [h₁a]
   by_cases h₁b : b = 0
@@ -75,12 +75,12 @@ lemma toBase_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
 -/
 @[simp]
-lemma toBase_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
-    (-a).toBase = -a.toBase := by
+lemma untop₀_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
+    (-a).untop₀ = -a.untop₀ := by
   by_cases ha : a = ⊤
   · simp [ha]
   · lift a to α using ha
-    rw [(by rfl : -a = (↑(-a) : WithTop α)), WithTop.toBase_coe]
+    rw [(by rfl : -a = (↑(-a) : WithTop α)), WithTop.untop₀_coe]
     simp
 
 end WithTop
