@@ -59,6 +59,50 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
     stx.getTailPos?
   else none
 
+partial
+def parallelScanAux : Nat → Array Nat → List Char → List Char → Array Nat
+  | n, as, ' '::ls, m::ms =>
+    if m.isWhitespace then
+      parallelScanAux (n + 1) as ls (ms.dropWhile (·.isWhitespace))
+    else
+      dbg_trace "extra space at {n}"
+      parallelScanAux (n + 1) (as.push n) ls (m::ms)
+  | n, as, '\n'::ls, m::ms =>
+    let lth := ls.takeWhile (·.isWhitespace) |>.length
+    if m.isWhitespace then
+      parallelScanAux (n + lth + 1) as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
+    else
+      dbg_trace "missing space at {n}"
+      parallelScanAux (n + lth + 1) (as.push n) (ls.drop lth) (m::ms)
+  | n, as, l::ls, m::ms => -- `l` is not whitespace
+    if l == m then
+      parallelScanAux (n + 1) as ls ms
+    else
+      if m.isWhitespace then
+        dbg_trace "missing space at {n}"
+        parallelScanAux n (as.push n) (l::ls) (ms.dropWhile (·.isWhitespace))
+    else
+      dbg_trace "{n}: oh no!"
+      as.push n
+  | n, as, ls, [] =>
+    -- it is normal for the source syntax to terminate with extra whitespace
+    if ls.all (·.isWhitespace) then as
+    else
+      dbg_trace "source finished early!"
+      as.push n
+  | n, as, [], ms =>
+    if ms.all (·.isWhitespace) then
+      if ms.isEmpty then as else
+      -- this may never happen, but I am not sure
+      dbg_trace "trailing whitespace in formatted"
+      as
+    else
+      dbg_trace "formatted finished early!"
+      as.push n
+
+def parallelScan (src fmt : String) : Array Nat :=
+  parallelScanAux 0 ∅ src.toList fmt.toList
+
 /--
 Returns the pair consisting of
 * longest initial segment of `s` that does not contain `pattern` as a substring;
@@ -164,9 +208,10 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
             m!"Stop linting, since {addDoc} is a multiline additive docstring"
           return
+    let origSubstring : Substring := stx.getSubstring?.getD default
     let stx := capSyntax stx finalLintPos.1
-    let origSubstring : Substring := {stx.getSubstring?.getD default with stopPos := finalLintPos}
-    let (real, lths) := polishSource origSubstring.toString
+    let origSubstringTrunc : Substring := {origSubstring with stopPos := finalLintPos}
+    let (real, lths) := polishSource origSubstringTrunc.toString
     let fmt : Option Format := ←
         try
           liftCoreM <| PrettyPrinter.ppCategory `command stx
@@ -177,6 +222,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           return none
     if let some fmt := fmt then
       let st := polishPP fmt.pretty
+      logInfo m!"{parallelScan origSubstring.toString fmt.pretty}"
       Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
         m!"slightly polished source:\n'{real}'\n\n\
           actually used source:\n'{furtherFormatting (trimComments real true)}'\n\n\
@@ -184,14 +230,13 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           intermediate reference formatting:\n'{fmt}'\n"
       if ! st.startsWith (furtherFormatting (trimComments real true)) then
         let diff := real.firstDiffPos st
-        let pos := posToShiftedPos lths diff.1 + origSubstring.startPos.1
-        let f := origSubstring.str.drop (pos)
+        let pos := posToShiftedPos lths diff.1 + origSubstringTrunc.startPos.1
+        let f := origSubstringTrunc.str.drop (pos)
         let extraLth := (f.takeWhile (· != st.get diff)).length
         let srcCtxt := zoomString real diff.1 5
         let ppCtxt  := zoomString st diff.1 5
         Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
           m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
-
 initialize addLinter commandStartLinter
 
 end Style.CommandStart

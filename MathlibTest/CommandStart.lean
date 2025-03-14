@@ -53,6 +53,14 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 #guard_msgs in
  section
 
+
+#eval
+  let s := "example  :   True :=trivial"
+  let t := "example : True :=
+    trivial"
+  Mathlib.Linter.parallelScan s t
+
+
 /--
 warning: Current syntax:  'mple  '
 Expected syntax: 'mple : Tru'
@@ -60,7 +68,7 @@ Expected syntax: 'mple : Tru'
 note: this linter can be disabled with `set_option linter.style.commandStart false`
 -/
 #guard_msgs in
-example  : True := trivial
+example  :  True :=trivial
 
 /--
 warning: Current syntax:  'le (a: Nat'
@@ -91,6 +99,37 @@ note: this linter can be disabled with `set_option linter.style.commandStart fal
 -/
 #guard_msgs in
 example {a: Nat} : a = a := rfl
+
+
+#eval
+  let l := "hac d"
+  let m := "h  acd"
+  parallelScan l m
+
+def parallelScam : Nat → List Char → List Char → Array Nat
+  | n, as, ' '::l::ls, m::ms =>
+    match l.isWhitespace,  m.isWhitespace with
+    | _, true =>
+      parallelScanAux (n + 1) (l::ls) (ms.dropWhile (·.isWhitespace))
+    ---| true, true =>
+    ---  dbg_trace "extra space at {n+1}"
+    ---  parallelScanAux (n + 1) (l::ls) ms |>.push (n+1)
+    | _, false =>
+      dbg_trace "missing space at {n}"
+      parallelScanAux (n + 1) (l::ls) (m::ms) |>.push n
+    --| false, false =>
+    --  dbg_trace "missing space at {n}"
+    --  parallelScanAux (n + 1) (l::ls) (m::ms) |>.push n
+
+  | _, _, _ => default
+
+set_option linter.style.commandStart.verbose true in
+/--
+a
+b
+c
+d -/
+example (a : Nat) (b : Int) : True := trivial
 
 /--
 warning: Current syntax:  ' {a :Nat} '
