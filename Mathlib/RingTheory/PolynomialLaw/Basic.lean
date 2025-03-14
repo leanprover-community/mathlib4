@@ -5,6 +5,7 @@ Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.TensorProduct.Associator
+import Mathlib.Algebra.MvPolynomial.Basic
 
 /-! # Polynomial laws on modules
 
@@ -226,8 +227,8 @@ theorem isCompat_apply'_ground {S : Type u} [CommSemiring S] [Algebra R S] (x : 
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   simp only [ground]
   convert f.isCompat_apply' (Algebra.algHom R S) (1 ⊗ₜ[R] x)
-  · simp only [Function.comp_apply, lid_symm_apply, TensorProduct.includeRight_lid]
-  · rw [rTensor_tmul, AlgHom.toLinearMap_apply, map_one]
+  · simp only [Function.comp_apply, lid_symm_apply, includeRight_lid]
+  · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
 /-- The map ground assigning a function `M → N` to a polynomial map `f : M →ₚ[R] N` as a
   linear map. -/
