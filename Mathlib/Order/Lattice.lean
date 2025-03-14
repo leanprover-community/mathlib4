@@ -128,10 +128,6 @@ theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
    fun ⟨h₁, h₂⟩ => sup_le h₁ h₂⟩
 
 @[simp]
-theorem sup_self : a ⊔ a = a := by
-  simp [le_antisymm_iff]
-
-@[simp]
 theorem sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
   le_antisymm_iff.trans <| by simp [le_rfl]
 
@@ -329,10 +325,6 @@ theorem inf_lt_of_right_lt (h : b < c) : a ⊓ b < c :=
 @[simp]
 theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
   @sup_le_iff αᵒᵈ _ _ _ _
-
-@[simp]
-theorem inf_self : a ⊓ a = a := by
-  simp [le_antisymm_iff]
 
 @[simp]
 theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
