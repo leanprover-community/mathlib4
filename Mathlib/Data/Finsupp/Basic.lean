@@ -1070,7 +1070,8 @@ protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
   f.sum fun a g => g.sum fun b c => single (a, b) c
 
 @[simp]
-theorem uncurry_apply (f : α →₀ β →₀ M) (x : α) (y : β) : f.uncurry (x, y) = f x y := by
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
+    f.uncurry (x, y) = f x y := by
   rw [← curry_apply (f.uncurry) x y]
   simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
     forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
@@ -1078,12 +1079,12 @@ theorem uncurry_apply (f : α →₀ β →₀ M) (x : α) (y : β) : f.uncurry 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
   ext a b
-  simp only [curry_apply, uncurry_apply]
+  rw [curry_apply, Finsupp.uncurry_apply_pair]
 
 @[simp]
 theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
   ext ⟨a, b⟩
-  simp only [uncurry_apply, curry_apply]
+  simp only [Finsupp.uncurry_apply_pair, curry_apply]
 
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
