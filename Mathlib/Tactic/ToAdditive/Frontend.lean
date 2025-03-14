@@ -800,7 +800,12 @@ where /-- Implementation of `applyReplacementFun`. -/
             -- TODO: warn user if permutation is trivial?
             -- this is panicking?
             -- dbg_trace "applyReplacementFun': {nm} {gAllArgs} {reorder}"
-            gAllArgs := gAllArgs.permute! reorder
+            if let some maxReorder := reorder.flatten.max? then
+              if gAllArgs.size > maxReorder then
+                gAllArgs := gAllArgs.permute! reorder
+              else
+                dbg_trace s!"applyReplacementFun: arguments of {nm} was an array of size\
+                  {gAllArgs.size}, attempted to reorder with {reorder}"
             trace[to_additive_detail] "applyReplacementFun: reordering the arguments of {nm}: \
               {gAllArgs} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
@@ -892,7 +897,12 @@ where /-- Implementation of `applyReplacementFun`. -/
           let reorder := reorderFn nm
           if !reorder.isEmpty && relevantArgId < gAllArgs.size &&
             (additiveTest env b gAllArgs[relevantArgId]!).isNone then
-            gAllArgs := gAllArgs.permute! reorder
+            if let some maxReorder := reorder.flatten.max? then
+              if gAllArgs.size > maxReorder then
+                gAllArgs := gAllArgs.permute! reorder
+              else
+                dbg_trace s!"applyReplacementFun: arguments of {nm} was an array of size\
+                  {gAllArgs.size}, attempted to reorder with {reorder}"
             if trace then
               dbg_trace s!"reordering the arguments of {nm} using the cyclic permutations {reorder}"
           /- Do not replace numerals in specific types. -/
@@ -961,21 +971,27 @@ def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr :=
   if reorder == [] then
     return src
   forallTelescope src fun xs e => do
-    if !xs.isEmpty then
-      mkForallFVars (xs.permute! reorder) e
+    if let some maxReorder := reorder.flatten.max? then
+      if xs.size > maxReorder then
+        mkLambdaFVars (xs.permute! reorder) e
+      else
+        dbg_trace "reorderForall tried to reorder a list that was too small: {src} {xs} {reorder}"
+        mkLambdaFVars xs e
     else
-      dbg_trace "reorderForall tried to reorder an empty list: {src} {xs} {reorder}"
-      mkForallFVars xs e
+      mkLambdaFVars xs e
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
   if reorder == [] then
     return src
   lambdaTelescope src fun xs e => do
-    if !xs.isEmpty then
-      mkLambdaFVars (xs.permute! reorder) e
+    if let some maxReorder := reorder.flatten.max? then
+      if xs.size > maxReorder then
+        mkLambdaFVars (xs.permute! reorder) e
+      else
+        dbg_trace "reorderLambda tried to reorder a list that was too small: {src} {xs} {reorder}"
+        mkLambdaFVars xs e
     else
-      dbg_trace "reorderLambda tried to reorder an empty list: {src} {xs} {reorder}"
       mkLambdaFVars xs e
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
@@ -1003,6 +1019,7 @@ def checkDeclType (b : BundledExtensions)
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
+  -- somehow this is causing a panic sometimes
   let exp ← applyReplacementFun b <| ← reorderForall reorder
     <| ← expand b <| ← unfoldAuxLemmas decl.type
   return ⟨exp, ← isDefEq exp tgtDecl.type⟩
