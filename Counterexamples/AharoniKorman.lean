@@ -71,7 +71,7 @@ aim of reaching a contradiction (as then, no such partition can exist). We may f
   we have a contradiction (`no_spinalMap`), and therefore show that no spinal map exists.
 -/
 
-#adaptation_note 2025-03-12
+#adaptation_note
 /--
 We temporarily comment out this file on `nightly-testing`, awaiting fixes for a complex
 interaction between `omega`, `aesop`, and asynchronous elaboration.
