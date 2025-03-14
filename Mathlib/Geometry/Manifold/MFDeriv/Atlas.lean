@@ -17,7 +17,7 @@ We show that
 Suppose a partial homeomorphism `e` is differentiable. This file shows
 * `PartialHomeomorph.MDifferentiable.mfderiv`: its derivative is a continuous linear equivalence
 * `PartialHomeomorph.MDifferentiable.mfderiv_bijective`: its derivative is bijective;
-  there are also spelling with trivial kernel and full range
+  there are also spellings with trivial kernel and full range
 
 In particular, (extended) charts have bijective differential.
 
@@ -47,8 +47,10 @@ variable (I)
 
 /-! #### Model with corners -/
 
-protected theorem hasMFDerivAt {x} : HasMFDerivAt I 𝓘(𝕜, E) I x (ContinuousLinearMap.id _ _) :=
-  ⟨I.continuousAt, (hasFDerivWithinAt_id _ _).congr' I.rightInvOn (mem_range_self _)⟩
+protected theorem hasMFDerivAt {x} : HasMFDerivAt I 𝓘(𝕜, E) I x (ContinuousLinearMap.id _ _) := by
+  refine ⟨I.continuousAt, (hasFDerivWithinAt_id _ _).congr' ?_ (mem_range_self _)⟩
+  intro x hx
+  simp [I.rightInvOn hx]
 
 protected theorem hasMFDerivWithinAt {s x} :
     HasMFDerivWithinAt I 𝓘(𝕜, E) I s x (ContinuousLinearMap.id _ _) :=
@@ -66,9 +68,15 @@ protected theorem mdifferentiableOn {s} : MDifferentiableOn I 𝓘(𝕜, E) I s 
 protected theorem mdifferentiable : MDifferentiable I 𝓘(𝕜, E) I := fun _ => I.mdifferentiableAt
 
 theorem hasMFDerivWithinAt_symm {x} (hx : x ∈ range I) :
-    HasMFDerivWithinAt 𝓘(𝕜, E) I I.symm (range I) x (ContinuousLinearMap.id _ _) :=
-  ⟨I.continuousWithinAt_symm,
-    (hasFDerivWithinAt_id _ _).congr' (fun _y hy => I.rightInvOn hy.1) ⟨hx, mem_range_self _⟩⟩
+    HasMFDerivWithinAt 𝓘(𝕜, E) I I.symm (range I) x (ContinuousLinearMap.id _ _) := by
+  refine ⟨I.continuousWithinAt_symm,
+    (hasFDerivWithinAt_id _ _).congr' ?_ (by simpa using hx)⟩
+  intro y hy
+  simp only [extChartAt, PartialHomeomorph.extend, chartAt_self_eq,
+    PartialHomeomorph.refl_partialEquiv, modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl,
+    PartialEquiv.refl_symm, PartialEquiv.refl_coe, preimage_id_eq, id_eq, modelWithCornersSelf_coe,
+    range_id, inter_univ] at hy
+  simp [I.rightInvOn hy]
 
 theorem mdifferentiableOn_symm : MDifferentiableOn 𝓘(𝕜, E) I I.symm (range I) := fun _x hx =>
   (I.hasMFDerivWithinAt_symm hx).mdifferentiableWithinAt

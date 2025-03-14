@@ -598,20 +598,40 @@ theorem const_smul_mfderiv (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) (s : �
       (s • mfderiv I 𝓘(𝕜, E') f z : TangentSpace I z →L[𝕜] E') :=
   (hf.hasMFDerivAt.const_smul s).mfderiv
 
+theorem HasMFDerivWithinAt.neg (hf : HasMFDerivWithinAt I 𝓘(𝕜, E') f s z f') :
+    HasMFDerivWithinAt I 𝓘(𝕜, E') (-f) s z (-f') :=
+  ⟨hf.1.neg, by simpa using hf.2.neg⟩
+
 theorem HasMFDerivAt.neg (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f') :
     HasMFDerivAt I 𝓘(𝕜, E') (-f) z (-f') :=
   ⟨hf.1.neg, by simpa using hf.2.neg⟩
 
+theorem hasMFDerivWithinAt_neg :
+    HasMFDerivWithinAt I 𝓘(𝕜, E') (-f) s z (-f') ↔ HasMFDerivWithinAt I 𝓘(𝕜, E') f s z f' :=
+  ⟨fun hf => by convert hf.neg <;> rw [neg_neg], fun hf => hf.neg⟩
+
 theorem hasMFDerivAt_neg : HasMFDerivAt I 𝓘(𝕜, E') (-f) z (-f') ↔ HasMFDerivAt I 𝓘(𝕜, E') f z f' :=
   ⟨fun hf => by convert hf.neg <;> rw [neg_neg], fun hf => hf.neg⟩
+
+theorem MDifferentiableWithinAt.neg (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s z) :
+    MDifferentiableWithinAt I 𝓘(𝕜, E') (-f) s z :=
+  hf.hasMFDerivWithinAt.neg.mdifferentiableWithinAt
 
 theorem MDifferentiableAt.neg (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) :
     MDifferentiableAt I 𝓘(𝕜, E') (-f) z :=
   hf.hasMFDerivAt.neg.mdifferentiableAt
 
+theorem mdifferentiableWithinAt_neg :
+    MDifferentiableWithinAt I 𝓘(𝕜, E') (-f) s z ↔ MDifferentiableWithinAt I 𝓘(𝕜, E') f s z :=
+  ⟨fun hf => by convert hf.neg; rw [neg_neg], fun hf => hf.neg⟩
+
 theorem mdifferentiableAt_neg :
     MDifferentiableAt I 𝓘(𝕜, E') (-f) z ↔ MDifferentiableAt I 𝓘(𝕜, E') f z :=
   ⟨fun hf => by convert hf.neg; rw [neg_neg], fun hf => hf.neg⟩
+
+theorem MDifferentiableOn.neg (hf : MDifferentiableOn I 𝓘(𝕜, E') f s) :
+    MDifferentiableOn I 𝓘(𝕜, E') (-f) s :=
+  fun x hx => (hf x hx).neg
 
 theorem MDifferentiable.neg (hf : MDifferentiable I 𝓘(𝕜, E') f) : MDifferentiable I 𝓘(𝕜, E') (-f) :=
   fun x => (hf x).neg
@@ -624,13 +644,28 @@ theorem mfderiv_neg (f : M → E') (x : M) :
   · exact hf.hasMFDerivAt.neg.mfderiv
   · rw [if_neg hf]; rw [← mdifferentiableAt_neg] at hf; rw [if_neg hf, neg_zero]
 
+theorem HasMFDerivWithinAt.sub (hf : HasMFDerivWithinAt I 𝓘(𝕜, E') f s z f')
+    (hg : HasMFDerivWithinAt I 𝓘(𝕜, E') g s z g') :
+    HasMFDerivWithinAt I 𝓘(𝕜, E') (f - g) s z (f' - g') :=
+  ⟨hf.1.sub hg.1, by simpa using hf.2.sub hg.2⟩
+
 theorem HasMFDerivAt.sub (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')
     (hg : HasMFDerivAt I 𝓘(𝕜, E') g z g') : HasMFDerivAt I 𝓘(𝕜, E') (f - g) z (f' - g') :=
   ⟨hf.1.sub hg.1, by simpa using hf.2.sub hg.2⟩
 
+theorem MDifferentiableWithinAt.sub (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s z)
+    (hg : MDifferentiableWithinAt I 𝓘(𝕜, E') g s z) :
+    MDifferentiableWithinAt I 𝓘(𝕜, E') (f - g) s z :=
+  (hf.hasMFDerivWithinAt.sub hg.hasMFDerivWithinAt).mdifferentiableWithinAt
+
 theorem MDifferentiableAt.sub (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) : MDifferentiableAt I 𝓘(𝕜, E') (f - g) z :=
   (hf.hasMFDerivAt.sub hg.hasMFDerivAt).mdifferentiableAt
+
+theorem MDifferentiableOn.sub (hf : MDifferentiableOn I 𝓘(𝕜, E') f s)
+    (hg : MDifferentiableOn I 𝓘(𝕜, E') g s) :
+    MDifferentiableOn I 𝓘(𝕜, E') (f - g) s := fun x hx =>
+  (hf x hx).sub (hg x hx)
 
 theorem MDifferentiable.sub (hf : MDifferentiable I 𝓘(𝕜, E') f)
     (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f - g) := fun x =>
