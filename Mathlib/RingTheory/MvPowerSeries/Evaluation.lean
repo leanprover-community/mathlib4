@@ -21,20 +21,15 @@ and that `S` is a complete and separated topological `R`-algebra,
 with `LinearTopology R`, which means there is a basis of neighborhoods of 0
 consisting of ideals.
 
-* `MvPowerSeries.eval₂` : Given `φ : R →+* S` and `a : σ → S`,
-this file defines an evaluation of `f : MvPowerSeries σ R`,
-that extends the evaluation of polynomials at `a`, by density.
-If `f` is not a polynomial, then this evaluation has no good properties
-unless `φ` is continuous and `a` satisfies the two conditions of which
-the following lemmas assert the necessity
-
-* `Continuous.tendsto_apply_pow_zero_of_constantCoeff_zero` :
-  for all `s : σ`, `(a s) ^ n` tends to 0 when `n` tends to infinity
-* `Continuous.tendsto_apply_variables_zero_of_cofinite`:
-  when `a s` tends to  zero for the filter of cofinite subsets of `σ`.
-
-* `MvPowerSeries.HasEval a` : for `a : σ → S`, the `Prop`-valued structure that bundles
-these two conditions.
+Given `φ : R →+* S`, `a : σ → S`, and `f : MvPowerSeries σ R`,
+`MvPowerSeries.eval₂ f φ a` is the evaluation of the multivariate power series `f` at `a`.
+It `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
+Otherwise, it is defined by density from polynomials;
+its values are irrelevant unless `φ` is continuous and `a` satisfies two conditions
+bundled in `MvPowerSeries.HasEval a` :
+  - for all `s : σ`, `a s` is topologically nilpotent,
+    meaning that `(a s) ^ n` tends to 0 when `n` tends to infinity
+  - when `a s` tends to  zero for the filter of cofinite subsets of `σ`.
 
 Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properties of evaluation:
 
@@ -64,7 +59,7 @@ variable {φ : R →+* S}
 -- We endow MvPowerSeries σ R with the Pi topology
 open WithPiTopology
 
-/-- Families at which power series can be evaluated -/
+/-- Families at which power series can be consistently evaluated -/
 structure HasEval (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Tendsto a cofinite (𝓝 0)
@@ -202,7 +197,10 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
 
 variable (φ a)
 open scoped Classical in
-/-- Evaluation of power series. Meaningful on adequate elements or on `MvPolynomial`)  -/
+/-- Evaluation of a multivariate power series at `f` at a point `a : σ → S`.
+
+It coincides with the evaluation of `f` as a polynomial if `f` is the coercion of a polynomial.
+Otherwise, it is only relevant if `φ` is continuous and `HasEval a`. -/
 noncomputable def eval₂ (f : MvPowerSeries σ R) : S :=
   if H : ∃ p : MvPolynomial σ R, p = f then (MvPolynomial.eval₂ φ a H.choose)
   else IsDenseInducing.extend coeToMvPowerSeries_isDenseInducing (MvPolynomial.eval₂ φ a) f
