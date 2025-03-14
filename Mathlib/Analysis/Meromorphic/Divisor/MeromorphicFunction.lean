@@ -41,9 +41,7 @@ namespace MeromorphicOn
 noncomputable def divisor (f : 𝕜 → E) (hf : MeromorphicOn f U) :
     DivisorOn U where
   toFun := fun z ↦ if hz : z ∈ U then ((hf z hz).order.untopD 0) else 0
-  supportWithinDomain' := by
-    intro z hz
-    simp at hz
+  supportWithinDomain' z hz := by
     by_contra h₂z
     simp [h₂z] at hz
   supportDiscreteWithinDomain' := by
