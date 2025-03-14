@@ -368,14 +368,23 @@ section
 
 open LieAlgebra
 
-variable {K L : Type*} [Field K] [IsAlgClosed K] [NoZeroSMulDivisors ℤ K] [LieRing L]
-[LieAlgebra K L] (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
+  (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+  [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
+  [IsTriangularizable K H M] [FiniteDimensional K M]
 
-variable {M : Type*} [AddCommGroup M] [Module K M] [FiniteDimensional K M] [NoZeroSMulDivisors K M]
-[LieRingModule L M] [LieModule K L M]
+lemma root_space_ad_is_nilpotent
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (toEnd K L M x) := by
+  have := iSup_genWeightSpace_eq_top K H M
+  have := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ (by sorry) hχ
+  sorry
 
-lemma root_space_ad_is_nilpotent {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
-  _root_.IsNilpotent (toEnd K L M x) := sorry
+-- This is what we really want
+example [IsTriangularizable K H L] [FiniteDimensional K L]
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (ad K L x) :=
+  root_space_ad_is_nilpotent (M := L) H hχ hx
 
 end
 
