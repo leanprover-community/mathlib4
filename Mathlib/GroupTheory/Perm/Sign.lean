@@ -14,6 +14,7 @@ import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Data.Finset.Sigma
 
@@ -591,6 +592,12 @@ theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subt
 end congr
 
 end SignType.sign
+
+@[simp]
+theorem viaFintypeEmbedding_sign
+    [Fintype α] [Fintype β] [DecidableEq β] (e : Equiv.Perm α) (f : α ↪ β) :
+    sign (e.viaFintypeEmbedding f) = sign e := by
+  simp [viaFintypeEmbedding]
 
 section Finset
 
