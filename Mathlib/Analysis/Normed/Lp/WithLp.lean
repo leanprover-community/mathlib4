@@ -84,8 +84,6 @@ instance instModuleFinite
   ‹Module.Finite K V›
 
 variable {K V}
--- variable [SMul K V] [AddCommGroup V] [Semiring K] [Module K V]
-variable (c : K) (x y : WithLp p V) (x' y' : V)
 
 /-! `WithLp.equiv` preserves the module structure. -/
 
@@ -98,40 +96,41 @@ theorem equiv_symm_zero [AddCommGroup V] : (WithLp.equiv p V).symm 0 = 0 :=
   rfl
 
 @[simp]
-theorem equiv_add [AddCommGroup V] :
+theorem equiv_add [AddCommGroup V] (x y : WithLp p V) :
     WithLp.equiv p V (x + y) = WithLp.equiv p V x + WithLp.equiv p V y :=
   rfl
 
 @[simp]
-theorem equiv_symm_add [AddCommGroup V] :
+theorem equiv_symm_add [AddCommGroup V] (x' y' : V) :
     (WithLp.equiv p V).symm (x' + y') = (WithLp.equiv p V).symm x' + (WithLp.equiv p V).symm y' :=
   rfl
 
 @[simp]
-theorem equiv_sub [AddCommGroup V] :
+theorem equiv_sub [AddCommGroup V] (x y : WithLp p V) :
     WithLp.equiv p V (x - y) = WithLp.equiv p V x - WithLp.equiv p V y :=
   rfl
 
 @[simp]
-theorem equiv_symm_sub [AddCommGroup V] :
+theorem equiv_symm_sub [AddCommGroup V] (x' y' : V) :
     (WithLp.equiv p V).symm (x' - y') = (WithLp.equiv p V).symm x' - (WithLp.equiv p V).symm y' :=
   rfl
 
 @[simp]
-theorem equiv_neg [AddCommGroup V] : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
+theorem equiv_neg [AddCommGroup V] (x : WithLp p V) : WithLp.equiv p V (-x) = -WithLp.equiv p V x :=
   rfl
 
 @[simp]
-theorem equiv_symm_neg [AddCommGroup V] :
+theorem equiv_symm_neg [AddCommGroup V] (x' : V):
     (WithLp.equiv p V).symm (-x') = -(WithLp.equiv p V).symm x' :=
   rfl
 
 @[simp]
-theorem equiv_smul [SMul K V] : WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
+theorem equiv_smul [SMul K V] (c : K) (x : WithLp p V) :
+    WithLp.equiv p V (c • x) = c • WithLp.equiv p V x :=
   rfl
 
 @[simp]
-theorem equiv_symm_smul [SMul K V] :
+theorem equiv_symm_smul [SMul K V] (c : K) (x' : V) :
     (WithLp.equiv p V).symm (c • x') = c • (WithLp.equiv p V).symm x' :=
   rfl
 
