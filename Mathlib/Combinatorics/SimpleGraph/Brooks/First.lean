@@ -7,12 +7,73 @@ variable {α : Type*} {G : SimpleGraph α}
 section Walks
 namespace Walk
 open Finset
+variable {u v : α}
+lemma chain_darts {w : G.Walk u v} (P : α → Prop) (hu : P u)
+   (hchain : ∀ d, d ∈ w.darts → P d.fst → P d.snd) : ∀ x, x ∈ w.support → P x := by
+  intro y hy
+  induction w with
+  | nil => simp_all
+  | cons h p ih =>
+    rw [support_cons] at hy
+    cases hy with
+    | head as =>  exact hu
+    | tail b hb =>
+      rw [darts_cons] at hchain
+      have : ∀d, d ∈ p.darts → P d.toProd.1 → P d.toProd.2 := by simp_all
+      apply ih _ this hb
+      simp_all
+
+lemma exists_change_dart (w : G.Walk u v) (P : α → Prop) {x : α} (hu : P u) (hx : x ∈ w.support)
+    (hxP : ¬ P x) : ∃ d, d ∈ w.darts ∧ P d.fst ∧ ¬ P d.snd := by
+  by_contra! hc
+  exact hxP <| chain_darts P hu hc _ hx
+
+/-- If a circuit contains vertices `x` and `y` such that `P x` and `¬ P y` then it contains
+a dart `d` such that `P d.fst` and `¬ P d.snd` -/
+lemma exists_change_dart_closed {w : G.Walk u u} (P : α → Prop) {x y : α} (hx : x ∈ w.support)
+    (hxP : P x) (hy : y ∈ w.support) (hyP : ¬ P y) : ∃ d, d ∈ w.darts ∧ P d.fst ∧ ¬ P d.snd := by
+  by_cases hu : P u
+  · exact w.exists_change_dart P hu hy hyP
+  · obtain ⟨d, hd, hd1, hd2⟩ := w.reverse.exists_change_dart (¬ P ·) hu
+       (by rwa [support_reverse, List.mem_reverse]) (not_not.2 hxP)
+    use d.symm, by simpa using hd, (not_not.1 hd2), hd1
+
+lemma cycle_mem_support_iff {c : G.Walk u u} (hc : c.IsCycle) {x : α} :
+    x ∈ c.support ↔ x ∈ c.support.tail := by
+  cases c with
+  | nil => simp at hc
+  | cons h p =>
+    simp only [support_cons, List.mem_cons, List.tail_cons, or_iff_right_iff_imp]
+    intro h
+    rw [h]
+    exact end_mem_support ..
+
+
+lemma rotate_dart_snd  [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) {d : G.Dart}
+    (hd : d ∈ c.darts) : (c.rotate (dart_fst_mem_support_of_mem_darts c hd)).snd = d.snd := by
+
+  sorry
+
+
+
+lemma exists_cycle [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) (P : α → Prop) {x y : α}
+    (hx : x ∈ c.support) (hxP : P x) (hy : y ∈ c.support) (hyP : ¬ P y) : ∃ (a : α),
+    ∃ (d : G.Walk a a), P a ∧ ¬ P d.snd ∧ d.IsCycle ∧ d.support.toFinset = c.support.toFinset:= by
+  obtain ⟨d, hd, hd1, hd2⟩ := exists_change_dart_closed P hx hxP hy hyP
+  use d.toProd.1, c.rotate (dart_fst_mem_support_of_mem_darts c hd), hd1
+  refine ⟨by rwa [rotate_dart_snd hc hd], hc.rotate (dart_fst_mem_support_of_mem_darts c hd), ?_⟩
+  have := support_rotate c (dart_fst_mem_support_of_mem_darts c hd)
+  ext z; simp only [List.mem_toFinset]
+  rw [cycle_mem_support_iff hc, cycle_mem_support_iff
+     (hc.rotate (dart_fst_mem_support_of_mem_darts c hd))]
+  exact List.IsRotated.mem_iff this
+
 section LFDEq
-variable [DecidableEq α]
-lemma exists_maximal_path_subset {u v : α} [LocallyFinite G] (s : Finset α) {q : G.Walk u v}
-(hq : q.IsPath) (hs : ∀ y , y ∈ q.support → y ∈ s) : ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧
-  (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
-∀ y, y ∈ G.neighborFinset x ∩ s → y ∈ (p.append q).support := by
+
+lemma exists_maximal_path_subset [DecidableEq α] {u v : α} [LocallyFinite G] (s : Finset α)
+    {q : G.Walk u v} (hq : q.IsPath) (hs : ∀ y , y ∈ q.support → y ∈ s) : ∃ x, ∃ p : G.Walk x u,
+    (p.append q).IsPath ∧ (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
+    ∀ y, y ∈ G.neighborFinset x ∩ s → y ∈ (p.append q).support := by
   by_contra! hf
   have : ∀ n, ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ x, x ∈ (p.append q).support → x ∈ s) ∧
     n ≤ (p.append q).length := by
@@ -32,8 +93,9 @@ lemma exists_maximal_path_subset {u v : α} [LocallyFinite G] (s : Finset α) {q
   exact Nat.not_succ_le_self _ (this.trans hc.2)
 
 open List
-lemma IsPath.support_takeUntil_disjoint_dropUntil_tail {u v x : α} {p : G.Walk u v} (hp : p.IsPath)
-   (hx : x ∈ p.support) : Disjoint (p.takeUntil x hx).support (p.dropUntil x hx).support.tail := by
+lemma IsPath.support_takeUntil_disjoint_dropUntil_tail [DecidableEq α] {u v x : α} {p : G.Walk u v}
+   (hp : p.IsPath) (hx : x ∈ p.support) : Disjoint (p.takeUntil x hx).support
+   (p.dropUntil x hx).support.tail := by
   rw [← p.take_spec hx, append_isPath_iff] at hp
   exact hp.2.2
 
@@ -170,7 +232,7 @@ structure IsCloseableMaxPath {u v : α} (p : G.Walk u v) [Fintype (G.neighborSet
   IsMaxPath p where
 /-- The end vertex has at least one other neighbor -/
   one_lt_degree : 1 < G.degree v
-  
+
 omit [DecidableEq α] in
 lemma IsCloseableMaxPath.mk' {u v : α} [Fintype (G.neighborSet v)] {p : G.Walk u v}
     (hp : p.IsPath) (hmax : ∀ y, G.Adj v y → y ∈ p.support)
@@ -227,6 +289,7 @@ lemma IsMaxCycle.dropUntil_of_isClosableMaxPath (hp : p.IsCloseableMaxPath) :
     rwa [penultimate_dropUntil (fun hv ↦ G.loopless _ (hv ▸ hp.isClosable.adj))] at h2
   · apply (mem_dropUntil_find_of_mem_prop ⟨(hp.max _ hy), _⟩)
     exact ⟨hy, hpen⟩
+
 
 end Walk
 end Walks
