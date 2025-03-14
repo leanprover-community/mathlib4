@@ -255,7 +255,6 @@ noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h.wf) s hs ha
@@ -266,11 +265,9 @@ section LinearOrder
 
 variable [LinearOrder β] [WellFoundedLT β]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
   not_lt.mp <| not_lt_argmin f a
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f s ha hs
