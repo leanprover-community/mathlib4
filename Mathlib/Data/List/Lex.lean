@@ -39,6 +39,8 @@ theorem lex_cons_iff {r : α → α → Prop} [IsIrrefl α r] {a l₁ l₂} :
     Lex r (a :: l₁) (a :: l₂) ↔ Lex r l₁ l₂ :=
   ⟨fun h => by obtain - | h | h := h; exacts [h, (irrefl_of r a h).elim], Lex.cons⟩
 
+@[deprecated (since := "2025-03-14")] alias Lex.cons_iff := lex_cons_iff
+
 @[deprecated (since := "2024-12-21")] alias not_nil_right := not_lex_nil
 
 theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
@@ -46,9 +48,13 @@ theorem lex_nil_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r []
   | [] => Or.inr rfl
   | _ :: _ => .inl .nil
 
+@[deprecated (since := "2025-03-14")] alias Lex.nil_left_or_eq_nil := lex_nil_or_eq_nil
+
 @[simp]
 theorem lex_singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=
   ⟨fun | .rel h => h, .rel⟩
+
+@[deprecated (since := "2025-03-14")] alias Lex.singleton_iff := lex_singleton_iff
 
 namespace Lex
 
