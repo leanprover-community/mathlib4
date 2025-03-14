@@ -1437,8 +1437,8 @@ theorem liftRel_join (R : α → β → Prop) {S : WSeq (WSeq α)} {T : WSeq (WS
       | some (a, s), some (b, t), ⟨h1, h2⟩ => by
         simpa using ⟨h1, s, t, S, rfl, T, rfl, h2, ST⟩
       | none, none, _ => by
-        -- Porting note: `LiftRelO` should be excluded.
-        dsimp [destruct_append.aux, Computation.LiftRel, -LiftRelO]; constructor
+        -- We do not `dsimp` with `LiftRelO` since `liftRel_join.lem` uses `LiftRelO`.
+        dsimp only [destruct_append.aux, Computation.LiftRel]; constructor
         · intro
           apply liftRel_join.lem _ ST fun _ _ => id
         · intro b mb
