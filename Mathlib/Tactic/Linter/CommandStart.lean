@@ -65,37 +65,37 @@ structure FormatError where
   msg : String := default
 
 partial
-def parallelScanAux : Nat → Array FormatError → List Char → List Char → Array FormatError
-  | n, as, ' '::ls, m::ms =>
+def parallelScanAux : Array FormatError → List Char → List Char → Array FormatError
+  | as, ' '::ls, m::ms =>
     if m.isWhitespace then
-      parallelScanAux (n + 1) as ls (ms.dropWhile (·.isWhitespace))
+      parallelScanAux as ls (ms.dropWhile (·.isWhitespace))
     else
-      parallelScanAux (n + 1) (as.push {srcPos := ls.length+1, msg := "extra space"}) ls (m::ms)
-  | n, as, '\n'::ls, m::ms =>
+      parallelScanAux (as.push {srcPos := ls.length+1, msg := "extra space"}) ls (m::ms)
+  | as, '\n'::ls, m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
-      parallelScanAux (n + lth + 1) as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
+      parallelScanAux as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
     else
       parallelScanAux
-        (n+lth+1) (as.push {srcPos := ls.length+1, msg := "remove line break"}) (ls.drop lth) (m::ms)
-  | n, as, l::ls, m::ms => -- `l` is not whitespace
+        (as.push {srcPos := ls.length+1, msg := "remove line break"}) (ls.drop lth) (m::ms)
+  | as, l::ls, m::ms => -- `l` is not whitespace
     if l == m then
-      parallelScanAux (n + 1) as ls ms
+      parallelScanAux as ls ms
     else
       if m.isWhitespace then
-        parallelScanAux n (as.push {srcPos := ls.length+1, msg := "missing space"})
+        parallelScanAux (as.push {srcPos := ls.length+1, msg := "missing space"})
           (l::ls) (ms.dropWhile (·.isWhitespace))
     else
-      as.push {srcPos := n, msg := "Oh no! (Unreachable?)"}
-  | _, as, _, [] => as
-  | _, as, [], ms =>
+      as.push {srcPos := ls.length + 1, msg := "Oh no! (Unreachable?)"}
+  | as, _, [] => as
+  | as, [], ms =>
     if ms.all (·.isWhitespace) then
       as
     else
       as.push {srcPos := 1, msg := "The formatted string finished early! (Unreachable?)"}
 
 def parallelScan (src fmt : String) : Array FormatError :=
-  parallelScanAux 0 ∅ src.toList fmt.toList
+  parallelScanAux ∅ src.toList fmt.toList
 
 /--
 Returns the pair consisting of
