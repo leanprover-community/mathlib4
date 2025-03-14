@@ -1073,8 +1073,7 @@ protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
 theorem uncurry_apply (f : α →₀ β →₀ M) (x : α) (y : β) : f.uncurry (x, y) = f x y := by
   rw [← curry_apply (f.uncurry) x y]
   simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
-    forall_true_iff, sum_single_index, single_zero, (single_sum _ _ _).symm,
-    sum_single]
+    forall_true_iff, sum_single_index, single_zero, (single_sum _ _ _).symm, sum_single]
 
 @[simp]
 theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
