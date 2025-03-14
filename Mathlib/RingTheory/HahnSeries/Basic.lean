@@ -318,7 +318,7 @@ zero if the series vanishes. -/
 def leadingCoeff (x : HahnSeries Γ R) : R :=
   if h : x = 0 then 0 else x.coeff (x.isWF_support.min (support_nonempty_iff.2 h))
 
-  @[simp]
+@[simp]
 theorem leadingCoeff_zero : leadingCoeff (0 : HahnSeries Γ R) = 0 :=
   dif_pos rfl
 

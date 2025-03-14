@@ -64,20 +64,27 @@ theorem single_sub_single_eq_zero_iff [Nontrivial R] (g g' : Γ) :
 theorem single_sub_single_neg (g g' : Γ) :
     - single_sub_single g g' (R := R) = single_sub_single g' g := by
   simp [single_sub_single]
-/-!
+
 theorem single_sub_single_pow [CommMonoid Γ] (g g' : Γ) (n : ℕ) :
-    (single_sub_single g g' (R := R)) ^ n = ∑ i : range (n + 1),
-      Int.negOnePow i.1 • n.choose i.1 • single (g ^ i.1 * g' ^ (n - i.1)) 1 := by
-  induction n with
-  | zero =>
-    simp [one_def]
-  | succ n ih =>
-    rw [pow_succ, ih, sum_mul, single_sub_single]
-   -- simp_rw [mul_sub, smul_mul_assoc, single_mul_single, ← mul_rotate, ← pow_succ, mul_rotate]
-
-    sorry
-
--/
+    (single_sub_single g g' (R := R)) ^ n = ∑ i ∈ antidiagonal n,
+      Int.negOnePow (i.2) • n.choose (i.1) • single (g ^ (i.1) * g' ^ i.2) 1 := by
+  rw [single_sub_single, Ring.sub_eq_add_neg, Commute.add_pow]
+  · rw [Nat.sum_antidiagonal_eq_sum_range_succ_mk]
+    refine sum_congr rfl ?_
+    intro i hi
+    rw [neg_pow']
+    simp only [single_pow, one_pow, smul_single, nsmul_eq_mul, mul_one]
+    rw [← mul_assoc, single_mul_single, one_mul, Int.negOnePow_def, uzpow_natCast]
+    have : Commute (single (g ^ i * g' ^ (n - i)) 1) ((-1 : MonoidAlgebra R Γ) ^ (n - i)) :=
+      single_commute (fun a' ↦ Commute.all (g ^ i * g' ^ (n - i)) a') (fun b' ↦ Commute.one_left b')
+        ((-1) ^ (n - i))
+    rw [this, ← Nat.cast_comm,
+      show (-1 : MonoidAlgebra R Γ) ^ (n - i) = ((-1) ^  (n - i) : ℤ) by norm_cast]
+    rw [← zsmul_eq_mul, ← nsmul_eq_mul, smul_single, smul_single]
+    congr 1
+    rw [nsmul_eq_mul, Nat.cast_comm, smul_one_mul]
+    congr
+  · exact Commute.neg_right (single_commute_single (Commute.all g g') rfl)
 
 end MonoidAlgebra
 
