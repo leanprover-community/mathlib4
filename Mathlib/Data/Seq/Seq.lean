@@ -967,7 +967,7 @@ theorem terminatedAt_map_iff {f : α → β} {s : Seq α} {n : ℕ} :
   simp [TerminatedAt]
 
 @[simp]
-theorem terminates_map_iff {f : α → β} {s : Seq α}  :
+theorem terminates_map_iff {f : α → β} {s : Seq α} :
     (map f s).Terminates ↔ s.Terminates := by
   simp [Terminates]
 
@@ -1311,10 +1311,7 @@ theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
 
 @[simp]
 theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
-  | ⟨a, s⟩ => by
-    dsimp [bind, map]
-    rw [map_comp, ret]
-    simp
+  | ⟨a, s⟩ => by simp [bind, map, map_comp, ret]
 
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
