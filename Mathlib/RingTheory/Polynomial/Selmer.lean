@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Analysis.Complex.Polynomial.UnitTrinomial
-import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.KrullTopology
 import Mathlib.GroupTheory.Perm.ClosureSwap
 import Mathlib.NumberTheory.NumberField.Discriminant.Basic
 import Mathlib.RingTheory.Ideal.Over
@@ -35,36 +35,11 @@ variable (A K L B : Type*) [CommRing A] [CommRing B] [Field K] [Field L]
   [IsScalarTower A K L] [IsScalarTower A B L]
   [IsIntegrallyClosed A] [IsIntegralClosure B A L]
 
-include A in
-noncomputable def IsIntegralClosure.MulSemiringAction [FiniteDimensional K L] :
-    MulSemiringAction (L ≃ₐ[K] L) B := by
-  let f : (L ≃ₐ[K] L) →* (B ≃ₐ[A] B) := galRestrict A K L B
-  exact MulSemiringAction.compHom B f
-
 instance IsIntegralClosure.SMulCommClass [FiniteDimensional K L] :
     let _ := IsIntegralClosure.MulSemiringAction A K L B
     SMulCommClass (L ≃ₐ[K] L) A B := by
   intro
   exact ⟨fun f ↦ map_smul (galRestrict A K L B f)⟩
-
-instance Algebra.isInvariant_of_isGalois [FiniteDimensional K L] [h : IsGalois K L] :
-    letI := IsIntegralClosure.MulSemiringAction A K L B
-    Algebra.IsInvariant A B (L ≃ₐ[K] L) := by
-  letI := IsIntegralClosure.MulSemiringAction A K L B
-  refine ⟨fun b hb ↦ ?_⟩
-  replace hb : algebraMap B L b ∈ IntermediateField.fixedField (⊤ : Subgroup (L ≃ₐ[K] L)) := by
-    rintro ⟨g, -⟩
-    exact (algebraMap_galRestrict_apply A g b).symm.trans (congrArg (algebraMap B L) (hb g))
-  have key := ((IsGalois.tfae (F := K) (E := L)).out 0 1).mp h
-  rw [key, IntermediateField.mem_bot] at hb
-  obtain ⟨k, hk⟩ := hb
-  have hb : IsIntegral A b := IsIntegralClosure.isIntegral A L b
-  rw [← isIntegral_algebraMap_iff (NoZeroSMulDivisors.algebraMap_injective B L), ← hk,
-    isIntegral_algebraMap_iff (NoZeroSMulDivisors.algebraMap_injective K L)] at hb
-  obtain ⟨a, rfl⟩ := IsIntegrallyClosed.algebraMap_eq_of_integral hb
-  rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_apply A B L,
-    (NoZeroSMulDivisors.algebraMap_injective B L).eq_iff] at hk
-  exact ⟨a, hk⟩
 
 end Galois
 
@@ -154,7 +129,7 @@ instance {α β : Type*} [Monoid α] [Subsingleton β] [MulAction α β] :
 
 open NumberField
 
-variable {K : Type*} [Field K] [NumberField K]
+variable {K : Type*} [Field K] [NumberField K] [IsGalois ℚ K]
 
 noncomputable def inertiaSubgroup  (q : Ideal (𝓞 K)) : Subgroup (K ≃ₐ[ℚ] K) :=
   _root_.inertiaSubgroup ℤ ℚ K (𝓞 K) (q.under ℤ) q
@@ -170,11 +145,16 @@ theorem keythm : ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q 
   suffices h : F = ⊥ by
     rw [← fixingSubgroup_fixedField H]
     change fixingSubgroup F = ⊤
-    rw [h]
-    -- easy lemma for mathlib
-    ext
-    simp [IntermediateField.fixingSubgroup, _root_.fixingSubgroup, fixingSubmonoid, mem_bot]
+    rw [h, IntermediateField.fixingSubgroup.bot] -- will get renamed and moved in #22759
+  have : H.Normal := sorry
+  have : IsGalois ℚ F := sorry
+  have key0 : ∀ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q ≤ H := by
+    intro q hq
+    exact le_iSup_of_le q (le_iSup_of_le hq le_rfl)
   have key : ∀ (q : Ideal (𝓞 F)) (hq : q.IsMaximal), inertiaSubgroup q = ⊥ := by
+    intro q hq
+    -- take prime of K lying over F
+    -- inertia subgroup in F is quotient by H
     sorry
   suffices h : ¬ 1 < Module.finrank ℚ F by
     rw [← IntermediateField.finrank_eq_one_iff]
@@ -188,10 +168,6 @@ theorem keythm : ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q 
   replace h := NumberField.abs_discr_gt_two h
   sorry
 
-#check map_smul
-
-#check MulActionHom.comp
-
 -- x ^ n - x - 1 = 0 (mod p)
 -- n x ^ (n - 1) - 1 = 0 (mod p)
 --
@@ -202,11 +178,11 @@ theorem keythm : ⨆ (q : Ideal (𝓞 K)) (hq : q.IsMaximal), inertiaSubgroup q 
 -- x = 1 / ((1 / n) - 1)
 -- x = n / (n - 1)
 
-theorem tada {G S T : Type*} [Group G] [MulAction G S] [MulAction G T] [DecidableEq S]
+theorem tada {G S T : Type*} [Group G] [MulAction G S] [MulAction G T]
+    [DecidableEq S] [DecidableEq T]
     (f : S →[G] T) (σ : G)
     (hσS : MulAction.toPermHom G S σ ≠ 1) (hσT : MulAction.toPermHom G T σ = 1)
-    (h : ∀ a b c d : S, a ≠ b → c ≠ d → f a = f b → f c = f d →
-      ((a = c ∧ b = d) ∨ (a = d ∧ b = c))) :
+    (h : ∀ s : Finset S, s.card ≤ (s.image f).card + 1) :
     (MulAction.toPermHom G S σ).IsSwap := sorry
 
 theorem X_pow_sub_X_sub_one_gal :
