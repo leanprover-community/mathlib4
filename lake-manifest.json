@@ -38,7 +38,7 @@
    "rev": "a602d13aca2913724c7d47b2d7df0353620c4ee8",
    "name": "proofwidgets",
    "manifestFile": "lake-manifest.json",
-   "inputRev": "v0.0.53",
+   "inputRev": "nightly-testing",
    "inherited": false,
    "configFile": "lakefile.lean"},
   {"url": "https://github.com/leanprover-community/aesop",

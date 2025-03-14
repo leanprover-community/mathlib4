@@ -96,7 +96,7 @@ instance : UsableInSimplexAlgorithm SparseMatrix where
       let rowVals := row.toList.map fun (j, v) => (i, j, v)
       rowVals ++ acc
   ofValues {n _ : Nat} vals := Id.run do
-    let mut data : Array (Std.HashMap Nat Rat) := Array.mkArray n .empty
+    let mut data : Array (Std.HashMap Nat Rat) := Array.mkArray n ∅
     for ⟨i, j, v⟩ in vals do
       if v != 0 then
         data := data.modify i fun row => row.insert j v
