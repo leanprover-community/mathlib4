@@ -9,7 +9,6 @@ import Mathlib.Geometry.Manifold.Instances.Sphere
 import Mathlib.Topology.FiberBundle.Basic
 
 set_option linter.style.longLine false
-set_option linter.style.lambdaSyntax false
 set_option linter.style.cdot false
 
 open Function Set
@@ -23,8 +22,7 @@ theorem h : x ∈  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
     calc
      (x 0)^2 + (x 1)^2 = 1^2 + 0^2 := rfl
      _ = 1 := by simp
-  have h6 : x ∈  {x | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2} := by
-    simp [h5]
+  have h6 : x ∈  {x | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2} := by simp [h5]
   have h7 : x ∈  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
    rw [h1]
    exact h6
@@ -141,7 +139,7 @@ theorem MyCoordChange_comp : ∀ (i j k : Fin 2),
 
 theorem tOpen : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 > 0 } := by
   let V := { x : EuclideanSpace ℝ (Fin 2) | x 1 > 0 }
-  have h1 : Continuous (λ (x: EuclideanSpace ℝ (Fin 2)) => (0 : (fun x => ℝ) 1)) := continuous_const
+  have h1 : Continuous (fun (x: EuclideanSpace ℝ (Fin 2)) ↦ (0 : (fun x => ℝ) 1)) := continuous_const
   have h2 :  ∀ (i : Fin 2), Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x i := continuous_apply
   have h3 : Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x 1 := h2 1
   have h4 : IsOpen V := isOpen_lt h1 h3
@@ -150,16 +148,16 @@ theorem tOpen : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) 
 
 theorem tOpen' : IsOpen { x : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) | x.val 1 < 0 } := by
   let V := { x : EuclideanSpace ℝ (Fin 2) | x 1 < 0 }
-  have h1 : Continuous (λ (x: EuclideanSpace ℝ (Fin 2)) => (0 : (fun x => ℝ) 1)) := continuous_const
+  have h1 : Continuous (fun (x: EuclideanSpace ℝ (Fin 2)) => (0 : (fun x => ℝ) 1)) := continuous_const
   have h2 :  ∀ (i : Fin 2), Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x i := continuous_apply
   have h3 : Continuous fun (x : EuclideanSpace ℝ (Fin 2)) => x 1 := h2 1
   have h4 : IsOpen V := isOpen_lt h3 h1
   let U := { x : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 | x.val 1 < 0 }
   exact isOpen_induced_iff.mpr ⟨V, h4, rfl⟩
 
-theorem t00 : ContinuousOn (λ p => MyCoordChange 0 0 p.1 p.2) (U.source ×ˢ univ) := by
-  have h1 : (λ (p : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) =>
-    MyCoordChange 0 0 p.fst p.snd) = (λ p => p.snd) := by rfl
+theorem t00 : ContinuousOn (fun p => MyCoordChange 0 0 p.1 p.2) (U.source ×ˢ univ) := by
+  have h1 : (fun (p : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) =>
+    MyCoordChange 0 0 p.fst p.snd) = (fun p => p.snd) := by rfl
   rw [h1]
   exact continuousOn_snd
 
@@ -210,14 +208,14 @@ theorem SulSource : U.source ∩ V.source = { x | x.val 1 > 0 } ∪ { x | x.val 
       rwa [Fin.sum_univ_two, one_pow] at h3ca
 
     have h3de : y.val 1 = 0 ↔ y.val 0 = 1 ∨ y.val 0 = -1 :=
-      ⟨ λ h => by
+      ⟨ fun h => by
         have ge : (y.val 0) ^ 2 + (y.val 1) ^ 2  = (y.val 0) ^ 2 + 0 ^ 2 := by rw [h]
         have gf : (y.val 0) ^ 2 + 0 ^ 2 = (y.val 0) ^ 2 := by rw [zero_pow two_ne_zero, add_zero]
         have gg : (y.val 0) ^ 2 = 1 ↔ y.val 0 = 1 ∨ y.val 0 = -1 := sq_eq_one_iff
         rw [ge, gf] at h3da
         rwa [gg] at h3da,
 
-      λ h => by
+      fun h => by
         have : (y.val 0) ^ 2 + (y.val 1) ^ 2 = 1 := h3da
         cases h with
         | inl pos1 => rw [pos1, one_pow, ←sub_eq_zero, add_comm] at this
@@ -373,7 +371,7 @@ lemma s2_is_open : IsOpen s2 := by
   rw [h3] at h2
   exact h2
 
-theorem t01 : ContinuousOn (λ p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V.source) ×ˢ univ) := by
+theorem t01 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V.source) ×ˢ univ) := by
   have h1 : (U.source ∩ V.source) = { x | x.val 1 > 0 } ∪ { x | x.val 1 < 0 } := SulSource
   let f : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
   | (x, α) =>if (x.val 1) > 0 then α else -α
@@ -390,7 +388,7 @@ theorem t01 : ContinuousOn (λ p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V.
     dsimp [f, s1] at hx ⊢
     rw [if_pos hx]
 
-  have hz1' : ContinuousOn (λ p => MyCoordChange 0 1 p.1 p.2) s1 := by
+  have hz1' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s1 := by
     exact hz1
 
   have hz2 : ContinuousOn f s2 := by
@@ -399,24 +397,24 @@ theorem t01 : ContinuousOn (λ p => MyCoordChange 0 1 p.1 p.2) ((U.source ∩ V.
     dsimp [f, s2] at hx ⊢
     rw [if_neg (not_lt_of_gt hx)]
 
-  have hz2' : ContinuousOn (λ p => MyCoordChange 0 1 p.1 p.2) s2 := by
+  have hz2' : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) s2 := by
     exact hz2
 
-  have h5 : ContinuousOn (λ p => MyCoordChange 0 1 p.1 p.2) (s1 ∪ s2) := continuous_on_union_of_open (λ p => MyCoordChange 0 1 p.1 p.2) s1 s2 s1_is_open s2_is_open hz1' hz2'
+  have h5 : ContinuousOn (fun p => MyCoordChange 0 1 p.1 p.2) (s1 ∪ s2) := continuous_on_union_of_open (fun p => MyCoordChange 0 1 p.1 p.2) s1 s2 s1_is_open s2_is_open hz1' hz2'
   rw [h1]
   rw [h6] at h5
   exact h5
 
- theorem t10 : ContinuousOn (λ p => MyCoordChange 1 0 p.1 p.2) ((V.source ∩ U.source) ×ˢ univ) := by
+ theorem t10 : ContinuousOn (fun p => MyCoordChange 1 0 p.1 p.2) ((V.source ∩ U.source) ×ˢ univ) := by
   have h1 : MyCoordChange 1 0 = MyCoordChange 0 1 := rfl
-  have h2 : (λ (p : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) => MyCoordChange 1 0 p.1 p.2) = (λ p => MyCoordChange 0 1 p.1 p.2) :=
+  have h2 : (fun (p : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) => MyCoordChange 1 0 p.1 p.2) = (fun p => MyCoordChange 0 1 p.1 p.2) :=
     funext (fun x => by rw [h1])
   rw [h2, inter_comm]
   exact t01
 
-theorem t11 : ContinuousOn (λ p => MyCoordChange 0 0 p.1 p.2) (V.source ×ˢ univ) := by
-  have h1 : (λ (p : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) =>
-    MyCoordChange 0 0 p.fst p.snd) = (λ p => p.snd) := by rfl
+theorem t11 : ContinuousOn (fun p => MyCoordChange 0 0 p.1 p.2) (V.source ×ˢ univ) := by
+  have h1 : (fun (p : (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) × EuclideanSpace ℝ (Fin 1)) =>
+    MyCoordChange 0 0 p.fst p.snd) = (fun p => p.snd) := by rfl
   rw [h1]
   exact continuousOn_snd
 
@@ -475,7 +473,7 @@ theorem my_mem_baseSet_at : ∀ (x : ↑(Metric.sphere 0 1)),
 noncomputable
 def Mobius : FiberBundleCore (Fin 2) (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) (EuclideanSpace ℝ (Fin 1)) :=
 {
-  baseSet := λ i => if i = 0 then U.source
+  baseSet := fun i => if i = 0 then U.source
                              else V.source,
 
   isOpen_baseSet := by
@@ -485,7 +483,7 @@ def Mobius : FiberBundleCore (Fin 2) (Metric.sphere (0 : EuclideanSpace ℝ (Fin
     · exact U.open_source
     · exact V.open_source
 
-  indexAt := λ x => if (x.val 0) > 0 then 0 else 1,
+  indexAt := fun x => if (x.val 0) > 0 then 0 else 1,
 
   mem_baseSet_at := my_mem_baseSet_at,
 

@@ -41,12 +41,11 @@ def CylinderAsGBundle : GBundleCore (atlas (EuclideanSpace ℝ (Fin 1)) Circle) 
 open Matrix
 
 instance {n : ℕ} : MulAction (orthogonalGroup (Fin n) ℝ) (EuclideanSpace ℝ (Fin n)) where
-  smul := λ g x => g.1.mulVec x
-  one_smul := λ x => by
-    have h1 : (1 : orthogonalGroup (Fin n) ℝ).1.mulVec x = x := by
-      simp [Matrix.mulVec_one]
-    exact h1
-  mul_smul := λ f g x => by
+  smul g x := g.1.mulVec x
+  one_smul x := by
+    change (1 : orthogonalGroup (Fin n) ℝ).1.mulVec x = x
+    simp [Matrix.mulVec_one]
+  mul_smul g x := by
     show (f * g).1.mulVec x = f.1.mulVec (g.1.mulVec x)
     simp [Matrix.mulVec_mulVec]
 
@@ -116,28 +115,19 @@ theorem MyCoordChange_structure_group : ∀ (i j : Fin 2),
 
 noncomputable
 def MobiusAsGBundle : GBundleCore (Fin 2) (Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1) (EuclideanSpace ℝ (Fin 1)) (orthogonalGroup (Fin 1) ℝ) where
-  baseSet := λ i => if i = 0 then U.source
-                             else V.source
-
+  baseSet i := if i = 0 then U.source else V.source
   isOpen_baseSet := by
     intro i
     dsimp only
     split
     · exact U.open_source
     · exact V.open_source
-
-  indexAt := λ x => if (x.val 0) > 0 then 0 else 1
-
+  indexAt x := if (x.val 0) > 0 then 0 else 1
   mem_baseSet_at := my_mem_baseSet_at
-
   coordChange := MyCoordChange
-
   coordChange_self := MyCoordChange_self
-
   continuousOn_coordChange := by
     intro i j
     exact MyContinuousOn_coordChange i j
-
   coordChange_comp := MyCoordChange_comp
-
   coordChange_structure_group := MyCoordChange_structure_group
