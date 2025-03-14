@@ -37,7 +37,7 @@ section Topology
 variable [TopologicalSpace R] [TopologicalSpace M]
 
 instance instTopologicalSpace : TopologicalSpace (tsze R M) :=
-  TopologicalSpace.induced fst ‹_› ⊓ TopologicalSpace.induced snd ‹_›
+  inferInstanceAs (TopologicalSpace (R × M))
 
 instance [T2Space R] [T2Space M] : T2Space (tsze R M) :=
   Prod.t2Space

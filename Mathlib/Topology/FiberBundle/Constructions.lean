@@ -43,7 +43,7 @@ instance topologicalSpace [t₁ : TopologicalSpace B]
 variable [TopologicalSpace B] [TopologicalSpace F]
 
 theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
-  ⟨by simp only [instTopologicalSpaceProd, induced_inf, induced_compose]; rfl⟩
+  ⟨by simp only [instTopologicalSpaceProd_eq_induced, induced_inf, induced_compose]; rfl⟩
 
 @[deprecated (since := "2024-10-28")] alias inducing_toProd := isInducing_toProd
 
@@ -279,7 +279,7 @@ theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F
 theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     IsInducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
-  simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
+  simp_rw [instTopologicalSpaceProd_eq_induced, induced_inf, induced_compose,
     Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
   rfl
 

@@ -469,13 +469,13 @@ protected def uniformEquivProdArrow [UniformSpace γ] : (α →ᵤ β × γ) ≃
   -- that some square commutes.
   Equiv.toUniformEquivOfIsUniformInducing (Equiv.arrowProdEquivProdArrow _ _ _) <| by
     constructor
+    simp only [instUniformSpaceProd_eq_comap]
     change
       comap (Prod.map (Equiv.arrowProdEquivProdArrow _ _ _) (Equiv.arrowProdEquivProdArrow _ _ _))
           _ = _
     simp_rw [UniformFun]
     rw [← uniformity_comap]
     congr
-    unfold instUniformSpaceProd
     rw [UniformSpace.comap_inf, ← UniformSpace.comap_comap, ← UniformSpace.comap_comap]
     have := (@UniformFun.inf_eq α (β × γ)
       (UniformSpace.comap Prod.fst ‹_›) (UniformSpace.comap Prod.snd ‹_›)).symm

@@ -186,8 +186,9 @@ instance Pi.locallyConvexSpace {ι : Type*} {X : ι → Type*} [∀ i, AddCommMo
   locallyConvexSpace_iInf fun i => locallyConvexSpace_induced (LinearMap.proj i)
 
 instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [LocallyConvexSpace 𝕜 E]
-    [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) :=
-  locallyConvexSpace_inf
+    [LocallyConvexSpace 𝕜 F] : LocallyConvexSpace 𝕜 (E × F) := by
+  rw [instTopologicalSpaceProd_eq_induced]
+  exact locallyConvexSpace_inf
     (locallyConvexSpace_induced (LinearMap.fst _ _ _))
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))
 

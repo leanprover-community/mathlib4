@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.PartialHomeomorphMore
 import Mathlib.Topology.Connected.LocPathConnected
 
 /-!
@@ -751,7 +751,8 @@ instance prodChartedSpace (H : Type*) [TopologicalSpace H] (M : Type*) [Topologi
 
 /-- Check that there is no diamond for charted spaces on products -/
 example (H H' : Type*) [TopologicalSpace H] [TopologicalSpace H'] :
-    prodChartedSpace H H H' H' = instChartedSpaceSelf (H × H') := rfl
+    prodChartedSpace H H H' H' = instChartedSpaceSelf (H × H') := by
+  with_reducible_and_instances rfl
 
 section prodChartedSpace
 
