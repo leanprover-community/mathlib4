@@ -5,7 +5,7 @@ Authors: Reid Barton
 -/
 import Mathlib.Topology.Hom.ContinuousEval
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The compact-open topology
