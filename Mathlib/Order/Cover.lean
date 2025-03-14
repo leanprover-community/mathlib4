@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
+Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn, Bhavik Mehta
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Interval.Set.WithBotTop
@@ -566,6 +566,156 @@ theorem covBy_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
   exact mk_covBy_mk_iff
 
 end Prod
+
+namespace Pi
+
+section Preorder
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] {a b : (i : ι) → α i}
+
+lemma _root_.WCovBy.eval (h : a ⩿ b) (i : ι) : a i ⩿ b i := by
+  classical
+  refine ⟨h.1 i, fun ci h₁ h₂ ↦ ?_⟩
+  have hcb : Function.update a i ci ≤ b := by simpa [update_le_iff, h₂.le] using fun j hj ↦ h.1 j
+  refine h.2 (by simpa) (lt_of_le_not_le hcb ?_)
+  simp [le_update_iff, h₂.not_le]
+
+lemma exists_forall_antisymmRel_of_covBy (h : a ⋖ b) :
+    ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  simp only [CovBy, Pi.lt_def, not_and, and_imp, forall_exists_index, not_exists] at h
+  obtain ⟨⟨hab, ⟨i, hi⟩⟩, h⟩ := h
+  use i
+  intro j hj
+  classical
+  let c : (i : ι) → α i := Function.update a i (b i)
+  have h₁ : a ≤ c := by simp [c, hi.le]
+  have h₂ : a i < c i := by simpa [c]
+  have h₃ : c ≤ b := by simpa [update_le_iff, c] using fun k hk ↦ hab k
+  have h₄ : ¬ c j < b j := h h₁ i h₂ h₃ j
+  have h₅ : ¬ a j < b j := by simpa [c, hj] using h₄
+  have h₆ : a j ≤ b j := hab j
+  refine ⟨h₆, ?_⟩
+  simpa [lt_iff_le_not_le, h₆] using h₅
+
+lemma exists_forall_antisymmRel_of_wcovBy [Nonempty ι] (h : a ⩿ b) :
+    ∃ i, ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  rw [wcovBy_iff_covBy_or_le_and_le] at h
+  obtain h | h := h
+  · exact exists_forall_antisymmRel_of_covBy h
+  · inhabit ι
+    exact ⟨default, fun j hj ↦ ⟨h.left j, h.right j⟩⟩
+
+/--
+A characterisation of the `WCovBy` relation in products of preorders. See `Pi.wcovBy_iff` for the
+(more common) version in products of partial orders.
+-/
+lemma wcovBy_iff' [Nonempty ι] :
+    a ⩿ b ↔ ∃ i, a i ⩿ b i ∧ ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  constructor
+  · intro h
+    obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h
+    use i
+    exact ⟨h.eval _, hi⟩
+  rintro ⟨i, hab, h⟩
+  refine ⟨?_, fun c hac hcb ↦ ?_⟩
+  · intro j
+    obtain rfl | hj := eq_or_ne j i
+    · exact hab.1
+    · exact (h j hj).1
+  have haci : a i < c i := by
+    rw [Pi.lt_def] at hac
+    obtain ⟨hac, j, hj⟩ := hac
+    obtain rfl | hj' := eq_or_ne j i
+    · exact hj
+    cases (lt_of_antisymmRel_of_lt (h j hj').symm hj).not_le (hcb.le j)
+  have hcbi : c i < b i := by
+    rw [Pi.lt_def] at hcb
+    obtain ⟨hcb, j, hj⟩ := hcb
+    obtain rfl | hj' := eq_or_ne j i
+    · exact hj
+    cases (lt_of_lt_of_antisymmRel hj (h j hj').symm).not_le (hac.le j)
+  exact hab.2 haci hcbi
+
+/--
+A characterisation of the `CovBy` relation in products of preorders. See `Pi.covBy_iff` for the
+(more common) version in products of partial orders.
+-/
+lemma covBy_iff' : a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, AntisymmRel (· ≤ ·) (a j) (b j) := by
+  constructor
+  · intro h
+    obtain ⟨j, hj⟩ := (Pi.lt_def.1 h.1).2
+    have : Nonempty ι := ⟨j⟩
+    obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h.wcovBy
+    obtain rfl : i = j := by_contra fun this ↦ (hi j (Ne.symm this)).2.not_lt hj
+    refine ⟨i, ?_, hi⟩
+    rw [covBy_iff_wcovBy_and_lt]
+    refine ⟨h.wcovBy.eval i, ?_⟩
+    exact hj
+  rintro ⟨i, hi, h⟩
+  have : Nonempty ι := ⟨i⟩
+  rw [covBy_iff_wcovBy_and_lt]
+  refine ⟨wcovBy_iff'.2 ⟨i, hi.wcovBy, h⟩, ?_⟩
+  exact Pi.lt_def.2 ⟨fun j ↦ (eq_or_ne j i).elim (· ▸ hi.1.le) (h j · |>.1), i, hi.1⟩
+
+end Preorder
+
+section PartialOrder
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, PartialOrder (α i)] {a b : (i : ι) → α i}
+
+lemma exists_forall_eq_of_covBy (h : a ⋖ b) : ∃ i, ∀ j ≠ i, a j = b j := by
+  obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_covBy h
+  exact ⟨i, fun j hj ↦ AntisymmRel.eq (hi _ hj)⟩
+
+lemma exists_forall_eq_of_wcovBy [Nonempty ι] (h : a ⩿ b) : ∃ i, ∀ j ≠ i, a j = b j := by
+  obtain ⟨i, hi⟩ := exists_forall_antisymmRel_of_wcovBy h
+  exact ⟨i, fun j hj ↦ AntisymmRel.eq (hi _ hj)⟩
+
+lemma wcovBy_iff [Nonempty ι] : a ⩿ b ↔ ∃ i, a i ⩿ b i ∧ ∀ j ≠ i, a j = b j := by
+  simp [wcovBy_iff']
+
+lemma covBy_iff : a ⋖ b ↔ ∃ i, a i ⋖ b i ∧ ∀ j ≠ i, a j = b j := by
+  simp [covBy_iff']
+
+lemma wcovBy_iff_exists_right_eq [Nonempty ι] [DecidableEq ι] :
+    a ⩿ b ↔ ∃ i x, a i ⩿ x ∧ b = Function.update a i x := by
+  rw [wcovBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, b i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+lemma covBy_iff_exists_right_eq [DecidableEq ι] :
+    a ⋖ b ↔ ∃ i x, a i ⋖ x ∧ b = Function.update a i x := by
+  rw [covBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, b i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+lemma wcovBy_iff_exists_left_eq [Nonempty ι] [DecidableEq ι] :
+    a ⩿ b ↔ ∃ i x, x ⩿ b i ∧ a = Function.update b i x := by
+  rw [wcovBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, a i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+lemma covBy_iff_exists_left_eq [Nonempty ι] [DecidableEq ι] :
+    a ⋖ b ↔ ∃ i x, x ⋖ b i ∧ a = Function.update b i x := by
+  rw [covBy_iff]
+  constructor
+  · rintro ⟨i, hi, h⟩
+    exact ⟨i, a i, hi, by simpa [Function.eq_update_iff, eq_comm] using h⟩
+  · rintro ⟨i, x, h, rfl⟩
+    exact ⟨i, by simpa +contextual⟩
+
+end PartialOrder
+
+end Pi
 
 namespace WithTop
 
