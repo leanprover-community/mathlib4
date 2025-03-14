@@ -1027,8 +1027,9 @@ protected theorem R1Space.inf {X : Type*} {t₁ t₂ : TopologicalSpace X}
   apply R1Space.iInf
   simp [*]
 
-instance [TopologicalSpace Y] [R1Space Y] : R1Space (X × Y) :=
-  .inf (.induced _) (.induced _)
+instance [TopologicalSpace Y] [R1Space Y] : R1Space (X × Y) := by
+  rw [instTopologicalSpaceProd_eq_induced]
+  exact .inf (.induced _) (.induced _)
 
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, R1Space (X i)] :
     R1Space (∀ i, X i) :=
