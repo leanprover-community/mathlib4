@@ -631,6 +631,21 @@ theorem finite_dualAnnihilator_iff {W : Submodule R M} [Free R (M ⧸ W)] :
     Module.Finite R W.dualAnnihilator ↔ Module.Finite R (M ⧸ W) :=
   (Finite.equiv_iff W.dualQuotEquivDualAnnihilator.symm).trans (finite_dual_iff R)
 
+lemma dualAnnihilator_eq_bot_iff' {W : Submodule R M} :
+    W.dualAnnihilator = ⊥ ↔ Subsingleton (Dual R (M ⧸ W)) := by
+  rw [W.dualQuotEquivDualAnnihilator.toEquiv.subsingleton_congr, subsingleton_iff_eq_bot]
+
+@[simp] lemma dualAnnihilator_eq_bot_iff {W : Submodule R M} [Projective R (M ⧸ W)] :
+    W.dualAnnihilator = ⊥ ↔ W = ⊤ := by
+  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, subsingleton_quotient_iff_eq_top]
+
+@[simp] lemma dualAnnihilator_eq_top_iff {W : Submodule R M} [Projective R M] :
+    W.dualAnnihilator = ⊤ ↔ W = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ dualAnnihilator_bot⟩
+  refine W.eq_bot_iff.mpr fun v hv ↦ (forall_dual_apply_eq_zero_iff R v).mp fun f ↦ ?_
+  refine (mem_dualAnnihilator f).mp ?_ v hv
+  simp [h]
+
 open LinearMap in
 /-- The pairing between a submodule `W` of a dual module `Dual R M` and the quotient of
 `M` by the coannihilator of `W`, which is always nondegenerate. -/
