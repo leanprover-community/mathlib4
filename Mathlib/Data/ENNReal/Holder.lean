@@ -41,6 +41,9 @@ class HolderTriple (p q : ℝ≥0∞) (r : semiOutParam ℝ≥0∞) : Prop where
 /-- An abbreviation for `ENNReal.HolderTriple p q 1`, this class states `p⁻¹ + q⁻¹ = 1`. -/
 abbrev HolderConjugate (p q : ℝ≥0∞) := HolderTriple p q 1
 
+lemma holderConjugate_iff {p q : ℝ≥0∞} : HolderConjugate p q ↔ p⁻¹ + q⁻¹ = 1 := by
+  simp [holderTriple_iff]
+
 /-! ### Hölder triples -/
 
 namespace HolderTriple

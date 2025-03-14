@@ -9,23 +9,28 @@ import Mathlib.Tactic.Finiteness
 /-!
 # Real conjugate exponents
 
-This file defines conjugate exponents in `ℝ` and `ℝ≥0`. Real numbers `p` and `q` are *conjugate* if
-they are both greater than `1` and satisfy `p⁻¹ + q⁻¹ = 1`. This property shows up often in
-analysis, especially when dealing with `L^p` spaces.
+This file defines Hölder triple and Hölder conjugate exponents in `ℝ` and `ℝ≥0`. Real numbers `p`,
+`q` and `r` form a *Hölder triple* if `0 < p` and `0 < q` and `p⁻¹ + q⁻¹ = r⁻¹` (which of course
+implies `0 < r`). We say `p` and `q` are *Hölder conjugate* if `p`, `q` and `1` are a Hölder triple.
+In this case, `1 < p` and `1 < q`. This property shows up often in analysis, especially when dealing
+with `L^p` spaces.
+
+These notions mimic the same notions for extended nonnegative reals where `p q r : ℝ≥0∞` are allowed
+to take the values `0` and `∞`.
 
 ## Main declarations
 
-* `Real.IsConjExponent`: Predicate for two real numbers to be conjugate.
+* `Real.HolderTriple`: Predicate for two real numbers to be a Hölder triple.
+* `Real.HolderConjugate`: Predicate for two real numbers to be Hölder conjugate.
 * `Real.conjExponent`: Conjugate exponent of a real number.
-* `NNReal.IsConjExponent`: Predicate for two nonnegative real numbers to be conjugate.
+* `NNReal.HolderTriple`: Predicate for two nonnegative real numbers to be a Hölder triple.
+* `NNReal.HolderConjugate`: Predicate for two nonnegative real numbers to be Hölder conjugate.
 * `NNReal.conjExponent`: Conjugate exponent of a nonnegative real number.
-* `ENNReal.IsConjExponent`: Predicate for two extended nonnegative real numbers to be conjugate.
 * `ENNReal.conjExponent`: Conjugate exponent of an extended nonnegative real number.
 
 ## TODO
 
 * Eradicate the `1 / p` spelling in lemmas.
-* Do we want an `ℝ≥0∞` version?
 -/
 
 noncomputable section
@@ -131,7 +136,7 @@ include h
 @[symm]
 protected lemma symm : q.HolderConjugate p := HolderTriple.symm h
 
-theorem inv_add_inv : p⁻¹ + q⁻¹ = 1 := inv_one (G := ℝ) ▸ h.inv_add_inv_eq_inv
+theorem inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 := inv_one (G := ℝ) ▸ h.inv_add_inv_eq_inv
 
 -- these lemmas already existed, but under a different namespace
 theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.lt
@@ -143,7 +148,7 @@ theorem conjugate_eq : q = p / (p - 1) := by
 
 lemma conjExponent_eq : conjExponent p = q := h.conjugate_eq.symm
 
-lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := sub_eq_of_eq_add h.symm.inv_add_inv.symm
+lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := sub_eq_of_eq_add h.symm.inv_add_inv_eq_one.symm
 lemma inv_sub_one : p⁻¹ - 1 = -q⁻¹ := by simpa using congr(-$(h.one_sub_inv))
 
 theorem sub_one_mul_conj : (p - 1) * q = p :=
@@ -156,15 +161,15 @@ theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
   rw [h.sub_one_mul_conj]
 
-theorem inv_add_inv_conj_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)⁻¹ = 1 := by
+theorem inv_add_inv_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)⁻¹ = 1 := by
   rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_inv_of_pos h.pos,
     ← ENNReal.ofReal_inv_of_pos h.symm.pos, ← ENNReal.ofReal_add h.inv_nonneg h.symm.inv_nonneg,
-    h.inv_add_inv]
+    h.inv_add_inv_eq_one]
 
 end
 
 lemma _root_.Real.holderConjugate_iff : p.HolderConjugate q ↔ 1 < p ∧ p⁻¹ + q⁻¹ = 1 := by
-  refine ⟨fun h ↦ ⟨h.lt, h.inv_add_inv⟩, ?_⟩
+  refine ⟨fun h ↦ ⟨h.lt, h.inv_add_inv_eq_one⟩, ?_⟩
   rintro ⟨hp, h⟩
   have hp' := zero_lt_one.trans hp
   refine ⟨inv_one (G := ℝ) |>.symm ▸ h, hp', ?_⟩
@@ -307,7 +312,7 @@ include h
 @[symm]
 protected lemma symm : q.HolderConjugate p := HolderTriple.symm h
 
-theorem inv_add_inv : p⁻¹ + q⁻¹ = 1 := inv_one (G := ℝ≥0) ▸ h.inv_add_inv_eq_inv
+theorem inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 := inv_one (G := ℝ≥0) ▸ h.inv_add_inv_eq_inv
 
 -- these lemmas already existed, but under a different namespace
 theorem sub_one_pos : 0 < p - 1 := tsub_pos_of_lt h.lt
@@ -319,7 +324,7 @@ theorem conjugate_eq : q = p / (p - 1) := by
 
 lemma conjExponent_eq : conjExponent p = q := h.conjugate_eq.symm
 
-lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := tsub_eq_of_eq_add h.symm.inv_add_inv.symm
+lemma one_sub_inv : 1 - p⁻¹ = q⁻¹ := tsub_eq_of_eq_add h.symm.inv_add_inv_eq_one.symm
 
 theorem sub_one_mul_conj : (p - 1) * q = p :=
   mul_comm q (p - 1) ▸ (eq_div_iff h.sub_one_ne_zero).1 h.conjugate_eq
@@ -331,10 +336,7 @@ theorem div_conj_eq_sub_one : p / q = p - 1 := by
   field_simp [h.symm.ne_zero]
   rw [h.sub_one_mul_conj]
 
---theorem inv_add_inv_conj_ennreal : (ENNReal.ofReal p)⁻¹ + (ENNReal.ofReal q)⁻¹ = 1 := by
-  --rw [← ENNReal.ofReal_one, ← ENNReal.ofReal_inv_of_pos h.pos,
-    --← ENNReal.ofReal_inv_of_pos h.symm.pos, ← ENNReal.ofReal_add h.inv_nonneg h.symm.inv_nonneg,
-    --h.inv_add_inv]
+lemma inv_add_inv_ennreal : (p⁻¹ + q⁻¹ : ℝ≥0∞) = 1 := by norm_cast; exact h.inv_add_inv_eq_one
 
 end
 
@@ -374,6 +376,9 @@ protected lemma Real.HolderTriple.toNNReal {p q r : ℝ} (h : p.HolderTriple q r
     p.toNNReal.HolderTriple q.toNNReal r.toNNReal := by
   simpa [← NNReal.holderTriple_coe_iff, h.nonneg, h.symm.nonneg, h.nonneg']
 
+protected lemma Real.HolderConjugate.toNNReal {p q : ℝ} (h : p.HolderConjugate q) :
+    p.toNNReal.HolderConjugate q.toNNReal := by
+  simpa using Real.HolderTriple.toNNReal h
 namespace ENNReal
 
 /-- The conjugate exponent of `p` is `q = 1 + (p - 1)⁻¹`, so that `1/p + 1/q = 1`. -/
@@ -573,4 +578,136 @@ lemma isConjExponent_comm : p.HolderConjugate q ↔ q.HolderConjugate p := ⟨(�
 lemma isConjExponent_iff_eq_conjExponent (hp : 1 ≤ p) : p.HolderConjugate q ↔ q = 1 + (p - 1)⁻¹ :=
   ⟨fun h ↦ h.conj_eq, by rintro rfl; exact .conjExponent hp⟩
 
+end ENNReal
+
+
+namespace Real
+
+@[deprecated (since := "2025-03-14")] alias IsConjExponent := HolderConjugate
+@[deprecated (since := "2025-03-14")] alias isConjExponent_iff := holderConjugate_iff
+@[deprecated (since := "2025-03-14")] alias IsConjExponent.one_lt := HolderTriple.lt
+@[deprecated (since := "2025-03-14")] alias IsConjExponent.inv_add_inv_conj :=
+  HolderConjugate.inv_add_inv_eq_one
+
+
+namespace IsConjExponent
+
+@[deprecated (since := "2025-03-14")] alias pos := HolderTriple.pos
+@[deprecated (since := "2025-03-14")] alias nonneg := HolderTriple.nonneg
+@[deprecated (since := "2025-03-14")] alias ne_zero := HolderTriple.ne_zero
+@[deprecated (since := "2025-03-14")] alias sub_one_pos := HolderConjugate.sub_one_pos
+@[deprecated (since := "2025-03-14")] alias sub_one_ne_zero := HolderConjugate.sub_one_ne_zero
+@[deprecated (since := "2025-03-14")] alias inv_pos := HolderTriple.inv_pos
+@[deprecated (since := "2025-03-14")] alias inv_nonneg := HolderTriple.inv_nonneg
+@[deprecated (since := "2025-03-14")] alias inv_ne_zero := HolderTriple.inv_ne_zero
+@[deprecated (since := "2025-03-14")] alias one_div_pos := HolderTriple.one_div_pos
+@[deprecated (since := "2025-03-14")] alias one_div_nonneg := HolderTriple.one_div_nonneg
+@[deprecated (since := "2025-03-14")] alias one_div_ne_zero := HolderTriple.one_div_ne_zero
+@[deprecated (since := "2025-03-14")] alias conj_eq := HolderConjugate.conjugate_eq
+@[deprecated (since := "2025-03-14")] alias conjExponent_eq := HolderConjugate.conjExponent_eq
+@[deprecated (since := "2025-03-14")] alias one_sub_inv := HolderConjugate.one_sub_inv
+@[deprecated (since := "2025-03-14")] alias inv_sub_one := HolderConjugate.inv_sub_one
+@[deprecated (since := "2025-03-14")] alias sub_one_mul_conj := HolderConjugate.sub_one_mul_conj
+@[deprecated (since := "2025-03-14")] alias mul_eq_add := HolderConjugate.mul_eq_add
+@[deprecated (since := "2025-03-14")] alias symm := HolderConjugate.symm
+@[deprecated (since := "2025-03-14")] alias div_conj_eq_sub_one :=
+  HolderConjugate.div_conj_eq_sub_one
+@[deprecated (since := "2025-03-14")] alias inv_inv := HolderConjugate.inv_inv
+@[deprecated (since := "2025-03-14")] alias inv_one_sub_inv := HolderConjugate.inv_one_sub_inv
+@[deprecated (since := "2025-03-14")] alias one_sub_inv_inv := HolderConjugate.one_sub_inv_inv
+@[deprecated (since := "2025-03-14")] alias inv_add_inv_conj_ennreal :=
+  HolderConjugate.inv_add_inv_ennreal
+
+end IsConjExponent
+
+@[deprecated (since := "2025-03-14")] alias isConjExponent_comm := holderConjugate_comm
+@[deprecated (since := "2025-03-14")] alias isConjExponent_iff_eq_conjExponent :=
+  holderConjugate_iff_eq_conjExponent
+@[deprecated (since := "2025-03-14")] alias IsConjExponent.conjExponent :=
+  HolderConjugate.conjExponent
+@[deprecated (since := "2025-03-14")] alias isConjExponent_one_div := holderConjugate_one_div
+
+end Real
+
+namespace NNReal
+
+@[deprecated (since := "2025-03-14")] alias IsConjExponent := HolderConjugate
+@[deprecated (since := "2025-03-14")] alias isConjExponent_iff := holderConjugate_iff
+@[deprecated (since := "2025-03-14")] alias IsConjExponent.one_lt := HolderTriple.lt
+@[deprecated (since := "2025-03-14")] alias IsConjExponent.inv_add_inv_conj :=
+  HolderConjugate.inv_add_inv_eq_one
+@[deprecated (since := "2025-03-14")] alias isConjExponent_coe := holderConjugate_coe_iff
+@[deprecated (since := "2025-03-14")] alias IsConjExponent.coe := HolderConjugate.coe
+
+namespace IsConjExponent
+
+@[deprecated (since := "2025-03-14")] alias one_le := HolderTriple.lt
+@[deprecated (since := "2025-03-14")] alias pos := HolderTriple.pos
+@[deprecated (since := "2025-03-14")] alias nonneg := HolderTriple.nonneg
+@[deprecated (since := "2025-03-14")] alias ne_zero := HolderTriple.ne_zero
+@[deprecated (since := "2025-03-14")] alias sub_one_pos := HolderConjugate.sub_one_pos
+@[deprecated (since := "2025-03-14")] alias sub_one_ne_zero := HolderConjugate.sub_one_ne_zero
+@[deprecated (since := "2025-03-14")] alias inv_pos := HolderTriple.inv_pos
+@[deprecated (since := "2025-03-14")] alias inv_nonneg := HolderTriple.inv_nonneg
+@[deprecated (since := "2025-03-14")] alias inv_ne_zero := HolderTriple.inv_ne_zero
+@[deprecated (since := "2025-03-14")] alias one_div_pos := HolderTriple.one_div_pos
+@[deprecated (since := "2025-03-14")] alias one_div_nonneg := HolderTriple.one_div_nonneg
+@[deprecated (since := "2025-03-14")] alias one_div_ne_zero := HolderTriple.one_div_ne_zero
+@[deprecated (since := "2025-03-14")] alias conj_eq := HolderConjugate.conjugate_eq
+@[deprecated (since := "2025-03-14")] alias conjExponent_eq := HolderConjugate.conjExponent_eq
+@[deprecated (since := "2025-03-14")] alias one_sub_inv := HolderConjugate.one_sub_inv
+@[deprecated (since := "2025-03-14")] alias sub_one_mul_conj := HolderConjugate.sub_one_mul_conj
+@[deprecated (since := "2025-03-14")] alias mul_eq_add := HolderConjugate.mul_eq_add
+@[deprecated (since := "2025-03-14")] alias symm := HolderConjugate.symm
+@[deprecated (since := "2025-03-14")] alias div_conj_eq_sub_one :=
+  HolderConjugate.div_conj_eq_sub_one
+@[deprecated (since := "2025-03-14")] alias inv_inv := HolderConjugate.inv_inv
+@[deprecated (since := "2025-03-14")] alias inv_one_sub_inv := HolderConjugate.inv_one_sub_inv
+@[deprecated (since := "2025-03-14")] alias one_sub_inv_inv := HolderConjugate.one_sub_inv_inv
+@[deprecated (since := "2025-03-14")] alias inv_add_inv_conj_ennreal :=
+  HolderConjugate.inv_add_inv_ennreal
+
+end IsConjExponent
+
+@[deprecated (since := "2025-03-14")] alias isConjExponent_comm := holderConjugate_comm
+@[deprecated (since := "2025-03-14")] alias isConjExponent_iff_eq_conjExponent :=
+  holderConjugate_iff_eq_conjExponent
+@[deprecated (since := "2025-03-14")] alias IsConjExponent.conjExponent :=
+  HolderConjugate.conjExponent
+@[deprecated (since := "2025-03-14")] alias isConjExponent_one_div := holderConjugate_one_div
+
+end NNReal
+
+@[deprecated (since := "2025-03-14")] alias Real.IsConjExponent.toNNReal :=
+  Real.HolderTriple.toNNReal
+
+namespace ENNReal
+
+@[deprecated (since := "2025-03-14")] alias IsConjExponent := HolderConjugate
+@[deprecated (since := "2025-03-14")] alias isConjExponent_iff := holderConjugate_iff
+@[deprecated (since := "2025-03-14")] alias isConjExopnent_coe := holderConjugate_coe_iff
+@[deprecated (since := "2025-03-14")] alias _root_.NNReal.IsConjExponent.coe_ennreal :=
+  NNReal.HolderConjugate.coe_ennreal
+
+namespace IsConjExponent
+
+@[deprecated (since := "2025-03-14")] alias conjExponent := HolderConjugate.conjExponent
+@[deprecated (since := "2025-03-14")] alias symm := HolderConjugate.symm
+@[deprecated (since := "2025-03-14")] alias one_le := HolderTriple.le
+@[deprecated (since := "2025-03-14")] alias pos := HolderConjugate.pos
+@[deprecated (since := "2025-03-14")] alias ne_zero := HolderConjugate.ne_zero
+@[deprecated (since := "2025-03-14")] alias one_sub_inv := HolderConjugate.one_sub_inv
+@[deprecated (since := "2025-03-14")] alias conjExponent_eq := HolderConjugate.conjExponent_eq
+@[deprecated (since := "2025-03-14")] alias conj_eq := HolderConjugate.conj_eq
+@[deprecated (since := "2025-03-14")] alias mul_eq_add := HolderConjugate.mul_eq_add
+@[deprecated (since := "2025-03-14")] alias div_conj_eq_sub_one :=
+  HolderConjugate.div_conj_eq_sub_one
+@[deprecated (since := "2025-03-14")] alias inv_inv := HolderConjugate.inv_inv
+@[deprecated (since := "2025-03-14")] alias inv_one_sub_inv := HolderConjugate.inv_one_sub_inv
+@[deprecated (since := "2025-03-14")] alias one_sub_inv_inv := HolderConjugate.one_sub_inv_inv
+@[deprecated (since := "2025-03-14")] alias top_one := HolderConjugate.top_one
+@[deprecated (since := "2025-03-14")] alias one_top := HolderConjugate.one_top
+
+
+end IsConjExponent
 end ENNReal
