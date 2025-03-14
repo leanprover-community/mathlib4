@@ -84,57 +84,35 @@ end Definitions
 
 section Results
 
-variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
+variable {J : Type u₁} [Category.{v₁} J]
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
-namespace HasConicalLimit
 
-variable {C} {F G : J ⥤ C} [HasConicalLimit V F]
+variable {C} in
 
 /-- ensure existence of a conical limit implies existence of a limit -/
-example : HasLimit F := inferInstance
-
-end HasConicalLimit
-
-namespace HasConicalLimitsOfShape
-
-variable [HasConicalLimitsOfShape J V C]
+example {F : J ⥤ C} [HasConicalLimit V F] : HasLimit F := inferInstance
 
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
 -- TODO: errors if made an `instance`.
-def hasLimitsOfShape : HasLimitsOfShape J C where
+def HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
+    HasLimitsOfShape J C where
   has_limit _ := inferInstance
-
-end HasConicalLimitsOfShape
-
-namespace HasConicalLimitsOfSize
-
-variable [HasConicalLimitsOfSize.{v₁, u₁} V C]
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
 -- TODO: errors if made an `instance`.
-def hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+def HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
   has_limits_of_shape _ :=
     -- TODO: use `inferInstance` instead
     HasConicalLimitsOfShape.hasLimitsOfShape V C
 
-end HasConicalLimitsOfSize
-
-end Results
-namespace HasConicalLimits
-
-variable (J : Type v) [SmallCategory J]
-variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
-variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
-variable [HasConicalLimits V C]
-
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
 -- TODO: errors if made an `instance`.
-def hasLimits : HasLimits C :=
+def HasConicalLimits.hasLimits [HasConicalLimits V C] : HasLimits C :=
   -- TODO: use `inferInstance` instead
   HasConicalLimitsOfSize.hasLimitsOfSize V C
 
-end HasConicalLimits
+end Results
 
 end CategoryTheory.Enriched
