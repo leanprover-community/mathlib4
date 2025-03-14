@@ -106,7 +106,7 @@ instance instDiscreteTopology [DiscreteTopology M] : DiscreteTopology Mˣ :=
 @[to_additive] lemma topology_eq_inf :
     instTopologicalSpaceUnits =
       .induced (val : Mˣ → M) ‹_› ⊓ .induced (fun u ↦ ↑u⁻¹ : Mˣ → M) ‹_› := by
-  simp only [isInducing_embedProduct.1, instTopologicalSpaceProd, induced_inf,
+  simp only [isInducing_embedProduct.1, instTopologicalSpaceProd_eq_induced, induced_inf,
     instTopologicalSpaceMulOpposite, induced_compose]; rfl
 
 /-- An auxiliary lemma that can be used to prove that coercion `Mˣ → M` is a topological embedding.

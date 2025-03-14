@@ -13,10 +13,13 @@ import Mathlib.Topology.PartialHomeomorph
 
 open Function Set Filter Topology
 
+
+variable {X Y Z Z' : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+[TopologicalSpace Z']
+
 namespace PartialHomeomorph
 
-variable {X Y : Type*} [TopologicalSpaceWithoutAtlas X] [TopologicalSpaceWithoutAtlas Y]
-(e : PartialHomeomorph X Y)
+variable (e : PartialHomeomorph X Y)
 
 /-- Interpret a `Homeomorph` as a `PartialHomeomorph` by restricting it
 to an open set `s` in the domain and to `t` in the codomain. -/
