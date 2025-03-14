@@ -3,7 +3,6 @@ Copyright (c) 2025 Antoine Chambert-Loir & María-Inés de Frutos-Fernández. Al
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
-import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 
