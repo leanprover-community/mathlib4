@@ -168,7 +168,7 @@ private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E
   · simpa using (Filter.eventually_and.2 ⟨Filter.eventuallyEq_iff_sub.mp hfg, h⟩).exists
 
 /-- After conversion to normal form at `x`, the function has normal form. -/
-theorem MeromorphicAt.MeromorphicNFAt_toNF (hf : MeromorphicAt f x) :
+theorem MeromorphicAt.meromorphicNFAt_toNF (hf : MeromorphicAt f x) :
     MeromorphicNFAt hf.toNF x := by
   by_cases h₂f : hf.order = ⊤
   · have : hf.toNF =ᶠ[𝓝 x] 0 := by
