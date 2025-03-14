@@ -12,36 +12,17 @@ set_option linter.style.longLine false
 
 open Function Set
 
-def x := (!₂[1, 0]  : EuclideanSpace ℝ (Fin 2))
+def x := (!₂[1, 0] : EuclideanSpace ℝ (Fin 2))
 
-theorem h : x ∈  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
-  have h1 : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 = {x | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2} := by
-   exact EuclideanSpace.sphere_zero_eq 1 (le_of_lt Real.zero_lt_one)
-  have h5 : (x 0)^2 + (x 1)^2 = 1 := by
-    calc
-     (x 0)^2 + (x 1)^2 = 1^2 + 0^2 := rfl
-     _ = 1 := by simp
-  have h6 : x ∈  {x | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2} := by simp [h5]
-  have h7 : x ∈  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
-   rw [h1]
-   exact h6
-  exact h7
+theorem h : x ∈ Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
+  rw [EuclideanSpace.sphere_zero_eq 1 (le_of_lt Real.zero_lt_one), mem_setOf]
+  simp [x]
 
 def u := (!₂[-1, 0] : EuclideanSpace ℝ (Fin 2))
 
 theorem g : u ∈  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
-  have h1 : Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 = {x | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2} := by
-   exact EuclideanSpace.sphere_zero_eq 1 (le_of_lt Real.zero_lt_one)
-  have h5 : (u 0)^2 + (u 1)^2 = 1 := by
-    calc
-     (u 0)^2 + (u 1)^2 = (-1)^2 + 0^2 := rfl
-     _ = 1 := by simp
-  have h6 : u ∈  {x | ∑ i : Fin 2, x i ^ 2 = 1 ^ 2} := by
-    simp [h5]
-  have h7 : u ∈  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 := by
-   rw [h1]
-   exact h6
-  exact h7
+  rw [EuclideanSpace.sphere_zero_eq 1 (le_of_lt Real.zero_lt_one), mem_setOf]
+  simp [u]
 
 def xh := ((⟨x, h⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
 def ug := ((⟨u, g⟩ :  Metric.sphere (0 : EuclideanSpace ℝ (Fin 2)) 1 ))
