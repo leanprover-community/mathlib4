@@ -56,6 +56,7 @@ lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b �
 /-!
 ## Simplifying Lemmas in cases where α is a MulZeroClass
 -/
+
 @[simp]
 lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
     (a * b).untop₀ = a.untop₀ * b.untop₀ := by
