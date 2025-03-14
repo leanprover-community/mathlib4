@@ -397,7 +397,10 @@ lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toS
 
 end IsCycle
 
-/-- This lemma considers the `SimpleGraph.Walk` until any vertex in a given set. You could
+/-- This lemma states that given some finite set of vertices, of which at least one is a walk,
+one of them is the first to be encountered. This is then encoded as the slightly weaker
+result that none of the vertices in this set are adjacent in the graph induced by
+the `Walk.takeUntil` up to that vertex. You could
 interpret this as being `takeUntilSet`, but defining this is slightly involved due to not
 knowing what the final vertex is. This could be done by defining a function to obtain
 the first encountered vertex and then use that to define `takeUntilSet`. That direction
