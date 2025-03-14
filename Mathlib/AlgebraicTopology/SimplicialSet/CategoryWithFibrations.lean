@@ -15,6 +15,10 @@ We endow `SSet` with `CategoryWithCofibrations` and `CategoryWithFibrations`
 instances. Cofibrations are monomorphisms, and fibrations are morphisms
 having the right lifting property with respect to horn inclusions.
 
+We have an instance `mono_of_cofibration` (but only a lemma `cofibration_of_mono`).
+Then, when stating lemmas about cofibrations of simplicial sets, it is advisable
+to use the assumption `[Mono f]` instead of `[Cofibration f]`.
+
 -/
 
 open CategoryTheory HomotopicalAlgebra MorphismProperty
@@ -73,7 +77,7 @@ lemma fibration_iff : Fibration f ↔ J.rlp f := by
   rw [HomotopicalAlgebra.fibration_iff]
   rfl
 
-instance [Cofibration f] : Mono f := by rwa [← cofibration_iff]
+instance mono_of_cofibration [Cofibration f] : Mono f := by rwa [← cofibration_iff]
 
 lemma cofibration_of_mono [Mono f] : Cofibration f := by rwa [cofibration_iff]
 
