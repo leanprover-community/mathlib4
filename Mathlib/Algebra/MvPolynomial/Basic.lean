@@ -399,7 +399,7 @@ for which `motive` is already known to hold.
 -/
 theorem induction_on'' {motive : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
     (C : ∀ a, motive (C a))
-    (monomial_add_weak :
+    (monomial_add :
       ∀ (a : σ →₀ ℕ) (b : R) (f : MvPolynomial σ R),
         a ∉ f.support → b ≠ 0 → motive f → motive (monomial a b) →
           motive ((monomial a b) + f))
