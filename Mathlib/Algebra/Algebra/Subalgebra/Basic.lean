@@ -586,9 +586,7 @@ noncomputable def ofInjectiveField {E F : Type*} [DivisionRing E] [Semiring F] [
 @[simps!]
 def subalgebraMap (e : A ≃ₐ[R] B) (S : Subalgebra R A) : S ≃ₐ[R] S.map (e : A →ₐ[R] B) :=
   { e.toRingEquiv.subsemiringMap S.toSubsemiring with
-    commutes' := fun r => by
-      ext; dsimp only; erw [RingEquiv.subsemiringMap_apply_coe]
-      exact e.commutes _ }
+    commutes' := fun r => by ext; exact e.commutes r }
 
 end AlgEquiv
 

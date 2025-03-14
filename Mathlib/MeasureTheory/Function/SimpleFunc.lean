@@ -1191,10 +1191,10 @@ theorem _root_.Measurable.add_simpleFunc
       ext x
       by_cases hx : x ∈ Function.support f
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_right_inj, add_right_eq_self]
+          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_right_inj, add_eq_left]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_right_inj, add_left_eq_self] using hx
+          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_right_inj, add_eq_right] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 
@@ -1214,10 +1214,10 @@ theorem _root_.Measurable.simpleFunc_add
       ext x
       by_cases hx : x ∈ Function.support f
       · simpa only [coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_left_inj, add_right_eq_self]
+          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_left_inj, add_eq_left]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_left_inj, add_left_eq_self] using hx
+          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_left_inj, add_eq_right] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 

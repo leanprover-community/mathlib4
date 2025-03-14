@@ -189,11 +189,11 @@ lemma mgf_pos_iff [hμ : NeZero μ] :
   contrapose! h with h
   simp [mgf_undef h]
 
-lemma exp_cgf_of_neZero [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+lemma exp_cgf [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
 
-lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
-    exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos hX)]
+@[deprecated (since := "2025-03-08")]
+alias exp_cgf_of_neZero := exp_cgf
 
 lemma mgf_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'} {Y : Ω' → Ω} {X : Ω → ℝ}
     (hY : AEMeasurable Y μ) {t : ℝ} (hX : AEStronglyMeasurable (fun ω ↦ exp (t * X ω)) (μ.map Y)) :

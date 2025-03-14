@@ -342,8 +342,7 @@ noncomputable instance : Min (GroupSeminorm E) :=
     { toFun := fun x => ⨅ y, p y + q (x / y)
       map_one' :=
         ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
-          -- Porting note: replace `add_nonneg` with `positivity` once we have the extension
-          (fun _ => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _)) fun r hr =>
+          (fun _ => by positivity) fun r hr =>
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
         le_ciInf_add_ciInf fun u v => by
