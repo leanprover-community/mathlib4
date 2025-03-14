@@ -62,11 +62,11 @@ lemma cRank_submatrix_le {m m₀ : Type um} (A : Matrix m n R) (r : m₀ → m) 
     (A.submatrix r c).cRank ≤ A.cRank := by
   simpa using lift_cRank_submatrix_le A r c
 
-lemma cRank_le_card_row [StrongRankCondition R] [Fintype m] (A : Matrix m n R) :
+lemma cRank_le_card_height [StrongRankCondition R] [Fintype m] (A : Matrix m n R) :
     A.cRank ≤ Fintype.card m :=
   (Submodule.rank_le (span R (range Aᵀ))).trans <| by rw [rank_fun']
 
-lemma cRank_le_card_col [StrongRankCondition R] [Fintype n] (A : Matrix m n R) :
+lemma cRank_le_card_width [StrongRankCondition R] [Fintype n] (A : Matrix m n R) :
     A.cRank ≤ Fintype.card n :=
   (rank_span_le ..).trans <| by simpa using Cardinal.mk_range_le_lift (f := Aᵀ)
 
@@ -81,20 +81,20 @@ lemma eRank_submatrix_le (A : Matrix m n R) (r : m₀ → m) (c : n₀ → n) :
     (A.submatrix r c).eRank ≤ A.eRank := by
   simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat <| lift_cRank_submatrix_le A r c
 
-lemma eRank_le_card_col [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
+lemma eRank_le_card_width [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card n := by
   wlog hfin : Finite n
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite n
   rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
-  exact A.cRank_le_card_col
+  exact A.cRank_le_card_width
 
-lemma eRank_le_card_row [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
+lemma eRank_le_card_height [StrongRankCondition R] (A : Matrix m n R) : A.eRank ≤ ENat.card m := by
   classical
   wlog hfin : Finite m
   · simp [ENat.card_eq_top.2 (by simpa using hfin)]
   have _ := Fintype.ofFinite m
   rw [ENat.card_eq_coe_fintype_card, eRank, toENat_le_nat]
-  exact A.cRank_le_card_row
+  exact A.cRank_le_card_height
 
 end Infinite
 
@@ -109,6 +109,19 @@ noncomputable def rank (A : Matrix m n R) : ℕ :=
   finrank R <| LinearMap.range A.mulVecLin
 
 @[simp]
+theorem cRank_one [StrongRankCondition R] [DecidableEq m] :
+    (cRank (1 : Matrix m m R)) = lift.{uR} #m := by
+  have := nontrivial_of_invariantBasisNumber R
+  have h : LinearIndependent R (1 : Matrix m m R)ᵀ := by
+    convert Pi.linearIndependent_single_one m R
+    simp [funext_iff, Matrix.one_eq_pi_single]
+  rw [cRank, rank_span h, ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
+
+@[simp] theorem eRank_one [StrongRankCondition R] [DecidableEq m] :
+    (eRank (1 : Matrix m m R)) = ENat.card m := by
+  rw [eRank, cRank_one, toENat_lift, ENat.card]
+
+@[simp]
 theorem rank_one [StrongRankCondition R] [DecidableEq n] :
     rank (1 : Matrix n n R) = Fintype.card n := by
   rw [rank, mulVecLin_one, LinearMap.range_id, finrank_top, finrank_pi]
@@ -116,6 +129,16 @@ theorem rank_one [StrongRankCondition R] [DecidableEq n] :
 @[simp]
 theorem rank_zero [Nontrivial R] : rank (0 : Matrix m n R) = 0 := by
   rw [rank, mulVecLin_zero, LinearMap.range_zero, finrank_bot]
+
+@[simp]
+theorem cRank_zero {m n : Type*} [Nontrivial R] : cRank (0 : Matrix m n R) = 0 := by
+  obtain hn | hn := isEmpty_or_nonempty n
+  · rw [cRank, range_eq_empty, span_empty, rank_bot]
+  rw [cRank, transpose_zero, range_zero, span_zero_singleton, rank_bot]
+
+@[simp]
+theorem eRank_zero {m n : Type*} [Nontrivial R] : eRank (0 : Matrix m n R) = 0 := by
+  simp [eRank]
 
 theorem rank_le_card_width [StrongRankCondition R] (A : Matrix m n R) :
     A.rank ≤ Fintype.card n := by
@@ -248,6 +271,29 @@ theorem rank_diagonal [Fintype m] [DecidableEq m] [DecidableEq R] (w : m → R) 
     (diagonal w).rank = Fintype.card {i // (w i) ≠ 0} := by
   rw [Matrix.rank, ← Matrix.toLin'_apply', Module.finrank, ← LinearMap.rank,
     LinearMap.rank_diagonal, Cardinal.toNat_natCast]
+
+theorem cRank_diagonal [DecidableEq m] (w : m → R) :
+    (diagonal w).cRank = lift.{uR} #{i // (w i) ≠ 0} := by
+  classical
+  set w' : {i // (w i) ≠ 0} → _ := fun i ↦ (diagonal w) i
+  have h : LinearIndependent R w' := by
+    have hli' := Pi.linearIndependent_single_ne_zero
+      (v := fun i : m ↦ if w i = 0 then (1 : R) else w i) (by simp [ite_eq_iff'])
+    convert hli'.comp Subtype.val Subtype.val_injective
+    ext ⟨j, hj⟩ k
+    simp [w', diagonal, hj, Pi.single_apply, eq_comm]
+  have hrw : insert 0 (range (diagonal w)ᵀ) = insert 0 (range w') := by
+    suffices ∀ a, diagonal w a = 0 ∨ ∃ a_1, ¬w a_1 = 0 ∧ diagonal w a_1 = diagonal w a
+      by simpa [subset_antisymm_iff, subset_def, w']
+    simp only [or_iff_not_imp_right, not_exists, not_and, not_imp_not]
+    intro i hi
+    simp [funext_iff, diagonal, hi i rfl]
+  rw [cRank, ← span_insert_zero, hrw, span_insert_zero, rank_span h,
+    ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
+
+theorem eRank_diagonal [DecidableEq m] (w : m → R) :
+    (diagonal w).eRank = ENat.card {i // (w i) ≠ 0} := by
+  simp [eRank, cRank_diagonal, ENat.card]
 
 end Field
 
