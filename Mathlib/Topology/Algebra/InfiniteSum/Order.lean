@@ -327,7 +327,7 @@ def evalTsum : PositivityExt where eval {u α} zα pα e := do
       let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
       let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
       assertInstancesCommute
-      return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f fun i ↦ $pr i)
+      return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f $pr)
   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity
