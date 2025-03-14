@@ -447,7 +447,7 @@ theorem Integrable.essSup_smul {𝕜 : Type*} [NormedField 𝕜] [NormedSpace �
 
 /-- Hölder's inequality for integrable functions: the scalar multiplication of an integrable
 scalar-valued function by a vector-value function with finite essential supremum is integrable. -/
-theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+theorem Integrable.smul_essSup {𝕜 : Type*} [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
     {f : α → 𝕜} (hf : Integrable f μ) {g : α → β}
     (g_aestronglyMeasurable : AEStronglyMeasurable g μ) (ess_sup_g : essSup (‖g ·‖ₑ) μ ≠ ∞) :
     Integrable (fun x : α => f x • g x) μ := by
@@ -796,29 +796,29 @@ theorem Integrable.neg_part {f : α → ℝ} (hf : Integrable f μ) :
 
 end PosPart
 
-section BoundedSMul
+section IsBoundedSMul
 
 variable {𝕜 : Type*}
 
 @[fun_prop]
-theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [BoundedSMul 𝕜 β] (c : 𝕜)
+theorem Integrable.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β] [IsBoundedSMul 𝕜 β] (c : 𝕜)
     {f : α → β} (hf : Integrable f μ) : Integrable (c • f) μ :=
   ⟨hf.aestronglyMeasurable.const_smul c, hf.hasFiniteIntegral.smul c⟩
 
-theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β] {c : 𝕜}
+theorem _root_.IsUnit.integrable_smul_iff [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] {c : 𝕜}
     (hc : IsUnit c) (f : α → β) : Integrable (c • f) μ ↔ Integrable f μ :=
   and_congr hc.aestronglyMeasurable_const_smul_iff (hasFiniteIntegral_smul_iff hc f)
 
-theorem integrable_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β] {c : 𝕜}
+theorem integrable_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β] {c : 𝕜}
     (hc : c ≠ 0) (f : α → β) : Integrable (c • f) μ ↔ Integrable f μ :=
   (IsUnit.mk0 _ hc).integrable_smul_iff f
 
-theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+theorem integrable_fun_smul_iff [NormedDivisionRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
     {c : 𝕜} (hc : c ≠ 0) (f : α → β) :
     Integrable (fun x ↦ c • f x) μ ↔ Integrable f μ :=
   integrable_smul_iff hc f
 
-variable [NormedRing 𝕜] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+variable [NormedRing 𝕜] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 theorem Integrable.smul_of_top_right {f : α → β} {φ : α → 𝕜} (hf : Integrable f μ)
     (hφ : MemLp φ ∞ μ) : Integrable (φ • f) μ := by
@@ -835,7 +835,7 @@ theorem Integrable.smul_const {f : α → 𝕜} (hf : Integrable f μ) (c : β) 
     Integrable (fun x => f x • c) μ :=
   hf.smul_of_top_left (memLp_top_const c)
 
-end BoundedSMul
+end IsBoundedSMul
 
 section NormedSpaceOverCompleteField
 

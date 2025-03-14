@@ -173,7 +173,7 @@ include hb
 
 private theorem b_pos : 0 < b := by linarith
 
--- Porting note: prime added to avoid clashing with `b_ne_one` further down the file
+-- Name has a prime added to avoid clashing with `b_ne_one` further down the file
 private theorem b_ne_one' : b ≠ 1 := by linarith
 
 @[simp]

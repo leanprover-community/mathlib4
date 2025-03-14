@@ -390,6 +390,17 @@ lemma orderIsoMapComap_symm_apply [EquivLike F M M₂] [SemilinearMapClass F σ�
     (orderIsoMapComap f).symm p = comap f p :=
   rfl
 
+variable [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂] {e : F}
+variable {p}
+
+@[simp] protected lemma map_eq_bot_iff : p.map e = ⊥ ↔ p = ⊥ := map_eq_bot_iff (orderIsoMapComap e)
+
+@[simp] protected lemma map_eq_top_iff : p.map e = ⊤ ↔ p = ⊤ := map_eq_top_iff (orderIsoMapComap e)
+
+protected lemma map_ne_bot_iff : p.map e ≠ ⊥ ↔ p ≠ ⊥ := by simp
+
+protected lemma map_ne_top_iff : p.map e ≠ ⊤ ↔ p ≠ ⊤ := by simp
+
 end OrderIso
 
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]

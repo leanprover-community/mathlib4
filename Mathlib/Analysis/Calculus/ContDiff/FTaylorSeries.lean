@@ -273,7 +273,6 @@ theorem hasFTaylorSeriesUpToOn_succ_iff_left {n : ℕ} :
         rw [this]
         exact h.2.2
 
--- Porting note: this was split out from `hasFTaylorSeriesUpToOn_succ_iff_right` to avoid a timeout.
 theorem HasFTaylorSeriesUpToOn.shift_of_succ
     {n : ℕ} (H : HasFTaylorSeriesUpToOn (n + 1 : ℕ) f p s) :
     (HasFTaylorSeriesUpToOn n (fun x => continuousMultilinearCurryFin1 𝕜 E F (p x 1))
@@ -432,7 +431,6 @@ theorem fderivWithin_iteratedFDerivWithin {s : Set E} {n : ℕ} :
 theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
     ‖fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 n f s) s x‖ =
       ‖iteratedFDerivWithin 𝕜 (n + 1) f s x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.norm_map]
 
 @[simp]
@@ -498,7 +496,6 @@ theorem iteratedFDerivWithin_succ_eq_comp_right {n : ℕ} (hs : UniqueDiffOn �
 theorem norm_iteratedFDerivWithin_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     ‖iteratedFDerivWithin 𝕜 n (fderivWithin 𝕜 f s) s x‖ =
       ‖iteratedFDerivWithin 𝕜 (n + 1) f s x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_succ_eq_comp_right hs hx, comp_apply, LinearIsometryEquiv.norm_map]
 
 @[simp]
@@ -798,7 +795,6 @@ theorem iteratedFDeriv_zero_eq_comp :
 
 @[simp]
 theorem norm_iteratedFDeriv_zero : ‖iteratedFDeriv 𝕜 0 f x‖ = ‖f x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDeriv_zero_eq_comp, comp_apply, LinearIsometryEquiv.norm_map]
 
 theorem iteratedFDerivWithin_zero_eq : iteratedFDerivWithin 𝕜 0 f s = iteratedFDeriv 𝕜 0 f := rfl
@@ -844,7 +840,6 @@ theorem HasCompactSupport.iteratedFDeriv (hf : HasCompactSupport f) (n : ℕ) :
 
 theorem norm_fderiv_iteratedFDeriv {n : ℕ} :
     ‖fderiv 𝕜 (iteratedFDeriv 𝕜 n f) x‖ = ‖iteratedFDeriv 𝕜 (n + 1) f x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDeriv_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.norm_map]
 
 theorem iteratedFDerivWithin_univ {n : ℕ} :
@@ -902,7 +897,6 @@ theorem iteratedFDeriv_succ_eq_comp_right {n : ℕ} :
 
 theorem norm_iteratedFDeriv_fderiv {n : ℕ} :
     ‖iteratedFDeriv 𝕜 n (fderiv 𝕜 f) x‖ = ‖iteratedFDeriv 𝕜 (n + 1) f x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDeriv_succ_eq_comp_right, comp_apply, LinearIsometryEquiv.norm_map]
 
 @[simp]
