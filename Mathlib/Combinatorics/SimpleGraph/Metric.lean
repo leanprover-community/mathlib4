@@ -193,7 +193,7 @@ protected theorem Reachable.pos_dist_of_ne (h : G.Reachable u v) (hne : u ≠ v)
   Nat.pos_of_ne_zero (by simp [h, hne])
 
 protected theorem Reachable.one_lt_dist_of_ne_of_not_adj (h : G.Reachable u v) (hne : u ≠ v)
-    (hnadj : ¬G.Adj u v) : 1 < G.dist u v := 
+    (hnadj : ¬G.Adj u v) : 1 < G.dist u v :=
   Nat.lt_of_le_of_ne (h.pos_dist_of_ne hne) (by
     by_contra! hc
     obtain ⟨p, hp⟩ := Reachable.exists_walk_length_eq_dist h
