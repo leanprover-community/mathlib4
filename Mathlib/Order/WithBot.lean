@@ -575,7 +575,7 @@ theorem untopD_coe {α} (d x : α) : untopD d x = x :=
 @[deprecated (since := "2025-02-06")]
 alias untop'_coe := untopD_coe
 
-@[simp, norm_cast] -- Porting note: added `simp`
+@[simp, norm_cast]
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 
