@@ -45,8 +45,7 @@ def essImage.witness {Y : D} (h : F.essImage Y) : C :=
   h.choose
 
 /-- Extract the isomorphism between `F.obj h.witness` and `Y` itself. -/
--- Porting note: in the next, the dot notation `h.witness` no longer works
-def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj (essImage.witness h) ≅ Y :=
+def essImage.getIso {Y : D} (h : F.essImage Y) : F.obj h.witness ≅ Y :=
   Classical.choice h.choose_spec
 
 /-- Being in the essential image is a "hygienic" property: it is preserved under isomorphism. -/
@@ -72,7 +71,6 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : essImage F (F.obj Y) :=
   ⟨Y, ⟨Iso.refl _⟩⟩
 
 /-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
--- Porting note: no hasNonEmptyInstance linter yet
 abbrev EssImageSubcategory (F : C ⥤ D) := F.essImage.FullSubcategory
 
 /-- The essential image as a subcategory has a fully faithful inclusion into the target category. -/

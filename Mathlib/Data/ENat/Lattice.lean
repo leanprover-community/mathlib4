@@ -30,7 +30,7 @@ open Set
 -- The `CompleteLinearOrder` instance should be constructed by a deriving handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
+-- `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
