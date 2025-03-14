@@ -177,7 +177,7 @@ theorem pow_dvd_of_squarefree_of_pow_succ_dvd_mul_right {k : ℕ}
     p ^ k ∣ y := by
   by_cases hxp : p ∣ x
   · obtain ⟨x', rfl⟩ := hxp
-    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_isUnit <| hx p (mul_dvd_mul_left p contra)
+    have hx' : ¬ p ∣ x' := fun contra ↦ hp.not_unit <| hx p (mul_dvd_mul_left p contra)
     replace h : p ^ k ∣ x' * y := by
       rw [pow_succ', mul_assoc] at h
       exact (mul_dvd_mul_iff_left hp.ne_zero).mp h
