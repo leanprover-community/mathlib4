@@ -71,10 +71,9 @@ theorem baseChange_injective (S : Type*) [CommRing S] [Algebra R S] :
   intro ht
   obtain ⟨A, hA, u, hu0, hut⟩ := exists_fg_of_baseChange_eq_zero N.subtype t ht
   have : Small.{u} A := hA.small
-  set A' := Shrink.{u} A with hA'
-  let e : A' ≃ₐ[R] A := Shrink.algEquiv A R
+  let e : (Shrink.{u} A) ≃ₐ[R] A := Shrink.algEquiv A R
   set u' := LinearMap.rTensor N e.symm.toLinearMap u with hu'
-  have hN := IsPure.baseChange_injective' A' (N := N)
+  have hN := IsPure.baseChange_injective' (Shrink.{u} A) (N := N)
   rw [← ker_eq_bot, eq_bot_iff] at hN
   have hu : u = LinearMap.rTensor N e.toLinearMap u' := by
     rw [← LinearMap.rTensor_id_apply N A u]
