@@ -129,7 +129,7 @@ open Option Finset Fin Fintype Equiv
 
 -- For performance reasons, the fintype of colorings is constructed inductively
 -- instead of simply filtering all coloring for valid ones.
-private def finColoringFintype {n m} {G : SimpleGraph (Fin n)} [DecidableRel G.Adj] :
+def finColoringFintype {n m} {G : SimpleGraph (Fin n)} [DecidableRel G.Adj] :
     Fintype (G.Coloring (Fin m)) :=
   -- induct on the number of vertices
   G |> match (motive :=
