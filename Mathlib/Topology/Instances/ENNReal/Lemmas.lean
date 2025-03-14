@@ -431,13 +431,13 @@ theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by
   rw [ContinuousOn]
   rintro ⟨x, y⟩ hp
-  simp only [Ne, Set.mem_setOf_eq, Prod.mk.inj_iff] at hp
+  simp only [Ne, Set.mem_setOf_eq, Prod.mk_inj] at hp
   exact tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
   change Continuous (Function.uncurry Sub.sub ∘ (a, ·))
   refine continuousOn_sub.comp_continuous (Continuous.Prod.mk a) fun x => ?_
-  simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk.inj_iff, false_and, not_false_iff]
+  simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk_inj, false_and, not_false_iff]
 
 theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
   continuous_sub_left coe_ne_top
@@ -454,7 +454,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply continuousOn_sub.comp_continuous (by fun_prop)
     intro x
-    simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false, not_false_iff]
+    simp only [a_infty, Ne, mem_setOf_eq, Prod.mk_inj, and_false, not_false_iff]
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
     (hm : Tendsto m f (𝓝 a)) : Tendsto (fun x => m x ^ n) f (𝓝 (a ^ n)) :=
