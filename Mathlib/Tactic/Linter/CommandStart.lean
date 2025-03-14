@@ -70,29 +70,29 @@ def parallelScanAux : Nat → Array FormatError → List Char → List Char → 
     if m.isWhitespace then
       parallelScanAux (n + 1) as ls (ms.dropWhile (·.isWhitespace))
     else
-      parallelScanAux (n + 1) (as.push {srcPos := n, msg := "extra space"}) ls (m::ms)
+      parallelScanAux (n + 1) (as.push {srcPos := ls.length+1, msg := "extra space"}) ls (m::ms)
   | n, as, '\n'::ls, m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
       parallelScanAux (n + lth + 1) as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
     else
       parallelScanAux
-        (n + lth + 1) (as.push {srcPos := n, msg := "remove line break"}) (ls.drop lth) (m::ms)
+        (n+lth+1) (as.push {srcPos := ls.length+1, msg := "remove line break"}) (ls.drop lth) (m::ms)
   | n, as, l::ls, m::ms => -- `l` is not whitespace
     if l == m then
       parallelScanAux (n + 1) as ls ms
     else
       if m.isWhitespace then
-        parallelScanAux n (as.push {srcPos := n, msg := "missing space"})
+        parallelScanAux n (as.push {srcPos := ls.length+1, msg := "missing space"})
           (l::ls) (ms.dropWhile (·.isWhitespace))
     else
       as.push {srcPos := n, msg := "Oh no! (Unreachable?)"}
   | _, as, _, [] => as
-  | n, as, [], ms =>
+  | _, as, [], ms =>
     if ms.all (·.isWhitespace) then
       as
     else
-      as.push {srcPos := n, msg := "The formatted string finished early! (Unreachable?)"}
+      as.push {srcPos := 1, msg := "The formatted string finished early! (Unreachable?)"}
 
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux 0 ∅ src.toList fmt.toList
@@ -200,15 +200,15 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     --let st := polishPP fmt.pretty
     let st := fmt.pretty
     let scan := parallelScan origSubstring.toString st
-    dbg_trace scan.map (·.srcPos)
+    --dbg_trace scan.map (·.srcPos)
     for s in scan do
-      let center := origSubstring.startPos + ⟨s.srcPos⟩
+      let center := origSubstring.stopPos - ⟨s.srcPos⟩
       let orig := origSubstring.toString
       let rg : String.Range := ⟨center, center + ⟨1⟩⟩
       logInfoAt (.ofRange rg)
         m!"{s.msg}\n\n\
-          Original: '{orig.drop (s.srcPos - 2) |>.take 5 |>.replace "\n" "⏎"}'\n\
-          Expected: '{st.drop (s.srcPos - 2) |>.take 5 |>.replace "\n" "⏎"}'"
+          Original: '{orig.takeRight (s.srcPos + 2) |>.take 5 |>.replace "\n" "⏎"}'\n\
+          Expected: '{st.takeRight (s.srcPos + 2) |>.take 5 |>.replace "\n" "⏎"}'"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
