@@ -95,13 +95,13 @@ example {F : J ⥤ C} [HasConicalLimit V F] : HasLimit F := inferInstance
 
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
 -- TODO: errors if made an `instance`.
-def HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
+lemma HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
     HasLimitsOfShape J C where
   has_limit _ := inferInstance
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
 -- TODO: errors if made an `instance`.
-def HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+lemma HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
   has_limits_of_shape _ :=
     -- TODO: use `inferInstance` instead
@@ -109,7 +109,7 @@ def HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} 
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
 -- TODO: errors if made an `instance`.
-def HasConicalLimits.hasLimits [HasConicalLimits V C] : HasLimits C :=
+lemma HasConicalLimits.hasLimits [HasConicalLimits V C] : HasLimits C :=
   -- TODO: use `inferInstance` instead
   HasConicalLimitsOfSize.hasLimitsOfSize V C
 
