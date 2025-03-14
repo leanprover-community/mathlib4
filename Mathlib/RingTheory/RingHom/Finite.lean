@@ -111,7 +111,7 @@ theorem RingHom.finite_localizationPreserves : RingHom.LocalizationPreserves @Ri
   apply Module.Finite_of_isLocalization R S R' S' M
 
 theorem RingHom.localization_away_map_finite (R S R' S' : Type u) [CommRing R] [CommRing S]
-    [Algebra R S] [CommRing R'] [CommRing S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
+    [CommRing R'] [CommRing S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
     (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.Finite) : (IsLocalization.Away.map R' S' f r).Finite :=
   finite_localizationPreserves.away f r _ _ hf

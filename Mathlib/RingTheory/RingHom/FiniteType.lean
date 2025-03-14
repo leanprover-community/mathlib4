@@ -198,7 +198,7 @@ theorem finiteType_localizationPreserves : RingHom.LocalizationPreserves @RingHo
   finiteType_isStableUnderBaseChange.localizationPreserves
 
 theorem localization_away_map_finiteType (R S R' S' : Type u) [CommRing R] [CommRing S]
-    [Algebra R S] [CommRing R'] [CommRing S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
+    [CommRing R'] [CommRing S'] [Algebra R R'] (f : R →+* S) [Algebra S S']
     (r : R) [IsLocalization.Away r R']
     [IsLocalization.Away (f r) S'] (hf : f.FiniteType) :
     (IsLocalization.Away.map R' S' f r).FiniteType :=
