@@ -3,8 +3,9 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
-import Mathlib.Data.Rat.Cast.Defs
+import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 
 /-!
 # Subfields
@@ -320,6 +321,14 @@ end DerivedFromSubfieldClass
 /-- The embedding from a subfield of the field `K` to `K`. -/
 def subtype (s : Subfield K) : s →+* K :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
+
+@[simp]
+lemma subtype_apply {s : Subfield K} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subfield K) :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
 
 @[simp]
 theorem coe_subtype : ⇑(s.subtype) = ((↑) : s → K) :=

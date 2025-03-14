@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Algebra.Order.Archimedean.Basic
+import Mathlib.Order.Filter.Bases.Finite
 import Mathlib.Topology.Algebra.Monoid
 
 /-!
@@ -394,23 +395,30 @@ continuous. Topological additive groups are defined in the same way. Equivalentl
 that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continuous.
 -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO should this docstring be extended
--- to match the multiplicative version?
 /-- A topological (additive) group is a group in which the addition and negation operations are
-continuous. -/
+continuous.
+
+When you declare an instance that does not already have a `UniformSpace` instance,
+you should also provide an instance of `UniformSpace` and `UniformAddGroup` using
+`IsTopologicalAddGroup.toUniformSpace` and `uniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalAddGroup :=
+  IsTopologicalAddGroup
 
 /-- A topological group is a group in which the multiplication and inversion operations are
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `UniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `topologicalCommGroup_isUniform`. -/
--- Porting note: check that these ↑ names exist once they've been ported in the future.
+`IsTopologicalGroup.toUniformSpace` and `uniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G
+
+@[deprecated (since := "2025-02-14")] alias TopologicalGroup :=
+  IsTopologicalGroup
 
 section Conj
 
@@ -421,11 +429,14 @@ instance ConjAct.units_continuousConstSMul {M} [Monoid M] [TopologicalSpace M]
 variable [TopologicalSpace G] [Inv G] [Mul G] [ContinuousMul G]
 
 /-- Conjugation is jointly continuous on `G × G` when both `mul` and `inv` are continuous. -/
-@[to_additive
+@[to_additive continuous_addConj_prod
   "Conjugation is jointly continuous on `G × G` when both `add` and `neg` are continuous."]
 theorem IsTopologicalGroup.continuous_conj_prod [ContinuousInv G] :
     Continuous fun g : G × G => g.fst * g.snd * g.fst⁻¹ :=
   continuous_mul.mul (continuous_inv.comp continuous_fst)
+
+@[deprecated (since := "2025-03-11")]
+alias IsTopologicalAddGroup.continuous_conj_sum := IsTopologicalAddGroup.continuous_addConj_prod
 
 /-- Conjugation by a fixed element is continuous when `mul` is continuous. -/
 @[to_additive (attr := continuity)
@@ -451,7 +462,7 @@ instance : IsTopologicalGroup (ULift G) where
 
 section ZPow
 
-@[to_additive (attr := continuity)]
+@[to_additive (attr := continuity, fun_prop)]
 theorem continuous_zpow : ∀ z : ℤ, Continuous fun a : G => a ^ z
   | Int.ofNat n => by simpa using continuous_pow n
   | Int.negSucc n => by simpa using (continuous_pow (n + 1)).inv
@@ -576,7 +587,8 @@ alias tendsto_inv_nhdsWithin_Iic_inv := tendsto_inv_nhdsLE_inv
 end OrderedCommGroup
 
 @[to_additive]
-instance [TopologicalSpace H] [Group H] [IsTopologicalGroup H] : IsTopologicalGroup (G × H) where
+instance Prod.instIsTopologicalGroup [TopologicalSpace H] [Group H] [IsTopologicalGroup H] :
+    IsTopologicalGroup (G × H) where
   continuous_inv := continuous_inv.prodMap continuous_inv
 
 @[to_additive]
@@ -1421,8 +1433,6 @@ theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
       simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.smul_inter_ne_empty_iff' }
 
--- attribute [local semireducible] MulOpposite -- Porting note: doesn't work in Lean 4
-
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the right, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
 `DiscreteTopology`.)
@@ -1657,10 +1667,10 @@ instance [ContinuousMul α] : IsTopologicalGroup αˣ where
 
 /-- The topological group isomorphism between the units of a product of two monoids, and the product
 of the units of each monoid. -/
-@[to_additive
+@[to_additive prodAddUnits
   "The topological group isomorphism between the additive units of a product of two
   additive monoids, and the product of the additive units of each additive monoid."]
-def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
+def _root_.Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
   continuous_toFun :=
     (continuous_fst.units_map (MonoidHom.fst α β)).prod_mk
       (continuous_snd.units_map (MonoidHom.snd α β))
@@ -1669,6 +1679,12 @@ def Homeomorph.prodUnits : (α × β)ˣ ≃ₜ αˣ × βˣ where
       ⟨continuous_val.fst'.prod_mk continuous_val.snd',
         continuous_coe_inv.fst'.prod_mk continuous_coe_inv.snd'⟩
   toEquiv := MulEquiv.prodUnits.toEquiv
+
+@[deprecated (since := "2025-02-21")]
+alias Homeomorph.sumAddUnits := Homeomorph.prodAddUnits
+
+@[deprecated (since := "2025-02-21")]
+protected alias Homeomorph.prodUnits := Homeomorph.prodUnits
 
 end Units
 
@@ -1790,7 +1806,7 @@ instance : Bot (GroupTopology α) :=
   let _t : TopologicalSpace α := ⊥
   ⟨{  continuous_mul := by
         haveI := discreteTopology_bot α
-        continuity
+        fun_prop
       continuous_inv := continuous_bot }⟩
 
 @[to_additive (attr := simp)]
@@ -1888,4 +1904,4 @@ theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Group β
 
 end GroupTopology
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 2000

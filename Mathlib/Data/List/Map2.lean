@@ -229,7 +229,6 @@ theorem zipLeft_cons_nil :
 theorem zipLeft_cons_cons : zipLeft (a :: as) (b :: bs) = (a, some b) :: zipLeft as bs :=
   rfl
 
--- Porting note: arguments explicit for recursion
 theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zipLeft' as bs).fst := by
   rw [zipLeft, zipLeft']
   cases as with
@@ -239,7 +238,7 @@ theorem zipLeft_eq_zipLeft' (as : List α) (bs : List β) : zipLeft as bs = (zip
     | nil => rfl
     | cons _ btl =>
       rw [zipWithLeft, zipWithLeft', cons_inj_right]
-      exact @zipLeft_eq_zipLeft' atl btl
+      exact zipLeft_eq_zipLeft' atl btl
 
 end ZipLeft
 

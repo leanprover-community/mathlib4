@@ -362,12 +362,9 @@ variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
 namespace Finite
 
-variable (A)
-
+variable (A) in
 theorem id : Finite (RingHom.id A) :=
   Module.Finite.self A
-
-variable {A}
 
 theorem of_surjective (f : A →+* B) (hf : Surjective f) : f.Finite :=
   letI := f.toAlgebra

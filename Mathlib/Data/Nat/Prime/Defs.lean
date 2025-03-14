@@ -43,11 +43,23 @@ def Prime (p : ℕ) :=
 theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 
-@[aesop safe destruct] theorem not_prime_zero : ¬Prime 0
+theorem not_prime_zero : ¬ Prime 0
   | h => h.ne_zero rfl
 
-@[aesop safe destruct] theorem not_prime_one : ¬Prime 1
+/-- A copy of `not_prime_zero` stated in a way that works for `aesop`.
+
+See https://github.com/leanprover-community/aesop/issues/197 for an explanation. -/
+@[aesop safe destruct] theorem prime_zero_false : Prime 0 → False :=
+  not_prime_zero
+
+theorem not_prime_one : ¬ Prime 1
   | h => h.ne_one rfl
+
+/-- A copy of `not_prime_one` stated in a way that works for `aesop`.
+
+See https://github.com/leanprover-community/aesop/issues/197 for an explanation. -/
+@[aesop safe destruct] theorem prime_one_false : Prime 1 → False :=
+  not_prime_one
 
 theorem Prime.ne_zero {n : ℕ} (h : Prime n) : n ≠ 0 :=
   Irreducible.ne_zero h
@@ -153,6 +165,10 @@ theorem prime_two : Prime 2 := by decide
 theorem prime_three : Prime 3 := by decide
 
 theorem prime_five : Prime 5 := by decide
+
+theorem prime_seven : Prime 7 := by decide
+
+theorem prime_eleven : Prime 11 := by decide
 
 theorem dvd_prime {p m : ℕ} (pp : Prime p) : m ∣ p ↔ m = 1 ∨ m = p :=
   ⟨fun d => pp.eq_one_or_self_of_dvd m d, fun h =>
@@ -420,8 +436,7 @@ instance inhabitedPrimes : Inhabited Primes :=
 instance coeNat : Coe Nat.Primes ℕ :=
   ⟨Subtype.val⟩
 
--- Porting note: change in signature to match change in coercion
-theorem coe_nat_injective : Function.Injective (fun (a : Nat.Primes) ↦ (a : ℕ)) :=
+theorem coe_nat_injective : Function.Injective ((↑) : Nat.Primes → ℕ) :=
   Subtype.coe_injective
 
 theorem coe_nat_inj (p q : Nat.Primes) : (p : ℕ) = (q : ℕ) ↔ p = q :=

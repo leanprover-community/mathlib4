@@ -88,6 +88,15 @@ def subtype : s →+* R :=
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    SubsemiringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SubsemiringClass.subtype s) := fun _ ↦ by
+  simp
+
 -- Prefer subclasses of `Semiring` over subclasses of `SubsemiringClass`.
 /-- A subsemiring of a `Semiring` is a `Semiring`. -/
 instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [SubsemiringClass S R] :
@@ -287,11 +296,18 @@ instance toCommSemiring {R} [CommSemiring R] (s : Subsemiring R) : CommSemiring 
 def subtype : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubmonoid.subtype with toFun := (↑) }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective s.subtype :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
-
-theorem subtype_injective : Function.Injective s.subtype := Subtype.coe_injective
 
 protected theorem nsmul_mem {x : R} (hx : x ∈ s) (n : ℕ) : n • x ∈ s :=
   nsmul_mem hx n

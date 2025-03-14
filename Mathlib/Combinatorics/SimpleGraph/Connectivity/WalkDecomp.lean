@@ -58,7 +58,7 @@ lemma nil_takeUntil (p : G.Walk u v) (hwp : w ∈ p.support) :
   | nil => simp only [takeUntil, eq_mpr_eq_cast] at hnil; exact hnil.eq
   | cons h q =>
     simp only [support_cons, List.mem_cons, false_or] at hwp
-    cases' hwp with hl hr
+    obtain hl | hr := hwp
     · exact hl.symm
     · by_contra! hc
       simp [takeUntil_cons hr hc] at hnil

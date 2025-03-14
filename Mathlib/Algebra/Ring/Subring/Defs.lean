@@ -116,6 +116,15 @@ def subtype (s : S) : s →+* R :=
   { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) :
+    SubringClass.subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → R) = ((↑) : s → R) :=
   rfl
@@ -325,6 +334,14 @@ instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
+
+@[simp]
+lemma subtype_apply {s : Subring R} (x : s) :
+    s.subtype x = x := rfl
+
+lemma subtype_injective (s : Subring R) :
+    Function.Injective s.subtype :=
+  s.toSubmonoid.subtype_injective
 
 @[simp]
 theorem coe_subtype : ⇑s.subtype = ((↑) : s → R) :=

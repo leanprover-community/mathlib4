@@ -10,6 +10,7 @@ import Mathlib.Data.Complex.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Topology.Instances.RealVectorSpace
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
 
 /-!
 
@@ -49,7 +50,7 @@ open ComplexConjugate Topology Filter
 
 instance : NormedField ℂ where
   dist_eq _ _ := rfl
-  norm_mul' := Complex.norm_mul
+  norm_mul := Complex.norm_mul
 
 instance : DenselyNormedField ℂ where
   lt_norm_lt r₁ r₂ h₀ hr :=
@@ -79,7 +80,6 @@ instance (priority := 900) _root_.NormedAlgebra.complexToReal {A : Type*} [Semin
   ext; exact norm_intCast n
 
 @[deprecated (since := "2025-02-16")] alias comap_abs_nhds_zero := comap_norm_nhds_zero
-@[deprecated (since := "2024-08-25")] alias nnnorm_int := nnnorm_intCast
 @[deprecated (since := "2025-02-16")] alias continuous_abs := continuous_norm
 
 @[continuity, fun_prop]
@@ -429,12 +429,9 @@ theorem hasSum_conj' {f : α → 𝕜} {x : 𝕜} : HasSum (fun x => conj (f x))
 theorem summable_conj {f : α → 𝕜} : (Summable fun x => conj (f x)) ↔ Summable f :=
   summable_star_iff
 
-variable {𝕜}
-
+variable {𝕜} in
 theorem conj_tsum (f : α → 𝕜) : conj (∑' a, f a) = ∑' a, conj (f a) :=
   tsum_star
-
-variable (𝕜)
 
 @[simp, norm_cast]
 theorem hasSum_ofReal {f : α → ℝ} {x : ℝ} : HasSum (fun x => (f x : 𝕜)) x ↔ HasSum f x :=
@@ -499,14 +496,12 @@ variable {α : Type*}
 
 open ComplexConjugate
 
--- Porting note: @[simp] unneeded due to `RCLike.hasSum_conj`
 theorem hasSum_conj {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) x ↔ HasSum f (conj x) :=
   RCLike.hasSum_conj _
 
 theorem hasSum_conj' {f : α → ℂ} {x : ℂ} : HasSum (fun x => conj (f x)) (conj x) ↔ HasSum f x :=
   RCLike.hasSum_conj' _
 
--- Porting note: @[simp] unneeded due to `RCLike.summable_conj`
 theorem summable_conj {f : α → ℂ} : (Summable fun x => conj (f x)) ↔ Summable f :=
   RCLike.summable_conj _
 

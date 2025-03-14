@@ -25,7 +25,8 @@ are 2-coskeletal.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory Opposite Category Functor Limits
+open CategoryTheory Simplicial SimplexCategory Truncated
+open Opposite Category Functor Limits
 
 namespace SSet
 
@@ -41,9 +42,6 @@ def rightExtensionInclusion (X : SSet.{u}) (n : ℕ) :
 end Truncated
 
 section
-
-local macro:max (priority := high) "⦋" n:term "⦌₂" : term =>
-  `((⟨SimplexCategory.mk $n, by dsimp; omega⟩ : SimplexCategory.Truncated 2))
 
 open StructuredArrow
 
@@ -109,7 +107,7 @@ lemma fac_aux₂ {n : ℕ}
         (strArrowMk₂ (⦋1⦌.const ⦋0⦌ 0 ≫ ⦋0⦌.const ⦋n⦌ ⟨i, Nat.lt_add_one_of_le hj⟩)) :=
             StructuredArrow.homMk ((⦋1⦌.const ⦋0⦌ 0).op) (by simp; rfl)
       have nat := congr_fun (s.π.naturality α) x
-      dsimp only [Fin.val_zero, Nat.add_zero, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int,
+      dsimp only [Fin.val_zero, Nat.add_zero, id_eq, Int.reduceNeg, Int.cast_ofNat_Int,
         Int.reduceAdd, Fin.eta, comp_obj, StructuredArrow.proj_obj, op_obj, const_obj_obj,
         const_obj_map, types_comp_apply, types_id_apply, Functor.comp_map, StructuredArrow.proj_map,
         op_map] at nat

@@ -41,9 +41,10 @@ variable {α β γ : Type*}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
 def Rel (α β : Type*) :=
-  α → β → Prop -- deriving CompleteLattice, Inhabited
+  α → β → Prop
+-- The `CompleteLattice, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` above doesn't work.
 instance : CompleteLattice (Rel α β) := show CompleteLattice (α → β → Prop) from inferInstance
 instance : Inhabited (Rel α β) := show Inhabited (α → β → Prop) from inferInstance
 
@@ -148,6 +149,7 @@ def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }
 theorem mem_image (y : β) (s : Set α) : y ∈ image r s ↔ ∃ x ∈ s, r x y :=
   Iff.rfl
 
+open scoped Relator in
 theorem image_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.image r.image := fun _ _ h _ ⟨x, xs, rxy⟩ =>
   ⟨x, h xs, rxy⟩
 
@@ -281,6 +283,7 @@ def core (s : Set β) := { x | ∀ y, r x y → y ∈ s }
 theorem mem_core (x : α) (s : Set β) : x ∈ r.core s ↔ ∀ y, r x y → y ∈ s :=
   Iff.rfl
 
+open scoped Relator in
 theorem core_subset : ((· ⊆ ·) ⇒ (· ⊆ ·)) r.core r.core := fun _s _t h _x h' y rxy => h (h' y rxy)
 
 theorem core_mono : Monotone r.core :=

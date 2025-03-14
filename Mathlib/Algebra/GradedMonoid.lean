@@ -9,8 +9,8 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Lean.Elab.Tactic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Additively-graded multiplicative structures
@@ -317,13 +317,10 @@ variable [AddMonoid ι] [GMonoid A]
 instance : NatPow (A 0) where
   pow x n := @Eq.rec ι (n • (0 : ι)) (fun a _ => A a) (GMonoid.gnpow n x) 0 (nsmul_zero n)
 
-variable {A}
-
+variable {A} in
 @[simp]
 theorem mk_zero_pow (a : A 0) (n : ℕ) : mk _ (a ^ n) = mk _ a ^ n :=
   Sigma.ext (nsmul_zero n).symm <| eqRec_heq _ _
-
-variable (A)
 
 /-- The `Monoid` structure derived from `GMonoid A`. -/
 instance GradeZero.monoid : Monoid (A 0) :=

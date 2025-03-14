@@ -36,22 +36,6 @@ variable {l l₁ l₂ l₃ : List α} {a b : α}
 
 section Fix
 
-@[deprecated IsSuffix.reverse (since := "2024-08-12")] alias isSuffix.reverse := IsSuffix.reverse
-@[deprecated IsPrefix.reverse (since := "2024-08-12")] alias isPrefix.reverse := IsPrefix.reverse
-@[deprecated IsInfix.reverse (since := "2024-08-12")] alias isInfix.reverse := IsInfix.reverse
-
-@[deprecated IsInfix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_infix_of_length_eq (h : l₁ <:+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
-
-@[deprecated IsPrefix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
-
-@[deprecated IsSuffix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
-
 @[gcongr] lemma IsPrefix.take (h : l₁ <+: l₂) (n : ℕ) : l₁.take n <+: l₂.take n := by
   simpa [prefix_take_iff, Nat.min_le_left] using (take_prefix n l₁).trans h
 
@@ -135,11 +119,6 @@ instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l
     letI := l₁.decidableInfix l₂
     @decidable_of_decidable_of_iff (l₁ <+: b :: l₂ ∨ l₁ <:+: l₂) _ _
       infix_cons_iff.symm
-
-@[deprecated cons_prefix_cons (since := "2024-08-14")]
-theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
-  simp
-
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
@@ -286,7 +265,7 @@ lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (ma
   induction' l using reverseRecOn <;> simp [*]
 
 lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
-  apply ext_getElem <;> (simp [take_take]; omega)
+  apply ext_getElem <;> (simp [take_take] <;> omega)
 
 end InitsTails
 
@@ -317,14 +296,5 @@ theorem subset_insert (a : α) (l : List α) : l ⊆ l.insert a :=
   (sublist_insert a l).subset
 
 end Insert
-
-@[deprecated (since := "2024-08-15")] alias mem_of_mem_suffix := IsSuffix.mem
-
-@[deprecated IsPrefix.getElem (since := "2024-08-15")]
-theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
-    x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
-  simp only [get_eq_getElem, IsPrefix.getElem h hn]
-
-@[deprecated (since := "2024-08-15")] alias IsPrefix.head_eq := IsPrefix.head
 
 end List
