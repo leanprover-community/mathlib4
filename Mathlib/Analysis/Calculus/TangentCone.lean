@@ -164,7 +164,7 @@ theorem tangentConeAt_univ [TopologicalSpace R] [NeBot (𝓝[{c | IsUnit c}] (0 
 
 @[deprecated (since := "2025-03-06")]
 alias tangentCone_univ := tangentConeAt_univ
-  
+
 variable [AddCommMonoid F] [Module R F] [TopologicalSpace F] {t : Set F} {y : F}
 
 /-- If a continuous linear map maps `s` to `t`,
@@ -189,26 +189,35 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Semiring R] [AddCommGroup E] [Module R E] [TopologicalSpace E] [ContinuousAdd E]
+variable [Semiring R] [AddCommGroup E] [Module R E] [TopologicalSpace E]
   {s : Set E} {x y : E}
 
 /-- In a topological group, zero belongs to the tangent cone
 iff the point belongs to the closure of the set. -/
 @[simp]
-theorem zero_mem_tangentConeAt_iff : 0 ∈ tangentConeAt R s x ↔ x ∈ closure s := by
+theorem zero_mem_tangentConeAt_iff [ContinuousAdd E] : 0 ∈ tangentConeAt R s x ↔ x ∈ closure s := by
   refine ⟨fun h ↦ mem_closure_of_tangentConeAt_nonempty ⟨_, h⟩, fun h ↦ ?_⟩
   simp only [tangentConeAt_eq_biInter_closure, mem_iInter₂]
   refine fun U hU ↦ subset_closure ?_
   rcases mem_closure_iff_nhds.mp h (x +ᵥ U) (by simpa) with ⟨_, ⟨y, hyU, rfl⟩, hys⟩
   exact ⟨0, mem_univ 0, y, ⟨hyU, hys⟩, by simp⟩
 
-variable [T1Space E]
+@[simp]
+protected theorem UniqueDiffWithinAt.univ [TopologicalSpace R] [NeBot (𝓝[{c | IsUnit c}] (0 : R))]
+    [ContinuousSMul R E] : UniqueDiffWithinAt R (univ : Set E) x where
+  dense_tangentCone := by simp
+  mem_closure := by simp
+
+@[simp]
+protected theorem UniqueDiffOn.univ [TopologicalSpace R] [NeBot (𝓝[{c | IsUnit c}] (0 : R))]
+    [ContinuousSMul R E] : UniqueDiffOn R (univ : Set E) := fun _ _ ↦ .univ
+
+variable [ContinuousAdd E] [T1Space E]
 
 theorem tangentConeAt_subset_of_not_mem_derivedSet (h : x ∉ derivedSet s) :
     tangentConeAt R s x ⊆ 0 := by
   intro y hy
-  simp only [tangentConeAt_eq_biInter_closure, mem_iInter₂, mem_derivedSet,
-    accPt_iff_nhds] at h hy
+  simp only [tangentConeAt_eq_biInter_closure, mem_iInter₂, mem_derivedSet, accPt_iff_nhds] at h hy
   push_neg at h
   rcases h with ⟨U, hUx, hU⟩
   suffices closure ((univ : Set R) • ((x + ·) ⁻¹' (U ∩ s))) ⊆ 0 from
@@ -291,15 +300,35 @@ theorem mapsTo_inr_tangentConeAt (hx : x ∈ closure s) :
   convert ((mapsTo_swap_prod t s).tangentConeAt_clm (f := .prod (.snd ..) (.fst ..))).comp
     (mapsTo_inl_tangentConeAt (R := R) (s := t) hx)
 
-/-- The tangent cone of a product contains the tangent cone of each factor. -/
-theorem mapsTo_tangentConeAt_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
+theorem UniqueDiffWithinAt.prod (hs : UniqueDiffWithinAt R s x) (ht : UniqueDiffWithinAt R t y) :
+    UniqueDiffWithinAt R (s ×ˢ t) (x, y) where
+  dense_tangentCone := by
+    refine (hs.dense_tangentCone.prod ht.dense_tangentCone).mono ?_
+    rw [← Submodule.prod_coe, ← LinearMap.span_inl_union_inr, SetLike.coe_subset_coe]
+    gcongr
+    exact union_subset (mapsTo_inl_tangentConeAt ht.2).image_subset
+      (mapsTo_inr_tangentConeAt hs.2).image_subset
+  mem_closure := by rw [closure_prod_eq]; exact ⟨hs.2, ht.2⟩
+
+theorem UniqueDiffOn.prod (hs : UniqueDiffOn R s) (ht : UniqueDiffOn R t) :
+    UniqueDiffOn R (s ×ˢ t) := fun (x, y) ⟨hx, hy⟩ ↦
+  (hs x hx).prod (ht y hy)
+
+end TVS
+
+section Pi
+
+variable {ι : Type*} [DecidableEq ι] {E : ι → Type*} [Semiring R]
     [∀ i, AddCommGroup (E i)] [∀ i, Module R (E i)] [∀ i, TopologicalSpace (E i)]
-    [∀ i, ContinuousAdd (E i)] [∀ i, ContinuousConstSMul R (E i)]
+    [∀ i, ContinuousAdd (E i)]
+
+/-- The tangent cone of a product contains the tangent cone of each factor. -/
+theorem mapsTo_tangentConeAt_pi [∀ i, ContinuousConstSMul R (E i)]
     {s : ∀ i, Set (E i)} {x : ∀ i, E i} {i : ι} (hi : ∀ j ≠ i, x j ∈ closure (s j)) :
     MapsTo (Pi.single i) (tangentConeAt R (s i) (x i))
       (tangentConeAt R (Set.pi univ s) x) := by
   rw [← tangentConeAt_closure (.pi _ _), closure_pi_set]
-  set f : E i →L[R] (∀ i, E i) := ⟨.single .., continuous_single _⟩
+  set f : E i →L[R] (∀ i, E i) := .single ..
   convert MapsTo.tangentConeAt_of_clm_add_const (f := f) (a := x - Pi.single i (x i)) _
   · simp [f]
   · intro y hy j _
@@ -307,7 +336,31 @@ theorem mapsTo_tangentConeAt_pi {ι : Type*} [DecidableEq ι] {E : ι → Type*}
     · simpa [f] using subset_closure hy
     · simpa [f, hj] using hi j hj
 
-end TVS
+theorem UniqueDiffWithinAt.univ_pi [∀ i, ContinuousConstSMul R (E i)]
+    {s : ∀ i, Set (E i)} {x : ∀ i, E i} (h : ∀ i, UniqueDiffWithinAt R (s i) (x i)) :
+    UniqueDiffWithinAt R (.pi univ s) x where
+  dense_tangentCone := by
+    have := dense_pi univ fun i _ ↦ (h i).dense_tangentCone
+    simp only [dense_iff_closure_eq, closure_pi_set, ← Submodule.closure_coe_iSup_map_single,
+      ← univ_subset_iff, Submodule.map_span] at this ⊢
+    refine this.trans ?_
+    gcongr
+    refine iSup_le fun i ↦ ?_
+    gcongr
+    exact (mapsTo_tangentConeAt_pi fun j _ ↦ (h j).2).image_subset
+  mem_closure := by
+    rw [closure_pi_set]
+    exact fun i _ ↦ (h i).2
+
+theorem UniqueDiffWithinAt.pi [TopologicalSpace R] [NeBot (𝓝[{c | IsUnit c}] (0 : R))]
+    [∀ i, ContinuousSMul R (E i)] (s : ∀ i, Set (E i)) (x : ∀ i, E i) (I : Set ι)
+    (h : ∀ i ∈ I, UniqueDiffWithinAt R (s i) (x i)) : UniqueDiffWithinAt R (Set.pi I s) x := by
+  classical
+  rw [← Set.univ_pi_piecewise_univ]
+  refine UniqueDiffWithinAt.univ_pi fun i => ?_
+  by_cases hi : i ∈ I <;> simp [*, UniqueDiffWithinAt.univ]
+
+end Pi
 
 #exit
   
@@ -335,47 +388,6 @@ segment belongs to the tangent cone at its endpoints. -/
 theorem mem_tangentCone_of_segment_subset {s : Set G} {x y : G} (h : segment ℝ x y ⊆ s) :
     y - x ∈ tangentConeAt ℝ s x :=
   mem_tangentCone_of_openSegment_subset ((openSegment_subset_segment ℝ x y).trans h)
-
-/-- The tangent cone at a non-isolated point contains `0`. -/
-theorem zero_mem_tangentCone {s : Set E} {x : E} (hx : (𝓝[s \ {x}] x).NeBot) :
-    0 ∈ tangentConeAt R s x := by
-  /- Take a sequence `d n` tending to `0` such that `x + d n ∈ s`. Taking `c n` of the order
-  of `1 / (d n) ^ (1/2)`, then `c n` tends to infinity, but `c n • d n` tends to `0`. By definition,
-  this shows that `0` belongs to the tangent cone. -/
-  obtain ⟨u, -, u_pos, u_lim⟩ :
-      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
-    exists_seq_strictAnti_tendsto (0 : ℝ)
-  have A n : ((s \ {x}) ∩ Metric.ball x (u n * u n)).Nonempty :=
-    NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _
-      (Metric.ball_mem_nhds _ (mul_pos (u_pos n) (u_pos n))))
-  choose v hv using A
-  let d n := v n - x
-  have M n : x + d n ∈ s \ {x} := by simpa [d] using (hv n).1
-  let ⟨r, hr⟩ := exists_one_lt_norm R
-  have W n := rescale_to_shell hr (u_pos n) (x := d n) (by simpa using (M n).2)
-  choose c c_ne c_le le_c hc using W
-  have c_lim : Tendsto (fun n ↦ ‖c n‖) atTop atTop := by
-    suffices Tendsto (fun n ↦ ‖c n‖⁻¹ ⁻¹) atTop atTop by simpa
-    apply tendsto_inv_nhdsGT_zero.comp
-    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
-      eventually_atTop, ge_iff_le]
-    have B (n : ℕ) : ‖c n‖⁻¹ ≤ ‖r‖ * u n := calc
-      ‖c n‖⁻¹
-      _ ≤ (u n)⁻¹ * ‖r‖ * ‖d n‖ := hc n
-      _ ≤ (u n)⁻¹ * ‖r‖ * (u n * u n) := by
-        gcongr
-        · exact mul_nonneg (by simp [(u_pos n).le]) (norm_nonneg _)
-        · specialize hv n
-          simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm]
-            at hv
-          simpa using hv.2.le
-      _ = ‖r‖ * u n := by field_simp [(u_pos n).ne']; ring
-    refine ⟨?_, 0, fun n hn ↦ by simpa using c_ne n⟩
-    apply squeeze_zero (fun n ↦ by positivity) B
-    simpa using u_lim.const_mul _
-  refine ⟨c, d, Eventually.of_forall (fun n ↦ by simpa [d] using (hv n).1.1), c_lim, ?_⟩
-  rw [tendsto_zero_iff_norm_tendsto_zero]
-  exact squeeze_zero (fun n ↦ by positivity) (fun n ↦ (c_le n).le) u_lim
 
 /-- In a proper space, the tangent cone at a non-isolated point is nontrivial. -/
 theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
@@ -427,43 +439,6 @@ theorem tangentCone_nonempty_of_properSpace [ProperSpace E]
   refine ⟨c ∘ φ, d ∘ φ, ?_, ?_, hφ⟩
   · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv (φ n)).1.1)
   · exact c_lim.comp φ_strict.tendsto_atTop
-
-/-- The tangent cone at a non-isolated point in dimension 1 is the whole space. -/
-theorem tangentCone_eq_univ {s : Set R} {x : R} (hx : (𝓝[s \ {x}] x).NeBot) :
-    tangentConeAt R s x = univ := by
-  apply eq_univ_iff_forall.2 (fun y ↦ ?_)
-  -- first deal with the case of `0`, which has to be handled separately.
-  rcases eq_or_ne y 0 with rfl | hy
-  · exact zero_mem_tangentCone hx
-  /- Assume now `y` is a fixed nonzero scalar. Take a sequence `d n` tending to `0` such
-  that `x + d n ∈ s`. Let `c n = y / d n`. Then `‖c n‖` tends to infinity, and `c n • d n`
-  converges to `y` (as it is equal to `y`). By definition, this shows that `y` belongs to the
-  tangent cone. -/
-  obtain ⟨u, -, u_pos, u_lim⟩ :
-      ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n) ∧ Tendsto u atTop (𝓝 (0 : ℝ)) :=
-    exists_seq_strictAnti_tendsto (0 : ℝ)
-  have A n : ((s \ {x}) ∩ Metric.ball x (u n)).Nonempty := by
-    apply NeBot.nonempty_of_mem hx (inter_mem_nhdsWithin _ (Metric.ball_mem_nhds _ (u_pos n)))
-  choose v hv using A
-  let d := fun n ↦ v n - x
-  have d_ne n : d n ≠ 0 := by
-    simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, d] at hv
-    simpa [d, sub_ne_zero] using (hv n).1.2
-  refine ⟨fun n ↦ y * (d n)⁻¹, d, ?_, ?_, ?_⟩
-  · exact Eventually.of_forall (fun n ↦ by simpa [d] using (hv n).1.1)
-  · simp only [norm_mul, norm_inv]
-    apply (tendsto_const_mul_atTop_of_pos (by simpa using hy)).2
-    apply tendsto_inv_nhdsGT_zero.comp
-    simp only [nhdsWithin, tendsto_inf, tendsto_principal, mem_Ioi, norm_pos_iff, ne_eq,
-      eventually_atTop, ge_iff_le]
-    have B (n : ℕ) : ‖d n‖ ≤ u n := by
-      specialize hv n
-      simp only [mem_inter_iff, mem_diff, mem_singleton_iff, Metric.mem_ball, dist_eq_norm] at hv
-      simpa using hv.2.le
-    refine ⟨?_, 0, fun n hn ↦ by simpa using d_ne n⟩
-    exact squeeze_zero (fun n ↦ by positivity) B u_lim
-  · convert tendsto_const_nhds (α := ℕ) (x := y) with n
-    simp [mul_assoc, inv_mul_cancel₀ (d_ne n)]
 
 end Normed
 
