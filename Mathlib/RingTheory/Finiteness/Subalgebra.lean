@@ -20,7 +20,7 @@ open Submodule
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 
-theorem fg_bot_toSubmodule  : (⊥ : Subalgebra R A).toSubmodule.FG :=
+theorem fg_bot_toSubmodule : (⊥ : Subalgebra R A).toSubmodule.FG :=
   ⟨{1}, by simp [Algebra.toSubmodule_bot, one_eq_span]⟩
 
 instance finite_bot : Module.Finite R (⊥ : Subalgebra R A) :=

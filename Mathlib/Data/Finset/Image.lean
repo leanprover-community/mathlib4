@@ -61,7 +61,7 @@ variable {f : α ↪ β} {s : Finset α}
 theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   Multiset.mem_map
 
--- Porting note: Higher priority to apply before `mem_map`.
+-- Higher priority to apply before `mem_map`.
 @[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
   rw [mem_map]
@@ -289,7 +289,7 @@ lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x 
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
   eq_of_veq (s.map f).2.dedup.symm
 
---@[simp] Porting note: removing simp, `simp` [Nonempty] can prove it
+-- Not `@[simp]` since `mem_image` already gets most of the way there.
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
   rw [mem_image]
   simp only [exists_prop, const_apply, exists_and_right]

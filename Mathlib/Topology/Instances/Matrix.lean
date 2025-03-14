@@ -247,7 +247,8 @@ theorem Continuous.matrix_blockDiagonal' [Zero R] [DecidableEq l]
     · exact continuous_const
 
 @[continuity, fun_prop]
-theorem Continuous.matrix_blockDiag' {A : X → Matrix (Σi, m' i) (Σi, n' i) R} (hA : Continuous A) :
+theorem Continuous.matrix_blockDiag'
+    {A : X → Matrix (Σ i, m' i) (Σ i, n' i) R} (hA : Continuous A) :
     Continuous fun x => blockDiag' (A x) :=
   continuous_pi fun _i => continuous_matrix fun _j _k => hA.matrix_elem _ _
 
@@ -390,12 +391,12 @@ theorem Matrix.blockDiagonal'_tsum [DecidableEq l] [T2Space R]
     rw [tsum_eq_zero_of_not_summable hf, tsum_eq_zero_of_not_summable hft]
     exact blockDiagonal'_zero
 
-theorem HasSum.matrix_blockDiag' {f : X → Matrix (Σi, m' i) (Σi, n' i) R}
-    {a : Matrix (Σi, m' i) (Σi, n' i) R} (hf : HasSum f a) :
+theorem HasSum.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R}
+    {a : Matrix (Σ i, m' i) (Σ i, n' i) R} (hf : HasSum f a) :
     HasSum (fun x => blockDiag' (f x)) (blockDiag' a) :=
   hf.map (blockDiag'AddMonoidHom m' n' R) continuous_id.matrix_blockDiag'
 
-theorem Summable.matrix_blockDiag' {f : X → Matrix (Σi, m' i) (Σi, n' i) R} (hf : Summable f) :
+theorem Summable.matrix_blockDiag' {f : X → Matrix (Σ i, m' i) (Σ i, n' i) R} (hf : Summable f) :
     Summable fun x => blockDiag' (f x) :=
   hf.hasSum.matrix_blockDiag'.summable
 

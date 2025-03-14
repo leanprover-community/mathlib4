@@ -32,9 +32,11 @@ universe u v w
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
--- Porting note: instances that were derived automatically need to be proved by hand (see below)
 /-- `I ⧸ I ^ 2` as a quotient of `I`. -/
 def Cotangent : Type _ := I ⧸ (I • ⊤ : Submodule R I)
+-- The `AddCommGroup, Module (R ⧸ I), Inhabited, Module S, IsScalarTower, IsNoetherian` instances
+-- should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance : AddCommGroup I.Cotangent := by delta Cotangent; infer_instance
 
@@ -52,7 +54,7 @@ instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
   inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 
 theorem map_toCotangent_ker : I.toCotangent.ker.map I.subtype = I ^ 2 := by

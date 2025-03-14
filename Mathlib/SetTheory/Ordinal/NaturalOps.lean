@@ -49,8 +49,9 @@ noncomputable section
 
 /-- A type synonym for ordinals with natural addition and multiplication. -/
 def NatOrdinal : Type _ :=
-  -- Porting note: used to derive LinearOrder & SuccOrder but need to manually define
   Ordinal deriving Zero, Inhabited, One, WellFoundedRelation
+-- The `LinearOrder, `SuccOrder` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance NatOrdinal.instLinearOrder : LinearOrder NatOrdinal := Ordinal.instLinearOrder
 instance NatOrdinal.instSuccOrder : SuccOrder NatOrdinal := Ordinal.instSuccOrder

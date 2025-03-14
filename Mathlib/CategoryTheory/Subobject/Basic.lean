@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -273,6 +274,10 @@ theorem mk_eq_mk_of_comm {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mo
     (w : i.hom ≫ g = f) : mk f = mk g :=
   eq_mk_of_comm _ ((underlyingIso f).trans i) <| by simp [w]
 
+lemma mk_surjective {X : C} (S : Subobject X) :
+    ∃ (A : C) (i : A ⟶ X) (_ : Mono i), S = Subobject.mk i :=
+  ⟨_, S.arrow, inferInstance, by simp⟩
+
 -- We make `X` and `Y` explicit arguments here so that when `ofLE` appears in goal statements
 -- it is possible to see its source and target
 -- (`h` will just display as `_`, because it is in `Prop`).
@@ -516,6 +521,20 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
+
+theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
+    {j : B ⟶ Y} [Mono j] {f' : B ⟶ A}
+    (h : IsPullback f' j i f) :
+    (pullback f).obj (mk i) = mk j :=
+  ((equivMonoOver Y).inverse.mapIso
+    (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
+
+theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk (pullback.snd x.arrow f) := by
+  obtain ⟨Z, i, _, rfl⟩ := mk_surjective x
+  rw [pullback_obj_mk (IsPullback.of_hasPullback i f)]
+  exact mk_eq_mk_of_comm _ _ (asIso (pullback.map i f (mk i).arrow f
+    (underlyingIso i).inv (𝟙 _) (𝟙 _) (by simp) (by simp))) (by simp)
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 

@@ -385,7 +385,7 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
     simp only [map_mul, map_of] at hb
     use head
     have H := congr_arg length hb
-    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
+    simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
     rw [H, mul_one] at hb
     exact FreeMonoid.of_injective hb
   intro fs d

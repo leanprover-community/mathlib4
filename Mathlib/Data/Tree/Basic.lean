@@ -28,15 +28,13 @@ additional data. We provide the notation `a △ b` for making a `Tree Unit` with
 inductive Tree.{u} (α : Type u) : Type u
   | nil : Tree α
   | node : α → Tree α → Tree α → Tree α
-  deriving DecidableEq, Repr -- Porting note: Removed `has_reflect`, added `Repr`.
+  deriving DecidableEq, Repr
 
 namespace Tree
 
 universe u
 
 variable {α : Type u}
-
--- Porting note: replaced with `deriving Repr` which builds a better instance anyway
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩

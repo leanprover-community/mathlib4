@@ -350,8 +350,6 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
     ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 
--- Porting note: added a `DecidableEq` argument to help with timeouts in
--- `Mathlib/Analysis/InnerProductSpace/Orientation.lean`
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
       ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by

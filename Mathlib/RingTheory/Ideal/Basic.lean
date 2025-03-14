@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Chris Hughes, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.IsField
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.Ideal.Maximal
@@ -74,7 +75,7 @@ theorem add_pow_mem_of_pow_mem_of_le_of_commute {m n k : ℕ}
   · refine I.mul_mem_left _ (I.pow_mem_of_pow_mem hb ?_)
     omega
 
-theorem add_pow_add_pred_mem_of_pow_mem_of_commute  {m n : ℕ}
+theorem add_pow_add_pred_mem_of_pow_mem_of_commute {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) (hab : Commute a b) :
     (a + b) ^ (m + n - 1) ∈ I :=
   I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb (by rw [← Nat.sub_le_iff_le_add]) hab
@@ -100,7 +101,7 @@ theorem add_pow_mem_of_pow_mem_of_le {m n k : ℕ}
     (a + b) ^ k ∈ I :=
   I.add_pow_mem_of_pow_mem_of_le_of_commute ha hb hk (Commute.all ..)
 
-theorem add_pow_add_pred_mem_of_pow_mem  {m n : ℕ}
+theorem add_pow_add_pred_mem_of_pow_mem {m n : ℕ}
     (ha : a ^ m ∈ I) (hb : b ^ n ∈ I) :
     (a + b) ^ (m + n - 1) ∈ I :=
   I.add_pow_add_pred_mem_of_pow_mem_of_commute ha hb (Commute.all ..)

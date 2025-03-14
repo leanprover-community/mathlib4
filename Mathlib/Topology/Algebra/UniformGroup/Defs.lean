@@ -147,7 +147,7 @@ instance (priority := 10) UniformGroup.to_topologicalGroup : IsTopologicalGroup 
   continuous_inv := uniformContinuous_inv.continuous
 
 @[to_additive]
-instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) :=
+instance Prod.instUniformGroup [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) :=
   ⟨((uniformContinuous_fst.comp uniformContinuous_fst).div
           (uniformContinuous_fst.comp uniformContinuous_snd)).prod_mk
       ((uniformContinuous_snd.comp uniformContinuous_fst).div

@@ -78,7 +78,6 @@ theorem abundant_twelve : Abundant 12 := by
   rw [Abundant, show properDivisors 12 = {1,2,3,4,6} by rfl]
   norm_num
 
-set_option maxRecDepth 1730 in
 theorem weird_seventy : Weird 70 := by
   rw [Weird, Abundant, not_pseudoperfect_iff_forall]
   have h : properDivisors 70 = {1, 2, 5, 7, 10, 14, 35} := by rfl

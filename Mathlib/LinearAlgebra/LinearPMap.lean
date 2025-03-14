@@ -696,7 +696,7 @@ theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} :
 theorem mem_graph_iff (f : E →ₗ.[R] F) {x : E × F} :
     x ∈ f.graph ↔ ∃ y : f.domain, (↑y : E) = x.1 ∧ f y = x.2 := by
   cases x
-  simp_rw [mem_graph_iff', Prod.mk.inj_iff]
+  simp_rw [mem_graph_iff', Prod.mk_inj]
 
 /-- The tuple `(x, f x)` is contained in the graph of `f`. -/
 theorem mem_graph (f : E →ₗ.[R] F) (x : domain f) : ((x : E), f x) ∈ f.graph := by simp
@@ -728,13 +728,13 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     rw [LinearPMap.smul_apply] at h
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
-      LinearMap.smul_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
+      LinearMap.smul_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
   simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply,
-    Prod.mk.inj_iff] at h
+    Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y
@@ -752,13 +752,13 @@ theorem neg_graph (f : E →ₗ.[R] F) :
     rw [LinearPMap.neg_apply] at h
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
-      LinearMap.neg_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
+      LinearMap.neg_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
   simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply,
-    Prod.mk.inj_iff] at h
+    Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y

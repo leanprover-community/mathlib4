@@ -86,7 +86,7 @@ theorem matrix_eq_sum_stdBasisMatrix [AddCommMonoid α] [Fintype m] [Fintype n] 
     x = ∑ i : m, ∑ j : n, stdBasisMatrix i j (x i j) := by
   ext i j
   rw [← Fintype.sum_prod_type']
-  simp [stdBasisMatrix, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk.inj_iff]
+  simp [stdBasisMatrix, Matrix.sum_apply, Matrix.of_apply, ← Prod.mk_inj]
 
 theorem stdBasisMatrix_eq_single_vecMulVec_single [MulZeroOneClass α] (i : m) (j : n) :
     stdBasisMatrix i j (1 : α) = vecMulVec (Pi.single i 1) (Pi.single j 1) := by

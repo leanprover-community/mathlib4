@@ -1021,7 +1021,7 @@ def restrictScalars (f : M →L[A] M₂) : M →L[R] M₂ :=
 
 variable {R}
 
-@[simp] -- @[norm_cast] -- Porting note: This theorem can't be a `norm_cast` theorem.
+@[simp]
 theorem coe_restrictScalars (f : M →L[A] M₂) :
     (f.restrictScalars R : M →ₗ[R] M₂) = (f : M →ₗ[A] M₂).restrictScalars R :=
   rfl

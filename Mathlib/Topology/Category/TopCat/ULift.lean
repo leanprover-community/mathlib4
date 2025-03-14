@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Topology.Category.TopCat.Basic
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Lifting topological spaces to a higher universe

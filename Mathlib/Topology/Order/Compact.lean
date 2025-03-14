@@ -53,12 +53,12 @@ export CompactIccSpace (isCompact_Icc)
 
 variable {α : Type*}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it the definition
+-- TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
   isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: drop one `'`
+-- TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
     (h : ∀ {a b : α}, a < b → IsCompact (Icc a b)) : CompactIccSpace α :=
   .mk' fun hab => hab.eq_or_lt.elim (by rintro rfl; simp) h
@@ -482,8 +482,7 @@ theorem IsCompact.exists_isMaxOn_mem_subset [ClosedIciTopology α] {f : β → �
   let ⟨x, hxt, hfx⟩ := ht.exists_isMaxOn ⟨z, hz⟩ hf
   ⟨x, by_contra fun hxs => (hfz x ⟨hxt, hxs⟩).not_le (hfx hz), hfx⟩
 
--- Porting note: rfc: assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and
--- `IsOpen s`?
+-- TODO: we could assume `t ∈ 𝓝ˢ s` (a.k.a. `s ⊆ interior t`) instead of `s ⊆ t` and `IsOpen s`.
 theorem IsCompact.exists_isLocalMin_mem_open [ClosedIicTopology α] {f : β → α} {s t : Set β}
     {z : β} (ht : IsCompact t) (hst : s ⊆ t) (hf : ContinuousOn f t) (hz : z ∈ t)
     (hfz : ∀ z' ∈ t \ s, f z < f z') (hs : IsOpen s) : ∃ x ∈ s, IsLocalMin f x :=
@@ -508,7 +507,7 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
 /-- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
 conditionally complete linear order, and `K : Set β` is a compact set, then
 `fun x ↦ sSup (f x '' K)` is a continuous function. -/
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize. The following version seems to be true:
+/- TODO: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))

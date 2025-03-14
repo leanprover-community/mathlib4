@@ -58,7 +58,7 @@ open CategoryTheory.Limits
 
 namespace AlgebraicGeometry
 
-universe v v₁ v₂ u
+universe w v v₁ v₂ u
 
 variable {C : Type u} [Category.{v} C]
 
@@ -880,7 +880,7 @@ theorem image_preimage_is_empty (j : Discrete ι) (h : i ≠ j) (U : Opens (F.ob
     TopCat.sigmaIsoSigma_hom_ι, TopCat.sigmaIsoSigma_hom_ι] at eq
   exact h (congr_arg Discrete.mk (congr_arg Sigma.fst eq))
 
-instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
+instance sigma_ι_isOpenImmersion_aux [HasStrictTerminalObjects C] :
     SheafedSpace.IsOpenImmersion (colimit.ι F i) where
   base_open := sigma_ι_isOpenEmbedding F i
   c_iso U := by
@@ -916,6 +916,18 @@ instance sigma_ι_isOpenImmersion [HasStrictTerminalObjects C] :
     convert (F.obj j).sheaf.isTerminalOfEmpty using 3
     convert image_preimage_is_empty F i j (fun h => hj (congr_arg op h.symm)) U using 6
     exact (congr_arg PresheafedSpace.Hom.base e).symm
+
+instance sigma_ι_isOpenImmersion {ι : Type w} [Small.{v} ι]
+    (F : Discrete ι ⥤ SheafedSpace.{_, v, v} C) [HasColimit F] (i : Discrete ι)
+    [HasStrictTerminalObjects C] :
+    SheafedSpace.IsOpenImmersion (colimit.ι F i) := by
+  obtain ⟨ι', ⟨e⟩⟩ := Small.equiv_small (α := ι)
+  let f : Discrete ι' ≌ Discrete ι := Discrete.equivalence e.symm
+  have : colimit.ι F i = (colimit.ι F i ≫ (HasColimit.isoOfEquivalence f (Iso.refl _)).inv) ≫
+      (HasColimit.isoOfEquivalence f (Iso.refl _)).hom := by
+    simp
+  rw [this, HasColimit.isoOfEquivalence_inv_π]
+  infer_instance
 
 end Prod
 
@@ -1101,7 +1113,6 @@ image is contained in the image of `f`, we can lift this morphism to a unique `Y
 commutes with these maps.
 -/
 def lift (H' : Set.range g.base ⊆ Set.range f.base) : Y ⟶ X :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   inv (pullback.snd f g) ≫ pullback.fst _ _
 
@@ -1114,7 +1125,6 @@ theorem lift_uniq (H' : Set.range g.base ⊆ Set.range f.base) (l : Y ⟶ X) (hl
 
 theorem lift_range (H' : Set.range g.base ⊆ Set.range f.base) :
     Set.range (lift f g H').base = f.base ⁻¹' Set.range g.base := by
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance manually
   have := pullback_snd_isIso_of_range_subset f g H'
   dsimp only [lift]
   have : _ = (pullback.fst f g).base :=

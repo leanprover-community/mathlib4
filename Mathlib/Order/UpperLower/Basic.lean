@@ -553,13 +553,13 @@ theorem coe_iSup (f : ι → UpperSet α) : (↑(⨆ i, f i) : Set α) = ⋂ i, 
 @[simp, norm_cast]
 theorem coe_iInf (f : ι → UpperSet α) : (↑(⨅ i, f i) : Set α) = ⋃ i, f i := by simp [iInf]
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iSup₂ (f : ∀ i, κ i → UpperSet α) :
-    (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iSup]
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iInf₂ (f : ∀ i, κ i → UpperSet α) :
-    (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iInf]
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp
 
 @[simp]
 theorem not_mem_top : a ∉ (⊤ : UpperSet α) :=
@@ -595,13 +595,11 @@ theorem mem_iInf_iff {f : ι → UpperSet α} : (a ∈ ⨅ i, f i) ↔ ∃ i, a 
   rw [← SetLike.mem_coe, coe_iInf]
   exact mem_iUnion
 
--- Porting note: no longer a @[simp]
 theorem mem_iSup₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨆ (i) (j), f i j) ↔ ∀ i j, a ∈ f i j := by
-  simp_rw [mem_iSup_iff]
+  simp
 
--- Porting note: no longer a @[simp]
 theorem mem_iInf₂_iff {f : ∀ i, κ i → UpperSet α} : (a ∈ ⨅ (i) (j), f i j) ↔ ∃ i j, a ∈ f i j := by
-  simp_rw [mem_iInf_iff]
+  simp
 
 @[simp, norm_cast]
 theorem codisjoint_coe : Codisjoint (s : Set α) t ↔ Disjoint s t := by
@@ -687,13 +685,13 @@ theorem coe_iSup (f : ι → LowerSet α) : (↑(⨆ i, f i) : Set α) = ⋃ i, 
 theorem coe_iInf (f : ι → LowerSet α) : (↑(⨅ i, f i) : Set α) = ⋂ i, f i := by
   simp_rw [iInf, coe_sInf, mem_range, iInter_exists, iInter_iInter_eq']
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iSup₂ (f : ∀ i, κ i → LowerSet α) :
-    (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp_rw [coe_iSup]
+    (↑(⨆ (i) (j), f i j) : Set α) = ⋃ (i) (j), f i j := by simp
 
-@[norm_cast] -- Porting note: no longer a `simp`
+@[norm_cast]
 theorem coe_iInf₂ (f : ∀ i, κ i → LowerSet α) :
-    (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp_rw [coe_iInf]
+    (↑(⨅ (i) (j), f i j) : Set α) = ⋂ (i) (j), f i j := by simp
 
 @[simp]
 theorem mem_top : a ∈ (⊤ : LowerSet α) :=
@@ -729,13 +727,11 @@ theorem mem_iInf_iff {f : ι → LowerSet α} : (a ∈ ⨅ i, f i) ↔ ∀ i, a 
   rw [← SetLike.mem_coe, coe_iInf]
   exact mem_iInter
 
--- Porting note: no longer a @[simp]
 theorem mem_iSup₂_iff {f : ∀ i, κ i → LowerSet α} : (a ∈ ⨆ (i) (j), f i j) ↔ ∃ i j, a ∈ f i j := by
-  simp_rw [mem_iSup_iff]
+  simp
 
--- Porting note: no longer a @[simp]
 theorem mem_iInf₂_iff {f : ∀ i, κ i → LowerSet α} : (a ∈ ⨅ (i) (j), f i j) ↔ ∀ i j, a ∈ f i j := by
-  simp_rw [mem_iInf_iff]
+  simp
 
 @[simp, norm_cast]
 theorem disjoint_coe : Disjoint (s : Set α) t ↔ Disjoint s t := by
@@ -805,13 +801,11 @@ protected theorem compl_iSup (f : ι → UpperSet α) : (⨆ i, f i).compl = ⨆
 protected theorem compl_iInf (f : ι → UpperSet α) : (⨅ i, f i).compl = ⨅ i, (f i).compl :=
   LowerSet.ext <| by simp only [coe_compl, coe_iInf, compl_iUnion, LowerSet.coe_iInf]
 
--- Porting note: no longer a @[simp]
 theorem compl_iSup₂ (f : ∀ i, κ i → UpperSet α) :
-    (⨆ (i) (j), f i j).compl = ⨆ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iSup]
+    (⨆ (i) (j), f i j).compl = ⨆ (i) (j), (f i j).compl := by simp
 
--- Porting note: no longer a @[simp]
 theorem compl_iInf₂ (f : ∀ i, κ i → UpperSet α) :
-    (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp_rw [UpperSet.compl_iInf]
+    (⨅ (i) (j), f i j).compl = ⨅ (i) (j), (f i j).compl := by simp
 
 end UpperSet
 
@@ -1092,9 +1086,8 @@ theorem Ici_sSup (S : Set α) : Ici (sSup S) = ⨆ a ∈ S, Ici a :=
 theorem Ici_iSup (f : ι → α) : Ici (⨆ i, f i) = ⨆ i, Ici (f i) :=
   SetLike.ext fun c => by simp only [mem_Ici_iff, mem_iSup_iff, iSup_le_iff]
 
--- Porting note: no longer a @[simp]
 theorem Ici_iSup₂ (f : ∀ i, κ i → α) : Ici (⨆ (i) (j), f i j) = ⨆ (i) (j), Ici (f i j) := by
-  simp_rw [Ici_iSup]
+  simp
 
 end CompleteLattice
 
@@ -1186,9 +1179,8 @@ theorem Iic_sInf (S : Set α) : Iic (sInf S) = ⨅ a ∈ S, Iic a :=
 theorem Iic_iInf (f : ι → α) : Iic (⨅ i, f i) = ⨅ i, Iic (f i) :=
   SetLike.ext fun c => by simp only [mem_Iic_iff, mem_iInf_iff, le_iInf_iff]
 
--- Porting note: no longer a @[simp]
 theorem Iic_iInf₂ (f : ∀ i, κ i → α) : Iic (⨅ (i) (j), f i j) = ⨅ (i) (j), Iic (f i j) := by
-  simp_rw [Iic_iInf]
+  simp
 
 end CompleteLattice
 
@@ -1206,7 +1198,7 @@ def upperClosure (s : Set α) : UpperSet α :=
 def lowerClosure (s : Set α) : LowerSet α :=
   ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
+-- TODO: move `GaloisInsertion`s up, use them to prove lemmas
 
 @[simp]
 theorem mem_upperClosure : x ∈ upperClosure s ↔ ∃ a ∈ s, a ≤ x :=

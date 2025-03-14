@@ -144,8 +144,7 @@ instance [∀ i, BoundedSpace (π i)] : BoundedSpace (∀ i, π i) := by
 
 theorem boundedSpace_induced_iff {α β : Type*} [Bornology β] {f : α → β} :
     @BoundedSpace α (Bornology.induced f) ↔ IsBounded (range f) := by
-  rw [← @isBounded_univ _ (Bornology.induced f), isBounded_induced, image_univ]
--- Porting note: had to explicitly provided the bornology to `isBounded_univ`.
+  rw [← @isBounded_univ, isBounded_induced, image_univ]
 
 theorem boundedSpace_subtype_iff {p : α → Prop} :
     BoundedSpace (Subtype p) ↔ IsBounded { x | p x } := by

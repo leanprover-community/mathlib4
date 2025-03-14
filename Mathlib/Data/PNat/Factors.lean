@@ -21,14 +21,15 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
--- Porting note: `deriving` contained Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
--- SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
   Multiset Nat.Primes deriving Inhabited, OrderedCancelAddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
+-- The `CanonicallyOrderedAdd, OrderBot, OrderedSub` instances should be constructed by a deriving
+-- handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 instance : CanonicallyOrderedAdd PrimeMultiset :=
   inferInstanceAs (CanonicallyOrderedAdd (Multiset Nat.Primes))

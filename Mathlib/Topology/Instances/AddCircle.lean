@@ -80,8 +80,6 @@ theorem continuous_right_toIcoMod : ContinuousWithinAt (toIcoMod hp a) (Ici x) x
 theorem continuous_left_toIocMod : ContinuousWithinAt (toIocMod hp a) (Iic x) x := by
   rw [(funext fun y => Eq.trans (by rw [neg_neg]) <| toIocMod_neg _ _ _ :
       toIocMod hp a = (fun x => p - x) ∘ toIcoMod hp (-a) ∘ Neg.neg)]
-  -- Porting note: added
-  have : ContinuousNeg 𝕜 := IsTopologicalAddGroup.toContinuousNeg
   exact
     (continuous_sub_left _).continuousAt.comp_continuousWithinAt <|
       (continuous_right_toIcoMod _ _ _).comp continuous_neg.continuousWithinAt fun y => neg_le_neg
@@ -427,7 +425,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
   have he : (↑(↑((a % n).toNat) / ↑n * p) : AddCircle p) = k := by
     convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
     rw [coe_add, ← Int.cast_natCast, han, zsmul_eq_mul, mul_div_right_comm, eq_comm,
-      add_left_eq_self, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
+      add_eq_right, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
   refine ⟨(a % n).toNat, ?_, ?_, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)

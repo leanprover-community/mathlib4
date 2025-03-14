@@ -475,7 +475,7 @@ section LocallyFiniteLinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
-theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
   use n
@@ -503,7 +503,7 @@ theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 
   rfl
 
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
-    (hn : ∀(m : Γ), m < n → f m = 0) :
+    (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
   dsimp only [order]
   by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0

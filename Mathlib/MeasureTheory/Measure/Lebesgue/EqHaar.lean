@@ -117,8 +117,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
   simp only [piIcc01, volume_pi_pi fun _ => Icc (0 : ℝ) 1, PositiveCompacts.coe_mk,
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this instance?
-instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
+theorem isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
 

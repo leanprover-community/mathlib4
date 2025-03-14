@@ -89,7 +89,7 @@ lemma isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (
 -/
 
 theorem hasBasis_nhds_prod (x y : α) :
-    HasBasis (𝓝 (x, y)) (fun s => s ∈ 𝓤 α ∧ SymmetricRel s) fun s => ball x s ×ˢ ball y s := by
+    HasBasis (𝓝 (x, y)) (fun s => s ∈ 𝓤 α ∧ IsSymmetricRel s) fun s => ball x s ×ˢ ball y s := by
   rw [nhds_prod_eq]
   apply (hasBasis_nhds x).prod_same_index (hasBasis_nhds y)
   rintro U V ⟨U_in, U_symm⟩ ⟨V_in, V_symm⟩
@@ -150,7 +150,7 @@ section
 variable (α)
 
 theorem UniformSpace.has_seq_basis [IsCountablyGenerated <| 𝓤 α] :
-    ∃ V : ℕ → Set (α × α), HasAntitoneBasis (𝓤 α) V ∧ ∀ n, SymmetricRel (V n) :=
+    ∃ V : ℕ → Set (α × α), HasAntitoneBasis (𝓤 α) V ∧ ∀ n, IsSymmetricRel (V n) :=
   let ⟨U, hsym, hbasis⟩ := (@UniformSpace.hasBasis_symmetric α _).exists_antitone_subbasis
   ⟨U, hbasis, fun n => (hsym n).2⟩
 
@@ -161,7 +161,7 @@ end
 -/
 
 theorem closure_eq_uniformity (s : Set <| α × α) :
-    closure s = ⋂ V ∈ { V | V ∈ 𝓤 α ∧ SymmetricRel V }, V ○ s ○ V := by
+    closure s = ⋂ V ∈ { V | V ∈ 𝓤 α ∧ IsSymmetricRel V }, V ○ s ○ V := by
   ext ⟨x, y⟩
   simp +contextual only
     [mem_closure_iff_nhds_basis (UniformSpace.hasBasis_nhds_prod x y), mem_iInter, mem_setOf_eq,
@@ -191,7 +191,7 @@ theorem uniformity_hasBasis_closure : HasBasis (𝓤 α) (fun V : Set (α × α)
 
 theorem closure_eq_inter_uniformity {t : Set (α × α)} : closure t = ⋂ d ∈ 𝓤 α, d ○ (t ○ d) :=
   calc
-    closure t = ⋂ (V) (_ : V ∈ 𝓤 α ∧ SymmetricRel V), V ○ t ○ V := closure_eq_uniformity t
+    closure t = ⋂ (V) (_ : V ∈ 𝓤 α ∧ IsSymmetricRel V), V ○ t ○ V := closure_eq_uniformity t
     _ = ⋂ V ∈ 𝓤 α, V ○ t ○ V :=
       Eq.symm <|
         UniformSpace.hasBasis_symmetric.biInter_mem fun _ _ hV =>
@@ -266,7 +266,7 @@ theorem Filter.HasBasis.mem_uniformity_iff {p : β → Prop} {s : β → Set (α
 /-- Open elements `s : Set (α × α)` of `𝓤 α` such that `(x, y) ∈ s ↔ (y, x) ∈ s` form a basis
 of `𝓤 α`. -/
 theorem uniformity_hasBasis_open_symmetric :
-    HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsOpen V ∧ SymmetricRel V) id := by
+    HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsOpen V ∧ IsSymmetricRel V) id := by
   simp only [← and_assoc]
   refine uniformity_hasBasis_open.restrict fun s hs => ⟨symmetrizeRel s, ?_⟩
   exact
@@ -274,7 +274,7 @@ theorem uniformity_hasBasis_open_symmetric :
       symmetric_symmetrizeRel s, symmetrizeRel_subset_self s⟩
 
 theorem comp_open_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, IsOpen t ∧ SymmetricRel t ∧ t ○ t ⊆ s := by
+    ∃ t ∈ 𝓤 α, IsOpen t ∧ IsSymmetricRel t ∧ t ○ t ⊆ s := by
   obtain ⟨t, ht₁, ht₂⟩ := comp_mem_uniformity_sets hs
   obtain ⟨u, ⟨hu₁, hu₂, hu₃⟩, hu₄ : u ⊆ t⟩ := uniformity_hasBasis_open_symmetric.mem_iff.mp ht₁
   exact ⟨u, hu₁, hu₂, hu₃, (compRel_mono hu₄ hu₄).trans ht₂⟩
@@ -495,18 +495,16 @@ instance OrderDual.instUniformSpace [UniformSpace α] : UniformSpace (αᵒᵈ) 
 
 section UniformContinuousInfi
 
--- Porting note: renamed for dot notation; add an `iff` lemma?
+-- TODO: add an `iff` lemma?
 theorem UniformContinuous.inf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ u₃ : UniformSpace β}
     (h₁ : UniformContinuous[u₁, u₂] f) (h₂ : UniformContinuous[u₁, u₃] f) :
     UniformContinuous[u₁, u₂ ⊓ u₃] f :=
   tendsto_inf.mpr ⟨h₁, h₂⟩
 
--- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_left {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₁, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_left hf
 
--- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_right {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₂, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_right hf

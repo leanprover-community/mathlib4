@@ -263,7 +263,7 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
       simpa only [eq_neg_iff_add_eq_zero, one_pow] using hk 1⟩
   invFun p := (p : K × K).1 / ((p : K × K).2 + 1)
   left_inv x := by
-    have h2 : (1 + 1 : K) = 2 := by norm_num -- Porting note: rfl is not enough to close this
+    have h2 : (1 + 1 : K) = 2 := by norm_num
     have h3 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2, h2]
@@ -277,8 +277,8 @@ def circleEquivGen (hk : ∀ x : K, 1 + x ^ 2 ≠ 0) :
     have h4 : (2 : K) ≠ 0 := by
       convert hk 1
       rw [one_pow 2]
-      ring -- Porting note: rfl is not enough to close this
-    simp only [Prod.mk.inj_iff, Subtype.mk_eq_mk]
+      ring
+    simp only [Prod.mk_inj, Subtype.mk_eq_mk]
     constructor
     · field_simp [h3]
       ring
@@ -313,7 +313,6 @@ private theorem coprime_sq_sub_sq_add_of_even_odd {m n : ℤ} (h : Int.gcd m n =
   have hmc : p = 2 ∨ p ∣ Int.natAbs m := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2m
   have hnc : p = 2 ∨ p ∣ Int.natAbs n := prime_two_or_dvd_of_dvd_two_mul_pow_self_two hp h2n
   by_cases h2 : p = 2
-  -- Porting note: norm_num is not enough to close h3
   · have h3 : (m ^ 2 + n ^ 2) % 2 = 1 := by
       simp only [sq, Int.add_emod, Int.mul_emod, hm, hn, dvd_refl, Int.emod_emod_of_dvd]
       decide
@@ -348,7 +347,6 @@ private theorem coprime_sq_sub_mul_of_even_odd {m n : ℤ} (h : Int.gcd m n = 1)
       revert hp1
       rw [hp2']
       apply mt Int.emod_eq_zero_of_dvd
-      -- Porting note: norm_num is not enough to close this
       simp only [sq, Nat.cast_ofNat, Int.sub_emod, Int.mul_emod, hm, hn,
         mul_zero, EuclideanDomain.zero_mod, mul_one, zero_sub]
       decide
@@ -445,9 +443,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
     exact h0
   have hw1 : w ≠ -1 := by
     contrapose! hvz with hw1
-    -- Porting note: `contrapose` unfolds local names, refold them
-    replace hw1 : w = -1 := hw1; show v = 0
-    rw [hw1, neg_sq, one_pow, add_left_eq_self] at hq
+    rw [hw1, neg_sq, one_pow, add_eq_right] at hq
     exact pow_eq_zero hq
   have hQ : ∀ x : ℚ, 1 + x ^ 2 ≠ 0 := by
     intro q

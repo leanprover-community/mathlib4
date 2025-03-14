@@ -429,8 +429,7 @@ noncomputable instance instInf : Min (Seminorm 𝕜 E) where
         · rw [norm_zero, zero_mul, zero_smul]
           refine
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
-              -- Porting note: the following was previously `fun i => by positivity`
-              (fun i => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _))
+              (fun i => by positivity)
               fun x hx => ⟨0, by rwa [map_zero, sub_zero, map_zero, add_zero]⟩
         simp_rw [Real.mul_iInf_of_nonneg (norm_nonneg a), mul_add, ← map_smul_eq_mul p, ←
           map_smul_eq_mul q, smul_sub]

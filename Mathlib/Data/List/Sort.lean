@@ -130,9 +130,9 @@ theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp
   let ⟨_, h, h'⟩ := hp
   rwa [← eq_of_perm_of_sorted h (hs₂.sublist h') hs₁]
 
-@[simp 1100] -- Porting note: higher priority for linter
-theorem sorted_singleton (a : α) : Sorted r [a] :=
-  pairwise_singleton _ _
+@[simp 1100] -- Higher priority shortcut lemma.
+theorem sorted_singleton (a : α) : Sorted r [a] := by
+  simp
 
 theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   rw [Sorted, pairwise_iff_get]
@@ -532,10 +532,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
   | [], _ => sorted_singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · -- Porting note: was
-      -- `simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)`
-      rw [List.orderedInsert, if_pos h', sorted_cons]
-      exact ⟨forall_mem_cons.2 ⟨h', fun c hc => _root_.trans h' (rel_of_sorted_cons h _ hc)⟩, h⟩
+    · simpa [orderedInsert, h', h] using fun b' bm => _root_.trans h' (rel_of_sorted_cons h _ bm)
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm

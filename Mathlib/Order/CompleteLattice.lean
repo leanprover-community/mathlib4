@@ -289,11 +289,9 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
     CompleteLattice α :=
   completeLatticeOfSup α fun s => isLUB_sSup s
 
--- Porting note: as we cannot rename fields while extending,
--- `CompleteLinearOrder` does not directly extend `LinearOrder`.
--- Instead we add the fields by hand, and write a manual instance.
-
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
+-- Note that we do not use `extends LinearOrder α`,
+-- and instead construct the forgetful instance manually.
 class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
@@ -1685,7 +1683,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
   congr_arg sInf (range_comp _ _).symm
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
-  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
+  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
     ⨅ i, (f i, g i) = (⨅ i, f i, ⨅ i, g i) :=
@@ -1698,7 +1696,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
   congr_arg sSup (range_comp _ _).symm
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
-  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
+  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=

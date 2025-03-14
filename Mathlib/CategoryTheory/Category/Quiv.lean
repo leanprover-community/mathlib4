@@ -120,7 +120,7 @@ def homEquivOfIso {V W : Quiv} (e : V ≅ W) {X Y : V} :
 end
 
 section
-variable {V W : Type u } [Quiver V] [Quiver W]
+variable {V W : Type u} [Quiver V] [Quiver W]
   (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y))
 
 include he in

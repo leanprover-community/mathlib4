@@ -59,7 +59,8 @@ end TensorAlgebra
 def TensorAlgebra :=
   RingQuot (TensorAlgebra.Rel R M)
 
--- Porting note: Expanded `deriving Inhabited, Semiring, Algebra`
+-- The `Inhabited, Semiring, Algebra` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Inhabited (TensorAlgebra R M) := RingQuot.instInhabited _
 instance : Semiring (TensorAlgebra R M) := RingQuot.instSemiring _
 

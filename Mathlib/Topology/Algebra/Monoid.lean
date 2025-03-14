@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.ULift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Theory of topological monoids
@@ -312,7 +312,7 @@ variable {M₁ M₂} [Mul M₁] [Mul M₂] [ContinuousMul M₂]
 /-- Construct a bundled semigroup homomorphism `M₁ →ₙ* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →ₙ* M₂` (or another type of bundled
 homomorphisms that has a `MulHomClass` instance) to `M₁ → M₂`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Construct a bundled additive semigroup homomorphism `M₁ →ₙ+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →ₙ+ M₂` (or another
 type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M₂`."]
@@ -322,7 +322,7 @@ def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
   map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled semigroup homomorphism from a pointwise limit of semigroup homomorphisms. -/
-@[to_additive (attr := simps! (config := .asFn))
+@[to_additive (attr := simps! -fullyApplied)
   "Construct a bundled additive semigroup homomorphism from a pointwise limit of additive
 semigroup homomorphisms"]
 def mulHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
@@ -346,7 +346,7 @@ variable {M₁ M₂} [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →* M₂` (or another type of bundled
 homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
 type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`."]
@@ -357,7 +357,7 @@ def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
   map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
-@[to_additive (attr := simps! (config := .asFn))
+@[to_additive (attr := simps! -fullyApplied)
   "Construct a bundled additive monoid homomorphism from a pointwise limit of additive
 monoid homomorphisms"]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]

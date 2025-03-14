@@ -6,7 +6,7 @@ Authors: Kenny Lau, Antoine Chambert-Loir
 
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.Algebra.Group.Prod.Notation
+import Mathlib.Algebra.Notation.Prod
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 
 /-!
@@ -372,14 +372,14 @@ variable {M α β : Type*} [SMul M α] [SMul M β]
 
 variable (M α β) in
 /-- `Prod.fst` as a bundled `MulActionHom`. -/
-@[to_additive (attr := simps (config := .asFn)) "`Prod.fst` as a bundled `AddActionHom`."]
+@[to_additive (attr := simps -fullyApplied) "`Prod.fst` as a bundled `AddActionHom`."]
 def fst : (α × β) →[M] α where
   toFun := Prod.fst
   map_smul' _ _ := rfl
 
 variable (M α β) in
 /-- `Prod.snd` as a bundled `MulActionHom`. -/
-@[to_additive (attr := simps (config := .asFn)) "`Prod.snd` as a bundled `AddActionHom`."]
+@[to_additive (attr := simps -fullyApplied) "`Prod.snd` as a bundled `AddActionHom`."]
 def snd : (α × β) →[M] β where
   toFun := Prod.snd
   map_smul' _ _ := rfl
@@ -389,7 +389,7 @@ end FstSnd
 variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N δ] {σ : M → N}
 
 /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`."]
 def prodMk (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] (γ × δ) where
   toFun x := (f x, g x)
@@ -405,7 +405,7 @@ lemma snd_comp_prodMk (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (snd _ _ _
 lemma prodMk_fst_snd : prodMk (fst M α β) (snd M α β) = .id .. := rfl
 
 /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`."]
 def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : (α × β) →ₑ[σ] (γ × δ) where
   toFun := Prod.map f g

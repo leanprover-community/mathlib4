@@ -41,9 +41,10 @@ variable {α β γ : Type*}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
 def Rel (α β : Type*) :=
-  α → β → Prop -- deriving CompleteLattice, Inhabited
+  α → β → Prop
+-- The `CompleteLattice, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` above doesn't work.
 instance : CompleteLattice (Rel α β) := show CompleteLattice (α → β → Prop) from inferInstance
 instance : Inhabited (Rel α β) := show Inhabited (α → β → Prop) from inferInstance
 

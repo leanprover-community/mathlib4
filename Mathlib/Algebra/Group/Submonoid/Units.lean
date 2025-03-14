@@ -305,7 +305,7 @@ units of `M`. -/
 noncomputable def ofUnitsTopEquiv : (⊤ : Subgroup Mˣ).ofUnits ≃* Mˣ :=
   (⊤ : Subgroup Mˣ).ofUnitsEquivType.trans topEquiv
 
-variable {G : Type*}  [Group G]
+variable {G : Type*} [Group G]
 
 @[to_additive]
 lemma mem_units_iff_val_mem (H : Subgroup G) (x : Gˣ) : x ∈ H.units ↔ (x : G) ∈ H := by

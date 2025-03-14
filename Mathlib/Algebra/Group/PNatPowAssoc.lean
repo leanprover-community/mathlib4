@@ -5,7 +5,7 @@ Authors: Scott Carnahan
 -/
 
 import Mathlib.Data.PNat.Basic
-import Mathlib.Algebra.Group.Prod.Notation
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Typeclasses for power-associative structures

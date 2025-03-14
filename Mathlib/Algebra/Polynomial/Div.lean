@@ -788,7 +788,7 @@ lemma eq_of_dvd_of_natDegree_le_of_leadingCoeff {p q : R[X]} (hpq : p ∣ q)
   replace h₁ := (natDegree_le_of_dvd hpq hq).antisymm h₁
   obtain ⟨u, rfl⟩ := hpq
   replace hq := mul_ne_zero_iff.mp hq
-  rw [natDegree_mul hq.1 hq.2, self_eq_add_right] at h₁
+  rw [natDegree_mul hq.1 hq.2, left_eq_add] at h₁
   rw [eq_C_of_natDegree_eq_zero h₁, leadingCoeff_mul, leadingCoeff_C,
     eq_comm, mul_eq_left₀ (leadingCoeff_ne_zero.mpr hq.1)] at h₂
   rw [eq_C_of_natDegree_eq_zero h₁, h₂, map_one, mul_one]

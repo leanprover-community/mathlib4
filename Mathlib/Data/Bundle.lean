@@ -61,7 +61,7 @@ instance [Inhabited B] [Inhabited (E default)] : Inhabited (TotalSpace F E) :=
 variable {E}
 
 @[inherit_doc]
-scoped notation:max "π" F':max E':max => Bundle.TotalSpace.proj (F := F') (E := E')
+scoped notation:max "π " F':max E':max => Bundle.TotalSpace.proj (F := F') (E := E')
 
 abbrev TotalSpace.mk' (F : Type*) (x : B) (y : E x) : TotalSpace F E := ⟨x, y⟩
 

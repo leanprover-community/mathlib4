@@ -98,13 +98,13 @@ def sinhEquiv : ℝ ≃ ℝ where
   right_inv := sinh_arsinh
 
 /-- `Real.sinh` as an `OrderIso`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def sinhOrderIso : ℝ ≃o ℝ where
   toEquiv := sinhEquiv
   map_rel_iff' := @sinh_le_sinh
 
 /-- `Real.sinh` as a `Homeomorph`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def sinhHomeomorph : ℝ ≃ₜ ℝ :=
   sinhOrderIso.toHomeomorph
 

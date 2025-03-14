@@ -35,10 +35,6 @@ normed, lattice, ordered, group
 Motivated by the theory of Banach Lattices, this section introduces normed lattice ordered groups.
 -/
 
-
--- Porting note: this now exists as a global notation
--- local notation "|" a "|" => abs a
-
 section SolidNorm
 
 /-- Let `α` be an `AddCommGroup` with a `Lattice` structure. A norm on `α` is *solid* if, for `a`

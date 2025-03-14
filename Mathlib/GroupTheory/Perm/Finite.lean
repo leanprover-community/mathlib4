@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
@@ -24,8 +22,9 @@ open Equiv Function Fintype Finset
 variable {α : Type u} {β : Type v}
 
 -- An example on how to determine the order of an element of a finite group.
-example : orderOf (-1 : ℤˣ) = 2 :=
-  orderOf_eq_prime (Int.units_sq _) (by decide)
+-- import Mathlib.Data.Int.Order.Units
+-- example : orderOf (-1 : ℤˣ) = 2 :=
+--   orderOf_eq_prime (Int.units_sq _) (by decide)
 
 namespace Equiv.Perm
 

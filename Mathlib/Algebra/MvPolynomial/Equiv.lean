@@ -3,12 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.BigOperators.Finsupp.Fin
 import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Data.Finsupp.Fin
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Equivalences between polynomial rings

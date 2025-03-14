@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Lean.Expr.ExtraRecognizers
 
 /-!
 
@@ -121,7 +122,7 @@ alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
   linearIndependent_iff_injective_linearCombination
 
 theorem Fintype.linearIndependent_iff_injective [Fintype ι] :
-    LinearIndependent R v ↔ Injective (Fintype.linearCombination R ℕ v) := by
+    LinearIndependent R v ↔ Injective (Fintype.linearCombination R v) := by
   simp [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearIndependent]
 
 theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) : Injective v := by
@@ -141,6 +142,9 @@ theorem LinearIndepOn.ne_zero [Nontrivial R] {i : ι} (hv : LinearIndepOn R v s)
     v i ≠ 0 :=
   LinearIndependent.ne_zero ⟨i, hi⟩ hv
 
+theorem LinearIndepOn.zero_not_mem_image [Nontrivial R] (hs : LinearIndepOn R v s) : 0 ∉ v '' s :=
+  fun ⟨_, hi, h0⟩ ↦ hs.ne_zero hi h0
+
 theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
   injective_of_subsingleton _
 
@@ -148,6 +152,10 @@ theorem linearIndependent_empty_type [IsEmpty ι] : LinearIndependent R v :=
 theorem linearIndependent_zero_iff [Nontrivial R] : LinearIndependent R (0 : ι → M) ↔ IsEmpty ι :=
   ⟨fun h ↦ not_nonempty_iff.1 fun ⟨i⟩ ↦ (h.ne_zero i rfl).elim,
     fun _ ↦ linearIndependent_empty_type⟩
+
+@[simp]
+theorem linearIndepOn_zero_iff [Nontrivial R] : LinearIndepOn R (0 : ι → M) s ↔ s = ∅ :=
+  linearIndependent_zero_iff.trans isEmpty_coe_sort
 
 variable (R M) in
 theorem linearIndependent_empty : LinearIndependent R (fun x => x : (∅ : Set M) → M) :=
@@ -564,6 +572,11 @@ theorem linearIndependent_iff'' :
         H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (if_pos hi).symm⟩
+
+theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) :
+    LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
+  simp [linearIndependent_iff_injective_linearCombination,
+    ← Finsupp.linearCombination_comp_addSingleEquiv i c h₀]
 
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔

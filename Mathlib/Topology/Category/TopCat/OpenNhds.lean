@@ -109,7 +109,6 @@ def map (x : X) : OpenNhds (f x) ⥤ OpenNhds x where
   obj U := ⟨(Opens.map f).obj U.1, U.2⟩
   map i := (Opens.map f).map i
 
--- Porting note: Changed `⟨(Opens.map f).obj U, by tidy⟩` to `⟨(Opens.map f).obj U, q⟩`
 @[simp]
 theorem map_obj (x : X) (U) (q) : (map f x).obj ⟨U, q⟩ = ⟨(Opens.map f).obj U, q⟩ :=
   rfl

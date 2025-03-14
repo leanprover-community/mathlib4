@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.End
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.GroupWithZero.Prod
-import Mathlib.Algebra.SMulWithZero
 
 /-!
 # Definitions of group actions

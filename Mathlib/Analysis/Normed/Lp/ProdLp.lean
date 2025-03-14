@@ -495,7 +495,7 @@ variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable [Module 𝕜 α] [Module 𝕜 β]
 
 /-- `WithLp.equiv` as a continuous linear equivalence. -/
-@[simps! (config := .asFn) apply symm_apply]
+@[simps! -fullyApplied apply symm_apply]
 protected def prodContinuousLinearEquiv : WithLp p (α × β) ≃L[𝕜] α × β where
   toLinearEquiv := WithLp.linearEquiv _ _ _
   continuous_toFun := prod_continuous_equiv _ _ _
@@ -763,10 +763,10 @@ theorem edist_equiv_symm_snd (y₁ y₂ : β) :
 
 end Single
 
-section BoundedSMul
-variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [BoundedSMul 𝕜 α] [BoundedSMul 𝕜 β]
+section IsBoundedSMul
+variable [SeminormedRing 𝕜] [Module 𝕜 α] [Module 𝕜 β] [IsBoundedSMul 𝕜 α] [IsBoundedSMul 𝕜 β]
 
-instance instProdBoundedSMul : BoundedSMul 𝕜 (WithLp p (α × β)) :=
+instance instProdIsBoundedSMul : IsBoundedSMul 𝕜 (WithLp p (α × β)) :=
   .of_nnnorm_smul_le fun c f => by
     rcases p.dichotomy with (rfl | hp)
     · simp only [← prod_nnnorm_equiv, WithLp.equiv_smul]
@@ -790,7 +790,7 @@ def prodEquivₗᵢ : WithLp ∞ (α × β) ≃ₗᵢ[𝕜] α × β where
   map_smul' _c _f := rfl
   norm_map' := prod_norm_equiv
 
-end BoundedSMul
+end IsBoundedSMul
 
 section SeminormedAddCommGroup
 

@@ -3,10 +3,13 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Joey van Langen, Casper Putz
 -/
+import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
+import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
 
@@ -247,12 +250,12 @@ theorem card (p : ℕ) [CharP K p] : ∃ n : ℕ+, Nat.Prime p ∧ q = p ^ (n : 
   exact absurd this zero_ne_one
 
 -- this statement doesn't use `q` because we want `K` to be an explicit parameter
-theorem card' : ∃ (p : ℕ) (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
+theorem card' : ∃ (p : ℕ), CharP K p ∧ ∃ (n : ℕ+), Nat.Prime p ∧ Fintype.card K = p ^ (n : ℕ) :=
   let ⟨p, hc⟩ := CharP.exists K
-  ⟨p, @FiniteField.card K _ _ p hc⟩
+  ⟨p, hc, @FiniteField.card K _ _ p hc⟩
 
 lemma isPrimePow_card : IsPrimePow (Fintype.card K) := by
-  obtain ⟨p, n, hp, hn⟩ := card' K
+  obtain ⟨p, _, n, hp, hn⟩ := card' K
   exact ⟨p, n, Nat.prime_iff.mp hp, n.prop, hn.symm⟩
 
 theorem cast_card_eq_zero : (q : K) = 0 := by
@@ -309,11 +312,97 @@ theorem sum_pow_lt_card_sub_one (i : ℕ) (h : i < q - 1) : ∑ x : K, x ^ i = 0
       _ = ∑ x : Kˣ, (x ^ i : K) := by simp [φ, ← this, univ.sum_map φ]
       _ = 0 := by rw [sum_pow_units K i, if_neg]; exact hiq
 
+section frobenius
+
+variable (R) [CommRing R] [Algebra K R]
+
+/-- If `R` is an algebra over a finite field `K`, the Frobenius `K`-algebra endomorphism of `R` is
+  given by raising every element of `R` to its `#K`-th power. -/
+@[simps!] def frobeniusAlgHom : R →ₐ[K] R where
+  __ := powMonoidHom q
+  map_zero' := zero_pow Fintype.card_pos.ne'
+  map_add' _ _ := by
+    obtain ⟨p, _, _, hp, card_eq⟩ := card' K
+    nontriviality R
+    have : CharP R p := charP_of_injective_algebraMap' K R p
+    have : ExpChar R p := .prime hp
+    simp only [OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, powMonoidHom_apply, card_eq]
+    exact add_pow_expChar_pow ..
+  commutes' _ := by simp [← RingHom.map_pow, pow_card]
+
+theorem coe_frobeniusAlgHom : ⇑(frobeniusAlgHom K R) = (· ^ q) := rfl
+
+/-- If `R` is a perfect ring and an algebra over a finite field `K`, the Frobenius `K`-algebra
+  endomorphism of `R` is an automorphism. -/
+@[simps!] noncomputable def frobeniusAlgEquiv (p : ℕ) [ExpChar R p] [PerfectRing R p] : R ≃ₐ[K] R :=
+  .ofBijective (frobeniusAlgHom K R) <| by
+    obtain ⟨p', _, n, hp, card_eq⟩ := card' K
+    rw [coe_frobeniusAlgHom, card_eq]
+    have : ExpChar K p' := ExpChar.prime hp
+    nontriviality R
+    have := ExpChar.eq ‹_› (expChar_of_injective_algebraMap (algebraMap K R).injective p')
+    subst this
+    apply bijective_iterateFrobenius
+
+variable (L : Type*) [Field L] [Algebra K L]
+
+/-- If `L/K` is an algebraic extension of a finite field, the Frobenius `K`-algebra endomorphism
+  of `L` is an automorphism. -/
+@[simps!] noncomputable def frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] : L ≃ₐ[K] L :=
+  (Algebra.IsAlgebraic.algEquivEquivAlgHom K L).symm (frobeniusAlgHom K L)
+
+theorem coe_frobeniusAlgEquivOfAlgebraic [Algebra.IsAlgebraic K L] :
+    ⇑(frobeniusAlgEquivOfAlgebraic K L) = (· ^ q) := rfl
+
+variable [Finite L]
+
+open Polynomial in
+theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank K L :=
+  (orderOf_eq_iff Module.finrank_pos).mpr <| by
+    have := Fintype.ofFinite L
+    refine ⟨DFunLike.ext _ _ fun x ↦ ?_, fun m lt pos eq ↦ ?_⟩
+    · simp_rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply,
+        ← Module.card_eq_pow_finrank, pow_card]
+    have := card_le_degree_of_subset_roots (R := L) (p := X ^ q ^ m - X) (Z := univ) fun x _ ↦ by
+      simp_rw [mem_roots', IsRoot, eval_sub, eval_pow, eval_X]
+      have := DFunLike.congr_fun eq x
+      rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply, ← sub_eq_zero] at this
+      refine ⟨fun h ↦ ?_, this⟩
+      simpa [if_neg (Nat.one_lt_pow pos.ne' Fintype.one_lt_card).ne] using congr_arg (coeff · 1) h
+    refine this.not_lt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
+      (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
+    simp [Nat.one_le_pow _ _ Fintype.card_pos]
+
+theorem orderOf_frobeniusAlgEquivOfAlgebraic :
+    orderOf (frobeniusAlgEquivOfAlgebraic K L) = Module.finrank K L := by
+  simpa [orderOf_eq_iff Module.finrank_pos, DFunLike.ext_iff] using orderOf_frobeniusAlgHom K L
+
+theorem bijective_frobeniusAlgHom_pow :
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgHom K L ^ n.1 :=
+  let e := (finCongr <| orderOf_frobeniusAlgHom K L).symm.trans <|
+    finEquivPowers (orderOf_pos_iff.mp <| orderOf_frobeniusAlgHom K L ▸ Module.finrank_pos)
+  (Subtype.val_injective.comp e.injective).bijective_of_nat_card_le
+    ((card_algHom_le_finrank K L L).trans_eq <| by simp)
+
+theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
+    Function.Bijective fun n : Fin (Module.finrank K L) ↦ frobeniusAlgEquivOfAlgebraic K L ^ n.1 :=
+  ((Algebra.IsAlgebraic.algEquivEquivAlgHom K L).bijective.of_comp_iff' _).mp <| by
+    simpa only [Function.comp_def, map_pow] using bijective_frobeniusAlgHom_pow K L
+
+instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
+  exists_zpow_surjective :=
+    have := Finite.of_injective_finite_range (RingHom.injective <| algebraMap K L)
+    have := Fintype.ofFinite K
+    ⟨frobeniusAlgEquivOfAlgebraic K L,
+      fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
+
+end frobenius
+
 open Polynomial
 
 section
 
-variable (K' : Type*) [Field K'] {p n : ℕ}
+variable [Fintype K] (K' : Type*) [Field K'] {p n : ℕ}
 
 theorem X_pow_card_sub_X_natDegree_eq (hp : 1 < p) : (X ^ p - X : K'[X]).natDegree = p := by
   have h1 : (X : K'[X]).degree < (X ^ p : K'[X]).degree := by
@@ -453,19 +542,6 @@ theorem Nat.ModEq.pow_totient {x n : ℕ} (h : Nat.Coprime x n) : x ^ φ n ≡ 1
 instance instFiniteZModUnits : (n : ℕ) → Finite (ZMod n)ˣ
 | 0     => Finite.of_fintype ℤˣ
 | _ + 1 => inferInstance
-
-section
-
-variable {V : Type*} [Fintype K] [DivisionRing K] [AddCommGroup V] [Module K V]
-
--- should this go in a namespace?
--- finite_dimensional would be natural,
--- but we don't assume it...
-theorem card_eq_pow_finrank [Fintype V] : Fintype.card V = q ^ Module.finrank K V := by
-  let b := IsNoetherian.finsetBasis K V
-  rw [Module.card_fintype b, ← Module.finrank_eq_card_basis b]
-
-end
 
 open FiniteField
 

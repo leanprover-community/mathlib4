@@ -129,6 +129,27 @@ jobs:
           lean --version
           lake --version
 
+      - name: cleanup .cache/mathlib
+        run: |
+          # Define the cache directory path
+          CACHE_DIR="$HOME/.cache/mathlib"
+
+          # Check if directory exists
+          if [ ! -d "$CACHE_DIR" ]; then
+            echo "::warning::Cache directory does not exist: $CACHE_DIR"
+            exit 0
+          fi
+
+          # Calculate directory size in bytes
+          DIR_SIZE=$(du -sb "$CACHE_DIR" | cut -f1)
+          printf 'Cache size (in bytes): %s\n' "$DIR_SIZE"
+
+          # Check if size exceeds 10GB
+          if [ "$DIR_SIZE" -gt "10737418240" ]; then
+            echo "Cache size exceeds threshold, running lake exe cache clean"
+            lake exe cache clean || echo "lake did not work"
+          fi
+
       - name: build cache
         run: |
           lake build cache
@@ -136,6 +157,8 @@ jobs:
       - name: get cache
         id: get
         run: |
+          rm -rf .lake/build/lib/lean/Mathlib
+          # useful pre v4.18: the following command is only present for compatibility reasons
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           lake exe cache get Mathlib/Init.lean
@@ -163,7 +186,9 @@ jobs:
 
       - name: print the sizes of the oleans
         run: |
-          du .lake/build/lib/Mathlib || echo "This code should be unreachable"
+          du .lake/build/lib/lean/Mathlib ||
+            # This path was the correct path before v4.18: it is here just for compatibility reasons
+            du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)

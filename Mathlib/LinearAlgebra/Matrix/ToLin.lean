@@ -948,7 +948,7 @@ by finite types `ι₁` and `ι₂`,
 then `Basis.linearMap b₁ b₂` is the basis of `M₁ →ₗ[R] M₂` indexed by `ι₂ × ι₁`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
-@[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
+@[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
 def linearMap (b₁ : Basis ι₁ R M₁) (b₂ : Basis ι₂ R M₂) :
     Basis (ι₂ × ι₁) R (M₁ →ₗ[R] M₂) :=
@@ -974,7 +974,7 @@ If `M` is a module with basis `b` indexed by a finite type `ι`,
 then `Basis.end b` is the basis of `Module.End R M` indexed by `ι × ι`
 where `(i, j)` indexes the linear map that sends `b j` to `b i`
 and sends all other basis vectors to `0`. -/
-@[simps! (config := .lemmasOnly) repr_apply repr_symm_apply]
+@[simps! -isSimp repr_apply repr_symm_apply]
 noncomputable
 abbrev _root_.Basis.end (b : Basis ι R M) : Basis (ι × ι) R (Module.End R M) :=
   b.linearMap b

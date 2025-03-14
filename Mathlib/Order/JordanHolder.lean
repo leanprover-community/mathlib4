@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Order.Lattice
 import Mathlib.Data.List.Sort
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.RelSeries
@@ -214,7 +214,6 @@ theorem mem_eraseLast {s : CompositionSeries X} {x : X} (h : 0 < s.length) :
     have hi : (i : ℕ) < s.length := by
       conv_rhs => rw [← Nat.add_one_sub_one s.length, Nat.succ_sub h]
       exact i.2
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [top, Fin.ext_iff, ne_of_lt hi]`.
     simp [last, Fin.ext_iff, ne_of_lt hi, -Set.mem_range, Set.mem_range_self]
   · intro h
     exact mem_eraseLast_of_ne_of_mem h.1 h.2
@@ -383,9 +382,7 @@ theorem exists_last_eq_snoc_equivalent (s : CompositionSeries X) (x : X) (hm : I
   · have h0s : 0 < s.length := hn.symm ▸ Nat.succ_pos _
     by_cases hetx : s.eraseLast.last = x
     · use s.eraseLast
-      simp [← hetx, hn]
-      -- Porting note: `rfl` is required.
-      rfl
+      simp [← hetx, hn, Equivalent.refl]
     · have imxs : IsMaximal (x ⊓ s.eraseLast.last) s.eraseLast.last :=
         isMaximal_of_eq_inf x s.last rfl (Ne.symm hetx) hm (isMaximal_eraseLast_last h0s)
       have := ih _ _ imxs (le_inf (by simpa) (le_last_of_mem s.eraseLast.head_mem)) (by simp [hn])

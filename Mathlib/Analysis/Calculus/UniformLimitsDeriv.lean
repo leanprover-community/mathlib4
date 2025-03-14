@@ -343,7 +343,6 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
         fun a : ι × E => (‖a.2 - x‖⁻¹ : 𝕜) • (f' a.1 x - g' x) (a.2 - x) := by
     ext; simp only [Pi.add_apply]; rw [← smul_add, ← smul_add]; congr
     simp only [map_sub, sub_add_sub_cancel, ContinuousLinearMap.coe_sub', Pi.sub_apply]
-    -- Porting note: added
     abel
   simp_rw [this]
   have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]

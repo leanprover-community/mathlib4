@@ -86,7 +86,7 @@ end proper_ideal
 section faithful
 
 instance rTensor_nontrivial
-    [fl: FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
   obtain ⟨n, hn⟩ := nontrivial_iff_exists_ne (0 : N) |>.1 inferInstance
   let I := (Submodule.span R {n}).annihilator

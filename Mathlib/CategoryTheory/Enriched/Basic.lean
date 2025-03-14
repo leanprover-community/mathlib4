@@ -95,7 +95,6 @@ section
 
 variable {V} {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
 
--- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the `W`-enriched category structure
 obtained by applying the functor `F : LaxMonoidalFunctor V W` to each hom object.

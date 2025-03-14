@@ -88,7 +88,6 @@ theorem Compares.inj [Preorder α] {o₁} :
   | eq, _, _, h₁, h₂ => h₁.eq_eq.2 h₂
   | gt, _, _, h₁, h₂ => h₁.eq_gt.2 h₂
 
--- Porting note: mathlib3 proof uses `change ... at hab`
 theorem compares_iff_of_compares_impl [LinearOrder α] [Preorder β] {a b : α} {a' b' : β}
     (h : ∀ {o}, Compares o a b → Compares o a' b') (o) : Compares o a b ↔ Compares o a' b' := by
   refine ⟨h, fun ho => ?_⟩

@@ -59,7 +59,7 @@ These also prevent non-computable instances being used to construct these instan
 -/
 
 instance commSemiring : CommSemiring ℚ := by infer_instance
-instance semiring     : Semiring ℚ     := by infer_instance
+instance semiring : Semiring ℚ := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 

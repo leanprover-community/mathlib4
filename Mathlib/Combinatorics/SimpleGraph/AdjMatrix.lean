@@ -246,7 +246,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
       apply Finset.sum_toFinset_eq_subtype
     -- Disjointness for card_bUnion
     · rintro ⟨x, hx⟩ - ⟨y, hy⟩ - hxy
-      rw [disjoint_iff_inf_le]
+      rw [Function.onFun, disjoint_iff_inf_le]
       intro p hp
       simp only [inf_eq_inter, mem_inter, mem_map, Function.Embedding.coeFn_mk, exists_prop] at hp
       obtain ⟨⟨px, _, rfl⟩, ⟨py, hpy, hp⟩⟩ := hp

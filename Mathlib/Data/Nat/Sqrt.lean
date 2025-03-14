@@ -78,11 +78,10 @@ lemma sqrt.lt_iter_succ_sq (n guess : ℕ) (hn : n < (guess + 1) * (guess + 1)) 
     rw [Nat.add_assoc, Nat.mul_add]
     exact Nat.add_lt_add_left (lt_mul_div_succ _ (lt_of_le_of_lt (Nat.zero_le m) h)) _
   · simpa only [dif_neg h] using hn
--- Porting note: the implementation of `Nat.sqrt` in `Batteries` no longer needs `sqrt_aux`.
+
 private def IsSqrt (n q : ℕ) : Prop :=
   q * q ≤ n ∧ n < (q + 1) * (q + 1)
--- Porting note: as the definition of square root has changed,
--- the proof of `sqrt_isSqrt` is attempted from scratch.
+
 /-
 Sketch of proof:
 Up to rounding, in terms of the definition of `sqrt.iter`,

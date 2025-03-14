@@ -29,22 +29,22 @@ variable (A B C G H : Type*) [Monoid A] [Monoid B] [Monoid C] [CommGroup G] [Gro
 /-- The Pontryagin dual of `A` is the group of continuous homomorphism `A → Circle`. -/
 def PontryaginDual :=
   ContinuousMonoidHom A Circle
+-- The `TopologicalSpace, T2Space, CommGroup, IsTopologicalGroup, Inhabited` instances should be
+-- constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` doesn't derive these instances
 instance : TopologicalSpace (PontryaginDual A) :=
   (inferInstance : TopologicalSpace (ContinuousMonoidHom A Circle))
 
 instance : T2Space (PontryaginDual A) :=
   (inferInstance : T2Space (ContinuousMonoidHom A Circle))
 
--- Porting note: instance is now noncomputable
 noncomputable instance : CommGroup (PontryaginDual A) :=
   (inferInstance : CommGroup (ContinuousMonoidHom A Circle))
 
 instance : IsTopologicalGroup (PontryaginDual A) :=
   (inferInstance : IsTopologicalGroup (ContinuousMonoidHom A Circle))
 
--- Porting note: instance is now noncomputable
 noncomputable instance : Inhabited (PontryaginDual A) :=
   (inferInstance : Inhabited (ContinuousMonoidHom A Circle))
 

@@ -35,11 +35,10 @@ in a different way in the library:
 
 Most of the theory assumes that the range is a commutative additive monoid. This gives us the big
 sum operator as a powerful way to construct `Finsupp` elements, which is defined in
-`Algebra/BigOperators/Finsupp`.
+`Mathlib.Algebra.BigOperators.Finsupp.Basic`.
 
--- Porting note: the semireducibility remark no longer applies in Lean 4, afaict.
-Many constructions based on `α →₀ M` use `semireducible` type tags to avoid reusing unwanted type
-instances. E.g., `MonoidAlgebra`, `AddMonoidAlgebra`, and types based on these two have
+Many constructions based on `α →₀ M` are `def`s rather than `abbrev`s to avoid reusing unwanted type
+class instances. E.g., `MonoidAlgebra`, `AddMonoidAlgebra`, and types based on these two have
 non-pointwise multiplication.
 
 ## Main declarations
@@ -78,7 +77,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
-assert_not_exists Submonoid
+assert_not_exists CompleteLattice Submonoid
 
 noncomputable section
 

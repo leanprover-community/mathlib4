@@ -182,9 +182,6 @@ theorem f_add_nat_ge (hf_conv : ConvexOn ℝ (Ioi 0) f)
       (by linarith : (n : ℝ) - 1 < (n : ℝ)) (by linarith)
   rw [add_sub_cancel_left, sub_sub_cancel, div_one] at c
   have : f (↑n - 1) = f n - log (↑n - 1) := by
-    -- Porting note: was
-    -- nth_rw_rhs 1 [(by ring : (n : ℝ) = ↑n - 1 + 1)]
-    -- rw [hf_feq npos, add_sub_cancel]
     rw [eq_sub_iff_add_eq, ← hf_feq npos, sub_add_cancel]
   rwa [this, le_div_iff₀ hx, sub_sub_cancel, le_sub_iff_add_le, mul_comm _ x, add_comm] at c
 
@@ -401,8 +398,6 @@ theorem doublingGamma_log_convex_Ioi : ConvexOn ℝ (Ioi (0 : ℝ)) (log ∘ dou
       using 1
     · simpa only [zero_div] using (preimage_const_mul_Ioi (0 : ℝ) one_half_pos).symm
     · ext1 x
-      -- Porting note: was
-      -- change log (Gamma (x / 2)) = log (Gamma ((1 / 2 : ℝ) • x))
       simp only [LinearMap.coe_toAffineMap, Function.comp_apply, DistribMulAction.toLinearMap_apply]
       rw [smul_eq_mul, mul_comm, mul_one_div]
   · refine ConvexOn.subset ?_ (Ioi_subset_Ioi <| neg_one_lt_zero.le) (convex_Ioi _)

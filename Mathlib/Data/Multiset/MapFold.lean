@@ -153,11 +153,10 @@ theorem map_id (s : Multiset α) : map id s = s :=
 theorem map_id' (s : Multiset α) : map (fun x => x) s = s :=
   map_id s
 
--- Porting note: was a `simp` lemma in mathlib3
+-- `simp`-normal form lemma is `map_const'`
 theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (card s) b :=
   Quot.inductionOn s fun _ => congr_arg _ <| List.map_const' _ _
 
--- Porting note: was not a `simp` lemma in mathlib3 because `Function.const` was reducible
 @[simp] theorem map_const' (s : Multiset α) (b : β) : map (fun _ ↦ b) s = replicate (card s) b :=
   map_const _ _
 
@@ -327,7 +326,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
     ∀ H, pmap f s H = s.attach.map fun x => f x.1 (H _ x.2) :=
   Quot.inductionOn s fun l H => congr_arg _ <| List.pmap_eq_map_attach f l H
 
--- @[simp] -- Porting note: Left hand does not simplify
+@[simp]
 theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i => f i.val) = s.map f :=
   Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_val l f
 
