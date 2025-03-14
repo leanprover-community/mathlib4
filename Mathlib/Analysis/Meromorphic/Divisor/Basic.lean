@@ -86,7 +86,7 @@ lemma coe_injective : Function.Injective (· : DivisorOn U → 𝕜 → ℤ) := 
 
 /-- Simplifier lemma: A divisor on `U` evaluates to zero outside of `U`. -/
 @[simp]
-lemma apply_eq_zero_of_nmem {z : 𝕜} (D : DivisorOn U) (hz : z ∉ U) :
+lemma apply_eq_zero_of_not_mem {z : 𝕜} (D : DivisorOn U) (hz : z ∉ U) :
     D z = 0 := Function.nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
 /-- The support of a divisor is discrete. -/
