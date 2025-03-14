@@ -225,8 +225,9 @@ theorem RegularSpace.inf {X} {t₁ t₂ : TopologicalSpace X} (h₁ : @RegularSp
 instance {p : X → Prop} : RegularSpace (Subtype p) :=
   IsEmbedding.subtypeVal.isInducing.regularSpace
 
-instance [TopologicalSpace Y] [RegularSpace Y] : RegularSpace (X × Y) :=
-  (regularSpace_induced (@Prod.fst X Y)).inf (regularSpace_induced (@Prod.snd X Y))
+instance [TopologicalSpace Y] [RegularSpace Y] : RegularSpace (X × Y) := by
+  rw [instTopologicalSpaceProd_eq_induced]
+  exact (regularSpace_induced (@Prod.fst X Y)).inf (regularSpace_induced (@Prod.snd X Y))
 
 instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i, RegularSpace (X i)] :
     RegularSpace (∀ i, X i) :=
