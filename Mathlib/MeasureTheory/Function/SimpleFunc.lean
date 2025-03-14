@@ -1167,70 +1167,47 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
     convert h_add _ Pg (h_ind x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
-      · simp [g, piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
+      · simpa [g, hy]
+      · simp [g, hy]
     rw [disjoint_iff_inf_le]
     rintro y
-    by_cases hy : y ∈ f ⁻¹' {x}
-    · simp [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
-    · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
+    by_cases hy : y ∈ f ⁻¹' {x} <;> simp [g, hy]
 
+/-- To prove something for an arbitrary simple function, it suffices to show
+that the property holds for constant functions and that if it holds for `f` and `g` and
+`s` is a measurable set then it holds for `f.piecewise h hs g`. -/
 protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : SimpleFunc α γ → Prop}
-    (ind : ∀ (c), P (SimpleFunc.const _ c))
+    (const : ∀ (c), P (SimpleFunc.const _ c))
     (pcw : ∀ ⦃f g : SimpleFunc α γ⦄ {s} (hs : MeasurableSet s), P f → P g →
       P (f.piecewise s hs g))
     (f : SimpleFunc α γ) : P f := by
+  let c : γ := Classical.ofNonempty
   classical
-  generalize h : f.range = s
-  rw [← Finset.coe_inj, SimpleFunc.coe_range] at h
+  generalize h : f.range \ {c} = s
+  rw [← Finset.coe_inj, Finset.coe_sdiff, Finset.coe_singleton, SimpleFunc.coe_range] at h
   induction s using Finset.induction generalizing f with
   | empty =>
-    rw [Finset.coe_empty, range_eq_empty_iff] at h
-    obtain (c : γ) := Classical.ofNonempty
-    have : f = SimpleFunc.const _ c := by ext x; exact (h.false x).rec
-    rw [this]
-    exact ind c
+    rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
+    convert const c
+    ext x
+    simp [h]
   | @insert x s hxs ih =>
-    rw [Finset.coe_insert] at h
-    rcases s.eq_empty_or_nonempty with rfl | hs
-    · rw [Finset.coe_empty, insert_emptyc_eq] at h
-      replace h := range_subset_singleton.1 (subset_of_eq h)
-      simp only [← coe_const, DFunLike.coe_fn_eq] at h
-      rw [h]
-      exact ind x
-    obtain ⟨c, c_s⟩ := hs.exists_mem
     have mx := f.measurableSet_preimage {x}
-    let F := SimpleFunc.piecewise (f ⁻¹' {x}) mx (SimpleFunc.const _ c) f
-    have PF : P F := by
-      apply ih F
-      simp only [coe_piecewise, coe_const, range_piecewise, Function.const_apply, F]
-      apply antisymm (union_subset _ _) _ <;> intro y
-      · simp only [mem_image, mem_singleton_iff, Finset.mem_coe, and_imp, forall_exists_index]
-        intro _ _ c_y
-        rwa [c_y.symm]
-      · simp only [mem_image, mem_compl_iff, mem_preimage, mem_singleton_iff, Finset.mem_coe,
-          forall_exists_index, and_imp, F]
-        intro z _ z_y
-        rw [← Finset.mem_coe]
-        apply mem_of_mem_insert_of_ne (a := x)
-        · rw [← h, Set.mem_range]
-          exact ⟨z, z_y⟩
-        · rwa [← z_y]
-      · refine fun y_s ↦ .inr ?_
-        have := mem_insert_of_mem x y_s
-        rw [← h, Set.mem_range] at this
-        obtain ⟨z, z_y⟩ := this
-        refine ⟨z, fun z_x ↦ hxs ?_, z_y⟩
-        rwa [← z_x, z_y]
-    have f_F : f = SimpleFunc.piecewise (f ⁻¹' {x}) mx (SimpleFunc.const _ x) F := by
-      ext y
-      rcases or_not (p := y ∈ f ⁻¹' {x}) with y_s | y_s
-      · simp only [coe_piecewise, coe_const, y_s, piecewise_eq_of_mem, Function.const_apply]
-        simp only [mem_preimage, mem_singleton_iff] at y_s
-        exact y_s
-      · simp only [coe_piecewise, coe_const, y_s, not_false_eq_true, piecewise_eq_of_not_mem, F]
-    rw [f_F]
-    exact pcw mx (ind x) PF
+    let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx (SimpleFunc.const α c) f
+    have Pg : P g := by
+      apply ih
+      simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
+      rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
+        insert_diff_self_of_not_mem, diff_eq_empty.mpr, Set.empty_union]
+      · rw [Set.image_subset_iff]
+        convert Set.subset_univ _
+        exact preimage_const_of_mem (mem_singleton _)
+      · rwa [Finset.mem_coe]
+    convert pcw mx.compl Pg (const x)
+    · ext1 y
+      by_cases hy : y ∈ f ⁻¹' {x}
+      · simpa [g, hy]
+      · simp [g, hy]
 
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
