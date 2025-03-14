@@ -38,7 +38,7 @@ lemma exists_change_dart_closed {w : G.Walk u u} (P : α → Prop) {x y : α} (h
        (by rwa [support_reverse, List.mem_reverse]) (not_not.2 hxP)
     use d.symm, by simpa using hd, (not_not.1 hd2), hd1
 
-lemma cycle_mem_support_iff {c : G.Walk u u} (hc : c.IsCycle) {x : α} :
+lemma mem_support_closed_iff {c : G.Walk u u} (hc : ¬c.Nil) {x : α} :
     x ∈ c.support ↔ x ∈ c.support.tail := by
   cases c with
   | nil => simp at hc
@@ -48,13 +48,16 @@ lemma cycle_mem_support_iff {c : G.Walk u u} (hc : c.IsCycle) {x : α} :
     rw [h]
     exact end_mem_support ..
 
+/-- support.get is injective on a path -/
+lemma get_path_injective {p : G.Walk u v} (hp : p.IsPath): Function.Injective p.support.get :=
+  List.nodup_iff_injective_get.1 hp.2
 
 lemma rotate_dart_snd  [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) {d : G.Dart}
     (hd : d ∈ c.darts) : (c.rotate (dart_fst_mem_support_of_mem_darts c hd)).snd = d.snd := by
 
   sorry
 
-
+#check IsCycle.not_nil
 
 lemma exists_cycle [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) (P : α → Prop) {x y : α}
     (hx : x ∈ c.support) (hxP : P x) (hy : y ∈ c.support) (hyP : ¬ P y) : ∃ (a : α),
@@ -64,8 +67,8 @@ lemma exists_cycle [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) (P : α �
   refine ⟨by rwa [rotate_dart_snd hc hd], hc.rotate (dart_fst_mem_support_of_mem_darts c hd), ?_⟩
   have := support_rotate c (dart_fst_mem_support_of_mem_darts c hd)
   ext z; simp only [List.mem_toFinset]
-  rw [cycle_mem_support_iff hc, cycle_mem_support_iff
-     (hc.rotate (dart_fst_mem_support_of_mem_darts c hd))]
+  rw [mem_support_closed_iff hc.not_nil, mem_support_closed_iff
+     (hc.rotate (dart_fst_mem_support_of_mem_darts c hd)).not_nil]
   exact List.IsRotated.mem_iff this
 
 section LFDEq
