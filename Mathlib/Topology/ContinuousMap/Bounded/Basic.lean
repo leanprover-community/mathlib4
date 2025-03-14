@@ -46,7 +46,6 @@ structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpac
 
 section
 
--- Porting note: Changed type of `α β` from `Type*` to `outParam Type*`.
 /-- `BoundedContinuousMapClass F α β` states that `F` is a type of bounded continuous maps.
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
@@ -193,8 +192,6 @@ instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `edist_dist`
-  edist_dist x y := by dsimp; congr; simp [dist_nonneg']
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
 instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) where
@@ -954,7 +951,6 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) wher
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added a proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -1172,14 +1168,12 @@ instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
-  { instSeminormedAddCommGroup with
-    norm_mul := fun f g =>
-      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _))
-        (fun x ↦ (norm_mul_le _ _).trans <|
-          mul_le_mul (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
-    -- Porting note: These 5 fields were missing. Add them.
-    left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc }
+instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
+  __ := instSeminormedAddCommGroup
+  __ := instNonUnitalRing
+  norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
+    (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
+      (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
 
 end Seminormed
 
@@ -1254,7 +1248,6 @@ In this section, if `R` is a normed commutative ring, then we show that the spac
 continuous functions from `α` to `R` inherits a normed commutative ring structure, by using
 pointwise operations and checking that they are compatible with the uniform distance. -/
 
-
 variable [TopologicalSpace α] {R : Type*}
 
 instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
@@ -1262,15 +1255,11 @@ instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
 
 instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
   __ := instCommRing
-  __ := instSeminormedAddCommGroup
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
-  norm_mul := norm_mul_le
+  __ := instNonUnitalSeminormedRing
 
 instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
-  __ := instCommRing
+  __ := instSeminormedCommRing
   __ := instNormedAddCommGroup
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
-  norm_mul := norm_mul_le
 
 end NormedCommRing
 
@@ -1423,7 +1412,6 @@ instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 end NormedLatticeOrderedGroup

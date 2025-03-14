@@ -804,7 +804,7 @@ end HasFPowerSeriesOnBall
 namespace ContinuousLinearMap
 
 variable {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
-  [Fintype ι]  {H : Type*} [NormedAddCommGroup H]
+  [Fintype ι] {H : Type*} [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
 theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]

@@ -126,12 +126,6 @@ does **not** have a `FunLike` instance by checking the discrimination tree once 
 the entire `extends` hierarchy.
 -/
 
--- This instance should have low priority, to ensure we follow the chain
--- `DFunLike → CoeFun`
--- Porting note: this is an elaboration detail from Lean 3, we are going to disable it
--- until it is clearer what the Lean 4 elaborator needs.
--- attribute [instance, priority 10] coe_fn_trans
-
 /-- The class `DFunLike F α β` expresses that terms of type `F` have an
 injective coercion to (dependent) functions from `α` to `β`.
 
@@ -175,7 +169,6 @@ run_cmd Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``DFunLike.coe
     (some { numArgs := 5, coercee := 4, type := .coeFun })
 
--- @[simp] -- Porting note: this loops in lean 4
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 
 theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
