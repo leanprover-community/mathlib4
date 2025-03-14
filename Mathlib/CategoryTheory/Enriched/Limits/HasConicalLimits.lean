@@ -30,9 +30,12 @@ namespace CategoryTheory.Enriched
 
 open Limits
 
+variable {J : Type u₁} [Category.{v₁} J]
+variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
+
 section Definitions
 
-variable {J : Type u₁} [Category.{v₁} J]
+-- note: for the classes it seems that instance inference wants `V` to be an `outParam`.
 variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
