@@ -352,9 +352,8 @@ theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
       MDifferentiableWithinAt I 𝓘(𝕜, F₁) (Prod.fst ∘ f) s x ∧
-      MDifferentiableWithinAt I 𝓘(𝕜, F₂) (Prod.snd ∘ f) s x := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact mdifferentiableWithinAt_prod_iff f
+      MDifferentiableWithinAt I 𝓘(𝕜, F₂) (Prod.snd ∘ f) s x :=
+  mdifferentiableWithinAt_prod_iff f
 
 theorem mdifferentiableAt_prod_iff (f : M → M' × N') :
     MDifferentiableAt I (I'.prod J') f x ↔
@@ -364,9 +363,8 @@ theorem mdifferentiableAt_prod_iff (f : M → M' × N') :
 theorem mdifferentiableAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableAt I 𝓘(𝕜, F₁ × F₂) f x ↔
       MDifferentiableAt I 𝓘(𝕜, F₁) (Prod.fst ∘ f) x
-      ∧ MDifferentiableAt I 𝓘(𝕜, F₂) (Prod.snd ∘ f) x := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact mdifferentiableAt_prod_iff f
+      ∧ MDifferentiableAt I 𝓘(𝕜, F₂) (Prod.snd ∘ f) x :=
+  mdifferentiableAt_prod_iff f
 
 theorem mdifferentiableOn_prod_iff (f : M → M' × N') :
     MDifferentiableOn I (I'.prod J') f s ↔
@@ -378,9 +376,8 @@ theorem mdifferentiableOn_prod_iff (f : M → M' × N') :
 theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableOn I 𝓘(𝕜, F₁ × F₂) f s ↔
       MDifferentiableOn I 𝓘(𝕜, F₁) (Prod.fst ∘ f) s
-      ∧ MDifferentiableOn I 𝓘(𝕜, F₂) (Prod.snd ∘ f) s := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact mdifferentiableOn_prod_iff f
+      ∧ MDifferentiableOn I 𝓘(𝕜, F₂) (Prod.snd ∘ f) s :=
+  mdifferentiableOn_prod_iff f
 
 theorem mdifferentiable_prod_iff (f : M → M' × N') :
     MDifferentiable I (I'.prod J') f ↔
@@ -389,9 +386,8 @@ theorem mdifferentiable_prod_iff (f : M → M' × N') :
 
 theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔
-      MDifferentiable I 𝓘(𝕜, F₁) (Prod.fst ∘ f) ∧ MDifferentiable I 𝓘(𝕜, F₂) (Prod.snd ∘ f) := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact mdifferentiable_prod_iff f
+      MDifferentiable I 𝓘(𝕜, F₁) (Prod.fst ∘ f) ∧ MDifferentiable I 𝓘(𝕜, F₂) (Prod.snd ∘ f) :=
+  mdifferentiable_prod_iff f
 
 
 section prodMap
@@ -552,13 +548,28 @@ section Group
 
 variable {z : M} {f g : M → E'} {f' g' : TangentSpace I z →L[𝕜] E'}
 
+theorem HasMFDerivWithinAt.add (hf : HasMFDerivWithinAt I 𝓘(𝕜, E') f s z f')
+    (hg : HasMFDerivWithinAt I 𝓘(𝕜, E') g s z g') :
+    HasMFDerivWithinAt I 𝓘(𝕜, E') (f + g) s z (f' + g') :=
+  ⟨hf.1.add hg.1, by simpa using hf.2.add hg.2⟩
+
 theorem HasMFDerivAt.add (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')
     (hg : HasMFDerivAt I 𝓘(𝕜, E') g z g') : HasMFDerivAt I 𝓘(𝕜, E') (f + g) z (f' + g') :=
-  ⟨hf.1.add hg.1, hf.2.add hg.2⟩
+  ⟨hf.1.add hg.1, by simpa using hf.2.add hg.2⟩
+
+theorem MDifferentiableWithinAt.add (hf : MDifferentiableWithinAt I 𝓘(𝕜, E') f s z)
+    (hg : MDifferentiableWithinAt I 𝓘(𝕜, E') g s z) :
+    MDifferentiableWithinAt I 𝓘(𝕜, E') (f + g) s z :=
+  (hf.hasMFDerivWithinAt.add hg.hasMFDerivWithinAt).mdifferentiableWithinAt
 
 theorem MDifferentiableAt.add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) : MDifferentiableAt I 𝓘(𝕜, E') (f + g) z :=
   (hf.hasMFDerivAt.add hg.hasMFDerivAt).mdifferentiableAt
+
+theorem MDifferentiableOn.add (hf : MDifferentiableOn I 𝓘(𝕜, E') f s)
+    (hg : MDifferentiableOn I 𝓘(𝕜, E') g s) :
+    MDifferentiableOn I 𝓘(𝕜, E') (f + g) s :=
+  fun z hz ↦ (hf z hz).add (hg z hz)
 
 theorem MDifferentiable.add (hf : MDifferentiable I 𝓘(𝕜, E') f)
     (hg : MDifferentiable I 𝓘(𝕜, E') g) : MDifferentiable I 𝓘(𝕜, E') (f + g) := fun x =>
@@ -573,7 +584,7 @@ theorem mfderiv_add (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
 
 theorem HasMFDerivAt.const_smul (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f') (s : 𝕜) :
     HasMFDerivAt I 𝓘(𝕜, E') (s • f) z (s • f') :=
-  ⟨hf.1.const_smul s, hf.2.const_smul s⟩
+  ⟨hf.1.const_smul s, by simpa using hf.2.const_smul s⟩
 
 theorem MDifferentiableAt.const_smul (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) (s : 𝕜) :
     MDifferentiableAt I 𝓘(𝕜, E') (s • f) z :=
@@ -589,7 +600,7 @@ theorem const_smul_mfderiv (hf : MDifferentiableAt I 𝓘(𝕜, E') f z) (s : �
 
 theorem HasMFDerivAt.neg (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f') :
     HasMFDerivAt I 𝓘(𝕜, E') (-f) z (-f') :=
-  ⟨hf.1.neg, hf.2.neg⟩
+  ⟨hf.1.neg, by simpa using hf.2.neg⟩
 
 theorem hasMFDerivAt_neg : HasMFDerivAt I 𝓘(𝕜, E') (-f) z (-f') ↔ HasMFDerivAt I 𝓘(𝕜, E') f z f' :=
   ⟨fun hf => by convert hf.neg <;> rw [neg_neg], fun hf => hf.neg⟩
@@ -615,7 +626,7 @@ theorem mfderiv_neg (f : M → E') (x : M) :
 
 theorem HasMFDerivAt.sub (hf : HasMFDerivAt I 𝓘(𝕜, E') f z f')
     (hg : HasMFDerivAt I 𝓘(𝕜, E') g z g') : HasMFDerivAt I 𝓘(𝕜, E') (f - g) z (f' - g') :=
-  ⟨hf.1.sub hg.1, hf.2.sub hg.2⟩
+  ⟨hf.1.sub hg.1, by simpa using hf.2.sub hg.2⟩
 
 theorem MDifferentiableAt.sub (hf : MDifferentiableAt I 𝓘(𝕜, E') f z)
     (hg : MDifferentiableAt I 𝓘(𝕜, E') g z) : MDifferentiableAt I 𝓘(𝕜, E') (f - g) z :=

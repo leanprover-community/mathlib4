@@ -3,10 +3,9 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Manifold.Algebra.Monoid
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
-import Mathlib.Geometry.Manifold.MFDeriv.Basic
+import Mathlib.Geometry.Manifold.MFDeriv.SpecificFunctions
 import Mathlib.Topology.LocallyConstant.Basic
 
 /-! # Holomorphic functions on complex manifolds
