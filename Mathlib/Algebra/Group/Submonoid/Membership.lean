@@ -330,7 +330,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
   zpow_neg' m x := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow]
-    rw [Int.negSucc_coe, ← Int.add_mul_emod_self (b := (m + 1 : ℕ))]
+    rw [Int.negSucc_eq, ← Int.natCast_succ, ← Int.add_mul_emod_self (b := (m + 1 : ℕ))]
     nth_rw 1 [← mul_one ((m + 1 : ℕ) : ℤ)]
     rw [← sub_eq_neg_add, ← Int.mul_sub, ← Int.natCast_pred_of_pos hpos]; norm_cast
     simp only [Int.toNat_natCast]
