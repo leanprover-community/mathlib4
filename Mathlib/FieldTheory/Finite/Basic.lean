@@ -362,7 +362,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
     have := Fintype.ofFinite L
     refine ⟨DFunLike.ext _ _ fun x ↦ ?_, fun m lt pos eq ↦ ?_⟩
     · simp_rw [AlgHom.coe_pow, coe_frobeniusAlgHom, pow_iterate, AlgHom.one_apply,
-        ← card_eq_pow_finrank, pow_card]
+        ← Module.card_eq_pow_finrank, pow_card]
     have := card_le_degree_of_subset_roots (R := L) (p := X ^ q ^ m - X) (Z := univ) fun x _ ↦ by
       simp_rw [mem_roots', IsRoot, eval_sub, eval_pow, eval_X]
       have := DFunLike.congr_fun eq x
