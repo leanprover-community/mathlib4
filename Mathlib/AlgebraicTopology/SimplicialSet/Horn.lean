@@ -19,8 +19,8 @@ open CategoryTheory Simplicial Opposite
 
 namespace SSet
 
-/-- `horn n i` (or `Λ[n, i]`) is the `i`-th horn of the `n`-th standard simplex, where `i : n`.
-It consists of all `m`-simplices `α` of `Δ[n]`
+/-- `subcomplexHorn n i` (or `Λ[n, i]`) is the `i`-th horn of the `n`-th standard simplex,
+where `i : n`. It consists of all `m`-simplices `α` of `Δ[n]`
 for which the union of `{i}` and the range of `α` is not all of `n`
 (when viewing `α` as monotone function `m → n`). -/
 @[simps -isSimp obj]
@@ -76,7 +76,7 @@ alias horn := subcomplexHorn
 @[deprecated subcomplexHorn (since := "2025-01-26")]
 abbrev hornInclusion (n : ℕ) (i : Fin (n + 1)) : (Λ[n, i] : SSet.{u}) ⟶ Δ[n] := Λ[n, i].ι
 
-namespace horn
+namespace subcomplexHorn
 
 open SimplexCategory Finset Opposite
 
@@ -124,7 +124,7 @@ assuming `3 ≤ n`. -/
 @[simps!]
 def edge₃ (n : ℕ) (i a b : Fin (n+1)) (hab : a ≤ b) (H : 3 ≤ n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ :=
-  horn.edge n i a b hab <| Finset.card_le_three.trans H
+  edge n i a b hab <| Finset.card_le_three.trans H
 
 /-- The edge of `Λ[n, i]` with endpoints `j` and `j+1`.
 
@@ -134,7 +134,7 @@ which is the type of horn that occurs in the horn-filling condition of quasicate
 def primitiveEdge {n : ℕ} {i : Fin (n+1)}
     (h₀ : 0 < i) (hₙ : i < Fin.last n) (j : Fin n) :
     (Λ[n, i] : SSet.{u}) _⦋1⦌ := by
-  refine horn.edge n i j.castSucc j.succ ?_ ?_
+  refine edge n i j.castSucc j.succ ?_ ?_
   · simp only [← Fin.val_fin_le, Fin.coe_castSucc, Fin.val_succ, le_add_iff_nonneg_right, zero_le]
   simp only [← Fin.val_fin_lt, Fin.val_zero, Fin.val_last] at h₀ hₙ
   obtain rfl|hn : n = 2 ∨ 2 < n := by
@@ -174,7 +174,7 @@ def primitiveTriangle {n : ℕ} (i : Fin (n+4))
     · have := Finset.mem_univ (0 : Fin (n + 4))
       rw [← hS] at this
       -- this was produced using `simp? [Fin.ext_iff] at this`
-      simp only [mem_insert, Fin.ext_iff, Fin.val_zero, self_eq_add_left,
+      simp only [mem_insert, Fin.ext_iff, Fin.val_zero, right_eq_add,
         AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, mem_singleton,
         OfNat.ofNat_ne_zero, or_self, or_false] at this
       obtain rfl | rfl := this <;> tauto
@@ -205,6 +205,6 @@ lemma hom_ext {n : ℕ} {i : Fin (n+2)} {S : SSet} (σ₁ σ₂ : (Λ[n+1, i] : 
   intro j hj
   exact (Subpresheaf.mem_equalizer_iff σ₁ σ₂ (face i j hj)).2 (by apply h)
 
-end horn
+end subcomplexHorn
 
 end SSet
