@@ -364,4 +364,19 @@ lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
 
 end
 
+section
+
+open LieAlgebra
+
+variable {K L : Type*} [Field K] [IsAlgClosed K] [NoZeroSMulDivisors ℤ K] [LieRing L]
+[LieAlgebra K L] (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+
+variable {M : Type*} [AddCommGroup M] [Module K M] [FiniteDimensional K M] [NoZeroSMulDivisors K M]
+[LieRingModule L M] [LieModule K L M]
+
+lemma root_space_ad_is_nilpotent {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+  _root_.IsNilpotent (toEnd K L M x) := sorry
+
+end
+
 end LieModule
