@@ -136,8 +136,8 @@ theorem Tendsto.snd {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×
     Tendsto (fun a ↦ (m a).2) f h :=
   tendsto_snd.comp H
 
-theorem Tendsto.prodMk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ} (h₁ : Tendsto m₁ f g)
-    (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
+theorem Tendsto.prodMk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
+    (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
   tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
 @[deprecated (since := "2025-03-10")]
@@ -158,8 +158,9 @@ theorem Eventually.prod_mk {la : Filter α} {pa : α → Prop} (ha : ∀ᶠ x in
     {pb : β → Prop} (hb : ∀ᶠ y in lb, pb y) : ∀ᶠ p in la ×ˢ lb, pa (p : α × β).1 ∧ pb p.2 :=
   (ha.prod_inl lb).and (hb.prod_inr la)
 
-theorem EventuallyEq.prodMap {δ} {la : Filter α} {fa ga : α → γ} (ha : fa =ᶠ[la] ga) {lb : Filter β}
-    {fb gb : β → δ} (hb : fb =ᶠ[lb] gb) : Prod.map fa fb =ᶠ[la ×ˢ lb] Prod.map ga gb :=
+theorem EventuallyEq.prodMap {δ} {la : Filter α} {fa ga : α → γ} (ha : fa =ᶠ[la] ga)
+    {lb : Filter β} {fb gb : β → δ} (hb : fb =ᶠ[lb] gb) :
+    Prod.map fa fb =ᶠ[la ×ˢ lb] Prod.map ga gb :=
   (Eventually.prod_mk ha hb).mono fun _ h => Prod.ext h.1 h.2
 
 @[deprecated (since := "2025-03-10")]
@@ -495,8 +496,8 @@ alias map_prod_map_coprod_le := map_prodMap_coprod_le
 
 /-- Characterization of the coproduct of the `Filter.map`s of two principal filters `𝓟 {a}` and
 `𝓟 {i}`, the first under the constant function `fun a => b` and the second under the identity
-function. Together with the next lemma, `map_prod_map_const_id_principal_coprod_principal`, this
-provides an example showing that the inequality in the lemma `map_prod_map_coprod_le` can be strict.
+function. Together with the next lemma, `map_prodMap_const_id_principal_coprod_principal`, this
+provides an example showing that the inequality in the lemma `map_prodMap_coprod_le` can be strict.
 -/
 theorem map_const_principal_coprod_map_id_principal {α β ι : Type*} (a : α) (b : β) (i : ι) :
     (map (fun _ => b) (𝓟 {a})).coprod (map id (𝓟 {i})) =
@@ -508,10 +509,10 @@ theorem map_const_principal_coprod_map_id_principal {α β ι : Type*} (a : α) 
 `𝓟 {i}`, under the `Prod.map` of two functions, respectively the constant function `fun a => b` and
 the identity function.  Together with the previous lemma,
 `map_const_principal_coprod_map_id_principal`, this provides an example showing that the inequality
-in the lemma `map_prod_map_coprod_le` can be strict. -/
+in the lemma `map_prodMap_coprod_le` can be strict. -/
 theorem map_prodMap_const_id_principal_coprod_principal {α β ι : Type*} (a : α) (b : β) (i : ι) :
-    map (Prod.map (fun _ : α => b) id) ((𝓟 { a }).coprod (𝓟 { i })) =
-      𝓟 (({ b } : Set β) ×ˢ (univ : Set ι)) := by
+    map (Prod.map (fun _ : α => b) id) ((𝓟 {a}).coprod (𝓟 {i})) =
+      𝓟 (({b} : Set β) ×ˢ (univ : Set ι)) := by
   rw [principal_coprod_principal, map_principal]
   congr
   ext ⟨b', i'⟩
