@@ -235,9 +235,8 @@ theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
 theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
       ContMDiffWithinAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s x ∧
-      ContMDiffWithinAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s x := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact contMDiffWithinAt_prod_iff f
+      ContMDiffWithinAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s x :=
+  contMDiffWithinAt_prod_iff f
 
 theorem contMDiffAt_prod_iff (f : M → M' × N') :
     ContMDiffAt I (I'.prod J') n f x ↔
@@ -246,9 +245,8 @@ theorem contMDiffAt_prod_iff (f : M → M' × N') :
 
 theorem contMDiffAt_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffAt I 𝓘(𝕜, F₁ × F₂) n f x ↔
-      ContMDiffAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) x := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact contMDiffAt_prod_iff f
+      ContMDiffAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) x :=
+  contMDiffAt_prod_iff f
 
 theorem contMDiffOn_prod_iff (f : M → M' × N') :
     ContMDiffOn I (I'.prod J') n f s ↔
@@ -259,9 +257,8 @@ theorem contMDiffOn_prod_iff (f : M → M' × N') :
 
 theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiffOn I 𝓘(𝕜, F₁ × F₂) n f s ↔
-      ContMDiffOn I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact contMDiffOn_prod_iff f
+      ContMDiffOn I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s :=
+  contMDiffOn_prod_iff f
 
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
@@ -270,9 +267,8 @@ theorem contMDiff_prod_iff (f : M → M' × N') :
 
 theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
     ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
-      ContMDiff I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) := by
-  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
-  exact contMDiff_prod_iff f
+      ContMDiff I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) :=
+  contMDiff_prod_iff f
 
 theorem contMDiff_prod_assoc :
     ContMDiff ((I.prod I').prod J) (I.prod (I'.prod J)) n
@@ -364,7 +360,7 @@ variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGrou
 theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
-  simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
+  simp [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
     writtenInExtChartAt, extChartAt_model_space_eq_id, Function.comp_def, PartialEquiv.refl_coe, id]
 
 theorem contMDiffOn_pi_space :

@@ -3,6 +3,7 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
+import Manifold.Algebra.Monoid
 import Mathlib.Analysis.Complex.AbsMax
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
@@ -63,10 +64,10 @@ theorem Complex.norm_eventually_eq_of_mdifferentiableAt_of_isLocalMax {f : M →
     have hys : e.symm y ∈ (chartAt H c).source := by
       rw [← extChartAt_source I c]
       exact (extChartAt I c).map_target hyt
-    have hfy : f (e.symm y) ∈ (chartAt F (0 : F)).source := mem_univ _
+    have hfy : f (e.symm y) ∈ (chartAt F (0 : F)).source := by simp
     rw [mdifferentiableAt_iff_of_mem_source hys hfy, hI, differentiableWithinAt_univ,
       e.right_inv hyt] at hy₂
-    exact hy₂.2
+    simpa using hy₂.2
   convert norm_eventually_eq_of_isLocalMax hd _
   · exact congr_arg f (extChartAt_to_inv _).symm
   · simpa only [e, IsLocalMax, IsMaxFilter, ← H₂, (· ∘ ·), extChartAt_to_inv] using hc
@@ -111,7 +112,7 @@ theorem eqOn_of_isPreconnected_of_isMaxOn_norm [StrictConvexSpace ℝ F] {f : M 
   have H₁ : ‖f x‖ = ‖f c‖ := hd.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm hx
   -- TODO: Add `MDifferentiableOn.add` etc; does it mean importing `Manifold.Algebra.Monoid`?
   have hd' : MDifferentiableOn I 𝓘(ℂ, F) (f · + f c) U := fun x hx ↦
-    ⟨(hd x hx).1.add continuousWithinAt_const, (hd x hx).2.add_const _⟩
+    ⟨(hd x hx).1.add continuousWithinAt_const, by simpa using (hd x hx).2.add_const _⟩
   have H₂ : ‖f x + f c‖ = ‖f c + f c‖ :=
     hd'.norm_eqOn_of_isPreconnected_of_isMaxOn hc ho hcU hm.norm_add_self hx
   eq_of_norm_eq_of_norm_add_eq H₁ <| by simp only [H₂, SameRay.rfl.norm_add, H₁, Function.const]

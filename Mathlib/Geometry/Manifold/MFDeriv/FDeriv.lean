@@ -40,8 +40,8 @@ theorem ModelWithCorners.uniqueMDiffOn {H : Type*} [TopologicalSpace H]
   I.uniqueDiffOn.uniqueMDiffOn
 
 @[simp, mfld_simps]
-theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
-  rfl
+theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f := by
+  simp
 
 theorem hasMFDerivWithinAt_iff_hasFDerivWithinAt {f'} :
     HasMFDerivWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E') f s x f' ↔ HasFDerivWithinAt f f' s x := by
