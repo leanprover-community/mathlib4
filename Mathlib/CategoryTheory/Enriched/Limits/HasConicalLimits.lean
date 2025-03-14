@@ -125,7 +125,7 @@ end Results
 namespace HasConicalLimits
 
 -- Note that `Category.{v, v} J` is deliberately chosen this way, see `HasConicalLimits`.
-variable (J : Type v) [Category.{v, v} J]
+variable (J : Type v) [SmallCategory J]
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimits V C]
