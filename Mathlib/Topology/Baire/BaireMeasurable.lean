@@ -31,7 +31,7 @@ variable (α : Type*) {β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 open Topology
 
 /-- Notation for `=ᶠ[residual _]`. That is, eventual equality with respect to
-the filter of residual sets.-/
+the filter of residual sets. -/
 scoped[Topology] notation:50 f " =ᵇ " g:50 => Filter.EventuallyEq (residual _) f g
 
 /-- Notation to say that a property of points in a topological space holds

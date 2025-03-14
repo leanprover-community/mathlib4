@@ -57,7 +57,7 @@ lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategory�
 @[simps]
 def const {X Y : SSet.{u}} (y : Y _⦋0⦌) : X ⟶ Y where
   app n _ := Y.map (n.unop.const _ 0).op y
-  naturality n m f := by
+  naturality _ _ _ := by
     ext
     dsimp
     rw [← FunctorToTypes.map_comp_apply]
@@ -117,7 +117,8 @@ abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.trun
 
 /-- For all `m ≤ n`, `truncation m` factors through `SSet.Truncated n`. -/
 lemma truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
-    truncation n ⋙ Truncated.trunc n m = truncation m := rfl
+    truncation n ⋙ Truncated.trunc n m = truncation m :=
+  rfl
 
 open SimplexCategory
 

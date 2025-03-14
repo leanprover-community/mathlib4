@@ -30,7 +30,7 @@ open CategoryTheory Simplicial SimplexCategory
 namespace SSet
 namespace Truncated
 
-open Opposite SimplexCategory.Truncated.Hom
+open Opposite SimplexCategory.Truncated SimplexCategory.Truncated.Hom
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 

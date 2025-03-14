@@ -40,7 +40,7 @@ variable (α β)
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ β` are
 equivalent to `C(α, β)`.
 -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def equivBoundedOfCompact : C(α, β) ≃ (α →ᵇ β) :=
   ⟨mkOfCompact, BoundedContinuousFunction.toContinuousMap, fun f => by
     ext
@@ -73,7 +73,7 @@ alias uniformEmbedding_equivBoundedOfCompact := isUniformEmbedding_equivBoundedO
 /-- When `α` is compact, the bounded continuous maps `α →ᵇ 𝕜` are
 additively equivalent to `C(α, 𝕜)`.
 -/
-@[simps! (config := .asFn) apply symm_apply]
+@[simps! -fullyApplied apply symm_apply]
 def addEquivBoundedOfCompact [AddMonoid β] [LipschitzAdd β] : C(α, β) ≃+ (α →ᵇ β) :=
   ({ toContinuousMapAddHom α β, (equivBoundedOfCompact α β).symm with } : (α →ᵇ β) ≃+ C(α, β)).symm
 
@@ -88,7 +88,7 @@ instance instMetricSpace {β : Type*} [MetricSpace β] :
 /-- When `α` is compact, and `β` is a metric space, the bounded continuous maps `α →ᵇ β` are
 isometric to `C(α, β)`.
 -/
-@[simps! (config := .asFn) toEquiv apply symm_apply]
+@[simps! -fullyApplied toEquiv apply symm_apply]
 def isometryEquivBoundedOfCompact : C(α, β) ≃ᵢ (α →ᵇ β) where
   isometry_toFun _ _ := rfl
   toEquiv := equivBoundedOfCompact α β
@@ -133,8 +133,8 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
   simp only [mkOfCompact_apply]
 
-instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [BoundedSMul R β] :
-    BoundedSMul R C(α, β) where
+instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
+    IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
     simpa only [← dist_mkOfCompact] using dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
   dist_pair_smul' r₁ r₂ f := by
@@ -234,7 +234,7 @@ variable {R : Type*}
 instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
   __ : SeminormedAddCommGroup C(α, R) := inferInstance
   __ : NonUnitalRing C(α, R) := inferInstance
-  norm_mul f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
+  norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
 instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
@@ -321,12 +321,12 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 end
 
 @[simp] lemma nnnorm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
 @[simp] lemma norm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 

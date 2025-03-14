@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Emily Riehl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Emily Riehl, Joël Riou, Nick Ward
+Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Horn
 
@@ -325,7 +325,7 @@ lemma Subcomplex.map_ι_liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p 
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
 in `Δ[n]`. -/
 @[simps! vertex_coe arrow_coe]
-def subcomplexHorn.spineId {n : ℕ} (i : Fin (n + 3))
+def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path (Λ[n + 2, i] : SSet.{u}) (n + 2) :=
   Λ[n + 2, i].liftPath (stdSimplex.spineId (n + 2)) (by simp) (fun j ↦ by
@@ -334,13 +334,9 @@ def subcomplexHorn.spineId {n : ℕ} (i : Fin (n + 3))
     fin_cases a <;> rfl)
 
 @[simp]
-lemma subcomplexHorn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
+lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
-    Path.map (subcomplexHorn.spineId.{u} i h₀ hₙ) Λ[n + 2, i].ι =
+    Path.map (horn.spineId.{u} i h₀ hₙ) Λ[n + 2, i].ι =
       stdSimplex.spineId (n + 2) := rfl
-
-@[deprecated (since := "2025-01-26")] alias horn.spineId := subcomplexHorn.spineId
-@[deprecated (since := "2025-01-26")] alias horn.spineId_map_hornInclusion :=
-  subcomplexHorn.spineId_map_hornInclusion
 
 end SSet
