@@ -208,7 +208,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
             m!"Stop linting, since {addDoc} is a multiline additive docstring"
           return
-    let origSubstring : Substring := stx.getSubstring?.getD default
+    let origSubstring := stx.getSubstring?.getD default
     let stx := capSyntax stx finalLintPos.1
     let origSubstringTrunc : Substring := {origSubstring with stopPos := finalLintPos}
     let (real, lths) := polishSource origSubstringTrunc.toString
