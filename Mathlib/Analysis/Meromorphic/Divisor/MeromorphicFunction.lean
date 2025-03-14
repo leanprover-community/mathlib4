@@ -38,29 +38,33 @@ namespace MeromorphicOn
 
 /-- The divisor of a meromorphic function `f`, mapping a point `z` to the order
   of `f` at `z`, and to zero if the order is infinite. -/
-noncomputable def divisor (f : 𝕜 → E) (hf : MeromorphicOn f U) :
+noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
     DivisorOn U where
-  toFun := fun z ↦ if hz : z ∈ U then ((hf z hz).order.untopD 0) else 0
+  toFun := fun z ↦ if h : MeromorphicOn f U ∧ z ∈ U then ((h.1 z h.2).order.untopD 0) else 0
   supportWithinDomain' z hz := by
     by_contra h₂z
     simp [h₂z] at hz
   supportDiscreteWithinDomain' := by
-    filter_upwards [mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
-      hf.codiscrete_setOf_order_eq_zero_or_top]
-    simp only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_right,
-      exists_eq_right, Pi.zero_apply, dite_eq_right_iff, WithTop.untopD_eq_self_iff,
-      WithTop.coe_zero]
-    tauto
+    by_cases hf : MeromorphicOn f U
+    · filter_upwards [mem_codiscrete_subtype_iff_mem_codiscreteWithin.1
+        hf.codiscrete_setOf_order_eq_zero_or_top]
+      simp only [Set.mem_image, Set.mem_setOf_eq, Subtype.exists, exists_and_right,
+        exists_eq_right, Pi.zero_apply, dite_eq_right_iff, WithTop.untopD_eq_self_iff,
+        WithTop.coe_zero]
+      tauto
+    · simp only [hf, false_and, ↓reduceDIte]
+      exact (Eq.eventuallyEq rfl)
 
 /-- Definition of the divisor. -/
-theorem divisor_def {f : 𝕜 → E} (hf : MeromorphicOn f U) :
-    divisor f hf z = if hz : z ∈ U then (hf z hz).order.untopD 0 else 0 := rfl
+theorem divisor_def {f : 𝕜 → E} (U : Set 𝕜) :
+    divisor f U z = if h : MeromorphicOn f U ∧ z ∈ U then ((h.1 z h.2).order.untopD 0) else 0 :=
+  rfl
 
 /-- Simplifier lemma: On `U`, the divisor of a function `f` that is meromorphic on `U` evaluates to
   `order.untopD`. -/
 @[simp]
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
-    divisor f hf z = (hf z hz).order.untopD 0 := by simp_all [hf.divisor_def, hz]
+    divisor f U z = (hf z hz).order.untopD 0 := by simp_all [MeromorphicOn.divisor_def, hz]
 
 /-!
 ## Behavior under Standard Operations
@@ -76,12 +80,13 @@ lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
 theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
-    divisor (f₁ • f₂) (h₁f₁.smul h₁f₂) = divisor f₁ h₁f₁ + divisor f₂ h₁f₂ := by
+    divisor (f₁ • f₂) U = divisor f₁ U + divisor f₂ U := by
   ext z
   by_cases hz : z ∈ U
   · lift (h₁f₁ z hz).order to ℤ using (h₂f₁ z hz) with a₁ ha₁
     lift (h₁f₂ z hz).order to ℤ using (h₂f₂ z hz) with a₂ ha₂
-    simp [hz, (h₁f₁ z hz).order_smul (h₁f₂ z hz), ← ha₁, ← ha₂, ← WithTop.coe_add]
+    simp [h₁f₁, h₁f₂, h₁f₁.smul h₁f₂, hz, (h₁f₁ z hz).order_smul (h₁f₂ z hz), ← ha₁, ← ha₂,
+      ← WithTop.coe_add]
   · simp [hz]
 
 /-- If orders are finite, the divisor of the product of two meromorphic
@@ -94,19 +99,19 @@ theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 �
 theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
-    divisor (f₁ * f₂) (h₁f₁.mul h₁f₂) = divisor f₁ h₁f₁ + divisor f₂ h₁f₂ :=
+    divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U :=
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
 
 /-- The divisor of the inverse is the negative of the divisor. -/
-theorem divisor_inv [CompleteSpace 𝕜] {f: 𝕜 → 𝕜} (hf : MeromorphicOn f U) :
-    divisor f⁻¹ hf.inv = -divisor f hf := by
+theorem divisor_inv [CompleteSpace 𝕜] {f: 𝕜 → 𝕜} :
+    divisor f⁻¹ U = -divisor f U := by
   ext z
-  by_cases hz : z ∈ U
-  · simp only [hz, divisor_apply, DivisorOn.coe_neg, Pi.neg_apply, (hf z hz).order_inv]
-    by_cases ha : (hf z hz).inv.order = ⊤
-    · simp only [ha, WithTop.untopD_top, LinearOrderedAddCommGroupWithTop.neg_top, neg_zero]
-    lift (hf z hz).inv.order to ℤ using ha with a ha
+  by_cases h : MeromorphicOn f U ∧ z ∈ U
+  · simp only [inv_iff, h, divisor_apply, DivisorOn.coe_neg, Pi.neg_apply, (h.1 z h.2).order_inv]
+    by_cases ha : (h.1 z h.2).inv.order = ⊤
+    · simp [ha]
+    lift (h.1 z h.2).inv.order to ℤ using ha with a
     simp [eq_comm (a := a), neg_eq_iff_eq_neg, WithTop.untopD_eq_iff]
-  · simp [hz]
+  · simp [divisor_def, h]
 
 end MeromorphicOn
