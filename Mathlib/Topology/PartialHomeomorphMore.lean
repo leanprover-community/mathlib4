@@ -15,8 +15,8 @@ import Mathlib.Topology.Sets.Opens
 open Function Set Filter Topology
 
 
-variable {X Y Y' Z Z' : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Y']
-[TopologicalSpace Z] [TopologicalSpace Z']
+variable {X X' Y Y' Z Z' : Type*} [TopologicalSpace X] [TopologicalSpace X']
+[TopologicalSpace Y] [TopologicalSpace Y'] [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace PartialHomeomorph
 
@@ -339,8 +339,10 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 
 end subtypeRestr
 
-variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
-  [Nonempty Z] {f : X → X'}
+
+section OpenEmbedding
+
+variable [Nonempty Z] {f : X → X'}
 
 /-- Extend a partial homeomorphism `e : X → Z` to `X' → Z`, using an open embedding `ι : X → X'`.
 On `ι(X)`, the extension is specified by `e`; its value elsewhere is arbitrary (and uninteresting).
@@ -428,6 +430,7 @@ lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedd
     rw [mem_preimage]; rw [comp_apply] at hxy
     exact (hf.injective hxy) ▸ hy
 
+end OpenEmbedding
 
 /-! product of two partial homeomorphisms -/
 section Prod
@@ -444,7 +447,7 @@ def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
   toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
 @[simp] lemma prodWithoutAtlas_eq_prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
-    (eX.prod_withoutAtlas eY) = (eX.prod' eY) := rfl
+    eX.prod_withoutAtlas eY = eX.prod eY := rfl
 
 @[simp, mfld_simps]
 theorem prod_symm (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
