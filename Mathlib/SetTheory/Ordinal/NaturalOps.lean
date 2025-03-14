@@ -93,7 +93,7 @@ instance : WellFoundedLT NatOrdinal :=
 instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
-@[simp] theorem bot_eq_zero : ⊥ = 0 := rfl
+@[simp] theorem bot_eq_zero : (⊥ : NatOrdinal) = 0 := rfl
 
 @[simp] theorem toOrdinal_zero : toOrdinal 0 = 0 := rfl
 @[simp] theorem toOrdinal_one : toOrdinal 1 = 1 := rfl
