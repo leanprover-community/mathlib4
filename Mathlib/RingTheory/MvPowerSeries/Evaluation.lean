@@ -307,15 +307,16 @@ noncomputable def aeval (ha : HasEval a) : MvPowerSeries σ R →ₐ[R] S where
     rw [← c_eq_algebraMap, coe_eval₂Hom, eval₂_C]
 
 theorem coe_aeval (ha : HasEval a) :
-    ⇑(MvPowerSeries.aeval ha) = MvPowerSeries.eval₂ (algebraMap R S) a := by
+    ⇑(aeval ha) = eval₂ (algebraMap R S) a := by
   simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
 
-theorem continuous_aeval (ha : HasEval a) : Continuous (aeval ha : MvPowerSeries σ R → S) := by
+theorem continuous_aeval (ha : HasEval a) :
+    Continuous (aeval ha : MvPowerSeries σ R → S) := by
   rw [coe_aeval]
   exact continuous_eval₂ (continuous_algebraMap R S) ha
 
 theorem aeval_coe (ha : HasEval a) (p : MvPolynomial σ R) :
-    MvPowerSeries.aeval ha (p : MvPowerSeries σ R) = MvPolynomial.aeval a p := by
+    aeval ha (p : MvPowerSeries σ R) = p.aeval a := by
   rw [coe_aeval, aeval_def, eval₂_coe]
 
 theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε) :
