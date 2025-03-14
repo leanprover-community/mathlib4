@@ -319,15 +319,15 @@ requires more assumptions. -/
 def evalTsum : PositivityExt where eval {u α} zα pα e := do
   match e with
   | ~q(@tsum _ $instCommMonoid $instTopSpace $ι $f) =>
-    let i : Q($ι) ← mkFreshExprMVarQ q($ι) .syntheticOpaque
-    have body : Q($α) := .betaRev f #[i]
-    let rbody ← core zα pα body
-    let pbody ← rbody.toNonneg
-    let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
-    let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
-    let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
-    assertInstancesCommute
-    return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f fun i ↦ $pr i)
+    lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
+      let #[(i : Q($ι))] := args | failure
+      let rbody ← core zα pα body
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
+      assertInstancesCommute
+      return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f fun i ↦ $pr i)
   | _ => throwError "not tsum"
 
 end Mathlib.Meta.Positivity
