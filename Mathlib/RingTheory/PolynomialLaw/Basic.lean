@@ -3,8 +3,8 @@ Copyright (c) 2025 Antoine Chambert-Loir & María-Inés de Frutos-Fernández. Al
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
+import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-! # Polynomial laws on modules
@@ -122,7 +122,7 @@ def smul : M →ₚ[R] N where
     ext
     simp only [Function.comp_apply, Pi.smul_apply, map_smul, isCompat_apply']
 
-instance : SMul R (PolynomialLaw R M N) := ⟨smul⟩
+instance : SMul R (M →ₚ[R] N) := ⟨smul⟩
 
 @[simp]
 theorem smul_def (S : Type u) [CommSemiring S] [Algebra R S] :
