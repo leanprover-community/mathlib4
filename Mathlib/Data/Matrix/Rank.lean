@@ -207,7 +207,6 @@ theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e :
     LinearEquiv.range, Submodule.map_top]
   exact Submodule.finrank_map_le _ _
 
-@[simp]
 theorem rank_reindex [Fintype n₀] (em : m ≃ m₀) (en : n ≃ n₀) (A : Matrix m n R) :
     rank (A.reindex em en) = rank A := by
   rw [rank, rank, mulVecLin_reindex, LinearMap.range_comp, LinearMap.range_comp,
@@ -224,11 +223,11 @@ theorem lift_cRank_reindex {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (e
     <| by simpa using ((A.reindex em en).lift_cRank_submatrix_le em en)
 
 /-- A special case of `lift_cRank_reindex` for when the row types are in the same universe. -/
-@[simp]
 theorem cRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
     cRank (A.reindex em en) = cRank A := by
   simpa using A.lift_cRank_reindex em en
 
+@[simp]
 theorem lift_cRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
     lift.{um} (cRank (A.submatrix em en)) = lift.{um₀} (cRank A) := by
   simp [← lift_cRank_reindex _ em.symm en.symm]
@@ -237,17 +236,16 @@ theorem lift_cRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) 
 @[simp]
 theorem cRank_submatrix {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m)
     (en : n₀ ≃ n) : cRank (A.submatrix em en) = cRank A := by
-  simpa using A.lift_cRank_submatrix em en
+  simpa [-lift_cRank_submatrix] using A.lift_cRank_submatrix em en
 
-@[simp]
 theorem eRank_reindex {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m ≃ m₀) (en : n ≃ n₀) :
     eRank (A.reindex em en) = eRank A := by
   simp [eRank]
 
 @[simp]
-theorem eRank_submatrix {m₀ : Type um} {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m)
-    (en : n₀ ≃ n) : eRank (A.submatrix em en) = eRank A := by
-  simp [eRank]
+theorem eRank_submatrix {n : Type un} (A : Matrix m n R) (em : m₀ ≃ m) (en : n₀ ≃ n) :
+    eRank (A.submatrix em en) = eRank A := by
+  simpa [-lift_cRank_submatrix] using congr_arg Cardinal.toENat (A.lift_cRank_submatrix em en)
 
 theorem rank_eq_finrank_range_toLin [Finite m] [DecidableEq n] {M₁ M₂ : Type*} [AddCommGroup M₁]
     [AddCommGroup M₂] [Module R M₁] [Module R M₂] (A : Matrix m n R) (v₁ : Basis m R M₁)
@@ -324,8 +322,8 @@ theorem cRank_diagonal [DecidableEq m] (w : m → R) :
     ← lift_umax, ← Cardinal.mk_range_eq_of_injective h.injective, lift_id']
 
 theorem eRank_diagonal [DecidableEq m] (w : m → R) :
-    (diagonal w).eRank = ENat.card {i // (w i) ≠ 0} := by
-  simp [eRank, cRank_diagonal, ENat.card]
+    (diagonal w).eRank = {i | (w i) ≠ 0}.encard := by
+  simp [eRank, cRank_diagonal]
 
 end Field
 
