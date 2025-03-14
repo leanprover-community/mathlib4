@@ -688,7 +688,8 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     IsManifold (I.prod I') n (M × M') where
   compatible := by
     rintro f g ⟨f1, hf1, f2, hf2, rfl⟩ ⟨g1, hg1, g2, hg2, rfl⟩
-    rw [PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
+    simp only [PartialHomeomorph.prodWithoutAtlas_eq_prod, PartialHomeomorph.prod_symm,
+      PartialHomeomorph.prod_trans]
     have h1 := (contDiffGroupoid n I).compatible hf1 hg1
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
