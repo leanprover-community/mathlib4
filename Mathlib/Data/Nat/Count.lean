@@ -38,11 +38,8 @@ theorem count_zero : count p 0 = 0 := by
   rw [count, List.range_zero, List.countP, List.countP.go]
 
 /-- A fintype instance for the set relevant to `Nat.count`. Locally an instance in locale `count` -/
-def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } := by
-  apply Fintype.ofFinset {x ∈ range n | p x}
-  intro x
-  rw [mem_filter, mem_range]
-  rfl
+def CountSet.fintype (n : ℕ) : Fintype { i // i < n ∧ p i } :=
+  Fintype.subtype {x ∈ range n | p x} <| fun x => by rw [mem_filter, mem_range]
 
 scoped[Count] attribute [instance] Nat.CountSet.fintype
 
@@ -50,12 +47,11 @@ open Count
 
 theorem count_eq_card_filter_range (n : ℕ) : count p n = #{x ∈ range n | p x} := by
   rw [count, List.countP_eq_length_filter]
-  rfl
+  simp [range, filter, ← Multiset.coe_card, ← Multiset.coe_range]
 
 /-- `count p n` can be expressed as the cardinality of `{k // k < n ∧ p k}`. -/
 theorem count_eq_card_fintype (n : ℕ) : count p n = Fintype.card { k : ℕ // k < n ∧ p k } := by
-  rw [count_eq_card_filter_range, ← Fintype.card_ofFinset, ← CountSet.fintype]
-  rfl
+  rw [Fintype.subtype_card, count_eq_card_filter_range]
 
 theorem count_le {n : ℕ} : count p n ≤ n := by
   rw [count_eq_card_filter_range]
@@ -76,8 +72,7 @@ theorem count_add (a b : ℕ) : count p (a + b) = count p a + count (fun k ↦ p
     rintro x hx ⟨c, _, rfl⟩
     exact (Nat.le_add_right _ _).not_gt hx
   simp_rw [count_eq_card_filter_range, range_add, filter_union, card_union_of_disjoint this,
-    filter_map, addLeftEmbedding, card_map]
-  rfl
+    filter_map, addLeftEmbedding, card_map, Function.comp_def, Function.Embedding.coeFn_mk]
 
 theorem count_add' (a b : ℕ) : count p (a + b) = count (fun k ↦ p (k + b)) a + count p b := by
   rw [add_comm, count_add, add_comm]
