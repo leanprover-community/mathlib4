@@ -172,6 +172,11 @@ theorem map_exp {B F : Type*} [Ring B] [FunLike F A B] [RingHomClass F A B] [Mod
   have hk' : (f a) ^ k = 0 := by simp [← map_pow, hk]
   simp [exp_eq_sum hk, exp_eq_sum hk', map_rat_smul]
 
+theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
+    (g : G) {a : A} (ha : IsNilpotent a) :
+    exp (g • a) = g • exp a :=
+  (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
+
 end IsNilpotent
 
 namespace Module.End
