@@ -334,7 +334,7 @@ lemma hx_pullback {X : C} (x : Subobject X) :
   simp [Subobject.presheaf, φ, Ω₀]
 
 /- More explicitly, `x` is the canonical representative of the pullback of `t₀` along `φₓ`. -/
-def hx_mk {X : C} (x : Subobject X) :
+lemma hx_mk {X : C} (x : Subobject X) :
     x = Subobject.mk (pullback.snd (t₀ h) (φ h x)) := by
   rw (occs := .pos [1]) [hx_pullback h x, pullback_obj]
   dsimp [t₀]
@@ -360,7 +360,7 @@ instance {X : C} (x : Subobject X) : Mono (pullback.snd (t₀ h) (φ h x)) := in
    which in turn is caused by the need to explicitly manipulate isomorphisms. Univalence would
    probably make things much easier.
 -/
-def isPullback_φ {X : C} (x : Subobject X) :
+lemma isPullback_φ {X : C} (x : Subobject X) :
     IsPullback (π h x) x.arrow (t₀ h) (φ h x) := by
   have hx := hx_mk h x
   rw (occs := .pos [1,2,3]) [hx]
@@ -386,7 +386,7 @@ def isPullback_φ {X : C} (x : Subobject X) :
    Note that we actually generalize `πₓ` to any morphism `ψ : x ⟶ Ω₀`, which will be necessary
    many times later on in the proof.
 -/
-def isPullback_uniq {X : C} (x : Subobject X) ψ χ (hχ : IsPullback ψ x.arrow (t₀ h) χ) :
+lemma isPullback_uniq {X : C} (x : Subobject X) ψ χ (hχ : IsPullback ψ x.arrow (t₀ h) χ) :
     χ = φ h x := by
   rw [hφ h χ]
   congr
