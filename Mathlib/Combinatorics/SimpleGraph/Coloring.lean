@@ -79,7 +79,7 @@ assigns vertices to colors and a proof that it is as proper coloring.
 (Note: this is a definitionally the constructor for `SimpleGraph.Hom`,
 but with a syntactically better proper coloring hypothesis.)
 -/
-@[match_pattern]
+@[match_pattern, simps]
 def Coloring.mk (color : V → α) (valid : ∀ {v w : V}, G.Adj v w → color v ≠ color w) :
     G.Coloring α :=
   ⟨color, @valid⟩
@@ -113,20 +113,94 @@ theorem Coloring.not_adj_of_mem_colorClass {c : α} {v w : V} (hv : v ∈ C.colo
 theorem Coloring.color_classes_independent (c : α) : IsAntichain G.Adj (C.colorClass c) :=
   fun _ hv _ hw _ => C.not_adj_of_mem_colorClass hv hw
 
--- TODO make this computable
-noncomputable instance [Fintype V] [Fintype α] : Fintype (Coloring G α) := by
-  classical
-  change Fintype (RelHom G.Adj (⊤ : SimpleGraph α).Adj)
-  apply Fintype.ofInjective _ RelHom.coe_fn_injective
+/-- The coloring of an empty graph. -/
+def coloringOfIsEmpty [IsEmpty V] : G.Coloring α :=
+  Coloring.mk isEmptyElim fun {v} => isEmptyElim v
+
+section Fintype
+
+-- TODO: move this code to `RelHom.instFintype`
+
+open Option Finset Fin Fintype Equiv
+
+-- We show a `Fintype` instance for `Fin n` taking colors in `Fin m`,
+-- and then transfer this to arbitrary finite types using
+-- `Fintype.truncFinBijection` and `Fintype.truncEquivFin`.
+
+-- For performance reasons, the fintype of colorings is constructed inductively
+-- instead of simply filtering all coloring for valid ones.
+private def finColoringFintype {n m} {G : SimpleGraph (Fin n)} [DecidableRel G.Adj] :
+    Fintype (G.Coloring (Fin m)) :=
+  -- induct on the number of vertices
+  G |> match (motive :=
+    ∀ n (G : SimpleGraph (Fin n)) [DecidableRel G.Adj],
+      Fintype (G.Coloring (Fin m))) n with
+  | 0 =>
+    -- no vertices, so exactly one coloring (the empty coloring)
+    fun _ _ ↦ ⟨{coloringOfIsEmpty}, by simp [RelHom.ext_iff]⟩
+  | n + 1 => fun G _ ↦ by
+    -- pair the valid colorings previously obtained with all possible choices for the new color
+    refine ⟨(@univ _ (@instFintypeProd _ _ finColoringFintype _)).filterMap
+      (fun p : (G.comap castSucc).Coloring (Fin m) × Fin m ↦ ?_) ?_, ?_⟩
+    · -- case on whether this is a valid coloring
+      by_cases h : ∀ a, G.Adj a.castSucc (Fin.last n) → p.fst a ≠ p.snd
+      · -- valid, so add
+        apply some
+        apply Coloring.mk (snoc p.fst p.snd)
+        intro v w hAdj
+        cases v using lastCases <;> cases w using lastCases
+        · simp at hAdj
+        · simp [h _ hAdj.symm |>.symm]
+        · simp [h _ hAdj]
+        · simp [p.fst.valid hAdj]
+      · -- not valid, so drop
+        exact none
+    · -- show this map is injective
+      intro v w _ hbv hbw
+      simp_rw [Option.mem_def, dite_none_right_eq_some] at hbv hbw
+      obtain ⟨_, hv⟩ := hbv
+      obtain ⟨_, hw⟩ := hbw
+      have hvw := hv.trans hw.symm
+      rw [some_inj] at hvw
+      ext i
+      · apply_fun (· i.castSucc |>.val) at hvw
+        simpa using hvw
+      · apply_fun (· (last n) |>.val) at hvw
+        simpa using hvw
+    · -- show this map is surjective
+      intro C
+      rw [mem_filterMap]
+      use (C.comp (.comap castSucc G), C (last n)), @mem_univ ..
+      simp_rw [Hom.coe_comp, comp_apply, Hom.comap_apply]
+      rw [dif_pos fun _ ↦ C.valid, some_inj]
+      ext i
+      cases i using Fin.lastCases <;> simp
+
+instance [Fintype V] [Fintype α] [DecidableEq V] [DecidableRel G.Adj] : Fintype (G.Coloring α) :=
+  (truncFinBijection α).recOnSubsingleton fun ⟨f, hf⟩ ↦
+    (truncEquivFin V).recOnSubsingleton fun e ↦
+      ⟨(@univ _ finColoringFintype).map ⟨fun r ↦
+        (Embedding.completeGraph ⟨f, hf.injective⟩).toHom.comp
+          (r.comp (Embedding.map e.toEmbedding G).toHom), by
+            intro a b hab
+            apply RelHom.ext
+            intro i
+            apply_fun (· (e.symm i)) at hab
+            apply hf.injective
+            simpa using hab⟩, by
+      intro r
+      rw [Finset.mem_map]
+      use (Iso.completeGraph (Equiv.ofBijective f hf).symm).toHom.comp
+        (r.comp (Iso.map e G).symm), @mem_univ ..
+      apply RelHom.ext
+      simp [ofBijective_apply_symm_apply]⟩
+
+end Fintype
 
 variable (G)
 
 /-- Whether a graph can be colored by at most `n` colors. -/
 def Colorable (n : ℕ) : Prop := Nonempty (G.Coloring (Fin n))
-
-/-- The coloring of an empty graph. -/
-def coloringOfIsEmpty [IsEmpty V] : G.Coloring α :=
-  Coloring.mk isEmptyElim fun {v} => isEmptyElim v
 
 theorem colorable_of_isEmpty [IsEmpty V] (n : ℕ) : G.Colorable n :=
   ⟨G.coloringOfIsEmpty⟩

@@ -542,23 +542,23 @@ lemma comap_symm_apply (f : V ≃ W) (G : SimpleGraph W) (w : W) :
     (SimpleGraph.Iso.comap f G).symm w = f.symm w := rfl
 
 /-- Given an injective function, there is an embedding from a graph into the mapped graph. -/
--- Porting note: `@[simps]` does not work here anymore since `f` is not a constructor application.
--- `@[simps toEmbedding]` could work, but Floris suggested writing `map_apply` for now.
-protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding :=
-  { f with map_rel_iff' := by simp }
-
-@[simp]
-lemma map_apply (f : V ≃ W) (G : SimpleGraph V) (v : V) :
-    SimpleGraph.Iso.map f G v = f v := rfl
-
-@[simp]
-lemma map_symm_apply (f : V ≃ W) (G : SimpleGraph V) (w : W) :
-    (SimpleGraph.Iso.map f G).symm w = f.symm w := rfl
+@[simps]
+protected def map (f : V ≃ W) (G : SimpleGraph V) : G ≃g G.map f.toEmbedding where
+  toFun := f
+  invFun := f.symm
+  left_inv := f.left_inv
+  right_inv := f.right_inv
+  map_rel_iff' := by simp
 
 /-- Equivalences of types induce isomorphisms of complete graphs on those types. -/
+@[simps]
 protected def completeGraph {α β : Type*} (f : α ≃ β) :
-    (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) :=
-  { f with map_rel_iff' := by simp }
+    (⊤ : SimpleGraph α) ≃g (⊤ : SimpleGraph β) where
+  toFun := f
+  invFun := f.symm
+  left_inv := f.left_inv
+  right_inv := f.right_inv
+  map_rel_iff' := by simp
 
 theorem toEmbedding_completeGraph {α β : Type*} (f : α ≃ β) :
     (Iso.completeGraph f).toEmbedding = Embedding.completeGraph f.toEmbedding :=
