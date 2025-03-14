@@ -219,11 +219,7 @@ abbrev NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 
   dist_eq := ‹SeminormedGroup E›.dist_eq
   toMetricSpace :=
     { eq_of_dist_eq_zero := fun hxy =>
-        div_eq_one.1 <| h _ <| by exact (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
-      -- Porting note: the `rwa` no longer worked, but it was easy enough to provide the term.
-      -- however, notice that if you make `x` and `y` accessible, then the following does work:
-      -- `have := ‹SeminormedGroup E›.dist_eq x y; rwa [← this]`, so I'm not sure why the `rwa`
-      -- was broken.
+        div_eq_one.1 <| h _ <| (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
 
 -- See note [reducible non-instances]
 /-- Construct a `NormedCommGroup` from a `SeminormedCommGroup` satisfying
@@ -337,8 +333,6 @@ abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminor
   dist_self x := by simp only [div_self', map_one_eq_zero]
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
-  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  -- Porting note: how did `mathlib3` solve this automatically?
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
@@ -914,7 +908,7 @@ lemma ContinuousWithinAt.enorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a
 
 @[fun_prop]
 lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
-  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h fun _ _ ↦ trivial
+  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
 
 end ContinuousENorm
 
@@ -926,16 +920,16 @@ variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
 
 @[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {a : E} :
-  ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm, ENormedMonoid.enorm_eq_zero]
+lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
+  simp [enorm, ENormedMonoid.enorm_eq_zero]
 
 @[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' {a : E} :
-    ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
+lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
+  enorm_eq_zero'.ne
 
 @[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' {a : E} :
-    0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
+lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
+  pos_iff_ne_zero.trans enorm_ne_zero'
 
 end ENormedMonoid
 
@@ -965,7 +959,6 @@ structure on the domain. -/
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
   { PseudoMetricSpace.induced f toPseudoMetricSpace with
-    -- Porting note: needed to add the instance explicitly, and `‹PseudoMetricSpace F›` failed
     norm := fun x => ‖f x‖
     dist_eq := fun x y => by simp only [map_div, ← dist_eq_norm_div]; rfl }
 
@@ -1104,8 +1097,6 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
 
--- Porting note: had to add `ι` here because otherwise the universe order gets switched compared to
--- `norm_prod_le` below
 @[bound]
 theorem norm_sum_le {ι E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
