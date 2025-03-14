@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Adjunction.AdjunctionTwo
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
-# Lifting properties and adjunctions of bifunctors
+# Lifting properties and parametrized adjunctions
 
 Let `F : C₁ ⥤ C₂ ⥤ C₃`. Given morphisms `f₁ : X₁ ⟶ Y₁` in `C₁`
 and `f₂ : X₂ ⟶ Y₂` in `C₂`, we introduce a structure
@@ -25,11 +25,11 @@ and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`.
 If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
 projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.
 
-Now, if we have `adj₂ : F ⊣₂ G`, `sq₁₂ : F.PushoutObjObj f₁ f₂`
-and `sq₁₃ : G.PullbackObjObj f₁ f₃`, we show that
-`sq₁₂.ι` has the left lifting property with respect to `f₃` if and
-only if `f₂` has the left lifting property with respect to `sq₁₃.π`:
-this is the lemma `Adjunction₂.hasLiftingProperty_iff`.
+Now, if we have a parametrized adjunction `adj₂ : F ⊣₂ G`,
+`sq₁₂ : F.PushoutObjObj f₁ f₂` and `sq₁₃ : G.PullbackObjObj f₁ f₃`,
+we show that `sq₁₂.ι` has the left lifting property with respect to
+`f₃` if and only if `f₂` has the left lifting property with respect
+to `sq₁₃.π`: this is the lemma `ParametrizedAdjunction.hasLiftingProperty_iff`.
 
 -/
 
@@ -84,6 +84,21 @@ lemma inl_ι : sq.inl ≫ sq.ι = (F.obj Y₁).map f₂ := by simp [ι]
 @[reassoc (attr := simp)]
 lemma inr_ι : sq.inr ≫ sq.ι = (F.map f₁).app Y₂ := by simp [ι]
 
+/-- Given `sq : F.PushoutObjObj f₁ f₂`, flipping the pushout square gives
+`sq.flip : F.flip.PushoutObjObj f₂ f₁`. -/
+@[simps]
+def flip : F.flip.PushoutObjObj f₂ f₁ where
+  pt := sq.pt
+  inl := sq.inr
+  inr := sq.inl
+  isPushout := sq.isPushout.flip
+
+@[simp]
+lemma ι_flip : sq.flip.ι = sq.ι := by
+  apply sq.flip.isPushout.hom_ext
+  · rw [inl_ι, flip_inl, inr_ι, flip_obj_map]
+  · rw [inr_ι, flip_inr, inl_ι, flip_map_app]
+
 end PushoutObjObj
 
 end
@@ -91,14 +106,6 @@ end
 section
 
 variable {X₁ Y₁ : C₁} (f₁ : X₁ ⟶ Y₁) {X₃ Y₃ : C₃} (f₃ : X₃ ⟶ Y₃)
-
-/-Similarly, if we have a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and
-morphisms `f₁ : X₁ ⟶ Y₁` in `C₁` and `f₃ : X₃ ⟶ Y₃` in `C₂`,
-we introduce a structure `F.PullbackObjObj f₁ f₃` which
-contains the data of a pullback of `(G.obj (op X₁)).obj X₃`
-and `(G.obj (op Y₁)).obj Y₃` over `(G.obj (op X₁)).obj Y₃`.
-If `sq₁₃ : F.PullbackObjObj f₁ f₃`, we have a canonical
-projection `sq₁₃.π : (G.obj Y₁).obj X₃ ⟶ sq₁₃.pt`.-/
 
 /-- Given a bifunctor `G : C₁ᵒᵖ ⥤ C₃ ⥤ C₂`, and morphisms `f₁ : X₁ ⟶ Y₁` in `C₁`
 and `f₃ : X₃ ⟶ Y₃` in `C₃`, this structure contains the data of
@@ -142,7 +149,7 @@ end
 
 end Functor
 
-namespace Adjunction₂
+namespace ParametrizedAdjunction
 
 variable {F G} (adj₂ : F ⊣₂ G)
   {X₁ Y₁ : C₁} {f₁ : X₁ ⟶ Y₁} {X₂ Y₂ : C₂} {f₂ : X₂ ⟶ Y₂}
@@ -256,6 +263,6 @@ lemma hasLiftingProperty_iff :
   · intro h α
     exact ⟨(adj₂.liftStructEquiv sq₁₂ sq₁₃ α).symm (h _).some⟩
 
-end Adjunction₂
+end ParametrizedAdjunction
 
 end CategoryTheory
