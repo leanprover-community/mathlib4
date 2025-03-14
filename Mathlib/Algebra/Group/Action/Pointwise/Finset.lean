@@ -209,9 +209,6 @@ theorem smul_univ [Fintype β] {s : Finset α} (hs : s.Nonempty) : s • (univ :
 theorem card_smul_finset (a : α) (s : Finset β) : (a • s).card = s.card :=
   card_image_of_injective _ <| MulAction.injective _
 
-@[to_additive (attr := simp)]
-lemma dens_smul_finset [Fintype β] (a : α) (s : Finset β) : (a • s).dens = s.dens := by simp [dens]
-
 /-- If the left cosets of `t` by elements of `s` are disjoint (but not necessarily distinct!), then
 the size of `t` divides the size of `s • t`. -/
 @[to_additive "If the left cosets of `t` by elements of `s` are disjoint (but not necessarily

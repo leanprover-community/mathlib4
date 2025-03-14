@@ -256,11 +256,7 @@ def AffineMap.ofMapMidpoint (f : P → Q) (h : ∀ x y, f (midpoint ℝ x y) = m
   let c := Classical.arbitrary P
   AffineMap.mk' f (↑((AddMonoidHom.ofMapMidpoint ℝ ℝ
     ((AffineEquiv.vaddConst ℝ (f <| c)).symm ∘ f ∘ AffineEquiv.vaddConst ℝ c) (by simp)
-    fun x y => by -- Porting note: was `by simp [h]`
-      simp only [c, Function.comp_apply, AffineEquiv.vaddConst_apply,
-        AffineEquiv.vaddConst_symm_apply]
-      conv_lhs => rw [(midpoint_self ℝ (Classical.arbitrary P)).symm, midpoint_vadd_midpoint, h, h,
-          midpoint_vsub_midpoint]).toRealLinearMap <| by
+    fun x y => by simp [h]).toRealLinearMap <| by
         apply_rules [Continuous.vadd, Continuous.vsub, continuous_const, hfc.comp, continuous_id]))
     c fun p => by simp
 
@@ -271,7 +267,7 @@ section
 open Dilation
 
 variable {𝕜 E : Type*} [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-variable [Module 𝕜 E] [BoundedSMul 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
+variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E] {P : Type*} [PseudoMetricSpace P] [NormedAddTorsor E P]
 
 -- TODO: define `ContinuousAffineEquiv` and reimplement this as one of those.
 /-- Scaling by an element `k` of the scalar ring as a `DilationEquiv` with ratio `‖k‖₊`, mapping
