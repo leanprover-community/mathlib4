@@ -83,6 +83,16 @@ def pUnitAlgEquiv : MvPolynomial PUnit R ≃ₐ[R] R[X] where
   map_add' _ _ := eval₂_add _ _
   commutes' _ := eval₂_C _ _ _
 
+theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
+    MvPolynomial.pUnitAlgEquiv R (MvPolynomial.monomial d r)
+      = Polynomial.monomial (d ()) r := by
+  simp [Polynomial.C_mul_X_pow_eq_monomial]
+
+theorem monomial_pUnitAlgEquiv_symm {d : PUnit →₀ ℕ} {r : R} :
+    (MvPolynomial.pUnitAlgEquiv R).symm (Polynomial.monomial (d ()) r)
+      = MvPolynomial.monomial d r := by
+  simp [MvPolynomial.monomial_eq]
+
 section Map
 
 variable {R} (σ)
@@ -137,6 +147,27 @@ theorem mapAlgEquiv_trans (e : A₁ ≃ₐ[R] A₂) (f : A₂ ≃ₐ[R] A₃) :
   rfl
 
 end Map
+
+section Eval
+
+variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+
+theorem eval₂_pUnitAlgEquiv_symm (f : Polynomial R) (φ : R →+* S) (a : S) :
+    ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a)  =
+      f.eval₂ φ a := by
+  simp only [MvPolynomial.pUnitAlgEquiv_symm_apply]
+  induction f using Polynomial.induction_on' with
+  | h_add f g hf hg => simp [hf, hg]
+  | h_monomial n r => simp
+
+theorem eval₂_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S} :
+    ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) := by
+  simp only [MvPolynomial.pUnitAlgEquiv_apply]
+  induction f using MvPolynomial.induction_on' with
+  | h1 d r => simp
+  | h2 f g hf hg => simp [hf, hg]
+
+end Eval
 
 section
 
