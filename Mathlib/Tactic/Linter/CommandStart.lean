@@ -199,12 +199,16 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
   if let some fmt := fmt then
     --let st := polishPP fmt.pretty
     let st := fmt.pretty
-    let scan := parallelScan origSubstring.toString fmt.pretty
+    let scan := parallelScan origSubstring.toString st
+    dbg_trace scan.map (·.srcPos)
     for s in scan do
-      let rg : String.Range :=
-        ⟨origSubstring.startPos + ⟨s.srcPos⟩, origSubstring.startPos + ⟨s.srcPos + 1⟩⟩
-      logInfoAt (.ofRange rg) m!"{s.msg}"
-    --if !scan.isEmpty then logInfo m!"{scan}"
+      let center := origSubstring.startPos + ⟨s.srcPos⟩
+      let orig := origSubstring.toString
+      let rg : String.Range := ⟨center, center + ⟨1⟩⟩
+      logInfoAt (.ofRange rg)
+        m!"{s.msg}\n\n\
+          Original: '{orig.drop (s.srcPos - 2) |>.take 5 |>.replace "\n" "⏎"}'\n\
+          Expected: '{st.drop (s.srcPos - 2) |>.take 5 |>.replace "\n" "⏎"}'"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
