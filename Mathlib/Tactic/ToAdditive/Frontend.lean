@@ -968,31 +968,29 @@ def expand (b : BundledExtensions)
 
 /-- Reorder pi-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderForall (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
-    return src
-  forallBoundedTelescope src none fun xs e => do
-    if let some maxReorder := reorder.flatten.max? then
-      if xs.size > maxReorder then
+  if let some maxReorder := reorder.flatten.max? then
+    forallBoundedTelescope src (some (maxReorder + 1)) fun xs e => do
+      if xs.size = maxReorder + 1 then
         mkForallFVars (xs.permute! reorder) e
       else
-        dbg_trace "reorderForall tried to reorder a list that was too small: {src} {xs} {reorder}"
-        mkForallFVars xs e
-    else
-      mkForallFVars xs e
+        dbg_trace "reorderForall tried to reorder a list that was too small:\n\
+          {src}\n{xs}\n{reorder}"
+        return src
+  else
+    return src
 
 /-- Reorder lambda-binders. See doc of `reorderAttr` for the interpretation of the argument -/
 def reorderLambda (reorder : List (List Nat) := []) (src : Expr) : MetaM Expr := do
-  if reorder == [] then
-    return src
-  lambdaTelescope src fun xs e => do
-    if let some maxReorder := reorder.flatten.max? then
-      if xs.size > maxReorder then
+  if let some maxReorder := reorder.flatten.max? then
+    lambdaBoundedTelescope src (maxReorder + 1) fun xs e => do
+      if xs.size = maxReorder + 1 then
         mkLambdaFVars (xs.permute! reorder) e
       else
-        dbg_trace "reorderLambda tried to reorder a list that was too small: {src} {xs} {reorder}"
-        mkLambdaFVars xs e
-    else
-      mkLambdaFVars xs e
+        dbg_trace "reorderLambda tried to reorder a list that was too small:\n\
+          {src}\n{xs}\n{reorder}"
+        return src
+  else
+    return src
 
 /-- Run applyReplacementFun on the given `srcDecl` to make a new declaration with name `tgt` -/
 def updateDecl (b : BundledExtensions)
