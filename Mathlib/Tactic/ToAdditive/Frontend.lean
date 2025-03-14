@@ -1321,7 +1321,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
     stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
   if let some doc := cfg.doc then
-    addDocString tgt doc
+    addDocStringCore tgt doc
   return nestedNames.push tgt
 
 end
