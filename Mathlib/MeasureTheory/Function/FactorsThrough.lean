@@ -122,6 +122,41 @@ theorem exists_eq_measurable_comp [AddZeroClass Z] [ContinuousAdd Z]
     rw [Function.comp_apply, Tendsto.limUnder_eq]
     simp_all
 
+lemma piecewise_comp {α β γ : Type*} (s : Set β) (f g : β → γ) (h : α → β)
+    [∀ i, Decidable (i ∈ s)]  [∀ i, Decidable (i ∈ h⁻¹' s)] :
+    (s.piecewise f g) ∘ h = (h⁻¹' s).piecewise (f ∘ h) (g ∘ h) := by
+  ext x
+  by_cases hx : h x ∈ s
+  · simp only [hx, piecewise_eq_of_mem, mem_preimage, Function.comp_apply]
+  · rw [Function.comp_apply, piecewise_eq_of_not_mem s f g hx,
+      piecewise_eq_of_not_mem (h⁻¹' s) (f ∘ h) (g ∘ h) _, Function.comp_apply]
+    rwa [mem_preimage]
+
+theorem exists_eq_measurable_comp' [Nonempty Z] {f : X → Y} {g : X → Z}
+    (hg : StronglyMeasurable[mY.comap f] g) :
+    ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f := by
+  classical
+  let mX : MeasurableSpace X := mY.comap f
+  apply hg.induction' (fun g ↦ ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f)
+  · intro c
+    refine ⟨fun _ ↦ c, stronglyMeasurable_const, ?_⟩
+    ext x
+    rw [SimpleFunc.coe_const, Function.const_apply, Function.comp_apply]
+  · rintro f' g' s s_mes f_mes' g_mes' ⟨F, F_mes, F_f⟩ ⟨G, G_mes, G_g⟩
+    rw [MeasurableSpace.measurableSet_comap] at s_mes
+    obtain ⟨s', s_mes', f_s⟩ := s_mes
+    refine ⟨s'.piecewise F G, F_mes.piecewise s_mes' G_mes, ?_⟩
+    rw [piecewise_comp, f_s, F_f, G_g]
+  · rintro gn g gn_mes gn_Gn g_mes gn_g
+    choose G Gn_mes Gn_gn using gn_Gn
+    refine ⟨fun y ↦ limUnder atTop (fun x ↦ G x y), stronglyMeasurable_limUnder Gn_mes, ?_⟩
+    ext x
+    rw [Function.comp_apply, Tendsto.limUnder_eq]
+    refine Filter.Tendsto.congr (f₁ := fun n ↦ gn n x) (fun n ↦ ?_) (gn_g x)
+    simp only [Gn_gn n, Function.comp_apply]
+
+#check exists_eq_measurable_comp'
+
 end FactorsThrough
 
 variable {ι : Type*} {X : ι → Type*} [∀ i, MeasurableSpace (X i)] {f : (Π i, X i) → Z}
