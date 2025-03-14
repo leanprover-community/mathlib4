@@ -13,8 +13,6 @@ independent. By specifying that one directory does not import from another, we c
 modularity of Mathlib.
 -/
 
-open Lean Elab Command
-
 /-- Find the longest prefix of `n` such that `f` returns `some` (or return `none` otherwise). -/
 def Lean.Name.findPrefix {α} (f : Name → Option α) (n : Name) : Option α := do
   f n <|> match n with
@@ -37,7 +35,23 @@ def Lean.Name.collectPrefixes (ns : Array Name) : NameSet :=
 def Lean.Name.prefixToName (p : Name) (ns : Array Name) : Option Name :=
   ns.find? p.isPrefixOf
 
+/-- Find the dependency chain, starting at a module that imports `imported`, and ends with the
+current module. -/
+def Lean.Environment.importPath (env : Environment) (imported : Name) : Array Name := Id.run do
+  let mut result := #[]
+  let modData := env.header.moduleData
+  let modNames := env.header.moduleNames
+  if let some idx := env.getModuleIdx? imported then
+    let mut target := imported
+    for i in [idx.toNat + 1 : modData.size] do
+      if modData[i]!.imports.any (·.module == target) then
+        target := modNames[i]!
+        result := result.push modNames[i]!
+  return result
+
 namespace Mathlib.Linter
+
+open Lean Elab Command
 
 /--
 The `directoryDependency` linter detects detects imports between directories that are supposed to be
@@ -147,9 +161,14 @@ def directoryDependencyCheck (mainModule : Name) : CommandElabM (Option MessageD
   | some (n₁, n₂) => do
     if let some imported := n₂.prefixToName imports then
       if !overrideAllowedImportDirs.contains mainModule imported then
-        return some m!"This module depends on {imported}, but modules starting with {n₁} are not allowed to import modules starting with {n₂} (exceptions can be added to `overrideAllowedImportDirs`)."
-      else
-        return some m!"Internal error in `directoryDependency` linter: this module claims to depend on a module starting with {n₂} but a module with that prefix was not found in the import graph."
+        let mut msg := m!"Modules starting with {n₁} are not allowed to import modules starting with {n₂}.
+This module depends on {imported}\n"
+        for dep in env.importPath imported do
+          msg := msg ++ m!"which is imported by {dep},\n"
+        return some <| msg ++ m!"which is imported by this module.
+(Exceptions can be added to `overrideAllowedImportDirs`.)"
+    else
+      return some m!"Internal error in `directoryDependency` linter: this module claims to depend on a module starting with {n₂} but a module with that prefix was not found in the import graph."
   | none => pure ()
   return none
 
