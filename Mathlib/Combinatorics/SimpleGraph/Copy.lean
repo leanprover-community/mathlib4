@@ -115,6 +115,9 @@ theorem ofLE_comp (h₁₂ : G₁ ≤ G₂) (h₂₃ : G₂ ≤ G₃) :
 /-- The copy from an induced subgraph to the initial simple graph. -/
 def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.induce s).toCopy
 
+/-- The copy of `⊥` in any simple graph that can embed its vertices. -/
+protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
+
 end Copy
 
 /-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
@@ -163,18 +166,13 @@ theorem isContained_congr (e : A ≃g B) : A ⊑ C ↔ B ⊑ C :=
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
-/-- A simple graph having no edges is contained in any simple graph having sufficent vertices. -/
-lemma bot_isContained_iff_nonempty : (⊥ : SimpleGraph α) ⊑ B ↔ Nonempty (α ↪ β) :=
-  ⟨fun ⟨f⟩ ↦ ⟨f.toEmbedding⟩, fun ⟨f⟩ ↦ ⟨⟨f, False.elim⟩, f.injective⟩⟩
-
-protected alias IsContained.bot_iff_nonempty := bot_isContained_iff_nonempty
-
-@[inherit_doc bot_isContained_iff_nonempty]
+/-- `⊥` is contained in any simple graph having sufficently many vertices. -/
 lemma bot_isContained_iff_card_le [Fintype α] [Fintype β] :
     (⊥ : SimpleGraph α) ⊑ B ↔ Fintype.card α ≤ Fintype.card β :=
-  bot_isContained_iff_nonempty.trans Function.Embedding.nonempty_iff_card_le
+  ⟨fun ⟨f⟩ ↦ Fintype.card_le_of_embedding f.toEmbedding,
+    fun h ↦ ⟨Copy.bot (Function.Embedding.nonempty_of_card_le h).some⟩⟩
 
-protected alias IsContained.bot_iff_card_le := bot_isContained_iff_card_le
+protected alias IsContained.bot := bot_isContained_iff_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
