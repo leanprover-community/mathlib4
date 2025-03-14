@@ -3,10 +3,10 @@ Copyright (c) 2025 Antoine Chambert-Loir, María-Inés de Frutos-Fernández. All
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Maria-Inés de Frutos-Fernandez
 -/
-import Mathlib.RingTheory.TensorProduct.DirectLimit.FG
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.RingTheory.FiniteType
+import Mathlib.LinearAlgebra.TensorProduct.DirectLimit
 import Mathlib.RingTheory.Finiteness.Small
+import Mathlib.RingTheory.FiniteType
 
 /-! # Tensor products and small submodules
 
