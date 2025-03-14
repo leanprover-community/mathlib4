@@ -25,7 +25,7 @@ lemma Submodule.isCompact_of_fg [CompactSpace R] {N : Submodule R M} (hN : N.FG)
   refine isCompact_range ?_
   simp only [Fintype.linearCombination, Finset.univ_eq_attach, smul_eq_mul, LinearMap.coe_mk,
     AddHom.coe_mk]
-  continuity
+  fun_prop
 
 lemma Ideal.isCompact_of_fg [IsTopologicalSemiring R] [CompactSpace R]
     {I : Ideal R} (hI : I.FG) : IsCompact (X := R) I :=

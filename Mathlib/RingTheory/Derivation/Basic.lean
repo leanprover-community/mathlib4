@@ -405,7 +405,7 @@ variable {R : Type*} [CommSemiring R] {A : Type*} [CommSemiring A] [Algebra R A]
 rule. -/
 def mk' (D : A →ₗ[R] M) (h : ∀ a b, D (a * b) = a • D b + b • D a) : Derivation R A M where
   toLinearMap := D
-  map_one_eq_zero' := (add_right_eq_self (a := D 1)).1 <| by
+  map_one_eq_zero' := (add_eq_left (a := D 1)).1 <| by
     simpa only [one_smul, one_mul] using (h 1 1).symm
   leibniz' := h
 

@@ -129,7 +129,7 @@ theorem inf_mem_closed_subalgebra (A : Subalgebra ℝ C(X, ℝ)) (h : IsClosed (
   convert inf_mem_subalgebra_closure A f g
   apply SetLike.ext'
   symm
-  erw [closure_eq_iff_isClosed]
+  rw [Subalgebra.topologicalClosure_coe, closure_eq_iff_isClosed]
   exact h
 
 theorem sup_mem_subalgebra_closure (A : Subalgebra ℝ C(X, ℝ)) (f g : A) :

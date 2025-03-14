@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Prod instances for NoZeroSMulDivisors
