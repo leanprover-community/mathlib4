@@ -312,16 +312,6 @@ instance PUnit.normedAlgebra : NormedAlgebra 𝕜 PUnit where
 instance : NormedAlgebra 𝕜 (ULift 𝕜') :=
   { ULift.normedSpace, ULift.algebra with }
 
-/-- The product of two normed algebras is a normed algebra, with the sup norm. -/
-instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] [NormedAlgebra 𝕜 E]
-    [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
-  { Prod.normedSpace, Prod.algebra 𝕜 E F with }
-
-/-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
-instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
-    [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
-  { Pi.normedSpace, Pi.algebra _ E with }
-
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
 instance SeparationQuotient.instNormedAlgebra : NormedAlgebra 𝕜 (SeparationQuotient E) where
