@@ -76,6 +76,15 @@ instance [TopologicalSpace α] [SeparableSpace α] [CompletelyMetrizableSpace α
 @[deprecated (since := "2025-03-14")] alias UpgradedPolishSpace :=
   UpgradedCompletelyMetrizableSpace
 
+@[deprecated (since := "2025-03-14")] alias polishSpaceMetric :=
+  completelyMetrizableMetric
+
+@[deprecated (since := "2025-03-14")] alias complete_polishSpaceMetric :=
+  complete_completelyMetrizableMetric
+
+@[deprecated (since := "2025-03-14")] alias upgradePolishSpace :=
+  upgradeCompletelyMetrizable
+
 namespace PolishSpace
 
 /-- Any nonempty Polish space is the continuous image of the fundamental space `ℕ → ℕ`. -/
