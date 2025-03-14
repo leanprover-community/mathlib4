@@ -346,9 +346,10 @@ def sheafToPresheaf : Sheaf J A ⥤ Cᵒᵖ ⥤ A where
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
 /-- The sheaf sections functor on `X` is given by evaluation of presheaves on `X`. -/
+@[simps!]
 def sheafSectionsNatIsoEvaluation {X : C} :
     (sheafSections J A).obj (op X) ≅ sheafToPresheaf J A ⋙ (evaluation _ _).obj (op X) :=
-  NatIso.ofComponents fun _ ↦ eqToIso rfl
+  NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
 /-- The functor `Sheaf J A ⥤ Cᵒᵖ ⥤ A` is fully faithful. -/
 @[simps]
