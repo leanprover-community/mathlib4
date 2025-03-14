@@ -36,7 +36,7 @@ variable
   [(coherentTopology CompHaus.{u}).HasSheafCompose (CategoryTheory.forget A)]
   [Balanced (Sheaf (coherentTopology CompHaus) A)]
   [PreservesFiniteProducts (CategoryTheory.forget A)] in
-lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
+def epi_iff_locallySurjective_on_compHaus : Epi f ↔
     ∀ (S : CompHaus) (y : ToType (Y.val.obj ⟨S⟩)),
       (∃ (S' : CompHaus) (φ : S' ⟶ S) (_ : Function.Surjective φ) (x : ToType (X.val.obj ⟨S'⟩)),
         f.val.app ⟨S'⟩ x = Y.val.map ⟨φ⟩ y) := by
@@ -51,7 +51,7 @@ variable
   [HasSheafify (extensiveTopology Stonean) A]
   [(extensiveTopology Stonean.{u}).HasSheafCompose (CategoryTheory.forget A)]
   [Balanced (Sheaf (extensiveTopology Stonean) A)] in
-lemma epi_iff_surjective_on_stonean : Epi f ↔
+def epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) := by
   rw [← (StoneanCompHaus.equivalence A).inverse.epi_map_iff_epi,
     ← Presheaf.coherentExtensiveEquivalence.functor.epi_map_iff_epi,

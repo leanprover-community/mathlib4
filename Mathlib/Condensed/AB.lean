@@ -29,7 +29,7 @@ variable (A J : Type*) [Category A] [Category J] [Preadditive A]
 -- One of the `HasWeakSheafify` instances could be deduced from the other using the dense subsite
 -- API, but when `A` is a concrete category, these will both be synthesized anyway.
 
-lemma hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
+def hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape J A]
     [HasFiniteLimits A] : HasExactColimitsOfShape J (Condensed.{u} A) := by
   let e : Condensed.{u} A ≌ Sheaf (extensiveTopology Stonean.{u}) A :=
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
@@ -37,7 +37,7 @@ lemma hasExactColimitsOfShape [HasColimitsOfShape J A] [HasExactColimitsOfShape 
     hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape e.inverse
   exact HasExactColimitsOfShape.domain_of_functor _ e.functor
 
-lemma hasExactLimitsOfShape [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
+def hasExactLimitsOfShape [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
     [HasFiniteColimits A] : HasExactLimitsOfShape J (Condensed.{u} A) := by
   let e : Condensed.{u} A ≌ Sheaf (extensiveTopology Stonean.{u}) A :=
     (StoneanCompHaus.equivalence A).symm.trans Presheaf.coherentExtensiveEquivalence
