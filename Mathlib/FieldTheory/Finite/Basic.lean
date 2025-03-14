@@ -370,7 +370,7 @@ theorem orderOf_frobeniusAlgHom : orderOf (frobeniusAlgHom K L) = Module.finrank
       refine ⟨fun h ↦ ?_, this⟩
       simpa [if_neg (Nat.one_lt_pow pos.ne' Fintype.one_lt_card).ne] using congr_arg (coeff · 1) h
     refine this.not_lt (((natDegree_sub_le ..).trans_eq ?_).trans_lt <|
-      (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq card_eq_pow_finrank.symm)
+      (Nat.pow_lt_pow_right Fintype.one_lt_card lt).trans_eq Module.card_eq_pow_finrank.symm)
     simp [Nat.one_le_pow _ _ Fintype.card_pos]
 
 theorem orderOf_frobeniusAlgEquivOfAlgebraic :
