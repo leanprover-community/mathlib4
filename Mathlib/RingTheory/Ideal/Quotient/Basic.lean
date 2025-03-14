@@ -79,6 +79,9 @@ lemma mk_singleton_self (x : R) [(Ideal.span {x}).IsTwoSided] : mk (Ideal.span {
 
 variable (I)
 
+theorem out_sub (x : R) : (Ideal.Quotient.mk I x).out - x ∈ I := by
+  rw [← Ideal.Quotient.eq, Ideal.Quotient.mk_out]
+
 instance noZeroDivisors [hI : I.IsPrime] : NoZeroDivisors (R ⧸ I) where
     eq_zero_or_eq_zero_of_mul_eq_zero {a b} := Quotient.inductionOn₂' a b fun {_ _} hab =>
       (hI.mem_or_mem (eq_zero_iff_mem.1 hab)).elim (Or.inl ∘ eq_zero_iff_mem.2)
@@ -216,13 +219,5 @@ lemma univ_eq_iUnion_image_add : (Set.univ (α := R)) = ⋃ x : R ⧸ I, x.out +
 variable {I} in
 lemma _root_.Finite.of_finite_quot_finite_ideal [hI : Finite I] [h : Finite (R ⧸ I)] : Finite R :=
   @Finite.of_finite_quot_finite_addSubgroup _ _ _ hI h
-
-theorem Quotient.mk_out {R : Type*} [CommRing R] {I : Ideal R} (x : R ⧸ I) :
-    Ideal.Quotient.mk I (Quotient.out x) = x := by
-  rw [← Ideal.Quotient.mk_eq_mk, ← Submodule.Quotient.mk''_eq_mk, Quotient.out_eq']
-
-theorem Quotient.out_sub {R : Type*} [CommRing R] (I : Ideal R) (x : R) :
-    (Ideal.Quotient.mk I x).out - x ∈ I := by
-  rw [← Ideal.Quotient.eq, Ideal.Quotient.mk_out]
 
 end Ideal

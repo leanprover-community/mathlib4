@@ -115,6 +115,8 @@ theorem finite_cover_of_uniformity_basis [IsDiscreteValuationRing 𝒪[K]] {γ :
   refine ⟨y, Set.mem_image_of_mem _ <| Finset.mem_image_of_mem _ (h.complete _),
     lt_of_le_of_lt (mem_maximalIdeal_pow_valuation (Ideal.Quotient.out_sub _ _) hϖ) hm⟩
 
+variable (K)
+
 /-- The ring of integers `𝒪[K]` of a complete `ℤₘ₀`-valued field `K` with finite residue
 field is compact, whenever `𝒪[K]` is a discrete valuation ring. -/
 theorem integer_compactSpace [CompleteSpace K] [IsDiscreteValuationRing 𝒪[K]] (h : Finite 𝓀[K]) :

@@ -226,7 +226,7 @@ end NormedField
 instance Rat.instNormedField : NormedField ℚ where
   __ := instField
   __ := instNormedAddCommGroup
-  norm_mul' a b := by simp only [norm, Rat.cast_mul, abs_mul]
+  norm_mul a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
 instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=

@@ -617,6 +617,8 @@ namespace adicCompletion
 -- https://github.com/mariainesdff/LocalClassFieldTheory/blob/18114679e7125329fd801032423c4c95078cdc77/LocalClassFieldTheory/DiscreteValuationRing/Localization.lean#L61
 instance : IsDiscreteValuationRing 𝒪[v.adicCompletion K] := sorry
 
+scoped notation  K "[" v "]" => WithVal (v.valuation K)
+
 variable {A K B L v w} in
 theorem uniformContinuous_algebraMap (h : w.comap A = v) :
     letI : UniformSpace K := v.adicValued.toUniformSpace
