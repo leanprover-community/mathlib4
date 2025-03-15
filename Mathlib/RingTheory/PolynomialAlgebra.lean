@@ -5,6 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Base change of polynomial algebras
@@ -212,7 +213,11 @@ theorem Polynomial.aeval_C_comp_mapRingHom (a : A) :
       C.comp (aeval (R := R) a).toRingHom := by ext <;> simp
 
 theorem Polynomial.map_C_aeval_C (p : R[X]) (a : A) : (p.map C).aeval (C a) = C (p.aeval a) :=
-  congr($(aeval_C_comp_mapRingHom a) p)
+  congr($(aeval_C_comp_mapRingHom R A a) p)
+
+instance [FaithfulSMul R A] : FaithfulSMul R[X] A[X] :=
+  (faithfulSMul_iff_algebraMap_injective ..).mpr
+    (map_injective _ <| FaithfulSMul.algebraMap_injective ..)
 
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 

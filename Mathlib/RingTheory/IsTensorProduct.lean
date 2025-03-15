@@ -440,6 +440,11 @@ variable (R S R' S')
 theorem Algebra.IsPushout.comm : Algebra.IsPushout R S R' S' ↔ Algebra.IsPushout R R' S S' :=
   ⟨Algebra.IsPushout.symm, Algebra.IsPushout.symm⟩
 
+instance : Algebra.IsPushout R R S S where
+  out := .of_equiv (TensorProduct.lid R S) fun _ ↦ by simp
+
+instance : Algebra.IsPushout R S R S := .symm inferInstance
+
 variable {R S R'}
 
 attribute [local instance] Algebra.TensorProduct.rightAlgebra
@@ -499,6 +504,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
 
+variable (R S R')
 /--
 Let the following be a commutative diagram of rings
 ```
@@ -519,7 +525,7 @@ lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     [Algebra.IsPushout R S R' S'] :
     Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
   let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
-  haveI : IsScalarTower R S T' := IsScalarTower.of_algebraMap_eq <| fun x ↦ by
+  haveI : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
     rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
   have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
       (toAlgHom R R' T').toLinearMap := by

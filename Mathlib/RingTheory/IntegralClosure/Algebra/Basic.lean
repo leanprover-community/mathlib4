@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!
 # Integral closure of a subring.
@@ -213,30 +212,6 @@ def integralClosure : Subalgebra R A where
 
 theorem mem_integralClosure_iff {a : A} : a ∈ integralClosure R A ↔ IsIntegral R a :=
   Iff.rfl
-
-section Polynomial
-
-variable [int : Algebra.IsIntegral R A]
-
-attribute [local instance] Polynomial.algebra in
-instance : Algebra.IsIntegral R[X] A[X] where
-  isIntegral p := p.induction_on' (fun _ _ ↦ .add) fun n a ↦ by
-    have ⟨q, monic, eq⟩ := int.1 a
-    rw [← C_mul_X_pow_eq_monomial]
-    refine .mul ⟨q.map C, monic.map _, ?_⟩ ?_
-    · rw [← aeval_def]; simpa [map_C_aeval_C]
-    convert isIntegral_algebraMap (x := X ^ n); simp
-
-attribute [local instance] MvPolynomial.algebraMvPolynomial in
-instance {σ} : Algebra.IsIntegral (MvPolynomial σ R) (MvPolynomial σ A) where
-  isIntegral p := by
-    refine p.induction_on (fun a ↦ ?_) (fun _ _ ↦ .add) fun p n h ↦ h.mul ?_
-    · have ⟨q, monic, eq⟩ := int.1 a
-      refine ⟨q.map MvPolynomial.C, monic.map _, ?_⟩
-      rw [← aeval_def]; simpa [MvPolynomial.map_C_aeval_C]
-    convert isIntegral_algebraMap (x := MvPolynomial.X n); simp
-
-end Polynomial
 
 variable {R} {A B : Type*} [Ring A] [Algebra R A] [Ring B] [Algebra R B]
 

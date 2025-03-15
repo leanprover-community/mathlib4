@@ -5,6 +5,8 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.OreLocalization.OreSet
 
@@ -81,11 +83,14 @@ lemma IsLocalizedModule.lift_rank_eq :
     apply hp (c * u i).prop
     exact hs t _ hc _ hit
 
+lemma IsLocalizedModule.finrank_eq : finrank S N = finrank R M := by
+  simpa using congr_arg toNat (lift_rank_eq S p f hp)
+
 end
 
 lemma IsLocalizedModule.rank_eq {N : Type v} [AddCommGroup N]
     [Module R N] [Module S N] [IsScalarTower R S N] (f : M →ₗ[R] N) [IsLocalizedModule p f] :
-    Module.rank S N = Module.rank R M := by simpa using IsLocalizedModule.lift_rank_eq S p f hp
+    Module.rank S N = Module.rank R M := by simpa using lift_rank_eq S p f hp
 
 end
 
@@ -115,6 +120,58 @@ instance IsDomain.hasRankNullity [IsDomain R] : HasRankNullity.{w} R where
   exists_set_linearIndependent M := exists_set_linearIndependent_of_isDomain R M
 
 end CommRing
+
+namespace Algebra.IsPushout
+
+universe uR vR uS vS
+
+variable (R : Type uR) (R' : Type vR) (S : Type uS) [CommRing R] [Field R'] [CommRing S]
+  [Algebra R R'] [FaithfulSMul R R'] [Algebra R S]
+
+section
+
+variable (S' : Type vS) [CommRing S'] [Algebra R S'] [Algebra R' S'] [Algebra S S']
+  [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsPushout R R' S S']
+
+open _root_.TensorProduct in
+theorem lift_rank_eq : lift.{uS} (Module.rank R' S') = lift.{vS} (Module.rank R S) := by
+  cases subsingleton_or_nontrivial R
+  · have := Module.subsingleton R R'; simp
+  let FR := FractionRing R
+  let FRS := FR ⊗[R] S
+  let _ : Algebra FR R' := FractionRing.liftAlgebra R _
+  let _ : Algebra S FRS := TensorProduct.rightAlgebra
+  let _ : Algebra FR S' := ((algebraMap R' S').comp (algebraMap FR R')).toAlgebra
+  have : IsScalarTower R FR S' := .of_algebraMap_eq fun _ ↦ (IsScalarTower.algebraMap_apply
+    R R' S' _).trans <| congr_arg _ <| IsScalarTower.algebraMap_apply ..
+  let _ : Algebra FRS S' := RingHom.toAlgebra <|
+    TensorProduct.lift (ofId FR S') (IsScalarTower.toAlgHom R S S') fun _ _ ↦ .all ..
+  have : IsScalarTower FR R' S' := .of_algebraMap_eq' rfl
+  have : IsScalarTower S FRS S' := .of_algebraMap_eq fun x ↦
+    (DFunLike.congr_fun (TensorProduct.lift_comp_includeRight (ofId FR S')
+      (IsScalarTower.toAlgHom R S S') fun _ _ ↦ .all ..) x).symm
+  have : IsScalarTower R FRS S' := .of_algebraMap_eq fun x ↦ by
+    rw [IsScalarTower.algebraMap_apply R FR, IsScalarTower.algebraMap_apply R FR FRS,
+      IsScalarTower.algebraMap_apply FR FRS S']
+  have : IsPushout FR R' FRS S' := (comp_iff R _ S _).mp inferInstance
+  have : R' ⊗[FR] FRS ≃ₐ[R'] S' := ((comp_iff R _ S _).mp inferInstance).equiv
+  have up := this.toLinearEquiv.lift_rank_eq
+  have low := lift_id' _ ▸ IsLocalizedModule.lift_rank_eq FR R⁰ (TensorProduct.mk R FR S 1) le_rfl
+  have := (FaithfulSMul.algebraMap_injective R R').isDomain
+  rw [Module.rank_baseChange, low, eq_comm, lift_lift, lift_lift,
+    ← lift_lift.{uS, max uR vR}, lift_umax.{uS, max uR vR vS}, ← lift_lift.{vS, max uR vR}] at up
+  exact lift_injective up
+
+theorem finrank_eq : finrank R' S' = finrank R S := by simpa using congr_arg toNat (lift_rank_eq ..)
+
+end
+
+theorem rank_eq (S' : Type uS) [CommRing S'] [Algebra R S'] [Algebra R' S'] [Algebra S S']
+    [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsPushout R R' S S'] :
+    Module.rank R' S' = Module.rank R S := by
+  simpa using lift_rank_eq R R' S S'
+
+end Algebra.IsPushout
 
 section Ring
 

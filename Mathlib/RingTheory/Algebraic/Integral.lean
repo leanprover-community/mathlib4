@@ -3,6 +3,7 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
@@ -250,9 +251,10 @@ theorem _root_.IsIntegral.trans_isAlgebraic [alg : Algebra.IsAlgebraic R S]
 
 end trans
 
-variable [nzd : NoZeroDivisors R] {a b : S} (ha : IsAlgebraic R a) (hb : IsAlgebraic R b)
+section Ring
+
+variable (s : S) {a : A} (ha : IsAlgebraic R a)
 include ha
-omit nzd
 
 protected lemma neg : IsAlgebraic R (-a) :=
   have ⟨p, h, eval0⟩ := ha
@@ -268,7 +270,21 @@ protected lemma nsmul (n : ℕ) : IsAlgebraic R (n • a) :=
 protected lemma zsmul (n : ℤ) : IsAlgebraic R (n • a) :=
   Int.cast_smul_eq_zsmul R n a ▸ ha.smul _
 
-include hb nzd
+omit [Algebra S A] [IsScalarTower R S A] in
+lemma tmul [FaithfulSMul R S] : IsAlgebraic S (s ⊗ₜ[R] a) := by
+  rw [← mul_one s, ← smul_eq_mul, ← TensorProduct.smul_tmul']
+  have ⟨p, h, eval0⟩ := ha
+  refine .smul ⟨p.map (algebraMap R S),
+    (Polynomial.map_ne_zero_iff <| FaithfulSMul.algebraMap_injective ..).mpr h, ?_⟩ _
+  rw [← Algebra.TensorProduct.includeRight_apply, ← AlgHom.coe_toRingHom (A := A),
+    ← map_aeval_eq_aeval_map (by ext; simp), eval0, map_zero]
+
+end Ring
+
+section CommRing
+
+variable [NoZeroDivisors R] {a b : S} (ha : IsAlgebraic R a) (hb : IsAlgebraic R b)
+include ha hb
 
 protected lemma mul : IsAlgebraic R (a * b) := by
   have ⟨ra, a0, int_a⟩ := ha.exists_integral_multiple
@@ -291,6 +307,8 @@ omit hb
 protected lemma pow (n : ℕ) : IsAlgebraic R (a ^ n) :=
   have := ha.nontrivial
   n.rec (pow_zero a ▸ isAlgebraic_one) fun _ h ↦ pow_succ a _ ▸ h.mul ha
+
+end CommRing
 
 end IsAlgebraic
 
@@ -396,21 +414,69 @@ lemma subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors S] :
 
 end Transcendental
 
+open scoped nonZeroDivisors
+
+namespace Algebra.IsAlgebraic
+
+open Cardinal (lift)
+
+variable (R) (R' : Type*) (S : Type u) [CommRing R'] [CommRing S] [Algebra R S]
+  [Algebra R R'] [IsFractionRing R R'] [FaithfulSMul R S] [Algebra.IsAlgebraic R S]
+
+section
+
+variable [NoZeroDivisors S] (S' : Type v) [CommRing S'] [Algebra R S'] [Algebra S S'] [Module R' S']
+  [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S']
+
+theorem lift_rank_of_isFractionRing : lift.{u} (Module.rank R' S') = lift.{v} (Module.rank R S) :=
+  IsLocalizedModule.lift_rank_eq _ R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl
+
+theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S :=
+  IsLocalizedModule.finrank_eq _ R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl
+
+theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
+    [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :
+    Module.rank R' S' = Module.rank R S := by
+  simpa using lift_rank_of_isFractionRing R R' S S'
+
+end
+
+attribute [local instance] FractionRing.liftAlgebra in
+theorem rank_fractionRing [IsDomain S] :
+    Module.rank (FractionRing R) (FractionRing S) = Module.rank R S :=
+  rank_of_isFractionRing ..
+
+end Algebra.IsAlgebraic
+
 section Polynomial
 
 variable [alg : Algebra.IsAlgebraic R S]
 
+section Pushout
+
+variable (R S) (R' : Type*) [CommRing R'] [Algebra R R'] [NoZeroDivisors R'] [FaithfulSMul R R']
+
+open TensorProduct in
+instance Algebra.IsAlgebraic.tensorProduct : Algebra.IsAlgebraic R' (R' ⊗[R] S) where
+  isAlgebraic p :=
+    have := IsAlgebraic.nontrivial R S
+    have := (FaithfulSMul.algebraMap_injective R R').nontrivial
+    p.induction_on isAlgebraic_zero (fun _ s ↦ .tmul _ <| alg.1 s) (fun _ _ ↦ .add)
+
+variable (S' : Type*) [CommRing S'] [Algebra R S'] [Algebra S S'] [Algebra R' S']
+  [IsScalarTower R R' S'] [IsScalarTower R S S']
+
+theorem Algebra.IsPushout.isAlgebraic' [IsPushout R R' S S'] : Algebra.IsAlgebraic R' S' :=
+  (equiv R R' S S').isAlgebraic
+
+theorem Algebra.IsPushout.isAlgebraic [h : IsPushout R S R' S'] : Algebra.IsAlgebraic R' S' :=
+  have := h.symm; (equiv R R' S S').isAlgebraic
+
+end Pushout
+
 attribute [local instance] Polynomial.algebra
 
-instance [NoZeroDivisors R] : Algebra.IsAlgebraic R[X] S[X] where
-  isAlgebraic p := p.induction_on' (fun _ _ ↦ .add) fun n s ↦ by
-    have ⟨q, ne, eq⟩ := alg.1 s
-    rw [← C_mul_X_pow_eq_monomial]
-    refine .mul ⟨q.mapRingHom C, (map_ne_zero_iff _ (map_injective _ C_injective)).2 ne, ?_⟩ ?_
-    · simpa [map_C_aeval_C]
-    convert isAlgebraic_algebraMap (X ^ n)
-    · simp
-    · have := alg.nontrivial; infer_instance
+instance [NoZeroDivisors R] : Algebra.IsAlgebraic R[X] S[X] := Algebra.IsPushout.isAlgebraic R S ..
 
 instance [NoZeroDivisors S] : Algebra.IsAlgebraic R[X] S[X] := by
   by_cases h : Function.Injective (algebraMap R S)
@@ -418,22 +484,14 @@ instance [NoZeroDivisors S] : Algebra.IsAlgebraic R[X] S[X] := by
   rw [← Polynomial.map_injective_iff] at h
   exact Algebra.isAlgebraic_of_not_injective h
 
-theorem Polynomial.exists_dvd_map_of_isAlgebraic {f : S[X]} (hf : f ∈ S[X]⁰) :
+theorem Polynomial.exists_dvd_map_of_isAlgebraic [NoZeroDivisors S] {f : S[X]} (hf : f ≠ 0) :
     ∃ g : R[X], g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
-  IsAlgebraic.exists_nonzero_dvd (Algebra.IsAlgebraic.isAlgebraic _) hf
+  (Algebra.IsAlgebraic.isAlgebraic f).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero hf)
 
 attribute [local instance] MvPolynomial.algebraMvPolynomial
 
-instance {σ} [NoZeroDivisors R] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) where
-  isAlgebraic p := by
-    refine p.induction_on (fun a ↦ ?_) (fun _ _ ↦ .add) fun p n h ↦ h.mul ?_
-    · have ⟨q, ne, eq⟩ := alg.1 a
-      refine ⟨q.mapRingHom MvPolynomial.C,
-        (map_ne_zero_iff _ (map_injective _ <| MvPolynomial.C_injective ..)).2 ne, ?_⟩
-      simpa [MvPolynomial.map_C_aeval_C]
-    convert isAlgebraic_algebraMap (x := MvPolynomial.X n)
-    · simp
-    · have := alg.nontrivial; infer_instance
+instance {σ} [NoZeroDivisors R] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) :=
+  Algebra.IsPushout.isAlgebraic R S ..
 
 instance {σ} [NoZeroDivisors S] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPolynomial σ S) := by
   by_cases h : Function.Injective (algebraMap R S)
@@ -441,9 +499,51 @@ instance {σ} [NoZeroDivisors S] : Algebra.IsAlgebraic (MvPolynomial σ R) (MvPo
   rw [← MvPolynomial.map_injective_iff] at h
   exact Algebra.isAlgebraic_of_not_injective h
 
-theorem MvPolynomial.exists_dvd_map_of_isAlgebraic {σ} {f : MvPolynomial σ S}
-    (hf : (MvPolynomial σ S)⁰) :
+theorem MvPolynomial.exists_dvd_map_of_isAlgebraic {σ}
+    [NoZeroDivisors S] {f : MvPolynomial σ S} (hf : f ≠ 0) :
     ∃ g : MvPolynomial σ R, g ≠ 0 ∧ f ∣ g.map (algebraMap R S) :=
-  IsAlgebraic.exists_nonzero_dvd (Algebra.IsAlgebraic.isAlgebraic _) hf
+  (Algebra.IsAlgebraic.isAlgebraic f).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero hf)
+
+variable [IsDomain S] [FaithfulSMul R S]
+
+attribute [local instance] FractionRing.liftAlgebra
+
+instance : Algebra.IsPushout R (FractionRing R[X]) S (FractionRing S[X]) :=
+  (Algebra.IsPushout.comp_iff _ R[X] _ S[X]).mpr inferInstance
+
+instance : Algebra.IsPushout R S (FractionRing R[X]) (FractionRing S[X]) := .symm inferInstance
+
+instance {σ : Type*} :
+    Algebra.IsPushout R (FractionRing (MvPolynomial σ R)) S (FractionRing (MvPolynomial σ S)) :=
+  (Algebra.IsPushout.comp_iff _ (MvPolynomial σ R) _ (MvPolynomial σ S)).mpr inferInstance
+
+instance {σ : Type*} :
+    Algebra.IsPushout R S (FractionRing (MvPolynomial σ R)) (FractionRing (MvPolynomial σ S)) :=
+  .symm inferInstance
+
+namespace Algebra.IsAlgebraic
+
+@[stacks 0G1M] theorem rank_fractionRing_polynomial :
+    Module.rank (FractionRing R[X]) (FractionRing S[X]) = Module.rank R S :=
+  have := (FaithfulSMul.algebraMap_injective R S).isDomain
+  IsPushout.rank_eq ..
+
+theorem rank_polynomial : Module.rank R[X] S[X] = Module.rank R S := by
+  conv_rhs => rw [← rank_fractionRing_polynomial, rank_fractionRing]
+
+open Cardinal in
+@[stacks 0G1M] theorem rank_fractionRing_mvPolynomial (σ : Type u) :
+    Module.rank (FractionRing (MvPolynomial σ R)) (FractionRing (MvPolynomial σ S)) =
+    lift.{u} (Module.rank R S) := by
+  have := (FaithfulSMul.algebraMap_injective R S).isDomain
+  have := IsPushout.lift_rank_eq
+    R (FractionRing (MvPolynomial σ R)) S (FractionRing (MvPolynomial σ S))
+  rwa [lift_id', lift_umax] at this
+
+theorem rank_mvPolynomial (σ : Type u) :
+    Module.rank (MvPolynomial σ R) (MvPolynomial σ S) = Cardinal.lift.{u} (Module.rank R S) := by
+  conv_rhs => rw [← rank_fractionRing_mvPolynomial σ, rank_fractionRing]
+
+end Algebra.IsAlgebraic
 
 end Polynomial

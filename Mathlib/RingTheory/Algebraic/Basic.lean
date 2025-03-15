@@ -7,6 +7,8 @@ import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Algebraic.Defs
+import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -532,7 +534,11 @@ end
 
 section
 
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {R S : Type*} [CommRing R]
+
+section
+
+variable [Ring S] [Algebra R S]
 
 theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ S⁰) :
@@ -558,26 +564,6 @@ theorem IsAlgebraic.exists_nonzero_dvd {s : S} (hRs : IsAlgebraic R s) (hs : s �
   rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
 
-namespace Algebra.IsAlgebraic
-
-variable (S : Type*) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
-  [alg : Algebra.IsAlgebraic R S] [Ring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
-
-open Function (Injective) in
-theorem injective_tower_top (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
-  refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
-  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
-  refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
-  simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
-
-variable (R A)
-
-theorem faithfulSMul_tower_top [FaithfulSMul R A] : FaithfulSMul S A := by
-  rw [faithfulSMul_iff_algebraMap_injective] at *
-  exact injective_tower_top S ‹_›
-
-end Algebra.IsAlgebraic
-
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
 theorem IsAlgebraic.exists_smul_eq_mul
@@ -594,6 +580,59 @@ theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlg
     (a : S) {b : S} (hb : b ≠ 0) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
   (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
+
+end
+
+namespace Algebra.IsAlgebraic
+
+section IsFractionRing
+
+variable (R S) (R' S' : Type*) [CommRing S] [CommRing S'] [Algebra R S]
+  [FaithfulSMul R S] [alg : Algebra.IsAlgebraic R S]
+  [NoZeroDivisors S] [Algebra S S'] [IsFractionRing S S']
+
+instance : IsLocalization (algebraMapSubmonoid S R⁰) S' :=
+  have := (FaithfulSMul.algebraMap_injective R S).noZeroDivisors _ (map_zero _) (map_mul _)
+  (IsLocalization.iff_of_le_of_exists_dvd _ S⁰
+    (map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective ..) le_rfl)
+    fun s hs ↦ have ⟨r, ne, eq⟩ := (alg.1 s).exists_nonzero_dvd hs
+    ⟨_, ⟨r, mem_nonZeroDivisors_of_ne_zero ne, rfl⟩, eq⟩).mpr inferInstance
+
+variable [Algebra R S'] [IsScalarTower R S S']
+
+instance : IsLocalizedModule R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap :=
+  isLocalizedModule_iff_isLocalization.mpr inferInstance
+
+variable [CommRing R'] [Algebra R R'] [IsFractionRing R R']
+
+theorem isBaseChange_of_isFractionRing [Module R' S'] [IsScalarTower R R' S'] :
+    IsBaseChange R' (IsScalarTower.toAlgHom R S S').toLinearMap :=
+  (isLocalizedModule_iff_isBaseChange R⁰ ..).mp inferInstance
+
+variable [Algebra R' S'] [IsScalarTower R R' S']
+
+instance : IsPushout R R' S S' := (isPushout_iff ..).mpr <| isBaseChange_of_isFractionRing ..
+instance : IsPushout R S R' S' := .symm inferInstance
+
+end IsFractionRing
+
+variable (S) {A : Type*} [CommRing S] [NoZeroDivisors S] [Algebra R S]
+  [alg : Algebra.IsAlgebraic R S] [Ring A] [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+
+open Function (Injective) in
+theorem injective_tower_top (inj : Injective (algebraMap R A)) : Injective (algebraMap S A) := by
+  refine (injective_iff_map_eq_zero _).mpr fun s eq ↦ of_not_not fun ne ↦ ?_
+  have ⟨r, ne, dvd⟩ := (alg.1 s).exists_nonzero_dvd (mem_nonZeroDivisors_of_ne_zero ne)
+  refine ne (inj <| map_zero (algebraMap R A) ▸ zero_dvd_iff.mp ?_)
+  simp_rw [← eq, IsScalarTower.algebraMap_apply R S A, map_dvd (algebraMap S A) dvd]
+
+variable (R A)
+
+theorem faithfulSMul_tower_top [FaithfulSMul R A] : FaithfulSMul S A := by
+  rw [faithfulSMul_iff_algebraMap_injective] at *
+  exact injective_tower_top S ‹_›
+
+end Algebra.IsAlgebraic
 
 end
 
