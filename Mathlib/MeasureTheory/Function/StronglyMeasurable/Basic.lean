@@ -312,7 +312,7 @@ protected theorem prodMk {m : MeasurableSpace α} [TopologicalSpace β] [Topolog
     StronglyMeasurable fun x => (f x, g x) := by
   refine ⟨fun n => SimpleFunc.pair (hf.approx n) (hg.approx n), fun x => ?_⟩
   rw [nhds_prod_eq]
-  exact Tendsto.prod_mk (hf.tendsto_approx x) (hg.tendsto_approx x)
+  exact Tendsto.prodMk (hf.tendsto_approx x) (hg.tendsto_approx x)
 
 @[deprecated (since := "2025-03-05")] protected alias prod_mk := StronglyMeasurable.prodMk
 

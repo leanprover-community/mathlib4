@@ -1662,10 +1662,10 @@ However, lemmas with this conclusion are not nice to use in practice because
     continuous_add.comp _
 
   example : Continuous (fun x : M ↦ x + x) :=
-    continuous_add.comp (continuous_id.prod_mk continuous_id)
+    continuous_add.comp (continuous_id.prodMk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
-  `continuous_add.comp (continuous_id.prod_mk continuous_id :)`
+  `continuous_add.comp (continuous_id.prodMk continuous_id :)`
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
   application the arguments in the domain might be in a different order or associated differently.

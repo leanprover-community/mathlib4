@@ -252,7 +252,7 @@ def homeoRealMixedSpacePolarSpace : realMixedSpace K ≃ₜ polarSpace K :=
   continuous_toFun := by
     change Continuous fun x : realMixedSpace K ↦  (fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
       (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2)
-    refine continuous_prod_mk.mpr ⟨continuous_pi_iff.mpr fun w ↦ ?_, by fun_prop⟩
+    refine .prodMk (continuous_pi fun w ↦ ?_) (by fun_prop)
     split_ifs <;> fun_prop
   continuous_invFun := by
     change Continuous fun x : polarSpace K ↦
