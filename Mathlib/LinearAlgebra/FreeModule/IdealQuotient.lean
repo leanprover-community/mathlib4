@@ -33,15 +33,17 @@ noncomputable def quotientEquivPiZMod (I : Ideal S) (b : Basis ι ℤ S) (hI : I
     S ⧸ I ≃+ ∀ i, ZMod (I.smithCoeffs b hI i).natAbs :=
   Submodule.quotientEquivPiZMod (I.restrictScalars ℤ) b <| finrank_eq_finrank b I hI
 
-/-- A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
-
-Can't be an instance because of the side condition `I ≠ ⊥`, and more importantly,
-because the choice of `Fintype` instance is non-canonical.
+/--
+A nonzero ideal over a free finite extension of `ℤ` has a finite quotient.
+It can't be an instance because of the side condition `I ≠ ⊥`.
 -/
-noncomputable def fintypeQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
-    (I : Ideal S) (hI : I ≠ ⊥) : Fintype (S ⧸ I) :=
+theorem finiteQuotientOfFreeOfNeBot [Module.Free ℤ S] [Module.Finite ℤ S]
+    (I : Ideal S) (hI : I ≠ ⊥) : Finite (S ⧸ I) :=
   let b := Module.Free.chooseBasis ℤ S
-  Submodule.fintypeQuotientOfFreeOfRankEq (I.restrictScalars ℤ) <| finrank_eq_finrank b I hI
+  Submodule.finiteQuotientOfFreeOfRankEq (I.restrictScalars ℤ) <| finrank_eq_finrank b I hI
+
+@[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfNeBot :=
+  finiteQuotientOfFreeOfNeBot
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Algebra F S] [IsScalarTower F R S]
   (b : Basis ι R S) {I : Ideal S} (hI : I ≠ ⊥)
