@@ -55,7 +55,8 @@ In a normalizing tactic, the expression returned by `addAtom` should be consider
 def AtomM.addAtom (e : Expr) : AtomM (Nat × Expr) := do
   let c ← get
   for h : i in [:c.atoms.size] do
-    if ← withTransparency (← read).red <| isDefEq e c.atoms[i] then
+    -- expressions in `c.atoms` may contain out of scope free variables, so we catch the exception
+    if ← withTransparency (← read).red <| try isDefEq e c.atoms[i] catch _ => pure false then
       return (i, c.atoms[i])
   modifyGet fun c ↦ ((c.atoms.size, e), { c with atoms := c.atoms.push e })
 
