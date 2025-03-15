@@ -568,7 +568,6 @@ lemma isConjExponent_iff_eq_conjExponent (hp : 1 â‰¤ p) : p.HolderConjugate q â†
 
 end ENNReal
 
-
 namespace Real
 
 @[deprecated (since := "2025-03-14")] alias IsConjExponent := HolderConjugate
@@ -576,7 +575,6 @@ namespace Real
 @[deprecated (since := "2025-03-14")] alias IsConjExponent.one_lt := HolderTriple.lt
 @[deprecated (since := "2025-03-14")] alias IsConjExponent.inv_add_inv_conj :=
   HolderConjugate.inv_add_inv_eq_one
-
 
 namespace IsConjExponent
 
@@ -695,7 +693,6 @@ namespace IsConjExponent
 @[deprecated (since := "2025-03-14")] alias one_sub_inv_inv := HolderConjugate.one_sub_inv_inv
 @[deprecated (since := "2025-03-14")] alias top_one := HolderConjugate.top_one
 @[deprecated (since := "2025-03-14")] alias one_top := HolderConjugate.one_top
-
 
 end IsConjExponent
 end ENNReal
