@@ -680,34 +680,40 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
   -- XXX: better name for the variables?
   · intro Φ Ψ Δ
     change uBordismClass.sum (uBordismClass.sum Φ Ψ) Δ = uBordismClass.sum Φ (uBordismClass.sum Ψ Δ)
-    -- use UnorientedBordism.sumAssoc
-    sorry
-  · intro Φ
-    change uBordismClass.sum (uBordismClass.empty X k I) Φ = Φ
-    -- change: s ⊕ ∅ is equivalent to s, i.e. bordant
-    -- use UnorientedBordism.sumEmpty (or perhaps emptySum)
+    set φ := Φ.out with φ_eq
+    set ψ := Ψ.out with ψ_eq
+    set δ := Δ.out with δ_eq
+    simp only [sum_eq_out_sum_out]
+    rw [← φ_eq, ← ψ_eq, ← δ_eq, Quotient.eq]
+    dsimp
+    -- why does this do nothing? trans ((φ.sum ψ).sum δ)
+
+    -- have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1))
+    --   ((⟦φ.sum ψ⟧ : uBordismClass X _ I).out.sum δ) (φ.sum (⟦ψ.sum δ⟧ : uBordismClass ..).out) := by
+    have almost : unorientedBordismRelation X k I (I.prod (𝓡∂ 1))
+         ((φ.sum ψ).sum δ) (φ.sum (ψ.sum δ)) := by
+      symm
+      use UnorientedBordism.sumAssoc (X := X) (s := φ) (t := ψ) (u := δ)
     sorry
   · intro S
-    change uBordismClass.sum S S = uBordismClass.empty X k I
-    -- Choose a representative for Φ.
+    change uBordismClass.sum (uBordismClass.empty X k I) S = S
     set s := S.out with s_eq
-    -- Then s.sum s is in the equivalence class of Φ.sum Φ.
-    rw [sum_eq_out_sum_out, ← s_eq, uBordismClass.empty, Quotient.eq]
-    haveI := ChartedSpace.empty
+    nth_rw 2 [← S.out_eq]
+    rw [uBordismClass.empty, sum_eq_out_sum_out, ← s_eq, Quotient.eq]
     dsimp
-    use UnorientedBordism.sum_self (M := PEmpty.{u + 1})
-
-    rw [← Quotient.out_equiv_out]
-    trans s.sum s
-    · rw [sum_eq_out_sum_out, ← s_eq, ← Quotient.eq_mk_iff_out]
-    · haveI := ChartedSpace.empty
-      trans SingularNManifold.empty X (k := k) PEmpty I
-      · use UnorientedBordism.sum_self
-      · -- use the empty bordism here? this should be easy!
-        rw [← Quotient.mk_eq_iff_out]
-        sorry
-        /- simp only [uBordismClass.empty]
-        congr <;> sorry -/
+    haveI := ChartedSpace.empty
+    trans (SingularNManifold.empty X (k := k) PEmpty I).sum s
+    sorry -- use UnorientedBordism.sumEmpty: no, want emptySum instead!
+  · intro S
+    change uBordismClass.sum S S = uBordismClass.empty X k I
+    -- Choose a representative s for S; then Φ.sum Φ = [s.sum s].
+    set s := S.out with s_eq
+    rw [sum_eq_out_sum_out, ← s_eq, uBordismClass.empty, Quotient.eq]
+    -- But sum_self is precisely a bordism between those.
+    -- haveI := ChartedSpace.empty
+    dsimp
+    -- TODO: this fails, investigate why!
+    sorry -- use UnorientedBordism.sum_self (M := PEmpty.{u + 1})
 
 instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) where
   __ := unorientedBordismGroup_aux X k I
