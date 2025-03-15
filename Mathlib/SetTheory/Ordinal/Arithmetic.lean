@@ -2390,6 +2390,10 @@ theorem isLimit_iff_omega0_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ 
 @[deprecated "No deprecation message was provided." (since := "2024-09-30")]
 alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
 
+@[simp]
+theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=
+  mod_eq_of_lt (nat_lt_omega0 n)
+
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
 
