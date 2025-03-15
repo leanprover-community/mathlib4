@@ -523,22 +523,22 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
   ⟨frobenius_norm_conjTranspose⟩
 
 @[simp]
-theorem frobenius_norm_row (v : m → α) : ‖row ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_rowConst (v : m → α) : ‖rowConst ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [row_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [rowConst_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 
 @[simp]
-theorem frobenius_nnnorm_row (v : m → α) : ‖row ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_row v
+theorem frobenius_nnnorm_row (v : m → α) : ‖rowConst ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+  Subtype.ext <| frobenius_norm_rowConst v
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖colConst ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_colConst (v : n → α) : ‖colConst ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [colConst_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖colConst ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_col v
+theorem frobenius_nnnorm_colConst (v : n → α) : ‖colConst ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+  Subtype.ext <| frobenius_norm_colConst v
 
 @[simp]
 theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
