@@ -32,6 +32,8 @@ In a module, this is equivalent to `0` satisfying such properties.
 -/
 
 
+assert_not_exists NormedSpace
+
 open TopologicalSpace Filter Set
 
 open Topology Pointwise
@@ -192,3 +194,38 @@ instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [Loca
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))
 
 end LatticeOps
+
+section LinearOrderedSemiring
+
+instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpace R]
+    [LinearOrderedSemiring R] [OrderTopology R] :
+    LocallyConvexSpace R R where
+  convex_basis x := by
+    obtain hl | hl := isBot_or_exists_lt x
+    · let _ : Bot R := ⟨x⟩
+      let _ : OrderBot R := ⟨hl⟩
+      replace hu : x = ⊥ := rfl
+      rw [hu]
+      refine nhds_bot_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Iio _, ?_, subset_refl _⟩
+        simp_all [Iio_mem_nhds, convex_Iio]
+      · simp +contextual
+    obtain hu | hu := isTop_or_exists_gt x
+    · let _ : Top R := ⟨x⟩
+      let _ : OrderTop R := ⟨hu⟩
+      replace hu : x = ⊤ := rfl
+      rw [hu]
+      refine nhds_top_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+        simp_all [Ioi_mem_nhds, convex_Ioi]
+      · simp +contextual
+    refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
+    · simp only [id_eq, and_imp, Prod.forall]
+      intros
+      refine ⟨_, ?_, subset_refl _⟩
+      simp_all [Ioo_mem_nhds, convex_Ioo]
+    · simp +contextual
+
+end LinearOrderedSemiring
