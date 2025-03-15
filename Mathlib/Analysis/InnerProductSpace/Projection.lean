@@ -238,6 +238,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
           2 * p ≤ θ * q := by
             exact this θ (lt_min (by norm_num) (div_pos hp q_pos)) (by norm_num [θ])
           _ ≤ p := eq₁
+      unfold p q at *
       linarith
   · intro h
     apply le_antisymm

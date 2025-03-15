@@ -99,7 +99,7 @@ lemma negY_of_Z_eq_zero [NoZeroDivisors R] {P : Fin 3 → R} (hP : W'.Equation P
 
 lemma negY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.negY P / P z = W.toAffine.negY (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [negY, Affine.negY]; ring1)) -W.a₃ * div_self hPz
+  linear_combination (norm := (rw [negY, Affine.negY, toAffine]; ring1)) -W.a₃ * div_self hPz
 
 lemma Y_sub_Y_mul_Y_sub_negY {P Q : Fin 3 → R} (hP : W'.Equation P) (hQ : W'.Equation Q)
     (hx : P x * Q z = Q x * P z) :
@@ -134,20 +134,20 @@ lemma Y_ne_negY_of_Y_ne [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation
     (hy : P y * Q z ≠ Q y * P z) : P y ≠ W'.negY P := by
   have hy' : P y * Q z - W'.negY Q * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne hP hQ hPz hQz hx hy
   contrapose! hy
-  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
+  linear_combination (norm := (rw [negY]; ring1)) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
 
 lemma Y_ne_negY_of_Y_ne' [NoZeroDivisors R] {P Q : Fin 3 → R} (hP : W'.Equation P)
     (hQ : W'.Equation Q) (hPz : P z ≠ 0) (hQz : Q z ≠ 0) (hx : P x * Q z = Q x * P z)
     (hy : P y * Q z ≠ W'.negY Q * P z) : P y ≠ W'.negY P := by
   have hy' : P y * Q z - Q y * P z = 0 := sub_eq_zero.mpr <| Y_eq_of_Y_ne' hP hQ hPz hQz hx hy
   contrapose! hy
-  linear_combination (norm := ring1) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
+  linear_combination (norm := (rw [negY]; ring1)) Y_sub_Y_add_Y_sub_negY hx + Q z * hy - hy'
 
 lemma Y_eq_negY_of_Y_eq [NoZeroDivisors R] {P Q : Fin 3 → R} (hQz : Q z ≠ 0)
     (hx : P x * Q z = Q x * P z) (hy : P y * Q z = Q y * P z) (hy' : P y * Q z = W'.negY Q * P z) :
     P y = W'.negY P :=
   mul_left_injective₀ hQz <| by
-    linear_combination (norm := ring1) -Y_sub_Y_add_Y_sub_negY hx + hy + hy'
+    linear_combination (norm := (rw [negY]; ring1)) -Y_sub_Y_add_Y_sub_negY hx + hy + hy'
 
 lemma nonsingular_iff_of_Y_eq_negY {P : Fin 3 → F} (hPz : P z ≠ 0) (hy : P y = W.negY P) :
     W.Nonsingular P ↔ W.Equation P ∧ eval P W.polynomialX ≠ 0 := by
@@ -232,6 +232,7 @@ private lemma toAffine_slope_of_eq {P Q : Fin 3 → F} (hP : W.Equation P) (hQ :
   simp only [X_eq_iff hPz hQz, ne_eq, Y_eq_iff' hPz hQz] at hx hy
   rw [Affine.slope_of_Y_ne hx <| negY_of_Z_ne_zero hQz ▸ hy, ← negY_of_Z_ne_zero hPz]
   field_simp [eval_polynomialX, hPz]
+  rw [negY, toAffine]
   ring1
 
 variable (W') in
@@ -295,7 +296,7 @@ private lemma toAffine_addX_of_eq {P : Fin 3 → F} (hPz : P z ≠ 0) {n d : F} 
     W.toAffine.addX (P x / P z) (P x / P z) (-n / P z / d) =
       (n ^ 2 - W.a₁ * n * P z * d - W.a₂ * P z ^ 2 * d ^ 2 - 2 * P x * P z * d ^ 2) * d / P z
         / (P z * d ^ 3) := by
-  field_simp [mul_ne_zero hPz hd]
+  field_simp [mul_ne_zero hPz hd, toAffine]
   ring1
 
 lemma dblX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)
@@ -612,7 +613,7 @@ private lemma toAffine_addX_of_ne {P Q : Fin 3 → F} (hPz : P z ≠ 0) (hQz : Q
     (hd : d ≠ 0) : W.toAffine.addX (P x / P z) (Q x / Q z) (n / d) =
       (n ^ 2 * P z * Q z + W.a₁ * n * P z * Q z * d - W.a₂ * P z * Q z * d ^ 2 - P x * Q z * d ^ 2
         - Q x * P z * d ^ 2) * d / (P z * Q z) ^ 2 / (d ^ 3 / (P z * Q z)) := by
-  field_simp [hd]
+  field_simp [hd, toAffine]
   ring1
 
 lemma addX_of_Z_ne_zero {P Q : Fin 3 → F} (hP : W.Equation P) (hQ : W.Equation Q) (hPz : P z ≠ 0)

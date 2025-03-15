@@ -210,7 +210,7 @@ lemma iteratedDeriv_two_cgf (h : v ∈ interior (integrableExpSet X μ)) :
     · rw [pow_two, div_mul_eq_div_div, mul_div_assoc, div_self, mul_one]
       exact (mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) h)).ne'
     · rw [deriv_cgf h]
-      ring
+      ring_nf
   _ = (∫ ω, (X ω) ^ 2 * exp (v * X ω) ∂μ) / mgf X μ v - deriv (cgf X μ) v ^ 2 := by
     congr
     convert (hasDerivAt_integral_pow_mul_exp_real h 1).deriv using 1
@@ -229,7 +229,7 @@ lemma iteratedDeriv_two_cgf_eq_integral (h : v ∈ interior (integrableExpSet X 
     rw [add_div, sub_div, sub_add]
     congr 1
     rw [mul_div_cancel_right₀, deriv_cgf h]
-    · ring
+    · ring_nf
     · exact (mgf_pos' hμ (interior_subset (s := integrableExpSet X μ) h)).ne'
   _ = (∫ ω, ((X ω) ^ 2 - 2 * X ω * deriv (cgf X μ) v + deriv (cgf X μ) v ^ 2) * exp (v * X ω) ∂μ)
       / mgf X μ v := by

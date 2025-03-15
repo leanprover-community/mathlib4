@@ -146,7 +146,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
     fun {_} ↦ hf.lmarginal μ |>.comp <| measurable_update _
   have hF₀ : Measurable fun t ↦ f (X t) := hf.comp <| measurable_update _
   let k : ℝ := s.card
-  have hk' : 0 ≤ 1 - k * p := by linarith only [hp]
+  have hk' : 0 ≤ 1 - k * p := by unfold k; linarith only [hp]
   calc ∫⁻ t, f (X t) ^ (1 - k * p)
           * ∏ j ∈ insert i s, (∫⋯∫⁻_{j}, f ∂μ) (X t) ^ p ∂ (μ i)
       = ∫⁻ t, (∫⋯∫⁻_{i}, f ∂μ) (X t) ^ p * (f (X t) ^ (1 - k * p)
@@ -176,7 +176,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
               · intros
                 exact hF₁.aemeasurable
               · simp only [sum_const, nsmul_eq_mul]
-                ring
+                unfold k; ring
               · exact hk'
               · exact fun _ _ ↦ hp₀
     _ = (∫⋯∫⁻_{i}, f ∂μ) x ^ p *
@@ -199,7 +199,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
           ∏ j ∈ s, (∫⋯∫⁻_{j}, (∫⋯∫⁻_{i}, f ∂μ) ∂μ) x ^ p := by
               -- identify the result with the RHS integrand
               congr! 2 with j hj
-              · ring_nf
+              · unfold k; ring_nf
               · congr! 1
                 rw [← lmarginal_union μ f hf]
                 · congr
@@ -707,7 +707,8 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
           exact h2u.trans subset_closure
         rel [eLpNorm_le_eLpNorm_fderiv_of_eq μ hu h2u' hp (mod_cast (zero_le p).trans_lt h2p) hp']
     _ = eLpNormLESNormFDerivOfLeConst F μ s p q * eLpNorm (fderiv ℝ u) p μ := by
-      simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]; ring
+      simp_rw [eLpNormLESNormFDerivOfLeConst, ENNReal.coe_mul]
+      unfold t C p'; ring
 
 /-- The **Gagliardo-Nirenberg-Sobolev inequality**.  Let `u` be a continuously differentiable
 function `u` supported in a bounded set `s` in a normed space `E` of finite dimension

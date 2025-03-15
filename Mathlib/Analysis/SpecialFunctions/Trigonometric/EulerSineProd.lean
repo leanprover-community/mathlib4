@@ -101,7 +101,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
       · have : ((n - 1 : ℕ) : ℂ) = (n : ℂ) - 1 := by
           rw [Nat.cast_sub (one_le_two.trans hn), Nat.cast_one]
         rw [Nat.sub_sub, this]
-        ring
+        ring_nf
   convert
     integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_sin_comp_const_mul hz x) _ _ using 1
   · refine integral_congr fun x _ => ?_

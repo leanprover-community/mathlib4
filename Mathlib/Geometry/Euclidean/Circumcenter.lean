@@ -118,7 +118,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         -- TODO(https://github.com/leanprover-community/mathlib4/issues/15486): used to be `field_simp`, but was really slow
         -- replaced by `simp only ...` to speed up. Reinstate `field_simp` once it is faster.
         simp (disch := field_simp_discharge) only [div_div, sub_div', one_mul, mul_div_assoc',
-          div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂]
+          div_mul_eq_mul_div, add_div', eq_div_iff, div_eq_iff, ycc₂, x, y]
         ring
       · rw [dist_sq_eq_dist_orthogonalProjection_sq_add_dist_orthogonalProjection_sq _ (hps hp₁),
           orthogonalProjection_vadd_smul_vsub_orthogonalProjection _ _ hcc, Subtype.coe_mk,
@@ -153,6 +153,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         dist_of_mem_subset_mk_sphere hp0 hcr, dist_eq_norm_vsub V _ cc, vadd_vsub, norm_smul, ←
         dist_eq_norm_vsub V p, Real.norm_eq_abs, ← mul_assoc, mul_comm _ |t₃|, ← mul_assoc,
         abs_mul_abs_self]
+      unfold y
       ring
     replace hcr₃ := dist_of_mem_subset_mk_sphere (Set.mem_insert _ _) hcr₃
     rw [hpo, hcc₃'', hcr₃val, ← mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
