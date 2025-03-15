@@ -45,6 +45,12 @@ lemma posPart_zero : (0 : A)⁺ = 0 := by simp [posPart_def]
 @[simp]
 lemma negPart_zero : (0 : A)⁻ = 0 := by simp [negPart_def]
 
+lemma posPart_eq_zero_of_not_isSelfAdjoint {a : A} (ha : ¬IsSelfAdjoint a) : a⁺ = 0 :=
+  cfcₙ_apply_of_not_predicate a ha
+
+lemma negPart_eq_zero_of_not_isSelfAdjoint {a : A} (ha : ¬IsSelfAdjoint a) : a⁻ = 0 :=
+  cfcₙ_apply_of_not_predicate a ha
+
 @[simp]
 lemma posPart_mul_negPart (a : A) : a⁺ * a⁻ = 0 := by
   rw [posPart_def, negPart_def]
