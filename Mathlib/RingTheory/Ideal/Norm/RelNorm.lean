@@ -84,7 +84,7 @@ theorem spanNorm_singleton {r : S} :
 theorem spanNorm_top : spanNorm R (⊤ : Ideal S) = ⊤ := by
   simp [← Ideal.span_singleton_one]
 
-theorem map_spanIntNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
+theorem map_spanIntNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (spanNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) := by
   rw [spanNorm]
   nth_rw 2 [map]
