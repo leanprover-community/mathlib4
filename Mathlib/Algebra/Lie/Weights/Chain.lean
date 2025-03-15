@@ -403,6 +403,7 @@ lemma root_space_ad_is_nilpotent
   have r : ⨆ χ ∈ s, genWeightSpace M χ = ⊤ := by
     simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ,
     iUnion_true, iSup_pos, s]
+
   have rrr : ∀ χ1 ∈ s, genWeightSpace M χ1 ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
     intro χ1
     intro a
@@ -449,22 +450,19 @@ lemma root_space_ad_is_nilpotent
 
   have ttt1 (ε : Weight K H M) (n : M) (n : genWeightSpace M ε) : A n = 0 :=
     sorry
-  have ttt2 (n : M) : A n = 0 := by
-    have : ∀ {R : Type u_1} {M : Type u_4} [inst : Semiring R] [inst_1 : AddCommMonoid M] [inst_2 : Module R M] (s : Set M),   Submodule.span R s = ⨆ x ∈ s, Submodule.span R {x} := Submodule.span_eq_iSup_of_singleton_spans
 
-
-  have ttt3 : A = 0 := by
-    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, implies_true, A]
-    ext x_1 : 1
-    simp_all only [LinearMap.zero_apply]
-
-  sorry
-
--- This is what we really want
-example [IsTriangularizable K H L] [FiniteDimensional K L]
-    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
-    _root_.IsNilpotent (ad K L x) :=
-  root_space_ad_is_nilpotent (M := L) H hχ hx
+  have ttt2 : A = 0 := by
+    haveI := [Module K M]
+    have call := Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) rr
+    apply call.2
+    intro s1
+    obtain ⟨a, ⟨b, ⟨c, d⟩⟩⟩ := s1
+    simp_all
+    obtain ⟨e, ⟨f, g⟩⟩ := c
+    simp_all
+    obtain ⟨d1, d2⟩ := d
+    exact ttt1 e a d2
+  use 5
 
 end
 
