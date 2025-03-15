@@ -317,8 +317,10 @@ variable (f : DecompositionHom FA FB) (g : DecompositionHom FB FC)
 variable {FA FB} in
 /-- The component_wise_hom abelian group morphism obtained from the
 restriction of a `DecompositionHom` to its `i`-th component. -/
-def component_wise_hom (i : ι) : FA i → FB i :=
-  Subtype.map f (fun _ ha ↦ f.component_wise ha)
+def component_wise_hom (i : ι) : FA i →+ FB i where
+  toFun := Subtype.map f (fun _ ha ↦ f.component_wise ha)
+  map_zero' := by aesop
+  map_add' := by aesop
 
 /-- The identity map as a `DecompositionHom` of same decomposition. -/
 def id : DecompositionHom FA FA where
