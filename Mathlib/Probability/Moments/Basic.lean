@@ -429,15 +429,4 @@ lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = ex
 
 end MomentGeneratingFunction
 
-lemma aemeasurable_exp_mul {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
-    AEStronglyMeasurable (fun ω ↦ rexp (t * X ω)) μ :=
-  (measurable_exp.comp_aemeasurable (hX.const_mul t)).aestronglyMeasurable
-
-lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : 0 ≤ t)
-    (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
-    Integrable (fun ω ↦ exp (t * X ω)) μ := by
-  refine .of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) ?_
-  filter_upwards [hb] with ω hb
-  exact ⟨by positivity, by gcongr⟩
-
 end ProbabilityTheory

@@ -176,6 +176,26 @@ lemma analyticOnNhd_cgf : AnalyticOnNhd ℝ (cgf X μ) (interior (integrableExpS
 lemma analyticOn_cgf : AnalyticOn ℝ (cgf X μ) (interior (integrableExpSet X μ)) :=
   analyticOnNhd_cgf.analyticOn
 
+lemma differentiableAt_cgf (ht : t ∈ interior (integrableExpSet X μ)) :
+    DifferentiableAt ℝ (cgf X μ) t := (analyticAt_cgf ht).differentiableAt
+
+lemma analyticOnNhd_iteratedDeriv_cgf (n : ℕ) :
+    AnalyticOnNhd ℝ (iteratedDeriv n (cgf X μ)) (interior (integrableExpSet X μ)) := by
+  rw [iteratedDeriv_eq_iterate]
+  exact analyticOnNhd_cgf.iterated_deriv n
+
+lemma analyticOn_iteratedDeriv_cgf (n : ℕ) :
+    AnalyticOn ℝ (iteratedDeriv n (cgf X μ)) (interior (integrableExpSet X μ)) :=
+  (analyticOnNhd_iteratedDeriv_cgf n).analyticOn
+
+lemma analyticAt_iteratedDeriv_cgf (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    AnalyticAt ℝ (iteratedDeriv n (cgf X μ)) v :=
+  analyticOnNhd_iteratedDeriv_cgf n v hv
+
+lemma differentiableAt_iteratedDeriv_cgf (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+    DifferentiableAt ℝ (iteratedDeriv n (cgf X μ)) v :=
+  (analyticAt_iteratedDeriv_cgf hv n).differentiableAt
+
 end AnalyticCGF
 
 section DerivCGF
