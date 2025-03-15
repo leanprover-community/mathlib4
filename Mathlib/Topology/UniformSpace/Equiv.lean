@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton,
 Anatole Dedecker
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Pi
 
@@ -269,10 +269,9 @@ def prodAssoc : (α × β) × γ ≃ᵤ α × β × γ where
   uniformContinuous_toFun :=
     (uniformContinuous_fst.comp uniformContinuous_fst).prod_mk
       ((uniformContinuous_snd.comp uniformContinuous_fst).prod_mk uniformContinuous_snd)
-  uniformContinuous_invFun := by -- Porting note: the `rw` was not necessary in Lean 3
-    rw [Equiv.invFun, Equiv.prodAssoc]
-    exact (uniformContinuous_fst.prod_mk (uniformContinuous_fst.comp
-    uniformContinuous_snd)).prod_mk (uniformContinuous_snd.comp uniformContinuous_snd)
+  uniformContinuous_invFun :=
+    (uniformContinuous_fst.prod_mk (uniformContinuous_fst.comp
+      uniformContinuous_snd)).prod_mk (uniformContinuous_snd.comp uniformContinuous_snd)
   toEquiv := Equiv.prodAssoc α β γ
 
 /-- `α × {*}` is uniformly isomorphic to `α`. -/
@@ -352,7 +351,6 @@ def piFinTwo (α : Fin 2 → Type u) [∀ i, UniformSpace (α i)] : (∀ i, α i
     uniformContinuous_pi.mpr <| Fin.forall_fin_two.2 ⟨uniformContinuous_fst, uniformContinuous_snd⟩
 
 /-- Uniform isomorphism between `α² = Fin 2 → α` and `α × α`. -/
--- Porting note: made `α` explicit
 @[simps! -fullyApplied]
 def finTwoArrow (α : Type*) [UniformSpace α] : (Fin 2 → α) ≃ᵤ α × α :=
   { piFinTwo fun _ => α with toEquiv := finTwoArrowEquiv α }
