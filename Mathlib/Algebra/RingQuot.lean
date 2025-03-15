@@ -233,6 +233,14 @@ theorem sub_quot {R : Type uR} [Ring R] (r : R → R → Prop) {a b} :
 theorem smul_quot [Algebra S R] {n : S} {a : R} :
     (n • ⟨a⟩ : RingQuot r) = ⟨n • a⟩ := rfl
 
+/-- `RingQuot` is a wrapper around `(RingQuot.ringCon r).Quotient` -/
+@[simps]
+def ringEquivQuotient : RingQuot r ≃+* (RingQuot.ringCon r).Quotient where
+  __ := equivQuotient r
+  toFun := toQuot
+  map_mul' _ _ := congrArg _ <| mul_def _ _ _
+  map_add' _ _ := congrArg _ <| add_def _ _ _
+
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
   ⟨fun s t ⟨a⟩ => smul_assoc s t a⟩
@@ -331,19 +339,14 @@ instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot 
 /-- The quotient map from a ring to its quotient, as a homomorphism of rings.
 -/
 irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
-  { toFun := fun x ↦ ⟨Quot.mk _ x⟩
-    map_one' := by simp [← one_quot]
-    map_mul' := by simp [mul_quot]
-    map_zero' := by simp [← zero_quot]
-    map_add' := by simp [add_quot] }
+  .comp (ringEquivQuotient r).symm (ringCon r).mk'
 
 theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r x = mkRingHom r y := by
-  simp [mkRingHom_def, Quot.sound (Rel.of w)]
+  simpa [mkRingHom_def, ringCon] using .rel _ _ (Rel.of w)
 
 theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
-  simp only [mkRingHom_def, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-  rintro ⟨⟨⟩⟩
-  simp
+  rw [mkRingHom_def]
+  exact (ringEquivQuotient r).symm.surjective.comp Quotient.mk_surjective
 
 @[ext 1100]
 theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+* T)
@@ -356,23 +359,24 @@ variable [Semiring T]
 
 irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
-  { toFun := fun x ↦ Quot.lift f
-        (by
-          rintro _ _ r
-          induction r with
-          | of r => exact h r
-          | add_left _ r' => rw [map_add, map_add, r']
-          | mul_left _ r' => rw [map_mul, map_mul, r']
-          | mul_right _ r' => rw [map_mul, map_mul, r'])
-        x.toQuot
-    map_zero' := by simp only [← zero_quot, f.map_zero]
-    map_add' := by
-      rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-      simp only [add_quot, f.map_add x y]
-    map_one' := by simp only [← one_quot, f.map_one]
-    map_mul' := by
-      rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
-      simp only [mul_quot, f.map_mul x y] }
+  .comp _ (ringEquivQuotient r).toRingHom
+  -- { toFun := fun x ↦ Quot.lift f
+  --       (by
+  --         rintro _ _ r
+  --         induction r with
+  --         | of r => exact h r
+  --         | add_left _ r' => rw [map_add, map_add, r']
+  --         | mul_left _ r' => rw [map_mul, map_mul, r']
+  --         | mul_right _ r' => rw [map_mul, map_mul, r'])
+  --       x.toQuot
+  --   map_zero' := by simp only [← zero_quot, f.map_zero]
+  --   map_add' := by
+  --     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
+  --     simp only [add_quot, f.map_add x y]
+  --   map_one' := by simp only [← one_quot, f.map_one]
+  --   map_mul' := by
+  --     rintro ⟨⟨x⟩⟩ ⟨⟨y⟩⟩
+  --     simp only [mul_quot, f.map_mul x y] }
 
 /-- Any ring homomorphism `f : R →+* T` which respects a relation `r : R → R → Prop`
 factors uniquely through a morphism `RingQuot r →+* T`.
