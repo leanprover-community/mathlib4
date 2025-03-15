@@ -39,20 +39,22 @@ open scoped ENNReal NNReal
 
 namespace Real
 
+/-- Real numbers `p q r : ℝ` are said to be a **Hölder triple** if `p` and `q` are positive
+and `p⁻¹ + q⁻¹ = r⁻¹`. -/
 @[mk_iff]
 structure HolderTriple (p q r : ℝ) : Prop where
   inv_add_inv' : p⁻¹ + q⁻¹ = r⁻¹
   left_pos : 0 < p
   right_pos : 0 < q
 
-/-- Two real exponents `p, q` are Hölder conjugate if they are positive and satisfy the equality
-`p⁻¹ + q⁻¹ = 1`. This condition shows up in many theorems in analysis, notably related to `L^p`
-norms.
+/-- Real numbers `p q : ℝ` are **Hölder conjugate** if they are positive and satisfy the
+equality `p⁻¹ + q⁻¹ = 1`. This is an abbreviation for `Real.HolderTriple p q 1`. This condition
+shows up in many theorems in analysis, notably related to `L^p` norms.
 
 It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `Real.holderConjugate_iff`. -/
 abbrev HolderConjugate (p q : ℝ) := HolderTriple p q 1
 
-/-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
+/-- The conjugate exponent of `p` is `q = p / (p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
 def conjExponent (p : ℝ) : ℝ := p / (p - 1)
 
 variable {a b p q r : ℝ}
@@ -75,7 +77,6 @@ protected lemma symm : q.HolderTriple p r where
   left_pos := h.right_pos
   right_pos := h.left_pos
 
--- original lemmas, but in new namespace
 theorem pos : 0 < p := h.left_pos
 theorem nonneg : 0 ≤ p := h.pos.le
 theorem ne_zero : p ≠ 0 := h.pos.ne'
@@ -86,8 +87,6 @@ theorem one_div_pos : 0 < 1 / p := _root_.one_div_pos.2 h.pos
 theorem one_div_nonneg : 0 ≤ 1 / p := le_of_lt h.one_div_pos
 theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
--- same lemmas as above, but for `r`, these are new, and they all need docstrings
--- open to naming suggestions without primes.
 /-- For `r`, instead of `p` -/
 theorem pos' : 0 < r := inv_pos.mp <| h.inv_add_inv_eq_inv ▸ add_pos h.inv_pos h.symm.inv_pos
 /-- For `r`, instead of `p` -/
@@ -107,7 +106,6 @@ theorem one_div_nonneg' : 0 ≤ 1 / r := le_of_lt h.one_div_pos'
 /-- For `r`, instead of `p` -/
 theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
 
--- generic triple lemmas to match `ENNReal.HolderTriple`
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := h.inv_add_inv_eq_inv.symm
 lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by simpa using h.inv_add_inv_eq_inv
 lemma one_div_eq : 1 / r = 1 / p + 1 / q := h.one_div_add_one_div.symm
@@ -138,7 +136,6 @@ protected lemma symm : q.HolderConjugate p := HolderTriple.symm h
 
 theorem inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 := inv_one (G := ℝ) ▸ h.inv_add_inv_eq_inv
 
--- these lemmas already existed, but under a different namespace
 theorem sub_one_pos : 0 < p - 1 := sub_pos.2 h.lt
 theorem sub_one_ne_zero : p - 1 ≠ 0 := h.sub_one_pos.ne'
 
@@ -204,15 +201,19 @@ end Real
 
 namespace NNReal
 
+/-- Nonnegative real numbers `p q r : ℝ≥0` are said to be a **Hölder triple** if `p` and `q` are
+positive and `p⁻¹ + q⁻¹ = r⁻¹`. -/
 @[mk_iff]
 structure HolderTriple (p q r : ℝ≥0) : Prop where
   inv_add_inv' : p⁻¹ + q⁻¹ = r⁻¹
   left_pos : 0 < p
   right_pos : 0 < q
 
-/-- Two real exponents `p, q` are Hölder conjugate if they are `> 1` and satisfy the equality
-`p⁻¹ + q⁻¹ = 1`. This condition shows up in many theorems in analysis, notably related to `L^p`
-norms. -/
+/-- Nonnegative real numbers `p q : ℝ≥0` are **Hölder conjugate** if they are positive and satisfy
+the equality `p⁻¹ + q⁻¹ = 1`. This is an abbreviation for `NNReal.HolderTriple p q 1`. This
+condition shows up in many theorems in analysis, notably related to `L^p` norms.
+
+It is equivalent that `1 < p` and `p⁻¹ + q⁻¹ = 1`. See `NNReal.holderConjugate_iff`. -/
 abbrev HolderConjugate (p q : ℝ≥0) := HolderTriple p q 1
 
 /-- The conjugate exponent of `p` is `q = p/(p-1)`, so that `p⁻¹ + q⁻¹ = 1`. -/
@@ -252,7 +253,6 @@ protected lemma symm : q.HolderTriple p r where
   left_pos := h.right_pos
   right_pos := h.left_pos
 
--- original lemmas, but in new namespace
 theorem pos : 0 < p := h.left_pos
 theorem nonneg : 0 ≤ p := h.pos.le
 theorem ne_zero : p ≠ 0 := h.pos.ne'
@@ -263,8 +263,6 @@ theorem one_div_pos : 0 < 1 / p := _root_.one_div_pos.2 h.pos
 theorem one_div_nonneg : 0 ≤ 1 / p := le_of_lt h.one_div_pos
 theorem one_div_ne_zero : 1 / p ≠ 0 := ne_of_gt h.one_div_pos
 
--- same lemmas as above, but for `r`, these are new, and they all need docstrings
--- open to naming suggestions without primes.
 /-- For `r`, instead of `p` -/
 theorem pos' : 0 < r := inv_pos.mp <| h.inv_add_inv_eq_inv ▸ add_pos h.inv_pos h.symm.inv_pos
 /-- For `r`, instead of `p` -/
@@ -284,7 +282,6 @@ theorem one_div_nonneg' : 0 ≤ 1 / r := le_of_lt h.one_div_pos'
 /-- For `r`, instead of `p` -/
 theorem one_div_ne_zero' : 1 / r ≠ 0 := ne_of_gt h.one_div_pos'
 
--- generic triple lemmas to match `ENNReal.HolderTriple`
 lemma inv_eq : r⁻¹ = p⁻¹ + q⁻¹ := h.inv_add_inv_eq_inv.symm
 lemma one_div_add_one_div : 1 / p + 1 / q = 1 / r := by exact_mod_cast h.coe.one_div_add_one_div
 lemma one_div_eq : 1 / r = 1 / p + 1 / q := h.one_div_add_one_div.symm
@@ -314,7 +311,6 @@ protected lemma symm : q.HolderConjugate p := HolderTriple.symm h
 
 theorem inv_add_inv_eq_one : p⁻¹ + q⁻¹ = 1 := inv_one (G := ℝ≥0) ▸ h.inv_add_inv_eq_inv
 
--- these lemmas already existed, but under a different namespace
 theorem sub_one_pos : 0 < p - 1 := tsub_pos_of_lt h.lt
 theorem sub_one_ne_zero : p - 1 ≠ 0 := h.sub_one_pos.ne'
 
@@ -379,9 +375,10 @@ protected lemma Real.HolderTriple.toNNReal {p q r : ℝ} (h : p.HolderTriple q r
 protected lemma Real.HolderConjugate.toNNReal {p q : ℝ} (h : p.HolderConjugate q) :
     p.toNNReal.HolderConjugate q.toNNReal := by
   simpa using Real.HolderTriple.toNNReal h
+
 namespace ENNReal
 
-/-- The conjugate exponent of `p` is `q = 1 + (p - 1)⁻¹`, so that `1/p + 1/q = 1`. -/
+/-- The conjugate exponent of `p` is `q = 1 + (p - 1)⁻¹`, so that `p⁻¹ + q⁻¹ = 1`. -/
 noncomputable def conjExponent (p : ℝ≥0∞) : ℝ≥0∞ := 1 + (p - 1)⁻¹
 
 lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponent p := by
@@ -394,9 +391,6 @@ lemma coe_conjExponent {p : ℝ≥0} (hp : 1 < p) : p.conjExponent = conjExponen
 
 
 variable {a b p q r : ℝ≥0∞}
-
-section -- what is the name?
-variable [h : HolderTriple p q r]
 
 @[simp, norm_cast]
 lemma holderTriple_coe_iff {p q r : ℝ≥0} (hr : r ≠ 0) :
@@ -427,8 +421,6 @@ alias ⟨_, _root_.NNReal.HolderConjugate.coe_ennreal⟩ := holderConjugate_coe_
 
 namespace HolderTriple
 
-variable (p q r : ℝ≥0∞)
-
 lemma _root_.Real.HolderTriple.ennrealOfReal {p q r : ℝ} (h : p.HolderTriple q r) :
     HolderTriple (ENNReal.ofReal p) (ENNReal.ofReal q) (ENNReal.ofReal r) := by
   simpa [holderTriple_iff, ofReal_inv_of_pos, h.pos, h.symm.pos, h.pos', ofReal_add, h.nonneg,
@@ -438,7 +430,6 @@ lemma _root_.Real.HolderConjugate.ennrealOfReal {p q : ℝ} (h : p.HolderConjuga
     HolderConjugate (ENNReal.ofReal p) (ENNReal.ofReal q) := by
   simpa using Real.HolderTriple.ennrealOfReal h
 
-variable {p q r} in
 lemma of_toReal (h : Real.HolderTriple p.toReal q.toReal r.toReal) : HolderTriple p q r := by
   have hp := h.pos
   have hq := h.symm.pos
@@ -446,7 +437,7 @@ lemma of_toReal (h : Real.HolderTriple p.toReal q.toReal r.toReal) : HolderTripl
   rw [toReal_pos_iff] at hp hq hr
   simpa [hp.2.ne, hq.2.ne, hr.2.ne] using h.ennrealOfReal
 
-variable {p q} in
+variable (r) in
 lemma toReal_iff (hp : 0 < p.toReal) (hq : 0 < q.toReal) :
     Real.HolderTriple p.toReal q.toReal r.toReal ↔ HolderTriple p q r := by
   refine ⟨of_toReal, fun h ↦ ⟨?_, hp, hq⟩⟩
@@ -454,31 +445,28 @@ lemma toReal_iff (hp : 0 < p.toReal) (hq : 0 < q.toReal) :
   simpa [toReal_add, Finiteness.inv_ne_top, hp.1.ne', hq.1.ne']
     using congr(ENNReal.toReal $(h.inv_add_inv_eq_inv))
 
-variable {p q} in
+variable (r) in
 lemma toReal (hp : 0 < p.toReal) (hq : 0 < q.toReal) [HolderTriple p q r] :
     Real.HolderTriple p.toReal q.toReal r.toReal :=
   toReal_iff r hp hq |>.mpr ‹_›
 
-variable {p q r} in
 lemma of_toNNReal (h : NNReal.HolderTriple p.toNNReal q.toNNReal r.toNNReal) :
     HolderTriple p q r :=
   .of_toReal <| by simpa only [coe_toNNReal_eq_toReal] using h.coe
 
-variable {p q} in
+variable (r) in
 lemma toNNReal_iff (hp : 0 < p.toNNReal) (hq : 0 < q.toNNReal) :
     NNReal.HolderTriple p.toNNReal q.toNNReal r.toNNReal ↔ HolderTriple p q r := by
   simp_rw [← NNReal.holderTriple_coe_iff, coe_toNNReal_eq_toReal]
   apply toReal_iff r ?_ ?_
   all_goals simpa [← coe_toNNReal_eq_toReal]
 
-variable {p q} in
+variable (r) in
 lemma toNNReal (hp : 0 < p.toNNReal) (hq : 0 < q.toNNReal) [HolderTriple p q r] :
     NNReal.HolderTriple p.toNNReal q.toNNReal r.toNNReal :=
   toNNReal_iff r hp hq |>.mpr ‹_›
 
 end HolderTriple
-
-end
 
 namespace HolderConjugate
 
@@ -532,7 +520,7 @@ protected lemma conjExponent {p : ℝ≥0∞} (hp : 1 ≤ p) : p.HolderConjugate
 
 instance {p : ℝ≥0∞} [Fact (1 ≤ p)] : p.HolderConjugate (conjExponent p) := .conjExponent Fact.out
 
-section -- should we name this too?
+section
 
 variable [h : HolderConjugate p q]
 
