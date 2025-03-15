@@ -390,12 +390,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithBot α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
   | ⊥, _ => isTrue <| by simp
   | (a : α), ⊥ => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
-instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithBot α) (· < ·)
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | _, ⊥ => isFalse <| by simp
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
@@ -887,12 +887,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithTop α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
   | _, ⊤ => isTrue <| by simp
   | ⊤, (a : α) => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
-instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithTop α) (· < ·)
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
   | ⊤, _ => isFalse <| by simp
   | (a : α), ⊤ => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
