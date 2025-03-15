@@ -401,8 +401,23 @@ instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).No
   (normal_subgroupOf_iff_le_normalizer H.le_normalizer).mpr le_rfl
 
 @[to_additive]
-theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
+theorem le_normalizer_of_normal_subgroupOf [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) :
+    K ≤ H.normalizer :=
   (normal_subgroupOf_iff_le_normalizer HK).mp hK
+
+
+@[to_additive]
+theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ H.normalizer :=
+  (@normalizer_eq_top _ _ H hH) ▸ le_top
+
+/- TODO: rename `le_normalizer_of_normal'` to `le_normalizer_of_normal` when the current deprecation
+`le_normalizer_of_normal` -> `le_normalizer_of_normal_subgroupOf` is completed.
+-/
+@[to_additive]
+theorem le_normalizer_of_normal' [hH : H.Normal] : K ≤ H.normalizer := subset_normalizer_of_normal
+
+@[to_additive (attr := deprecated le_normalizer_of_normal_subgroupOf (since := "2025-03-06"))]
+alias le_normalizer_of_normal := le_normalizer_of_normal_subgroupOf
 
 @[to_additive]
 theorem inf_normalizer_le_normalizer_inf : H.normalizer ⊓ K.normalizer ≤ (H ⊓ K).normalizer :=
@@ -896,6 +911,20 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
   · show x * y * x⁻¹ * y⁻¹ ∈ H₂
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
+
+@[to_additive]
+theorem inf_subgroupOf_normal_of_le_normalizer {H N : Subgroup G}
+    (hLE : H ≤ N.normalizer) : (N.subgroupOf H).Normal := by
+  have : ((H ⊓ N).subgroupOf (H ⊓ N.normalizer)).Normal :=
+    inf_subgroupOf_inf_normal_of_right _ _ _
+  rwa [inf_eq_left.mpr hLE, inf_subgroupOf_left] at this
+
+@[to_additive]
+theorem subgroupOf_sup_normal_of_le_normalizer {H N : Subgroup G}
+    (hLE : H ≤ N.normalizer) : (N.subgroupOf (H ⊔ N)).Normal := by
+  have : (((H ⊔ N) ⊓ N).subgroupOf ((H ⊔ N) ⊓ N.normalizer)).Normal :=
+    inf_subgroupOf_inf_normal_of_right _ _ _
+  rwa [inf_of_le_right (@le_sup_right _ _ H N), inf_of_le_left (sup_le hLE le_normalizer)] at this
 
 end SubgroupNormal
 
