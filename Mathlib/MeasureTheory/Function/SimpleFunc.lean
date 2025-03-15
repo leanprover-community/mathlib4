@@ -1176,8 +1176,8 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : 
     by_cases hy : y ∈ f ⁻¹' {x} <;> simp [g, hy]
 
 /-- To prove something for an arbitrary simple function, it suffices to show
-that the property holds for constant functions and that if it holds for `f` and `g` and
-`s` is a measurable set then it holds for `f.piecewise h hs g`.
+that the property holds for constant functions and that it is closed under piecewise combinations
+of functions.
 
 To use in an induction proof, the syntax is `induction f with`. -/
 @[induction_eliminator]
