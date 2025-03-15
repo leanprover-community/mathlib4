@@ -155,3 +155,42 @@ theorem exact_of_strict_exact [DecidableEq ι] (fstrict : f.IsStrict) (gstrict :
     (fun i x ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i x)
 
 end exactness
+
+
+
+
+
+section
+
+open AddSubgroup FilteredAddGroupHom IsFiltration
+
+variable {ι R S T σR σS σT : Type*}
+
+variable [AddCommGroup R] [SetLike σR R] [AddSubgroupClass σR R] {FR : ℤ → σR} {monoR : Monotone FR}
+
+variable [AddCommGroup S] [SetLike σS S] [AddSubgroupClass σS S] {FS : ℤ → σS} {monoS : Monotone FS}
+
+variable [AddCommGroup T] [SetLike σT T] [AddSubgroupClass σT T] {FT : ℤ → σT} {monoT : Monotone FT}
+
+variable (f : FilteredAddGroupHom FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)))
+
+variable (g : FilteredAddGroupHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)))
+
+lemma shrinking_lemma (S' : AddSubgroup S) {p : ℤ} (y : (ofClass (FS p) ⊓ S' : AddSubgroup S))
+    (h : ∀ i : ℤ, S' ⊓ ofClass (FS i) ≤ AddSubgroup.map f (ofClass (FR i))) :
+  ∀ s : ℕ, ∃ x : FR p, y - (f.toAddMonoidHom x) ∈ FS (p - s - 1) := sorry
+
+
+
+theorem exact_of_graded_exact
+    (exhaustive : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
+    (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
+    (exact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact f.toAddMonoidHom g.toAddMonoidHom := by
+  -- refine Function.Exact.of_comp_of_mem_range ?_ ?_
+  -- · sorry
+  -- · intro y yto0
+  --   have : ∃ p : ℤ, y ∈ FS p := sorry
+  --   have : ∀ s : ℕ, ∃ x : FS p,
+
+
+end
