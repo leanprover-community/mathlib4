@@ -817,7 +817,7 @@ theorem compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.i
 @[simp]
 theorem image_inl_inter_image_inr {X Y} (u : Set X) (v : Set Y) :
     Sum.inl '' u ∩ Sum.inr '' v = ∅ := by
-  apply subset_empty_iff.mp
+  rw [← subset_empty_iff]
   intro x hx
   nomatch hx
 
