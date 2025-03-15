@@ -33,14 +33,14 @@ namespace modelCategory
 def I : MorphismProperty SSet.{u} :=
   .ofHoms (fun (n : ℕ) ↦ (boundary.{u} n).ι)
 
-lemma subcomplexBoundary_ι_mem_I (n : ℕ) :
+lemma boundary_ι_mem_I (n : ℕ) :
     I (boundary.{u} n).ι := by constructor
 
 /-- The generating trivial cofibrations. -/
 def J : MorphismProperty SSet.{u} :=
   ⨆ n, .ofHoms (fun i ↦ (horn.{u} (n + 1) i).ι)
 
-lemma subcomplexHorn_ι_mem_J (n : ℕ) (i : Fin (n + 2)):
+lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)):
     J (horn.{u} (n + 1) i).ι := by
   simp only [J, iSup_iff]
   exact ⟨n, ⟨i⟩⟩
@@ -84,7 +84,7 @@ lemma cofibration_of_mono [Mono f] : Cofibration f := by rwa [cofibration_iff]
 instance [hf : Fibration f] {n : ℕ} (i : Fin (n + 2)) :
     HasLiftingProperty (horn (n + 1) i).ι f := by
   rw [fibration_iff] at hf
-  exact hf _ (subcomplexHorn_ι_mem_J _ _)
+  exact hf _ (horn_ι_mem_J _ _)
 
 end
 
