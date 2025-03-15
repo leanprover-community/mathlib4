@@ -184,13 +184,13 @@ lemma eq_of_mem_takeUntil_find (hp : b ∈ (p.takeUntil (p.find P) find_mem_supp
   | @cons u v w h p ih =>
     by_cases hu : P u
     · have hf := find_cons_pos h p hu
-      rw [ ← (cons h p).takeUntil_eq _ (cons h p).start_mem_support hf.symm] at *
+      rw [ ← (cons h p).takeUntil_of_eq _ (cons h p).start_mem_support hf.symm] at *
       aesop
     · have hf := find_cons_neg h p hu
       have hnu : u ≠ p.find P := by
         intro h; apply hu; rw [h, ← hf]
         exact find_spec_some ⟨support_takeUntil_subset _ _ hp, hb⟩
-      rw [ ← (cons h p).takeUntil_eq _ (hf ▸ find_mem_support) hf.symm, support_copy,
+      rw [ ← (cons h p).takeUntil_of_eq _ (hf ▸ find_mem_support) hf.symm, support_copy,
          takeUntil_cons find_mem_support hnu, support_cons] at hp
       rw [hf]
       cases hp with
