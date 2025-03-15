@@ -126,16 +126,19 @@ theorem coe_nsmul {n : ℕ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x
 theorem coe_zsmul {n : ℤ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x : AddCircle p) :=
   rfl
 
+@[simp, norm_cast]
 theorem coe_add (x y : 𝕜) : (↑(x + y) : AddCircle p) = (x : AddCircle p) + (y : AddCircle p) :=
   rfl
 
+@[simp, norm_cast]
 theorem coe_sub (x y : 𝕜) : (↑(x - y) : AddCircle p) = (x : AddCircle p) - (y : AddCircle p) :=
   rfl
 
+@[simp, norm_cast]
 theorem coe_neg {x : 𝕜} : (↑(-x) : AddCircle p) = -(x : AddCircle p) :=
   rfl
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem coe_zero : ↑(0 : 𝕜) = (0 : AddCircle p) :=
   rfl
 
