@@ -831,9 +831,7 @@ theorem Topology.IsInducing.sumElim (hf : IsInducing f) (hg : IsInducing g)
   intro x
   apply le_antisymm ((hf.continuous.sumElim hg.continuous).tendsto x).le_comap
   intro s hs
-  rw [mem_comap_iff_compl, ← image_preimage_inl_union_image_preimage_inr sᶜ]
-  simp_rw [image_union, ← image_comp, elim_comp_inl, elim_comp_inr, preimage_compl, compl_union,
-    inter_mem_iff, ← mem_comap_iff_compl]
+  rw [comap_sumElim_eq, mem_sup, mem_map, mem_map]
   obtain x | x := x <;>
   simp only [nhds_inl, nhds_inr, mem_map] at hs <;>
   simp only [elim_inl, elim_inr, ← hf.nhds_eq_comap, ← hg.nhds_eq_comap, hs, true_and, and_true] <;>
@@ -862,9 +860,8 @@ theorem Topology.IsInducing.disjoint_of_sumElim_aux (h : IsInducing (Sum.elim f 
   rw [← comap_eq_bot_iff_compl_range]
   specialize h (inr x)
   rw [nhds_inr, elim_inr] at h
-  apply_fun (map inl ⊤ ⊓ ·) at h
   simpa only [map_inl_inf_map_inr, inf_sup_left, sup_bot_eq, ← map_inf, inl_injective, top_inf_eq,
-    map_eq_bot_iff] using h
+    map_eq_bot_iff] using congr(map inl ⊤ ⊓ $h)
 
 -- has a one-line proof, except for an import cycle: (Homeomorph.sumComm X Y).isOpenEmbedding
 theorem IsOpenEmbedding.sumSwap : IsOpenEmbedding (@Sum.swap Y X) := sorry
