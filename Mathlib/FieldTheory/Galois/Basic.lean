@@ -184,10 +184,14 @@ namespace IntermediateField
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 
-theorem mem_fixedField_iff (x) :
+@[simp] lemma mem_fixedField_iff (x) :
     x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
   show x ∈ MulAction.fixedPoints H E ↔ _
   simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
+
+@[simp] lemma fixedField_bot : fixedField (⊥ : Subgroup (E ≃ₐ[F] E)) = ⊤ := by
+  ext
+  simp
 
 theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
     finrank (fixedField H) E = Fintype.card H :=
@@ -204,6 +208,17 @@ lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) 
   intro K K' h
   rw [← le_iff_le]
   exact le_trans h ((le_iff_le _ _).mpr (le_refl K'.fixingSubgroup))
+
+@[simp] lemma mem_fixingSubgroup_iff (σ) : σ ∈ fixingSubgroup K ↔ ∀ x ∈ K, σ x = x :=
+  _root_.mem_fixingSubgroup_iff _
+
+@[simp] lemma fixingSubgroup_top : fixingSubgroup (⊤ : IntermediateField F E) = ⊥ := by
+  ext
+  simp [DFunLike.ext_iff]
+
+@[simp] lemma fixingSubgroup_bot : fixingSubgroup (⊥ : IntermediateField F E) = ⊤ := by
+  ext
+  simp [mem_bot]
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
@@ -258,6 +273,19 @@ theorem fixedField_fixingSubgroup [FiniteDimensional F E] [h : IsGalois F E] :
     Fintype.card_congr (IntermediateField.fixingSubgroupEquiv K).toEquiv]
   exact (card_aut_eq_finrank K E).symm
 
+@[simp] lemma fixedField_top [IsGalois F E] [FiniteDimensional F E] :
+    fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥ := by
+  rw [← fixingSubgroup_bot, fixedField_fixingSubgroup]
+
+theorem mem_bot_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
+    x ∈ (⊥ : IntermediateField F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x := by
+  rw [← fixedField_top, mem_fixedField_iff]
+  simp only [Subgroup.mem_top, forall_const]
+
+theorem mem_range_algebraMap_iff_fixed [IsGalois F E] [FiniteDimensional F E] (x : E) :
+    x ∈ Set.range (algebraMap F E) ↔ ∀ f : E ≃ₐ[F] E, f x = x :=
+  mem_bot_iff_fixed x
+
 theorem card_fixingSubgroup_eq_finrank [DecidablePred (· ∈ IntermediateField.fixingSubgroup K)]
     [FiniteDimensional F E] [IsGalois F E] :
     Fintype.card (IntermediateField.fixingSubgroup K) = finrank K E := by
@@ -309,8 +337,8 @@ open scoped Pointwise
 
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp [fixingSubgroup, Subgroup.ext_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
-    restrictNormalHom_apply, mem_fixingSubgroup_iff]
+  simp [Subgroup.ext_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
+    restrictNormalHom_apply]
 
 namespace IsGalois
 
