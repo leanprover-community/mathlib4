@@ -217,28 +217,6 @@ lemma isEmptyRingEquiv_eq_coeff_zero {σ R : Type*} [CommSemiring R] [IsEmpty σ
     isEmptyRingEquiv R σ x = x.coeff 0 := by
   obtain ⟨x, rfl⟩ := (isEmptyRingEquiv R σ).symm.surjective x; simp
 
-variable {R} {S : Type*} [CommSemiring S] (f : R →+* S)
-
-lemma isEmptyRingEquiv_comp_map :
-    (isEmptyRingEquiv S σ : MvPolynomial σ S →+* S).comp (map f) =
-      f.comp (isEmptyRingEquiv R σ) := by
-  ext i
-  · simp
-  · exact isEmptyElim i
-
-lemma isEmptyRingEquiv_map_apply (p : MvPolynomial σ R) :
-    isEmptyRingEquiv S σ (map f p) = f (isEmptyRingEquiv R σ p) :=
-  congr($(isEmptyRingEquiv_comp_map f) p)
-
-lemma map_comp_isEmptyRingEquiv_symm_apply (r : R) :
-    map f ((isEmptyRingEquiv R σ).symm r) = (isEmptyRingEquiv S σ).symm (f r) := by
-  simp_rw [isEmptyRingEquiv_symm_apply, map_C]
-
-lemma map_comp_isEmptyRingEquiv_symm :
-    (map f).comp (isEmptyRingEquiv R σ).symm =
-      ((isEmptyRingEquiv S σ).symm : S →+* MvPolynomial σ S).comp f := by
-  ext1; apply map_comp_isEmptyRingEquiv_symm_apply
-
 end isEmptyRingEquiv
 
 /-- A helper function for `sumRingEquiv`. -/
@@ -599,21 +577,5 @@ theorem rename_polynomial_aeval_X {σ τ : Type*} (f : σ → τ) (i : σ) (p : 
   rw [← aeval_algHom_apply, rename_X]
 
 end Equiv
-
-section
-
-variable {S} [CommSemiring R] [CommSemiring S] [Algebra R S]
-
-attribute [local instance] algebraMvPolynomial
-
-theorem aeval_C_comp_mapRingHom (s : S) :
-    (Polynomial.aeval (C (σ := σ) s)).toRingHom.comp (mapRingHom <| C (σ := σ)) =
-      C.comp (Polynomial.aeval (R := R) s).toRingHom := by ext <;> simp
-
-theorem map_C_aeval_C (p : R[X]) (s : S) :
-    (Polynomial.map (C (σ := σ)) p).aeval (C (σ := σ) s) = C (p.aeval s) :=
-  congr($(aeval_C_comp_mapRingHom s) _)
-
-end
 
 end MvPolynomial
