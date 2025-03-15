@@ -285,16 +285,16 @@ section FaithfulSMul
 
 instance (R : Type*) [NonAssocSemiring R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
 
-variable (R A : Type*) [CommSemiring R] [Semiring A]
+variable (R A : Type*) [Semiring A]
 
-lemma faithfulSMul_iff_injective_smul_one [Module R A] [IsScalarTower R A A] :
+lemma faithfulSMul_iff_injective_smul_one [SMul R A] [IsScalarTower R A A] :
     FaithfulSMul R A ↔ Injective (fun r : R ↦ r • (1 : A)) := by
   refine ⟨fun ⟨h⟩ {r₁ r₂} hr ↦ h fun a ↦ ?_, fun h ↦ ⟨fun {r₁ r₂} hr ↦ h ?_⟩⟩
   · simp only at hr
     rw [← one_mul a, ← smul_mul_assoc, ← smul_mul_assoc, hr]
   · simpa using hr 1
 
-variable [Algebra R A]
+variable [CommSemiring R] [Algebra R A]
 
 lemma faithfulSMul_iff_algebraMap_injective : FaithfulSMul R A ↔ Injective (algebraMap R A) := by
   rw [faithfulSMul_iff_injective_smul_one, Algebra.algebraMap_eq_smul_one']
