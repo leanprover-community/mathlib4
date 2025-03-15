@@ -1156,7 +1156,6 @@ theorem ceil_zero : ⌈(0 : α)⌉ = 0 := by rw [← cast_zero, ceil_intCast]
 @[simp]
 theorem ceil_one : ⌈(1 : α)⌉ = 1 := by rw [← cast_one, ceil_intCast]
 
-@[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
 
 @[bound]
@@ -1394,20 +1393,14 @@ variable {a : α}
 theorem Int.natCast_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋ := by
   rw [← Int.floor_toNat, Int.toNat_of_nonneg (Int.floor_nonneg.2 ha)]
 
-theorem Int.natCast_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
-  rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
-
-theorem Int.natCast_ceil_eq_ceil' (ha : -1 < a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
+theorem Int.natCast_ceil_eq_ceil (ha : -1 < a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
   rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg' ha)]
 
 theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
   rw [← Int.natCast_floor_eq_floor ha, Int.cast_natCast]
 
-theorem natCast_ceil_eq_intCast_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
+theorem natCast_ceil_eq_intCast_ceil (ha : -1 < a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
   rw [← Int.natCast_ceil_eq_ceil ha, Int.cast_natCast]
-
-theorem natCast_ceil_eq_intCast_ceil' (ha : -1 < a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
-  rw [← Int.natCast_ceil_eq_ceil' ha, Int.cast_natCast]
 
 end FloorRingToSemiring
 
