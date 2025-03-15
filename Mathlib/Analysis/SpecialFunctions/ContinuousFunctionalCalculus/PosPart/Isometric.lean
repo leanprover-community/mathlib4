@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2025 Frédéric Dupuis. All rights reserved.
+Copyright (c) 2025 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Frédéric Dupuis
+Authors: Jireh Loreaux
 -/
 
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
@@ -19,80 +19,35 @@ C⋆-algebra that involve the norm.
   respectively.
 -/
 
-namespace CFC
-
 variable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [SMulCommClass ℝ A A]
   [IsScalarTower ℝ A A] [StarRing A]
-  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A (IsSelfAdjoint : A → Prop)]
+  [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
-lemma norm_eq_max_norm_posPart_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
+@[simp]
+lemma CStarAlgebra.norm_posPart_le (a : A) : ‖a⁺‖ ≤ ‖a‖ := by
+  refine (em (IsSelfAdjoint a)).elim (fun ha ↦ ?_)
+    fun ha ↦ by simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha]
+  refine norm_cfcₙ_le fun x hx ↦ ?_
+  obtain (h | h) := le_or_lt x 0
+  · simp [posPart_def, max_eq_right h]
+  · simp only [posPart_def, max_eq_left h.le]
+    exact NonUnitalIsometricContinuousFunctionalCalculus.norm_quasispectrum_le a hx ha
+
+@[simp]
+lemma CStarAlgebra.norm_negPart_le (a : A) : ‖a⁻‖ ≤ ‖a‖ := by
+  simpa [CFC.negPart_neg] using norm_posPart_le (-a)
+
+open CStarAlgebra in
+lemma IsSelfAdjoint.norm_eq_max_norm_posPart_negPart (a : A) (ha : IsSelfAdjoint a := by cfc_tac) :
     ‖a‖ = max ‖a⁺‖ ‖a⁻‖ := by
-  have hsubset₁ :
-      (fun x => ‖x⁺‖) '' quasispectrum ℝ a ⊆ (fun x => ‖x‖) '' quasispectrum ℝ a := by
-    intro x hx
-    rw [Set.mem_image] at hx ⊢
-    obtain ⟨z, hz₁, hz₂⟩ := hx
-    by_cases hz₃ : z ≤ 0
-    · refine ⟨0, quasispectrum.zero_mem ℝ a, ?_⟩
-      rw [← posPart_eq_zero] at hz₃
-      simp only [hz₃, norm_zero] at hz₂
-      simp [← hz₂]
-    · refine ⟨z, hz₁, ?_⟩
-      replace hz₃ : 0 ≤ z := le_of_not_ge hz₃
-      rw [← _root_.posPart_eq_self] at hz₃
-      rwa [hz₃] at hz₂
-  have hsubset₂ :
-      (fun x => ‖x⁻‖) '' quasispectrum ℝ a ⊆ (fun x => ‖x‖) '' quasispectrum ℝ a := by
-    intro x hx
-    rw [Set.mem_image] at hx ⊢
-    obtain ⟨z, hz₁, hz₂⟩ := hx
-    by_cases hz₃ : 0 ≤ z
-    · refine ⟨0, quasispectrum.zero_mem ℝ a, ?_⟩
-      rw [← negPart_eq_zero] at hz₃
-      simp only [hz₃, norm_zero] at hz₂
-      simp [← hz₂]
-    · refine ⟨z, hz₁, ?_⟩
-      replace hz₃ : z ≤ 0 := le_of_not_ge hz₃
-      rw [← _root_.negPart_eq_neg] at hz₃
-      simpa [hz₃] using hz₂
-  have hmain : IsGreatest ((fun x => ‖x‖) '' quasispectrum ℝ a) (‖a⁺‖ ⊔ ‖a⁻‖) := by
-    refine ⟨?_, ?_⟩
-    · rcases max_cases ‖a⁺‖ ‖a⁻‖ with ⟨h₁,h₂⟩|⟨h₁,h₂⟩
-      · rw [h₁, CFC.posPart_def]
-        refine Set.mem_of_subset_of_mem hsubset₁ ?_
-        exact (IsGreatest.norm_cfcₙ (𝕜 := ℝ) (fun x => x⁺) a).1
-      · rw [h₁]
-        refine Set.mem_of_subset_of_mem hsubset₂ ?_
-        exact (IsGreatest.norm_cfcₙ (𝕜 := ℝ) (fun x => x⁻) a).1
-    · intro x hx
-      rw [le_max_iff]
-      rw [Set.mem_image] at hx
-      obtain ⟨z, hz₁, hz₂⟩ := hx
-      by_cases hz_neg : z < 0
-      · refine Or.inr ?_
-        have := _root_.negPart_eq_neg.mpr (le_of_lt hz_neg)
-        rw [← norm_neg z, ← this] at hz₂
-        rw [CFC.negPart_def, ← hz₂]
-        exact norm_apply_le_norm_cfcₙ _ _ hz₁
-      · refine Or.inl ?_
-        push_neg at hz_neg
-        have := _root_.posPart_eq_self.mpr hz_neg
-        rw [← this] at hz₂
-        rw [CFC.posPart_def, ← hz₂]
-        exact norm_apply_le_norm_cfcₙ _ _ hz₁
-  exact IsGreatest.unique
-    (NonUnitalIsometricContinuousFunctionalCalculus.isGreatest_norm_quasispectrum a ha) hmain
-
-lemma norm_posPart_le (a : A) : ‖a⁺‖ ≤ ‖a‖ := by
-  by_cases ha : IsSelfAdjoint a
-  · rw [norm_eq_max_norm_posPart_negPart a ha]
-    exact le_max_left ‖a⁺‖ ‖a⁻‖
-  · simp [posPart_eq_zero_of_not_isSelfAdjoint ha]
-
-lemma norm_negPart_le (a : A) : ‖a⁻‖ ≤ ‖a‖ := by
-  by_cases ha : IsSelfAdjoint a
-  · rw [norm_eq_max_norm_posPart_negPart a ha]
-    exact le_max_right ‖a⁺‖ ‖a⁻‖
-  · simp [negPart_eq_zero_of_not_isSelfAdjoint ha]
-
-end CFC
+  refine le_antisymm ?_ <| max_le (norm_posPart_le a) (norm_negPart_le a)
+  conv_lhs => rw [← cfcₙ_id' ℝ a]
+  rw [norm_cfcₙ_le_iff ..]
+  intro x hx
+  obtain (hx' | hx') := le_total 0 x
+  · apply le_max_of_le_left
+    refine le_of_eq_of_le ?_ <| norm_apply_le_norm_cfcₙ _ a hx
+    rw [posPart_eq_self.mpr hx']
+  · apply le_max_of_le_right
+    refine le_of_eq_of_le ?_ <| norm_apply_le_norm_cfcₙ _ a hx
+    rw [negPart_eq_neg.mpr hx', norm_neg]
