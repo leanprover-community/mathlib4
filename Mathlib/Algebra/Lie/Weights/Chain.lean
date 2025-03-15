@@ -374,6 +374,7 @@ end
 section
 
 open LieAlgebra
+set_option maxHeartbeats 400000
 
 variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
@@ -402,12 +403,42 @@ lemma root_space_ad_is_nilpotent
   have Mm : Finite s := by
     exact Subtype.finite
 
-  let v := (0 : M)
   have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n, ((toEnd K L M x) ^ m) v = 0 :=
     sorry
 
-  have exists_global_n0 : ∃ n0 : ℕ, ∀ ε ∈ s, ∀ (v : genWeightSpace M ε), ((toEnd K L M x) ^ n0) v = 0 :=
-    sorry
+  have exists_global_n0 : ∃ n0 : ℕ, ∀ ε ∈ s, ∀ (v : genWeightSpace M ε), ((toEnd K L M x) ^ n0) v = 0 := by
+    let fs := Finite.toFinset Mm
+    choose n hn using helpMe
+    simp_all
+    let nn1 : (ε : Weight K H M) → ℕ := by
+      intro ε
+      have ttt : ε ∈ s := by
+        simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
+        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
+      apply n ε ttt
+    let n0 := fs.sup nn1
+    use n0
+    intro ε hε v
+    specialize hn ε hε v
+    intro ropi
+    have ropi2 := hn ropi
+    have ropi3 : n ε hε ≤ nn1 ε := by
+      simp_all
+      simp_all only [le_refl, s, nn1]
+    have ropi4 : nn1 ε ≤ n0 := by
+      simp_all
+      dsimp [n0]
+      have ttt : ε ∈ s := by
+        simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
+        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
+      have tttt : ε ∈ fs := by
+        simp_all only [le_refl, mem_univ, Finite.toFinset_setOf, Finset.filter_True, Finset.mem_univ, s, nn1, n0, fs]
+      exact Finset.le_sup tttt
+    have hellp : n ε hε ≤ n0 := by
+      linarith [ropi3, ropi4]
+    have ropi5 := ropi2 n0 hellp
+    exact ropi5
+
   obtain ⟨n0, hn0⟩ := exists_global_n0
   let A := (toEnd K L M x) ^ n0
   have r : ⨆ χ ∈ s, genWeightSpace M χ = ⊤ := by
