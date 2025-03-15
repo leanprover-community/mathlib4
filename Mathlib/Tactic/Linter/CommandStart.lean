@@ -61,11 +61,12 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
 
 structure FormatError where
   srcPos : Nat
+  srcPos' : String.Pos := ⟨srcPos⟩
   fmtPos : Nat
   msg : String
 
 def mkFormatError (ls ms : List Char) (msg : String) : FormatError :=
-  {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := msg}
+  {srcPos := ls.length + 1, srcPos' := (String.mk ls).endPos + ⟨1⟩, fmtPos := ms.length + 1, msg := msg}
 
 partial
 def parallelScanAux : Array FormatError → List Char → List Char → Array FormatError
@@ -206,13 +207,13 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
     --dbg_trace scan.map (·.srcPos)
 
     for s in scan do
-      let mut (center', orig') := (origSubstring.stopPos, orig)
-      for i in [:orig.length - s.srcPos] do
-        --dbg_trace "{center'}, '{orig'.get (center' - origSubstring.stopPos)}' {orig'}"
-        center' := orig'.next center' -- ⟨1⟩
-        orig' := orig'.dropRight 1
-      let center := center' + origSubstring.stopPos - origSubstring.startPos
-      let center := origSubstring.stopPos - ⟨s.srcPos⟩
+      --let mut (center', orig') := (origSubstring.stopPos, orig)
+      --for i in [:orig.length - s.srcPos] do
+      --  --dbg_trace "{center'}, '{orig'.get (center' - origSubstring.stopPos)}' {orig'}"
+      --  center' := orig'.next center' -- ⟨1⟩
+      --  orig' := orig'.dropRight 1
+      --let center := center' + origSubstring.stopPos - origSubstring.startPos
+      let center := origSubstring.stopPos - s.srcPos'
       let rg : String.Range := ⟨center, center + ⟨1⟩⟩
       logInfoAt (.ofRange rg)
         m!"{s.msg}\n\n\
@@ -220,7 +221,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           Expected: '{st.takeRight (s.fmtPos + 2) |>.take 5 |>.replace "\n" "⏎"}'"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
-#check String.prev
+
   ---- We only lint up to the position given by `lintUpTo`
   --if let some finalLintPos := lintUpTo stx then
   --  if let some stype := stx.find? (unlintedNodes.contains ·.getKind) then
