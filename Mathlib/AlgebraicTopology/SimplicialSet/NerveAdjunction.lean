@@ -43,11 +43,11 @@ def nerve₂Adj.counit.app (C : Type u) [SmallCategory C] :
     (nerveFunctor₂.obj (Cat.of C)).HomotopyCategory ⥤ C := by
   fapply Quotient.lift
   · exact
-      (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
+    (whiskerRight (OneTruncation₂.ofNerve₂.natIso).hom _ ≫ ReflQuiv.adj.{u}.counit).app (Cat.of C)
   · intro x y f g rel
     obtain ⟨φ⟩ := rel
     simpa [ReflQuiv.adj, Quot.liftOn, Cat.FreeRefl.quotientFunctor, Quotient.functor,
-        Quiv.adj, OneTruncation₂.nerveHomEquiv] using
+        pathComposition, Quiv.adj, OneTruncation₂.nerveHomEquiv] using
       φ.map_comp (X := 0) (Y := 1) (Z := 2) (homOfLE (by decide)) (homOfLE (by decide))
 
 @[simp]
