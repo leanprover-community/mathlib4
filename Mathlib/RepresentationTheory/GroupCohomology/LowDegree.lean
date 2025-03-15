@@ -713,6 +713,11 @@ lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ ⇑x ∈ oneCoboun
   show (LinearMap.range ((dZero A).codRestrict (oneCocycles A) _)).mkQ _ = 0 ↔ _
   simp [LinearMap.range_codRestrict, oneCoboundaries]
 
+@[elab_as_elim]
+theorem H1_induction_on {C : H1 A → Prop}
+    (h : ∀ x : oneCocycles A, C (Submodule.Quotient.mk x)) (x : H1 A) :
+    C x := Quotient.inductionOn' x h
+
 /-- We define the 2nd group cohomology of a `k`-linear `G`-representation `A`, `H²(G, A)`, to be
 2-cocycles (i.e. `Z²(G, A) := Ker(d² : Fun(G², A) → Fun(G³, A)`) modulo 2-coboundaries
 (i.e. `B²(G, A) := Im(d¹: Fun(G, A) → Fun(G², A))`). -/
@@ -725,6 +730,11 @@ variable {A} in
 lemma H2π_eq_zero_iff (x : twoCocycles A) : H2π A x = 0 ↔ ⇑x ∈ twoCoboundaries A := by
   show (LinearMap.range ((dOne A).codRestrict (twoCocycles A) _)).mkQ _ = 0 ↔ _
   simp [LinearMap.range_codRestrict, twoCoboundaries]
+
+@[elab_as_elim]
+theorem H2_induction_on {C : H2 A → Prop}
+    (h : ∀ x : twoCocycles A, C (Submodule.Quotient.mk x)) (x : H2 A) :
+    C x := Quotient.inductionOn' x h
 
 end Cohomology
 
