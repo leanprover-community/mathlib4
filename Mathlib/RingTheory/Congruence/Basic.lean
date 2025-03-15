@@ -47,14 +47,20 @@ variable [SMul α R] [IsScalarTower α R R]
 variable [SMul β R] [IsScalarTower β R R]
 variable (c : RingCon R)
 
-instance : SMul α c.Quotient := show_term inferInstanceAs (SMul α c.toCon.Quotient)
+instance : SMul α c.Quotient := inferInstanceAs (SMul α c.toCon.Quotient)
 
 @[simp, norm_cast]
 theorem coe_smul (a : α) (x : R) : (↑(a • x) : c.Quotient) = a • (x : c.Quotient) :=
   rfl
 
 instance [SMulCommClass α β R] : SMulCommClass α β c.Quotient :=
-  (inferInstanceAs (SMulCommClass α β c.toCon.Quotient) :)
+  inferInstanceAs (SMulCommClass α β c.toCon.Quotient)
+
+instance [SMul α β] [IsScalarTower α β R] : IsScalarTower α β c.Quotient :=
+  inferInstanceAs (IsScalarTower α β c.toCon.Quotient)
+
+instance [SMul αᵐᵒᵖ R] [IsCentralScalar α R] : IsCentralScalar α c.Quotient :=
+  inferInstanceAs (IsCentralScalar α c.toCon.Quotient)
 
 end SMul
 

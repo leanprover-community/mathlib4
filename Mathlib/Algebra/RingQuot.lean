@@ -142,7 +142,7 @@ namespace RingQuot
 variable (r : R → R → Prop)
 
 /-- `RingQuot` is a wrapper around `(RingQuot.ringCon r).Quotient` -/
-@[simps]
+@[simps apply symm_apply]
 def equivQuotient : RingQuot r ≃ (RingQuot.ringCon r).Quotient where
   toFun := toQuot
   invFun := mk
@@ -243,11 +243,11 @@ def ringEquivQuotient : RingQuot r ≃+* (RingQuot.ringCon r).Quotient where
 
 instance instIsScalarTower [CommSemiring T] [SMul S T] [Algebra S R] [Algebra T R]
     [IsScalarTower S T R] : IsScalarTower S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => smul_assoc s t a⟩
+  ⟨fun s t ⟨a⟩ => congrArg mk <| smul_assoc s t a⟩
 
 instance instSMulCommClass [CommSemiring T] [Algebra S R] [Algebra T R] [SMulCommClass S T R] :
     SMulCommClass S T (RingQuot r) :=
-  ⟨fun s t ⟨a⟩ => smul_comm s t a⟩
+  ⟨fun s t ⟨a⟩ => congrArg mk <| smul_comm s t a⟩
 
 instance instAddCommMonoid (r : R → R → Prop) : AddCommMonoid (RingQuot r) := fast_instance%
   (mk_bijective r).surjective.addCommMonoid _
@@ -323,12 +323,7 @@ instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
 
 instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
-  algebraMap :=
-  { toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
-    map_one' := by simp [← one_quot]
-    map_mul' := by simp [mul_quot]
-    map_zero' := by simp [← zero_quot]
-    map_add' := by simp [add_quot] }
+  algebraMap := .comp (ringEquivQuotient r).symm (algebraMap S (RingQuot.ringCon r).Quotient)
   commutes' r := by
     rintro ⟨⟨a⟩⟩
     simp [Algebra.commutes, mul_quot]
@@ -359,7 +354,7 @@ variable [Semiring T]
 
 irreducible_def preLift {r : R → R → Prop} {f : R →+* T} (h : ∀ ⦃x y⦄, r x y → f x = f y) :
   RingQuot r →+* T :=
-  .comp _ (ringEquivQuotient r).toRingHom
+  .comp sorry (ringEquivQuotient r).toRingHom
   -- { toFun := fun x ↦ Quot.lift f
   --       (by
   --         rintro _ _ r
