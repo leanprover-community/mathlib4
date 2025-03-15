@@ -226,6 +226,9 @@ instance (priority := 100) NormedAddTorsor.to_continuousVAdd : ContinuousVAdd V 
 theorem continuous_vsub : Continuous fun x : P × P => x.1 -ᵥ x.2 :=
   uniformContinuous_vsub.continuous
 
+instance (priority := 100) NormedAddTorsor.to_continuousVSub : ContinuousVSub V P where
+  continuous_vsub := uniformContinuous_vsub.continuous
+
 theorem Filter.Tendsto.vsub {l : Filter α} {f g : α → P} {x y : P} (hf : Tendsto f l (𝓝 x))
     (hg : Tendsto g l (𝓝 y)) : Tendsto (f -ᵥ g) l (𝓝 (x -ᵥ y)) :=
   (continuous_vsub.tendsto (x, y)).comp (hf.prod_mk_nhds hg)
@@ -237,7 +240,7 @@ variable [TopologicalSpace α]
 @[fun_prop]
 theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g) :
     Continuous (fun x ↦ f x -ᵥ g x) :=
-  continuous_vsub.comp (hf.prod_mk hg :)
+  _root_.continuous_vsub.comp (hf.prod_mk hg :)
 
 @[fun_prop]
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)

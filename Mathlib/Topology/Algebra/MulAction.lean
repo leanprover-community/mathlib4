@@ -53,9 +53,18 @@ class ContinuousVAdd (M X : Type*) [VAdd M X] [TopologicalSpace M] [TopologicalS
 
 export ContinuousVAdd (continuous_vadd)
 
+/-- Class `ContinuousVSub M X` says that the subtraction ``(-ᵥ)` : X → X → M`
+is continuous in both arguments. -/
+class ContinuousVSub (M X : Type*) [VSub M X] [TopologicalSpace M] [TopologicalSpace X] :
+    Prop where
+  /-- The subtraction `(-ᵥ)` is continuous. -/
+  continuous_vsub : Continuous fun p : X × X => p.1 -ᵥ p.2
+
+export ContinuousVSub (continuous_vsub)
+
 attribute [to_additive] ContinuousSMul
 
-attribute [continuity, fun_prop] continuous_smul continuous_vadd
+attribute [continuity, fun_prop] continuous_smul continuous_vadd continuous_vsub
 
 section Main
 
