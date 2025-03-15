@@ -630,6 +630,9 @@ theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
   liftIco_continuous (by rwa [zero_add] : f 0 = f (0 + p)) (by rwa [zero_add])
 
+@[simp] lemma coe_fract (x : ℝ) : (↑(Int.fract x) : AddCircle (1 : ℝ)) = x := by
+  simp [← Int.self_sub_floor]
+
 end AddCircle
 
 end IdentifyIccEnds
