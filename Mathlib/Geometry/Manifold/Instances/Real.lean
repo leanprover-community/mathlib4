@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.IsManifold.Basic
+import Mathlib.Geometry.Manifold.Orientable
 import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
@@ -12,9 +12,10 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
-boundary structure on the real interval `[x, y]`, and prove that its boundary is indeed `{x,y}`
-whenever `x < y`. As a corollary, a product `M × [x, y]` with a manifold `M` without boundary
-has boundary `M × {x, y}`.
+boundary structure on the real interval `[x, y]`, and prove that it is orientable and its boundary
+is indeed `{x,y}` whenever `x < y`.
+As a corollary, a product `M × [x, y]` with a manifold `M` without boundary has
+boundary `M × {x, y}`.
 
 More specifically, we introduce
 * `modelWithCornersEuclideanHalfSpace n :
@@ -170,12 +171,12 @@ end
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
 -/
-def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
-    ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
+def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] (ε : SignType) :
+    ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n ε) where
   toFun := Subtype.val
-  invFun x := ⟨update x 0 (max (x 0) 0), by simp [le_refl]⟩
+  invFun x := ⟨update x 0 (ε * max (x 0) 0), by cases ε <;> simp⟩
   source := univ
-  target := { x | 0 ≤ x 0 }
+  target := { x | 0 ≤ ε * x 0 }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
   left_inv' := fun ⟨xval, xprop⟩ _ => by
@@ -498,14 +499,49 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
+/-- The manifold structure on `[x, y]` is orientable. -/
+instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
+    OrientableManifold (𝓡∂ 1) (Icc x y) where
+  compatible {e₁ e₂} he₁ he₂ := by
+    simp only [atlas, mem_singleton_iff, mem_insert_iff] at he₁ he₂
+    rcases he₁ with (rfl | rfl) <;> rcases he₂ with (rfl | rfl)
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccLeftChart x y)
+    · constructor
+      · constructor
+        · rintro z ⟨hz₁, s, ⟨hs₁, hs₂⟩, hz₂⟩
+          -- Notation, for easy of reading
+          set F := (𝓡∂ 1) ∘ ((IccLeftChart x y).symm ≫ₕ IccRightChart x y) ∘ (𝓡∂ 1).symm
+          let S := (𝓡∂ 1).symm ⁻¹' ((IccLeftChart x y).symm ≫ₕ IccRightChart x y).source
+            ∩ range (𝓡∂ 1)
+          -- Recall, this was proven above.
+          have : ContDiffOn ℝ ⊤ F S := sorry
+          show 0 < LinearMap.det (fderiv ℝ F z).toLinearMap
+          -- Choose a basis of EuclideanSpace ℝ (Fin 1), using eg. `stdOrthonormalBasis`
+          -- and OrthonormalBasis.toBasis
+          let basis : Basis (Fin 1) ℝ (EuclideanSpace ℝ (Fin 1)) := sorry
+          let Fder := fderiv ℝ F z
+          let Flin := LinearMap.toMatrix basis basis Fder.toLinearMap
+          rw [← LinearMap.det_toMatrix basis Fder,
+            Matrix.det_eq_elem_of_card_eq_one (by rw [Fintype.card_ofSubsingleton]) 0]
+          -- Next: compute the derivative of the resulting function ℝ → ℝ and prove it is positive.
+          sorry
+
+        · sorry
+      · sorry -- inverse result
+    · sorry -- similar, with left and right swapped
+    · exact mem_groupoid_of_pregroupoid.mpr
+      <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
+
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
 `instIccChartedSpace` and `instIsManifoldIcc`. -/
-
 section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by
   infer_instance
+
+instance : OrientableManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
 
 end
