@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
