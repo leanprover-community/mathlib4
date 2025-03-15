@@ -61,8 +61,8 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
 
 structure FormatError where
   srcPos : Nat
-  fmtPos : Nat := default
-  msg : String := default
+  fmtPos : Nat
+  msg : String
 
 partial
 def parallelScanAux : Array FormatError → List Char → List Char → Array FormatError
@@ -70,7 +70,8 @@ def parallelScanAux : Array FormatError → List Char → List Char → Array Fo
     if m.isWhitespace then
       parallelScanAux as ls (ms.dropWhile (·.isWhitespace))
     else
-      parallelScanAux (as.push {srcPos := ls.length+1, fmtPos := ms.length+1, msg := "extra space"}) ls (m::ms)
+      parallelScanAux
+        (as.push {srcPos := ls.length+1, fmtPos := ms.length+1, msg := "extra space"}) ls (m::ms)
   | as, '\n'::ls, m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
@@ -92,7 +93,7 @@ def parallelScanAux : Array FormatError → List Char → List Char → Array Fo
     if ms.all (·.isWhitespace) then
       as
     else
-      as.push {srcPos := 1, msg := "The formatted string finished early! (Unreachable?)"}
+      as.push {srcPos := 1, fmtPos := ms.length, msg := "The formatted string finished early! (Unreachable?)"}
 
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux ∅ src.toList fmt.toList
@@ -208,7 +209,7 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       logInfoAt (.ofRange rg)
         m!"{s.msg}\n\n\
           Original: '{orig.takeRight (s.srcPos + 2) |>.take 5 |>.replace "\n" "⏎"}'\n\
-          Expected: '{st.takeRight (s.srcPos + 2) |>.take 5 |>.replace "\n" "⏎"}'"
+          Expected: '{st.takeRight (s.fmtPos + 2) |>.take 5 |>.replace "\n" "⏎"}'"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
 
