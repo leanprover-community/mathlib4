@@ -212,7 +212,11 @@ def cast : SignType → α
   | pos => 1
   | neg => -1
 
-/-- This is a `CoeTail` since the type on the right (trivially) determines the type on the left. -/
+/-- This is a `CoeTail` since the type on the right (trivially) determines the type on the left.
+
+`outParam`-wise it could be a `Coe`, but we don't want to try applying this instance for a
+coercion to any `α`.
+-/
 instance : CoeTail SignType α :=
   ⟨cast⟩
 
