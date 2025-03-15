@@ -131,11 +131,11 @@ instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m �
   ⟨norm_conjTranspose⟩
 
 @[simp]
-theorem nnnorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
+theorem nnnorm_col (v : m → α) : ‖colConst ι v‖₊ = ‖v‖₊ := by
   simp [nnnorm_def, Pi.nnnorm_def]
 
 @[simp]
-theorem norm_col (v : m → α) : ‖col ι v‖ = ‖v‖ :=
+theorem norm_col (v : m → α) : ‖colConst ι v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_col v
 
 @[simp]
@@ -255,12 +255,12 @@ theorem linfty_opNNNorm_def (A : Matrix m n α) :
   Subtype.ext <| linfty_opNorm_def A
 
 @[simp]
-theorem linfty_opNNNorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
+theorem linfty_opNNNorm_col (v : m → α) : ‖colConst ι v‖₊ = ‖v‖₊ := by
   rw [linfty_opNNNorm_def, Pi.nnnorm_def]
   simp
 
 @[simp]
-theorem linfty_opNorm_col (v : m → α) : ‖col ι v‖ = ‖v‖ :=
+theorem linfty_opNorm_col (v : m → α) : ‖colConst ι v‖ = ‖v‖ :=
   congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_col v
 
 @[simp]
@@ -311,7 +311,7 @@ theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ 
 
 theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
   rw [← linfty_opNNNorm_col (ι := Fin 1) (A *ᵥ v), ← linfty_opNNNorm_col v (ι := Fin 1)]
-  exact linfty_opNNNorm_mul A (col (Fin 1) v)
+  exact linfty_opNNNorm_mul A (colConst (Fin 1) v)
 
 theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖ ≤ ‖A‖ * ‖v‖ :=
   linfty_opNNNorm_mulVec _ _
@@ -532,12 +532,12 @@ theorem frobenius_nnnorm_row (v : m → α) : ‖row ι v‖₊ = ‖(WithLp.equ
   Subtype.ext <| frobenius_norm_row v
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖col ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_col (v : n → α) : ‖colConst ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
   simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖col ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+theorem frobenius_nnnorm_col (v : n → α) : ‖colConst ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
   Subtype.ext <| frobenius_norm_col v
 
 @[simp]

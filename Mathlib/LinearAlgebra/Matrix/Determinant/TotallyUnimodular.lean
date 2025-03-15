@@ -180,7 +180,7 @@ alias ⟨_, IsTotallyUnimodular.fromCols_one⟩ := fromCols_one_isTotallyUnimodu
 alias ⟨_, IsTotallyUnimodular.one_fromCols⟩ := one_fromCols_isTotallyUnimodular_iff
 
 lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) :
-    (fromRows A (row m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+    (fromRows A (rowConst m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   classical
   refine fromRows_isTotallyUnimodular_iff_rows <| fun _ _ => ?_
   inhabit n
@@ -188,12 +188,15 @@ lemma fromRows_row0_isTotallyUnimodular_iff (A : Matrix m n R) :
   ext x
   simp [Pi.single_apply]
 
-lemma fromCols_col0_isTotallyUnimodular_iff (A : Matrix m n R) :
-    (fromCols A (col n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
-  rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_col,
+lemma fromCols_colConst0_isTotallyUnimodular_iff (A : Matrix m n R) :
+    (fromCols A (colConst n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
+  rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_colConst,
     fromRows_row0_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
 @[deprecated (since := "2024-12-11")]
-alias fromColumns_col0_isTotallyUnimodular_iff := fromCols_col0_isTotallyUnimodular_iff
+alias fromColumns_col0_isTotallyUnimodular_iff := fromCols_colConst0_isTotallyUnimodular_iff
+
+@[deprecated (since := "2025-03-15")] alias fromCols_col0_isTotallyUnimodular_iff :=
+  fromCols_colConst0_isTotallyUnimodular_iff
 
 end Matrix

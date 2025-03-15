@@ -27,140 +27,146 @@ variable {R : Type*} {α : Type v} {β : Type w}
 namespace Matrix
 
 /--
-`Matrix.col ι u` the matrix with all columns equal to the vector `u`.
+`Matrix.colConst ι u` the matrix with all columns equal to the vector `u`.
 
-To get a column matrix with exactly one column, `Matrix.col (Fin 1) u` is the canonical choice.
+To get a column matrix with exactly one column, `Matrix.colConst (Fin 1) u` is the canonical choice.
+(This was previously called `Matrix.col`.)
 -/
-def col (ι : Type*) (w : m → α) : Matrix m ι α :=
+def colConst (ι : Type*) (w : m → α) : Matrix m ι α :=
   of fun x _ => w x
 
 -- TODO: set as an equation lemma for `col`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
-theorem col_apply {ι : Type*} (w : m → α) (i) (j : ι) : col ι w i j = w i :=
+theorem colConst_apply {ι : Type*} (w : m → α) (i) (j : ι) : colConst ι w i j = w i :=
   rfl
 
 /--
-`Matrix.row ι u` the matrix with all rows equal to the vector `u`.
+`Matrix.rowConst ι u` the matrix with all rows equal to the vector `u`.
 
-To get a row matrix with exactly one row, `Matrix.row (Fin 1) u` is the canonical choice.
+To get a row matrix with exactly one row, `Matrix.rowConst (Fin 1) u` is the canonical choice.
+(This was previously called `Matrix.row`.)
 -/
-def row (ι : Type*) (v : n → α) : Matrix ι n α :=
+def rowConst (ι : Type*) (v : n → α) : Matrix ι n α :=
   of fun _ y => v y
 
 variable {ι : Type*}
 
 -- TODO: set as an equation lemma for `row`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
-theorem row_apply (v : n → α) (i : ι) (j) : row ι v i j = v j :=
+theorem row_apply (v : n → α) (i : ι) (j) : rowConst ι v i j = v j :=
   rfl
 
-theorem col_injective [Nonempty ι] : Function.Injective (col ι : (m → α) → Matrix m ι α) := by
+theorem colConst_injective [Nonempty ι] :
+    Function.Injective (colConst ι : (m → α) → Matrix m ι α) := by
   inhabit ι
   exact fun _x _y h => funext fun i => congr_fun₂ h i default
 
-@[simp] theorem col_inj [Nonempty ι] {v w : m → α} : col ι v = col ι w ↔ v = w :=
-  col_injective.eq_iff
+@[simp] theorem colConst_inj [Nonempty ι] {v w : m → α} : colConst ι v = colConst ι w ↔ v = w :=
+  colConst_injective.eq_iff
 
-@[simp] theorem col_zero [Zero α] : col ι (0 : m → α) = 0 := rfl
+@[simp] theorem colConst_zero [Zero α] : colConst ι (0 : m → α) = 0 := rfl
 
-@[simp] theorem col_eq_zero [Zero α] [Nonempty ι] (v : m → α) : col ι v = 0 ↔ v = 0 := col_inj
+@[simp] theorem colConst_eq_zero [Zero α] [Nonempty ι] (v : m → α) : colConst ι v = 0 ↔ v = 0 :=
+  colConst_inj
 
 @[simp]
-theorem col_add [Add α] (v w : m → α) : col ι (v + w) = col ι v + col ι w := by
+theorem colConst_add [Add α] (v w : m → α) : colConst ι (v + w) = colConst ι v + colConst ι w := by
   ext
   rfl
 
 @[simp]
-theorem col_smul [SMul R α] (x : R) (v : m → α) : col ι (x • v) = x • col ι v := by
+theorem colConst_smul [SMul R α] (x : R) (v : m → α) : colConst ι (x • v) = x • colConst ι v := by
   ext
   rfl
 
-theorem row_injective [Nonempty ι] : Function.Injective (row ι : (n → α) → Matrix ι n α) := by
+theorem rowConst_injective [Nonempty ι] :
+    Function.Injective (rowConst ι : (n → α) → Matrix ι n α) := by
   inhabit ι
   exact fun _x _y h => funext fun j => congr_fun₂ h default j
 
-@[simp] theorem row_inj [Nonempty ι] {v w : n → α} : row ι v = row ι w ↔ v = w :=
-  row_injective.eq_iff
+@[simp] theorem rowConst_inj [Nonempty ι] {v w : n → α} : rowConst ι v = rowConst ι w ↔ v = w :=
+  rowConst_injective.eq_iff
 
-@[simp] theorem row_zero [Zero α] : row ι (0 : n → α) = 0 := rfl
+@[simp] theorem rowConst_zero [Zero α] : rowConst ι (0 : n → α) = 0 := rfl
 
-@[simp] theorem row_eq_zero [Zero α] [Nonempty ι] (v : n → α) : row ι v = 0 ↔ v = 0 := row_inj
-
-@[simp]
-theorem row_add [Add α] (v w : m → α) : row ι (v + w) = row ι v + row ι w := by
-  ext
-  rfl
+@[simp] theorem rowConst_eq_zero [Zero α] [Nonempty ι] (v : n → α) : rowConst ι v = 0 ↔ v = 0 :=
+  rowConst_inj
 
 @[simp]
-theorem row_smul [SMul R α] (x : R) (v : m → α) : row ι (x • v) = x • row ι v := by
+theorem rowConst_add [Add α] (v w : m → α) : rowConst ι (v + w) = rowConst ι v + rowConst ι w := by
   ext
   rfl
 
 @[simp]
-theorem transpose_col (v : m → α) : (Matrix.col ι v)ᵀ = Matrix.row ι v := by
+theorem rowConst_smul [SMul R α] (x : R) (v : m → α) : rowConst ι (x • v) = x • rowConst ι v := by
   ext
   rfl
 
 @[simp]
-theorem transpose_row (v : m → α) : (Matrix.row ι v)ᵀ = Matrix.col ι v := by
+theorem transpose_colConst (v : m → α) : (colConst ι v)ᵀ = rowConst ι v := by
   ext
   rfl
 
 @[simp]
-theorem conjTranspose_col [Star α] (v : m → α) : (col ι v)ᴴ = row ι (star v) := by
+theorem transpose_rowConst (v : m → α) : (rowConst ι v)ᵀ = colConst ι v := by
   ext
   rfl
 
 @[simp]
-theorem conjTranspose_row [Star α] (v : m → α) : (row ι v)ᴴ = col ι (star v) := by
+theorem conjTranspose_colConst [Star α] (v : m → α) : (colConst ι v)ᴴ = rowConst ι (star v) := by
   ext
-  rfl
-
-theorem row_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.row ι (v ᵥ* M) = Matrix.row ι v * M := by
-  ext
-  rfl
-
-theorem col_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
-    Matrix.col ι (v ᵥ* M) = (Matrix.row ι v * M)ᵀ := by
-  ext
-  rfl
-
-theorem col_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.col ι (M *ᵥ v) = M * Matrix.col ι v := by
-  ext
-  rfl
-
-theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
-    Matrix.row ι (M *ᵥ v) = (M * Matrix.col ι v)ᵀ := by
-  ext
-  rfl
-
-theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
-    Matrix.row ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
-
-theorem mulVec_col_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
-    v ᵥ* Matrix.col ι w = Function.const _ (v ⬝ᵥ w) := rfl
-
-theorem row_mul_col [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
-    row ι v * col ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[simp]
-theorem row_mul_col_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) (i j) :
-    (row ι v * col ι w) i j = v ⬝ᵥ w :=
+theorem conjTranspose_rowConst [Star α] (v : m → α) : (rowConst ι v)ᴴ = colConst ι (star v) := by
+  ext
+  rfl
+
+theorem rowConst_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
+    rowConst ι (v ᵥ* M) = rowConst ι v * M := by
+  ext
+  rfl
+
+theorem colConst_vecMul [Fintype m] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : m → α) :
+    colConst ι (v ᵥ* M) = (rowConst ι v * M)ᵀ := by
+  ext
+  rfl
+
+theorem colConst_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
+    colConst ι (M *ᵥ v) = M * colConst ι v := by
+  ext
+  rfl
+
+theorem rowConst_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α) (v : n → α) :
+    rowConst ι (M *ᵥ v) = (M * colConst ι v)ᵀ := by
+  ext
+  rfl
+
+theorem rowConst_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
+    rowConst ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
+
+theorem mulVec_colConst_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
+    v ᵥ* colConst ι w = Function.const _ (v ⬝ᵥ w) := rfl
+
+theorem rowConst_mul_colConst [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) :
+    rowConst ι v * colConst ι w = of fun _ _ => v ⬝ᵥ w :=
   rfl
 
 @[simp]
-theorem diag_col_mul_row [Mul α] [AddCommMonoid α] [Unique ι] (a b : n → α) :
-    diag (col ι a * row ι b) = a * b := by
+theorem rowConst_mul_colConst_apply [Fintype m] [Mul α] [AddCommMonoid α] (v w : m → α) (i j) :
+    (rowConst ι v * colConst ι w) i j = v ⬝ᵥ w :=
+  rfl
+
+@[simp]
+theorem diag_colConst_mul_rowConst [Mul α] [AddCommMonoid α] [Unique ι] (a b : n → α) :
+    diag (colConst ι a * rowConst ι b) = a * b := by
   ext
-  simp [Matrix.mul_apply, col, row]
+  simp [Matrix.mul_apply, colConst, rowConst]
 
 variable (ι)
 
 theorem vecMulVec_eq [Mul α] [AddCommMonoid α] [Unique ι] (w : m → α) (v : n → α) :
-    vecMulVec w v = col ι w * row ι v := by
+    vecMulVec w v = colConst ι w * rowConst ι v := by
   ext
   simp [vecMulVec, mul_apply]
 
@@ -215,7 +221,7 @@ theorem updateCol_apply [DecidableEq n] {j' : n} :
 
 @[simp]
 theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : m → R) :
-    A.updateCol i b = (col (Fin 1) b).submatrix id (Function.const n 0) := by
+    A.updateCol i b = (colConst (Fin 1) b).submatrix id (Function.const n 0) := by
   ext x y
   simp [updateCol_apply, Subsingleton.elim i y]
 
@@ -223,7 +229,7 @@ theorem updateCol_subsingleton [Subsingleton n] (A : Matrix m n R) (i : n) (b : 
 
 @[simp]
 theorem updateRow_subsingleton [Subsingleton m] (A : Matrix m n R) (i : m) (b : n → R) :
-    A.updateRow i b = (row (Fin 1) b).submatrix (Function.const m 0) id := by
+    A.updateRow i b = (rowConst (Fin 1) b).submatrix (Function.const m 0) id := by
   ext x y
   simp [updateCol_apply, Subsingleton.elim i x]
 

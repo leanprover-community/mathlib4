@@ -497,4 +497,34 @@ abbrev subDownLeft {d u l r : Nat} (A : Matrix (Fin (u + d)) (Fin (l + r)) α) :
     Matrix (Fin d) (Fin l) α :=
   subDown (subLeft A)
 
+section RowCol
+
+/-- For an `m × n` `α`-matrix `A`, `A.row i` is the `i`th row of `A` as a vector in `n → α`.
+`A.row` is defeq to `A`, but explicitly refers to the 'row function` of `A` without abusing defeq,
+such as in expressions like `Set.Injective A.row`.
+(Note 03-15-2025 : the identifier `Matrix.row` used to refer to a matrix with constant rows;
+this is now called `Matrix.rowConst`) -/
+abbrev row (A : Matrix m n α) : m → n → α := A
+
+/-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
+`A.col` is defeq to `Aᵀ`, but refers to the 'column function' of `A` without abusing defeq
+(and without the simplifier unfolding transposes) in expressions like `Set.Injective A.col`.
+(Note 03-15-2025 : the identifier `Matrix.col` used to refer to a matrix with constant columns;
+this is now called `Matrix.colConst`) -/
+abbrev col (A : Matrix m n α) : n → m → α := Aᵀ
+
+@[simp]
+lemma row_apply (A : Matrix m n α) (i : m) (j : n) : A.row i j = A i j := rfl
+
+@[simp]
+lemma col_apply (A : Matrix m n α) (i : n) (j : m) : A.col i j = A j i := rfl
+
+@[simp]
+lemma transpose_row (A : Matrix m n α) : Aᵀ.row = A.col := rfl
+
+@[simp]
+lemma transpose_col (A : Matrix m n α) : Aᵀ.col = A.row := rfl
+
+end RowCol
+
 end Matrix
