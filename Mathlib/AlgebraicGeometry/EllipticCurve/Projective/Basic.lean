@@ -234,7 +234,7 @@ lemma eval_polynomial (P : Fin 3 → R) : eval P W'.polynomial =
 
 lemma eval_polynomial_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) : eval P W.polynomial / P z ^ 3 =
     W.toAffine.polynomial.evalEval (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial]; ring1))
+  linear_combination (norm := (rw [eval_polynomial, Affine.evalEval_polynomial, toAffine]; ring1))
     P y ^ 2 / P z ^ 2 * div_self hPz + W.a₁ * P x * P y / P z ^ 2 * div_self hPz
       + W.a₃ * P y / P z * div_self (pow_ne_zero 2 hPz) - W.a₂ * P x ^ 2 / P z ^ 2 * div_self hPz
       - W.a₄ * P x / P z * div_self (pow_ne_zero 2 hPz) - W.a₆ * div_self (pow_ne_zero 3 hPz)
@@ -301,7 +301,7 @@ lemma eval_polynomialX (P : Fin 3 → R) : eval P W'.polynomialX =
 
 lemma eval_polynomialX_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialX / P z ^ 2 = W.toAffine.polynomialX.evalEval (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [eval_polynomialX, Affine.evalEval_polynomialX]; ring1))
+  linear_combination (norm := (rw [eval_polynomialX, Affine.evalEval_polynomialX, toAffine]; ring1))
     W.a₁ * P y / P z * div_self hPz - 2 * W.a₂ * P x / P z * div_self hPz
       - W.a₄ * div_self (pow_ne_zero 2 hPz)
 
@@ -324,7 +324,7 @@ lemma eval_polynomialY (P : Fin 3 → R) :
 
 lemma eval_polynomialY_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     eval P W.polynomialY / P z ^ 2 = W.toAffine.polynomialY.evalEval (P x / P z) (P y / P z) := by
-  linear_combination (norm := (rw [eval_polynomialY, Affine.evalEval_polynomialY]; ring1))
+  linear_combination (norm := (rw [eval_polynomialY, Affine.evalEval_polynomialY, toAffine]; ring1))
     2 * P y / P z * div_self hPz + W.a₁ * P x / P z * div_self hPz
       + W.a₃ * div_self (pow_ne_zero 2 hPz)
 
@@ -404,7 +404,7 @@ lemma nonsingular_some (X Y : R) : W'.Nonsingular ![X, Y, 1] ↔ W'.toAffine.Non
     Affine.equation_iff', and_congr_right_iff, ← not_and_or, not_iff_not, one_pow, mul_one,
     and_congr_right_iff, Iff.comm, iff_self_and]
   intro h hX hY
-  linear_combination (norm := ring1) 3 * h - X * hX - Y * hY
+  linear_combination (norm := (rw [toAffine]; ring1)) 3 * h - X * hX - Y * hY
 
 lemma nonsingular_of_Z_ne_zero {P : Fin 3 → F} (hPz : P z ≠ 0) :
     W.Nonsingular P ↔ W.toAffine.Nonsingular (P x / P z) (P y / P z) :=
