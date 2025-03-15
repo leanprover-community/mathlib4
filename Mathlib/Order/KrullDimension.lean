@@ -858,7 +858,7 @@ lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top [Preorder α] :
   by_cases h : Nonempty α
   · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
   · constructor
-    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalType α)))
+    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalOrder α)))
     · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
 
 lemma exists_coatom_of_finiteDimensional [PartialOrder α] [OrderTop α] [FiniteDimensionalOrder α]

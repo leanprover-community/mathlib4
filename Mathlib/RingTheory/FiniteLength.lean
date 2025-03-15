@@ -3,7 +3,7 @@ Copyright (c) 2024 Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
-import Mathlib.Algebra.Module.Length
+import Mathlib.Algebra.Module.Length.Basic
 import Mathlib.RingTheory.Artinian.Module
 
 /-!
@@ -102,6 +102,7 @@ instance [IsSemisimpleModule R M] [Module.Finite R M] : IsArtinian R M :=
 
 section length
 
+variable (R) in
 theorem isFiniteLength_iff_length_finite (M : Type*) [AddCommGroup M] [Module R M] :
     IsFiniteLength R M ↔ Module.length R M ≠ ⊤ := by
   constructor

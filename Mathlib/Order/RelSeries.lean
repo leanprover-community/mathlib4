@@ -698,13 +698,13 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
   RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
-lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
+instance nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
 
 @[deprecated (since := "2025-03-01")]
 alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
 
-lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
+instance nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
   obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
   exact ⟨p 0⟩
 
@@ -718,7 +718,6 @@ lemma longestOf_len_unique [FiniteDimensionalOrder α] (p : LTSeries α)
     (is_longest : ∀ (q : LTSeries α), q.length ≤ p.length) :
     p.length = (LTSeries.longestOf α).length :=
   le_antisymm (longestOf_is_longest _) (is_longest _)
-
 
 lemma strictMono (x : LTSeries α) : StrictMono x :=
   fun _ _ h => x.rel_of_lt h
