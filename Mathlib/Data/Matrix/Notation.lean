@@ -190,20 +190,21 @@ section ColRow
 variable {ι : Type*}
 
 @[simp]
-theorem col_empty (v : Fin 0 → α) : col ι v = vecEmpty :=
+theorem colConst_empty (v : Fin 0 → α) : colConst ι v = vecEmpty :=
   empty_eq _
 
 @[simp]
-theorem col_cons (x : α) (u : Fin m → α) :
-    col ι (vecCons x u) = of (vecCons (fun _ => x) (col ι u)) := by
+theorem colConst_cons (x : α) (u : Fin m → α) :
+    colConst ι (vecCons x u) = of (vecCons (fun _ => x) (colConst ι u)) := by
   ext i j
   refine Fin.cases ?_ ?_ i <;> simp [vecHead, vecTail]
 
 @[simp]
-theorem row_empty : row ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
+theorem rowConst_empty : rowConst ι (vecEmpty : Fin 0 → α) = of fun _ => vecEmpty := rfl
 
 @[simp]
-theorem row_cons (x : α) (u : Fin m → α) : row ι (vecCons x u) = of fun _ => vecCons x u :=
+theorem rowConst_cons (x : α) (u : Fin m → α) :
+    rowConst ι (vecCons x u) = of fun _ => vecCons x u :=
   rfl
 
 end ColRow
