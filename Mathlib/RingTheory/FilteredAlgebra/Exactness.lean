@@ -162,7 +162,7 @@ end exactness
 
 section
 
-open AddSubgroup FilteredAddGroupHom IsFiltration
+open AddSubgroup FilteredAddGroupHom IsFiltration FilteredHom
 
 variable {ι R S T σR σS σT : Type*}
 
@@ -197,14 +197,10 @@ lemma shrinking_lemma (monoR : Monotone FR) (S' : AddSubgroup S) {p : ℤ}
     simp [eq, AddSubgroup.zero_mem]
 
 
-lemma piece_exact_of_exact (exact : Function.Exact Gr+[f] Gr+[g]) :
-  ∀ i : ℤ, Function.Exact Gr+(i)[f] Gr+(i)[g] := by
-    sorry
-
-
 theorem exact_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
     (exhaustiveR : letI := (mk_int FR monoR); IsExhaustiveFiltration FR (fun n ↦ FR (n - 1)))
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
+    (strict : IsStrict FR (fun n ↦ FR (n - 1))  FS (fun n ↦ FS (n - 1)) f)
     (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
     (exact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact f.toAddMonoidHom g.toAddMonoidHom := by
   refine Function.Exact.of_comp_of_mem_range ?_ ?_
