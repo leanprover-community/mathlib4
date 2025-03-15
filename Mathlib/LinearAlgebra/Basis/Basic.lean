@@ -567,3 +567,34 @@ theorem Basis.mem_span_iff_repr_mem (m : M) :
   exact smul_mem _ _ (subset_span (Set.mem_range_self i))
 
 end RestrictScalars
+
+section AddSubgroup
+
+variable {M R : Type*} [Ring R] [Nontrivial R] [NoZeroSMulDivisors ℤ R]
+  [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
+
+/--
+Let `A` be an subgroup of an additive commutative group `M` that is also an `R`-module.
+Construct a basis of `A` as a `ℤ`-basis from a `R`-basis of `E` that generates `A`.
+-/
+noncomputable def Basis.addSubgroupOfClosure (h : A = .closure (Set.range b)) :
+    Basis ι ℤ A.toIntSubmodule :=
+  (b.restrictScalars ℤ).map <|
+    LinearEquiv.ofEq _ _
+      (by rw [h, ← Submodule.span_int_eq_addSubgroup_closure, toAddSubgroup_toIntSubmodule])
+
+@[simp]
+theorem Basis.addSubgroupOfClosure_apply (h : A = .closure (Set.range b)) (i : ι) :
+    b.addSubgroupOfClosure A h i = b i := by
+  simp [addSubgroupOfClosure]
+
+@[simp]
+theorem Basis.addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (x : A) (i : ι) :
+    (b.addSubgroupOfClosure A h).repr x i = b.repr x i := by
+  suffices Finsupp.mapRange.linearMap (Algebra.linearMap ℤ R) ∘ₗ
+      (b.addSubgroupOfClosure A h).repr.toLinearMap =
+        ((b.repr : M →ₗ[R] ι →₀ R).restrictScalars ℤ).domRestrict A.toIntSubmodule by
+    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  refine (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
+
+end AddSubgroup

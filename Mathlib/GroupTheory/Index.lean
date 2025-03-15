@@ -83,6 +83,12 @@ theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
   rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
+@[to_additive]
+theorem relindex_map_equiv (H K : Subgroup G) (e : G ≃* G') :
+    (map e.toMonoidHom H).relindex (map e.toMonoidHom K) = H.relindex K := by
+  rw [← Subgroup.relindex_comap, Subgroup.map_equiv_eq_comap_symm']
+  simp [comap_comap]
+
 variable {H K L}
 
 @[to_additive relindex_mul_index]
