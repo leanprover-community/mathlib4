@@ -201,6 +201,14 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
   { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
 
+instance [IsAsymm α r] [IsAsymm β s] :
+    IsAsymm (α × β) (Prod.Lex r s) where
+  asymm
+  | (_a₁, _a₂), (_b₁, _b₂), .left _ _ h₁, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₁
+  | (_a₁, _a₂), (_, _b₂), .left _ _ h₁, .right _ _ => IsAsymm.asymm _ _ h₁ h₁
+  | (_a₁, _a₂), (_, _b₂), .right _ _, .left _ _ h₂ => IsAsymm.asymm _ _ h₂ h₂
+  | (_a₁, _a₂), (_, _b₂), .right _ h₁, .right _ h₂ => IsAsymm.asymm _ _ h₁ h₂
+
 end Prod
 
 open Prod
