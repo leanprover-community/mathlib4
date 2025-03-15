@@ -111,7 +111,7 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
 /-- If a function is meromorphic in normal form at `x`, then it is meromorphic at `x`. -/
 theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
     MeromorphicAt f x := by
-  rw [MeromorphicAt.meromorphicNFAt_iff] at hf
+  rw [meromorphicNFAt_iff_analyticAt_or] at hf
   rcases hf with h | h
   · exact h.meromorphicAt
   · obtain ⟨hf, _⟩ := h
@@ -122,7 +122,7 @@ analytic. -/
 theorem MeromorphicNFAt.nonneg_order_iff_analyticAt (hf : MeromorphicNFAt f x) :
     0 ≤ hf.meromorphicAt.order ↔ AnalyticAt 𝕜 f x := by
   constructor <;> intro h₂f
-  · rw [MeromorphicAt.meromorphicNFAt_iff] at hf
+  · rw [meromorphicNFAt_iff_analyticAt_or] at hf
     rcases hf with h | ⟨_, h₃f, _⟩
     · exact h
     · by_contra h'
@@ -133,7 +133,7 @@ theorem MeromorphicNFAt.nonneg_order_iff_analyticAt (hf : MeromorphicNFAt f x) :
 /-- Analytic functions are meromorphic in normal form. -/
 theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
     MeromorphicNFAt f x := by
-  simp [MeromorphicAt.meromorphicNFAt_iff, hf]
+  simp [meromorphicNFAt_iff_analyticAt_or, hf]
 
 /-!
 ## Continuous extension and conversion to normal form
