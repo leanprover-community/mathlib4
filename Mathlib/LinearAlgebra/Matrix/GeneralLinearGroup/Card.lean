@@ -64,17 +64,16 @@ variable (n : ℕ)
 
 /-- Equivalence between `GL n F` and `n` vectors of length `n` that are linearly independent. Given
 by sending a matrix to its columns. -/
-noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
+noncomputable def equiv_GL_linearindependent :
     GL (Fin n) 𝔽 ≃ { s : Fin n → Fin n → 𝔽 // LinearIndependent 𝔽 s } where
   toFun M := ⟨transpose M, by
     apply linearIndependent_iff_card_eq_finrank_span.2
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
-    have : Nonempty (Fin n) := Fin.pos_iff_nonempty.1 hn
-    let b := basisOfLinearIndependentOfCardEqFinrank M.2 (by simp)
+    let b := basisOfPiSpaceOfLinearIndependent M.2
     have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b
     rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
-      ← coe_basisOfLinearIndependentOfCardEqFinrank M.2]
+      ← coe_basisOfPiSpaceOfLinearIndependent M.2]
     exact isUnit_det_of_invertible _
   left_inv := fun _ ↦ Units.ext (ext fun _ _ ↦ rfl)
   right_inv := by exact congrFun rfl
@@ -82,11 +81,9 @@ noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
 /-- The cardinal of the general linear group over a finite field. -/
 theorem card_GL_field :
     Nat.card (GL (Fin n) 𝔽) = ∏ i : (Fin n), (q ^ n - q ^ ( i : ℕ )) := by
-  rcases Nat.eq_zero_or_pos n with rfl | hn
-  · simp [Nat.card_eq_fintype_card]
-  · rw [Nat.card_congr (equiv_GL_linearindependent n hn), card_linearIndependent,
+  rw [Nat.card_congr (equiv_GL_linearindependent n), card_linearIndependent,
     Module.finrank_fintype_fun_eq_card, Fintype.card_fin]
-    simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
+  simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
 
 end field
 
