@@ -95,15 +95,14 @@ lemma aestronglyMeasurable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} 
 
 @[fun_prop]
 lemma integrable_dirac [MeasurableSingletonClass Ω] {f : Ω → ℝ} :
-    Integrable f (Measure.dirac ω) := by
-  refine ⟨aestronglyMeasurable_dirac, ?_⟩
-  simp [HasFiniteIntegral, lintegral_dirac]
-
-lemma mgf_id_dirac : mgf id (Measure.dirac x) t = exp (t * x) := by rw [mgf, integral_dirac, id_eq]
+    Integrable f (Measure.dirac ω) :=
+  ⟨aestronglyMeasurable_dirac, by simp [HasFiniteIntegral, lintegral_dirac]⟩
 
 lemma mgf_dirac' [MeasurableSingletonClass Ω] :
     mgf X (Measure.dirac ω) t = exp (t * X ω) := by
   rw [mgf, integral_dirac]
+
+lemma mgf_id_dirac : mgf id (Measure.dirac x) t = exp (t * x) := by rw [mgf_dirac', id_eq]
 
 lemma mgf_add_measure {ν : Measure Ω}
     (hμ : Integrable (fun ω ↦ exp (t * X ω)) μ) (hν : Integrable (fun ω ↦ exp (t * X ω)) ν) :
@@ -113,8 +112,48 @@ lemma mgf_add_measure {ν : Measure Ω}
 lemma mgf_smul_measure (c : ℝ≥0∞) : mgf X (c • μ) t = c.toReal * mgf X μ t := by
   rw [mgf, integral_smul_measure, mgf, smul_eq_mul]
 
+lemma integral_eq_of_two_points_of_measurable [IsProbabilityMeasure μ] (hXm : Measurable X)
+    (h : ∀ᵐ ω ∂μ, X ω = a ∨ X ω = b) (hab : a ≠ b) :
+    μ[X] = (μ (X ⁻¹' {a})).toReal * a + (μ (X ⁻¹' {b})).toReal * b := by
+  rw [← setIntegral_univ]
+  have : (univ : Set Ω) =ᵐ[μ] ((X ⁻¹' {a}) ∪ (X ⁻¹' {b}) : Set Ω) := by
+    filter_upwards [h] with ω hω
+    simp only [eq_iff_iff]
+    suffices ω ∈ univ ↔ ω ∈ (X ⁻¹' {a} ∪ X ⁻¹' {b}) by exact this
+    simpa using hω
+  rw [setIntegral_congr_set this, setIntegral_union]
+  rotate_left
+  · rw [Set.disjoint_iff]
+    intro ω
+    simp only [mem_inter_iff, mem_preimage, mem_singleton_iff, mem_empty_iff_false, imp_false,
+      not_and]
+    intro hωa
+    rwa [hωa]
+  · exact hXm (measurableSet_singleton _)
+  · rw [integrableOn_congr_fun (g := fun _ ↦ a)]
+    · exact (integrable_const _).integrableOn
+    · intro ω hω
+      simpa using hω
+    · exact hXm (measurableSet_singleton _)
+  · rw [integrableOn_congr_fun (g := fun _ ↦ b)]
+    · exact (integrable_const _).integrableOn
+    · intro ω hω
+      simpa using hω
+    · exact hXm (measurableSet_singleton _)
+  congr
+  · rw [setIntegral_congr_fun (g := fun _ ↦ a)]
+    · simp
+    · exact hXm (measurableSet_singleton _)
+    · intro ω hω
+      simpa using hω
+  · rw [setIntegral_congr_fun (g := fun _ ↦ b)]
+    · simp
+    · exact hXm (measurableSet_singleton _)
+    · intro ω hω
+      simpa using hω
+
 lemma integral_eq_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurable X μ)
-    (h : ∀ᵐ ω ∂μ, X ω = a ∨ X ω = b) :
+    (h : ∀ᵐ ω ∂μ, X ω = a ∨ X ω = b) (hab : a ≠ b) :
     μ[X] = (μ (X ⁻¹' {a})).toReal * a + (μ (X ⁻¹' {b})).toReal * b := by
   sorry
 
@@ -124,13 +163,16 @@ lemma measure_left_eq_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurabl
   sorry
 
 lemma measure_right_eq_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurable X μ)
-    (h : ∀ᵐ ω ∂μ, X ω = a ∨ X ω = b) :
+    (h : ∀ᵐ ω ∂μ, X ω = a ∨ X ω = b) (hab : a ≠ b) :
     (μ (X ⁻¹' {b})).toReal = (μ[X] - a) / (b - a) := by
   sorry
 
 lemma mgf_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω = a ∨ X ω = b) (t : ℝ) :
     mgf X μ t = (1 - (μ[X] - a)/(b - a)) * exp (t * a) + (μ[X] - a)/(b - a) * exp (t * b) := by
+  by_cases hab : a = b
+  · simp only [hab, sub_self, div_zero, sub_zero, one_mul, zero_mul, add_zero]
+    sorry
   rw [← mgf_id_map hXm]
   have : μ.map X = μ (X ⁻¹' {a}) • Measure.dirac a + μ (X ⁻¹' {b}) • Measure.dirac b := by
     sorry
@@ -140,6 +182,6 @@ lemma mgf_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurable X μ)
   · exact integrable_dirac.smul_measure (measure_ne_top _ _)
   congr
   · exact measure_left_eq_of_two_points hXm h
-  · exact measure_right_eq_of_two_points hXm h
+  · exact measure_right_eq_of_two_points hXm h hab
 
 end  ProbabilityTheory
