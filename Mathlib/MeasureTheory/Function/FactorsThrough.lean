@@ -5,17 +5,16 @@ Authors: Etienne Marion
 -/
 import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 import Mathlib.Probability.Process.Filtration
-import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
 
 /-!
 # Factorization of a map from measurability
 
 Consider `f : X → Y` and `g : X → Z` and assume that `g` is measurable with respect to the pullback
-along `f`. Then `g` factors though `f`, which means that there exists `h : Y → Z` such that
-`g = h ∘ f`.
+along `f`. Then `g` factors through `f`, which means that (if `Z` is nonempty)
+there exists `h : Y → Z` such that `g = h ∘ f`.
 
-Under certain assumptions, the factorization map `h` is measurable. This is the content of the
-[Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma):
+If `Z` is completely metrizable, the factorization map `h` can be taken to be measurable.
+This is the content of the [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma):
 see `exists_eq_measurable_comp`.
 -/
 
@@ -41,7 +40,8 @@ theorem _root_.Measurable.factorsThrough [MeasurableSpace Z] [MeasurableSingleto
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then to prove `g x = g y` it is enough to prove `f x = f y`.
 
-Under certain assumptions, the factorization map `h` is measurable
+If `Z` is not empty there exists `h : Y → Z` such that `g = h ∘ f`.
+If `Z` is also completely metrizable, the factorization map `h` can be taken to be measurable
 (see `exists_eq_measurable_comp`). -/
 theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
     [PseudoMetrizableSpace Z] [T1Space Z] (hg : StronglyMeasurable[mY.comap f] g) :
