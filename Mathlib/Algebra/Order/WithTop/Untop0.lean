@@ -21,6 +21,9 @@ simplifier lemmas, akin to those that already exists for `ENat.toNat`.
 namespace WithTop
 variable {α : Type*}
 
+section Zero
+variable [Zero α]
+
 /-- Conversion from `WithTop α` to `α`, mapping `⊤` to zero. -/
 def untop₀ [Zero α] (a : WithTop α) : α := a.untopD 0
 
@@ -29,19 +32,21 @@ def untop₀ [Zero α] (a : WithTop α) : α := a.untopD 0
 -/
 
 @[simp]
-lemma untop₀_eq_zero [Zero α] (a : WithTop α) :
-    a.untop₀ = 0 ↔ a = 0 ∨ a = ⊤ := by simp [WithTop.untop₀]
+lemma untop₀_eq_zero (a : WithTop α) :
+    a.untop₀ = 0 ↔ a = 0 ∨ a = ⊤ := by simp [untop₀]
 
 @[simp]
-lemma untop₀_top [Zero α] :
-    (⊤ : WithTop α).untop₀ = (0 : α) := by simp [WithTop.untop₀]
+lemma untop₀_top :
+    (⊤ : WithTop α).untop₀ = (0 : α) := by simp [untop₀]
 
 @[simp]
-lemma untop₀_zero [Zero α] :
-    (0 : WithTop α).untop₀ = (0 : α) := by simp [WithTop.untop₀]
+lemma untop₀_zero :
+    (0 : WithTop α).untop₀ = (0 : α) := by simp [untop₀]
 
 @[simp]
-lemma untop₀_coe [Zero α] (a : α) : (a : WithTop α).untop₀ = a := rfl
+lemma untop₀_coe (a : α) : (a : WithTop α).untop₀ = a := rfl
+
+end Zero
 
 /-!
 ## Simplifying Lemmas in cases where α is an AddMonoid
@@ -51,7 +56,7 @@ lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b �
     (a + b).untop₀ = a.untop₀ + b.untop₀ := by
   lift a to α using ha
   lift b to α using hb
-  simp [← WithTop.coe_add]
+  simp [← coe_add]
 
 /-!
 ## Simplifying Lemmas in cases where α is a MulZeroClass
@@ -65,12 +70,12 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
   by_cases h₁b : b = 0
   · simp [h₁b]
   by_cases h₂a : a = ⊤
-  · simp [h₂a, WithTop.top_mul h₁b]
+  · simp [h₂a, top_mul h₁b]
   by_cases h₂b : b = ⊤
-  · simp [h₂b, WithTop.mul_top h₁a]
+  · simp [h₂b, mul_top h₁a]
   lift a to α using h₂a
   lift b to α using h₂b
-  simp [← WithTop.coe_mul]
+  simp [← coe_mul]
 
 /-!
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
@@ -81,7 +86,7 @@ lemma untop₀_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
   by_cases ha : a = ⊤
   · simp [ha]
   · lift a to α using ha
-    rw [(by rfl : -a = (↑(-a) : WithTop α)), WithTop.untop₀_coe]
+    rw [(by rfl : -a = (↑(-a) : WithTop α)), untop₀_coe]
     simp
 
 end WithTop
