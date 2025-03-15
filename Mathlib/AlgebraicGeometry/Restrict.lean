@@ -74,7 +74,9 @@ lemma ι_app (V) : U.ι.app V = X.presheaf.map
 
 @[simp]
 lemma ι_appTop :
-    U.ι.appTop = X.presheaf.map (homOfLE (x := U.ι ''ᵁ ⊤) le_top).op :=
+    U.ι.appTop = X.presheaf.map (homOfLE (x := U.ι ''ᵁ ⊤) le_top).op := by
+  simp only [Hom.appTop, Hom.appLE, Opens.map_top, ι_app, homOfLE_leOfHom, homOfLE_refl, op_id,
+    toScheme_presheaf_map, unop_id, CategoryTheory.Functor.map_id]
   rfl
 
 @[simp]
@@ -262,8 +264,11 @@ theorem Scheme.homOfLE_app {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
 
 theorem Scheme.homOfLE_appTop {U V : X.Opens} (e : U ≤ V) :
     (X.homOfLE e).appTop =
-      X.presheaf.map (homOfLE <| X.ι_image_homOfLE_le_ι_image e ⊤).op :=
-  homOfLE_app ..
+      X.presheaf.map (homOfLE <| X.ι_image_homOfLE_le_ι_image e ⊤).op := by
+  -- TODO: why does Category.comp_id not trigger here?
+  simp only [Hom.appTop, Hom.appLE, Opens.map_top, homOfLE_app, homOfLE_leOfHom, homOfLE_refl,
+    op_id, Opens.toScheme_presheaf_map, unop_id, CategoryTheory.Functor.map_id]
+  rfl
 
 instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.homOfLE e) := by
   delta Scheme.homOfLE
@@ -303,6 +308,7 @@ def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ S
     (by
       intro U V i
       dsimp
+      simp only [Γ_map, Quiver.Hom.unop_op, eqToHom_op, op_unop]
       rw [X.homOfLE_appTop, ← Functor.map_comp, ← Functor.map_comp]
       congr 1)
 
@@ -558,11 +564,6 @@ theorem morphismRestrict_app {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
     Quiver.Hom.unop_op, Hom.opensFunctor_map_homOfLE]
   rw [this, Hom.appLE_map, Hom.appLE_map, Hom.appLE_map]
 
-theorem morphismRestrict_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
-    (f ∣_ U).appTop = f.app (U.ι ''ᵁ ⊤) ≫
-        X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U ⊤)).op :=
-  morphismRestrict_app ..
-
 @[simp]
 theorem morphismRestrict_app' {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V : Opens U) :
     (f ∣_ U).app V = f.appLE _ _ (image_morphismRestrict_preimage f U V).le :=
@@ -574,6 +575,15 @@ theorem morphismRestrict_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V
       ((Set.image_subset _ e).trans (image_morphismRestrict_preimage f U V).le) := by
   rw [Scheme.Hom.appLE, morphismRestrict_app', Scheme.Opens.toScheme_presheaf_map,
     Scheme.Hom.appLE_map]
+
+theorem morphismRestrict_appTop {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
+    (f ∣_ U).appTop = f.app (U.ι ''ᵁ ⊤) ≫
+        X.presheaf.map (eqToHom (image_morphismRestrict_preimage f U ⊤)).op := by
+  -- TODO: another case where Category.comp_id does not trigger
+  simp only [Scheme.Hom.appTop, Scheme.Hom.appLE, Opens.map_top, morphismRestrict_app',
+    homOfLE_leOfHom, homOfLE_refl, op_id, Scheme.Opens.toScheme_presheaf_map, unop_id,
+    CategoryTheory.Functor.map_id, Category.assoc, eqToHom_op]
+  rfl
 
 theorem Γ_map_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) :
     Scheme.Γ.map (f ∣_ U).op =
@@ -744,7 +754,7 @@ noncomputable def arrowResLEAppIso (f : X ⟶ Y) (U : Y.Opens) (V : X.Opens) (e 
   Arrow.isoMk U.topIso V.topIso <| by
   simp only [Opens.map_top, Arrow.mk_left, Arrow.mk_right, Functor.id_obj, Scheme.Opens.topIso_hom,
     eqToHom_op, Arrow.mk_hom, Scheme.Hom.map_appLE]
-  rw [Scheme.Hom.appTop, ← Scheme.Hom.appLE_eq_app, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
+  rw [Scheme.Hom.appTop, Scheme.Hom.resLE_appLE, Scheme.Hom.appLE_map]
 
 end MorphismRestrict
 
