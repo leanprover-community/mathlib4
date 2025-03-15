@@ -163,13 +163,13 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
     simp_all
 
 /-- A closed subset of a completely metrizable space is also completely metrizable. -/
-theorem _root_.IsClosed.CompletelyMetrizableSpace [TopologicalSpace X] [CompletelyMetrizableSpace X]
+theorem _root_.IsClosed.completelyMetrizableSpace [TopologicalSpace X] [CompletelyMetrizableSpace X]
     {s : Set X} (hs : IsClosed s) : CompletelyMetrizableSpace s :=
   hs.isClosedEmbedding_subtypeVal.CompletelyMetrizableSpace
 
 instance univ [TopologicalSpace X] [CompletelyMetrizableSpace X] :
     CompletelyMetrizableSpace (univ : Set X) :=
-  isClosed_univ.CompletelyMetrizableSpace
+  isClosed_univ.completelyMetrizableSpace
 
 end CompletelyMetrizableSpace
 
