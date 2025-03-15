@@ -205,6 +205,14 @@ instance tensor : Module.Free S (M ⊗[R] N) :=
   let ⟨bN⟩ := exists_basis (R := R) (M := N)
   of_basis (bM.2.tensorProduct bN.2)
 
+variable (S) in
+lemma trans [Module.Free R S] : Module.Free R M :=
+  let e : (ChooseBasisIndex S M →₀ S) ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    Finsupp.mapRange.linearEquiv (Module.Free.chooseBasis R S).repr
+  let e : M ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
+    (Module.Free.chooseBasis S M).repr.restrictScalars R ≪≫ₗ e
+  .of_equiv e.symm
+
 end CommSemiring
 
 end Module.Free
