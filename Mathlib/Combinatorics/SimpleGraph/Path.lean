@@ -1226,6 +1226,26 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
   apply SimpleGraph.ConnectedComponent.sound
   exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
 
+lemma reachable_induce_supp {v w} {c : ConnectedComponent G} (hv : v ∈ c.supp) (hw : w ∈ c.supp)
+    (p : G.Walk v w) : (G.induce c.supp).Reachable ⟨v, hv⟩ ⟨w, hw⟩ := by
+  induction p with
+  | nil => rfl
+  | @cons u v w h p ih =>
+    have : v ∈ c.supp := (c.mem_supp_congr_adj h).mp hv
+    obtain ⟨q⟩ := ih this hw
+    have hadj : (G.induce c.supp).Adj ⟨u, hv⟩ ⟨v, this⟩ := h
+    use q.cons hadj
+
+lemma connected_induce_supp (c : ConnectedComponent G) : (G.induce c.supp).Connected := by
+  rw [connected_iff_exists_forall_reachable]
+  use ⟨c.out, c.out_eq⟩
+  intro w
+  have hwc := (c.mem_supp_iff w).mp (Subtype.coe_prop w)
+  obtain ⟨p⟩ := ConnectedComponent.exact
+    (show G.connectedComponentMk c.out = G.connectedComponentMk w from by
+      simp [← hwc, connectedComponentMk])
+  exact c.reachable_induce_supp c.out_eq hwc p
+
 end ConnectedComponent
 
 -- TODO: Extract as lemma about general equivalence relation
