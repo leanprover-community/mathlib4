@@ -295,7 +295,6 @@ variable [AddCommMonoid C] [SetLike γ C] [AddSubmonoidClass γ C]
 variable (FC : ι → γ) (FA : ι → α) (FB : ι → β)
 variable [AddMonoidHomClass F A B] [AddMonoidHomClass F B C]
 
-
 @[ext]
 class DecompositionHom extends A →+ B where
   component_wise {i a} : a ∈ FA i → toFun a ∈ FB i
@@ -316,7 +315,7 @@ namespace DecompositionHom
 variable (f : DecompositionHom FA FB) (g : DecompositionHom FB FC)
 
 variable {FA FB} in
-/-- The filtered abelian group morphism obtained from the
+/-- The component_wise_hom abelian group morphism obtained from the
 restriction of a `DecompositionHom` to its `i`-th component. -/
 def component_wise_hom (i : ι) : FA i → FB i :=
   Subtype.map f (fun _ ha ↦ f.component_wise ha)
@@ -333,8 +332,8 @@ variable {FA FB FC} in
 obtained from the composition of the underlying function. -/
 def comp : DecompositionHom FA FC where
   toFun := g.1.comp f.1
-  map_zero' := by simp only [AddMonoidHom.coe_comp, Function.comp_apply, map_zero]
-  map_add' := by simp only [AddMonoidHom.coe_comp, Function.comp_apply, map_add, implies_true]
+  map_zero' := by simp
+  map_add' := by simp
   component_wise ha := g.component_wise (f.component_wise ha)
 
 end DecompositionHom
