@@ -65,29 +65,32 @@ structure FormatError where
   fmtPos : Nat
   msg : String
 
-def mkFormatError (ls ms : List Char) (msg : String) : FormatError :=
-  {srcNat := ls.length + 1, srcPos := (String.mk ls).endPos + ⟨1⟩, fmtPos := ms.length + 1, msg := msg}
+def mkFormatError (ls ms : List Char) (msg : String) : FormatError where
+  srcNat := ls.length
+  srcPos := (String.mk ls).endPos
+  fmtPos := ms.length + 1
+  msg := msg
 
 partial
 def parallelScanAux : Array FormatError → List Char → List Char → Array FormatError
-  | as, ' '::ls, m::ms =>
+  | as, L@(' '::ls), m::ms =>
     if m.isWhitespace then
       parallelScanAux as ls (ms.dropWhile (·.isWhitespace))
     else
-      parallelScanAux (as.push (mkFormatError ls ms "extra space")) ls (m::ms)
-  | as, '\n'::ls, m::ms =>
+      parallelScanAux (as.push (mkFormatError L ms "extra space")) ls (m::ms)
+  | as, L@('\n'::ls), m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
       parallelScanAux as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
     else
-      parallelScanAux (as.push (mkFormatError ls ms "remove line break")) (ls.drop lth) (m::ms)
-  | as, l::ls, m::ms => -- `l` is not whitespace
+      parallelScanAux (as.push (mkFormatError L ms "remove line break")) (ls.drop lth) (m::ms)
+  | as, L@(l::ls), m::ms => -- `l` is not whitespace
     if l == m then
       parallelScanAux as ls ms
     else
       if m.isWhitespace then
         parallelScanAux
-          (as.push (mkFormatError ls ms "missing space")) (l::ls) (ms.dropWhile (·.isWhitespace))
+          (as.push (mkFormatError L ms "missing space")) (l::ls) (ms.dropWhile (·.isWhitespace))
     else
       as.push (mkFormatError ls ms "Oh no! (Unreachable?)")
   | as, _, [] => as
