@@ -23,8 +23,8 @@ open Filter MeasureTheory Set TopologicalSpace
 
 open scoped Topology
 
-variable {ι X E : Type*} [MeasurableSpace X] [MetricSpace E] [CompleteSpace E] [Countable ι]
-  {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → E}
+variable {ι X E : Type*} [MeasurableSpace X] [TopologicalSpace E] [CompletelyMetrizableSpace E]
+  [Countable ι] {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → E}
 
 namespace MeasureTheory.StronglyMeasurable
 
@@ -32,13 +32,14 @@ theorem measurableSet_exists_tendsto (hf : ∀ i, StronglyMeasurable (f i)) :
     MeasurableSet {x | ∃ c, Tendsto (f · x) l (𝓝 c)} := by
   obtain rfl | hl := eq_or_neBot l
   · simp_all
+  borelize E
+  letI := upgradeCompletelyMetrizable E
   let s := closure (⋃ i, range (f i))
   have : PolishSpace s :=
     { toSecondCountableTopology := @UniformSpace.secondCountable_of_separable s _ _
         (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
-      complete := ⟨inferInstance, rfl, isClosed_closure.completeSpace_coe⟩ }
+      toCompletelyMetrizableSpace := isClosed_closure.CompletelyMetrizableSpace }
   let g i x : s := ⟨f i x, subset_closure <| mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩⟩
-  borelize E
   have mg i : Measurable (g i) := (hf i).measurable.subtype_mk
   convert MeasureTheory.measurableSet_exists_tendsto (l := l) mg with x
   refine ⟨fun ⟨c, hc⟩ ↦ ⟨⟨c, ?_⟩, tendsto_subtype_rng.2 hc⟩,
@@ -55,16 +56,16 @@ theorem limUnder [hE : Nonempty E] (hf : ∀ i, StronglyMeasurable (f i)) :
   · let conv := {x | ∃ c, Tendsto (f · x) l (𝓝 c)}
     have mconv : MeasurableSet conv := StronglyMeasurable.measurableSet_exists_tendsto hf
     have : (fun x ↦ _root_.limUnder l (f · x)) = ((↑) : conv → X).extend
-        (fun x : conv ↦ _root_.limUnder l (f · x)) (fun _ ↦ e) := by
+        (fun x ↦ _root_.limUnder l (f · x)) (fun _ ↦ e) := by
       ext x
       by_cases hx : x ∈ conv
       · rw [Function.extend_val_apply hx]
       · rw [Function.extend_val_apply' hx, limUnder_of_not_tendsto hx]
     rw [this]
-    refine (MeasurableEmbedding.subtype_coe mconv).measurable_extend ?_ measurable_const
-    refine measurable_of_tendsto_metrizable' l
-      (fun i ↦ (hf i).measurable.comp measurable_subtype_coe)
-      (tendsto_pi_nhds.2 fun ⟨x, ⟨c, hc⟩⟩ ↦ ?_)
+    refine (MeasurableEmbedding.subtype_coe mconv).measurable_extend
+      (measurable_of_tendsto_metrizable' l
+        (fun i ↦ (hf i).measurable.comp measurable_subtype_coe)
+        (tendsto_pi_nhds.2 fun ⟨x, ⟨c, hc⟩⟩ ↦ ?_)) measurable_const
     rwa [hc.limUnder_eq]
   · let s := closure (⋃ i, range (f i)) ∪ {e}
     have hs : IsSeparable s := (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.union
