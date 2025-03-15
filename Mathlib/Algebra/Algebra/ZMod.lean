@@ -43,4 +43,9 @@ See note [reducible non-instances]. -/
 abbrev algebra (p : ℕ) [CharP R p] : Algebra (ZMod p) R :=
   algebra' R p dvd_rfl
 
+@[simp]
+theorem algebraMap_eq_castHom (p : ℕ) [CharP R p] :
+    (ZMod.algebra R p).algebraMap = ZMod.castHom dvd_rfl R :=
+  rfl
+
 end ZMod
