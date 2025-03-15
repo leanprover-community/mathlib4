@@ -129,4 +129,41 @@ def elabFastInstance : TermElab
         return provided
   | _, _ => Elab.throwUnsupportedSyntax
 
+syntax (name := tryFastInstance) "try_fast_instance%" term : term
+
+@[term_elab tryFastInstance, inherit_doc fastInstance]
+def elabTryFastInstance : TermElab
+  | `(term| try_fast_instance%%$tk $arg), expectedType => do
+    let provided ← Term.elabTermEnsuringType arg expectedType
+    Term.synthesizeSyntheticMVarsNoPostponing
+    withRef tk do
+      try
+        makeFastInstance provided
+      catch _ =>
+        return provided
+  | _, _ => Elab.throwUnsupportedSyntax
+
+open Lean Elab Parser Command
+
+def «betterInstance»       := leading_parser
+  Term.attrKind >> "instance" >> optNamedPrio >>
+  optional (ppSpace >> declId) >> ppIndent declSig >> declVal
+
+@[command_parser] def betterInstanceDecl := leading_parser
+  declModifiers false >> «betterInstance»
+
+@[command_elab betterInstanceDecl]
+def elabBetterInstance : Lean.Elab.Command.CommandElab
+  | .node i1 ``betterInstanceDecl #[modifiers, .node i2 ``«betterInstance» args] => do
+    let args ← args.modifyM 5 fun
+      | .node i3 ``declValSimple dargs =>
+        return .node i3 ``declValSimple <|
+          ← dargs.modifyM 1 fun arg => `(try_fast_instance% $(⟨arg⟩))
+      | x => return x
+
+    elabCommand <|
+      .node i1 ``declaration #[modifiers, .node i2 ``«instance» args]
+  | _ => throwUnsupportedSyntax
+
+
 end Mathlib.Elab.FastInstance
