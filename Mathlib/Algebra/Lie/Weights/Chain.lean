@@ -392,7 +392,8 @@ lemma root_space_ad_is_nilpotent
     (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K H M)
   have hoho := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ (by sorry) hχ
 
-  let A := (toEnd K L M x) ^ 5
+
+
   --have ttt (χ₂ : Weight K H M) : (genWeightSpace M χ₂) ⊆ ker A :=
   --  sorry
   --haveI := Weight.instFintype K H M
@@ -400,6 +401,15 @@ lemma root_space_ad_is_nilpotent
     exact univ
   have Mm : Finite s := by
     exact Subtype.finite
+
+  let v := (0 : M)
+  have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n, ((toEnd K L M x) ^ m) v = 0 :=
+    sorry
+
+  have exists_global_n0 : ∃ n0 : ℕ, ∀ ε ∈ s, ∀ (v : genWeightSpace M ε), ((toEnd K L M x) ^ n0) v = 0 :=
+    sorry
+  obtain ⟨n0, hn0⟩ := exists_global_n0
+  let A := (toEnd K L M x) ^ n0
   have r : ⨆ χ ∈ s, genWeightSpace M χ = ⊤ := by
     simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ,
     iUnion_true, iSup_pos, s]
@@ -448,8 +458,12 @@ lemma root_space_ad_is_nilpotent
     simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
       LieSubmodule.top_toSubmodule, top_le_iff, s]
 
-  have ttt1 (ε : Weight K H M) (n : M) (n : genWeightSpace M ε) : A n = 0 :=
-    sorry
+  have ttt1 (ε : Weight K H M) (n : M) (n : genWeightSpace M ε) : A n = 0 := by
+    have ttt : ε ∈ s := by
+      simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
+        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
+    have zzz := (hn0 ε) (ttt) n
+    exact zzz
 
   have ttt2 : A = 0 := by
     haveI := [Module K M]
@@ -462,7 +476,7 @@ lemma root_space_ad_is_nilpotent
     simp_all
     obtain ⟨d1, d2⟩ := d
     exact ttt1 e a d2
-  use 5
+  use n0
 
 end
 
