@@ -787,8 +787,8 @@ theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
 
 open scoped Classical in
 /-- To prove that a property holds for any strongly measurable function, it is enough to show
-that it holds for constant functions, that it holds for `f` and `g` and `s` is a measurable set
-then it holds for `s.piecewise f g` and that it is closed under addition and pointwise limit.
+that it holds for constant functions and that it is closed under piecewise combination of functions
+and pointwise limits.
 
 To use in an induction proof, the syntax is `induction f, hf with`. -/
 @[induction_eliminator]
