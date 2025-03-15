@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Monoidal.Functor
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Adjunction.Mates
+import Mathlib.CategoryTheory.Adjunction.Parametrized
 
 /-!
 # Closed monoidal categories
@@ -266,6 +267,14 @@ end Pre
 def internalHom [MonoidalClosed C] : Cᵒᵖ ⥤ C ⥤ C where
   obj X := ihom X.unop
   map f := pre f.unop
+
+/-- The adjunction between `curriedTensor C : C ⥤ C ⥤ C`
+and `internalHom : Cᵒᵖ ⥤ C ⥤ C` -/
+@[simps!]
+def internalHomAdjunction₂ [MonoidalClosed C] :
+    curriedTensor C ⊣₂ internalHom where
+  adj _ := ihom.adjunction _
+  naturality' _ _ _ _ := (curry_pre_app _ _).symm
 
 section OfEquiv
 
