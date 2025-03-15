@@ -127,7 +127,7 @@ variable {R : Type*} [CommRing R] (I : Ideal R)
 lemma Ideal.map_mk_comap_factorPow {a b : ℕ} (apos : 0 < a) (le : a ≤ b) :
     (I.map (mk (I ^ a))).comap (factorPow I le) = I.map (mk (I ^ b))  := by
   apply Ideal.map_mk_comap_factor
-  exact pow_le_self (Nat.not_eq_zero_of_lt apos)
+  exact pow_le_self (Nat.ne_zero_of_lt apos)
 
 variable {I} in
 lemma factorPowSucc.isUnit_of_isUnit_image {n : ℕ} (npos : n > 0) {a : R ⧸ I ^ (n + 1)}

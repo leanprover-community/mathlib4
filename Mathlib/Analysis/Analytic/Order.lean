@@ -136,28 +136,21 @@ end AnalyticAt
 
 /-!
 ## Level Sets of the Order Function
-
-TODO:
-
-- Draw conclusions about behaviour of the order function on connected domains of analyticity.
-
-- Prove that the set where an analytic function has order in [1,∞) is discrete within its domain of
-  analyticity.
 -/
 
 namespace AnalyticOnNhd
 
-variable {U : Set 𝕜}
+variable {U : Set 𝕜} (hf : AnalyticOnNhd 𝕜 f U)
 
 /-- The set where an analytic function has infinite order is clopen in its domain of analyticity. -/
-theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
-    IsClopen { u : U | (h₁f u.1 u.2).order = ⊤ } := by
+theorem isClopen_setOf_order_eq_top :
+    IsClopen { u : U | (hf u.1 u.2).order = ⊤ } := by
   constructor
   · rw [← isOpen_compl_iff, isOpen_iff_forall_mem_open]
     intro z hz
-    rcases (h₁f z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
+    rcases (hf z.1 z.2).eventually_eq_zero_or_eventually_ne_zero with h | h
     · -- Case: f is locally zero in a punctured neighborhood of z
-      rw [← (h₁f z.1 z.2).order_eq_top_iff] at h
+      rw [← (hf z.1 z.2).order_eq_top_iff] at h
       tauto
     · -- Case: f is locally nonzero in a punctured neighborhood of z
       obtain ⟨t', h₁t', h₂t', h₃t'⟩ := eventually_nhds_iff.1 (eventually_nhdsWithin_iff.1 h)
@@ -167,7 +160,7 @@ theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
         simp only [mem_compl_iff, mem_setOf_eq]
         by_cases h₁w : w = z
         · rwa [h₁w]
-        · rw [(h₁f _ w.2).order_eq_zero_iff.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
+        · rw [(hf _ w.2).order_eq_zero_iff.2 ((h₁t' w hw) (Subtype.coe_ne_coe.mpr h₁w))]
           exact ENat.zero_ne_top
       · exact ⟨isOpen_induced h₂t', h₃t'⟩
   · apply isOpen_iff_forall_mem_open.mpr
@@ -191,5 +184,35 @@ theorem isClopen_setOf_order_eq_top (h₁f : AnalyticOnNhd 𝕜 f U) :
     use t' \ {z.1}, fun y h₁y ↦ h₁t' y h₁y.1, h₂t'.sdiff isClosed_singleton
     apply (mem_diff w).1
     exact ⟨hw, mem_singleton_iff.not.1 (Subtype.coe_ne_coe.2 h₁w)⟩
+
+/-- On a connected set, there exists a point where a meromorphic function `f` has finite order iff
+`f` has finite order at every point. -/
+theorem exists_order_ne_top_iff_forall (hU : IsConnected U) :
+    (∃ u : U, (hf u u.2).order ≠ ⊤) ↔ (∀ u : U, (hf u u.2).order ≠ ⊤) := by
+  have : ConnectedSpace U := Subtype.connectedSpace hU
+  obtain ⟨v⟩ : Nonempty U := inferInstance
+  suffices (∀ (u : U), (hf u u.2).order ≠ ⊤) ∨ ∀ (u : U), (hf u u.2).order = ⊤ by tauto
+  simpa [Set.eq_empty_iff_forall_not_mem, Set.eq_univ_iff_forall] using
+      isClopen_iff.1 hf.isClopen_setOf_order_eq_top
+
+/-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
+order at another point. -/
+theorem order_ne_top_of_isPreconnected {x y : 𝕜} (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U)
+    (h₂x : (hf x h₁x).order ≠ ⊤) :
+    (hf y hy).order ≠ ⊤ :=
+  (hf.exists_order_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
+
+/-- The set where an analytic function has zero or infinite order is discrete within its domain of
+analyticity. -/
+theorem codiscrete_setOf_order_eq_zero_or_top :
+    {u : U | (hf u u.2).order = 0 ∨ (hf u u.2).order = ⊤} ∈ Filter.codiscrete U := by
+  rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin]
+  intro x hx
+  rw [Filter.disjoint_principal_right]
+  rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
+  · filter_upwards [eventually_nhdsWithin_of_eventually_nhds h₁f.eventually_nhds] with a ha
+    simp +contextual [(hf a _).order_eq_top_iff, ha]
+  · filter_upwards [h₁f] with a ha
+    simp +contextual [(hf a _).order_eq_zero_iff, ha]
 
 end AnalyticOnNhd

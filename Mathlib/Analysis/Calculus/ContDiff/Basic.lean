@@ -467,7 +467,7 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
 product of `f` and `g` admits the cartesian product of `p` and `q` as a Taylor series. -/
-theorem HasFTaylorSeriesUpToOn.prod {n : WithTop ℕ∞}
+theorem HasFTaylorSeriesUpToOn.prodMk {n : WithTop ℕ∞}
     (hf : HasFTaylorSeriesUpToOn n f p s) {g : E → G}
     {q : E → FormalMultilinearSeries 𝕜 E G} (hg : HasFTaylorSeriesUpToOn n g q s) :
     HasFTaylorSeriesUpToOn n (fun y => (f y, g y)) (fun y k => (p y k).prod (q y k)) s := by
@@ -476,47 +476,59 @@ theorem HasFTaylorSeriesUpToOn.prod {n : WithTop ℕ∞}
   · intro x hx; rw [← hf.zero_eq x hx, ← hg.zero_eq x hx]; rfl
   · intro m hm x hx
     convert (L m).hasFDerivAt.comp_hasFDerivWithinAt x
-        ((hf.fderivWithin m hm x hx).prod (hg.fderivWithin m hm x hx))
+        ((hf.fderivWithin m hm x hx).prodMk (hg.fderivWithin m hm x hx))
   · intro m hm
     exact (L m).continuous.comp_continuousOn ((hf.cont m hm).prod (hg.cont m hm))
 
+@[deprecated (since := "2025-03-09")]
+alias HasFTaylorSeriesUpToOn.prod := HasFTaylorSeriesUpToOn.prodMk
+
 /-- The cartesian product of `C^n` functions at a point in a domain is `C^n`. -/
-theorem ContDiffWithinAt.prod {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffWithinAt 𝕜 n f s x)
-    (hg : ContDiffWithinAt 𝕜 n g s x) : ContDiffWithinAt 𝕜 n (fun x : E => (f x, g x)) s x := by
+theorem ContDiffWithinAt.prodMk {s : Set E} {f : E → F} {g : E → G}
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hg : ContDiffWithinAt 𝕜 n g s x) :
+    ContDiffWithinAt 𝕜 n (fun x : E => (f x, g x)) s x := by
   match n with
   | ω =>
     obtain ⟨u, hu, p, hp, h'p⟩ := hf
     obtain ⟨v, hv, q, hq, h'q⟩ := hg
     refine ⟨u ∩ v, Filter.inter_mem hu hv, _,
-      (hp.mono inter_subset_left).prod (hq.mono inter_subset_right), fun i ↦ ?_⟩
-    change AnalyticOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i))
-      (u ∩ v)
-    apply AnalyticOnNhd.comp_analyticOn (LinearIsometryEquiv.analyticOnNhd _ _) _
-      (Set.mapsTo_univ _ _)
+      (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right), fun i ↦ ?_⟩
+    change AnalyticOn 𝕜 (fun x ↦ ContinuousMultilinearMap.prodL _ _ _ _ (p x i, q x i)) (u ∩ v)
+    apply (LinearIsometryEquiv.analyticOnNhd _ _).comp_analyticOn _ (Set.mapsTo_univ _ _)
     exact ((h'p i).mono inter_subset_left).prod ((h'q i).mono inter_subset_right)
   | (n : ℕ∞) =>
     intro m hm
     rcases hf m hm with ⟨u, hu, p, hp⟩
     rcases hg m hm with ⟨v, hv, q, hq⟩
-    exact
-      ⟨u ∩ v, Filter.inter_mem hu hv, _,
-        (hp.mono inter_subset_left).prod (hq.mono inter_subset_right)⟩
+    exact ⟨u ∩ v, Filter.inter_mem hu hv, _,
+      (hp.mono inter_subset_left).prodMk (hq.mono inter_subset_right)⟩
+
+@[deprecated (since := "2025-03-09")]
+alias ContDiffWithinAt.prod := ContDiffWithinAt.prodMk
 
 /-- The cartesian product of `C^n` functions on domains is `C^n`. -/
-theorem ContDiffOn.prod {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.prodMk {s : Set E} {f : E → F} {g : E → G} (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) : ContDiffOn 𝕜 n (fun x : E => (f x, g x)) s := fun x hx =>
-  (hf x hx).prod (hg x hx)
+  (hf x hx).prodMk (hg x hx)
+
+@[deprecated (since := "2025-03-09")]
+alias ContDiffOn.prod := ContDiffOn.prodMk
 
 /-- The cartesian product of `C^n` functions at a point is `C^n`. -/
-theorem ContDiffAt.prod {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
+theorem ContDiffAt.prodMk {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) : ContDiffAt 𝕜 n (fun x : E => (f x, g x)) x :=
-  contDiffWithinAt_univ.1 <|
-    ContDiffWithinAt.prod (contDiffWithinAt_univ.2 hf) (contDiffWithinAt_univ.2 hg)
+  contDiffWithinAt_univ.1 <| hf.contDiffWithinAt.prodMk hg.contDiffWithinAt
+
+@[deprecated (since := "2025-03-09")]
+alias ContDiffAt.prod := ContDiffAt.prodMk
 
 /-- The cartesian product of `C^n` functions is `C^n`. -/
-theorem ContDiff.prod {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+theorem ContDiff.prodMk {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
-  contDiffOn_univ.1 <| ContDiffOn.prod (contDiffOn_univ.2 hf) (contDiffOn_univ.2 hg)
+  contDiffOn_univ.1 <| hf.contDiffOn.prodMk hg.contDiffOn
+
+@[deprecated (since := "2025-03-09")]
+alias ContDiff.prod := ContDiff.prodMk
 
 /-!
 ### Composition of `C^n` functions
@@ -841,19 +853,19 @@ variable [NormedAddCommGroup E₁] [NormedAddCommGroup E₂] [NormedAddCommGroup
 
 theorem ContDiff.comp₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} (hg : ContDiff 𝕜 n g)
     (hf₁ : ContDiff 𝕜 n f₁) (hf₂ : ContDiff 𝕜 n f₂) : ContDiff 𝕜 n fun x => g (f₁ x, f₂ x) :=
-  hg.comp <| hf₁.prod hf₂
+  hg.comp <| hf₁.prodMk hf₂
 
 theorem ContDiffAt.comp₂ {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} {x : F}
     (hg : ContDiffAt 𝕜 n g (f₁ x, f₂ x))
     (hf₁ : ContDiffAt 𝕜 n f₁ x) (hf₂ : ContDiffAt 𝕜 n f₂ x) :
     ContDiffAt 𝕜 n (fun x => g (f₁ x, f₂ x)) x :=
-  hg.comp x (hf₁.prod hf₂)
+  hg.comp x (hf₁.prodMk hf₂)
 
 theorem ContDiffAt.comp₂_contDiffWithinAt {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂}
     {s : Set F} {x : F} (hg : ContDiffAt 𝕜 n g (f₁ x, f₂ x))
     (hf₁ : ContDiffWithinAt 𝕜 n f₁ s x) (hf₂ : ContDiffWithinAt 𝕜 n f₂ s x) :
     ContDiffWithinAt 𝕜 n (fun x => g (f₁ x, f₂ x)) s x :=
-  hg.comp_contDiffWithinAt x (hf₁.prod hf₂)
+  hg.comp_contDiffWithinAt x (hf₁.prodMk hf₂)
 
 @[deprecated (since := "2024-10-30")]
 alias ContDiffAt.comp_contDiffWithinAt₂ := ContDiffAt.comp₂_contDiffWithinAt
@@ -870,7 +882,7 @@ theorem ContDiff.comp₂_contDiffWithinAt {g : E₁ × E₂ → G} {f₁ : F →
     {s : Set F} {x : F} (hg : ContDiff 𝕜 n g)
     (hf₁ : ContDiffWithinAt 𝕜 n f₁ s x) (hf₂ : ContDiffWithinAt 𝕜 n f₂ s x) :
     ContDiffWithinAt 𝕜 n (fun x => g (f₁ x, f₂ x)) s x :=
-  hg.contDiffAt.comp_contDiffWithinAt x  (hf₁.prod hf₂)
+  hg.contDiffAt.comp_contDiffWithinAt x (hf₁.prodMk hf₂)
 
 @[deprecated (since := "2024-10-30")]
 alias ContDiff.comp_contDiffWithinAt₂ := ContDiff.comp₂_contDiffWithinAt
@@ -878,7 +890,7 @@ alias ContDiff.comp_contDiffWithinAt₂ := ContDiff.comp₂_contDiffWithinAt
 theorem ContDiff.comp₂_contDiffOn {g : E₁ × E₂ → G} {f₁ : F → E₁} {f₂ : F → E₂} {s : Set F}
     (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s) :
     ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x)) s :=
-  hg.comp_contDiffOn <| hf₁.prod hf₂
+  hg.comp_contDiffOn <| hf₁.prodMk hf₂
 
 @[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₂ := ContDiff.comp₂_contDiffOn
 
@@ -888,12 +900,12 @@ alias ContDiff.comp_contDiffOn₂ := ContDiff.comp₂_contDiffOn
 theorem ContDiff.comp₃ {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f₂ : F → E₂} {f₃ : F → E₃}
     (hg : ContDiff 𝕜 n g) (hf₁ : ContDiff 𝕜 n f₁) (hf₂ : ContDiff 𝕜 n f₂) (hf₃ : ContDiff 𝕜 n f₃) :
     ContDiff 𝕜 n fun x => g (f₁ x, f₂ x, f₃ x) :=
-  hg.comp₂ hf₁ <| hf₂.prod hf₃
+  hg.comp₂ hf₁ <| hf₂.prodMk hf₃
 
 theorem ContDiff.comp₃_contDiffOn {g : E₁ × E₂ × E₃ → G} {f₁ : F → E₁} {f₂ : F → E₂} {f₃ : F → E₃}
     {s : Set F} (hg : ContDiff 𝕜 n g) (hf₁ : ContDiffOn 𝕜 n f₁ s) (hf₂ : ContDiffOn 𝕜 n f₂ s)
     (hf₃ : ContDiffOn 𝕜 n f₃ s) : ContDiffOn 𝕜 n (fun x => g (f₁ x, f₂ x, f₃ x)) s :=
-  hg.comp₂_contDiffOn hf₁ <| hf₂.prod hf₃
+  hg.comp₂_contDiffOn hf₁ <| hf₂.prodMk hf₃
 
 @[deprecated (since := "2024-10-10")] alias ContDiff.comp_contDiff_on₃ := ContDiff.comp₃_contDiffOn
 
@@ -940,8 +952,6 @@ theorem ContDiffWithinAt.clm_apply {f : E → F →L[𝕜] G} {g : E → F}
     ContDiffWithinAt 𝕜 n (fun x => (f x) (g x)) s x :=
   isBoundedBilinearMap_apply.contDiff.comp₂_contDiffWithinAt hf hg
 
--- Porting note: In Lean 3 we had to give implicit arguments in proofs like the following,
--- to speed up elaboration. In Lean 4 this isn't necessary anymore.
 theorem ContDiff.smulRight {f : E → F →L[𝕜] 𝕜} {g : E → G} (hf : ContDiff 𝕜 n f)
     (hg : ContDiff 𝕜 n g) : ContDiff 𝕜 n fun x => (f x).smulRight (g x) :=
   isBoundedBilinearMap_smulRight.contDiff.comp₂ (g := fun p => p.1.smulRight p.2) hf hg
@@ -1047,11 +1057,11 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
     exact (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
   · intro z hz
     have := hvf' (z, g z) hz.1
-    refine this.comp _ (hasFDerivAt_prod_mk_right _ _).hasFDerivWithinAt ?_
-    exact mapsTo'.mpr (image_prod_mk_subset_prod_right hz.2)
+    refine this.comp _ (hasFDerivAt_prodMk_right _ _).hasFDerivWithinAt ?_
+    exact mapsTo'.mpr (image_prodMk_subset_prod_right hz.2)
   · exact (hf'.continuousLinearMap_comp <| (ContinuousLinearMap.compL 𝕜 F (E × F) G).flip
       (ContinuousLinearMap.inr 𝕜 E F)).comp_of_mem_nhdsWithin_image x₀
-      (contDiffWithinAt_id.prod hg) hst
+      (contDiffWithinAt_id.prodMk hg) hst
 
 /-- The most general lemma stating that `x ↦ fderivWithin 𝕜 (f x) t (g x)` is `C^n`
 at a point within a set.
@@ -1112,7 +1122,7 @@ theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} 
     (hmn : m + 1 ≤ n) (hx₀ : x₀ ∈ s) (hst : s ⊆ g ⁻¹' t) :
     ContDiffWithinAt 𝕜 m (fun x => fderivWithin 𝕜 (f x) t (g x) (k x)) s x₀ :=
   (contDiff_fst.clm_apply contDiff_snd).contDiffAt.comp_contDiffWithinAt x₀
-    ((hf.fderivWithin hg ht hmn hx₀ hst).prod hk)
+    ((hf.fderivWithin hg ht hmn hx₀ hst).prodMk hk)
 
 /-- `fderivWithin 𝕜 f s` is smooth at `x₀` within `s`. -/
 theorem ContDiffWithinAt.fderivWithin_right (hf : ContDiffWithinAt 𝕜 n f s x₀)

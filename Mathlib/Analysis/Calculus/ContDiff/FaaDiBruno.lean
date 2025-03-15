@@ -692,15 +692,15 @@ def extendEquiv (n : ℕ) :
 block of `c`, we may define a function on `Fin n → E` by picking the variables in the `i`-th block
 of `n`, and applying the corresponding coefficient of `p` to these variables. This function is
 called `p.applyOrderedFinpartition c v i` for `v : Fin n → E` and `i : Fin c.k`. -/
-def applyOrderedFinpartition (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F) :
+def applyOrderedFinpartition (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F) :
     (Fin n → E) → Fin c.length → F :=
   fun v m ↦ p m (v ∘ c.emb m)
 
-lemma applyOrderedFinpartition_apply (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
+lemma applyOrderedFinpartition_apply (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (v : Fin n → E) :
   c.applyOrderedFinpartition p v = (fun m ↦ p m (v ∘ c.emb m)) := rfl
 
-theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
+theorem norm_applyOrderedFinpartition_le (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
     (v : Fin n → E) (m : Fin c.length) :
     ‖c.applyOrderedFinpartition p v m‖ ≤ ‖p m‖ * ∏ i : Fin (c.partSize m), ‖v (c.emb m i)‖ :=
   (p m).le_opNorm _
@@ -732,8 +732,8 @@ theorem applyOrderedFinpartition_update_right
     have : j ∈ range (c.emb (c.index j)) := mem_range.2 ⟨c.invEmbedding j, by simp⟩
     exact Set.disjoint_right.1 A this
 
-theorem applyOrderedFinpartition_update_left (p : ∀ (i : Fin c.length), E[×c.partSize i]→L[𝕜] F)
-    (m : Fin c.length) (v : Fin n → E) (q : E[×c.partSize m]→L[𝕜] F) :
+theorem applyOrderedFinpartition_update_left (p : ∀ (i : Fin c.length), E [×c.partSize i]→L[𝕜] F)
+    (m : Fin c.length) (v : Fin n → E) (q : E [×c.partSize m]→L[𝕜] F) :
     c.applyOrderedFinpartition (update p m q) v
       = update (c.applyOrderedFinpartition p v) m (q (v ∘ c.emb m)) := by
   ext d
@@ -809,7 +809,6 @@ noncomputable def compAlongOrderedFinpartitionL :
     c.compAlongOrderedFinpartitionL 𝕜 E F G f p = c.compAlongOrderedFinpartition f p := rfl
 
 theorem norm_compAlongOrderedFinpartitionL_le :
-    set_option maxSynthPendingDepth 2 in
     ‖c.compAlongOrderedFinpartitionL 𝕜 E F G‖ ≤ 1 :=
   MultilinearMap.mkContinuousLinear_norm_le _ zero_le_one _
 
