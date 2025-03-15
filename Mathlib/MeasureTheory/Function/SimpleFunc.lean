@@ -1135,8 +1135,10 @@ addition (of functions with disjoint support).
 
 It is possible to make the hypotheses in `h_add` a bit stronger, and such conditions can be added
 once we need them (for example it is only necessary to consider the case where `g` is a multiple
-of a characteristic function, and that this multiple doesn't appear in the image of `f`) -/
-@[elab_as_elim, induction_eliminator]
+of a characteristic function, and that this multiple doesn't appear in the image of `f`).
+
+To use in an induction proof, the syntax is `induction f using SimpleFunc.induction with`. -/
+@[elab_as_elim]
 protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : SimpleFunc α γ → Prop}
     (h_ind :
       ∀ (c) {s} (hs : MeasurableSet s),
@@ -1175,7 +1177,10 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : 
 
 /-- To prove something for an arbitrary simple function, it suffices to show
 that the property holds for constant functions and that if it holds for `f` and `g` and
-`s` is a measurable set then it holds for `f.piecewise h hs g`. -/
+`s` is a measurable set then it holds for `f.piecewise h hs g`.
+
+To use in an induction proof, the syntax is `induction f with`. -/
+@[induction_eliminator]
 protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : SimpleFunc α γ → Prop}
     (const : ∀ (c), P (SimpleFunc.const _ c))
     (pcw : ∀ ⦃f g : SimpleFunc α γ⦄ {s} (hs : MeasurableSet s), P f → P g →
