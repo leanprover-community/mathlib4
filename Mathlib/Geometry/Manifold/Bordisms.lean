@@ -586,6 +586,27 @@ def unorientedBordismRelation.{u, v} (J : ModelWithCorners ℝ E' H') :
   -- XXX: shall we demand a relation between I and J here? for the equivalence, we need to!
   fun s t ↦ ∃ _φ : UnorientedBordism k s t J, True
 
+namespace unorientedBordismRelation
+
+variable {J : ModelWithCorners ℝ E' H'} {s t u : SingularNManifold X k I}
+
+omit [FiniteDimensional ℝ E']
+
+@[symm]
+lemma symm (h: unorientedBordismRelation X k I J s t) : unorientedBordismRelation X k I J t s := by
+  choose φ _ using h
+  use UnorientedBordism.symm φ
+
+@[trans]
+lemma trans (h : finrank ℝ E' = finrank ℝ E + 1)
+    (hst: unorientedBordismRelation X k I J s t) (htu : unorientedBordismRelation X k I J t u) :
+    unorientedBordismRelation X k I J s u := by
+    choose φ _ using hst
+    choose ψ _ using htu
+    use φ.trans ψ (by simp [h])
+
+end unorientedBordismRelation
+
 -- TODO: does this hold for general models J, as opposed to just I.prod 𝓡∂ 1?
 variable (X k I) in
 lemma uBordismRelation.{u} :
@@ -593,12 +614,9 @@ lemma uBordismRelation.{u} :
   apply Equivalence.mk
   · intro s; use UnorientedBordism.refl s
   · intro s t h
-    choose φ _ using h
-    use UnorientedBordism.symm φ
+    exact h.symm
   · intro s t u hst htu
-    choose φ _ using hst
-    choose ψ _ using htu
-    use φ.trans ψ (by simp)
+    exact hst.trans (by simp) htu
 
 variable (X k I) in
 /-- The `Setoid` of singular n-manifolds, with the unoriented bordism relation. -/
