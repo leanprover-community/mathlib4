@@ -65,7 +65,7 @@ theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] {f : X → Y} 
     obtain ⟨h₁, mh₁, rfl⟩ := h₁
     obtain ⟨h₂, mh₂, rfl⟩ := h₂
     classical
-    refine ⟨t.piecewise h₁ h₂, mh₁.piecewise ht mh₂, by rw [piecewise_comp]⟩
+    exact ⟨t.piecewise h₁ h₂, mh₁.piecewise ht mh₂, by rw [piecewise_comp]⟩
   | @lim g i hg hi h₁ h₂ =>
     choose h mh hh using h₁
     refine ⟨fun y ↦ _root_.limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
