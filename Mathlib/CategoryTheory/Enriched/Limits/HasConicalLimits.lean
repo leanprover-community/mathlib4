@@ -101,9 +101,9 @@ lemma HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
 -- TODO: errors if made an `instance`.
 lemma HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
-  has_limits_of_shape _ :=
+  has_limits_of_shape J :=
     -- TODO: use `inferInstance` instead
-    HasConicalLimitsOfShape.hasLimitsOfShape V C
+    HasConicalLimitsOfShape.hasLimitsOfShape J V C
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
 -- TODO: errors if made an `instance`.
