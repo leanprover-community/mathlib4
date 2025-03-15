@@ -48,7 +48,7 @@ def MeromorphicNFAt (f : 𝕜 → E) (x : 𝕜) :=
 
 /-- A meromorphic function has normal form at `x` iff it is either analytic
 there, or if it has a pole at `x` and takes the default value `0`. -/
-theorem MeromorphicAt.meromorphicNFAt_iff :
+theorem meromorphicNFAt_iff_analyticAt_or :
     MeromorphicNFAt f x ↔ AnalyticAt 𝕜 f x ∨ ∃ hf : MeromorphicAt f x, hf.order < 0 ∧ f x = 0 := by
   constructor
   · rintro (h | ⟨n, g, h₁g, h₂g, h₃g⟩)
