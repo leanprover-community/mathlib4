@@ -365,6 +365,10 @@ def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β
         _ ≤ max C 0 * D := by gcongr; apply hD
         ⟩⟩
 
+@[simp]
+theorem comp_apply (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β) (a : α) :
+    (f.comp G H) a = G (f a) := rfl
+
 /-- The composition operator (in the target) with a Lipschitz map is Lipschitz. -/
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
@@ -628,6 +632,19 @@ def coeFnAddHom : (α →ᵇ β) →+ α → β where
   map_zero' := coe_zero
   map_add' := coe_add
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological additive
+monoids, as a `AddMonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[simps]
+protected def _root_.AddMonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
+    [TopologicalSpace α]
+    [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
+    [PseudoMetricSpace γ] [AddMonoid γ] [BoundedAdd γ] [ContinuousAdd γ]
+    (g : β →+ γ) {C : NNReal} (hg : LipschitzWith C g) :
+    (α →ᵇ β) →+ (α →ᵇ γ) where
+  toFun f := f.comp g hg
+  map_zero' := ext fun _ => g.map_zero
+  map_add' _ _ := ext fun _ => g.map_add _ _
+
 variable (α β)
 
 /-- The additive map forgetting that a bounded continuous function is bounded. -/
@@ -772,6 +789,22 @@ instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
     Semiring (α →ᵇ R) :=
   Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
+
+instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
+  DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
+
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
+`AddMonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[simps]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
+    [TopologicalSpace α]
+    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+    [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
+    (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
+    (α →ᵇ β) →* (α →ᵇ γ) where
+  toFun f := f.comp g hg
+  map_one' := ext fun _ => g.map_one
+  map_mul' _ _ := ext fun _ => g.map_mul _ _
 
 end mul
 
@@ -1231,6 +1264,15 @@ instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instRing
   __ := instNonUnitalSeminormedRing
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
+`RingHom`.  Similar to `RingHom.compLeftContinuous`. -/
+@[simps!]
+protected def _root_.RingHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
+    [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
+    (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
+  { g.toMonoidHom.compLeftContinuousBounded α hg,
+    g.toAddMonoidHom.compLeftContinuousBounded α hg with }
+
 end Seminormed
 
 instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
@@ -1316,6 +1358,30 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
   __ := instNormedSpace
 
+variable (𝕜)
+
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
+as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
+@[simps!]
+protected def AlgHom.compLeftContinuousBounded {α : Type*} [TopologicalSpace α]
+    [NormedRing β] [NormedAlgebra 𝕜 β][NormedRing γ] [NormedAlgebra 𝕜 γ]
+    (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
+  { g.toRingHom.compLeftContinuousBounded α hg with
+    commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
+
+/-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
+@[simps]
+def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
+  toFun := (↑)
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+@[simp]
+theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
+
 /-!
 ### Structure as normed module over scalar functions
 
@@ -1323,6 +1389,7 @@ If `β` is a normed `𝕜`-space, then we show that the space of bounded continu
 functions from `α` to `β` is naturally a module over the algebra of bounded continuous
 functions from `α` to `𝕜`. -/
 
+variable {𝕜}
 
 instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=
@@ -1477,3 +1544,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+set_option linter.style.longFile 1700
