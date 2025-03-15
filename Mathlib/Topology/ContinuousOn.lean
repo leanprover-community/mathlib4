@@ -420,6 +420,17 @@ theorem eventuallyEq_nhdsWithin_iff {f g : α → β} {s : Set α} {a : α} :
     f =ᶠ[𝓝[s] a] g ↔ ∀ᶠ x in 𝓝 a, x ∈ s → f x = g x :=
   mem_inf_principal
 
+/-- Two functions agree on a neighborhood of `x` if they agree at `x` and in a punctured
+neighborhood. -/
+theorem eventuallyEq_nhds_of_eventuallyEq_nhdsNE {f g : α → β} {a : α} (h₁ : f =ᶠ[𝓝[≠] a] g)
+    (h₂ : f a = g a) :
+    f =ᶠ[𝓝 a] g := by
+  filter_upwards [eventually_nhdsWithin_iff.1 h₁]
+  intro x hx
+  by_cases h₂x : x = a
+  · simp [h₂x, h₂]
+  · tauto
+
 theorem eventuallyEq_nhdsWithin_of_eqOn {f g : α → β} {s : Set α} {a : α} (h : EqOn f g s) :
     f =ᶠ[𝓝[s] a] g :=
   mem_inf_of_right h
