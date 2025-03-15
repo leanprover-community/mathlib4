@@ -53,7 +53,7 @@ variable {ι : Type*}
 
 -- TODO: set as an equation lemma for `row`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
-theorem row_apply (v : n → α) (i : ι) (j) : rowConst ι v i j = v j :=
+theorem rowConst_apply (v : n → α) (i : ι) (j) : rowConst ι v i j = v j :=
   rfl
 
 theorem colConst_injective [Nonempty ι] :
