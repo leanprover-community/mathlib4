@@ -83,18 +83,16 @@ def parallelScanAux (as : Array FormatError) (L M : String) : Array FormatError 
     else
       parallelScanAux (as.push (mkFormatError L M "extra space")) ls M
   | '\n', m =>
-    let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
-      parallelScanAux as (ls.drop lth) ms.trimLeft
+      parallelScanAux as ls.trimLeft ms.trimLeft
     else
-      parallelScanAux (as.push (mkFormatError L M "remove line break")) (ls.drop lth) M
+      parallelScanAux (as.push (mkFormatError L M "remove line break")) ls.trimLeft M
   | l, m => -- `l` is not whitespace
     if l == m then
       parallelScanAux as ls ms
     else
       if m.isWhitespace then
-        parallelScanAux
-          (as.push (mkFormatError L M "missing space")) L ms.trimLeft
+        parallelScanAux (as.push (mkFormatError L M "missing space")) L ms.trimLeft
     else
       as.push (mkFormatError ls ms "Oh no! (Unreachable?)")
 
