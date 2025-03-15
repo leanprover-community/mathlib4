@@ -16,7 +16,7 @@ import Mathlib.GroupTheory.MonoidLocalization.Basic
 # Symmetric Algebras
 
 Given a commutative ring `R`, and an `R`-module `L`, we construct the symmetric algebra of `L`.
-This is the free commutative `R`-algebra generated (`R`-linearly) by the module `L`.
+This is the free commutative `R`-algebra generated (`R`-lineaAy) by the module `L`.
 
 ## Notation
 
@@ -24,12 +24,12 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
    quotient of the tensor algebra. It is endowed with an R-algebra structure and a commutative
    ring structure.
 2. `SymmetricAlgebra.ι R` is the canonical R-linear map `L → TensorAlgebra R L`.
-3. Given a morphism `ι : L →ₗ[R] RL`, `IsSymmetricAlgebra ι` is a proposition saying whether
-   RL satisfies the universal property of the symmetric algebra over L with ι as the canonical
+3. Given a morphism `ι : L →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying whether
+   A satisfies the universal property of the symmetric algebra over L with ι as the canonical
    inclusion morphism.
 3. Given a linear map `f : M → A` to an commutative R-algebra `A`, and a morphism
-   `ι : L →ₗ[R] RL` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift R p f`
-   is the lift of `f` to an `R`-algebra morphism `RL →ₐ[R] A`.
+   `ι : L →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift R p f`
+   is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A`.
 
 ## Theorems
 
@@ -53,8 +53,7 @@ universe u
 
 noncomputable section
 
-variable (R L : Type*) {RL : Type*} [CommRing R] [AddCommMonoid L] [Module R L]
-variable [CommRing RL] [Algebra R RL] {L' : Type*} [CommRing L'] [Algebra R L']
+variable (R L : Type*) [CommRing R] [AddCommMonoid L] [Module R L]
 
 open TensorAlgebra in
 /--
@@ -69,17 +68,6 @@ Concrete construction of the symmetric algebra of L by quotienting out
 the tensor algebra by the commutativity relation
 -/
 abbrev SymmetricAlgebra := RingQuot (SymRel R L)
-
-variable {R} {L} in
-/--
-Given a morphism ι : L →ₗ[R] RL, where RL is some commutative algebra over R,
-IsSymmetricAlgebra ι means that RL satisfies the universal property of the
-symmetric algebra of L, i.e. it means that for any morphism φ : L →ₗ[R] A into a
-commutative algebra A, there exists a unique φ' : RL →ₐ[R] A such that φ = φ' ∘ ι.
--/
-structure IsSymmetricAlgebra (ι : L →ₗ[R] RL) : Prop where
-  ex_map {A : Type*} [CommRing A] [Algebra R A] (φ : L →ₗ[R] A)
-    : ∃! φ' : RL →ₐ[R] A, φ = φ'.toLinearMap ∘ₗ ι
 
 namespace SymmetricAlgebra
 
@@ -129,124 +117,116 @@ Canonical inclusion of `L` into the symmetric algebra `𝔖 R L`.
 -/
 def ι : L →ₗ[R] SymmetricAlgebra R L := (algHom R L).toLinearMap.comp (TensorAlgebra.ι R (M := L))
 
+variable {R L} in
+def lift {A : Type*} [CommSemiring A] [Algebra R A] (f : L →ₗ[R] A) :
+    (SymmetricAlgebra R L) →ₐ[R] A :=
+  RingQuot.liftAlgHom R (s := SymRel R L) ⟨TensorAlgebra.lift R f, fun _ _ r ↦ by
+    induction r with | mul_comm x y => simp [mul_comm]⟩
+
 end SymmetricAlgebra
 
+variable {A : Type*} [CommSemiring A] [Algebra R A] (f : L →ₗ[R] A)
+variable {R} {L}
+
+def IsSymmetricAlgebra (f : L →ₗ[R] A) : Prop :=
+  Function.Bijective (SymmetricAlgebra.lift f)
+
 namespace IsSymmetricAlgebra
-/--
-The zero module over base ring R has R as its symmetric algebra
--/
-theorem baseRingOfZeroModule [Subsingleton L] :
-    IsSymmetricAlgebra (R := R) (L := L) (RL := R) 0 where
-  ex_map := by
-    intro a b c φ
-    have hφ : φ = 0 := Subsingleton.eq_zero φ
-    use Algebra.ofId R a
-    constructor
-    · rw [hφ]
-      ext x
-      simp only [LinearMap.zero_apply, LinearMap.comp_zero]
-    · intro ψ hψ
-      exact Algebra.ext_id_iff.mpr trivial
 
-open SymmetricAlgebra in
-/--
-The concrete construction of the symmetric algebra as a quotient of the tensor algebra
-satisfies the universal property of the symmetric algebra
--/
-theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) where
-  ex_map := by
-    intro alg com halg φ
-    let tensorphi : TensorAlgebra R L →ₐ[R] alg := TensorAlgebra.lift R φ
-    have res : ∀ ⦃x y : TensorAlgebra R L⦄, SymRel R L x y → tensorphi x = tensorphi y := by
-      intro x y h
-      induction h
-      case mul_comm x y =>
-        simp only [map_mul]
-        rw [@NonUnitalCommSemiring.mul_comm]
-    use (RingQuot.liftAlgHom (S := R) (s := SymRel R L) (B := alg)) ⟨TensorAlgebra.lift R φ, res⟩
-    constructor
-    · unfold ι
-      ext a
-      simp
-    · intro a b
-      apply RingQuot.liftAlgHom_unique
-      exact (TensorAlgebra.lift_unique φ (a.comp (RingQuot.mkAlgHom R (SymRel R L)))).mp (Eq.symm b)
+variable {f : L →ₗ[R] A} (h : IsSymmetricAlgebra f)
 
-variable {L}
-
-/--
-Given a morphism `φ : L →ₗ[R] L'`, lift this to a morphism of type `RL →ₐ[R] L'` (where `RL`
-satisfies the universal property of the symmetric algebra of `L`)
--/
-def lift {iM : L →ₗ[R] RL} (salg : IsSymmetricAlgebra iM) (φ : L →ₗ[R] L') : RL →ₐ[R] L' :=
-  (salg.ex_map φ).choose
-
-/--
-The lift `φ' : RL →ₐ[R] L'` of a morphism `φ : L →ₗ[R] L'` satisfies `φ = φ' ∘ ι`
--/
-theorem lift_spec {iM : L →ₗ[R] RL} (salg : IsSymmetricAlgebra iM) (φ : L →ₗ[R] L') :
-    φ = (lift R salg φ).toLinearMap ∘ₗ iM := (salg.ex_map φ).choose_spec.1
-
-lemma comp_spec {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*} [CommRing RM]
-    [Algebra R RM] [CommRing RM'] [Algebra R RM'] {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
-    (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
-    iM = ((AlgHom.comp (lift _ salg' iM) (lift _ salg iM')).toLinearMap) ∘ₗ iM := by
-  rw [AlgHom.comp_toLinearMap]
-  rw [LinearMap.comp_assoc]
-  rw [← lift_spec _ salg iM']
-  exact lift_spec _ salg' iM
+noncomputable def equiv : (SymmetricAlgebra R L) ≃ₐ[R] A :=
+  AlgEquiv.ofBijective (SymmetricAlgebra.lift f) h
 
 @[simp]
-lemma comp_id {M : Type*} [AddCommMonoid M] [Module R M] {RM : Type u} {RM' : Type u}
-    [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
-    {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
-    (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM')
-    : (lift R salg' iM).comp (lift R salg iM') = AlgHom.id R RM :=
-  (salg.ex_map iM).unique (comp_spec _ salg salg') rfl
+lemma equiv_apply (a : SymmetricAlgebra R L) : h.equiv a = SymmetricAlgebra.lift f a := sorry
 
-lemma lift_comp {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*}
-    [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
-    {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
-    (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
-    ⇑(lift R salg' iM) ∘ ⇑(lift R salg iM') = (AlgHom.comp (lift R salg' iM) (lift R salg iM')) :=
-  rfl
+@[simp]
+lemma equiv_toAlgHom : h.equiv = SymmetricAlgebra.lift f := sorry
 
+@[simp]
+lemma equiv_symm_apply (a : L) : h.equiv.symm (f a) = SymmetricAlgebra.ι R L a := sorry
+
+variable {A' : Type*} [CommSemiring A'] [Algebra R A'] (g : L →ₗ[R] A')
 /--
-Two algebras RM and RM' satisfying the universal property for the symmetric algebra of M over R
-must be isomorphic
+Given a morphism `φ : L →ₗ[R] A'`, lift this to a morphism of type `A →ₐ[R] A'` (where `A`
+satisfies the universal property of the symmetric algebra of `L`)
 -/
-def isomorphismOfSymmetricAlgebraOfSymmetricAlgebra {M : Type*} [AddCommMonoid M] [Module R M]
-    {RM RM' : Type u} [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
-    {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
-    (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') : RM ≃ₐ[R] RM' where
-  toFun : RM →ₐ[R] RM' := lift R salg iM'
-  invFun : RM' →ₐ[R] RM := lift R salg' iM
-  left_inv := by
-    rw [@Function.leftInverse_iff_comp]
-    simp [lift_comp]
-  right_inv := by
-    rw [@Function.rightInverse_iff_comp]
-    simp [lift_comp]
-  map_mul' := by simp only [map_mul, implies_true]
-  map_add' := by simp only [map_add, implies_true]
-  commutes' := by simp only [AlgHom.commutes, implies_true]
+noncomputable def lift :
+    A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equiv.symm
 
-/--
-Given a basis I of an R-module L, the polynomial ring with variables generated by the elements
-of I satisfies the universal property of a symmetric algebra of L
--/
-theorem mvPolynomial (I : Type*) (basis_I : Basis I R L) :
-    IsSymmetricAlgebra (Basis.constr basis_I R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R))))
-  where
-  ex_map := by
-    intro alg b c φ
-    use MvPolynomial.aeval (R := R) (fun i => φ (basis_I i))
-    constructor
-    · apply Basis.ext basis_I
-      intro i
-      simp
-    · intro f hf
-      ext i
-      simp [aeval_X, hf]
+lemma lift_eq (a : L) : (h.lift g) (f a) = g a := sorry
+
+theorem mv_polynomial (I : Type*) (h : Basis I R L) :
+    IsSymmetricAlgebra (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))) := by
+  let u : (SymmetricAlgebra R L) ≃ₐ[R] (MvPolynomial I R) := AlgEquiv.ofAlgHom
+    (SymmetricAlgebra.lift (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))))
+    (MvPolynomial.aeval (R := R) (fun i ↦ SymmetricAlgebra.ι R L (h i)))
+    (by sorry)
+    (by sorry)
+  exact u.bijective
+
+-- /--
+-- The zero module over base ring R has R as its symmetric algebra
+-- -/
+-- theorem baseRingOfZeroModule [Subsingleton L] :
+--     IsSymmetricAlgebra (R := R) (L := L) (A := R) 0 := sorry
+
+-- open SymmetricAlgebra in
+-- /--
+-- The concrete construction of the symmetric algebra as a quotient of the tensor algebra
+-- satisfies the universal property of the symmetric algebra
+-- -/
+-- theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) := sorry
+
+-- /--
+-- The lift `φ' : A →ₐ[R] L'` of a morphism `φ : L →ₗ[R] L'` satisfies `φ = φ' ∘ ι`
+-- -/
+-- theorem lift_spec {iM : L →ₗ[R] A} (salg : IsSymmetricAlgebra iM) (φ : L →ₗ[R] L') :
+--     φ = (lift R salg φ).toLinearMap ∘ₗ iM := (salg.ex_map φ).choose_spec.1
+
+-- lemma comp_spec {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*} [CommRing RM]
+--     [Algebra R RM] [CommRing RM'] [Algebra R RM'] {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
+--     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
+--     iM = ((AlgHom.comp (lift _ salg' iM) (lift _ salg iM')).toLinearMap) ∘ₗ iM := by
+--   rw [AlgHom.comp_toLinearMap]
+--   rw [LinearMap.comp_assoc]
+--   rw [← lift_spec _ salg iM']
+--   exact lift_spec _ salg' iM
+
+-- @[simp]
+-- lemma comp_id {M : Type*} [AddCommMonoid M] [Module R M] {RM : Type u} {RM' : Type u}
+--     [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
+--     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
+--     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM')
+--     : (lift R salg' iM).comp (lift R salg iM') = AlgHom.id R RM :=
+--   (salg.ex_map iM).unique (comp_spec _ salg salg') rfl
+
+-- lemma lift_comp {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*}
+--     [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
+--     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
+--     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
+--     ⇑(lift R salg' iM) ∘ ⇑(lift R salg iM') = (AlgHom.comp (lift R salg' iM) (lift R salg iM')) :=
+--   rfl
+
+-- /--
+-- Two algebras RM and RM' satisfying the universal property for the symmetric algebra of M over R
+-- must be isomorphic
+-- -/
+-- def isomorphismOfSymmetricAlgebraOfSymmetricAlgebra {M : Type*} [AddCommMonoid M] [Module R M]
+--     {RM RM' : Type u} [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
+--     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
+--     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') : RM ≃ₐ[R] RM' where
+--   toFun : RM →ₐ[R] RM' := lift R salg iM'
+--   invFun : RM' →ₐ[R] RM := lift R salg' iM
+--   left_inv := by
+--     rw [@Function.leftInverse_iff_comp]
+--     simp [lift_comp]
+--   right_inv := by
+--     rw [@Function.rightInverse_iff_comp]
+--     simp [lift_comp]
+--   map_mul' := by simp only [map_mul, implies_true]
+--   map_add' := by simp only [map_add, implies_true]
+--   commutes' := by simp only [AlgHom.commutes, implies_true]
 
 end IsSymmetricAlgebra
