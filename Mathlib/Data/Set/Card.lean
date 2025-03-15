@@ -912,7 +912,7 @@ theorem ncard_add_ncard_compl (s : Set α) (hs : s.Finite := by toFinite_tac)
 
 theorem eq_univ_iff_ncard [Finite α] (s : Set α) :
     s = univ ↔ ncard s = Nat.card α := by
-  rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, self_eq_add_right]
+  rw [← compl_empty_iff, ← ncard_eq_zero, ← ncard_add_ncard_compl s, left_eq_add]
 
 end Lattice
 
@@ -986,6 +986,10 @@ theorem exists_eq_insert_iff_ncard (hs : s.Finite := by toFinite_tac) :
 theorem ncard_le_one (hs : s.Finite := by toFinite_tac) :
     s.ncard ≤ 1 ↔ ∀ a ∈ s, ∀ b ∈ s, a = b := by
   simp_rw [ncard_eq_toFinset_card _ hs, Finset.card_le_one, Finite.mem_toFinset]
+
+@[simp] theorem ncard_le_one_iff_subsingleton [Finite s] :
+    s.ncard ≤ 1 ↔ s.Subsingleton :=
+  ncard_le_one <| inferInstanceAs (Finite s)
 
 theorem ncard_le_one_iff (hs : s.Finite := by toFinite_tac) :
     s.ncard ≤ 1 ↔ ∀ {a b}, a ∈ s → b ∈ s → a = b := by

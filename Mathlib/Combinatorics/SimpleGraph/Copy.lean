@@ -24,10 +24,13 @@ This file introduces the concept of one simple graph containing a copy of anothe
 
 * `SimpleGraph.Free` is the predicate that `B` is `A`-free, that is, `B` does not contain a copy of
   `A`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
+
+## Notation
+
+The following notation is declared in locale `SimpleGraph`:
+
+* `G ⊑ H` for `SimpleGraph.IsContained G H`.
 -/
-
-
-open Fintype
 
 namespace SimpleGraph
 
@@ -66,7 +69,7 @@ instance : FunLike (Copy A B) α β where
 
 /-- A copy induces an embedding of edge sets. -/
 def mapEdgeSet (f : Copy A B) : A.edgeSet ↪ B.edgeSet where
-  toFun := Hom.mapEdgeSet f.toHom
+  toFun := f.toHom.mapEdgeSet
   inj' := Hom.mapEdgeSet.injective f.toHom f.injective
 
 /-- A copy induces an embedding of neighbor sets. -/
@@ -89,7 +92,7 @@ def toEmbedding (f : Copy A B) : α ↪ β := ⟨f, f.injective⟩
 def comp (g : Copy B C) (f : Copy A B) : Copy A C := by
   use g.toHom.comp f.toHom
   rw [Hom.coe_comp]
-  exact Function.Injective.comp g.injective f.injective
+  exact g.injective.comp f.injective
 
 @[simp]
 theorem comp_apply (g : Copy B C) (f : Copy A B) (a : α) : g.comp f a = g (f a) :=
@@ -103,21 +106,22 @@ theorem coe_comp (g : Copy B C) (f : Copy A B) : ⇑(g.comp f) = g ∘ f := by e
 
 @[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE G₁ G₂ h) = _root_.id := rfl
 
-@[simp] theorem ofLE_refl : ofLE G G (le_refl G) = id G := by ext; simp
+@[simp] theorem ofLE_refl : ofLE G G le_rfl = id G := by ext; simp
 
 @[simp]
 theorem ofLE_comp (h₁₂ : G₁ ≤ G₂) (h₂₃ : G₂ ≤ G₃) :
   (ofLE _ _ h₂₃).comp (ofLE _ _ h₁₂) = ofLE _ _ (h₁₂.trans h₂₃) := by ext; simp
 
 /-- The copy from an induced subgraph to the initial simple graph. -/
-def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G :=
-  (Embedding.induce s).toCopy
+def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.induce s).toCopy
+
+/-- The copy of `⊥` in any simple graph that can embed its vertices. -/
+protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
 end Copy
 
 /-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
-def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G :=
-  G'.hom.toCopy Subgraph.hom.injective
+def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy Subgraph.hom.injective
 
 end Copy
 
@@ -131,53 +135,50 @@ abbrev IsContained (A : SimpleGraph α) (B : SimpleGraph β) := Nonempty (Copy A
 @[inherit_doc] scoped infixl:50 " ⊑ " => SimpleGraph.IsContained
 
 /-- A simple graph contains itself. -/
-@[refl] theorem isContained_refl (G : SimpleGraph V) : G ⊑ G := ⟨Copy.id G⟩
+@[refl] protected theorem IsContained.refl (G : SimpleGraph V) : G ⊑ G := ⟨.id G⟩
+
+protected theorem IsContained.rfl : G ⊑ G := IsContained.refl G
 
 /-- A simple graph contains its subgraphs. -/
-theorem isContained_of_le (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨Copy.ofLE G₁ G₂ h⟩
+theorem IsContained.of_le (h : G₁ ≤ G₂) : G₁ ⊑ G₂ := ⟨.ofLE G₁ G₂ h⟩
 
 /-- If `A` contains `B` and `B` contains `C`, then `A` contains `C`. -/
-theorem isContained_trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
-
-alias IsContained.trans := isContained_trans
+theorem IsContained.trans : A ⊑ B → B ⊑ C → A ⊑ C := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
 /-- If `B` contains `C` and `A` contains `B`, then `A` contains `C`. -/
-theorem isContained_trans' : B ⊑ C → A ⊑ B → A ⊑ C := flip isContained_trans
-
-alias IsContained.trans' := isContained_trans'
+theorem IsContained.trans' : B ⊑ C → A ⊑ B → A ⊑ C := flip IsContained.trans
 
 lemma IsContained.mono_right {B' : SimpleGraph β} (h_isub : A ⊑ B) (h_sub : B ≤ B') : A ⊑ B' :=
-  h_isub.trans <| isContained_of_le h_sub
+  h_isub.trans <| IsContained.of_le h_sub
 
 alias IsContained.trans_le := IsContained.mono_right
 
 lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A' ⊑ B) : A ⊑ B :=
-  (isContained_of_le h_sub).trans h_isub
+  (IsContained.of_le h_sub).trans h_isub
 
 alias IsContained.trans_le' := IsContained.mono_left
 
 /-- If `A ≃g B`, then `A` is contained in `C` if and only if `B` is contained in `C`. -/
 theorem isContained_congr (e : A ≃g B) : A ⊑ C ↔ B ⊑ C :=
-  ⟨isContained_trans ⟨e.symm.toCopy⟩, isContained_trans ⟨e.toCopy⟩⟩
+  ⟨.trans ⟨e.symm.toCopy⟩, .trans ⟨e.toCopy⟩⟩
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
-lemma isContained_of_isEmpty [IsEmpty α] : A ⊑ B :=
+lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
 
-/-- A simple graph having no edges is contained in any simple graph having sufficent vertices. -/
-theorem isContained_of_isEmpty_edgeSet [IsEmpty A.edgeSet] [Fintype α] [Fintype β]
-    (h : card α ≤ card β) : A ⊑ B := by
-  haveI := Function.Embedding.nonempty_of_card_le h
-  let ι : α ↪ β := Classical.arbitrary (α ↪ β)
-  exact ⟨⟨ι, isEmptyElim ∘ fun hadj ↦ (⟨s(_, _), hadj⟩ : A.edgeSet)⟩, ι.injective⟩
+/-- `⊥` is contained in any simple graph having sufficently many vertices. -/
+lemma bot_isContained_iff_card_le [Fintype α] [Fintype β] :
+    (⊥ : SimpleGraph α) ⊑ B ↔ Fintype.card α ≤ Fintype.card β :=
+  ⟨fun ⟨f⟩ ↦ Fintype.card_le_of_embedding f.toEmbedding,
+    fun h ↦ ⟨Copy.bot (Function.Embedding.nonempty_of_card_le h).some⟩⟩
 
-lemma bot_isContained (f : α ↪ β) : (⊥ : SimpleGraph α) ⊑ B := ⟨⟨f, False.elim⟩, f.injective⟩
+protected alias IsContained.bot := bot_isContained_iff_card_le
 
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
 
 /-- The isomorphism from `Subgraph A` to its map under a copy `Copy A B`. -/
-noncomputable def Subgraph.isoMap (f : Copy A B) (A' : A.Subgraph) :
+noncomputable def Subgraph.Copy.map (f : Copy A B) (A' : A.Subgraph) :
     A'.coe ≃g (A'.map f.toHom).coe := by
   use Equiv.Set.image f.toHom _ f.injective
   simp_rw [map_verts, Equiv.Set.image_apply, coe_adj, map_adj, Relation.map_apply,
@@ -186,10 +187,11 @@ noncomputable def Subgraph.isoMap (f : Copy A B) (A' : A.Subgraph) :
 /-- `B` contains `A` if and only if `B` has a subgraph `B'` and `B'` is isomorphic to `A`. -/
 theorem isContained_iff_exists_iso_subgraph :
     A ⊑ B ↔ ∃ B' : B.Subgraph, Nonempty (A ≃g B'.coe) :=
-  ⟨fun ⟨f⟩ ↦ ⟨Subgraph.map f.toHom ⊤, ⟨(Subgraph.isoMap f ⊤).comp Subgraph.topIso.symm⟩⟩,
+  ⟨fun ⟨f⟩ ↦ ⟨Subgraph.map f.toHom ⊤, ⟨(Subgraph.Copy.map f ⊤).comp Subgraph.topIso.symm⟩⟩,
     fun ⟨B', ⟨e⟩⟩ ↦ B'.coe_isContained.trans' ⟨e.toCopy⟩⟩
 
-alias ⟨exists_iso_subgraph, _⟩ := isContained_iff_exists_iso_subgraph
+alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
+  isContained_iff_exists_iso_subgraph
 
 end IsContained
 
@@ -198,12 +200,13 @@ section Free
 /-- The proposition that a simple graph does not contain a copy of another simple graph. -/
 abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A ⊑ B
 
-/-- If `A ≃g B`, then `C` is `A`-free if and only if `C` is `B`-free. -/
-theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := by
-  rw [not_iff_not]
-  exact isContained_congr e
+lemma not_free : ¬A.Free B ↔ A ⊑ B := not_not
 
-lemma free_bot (h : A.edgeSet.Nonempty) : A.Free (⊥ : SimpleGraph β) := by
+/-- If `A ≃g B`, then `C` is `A`-free if and only if `C` is `B`-free. -/
+theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := (isContained_congr e).not
+
+lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
+  rw [← edgeSet_nonempty] at h
   intro ⟨f, hf⟩
   absurd f.map_mem_edgeSet h.choose_spec
   rw [edgeSet_bot]

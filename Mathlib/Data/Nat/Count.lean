@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Kim Morrison, Eric Rodr
 -/
 import Mathlib.Algebra.Group.Nat.Range
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Counting on ℕ
@@ -17,6 +17,7 @@ objects, and helping to evaluate it for specific `k`.
 
 -/
 
+assert_not_imported Mathlib.Dynamics.FixedPoints.Basic
 
 open Finset
 
@@ -103,10 +104,6 @@ theorem count_succ_eq_count_iff {n : ℕ} : count p (n + 1) = count p n ↔ ¬p 
 alias ⟨_, count_succ_eq_succ_count⟩ := count_succ_eq_succ_count_iff
 
 alias ⟨_, count_succ_eq_count⟩ := count_succ_eq_count_iff
-
-theorem count_le_cardinal (n : ℕ) : (count p n : Cardinal) ≤ Cardinal.mk { k | p k } := by
-  rw [count_eq_card_fintype, ← Cardinal.mk_fintype]
-  exact Cardinal.mk_subtype_mono fun x hx ↦ hx.2
 
 theorem lt_of_count_lt_count {a b : ℕ} (h : count p a < count p b) : a < b :=
   (count_monotone p).reflect_lt h

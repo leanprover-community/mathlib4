@@ -10,7 +10,7 @@ import Mathlib.Data.Finset.Lattice.Fold
 # Maximum and minimum of finite sets
 -/
 
-assert_not_exists OrderedCommMonoid MonoidWithZero
+assert_not_exists Monoid OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 
@@ -271,35 +271,25 @@ theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun Option.map_id _
 
--- Porting note: new proofs without `convert` for the next four theorems.
-
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   rw [← WithBot.coe_eq_coe]
-  simp only [min'_eq_inf', id_eq, ofDual_inf', Function.comp_apply, coe_sup', max'_eq_sup',
-    sup_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem ofDual_max' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (max' s hs) = min' (s.image ofDual) (hs.image _) := by
   rw [← WithTop.coe_eq_coe]
-  simp only [max'_eq_sup', id_eq, ofDual_sup', Function.comp_apply, coe_inf', min'_eq_inf',
-    inf_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_min' {s : Finset α} (hs : s.Nonempty) :
     toDual (min' s hs) = max' (s.image toDual) (hs.image _) := by
   rw [← WithBot.coe_eq_coe]
-  simp only [min'_eq_inf', id_eq, toDual_inf', Function.comp_apply, coe_sup', max'_eq_sup',
-    sup_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem toDual_max' {s : Finset α} (hs : s.Nonempty) :
     toDual (max' s hs) = min' (s.image toDual) (hs.image _) := by
   rw [← WithTop.coe_eq_coe]
-  simp only [max'_eq_sup', id_eq, toDual_sup', Function.comp_apply, coe_inf', min'_eq_inf',
-    inf_image]
-  rfl
+  simp [min'_eq_inf', max'_eq_sup']
 
 theorem max'_subset {s t : Finset α} (H : s.Nonempty) (hst : s ⊆ t) :
     s.max' H ≤ t.max' (H.mono hst) :=
@@ -391,11 +381,9 @@ theorem max_erase_ne_self {s : Finset α} : (s.erase x).max ≠ x := by
     exact WithBot.bot_ne_coe
 
 theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
-  -- Porting note: old proof `convert @max_erase_ne_self αᵒᵈ _ _ _`
-  convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
-  apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
-  congr!
-  ext; simp only [mem_map_equiv]; exact Iff.rfl
+  apply mt (congr_arg (WithTop.map toDual))
+  rw [map_toDual_min, image_erase toDual.injective, WithTop.map_coe]
+  apply max_erase_ne_self
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :
     ∃ y ∈ s, x < y ∧ ∀ z ∈ s, x < z → y ≤ z :=

@@ -31,8 +31,8 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 /-- `i : α → β` is "dense inducing" if it has dense range and the topology on `α`
   is the one induced by `i` from the topology on `β`. -/
-structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β)
-    extends IsInducing i : Prop where
+structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → β) : Prop
+    extends IsInducing i where
   /-- The range of a dense inducing map is a dense set. -/
   protected dense : DenseRange i
 
@@ -255,8 +255,8 @@ theorem continuous_extend [T3Space β] (hs : Dense s)
 end Dense
 
 /-- A dense embedding is an embedding with dense image. -/
-structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) extends
-  IsDenseInducing e : Prop where
+structure IsDenseEmbedding [TopologicalSpace α] [TopologicalSpace β] (e : α → β) : Prop
+    extends IsDenseInducing e where
   /-- A dense embedding is injective. -/
   injective : Function.Injective e
 

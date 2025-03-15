@@ -69,8 +69,7 @@ theorem not_isAssociatedPrime_of_subsingleton [Subsingleton M] : ¬IsAssociatedP
   apply hI.ne_top
   simpa [Subsingleton.elim x 0] using hx
 
-variable (R)
-
+variable (R) in
 theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R] (x : M)
     (hx : x ≠ 0) : ∃ P : Ideal R, IsAssociatedPrime P M ∧ ker (toSpanSingleton R M x) ≤ P := by
   have : ker (toSpanSingleton R M x) ≠ ⊤ := by
@@ -92,8 +91,6 @@ theorem exists_le_isAssociatedPrime_of_isNoetherianRing [H : IsNoetherianRing R]
     rwa [Ne, ker_eq_top, toSpanSingleton_eq_zero_iff]
   rwa [H₁.eq_of_not_lt (h₃ _ ⟨l.trans H₁, H₂, _, rfl⟩),
     mem_ker, toSpanSingleton_apply, smul_comm, smul_smul]
-
-variable {R}
 
 theorem associatedPrimes.subset_of_injective (hf : Function.Injective f) :
     associatedPrimes R M ⊆ associatedPrimes R M' := fun _I h => h.map_of_injective f hf

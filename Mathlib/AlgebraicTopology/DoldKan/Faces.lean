@@ -128,7 +128,8 @@ theorem comp_Hσ_eq {Y : C} {n a q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Highe
       rw [Fin.le_iff_val_le_val]
       dsimp
       omega
-    erw [δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg, ← neg_zsmul]
+    rw [← Fin.succ_mk, ← Fin.castSucc_mk _ i, δ_comp_σ_of_le X hia, add_eq_zero_iff_eq_neg,
+      ← neg_zsmul]
     congr 2
     ring
 
@@ -146,7 +147,8 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _⦋n + 1⦌} (v : Hi
         Fin.cast_mk, Fin.castSucc_mk]
       simp only [Fin.mk_zero, Fin.val_zero, pow_zero, one_zsmul, Fin.mk_one, Fin.val_one, pow_one,
         neg_smul, comp_neg]
-      erw [δ_comp_σ_self, δ_comp_σ_succ, add_neg_cancel]
+      rw [← Fin.castSucc_zero (n := n + 1), δ_comp_σ_self, ← Fin.succ_zero_eq_one, δ_comp_σ_succ,
+        add_neg_cancel]
     · intro j
       dsimp [Fin.cast, Fin.castLE, Fin.castLT]
       rw [comp_zsmul, comp_zsmul, δ_comp_σ_of_gt', v.comp_δ_eq_zero_assoc, zero_comp, zsmul_zero]
