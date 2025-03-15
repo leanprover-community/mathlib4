@@ -21,7 +21,7 @@ to use the assumption `[Mono f]` instead of `[Cofibration f]`.
 
 -/
 
-open CategoryTheory HomotopicalAlgebra MorphismProperty
+open CategoryTheory HomotopicalAlgebra MorphismProperty Simplicial
 
 universe u
 
@@ -29,16 +29,18 @@ namespace SSet
 
 namespace modelCategory
 
-/-- The generating cofibrations. -/
+/-- The generating cofibrations: this is the family of morphisms in `SSet`
+which consists of boundary inclusions `∂Δ[n].ι : ∂Δ[n] ⟶ Δ[n]`. -/
 def I : MorphismProperty SSet.{u} :=
-  .ofHoms (fun (n : ℕ) ↦ (boundary.{u} n).ι)
+  .ofHoms (fun n ↦ ∂Δ[n].ι)
 
 lemma boundary_ι_mem_I (n : ℕ) :
     I (boundary.{u} n).ι := by constructor
 
-/-- The generating trivial cofibrations. -/
+/-- The generating trivial cofibrations: this is the family of morphisms in `SSet`
+which consists of horn inclusions `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for positive `n`). -/
 def J : MorphismProperty SSet.{u} :=
-  ⨆ n, .ofHoms (fun i ↦ (horn.{u} (n + 1) i).ι)
+  ⨆ n, .ofHoms (fun i ↦ Λ[n + 1, i].ι)
 
 lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)):
     J (horn.{u} (n + 1) i).ι := by
