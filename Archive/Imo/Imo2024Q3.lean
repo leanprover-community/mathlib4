@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Nat.Nth
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # IMO 2024 Q3
