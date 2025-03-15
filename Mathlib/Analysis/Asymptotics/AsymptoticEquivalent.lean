@@ -297,7 +297,7 @@ variable {α β : Type*} [NormedLinearOrderedField β] {u v : α → β} {l : Fi
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :
     Tendsto v l atTop :=
   let ⟨φ, hφ, h⟩ := huv.symm.exists_eq_mul
-  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul zero_lt_one hφ)
+  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul_pos zero_lt_one hφ)
 
 theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atTop ↔ Tendsto v l atTop :=
