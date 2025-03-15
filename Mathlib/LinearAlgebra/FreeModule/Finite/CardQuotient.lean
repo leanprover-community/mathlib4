@@ -119,4 +119,3 @@ theorem AddSubgroup.relindex_eq_abs_det {E : Type*} [AddCommGroup E] [Module ℚ
   simp [Basis.toMatrix_apply]
 
 end AddSubgroup
-

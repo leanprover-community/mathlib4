@@ -595,6 +595,6 @@ theorem Basis.addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (
       (b.addSubgroupOfClosure A h).repr.toLinearMap =
         ((b.repr : M →ₗ[R] ι →₀ R).restrictScalars ℤ).domRestrict A.toIntSubmodule by
     exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
-  refine (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
+  exact (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
 
 end AddSubgroup
