@@ -213,19 +213,19 @@ lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
 
 end UniversalProperty
 
+end IsSymmetricAlgebra
+
 section MvPolynomial
 
-theorem mvPolynomial (I : Type*) (h : Basis I R L) :
+def SymmetricAlgebra.isoMvPolynomial {I : Type*} (h : Basis I R L) :
+    (SymmetricAlgebra R L) ≃ₐ[R] (MvPolynomial I R) := AlgEquiv.ofAlgHom
+  (SymmetricAlgebra.lift (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))))
+  (MvPolynomial.aeval (R := R) (fun i ↦ SymmetricAlgebra.ι R L (h i)))
+  (MvPolynomial.algHom_ext fun i ↦ (by simp))
+  (SymmetricAlgebra.algHom_ext <| h.ext <| fun i ↦ (by simp))
+
+theorem IsSymmetricAlgebra.mvPolynomial (I : Type*) (h : Basis I R L) :
     IsSymmetricAlgebra (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))) := by
-  let u : (SymmetricAlgebra R L) ≃ₐ[R] (MvPolynomial I R) := AlgEquiv.ofAlgHom
-    (SymmetricAlgebra.lift (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))))
-    (MvPolynomial.aeval (R := R) (fun i ↦ SymmetricAlgebra.ι R L (h i)))
-    (MvPolynomial.algHom_ext fun i ↦ (by simp)) (by
-      apply ringQuot_ext'; apply TensorAlgebra.hom_ext; apply h.ext;
-      intro i; simp
-      sorry)
-  exact u.bijective
+  exact (SymmetricAlgebra.isoMvPolynomial h).bijective
 
 end MvPolynomial
-
-end IsSymmetricAlgebra
