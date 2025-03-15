@@ -657,6 +657,112 @@ instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
 
 end RingHomIsometric
 
+section NormMulClass
+
+/-- A mixin class for strict multiplicativity of the norm, `‖a * b‖ = ‖a‖ * ‖b‖` (rather than
+`≤` as in the definition of `NormedRing`). Many `NormedRing`s satisfy this stronger property,
+including all `NormedDivisionRing`s and `NormedField`s. -/
+class NormMulClass (α : Type*) [Norm α] [Mul α] : Prop where
+  /-- The norm is multiplicative. -/
+  protected norm_mul : ∀ (a b : α), ‖a * b‖ = ‖a‖ * ‖b‖
+
+@[simp] lemma norm_mul [Norm α] [Mul α] [NormMulClass α] (a b : α) :
+    ‖a * b‖ = ‖a‖ * ‖b‖ :=
+  NormMulClass.norm_mul a b
+
+section SeminormedAddCommGroup
+
+variable [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
+
+@[simp] lemma nnnorm_mul : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
+
+@[simp] lemma enorm_mul : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [enorm]
+
+end SeminormedAddCommGroup
+
+section NormedAddCommGroup
+
+variable [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial α]
+
+/-- Deduce `NormOneClass` from `NormMulClass` under a suitable nontriviality hypothesis. -/
+instance NormMulClass.toNormOneClass : NormOneClass α := by
+  constructor
+  obtain ⟨u, hu⟩ := exists_ne (0 : α)
+  simpa [mul_eq_left₀ (norm_ne_zero_iff.mpr hu)] using (norm_mul u 1).symm
+
+end NormedAddCommGroup
+
+section NormedRing
+
+variable [NormedRing α] [NormMulClass α]
+
+instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
+  abv_nonneg' := norm_nonneg
+  abv_eq_zero' := norm_eq_zero
+  abv_add' := norm_add_le
+  abv_mul' := norm_mul
+
+instance NormMulClass.isDomain [Nontrivial α] : IsDomain α where
+  mul_left_cancel_of_ne_zero {a b c} ha h := by
+    rw [← sub_eq_zero] at h ⊢
+    rwa [← mul_sub, ← norm_eq_zero, norm_mul, mul_eq_zero_iff_left (norm_ne_zero_iff.mpr ha),
+      norm_eq_zero] at h
+  mul_right_cancel_of_ne_zero {a b c} ha h := by
+    rw [← sub_eq_zero] at h ⊢
+    rwa [← sub_mul, ← norm_eq_zero, norm_mul, mul_eq_zero_iff_right (norm_ne_zero_iff.mpr ha),
+      norm_eq_zero] at h
+
+variable [Nontrivial α]
+
+/-- `norm` as a `MonoidWithZeroHom`. -/
+@[simps]
+def normHom : α →*₀ ℝ where
+  toFun := (‖·‖)
+  map_zero' := norm_zero
+  map_one' := norm_one
+  map_mul' := norm_mul
+
+/-- `nnnorm` as a `MonoidWithZeroHom`. -/
+@[simps]
+def nnnormHom : α →*₀ ℝ≥0 where
+  toFun := (‖·‖₊)
+  map_zero' := nnnorm_zero
+  map_one' := nnnorm_one
+  map_mul' := nnnorm_mul
+
+@[simp]
+theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
+  (normHom.toMonoidHom : α →* ℝ).map_pow a
+
+@[simp]
+theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
+  (nnnormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
+
+@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [enorm]
+
+protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
+  map_list_prod (normHom.toMonoidHom : α →* ℝ) _
+
+protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
+  map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
+
+end NormedRing
+
+section NormedCommRing
+
+variable [NormedCommRing α] [NormMulClass α] [Nontrivial α]
+
+@[simp]
+theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=
+  map_prod normHom.toMonoidHom f s
+
+@[simp]
+theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
+  map_prod nnnormHom.toMonoidHom f s
+
+end NormedCommRing
+
+end NormMulClass
 
 /-! ### Induced normed structures -/
 
@@ -737,6 +843,15 @@ theorem NormOneClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing 
   let _ : SeminormedRing R := SeminormedRing.induced R S f
   { norm_one := (congr_arg norm (map_one f)).trans norm_one }
 
+/-- A ring homomorphism from a `Ring R` to a `SeminormedRing S` which induces the norm structure
+`SeminormedRing.induced` makes `R` satisfy `‖(1 : R)‖ = 1` whenever `‖(1 : S)‖ = 1`. -/
+theorem NormMulClass.induced {F : Type*} (R S : Type*) [Ring R] [SeminormedRing S]
+    [NormMulClass S] [FunLike F R S] [RingHomClass F R S] (f : F) :
+    @NormMulClass R (SeminormedRing.induced R S f).toNorm _ :=
+  -- Porting note: is this `let` a bad idea somehow?
+  let _ : SeminormedRing R := SeminormedRing.induced R S f
+  { norm_mul x y := (congr_arg norm (map_mul f x y)).trans <| norm_mul _ _ }
+
 end Induced
 
 namespace SubringClass
@@ -758,6 +873,10 @@ instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : Normed
 
 instance toNormOneClass [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
     NormOneClass s :=
+  .induced s R <| SubringClass.subtype _
+
+instance toNormMulClass [SeminormedRing R] [NormMulClass R] [SubringClass S R] (s : S) :
+    NormMulClass s :=
   .induced s R <| SubringClass.subtype _
 
 end SubringClass
