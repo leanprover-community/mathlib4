@@ -186,11 +186,9 @@ lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
 /-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
 
 See the results below to compute this norm in various cases. -/
-lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
-    (hζ : IsPrimitiveRoot ζ k) :
+lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     Nat.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =
       (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
-  have := hζ.finite_quotient_toInteger_sub_one hk
   rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
 
 lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
