@@ -50,6 +50,7 @@ canonical "recomposition" rather than just a proof that the "recomposition" is b
 Often it is easier to construct a term of this type via `Decomposition.ofAddHom` or
 `Decomposition.ofLinearMap`. -/
 class Decomposition where
+  /-- The inverse function of `DirectSum.coeAddMonoidHom ℳ`. -/
   decompose' : M → ⨁ i, ℳ i
   left_inv : Function.LeftInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
   right_inv : Function.RightInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
@@ -275,5 +276,72 @@ theorem decompose_lhom_ext {N} [AddCommMonoid N] [Module R N] ⦃f g : M →ₗ[
       simp_rw [LinearMap.comp_assoc, decomposeLinearEquiv_symm_comp_lof ℳ i, h]
 
 end Module
+
+section DecompostionHomClass
+
+/-- The class of `AddMonoidHom` that preserves the structrue of `DirectSum.Decomposition`. -/
+class DecompositionHomClass (F : Type*) {A B α β ι : Type*} [FunLike F A B] [DecidableEq ι]
+    [AddCommMonoid A] [AddCommMonoid B] [SetLike α A] [AddSubmonoidClass α A] [SetLike β B]
+    [AddMonoidHomClass F A B] [AddSubmonoidClass β B] (FA : ι → α) (FB : ι → β)
+    [Decomposition FA] [Decomposition FB]  :
+    Prop where
+  component_wise (f : F) {i a} : a ∈ FA i → f a ∈ FB i
+
+end DecompostionHomClass
+
+variable (F : Type*) {A B C α β γ ι : Type*}
+variable [FunLike F A B] [FunLike F B C] [DecidableEq ι]
+variable [AddCommMonoid A] [SetLike α A] [AddSubmonoidClass α A]
+variable [AddCommMonoid B] [SetLike β B] [AddSubmonoidClass β B]
+variable [AddCommMonoid C] [SetLike γ C] [AddSubmonoidClass γ C]
+variable (FA : ι → α) (FB : ι → β) (FC : ι → γ)
+variable [AddMonoidHomClass F A B] [AddMonoidHomClass F B C]
+variable [Decomposition FA] [Decomposition FB] [Decomposition FC]
+
+/-- `AddMonoidHom` that preserves the structrue of `DirectSum.Decomposition`. -/
+@[ext]
+class DecompositionHom extends A →+ B where
+  component_wise {i a} : a ∈ FA i → toFun a ∈ FB i
+
+instance : FunLike (DecompositionHom FA FB) A B where
+  coe f := f.toFun
+  coe_injective' _ _ hfg := DecompositionHom.ext hfg
+
+instance : AddMonoidHomClass (DecompositionHom FA FB) A B where
+  map_add f := f.map_add'
+  map_zero f := f.map_zero
+
+instance : DecompositionHomClass (DecompositionHom FA FB) FA FB where
+  component_wise f := f.component_wise
+
+namespace DecompositionHom
+
+variable (f : DecompositionHom FA FB) (g : DecompositionHom FB FC)
+
+variable {FA FB} in
+/-- The AddMonoidHom obtained from the
+restriction of a `DecompositionHom` to its `i`-th component. -/
+def component_wise_hom (i : ι) : FA i →+ FB i where
+  toFun := Subtype.map f (fun _ ha ↦ f.component_wise ha)
+  map_zero' := Subtype.ext (by simp)
+  map_add' := fun x y ↦ Subtype.ext (by simp)
+
+/-- The identity map as a `DecompositionHom` of same decomposition. -/
+def id : DecompositionHom FA FA where
+  toFun := _root_.id
+  map_zero' := by simp
+  map_add' := by simp
+  component_wise h := h
+
+variable {FA FB FC} in
+/-- The composition of two decomposition morphisms,
+obtained from the composition of the underlying function. -/
+def comp : DecompositionHom FA FC where
+  toFun := g.1.comp f.1
+  map_zero' := by simp
+  map_add' := by simp
+  component_wise h := g.component_wise (f.component_wise h)
+
+end DecompositionHom
 
 end DirectSum
