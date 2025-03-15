@@ -294,7 +294,7 @@ variable [FunLike F A B] [FunLike F B C] [DecidableEq ι]
 variable [AddCommMonoid A] [SetLike α A] [AddSubmonoidClass α A]
 variable [AddCommMonoid B] [SetLike β B] [AddSubmonoidClass β B]
 variable [AddCommMonoid C] [SetLike γ C] [AddSubmonoidClass γ C]
-variable (FC : ι → γ) (FA : ι → α) (FB : ι → β)
+variable (FA : ι → α) (FB : ι → β) (FC : ι → γ)
 variable [AddMonoidHomClass F A B] [AddMonoidHomClass F B C]
 variable [Decomposition FA] [Decomposition FB] [Decomposition FC]
 
