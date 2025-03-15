@@ -172,7 +172,7 @@ def multiGoalLinter : Linter where run := withSetOptionIn fun _stx ↦ do
           {indentD fmt}\n\
           Please focus on the current goal, for instance using `·` (typed as \"\\.\")."
 
-initialize addLinter multiGoalLinter
+--initialize addLinter multiGoalLinter
 
 end Style.multiGoal
 
