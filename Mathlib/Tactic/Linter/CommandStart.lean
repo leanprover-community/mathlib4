@@ -64,40 +64,37 @@ structure FormatError where
   fmtPos : Nat
   msg : String
 
+def mkFormatError (ls ms : List Char) (msg : String) : FormatError :=
+  {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := msg}
+
 partial
 def parallelScanAux : Array FormatError → List Char → List Char → Array FormatError
   | as, ' '::ls, m::ms =>
     if m.isWhitespace then
       parallelScanAux as ls (ms.dropWhile (·.isWhitespace))
     else
-      let new := {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "extra space"}
-      parallelScanAux (as.push new) ls (m::ms)
+      parallelScanAux (as.push (mkFormatError ls ms "extra space")) ls (m::ms)
   | as, '\n'::ls, m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
       parallelScanAux as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
     else
-      let new := {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "remove line break"}
-      parallelScanAux (as.push new) (ls.drop lth) (m::ms)
+      parallelScanAux (as.push (mkFormatError ls ms "remove line break")) (ls.drop lth) (m::ms)
   | as, l::ls, m::ms => -- `l` is not whitespace
     if l == m then
       parallelScanAux as ls ms
     else
       if m.isWhitespace then
-        let new := {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "missing space"}
-        parallelScanAux (as.push new) (l::ls) (ms.dropWhile (·.isWhitespace))
+        parallelScanAux
+          (as.push (mkFormatError ls ms "missing space")) (l::ls) (ms.dropWhile (·.isWhitespace))
     else
-      as.push {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "Oh no! (Unreachable?)"}
+      as.push (mkFormatError ls ms "Oh no! (Unreachable?)")
   | as, _, [] => as
   | as, [], ms =>
     if ms.all (·.isWhitespace) then
       as
     else
-      as.push {
-        srcPos := 1
-        fmtPos := ms.length
-        msg := "The formatted string finished early! (Unreachable?)"
-      }
+      as.push (mkFormatError [] ms "The formatted string finished early! (Unreachable?)")
 
 def parallelScan (src fmt : String) : Array FormatError :=
   parallelScanAux ∅ src.toList fmt.toList
@@ -200,15 +197,22 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           m!"The `commandStart` linter had some parsing issues: \
             feel free to silence it and report this error!"
         return none
-  let origSubstring := stx.getSubstring?.getD default
   if let some fmt := fmt then
     --let st := polishPP fmt.pretty
     let st := fmt.pretty
-    let scan := parallelScan origSubstring.toString st
+    let origSubstring := stx.getSubstring?.getD default
+    let orig := origSubstring.toString
+    let scan := parallelScan orig st
     --dbg_trace scan.map (·.srcPos)
+
     for s in scan do
+      let mut (center', orig') := (origSubstring.stopPos, orig)
+      for i in [:orig.length - s.srcPos] do
+        --dbg_trace "{center'}, '{orig'.get (center' - origSubstring.stopPos)}' {orig'}"
+        center' := orig'.next center' -- ⟨1⟩
+        orig' := orig'.dropRight 1
+      let center := center' + origSubstring.stopPos - origSubstring.startPos
       let center := origSubstring.stopPos - ⟨s.srcPos⟩
-      let orig := origSubstring.toString
       let rg : String.Range := ⟨center, center + ⟨1⟩⟩
       logInfoAt (.ofRange rg)
         m!"{s.msg}\n\n\
@@ -216,44 +220,44 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
           Expected: '{st.takeRight (s.fmtPos + 2) |>.take 5 |>.replace "\n" "⏎"}'"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
-
-  -- We only lint up to the position given by `lintUpTo`
-  if let some finalLintPos := lintUpTo stx then
-    if let some stype := stx.find? (unlintedNodes.contains ·.getKind) then
-      Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-        m!"Found a '{stype.getKind}' node in '{stype}'"
-      if let some pos := stype.getPos? then
-        if pos ≤ finalLintPos && stype.getKind != `ToAdditive.toAdditiveRest then
-          return
-      -- we allow the linter to inspect declarations with a `to_additive` doc-string, as long as
-      -- it fits in a single line.  Otherwise, getting the right formatting is hard.
-      if stype.getKind == `ToAdditive.toAdditiveRest then
-        let addDoc :=  stype.find? (·.isAtom) |>.map (·.getAtomVal) |>.getD ""
-        if addDoc.contains '\n' then
-          Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-            m!"Stop linting, since {addDoc} is a multiline additive docstring"
-          return
-    let stx := capSyntax stx finalLintPos.1
-    let origSubstringTrunc : Substring := {origSubstring with stopPos := finalLintPos}
-    let (real, lths) := polishSource origSubstringTrunc.toString
-    if let some fmt := fmt then
-      let st := polishPP fmt.pretty
-      --let scan := parallelScan origSubstring.toString fmt.pretty
-      --if !scan.isEmpty then logInfo m!"{scan}"
-      Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
-        m!"slightly polished source:\n'{real}'\n\n\
-          actually used source:\n'{furtherFormatting (trimComments real true)}'\n\n\
-          reference formatting:\n'{st}'\n\n\
-          intermediate reference formatting:\n'{fmt}'\n"
-      if ! st.startsWith (furtherFormatting (trimComments real true)) then
-        let diff := real.firstDiffPos st
-        let pos := posToShiftedPos lths diff.1 + origSubstringTrunc.startPos.1
-        let f := origSubstringTrunc.str.drop (pos)
-        let extraLth := (f.takeWhile (· != st.get diff)).length
-        let srcCtxt := zoomString real diff.1 5
-        let ppCtxt  := zoomString st diff.1 5
-        --Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
-        --  m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
+#check String.prev
+  ---- We only lint up to the position given by `lintUpTo`
+  --if let some finalLintPos := lintUpTo stx then
+  --  if let some stype := stx.find? (unlintedNodes.contains ·.getKind) then
+  --    Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+  --      m!"Found a '{stype.getKind}' node in '{stype}'"
+  --    if let some pos := stype.getPos? then
+  --      if pos ≤ finalLintPos && stype.getKind != `ToAdditive.toAdditiveRest then
+  --        return
+  --    -- we allow the linter to inspect declarations with a `to_additive` doc-string, as long as
+  --    -- it fits in a single line.  Otherwise, getting the right formatting is hard.
+  --    if stype.getKind == `ToAdditive.toAdditiveRest then
+  --      let addDoc :=  stype.find? (·.isAtom) |>.map (·.getAtomVal) |>.getD ""
+  --      if addDoc.contains '\n' then
+  --        Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+  --          m!"Stop linting, since {addDoc} is a multiline additive docstring"
+  --        return
+    --let stx := capSyntax stx finalLintPos.1
+    --let origSubstringTrunc : Substring := {origSubstring with stopPos := finalLintPos}
+    --let (real, lths) := polishSource origSubstringTrunc.toString
+    --if let some fmt := fmt then
+    --  let st := polishPP fmt.pretty
+    --  --let scan := parallelScan origSubstring.toString fmt.pretty
+    --  --if !scan.isEmpty then logInfo m!"{scan}"
+    --  Linter.logLintIf linter.style.commandStart.verbose (stx.getHead?.getD stx)
+    --    m!"slightly polished source:\n'{real}'\n\n\
+    --      actually used source:\n'{furtherFormatting (trimComments real true)}'\n\n\
+    --      reference formatting:\n'{st}'\n\n\
+    --      intermediate reference formatting:\n'{fmt}'\n"
+    --  if ! st.startsWith (furtherFormatting (trimComments real true)) then
+    --    let diff := real.firstDiffPos st
+    --    let pos := posToShiftedPos lths diff.1 + origSubstringTrunc.startPos.1
+    --    let f := origSubstringTrunc.str.drop (pos)
+    --    let extraLth := (f.takeWhile (· != st.get diff)).length
+    --    let srcCtxt := zoomString real diff.1 5
+    --    let ppCtxt  := zoomString st diff.1 5
+    --    --Linter.logLint linter.style.commandStart (.ofRange ⟨⟨pos⟩, ⟨pos + extraLth + 1⟩⟩)
+    --    --  m!"Current syntax:  '{srcCtxt}'\nExpected syntax: '{ppCtxt}'\n"
 initialize addLinter commandStartLinter
 
 end Style.CommandStart
