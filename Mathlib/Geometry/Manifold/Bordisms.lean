@@ -637,15 +637,14 @@ def uBordismClass.sum.{u} :
     (f := fun s t ↦ Quotient.mk (unorientedBordismSetoid X k I) (s.sum t))
   fun s t ↦ sum (fun _ _ _ _ h h' ↦ Quotient.sound (aux h h')) s t
 
--- lemma mk_sum_mk {s t : SingularNManifold X k I} :
---     (Quotient.mk (unorientedBordismSetoid X k I) s).sum (Quotient.mk _ t) = Quotient.mk _ (s.sum t) := by
---   sorry -- use Quotient.eq, and then unfold the defs
+lemma mk_sum_mk {s t : SingularNManifold X k I} :
+    uBordismClass.sum (Quotient.mk _ s) (Quotient.mk _ t) = Quotient.mk _ (s.sum t) := by
+  dsimp only [uBordismClass.sum, Quotient.lift_mk]
+  rfl
 
 lemma sum_eq_out_sum_out.{u} {Φ Ψ : uBordismClass.{_, _, _, u} X k I} :
     Φ.sum Ψ = Quotient.mk _ (Φ.out.sum Ψ.out) := by
-  rw [← Φ.out_eq, ← Ψ.out_eq]
-  -- use the previous lemma, or so
-  sorry
+  nth_rw 1 [← Φ.out_eq, ← Ψ.out_eq, mk_sum_mk]
 
 instance : Zero (uBordismClass X k I) where
   zero := uBordismClass.empty X k I
@@ -693,9 +692,5 @@ instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) whe
     change Φ.sum Ψ = Ψ.sum Φ
     set φ := Φ.out with φ_eq
     set ψ := Ψ.out with ψ_eq
-    rw [← Quotient.out_equiv_out]
-    trans φ.sum ψ
-    · rw [sum_eq_out_sum_out, ← φ_eq, ← Quotient.eq_mk_iff_out]
-    · rw [sum_eq_out_sum_out, ← φ_eq, ← ψ_eq]
-      sorry --, ← Quotient.eq_mk_iff_out]
-      -- use UnorientedBordism.sumComm
+    rw [sum_eq_out_sum_out, sum_eq_out_sum_out, ← φ_eq, ← ψ_eq, Quotient.eq]
+    use UnorientedBordism.sumComm
