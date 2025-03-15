@@ -50,6 +50,7 @@ canonical "recomposition" rather than just a proof that the "recomposition" is b
 Often it is easier to construct a term of this type via `Decomposition.ofAddHom` or
 `Decomposition.ofLinearMap`. -/
 class Decomposition where
+  /-- The inverse function of `DirectSum.coeAddMonoidHom ℳ`. -/
   decompose' : M → ⨁ i, ℳ i
   left_inv : Function.LeftInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
   right_inv : Function.RightInverse (DirectSum.coeAddMonoidHom ℳ) decompose'
@@ -278,10 +279,11 @@ end Module
 
 section DecompostionHomClass
 
+/-- The class of `AddMonoidHom` that preserves the structrue of `DirectSum.Decomposition`. -/
 class DecompositionHomClass (F : Type*) {A B α β ι : Type*} [FunLike F A B] [DecidableEq ι]
     [AddCommMonoid A] [AddCommMonoid B] [SetLike α A] [AddSubmonoidClass α A] [SetLike β B]
-    [AddMonoidHomClass F A B] [AddSubmonoidClass β B]
-    (FA : ι → α) (FB : ι → β) :
+    [AddMonoidHomClass F A B] [AddSubmonoidClass β B] (FA : ι → α) (FB : ι → β)
+    [Decomposition FA] [Decomposition FB]  :
     Prop where
   component_wise (f : F) {i a} : a ∈ FA i → f a ∈ FB i
 
@@ -294,7 +296,9 @@ variable [AddCommMonoid B] [SetLike β B] [AddSubmonoidClass β B]
 variable [AddCommMonoid C] [SetLike γ C] [AddSubmonoidClass γ C]
 variable (FC : ι → γ) (FA : ι → α) (FB : ι → β)
 variable [AddMonoidHomClass F A B] [AddMonoidHomClass F B C]
+variable [Decomposition FA] [Decomposition FB] [Decomposition FC]
 
+/-- `AddMonoidHom` that preserves the structrue of `DirectSum.Decomposition`. -/
 @[ext]
 class DecompositionHom extends A →+ B where
   component_wise {i a} : a ∈ FA i → toFun a ∈ FB i
