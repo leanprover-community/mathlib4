@@ -60,13 +60,13 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
   else none
 
 structure FormatError where
-  srcPos : Nat
-  srcPos' : String.Pos
+  srcNat : Nat
+  srcPos : String.Pos
   fmtPos : Nat
   msg : String
 
 def mkFormatError (ls ms : List Char) (msg : String) : FormatError :=
-  {srcPos := ls.length + 1, srcPos' := (String.mk ls).endPos + ⟨1⟩, fmtPos := ms.length + 1, msg := msg}
+  {srcNat := ls.length + 1, srcPos := (String.mk ls).endPos + ⟨1⟩, fmtPos := ms.length + 1, msg := msg}
 
 partial
 def parallelScanAux : Array FormatError → List Char → List Char → Array FormatError
@@ -213,11 +213,11 @@ def commandStartLinter : Linter where run := withSetOptionIn fun stx ↦ do
       --  center' := orig'.next center' -- ⟨1⟩
       --  orig' := orig'.dropRight 1
       --let center := center' + origSubstring.stopPos - origSubstring.startPos
-      let center := origSubstring.stopPos - s.srcPos'
+      let center := origSubstring.stopPos - s.srcPos
       let rg : String.Range := ⟨center, center + ⟨1⟩⟩
       logInfoAt (.ofRange rg)
         m!"{s.msg}\n\n\
-          Original: '{orig.takeRight (s.srcPos + 2) |>.take 5 |>.replace "\n" "⏎"}'\n\
+          Original: '{orig.takeRight (s.srcNat + 2) |>.take 5 |>.replace "\n" "⏎"}'\n\
           Expected: '{st.takeRight (s.fmtPos + 2) |>.take 5 |>.replace "\n" "⏎"}'"
       Linter.logLintIf linter.style.commandStart.verbose (.ofRange rg) --(stx.getHead?.getD stx)
         m!"Formatted string:\n{fmt}\nOriginal string:\n{origSubstring}"
