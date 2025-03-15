@@ -546,7 +546,7 @@ theorem idxOf_of_not_mem {l : List α} {a : α} : a ∉ l → idxOf a l = length
 @[deprecated (since := "2025-01-30")] alias indexOf_of_not_mem := idxOf_of_not_mem
 
 theorem idxOf_le_length {a : α} {l : List α} : idxOf a l ≤ length l := by
-  induction' l with b l ih; · rfl
+  induction l with | nil => rfl | cons b l ih =>
   simp only [length, idxOf_cons, cond_eq_if, beq_iff_eq]
   by_cases h : b = a
   · rw [if_pos h]; exact Nat.zero_le _
@@ -561,9 +561,7 @@ theorem idxOf_lt_length_iff {a} {l : List α} : idxOf a l < length l ↔ a ∈ l
 @[deprecated (since := "2025-01-30")] alias indexOf_lt_length_iff := idxOf_lt_length_iff
 
 theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) = idxOf a l₁ := by
-  induction' l₁ with d₁ t₁ ih
-  · exfalso
-    exact not_mem_nil a h
+  induction l₁ with | nil => exfalso; exact not_mem_nil a h | cons d₁ t₁ ih =>
   rw [List.cons_append]
   by_cases hh : d₁ = a
   · iterate 2 rw [idxOf_cons_eq _ hh]
@@ -573,8 +571,7 @@ theorem idxOf_append_of_mem {a : α} (h : a ∈ l₁) : idxOf a (l₁ ++ l₂) =
 
 theorem idxOf_append_of_not_mem {a : α} (h : a ∉ l₁) :
     idxOf a (l₁ ++ l₂) = l₁.length + idxOf a l₂ := by
-  induction' l₁ with d₁ t₁ ih
-  · rw [List.nil_append, List.length, Nat.zero_add]
+  induction l₁ with | nil => rw [List.nil_append, List.length, Nat.zero_add] | cons d₁ t₁ ih =>
   rw [List.cons_append, idxOf_cons_ne _ (ne_of_not_mem_cons h).symm, List.length,
     ih (not_mem_of_not_mem_cons h), Nat.succ_add]
 
@@ -817,7 +814,7 @@ theorem foldl_ext (f g : α → β → α) (a : α) {l : List β} (H : ∀ a : �
 
 theorem foldr_ext (f g : α → β → β) (b : β) {l : List α} (H : ∀ a ∈ l, ∀ b : β, f a b = g a b) :
     foldr f b l = foldr g b l := by
-  induction' l with hd tl ih; · rfl
+  induction l with | nil => rfl | cons hd tl ih =>
   simp only [mem_cons, or_imp, forall_and, forall_eq] at H
   simp only [foldr, ih H.2, H.1]
 
@@ -869,9 +866,10 @@ theorem foldr_hom₂ (l : List ι) (f : α → β → γ) (op₁ : ι → α →
 theorem injective_foldl_comp {l : List (α → α)} {f : α → α}
     (hl : ∀ f ∈ l, Function.Injective f) (hf : Function.Injective f) :
     Function.Injective (@List.foldl (α → α) (α → α) Function.comp f l) := by
-  induction' l with lh lt l_ih generalizing f
-  · exact hf
-  · apply l_ih fun _ h => hl _ (List.mem_cons_of_mem _ h)
+  induction l generalizing f with
+  | nil => exact hf
+  | cons lh lt l_ih =>
+    apply l_ih fun _ h => hl _ (List.mem_cons_of_mem _ h)
     apply Function.Injective.comp hf
     apply hl _ (List.mem_cons_self _ _)
 
@@ -1002,7 +1000,7 @@ end FoldlMFoldrM
 @[deprecated "Deprecated without replacement." (since := "2025-02-07")]
 theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {l : List α} (hx : x ∈ l) :
     SizeOf.sizeOf x < SizeOf.sizeOf l := by
-  induction' l with h t ih <;> cases hx <;> rw [cons.sizeOf_spec]
+  induction l with | nil => _ | cons h t ih => _ <;> cases hx <;> rw [cons.sizeOf_spec]
   · omega
   · specialize ih ‹_›
     omega
@@ -1018,7 +1016,7 @@ theorem length_eq_length_filter_add {l : List (α)} (f : α → Bool) :
 
 theorem filterMap_eq_flatMap_toList (f : α → Option β) (l : List α) :
     l.filterMap f = l.flatMap fun a ↦ (f a).toList := by
-  induction' l with a l ih <;> simp [filterMap_cons]
+  induction l with | nil => _ | cons a l ih => _ <;> simp [filterMap_cons]
   rcases f a <;> simp [ih]
 
 @[deprecated (since := "2024-10-16")] alias filterMap_eq_bind_toList := filterMap_eq_flatMap_toList
@@ -1030,8 +1028,7 @@ theorem filterMap_congr {f g : α → Option β} {l : List α}
 theorem filterMap_eq_map_iff_forall_eq_some {f : α → Option β} {g : α → β} {l : List α} :
     l.filterMap f = l.map g ↔ ∀ x ∈ l, f x = some (g x) where
   mp := by
-    induction' l with a l ih
-    · simp
+    induction l with | nil => simp | cons a l ih =>
     rcases ha : f a with - | b <;> simp [ha, filterMap_cons]
     · intro h
       simpa [show (filterMap f l).length = l.length + 1 from by simp[h], Nat.add_one_le_iff]
@@ -1074,9 +1071,10 @@ variable (p)
 
 theorem monotone_filter_right (l : List α) ⦃p q : α → Bool⦄
     (h : ∀ a, p a → q a) : l.filter p <+ l.filter q := by
-  induction' l with hd tl IH
-  · rfl
-  · by_cases hp : p hd
+  induction l with
+  | nil => rfl
+  | cons hd tl IH =>
+    by_cases hp : p hd
     · rw [filter_cons_of_pos hp, filter_cons_of_pos (h _ hp)]
       exact IH.cons_cons hd
     · rw [filter_cons_of_neg hp]
@@ -1302,9 +1300,10 @@ variable [BEq α] [LawfulBEq α]
 
 lemma lookup_graph (f : α → β) {a : α} {as : List α} (h : a ∈ as) :
     lookup a (as.map fun x => (x, f x)) = some (f a) := by
-  induction' as with a' as ih
-  · exact (List.not_mem_nil _ h).elim
-  · by_cases ha : a = a'
+  induction as with
+  | nil => exact (List.not_mem_nil _ h).elim
+  | cons a' as ih =>
+    by_cases ha : a = a'
     · simp [ha, lookup_cons]
     · simpa [lookup_cons, beq_false_of_ne ha] using ih (List.mem_of_ne_of_mem ha h)
 
