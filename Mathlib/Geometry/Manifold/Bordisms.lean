@@ -674,6 +674,11 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
     -- Choose a representative for Φ.
     set s := S.out with s_eq
     -- Then s.sum s is in the equivalence class of Φ.sum Φ.
+    rw [sum_eq_out_sum_out, ← s_eq, uBordismClass.empty, Quotient.eq]
+    haveI := ChartedSpace.empty
+    dsimp
+    use UnorientedBordism.sum_self (M := PEmpty.{u + 1})
+
     rw [← Quotient.out_equiv_out]
     trans s.sum s
     · rw [sum_eq_out_sum_out, ← s_eq, ← Quotient.eq_mk_iff_out]
