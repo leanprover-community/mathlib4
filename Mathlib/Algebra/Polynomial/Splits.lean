@@ -344,6 +344,13 @@ theorem roots_map {f : K[X]} (hf : f.Splits <| RingHom.id K) : (f.map i).roots =
       convert (natDegree_eq_card_roots hf).symm
       rw [map_id]).symm
 
+theorem Splits.mem_subfield_of_isRoot (F : Subfield K) {f : F[X]} (hnz : f ≠ 0)
+    (hf : Splits (RingHom.id F) f) {x : K} (hx : (f.map F.subtype).IsRoot x) :
+    x ∈ F := by
+  obtain ⟨x, _, rfl⟩ := Multiset.mem_map.mp
+    (roots_map F.subtype hf ▸ mem_roots'.mpr ⟨Polynomial.map_ne_zero hnz, hx⟩)
+  exact x.2
+
 theorem image_rootSet [Algebra R K] [Algebra R L] {p : R[X]} (h : p.Splits (algebraMap R K))
     (f : K →ₐ[R] L) : f '' p.rootSet K = p.rootSet L := by
   classical
