@@ -91,11 +91,11 @@ end ExhaustiveFiltration
 
 section DiscreteFiltration
 
-variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
+variable {ι A σ : Type*} [AddGroup A] [Preorder ι] [SetLike σ A]
 
 /-- For `IsFiltration F F_lt`, the filtration is discrete if `Set.univ = ⋃ F i`. -/
 class IsDiscreteFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_lt] : Prop where
-  discrete : ∃ i : ι, (F i : Set A) = ⊥
+  discrete : ∃ i : ι, (F i : Set A) = {0}
 
 end DiscreteFiltration
 
@@ -202,12 +202,33 @@ theorem exact_of_graded_exact
     (exhaustive : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
     (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
     (exact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact f.toAddMonoidHom g.toAddMonoidHom := by
-  sorry
-  -- refine Function.Exact.of_comp_of_mem_range ?_ ?_
-  -- · sorry
-  -- · intro y yto0
-  --   have : ∃ p : ℤ, y ∈ FS p := sorry
-  --   have : ∀ s : ℕ, ∃ x : FS p,
+  refine Function.Exact.of_comp_of_mem_range ?_ ?_
+  · sorry
+  · intro y yto0
+
+    have : ∃ p : ℤ, y ∈ ofClass (FS p) ⊓ (AddMonoidHom.ker g.toAddMonoidHom) := by
+      refine exists_and_right.mpr ⟨?_, yto0⟩
+      have : y ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustive.exhaustive, Set.mem_univ]
+      exact Set.mem_iUnion.mp this
+    rcases this with ⟨p, hy⟩
+
+    have : ∃ t ≤ p, (FS t : Set S) = {0} := by
+      rcases discrete.discrete with ⟨t₀, t₀bot⟩
+      refine ⟨min p t₀, ⟨Int.min_le_left p t₀, ?_⟩⟩
+      refine (Set.Nonempty.subset_singleton_iff Set.Nonempty.of_subtype).mp ?_
+      rw [← t₀bot]
+      apply Monotone.imp monoS (Int.min_le_right p t₀)
+    rcases this with ⟨t, tlep, tbot⟩
+
+    have : ∀ i : ℤ, (AddMonoidHom.ker g.toAddMonoidHom) ⊓ ofClass (FS i) ≤ AddSubgroup.map f (ofClass (FR i)) := sorry
+
+    rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le tlep) with ⟨s, _⟩
+    rcases shrinking_lemma f (AddMonoidHom.ker g.toAddMonoidHom) ⟨y, hy⟩ this s with ⟨x, hx⟩
+    have eq : p - s = t := by omega
+    rw [eq] at hx
+    have hx : y - (f.toAddMonoidHom x) ∈ (FS t : Set S) := hx
+    rw [tbot] at hx
+    exact ⟨x, (eq_of_sub_eq_zero <| Set.mem_singleton_iff.mp hx).symm⟩
 
 
 end
