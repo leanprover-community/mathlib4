@@ -160,6 +160,9 @@ lemma integral_eq_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurable X 
 lemma measure_left_eq_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω = a ∨ X ω = b) :
     (μ (X ⁻¹' {a})).toReal = 1 - (μ[X] - a) / (b - a) := by
+  by_cases hab : a = b
+  · simp only [hab, sub_self, div_zero, sub_zero]
+    sorry
   sorry
 
 lemma measure_right_eq_of_two_points [IsProbabilityMeasure μ] (hXm : AEMeasurable X μ)
