@@ -124,10 +124,22 @@ def lift : (SymmetricAlgebra R L) →ₐ[R] A :=
     induction r with | mul_comm x y => simp [mul_comm]⟩
 
 @[simp]
-lemma lift_apply (a : L) : (lift f) ((ι R L) a) = f a := sorry
+lemma lift_apply (a : L) : (lift f) ((ι R L) a) = f a := by
+  simp [lift, ι, algHom]
 
 @[simp]
 lemma lift_comp : (lift f) ∘ₗ (ι R L) = f := LinearMap.ext fun x ↦ lift_apply f x
+
+theorem algHom_ext {F G : (SymmetricAlgebra R L) →ₐ[R] A}
+    (h : F ∘ₗ (ι R L) = (G ∘ₗ (ι R L) : L →ₗ[R] A)) : F = G := by
+  ext x
+  exact congr($h x)
+
+@[simp]
+lemma lift_iota : (lift (ι R L)) = AlgHom.id R (SymmetricAlgebra R L) := by
+  apply algHom_ext
+  rw [lift_comp]
+  rfl
 
 end SymmetricAlgebra
 
@@ -136,6 +148,10 @@ variable {R} {L}
 
 def IsSymmetricAlgebra (f : L →ₗ[R] A) : Prop :=
   Function.Bijective (SymmetricAlgebra.lift f)
+
+theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) := by
+  rw [IsSymmetricAlgebra, lift_iota]
+  exact Function.Involutive.bijective (congrFun rfl)
 
 namespace IsSymmetricAlgebra
 
@@ -147,13 +163,15 @@ noncomputable def equiv : (SymmetricAlgebra R L) ≃ₐ[R] A :=
   AlgEquiv.ofBijective (SymmetricAlgebra.lift f) h
 
 @[simp]
-lemma equiv_apply (a : SymmetricAlgebra R L) : h.equiv a = SymmetricAlgebra.lift f a := sorry
+lemma equiv_apply (a : SymmetricAlgebra R L) : h.equiv a = SymmetricAlgebra.lift f a := rfl
 
 @[simp]
-lemma equiv_toAlgHom : h.equiv = SymmetricAlgebra.lift f := sorry
+lemma equiv_toAlgHom : h.equiv = SymmetricAlgebra.lift f := rfl
 
 @[simp]
-lemma equiv_symm_apply (a : L) : h.equiv.symm (f a) = SymmetricAlgebra.ι R L a := sorry
+lemma equiv_symm_apply (a : L) : h.equiv.symm (f a) = SymmetricAlgebra.ι R L a := by
+  apply h.equiv.injective
+  simp
 
 @[simp]
 lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R L :=
@@ -172,14 +190,26 @@ noncomputable def lift :
     A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equiv.symm
 
 @[simp]
-lemma lift_eq (a : L) : (h.lift g) (f a) = g a := sorry
+lemma lift_eq (a : L) : (h.lift g) (f a) = g a := by simp [lift]
 
 @[simp]
 lemma lift_comp_linearMap : (h.lift g) ∘ₗ f = g := LinearMap.ext fun x ↦ lift_eq h g x
 
-lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = (h.lift g) := by sorry
+variable {g} in
+lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = (h.lift g) := by
+  suffices h' : F.comp h.equiv = (h.lift g).comp h.equiv.toAlgHom by
+    ext x
+    have : (F <| h.equiv.toFun <| h.equiv.invFun <| x) =
+      ((h.lift g) <| h.equiv.toFun <| h.equiv.invFun <| x) := congr($h' (h.equiv.symm x))
+    simpa [h.equiv.right_inv] using this
+  refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x ↦ ?_)
+  unfold equiv lift
+  simpa using congr($hF x)
 
-lemma algHom_ext {F G : A →ₐ[R] A'} (hFG : (F ∘ₗ f) = (G ∘ₗ f : L →ₗ[R] A')) : F = G := by sorry
+lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
+    (hFG : (F ∘ₗ f) = (G ∘ₗ f : L →ₗ[R] A')) : F = G := by
+  rw [((h.lift_unique hFG) : F = (h.lift (G ∘ₗ f))), eq_comm]
+  exact h.lift_unique rfl
 
 end UniversalProperty
 
@@ -190,73 +220,12 @@ theorem mvPolynomial (I : Type*) (h : Basis I R L) :
   let u : (SymmetricAlgebra R L) ≃ₐ[R] (MvPolynomial I R) := AlgEquiv.ofAlgHom
     (SymmetricAlgebra.lift (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))))
     (MvPolynomial.aeval (R := R) (fun i ↦ SymmetricAlgebra.ι R L (h i)))
-    (by sorry)
-    (by sorry)
+    (MvPolynomial.algHom_ext fun i ↦ (by simp)) (by
+      apply ringQuot_ext'; apply TensorAlgebra.hom_ext; apply h.ext;
+      intro i; simp
+      sorry)
   exact u.bijective
 
 end MvPolynomial
-
--- /--
--- The zero module over base ring R has R as its symmetric algebra
--- -/
--- theorem baseRingOfZeroModule [Subsingleton L] :
---     IsSymmetricAlgebra (R := R) (L := L) (A := R) 0 := sorry
-
--- open SymmetricAlgebra in
--- /--
--- The concrete construction of the symmetric algebra as a quotient of the tensor algebra
--- satisfies the universal property of the symmetric algebra
--- -/
--- theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) := sorry
-
--- /--
--- The lift `φ' : A →ₐ[R] L'` of a morphism `φ : L →ₗ[R] L'` satisfies `φ = φ' ∘ ι`
--- -/
--- theorem lift_spec {iM : L →ₗ[R] A} (salg : IsSymmetricAlgebra iM) (φ : L →ₗ[R] L') :
---     φ = (lift R salg φ).toLinearMap ∘ₗ iM := (salg.ex_map φ).choose_spec.1
-
--- lemma comp_spec {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*} [CommRing RM]
---     [Algebra R RM] [CommRing RM'] [Algebra R RM'] {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
---     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
---     iM = ((AlgHom.comp (lift _ salg' iM) (lift _ salg iM')).toLinearMap) ∘ₗ iM := by
---   rw [AlgHom.comp_toLinearMap]
---   rw [LinearMap.comp_assoc]
---   rw [← lift_spec _ salg iM']
---   exact lift_spec _ salg' iM
-
--- @[simp]
--- lemma comp_id {M : Type*} [AddCommMonoid M] [Module R M] {RM : Type u} {RM' : Type u}
---     [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
---     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
---     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM')
---     : (lift R salg' iM).comp (lift R salg iM') = AlgHom.id R RM :=
---   (salg.ex_map iM).unique (comp_spec _ salg salg') rfl
-
--- lemma lift_comp {M : Type*} [AddCommMonoid M] [Module R M] {RM RM' : Type*}
---     [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
---     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
---     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') :
---     ⇑(lift R salg' iM) ∘ ⇑(lift R salg iM') = (AlgHom.comp (lift R salg' iM) (lift R salg iM')) :=
---   rfl
-
--- /--
--- Two algebras RM and RM' satisfying the universal property for the symmetric algebra of M over R
--- must be isomorphic
--- -/
--- def isomorphismOfSymmetricAlgebraOfSymmetricAlgebra {M : Type*} [AddCommMonoid M] [Module R M]
---     {RM RM' : Type u} [CommRing RM] [Algebra R RM] [CommRing RM'] [Algebra R RM']
---     {iM : M →ₗ[R] RM} {iM' : M →ₗ[R] RM'}
---     (salg : IsSymmetricAlgebra iM) (salg' : IsSymmetricAlgebra iM') : RM ≃ₐ[R] RM' where
---   toFun : RM →ₐ[R] RM' := lift R salg iM'
---   invFun : RM' →ₐ[R] RM := lift R salg' iM
---   left_inv := by
---     rw [@Function.leftInverse_iff_comp]
---     simp [lift_comp]
---   right_inv := by
---     rw [@Function.rightInverse_iff_comp]
---     simp [lift_comp]
---   map_mul' := by simp only [map_mul, implies_true]
---   map_add' := by simp only [map_add, implies_true]
---   commutes' := by simp only [AlgHom.commutes, implies_true]
 
 end IsSymmetricAlgebra
