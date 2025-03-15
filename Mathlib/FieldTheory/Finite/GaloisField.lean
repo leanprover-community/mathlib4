@@ -225,45 +225,43 @@ namespace FiniteField
 
 variable {K K' : Type*} [Field K] [Field K']
 
-theorem algebraMap_norm_eq_pow [Algebra K K'] [Fintype K] [Fintype K'] {x : K'} :
-    algebraMap K K' (Algebra.norm K x) = x ^ ((Fintype.card K' - 1) / (Fintype.card K - 1)) := by
-  simp_rw [Algebra.norm_eq_prod_automorphisms,
+section norm
+
+variable [Algebra K K'] [Finite K']
+
+theorem algebraMap_norm_eq_pow {x : K'} :
+    algebraMap K K' (Algebra.norm K x) = x ^ ((Nat.card K' - 1) / (Nat.card K - 1)) := by
+  have := Finite.of_injective_finite_range (algebraMap K K').injective
+  have := Fintype.ofFinite K
+  have := Fintype.ofFinite K'
+  simp_rw [← Fintype.card_eq_nat_card, Algebra.norm_eq_prod_automorphisms,
     ← (bijective_frobeniusAlgEquivOfAlgebraic_pow K K').prod_comp, AlgEquiv.coe_pow,
     coe_frobeniusAlgEquivOfAlgebraic, pow_iterate, Finset.prod_pow_eq_pow_sum,
     Fin.sum_univ_eq_sum_range, Nat.geomSum_eq Fintype.one_lt_card, ← Module.card_eq_pow_finrank]
 
 variable (K K')
 
-theorem unitsMap_norm_surjective [Algebra K K'] [Finite K'] :
-    Function.Surjective (Units.map <| Algebra.norm K (S := K')) :=
+theorem unitsMap_norm_surjective : Function.Surjective (Units.map <| Algebra.norm K (S := K')) :=
   have := Finite.of_injective_finite_range (algebraMap K K').injective
-  MonoidHom.range_eq_top.1 <| SetLike.ext' <| Set.eq_of_subset_of_ncard_le (Set.subset_univ _) <| by
-    set φ := Units.map (Algebra.norm K (S := K'))
-    rw [Subgroup.coe_top, Set.ncard_univ, ← Set.Nat.card_coe_set_eq, SetLike.coe_sort_coe,
-      ← Nat.card_congr (QuotientGroup.quotientKerEquivRange φ).toEquiv]
-    refine Nat.le_of_mul_le_mul_right (φ.ker.card_eq_card_quotient_mul_card_subgroup ▸ ?_)
-      (Nat.card_pos (α := φ.ker))
-    let e := (Nat.card K' - 1) / (Nat.card K - 1)
-    suffices Nat.card φ.ker ≤ e from (Nat.mul_le_mul_left _ this).trans <| by
-      simpa only [Nat.card_units, mul_comm] using Nat.div_mul_le_self ..
+  MonoidHom.surjective_of_card_ker_le_div _ <| by
+    simp_rw [Nat.card_units]
     classical
     have := Fintype.ofFinite K'ˣ
     convert IsCyclic.card_pow_eq_one_le (α := K'ˣ) <| Nat.div_pos
       (Nat.sub_le_sub_right (Nat.card_le_card_of_injective _ (algebraMap K K').injective) _) <|
       Nat.sub_pos_of_lt Finite.one_lt_card
     rw [← Set.ncard_coe_Finset, ← SetLike.coe_sort_coe, Set.Nat.card_coe_set_eq]; congr; ext
-    have := Fintype.ofFinite K'
-    have := Fintype.ofFinite K
-    simp [Units.ext_iff, φ, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
+    simp [Units.ext_iff, ← (algebraMap K K').injective.eq_iff, algebraMap_norm_eq_pow]
 
-theorem norm_surjective [Algebra K K'] [Finite K'] :
-    Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by
+theorem norm_surjective : Function.Surjective (Algebra.norm K (S := K')) := fun k ↦ by
   obtain rfl | ne := eq_or_ne k 0
   · exact ⟨0, Algebra.norm_zero ..⟩
   have ⟨x, eq⟩ := unitsMap_norm_surjective K K' (Units.mk0 k ne)
   exact ⟨x, congr_arg (·.1) eq⟩
 
-variable {K K'} [Fintype K] [Fintype K']
+end norm
+
+variable [Fintype K] [Fintype K']
 
 /-- Uniqueness of finite fields:
   Any two finite fields of the same cardinality are (possibly non canonically) isomorphic -/
