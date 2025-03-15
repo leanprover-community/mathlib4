@@ -760,6 +760,56 @@ protected theorem indicator {_ : MeasurableSpace α} [TopologicalSpace β] [Zero
     StronglyMeasurable (s.indicator f) :=
   hf.piecewise hs stronglyMeasurable_const
 
+/-- To prove that a property holds for any strongly measurable function, it is enough to show
+that it holds for constant indicator functions of measurable sets and that it is closed under
+addition and pointwise limit.
+
+To use in an induction proof, the syntax is
+`induction f, hf using StronglyMeasurable.induction with`. -/
+theorem induction [MeasurableSpace α] [AddZeroClass β] [TopologicalSpace β]
+    {P : (f : α → β) → StronglyMeasurable f → Prop}
+    (ind : ∀ c ⦃s : Set α⦄ (hs : MeasurableSet s),
+      P (s.indicator fun _ ↦ c) (stronglyMeasurable_const.indicator hs))
+    (add : ∀ ⦃f g : α → β⦄ (hf : StronglyMeasurable f) (hg : StronglyMeasurable g)
+      (hfg : StronglyMeasurable (f + g)), Disjoint f.support g.support →
+      P f hf → P g hg → P (f + g) hfg)
+    (lim : ∀ ⦃f : ℕ → α → β⦄ ⦃g : α → β⦄ (hf : ∀ n, StronglyMeasurable (f n))
+      (hg : StronglyMeasurable g), (∀ n, P (f n) (hf n)) →
+      (∀ x, Tendsto (f · x) atTop (𝓝 (g x))) → P g hg)
+    (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
+  let s := hf.approx
+  refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
+  change P (s n) (s n).stronglyMeasurable
+  induction s n using SimpleFunc.induction with
+  | h_ind c hs => exact ind c hs
+  | @h_add f g h_supp hf hg =>
+    exact add f.stronglyMeasurable g.stronglyMeasurable (f + g).stronglyMeasurable h_supp hf hg
+
+open scoped Classical in
+/-- To prove that a property holds for any strongly measurable function, it is enough to show
+that it holds for constant functions and that it is closed under piecewise combination of functions
+and pointwise limits.
+
+To use in an induction proof, the syntax is `induction f, hf with`. -/
+@[induction_eliminator]
+theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
+    {P : (f : α → β) → StronglyMeasurable f → Prop}
+    (ind : ∀ (c), P (fun _ ↦ c) stronglyMeasurable_const)
+    (pcw : ∀ ⦃f g : α → β⦄ {s} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g)
+      (hs : MeasurableSet s), P f hf → P g hg → P (s.piecewise f g) (hf.piecewise hs hg))
+    (lim : ∀ ⦃f : ℕ → α → β⦄ ⦃g : α → β⦄ (hf : ∀ n, StronglyMeasurable (f n))
+      (hg : StronglyMeasurable g), (∀ n, P (f n) (hf n)) →
+      (∀ x, Tendsto (f · x) atTop (𝓝 (g x))) → P g hg)
+    (f : α → β) (hf : StronglyMeasurable f) : P f hf := by
+  let s := hf.approx
+  refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
+  change P (s n) (s n).stronglyMeasurable
+  induction s n with
+  | const c => exact ind c
+  | @pcw f g s hs Pf Pg =>
+    simp_rw [SimpleFunc.coe_piecewise]
+    exact pcw f.stronglyMeasurable g.stronglyMeasurable hs Pf Pg
+
 @[aesop safe 20 apply (rule_sets := [Measurable])]
 protected theorem dist {_ : MeasurableSpace α} {β : Type*} [PseudoMetricSpace β] {f g : α → β}
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
