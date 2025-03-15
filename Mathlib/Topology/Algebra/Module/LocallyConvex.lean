@@ -192,3 +192,43 @@ instance Prod.locallyConvexSpace [TopologicalSpace E] [TopologicalSpace F] [Loca
     (locallyConvexSpace_induced (LinearMap.snd _ _ _))
 
 end LatticeOps
+
+section LinearOrderedSemiring
+
+instance {R : Type*} [TopologicalSpace R] [LinearOrderedSemiring R] [OrderTopology R] :
+    LocallyConvexSpace R R where
+  convex_basis := by
+    intro x
+    by_cases hl : ∃ l, l < x
+    · by_cases hu : ∃ u, x < u
+      · refine (nhds_basis_Ioo' hl hu).to_hasBasis' ?_ ?_
+        · simp only [id_eq, and_imp, Prod.forall]
+          intros
+          refine ⟨_, ?_, subset_refl _⟩
+          simp_all [Ioo_mem_nhds, convex_Ioo]
+        · simp +contextual
+      · push_neg at hu
+        let _ : Top R := ⟨x⟩
+        let _ : OrderTop R := ⟨hu⟩
+        replace hu : x = ⊤ := rfl
+        rw [hu]
+        refine nhds_top_basis.to_hasBasis' ?_ ?_
+        · intros
+          refine ⟨Set.Ioi _, ?_, subset_refl _⟩
+          simp_all [Ioi_mem_nhds, convex_Ioi]
+        · simp +contextual
+    · push_neg at hl
+      let _ : Bot R := ⟨x⟩
+      let _ : OrderBot R := ⟨hl⟩
+      replace hu : x = ⊥ := rfl
+      rw [hu]
+      refine nhds_bot_basis.to_hasBasis' ?_ ?_
+      · intros
+        refine ⟨Set.Iio _, ?_, subset_refl _⟩
+        simp_all [Iio_mem_nhds, convex_Iio]
+      · simp +contextual
+
+instance : LocallyConvexSpace ℝ ℝ := inferInstance
+instance : LocallyConvexSpace NNReal NNReal := inferInstance
+
+end LinearOrderedSemiring

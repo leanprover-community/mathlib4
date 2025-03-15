@@ -1598,6 +1598,7 @@ import Mathlib.Analysis.Normed.Order.Hom.Basic
 import Mathlib.Analysis.Normed.Order.Hom.Ultra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
+import Mathlib.Analysis.Normed.PiNat
 import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.Analysis.Normed.Ring.InfiniteSum
 import Mathlib.Analysis.Normed.Ring.Lemmas

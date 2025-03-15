@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.Instances.Nat
-import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Gluing
+import Mathlib.Topology.MetricSpace.PiNat
 import Mathlib.Topology.Sets.Opens
 
 /-!
