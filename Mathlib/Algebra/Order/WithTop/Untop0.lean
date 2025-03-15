@@ -34,11 +34,11 @@ lemma untop₀_eq_zero [Zero α] (a : WithTop α) :
 
 @[simp]
 lemma untop₀_top [Zero α] :
-    (⊤ : WithTop α).untop₀ = (0 : α) := by simp_all [WithTop.untop₀]
+    (⊤ : WithTop α).untop₀ = (0 : α) := by simp [WithTop.untop₀]
 
 @[simp]
 lemma untop₀_zero [Zero α] :
-    (0 : WithTop α).untop₀ = (0 : α) := by simp_all [WithTop.untop₀]
+    (0 : WithTop α).untop₀ = (0 : α) := by simp [WithTop.untop₀]
 
 @[simp]
 lemma untop₀_coe [Zero α] (a : α) : (a : WithTop α).untop₀ = a := rfl
