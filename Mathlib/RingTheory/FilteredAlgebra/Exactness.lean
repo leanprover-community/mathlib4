@@ -170,15 +170,15 @@ variable [AddCommGroup R] [SetLike σR R] [AddSubgroupClass σR R] {FR : ℤ →
 
 variable [AddCommGroup S] [SetLike σS S] [AddSubgroupClass σS S] {FS : ℤ → σS}
 
-variable [AddCommGroup T] [SetLike σT T] [AddSubgroupClass σT T] {FT : ℤ → σT}
+variable [AddCommGroup T] [SetLike σT T] [AddSubgroupClass σT T] {FT : ℤ → σT} (monoT : Monotone FT)
 
 variable (f : FilteredAddGroupHom FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)))
 
 variable (g : FilteredAddGroupHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)))
 
 lemma shrinking_lemma (monoR : Monotone FR) (S' : AddSubgroup S) {p : ℤ}
-    (y : (ofClass (FS p) ⊓ S' : AddSubgroup S))
-    (h : ∀ i : ℤ, ofClass (FS i) ⊓ S' ≤ AddSubgroup.map f (ofClass (FR i))) :
+  (y : (ofClass (FS p) ⊓ S' : AddSubgroup S))
+  (h : ∀ i : ℤ, ofClass (FS i) ⊓ S' ≤ AddSubgroup.map f (ofClass (FR i))) :
     ∀ s : ℕ, ∃ x : FR p, y - (f.toAddMonoidHom x) ∈ ofClass (FS (p - s)) ⊓ S' := by
   intro s
   induction' s with s ih
@@ -197,9 +197,14 @@ lemma shrinking_lemma (monoR : Monotone FR) (S' : AddSubgroup S) {p : ℤ}
     simp [eq, AddSubgroup.zero_mem]
 
 
+lemma piece_exact_of_exact (exact : Function.Exact Gr+[f] Gr+[g]) :
+  ∀ i : ℤ, Function.Exact Gr+(i)[f] Gr+(i)[g] := by
+    sorry
+
 
 theorem exact_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
-    (exhaustive : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
+    (exhaustiveR : letI := (mk_int FR monoR); IsExhaustiveFiltration FR (fun n ↦ FR (n - 1)))
+    (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
     (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
     (exact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact f.toAddMonoidHom g.toAddMonoidHom := by
   refine Function.Exact.of_comp_of_mem_range ?_ ?_
@@ -207,7 +212,7 @@ theorem exact_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
   · intro y yto0
     obtain⟨p, hy⟩ : ∃ p : ℤ, y ∈ ofClass (FS p) ⊓ (AddMonoidHom.ker g.toAddMonoidHom) := by
       refine exists_and_right.mpr ⟨?_, yto0⟩
-      have : y ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustive.exhaustive, Set.mem_univ]
+      have : y ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustiveS.exhaustive, Set.mem_univ]
       exact Set.mem_iUnion.mp this
     obtain⟨t, tlep, tbot⟩ : ∃ t ≤ p, (FS t : Set S) = {0} := by
       rcases discrete.discrete with ⟨t₀, t₀bot⟩
@@ -216,11 +221,7 @@ theorem exact_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
       rw [← t₀bot]
       apply Monotone.imp monoS (Int.min_le_right p t₀)
     have : ∀ i : ℤ, ofClass (FS i) ⊓ (AddMonoidHom.ker g.toAddMonoidHom) ≤
-      AddSubgroup.map f (ofClass (FR i)) := by
-      intro i
-      
-
-      sorry
+      AddSubgroup.map f (ofClass (FR i)) := sorry
     obtain⟨s, _⟩ := Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le tlep)
     obtain⟨x ,hx⟩ := shrinking_lemma f monoR (AddMonoidHom.ker g.toAddMonoidHom) ⟨y, hy⟩ this s
     have eq : p - s = t := by omega
@@ -228,6 +229,5 @@ theorem exact_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
     have hx : y - (f.toAddMonoidHom x) ∈ (FS t : Set S) := Set.mem_of_mem_inter_left hx
     rw [tbot] at hx
     exact ⟨x, (eq_of_sub_eq_zero <| Set.mem_singleton_iff.mp hx).symm⟩
-
 
 end
