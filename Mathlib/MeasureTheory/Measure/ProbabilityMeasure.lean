@@ -181,6 +181,14 @@ theorem apply_mono (μ : ProbabilityMeasure Ω) {s₁ s₂ : Set Ω} (h : s₁ �
   rw [← coeFn_comp_toFiniteMeasure_eq_coeFn]
   exact MeasureTheory.FiniteMeasure.apply_mono _ h
 
+/-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
+sets is the limit of the measures of the partial unions. -/
+protected lemma tendsto_measure_iUnion_accumulate {ι : Type*} [Preorder ι]
+    [IsCountablyGenerated (atTop : Filter ι)] {μ : ProbabilityMeasure Ω} {f : ι → Set Ω} :
+    Tendsto (fun i ↦ μ (Accumulate f i)) atTop (𝓝 (μ (⋃ i, f i))) := by
+  simpa [← ennreal_coeFn_eq_coeFn_toMeasure, ENNReal.tendsto_coe]
+    using tendsto_measure_iUnion_accumulate (μ := μ.toMeasure)
+
 @[simp] theorem apply_le_one (μ : ProbabilityMeasure Ω) (s : Set Ω) : μ s ≤ 1 := by
   simpa using apply_mono μ (subset_univ s)
 
