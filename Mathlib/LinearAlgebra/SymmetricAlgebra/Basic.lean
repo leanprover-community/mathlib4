@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.MonoidLocalization.Basic
 /-!
 # Symmetric Algebras
 
-Given a commutative ring `R`, and an `R`-module `L`, we construct the symmetric algebra of `L`.
+Given a commutative semiring `R`, and an `R`-module `L`, we construct the symmetric algebra of `L`.
 This is the free commutative `R`-algebra generated (`R`-linearly) by the module `L`.
 
 ## Notation
