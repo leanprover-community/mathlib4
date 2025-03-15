@@ -658,6 +658,17 @@ instance {B : C} : CompleteLattice (Subobject B) :=
 
 end CompleteLattice
 
+lemma subsingleton_of_isZero {X : C} (hX : IsZero X) : Subsingleton (Subobject X) := by
+  suffices ∀ (S : Subobject X), S = .mk (𝟙 _) from ⟨by simp [this]⟩
+  intro S
+  obtain ⟨A, i, _, rfl⟩ := S.mk_surjective
+  let e : A ≅ X :=
+    { hom := i
+      inv := hX.to_ A
+      hom_inv_id := by rw [← cancel_mono i]; apply hX.eq_of_tgt
+      inv_hom_id := hX.eq_of_tgt _ _ }
+  exact mk_eq_mk_of_comm i (𝟙 X) e (by simp [e])
+
 section ZeroObject
 
 variable [HasZeroMorphisms C] [HasZeroObject C]
