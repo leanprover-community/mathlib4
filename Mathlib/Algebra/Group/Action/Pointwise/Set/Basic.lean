@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Algebra.Ring.Idempotent
 
 /-!
 # Pointwise actions on sets
