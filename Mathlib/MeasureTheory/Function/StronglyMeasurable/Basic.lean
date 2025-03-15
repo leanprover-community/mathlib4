@@ -790,8 +790,8 @@ open scoped Classical in
 that it holds for constant functions and that it is closed under piecewise combination of functions
 and pointwise limits.
 
-To use in an induction proof, the syntax is `induction f, hf with`. -/
-@[induction_eliminator]
+To use in an induction proof, the syntax is
+`induction f, hf using StronglyMeasurable.induction' with`. -/
 theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
     {P : (f : α → β) → StronglyMeasurable f → Prop}
     (ind : ∀ (c), P (fun _ ↦ c) stronglyMeasurable_const)
