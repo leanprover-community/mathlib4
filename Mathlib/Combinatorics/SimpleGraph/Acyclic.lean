@@ -197,4 +197,236 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
+lemma _root_.List.Chain'.induction {α : Type*} {R : α → α → Prop} {p : α → Prop} {l : List α}
+    (hl : l.Chain' R) (h_head : (lne : l ≠ []) → p (l.head lne))
+    (h_inc : ⦃a b : α⦄ → R a b → p a → p b) :
+    ∀ x ∈ l, p x := by
+  cases l with
+  | nil => simp
+  | cons a t =>
+    simp_all only [ne_eq, not_false_eq_true, List.head_cons, true_implies, List.mem_cons,
+    forall_eq_or_imp, implies_true, true_and, List.Chain']
+    induction hl with
+    | nil =>
+      simp
+    | @cons a b t hab _ h_ind =>
+      simp only [List.mem_cons, forall_eq_or_imp]
+      refine ⟨?pb, (fun pb ↦ ?_) ?pb⟩
+      · apply h_inc hab
+        assumption
+      · apply h_ind pb
+
+lemma Dart.ne {G : SimpleGraph V} (d : G.Dart) : d.toProd.1 ≠ d.toProd.2 :=
+  fun h ↦ SimpleGraph.irrefl _ (h ▸ d.adj)
+
+lemma Walk.support_head {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.head (by simp) = a := by
+  cases p <;> simp
+
+lemma Walk.support_getLast {G : SimpleGraph V} {a b : V} (p : G.Walk a b) :
+    p.support.getLast (by simp) = b := by
+  induction p
+  · simp
+  · simpa
+
+lemma Walk.darts_head_fst {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.head hp).toProd.1 = a := by
+  cases p
+  · contradiction
+  · simp
+
+lemma _root_.List.getLast_tail {α : Type*} (xs : List α) (h : xs.tail ≠ []) :
+    xs.tail.getLast h = xs.getLast (fun x ↦ by simp [x] at h) := by
+  cases xs with
+  | nil => simp
+  | cons x xs =>
+    cases xs with
+    | nil => simp at h
+    | cons y ys => rfl
+
+lemma Walk.darts_getLast_snd {G : SimpleGraph V} {a b : V} (p : G.Walk a b) (hp : p.darts ≠ []) :
+    (p.darts.getLast hp).toProd.2 = b := by
+  rw [← List.getLast_map (f := fun x : G.Dart ↦ x.toProd.2)]
+  simp_rw [p.map_snd_darts, List.getLast_tail]
+  exact p.support_getLast
+  simpa
+
+lemma _root_.List.Chain_of_Chain' {α : Type*} {R : α → α → Prop} {l : List α} {v : α}
+    (hl : l.Chain' R) (hv : (lne : l ≠ []) → R v (l.head lne)) : l.Chain R v := by
+  rw [List.chain_iff_get]
+  constructor
+  · intro h
+    rw [List.get_mk_zero]
+    apply hv
+  · exact List.chain'_iff_get.mp hl
+
+lemma _root_.List.Chain'.eq_fun {α : Type*} {f : α → α} {l : List α}
+    (hl : l.Chain' (fun x y ↦ f x = y)) (hl2 : l ≠ []) :
+    f^[l.length - 1] (l.head hl2) = l.getLast hl2 := by
+  match l with
+  | [] => contradiction
+  | a :: l =>
+    induction l generalizing a
+    · simp
+    case cons h t ht =>
+      simp only [List.length_cons, add_tsub_cancel_right, List.head_cons, Function.iterate_succ,
+        Function.comp_apply, ne_eq, not_false_eq_true, List.getLast_cons]
+      rw [← ht]
+      · simp only [List.length_cons, add_tsub_cancel_right, List.head_cons]
+        congr
+        simp at hl
+        exact hl.1
+      · rw [List.chain'_cons] at hl
+        exact hl.2
+
+set_option maxHeartbeats 400000 in
+lemma IsAcyclic_of_create (f : V → V) (hf : ∀ x n (_ : 0 < n), f^[n] x = x → f x = x) :
+    IsAcyclic (fromRel (· = f ·)) := by classical
+  intro a p hp
+  let u := p.darts.takeWhile (fun a ↦ f a.toProd.1 = a.toProd.2)
+  let d := p.darts.dropWhile (fun a ↦ f a.toProd.1 = a.toProd.2)
+  have ud : p.darts = u ++ d := (List.takeWhile_append_dropWhile ..).symm
+  have udM : p.edges = u.map Dart.edge ++ d.map Dart.edge :=
+    (ud ▸ List.map_append Dart.edge u d :)
+  have hu : ∀ a ∈ u, f a.toProd.1 = a.toProd.2 := by
+    intros x hx
+    apply of_decide_eq_true
+    apply List.mem_takeWhile_imp hx
+  clear_value u
+  have := ud ▸ p.chain'_dartAdj_darts
+  have d_chain := this.right_of_append
+  rw [List.Chain'.iff_mem] at d_chain
+  have u_chain := this.left_of_append
+  have dnodup : d.map Dart.edge |>.Nodup := (udM ▸ hp.edges_nodup).of_append_right
+  have hd : ∀ a ∈ d, a.toProd.1 = f a.toProd.2 :=
+    d_chain.induction
+    (fun lne ↦ of_decide_eq_true (by
+    have : decide (f (d.head lne).toProd.1 = (d.head lne).toProd.2) = false :=
+      List.head_dropWhile_not _ _ lne
+    rw [decide_eq_false_iff_not] at this
+    rw [decide_eq_true_eq]
+    have := (d.head lne).adj
+    simp only [fromRel_adj, ne_eq] at this
+    tauto
+    )) (by
+    rintro a b ⟨ha, hb, hab⟩ ha'
+    have := b.adj
+    simp only [fromRel_adj, ne_eq] at this
+    obtain ⟨-, hb' | hb'⟩ := this
+    · exact hb'
+    unfold DartAdj at hab
+    have : a.toProd.1 = b.toProd.2 := by cc
+    apply List.inj_on_of_nodup_map at dnodup
+    specialize dnodup ha hb _
+    · rw [SimpleGraph.dart_edge_eq_iff]
+      right
+      ext
+      simp [this]
+      simp [hab]
+    exact (b.ne (dnodup ▸ this)).elim
+    )
+  clear_value d
+  match u with
+  | [] =>
+    rw [List.nil_append] at ud
+    clear udM hu this u_chain
+    have : List.Chain' (· = f ·) (d.map (·.toProd.2)) := by
+      apply List.chain'_map_of_chain' _ _ d_chain
+      rintro a b ⟨-, hb, hab⟩
+      rw [hab]
+      exact hd b hb
+    replace : List.Chain' (· = f ·) (a :: d.map (·.toProd.2)) := by
+      apply List.Chain_of_Chain' this
+      intro lne
+      simp
+      convert hd _ _
+      simp_rw [← ud, Walk.darts_head_fst]
+      apply List.head_mem
+    replace := List.chain'_reverse.mpr this
+    rw [List.reverse_cons] at this
+    have headeq : ((List.map (fun x ↦ x.toProd.2) d).reverse ++ [a]).head (by simp) = a := by
+      rcases d.eq_nil_or_concat with rfl | ⟨d', b, rfl⟩
+      · simp
+      · simp only [List.concat_eq_append, List.map_append, List.map_cons, List.map_nil,
+        List.reverse_append, List.reverse_cons, List.reverse_nil, List.nil_append,
+        List.singleton_append, List.cons_append, List.head_cons]
+        convert Walk.darts_getLast_snd p (by simp [ud])
+        simp [ud]
+    have gleq : ((List.map (fun x ↦ x.toProd.2) d).reverse ++ [a]).getLast (by simp) = a := by
+      simp
+    conv at this =>
+      arg 1
+      intro a b
+      rw [eq_comm]
+    have nice := this.eq_fun (by simp)
+    rw [headeq, gleq] at nice
+    simp only [List.length_append, List.length_reverse, List.length_map, List.length_singleton,
+      add_tsub_cancel_right] at nice
+    rcases d.eq_nil_or_concat with rfl | ⟨d', b, rfl⟩
+    · apply hp.not_nil
+      simp [Walk.nil_iff_length_eq, ← Walk.length_darts, ud]
+    · apply hf at nice
+      · simp at headeq
+        specialize hd b
+        simp only [List.concat_eq_append, List.mem_append, List.mem_singleton, or_true,
+          true_implies] at hd
+        apply b.ne
+        cc
+      · simp
+  | v :: u' =>
+    rcases d.eq_nil_or_concat with rfl | ⟨d', b, rfl⟩
+    · rw [List.append_nil] at ud
+      have : List.Chain' (f · = ·) ((v :: u').map (·.toProd.2)) := by
+        rw [List.Chain'.iff_mem] at u_chain
+        apply List.chain'_map_of_chain' _ _ u_chain
+        rintro a b ⟨-, hb, hab⟩
+        rw [hab]
+        exact hu b hb
+      have vf : v.toProd.1 = a := by
+        convert Walk.darts_head_fst p (by simp [ud])
+        simp [ud]
+      replace : List.Chain' (f · = ·) (a :: (v :: u').map (·.toProd.2)) := by
+        apply List.Chain_of_Chain' this
+        intro lne
+        simp [← vf]
+        apply hu
+        simp
+      have gleq : (a :: (v :: u').map (·.toProd.2)).getLast (by simp) = a := by
+        simp only [List.map_cons, ne_eq, not_false_eq_true, List.getLast_cons]
+        simp_rw [← List.map_cons (·.toProd.2) v, List.getLast_map, ← ud]
+        apply darts_getLast_snd
+      have nice := this.eq_fun (by simp)
+      rw [gleq] at nice
+      simp only [List.map_cons, List.length_cons, List.length_map, add_tsub_cancel_right,
+        List.head_cons] at nice
+      apply hf at nice
+      · specialize hu v
+        simp only [List.mem_cons, true_or, true_implies] at hu
+        apply v.ne
+        cc
+      · omega
+    · have inj := List.inj_on_of_nodup_map hp.edges_nodup (show v ∈ p.darts from by simp [ud])
+        (show b ∈ p.darts from by simp [ud])
+      have := p.darts_head_fst (by simp [ud])
+      simp only [ud, List.concat_eq_append, List.cons_append, List.head_cons] at this
+      specialize hu v
+      simp only [List.mem_cons, true_or, true_implies] at hu
+      have := p.darts_getLast_snd (by simp [ud])
+      simp only [ud, List.concat_eq_append, List.cons_append, ne_eq, List.append_eq_nil,
+        List.cons_ne_self, and_false, not_false_eq_true, List.getLast_cons,
+        List.getLast_append_of_ne_nil, List.getLast_singleton] at this
+      specialize hd b
+      simp only [List.concat_eq_append, List.mem_append, List.mem_singleton, or_true,
+        true_implies] at hd
+      specialize inj _
+      · rw [dart_edge_eq_iff]
+        right
+        ext
+        · simp only [Dart.symm_toProd, Prod.fst_swap]
+          cc
+        · simp only [Dart.symm_toProd, Prod.snd_swap]
+          cc
+      apply v.ne
+      cc
+
 end SimpleGraph
