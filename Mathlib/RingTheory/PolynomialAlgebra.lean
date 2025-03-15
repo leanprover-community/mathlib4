@@ -208,13 +208,6 @@ theorem Polynomial.algebraMap_def : algebraMap R[X] A[X] = mapRingHom (algebraMa
 
 instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
 
-theorem Polynomial.aeval_C_comp_mapRingHom (a : A) :
-    (@AlgHom.toRingHom _ _ _ _ _ _ (_) _ <| aeval (C a)).comp (mapRingHom C) =
-      C.comp (aeval (R := R) a).toRingHom := by ext <;> simp
-
-theorem Polynomial.map_C_aeval_C (p : R[X]) (a : A) : (p.map C).aeval (C a) = C (p.aeval a) :=
-  congr($(aeval_C_comp_mapRingHom R A a) p)
-
 instance [FaithfulSMul R A] : FaithfulSMul R[X] A[X] :=
   (faithfulSMul_iff_algebraMap_injective ..).mpr
     (map_injective _ <| FaithfulSMul.algebraMap_injective ..)

@@ -418,8 +418,6 @@ open scoped nonZeroDivisors
 
 namespace Algebra.IsAlgebraic
 
-open Cardinal (lift)
-
 variable (R) (R' : Type*) (S : Type u) [CommRing R'] [CommRing S] [Algebra R S]
   [Algebra R R'] [IsFractionRing R R'] [FaithfulSMul R S] [Algebra.IsAlgebraic R S]
 
@@ -428,7 +426,8 @@ section
 variable [NoZeroDivisors S] (S' : Type v) [CommRing S'] [Algebra R S'] [Algebra S S'] [Module R' S']
   [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S']
 
-theorem lift_rank_of_isFractionRing : lift.{u} (Module.rank R' S') = lift.{v} (Module.rank R S) :=
+theorem lift_rank_of_isFractionRing :
+    Cardinal.lift.{u} (Module.rank R' S') = Cardinal.lift.{v} (Module.rank R S) :=
   IsLocalizedModule.lift_rank_eq _ R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl
 
 theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S :=
