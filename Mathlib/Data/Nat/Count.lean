@@ -16,7 +16,8 @@ objects, and helping to evaluate it for specific `k`.
 
 -/
 
-assert_not_imported Mathlib.Dynamics.FixedPoints.Basic Mathlib.Algebra.Order.Ring.Nat
+assert_not_imported Mathlib.Dynamics.FixedPoints.Basic
+assert_not_exists Ring
 
 open Finset
 
