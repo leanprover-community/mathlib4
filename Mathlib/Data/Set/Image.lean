@@ -288,14 +288,14 @@ theorem image_eq_empty {α β} {f : α → β} {s : Set α} : f '' s = ∅ ↔ s
   simp only [eq_empty_iff_forall_not_mem]
   exact ⟨fun H a ha => H _ ⟨_, ha, rfl⟩, fun H b ⟨_, ha, _⟩ => H _ ha⟩
 
-theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (S : Set α) :
-    HasCompl.compl ⁻¹' S = HasCompl.compl '' S :=
+theorem preimage_compl_eq_image_compl [BooleanAlgebra α] (s : Set α) :
+    HasCompl.compl ⁻¹' s = HasCompl.compl '' s :=
   Set.ext fun x =>
     ⟨fun h => ⟨xᶜ, h, compl_compl x⟩, fun h =>
       Exists.elim h fun _ hy => (compl_eq_comm.mp hy.2).symm.subst hy.1⟩
 
-theorem mem_compl_image [BooleanAlgebra α] (t : α) (S : Set α) :
-    t ∈ HasCompl.compl '' S ↔ tᶜ ∈ S := by
+theorem mem_compl_image [BooleanAlgebra α] (t : α) (s : Set α) :
+    t ∈ HasCompl.compl '' s ↔ tᶜ ∈ s := by
   simp [← preimage_compl_eq_image_compl]
 
 @[simp]
@@ -314,8 +314,8 @@ lemma image_iterate_eq {f : α → α} {n : ℕ} : image (f^[n]) = (image f)^[n]
   | zero => simp
   | succ n ih => rw [iterate_succ', iterate_succ', ← ih, image_comp_eq]
 
-theorem compl_compl_image [BooleanAlgebra α] (S : Set α) :
-    HasCompl.compl '' (HasCompl.compl '' S) = S := by
+theorem compl_compl_image [BooleanAlgebra α] (s : Set α) :
+    HasCompl.compl '' (HasCompl.compl '' s) = s := by
   rw [← image_comp, compl_comp_compl, image_id]
 
 theorem image_insert_eq {f : α → β} {a : α} {s : Set α} :
@@ -332,8 +332,8 @@ theorem image_subset_preimage_of_inverse {f : α → β} {g : β → α} (I : Le
 theorem preimage_subset_image_of_inverse {f : α → β} {g : β → α} (I : LeftInverse g f) (s : Set β) :
     f ⁻¹' s ⊆ g '' s := fun b h => ⟨f b, h, I b⟩
 
-theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {S S' : Set β} :
-  range f ∩ S ⊂ range f ∩ S' ↔ f ⁻¹' S ⊂ f ⁻¹' S' := by
+theorem range_inter_ssubset_iff_preimage_ssubset {f : α → β} {s s' : Set β} :
+  range f ∩ s ⊂ range f ∩ s' ↔ f ⁻¹' s ⊂ f ⁻¹' s' := by
     simp only [Set.ssubset_iff_exists]
     apply and_congr ?_ (by aesop)
     constructor
@@ -821,8 +821,8 @@ theorem image_inl_inter_image_inr {X Y} (u : Set X) (v : Set Y) :
   intro x hx
   nomatch hx
 
-theorem preimage_sumElim_eq {f : α → γ} {g : β → γ} (S : Set γ) :
-    Sum.elim f g ⁻¹' S = Sum.inl '' (f ⁻¹' S) ∪ Sum.inr '' (g ⁻¹' S) := by
+theorem preimage_sumElim_eq {f : α → γ} {g : β → γ} (s : Set γ) :
+    Sum.elim f g ⁻¹' s = Sum.inl '' (f ⁻¹' s) ∪ Sum.inr '' (g ⁻¹' s) := by
   ext x
   cases x <;> simp
 
@@ -830,9 +830,9 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [← preimage_sumElim_eq, Sum.elim_inl_inr, preimage_id]
 
-theorem image_sumElim_eq {f : α → γ} {g : β → γ} (S : Set (α ⊕ β)) :
-    Sum.elim f g '' S = f '' (Sum.inl ⁻¹' S) ∪ g '' (Sum.inr ⁻¹' S) := by
-  rw [← image_preimage_inl_union_image_preimage_inr S]
+theorem image_sumElim_eq {f : α → γ} {g : β → γ} (s : Set (α ⊕ β)) :
+    Sum.elim f g '' s = f '' (Sum.inl ⁻¹' s) ∪ g '' (Sum.inr ⁻¹' s) := by
+  rw [← image_preimage_inl_union_image_preimage_inr s]
   simp [image_union, image_image, preimage_image_preimage]
 
 @[simp]
