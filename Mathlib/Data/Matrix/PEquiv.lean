@@ -56,8 +56,9 @@ theorem toMatrix_apply [DecidableEq n] [Zero α] [One α] (f : m ≃. n) (i j) :
     toMatrix f i j = if j ∈ f i then (1 : α) else 0 :=
   rfl
 
-theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃. m) (M : Matrix m n α)
-    (i j) : (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
+theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [NonAssocSemiring α] (f : l ≃. m)
+    (M : Matrix m n α) (i j) :
+    (f.toMatrix * M :) i j = Option.casesOn (f i) 0 fun fi => M fi j := by
   dsimp [toMatrix, Matrix.mul_apply]
   rcases h : f i with - | fi
   · simp [h]
@@ -65,8 +66,8 @@ theorem toMatrix_mul_apply [Fintype m] [DecidableEq m] [Semiring α] (f : l ≃.
 
 @[deprecated (since := "2025-01-27")] alias mul_matrix_apply := toMatrix_mul_apply
 
-theorem mul_toMatrix_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l m α) (f : m ≃. n)
-    (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
+theorem mul_toMatrix_apply [Fintype m] [NonAssocSemiring α] [DecidableEq n] (M : Matrix l m α)
+    (f : m ≃. n) (i j) : (M * f.toMatrix :) i j = Option.casesOn (f.symm j) 0 (M i) := by
   dsimp [Matrix.mul_apply, toMatrix_apply]
   rcases h : f.symm j with - | fj
   · simp [h, ← f.eq_some_iff]

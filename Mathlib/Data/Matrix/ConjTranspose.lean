@@ -150,7 +150,8 @@ theorem conjTranspose_eq_zero [AddMonoid α] [StarAddMonoid α] {M : Matrix m n 
   rw [← conjTranspose_inj (A := M), conjTranspose_zero]
 
 @[simp]
-theorem conjTranspose_one [DecidableEq n] [Semiring α] [StarRing α] : (1 : Matrix n n α)ᴴ = 1 := by
+theorem conjTranspose_one [DecidableEq n] [NonAssocSemiring α] [StarRing α] :
+    (1 : Matrix n n α)ᴴ = 1 := by
   simp [conjTranspose]
 
 @[simp]
