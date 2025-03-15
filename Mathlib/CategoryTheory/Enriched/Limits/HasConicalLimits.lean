@@ -84,14 +84,12 @@ end Definitions
 
 section Results
 
-variable {J : Type u₁} [Category.{v₁} J]
+variable (J : Type u₁) [Category.{v₁} J]
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
-variable {C} in
-
 /-- ensure existence of a conical limit implies existence of a limit -/
-example {F : J ⥤ C} [HasConicalLimit V F] : HasLimit F := inferInstance
+example (F : J ⥤ C) [HasConicalLimit V F] : HasLimit F := inferInstance
 
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
 -- TODO: errors if made an `instance`.
