@@ -24,11 +24,12 @@ The following notations can be enabled via `open Simplicial`.
 - `X _⦋n⦌` denotes the `n`-th term of a simplicial object `X`, where `n : ℕ`.
 - `X ^⦋n⦌` denotes the `n`-th term of a cosimplicial object `X`, where `n : ℕ`.
 
-The following notations can be enabled via
-`open CategoryTheory.SimplicialObject.Truncated`.
+The following notations can be enabled via the respective `Truncated` namespace.
 
 - `X _⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated simplicial object `X`.
+  Access this notation with `open CategoryTheory.SimplicialObject.Truncated`.
 - `X ^⦋m⦌ₙ` denotes the `m`-th term of an `n`-truncated cosimplicial object `X`.
+  Access this notation with `open CategoryTheory.CosimplicialObject.Truncated`.
 -/
 
 open Opposite
@@ -248,21 +249,51 @@ variable (C) in
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
-open Mathlib.Tactic (subscriptTerm) in
+section Meta
+/-! We provide a macro and a delaborator for the truncated simplicial object
+notation `X _⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
+cosimplicial object notation `X ^⦋m⦌ₙ` is defined later in this file. -/
+
+open SimplexCategory.Truncated Lean PrettyPrinter.Delaborator SubExpr
+open SimplexCategory.Truncated.Meta (subscript)
+open Mathlib.Tactic (subscriptTerm)
+
 /-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
-proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. -/
+proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. Access
+this notation with `open CategoryTheory.SimplicialObject.Truncated`. -/
 scoped syntax:max (name := mkNotation)
   term " _⦋" term ("," term)? "⦌" noWs subscriptTerm : term
-
-open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term _⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      (Opposite.op ⟨SimplexCategory.mk $m, by first | trunc |
       fail "Failed to prove truncation property. Try writing `X _⦋m, by ...⦌ₙ`."⟩))
   | `($X:term _⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
+
+/-- Delaborator for the notation `X _⦋m⦌ₙ`. -/
+@[app_delab Prefunctor.obj]
+def delabMkNotation : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+    let_expr Prefunctor.obj src _ _ _ f x := ← getExpr | failure
+    -- check that f is a contravariant functor out of the truncated simplex category
+    guard <| f.isAppOfArity ``Functor.toPrefunctor 5
+    let_expr Opposite.op _ x := x | failure
+    let_expr FullSubcategory.mk _ _ simplex _ := x | failure
+    guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
+    let_expr Opposite src := src | failure
+    let_expr SimplexCategory.Truncated n := src | failure
+    -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
+    let n ← withNaryArg 0 <| withAppArg <| withAppArg <| subscript n
+    let m ← withAppArg <| withAppArg <| withNaryArg 2 <| withAppArg delab
+    let f ← withNaryArg 4 <| withAppArg delab
+    if (← getPPOption getPPProofs) then
+      let p ← withAppArg <| withAppArg <| withAppArg delab
+      `($f _⦋$m, $p⦌$n)
+    else `($f _⦋$m⦌$n)
+
+end Meta
 
 end Truncated
 
@@ -701,21 +732,49 @@ variable (C) in
 def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Truncated D n :=
   whiskeringRight _ _ _
 
-open Mathlib.Tactic (subscriptTerm) in
+section Meta
+/-! We provide a macro and a delaborator for the truncated cosimplicial object
+notation `X ^⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
+simplicial object notation `X _⦋m⦌ₙ` is defined earlier in this file. -/
+
+open SimplexCategory.Truncated Lean PrettyPrinter.Delaborator SubExpr
+open SimplexCategory.Truncated.Meta (subscript)
+open Mathlib.Tactic (subscriptTerm)
+
 /-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
-proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. -/
+proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. Access
+this notation with `open CategoryTheory.CosimplicialObject.Truncated`. -/
 scoped syntax:max (name := mkNotation)
   term " ^⦋" term ("," term)? "⦌" noWs subscriptTerm : term
-
-open scoped SimplexCategory.Truncated in
 scoped macro_rules
   | `($X:term ^⦋$m:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
-      ⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      ⟨SimplexCategory.mk $m, by first | trunc |
       fail "Failed to prove truncation property. Try writing `X ^⦋m, by ...⦌ₙ`."⟩)
   | `($X:term ^⦋$m:term, $p:term⦌$n:subscript) =>
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
+
+/-- Delaborator for the notation `X ^⦋m⦌ₙ`. -/
+@[app_delab Prefunctor.obj]
+def delabMkNotation : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
+    let_expr Prefunctor.obj src _ _ _ f x := ← getExpr | failure
+    -- check that f is a functor out of the truncated simplex category
+    guard <| f.isAppOfArity ``Functor.toPrefunctor 5
+    let_expr FullSubcategory.mk _ _ simplex _ := x | failure
+    guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
+    let_expr SimplexCategory.Truncated n := src | failure
+    -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
+    let n ← withNaryArg 0 <| withAppArg <| subscript n
+    let m ← withAppArg <| withNaryArg 2 <| withAppArg delab
+    let f ← withNaryArg 4 <| withAppArg delab
+    if (← getPPOption getPPProofs) then
+      let p ← withAppArg <| withAppArg delab
+      `($f ^⦋$m, $p⦌$n)
+    else `($f ^⦋$m⦌$n)
+
+end Meta
 
 end Truncated
 
