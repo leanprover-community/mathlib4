@@ -17,10 +17,8 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
    quotient of the tensor algebra. It is endowed with an R-algebra structure and a commutative
    ring structure.
 2. `SymmetricAlgebra.ι R` is the canonical R-linear map `L → TensorAlgebra R L`.
-3. Given a morphism `ι : L →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying whether
-   A satisfies the universal property of the symmetric algebra over L with ι as the canonical
-   inclusion morphism. This is implemented concretely as
-   `Function.Bijective (SymmetricAlgebra.lift f)`.
+3. Given a morphism `ι : L →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the algebra
+   homomorphism from `SymmetricAlgebra R L` to `A` is bijective.
 4. Given a linear map `f : L →ₗ[R] A'` to an commutative R-algebra `A'`, and a morphism
    `ι : L →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift p f`
    is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A'`.
@@ -125,6 +123,8 @@ end SymmetricAlgebra
 variable {A : Type*} [CommSemiring A] [Algebra R A] (f : L →ₗ[R] A)
 variable {R} {L}
 
+/-- Given a morphism `ι : L →ₗ[R] A`, `IsSymmetricAlgebra ι` is a proposition saying that the
+algebra homomorphism from `SymmetricAlgebra R L` to `A` is bijective. -/
 def IsSymmetricAlgebra (f : L →ₗ[R] A) : Prop :=
   Function.Bijective (SymmetricAlgebra.lift f)
 
