@@ -58,10 +58,7 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
 
 @[simp] theorem matPolyEquiv_symm_X :
     matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
-  suffices (Matrix.map 1 fun x ↦ X * algebraMap R R[X] x) = diagonal fun _ : n => (X : R[X]) by
-    simpa [matPolyEquiv]
-  rw [← Matrix.diagonal_one]
-  simp [-Matrix.diagonal_one]
+  simp [matPolyEquiv, Matrix.smul_one_eq_diagonal]
 
 @[simp] theorem matPolyEquiv_diagonal_X :
     matPolyEquiv (diagonal fun _ : n => (X : R[X])) = X := by
