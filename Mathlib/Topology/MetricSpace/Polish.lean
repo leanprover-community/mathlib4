@@ -51,8 +51,6 @@ variable {α : Type*} {β : Type*}
 
 /-- A Polish space is a topological space with second countable topology, that can be endowed
 with a metric for which it is complete.
-We register an instance from complete second countable metric space to polish space, and not the
-other way around as this is the most common use case.
 
 To endow a Polish space with a complete metric space structure, do
 `letI := upgradeCompletelyMetrizable α`.
