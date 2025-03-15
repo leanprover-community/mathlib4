@@ -121,7 +121,7 @@ protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, Fa
 end Copy
 
 /-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
-def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy Subgraph.hom.injective
+def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy hom_injective
 
 end Copy
 
