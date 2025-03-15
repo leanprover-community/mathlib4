@@ -117,11 +117,17 @@ Canonical inclusion of `L` into the symmetric algebra `𝔖 R L`.
 -/
 def ι : L →ₗ[R] SymmetricAlgebra R L := (algHom R L).toLinearMap.comp (TensorAlgebra.ι R (M := L))
 
-variable {R L} in
-def lift {A : Type*} [CommSemiring A] [Algebra R A] (f : L →ₗ[R] A) :
-    (SymmetricAlgebra R L) →ₐ[R] A :=
+variable {R L} {A : Type*} [CommSemiring A] [Algebra R A] (f : L →ₗ[R] A)
+
+def lift : (SymmetricAlgebra R L) →ₐ[R] A :=
   RingQuot.liftAlgHom R (s := SymRel R L) ⟨TensorAlgebra.lift R f, fun _ _ r ↦ by
     induction r with | mul_comm x y => simp [mul_comm]⟩
+
+@[simp]
+lemma lift_apply (a : L) : (lift f) ((ι R L) a) = f a := sorry
+
+@[simp]
+lemma lift_comp : (lift f) ∘ₗ (ι R L) = f := LinearMap.ext fun x ↦ lift_apply f x
 
 end SymmetricAlgebra
 
@@ -135,6 +141,8 @@ namespace IsSymmetricAlgebra
 
 variable {f : L →ₗ[R] A} (h : IsSymmetricAlgebra f)
 
+section equiv
+
 noncomputable def equiv : (SymmetricAlgebra R L) ≃ₐ[R] A :=
   AlgEquiv.ofBijective (SymmetricAlgebra.lift f) h
 
@@ -147,6 +155,14 @@ lemma equiv_toAlgHom : h.equiv = SymmetricAlgebra.lift f := sorry
 @[simp]
 lemma equiv_symm_apply (a : L) : h.equiv.symm (f a) = SymmetricAlgebra.ι R L a := sorry
 
+@[simp]
+lemma equiv_symm_comp : h.equiv.symm ∘ₗ f = SymmetricAlgebra.ι R L :=
+  LinearMap.ext fun x ↦ equiv_symm_apply h x
+
+end equiv
+
+section UniversalProperty
+
 variable {A' : Type*} [CommSemiring A'] [Algebra R A'] (g : L →ₗ[R] A')
 /--
 Given a morphism `φ : L →ₗ[R] A'`, lift this to a morphism of type `A →ₐ[R] A'` (where `A`
@@ -155,9 +171,21 @@ satisfies the universal property of the symmetric algebra of `L`)
 noncomputable def lift :
     A →ₐ[R] A' := (SymmetricAlgebra.lift g).comp h.equiv.symm
 
+@[simp]
 lemma lift_eq (a : L) : (h.lift g) (f a) = g a := sorry
 
-theorem mv_polynomial (I : Type*) (h : Basis I R L) :
+@[simp]
+lemma lift_comp_linearMap : (h.lift g) ∘ₗ f = g := LinearMap.ext fun x ↦ lift_eq h g x
+
+lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = (h.lift g) := by sorry
+
+lemma algHom_ext {F G : A →ₐ[R] A'} (hFG : (F ∘ₗ f) = (G ∘ₗ f : L →ₗ[R] A')) : F = G := by sorry
+
+end UniversalProperty
+
+section MvPolynomial
+
+theorem mvPolynomial (I : Type*) (h : Basis I R L) :
     IsSymmetricAlgebra (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))) := by
   let u : (SymmetricAlgebra R L) ≃ₐ[R] (MvPolynomial I R) := AlgEquiv.ofAlgHom
     (SymmetricAlgebra.lift (Basis.constr h R (fun i ↦ ((MvPolynomial.X i) : (MvPolynomial I R)))))
@@ -165,6 +193,8 @@ theorem mv_polynomial (I : Type*) (h : Basis I R L) :
     (by sorry)
     (by sorry)
   exact u.bijective
+
+end MvPolynomial
 
 -- /--
 -- The zero module over base ring R has R as its symmetric algebra
