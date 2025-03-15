@@ -30,7 +30,7 @@ def tree (A : Type*) : CompleteSublattice (Set (List A)) :=
 @[simps!] instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
 
 namespace Tree
-variable {A : Type*} {T : tree A}
+variable {A : Type*} {S T : tree A}
 
 lemma mem_of_append {x y : List A} (h : x ++ y ∈ T) : x ∈ T := by
   induction' y with y ys ih generalizing x
@@ -38,6 +38,7 @@ lemma mem_of_append {x y : List A} (h : x ++ y ∈ T) : x ∈ T := by
   · exact T.prop (ih (by simpa))
 lemma mem_of_prefix {x y : List A} (h' : x <+: y) (h : y ∈ T) : x ∈ T := by
   obtain ⟨_, rfl⟩ := h'; exact mem_of_append h
+
 instance : Trans (List.IsPrefix) (fun x (T : tree A) ↦ x ∈ T) (fun x T ↦ x ∈ T) where
   trans := mem_of_prefix
 lemma singleton_mem (T : tree A) {a : A} {x : List A} (h : a :: x ∈ T) : [a] ∈ T :=
@@ -47,13 +48,13 @@ lemma singleton_mem (T : tree A) {a : A} {x : List A} (h : a :: x ∈ T) : [a] �
   mp := by rintro rfl; simp
   mpr h := by ext x; simpa using fun h' ↦ h <| mem_of_prefix x.nil_prefix h'
 
-lemma take_mem {T : tree A} {n : ℕ} (x : T) : x.val.take n ∈ T :=
+lemma take_mem {n : ℕ} (x : T) : x.val.take n ∈ T :=
   mem_of_prefix (x.val.take_prefix n) x.prop
 
 /-- A variant of `List.take` internally to a tree -/
-@[simps] def take {T : tree A} (n : ℕ) (x : T) : T := ⟨x.val.take n, take_mem x⟩
+@[simps] def take (n : ℕ) (x : T) : T := ⟨x.val.take n, take_mem x⟩
 
-@[simp] lemma take_take {T : tree A} (m n : ℕ) (x : T) :
+@[simp] lemma take_take (m n : ℕ) (x : T) :
   take m (take n x) = take (m ⊓ n) x := by simp [Subtype.ext_iff, List.take_take]
 @[simp] lemma take_eq_take {x : T} {m n : ℕ} :
   take m x = take n x ↔ m ⊓ x.val.length = n ⊓ x.val.length := by simp [Subtype.ext_iff]
@@ -65,14 +66,15 @@ def subAt : tree A := ⟨(x ++ ·)⁻¹' T, fun _ _ _ ↦ mem_of_append (by rwa 
 
 @[simp] lemma subAt_nil : subAt T [] = T := rfl
 @[simp] lemma subAt_append : subAt (subAt T x) y = subAt T (x ++ y) := by ext; simp
-@[gcongr] lemma subAt_mono {S T : tree A} (h : S ≤ T) : subAt S x ≤ subAt T x :=
+@[gcongr] lemma subAt_mono (h : S ≤ T) : subAt S x ≤ subAt T x :=
   Set.preimage_mono h
 
 /-- A variant of `List.drop` that takes values in `subAt` -/
-@[simps] def drop {T : tree A} (n : ℕ) (x : T) : subAt T (Tree.take n x).val :=
+@[simps] def drop (n : ℕ) (x : T) : subAt T (Tree.take n x).val :=
   ⟨x.val.drop n, by simp⟩
 
-/-- Adjoint of `subAt` -/
+/-- Adjoint of `subAt`, given by pasting x before the root of T. Explicitly,
+  elements are prefixes of x or x with an element of T appended -/
 def pullSub : tree A where
   val := { y | y.take x.length <+: x ∧ y.drop x.length ∈ T }
   property := fun y a ⟨h1, h2⟩ ↦
@@ -101,7 +103,7 @@ lemma pullSub_subAt : pullSub (subAt T x) x ≤ T := by
   · rw [mem_pullSub_long h'] at h; obtain ⟨_, h, rfl⟩ := h; exact h
 @[simp] lemma subAt_pullSub : subAt (pullSub T x) x = T := by
   ext y; simp
-@[gcongr] lemma pullSub_mono {S T : tree A} (h : S ≤ T) x : pullSub S x ≤ pullSub T x :=
+@[gcongr] lemma pullSub_mono (h : S ≤ T) x : pullSub S x ≤ pullSub T x :=
   fun _ ⟨h1, h2⟩ ↦ ⟨h1, h h2⟩
 lemma pullSub_adjunction (S T : tree A) (x : List A) : pullSub S x ≤ T ↔ S ≤ subAt T x where
   mp _ := by rw [← subAt_pullSub S x]; gcongr
