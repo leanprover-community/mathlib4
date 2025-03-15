@@ -624,7 +624,7 @@ theorem tendsto_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α} {μ :
   exact tendsto_atTop_iInf
     fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
 
-/-- Some version of continuity of a measure in the emptyset using the intersection along a set of
+/-- Some version of continuity of a measure in the empty set using the intersection along a set of
 sets. -/
 theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SemilatticeSup ι] [Countable ι] {f : ι → Set α}
@@ -710,9 +710,6 @@ theorem boundedBy_measure (μ : Measure α) : OuterMeasure.boundedBy μ = μ.toO
 end OuterMeasure
 
 section
-
-/- Porting note: These variables are wrapped by an anonymous section because they interrupt
-synthesizing instances in `MeasureSpace` section. -/
 
 variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}

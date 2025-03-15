@@ -112,7 +112,7 @@ variable {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 
 /-- The canonical isomorphism `Proj A |_ D₊(f) ≅ Spec (A_f)₀`
 when `f` is homogeneous of positive degree. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 noncomputable
 def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of (Away 𝒜 f)) :=
   have : IsIso (basicOpenToSpec 𝒜 f) := by
@@ -126,7 +126,7 @@ def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of (Away 𝒜 f)) 
 
 /-- The canonical isomorphism `(A_f)₀ ≅ Γ(Proj A, D₊(f))`
 when `f` is homogeneous of positive degree. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 noncomputable
 def basicOpenIsoAway : CommRingCat.of (Away 𝒜 f) ≅ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
   have : IsIso (awayToSection 𝒜 f) := by
