@@ -56,11 +56,11 @@ lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → 
     (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
   apply tendstoUniformlyOn_tsum_nat_eventually (hu.mul_left (3/2))
   obtain ⟨N, hN⟩ := Metric.tendsto_atTop.mp (Summable.tendsto_atTop_zero hu) (1/2) (one_half_pos)
-  simp only [Complex.norm_eq_abs, eventually_atTop, ge_iff_le] at *
+  simp only [eventually_atTop, ge_iff_le] at *
   obtain ⟨N2, hN2⟩ := h
   refine ⟨max N N2, fun n hn x hx => ?_⟩
   apply le_trans (Complex.norm_log_one_add_half_le_self (z := (f n x)) ?_)
-  · simp only [Complex.norm_eq_abs, Nat.ofNat_pos, div_pos_iff_of_pos_left, mul_le_mul_left]
+  · simp only [Nat.ofNat_pos, div_pos_iff_of_pos_left, mul_le_mul_left]
     exact hN2 n (le_of_max_le_right hn) x hx
   · apply le_trans (le_trans (hN2 n (le_of_max_le_right hn) x hx)
     (by simpa using Real.le_norm_self (u n))) (hN n (le_of_max_le_left hn)).le

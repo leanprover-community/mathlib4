@@ -63,13 +63,10 @@ variable {X Y Z : TopCat.{v}}
 
 namespace TopCat.Presheaf
 
-variable (C)
-
+variable (C) in
 /-- Stalks are functorial with respect to morphisms of presheaves over a fixed `X`. -/
 def stalkFunctor (x : X) : X.Presheaf C ⥤ C :=
   (whiskeringLeft _ _ C).obj (OpenNhds.inclusion x).op ⋙ colim
-
-variable {C}
 
 /-- The stalk of a presheaf `F` at a point `x` is calculated as the colimit of the functor
 nbhds x ⥤ opens F.X ⥤ C
@@ -162,7 +159,6 @@ stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 -/
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
-  -- Porting note: The original proof was `trans; swap`, but `trans` does nothing.
   refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 

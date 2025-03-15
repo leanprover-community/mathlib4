@@ -65,7 +65,7 @@ lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n
   rw [← h.preimage_dynEntourage V n, ball_preimage]
 
 lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) {n : ℕ} {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
+    (V_symm : IsSymmetricRel V) {n : ℕ} {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
     ∃ s : Finset X, IsDynCoverOf S F ((map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
@@ -89,7 +89,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
   exact ⟨x_i, gs_cover⟩
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) (n : ℕ) :
+    (V_symm : IsSymmetricRel V) (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by
   rcases eq_top_or_lt_top (coverMincard T (φ '' F) V n) with h' | h'
   · exact h' ▸ le_top
@@ -112,13 +112,13 @@ lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y))
 open ENNReal EReal Filter
 
 lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) :
+    (V_symm : IsSymmetricRel V) :
     coverEntropyEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyEntourage T (φ '' F) V :=
   limsup_le_limsup (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
     (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))
 
 lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) :
+    (V_symm : IsSymmetricRel V) :
     coverEntropyInfEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyInfEntourage T (φ '' F) V :=
   liminf_le_liminf (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
     (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))

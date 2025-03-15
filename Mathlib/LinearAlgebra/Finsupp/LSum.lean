@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Module.Equiv.Basic
 import Mathlib.Algebra.Module.Submodule.LinearMap
 import Mathlib.LinearAlgebra.Finsupp.Defs
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Sums as a linear map

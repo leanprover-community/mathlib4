@@ -340,7 +340,7 @@ private lemma exists_eq_iSup_of_iSup_eq_coe {α : Type*} [Nonempty α] {f : α �
   use x
   simpa [hx] using h
 
-/-- There exist a series ending in a element for any length up to the element’s height.  -/
+/-- There exist a series ending in a element for any length up to the element’s height. -/
 lemma exists_series_of_le_height (a : α) {n : ℕ} (h : n ≤ height a) :
     ∃ p : LTSeries α, p.last = a ∧ p.length = n := by
   have hne : Nonempty { p : LTSeries α // p.last = a } := ⟨RelSeries.singleton _ a, rfl⟩
@@ -914,6 +914,19 @@ end typeclass
 -/
 
 section calculations
+
+@[simp] lemma krullDim_of_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
+    [IsSimpleOrder α] : krullDim α = 1 := by
+  rw [krullDim]
+  let q : LTSeries α := ⟨1, (fun n ↦ if n == 0 then ⊥ else ⊤), by simp [Fin.fin_one_eq_zero]⟩
+  refine le_antisymm (iSup_le fun p ↦ ?_) (le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q)
+  by_contra h; simp only [Nat.cast_le_one, not_le] at h
+  have h2 : 2 < p.length + 1 := add_lt_add_of_lt_of_le h (le_refl 1)
+  have h0' : 0 < p.length := lt_trans (show 0 < 1 by decide) h
+  have h1 : 1 < p.length + 1 := lt_of_le_of_lt (show 1 ≤ 2 by decide) h2
+  have : p ⟨1, h1⟩ = ⊤ := IsSimpleOrder.eq_top_of_lt (p.step ⟨0, h0'⟩)
+  have : p ⟨1, h1⟩ < p ⟨2, h2⟩ := p.step ⟨1, h⟩
+  simp_all
 
 variable {α : Type*} [Preorder α]
 
