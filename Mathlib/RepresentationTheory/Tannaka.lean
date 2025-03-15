@@ -115,7 +115,7 @@ lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom
   simp_all [single_apply]
 
 /-- An algebra morphism `φ : (G → k) →ₐ[k] k` is an evaluation map. -/
-lemma eval_of_alghom [IsDomain k] {G : Type u} [DecidableEq G] [Fintype G] (φ : (G → k) →ₐ[k] k) :
+lemma eval_of_algHom [IsDomain k] {G : Type u} [DecidableEq G] [Fintype G] (φ : (G → k) →ₐ[k] k) :
     ∃ (s : G), φ = evalAlgHom _ _ s := by
   have h1 := map_one φ
   simp only [← univ_sum_single (1 : G → k), one_apply, map_sum] at h1
@@ -181,7 +181,7 @@ def leftRegularFDRepHom (s : G) : End (rightFDRep : FDRep k G) where
 
 lemma toRightFDRepComp_in_rightRegular [IsDomain k] (η : Aut (forget k G)) :
     ∃ (s : G), (η.hom.hom.app rightFDRep).hom = rightRegular s := by
-  obtain ⟨s, hs⟩ := eval_of_alghom ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η))
+  obtain ⟨s, hs⟩ := eval_of_algHom ((evalAlgHom _ _ 1).comp (algHomOfRightFDRepComp η))
   use s
   apply Basis.ext (basisFun k G)
   intro u
