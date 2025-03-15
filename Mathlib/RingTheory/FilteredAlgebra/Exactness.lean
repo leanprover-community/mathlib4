@@ -94,9 +94,8 @@ section DiscreteFiltration
 variable {ι A σ : Type*} [Preorder ι] [SetLike σ A]
 
 /-- For `IsFiltration F F_lt`, the filtration is discrete if `Set.univ = ⋃ F i`. -/
-class IsDiscreteFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_lt] where
-  end_index : ι
-  discrete : Prop := (F end_index : Set A) = ⊥
+class IsDiscreteFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_lt] : Prop where
+  discrete : ∃ i : ι, (F i : Set A) = ⊥
 
 end DiscreteFiltration
 
