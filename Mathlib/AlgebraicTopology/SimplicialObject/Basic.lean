@@ -264,6 +264,11 @@ scoped macro_rules
     `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
+variable (C) in
+/-- Further truncation of truncated simplicial objects. -/
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.incl m n).op
+
 end Truncated
 
 section Truncation
@@ -271,6 +276,11 @@ section Truncation
 /-- The truncation functor from simplicial objects to truncated simplicial objects. -/
 def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+def truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
+  Iso.refl _
 
 end Truncation
 
@@ -717,6 +727,11 @@ scoped macro_rules
     `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
 
+variable (C) in
+/-- Further truncation of truncated cosimplicial objects. -/
+def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
+  (whiskeringLeft _ _ _).obj <| SimplexCategory.Truncated.incl m n
+
 end Truncated
 
 section Truncation
@@ -724,6 +739,11 @@ section Truncation
 /-- The truncation functor from cosimplicial objects to truncated cosimplicial objects. -/
 def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated C n :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n)
+
+/-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
+def truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
+  Iso.refl _
 
 end Truncation
 
