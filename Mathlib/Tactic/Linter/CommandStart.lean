@@ -61,7 +61,7 @@ def lintUpTo (stx : Syntax) : Option String.Pos :=
 
 structure FormatError where
   srcPos : Nat
-  srcPos' : String.Pos := ⟨srcPos⟩
+  srcPos' : String.Pos
   fmtPos : Nat
   msg : String
 
