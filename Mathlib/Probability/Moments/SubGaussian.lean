@@ -67,6 +67,13 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
   This is equivalent to `Kernel.HasSubgaussianMGF` with a constant kernel.
   See `HasSubgaussianMGF_iff_kernel`.
 
+## Main statements
+
+* `measure_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of indepedent sub-Gaussian
+  random variables.
+* `measure_sum_ge_le_of_HasCondSubgaussianMGF`: the Azuma-Hoeffding inequality for sub-Gaussian
+  random variables.
+
 ## Implementation notes
 
 ### Definition of `Kernel.HasSubgaussianMGF`
@@ -238,6 +245,35 @@ lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr {Y : Ω → ℝ} (
     HasSubgaussianMGF X c κ ν ↔ HasSubgaussianMGF Y c κ ν :=
   ⟨fun hX ↦ congr hX h, fun hY ↦ congr hY (ae_eq_symm h)⟩
 
+lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''}
+    {Y : Ω'' → Ω} {X : Ω → ℝ} (hY : Measurable Y) (h : HasSubgaussianMGF X c (κ.map Y) ν) :
+    HasSubgaussianMGF (X ∘ Y) c κ ν where
+  integrable_exp_mul t := by
+    have h1 := h.integrable_exp_mul t
+    rwa [← Measure.map_comp _ _ hY, integrable_map_measure h1.aestronglyMeasurable (by fun_prop)]
+      at h1
+  mgf_le := by
+    filter_upwards [h.ae_forall_integrable_exp_mul, h.mgf_le] with ω' h_int h_mgf t
+    convert h_mgf t
+    ext t
+    rw [Kernel.map_apply _ hY, mgf_map hY.aemeasurable]
+    convert (h_int t).1
+    rw [Kernel.map_apply _ hY]
+
+lemma id_map_iff (hX : Measurable X) :
+    HasSubgaussianMGF id c (κ.map X) ν ↔ HasSubgaussianMGF X c κ ν := by
+  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩, fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩⟩
+  · specialize h1 t
+    rwa [← Measure.map_comp ν κ hX, integrable_map_measure] at h1
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
+  · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h2
+  · specialize h1 t
+    rwa [← Measure.map_comp ν κ hX, integrable_map_measure]
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
+  · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h2
+
 section ChernoffBound
 
 lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
@@ -266,6 +302,78 @@ lemma measure_ge_le (h : HasSubgaussianMGF X c κ ν) {ε : ℝ} (hε : 0 ≤ ε
   _ = exp (- ε ^ 2 / (2 * c)) := by congr; field_simp; ring
 
 end ChernoffBound
+
+section Add
+
+variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
+  [SFinite ν] [IsSFiniteKernel κ]
+
+lemma prodMkLeft_compProd {η : Kernel Ω Ω''} (h : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
+    HasSubgaussianMGF Y cY (prodMkLeft Ω' η) (ν ⊗ₘ κ) where
+  integrable_exp_mul := by
+    convert h.integrable_exp_mul
+    simp
+  mgf_le := by
+    have h2 := h.mgf_le
+    simp only [prodMkLeft_apply] at h2
+    rw [← Measure.snd_compProd, Measure.snd] at h2
+    refine ae_of_ae_map ?_ h2
+    fun_prop
+
+lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
+    (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) (t : ℝ) :
+    Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) ((κ ⊗ₖ η) ∘ₘ ν) := by
+  simp_rw [mul_add, exp_add]
+  refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
+  · have h := hX.memLp_exp_mul t 2
+    simp only [ENNReal.coe_ofNat] at h
+    have : κ ∘ₘ ν = ((κ ⊗ₖ η) ∘ₘ ν).map Prod.fst := by
+      rw [Measure.map_comp _ _ measurable_fst, ← fst_eq, fst_compProd]
+    rwa [this, memLp_map_measure_iff h.1 measurable_fst.aemeasurable] at h
+  · have h := hY.memLp_exp_mul t 2
+    simp only [ENNReal.coe_ofNat] at h
+    rwa [Measure.comp_compProd_comm, Measure.snd,
+      memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
+
+/-- For `ν : Measure Ω'`, `κ : Kernel Ω' Ω` and `η : (Ω' × Ω) Ω''`, if a random variable `X : Ω → ℝ`
+has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable `Y : Ω'' → ℝ` has
+a sub-Gaussian mgf with respect to `η` and `ν ⊗ₘ κ : Measure (Ω' × Ω)`, then `X + Y` (random
+variable on the measurable space `Ω × Ω''`) has a sub-Gaussian mgf with respect to
+`κ ⊗ₖ η : Kernel Ω' (Ω × Ω'')` and `ν`. -/
+lemma add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
+    (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) :
+    HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ η) ν := by
+  refine .of_rat (integrable_exp_add_compProd hX hY) fun q ↦ ?_
+  filter_upwards [hX.mgf_le, hX.ae_integrable_exp_mul q, Measure.ae_ae_of_ae_compProd hY.mgf_le,
+    Measure.ae_integrable_of_integrable_comp <| integrable_exp_add_compProd hX hY q]
+    with ω' hX_mgf hX_int hY_mgf h_int_mul
+  calc mgf (fun p ↦ X p.1 + Y p.2) ((κ ⊗ₖ η) ω') q
+  _ = ∫ x, exp (q * X x) * ∫ y, exp (q * Y y) ∂(η (ω', x)) ∂(κ ω') := by
+    simp_rw [mgf, mul_add, exp_add] at h_int_mul ⊢
+    simp_rw [integral_compProd h_int_mul, integral_mul_left]
+  _ ≤ ∫ x, exp (q * X x) * exp (cY * q ^ 2 / 2) ∂(κ ω') := by
+    refine integral_mono_of_nonneg ?_ (hX_int.mul_const _) ?_
+    · exact ae_of_all _ fun  ω ↦ mul_nonneg (by positivity)
+        (integral_nonneg (fun _ ↦ by positivity))
+    · filter_upwards [all_ae_of hY_mgf q] with ω hY_mgf
+      gcongr
+      exact hY_mgf
+  _ ≤ exp (↑(c + cY) * q ^ 2 / 2) := by
+    rw [integral_mul_right, NNReal.coe_add, add_mul, add_div, exp_add]
+    gcongr
+    exact hX_mgf q
+
+/-- For `ν : Measure Ω'`, `κ : Kernel Ω' Ω` and `η : Ω Ω''`, if a random variable `X : Ω → ℝ`
+has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable `Y : Ω'' → ℝ` has
+a sub-Gaussian mgf with respect to `η` and `κ ∘ₘ ν : Measure Ω`, then `X + Y` (random
+variable on the measurable space `Ω × Ω''`) has a sub-Gaussian mgf with respect to
+`κ ⊗ₖ prodMkLeft Ω' η : Kernel Ω' (Ω × Ω'')` and `ν`. -/
+lemma add_comp {η : Kernel Ω Ω''} [IsMarkovKernel η]
+    (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
+    HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ prodMkLeft Ω' η) ν :=
+  hX.add_compProd hY.prodMkLeft_compProd
+
+end Add
 
 end Kernel.HasSubgaussianMGF
 
@@ -376,6 +484,40 @@ lemma fun_zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF (fun _ ↦ 0)
 @[simp]
 lemma zero [IsZeroOrProbabilityMeasure μ] : HasSubgaussianMGF 0 0 μ := fun_zero
 
+lemma id_map_iff (hX : AEMeasurable X μ) :
+    HasSubgaussianMGF id c (μ.map X) ↔ HasSubgaussianMGF X c μ := by
+  refine ⟨fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩, fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩⟩
+  · specialize h1 t
+    rwa [integrable_map_measure] at h1
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
+  · simpa [Kernel.map_apply _, mgf_id_map hX] using h2
+  · specialize h1 t
+    rwa [integrable_map_measure]
+    · exact Measurable.aestronglyMeasurable <| by fun_prop
+    · fun_prop
+  · simpa [Kernel.map_apply _, mgf_id_map hX] using h2
+
+lemma trim (hm : m ≤ mΩ) (hXm : Measurable[m] X) (hX : HasSubgaussianMGF X c μ) :
+    HasSubgaussianMGF X c (μ.trim hm) where
+  integrable_exp_mul t := by
+    refine (hX.integrable_exp_mul t).trim hm ?_
+    exact Measurable.stronglyMeasurable <| by fun_prop
+  mgf_le t := by
+    rw [mgf, ← integral_trim]
+    · exact hX.mgf_le t
+    · exact Measurable.stronglyMeasurable <| by fun_prop
+
+lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
+    {Y : Ω' → Ω} {X : Ω → ℝ} (hY : AEMeasurable Y μ) (h : HasSubgaussianMGF X c (μ.map Y)) :
+    HasSubgaussianMGF (X ∘ Y) c μ where
+  integrable_exp_mul t := by
+    have h1 := h.integrable_exp_mul t
+    rwa [integrable_map_measure h1.aestronglyMeasurable (by fun_prop)] at h1
+  mgf_le t := by
+    convert h.mgf_le t using 1
+    rw [mgf_map hY (h.integrable_exp_mul t).1]
+
 section ChernoffBound
 
 /-- Chernoff bound on the right tail of a sub-Gaussian random variable. -/
@@ -386,6 +528,125 @@ lemma measure_ge_le (h : HasSubgaussianMGF X c μ) {ε : ℝ} (hε : 0 ≤ ε) :
 
 end ChernoffBound
 
+section Add
+
+lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF X cX μ)
+    (hY : HasSubgaussianMGF Y cY μ) (hindep : IndepFun X Y μ) :
+    HasSubgaussianMGF (fun ω ↦ X ω + Y ω) (cX + cY) μ where
+  integrable_exp_mul t := by
+    simp_rw [mul_add, exp_add]
+    convert MemLp.integrable_mul (hX.memLp_exp_mul t 2) (hY.memLp_exp_mul t 2)
+    norm_cast
+    infer_instance
+  mgf_le t := by
+    calc mgf (X + Y) μ t
+    _ = mgf X μ t * mgf Y μ t :=
+      hindep.mgf_add (hX.integrable_exp_mul t).1 (hY.integrable_exp_mul t).1
+    _ ≤ exp (cX * t ^ 2 / 2) * exp (cY * t ^ 2 / 2) := by
+      gcongr
+      · exact mgf_nonneg
+      · exact hX.mgf_le t
+      · exact hY.mgf_le t
+    _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
+
+lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
+    {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
+    (h_meas : ∀ i, Measurable (X i))
+    {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
+    HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert i s his h =>
+    simp_rw [← Finset.sum_apply]
+    rw [Finset.sum_insert his, Finset.sum_insert his]
+    simp_rw [Pi.add_apply, Finset.sum_apply]
+    have h_indep' := (h_indep.indepFun_finset_sum_of_not_mem h_meas his).symm
+    refine add_of_indepFun (h_subG _ (Finset.mem_insert_self _ _)) (h ?_) ?_
+    · exact fun i hi ↦ h_subG _ (Finset.mem_insert_of_mem hi)
+    · convert h_indep'
+      rw [Finset.sum_apply]
+
+/-- **Hoeffding inequality** for sub-Gaussian random variables. -/
+lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
+    {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
+    (h_meas : ∀ i, Measurable (X i))
+    {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) {ε : ℝ} (hε : 0 ≤ ε) :
+    (μ {ω | ε ≤ ∑ i ∈ s, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ s, c i)) :=
+  (sum_of_iIndepFun h_indep h_meas h_subG).measure_ge_le hε
+
+/-- **Hoeffding inequality** for sub-Gaussian random variables. -/
+lemma measure_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
+    {X : ℕ → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ℝ≥0}
+    (h_meas : ∀ i, Measurable (X i))
+    {n : ℕ} (h_subG : ∀ i < n, HasSubgaussianMGF (X i) c μ) {ε : ℝ} (hε : 0 ≤ ε) :
+    (μ {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * n * c)) := by
+  have h := (sum_of_iIndepFun h_indep h_meas (c := fun _ ↦ c)
+    (s := Finset.range n) (by simpa)).measure_ge_le hε
+  simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul, NNReal.coe_mul,
+    NNReal.coe_natCast] at h
+  rwa [← mul_assoc] at h
+
+end Add
+
 end HasSubgaussianMGF
+
+section Martingale
+
+variable [StandardBorelSpace Ω]
+
+/-- If `X` is sub-Gaussian with parameter `cX` with respect to the restriction of `μ` to
+a sub-sigma-algebra `m` and `Y` is conditionally sub-Gaussian with parameter `cY` with respect to
+`m` and `μ` then `X + Y` is sub-Gaussian with parameter `cX + cY` with respect to `μ`.
+
+`HasSubgaussianMGF X cX (μ.trim hm)` can be obtained from `HasSubgaussianMGF X cX μ` if `X` is
+`m`-measurable. See `HasSubgaussianMGF.trim`. -/
+lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
+    {Y : Ω → ℝ} {cX cY : ℝ≥0} (hm : m ≤ mΩ)
+    (hX : HasSubgaussianMGF X cX (μ.trim hm)) (hY : HasCondSubgaussianMGF m hm Y cY μ) :
+    HasSubgaussianMGF (X + Y) (cX + cY) μ := by
+  suffices HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (cX + cY)
+      (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ) by
+    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ (fun ω ↦ (id ω, id ω)) := by ext; simp
+    rw [h_eq]
+    refine HasSubgaussianMGF.of_map ?_ this
+    exact @Measurable.aemeasurable _ _ _ (m.prod mΩ) _ _
+      ((measurable_id'' hm).prodMk measurable_id)
+  rw [HasSubgaussianMGF_iff_kernel] at hX ⊢
+  have hY' : Kernel.HasSubgaussianMGF Y cY (condExpKernel μ m)
+      (Kernel.const Unit (μ.trim hm) ∘ₘ Measure.dirac ()) := by simpa
+  convert hX.add_comp hY'
+  ext
+  rw [Kernel.const_apply, ← Measure.compProd, compProd_trim_condExpKernel]
+
+variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
+
+/-- Let `Y` be a random process adapted to a filtration `ℱ`, such that for all `i : ℕ`, `Y i` is
+conditionally sub-Gaussian with parameter `cY i` with respect to `ℱ i`.
+In particular, `Y` is a martingale.
+Then the sum `∑ i ∈ range n, Y i` is sub-Gaussian with parameter `∑ i ∈ range n, cY i`. -/
+lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
+    (h_adapted : Adapted ℱ Y)
+    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y i) (cY i) μ) (n : ℕ) :
+    HasSubgaussianMGF (fun ω ↦ ∑ i ∈ Finset.range n, Y i ω) (∑ i ∈ Finset.range n, cY i) μ := by
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp_rw [Finset.sum_range_succ]
+    refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n)
+    refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
+    exact Finset.measurable_sum (Finset.range n) fun m hm ↦
+      ((h_adapted m).mono (ℱ.mono (Finset.mem_range_le hm))).measurable
+
+/-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
+lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
+    (h_adapted : Adapted ℱ Y)
+    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y i) (cY i) μ) (n : ℕ)
+    {ε : ℝ} (hε : 0 ≤ ε) :
+    (μ {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}).toReal
+      ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
+  (HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF h_adapted h_subG n).measure_ge_le hε
+
+end Martingale
 
 end ProbabilityTheory
