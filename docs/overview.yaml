@@ -438,11 +438,11 @@ Geometry:
     (topological) direct sum of vector bundles: VectorBundle.prod
     (topological) pullback vector bundle: VectorBundle.pullback
     (topological) Hom bundle: Bundle.ContinuousLinearMap.vectorBundle
-    smooth vector bundle: SmoothVectorBundle
-    (smooth) trivial bundle: Bundle.Trivial.smoothVectorBundle
-    # (smooth) direct sum is missing (March 2025)
-    (smooth) pullback vector bundle: SmoothVectorBundle.pullback
-    (smooth) Hom bundle: SmoothVectorBundle.continuousLinearMap
+    smooth vector bundle: ContMDiffVectorBundle
+    (smooth) trivial vector bundle: Bundle.Trivial.contMDiffVectorBundle
+    (smooth) direct sum of vector bundles: Bundle.Prod.contMDiffVectorBundle
+    (smooth) pullback vector bundle: ContMDiffVectorBundle.pullback
+    (smooth) Hom bundle: ContMDiffVectorBundle.continuousLinearMap
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
