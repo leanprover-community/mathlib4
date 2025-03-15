@@ -176,9 +176,10 @@ variable (f : FilteredAddGroupHom FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n 
 
 variable (g : FilteredAddGroupHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)))
 
-lemma shrinking_lemma {monoR : Monotone FR} (S' : AddSubgroup S) {p : ℤ} (y : (ofClass (FS p) ⊓ S' : AddSubgroup S))
-    (h : ∀ i : ℤ, (ofClass (FS i) ⊓ S' : AddSubgroup S) ≤ AddSubgroup.map f (ofClass (FR i))) :
-    ∀ s : ℕ, ∃ x : FR p, y - (f.toAddMonoidHom x) ∈ (ofClass (FS (p - s)) ⊓ S' : AddSubgroup S):= by
+lemma shrinking_lemma {monoR : Monotone FR} (S' : AddSubgroup S) {p : ℤ}
+    (y : (ofClass (FS p) ⊓ S' : AddSubgroup S))
+    (h : ∀ i : ℤ, ofClass (FS i) ⊓ S' ≤ AddSubgroup.map f (ofClass (FR i))) :
+    ∀ s : ℕ, ∃ x : FR p, y - (f.toAddMonoidHom x) ∈ ofClass (FS (p - s)) ⊓ S' := by
   intro s
   induction' s with s ih
   · use 0
@@ -186,20 +187,14 @@ lemma shrinking_lemma {monoR : Monotone FR} (S' : AddSubgroup S) {p : ℤ} (y : 
   · obtain⟨x₀, h₀⟩ := ih
     obtain⟨z, zin, eq⟩ : y - f.toAddMonoidHom x₀ ∈ (map f.toAddMonoidHom (ofClass (FR (p - s)))) :=
       h (p - s) h₀
-
-    have : ((⟨z, zin⟩ : FR (p - s)) : R) ∈ (FR p) := by
+    have : z ∈ (FR p) := by
       have : FR (p - s) ≤ FR p := by
         apply monoR
         simp
       exact this zin
-
-    use (x₀ + ⟨((⟨z, zin⟩ : FR (p - s)) : R) , this⟩)
-
+    use (x₀ + ⟨z , this⟩)
     simp only [Nat.cast_add, Nat.cast_one, AddMemClass.coe_add, AddMonoidHom.map_add]
-    simp[eq]
-    constructor
-    · exact AddSubgroup.zero_mem (ofClass (FS (p - (↑s + 1))))
-    · exact AddSubgroup.zero_mem S'
+    simp [eq, AddSubgroup.zero_mem]
 
 
 
