@@ -71,24 +71,21 @@ def parallelScanAux : Array FormatError → List Char → List Char → Array Fo
       parallelScanAux as ls (ms.dropWhile (·.isWhitespace))
     else
       let new := {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "extra space"}
-      parallelScanAux
-        (as.push new) ls (m::ms)
+      parallelScanAux (as.push new) ls (m::ms)
   | as, '\n'::ls, m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
       parallelScanAux as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
     else
       let new := {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "remove line break"}
-      parallelScanAux
-        (as.push new) (ls.drop lth) (m::ms)
+      parallelScanAux (as.push new) (ls.drop lth) (m::ms)
   | as, l::ls, m::ms => -- `l` is not whitespace
     if l == m then
       parallelScanAux as ls ms
     else
       if m.isWhitespace then
         let new := {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "missing space"}
-        parallelScanAux (as.push new)
-          (l::ls) (ms.dropWhile (·.isWhitespace))
+        parallelScanAux (as.push new) (l::ls) (ms.dropWhile (·.isWhitespace))
     else
       as.push {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "Oh no! (Unreachable?)"}
   | as, _, [] => as
