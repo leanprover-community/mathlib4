@@ -31,6 +31,9 @@ theorem isRadical_iff_span_singleton [CommSemiring R] :
   simp_rw [IsRadical, ← Ideal.mem_span_singleton]
   exact forall_swap.trans (forall_congr' fun r => exists_imp.symm)
 
+theorem isNilpotent_iff_zero_mem_powers [Monoid R] [Zero R] {x : R} :
+    IsNilpotent x ↔ 0 ∈ Submonoid.powers x := Iff.rfl
+
 section CommSemiring
 
 variable [CommSemiring R] {x y : R}
