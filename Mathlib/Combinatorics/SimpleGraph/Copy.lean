@@ -203,9 +203,7 @@ abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A ⊑ B
 lemma not_free : ¬A.Free B ↔ A ⊑ B := not_not
 
 /-- If `A ≃g B`, then `C` is `A`-free if and only if `C` is `B`-free. -/
-theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := by
-  rw [not_iff_not]
-  exact isContained_congr e
+theorem free_congr (e : A ≃g B) : A.Free C ↔ B.Free C := (isContained_congr e).not
 
 lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [← edgeSet_nonempty] at h
