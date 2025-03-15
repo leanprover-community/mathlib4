@@ -87,7 +87,7 @@ theorem Matrix.coe_vecMulLinear [Fintype m] (M : Matrix m n R) :
 variable [Fintype m]
 
 theorem range_vecMulLinear (M : Matrix m n R) :
-    LinearMap.range M.vecMulLinear = span R (range M) := by
+    LinearMap.range M.vecMulLinear = span R (range M.row) := by
   letI := Classical.decEq m
   simp_rw [range_eq_map, ← iSup_range_single, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
@@ -97,7 +97,7 @@ theorem range_vecMulLinear (M : Matrix m n R) :
   simp_rw [single_dotProduct, one_mul]
 
 theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
-    Function.Injective M.vecMul ↔ LinearIndependent R (fun i ↦ M i) := by
+    Function.Injective M.vecMul ↔ LinearIndependent R M.row := by
   rw [← coe_vecMulLinear]
   simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
     LinearMap.mem_ker, vecMulLinear_apply]
@@ -110,7 +110,7 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     simp [vecMul, dotProduct]
 
 lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [CommRing R] {A : Matrix m m R}
-    [DecidableEq m] (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
+    [DecidableEq m] (ha : IsUnit A) : LinearIndependent R A.row := by
   rw [← Matrix.vecMul_injective_iff]
   exact Matrix.vecMul_injective_of_isUnit ha
 
@@ -255,17 +255,17 @@ theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
   simp only [Submodule.eq_bot_iff, LinearMap.mem_ker, Matrix.mulVecLin_apply]
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
-    LinearMap.range M.mulVecLin = span R (range Mᵀ) := by
+    LinearMap.range M.mulVecLin = span R (range M.col) := by
   rw [← vecMulLinear_transpose, range_vecMulLinear]
 
 theorem Matrix.mulVec_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
-    Function.Injective M.mulVec ↔ LinearIndependent R (fun i ↦ Mᵀ i) := by
+    Function.Injective M.mulVec ↔ LinearIndependent R M.col := by
   change Function.Injective (fun x ↦ _) ↔ _
   simp_rw [← M.vecMul_transpose, vecMul_injective_iff]
 
 lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype m]
     {A : Matrix m m R} [DecidableEq m] (ha : IsUnit A) :
-    LinearIndependent R (fun i ↦ A.transpose i) := by
+    LinearIndependent R A.col := by
   rw [← Matrix.mulVec_injective_iff]
   exact Matrix.mulVec_injective_of_isUnit ha
 
@@ -397,7 +397,7 @@ theorem Matrix.ker_toLin'_eq_bot_iff {M : Matrix n n R} :
   Matrix.ker_mulVecLin_eq_bot_iff
 
 theorem Matrix.range_toLin' (M : Matrix m n R) :
-    LinearMap.range (Matrix.toLin' M) = span R (range Mᵀ) :=
+    LinearMap.range (Matrix.toLin' M) = span R (range M.col) :=
   Matrix.range_mulVecLin _
 
 /-- If `M` and `M'` are each other's inverse matrices, they provide an equivalence between `m → A`
