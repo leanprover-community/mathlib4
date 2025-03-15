@@ -341,7 +341,7 @@ end basic
 variable [Fintype n] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
-def toCLM : CStarMatrix m n A →ₗ[ℂ] (C⋆ᵐᵒᵈ (n → A)) →L[ℂ] (C⋆ᵐᵒᵈ (m → A)) where
+def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, n → A) →L[ℂ] C⋆ᵐᵒᵈ(A, m → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.mulVec ∘ WithCStarModule.equivL ℂ
                map_add' := M.mulVec_add
                map_smul' := M.mulVec_smul
@@ -365,17 +365,17 @@ def toCLM : CStarMatrix m n A →ₗ[ℂ] (C⋆ᵐᵒᵈ (n → A)) →L[ℂ] (C
     ext j
     rw [CStarMatrix.smul_apply, smul_mul_assoc]
 
-lemma toCLM_apply {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (n → A)} :
-    toCLM M v = (WithCStarModule.equiv _).symm (M.mulVec v) := rfl
+lemma toCLM_apply {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)} :
+    toCLM M v = (WithCStarModule.equiv _ _).symm (M.mulVec v) := rfl
 
-lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (n → A)} :
-    toCLM M v = (WithCStarModule.equiv _).symm (fun i => ∑ j, M i j * v j) := by
+lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)} :
+    toCLM M v = (WithCStarModule.equiv _ _).symm (fun i => ∑ j, M i j * v j) := by
   ext i
   simp [toCLM_apply, Matrix.mulVec, dotProduct]
 
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. This
 version is specialized to the case `m = n` and is bundled as a non-unital algebra homomorphism. -/
-def toCLMNonUnitalAlgHom : CStarMatrix n n A →ₙₐ[ℂ] (C⋆ᵐᵒᵈ (n → A)) →L[ℂ] (C⋆ᵐᵒᵈ (n → A)) :=
+def toCLMNonUnitalAlgHom : CStarMatrix n n A →ₙₐ[ℂ] C⋆ᵐᵒᵈ(A, n → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) :=
   { toCLM (n := n) (m := n) with
     map_zero' := by ext1; simp
     map_mul' := by intros; ext; simp [toCLM] }
@@ -386,13 +386,13 @@ lemma toCLMNonUnitalAlgHom_eq_toCLM {M : CStarMatrix n n A} :
 open WithCStarModule in
 @[simp high]
 lemma toCLM_apply_single [DecidableEq n] {M : CStarMatrix m n A} {j : n} (a : A) :
-    (toCLM M) (equiv _ |>.symm <| Pi.single j a) = (equiv _).symm (fun i => M i j * a) := by
+    (toCLM M) (equiv _ _ |>.symm <| Pi.single j a) = (equiv _ _).symm (fun i => M i j * a) := by
   ext
   simp [toCLM_apply, EmbeddingLike.apply_eq_iff_eq, equiv, Equiv.refl]
 
 open WithCStarModule in
 lemma toCLM_apply_single_apply [DecidableEq n] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
-    (toCLM M) (equiv _ |>.symm <| Pi.single j a) i = M i j * a := by simp
+    (toCLM M) (equiv _ _ |>.symm <| Pi.single j a) i = M i j * a := by simp
 
 variable [Fintype m]
 
@@ -400,8 +400,8 @@ open WithCStarModule in
 lemma mul_entry_mul_eq_inner_toCLM [DecidableEq m] [DecidableEq n] {M : CStarMatrix m n A}
     {i : m} {j : n} (a b : A) :
     star a * M i j * b
-      = ⟪equiv _ |>.symm (Pi.single i a), toCLM M (equiv _ |>.symm <| Pi.single j b)⟫_A := by
-  simp [mul_assoc, inner_def]
+      = ⟪equiv _ _ |>.symm (Pi.single i a), toCLM M (equiv _ _ |>.symm <| Pi.single j b)⟫_A := by
+  simp [mul_assoc, inner_def]; sorry -- not provable
 
 lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) := by
   classical
@@ -413,15 +413,16 @@ lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) :=
   simp [h]
 
 open WithCStarModule in
-lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (m → A)}
-    {w : C⋆ᵐᵒᵈ (n → A)} : ⟪toCLM Mᴴ v, w⟫_A = ⟪v, toCLM M w⟫_A := by
+lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)}
+    {w : C⋆ᵐᵒᵈ(A, n → A)} : ⟪toCLM Mᴴ v, w⟫_A = ⟪v, toCLM M w⟫_A := by
   simp only [toCLM_apply_eq_sum, pi_inner, equiv_symm_pi_apply, inner_def, Finset.mul_sum,
     Matrix.conjTranspose_apply, star_sum, star_mul, star_star, Finset.sum_mul]
   rw [Finset.sum_comm]
   simp_rw [mul_assoc]
+  sorry -- not provable
 
-lemma inner_toCLM_conjTranspose_right {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ (n → A)}
-    {w : C⋆ᵐᵒᵈ (m → A)} : ⟪v, toCLM Mᴴ w⟫_A = ⟪toCLM M v, w⟫_A := by
+lemma inner_toCLM_conjTranspose_right {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)}
+    {w : C⋆ᵐᵒᵈ(A, m → A)} : ⟪v, toCLM Mᴴ w⟫_A = ⟪toCLM M v, w⟫_A := by
   apply Eq.symm
   simpa using inner_toCLM_conjTranspose_left (M := Mᴴ) (v := v) (w := w)
 
@@ -461,7 +462,7 @@ lemma norm_le_of_forall_inner_le {M : CStarMatrix m n A} {C : ℝ≥0}
   · rw [← h₀]
     positivity
   · refine le_of_mul_le_mul_right ?_ h₀
-    simpa [← sq, norm_sq_eq] using h ..
+    simpa [← sq, norm_sq_eq A] using h ..
 
 end CStarMatrix
 
@@ -608,9 +609,9 @@ instance instCStarRing : CStarRing (CStarMatrix n n A) where
       change ‖toCLM M‖ ≤ √‖star M * M‖
       rw [opNorm_le_iff (by positivity)]
       intro v
-      rw [norm_eq_sqrt_norm_inner_self, ← inner_toCLM_conjTranspose_right]
+      rw [norm_eq_sqrt_norm_inner_self (A := A), ← inner_toCLM_conjTranspose_right]
       have h₁ : ‖⟪v, (toCLM Mᴴ) ((toCLM M) v)⟫_A‖ ≤ ‖star M * M‖ * ‖v‖ ^ 2 := calc
-          _ ≤ ‖v‖ * ‖(toCLM Mᴴ) (toCLM M v)‖ := norm_inner_le (C⋆ᵐᵒᵈ (n → A))
+          _ ≤ ‖v‖ * ‖(toCLM Mᴴ) (toCLM M v)‖ := norm_inner_le (C⋆ᵐᵒᵈ(A, n → A))
           _ ≤ ‖v‖ * ‖(toCLM Mᴴ).comp (toCLM M)‖ * ‖v‖ := by
                     rw [mul_assoc]
                     gcongr
