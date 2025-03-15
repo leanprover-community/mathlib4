@@ -171,10 +171,11 @@ theorem covolume_div_covolume_eq_relindex' {E : Type*} [NormedAddCommGroup E]
   have hf : MeasurePreserving f := (stdOrthonormalBasis ℝ E).measurePreserving_repr_symm.comp
     (EuclideanSpace.volume_preserving_measurableEquiv _).symm
   rw [← covolume_comap L₁ volume volume hf, ← covolume_comap L₂ volume volume hf,
-    covolume_div_covolume_eq_relindex _ _ (fun _ h' ↦ h h'), ← L₁.toAddSubgroup.relindex_map_equiv
-    L₂.toAddSubgroup f.symm.toAddEquiv]
-  simp only [ContinuousLinearEquiv.symm_toLinearEquiv, LinearEquiv.coe_toAddEquiv,
-    AddEquiv.toAddMonoidHom_eq_coe, AddSubgroup.map_equiv_eq_comap_symm, Nat.cast_inj]
+    covolume_div_covolume_eq_relindex _ _ (fun _ h' ↦ h h')]
+  rw [← L₁.toAddSubgroup.relindex_map_of_injective L₂.toAddSubgroup
+    (e := f.toAddEquiv.symm.toAddMonoidHom) f.symm.injective,
+    ← AddSubgroup.comap_equiv_eq_map_symm', ← AddSubgroup.comap_equiv_eq_map_symm']
+  simp only [LinearEquiv.coe_toAddEquiv, AddEquiv.toAddMonoidHom_eq_coe, Nat.cast_inj]
   rfl
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [DecidableEq ι]
