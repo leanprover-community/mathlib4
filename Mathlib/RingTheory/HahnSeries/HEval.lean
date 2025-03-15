@@ -331,7 +331,7 @@ def equiv_map_on_finset_finsupp {σ : Type*} (s : Finset σ) :
   left_inv := congrFun rfl
   right_inv f := by simp
 
-/-- The equivalence between maps on a finite totality and finitely supported functions.-/
+/-- The equivalence between maps on a finite totality and finitely supported functions. -/
 def equiv_map_on_fintype_finsupp {σ : Type*} [Fintype σ] :
     ((i : σ) → i ∈ Finset.univ → ℕ) ≃ (σ →₀ ℕ) where
   toFun f := Finsupp.equivFunOnFinite.symm (fun i => f i (mem_univ i))
@@ -359,7 +359,7 @@ theorem isPWO_iUnion_support_smul_MVpowers {σ : Type*} [Fintype σ] (y : σ →
     (fun i => zero_le_orderTop_iff.mp <| le_of_lt (hy i))
 
 /-- A summable family given by substituting a multivariable power series into positive order
-elements.-/
+elements. -/
 @[simps]
 def mvPowerSeriesFamily {σ : Type*} [Fintype σ] (y : σ →₀ HahnSeries Γ R)
     (hy : ∀ i, 0 < (y i).orderTop) (f : MvPowerSeries σ R) : SummableFamily Γ R (σ →₀ ℕ) where

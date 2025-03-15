@@ -850,7 +850,7 @@ end CommRing
 
 section CommRing
 
-variable [CommRing R]
+variable [CommRing R] [LinearOrderedAddCommGroup Γ]
 
 theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + x.leadingTerm) : 1 - single (-order x) r * x = -(single (-x.order) r * y) := by
@@ -859,65 +859,7 @@ theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leading
     sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq]
   exact rfl
 
-theorem unit_aux2 (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
-    0 < (1 - single (-x.order) r * x).orderTop := by
-  let y := (x - x.leadingTerm)
-  by_cases hy : y = 0
-  · have hrx : (single (-order x)) r * x = 1 := by
-      nth_rw 2 [eq_of_sub_eq_zero hy]
-      simp only [leadingTerm_eq, single_mul_single, neg_add_cancel, hr, ← leadingCoeff_eq]
-      exact rfl
-    simp only [hrx, sub_self, orderTop_zero, WithTop.top_pos]
-  have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
-    fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
-  have hy' : 0 < (single (-x.order) r * y).order := by
-    rw [(order_mul_single_of_nonzero_divisor hr' hy), lt_neg_add_iff_lt]
-    exact order_lt_add_single_support_order (sub_add_cancel x x.leadingTerm).symm hy
-  simp only [one_minus_single_mul x y r hr (sub_add_cancel x x.leadingTerm).symm, orderTop_neg]
-  exact zero_lt_orderTop_of_order hy'
-
-theorem isUnit_of_isUnit_leadingCoeff {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff) :
-    IsUnit x := by
-  let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
-  rw [Units.val_mk] at h
-  rw [h] at iu
-  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux2 x iu)
-  rw [sub_sub_cancel] at h'
-  exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
-
-theorem isUnit_iff2 [IsDomain R] {x : HahnSeries Γ R} :
-    IsUnit x ↔ IsUnit (x.leadingCoeff) := by
-  refine { mp := ?mp, mpr := isUnit_of_isUnit_leadingCoeff }
-  rintro ⟨⟨u, i, ui, iu⟩, rfl⟩
-  refine
-    isUnit_of_mul_eq_one (u.leadingCoeff) (i.leadingCoeff)
-      ((coeff_mul_order_add_order u i).symm.trans ?_)
-  rw [ui, coeff_one, if_pos]
-  rw [← order_mul (left_ne_zero_of_mul_eq_one ui) (right_ne_zero_of_mul_eq_one ui), ui, order_one]
-
 end CommRing
-
-/-!
-open Classical in
-instance instField [Field R] : Field (HahnSeries Γ R) where
-  __ : IsDomain (HahnSeries Γ R) := inferInstance
-  inv x :=
-    if x0 : x = 0 then 0
-    else
-      (single (-x.order)) (x.leadingCoeff)⁻¹ *
-        (SummableFamily.powers (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))).hsum
-  inv_zero := dif_pos rfl
-  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans <| by
-    have h :=
-      SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel₀ (leadingCoeff_ne_iff.mpr x0)))
-    rw [sub_sub_cancel] at h
-    rw [← mul_assoc, mul_comm x, h]
-  nnqsmul := _
-  nnqsmul_def := fun q a => rfl
-  qsmul := _
-  qsmul_def := fun q a => rfl
--/
 
 section IsDomain
 
