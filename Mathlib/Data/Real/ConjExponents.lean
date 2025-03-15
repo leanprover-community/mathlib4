@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Data.ENNReal.Holder
-import Mathlib.Tactic.Finiteness
 
 /-!
 # Real conjugate exponents
