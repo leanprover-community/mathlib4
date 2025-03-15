@@ -323,15 +323,15 @@ variable {FA FB} in
 restriction of a `DecompositionHom` to its `i`-th component. -/
 def component_wise_hom (i : ι) : FA i →+ FB i where
   toFun := Subtype.map f (fun _ ha ↦ f.component_wise ha)
-  map_zero' := by aesop
-  map_add' := by aesop
+  map_zero' := Subtype.ext (by simp)
+  map_add' := fun x y ↦ Subtype.ext (by simp)
 
 /-- The identity map as a `DecompositionHom` of same decomposition. -/
 def id : DecompositionHom FA FA where
   toFun := _root_.id
   map_zero' := by simp
   map_add' := by simp
-  component_wise ha := ha
+  component_wise h := h
 
 variable {FA FB FC} in
 /-- The composition of two decomposition morphisms,
@@ -340,7 +340,7 @@ def comp : DecompositionHom FA FC where
   toFun := g.1.comp f.1
   map_zero' := by simp
   map_add' := by simp
-  component_wise ha := g.component_wise (f.component_wise ha)
+  component_wise h := g.component_wise (f.component_wise h)
 
 end DecompositionHom
 
