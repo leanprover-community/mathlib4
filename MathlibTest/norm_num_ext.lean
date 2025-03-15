@@ -15,6 +15,7 @@ import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Tactic.NormNum.RealSqrt
+import Mathlib.Tactic.NormNum.Irrational
 
 /-!
 # Tests for `norm_num` extensions
@@ -493,3 +494,18 @@ example : Real.sqrt 0 = 0 := by norm_num
 example : NNReal.sqrt 0 = 0 := by norm_num
 
 end real_sqrt
+
+section irrational
+
+example : Irrational √2 := by norm_num1
+example : Irrational √(5 - 2) := by norm_num1
+-- big prime number
+example : Irrational
+  √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
+example : Irrational √(7/2) := by norm_num1
+example : Irrational √(1/2 + 1/2 + 1/3) := by norm_num1
+example : Irrational (100^(1/3 : ℝ)) := by norm_num1
+example : Irrational ((87/6) ^ (54/321 : ℝ)) := by norm_num1
+
+
+end irrational
