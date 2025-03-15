@@ -70,7 +70,7 @@ def parallelScanAux : Array FormatError → List Char → List Char → Array Fo
     if m.isWhitespace then
       parallelScanAux as ls (ms.dropWhile (·.isWhitespace))
     else
-      let new := {srcPos := ls.length+1, fmtPos := ms.length+1, msg := "extra space"}
+      let new := {srcPos := ls.length + 1, fmtPos := ms.length + 1, msg := "extra space"}
       parallelScanAux
         (as.push new) ls (m::ms)
   | as, '\n'::ls, m::ms =>
