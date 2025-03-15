@@ -83,8 +83,8 @@ def upgradeCompletelyMetrizable (X : Type*) [TopologicalSpace X] [CompletelyMetr
 
 namespace CompletelyMetrizableSpace
 
-instance (priority := 100) instMetrizableSpace (X : Type*) [TopologicalSpace X]
-    [CompletelyMetrizableSpace X] : MetrizableSpace X := by
+instance (priority := 100) MetrizableSpace [TopologicalSpace X] [CompletelyMetrizableSpace X] :
+    MetrizableSpace X := by
   letI := upgradeCompletelyMetrizable X
   infer_instance
 
@@ -96,7 +96,7 @@ instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, Top
 
 /-- A disjoint union of completely metrizable spaces is completely metrizable. -/
 instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
-    [∀ n, CompletelyMetrizableSpace (X n)] : CompletelyMetrizableSpace (Σn, X n) :=
+    [∀ n, CompletelyMetrizableSpace (X n)] : CompletelyMetrizableSpace (Σ n, X n) :=
   letI := fun n ↦ upgradeCompletelyMetrizable (X n)
   letI : MetricSpace (Σ n, X n) := Metric.Sigma.metricSpace
   haveI : CompleteSpace (Σ n, X n) := Metric.Sigma.completeSpace
