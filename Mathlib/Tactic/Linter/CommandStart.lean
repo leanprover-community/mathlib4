@@ -70,23 +70,23 @@ def parallelScanAux : Array FormatError → List Char → List Char → Array Fo
     if m.isWhitespace then
       parallelScanAux as ls (ms.dropWhile (·.isWhitespace))
     else
-      parallelScanAux (as.push {srcPos := ls.length+1, msg := "extra space"}) ls (m::ms)
+      parallelScanAux (as.push {srcPos := ls.length+1, fmtPos := ms.length+1, msg := "extra space"}) ls (m::ms)
   | as, '\n'::ls, m::ms =>
     let lth := ls.takeWhile (·.isWhitespace) |>.length
     if m.isWhitespace then
       parallelScanAux as (ls.drop lth) (ms.dropWhile (·.isWhitespace))
     else
       parallelScanAux
-        (as.push {srcPos := ls.length+1, msg := "remove line break"}) (ls.drop lth) (m::ms)
+        (as.push {srcPos := ls.length+1, fmtPos := ms.length+1, msg := "remove line break"}) (ls.drop lth) (m::ms)
   | as, l::ls, m::ms => -- `l` is not whitespace
     if l == m then
       parallelScanAux as ls ms
     else
       if m.isWhitespace then
-        parallelScanAux (as.push {srcPos := ls.length+1, msg := "missing space"})
+        parallelScanAux (as.push {srcPos := ls.length+1, fmtPos := ms.length+1, msg := "missing space"})
           (l::ls) (ms.dropWhile (·.isWhitespace))
     else
-      as.push {srcPos := ls.length + 1, msg := "Oh no! (Unreachable?)"}
+      as.push {srcPos := ls.length + 1, fmtPos := ms.length+1, msg := "Oh no! (Unreachable?)"}
   | as, _, [] => as
   | as, [], ms =>
     if ms.all (·.isWhitespace) then
