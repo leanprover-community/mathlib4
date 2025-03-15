@@ -7,6 +7,13 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.Algebra.DirectSum.Decomposition
+import Mathlib.Algebra.Lie.InvariantForm
+import Mathlib.Algebra.Lie.Weights.Cartan
+import Mathlib.Algebra.Lie.Weights.Linear
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.PID
+import LeanCopilot
 
 /-!
 # Chains of roots and weights
@@ -376,8 +383,81 @@ variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 lemma root_space_ad_is_nilpotent
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  have := iSup_genWeightSpace_eq_top K H M
-  have := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ (by sorry) hχ
+  have partition := iSup_genWeightSpace_eq_top' K H M
+  -- set s := ⋃ χ ∈ Weight K H M, (genWeightSpace M χ).carrier
+  --set s := ⋃ χ ∈ Weight K H M, χ
+  classical
+  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace' K H M)
+    (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K H M)
+  have hoho := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ (by sorry) hχ
+
+  let A := (toEnd K L M x) ^ 5
+  --have ttt (χ₂ : Weight K H M) : (genWeightSpace M χ₂) ⊆ ker A :=
+  --  sorry
+  --haveI := Weight.instFintype K H M
+  set s : Set (Weight K H M) := by
+    exact univ
+  have Mm : Finite s := by
+    exact Subtype.finite
+  have r : ⨆ χ ∈ s, genWeightSpace M χ = ⊤ := by
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ,
+    iUnion_true, iSup_pos, s]
+  have rrr : ∀ χ1 ∈ s, genWeightSpace M χ1 ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+    intro χ1
+    intro a
+    intro m hm
+    have nam : Submodule.span K (genWeightSpace M χ1).carrier ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+      apply Submodule.span_mono
+      simp_all
+      intro x hx
+      apply Set.mem_biUnion a
+      simp_all only [mem_univ, iSup_pos, AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+        Submodule.mem_toAddSubmonoid, LieSubmodule.mem_toSubmodule, s]
+    have tq : genWeightSpace M χ1 ≤ Submodule.span K (genWeightSpace M χ1).carrier := by
+      intro m hm
+      simp_all
+      dsimp [Submodule.span]
+      intro p hp
+      simp_all
+      obtain ⟨pr, hr⟩ := hp
+      obtain ⟨aa, aaa⟩ := hr
+      simp_all
+      intro xx
+      have ttttt := xx hm
+      simp_all
+    have := nam (tq hm)
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, LieSubmodule.mem_toSubmodule,
+      iUnion_true, s]
+
+
+  have rrr : ⨆ χ ∈ s, genWeightSpace M χ ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+    apply sSup_le
+    intro x hf
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
+      mem_range, exists_exists_eq_and, mem_setOf_eq, s]
+    obtain ⟨w, h⟩ := hoho
+    obtain ⟨w_1, h_1⟩ := hf
+    obtain ⟨left, right⟩ := h
+    subst h_1
+    simp_all only [s]
+
+
+  have rr : Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) = ⊤ := by
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
+      LieSubmodule.top_toSubmodule, top_le_iff, s]
+
+  have ttt1 (ε : Weight K H M) (n : M) (n : genWeightSpace M ε) : A n = 0 :=
+    sorry
+  have ttt2 (n : M) : A n = 0 := by
+    have : ∀ {R : Type u_1} {M : Type u_4} [inst : Semiring R] [inst_1 : AddCommMonoid M] [inst_2 : Module R M] (s : Set M),   Submodule.span R s = ⨆ x ∈ s, Submodule.span R {x} := Submodule.span_eq_iSup_of_singleton_spans
+
+
+  have ttt3 : A = 0 := by
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, implies_true, A]
+    ext x_1 : 1
+    simp_all only [LinearMap.zero_apply]
+
   sorry
 
 -- This is what we really want
