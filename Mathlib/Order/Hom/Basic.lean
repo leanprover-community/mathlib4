@@ -598,13 +598,14 @@ protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFounde
   @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[simps! -fullyApplied]
+@[simps -fullyApplied]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   __ := f.toEmbedding.optionMap
+  toFun := WithBot.map f
   map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
-@[simps -fullyApplied]
+@[simps! (config := .asFn)]
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
@@ -616,9 +617,11 @@ protected def withBotCoe : α ↪o WithBot α where
   map_rel_iff' := WithBot.coe_le_coe
 
 /-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
-@[simps -fullyApplied]
-protected def withTopCoe : α ↪o WithTop α :=
-  { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
+@[simps! -fullyApplied]
+protected def withTopCoe : α ↪o WithTop α where
+  toFun := .some
+  inj' := Option.some_injective _
+  map_rel_iff' := WithTop.coe_le_coe
 
 /-- To define an order embedding from a partial order to a preorder it suffices to give a function
 together with a proof that it satisfies `f a ≤ f b ↔ a ≤ b`.
@@ -1175,8 +1178,9 @@ namespace WithBot
 /-- Taking the dual then adding `⊥` is the same as adding `⊤` then taking the dual.
 This is the order iso form of `WithBot.ofDual`, as proven by `coe_toDualTopEquiv_eq`.
 -/
-protected def toDualTopEquiv [LE α] : WithBot αᵒᵈ ≃o (WithTop α)ᵒᵈ :=
-  OrderIso.refl _
+protected def toDualTopEquiv [LE α] : WithBot αᵒᵈ ≃o (WithTop α)ᵒᵈ where
+  toEquiv := .refl _
+  map_rel_iff' := WithTop.toDual_le_toDual_iff.symm
 
 @[simp]
 theorem toDualTopEquiv_coe [LE α] (a : α) :
@@ -1219,8 +1223,9 @@ namespace WithTop
 
 /-- Taking the dual then adding `⊤` is the same as adding `⊥` then taking the dual.
 This is the order iso form of `WithTop.ofDual`, as proven by `coe_toDualBotEquiv_eq`. -/
-protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ :=
-  OrderIso.refl _
+protected def toDualBotEquiv [LE α] : WithTop αᵒᵈ ≃o (WithBot α)ᵒᵈ where
+  toEquiv := .refl _
+  map_rel_iff' := WithBot.toDual_le_toDual_iff.symm
 
 @[simp]
 theorem toDualBotEquiv_coe [LE α] (a : α) :
