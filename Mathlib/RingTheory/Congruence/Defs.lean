@@ -125,6 +125,12 @@ theorem ext' {c d : RingCon R} (H : ⇑c = ⇑d) : c = d := DFunLike.coe_injecti
 theorem ext {c d : RingCon R} (H : ∀ x y, c x y ↔ d x y) : c = d :=
   ext' <| by ext; apply H
 
+theorem toCon_injective : Function.Injective (toCon : RingCon R → _) :=
+  fun _ _ H => ext <| Con.ext_iff.1 H
+
+theorem toAddCon_injective : Function.Injective (toCon : RingCon R → _) :=
+  fun _ _ H => ext <| Con.ext_iff.1 H
+
 /--
 Pulling back a `RingCon` across a ring homomorphism.
 -/
@@ -153,6 +159,15 @@ variable {c}
 @[coe] def toQuotient (r : R) : c.Quotient :=
   @Quotient.mk'' _ c.toSetoid r
 
+/-- The function on the quotient by a congruence relation `c` induced by a function that is
+    constant on `c`'s equivalence classes. -/
+protected def liftOn {β} (q : c.Quotient) (f : R → β) (h : ∀ a b, c a b → f a = f b) : β :=
+  Quotient.liftOn q f h
+
+@[simp]
+theorem liftOn_toQuotient {β} (x : R) (f : R → β) (h : ∀ a b, c a b → f a = f b) :
+    RingCon.liftOn (toQuotient x) f h = f x := rfl
+
 variable (c)
 
 /-- Coercion from a type with addition and multiplication to its quotient by a congruence relation.
@@ -168,6 +183,10 @@ instance (priority := 500) [_d : ∀ a b, Decidable (c a b)] : DecidableEq c.Quo
 
 @[simp]
 theorem quot_mk_eq_coe (x : R) : Quot.mk c x = (x : c.Quotient) :=
+  rfl
+
+@[simp]
+theorem quotientMk_eq_coe (x : R) : Quotient.mk _ x = (x : c.Quotient) :=
   rfl
 
 /-- Two elements are related by a congruence relation `c` iff they are represented by the same
@@ -361,14 +380,6 @@ instance [CommRing R] (c : RingCon R) : CommRing c.Quotient := fast_instance%
     (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
 
 end Algebraic
-
-/-- The natural homomorphism from a ring to its quotient by a congruence relation. -/
-def mk' [NonAssocSemiring R] (c : RingCon R) : R →+* c.Quotient where
-  toFun := toQuotient
-  map_zero' := rfl
-  map_one' := rfl
-  map_add' _ _ := rfl
-  map_mul' _ _ := rfl
 
 end Quotient
 
