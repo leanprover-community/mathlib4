@@ -142,7 +142,7 @@ section Sum'
 
 variable (F : A ⥤ C) (G : B ⥤ C)
 
-/-- The sum of two functors that lands in a given category `C`. -/
+/-- The sum of two functors that land in a given category `C`. -/
 def sum' : A ⊕ B ⥤ C where
   obj X :=
     match X with
