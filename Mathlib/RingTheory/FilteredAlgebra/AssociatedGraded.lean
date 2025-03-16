@@ -309,7 +309,7 @@ lemma Filtration.pow_lift [hasGMul F F_lt] (n : ℕ) {i : ι} (x₁ x₂ : ofCla
     (⟨x₁ ^ n, Filtration.pow_mem F F_lt n x₁⟩ : ofClass (F (n • i))) ≈
     (⟨x₂ ^ n, Filtration.pow_mem F F_lt n x₂⟩ : ofClass (F (n • i))) := by
   induction' n with d hd
-  · simp only [pow_zero, mk_eq, exact]
+  · simp [pow_zero]
   · simp only [pow_succ, HasEquiv.Equiv, QuotientAddGroup.leftRel_apply] at h hd ⊢
     have mem1 : x₁.1 ^ d * x₂.1 - x₁.1 ^ d * x₁.1 ∈ F_lt ((d + 1) • i) := by
       rw [← mul_sub, sub_eq_neg_add, succ_nsmul i d]
