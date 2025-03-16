@@ -278,7 +278,7 @@ def truncation (n : ℕ) : SimplicialObject C ⥤ SimplicialObject.Truncated C n
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n).op
 
 /-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
-def truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
     truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
   Iso.refl _
 
@@ -741,7 +741,7 @@ def truncation (n : ℕ) : CosimplicialObject C ⥤ CosimplicialObject.Truncated
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.inclusion n)
 
 /-- For all `m ≤ n`, `truncation m` factors through `Truncated n`. -/
-def truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
     truncation n ⋙ Truncated.trunc C n m ≅ truncation m :=
   Iso.refl _
 

@@ -116,7 +116,7 @@ end Truncated
 abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
 
 /-- For all `m ≤ n`, `truncation m` factors through `SSet.Truncated n`. -/
-def truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+def truncationCompTrunc {n m : ℕ} (h : m ≤ n) :
     truncation n ⋙ Truncated.trunc n m ≅ truncation m :=
   Iso.refl _
 

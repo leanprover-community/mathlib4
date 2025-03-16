@@ -212,7 +212,7 @@ def incl (n m : ℕ) (h : n ≤ m := by omega) : Truncated n ⥤ Truncated m whe
   map := id
 
 /-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
-def incl_comp_inclusion {n m : ℕ} (h : n ≤ m) :
+def inclCompInclusion {n m : ℕ} (h : n ≤ m) :
     incl n m ⋙ inclusion m ≅ inclusion n :=
   Iso.refl _
 
