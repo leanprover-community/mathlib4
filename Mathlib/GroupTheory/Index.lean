@@ -84,9 +84,9 @@ theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
   rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
 @[to_additive]
-theorem relindex_map_of_injective (H K : Subgroup G) {e : G →* G'} (he : Function.Injective e) :
-    (map e H).relindex (map e K) = H.relindex K := by
-  rw [← Subgroup.relindex_comap, Subgroup.comap_map_eq_self_of_injective he]
+theorem relindex_map_of_injective {f : G →* G'} (H K : Subgroup G) (hf : Function.Injective f) :
+    relindex (map f H) (map f K) = relindex H K := by
+  rw [← Subgroup.relindex_comap, Subgroup.comap_map_eq_self_of_injective hf]
 
 variable {H K L}
 
