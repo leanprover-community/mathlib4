@@ -407,7 +407,6 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
     right_inv x := by
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
         ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
-end ExpNilpotent
 
 lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
     exp D h = IsNilpotent.exp D.toLinearMap := by
@@ -415,5 +414,7 @@ lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
   dsimp [exp]
   convert rfl
   subsingleton
+
+end ExpNilpotent
 
 end LieDerivation
