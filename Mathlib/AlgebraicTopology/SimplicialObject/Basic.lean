@@ -266,6 +266,7 @@ scoped macro_rules
 
 variable (C) in
 /-- Further truncation of truncated simplicial objects. -/
+@[simps!]
 def trunc (n m : ℕ) (h : m ≤ n := by omega) : Truncated C n ⥤ Truncated C m :=
   (whiskeringLeft _ _ _).obj (SimplexCategory.Truncated.incl m n).op
 
