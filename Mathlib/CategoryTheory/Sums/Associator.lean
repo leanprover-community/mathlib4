@@ -55,18 +55,22 @@ theorem associator_map_inr {X Y : E} (f : inr X ⟶ inr Y) :
     (associator C D E).map f = (inr_ _ _).map ((inr_ _ _).map f.down) :=
   rfl
 
+/-- Characterizing the composition of the associator and the left inclusion. -/
 @[simps!]
 def inlCompAssociator : (inl_ _ _) ⋙ associator C D E ≅ inl_ _ _ |>.sum' <| inl_ _ _ ⋙ inr_ _ _ :=
   (Functor.inlCompSum' _ _)
 
+/-- Characterizing the composition of the associator and the right inclusion. -/
 @[simps!]
 def inrCompAssociator : (inr_ _ _) ⋙ associator C D E ≅ inr_ _ _ ⋙ inr_ _ _ :=
   (Functor.inrCompSum' _ _)
 
+/-- Further characterizing the composition of the associator and the left inclusion. -/
 @[simps!]
 def inlCompInlCompAssociator : (inl_ _ _) ⋙ (inl_ _ _) ⋙ associator C D E ≅ inl_ _ _ :=
   isoWhiskerLeft (inl_ _ _) (inlCompAssociator C D E) ≪≫ (Functor.inlCompSum' _ _)
 
+/-- Further characterizing the composition of the associator and the left inclusion. -/
 @[simps!]
 def inrCompInlCompAssociator : (inr_ _ _) ⋙ (inl_ _ _) ⋙ associator C D E ≅ inl_ _ _ ⋙ inr_ _ _ :=
   isoWhiskerLeft (inr_ _ _) (inlCompAssociator C D E) ≪≫ (Functor.inrCompSum' _ _)
@@ -104,20 +108,26 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)
     (inverseAssociator C D E).map f = (inr_ _ _).map f.down.down :=
   rfl
 
+/-- Characterizing the composition of the inverse of the associator and the left inclusion. -/
 @[simps!]
 def inlCompInverseAssociator : (inl_ _ _) ⋙ inverseAssociator C D E ≅ inl_ _ _ ⋙ inl_ _ _ :=
   Functor.inlCompSum' _ _
 
+/-- Characterizing the composition of the inverse of the associator and the right inclusion. -/
 @[simps!]
 def inrCompInverseAssociator :
     (inr_ _ _) ⋙ inverseAssociator C D E ≅ (inr_ _ _ ⋙ inl_ _ _).sum' <| inr_ _ _ :=
   Functor.inrCompSum' _ _
 
+/-- Further characterizing the composition of the inverse of the associator and the right
+inclusion. -/
 @[simps!]
 def inlCompInrCompInverseAssociator :
     (inl_ _ _) ⋙ (inr_ _ _) ⋙ inverseAssociator C D E ≅ inr_ _ _ ⋙ inl_ _ _ :=
   isoWhiskerLeft (inl_ _ _) (inrCompInverseAssociator C D E) ≪≫ Functor.inlCompSum' _ _
 
+/-- Further characterizing the composition of the inverse of the associator and the right
+inclusion. -/
 @[simps!]
 def inrCompInrCompInverseAssociator :
     (inr_ _ _) ⋙ (inr_ _ _) ⋙ inverseAssociator C D E ≅ inr_ _ _ :=

@@ -74,12 +74,12 @@ theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False 
 theorem hom_inr_inl_false {X : C} {Y : D} (f : Sum.inr X ⟶ Sum.inl Y) : False := by
   cases f
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 theorem sum_comp_inl_down {P Q R : C} (f : (inl P : C ⊕ D) ⟶ inl Q) (g : (inl Q : C ⊕ D) ⟶ inl R) :
     (f ≫ g).down = f.down ≫ g.down :=
   rfl
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 theorem sum_comp_inr_down {P Q R : D} (f : (inr P : C ⊕ D) ⟶ inr Q) (g : (inr Q : C ⊕ D) ⟶ inr R) :
     (f ≫ g).down = f.down ≫ g.down :=
   rfl
