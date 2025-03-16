@@ -58,6 +58,31 @@ def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
     fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
+--Ideally we'd want this to be defined using `List.Icc 1 n` but this doesn't exist yet
+--and using `Finset.Icc 1 n |>.sort (· ≤ ·)` as a substitute seems impractical
+--(e.g. `divisorsAntidiagonalList_zero` is no longer `rfl`)
+def divisorsAntidiagonalList (n : ℕ) : List (ℕ × ℕ) :=
+  (List.range n.succ).filterMap
+    (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
+
+@[simp]
+lemma divisorsAntidiagonalList_zero : divisorsAntidiagonalList 0 = [(0, 0)] := rfl
+
+lemma divisorsAntidiagonal_coe (n : ℕ) (hn : n ≠ 0) :
+    n.divisorsAntidiagonal = n.divisorsAntidiagonalList.toFinset := by
+  rw [List.toFinset_filter]
+  ext a
+  simp [List.mem_toFinset, mem_divisorsAntidiagonalList_of_pos hn, Nat.mem_divisorsAntidiagonal, hn]
+
+lemma mem_divisorsAntidiagonalList_of_pos {n : ℕ} (hn : n ≠ 0) (a : ℕ × ℕ) :
+    a ∈ n.divisorsAntidiagonalList ↔ a.1 * a.2 = n := by
+  rw []
+
+lemma divisorsAntidiagonal_coe (n : ℕ) (hn : n ≠ 0) :
+    n.divisorsAntidiagonal = n.divisorsAntidiagonalList.toFinset := by
+  ext a
+  simp [List.mem_toFinset, mem_divisorsAntidiagonalList_of_pos hn, Nat.mem_divisorsAntidiagonal, hn]
+
 variable {n}
 
 @[simp]
