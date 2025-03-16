@@ -210,8 +210,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
 where the main point of the bound is that it tends to `0`. The goal is to deduce the series
 expansion of the logarithm, in `hasSum_pow_div_log_of_abs_lt_1`.
 
-Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use one of generic theorems about Taylor's series
-to prove this estimate.
+TODO: use one of generic theorems about Taylor's series to prove this estimate.
 -/
 theorem abs_log_sub_add_sum_range_le {x : ℝ} (h : |x| < 1) (n : ℕ) :
     |(∑ i ∈ range n, x ^ (i + 1) / (i + 1)) + log (1 - x)| ≤ |x| ^ (n + 1) / (1 - |x|) := by

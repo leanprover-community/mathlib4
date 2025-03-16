@@ -119,8 +119,11 @@ theorem injective_comp_left_iff [Nonempty α] {g : β → γ} :
   ⟨fun h b₁ b₂ eq ↦ Nonempty.elim ‹_›
     (congr_fun <| h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq), (·.comp_left)⟩
 
-theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
+@[nontriviality] theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
+
+@[nontriviality] theorem bijective_of_subsingleton [Subsingleton α] (f : α → α) : Bijective f :=
+  ⟨injective_of_subsingleton f, fun a ↦ ⟨a, Subsingleton.elim ..⟩⟩
 
 lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}

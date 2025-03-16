@@ -103,7 +103,7 @@ def fieldSimpExcluded : List Name := [
   ``mul_div_div_cancel, ``mul_mul_div_cancel,
 
   ``div_eq_self,
-  ``mul_left_eq_self, ``mul_right_eq_self, ``self_eq_mul_left, ``self_eq_mul_right,
+  ``mul_eq_right, ``mul_eq_left, ``right_eq_mul, ``left_eq_mul,
   ``div_left_inj, ``div_right_inj, ``mul_left_inj, ``mul_right_inj]
 
 /--

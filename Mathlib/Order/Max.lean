@@ -126,11 +126,9 @@ instance {ι : Type u} {π : ι → Type*} [Nonempty ι] [∀ i, Preorder (π i)
       obtain ⟨b, hb⟩ := exists_lt (a <| Classical.arbitrary _)
       exact ⟨_, update_lt_self_iff.2 hb⟩⟩
 
--- Porting note: mathlib3 proof uses `convert`
 theorem NoBotOrder.to_noMinOrder (α : Type*) [LinearOrder α] [NoBotOrder α] : NoMinOrder α :=
   { exists_lt := fun a => by simpa [not_le] using exists_not_ge a }
 
--- Porting note: mathlib3 proof uses `convert`
 theorem NoTopOrder.to_noMaxOrder (α : Type*) [LinearOrder α] [NoTopOrder α] : NoMaxOrder α :=
   { exists_gt := fun a => by simpa [not_le] using exists_not_le a }
 

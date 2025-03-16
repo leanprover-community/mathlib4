@@ -209,6 +209,12 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
 
+/-- `Pi.single` as a bundled continuous linear map. -/
+@[simps! -fullyApplied]
+def single [DecidableEq ι] (i : ι) : φ i →L[R] (∀ i, φ i) where
+  toLinearMap := .single R φ i
+  cont := continuous_single _
+
 end Pi
 
 section Ring

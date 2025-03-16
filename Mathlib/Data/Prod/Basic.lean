@@ -58,10 +58,7 @@ theorem map_fst' (f : α → γ) (g : β → δ) : Prod.fst ∘ map f g = f ∘ 
 theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ Prod.snd :=
   funext <| map_snd f g
 
--- Porting note: `@[simp]` tag removed because auto-generated `mk.injEq` simplifies LHS
--- @[simp]
-theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ :=
-  Iff.of_eq (mk.injEq _ _ _ _)
+theorem mk_inj {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b₂) ↔ a₁ = a₂ ∧ b₁ = b₂ := by simp
 
 @[deprecated (since := "2025-03-06")] alias mk.inj_iff := mk_inj
 
