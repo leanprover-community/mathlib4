@@ -862,6 +862,25 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | p, 0 => p.copy (getVert_zero p).symm rfl
   | .cons _ q, (n + 1) => q.drop n
 
+@[simp]
+lemma drop_nil {u : V} {n : ℕ} : (nil : G.Walk u u).drop n = nil := by
+  cases n <;> rfl
+
+@[simp]
+lemma drop_zero {u v : V} {p : G.Walk u v} :
+  (p.drop 0) = p.copy p.getVert_zero.symm rfl := by
+  cases p <;> rfl
+
+@[simp]
+lemma drop_cons_succ {h : G.Adj u v} {p : G.Walk v w} {n : ℕ} :
+  (cons h p).drop (n + 1) = (p.drop n):= rfl
+
+lemma drop_not_nil_iff {p : G.Walk v w} {n : ℕ} : ¬ (p.drop n).Nil ↔ n < p.length:= by
+  rw [not_iff_comm, not_lt]
+  induction p generalizing n with
+  | nil => simp
+  | cons h p ih => cases n <;> simp [ih]
+
 /-- The second vertex of a walk, or the only vertex in a nil walk. -/
 abbrev snd (p : G.Walk u v) : V := p.getVert 1
 
@@ -878,6 +897,26 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   | .nil, _ => .nil
   | p, 0 => nil.copy rfl (getVert_zero p).symm
   | .cons h q, (n + 1) => .cons h (q.take n)
+
+@[simp]
+lemma take_zero {u v : V} (p : G.Walk u v) :
+    p.take 0 = (nil : G.Walk u u).copy rfl (getVert_zero p).symm := by
+  cases p <;> rfl
+
+@[simp]
+lemma take_cons_succ {u v w : V} {h : G.Adj u v} {n : ℕ} {p : G.Walk v w} :
+  (cons h p).take (n + 1) = cons h (p.take n) := rfl
+
+@[simp]
+lemma take_nil {u : V} {n : ℕ} : (nil : G.Walk u u).take n = .nil := by
+  cases n <;> rfl
+
+@[simp]
+theorem take_drop_append {u v : V} (p : G.Walk u v) (n : ℕ)  :
+    (p.take n).append (p.drop n) = p := by
+  induction p generalizing n with
+  | nil => cases n <;> rfl
+  | cons h p ih => cases n <;> simp [ih]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
@@ -982,12 +1021,18 @@ lemma edge_lastDart (p : G.Walk v w) (hp : ¬ p.Nil) :
 
 variable {x y : V} -- TODO: rename to u, v, w instead?
 
+@[simp]
 lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     cons (p.adj_snd hp) p.tail = p := by
   cases p with
   | nil => simp at hp
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
+
+@[simp]
+theorem take_append_cons_drop_tail {u v : V} (p : G.Walk u v) (n : ℕ) (hn : n < p.length)  :
+    (p.take n).append (cons (adj_snd (drop_not_nil_iff.2 hn)) (p.drop n).tail) = p := by
+  simp [drop_not_nil_iff.2 hn]
 
 @[simp]
 lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :

@@ -311,7 +311,7 @@ theorem rotate_copy {u v v'} (p : G.Walk v v) (hv : v = v') (h : u ∈ (p.copy h
   rfl
 
 @[simp]
-theorem rotate_self {v} (p : G.Walk v v)  : p.rotate (start_mem_support ..) = p := by
+theorem rotate_start {v} (p : G.Walk v v)  : p.rotate (start_mem_support ..) = p := by
   cases p <;> simp [rotate]
 
 @[simp]
@@ -393,6 +393,8 @@ termination_by p.length
 decreasing_by
 · simp_wf
   rw [Nat.lt_iff_add_one_le, length_tail_add_one hnp]
+
+
 
 lemma mem_support_rotate_iff [DecidableEq V] {u v x} {c : G.Walk u u} (h : v ∈ c.support) :
     x ∈ (c.rotate h).support ↔ x ∈ c.support := by
