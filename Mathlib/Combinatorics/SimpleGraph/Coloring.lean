@@ -163,10 +163,8 @@ private def finColoringFintype {n m} {G : SimpleGraph (Fin n)} [DecidableRel G.A
       have hvw := hv.trans hw.symm
       rw [some_inj] at hvw
       ext i
-      · apply_fun (· i.castSucc |>.val) at hvw
-        simpa using hvw
-      · apply_fun (· (last n) |>.val) at hvw
-        simpa using hvw
+      · simpa using congr(($hvw i.castSucc).val)
+      · simpa using congr(($hvw (last n)).val)
     · -- show this map is surjective
       intro C
       rw [mem_filterMap]
@@ -185,9 +183,8 @@ instance [Fintype V] [Fintype α] [DecidableEq V] [DecidableRel G.Adj] : Fintype
             intro a b hab
             apply RelHom.ext
             intro i
-            apply_fun (· (e.symm i)) at hab
             apply hf.injective
-            simpa using hab⟩, by
+            simpa using congr($hab (e.symm i))⟩, by
       intro r
       rw [Finset.mem_map]
       use (Iso.completeGraph (Equiv.ofBijective f hf).symm).toHom.comp
