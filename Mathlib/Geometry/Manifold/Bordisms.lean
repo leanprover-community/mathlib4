@@ -280,7 +280,7 @@ structure UnorientedBordism.{u, v} {X E H E' H' : Type*}
   bd: BoundaryManifoldData W J k I
   /-- A continuous map `W → X` of the bordism into the topological space we work on -/
   F : W → X
-  hF : Continuous F
+  hF : Continuous F := by fun_prop
   /-- The boundary of `W` is diffeomorphic to the disjoint union `M ⊔ M'`. -/
   φ : Diffeomorph I I (s.M ⊕ t.M) bd.M₀ k
   /-- `F` restricted to `M ↪ ∂W` equals `f`: this is formalised more nicely as
@@ -288,6 +288,8 @@ structure UnorientedBordism.{u, v} {X E H E' H' : Type*}
   hFf : F ∘ bd.f ∘ φ ∘ Sum.inl = s.f
   /-- `F` restricted to `N ↪ ∂W` equals `g` -/
   hFg : F ∘ bd.f ∘ φ ∘ Sum.inr = t.f
+
+attribute [fun_prop] UnorientedBordism.hF
 
 namespace UnorientedBordism
 
@@ -344,7 +346,6 @@ noncomputable def sum (φ : UnorientedBordism k s t J) (ψ : UnorientedBordism k
   W := φ.W ⊕ ψ.W
   bd := φ.bd.sum ψ.bd
   F := Sum.elim φ.F ψ.F
-  hF := φ.hF.sumElim ψ.hF
   φ := Diffeomorph.trans (Diffeomorph.sumSumSumComm I s.M k t.M s'.M t'.M).symm
       (Diffeomorph.sumCongr φ.φ ψ.φ)
   hFf := by
@@ -376,7 +377,6 @@ def comap_fst (φ : UnorientedBordism k s t J) (f : Diffeomorph I I M'' s.M k) :
     UnorientedBordism k (s.comap f.continuous) t J where
   bd := φ.bd
   F := φ.F
-  hF := φ.hF
   φ := Diffeomorph.trans (f.sumCongr (Diffeomorph.refl _ _ _)) φ.φ
   hFf := by dsimp; rw [← φ.hFf]; congr
   hFg := by dsimp; rw [← φ.hFg]; congr
@@ -387,7 +387,6 @@ def comap_snd (φ : UnorientedBordism k s t J) (f : Diffeomorph I I M t.M k) :
     UnorientedBordism k s (t.comap f.continuous) J where
   bd := φ.bd
   F := φ.F
-  hF := φ.hF
   φ := Diffeomorph.trans ((Diffeomorph.refl _ _ _).sumCongr f) φ.φ
   hFf := by dsimp; rw [← φ.hFf]; congr
   hFg := by dsimp; rw [← φ.hFg]; congr
@@ -408,7 +407,6 @@ def refl : UnorientedBordism k s s (I.prod (𝓡∂ 1)) where
 def symm (φ : UnorientedBordism k s t J) : UnorientedBordism k t s J where
   bd := φ.bd
   F := φ.F
-  hF := φ.hF
   φ := (Diffeomorph.sumComm I t.M k s.M).trans φ.φ
   hFf := by rw [← φ.hFg]; congr
   hFg := by rw [← φ.hFf]; congr
@@ -421,7 +419,6 @@ def copy_map_fst.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
   W := φ.W
   bd := φ.bd
   F := φ.F
-  hF := φ.hF
   φ := Diffeomorph.trans (Diffeomorph.sumCongr eq (Diffeomorph.refl I t.M k)) φ.φ
   hFf := by dsimp; rw [h_eq, ← φ.hFf]; congr
   hFg := by dsimp; rw [← φ.hFg]; congr
@@ -434,7 +431,6 @@ def copy_map_snd.{u, v} (φ : UnorientedBordism.{u, v} k s t J)
   W := φ.W
   bd := φ.bd
   F := φ.F
-  hF := φ.hF
   φ := Diffeomorph.trans (Diffeomorph.sumCongr (Diffeomorph.refl I s.M k) eq) φ.φ
   hFf := by dsimp; rw [← φ.hFf]; congr
   hFg := by dsimp; rw [h_eq, ← φ.hFg]; congr
