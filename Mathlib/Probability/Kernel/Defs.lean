@@ -109,12 +109,15 @@ instance instOrderBot {α β : Type*} [MeasurableSpace α] [MeasurableSpace β] 
   bot_le κ a := by simp only [coe_zero, Pi.zero_apply, Measure.zero_le]
 
 /-- Coercion to a function as an additive monoid homomorphism. -/
-@[simps]
 def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
     Kernel α β →+ α → Measure β where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coeAddHom_apply(α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (κ : Kernel α β) :
+    coeAddHom μ = ⇑μ := rfl
 
 @[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
