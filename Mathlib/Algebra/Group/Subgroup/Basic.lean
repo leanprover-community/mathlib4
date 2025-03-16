@@ -913,7 +913,7 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
     apply hH₂.conj_mem _ hy
 
 @[to_additive]
-theorem inf_subgroupOf_normal_of_le_normalizer {H N : Subgroup G}
+theorem subgroupOf_normal_of_le_normalizer {H N : Subgroup G}
     (hLE : H ≤ N.normalizer) : (N.subgroupOf H).Normal := by
   have : ((H ⊓ N).subgroupOf (H ⊓ N.normalizer)).Normal :=
     inf_subgroupOf_inf_normal_of_right _ _ _

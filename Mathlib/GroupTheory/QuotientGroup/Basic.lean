@@ -293,7 +293,7 @@ where `N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(HN)/N`. 
 @[to_additive "Noether's second isomorphism theorem: given two subgroups `H` and `N` of a group `G`,
 where `N` is normal, defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N`"]
 noncomputable def quotientInfEquivProdNormalQuotient (H N : Subgroup G) [hN : N.Normal] :
-    H ⧸ N.subgroupOf H ≃* _ ⧸ N.subgroupOf (H ⊔ N) :=
+    H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
   quotientInfEquivProdNormalizerQuotient H N le_normalizer_of_normal'
 
 end SndIsomorphismThm
