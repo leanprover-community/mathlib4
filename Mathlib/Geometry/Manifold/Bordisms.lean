@@ -142,8 +142,10 @@ instance {s : SingularNManifold X k I} : BoundarylessManifold I s.M := s.boundar
 
 /-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
-def map (s : SingularNManifold X k I)
-    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y k I where
+def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop ℕ∞}
+    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [TopologicalSpace H] {I : ModelWithCorners ℝ E H} (s : SingularNManifold.{u} X k I)
+    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold.{u} Y k I where
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
