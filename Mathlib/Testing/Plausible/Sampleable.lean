@@ -25,7 +25,7 @@ instance Rat.shrinkable : Shrinkable Rat where
     (Shrinkable.shrink r.num).flatMap fun d => Nat.shrink r.den |>.map fun n => Rat.divInt d n
 
 instance PNat.shrinkable : Shrinkable PNat where
-  shrink m := Nat.shrink m.val |>.map Nat.toPNat'
+  shrink m := Nat.shrink m.natPred |>.map Nat.succPNat
 
 end Shrinkers
 

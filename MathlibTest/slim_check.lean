@@ -231,3 +231,16 @@ warning: declaration uses 'sorry'
 #guard_msgs in
 example (x : PNat) : x < x + 1 := by
   plausible
+
+/--
+error:
+===================
+Found a counter-example!
+x := 4
+issue: 64 < 42 does not hold
+(1 shrinks)
+-------------------
+-/
+#guard_msgs in
+example (x : PNat) : x^3 < 2*x^2 + 10:= by
+  plausible (config := { randomSeed := some 257 })
