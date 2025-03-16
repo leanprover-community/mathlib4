@@ -814,14 +814,39 @@ theorem compl_range_inl : (range (Sum.inl : α → α ⊕ β))ᶜ = range (Sum.i
 theorem compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.inl : α → α ⊕ β) :=
   IsCompl.compl_eq isCompl_range_inl_range_inr.symm
 
+section
+variable (u : Set α) (v : Set β)
+open Sum
+
 @[simp]
-theorem image_inl_inter_image_inr {X Y} (u : Set X) (v : Set Y) :
-    Sum.inl '' u ∩ Sum.inr '' v = ∅ := by
+theorem image_inl_inter_image_inr : inl '' u ∩ inr '' v = ∅ := by
   rw [← subset_empty_iff]
   intro x hx
   nomatch hx
 
-theorem preimage_sumElim_eq {f : α → γ} {g : β → γ} (s : Set γ) :
+@[simp]
+theorem image_inr_inter_image_inl : inr '' u ∩ inl '' v = ∅ := by
+  rw [inter_comm, image_inl_inter_image_inr]
+
+@[simp]
+theorem range_inl_inter_image_inr : range inl ∩ inr '' v = (∅ : Set (α ⊕ β)) := by
+  rw [← image_univ, image_inl_inter_image_inr]
+
+@[simp]
+theorem image_inl_inter_range_inr : inl '' u ∩ range inr = (∅ : Set (α ⊕ β)) := by
+  rw [← image_univ, image_inl_inter_image_inr]
+
+@[simp]
+theorem range_inr_inter_image_inl : range inr ∩ inl '' u = (∅ : Set (α ⊕ β)) := by
+  rw [← image_univ, image_inr_inter_image_inl]
+
+@[simp]
+theorem image_inr_inter_range_inl : inr '' v ∩ range inl = (∅ : Set (α ⊕ β)) := by
+  rw [← image_univ, image_inr_inter_image_inl]
+
+end
+
+theorem preimage_sumElim_eq (s : Set γ) (f : α → γ) (g : β → γ) :
     Sum.elim f g ⁻¹' s = Sum.inl '' (f ⁻¹' s) ∪ Sum.inr '' (g ⁻¹' s) := by
   ext x
   cases x <;> simp
@@ -830,7 +855,7 @@ theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [← preimage_sumElim_eq, Sum.elim_inl_inr, preimage_id]
 
-theorem image_sumElim_eq {f : α → γ} {g : β → γ} (s : Set (α ⊕ β)) :
+theorem image_sumElim_eq (s : Set (α ⊕ β)) (f : α → γ) (g : β → γ) :
     Sum.elim f g '' s = f '' (Sum.inl ⁻¹' s) ∪ g '' (Sum.inr ⁻¹' s) := by
   rw [← image_preimage_inl_union_image_preimage_inr s]
   simp [image_union, image_image, preimage_image_preimage]
