@@ -14,19 +14,19 @@ which makes it complete and gives the same topology. This typeclass allows to st
 which do not require a `MetricSpace` structure to make sense without introducing such a structure.
 It is in particular useful in measure theory, where one often assumes that a space is a
 `PolishSpace`, i.e. a separable and completely metrizable space. Sometimes the separability
-hypothesis is not needed and the right assumption is then `CompletelyMetrizableSpace`.
+hypothesis is not needed and the right assumption is then `IsCompletelyMetrizableSpace`.
 
 ## Main definition
 
-* `CompletelyMetrizableSpace X`: A topological space is completely metrizable if there exists a
+* `IsCompletelyMetrizableSpace X`: A topological space is completely metrizable if there exists a
   metric space structure compatible with the topology which makes the space complete.
-  To endow such a space with a compatible distance, use `letI := upgradeCompletelyMetrizable X`.
+  To endow such a space with a compatible distance, use `letI := upgradeIsCompletelyMetrizable X`.
 
 ## Implementation note
 
-Given a `CompletelyMetrizableSpace X` instance, one may want to endow `X` with a complete metric.
-This can be done by writing `letI := upgradeCompletelyMetrizable X`, which will endow `X` with
-an `UpgradedCompletelyMetrizableSpace X` instance. This class is a convenience class and
+Given a `IsCompletelyMetrizableSpace X` instance, one may want to endow `X` with a complete metric.
+This can be done by writing `letI := upgradeIsCompletelyMetrizable X`, which will endow `X` with
+an `UpgradedIsCompletelyMetrizableSpace X` instance. This class is a convenience class and
 no instance should be registered for it.
 -/
 
@@ -39,89 +39,88 @@ namespace TopologicalSpace
 /-- A topological space is completely metrizable if there exists a metric space structure
 compatible with the topology which makes the space complete.
 To endow such a space with a compatible distance, use
-`letI := upgradeCompletelyMetrizable X`. -/
-class CompletelyMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
+`letI := upgradeIsCompletelyMetrizable X`. -/
+class IsCompletelyMetrizableSpace (X : Type*) [t : TopologicalSpace X] : Prop where
   complete : ∃ m : MetricSpace X, m.toUniformSpace.toTopologicalSpace = t ∧
     @CompleteSpace X m.toUniformSpace
 
-instance (priority := 100) _root_.MetricSpace.toCompletelyMetrizableSpace
-    [MetricSpace X] [CompleteSpace X] : CompletelyMetrizableSpace X :=
+instance (priority := 100) _root_.MetricSpace.toIsCompletelyMetrizableSpace
+    [MetricSpace X] [CompleteSpace X] : IsCompletelyMetrizableSpace X :=
   ⟨⟨‹_›, rfl, ‹_›⟩⟩
 
 /-- A convenience class, for a completely metrizable space endowed with a complete metric.
 No instance of this class should be registered: It should be used as
-`letI := upgradeCompletelyMetrizable X` to endow a completely metrizable
+`letI := upgradeIsCompletelyMetrizable X` to endow a completely metrizable
 space with a complete metric. -/
-class UpgradedCompletelyMetrizableSpace (X : Type*) extends MetricSpace X, CompleteSpace X
+class UpgradedIsCompletelyMetrizableSpace (X : Type*) extends MetricSpace X, CompleteSpace X
 
 open scoped Uniformity in
-instance (priority := 100) CompletelyMetrizableSpace.of_completeSpace_metrizable [UniformSpace X]
+instance (priority := 100) IsCompletelyMetrizableSpace.of_completeSpace_metrizable [UniformSpace X]
     [CompleteSpace X] [(𝓤 X).IsCountablyGenerated] [T0Space X] :
-    CompletelyMetrizableSpace X where
+    IsCompletelyMetrizableSpace X where
   complete := ⟨UniformSpace.metricSpace X, rfl, ‹_›⟩
 
 /-- Construct on a completely metrizable space a metric (compatible with the topology)
 which is complete. -/
-noncomputable
-def completelyMetrizableMetric (X : Type*) [TopologicalSpace X] [h : CompletelyMetrizableSpace X] :
-    MetricSpace X :=
+noncomputable def completelyMetrizableMetric (X : Type*) [TopologicalSpace X]
+    [h : IsCompletelyMetrizableSpace X] : MetricSpace X :=
   h.complete.choose.replaceTopology h.complete.choose_spec.1.symm
 
 theorem complete_completelyMetrizableMetric (X : Type*) [ht : TopologicalSpace X]
-    [h : CompletelyMetrizableSpace X] :
+    [h : IsCompletelyMetrizableSpace X] :
     @CompleteSpace X (completelyMetrizableMetric X).toUniformSpace := by
   convert h.complete.choose_spec.2
   exact MetricSpace.replaceTopology_eq _ _
 
 /-- This definition endows a completely metrizable space with a complete metric. Use it as:
-`letI := upgradeCompletelyMetrizable X`. -/
+`letI := upgradeIsCompletelyMetrizable X`. -/
 noncomputable
-def upgradeCompletelyMetrizable (X : Type*) [TopologicalSpace X] [CompletelyMetrizableSpace X] :
-    UpgradedCompletelyMetrizableSpace X :=
+def upgradeIsCompletelyMetrizable (X : Type*) [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+    UpgradedIsCompletelyMetrizableSpace X :=
   letI := completelyMetrizableMetric X
   { complete_completelyMetrizableMetric X with }
 
-namespace CompletelyMetrizableSpace
+namespace IsCompletelyMetrizableSpace
 
-instance (priority := 100) MetrizableSpace [TopologicalSpace X] [CompletelyMetrizableSpace X] :
+instance (priority := 100) MetrizableSpace [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
     MetrizableSpace X := by
-  letI := upgradeCompletelyMetrizable X
+  letI := upgradeIsCompletelyMetrizable X
   infer_instance
 
 /-- A countable product of completely metrizable spaces is completely metrizable. -/
 instance pi_countable {ι : Type*} [Countable ι] {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-    [∀ i, CompletelyMetrizableSpace (X i)] : CompletelyMetrizableSpace (Π i, X i) := by
-  letI := fun i ↦ upgradeCompletelyMetrizable (X i)
+    [∀ i, IsCompletelyMetrizableSpace (X i)] : IsCompletelyMetrizableSpace (Π i, X i) := by
+  letI := fun i ↦ upgradeIsCompletelyMetrizable (X i)
   infer_instance
 
 /-- A disjoint union of completely metrizable spaces is completely metrizable. -/
 instance sigma {ι : Type*} {X : ι → Type*} [∀ n, TopologicalSpace (X n)]
-    [∀ n, CompletelyMetrizableSpace (X n)] : CompletelyMetrizableSpace (Σ n, X n) :=
-  letI := fun n ↦ upgradeCompletelyMetrizable (X n)
+    [∀ n, IsCompletelyMetrizableSpace (X n)] : IsCompletelyMetrizableSpace (Σ n, X n) :=
+  letI := fun n ↦ upgradeIsCompletelyMetrizable (X n)
   letI : MetricSpace (Σ n, X n) := Metric.Sigma.metricSpace
   haveI : CompleteSpace (Σ n, X n) := Metric.Sigma.completeSpace
   inferInstance
 
 /-- The product of two completely metrizable spaces is completely metrizable. -/
-instance prod [TopologicalSpace X] [CompletelyMetrizableSpace X] [TopologicalSpace Y]
-    [CompletelyMetrizableSpace Y] : CompletelyMetrizableSpace (X × Y) :=
-  letI := upgradeCompletelyMetrizable X
-  letI := upgradeCompletelyMetrizable Y
+instance prod [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSpace Y]
+    [IsCompletelyMetrizableSpace Y] : IsCompletelyMetrizableSpace (X × Y) :=
+  letI := upgradeIsCompletelyMetrizable X
+  letI := upgradeIsCompletelyMetrizable Y
   inferInstance
 
 /-- The disjoint union of two completely metrizable spaces is completely metrizable. -/
-instance sum [TopologicalSpace X] [CompletelyMetrizableSpace X] [TopologicalSpace Y]
-    [CompletelyMetrizableSpace Y] : CompletelyMetrizableSpace (X ⊕ Y) :=
-  letI := upgradeCompletelyMetrizable X
-  letI := upgradeCompletelyMetrizable Y
+instance sum [TopologicalSpace X] [IsCompletelyMetrizableSpace X] [TopologicalSpace Y]
+    [IsCompletelyMetrizableSpace Y] : IsCompletelyMetrizableSpace (X ⊕ Y) :=
+  letI := upgradeIsCompletelyMetrizable X
+  letI := upgradeIsCompletelyMetrizable Y
   inferInstance
 
 /-- Given a closed embedding into a completely metrizable space,
 the source space is also completely metrizable. -/
-theorem _root_.Topology.IsClosedEmbedding.CompletelyMetrizableSpace [TopologicalSpace X]
-    [TopologicalSpace Y] [CompletelyMetrizableSpace Y] {f : X → Y} (hf : IsClosedEmbedding f) :
-    CompletelyMetrizableSpace X := by
-  letI := upgradeCompletelyMetrizable Y
+theorem _root_.Topology.IsClosedEmbedding.IsCompletelyMetrizableSpace [TopologicalSpace X]
+    [TopologicalSpace Y] [IsCompletelyMetrizableSpace Y] {f : X → Y} (hf : IsClosedEmbedding f) :
+    IsCompletelyMetrizableSpace X := by
+  letI := upgradeIsCompletelyMetrizable Y
   letI : MetricSpace X := hf.isEmbedding.comapMetricSpace f
   have : CompleteSpace X := by
     rw [completeSpace_iff_isComplete_range hf.isEmbedding.to_isometry.isUniformInducing]
@@ -130,7 +129,7 @@ theorem _root_.Topology.IsClosedEmbedding.CompletelyMetrizableSpace [Topological
 
 /-- Any discrete space is completely metrizable. -/
 instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
-    CompletelyMetrizableSpace X := by
+    IsCompletelyMetrizableSpace X := by
   classical
   let m : MetricSpace X :=
     { dist x y := if x = y then 0 else 1
@@ -163,14 +162,15 @@ instance (priority := 50) discrete [TopologicalSpace X] [DiscreteTopology X] :
     simp_all
 
 /-- A closed subset of a completely metrizable space is also completely metrizable. -/
-theorem _root_.IsClosed.completelyMetrizableSpace [TopologicalSpace X] [CompletelyMetrizableSpace X]
-    {s : Set X} (hs : IsClosed s) : CompletelyMetrizableSpace s :=
-  hs.isClosedEmbedding_subtypeVal.CompletelyMetrizableSpace
+theorem _root_.IsClosed.isCompletelyMetrizableSpace
+    [TopologicalSpace X] [IsCompletelyMetrizableSpace X]
+    {s : Set X} (hs : IsClosed s) : IsCompletelyMetrizableSpace s :=
+  hs.isClosedEmbedding_subtypeVal.IsCompletelyMetrizableSpace
 
-instance univ [TopologicalSpace X] [CompletelyMetrizableSpace X] :
-    CompletelyMetrizableSpace (univ : Set X) :=
-  isClosed_univ.completelyMetrizableSpace
+instance univ [TopologicalSpace X] [IsCompletelyMetrizableSpace X] :
+    IsCompletelyMetrizableSpace (univ : Set X) :=
+  isClosed_univ.isCompletelyMetrizableSpace
 
-end CompletelyMetrizableSpace
+end IsCompletelyMetrizableSpace
 
 end TopologicalSpace
