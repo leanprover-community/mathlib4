@@ -7,30 +7,11 @@ import Mathlib.Logic.Equiv.Basic
 import Mathlib.Data.Subtype
 
 /-!
-# Equivalence between types
+# Equivalence between subtypes
 
-In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`, defining
+In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`,
+defining equivalences related to subtypes.
 
-* canonical isomorphisms between various types: e.g.,
-
-  - `Equiv.sumEquivSigmaBool` is the canonical equivalence between the sum of two types `α ⊕ β`
-    and the sigma-type `Σ b, bif b then β else α`;
-
-  - `Equiv.prodSumDistrib : α × (β ⊕ γ) ≃ (α × β) ⊕ (α × γ)` shows that type product and type sum
-    satisfy the distributive law up to a canonical equivalence;
-
-* operations on equivalences: e.g.,
-
-  - `Equiv.prodCongr ea eb : α₁ × β₁ ≃ α₂ × β₂`: combine two equivalences `ea : α₁ ≃ α₂` and
-    `eb : β₁ ≃ β₂` using `Prod.map`.
-
-  More definitions of this kind can be found in other files.
-  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
-  `Group`, `Module`, etc.
-
-## Tags
-
-equivalence, congruence, bijective map
 -/
 
 universe u v w z
