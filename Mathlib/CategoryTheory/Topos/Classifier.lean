@@ -312,26 +312,25 @@ variable {Ω : C} (h : SubobjectRepresentableBy Ω)
 
 namespace SubobjectRepresentableBy
 
-
-/- Representability of `Subobject.presheaf C` by `Ω` gives us a natural bijection `θ`. -/
+/-- Representability of `Subobject.presheaf C` by `Ω` gives us a natural bijection `θ`. -/
 def θ {X : C} : (X ⟶ Ω) ≃ Subobject X :=
   h.homEquiv
 lemma hθ {X X' : C} (f : X ⟶ X') (g : X' ⟶ Ω) :
     θ h (f ≫ g) = (Subobject.presheaf C).map f.op (θ h g) :=
   h.homEquiv_comp f g
 
-/- Each subobject `x` of `X` corresponds to a morphism `φₓ : X ⟶ Ω` through `θ`. -/
+/-- Each subobject `x` of `X` corresponds to a morphism `φₓ : X ⟶ Ω` through `θ`. -/
 def φ {X : C} (x : Subobject X) : X ⟶ Ω := (θ h).symm x
 lemma hφ {X : C} (χ : X ⟶ Ω) : χ = φ h (θ h χ) := by simp [φ]
 
-/- Some subobject `Ω₀` of `Ω` corresponds to the identity `𝟙 Ω` through `θ`. -/
+/-- Some subobject `Ω₀` of `Ω` corresponds to the identity `𝟙 Ω` through `θ`. -/
 def Ω₀ : Subobject Ω := θ h (𝟙 Ω)
 
-/- Let `t₀` be the underlying monomorphism of `Ω₀` (this requires the axiom of choice). -/
+/-- Let `t₀` be the underlying monomorphism of `Ω₀` (this requires the axiom of choice). -/
 noncomputable def t₀ : (Ω₀ h : C) ⟶ Ω := (Ω₀ h).arrow
 instance t₀_mono : Mono (t₀ h) := arrow_mono (Ω₀ h)
 
-/- The naturality of `θ` (hypothesis `hθ`) states that `x = φₓ⋆ Ω₀` for any `x`. -/
+/-- The naturality of `θ` (hypothesis `hθ`) states that `x = φₓ⋆ Ω₀` for any `x`. -/
 lemma hx_pullback {X : C} (x : Subobject X) :
     x = (Subobject.pullback (φ h x)).obj (Ω₀ h) := by
   have := hθ h ((θ h).symm x) (𝟙 _)
@@ -339,32 +338,32 @@ lemma hx_pullback {X : C} (x : Subobject X) :
   rw (occs := .pos [1]) [this]
   simp [Subobject.presheaf, φ, Ω₀]
 
-/- More explicitly, `x` is the canonical representative of the pullback of `t₀` along `φₓ`. -/
+/-- More explicitly, `x` is the canonical representative of the pullback of `t₀` along `φₓ`. -/
 lemma hx_mk {X : C} (x : Subobject X) :
     x = Subobject.mk (pullback.snd (t₀ h) (φ h x)) := by
   rw (occs := .pos [1]) [hx_pullback h x, pullback_obj]
   dsimp [t₀]
 
-/- Even more explicitly, we have an isomorphism `ιₓ` between the underlying object `(x : C)` of
-   `x` in `C` (obtained through the axiom of choice) and the pullback of `t₀` and `φₓ`. -/
+/-- Even more explicitly, we have an isomorphism `ιₓ` between the underlying object `(x : C)` of
+    `x` in `C` (obtained through the axiom of choice) and the pullback of `t₀` and `φₓ`. -/
 noncomputable def ι {X : C} (x : Subobject X) :
     (x : C) ≅ Limits.pullback (t₀ h) (φ h x) := by
   rw (occs := .pos [1]) [hx_mk h x]
   exact (underlyingIso (pullback.snd (t₀ h) (φ h x)))
 
-/- Let `πₓ : x ⟶ Ω₀` be the first projection of the pullback of `t₀` and `φₓ` modulo `ιₓ`. -/
+/-- Let `πₓ : x ⟶ Ω₀` be the first projection of the pullback of `t₀` and `φₓ` modulo `ιₓ`. -/
 noncomputable def π {X : C} (x : Subobject X) :=
   (ι h x).hom ≫ pullback.fst (t₀ h) (φ h x)
 
 instance {X : C} (x : Subobject X) : Mono (pullback.snd (t₀ h) (φ h x)) := inferInstance
 
-/- We can finally state that the corresponding pullback square commutes (diagram (5) in [MM92]).
+/-- We can finally state that the corresponding pullback square commutes (diagram (5) in [MM92]).
 
-   Implementation note: Here we need to deal with the usual "transport hell" of dependent types,
-   which materializes in Lean under the guise of the heterogenous equality type `HEq`. This is
-   because the types of morphisms are *propositionally* equal rather than *definitionally* equal,
-   which in turn is caused by the need to explicitly manipulate isomorphisms. Univalence would
-   probably make things much easier.
+    Implementation note: Here we need to deal with the usual "transport hell" of dependent types,
+    which materializes in Lean under the guise of the heterogenous equality type `HEq`. This is
+    because the types of morphisms are *propositionally* equal rather than *definitionally* equal,
+    which in turn is caused by the need to explicitly manipulate isomorphisms. Univalence would
+    probably make things much easier.
 -/
 lemma isPullback_φ {X : C} (x : Subobject X) :
     IsPullback (π h x) x.arrow (t₀ h) (φ h x) := by
@@ -386,11 +385,11 @@ lemma isPullback_φ {X : C} (x : Subobject X) :
   rw [← h1]
   exact arrow_isPullback (t₀ h) (φ h x)
 
-/- Furthermore, `φₓ` is the unique morphism that makes this pullback square commute by
-   bijectivity and naturality of `θ`.
+/-- Furthermore, `φₓ` is the unique morphism that makes this pullback square commute by
+    bijectivity and naturality of `θ`.
 
-   Note that we actually generalize `πₓ` to any morphism `ψ : x ⟶ Ω₀`, which will be necessary
-   many times later on in the proof.
+    Note that we actually generalize `πₓ` to any morphism `ψ : x ⟶ Ω₀`, which will be necessary
+    many times later on in the proof.
 -/
 lemma isPullback_uniq {X : C} (x : Subobject X) ψ χ (hχ : IsPullback ψ x.arrow (t₀ h) χ) :
     χ = φ h x := by
@@ -403,7 +402,7 @@ lemma isPullback_uniq {X : C} (x : Subobject X) ψ χ (hχ : IsPullback ψ x.arr
   rw [pullback_obj, eqOfIsPullback hχ (arrow_isPullback _ _)]
   rfl
 
-/- It remains to show that `Ω₀` is actually a terminal object in `C`. -/
+/-- It remains to show that `Ω₀` is actually a terminal object in `C`. -/
 noncomputable def isTerminal_Ω₀ : IsTerminal (Ω₀ h : C) := by
   have : (X : C) → Unique (X ⟶ Ω₀ h) := by
     intro X
@@ -451,7 +450,7 @@ noncomputable def isTerminal_Ω₀ : IsTerminal (Ω₀ h : C) := by
     exact Mono.right_cancellation _ _ h.symm
   apply IsTerminal.ofUnique
 
-/- We need to give explicitly the iso `i` with the "canonical" terminal object `⊤_ C`. -/
+/-- We need to give explicitly the iso `i` with the "canonical" terminal object `⊤_ C`. -/
 noncomputable def i [HasTerminal C] : ⊤_ C ≅ Ω₀ h := by
   apply IsTerminal.uniqueUpToIso
   · exact terminalIsTerminal
