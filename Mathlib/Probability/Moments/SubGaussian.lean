@@ -315,11 +315,15 @@ lemma prodMkLeft_compProd {η : Kernel Ω Ω''} (h : HasSubgaussianMGF Y cY η (
     rw [← Measure.snd_compProd, Measure.snd] at h2
     exact ae_of_ae_map (by fun_prop) h2
 
-variable [SFinite ν] [IsSFiniteKernel κ]
+variable [SFinite ν]
 
-lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
+lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) (t : ℝ) :
     Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) ((κ ⊗ₖ η) ∘ₘ ν) := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  rcases eq_zero_or_isMarkovKernel η with (rfl | hη)
+  · simp
   simp_rw [mul_add, exp_add]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
   · have h := hX.memLp_exp_mul t 2
@@ -336,9 +340,11 @@ has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable
 a sub-Gaussian mgf with respect to `η` and `ν ⊗ₘ κ : Measure (Ω' × Ω)`, then `X + Y` (random
 variable on the measurable space `Ω × Ω''`) has a sub-Gaussian mgf with respect to
 `κ ⊗ₖ η : Kernel Ω' (Ω × Ω'')` and `ν`. -/
-lemma add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
+lemma add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) :
     HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ η) ν := by
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
   refine .of_rat (integrable_exp_add_compProd hX hY) fun q ↦ ?_
   filter_upwards [hX.mgf_le, hX.ae_integrable_exp_mul q, Measure.ae_ae_of_ae_compProd hY.mgf_le,
     Measure.ae_integrable_of_integrable_comp <| integrable_exp_add_compProd hX hY q]
