@@ -87,3 +87,9 @@ macro_rules
   `(tactic| repeat (fail_if_no_progress (aux_group₁ $[$loc]? <;> aux_group₂ $[$loc]?)))
 
 end Mathlib.Tactic.Group
+
+/-!
+We register `group` with the `hint` tactic.
+-/
+
+register_hint group
