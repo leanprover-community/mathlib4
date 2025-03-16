@@ -164,7 +164,7 @@ def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
       ((Functor.associator _ _ _).symm ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (Functor.associator _ _ _ ≪≫
           inrCompInrCompInverseAssociator _ _ _) (associator _ _ _) ≪≫
-        inrCompAssociator _ _ _ ≪≫ isoWhiskerLeft _ ((Functor.rightUnitor _).symm)))
+        inrCompAssociator _ _ _ ≪≫ isoWhiskerLeft _ (Functor.rightUnitor _).symm))
   functor_unitIso_comp x := match x with
     | inl (inl c) => by simp [inlCompInlCompAssociator]
     | inl (inr d) => by simp [inrCompInlCompAssociator]
