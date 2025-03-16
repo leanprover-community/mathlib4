@@ -41,18 +41,19 @@ theorem associator_obj_inr (X) : (associator C D E).obj (inr X) = inr (inr X) :=
   rfl
 
 @[simp]
-theorem associator_map_inl_inl {X Y : C} (f : inl (inl X) ⟶ inl (inl Y)) :
-    (associator C D E).map f = (inl_ _ _).map f.down.down :=
+theorem associator_map_inl_inl {X Y : C} (f : X ⟶ Y) :
+    (associator C D E).map ((inl_ _ _).map ((inl_ _ _).map f)) = (inl_ _ _).map f :=
   rfl
 
 @[simp]
-theorem associator_map_inl_inr {X Y : D} (f : inl (inr X) ⟶ inl (inr Y)) :
-    (associator C D E).map f = (inr_ _ _).map ((inl_ _ _).map f.down.down) :=
+theorem associator_map_inl_inr {X Y : D} (f : X ⟶ Y) :
+    (associator C D E).map ((inl_ _ _).map ((inr_ _ _).map f)) =
+    (inr_ _ _).map ((inl_ _ _).map f) :=
   rfl
 
 @[simp]
-theorem associator_map_inr {X Y : E} (f : inr X ⟶ inr Y) :
-    (associator C D E).map f = (inr_ _ _).map ((inr_ _ _).map f.down) :=
+theorem associator_map_inr {X Y : E} (f : X ⟶ Y) :
+    (associator C D E).map ((inr_ _ _).map f) = (inr_ _ _).map ((inr_ _ _).map f) :=
   rfl
 
 /-- Characterizing the composition of the associator and the left inclusion. -/
@@ -94,18 +95,20 @@ theorem inverseAssociator_obj_inr_inr (X) : (inverseAssociator C D E).obj (inr (
   rfl
 
 @[simp]
-theorem inverseAssociator_map_inl {X Y : C} (f : inl X ⟶ inl Y) :
-    (inverseAssociator C D E).map f = (inl_ _ _).map ((inl_ _ _).map f.down) :=
+theorem inverseAssociator_map_inl {X Y : C} (f : X ⟶ Y) :
+    (inverseAssociator C D E).map ((inl_ _ _).map f) = (inl_ _ _).map ((inl_ _ _).map f) :=
   rfl
 
 @[simp]
-theorem inverseAssociator_map_inr_inl {X Y : D} (f : inr (inl X) ⟶ inr (inl Y)) :
-    (inverseAssociator C D E).map f = (inl_ _ _).map ((inr_ _ _).map f.down.down) :=
+theorem inverseAssociator_map_inr_inl {X Y : D} (f : X ⟶ Y) :
+    (inverseAssociator C D E).map ((inr_ _ _).map ((inl_ _ _).map f)) =
+    (inl_ _ _).map ((inr_ _ _).map f) :=
   rfl
 
 @[simp]
-theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)) :
-    (inverseAssociator C D E).map f = (inr_ _ _).map f.down.down :=
+theorem inverseAssociator_map_inr_inr {X Y : E} (f : X ⟶ Y) :
+    (inverseAssociator C D E).map ((inr_ _ _).map ((inr_ _ _).map f)) =
+    (inr_ _ _).map f :=
   rfl
 
 /-- Characterizing the composition of the inverse of the associator and the left inclusion. -/
@@ -166,9 +169,9 @@ def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
           inrCompInrCompInverseAssociator _ _ _) (associator _ _ _) ≪≫
         inrCompAssociator _ _ _ ≪≫ isoWhiskerLeft _ (Functor.rightUnitor _).symm))
   functor_unitIso_comp x := match x with
-    | inl (inl c) => by simp [inlCompInlCompAssociator]
-    | inl (inr d) => by simp [inrCompInlCompAssociator]
-    | inr e => by simp [inrCompAssociator]
+    | inl (inl c) => by simp [inlCompInlCompAssociator, inlCompInverseAssociator]
+    | inl (inr d) => by simp [inrCompInlCompAssociator, inlCompInrCompInverseAssociator]
+    | inr e => by simp [inrCompAssociator, inrCompInrCompInverseAssociator]
 
 instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
   (by infer_instance : (associativity C D E).functor.IsEquivalence)

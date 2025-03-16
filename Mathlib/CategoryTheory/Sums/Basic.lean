@@ -16,10 +16,13 @@ We define:
 * `swap`      : the functor `C ⊕ D ⥤ D ⊕ C`
     (and the fact this is an equivalence)
 
-The sum of two functors `F : A ⥤ C` and `G : B ⥤ C` is a functor `A ⊕ B ⥤ C`, written `F.sum' G`.
-This construction should be preffered when defining functors out of a sum.
+We provide an induction principle `Sum.homInduction` to reason and work with morphisms in this
+category.
 
-We provides natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
+The sum of two functors `F : A ⥤ C` and `G : B ⥤ C` is a functor `A ⊕ B ⥤ C`, written `F.sum' G`.
+This construction should be prefered when defining functors out of a sum.
+
+We provide natural isomorphisms `inlCompSum' : inl_ ⋙ F.sum' G ≅ F` and
 `inrCompSum' : inl_ ⋙ F.sum' G ≅ G`.
 
 Furthermore, we provide `Functor.sumIsoExt`, which
@@ -74,32 +77,6 @@ theorem hom_inl_inr_false {X : C} {Y : D} (f : Sum.inl X ⟶ Sum.inr Y) : False 
 theorem hom_inr_inl_false {X : C} {Y : D} (f : Sum.inr X ⟶ Sum.inl Y) : False := by
   cases f
 
-@[simp, reassoc]
-theorem sum_comp_inl_down {P Q R : C} (f : (inl P : C ⊕ D) ⟶ inl Q) (g : (inl Q : C ⊕ D) ⟶ inl R) :
-    (f ≫ g).down = f.down ≫ g.down :=
-  rfl
-
-@[simp, reassoc]
-theorem sum_comp_inr_down {P Q R : D} (f : (inr P : C ⊕ D) ⟶ inr Q) (g : (inr Q : C ⊕ D) ⟶ inr R) :
-    (f ≫ g).down = f.down ≫ g.down :=
-  rfl
-
-@[reassoc (attr := simp)]
-theorem sum_comp_inl {P Q R : C} (f : (inl P : C ⊕ D) ⟶ inl Q) (g : (inl Q : C ⊕ D) ⟶ inl R) :
-    (f ≫ g) = (ULift.up (f.down ≫ g.down) : inl P ⟶ inl R) :=
-  rfl
-
-@[reassoc (attr := simp)]
-theorem sum_comp_inr {P Q R : D} (f : (inr P : C ⊕ D) ⟶ inr Q) (g : (inr Q : C ⊕ D) ⟶ inr R) :
-    f ≫ g = (ULift.up (f.down ≫ g.down) : inr P ⟶ inr R) :=
-  rfl
-
-@[simp]
-lemma id_down_left {P : C} : (𝟙 (inl P) : (_ : C ⊕ D) ⟶ _ ).down = 𝟙 P := rfl
-
-@[simp]
-lemma id_down_right {P : D} : (𝟙 (inr P) : (_ : C ⊕ D) ⟶ _ ).down = 𝟙 P := rfl
-
 end
 
 namespace Sum
@@ -113,23 +90,36 @@ def inl_ : C ⥤ C ⊕ D where
   obj X := inl X
   map {_ _} f := ULift.up f
 
-@[simp]
-lemma inl_map_down {c c' : C} (f : c ⟶ c') : ((inl_ C D).map f).down = f := rfl
-
-@[simp]
-lemma inl_map_down' {c c' : C} (f : (inl c : C ⊕ D) ⟶ inl c') : (inl_ C D).map f.down = f := rfl
-
 /-- `inr_` is the functor `X ↦ inr X`. -/
 @[simps! obj]
 def inr_ : D ⥤ C ⊕ D where
   obj X := inr X
   map {_ _} f := ULift.up f
 
-@[simp]
-lemma inr_map_down {d d' : D} (f : d ⟶ d') : ((inr_ C D).map f).down = f := rfl
+variable {C D}
+
+@[elab_as_elim, cases_eliminator, induction_eliminator]
+def homInduction {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
+    (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
+    (inr : ∀ x y : D, (f : x ⟶ y) → P ((inr_ C D).map f))
+    {x y : C ⊕ D} (f : x ⟶ y) : P f :=
+  match x, y, f with
+  | .inl x, .inl y, f => inl x y f.down
+  | .inr x, .inr y, f => inr x y f.down
 
 @[simp]
-lemma inr_map_down' {d d' : D} (f : (inr d : C ⊕ D) ⟶ inr d') : (inr_ C D).map f.down = f := rfl
+def homInduction_left {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
+    (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
+    (inr : ∀ x y : D, (f : x ⟶ y) → P ((inr_ C D).map f))
+    {x y : C} (f : x ⟶ y) : homInduction (P := P) inl inr ((inl_ C D).map f) = inl x y f :=
+  rfl
+
+@[simp]
+def homInduction_right {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
+    (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
+    (inr : ∀ x y : D, (f : x ⟶ y) → P ((inr_ C D).map f))
+    {x y : D} (f : x ⟶ y) : homInduction (P := P) inl inr ((inr_ C D).map f) = inr x y f :=
+  rfl
 
 end Sum
 
@@ -145,13 +135,22 @@ variable (F : A ⥤ C) (G : B ⥤ C)
 /-- The sum of two functors that land in a given category `C`. -/
 def sum' : A ⊕ B ⥤ C where
   obj X :=
-    match X with
-    | inl X => F.obj X
-    | inr X => G.obj X
+  match X with
+  | inl X => F.obj X
+  | inr X => G.obj X
   map {X Y} f :=
-    match X, Y, f with
-    | inl _, inl _, f => F.map f.down
-    | inr _, inr _, f => G.map f.down
+    Sum.homInduction
+      (inl := fun _ _ f ↦ F.map f)
+      (inr := fun _ _ g ↦ G.map g)
+      f
+  map_comp {x y z} f g := by
+    cases f <;> cases g <;> simp [← Functor.map_comp]
+  map_id x := by
+    cases x
+    · simp only [← map_id]
+      rfl
+    · simp only [← map_id]
+      rfl
 
 /-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
 @[simps!]
@@ -172,13 +171,13 @@ theorem sum'_obj_inr (b : B) : (F.sum' G).obj (inr b) = (G.obj b) :=
   rfl
 
 @[simp]
-theorem sum'_map_inl {a a' : A} (f : inl a ⟶ inl a') :
-    (F.sum' G).map f = (F.map f.down) :=
+theorem sum'_map_inl {a a' : A} (f : a ⟶ a') :
+    (F.sum' G).map ((Sum.inl_ _ _).map f) = F.map f :=
   rfl
 
 @[simp]
-theorem sum'_map_inr {b b' : B} (f : inr b ⟶ inr b') :
-    (F.sum' G).map f = (G.map f.down) :=
+theorem sum'_map_inr {b b' : B} (f : b ⟶ b') :
+    (F.sum' G).map ((Sum.inr_ _ _).map f) = G.map f :=
   rfl
 
 end Sum'
@@ -195,13 +194,13 @@ theorem sum_obj_inr (F : A ⥤ B) (G : C ⥤ D) (c : C) : (F.sum G).obj (inr c) 
   rfl
 
 @[simp]
-theorem sum_map_inl (F : A ⥤ B) (G : C ⥤ D) {a a' : A} (f : inl a ⟶ inl a') :
-    (F.sum G).map f = (Sum.inl_ _ _).map (F.map f.down) :=
+theorem sum_map_inl (F : A ⥤ B) (G : C ⥤ D) {a a' : A} (f : a ⟶ a') :
+    (F.sum G).map ((Sum.inl_ _ _).map f) = (Sum.inl_ _ _).map (F.map f) :=
   rfl
 
 @[simp]
-theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : inr c ⟶ inr c') :
-    (F.sum G).map f = (Sum.inr_ _ _).map (G.map f.down) :=
+theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : c ⟶ c') :
+    (F.sum G).map ((Sum.inr_ _ _).map f) = (Sum.inr_ _ _).map (G.map f) :=
   rfl
 
 section
@@ -217,10 +216,10 @@ def sumIsoExt : F ≅ G :=
     match x with
     | inl x => e₁.app x
     | inr x => e₂.app x)
-    (fun {x y} f ↦
-      match x, y, f with
-      | inl x, inl y, f => by simpa using e₁.hom.naturality f.down
-      | inr x, inr y, f => by simpa using e₂.hom.naturality f.down)
+    (fun {x y} f ↦ by
+      cases f
+      · simpa using e₁.hom.naturality _
+      · simpa using e₂.hom.naturality _)
 
 @[simp]
 lemma sumIsoExt_hom_app_inl (a : A) : (sumIsoExt e₁ e₂).hom.app (inl a) = e₁.hom.app a := rfl
@@ -269,9 +268,7 @@ def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H 
     | inl X => (Sum.inl_ _ _).map (α.app X)
     | inr X => (Sum.inr_ _ _).map (β.app X)
   naturality X Y f :=
-    match X, Y, f with
-    | inl X, inl Y, f => by simp [← Functor.map_comp]
-    | inr X, inr Y, f => by simp [← Functor.map_comp]
+    by cases f <;> simp [← Functor.map_comp]
 
 @[simp]
 theorem sum_app_inl {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) (a : A) :
@@ -309,11 +306,11 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
   rfl
 
 /-- Precomposing `swap` with the left inclusion gives the right inclusion. -/
-@[simps!]
+@[simps! hom_app inv_app]
 def swapCompInl : inl_ _ _ ⋙ swap C D ≅ inr_ _ _ := (Functor.inlCompSum' (inr_ _ _) (inl_ _ _)).symm
 
 /-- Precomposing `swap` with the rightt inclusion gives the leftt inclusion. -/
-@[simps!]
+@[simps! hom_app inv_app]
 def swapCompInr : inr_ _ _ ⋙ swap C D ≅ inl_ _ _ := (Functor.inrCompSum' (inr_ _ _) (inl_ _ _)).symm
 
 namespace Swap
