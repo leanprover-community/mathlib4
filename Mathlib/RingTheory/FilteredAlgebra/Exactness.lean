@@ -192,7 +192,7 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
       rcases discrete.discrete with ⟨t₀, t₀bot⟩
       refine ⟨min p t₀, ⟨Int.min_le_left p t₀, ?_⟩⟩
       rw [← Set.Nonempty.subset_singleton_iff Set.Nonempty.of_subtype, ← t₀bot]
-      apply Monotone.imp monoS (Int.min_le_right p t₀)
+      exact monoS (Int.min_le_right p t₀)
     have (s : ℕ) : ∃ r : R, y - f r ∈ FS (p - s) := by
       induction' s with s ih
       · use 0
