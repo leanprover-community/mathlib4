@@ -47,8 +47,8 @@ variable {M : PDA Q T S}
 /-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
 def Reaches₁ (r₁ r₂ : Conf M) : Prop :=
   ∃ (Z : S) (α : List S) (β : List S), r₁.stack = Z :: α ∧ r₂.stack = β ++ α ∧ (
-    r₁.input = r₂.input ∧ (r₂.state, β) ∈ M.transition_fun r₁.state none Z ∨
-    ∃ (a : T), r₁.input = a :: r₂.input ∧ (r₂.state, β) ∈ (M.transition_fun r₁.state (some a) Z)
+    r₁.input = r₂.input ∧ (r₂.state, β) ∈ M.transitionFun r₁.state none Z ∨
+    ∃ (a : T), r₁.input = a :: r₂.input ∧ (r₂.state, β) ∈ (M.transitionFun r₁.state (some a) Z)
   )
 
 /-- `Reaches r₁ r₂` means that `r₂` is reachable from `r₁` in finitely many steps. -/
@@ -58,12 +58,12 @@ def Reaches : Conf M → Conf M → Prop := Relation.ReflTransGen Reaches₁
   condition. -/
 def acceptsByEmptyStack (M : PDA Q T S) : Language T :=
   { w : List T | ∃ q : Q,
-      Reaches (⟨M.initial_state, w, [M.start_symbol]⟩ : Conf M) ⟨q, [], []⟩ }
+      Reaches (⟨M.initialState, w, [M.startSymbol]⟩ : Conf M) ⟨q, [], []⟩ }
 
 /-- `acceptsByFinalState M` is the language accepted by the PDA `M` based on the final-state
   condition. -/
 def acceptsByFinalState (M : PDA Q T S) : Language T :=
-  { w : List T | ∃ q ∈ M.final_states, ∃ γ : List S,
-      Reaches (⟨M.initial_state, w, [M.start_symbol]⟩ : Conf M) ⟨q, [], γ⟩ }
+  { w : List T | ∃ q ∈ M.finalStates, ∃ γ : List S,
+      Reaches (⟨M.initialState, w, [M.startSymbol]⟩ : Conf M) ⟨q, [], γ⟩ }
 
 end PDA
