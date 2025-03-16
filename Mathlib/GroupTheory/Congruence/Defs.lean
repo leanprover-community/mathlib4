@@ -565,11 +565,8 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
     constructor
     · intros h x y hs
       rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
-      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq'.1 hx)
-        (t.1.trans ht (t.2 <| Quotient.eq'.1 hy))
-    · intros h _ _ hs
-      rcases hs with ⟨a, b, Hs, hx, hy⟩
-      exact ⟨a, b, h Hs, hx, hy⟩
+      exact t.1.trans (t.1.symm <| t.2 <| c.eq.1 hx) (t.1.trans ht (t.2 <| c.eq.1 hy))
+    · exact Relation.map_mono
 
 end
 

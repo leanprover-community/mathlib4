@@ -244,6 +244,11 @@ lemma map_equivalence {r : α → α → Prop} (hr : Equivalence r) (f : α → 
   symm := @(map_symmetric hr.symmetric _)
   trans := @(map_transitive hr.transitive hf_ker)
 
+-- TODO: state this using `≤`, after adjusting imports.
+lemma map_mono {r s : α → β → Prop} {f : α → γ} {g : β → δ} (h : ∀ x y, r x y → s x y) :
+    ∀ x y, Relation.Map r f g x y → Relation.Map s f g x y :=
+  fun _ _ ⟨x, y, hxy, hx, hy⟩ => ⟨x, y, h _ _ hxy, hx, hy⟩
+
 end Map
 
 variable {r : α → α → Prop} {a b c : α}
