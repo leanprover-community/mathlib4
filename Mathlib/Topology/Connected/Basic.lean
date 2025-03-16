@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
+import Mathlib.Data.Finset.Piecewise
 import Mathlib.Data.Set.SymmDiff
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Topology.Irreducible
@@ -422,6 +423,14 @@ theorem IsPreconnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs 
 theorem IsConnected.prod [TopologicalSpace β] {s : Set α} {t : Set β} (hs : IsConnected s)
     (ht : IsConnected t) : IsConnected (s ×ˢ t) :=
   ⟨hs.1.prod ht.1, hs.2.prod ht.2⟩
+
+theorem exists_finset_piecewise_mem_of_mem_nhds [DecidableEq ι]
+    {π : ι → Type*} [T : ∀ i, TopologicalSpace (π i)] {s : Set (∀ a, π a)} {x : ∀ a, π a}
+    (hs : s ∈ 𝓝 x) (y : ∀ a, π a) : ∃ I : Finset ι, I.piecewise x y ∈ s := by
+  simp only [nhds_pi, Filter.mem_pi'] at hs
+  rcases hs with ⟨I, t, htx, hts⟩
+  refine ⟨I, hts fun i hi => ?_⟩
+  simpa [Finset.mem_coe.1 hi] using mem_of_mem_nhds (htx i)
 
 theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set (π i)}
     (hs : ∀ i, IsPreconnected (s i)) : IsPreconnected (pi univ s) := by

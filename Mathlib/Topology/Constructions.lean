@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Data.Fin.VecNotation
-import Mathlib.Data.Finset.Piecewise
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.Curry
 import Mathlib.Topology.Constructions.SumProd
@@ -895,13 +894,6 @@ theorem interior_pi_set {I : Set ι} (hI : I.Finite) {s : ∀ i, Set (π i)} :
     interior (pi I s) = I.pi fun i => interior (s i) := by
   ext a
   simp only [Set.mem_pi, mem_interior_iff_mem_nhds, set_pi_mem_nhds_iff hI]
-
-theorem exists_finset_piecewise_mem_of_mem_nhds [DecidableEq ι] {s : Set (∀ a, π a)} {x : ∀ a, π a}
-    (hs : s ∈ 𝓝 x) (y : ∀ a, π a) : ∃ I : Finset ι, I.piecewise x y ∈ s := by
-  simp only [nhds_pi, Filter.mem_pi'] at hs
-  rcases hs with ⟨I, t, htx, hts⟩
-  refine ⟨I, hts fun i hi => ?_⟩
-  simpa [Finset.mem_coe.1 hi] using mem_of_mem_nhds (htx i)
 
 theorem pi_generateFrom_eq {π : ι → Type*} {g : ∀ a, Set (Set (π a))} :
     (@Pi.topologicalSpace ι π fun a => generateFrom (g a)) =
