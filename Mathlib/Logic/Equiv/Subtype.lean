@@ -501,8 +501,6 @@ theorem subtypeEquivCodomain_symm_apply_ne
 
 end subtypeEquivCodomain
 
-instance : CanLift (α → β) (α ≃ β) (↑) Bijective where prf f hf := ⟨ofBijective f hf, rfl⟩
-
 section
 
 variable {α' β' : Type*} (e : Perm α') {p : β' → Prop} [DecidablePred p] (f : α' ≃ Subtype p)
