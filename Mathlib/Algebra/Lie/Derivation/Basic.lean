@@ -394,39 +394,22 @@ open scoped Nat
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
-noncomputable def exp_nilpotent_derivation (h : IsNilpotent D.toLinearMap) :
-  LieEquiv R L L := by
-  letI : LieAlgebra ℚ L := LieAlgebra.RestrictScalars.lieAlgebra ℚ R L
-  exact {
-    toFun := fun l => (IsNilpotent.exp D.toLinearMap) l
-    map_add' := by exact fun x y ↦ LinearMap.map_add (IsNilpotent.exp D.toLinearMap) x y
-    map_smul' := by exact fun m x ↦ LinearMap.map_smul (IsNilpotent.exp D.toLinearMap) m x
+noncomputable def exp (h : IsNilpotent D.toLinearMap) :
+    L ≃ₗ⁅R⁆ L :=
+  let _i : LieAlgebra ℚ L := LieAlgebra.RestrictScalars.lieAlgebra ℚ R L
+  { toLinearMap := IsNilpotent.exp D.toLinearMap
     map_lie' := by
       let _i := LieRing.toNonUnitalNonAssocRing L
-      haveI : SMulCommClass R L L := LieAlgebra.smulCommClass R L
-      haveI : IsScalarTower R L L := LieAlgebra.isScalarTower R L
+      have : SMulCommClass R L L := LieAlgebra.smulCommClass R L
+      have : IsScalarTower R L L := LieAlgebra.isScalarTower R L
       exact Module.End.exp_mul_of_derivation R L D.toLinearMap D.apply_lie_eq_add h
-    invFun := fun l => (IsNilpotent.exp (-(D.toLinearMap))) l
-    left_inv := by
-      have h₁ : Commute (-(D.toLinearMap)) (D.toLinearMap) := Commute.neg_left rfl
-      have h₂ : IsNilpotent (-(D.toLinearMap)) := IsNilpotent.neg h
-      have h₃ := IsNilpotent.exp_add_of_commute h₁ h₂ h
-      have s₁ (l : L) : ((IsNilpotent.exp (-(D.toLinearMap))) *
-          (IsNilpotent.exp ((D.toLinearMap)))) l = l := by
-        rw [h₃.symm, neg_add_cancel, IsNilpotent.exp_zero_eq_one]
-        exact rfl
-      exact s₁
-    right_inv := by
-      have h₁ : Commute D.toLinearMap (-(D.toLinearMap)) := Commute.neg_right rfl
-      have h₂ : IsNilpotent (-(D.toLinearMap)) := IsNilpotent.neg h
-      have h₃ := IsNilpotent.exp_add_of_commute h₁ h h₂
-      have s₁ (l : L) : ((IsNilpotent.exp ((D.toLinearMap))) *
-          (IsNilpotent.exp (-(D.toLinearMap)))) l = l := by
-        rw [h₃.symm, add_neg_cancel, IsNilpotent.exp_zero_eq_one]
-        exact rfl
-      exact s₁
-}
-
+    invFun x := IsNilpotent.exp (- D.toLinearMap) x
+    left_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_neg_mul_exp_self, LinearMap.one_apply]
+    right_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
 end ExpNilpotent
 
 end LieDerivation
