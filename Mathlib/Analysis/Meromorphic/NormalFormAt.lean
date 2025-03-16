@@ -185,7 +185,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
         apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
         · exact hf.eq_nhdNE_toMeromorphicNFAt.symm.trans (hf.order_eq_top_iff.1 h₂f)
         · simp [h₂f, toMeromorphicNFAt, hf]
-      apply AnalyticAt.MeromorphicNFAt
+      apply AnalyticAt.meromorphicNFAt
       rw [analyticAt_congr this]
       exact analyticAt_const
     · lift hf.order to ℤ using h₂f with n hn
@@ -203,7 +203,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
         simp_all
       · simp [h₃f, zero_zpow]
   · simp only [toMeromorphicNFAt, hf, ↓reduceDIte]
-    exact analyticAt_const.MeromorphicNFAt
+    exact analyticAt_const.meromorphicNFAt
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 @[simp] theorem toMeromorphicNFAt_eq_self :
