@@ -154,14 +154,14 @@ noncomputable def toMeromorphicNFAt :
   · exact 0
 
 /-- Conversion to normal form at `x` by changes the value only at x. -/
-lemma MeromorphicAt.eqOn_compl_singleton_toNF (hf : MeromorphicAt f x) :
+lemma MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt (hf : MeromorphicAt f x) :
     Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.eq_nhdNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
-  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toNF hz)
+  eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMermomorphicNFAt hz)
 
 /-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood. -/
 private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E} {z₀ : 𝕜}
@@ -172,69 +172,77 @@ private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E
   · simpa using (Filter.eventually_and.2 ⟨Filter.eventuallyEq_iff_sub.mp hfg, h⟩).exists
 
 /-- After conversion to normal form at `x`, the function has normal form. -/
-theorem MeromorphicAt.meromorphicNFAt_toNF (hf : MeromorphicAt f x) :
+theorem meromorphicNFAt_toMeromorphicNFAt :
     MeromorphicNFAt (toMeromorphicNFAt f x) x := by
-  by_cases h₂f : hf.order = ⊤
-  · have : toMeromorphicNFAt f x =ᶠ[𝓝 x] 0 := by
-      apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
-      · exact hf.eq_nhdNE_toMeromorphicNFAt.symm.trans (hf.order_eq_top_iff.1 h₂f)
-      · simp [h₂f, toMeromorphicNFAt, hf]
-    apply AnalyticAt.MeromorphicNFAt
-    rw [analyticAt_congr this]
-    exact analyticAt_const
-  · lift hf.order to ℤ using h₂f with n hn
-    obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff n).1 hn.symm
-    right
-    use n, g, h₁g, h₂g
-    apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.eq_nhdNE_toMeromorphicNFAt.symm.trans h₃g)
-    simp only [toMeromorphicNFAt, hf, ↓reduceDIte, ← hn, WithTop.coe_zero,
-      WithTop.coe_eq_zero, ne_eq, Function.update_self, sub_self]
-    split_ifs with h₃f
-    · obtain ⟨h₁G, _, h₃G⟩ := Classical.choose_spec ((hf.order_eq_int_iff 0).1 (h₃f ▸ hn.symm))
-      apply Filter.EventuallyEq.eq_of_nhds
-      apply h₁G.eventuallyEq_nhdNE_iff_eventuallyEq_nhd (by fun_prop)
-      filter_upwards [h₃g, h₃G]
-      simp_all
-    · simp [h₃f, zero_zpow]
+  by_cases hf : MeromorphicAt f x
+  · by_cases h₂f : hf.order = ⊤
+    · have : toMeromorphicNFAt f x =ᶠ[𝓝 x] 0 := by
+        apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
+        · exact hf.eq_nhdNE_toMeromorphicNFAt.symm.trans (hf.order_eq_top_iff.1 h₂f)
+        · simp [h₂f, toMeromorphicNFAt, hf]
+      apply AnalyticAt.MeromorphicNFAt
+      rw [analyticAt_congr this]
+      exact analyticAt_const
+    · lift hf.order to ℤ using h₂f with n hn
+      obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff n).1 hn.symm
+      right
+      use n, g, h₁g, h₂g
+      apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.eq_nhdNE_toMeromorphicNFAt.symm.trans h₃g)
+      simp only [toMeromorphicNFAt, hf, ↓reduceDIte, ← hn, WithTop.coe_zero,
+        WithTop.coe_eq_zero, ne_eq, Function.update_self, sub_self]
+      split_ifs with h₃f
+      · obtain ⟨h₁G, _, h₃G⟩ := Classical.choose_spec ((hf.order_eq_int_iff 0).1 (h₃f ▸ hn.symm))
+        apply Filter.EventuallyEq.eq_of_nhds
+        apply h₁G.eventuallyEq_nhdNE_iff_eventuallyEq_nhd (by fun_prop)
+        filter_upwards [h₃g, h₃G]
+        simp_all
+      · simp [h₃f, zero_zpow]
+  · simp only [toMeromorphicNFAt, hf, ↓reduceDIte]
+    exact analyticAt_const.MeromorphicNFAt
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
-theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
-    f = toMeromorphicNFAt f x := by
-  funext z
-  by_cases hz : z = x
-  · rw [hz]
-    simp only [toMeromorphicNFAt, hf.meromorphicAt, WithTop.coe_zero, ne_eq, Function.update_self]
-    have h₀f := hf
-    rcases hf with h₁f | h₁f
-    · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)]
-        using h₁f.eq_of_nhds
-    · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h₁f
-      rw [Filter.EventuallyEq.eq_of_nhds h₃g]
-      have : h₀f.meromorphicAt.order = n := by
-        rw [MeromorphicAt.order_eq_int_iff (MeromorphicNFAt.meromorphicAt h₀f) n]
-        use g, h₁g, h₂g
-        exact eventually_nhdsWithin_of_eventually_nhds h₃g
-      by_cases h₃f : h₀f.meromorphicAt.order = 0
-      · simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte]
-        have hn : n = (0 : ℤ) := by
-          rw [h₃f] at this
-          exact WithTop.coe_eq_zero.mp this.symm
-        simp_rw [hn]
-        simp only [zpow_zero, one_smul]
-        have : g =ᶠ[𝓝 x] (Classical.choose ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)) := by
-          obtain ⟨h₀, h₁, h₂⟩ := Classical.choose_spec
-            ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)
-          apply h₁g.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₀
-          rw [hn] at h₃g
-          simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂
-          exact (h₃g.filter_mono nhdsWithin_le_nhds).symm.trans h₂
-        simp only [Function.update_self]
-        exact Filter.EventuallyEq.eq_of_nhds this
-      · simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte, smul_eq_zero,
-          Function.update_self, smul_eq_zero]
-        left
-        apply zero_zpow n
-        by_contra hn
-        rw [hn] at this
-        tauto
-  · exact hf.meromorphicAt.eqOn_compl_singleton_toNF hz
+theorem meromorphicNFAt_iff_toNF_eq_id :
+    MeromorphicNFAt f x ↔ f = toMeromorphicNFAt f x := by
+  constructor
+  · intro hf
+    funext z
+    by_cases hz : z = x
+    · rw [hz]
+      simp only [toMeromorphicNFAt, hf.meromorphicAt, WithTop.coe_zero, ne_eq, Function.update_self]
+      have h₀f := hf
+      rcases hf with h₁f | h₁f
+      · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)]
+          using h₁f.eq_of_nhds
+      · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h₁f
+        rw [Filter.EventuallyEq.eq_of_nhds h₃g]
+        have : h₀f.meromorphicAt.order = n := by
+          rw [MeromorphicAt.order_eq_int_iff (MeromorphicNFAt.meromorphicAt h₀f) n]
+          use g, h₁g, h₂g
+          exact eventually_nhdsWithin_of_eventually_nhds h₃g
+        by_cases h₃f : h₀f.meromorphicAt.order = 0
+        · simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte]
+          have hn : n = (0 : ℤ) := by
+            rw [h₃f] at this
+            exact WithTop.coe_eq_zero.mp this.symm
+          simp_rw [hn]
+          simp only [zpow_zero, one_smul]
+          have : g =ᶠ[𝓝 x] (Classical.choose ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)) := by
+            obtain ⟨h₀, h₁, h₂⟩ := Classical.choose_spec
+              ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)
+            apply h₁g.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₀
+            rw [hn] at h₃g
+            simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂
+            exact (h₃g.filter_mono nhdsWithin_le_nhds).symm.trans h₂
+          simp only [Function.update_self]
+          exact Filter.EventuallyEq.eq_of_nhds this
+        · simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte, smul_eq_zero,
+            Function.update_self, smul_eq_zero]
+          left
+          apply zero_zpow n
+          by_contra hn
+          rw [hn] at this
+          tauto
+    · exact hf.meromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt hz
+  · intro hf
+    rw [hf]
+    exact meromorphicNFAt_toMeromorphicNFAt
