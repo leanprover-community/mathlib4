@@ -119,7 +119,7 @@ theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
 
 /-- If a function is meromorphic in normal form at `x`, then it has non-negative order iff it is
 analytic. -/
-theorem MeromorphicNFAt.nonneg_order_iff_analyticAt (hf : MeromorphicNFAt f x) :
+theorem MeromorphicNFAt.order_nonneg_iff_analyticAt (hf : MeromorphicNFAt f x) :
     0 ≤ hf.meromorphicAt.order ↔ AnalyticAt 𝕜 f x := by
   constructor <;> intro h₂f
   · rw [meromorphicNFAt_iff_analyticAt_or] at hf
