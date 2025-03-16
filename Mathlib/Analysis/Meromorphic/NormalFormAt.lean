@@ -98,11 +98,11 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
     MeromorphicNFAt f x ↔ MeromorphicNFAt g x := by
   constructor
   · rintro (h | ⟨n, h, h₁h, h₂h, h₃h⟩)
-    · exact Or.inl (hfg.symm.trans h)
-    · exact Or.inr ⟨n, h, h₁h, h₂h, hfg.symm.trans h₃h⟩
+    · exact .inl (hfg.symm.trans h)
+    · exact .inr ⟨n, h, h₁h, h₂h, hfg.symm.trans h₃h⟩
   · rintro (h | ⟨n, h, h₁h, h₂h, h₃h⟩)
-    · exact Or.inl (hfg.trans h)
-    · exact Or.inr ⟨n, h, h₁h, h₂h, hfg.trans h₃h⟩
+    · exact .inl (hfg.trans h)
+    · exact .inr ⟨n, h, h₁h, h₂h, hfg.trans h₃h⟩
 
 /-!
 ## Relation to other properties of functions
@@ -119,7 +119,7 @@ theorem MeromorphicNFAt.meromorphicAt (hf : MeromorphicNFAt f x) :
 
 /-- If a function is meromorphic in normal form at `x`, then it has non-negative order iff it is
 analytic. -/
-theorem MeromorphicNFAt.nonneg_order_iff_analyticAt (hf : MeromorphicNFAt f x) :
+theorem MeromorphicNFAt.order_nonneg_iff_analyticAt (hf : MeromorphicNFAt f x) :
     0 ≤ hf.meromorphicAt.order ↔ AnalyticAt 𝕜 f x := by
   constructor <;> intro h₂f
   · rw [meromorphicNFAt_iff_analyticAt_or] at hf
@@ -139,7 +139,7 @@ theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 ## Continuous extension and conversion to normal form
 -/
 
-variable (f) (x) in
+variable (f x) in
 /-- If `f` is meromorphic at `x`, convert `f` to normal form at `x` by changing its value at `x`.
 Otherwise, returns the 0 function. -/
 noncomputable def toMeromorphicNFAt :
@@ -201,7 +201,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
     exact analyticAt_const.MeromorphicNFAt
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
-theorem meromorphicNFAt_iff_toNF_eq_id :
+@[simp] theorem toMeromorphicNFAt_eq_self :
     MeromorphicNFAt f x ↔ f = toMeromorphicNFAt f x where
   mp hf := by
     funext z
