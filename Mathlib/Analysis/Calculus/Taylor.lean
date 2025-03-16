@@ -429,21 +429,14 @@ theorem taylorCoeffWithin_neg {f : ℝ → ℝ} {x₀ : ℝ} (d : ℕ) :
   have : (-1 : ℝ)^d * (-1)^d = 1 := by rw [←pow_add, ← two_mul, (even_two_mul d).neg_one_pow ]
   field_simp [taylorCoeffWithin, iteratedDerivWithin_univ, iteratedDeriv_comp_neg, this, ←mul_assoc]
 
-theorem taylorWithinEval_neg {f : Real → Real} {x₀ x : Real} {n : Nat}
-                             (hf : ContDiff Real (n + 1) f) :
-  taylorWithinEval f n Set.univ x₀ x =
-  taylorWithinEval (fun x => f (-x)) n Set.univ (-x₀) (-x) := by
-  unfold taylorWithinEval
-  unfold taylorWithin
-  rw [Finset.sum_congr rfl
-      (by intro d hd; rw [taylorCoeffWithin_neg d
-                          (ContDiff.of_le hf (by norm_cast; exact Finset.mem_range_le hd))])]
-  simp
-  apply Finset.sum_congr rfl
-  intro d _
-  simp only [PolynomialModule.eval_smul, Polynomial.eval_pow, Polynomial.eval_X]
-  simp [← mul_pow, ← mul_assoc]
-  apply Or.inl; ring
+theorem taylorWithinEval_neg {f : ℝ → ℝ} (x₀ x : ℝ) {n : ℕ} :
+    taylorWithinEval (fun x => f (-x)) n Set.univ (-x₀) (-x)
+      = taylorWithinEval f n Set.univ x₀ x := by
+  simp only [taylorWithinEval, taylorWithin, PolynomialModule.comp_apply,
+    PolynomialModule.map_single, PolynomialModule.eval_single, map_sum, map_neg, sub_neg_eq_add]
+  apply Finset.sum_congr rfl (fun d _ ↦ ?_)
+  simp [taylorCoeffWithin_neg d, ← mul_pow, ← mul_assoc, PolynomialModule.eval_smul,
+    Polynomial.eval_pow, Polynomial.eval_X, sub_eq_neg_add x x₀]
 
 theorem taylorCoeffWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
     (s : Set ℝ) (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
