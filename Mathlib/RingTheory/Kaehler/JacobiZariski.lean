@@ -37,6 +37,9 @@ variable {R : Type u} {S : Type v} [CommRing R] [CommRing S] [Algebra R S] {P : 
 variable {T : Type uT} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (Q : Generators.{w} S T) (P : Generators.{w'} R S)
 
+unif_hint toExtension_Ring where ⊢
+  P.toExtension.Ring ≟ P.Ring
+
 attribute [local instance] SMulCommClass.of_commMonoid
 
 namespace Generators
