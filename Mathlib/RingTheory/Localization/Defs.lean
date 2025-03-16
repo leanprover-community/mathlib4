@@ -120,7 +120,7 @@ variable (M) {S}
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
   IsLocalization.surj'
 
-variable (S)
+variable (S) in
 @[inherit_doc IsLocalization.exists_of_eq]
 theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M, ↑c * x = ↑c * y :=
   Iff.intro IsLocalization.exists_of_eq fun ⟨c, h⟩ ↦ by
@@ -128,7 +128,6 @@ theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M,
     rw [map_mul, map_mul] at h
     exact (IsLocalization.map_units S c).mul_right_inj.mp h
 
-variable {S}
 theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
     IsLocalization N S where
   map_units' r := h₂ r r.2
@@ -712,10 +711,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
   · intro x y
     rw [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, RingHom.comp_apply,
       IsLocalization.eq_iff_exists M S]
-    simp_rw [← h.toEquiv.apply_eq_iff_eq]
-    change (∃ c : M, h (c * h.symm x) = h (c * h.symm y)) → _
-    simp only [RingEquiv.apply_symm_apply, RingEquiv.map_mul]
-    exact fun ⟨c, e⟩ ↦ ⟨⟨_, _, c.prop, rfl⟩, e⟩
+    simp [← h.toEquiv.apply_eq_iff_eq]
 
 theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsLocalization M S ↔
@@ -780,7 +776,7 @@ theorem add_mk_self (a b c) : (mk a b : Localization M) + mk c b = mk (a + c) b 
   ring
 
 /-- For any given denominator `b : M`, the map `a ↦ a / b` is an `AddMonoidHom` from `R` to
-  `Localization M`-/
+  `Localization M`. -/
 @[simps]
 def mkAddMonoidHom (b : M) : R →+ Localization M where
   toFun a := mk a b
@@ -849,6 +845,14 @@ namespace IsLocalization
 
 variable {K : Type*} [IsLocalization M S]
 
+theorem mk'_neg (x : R) (y : M) :
+    mk' S (-x) y = - mk' S x y := by
+  rw [eq_comm, eq_mk'_iff_mul_eq, neg_mul, map_neg, mk'_spec]
+
+theorem mk'_sub (x₁ x₂ : R) (y₁ y₂ : M) :
+    mk' S (x₁ * y₂ - x₂ * y₁) (y₁ * y₂) = mk' S x₁ y₁ - mk' S x₂ y₂ := by
+  rw [sub_eq_add_neg, sub_eq_add_neg, ← mk'_neg, ← mk'_add, neg_mul]
+
 include M in
 lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
     (h : ∀ x, f (algebraMap R S x) = 0 → algebraMap R S x = 0) :
@@ -862,7 +866,7 @@ lemma injective_of_map_algebraMap_zero {T} [CommRing T] (f : S →+* T)
 theorem to_map_eq_zero_iff {x : R} (hM : M ≤ nonZeroDivisors R) : algebraMap R S x = 0 ↔ x = 0 := by
   rw [← (algebraMap R S).map_zero]
   constructor <;> intro h
-  · cases' (eq_iff_exists M S).mp h with c hc
+  · obtain ⟨c, hc⟩ := (eq_iff_exists M S).mp h
     rw [mul_zero, mul_comm] at hc
     exact hM c.2 x hc
   · rw [h]
@@ -900,13 +904,13 @@ theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [Is
     (hM : M ≤ nonZeroDivisors A) : NoZeroDivisors S :=
   { eq_zero_or_eq_zero_of_mul_eq_zero := by
       intro z w h
-      cases' surj M z with x hx
-      cases' surj M w with y hy
+      obtain ⟨x, hx⟩ := surj M z
+      obtain ⟨y, hy⟩ := surj M w
       have :
         z * w * algebraMap A S y.2 * algebraMap A S x.2 = algebraMap A S x.1 * algebraMap A S y.1 :=
         by rw [mul_assoc z, hy, ← hx]; ring
       rw [h, zero_mul, zero_mul, ← (algebraMap A S).map_mul] at this
-      cases' eq_zero_or_eq_zero_of_mul_eq_zero ((to_map_eq_zero_iff S hM).mp this.symm) with H H
+      rcases eq_zero_or_eq_zero_of_mul_eq_zero ((to_map_eq_zero_iff S hM).mp this.symm) with H | H
       · exact Or.inl (eq_zero_of_fst_eq_zero hx H)
       · exact Or.inr (eq_zero_of_fst_eq_zero hy H) }
 

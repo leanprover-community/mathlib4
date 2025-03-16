@@ -80,8 +80,7 @@ instance inhabitedPrelocalPredicate (T : TopCat.{v}) :
     Inhabited (PrelocalPredicate fun _ : X => T) :=
   ⟨continuousPrelocal X T⟩
 
-variable {X}
-
+variable {X} in
 /-- Given a topological space `X : TopCat` and a type family `T : X → Type`,
 a `P : LocalPredicate T` consists of:
 * a family of predicates `P.pred`, one for each `U : Opens X`, of the form `(Π x : U, T x) → Prop`
@@ -99,8 +98,6 @@ structure LocalPredicate extends PrelocalPredicate T where
     ∀ {U : Opens X} (f : ∀ x : U, T x)
       (_ : ∀ x : U, ∃ (V : Opens X) (_ : x.1 ∈ V) (i : V ⟶ U),
         pred fun x : V => f (i x : U)), pred f
-
-variable (X)
 
 /-- Continuity is a "local" predicate on functions to a fixed topological space `T`.
 -/

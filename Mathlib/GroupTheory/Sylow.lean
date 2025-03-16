@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.GroupTheory.PGroup
 import Mathlib.GroupTheory.NoncommPiCoprod
@@ -55,14 +56,8 @@ namespace Sylow
 
 attribute [coe] toSubgroup
 
--- Porting note: Changed to `CoeOut`
 instance : CoeOut (Sylow p G) (Subgroup G) :=
   ⟨toSubgroup⟩
-
--- Porting note: syntactic tautology
--- @[simp]
--- theorem toSubgroup_eq_coe {P : Sylow p G} : P.toSubgroup = ↑P :=
---   rfl
 
 @[ext]
 theorem ext {P Q : Sylow p G} (h : (P : Subgroup G) = Q) : P = Q := by cases P; cases Q; congr
@@ -626,7 +621,7 @@ theorem exists_subgroup_card_pow_succ [Finite G] {p : ℕ} {n : ℕ} [hp : Fact 
     exact Nat.card_congr
       (preimageMkEquivSubgroupProdSet (H.subgroupOf H.normalizer) (zpowers x)), by
     intro y hy
-    simp only [exists_prop, Subgroup.coeSubtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
+    simp only [exists_prop, Subgroup.coe_subtype, mk'_apply, Subgroup.mem_map, Subgroup.mem_comap]
     refine ⟨⟨y, le_normalizer hy⟩, ⟨0, ?_⟩, rfl⟩
     dsimp only
     rw [zpow_zero, eq_comm, QuotientGroup.eq_one_iff]
@@ -755,11 +750,9 @@ theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)
 theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     P.normalizer.normalizer = P.normalizer := by
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
-  simp_rw [← normalizer_eq_top_iff, coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
-    subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
-  rw [← range_subtype P.normalizer.normalizer, MonoidHom.range_eq_map,
-    ← this trivial]
-  exact map_comap_eq_self (le_normalizer.trans (ge_of_eq (range_subtype _)))
+  rw [coe_subtype, normal_subgroupOf_iff_le_normalizer (le_normalizer.trans le_normalizer),
+    ← subgroupOf_normalizer_eq (le_normalizer.trans le_normalizer)] at this
+  exact le_antisymm (this normal_in_normalizer) le_normalizer
 
 theorem normal_of_all_max_subgroups_normal [Finite G]
     (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]

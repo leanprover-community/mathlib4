@@ -50,7 +50,7 @@ section Lintegral
 
 open SimpleFunc
 
-variable {m : MeasurableSpace α} {μ ν : Measure α}
+variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
 irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
@@ -283,6 +283,13 @@ theorem lintegral_congr_ae {f g : α → ℝ≥0∞} (h : f =ᵐ[μ] g) : ∫⁻
 
 theorem lintegral_congr {f g : α → ℝ≥0∞} (h : ∀ a, f a = g a) : ∫⁻ a, f a ∂μ = ∫⁻ a, g a ∂μ := by
   simp only [h]
+
+lemma lintegral_eq_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : ℝ≥0∞}
+    (hf : ∀ᵐ x ∂μ, f x = c) : ∫⁻ x, f x ∂μ = c := by simp [lintegral_congr_ae hf]
+
+lemma lintegral_le_const [IsProbabilityMeasure μ] {f : α → ℝ≥0∞} {c : ℝ≥0∞}
+    (hf : ∀ᵐ x ∂μ, f x ≤ c) : ∫⁻ x, f x ∂μ ≤ c :=
+  (lintegral_mono_ae hf).trans_eq (by simp)
 
 theorem setLIntegral_congr {f : α → ℝ≥0∞} {s t : Set α} (h : s =ᵐ[μ] t) :
     ∫⁻ x in s, f x ∂μ = ∫⁻ x in t, f x ∂μ := by rw [Measure.restrict_congr_set h]
@@ -1313,6 +1320,13 @@ theorem lintegral_add_compl (f : α → ℝ≥0∞) {A : Set α} (hA : Measurabl
     ∫⁻ x in A, f x ∂μ + ∫⁻ x in Aᶜ, f x ∂μ = ∫⁻ x, f x ∂μ := by
   rw [← lintegral_add_measure, Measure.restrict_add_restrict_compl hA]
 
+lemma lintegral_piecewise (hs : MeasurableSet s) (f g : α → ℝ≥0∞) [∀ j, Decidable (j ∈ s)] :
+    ∫⁻ a, s.piecewise f g a ∂μ = ∫⁻ a in s, f a ∂μ + ∫⁻ a in sᶜ, g a ∂μ := by
+  rw [← lintegral_add_compl _ hs]
+  congr 1
+  · exact setLIntegral_congr_fun hs <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_mem _ _ _
+  · exact setLIntegral_congr_fun hs.compl <| ae_of_all μ fun _ ↦ Set.piecewise_eq_of_not_mem _ _ _
+
 theorem setLintegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : MeasurableSet s)
     (hfs : ∫⁻ x in s, f x ∂μ ≠ ∞) :
     ∫⁻ x in sᶜ, f x ∂μ = ∫⁻ x, f x ∂μ - ∫⁻ x in s, f x ∂μ := by
@@ -1447,7 +1461,7 @@ section UnifTight
 such that the integral of `f` over `sᶜ` is less than a given positive number.
 
 Also used to prove an `Lᵖ`-norm version in
-`MeasureTheory.Memℒp.exists_eLpNorm_indicator_compl_le`. -/
+`MeasureTheory.MemLp.exists_eLpNorm_indicator_compl_le`. -/
 theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a ∂μ ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     ∃ s : Set α, MeasurableSet s ∧ μ s < ∞ ∧ ∫⁻ a in sᶜ, f a ∂μ < ε := by
@@ -1493,6 +1507,7 @@ variable [MeasurableSpace α]
 theorem lintegral_dirac' (a : α) {f : α → ℝ≥0∞} (hf : Measurable f) : ∫⁻ a, f a ∂dirac a = f a := by
   simp [lintegral_congr_ae (ae_eq_dirac' hf)]
 
+@[simp]
 theorem lintegral_dirac [MeasurableSingletonClass α] (a : α) (f : α → ℝ≥0∞) :
     ∫⁻ a, f a ∂dirac a = f a := by simp [lintegral_congr_ae (ae_eq_dirac f)]
 
@@ -1653,7 +1668,7 @@ lemma tendsto_of_lintegral_tendsto_of_monotone_aux {α : Type*} {mα : Measurabl
     filter_upwards [h_bound, h_bound_finite, hf_mono] with a h_le h_fin h_mono
     have h_tendsto : Tendsto (fun i ↦ f i a) atTop atTop ∨
         ∃ l, Tendsto (fun i ↦ f i a) atTop (𝓝 l) := tendsto_of_monotone h_mono
-    cases' h_tendsto with h_absurd h_tendsto
+    rcases h_tendsto with h_absurd | h_tendsto
     · rw [tendsto_atTop_atTop_iff_of_monotone h_mono] at h_absurd
       obtain ⟨i, hi⟩ := h_absurd (F a + 1)
       refine absurd (hi.trans (h_le _)) (not_le.mpr ?_)

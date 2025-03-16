@@ -23,8 +23,6 @@ variable {α : Type*}
 
 /-- `Compares o a b` means that `a` and `b` have the ordering relation `o` between them, assuming
 that the relation `a < b` is defined. -/
--- Porting note: we have removed `@[simp]` here in favour of separate simp lemmas,
--- otherwise this definition will unfold to a match.
 def Compares [LT α] : Ordering → α → α → Prop
   | lt, a, b => a < b
   | eq, a, b => a = b

@@ -3,9 +3,7 @@ Copyright (c) 2017 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Johannes Hölzl, Chris Hughes, Jens Wagemaker, Jon Eugster
 -/
-import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Logic.Function.Basic
 
 /-!
 # Units (i.e., invertible elements) of a monoid
@@ -114,7 +112,7 @@ theorem ext : Function.Injective (val : αˣ → α)
 
 @[to_additive (attr := norm_cast)]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
-  ext.eq_iff
+  ⟨fun h => ext h, congr_arg _⟩
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality

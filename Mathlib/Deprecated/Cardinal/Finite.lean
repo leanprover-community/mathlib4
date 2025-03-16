@@ -113,7 +113,7 @@ theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := 
   unfold PartENat.card
   apply symm
   rw [Cardinal.natCast_eq_toPartENat_iff]
-  exact Finite.cast_card_eq_mk
+  exact Nat.cast_card
 
 
 end PartENat

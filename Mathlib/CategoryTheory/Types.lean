@@ -48,9 +48,6 @@ instance types : LargeCategory (Type u) where
 theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
--- because of its "if all else fails, apply all `ext` lemmas" policy,
--- which apparently we want to move away from.
 @[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
   funext x
   exact h x
@@ -212,7 +209,7 @@ instance uliftFunctor_faithful : uliftFunctor.Faithful where
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
 
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
- -/
+-/
 def uliftFunctorTrivial : uliftFunctor.{u, u} ≅ 𝟭 _ :=
   NatIso.ofComponents uliftTrivial
 
@@ -258,10 +255,7 @@ allows us to use these functors in category theory. -/
 def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] : Type u ⥤ Type v where
   obj := m
   map f := Functor.map f
-  map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via
-  `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its
-  original proof -/
-  map_comp f g := funext fun _ => LawfulFunctor.comp_map f g _
+  map_id := fun α => by funext X; apply id_map
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 
