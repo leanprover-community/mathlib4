@@ -482,13 +482,19 @@ def sum_self [IsEmpty M] :
     UnorientedBordism k (s.sum s) (SingularNManifold.empty X M I) (I.prod (𝓡∂ 1)) where
   -- This is the same manifold as for `refl`, but with a different map.
   W := s.M × (Set.Icc (0 : ℝ) 1)
-  -- TODO: I want boundary data modelled on I, not I × (∂[0,1])
-  bd := sorry -- BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
+  -- XXX: I'm using special boundary data modelled on I, as opposed to
+  -- BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
+  -- modelled on I × (∂[0,1])
+  bd := BoundaryManifoldData.prod_Icc _ k I
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
-  φ := sorry -- map everything into the left component
-  hFf := sorry
-  hFg := sorry
+  φ := Diffeomorph.sumEmpty I _ k
+  hFf := by
+    ext x
+    cases x <;> simp
+  hFg := by
+    ext x
+    apply (IsEmpty.false x).elim
 
 /-- Mapping a bordism between `M` and `N` on `X` under a continuous map `f : X → Y` -/
 def map.{u, v} {f : X → Y} (hf : Continuous f) (φ : UnorientedBordism.{u, v} k s t J) :

@@ -384,6 +384,11 @@ noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
         ext; exacts [by simp, by simp_all [h.symm]]
 
 @[simp, mfld_simps]
+lemma BoundaryManifoldData.prod_Icc_M₀ [BoundarylessManifold I M] :
+    (BoundaryManifoldData.prod_Icc M k I).M₀ = (M ⊕ M) :=
+  rfl
+
+@[simp, mfld_simps]
 lemma BoundaryManifoldData.prod_Icc_f [BoundarylessManifold I M] :
     (BoundaryManifoldData.prod_Icc M k I).f = Sum.elim (·, ⊥) (·, ⊤) :=
   rfl
