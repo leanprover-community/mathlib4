@@ -455,7 +455,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
   {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
 /-- A product `M × [x,y]` for `M` boundaryless has boundary `M × {x, y}`. -/
-lemma boundary_product [I.Boundaryless] :
+lemma boundary_product [BoundarylessManifold I M] :
     (I.prod (𝓡∂ 1)).boundary (M × Icc x y) = Set.prod univ {⊥, ⊤} := by
   rw [I.boundary_of_boundaryless_left, boundary_Icc]
 
