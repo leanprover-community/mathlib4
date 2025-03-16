@@ -229,74 +229,45 @@ namespace Classifier
 
 open Subobject HasClassifier
 
-variable {C : Type u} [Category.{v} C] [HasTerminal C] {𝒞 : Classifier C}
-
 /-! #### From classifiers to representations -/
 
 section RepresentableBy
 
-/-- `x.cmap` is the unique characteristic map of subobject `x` given by the `IsClassifier` property.
--/
-noncomputable def cmap {X : C} (x : Subobject X) : X ⟶ 𝒞.Ω :=
-  𝒞.χ x.arrow
+variable {C : Type u} [Category.{v} C] [HasTerminal C] [HasPullbacks C] (𝒞 : Classifier C)
 
-variable [HasPullbacks C]
+lemma surjective_χ {X : C} (φ : X ⟶ 𝒞.Ω) :
+    ∃ (Z : C) (i : Z ⟶ X) (_ : Mono i), φ = 𝒞.χ i :=
+  ⟨Limits.pullback φ 𝒞.truth, pullback.fst _ _, inferInstance, 𝒞.uniq _ _ (by
+    convert IsPullback.of_hasPullback φ 𝒞.truth
+    apply Subsingleton.elim)⟩
 
-/-- `compr χ` builds the subobject whose characteristic map is `φ` by pulling back `truth` along
-    `φ`. This generalizes the construction of a subset "by comprehension" from its characteristic
-    function in set theory. -/
-noncomputable def compr {X : C} (φ : X ⟶ 𝒞.Ω) : Subobject X :=
-  (Subobject.pullback φ).obj (Subobject.mk 𝒞.truth)
+@[simp]
+lemma pullback_χ_obj_mk_truth {Z X : C} (i : Z ⟶ X) [Mono i] :
+    (Subobject.pullback (𝒞.χ i)).obj (.mk 𝒞.truth) = .mk i :=
+  Subobject.pullback_obj_mk (𝒞.isPullback i).flip
 
-lemma compr_isPullback {X : C} (φ : X ⟶ 𝒞.Ω) :
-    IsPullback (compr φ).arrow (terminal.from (compr φ : C)) φ 𝒞.truth := by
-  have h := IsPullback.of_hasPullback 𝒞.truth φ
-  let i : (compr φ : C) ≅ Limits.pullback 𝒞.truth φ := underlyingIso _
-  apply IsPullback.flip
-  apply IsPullback.of_iso h
+@[simp]
+lemma χ_pullback_obj_mk_truth_arrow {X : C} (φ : X ⟶ 𝒞.Ω) :
+    𝒞.χ ((Subobject.pullback φ).obj (.mk 𝒞.truth)).arrow = φ := by
+  obtain ⟨Z, i, _, rfl⟩ := 𝒞.surjective_χ φ
+  refine (𝒞.uniq _ _ ?_).symm
+  refine (IsPullback.of_hasPullback 𝒞.truth (𝒞.χ i)).flip.of_iso
     (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    <;> try aesop_cat
-  have heq : (compr φ).arrow = (Subobject.mk (pullback.snd 𝒞.truth φ)).arrow := by rfl
-  simp [heq]
+    ?_ (Subsingleton.elim _ _) (by simp) (by simp)
+  dsimp
+  rw [Iso.eq_inv_comp, comp_id, underlyingIso_hom_comp_eq_mk]
+  rfl
 
-lemma compr_cmap {X : C} (x : Subobject X) :
-    compr (𝒞 := 𝒞) (cmap x) = x := by
-  have h : IsPullback x.arrow (terminal.from (x : C)) (cmap x) 𝒞.truth :=
-    𝒞.isPullback x.arrow
-  have h' : IsPullback (compr (𝒞 := 𝒞) (cmap x)).arrow (terminal.from (compr (cmap x) : C))
-                       (cmap x) 𝒞.truth := by
-    apply compr_isPullback
-  apply IsPullback.flip at h
-  apply IsPullback.flip at h'
-  exact eqOfIsPullback h' h
-
-lemma cmap_compr {X : C} (φ : X ⟶ 𝒞.Ω) :
-    cmap (compr φ) = φ := by
-  have h := compr_isPullback φ
-  conv => rhs; rw [𝒞.uniq (compr φ).arrow φ h]
-  simp [cmap]
-
-variable {C : Type u} [Category.{v} C] [HasTerminal C] [HasPullbacks C]
-
-/-- Any subobject classifier `Ω` represents the subobjects functor `sub`. -/
-noncomputable def representableBy (𝒞 : Classifier C) :
-    (Subobject.presheaf C).RepresentableBy 𝒞.Ω := by
-  exact {
-    /- The correspondence `compr` sending each map `φ : X ⟶ Ω` to the corresponding subobject is a
-       bijection with `cmap` as inverse. -/
-    homEquiv := {
-      toFun := compr
-      invFun := cmap
-      left_inv := cmap_compr
-      right_inv := compr_cmap
-    }
-    /- Furthermore, this bijection is natural by the fact that two pullback squares placed side by
-       side yield a pullback rectangle (lemma `Subobject.pullback_comp`). -/
-    homEquiv_comp := by
-      intro X X' f g
-      dsimp
-      simp [compr, pullback_comp]
+/-- Any subobject classifier `Ω` represents the subobjects functor `Subobject.presheaf`. -/
+noncomputable def representableBy :
+    (Subobject.presheaf C).RepresentableBy 𝒞.Ω where
+  homEquiv := {
+    toFun φ := (Subobject.pullback φ).obj (Subobject.mk 𝒞.truth)
+    invFun x := 𝒞.χ x.arrow
+    left_inv φ := by simp
+    right_inv x := by simp
   }
+  homEquiv_comp _ _ := by simp [pullback_comp]
 
 end RepresentableBy
 
@@ -305,7 +276,6 @@ end RepresentableBy
 section FromRepresentation
 
 variable {C : Type u} [Category.{v} C] [HasPullbacks C]
-
 variable {Ω : C} (h : (Subobject.presheaf C).RepresentableBy Ω)
 
 namespace SubobjectRepresentableBy
