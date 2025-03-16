@@ -153,7 +153,7 @@ noncomputable def toMeromorphicNFAt :
     · exact 0
   · exact 0
 
-/-- Conversion to normal form at `x` by changes the value only at x. -/
+/-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt (hf : MeromorphicAt f x) :
     Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
