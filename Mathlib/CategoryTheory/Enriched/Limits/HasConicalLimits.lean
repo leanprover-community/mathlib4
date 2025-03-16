@@ -26,8 +26,9 @@ The main constructions are the following.
 ## Implementation notes
 
 It seems that instance inference would work much smoother when `V` would be made
-an `(V : outParam <| Type u')` for the `class`es below. However, this might
-cause other problems, for example maybe if different `[MonoidalCategory _]` are in scope.
+an `(V : outParam <| Type u')` for the `class`es below. However, this could maybe
+cause other problems, maybe such an example would be if
+different `[MonoidalCategory _]` are in scope.
 -/
 
 universe v₁ u₁ v₂ u₂ w v' v u u'
@@ -38,7 +39,6 @@ open Limits
 
 section Definitions
 
--- note: for the classes it seems that instance inference wants `V` to be an `outParam`.
 variable {J : Type u₁} [Category.{v₁} J]
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
@@ -92,23 +92,18 @@ variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 example (F : J ⥤ C) [HasConicalLimit V F] : HasLimit F := inferInstance
 
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
--- TODO: errors if made an `instance`.
 lemma HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
     HasLimitsOfShape J C where
   has_limit _ := inferInstance
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
--- TODO: errors if made an `instance`.
 lemma HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
   has_limits_of_shape J :=
-    -- TODO: use `inferInstance` instead
     HasConicalLimitsOfShape.hasLimitsOfShape J V C
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
--- TODO: errors if made an `instance`.
 lemma HasConicalLimits.hasLimits [HasConicalLimits V C] : HasLimits C :=
-  -- TODO: use `inferInstance` instead
   HasConicalLimitsOfSize.hasLimitsOfSize V C
 
 end Results
