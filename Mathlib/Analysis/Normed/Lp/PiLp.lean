@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Jireh Loreaux
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.Analysis.Normed.Lp.WithLp
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L^p` distance on finite products of metric spaces
@@ -792,6 +792,31 @@ def _root_.LinearIsometryEquiv.piLpCurry :
   rfl
 
 end piLpCurry
+
+section sumPiLpEquivProdLpPiLp
+
+variable {ι κ : Type} (α : ι ⊕ κ → Type*) {p : ENNReal}
+variable [∀ i, SeminormedAddCommGroup (α i)]
+variable [∀ i, Module 𝕜 (α i)] [Fintype ι] [Fintype κ] [Fact (1 ≤ p)]
+
+/-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry -/
+@[simps]
+def sumPiLpEquivProdLpPiLp :
+    WithLp p (Π i, α i) ≃ₗᵢ[𝕜]
+      WithLp p (WithLp p (Π i, α (.inl i)) × WithLp p (Π i, α (.inr i))) where
+  toLinearEquiv :=
+    WithLp.linearEquiv p _ _
+      ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
+      ≪≫ₗ LinearEquiv.prod (WithLp.linearEquiv p _ _).symm (WithLp.linearEquiv p _ _).symm
+      ≪≫ₗ (WithLp.linearEquiv p _ _).symm
+  norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
+    obtain rfl | hp := p.dichotomy
+    · simp
+      sorry
+    · simp
+      sorry
+
+end sumPiLpEquivProdLpPiLp
 
 section Single
 
