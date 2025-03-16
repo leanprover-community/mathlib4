@@ -516,6 +516,10 @@ and `Set.range A.col`.
 this is now called `Matrix.colConst`) -/
 def col (A : Matrix m n α) : n → m → α := Aᵀ
 
+lemma row_eq_self (A : Matrix m n α) : A.row = A := rfl
+
+lemma col_eq_transpose (A : Matrix m n α) : A.col = Aᵀ := rfl
+
 lemma row_def (A : Matrix m n α) : A.row = fun i ↦ A i := rfl
 
 lemma col_def (A : Matrix m n α) : A.col = fun j ↦ Aᵀ j := rfl
