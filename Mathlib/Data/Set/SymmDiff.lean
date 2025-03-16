@@ -6,7 +6,7 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.BooleanAlgebra
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Subtype
 import Mathlib.Tactic.Tauto
 import Mathlib.Tactic.ByContra
 import Mathlib.Util.Delaborators

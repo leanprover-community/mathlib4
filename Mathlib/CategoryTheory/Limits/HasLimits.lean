@@ -6,7 +6,7 @@ Authors: Reid Barton, Mario Carneiro, Kim Morrison, Floris van Doorn
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.ULift
 import Mathlib.CategoryTheory.EssentiallySmall
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Subtype
 
 /-!
 # Existence of limits and colimits

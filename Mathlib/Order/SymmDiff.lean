@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bryan Gin-ge Chen, Yaël Dillies
 -/
 import Mathlib.Order.BooleanAlgebra
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Subtype
 
 /-!
 # Symmetric difference and bi-implication

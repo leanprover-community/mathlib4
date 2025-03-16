@@ -1,5 +1,5 @@
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Subtype
 
 set_option autoImplicit true
 -- testing that the attribute is recognized
