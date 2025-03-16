@@ -15,7 +15,6 @@ basic lemmas about those divisors.
 
 ## TODO
 
-- Remove the assumption `CompleteSpace E`.
 - Compatibility with restriction of divisors/functions
 - Non-negativity of the divisor for an analytic function
 - Behavior under addition of functions
