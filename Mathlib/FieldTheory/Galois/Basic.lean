@@ -197,20 +197,20 @@ theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· �
 nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
   fixingSubgroup (E ≃ₐ[F] E) (K : Set E)
 
-/-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L`. -/
-theorem fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
-    fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
-  ext f
-  refine ⟨fun _ => Subgroup.mem_top _, fun _ => ?_⟩
-  rintro ⟨x, hx : x ∈ (⊥ : IntermediateField K L)⟩
-  rw [mem_bot] at hx
-  rcases hx with ⟨y, rfl⟩
-  exact f.commutes y
-
 /-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`. -/
 theorem mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
   ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
+
+@[simp] lemma fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
+  ext
+  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
+
+@[simp] lemma fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
+    fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
+  ext
+  simp [mem_fixingSubgroup_iff, mem_bot]
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩

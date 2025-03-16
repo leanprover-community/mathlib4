@@ -67,10 +67,13 @@ def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgrou
 @[deprecated (since := "2025-03-16")]
 alias IntermediateField.finiteDimensional_bot := IntermediateField.instFiniteSubtypeMemBot
 
+@[deprecated (since := "2025-03-16")]
+alias IntermediateField.fixingSubgroup.bot := IntermediateField.fixingSubgroup_bot
+
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L`. -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
-  ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup.bot⟩
+  ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup_bot K L⟩
 
 @[deprecated (since := "2025-03-16")]
 alias finiteDimensional_sup := IntermediateField.finiteDimensional_sup
@@ -243,16 +246,6 @@ instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L
   isTotallyDisconnected_univ := krullTopology_totallyDisconnected
 
 end TotallyDisconnected
-
-@[simp] lemma IntermediateField.fixingSubgroup_top (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊤ : IntermediateField K L) = ⊥ := by
-  ext
-  simp [mem_fixingSubgroup_iff, DFunLike.ext_iff]
-
-@[simp] lemma IntermediateField.fixingSubgroup_bot (K L : Type*) [Field K] [Field L] [Algebra K L] :
-    IntermediateField.fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
-  ext
-  simp [mem_fixingSubgroup_iff, mem_bot]
 
 instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type*) [Field K] [Field L]
     [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
