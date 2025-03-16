@@ -144,8 +144,7 @@ theorem isBipartiteWith_neighborFinset (h : G.IsBipartiteWith s t) (hv : v ∈ s
 "above" `v` according to the adjacency relation of `G`. -/
 theorem isBipartiteWith_bipartiteAbove (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
     G.neighborFinset v = bipartiteAbove G.Adj t v := by
-  rw [isBipartiteWith_neighborFinset h hv]
-  rfl
+  rw [isBipartiteWith_neighborFinset h hv, bipartiteAbove]
 
 /-- If `G.IsBipartiteWith s t` and `v ∈ s`, then the neighbor finset of `v` is a subset of `s`. -/
 theorem isBipartiteWith_neighborFinset_subset (h : G.IsBipartiteWith s t) (hv : v ∈ s) :
@@ -177,8 +176,7 @@ theorem isBipartiteWith_neighborFinset' (h : G.IsBipartiteWith s t) (hw : w ∈ 
 "below" `w` according to the adjacency relation of `G`. -/
 theorem isBipartiteWith_bipartiteBelow (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
     G.neighborFinset w = bipartiteBelow G.Adj s w := by
-  rw [isBipartiteWith_neighborFinset' h hw]
-  rfl
+  rw [isBipartiteWith_neighborFinset' h hw, bipartiteBelow]
 
 /-- If `G.IsBipartiteWith s t` and `w ∈ t`, then the neighbor finset of `w` is a subset of `s`. -/
 theorem isBipartiteWith_neighborFinset_subset' (h : G.IsBipartiteWith s t) (hw : w ∈ t) :
