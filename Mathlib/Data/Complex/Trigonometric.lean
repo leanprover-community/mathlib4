@@ -885,11 +885,11 @@ theorem sin_pos_of_pos_of_le_two {x : ℝ} (hx0 : 0 < x) (hx : x ≤ 2) : 0 < si
         (cos_pos_of_le_one (by rwa [abs_of_nonneg (le_of_lt (half_pos hx0))]))
     _ = sin x := by rw [← sin_two_mul, two_mul, add_halves]
 
-theorem cos_one_le : cos 1 ≤ 2 / 3 :=
+theorem cos_one_le : cos 1 ≤ 5 / 9 :=
   calc
     cos 1 ≤ |(1 : ℝ)| ^ 4 * (5 / 96) + (1 - 1 ^ 2 / 2) :=
       sub_le_iff_le_add.1 (abs_sub_le_iff.1 (cos_bound (by simp))).1
-    _ ≤ 2 / 3 := by norm_num
+    _ ≤ 5 / 9 := by norm_num
 
 theorem cos_one_pos : 0 < cos 1 :=
   cos_pos_of_le_one (le_of_eq abs_one)
@@ -897,7 +897,7 @@ theorem cos_one_pos : 0 < cos 1 :=
 theorem cos_two_neg : cos 2 < 0 :=
   calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
     _ = _ := Real.cos_two_mul 1
-    _ ≤ 2 * (2 / 3) ^ 2 - 1 := by
+    _ ≤ 2 * (5 / 9) ^ 2 - 1 := by
       gcongr
       · exact cos_one_pos.le
       · apply cos_one_le
