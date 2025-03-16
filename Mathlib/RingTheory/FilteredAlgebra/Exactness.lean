@@ -206,7 +206,9 @@ theorem strict_exact_discrete
           rw [← hx']
           convert_to g (f x') = 0
           exact comp_zero x'
-        · sorry
+        · convert_to 0 ∈ Gr+(i)[g].ker
+          exact AssociatedGraded.of_eq_of_ne p i y' fun a ↦ h (id a.symm)
+          simp only [AddMonoidHom.mem_ker, map_zero, y']
       obtain ⟨xₚ, hxₚ⟩ := Set.mem_range.1 <| (exact yₚ).1 this
       sorry
     strict_lt := sorry
