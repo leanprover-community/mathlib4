@@ -516,11 +516,25 @@ and `Set.range A.col`.
 this is now called `Matrix.colConst`) -/
 abbrev col (A : Matrix m n α) : n → m → α := Aᵀ
 
-@[simp]
 lemma row_apply (A : Matrix m n α) (i : m) (j : n) : A.row i j = A i j := rfl
 
-@[simp]
 lemma col_apply (A : Matrix m n α) (i : n) (j : m) : A.col i j = A j i := rfl
+
+lemma submatrix_row {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
+    (A.submatrix r c).row i = (A.submatrix id c).row (r i) := rfl
+
+lemma submatrix_row_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
+    (A.submatrix r c).row i = A.row (r i) ∘ c := rfl
+
+lemma submatrix_col {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
+    (A.submatrix r c).col j = (A.submatrix r id).col (c j) := rfl
+
+lemma submatrix_col_eq_comp {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (j : n₀) :
+    (A.submatrix r c).col j = A.col (c j) ∘ r := rfl
+
+lemma map_row (A : Matrix m n α) (f : α → β) (i : m) : (A.map f).row i = f ∘ A.row i := rfl
+
+lemma map_col (A : Matrix m n α) (f : α → β) (j : n) : (A.map f).col j = f ∘ A.col j := rfl
 
 @[simp]
 lemma transpose_row (A : Matrix m n α) : Aᵀ.row = A.col := rfl
