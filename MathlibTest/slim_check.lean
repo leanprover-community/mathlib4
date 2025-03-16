@@ -238,7 +238,7 @@ error:
 Found a counter-example!
 x := 4
 issue: 64 < 42 does not hold
-(1 shrinks)
+(0 shrinks)
 -------------------
 -/
 #guard_msgs in
