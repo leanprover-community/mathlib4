@@ -294,21 +294,20 @@ theorem toNNReal_mul_top (a : ℝ≥0∞) : ENNReal.toNNReal (a * ∞) = 0 := by
 
 theorem toNNReal_top_mul (a : ℝ≥0∞) : ENNReal.toNNReal (∞ * a) = 0 := by simp
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
-def toNNRealHom : ℝ≥0∞ →* ℝ≥0 where
+def toNNRealHom : ℝ≥0∞ →*₀ ℝ≥0 where
   toFun := ENNReal.toNNReal
   map_one' := toNNReal_coe _
   map_mul' _ _ := toNNReal_mul
+  map_zero' := zero_toNNReal
 
 @[simp]
 theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal ^ n :=
   toNNRealHom.map_pow a n
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
-def toRealHom : ℝ≥0∞ →* ℝ :=
-  (NNReal.toRealHom : ℝ≥0 →* ℝ).comp toNNRealHom
+def toRealHom : ℝ≥0∞ →*₀ ℝ :=
+  (NNReal.toRealHom : ℝ≥0 →*₀ ℝ).comp toNNRealHom
 
 @[simp]
 theorem toReal_mul : (a * b).toReal = a.toReal * b.toReal :=
@@ -381,8 +380,6 @@ theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f 
 theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toNNReal = sInf (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- Porting note: `← sInf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
-  -- in a different order.
   simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iInf hf)
 
 theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f i).toNNReal := by
@@ -395,8 +392,6 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- Porting note: `← sSup_image'` had to be replaced by `← image_eq_range` as the lemmas are used
-  -- in a different order.
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
 
 theorem toReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toReal = ⨅ i, (f i).toReal := by

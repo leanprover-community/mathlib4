@@ -37,7 +37,7 @@ noncomputable section
 
 /-- Local homeomorphism between a real (semi)normed space and the unit ball.
 See also `Homeomorph.unitBall`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
   toFun x := (√(1 + ‖x‖ ^ 2))⁻¹ • x
   invFun y := (√(1 - ‖(y : E)‖ ^ 2))⁻¹ • (y : E)
@@ -63,7 +63,7 @@ def PartialHomeomorph.univUnitBall : PartialHomeomorph E E where
     suffices Continuous fun (x : E) => (√(1 + ‖x‖ ^ 2))⁻¹
      from (this.smul continuous_id).continuousOn
     refine Continuous.inv₀ ?_ fun x => Real.sqrt_ne_zero'.mpr (by positivity)
-    continuity
+    fun_prop
   continuousOn_invFun := by
     have : ∀ y ∈ ball (0 : E) 1, √(1 - ‖(y : E)‖ ^ 2) ≠ 0 := fun y hy ↦ by
       rw [Real.sqrt_ne_zero']
@@ -87,7 +87,7 @@ In many cases the actual implementation is not important, so we don't mark the p
 
 See also `Homeomorph.contDiff_unitBall` and `PartialHomeomorph.contDiffOn_unitBall_symm`
 for smoothness properties that hold when `E` is an inner-product space. -/
-@[simps! (config := .lemmasOnly)]
+@[simps! -isSimp]
 def Homeomorph.unitBall : E ≃ₜ ball (0 : E) 1 :=
   (Homeomorph.Set.univ _).symm.trans PartialHomeomorph.univUnitBall.toHomeomorphSourceTarget
 

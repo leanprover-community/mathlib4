@@ -175,7 +175,7 @@ example {α} (x : α) : rfl2.toFun x = x ∧ rfl2.invFun x = x := by
 
 /- test `fullyApplied` option -/
 
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def rfl3 {α} : α ≃ α := ⟨id, fun x ↦ x, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 end foo
@@ -193,7 +193,7 @@ namespace CountNested
 def nested1 : MyProd ℕ <| MyProd ℤ ℕ :=
   ⟨2, -1, 1⟩
 
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def nested2 : ℕ × MyProd ℕ ℕ :=
   ⟨2, MyProd.map Nat.succ Nat.pred ⟨1, 2⟩⟩
 
@@ -213,7 +213,7 @@ run_cmd liftTermElabM <| do
   -- todo: test that another attribute can be added (not working yet)
   guard <| hasSimpAttribute env `CountNested.nested1_fst -- simp attribute is global
   guard <| not <| hasSimpAttribute env `CountNested.nested2_fst
-    -- `lemmasOnly` doesn't add simp lemma
+    -- `- isSimp` doesn't add simp lemma
   -- todo: maybe test that there are no other lemmas generated
   -- guard <| 7 = env.fold 0
   --   (fun d n ↦ n + if d.to_name.components.init.ilast = `CountNested then 1 else 0)
@@ -528,7 +528,7 @@ example {α} (x x' : α) (h : x = x') : coercing.rfl2.invFun x = x' := by simp; 
 @[simps] protected def Equiv2.symm2 {α β} (f : Equiv2 α β) : Equiv2 β α :=
   ⟨f.invFun, f.toFun, f.right_inv, f.left_inv⟩
 
-@[simps (config := .asFn)] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
+@[simps -fullyApplied] protected def Equiv2.symm3 {α β} (f : Equiv2 α β) : Equiv2 β α :=
   ⟨f.invFun, f, f.right_inv, f.left_inv⟩
 
 example {α β} (f : Equiv2 α β) (y : β) {x} (h : f.invFun y = x) : f.symm y = x := by simp; rw [h]
