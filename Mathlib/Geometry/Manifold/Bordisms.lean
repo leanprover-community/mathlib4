@@ -149,16 +149,20 @@ def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
-@[simp]
+@[simp, mfld_simps]
 lemma map_f (s : SingularNManifold X k I) {φ : X → Y} (hφ : Continuous φ) :
     (s.map hφ).f = φ ∘ s.f :=
+  rfl
+
+@[simp, mfld_simps]
+lemma map_M (s : SingularNManifold X k I) {φ : X → Y} (hφ : Continuous φ) :
+    (s.map hφ).M = s.M :=
   rfl
 
 lemma map_comp (s : SingularNManifold X k I)
     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
-  rfl
 
 -- Let M' and W be real C^k manifolds.
 variable {E' E'' E''' H' H'' H''' : Type*}
@@ -487,12 +491,12 @@ def map.{u, v} {f : X → Y} (hf : Continuous f) (φ : UnorientedBordism.{u, v} 
   bd := φ.bd
   F := f ∘ φ.F
   φ := φ.φ
-  hFf := by
-    simp [Function.comp_assoc, ← φ.hFf]
-    rfl
-  hFg := by
-    simp [Function.comp_assoc, ← φ.hFg]
-    rfl
+  hFf := by simp [Function.comp_assoc, ← φ.hFf]
+  hFg := by simp [Function.comp_assoc, ← φ.hFg]
+
+lemma map_W {f : X → Y} (hf : Continuous f) (φ : UnorientedBordism k s t J) :
+    (φ.map hf).W = φ.W :=
+  rfl
 
 @[simp, mfld_simps]
 lemma map_F {f : X → Y} (hf : Continuous f) (φ : UnorientedBordism k s t J) :
