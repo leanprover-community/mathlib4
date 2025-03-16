@@ -177,6 +177,35 @@ variable (f : FilteredAddGroupHom FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n 
 
 variable (g : FilteredAddGroupHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)))
 
+open AssociatedGraded in
+omit [AddSubgroupClass σR R] in
+lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
+  (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
+    Gr+[g] (of ((GradedPiece.mk FS fun n ↦ FS (n - 1)) y)) = 0 := by
+  have comp_zero (x : R) : (g.toAddMonoidHom.comp f.toAddMonoidHom) x = 0 := by
+    simp only [comp_eq_zero, AddMonoidHom.zero_apply]
+  obtain ⟨x, hx⟩ := hy
+  set yₚ := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (y : ofClass (FS p))
+  convert_to of yₚ ∈ Gr+[g].ker
+  rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom.mem_ker_iff]
+  intro i
+  by_cases h : i = p
+  · rw [h]
+    convert_to yₚ ∈ Gr+(p)[g].ker
+    · exact DirectSum.of_eq_same p yₚ
+    · simp only [GradedPieceHom, GradedPiece.mk, QuotientAddGroup.mk'_apply,
+        AddMonoidHom.mem_ker, QuotientAddGroup.map_mk, QuotientAddGroup.eq_zero_iff, yₚ]
+      suffices ((g.piece_wise_hom p) y) = 0 from
+        (QuotientAddGroup.eq_zero_iff ((g.piece_wise_hom p) y)).1
+          (congrArg QuotientAddGroup.mk this)
+      suffices g y = 0 from ZeroMemClass.coe_eq_zero.1 this
+      rw [← hx]
+      convert_to g (f x) = 0
+      exact comp_zero x
+  · convert_to 0 ∈ Gr+(i)[g].ker
+    · exact AssociatedGraded.of_eq_of_ne p i yₚ fun a ↦ h (id a.symm)
+    · simp only [AddMonoidHom.mem_ker, map_zero, yₚ]
+
 theorem strict_exact_discrete
     (monoS : Monotone FS) (exact : Function.Exact Gr+[f] Gr+[g])
     (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
@@ -185,31 +214,10 @@ theorem strict_exact_discrete
     strict {p y} hp hy := by
       have comp_zero (x : R) : (g.toAddMonoidHom.comp f.toAddMonoidHom) x = 0 := by
         simp [comp_eq_zero]
-      simp only [Set.mem_range, Set.mem_image, SetLike.mem_coe] at hy ⊢
-      obtain ⟨x', hx'⟩ := hy
+      simp only [Set.mem_range, Set.mem_image, SetLike.mem_coe]
       set y' := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
       set yₚ := AssociatedGraded.of y'
-      have : Gr+[g] yₚ = 0 := by
-        convert_to yₚ ∈ Gr+[g].ker
-        rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom.mem_ker_iff]
-        intro i
-        by_cases h : i = p
-        · rw [h]
-          convert_to y' ∈ Gr+(p)[g].ker
-          exact DirectSum.of_eq_same p y'
-          simp only [GradedPieceHom, GradedPiece.mk, QuotientAddGroup.mk'_apply,
-            AddMonoidHom.mem_ker, QuotientAddGroup.map_mk, QuotientAddGroup.eq_zero_iff, y']
-          suffices ((g.piece_wise_hom p) ⟨y, hp⟩) = 0 from
-            (QuotientAddGroup.eq_zero_iff ((g.piece_wise_hom p) ⟨y, hp⟩)).1
-              (congrArg QuotientAddGroup.mk this)
-          suffices g y = 0 from ZeroMemClass.coe_eq_zero.1 this
-          rw [← hx']
-          convert_to g (f x') = 0
-          exact comp_zero x'
-        · convert_to 0 ∈ Gr+(i)[g].ker
-          exact AssociatedGraded.of_eq_of_ne p i y' fun a ↦ h (id a.symm)
-          simp only [AddMonoidHom.mem_ker, map_zero, y']
-      obtain ⟨xₚ, hxₚ⟩ := Set.mem_range.1 <| (exact yₚ).1 this
+      obtain ⟨xₚ, hxₚ⟩ := Set.mem_range.1 <| (exact yₚ).1 (zero_of_pieces_range f g hy comp_eq_zero)
       sorry
     strict_lt := sorry
   }
