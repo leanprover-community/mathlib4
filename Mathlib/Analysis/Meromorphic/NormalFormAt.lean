@@ -159,7 +159,7 @@ lemma MeromorphicAt.eqOn_compl_singleton_toNF (hf : MeromorphicAt f x) :
   fun _ _ ↦ by simp_all [toMeromorphicNFAt]
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
-lemma MeromorphicAt.toNF_id_on_nhdNE (hf : MeromorphicAt f x) :
+lemma MeromorphicAt.eq_nhdNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toNF hz)
 
