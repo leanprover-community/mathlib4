@@ -58,15 +58,17 @@ def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
     fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
---Ideally we'd want this to be defined using `List.Icc 1 n` but this doesn't exist yet
---and using `Finset.Icc 1 n |>.sort (· ≤ ·)` as a substitute seems impractical
---(e.g. `divisorsAntidiagonalList_zero` is no longer `rfl`)
+/-- Pairs of divisors of a natural number as a list.
+
+`n.divisorsAntidiagonalList` is the list of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`, ordered
+by increasing `a`. By convention, we set `Nat.divisorsAntidiagonalList 0 = []`.
+-/
 def divisorsAntidiagonalList (n : ℕ) : List (ℕ × ℕ) :=
-  (List.range n.succ).filterMap
+  (List.range' 1 n).filterMap
     (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
 
 @[simp]
-lemma divisorsAntidiagonalList_zero : divisorsAntidiagonalList 0 = [(0, 0)] := rfl
+lemma divisorsAntidiagonalList_zero : divisorsAntidiagonalList 0 = [] := rfl
 
 lemma divisorsAntidiagonal_coe (n : ℕ) (hn : n ≠ 0) :
     n.divisorsAntidiagonal = n.divisorsAntidiagonalList.toFinset := by
