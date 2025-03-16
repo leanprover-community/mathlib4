@@ -99,6 +99,11 @@ class IsStrict (f : outParam <| FilteredHom FA FA_lt FB FB_lt) : Prop where
   strict {p y} : y ∈ (FB p) → y ∈ Set.range f.toFun → y ∈ f.toFun '' (FA p)
   strict_lt {p y} : y ∈ (FB_lt p) → y ∈ Set.range f.toFun → y ∈ f.toFun '' (FA_lt p)
 
+lemma IsStrict_of_Int {FA : ℤ → α} {FB : ℤ → β}
+    {f : FilteredHom FA (fun n ↦ FA (n - 1)) FB (fun n ↦ FB (n - 1))}
+    (h : ∀ {p : ℤ} {y : B}, y ∈ (FB p) → y ∈ Set.range f.toFun → y ∈ f.toFun '' (FA p)) :
+  FilteredHom.IsStrict FA (fun n ↦ FA (n - 1)) FB (fun n ↦ FB (n - 1)) f := ⟨h, h⟩
+
 end FilteredHom
 
 end

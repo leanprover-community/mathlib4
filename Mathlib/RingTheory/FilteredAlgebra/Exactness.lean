@@ -212,12 +212,12 @@ theorem strict_exact_discrete
     (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
   IsStrict FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)) f := {
     strict {p y} hp hy := by
-      have comp_zero (x : R) : (g.toAddMonoidHom.comp f.toAddMonoidHom) x = 0 := by
-        simp [comp_eq_zero]
       simp only [Set.mem_range, Set.mem_image, SetLike.mem_coe]
+      have := discrete.discrete
       set y' := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
       set yₚ := AssociatedGraded.of y'
       obtain ⟨xₚ, hxₚ⟩ := Set.mem_range.1 <| (exact yₚ).1 (zero_of_pieces_range f g hy comp_eq_zero)
+
       sorry
     strict_lt := sorry
   }
