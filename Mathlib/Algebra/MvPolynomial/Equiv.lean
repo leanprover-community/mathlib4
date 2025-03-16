@@ -586,12 +586,7 @@ variable {R S σ τ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
 
 /-- The embedding of `R[X]` into `R[Xᵢ]` as an `R`-algebra homomorphism. -/
 noncomputable def Polynomial.toMvPolynomial (i : σ) : R[X] →ₐ[R] MvPolynomial σ R :=
-  (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.pUnitAlgEquiv R).symm
-
-lemma Polynomial.toMvPolynomial_injective (i : σ) :
-    Function.Injective (toMvPolynomial (R := R) i) := by
-  simp only [toMvPolynomial, AlgHom.coe_comp, AlgHom.coe_coe, EquivLike.injective_comp]
-  exact MvPolynomial.rename_injective (fun x ↦ i) fun ⦃a₁ a₂⦄ ↦ congrFun rfl
+  aeval (MvPolynomial.X i)
 
 @[simp]
 lemma Polynomial.toMvPolynomial_C (i : σ) (r : R) : (C r).toMvPolynomial i = MvPolynomial.C r := by
@@ -600,6 +595,18 @@ lemma Polynomial.toMvPolynomial_C (i : σ) (r : R) : (C r).toMvPolynomial i = Mv
 @[simp]
 lemma Polynomial.toMvPolynomial_X (i : σ) : X.toMvPolynomial i = MvPolynomial.X (R := R) i := by
   simp [toMvPolynomial]
+
+lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
+    toMvPolynomial (R := R) i =
+      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.pUnitAlgEquiv R).symm := by
+  ext
+  simp
+
+lemma Polynomial.toMvPolynomial_injective (i : σ) :
+    Function.Injective (toMvPolynomial (R := R) i) := by
+  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgHom.coe_coe,
+    EquivLike.injective_comp]
+  exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
 
 @[simp]
 lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :
