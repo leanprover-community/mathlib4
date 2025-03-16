@@ -390,16 +390,31 @@ theorem inertiaGroup_le_decompositionGroup : inertiaGroup A P K L ≤ decomposit
     Submodule.sub_mem_iff_left P (Ideal.Quotient.eq.mp (((inertiaGroup A P K L).inv_mem hs) x))
   rw [sub_sub_cancel] at h
   exact mem_pointwise_smul_iff_inv_smul_mem.trans h.symm
+
+/-- The inertia group of `P` over `K` as a subgroup of the decomposition group. -/
+def inertiaGroup' : Subgroup (decompositionGroup A P K L) :=
+  (inertiaGroup A P K L).subgroupOf (decompositionGroup A P K L)
+
+/-- The intertia field of `P` over `K` is the intermediate field of `L / decompositionField p P`
+fixed by the inertia group pf `P` over `K`. -/
+def inertiaField : IntermediateField K L :=
+  fixedField (inertiaGroup A P K L)
+
+variable [FiniteDimensional K L] [IsGalois K L]
 /-
+example : decompositionField A P K L ≤ inertiaField A P K L :=
+  (RelIso.map_rel_iff (IsGalois.intermediateFieldEquivSubgroup (E := L) (F := K))).mpr (inertiaGroup_le_decompositionGroup A P K L)
+--algebraize [SubSemiring.inclusion sorry]
+ -/
 variable {A}
 
 /-- If `P` is the unique ideal lying over `p`, then the `inertiaGroup` is equal to the
-kernel of the homomorphism `residueGaloisHom`. -/
+  kernel of the homomorphism `residueGaloisHom`. -/
 theorem inertiaGroup_eq_ker :
     letI := IsIntegralClosure.MulSemiringAction A K L B;
     letI : SMulCommClass (L ≃ₐ[K] L) A B :=
-    SMul.comp.smulCommClass (galRestrict A K L B).toMonoidHom
-    inertiaGroup A P K L = MonoidHom.ker (Ideal.Quotient.stabilizerHom P p (L ≃ₐ[K] L)) := by
+      SMul.comp.smulCommClass (galRestrict A K L B).toMonoidHom
+    (inertiaGroup' A P K L) = MonoidHom.ker (Ideal.Quotient.stabilizerHom P p (L ≃ₐ[K] L)) := by
   ext σ
   rw [MonoidHom.mem_ker, AlgEquiv.ext_iff]
   constructor
@@ -413,23 +428,51 @@ theorem inertiaGroup_eq_ker :
     rw [← h]
     rfl
 
+include p in
 /-- If `P` is the unique ideal lying over `p`, then the `inertiaGroup K P` is a normal subgroup. -/
-theorem inertiaGroup_normal {K L : Type*} [Field K] [Field L] [Algebra K L]
-(p : Ideal (𝓞 K)) (P : Ideal (𝓞 L)) [p.IsMaximal] [P.IsMaximal]
-    [hp : P unique_lies_over p] : Subgroup.Normal (inertiaGroup K P) := by
-  rw [inertiaGroup_eq_ker p P]
-  exact MonoidHom.normal_ker (residueGaloisHom p P)
+theorem inertiaGroup_normal : (inertiaGroup' A P K L).Normal := by
+  rw [inertiaGroup_eq_ker p P K L]
+  exact MonoidHom.normal_ker _
 
-noncomputable def aut_quoutient_inertiaGroup_equiv_residueField_aut [Normal K L] :
-    @MulEquiv ((L ≃ₐ[K] L) ⧸ (inertiaGroup K P)) (((𝓞 L) ⧸ P) ≃ₐ[(𝓞 K) ⧸ p] ((𝓞 L) ⧸ P))
-    (letI := inertiaGroup_normal p P; inferInstance) _ :=
-  letI := inertiaGroup_normal p P
-  (QuotientGroup.quotientMulEquivOfEq (inertiaGroup_eq_ker p P)).trans <|
-    QuotientGroup.quotientKerEquivOfSurjective _ (residueGaloisHom_surjective p P)
-
-/-- The intermediate field fixed by `inertiaGroup K P`. -/
-def inertiaFieldAux (K : Type*) {L : Type*} [Field K] [Field L] [Algebra K L]
-    (P : Ideal (𝓞 L)) [P.IsMaximal] : IntermediateField K L :=
-  fixedField (inertiaGroup K P)
- -/
 end inertiaGroup
+
+section inertiaField
+
+variable (A : Type*) [CommRing A] [IsDedekindDomain A] {p : Ideal A} (hpb : p ≠ ⊥) [p.IsMaximal]
+  {B : Type*} [CommRing B] [IsDedekindDomain B] [Algebra A B] [Module.Finite A B]
+  (P : Ideal B) [P.IsPrime] [P.LiesOver p]
+  (K L : Type*) [Field K] [Field L] [Algebra A K] [IsFractionRing A K] [Algebra B L]
+  [IsFractionRing B L] [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
+  [FiniteDimensional K L] [IsGalois K L]
+  {D : Type*} [CommRing D] [IsDedekindDomain D] [Algebra D (decompositionField A P K L)]
+  [IsFractionRing D (decompositionField A P K L)] [Algebra A D]
+  [IsScalarTower A D (decompositionField A P K L)]
+  [Algebra D B] [Module.Finite D B] [Algebra D L] [IsScalarTower D B L]
+  [IsScalarTower D (decompositionField A P K L) L] [IsScalarTower A D B]
+
+omit [IsDedekindDomain A] [P.IsPrime] [IsDedekindDomain D] [Algebra A D] in
+theorem inertiaGroup_eq :
+    Subgroup.map (subgroup_equiv_aut (decompositionGroup A P K L)).symm.toMonoidHom
+    ((inertiaGroup A P K L).subgroupOf (decompositionGroup A P K L)) =
+    inertiaGroup D P (decompositionField A P K L) L := by
+  ext σ
+  rw [Subgroup.mem_map]
+  refine ⟨fun ⟨τ, ht, he⟩ x ↦ by rw [← he, ← Subgroup.mem_subgroupOf.mp ht x]; rfl, fun hs ↦
+    ⟨(subgroup_equiv_aut (decompositionGroup A P K L)).toFun σ, fun x ↦ by rw [← hs x]; rfl, ?_⟩⟩
+  rw [MulEquiv.toEquiv_eq_coe]
+  simp only [Equiv.toFun_as_coe, MulEquiv.coe_toEquiv, MulEquiv.coe_toMonoidHom,
+    MulEquiv.symm_apply_apply]
+
+/- The inertia group of `P` over the decomposition field is isomorpic to the inertia group of `P`
+  over `K`. -/
+def inertiaGroup_equiv : inertiaGroup D P (decompositionField A P K L) L ≃* inertiaGroup A P K L :=
+  (MulEquiv.subgroupCongr (inertiaGroup_eq A P K L)).symm.trans <|
+    ((subgroup_equiv_aut (decompositionGroup A P K L)).symm.subgroupMap
+      ((inertiaGroup A P K L).subgroupOf (decompositionGroup A P K L))).symm.trans <|
+        (Subgroup.subgroupOfEquivOfLe (inertiaGroup_le_decompositionGroup A P K L))
+/-
+instance inertiaField_isGalois [IsGalois K L] : IsGalois (decompositionField A P K L) (inertiaField A P K L) :=
+  letI := inertiaGroup_normal p P
+  of_fixedField_normal_subgroup (inertiaGroup K P)
+ -/
+end inertiaField
