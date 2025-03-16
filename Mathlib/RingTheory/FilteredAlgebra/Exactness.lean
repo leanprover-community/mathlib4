@@ -196,8 +196,15 @@ lemma shrinking_lemma (monoR : Monotone FR) (S' : AddSubgroup S) {p : ℤ}
     simp only [Nat.cast_add, Nat.cast_one, AddMemClass.coe_add, AddMonoidHom.map_add]
     simp [eq, AddSubgroup.zero_mem]
 
+theorem comp_eq_zero_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
+    (exhaustiveR : letI := (mk_int FR monoR); IsExhaustiveFiltration FR (fun n ↦ FR (n - 1)))
+    (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
+    (strict : IsStrict FR (fun n ↦ FR (n - 1))  FS (fun n ↦ FS (n - 1)) f)
+    (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
+    (exact : Function.Exact Gr+[f] Gr+[g]) : g.toAddMonoidHom ∘ f.toAddMonoidHom = 0 := sorry
 
-theorem exact_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
+
+theorem ker_in_range_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
     (exhaustiveR : letI := (mk_int FR monoR); IsExhaustiveFiltration FR (fun n ↦ FR (n - 1)))
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
     (strict : IsStrict FR (fun n ↦ FR (n - 1))  FS (fun n ↦ FS (n - 1)) f)
