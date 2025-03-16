@@ -369,20 +369,16 @@ noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
       sorry
     | inr x => sorry -- same argument as in the other case
   range_eq_boundary := by
-    simp only [Set.Sum.elim_range, Set.prod, mem_univ, true_and]
-    -- makes no progress: simp only [boundary_product]
+    simp only [Set.Sum.elim_range, Set.prod, mem_univ, true_and, boundary_product]
     ext x
+    simp_rw [mem_setOf]
     constructor
-    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩)
-      <;> beta_reduce at hx' ⊢ <;> rw [← hx'] --<;> tauto
-      · sorry -- proved this, basically
-      · sorry
-    · sorry
-    /- rw [mem_setOf]
-    constructor
-    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;> rw [← hx'] <;> tauto
-    · -- Can this be simplified?
-      intro hx
-      simp only [mem_insert_iff, mem_singleton_iff] at hx
-      obtain (h | h) := hx
-      exacts [Or.inl ⟨x.1, by rw [← h]⟩, Or.inr ⟨x.1, by rw [← h]⟩] -/
+    · rintro (⟨x', hx'⟩ | ⟨x', hx'⟩) <;> beta_reduce at hx' ⊢ <;>
+        rw [← hx'] <;> simp
+    · rintro (h | h)
+      · left
+        use x.1
+        ext; exacts [by simp, by simp_all [h.symm]]
+      · right
+        use x.1
+        ext; exacts [by simp, by simp_all [h.symm]]
