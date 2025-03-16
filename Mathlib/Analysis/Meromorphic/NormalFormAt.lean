@@ -98,11 +98,11 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
     MeromorphicNFAt f x ↔ MeromorphicNFAt g x := by
   constructor
   · rintro (h | ⟨n, h, h₁h, h₂h, h₃h⟩)
-    · exact Or.inl (hfg.symm.trans h)
-    · exact Or.inr ⟨n, h, h₁h, h₂h, hfg.symm.trans h₃h⟩
+    · exact .inl (hfg.symm.trans h)
+    · exact .inr ⟨n, h, h₁h, h₂h, hfg.symm.trans h₃h⟩
   · rintro (h | ⟨n, h, h₁h, h₂h, h₃h⟩)
-    · exact Or.inl (hfg.trans h)
-    · exact Or.inr ⟨n, h, h₁h, h₂h, hfg.trans h₃h⟩
+    · exact .inl (hfg.trans h)
+    · exact .inr ⟨n, h, h₁h, h₂h, hfg.trans h₃h⟩
 
 /-!
 ## Relation to other properties of functions
