@@ -811,9 +811,10 @@ def sumPiLpEquivProdLpPiLp :
       ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy
-    · simp
+    · simp [LinearEquiv.sumPiEquivProdPi]
       sorry
-    · simp
+    · have : 0 < p.toReal := sorry
+      simp [LinearEquiv.sumPiEquivProdPi, norm_eq_sum this, WithLp.prod_norm_eq_add this]
       sorry
 
 end sumPiLpEquivProdLpPiLp
