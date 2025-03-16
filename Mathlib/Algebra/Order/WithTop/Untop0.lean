@@ -40,8 +40,7 @@ lemma untop₀_top :
     (⊤ : WithTop α).untop₀ = (0 : α) := by simp [untop₀]
 
 @[simp]
-lemma untop₀_zero :
-    (0 : WithTop α).untop₀ = (0 : α) := by simp [untop₀]
+lemma untop₀_zero : untop₀ 0 = (0 : α) := by simp [untop₀]
 
 @[simp]
 lemma untop₀_coe (a : α) : (a : WithTop α).untop₀ = a := rfl
