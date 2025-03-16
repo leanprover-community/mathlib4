@@ -66,10 +66,44 @@ class ContinuousConstVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [VAdd Γ
   /-- The additive action `(+ᵥ) : Γ → T → T` is continuous in the second argument. -/
   continuous_const_vadd : ∀ γ : Γ, Continuous fun x : T => γ +ᵥ x
 
+/-- Class `ContinuousConstVSub Γ T` says that the subtraction `(-ᵥ) : T → T → Γ`
+is continuous in the second argument. -/
+class ContinuousConstVSub (Γ : Type*) (T : Type*) [TopologicalSpace Γ] [TopologicalSpace T]
+  [VSub Γ T] : Prop where
+  /-- The subtraction `(-ᵥ) : T → T → Γ` is continuous in the second argument. -/
+  continuous_const_vsub : ∀ γ : T, Continuous fun x : T => γ -ᵥ x
+
+/-- Class `ContinuousSMulConst Γ T` says that the scalar multiplication `(•) : Γ → T → T`
+is continuous in the first argument. -/
+class ContinuousSMulConst (Γ : Type*) (T : Type*) [TopologicalSpace Γ] [TopologicalSpace T]
+  [SMul Γ T] : Prop where
+  /-- The scalar multiplication `(•) : Γ → T → T` is continuous in the first argument. -/
+  continuous_smul_const : ∀ x : T, Continuous fun γ : Γ => γ • x
+
+/-- Class `ContinuousVAddConst Γ T` says that the additive action `(+ᵥ) : Γ → T → T`
+is continuous in the first argument. -/
+class ContinuousVAddConst (Γ : Type*) (T : Type*) [TopologicalSpace Γ] [TopologicalSpace T]
+  [VAdd Γ T] : Prop where
+  /-- The additive action `(+ᵥ) : Γ → T → T` is continuous in the first argument. -/
+  continuous_vadd_const : ∀ γ : T, Continuous fun x : Γ => x +ᵥ γ
+
+/-- Class `ContinuousVSubConst Γ T` says that the subtraction `(-ᵥ) : T → T → Γ`
+is continuous in the first argument. -/
+class ContinuousVSubConst (Γ : Type*) (T : Type*) [TopologicalSpace Γ] [TopologicalSpace T]
+  [VSub Γ T] : Prop where
+  /-- The subtraction `(-ᵥ) : T → T → Γ` is continuous in the first argument. -/
+  continuous_vsub_const : ∀ x : T, Continuous fun γ : T => γ -ᵥ x
+
 attribute [to_additive] ContinuousConstSMul
+attribute [to_additive] ContinuousSMulConst
 
 export ContinuousConstSMul (continuous_const_smul)
 export ContinuousConstVAdd (continuous_const_vadd)
+export ContinuousConstVSub (continuous_const_vsub)
+
+export ContinuousSMulConst (continuous_smul_const)
+export ContinuousVAddConst (continuous_vadd_const)
+export ContinuousVSubConst (continuous_vsub_const)
 
 variable {M α β : Type*}
 
