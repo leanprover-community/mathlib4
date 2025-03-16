@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Logic.Equiv.Basic
+import Mathlib.Data.Subtype
 
 /-!
 # Equivalence between types

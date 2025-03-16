@@ -7,7 +7,6 @@ import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Option.Defs
 import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.Subtype
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Function.Conjugate
