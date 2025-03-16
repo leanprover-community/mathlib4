@@ -187,27 +187,27 @@ instance : IsHomogeneousRelation 𝒜 (RingConGen.Rel rel) :=
 
 end RingCon
 
-section GradedRing
+-- section GradedRing
 
-variable (𝒜 : ι → AddSubmonoid A) [inst : GradedRing 𝒜] (rel : A → A → Prop)
+-- variable (𝒜 : ι → AddSubmonoid A) [inst : GradedRing 𝒜] (rel : A → A → Prop)
 
-instance : SetLike.GradedMonoid ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
-  one_mem := by
-    use 1
-    constructor
-    · exact SetLike.GradedOne.one_mem
-    · exact map_one (RingQuot.mkRingHom rel)
-  mul_mem := by
-    intro x y gi gj hi hj
-    simp only [Function.comp_apply, Submodule.mem_map]
-    rcases hi with ⟨a, ha1, ha2⟩
-    rcases hj with ⟨b, hb1, hb2⟩
-    use a * b
-    constructor
-    · exact SetLike.GradedMul.mul_mem ha1 hb1
-    · rw [map_mul, ha2, hb2]
+-- instance : SetLike.GradedMonoid ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
+--   one_mem := by
+--     use 1
+--     constructor
+--     · exact SetLike.GradedOne.one_mem
+--     · exact map_one (RingQuot.mkRingHom rel)
+--   mul_mem := by
+--     intro x y gi gj hi hj
+--     simp only [Function.comp_apply, Submodule.mem_map]
+--     rcases hi with ⟨a, ha1, ha2⟩
+--     rcases hj with ⟨b, hb1, hb2⟩
+--     use a * b
+--     constructor
+--     · exact SetLike.GradedMul.mul_mem ha1 hb1
+--     · rw [map_mul, ha2, hb2]
 
-variable [IsHomogeneousRelation 𝒜 rel]
+-- variable [IsHomogeneousRelation 𝒜 rel]
 
 -- open DirectSum in
 -- noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) := by
@@ -251,33 +251,36 @@ variable [IsHomogeneousRelation 𝒜 rel]
 --     use g (e x); show (u.comp g) (e x) = (f x)
 --     simp [← h_comp]
 
-end GradedRing
+-- end GradedRing
 
--- section GradedAlgebra
+section GradedAlgebra
 
--- variable {R : Type*} [CommSemiring R] [Algebra R A]
--- variable (𝒜 : ι → Submodule R A) [inst : GradedAlgebra 𝒜] (rel : A → A → Prop)
+variable {R : Type*} [CommSemiring R] [Algebra R A]
+variable (𝒜 : ι → Submodule R A) [inst : GradedAlgebra 𝒜] (rel : A → A → Prop)
 
--- instance : SetLike.GradedMonoid ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) where
---   one_mem := by
---     use 1
---     constructor
---     · exact SetLike.GradedOne.one_mem
---     · exact map_one (RingQuot.mkAlgHom R rel)
---   mul_mem := by
---     intro x y gi gj hi hj
---     simp only [Function.comp_apply, Submodule.mem_map]
---     rcases hi with ⟨a, ha1, ha2⟩
---     rcases hj with ⟨b, hb1, hb2⟩
---     use a * b
---     constructor
---     · exact SetLike.GradedMul.mul_mem ha1 hb1
---     · rw [map_mul, ha2, hb2]
+instance : SetLike.GradedMonoid ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) where
+  one_mem := by
+    use 1
+    constructor
+    · exact SetLike.GradedOne.one_mem
+    · exact map_one (RingQuot.mkAlgHom R rel)
+  mul_mem := by
+    intro x y gi gj hi hj
+    simp only [Function.comp_apply, Submodule.mem_map]
+    rcases hi with ⟨a, ha1, ha2⟩
+    rcases hj with ⟨b, hb1, hb2⟩
+    use a * b
+    constructor
+    · exact SetLike.GradedMul.mul_mem ha1 hb1
+    · rw [map_mul, ha2, hb2]
 
--- variable [IsHomogeneousRelation 𝒜 rel]
+variable [IsHomogeneousRelation 𝒜 rel]
 
--- open DirectSum in
--- noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) := by
+noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) :=
+  GradedAlgebra.ofAlgHom _
+    (RingQuot.liftAlgHom R sorry)
+    sorry
+    sorry
 --   apply DirectSum.IsInternal.gradedRing
 --   set ℬ := (Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜 with hb
 --   set f := RingQuot.mkAlgHom R rel with hf
@@ -319,6 +322,6 @@ end GradedRing
 --     use g (e x); show (u.comp g) (e x) = (f x)
 --     simp [← h_comp]
 
--- end GradedAlgebra
+end GradedAlgebra
 
--- end HomogeneousRelation
+end HomogeneousRelation
