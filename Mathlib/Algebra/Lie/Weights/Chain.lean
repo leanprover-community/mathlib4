@@ -9,7 +9,6 @@ import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.LinearAlgebra.PID
@@ -515,6 +514,25 @@ lemma root_space_ad_is_nilpotent
     exact ttt1 e a d2
   use n0
 
+lemma root_space_ad_is_nilpotent2 [IsTriangularizable K H L] [FiniteDimensional K L]
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (ad K L x) :=
+  root_space_ad_is_nilpotent (M := L) H hχ hx
+
 end
 
 end LieModule
+
+namespace LieAlgebra
+
+open LieModule
+
+variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
+  (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+
+lemma root_space_ad_is_nilpotent [IsTriangularizable K H L] [FiniteDimensional K L]
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (ad K L x) :=
+  LieModule.root_space_ad_is_nilpotent (M := L) H hχ hx
+
+end LieAlgebra
