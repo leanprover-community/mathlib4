@@ -67,24 +67,6 @@ def divisorsAntidiagonalList (n : ℕ) : List (ℕ × ℕ) :=
   (List.range' 1 n).filterMap
     (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
 
-@[simp]
-lemma divisorsAntidiagonalList_zero : divisorsAntidiagonalList 0 = [] := rfl
-
-lemma divisorsAntidiagonal_coe (n : ℕ) (hn : n ≠ 0) :
-    n.divisorsAntidiagonal = n.divisorsAntidiagonalList.toFinset := by
-  rw [List.toFinset_filter]
-  ext a
-  simp [List.mem_toFinset, mem_divisorsAntidiagonalList_of_pos hn, Nat.mem_divisorsAntidiagonal, hn]
-
-lemma mem_divisorsAntidiagonalList_of_pos {n : ℕ} (hn : n ≠ 0) (a : ℕ × ℕ) :
-    a ∈ n.divisorsAntidiagonalList ↔ a.1 * a.2 = n := by
-  rw []
-
-lemma divisorsAntidiagonal_coe (n : ℕ) (hn : n ≠ 0) :
-    n.divisorsAntidiagonal = n.divisorsAntidiagonalList.toFinset := by
-  ext a
-  simp [List.mem_toFinset, mem_divisorsAntidiagonalList_of_pos hn, Nat.mem_divisorsAntidiagonal, hn]
-
 variable {n}
 
 @[simp]
@@ -144,6 +126,19 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
+
+@[simp]
+lemma divisorsAntidiagonalList_coe {n : ℕ} :
+    n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
+  --TODO(Paul-Lez): fix variables + namespace in filterMap_toFinset
+  rw [divisorsAntidiagonalList, divisorsAntidiagonal, filterMap_toFinset]
+  congr
+  rw [List.toFinset_range'_1_1]
+
+@[simp]
+lemma mem_divisorsAntidiagonalList_of_pos {n : ℕ} (a : ℕ × ℕ) :
+    a ∈ n.divisorsAntidiagonalList ↔ a.1 * a.2 = n ∧ n ≠ 0 := by
+  rw [←List.mem_toFinset, divisorsAntidiagonalList_coe, mem_divisorsAntidiagonal]
 
 lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
     p.1 ≠ 0 ∧ p.2 ≠ 0 := by
@@ -272,6 +267,12 @@ theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
 theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
   simp [mul_eq_one, Prod.ext_iff]
+
+@[simp]
+lemma divisorsAntidiagonalList_zero : divisorsAntidiagonalList 0 = [] := rfl
+
+@[simp]
+lemma divisorsAntidiagonalList_one : divisorsAntidiagonalList 1 = [(1, 1)] := rfl
 
 @[simp high]
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
