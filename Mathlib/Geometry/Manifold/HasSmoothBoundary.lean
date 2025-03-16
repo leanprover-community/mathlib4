@@ -318,7 +318,7 @@ lemma BoundaryManifoldData.sum_f (bd : BoundaryManifoldData M I k I₀)
 
 open Fact.Manifold
 
-variable (k) in
+variable (I M k) in
 -- FIXME: delete this, in favour of the boundary data instance on Icc and the product
 noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
     BoundaryManifoldData (M × (Set.Icc (0 : ℝ) 1)) (I.prod (𝓡∂ 1)) k I where
@@ -382,3 +382,8 @@ noncomputable def BoundaryManifoldData.prod_Icc [BoundarylessManifold I M] :
       · right
         use x.1
         ext; exacts [by simp, by simp_all [h.symm]]
+
+@[simp, mfld_simps]
+lemma BoundaryManifoldData.prod_Icc_f [BoundarylessManifold I M] :
+    (BoundaryManifoldData.prod_Icc M k I).f = Sum.elim (·, ⊥) (·, ⊤) :=
+  rfl
