@@ -445,11 +445,11 @@ theorem taylorWithinEval_neg {f : Real → Real} {x₀ x : Real} {n : Nat}
   simp [← mul_pow, ← mul_assoc]
   apply Or.inl; ring
 
-theorem taylorCoeffWithin_eq {f : Real → Real} {x₀ : Real} {d : Nat}
-    (s : Set Real) (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff Real d f):
-  (taylorCoeffWithin f d s x₀) = (taylorCoeffWithin f d Set.univ x₀) := by
-  simp only [taylorCoeffWithin]
-  rw [iteratedDerivWithin_eq_iteratedDeriv hf hs hx, iteratedDerivWithin_univ]
+theorem taylorCoeffWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
+    (s : Set ℝ) (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorCoeffWithin f d s x₀ = taylorCoeffWithin f d Set.univ x₀ := by
+  simp only [taylorCoeffWithin, iteratedDerivWithin_eq_iteratedDeriv hf hs hx,
+    iteratedDerivWithin_univ]
 
 theorem taylorWithinEval_eq {f : Real → Real} {x₀ : Real} {d : Nat}
     (s : Set Real) (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff Real (d + 1) f) :
