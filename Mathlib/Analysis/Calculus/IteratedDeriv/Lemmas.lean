@@ -35,8 +35,8 @@ theorem iteratedDerivWithin_congr (hfg : Set.EqOn f g s) :
     exact derivWithin_congr (IH hfg) (IH hfg hy)
 
 theorem iteratedDerivWithin_eq_iteratedDeriv
-(hf : ContDiff 𝕜 n f) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s):
-iteratedDerivWithin n f s x = iteratedDeriv n f x := by
+    (hf : ContDiff 𝕜 n f) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
+    iteratedDerivWithin n f s x = iteratedDeriv n f x := by
   induction n generalizing x with
   | zero => simp
   | succ n hn =>
