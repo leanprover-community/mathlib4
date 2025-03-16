@@ -120,7 +120,7 @@ theorem single_apply {a a' : G} {b : k} [Decidable (a = a')] :
 theorem single_eq_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := Finsupp.single_eq_zero
 
 @[simp]
-theorem single_ne_zero {a : G} {b : k} : single a b = 0 ↔ b = 0 := single_eq_zero.not
+theorem single_ne_zero {a : G} {b : k} : single a b ≠ 0 ↔ b ≠ 0 := single_eq_zero.not
 
 /-- A non-commutative version of `MonoidAlgebra.lift`: given an additive homomorphism `f : k →+ R`
 and a homomorphism `g : G → R`, returns the additive homomorphism from
