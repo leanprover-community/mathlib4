@@ -436,6 +436,11 @@ theorem toSubalgebra_map (f : L →ₐ[K] L') : (S.map f).toSubalgebra = S.toSub
 theorem toSubfield_map (f : L →ₐ[K] L') : (S.map f).toSubfield = S.toSubfield.map f :=
   rfl
 
+/-- Mapping intermediate fields along the identity does not change them. -/
+theorem map_id {K L : Type*} [Field K] [Field L] [Algebra K L]
+    (E : IntermediateField K L) : E.map (AlgHom.id K L) = E :=
+  SetLike.coe_injective <| Set.image_id _
+
 theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L₁] [Field L₂] [Algebra K L₂]
     [Field L₃] [Algebra K L₃] (E : IntermediateField K L₁) (f : L₁ →ₐ[K] L₂) (g : L₂ →ₐ[K] L₃) :
     (E.map f).map g = E.map (g.comp f) :=

@@ -197,13 +197,36 @@ theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· �
 nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
   fixingSubgroup (E ≃ₐ[F] E) (K : Set E)
 
+/-- This lemma says that `Gal(L/K) = L ≃ₐ[K] L`. -/
+theorem fixingSubgroup.bot {K L : Type*} [Field K] [Field L] [Algebra K L] :
+    fixingSubgroup (⊥ : IntermediateField K L) = ⊤ := by
+  ext f
+  refine ⟨fun _ => Subgroup.mem_top _, fun _ => ?_⟩
+  rintro ⟨x, hx : x ∈ (⊥ : IntermediateField K L)⟩
+  rw [mem_bot] at hx
+  rcases hx with ⟨y, rfl⟩
+  exact f.commutes y
+
+/-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`. -/
+theorem mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
+    (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
+  ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
+
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
 
-lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) (E := E)) := by
-  intro K K' h
-  rw [← le_iff_le]
-  exact le_trans h ((le_iff_le _ _).mpr (le_refl K'.fixingSubgroup))
+/-- The map `E ↦ Gal(L/E)` is inclusion-reversing. -/
+theorem fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
+
+theorem fixedField.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
+    {H1 H2 : Subgroup (L ≃ₐ[K] L)} (h12 : H1 ≤ H2) :
+    IntermediateField.fixedField H2 ≤ IntermediateField.fixedField H1 :=
+  fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
+
+lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) (E := E)) :=
+  fun _ _ ↦ fixingSubgroup.antimono
 
 /-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
@@ -309,8 +332,8 @@ open scoped Pointwise
 
 lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
     (restrictNormalHom E).ker = E.fixingSubgroup := by
-  simp [fixingSubgroup, Subgroup.ext_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
-    restrictNormalHom_apply, mem_fixingSubgroup_iff]
+  simp only [Subgroup.ext_iff, MonoidHom.mem_ker, AlgEquiv.ext_iff, one_apply, Subtype.ext_iff,
+    restrictNormalHom_apply, Subtype.forall, mem_fixingSubgroup_iff, implies_true]
 
 namespace IsGalois
 
