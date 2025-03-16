@@ -322,7 +322,7 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsZeroOrMarkov
     Integrable (fun ω ↦ exp (t * (X ω.1 + Y ω.2))) ((κ ⊗ₖ η) ∘ₘ ν) := by
   by_cases hκ : IsSFiniteKernel κ
   swap; · simp [hκ]
-  rcases eq_zero_or_isMarkovKernel η with (rfl | hη)
+  rcases eq_zero_or_isMarkovKernel η with rfl | hη
   · simp
   simp_rw [mul_add, exp_add]
   refine MemLp.integrable_mul (p := 2) (q := 2) ?_ ?_
@@ -370,7 +370,7 @@ has a sub-Gaussian mgf with respect to `κ` and `ν` and another random variable
 a sub-Gaussian mgf with respect to `η` and `κ ∘ₘ ν : Measure Ω`, then `X + Y` (random
 variable on the measurable space `Ω × Ω''`) has a sub-Gaussian mgf with respect to
 `κ ⊗ₖ prodMkLeft Ω' η : Kernel Ω' (Ω × Ω'')` and `ν`. -/
-lemma add_comp {η : Kernel Ω Ω''} [IsMarkovKernel η]
+lemma add_comp {η : Kernel Ω Ω''} [IsZeroOrMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
     HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (c + cY) (κ ⊗ₖ prodMkLeft Ω' η) ν :=
   hX.add_compProd hY.prodMkLeft_compProd
