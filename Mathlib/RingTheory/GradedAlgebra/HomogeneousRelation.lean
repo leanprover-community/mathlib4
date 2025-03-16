@@ -276,51 +276,67 @@ instance : SetLike.GradedMonoid ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 
 
 variable [IsHomogeneousRelation 𝒜 rel]
 
-noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) :=
-  GradedAlgebra.ofAlgHom _
-    (RingQuot.liftAlgHom R sorry)
+open DirectSum
+
+def AlgHomAux : (⨁ i, 𝒜 i) →ₐ[R] ⨁ i, (Submodule.map (RingQuot.mkAlgHom R rel) ∘ 𝒜) i := by
+  apply toAlgebra R (fun i ↦ 𝒜 i)
+    (fun i ↦ (lof R ι _ i).comp <| (RingQuot.mkAlgHom R rel).toLinearMap.submoduleMap (𝒜 i))
+  · ext t
     sorry
+
+  · sorry
+
+def decomposeAux : RingQuot rel →ₐ[R] ⨁ i, (Submodule.map (RingQuot.mkAlgHom R rel) ∘ 𝒜) i := by
+  refine RingQuot.liftAlgHom R ⟨(AlgHomAux 𝒜 rel).comp (decomposeAlgEquiv 𝒜), fun x y hxy ↦ ?_⟩
+  sorry
+
+instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) := by
+  apply GradedAlgebra.ofAlgHom _ (decomposeAux 𝒜 rel)
+  · sorry
+  · intro x i
     sorry
---   apply DirectSum.IsInternal.gradedRing
---   set ℬ := (Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜 with hb
---   set f := RingQuot.mkAlgHom R rel with hf
---   set g' : ∀ (i : ι), 𝒜 i →+ ℬ i := fun i ↦ {
---     toFun := fun x ↦ ⟨f x, by rw [hb]; exact ⟨x, ⟨x.2, rfl⟩⟩⟩
---     map_zero' := by simp
---     map_add' := by simp
---   } with hg'
---   set g := DirectSum.map g' with hg
---   set e := DirectSum.decomposeRingEquiv 𝒜 with he
---   set u := DirectSum.coeAddMonoidHom ℬ with hu
---   have h_comp : f.toAddMonoidHom.compHom e.symm.toAddMonoidHom = u.comp g := by
---     ext i x
---     simp [hg, hu, he, hg', decomposeRingEquiv]
---   have h_g_surj : Function.Surjective g := by
---     refine (map_surjective _).mpr (fun i ↦ hg' ▸ ?_)
---     intro x; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, Subtype.exists];
---     obtain ⟨x, hx, hx'⟩ := x.2; exact ⟨x, hx, by ext; exact hx'⟩
---   simp only [RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
---     AddMonoidHom.compHom_apply_apply] at h_comp
---   constructor
---   · intro x y hxy
---     obtain ⟨x, rfl⟩ := (h_g_surj.comp e.surjective) x
---     obtain ⟨y, rfl⟩ := (h_g_surj.comp e.surjective) y
---     change (u.comp g) (e x) = (u.comp g) (e y) at hxy
---     simp only [← h_comp, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, RingHom.coe_coe,
---       Function.comp_apply, RingEquiv.symm_apply_apply] at hxy
---     change f x = f y at hxy
---     ext i; simp only [hg, Function.comp_apply, map_apply, SetLike.coe_eq_coe, hg']
---     ext; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
---     show f (GradedRing.proj 𝒜 i x) = f (GradedRing.proj 𝒜 i y)
---     rw [hf, RingQuot.mkAlgHom_eq_iff' R] at hxy ⊢
---     have : IsHomogeneousRelation 𝒜 (RingConGen.Rel rel) := inferInstance
---     have := this.is_homogeneous' hxy i
---     rw [← RingQuot.eqvGen_rel_eq rel, Equivalence.eqvGen_eq (Relation.EqvGen.is_equivalence _),
---       RingQuot.eqvGen_rel_eq] at this
---     exact this
---   · intro x; rw [← hu]; obtain ⟨x, rfl⟩ := RingQuot.mkAlgHom_surjective R rel x
---     use g (e x); show (u.comp g) (e x) = (f x)
---     simp [← h_comp]
+
+/- noncomputable instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) := by
+  apply DirectSum.IsInternal.gradedRing
+  set ℬ := (Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜 with hb
+  set f := RingQuot.mkAlgHom R rel with hf
+  set g' : ∀ (i : ι), 𝒜 i →+ ℬ i := fun i ↦ {
+    toFun := fun x ↦ ⟨f x, by rw [hb]; exact ⟨x, ⟨x.2, rfl⟩⟩⟩,
+    map_zero' := by simp,
+    map_add' := by simp,
+  } with hg'
+  set g := DirectSum.map g' with hg
+  set e := DirectSum.decomposeRingEquiv 𝒜 with he
+  set u := DirectSum.coeAddMonoidHom ℬ with hu
+  have h_comp : f.toAddMonoidHom.compHom e.symm.toAddMonoidHom = u.comp g := by
+    ext i x
+    simp [hg, hu, he, hg', decomposeRingEquiv]
+  have h_g_surj : Function.Surjective g := by
+    refine (map_surjective _).mpr (fun i ↦ hg' ▸ ?_)
+    intro x; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, Subtype.exists];
+    obtain ⟨x, hx, hx'⟩ := x.2; exact ⟨x, hx, by ext; exact hx'⟩
+  simp only [RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
+    AddMonoidHom.compHom_apply_apply] at h_comp
+  constructor
+  · intro x y hxy
+    obtain ⟨x, rfl⟩ := (h_g_surj.comp e.surjective) x
+    obtain ⟨y, rfl⟩ := (h_g_surj.comp e.surjective) y
+    change (u.comp g) (e x) = (u.comp g) (e y) at hxy
+    simp only [← h_comp, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, RingHom.coe_coe,
+      Function.comp_apply, RingEquiv.symm_apply_apply] at hxy
+    change f x = f y at hxy
+    ext i; simp only [hg, Function.comp_apply, map_apply, SetLike.coe_eq_coe, hg']
+    ext; simp only [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+    show f (GradedRing.proj 𝒜 i x) = f (GradedRing.proj 𝒜 i y)
+    rw [hf, RingQuot.mkAlgHom_eq_iff' R] at hxy ⊢
+    have : IsHomogeneousRelation 𝒜 (RingConGen.Rel rel) := inferInstance
+    have := this.is_homogeneous' hxy i
+    rw [← RingQuot.eqvGen_rel_eq rel, Equivalence.eqvGen_eq (Relation.EqvGen.is_equivalence _),
+      RingQuot.eqvGen_rel_eq] at this
+    exact this
+  · intro x; rw [← hu]; obtain ⟨x, rfl⟩ := RingQuot.mkAlgHom_surjective R rel x
+    use g (e x); show (u.comp g) (e x) = (f x)
+    simp [← h_comp] -/
 
 end GradedAlgebra
 
