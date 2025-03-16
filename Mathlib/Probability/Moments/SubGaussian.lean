@@ -256,9 +256,9 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
     filter_upwards [h.ae_forall_integrable_exp_mul, h.mgf_le] with ω' h_int h_mgf t
     convert h_mgf t
     ext t
-    rw [Kernel.map_apply _ hY, mgf_map hY.aemeasurable]
+    rw [map_apply _ hY, mgf_map hY.aemeasurable]
     convert (h_int t).1
-    rw [Kernel.map_apply _ hY]
+    rw [map_apply _ hY]
 
 lemma id_map_iff (hX : Measurable X) :
     HasSubgaussianMGF id c (κ.map X) ν ↔ HasSubgaussianMGF X c κ ν := by
@@ -311,14 +311,11 @@ variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : 
 lemma prodMkLeft_compProd {η : Kernel Ω Ω''} (h : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
     HasSubgaussianMGF Y cY (prodMkLeft Ω' η) (ν ⊗ₘ κ) where
   integrable_exp_mul := by
-    convert h.integrable_exp_mul
-    simp
+    simpa using h.integrable_exp_mul
   mgf_le := by
     have h2 := h.mgf_le
-    simp only [prodMkLeft_apply] at h2
     rw [← Measure.snd_compProd, Measure.snd] at h2
-    refine ae_of_ae_map ?_ h2
-    fun_prop
+    exact ae_of_ae_map (by fun_prop) h2
 
 lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) (t : ℝ) :
@@ -331,8 +328,7 @@ lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel
       rw [Measure.map_comp _ _ measurable_fst, ← fst_eq, fst_compProd]
     rwa [this, memLp_map_measure_iff h.1 measurable_fst.aemeasurable] at h
   · have h := hY.memLp_exp_mul t 2
-    simp only [ENNReal.coe_ofNat] at h
-    rwa [Measure.comp_compProd_comm, Measure.snd,
+    rwa [ENNReal.coe_ofNat, Measure.comp_compProd_comm, Measure.snd,
       memLp_map_measure_iff h.1 measurable_snd.aemeasurable] at h
 
 /-- For `ν : Measure Ω'`, `κ : Kernel Ω' Ω` and `η : (Ω' × Ω) Ω''`, if a random variable `X : Ω → ℝ`
@@ -558,9 +554,7 @@ lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
   induction s using Finset.induction_on with
   | empty => simp
   | @insert i s his h =>
-    simp_rw [← Finset.sum_apply]
-    rw [Finset.sum_insert his, Finset.sum_insert his]
-    simp_rw [Pi.add_apply, Finset.sum_apply]
+    simp_rw [← Finset.sum_apply, Finset.sum_insert his, Pi.add_apply, Finset.sum_apply]
     have h_indep' := (h_indep.indepFun_finset_sum_of_not_mem h_meas his).symm
     refine add_of_indepFun (h_subG _ (Finset.mem_insert_self _ _)) (h ?_) ?_
     · exact fun i hi ↦ h_subG _ (Finset.mem_insert_of_mem hi)
@@ -583,9 +577,7 @@ lemma measure_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * n * c)) := by
   have h := (sum_of_iIndepFun h_indep h_meas (c := fun _ ↦ c)
     (s := Finset.range n) (by simpa)).measure_ge_le hε
-  simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul, NNReal.coe_mul,
-    NNReal.coe_natCast] at h
-  rwa [← mul_assoc] at h
+  simpa [← mul_assoc] using h
 
 end Add
 
@@ -607,7 +599,7 @@ lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
     HasSubgaussianMGF (X + Y) (cX + cY) μ := by
   suffices HasSubgaussianMGF (fun p ↦ X p.1 + Y p.2) (cX + cY)
       (@Measure.map Ω (Ω × Ω) mΩ (m.prod mΩ) (fun ω ↦ (id ω, id ω)) μ) by
-    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ (fun ω ↦ (id ω, id ω)) := by ext; simp
+    have h_eq : X + Y = (fun p ↦ X p.1 + Y p.2) ∘ (fun ω ↦ (id ω, id ω)) := rfl
     rw [h_eq]
     refine HasSubgaussianMGF.of_map ?_ this
     exact @Measurable.aemeasurable _ _ _ (m.prod mΩ) _ _
