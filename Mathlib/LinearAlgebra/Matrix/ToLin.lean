@@ -92,7 +92,7 @@ theorem range_vecMulLinear (M : Matrix m n R) :
   simp_rw [range_eq_map, ← iSup_range_single, Submodule.map_iSup, range_eq_map, ←
     Ideal.span_singleton_one, Ideal.span, Submodule.map_span, image_image, image_singleton,
     Matrix.vecMulLinear_apply, iSup_span, range_eq_iUnion, iUnion_singleton_eq_range,
-    LinearMap.single, LinearMap.coe_mk, AddHom.coe_mk]
+    LinearMap.single, LinearMap.coe_mk, AddHom.coe_mk, row_def]
   unfold vecMul
   simp_rw [single_dotProduct, one_mul]
 
@@ -100,7 +100,7 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     Function.Injective M.vecMul ↔ LinearIndependent R M.row := by
   rw [← coe_vecMulLinear]
   simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
-    LinearMap.mem_ker, vecMulLinear_apply]
+    LinearMap.mem_ker, vecMulLinear_apply, row_def]
   refine ⟨fun h c h0 ↦ congr_fun <| h c ?_, fun h c h0 ↦ funext <| h c ?_⟩
   · rw [← h0]
     ext i
@@ -256,12 +256,12 @@ theorem Matrix.ker_mulVecLin_eq_bot_iff {M : Matrix m n R} :
 
 theorem Matrix.range_mulVecLin (M : Matrix m n R) :
     LinearMap.range M.mulVecLin = span R (range M.col) := by
-  rw [← vecMulLinear_transpose, range_vecMulLinear]
+  rw [← vecMulLinear_transpose, range_vecMulLinear, transpose_row]
 
 theorem Matrix.mulVec_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
     Function.Injective M.mulVec ↔ LinearIndependent R M.col := by
   change Function.Injective (fun x ↦ _) ↔ _
-  simp_rw [← M.vecMul_transpose, vecMul_injective_iff]
+  simp_rw [← M.vecMul_transpose, vecMul_injective_iff, transpose_row]
 
 lemma Matrix.linearIndependent_cols_of_isUnit {R : Type*} [CommRing R] [Fintype m]
     {A : Matrix m m R} [DecidableEq m] (ha : IsUnit A) :
