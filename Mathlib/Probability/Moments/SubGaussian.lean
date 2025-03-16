@@ -230,6 +230,16 @@ lemma fun_zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] :
 @[simp]
 lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 0 κ ν := fun_zero
 
+@[simp]
+lemma zero_kernel : HasSubgaussianMGF X c (0 : Kernel Ω' Ω) ν := by
+  constructor
+  · simp
+  · simp only [zero_apply, mgf_zero_measure, Pi.zero_apply]
+    exact ae_of_all _ fun _ _ ↦ by positivity
+
+@[simp]
+lemma zero_measure : HasSubgaussianMGF X c κ (0 : Measure Ω') := ⟨by simp, by simp⟩
+
 lemma congr {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν) (h' : X =ᵐ[κ ∘ₘ ν] Y) :
     HasSubgaussianMGF Y c κ ν where
   integrable_exp_mul t := by
@@ -301,16 +311,20 @@ end ChernoffBound
 section Add
 
 variable {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {Y : Ω'' → ℝ} {cY : ℝ≥0}
-  [SFinite ν] [IsSFiniteKernel κ]
 
 lemma prodMkLeft_compProd {η : Kernel Ω Ω''} (h : HasSubgaussianMGF Y cY η (κ ∘ₘ ν)) :
-    HasSubgaussianMGF Y cY (prodMkLeft Ω' η) (ν ⊗ₘ κ) where
-  integrable_exp_mul := by
-    simpa using h.integrable_exp_mul
-  mgf_le := by
-    have h2 := h.mgf_le
+    HasSubgaussianMGF Y cY (prodMkLeft Ω' η) (ν ⊗ₘ κ) := by
+  by_cases hν : SFinite ν
+  swap; · simp [hν]
+  by_cases hκ : IsSFiniteKernel κ
+  swap; · simp [hκ]
+  constructor
+  · simpa using h.integrable_exp_mul
+  · have h2 := h.mgf_le
     rw [← Measure.snd_compProd, Measure.snd] at h2
     exact ae_of_ae_map (by fun_prop) h2
+
+variable [SFinite ν] [IsSFiniteKernel κ]
 
 lemma integrable_exp_add_compProd {η : Kernel (Ω' × Ω) Ω''} [IsMarkovKernel η]
     (hX : HasSubgaussianMGF X c κ ν) (hY : HasSubgaussianMGF Y cY η (ν ⊗ₘ κ)) (t : ℝ) :
