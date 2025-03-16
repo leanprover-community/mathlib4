@@ -116,14 +116,14 @@ variable {R : Type*} [CommSemiring R] {n d : ℕ}
 -- theorem mul_assoc_rev (a b c : R) : a * (b * c) = a * b * c := (mul_assoc ..).symm
 -- theorem mul_neg {R} [Ring R] (a b : R) : a * -b = -(a * b) := by simp
 -- theorem add_neg {R} [Ring R] (a b : R) : a + -b = a - b := (sub_eq_add_neg ..).symm
--- theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
--- theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
--- theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
--- theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
--- theorem rat_rawCast_pos {R} [DivisionRing R] :
---     (Rat.rawCast (.ofNat n) d : R) = Nat.rawCast n / Nat.rawCast d := by simp
--- theorem rat_rawCast_neg {R} [DivisionRing R] :
---     (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
+theorem nat_rawCast_0 : (Nat.rawCast 0 : R) = 0 := by simp
+theorem nat_rawCast_1 : (Nat.rawCast 1 : R) = 1 := by simp
+theorem nat_rawCast_2 [Nat.AtLeastTwo n] : (Nat.rawCast n : R) = OfNat.ofNat n := rfl
+theorem int_rawCast_neg {R} [Ring R] : (Int.rawCast (.negOfNat n) : R) = -Nat.rawCast n := by simp
+theorem rat_rawCast_pos {R} [DivisionRing R] :
+    (Rat.rawCast (.ofNat n) d : R) = Nat.rawCast n / Nat.rawCast d := by simp
+theorem rat_rawCast_neg {R} [DivisionRing R] :
+    (Rat.rawCast (.negOfNat n) d : R) = Int.rawCast (.negOfNat n) / Nat.rawCast d := by simp
 
 /--
 Runs a tactic in the `RingNF.M` monad, given initial data:
@@ -144,8 +144,8 @@ partial def M.run
     let thms : SimpTheorems := {}
     -- let thms ← [``add_zero, ``add_assoc_rev, ``_root_.mul_one, ``mul_assoc_rev,
     --   ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
-    -- let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
-    --   ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
+    let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
+      ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
     let ctx' := ctx.setSimpTheorems #[thms]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
