@@ -790,11 +790,11 @@ open scoped Classical in
 that it holds for constant functions and that it is closed under piecewise combination of functions
 and pointwise limits.
 
-To use in an induction proof, the syntax is `induction f, hf with`. -/
-@[elab_as_elim, induction_eliminator]
+To use in an induction proof, the syntax is
+`induction f, hf using StronglyMeasurable.induction' with`. -/
 theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
     {P : (f : α → β) → StronglyMeasurable f → Prop}
-    (ind : ∀ (c), P (fun _ ↦ c) stronglyMeasurable_const)
+    (const : ∀ (c), P (fun _ ↦ c) stronglyMeasurable_const)
     (pcw : ∀ ⦃f g : α → β⦄ {s} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g)
       (hs : MeasurableSet s), P f hf → P g hg → P (s.piecewise f g) (hf.piecewise hs hg))
     (lim : ∀ ⦃f : ℕ → α → β⦄ ⦃g : α → β⦄ (hf : ∀ n, StronglyMeasurable (f n))
@@ -805,7 +805,7 @@ theorem induction' [MeasurableSpace α] [Nonempty β] [TopologicalSpace β]
   refine lim (fun n ↦ (s n).stronglyMeasurable) hf (fun n ↦ ?_) hf.tendsto_approx
   change P (s n) (s n).stronglyMeasurable
   induction s n with
-  | const c => exact ind c
+  | const c => exact const c
   | @pcw f g s hs Pf Pg =>
     simp_rw [SimpleFunc.coe_piecewise]
     exact pcw f.stronglyMeasurable g.stronglyMeasurable hs Pf Pg

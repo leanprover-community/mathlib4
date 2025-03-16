@@ -340,11 +340,11 @@ def coev (b : Y) : C(X, Y × X) :=
 
 variable {X Y}
 
-theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp
+theorem image_coev {y : Y} (s : Set X) : coev X Y y '' s = {y} ×ˢ s := by simp [singleton_prod]
 
 /-- The coevaluation map `Y → C(X, Y × X)` is continuous (always). -/
 theorem continuous_coev : Continuous (coev X Y) := by
-  have : ∀ {a K U}, MapsTo (coev X Y a) K U ↔ {a} ×ˢ K ⊆ U := by simp [mapsTo']
+  have : ∀ {a K U}, MapsTo (coev X Y a) K U ↔ {a} ×ˢ K ⊆ U := by simp [singleton_prod, mapsTo']
   simp only [continuous_iff_continuousAt, ContinuousAt, tendsto_nhds_compactOpen, this]
   intro x K hK U hU hKU
   rcases generalized_tube_lemma isCompact_singleton hK hU hKU with ⟨V, W, hV, -, hxV, hKW, hVWU⟩
