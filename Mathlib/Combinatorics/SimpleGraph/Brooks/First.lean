@@ -7,69 +7,77 @@ variable {α : Type*} {G : SimpleGraph α}
 section Walks
 namespace Walk
 open Finset
-variable {u v : α}
-lemma chain_darts {w : G.Walk u v} (P : α → Prop) (hu : P u)
-   (hchain : ∀ d, d ∈ w.darts → P d.fst → P d.snd) : ∀ x, x ∈ w.support → P x := by
-  intro y hy
-  induction w with
-  | nil => simp_all
+variable {u v x : α}
+/-- the ith dart of w is (wᵢ, wᵢ₊₁) -/
+@[simp]
+lemma get_dart_eq {w : G.Walk u v} {i : ℕ} (hi : i < w.length) :
+    w.darts.get ⟨i, w.length_darts.symm ▸ hi⟩ =
+    ⟨(w.getVert i, w.getVert (i + 1)), w.adj_getVert_succ hi⟩ := by
+  induction w generalizing i with
+  | nil => simp at hi
   | cons h p ih =>
-    rw [support_cons] at hy
-    cases hy with
-    | head as =>  exact hu
+    cases i with
+    | zero => simp
+    | succ i => aesop
+
+
+
+
+
+lemma getVert_induct {w : G.Walk u v} (P : α → Prop) (hstart : P u)
+   (hsucc : ∀ n, P (w.getVert n) → P (w.getVert (n + 1))) (hx : x ∈ w.support) : P x := by
+  induction w with
+  | nil => exact (mem_support_nil_iff.1 hx) ▸ hstart
+  | cons h p ih =>
+    have := getVert_zero .. ▸  (getVert_cons_succ ..) ▸ hsucc 0 hstart
+    rw [support_cons] at hx
+    cases hx with
+    | head as => exact hstart
     | tail b hb =>
-      rw [darts_cons] at hchain
-      have : ∀d, d ∈ p.darts → P d.toProd.1 → P d.toProd.2 := by simp_all
-      apply ih _ this hb
-      simp_all
+      apply ih this
+      · intro n hn
+        have := hsucc (n + 1)
+        simp_rw [getVert_cons_succ] at this
+        exact this hn
+      · exact hb
 
-lemma exists_change_dart (w : G.Walk u v) (P : α → Prop) {x : α} (hu : P u) (hx : x ∈ w.support)
-    (hxP : ¬ P x) : ∃ d, d ∈ w.darts ∧ P d.fst ∧ ¬ P d.snd := by
-  by_contra! hc
-  exact hxP <| chain_darts P hu hc _ hx
-
-/-- If a circuit contains vertices `x` and `y` such that `P x` and `¬ P y` then it contains
-a dart `d` such that `P d.fst` and `¬ P d.snd` -/
-lemma exists_change_dart_closed {w : G.Walk u u} (P : α → Prop) {x y : α} (hx : x ∈ w.support)
-    (hxP : P x) (hy : y ∈ w.support) (hyP : ¬ P y) : ∃ d, d ∈ w.darts ∧ P d.fst ∧ ¬ P d.snd := by
-  by_cases hu : P u
-  · exact w.exists_change_dart P hu hy hyP
-  · obtain ⟨d, hd, hd1, hd2⟩ := w.reverse.exists_change_dart (¬ P ·) hu
-       (by rwa [support_reverse, List.mem_reverse]) (not_not.2 hxP)
-    use d.symm, by simpa using hd, (not_not.1 hd2), hd1
-
-lemma mem_support_closed_iff {c : G.Walk u u} (hc : ¬c.Nil) {x : α} :
-    x ∈ c.support ↔ x ∈ c.support.tail := by
-  cases c with
-  | nil => simp at hc
-  | cons h p =>
-    simp only [support_cons, List.mem_cons, List.tail_cons, or_iff_right_iff_imp]
-    intro h
-    rw [h]
-    exact end_mem_support ..
+lemma exists_getVert_change (w : G.Walk u v) (P : α → Prop) {x : α} (hu : P u) (hx : x ∈ w.support)
+    (hxP : ¬ P x) : ∃ n, P (w.getVert n) ∧ ¬ P (w.getVert (n + 1)) ∧ n + 1 ≤ w.length := by
+  have ⟨n, h1, h2⟩ : ∃ n, P (w.getVert n) ∧ ¬ P (w.getVert (n + 1)) := by
+    by_contra! hc
+    exact  hxP <| getVert_induct P hu hc hx
+  use n, h1, h2
+  by_contra! hf
+  apply h2
+  rw [getVert_of_length_le _ (Nat.le_of_succ_le_succ hf)] at h1
+  rwa [getVert_of_length_le _ hf.le]
 
 /-- support.get is injective on a path -/
 lemma get_path_injective {p : G.Walk u v} (hp : p.IsPath): Function.Injective p.support.get :=
   List.nodup_iff_injective_get.1 hp.2
 
-lemma rotate_dart_snd  [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) {d : G.Dart}
-    (hd : d ∈ c.darts) : (c.rotate (dart_fst_mem_support_of_mem_darts c hd)).snd = d.snd := by
 
-  sorry
+lemma exists_cycle [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) (P : Set α) {x y : α}
+    (hx : x ∈ c.support) (hxP : x ∈ P) (hy : y ∈ c.support) (hyP : y ∉ P) : ∃ (a : α),
+    ∃ (c' : G.Walk a a), P a ∧ ¬ P c'.snd ∧ c'.IsCycle ∧
+    c'.support.toFinset = c.support.toFinset := by
+  obtain ⟨d, h1, h2, hlt⟩ := exists_getVert_change (c.rotate hx) P hxP
+    ((mem_support_rotate_iff _).2 hy) hyP
+  rw [length_rotate] at hlt
+  have ha : (c.rotate hx).getVert d ∈ c.support := (mem_support_rotate_iff _).1 <|
+    getVert_mem_support ..
+  use (c.rotate hx).getVert d
+  use c.rotate ha
+  use h1
+  refine ⟨?_,hc.rotate ha, ?_ ⟩
+  · rw [snd]
+    rw [getVert_rotate]
+    · split_ifs with h2
+      · sorry
+      · sorry
+    · sorry
 
-#check IsCycle.not_nil
-
-lemma exists_cycle [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) (P : α → Prop) {x y : α}
-    (hx : x ∈ c.support) (hxP : P x) (hy : y ∈ c.support) (hyP : ¬ P y) : ∃ (a : α),
-    ∃ (d : G.Walk a a), P a ∧ ¬ P d.snd ∧ d.IsCycle ∧ d.support.toFinset = c.support.toFinset:= by
-  obtain ⟨d, hd, hd1, hd2⟩ := exists_change_dart_closed P hx hxP hy hyP
-  use d.toProd.1, c.rotate (dart_fst_mem_support_of_mem_darts c hd), hd1
-  refine ⟨by rwa [rotate_dart_snd hc hd], hc.rotate (dart_fst_mem_support_of_mem_darts c hd), ?_⟩
-  have := support_rotate c (dart_fst_mem_support_of_mem_darts c hd)
-  ext z; simp only [List.mem_toFinset]
-  rw [mem_support_closed_iff hc.not_nil, mem_support_closed_iff
-     (hc.rotate (dart_fst_mem_support_of_mem_darts c hd)).not_nil]
-  exact List.IsRotated.mem_iff this
+  · ext x ; simp [mem_support_rotate_iff]
 
 section LFDEq
 
@@ -292,6 +300,8 @@ lemma IsMaxCycle.dropUntil_of_isClosableMaxPath (hp : p.IsCloseableMaxPath) :
     rwa [penultimate_dropUntil (fun hv ↦ G.loopless _ (hv ▸ hp.isClosable.adj))] at h2
   · apply (mem_dropUntil_find_of_mem_prop ⟨(hp.max _ hy), _⟩)
     exact ⟨hy, hpen⟩
+
+
 
 
 end Walk

@@ -178,11 +178,13 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         have hp : p.IsPath := hq.reverse
         have hcmp :=  IsCloseableMaxPath.mk' hp
           (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
+        let c:= ((p.dropUntil p.close find_mem_support).cons hcmp.isClosable.adj)
         have hps : p.support = (q.append v41).support.reverse :=by rw [support_reverse]
         have ⟨hcy, hcym⟩:= IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hp
           (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
+        change c.IsCycle at hcy
+        change c.IsMaximal at hcym
         rw [IsMaximal.iff] at hcym
-        let c:= ((p.dropUntil p.close find_mem_support).cons hcmp.isClosable.adj)
         have hsub : c.support.toFinset ⊂ s := by
           apply Finset.ssubset_of_subset_of_ssubset _ hssf
           intro y hy
@@ -207,7 +209,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           exact Nat.lt_add_of_pos_left hnemp
          -- Two cases either cycle has no neighbors outside of c
         by_cases hnbc : ∃ x, x ∈ c.support ∧ ∃ y, y ∈ s \ c.support.toFinset ∧ G.Adj x y
-        · -- we know `hcym : vᵣ` has all its neighbors in `c` while
+        · --
+          -- we know `hcym : vᵣ` has all its neighbors in `c` while
           -- `hnbc : ∃ x ∈ c` that has a neighbor in `s \ c`
           sorry
         ·  -- Can now color `c` and `s \ c` by induction

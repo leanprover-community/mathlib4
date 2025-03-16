@@ -312,25 +312,27 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
   rw [Nat.lt_iff_add_one_le, ← length_support]
   exact hp.support_nodup.length_le_card
 
-lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
-    Set.InjOn p.getVert {i | i ≤ p.length} := by
-  intro n hn m hm hnm
-  induction p generalizing n m with
-  | nil => aesop
-  | @cons v w u h p ihp =>
-    simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
-    by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
-    · aesop
-    · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
-      have hvp : v ∉ p.support := by aesop
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
-    · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
-      have hvp : v ∉ p.support := by aesop
-      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by omega⟩⟩)).elim
-    · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
-      have := ihp hp.of_cons (by omega : (n - 1) ≤ p.length)
-        (by omega : (m - 1) ≤ p.length) hnm
-      omega
+
+/- `getVert` and `support.get` agree for `i ≤ p.length`  -/
+lemma getVert_eq_get {p : G.Walk u v} {n : ℕ} (hn : n ≤ p.length) :
+p.getVert n = p.support.get ⟨n, p.length_support ▸ (Nat.lt_add_one_of_le hn)⟩ := by
+  induction n generalizing u v with
+  | zero => cases p <;> simp
+  | succ i ih =>
+    cases p with
+    | nil => simp at hn
+    | cons h p => aesop
+
+lemma get_support_injective_iff {p : G.Walk u v} : Function.Injective p.support.get ↔ p.IsPath := by
+  rw [← List.nodup_iff_injective_get, isPath_def]
+
+lemma IsPath.getVert_injOn {p : G.Walk u v} (hp: p.IsPath) :
+    Set.InjOn p.getVert {i | i ≤ p.length}:= by
+  intro i hi j hj heq
+  simp only [Set.mem_setOf_eq] at hi hj
+  by_contra!
+  rw [getVert_eq_get hi, getVert_eq_get hj] at heq
+  apply this (Fin.mk.inj (get_support_injective_iff.2 hp heq))
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
@@ -349,28 +351,24 @@ lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi :
   rw [this]
   omega
 
+example(p : G.Walk u v)(i : ℕ) :  i ≤ p.length ↔ i < p.support.length := by
+  simp [length_support, Nat.le_iff_lt_add_one]
+
 lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
     p.IsPath := by
   refine ⟨?_, fun a => a.getVert_injOn⟩
-  induction p with
-  | nil => simp
-  | cons h q ih =>
-    intro hinj
-    rw [cons_isPath_iff]
-    refine ⟨ih (by
-      intro n hn m hm hnm
-      simp only [Set.mem_setOf_eq] at hn hm
-      have := hinj (by rw [length_cons]; omega : n + 1 ≤ (q.cons h).length)
-          (by rw [length_cons]; omega : m + 1 ≤ (q.cons h).length)
-          (by simpa [getVert_cons] using hnm)
-      omega), fun h' => ?_⟩
-    obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp h'
-    have := hinj (by rw [length_cons]; omega : (n + 1) ≤ (q.cons h).length)
-      (by omega : 0 ≤ (q.cons h).length) (show (q.cons h).getVert (n + 1) = (q.cons h).getVert 0
-        from by rwa [getVert_cons _ _ (by omega : n + 1 ≠ 0), getVert_zero])
-    omega
+  simp_rw [Nat.le_iff_lt_add_one, ← length_support]
+  intro hinj
+  apply get_support_injective_iff.1
+  intro i j heq
+  apply Fin.ext_iff.2 <| hinj i.2 j.2 _
+  rwa [getVert_eq_get (Nat.le_of_lt_succ <| i.2.trans_le p.length_support.le),
+        getVert_eq_get (Nat.le_of_lt_succ <| j.2.trans_le p.length_support.le)]
 
 /-! ### About cycles -/
+
+lemma IsCycle.get_support_tail_injective {c : G.Walk u u} (hc : c.IsCycle) :
+    Function.Injective c.support.tail.get := List.nodup_iff_injective_get.1 hc.2
 
 -- TODO: These results could possibly be less laborious with a periodic function getCycleVert
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
@@ -386,7 +384,7 @@ lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
   omega
 
 lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
-    Set.InjOn p.getVert {i |  i ≤ p.length - 1} := by
+    Set.InjOn p.getVert {i | i ≤ p.length - 1} := by
   intro n hn m hm hnm
   simp only [Walk.length_reverse, Set.mem_setOf_eq, Nat.sub_le, and_true] at *
   have := hpc.three_le_length

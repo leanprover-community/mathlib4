@@ -38,7 +38,8 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
-@[simp] theorem takeUntil_nil {u : V} {h} : takeUntil (nil : G.Walk u u) u h = nil := rfl
+@[simp]
+theorem takeUntil_nil {u : V} {h} : takeUntil (nil : G.Walk u u) u h = nil := rfl
 
 lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
     (hadj : G.Adj u v') :
@@ -76,6 +77,8 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
       cases h
       · exact (hx rfl).elim
       · assumption
+
+@[simp] theorem dropUntil_nil {u : V} {h} : dropUntil (nil : G.Walk u u) u h = nil := rfl
 
 @[simp]
 lemma dropUntil_start (p : G.Walk u v) :
@@ -334,36 +337,29 @@ lemma length_takeUntil_add_dropUntil {p : G.Walk u v} (h : w ∈ p.support) :
   rw [← length_append, take_spec]
 
 @[simp]
+theorem support_rotate_eq {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
+    (c.rotate h).support = u :: c.support.tail.rotate (c.takeUntil _ h).length := by
+  rw [support_eq_cons]
+  simp only [List.cons.injEq, true_and, rotate, tail_support_append]
+  nth_rw 3 [← take_spec c h]
+  rw [tail_support_append, ← List.rotate_append_length_eq]
+  simp
+
+@[simp]
 lemma length_rotate {v : V} {c : G.Walk u u} (h : v ∈ c.support) :
     (c.rotate h).length = c.length := by
   rw [rotate, length_append, add_comm]
   simp
 
 lemma getVert_rotate {n : ℕ} {c : G.Walk v v} (h : w ∈ c.support) (hn : n ≤ c.length) :
-    (c.rotate h).getVert n = c.getVert ((n + (c.takeUntil _ h).length) % c.length) := by
-  cases hn.lt_or_eq with
-  | inl hlt =>
-    have hl := length_takeUntil_add_dropUntil h
-    rw [rotate, getVert_append]
-    split_ifs with h1
-    · rw [getVert_dropUntil, Nat.mod_eq_of_lt]
-      omega
-    · push_neg at h1
-      rw [getVert_takeUntil h (Nat.sub_le_of_le_add (hl ▸ hn))]
-      congr
-      rw [Nat.mod_eq, if_pos ⟨Nat.zero_lt_of_lt hlt, by omega⟩]
-      · rw [Nat.mod_eq_of_lt]
-        · rw [← hl, add_comm, Nat.add_sub_add_left]
-        · omega
-  | inr heq =>
-    subst_vars
-    rw [Nat.add_mod_left,← length_rotate h, getVert_length, length_rotate h]
-    cases (length_takeUntil_le c h).lt_or_eq with
-    | inl h' => rw [Nat.mod_eq_of_lt h', ← getVert_takeUntil h le_rfl, getVert_length]
-    | inr h' =>
-      rw [← h', Nat.mod_self, getVert_zero]
-      contrapose! h'
-      apply Nat.ne_of_lt <| length_takeUntil_lt h h'
+    (c.rotate h).getVert n = if (n < (c.dropUntil _ h).length) then
+      c.getVert ((n + (c.takeUntil _ h).length)) else c.getVert (n - (c.dropUntil _ h).length) := by
+  rw [rotate, getVert_append]
+  split_ifs with h1
+  · rw [getVert_dropUntil]
+  · push_neg at h1
+    apply getVert_takeUntil
+    rwa [Nat.sub_le_iff_le_add, length_takeUntil_add_dropUntil h]
 
 end WalkDecomp
 
@@ -397,5 +393,17 @@ termination_by p.length
 decreasing_by
 · simp_wf
   rw [Nat.lt_iff_add_one_le, length_tail_add_one hnp]
+
+lemma mem_support_rotate_iff [DecidableEq V] {u v x} {c : G.Walk u u} (h : v ∈ c.support) :
+    x ∈ (c.rotate h).support ↔ x ∈ c.support := by
+  constructor <;> intro h' <;> rw [support_eq_cons] at h'
+  · cases h' with
+    | head _ => exact h
+    | tail _ hb => exact List.mem_of_mem_tail <|  (support_rotate c h).mem_iff.1 hb
+  · cases h' with
+    | head _ =>
+      rw [rotate, support_append]
+      exact List.mem_append_left _ <| end_mem_support ..
+    | tail _ hb => exact List.mem_of_mem_tail <| (support_rotate c h).mem_iff.2 hb
 
 end SimpleGraph.Walk
