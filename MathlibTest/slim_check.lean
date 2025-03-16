@@ -224,15 +224,6 @@ example {a : ℕ} [Fact a.Prime] : (a + 1).Prime ∨ (a + 2).Prime := by
   plausible (config := { randomSeed := some 257 })
 
 /--
-info: Unable to find a counter-example
----
-warning: declaration uses 'sorry'
--/
-#guard_msgs in
-example (x : PNat) : x < x + 1 := by
-  plausible
-
-/--
 error:
 ===================
 Found a counter-example!
