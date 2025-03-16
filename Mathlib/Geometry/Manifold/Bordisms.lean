@@ -480,6 +480,25 @@ def sum_self [IsEmpty M] :
   hFf := sorry
   hFg := sorry
 
+/-- Mapping a bordism between `M` and `N` on `X` under a continuous map `f : X → Y` -/
+def map.{u, v} {f : X → Y} (hf : Continuous f) (φ : UnorientedBordism.{u, v} k s t J) :
+    UnorientedBordism k (s.map hf) (t.map hf) J where
+  W := φ.W
+  bd := φ.bd
+  F := f ∘ φ.F
+  φ := φ.φ
+  hFf := by
+    simp [Function.comp_assoc, ← φ.hFf]
+    rfl
+  hFg := by
+    simp [Function.comp_assoc, ← φ.hFg]
+    rfl
+
+@[simp, mfld_simps]
+lemma map_F {f : X → Y} (hf : Continuous f) (φ : UnorientedBordism k s t J) :
+    (φ.map hf).F = f ∘ φ.F :=
+  rfl
+
 section collarNeighbourhood
 
 variable {I₀ : ModelWithCorners ℝ E'' H''} [FiniteDimensional ℝ E] [FiniteDimensional ℝ E'']
@@ -721,3 +740,27 @@ instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) whe
     set ψ := Ψ.out with ψ_eq
     rw [sum_eq_out_sum_out, sum_eq_out_sum_out, ← φ_eq, ← ψ_eq, Quotient.eq]
     use UnorientedBordism.sumComm
+
+section functor
+
+namespace uBordismClass
+
+variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
+  {k : WithTop ℕ∞}
+  {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
+  [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
+
+/-- If `s` and `t` are cobordant, so are `s.map hf` and `t.map hf`. -/
+def map_aux {f : X → Y} (hf : Continuous f) {s t: SingularNManifold X k I}
+    (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) s t) :
+    unorientedBordismRelation Y k I (I.prod (𝓡∂ 1)) (s.map hf) (t.map hf) := by
+  choose φ _ using h
+  use φ.map hf
+
+def map {f : X → Y} (hf : Continuous f) : (uBordismClass X k I) → (uBordismClass Y k I) :=
+  Quotient.lift (fun s ↦ Quotient.mk _ (s.map hf)) (fun _ _ h ↦ Quotient.sound (map_aux hf h))
+
+end uBordismClass
+
+end functor
