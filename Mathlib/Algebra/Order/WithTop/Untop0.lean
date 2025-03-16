@@ -36,8 +36,7 @@ lemma untop₀_eq_zero {a : WithTop α} :
     a.untop₀ = 0 ↔ a = 0 ∨ a = ⊤ := by simp [untop₀]
 
 @[simp]
-lemma untop₀_top :
-    (⊤ : WithTop α).untop₀ = (0 : α) := by simp [untop₀]
+lemma untop₀_top : untop₀ ⊤ = (0 : α) := by simp [untop₀]
 
 @[simp]
 lemma untop₀_zero : untop₀ 0 = (0 : α) := by simp [untop₀]
