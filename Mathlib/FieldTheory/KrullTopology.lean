@@ -6,7 +6,6 @@ Authors: Sebastian Monnet
 import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.OpenSubgroup
-import Mathlib.Tactic.ByContra
 
 /-!
 # Krull topology
