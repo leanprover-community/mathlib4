@@ -664,9 +664,11 @@ variable (X k n) in
 /-- The type of unoriented `n`-dimensional `C^k` bordism classes on `X`. -/
 abbrev uBordismClassN (n : ℕ) := uBordismClass X k (𝓡 n)
 
+namespace uBordismClass
+
 variable (X k I) in
 /-- The bordism class of the empty set: the neutral element for the group operation -/
-def uBordismClass.empty.{u} : uBordismClass X k I :=
+def empty.{u} : uBordismClass X k I :=
   haveI := ChartedSpace.empty
   Quotient.mk _ (SingularNManifold.empty.{_, _, _, u} X PEmpty I)
 
@@ -681,7 +683,7 @@ lemma aux.{u} {a₁ b₁ a₂ b₂ : SingularNManifold.{u} X k I}
   choose ψ _ using h'
   use φ.sum ψ
 
-def uBordismClass.sum.{u} :
+def sum.{u} :
     (uBordismClass.{_, _, _, u} X k I) → (uBordismClass X k I) → uBordismClass X k I :=
   letI sum := Quotient.lift₂
     (s₁ := unorientedBordismSetoid X k I) (s₂ := unorientedBordismSetoid X k I)
@@ -689,8 +691,8 @@ def uBordismClass.sum.{u} :
   fun s t ↦ sum (fun _ _ _ _ h h' ↦ Quotient.sound (aux h h')) s t
 
 lemma mk_sum_mk {s t : SingularNManifold X k I} :
-    uBordismClass.sum (Quotient.mk _ s) (Quotient.mk _ t) = Quotient.mk _ (s.sum t) := by
-  dsimp only [uBordismClass.sum, Quotient.lift_mk]
+    sum (Quotient.mk _ s) (Quotient.mk _ t) = Quotient.mk _ (s.sum t) := by
+  dsimp only [sum, Quotient.lift_mk]
   rfl
 
 lemma sum_eq_out_sum_out.{u} {Φ Ψ : uBordismClass.{_, _, _, u} X k I} :
@@ -698,21 +700,21 @@ lemma sum_eq_out_sum_out.{u} {Φ Ψ : uBordismClass.{_, _, _, u} X k I} :
   nth_rw 1 [← Φ.out_eq, ← Ψ.out_eq, mk_sum_mk]
 
 instance : Zero (uBordismClass X k I) where
-  zero := uBordismClass.empty X k I
+  zero := empty X k I
 
 instance : Neg (uBordismClass X k I) where
   -- XXX: better name for the variable?
   neg Φ := Φ
 
 instance : Add (uBordismClass X k I) where
-  add := uBordismClass.sum
+  add := sum
 
 variable (X k I J) in
 private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u} X k I) := by
   apply AddGroup.ofLeftAxioms
   -- XXX: better name for the variables?
   · intro Φ Ψ Δ
-    change uBordismClass.sum (uBordismClass.sum Φ Ψ) Δ = uBordismClass.sum Φ (uBordismClass.sum Ψ Δ)
+    change sum (sum Φ Ψ) Δ = sum Φ (sum Ψ Δ)
     set φ := Φ.out with φ_eq
     set ψ := Ψ.out with ψ_eq
     set δ := Δ.out with δ_eq
@@ -729,26 +731,26 @@ private def unorientedBordismGroup_aux.{u} : AddGroup (uBordismClass.{_, _, _, u
       use UnorientedBordism.sumAssoc (X := X) (s := φ) (t := ψ) (u := δ)
     sorry
   · intro S
-    change uBordismClass.sum (uBordismClass.empty X k I) S = S
+    change sum (empty X k I) S = S
     set s := S.out with s_eq
     nth_rw 2 [← S.out_eq]
-    rw [uBordismClass.empty, sum_eq_out_sum_out, ← s_eq, Quotient.eq]
+    rw [empty, sum_eq_out_sum_out, ← s_eq, Quotient.eq]
     dsimp
     haveI := ChartedSpace.empty
     trans (SingularNManifold.empty X (k := k) PEmpty I).sum s
     sorry -- use UnorientedBordism.sumEmpty: no, want emptySum instead!
   · intro S
-    change uBordismClass.sum S S = uBordismClass.empty X k I
+    change sum S S = empty X k I
     -- Choose a representative s for S; then Φ.sum Φ = [s.sum s].
     set s := S.out with s_eq
-    rw [sum_eq_out_sum_out, ← s_eq, uBordismClass.empty, Quotient.eq]
+    rw [sum_eq_out_sum_out, ← s_eq, empty, Quotient.eq]
     -- But sum_self is precisely a bordism between those.
     -- haveI := ChartedSpace.empty
     dsimp
     -- TODO: this fails, investigate why!
     sorry -- use UnorientedBordism.sum_self (M := PEmpty.{u + 1})
 
-instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) where
+instance instAddCommGroup : AddCommGroup (uBordismClass X k I) where
   __ := unorientedBordismGroup_aux X k I
   add_comm Φ Ψ := by
     change Φ.sum Ψ = Ψ.sum Φ
@@ -758,8 +760,6 @@ instance uBordismClass.instAddCommGroup : AddCommGroup (uBordismClass X k I) whe
     use UnorientedBordism.sumComm
 
 section functor
-
-namespace uBordismClass
 
 variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
   {k : WithTop ℕ∞}
@@ -808,6 +808,6 @@ theorem map_comp' (hf : Continuous f) (hg : Continuous g) :
   ext Φ
   apply map_comp hf hg
 
-end uBordismClass
-
 end functor
+
+end uBordismClass
