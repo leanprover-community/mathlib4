@@ -77,7 +77,7 @@ instance : DenselyOrdered EReal :=
 instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
-@[coe] def Real.toEReal : ℝ → EReal := some ∘ some
+@[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
 
 namespace EReal
 
@@ -86,7 +86,7 @@ instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
   WithBot.decidableLT
 
 -- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
-instance : Top EReal := ⟨some ⊤⟩
+instance : Top EReal := ⟨WithBot.some ⊤⟩
 
 instance : Coe ℝ EReal := ⟨Real.toEReal⟩
 
