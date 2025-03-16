@@ -306,9 +306,7 @@ section FromRepresentation
 
 variable {C : Type u} [Category.{v} C] [HasPullbacks C]
 
-abbrev SubobjectRepresentableBy X := (Subobject.presheaf C).RepresentableBy X
-
-variable {Ω : C} (h : SubobjectRepresentableBy Ω)
+variable {Ω : C} (h : (Subobject.presheaf C).RepresentableBy Ω)
 
 namespace SubobjectRepresentableBy
 
