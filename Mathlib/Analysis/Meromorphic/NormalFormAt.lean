@@ -201,8 +201,8 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
     exact analyticAt_const.MeromorphicNFAt
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
-theorem meromorphicNFAt_iff_toNF_eq_id :
-    MeromorphicNFAt f x ↔ f = toMeromorphicNFAt f x := by
+@[simp] theorem toMeromorphicNFAt_eq_self :
+    toMeromorphicNFAt f x = f ↔ MeromorphicNFAt f x := by
   constructor
   · intro hf
     funext z
