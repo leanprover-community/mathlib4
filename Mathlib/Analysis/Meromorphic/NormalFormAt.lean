@@ -142,7 +142,7 @@ theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 variable (f) (x) in
 /-- If `f` is meromorphic at `x`, convert `f` to normal form at `x` by changing its value at `x`.
 Otherwise, returns the 0 function. -/
-noncomputable def Function.toMeromorphicNFAt :
+noncomputable def toMeromorphicNFAt :
     𝕜 → E := by
   by_cases hf : MeromorphicAt f x
   · classical -- do not complain about decidability issues in Function.update
@@ -155,12 +155,12 @@ noncomputable def Function.toMeromorphicNFAt :
 
 /-- Conversion to normal form at `x` by changes the value only at x. -/
 lemma MeromorphicAt.eqOn_compl_singleton_toNF (hf : MeromorphicAt f x) :
-    Set.EqOn f (f.toMeromorphicNFAt x) {x}ᶜ :=
-  fun _ _ ↦ by simp_all [Function.toMeromorphicNFAt]
+    Set.EqOn f (toMeromorphicNFAt f x) {x}ᶜ :=
+  fun _ _ ↦ by simp_all [toMeromorphicNFAt]
 
 /-- Conversion to normal form at `x` changes the value only at x. -/
 lemma MeromorphicAt.toNF_id_on_nhdNE (hf : MeromorphicAt f x) :
-    f =ᶠ[𝓝[≠] x] f.toMeromorphicNFAt x :=
+    f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toNF hz)
 
 -- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood.
@@ -173,12 +173,12 @@ private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E
 
 /-- After conversion to normal form at `x`, the function has normal form. -/
 theorem MeromorphicAt.meromorphicNFAt_toNF (hf : MeromorphicAt f x) :
-    MeromorphicNFAt (f.toMeromorphicNFAt x) x := by
+    MeromorphicNFAt (toMeromorphicNFAt f x) x := by
   by_cases h₂f : hf.order = ⊤
-  · have : f.toMeromorphicNFAt x =ᶠ[𝓝 x] 0 := by
+  · have : toMeromorphicNFAt f x =ᶠ[𝓝 x] 0 := by
       apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
       · exact hf.toNF_id_on_nhdNE.symm.trans (hf.order_eq_top_iff.1 h₂f)
-      · simp [h₂f, Function.toMeromorphicNFAt, hf]
+      · simp [h₂f, toMeromorphicNFAt, hf]
     apply AnalyticAt.MeromorphicNFAt
     rw [analyticAt_congr this]
     exact analyticAt_const
@@ -187,7 +187,7 @@ theorem MeromorphicAt.meromorphicNFAt_toNF (hf : MeromorphicAt f x) :
     right
     use n, g, h₁g, h₂g
     apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.toNF_id_on_nhdNE.symm.trans h₃g)
-    simp only [Function.toMeromorphicNFAt, hf, ↓reduceDIte, ← hn, WithTop.coe_zero,
+    simp only [toMeromorphicNFAt, hf, ↓reduceDIte, ← hn, WithTop.coe_zero,
       WithTop.coe_eq_zero, ne_eq, Function.update_self, sub_self]
     split_ifs with h₃f
     · obtain ⟨h₁G, _, h₃G⟩ := Classical.choose_spec ((hf.order_eq_int_iff 0).1 (h₃f ▸ hn.symm))
@@ -199,12 +199,11 @@ theorem MeromorphicAt.meromorphicNFAt_toNF (hf : MeromorphicAt f x) :
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 theorem MeromorphicNFAt.toNF_eq_id (hf : MeromorphicNFAt f x) :
-    f = f.toMeromorphicNFAt x := by
+    f = toMeromorphicNFAt f x := by
   funext z
   by_cases hz : z = x
   · rw [hz]
-    simp only [Function.toMeromorphicNFAt, hf.meromorphicAt, WithTop.coe_zero, ne_eq,
-      Function.update_self]
+    simp only [toMeromorphicNFAt, hf.meromorphicAt, WithTop.coe_zero, ne_eq, Function.update_self]
     have h₀f := hf
     rcases hf with h₁f | h₁f
     · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)]
