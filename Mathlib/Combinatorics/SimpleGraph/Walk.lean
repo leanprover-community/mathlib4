@@ -875,6 +875,21 @@ lemma drop_zero {u v : V} {p : G.Walk u v} :
 lemma drop_cons_succ {h : G.Adj u v} {p : G.Walk v w} {n : ℕ} :
   (cons h p).drop (n + 1) = (p.drop n):= rfl
 
+
+@[simp]
+lemma drop_cons_succ_of_lt {p : G.Walk v w} (n : ℕ) (hn : n < p.length) :
+    cons (p.adj_getVert_succ hn) (p.drop (n + 1)) = p.drop n := by
+  induction p generalizing n with
+  | nil => simp at hn
+  | cons h p ih =>
+    cases n with
+    | zero => simp
+    | succ n =>
+      rw [length_cons, Nat.add_lt_add_iff_right] at hn
+      rw [drop_cons_succ]
+      exact ih _ hn
+
+
 lemma drop_not_nil_iff {p : G.Walk v w} {n : ℕ} : ¬ (p.drop n).Nil ↔ n < p.length:= by
   rw [not_iff_comm, not_lt]
   induction p generalizing n with
@@ -917,6 +932,11 @@ theorem take_drop_append {u v : V} (p : G.Walk u v) (n : ℕ)  :
   induction p generalizing n with
   | nil => cases n <;> rfl
   | cons h p ih => cases n <;> simp [ih]
+
+@[simp]
+theorem take_append_cons_drop_succ {u v : V} (p : G.Walk u v) (n : ℕ) (hn : n < p.length)  :
+    (p.take n).append (cons (p.adj_getVert_succ hn) (p.drop (n + 1))) = p := by
+  simp [hn]
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
@@ -1028,11 +1048,6 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   | nil => simp at hp
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
-
-@[simp]
-theorem take_append_cons_drop_tail {u v : V} (p : G.Walk u v) (n : ℕ) (hn : n < p.length)  :
-    (p.take n).append (cons (adj_snd (drop_not_nil_iff.2 hn)) (p.drop n).tail) = p := by
-  simp [drop_not_nil_iff.2 hn]
 
 @[simp]
 lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
