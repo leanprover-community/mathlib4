@@ -42,6 +42,8 @@ noncomputable def eanalyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
     else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
   else 0
 
+@[deprecated (since := "2025-05-02")] alias AnalyticAt.order := eanalyticOrderAt
+
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
@@ -70,6 +72,9 @@ lemma eanalyticOrderAt_eq_top :
 protected lemma AnalyticAt.eanalyticOrderAt_eq_top (hf : AnalyticAt 𝕜 f z₀) :
     eanalyticOrderAt f z₀ = ⊤ ↔ ∀ᶠ z in 𝓝 z₀, f z = 0 := by simp [eanalyticOrderAt_eq_top, hf]
 
+@[deprecated (since := "2025-05-03")]
+alias AnalyticAt.order_eq_top_iff := AnalyticAt.eanalyticOrderAt_eq_top
+
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
 lemma AnalyticAt.eanalyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
@@ -84,6 +89,9 @@ lemma AnalyticAt.eanalyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
   · rw [← hf.exists_eventuallyEq_pow_smul_nonzero_iff] at h
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
+
+@[deprecated (since := "2025-05-03")]
+alias AnalyticAt.order_eq_nat_iff := AnalyticAt.eanalyticOrderAt_eq_natCast
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
@@ -106,8 +114,11 @@ lemma AnalyticAt.eanalyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
   simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.eanalyticOrderAt_eq_natCast,
     analyticOrderAt]
 
+@[deprecated (since := "2025-05-03")]
+alias AnalyticAt.order_ne_top_iff := AnalyticAt.eanalyticOrderAt_ne_top
+
 @[deprecated (since := "2025-02-03")]
-alias order_neq_top_iff := AnalyticAt.eanalyticOrderAt_ne_top
+alias AnalyticAt.order_neq_top_iff := AnalyticAt.eanalyticOrderAt_ne_top
 
 lemma eanalyticOrderAt_eq_zero : eanalyticOrderAt f z₀ = 0 ↔ ¬ AnalyticAt 𝕜 f z₀ ∨ f z₀ ≠ 0 := by
   by_cases hf : AnalyticAt 𝕜 f z₀
@@ -125,6 +136,9 @@ lemma eanalyticOrderAt_ne_zero : eanalyticOrderAt f z₀ ≠ 0 ↔ AnalyticAt �
 protected lemma AnalyticAt.eanalyticOrderAt_eq_zero (hf : AnalyticAt 𝕜 f z₀) :
     eanalyticOrderAt f z₀ = 0 ↔ f z₀ ≠ 0 := by simp [hf, eanalyticOrderAt_eq_zero]
 
+@[deprecated (since := "2025-05-03")]
+alias AnalyticAt.order_eq_zero_iff := AnalyticAt.eanalyticOrderAt_eq_zero
+
 /-- The order of an analytic function `f` at `z₀` is zero iff `f` does not vanish at `z₀`. -/
 protected lemma AnalyticAt.eanalyticOrderAt_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     eanalyticOrderAt f z₀ ≠ 0 ↔ f z₀ = 0 := hf.eanalyticOrderAt_eq_zero.not_left
@@ -133,6 +147,8 @@ protected lemma AnalyticAt.eanalyticOrderAt_ne_zero (hf : AnalyticAt 𝕜 f z₀
 lemma apply_eq_zero_of_analyticOrderAt_ne_zero (hf : analyticOrderAt f z₀ ≠ 0) : f z₀ = 0 := by
   by_cases hf' : AnalyticAt 𝕜 f z₀ <;> simp_all [analyticOrderAt, eanalyticOrderAt_eq_zero]
 
+@[deprecated (since := "2025-05-03")]
+alias AnalyticAt.apply_eq_zero_of_order_toNat_ne_zero := apply_eq_zero_of_analyticOrderAt_ne_zero
 
 /-- Characterization of which natural numbers are `≤ hf.order`. Useful for avoiding case splits,
 since it applies whether or not the order is `∞`. -/
@@ -158,6 +174,8 @@ lemma natCast_le_eanalyticOrderAt (hf : AnalyticAt 𝕜 f z₀) {n : ℕ} :
           ← mul_smul] at hf'
         rw [pow_sub₀ _ (sub_ne_zero_of_ne hz) (by omega), ← hf']
 
+@[deprecated (since := "2025-05-03")] alias natCast_le_order_iff := natCast_le_eanalyticOrderAt
+
 /-- If two functions agree in a neighborhood of `z₀`, then their orders at `z₀` agree. -/
 lemma eanalyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
     eanalyticOrderAt f z₀ = eanalyticOrderAt g z₀ := by
@@ -168,6 +186,55 @@ lemma eanalyticOrderAt_congr (hfg : f =ᶠ[𝓝 z₀] g) :
     exact hfg.congr_left
   · rw [eanalyticOrderAt_of_not_analyticAt hf,
       eanalyticOrderAt_of_not_analyticAt fun hg ↦ hf <| hg.congr hfg.symm]
+
+@[deprecated (since := "2025-05-03")] alias AnalyticAt.order_congr := eanalyticOrderAt_congr
+
+@[simp] lemma eanalyticOrderAt_neg : eanalyticOrderAt (-f) z₀ = eanalyticOrderAt f z₀ := by
+  by_cases hf : AnalyticAt 𝕜 f z₀
+  · refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
+    simp only [ natCast_le_eanalyticOrderAt, hf, hf.neg]
+    exact (Equiv.neg _).exists_congr <| by simp [neg_eq_iff_eq_neg]
+  · rw [eanalyticOrderAt_of_not_analyticAt hf,
+      eanalyticOrderAt_of_not_analyticAt <| analyticAt_neg.not.2 hf]
+
+/-- The order of a sum is at least the minimum of the orders of the summands. -/
+theorem le_eanalyticOrderAt_add (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+    min (eanalyticOrderAt f z₀) (eanalyticOrderAt g z₀) ≤ eanalyticOrderAt (f + g) z₀ := by
+  refine ENat.forall_natCast_le_iff_le.mp fun n ↦ ?_
+  simp only [le_min_iff, natCast_le_eanalyticOrderAt, hf, hg, hf.add hg]
+  refine fun ⟨⟨F, hF, hF'⟩, ⟨G, hG, hG'⟩⟩ ↦ ⟨F + G, hF.add hG, ?_⟩
+  filter_upwards [hF', hG'] with z using by simp +contextual [mul_add]
+
+@[deprecated (since := "2025-05-03")] alias AnalyticAt.order_add := le_eanalyticOrderAt_add
+
+lemma le_eanalyticOrderAt_sub (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
+    min (eanalyticOrderAt f z₀) (eanalyticOrderAt g z₀) ≤ eanalyticOrderAt (f - g) z₀ := by
+  simpa [sub_eq_add_neg] using le_eanalyticOrderAt_add hf hg.neg
+
+lemma eanalyticOrderAt_add_eq_left_of_lt (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
+    (hfg : eanalyticOrderAt f z₀ < eanalyticOrderAt g z₀) :
+    eanalyticOrderAt (f + g) z₀ = eanalyticOrderAt f z₀ :=
+  le_antisymm (by simpa [hfg.not_le] using le_eanalyticOrderAt_sub (hf.add hg) hg)
+    (by simpa [hfg.le] using le_eanalyticOrderAt_add hf hg)
+
+lemma eanalyticOrderAt_add_eq_right_of_lt (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
+    (hgf : eanalyticOrderAt g z₀ < eanalyticOrderAt f z₀) :
+    eanalyticOrderAt (f + g) z₀ = eanalyticOrderAt g z₀ := by
+  rw [add_comm, eanalyticOrderAt_add_eq_left_of_lt hg hf hgf]
+
+@[deprecated (since := "2025-05-03")] alias order_add_of_order_lt_order := le_eanalyticOrderAt_add
+
+/-- If two functions have unequal orders, then the order of their sum is exactly the minimum
+of the orders of the summands. -/
+theorem eanalyticOrderAt_add_of_ne (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
+    (hfg : eanalyticOrderAt f z₀ ≠ eanalyticOrderAt g z₀) :
+    eanalyticOrderAt (f + g) z₀ = min (eanalyticOrderAt f z₀) (eanalyticOrderAt g z₀) := by
+  obtain hfg | hgf := hfg.lt_or_lt
+  · simpa [hfg.le] using eanalyticOrderAt_add_eq_left_of_lt hf hg hfg
+  · simpa [hgf.le] using eanalyticOrderAt_add_eq_right_of_lt hf hg hgf
+
+@[deprecated (since := "2025-05-03")]
+alias AnalyticAt.order_add_of_order_ne_order := eanalyticOrderAt_add_of_ne
 
 lemma eanalyticOrderAt_smul_eq_top_of_left {f : 𝕜 → 𝕜} (hg : AnalyticAt 𝕜 g z₀)
     (hf : eanalyticOrderAt f z₀ = ⊤) : eanalyticOrderAt (f • g) z₀ = ⊤ := by
@@ -215,6 +282,9 @@ lemma eanalyticOrderAt_centeredMonomial {z₀ : 𝕜} {n : ℕ} :
   rw [AnalyticAt.eanalyticOrderAt_eq_natCast (by fun_prop)]
   exact ⟨1, by simp [Pi.one_def, analyticAt_const]⟩
 
+@[deprecated (since := "2025-05-03")]
+alias analyticAt_order_centeredMonomial := eanalyticOrderAt_centeredMonomial
+
 section NontriviallyNormedField
 variable {f g : 𝕜 → 𝕜} {z₀ : 𝕜}
 
@@ -222,6 +292,9 @@ variable {f g : 𝕜 → 𝕜} {z₀ : 𝕜}
 lemma eanalyticOrderAt_mul_eq_top_of_left (hg : AnalyticAt 𝕜 g z₀)
     (hf : eanalyticOrderAt f z₀ = ⊤) : eanalyticOrderAt (f * g) z₀ = ⊤ :=
   eanalyticOrderAt_smul_eq_top_of_left hg hf
+
+@[deprecated (since := "2025-05-03")]
+alias AnalyticAt.order_mul_of_order_eq_top := eanalyticOrderAt_mul_eq_top_of_left
 
 /-- Helper lemma for `eanalyticOrderAt_mul` -/
 lemma eanalyticOrderAt_mul_eq_top_of_right (hf : AnalyticAt 𝕜 f z₀)
@@ -232,6 +305,8 @@ lemma eanalyticOrderAt_mul_eq_top_of_right (hf : AnalyticAt 𝕜 f z₀)
 theorem eanalyticOrderAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     eanalyticOrderAt (f * g) z₀ = eanalyticOrderAt f z₀ + eanalyticOrderAt g z₀ :=
   eanalyticOrderAt_smul hf hg
+
+@[deprecated (since := "2025-05-03")] alias AnalyticAt.order_mul := eanalyticOrderAt_mul
 
 /-- The order is additive when multiplying analytic functions. -/
 theorem analyticOrderAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
@@ -245,50 +320,13 @@ theorem eanalyticOrderAt_pow (hf : AnalyticAt 𝕜 f z₀) :
   | 0 => by simp [eanalyticOrderAt_eq_zero]
   | n + 1 => by simp [add_mul, pow_add, eanalyticOrderAt_mul (hf.pow n), eanalyticOrderAt_pow, hf]
 
-@[simp] lemma eanalyticOrderAt_neg : eanalyticOrderAt (-f) z₀ = eanalyticOrderAt f z₀ := by
-  by_cases hf : AnalyticAt 𝕜 f z₀
-  · refine ENat.eq_of_forall_natCast_le_iff fun n ↦ ?_
-    simp only [ natCast_le_eanalyticOrderAt, hf, hf.neg]
-    exact (Equiv.neg _).exists_congr <| by simp [neg_eq_iff_eq_neg]
-  · rw [eanalyticOrderAt_of_not_analyticAt hf,
-      eanalyticOrderAt_of_not_analyticAt <| analyticAt_neg.not.2 hf]
-
-/-- The order of a sum is at least the minimum of the orders of the summands. -/
-theorem le_eanalyticOrderAt_add (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-    min (eanalyticOrderAt f z₀) (eanalyticOrderAt g z₀) ≤ eanalyticOrderAt (f + g) z₀ := by
-  refine ENat.forall_natCast_le_iff_le.mp fun n ↦ ?_
-  simp only [le_min_iff, natCast_le_eanalyticOrderAt, hf, hg, hf.add hg]
-  refine fun ⟨⟨F, hF, hF'⟩, ⟨G, hG, hG'⟩⟩ ↦ ⟨F + G, hF.add hG, ?_⟩
-  filter_upwards [hF', hG'] with z using by simp +contextual [mul_add]
-
-lemma le_eanalyticOrderAt_sub (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-    min (eanalyticOrderAt f z₀) (eanalyticOrderAt g z₀) ≤ eanalyticOrderAt (f - g) z₀ := by
-  simpa [sub_eq_add_neg] using le_eanalyticOrderAt_add hf hg.neg
-
-lemma eanalyticOrderAt_add_eq_left_of_lt (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
-    (hfg : eanalyticOrderAt f z₀ < eanalyticOrderAt g z₀) :
-    eanalyticOrderAt (f + g) z₀ = eanalyticOrderAt f z₀ :=
-  le_antisymm (by simpa [hfg.not_le] using le_eanalyticOrderAt_sub (hf.add hg) hg)
-    (by simpa [hfg.le] using le_eanalyticOrderAt_add hf hg)
-
-lemma eanalyticOrderAt_add_eq_right_of_lt (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
-    (hgf : eanalyticOrderAt g z₀ < eanalyticOrderAt f z₀) :
-    eanalyticOrderAt (f + g) z₀ = eanalyticOrderAt g z₀ := by
-  rw [add_comm, eanalyticOrderAt_add_eq_left_of_lt hg hf hgf]
-
-/-- If two functions have unequal orders, then the order of their sum is exactly the minimum
-of the orders of the summands. -/
-theorem eanalyticOrderAt_add_of_ne (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
-    (hfg : eanalyticOrderAt f z₀ ≠ eanalyticOrderAt g z₀) :
-    eanalyticOrderAt (f + g) z₀ = min (eanalyticOrderAt f z₀) (eanalyticOrderAt g z₀) := by
-  obtain hfg | hgf := hfg.lt_or_lt
-  · simpa [hfg.le] using eanalyticOrderAt_add_eq_left_of_lt hf hg hfg
-  · simpa [hgf.le] using eanalyticOrderAt_add_eq_right_of_lt hf hg hgf
+@[deprecated (since := "2025-05-03")] alias AnalyticAt.order_pow := eanalyticOrderAt_pow
 
 /-- The order multiplies by `n` when taking an analytic function to its `n`th power. -/
 theorem analyticOrderAt_pow (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
     analyticOrderAt (f ^ n) z₀ = n • analyticOrderAt f z₀ := by
   simp [analyticOrderAt, eanalyticOrderAt_pow, hf]
+
 
 end NontriviallyNormedField
 
