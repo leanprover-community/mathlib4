@@ -163,7 +163,7 @@ lemma MeromorphicAt.toNF_id_on_nhdNE (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toNF hz)
 
--- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood.
+/-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood. -/
 private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E} {z₀ : 𝕜}
   (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) (hfg : f =ᶠ[𝓝[≠] z₀] g) :
     f =ᶠ[𝓝 z₀] g := by
