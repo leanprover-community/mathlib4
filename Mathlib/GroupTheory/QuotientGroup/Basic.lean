@@ -260,10 +260,10 @@ subgroup `H` of the normalizer of `N` in `G`,
 defines an isomorphism between `H/(H ∩ N)` and `(H + N)/N`"]
 noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
     (hLE : H ≤ N.normalizer) :
-    letI := Subgroup.inf_subgroupOf_normal_of_le_normalizer hLE
+    letI := Subgroup.subgroupOf_normal_of_le_normalizer hLE
     letI := Subgroup.subgroupOf_sup_normal_of_le_normalizer hLE
     H ⧸ N.subgroupOf H ≃* (H ⊔ N : Subgroup G) ⧸ N.subgroupOf (H ⊔ N) :=
-  letI := Subgroup.inf_subgroupOf_normal_of_le_normalizer hLE
+  letI := Subgroup.subgroupOf_normal_of_le_normalizer hLE
   letI := Subgroup.subgroupOf_sup_normal_of_le_normalizer hLE
   let
     φ :-- φ is the natural homomorphism H →* (HN)/N.
