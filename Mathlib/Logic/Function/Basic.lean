@@ -9,7 +9,6 @@ import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Mathlib.Logic.Nontrivial.Defs
 import Batteries.Tactic.Init
-import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
 
 /-!
@@ -66,10 +65,10 @@ lemma funext_iff_of_subsingleton [Subsingleton α] {g : α → β} (x y : α) :
   · rwa [Subsingleton.elim x z, Subsingleton.elim y z] at h
   · rw [h, Subsingleton.elim x y]
 
-theorem swap_lt {α} [Preorder α] : swap (· < · : α → α → _) = (· > ·) := rfl
-theorem swap_le {α} [Preorder α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
-theorem swap_gt {α} [Preorder α] : swap (· > · : α → α → _) = (· < ·) := rfl
-theorem swap_ge {α} [Preorder α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
+theorem swap_lt {α} [LT α] : swap (· < · : α → α → _) = (· > ·) := rfl
+theorem swap_le {α} [LE α] : swap (· ≤ · : α → α → _) = (· ≥ ·) := rfl
+theorem swap_gt {α} [LT α] : swap (· > · : α → α → _) = (· < ·) := rfl
+theorem swap_ge {α} [LE α] : swap (· ≥ · : α → α → _) = (· ≤ ·) := rfl
 
 protected theorem Bijective.injective {f : α → β} (hf : Bijective f) : Injective f := hf.1
 protected theorem Bijective.surjective {f : α → β} (hf : Bijective f) : Surjective f := hf.2
@@ -120,8 +119,11 @@ theorem injective_comp_left_iff [Nonempty α] {g : β → γ} :
   ⟨fun h b₁ b₂ eq ↦ Nonempty.elim ‹_›
     (congr_fun <| h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq), (·.comp_left)⟩
 
-theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
+@[nontriviality] theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
+
+@[nontriviality] theorem bijective_of_subsingleton [Subsingleton α] (f : α → α) : Bijective f :=
+  ⟨injective_of_subsingleton f, fun a ↦ ⟨a, Subsingleton.elim ..⟩⟩
 
 lemma Injective.dite (p : α → Prop) [DecidablePred p]
     {f : {a : α // p a} → β} {f' : {a : α // ¬ p a} → β}

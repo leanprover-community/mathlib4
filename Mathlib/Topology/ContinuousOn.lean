@@ -286,7 +286,7 @@ alias nhdsWithin_compl_singleton_sup_pure := nhdsNE_sup_pure
 @[simp]
 theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [← sup_comm, nhdsNE_sup_pure]
 
-theorem nhdsWithin_prod {α : Type*} [TopologicalSpace α] {β : Type*} [TopologicalSpace β]
+theorem nhdsWithin_prod [TopologicalSpace β]
     {s u : Set α} {t v : Set β} {a : α} {b : β} (hu : u ∈ 𝓝[s] a) (hv : v ∈ 𝓝[t] b) :
     u ×ˢ v ∈ 𝓝[s ×ˢ t] (a, b) := by
   rw [nhdsWithin_prod_eq]
@@ -420,6 +420,17 @@ theorem eventuallyEq_nhdsWithin_iff {f g : α → β} {s : Set α} {a : α} :
     f =ᶠ[𝓝[s] a] g ↔ ∀ᶠ x in 𝓝 a, x ∈ s → f x = g x :=
   mem_inf_principal
 
+/-- Two functions agree on a neighborhood of `x` if they agree at `x` and in a punctured
+neighborhood. -/
+theorem eventuallyEq_nhds_of_eventuallyEq_nhdsNE {f g : α → β} {a : α} (h₁ : f =ᶠ[𝓝[≠] a] g)
+    (h₂ : f a = g a) :
+    f =ᶠ[𝓝 a] g := by
+  filter_upwards [eventually_nhdsWithin_iff.1 h₁]
+  intro x hx
+  by_cases h₂x : x = a
+  · simp [h₂x, h₂]
+  · tauto
+
 theorem eventuallyEq_nhdsWithin_of_eqOn {f g : α → β} {s : Set α} {a : α} (h : EqOn f g s) :
     f =ᶠ[𝓝[s] a] g :=
   mem_inf_of_right h
@@ -455,7 +466,7 @@ theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a :
     (hmem : a ∈ s) : f a = g a :=
   h.self_of_nhdsWithin hmem
 
-theorem eventually_nhdsWithin_of_eventually_nhds {α : Type*} [TopologicalSpace α] {s : Set α}
+theorem eventually_nhdsWithin_of_eventually_nhds {s : Set α}
     {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) : ∀ᶠ x in 𝓝[s] a, p x :=
   mem_nhdsWithin_of_mem_nhds h
 
@@ -993,10 +1004,8 @@ theorem Continuous.comp_continuousOn {g : β → γ} {f : α → β} {s : Set α
 /-- Variant of `Continuous.comp_continuousOn` using the form `fun y ↦ g (f y)`
 instead of `g ∘ f`. -/
 @[fun_prop]
-theorem Continuous.comp_continuousOn'
-    {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {g : β → γ}
-    {f : α → β} {s : Set α} (hg : Continuous g) (hf : ContinuousOn f s) :
-    ContinuousOn (fun x ↦ g (f x)) s :=
+theorem Continuous.comp_continuousOn' {g : β → γ} {f : α → β} {s : Set α} (hg : Continuous g)
+    (hf : ContinuousOn f s) : ContinuousOn (fun x ↦ g (f x)) s :=
   hg.comp_continuousOn hf
 
 theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β} (hg : ContinuousOn g s)
@@ -1495,9 +1504,7 @@ theorem continuousOn_piecewise_ite [∀ x, Decidable (x ∈ t)]
 
 /-- If `f` is continuous on an open set `s` and continuous at each point of another
 set `t` then `f` is continuous on `s ∪ t`. -/
-lemma ContinuousOn.union_continuousAt
-    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {s t : Set X} {f : X → Y} (s_op : IsOpen s)
+lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
     (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
     ContinuousOn f (s ∪ t) :=
   continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
@@ -1506,8 +1513,8 @@ lemma ContinuousOn.union_continuousAt
 
 open Classical in
 /-- If a function is continuous on two closed sets, it is also continuous on their union. -/
-theorem ContinuousOn.union_isClosed {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) {f : X → Y} (hfs : ContinuousOn f s)
+theorem ContinuousOn.union_isClosed (hs : IsClosed s)
+    (ht : IsClosed t) {f : α → β} (hfs : ContinuousOn f s)
     (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
   refine fun x hx ↦ .union ?_ ?_
   · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
