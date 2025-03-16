@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Union
 import Mathlib.Data.Multiset.Sum
 
@@ -214,5 +215,19 @@ def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β wh
 @[simp]
 lemma sumEquiv_symm_apply {α β : Type*} (s : Finset α × Finset β) :
     sumEquiv.symm s = disjSum s.1 s.2 := rfl
+
+lemma sup_disjSum
+    {α β γ : Type*} [SemilatticeSup γ] [OrderBot γ] (f : (α ⊕ β) → γ)
+    (s : Finset α) (t : Finset β) :
+    (s.disjSum t).sup f = (s.sup fun x ↦ f (Sum.inl x)) ⊔ (t.sup fun x ↦ f (Sum.inr x)) := by
+  refine eq_of_forall_ge_iff fun c ↦ ?_
+  simp only [Finset.sup_le_iff, Sum.forall, inl_mem_disjSum, inr_mem_disjSum, sup_le_iff]
+
+lemma inf_disjSum
+    {α β γ : Type*} [SemilatticeInf γ] [OrderTop γ] (f : (α ⊕ β) → γ)
+    (s : Finset α) (t : Finset β) :
+    (s.disjSum t).inf f = (s.inf fun x ↦ f (Sum.inl x)) ⊓ (t.inf fun x ↦ f (Sum.inr x)) := by
+  refine eq_of_forall_le_iff fun c ↦ ?_
+  simp only [Finset.le_inf_iff, Sum.forall, inl_mem_disjSum, inr_mem_disjSum, le_inf_iff]
 
 end Finset
