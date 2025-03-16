@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
 import Mathlib.Data.Finite.Prod
-import Mathlib.MeasureTheory.SetRing
+import Mathlib.MeasureTheory.SetSemiring
 
 /-!
 # Algebra of sets
