@@ -171,7 +171,7 @@ variable [AddCommGroup R] [SetLike σR R] [AddSubgroupClass σR R] {FR : ℤ →
 
 variable [AddCommGroup S] [SetLike σS S] [AddSubgroupClass σS S] {FS : ℤ → σS}
 
-variable [AddCommGroup T] [SetLike σT T] [AddSubgroupClass σT T] {FT : ℤ → σT} (monoT : Monotone FT)
+variable [AddCommGroup T] [SetLike σT T] [AddSubgroupClass σT T] {FT : ℤ → σT}
 
 variable (f : FilteredAddGroupHom FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)))
 
@@ -205,6 +205,36 @@ lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
   · convert_to 0 ∈ Gr+(i)[g].ker
     · exact AssociatedGraded.of_eq_of_ne p i yₚ fun a ↦ h (id a.symm)
     · simp only [AddMonoidHom.mem_ker, map_zero, yₚ]
+
+theorem strict_of_exhaustive_exact (monoS : Monotone FS) (exact : Function.Exact Gr+[f] Gr+[g])
+    (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
+    (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
+    IsStrict FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)) g := by
+      refine IsStrict_of_Int ?_
+      intro p z zp ⟨y₀, gy₀z⟩
+      have : ∃ s : ℕ, y₀ ∈ FS (p + s) := by
+        have : y₀ ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustiveS.exhaustive, Set.mem_univ]
+        rcases Set.mem_iUnion.mp this with ⟨p', y₀p'⟩
+        rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le (Int.le_max_left p p')) with ⟨s, hs⟩
+        exact ⟨s, by simpa only [← hs, add_sub_cancel] using monoS (Int.le_max_right p p') y₀p'⟩
+      rcases this with ⟨s, hs⟩
+      have (i : ℕ) : ∃ y : FS (p + s - i), g y = z := by
+        induction' i with i ih
+        · simpa only [Int.Nat.cast_ofNat_Int, Subtype.exists, sub_zero] using ⟨y₀, ⟨hs, gy₀z⟩⟩
+        · rcases ih with ⟨y, yeq⟩
+          simp only [Subtype.exists, Nat.cast_add, Nat.cast_one, exists_prop]
+          have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) y) = 0 := sorry
+          have iex := GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact
+          have hy : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) y) ∈ Gr+(p + s - i)[f].range := by
+            simpa [← AddMonoidHom.exact_iff.mp iex] using hy
+          rcases hy with ⟨xi, fxiy⟩
+          set x := xi.out with xxi
+          use y - f x
+          constructor
+          · sorry
+          · simp only [map_sub, yeq, sub_eq_self]
+            show (g.toAddMonoidHom.comp f.toAddMonoidHom) x = 0
+            simp only [comp_eq_zero, AddMonoidHom.zero_apply]
 
 theorem strict_exact_discrete
     (monoS : Monotone FS) (exact : Function.Exact Gr+[f] Gr+[g])
