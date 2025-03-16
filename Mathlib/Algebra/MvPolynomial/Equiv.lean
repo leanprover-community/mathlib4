@@ -612,7 +612,7 @@ lemma Polynomial.toMvPolynomial_injective (i : σ) :
 lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :
     (aeval (R := R) f).comp (toMvPolynomial i) = Polynomial.aeval (f i) := by
   ext
-  simp [toMvPolynomial, aeval_rename, Polynomial.aeval_def]
+  simp
 
 @[simp]
 lemma MvPolynomial.aeval_toMvPolynomial (f : σ → S) (i : σ) (p : R[X]) :
