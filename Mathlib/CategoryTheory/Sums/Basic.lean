@@ -98,6 +98,8 @@ def inr_ : D ⥤ C ⊕ D where
 
 variable {C D}
 
+/-- An induction principle for morphisms in a sum of category: a morphism is either of the form
+`(inl_ _ _).map _` or of the form `(inr_ _ _).map _)`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 def homInduction {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
@@ -108,14 +110,14 @@ def homInduction {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
   | .inr x, .inr y, f => inr x y f.down
 
 @[simp]
-def homInduction_left {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
+lemma homInduction_left {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
     (inr : ∀ x y : D, (f : x ⟶ y) → P ((inr_ C D).map f))
     {x y : C} (f : x ⟶ y) : homInduction (P := P) inl inr ((inl_ C D).map f) = inl x y f :=
   rfl
 
 @[simp]
-def homInduction_right {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
+lemma homInduction_right {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
     (inr : ∀ x y : D, (f : x ⟶ y) → P ((inr_ C D).map f))
     {x y : D} (f : x ⟶ y) : homInduction (P := P) inl inr ((inr_ C D).map f) = inr x y f :=
