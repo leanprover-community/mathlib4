@@ -131,7 +131,7 @@ theorem MeromorphicNFAt.order_nonneg_iff_analyticAt (hf : MeromorphicNFAt f x) :
     simp
 
 /-- Analytic functions are meromorphic in normal form. -/
-theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
+theorem AnalyticAt.meromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
     MeromorphicNFAt f x := by
   simp [meromorphicNFAt_iff_analyticAt_or, hf]
 
