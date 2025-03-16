@@ -96,18 +96,18 @@ theorem mk_apply_of_not_mem {s : Finset ι} {f : ∀ i : (s : Set ι), GradedPie
 
 section support
 
-noncomputable instance : ∀ (i : ι) (x : GradedPiece F F_lt i), Decidable (x ≠ 0) :=
-  fun _ x ↦ Classical.propDecidable (x ≠ 0)
-
 @[simp]
-theorem support_of (i : ι) (x : GradedPiece F F_lt i) (h : x ≠ 0) : (of x).support = {i} :=
-  DFinsupp.support_single_ne_zero h
+theorem support_of (i : ι) (x : GradedPiece F F_lt i) (h : x ≠ 0)
+    [(i : ι) → (x : GradedPiece F F_lt i) → Decidable (x ≠ 0)] : (of x).support = {i} :=
+  DirectSum.support_of i x h
 
-theorem support_of_subset {i : ι} {b : GradedPiece F F_lt i} : (of b).support ⊆ {i} :=
-  DFinsupp.support_single_subset
+theorem support_of_subset {i : ι} {b : GradedPiece F F_lt i}
+    [(i : ι) → (x : GradedPiece F F_lt i) → Decidable (x ≠ 0)] : (of b).support ⊆ {i} :=
+  DirectSum.support_of_subset
 
-theorem sum_support_of (x : AssociatedGraded F F_lt) : (∑ i ∈ x.support, of (x i)) = x :=
-  DFinsupp.sum_single
+theorem sum_support_of (x : AssociatedGraded F F_lt)
+    [(i : ι) → (x : GradedPiece F F_lt i) → Decidable (x ≠ 0)] : (∑ i ∈ x.support, of (x i)) = x :=
+  DirectSum.sum_support_of x
 
 end support
 
@@ -159,18 +159,6 @@ lemma HEq_eq_mk_coe_eq {i j : ι} {x : GradedPiece F F_lt i} {y : GradedPiece F 
   HEq_eq_mk_eq F F_lt h e r.2 (e ▸ s.2) hx hy
 
 end
-
-lemma mk_congr {i : ι} (x y : ofClass (F i)) (h : x = y) : mk F F_lt x = mk F F_lt y :=
-  congrArg (mk F F_lt) h
-
-lemma sound [Preorder ι] [IsFiltration F F_lt] {i : ι} (x y : ofClass (F i)) :
-    x ≈ y → mk F F_lt x = mk F F_lt y :=
-  Quotient.sound
-
-@[simp]
-lemma exact [Preorder ι] [IsFiltration F F_lt] {i : ι} (x y : ofClass (F i)) :
-    mk F F_lt x = mk F F_lt y → x ≈ y :=
-  Quotient.exact
 
 end GradedPiece
 
