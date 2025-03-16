@@ -43,6 +43,8 @@ noncomputable def eanalyticOrderAt (f : 𝕜 → E) (z₀ : 𝕜) : ℕ∞ :=
     else ↑(hf.exists_eventuallyEq_pow_smul_nonzero_iff.mpr h).choose
   else 0
 
+@[deprecated (since := "2025-03-16")] alias AnalyticAt.order := eanalyticOrderAt
+
 /-- The order of vanishing of `f` at `z₀`, as an element of `ℕ∞`.
 
 The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `z₀`, and otherwise the
@@ -89,6 +91,9 @@ lemma AnalyticAt.eanalyticOrderAt_eq_natCast (hf : AnalyticAt 𝕜 f z₀) :
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [AnalyticAt.unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
+@[deprecated (since := "2025-03-16")]
+alias AnalyticAt.order_eq_nat_iff := AnalyticAt.eanalyticOrderAt_eq_natCast
+
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
 lemma AnalyticAt.analyticOrderAt_eq_iff (hf : AnalyticAt 𝕜 f z₀) (hf' : eanalyticOrderAt f z₀ ≠ ⊤)
@@ -110,6 +115,9 @@ lemma AnalyticAt.eanalyticOrderAt_ne_top (hf : AnalyticAt 𝕜 f z₀) :
   simp only [← ENat.coe_toNat_eq_self, Eq.comm, EventuallyEq, ← hf.eanalyticOrderAt_eq_natCast,
     analyticOrderAt]
 
+@[deprecated (since := "2025-03-16")]
+alias AnalyticAt.order_ne_top_iff := AnalyticAt.eanalyticOrderAt_ne_top
+
 @[deprecated (since := "2025-02-03")]
 alias order_neq_top_iff := AnalyticAt.eanalyticOrderAt_ne_top
 
@@ -129,6 +137,9 @@ lemma eanalyticOrderAt_ne_zero : eanalyticOrderAt f z₀ ≠ 0 ↔ AnalyticAt �
 protected lemma AnalyticAt.eanalyticOrderAt_eq_zero (hf : AnalyticAt 𝕜 f z₀) :
     eanalyticOrderAt f z₀ = 0 ↔ f z₀ ≠ 0 := by simp [hf, eanalyticOrderAt_eq_zero]
 
+@[deprecated (since := "2025-03-16")]
+alias AnalyticAt.order_eq_zero_iff := AnalyticAt.eanalyticOrderAt_eq_zero
+
 /-- The order of an analytic function `f` at `z₀` is zero iff `f` does not vanish at `z₀`. -/
 protected lemma AnalyticAt.eanalyticOrderAt_ne_zero (hf : AnalyticAt 𝕜 f z₀) :
     eanalyticOrderAt f z₀ ≠ 0 ↔ f z₀ = 0 := hf.eanalyticOrderAt_eq_zero.not_left
@@ -136,6 +147,9 @@ protected lemma AnalyticAt.eanalyticOrderAt_ne_zero (hf : AnalyticAt 𝕜 f z₀
 /-- An analytic function vanishes at a point if its order is nonzero when converted to ℕ. -/
 lemma apply_eq_zero_of_analyticOrderAt_ne_zero (hf : analyticOrderAt f z₀ ≠ 0) : f z₀ = 0 := by
   by_cases hf' : AnalyticAt 𝕜 f z₀ <;> simp_all [analyticOrderAt, eanalyticOrderAt_eq_zero]
+
+@[deprecated (since := "2025-03-16")]
+alias AnalyticAt.apply_eq_zero_of_order_toNat_ne_zero := apply_eq_zero_of_analyticOrderAt_ne_zero
 
 end NormedSpace
 
@@ -157,6 +171,9 @@ lemma eanalyticOrderAt_mul_eq_top_of_left (hg : AnalyticAt 𝕜 g z₀)
   rw [eanalyticOrderAt_eq_top, eventually_nhds_iff] at *
   obtain ⟨hf, t, h₁t, h₂t, h₃t⟩ := hf
   exact ⟨hf.mul hg, t, fun y hy ↦ by simp [h₁t y hy], h₂t, h₃t⟩
+
+@[deprecated (since := "2025-03-16")]
+alias AnalyticAt.order_mul_of_order_eq_top := eanalyticOrderAt_mul_eq_top_of_left
 
 /-- Helper lemma for `eanalyticOrderAt_mul` -/
 lemma eanalyticOrderAt_mul_eq_top_of_right (hf : AnalyticAt 𝕜 f z₀)
@@ -186,6 +203,8 @@ theorem eanalyticOrderAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜
     exact eventually_nhds_iff.2
       ⟨t ∩ s, fun y hy ↦ (by simp [h₁t y hy.1, h₁s y hy.2]; ring_nf), h₂t.inter h₂s, h₃t, h₃s⟩
 
+@[deprecated (since := "2025-03-16")] alias AnalyticAt.order_mul := eanalyticOrderAt_mul
+
 /-- The order is additive when multiplying analytic functions. -/
 theorem analyticOrderAt_mul (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀)
     (hf' : eanalyticOrderAt f z₀ ≠ ⊤) (hg' : eanalyticOrderAt g z₀ ≠ ⊤) :
@@ -202,6 +221,8 @@ theorem eanalyticOrderAt_pow (hf : AnalyticAt 𝕜 f z₀) :
 theorem analyticOrderAt_pow (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) :
     analyticOrderAt (f ^ n) z₀ = n • analyticOrderAt f z₀ := by
   simp [analyticOrderAt, eanalyticOrderAt_pow, hf]
+
+@[deprecated (since := "2025-03-16")] alias AnalyticAt.order_pow := analyticOrderAt_pow
 
 end NontriviallyNormedField
 
