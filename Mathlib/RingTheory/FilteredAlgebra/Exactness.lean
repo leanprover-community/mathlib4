@@ -196,6 +196,23 @@ lemma shrinking_lemma (monoR : Monotone FR) (S' : AddSubgroup S) {p : ℤ}
     simp only [Nat.cast_add, Nat.cast_one, AddMemClass.coe_add, AddMonoidHom.map_add]
     simp [eq, AddSubgroup.zero_mem]
 
+-- set_option maxHeartbeats 0
+theorem strict_exact_discrete
+    (monoS : Monotone FS) (exact : Function.Exact Gr+[f] Gr+[g])
+    (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1))) :
+  IsStrict FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)) f := {
+    strict {p y} hp hy := by
+      simp only [Set.mem_range, Set.mem_image, SetLike.mem_coe] at hy ⊢
+      obtain ⟨x', hx'⟩ := hy
+      set yₚ' := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
+      set yₚ := AssociatedGraded.of yₚ'
+      have : Gr+[g] yₚ = 0 := by
+        convert_to yₚ ∈ Gr+[g].ker
+        rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom.mem_ker_iff]
+        intro i
+
+        sorry
+  }
 
 theorem exact_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
     (exhaustiveR : letI := (mk_int FR monoR); IsExhaustiveFiltration FR (fun n ↦ FR (n - 1)))
