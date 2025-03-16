@@ -339,6 +339,7 @@ theorem coeFn_add (f g : lp E p) : ⇑(f + g) = f + g :=
 
 variable (p E) in
 /-- Coercion to function as an `AddMonoidHom`. -/
+@[simps]
 def coeFnAddMonoidHom : lp E p →+ (∀ i, E i) where
   toFun := (⇑)
   __ := AddSubgroup.subtype _

@@ -259,6 +259,7 @@ instance instAddCommGroup : AddCommGroup (LieDerivation R L M) :=
   coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ => rfl
 
 /-- `coe_fn` as an `AddMonoidHom`. -/
+@[simps]
 def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where
   toFun := (↑)
   map_zero' := coe_zero

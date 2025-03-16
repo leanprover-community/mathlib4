@@ -226,6 +226,7 @@ instance [∀ i, AddMonoid (β i)] : AddMonoid (Π₀ i, β i) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 /-- Coercion from a `DFinsupp` to a pi type is an `AddMonoidHom`. -/
+@[simps]
 def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i, β i where
   toFun := (⇑)
   map_zero' := coe_zero

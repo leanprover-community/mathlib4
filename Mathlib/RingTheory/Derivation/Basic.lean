@@ -227,6 +227,7 @@ instance : AddCommMonoid (Derivation R A M) :=
   coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
 
 /-- `coe_fn` as an `AddMonoidHom`. -/
+@[simps]
 def coeFnAddMonoidHom : Derivation R A M →+ A → M where
   toFun := (↑)
   map_zero' := coe_zero

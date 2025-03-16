@@ -855,6 +855,7 @@ instance instAddCommMonoid {_ : MeasurableSpace α} : AddCommMonoid (Measure α)
     fun _ _ => smul_toOuterMeasure _ _
 
 /-- Coercion to function as an additive monoid homomorphism. -/
+@[simps]
 def coeAddHom {_ : MeasurableSpace α} : Measure α →+ Set α → ℝ≥0∞ where
   toFun := (⇑)
   map_zero' := coe_zero

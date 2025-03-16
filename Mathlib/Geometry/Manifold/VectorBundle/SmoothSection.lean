@@ -175,6 +175,7 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I
 
 variable (I F V n) in
 /-- The additive morphism from `C^n` sections to dependent maps. -/
+@[simps]
 def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
   toFun := (↑)
   map_zero' := coe_zero
