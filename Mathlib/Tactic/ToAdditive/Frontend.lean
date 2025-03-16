@@ -11,6 +11,7 @@ import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Lean.Elab.Tactic.Ext
+import Lean.Environment
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Match.MatcherInfo
@@ -1017,9 +1018,11 @@ def checkDeclType (b : BundledExtensions)
   let mut decl := srcDecl.updateName tgt
   if 0 ∈ reorder.flatten then
     decl := decl.updateLevelParams decl.levelParams.swapFirstTwo
-  -- somehow this is causing a panic sometimes
+  -- rename universe levels, cf. https://leanprover.zulipchat.com/#narrow/channel/239415-metaprogramming-.2F-tactics/topic/checking.20if.20two.20Exprs.20are.20defeq
+  let decl_type := decl.type.instantiateLevelParams
+    decl.levelParams (tgtDecl.levelParams.map mkLevelParam)
   let exp ← applyReplacementFun b <| ← reorderForall reorder
-    <| ← expand b <| ← unfoldAuxLemmas decl.type
+    <| ← expand b <| ← unfoldAuxLemmas decl_type
   return ⟨exp, ← isDefEq exp tgtDecl.type⟩
 
 /-- Find the target name of `pre` and all created auxiliary declarations. -/
@@ -1689,6 +1692,7 @@ partial def addToAdditiveAttr (b : BundledExtensions)
         "The additive declaration doesn't exist. Please remove the option `existing`."
   -- for `order_dual self` / `order_dual existing`:
   -- validate type of declaration that would be generated using order_dual
+  -- TODO: need an option / syntax to force skipping validation (existing! self!)
   if b.attrName = `order_dual && alreadyExists then
     let tgtDecl ← getConstInfo tgt
     let srcDecl ← getConstInfo src
