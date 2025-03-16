@@ -533,7 +533,7 @@ lemma algebraMap_liftAlgebra :
     algebraMap (FractionRing R) K = IsFractionRing.lift (FaithfulSMul.algebraMap_injective R _) :=
   rfl
 
-instance {R₀} [Monoid R₀] [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ K] [IsScalarTower R₀ R K] :
+instance {R₀} [SMul R₀ R] [IsScalarTower R₀ R R] [SMul R₀ K] [IsScalarTower R₀ R K] :
     IsScalarTower R₀ (FractionRing R) K where
   smul_assoc r₀ r k := r.ind fun ⟨r, s⟩ ↦ by
     simp_rw [Localization.smul_mk, Algebra.smul_def, Localization.mk_eq_mk',

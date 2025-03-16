@@ -5,7 +5,6 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.IsTensorProduct
-import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Base change of polynomial algebras
@@ -34,9 +33,11 @@ namespace PolyEquivTensor
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a bilinear function of two arguments.
 -/
-@[simps! apply_apply]
 def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
   LinearMap.toSpanSingleton A _ (aeval (Polynomial.X : A[X])).toLinearMap
+
+theorem toFunBilinear_apply_apply (a : A) (p : R[X]) :
+    toFunBilinear R A a p = a • (aeval X) p := rfl
 
 @[simp] theorem toFunBilinear_apply_eq_smul (a : A) (p : R[X]) :
     toFunBilinear R A a p = a • p.map (algebraMap R A) := rfl

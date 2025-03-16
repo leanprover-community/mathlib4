@@ -153,7 +153,6 @@ theorem lift_rank_eq : lift.{uS} (Module.rank R' S') = lift.{vS} (Module.rank R 
   have : IsScalarTower R FRS S' := .of_algebraMap_eq fun x ↦ by
     rw [IsScalarTower.algebraMap_apply R FR, IsScalarTower.algebraMap_apply R FR FRS,
       IsScalarTower.algebraMap_apply FR FRS S']
-  have : IsPushout FR R' FRS S' := (comp_iff R _ S _).mp inferInstance
   have : R' ⊗[FR] FRS ≃ₐ[R'] S' := ((comp_iff R _ S _).mp inferInstance).equiv
   have up := this.toLinearEquiv.lift_rank_eq
   have low := lift_id' _ ▸ IsLocalizedModule.lift_rank_eq FR R⁰ (TensorProduct.mk R FR S 1) le_rfl

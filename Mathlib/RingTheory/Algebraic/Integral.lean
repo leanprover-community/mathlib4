@@ -6,7 +6,6 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.RingTheory.IntegralClosure.IsIntegralClosure.Basic
-import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
 # Algebraic elements and integral elements
