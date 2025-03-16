@@ -270,15 +270,6 @@ lemma of_map {Ω'' : Type*} {mΩ'' : MeasurableSpace Ω''} {κ : Kernel Ω' Ω''
     convert (h_int t).1
     rw [map_apply _ hY]
 
-lemma id_map_iff (hX : Measurable X) :
-    HasSubgaussianMGF id c (κ.map X) ν ↔ HasSubgaussianMGF X c κ ν := by
-  refine ⟨fun h ↦ of_map (Y := X) hX h, fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩⟩
-  · specialize h1 t
-    rwa [← Measure.map_comp ν κ hX, integrable_map_measure]
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
-    · fun_prop
-  · simpa [Kernel.map_apply _ hX, mgf_id_map hX.aemeasurable] using h2
-
 section ChernoffBound
 
 lemma measure_ge_le_exp_add (h : HasSubgaussianMGF X c κ ν) (ε : ℝ) :
@@ -498,15 +489,6 @@ lemma of_map {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {μ : Measure Ω'}
   mgf_le t := by
     convert h.mgf_le t using 1
     rw [mgf_map hY (h.integrable_exp_mul t).1]
-
-lemma id_map_iff (hX : AEMeasurable X μ) :
-    HasSubgaussianMGF id c (μ.map X) ↔ HasSubgaussianMGF X c μ := by
-  refine ⟨fun h ↦ of_map (Y := X) hX h, fun ⟨h1, h2⟩ ↦ ⟨fun t ↦ ?_, ?_⟩⟩
-  · specialize h1 t
-    rwa [integrable_map_measure]
-    · exact Measurable.aestronglyMeasurable <| by fun_prop
-    · fun_prop
-  · simpa [Kernel.map_apply _, mgf_id_map hX] using h2
 
 lemma trim (hm : m ≤ mΩ) (hXm : Measurable[m] X) (hX : HasSubgaussianMGF X c μ) :
     HasSubgaussianMGF X c (μ.trim hm) where
