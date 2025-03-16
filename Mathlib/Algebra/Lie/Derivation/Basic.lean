@@ -409,4 +409,11 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
         ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
 end ExpNilpotent
 
+lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
+    exp D h = IsNilpotent.exp D.toLinearMap := by
+  ext x
+  dsimp [exp]
+  convert rfl
+  subsingleton
+
 end LieDerivation
