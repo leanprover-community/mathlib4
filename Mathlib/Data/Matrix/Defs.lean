@@ -505,7 +505,7 @@ while avoiding defeq abuse and noisy eta-expansions,
 such as in expressions like `Set.Injective A.row` and `Set.range A.row`.
 (Note 03-15-2025 : the identifier `Matrix.row` used to refer to a matrix with constant rows;
 this is now called `Matrix.rowConst`) -/
-abbrev row (A : Matrix m n α) : m → n → α := A
+def row (A : Matrix m n α) : m → n → α := A
 
 /-- For an `m × n` `α`-matrix `A`, `A.col j` is the `j`th column of `A` as a vector in `m → α`.
 `A.col` is defeq to `Aᵀ`, but refers to the 'column function' of `A`
@@ -514,10 +514,16 @@ while avoiding defeq abuse and noisy eta-expansions
 and `Set.range A.col`.
 (Note 03-15-2025 : the identifier `Matrix.col` used to refer to a matrix with constant columns;
 this is now called `Matrix.colConst`) -/
-abbrev col (A : Matrix m n α) : n → m → α := Aᵀ
+def col (A : Matrix m n α) : n → m → α := Aᵀ
 
+lemma row_def (A : Matrix m n α) : A.row = fun i ↦ A i := rfl
+
+lemma col_def (A : Matrix m n α) : A.col = fun j ↦ Aᵀ j := rfl
+
+@[simp]
 lemma row_apply (A : Matrix m n α) (i : m) (j : n) : A.row i j = A i j := rfl
 
+@[simp]
 lemma col_apply (A : Matrix m n α) (i : n) (j : m) : A.col i j = A j i := rfl
 
 lemma submatrix_row {m₀ n₀ : Type*} (A : Matrix m n α) (r : m₀ → m) (c : n₀ → n) (i : m₀) :
