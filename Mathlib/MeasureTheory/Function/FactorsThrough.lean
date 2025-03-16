@@ -59,7 +59,7 @@ theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] {f : X → Y} 
     ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f := by
   let mX : MeasurableSpace X := mY.comap f
   induction g, hg using StronglyMeasurable.induction' with
-  | ind z => exact ⟨fun _ ↦ z, stronglyMeasurable_const, rfl⟩
+  | const z => exact ⟨fun _ ↦ z, stronglyMeasurable_const, rfl⟩
   | @pcw g₁ g₂ s hg₁ hg₂ hs h₁ h₂ =>
     obtain ⟨t, ht, rfl⟩ := hs
     obtain ⟨h₁, mh₁, rfl⟩ := h₁
