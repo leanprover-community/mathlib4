@@ -423,17 +423,11 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
 /-! ### Extension of Taylor's Theorem to `x < x₀` -/
 
 
-theorem taylorCoeffWithin_neg {f : Real → Real} {x₀ : Real}
-                              (d : ℕ) (hf : ContDiff Real d f) :
-  taylorCoeffWithin f d Set.univ x₀ =
-    (-1 : Real)^d * taylorCoeffWithin (fun x => f (-x)) d Set.univ (-x₀) := by
-  simp only [taylorCoeffWithin]
-  rw [←iteratedDerivWithin_congr (g := fun i => f (-i)) (f := fun i => f (-1*i))
-                                 (by  simp [Set.eqOn_refl]) (mem_univ _)]
-  rw [iteratedDerivWithin_univ, iteratedDerivWithin_univ, iteratedDeriv_comp_const_mul hf]
-  simp only [ mul_neg, neg_mul, one_mul, neg_neg]
-  rw [mul_comm, smul_eq_mul, smul_eq_mul, mul_assoc]; congr 1
-  rw [mul_comm, ← mul_assoc, ← pow_add, ← two_mul, Even.neg_one_pow (by simp), one_mul]
+theorem taylorCoeffWithin_neg {f : ℝ → ℝ} {x₀ : ℝ} (d : ℕ) :
+    taylorCoeffWithin (fun x => f (-x)) d Set.univ (-x₀)
+      = (-1)^d * taylorCoeffWithin f d Set.univ x₀ := by
+  have : (-1 : ℝ)^d * (-1)^d = 1 := by rw [←pow_add, ← two_mul, (even_two_mul d).neg_one_pow ]
+  field_simp [taylorCoeffWithin, iteratedDerivWithin_univ, iteratedDeriv_comp_neg, this, ←mul_assoc]
 
 theorem taylorWithinEval_neg {f : Real → Real} {x₀ x : Real} {n : Nat}
                              (hf : ContDiff Real (n + 1) f) :
