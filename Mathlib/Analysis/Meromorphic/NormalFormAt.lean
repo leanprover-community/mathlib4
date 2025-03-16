@@ -139,7 +139,7 @@ theorem AnalyticAt.MeromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 ## Continuous extension and conversion to normal form
 -/
 
-variable (f) (x) in
+variable (f x) in
 /-- If `f` is meromorphic at `x`, convert `f` to normal form at `x` by changing its value at `x`.
 Otherwise, returns the 0 function. -/
 noncomputable def toMeromorphicNFAt :
