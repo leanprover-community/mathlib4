@@ -391,20 +391,28 @@ lemma root_space_ad_is_nilpotent
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
     (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace' K H M)
     (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K H M)
-  have hoho := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ (by sorry) hχ
 
-
-
-  --have ttt (χ₂ : Weight K H M) : (genWeightSpace M χ₂) ⊆ ker A :=
-  --  sorry
-  --haveI := Weight.instFintype K H M
   set s : Set (Weight K H M) := by
     exact univ
   have Mm : Finite s := by
     exact Subtype.finite
 
-  have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n, ((toEnd K L M x) ^ m) v = 0 :=
-    sorry
+  have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n, ((toEnd K L M x) ^ m) v = 0 := by
+    intro ε he
+    have hoho := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ ε hχ
+    obtain ⟨k, ⟨hk1, hk2⟩⟩ := hoho
+    use k
+    intro v m hm
+    suffices ((toEnd K L M x) ^ k) v = 0 by
+      exact LinearMap.pow_map_zero_of_le hm this
+    --  (hm : m ∈ genWeightSpace M χ₂)
+    simp_all
+    have s0 := v.mem
+    have s1 := toEnd_pow_apply_mem hx s0 k
+    simp_all
+    --rw [hk2] at s1
+
+
 
   have exists_global_n0 : ∃ n0 : ℕ, ∀ ε ∈ s, ∀ (v : genWeightSpace M ε), ((toEnd K L M x) ^ n0) v = 0 := by
     let fs := Finite.toFinset Mm
@@ -478,9 +486,7 @@ lemma root_space_ad_is_nilpotent
     intro x hf
     simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
       mem_range, exists_exists_eq_and, mem_setOf_eq, s]
-    obtain ⟨w, h⟩ := hoho
     obtain ⟨w_1, h_1⟩ := hf
-    obtain ⟨left, right⟩ := h
     subst h_1
     simp_all only [s]
 
