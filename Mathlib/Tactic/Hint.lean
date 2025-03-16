@@ -104,7 +104,7 @@ def hint (stx : Syntax) : TacticM Unit := withMainContext do
   let tacs := Nondet.ofList (← getHints)
   let results := tacs.filterMapM fun t : TSyntax `tactic => do
     if let some msgs ← observing? (withMessageLog (withoutInfoTrees (evalTactic t))) then
-      if msgs.toList.any (fun m => m.severity == .error) then
+      if msgs.hasErrors then
         return none
       else
         return some (← getGoals, ← suggestion t msgs)
