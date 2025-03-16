@@ -177,7 +177,7 @@ theorem MeromorphicAt.meromorphicNFAt_toNF (hf : MeromorphicAt f x) :
   by_cases h₂f : hf.order = ⊤
   · have : toMeromorphicNFAt f x =ᶠ[𝓝 x] 0 := by
       apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE
-      · exact hf.toNF_id_on_nhdNE.symm.trans (hf.order_eq_top_iff.1 h₂f)
+      · exact hf.eq_nhdNE_toMeromorphicNFAt.symm.trans (hf.order_eq_top_iff.1 h₂f)
       · simp [h₂f, toMeromorphicNFAt, hf]
     apply AnalyticAt.MeromorphicNFAt
     rw [analyticAt_congr this]
@@ -186,7 +186,7 @@ theorem MeromorphicAt.meromorphicNFAt_toNF (hf : MeromorphicAt f x) :
     obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff n).1 hn.symm
     right
     use n, g, h₁g, h₂g
-    apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.toNF_id_on_nhdNE.symm.trans h₃g)
+    apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE (hf.eq_nhdNE_toMeromorphicNFAt.symm.trans h₃g)
     simp only [toMeromorphicNFAt, hf, ↓reduceDIte, ← hn, WithTop.coe_zero,
       WithTop.coe_eq_zero, ne_eq, Function.update_self, sub_self]
     split_ifs with h₃f
