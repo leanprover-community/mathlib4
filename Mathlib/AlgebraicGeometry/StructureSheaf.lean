@@ -1081,8 +1081,7 @@ theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top
   RingHom.ext fun s =>
     Subtype.eq <|
       funext fun p => by
-        rw [comap_apply]
-        rw [Localization.localRingHom_comp _ (PrimeSpectrum.comap g p.1).asIdeal] <;>
+        rw [comap_apply, Localization.localRingHom_comp _ (PrimeSpectrum.comap g p.1).asIdeal] <;>
         simp
 
 @[elementwise, reassoc]
