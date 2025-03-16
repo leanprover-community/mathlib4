@@ -469,6 +469,7 @@ alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
 theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
     LinearIndependent R A.row := by
+  rw [row_def]
   contrapose! hA
   obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
   have h0 := A.det_updateRow_sum i c
