@@ -130,10 +130,9 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
 @[simp]
 lemma divisorsAntidiagonalList_coe {n : ℕ} :
     n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
-  --TODO(Paul-Lez): fix variables + namespace in filterMap_toFinset
-  rw [divisorsAntidiagonalList, divisorsAntidiagonal, filterMap_toFinset]
+  rw [divisorsAntidiagonalList, divisorsAntidiagonal, toFinset_filterMap (f_inj := by aesop),
+    List.toFinset_range'_1_1]
   congr
-  rw [List.toFinset_range'_1_1]
 
 @[simp]
 lemma mem_divisorsAntidiagonalList_of_pos {n : ℕ} (a : ℕ × ℕ) :
