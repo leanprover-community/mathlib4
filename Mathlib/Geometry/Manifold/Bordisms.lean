@@ -754,16 +754,47 @@ variable {X Y Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalS
   {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
   [IsManifold I k M] [CompactSpace M] [BoundarylessManifold I M]
+  {f : X → Y} {g : Y → Z}
 
 /-- If `s` and `t` are cobordant, so are `s.map hf` and `t.map hf`. -/
-def map_aux {f : X → Y} (hf : Continuous f) {s t: SingularNManifold X k I}
+def map_aux (hf : Continuous f) {s t: SingularNManifold X k I}
     (h : unorientedBordismRelation X k I (I.prod (𝓡∂ 1)) s t) :
     unorientedBordismRelation Y k I (I.prod (𝓡∂ 1)) (s.map hf) (t.map hf) := by
   choose φ _ using h
   use φ.map hf
 
-def map {f : X → Y} (hf : Continuous f) : (uBordismClass X k I) → (uBordismClass Y k I) :=
+def map (hf : Continuous f) : (uBordismClass X k I) → (uBordismClass Y k I) :=
   Quotient.lift (fun s ↦ Quotient.mk _ (s.map hf)) (fun _ _ h ↦ Quotient.sound (map_aux hf h))
+
+lemma mk_map (hf : Continuous f) {s : SingularNManifold X k I} :
+    uBordismClass.map hf (Quotient.mk _ s) = Quotient.mk _ (s.map hf) := by
+  dsimp only [uBordismClass.map, Quotient.lift_mk]
+
+-- is there a tactic for this already?
+lemma foo {α : Type*} (a : α) : ∃ _ : α, True := by use a
+
+theorem map_id (Φ : uBordismClass X k I) : Φ.map continuous_id = Φ := by
+  set φ := Φ.out with φ_eq
+  rw [← Φ.out_eq, mk_map, Quotient.eq, ← φ_eq]
+  dsimp only
+  use (UnorientedBordism.refl φ).copy_map_fst (Diffeomorph.refl I _ k) (by dsimp)
+
+theorem map_id' : uBordismClass.map (k := k) (I := I) (@continuous_id X _) = id := by
+  ext Φ
+  exact map_id Φ
+
+theorem map_comp (hf : Continuous f) (hg : Continuous g) (Φ : uBordismClass X k I) :
+    (Φ.map hf).map hg = Φ.map (hg.comp hf) := by
+  set φ := Φ.out with φ_eq
+  rw [← Φ.out_eq, mk_map, ← φ_eq, mk_map, mk_map, Quotient.eq]
+  dsimp only
+  use ((UnorientedBordism.refl φ).map (hg.comp hf)).copy_map_fst
+    (Diffeomorph.refl I _ k) (by dsimp [Function.comp_assoc])
+
+theorem map_comp' (hf : Continuous f) (hg : Continuous g) :
+    (fun s : uBordismClass X k I ↦ (s.map hf).map hg) = uBordismClass.map (hg.comp hf) := by
+  ext Φ
+  apply map_comp hf hg
 
 end uBordismClass
 
