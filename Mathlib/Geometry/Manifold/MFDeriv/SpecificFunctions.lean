@@ -397,6 +397,36 @@ theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
 section prodMap
 
 variable {f : M → M'} {g : N → N'} {r : Set N} {y : N}
+  {f' : TangentSpace I x →L[𝕜] TangentSpace I' (f x)}
+  {g' : TangentSpace J y →L[𝕜] TangentSpace J' (g y)}
+
+theorem HasMFDerivAt.prodMk {f : M → N} {g : M → N'}
+    {f' : TangentSpace I x →L[𝕜] TangentSpace J (f x)}
+    {g' : TangentSpace I x →L[𝕜] TangentSpace J' (g x)}
+    (hf : HasMFDerivAt I J f x f') (hg : HasMFDerivAt I J' g x g') :
+    HasMFDerivAt I (J.prod J') (fun x => (f x, g x)) x (f'.prod g') := by
+  refine ⟨hf.1.prod hg.1, ?_⟩
+  -- TODO: argue that our expression is just the product of the expressions for hf and hg
+  -- missing lemma: writtenInExtChartAt, "prod"
+  simp_all [hf.2, hg.2]
+  sorry --⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+
+-- @[fun_prop]
+protected theorem HasMFDerivAt.prodMap (hf : HasMFDerivAt I I' f x f') (hg : HasMFDerivAt J J' g y g') :
+    HasMFDerivAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y) (f'.prodMap g') := by
+  sorry
+  -- apply HasMFDerivAt.prodMk
+  -- · have aux : (fun x : M × N↦ f x.1) = fun x ↦ (Prod.fst (f x)) := sorry
+  --   apply HasMFDerivAt.comp x hf hasMFDerivAt_fst--.comp x--HasMFDerivAt.comp hf x hasMFDerivAt_fst
+  --   sorry
+  -- · sorry --(hf.comp x hasMFDerivAt_fst).prod (hf₂.comp p hasFDerivAt_snd)
+
+lemma mfderiv_prodMap
+    (hf : MDifferentiableAt I I' f x) (hg : MDifferentiableAt J J' g y) :
+    mfderiv (I.prod J) (I'.prod J') (Prod.map f g) (x, y)
+    = (mfderiv I I' f x).prodMap (mfderiv J J' g y) := sorry
+
+-- and variations for mfderivWithin, etc.
 
 /-- The product map of two `C^n` functions within a set at a point is `C^n`
 within the product set at the product point. -/

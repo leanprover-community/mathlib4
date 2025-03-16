@@ -199,31 +199,6 @@ section PrereqsDiffGeo
 
 variable  {𝕜 : Type u_1} [NontriviallyNormedField 𝕜]
 
-section
-
-variable {E E' F F' : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-variable {H H' H'' H''' : Type*} [TopologicalSpace H] [TopologicalSpace H']
-  [TopologicalSpace H''] [TopologicalSpace H''']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-  {J : ModelWithCorners 𝕜 F H''} {J' : ModelWithCorners 𝕜 F' H'''}
-variable {M M' N N' : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [TopologicalSpace M'] [ChartedSpace H' M']
-  [TopologicalSpace N] [ChartedSpace H'' N] [TopologicalSpace N'] [ChartedSpace H''' N']
-  {f : M → N} {g : M' → N'} {x : M} {x' : M'}
-
--- #check MDifferentiable.prod_map
-
-lemma mfderiv_prodMap
-    (hf : MDifferentiableAt I J f x) (hg : MDifferentiableAt I' J' g x') :
-    mfderiv (I.prod I') (J.prod J') (Prod.map f g) (x, x')
-    = (mfderiv I J f x).prodMap (mfderiv I' J' g x') := sorry
-
--- and variations for within, etc
-
-end
-
 variable {N' : Type*} [TopologicalSpace N'] [ChartedSpace H' N']
 
 @[simp, mfld_simps]
