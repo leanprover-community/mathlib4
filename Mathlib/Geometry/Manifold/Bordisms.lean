@@ -399,13 +399,19 @@ variable (s) in
 /-- Each singular n-manifold is bordant to itself. -/
 def refl : UnorientedBordism k s s (I.prod (𝓡∂ 1)) where
   W := s.M × (Set.Icc (0 : ℝ) 1)
-  -- TODO: I want boundary data modelled on I, not I × (∂[0,1])
-  bd := sorry -- BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
+  -- XXX: I'm using special boundary data modelled on I, as opposed to
+  -- BoundaryManifoldData.prod_of_boundaryless_left s.M I (BoundaryManifoldData.Icc k)
+  -- modelled on I × (∂[0,1])
+  bd := BoundaryManifoldData.prod_Icc _ k I
   F := s.f ∘ (fun p ↦ p.1)
   hF := s.hf.comp continuous_fst
-  φ := sorry
-  hFf := sorry
-  hFg := sorry
+  φ := Diffeomorph.refl I _ k
+  hFf := by
+    simp only [BoundaryManifoldData.prod_Icc_f, Function.comp_assoc]
+    congr
+  hFg := by
+    simp only [BoundaryManifoldData.prod_Icc_f, Function.comp_assoc]
+    congr
 
 /-- Being bordant is symmetric. -/
 def symm (φ : UnorientedBordism k s t J) : UnorientedBordism k t s J where
