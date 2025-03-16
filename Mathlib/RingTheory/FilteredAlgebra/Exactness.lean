@@ -224,7 +224,7 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (exact : Function.Exact
         · rcases ih with ⟨y, ymem, yeq⟩
           simp only [Subtype.exists, Nat.cast_add, Nat.cast_one, exists_prop]
           have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) = 0 :=
-            sorry
+            sorry -- get some lemma?
           have hy : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) ∈ Gr+(p + s - i)[f].range :=
             by simpa only [← AddMonoidHom.exact_iff.mp
                 (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
@@ -232,7 +232,7 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (exact : Function.Exact
           rcases hy with ⟨xi, fxiy⟩
           use y - f xi.out
           constructor
-          · sorry -- consider making this a lemma?
+          · sorry -- get some lemma?
           · simp only [map_sub, yeq, sub_eq_self]
             show (g.toAddMonoidHom.comp f.toAddMonoidHom) xi.out = 0
             simp only [comp_eq_zero, AddMonoidHom.zero_apply]
