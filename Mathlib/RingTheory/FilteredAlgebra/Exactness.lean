@@ -162,9 +162,10 @@ end exactness
 
 section
 
-open AddSubgroup FilteredAddGroupHom IsFiltration FilteredHom
+open AddSubgroup IsFiltration FilteredHom
+open FilteredAddGroupHom AssociatedGradedAddMonoidHom
 
-variable {ι R S T σR σS σT : Type*}
+variable {ι R S T σR σS σT : Type*} [DecidableEq ι]
 
 variable [AddCommGroup R] [SetLike σR R] [AddSubgroupClass σR R] {FR : ℤ → σR}
 
@@ -176,61 +177,48 @@ variable (f : FilteredAddGroupHom FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n 
 
 variable (g : FilteredAddGroupHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)))
 
-lemma shrinking_lemma (monoR : Monotone FR) (S' : AddSubgroup S) {p : ℤ}
-  (y : (ofClass (FS p) ⊓ S' : AddSubgroup S))
-  (h : ∀ i : ℤ, ofClass (FS i) ⊓ S' ≤ AddSubgroup.map f (ofClass (FR i))) :
-    ∀ s : ℕ, ∃ x : FR p, y - (f.toAddMonoidHom x) ∈ ofClass (FS (p - s)) ⊓ S' := by
-  intro s
-  induction' s with s ih
-  · use 0
-    simp[AddMonoidHom.map_zero f.toAddMonoidHom]
-  · obtain⟨x₀, h₀⟩ := ih
-    obtain⟨z, zin, eq⟩ : y - f.toAddMonoidHom x₀ ∈ (map f.toAddMonoidHom (ofClass (FR (p - s)))) :=
-      h (p - s) h₀
-    have : z ∈ (FR p) := by
-      have : FR (p - s) ≤ FR p := by
-        apply monoR
-        simp
-      exact this zin
-    use (x₀ + ⟨z , this⟩)
-    simp only [Nat.cast_add, Nat.cast_one, AddMemClass.coe_add, AddMonoidHom.map_add]
-    simp [eq, AddSubgroup.zero_mem]
-
-theorem comp_eq_zero_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
-    (exhaustiveR : letI := (mk_int FR monoR); IsExhaustiveFiltration FR (fun n ↦ FR (n - 1)))
+theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
-    (strict : IsStrict FR (fun n ↦ FR (n - 1))  FS (fun n ↦ FS (n - 1)) f)
     (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
-    (exact : Function.Exact Gr+[f] Gr+[g]) : g.toAddMonoidHom ∘ f.toAddMonoidHom = 0 := sorry
-
-
-theorem ker_in_range_of_graded_exact (monoR : Monotone FR) (monoS : Monotone FS)
-    (exhaustiveR : letI := (mk_int FR monoR); IsExhaustiveFiltration FR (fun n ↦ FR (n - 1)))
-    (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
-    (strict : IsStrict FR (fun n ↦ FR (n - 1))  FS (fun n ↦ FS (n - 1)) f)
-    (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
-    (exact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact f.toAddMonoidHom g.toAddMonoidHom := by
-  refine Function.Exact.of_comp_of_mem_range ?_ ?_
-  · sorry
+    (exact : Function.Exact Gr+[f] Gr+[g])
+    (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) : Function.Exact f g := by
+  have comp_zero (x : R) : (g.toAddMonoidHom.comp f.toAddMonoidHom) x = 0 := by simp [comp_eq_zero]
+  apply Function.Exact.of_comp_of_mem_range
+  · exact funext (fun x ↦ comp_zero x)
   · intro y yto0
-    obtain⟨p, hy⟩ : ∃ p : ℤ, y ∈ ofClass (FS p) ⊓ (AddMonoidHom.ker g.toAddMonoidHom) := by
-      refine exists_and_right.mpr ⟨?_, yto0⟩
-      have : y ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustiveS.exhaustive, Set.mem_univ]
-      exact Set.mem_iUnion.mp this
-    obtain⟨t, tlep, tbot⟩ : ∃ t ≤ p, (FS t : Set S) = {0} := by
+    have : y ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustiveS.exhaustive, Set.mem_univ]
+    rcases Set.mem_iUnion.mp this with ⟨p, hy⟩
+    obtain ⟨t, tlep, tbot⟩ : ∃ t ≤ p, (FS t : Set S) = {0} := by
       rcases discrete.discrete with ⟨t₀, t₀bot⟩
       refine ⟨min p t₀, ⟨Int.min_le_left p t₀, ?_⟩⟩
-      refine (Set.Nonempty.subset_singleton_iff Set.Nonempty.of_subtype).mp ?_
-      rw [← t₀bot]
+      rw [← Set.Nonempty.subset_singleton_iff Set.Nonempty.of_subtype, ← t₀bot]
       apply Monotone.imp monoS (Int.min_le_right p t₀)
-    have : ∀ i : ℤ, ofClass (FS i) ⊓ (AddMonoidHom.ker g.toAddMonoidHom) ≤
-      AddSubgroup.map f (ofClass (FR i)) := sorry
-    obtain⟨s, _⟩ := Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le tlep)
-    obtain⟨x ,hx⟩ := shrinking_lemma f monoR (AddMonoidHom.ker g.toAddMonoidHom) ⟨y, hy⟩ this s
-    have eq : p - s = t := by omega
-    rw [eq] at hx
-    have hx : y - (f.toAddMonoidHom x) ∈ (FS t : Set S) := Set.mem_of_mem_inter_left hx
-    rw [tbot] at hx
-    exact ⟨x, (eq_of_sub_eq_zero <| Set.mem_singleton_iff.mp hx).symm⟩
+    have (s : ℕ) : ∃ r : R, y - f r ∈ FS (p - s) := by
+      induction' s with s ih
+      · use 0
+        simpa using hy
+      · rcases ih with ⟨r, hr⟩
+        have : g (y - f r) = 0 := by simpa [yto0] using comp_zero r
+        have mem_ker :
+          Gr+(p - s)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩) = 0 := by
+          rw [← map_zero (GradedPiece.mk FT (fun n ↦ FT (n - 1))),
+            GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
+          congr
+          exact SetCoe.ext this
+        rcases ((GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g _ exact) _).mp
+           mem_ker with ⟨r', hr'⟩
+        have : Gr+(p - s)[f] ((GradedPiece.mk FR fun n ↦ FR (n - 1)) r'.out) =
+          (GradedPiece.mk FS fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩ := by
+          simpa [GradedPiece.mk] using hr'
+        simp only [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, Eq.comm] at this
+        use r + r'.out.1
+        simpa only [Nat.cast_add, Nat.cast_one, map_add, sub_add_eq_sub_sub] using
+          QuotientAddGroup.eq_iff_sub_mem.mp this
+    rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le tlep) with ⟨s, hs⟩
+    rcases this s with ⟨r, hr⟩
+    use r
+    have : y - f r ∈ (FS t : Set S) := by simpa only [← hs, sub_sub_cancel] using hr
+    simp only [tbot, Set.mem_singleton_iff] at this
+    rw [← zero_add (f r), ← this, sub_add_cancel]
 
 end
