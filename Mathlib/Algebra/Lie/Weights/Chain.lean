@@ -367,6 +367,7 @@ end
 section
 
 open LieAlgebra
+set_option maxHeartbeats 400000
 
 variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
@@ -376,12 +377,132 @@ variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 lemma root_space_ad_is_nilpotent
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  have := iSup_genWeightSpace_eq_top K H M
-  have := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ (by sorry) hχ
-  sorry
+  have partition := iSup_genWeightSpace_eq_top' K H M
 
--- This is what we really want
-example [IsTriangularizable K H L] [FiniteDimensional K L]
+  set s : Set (Weight K H M) := by
+    exact univ
+  have Mm : Finite s := by
+    exact Subtype.finite
+
+  have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n, ((toEnd K L M x) ^ m) v = 0 := by
+    intro ε he
+    have hoho := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ ε hχ
+    obtain ⟨k, ⟨hk1, hk2⟩⟩ := hoho
+    use k
+    intro v m hm
+    suffices ((toEnd K L M x) ^ k) v = 0 by
+      exact LinearMap.pow_map_zero_of_le hm this
+    --  (hm : m ∈ genWeightSpace M χ₂)
+    simp_all
+    have s0 := v.mem
+    have s1 := toEnd_pow_apply_mem hx s0 k
+    simp_all
+    --rw [hk2] at s1
+
+
+
+  have exists_global_n0 : ∃ n0 : ℕ, ∀ ε ∈ s, ∀ (v : genWeightSpace M ε), ((toEnd K L M x) ^ n0) v = 0 := by
+    let fs := Finite.toFinset Mm
+    choose n hn using helpMe
+    simp_all
+    let nn1 : (ε : Weight K H M) → ℕ := by
+      intro ε
+      have ttt : ε ∈ s := by
+        simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
+        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
+      apply n ε ttt
+    let n0 := fs.sup nn1
+    use n0
+    intro ε hε v
+    specialize hn ε hε v
+    intro ropi
+    have ropi2 := hn ropi
+    have ropi3 : n ε hε ≤ nn1 ε := by
+      simp_all
+      simp_all only [le_refl, s, nn1]
+    have ropi4 : nn1 ε ≤ n0 := by
+      simp_all
+      dsimp [n0]
+      have ttt : ε ∈ s := by
+        simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
+        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
+      have tttt : ε ∈ fs := by
+        simp_all only [le_refl, mem_univ, Finite.toFinset_setOf, Finset.filter_True, Finset.mem_univ, s, nn1, n0, fs]
+      exact Finset.le_sup tttt
+    have hellp : n ε hε ≤ n0 := by
+      linarith [ropi3, ropi4]
+    have ropi5 := ropi2 n0 hellp
+    exact ropi5
+
+  obtain ⟨n0, hn0⟩ := exists_global_n0
+  let A := (toEnd K L M x) ^ n0
+  have r : ⨆ χ ∈ s, genWeightSpace M χ = ⊤ := by
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ,
+    iUnion_true, iSup_pos, s]
+
+  have rrr : ∀ χ1 ∈ s, genWeightSpace M χ1 ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+    intro χ1
+    intro a
+    intro m hm
+    have nam : Submodule.span K (genWeightSpace M χ1).carrier ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+      apply Submodule.span_mono
+      simp_all
+      intro x hx
+      apply Set.mem_biUnion a
+      simp_all only [mem_univ, iSup_pos, AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
+        Submodule.mem_toAddSubmonoid, LieSubmodule.mem_toSubmodule, s]
+    have tq : genWeightSpace M χ1 ≤ Submodule.span K (genWeightSpace M χ1).carrier := by
+      intro m hm
+      simp_all
+      dsimp [Submodule.span]
+      intro p hp
+      simp_all
+      obtain ⟨pr, hr⟩ := hp
+      obtain ⟨aa, aaa⟩ := hr
+      simp_all
+      intro xx
+      have ttttt := xx hm
+      simp_all
+    have := nam (tq hm)
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, LieSubmodule.mem_toSubmodule,
+      iUnion_true, s]
+
+
+  have rrr : ⨆ χ ∈ s, genWeightSpace M χ ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+    apply sSup_le
+    intro x hf
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
+      mem_range, exists_exists_eq_and, mem_setOf_eq, s]
+    obtain ⟨w_1, h_1⟩ := hf
+    subst h_1
+    simp_all only [s]
+
+
+  have rr : Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) = ⊤ := by
+    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
+      LieSubmodule.top_toSubmodule, top_le_iff, s]
+
+  have ttt1 (ε : Weight K H M) (n : M) (n : genWeightSpace M ε) : A n = 0 := by
+    have ttt : ε ∈ s := by
+      simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
+        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
+    have zzz := (hn0 ε) (ttt) n
+    exact zzz
+
+  have ttt2 : A = 0 := by
+    haveI := [Module K M]
+    have call := Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) rr
+    apply call.2
+    intro s1
+    obtain ⟨a, ⟨b, ⟨c, d⟩⟩⟩ := s1
+    simp_all
+    obtain ⟨e, ⟨f, g⟩⟩ := c
+    simp_all
+    obtain ⟨d1, d2⟩ := d
+    exact ttt1 e a d2
+  use n0
+
+lemma root_space_ad_is_nilpotent2 [IsTriangularizable K H L] [FiniteDimensional K L]
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (ad K L x) :=
   root_space_ad_is_nilpotent (M := L) H hχ hx
@@ -389,3 +510,17 @@ example [IsTriangularizable K H L] [FiniteDimensional K L]
 end
 
 end LieModule
+
+namespace LieAlgebra
+
+open LieModule
+
+variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
+  (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+
+lemma root_space_ad_is_nilpotent [IsTriangularizable K H L] [FiniteDimensional K L]
+    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
+    _root_.IsNilpotent (ad K L x) :=
+  LieModule.root_space_ad_is_nilpotent (M := L) H hχ hx
+
+end LieAlgebra
