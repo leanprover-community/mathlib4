@@ -179,11 +179,10 @@ variable (g : FilteredAddGroupHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n 
 
 open AssociatedGraded in
 omit [AddSubgroupClass σR R] in
+variable {f g} in
 lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
   (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
     Gr+[g] (of ((GradedPiece.mk FS fun n ↦ FS (n - 1)) y)) = 0 := by
-  have comp_zero (x : R) : (g.toAddMonoidHom.comp f.toAddMonoidHom) x = 0 := by
-    simp only [comp_eq_zero, AddMonoidHom.zero_apply]
   obtain ⟨x, hx⟩ := hy
   set yₚ := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (y : ofClass (FS p))
   convert_to of yₚ ∈ Gr+[g].ker
@@ -200,8 +199,8 @@ lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
           (congrArg QuotientAddGroup.mk this)
       suffices g y = 0 from ZeroMemClass.coe_eq_zero.1 this
       rw [← hx]
-      convert_to g (f x) = 0
-      exact comp_zero x
+      suffices g.toAddMonoidHom.comp f.toAddMonoidHom x = 0 from this
+      rw [comp_eq_zero, AddMonoidHom.zero_apply]
   · convert_to 0 ∈ Gr+(i)[g].ker
     · exact AssociatedGraded.of_eq_of_ne p i yₚ fun a ↦ h (id a.symm)
     · simp only [AddMonoidHom.mem_ker, map_zero, yₚ]
@@ -243,17 +242,46 @@ theorem strict_exact_discrete
     (monoS : Monotone FS) (exact : Function.Exact Gr+[f] Gr+[g])
     (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
     (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
-  IsStrict FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)) f := {
-    strict {p y} hp hy := by
-      simp only [Set.mem_range, Set.mem_image, SetLike.mem_coe]
-      have := discrete.discrete
-      set y' := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
-      set yₚ := AssociatedGraded.of y'
-      obtain ⟨xₚ, hxₚ⟩ := Set.mem_range.1 <| (exact yₚ).1 (zero_of_pieces_range f g hy comp_eq_zero)
+  IsStrict FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)) f := by
+    refine FilteredHom.IsStrict_of_Int fun {p y} hp hy ↦ ?_
+    simp only [Set.mem_range, Set.mem_image, SetLike.mem_coe]
+    rcases discrete.discrete with ⟨t₀, t₀bot⟩
+    have le_zero : ∀ t ≤ t₀, (FS t : Set S) = {0} := by
+      intro t ht
+      refine (Set.Nonempty.subset_singleton_iff ?_).1 <| le_of_eq_of_le' t₀bot (monoS ht)
+      exact Set.Nonempty.of_subtype
+    set yₚ := AssociatedGraded.of <|
+      GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
+    obtain ⟨xₚ, hxₚ⟩ := Set.mem_range.1 <| (exact yₚ).1 (zero_of_pieces_range hy comp_eq_zero)
+    have (s : ℕ) : ∃ r : FR p, y - f r ∈ (f.range : Set S) ∩ FS (p - s) := by
+      induction' s with s ih
+      · simp only [AddMonoidHom.coe_range, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Nat.cast_zero,
+        sub_zero, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe, Subtype.exists,
+        exists_and_left, exists_prop]
+        use (xₚ p).out
+        simp only [SetLike.coe_mem, true_and]
+        constructor
+        · use 0
+          convert_to 0 = y - f (xₚ p).out
+          exact FilteredAddGroupHom.map_zero'
+          symm; rw [sub_eq_zero]
+          apply_fun (· p) at hxₚ
+          simp only [AssociatedGradedAddMonoidHom_apply] at hxₚ
+          rw [DirectSum.of_eq_same] at hxₚ
+          sorry
+        · sorry
+      · sorry
+    obtain ⟨s, hs⟩ : ∃ s : ℕ, p - s ≤ t₀ := by
+      simp only [tsub_le_iff_right]
+      obtain ⟨s, hs⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ - t₀ + t₀.natAbs + p.natAbs by omega)
+      use s; rw [← hs]; omega
+    replace le_zero := le_zero (p - s) hs
+    rcases this s with ⟨r, hr⟩
+    refine ⟨r, ⟨SetLike.coe_mem r, ?_⟩⟩
+    · rw [le_zero, (Set.inter_eq_right.2 fun x hx ↦ hx.symm ▸ zero_mem f.range),
+        Set.mem_singleton_iff, sub_eq_zero] at hr
+      exact hr.symm
 
-      sorry
-    strict_lt := sorry
-  }
 
 theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
