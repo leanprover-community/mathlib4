@@ -218,23 +218,26 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (exact : Function.Exact
         rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le (Int.le_max_left p p')) with ⟨s, hs⟩
         exact ⟨s, by simpa only [← hs, add_sub_cancel] using monoS (Int.le_max_right p p') y₀p'⟩
       rcases this with ⟨s, hs⟩
-      have (i : ℕ) : ∃ y : FS (p + s - i), g y = z := by
+      have (i : ℕ) : ∃ y ∈ FS (p + s - i), g y = z := by
         induction' i with i ih
         · simpa only [Int.Nat.cast_ofNat_Int, Subtype.exists, sub_zero] using ⟨y₀, ⟨hs, gy₀z⟩⟩
-        · rcases ih with ⟨y, yeq⟩
+        · rcases ih with ⟨y, ymem, yeq⟩
           simp only [Subtype.exists, Nat.cast_add, Nat.cast_one, exists_prop]
-          have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) y) = 0 := sorry
-          have iex := GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact
-          have hy : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) y) ∈ Gr+(p + s - i)[f].range := by
-            simpa [← AddMonoidHom.exact_iff.mp iex] using hy
+          have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) = 0 :=
+            sorry
+          have hy : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) ∈ Gr+(p + s - i)[f].range :=
+            by simpa only [← AddMonoidHom.exact_iff.mp
+                (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
+              using hy
           rcases hy with ⟨xi, fxiy⟩
-          set x := xi.out with xxi
-          use y - f x
+          use y - f xi.out
           constructor
-          · sorry
+          · sorry -- consider making this a lemma?
           · simp only [map_sub, yeq, sub_eq_self]
-            show (g.toAddMonoidHom.comp f.toAddMonoidHom) x = 0
+            show (g.toAddMonoidHom.comp f.toAddMonoidHom) xi.out = 0
             simp only [comp_eq_zero, AddMonoidHom.zero_apply]
+      rcases this s with ⟨y, ymem, gyz⟩
+      exact ⟨y, ⟨by simpa only [add_sub_cancel_right] using ymem, gyz⟩⟩
 
 theorem strict_exact_discrete
     (monoS : Monotone FS) (exact : Function.Exact Gr+[f] Gr+[g])
