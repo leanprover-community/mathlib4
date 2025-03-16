@@ -13,19 +13,19 @@ exactly the context-free languages.
 -/
 
 /-- A PDA is a set of states (`Q`), a tape alphabet (`T`), a stack alphabet (`S`), an initial state
-  (`initial_state`), a start symbol (`start_symbol`), a set of final states (`final_states`), a
-  transition function (`transition_fun`), and a proof that, for any input, the transition function
-  returns a finite set as output. -/
+(`initial_state`), a start symbol (`start_symbol`), a set of final states (`final_states`), a
+transition function (`transition_fun`), and a proof that, for any input, the transition function
+returns a finite set as output. -/
 structure PDA (Q T S : Type) [Fintype Q] [Fintype T] [Fintype S] where
   /-- Initial state. -/
-  initial_state : Q
+  initialState : Q
   /-- Start symbol on the stack. -/
-  start_symbol : S
+  startSymbol : S
   /-- Set of final states. -/
-  final_states : Set Q
+  finalStates : Set Q
   /-- Transition function reading a letter from `T` if present and an epsilon otherwise. -/
-  transition_fun : Q → (Option T) → S → Set (Q × List S)
-  finite (q : Q) (x : (Option T)) (Z : S) : (transition_fun q x Z).Finite
+  transitionFun : Q → Option T → S → Set (Q × List S)
+  finite_transitionFun (q : Q) (x : Option T) (Z : S) : (transitionFun q x Z).Finite
 
 namespace PDA
 
@@ -46,9 +46,9 @@ variable {M : PDA Q T S}
 
 /-- `Reaches₁ r₁ r₂` means that `r₂` is reachable from `r₁` in one step. -/
 def Reaches₁ (r₁ r₂ : Conf M) : Prop :=
-  ∃ (Z : S) (α : List S) (β : List S), r₁.stack = Z::α ∧ r₂.stack = β++α ∧ (
-    (r₁.input = r₂.input ∧ (r₂.state, β) ∈ (M.transition_fun r₁.state none Z)) ∨
-    (∃ (a : T), r₁.input = a::r₂.input ∧ (r₂.state, β) ∈ (M.transition_fun r₁.state (some a) Z))
+  ∃ (Z : S) (α : List S) (β : List S), r₁.stack = Z :: α ∧ r₂.stack = β ++ α ∧ (
+    r₁.input = r₂.input ∧ (r₂.state, β) ∈ M.transition_fun r₁.state none Z ∨
+    ∃ (a : T), r₁.input = a :: r₂.input ∧ (r₂.state, β) ∈ (M.transition_fun r₁.state (some a) Z)
   )
 
 /-- `Reaches r₁ r₂` means that `r₂` is reachable from `r₁` in finitely many steps. -/
