@@ -202,9 +202,8 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 theorem meromorphicNFAt_iff_toNF_eq_id :
-    MeromorphicNFAt f x ↔ f = toMeromorphicNFAt f x := by
-  constructor
-  · intro hf
+    MeromorphicNFAt f x ↔ f = toMeromorphicNFAt f x where
+  mp hf := by
     funext z
     by_cases hz : z = x
     · rw [hz]
@@ -243,6 +242,6 @@ theorem meromorphicNFAt_iff_toNF_eq_id :
           rw [hn] at this
           tauto
     · exact hf.meromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt hz
-  · intro hf
+  mpr hf := by
     rw [hf]
     exact meromorphicNFAt_toMeromorphicNFAt
