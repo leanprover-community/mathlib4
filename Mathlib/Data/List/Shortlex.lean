@@ -56,14 +56,14 @@ theorem shortlex_def {s t : List α} :
     Shortlex r s t ↔ s.length < t.length ∨ s.length = t.length ∧ Lex r s t := Prod.lex_def
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
-over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`.-/
+over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`. -/
 theorem shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
   simp [shortlex_def, h]
 
 theorem shortlex_cons_iff [IsIrrefl α r] {a : α} {s t : List α} :
     Shortlex r (a :: s) (a :: t) ↔ Shortlex r s t := by
-  simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.Lex.cons_iff]
+  simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.lex_cons_iff]
 
 alias ⟨Shortlex.of_cons, Shortlex.cons⟩ := shortlex_cons_iff
 
@@ -80,7 +80,7 @@ theorem shortlex_nil_or_eq_nil : ∀ s : List α, Shortlex r [] s ∨ s = []
 
 @[simp]
 theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
-  simp only [shortlex_def, length_singleton, lt_self_iff_false, Lex.singleton_iff, true_and,
+  simp only [shortlex_def, length_singleton, lt_self_iff_false, lex_singleton_iff, true_and,
     false_or]
 
 namespace Shortlex
