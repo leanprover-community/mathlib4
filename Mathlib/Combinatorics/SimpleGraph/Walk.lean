@@ -875,9 +875,8 @@ lemma drop_zero {u v : V} {p : G.Walk u v} :
 lemma drop_cons_succ {h : G.Adj u v} {p : G.Walk v w} {n : ℕ} :
   (cons h p).drop (n + 1) = (p.drop n):= rfl
 
-
 @[simp]
-lemma drop_cons_succ_of_lt {p : G.Walk v w} (n : ℕ) (hn : n < p.length) :
+lemma cons_drop_succ_of_lt {p : G.Walk v w} (n : ℕ) (hn : n < p.length) :
     cons (p.adj_getVert_succ hn) (p.drop (n + 1)) = p.drop n := by
   induction p generalizing n with
   | nil => simp at hn
@@ -888,7 +887,6 @@ lemma drop_cons_succ_of_lt {p : G.Walk v w} (n : ℕ) (hn : n < p.length) :
       rw [length_cons, Nat.add_lt_add_iff_right] at hn
       rw [drop_cons_succ]
       exact ih _ hn
-
 
 lemma drop_not_nil_iff {p : G.Walk v w} {n : ℕ} : ¬ (p.drop n).Nil ↔ n < p.length:= by
   rw [not_iff_comm, not_lt]
@@ -923,15 +921,43 @@ lemma take_cons_succ {u v w : V} {h : G.Adj u v} {n : ℕ} {p : G.Walk v w} :
   (cons h p).take (n + 1) = cons h (p.take n) := rfl
 
 @[simp]
-lemma take_nil {u : V} {n : ℕ} : (nil : G.Walk u u).take n = .nil := by
+lemma take_nil {u : V} {n : ℕ} : (nil : G.Walk u u).take n = nil := by
   cases n <;> rfl
 
 @[simp]
-theorem take_drop_append {u v : V} (p : G.Walk u v) (n : ℕ)  :
+theorem take_drop_spec {u v : V} (p : G.Walk u v) (n : ℕ)  :
     (p.take n).append (p.drop n) = p := by
   induction p generalizing n with
   | nil => cases n <;> rfl
   | cons h p ih => cases n <;> simp [ih]
+
+theorem support_take_subset {v w : V} (p : G.Walk v w) (n : ℕ) :
+    (p.take n).support ⊆ p.support := fun x hx => by
+  rw [← take_drop_spec p n, mem_support_append_iff]
+  exact Or.inl hx
+
+theorem support_drop_subset {v w : V} (p : G.Walk v w) (n : ℕ) :
+    (p.drop n).support ⊆ p.support := fun x hx => by
+  rw [← take_drop_spec p n, mem_support_append_iff]
+  exact Or.inr hx
+
+theorem darts_take_subset {v w : V} (p : G.Walk v w) (n : ℕ)  :
+    (p.take n).darts ⊆ p.darts := fun x hx => by
+  rw [← take_drop_spec p n, darts_append, List.mem_append]
+  exact Or.inl hx
+
+theorem darts_drop_subset {v w : V} (p : G.Walk v w) (n : ℕ)  :
+    (p.drop n).darts ⊆ p.darts := fun x hx => by
+  rw [← take_drop_spec p n, darts_append, List.mem_append]
+  exact Or.inr hx
+
+theorem edges_take_subset {v w : V} (p : G.Walk v w) (n : ℕ) :
+    (p.take n).edges ⊆ p.edges :=
+  List.map_subset _ (p.darts_take_subset n)
+
+theorem edges_drop_subset {v w : V} (p : G.Walk v w) (n : ℕ) :
+    (p.drop n).edges ⊆ p.edges :=
+  List.map_subset _ (p.darts_drop_subset n)
 
 @[simp]
 theorem take_append_cons_drop_succ {u v : V} (p : G.Walk u v) (n : ℕ) (hn : n < p.length)  :

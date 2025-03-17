@@ -178,6 +178,12 @@ theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
   subst_vars
   rfl
 
+@[simp]
+theorem dropUntil_of_eq {u v x y} (p : G.Walk u v) (hx : x ∈ p.support) (hy : y ∈ p.support)
+    (h : y = x) : (p.dropUntil y hy).copy h rfl  = p.dropUntil x hx := by
+  subst_vars
+  rfl
+  
 theorem support_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support ⊆ p.support := fun x hx => by
   rw [← take_spec p h, mem_support_append_iff]
