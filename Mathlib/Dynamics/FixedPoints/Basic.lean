@@ -36,6 +36,10 @@ open Function (Commute)
 theorem isFixedPt_id (x : α) : IsFixedPt id x :=
   (rfl :)
 
+/-- A function is an identity iff every point is fixed. -/
+theorem isFixedPt_eq_id_iff : (∀ x, IsFixedPt f x) ↔ f = id :=
+  ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
+
 namespace IsFixedPt
 
 instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
