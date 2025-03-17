@@ -234,8 +234,7 @@ lemma zero [IsFiniteMeasure ν] [IsZeroOrMarkovKernel κ] : HasSubgaussianMGF 0 
 lemma zero_kernel : HasSubgaussianMGF X c (0 : Kernel Ω' Ω) ν := by
   constructor
   · simp
-  · simp only [zero_apply, mgf_zero_measure, Pi.zero_apply]
-    exact ae_of_all _ fun _ _ ↦ by positivity
+  · simp [exp_nonneg]
 
 @[simp]
 lemma zero_measure : HasSubgaussianMGF X c κ (0 : Measure Ω') := ⟨by simp, by simp⟩
