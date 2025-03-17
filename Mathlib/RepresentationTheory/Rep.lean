@@ -176,7 +176,7 @@ theorem coe_linearization_obj_ρ (X : Action (Type u) G) (g : G) :
 theorem linearization_of (X : Action (Type u) G) (g : G) (x : X.V) :
     ((linearization k G).obj X).ρ g (Finsupp.single x (1 : k))
       = Finsupp.single (X.ρ g x) (1 : k) := by
-  Finsupp.mapDomain_single
+  simp
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): helps fixing `linearizationTrivialIso` since change in behaviour of `ext`.
 theorem linearization_single (X : Action (Type u) G) (g : G) (x : X.V) (r : k) :
@@ -423,14 +423,14 @@ variable {α : Type u} (i : α)
 lemma leftRegularTensorTrivialIsoFree_hom_hom_single_tmul_single (i : α) (g : G) (r s : k) :
     (leftRegularTensorTrivialIsoFree k G α).hom.hom (single g r ⊗ₜ single i s) =
       single i (single g (r * s)) := by
-  simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
+  simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ]
   simp [leftRegularTensorTrivialIsoFree, instMonoidalCategoryStruct_tensorObj,
     ModuleCat.MonoidalCategory.tensorObj, coe_of]
 
 lemma leftRegularTensorTrivialIsoFree_inv_hom_single_single (i : α) (g : G) (r : k) :
     (leftRegularTensorTrivialIsoFree k G α).inv.hom (single i (single g r)) =
       single g r ⊗ₜ[k] single i 1 := by
-  simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ']
+  simp only [Action.instMonoidalCategory_tensorObj_V, Action.tensor_ρ]
   simp [leftRegularTensorTrivialIsoFree, finsuppTensorFinsupp'_symm_single_eq_tmul_single_one,
     instMonoidalCategoryStruct_tensorObj, ModuleCat.MonoidalCategory.tensorObj, coe_of]
 

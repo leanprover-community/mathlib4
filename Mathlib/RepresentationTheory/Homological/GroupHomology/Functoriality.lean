@@ -44,7 +44,7 @@ noncomputable def chainsMap :
   comm' i j (hij : _ = _) := by
     subst hij
     refine ModuleCat.hom_ext <| lhom_ext fun _ _ => ?_
-    simpa [Fin.comp_contractNth, map_add, coe_res_obj_ρ] using
+    simpa [Fin.comp_contractNth, map_add, res_obj_ρ] using
       congr(single _ $((hom_comm_apply φ (_)⁻¹ _).symm))
 
 @[reassoc (attr := simp)]

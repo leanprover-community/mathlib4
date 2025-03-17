@@ -830,22 +830,6 @@ lemma groupCohomologyπ_comp_isoH0_hom  :
     groupCohomologyπ A 0 ≫ (isoH0 A).hom = (isoZeroCocycles A).hom := by
   simp [isoH0]
 
-section Trivial
-
-/-- When the representation on `A` is trivial, then `H⁰(G, A)` is all of `A.` -/
-def H0LequivOfIsTrivial [A.ρ.IsTrivial] :
-    H0 A ≃ₗ[k] A := LinearEquiv.ofTop _ (invariants_eq_top A.ρ)
-
-@[simp] theorem H0LequivOfIsTrivial_eq_subtype [A.ρ.IsTrivial] :
-    H0LequivOfIsTrivial A = A.ρ.invariants.subtype := rfl
-
-theorem H0LequivOfIsTrivial_apply [A.ρ.IsTrivial] (x : H0 A) :
-    H0LequivOfIsTrivial A x = x := rfl
-
-@[simp] theorem H0LequivOfIsTrivial_symm_apply [A.ρ.IsTrivial] (x : A) :
-    (H0LequivOfIsTrivial A).symm x = x := rfl
-
-end Trivial
 end H0
 
 section H1
@@ -869,6 +853,12 @@ lemma isoOneCocycles_hom_comp_subtype :
       iCocycles A 1 ≫ (oneCochainsLequiv A).toModuleIso.hom := by
   have := (shortComplexH1 A).moduleCatCyclesIso_hom_subtype
   simp_all [shortComplexH1, isoOneCocycles, oneCocycles]
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma isoOneCocycles_inv_comp_iCocycles :
+    (isoOneCocycles A).inv ≫ iCocycles A 1 =
+      ModuleCat.ofHom (oneCocycles A).subtype ≫ (oneCochainsLequiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoOneCocycles_hom_comp_subtype]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoOneCocycles_hom :
@@ -898,30 +888,6 @@ lemma groupCohomologyπ_comp_isoH1_hom  :
     groupCohomologyπ A 1 ≫ (isoH1 A).hom = (isoOneCocycles A).hom ≫ H1π A := by
   simp [isoH1, isoOneCocycles]
 
-section Trivial
-
-/-- When `A : Rep k G` is a trivial representation of `G`, `H¹(G, A)` is isomorphic to the
-group homs `G → A`. -/
-def H1LequivOfIsTrivial [A.ρ.IsTrivial] :
-    H1 A ≃ₗ[k] Additive G →+ A :=
-  (Submodule.quotEquivOfEqBot _ (by
-    simp [shortComplexH1, moduleCatToCycles, Submodule.eq_bot_iff])).trans
-  (oneCocyclesLequivOfIsTrivial A)
-
-theorem H1LequivOfIsTrivial_comp_H1π [A.ρ.IsTrivial] :
-    (H1LequivOfIsTrivial A).comp (H1π A).hom = (oneCocyclesLequivOfIsTrivial A).toLinearMap := by
-  ext; rfl
-
-@[simp] theorem H1LequivOfIsTrivial_H1π_apply_apply
-    [A.ρ.IsTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1LequivOfIsTrivial A (Submodule.Quotient.mk f) x = f.1 (Additive.toMul x) := by
-  rfl
-
-@[simp] theorem H1LequivOfIsTrivial_symm_apply [A.ρ.IsTrivial] (f : Additive G →+ A) :
-    (H1LequivOfIsTrivial A).symm f = H1π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=
-  rfl
-
-end Trivial
 end H1
 
 section H2
@@ -946,6 +912,12 @@ lemma isoTwoCocycles_hom_comp_subtype :
       iCocycles A 2 ≫ (twoCochainsLequiv A).toModuleIso.hom := by
   have := (shortComplexH2 A).moduleCatCyclesIso_hom_subtype
   simp_all [shortComplexH2, isoTwoCocycles, twoCocycles]
+
+@[reassoc (attr := simp), elementwise (attr := simp)]
+lemma isoTwoCocycles_inv_comp_iCocycles :
+    (isoTwoCocycles A).inv ≫ iCocycles A 2 =
+      ModuleCat.ofHom (twoCocycles A).subtype ≫ (twoCochainsLequiv A).toModuleIso.inv := by
+  rw [Iso.inv_comp_eq, ← Category.assoc, Iso.eq_comp_inv, isoTwoCocycles_hom_comp_subtype]
 
 @[reassoc (attr := simp), elementwise (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :
