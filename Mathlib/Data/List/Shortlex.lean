@@ -37,56 +37,56 @@ under the lexicographic order induced by `r`. -/
 def Shortlex {α : Type*} (r : α → α → Prop) : List α → List α → Prop :=
   InvImage (Prod.Lex (· < ·) (List.Lex r)) fun a ↦ (a.length, a)
 
-namespace Shortlex
-
 variable {α : Type*} {r : α → α → Prop}
 
 /-- If a list `s` is shorter than a list `t`, then `s` is smaller than `t` under any shortlex
 order. -/
-theorem of_length_lt {s t : List α} (h : s.length < t.length) : Shortlex r s t :=
+theorem Shortlex.of_length_lt {s t : List α} (h : s.length < t.length) : Shortlex r s t :=
   Prod.Lex.left _ _ h
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
 over a relation `r`  when `s` is smaller than `t` under the lexicographic order over `r` -/
-theorem of_lex {s t : List α} (len_eq : s.length = t.length) (h_lex : List.Lex r s t) :
+theorem Shortlex.of_lex {s t : List α} (len_eq : s.length = t.length) (h_lex : List.Lex r s t) :
     Shortlex r s t := by
   apply Prod.lex_def.mpr
   right
   exact ⟨len_eq, h_lex⟩
 
-theorem _root_.List.shortlex_def {s t : List α} : Shortlex r s t ↔
-    s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := Prod.lex_def
+theorem shortlex_def {s t : List α} :
+    Shortlex r s t ↔ s.length < t.length ∨ s.length = t.length ∧ Lex r s t := Prod.lex_def
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
 over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`.-/
-theorem _root_.List.shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
+theorem shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
     Shortlex r s t ↔ List.Lex r s t := by
   simp [shortlex_def, h]
 
-theorem cons_iff [IsIrrefl α r] {a : α} {s t : List α} : Shortlex r (a :: s) (a :: t) ↔
-    Shortlex r s t := by
+theorem shortlex_cons_iff [IsIrrefl α r] {a : α} {s t : List α} :
+    Shortlex r (a :: s) (a :: t) ↔ Shortlex r s t := by
   simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.Lex.cons_iff]
 
+alias ⟨Shortlex.of_cons, Shortlex.cons⟩ := shortlex_cons_iff
+
 @[simp]
-theorem not_nil_right {s : List α} : ¬ Shortlex r s [] := by
+theorem not_shortlex_nil_right {s : List α} : ¬ Shortlex r s [] := by
   rw [shortlex_def]
   rintro (h1 | h2)
   · simp only [List.length_nil, not_lt_zero'] at h1
   · exact List.not_lex_nil h2.2
 
-theorem nil_left_or_eq_nil (s : List α) : Shortlex r [] s ∨ s = [] :=
-  match s with
+theorem shortlex_nil_or_eq_nil : ∀ s : List α, Shortlex r [] s ∨ s = []
   | [] => .inr rfl
-  | _ :: tail => .inl <| of_length_lt (Nat.succ_pos tail.length)
+  | _ :: tail => .inl <| .of_length_lt tail.length.succ_pos
 
 @[simp]
-theorem singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
+theorem shortlex_singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
   simp only [shortlex_def, length_singleton, lt_self_iff_false, Lex.singleton_iff, true_and,
     false_or]
 
+namespace Shortlex
+
 instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) :=
   ⟨(InvImage.isTrichotomous (by simp [Function.Injective])).trichotomous⟩
-
 
 instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) :=
   inferInstanceAs <| IsAsymm (List α) (InvImage _ _)
@@ -158,7 +158,7 @@ theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := .intro fun a => by
   | zero =>
     rw [List.length_eq_zero_iff] at len_a
     rw [len_a]
-    exact Acc.intro _ <| fun _ ylt => (Shortlex.not_nil_right ylt).elim
+    exact Acc.intro _ <| fun _ ylt => (not_shortlex_nil_right ylt).elim
   | ind n ih =>
     obtain ⟨head, tail, rfl⟩ := List.exists_of_length_succ a len_a
     rw [List.length_cons, add_left_inj] at len_a
