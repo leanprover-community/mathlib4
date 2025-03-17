@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Exact
 import Mathlib.RingTheory.FilteredAlgebra.FilteredHom
 import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Tactic.Linarith.Frontend
 
 /-!
 # The property of exactness om AssociatedGradedRingHom
@@ -205,38 +206,48 @@ lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
     · exact of_eq_of_ne p i yₚ fun a ↦ h (id a.symm)
     · simp only [AddMonoidHom.mem_ker, map_zero, yₚ]
 
-theorem strict_of_exhaustive_exact (monoS : Monotone FS) (exact : Function.Exact Gr+[f] Gr+[g])
+theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
+ (exact : Function.Exact Gr+[f] Gr+[g])
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
     (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
     IsStrict FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)) g := by
-      refine IsStrict_of_Int ?_
-      intro p z zp ⟨y₀, gy₀z⟩
-      have : ∃ s : ℕ, y₀ ∈ FS (p + s) := by
-        have : y₀ ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustiveS.exhaustive, Set.mem_univ]
-        rcases Set.mem_iUnion.mp this with ⟨p', y₀p'⟩
-        rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le (Int.le_max_left p p')) with ⟨s, hs⟩
-        exact ⟨s, by simpa only [← hs, add_sub_cancel] using monoS (Int.le_max_right p p') y₀p'⟩
-      rcases this with ⟨s, hs⟩
-      have (i : ℕ) : ∃ y ∈ FS (p + s - i), g y = z := by
-        induction' i with i ih
-        · simpa only [Int.Nat.cast_ofNat_Int, Subtype.exists, sub_zero] using ⟨y₀, ⟨hs, gy₀z⟩⟩
-        · rcases ih with ⟨y, ymem, yeq⟩
-          simp only [Subtype.exists, Nat.cast_add, Nat.cast_one, exists_prop]
-          have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) = 0 :=
-            sorry -- get some lemma?
-          have hy : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) ∈ Gr+(p + s - i)[f].range :=
-            by simpa only [← AddMonoidHom.exact_iff.mp
-                (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
-              using hy
-          rcases hy with ⟨xi, fxiy⟩
-          use y - f xi.out
-          constructor
-          · sorry -- get some lemma?
-          · simp only [map_sub, yeq, sub_eq_self]
-            show (g.toAddMonoidHom.comp f.toAddMonoidHom) xi.out = 0
-            simp only [comp_eq_zero, AddMonoidHom.zero_apply]
-      rcases this s with ⟨y, ymem, gyz⟩
-      exact ⟨y, ⟨by simpa only [add_sub_cancel_right] using ymem, gyz⟩⟩
+  refine IsStrict_of_Int ?_
+  intro p z zp ⟨y₀, gy₀z⟩
+  obtain ⟨s, hs⟩ : ∃ s : ℕ, y₀ ∈ FS (p + s) := by
+    have : y₀ ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustiveS.exhaustive, Set.mem_univ]
+    rcases Set.mem_iUnion.mp this with ⟨p', y₀p'⟩
+    rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le (Int.le_max_left p p')) with ⟨s, hs⟩
+    exact ⟨s, by simpa only [← hs, add_sub_cancel] using monoS (Int.le_max_right p p') y₀p'⟩
+  have (i : ℕ) : i ≤ s → ∃ y ∈ FS (p + s - i), g y = z := by
+    intro h
+    induction' i with i ih
+    · simpa only [Int.Nat.cast_ofNat_Int, Subtype.exists, sub_zero] using ⟨y₀, ⟨hs, gy₀z⟩⟩
+    · rcases ih <| Nat.le_of_succ_le h with ⟨y, ymem, yeq⟩
+      simp only [Subtype.exists, Nat.cast_add, Nat.cast_one, exists_prop]
+      have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) = 0 := by
+        have zin : z ∈ FT (p + s - i) := by
+          rw [← yeq]
+          exact SetLike.coe_mem ((g.piece_wise_hom (p + s - i)) ⟨y, ymem⟩)
+        have : ((g.piece_wise_hom (p + s - i)) ⟨y, ymem⟩) = (⟨z, zin⟩ : FT (p + s - i)):=
+          SetLike.coe_eq_coe.mp yeq
+        rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, this, GradedPiece.mk_eq,
+          QuotientAddGroup.eq_zero_iff]
+        apply monoT
+        linarith
+        exact zp
+      have hy : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) ∈ Gr+(p + s - i)[f].range :=
+        by simpa only [← AddMonoidHom.exact_iff.mp
+            (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
+          using hy
+      rcases hy with ⟨xi, fxiy⟩
+      use y - f xi.out
+      constructor
+      · sorry -- get some lemma?
+      · simp only [map_sub, yeq, sub_eq_self]
+        show (g.toAddMonoidHom.comp f.toAddMonoidHom) xi.out = 0
+        simp only [comp_eq_zero, AddMonoidHom.zero_apply]
+  rcases this s (Nat.le_refl s) with ⟨y, ymem, gyz⟩
+  exact ⟨y, ⟨by simpa only [add_sub_cancel_right] using ymem, gyz⟩⟩
 
 theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
     (exact : Function.Exact Gr+[f] Gr+[g])
