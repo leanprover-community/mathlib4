@@ -506,7 +506,7 @@ variable {C : Type*} [AddCommMonoid C] [Module R C] [TopologicalSpace C] [IsModu
 If `n` is finite and `B`,`C` are `R`-modules with the module topology,
 then any bilinear map `Rⁿ × B → C` is automatically continuous.
 
-Note that whilst this result works for semirings, for rings this result is superceded
+Note that whilst this result works for semirings, for rings this result is superseded
 by `IsModuleTopology.continuous_bilinear_of_finite_left`.
 -/
 theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]
