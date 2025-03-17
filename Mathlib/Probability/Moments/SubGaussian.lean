@@ -605,26 +605,28 @@ lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
 variable {Y : ℕ → Ω → ℝ} {cY : ℕ → ℝ≥0} {ℱ : Filtration ℕ mΩ}
 
 /-- Let `Y` be a random process adapted to a filtration `ℱ`, such that for all `i : ℕ`, `Y i` is
-conditionally sub-Gaussian with parameter `cY i` with respect to `ℱ i`.
-In particular, `Y` is a martingale.
+conditionally sub-Gaussian with parameter `cY i` with respect to `ℱ (i - 1)`.
+In particular, `n ↦ ∑ i ∈ range n, Y i` is a martingale.
 Then the sum `∑ i ∈ range n, Y i` is sub-Gaussian with parameter `∑ i ∈ range n, cY i`. -/
 lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : Adapted ℱ Y)
-    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y i) (cY i) μ) (n : ℕ) :
+    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ (i - 1)) (ℱ.le (i - 1)) (Y i) (cY i) μ) (n : ℕ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ Finset.range n, Y i ω) (∑ i ∈ Finset.range n, cY i) μ := by
   induction n with
   | zero => simp
   | succ n hn =>
     simp_rw [Finset.sum_range_succ]
-    refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n)
-    refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
-    exact Finset.measurable_sum (Finset.range n) fun m hm ↦
-      ((h_adapted m).mono (ℱ.mono (Finset.mem_range_le hm))).measurable
+    refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le (n - 1)) ?_ (h_subG n)
+    refine HasSubgaussianMGF.trim (ℱ.le (n - 1)) ?_ hn
+    refine Finset.measurable_sum (Finset.range n) fun m hm ↦
+      ((h_adapted m).mono (ℱ.mono ?_)).measurable
+    simp only [Finset.mem_range] at hm
+    omega
 
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : Adapted ℱ Y)
-    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y i) (cY i) μ) (n : ℕ)
+    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ (i - 1)) (ℱ.le (i - 1)) (Y i) (cY i) μ) (n : ℕ)
     {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}).toReal
       ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
