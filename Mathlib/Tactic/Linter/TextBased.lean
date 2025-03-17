@@ -290,8 +290,7 @@ end
 
 namespace UnicodeLinter
 
-/-- Creates `StyleError`s for
-bad usage of (emoji/text)-variant-selectors.
+/-- Creates `StyleError`s for bad usage of unicode characters.
 Note: if `pos` is not a valid position, the result is unspecified. -/
 def findBadUnicodeAux (s : String) (pos : String.Pos := 0)
     (err : Array StyleError := #[]) : Array StyleError :=
@@ -309,9 +308,10 @@ def findBadUnicodeAux (s : String) (pos : String.Pos := 0)
     err
 termination_by s.endPos.1 - pos.1
 
-@[inline, inherit_doc findBadUnicodeAux]
+/-- Creates `StyleError`s for bad usage of unicode characters. -/
+@[inline]
 def findBadUnicode (s : String) : Array StyleError :=
-  findBadUnicodeAux s 0
+  findBadUnicodeAux s
 
 end UnicodeLinter
 
