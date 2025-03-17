@@ -54,8 +54,8 @@ compact support.
 
 You should also extend this typeclass when you extend `CompactlySupportedContinuousMap`. -/
 class CompactlySupportedContinuousMapClass (F : Type*) (α β : outParam <| Type*)
-    [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β]
-    extends ContinuousMapClass F α β : Prop where
+    [TopologicalSpace α] [Zero β] [TopologicalSpace β] [FunLike F α β] : Prop
+    extends ContinuousMapClass F α β where
   /-- Each member of the class has compact support. -/
   hasCompactSupport (f : F) : HasCompactSupport f
 

@@ -171,20 +171,18 @@ section LE
 
 variable [LE α] [LE β] [EquivLike F α β] [OrderIsoClass F α β]
 
--- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem map_inv_le_iff (f : F) {a : α} {b : β} : EquivLike.inv f b ≤ a ↔ b ≤ f a := by
-  convert (map_le_map_iff f (a := EquivLike.inv f b) (b := a)).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv f _).symm
 
 theorem map_inv_le_map_inv_iff (f : F) {a b : β} :
     EquivLike.inv f b ≤ EquivLike.inv f a ↔ b ≤ a := by
   simp
 
--- Porting note: needed to add explicit arguments to map_le_map_iff
 @[simp]
 theorem le_map_inv_iff (f : F) {a : α} {b : β} : a ≤ EquivLike.inv f b ↔ f a ≤ b := by
-  convert (map_le_map_iff f (a := a) (b := EquivLike.inv f b)).symm
+  convert (map_le_map_iff f).symm
   exact (EquivLike.right_inv _ _).symm
 
 end LE
@@ -233,7 +231,7 @@ protected theorem mono (f : α →o β) : Monotone f :=
 projection directly instead. -/
 def Simps.coe (f : α →o β) : α → β := f
 
-/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: all other DFunLike classes use `apply` instead of `coe`
+/- TODO: all other DFunLike classes use `apply` instead of `coe`
 for the projection names. Maybe we should change this. -/
 initialize_simps_projections OrderHom (toFun → coe)
 
@@ -267,7 +265,7 @@ theorem copy_eq (f : α →o β) (f' : α → β) (h : f' = f) : f.copy f' h = f
   DFunLike.ext' h
 
 /-- The identity function as bundled monotone function. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def id : α →o α :=
   ⟨_root_.id, monotone_id⟩
 
@@ -314,7 +312,7 @@ theorem curry_symm_apply (f : α →o β →o γ) (x : α × β) : curry.symm f 
   rfl
 
 /-- The composition of two bundled monotone functions. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def comp (g : β →o γ) (f : α →o β) : α →o γ :=
   ⟨g ∘ f, g.mono.comp f.mono⟩
 
@@ -326,7 +324,7 @@ theorem comp_mono ⦃g₁ g₂ : β →o γ⦄ (hg : g₁ ≤ g₂) ⦃f₁ f₂
     comp ⟨g, hg⟩ ⟨f, hf⟩ = ⟨g ∘ f, hg.comp hf⟩ := rfl
 
 /-- The composition of two bundled monotone functions, a fully bundled version. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def compₘ : (β →o γ) →o (α →o β) →o α →o γ :=
   curry ⟨fun f : (β →o γ) × (α →o β) => f.1.comp f.2, fun _ _ h => comp_mono h.1 h.2⟩
 
@@ -341,7 +339,7 @@ theorem id_comp (f : α →o β) : comp id f = f := by
   rfl
 
 /-- Constant function bundled as an `OrderHom`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def const (α : Type*) [Preorder α] {β : Type*} [Preorder β] : β →o α →o β where
   toFun b := ⟨Function.const α b, fun _ _ _ => le_rfl⟩
   monotone' _ _ h _ := h
@@ -426,20 +424,20 @@ def prodMap (f : α →o β) (g : γ →o δ) : α × γ →o β × δ :=
 variable {ι : Type*} {π : ι → Type*} [∀ i, Preorder (π i)]
 
 /-- Evaluation of an unbundled function at a point (`Function.eval`) as an `OrderHom`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def _root_.Pi.evalOrderHom (i : ι) : (∀ j, π j) →o π i :=
   ⟨Function.eval i, Function.monotone_eval i⟩
 
 /-- The "forgetful functor" from `α →o β` to `α → β` that takes the underlying function,
 is monotone. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def coeFnHom : (α →o β) →o α → β where
   toFun f := f
   monotone' _ _ h := h
 
 /-- Function application `fun f => f a` (for fixed `a`) is a monotone function from the
 monotone function space `α →o β` to `β`. See also `Pi.evalOrderHom`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def apply (x : α) : (α →o β) →o β :=
   (Pi.evalOrderHom x).comp coeFnHom
 
@@ -460,7 +458,7 @@ def piIso : (α →o ∀ i, π i) ≃o ∀ i, α →o π i where
   map_rel_iff' := forall_swap
 
 /-- `Subtype.val` as a bundled monotone function. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def Subtype.val (p : α → Prop) : Subtype p →o α :=
   ⟨_root_.Subtype.val, fun _ _ h => h⟩
 
@@ -512,12 +510,12 @@ def dualIso (α β : Type*) [Preorder α] [Preorder β] : (α →o β) ≃o (α�
   map_rel_iff' := Iff.rfl
 
 /-- Lift an order homomorphism `f : α →o β` to an order homomorphism `WithBot α →o WithBot β`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def withBotMap (f : α →o β) : WithBot α →o WithBot β :=
   ⟨WithBot.map f, f.mono.withBot_map⟩
 
 /-- Lift an order homomorphism `f : α →o β` to an order homomorphism `WithTop α →o WithTop β`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
   ⟨WithTop.map f, f.mono.withTop_map⟩
 
@@ -600,25 +598,25 @@ protected theorem wellFoundedGT [WellFoundedGT β] (f : α ↪o β) : WellFounde
   @OrderEmbedding.wellFoundedLT αᵒᵈ _ _ _ _ f.dual
 
 /-- A version of `WithBot.map` for order embeddings. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 protected def withBotMap (f : α ↪o β) : WithBot α ↪o WithBot β where
   __ := f.toEmbedding.optionMap
   map_rel_iff' := WithBot.map_le_iff f f.map_rel_iff
 
 /-- A version of `WithTop.map` for order embeddings. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def withTopMap (f : α ↪o β) : WithTop α ↪o WithTop β :=
   { f.dual.withBotMap.dual with toFun := WithTop.map f }
 
 /-- Coercion `α → WithBot α` as an `OrderEmbedding`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def withBotCoe : α ↪o WithBot α where
   toFun := .some
   inj' := Option.some_injective _
   map_rel_iff' := WithBot.coe_le_coe
 
 /-- Coercion `α → WithTop α` as an `OrderEmbedding`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def withTopCoe : α ↪o WithTop α :=
   { (OrderEmbedding.withBotCoe (α := αᵒᵈ)).dual with toFun := .some }
 
@@ -644,12 +642,22 @@ theorem coe_ofStrictMono {α β} [LinearOrder α] [Preorder β] {f : α → β} 
   rfl
 
 /-- Embedding of a subtype into the ambient type as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
 def subtype (p : α → Prop) : Subtype p ↪o α :=
   ⟨Function.Embedding.subtype p, Iff.rfl⟩
 
+@[simp]
+theorem subtype_apply {p : α → Prop} (x : Subtype p) : subtype p x = x :=
+  rfl
+
+theorem subtype_injective (p : α → Prop) : Function.Injective (subtype p) :=
+  Subtype.coe_injective
+
+@[simp]
+theorem coe_subtype (p : α → Prop) : ⇑(subtype p) = Subtype.val :=
+  rfl
+
 /-- Convert an `OrderEmbedding` to an `OrderHom`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def toOrderHom {X Y : Type*} [Preorder X] [Preorder Y] (f : X ↪o Y) : X →o Y where
   toFun := f
   monotone' := f.monotone
@@ -703,7 +711,7 @@ variable (f : ((· < ·) : α → α → Prop) →r ((· < ·) : β → β → P
 
 /-- A bundled expression of the fact that a map between partial orders that is strictly monotone
 is weakly monotone. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def toOrderHom : α →o β where
   toFun := f
   monotone' := StrictMono.monotone fun _ _ => f.map_rel
@@ -1076,7 +1084,7 @@ variable [LinearOrder α] [Preorder β]
 variable (f : α → β) (h_mono : StrictMono f)
 
 /-- A strictly monotone function with a right inverse is an order isomorphism. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def orderIsoOfRightInverse (g : β → α) (hg : Function.RightInverse g f) : α ≃o β :=
   { OrderEmbedding.ofStrictMono f h_mono with
     toFun := f,
@@ -1192,6 +1200,12 @@ theorem coe_toDualTopEquiv_eq [LE α] :
     (WithBot.toDualTopEquiv : WithBot αᵒᵈ → (WithTop α)ᵒᵈ) = toDual ∘ WithBot.ofDual :=
   funext fun _ => rfl
 
+/-- Embedding into `WithBot α`. -/
+@[simps]
+def _root_.Function.Embedding.coeWithBot : α ↪ WithBot α where
+  toFun := (↑)
+  inj' := WithBot.coe_injective
+
 /-- The coercion `α → WithBot α` bundled as monotone map. -/
 @[simps]
 def coeOrderHom {α : Type*} [Preorder α] : α ↪o WithBot α where
@@ -1229,6 +1243,12 @@ theorem toDualBotEquiv_symm_top [LE α] : WithTop.toDualBotEquiv.symm (⊤ : (Wi
 theorem coe_toDualBotEquiv [LE α] :
     (WithTop.toDualBotEquiv : WithTop αᵒᵈ → (WithBot α)ᵒᵈ) = toDual ∘ WithTop.ofDual :=
   funext fun _ => rfl
+
+/-- Embedding into `WithTop α`. -/
+@[simps]
+def _root_.Function.Embedding.coeWithTop : α ↪ WithTop α where
+  toFun := (↑)
+  inj' := WithTop.coe_injective
 
 /-- The coercion `α → WithTop α` bundled as monotone map. -/
 @[simps]

@@ -552,7 +552,7 @@ lemma integrable_cexp_mul_of_re_mem_integrableExpSet (hX : AEMeasurable X μ)
     (hz : z.re ∈ integrableExpSet X μ) :
     Integrable (fun ω ↦ cexp (z * X ω)) μ := by
   rw [← integrable_norm_iff]
-  · simpa [Complex.norm_eq_abs, Complex.abs_exp] using hz
+  · simpa [Complex.norm_exp] using hz
   · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
 
 lemma integrable_cexp_mul_of_re_mem_interior_integrableExpSet
@@ -567,7 +567,7 @@ lemma integrable_rpow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   rw [← integrable_norm_iff]
   swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-  simpa [abs_rpow_of_nonneg (abs_nonneg _), Complex.abs_exp]
+  simpa [abs_rpow_of_nonneg (abs_nonneg _), Complex.norm_exp]
     using integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp
 
 lemma integrable_pow_abs_mul_cexp_of_re_mem_interior_integrableExpSet
@@ -582,12 +582,12 @@ lemma integrable_rpow_mul_cexp_of_re_mem_interior_integrableExpSet
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hz
   rw [← integrable_norm_iff]
   swap; · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
-  simp only [norm_mul, norm_real, Real.norm_eq_abs, Complex.norm_eq_abs, Complex.abs_exp, mul_re,
-    ofReal_re, ofReal_im, mul_zero, sub_zero, Complex.abs_ofReal]
+  simp only [norm_mul, norm_real, Complex.norm_exp, mul_re, ofReal_re,
+    ofReal_im, mul_zero, sub_zero]
   refine (integrable_rpow_abs_mul_exp_of_mem_interior_integrableExpSet hz hp).mono ?_ ?_
   · exact AEMeasurable.aestronglyMeasurable (by fun_prop)
   refine ae_of_all _ fun ω ↦ ?_
-  simp only [norm_mul, Real.norm_eq_abs, Complex.abs_abs, Real.abs_exp]
+  simp only [norm_mul, Real.norm_eq_abs, Real.abs_exp]
   gcongr
   exact abs_rpow_le_abs_rpow _ _
 
