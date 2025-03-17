@@ -132,8 +132,7 @@ section pmap
 
 variable {p : α → Prop} (f : ∀ a : α, p a → β) (x : Option α)
 
--- Porting note: Can't simp tag this anymore because `pbind` simplifies
--- @[simp]
+@[simp]
 theorem pbind_eq_bind (f : α → Option β) (x : Option α) : (x.pbind fun a _ ↦ f a) = x.bind f := by
   cases x <;> simp only [pbind, none_bind', some_bind']
 
@@ -177,10 +176,15 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
 
--- Porting note: Can't simp tag this anymore because `join` and `pmap` simplify
--- @[simp]
 theorem join_pmap_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
     (pmap (pmap f) x H).join = pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
+  rcases x with (_ | _ | x) <;> simp
+
+/-- `simp`-normal form of `join_pmap_eq_pmap_join` -/
+@[simp]
+theorem pmap_bind_id_eq_pmap_join {f : ∀ a, p a → β} {x : Option (Option α)} (H) :
+    ((pmap (pmap f) x H).bind fun a ↦ a) =
+      pmap f x.join fun a h ↦ H (some a) (mem_of_mem_join h) _ rfl := by
   rcases x with (_ | _ | x) <;> simp
 
 end pmap
@@ -241,23 +245,18 @@ theorem casesOn'_some (x : β) (f : α → β) (a : α) : casesOn' (some a) x f 
 theorem casesOn'_coe (x : β) (f : α → β) (a : α) : casesOn' (a : Option α) x f = f a :=
   rfl
 
--- Porting note: Left-hand side does not simplify.
--- @[simp]
+@[simp]
 theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
     casesOn' o (f none) (f ∘ (fun a ↦ ↑a)) = f o := by cases o <;> rfl
 
 lemma casesOn'_eq_elim (b : β) (f : α → β) (a : Option α) :
     Option.casesOn' a b f = Option.elim a b f := by cases a <;> rfl
 
--- porting note: workaround for https://github.com/leanprover/lean4/issues/2049
-compile_inductive% Option
-
 theorem orElse_eq_some (o o' : Option α) (x : α) :
     (o <|> o') = some x ↔ o = some x ∨ o = none ∧ o' = some x := by
   cases o
   · simp only [true_and, false_or, eq_self_iff_true, none_orElse, reduceCtorEq]
   · simp only [some_orElse, or_false, false_and, reduceCtorEq]
-
 
 theorem orElse_eq_some' (o o' : Option α) (x : α) :
     o.orElse (fun _ ↦ o') = some x ↔ o = some x ∨ o = none ∧ o' = some x :=
@@ -280,10 +279,9 @@ theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
 
 end
 
--- Porting note: Can't simp tag this anymore because `elim` simplifies
--- @[simp]
-theorem elim_none_some (f : Option α → β) : (fun x ↦ Option.elim x (f none) (f ∘ some)) = f :=
-  funext fun o ↦ by cases o <;> rfl
+@[simp]
+theorem elim_none_some (f : Option α → β) (i : Option α) : i.elim (f none) (f ∘ some) = f i := by
+  cases i <;> rfl
 
 theorem elim_comp (h : α → β) {f : γ → α} {x : α} {i : Option γ} :
     (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl

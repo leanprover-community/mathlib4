@@ -376,7 +376,7 @@ theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyW
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
   change s.WellFoundedOn (· < ·)
-  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- Porting note: was `change _ at h`
+  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h
   rw [wellFoundedOn_iff_no_descending_seq]
   intro f hf
   obtain ⟨m, n, hlt, hle⟩ := h f hf

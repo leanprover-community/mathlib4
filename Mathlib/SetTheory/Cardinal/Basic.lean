@@ -10,7 +10,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.UnivLE
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
