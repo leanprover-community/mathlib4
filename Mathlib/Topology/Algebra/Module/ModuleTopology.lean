@@ -257,7 +257,7 @@ instance _root_.IsTopologicalSemiring.toIsModuleTopology : IsModuleTopology R R 
     The map `R → R × R` sending `r` to `(r,1)` is a map into a product, so it suffices to show
     that each of the two factors is continuous. But the first is the identity function
     on `(R, usual topology)` and the second is a constant function. -/
-    exact @Continuous.prod_mk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
+    exact @Continuous.prodMk _ _ _ _ (moduleTopology R R) _ _ _ continuous_id <|
       @continuous_const _ _ _ (moduleTopology R R) _
 
 end self
@@ -506,7 +506,7 @@ variable {C : Type*} [AddCommMonoid C] [Module R C] [TopologicalSpace C] [IsModu
 If `n` is finite and `B`,`C` are `R`-modules with the module topology,
 then any bilinear map `Rⁿ × B → C` is automatically continuous.
 
-Note that whilst this result works for semirings, for rings this result is superceded
+Note that whilst this result works for semirings, for rings this result is superseded
 by `IsModuleTopology.continuous_bilinear_of_finite_left`.
 -/
 theorem continuous_bilinear_of_pi_fintype (ι : Type*) [Finite ι]

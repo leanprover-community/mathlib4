@@ -3,9 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection
@@ -630,6 +631,21 @@ theorem dualQuotEquivDualAnnihilator_symm_apply_mk (W : Submodule R M) (φ : W.d
 theorem finite_dualAnnihilator_iff {W : Submodule R M} [Free R (M ⧸ W)] :
     Module.Finite R W.dualAnnihilator ↔ Module.Finite R (M ⧸ W) :=
   (Finite.equiv_iff W.dualQuotEquivDualAnnihilator.symm).trans (finite_dual_iff R)
+
+lemma dualAnnihilator_eq_bot_iff' {W : Submodule R M} :
+    W.dualAnnihilator = ⊥ ↔ Subsingleton (Dual R (M ⧸ W)) := by
+  rw [W.dualQuotEquivDualAnnihilator.toEquiv.subsingleton_congr, subsingleton_iff_eq_bot]
+
+@[simp] lemma dualAnnihilator_eq_bot_iff {W : Submodule R M} [Projective R (M ⧸ W)] :
+    W.dualAnnihilator = ⊥ ↔ W = ⊤ := by
+  rw [dualAnnihilator_eq_bot_iff', subsingleton_dual_iff, subsingleton_quotient_iff_eq_top]
+
+@[simp] lemma dualAnnihilator_eq_top_iff {W : Submodule R M} [Projective R M] :
+    W.dualAnnihilator = ⊤ ↔ W = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ dualAnnihilator_bot⟩
+  refine W.eq_bot_iff.mpr fun v hv ↦ (forall_dual_apply_eq_zero_iff R v).mp fun f ↦ ?_
+  refine (mem_dualAnnihilator f).mp ?_ v hv
+  simp [h]
 
 open LinearMap in
 /-- The pairing between a submodule `W` of a dual module `Dual R M` and the quotient of
