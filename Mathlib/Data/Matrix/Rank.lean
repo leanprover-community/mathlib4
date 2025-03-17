@@ -158,7 +158,7 @@ theorem rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (
 
 /-- The rank of a matrix is the rank of the space spanned by its columns. -/
 theorem rank_eq_finrank_span_cols (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range Aᵀ)) := by rw [rank, Matrix.range_mulVecLin]
+    A.rank = finrank R (Submodule.span R (Set.range A.col)) := by rw [rank, Matrix.range_mulVecLin]
 
 end CommRing
 
@@ -262,12 +262,12 @@ theorem rank_self_mul_transpose [LinearOrderedField R] [Fintype m] (A : Matrix m
 
 /-- The rank of a matrix is the rank of the space spanned by its rows. -/
 theorem rank_eq_finrank_span_row [Field R] [Finite m] (A : Matrix m n R) :
-    A.rank = finrank R (Submodule.span R (Set.range A)) := by
+    A.rank = finrank R (Submodule.span R (Set.range A.row)) := by
   cases nonempty_fintype m
-  rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_transpose]
+  rw [← rank_transpose, rank_eq_finrank_span_cols, transpose_col]
 
 theorem _root_.LinearIndependent.rank_matrix [Field R] [Fintype m]
-    {M : Matrix m n R} (h : LinearIndependent R M) : M.rank = Fintype.card m := by
+    {M : Matrix m n R} (h : LinearIndependent R M.row) : M.rank = Fintype.card m := by
   rw [M.rank_eq_finrank_span_row, linearIndependent_iff_card_eq_finrank_span.mp h, Set.finrank]
 
 lemma rank_add_rank_le_card_of_mul_eq_zero [Field R] [Finite l] [Fintype m]

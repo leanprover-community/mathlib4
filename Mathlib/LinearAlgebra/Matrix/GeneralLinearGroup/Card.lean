@@ -67,7 +67,7 @@ variable (n : ℕ)
 by sending a matrix to its columns. -/
 noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
     GL (Fin n) 𝔽 ≃ { s : Fin n → Fin n → 𝔽 // LinearIndependent 𝔽 s } where
-  toFun M := ⟨transpose M, by
+  toFun M := ⟨Matrix.col M, by
     apply linearIndependent_iff_card_eq_finrank_span.2
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by

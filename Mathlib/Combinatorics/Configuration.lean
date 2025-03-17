@@ -480,6 +480,7 @@ lemma crossProduct_eq_zero_of_dotProduct_eq_zero {a b c d : Fin 3 → K} (hac : 
     crossProduct a b = 0 ∨ crossProduct c d = 0 := by
   by_contra h
   simp_rw [not_or, ← ne_eq, crossProduct_ne_zero_iff_linearIndependent] at h
+  rw [← Matrix.row_eq_self (![a,b]), ← Matrix.row_eq_self (![c,d])] at h
   let A : Matrix (Fin 2) (Fin 3) K := ![a, b]
   let B : Matrix (Fin 2) (Fin 3) K := ![c, d]
   have hAB : A * B.transpose = 0 := by
