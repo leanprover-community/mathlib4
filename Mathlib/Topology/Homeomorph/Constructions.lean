@@ -3,21 +3,15 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.Homeomorph.Defs
-import Mathlib.Topology.Bases -- only for piUnique
+import Mathlib.Topology.Bases -- only used for piUnique
 
 /-!
-# Homeomorphisms and constructions yada yada
+# Miscellaneous constructions around homeomorphisms
 
-This file defines homeomorphisms between two topological spaces. They are bijections with both
-directions continuous. We denote homeomorphisms with the notation `≃ₜ`.
+TODO: write a doc-string here!
 
-# Main definitions
-
-
-
-# Main results
+# Main definitions and results
 
 * Pretty much every topological property is preserved under homeomorphisms.
 
