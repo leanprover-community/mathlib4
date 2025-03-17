@@ -221,9 +221,9 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     rw [← w j]
     simp
 
-/-- Conversely, if `coneOfConeUncurry Q c` is a limit cone then `c` is in fact a limit cone.
+/-- If `coneOfConeUncurry Q c` is a limit cone then `c` is in fact a limit cone.
 -/
-def isLimitOfIsLimitConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
+def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
     {c : Cone (uncurry.obj F)} (P : IsLimit (coneOfConeUncurry Q c)) : IsLimit c :=
   -- These constructions are used in various fields of the proof so we abstract them here.
   letI E (j : J) : Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j :=
@@ -292,9 +292,9 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     rw [← w j]
     simp
 
-/-- Conversely, if `coconeOfCoconeUncurry Q c` is a colimit cocone then `c` is in fact a colimit
+/-- If `coconeOfCoconeUncurry Q c` is a colimit cocone then `c` is in fact a colimit
 cocone. -/
-def isColimitOfIsColimitCoconeOfCoconeUncurry {D : DiagramOfCocones F}
+def IsColimit.ofCoconeUncurry {D : DiagramOfCocones F}
     (Q : ∀ j, IsColimit (D.obj j)) {c : Cocone (uncurry.obj F)}
     (P : IsColimit (coconeOfCoconeUncurry Q c)) : IsColimit c :=
   -- These constructions are used in various fields of the proof so we abstract them here.
