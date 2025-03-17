@@ -500,7 +500,7 @@ variable {k G : Type*} [CommSemiring k] [Monoid G] {α A B : Type*}
 open Finsupp
 
 /-- The representation on `α →₀ A` defined pointwise by a representation on `A`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def finsupp (α : Type*) :
     Representation k G (α →₀ A) where
   toFun g := lsum k fun i => (lsingle i).comp (ρ g)

@@ -383,7 +383,7 @@ def finsuppTensorRight [DecidableEq α] :
 
 variable (k G) in
 /-- The natural isomorphism sending `single g r₁ ⊗ single a r₂ ↦ single a (single g r₁r₂)`. -/
-@[simps! (config := .lemmasOnly) hom_hom inv_hom]
+@[simps! -isSimp hom_hom inv_hom]
 def leftRegularTensorTrivialIsoFree (α : Type u) :
     leftRegular k G ⊗ trivial k G (α →₀ k) ≅ free k G α :=
   Action.mkIso (finsuppTensorFinsupp' k G α ≪≫ₗ Finsupp.domLCongr (Equiv.prodComm G α) ≪≫ₗ
