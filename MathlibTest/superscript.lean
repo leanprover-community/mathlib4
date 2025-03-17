@@ -103,9 +103,9 @@ private def delabCheckSuper : Delab := withOverApp 2 do
   `("ok")
 
 /-- `α` can not be subscripted or superscripted. -/
-def α {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
+private def α {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
 /-- `β` can be both subscripted and superscripted. -/
-def β {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
+private def β {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
 
 variable (n : String)
 

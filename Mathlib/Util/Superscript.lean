@@ -229,8 +229,8 @@ open PrettyPrinter.Delaborator
 
 /-- Returns the user-facing name of any constant or free variable. -/
 private def name : Expr → MetaM (Option Name)
-  | Expr.const name _ => pure name
-  | Expr.fvar name => name.getUserName
+  | Expr.const name _ => pure (privateToUserName name)
+  | Expr.fvar name => Functor.map (pure ∘ privateToUserName) name.getUserName
   | _ => pure none
 
 /-- Returns `true` if every character in `s` can be subscripted. -/
@@ -268,7 +268,7 @@ private def check_expr (e : Expr) (fname : Name → Bool)
   if (← name e).any fname || (← delab) matches `($_:num) then return
   -- Function application is valid if all explicit arguments are valid and the
   -- function name is valid (or one of `+`, `-`, `=`, `==`).
-  guard <| isSpecialBinOp e || (e.isApp && fname e.getAppFn.constName)
+  guard <| isSpecialBinOp e || (e.isApp && (← name e.getAppFn).any fname)
   check_args e fexpr
 
 /-- Checks if the expression `e` can be subscripted. -/
