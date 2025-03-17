@@ -16,9 +16,10 @@ supports `Irrational √x` expressions.
 
 ## Implementation details
 To prove that `(a / b)^(p / q)` is irrational, we reduce the problem to showing that `(a / b)^p` is
-not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a^p` or
-`b^p` is not a `q`-th power of a natural number. To show that a given `n : ℕ` is not a `q`-th power,
-we find a natural number `k` such that `k^q < n < (k + 1)^q`, using binary search.
+not a `q`-th power of any rational number. This, in turn, reduces to proving that either `a` or
+`b` is not a `q`-th power of a natural number, assuming `p` and `q` are coprime.
+To show that a given `n : ℕ` is not a `q`-th power, we find a natural number `k`
+such that `k^q < n < (k + 1)^q`, using binary search.
 
 ## TODO
 Disprove `Irrational x` for rational `x`.
@@ -287,7 +288,8 @@ private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hn2 : num < (num_k + 1)^2) :
     Irrational (Real.sqrt x) := by
   rw [Real.sqrt_eq_rpow]
-  apply irrational_rpow_rat_rat_of_num hx_isRat (y_num := 1) (y_den := 2) <;> try simpa
+  apply irrational_rpow_rat_rat_of_num hx_isRat (y_num := 1) (y_den := 2) _ hx_coprime (by simp)
+    hn1 hn2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
 private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
@@ -297,7 +299,8 @@ private theorem irrational_sqrt_rat_of_den {x : ℝ} {num den den_k : ℕ}
     (hd2 : den < (den_k + 1)^2) :
     Irrational (Real.sqrt x) := by
   rw [Real.sqrt_eq_rpow]
-  apply irrational_rpow_rat_rat_of_den hx_isRat (y_num := 1) (y_den := 2) <;> try simpa
+  apply irrational_rpow_rat_rat_of_den hx_isRat (y_num := 1) (y_den := 2) _ hx_coprime (by simp)
+    hd1 hd2
   exact ⟨Invertible.mk (1/2) (by simp) (by simp), by simp⟩
 
 private theorem irrational_sqrt_nat {x : ℝ} {n k : ℕ}
