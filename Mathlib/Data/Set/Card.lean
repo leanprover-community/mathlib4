@@ -577,7 +577,7 @@ theorem ncard_singleton_inter (a : α) (s : Set α) : ({a} ∩ s).ncard ≤ 1 :=
 
 @[simp]
 theorem ncard_prod : (s ×ˢ t).ncard = s.ncard * t.ncard := by
-  simp [ncard]
+  simp [ncard, ENat.toNat_mul]
 
 section InsertErase
 
