@@ -26,8 +26,6 @@ section
 
 universe z w v u
 
--- Porting note: removed restrictions on universes
-
 variable {C : Type u} [Category.{v} C]
 variable {D : Type w} [Category.{z} D] [Abelian D]
 
@@ -93,23 +91,6 @@ noncomputable instance functorCategoryAbelian : Abelian (C ⥤ D) :=
   Abelian.ofCoimageImageComparisonIsIso
 
 end
-
--- Porting note: the following section should be unnecessary because there are no longer
---any universe restrictions for `functorCategoryAbelian`
---
---section
---
---universe u
---
---variable {C : Type u} [SmallCategory C]
---
---variable {D : Type (u + 1)} [LargeCategory D] [Abelian D]
---
---/-- A variant with specialized universes for a common case. -/
---noncomputable instance functorCategoryAbelian' : Abelian (C ⥤ D) :=
---  Abelian.functorCategoryAbelian.{u, u + 1, u, u}
---
---end
 
 end Abelian
 
