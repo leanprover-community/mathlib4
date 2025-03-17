@@ -225,7 +225,7 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   | .ok newStack =>
     set { st with stack := stack ++ newStack }
 
-open PrettyPrinter.Delaborator
+open PrettyPrinter.Delaborator SubExpr
 
 /-- Returns the user-facing name of any constant or free variable. -/
 private def name : Expr → MetaM (Option Name)
@@ -242,15 +242,15 @@ private def isSuperscriptable (s : Name) : Bool :=
   s.toString.toList.all Mapping.superscript.toSpecial.contains
 
 /-- Applies the predicate `f` to every explicit argument of `e`. -/
-private def check_args (e : Expr) (f : Expr → DelabM Unit) :
-    DelabM Unit := do
+private def check_args (f : Expr → DelabM Unit) : DelabM Unit := do
+  let e ← getExpr
   let args := e.getAppArgs
   let kinds ← getParamKinds e.getAppFn args
   -- The function may be partially-applied. We only need to check the args we have.
   guard <| args.size <= kinds.size
   args.zipIdx.zip kinds |>.filter
     (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
-    fun ((x, i), _) ↦ SubExpr.withNaryArg i <| f x
+    fun ((x, i), _) ↦ withNaryArg i <| f x
 
 /-- The binary operations `+`, `-`, `=`, and `==` can be super/subscripted if
 their operands can be super/subscripted. -/
@@ -270,7 +270,7 @@ private def check_expr (e : Expr) (fname : Name → Bool)
   -- Function application is valid if all explicit arguments are valid and the
   -- function name is valid (or one of `+`, `-`, `=`, `==`).
   guard <| isSpecialBinOp e || (e.isApp && (← name e.getAppFn).any fname)
-  check_args e fexpr
+  check_args fexpr
 
 /-- Checks if the expression `e` can be subscripted. -/
 partial def subscriptable (e : Expr) : DelabM Unit :=
@@ -318,10 +318,10 @@ def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscri
 
 initialize register_parser_alias superscript
 
-open PrettyPrinter.Delaborator in
+open PrettyPrinter.Delaborator SubExpr in
 /-- Checks that the provided expression can be superscripted before delaborating. -/
-def delabSuperscript (e : Expr) : Delab :=
-  Superscript.superscriptable e >>= fun () ↦ delab
+def delabSuperscript : Delab := do
+  Superscript.superscriptable (← getExpr); delab
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -359,9 +359,9 @@ def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript t
 
 initialize register_parser_alias subscript
 
-open PrettyPrinter.Delaborator in
+open PrettyPrinter.Delaborator SubExpr in
 /-- Checks that the provided expression can be subscripted before delaborating. -/
-def delabSubscript (e : Expr) : Delab :=
-  Superscript.subscriptable e >>= fun () ↦ delab
+def delabSubscript : Delab := do
+  Superscript.subscriptable (← getExpr); delab
 
 end Mathlib.Tactic

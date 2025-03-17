@@ -97,14 +97,12 @@ local macro_rules | `(test($a:superscript)) => `(check_superscript $a)
 
 @[app_delab check_subscript]
 private def delabCheckSubscript : Delab := withOverApp 2 do
-  let #[_, e] := (← getExpr).getAppArgs | failure
-  let sub ← withAppArg <| delabSubscript e
+  let sub ← withAppArg <| delabSubscript
   `(test($sub:subscript))
 
 @[app_delab check_superscript]
 private def delabCheckSuperscript : Delab := withOverApp 2 do
-  let #[_, e] := (← getExpr).getAppArgs | failure
-  let sup ← withAppArg <| delabSuperscript e
+  let sup ← withAppArg <| delabSuperscript
   `(test($sup:superscript))
 
 /-- `α` can not be subscripted or superscripted. -/
