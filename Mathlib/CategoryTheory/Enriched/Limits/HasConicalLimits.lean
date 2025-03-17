@@ -108,7 +108,7 @@ instance HasConicalLimit.of_equiv (F : J ⥤ C) [HasConicalLimit V F] (e : J' �
   preservesLimit_eCoyoneda _ := inferInstance
 
 /-- If a `e ⋙ F` has a limit, and `e` is an equivalence, we can construct a limit of `F`. -/
-theorem HasConicalLimit.of_equiv_comp (F : J ⥤ C) (e : J' ≌ J)
+lemma HasConicalLimit.of_equiv_comp (F : J ⥤ C) (e : J' ≌ J)
     [HasConicalLimit V (e.functor ⋙ F)] : HasConicalLimit V F :=
   have : HasConicalLimit V (e.inverse ⋙ e.functor ⋙ F) := of_equiv V _ e.symm
   HasConicalLimit.of_iso V (e.invFunIdAssoc F)
@@ -123,7 +123,7 @@ instance HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C
   has_limit _ := inferInstance
 
 /-- We can transport conical limits of shape `J` along an equivalence `J ≌ J'`. -/
-theorem HasConicalLimitsOfShape.of_equiv [HasConicalLimitsOfShape J V C] (e : J ≌ J') :
+lemma HasConicalLimitsOfShape.of_equiv [HasConicalLimitsOfShape J V C] (e : J ≌ J') :
     HasConicalLimitsOfShape J' V C where
   hasConicalLimit F := HasConicalLimit.of_equiv_comp V F e
 
