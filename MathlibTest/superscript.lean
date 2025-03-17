@@ -105,10 +105,15 @@ private def delabCheckSuperscript : Delab := withOverApp 2 do
   let sup ← withAppArg <| delabSuperscript
   `(test($sup:superscript))
 
+universe u v
+
 /-- `α` can not be subscripted or superscripted. -/
-private def α {γ : Type} {δ : Type} : γ → δ → δ := fun _ ↦ id
+private def α {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
 /-- `β` can be both subscripted and superscripted. -/
-private def β {γ : Type} {δ : Type} : γ → δ → δ := fun _ ↦ id
+private def β {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
+
+/-- `d` can not be subscripted, so we create an alias for `id`. -/
+private abbrev ID {γ : Sort u} := @id γ
 
 variable (n : String)
 
@@ -122,6 +127,8 @@ variable (n : String)
 #guard_msgs in #check test(ᵦ ₍₎)
 /-- info: test(ᵦ ᵦ ᵦ ᵦ) : Unit -/
 #guard_msgs in #check test(ᵦ ᵦ ᵦ ᵦ)
+/-- info: test(ɪᴅ ɪᴅ ₃₇) : Unit -/
+#guard_msgs in #check test(ɪᴅ ɪᴅ ₃₇)
 
 /-- info: check_subscript (α 0 0) : Unit -/
 #guard_msgs in #check check_subscript (α 0 0)
@@ -130,13 +137,14 @@ variable (n : String)
 #guard_msgs in #check test(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰)
 /-- info: test(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾) : Unit -/
 #guard_msgs in #check test(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾)
-
 /-- info: test(ᵝ) : Unit -/
 #guard_msgs in #check test(ᵝ)
 /-- info: test(ᵝ ⁽⁾) : Unit -/
 #guard_msgs in #check test(ᵝ ⁽⁾)
 /-- info: test(ᵝ ᵝ ᵝ ᵝ) : Unit -/
 #guard_msgs in #check test(ᵝ ᵝ ᵝ ᵝ)
+/-- info: test(ⁱᵈ ⁱᵈ ³⁷) : Unit -/
+#guard_msgs in #check test(ⁱᵈ ⁱᵈ ³⁷)
 
 /-- info: check_superscript (α 0 0) : Unit -/
 #guard_msgs in #check check_superscript (α 0 0)
