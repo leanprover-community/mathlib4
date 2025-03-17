@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Multiset.Sum
 
 /-!
@@ -110,8 +109,8 @@ forms a quasi-inverse to `disjSum`, in that it recovers its left input.
 
 See also `List.partitionMap`.
 -/
-def toLeft (s : Finset (α ⊕ β)) : Finset α :=
-  s.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
+def toLeft (u : Finset (α ⊕ β)) : Finset α :=
+  u.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
@@ -119,16 +118,13 @@ forms a quasi-inverse to `disjSum`, in that it recovers its right input.
 
 See also `List.partitionMap`.
 -/
-def toRight (s : Finset (α ⊕ β)) : Finset β :=
-  s.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
+def toRight (u : Finset (α ⊕ β)) : Finset β :=
+  u.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
 
-variable {u v : Finset (α ⊕ β)}
+variable {u v : Finset (α ⊕ β)} {a : α} {b : β}
 
-@[simp] lemma mem_toLeft {x : α} : x ∈ u.toLeft ↔ inl x ∈ u := by
-  simp [toLeft]
-
-@[simp] lemma mem_toRight {x : β} : x ∈ u.toRight ↔ inr x ∈ u := by
-  simp [toRight]
+@[simp] lemma mem_toLeft : a ∈ u.toLeft ↔ .inl a ∈ u := by simp [toLeft]
+@[simp] lemma mem_toRight : b ∈ u.toRight ↔ .inr b ∈ u := by simp [toRight]
 
 @[gcongr]
 lemma toLeft_subset_toLeft : u ⊆ v → u.toLeft ⊆ v.toLeft :=
@@ -144,13 +140,13 @@ lemma toRight_monotone : Monotone (@toRight α β) := fun _ _ => toRight_subset_
 lemma toLeft_disjSum_toRight : u.toLeft.disjSum u.toRight = u := by
   ext (x | x) <;> simp
 
-lemma card_toLeft_add_card_toRight : u.toLeft.card + u.toRight.card = u.card := by
+lemma card_toLeft_add_card_toRight : #u.toLeft + #u.toRight = #u := by
   rw [← card_disjSum, toLeft_disjSum_toRight]
 
-lemma card_toLeft_le : u.toLeft.card ≤ u.card :=
+lemma card_toLeft_le : #u.toLeft ≤ #u :=
   (Nat.le_add_right _ _).trans_eq card_toLeft_add_card_toRight
 
-lemma card_toRight_le : u.toRight.card ≤ u.card :=
+lemma card_toRight_le : #u.toRight ≤ #u :=
   (Nat.le_add_left _ _).trans_eq card_toLeft_add_card_toRight
 
 @[simp] lemma toLeft_disjSum : (s.disjSum t).toLeft = s := by ext x; simp
