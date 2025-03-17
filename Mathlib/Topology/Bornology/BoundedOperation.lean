@@ -129,6 +129,7 @@ open Pointwise Set
 /-- A typeclass saying that `(p : R × R) ↦ p.1 * p.2` maps any product of bounded sets to a bounded
 set. This property automatically holds for non-unital seminormed rings, but it also holds, e.g.,
 for `ℝ≥0`. -/
+@[to_additive]
 class BoundedMul (R : Type*) [Bornology R] [Mul R] : Prop where
   isBounded_mul : ∀ {s t : Set R},
     Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s * t)

@@ -587,72 +587,64 @@ end One
 
 section add
 
-variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
-variable (f g : α →ᵇ β) {x : α} {C : ℝ}
+variable [TopologicalSpace α] [PseudoMetricSpace β]
+variable {C : ℝ}
 
 /-- The pointwise sum of two bounded continuous functions is again bounded continuous. -/
-instance instAdd : Add (α →ᵇ β) where
+instance instAdd [Add β] [BoundedAdd β] [ContinuousAdd β] : Add (α →ᵇ β) where
   add f g :=
     { toFun := fun x ↦ f x + g x
       continuous_toFun := f.continuous.add g.continuous
       map_bounded' := add_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
 @[simp]
-theorem coe_add : ⇑(f + g) = f + g := rfl
+theorem coe_add [Add β] [BoundedAdd β] [ContinuousAdd β] (f g : α →ᵇ β) : ⇑(f + g) = f + g := rfl
 
-theorem add_apply : (f + g) x = f x + g x := rfl
+theorem add_apply [Add β] [BoundedAdd β] [ContinuousAdd β] (f g : α →ᵇ β) {x : α} :
+    (f + g) x = f x + g x := rfl
 
 @[simp]
-theorem mkOfCompact_add [CompactSpace α] (f g : C(α, β)) :
+theorem mkOfCompact_add [CompactSpace α] [Add β] [BoundedAdd β] [ContinuousAdd β] (f g : C(α, β)) :
     mkOfCompact (f + g) = mkOfCompact f + mkOfCompact g := rfl
 
-theorem add_compContinuous [TopologicalSpace γ] (h : C(γ, α)) :
+theorem add_compContinuous [Add β] [BoundedAdd β] [ContinuousAdd β] [TopologicalSpace γ]
+    (f g : α →ᵇ β) (h : C(γ, α)) :
     (g + f).compContinuous h = g.compContinuous h + f.compContinuous h := rfl
 
 @[simp]
-theorem coe_nsmulRec : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
+theorem coe_nsmulRec [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] (f : α →ᵇ β) :
+    ∀ n, ⇑(nsmulRec n f) = n • ⇑f
   | 0 => by rw [nsmulRec, zero_smul, coe_zero]
-  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec n]
+  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec f n]
 
-instance instSMulNat : SMul ℕ (α →ᵇ β) where
+instance instSMulNat [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : SMul ℕ (α →ᵇ β) where
   smul n f :=
     { toContinuousMap := n • f.toContinuousMap
       map_bounded' := by simpa [coe_nsmulRec] using (nsmulRec n f).map_bounded' }
 
 @[simp]
-theorem coe_nsmul (r : ℕ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rfl
+theorem coe_nsmul [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] (r : ℕ) (f : α →ᵇ β) :
+    ⇑(r • f) = r • ⇑f := rfl
 
 @[simp]
-theorem nsmul_apply (r : ℕ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
+theorem nsmul_apply [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] (r : ℕ) (f : α →ᵇ β) (v : α) :
+    (r • f) v = r • f v := rfl
 
-instance instAddMonoid : AddMonoid (α →ᵇ β) :=
+instance instAddMonoid [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : AddMonoid (α →ᵇ β) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
-def coeFnAddHom : (α →ᵇ β) →+ α → β where
+def coeFnAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ α → β where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
-
-/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological additive
-monoids, as a `AddMonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
-@[simps]
-protected def _root_.AddMonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
-    [TopologicalSpace α]
-    [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
-    [PseudoMetricSpace γ] [AddMonoid γ] [BoundedAdd γ] [ContinuousAdd γ]
-    (g : β →+ γ) {C : NNReal} (hg : LipschitzWith C g) :
-    (α →ᵇ β) →+ (α →ᵇ γ) where
-  toFun f := f.comp g hg
-  map_zero' := ext fun _ => g.map_zero
-  map_add' _ _ := ext fun _ => g.map_add _ _
 
 variable (α β)
 
 /-- The additive map forgetting that a bounded continuous function is bounded. -/
 @[simps]
-def toContinuousMapAddHom : (α →ᵇ β) →+ C(α, β) where
+def toContinuousMapAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ C(α, β) where
   toFun := toContinuousMap
   map_zero' := rfl
   map_add' := by
@@ -748,8 +740,9 @@ end casts
 
 section mul
 
-variable [TopologicalSpace α] {R : Type*} [PseudoMetricSpace R]
+variable {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
 
+@[to_additive existing]
 instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
     Mul (α →ᵇ R) where
   mul f g :=
@@ -757,7 +750,7 @@ instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
       continuous_toFun := f.continuous.mul g.continuous
       map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
-@[simp]
+@[to_additive existing, simp]
 theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
 
 theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
@@ -793,12 +786,13 @@ instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
   Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
 
+@[to_additive]
 instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
   DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
 
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
 `AddMonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
-@[simps]
+@[to_additive (attr := simps)]
 protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α]
     [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
