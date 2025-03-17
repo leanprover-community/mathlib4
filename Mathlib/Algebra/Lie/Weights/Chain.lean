@@ -384,13 +384,6 @@ lemma root_space_ad_is_nilpotent
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
   have partition := iSup_genWeightSpace_eq_top' K H M
-  -- set s := ⋃ χ ∈ Weight K H M, (genWeightSpace M χ).carrier
-  --set s := ⋃ χ ∈ Weight K H M, χ
-  classical
-  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
-    (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace' K H M)
-    (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K H M)
-
   set s : Set (Weight K H M) := by
     exact univ
   have Mm : Finite s := by
@@ -398,16 +391,12 @@ lemma root_space_ad_is_nilpotent
 
   have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n, ((toEnd K L M x) ^ m) v = 0 := by
     intro ε he
-    have hoho := exists_genWeightSpace_smul_add_eq_bot (R := K) (L := H) (M := M) χ ε hχ
-    obtain ⟨k, ⟨hk1, hk2⟩⟩ := hoho
+    obtain ⟨k, ⟨hk1, hk2⟩⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ ε hχ
     use k
     intro v m hm
     suffices ((toEnd K L M x) ^ k) v = 0 by
       exact LinearMap.pow_map_zero_of_le hm this
-    --  (hm : m ∈ genWeightSpace M χ₂)
-    simp_all
-    have s0 := v.mem
-    have s1 := toEnd_pow_apply_mem hx s0 k
+    have s1 := toEnd_pow_apply_mem hx v.mem k
     simp_all
     --rw [hk2] at s1
 
