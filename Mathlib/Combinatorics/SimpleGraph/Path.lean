@@ -313,7 +313,7 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
   exact hp.support_nodup.length_le_card
 
 
-/- `getVert` and `support.get` agree for `i ≤ p.length`  -/
+/- `getVert` and `support.get` agree for `n ≤ p.length`  -/
 lemma getVert_eq_get {p : G.Walk u v} {n : ℕ} (hn : n ≤ p.length) :
 p.getVert n = p.support.get ⟨n, p.length_support ▸ (Nat.lt_add_one_of_le hn)⟩ := by
   induction n generalizing u v with
@@ -485,6 +485,17 @@ lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈
   have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   omega
+
+/-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
+there exists a dart in the walk whose start is in `S` but whose end is not. -/
+theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) (xS : x ∈ S)
+    (yS : y ∉ S) (xp : x ∈ c.support) (yp : y ∈ c.support) :
+    ∃ d : G.Dart, d ∈ c.darts ∧ d.fst ∈ S ∧ d.snd ∉ S :=
+  let ⟨_, hd, hd1, hd2⟩ := exists_boundary_dart
+      ((c.rotate xp).takeUntil _ ((mem_support_rotate_iff xp).2 yp)) S xS yS
+  ⟨_, (rotate_darts _ xp).mem_iff.1 <| (darts_takeUntil_subset _
+          <| (mem_support_rotate_iff xp).2 yp) hd, hd1, hd2⟩
+
 
 end WalkDecomp
 
