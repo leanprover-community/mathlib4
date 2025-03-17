@@ -5,7 +5,6 @@ Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Archimedean.Hom
 import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
 # Conditionally complete linear ordered fields
@@ -46,7 +45,7 @@ variable {F α β γ : Type*}
 
 noncomputable section
 
-open Function Rat Real Set
+open Function Rat Set
 
 open scoped Pointwise
 
@@ -68,11 +67,6 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
         (forall_mem_range.2 fun m =>
           le_sub_iff_add_le.2 <| le_csSup _ _ ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
       linarith)
-
-/-- The reals are a conditionally complete linearly ordered field. -/
-instance : ConditionallyCompleteLinearOrderedField ℝ :=
-  { (inferInstance : LinearOrderedField ℝ),
-    (inferInstance : ConditionallyCompleteLinearOrder ℝ) with }
 
 namespace LinearOrderedField
 
@@ -105,7 +99,6 @@ variable {β}
 @[simp]
 theorem mem_cutMap_iff : b ∈ cutMap β a ↔ ∃ q : ℚ, (q : α) < a ∧ (q : β) = b := Iff.rfl
 
--- @[simp] -- Porting note: not in simpNF
 theorem coe_mem_cutMap_iff [CharZero β] : (q : β) ∈ cutMap β a ↔ (q : α) < a :=
   Rat.cast_injective.mem_set_image
 
@@ -328,11 +321,5 @@ variable {R S : Type*} [OrderedRing R] [LinearOrderedRing S]
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
   (monotone_iff_map_nonneg f).2 fun r h => by
     obtain ⟨s, rfl⟩ := hR r h; rw [map_pow]; apply sq_nonneg
-
-/-- There exists no nontrivial ring homomorphism `ℝ →+* ℝ`. -/
-instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
-  default := RingHom.id ℝ
-  uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
-      ⟨f, ringHom_monotone (fun r hr => ⟨√r, sq_sqrt hr⟩) f⟩ default)
 
 end Real

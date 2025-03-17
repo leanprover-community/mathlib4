@@ -125,8 +125,7 @@ lemma fromRows_toRows (A : Matrix (m₁ ⊕ m₂) n R) : fromRows A.toRows₁ A.
 
 lemma fromRows_inj : Function.Injective2 (@fromRows R m₁ m₂ n) := by
   intros x1 x2 y1 y2
-  simp only [funext_iff, ← Matrix.ext_iff]
-  aesop
+  simp [← Matrix.ext_iff]
 
 lemma fromCols_inj : Function.Injective2 (@fromCols R m n₁ n₂) := by
   intros x1 x2 y1 y2
@@ -214,20 +213,24 @@ lemma vecMul_fromCols [Fintype m] (B₁ : Matrix m n₁ R) (B₂ : Matrix m n₂
 @[deprecated (since := "2024-12-11")] alias vecMul_fromColumns := vecMul_fromCols
 
 @[simp]
-lemma sum_elim_vecMul_fromRows [Fintype m₁] [Fintype m₂] (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R)
+lemma sumElim_vecMul_fromRows [Fintype m₁] [Fintype m₂] (B₁ : Matrix m₁ n R) (B₂ : Matrix m₂ n R)
     (v₁ : m₁ → R) (v₂ : m₂ → R) :
     Sum.elim v₁ v₂ ᵥ* fromRows B₁ B₂ = v₁ ᵥ* B₁ + v₂ ᵥ* B₂ := by
   ext
   simp [Matrix.vecMul, fromRows, dotProduct]
 
+@[deprecated (since := "2025-02-21")] alias sum_elim_vecMul_fromRows := sumElim_vecMul_fromRows
+
 @[simp]
-lemma fromCols_mulVec_sum_elim [Fintype n₁] [Fintype n₂]
+lemma fromCols_mulVec_sumElim [Fintype n₁] [Fintype n₂]
     (A₁ : Matrix m n₁ R) (A₂ : Matrix m n₂ R) (v₁ : n₁ → R) (v₂ : n₂ → R) :
     fromCols A₁ A₂ *ᵥ Sum.elim v₁ v₂ = A₁ *ᵥ v₁ + A₂ *ᵥ v₂ := by
   ext
   simp [Matrix.mulVec, fromCols]
 
-@[deprecated (since := "2024-12-11")] alias fromColumns_mulVec_sum_elim := fromCols_mulVec_sum_elim
+@[deprecated (since := "2025-02-21")] alias fromCols_mulVec_sum_elim := fromCols_mulVec_sumElim
+@[deprecated (since := "2024-12-11")] alias fromColumns_mulVec_sum_elim := fromCols_mulVec_sumElim
+
 
 @[simp]
 lemma fromRows_mul [Fintype n] (A₁ : Matrix m₁ n R) (A₂ : Matrix m₂ n R) (B : Matrix n m R) :

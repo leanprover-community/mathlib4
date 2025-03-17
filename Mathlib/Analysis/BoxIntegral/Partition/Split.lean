@@ -37,7 +37,6 @@ rectangular box, partition, hyperplane
 
 noncomputable section
 
-open scoped Classical
 open Function Set Filter
 
 namespace BoxIntegral
@@ -48,6 +47,7 @@ namespace Box
 
 variable {I : Box ι} {i : ι} {x : ℝ} {y : ι → ℝ}
 
+open scoped Classical in
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
 `I` into two boxes. `BoxIntegral.Box.splitLower I i x` is the box `I ∩ {y | y i ≤ x}`
 (if it is nonempty). As usual, we represent a box that may be empty as
@@ -68,6 +68,7 @@ theorem splitLower_le : I.splitLower i x ≤ I :=
 
 @[simp]
 theorem splitLower_eq_bot {i x} : I.splitLower i x = ⊥ ↔ x ≤ I.lower i := by
+  classical
   rw [splitLower, mk'_eq_bot, exists_update_iff I.upper fun j y => y ≤ I.lower j]
   simp [(I.lower_lt_upper _).not_le]
 
@@ -83,6 +84,7 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
   simp (config := { unfoldPartialApp := true }) only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
     update, and_self]
 
+open scoped Classical in
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
 `I` into two boxes. `BoxIntegral.Box.splitUpper I i x` is the box `I ∩ {y | x < y i}`
 (if it is nonempty). As usual, we represent a box that may be empty as
@@ -92,6 +94,7 @@ def splitUpper (I : Box ι) (i : ι) (x : ℝ) : WithBot (Box ι) :=
 
 @[simp]
 theorem coe_splitUpper : (splitUpper I i x : Set (ι → ℝ)) = ↑I ∩ { y | x < y i } := by
+  classical
   rw [splitUpper, coe_mk']
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and,
@@ -104,6 +107,7 @@ theorem splitUpper_le : I.splitUpper i x ≤ I :=
 
 @[simp]
 theorem splitUpper_eq_bot {i x} : I.splitUpper i x = ⊥ ↔ I.upper i ≤ x := by
+  classical
   rw [splitUpper, mk'_eq_bot, exists_update_iff I.lower fun j y => I.upper j ≤ y]
   simp [(I.lower_lt_upper _).not_le]
 
@@ -128,7 +132,7 @@ theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
 
 theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
     I.splitLower i x ≠ I.splitUpper i x := by
-  cases' le_or_lt x (I.lower i) with h
+  rcases le_or_lt x (I.lower i) with h | _
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine (disjoint_splitLower_splitUpper I i x).ne ?_
@@ -140,6 +144,7 @@ namespace Prepartition
 
 variable {I J : Box ι} {i : ι} {x : ℝ}
 
+open scoped Classical in
 /-- The partition of `I : Box ι` into the boxes `I ∩ {y | y ≤ x i}` and `I ∩ {y | x i < y}`.
 One of these boxes can be empty, then this partition is just the single-box partition `⊤`. -/
 def split (I : Box ι) (i : ι) (x : ℝ) : Prepartition I :=
@@ -169,10 +174,10 @@ theorem iUnion_split (I : Box ι) (i : ι) (x : ℝ) : (split I i x).iUnion = I 
 theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I i x) :=
   isPartition_iff_iUnion_eq.2 <| iUnion_split I i x
 
--- Porting note: In the type, changed `Option.elim` to `Option.elim'`
 theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J ∈ (split I i x).boxes, f J) =
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by
+  classical
   rw [split, sum_ofWithBot, Finset.sum_pair (I.splitLower_ne_splitUpper i x)]
 
 /-- If `x ∉ (I.lower i, I.upper i)`, then the hyperplane `{y | y i = x}` does not split `I`. -/
@@ -218,6 +223,7 @@ def splitMany (I : Box ι) (s : Finset (ι × ℝ)) : Prepartition I :=
 theorem splitMany_empty (I : Box ι) : splitMany I ∅ = ⊤ :=
   Finset.inf_empty
 
+open scoped Classical in
 @[simp]
 theorem splitMany_insert (I : Box ι) (s : Finset (ι × ℝ)) (p : ι × ℝ) :
     splitMany I (insert p s) = splitMany I s ⊓ split I p.1 p.2 := by
@@ -227,8 +233,9 @@ theorem splitMany_le_split (I : Box ι) {s : Finset (ι × ℝ)} {p : ι × ℝ}
     splitMany I s ≤ split I p.1 p.2 :=
   Finset.inf_le hp
 
-theorem isPartition_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : IsPartition (splitMany I s) :=
-  Finset.induction_on s (by simp only [splitMany_empty, isPartitionTop]) fun a s _ hs => by
+theorem isPartition_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : IsPartition (splitMany I s) := by
+  classical
+  exact Finset.induction_on s (by simp only [splitMany_empty, isPartitionTop]) fun a s _ hs => by
     simpa only [splitMany_insert, inf_split] using hs.biUnion fun J _ => isPartitionSplit _ _ _
 
 @[simp]
@@ -237,10 +244,12 @@ theorem iUnion_splitMany (I : Box ι) (s : Finset (ι × ℝ)) : (splitMany I s)
 
 theorem inf_splitMany {I : Box ι} (π : Prepartition I) (s : Finset (ι × ℝ)) :
     π ⊓ splitMany I s = π.biUnion fun J => splitMany J s := by
+  classical
   induction' s using Finset.induction_on with p s _ ihp
   · simp
   · simp_rw [splitMany_insert, ← inf_assoc, ihp, inf_split, biUnion_assoc]
 
+open scoped Classical in
 /-- Let `s : Finset (ι × ℝ)` be a set of hyperplanes `{x : ι → ℝ | x i = r}` in `ι → ℝ` encoded as
 pairs `(i, r)`. Suppose that this set contains all faces of a box `J`. The hyperplanes of `s` split
 a box `I` into subboxes. Let `Js` be one of them. If `J` and `Js` have nonempty intersection, then
@@ -272,6 +281,7 @@ intersection, then `J' ≤ J`. -/
 theorem eventually_not_disjoint_imp_le_of_mem_splitMany (s : Finset (Box ι)) :
     ∀ᶠ t : Finset (ι × ℝ) in atTop, ∀ (I : Box ι), ∀ J ∈ s, ∀ J' ∈ splitMany I t,
       ¬Disjoint (J : WithBot (Box ι)) J' → J' ≤ J := by
+  classical
   cases nonempty_fintype ι
   refine eventually_atTop.2
     ⟨s.biUnion fun J => Finset.univ.biUnion fun i => {(i, J.lower i), (i, J.upper i)},

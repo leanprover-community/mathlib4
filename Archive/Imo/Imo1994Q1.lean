@@ -32,7 +32,7 @@ open Finset
 namespace Imo1994Q1
 
 theorem tedious (m : ℕ) (k : Fin (m + 1)) : m - ((m + 1 - ↑k) + m) % (m + 1) = ↑k := by
-  cases' k with k hk
+  obtain ⟨k, hk⟩ := k
   rw [Nat.lt_succ_iff, le_iff_exists_add] at hk
   rcases hk with ⟨c, rfl⟩
   have : (k + c + 1 - k) + (k + c) = c + (k + c + 1) := by omega
@@ -83,7 +83,7 @@ theorem imo1994_q1 (n : ℕ) (m : ℕ) (A : Finset ℕ) (hm : #A = m + 1)
     have h1 : a i + a (Fin.last m - k) ≤ n := by unfold a; linarith only [h, a.monotone hi]
     have h2 : a i + a (Fin.last m - k) ∈ A := hadd _ (ha _) _ (ha _) h1
     rw [← mem_coe, ← range_orderEmbOfFin A hm, Set.mem_range] at h2
-    cases' h2 with j hj
+    obtain ⟨j, hj⟩ := h2
     refine ⟨j, ⟨?_, Fin.le_last j⟩, hj⟩
     rw [← a.strictMono.lt_iff_lt, hj]
     simpa using (hrange (a i) (ha i)).1

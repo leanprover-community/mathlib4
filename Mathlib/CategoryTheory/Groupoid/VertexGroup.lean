@@ -3,7 +3,8 @@ Copyright (c) 2022 Rémi Bottinelli. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.PathCategory.Basic
 import Mathlib.Combinatorics.Quiver.Path

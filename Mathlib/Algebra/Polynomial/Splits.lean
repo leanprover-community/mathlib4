@@ -77,7 +77,7 @@ theorem splits_of_degree_le_one {f : K[X]} (hf : degree f ≤ 1) : Splits i f :=
   if hif : degree (f.map i) ≤ 0 then splits_of_map_eq_C i (degree_le_zero_iff.mp hif)
   else by
     push_neg at hif
-    rw [← Order.succ_le_iff, ← WithBot.coe_zero, WithBot.succ_coe, Nat.succ_eq_succ] at hif
+    rw [← Order.succ_le_iff, ← WithBot.coe_zero, WithBot.orderSucc_coe, Nat.succ_eq_succ] at hif
     exact splits_of_map_degree_eq_one i ((degree_map_le.trans hf).antisymm hif)
 
 theorem splits_of_degree_eq_one {f : K[X]} (hf : degree f = 1) : Splits i f :=
@@ -242,7 +242,7 @@ theorem natDegree_eq_card_roots' {p : K[X]} {i : K →+* L} (hsplit : Splits i p
   rw [← splits_id_iff_splits, ← he] at hsplit
   rw [← he] at hp
   have hq : q ≠ 0 := fun h => hp (by rw [h, mul_zero])
-  rw [← hd, add_right_eq_self]
+  rw [← hd, add_eq_left]
   by_contra h
   have h' : (map (RingHom.id L) q).natDegree ≠ 0 := by simp [h]
   have := roots_ne_zero_of_splits' (RingHom.id L) (splits_of_splits_mul' _ ?_ hsplit).2 h'
@@ -263,7 +263,7 @@ variable (i : K →+* L)
 /-- This lemma is for polynomials over a field. -/
 theorem splits_iff (f : K[X]) :
     Splits i f ↔ f = 0 ∨ ∀ {g : L[X]}, Irreducible g → g ∣ f.map i → degree g = 1 := by
-  rw [Splits, map_eq_zero]
+  rw [Splits, Polynomial.map_eq_zero]
 
 /-- This lemma is for polynomials over a field. -/
 theorem Splits.def {i : K →+* L} {f : K[X]} (h : Splits i f) :

@@ -80,6 +80,8 @@ theorem pairwise_iff_coe_toFinset_pairwise (hn : l.Nodup) (hs : Symmetric r) :
   letI : IsSymm α r := ⟨hs⟩
   rw [coe_toFinset, hn.pairwise_coe]
 
+open scoped Function -- required for scoped `on` notation
+
 theorem pairwise_disjoint_of_coe_toFinset_pairwiseDisjoint {α ι} [SemilatticeInf α] [OrderBot α]
     [DecidableEq ι] {l : List ι} {f : ι → α} (hl : (l.toFinset : Set ι).PairwiseDisjoint f)
     (hn : l.Nodup) : l.Pairwise (_root_.Disjoint on f) :=

@@ -95,4 +95,7 @@ theorem pi_iff :
         Ideal.Quotient.mkₐ_eq_mk]
       exact Ideal.mem_map_of_mem (Ideal.Quotient.mk J') (hf (Pi.single x r))
 
+instance [∀ i, FormallyUnramified R (f i)] : FormallyUnramified R (Π i, f i) :=
+  (pi_iff _).mpr ‹_›
+
 end Algebra.FormallyUnramified

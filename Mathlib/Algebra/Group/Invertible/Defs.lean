@@ -73,8 +73,7 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
 
@@ -91,7 +90,7 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 
 /-- The inverse of an `Invertible` element -/
 -- This notation has the same precedence as `Inv.inv`.
-prefix:max "⅟" => Invertible.invOf
+prefix:max "⅟ " => Invertible.invOf
 
 @[simp]
 theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=

@@ -90,8 +90,7 @@ theorem finMulAntidiag_one {d : ℕ} :
     rw [← Nat.dvd_one, ← hf]
     exact dvd_prod_of_mem f (mem_univ _)
   · rintro rfl
-    simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true,
-    and_self]
+    simp only [prod_const_one, implies_true, ne_eq, one_ne_zero, not_false_eq_true, and_self]
 
 theorem finMulAntidiag_zero_left {n : ℕ} (hn : n ≠ 1) :
     finMulAntidiag 0 n = ∅ := by
@@ -142,10 +141,10 @@ lemma image_apply_finMulAntidiag {d n : ℕ} {i : Fin d} (hd : d ≠ 1) :
     obtain ⟨i', hi_ne⟩ := exists_ne i
     use fun j => if j = i then k else if j = i' then r else 1
     simp only [ite_true, and_true, hn]
-    rw [← Finset.mul_prod_erase (a:=i) (h:=mem_univ _),
-      ← Finset.mul_prod_erase (a:= i')]
+    rw [← Finset.mul_prod_erase (h := mem_univ i),
+      ← Finset.mul_prod_erase (a := i')]
     · rw [if_neg hi_ne, if_pos rfl, if_pos rfl, prod_eq_one]
-      · refine ⟨by ring, hn⟩
+      · exact ⟨by ring, hn⟩
       intro j hj
       simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
       rw [if_neg hj.1, if_neg hj.2]
@@ -156,7 +155,7 @@ lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
   ext x
   simp [(piFinTwoEquiv <| fun _ => ℕ).symm.surjective.exists]
 
-lemma finMulAntidiag_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
+lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiag d n) :
     ∃! i, p ∣ f i := by
   rw [mem_finMulAntidiag] at hf
@@ -168,9 +167,12 @@ lemma finMulAntidiag_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
   apply Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp.1, hi, hj⟩
   apply Nat.coprime_of_squarefree_mul
   apply hn.squarefree_of_dvd
-  rw [← hf.1, ← Finset.mul_prod_erase _ _ (his),
+  rw [← hf.1, ← Finset.mul_prod_erase _ _ his,
     ← Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ← mul_assoc]
   apply Nat.dvd_mul_right
+
+@[deprecated (since := "2024-12-17")]
+alias finMulAntidiag_exists_unique_prime_dvd := finMulAntidiag_existsUnique_prime_dvd
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
@@ -212,10 +214,10 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
 private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
     (t : Fin d → ℕ) (ht : t ∈ finMulAntidiag d n) : ∃ (g : _)
     (hg : g ∈ pi n.primeFactors fun _ => univ), Nat.primeFactorsPiBij d n g hg = t := by
-  have exists_unique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
-    (finMulAntidiag_exists_unique_prime_dvd hn
+  have existsUnique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
+    (finMulAntidiag_existsUnique_prime_dvd hn
       (mem_primeFactors_iff_mem_primeFactorsList.mp hp) t ht)
-  choose f hf hf_unique using exists_unique
+  choose f hf hf_unique using existsUnique
   refine ⟨f, ?_, ?_⟩
   · simp only [mem_pi, mem_univ, forall_true_iff]
   funext i
@@ -241,9 +243,7 @@ theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
     Finset.card_fin]
 
-theorem finMulAntidiag_three {n : ℕ} :
-    ∀ a ∈ finMulAntidiag 3 n, a 0 * a 1 * a 2 = n := by
-  intro a ha
+theorem finMulAntidiag_three {n : ℕ} (a) (ha : a ∈ finMulAntidiag 3 n) : a 0 * a 1 * a 2 = n := by
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]
 
 namespace card_pair_lcm_eq

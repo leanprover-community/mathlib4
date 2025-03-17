@@ -33,24 +33,12 @@ namespace List
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   simp; congr
 
-/-- The `n`th element of a list -/
-theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i := by
-  simp [ofFnNthVal]
+@[deprecated (since := "2025-02-15")] alias get?_ofFn := List.getElem?_ofFn
 
 @[simp]
 theorem map_ofFn {β : Type*} {n : ℕ} (f : Fin n → α) (g : α → β) :
     map g (ofFn f) = ofFn (g ∘ f) :=
   ext_get (by simp) fun i h h' => by simp
-
--- Porting note: we don't have Array' in mathlib4
--- /-- Arrays converted to lists are the same as `of_fn` on the indexing function of the array. -/
--- theorem array_eq_of_fn {n} (a : Array' n α) : a.toList = ofFn a.read :=
---   by
---   suffices ∀ {m h l}, DArray.revIterateAux a (fun i => cons) m h l =
---      ofFnAux (DArray.read a) m h l
---     from this
---   intros; induction' m with m IH generalizing l; · rfl
---   simp only [DArray.revIterateAux, of_fn_aux, IH]
 
 @[congr]
 theorem ofFn_congr {m n : ℕ} (h : m = n) (f : Fin m → α) :
@@ -123,19 +111,14 @@ theorem ofFn_getElem_eq_map {β : Type*} (l : List α) (f : α → β) :
     ofFn (fun i : Fin l.length => f <| l[(i : Nat)]) = l.map f := by
   rw [← Function.comp_def, ← map_ofFn, ofFn_getElem]
 
-@[deprecated ofFn_getElem_eq_map (since := "2024-06-12")]
-theorem ofFn_get_eq_map {β : Type*} (l : List α) (f : α → β) : ofFn (f <| l.get ·) = l.map f := by
-  simp
-
--- not registered as a simp lemma, as otherwise it fires before `forall_mem_ofFn_iff` which
--- is much more useful
-theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
+-- Note there is a now another `mem_ofFn` defined in Lean, with an existential on the RHS,
+-- which is marked as a simp lemma.
+theorem mem_ofFn' {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.range f := by
   simp only [mem_iff_get, Set.mem_range, get_ofFn]
   exact ⟨fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩, fun ⟨i, hi⟩ => ⟨Fin.cast (by simp) i, hi⟩⟩
 
-@[simp]
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
-    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_mem_range]
+    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp
 
 @[simp]
 theorem ofFn_const : ∀ (n : ℕ) (c : α), (ofFn fun _ : Fin n => c) = replicate n c

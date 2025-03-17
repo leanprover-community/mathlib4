@@ -203,7 +203,7 @@ abbrev Hom :=
   RelHom G.Adj G'.Adj
 
 /-- A graph embedding is an embedding `f` such that for vertices `v w : V`,
-`G.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
+`G'.Adj (f v) (f w) ↔ G.Adj v w`. Its image is an induced subgraph of G'.
 
 The notation `G ↪g G'` represents the type of graph embeddings. -/
 abbrev Embedding :=
@@ -271,6 +271,13 @@ theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2
 def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h ha
+
+lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
+    mapSpanningSubgraphs h v = mapSpanningSubgraphs h w ↔ v = w := by simp
+
+lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
+    Injective (mapSpanningSubgraphs h) :=
+  fun v w hvw ↦ by simpa [mapSpanningSubgraphs_apply] using hvw
 
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩

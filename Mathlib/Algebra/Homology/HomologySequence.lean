@@ -165,7 +165,7 @@ noncomputable def composableArrows₃Functor [CategoryWithHomology C] :
     HomologicalComplex C c ⥤ ComposableArrows C 3 where
   obj K := composableArrows₃ K i j
   map {K L} φ := ComposableArrows.homMk₃ (homologyMap φ i) (opcyclesMap φ i) (cyclesMap φ j)
-    (homologyMap φ j) (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (homologyMap φ j) (by simp) (by simp) (by simp)
 
 end HomologySequence
 
@@ -219,7 +219,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])
 
-variable  {S : ShortComplex (HomologicalComplex C c)}
+variable {S : ShortComplex (HomologicalComplex C c)}
   (hS : S.ShortExact) (i j : ι) (hij : c.Rel i j)
 
 namespace HomologySequence
@@ -311,7 +311,7 @@ lemma homology_exact₂ : (ShortComplex.mk (HomologicalComplex.homologyMap S.f i
     have e : S.map (HomologicalComplex.homologyFunctor C c i) ≅
         S.map (HomologicalComplex.opcyclesFunctor C c i) :=
       ShortComplex.isoMk (asIso (S.X₁.homologyι i))
-        (asIso (S.X₂.homologyι i)) (asIso (S.X₃.homologyι i)) (by aesop_cat) (by aesop_cat)
+        (asIso (S.X₂.homologyι i)) (asIso (S.X₃.homologyι i)) (by simp) (by simp)
     exact ShortComplex.exact_of_iso e.symm (opcycles_right_exact S hS.exact i)
 
 /-- Exactness of `S.X₂.homology i ⟶ S.X₃.homology i ⟶ S.X₁.homology j`. -/

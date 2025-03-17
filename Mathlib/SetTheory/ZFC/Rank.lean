@@ -65,7 +65,7 @@ variable {x y : PSet.{u}}
   rank_le_iff.2 fun _ h₁ => rank_lt_of_mem (mem_of_subset h h₁)
 
 @[simp]
-theorem rank_empty : rank ∅ = 0 := by simp [rank]
+theorem rank_empty : rank ∅ = 0 := by simp [empty_def, rank]
 
 @[simp]
 theorem rank_insert (x y : PSet) : rank (insert x y) = max (succ (rank x)) (rank y) := by

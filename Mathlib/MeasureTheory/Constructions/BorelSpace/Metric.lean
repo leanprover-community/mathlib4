@@ -3,8 +3,8 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
+import Mathlib.Analysis.Normed.Group.Continuity
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 import Mathlib.Topology.MetricSpace.Thickening
 
 /-!
@@ -12,8 +12,8 @@ import Mathlib.Topology.MetricSpace.Thickening
 
 ## Main statements
 
-* `measurable_dist`, `measurable_infEdist`, `measurable_norm`,
-  `Measurable.dist`, `Measurable.infEdist`, `Measurable.norm`:
+* `measurable_dist`, `measurable_infEdist`, `measurable_norm`, `measurable_enorm`,
+  `Measurable.dist`, `Measurable.infEdist`, `Measurable.norm`, `Measurable.enorm`:
   measurability of various metric-related notions;
 * `tendsto_measure_thickening_of_isClosed`:
   the measure of a closed set is the limit of the measure of its ε-thickenings as ε → 0.
@@ -44,7 +44,7 @@ theorem measurableSet_ball : MeasurableSet (Metric.ball x ε) :=
 
 @[measurability]
 theorem measurableSet_closedBall : MeasurableSet (Metric.closedBall x ε) :=
-  Metric.isClosed_ball.measurableSet
+  Metric.isClosed_closedBall.measurableSet
 
 @[measurability]
 theorem measurable_infDist {s : Set α} : Measurable fun x => infDist x s :=
@@ -135,7 +135,7 @@ theorem tendsto_measure_cthickening {μ : Measure α} {s : Set α}
     filter_upwards [self_mem_nhdsWithin (α := ℝ)] with _ hr
     rw [cthickening_of_nonpos hr]
   convert B.sup A
-  exact (nhds_left_sup_nhds_right' 0).symm
+  exact (nhdsLE_sup_nhdsGT 0).symm
 
 /-- If a closed set has a closed thickening with finite measure, then the measure of its closed
 `r`-thickenings converge to its measure as `r` tends to `0`. -/
@@ -210,6 +210,30 @@ theorem exists_opensMeasurableSpace_of_countablySeparated (α : Type*)
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
 
+
+section ContinuousENorm
+
+variable {ε : Type*} [MeasurableSpace ε] [TopologicalSpace ε] [ContinuousENorm ε]
+  [OpensMeasurableSpace ε] [MeasurableSpace β]
+
+@[measurability, fun_prop]
+lemma measurable_enorm : Measurable (enorm : ε → ℝ≥0∞) := continuous_enorm.measurable
+
+@[measurability, fun_prop]
+protected lemma Measurable.enorm {f : β → ε} (hf : Measurable f) : Measurable (‖f ·‖ₑ) :=
+  measurable_enorm.comp hf
+
+@[measurability, fun_prop]
+protected lemma AEMeasurable.enorm {f : β → ε} {μ : Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (‖f ·‖ₑ) μ :=
+  measurable_enorm.comp_aemeasurable hf
+
+@[deprecated (since := "2025-01-21")] alias measurable_ennnorm := measurable_enorm
+@[deprecated (since := "2025-01-21")] alias Measurable.ennnorm := Measurable.enorm
+@[deprecated (since := "2025-01-21")] alias AEMeasurable.ennnorm := AEMeasurable.enorm
+
+end ContinuousENorm
+
 section NormedAddCommGroup
 
 variable [MeasurableSpace α] [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
@@ -232,25 +256,12 @@ theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
   continuous_nnnorm.measurable
 
 @[measurability, fun_prop]
-theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+protected theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
   measurable_nnnorm.comp hf
 
 @[measurability, fun_prop]
-theorem AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+protected lemma AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
     AEMeasurable (fun a => ‖f a‖₊) μ :=
   measurable_nnnorm.comp_aemeasurable hf
-
-@[measurability]
-theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) :=
-  measurable_nnnorm.coe_nnreal_ennreal
-
-@[measurability, fun_prop]
-theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
-  hf.nnnorm.coe_nnreal_ennreal
-
-@[measurability, fun_prop]
-theorem AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
-  measurable_ennnorm.comp_aemeasurable hf
 
 end NormedAddCommGroup
