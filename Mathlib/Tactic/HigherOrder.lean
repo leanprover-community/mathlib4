@@ -6,6 +6,8 @@ Authors: Simon Hudon
 import Lean.Elab.Term
 import Lean.Meta.Tactic.Apply
 import Lean.Meta.Tactic.Assumption
+import Lean.Meta.MatchUtil
+import Lean.Meta.Tactic.Intro
 import Lean.Elab.DeclarationRange
 import Mathlib.Tactic.Attr.Register
 
@@ -89,9 +91,7 @@ def higherOrderGetParam (thm : Name) (stx : Syntax) : AttrM Name := do
           levelParams := lvl
           type := hot
           value := prf }
-      addDeclarationRanges hothmName
-        { range := ← getDeclarationRange (← getRef)
-          selectionRange := ← getDeclarationRange ref }
+      addDeclarationRangesFromSyntax hothmName (← getRef) ref
       _ ← addTermInfo (isBinder := true) ref <| ← mkConstWithLevelParams hothmName
       let hsm := simpExtension.getState (← getEnv) |>.lemmaNames.contains (.decl thm)
       if hsm then

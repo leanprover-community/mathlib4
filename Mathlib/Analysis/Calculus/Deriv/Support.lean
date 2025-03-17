@@ -5,8 +5,6 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Analysis.Calculus.Deriv.Basic
 
-#align_import analysis.calculus.deriv.support from "leanprover-community/mathlib"@"3bce8d800a6f2b8f63fe1e588fd76a9ff4adcebe"
-
 /-!
 # Support of the derivative of a function
 
@@ -23,9 +21,7 @@ derivative, support
 universe u v
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {E : Type v} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f : 𝕜 → E}
 
 /-! ### Support of derivatives -/
@@ -41,11 +37,9 @@ theorem support_deriv_subset : support (deriv f) ⊆ tsupport f := by
   intro h2x
   rw [not_mem_tsupport_iff_eventuallyEq] at h2x
   exact nmem_support.mpr (h2x.deriv_eq.trans (deriv_const x 0))
-#align support_deriv_subset support_deriv_subset
 
 protected theorem HasCompactSupport.deriv (hf : HasCompactSupport f) :
     HasCompactSupport (deriv f) :=
   hf.mono' support_deriv_subset
-#align has_compact_support.deriv HasCompactSupport.deriv
 
 end Support

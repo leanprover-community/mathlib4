@@ -1,18 +1,16 @@
 /-
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Joël Riou
 -/
+import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Adjunction.Whiskering
-import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.Whiskering
-
-#align_import category_theory.sites.adjunction from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
+import Mathlib.CategoryTheory.Sites.PreservesSheafification
 
 /-!
 
-In this file, we show that an adjunction `F ⊣ G` induces an adjunction between
-categories of sheaves, under certain hypotheses on `F` and `G`.
+In this file, we show that an adjunction `G ⊣ F` induces an adjunction between
+categories of sheaves. We also show that `G` preserves sheafification.
 
 -/
 
@@ -21,144 +19,95 @@ namespace CategoryTheory
 
 open GrothendieckTopology CategoryTheory Limits Opposite
 
-universe w₁ w₂ v u
+universe v₁ v₂ u₁ u₂
 
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
-variable {D : Type w₁} [Category.{max v u} D]
-
-variable {E : Type w₂} [Category.{max v u} E]
-
+variable {C : Type u₁} [Category.{v₁} C] (J : GrothendieckTopology C)
+variable {D : Type u₂} [Category.{v₂} D]
+variable {E : Type*} [Category E]
 variable {F : D ⥤ E} {G : E ⥤ D}
-
-variable [∀ (X : C) (S : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (S.index P).multicospan F]
-
-variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 
 /-- The forgetful functor from `Sheaf J D` to sheaves of types, for a concrete category `D`
 whose forgetful functor preserves the correct limits. -/
-abbrev sheafForget : Sheaf J D ⥤ SheafOfTypes J :=
-  sheafCompose J (forget D) ⋙ (sheafEquivSheafOfTypes J).functor
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf_forget CategoryTheory.sheafForget
-
--- We need to sheafify...
-variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
+abbrev sheafForget [HasForget D] [HasSheafCompose J (forget D)] :
+    Sheaf J D ⥤ Sheaf J (Type _) :=
+  sheafCompose J (forget D)
 
 namespace Sheaf
 
 noncomputable section
 
-/-- This is the functor sending a sheaf `X : Sheaf J E` to the sheafification
-of `X ⋙ G`. -/
-abbrev composeAndSheafify (G : E ⥤ D) : Sheaf J E ⥤ Sheaf J D :=
-  sheafToPresheaf J E ⋙ (whiskeringRight _ _ _).obj G ⋙ presheafToSheaf J D
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_and_sheafify CategoryTheory.Sheaf.composeAndSheafify
-
-/-- An auxiliary definition to be used in defining `CategoryTheory.Sheaf.adjunction` below. -/
-@[simps]
-def composeEquiv (adj : G ⊣ F) (X : Sheaf J E) (Y : Sheaf J D) :
-    ((composeAndSheafify J G).obj X ⟶ Y) ≃ (X ⟶ (sheafCompose J F).obj Y) :=
-  let A := adj.whiskerRight Cᵒᵖ
-  { toFun := fun η => ⟨A.homEquiv _ _ (J.toSheafify _ ≫ η.val)⟩
-    invFun := fun γ => ⟨J.sheafifyLift ((A.homEquiv _ _).symm ((sheafToPresheaf _ _).map γ)) Y.2⟩
-    left_inv := by
-      intro η
-      ext1
-      dsimp
-      symm
-      apply J.sheafifyLift_unique
-      rw [Equiv.symm_apply_apply]
-    right_inv := by
-      intro γ
-      ext1
-      dsimp
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [J.toSheafify_sheafifyLift, Equiv.apply_symm_apply] }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_equiv CategoryTheory.Sheaf.composeEquiv
-
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
-attribute [nolint simpNF] CategoryTheory.Sheaf.composeEquiv_apply_val
-  CategoryTheory.Sheaf.composeEquiv_symm_apply_val
-
 /-- An adjunction `adj : G ⊣ F` with `F : D ⥤ E` and `G : E ⥤ D` induces an adjunction
 between `Sheaf J D` and `Sheaf J E`, in contexts where one can sheafify `D`-valued presheaves,
-and `F` preserves the correct limits. -/
-@[simps! unit_app_val counit_app_val]
-def adjunction (adj : G ⊣ F) : composeAndSheafify J G ⊣ sheafCompose J F :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := composeEquiv J adj
-      homEquiv_naturality_left_symm := fun f g => by
-        ext1
-        dsimp [composeEquiv]
-        rw [sheafifyMap_sheafifyLift]
-        erw [Adjunction.homEquiv_naturality_left_symm]
-        rw [whiskeringRight_obj_map]
-        rfl
-      homEquiv_naturality_right := fun f g => by
-        ext
-        dsimp [composeEquiv]
-        erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_unit]
-        dsimp
-        simp }
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction CategoryTheory.Sheaf.adjunction
+and postcomposing with `F` preserves the property of being a sheaf. -/
+def adjunction [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F) :
+    composeAndSheafify J G ⊣ sheafCompose J F :=
+  Adjunction.restrictFullyFaithful ((adj.whiskerRight Cᵒᵖ).comp (sheafificationAdjunction J D))
+    (fullyFaithfulSheafToPresheaf J E) (Functor.FullyFaithful.id _) (Iso.refl _) (Iso.refl _)
 
-instance [IsRightAdjoint F] : IsRightAdjoint (sheafCompose J F) :=
-  ⟨_, adjunction J (Adjunction.ofRightAdjoint F)⟩
+@[simp]
+lemma adjunction_unit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
+    (X : Sheaf J E) : ((adjunction J adj).unit.app X).val =
+      (adj.whiskerRight Cᵒᵖ).unit.app _ ≫ whiskerRight (toSheafify J (X.val ⋙ G)) F  := by
+  change (sheafToPresheaf _ _).map ((adjunction J adj).unit.app X) = _
+  simp only [Functor.id_obj, Functor.comp_obj, whiskeringRight_obj_obj, adjunction,
+    Adjunction.map_restrictFullyFaithful_unit_app, Adjunction.comp_unit_app,
+    sheafificationAdjunction_unit_app, whiskeringRight_obj_map, Iso.refl_hom, NatTrans.id_app,
+    Functor.comp_map, Functor.map_id, whiskerRight_id', Category.comp_id]
+  rfl
+
+@[simp]
+lemma adjunction_counit_app_val [HasWeakSheafify J D] [HasSheafCompose J F] (adj : G ⊣ F)
+    (Y : Sheaf J D) : ((adjunction J adj).counit.app Y).val =
+      sheafifyLift J (((adj.whiskerRight Cᵒᵖ).counit.app Y.val)) Y.cond := by
+  change ((𝟭 (Sheaf _ _)).map ((adjunction J adj).counit.app Y)).val = _
+  simp only [Functor.comp_obj, sheafToPresheaf_obj, sheafCompose_obj_val, whiskeringRight_obj_obj,
+    adjunction, Adjunction.map_restrictFullyFaithful_counit_app, Iso.refl_inv, NatTrans.id_app,
+    Functor.comp_map, whiskeringRight_obj_map, Adjunction.comp_counit_app,
+    instCategorySheaf_comp_val, instCategorySheaf_id_val, sheafificationAdjunction_counit_app_val,
+    sheafifyMap_sheafifyLift, Functor.id_obj, whiskerRight_id', Category.comp_id, Category.id_comp]
+
+
+instance [HasWeakSheafify J D] [F.IsRightAdjoint] : (sheafCompose J F).IsRightAdjoint :=
+  (adjunction J (Adjunction.ofIsRightAdjoint F)).isRightAdjoint
+
+instance [HasWeakSheafify J D] [G.IsLeftAdjoint] : (composeAndSheafify J G).IsLeftAdjoint :=
+  (adjunction J (Adjunction.ofIsLeftAdjoint G)).isLeftAdjoint
+
+lemma preservesSheafification_of_adjunction (adj : G ⊣ F) :
+    J.PreservesSheafification G where
+  le P Q f hf := by
+    have := adj.isRightAdjoint
+    rw [MorphismProperty.inverseImage_iff]
+    dsimp
+    intro R hR
+    rw [← ((adj.whiskerRight Cᵒᵖ).homEquiv P R).comp_bijective]
+    convert (((adj.whiskerRight Cᵒᵖ).homEquiv Q R).trans
+      (hf.homEquiv (R ⋙ F) ((sheafCompose J F).obj ⟨R, hR⟩).cond)).bijective
+    ext g X
+    -- The rest of this proof was
+    -- `dsimp [Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]; simp` before https://github.com/leanprover-community/mathlib4/pull/16317.
+    dsimp
+    rw [← NatTrans.comp_app]
+    congr
+    exact Adjunction.homEquiv_naturality_left _ _ _
+
+instance [G.IsLeftAdjoint] : J.PreservesSheafification G :=
+  preservesSheafification_of_adjunction J (Adjunction.ofIsLeftAdjoint G)
 
 section ForgetToType
 
-/-- This is the functor sending a sheaf of types `X` to the sheafification of `X ⋙ G`. -/
-abbrev composeAndSheafifyFromTypes (G : Type max v u ⥤ D) : SheafOfTypes J ⥤ Sheaf J D :=
-  (sheafEquivSheafOfTypes J).inverse ⋙ composeAndSheafify _ G
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.compose_and_sheafify_from_types CategoryTheory.Sheaf.composeAndSheafifyFromTypes
+variable [HasWeakSheafify J D] [HasForget D] [HasSheafCompose J (forget D)]
 
-/-- A variant of the adjunction between sheaf categories, in the case where the right adjoint
-is the forgetful functor to sheaves of types. -/
-def adjunctionToTypes {G : Type max v u ⥤ D} (adj : G ⊣ forget D) :
-    composeAndSheafifyFromTypes J G ⊣ sheafForget J :=
-  (sheafEquivSheafOfTypes J).symm.toAdjunction.comp (adjunction J adj)
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction_to_types CategoryTheory.Sheaf.adjunctionToTypes
+@[deprecated (since := "2024-11-26")] alias composeAndSheafifyFromTypes := composeAndSheafify
 
-@[simp]
-theorem adjunctionToTypes_unit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
-    (Y : SheafOfTypes J) :
-    ((adjunctionToTypes J adj).unit.app Y).val =
-      (adj.whiskerRight _).unit.app ((sheafOfTypesToPresheaf J).obj Y) ≫
-        whiskerRight (J.toSheafify _) (forget D) := by
-  dsimp [adjunctionToTypes, Adjunction.comp]
-  simp
-  rfl
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction_to_types_unit_app_val CategoryTheory.Sheaf.adjunctionToTypes_unit_app_val
+/-- The adjunction `composeAndSheafify J G ⊣ sheafForget J`. -/
+@[deprecated Sheaf.adjunction (since := "2024-11-26")] abbrev adjunctionToTypes
+    {G : Type max v₁ u₁ ⥤ D} (adj : G ⊣ forget D) :
+    composeAndSheafify J G ⊣ sheafForget J :=
+  adjunction _ adj
 
-@[simp]
-theorem adjunctionToTypes_counit_app_val {G : Type max v u ⥤ D} (adj : G ⊣ forget D)
-    (X : Sheaf J D) :
-    ((adjunctionToTypes J adj).counit.app X).val =
-      J.sheafifyLift ((Functor.associator _ _ _).hom ≫ (adj.whiskerRight _).counit.app _) X.2 := by
-  apply J.sheafifyLift_unique
-  dsimp only [adjunctionToTypes, Adjunction.comp, NatTrans.comp_app,
-    instCategorySheaf_comp_val, instCategorySheaf_id_val]
-  rw [adjunction_counit_app_val]
-  erw [Category.id_comp, J.sheafifyMap_sheafifyLift, J.toSheafify_sheafifyLift]
-  ext
-  dsimp [sheafEquivSheafOfTypes, Equivalence.symm, Equivalence.toAdjunction,
-    NatIso.ofComponents, Adjunction.whiskerRight, Adjunction.mkOfUnitCounit]
-  simp
-
-set_option linter.uppercaseLean3 false in
-#align category_theory.Sheaf.adjunction_to_types_counit_app_val CategoryTheory.Sheaf.adjunctionToTypes_counit_app_val
-
-instance [IsRightAdjoint (forget D)] : IsRightAdjoint (sheafForget J : Sheaf J D ⥤ _) :=
-  ⟨_, adjunctionToTypes J (Adjunction.ofRightAdjoint (forget D))⟩
+example [(forget D).IsRightAdjoint] :
+    (sheafForget.{_, _, _, _, max u₁ v₁} (D := D) J).IsRightAdjoint := by infer_instance
 
 end ForgetToType
 

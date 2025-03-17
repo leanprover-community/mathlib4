@@ -6,7 +6,7 @@ Authors: Kyle Miller
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Logic.Basic
-import Mathlib.Tactic.Congr!
+import Mathlib.Tactic.CongrExclamation
 
 /-! # `congr(...)` congruence quotations
 
@@ -47,7 +47,7 @@ it eagerly wants to solve for instance arguments. The current version is able to
 expected LHS and RHS to fill in arguments before solving for instance arguments.
 -/
 
-set_option autoImplicit true
+universe u
 
 namespace Mathlib.Tactic.TermCongr
 open Lean Elab Meta
@@ -55,7 +55,7 @@ open Lean Elab Meta
 initialize registerTraceClass `Elab.congr
 
 /--
-`congr(expr)` generates an congruence from an expression containing
+`congr(expr)` generates a congruence from an expression containing
 congruence holes of the form `$h` or `$(h)`.
 In these congruence holes, `h : a = b` indicates that, in the generated congruence,
 on the left-hand side `a` is substituted for `$h`
@@ -103,7 +103,7 @@ Note that there is no relation between `val` and the proof.
 We need to decouple these to support letting the proof's elaboration be deferred until
 we know whether we want an iff, eq, or heq, while also allowing it to choose
 to elaborate as an iff, eq, or heq.
-Later, the congruence generator handles any discrepencies.
+Later, the congruence generator handles any discrepancies.
 See `Mathlib.Tactic.TermCongr.CongrResult`. -/
 @[reducible, nolint unusedArguments]
 def cHole {α : Sort u} (val : α) {p : Prop} (_pf : p) : α := val
@@ -139,7 +139,7 @@ def cHole? (e : Expr) (mvarCounterSaved? : Option Nat := none) : Option (Bool ×
     return (forLhs, val, pf)
   | _ => none
 
-/-- Returns any subexpression that is a recent congruence hole.  -/
+/-- Returns any subexpression that is a recent congruence hole. -/
 def hasCHole (mvarCounterSaved : Nat) (e : Expr) : Option Expr :=
   e.find? fun e' => (cHole? e' mvarCounterSaved).isSome
 
@@ -282,8 +282,8 @@ Throws an error if the `lhs` and `rhs` have non-defeq types.
 If `pf? = none`, this returns the `rfl` proof. -/
 def CongrResult.eq (res : CongrResult) : MetaM Expr := do
   unless ← isDefEq (← inferType res.lhs) (← inferType res.rhs) do
-    throwError "Expecting{indentD res.lhs}\nand{indentD res.rhs}\n{""
-      }to have definitionally equal types."
+    throwError "Expecting{indentD res.lhs}\nand{indentD res.rhs}\n\
+      to have definitionally equal types."
   match res.pf? with
   | some pf => pf .eq
   | none => mkEqRefl res.lhs
@@ -369,11 +369,11 @@ where
     let some (_, lhs', _, rhs') := (← whnf pfTy).sides?
       | panic! "Unexpectedly did not generate an eq or heq"
     unless ← isDefEq lhs lhs' do
-      throwError "Congruence hole has type{indentD pfTy}\n{""
-        }but its left-hand side is not definitionally equal to the expected value{indentD lhs}"
+      throwError "Congruence hole has type{indentD pfTy}\n\
+        but its left-hand side is not definitionally equal to the expected value{indentD lhs}"
     unless ← isDefEq rhs rhs' do
-      throwError "Congruence hole has type{indentD pfTy}\n{""
-        }but its right-hand side is not definitionally equal to the expected value{indentD rhs}"
+      throwError "Congruence hole has type{indentD pfTy}\n\
+        but its right-hand side is not definitionally equal to the expected value{indentD rhs}"
     return pf
 
 /-- Force the lhs and rhs to be defeq. For when `dsimp`-like congruence is necessary.
@@ -383,8 +383,8 @@ def CongrResult.defeq (res : CongrResult) : MetaM CongrResult := do
     return res
   else
     unless ← isDefEq res.lhs res.rhs do
-      throwError "Cannot generate congruence because we need{indentD res.lhs}\n{""
-        }to be definitionally equal to{indentD res.rhs}"
+      throwError "Cannot generate congruence because we need{indentD res.lhs}\n\
+        to be definitionally equal to{indentD res.rhs}"
     -- Propagate types into any proofs that we're dropping:
     discard <| res.eq
     return {res with pf? := none}
@@ -416,9 +416,9 @@ def CongrResult.mkDefault' (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM Con
   CongrResult.mkDefault lhs rhs
 
 /-- Throw an internal error. -/
-def throwCongrEx (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
-  throwError "congr(...) failed with left-hand side{indentD lhs}\n{""
-    }and right-hand side {indentD rhs}\n{msg}"
+def throwCongrEx {α : Type} (lhs rhs : Expr) (msg : MessageData) : MetaM α := do
+  throwError "congr(...) failed with left-hand side{indentD lhs}\n\
+    and right-hand side {indentD rhs}\n{msg}"
 
 /-- If `lhs` or `rhs` is a congruence hole, then process it.
 Only process ones that are at least as new as `mvarCounterSaved`
@@ -436,11 +436,11 @@ def mkCongrOfCHole? (mvarCounterSaved : Nat) (lhs rhs : Expr) : MetaM (Option Co
       throwCongrEx lhs rhs "Elaborated types of congruence holes are not defeq."
     if let some (_, lhsVal, _, rhsVal) := (← whnf <| ← inferType pf1).sides? then
       unless ← isDefEq val1 lhsVal do
-        throwError "Left-hand side of congruence hole is{indentD lhsVal}\n{""
-          }but is expected to be{indentD val1}"
+        throwError "Left-hand side of congruence hole is{indentD lhsVal}\n\
+          but is expected to be{indentD val1}"
       unless ← isDefEq val2 rhsVal do
-        throwError "Right-hand side of congruence hole is{indentD rhsVal}\n{""
-          }but is expected to be{indentD val2}"
+        throwError "Right-hand side of congruence hole is{indentD rhsVal}\n\
+          but is expected to be{indentD val2}"
     return some <| CongrResult.mk' val1 val2 pf1
   | some .., none =>
     throwCongrEx lhs rhs "Right-hand side lost its congruence hole annotation."
@@ -616,12 +616,12 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
         let rhs ← elaboratePattern t expRhsTy false
         -- Note: these defeq checks can leak congruence holes.
         unless ← isDefEq expLhs lhs do
-          throwError "Left-hand side of elaborated pattern{indentD lhs}\n{""
-            }is not definitionally equal to left-hand side of expected type{indentD expectedType}"
+          throwError "Left-hand side of elaborated pattern{indentD lhs}\n\
+            is not definitionally equal to left-hand side of expected type{indentD expectedType}"
         unless ← isDefEq expRhs rhs do
-          throwError "Right-hand side of elaborated pattern{indentD rhs}\n{""
-            }is not definitionally equal to right-hand side of expected type{indentD expectedType}"
-        Term.synthesizeSyntheticMVars (mayPostpone := true)
+          throwError "Right-hand side of elaborated pattern{indentD rhs}\n\
+            is not definitionally equal to right-hand side of expected type{indentD expectedType}"
+        Term.synthesizeSyntheticMVars (postpone := .yes)
         let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
         let expectedType' ← whnf expectedType
         let pf ← if expectedType'.iff?.isSome then res.iff
@@ -632,9 +632,13 @@ def elabTermCongr : Term.TermElab := fun stx expectedType? => do
     -- Case 2: No expected type or it's not obviously Iff/Eq/HEq. We generate an Eq.
     let lhs ← elaboratePattern t none true
     let rhs ← elaboratePattern t none false
-    Term.synthesizeSyntheticMVars (mayPostpone := true)
+    Term.synthesizeSyntheticMVars (postpone := .yes)
     let res ← mkCongrOf 0 mvarCounterSaved lhs rhs
     let pf ← res.eq
     let ty ← mkEq res.lhs res.rhs
     mkExpectedTypeHint pf ty
   | _ => throwUnsupportedSyntax
+
+end TermCongr
+
+end Mathlib.Tactic

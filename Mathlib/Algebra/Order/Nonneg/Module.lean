@@ -3,9 +3,9 @@ Copyright (c) 2023 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
+import Mathlib.Algebra.Module.RingHom
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Nonneg.Ring
-import Mathlib.Algebra.Module.Basic
-import Mathlib.Algebra.Order.Module
 
 /-!
 # Modules over nonnegative elements
@@ -18,7 +18,6 @@ These instances are useful for working with `ConvexCone`.
 -/
 
 variable {𝕜 𝕜' E : Type*}
-
 variable [OrderedSemiring 𝕜]
 
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
@@ -61,14 +60,14 @@ instance instSMulWithZero : SMulWithZero 𝕜≥0 𝕜' where
 
 end SMulWithZero
 
-section OrderedSmul
+section OrderedSMul
 
 variable [OrderedAddCommMonoid E] [SMulWithZero 𝕜 E] [hE : OrderedSMul 𝕜 E]
 
-instance instOrderedSmul : OrderedSMul 𝕜≥0 E :=
+instance instOrderedSMul : OrderedSMul 𝕜≥0 E :=
   ⟨hE.1, hE.2⟩
 
-end OrderedSmul
+end OrderedSMul
 
 section Module
 
@@ -76,7 +75,7 @@ variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- A module over an ordered semiring is also a module over just the non-negative scalars. -/
 instance instModule : Module 𝕜≥0 E :=
-  Module.compHom E (@Nonneg.coeRingHom 𝕜 _)
+  Module.compHom E Nonneg.coeRingHom
 
 end Module
 

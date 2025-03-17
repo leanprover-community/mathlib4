@@ -5,8 +5,7 @@ Authors: Markus Himmel
 -/
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 import Mathlib.Algebra.Category.ModuleCat.Abelian
-
-#align_import category_theory.preadditive.yoneda.limits from "leanprover-community/mathlib"@"09f981f72d43749f1fa072deade828d9c1e185bb"
+import Mathlib.CategoryTheory.Limits.Yoneda
 
 /-!
 # The Yoneda embedding for preadditive categories preserves limits
@@ -31,26 +30,23 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
 
-instance preservesLimitsPreadditiveYonedaObj (X : C) : PreservesLimits (preadditiveYonedaObj X) :=
+instance preservesLimits_preadditiveYonedaObj (X : C) : PreservesLimits (preadditiveYonedaObj X) :=
   have : PreservesLimits (preadditiveYonedaObj X ⋙ forget _) :=
     (inferInstance : PreservesLimits (yoneda.obj X))
-  preservesLimitsOfReflectsOfPreserves _ (forget _)
-#align category_theory.preserves_limits_preadditive_yoneda_obj CategoryTheory.preservesLimitsPreadditiveYonedaObj
+  preservesLimits_of_reflects_of_preserves _ (forget _)
 
-instance preservesLimitsPreadditiveCoyonedaObj (X : Cᵒᵖ) :
+instance preservesLimits_preadditiveCoyonedaObj (X : C) :
     PreservesLimits (preadditiveCoyonedaObj X) :=
   have : PreservesLimits (preadditiveCoyonedaObj X ⋙ forget _) :=
-    (inferInstance : PreservesLimits (coyoneda.obj X))
-  preservesLimitsOfReflectsOfPreserves _ (forget _)
-#align category_theory.preserves_limits_preadditive_coyoneda_obj CategoryTheory.preservesLimitsPreadditiveCoyonedaObj
+    (inferInstance : PreservesLimits (coyoneda.obj (op X)))
+  preservesLimits_of_reflects_of_preserves _ (forget _)
 
-instance PreservesLimitsPreadditiveYoneda.obj (X : C) : PreservesLimits (preadditiveYoneda.obj X) :=
+instance preservesLimits_preadditiveYoneda_obj (X : C) :
+    PreservesLimits (preadditiveYoneda.obj X) :=
   show PreservesLimits (preadditiveYonedaObj X ⋙ forget₂ _ _) from inferInstance
-#align category_theory.preserves_limits_preadditive_yoneda.obj CategoryTheory.PreservesLimitsPreadditiveYoneda.obj
 
-instance PreservesLimitsPreadditiveCoyoneda.obj (X : Cᵒᵖ) :
+instance preservesLimits_preadditiveCoyoneda_obj (X : Cᵒᵖ) :
     PreservesLimits (preadditiveCoyoneda.obj X) :=
-  show PreservesLimits (preadditiveCoyonedaObj X ⋙ forget₂ _ _) from inferInstance
-#align category_theory.preserves_limits_preadditive_coyoneda.obj CategoryTheory.PreservesLimitsPreadditiveCoyoneda.obj
+  show PreservesLimits (preadditiveCoyonedaObj (unop X) ⋙ forget₂ _ _) from inferInstance
 
 end CategoryTheory
