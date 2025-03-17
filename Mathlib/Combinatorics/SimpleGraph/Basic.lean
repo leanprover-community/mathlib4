@@ -37,13 +37,9 @@ This module defines simple graphs on a vertex type `V` as an irreflexive symmetr
   look like.
 -/
 
--- Porting note: using `aesop` for automation
-
--- Porting note: These attributes are needed to use `aesop` as a replacement for `obviously`
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Symmetric
 attribute [aesop norm unfold (rule_sets := [SimpleGraph])] Irreflexive
 
--- Porting note: a thin wrapper around `aesop` for graph lemmas, modelled on `aesop_cat`
 /--
 A variant of the `aesop` tactic for use in the graph library. Changes relative
 to standard `aesop`:
@@ -93,7 +89,6 @@ structure SimpleGraph (V : Type u) where
   Adj : V → V → Prop
   symm : Symmetric Adj := by aesop_graph
   loopless : Irreflexive Adj := by aesop_graph
--- Porting note: changed `obviously` to `aesop` in the `structure`
 
 initialize_simps_projections SimpleGraph (Adj → adj)
 
@@ -139,7 +134,6 @@ theorem SimpleGraph.fromRel_adj {V : Type u} (r : V → V → Prop) (v w : V) :
     (SimpleGraph.fromRel r).Adj v w ↔ v ≠ w ∧ (r v w ∨ r w v) :=
   Iff.rfl
 
--- Porting note: attributes needed for `completeGraph`
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.symm
 attribute [aesop safe (rule_sets := [SimpleGraph])] Ne.irrefl
 
@@ -199,7 +193,7 @@ theorem adj_inj {G H : SimpleGraph V} : G.Adj = H.Adj ↔ G = H :=
 
 theorem adj_congr_of_sym2 {u v w x : V} (h : s(u, v) = s(w, x)) : G.Adj u v ↔ G.Adj w x := by
   simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h
-  cases' h with hl hr
+  rcases h with hl | hr
   · rw [hl.1, hl.2]
   · rw [hr.1, hr.2, adj_comm]
 
@@ -409,6 +403,9 @@ def neighborSet (v : V) : Set V := {w | G.Adj v w}
 instance neighborSet.memDecidable (v : V) [DecidableRel G.Adj] :
     DecidablePred (· ∈ G.neighborSet v) :=
   inferInstanceAs <| DecidablePred (Adj G v)
+
+lemma neighborSet_subset_support (v : V) : G.neighborSet v ⊆ G.support :=
+  fun _ hadj ↦ ⟨v, hadj.symm⟩
 
 section EdgeSet
 
@@ -777,7 +774,7 @@ theorem edge_other_incident_set {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v
 
 theorem incidence_other_prop {v : V} {e : Sym2 V} (h : e ∈ G.incidenceSet v) :
     G.otherVertexOfIncident h ∈ G.neighborSet v := by
-  cases' h with he hv
+  obtain ⟨he, hv⟩ := h
   rwa [← Sym2.other_spec' hv, mem_edgeSet] at he
 
 -- Porting note: as a simp lemma this does not apply even to itself

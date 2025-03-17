@@ -47,7 +47,6 @@ variable (F : C → D)
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def InducedCategory (_F : C → D) : Type u₁ :=
   C
@@ -100,11 +99,8 @@ variable (Z : C → Prop)
 /--
 A subtype-like structure for full subcategories. Morphisms just ignore the property. We don't use
 actual subtypes since the simp-normal form `↑X` of `X.val` does not work well for full
-subcategories.
-
-See <https://stacks.math.columbia.edu/tag/001D>. We do not define 'strictly full' subcategories.
--/
-@[ext]
+subcategories. -/
+@[ext, stacks 001D "We do not define 'strictly full' subcategories."]
 structure FullSubcategory where
   /-- The category of which this is a full subcategory -/
   obj : C

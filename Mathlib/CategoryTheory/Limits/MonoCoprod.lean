@@ -239,13 +239,19 @@ end Preservation
 
 section Concrete
 
-instance [ConcreteCategory C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
+instance [HasForget C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
     [ReflectsMonomorphisms (forget C)] : MonoCoprod C :=
   monoCoprod_of_preservesCoprod_of_reflectsMono (forget C)
 
 end Concrete
 
 end MonoCoprod
+
+instance (A : C) [HasCoproducts.{u} C] [MonoCoprod C] :
+    (sigmaConst.{u}.obj A).PreservesMonomorphisms where
+  preserves {J I} ι hι := by
+    rw [mono_iff_injective] at hι
+    exact MonoCoprod.mono_map'_of_injective (fun (i : I) ↦ A) ι hι
 
 end Limits
 

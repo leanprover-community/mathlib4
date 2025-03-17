@@ -3,12 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Multiset.Fold
-import Mathlib.Algebra.Order.Monoid.OrderDual
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -138,8 +138,8 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 
 end OrderedCancelCommMonoid
 
-section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
+section CanonicallyOrderedMul
+variable [OrderedCommMonoid α] [CanonicallyOrderedMul α] {m : Multiset α} {a : α}
 
 @[to_additive] lemma prod_eq_one_iff : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l ↦ by simpa using List.prod_eq_one_iff
@@ -149,7 +149,7 @@ variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
   rw [prod_cons]
   exact _root_.le_mul_right (le_refl a)
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multiset α)
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by

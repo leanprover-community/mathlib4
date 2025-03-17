@@ -66,7 +66,6 @@ abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
 abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
-  -- Porting note: needed to make `id` explicit
   le_top a := le_sup' id <| mem_univ a
 
 -- See note [reducible non-instances]
@@ -125,6 +124,8 @@ noncomputable abbrev toCompleteLinearOrder
 noncomputable abbrev toCompleteBooleanAlgebra [BooleanAlgebra α] : CompleteBooleanAlgebra α where
   __ := ‹BooleanAlgebra α›
   __ := Fintype.toCompleteDistribLattice α
+  inf_sSup_le_iSup_inf _ _ := inf_sSup_eq.le
+  iInf_sup_le_sup_sInf _ _ := sup_sInf_eq.ge
 
 -- See note [reducible non-instances]
 /-- A finite boolean algebra is complete and atomic. -/

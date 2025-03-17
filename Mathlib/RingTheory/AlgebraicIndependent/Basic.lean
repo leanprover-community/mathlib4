@@ -3,6 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Algebra.MvPolynomial.Supported
@@ -32,8 +33,6 @@ transcendence basis, transcendence degree, transcendence
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
-
-open scoped Classical
 
 variable {ι ι' R K A A' : Type*} {x : ι → A}
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']

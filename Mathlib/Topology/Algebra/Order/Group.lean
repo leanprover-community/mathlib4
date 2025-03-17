@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Order.LeftRightNhds
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topology on a linear ordered additive commutative group
@@ -24,7 +24,7 @@ variable {l : Filter α} {f g : α → G}
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup :
-    TopologicalAddGroup G where
+    IsTopologicalAddGroup G where
   continuous_add := by
     refine continuous_iff_continuousAt.2 ?_
     rintro ⟨a, b⟩

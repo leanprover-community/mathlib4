@@ -21,11 +21,11 @@ hence, we lint against it.
 *Example*: before this was discovered, `Mathlib/Topology/Category/TopCat/Basic.lean`
 contained the following code:
 ```
-attribute [instance] ConcreteCategory.instFunLike in
+attribute [instance] HasForget.instFunLike in
 instance (X Y : TopCat.{u}) : CoeFun (X ⟶ Y) fun _ => X → Y where
   coe f := f
 ```
-Despite the `in`, this makes `ConcreteCategory.instFunLike` a global instance.
+Despite the `in`, this makes `HasForget.instFunLike` a global instance.
 
 This seems to apply to all attributes. For example:
 ```lean
