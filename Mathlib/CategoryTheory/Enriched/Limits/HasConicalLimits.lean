@@ -118,12 +118,33 @@ lemma HasConicalLimitsOfShape.of_equiv [HasConicalLimitsOfShape J' V C]
     (G : J' ⥤ J) [G.IsEquivalence] : HasConicalLimitsOfShape J V C where
   hasConicalLimit F := HasConicalLimit.of_equiv_comp V F G
 
+namespace HasConicalLimitsOfSize
+
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
-instance HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+instance hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
+
+/-- A category that has larger conical limits also has smaller conical limits. -/
+lemma of_univLE [HasConicalLimitsOfSize.{v₁, u₁} V C] [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}] :
+    HasConicalLimitsOfSize.{v₂, u₂} V C where
+  hasConicalLimitsOfShape J := HasConicalLimitsOfShape.of_equiv V C
+    ((ShrinkHoms.equivalence J).trans (Shrink.equivalence _)).inverse
+
+/-- `shrink.{v, u} C` tries to obtain `HasConicalLimitsOfSize.{v, u} C`
+from some other `HasConicalLimitsOfSize.{v₁, u₁} C`.
+-/
+theorem shrink [HasConicalLimitsOfSize.{max v₁ v₂, max u₁ u₂} V C] :
+    HasConicalLimitsOfSize.{v₁, u₁} V C :=
+  of_univLE.{max v₁ v₂, max u₁ u₂} V C
+
+end HasConicalLimitsOfSize
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
 example [HasConicalLimits V C] : HasLimits C := inferInstance
+
+instance (priority := 100) HasConicalLimits.hasSmallestConicalLimitsOfHasConicalLimits
+    [HasConicalLimits V C]: HasConicalLimitsOfSize.{0, 0} V C :=
+  HasConicalLimitsOfSize.shrink.{0, 0} V C
 
 end Results
 
