@@ -2121,6 +2121,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
+import Mathlib.CategoryTheory.Limits.Shapes.MultiequalizerPullback
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.NormalMono.Equalizers
 import Mathlib.CategoryTheory.Limits.Shapes.PiProd
@@ -4413,6 +4414,7 @@ import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Order.CompleteLattice
 import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.CompleteLattice.MulticoequalizerDiagram
 import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder
