@@ -50,7 +50,7 @@ theorem associatedGraded_of_mem_ker_iff {i : ι} [DecidableEq ι] (u : GradedPie
     of (GradedPiece FB FB_lt) i u ∈ Gr+[g].ker ↔ u ∈ Gr+(i)[g].ker :=
   of_mem_map_ker_iff (fun i ↦ Gr+(i)[g]) i u
 
-theorem mem_range_iff [DecidableEq ι]
+theorem mem_range_iff [DecidableEq ι] [(i : ι) → (x : GradedPiece FB FB_lt i) → Decidable (x ≠ 0)]
     (m : AssociatedGraded FB FB_lt) : m ∈ Gr+[f].range ↔ ∀ i : ι, m i ∈ Gr+(i)[f].range :=
   mem_map_range_iff (fun i ↦ Gr+(i)[f]) m
 
@@ -66,6 +66,7 @@ theorem GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact (i : ι) [Dec
     ← associatedGraded_of_mem_range_iff f u]
 
 theorem AssociatedGradedAddMonoidHom_exact_of_GradedPieceHom_exact [DecidableEq ι]
+    [(i : ι) → (x : GradedPiece FB FB_lt i) → Decidable (x ≠ 0)]
     (h : ∀ i, Function.Exact Gr+(i)[f] Gr+(i)[g]) : Function.Exact Gr+[f] Gr+[g] := by
   rw [AddMonoidHom.exact_iff]
   ext x
@@ -135,6 +136,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     exact congrArg (GradedPiece.mk FT FT_lt) (SetCoe.ext (fgexact.apply_apply_eq_zero z.1))
 
 theorem exact_of_strict_exact [DecidableEq ι] (fstrict : f.IsStrict) (gstrict : g.IsStrict)
+    [(i : ι) → (x : GradedPiece FS FS_lt i) → Decidable (x ≠ 0)]
     (exact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) : Function.Exact Gr+[f] Gr+[g] :=
   AssociatedGradedAddMonoidHom_exact_of_GradedPieceHom_exact f g
     (fun i x ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i x)
