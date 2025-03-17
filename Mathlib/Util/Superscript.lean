@@ -242,7 +242,7 @@ private def isSuperscriptable (s : Name) : Bool :=
   s.toString.toList.all Mapping.superscript.toSpecial.contains
 
 /-- Applies the predicate `f` to every explicit argument of `e`. -/
-private def check_args (f : Expr → DelabM Unit) : DelabM Unit := do
+private def checkArgs (f : Expr → DelabM Unit) : DelabM Unit := do
   let e ← getExpr
   let args := e.getAppArgs
   let kinds ← getParamKinds e.getAppFn args
@@ -262,29 +262,29 @@ private def isSpecialBinOp (e : Expr) : Bool :=
 
 /-- Any numeral is valid in a superscript (or subscript). `() : Unit` is valid.
 Any constant or free variable with a valid user-facing name is also valid. -/
-private def const_valid (e : Expr) (fname : Name → Bool) : DelabM Bool := do
+private def constValid (e : Expr) (fname : Name → Bool) : DelabM Bool := do
   return e.isConstOf ``Unit.unit ||
     (← name e).any fname ||
     (← delab) matches `($_:num)
 
 -- TODO: what about dot notation?
 /-- Checks if the entire expression `e` can be superscripted (or subscripted). -/
-private def check_expr (e : Expr) (fname : Name → Bool)
+private def checkExpr (e : Expr) (fname : Name → Bool)
     (fexpr : Expr → DelabM Unit) : DelabM Unit := do
   -- Look for numerals, valid constants and free variables, and `() : Unit`.
-  if (← const_valid e fname) then return
+  if (← constValid e fname) then return
   -- Function application is valid if all explicit arguments are valid and the
   -- function name is valid (or one of `+`, `-`, `=`, `==`).
   guard <| isSpecialBinOp e || (e.isApp && (← name e.getAppFn).any fname)
-  check_args fexpr
+  checkArgs fexpr
 
 /-- Checks if the expression `e` can be subscripted. -/
 partial def subscriptable (e : Expr) : DelabM Unit :=
-  check_expr e isSubscriptable subscriptable
+  checkExpr e isSubscriptable subscriptable
 
 /-- Checks if the expression `e` can be superscripted. -/
 partial def superscriptable (e : Expr) : DelabM Unit := do
-  check_expr e isSuperscriptable superscriptable
+  checkExpr e isSuperscriptable superscriptable
 
 end Superscript
 
