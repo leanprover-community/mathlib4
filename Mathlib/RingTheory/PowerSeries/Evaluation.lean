@@ -24,7 +24,7 @@ Given `φ : R →+* S`, `a : S`, and `f : MvPowerSeries σ R`,
 `PowerSeries.eval₂ f φ a` is the evaluation of the power series `f` at `a`.
 It `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
 Otherwise, it is defined by density from polynomials;
-its values are irrelevant unless `φ` is continuous and `a` is topologically 
+its values are irrelevant unless `φ` is continuous and `a` is topologically
 nilpotent (`a ^ n` tends to 0 when `n` tends to infinity).
 
 Under `Continuous φ` and `IsTopologicallyNilpotent a`,
