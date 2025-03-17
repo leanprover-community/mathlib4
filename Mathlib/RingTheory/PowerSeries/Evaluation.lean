@@ -78,7 +78,7 @@ theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
   let g : MvPolynomial Unit R := (MvPolynomial.pUnitAlgEquiv R).symm f
   have : f = MvPolynomial.pUnitAlgEquiv R g := by
     simp only [g, ← AlgEquiv.symm_apply_eq]
-  simp only [this, PowerSeries.eval₂, MvPolynomial.eval₂_pUnitAlgEquiv]
+  simp only [this, PowerSeries.eval₂, MvPolynomial.eval₂_const_pUnitAlgEquiv]
   rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, MvPowerSeries.eval₂_coe]
 
 theorem eval₂_C (r : R) :
