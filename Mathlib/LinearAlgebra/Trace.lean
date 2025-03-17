@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen, Antoine Labe
 import Mathlib.LinearAlgebra.Contraction
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Coeff
 import Mathlib.RingTheory.Finiteness.Prod
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
@@ -62,14 +62,11 @@ theorem traceAux_eq : traceAux R b = traceAux R c :=
         rw [LinearMap.toMatrix_comp _ b, LinearMap.toMatrix_comp _ c]
       _ = Matrix.trace (LinearMap.toMatrix c c f) := by rw [LinearMap.comp_id, LinearMap.comp_id]
 
-variable (M)
-
+variable (M) in
 open Classical in
 /-- Trace of an endomorphism independent of basis. -/
 def trace : (M →ₗ[R] M) →ₗ[R] R :=
   if H : ∃ s : Finset M, Nonempty (Basis s R M) then traceAux R H.choose_spec.some else 0
-
-variable {M}
 
 open Classical in
 /-- Auxiliary lemma for `trace_eq_matrix_trace`. -/
