@@ -9,14 +9,13 @@ set -x
 
 # Test if there are keys with characters outside alphanumeric, '-', '_', and ':'.
 bibtool --pass.comments=on -- 'select{$key "[^-:A-Za-z0-9_]+"}' \
-  docs/references.bib -o docs/non-ascii.bib.tmp
+  docs/references.bib -o docs/non-ascii.bib
 
-if [ -s docs/non-ascii.bib.tmp ]; then
+if [ -s docs/non-ascii.bib ]; then
   echo "::error:: There are items in references.bib with keys containing characters" \
     "outside alphanumeric, '-', '_', and ':':"
-  cat docs/non-ascii.bib.tmp && rm docs/non-ascii.bib.tmp && exit 1
-else
-  rm docs/non-ascii.bib.tmp
+  cat docs/non-ascii.bib
+  exit 1
 fi
 
 # https://leanprover-community.github.io/contribute/doc.html#citing-other-works
