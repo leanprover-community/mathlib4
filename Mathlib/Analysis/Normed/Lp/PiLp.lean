@@ -800,7 +800,7 @@ variable [∀ i, SeminormedAddCommGroup (α i)]
 variable [∀ i, Module 𝕜 (α i)] [Fintype ι] [Fintype κ] [Fact (1 ≤ p)]
 
 /-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry -/
-@[simps]
+@[simps!]
 def sumPiLpEquivProdLpPiLp :
     WithLp p (Π i, α i) ≃ₗᵢ[𝕜]
       WithLp p (WithLp p (Π i, α (.inl i)) × WithLp p (Π i, α (.inr i))) where
@@ -815,7 +815,8 @@ def sumPiLpEquivProdLpPiLp :
       simp_rw [← Finset.univ_disjSum_univ, Finset.sup_disjSum]; rfl
     · have : 0 < p.toReal := by positivity
       simp [LinearEquiv.sumPiEquivProdPi, norm_eq_sum this, WithLp.prod_norm_eq_add this]
-      sorry
+      congr <;> rw [← Real.rpow_mul] <;> (try field_simp) <;>
+      refine Finset.sum_nonneg fun i hi ↦ ?_ <;> positivity
 
 end sumPiLpEquivProdLpPiLp
 
