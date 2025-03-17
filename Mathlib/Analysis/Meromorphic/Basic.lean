@@ -43,9 +43,8 @@ theorem MeromorphicAt.eventually_eq_zero_or_eventually_ne_zero {f : 𝕜 → E} 
   rcases h.eventually_eq_zero_or_eventually_ne_zero with h₁ | h₂
   · left
     filter_upwards [nhdsWithin_le_nhds h₁, self_mem_nhdsWithin] with y h₁y h₂y
-    rcases (smul_eq_zero.1 h₁y) with h₃ | h₄
-    · exact False.elim (h₂y (sub_eq_zero.1 (pow_eq_zero_iff'.1 h₃).1))
-    · assumption
+    rw [Set.mem_compl_iff, Set.mem_singleton_iff, ← sub_eq_zero] at h₂y
+    exact smul_eq_zero_iff_right (pow_ne_zero n h₂y) |>.mp h₁y
   · right
     filter_upwards [h₂, self_mem_nhdsWithin] with y h₁y h₂y
     exact (smul_ne_zero_iff.1 h₁y).2
@@ -83,7 +82,7 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f
   rcases hf with ⟨m, hf⟩
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
-  convert hf.smul' hg using 2 with z
+  convert hf.fun_smul hg using 2 with z
   rw [Pi.smul_apply', smul_eq_mul]
   module
 
@@ -136,7 +135,7 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   rcases hf with ⟨m, hf⟩
   refine ⟨m + 1, ?_⟩
   have : AnalyticAt 𝕜 (fun z ↦ z - x) x := analyticAt_id.sub analyticAt_const
-  refine (this.smul' hf).congr ?_
+  refine (this.fun_smul hf).congr ?_
   rw [eventuallyEq_nhdsWithin_iff] at hfg
   filter_upwards [hfg] with z hz
   rcases eq_or_ne z x with rfl | hn
@@ -158,7 +157,7 @@ lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicA
     have : AnalyticAt 𝕜 (fun z ↦ (z - x) ^ (m + 1)) x :=
       (analyticAt_id.sub analyticAt_const).pow _
     -- use `m + 1` rather than `m` to damp out any silly issues with the value at `z = x`
-    refine ⟨n + 1, (this.smul' <| hg_an.inv hg_ne).congr ?_⟩
+    refine ⟨n + 1, (this.fun_smul <| hg_an.inv hg_ne).congr ?_⟩
     filter_upwards [hg_eq, hg_an.continuousAt.eventually_ne hg_ne] with z hfg hg_ne'
     rcases eq_or_ne z x with rfl | hz_ne
     · simp only [sub_self, pow_succ, mul_zero, zero_smul]
@@ -203,7 +202,7 @@ lemma pow' {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℕ) :
 
 @[fun_prop]
 lemma zpow {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : MeromorphicAt (f ^ n) x := by
-  induction n with
+  cases n with
   | ofNat m => simpa only [Int.ofNat_eq_coe, zpow_natCast] using hf.pow m
   | negSucc m => simpa only [zpow_negSucc, inv_iff] using hf.pow (m + 1)
 

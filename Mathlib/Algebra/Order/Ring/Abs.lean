@@ -31,7 +31,7 @@ variable [LinearOrderedCommGroup α]
 end LinearOrderedAddCommGroup
 
 lemma odd_abs [LinearOrder α] [Ring α] {a : α} : Odd (abs a) ↔ Odd a := by
-  cases' abs_choice a with h h <;> simp only [h, odd_neg]
+  rcases abs_choice a with h | h <;> simp only [h, odd_neg]
 
 section LinearOrderedRing
 
@@ -184,14 +184,14 @@ variable [Ring α] [LinearOrder α]
 
 @[simp]
 theorem abs_dvd (a b : α) : |a| ∣ b ↔ a ∣ b := by
-  cases' abs_choice a with h h <;> simp only [h, neg_dvd]
+  rcases abs_choice a with h | h <;> simp only [h, neg_dvd]
 
 theorem abs_dvd_self (a : α) : |a| ∣ a :=
   (abs_dvd a a).mpr (dvd_refl a)
 
 @[simp]
 theorem dvd_abs (a b : α) : a ∣ |b| ↔ a ∣ b := by
-  cases' abs_choice b with h h <;> simp only [h, dvd_neg]
+  rcases abs_choice b with h | h <;> simp only [h, dvd_neg]
 
 theorem self_dvd_abs (a : α) : a ∣ |a| :=
   (dvd_abs a a).mpr (dvd_refl a)

@@ -4,31 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arthur Paulino
 -/
 
-import Std.Data.HashMap
-import Lean.Data.RBMap
-import Lean.Data.RBTree
-import Lean.Data.Json.Printer
-import Lean.Util.Paths
+import Cache.Lean
 
 variable {α : Type}
-
-/-- Removes a parent path from the beginning of a path -/
-def System.FilePath.withoutParent (path parent : FilePath) : FilePath :=
-  let rec aux : List String → List String → List String
-    | z@(x :: xs), y :: ys => if x == y then aux xs ys else z
-    | [], _ => []
-    | x, [] => x
-  mkFilePath <| aux path.components parent.components
-
-def Nat.toHexDigits (n : Nat) : Nat → (res : String := "") → String
-  | 0, s => s
-  | len+1, s =>
-    let b := UInt8.ofNat (n >>> (len * 8))
-    Nat.toHexDigits n len <|
-      s.push (Nat.digitChar (b >>> 4).toNat) |>.push (Nat.digitChar (b &&& 15).toNat)
-
-def UInt64.asLTar (n : UInt64) : String :=
-  s!"{Nat.toHexDigits n.toNat 8}.ltar"
 
 open Lean
 
@@ -38,11 +16,28 @@ open System (FilePath)
 
 /-- Target directory for build files -/
 def LIBDIR : FilePath :=
-  ".lake" / "build" / "lib"
+  ".lake" / "build" / "lib" / "lean"
 
 /-- Target directory for IR files -/
 def IRDIR : FilePath :=
   ".lake" / "build" / "ir"
+
+/-- Determine if the package `mod` is part of the mathlib cache.
+
+TODO: write a better predicate. -/
+def isPartOfMathlibCache (mod : Name) : Bool := #[
+  `Mathlib,
+  `Batteries,
+  `Aesop,
+  `Cli,
+  `ImportGraph,
+  `LeanSearchClient,
+  `Plausible,
+  `Qq,
+  `ProofWidgets,
+  `Archive,
+  `Counterexamples,
+  `MathlibTest ].contains mod.getRoot
 
 /-- Target directory for caching -/
 initialize CACHEDIR : FilePath ← do
@@ -92,12 +87,16 @@ def getCurl : IO String := do
 def getLeanTar : IO String := do
   return if (← LEANTARBIN.pathExists) then LEANTARBIN.toString else "leantar"
 
-abbrev PackageDirs := Lean.RBMap String FilePath compare
-
 /--
 `CacheM` stores the following information:
 * the source directory where `Mathlib.lean` lies
-* package directories
+* the Lean search path. This contains
+  paths to the source directory of each imported package, i.e. where the `.lean` files
+  can be found.
+  (Note: in a standard setup these might also be the paths where the correpsponding `.lake`
+  folders are located. However, `lake` has multiple options to customise these paths, like
+  setting `srcDir` in a `lean_lib`. See `mkBuildPaths` below which currently assumes
+  that no such options are set in any mathlib dependency)
 * the build directory for proofwidgets
 -/
 structure CacheM.Context where
@@ -105,8 +104,6 @@ structure CacheM.Context where
   mathlibDepPath : FilePath
   /-- the Lean source search path -/
   srcSearchPath : SearchPath
-  /-- TODO: use search path instead -/
-  packageDirs : PackageDirs
   /-- build directory for proofwidgets -/
   proofWidgetsBuildDir : FilePath
 
@@ -126,26 +123,12 @@ private def CacheM.mathlibDepPath (sp : SearchPath) : IO FilePath := do
     | throw <| IO.userError s!"Mathlib not found in dependencies"
   return mathlibSource
 
--- TODO this should be generated automatically from the information in `lakefile.lean`.
 private def CacheM.getContext : IO CacheM.Context := do
   let sp ← initSrcSearchPath
   let mathlibSource ← CacheM.mathlibDepPath sp
   return {
     mathlibDepPath := mathlibSource,
     srcSearchPath := sp,
-    packageDirs := .ofList [
-      ("Mathlib", mathlibSource),
-      ("Archive", mathlibSource),
-      ("Counterexamples", mathlibSource),
-      ("MathlibTest", mathlibSource),
-      ("Aesop", LAKEPACKAGESDIR / "aesop"),
-      ("Batteries", LAKEPACKAGESDIR / "batteries"),
-      ("Cli", LAKEPACKAGESDIR / "Cli"),
-      ("ProofWidgets", LAKEPACKAGESDIR / "proofwidgets"),
-      ("Qq", LAKEPACKAGESDIR / "Qq"),
-      ("ImportGraph", LAKEPACKAGESDIR / "importGraph"),
-      ("LeanSearchClient", LAKEPACKAGESDIR / "LeanSearchClient"),
-      ("Plausible", LAKEPACKAGESDIR / "plausible")],
     proofWidgetsBuildDir := LAKEPACKAGESDIR / "proofwidgets" / ".lake" / "build"}
 
 /-- Run a `CacheM` in `IO` by loading the context from `LEAN_SRC_PATH`. -/
@@ -153,14 +136,26 @@ def CacheM.run (f : CacheM α) : IO α := do ReaderT.run f (← getContext)
 
 end
 
-def getPackageDirs : CacheM PackageDirs := return (← read).packageDirs
+/--
+`path` is assumed to be the unresolved file path corresponding to a module:
+For `Mathlib.Init` this would be `Mathlib/Init.lean`.
 
-def getPackageDir (path : FilePath) : CacheM FilePath := do
-  match path.withExtension "" |>.components.head? with
-  | none => throw <| IO.userError "Can't find package directory for empty path"
-  | some pkg => match (← getPackageDirs).find? pkg with
-    | none => throw <| IO.userError s!"Unknown package directory for {pkg}"
-    | some path => return path
+Find the source directory for `path`.
+This corresponds to the folder where the `.lean` files are located, i.e. for `Mathlib.Init`,
+the file should be located at `(← getSrcDir _) / "Mathlib" / "Init.lean`.
+
+Usually it is either `.` or something like `./.lake/packages/mathlib/`
+-/
+def getSrcDir (path : FilePath) : CacheM FilePath := do
+  let sp := (← read).srcSearchPath
+
+  -- `path` is a unresolved file name like `Aesop/Build.lean`
+  let mod : Name := .fromComponents <| path.withExtension "" |>.components.map Name.mkSimple
+
+  let .some srcDir ← sp.findWithExtBase "lean" mod |
+    throw <| IO.userError s!"Unknown package directory for {mod}\nsearch paths: {sp}"
+
+  return srcDir
 
 /-- Runs a terminal command and retrieves its output, passing the lines to `processLine` -/
 partial def runCurlStreaming (args : Array String) (init : α)
@@ -291,7 +286,21 @@ Given a path to a Lean file, concatenates the paths to its build files.
 Each build file also has a `Bool` indicating whether that file is required for caching to proceed.
 -/
 def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
-  let packageDir ← getPackageDir path
+  /-
+  TODO: if `srcDir` or other custom lake layout options are set in the `lean_lib`,
+  `packageSrcDir / LIBDIR` might be the wrong path!
+
+  See [Lake documentation](https://github.com/leanprover/lean4/tree/master/src/lake#layout)
+  for available options.
+
+  If a dependency is added to mathlib which uses such a custom layout, `mkBuildPaths`
+  needs to be adjusted!
+  -/
+  let packageDir ← getSrcDir path
+  if !(← (packageDir / ".lake").isDir) then
+    IO.eprintln <| s!"Warning: {packageDir / ".lake"} seems not to exist, most likely `cache` \
+      will not work as expected!"
+
   return [
     -- Note that `packCache` below requires that the `.trace` file is first in this list.
     (packageDir / LIBDIR / path.withExtension "trace", true),
@@ -359,16 +368,32 @@ def unpackCache (hashMap : ModuleHashMap) (force : Bool) : CacheM Unit := do
   if size > 0 then
     let now ← IO.monoMsNow
     IO.println s!"Decompressing {size} file(s)"
-    let isMathlibRoot ← isMathlibRoot
     let args := (if force then #["-f"] else #[]) ++ #["-x", "--delete-corrupted", "-j", "-"]
     let child ← IO.Process.spawn { cmd := ← getLeanTar, args, stdin := .piped }
     let (stdin, child) ← child.takeStdin
+    /-
+    TODO: The case distinction below could be avoided by making use of the `leantar` option `-C`
+    (rsp the `"base"` field in JSON format, see below) here and in `packCache`.
+
+    See also https://github.com/leanprover-community/mathlib4/pull/8767#discussion_r1422077498
+
+    Doing this, one could avoid that the package directory path (for dependencies) appears
+    inside the leantar files, but unless `cache` is upstreamed to work on upstream packages
+    themselves (without `Mathlib`), this might not be too useful to change.
+
+    NOTE: making changes to the generated .ltar files invalidates them while it *DOES NOT* change
+    the file hash! This means any such change needs to be accompanied by a change
+    to the root hash affecting *ALL* files
+    (e.g. any modification to lakefile, lean-toolchain or manifest)
+    -/
+    let isMathlibRoot ← isMathlibRoot
     let mathlibDepPath := (← read).mathlibDepPath.toString
     let config : Array Lean.Json := hashMap.fold (init := #[]) fun config path hash =>
       let pathStr := s!"{CACHEDIR / hash.asLTar}"
       if isMathlibRoot || !isPathFromMathlib path then
         config.push <| .str pathStr
-      else -- only mathlib files, when not in the mathlib4 repo, need to be redirected
+      else
+        -- only mathlib files, when not in the mathlib4 repo, need to be redirected
         config.push <| .mkObj [("file", pathStr), ("base", mathlibDepPath)]
     stdin.putStr <| Lean.Json.compress <| .arr config
     let exitCode ← child.wait

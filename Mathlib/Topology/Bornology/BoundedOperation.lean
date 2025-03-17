@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Analysis.Normed.Group.Basic
-import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Topology.MetricSpace.ProperSpace.Real
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Bounded operations

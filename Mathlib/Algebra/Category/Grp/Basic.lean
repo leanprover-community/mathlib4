@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Group.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
@@ -169,14 +168,14 @@ lemma ofHom_comp {X Y Z : Type u} [Group X] [Group Y] [Group Z]
 lemma ofHom_apply {X Y : Type u} [Group X] [Group Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[to_additive (attr := simp)]
+-- This is essentially an alias for `Iso.hom_inv_id_apply`; consider deprecation?
+@[to_additive]
 lemma inv_hom_apply {X Y : Grp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+-- This is essentially an alias for `Iso.inv_hom_id_apply`; consider deprecation?
+@[to_additive]
 lemma hom_inv_apply {X Y : Grp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 @[to_additive (attr := deprecated "use `coe_comp` instead" (since := "2025-01-28"))]
@@ -215,9 +214,6 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   intro _ _ h
   ext
   apply ConcreteCategory.congr_hom h
-
-@[to_additive]
-instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (Grp.of G) := i
 
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
@@ -391,14 +387,14 @@ lemma ofHom_comp {X Y Z : Type u} [CommGroup X] [CommGroup Y] [CommGroup Z]
 lemma ofHom_apply {X Y : Type u} [CommGroup X] [CommGroup Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
-@[to_additive (attr := simp)]
+-- This is essentially an alias for `Iso.hom_inv_id_apply`; consider deprecation?
+@[to_additive]
 lemma inv_hom_apply {X Y : CommGrp} (e : X ≅ Y) (x : X) : e.inv (e.hom x) = x := by
-  rw [← comp_apply]
   simp
 
-@[to_additive (attr := simp)]
+-- This is essentially an alias for `Iso.inv_hom_id_apply`; consider deprecation?
+@[to_additive]
 lemma hom_inv_apply {X Y : CommGrp} (e : X ≅ Y) (s : Y) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
   simp
 
 @[to_additive (attr := deprecated "use `coe_comp` instead" (since := "2025-01-28"))]
@@ -406,10 +402,6 @@ alias coe_comp' := coe_comp
 
 @[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
 alias coe_id' := coe_id
-
-@[to_additive]
-instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
-  i
 
 @[to_additive]
 instance hasForgetToGroup : HasForget₂ CommGrp Grp where

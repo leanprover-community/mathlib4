@@ -6,15 +6,12 @@ Authors: Leonardo de Moura
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.List.Defs
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Common
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
-
-Porting note:
-This file used to be in the core library. It was moved to `mathlib` and renamed to `init` to avoid
-name clashes. -/
+-/
 
 open Nat Function Option
 
@@ -114,7 +111,7 @@ theorem mem_cons_of_mem {a : α} {s : Stream' α} (b : α) : a ∈ s → a ∈ b
 
 theorem eq_or_mem_of_mem_cons {a b : α} {s : Stream' α} : (a ∈ b::s) → a = b ∨ a ∈ s :=
     fun ⟨n, h⟩ => by
-  cases' n with n'
+  rcases n with - | n'
   · left
     exact h
   · right
@@ -533,13 +530,18 @@ theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min 
 @[simp] theorem concat_take_get {n : ℕ} {s : Stream' α} : s.take n ++ [s.get n] = s.take (n + 1) :=
   (take_succ' n).symm
 
-theorem get?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n).get? k = s.get k
-  | 0, _+1, _ => rfl
-  | k+1, n+1, h => by rw [take_succ, List.get?, get?_take (Nat.lt_of_succ_lt_succ h), get_succ]
+theorem getElem?_take {s : Stream' α} : ∀ {k n}, k < n → (s.take n)[k]? = s.get k
+  | 0, _+1, _ => by simp only [length_take, zero_lt_succ, List.getElem?_eq_getElem]; rfl
+  | k+1, n+1, h => by
+    rw [take_succ, List.getElem?_cons_succ, getElem?_take (Nat.lt_of_succ_lt_succ h), get_succ]
 
-theorem get?_take_succ (n : ℕ) (s : Stream' α) :
-    List.get? (take (succ n) s) n = some (get s n) :=
-  get?_take (Nat.lt_succ_self n)
+@[deprecated (since := "2025-02-14")] alias get?_take := getElem?_take
+
+theorem getElem?_take_succ (n : ℕ) (s : Stream' α) :
+    (take (succ n) s)[n]? = some (get s n) :=
+  getElem?_take (Nat.lt_succ_self n)
+
+@[deprecated (since := "2025-02-14")] alias get?_take_succ := getElem?_take_succ
 
 @[simp] theorem dropLast_take {n : ℕ} {xs : Stream' α} :
     (Stream'.take n xs).dropLast = Stream'.take (n-1) xs := by
@@ -604,7 +606,7 @@ theorem take_theorem (s₁ s₂ : Stream' α) : (∀ n : ℕ, take n s₁ = take
       simp only [take, List.cons.injEq, and_true] at aux
     exact aux
   · have h₁ : some (get s₁ (succ n)) = some (get s₂ (succ n)) := by
-      rw [← get?_take_succ, ← get?_take_succ, h (succ (succ n))]
+      rw [← getElem?_take_succ, ← getElem?_take_succ, h (succ (succ n))]
     injection h₁
 
 protected theorem cycle_g_cons (a : α) (a₁ : α) (l₁ : List α) (a₀ : α) (l₀ : List α) :

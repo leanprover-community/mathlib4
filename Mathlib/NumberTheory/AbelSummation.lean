@@ -180,7 +180,7 @@ end abelSummationProof
 
 section specialversions
 
-/-- Specialized version of `sum_mul_eq_sub_sub_integral_mul` for the case `a = 0`.-/
+/-- Specialized version of `sum_mul_eq_sub_sub_integral_mul` for the case `a = 0` -/
 theorem sum_mul_eq_sub_integral_mul {b : ℝ} (hb : 0 ≤ b)
     (hf_diff : ∀ t ∈ Set.Icc 0 b, DifferentiableAt ℝ f t)
     (hf_int : IntegrableOn (deriv f) (Set.Icc 0 b)) :
@@ -271,7 +271,7 @@ theorem tendsto_sum_mul_atTop_nhds_one_sub_integral
 theorem tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (hc : c 0 = 0)
     (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ f t)
     (hf_int : LocallyIntegrableOn (deriv f) (Set.Ici 1)) {l : 𝕜}
-    (h_lim: Tendsto (fun n : ℕ ↦ f n * ∑ k ∈ Icc 0 n, c k) atTop (𝓝 l))
+    (h_lim : Tendsto (fun n : ℕ ↦ f n * ∑ k ∈ Icc 0 n, c k) atTop (𝓝 l))
     {g : ℝ → ℝ} (hg_dom : (fun t ↦ deriv f t * ∑ k ∈ Icc 0 ⌊t⌋₊, c k) =O[atTop] g)
     (hg_int : IntegrableAtFilter g atTop) :
     Tendsto (fun n : ℕ ↦ ∑ k ∈ Icc 0 n, f k * c k) atTop
