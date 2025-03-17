@@ -231,7 +231,7 @@ variable [Algebra K K'] [Finite K']
 
 theorem algebraMap_norm_eq_pow {x : K'} :
     algebraMap K K' (Algebra.norm K x) = x ^ ((Nat.card K' - 1) / (Nat.card K - 1)) := by
-  have := Finite.of_injective (algebraMap K K').injective
+  have := Finite.of_injective _ (algebraMap K K').injective
   have := Fintype.ofFinite K
   have := Fintype.ofFinite K'
   simp_rw [← Fintype.card_eq_nat_card, Algebra.norm_eq_prod_automorphisms,
