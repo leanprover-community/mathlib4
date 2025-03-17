@@ -437,7 +437,7 @@ open LieModule
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
 
-lemma root_space_ad_is_nilpotent [IsTriangularizable K H L] [FiniteDimensional K L]
+lemma root_space_ad_is_nilpotent' [IsTriangularizable K H L] [FiniteDimensional K L]
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (ad K L x) :=
   LieModule.root_space_ad_is_nilpotent (M := L) H hχ hx
