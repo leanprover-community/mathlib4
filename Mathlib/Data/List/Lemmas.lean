@@ -17,8 +17,7 @@ variable {α β γ : Type*}
 
 namespace List
 
-theorem setOf_mem_empty : { x | x ∈ ([] : List α) } = ∅ := by simp
-
+@[simp]
 theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
   Set.eq_empty_iff_forall_not_mem.trans eq_nil_iff_forall_not_mem.symm
 
