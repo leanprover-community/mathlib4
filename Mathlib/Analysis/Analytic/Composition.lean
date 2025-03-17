@@ -746,7 +746,7 @@ theorem HasFPowerSeriesWithinAt.comp {g : F → G} {f : E → F} {q : FormalMult
   -- First step: the partial sum of `p` converges to `f (x + y)`.
   have A : Tendsto (fun n ↦ (n, ∑ a ∈ Finset.Ico 1 n, p a fun _ ↦ y))
       atTop (atTop ×ˢ 𝓝 (f (x + y) - f x)) := by
-    apply Tendsto.prod_mk tendsto_id
+    apply Tendsto.prodMk tendsto_id
     have L : ∀ᶠ n in atTop, (∑ a ∈ Finset.range n, p a fun _b ↦ y) - f x
         = ∑ a ∈ Finset.Ico 1 n, p a fun _b ↦ y := by
       rw [eventually_atTop]
