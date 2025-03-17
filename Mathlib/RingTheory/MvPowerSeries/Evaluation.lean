@@ -157,7 +157,6 @@ theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
     [UniformAddGroup R] [UniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : HasEval a) :
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
-  classical
   apply uniformContinuous_of_continuousAt_zero
   rw [ContinuousAt, map_zero, IsLinearTopology.hasBasis_ideal.tendsto_right_iff]
   intro I hI
@@ -208,12 +207,10 @@ theorem eval₂_coe (f : MvPolynomial σ R) :
   congr
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 
-theorem eval₂_C (r : R) :
-    eval₂ φ a (C σ R r) = φ r := by
+theorem eval₂_C (r : R) : eval₂ φ a (C σ R r) = φ r := by
   rw [← coe_C, eval₂_coe, MvPolynomial.eval₂_C]
 
-theorem eval₂_X (s : σ) :
-    eval₂ φ a (X s) = a s := by
+theorem eval₂_X (s : σ) : eval₂ φ a (X s) = a s := by
   rw [← coe_X, eval₂_coe, MvPolynomial.eval₂_X]
 
 variable [IsTopologicalSemiring R] [UniformAddGroup R]
@@ -292,8 +289,8 @@ theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
   · exact Continuous.comp hε (continuous_eval₂ hφ ha)
   · intro p
     simp only [Function.comp_apply, eval₂_coe]
-    rw [← MvPolynomial.coe_eval₂Hom, ← comp_apply, MvPolynomial.comp_eval₂Hom]
-    rfl
+    rw [← MvPolynomial.coe_eval₂Hom, ← comp_apply, MvPolynomial.comp_eval₂Hom,
+      MvPolynomial.coe_eval₂Hom]
   · simp only [coe_comp, Continuous.comp hε hφ]
 
 variable [Algebra R S] [ContinuousSMul R S]
@@ -306,7 +303,7 @@ noncomputable def aeval (ha : HasEval a) : MvPowerSeries σ R →ₐ[R] S where
     rw [← c_eq_algebraMap, coe_eval₂Hom, eval₂_C]
 
 theorem coe_aeval (ha : HasEval a) :
-    ⇑(aeval ha) = eval₂ (algebraMap R S) a := by
+    ↑(aeval ha) = eval₂ (algebraMap R S) a := by
   simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
 
 theorem continuous_aeval (ha : HasEval a) :
@@ -318,11 +315,12 @@ theorem aeval_coe (ha : HasEval a) (p : MvPolynomial σ R) :
     aeval ha (p : MvPowerSeries σ R) = p.aeval a := by
   rw [coe_aeval, aeval_def, eval₂_coe]
 
+@[simp]
 theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε) :
-    ε = aeval (HasEval.X.map hε) := by
+    aeval (HasEval.X.map hε) = ε := by
   apply DFunLike.ext'
   rw [coe_aeval]
-  apply eval₂_unique (continuous_algebraMap R S) (HasEval.X.map hε) hε
+  refine (eval₂_unique (continuous_algebraMap R S) (HasEval.X.map hε) hε ?_).symm
   intro p
   change ε.comp (coeToMvPowerSeries.algHom R) p = _
   conv_lhs => rw [← p.aeval_X_left_apply, MvPolynomial.comp_aeval_apply, MvPolynomial.aeval_def]

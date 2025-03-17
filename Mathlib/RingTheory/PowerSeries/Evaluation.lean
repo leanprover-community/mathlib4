@@ -158,7 +158,7 @@ noncomputable def aeval (ha : IsTopologicallyNilpotent a) :
   MvPowerSeries.aeval (hasEval ha)
 
 theorem coe_aeval (ha : IsTopologicallyNilpotent a) :
-    ⇑(aeval ha) = eval₂ (algebraMap R S) a :=
+    ↑(aeval ha) = eval₂ (algebraMap R S) a :=
   MvPowerSeries.coe_aeval (hasEval ha)
 
 theorem continuous_aeval (ha : IsTopologicallyNilpotent a) :
@@ -169,8 +169,9 @@ theorem aeval_coe (ha : IsTopologicallyNilpotent a) (p : Polynomial R) :
     aeval ha (p : PowerSeries R) = Polynomial.aeval a p := by
   rw [coe_aeval, Polynomial.aeval_def, eval₂_coe]
 
+@[simp]
 theorem aeval_unique {ε : PowerSeries R →ₐ[R] S} (hε : Continuous ε) :
-    ε = aeval (isTopologicallyNilpotent_X.map hε) :=
+    aeval (isTopologicallyNilpotent_X.map hε) = ε:=
   MvPowerSeries.aeval_unique hε
 
 theorem hasSum_aeval (ha : IsTopologicallyNilpotent a) (f : PowerSeries R) :
