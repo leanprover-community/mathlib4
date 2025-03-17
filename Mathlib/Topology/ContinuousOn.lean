@@ -286,7 +286,7 @@ alias nhdsWithin_compl_singleton_sup_pure := nhdsNE_sup_pure
 @[simp]
 theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [← sup_comm, nhdsNE_sup_pure]
 
-theorem nhdsWithin_prod {α : Type*} [TopologicalSpace α] {β : Type*} [TopologicalSpace β]
+theorem nhdsWithin_prod [TopologicalSpace β]
     {s u : Set α} {t v : Set β} {a : α} {b : β} (hu : u ∈ 𝓝[s] a) (hv : v ∈ 𝓝[t] b) :
     u ×ˢ v ∈ 𝓝[s ×ˢ t] (a, b) := by
   rw [nhdsWithin_prod_eq]
@@ -420,6 +420,17 @@ theorem eventuallyEq_nhdsWithin_iff {f g : α → β} {s : Set α} {a : α} :
     f =ᶠ[𝓝[s] a] g ↔ ∀ᶠ x in 𝓝 a, x ∈ s → f x = g x :=
   mem_inf_principal
 
+/-- Two functions agree on a neighborhood of `x` if they agree at `x` and in a punctured
+neighborhood. -/
+theorem eventuallyEq_nhds_of_eventuallyEq_nhdsNE {f g : α → β} {a : α} (h₁ : f =ᶠ[𝓝[≠] a] g)
+    (h₂ : f a = g a) :
+    f =ᶠ[𝓝 a] g := by
+  filter_upwards [eventually_nhdsWithin_iff.1 h₁]
+  intro x hx
+  by_cases h₂x : x = a
+  · simp [h₂x, h₂]
+  · tauto
+
 theorem eventuallyEq_nhdsWithin_of_eqOn {f g : α → β} {s : Set α} {a : α} (h : EqOn f g s) :
     f =ᶠ[𝓝[s] a] g :=
   mem_inf_of_right h
@@ -455,7 +466,7 @@ theorem Filter.EventuallyEq.eq_of_nhdsWithin {s : Set α} {f g : α → β} {a :
     (hmem : a ∈ s) : f a = g a :=
   h.self_of_nhdsWithin hmem
 
-theorem eventually_nhdsWithin_of_eventually_nhds {α : Type*} [TopologicalSpace α] {s : Set α}
+theorem eventually_nhdsWithin_of_eventually_nhds {s : Set α}
     {a : α} {p : α → Prop} (h : ∀ᶠ x in 𝓝 a, p x) : ∀ᶠ x in 𝓝[s] a, p x :=
   mem_nhdsWithin_of_mem_nhds h
 
@@ -993,10 +1004,8 @@ theorem Continuous.comp_continuousOn {g : β → γ} {f : α → β} {s : Set α
 /-- Variant of `Continuous.comp_continuousOn` using the form `fun y ↦ g (f y)`
 instead of `g ∘ f`. -/
 @[fun_prop]
-theorem Continuous.comp_continuousOn'
-    {α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] {g : β → γ}
-    {f : α → β} {s : Set α} (hg : Continuous g) (hf : ContinuousOn f s) :
-    ContinuousOn (fun x ↦ g (f x)) s :=
+theorem Continuous.comp_continuousOn' {g : β → γ} {f : α → β} {s : Set α} (hg : Continuous g)
+    (hf : ContinuousOn f s) : ContinuousOn (fun x ↦ g (f x)) s :=
   hg.comp_continuousOn hf
 
 theorem ContinuousOn.comp_continuous {g : β → γ} {f : α → β} {s : Set β} (hg : ContinuousOn g s)
@@ -1012,7 +1021,7 @@ theorem ContinuousAt.comp₂_continuousWithinAt {f : β × γ → δ} {g : α �
     {s : Set α} (hf : ContinuousAt f (g x, h x)) (hg : ContinuousWithinAt g s x)
     (hh : ContinuousWithinAt h s x) :
     ContinuousWithinAt (fun x ↦ f (g x, h x)) s x :=
-  ContinuousAt.comp_continuousWithinAt hf (hg.prod_mk_nhds hh)
+  ContinuousAt.comp_continuousWithinAt hf (hg.prodMk_nhds hh)
 
 theorem ContinuousAt.comp₂_continuousWithinAt_of_eq {f : β × γ → δ} {g : α → β}
     {h : α → γ} {x : α} {s : Set α} {y : β × γ} (hf : ContinuousAt f y)
@@ -1020,7 +1029,6 @@ theorem ContinuousAt.comp₂_continuousWithinAt_of_eq {f : β × γ → δ} {g :
     ContinuousWithinAt (fun x ↦ f (g x, h x)) s x := by
   rw [← e] at hf
   exact hf.comp₂_continuousWithinAt hg hh
-
 
 /-!
 ### Image
@@ -1055,12 +1063,72 @@ theorem ContinuousOn.image_closure (hf : ContinuousOn f (closure s)) :
 ### Product
 -/
 
-theorem ContinuousWithinAt.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} {x : α} {y : β}
+theorem ContinuousWithinAt.prodMk {f : α → β} {g : α → γ} {s : Set α} {x : α}
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    ContinuousWithinAt (fun x => (f x, g x)) s x :=
+  hf.prodMk_nhds hg
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousWithinAt.prod := ContinuousWithinAt.prodMk
+
+@[fun_prop]
+theorem ContinuousOn.prodMk {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
+  (hf x hx).prodMk (hg x hx)
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousOn.prod := ContinuousOn.prodMk
+
+theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
+  continuous_fst.continuousOn
+
+theorem continuousWithinAt_fst {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.fst s p :=
+  continuous_fst.continuousWithinAt
+
+@[fun_prop]
+theorem ContinuousOn.fst {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (f x).1) s :=
+  continuous_fst.comp_continuousOn hf
+
+theorem ContinuousWithinAt.fst {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (fun x => (f x).fst) s a :=
+  continuousAt_fst.comp_continuousWithinAt h
+
+theorem continuousOn_snd {s : Set (α × β)} : ContinuousOn Prod.snd s :=
+  continuous_snd.continuousOn
+
+theorem continuousWithinAt_snd {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.snd s p :=
+  continuous_snd.continuousWithinAt
+
+@[fun_prop]
+theorem ContinuousOn.snd {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
+    ContinuousOn (fun x => (f x).2) s :=
+  continuous_snd.comp_continuousOn hf
+
+theorem ContinuousWithinAt.snd {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (fun x => (f x).snd) s a :=
+  continuousAt_snd.comp_continuousWithinAt h
+
+theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} :
+    ContinuousWithinAt f s x ↔
+      ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prodMk h2⟩
+
+theorem ContinuousWithinAt.prodMap {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} {x : α} {y : β}
     (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g t y) :
-    ContinuousWithinAt (Prod.map f g) (s ×ˢ t) (x, y) := by
-  unfold ContinuousWithinAt at *
-  rw [nhdsWithin_prod_eq, Prod.map, nhds_prod_eq]
-  exact hf.prod_map hg
+    ContinuousWithinAt (Prod.map f g) (s ×ˢ t) (x, y) :=
+  .prodMk (hf.comp continuousWithinAt_fst mapsTo_fst_prod)
+    (hg.comp continuousWithinAt_snd mapsTo_snd_prod)
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousWithinAt.prod_map := ContinuousWithinAt.prodMap
+
+theorem ContinuousOn.prodMap {f : α → γ} {g : β → δ} {s : Set α} {t : Set β} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) := fun ⟨x, y⟩ ⟨hx, hy⟩ =>
+  (hf x hx).prodMap (hg y hy)
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousOn.prod_map := ContinuousOn.prodMap
 
 theorem continuousWithinAt_prod_of_discrete_left [DiscreteTopology α]
     {f : α × β → γ} {s : Set (α × β)} {x : α × β} :
@@ -1109,55 +1177,6 @@ theorem isOpenMap_prod_of_discrete_right [DiscreteTopology β] {f : α × β →
     IsOpenMap f ↔ ∀ b, IsOpenMap (f ⟨·, b⟩) := by
   simp_rw [isOpenMap_iff_nhds_le, Prod.forall, forall_swap (α := α) (β := β), nhds_prod_eq,
     nhds_discrete, prod_pure, map_map]; rfl
-
-theorem ContinuousOn.prod_map {f : α → γ} {g : β → δ} {s : Set α} {t : Set β}
-    (hf : ContinuousOn f s) (hg : ContinuousOn g t) : ContinuousOn (Prod.map f g) (s ×ˢ t) :=
-  fun ⟨x, y⟩ ⟨hx, hy⟩ => ContinuousWithinAt.prod_map (hf x hx) (hg y hy)
-
-theorem ContinuousWithinAt.prod {f : α → β} {g : α → γ} {s : Set α} {x : α}
-    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun x => (f x, g x)) s x :=
-  hf.prod_mk_nhds hg
-
-@[fun_prop]
-theorem ContinuousOn.prod {f : α → β} {g : α → γ} {s : Set α} (hf : ContinuousOn f s)
-    (hg : ContinuousOn g s) : ContinuousOn (fun x => (f x, g x)) s := fun x hx =>
-  ContinuousWithinAt.prod (hf x hx) (hg x hx)
-
-theorem continuousOn_fst {s : Set (α × β)} : ContinuousOn Prod.fst s :=
-  continuous_fst.continuousOn
-
-theorem continuousWithinAt_fst {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.fst s p :=
-  continuous_fst.continuousWithinAt
-
-@[fun_prop]
-theorem ContinuousOn.fst {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (f x).1) s :=
-  continuous_fst.comp_continuousOn hf
-
-theorem ContinuousWithinAt.fst {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => (f x).fst) s a :=
-  continuousAt_fst.comp_continuousWithinAt h
-
-theorem continuousOn_snd {s : Set (α × β)} : ContinuousOn Prod.snd s :=
-  continuous_snd.continuousOn
-
-theorem continuousWithinAt_snd {s : Set (α × β)} {p : α × β} : ContinuousWithinAt Prod.snd s p :=
-  continuous_snd.continuousWithinAt
-
-@[fun_prop]
-theorem ContinuousOn.snd {f : α → β × γ} {s : Set α} (hf : ContinuousOn f s) :
-    ContinuousOn (fun x => (f x).2) s :=
-  continuous_snd.comp_continuousOn hf
-
-theorem ContinuousWithinAt.snd {f : α → β × γ} {s : Set α} {a : α} (h : ContinuousWithinAt f s a) :
-    ContinuousWithinAt (fun x => (f x).snd) s a :=
-  continuousAt_snd.comp_continuousWithinAt h
-
-theorem continuousWithinAt_prod_iff {f : α → β × γ} {s : Set α} {x : α} :
-    ContinuousWithinAt f s x ↔
-      ContinuousWithinAt (Prod.fst ∘ f) s x ∧ ContinuousWithinAt (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun ⟨h1, h2⟩ => h1.prod h2⟩
 
 /-!
 ### Pi
@@ -1495,9 +1514,7 @@ theorem continuousOn_piecewise_ite [∀ x, Decidable (x ∈ t)]
 
 /-- If `f` is continuous on an open set `s` and continuous at each point of another
 set `t` then `f` is continuous on `s ∪ t`. -/
-lemma ContinuousOn.union_continuousAt
-    {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {s t : Set X} {f : X → Y} (s_op : IsOpen s)
+lemma ContinuousOn.union_continuousAt {f : α → β} (s_op : IsOpen s)
     (hs : ContinuousOn f s) (ht : ∀ x ∈ t, ContinuousAt f x) :
     ContinuousOn f (s ∪ t) :=
   continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
@@ -1506,8 +1523,8 @@ lemma ContinuousOn.union_continuousAt
 
 open Classical in
 /-- If a function is continuous on two closed sets, it is also continuous on their union. -/
-theorem ContinuousOn.union_isClosed {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) {f : X → Y} (hfs : ContinuousOn f s)
+theorem ContinuousOn.union_isClosed (hs : IsClosed s)
+    (ht : IsClosed t) {f : α → β} (hfs : ContinuousOn f s)
     (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
   refine fun x hx ↦ .union ?_ ?_
   · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_

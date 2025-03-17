@@ -311,7 +311,7 @@ theorem δ_natural {X Y X' Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
   simp [tensorHom_def]
 
 @[reassoc (attr := simp)]
-theorem left_unitality_hom  (X : C) :
+theorem left_unitality_hom (X : C) :
     δ F (𝟙_ C) X ≫ η F ▷ F.obj X ≫ (λ_ (F.obj X)).hom = F.map (λ_ X).hom := by
   rw [← Category.assoc, ← Iso.eq_comp_inv, left_unitality, ← Category.assoc,
     ← F.map_comp, Iso.hom_inv_id, F.map_id, id_comp]

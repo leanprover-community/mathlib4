@@ -177,7 +177,7 @@ namespace DifferentialsConstruction
 
 /-- The presheaf of relative differentials of a morphism of presheaves of
 commutative rings. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 noncomputable def relativeDifferentials' :
     PresheafOfModules.{u} (R ⋙ forget₂ _ _) where
   obj X := CommRingCat.KaehlerDifferential (φ'.app X)
