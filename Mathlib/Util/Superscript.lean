@@ -225,6 +225,60 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   | .ok newStack =>
     set { st with stack := stack ++ newStack }
 
+open PrettyPrinter.Delaborator
+
+/-- Returns the user-facing name of any constant or free variable. -/
+private def name : Expr → MetaM (Option Name)
+  | Expr.const name _ => pure name
+  | Expr.fvar name => name.getUserName
+  | _ => pure none
+
+/-- Returns `true` if every character in `s` can be subscripted. -/
+private def isSubscriptable (s : Name) : Bool :=
+  s.toString.toList.all Mapping.subscript.toSpecial.contains
+
+/-- Returns `true` if every character in `s` can be superscripted. -/
+private def isSuperscriptable (s : Name) : Bool :=
+  s.toString.toList.all Mapping.superscript.toSpecial.contains
+
+/-- Applies the predicate `f` to every explicit argument of `e`. -/
+private def check_args (e : Expr) (f : Expr → DelabM Unit) :
+    DelabM Unit := do
+  let args := e.getAppArgs
+  let kinds ← getParamKinds e.getAppFn args
+  guard <| kinds.size == args.size
+  args.zipIdx.zip kinds |>.filter
+    (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
+    fun ((x, i), _) ↦ SubExpr.withNaryArg i <| f x
+
+/-- The binary operations `+`, `-`, `=`, and `==` can be super/subscripted if
+their operands can be super/subscripted. -/
+private def isSpecialBinOp (e : Expr) : Bool :=
+  e.isAppOfArity ``HAdd.hAdd 6 ||
+  e.isAppOfArity ``HSub.hSub 6 ||
+  e.isAppOfArity ``Eq 3 ||
+  e.isAppOfArity ``BEq.beq 4
+
+-- TODO: what about dot notation?
+/-- Checks if the entire expression `e` can be superscripted (or subscripted). -/
+private def check_expr (e : Expr) (fname : Name → Bool)
+    (fexpr : Expr → DelabM Unit) : DelabM Unit := do
+  -- Any numeral is valid in a super/subscript, as is any constant or free
+  -- variable with a user-facing name that is valid in a super/subscript.
+  if (← name e).any fname || (← delab) matches `($_:num) then return
+  -- Function application is valid if all explicit arguments are valid and the
+  -- function name is valid (or one of `+`, `-`, `=`, `==`).
+  guard <| isSpecialBinOp e || (e.isApp && fname e.getAppFn.constName)
+  check_args e fexpr
+
+/-- Checks if the expression `e` can be subscripted. -/
+partial def subscriptable (e : Expr) : DelabM Unit :=
+  check_expr e isSubscriptable subscriptable
+
+/-- Checks if the expression `e` can be superscripted. -/
+partial def superscriptable (e : Expr) : DelabM Unit := do
+  check_expr e isSuperscriptable superscriptable
+
 end Superscript
 
 /--
@@ -263,6 +317,11 @@ def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscri
 
 initialize register_parser_alias superscript
 
+open PrettyPrinter.Delaborator in
+/-- Checks that the provided expression can be superscripted before delaborating. -/
+def delabSuperscript (e : Expr) : Delab :=
+  Superscript.superscriptable e >>= fun () ↦ delab
+
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
 ```
@@ -298,5 +357,10 @@ for some context. -/
 def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript termParser
 
 initialize register_parser_alias subscript
+
+open PrettyPrinter.Delaborator in
+/-- Checks that the provided expression can be subscripted before delaborating. -/
+def delabSubscript (e : Expr) : Delab :=
+  Superscript.subscriptable e >>= fun () ↦ delab
 
 end Mathlib.Tactic
