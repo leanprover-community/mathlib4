@@ -10,8 +10,7 @@ import Mathlib.Algebra.Group.TypeTags.Basic
 # Lemmas about `Multiplicative ℕ`
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open Multiplicative
 

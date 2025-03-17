@@ -122,8 +122,8 @@ lemma antidiagonal_congr' (hp : p ∈ antidiagonal n) (hq : q ∈ antidiagonal n
 
 end AddCancelCommMonoid
 
-section CanonicallyOrderedAddCommMonoid
-variable [CanonicallyOrderedAddCommMonoid A] [HasAntidiagonal A]
+section CanonicallyOrderedAdd
+variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [HasAntidiagonal A]
 
 @[simp]
 theorem antidiagonal_zero : antidiagonal (0 : A) = {(0, 0)} := by
@@ -140,10 +140,10 @@ theorem antidiagonal.snd_le {n : A} {kl : A × A} (hlk : kl ∈ antidiagonal n) 
   use kl.1
   rwa [mem_antidiagonal, eq_comm, add_comm] at hlk
 
-end CanonicallyOrderedAddCommMonoid
+end CanonicallyOrderedAdd
 
 section OrderedSub
-variable [CanonicallyOrderedAddCommMonoid A] [Sub A] [OrderedSub A]
+variable [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A] [Sub A] [OrderedSub A]
 variable [AddLeftReflectLE A]
 variable [HasAntidiagonal A]
 
@@ -152,7 +152,7 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
   ext ⟨a, b⟩
   suffices a = m → (a + b = n ↔ m ≤ n ∧ b = n - m) by
     rw [mem_filter, mem_antidiagonal, apply_ite (fun n ↦ (a, b) ∈ n), mem_singleton,
-      Prod.mk.inj_iff, ite_prop_iff_or]
+      Prod.mk_inj, ite_prop_iff_or]
     simpa [← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
   rintro rfl
   constructor
@@ -184,7 +184,7 @@ def sigmaAntidiagonalEquivProd [AddMonoid A] [HasAntidiagonal A] :
   right_inv _ := rfl
 
 variable {A : Type*}
-  [CanonicallyOrderedAddCommMonoid A]
+  [OrderedAddCommMonoid A] [CanonicallyOrderedAdd A]
   [LocallyFiniteOrder A] [DecidableEq A]
 
 /-- In a canonically ordered add monoid, the antidiagonal can be construct by filtering.

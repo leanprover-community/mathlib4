@@ -3,7 +3,7 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Floris van Doorn
 -/
-import Mathlib.Geometry.Manifold.IsManifold
+import Mathlib.Geometry.Manifold.IsManifold.ExtChartAt
 import Mathlib.Geometry.Manifold.LocalInvariantProperties
 
 /-!
@@ -224,9 +224,6 @@ theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
       ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) := by
   rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
 
-@[deprecated (since := "2024-04-30")]
-alias mdifferentiableWithinAt_iff_liftPropWithinAt := mdifferentiableWithinAt_iff'
-
 theorem MDifferentiableWithinAt.continuousWithinAt {f : M → M'} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I I' f s x) :
     ContinuousWithinAt f s x :=
@@ -255,12 +252,7 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
   rw [MDifferentiableAt, liftPropAt_iff]
   congrm _ ∧ ?_
-  simp [DifferentiableWithinAtProp, Set.univ_inter]
-  -- Porting note: `rfl` wasn't needed
-  rfl
-
-@[deprecated (since := "2024-04-30")]
-alias mdifferentiableAt_iff_liftPropAt := mdifferentiableAt_iff
+  simp [DifferentiableWithinAtProp, Set.univ_inter, Function.comp_assoc]
 
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :
     ContinuousAt f x :=

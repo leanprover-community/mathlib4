@@ -19,7 +19,7 @@ implementation. Use `ℕ∞` instead unless you care about computability.
 The following instances are defined:
 
 * `OrderedAddCommMonoid PartENat`
-* `CanonicallyOrderedAddCommMonoid PartENat`
+* `CanonicallyOrderedAdd PartENat`
 * `CompleteLinearOrder PartENat`
 
 There is no additive analogue of `MonoidWithZero`; if there were then `PartENat` could
@@ -106,7 +106,7 @@ theorem some_eq_natCast (n : ℕ) : some n = n :=
 instance : CharZero PartENat where
   cast_injective := Part.some_injective
 
-/-- Alias of `Nat.cast_inj` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_inj` specialized to `PartENat` -/
 theorem natCast_inj {x y : ℕ} : (x : PartENat) = y ↔ x = y :=
   Nat.cast_inj
 
@@ -215,8 +215,6 @@ instance decidableLe (x y : PartENat) [Decidable x.Dom] [Decidable y.Dom] : Deci
     if hy : y.Dom then isFalse fun h => hx <| dom_of_le_of_dom h hy
     else isTrue ⟨fun h => (hy h).elim, fun h => (hy h).elim⟩
 
--- Porting note: Removed. Use `Nat.castAddMonoidHom` instead.
-
 instance partialOrder : PartialOrder PartENat where
   le := (· ≤ ·)
   le_refl _ := ⟨id, fun _ => le_rfl⟩
@@ -236,12 +234,12 @@ theorem lt_def (x y : PartENat) : x < y ↔ ∃ hx : x.Dom, ∀ hy : y.Dom, x.ge
       specialize H hy
       specialize h fun _ => hy
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       rw [not_le] at h
       exact h
     · specialize h fun hx' => (hx hx').elim
       rw [not_forall] at h
-      cases' h with hx' h
+      obtain ⟨hx', h⟩ := h
       exact (hx hx').elim
   · rintro ⟨hx, H⟩
     exact ⟨⟨fun _ => hx, fun hy => (H hy).le⟩, fun hxy h => not_lt_of_le (h _) (H _)⟩
@@ -272,10 +270,10 @@ instance orderTop : OrderTop PartENat where
 instance : ZeroLEOneClass PartENat where
   zero_le_one := bot_le
 
-/-- Alias of `Nat.cast_le` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_le` specialized to `PartENat` -/
 theorem coe_le_coe {x y : ℕ} : (x : PartENat) ≤ y ↔ x ≤ y := Nat.cast_le
 
-/-- Alias of `Nat.cast_lt` specialized to `PartENat` --/
+/-- Alias of `Nat.cast_lt` specialized to `PartENat` -/
 theorem coe_lt_coe {x y : ℕ} : (x : PartENat) < y ↔ x < y := Nat.cast_lt
 
 @[simp]
@@ -391,11 +389,7 @@ noncomputable instance linearOrder : LinearOrder PartENat :=
     le_total := IsTotal.total
     decidableLE := Classical.decRel _
     max := (· ⊔ ·)
-    -- Porting note: was `max_def := @sup_eq_maxDefault _ _ (id _) _ }`
-    max_def := fun a b => by
-      change (fun a b => a ⊔ b) a b = _
-      rw [@sup_eq_maxDefault PartENat _ (id _) _]
-      rfl }
+    max_def a b := congr_fun₂ (@sup_eq_maxDefault PartENat _ (_) _) _ _ }
 
 instance boundedOrder : BoundedOrder PartENat :=
   { PartENat.orderTop, PartENat.orderBot with }
@@ -407,10 +401,8 @@ noncomputable instance lattice : Lattice PartENat :=
     inf_le_right := min_le_right
     le_inf := fun _ _ _ => le_min }
 
-noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
-  { PartENat.semilatticeSup, PartENat.orderBot,
-    PartENat.orderedAddCommMonoid with
-    le_self_add := fun a b =>
+instance : CanonicallyOrderedAdd PartENat :=
+  { le_self_add := fun a b =>
       PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
         PartENat.casesOn a (top_add _).ge fun _ =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
@@ -432,11 +424,9 @@ protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ �
   rcases ne_top_iff.mp hz with ⟨k, rfl⟩
   induction' y using PartENat.casesOn with n
   · rw [top_add]
-    -- Porting note: was apply_mod_cast natCast_lt_top
-    norm_cast; apply natCast_lt_top
+    exact_mod_cast natCast_lt_top _
   norm_cast at h
-  -- Porting note: was `apply_mod_cast add_lt_add_right h`
-  norm_cast; apply add_lt_add_right h
+  exact_mod_cast add_lt_add_right h _
 
 protected theorem add_lt_add_iff_right {x y z : PartENat} (hz : z ≠ ⊤) : x + z < y + z ↔ x < y :=
   ⟨lt_of_add_lt_add_right, fun h => PartENat.add_lt_add_right h hz⟩
@@ -456,23 +446,20 @@ theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
   induction' y using PartENat.casesOn with n
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
-  -- Porting note: was `apply_mod_cast Nat.le_of_lt_succ; apply_mod_cast h`
-  norm_cast; apply Nat.le_of_lt_succ; norm_cast at h
+  exact_mod_cast Nat.le_of_lt_succ (by norm_cast at h)
 
 theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
   induction' y using PartENat.casesOn with n
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
-  -- Porting note: was `apply_mod_cast Nat.succ_le_of_lt; apply_mod_cast h`
-  norm_cast; apply Nat.succ_le_of_lt; norm_cast at h
+  exact_mod_cast Nat.succ_le_of_lt (by norm_cast at h)
 
 theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
   refine ⟨fun h => ?_, add_one_le_of_lt⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
   induction' y using PartENat.casesOn with n
   · apply natCast_lt_top
-  -- Porting note: was `apply_mod_cast Nat.lt_of_succ_le; apply_mod_cast h`
-  norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
+  exact_mod_cast Nat.lt_of_succ_le (by norm_cast at h)
 
 theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e := by
   rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, add_one_le_iff_lt (natCast_ne_top n)]
@@ -483,8 +470,7 @@ theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x �
   induction' y using PartENat.casesOn with n
   · rw [top_add]
     apply natCast_lt_top
-  -- Porting note: was `apply_mod_cast Nat.lt_succ_of_le; apply_mod_cast h`
-  norm_cast; apply Nat.lt_succ_of_le; norm_cast at h
+  exact_mod_cast Nat.lt_succ_of_le (by norm_cast at h)
 
 lemma lt_coe_succ_iff_le {x : PartENat} {n : ℕ} (hx : x ≠ ⊤) : x < n.succ ↔ x ≤ n := by
   rw [Nat.succ_eq_add_one n, Nat.cast_add, Nat.cast_one, lt_add_one_iff_lt hx]
@@ -554,16 +540,6 @@ theorem toWithTop_natCast' (n : ℕ) {_ : Decidable (n : PartENat).Dom} :
 theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n : PartENat).Dom} :
     toWithTop (ofNat(n) : PartENat) = OfNat.ofNat n := toWithTop_natCast' n
 
--- Porting note: statement changed. Mathlib 3 statement was
--- ```
--- @[simp] lemma to_with_top_le {x y : part_enat} :
---   Π [decidable x.dom] [decidable y.dom], by exactI to_with_top x ≤ to_with_top y ↔ x ≤ y :=
--- ```
--- This used to be really slow to typecheck when the definition of `ENat`
--- was still `deriving AddCommMonoidWithOne`. Now that I removed that it is fine.
--- (The problem was that the last `simp` got stuck at `CharZero ℕ∞ ≟ CharZero ℕ∞` where
--- one side used `instENatAddCommMonoidWithOne` and the other used
--- `NonAssocSemiring.toAddCommMonoidWithOne`. Now the former doesn't exist anymore.)
 @[simp]
 theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.Dom] :
     toWithTop x ≤ toWithTop y ↔ x ≤ y := by
@@ -571,17 +547,7 @@ theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.D
   · simp
   induction x using PartENat.casesOn generalizing hx
   · simp
-  · simp -- Porting note: this takes too long.
-
-/-
-Porting note: As part of the investigation above, I noticed that Lean4 does not
-find the following two instances which it could find in Lean3 automatically:
-```
-#synth Decidable (⊤ : PartENat).Dom
-variable {n : ℕ}
-#synth Decidable (n : PartENat).Dom
-```
--/
+  · simp
 
 @[simp]
 theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
@@ -590,7 +556,6 @@ theorem toWithTop_lt {x y : PartENat} [Decidable x.Dom] [Decidable y.Dom] :
 
 end WithTop
 
--- Porting note: new, extracted from `withTopEquiv`.
 /-- Coercion from `ℕ∞` to `PartENat`. -/
 @[coe]
 def ofENat : ℕ∞ → PartENat :=
@@ -598,10 +563,8 @@ def ofENat : ℕ∞ → PartENat :=
   | Option.none => none
   | Option.some n => some n
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 
--- Porting note: new. This could probably be moved to tests or removed.
 example (n : ℕ) : ((n : ℕ∞) : PartENat) = ↑n := rfl
 
 @[simp, norm_cast]
@@ -642,17 +605,13 @@ theorem ofENat_lt {x y : ℕ∞} : ofENat x < ofENat y ↔ x < y := by
 
 section WithTopEquiv
 
-open scoped Classical
-
+open scoped Classical in
 @[simp]
 theorem toWithTop_add {x y : PartENat} : toWithTop (x + y) = toWithTop x + toWithTop y := by
-  refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_
-  -- Porting note: was `simp [← Nat.cast_add, ← ENat.coe_add]`
-  · simp only [add_top, toWithTop_top', _root_.add_top]
-  · simp only [add_top, toWithTop_top', toWithTop_natCast', _root_.add_top, forall_const]
-  · simp only [top_add, toWithTop_top', toWithTop_natCast', _root_.top_add, forall_const]
-  · simp_rw [toWithTop_natCast', ← Nat.cast_add, toWithTop_natCast', forall_const]
+  refine PartENat.casesOn y ?_ ?_ <;> refine PartENat.casesOn x ?_ ?_ <;>
+    simp [add_top, top_add, ← Nat.cast_add, ← ENat.coe_add]
 
+open scoped Classical in
 /-- `Equiv` between `PartENat` and `ℕ∞` (for the order isomorphism see
 `withTopOrderIso`). -/
 @[simps]

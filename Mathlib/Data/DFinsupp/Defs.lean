@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Dependent functions with finite support
@@ -38,14 +42,13 @@ the `Add` instance as noncomputable. This design difference is independent of th
 definitions, or introduce two more definitions for the other combinations of decisions.
 -/
 
-assert_not_exists Finset.prod
-assert_not_exists Submonoid
+assert_not_exists Finset.prod Submonoid
 
 universe u u₁ u₂ v v₁ v₂ v₃ w x y l
 
 variable {ι : Type u} {γ : Type w} {β : ι → Type v} {β₁ : ι → Type v₁} {β₂ : ι → Type v₂}
-variable (β)
 
+variable (β) in
 /-- A dependent function `Π i, β i` with finite support, with notation `Π₀ i, β i`.
 
 Note that `DFinsupp.support` is the preferred API for accessing the support of the function,
@@ -56,8 +59,6 @@ structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
   toFun : ∀ i, β i
   /-- The support of a dependent function with finite support (aka `DFinsupp`). -/
   support' : Trunc { s : Multiset ι // ∀ i, i ∈ s ∨ toFun i = 0 }
-
-variable {β}
 
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `DFinsupp β`. -/
 notation3 "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r
@@ -229,6 +230,10 @@ def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i,
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) : coeFnAddMonoidHom v = v :=
+  rfl
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
@@ -564,8 +569,7 @@ theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 
 theorem erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
 
-theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι)
-    [∀ i' : ι, Decidable <| (i' ∈ ({i} : Set ι))] : -- Porting note: added Decidable hypothesis
+theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι) :
     (single i (x i)).piecewise (x.erase i) {i} = x := by
   ext j; rw [piecewise_apply]; split_ifs with h
   · rw [(id h : j = i), single_eq_same]
@@ -731,9 +735,9 @@ theorem erase_add_single (i : ι) (f : Π₀ i, β i) : f.erase i + single i (f 
 
 protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (h0 : p 0)
     (ha : ∀ (i b) (f : Π₀ i, β i), f i = 0 → b ≠ 0 → p f → p (single i b + f)) : p f := by
-  cases' f with f s
+  obtain ⟨f, s⟩ := f
   induction' s using Trunc.induction_on with s
-  cases' s with s H
+  obtain ⟨s, H⟩ := s
   induction' s using Multiset.induction_on with i s ih generalizing f
   · have : f = 0 := funext fun i => (H i).resolve_left (Multiset.not_mem_zero _)
     subst this
@@ -743,8 +747,8 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
       Function.comp, Subtype.coe_mk]
     have H2 : ∀ j, j ∈ s ∨ ite (j = i) 0 (f j) = 0 := by
       intro j
-      cases' H j with H2 H2
-      · cases' Multiset.mem_cons.1 H2 with H3 H3
+      rcases H j with H2 | H2
+      · rcases Multiset.mem_cons.1 H2 with H3 | H3
         · right; exact if_pos H3
         · left; exact H3
       right
@@ -757,7 +761,7 @@ protected theorem induction {p : (Π₀ i, β i) → Prop} (f : Π₀ i, β i) (
   have H3 : single i _ + _ = (⟨f, Trunc.mk ⟨i ::ₘ s, H⟩⟩ : Π₀ i, β i) := single_add_erase _ _
   rw [← H3]
   change p (single i (f i) + _)
-  cases' Classical.em (f i = 0) with h h
+  rcases Classical.em (f i = 0) with h | h
   · rw [h, single_zero, zero_add]
     exact H2
   refine ha _ _ _ ?_ h H2
@@ -795,7 +799,7 @@ theorem mk_sub [∀ i, AddGroup (β i)] {s : Finset ι} {x y : ∀ i : (↑s : S
   ext fun i => by simp only [sub_apply, mk_apply]; split_ifs <;> [rfl; rw [sub_zero]]
 
 /-- If `s` is a subset of `ι` then `mk_addGroupHom s` is the canonical additive
-group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i.$-/
+group homomorphism from $\prod_{i\in s}\beta_i$ to $\prod_{\mathtt{i : \iota}}\beta_i$. -/
 def mkAddGroupHom [∀ i, AddGroup (β i)] (s : Finset ι) :
     (∀ i : (s : Set ι), β ↑i) →+ Π₀ i : ι, β i where
   toFun := mk s
@@ -830,7 +834,7 @@ theorem support_mk'_subset {f : ∀ i, β i} {s : Multiset ι} {h} :
 
 @[simp]
 theorem mem_support_toFun (f : Π₀ i, β i) (i) : i ∈ f.support ↔ f i ≠ 0 := by
-  cases' f with f s
+  obtain ⟨f, s⟩ := f
   induction' s using Trunc.induction_on with s
   dsimp only [support, Trunc.lift_mk]
   rw [Finset.mem_filter, Multiset.mem_toFinset, coe_mk']
@@ -927,6 +931,23 @@ theorem mapRange_injective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 =
   ⟨fun h i x y eq ↦ single_injective (@h (single i x) (single i y) <| by
     simpa using congr_arg _ eq), fun h _ _ eq ↦ DFinsupp.ext fun i ↦ h i congr($eq i)⟩
 
+theorem mapRange_surjective (f : ∀ i, β₁ i → β₂ i) (hf : ∀ i, f i 0 = 0) :
+    Function.Surjective (mapRange f hf) ↔ ∀ i, Function.Surjective (f i) := by
+  refine ⟨fun h i u ↦ ?_, fun h x ↦ ?_⟩
+  · obtain ⟨x, hx⟩ := h (single i u)
+    exact ⟨x i, by simpa using congr($hx i)⟩
+  · obtain ⟨x, s, hs⟩ := x
+    have (i : ι) : ∃ u : β₁ i, f i u = x i ∧ (x i = 0 → u = 0) :=
+      (eq_or_ne (x i) 0).elim
+        (fun h ↦ ⟨0, (hf i).trans h.symm, fun _ ↦ rfl⟩)
+        (fun h' ↦ by
+          obtain ⟨u, hu⟩ := h i (x i)
+          exact ⟨u, hu, fun h'' ↦ (h' h'').elim⟩)
+    choose y hy using this
+    refine ⟨⟨y, Trunc.mk ⟨s, fun i ↦ ?_⟩⟩, ext fun i ↦ ?_⟩
+    · exact (hs i).imp_right (hy i).2
+    · simp [(hy i).1]
+
 variable [∀ (i) (x : β₁ i), Decidable (x ≠ 0)] [∀ (i) (x : β₂ i), Decidable (x ≠ 0)]
 
 theorem support_mapRange {f : ∀ i, β₁ i → β₂ i} {hf : ∀ i, f i 0 = 0} {g : Π₀ i, β₁ i} :
@@ -989,7 +1010,7 @@ theorem subtypeDomain_def (f : Π₀ i, β i) :
     f.subtypeDomain p = mk (f.support.subtype p) fun i => f i := by
   ext i; by_cases h2 : f i ≠ 0 <;> try simp at h2; dsimp; simp [h2]
 
-@[simp, nolint simpNF] -- Porting note: simpNF claims that LHS does not simplify, but it does
+@[simp]
 theorem support_subtypeDomain {f : Π₀ i, β i} :
     (subtypeDomain p f).support = f.support.subtype p := by
   ext i
@@ -1119,18 +1140,14 @@ section SigmaCurry
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
 
--- lean can't find these instances -- Porting note: but Lean 4 can!!!
 instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.hasAdd ι (fun i => Π₀ j, δ i j) _
 
 instance addZeroClass₂ [∀ i j, AddZeroClass (δ i j)] : AddZeroClass (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.addZeroClass ι (fun i => Π₀ j, δ i j) _
 
 instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.addMonoid ι (fun i => Π₀ j, δ i j) _
 
 end SigmaCurry
 
@@ -1185,7 +1202,7 @@ noncomputable def equivProdDFinsupp [∀ i, Zero (α i)] :
   toFun f := (f none, comapDomain some (Option.some_injective _) f)
   invFun f := f.2.extendWith f.1
   left_inv f := by
-    ext i; cases' i with i
+    ext i; obtain - | i := i
     · rw [extendWith_none]
     · rw [extendWith_some, comapDomain_apply]
   right_inv x := by

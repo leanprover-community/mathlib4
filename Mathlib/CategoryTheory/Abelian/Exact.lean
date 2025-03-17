@@ -176,7 +176,7 @@ theorem Abelian.tfae_mono {X Y : C} (f : X ⟶ Y) (Z : C) :
   tfae_finish
 
 open List in
-theorem Abelian.tfae_epi {X Y : C} (f : X ⟶ Y) (Z : C ) :
+theorem Abelian.tfae_epi {X Y : C} (f : X ⟶ Y) (Z : C) :
     TFAE [Epi f, cokernel.π f = 0, (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).Exact] := by
   tfae_have 2 → 1 := epi_of_cokernel_π_eq_zero _
   tfae_have 1 → 2
@@ -211,9 +211,6 @@ end
 end Functor
 
 namespace Functor
-
-@[deprecated (since := "2024-07-09")] alias CategoryTheory.Functor.map_exact :=
-  ShortComplex.Exact.map
 
 open Limits Abelian
 
@@ -263,11 +260,6 @@ lemma preservesHomology_of_map_exact : L.PreservesHomology where
       infer_instance
     exact (hL (ShortComplex.mk _ _ (kernel.condition f))
       (ShortComplex.exact_of_f_is_kernel _ (kernelIsKernel f))).fIsKernel
-
-@[deprecated (since := "2024-07-09")] alias preservesKernelsOfMapExact :=
-  PreservesHomology.preservesKernels
-@[deprecated (since := "2024-07-09")] alias preservesCokernelsOfMapExact :=
-  PreservesHomology.preservesCokernels
 
 end
 

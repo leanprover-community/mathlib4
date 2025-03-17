@@ -140,6 +140,27 @@ theorem isComplement_univ_right : IsComplement S univ ↔ ∃ g : G, S = {g} := 
 lemma IsComplement.mul_eq (h : IsComplement S T) : S * T = univ :=
   eq_univ_of_forall fun x ↦ by simpa [mem_mul] using (h.existsUnique x).exists
 
+@[to_additive (attr := simp)]
+lemma not_isComplement_empty_left : ¬ IsComplement ∅ T :=
+  fun h ↦ by simpa [eq_comm (a := ∅)] using h.mul_eq
+
+@[to_additive (attr := simp)]
+lemma not_isComplement_empty_right : ¬ IsComplement S ∅ :=
+  fun h ↦ by simpa [eq_comm (a := ∅)] using h.mul_eq
+
+@[to_additive]
+lemma IsComplement.nonempty_left (hst : IsComplement S T) : S.Nonempty := by
+  contrapose! hst; simp [hst]
+
+@[to_additive]
+lemma IsComplement.nonempty_right (hst : IsComplement S T) : T.Nonempty := by
+  contrapose! hst; simp [hst]
+
+@[to_additive] lemma IsComplement.pairwiseDisjoint_smul (hst : IsComplement S T) :
+    S.PairwiseDisjoint (· • T) := fun a ha b hb hab ↦ disjoint_iff_forall_ne.2 <| by
+  rintro _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩
+  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂:= (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
+
 @[to_additive AddSubgroup.IsComplement.card_mul_card]
 lemma IsComplement.card_mul_card (h : IsComplement S T) : Nat.card S * Nat.card T = Nat.card G :=
   (Nat.card_prod _ _).symm.trans <| Nat.card_congr <| Equiv.ofBijective _ h
@@ -501,8 +522,6 @@ theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T)
   ext
   rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_cancel]
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem equiv_mul_right (g : G) (k : K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
   have : (hSK.equiv (g * k)).fst = (hSK.equiv g).fst :=
@@ -516,8 +535,6 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * ⟨k, h⟩) :=
   equiv_mul_right _ g ⟨k, h⟩
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
   have : (hHT.equiv (h * g)).2 = (hHT.equiv g).2 := hHT.equiv_snd_eq_iff_rightCosetEquivalence.2 ?_
@@ -568,7 +585,7 @@ noncomputable def leftQuotientEquiv (hS : IsComplement S H) : G ⧸ H ≃ S :=
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemLeftTransversals.toEquiv := leftQuotientEquiv
 
-/-- A left transversal is finite iff the subgroup has finite index.-/
+/-- A left transversal is finite iff the subgroup has finite index. -/
 @[to_additive "A left transversal is finite iff the subgroup has finite index."]
 theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := by
   rw [← h.leftQuotientEquiv.finite_iff]
@@ -576,6 +593,9 @@ theorem finite_left_iff (h : IsComplement S H) : Finite S ↔ H.FiniteIndex := b
 
 @[deprecated (since := "2024-12-28")]
 alias _root_.Subgroup.MemLeftTransversals.finite_iff := finite_left_iff
+
+@[to_additive]
+lemma finite_left [H.FiniteIndex] (hS : IsComplement S H) : S.Finite := hS.finite_left_iff.2 ‹_›
 
 @[to_additive]
 theorem quotientGroupMk_leftQuotientEquiv (hS : IsComplement S H) (q : G ⧸ H) :
@@ -639,6 +659,9 @@ theorem finite_right_iff (h : IsComplement H T) : Finite T ↔ H.FiniteIndex := 
 alias _root_.Subgroup.MemRightTransversals.finite_iff := finite_right_iff
 
 @[to_additive]
+lemma finite_right [H.FiniteIndex] (hT : IsComplement H T) : T.Finite := hT.finite_right_iff.2 ‹_›
+
+@[to_additive]
 theorem mk''_rightQuotientEquiv (hT : IsComplement H T)
      (q : Quotient (QuotientGroup.rightRel H)) : Quotient.mk'' (rightQuotientEquiv hT q : G) = q :=
   (rightQuotientEquiv hT).symm_apply_apply q
@@ -687,11 +710,11 @@ section Action
 
 open Pointwise MulAction MemLeftTransversals
 
-/-- The collection of left transversals of a subgroup.-/
+/-- The collection of left transversals of a subgroup -/
 @[to_additive "The collection of left transversals of a subgroup."]
 abbrev LeftTransversal (H : Subgroup G) := {S : Set G // IsComplement S H}
 
-/-- The collection of right transversals of a subgroup.-/
+/-- The collection of right transversals of a subgroup -/
 @[to_additive "The collection of right transversals of a subgroup."]
 abbrev RightTransversal (H : Subgroup G) := {T : Set G // IsComplement H T}
 
@@ -809,6 +832,6 @@ theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
   rintro ⟨h', g, hg : g • a = a⟩ rfl
   specialize h1 (h * h') (by rwa [mul_smul, smul_def h', ← hg, ← mul_smul, hg])
   refine Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext ?_)
-  rwa [Subtype.ext_iff, coe_one, coe_mul, ← self_eq_mul_left, mul_assoc (↑h) (↑h') g] at h1
+  rwa [Subtype.ext_iff, coe_one, coe_mul, ← right_eq_mul, mul_assoc (↑h) (↑h') g] at h1
 
 end Subgroup

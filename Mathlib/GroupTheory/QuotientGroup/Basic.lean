@@ -10,7 +10,7 @@ import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Quotients of groups by normal subgroups
@@ -340,7 +340,7 @@ theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
   simp [Subgroup.comap_map_eq, sup_comm]
 
 /-- The **correspondence theorem**, or lattice theorem,
-  or fourth isomorphism theorem for multiplicative groups-/
+or fourth isomorphism theorem for multiplicative groups -/
 @[to_additive "The **correspondence theorem**, or lattice theorem,
   or fourth isomorphism theorem for additive groups"]
 def comapMk'OrderIso (N : Subgroup G) [hn : N.Normal] :

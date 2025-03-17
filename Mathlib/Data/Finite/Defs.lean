@@ -58,9 +58,7 @@ instances since they do not compute anything.
 finite, fintype, finite sets
 -/
 
-assert_not_exists Finset
-assert_not_exists MonoidWithZero
-assert_not_exists OrderedRing
+assert_not_exists Finset MonoidWithZero OrderedRing
 
 universe u v
 
@@ -131,7 +129,7 @@ instance {α : Type v} [Finite α] : Finite (ULift.{u} α) :=
 /-- A type is said to be infinite if it is not finite. Note that `Infinite α` is equivalent to
 `IsEmpty (Fintype α)` or `IsEmpty (Finite α)`. -/
 class Infinite (α : Sort*) : Prop where
-  /-- assertion that `α` is `¬Finite`-/
+  /-- assertion that `α` is `¬Finite` -/
   not_finite : ¬Finite α
 
 @[simp]
@@ -154,7 +152,7 @@ instance {α : Type v} [Infinite α] : Infinite (ULift.{u} α) :=
 theorem finite_or_infinite (α : Sort*) : Finite α ∨ Infinite α :=
   or_iff_not_imp_left.2 not_finite_iff_infinite.1
 
-/-- `Infinite α` is not `Finite`-/
+/-- `Infinite α` is not `Finite` -/
 theorem not_finite (α : Sort*) [Infinite α] [Finite α] : False :=
   @Infinite.not_finite α ‹_› ‹_›
 
@@ -235,7 +233,6 @@ variable {s t : Set α}
 theorem infinite_coe_iff {s : Set α} : Infinite s ↔ s.Infinite :=
   not_finite_iff_infinite.symm.trans finite_coe_iff.not
 
--- Porting note: something weird happened here
 alias ⟨_, Infinite.to_subtype⟩ := infinite_coe_iff
 
 end Set
