@@ -368,6 +368,7 @@ end
 section
 
 open LieAlgebra
+open Submodule
 
 variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
@@ -401,32 +402,28 @@ lemma root_space_ad_is_nilpotent
     exact hn hv n₀ this
   obtain ⟨n₀, hn₀⟩ := uniform_nilpotency_limit
   let A := (toEnd K L M x) ^ n₀
-  have s₁ : ∀ χ₂ ∈ s, genWeightSpace M χ₂ ≤
-      Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
-    intro _ a _ hm
-    exact (Submodule.span_mono (fun _ hx => Set.mem_biUnion a hx)) (Submodule.subset_span hm)
-  have s₂ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤
-      Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
+  have s₁ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤ span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
     apply sSup_le
     intro n hn
-    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at s₁ hn ⊢
+    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at hn ⊢
     obtain ⟨χ₂, hχ₂⟩ := hn
     subst hχ₂
-    exact s₁ χ₂ trivial
-  have s₃ : Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) = ⊤ := by
-    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂ ⊢
-    rw [iSup_genWeightSpace_eq_top' K H M] at s₂
-    apply top_le_iff.1 s₂
-  have s₄ (χ₂ : Weight K H M) (m : M) (m : genWeightSpace M χ₂) : A m = 0 :=
+    intro m hm
+    exact (span_mono (fun _ hx => Set.mem_biUnion (mem_univ χ₂) hx)) (subset_span hm)
+  have s₂ : span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) = ⊤ := by
+    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₁ ⊢
+    rw [iSup_genWeightSpace_eq_top' K H M] at s₁
+    apply top_le_iff.1 s₁
+  have s₃ (χ₂ : Weight K H M) (m : M) (m : genWeightSpace M χ₂) : A m = 0 :=
     (hn₀ χ₂) (mem_univ χ₂) m
-  have s₅ : A = 0 := by
+  have s₄ : A = 0 := by
     haveI := [Module K M]
-    apply (Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₃).2
+    apply (linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₂).2
     intro h₀
     obtain ⟨m, ⟨_, ⟨⟨χ₂, ⟨_, _⟩⟩, h₁⟩⟩⟩ := h₀
     rw [mem_iUnion] at h₁
     obtain ⟨_, h₂⟩ := h₁
-    have h₃ := s₄ χ₂ m
+    have h₃ := s₃ χ₂ m
     rw [Subtype.forall] at h₃
     exact h₃ m h₂
   use n₀
