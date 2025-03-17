@@ -389,7 +389,7 @@ lemma root_space_ad_is_nilpotent
   have Mm : Finite s := by
     exact Subtype.finite
 
-  have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n,
+  have helpMe : ∀ χ₂ ∈ s, ∃ n : ℕ, ∀ v : genWeightSpace M χ₂, ∀ m ≥ n,
       ((toEnd K L M x) ^ m) v = 0 := by
     intro χ₂ he
     obtain ⟨k, ⟨hk₁, hk₂⟩⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
@@ -399,42 +399,21 @@ lemma root_space_ad_is_nilpotent
     rw [hk₂, LieSubmodule.mem_bot] at h
     exact LinearMap.pow_map_zero_of_le hm h
 
+  have exists_uniform_n₀ : ∃ n₀ : ℕ, ∀ χ₂ ∈ s, ∀ v : genWeightSpace M χ₂,
+      ((toEnd K L M x) ^ n₀) v = 0 := by
+    choose fn₁ hn using helpMe
+    simp only [Subtype.forall] at hn ⊢
+    let fn₂ : (χ₂ : Weight K H M) → ℕ := fun χ₂ => fn₁ χ₂ (mem_univ χ₂)
+    let n₀ := s.toFinset.sup fn₂
+    use n₀
+    intro χ₂ hχ₂ v
+    specialize hn χ₂ hχ₂ v
+    intro hv
+    have : fn₁ χ₂ hχ₂ ≤ n₀ := by
+      apply Finset.le_sup (mem_toFinset.2 hχ₂)
+    exact hn hv n₀ this
 
-
-  have exists_global_n0 : ∃ n0 : ℕ, ∀ ε ∈ s, ∀ (v : genWeightSpace M ε), ((toEnd K L M x) ^ n0) v = 0 := by
-    let fs := Finite.toFinset Mm
-    choose n hn using helpMe
-    simp_all
-    let nn1 : (ε : Weight K H M) → ℕ := by
-      intro ε
-      have ttt : ε ∈ s := by
-        simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
-        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
-      apply n ε ttt
-    let n0 := fs.sup nn1
-    use n0
-    intro ε hε v
-    specialize hn ε hε v
-    intro ropi
-    have ropi2 := hn ropi
-    have ropi3 : n ε hε ≤ nn1 ε := by
-      simp_all
-      simp_all only [le_refl, s, nn1]
-    have ropi4 : nn1 ε ≤ n0 := by
-      simp_all
-      dsimp [n0]
-      have ttt : ε ∈ s := by
-        simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
-        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
-      have tttt : ε ∈ fs := by
-        simp_all only [le_refl, mem_univ, Finite.toFinset_setOf, Finset.filter_True, Finset.mem_univ, s, nn1, n0, fs]
-      exact Finset.le_sup tttt
-    have hellp : n ε hε ≤ n0 := by
-      linarith [ropi3, ropi4]
-    have ropi5 := ropi2 n0 hellp
-    exact ropi5
-
-  obtain ⟨n0, hn0⟩ := exists_global_n0
+  obtain ⟨n0, hn0⟩ := exists_uniform_n₀
   let A := (toEnd K L M x) ^ n0
   have r : ⨆ χ ∈ s, genWeightSpace M χ = ⊤ := by
     simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ,
@@ -501,11 +480,6 @@ lemma root_space_ad_is_nilpotent
     obtain ⟨d1, d2⟩ := d
     exact ttt1 e a d2
   use n0
-
-lemma root_space_ad_is_nilpotent2 [IsTriangularizable K H L] [FiniteDimensional K L]
-    {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
-    _root_.IsNilpotent (ad K L x) :=
-  root_space_ad_is_nilpotent (M := L) H hχ hx
 
 end
 
