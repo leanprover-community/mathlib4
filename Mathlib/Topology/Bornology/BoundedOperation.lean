@@ -102,6 +102,7 @@ lemma isBounded_mul [Bornology R] [Mul R] [BoundedMul R] {s t : Set R}
     (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t) :
     Bornology.IsBounded (s * t) := BoundedMul.isBounded_mul hs ht
 
+@[to_additive]
 lemma isBounded_pow {R : Type*} [Bornology R] [Monoid R] [BoundedMul R] {s : Set R}
     (s_bdd : Bornology.IsBounded s) (n : ℕ) :
     Bornology.IsBounded ((fun x ↦ x ^ n) '' s) := by
