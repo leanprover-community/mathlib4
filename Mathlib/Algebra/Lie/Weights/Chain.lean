@@ -7,11 +7,6 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
-import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Algebra.Lie.InvariantForm
-import Mathlib.Algebra.Lie.Weights.Linear
-import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.LinearAlgebra.PID
 import LeanCopilot
 
 /-!
