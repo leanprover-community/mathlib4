@@ -67,13 +67,13 @@ def fixedByFinite (K L : Type*) [Field K] [Field L] [Algebra K L] : Set (Subgrou
 @[deprecated (since := "2025-03-16")]
 alias IntermediateField.finiteDimensional_bot := IntermediateField.instFiniteSubtypeMemBot
 
-@[deprecated (since := "2025-03-16")]
+@[deprecated (since := "2025-03-12")]
 alias IntermediateField.fixingSubgroup.bot := IntermediateField.fixingSubgroup_bot
 
 /-- If `L/K` is a field extension, then we have `Gal(L/K) ∈ fixedByFinite K L`. -/
 theorem top_fixedByFinite {K L : Type*} [Field K] [Field L] [Algebra K L] :
     ⊤ ∈ fixedByFinite K L :=
-  ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup_bot K L⟩
+  ⟨⊥, IntermediateField.instFiniteSubtypeMemBot K, IntermediateField.fixingSubgroup_bot⟩
 
 @[deprecated (since := "2025-03-16")]
 alias finiteDimensional_sup := IntermediateField.finiteDimensional_sup
