@@ -248,48 +248,34 @@ lemma toAddMonoidHom_lmap :
 lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
   rfl
 
-end map
-
 section
 
-variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommGroup (α i)]
+variable {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommGroup (α i)]
 variable [∀ i, AddCommGroup (β i)] (f : ∀(i : ι), α i →+ β i)
 
-lemma mem_map_ker_iff (x : ⨁ i, α i) : x ∈ (map f).ker ↔ ∀ i, x i ∈ (f i).ker := by
-  refine ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
-  · rw [AddMonoidHom.mem_ker, ← map_apply, h, zero_apply]
-  · ext i
-    exact h i
+lemma ker_map : (map f).ker =
+    (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom α) := by
+  ext
+  simp [AddSubgroup.mem_pi, DirectSum.ext_iff]
 
-lemma of_mem_map_ker_iff [DecidableEq ι] (i : ι) (x : α i) :
-    (of α i x) ∈ (map f).ker ↔ x ∈ (f i).ker := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [AddMonoidHom.mem_ker, map_of] at h
-    exact DFinsupp.single_eq_zero.mp h
-  · simp [AddMonoidHom.mem_ker.mp h]
-
-lemma mem_map_range_iff (y : ⨁ i, β i) [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] :
-    y ∈ (map f).range ↔ ∀ i, y i ∈ (f i).range := by
-  refine ⟨fun ⟨x, hx⟩ i ↦ ?_, fun h ↦ ?_⟩
-  · simp [← hx]
-  · use DirectSum.mk α y.support (fun i ↦ Classical.choose (h i))
+lemma range_map [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] : (map f).range =
+    (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) := by
+  ext x
+  simp only [AddSubgroup.mem_comap, AddSubgroup.mem_pi, DirectSum.ext_iff]
+  refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
+  · simp [← hy]
+  · use DirectSum.mk α x.support (fun i ↦ Classical.choose (h i trivial))
     ext i
     simp only [Finset.coe_sort_coe, map_apply]
-    by_cases mem : i ∈ y.support
-    · rw [← Classical.choose_spec (h i)]
-      exact congrArg (f i) (mk_apply_of_mem mem)
+    by_cases mem : i ∈ x.support
+    · convert Classical.choose_spec (h i trivial)
+      exact mk_apply_of_mem mem
     · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
       exact congrArg (f i) (mk_apply_of_not_mem mem)
 
-lemma of_mem_map_range_iff (i : ι) (y : β i) [DecidableEq ι] :
-    (of β i y) ∈ (map f).range ↔ y ∈ (f i).range := by
-  refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
-  · use x i
-    rw [← of_eq_same i y, ← hx, map_apply]
-  · use of α i x
-    simp [hx]
-
 end
+
+end map
 
 section CongrLeft
 
