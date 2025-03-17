@@ -81,19 +81,22 @@ noncomputable abbrev δ (i j : ℕ) (hij : i + 1 = j) :
     groupCohomology X.X₃ i ⟶ groupCohomology X.X₁ j :=
   (map_cochainsFunctor_shortExact hX).δ i j hij
 
-theorem δ_apply (i j l : ℕ) (hij : i + 1 = j) (hjl : (ComplexShape.up ℕ).next j = l)
+theorem δ_apply (i j : ℕ) (hij : i + 1 = j)
     (z : (Fin i → G) → X.X₃) (hz : (inhomogeneousCochains X.X₃).d i j z = 0)
     (y : (Fin i → G) → X.X₂) (hy : (cochainsMap (MonoidHom.id G) X.g).f i y = z)
     (x : (Fin j → G) → X.X₁) (hx : X.f.hom ∘ x = (inhomogeneousCochains X.X₂).d i j y) :
     δ hX i j hij (groupCohomologyπ X.X₃ i <| (moduleCatCyclesIso _).inv
       ⟨z, show ((inhomogeneousCochains X.X₃).dFrom i).hom z = 0 by
         simp_all [(inhomogeneousCochains X.X₃).dFrom_eq hij]⟩) = groupCohomologyπ X.X₁ j
-      ((moduleCatCyclesIso _).inv ⟨x, ((map_cochainsFunctor_shortExact hX).δ_apply_aux i j y x
-        (by simpa [cochainsMap_id_f_eq_compLeft] using hx) _)⟩) := by
+      ((moduleCatCyclesIso _).inv ⟨x, by
+        convert (map_cochainsFunctor_shortExact hX).δ_apply_aux i j y x
+          (by simpa [cochainsMap_id_f_eq_compLeft] using hx) <| (ComplexShape.up ℕ).next j⟩) := by
   convert (map_cochainsFunctor_shortExact hX).δ_apply i j hij z
-    hz y hy x (by simpa [cochainsMap_id_f_eq_compLeft] using hx) l hjl
+    hz y hy x (by simpa [cochainsMap_id_f_eq_compLeft] using hx) ((ComplexShape.up ℕ).next j) rfl
   <;> rw [moduleCatCyclesIso_inv_apply]
   <;> rfl
+
+#exit
 
 /-- The degree 0 connecting homomorphism `X₃ᴳ ⟶ H¹(G, X₁)` associated to an exact sequence
 `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations. Uses a simpler expression for `H⁰` and `H¹` than
@@ -123,7 +126,7 @@ theorem δ₀_apply (z : X.X₃) (hz : z ∈ X.X₃.ρ.invariants) (y : X.X₂) 
     ext i
     simp_all [← hx, oneCochainsLequiv]
   have δ_0_1 := congr((isoH1 X.X₁).hom
-    $(δ_apply hX 0 1 2 rfl (by simp) ((zeroCochainsLequiv X.X₃).symm z) h0z
+    $(δ_apply hX 0 1 (by simp) ((zeroCochainsLequiv X.X₃).symm z) h0z
     ((zeroCochainsLequiv X.X₂).symm y) (hy ▸ rfl) ((oneCochainsLequiv X.X₁).symm x) hxy))
   convert δ_0_1
   · simp only [δ₀, isoH0, Iso.trans_inv, ModuleCat.hom_comp, LinearMap.coe_comp,

@@ -86,7 +86,7 @@ noncomputable abbrev δ (i j : ℕ) (hij : j + 1 = i) :
     groupHomology X.X₃ i ⟶ groupHomology X.X₁ j :=
   (map_chainsFunctor_shortExact hX).δ i j hij
 
-theorem δ_apply (i j l : ℕ) (hij : j + 1 = i) (hjl : (ComplexShape.down ℕ).next j = l)
+theorem δ_apply (i j : ℕ) (hij : j + 1 = i)
     (z : (Fin i → G) →₀ X.X₃) (hz : (inhomogeneousChains X.X₃).d i j z = 0)
     (y : (Fin i → G) →₀ X.X₂) (hy : (chainsMap (MonoidHom.id G) X.g).f i y = z)
     (x : (Fin j → G) →₀ X.X₁)
@@ -94,13 +94,15 @@ theorem δ_apply (i j l : ℕ) (hij : j + 1 = i) (hjl : (ComplexShape.down ℕ).
     δ hX i j hij (groupHomologyπ X.X₃ i <|
       (moduleCatCyclesIso _).inv ⟨z, show ((inhomogeneousChains X.X₃).dFrom i).hom z = 0 by
         simp_all [(inhomogeneousChains X.X₃).dFrom_eq hij]⟩) = groupHomologyπ X.X₁ j
-      ((moduleCatCyclesIso _).inv ⟨x, (map_chainsFunctor_shortExact hX).δ_apply_aux i j y x
-        (by simpa [chainsMap_f_id_eq_mapRange] using hx) _⟩) := by
+      ((moduleCatCyclesIso _).inv ⟨x, by
+        convert (map_chainsFunctor_shortExact hX).δ_apply_aux i j y x
+          (by simpa [chainsMap_f_id_eq_mapRange] using hx) ((ComplexShape.down ℕ).next j)⟩) := by
   convert (map_chainsFunctor_shortExact hX).δ_apply i j hij z
-    hz y hy x (by simpa [chainsMap_f_id_eq_mapRange] using hx) l hjl
+    hz y hy x (by simpa [chainsMap_f_id_eq_mapRange] using hx) ((ComplexShape.down ℕ).next j) rfl
   <;> rw [moduleCatCyclesIso_inv_apply]
   <;> rfl
 
+#exit
 /-- The degree 0 connecting homomorphism `H₁(G, X₃) ⟶ X₁_G` associated to an exact sequence
 `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of representations. Uses a simpler expression for `H₀` and `H₁` than
 general `δ`. -/
