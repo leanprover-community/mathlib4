@@ -268,12 +268,8 @@ lemma rnDeriv_posterior (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
 lemma rnDeriv_posterior_symm (h_ac : ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ) :
     ∀ᵐ x ∂(κ ∘ₘ μ), ∀ᵐ ω ∂μ,
       (κ†μ).rnDeriv (Kernel.const _ μ) x ω = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) ω x := by
-  refine Measure.ae_ae_of_ae_prod (μ := κ ∘ₘ μ) (ν := μ)
-    (p := fun (u : 𝓧 × Ω) ↦ (κ†μ).rnDeriv (Kernel.const _ μ) u.1 u.2
-      = κ.rnDeriv (Kernel.const _ (κ ∘ₘ μ)) u.2 u.1) ?_
-  rw [← Measure.prod_swap, ae_map_iff]
-  · exact rnDeriv_posterior_ae_prod h_ac
-  · fun_prop
+  rw [Measure.ae_ae_comm]
+  · exact rnDeriv_posterior h_ac
   · exact measurableSet_eq_fun' (by fun_prop) (by fun_prop)
 
 /-- If `κ ω ≪ κ ∘ₘ μ` for `μ`-almost every `ω`, then for `κ ∘ₘ μ`-almost every `x`,
