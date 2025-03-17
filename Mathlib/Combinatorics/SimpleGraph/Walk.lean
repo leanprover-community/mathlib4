@@ -1021,6 +1021,10 @@ lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) :
   | .nil => rfl
   | .cons h q => rfl
 
+lemma tail_cons_cons_not_nil {z : V} (h1 : G.Adj u v) (h2 : G.Adj v w) (p : G.Walk w z) :
+    ¬ ((p.cons h2).cons h1).tail.Nil := by
+  simp [tail_cons_eq]
+
 @[simp]
 lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
 
@@ -1044,6 +1048,21 @@ lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     rw [dropLast_cons_of_not_nil]
     · simp [*]
     · simp [concat, nil_iff_length_eq]
+
+lemma support_dropLast (p : G.Walk u v) (h : ¬ p.Nil) :
+     p.dropLast.support = p.support.dropLast := by
+  induction p with
+  | nil => exact (h Nil.nil).elim
+  | cons h p ih =>
+    cases p with
+    | nil => simp_all
+    | cons h p =>
+      rw [dropLast_cons_cons]
+      simp only [penultimate_cons_cons, support_cons, List.dropLast_cons₂, List.cons.injEq,
+        true_and]
+      apply ih not_nil_cons
+
+
 
 /-- The first dart of a walk. -/
 @[simps]

@@ -268,6 +268,12 @@ lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons 
   rw [Walk.not_nil_iff_lt_length]
   omega
 
+lemma  IsCycle.tail_not_nil {v : V} {p : G.Walk v v} (hp : p.IsCycle) : ¬ p.tail.Nil := by
+  have := hp.three_le_length
+  rw [not_nil_iff_lt_length]
+  rw [← length_tail_add_one hp.not_nil] at this
+  omega
+
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
   simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
@@ -300,6 +306,17 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   | nil => simp
   | cons hadj p =>
     simp_all [Walk.isPath_def]
+
+lemma IsPath.dropLast {p : G.Walk u v} (hp : p.IsPath) (h : ¬p.Nil): p.dropLast.IsPath := by
+  apply IsPath.mk'
+  rw [support_dropLast _ h]
+  exact List.Nodup.sublist (List.dropLast_sublist p.support)  hp.support_nodup
+
+lemma IsCycle.isPath_tail {c : G.Walk v v} (hc : c.IsCycle) :
+    c.tail.IsPath := by
+  apply IsPath.mk'
+  rw [support_tail _ hc.not_nil]
+  exact hc.2
 
 /-! ### About paths -/
 

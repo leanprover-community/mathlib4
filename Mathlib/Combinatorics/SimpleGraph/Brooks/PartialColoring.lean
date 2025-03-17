@@ -60,7 +60,7 @@ variable {s : Finset α} {b : ℕ} {i : α}
 /-- If `C` is a PartialColoring of `s` and `b` is not adjacent to anything
 in `s` then we can color `b` with the color of `a` to give a PartialColoring of `insert b s`.
 (Note: this is mainly useful when `a ∈ s` and `b ∉ s`.) -/
-def insertNotAdj {b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj v b) (a : α) :
+def insertNotAdj {b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v) (a : α) :
     G.PartialColoring (insert b s) where
   col   := fun v ↦ ite (v = b) (C a) (C v)
   valid := by
@@ -75,22 +75,22 @@ def insertNotAdj {b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G
         split_ifs at hf
         · subst_vars
           exact (G.loopless _ hadj).elim
-        · exact h _ hw (hv ▸ hadj.symm)
+        · exact h _ hw (hv ▸ hadj)
     | inr hv =>
       cases hw with
-      | inl hw => exact h _ hv (hw ▸ hadj)
+      | inl hw => exact h _ hv (hw ▸ hadj.symm)
       | inr hw =>
         split_ifs at hf with h1 h2 h3
         · exact (G.loopless _ (h1 ▸ h2 ▸ hadj)).elim
-        · exact h _ hw (h1 ▸ hadj.symm)
-        · exact h _ hv (h3 ▸ hadj)
+        · exact h _ hw (h1 ▸ hadj)
+        · exact h _ hv (h3 ▸ hadj.symm)
         · exact C.valid hv hw hadj hf
 @[simp]
-lemma ofinsertNotAdj {a b v : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj v b) :
+lemma ofinsertNotAdj {a b v : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v) :
     (C.insertNotAdj h a) v = ite  (v = b) (C a) (C v) := rfl
 
-lemma lt_of_insertNotAdj_lt {a b v : α} {k : ℕ} {C : G.PartialColoring s}
-    {h : ∀ v, v ∈ s → ¬ G.Adj v b} (hlt : ∀  v, C v < k) :
+lemma lt_of_insertNotAdj_lt {b : α} {k : ℕ} (C : G.PartialColoring s)
+    (h : ∀ v, v ∈ s → ¬ G.Adj b v) (a : α) (hlt : ∀  v, C v < k) (v : α) :
     (C.insertNotAdj h a) v < k := by
   rw [ofinsertNotAdj]
   split_ifs <;> exact hlt _
@@ -382,7 +382,7 @@ theorem Brooks1 {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} {p : G.Walk xᵣ x₄} (hk 
       fun a ↦ h2disjp ((support_takeUntil_subset p hj) a)⟩
   let C₁ := (G.ofNotAdj heq).Greedy (p.dropUntil _ hj).support.tail
   have (x) : C₁ x < k := by
-    have hd : ∀ y, y ∈ (p.dropUntil _ hj).support.toFinset → y ∈  p.support.toFinset := by
+    have hd : ∀ y, y ∈ (p.dropUntil _ hj).support.toFinset → y ∈ p.support.toFinset := by
       intro y hy; rw [List.mem_toFinset] at *
       apply support_dropUntil_subset p hj hy
     have hd' : ∀ y : α, y ∈ ({x₁, x₃} : Finset α) → y ∈ s := by
