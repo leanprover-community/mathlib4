@@ -55,7 +55,7 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
       exact (Eq.eventuallyEq rfl)
 
 /-- Definition of the divisor. -/
-theorem divisor_def {f : 𝕜 → E} (U : Set 𝕜) :
+theorem divisor_def (f : 𝕜 → E) (U : Set 𝕜) :
     divisor f U z = if h : MeromorphicOn f U ∧ z ∈ U then ((h.1 z h.2).order.untopD 0) else 0 :=
   rfl
 
