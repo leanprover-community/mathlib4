@@ -35,6 +35,22 @@ lemma ker_mapRangeAddMonoidHom : (mapRange.addMonoidHom f).ker =
   ext
   simp [AddSubgroup.mem_pi, DFinsupp.ext_iff]
 
+lemma range_map [DecidableEq ι] [(i : ι) → (x : N i) → Decidable (x ≠ 0)] :
+    (mapRange.addMonoidHom f).range =
+    (AddSubgroup.pi Set.univ (f · |>.range)).comap DFinsupp.coeFnAddMonoidHom := by
+  ext x
+  simp only [AddSubgroup.mem_comap, AddSubgroup.mem_pi, DirectSum.ext_iff]
+  refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
+  · simp [← hy]
+  · use DFinsupp.mk x.support (fun i ↦ Classical.choose (h i trivial))
+    ext i
+    simp only [Finset.coe_sort_coe, mapRange.addMonoidHom_apply, mapRange_apply]
+    by_cases mem : i ∈ x.support
+    · convert Classical.choose_spec (h i trivial)
+      exact mk_of_mem mem
+    · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
+      exact congrArg (f i) (mk_of_not_mem mem)
+
 end DFinsupp
 
 end
@@ -273,19 +289,8 @@ lemma ker_map : (map f).ker =
   DFinsupp.ker_mapRangeAddMonoidHom f
 
 lemma range_map [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] : (map f).range =
-    (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) := by
-  ext x
-  simp only [AddSubgroup.mem_comap, AddSubgroup.mem_pi, DirectSum.ext_iff]
-  refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
-  · simp [← hy]
-  · use DirectSum.mk α x.support (fun i ↦ Classical.choose (h i trivial))
-    ext i
-    simp only [Finset.coe_sort_coe, map_apply]
-    by_cases mem : i ∈ x.support
-    · convert Classical.choose_spec (h i trivial)
-      exact mk_apply_of_mem mem
-    · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
-      exact congrArg (f i) (mk_apply_of_not_mem mem)
+    (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) :=
+  DFinsupp.range_map f
 
 end
 
