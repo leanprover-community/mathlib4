@@ -391,16 +391,13 @@ lemma root_space_ad_is_nilpotent
 
   have helpMe : ∀ ε ∈ s, ∃ n : ℕ, ∀ (v : genWeightSpace M ε), ∀ m ≥ n,
       ((toEnd K L M x) ^ m) v = 0 := by
-    intro ε he
-    obtain ⟨k, ⟨hk₁, hk₂⟩⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ ε hχ
+    intro χ₂ he
+    obtain ⟨k, ⟨hk₁, hk₂⟩⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
     use k
     intro v m hm
-    suffices ((toEnd K L M x) ^ k) v = 0 by
-      exact LinearMap.pow_map_zero_of_le hm this
     have h := toEnd_pow_apply_mem hx v.mem k
-    rw [hk₂] at h
-    simp only [LieSubmodule.mem_bot] at h
-    exact h
+    rw [hk₂, LieSubmodule.mem_bot] at h
+    exact LinearMap.pow_map_zero_of_le hm h
 
 
 
