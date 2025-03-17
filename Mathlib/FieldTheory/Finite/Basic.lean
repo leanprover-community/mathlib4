@@ -391,7 +391,7 @@ theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
 
 instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
   exists_zpow_surjective :=
-    have := Finite.of_injective_finite_range (algebraMap K L).injective
+    have := Finite.of_injective (algebraMap K L).injective
     have := Fintype.ofFinite K
     ⟨frobeniusAlgEquivOfAlgebraic K L,
       fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
