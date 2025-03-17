@@ -5,8 +5,6 @@ import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Complex.Basic
-import Mathlib.LinearAlgebra.Matrix.PosDef
-import Mathlib.Analysis.CStarAlgebra.Module.Defs
 
 open Complex Matrix
 
@@ -22,7 +20,20 @@ def convex_set (S : Set ℂ) : Prop :=
 
 open Classical
 
+lemma sum_complex_star {n : Type*} [Fintype n] (x₁ x₂ : n → ℂ) :
+  ∑ x : n, ( (x₂ x).re * (x₁ x).re + (x₂ x).im * (x₁ x).im )
+  = (∑ i, (star (x₁ i) * x₂ i)).re := by
+    have h : ∀ i, (x₂ i).re * (x₁ i).re + (x₂ i).im * (x₁ i).im = (star (x₁ i) * x₂ i).re := by
+      intro i
+      simp
+      ring_nf
+    simp_rw [h]
+    simp [Complex.re_sum]
+
+
+
 theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
+  -- TODO use Convex rather than convex_set
   convex_set (numericalRange A) := 
   by 
     intros z₁ z₂ t hz₁ hz₂ ht₀ ht
@@ -35,7 +46,7 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
       have eq_v : (1 - t) • x₁ + t • x₂ = 0 := hv
       have eq_1 : (1 - t) • x₁ = -(t • x₂) := by 
         rw[add_eq_zero_iff_eq_neg] at eq_v; exact eq_v
-      have norm_eq : ‖(1 - t) • x₁‖ = ‖-(t • x₂)‖ := congrArg (λ v => ‖v‖) eq_1
+      have norm_eq : ‖(1 - t) • x₁‖ = ‖-(t • x₂)‖ := congrArg (fun v => ‖v‖) eq_1
       rw [norm_smul, hx₁, norm_neg, norm_smul, hx₂, mul_one, mul_one] at norm_eq
       have h1t: 0 <= 1 - t  := sub_nonneg.mpr ht
       have rm_norm1 : ‖(1 - t)‖ = 1 - t := abs_of_nonneg h1t
@@ -64,32 +75,84 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
       have h_norm : ‖‖v‖⁻¹ • v‖ = 1 := by
          simp [norm_smul, hv]
       simp_all
+
+      -- We can go ahead and define the quadratic form of the norm of v to use its properties
       have expand_xt : star xₜ ⬝ᵥA *ᵥxₜ = (star v ⬝ᵥA *ᵥv) / ‖v‖^2 := by 
         rw [star_smul, star_trivial, mulVec_smul, dotProduct_smul]
         field_simp [hv]
         ring_nf
         simp
+
       rw [expand_xt]
+
+      -- Rewrite qudratic form of the numerator using our unit vectors and t
       have exp1 : star v ⬝ᵥ A *ᵥv =
         (1-t)^2 * (star x₁ ⬝ᵥ A *ᵥx₁)
         + t^2 * (star x₂ ⬝ᵥ A *ᵥ x₂)
         + t*(1-t)*(star x₁ ⬝ᵥ A *ᵥ x₂ + star x₂ ⬝ᵥ A *ᵥ x₁) := by
           simp [v] 
           rw [mulVec_add, mulVec_smul, mulVec_smul]
-          rw [dotProduct_add, dotProduct_add, dotProduct_smul, dotProduct_smul, dotProduct_smul, dotProduct_smul]
+          rw [dotProduct_add, dotProduct_add, dotProduct_smul]
+          rw [dotProduct_smul, dotProduct_smul, dotProduct_smul]
           simp
           ring_nf
-      have exp2 : ‖v‖^2 = (1-t)^2 + t^2 + 2*t*(1-t)* (star x₁ ⬝ᵥ x₂) := by 
-        norm_cast
+
+      -- Rewrite qudratic form of the denominator using our unit vectors and t
+      have exp2 : ‖v‖^2 = (1-t)^2 + t^2 + 2*t*(1-t)* (star x₁ ⬝ᵥ x₂).re := by
+        norm_cast at *
         rw [norm_add_sq_real]
         rw [norm_smul, norm_smul] 
-        rw [hx₁, hx₂]
         rw [Real.norm_eq_abs, Real.norm_eq_abs]
+        rw [hx₁, hx₂]
         rw [inner_smul_left, inner_smul_right]
         rw [starRingEnd_apply, star_trivial]
         rw [_root_.abs_of_nonneg (sub_nonneg.mpr ht), _root_.abs_of_nonneg  ht₀]
-      have conv_eq : (star v ⬝ᵥ A *ᵥ v) / ‖v‖^2 = (1-t) * (star x₁ ⬝ᵥ A *ᵥ x₁) + t * (star x₂ ⬝ᵥ A *ᵥ x₂) := by
+        simp
+        rw [sum_complex_star]
+        simp [dotProduct]
+        ring_nf
+        
+      -- using the expansion of the numerator and the denominator,
+      -- simplify the quadratic form of the norm of v
+      have conv_eq : (star v ⬝ᵥ A *ᵥ v) / ‖v‖^2 = 
+        (1-t) * (star x₁ ⬝ᵥ A *ᵥ x₁) + t * (star x₂ ⬝ᵥ A *ᵥ x₂) := by
+
+        have rhA : A = Aᴴ := by simp [hA]
+
+        -- have H : (1 - t)^2 + t^2 + 2 * t * (1 - t) * (star x₁ ⬝ᵥ x₂).re ≠ 0 := by
+        --   intro h
+        --   simp_all
+        
+        norm_cast
         rw [exp1, exp2]
-        -- rw [star_dotProduct, star_mulVec, star_dotProduct, star_mulVec]
+        rw [←hz₁', ←hz₂'] 
+        simp
+
+        let first_term := star x₁ ⬝ᵥ A *ᵥ x₂
+        let second_term := star x₂ ⬝ᵥ A *ᵥ x₁
+
+
+        have h_cross : first_term + second_term = 2 * (first_term).re := by
+          have symm : second_term = star first_term := by
+            unfold first_term second_term
+            conv =>
+              lhs;
+              rw [dotProduct_mulVec, rhA, vecMul_conjTranspose, star_dotProduct]
+            simp
+          simp [symm] 
+          rw [re_eq_add_conj]
+          ring_nf
+
+        rw [h_cross]
+
+        -- pull the two out of the numerator
+        conv_lhs =>
+          pattern (_ * (2 * _ ))
+          rw [mul_comm]
+        
         sorry
+        
+        
+      simp [conv_eq]
+      linarith  
     }
