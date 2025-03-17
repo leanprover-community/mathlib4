@@ -672,8 +672,8 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
     intro
     apply h.2
 
-@[simp] lemma comap_equiv_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.comap e.toHom ⊤ = ⊤ := by
-  ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
+@[simp] lemma comap_equiv_top {H : SimpleGraph W} (f : G →g H) : Subgraph.comap f ⊤ = ⊤ := by
+  ext <;> simp +contextual [f.map_adj]
 
 theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) (H' : G'.Subgraph) :
     H.map f ≤ H' ↔ H ≤ H'.comap f := by
