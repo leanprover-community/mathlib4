@@ -245,16 +245,6 @@ noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Sem
       ext
       simp [finsuppProdEquiv, curry_apply] }
 
-lemma finsuppProdLEquiv_single {α β R M : Type*}
-    [Semiring R] [AddCommMonoid M] [Module R M] (a : α × β) (m : M) :
-    finsuppProdLEquiv R (single a m) = single a.1 (single a.2 m) := by
-  simp
-
-lemma finsuppProdLEquiv_symm_single_single {α β R M : Type*}
-    [Semiring R] [AddCommMonoid M] [Module R M] (a : α) (b : β) (m : M) :
-    (finsuppProdLEquiv R).symm (single a (single b m)) = single (a, b) m := by
-  simp
-
 end Prod
 
 end Finsupp
