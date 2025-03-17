@@ -138,9 +138,7 @@ theorem acc_iff_wellFoundedOn {α} {r : α → α → Prop} {a : α} :
       WellFoundedOn { b | ReflTransGen r b a } r,
       WellFoundedOn { b | TransGen r b a } r] := by
   tfae_have 1 → 2 := by
-    refine fun h => ⟨fun b => ?_⟩
-    unfold Subrel
-    apply InvImage.accessible _
+    refine fun h => ⟨fun b => InvImage.accessible Subtype.val ?_⟩
     rw [← acc_transGen_iff] at h ⊢
     obtain h' | h' := reflTransGen_iff_eq_or_transGen.1 b.2
     · rwa [h'] at h
@@ -249,6 +247,10 @@ end Preorder
 
 /-- `s.PartiallyWellOrderedOn r` indicates that the relation `r` is `WellQuasiOrdered` when
 restricted to `s`.
+
+A set is partially well-ordered by a relation `r` when any infinite sequence contains two elements
+where the first is related to the second by `r`. Equivalently, any antichain (see `IsAntichain`) is
+finite, see `Set.partiallyWellOrderedOn_iff_finite_antichains`.
 
 TODO: rename this to `WellQuasiOrderedOn` to match `WellQuasiOrdered`. -/
 def PartiallyWellOrderedOn (s : Set α) (r : α → α → Prop) : Prop :=
