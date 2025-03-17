@@ -91,7 +91,7 @@ lemma ofinsertNotAdj {a b v : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s 
 
 @[simp]
 lemma eq_ofinsertNotAdj  {a b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v) :
-    (C.insertNotAdj h a) a = (C.insertNotAdj h a) b := by simp
+    (C.insertNotAdj h a) b = (C.insertNotAdj h a) a := by simp
 
 lemma lt_of_insertNotAdj_lt {b : α} {k : ℕ} (C : G.PartialColoring s)
     (h : ∀ v, v ∈ s → ¬ G.Adj b v) (a : α) (hlt : ∀  v, C v < k) (v : α) :

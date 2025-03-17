@@ -49,32 +49,6 @@ lemma exists_getVert_change (w : G.Walk u v) (P : α → Prop) {x : α} (hu : P 
   rw [getVert_of_length_le _ (Nat.le_of_succ_le_succ hf)] at h1
   rwa [getVert_of_length_le _ hf.le]
 
-lemma exists_cycle [DecidableEq α] {c : G.Walk u u} (hc : c.IsCycle) (P : Set α) {x y : α}
-    (hx : x ∈ c.support) (hxP : x ∈ P) (hy : y ∈ c.support) (hyP : y ∉ P) : ∃ (a : α),
-    ∃ (c' : G.Walk a a), P a ∧ ¬ P c'.snd ∧ c'.IsCycle ∧
-    c'.support.toFinset = c.support.toFinset := by
-  
-  sorry
-  -- obtain ⟨d, h1, h2, hlt⟩ := exists_getVert_change (c.rotate hx) P hxP
-  --   ((mem_support_rotate_iff _).2 hy) hyP
-  -- rw [length_rotate] at hlt
-  -- have ha : (c.rotate hx).getVert d ∈ c.support := (mem_support_rotate_iff _).1 <|
-  --   getVert_mem_support ..
-  -- use (c.rotate hx).getVert d
-  -- use c.rotate ha
-  -- use h1
-  -- refine ⟨?_,hc.rotate ha, ?_ ⟩
-  -- · rw [snd]
-  --   rw [getVert_rotate]
-  --   · split_ifs with h2
-  --     · sorry
-  --     · sorry
-  --   · have := hc.three_le_length
-  --     omega
-
-  -- · ext x ; simp only [List.mem_toFinset, mem_support_rotate_iff]
-
-
 section LFDEq
 
 lemma exists_maximal_path_subset [DecidableEq α] {u v : α} [LocallyFinite G] (s : Finset α)

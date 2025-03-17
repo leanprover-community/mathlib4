@@ -226,16 +226,18 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           let hr := (c.dart_fst_mem_support_of_mem_darts hd)
           let p := (c.rotate hr).tail.tail
           have hp : p.IsPath := (hcy.rotate hr).isPath_tail.tail
-          have hne : d.toProd.2 ≠ y := by sorry
-          have hc2eq : C₂ y = C₂ d.toProd.2  := C₁.eq_ofinsertNotAdj hd2
+          have hne : d.toProd.2 ≠ y := by
+            intro hf; subst_vars
+            exact (mem_sdiff.1 hy1).2
+            <| List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
+          have hc2eq : C₂ d.toProd.2 = C₂ y := C₁.eq_ofinsertNotAdj hd2
           let C₃ := C₂.Greedy p.reverse.support
           have heq : (insert d.toProd.2 (s \ c.support.toFinset)
             ∪ p.reverse.support.toFinset) = s := by sorry
           use C₃.copy heq
           simp_rw [copy_eq]
-          intro v
           exact C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self _ _)
-            (mem_insert_of_mem hy1)  d.adj hd1 hne hc2eq.symm (by sorry)
+             (mem_insert_of_mem hy1)  d.adj hd1 hne hc2eq (by sorry)
         ·  -- Can now color `c` and `s \ c` by induction
           obtain ⟨C₁, hC₁⟩:= ih _ hccard  _ le_rfl
           obtain ⟨C₂, hC₂⟩:= ih _ hsdcard _ le_rfl
