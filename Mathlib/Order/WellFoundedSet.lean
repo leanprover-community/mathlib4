@@ -12,7 +12,7 @@ import Mathlib.Tactic.TFAE
 /-!
 # Well-founded sets
 
-This file introduces specializations of `WellFounded` and `WellQuasiOrdered` for sets.
+This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## Main Definitions
 
