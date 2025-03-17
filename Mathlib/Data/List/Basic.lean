@@ -33,9 +33,6 @@ universe u v w
 
 variable {ι : Type*} {α : Type u} {β : Type v} {γ : Type w} {l₁ l₂ : List α}
 
--- Porting note: Delete this attribute
--- attribute [inline] List.head!
-
 /-- There is only one list of an empty type -/
 instance uniqueOfIsEmpty [IsEmpty α] : Unique (List α) :=
   { instInhabitedList with
@@ -110,7 +107,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
       · subsingleton
       · apply ih; simpa using hl
 
-@[simp default+1] -- Porting note: this used to be just @[simp]
+@[simp default+1] -- Raise priority above `length_injective_iff`.
 lemma length_injective [Subsingleton α] : Injective (length : List α → ℕ) :=
   length_injective_iff.mpr inferInstance
 
@@ -149,16 +146,13 @@ theorem doubleton_eq [DecidableEq α] {x y : α} (h : x ≠ y) : ({x, y} : List 
 theorem forall_mem_of_forall_mem_cons {p : α → Prop} {a : α} {l : List α} (h : ∀ x ∈ a :: l, p x) :
     ∀ x ∈ l, p x := (forall_mem_cons.1 h).2
 
--- Porting note: bExists in Lean3 and And in Lean4
 theorem exists_mem_cons_of {p : α → Prop} {a : α} (l : List α) (h : p a) : ∃ x ∈ a :: l, p x :=
   ⟨a, mem_cons_self _ _, h⟩
 
--- Porting note: bExists in Lean3 and And in Lean4
 theorem exists_mem_cons_of_exists {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ l, p x) →
     ∃ x ∈ a :: l, p x :=
   fun ⟨x, xl, px⟩ => ⟨x, mem_cons_of_mem _ xl, px⟩
 
--- Porting note: bExists in Lean3 and And in Lean4
 theorem or_exists_of_exists_mem_cons {p : α → Prop} {a : α} {l : List α} : (∃ x ∈ a :: l, p x) →
     p a ∨ ∃ x ∈ l, p x :=
   fun ⟨x, xal, px⟩ =>
@@ -522,28 +516,14 @@ section IndexOf
 
 variable [DecidableEq α]
 
-/-
-  Porting note: The following proofs were simpler prior to the port. These proofs use the low-level
-  `findIdx.go`.
-  * `indexOf_cons_self`
-  * `indexOf_cons_eq`
-  * `indexOf_cons_ne`
-  * `indexOf_cons`
-
-  The ported versions of the earlier proofs are given in comments.
--/
-
-
--- fun e => if_pos e
 theorem idxOf_cons_eq {a b : α} (l : List α) : b = a → idxOf a (b :: l) = 0
   | e => by rw [← e]; exact idxOf_cons_self
 
 @[deprecated (since := "2025-01-30")] alias indexOf_cons_eq := idxOf_cons_eq
 
--- fun n => if_neg n
 @[simp]
 theorem idxOf_cons_ne {a b : α} (l : List α) : b ≠ a → idxOf a (b :: l) = succ (idxOf a l)
-  | h => by simp only [idxOf, findIdx_cons, Bool.cond_eq_ite, beq_iff_eq, h, ite_false]
+  | h => by simp only [idxOf_cons, Bool.cond_eq_ite, beq_iff_eq, if_neg h]
 
 @[deprecated (since := "2025-01-30")] alias indexOf_cons_ne := idxOf_cons_ne
 

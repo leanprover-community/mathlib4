@@ -38,7 +38,7 @@ noncomputable section
 
 namespace RootPairing
 
-variable  [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   (P : RootPairing ι R M N) (i : ι)
 
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the root pairing generated

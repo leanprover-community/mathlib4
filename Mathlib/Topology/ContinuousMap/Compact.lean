@@ -234,7 +234,7 @@ variable {R : Type*}
 instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
   __ : SeminormedAddCommGroup C(α, R) := inferInstance
   __ : NonUnitalRing C(α, R) := inferInstance
-  norm_mul f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
+  norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
 instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
