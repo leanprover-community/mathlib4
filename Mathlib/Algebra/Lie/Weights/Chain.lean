@@ -391,8 +391,7 @@ lemma root_space_ad_is_nilpotent
       ((toEnd K L M x) ^ n₀) v = 0 := by
     choose fn₁ hn using nilpotency_limit
     simp only [Subtype.forall] at hn ⊢
-    let fn₂ : (χ₂ : Weight K H M) → ℕ := fun χ₂ => fn₁ χ₂ (mem_univ χ₂)
-    let n₀ := s.toFinset.sup fn₂
+    let n₀ := s.toFinset.sup fun χ₂ => fn₁ χ₂ (mem_univ χ₂)
     use n₀
     intro χ₂ hχ₂ v
     specialize hn χ₂ hχ₂ v
