@@ -234,10 +234,12 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           let C₃ := C₂.Greedy p.reverse.support
           have heq : (insert d.toProd.2 (s \ c.support.toFinset)
             ∪ p.reverse.support.toFinset) = s := by sorry
+          have hdisj2 : Disjoint (insert d.toProd.2 (s \ c.support.toFinset))
+            p.reverse.support.toFinset := by sorry
           use C₃.copy heq
           simp_rw [copy_eq]
-          exact C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self _ _)
-             (mem_insert_of_mem hy1)  d.adj hd1 hne hc2eq (by sorry)
+          exact C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self ..)
+                    (mem_insert_of_mem hy1) d.adj hd1 hne hc2eq hdisj2
         ·  -- Can now color `c` and `s \ c` by induction
           obtain ⟨C₁, hC₁⟩:= ih _ hccard  _ le_rfl
           obtain ⟨C₂, hC₂⟩:= ih _ hsdcard _ le_rfl
