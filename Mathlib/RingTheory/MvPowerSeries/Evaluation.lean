@@ -65,16 +65,12 @@ structure HasEval (a : σ → S) : Prop where
   tendsto_zero : Tendsto a cofinite (𝓝 0)
 
 theorem HasEval.zero : HasEval (0 : σ → S) where
-  hpow s := by
-    simp only [Pi.zero_apply]
-    apply tendsto_atTop_of_eventually_const (i₀ := 1)
-    intro i hi
-    rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)]
+  hpow _ := .zero
   tendsto_zero := tendsto_const_nhds
 
 theorem HasEval.add [ContinuousAdd S] [IsLinearTopology S S]
     {a b : σ → S} (ha : HasEval a) (hb : HasEval b) : HasEval (a + b) where
-  hpow s := IsTopologicallyNilpotent.add (ha.hpow s) (hb.hpow s)
+  hpow s := (ha.hpow s).add (hb.hpow s)
   tendsto_zero := by rw [← add_zero 0]; exact ha.tendsto_zero.add hb.tendsto_zero
 
 theorem HasEval.mul_left [IsLinearTopology S S]
