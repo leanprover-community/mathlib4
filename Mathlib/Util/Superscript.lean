@@ -260,13 +260,19 @@ private def isSpecialBinOp (e : Expr) : Bool :=
   e.isAppOfArity ``Eq 3 ||
   e.isAppOfArity ``BEq.beq 4
 
+/-- Any numeral is valid in a superscript (or subscript). `() : Unit` is valid.
+Any constant or free variable with a valid user-facing name is also valid. -/
+private def const_valid (e : Expr) (fname : Name → Bool) : DelabM Bool := do
+  return e.isConstOf ``Unit.unit ||
+    (← name e).any fname ||
+    (← delab) matches `($_:num)
+
 -- TODO: what about dot notation?
 /-- Checks if the entire expression `e` can be superscripted (or subscripted). -/
 private def check_expr (e : Expr) (fname : Name → Bool)
     (fexpr : Expr → DelabM Unit) : DelabM Unit := do
-  -- Any numeral is valid in a super/subscript, as is any constant or free
-  -- variable with a user-facing name that is valid in a super/subscript.
-  if (← name e).any fname || (← delab) matches `($_:num) then return
+  -- Look for numerals, valid constants and free variables, and `() : Unit`.
+  if (← const_valid e fname) then return
   -- Function application is valid if all explicit arguments are valid and the
   -- function name is valid (or one of `+`, `-`, `=`, `==`).
   guard <| isSpecialBinOp e || (e.isApp && (← name e.getAppFn).any fname)

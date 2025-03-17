@@ -118,8 +118,8 @@ variable (n : String)
 #guard_msgs in #check test(ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎)
 /-- info: test(ᵦ) : Unit -/
 #guard_msgs in #check test(ᵦ)
-/-- info: test(ᵦ ₁) : Unit -/
-#guard_msgs in #check test(ᵦ ₁)
+/-- info: test(ᵦ ₍₎) : Unit -/
+#guard_msgs in #check test(ᵦ ₍₎)
 /-- info: test(ᵦ ᵦ ᵦ ᵦ) : Unit -/
 #guard_msgs in #check test(ᵦ ᵦ ᵦ ᵦ)
 
@@ -133,8 +133,8 @@ variable (n : String)
 
 /-- info: test(ᵝ) : Unit -/
 #guard_msgs in #check test(ᵝ)
-/-- info: test(ᵝ ¹) : Unit -/
-#guard_msgs in #check test(ᵝ ¹)
+/-- info: test(ᵝ ⁽⁾) : Unit -/
+#guard_msgs in #check test(ᵝ ⁽⁾)
 /-- info: test(ᵝ ᵝ ᵝ ᵝ) : Unit -/
 #guard_msgs in #check test(ᵝ ᵝ ᵝ ᵝ)
 
