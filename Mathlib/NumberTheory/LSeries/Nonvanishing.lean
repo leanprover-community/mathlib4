@@ -324,7 +324,7 @@ lemma LFunctionTrivChar_isBigO_near_one_horizontal :
 omit [NeZero N] in
 private lemma one_add_I_mul_ne_one_or {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1) :
     1 + I * y ≠ 1 ∨ χ ≠ 1:= by
-  simpa only [ne_eq, add_right_eq_self, _root_.mul_eq_zero, I_ne_zero, ofReal_eq_zero, false_or]
+  simpa only [ne_eq, add_eq_left, _root_.mul_eq_zero, I_ne_zero, ofReal_eq_zero, false_or]
     using hy
 
 lemma LFunction_isBigO_horizontal {y : ℝ} (hy : y ≠ 0 ∨ χ ≠ 1) :
@@ -386,7 +386,7 @@ theorem LFunction_ne_zero_of_re_eq_one {s : ℂ} (hs : s.re = 1) (hχs : χ ≠ 
   · exact h.2 ▸ LFunction_apply_one_ne_zero_of_quadratic h.1 <| hχs.neg_resolve_right h.2
   · have hs' : s = 1 + I * s.im := by
       conv_lhs => rw [← re_add_im s, hs, ofReal_one, mul_comm]
-    rw [not_and_or, ← ne_eq, ← ne_eq, hs', add_right_ne_self] at h
+    rw [not_and_or, ← ne_eq, ← ne_eq, hs', add_ne_left] at h
     replace h : χ ^ 2 ≠ 1 ∨ s.im ≠ 0 :=
       h.imp_right (fun H ↦ by exact_mod_cast right_ne_zero_of_mul H)
     exact hs'.symm ▸ χ.LFunction_ne_zero_of_not_quadratic_or_ne_one h

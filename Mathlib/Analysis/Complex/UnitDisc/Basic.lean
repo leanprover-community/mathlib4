@@ -171,8 +171,6 @@ theorem im_neg (z : 𝔻) : (-z).im = -z.im :=
 def conj (z : 𝔻) : 𝔻 :=
   mk (conj' ↑z) <| (norm_conj z).symm ▸ z.norm_lt_one
 
--- Porting note: removed `norm_cast` because this is a bad `norm_cast` lemma
--- because both sides have a head coe
 @[simp]
 theorem coe_conj (z : 𝔻) : (z.conj : ℂ) = conj' ↑z :=
   rfl

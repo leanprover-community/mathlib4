@@ -3,7 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
@@ -490,7 +490,7 @@ section orderLemmas
 
 variable {Γ : Type*} [LinearOrderedCancelAddCommMonoid Γ] [NonUnitalNonAssocSemiring R]
 
-theorem coeff_mul_order_add_order  (x y : HahnSeries Γ R) :
+theorem coeff_mul_order_add_order (x y : HahnSeries Γ R) :
     (x * y).coeff (x.order + y.order) = x.leadingCoeff * y.leadingCoeff := by
   simp only [← of_symm_smul_of_eq_mul]
   exact HahnModule.coeff_smul_order_add_order x y
