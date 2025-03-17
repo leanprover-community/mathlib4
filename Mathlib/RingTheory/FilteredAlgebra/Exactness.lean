@@ -235,16 +235,22 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
         apply monoT
         linarith
         exact zp
-      have hy : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) ∈ Gr+(p + s - i)[f].range :=
-        by simpa only [← AddMonoidHom.exact_iff.mp
-            (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
+      obtain ⟨xi, fxiy⟩ : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) ∈
+          Gr+(p + s - i)[f].range := by
+        simpa only [← AddMonoidHom.exact_iff.mp
+          (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
           using hy
-      rcases hy with ⟨xi, fxiy⟩
-      use y - f xi.out
+      obtain ⟨xiout, xiout_eq⟩ : ∃ xiout, (GradedPiece.mk FR fun n ↦ FR (n - 1)) xiout = xi :=
+        Quotient.exists_rep xi
+      rw [← xiout_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
+        GradedPiece.mk_eq, QuotientAddGroup.eq_iff_sub_mem] at fxiy
+      use y - f xiout
       constructor
-      · sorry -- get some lemma?
+      · have : (p + s - (i + 1)) = p + s - i - 1 := by omega
+        rw [this, ← neg_sub (f xiout) y]
+        exact neg_mem fxiy
       · simp only [map_sub, yeq, sub_eq_self]
-        show (g.toAddMonoidHom.comp f.toAddMonoidHom) xi.out = 0
+        show (g.toAddMonoidHom.comp f.toAddMonoidHom) xiout = 0
         simp only [comp_eq_zero, AddMonoidHom.zero_apply]
   rcases this s (Nat.le_refl s) with ⟨y, ymem, gyz⟩
   exact ⟨y, ⟨by simpa only [add_sub_cancel_right] using ymem, gyz⟩⟩
