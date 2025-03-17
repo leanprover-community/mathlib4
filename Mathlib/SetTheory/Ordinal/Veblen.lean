@@ -35,6 +35,8 @@ The following notation is scoped to the `Ordinal` namespace.
 
 noncomputable section
 
+open Order
+
 universe u
 
 namespace Ordinal
@@ -90,15 +92,15 @@ theorem veblenWith_veblenWith_of_lt (h : o₁ < o₂) (a : Ordinal) :
     derivFamily_fp (f := fun y : Set.Iio o₂ ↦ veblenWith f y.1) (i := x)]
   exact hf.veblenWith x
 
-theorem veblenWith_succ (o : Ordinal) : veblenWith f (Order.succ o) = deriv (veblenWith f o) := by
+theorem veblenWith_succ (o : Ordinal) : veblenWith f (succ o) = deriv (veblenWith f o) := by
   rw [deriv_eq_enumOrd (hf.veblenWith o), veblenWith_of_ne_zero f (succ_ne_zero _),
     derivFamily_eq_enumOrd]
   · apply congr_arg
     ext a
     rw [Set.mem_iInter]
-    use fun ha ↦ ha ⟨o, Order.lt_succ o⟩
+    use fun ha ↦ ha ⟨o, lt_succ o⟩
     rintro (ha : _ = _) ⟨b, hb : b < _⟩
-    obtain rfl | hb := Order.lt_succ_iff_eq_or_lt.1 hb
+    obtain rfl | hb := lt_succ_iff_eq_or_lt.1 hb
     · rw [Function.mem_fixedPoints_iff, ha]
     · rw [← ha]
       exact veblenWith_veblenWith_of_lt hf hb _
@@ -175,9 +177,9 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
     obtain ⟨b, hb, hb'⟩ := IH
     refine ⟨_, ho.succ_lt (max_lt a.2 hb), ((veblenWith_right_strictMono hf _).monotone <|
       hb'.trans <| veblenWith_left_monotone hf _ <|
-        (le_max_right a.1 b).trans (Order.le_succ _)).trans ?_⟩
+        (le_max_right a.1 b).trans (le_succ _)).trans ?_⟩
     rw [veblenWith_veblenWith_of_lt hf]
-    rw [Order.lt_succ_iff]
+    rw [lt_succ_iff]
     exact le_max_left _ b
 
 theorem cmp_veblenWith :
@@ -253,7 +255,7 @@ theorem isNormal_veblen (o : Ordinal) : IsNormal (veblen o) :=
 theorem veblen_veblen_of_lt (h : o₁ < o₂) (a : Ordinal) : veblen o₁ (veblen o₂ a) = veblen o₂ a :=
   veblenWith_veblenWith_of_lt (isNormal_opow one_lt_omega0) h a
 
-theorem veblen_succ (o : Ordinal) : veblen (Order.succ o) = deriv (veblen o) :=
+theorem veblen_succ (o : Ordinal) : veblen (succ o) = deriv (veblen o) :=
   veblenWith_succ (isNormal_opow one_lt_omega0) o
 
 theorem veblen_right_strictMono (o : Ordinal) : StrictMono (veblen o) :=
@@ -358,8 +360,7 @@ theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := b
 theorem epsilon0_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
   rw [epsilon_eq_deriv, deriv_zero_right]
 
-theorem epsilon_succ_eq_nfp (o : Ordinal) :
-    ε_ (Order.succ o) = nfp (fun a ↦ ω ^ a) (Order.succ (ε_ o)) := by
+theorem epsilon_succ_eq_nfp (o : Ordinal) : ε_ (succ o) = nfp (fun a ↦ ω ^ a) (succ (ε_ o)) := by
   rw [epsilon_eq_deriv, epsilon_eq_deriv, deriv_succ]
 
 theorem epsilon0_le_of_omega0_opow_le (h : ω ^ o ≤ o) : ε₀ ≤ o := by
@@ -433,8 +434,7 @@ theorem veblen_gamma_zero (o : Ordinal) : veblen (Γ_ o) 0 = Γ_ o :=
 theorem gamma0_eq_nfp : Γ₀ = nfp (veblen · 0) 0 :=
   deriv_zero_right _
 
-theorem gamma_succ_eq_nfp (o : Ordinal) :
-    Γ_ (Order.succ o) = nfp (veblen · 0) (Order.succ (Γ_ o)) :=
+theorem gamma_succ_eq_nfp (o : Ordinal) : Γ_ (succ o) = nfp (veblen · 0) (succ (Γ_ o)) :=
   deriv_succ _ _
 
 theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
