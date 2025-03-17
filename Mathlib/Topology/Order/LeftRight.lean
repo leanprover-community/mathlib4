@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.Order.Antichain
-import Mathlib.Topology.Piecewise
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Left and right continuity

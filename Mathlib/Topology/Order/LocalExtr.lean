@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Filter.Extr
-import Mathlib.Topology.Piecewise
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Local extrema of functions on topological spaces
