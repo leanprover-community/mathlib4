@@ -157,6 +157,8 @@ initialize Lean.registerBuiltinAttribute {
     let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){commentInDoc}"]
     addDocStringCore decl <| "\n\n".intercalate (newDoc.filter (· != ""))
     addTagEntry decl database tagStr <| comment
+  -- docstrings are immutable once an asynchronous elaboration task has been started
+  applicationTime := .beforeElaboration
 }
 
 end Mathlib.StacksTag
