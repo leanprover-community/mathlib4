@@ -75,9 +75,7 @@ theorem HasEval.add [ContinuousAdd S] [IsLinearTopology S S]
 
 theorem HasEval.mul_left [IsLinearTopology S S]
     (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (c * x) where
-  hpow s := by
-    simp only [IsTopologicallyNilpotent, Pi.mul_apply, smul_eq_mul, mul_pow]
-    exact IsLinearTopology.tendsto_mul_zero_of_right _ _ (hx.hpow s)
+  hpow s := (hx.hpow s).mul_left (c s)
   tendsto_zero := IsLinearTopology.tendsto_mul_zero_of_right _ _ hx.tendsto_zero
 
 theorem HasEval.mul_right [IsLinearTopology S S]
