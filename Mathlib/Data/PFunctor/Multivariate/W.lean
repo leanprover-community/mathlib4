@@ -102,7 +102,7 @@ theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.l
 /-- Polynomial functor for the W-type of `P`. `A` is a data-less well-founded
 tree whereas, for a given `a : A`, `B a` is a valid path in tree `a` so
 that `Wp.obj α` is made of a tree and a function from its valid paths to
-the values it contains  -/
+the values it contains -/
 def wp : MvPFunctor n where
   A := P.last.W
   B := P.WPath

@@ -61,7 +61,7 @@ variable {f : α ↪ β} {s : Finset α}
 theorem mem_map {b : β} : b ∈ s.map f ↔ ∃ a ∈ s, f a = b :=
   Multiset.mem_map
 
--- Porting note: Higher priority to apply before `mem_map`.
+-- Higher priority to apply before `mem_map`.
 @[simp 1100]
 theorem mem_map_equiv {f : α ≃ β} {b : β} : b ∈ s.map f.toEmbedding ↔ f.symm b ∈ s := by
   rw [mem_map]
@@ -289,7 +289,7 @@ lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x 
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
   eq_of_veq (s.map f).2.dedup.symm
 
---@[simp] Porting note: removing simp, `simp` [Nonempty] can prove it
+-- Not `@[simp]` since `mem_image` already gets most of the way there.
 theorem mem_image_const : c ∈ s.image (const α b) ↔ s.Nonempty ∧ b = c := by
   rw [mem_image]
   simp only [exists_prop, const_apply, exists_and_right]
@@ -639,12 +639,32 @@ protected def fin (n : ℕ) (s : Finset ℕ) : Finset (Fin n) :=
 theorem mem_fin {n} {s : Finset ℕ} : ∀ a : Fin n, a ∈ s.fin n ↔ (a : ℕ) ∈ s
   | ⟨a, ha⟩ => by simp [Finset.fin, ha, and_comm]
 
+@[simp]
+theorem coe_fin (n : ℕ) (s : Finset ℕ) : (s.fin n : Set (Fin n)) = Fin.val ⁻¹' s := by ext; simp
+
 @[mono]
 theorem fin_mono {n} : Monotone (Finset.fin n) := fun s t h x => by simpa using @h x
+
+@[gcongr]
+theorem fin_subset_fin (n : ℕ) {s t : Finset ℕ} (h : s ⊆ t) : s.fin n ⊆ t.fin n := fin_mono h
 
 @[simp]
 theorem fin_map {n} {s : Finset ℕ} : (s.fin n).map Fin.valEmbedding = s.filter (· < n) := by
   simp [Finset.fin, Finset.map_map]
+
+/-- If a `Finset` is a subset of the image of a `Set` under `f`,
+then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/
+theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α → β} :
+    ↑t ⊆ f '' s ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ s'.image f = t := by
+  constructor
+  · intro h
+    letI : CanLift β s (f ∘ (↑)) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
+    lift t to Finset s using h
+    refine ⟨t.map (Embedding.subtype _), map_subtype_subset _, ?_⟩
+    ext y; simp
+  · rintro ⟨t, ht, rfl⟩
+    rw [coe_image]
+    exact Set.image_subset f ht
 
 /--
 If a finset `t` is a subset of the image of another finset `s` under `f`, then it is equal to the
@@ -654,25 +674,7 @@ For the version where `s` is a set, see `subset_set_image_iff`.
 -/
 theorem subset_image_iff [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β} :
     t ⊆ s.image f ↔ ∃ s' : Finset α, s' ⊆ s ∧ s'.image f = t := by
-  refine ⟨fun ht => ?_, fun ⟨s', hs', h⟩ => h ▸ image_subset_image hs'⟩
-  refine ⟨s.filter (f · ∈ t), filter_subset _ _, le_antisymm (by simp [image_subset_iff]) ?_⟩
-  intro x hx
-  specialize ht hx
-  aesop
-
-/-- If a `Finset` is a subset of the image of a `Set` under `f`,
-then it is equal to the `Finset.image` of a `Finset` subset of that `Set`. -/
-theorem subset_set_image_iff [DecidableEq β] {s : Set α} {t : Finset β} {f : α → β} :
-    ↑t ⊆ f '' s ↔ ∃ s' : Finset α, ↑s' ⊆ s ∧ s'.image f = t := by
-  constructor; swap
-  · rintro ⟨t, ht, rfl⟩
-    rw [coe_image]
-    exact Set.image_subset f ht
-  intro h
-  letI : CanLift β s (f ∘ (↑)) fun y => y ∈ f '' s := ⟨fun y ⟨x, hxt, hy⟩ => ⟨⟨x, hxt⟩, hy⟩⟩
-  lift t to Finset s using h
-  refine ⟨t.map (Embedding.subtype _), map_subtype_subset _, ?_⟩
-  ext y; simp
+  simp only [← coe_subset, coe_image, subset_set_image_iff]
 
 theorem range_sdiff_zero {n : ℕ} : range (n + 1) \ {0} = (range n).image Nat.succ := by
   induction' n with k hk
