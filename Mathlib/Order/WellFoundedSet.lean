@@ -514,7 +514,7 @@ theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
 If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
 Note this does not hold without the linearity assumption.
 -/
-lemma IsPWO.of_linearOrder [WellFoundedLT α] : s.IsPWO := IsWF.of_wellFoundedLT.isPWO
+lemma IsPWO.of_linearOrder [WellFoundedLT α] (s : Set α) : s.IsPWO := IsWF.of_wellFoundedLT.isPWO
 
 end LinearOrder
 
@@ -855,8 +855,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     exists RelEmbedding.refl (· ≤ ·)
     simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
   · intro x s hx ih f
-    obtain ⟨g, hg⟩ := (IsWF.of_wellFoundedLT univ).isPWO.exists_monotone_subseq
-      (f := (f · x)) mem_univ
+    obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
     refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
