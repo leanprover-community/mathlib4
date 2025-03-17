@@ -57,7 +57,6 @@ variable (F : Ctop α σ)
 instance : CoeFun (Ctop α σ) fun _ ↦ σ → Set α :=
   ⟨Ctop.f⟩
 
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem coe_mk (f T h₁ I h₂ h₃ a) : (@Ctop.mk α σ f T h₁ I h₂ h₃) a = f a := rfl
 
 /-- Map a Ctop to an equivalent representation type. -/

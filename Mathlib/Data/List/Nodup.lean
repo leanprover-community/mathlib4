@@ -77,7 +77,6 @@ theorem nodup_iff_injective_getElem {l : List α} :
       · exact (h j i hj hi hji hg.symm).elim,
       fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem nodup_iff_injective_get {l : List α} :
     Nodup l ↔ Function.Injective l.get := by
   rw [nodup_iff_injective_getElem]
