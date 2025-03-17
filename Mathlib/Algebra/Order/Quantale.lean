@@ -5,7 +5,7 @@ Authors: Pieter Cuijpers
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Hom
 import Mathlib.Tactic.Variable
 
 /-!

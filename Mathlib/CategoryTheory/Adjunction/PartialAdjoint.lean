@@ -7,7 +7,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Hom
 
 /-!
 # Domain of definition of the partial left adjoint

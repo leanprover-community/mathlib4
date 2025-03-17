@@ -5,7 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Data.Set.Lattice
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Hom
 
 /-!
 

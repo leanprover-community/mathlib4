@@ -6,7 +6,7 @@ Authors: Rémy Degenne, Peter Pfaffelhuber
 import Mathlib.Data.Nat.Lattice
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Hom
 import Mathlib.MeasureTheory.PiSystem
 
 /-! # Semirings and rings of sets

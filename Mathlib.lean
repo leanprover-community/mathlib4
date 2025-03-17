@@ -4408,8 +4408,10 @@ import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.Order.Comparable
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.CompleteLattice.Hom
+import Mathlib.Order.CompleteLattice.Instances
 import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder
