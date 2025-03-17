@@ -305,7 +305,7 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
         rw [AssociatedGradedAddMonoidHom_apply, GradedPiece.mk_piece_wise,
           GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
           DirectSum.of_eq_same] at hxₚₛ
-        replace hxₚₛ := Quotient.sound <| GradedPiece.exact FS (fun n ↦ FS (n - 1)) _ _ hxₚₛ
+        replace hxₚₛ : ⟦(f.piece_wise_hom (p - s)) (xₚₛ (p - s)).out⟧ = ⟦⟨y - f r, hr₂⟩⟧ := hxₚₛ
         rw [Quotient.eq, QuotientAddGroup.leftRel_apply] at hxₚₛ
         rw [show f xr.val = (f.piece_wise_hom p) xr by rfl,
           sub_eq_add_neg y, add_comm y, show xr = ⟨(xₚₛ (p - s)).out, ps_mem_p⟩ + r by rfl,
