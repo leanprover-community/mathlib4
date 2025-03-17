@@ -28,6 +28,8 @@ The main constructions are the following.
 
 `V` has been made an `(V : outParam <| Type u')` in the classes below as it seems instance
 inference prefers this. Otherwise it failed with
+`cannot find synthesization order` on the instances below.
+However, it is not fully clear yet whether this could lead to potential issues, for example
 if there are multiple `MonoidalCategory _` instances in scope.
 -/
 
@@ -82,15 +84,20 @@ abbrev HasConicalLimits : Prop := HasConicalLimitsOfSize.{v, v} V C
 
 end Definitions
 
-namespace HasConicalLimit
+section Results
 
 variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
-variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
+variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
+
+namespace HasConicalLimit
+
+variable {C}
+
 variable {F G : J ⥤ C} [HasConicalLimit V F]
 
 /-- ensure existence of a conical limit implies existence of a limit -/
-example : HasLimit F := inferInstance
+example (F : J ⥤ C) [HasConicalLimit V F] : HasLimit F := inferInstance
 
 /-- If a functor `F` has a conical limit, so does any naturally isomorphic functor. -/
 lemma of_iso (e : F ≅ G) :
@@ -122,13 +129,13 @@ end HasConicalLimit
 
 namespace HasConicalLimitsOfShape
 
-variable {J : Type u₁} [Category.{v₁} J] {J' : Type u₂} [Category.{v₂} J']
-variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
-variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimitsOfShape J V C]
 
+variable (J) in
+
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
-instance : HasLimitsOfShape J C where
+instance hasLimitsOfShape :
+    HasLimitsOfShape J C where
   has_limit _ := inferInstance
 
 /-- We can transport conical limits of shape `J` along an equivalence `J ≌ J'`. -/
@@ -141,15 +148,12 @@ end HasConicalLimitsOfShape
 
 namespace HasConicalLimitsOfSize
 
-variable {J : Type u₁} [Category.{v₁} J]
-variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
-variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimitsOfSize.{v₁, u₁} V C]
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
-instance hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+instance hasLimitsOfSize :
     HasLimitsOfSize.{v₁, u₁} C where
-  has_limits_of_shape := inferInstance
+  has_limits_of_shape _ := inferInstance
 
 /-- A category that has larger conical limits also has smaller conical limits. -/
 theorem hasConicalLimitsOfSize_of_univLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}] :
@@ -168,16 +172,18 @@ theorem shrink [HasConicalLimitsOfSize.{max v₁ v₂, max u₁ u₂} V C] :
 
 end HasConicalLimitsOfSize
 
+end Results
+
 namespace HasConicalLimits
 
 -- Note that `Category.{v, v} J` is deliberately chosen this way, see `HasConicalLimits`.
-variable (J : Type v) [Category.{v, v} J]
+variable (J : Type v) [SmallCategory J]
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 variable [HasConicalLimits V C]
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
-example : HasLimits C := inferInstance
+example [HasConicalLimits V C] : HasLimits C := inferInstance
 
 instance (priority := 100) hasSmallestConicalLimitsOfHasConicalLimits :
     HasConicalLimitsOfSize.{0, 0} V C :=
