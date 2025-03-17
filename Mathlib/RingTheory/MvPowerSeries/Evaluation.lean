@@ -315,7 +315,6 @@ theorem aeval_coe (ha : HasEval a) (p : MvPolynomial σ R) :
     aeval ha (p : MvPowerSeries σ R) = p.aeval a := by
   rw [coe_aeval, aeval_def, eval₂_coe]
 
-@[simp]
 theorem aeval_unique {ε : MvPowerSeries σ R →ₐ[R] S} (hε : Continuous ε) :
     aeval (HasEval.X.map hε) = ε := by
   apply DFunLike.ext'
