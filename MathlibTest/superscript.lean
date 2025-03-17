@@ -88,24 +88,24 @@ open Lean PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (delabSubscript delabSuperscript)
 
 private def check_subscript {α : Type} (_ : α) := ()
-local syntax:arg "#" noWs subscript(term) : term
-local macro_rules | `(#$a:subscript) => `(check_subscript $a)
+local syntax:arg "test(" noWs subscript(term) noWs ")" : term
+local macro_rules | `(test($a:subscript)) => `(check_subscript $a)
 
 private def check_superscript {α : Type} (_ : α) := ()
-local syntax:arg "#" noWs superscript(term) : term
-local macro_rules | `(#$a:superscript) => `(check_superscript $a)
+local syntax:arg "test(" noWs superscript(term) noWs ")" : term
+local macro_rules | `(test($a:superscript)) => `(check_superscript $a)
 
 @[app_delab check_subscript]
 private def delabCheckSubscript : Delab := withOverApp 2 do
   let #[_, e] := (← getExpr).getAppArgs | failure
   let sub ← withAppArg <| delabSubscript e
-  `(#$sub:subscript)
+  `(test($sub:subscript))
 
 @[app_delab check_superscript]
 private def delabCheckSuperscript : Delab := withOverApp 2 do
   let #[_, e] := (← getExpr).getAppArgs | failure
   let sup ← withAppArg <| delabSuperscript e
-  `(#$sup:superscript)
+  `(test($sup:superscript))
 
 /-- `α` can not be subscripted or superscripted. -/
 private def α {γ : Type} {δ : Type} : γ → δ → δ := fun _ ↦ id
@@ -114,32 +114,31 @@ private def β {γ : Type} {δ : Type} : γ → δ → δ := fun _ ↦ id
 
 variable (n : String)
 
-/-- info: #₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀ : Unit -/
-#guard_msgs in #check #₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀
-/-- info: #ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎ : Unit -/
-#guard_msgs in #check #ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎
-/-- info: #ᵦ : Unit -/
-#guard_msgs in #check #ᵦ
-/-- info: #ᵦ ₁ : Unit -/
-#guard_msgs in #check #ᵦ ₁
-/-- info: #ᵦ ᵦ ᵦ ᵦ : Unit -/
-#guard_msgs in #check #ᵦ ᵦ ᵦ ᵦ
+/-- info: test(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀) : Unit -/
+#guard_msgs in #check test(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀)
+/-- info: test(ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎) : Unit -/
+#guard_msgs in #check test(ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎)
+/-- info: test(ᵦ) : Unit -/
+#guard_msgs in #check test(ᵦ)
+/-- info: test(ᵦ ₁) : Unit -/
+#guard_msgs in #check test(ᵦ ₁)
+/-- info: test(ᵦ ᵦ ᵦ ᵦ) : Unit -/
+#guard_msgs in #check test(ᵦ ᵦ ᵦ ᵦ)
 
 /-- info: check_subscript (α 0 0) : Unit -/
 #guard_msgs in #check check_subscript (α 0 0)
 
-/-- info: #¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰ : Unit -/
-#guard_msgs in #check #¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰
-/-- info: #ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾ : Unit -/
-#guard_msgs in #check #ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾
+/-- info: test(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰) : Unit -/
+#guard_msgs in #check test(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰)
+/-- info: test(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾) : Unit -/
+#guard_msgs in #check test(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾)
 
--- partially-applied functions
-/-- info: #ᵝ : Unit -/
-#guard_msgs in #check #ᵝ
-/-- info: #ᵝ ¹ : Unit -/
-#guard_msgs in #check #ᵝ ¹
-/-- info: #ᵝ ᵝ ᵝ ᵝ : Unit -/
-#guard_msgs in #check #ᵝ ᵝ ᵝ ᵝ
+/-- info: test(ᵝ) : Unit -/
+#guard_msgs in #check test(ᵝ)
+/-- info: test(ᵝ ¹) : Unit -/
+#guard_msgs in #check test(ᵝ ¹)
+/-- info: test(ᵝ ᵝ ᵝ ᵝ) : Unit -/
+#guard_msgs in #check test(ᵝ ᵝ ᵝ ᵝ)
 
 /-- info: check_superscript (α 0 0) : Unit -/
 #guard_msgs in #check check_superscript (α 0 0)
