@@ -72,6 +72,11 @@ namespace DirectSum
 
 variable {ι}
 
+@[simps!]
+def coeFnAddMonoidHom [∀ i, AddCommMonoid (β i)] : (⨁ i, β i) →+ (Π i, β i) where
+  toFun x := x
+  __ := DFinsupp.coeFnAddMonoidHom
+
 section AddCommGroup
 
 variable [∀ i, AddCommGroup (β i)]
