@@ -467,7 +467,7 @@ theorem ContinuousLinearEquiv.contDiff_comp_iff (e : G ≃L[𝕜] E) :
 
 end linear
 
--- The Cartesian product of two C^n functions is C^n.
+/-! ### The Cartesian product of two C^n functions is C^n. -/
 section prod
 
 /-- If two functions `f` and `g` admit Taylor series `p` and `q` in a set `s`, then the cartesian
