@@ -190,8 +190,7 @@ theorem card_lt_of_card_biUnion_lt {α β : Type u} {s : Set α} {t : ∀ a ∈ 
     (h : #(⋃ a ∈ s, t a ‹_›) < c) (a : α) (ha : a ∈ s) : # (t a ha) < c := by
   rw [biUnion_eq_iUnion] at h
   have := card_lt_of_card_iUnion_lt h
-  simp_all only [iUnion_coe_set,
-    Subtype.forall]
+  simp_all only [iUnion_coe_set, Subtype.forall]
 
 theorem card_biUnion_lt_iff_forall_of_isRegular {α β : Type u} {s : Set α} {t : ∀ a ∈ s, Set β}
     {c : Cardinal} (hc : c.IsRegular) (hs : #s < c) :
@@ -228,11 +227,7 @@ theorem nfpBFamily_lt_ord_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal →
 
 theorem nfp_lt_ord_of_isRegular {f : Ordinal → Ordinal} {c} (hc : IsRegular c) (hc' : c ≠ ℵ₀)
     (hf : ∀ i < c.ord, f i < c.ord) {a} : a < c.ord → nfp f a < c.ord :=
-  nfp_lt_ord
-    (by
-      rw [hc.cof_eq]
-      exact lt_of_le_of_ne hc.1 hc'.symm)
-    hf
+  nfp_lt_ord (by rw [hc.cof_eq]; exact lt_of_le_of_ne hc.1 hc'.symm) hf
 
 theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {c} (hc : IsRegular c)
     (hι : lift.{v} #ι < c) (hc' : c ≠ ℵ₀) (hf : ∀ i, ∀ b < c.ord, f i b < c.ord) {a} :
