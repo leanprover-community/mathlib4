@@ -432,12 +432,12 @@ lemma root_space_ad_is_nilpotent
     haveI := [Module K M]
     apply (Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₃).2
     intro h₀
-    obtain ⟨m, ⟨_, ⟨⟨χ₂, ⟨_, _⟩⟩, h⟩⟩⟩ := h₀
-    rw [mem_iUnion] at h
-    obtain ⟨h₁, h₂⟩ := h
-    have h := s₄ χ₂ m
-    rw [Subtype.forall] at h
-    exact h m h₂
+    obtain ⟨m, ⟨_, ⟨⟨χ₂, ⟨_, _⟩⟩, h₁⟩⟩⟩ := h₀
+    rw [mem_iUnion] at h₁
+    obtain ⟨_, h₂⟩ := h₁
+    have h₃ := s₄ χ₂ m
+    rw [Subtype.forall] at h₃
+    exact h₃ m h₂
   use n₀
 
 end
