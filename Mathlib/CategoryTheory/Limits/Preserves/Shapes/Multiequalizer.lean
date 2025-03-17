@@ -69,7 +69,7 @@ def Multicofork.isColimitMapEquiv :
 
 /-- If `d : MultispanIndex J C`, `c : Multicofork d` is a colimit multicofork,
 and `F : C ⥤ D` is a functor which preserves the colimit of `d.multispan`,
-then the multicofork `c.map F` is colimit, -/
+then the multicofork `c.map F` is colimit. -/
 noncomputable def Multicofork.isColimitMapOfPreserves
     [PreservesColimit d.multispan F] (hc : IsColimit c) : IsColimit (c.map F) :=
   (isColimitMapEquiv c F) (isColimitOfPreserves F hc)
