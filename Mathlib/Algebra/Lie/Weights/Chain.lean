@@ -440,32 +440,25 @@ lemma root_space_ad_is_nilpotent
     subst h₁
     exact s₁ w₁ trivial
 
-
-  have rr : Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) = ⊤ := by
+  have s₃ : Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) = ⊤ := by
     simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂
     simp only [mem_univ, iUnion_true, s]
     rw [partition] at s₂
     apply top_le_iff.1 s₂
 
+  have s₄ (χ₂ : Weight K H M) (n : M) (n : genWeightSpace M χ₂) : A n = 0 :=
+    (hn₀ χ₂) (mem_univ χ₂) n
 
-  have ttt1 (ε : Weight K H M) (n : M) (n : genWeightSpace M ε) : A n = 0 := by
-    have ttt : ε ∈ s := by
-      simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
-        iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
-    have zzz := (hn₀ ε) (ttt) n
-    exact zzz
-
-  have ttt2 : A = 0 := by
+  have s₅ : A = 0 := by
     haveI := [Module K M]
-    have call := Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) rr
-    apply call.2
+    apply (Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₃).2
     intro s1
-    obtain ⟨a, ⟨b, ⟨c, d⟩⟩⟩ := s1
-    simp_all
-    obtain ⟨e, ⟨f, g⟩⟩ := c
-    simp_all
+    obtain ⟨a, ⟨b, ⟨⟨e, ⟨f, g⟩⟩, d⟩⟩⟩ := s1
+    rw [mem_iUnion] at d
     obtain ⟨d1, d2⟩ := d
-    exact ttt1 e a d2
+    have h := s₄ e a
+    rw [Subtype.forall] at h
+    exact h a d2
   use n₀
 
 end
