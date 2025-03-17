@@ -64,22 +64,22 @@ structure HasEval (a : σ → S) : Prop where
   hpow : ∀ s, IsTopologicallyNilpotent (a s)
   tendsto_zero : Tendsto a cofinite (𝓝 0)
 
-theorem HasEval.add [IsTopologicalRing S] [IsLinearTopology S S]
-    {a b : σ → S} (ha : HasEval a) (hb : HasEval b) : HasEval (a + b) where
-  hpow := fun s ↦ IsTopologicallyNilpotent.add (ha.hpow s) (hb.hpow s)
-  tendsto_zero := by rw [← add_zero 0]; exact ha.tendsto_zero.add hb.tendsto_zero
-
-theorem HasEval.zero [IsTopologicalRing S] [IsLinearTopology S S] : HasEval (0 : σ → S) where
-  hpow := fun s ↦ by
+theorem HasEval.zero : HasEval (0 : σ → S) where
+  hpow s := by
     simp only [Pi.zero_apply]
     apply tendsto_atTop_of_eventually_const (i₀ := 1)
     intro i hi
     rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)]
   tendsto_zero := tendsto_const_nhds
 
+theorem HasEval.add [IsTopologicalRing S] [IsLinearTopology S S]
+    {a b : σ → S} (ha : HasEval a) (hb : HasEval b) : HasEval (a + b) where
+  hpow s := IsTopologicallyNilpotent.add (ha.hpow s) (hb.hpow s)
+  tendsto_zero := by rw [← add_zero 0]; exact ha.tendsto_zero.add hb.tendsto_zero
+
 theorem HasEval.mul_left [IsTopologicalRing S] [IsLinearTopology S S]
     (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (c * x) where
-  hpow := fun s ↦ by
+  hpow s := by
     simp only [IsTopologicallyNilpotent, Pi.mul_apply, smul_eq_mul, mul_pow]
     apply IsLinearTopology.tendsto_mul_zero_of_right _ _ (hx.hpow s)
   tendsto_zero := IsLinearTopology.tendsto_mul_zero_of_right _ _ hx.tendsto_zero
