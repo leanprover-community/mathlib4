@@ -21,8 +21,7 @@ does not vanish at `x`.
 
 ## TODO
 
-Establish further properties of meromorphic functions in normal form, such
-as a local identity theorem. Establish the analogous notion `MeromorphicNFOn`.
+Establish the analogous notion `MeromorphicNFOn`.
 -/
 
 open Topology
@@ -30,7 +29,7 @@ open Topology
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  {f : 𝕜 → E}
+  {f : 𝕜 → E} {g : 𝕜 → 𝕜}
   {x : 𝕜}
 
 /-!
@@ -39,10 +38,11 @@ variable
 ## Definition and characterizations
 -/
 
+variable (f x) in
 /-- A function is 'meromorphic in normal form' at `x` if it vanishes around `x`
 or if it can locally be written as `fun z ↦ (z - x) ^ n • g` where `g` is
 analytic and does not vanish at `x`. -/
-def MeromorphicNFAt (f : 𝕜 → E) (x : 𝕜) :=
+def MeromorphicNFAt :=
   f =ᶠ[𝓝 x] 0 ∨
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ f =ᶠ[𝓝 x] (· - x) ^ n • g
 
@@ -145,11 +145,11 @@ private lemma WithTop.map_natCast_eq_zero {n : WithTop ℕ}
 ## Vanishing and order
 -/
 
-/-- If `f` is meromorphic in normal form at `z₀`, then `f` has order zero iff it does not vanish at
-`z₀`.
+/-- If `f` is meromorphic in normal form at `x`, then `f` has order zero iff it does not vanish at
+`x`.
 
 See `AnalyticAt.order_eq_zero_iff` for an analogous statement about analytic functions. -/
-theorem MeromorphicNFAt.order_eq_zero_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicNFAt f x) :
+theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
     hf.meromorphicAt.order = 0 ↔ f x ≠ 0 := by
   constructor
   · intro h₁f
@@ -183,9 +183,9 @@ neighborhood iff they agree in a pointed neighborhood.
 See `AnalytivAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd` for the analogous
 statement for analytic functions.
 -/
-theorem MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {f g : 𝕜 → E} {z₀ : 𝕜}
-    (hf : MeromorphicNFAt f z₀) (hg : MeromorphicNFAt g z₀) :
-    f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g := by
+theorem MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E}
+    (hf : MeromorphicNFAt f x) (hg : MeromorphicNFAt g x) :
+    f =ᶠ[𝓝[≠] x] g ↔ f =ᶠ[𝓝 x] g := by
   constructor
   · intro h
     have t₀ := hf.meromorphicAt.order_congr h
@@ -219,11 +219,11 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
 -/
 
 /-- Helper lemma for `meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic`: if
-`f` is meromorphic in normal form at `z₀` and `g` is analytic without zero at
-`z₀`, then `g • f` is meromorphic in normal form at `z₀`. -/
-lemma MeromorphicNFAt.meromorphicNFAt_of_smul_analytic {f : 𝕜 → E} {g : 𝕜 → 𝕜} {z₀ : 𝕜}
-    (hf : MeromorphicNFAt f z₀) (h₁g : AnalyticAt 𝕜 g z₀) (h₂g : g z₀ ≠ 0) :
-    MeromorphicNFAt (g • f) z₀ := by
+`f` is meromorphic in normal form at `x` and `g` is analytic without zero at
+`x`, then `g • f` is meromorphic in normal form at `x`. -/
+lemma MeromorphicNFAt.meromorphicNFAt_of_smul_analytic (hf : MeromorphicNFAt f x)
+    (h₁g : AnalyticAt 𝕜 g x) (h₂g : g x ≠ 0) :
+    MeromorphicNFAt (g • f) x := by
   rcases hf with h₁f | ⟨n, g_f, h₁g_f, h₂g_f, h₃g_f⟩
   · left
     filter_upwards [h₁f]
@@ -234,17 +234,19 @@ lemma MeromorphicNFAt.meromorphicNFAt_of_smul_analytic {f : 𝕜 → E} {g : �
     · simp [smul_ne_zero h₂g h₂g_f]
     · filter_upwards [h₃g_f]
       intro y hy
-      simp [hy, smul_comm (g y) ((y - z₀) ^ n) (g_f y)]
+      simp only [Pi.smul_apply', hy, Pi.pow_apply]
+      rw [smul_comm]
+
 
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `g • f` is meromorphic in normal form at `z₀`. -/
-theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic
-    {g : 𝕜 → 𝕜} {f : 𝕜 → E} {z₀ : 𝕜} (h₁g : AnalyticAt 𝕜 g z₀) (h₂g : g z₀ ≠ 0) :
-    MeromorphicNFAt f z₀ ↔ MeromorphicNFAt (g • f) z₀ := by
+theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic (h₁g : AnalyticAt 𝕜 g x)
+    (h₂g : g x ≠ 0) :
+    MeromorphicNFAt f x ↔ MeromorphicNFAt (g • f) x := by
   constructor
   · exact fun hf ↦ hf.meromorphicNFAt_of_smul_analytic h₁g h₂g
   · intro hprod
-    have : f =ᶠ[𝓝 z₀] g⁻¹ • g • f := by
+    have : f =ᶠ[𝓝 x] g⁻¹ • g • f := by
       filter_upwards [h₁g.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.mpr h₂g)]
       intro y hy
       rw [Set.preimage_compl, Set.mem_compl_iff, Set.mem_preimage,
@@ -255,12 +257,9 @@ theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic
 
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `g * f` is meromorphic in normal form at `z₀`. -/
-theorem meromorphicNFAt_iff_meromorphicNFAt_of_mul_analytic
-    {f g : 𝕜 → 𝕜}
-    {z₀ : 𝕜}
-    (h₁g : AnalyticAt 𝕜 g z₀)
-    (h₂g : g z₀ ≠ 0) :
-    MeromorphicNFAt f z₀ ↔ MeromorphicNFAt (g * f) z₀ := by
+theorem meromorphicNFAt_iff_meromorphicNFAt_of_mul_analytic {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
+    (h₂g : g x ≠ 0) :
+    MeromorphicNFAt f x ↔ MeromorphicNFAt (g * f) x := by
   rw [← smul_eq_mul]
   exact meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic h₁g h₂g
 
