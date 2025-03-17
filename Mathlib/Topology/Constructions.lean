@@ -291,7 +291,7 @@ theorem MapClusterPt.curry_prodMap {α β : Type*}
     {f : α → X} {g : β → Y} {la : Filter α} {lb : Filter β} {x : X} {y : Y}
     (hf : MapClusterPt x la f) (hg : MapClusterPt y lb g) :
     MapClusterPt (x, y) (la.curry lb) (.map f g) := by
-  rw [mapClusterPt_iff] at hf hg
+  rw [mapClusterPt_iff_frequently] at hf hg
   rw [((𝓝 x).basis_sets.prod_nhds (𝓝 y).basis_sets).mapClusterPt_iff_frequently]
   rintro ⟨s, t⟩ ⟨hs, ht⟩
   rw [frequently_curry_iff]
@@ -823,6 +823,34 @@ theorem Continuous.finInsertNth
 
 @[deprecated (since := "2025-01-02")]
 alias Continuous.fin_insertNth := Continuous.finInsertNth
+
+theorem Filter.Tendsto.finInit {f : Y → ∀ j : Fin (n + 1), π j} {l : Filter Y} {x : ∀ j, π j}
+    (hg : Tendsto f l (𝓝 x)) : Tendsto (fun a ↦ Fin.init (f a)) l (𝓝 <| Fin.init x) :=
+  tendsto_pi_nhds.2 fun j ↦ apply_nhds hg j.castSucc
+
+@[fun_prop]
+theorem ContinuousAt.finInit {f : X → ∀ j : Fin (n + 1), π j} {x : X}
+    (hf : ContinuousAt f x) : ContinuousAt (fun a ↦ Fin.init (f a)) x :=
+  hf.tendsto.finInit
+
+@[fun_prop]
+theorem Continuous.finInit {f : X → ∀ j : Fin (n + 1), π j} (hf : Continuous f) :
+    Continuous fun a ↦ Fin.init (f a) :=
+  continuous_iff_continuousAt.2 fun _ ↦ hf.continuousAt.finInit
+
+theorem Filter.Tendsto.finTail {f : Y → ∀ j : Fin (n + 1), π j} {l : Filter Y} {x : ∀ j, π j}
+    (hg : Tendsto f l (𝓝 x)) : Tendsto (fun a ↦ Fin.tail (f a)) l (𝓝 <| Fin.tail x) :=
+  tendsto_pi_nhds.2 fun j ↦ apply_nhds hg j.succ
+
+@[fun_prop]
+theorem ContinuousAt.finTail {f : X → ∀ j : Fin (n + 1), π j} {x : X}
+    (hf : ContinuousAt f x) : ContinuousAt (fun a ↦ Fin.tail (f a)) x :=
+  hf.tendsto.finTail
+
+@[fun_prop]
+theorem Continuous.finTail {f : X → ∀ j : Fin (n + 1), π j} (hf : Continuous f) :
+    Continuous fun a ↦ Fin.tail (f a) :=
+  continuous_iff_continuousAt.2 fun _ ↦ hf.continuousAt.finTail
 
 end Fin
 

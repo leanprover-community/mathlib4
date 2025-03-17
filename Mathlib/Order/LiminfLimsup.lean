@@ -548,18 +548,11 @@ macro "isBoundedDefault" : tactic =>
     | apply isBounded_ge_of_bot
     | assumption)
 
--- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
--- unsafe def is_bounded_default : tactic Unit :=
---   tactic.applyc `` is_cobounded_le_of_bot <|>
---     tactic.applyc `` is_cobounded_ge_of_top <|>
---       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
-
 
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 
--- Porting note: Renamed from Limsup and Liminf to limsSup and limsInf
 /-- The `limsSup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
 holds `x ≤ a`. -/
 def limsSup (f : Filter α) : α :=
@@ -1592,7 +1585,6 @@ theorem OrderIso.limsup_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
   rw [← g.symm.symm_apply_apply <| limsup (fun x => g (u x)) f, g.symm_symm]
   refine g.monotone ?_
   have hf : u = fun i => g.symm (g (u i)) := funext fun i => (g.symm_apply_apply (u i)).symm
-  -- Porting note: nth_rw 1 to nth_rw 2
   nth_rw 2 [hf]
   refine (OrderIso.to_galoisConnection g.symm).l_limsup_le ?_ hgu_co
   simp_rw [g.symm_apply_apply]

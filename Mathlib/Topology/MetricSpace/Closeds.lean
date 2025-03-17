@@ -397,13 +397,9 @@ theorem lipschitz_infDist_set (x : α) : LipschitzWith 1 fun s : NonemptyCompact
     exact infDist_le_infDist_add_hausdorffDist (edist_ne_top t s)
 
 theorem lipschitz_infDist : LipschitzWith 2 fun p : α × NonemptyCompacts α => infDist p.1 p.2 := by
-  -- Porting note: this used to be `exact` rather than `convert`,
-  -- but now this gets stuck on `2 = 1 + 1`.
-  -- Unfortunately either `simpa using` or `have` results in a timeout.
-  convert @LipschitzWith.uncurry α (NonemptyCompacts α) ℝ _ _ _
-    (fun (x : α) (s : NonemptyCompacts α) => infDist x s) 1 1
-    (fun s => lipschitz_infDist_pt ↑s) lipschitz_infDist_set
-  norm_num
+  rw [← one_add_one_eq_two]
+  exact LipschitzWith.uncurry
+    (fun s : NonemptyCompacts α => lipschitz_infDist_pt (s : Set α)) lipschitz_infDist_set
 
 theorem uniformContinuous_infDist_Hausdorff_dist :
     UniformContinuous fun p : α × NonemptyCompacts α => infDist p.1 p.2 :=

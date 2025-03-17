@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Set.Pointwise.Iterate
+import Mathlib.Dynamics.FixedPoints.Prufer
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.MeasureTheory.Group.AddCircle
