@@ -344,9 +344,6 @@ theorem has_succ_of_type_succ_lt {α} {r : α → α → Prop} [wo : IsWellOrder
 theorem toType_noMax_of_succ_lt {o : Ordinal} (ho : ∀ a < o, succ a < o) : NoMaxOrder o.toType :=
   ⟨has_succ_of_type_succ_lt (type_toType _ ▸ ho)⟩
 
-@[deprecated toType_noMax_of_succ_lt (since := "2024-08-26")]
-alias out_no_max_of_succ_lt := toType_noMax_of_succ_lt
-
 theorem bounded_singleton {r : α → α → Prop} [IsWellOrder α r] (hr : (type r).IsLimit) (x) :
     Bounded r {x} := by
   refine ⟨enum r ⟨succ (typein r x), hr.succ_lt (typein_lt_type r x)⟩, ?_⟩

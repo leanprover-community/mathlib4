@@ -5,7 +5,7 @@ Authors: Johan Commelin, Eric Wieser
 -/
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.DotProduct
 import Mathlib.LinearAlgebra.Matrix.Dual
