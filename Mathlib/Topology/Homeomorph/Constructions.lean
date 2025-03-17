@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Re
 -/
 import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Bases -- only used for piUnique
+import Mathlib.Logic.Equiv.Fin.Basic
 
 /-!
 # Miscellaneous constructions around homeomorphisms
@@ -140,6 +141,18 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
+/-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
+@[simps! -fullyApplied]
+def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
+  toEquiv := piFinTwoEquiv X
+  continuous_toFun := (continuous_apply 0).prodMk (continuous_apply 1)
+  continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
+
+/-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
+@[simps! -fullyApplied]
+def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
+  { piFinTwo fun _ => X with toEquiv := finTwoArrowEquiv X }
+
 /-- The natural homeomorphism `(ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)`.
 `Equiv.sumArrowEquivProdArrow` as a homeomorphism. -/
 @[simps!]
@@ -151,5 +164,36 @@ def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι
   continuous_invFun := continuous_pi fun i ↦ match i with
     | .inl i => by apply (continuous_apply _).comp' continuous_fst
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
+
+private theorem _root_.Fin.appendEquiv_eq_Homeomorph (m n : ℕ) : Fin.appendEquiv m n =
+    ((sumArrowHomeomorphProdArrow).symm.trans
+    (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
+  ext ⟨x1, x2⟩ l
+  simp only [sumArrowHomeomorphProdArrow, Equiv.sumArrowEquivProdArrow,
+    finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
+  by_cases h : l < m
+  · simp [h]
+  · simp [h]
+
+theorem _root_.Fin.continuous_append (m n : ℕ) :
+    Continuous fun (p : (Fin m → X) × (Fin n → X)) ↦ Fin.append p.1 p.2 := by
+  suffices Continuous (Fin.appendEquiv m n) by exact this
+  rw [Fin.appendEquiv_eq_Homeomorph]
+  exact Homeomorph.continuous_toFun _
+
+/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
+`Fin.appendEquiv` as a homeomorphism -/
+@[simps!]
+def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
+  toEquiv := Fin.appendEquiv m n
+  continuous_toFun := Fin.continuous_append m n
+  continuous_invFun := by
+    rw [Fin.appendEquiv_eq_Homeomorph]
+    exact Homeomorph.continuous_invFun _
+
+@[simp]
+theorem _root_.Fin.appendHomeomorph_toEquiv (m n : ℕ) :
+    (Fin.appendHomeomorph (X := X) m n).toEquiv = Fin.appendEquiv m n :=
+  rfl
 
 end Homeomorph

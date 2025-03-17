@@ -3,10 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Homeomorph.Constructions
+--import Mathlib.Topology.Homeomorph.Constructions
 
 /-!
 # Further properties of homeomorphisms
@@ -207,55 +206,6 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   continuous_toFun := continuous_inclusion h.subset
   continuous_invFun := continuous_inclusion h.symm.subset
   toEquiv := Equiv.setCongr h
-
-private theorem _root_.Fin.appendEquiv_eq_Homeomorph (m n : ℕ) : Fin.appendEquiv m n =
-    ((sumArrowHomeomorphProdArrow).symm.trans
-    (piCongrLeft (Y := fun _ ↦ X) finSumFinEquiv)).toEquiv := by
-  ext ⟨x1, x2⟩ l
-  simp only [sumArrowHomeomorphProdArrow, Equiv.sumArrowEquivProdArrow,
-    finSumFinEquiv, Fin.addCases, Fin.appendEquiv, Fin.append, Equiv.coe_fn_mk]
-  by_cases h : l < m
-  · simp [h]
-  · simp [h]
-
-theorem _root_.Fin.continuous_append (m n : ℕ) :
-    Continuous fun (p : (Fin m → X) × (Fin n → X)) ↦ Fin.append p.1 p.2 := by
-  suffices Continuous (Fin.appendEquiv m n) by exact this
-  rw [Fin.appendEquiv_eq_Homeomorph]
-  exact Homeomorph.continuous_toFun _
-
-/-- The natural homeomorphism between `(Fin m → X) × (Fin n → X)` and `Fin (m + n) → X`.
-`Fin.appendEquiv` as a homeomorphism -/
-@[simps!]
-def _root_.Fin.appendHomeomorph (m n : ℕ) : (Fin m → X) × (Fin n → X) ≃ₜ (Fin (m + n) → X) where
-  toEquiv := Fin.appendEquiv m n
-  continuous_toFun := Fin.continuous_append m n
-  continuous_invFun := by
-    rw [Fin.appendEquiv_eq_Homeomorph]
-    exact Homeomorph.continuous_invFun _
-
-@[simp]
-theorem _root_.Fin.appendHomeomorph_toEquiv (m n : ℕ) :
-    (Fin.appendHomeomorph (X := X) m n).toEquiv = Fin.appendEquiv m n :=
-  rfl
-
-section Distrib
-
-variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
-
-end Distrib
-
-/-- Homeomorphism between dependent functions `Π i : Fin 2, X i` and `X 0 × X 1`. -/
-@[simps! -fullyApplied]
-def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
-  toEquiv := piFinTwoEquiv X
-  continuous_toFun := (continuous_apply 0).prodMk (continuous_apply 1)
-  continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
-
-/-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
-@[simps! -fullyApplied]
-def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
-  { piFinTwo fun _ => X with toEquiv := finTwoArrowEquiv X }
 
 section
 
