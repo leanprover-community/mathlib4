@@ -279,11 +279,11 @@ private def checkExpr (e : Expr) (fname : Name → Bool)
   checkArgs fexpr
 
 /-- Checks if the expression `e` can be subscripted. -/
-partial def subscriptable (e : Expr) : DelabM Unit :=
+private partial def subscriptable (e : Expr) : DelabM Unit :=
   checkExpr e isSubscriptable subscriptable
 
 /-- Checks if the expression `e` can be superscripted. -/
-partial def superscriptable (e : Expr) : DelabM Unit := do
+private partial def superscriptable (e : Expr) : DelabM Unit :=
   checkExpr e isSuperscriptable superscriptable
 
 end Superscript
