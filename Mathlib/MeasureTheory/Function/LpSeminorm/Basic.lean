@@ -1030,7 +1030,7 @@ theorem MemLp.right_of_add_measure [TopologicalSpace ε] {f : α → ε} (h : Me
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.right_of_add_measure := MemLp.right_of_add_measure
 
-variable {ε: Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
 
 theorem MemLp.norm {f : α → E} (h : MemLp f p μ) : MemLp (fun x => ‖f x‖) p μ :=
   h.of_le h.aestronglyMeasurable.norm (Eventually.of_forall fun x => by simp)
@@ -1128,7 +1128,8 @@ alias Memℒp.of_discrete := MemLp.of_discrete
 
 section MapMeasure
 
-variable {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → E}
+variable {ε : Type*} [TopologicalSpace ε] [ENormedAddMonoid ε]
+  {β : Type*} {mβ : MeasurableSpace β} {f : α → β} {g : β → ε}
 
 theorem eLpNormEssSup_map_measure (hg : AEStronglyMeasurable g (Measure.map f μ))
     (hf : AEMeasurable f μ) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
@@ -1176,11 +1177,11 @@ theorem MemLp.comp_measurePreserving {ν : MeasureTheory.Measure β} (hg : MemLp
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.comp_measurePreserving := MemLp.comp_measurePreserving
 
-theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure {g : β → F}
-    (hf : MeasurableEmbedding f) : eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
+theorem _root_.MeasurableEmbedding.eLpNormEssSup_map_measure (hf : MeasurableEmbedding f) :
+    eLpNormEssSup g (Measure.map f μ) = eLpNormEssSup (g ∘ f) μ :=
   hf.essSup_map_measure
 
-theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : MeasurableEmbedding f) :
+theorem _root_.MeasurableEmbedding.eLpNorm_map_measure (hf : MeasurableEmbedding f) :
     eLpNorm g p (Measure.map f μ) = eLpNorm (g ∘ f) p μ := by
   by_cases hp_zero : p = 0
   · simp only [hp_zero, eLpNorm_exponent_zero]
@@ -1191,7 +1192,7 @@ theorem _root_.MeasurableEmbedding.eLpNorm_map_measure {g : β → F} (hf : Meas
     rw [hf.lintegral_map]
     rfl
 
-theorem _root_.MeasurableEmbedding.memLp_map_measure_iff {g : β → F} (hf : MeasurableEmbedding f) :
+theorem _root_.MeasurableEmbedding.memLp_map_measure_iff (hf : MeasurableEmbedding f) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ := by
   simp_rw [MemLp, hf.aestronglyMeasurable_map_iff, hf.eLpNorm_map_measure]
 
@@ -1199,7 +1200,7 @@ theorem _root_.MeasurableEmbedding.memLp_map_measure_iff {g : β → F} (hf : Me
 alias _root_.MeasurableEmbedding.memℒp_map_measure_iff :=
   _root_.MeasurableEmbedding.memLp_map_measure_iff
 
-theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) {g : β → F} :
+theorem _root_.MeasurableEquiv.memLp_map_measure_iff (f : α ≃ᵐ β) :
     MemLp g p (Measure.map f μ) ↔ MemLp (g ∘ f) p μ :=
   f.measurableEmbedding.memLp_map_measure_iff
 
@@ -1293,10 +1294,10 @@ end Monotonicity
 In this section we show inequalities on the norm.
 -/
 
-section BoundedSMul
+section IsBoundedSMul
 
 variable {𝕜 : Type*} [NormedRing 𝕜] [MulActionWithZero 𝕜 E] [MulActionWithZero 𝕜 F]
-variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
+variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜 F] {c : 𝕜} {f : α → F}
 
 theorem eLpNorm'_const_smul_le (hq : 0 < q) : eLpNorm' (c • f) q μ ≤ ‖c‖ₑ * eLpNorm' f q μ :=
   eLpNorm'_le_nnreal_smul_eLpNorm'_of_ae_le_mul (Eventually.of_forall fun _ => nnnorm_smul_le ..) hq
@@ -1322,7 +1323,7 @@ theorem MemLp.const_mul {f : α → 𝕜} (hf : MemLp f p μ) (c : 𝕜) : MemLp
 @[deprecated (since := "2025-02-21")]
 alias Memℒp.const_mul := MemLp.const_mul
 
-end BoundedSMul
+end IsBoundedSMul
 
 /-!
 ### Bounded actions by normed division rings
@@ -1332,7 +1333,7 @@ The inequalities in the previous section are now tight.
 section NormedSpace
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] [MulActionWithZero 𝕜 E] [Module 𝕜 F]
-variable [BoundedSMul 𝕜 E] [BoundedSMul 𝕜 F]
+variable [IsBoundedSMul 𝕜 E] [IsBoundedSMul 𝕜 F]
 
 theorem eLpNorm'_const_smul {f : α → F} (c : 𝕜) (hq_pos : 0 < q) :
     eLpNorm' (c • f) q μ = ‖c‖ₑ * eLpNorm' f q μ := by

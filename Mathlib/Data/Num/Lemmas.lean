@@ -14,7 +14,6 @@ import Mathlib.Data.Num.Bitwise
 # Properties of the binary representation of integers
 -/
 
--- Porting note: Required for the notation `-[n+1]`.
 open Int Function
 
 attribute [local simp] add_assoc
@@ -423,7 +422,7 @@ theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n :
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
   ⟨fun h => Function.LeftInverse.injective to_of_nat h, congr_arg _⟩
 
--- Porting note: The priority should be `high`er than `cast_to_nat`.
+-- The priority should be `high`er than `cast_to_nat`.
 @[simp high, norm_cast]
 theorem of_to_nat : ∀ n : Num, ((n : ℕ) : Num) = n :=
   of_to_nat'
@@ -440,7 +439,7 @@ variable {α : Type*}
 
 open Num
 
--- Porting note: The priority should be `high`er than `cast_to_nat`.
+-- The priority should be `high`er than `cast_to_nat`.
 @[simp high, norm_cast]
 theorem of_to_nat : ∀ n : PosNum, ((n : ℕ) : Num) = Num.pos n :=
   of_to_nat'
@@ -790,10 +789,8 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
 
 @[simp, norm_cast]
 theorem castNum_or : ∀ m n : Num, ↑(m ||| n) = (↑m ||| ↑n : ℕ) := by
-  -- Porting note: A name of an implicit local hypothesis is not available so
-  --               `cases_type*` is used.
   apply castNum_eq_bitwise fun x y => pos (PosNum.lor x y) <;>
-   intros <;> (try cases_type* Bool) <;> rfl
+   (try rintro (_ | _)) <;> (try rintro (_ | _)) <;> intros <;> rfl
 
 @[simp, norm_cast]
 theorem castNum_and : ∀ m n : Num, ↑(m &&& n) = (↑m &&& ↑n : ℕ) := by
@@ -846,7 +843,6 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
 
 @[simp]
 theorem castNum_testBit (m n) : testBit m n = Nat.testBit m n := by
-  -- Porting note: `unfold` → `dsimp only`
   cases m with dsimp only [testBit]
   | zero =>
     rw [show (Num.zero : Nat) = 0 from rfl, Nat.zero_testBit]
@@ -961,7 +957,6 @@ theorem cast_bit1 [AddGroupWithOne α] : ∀ n : ZNum, (n.bit1 : α) = ((n : α)
     · conv at ep => change p = 1
       subst p
       simp
-    -- Porting note: `rw [Num.succ']` yields a `match` pattern.
     · dsimp only [Num.succ'] at ep
       subst p
       have : (↑(-↑a : ℤ) : α) = -1 + ↑(-↑a + 1 : ℤ) := by simp [add_comm (- ↑a : ℤ) 1]
@@ -1060,8 +1055,6 @@ theorem pred_succ : ∀ n : ZNum, n.pred.succ = n
   | ZNum.neg p => show toZNumNeg (pos p).succ'.pred' = _ by rw [PosNum.pred'_succ']; rfl
   | ZNum.pos p => by rw [ZNum.pred, ← toZNum_succ, Num.succ, PosNum.succ'_pred', toZNum]
 
--- Porting note: `erw [ZNum.ofInt', ZNum.ofInt']` yields `match` so
---               `change` & `dsimp` are required.
 theorem succ_ofInt' : ∀ n, ZNum.ofInt' (n + 1) = ZNum.ofInt' n + 1
   | (n : ℕ) => by
     change ZNum.ofInt' (n + 1 : ℕ) = ZNum.ofInt' (n : ℕ) + 1
@@ -1157,7 +1150,6 @@ theorem ofInt'_neg : ∀ n : ℤ, ofInt' (-n) = -ofInt' n
   | 0 => show Num.toZNum (Num.ofNat' 0) = -Num.toZNum (Num.ofNat' 0) by rw [Num.ofNat'_zero]; rfl
   | (n + 1 : ℕ) => show Num.toZNumNeg _ = -Num.toZNum _ by rw [Num.zneg_toZNum]
 
--- Porting note: `erw [ofInt']` yields `match` so `dsimp` is required.
 theorem of_to_int' : ∀ n : ZNum, ZNum.ofInt' n = n
   | 0 => by dsimp [ofInt', cast_zero]; erw [Num.ofNat'_zero, Num.toZNum]
   | pos a => by rw [cast_pos, ← PosNum.cast_to_nat, ← Num.ofInt'_toZNum, PosNum.of_to_nat]; rfl
@@ -1278,7 +1270,7 @@ instance addMonoidWithOne : AddMonoidWithOne ZNum :=
       show (Num.ofNat' (n + 1)).toZNum = (Num.ofNat' n).toZNum + 1 by
         rw [Num.ofNat'_succ, Num.add_one, Num.toZNum_succ, ZNum.add_one] }
 
--- Porting note: These theorems should be declared out of the instance, otherwise timeouts.
+-- The next theorems are declared outside of the instance to prevent timeouts.
 
 private theorem mul_comm : ∀ (a b : ZNum), a * b = b * a := by transfer
 
@@ -1333,7 +1325,7 @@ theorem ofInt'_eq : ∀ n : ℤ, ZNum.ofInt' n = n
 theorem of_nat_toZNum (n : ℕ) : Num.toZNum n = n :=
   rfl
 
--- Porting note: The priority should be `high`er than `cast_to_int`.
+-- The priority should be `high`er than `cast_to_int`.
 @[simp high, norm_cast]
 theorem of_to_int (n : ZNum) : ((n : ℤ) : ZNum) = n := by rw [← ofInt'_eq, of_to_int']
 

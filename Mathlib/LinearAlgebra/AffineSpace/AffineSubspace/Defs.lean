@@ -322,23 +322,24 @@ theorem eq_iff_direction_eq_of_mem {s₁ s₂ : AffineSubspace k P} {p : P} (h�
 
 /-- Construct an affine subspace from a point and a direction. -/
 def mk' (p : P) (direction : Submodule k V) : AffineSubspace k P where
-  carrier := { q | ∃ v ∈ direction, q = v +ᵥ p }
+  carrier := { q | q -ᵥ p ∈ direction }
   smul_vsub_vadd_mem c p₁ p₂ p₃ hp₁ hp₂ hp₃ := by
-    rcases hp₁ with ⟨v₁, hv₁, hp₁⟩
-    rcases hp₂ with ⟨v₂, hv₂, hp₂⟩
-    rcases hp₃ with ⟨v₃, hv₃, hp₃⟩
-    use c • (v₁ - v₂) + v₃, direction.add_mem (direction.smul_mem c (direction.sub_mem hv₁ hv₂)) hv₃
-    simp [hp₁, hp₂, hp₃, vadd_vadd]
+    simpa [vadd_vsub_assoc] using
+      direction.add_mem (direction.smul_mem c (direction.sub_mem hp₁ hp₂)) hp₃
+
+@[simp]
+theorem mem_mk' (p q : P) (direction : Submodule k V) : q ∈ mk' p direction ↔ q -ᵥ p ∈ direction :=
+  Iff.rfl
 
 /-- An affine subspace constructed from a point and a direction contains that point. -/
-theorem self_mem_mk' (p : P) (direction : Submodule k V) : p ∈ mk' p direction :=
-  ⟨0, ⟨direction.zero_mem, (zero_vadd _ _).symm⟩⟩
+theorem self_mem_mk' (p : P) (direction : Submodule k V) : p ∈ mk' p direction := by
+  simp
 
 /-- An affine subspace constructed from a point and a direction contains the result of adding a
 vector in that direction to that point. -/
 theorem vadd_mem_mk' {v : V} (p : P) {direction : Submodule k V} (hv : v ∈ direction) :
-    v +ᵥ p ∈ mk' p direction :=
-  ⟨v, hv, rfl⟩
+    v +ᵥ p ∈ mk' p direction := by
+  simpa
 
 /-- An affine subspace constructed from a point and a direction is nonempty. -/
 theorem mk'_nonempty (p : P) (direction : Submodule k V) : (mk' p direction : Set P).Nonempty :=
@@ -351,9 +352,8 @@ theorem direction_mk' (p : P) (direction : Submodule k V) :
   ext v
   rw [mem_direction_iff_eq_vsub (mk'_nonempty _ _)]
   constructor
-  · rintro ⟨p₁, ⟨v₁, hv₁, hp₁⟩, p₂, ⟨v₂, hv₂, hp₂⟩, hv⟩
-    rw [hv, hp₁, hp₂, vadd_vsub_vadd_cancel_right]
-    exact direction.sub_mem hv₁ hv₂
+  · rintro ⟨p₁, hp₁, p₂, hp₂, rfl⟩
+    simpa using direction.sub_mem hp₁ hp₂
   · exact fun hv => ⟨v +ᵥ p, vadd_mem_mk' _ hv, p, self_mem_mk' _ _, (vadd_vsub _ _).symm⟩
 
 /-- A point lies in an affine subspace constructed from another point and a direction if and only

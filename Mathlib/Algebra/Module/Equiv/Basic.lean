@@ -604,6 +604,9 @@ theorem conj_id (e : M ≃ₗ[R] M₂) : e.conj LinearMap.id = LinearMap.id := b
   ext
   simp [conj_apply]
 
+@[simp]
+theorem conj_refl (f : Module.End R M) : (refl R M).conj f = f := rfl
+
 variable (M) in
 /-- An `R`-linear isomorphism between two `R`-modules `M₂` and `M₃` induces an `S`-linear
 isomorphism between `M₂ →ₗ[R] M` and `M₃ →ₗ[R] M`, if `M` is both an `R`-module and an
@@ -733,7 +736,7 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Typ
 
 This is `Equiv.piUnique` as a `LinearEquiv`.
 -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
     [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] : (Π t : α, f t) ≃ₗ[R] f default where
   __ := Equiv.piUnique _
