@@ -223,11 +223,19 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           -- `hnbc : ∃ x ∈ c` that has a neighbor in `s \ c`
           let C₂ := C₁.insertNotAdj hd2 y
           have hC₂ := C₁.lt_of_insertNotAdj_lt hd2 y hC₁
-          let hr := (c.dart_snd_mem_support_of_mem_darts hd)
-          let p := (c.rotate hr).tail.dropLast
-          have hp : p.IsPath := hcy.rotate hr |>.isPath_tail.dropLast (hcy.rotate hr).tail_not_nil
-          
-          sorry
+          let hr := (c.dart_fst_mem_support_of_mem_darts hd)
+          let p := (c.rotate hr).tail.tail
+          have hp : p.IsPath := (hcy.rotate hr).isPath_tail.tail
+          have hne : d.toProd.2 ≠ y := by sorry
+          have hc2eq : C₂ y = C₂ d.toProd.2  := C₁.eq_ofinsertNotAdj hd2
+          let C₃ := C₂.Greedy p.reverse.support
+          have heq : (insert d.toProd.2 (s \ c.support.toFinset)
+            ∪ p.reverse.support.toFinset) = s := by sorry
+          use C₃.copy heq
+          simp_rw [copy_eq]
+          intro v
+          exact C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self _ _)
+            (mem_insert_of_mem hy1)  d.adj hd1 hne hc2eq.symm (by sorry)
         ·  -- Can now color `c` and `s \ c` by induction
           obtain ⟨C₁, hC₁⟩:= ih _ hccard  _ le_rfl
           obtain ⟨C₂, hC₂⟩:= ih _ hsdcard _ le_rfl

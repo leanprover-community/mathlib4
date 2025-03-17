@@ -89,6 +89,10 @@ def insertNotAdj {b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G
 lemma ofinsertNotAdj {a b v : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v) :
     (C.insertNotAdj h a) v = ite  (v = b) (C a) (C v) := rfl
 
+@[simp]
+lemma eq_ofinsertNotAdj  {a b : α} (C : G.PartialColoring s) (h : ∀ v, v ∈ s → ¬ G.Adj b v) :
+    (C.insertNotAdj h a) a = (C.insertNotAdj h a) b := by simp
+
 lemma lt_of_insertNotAdj_lt {b : α} {k : ℕ} (C : G.PartialColoring s)
     (h : ∀ v, v ∈ s → ¬ G.Adj b v) (a : α) (hlt : ∀  v, C v < k) (v : α) :
     (C.insertNotAdj h a) v < k := by
@@ -313,10 +317,10 @@ lemma extend_lt_of_not_injOn {C : G.PartialColoring s} {a : α} {u v : α} (hus 
 -- lemma extend_lt_of_not_colored {C : G.PartialColoring s} {a : α} {u : α} (hu : G.Adj a u)
 --     (h : u ∉ s) : C.extend a < G.degree a := lt_of_le_of_ne (C.extend_le_degree _)
 --         fun hf ↦ h <| (next_eq_degree hf).2 <| (mem_neighborFinset ..).mpr hu
-theorem Greedy_of_path_notInj {x y a : α} (C : G.PartialColoring s)
+theorem Greedy_of_path_notInj {x y : α} (C : G.PartialColoring s)
     {p : G.Walk u v} (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hlt : ∀ y, C y < k)
     (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj u x) (huy : G.Adj u y) (hne : x ≠ y)
-    (heq : C x = C y) (hdisj : Disjoint s p.support.toFinset) :
+    (heq : C x = C y) (hdisj : Disjoint s p.support.toFinset) (a : α):
     (C.Greedy p.support) a < k := by
   have hnx := fun hf ↦ disjoint_left.1 hdisj hxs <| List.mem_toFinset.2 <| List.mem_of_mem_tail hf
   have hny := fun hf ↦ disjoint_left.1 hdisj hys <| List.mem_toFinset.2 <| List.mem_of_mem_tail hf
