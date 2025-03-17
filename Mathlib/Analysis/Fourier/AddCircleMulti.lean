@@ -166,7 +166,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   intro m n
   simp only [ContinuousMap.inner_toLp, ← mFourier_neg, ← mFourier_add]
   split_ifs with h
-  · simpa only [h, neg_add_cancel, mFourier_zero, measure_univ, ENNReal.one_toReal, one_smul] using
+  · simpa only [h, add_neg_cancel, mFourier_zero, measure_univ, ENNReal.one_toReal, one_smul] using
       integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
   rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h
@@ -207,7 +207,7 @@ theorem mFourierBasis_repr (f : L²(UnitAddTorus d)) (i : d → ℤ) :
     mFourierBasis.repr f i = mFourierCoeff f i := by
   trans ∫ t, conj (mFourierLp 2 i t) * f t
   · rw [mFourierBasis.repr_apply_apply f i, MeasureTheory.L2.inner_def, coe_mFourierBasis]
-    simp only [RCLike.inner_apply]
+    simp only [RCLike.inner_apply, mul_comm]
   · apply integral_congr_ae
     filter_upwards [coeFn_mFourierLp 2 i] with _ ht
     rw [ht, ← mFourier_neg, smul_eq_mul]
@@ -221,14 +221,16 @@ theorem hasSum_mFourier_series_L2 (f : L²(UnitAddTorus d)) :
 inner product of the Fourier coefficients of `f` and `g` is the inner product of `f` and `g`. -/
 theorem hasSum_prod_mFourierCoeff (f g : L²(UnitAddTorus d)) :
     HasSum (fun i ↦ conj (mFourierCoeff f i) * (mFourierCoeff g i)) (∫ t, conj (f t) * g t) := by
+  simp_rw [mul_comm (conj _)]
   refine HasSum.congr_fun (mFourierBasis.hasSum_inner_mul_inner f g) (fun n ↦ ?_)
-  simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm]
+  simp only [← mFourierBasis_repr, HilbertBasis.repr_apply_apply, inner_conj_symm,
+    mul_comm (inner f _)]
 
 /-- **Parseval's identity** for norms: for an `L²` function `f` on `UnitAddTorus d`, the sum of the
 squared norms of the Fourier coefficients equals the `L²` norm of `f`. -/
 theorem hasSum_sq_mFourierCoeff (f : L²(UnitAddTorus d)) :
     HasSum (fun i ↦ ‖mFourierCoeff f i‖ ^ 2) (∫ t, ‖f t‖ ^ 2) := by
-  simpa only [← RCLike.inner_apply, inner_self_eq_norm_sq, ← integral_re
+  simpa only [← RCLike.inner_apply', inner_self_eq_norm_sq, ← integral_re
     (L2.integrable_inner f f)] using RCLike.hasSum_re ℂ (hasSum_prod_mFourierCoeff f f)
 
 end FourierL2

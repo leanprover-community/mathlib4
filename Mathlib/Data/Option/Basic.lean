@@ -279,9 +279,9 @@ theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
 
 end
 
--- This wouldn't be a useful simp lemma, as its head is a lambda, so its keys are just .other.
-theorem elim_none_some (f : Option α → β) : (fun x ↦ Option.elim x (f none) (f ∘ some)) = f :=
-  funext fun o ↦ by cases o <;> rfl
+@[simp]
+theorem elim_none_some (f : Option α → β) (i : Option α) : i.elim (f none) (f ∘ some) = f i := by
+  cases i <;> rfl
 
 theorem elim_comp (h : α → β) {f : γ → α} {x : α} {i : Option γ} :
     (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl
