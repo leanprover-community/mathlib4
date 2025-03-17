@@ -138,7 +138,7 @@ theorem image_upperBounds_subset_upperBounds_image :
   rintro _ ⟨a, ha, rfl⟩
   exact Hf.mem_upperBounds_image ha
 
-lemma upperBounds_image_eq_ofSubset {s₁ s₂ : Set α}
+lemma upperBounds_image_congr_of_subset {s₁ s₂ : Set α}
     (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, a ≤ b) :
     upperBounds (f '' s₁) = upperBounds (f '' s₂) := by
   apply upperBounds_congr_of_subset (image_mono hs₁)
@@ -149,7 +149,7 @@ lemma upperBounds_image_eq_ofSubset {s₁ s₂ : Set α}
 theorem image_lowerBounds_subset_lowerBounds_image : f '' lowerBounds s ⊆ lowerBounds (f '' s) :=
   Hf.dual.image_upperBounds_subset_upperBounds_image
 
-lemma lowerBounds_image_eq_ofSubset {s₁ s₂ : Set α}
+lemma lowerBounds_image_congr_of_subset {s₁ s₂ : Set α}
     (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
     lowerBounds (f '' s₁) = lowerBounds (f '' s₂) := by
   apply lowerBounds_congr_of_subset (image_mono hs₁)
@@ -180,7 +180,7 @@ omit Hf
 lemma upperBounds_image_of_directedOn_prod {γ : Type*} [Preorder γ] {g : α × β → γ}
     (Hg : Monotone g) {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
     upperBounds (g '' d) = upperBounds (g '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) :=
-  Hg.upperBounds_image_eq_ofSubset subset_fst_image_prod_snd_image (hd.prod_all_dominated)
+  Hg.upperBounds_image_congr_of_subset subset_fst_image_prod_snd_image (hd.prod_all_dominated)
 
 end Monotone
 
