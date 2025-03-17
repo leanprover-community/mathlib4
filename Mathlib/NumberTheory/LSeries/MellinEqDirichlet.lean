@@ -57,8 +57,8 @@ lemma hasSum_mellin {a : ι → ℂ} {p : ι → ℝ} {F : ℝ → ℂ} {s : ℂ
     simp_rw [← neg_mul (p i), one_div, inv_rpow hpi.le, ← div_eq_inv_mul] at this
     rw [norm_of_nonneg (integral_nonneg (fun _ ↦ norm_nonneg _)), ← this]
     refine setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
-    rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp, Complex.norm_eq_abs,
-      abs_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
+    rw [norm_mul, norm_real, Real.norm_eq_abs, Real.abs_exp,
+      norm_cpow_eq_rpow_re_of_pos ht, sub_re, one_re]
 
 /-- Shortcut version for the commonly arising special case when `p i = π * q i` for some other
 sequence `q`. -/

@@ -7,7 +7,7 @@ import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Block
 import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
@@ -359,7 +359,7 @@ theorem mul_kronecker_mul [Fintype m] [Fintype m'] [CommSemiring α] (A : Matrix
     (A * B) ⊗ₖ (A' * B') = A ⊗ₖ A' * B ⊗ₖ B' :=
   kroneckerMapBilinear_mul_mul (Algebra.lmul ℕ α).toLinearMap mul_mul_mul_comm A B A' B'
 
--- @[simp] -- Porting note: simp-normal form is `kronecker_assoc'`
+-- simp-normal form is `kronecker_assoc'`
 theorem kronecker_assoc [Semigroup α] (A : Matrix l m α) (B : Matrix n p α) (C : Matrix q r α) :
     reindex (Equiv.prodAssoc l n q) (Equiv.prodAssoc m p r) (A ⊗ₖ B ⊗ₖ C) = A ⊗ₖ (B ⊗ₖ C) :=
   kroneckerMap_assoc₁ _ _ _ _ A B C mul_assoc
@@ -503,7 +503,7 @@ theorem diagonal_kroneckerTMul [DecidableEq l] (a : l → α) (B : Matrix m n α
         (blockDiagonal fun i => B.map fun b => a i ⊗ₜ[R] b) :=
   kroneckerMap_diagonal_left _ (zero_tmul _) _ _
 
--- @[simp] -- Porting note: simp-normal form is `kroneckerTMul_assoc'`
+-- simp-normal form is `kroneckerTMul_assoc'`
 theorem kroneckerTMul_assoc (A : Matrix l m α) (B : Matrix n p β) (C : Matrix q r γ) :
     reindex (Equiv.prodAssoc l n q) (Equiv.prodAssoc m p r)
         (((A ⊗ₖₜ[R] B) ⊗ₖₜ[R] C).map (TensorProduct.assoc R α β γ)) =

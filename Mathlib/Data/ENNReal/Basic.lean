@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.NNReal.Defs
+import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -134,19 +135,14 @@ instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
--- Porting note: rfc: redefine using pattern matching?
+-- RFC: redefine using pattern matching?
 noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
--- Porting note: are these 2 instances still required in Lean 4?
-instance mulLeftMono : MulLeftMono ℝ≥0∞ := inferInstance
-
-instance addLeftMono : AddLeftMono ℝ≥0∞ := inferInstance
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a `WithTop` instance and use it here
+-- TODO: add a `WithTop` instance and use it here
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
@@ -381,7 +377,7 @@ lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ≥0∞) = ofNat(n) := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
+-- TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
 theorem coe_two : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := rfl
 
@@ -503,15 +499,26 @@ lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_t
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 
 @[simp, norm_cast]
-theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
+theorem toNNReal_natCast (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
   rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 
+@[deprecated (since := "2025-02-19")] alias toNNReal_nat := toNNReal_natCast
+
+theorem toNNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toNNReal ofNat(n) = ofNat(n) :=
+  toNNReal_natCast n
+
 @[simp, norm_cast]
-theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
+theorem toReal_natCast (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 
+@[deprecated (since := "2025-02-19")] alias toReal_nat := toReal_natCast
+
 @[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toReal ofNat(n) = ofNat(n) :=
-  toReal_nat n
+  toReal_natCast n
+
+lemma toNNReal_natCast_eq_toNNReal (n : ℕ) :
+    (n : ℝ≥0∞).toNNReal = (n : ℝ).toNNReal := by
+  rw [Real.toNNReal_of_nonneg (by positivity), ENNReal.toNNReal_natCast, mk_natCast]
 
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff
 
@@ -531,8 +538,6 @@ theorem max_zero_left : max 0 a = a :=
 
 theorem max_zero_right : max a 0 = a :=
   max_eq_left (zero_le a)
-
--- Porting note: moved `le_of_forall_pos_le_add` down
 
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
@@ -660,7 +665,6 @@ end CompleteLattice
 
 section Bit
 
--- Porting note: removed lemmas about `bit0` and `bit1`
 -- TODO: add lemmas about `OfNat.ofNat`
 
 end Bit
@@ -678,7 +682,7 @@ variable {s : Set ℝ} {t : Set ℝ≥0} {u : Set ℝ≥0∞}
 theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set ℝ≥0).OrdConnected :=
   h.preimage_mono ENNReal.coe_mono
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩

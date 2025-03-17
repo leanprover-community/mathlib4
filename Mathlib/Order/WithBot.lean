@@ -21,7 +21,7 @@ Adding a `bot` or a `top` to an order.
 
 * `With<Top/Bot> α`: Equips `Option α` with the order on `α` plus `none` as the top/bottom element.
 
- -/
+-/
 
 variable {α β γ δ : Type*}
 
@@ -575,7 +575,7 @@ theorem untopD_coe {α} (d x : α) : untopD d x = x :=
 @[deprecated (since := "2025-02-06")]
 alias untop'_coe := untopD_coe
 
-@[simp, norm_cast] -- Porting note: added `simp`
+@[simp, norm_cast]
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 

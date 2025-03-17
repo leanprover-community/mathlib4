@@ -3,7 +3,7 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
-import Mathlib.Algebra.ZeroOne.Prod
+import Mathlib.Algebra.Notation.Prod
 import Mathlib.Data.Nat.Sqrt
 import Mathlib.Data.Set.Lattice
 
@@ -66,7 +66,7 @@ theorem unpair_pair (a b : ℕ) : unpair (pair a b) = (a, b) := by
     simp [unpair, ae, Nat.not_lt_zero, Nat.add_assoc, Nat.add_sub_cancel_left]
 
 /-- An equivalence between `ℕ × ℕ` and `ℕ`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def pairEquiv : ℕ × ℕ ≃ ℕ :=
   ⟨uncurry pair, unpair, fun ⟨a, b⟩ => unpair_pair a b, pair_unpair⟩
 
@@ -156,12 +156,10 @@ open Nat
 
 section CompleteLattice
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iSup_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨆ n : ℕ, f n.unpair.1 n.unpair.2 = ⨆ (i : ℕ) (j : ℕ), f i j := by
   rw [← (iSup_prod : ⨆ i : ℕ × ℕ, f i.1 i.2 = _), ← Nat.surjective_unpair.iSup_comp]
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iInf_unpair {α} [CompleteLattice α] (f : ℕ → ℕ → α) :
     ⨅ n : ℕ, f n.unpair.1 n.unpair.2 = ⨅ (i : ℕ) (j : ℕ), f i j :=
   iSup_unpair (show ℕ → ℕ → αᵒᵈ from f)
@@ -175,12 +173,10 @@ theorem iUnion_unpair_prod {α β} {s : ℕ → Set α} {t : ℕ → Set β} :
   rw [← Set.iUnion_prod]
   exact surjective_unpair.iUnion_comp (fun x => s x.fst ×ˢ t x.snd)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iUnion_unpair {α} (f : ℕ → ℕ → Set α) :
     ⋃ n : ℕ, f n.unpair.1 n.unpair.2 = ⋃ (i : ℕ) (j : ℕ), f i j :=
   iSup_unpair f
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem iInter_unpair {α} (f : ℕ → ℕ → Set α) :
     ⋂ n : ℕ, f n.unpair.1 n.unpair.2 = ⋂ (i : ℕ) (j : ℕ), f i j :=
   iInf_unpair f

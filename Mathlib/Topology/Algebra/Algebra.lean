@@ -353,7 +353,7 @@ variable {B : Type*} [Semiring B] [TopologicalSpace B] [Algebra R A] [Algebra R 
 /-- The cartesian product of two continuous algebra morphisms as a continuous algebra morphism. -/
 protected def prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
     A →A[R] B × C :=
-  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.2.prod_mk f₂.2⟩
+  ⟨(f₁ : A →ₐ[R] B).prod f₂, f₁.2.prodMk f₂.2⟩
 
 @[simp, norm_cast]
 theorem coe_prod (f₁ : A →A[R] B) (f₂ : A →A[R] C) :
@@ -404,7 +404,7 @@ theorem coe_snd' : ⇑(snd R A B) = Prod.snd :=
   rfl
 
 @[simp]
-theorem fst_prod_snd  : (fst R A B).prod (snd R A B) = ContinuousAlgHom.id R (A × B) :=
+theorem fst_prod_snd : (fst R A B).prod (snd R A B) = ContinuousAlgHom.id R (A × B) :=
   ext fun ⟨_x, _y⟩ => rfl
 
 @[simp]

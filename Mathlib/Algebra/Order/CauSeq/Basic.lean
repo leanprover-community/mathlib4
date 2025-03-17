@@ -200,12 +200,9 @@ theorem coe_add (f g : CauSeq β abv) : ⇑(f + g) = (f : ℕ → β) + g :=
 theorem add_apply (f g : CauSeq β abv) (i : ℕ) : (f + g) i = f i + g i :=
   rfl
 
-variable (abv)
-
+variable (abv) in
 /-- The constant Cauchy sequence. -/
 def const (x : β) : CauSeq β abv := ⟨fun _ ↦ x, IsCauSeq.const _⟩
-
-variable {abv}
 
 /-- The constant Cauchy sequence -/
 local notation "const" => const abv
@@ -828,8 +825,8 @@ protected theorem inf_le_right {a b : CauSeq α abs} : a ⊓ b ≤ b :=
   le_of_exists ⟨0, fun _ _ => inf_le_right⟩
 
 protected theorem sup_le {a b c : CauSeq α abs} (ha : a ≤ c) (hb : b ≤ c) : a ⊔ b ≤ c := by
-  cases' ha with ha ha
-  · cases' hb with hb hb
+  obtain ha | ha := ha
+  · obtain hb | hb := hb
     · exact Or.inl (CauSeq.sup_lt ha hb)
     · replace ha := le_of_le_of_eq ha.le (Setoid.symm hb)
       refine le_of_le_of_eq (Or.inr ?_) hb
@@ -839,8 +836,8 @@ protected theorem sup_le {a b c : CauSeq α abs} (ha : a ≤ c) (hb : b ≤ c) :
     exact CauSeq.sup_eq_left hb
 
 protected theorem le_inf {a b c : CauSeq α abs} (hb : a ≤ b) (hc : a ≤ c) : a ≤ b ⊓ c := by
-  cases' hb with hb hb
-  · cases' hc with hc hc
+  obtain hb | hb := hb
+  · obtain hc | hc := hc
     · exact Or.inl (CauSeq.lt_inf hb hc)
     · replace hb := le_of_eq_of_le (Setoid.symm hc) hb.le
       refine le_of_eq_of_le hc (Or.inr ?_)
