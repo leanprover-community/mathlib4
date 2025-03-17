@@ -56,7 +56,11 @@ macro "tauto_set" : tactic => `(tactic|
 end Mathlib.Tactic.TautoSet
 
 /-!
-We register `tauto_set` with the `hint` tactic.
+We register `tauto_set` and `tauto` with the `hint` tactic.
+
+Since tactics run in the reverse order of their registration, we register
+`tauto_set` before `tauto` to ensure that `tauto` is tried first.
 -/
 
 register_hint tauto_set
+register_hint tauto
