@@ -367,6 +367,7 @@ end
 section
 
 open LieAlgebra
+open Submodule
 
 variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
@@ -400,41 +401,26 @@ lemma root_space_ad_is_nilpotent
     exact hn hv n₀ this
   obtain ⟨n₀, hn₀⟩ := uniform_nilpotency_limit
   let A := (toEnd K L M x) ^ n₀
-  have s₁ : ∀ χ₂ ∈ s, genWeightSpace M χ₂ ≤
-      Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
-    intro χ₂ a m hm
-    have h₁ : Submodule.span K (genWeightSpace M χ₂).carrier ≤
-        Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
-      apply Submodule.span_mono
-      exact fun _ hx => Set.mem_biUnion a hx
-    have h₂ : genWeightSpace M χ₂ ≤ Submodule.span K (genWeightSpace M χ₂).carrier := by
-      intro m hm p hp
-      obtain ⟨pr, ⟨_, _⟩⟩ := hp
-      simp only [mem_setOf_eq, mem_iInter, SetLike.mem_coe]
-      exact fun p => p hm
-    exact h₁ (h₂ hm)
-  have s₂ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤
-      Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
+  have s₁ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤ span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
     apply sSup_le
     intro n hn
-    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at s₁ hn ⊢
+    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at hn ⊢
     obtain ⟨χ₂, hχ₂⟩ := hn
     subst hχ₂
-    exact s₁ χ₂ trivial
-  have s₃ : Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) = ⊤ := by
-    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂ ⊢
-    rw [iSup_genWeightSpace_eq_top' K H M] at s₂
-    apply top_le_iff.1 s₂
-  have s₄ (χ₂ : Weight K H M) (m : M) (m : genWeightSpace M χ₂) : A m = 0 :=
-    (hn₀ χ₂) (mem_univ χ₂) m
-  have s₅ : A = 0 := by
+    intro m hm
+    exact (span_mono (fun _ hx => Set.mem_biUnion (mem_univ χ₂) hx)) (subset_span hm)
+  have s₂ : span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) = ⊤ := by
+    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₁ ⊢
+    rw [iSup_genWeightSpace_eq_top' K H M] at s₁
+    apply top_le_iff.1 s₁
+  have s₃ : A = 0 := by
     haveI := [Module K M]
-    apply (Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₃).2
+    apply (linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₂).2
     intro h₀
     obtain ⟨m, ⟨_, ⟨⟨χ₂, ⟨_, _⟩⟩, h₁⟩⟩⟩ := h₀
     rw [mem_iUnion] at h₁
     obtain ⟨_, h₂⟩ := h₁
-    have h₃ := s₄ χ₂ m
+    have h₃ := (hn₀ χ₂) (mem_univ χ₂)
     rw [Subtype.forall] at h₃
     exact h₃ m h₂
   use n₀
@@ -450,7 +436,7 @@ open LieModule
 variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
 
-lemma root_space_ad_is_nilpotent [IsTriangularizable K H L] [FiniteDimensional K L]
+lemma root_space_ad_is_nilpotent' [IsTriangularizable K H L] [FiniteDimensional K L]
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (ad K L x) :=
   LieModule.root_space_ad_is_nilpotent (M := L) H hχ hx
