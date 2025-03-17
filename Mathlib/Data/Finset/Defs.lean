@@ -360,10 +360,10 @@ instance instDecidableRelSubset [DecidableEq α] : DecidableRel (α := Finset α
 instance instDecidableRelSSubset [DecidableEq α] : DecidableRel (α := Finset α) (· ⊂ ·) :=
   fun _ _ ↦ instDecidableAnd
 
-instance instDecidableLE [DecidableEq α] : DecidableRel (α := Finset α) (· ≤ ·) :=
+instance instDecidableLE [DecidableEq α] : DecidableLE (Finset α) :=
   instDecidableRelSubset
 
-instance instDecidableLT [DecidableEq α] : DecidableRel (α := Finset α) (· < ·) :=
+instance instDecidableLT [DecidableEq α] : DecidableLT (Finset α) :=
   instDecidableRelSSubset
 
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
