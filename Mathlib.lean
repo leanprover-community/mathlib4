@@ -5311,6 +5311,7 @@ import Mathlib.Tactic.DeriveEncodable
 import Mathlib.Tactic.DeriveFintype
 import Mathlib.Tactic.DeriveTraversable
 import Mathlib.Tactic.ENatToNat
+import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ErwQuestion
 import Mathlib.Tactic.Eval
 import Mathlib.Tactic.ExistsI
