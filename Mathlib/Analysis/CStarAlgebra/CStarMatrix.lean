@@ -610,20 +610,6 @@ noncomputable instance instNonUnitalNormedRing :
   __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
   norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
-lemma _root_.CStarRing.of_le_norm_mul_star_self {E : Type*} [NonUnitalNormedRing E] [StarRing E]
-    (h : ∀ x : E, ‖x‖ ^ 2 ≤ ‖x * star x‖) : CStarRing E := by
-  have (x : E) : ‖star x‖ = ‖x‖ := by
-    obtain (rfl | hx) := eq_zero_or_norm_pos x
-    · simp
-    · have : ‖x‖ ≤ ‖star x‖ := by
-        refine le_of_mul_le_mul_right ?_ hx
-        simpa [sq, mul_comm ‖star x‖] using h x |>.trans <| norm_mul_le _ _
-      refine le_antisymm ?_ this
-      refine le_of_mul_le_mul_right ?_ (hx.trans_le this)
-      simpa [sq, mul_comm ‖star x‖] using h (star x) |>.trans <| norm_mul_le _ _
-  refine ⟨Equiv.star.surjective.forall.mpr ?_⟩
-  simpa [Equiv.star, this, sq] using h
-
 open ContinuousLinearMap CStarModule in
 /-- Matrices with entries in a C⋆-algebra form a C⋆-algebra. -/
 instance instCStarRing : CStarRing (CStarMatrix n n A) :=
