@@ -800,7 +800,7 @@ variable [∀ i, SeminormedAddCommGroup (α i)]
 variable [∀ i, Module 𝕜 (α i)] [Fintype ι] [Fintype κ] [Fact (1 ≤ p)]
 
 /-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry -/
-@[simps!? +simpRhs]
+@[simps! +simpRhs]
 def sumPiLpEquivProdLpPiLp :
     WithLp p (Π i, α i) ≃ₗᵢ[𝕜]
       WithLp p (WithLp p (Π i, α (.inl i)) × WithLp p (Π i, α (.inr i))) where
