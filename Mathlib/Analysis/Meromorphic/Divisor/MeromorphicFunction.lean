@@ -102,7 +102,8 @@ theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ :
   divisor_smul h₁f₁ h₁f₂ h₂f₁ h₂f₂
 
 /-- The divisor of the inverse is the negative of the divisor. -/
-theorem divisor_inv [CompleteSpace 𝕜] {f: 𝕜 → 𝕜} :
+@[simp]
+theorem divisor_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
     divisor f⁻¹ U = -divisor f U := by
   ext z
   by_cases h : MeromorphicOn f U ∧ z ∈ U
