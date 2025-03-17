@@ -6,6 +6,7 @@ Authors: Johan Commelin, Anne Baanen
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.GaloisConnection.Basic
 import Mathlib.Order.Hom.Basic
+import Mathlib.Order.CompleteLattice.Instances
 
 /-!
 # Lattice structure on order homomorphisms

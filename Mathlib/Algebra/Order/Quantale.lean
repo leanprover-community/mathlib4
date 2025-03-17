@@ -5,8 +5,8 @@ Authors: Pieter Cuijpers
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Basic
-import Mathlib.Order.CompleteLattice.Hom
 import Mathlib.Tactic.Variable
+import Mathlib.Order.CompleteLattice.Basic
 
 /-!
 # Theory of quantales

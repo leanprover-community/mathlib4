@@ -9,8 +9,8 @@ import Mathlib.Data.Set.NAry
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.ULift
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Order.Hom.Set
 import Mathlib.Order.SetNotation
+import Mathlib.Logic.Equiv.Set
 
 /-!
 # Theory of complete lattices
