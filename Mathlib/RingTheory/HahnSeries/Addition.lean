@@ -575,7 +575,7 @@ theorem coeff_add_leading (hxy : x = y + x.leadingTerm) (h : x ≠ 0) :
     nth_rw 1 [hxy, coeff_add]
   have hxx : (leadingTerm x).coeff xo = x.leadingTerm.leadingCoeff := by
     rw [leadingCoeff_leadingTerm, leadingTerm_of_ne h, coeff_single_same]
-  rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_leadingTerm, self_eq_add_left] at hx
+  rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_leadingTerm, right_eq_add] at hx
   exact hx
 
 theorem add_leading_orderTop_ne (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
@@ -592,7 +592,7 @@ theorem add_leading_orderTop_ne (hxy : x = y + x.leadingTerm) (hy : y ≠ 0) :
 theorem coeff_eq_of_not_orderTop (hxy : x = y + x.leadingTerm) (g : Γ) (hg : ↑g ≠ x.orderTop) :
     y.coeff g = x.coeff g := by
   rw [hxy, coeff_add, leadingTerm]
-  simp only [self_eq_add_right]
+  simp only [left_eq_add]
   split_ifs with hx
   · simp only [coeff_zero]
   · simp only [orderTop_of_ne hx, ne_eq, WithTop.coe_eq_coe] at hg

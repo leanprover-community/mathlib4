@@ -90,6 +90,29 @@ end MonoidAlgebra
 
 namespace HahnSeries
 
+section BinomialPow
+
+variable [LinearOrderedAddCommGroup Γ] [CommRing R] [BinomialRing R] [Module R Γ]
+[CommRing A] [Algebra R A]
+
+theorem pos_orderTop_single_sub {g g' : Γ} (h : g < g') (r : A) :
+    0 < (single (g' - g) r).orderTop := by
+  by_cases hr : r = 0
+  · simp [hr]
+  · rw [orderTop_single hr, WithTop.coe_pos]
+    exact sub_pos.mpr h
+
+/-- A Hahn series formally expanding `(X g - X g') ^ r` where `r` is an element of a binomial ring.
+-/
+def binomialPowFamily {g g' : Γ} (h : g < g') (r : R) : HahnSeries Γ A :=
+  single (r • g) 1 *
+    (PowerSeries.heval (pos_orderTop_single_sub h (-1))
+      (PowerSeries.mk (fun n => Ring.choose r n) • 1))
+
+
+
+end BinomialPow
+
 /-! We consider integral powers of binomials with invertible leading term.  Also, we consider more
 binomial ring powers of binomials with leading term 1, when the coefficient ring is an algebra over
 the binomial ring in question.  Question: how to approach switching to consider locality in vertex

@@ -964,7 +964,7 @@ theorem embDomain_succ_smul_powers :
   rintro (_ | n)
   · simp [hx]
   · simp only [coe_sub, coe_ofFinsupp, Pi.sub_apply, powers_of_orderTop_pos hx, ne_eq,
-    self_eq_add_left, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
+    right_eq_add, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, not_false_eq_true,
     Finsupp.single_eq_of_ne, sub_zero]
     simp only [embDomain_apply, Embedding.coeFn_mk, Nat.range_succ, Set.mem_setOf_eq,
       lt_add_iff_pos_left, add_pos_iff, Nat.lt_one_iff, pos_of_gt, or_true, ↓reduceDIte,
