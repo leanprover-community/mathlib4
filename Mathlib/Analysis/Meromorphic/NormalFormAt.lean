@@ -132,7 +132,7 @@ theorem MeromorphicOn.meromorphicNFAt_codiscreteWithin [CompleteSpace E] {U : Se
   filter_upwards [hf.analyticAt_codiscreteWithin] with _ ha
   exact ha.meromorphicNFAt
 
-private lemma WithTop.map_natCast_eq_zero {n : WithTop ℕ}
+private lemma WithTop.map_natCast_eq_zero {n : ENat}
   (hn : WithTop.map (Nat.cast : ℕ → ℤ) n = 0) :
   n = 0 := by
   rcases n
