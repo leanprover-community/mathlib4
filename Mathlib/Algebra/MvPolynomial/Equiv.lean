@@ -159,7 +159,7 @@ theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit
   | h_add f g hf hg => simp [hf, hg]
   | h_monomial n r => simp
 
-theorem eval₂_pUnitAlgEquiv_symm_const {f : Polynomial R} {φ : R →+* S} {a : S} :
+theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
     ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a)  =
       f.eval₂ φ a := by
   rw [eval₂_pUnitAlgEquiv_symm]
@@ -171,7 +171,7 @@ theorem eval₂_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : P
   | monomial d r => simp
   | add f g hf hg => simp [hf, hg]
 
-theorem eval₂_pUnitAlgEquiv_const {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S} :
+theorem eval₂_const_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S} :
     ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) := by
   rw [← eval₂_pUnitAlgEquiv]
 
