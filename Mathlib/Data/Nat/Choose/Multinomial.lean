@@ -336,7 +336,7 @@ theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {
   · refine congrArg _ ?_
     rw [coe_fill, coe_replicate, Multiset.filter_add]
     rw [Multiset.filter_eq_self.mpr]
-    · rw [add_right_eq_self]
+    · rw [add_eq_left]
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj
