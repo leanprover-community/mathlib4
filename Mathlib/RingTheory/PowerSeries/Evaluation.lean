@@ -15,20 +15,19 @@ for the `Unit` type of indeterminates.
 This file provides a simpler syntax.
 
 Let `R`, `S` be types, with `CommRing R`, `CommRing S`.
-One assumes that `TopologicalRing R` and `UniformAddGroup R`,
+One assumes that `IsTopologicalRing R` and `UniformAddGroup R`,
 and that `S` is a complete and separated topological `R`-algebra,
-with `LinearTopology R`, which means there is a basis of ighborhoods of 0
+with `IsLinearTopology S S`, which means there is a basis of neighborhoods of 0
 consisting of ideals.
 
 Given `φ : R →+* S`, `a : S`, and `f : MvPowerSeries σ R`,
-`MvPowerSeries.eval₂ f φ a` is the evaluation of the power series `f` at `a`.
+`PowerSeries.eval₂ f φ a` is the evaluation of the power series `f` at `a`.
 It `f` is (the coercion of) a polynomial, it coincides with the evaluation of that polynomial.
 Otherwise, it is defined by density from polynomials;
-its values are irrelevant unless `φ` is continuous and `a` satisfies the condition
-bundled in `PowerSeries.HasEval a` :
-  - `a` is topologically nilpotent (`a ^ n` tends to 0 when `n` tends to infinity)
+its values are irrelevant unless `φ` is continuous and `a` is topologically 
+nilpotent (`a ^ n` tends to 0 when `n` tends to infinity).
 
-Under `Continuous φ` and `PowerSeries.HasEval a`,
+Under `Continuous φ` and `IsTopologicallyNilpotent a`,
 the following lemmas furnish the properties of evaluation:
 
 * `PowerSeries.eval₂Hom`: the evaluation of multivariate power series, as a ring morphism,
@@ -52,15 +51,15 @@ section
 variable [TopologicalSpace R] [TopologicalSpace S]
 
 theorem hasEval_iff {a : S} :
-    MvPowerSeries.HasEval (Function.const Unit a) ↔ IsTopologicallyNilpotent a :=
+    MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) ↔ IsTopologicallyNilpotent a :=
   ⟨fun ha ↦ ha.hpow default, fun ha ↦ ⟨fun _ ↦ ha, by simp⟩⟩
 
 theorem hasEval {a : S} (ha : IsTopologicallyNilpotent a) :
-    MvPowerSeries.HasEval (Function.const Unit a) := hasEval_iff.mpr ha
+    MvPowerSeries.HasEval (fun (_ : Unit) ↦ a) := hasEval_iff.mpr ha
 
 theorem isTopologicallyNilpotent_X :
     IsTopologicallyNilpotent (PowerSeries.X : PowerSeries R) :=
-  tendsto_pow_zero_of_constantCoeff_zero (MvPowerSeries.constantCoeff_X _)
+  tendsto_pow_zero_of_constantCoeff_zero PowerSeries.constantCoeff_X
 
 end
 
@@ -79,10 +78,8 @@ theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
   let g : MvPolynomial Unit R := (MvPolynomial.pUnitAlgEquiv R).symm f
   have : f = MvPolynomial.pUnitAlgEquiv R g := by
     simp only [g, ← AlgEquiv.symm_apply_eq]
-  simp only [this]
-  simp only [PowerSeries.eval₂, MvPowerSeries.eval₂_coe, MvPolynomial.eval₂_pUnitAlgEquiv]
-  rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
-  rw [MvPowerSeries.eval₂_coe]
+  simp only [this, PowerSeries.eval₂, MvPolynomial.eval₂_pUnitAlgEquiv]
+  rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, MvPowerSeries.eval₂_coe]
 
 theorem eval₂_C (r : R) :
     eval₂ φ a (C R r) = φ r := by
@@ -138,9 +135,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : IsTopologicallyNilpotent a)
     ε = eval₂ φ a := by
   apply MvPowerSeries.eval₂_unique hφ (hasEval ha) hε
   intro p
-  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_pUnitAlgEquiv_symm]
-  congr
-  rw [AlgEquiv.symm_apply_apply]
+  rw [MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, h, ← MvPolynomial.eval₂_pUnitAlgEquiv]
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : IsTopologicallyNilpotent a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]

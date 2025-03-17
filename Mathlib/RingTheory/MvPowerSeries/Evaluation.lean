@@ -100,7 +100,6 @@ theorem HasEval.mul_right [IsTopologicalRing S] [IsLinearTopology S S]
     (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (x * c) :=
   hasEvalIdeal.mul_mem_right c hx
 
-
 /-- [Bourbaki, *Algebra*, chap. 4, §4, n°3, Prop. 4 (i) (a & b)](bourbaki1981). -/
 theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
     HasEval (fun s ↦ φ (a s)) where
