@@ -33,7 +33,7 @@ We define `FDRep R G` for any ring `R` and monoid `G`,
 as the category of finitely generated `R`-linear representations of `G`.
 
 The main case of interest is when `R = k` is a field and `G` is a group,
-and this is reflected in the documentaton.
+and this is reflected in the documentation.
 
 ## TODO
 * `FdRep k G ≌ FullSubcategory (FiniteDimensional k)`
@@ -63,7 +63,9 @@ namespace FDRep
 
 variable {R k G : Type u} [CommRing R] [Field k] [Monoid G]
 
--- Porting note: `@[derive]` didn't work for `FDRep`. Add the 4 instances here.
+-- The `LargeCategory, ConcreteCategory, Preadditive, HasFiniteLimits` instances should be
+-- constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : LargeCategory (FDRep R G) := inferInstance
 instance : ConcreteCategory (FDRep R G) (Action.HomSubtype _ _) := inferInstance
 instance : Preadditive (FDRep R G) := inferInstance

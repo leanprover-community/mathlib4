@@ -372,11 +372,7 @@ def grothendieckTypeToCatFunctor : Grothendieck (G ⋙ typeToCat) ⥤ G.Elements
   map f := ⟨f.1, f.2.1.1⟩
 
 /-- Auxiliary definition for `grothendieckTypeToCat`, to speed up elaboration. -/
--- Porting note:
--- `simps` is incorrectly producing Prop-valued projections here,
--- so we manually specify which ones to produce.
--- See https://leanprover.zulipchat.com/#narrow/stream/144837-PR-reviews/topic/!4.233204.20simps.20bug.20.28Grothendieck.20construction.29
-@[simps! obj_base obj_fiber_as map_base]
+@[simps!]
 def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat) where
   obj X := ⟨X.1, ⟨X.2⟩⟩
   map f := ⟨f.1, ⟨⟨f.2⟩⟩⟩
@@ -385,12 +381,7 @@ def grothendieckTypeToCatInverse : G.Elements ⥤ Grothendieck (G ⋙ typeToCat)
 (thought of as a functor to `Cat` by realising a type as a discrete category)
 is the same as the 'category of elements' construction.
 -/
--- See porting note on grothendieckTypeToCatInverse.
--- We just want to turn off grothendieckTypeToCat_inverse_map_fiber_down_down,
--- so have to list the complement here for `@[simps]`.
-@[simps! functor_obj_fst functor_obj_snd functor_map_coe inverse_obj_base inverse_obj_fiber_as
-  inverse_map_base unitIso_hom_app_base unitIso_hom_app_fiber unitIso_inv_app_base
-  unitIso_inv_app_fiber counitIso_hom_app_coe counitIso_inv_app_coe]
+@[simps!]
 def grothendieckTypeToCat : Grothendieck (G ⋙ typeToCat) ≌ G.Elements where
   functor := grothendieckTypeToCatFunctor G
   inverse := grothendieckTypeToCatInverse G

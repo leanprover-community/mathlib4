@@ -505,8 +505,7 @@ lemma eq_finite_iUnion_of_isTopologicalBasis_of_isCompact_open (b : ι → Set X
   · refine Set.Subset.trans ht ?_
     simp only [Set.iUnion_subset_iff]
     intro i hi
-    erw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
-    exact Set.subset_iUnion (fun i : t.image f' => b i) ⟨_, Finset.mem_image_of_mem _ hi⟩
+    simpa using subset_iUnion₂ (s := fun i _ => b (f' i)) i hi
   · apply Set.iUnion₂_subset
     rintro i hi
     obtain ⟨j, -, rfl⟩ := Finset.mem_image.mp hi
@@ -858,7 +857,7 @@ theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsC
   rw [← image_univ]; exact isCompact_univ.image hf
 
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
-  @range_diag X ▸ isCompact_range (continuous_id.prod_mk continuous_id)
+  @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
 /-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/
 theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :

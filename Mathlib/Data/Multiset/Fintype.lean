@@ -48,8 +48,6 @@ instance : CoeSort (Multiset α) (Type _) := ⟨Multiset.ToType⟩
 
 example : DecidableEq m := inferInstanceAs <| DecidableEq ((x : α) × Fin (m.count x))
 
--- Porting note: syntactic equality
-
 /-- Constructor for terms of the coercion of `m` to a type.
 This helps Lean pick up the correct instances. -/
 @[reducible, match_pattern]
@@ -61,11 +59,6 @@ component. -/
 instance instCoeSortMultisetType.instCoeOutToType : CoeOut m α :=
   ⟨fun x ↦ x.1⟩
 
--- Porting note: syntactic equality
-
--- Syntactic equality
-
--- @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10685): dsimp can prove this
 theorem coe_mk {x : α} {i : Fin (m.count x)} : ↑(m.mkToType x i) = x :=
   rfl
 
