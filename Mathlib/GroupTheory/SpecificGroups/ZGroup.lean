@@ -121,7 +121,7 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
     ⟨Nat.prime_of_mem_primeFactors p.2⟩
-  obtain ⟨ϕ⟩ := ((isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
+  obtain ⟨ϕ⟩ := ((isNilpotent_tfae_of_finite (G := G)).out 0 4).mp hG
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
