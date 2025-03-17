@@ -377,9 +377,7 @@ variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 lemma root_space_ad_is_nilpotent
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  let s : Set (Weight K H M) := by
-    exact univ
-
+  let s : Set (Weight K H M) := univ
   have nilpotency_limit : ∀ χ₂ ∈ s, ∃ n : ℕ, ∀ v : genWeightSpace M χ₂, ∀ m ≥ n,
       ((toEnd K L M x) ^ m) v = 0 := by
     intro χ₂ he
@@ -389,7 +387,6 @@ lemma root_space_ad_is_nilpotent
     have h := toEnd_pow_apply_mem hx v.mem k
     rw [hk₂, LieSubmodule.mem_bot] at h
     exact LinearMap.pow_map_zero_of_le hm h
-
   have uniform_nilpotency_limit : ∃ n₀ : ℕ, ∀ χ₂ ∈ s, ∀ v : genWeightSpace M χ₂,
       ((toEnd K L M x) ^ n₀) v = 0 := by
     choose fn₁ hn using nilpotency_limit
@@ -403,10 +400,8 @@ lemma root_space_ad_is_nilpotent
     have : fn₁ χ₂ hχ₂ ≤ n₀ := by
       apply Finset.le_sup (mem_toFinset.2 hχ₂)
     exact hn hv n₀ this
-
   obtain ⟨n₀, hn₀⟩ := uniform_nilpotency_limit
   let A := (toEnd K L M x) ^ n₀
-
   have s₁ : ∀ χ₂ ∈ s, genWeightSpace M χ₂ ≤
       Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
     intro χ₂ a m hm
@@ -420,7 +415,6 @@ lemma root_space_ad_is_nilpotent
       simp only [mem_setOf_eq, mem_iInter, SetLike.mem_coe]
       exact fun p => p hm
     exact h₁ (h₂ hm)
-
   have s₂ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤
       Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
     apply sSup_le
@@ -429,15 +423,12 @@ lemma root_space_ad_is_nilpotent
     obtain ⟨χ₂, hχ₂⟩ := hn
     subst hχ₂
     exact s₁ χ₂ trivial
-
   have s₃ : Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) = ⊤ := by
     simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂ ⊢
     rw [iSup_genWeightSpace_eq_top' K H M] at s₂
     apply top_le_iff.1 s₂
-
   have s₄ (χ₂ : Weight K H M) (m : M) (m : genWeightSpace M χ₂) : A m = 0 :=
     (hn₀ χ₂) (mem_univ χ₂) m
-
   have s₅ : A = 0 := by
     haveI := [Module K M]
     apply (Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₃).2
