@@ -241,7 +241,7 @@ theorem coe_eval₂Hom (hφ : Continuous φ) (ha : HasEval a) :
     simpa [MvPolynomial.coe_eval₂Hom, coeToMvPowerSeries.ringHom_apply] using
       coeToMvPowerSeries_isDenseInducing.extend_eq
         (coeToMvPowerSeries_uniformContinuous hφ ha).continuous p
-  · rfl
+  · rw [← eval₂Hom_eq_extend hφ ha]
 
 -- Note: this is still true without the `T2Space` hypothesis, by arguing that the case
 -- disjunction in the definition of `eval₂` only replaces some values by topologically
