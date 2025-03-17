@@ -76,16 +76,9 @@ theorem countP_True {s : Multiset α} : countP (fun _ => True) s = card s :=
 theorem countP_False {s : Multiset α} : countP (fun _ => False) s = 0 :=
   Quot.inductionOn s fun _l => congrFun List.countP_false _
 
--- Porting note: `Lean.Internal.coeM` forces us to type-ascript `{a // a ∈ s}`
 lemma countP_attach (s : Multiset α) : s.attach.countP (fun a : {a // a ∈ s} ↦ p a) = s.countP p :=
   Quotient.inductionOn s fun l => by
-    simp only [quot_mk_to_coe, coe_countP]
-    -- Porting note: was
-    -- rw [quot_mk_to_coe, coe_attach, coe_countP]
-    -- exact List.countP_attach _ _
-    rw [coe_attach]
-    refine (coe_countP _ _).trans ?_
-    convert List.countP_attach _ _
+    simp only [quot_mk_to_coe, coe_countP, coe_attach, coe_countP, ← List.countP_attach l]
     rfl
 
 variable {p}

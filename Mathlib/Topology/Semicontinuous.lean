@@ -324,7 +324,7 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
           simpa using (eventually_principal.2 fun (_ : α × γ) ↦ id).filter_mono h
     _ = y := h'.2.liminf_eq
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
-    exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
+    exact fun hf y ↦ hf.preimage (.prodMk_left y)
 
 alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
 

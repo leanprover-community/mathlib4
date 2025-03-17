@@ -299,7 +299,6 @@ theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
-  -- Porting note: had to reshuffle `intro`
   cases s with
   | nil => injection e
   | cons b s' =>
@@ -339,9 +338,7 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
 theorem corec_eq (f : β → Option (α × β)) (b : β) :
     destruct (corec f b) = omap (corec f) (f b) := by
   dsimp [corec, destruct, get]
-  -- Porting note: next two lines were `change`...`with`...
-  have h : Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 := rfl
-  rw [h]
+  rw [show Stream'.corec' (Corec.f f) (some b) 0 = (Corec.f f (some b)).1 from rfl]
   dsimp [Corec.f]
   induction' h : f b with s; · rfl
   obtain ⟨a, b'⟩ := s; dsimp [Corec.f]
@@ -918,7 +915,7 @@ theorem terminatedAt_map_iff {f : α → β} {s : Seq α} {n : ℕ} :
   simp [TerminatedAt]
 
 @[simp]
-theorem terminates_map_iff {f : α → β} {s : Seq α}  :
+theorem terminates_map_iff {f : α → β} {s : Seq α} :
     (map f s).Terminates ↔ s.Terminates := by
   simp [Terminates]
 
@@ -1255,11 +1252,7 @@ theorem join_map_ret (s : Seq α) : Seq.join (Seq.map ret s) = s := by
 
 @[simp]
 theorem bind_ret (f : α → β) : ∀ s, bind s (ret ∘ f) = map f s
-  | ⟨a, s⟩ => by
-    dsimp [bind, map]
-    -- Porting note: Was `rw [map_comp]; simp [Function.comp, ret]`
-    rw [map_comp, ret]
-    simp
+  | ⟨a, s⟩ => by simp [bind, map, map_comp, ret]
 
 @[simp]
 theorem ret_bind (a : α) (f : α → Seq1 β) : bind (ret a) f = f a := by
@@ -1317,15 +1310,12 @@ theorem join_join (SS : Seq (Seq1 (Seq1 α))) :
 theorem bind_assoc (s : Seq1 α) (f : α → Seq1 β) (g : β → Seq1 γ) :
     bind (bind s f) g = bind s fun x : α => bind (f x) g := by
   obtain ⟨a, s⟩ := s
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp [bind, map]`.
   simp only [bind, map_pair, map_join]
   rw [← map_comp]
   simp only [show (fun x => join (map g (f x))) = join ∘ (map g ∘ f) from rfl]
   rw [map_comp _ join]
   generalize Seq.map (map g ∘ f) s = SS
   rcases map g (f a) with ⟨⟨a, s⟩, S⟩
-  -- Porting note: Instead of `apply recOn s <;> intros`, `induction'` are used to
-  --   give names to variables.
   induction' s using recOn with x s_1 <;> induction' S using recOn with x_1 s_2 <;> simp
   · obtain ⟨x, t⟩ := x_1
     cases t <;> simp

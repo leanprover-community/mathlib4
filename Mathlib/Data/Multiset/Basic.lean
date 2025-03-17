@@ -95,7 +95,6 @@ def strongDownwardInduction {p : Multiset α → Sort*} {n : ℕ}
     strongDownwardInduction H t ht
 termination_by n - card s
 decreasing_by simp_wf; have := (card_lt_card _h); omega
--- Porting note: reorderd universes
 
 theorem strongDownwardInduction_eq {p : Multiset α → Sort*} {n : ℕ}
     (H : ∀ t₁, (∀ {t₂ : Multiset α}, card t₂ ≤ n → t₁ < t₂ → p t₂) → card t₁ ≤ n → p t₁)
