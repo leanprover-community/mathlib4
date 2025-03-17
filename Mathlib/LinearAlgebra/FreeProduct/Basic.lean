@@ -206,7 +206,7 @@ theorem lof_map_one (i : I) : lof R A i 1 = 1 := by
   rw [lof]; dsimp [mkAlgHom]; exact identify_one R A i
 
 /-- The `i`th canonical injection, from `A i` to the free product -/
-irreducible_def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
+@[irreducible] def ι (i : I) : A i →ₐ[R] FreeProduct R A :=
   AlgHom.ofLinearMap (ι' R A ∘ₗ DirectSum.lof R I A i)
     (lof_map_one R A i) (mul_injections R A · · |>.symm)
 

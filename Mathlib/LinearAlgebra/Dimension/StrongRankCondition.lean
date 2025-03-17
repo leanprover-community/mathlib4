@@ -310,7 +310,7 @@ theorem maximal_linearIndependent_eq_infinite_basis {ι : Type w} (b : Basis ι 
 
 theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank R M := by
   haveI := nontrivial_of_invariantBasisNumber R
-  rw [Module.rank_def]
+  rw [Module.rank]
   apply le_antisymm
   · trans
     swap
@@ -450,7 +450,7 @@ variable (M)
 
 /-- The rank of a finite module is finite. -/
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
-  simp only [Module.rank_def]
+  simp only [Module.rank]
   -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
   refine (ciSup_le' fun i => ?_).trans_lt (nat_lt_aleph0 S.card)

@@ -37,7 +37,7 @@ variable {f'' : α → E''} {g'' : α → F''} {k'' : α → G''}
 variable {l l' : Filter α}
 @[simp]
 theorem isBigOWith_principal {s : Set α} : IsBigOWith c (𝓟 s) f g ↔ ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
-  rw [IsBigOWith_def, eventually_principal]
+  rw [IsBigOWith, eventually_principal]
 
 theorem isBigO_principal {s : Set α} : f =O[𝓟 s] g ↔ ∃ c, ∀ x ∈ s, ‖f x‖ ≤ c * ‖g x‖ := by
   simp_rw [isBigO_iff, eventually_principal]
@@ -57,7 +57,7 @@ theorem isLittleO_principal {s : Set α} : f'' =o[𝓟 s] g' ↔ ∀ x ∈ s, f'
 
 @[simp]
 theorem isBigOWith_top : IsBigOWith c ⊤ f g ↔ ∀ x, ‖f x‖ ≤ c * ‖g x‖ := by
-  rw [IsBigOWith_def, eventually_top]
+  rw [IsBigOWith, eventually_top]
 
 @[simp]
 theorem isBigO_top : f =O[⊤] g ↔ ∃ C, ∀ x, ‖f x‖ ≤ C * ‖g x‖ := by
@@ -265,7 +265,7 @@ variable {k₁ : α → R} {k₂ : α → 𝕜'}
 
 theorem IsBigOWith.smul (h₁ : IsBigOWith c l k₁ k₂) (h₂ : IsBigOWith c' l f' g') :
     IsBigOWith (c * c') l (fun x => k₁ x • f' x) fun x => k₂ x • g' x := by
-  simp only [IsBigOWith_def] at *
+  simp only [IsBigOWith] at *
   filter_upwards [h₁, h₂] with _ hx₁ hx₂
   apply le_trans (norm_smul_le _ _)
   convert mul_le_mul hx₁ hx₂ (norm_nonneg _) (le_trans (norm_nonneg _) hx₁) using 1
@@ -425,7 +425,7 @@ variable {u v : α → 𝕜}
 theorem isBigOWith_of_eq_mul {u v : α → R} (φ : α → R) (hφ : ∀ᶠ x in l, ‖φ x‖ ≤ c)
     (h : u =ᶠ[l] φ * v) :
     IsBigOWith c l u v := by
-  simp only [IsBigOWith_def]
+  simp only [IsBigOWith]
   refine h.symm.rw (fun x a => ‖a‖ ≤ c * ‖v x‖) (hφ.mono fun x hx => ?_)
   simp only [Pi.mul_apply]
   refine (norm_mul_le _ _).trans ?_
@@ -575,7 +575,7 @@ theorem IsLittleO.right_isBigO_add' {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂
 theorem bound_of_isBigO_cofinite (h : f =O[cofinite] g'') :
     ∃ C > 0, ∀ ⦃x⦄, g'' x ≠ 0 → ‖f x‖ ≤ C * ‖g'' x‖ := by
   rcases h.exists_pos with ⟨C, C₀, hC⟩
-  rw [IsBigOWith_def, eventually_cofinite] at hC
+  rw [IsBigOWith, eventually_cofinite] at hC
   rcases (hC.toFinset.image fun x => ‖f x‖ / ‖g'' x‖).exists_le with ⟨C', hC'⟩
   have : ∀ x, C * ‖g'' x‖ < ‖f x‖ → ‖f x‖ / ‖g'' x‖ ≤ C' := by simpa using hC'
   refine ⟨max C C', lt_max_iff.2 (Or.inl C₀), fun x h₀ => ?_⟩
@@ -686,7 +686,7 @@ theorem isBigOWith_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.ta
 /-- Transfer `IsBigO` over a `PartialHomeomorph`. -/
 theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
-  simp only [IsBigO_def]
+  simp only [IsBigO]
   exact exists_congr fun C => e.isBigOWith_congr hb
 
 /-- Transfer `IsLittleO` over a `PartialHomeomorph`. -/
@@ -712,7 +712,7 @@ theorem isBigOWith_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → 
 /-- Transfer `IsBigO` over a `Homeomorph`. -/
 theorem isBigO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
     f =O[𝓝 b] g ↔ (f ∘ e) =O[𝓝 (e.symm b)] (g ∘ e) := by
-  simp only [IsBigO_def]
+  simp only [IsBigO]
   exact exists_congr fun C => e.isBigOWith_congr
 
 /-- Transfer `IsLittleO` over a `Homeomorph`. -/

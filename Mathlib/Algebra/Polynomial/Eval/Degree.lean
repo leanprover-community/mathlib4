@@ -86,7 +86,7 @@ section Comp
 theorem coeff_comp_degree_mul_degree (hqd0 : natDegree q ≠ 0) :
     coeff (p.comp q) (natDegree p * natDegree q) =
     leadingCoeff p * leadingCoeff q ^ natDegree p := by
-  rw [comp, eval₂_def, coeff_sum]
+  rw [comp, eval₂, coeff_sum]
   refine Eq.trans (Finset.sum_eq_single p.natDegree ?h₀ ?h₁) ?h₂
   case h₂ =>
     simp only [coeff_natDegree, coeff_C_mul, coeff_pow_mul_natDegree]

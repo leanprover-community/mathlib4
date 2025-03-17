@@ -152,7 +152,7 @@ variable [NormedAddCommGroup E] [hE : CompleteSpace E] [NontriviallyNormedField 
 
 open Classical in
 /-- The Bochner integral -/
-irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
+@[irreducible] def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
   if _ : CompleteSpace G then
     if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
   else 0
@@ -516,7 +516,7 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
 
 theorem integral_nonneg_of_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) : 0 ≤ ∫ a, f a ∂μ := by
   have A : CompleteSpace ℝ := by infer_instance
-  simp only [integral_def, A, L1.integral_def, dite_true]
+  simp only [integral, A, L1.integral, dite_true]
   exact setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
     (fun s _ _ => weightedSMul_nonneg s) hf
 

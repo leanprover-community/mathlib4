@@ -68,7 +68,7 @@ It is defined as the conditional distribution of the identity given the identity
 identity is understood as a map from `Ω` with the σ-algebra `mΩ` to `Ω` with σ-algebra `m ⊓ mΩ`.
 We use `m ⊓ mΩ` instead of `m` to ensure that it is a sub-σ-algebra of `mΩ`. We then use
 `Kernel.comap` to get a kernel from `m` to `mΩ` instead of from `m ⊓ mΩ` to `mΩ`. -/
-noncomputable irreducible_def condExpKernel (μ : Measure Ω) [IsFiniteMeasure μ]
+@[irreducible] noncomputable def condExpKernel (μ : Measure Ω) [IsFiniteMeasure μ]
     (m : MeasurableSpace Ω) : @Kernel Ω Ω m mΩ :=
   if _h : Nonempty Ω then
     Kernel.comap (@condDistrib Ω Ω Ω mΩ _ _ mΩ (m ⊓ mΩ) id id μ _) id

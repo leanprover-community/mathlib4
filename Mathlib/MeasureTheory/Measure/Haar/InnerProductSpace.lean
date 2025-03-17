@@ -118,7 +118,7 @@ theorem EuclideanSpace.volume_preserving_measurableEquiv :
     MeasurePreserving (EuclideanSpace.measurableEquiv ι) := by
   suffices volume = map (EuclideanSpace.measurableEquiv ι).symm volume by
     convert ((EuclideanSpace.measurableEquiv ι).symm.measurable.measurePreserving _).symm
-  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar_def,
+  rw [← addHaarMeasure_eq_volume_pi, ← Basis.parallelepiped_basisFun, ← Basis.addHaar,
     coe_measurableEquiv_symm, ← PiLp.continuousLinearEquiv_symm_apply 2 ℝ, Basis.map_addHaar]
   exact (EuclideanSpace.basisFun _ _).addHaar_eq_volume.symm
 

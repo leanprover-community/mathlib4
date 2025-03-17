@@ -384,7 +384,7 @@ instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot 
 
 /-- The quotient map from a ring to its quotient, as a homomorphism of rings.
 -/
-irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
+@[irreducible] def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
   { toFun := fun x ↦ ⟨Quot.mk _ x⟩
     map_one' := by simp [← one_quot]
     map_mul' := by simp [mul_quot]
@@ -392,10 +392,10 @@ irreducible_def mkRingHom (r : R → R → Prop) : R →+* RingQuot r :=
     map_add' := by simp [add_quot] }
 
 theorem mkRingHom_rel {r : R → R → Prop} {x y : R} (w : r x y) : mkRingHom r x = mkRingHom r y := by
-  simp [mkRingHom_def, Quot.sound (Rel.of w)]
+  simp [mkRingHom, Quot.sound (Rel.of w)]
 
 theorem mkRingHom_surjective (r : R → R → Prop) : Function.Surjective (mkRingHom r) := by
-  simp only [mkRingHom_def, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  simp only [mkRingHom, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
   rintro ⟨⟨⟩⟩
   simp
 
@@ -437,18 +437,18 @@ irreducible_def lift {r : R → R → Prop} :
     invFun := fun F ↦ ⟨F.comp (mkRingHom r), fun _ _ h ↦ congr_arg F (mkRingHom_rel h)⟩
     left_inv := fun f ↦ by
       ext
-      simp only [preLift_def, mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk,
+      simp only [preLift_def, mkRingHom, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk,
                  OneHom.coe_mk, Function.comp_apply]
     right_inv := fun F ↦ by
       simp only [preLift_def]
       ext
-      simp only [mkRingHom_def, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      simp only [mkRingHom, RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
                  Function.comp_apply, forall_const] }
 
 @[simp]
 theorem lift_mkRingHom_apply (f : R →+* T) {r : R → R → Prop} (w : ∀ ⦃x y⦄, r x y → f x = f y) (x) :
     lift ⟨f, w⟩ (mkRingHom r x) = f x := by
-  simp_rw [lift_def, preLift_def, mkRingHom_def]
+  simp_rw [lift_def, preLift_def, mkRingHom]
   rfl
 
 -- note this is essentially `lift.symm_apply_eq.mp h`
@@ -482,7 +482,7 @@ def ringQuotToIdealQuotient (r : B → B → Prop) : RingQuot r →+* B ⧸ Idea
 @[simp]
 theorem ringQuotToIdealQuotient_apply (r : B → B → Prop) (x : B) :
     ringQuotToIdealQuotient r (mkRingHom r x) = Ideal.Quotient.mk (Ideal.ofRel r) x := by
-  simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
+  simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom]
   rfl
 
 /-- The universal ring homomorphism from `B ⧸ Ideal.ofRel r` to `RingQuot r`. -/
@@ -512,15 +512,15 @@ def ringQuotEquivIdealQuotient (r : B → B → Prop) : RingQuot r ≃+* B ⧸ I
   RingEquiv.ofHomInv (ringQuotToIdealQuotient r) (idealQuotientToRingQuot r)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
+      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom]
       change mkRingHom r x = _
-      rw [mkRingHom_def]
+      rw [mkRingHom]
       rfl)
     (by
       ext x
-      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom_def]
+      simp_rw [ringQuotToIdealQuotient, lift_def, preLift_def, mkRingHom]
       change Quot.lift _ _ ((mkRingHom r) x).toQuot = _
-      rw [mkRingHom_def]
+      rw [mkRingHom]
       rfl)
 
 end CommRing
@@ -531,22 +531,22 @@ variable (S)
 
 /-- The quotient map from an `S`-algebra to its quotient, as a homomorphism of `S`-algebras.
 -/
-irreducible_def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
+@[irreducible] def mkAlgHom (s : A → A → Prop) : A →ₐ[S] RingQuot s :=
   { mkRingHom s with
-    commutes' := fun _ ↦ by simp [mkRingHom_def]; rfl }
+    commutes' := fun _ ↦ by simp [mkRingHom]; rfl }
 
 @[simp]
 theorem mkAlgHom_coe (s : A → A → Prop) : (mkAlgHom S s : A →+* RingQuot s) = mkRingHom s := by
-  simp_rw [mkAlgHom_def, mkRingHom_def]
+  simp_rw [mkAlgHom, mkRingHom]
   rfl
 
 theorem mkAlgHom_rel {s : A → A → Prop} {x y : A} (w : s x y) :
     mkAlgHom S s x = mkAlgHom S s y := by
-  simp [mkAlgHom_def, mkRingHom_def, Quot.sound (Rel.of w)]
+  simp [mkAlgHom, mkRingHom, Quot.sound (Rel.of w)]
 
 theorem mkAlgHom_surjective (s : A → A → Prop) : Function.Surjective (mkAlgHom S s) := by
   suffices Function.Surjective fun x ↦ (⟨.mk (Rel s) x⟩ : RingQuot s) by
-    simpa [mkAlgHom_def, mkRingHom_def]
+    simpa [mkAlgHom, mkRingHom]
   rintro ⟨⟨a⟩⟩
   use a
 
@@ -585,25 +585,25 @@ irreducible_def preLiftAlgHom {s : A → A → Prop} {f : A →ₐ[S] B}
 /-- Any `S`-algebra homomorphism `f : A →ₐ[S] B` which respects a relation `s : A → A → Prop`
 factors uniquely through a morphism `RingQuot s →ₐ[S] B`.
 -/
-irreducible_def liftAlgHom {s : A → A → Prop} :
+@[irreducible] def liftAlgHom {s : A → A → Prop} :
   { f : A →ₐ[S] B // ∀ ⦃x y⦄, s x y → f x = f y } ≃ (RingQuot s →ₐ[S] B) :=
   { toFun := fun f' ↦ preLiftAlgHom _ f'.prop
     invFun := fun F ↦ ⟨F.comp (mkAlgHom S s), fun _ _ h ↦ congr_arg F (mkAlgHom_rel S h)⟩
     left_inv := fun f ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, RingHom.toMonoidHom_eq_coe,
+      simp only [preLiftAlgHom_def, mkAlgHom, mkRingHom, RingHom.toMonoidHom_eq_coe,
                  RingHom.coe_monoidHom_mk, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
                  MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
     right_inv := fun F ↦ by
       ext
-      simp only [preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def, RingHom.toMonoidHom_eq_coe,
+      simp only [preLiftAlgHom_def, mkAlgHom, mkRingHom, RingHom.toMonoidHom_eq_coe,
                  RingHom.coe_monoidHom_mk, AlgHom.coe_comp, AlgHom.coe_mk, RingHom.coe_mk,
                  MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply] }
 
 @[simp]
 theorem liftAlgHom_mkAlgHom_apply (f : A →ₐ[S] B) {s : A → A → Prop}
     (w : ∀ ⦃x y⦄, s x y → f x = f y) (x) : (liftAlgHom S ⟨f, w⟩) ((mkAlgHom S s) x) = f x := by
-  simp_rw [liftAlgHom_def, preLiftAlgHom_def, mkAlgHom_def, mkRingHom_def]
+  simp_rw [liftAlgHom, preLiftAlgHom_def, mkAlgHom, mkRingHom]
   rfl
 
 -- note this is essentially `(liftAlgHom S).symm_apply_eq.mp h`

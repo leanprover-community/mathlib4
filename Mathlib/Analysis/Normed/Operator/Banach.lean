@@ -298,7 +298,7 @@ end
 controlled right inverse. In general, it is not possible to ensure that such a right inverse
 is linear (take for instance the map from `E` to `E/F` where `F` is a closed subspace of `E`
 without a closed complement. Then it doesn't have a continuous linear right inverse.) -/
-noncomputable irreducible_def nonlinearRightInverseOfSurjective (f : E →SL[σ] F)
+@[irreducible] noncomputable def nonlinearRightInverseOfSurjective (f : E →SL[σ] F)
   (hsurj : LinearMap.range f = ⊤) : NonlinearRightInverse f :=
   Classical.choose (exists_nonlinearRightInverse_of_surjective f hsurj)
 

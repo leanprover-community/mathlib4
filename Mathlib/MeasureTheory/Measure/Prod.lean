@@ -180,7 +180,7 @@ namespace Measure
 
 /-- The binary product of measures. They are defined for arbitrary measures, but we basically
   prove all properties under the assumption that at least one of them is s-finite. -/
-protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
+@[irreducible] protected def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
   bind μ fun x : α => map (Prod.mk x) ν
 
 instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where

@@ -38,8 +38,8 @@ variable {α β γ δ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace
 
 open Classical in
 /-- Parallel product of two kernels. -/
-noncomputable
-irreducible_def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
+@[irreducible] noncomputable
+def parallelComp (κ : Kernel α β) (η : Kernel γ δ) : Kernel (α × γ) (β × δ) :=
   if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
   { toFun := fun x ↦ (κ x.1).prod (η x.2)
     measurable' := by

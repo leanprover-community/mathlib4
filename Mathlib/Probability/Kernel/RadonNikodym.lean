@@ -224,18 +224,18 @@ lemma measure_mutuallySingularSetSlice (κ η : Kernel α γ) [IsFiniteKernel κ
   simp [hx]
 
 /-- Radon-Nikodym derivative of the kernel `κ` with respect to the kernel `η`. -/
-noncomputable
-irreducible_def rnDeriv (κ η : Kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
+@[irreducible] noncomputable
+def rnDeriv (κ η : Kernel α γ) (a : α) (x : γ) : ℝ≥0∞ :=
   ENNReal.ofReal (rnDerivAux κ (κ + η) a x) / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x)
 
 lemma rnDeriv_def' (κ η : Kernel α γ) :
     rnDeriv κ η = fun a x ↦ ENNReal.ofReal (rnDerivAux κ (κ + η) a x)
-      / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x) := by ext; rw [rnDeriv_def]
+      / ENNReal.ofReal (1 - rnDerivAux κ (κ + η) a x) := by ext; rw [rnDeriv]
 
 @[fun_prop]
 lemma measurable_rnDeriv (κ η : Kernel α γ) :
     Measurable (fun p : α × γ ↦ rnDeriv κ η p.1 p.2) := by
-  simp_rw [rnDeriv_def]
+  simp_rw [rnDeriv]
   exact (measurable_rnDerivAux κ _).ennreal_ofReal.div
     (measurable_const.sub (measurable_rnDerivAux κ _)).ennreal_ofReal
 
@@ -255,8 +255,8 @@ lemma rnDeriv_eq_top_iff' (κ η : Kernel α γ) (a : α) (x : γ) :
   rw [rnDeriv_eq_top_iff, mutuallySingularSet, mutuallySingularSetSlice, mem_setOf, mem_setOf]
 
 /-- Singular part of the kernel `κ` with respect to the kernel `η`. -/
-noncomputable
-irreducible_def singularPart (κ η : Kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
+@[irreducible] noncomputable
+def singularPart (κ η : Kernel α γ) [IsSFiniteKernel κ] [IsSFiniteKernel η] :
     Kernel α γ :=
   withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)
     - Real.toNNReal (1 - rnDerivAux κ (κ + η) a x) * rnDeriv κ η a x)
@@ -543,7 +543,7 @@ function of `a`. -/
 lemma measurable_singularPart (κ η : Kernel α γ) [IsFiniteKernel κ] [IsFiniteKernel η] :
     Measurable (fun a ↦ (κ a).singularPart (η a)) := by
   refine Measure.measurable_of_measurable_coe _ (fun s hs ↦ ?_)
-  simp_rw [← κ.singularPart_eq_singularPart_measure, κ.singularPart_def η]
+  simp_rw [← κ.singularPart_eq_singularPart_measure, singularPart]
   exact Kernel.measurable_coe _ hs
 
 lemma rnDeriv_self (κ : Kernel α γ) [IsFiniteKernel κ] (a : α) : rnDeriv κ κ a =ᵐ[κ a] 1 :=

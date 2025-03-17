@@ -283,8 +283,8 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     rw [this]
 
 /-- The `Γ` function (of a complex variable `s`). -/
-@[pp_nodot]
-irreducible_def Gamma (s : ℂ) : ℂ :=
+@[pp_nodot, irreducible]
+def Gamma (s : ℂ) : ℂ :=
   GammaAux ⌊1 - s.re⌋₊ s
 
 theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = GammaAux n s := by

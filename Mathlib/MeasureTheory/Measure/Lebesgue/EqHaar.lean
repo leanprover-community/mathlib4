@@ -551,7 +551,7 @@ variable [FiniteDimensional ℝ G] {n : ℕ} [_i : Fact (finrank ℝ G = n)]
 /-- The Lebesgue measure associated to an alternating map. It gives measure `|ω v|` to the
 parallelepiped spanned by the vectors `v₁, ..., vₙ`. Note that it is not always a Haar measure,
 as it can be zero, but it is always locally finite and translation invariant. -/
-noncomputable irreducible_def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) :
+@[irreducible] noncomputable def _root_.AlternatingMap.measure (ω : G [⋀^Fin n]→ₗ[ℝ] ℝ) :
     Measure G :=
   ‖ω (finBasisOfFinrankEq ℝ G _i.out)‖₊ • (finBasisOfFinrankEq ℝ G _i.out).addHaar
 

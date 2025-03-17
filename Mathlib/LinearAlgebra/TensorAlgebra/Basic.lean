@@ -102,7 +102,7 @@ variable {M}
 
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
-irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
+@[irreducible] def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
       rw [← map_add (RingQuot.mkAlgHom R (Rel R M))]

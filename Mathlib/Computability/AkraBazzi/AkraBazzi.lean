@@ -556,7 +556,7 @@ end
 
 variable (a b) in
 /-- The exponent `p` associated with a particular Akra-Bazzi recurrence. -/
-noncomputable irreducible_def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
+@[irreducible] noncomputable def p : ℝ := Function.invFun (fun (p : ℝ) => ∑ i, a i * (b i) ^ p) 1
 
 include R in
 @[simp]

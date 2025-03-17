@@ -46,7 +46,7 @@ open scoped Topology
 
 /-- A Vitali family in a space with a uniformly locally doubling measure, designed so that the sets
 at `x` contain all `closedBall y r` when `dist x y ≤ K * r`. -/
-irreducible_def vitaliFamily (K : ℝ) : VitaliFamily μ := by
+@[irreducible] def vitaliFamily (K : ℝ) : VitaliFamily μ := by
   /- the Vitali covering theorem gives a family that works well at small scales, thanks to the
     doubling property. We enlarge this family to add large sets, to make sure that all balls and not
     only small ones belong to the family, for convenience. -/

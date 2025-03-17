@@ -862,7 +862,7 @@ irreducible_def DirectSum.IsInternal.sigmaOrthonormalBasisIndexEquiv
 
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
+@[irreducible] def DirectSum.IsInternal.subordinateOrthonormalBasis
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) :
     OrthonormalBasis (Fin n) 𝕜 E :=
   (hV.collectedOrthonormalBasis hV' fun i => stdOrthonormalBasis 𝕜 (V i)).reindex
@@ -871,7 +871,7 @@ irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasis
 /-- An `n`-dimensional `InnerProductSpace` equipped with a decomposition as an internal direct
 sum has an orthonormal basis indexed by `Fin n` and subordinate to that direct sum. This function
 provides the mapping by which it is subordinate. -/
-irreducible_def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
+@[irreducible] def DirectSum.IsInternal.subordinateOrthonormalBasisIndex (a : Fin n)
     (hV' : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ) : ι :=
   ((hV.sigmaOrthonormalBasisIndexEquiv hn hV').symm a).1
 

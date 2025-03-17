@@ -189,14 +189,14 @@ finite-dimensional inner product space `E`.
 
 TODO Postcompose with a permutation so that these eigenvectors are listed in increasing order of
 eigenvalue. -/
-noncomputable irreducible_def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
+@[irreducible] noncomputable def eigenvectorBasis : OrthonormalBasis (Fin n) 𝕜 E :=
   hT.direct_sum_isInternal.subordinateOrthonormalBasis hn hT.orthogonalFamily_eigenspaces'
 
 /-- The sequence of real eigenvalues associated to the standard orthonormal basis of eigenvectors
 for a self-adjoint operator `T` on `E`.
 
 TODO Postcompose with a permutation so that these eigenvalues are listed in increasing order. -/
-noncomputable irreducible_def eigenvalues (i : Fin n) : ℝ :=
+@[irreducible] noncomputable def eigenvalues (i : Fin n) : ℝ :=
   @RCLike.re 𝕜 _ <| (hT.direct_sum_isInternal.subordinateOrthonormalBasisIndex hn i
     hT.orthogonalFamily_eigenspaces').val
 

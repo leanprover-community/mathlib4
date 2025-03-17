@@ -73,7 +73,7 @@ theorem isOpen_generateFrom_of_mem {g : Set (Set α)} {s : Set α} (hs : s ∈ g
 theorem nhds_generateFrom {g : Set (Set α)} {a : α} :
     @nhds α (generateFrom g) a = ⨅ s ∈ { s | a ∈ s ∧ s ∈ g }, 𝓟 s := by
   letI := generateFrom g
-  rw [nhds_def]
+  rw [nhds]
   refine le_antisymm (biInf_mono fun s ⟨as, sg⟩ => ⟨as, .basic _ sg⟩) <| le_iInf₂ ?_
   rintro s ⟨ha, hs⟩
   induction hs with

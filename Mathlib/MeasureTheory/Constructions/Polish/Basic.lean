@@ -171,7 +171,7 @@ in `analyticSet_iff_exists_polishSpace_range`.
 Warning: these are analytic sets in the context of descriptive set theory (which is why they are
 registered in the namespace `MeasureTheory`). They have nothing to do with analytic sets in the
 context of complex analysis. -/
-irreducible_def AnalyticSet (s : Set α) : Prop :=
+@[irreducible] def AnalyticSet (s : Set α) : Prop :=
   s = ∅ ∨ ∃ f : (ℕ → ℕ) → α, Continuous f ∧ range f = s
 
 theorem analyticSet_empty : AnalyticSet (∅ : Set α) := by

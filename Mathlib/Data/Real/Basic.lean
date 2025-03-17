@@ -77,7 +77,7 @@ private irreducible_def neg : ℝ → ℝ
 private irreducible_def mul : ℝ → ℝ → ℝ
   | ⟨a⟩, ⟨b⟩ => ⟨a * b⟩
 
-private noncomputable irreducible_def inv' : ℝ → ℝ
+@[irreducible] private noncomputable def inv' : ℝ → ℝ
   | ⟨a⟩ => ⟨a⁻¹⟩
 
 instance : Zero ℝ :=

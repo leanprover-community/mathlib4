@@ -88,7 +88,7 @@ theorem LinearIndepOn.quotient_iff_union {s t : Set ι} {f : ι → M} (hs : Lin
 
 theorem rank_quotient_add_rank_le [Nontrivial R] (M' : Submodule R M) :
     Module.rank R (M ⧸ M') + Module.rank R M' ≤ Module.rank R M := by
-  conv_lhs => simp only [Module.rank_def]
+  conv_lhs => simp only [Module.rank]
   have := nonempty_linearIndependent_set R (M ⧸ M')
   have := nonempty_linearIndependent_set R M'
   rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
@@ -130,7 +130,7 @@ variable [Module R M₁] [Module R M']
 
 theorem rank_add_rank_le_rank_prod [Nontrivial R] :
     Module.rank R M + Module.rank R M₁ ≤ Module.rank R (M × M₁) := by
-  conv_lhs => simp only [Module.rank_def]
+  conv_lhs => simp only [Module.rank]
   have := nonempty_linearIndependent_set R M
   have := nonempty_linearIndependent_set R M₁
   rw [Cardinal.ciSup_add_ciSup _ (bddAbove_range _) _ (bddAbove_range _)]
