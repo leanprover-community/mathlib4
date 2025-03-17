@@ -597,7 +597,7 @@ theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
     IsLindelof (range f) := by rw [← image_univ]; exact isLindelof_univ.image hf
 
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
-  @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
+  @range_diag X ▸ isLindelof_range (continuous_id.prodMk continuous_id)
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is Lindelöf
   if and only if `s` is compact. -/

@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.Limits.Final
 
 /-!
-# HasConicalLimits
+# Existence of conical limits
 
 This file contains different statements about the (non-constructive) existence of conical limits.
 
@@ -23,6 +23,12 @@ The main constructions are the following.
 * [Kelly G.M., *Basic concepts of enriched category theory*][kelly2005]:
   See section 3.8 for a similar treatment, although the content of this file is not directly
   adapted from there.
+
+## Implementation notes
+
+`V` has been made an `(V : outParam <| Type u')` in the classes below as it seems instance
+inference prefers this. Otherwise it failed with
+if there are multiple `MonoidalCategory _` instances in scope.
 -/
 
 universe v₁ u₁ v₂ u₂ w v' v u u'
@@ -33,7 +39,6 @@ open Limits
 
 section Definitions
 
--- note: for the classes it seems that instance inference wants `V` to be an `outParam`.
 variable {J : Type u₁} [Category.{v₁} J]
 variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
