@@ -55,9 +55,8 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The order embedding is an initial segment -/
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
--- Porting note: Deleted `scoped[InitialSeg]`
 @[inherit_doc]
-infixl:25 " ≼i " => InitialSeg
+scoped[InitialSeg] infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
 notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
@@ -258,12 +257,13 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   /-- The range of the order embedding is the set of elements `b` such that `s b top` -/
   mem_range_iff_rel' : ∀ b, b ∈ Set.range toRelEmbedding ↔ s b top
 
--- Porting note: deleted `scoped[InitialSeg]`
 @[inherit_doc]
-infixl:25 " ≺i " => PrincipalSeg
+scoped[InitialSeg] infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
 notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
+
+open scoped InitialSeg
 
 namespace PrincipalSeg
 
@@ -627,11 +627,11 @@ def _root_.OrderIso.toInitialSeg [Preorder α] [Preorder β] (f : α ≃o β) : 
 
 variable [PartialOrder β] {a a' : α} {b : β}
 
-theorem mem_range_of_le [Preorder α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
+theorem mem_range_of_le [LT α] (f : α ≤i β) (h : b ≤ f a) : b ∈ Set.range f := by
   obtain rfl | hb := h.eq_or_lt
   exacts [⟨a, rfl⟩, f.mem_range_of_rel hb]
 
-theorem isLowerSet_range [Preorder α] (f : α ≤i β) : IsLowerSet (Set.range f) := by
+theorem isLowerSet_range [LT α] (f : α ≤i β) : IsLowerSet (Set.range f) := by
   rintro _ b h ⟨a, rfl⟩
   exact mem_range_of_le f h
 
@@ -667,7 +667,7 @@ theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) :
 theorem image_Iio [PartialOrder α] (f : α ≤i β) (a : α) : f '' Set.Iio a = Set.Iio (f a) :=
   f.toOrderEmbedding.image_Iio f.isLowerSet_range a
 
-theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
+theorem le_apply_iff [PartialOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.mem_range_of_le h
@@ -676,7 +676,7 @@ theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤
   · rintro ⟨c, hc, rfl⟩
     exact f.monotone hc
 
-theorem lt_apply_iff [LinearOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
+theorem lt_apply_iff [PartialOrder α] (f : α ≤i β) : b < f a ↔ ∃ a' < a, f a' = b := by
   constructor
   · intro h
     obtain ⟨c, hc⟩ := f.mem_range_of_rel h
@@ -691,10 +691,10 @@ namespace PrincipalSeg
 
 variable [PartialOrder β] {a a' : α} {b : β}
 
-theorem mem_range_of_le [Preorder α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
+theorem mem_range_of_le [LT α] (f : α <i β) (h : b ≤ f a) : b ∈ Set.range f :=
   (f : α ≤i β).mem_range_of_le h
 
-theorem isLowerSet_range [Preorder α] (f : α <i β) : IsLowerSet (Set.range f) :=
+theorem isLowerSet_range [LT α] (f : α <i β) : IsLowerSet (Set.range f) :=
   (f : α ≤i β).isLowerSet_range
 
 -- TODO: this would follow immediately if we had a `RelEmbeddingClass`
@@ -726,10 +726,10 @@ theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α <i β) : f
 theorem image_Iio [PartialOrder α] (f : α <i β) (a : α) : f '' Set.Iio a = Set.Iio (f a) :=
   (f : α ≤i β).image_Iio a
 
-theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
+theorem le_apply_iff [PartialOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
   (f : α ≤i β).le_apply_iff
 
-theorem lt_apply_iff [LinearOrder α] (f : α <i β) : b < f a ↔ ∃ a' < a, f a' = b :=
+theorem lt_apply_iff [PartialOrder α] (f : α <i β) : b < f a ↔ ∃ a' < a, f a' = b :=
   (f : α ≤i β).lt_apply_iff
 
 end PrincipalSeg

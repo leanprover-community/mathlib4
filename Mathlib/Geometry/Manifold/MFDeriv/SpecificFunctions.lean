@@ -259,7 +259,6 @@ theorem mfderivWithin_fst {s : Set (M × M')} {x : M × M'}
 @[simp, mfld_simps]
 theorem tangentMap_prod_fst {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I Prod.fst p = ⟨p.proj.1, p.2.1⟩ := by
-  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prod_fst {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
@@ -348,7 +347,7 @@ theorem mdifferentiableWithinAt_prod_iff (f : M → M' × N') :
     MDifferentiableWithinAt I (I'.prod J') f s x ↔
       MDifferentiableWithinAt I I' (Prod.fst ∘ f) s x
       ∧ MDifferentiableWithinAt I J' (Prod.snd ∘ f) s x :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prodMk h.2⟩
 
 theorem mdifferentiableWithinAt_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiableWithinAt I 𝓘(𝕜, F₁ × F₂) f s x ↔
@@ -386,7 +385,7 @@ theorem mdifferentiableOn_prod_module_iff (f : M → F₁ × F₂) :
 theorem mdifferentiable_prod_iff (f : M → M' × N') :
     MDifferentiable I (I'.prod J') f ↔
       MDifferentiable I I' (Prod.fst ∘ f) ∧ MDifferentiable I J' (Prod.snd ∘ f) :=
-  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
+  ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prodMk h.2⟩
 
 theorem mdifferentiable_prod_module_iff (f : M → F₁ × F₂) :
     MDifferentiable I 𝓘(𝕜, F₁ × F₂) f ↔
@@ -404,7 +403,7 @@ within the product set at the product point. -/
 theorem MDifferentiableWithinAt.prod_map' {p : M × N} (hf : MDifferentiableWithinAt I I' f s p.1)
     (hg : MDifferentiableWithinAt J J' g r p.2) :
     MDifferentiableWithinAt (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) p :=
-  (hf.comp p mdifferentiableWithinAt_fst (prod_subset_preimage_fst _ _)).prod_mk <|
+  (hf.comp p mdifferentiableWithinAt_fst (prod_subset_preimage_fst _ _)).prodMk <|
     hg.comp p mdifferentiableWithinAt_snd (prod_subset_preimage_snd _ _)
 
 theorem MDifferentiableWithinAt.prod_map (hf : MDifferentiableWithinAt I I' f s x)
@@ -430,7 +429,7 @@ theorem MDifferentiableAt.prod_map' {p : M × N}
 theorem MDifferentiableOn.prod_map
     (hf : MDifferentiableOn I I' f s) (hg : MDifferentiableOn J J' g r) :
     MDifferentiableOn (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) :=
-  (hf.comp mdifferentiableOn_fst (prod_subset_preimage_fst _ _)).prod_mk <|
+  (hf.comp mdifferentiableOn_fst (prod_subset_preimage_fst _ _)).prodMk <|
     hg.comp mdifferentiableOn_snd (prod_subset_preimage_snd _ _)
 
 theorem MDifferentiable.prod_map (hf : MDifferentiable I I' f) (hg : MDifferentiable J J' g) :
@@ -443,7 +442,6 @@ end prodMap
 @[simp, mfld_simps]
 theorem tangentMap_prod_snd {p : TangentBundle (I.prod I') (M × M')} :
     tangentMap (I.prod I') I' Prod.snd p = ⟨p.proj.2, p.2.2⟩ := by
-  -- Porting note: `rfl` wasn't needed
   simp [tangentMap]; rfl
 
 theorem tangentMapWithin_prod_snd {s : Set (M × M')} {p : TangentBundle (I.prod I') (M × M')}
@@ -459,8 +457,8 @@ theorem MDifferentiableAt.mfderiv_prod {f : M → M'} {g : M → M''} {x : M}
     mfderiv I (I'.prod I'') (fun x => (f x, g x)) x =
       (mfderiv I I' f x).prod (mfderiv I I'' g x) := by
   classical
-  simp_rw [mfderiv, if_pos (hf.prod_mk hg), if_pos hf, if_pos hg]
-  exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prod
+  simp_rw [mfderiv, if_pos (hf.prodMk hg), if_pos hf, if_pos hg]
+  exact hf.differentiableWithinAt_writtenInExtChartAt.fderivWithin_prodMk
     hg.differentiableWithinAt_writtenInExtChartAt (I.uniqueDiffOn _ (mem_range_self _))
 
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
@@ -493,8 +491,8 @@ theorem mfderiv_prod_eq_add {f : M × M' → M''} {p : M × M'}
     mfderiv (I.prod I') I'' f p =
         mfderiv (I.prod I') I'' (fun z : M × M' => f (z.1, p.2)) p +
           mfderiv (I.prod I') I'' (fun z : M × M' => f (p.1, z.2)) p := by
-  erw [mfderiv_comp_of_eq hf (mdifferentiableAt_fst.prod_mk mdifferentiableAt_const) rfl,
-    mfderiv_comp_of_eq hf (mdifferentiableAt_const.prod_mk mdifferentiableAt_snd) rfl,
+  erw [mfderiv_comp_of_eq hf (mdifferentiableAt_fst.prodMk mdifferentiableAt_const) rfl,
+    mfderiv_comp_of_eq hf (mdifferentiableAt_const.prodMk mdifferentiableAt_snd) rfl,
     ← ContinuousLinearMap.comp_add,
     mdifferentiableAt_fst.mfderiv_prod mdifferentiableAt_const,
     mdifferentiableAt_const.mfderiv_prod mdifferentiableAt_snd, mfderiv_fst,
@@ -519,13 +517,13 @@ theorem mfderiv_prod_eq_add_comp {f : M × M' → M''} {p : M × M'}
     rw [this, mfderiv_comp (I' := I)]
     · simp only [mfderiv_fst, id_eq]
       rfl
-    · exact hf.comp _  (mdifferentiableAt_id.prod_mk mdifferentiableAt_const)
+    · exact hf.comp _  (mdifferentiableAt_id.prodMk mdifferentiableAt_const)
     · exact mdifferentiableAt_fst
   · have : (fun z : M × M' => f (p.1, z.2)) = (fun z : M' => f (p.1, z)) ∘ Prod.snd := rfl
     rw [this, mfderiv_comp (I' := I')]
     · simp only [mfderiv_snd, id_eq]
       rfl
-    · exact hf.comp _ (mdifferentiableAt_const.prod_mk mdifferentiableAt_id)
+    · exact hf.comp _ (mdifferentiableAt_const.prodMk mdifferentiableAt_id)
     · exact mdifferentiableAt_snd
 
 /-- The total derivative of a function in two variables is the sum of the partial derivatives.

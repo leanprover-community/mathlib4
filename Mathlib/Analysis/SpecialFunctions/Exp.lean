@@ -5,6 +5,7 @@ Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
 -/
 import Mathlib.Analysis.Complex.Asymptotics
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.Data.Complex.Trigonometric
 
 /-!
 # Complex and real exponential
@@ -36,7 +37,7 @@ theorem exp_bound_sq (x z : ℂ) (hz : ‖z‖ ≤ 1) :
       ring
     _ = ‖exp x‖ * ‖exp z - 1 - z‖ := norm_mul _ _
     _ ≤ ‖exp x‖ * ‖z‖ ^ 2 :=
-      mul_le_mul_of_nonneg_left (abs_exp_sub_one_sub_id_le hz) (norm_nonneg _)
+      mul_le_mul_of_nonneg_left (norm_exp_sub_one_sub_id_le hz) (norm_nonneg _)
 
 theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) (x y : ℂ)
     (hyx : ‖y - x‖ < r) : ‖exp y - exp x‖ ≤ (1 + r) * ‖exp x‖ * ‖y - x‖ := by
@@ -129,17 +130,16 @@ lemma UniformContinuousOn.cexp (a : ℝ) : UniformContinuousOn exp {x : ℂ | x.
   obtain ⟨δ, hδ⟩ := H
   refine ⟨δ, hδ.1, ?_⟩
   intros x _ y hy hxy
-  have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right, norm_eq_abs] using hxy)
+  have h3 := hδ.2 (y := x - y) (by simpa only [dist_zero_right] using hxy)
   rw [dist_eq_norm, exp_zero] at *
   have : cexp x - cexp y = cexp y * (cexp (x - y) - 1) := by
       rw [mul_sub_one, ← exp_add]
       ring_nf
   rw [this, mul_comm]
   have hya : ‖cexp y‖ ≤ Real.exp a := by
-    simp only [norm_eq_abs, abs_exp, Real.exp_le_exp]
+    simp only [norm_exp, Real.exp_le_exp]
     exact hy
-  simp only [gt_iff_lt, dist_zero_right, norm_eq_abs, Set.mem_setOf_eq, norm_mul,
-    Complex.abs_exp] at *
+  simp only [gt_iff_lt, dist_zero_right, Set.mem_setOf_eq, norm_mul, Complex.norm_exp] at *
   apply lt_of_le_of_lt (mul_le_mul h3.le hya (Real.exp_nonneg y.re) (le_of_lt ha))
   have hrr : ε / (2 * a.exp) * a.exp = ε / 2 := by
     nth_rw 2 [mul_comm]
@@ -450,14 +450,15 @@ namespace Complex
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
     comap exp (cobounded ℂ) = comap re (comap Real.exp atTop) := by
-      simp only [← comap_norm_atTop, Complex.norm_eq_abs, comap_comap, Function.comp_def, abs_exp]
+      simp only [← comap_norm_atTop, comap_comap, comp_def, norm_exp]
     _ = comap re atTop := by rw [Real.comap_exp_atTop]
 
 @[simp]
 theorem comap_exp_nhds_zero : comap exp (𝓝 0) = comap re atBot :=
   calc
     comap exp (𝓝 0) = comap re (comap Real.exp (𝓝 0)) := by
-      simp only [comap_comap, ← comap_abs_nhds_zero, Function.comp_def, abs_exp]
+      rw [← comap_norm_nhds_zero, comap_comap, Function.comp_def]
+      simp_rw [norm_exp, comap_comap, Function.comp_def]
     _ = comap re atBot := by rw [Real.comap_exp_nhds_zero]
 
 theorem comap_exp_nhdsNE : comap exp (𝓝[≠] 0) = comap re atBot := by
@@ -472,7 +473,7 @@ theorem tendsto_exp_nhds_zero_iff {α : Type*} {l : Filter α} {f : α → ℂ} 
   simp_rw [← comp_apply (f := exp), ← tendsto_comap_iff, comap_exp_nhds_zero, tendsto_comap_iff]
   rfl
 
-/-- `Complex.abs (Complex.exp z) → ∞` as `Complex.re z → ∞`. -/
+/-- `‖Complex.exp z‖ → ∞` as `Complex.re z → ∞`. -/
 theorem tendsto_exp_comap_re_atTop : Tendsto exp (comap re atTop) (cobounded ℂ) :=
   comap_exp_cobounded ▸ tendsto_comap
 

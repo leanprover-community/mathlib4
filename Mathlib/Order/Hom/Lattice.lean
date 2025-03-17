@@ -99,8 +99,7 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
   Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
--- We keep this to be consistent with Lean 3.
+-- TODO: remove this configuration and use the default configuration.
 initialize_simps_projections SupBotHom (+toSupHom, -toFun)
 initialize_simps_projections InfTopHom (+toInfHom, -toFun)
 initialize_simps_projections LatticeHom (+toSupHom, -toFun)
@@ -125,24 +124,24 @@ class InfHomClass (F α β : Type*) [Min α] [Min β] [FunLike F α β] : Prop w
 /-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class SupBotHomClass (F α β : Type*) [Max α] [Max β] [Bot α] [Bot β] [FunLike F α β]
-  extends SupHomClass F α β : Prop where
+class SupBotHomClass (F α β : Type*) [Max α] [Max β] [Bot α] [Bot β] [FunLike F α β] : Prop
+  extends SupHomClass F α β where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class InfTopHomClass (F α β : Type*) [Min α] [Min β] [Top α] [Top β] [FunLike F α β]
-  extends InfHomClass F α β : Prop where
+class InfTopHomClass (F α β : Type*) [Min α] [Min β] [Top α] [Top β] [FunLike F α β] : Prop
+  extends InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 
 /-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `LatticeHom`. -/
-class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β]
-  extends SupHomClass F α β : Prop where
+class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β] : Prop
+  extends SupHomClass F α β where
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 
@@ -150,7 +149,8 @@ class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α 
 
 You should extend this class when you extend `BoundedLatticeHom`. -/
 class BoundedLatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
-  [BoundedOrder β] [FunLike F α β] extends LatticeHomClass F α β : Prop where
+    [BoundedOrder β] [FunLike F α β] : Prop
+  extends LatticeHomClass F α β where
   /-- A `BoundedLatticeHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- A `BoundedLatticeHomClass` morphism preserves the bottom element. -/
@@ -1137,7 +1137,6 @@ variable (α β)
 variable [LinearOrder α] [Lattice β] [OrderHomClass F α β]
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
--- Porting note: made it an `instance` because we're no longer afraid of loops
 instance (priority := 100) toLatticeHomClass : LatticeHomClass F α β :=
   { ‹OrderHomClass F α β› with
     map_sup := fun f a b => by
@@ -1573,7 +1572,6 @@ variable [SemilatticeSup α] [SemilatticeSup β] [SemilatticeSup γ]
 /-- Adjoins a `⊤` to the domain and codomain of a `SupHom`. -/
 @[simps]
 protected def withTop (f : SupHom α β) : SupHom (WithTop α) (WithTop β) where
-  -- Porting note: this was `Option.map f`
   toFun := WithTop.map f
   map_sup' a b :=
     match a, b with
