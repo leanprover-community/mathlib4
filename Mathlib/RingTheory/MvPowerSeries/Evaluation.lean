@@ -65,6 +65,7 @@ structure HasEval (a : σ → S) : Prop where
   tendsto_zero : Tendsto a cofinite (𝓝 0)
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
+@[simps]
 def hasEvalIdeal [IsTopologicalRing S] [IsLinearTopology S S] : Ideal (σ → S) where
   carrier := {a | HasEval a}
   add_mem' {a} {b} ha hb := {
@@ -85,6 +86,10 @@ def hasEvalIdeal [IsTopologicalRing S] [IsLinearTopology S S] : Ideal (σ → S)
       exact IsLinearTopology.tendsto_mul_zero_of_right _ _ (hx.hpow s)
     tendsto_zero := IsLinearTopology.tendsto_mul_zero_of_right _ _ hx.tendsto_zero }
 
+theorem mem_hasEvalIdeal_iff [IsTopologicalRing S] [IsLinearTopology S S] {a : σ → S} :
+    a ∈ hasEvalIdeal ↔ HasEval a := by
+  simp [hasEvalIdeal]
+
 theorem HasEval.add [IsTopologicalRing S] [IsLinearTopology S S]
     {a b : σ → S} (ha : HasEval a) (hb : HasEval b) : HasEval (a + b) :=
   hasEvalIdeal.add_mem' ha hb
@@ -100,7 +105,7 @@ theorem HasEval.mul_right [IsTopologicalRing S] [IsLinearTopology S S]
     (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (x * c) :=
   hasEvalIdeal.mul_mem_right c hx
 
-/-- [Bourbaki, *Algebra*, chap. 4, §4, n°3, Prop. 4 (i) (a & b)](bourbaki1981). -/
+/-- [Bourbaki, *Algebra*, chap. 4, §4, n°3, Prop. 4 (i) (a & b)][bourbaki1981]. -/
 theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
     HasEval (fun s ↦ φ (a s)) where
   hpow := fun s ↦ IsTopologicallyNilpotent.map hφ (ha.hpow s)
