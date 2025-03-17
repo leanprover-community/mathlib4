@@ -415,47 +415,38 @@ lemma root_space_ad_is_nilpotent
   obtain ⟨n₀, hn₀⟩ := exists_uniform_n₀
   let A := (toEnd K L M x) ^ n₀
 
-  have rrr : ∀ χ1 ∈ s, genWeightSpace M χ1 ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
-    intro χ1
-    intro a
-    intro m hm
-    have nam : Submodule.span K (genWeightSpace M χ1).carrier ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+  have s₁ : ∀ χ₂ ∈ s, genWeightSpace M χ₂ ≤
+      Submodule.span K (⋃ i ∈ s, (genWeightSpace M i).carrier) := by
+    intro χ₂ a m hm
+    have h₁ : Submodule.span K (genWeightSpace M χ₂).carrier ≤
+        Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
       apply Submodule.span_mono
-      simp_all
-      intro x hx
-      apply Set.mem_biUnion a
-      simp_all only [mem_univ, iSup_pos, AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, LieSubmodule.mem_toSubmodule, s]
-    have tq : genWeightSpace M χ1 ≤ Submodule.span K (genWeightSpace M χ1).carrier := by
-      intro m hm
-      simp_all
-      dsimp [Submodule.span]
-      intro p hp
-      simp_all
-      obtain ⟨pr, hr⟩ := hp
-      obtain ⟨aa, aaa⟩ := hr
-      simp_all
-      intro xx
-      have ttttt := xx hm
-      simp_all
-    have := nam (tq hm)
-    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, LieSubmodule.mem_toSubmodule,
-      iUnion_true, s]
+      exact fun _ hx => Set.mem_biUnion a hx
+    have h₂ : genWeightSpace M χ₂ ≤ Submodule.span K (genWeightSpace M χ₂).carrier := by
+      intro m hm p hp
+      obtain ⟨pr, ⟨_, _⟩⟩ := hp
+      simp only [mem_setOf_eq, mem_iInter, SetLike.mem_coe]
+      exact fun p => p hm
+    exact h₁ (h₂ hm)
 
-
-  have rrr : ⨆ χ ∈ s, genWeightSpace M χ ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+  have s₂ : ⨆ χ ∈ s, genWeightSpace M χ ≤
+      Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
     apply sSup_le
     intro x hf
-    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
-      mem_range, exists_exists_eq_and, mem_setOf_eq, s]
-    obtain ⟨w_1, h_1⟩ := hf
-    subst h_1
-    simp_all only [s]
+    simp only [mem_univ, iUnion_true, mem_range, s] at s₁
+    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at hf
+    simp only [mem_univ, iSup_pos, iUnion_true, s]
+    obtain ⟨w₁, h₁⟩ := hf
+    subst h₁
+    exact s₁ w₁ trivial
 
 
   have rr : Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) = ⊤ := by
-    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, iSup_pos, iUnion_true, forall_const,
-      LieSubmodule.top_toSubmodule, top_le_iff, s]
+    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂
+    simp only [mem_univ, iUnion_true, s]
+    rw [partition] at s₂
+    apply top_le_iff.1 s₂
+
 
   have ttt1 (ε : Weight K H M) (n : M) (n : genWeightSpace M ε) : A n = 0 := by
     have ttt : ε ∈ s := by
