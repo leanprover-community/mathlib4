@@ -414,16 +414,14 @@ lemma root_space_ad_is_nilpotent
     simp only [mem_univ, iSup_pos, iUnion_true, s] at s₁ ⊢
     rw [iSup_genWeightSpace_eq_top' K H M] at s₁
     apply top_le_iff.1 s₁
-  have s₃ (χ₂ : Weight K H M) (m : M) (m : genWeightSpace M χ₂) : A m = 0 :=
-    (hn₀ χ₂) (mem_univ χ₂) m
-  have s₄ : A = 0 := by
+  have s₃ : A = 0 := by
     haveI := [Module K M]
     apply (linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₂).2
     intro h₀
     obtain ⟨m, ⟨_, ⟨⟨χ₂, ⟨_, _⟩⟩, h₁⟩⟩⟩ := h₀
     rw [mem_iUnion] at h₁
     obtain ⟨_, h₂⟩ := h₁
-    have h₃ := s₃ χ₂ m
+    have h₃ := (hn₀ χ₂) (mem_univ χ₂)
     rw [Subtype.forall] at h₃
     exact h₃ m h₂
   use n₀
