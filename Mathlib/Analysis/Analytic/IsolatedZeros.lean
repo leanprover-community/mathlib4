@@ -268,7 +268,7 @@ alias _root_.AnalyticOn.eq_of_frequently_eq := eq_of_frequently_eq
 
 section Mul
 /-!
-### Vanishing of products of analytic functions
+### Vanishing of products of analytic functions
 -/
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -310,7 +310,7 @@ end Mul
 end AnalyticOnNhd
 
 /-!
-### Preimages of codiscrete sets
+### Preimages of codiscrete sets
 -/
 
 section PreimgCodiscrete
