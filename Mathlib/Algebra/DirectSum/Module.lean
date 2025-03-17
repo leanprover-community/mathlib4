@@ -23,6 +23,21 @@ in this file.
 
 -/
 
+section
+
+variable {ι : Type*} {M : ι → Type*} {N : ι → Type*} [∀ i, AddCommGroup (M i)]
+variable [∀ i, AddCommGroup (N i)] (f : ∀(i : ι), M i →+ N i)
+
+namespace DFinsupp
+
+lemma ker_mapRangeAddMonoidHom : (mapRange.addMonoidHom f).ker =
+    (AddSubgroup.pi Set.univ (f · |>.ker)).comap DFinsupp.coeFnAddMonoidHom := by
+  ext
+  simp [AddSubgroup.mem_pi, DFinsupp.ext_iff]
+
+end DFinsupp
+
+end
 
 universe u v w u₁
 
@@ -254,9 +269,8 @@ variable {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommGroup (α i)]
 variable [∀ i, AddCommGroup (β i)] (f : ∀(i : ι), α i →+ β i)
 
 lemma ker_map : (map f).ker =
-    (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom α) := by
-  ext
-  simp [AddSubgroup.mem_pi, DirectSum.ext_iff]
+    (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom α) :=
+  DFinsupp.ker_mapRangeAddMonoidHom f
 
 lemma range_map [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] : (map f).range =
     (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) := by
