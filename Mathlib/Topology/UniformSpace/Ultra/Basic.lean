@@ -36,7 +36,6 @@ but rather extend the relation properties as needed.
 * Generalize results about open/closed balls and spheres in `IsUltraUniformity` to
   combine applications for `MetricSpace.ball` and valued "balls"
 * Use `IsUltraUniformity` to work with profinite/totally separated spaces
-* Define the nonarchimedean uniformity of a space that is a product of `IsUltraUniformity`s
 * Show that the `UniformSpace.Completion` of an `IsUltraUniformity` is `IsUltraUniformity`
 
 ## References
