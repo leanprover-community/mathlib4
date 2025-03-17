@@ -408,12 +408,7 @@ lemma root_space_ad_is_nilpotent
         Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
       apply Submodule.span_mono
       exact fun _ hx => Set.mem_biUnion a hx
-    have h₂ : genWeightSpace M χ₂ ≤ Submodule.span K (genWeightSpace M χ₂).carrier := by
-      intro m hm p hp
-      obtain ⟨pr, ⟨_, _⟩⟩ := hp
-      simp only [mem_setOf_eq, mem_iInter, SetLike.mem_coe]
-      exact fun p => p hm
-    exact h₁ (h₂ hm)
+    exact h₁ (Submodule.subset_span hm)
   have s₂ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤
       Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
     apply sSup_le
