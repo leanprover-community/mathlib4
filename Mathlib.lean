@@ -5891,6 +5891,7 @@ import Mathlib.Topology.MetricSpace.Pseudo.Pi
 import Mathlib.Topology.MetricSpace.Pseudo.Real
 import Mathlib.Topology.MetricSpace.Sequences
 import Mathlib.Topology.MetricSpace.ShrinkingLemma
+import Mathlib.Topology.MetricSpace.Similarity
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.MetricSpace.Ultra.Basic
