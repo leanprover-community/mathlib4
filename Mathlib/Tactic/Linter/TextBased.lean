@@ -295,8 +295,8 @@ Note: if `pos` is not a valid position, the result is unspecified. -/
 def findBadUnicodeAux (s : String) (pos : String.Pos := 0)
     (err : Array StyleError := #[]) : Array StyleError :=
   if h : pos < s.endPos then
-    have := Nat.sub_lt_sub_left h (String.lt_next s pos) ;
-    let c := s.get? pos |>.getD '\uFFFD' -- �  -- ' '
+    have := Nat.sub_lt_sub_left h (String.lt_next s pos)
+    let c := s.get? pos |>.getD '\uFFFD' -- �
     let posₙ := s.next pos -- `pos` is valid by assumption. `pos` is not `endPos` by check above.
     if ! isAllowedCharacter c then
       -- bad: character not allowed
