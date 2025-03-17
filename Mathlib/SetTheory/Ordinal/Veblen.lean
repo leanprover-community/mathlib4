@@ -283,7 +283,7 @@ theorem veblen_left_monotone (o : Ordinal) : Monotone (veblen · o) :=
   veblenWith_left_monotone (isNormal_opow one_lt_omega0) o
 
 @[simp]
-theorem veblen_pos : 0 < veblen o a :=
+theorem veblen_pos (o a : Ordinal) : 0 < veblen o a :=
   veblenWith_pos (isNormal_opow one_lt_omega0) (by simp)
 
 theorem veblen_zero_strictMono : StrictMono (veblen · 0) :=
