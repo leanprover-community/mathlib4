@@ -1448,15 +1448,21 @@ theorem liminf_le_iff' [DenselyOrdered β] {x : β}
     liminf u f ≤ x ↔ ∀ y > x, ∃ᶠ a in f, u a ≤ y := le_limsup_iff' (β := βᵒᵈ) h₁ h₂
 
 lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x ≤ v x)
-    (h₁ : f.IsCoboundedUnder (· ≥ ·) u := by isBoundedDefault)
-    (h₂ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
-    (h₃ : f.IsCoboundedUnder (· ≤ ·) v := by isBoundedDefault)
-    (h₄ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
+    (h₁ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
+    (h₂ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
     f.liminf u ≤ f.limsup v := by
   rcases f.eq_or_neBot with rfl | _
   · exact (frequently_bot h).rec
-  refine (le_limsup_iff h₃ h₄).2 fun y y_v ↦ ?_
-  have := (le_liminf_iff h₁ h₂).1 (le_refl (f.liminf u)) y y_v
+  have h₃ : f.IsCoboundedUnder (· ≥ ·) u := by
+    obtain ⟨a, ha⟩ := h₂.eventually_le
+    apply IsCoboundedUnder.of_frequently_le (a := a)
+    exact (h.and_eventually ha).mono fun x ⟨u_x, v_x⟩ ↦ u_x.trans v_x
+  have h₄ : f.IsCoboundedUnder (· ≤ ·) v := by
+    obtain ⟨a, ha⟩ := h₁.eventually_ge
+    apply IsCoboundedUnder.of_frequently_ge (a := a)
+    exact (ha.and_frequently h).mono fun x ⟨u_x, v_x⟩ ↦ u_x.trans v_x
+  refine (le_limsup_iff h₄ h₂).2 fun y y_v ↦ ?_
+  have := (le_liminf_iff h₃ h₁).1 (le_refl (f.liminf u)) y y_v
   exact (h.and_eventually this).mono fun x ⟨ux_vx, y_ux⟩ ↦ y_ux.trans_le ux_vx
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
