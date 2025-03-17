@@ -34,8 +34,8 @@ The bound `O_{M, m, n}(1)` we find is of tower type.
 ## Sketch proof
 
 We first show the result in the case of `C : R → R[X]`. We prove this by induction on the number of
-components of the form `C \ D`, then by induction again on the number of polynomials used to
-describe `C`. See the (private) lemma `chevalley_polynomialC`.
+components of the form `(C₁ ∪ ... ∪ Cₖ) \ D`, then by induction again on the number of polynomials
+used to describe `(C₁ ∪ ... ∪ Cₖ)`. See the (private) lemma `chevalley_polynomialC`.
 
 Secondly, we prove the result in the case of `C : R → R[X₁, ..., Xₘ]` by composing the first result
 with itself `m` times. See the (private) lemma `chevalley_mvPolynomialC`.
