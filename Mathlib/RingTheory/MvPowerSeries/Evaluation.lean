@@ -200,6 +200,7 @@ noncomputable def eval₂ (f : MvPowerSeries σ R) : S :=
   if H : ∃ p : MvPolynomial σ R, p = f then (MvPolynomial.eval₂ φ a H.choose)
   else IsDenseInducing.extend coeToMvPowerSeries_isDenseInducing (MvPolynomial.eval₂ φ a) f
 
+@[simp, norm_cast]
 theorem eval₂_coe (f : MvPolynomial σ R) :
     MvPowerSeries.eval₂ φ a f = MvPolynomial.eval₂ φ a f := by
   have : ∃ p : MvPolynomial σ R, (p : MvPowerSeries σ R) = f := ⟨f, rfl⟩
@@ -207,9 +208,11 @@ theorem eval₂_coe (f : MvPolynomial σ R) :
   congr
   rw [← MvPolynomial.coe_inj, this.choose_spec]
 
+@[simp]
 theorem eval₂_C (r : R) : eval₂ φ a (C σ R r) = φ r := by
   rw [← coe_C, eval₂_coe, MvPolynomial.eval₂_C]
 
+@[simp]
 theorem eval₂_X (s : σ) : eval₂ φ a (X s) = a s := by
   rw [← coe_X, eval₂_coe, MvPolynomial.eval₂_X]
 
@@ -311,6 +314,7 @@ theorem continuous_aeval (ha : HasEval a) :
   rw [coe_aeval]
   exact continuous_eval₂ (continuous_algebraMap R S) ha
 
+@[simp]
 theorem aeval_coe (ha : HasEval a) (p : MvPolynomial σ R) :
     aeval ha (p : MvPowerSeries σ R) = p.aeval a := by
   rw [coe_aeval, aeval_def, eval₂_coe]

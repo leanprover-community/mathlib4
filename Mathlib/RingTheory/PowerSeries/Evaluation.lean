@@ -74,6 +74,7 @@ Otherwise, it is only relevant if `φ` is continuous and `a` is topologically ni
 noncomputable def eval₂ : PowerSeries R → S :=
   MvPowerSeries.eval₂ φ (fun _ ↦ a)
 
+@[simp]
 theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
   let g : MvPolynomial Unit R := (MvPolynomial.pUnitAlgEquiv R).symm f
   have : f = MvPolynomial.pUnitAlgEquiv R g := by
@@ -81,10 +82,12 @@ theorem eval₂_coe (f : Polynomial R) : eval₂ φ a f = f.eval₂ φ a := by
   simp only [this, PowerSeries.eval₂, MvPolynomial.eval₂_const_pUnitAlgEquiv]
   rw [← MvPolynomial.toMvPowerSeries_pUnitAlgEquiv, MvPowerSeries.eval₂_coe]
 
+@[simp]
 theorem eval₂_C (r : R) :
     eval₂ φ a (C R r) = φ r := by
   rw [← Polynomial.coe_C, eval₂_coe, Polynomial.eval₂_C]
 
+@[simp]
 theorem eval₂_X :
     eval₂ φ a X = a := by
   rw [← Polynomial.coe_X, eval₂_coe, Polynomial.eval₂_X]
@@ -165,6 +168,7 @@ theorem continuous_aeval (ha : IsTopologicallyNilpotent a) :
     Continuous (aeval ha : PowerSeries R → S) :=
   MvPowerSeries.continuous_aeval (hasEval ha)
 
+@[simp, norm_cast]
 theorem aeval_coe (ha : IsTopologicallyNilpotent a) (p : Polynomial R) :
     aeval ha (p : PowerSeries R) = Polynomial.aeval a p := by
   rw [coe_aeval, Polynomial.aeval_def, eval₂_coe]
