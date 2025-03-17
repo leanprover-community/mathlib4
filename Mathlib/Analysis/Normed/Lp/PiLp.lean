@@ -800,7 +800,7 @@ variable [∀ i, SeminormedAddCommGroup (α i)]
 variable [∀ i, Module 𝕜 (α i)] [Fintype ι] [Fintype κ] [Fact (1 ≤ p)]
 
 /-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry -/
-@[simps!]
+@[simps!? +simpRhs]
 def sumPiLpEquivProdLpPiLp :
     WithLp p (Π i, α i) ≃ₗᵢ[𝕜]
       WithLp p (WithLp p (Π i, α (.inl i)) × WithLp p (Π i, α (.inr i))) where
@@ -811,12 +811,11 @@ def sumPiLpEquivProdLpPiLp :
       ≪≫ₗ (WithLp.linearEquiv p _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
     obtain rfl | hp := p.dichotomy
-    · simp [LinearEquiv.sumPiEquivProdPi, Pi.norm_def]
-      simp_rw [← Finset.univ_disjSum_univ, Finset.sup_disjSum]; rfl
+    · simp [← Finset.univ_disjSum_univ, Finset.sup_disjSum, Pi.norm_def]
     · have : 0 < p.toReal := by positivity
-      simp [LinearEquiv.sumPiEquivProdPi, norm_eq_sum this, WithLp.prod_norm_eq_add this]
-      congr <;> rw [← Real.rpow_mul] <;> (try field_simp) <;>
-      refine Finset.sum_nonneg fun i hi ↦ ?_ <;> positivity
+      have hpt : p ≠ ⊤ := (toReal_pos_iff_ne_top p).mp this
+      simp_rw [← coe_nnnorm]; congr 1 -- convert to nnnorm to avoid needing positivity arguments
+      simp [nnnorm_eq_sum hpt, WithLp.prod_nnnorm_eq_add hpt, NNReal.rpow_inv_rpow this.ne']
 
 end sumPiLpEquivProdLpPiLp
 
