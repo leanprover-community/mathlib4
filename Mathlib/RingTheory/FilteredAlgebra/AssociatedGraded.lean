@@ -122,6 +122,10 @@ namespace GradedPiece
 def mk {i : ι} : (ofClass (F i)) →+ GradedPiece F F_lt i :=
   QuotientAddGroup.mk' ((ofClass (F_lt i)).addSubgroupOf (ofClass (F i)))
 
+lemma mk_piece_wise {i : ι} (x : AssociatedGraded F F_lt) :
+    x i = (GradedPiece.mk F F_lt) (x i).out := by
+  simp only [GradedPiece.mk, QuotientAddGroup.mk'_apply, Quotient.out_eq]
+
 section
 
 lemma induction_on {i : ι} {C : GradedPiece F F_lt i → Prop} (x : GradedPiece F F_lt i)
