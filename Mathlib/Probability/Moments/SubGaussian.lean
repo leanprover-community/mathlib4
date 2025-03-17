@@ -69,7 +69,7 @@ as special cases of a notion of sub-Gaussianity with respect to a kernel and a m
 
 ## Main statements
 
-* `measure_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of indepedent sub-Gaussian
+* `measure_sum_ge_le_of_iIndepFun`: Hoeffding's inequality for sums of independent sub-Gaussian
   random variables.
 * `measure_sum_ge_le_of_HasCondSubgaussianMGF`: the Azuma-Hoeffding inequality for sub-Gaussian
   random variables.
