@@ -107,10 +107,10 @@ theorem divisor_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
     divisor f⁻¹ U = -divisor f U := by
   ext z
   by_cases h : MeromorphicOn f U ∧ z ∈ U
-  · simp only [inv_iff, h, divisor_apply, DivisorOn.coe_neg, Pi.neg_apply, (h.1 z h.2).order_inv]
-    by_cases ha : (h.1 z h.2).inv.order = ⊤
+  · simp [divisor_apply, h, (h.1 z h.2).order_inv]
+    by_cases ha : (h.1 z h.2).order = ⊤
     · simp [ha]
-    lift (h.1 z h.2).inv.order to ℤ using ha with a
+    lift (h.1 z h.2).order to ℤ using ha with a
     simp [eq_comm (a := a), neg_eq_iff_eq_neg, WithTop.untopD_eq_iff]
   · simp [divisor_def, h]
 
