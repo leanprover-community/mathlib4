@@ -109,9 +109,11 @@ def condExpUnexpander : Lean.PrettyPrinter.Unexpander
   | _ => throw ()
 
 /-- info: μ[f|m] : α → E -/
-#guard_msgs in #check μ[f | m]
+#guard_msgs in
+#check μ[f | m]
 /-- info: μ[f|m] sorry : E -/
-#guard_msgs in #check μ[f | m] (sorry : α)
+#guard_msgs in
+#check μ[f | m] (sorry : α)
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
