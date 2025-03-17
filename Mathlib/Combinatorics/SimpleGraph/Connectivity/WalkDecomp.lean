@@ -248,6 +248,12 @@ lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} {w x : V} (h : x ≠ 
   simp only [takeUntil_takeUntil] at h1 h2
   omega
 
+lemma not_mem_support_takeUntil_support_takeUntil_subset {p : G.Walk u v} {w x : V} (h : x ≠ w)
+    (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
+    w ∉ (p.takeUntil x (p.support_takeUntil_subset hw hx)).support := by
+  rw [← takeUntil_takeUntil _ _ _]
+  exact not_mem_support_takeUntil_takeUntil h hw hx
+
 /-- Rotate a loop walk such that it is centered at the given vertex. -/
 def rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) : G.Walk u u :=
   (c.dropUntil u h).append (c.takeUntil u h)
