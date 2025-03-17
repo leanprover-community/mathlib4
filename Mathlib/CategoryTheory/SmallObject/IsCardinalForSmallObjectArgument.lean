@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
 import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.AlgebraicTopology.RelativeCellComplex.Basic
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Regular
 
 /-!
 # Cardinals that are suitable for the small object argument
@@ -450,7 +450,7 @@ lemma hasFunctorialFactorization :
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
 of transfinite compositions (of shape `κ.ord.toType`) of pushouts of coproducts
-of maps in `I`.  -/
+of maps in `I`. -/
 lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape
       (coproducts.{w} I).pushouts κ.ord.toType).retracts := by
@@ -466,7 +466,7 @@ lemma llp_rlp_of_isCardinalForSmallObjectArgument' :
 
 /-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
 then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
-of transfinite compositions of pushouts of coproducts of maps in `I`.  -/
+of transfinite compositions of pushouts of coproducts of maps in `I`. -/
 lemma llp_rlp_of_isCardinalForSmallObjectArgument :
     I.rlp.llp =
       (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts := by

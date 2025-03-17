@@ -85,7 +85,6 @@ instance funLike : FunLike (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   coe := toFun
   coe_injective' f g h := by cases f; cases g; congr
 
--- Porting note: moved this declaration up so we could get a `FunLike` instance sooner.
 instance toAddMonoidHomClass : AddMonoidHomClass (NormedAddGroupHom V₁ V₂) V₁ V₂ where
   map_add f := f.map_add'
   map_zero f := (AddMonoidHom.mk' f.toFun f.map_add').map_zero
@@ -292,16 +291,6 @@ instance add : Add (NormedAddGroupHom V₁ V₂) :=
 theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
   mkNormedAddGroupHom_norm_le _ (add_nonneg (opNorm_nonneg _) (opNorm_nonneg _)) _
 
--- Porting note: this library note doesn't seem to apply anymore
-/-
-library_note "addition on function coercions"/--
-Terms containing `@has_add.add (has_coe_to_fun.F ...) pi.has_add`
-seem to cause leanchecker to [crash due to an out-of-memory
-condition](https://github.com/leanprover-community/lean/issues/543).
-As a workaround, we add a type annotation: `(f + g : V₁ → V₂)`
--/
--/
-
 @[simp]
 theorem coe_add (f g : NormedAddGroupHom V₁ V₂) : ⇑(f + g) = f + g :=
   rfl
@@ -432,8 +421,8 @@ theorem sub_apply (f g : NormedAddGroupHom V₁ V₂) (v : V₁) :
 section SMul
 
 variable {R R' : Type*} [MonoidWithZero R] [DistribMulAction R V₂] [PseudoMetricSpace R]
-  [BoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
-  [BoundedSMul R' V₂]
+  [IsBoundedSMul R V₂] [MonoidWithZero R'] [DistribMulAction R' V₂] [PseudoMetricSpace R']
+  [IsBoundedSMul R' V₂]
 
 instance smul : SMul R (NormedAddGroupHom V₁ V₂) where
   smul r f :=
@@ -554,10 +543,10 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → NormedAddGroupHom V�
 
 
 instance distribMulAction {R : Type*} [MonoidWithZero R] [DistribMulAction R V₂]
-    [PseudoMetricSpace R] [BoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
+    [PseudoMetricSpace R] [IsBoundedSMul R V₂] : DistribMulAction R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.distribMulAction coeAddHom coe_injective coe_smul
 
-instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [BoundedSMul R V₂] :
+instance module {R : Type*} [Semiring R] [Module R V₂] [PseudoMetricSpace R] [IsBoundedSMul R V₂] :
     Module R (NormedAddGroupHom V₁ V₂) :=
   Function.Injective.module _ coeAddHom coe_injective coe_smul
 

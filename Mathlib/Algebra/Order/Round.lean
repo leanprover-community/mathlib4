@@ -138,7 +138,7 @@ theorem round_eq (x : α) : round x = ⌊x + 1 / 2⌋ := by
   simp_rw [round, (by simp only [lt_div_iff₀', two_pos] : 2 * fract x < 1 ↔ fract x < 1 / 2)]
   rcases lt_or_le (fract x) (1 / 2) with hx | hx
   · conv_rhs => rw [← fract_add_floor x, add_assoc, add_left_comm, floor_int_add]
-    rw [if_pos hx, self_eq_add_right, floor_eq_iff, cast_zero, zero_add]
+    rw [if_pos hx, left_eq_add, floor_eq_iff, cast_zero, zero_add]
     constructor
     · linarith [fract_nonneg x]
     · linarith

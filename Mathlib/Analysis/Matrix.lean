@@ -16,7 +16,7 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.seminormedAddCommGroup`
   * `Matrix.normedAddCommGroup`
   * `Matrix.normedSpace`
-  * `Matrix.boundedSMul`
+  * `Matrix.isBoundedSMul`
 
 * The Frobenius norm:
 
@@ -25,14 +25,14 @@ In this file we provide the following non-instances for norms on matrices:
   * `Matrix.frobeniusNormedSpace`
   * `Matrix.frobeniusNormedRing`
   * `Matrix.frobeniusNormedAlgebra`
-  * `Matrix.frobeniusBoundedSMul`
+  * `Matrix.frobeniusIsBoundedSMul`
 
 * The $L^\infty$ operator norm:
 
   * `Matrix.linftyOpSeminormedAddCommGroup`
   * `Matrix.linftyOpNormedAddCommGroup`
   * `Matrix.linftyOpNormedSpace`
-  * `Matrix.linftyOpBoundedSMul`
+  * `Matrix.linftyOpIsBoundedSMul`
   * `Matrix.linftyOpNonUnitalSemiNormedRing`
   * `Matrix.linftyOpSemiNormedRing`
   * `Matrix.linftyOpNonUnitalNormedRing`
@@ -180,9 +180,11 @@ section NormedSpace
 attribute [local instance] Matrix.seminormedAddCommGroup
 
 /-- This applies to the sup norm of sup norm. -/
-protected theorem boundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
-    [BoundedSMul R α] : BoundedSMul R (Matrix m n α) :=
-  Pi.instBoundedSMul
+protected theorem isBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [IsBoundedSMul R α] : IsBoundedSMul R (Matrix m n α) :=
+  Pi.instIsBoundedSMul
+
+@[deprecated (since := "2025-03-10")] protected alias boundedSMul := Matrix.isBoundedSMul
 
 variable [NormedField R] [SeminormedAddCommGroup α] [NormedSpace R α]
 
@@ -225,10 +227,10 @@ protected def linftyOpNormedAddCommGroup [NormedAddCommGroup α] :
 
 /-- This applies to the sup norm of L1 norm. -/
 @[local instance]
-protected theorem linftyOpBoundedSMul
-    [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [BoundedSMul R α] :
-    BoundedSMul R (Matrix m n α) :=
-  (by infer_instance : BoundedSMul R (m → PiLp 1 fun j : n => α))
+protected theorem linftyOpIsBoundedSMul
+    [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α] [IsBoundedSMul R α] :
+    IsBoundedSMul R (Matrix m n α) :=
+  (by infer_instance : IsBoundedSMul R (m → PiLp 1 fun j : n => α))
 
 /-- Normed space instance (using sup norm of L1 norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -323,7 +325,7 @@ the norm of a matrix. -/
 protected def linftyOpNonUnitalSemiNormedRing [NonUnitalSeminormedRing α] :
     NonUnitalSeminormedRing (Matrix n n α) :=
   { Matrix.linftyOpSeminormedAddCommGroup, Matrix.instNonUnitalRing with
-    norm_mul := linfty_opNorm_mul }
+    norm_mul_le := linfty_opNorm_mul }
 
 /-- The `L₁-L∞` norm preserves one on non-empty matrices. Note this is safe as an instance, as it
 carries no data. -/
@@ -458,10 +460,12 @@ def frobeniusNormedAddCommGroup [NormedAddCommGroup α] : NormedAddCommGroup (Ma
 
 /-- This applies to the frobenius norm. -/
 @[local instance]
-theorem frobeniusBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
-    [BoundedSMul R α] :
-    BoundedSMul R (Matrix m n α) :=
-  (by infer_instance : BoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+theorem frobeniusIsBoundedSMul [SeminormedRing R] [SeminormedAddCommGroup α] [Module R α]
+    [IsBoundedSMul R α] :
+    IsBoundedSMul R (Matrix m n α) :=
+  (by infer_instance : IsBoundedSMul R (PiLp 2 fun i : m => PiLp 2 fun j : n => α))
+
+@[deprecated (since := "2025-03-10")] alias frobeniusBoundedSMul := frobeniusIsBoundedSMul
 
 /-- Normed space instance (using frobenius norm) for matrices over a normed space.  Not
 declared as an instance because there are several natural choices for defining the norm of a
@@ -498,7 +502,7 @@ theorem frobenius_norm_map_eq (A : Matrix m n α) (f : α → β) (hf : ∀ a, �
 @[simp]
 theorem frobenius_nnnorm_transpose (A : Matrix m n α) : ‖Aᵀ‖₊ = ‖A‖₊ := by
   rw [frobenius_nnnorm_def, frobenius_nnnorm_def, Finset.sum_comm]
-  simp_rw [Matrix.transpose_apply]  -- Porting note: added
+  simp_rw [Matrix.transpose_apply]
 
 @[simp]
 theorem frobenius_norm_transpose (A : Matrix m n α) : ‖Aᵀ‖ = ‖A‖ :=
@@ -579,7 +583,7 @@ theorem frobenius_nnnorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B�
   have :=
     @nnnorm_inner_le_nnnorm α _ _ _ _ ((WithLp.equiv 2 <| _ → α).symm fun j => star (A i j))
       ((WithLp.equiv 2 <| _ → α).symm fun k => B k j)
-  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, RCLike.inner_apply, starRingEnd_apply,
+  simpa only [WithLp.equiv_symm_pi_apply, PiLp.inner_apply, RCLike.inner_apply', starRingEnd_apply,
     Pi.nnnorm_def, PiLp.nnnorm_eq_of_L2, star_star, nnnorm_star, NNReal.sqrt_eq_rpow,
     NNReal.rpow_two] using this
 
@@ -593,7 +597,7 @@ matrix. -/
 def frobeniusNormedRing [DecidableEq m] : NormedRing (Matrix m m α) :=
   { Matrix.frobeniusSeminormedAddCommGroup, Matrix.instRing with
     norm := Norm.norm
-    norm_mul := frobenius_norm_mul
+    norm_mul_le := frobenius_norm_mul
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
 /-- Normed algebra instance (using frobenius norm) for matrices over `ℝ` or `ℂ`.  Not

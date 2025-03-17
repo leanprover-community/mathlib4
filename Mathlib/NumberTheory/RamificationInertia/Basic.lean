@@ -127,7 +127,7 @@ theorem le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P)
 theorem le_comap_of_ramificationIdx_ne_zero (h : ramificationIdx f p P ≠ 0) : p ≤ comap f P :=
   Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx.trans <| Ideal.pow_le_self <| h
 
-variable {S₁: Type*} [CommRing S₁] [Algebra R S₁]
+variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
 
 variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
@@ -253,8 +253,7 @@ variable (K)
 
 open scoped Matrix
 
-variable {K}
-
+variable {K} in
 /-- If `b` mod `p` spans `S/p` as `R/p`-space, then `b` itself spans `Frac(S)` as `K`-space.
 
 Here,
@@ -354,7 +353,6 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [Submodule.restrictScalars_mem, IsScalarTower.algebraMap_apply R S L] at hx
     exact IsFractionRing.ideal_span_singleton_map_subset R hRL span_d hx
 
-variable (K)
 variable [hRK : IsFractionRing R K]
 
 /-- Let `V` be a vector space over `K = Frac(R)`, `S / R` a ring extension
@@ -622,7 +620,6 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
     (i : ℕ) (hi : i ≤ e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
       (e - i) • Module.rank (R ⧸ p) (S ⧸ P) := by
--- Porting note: Lean cannot figure out what to prove by itself
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
@@ -701,8 +698,6 @@ instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S)
     NeZero (ramificationIdx (algebraMap R S) p P) :=
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 
-set_option synthInstance.checkSynthOrder false
--- Porting note: this is okay since, as noted above, in this file the value of `f` can be inferred
 attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
 open scoped Classical in
@@ -833,7 +828,7 @@ theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R �
     by_contra h
     simp only [h, Submodule.zero_eq_bot, bot_le, sup_of_le_left] at hcp
     exact hntq (hcp.trans_le hg), Multiset.count_add, normalizedFactors_pow, Multiset.count_nsmul]
-  exact add_right_eq_self.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
+  exact add_eq_left.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
     sup_le hg <| le_of_dvd <| dvd_of_mem_normalizedFactors <| Multiset.count_ne_zero.mp h
 
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

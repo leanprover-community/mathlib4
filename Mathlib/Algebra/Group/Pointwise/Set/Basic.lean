@@ -5,10 +5,9 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Algebra.Group.Units.Hom
-import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.MinImports
 
 /-!
 # Pointwise operations of sets
@@ -54,7 +53,7 @@ set multiplication, set addition, pointwise addition, pointwise multiplication,
 pointwise subtraction
 -/
 
-assert_not_exists MonoidWithZero OrderedAddCommMonoid
+assert_not_exists MulAction MonoidWithZero OrderedAddCommMonoid
 
 library_note "pointwise nat action"/--
 Pointwise monoids (`Set`, `Finset`, `Filter`) have derived pointwise actions of the form
@@ -134,8 +133,11 @@ theorem coe_singletonOneHom : (singletonOneHom : α → Set α) = singleton :=
 
 @[to_additive] lemma image_op_one : (1 : Set α).image op = 1 := image_singleton
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) zero_prod_zero]
 lemma one_prod_one [One β] : (1 ×ˢ 1 : Set (α × β)) = 1 := by ext; simp [Prod.ext_iff]
+
+@[deprecated (since := "2025-03-11")]
+alias zero_sum_zero := zero_prod_zero
 
 end One
 
@@ -204,8 +206,11 @@ theorem sUnion_inv (S : Set (Set α)) : (⋃₀ S)⁻¹ = ⋃ s ∈ S, s⁻¹ :=
 theorem compl_inv : sᶜ⁻¹ = s⁻¹ᶜ :=
   preimage_compl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) neg_prod]
 lemma inv_prod [Inv β] (s : Set α) (t : Set β) : (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := rfl
+
+@[deprecated (since := "2025-03-11")]
+alias neg_sum := neg_prod
 
 end Inv
 
@@ -409,15 +414,11 @@ theorem sUnion_mul (S : Set (Set α)) (t : Set α) : ⋃₀ S * t = ⋃ s ∈ S,
 theorem mul_sUnion (s : Set α) (T : Set (Set α)) : s * ⋃₀ T = ⋃ t ∈ T, s * t :=
   image2_sUnion_right ..
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iUnion₂_mul (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) * t = ⋃ (i) (j), s i j * t :=
   image2_iUnion₂_left ..
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem mul_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋃ (i) (j), t i j) = ⋃ (i) (j), s * t i j :=
@@ -439,15 +440,11 @@ lemma mul_sInter_subset (s : Set α) (T : Set (Set α)) :
 lemma sInter_mul_subset (S : Set (Set α)) (t : Set α) :
     ⋂₀ S * t ⊆ ⋂ s ∈ S, s * t := image2_sInter_left_subset S t (fun a b => a * b)
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iInter₂_mul_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) * t ⊆ ⋂ (i) (j), s i j * t :=
   image2_iInter₂_subset_left ..
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem mul_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s * ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s * t i j :=
@@ -473,9 +470,12 @@ open MulOpposite
 theorem image_op_mul : op '' (s * t) = op '' t * op '' s :=
   image_image2_antidistrib op_mul
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) prod_add_prod_comm]
 lemma prod_mul_prod_comm [Mul β] (s₁ s₂: Set α) (t₁ t₂ : Set β) :
    (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) := by ext; simp [mem_mul]; aesop
+
+@[deprecated (since := "2025-03-11")]
+alias sum_add_sum_comm := prod_add_prod_comm
 
 end Mul
 
@@ -497,7 +497,7 @@ protected def div : Div (Set α) :=
 scoped[Pointwise] attribute [instance] Set.div Set.sub
 
 @[to_additive (attr := simp)]
-theorem image2_div : image2 Div.div s t = s / t :=
+theorem image2_div : image2 (· / ·) s t = s / t :=
   rfl
 
 @[to_additive]
@@ -616,15 +616,11 @@ theorem sUnion_div (S : Set (Set α)) (t : Set α) : ⋃₀ S / t = ⋃ s ∈ S,
 theorem div_sUnion (s : Set α) (T : Set (Set α)) : s / ⋃₀ T = ⋃ t ∈ T, s / t :=
   image2_sUnion_right ..
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iUnion₂_div (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋃ (i) (j), s i j) / t = ⋃ (i) (j), s i j / t :=
   image2_iUnion₂_left ..
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem div_iUnion₂ (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋃ (i) (j), t i j) = ⋃ (i) (j), s / t i j :=
@@ -646,15 +642,11 @@ theorem sInter_div_subset (S : Set (Set α)) (t : Set α) : ⋂₀ S / t ⊆ ⋂
 theorem div_sInter_subset (s : Set α) (T : Set (Set α)) : s / ⋂₀ T ⊆ ⋂ t ∈ T, s / t :=
   image2_sInter_subset_right ..
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem iInter₂_div_subset (s : ∀ i, κ i → Set α) (t : Set α) :
     (⋂ (i) (j), s i j) / t ⊆ ⋂ (i) (j), s i j / t :=
   image2_iInter₂_subset_left ..
 
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
-/- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 @[to_additive]
 theorem div_iInter₂_subset (s : Set α) (t : ∀ i, κ i → Set α) :
     (s / ⋂ (i) (j), t i j) ⊆ ⋂ (i) (j), s / t i j :=
@@ -685,7 +677,7 @@ section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
-@[to_additive (attr := simp)] lemma image2_smul : image2 SMul.smul s t = s • t := rfl
+@[to_additive (attr := simp)] lemma image2_smul : image2 (· • ·) s t = s • t := rfl
 
 @[to_additive vadd_image_prod]
 lemma image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s • t := image_prod _
@@ -870,6 +862,21 @@ lemma smul_set_iInter₂_subset (a : α) (t : ∀ i, κ i → Set β) :
 
 end SMulSet
 
+section Pi
+
+variable {M ι : Type*} {π : ι → Type*} [∀ i, SMul M (π i)]
+
+@[to_additive]
+theorem smul_set_pi_of_surjective (c : M) (I : Set ι) (s : ∀ i, Set (π i))
+    (hsurj : ∀ i ∉ I, Function.Surjective (c • · : π i → π i)) : c • I.pi s = I.pi (c • s ·) :=
+  piMap_image_pi hsurj s
+
+@[to_additive]
+theorem smul_set_univ_pi (c : M) (s : ∀ i, Set (π i)) : c • univ.pi s = univ.pi (c • s ·) :=
+  piMap_image_univ_pi _ s
+
+end Pi
+
 variable {s : Set α} {t : Set β} {a : α} {b : β}
 
 @[to_additive]
@@ -893,7 +900,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ 
 
 instance vsub : VSub (Set α) (Set β) where vsub := image2 (· -ᵥ ·)
 
-@[simp] lemma image2_vsub : (image2 VSub.vsub s t : Set α) = s -ᵥ t := rfl
+@[simp] lemma image2_vsub : image2 (· -ᵥ ·) s t = s -ᵥ t := rfl
 
 lemma image_vsub_prod : (fun x : β × β ↦ x.fst -ᵥ x.snd) '' s ×ˢ t = s -ᵥ t := image_prod _
 
@@ -983,13 +990,20 @@ lemma vsub_iInter₂_subset (s : Set β) (t : ∀ i, κ i → Set β) :
 
 end VSub
 
-open Pointwise
-
 @[to_additive]
 lemma image_smul_comm [SMul α β] [SMul α γ] (f : β → γ) (a : α) (s : Set β) :
     (∀ b, f (a • b) = a • f b) → f '' (a • s) = a • f '' s := image_comm
 
-open Pointwise
+section SMul
+variable [SMul αᵐᵒᵖ β] [SMul β γ] [SMul α γ]
+
+-- TODO: replace hypothesis and conclusion with a typeclass
+@[to_additive]
+lemma op_smul_set_smul_eq_smul_smul_set (a : α) (s : Set β) (t : Set γ)
+    (h : ∀ (a : α) (b : β) (c : γ), (op a • b) • c = b • a • c) : (op a • s) • t = s • a • t := by
+  ext; simp [mem_smul, mem_smul_set, h]
+
+end SMul
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
 note [pointwise nat action]. -/
