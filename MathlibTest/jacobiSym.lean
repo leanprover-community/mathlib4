@@ -41,9 +41,9 @@ instance prime_1000003 : Fact (Nat.Prime 1000003) := ⟨by norm_num1⟩
 
 -- Should replace `legendreSym` with `fastJacobiSym` without using `Fact p.Prime`
 /--
-warning: declaration uses 'sorry'
----
 info: 1
+---
+warning: declaration uses 'sorry'
 -/
 #guard_msgs in
 #eval! @legendreSym (2 ^ 11213 - 1) sorry 7
