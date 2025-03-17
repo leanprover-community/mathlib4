@@ -234,7 +234,7 @@ section Prod
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
 
 This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
-@[simp]
+@[simps]
 noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Semiring R]
     [AddCommMonoid M] [Module R M] : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
   { finsuppProdEquiv with
@@ -246,15 +246,10 @@ noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Sem
       simp [finsuppProdEquiv, curry_apply] }
 
 @[simp]
-theorem finsuppProdLEquiv_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : α × β →₀ M) (x y) : finsuppProdLEquiv R f x y = f (x, y) := by
-  rw [finsuppProdLEquiv, LinearEquiv.coe_mk, finsuppProdEquiv, Finsupp.curry_apply]
-
-@[simp]
 theorem finsuppProdLEquiv_symm_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     (f : α →₀ β →₀ M) (xy) : (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 := by
-  conv_rhs =>
-    rw [← (finsuppProdLEquiv R).apply_symm_apply f, finsuppProdLEquiv_apply]
+  rw [← Prod.mk.eta (p := xy)]
+  simp
 
 end Prod
 
