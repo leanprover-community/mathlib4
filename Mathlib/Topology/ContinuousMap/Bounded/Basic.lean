@@ -791,8 +791,10 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
   DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
 
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
-`AddMonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
-@[to_additive (attr := simps)]
+`MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[to_additive (attr := simps)
+"Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
+`AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
 protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
     [TopologicalSpace α]
     [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
