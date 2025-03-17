@@ -491,7 +491,6 @@ variable {A : Type u₁} [Category.{v₁} A] {A' : Type u₂} [Category.{v₂} A
 
 /-- A consequence of `functorEquiv`: we can construct a natural isomorphism of functors
 `A ⊕ A' ⥤ B` from the data of natural isomorphisms of their whiskering with `inl_` and `inr_`. -/
-@[simps!]
 def ofNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
     F ≅ G :=
@@ -503,6 +502,12 @@ def ofNatIsoWhiskerLeftInlInr {F G : A ⊕ A' ⥤ B}
 lemma ofNatIsoWhiskerLeftInlInr_hom {F G : A ⊕ A' ⥤ B}
     (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
     (ofNatIsoWhiskerLeftInlInr η₁ η₂).hom = NatTrans.ofNatTransWhiskerLeftInlInr η₁.hom η₂.hom := by
+  aesop_cat
+
+@[simp]
+lemma ofNatIsoWhiskerLeftInlInr_inv {F G : A ⊕ A' ⥤ B}
+    (η₁ : Sum.inl_ A A' ⋙ F ≅ Sum.inl_ A A' ⋙ G) (η₂ : Sum.inr_ A A' ⋙ F ≅ Sum.inr_ A A' ⋙ G) :
+    (ofNatIsoWhiskerLeftInlInr η₁ η₂).inv = NatTrans.ofNatTransWhiskerLeftInlInr η₁.inv η₂.inv := by
   aesop_cat
 
 end NatIso
