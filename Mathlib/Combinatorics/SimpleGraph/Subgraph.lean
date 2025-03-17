@@ -644,7 +644,7 @@ lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
 theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f = H₁.map f ⊔ H₂.map f := by
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
-@[simp] lemma map_equiv_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
+@[simp] lemma map_iso_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
   ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
 
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
@@ -730,7 +730,7 @@ theorem hom_injective {x : Subgraph G} : Function.Injective x.hom :=
 @[deprecated (since := "2025-03-15")] alias hom.injective := hom_injective
 
 @[simp] lemma map_hom_top (G' : G.Subgraph) : Subgraph.map G'.hom ⊤ = G' := by
-  ext <;> simp [Relation.Map]; exact fun h ↦ ⟨G'.edge_vert h, G'.edge_vert h.symm⟩
+  aesop (add unfold safe Relation.Map, unsafe G'.edge_vert, unsafe Adj.symm)
 
 /-- There is an induced injective homomorphism of a subgraph of `G` as
 a spanning subgraph into `G`. -/
