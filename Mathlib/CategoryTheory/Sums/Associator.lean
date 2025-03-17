@@ -26,7 +26,7 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 /-- The associator functor `(C ⊕ D) ⊕ E ⥤ C ⊕ (D ⊕ E)` for sums of categories.
 -/
 def associator : (C ⊕ D) ⊕ E ⥤ C ⊕ (D ⊕ E) :=
-  (inl_ _ _ |>.sum' <| inl_ _ _ ⋙ inr_ _ _).sum' <| inr_ _ _ ⋙ inr_ _ _
+  (inl_ C (D ⊕ E) |>.sum' <| inl_ D E ⋙ inr_ C (D ⊕ E)).sum' <| inr_ D E ⋙ inr_ C (D ⊕ E)
 
 @[simp]
 theorem associator_obj_inl_inl (X) : (associator C D E).obj (inl (inl X)) = inl X :=
@@ -58,28 +58,30 @@ theorem associator_map_inr {X Y : E} (f : X ⟶ Y) :
 
 /-- Characterizing the composition of the associator and the left inclusion. -/
 @[simps!]
-def inlCompAssociator : (inl_ _ _) ⋙ associator C D E ≅ inl_ _ _ |>.sum' <| inl_ _ _ ⋙ inr_ _ _ :=
+def inlCompAssociator :
+    inl_ (C ⊕ D) E ⋙ associator C D E ≅ inl_ C (D ⊕ E) |>.sum' <| inl_ D E ⋙ inr_ C (D ⊕ E) :=
   (Functor.inlCompSum' _ _)
 
 /-- Characterizing the composition of the associator and the right inclusion. -/
 @[simps!]
-def inrCompAssociator : (inr_ _ _) ⋙ associator C D E ≅ inr_ _ _ ⋙ inr_ _ _ :=
+def inrCompAssociator : inr_ (C ⊕ D) E ⋙ associator C D E ≅ inr_ D E ⋙ inr_ C (D ⊕ E) :=
   (Functor.inrCompSum' _ _)
 
 /-- Further characterizing the composition of the associator and the left inclusion. -/
 @[simps!]
-def inlCompInlCompAssociator : (inl_ _ _) ⋙ (inl_ _ _) ⋙ associator C D E ≅ inl_ _ _ :=
-  isoWhiskerLeft (inl_ _ _) (inlCompAssociator C D E) ≪≫ (Functor.inlCompSum' _ _)
+def inlCompInlCompAssociator : inl_ C D ⋙ inl_ (C ⊕ D) E ⋙ associator C D E ≅ inl_ C (D ⊕ E) :=
+  isoWhiskerLeft (inl_ _ _) (inlCompAssociator C D E) ≪≫ Functor.inlCompSum' _ _
 
 /-- Further characterizing the composition of the associator and the left inclusion. -/
 @[simps!]
-def inrCompInlCompAssociator : (inr_ _ _) ⋙ (inl_ _ _) ⋙ associator C D E ≅ inl_ _ _ ⋙ inr_ _ _ :=
-  isoWhiskerLeft (inr_ _ _) (inlCompAssociator C D E) ≪≫ (Functor.inrCompSum' _ _)
+def inrCompInlCompAssociator :
+    inr_ C D ⋙ inl_ (C ⊕ D) E ⋙ associator C D E ≅ inl_ D E ⋙ inr_ C (D ⊕ E) :=
+  isoWhiskerLeft (inr_ _ _) (inlCompAssociator C D E) ≪≫ Functor.inrCompSum' _ _
 
 /-- The inverse associator functor `C ⊕ (D ⊕ E) ⥤ (C ⊕ D) ⊕ E` for sums of categories.
 -/
 def inverseAssociator : C ⊕ (D ⊕ E) ⥤ (C ⊕ D) ⊕ E :=
-  inl_ _ _ ⋙ inl_ _ _ |>.sum' <| (inr_ _ _ ⋙ inl_ _ _).sum' <| inr_ _ _
+  inl_ C D ⋙ inl_ (C ⊕ D) E |>.sum' <| (inr_ C D ⋙ inl_ (C ⊕ D) E).sum' <| inr_ (C ⊕ D) E
 
 @[simp]
 theorem inverseAssociator_obj_inl (X) : (inverseAssociator C D E).obj (inl X) = inl (inl X) :=
@@ -113,27 +115,28 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : X ⟶ Y) :
 
 /-- Characterizing the composition of the inverse of the associator and the left inclusion. -/
 @[simps!]
-def inlCompInverseAssociator : (inl_ _ _) ⋙ inverseAssociator C D E ≅ inl_ _ _ ⋙ inl_ _ _ :=
+def inlCompInverseAssociator :
+    inl_ C (D ⊕ E) ⋙ inverseAssociator C D E ≅ inl_ C D ⋙ inl_ (C ⊕ D) E :=
   Functor.inlCompSum' _ _
 
 /-- Characterizing the composition of the inverse of the associator and the right inclusion. -/
 @[simps!]
 def inrCompInverseAssociator :
-    (inr_ _ _) ⋙ inverseAssociator C D E ≅ (inr_ _ _ ⋙ inl_ _ _).sum' <| inr_ _ _ :=
+    inr_ C (D ⊕ E) ⋙ inverseAssociator C D E ≅ (inr_ C D ⋙ inl_ (C ⊕ D) E).sum' <| inr_ (C ⊕ D) E :=
   Functor.inrCompSum' _ _
 
 /-- Further characterizing the composition of the inverse of the associator and the right
 inclusion. -/
 @[simps!]
 def inlCompInrCompInverseAssociator :
-    (inl_ _ _) ⋙ (inr_ _ _) ⋙ inverseAssociator C D E ≅ inr_ _ _ ⋙ inl_ _ _ :=
+    inl_ D E ⋙ inr_ C (D ⊕ E) ⋙ inverseAssociator C D E ≅ inr_ C D ⋙ inl_ (C ⊕ D) E :=
   isoWhiskerLeft (inl_ _ _) (inrCompInverseAssociator C D E) ≪≫ Functor.inlCompSum' _ _
 
 /-- Further characterizing the composition of the inverse of the associator and the right
 inclusion. -/
 @[simps!]
 def inrCompInrCompInverseAssociator :
-    (inr_ _ _) ⋙ (inr_ _ _) ⋙ inverseAssociator C D E ≅ inr_ _ _ :=
+    inr_ D E ⋙ inr_ C (D ⊕ E) ⋙ inverseAssociator C D E ≅ inr_ (C ⊕ D) E :=
   isoWhiskerLeft (inr_ _ _) (inrCompInverseAssociator C D E) ≪≫ Functor.inrCompSum' _ _
 
 /-- The equivalence of categories expressing associativity of sums of categories.
@@ -145,29 +148,29 @@ def associativity : (C ⊕ D) ⊕ E ≌ C ⊕ (D ⊕ E) where
   unitIso := Functor.sumIsoExt
     (Functor.sumIsoExt
       ((Functor.associator _ _ _).symm ≪≫ Functor.rightUnitor _ ≪≫
-        (isoWhiskerRight (inlCompInlCompAssociator _ _ _) (inverseAssociator _ _ _) ≪≫
-          inlCompInverseAssociator _ _ _).symm ≪≫ Functor.associator _ _ _)
+        (isoWhiskerRight (inlCompInlCompAssociator C D E) (inverseAssociator C D E) ≪≫
+          inlCompInverseAssociator C D E).symm ≪≫ Functor.associator _ _ _)
       ((Functor.associator _ _ _).symm ≪≫ Functor.rightUnitor _ ≪≫
-        (isoWhiskerRight (inrCompInlCompAssociator _ _ _) (inverseAssociator _ _ _) ≪≫
-          inlCompInrCompInverseAssociator _ _ _).symm ≪≫
+        (isoWhiskerRight (inrCompInlCompAssociator C D E) (inverseAssociator C D E) ≪≫
+          inlCompInrCompInverseAssociator C D E).symm ≪≫
         Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (Functor.associator _ _ _)))
     (Functor.rightUnitor _ ≪≫
-      (isoWhiskerRight (inrCompAssociator _ _ _) (inverseAssociator _ _ _) ≪≫
-        Functor.associator _ _ _ ≪≫ inrCompInrCompInverseAssociator _ _ _).symm ≪≫
+      (isoWhiskerRight (inrCompAssociator C D E) (inverseAssociator C D E) ≪≫
+        Functor.associator _ _ _ ≪≫ inrCompInrCompInverseAssociator C D E).symm ≪≫
       Functor.associator _ _ _)
   counitIso := Functor.sumIsoExt
     ((Functor.associator _ _ _).symm ≪≫
-      isoWhiskerRight (inlCompInverseAssociator _ _ _) (associator _ _ _) ≪≫
-      Functor.associator _ _ _ ≪≫ inlCompInlCompAssociator _ _ _ ≪≫ (Functor.rightUnitor _).symm)
+      isoWhiskerRight (inlCompInverseAssociator C D E) (associator C D E) ≪≫
+      Functor.associator _ _ _ ≪≫ inlCompInlCompAssociator C D E ≪≫ (Functor.rightUnitor _).symm)
     (Functor.sumIsoExt
       ((Functor.associator _ _ _).symm ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (Functor.associator _ _ _ ≪≫
-          inlCompInrCompInverseAssociator C D E) (associator _ _ _) ≪≫
-        Functor.associator _ _ _ ≪≫ inrCompInlCompAssociator _ _ _ ≪≫ (Functor.rightUnitor _).symm)
+          inlCompInrCompInverseAssociator C D E) (associator C D E) ≪≫
+        Functor.associator _ _ _ ≪≫ inrCompInlCompAssociator C D E ≪≫ (Functor.rightUnitor _).symm)
       ((Functor.associator _ _ _).symm ≪≫ (Functor.associator _ _ _).symm ≪≫
         isoWhiskerRight (Functor.associator _ _ _ ≪≫
-          inrCompInrCompInverseAssociator _ _ _) (associator _ _ _) ≪≫
-        inrCompAssociator _ _ _ ≪≫ isoWhiskerLeft _ (Functor.rightUnitor _).symm))
+          inrCompInrCompInverseAssociator C D E) (associator C D E) ≪≫
+        inrCompAssociator C D E ≪≫ isoWhiskerLeft _ (Functor.rightUnitor _).symm))
   functor_unitIso_comp x := match x with
     | inl (inl c) => by simp [inlCompInlCompAssociator, inlCompInverseAssociator]
     | inl (inr d) => by simp [inrCompInlCompAssociator, inlCompInrCompInverseAssociator]

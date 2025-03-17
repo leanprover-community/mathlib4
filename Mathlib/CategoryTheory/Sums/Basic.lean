@@ -88,13 +88,13 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 @[simps! obj]
 def inl_ : C ⥤ C ⊕ D where
   obj X := inl X
-  map {_ _} f := ULift.up f
+  map f := ULift.up f
 
 /-- `inr_` is the functor `X ↦ inr X`. -/
 @[simps! obj]
 def inr_ : D ⥤ C ⊕ D where
   obj X := inr X
-  map {_ _} f := ULift.up f
+  map f := ULift.up f
 
 variable {C D}
 
@@ -113,14 +113,14 @@ def homInduction {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
 lemma homInduction_left {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
     (inr : ∀ x y : D, (f : x ⟶ y) → P ((inr_ C D).map f))
-    {x y : C} (f : x ⟶ y) : homInduction (P := P) inl inr ((inl_ C D).map f) = inl x y f :=
+    {x y : C} (f : x ⟶ y) : homInduction inl inr ((inl_ C D).map f) = inl x y f :=
   rfl
 
 @[simp]
 lemma homInduction_right {P : {x y : C ⊕ D} → (x ⟶ y) → Sort*}
     (inl : ∀ x y : C, (f : x ⟶ y) → P ((inl_ C D).map f))
     (inr : ∀ x y : D, (f : x ⟶ y) → P ((inr_ C D).map f))
-    {x y : D} (f : x ⟶ y) : homInduction (P := P) inl inr ((inr_ C D).map f) = inr x y f :=
+    {x y : D} (f : x ⟶ y) : homInduction inl inr ((inr_ C D).map f) = inr x y f :=
   rfl
 
 end Sum
@@ -140,19 +140,11 @@ def sum' : A ⊕ B ⥤ C where
   match X with
   | inl X => F.obj X
   | inr X => G.obj X
-  map {X Y} f :=
-    Sum.homInduction
-      (inl := fun _ _ f ↦ F.map f)
-      (inr := fun _ _ g ↦ G.map g)
-      f
+  map {X Y} f := Sum.homInduction (inl := fun _ _ f ↦ F.map f) (inr := fun _ _ g ↦ G.map g) f
   map_comp {x y z} f g := by
     cases f <;> cases g <;> simp [← Functor.map_comp]
   map_id x := by
-    cases x
-    · simp only [← map_id]
-      rfl
-    · simp only [← map_id]
-      rfl
+    cases x <;> (simp only [← map_id]; rfl)
 
 /-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
 @[simps!]
@@ -208,8 +200,8 @@ theorem sum_map_inr (F : A ⥤ B) (G : C ⥤ D) {c c' : C} (f : c ⟶ c') :
 section
 
 variable {F G: A ⊕ B ⥤ C}
-  (e₁ : Sum.inl_ _ _ ⋙ F ≅ Sum.inl_ _ _ ⋙ G)
-  (e₂ : Sum.inr_ _ _ ⋙ F ≅ Sum.inr_ _ _ ⋙ G)
+  (e₁ : Sum.inl_ A B ⋙ F ≅ Sum.inl_ A B ⋙ G)
+  (e₂ : Sum.inr_ A B ⋙ F ≅ Sum.inr_ A B ⋙ G)
 
 /-- A functor out of a sum is uniquely characterized by its precompositions with `inl_` and `inr_`.
 -/
@@ -239,11 +231,13 @@ end
 
 section
 
-variable (F : A ⊕ B ⥤ C) (a : A) (b : B)
+variable (F : A ⊕ B ⥤ C)
 
 /-- Any functor out of a sum is the sum of its precomposition with the inclusions. -/
-def isoSum : F ≅ (Sum.inl_ _ _ ⋙ F).sum' (Sum.inr_ _ _ ⋙ F) :=
+def isoSum : F ≅ (Sum.inl_ A B ⋙ F).sum' (Sum.inr_ A B ⋙ F) :=
     sumIsoExt (Iso.refl _) (Iso.refl _)
+
+variable (a : A) (b : B)
 
 @[simp]
 lemma isoSum_hom_app_inl : (isoSum F).hom.app (inl a) = 𝟙 (F.obj (inl a)) := rfl
@@ -267,8 +261,8 @@ namespace NatTrans
 def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H ⟶ G.sum I where
   app X :=
     match X with
-    | inl X => (Sum.inl_ _ _).map (α.app X)
-    | inr X => (Sum.inr_ _ _).map (β.app X)
+    | inl X => (Sum.inl_ B D).map (α.app X)
+    | inr X => (Sum.inr_ B D).map (β.app X)
   naturality X Y f :=
     by cases f <;> simp [← Functor.map_comp]
 
@@ -289,7 +283,7 @@ namespace Sum
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
 /-- The functor exchanging two direct summand categories. -/
-def swap : C ⊕ D ⥤ D ⊕ C := (inr_ _ _).sum' (inl_ _ _)
+def swap : C ⊕ D ⥤ D ⊕ C := (inr_ D C).sum' (inl_ D C)
 
 @[simp]
 theorem swap_obj_inl (X : C) : (swap C D).obj (inl X) = inr X :=
@@ -309,11 +303,11 @@ theorem swap_map_inr {X Y : D} {f : inr X ⟶ inr Y} : (swap C D).map f = f :=
 
 /-- Precomposing `swap` with the left inclusion gives the right inclusion. -/
 @[simps! hom_app inv_app]
-def swapCompInl : inl_ _ _ ⋙ swap C D ≅ inr_ _ _ := (Functor.inlCompSum' (inr_ _ _) (inl_ _ _)).symm
+def swapCompInl : inl_ C D ⋙ swap C D ≅ inr_ D C := (Functor.inlCompSum' (inr_ _ _) (inl_ _ _)).symm
 
 /-- Precomposing `swap` with the rightt inclusion gives the leftt inclusion. -/
 @[simps! hom_app inv_app]
-def swapCompInr : inr_ _ _ ⋙ swap C D ≅ inl_ _ _ := (Functor.inrCompSum' (inr_ _ _) (inl_ _ _)).symm
+def swapCompInr : inr_ C D ⋙ swap C D ≅ inl_ D C := (Functor.inrCompSum' (inr_ _ _) (inl_ _ _)).symm
 
 namespace Swap
 
