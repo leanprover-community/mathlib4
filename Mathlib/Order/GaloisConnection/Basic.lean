@@ -3,8 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Logic.Equiv.Set
-import Mathlib.Order.Hom.Basic
+import Mathlib.Order.Hom.Set
 import Mathlib.Order.Bounds.Image
 import Mathlib.Order.GaloisConnection.Defs
 import Mathlib.Order.CompleteLattice.Basic
