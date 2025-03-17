@@ -92,8 +92,8 @@ lemma epi_iff_locallySurjective_on_compHaus : Epi f ↔
 attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 lemma epi_iff_surjective_on_stonean : Epi f ↔
     ∀ (S : Stonean), Function.Surjective (f.val.app (op S.compHaus)) :=
-  have : HasLimitsOfSize.{u, u + 1} (ModuleCat R)
-    := hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
+  have : HasLimitsOfSize.{u, u + 1} (ModuleCat R) :=
+    hasLimitsOfSizeShrink.{u, u + 1, u + 1, u + 1} _
   Condensed.epi_iff_surjective_on_stonean _ f
 
 end CondensedMod

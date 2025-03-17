@@ -462,9 +462,6 @@ theorem lt_nfp_iff {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
   rw [← iSup_iterate_eq_nfp]
   exact Ordinal.lt_iSup_iff
 
-@[deprecated lt_nfp_iff (since := "2024-02-16")]
-alias lt_nfp := lt_nfp_iff
-
 theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
   rw [← iSup_iterate_eq_nfp]
   exact Ordinal.iSup_le_iff
