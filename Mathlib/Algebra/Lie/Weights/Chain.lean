@@ -373,7 +373,6 @@ end
 section
 
 open LieAlgebra
-set_option maxHeartbeats 400000
 
 variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
@@ -413,11 +412,8 @@ lemma root_space_ad_is_nilpotent
       apply Finset.le_sup (mem_toFinset.2 hχ₂)
     exact hn hv n₀ this
 
-  obtain ⟨n0, hn0⟩ := exists_uniform_n₀
-  let A := (toEnd K L M x) ^ n0
-  have r : ⨆ χ ∈ s, genWeightSpace M χ = ⊤ := by
-    simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ,
-    iUnion_true, iSup_pos, s]
+  obtain ⟨n₀, hn₀⟩ := exists_uniform_n₀
+  let A := (toEnd K L M x) ^ n₀
 
   have rrr : ∀ χ1 ∈ s, genWeightSpace M χ1 ≤ Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
     intro χ1
@@ -465,7 +461,7 @@ lemma root_space_ad_is_nilpotent
     have ttt : ε ∈ s := by
       simp_all only [ne_eq, gt_iff_lt, nsmul_eq_mul, Pi.natCast_def, mem_univ, ge_iff_le, Subtype.forall, forall_const,
         iSup_pos, iUnion_true, LieSubmodule.top_toSubmodule, top_le_iff, s]
-    have zzz := (hn0 ε) (ttt) n
+    have zzz := (hn₀ ε) (ttt) n
     exact zzz
 
   have ttt2 : A = 0 := by
@@ -479,7 +475,7 @@ lemma root_space_ad_is_nilpotent
     simp_all
     obtain ⟨d1, d2⟩ := d
     exact ttt1 e a d2
-  use n0
+  use n₀
 
 end
 
