@@ -62,12 +62,11 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
   /-- A `ConditionallyCompleteLinearOrder` is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
+  decidableLE : DecidableLE α
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (· < · : α → α → Prop) :=
-    @decidableLTOfDecidableLE _ _ decidableLE
+  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
   /-- If a set is not bounded above, its supremum is by convention `sSup ∅`. -/
   csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
   /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/
