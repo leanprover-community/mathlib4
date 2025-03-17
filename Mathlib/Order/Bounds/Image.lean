@@ -152,7 +152,7 @@ theorem image_lowerBounds_subset_lowerBounds_image : f '' lowerBounds s ⊆ lowe
 lemma lowerBounds_image_eq_ofSubset {s₁ s₂ : Set α}
     (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
     lowerBounds (f '' s₁) = lowerBounds (f '' s₂) := by
-  apply lowerBounds_eq_ofSubset (image_mono hs₁)
+  apply lowerBounds_congr_of_subset (image_mono hs₁)
   intro a ⟨c, hc⟩
   obtain ⟨d,hd⟩ := hs₂ c hc.1
   exact ⟨f d, ⟨(mem_image _ _ _).mpr ⟨d,⟨hd.1,rfl⟩⟩, le_of_le_of_eq (Hf hd.2) hc.2⟩⟩
