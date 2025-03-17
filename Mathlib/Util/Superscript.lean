@@ -246,7 +246,8 @@ private def check_args (e : Expr) (f : Expr → DelabM Unit) :
     DelabM Unit := do
   let args := e.getAppArgs
   let kinds ← getParamKinds e.getAppFn args
-  guard <| kinds.size == args.size
+  -- The function may be partially-applied. We only need to check the args we have.
+  guard <| args.size <= kinds.size
   args.zipIdx.zip kinds |>.filter
     (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
     fun ((x, i), _) ↦ SubExpr.withNaryArg i <| f x

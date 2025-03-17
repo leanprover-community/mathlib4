@@ -108,9 +108,9 @@ private def delabCheckSuperscript : Delab := withOverApp 2 do
   `(#$sup:superscript)
 
 /-- `α` can not be subscripted or superscripted. -/
-private def α {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
+private def α {γ : Type} {δ : Type} : γ → δ → δ := fun _ ↦ id
 /-- `β` can be both subscripted and superscripted. -/
-private def β {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
+private def β {γ : Type} {δ : Type} : γ → δ → δ := fun _ ↦ id
 
 variable (n : String)
 
@@ -118,6 +118,12 @@ variable (n : String)
 #guard_msgs in #check #₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀
 /-- info: #ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎ : Unit -/
 #guard_msgs in #check #ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎
+/-- info: #ᵦ : Unit -/
+#guard_msgs in #check #ᵦ
+/-- info: #ᵦ ₁ : Unit -/
+#guard_msgs in #check #ᵦ ₁
+/-- info: #ᵦ ᵦ ᵦ ᵦ : Unit -/
+#guard_msgs in #check #ᵦ ᵦ ᵦ ᵦ
 
 /-- info: check_subscript (α 0 0) : Unit -/
 #guard_msgs in #check check_subscript (α 0 0)
@@ -126,6 +132,14 @@ variable (n : String)
 #guard_msgs in #check #¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰
 /-- info: #ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾ : Unit -/
 #guard_msgs in #check #ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾
+
+-- partially-applied functions
+/-- info: #ᵝ : Unit -/
+#guard_msgs in #check #ᵝ
+/-- info: #ᵝ ¹ : Unit -/
+#guard_msgs in #check #ᵝ ¹
+/-- info: #ᵝ ᵝ ᵝ ᵝ : Unit -/
+#guard_msgs in #check #ᵝ ᵝ ᵝ ᵝ
 
 /-- info: check_superscript (α 0 0) : Unit -/
 #guard_msgs in #check check_superscript (α 0 0)
