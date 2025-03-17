@@ -202,20 +202,16 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
     LocallyConvexSpace R R where
   convex_basis x := by
     obtain hl | hl := isBot_or_exists_lt x
-    · let _ : Bot R := ⟨x⟩
-      let _ : OrderBot R := ⟨hl⟩
-      replace hu : x = ⊥ := rfl
-      rw [hu]
+    · refine hl.rec ?_ _
+      intro
       refine nhds_bot_basis.to_hasBasis' ?_ ?_
       · intros
         refine ⟨Set.Iio _, ?_, subset_refl _⟩
         simp_all [Iio_mem_nhds, convex_Iio]
       · simp +contextual
     obtain hu | hu := isTop_or_exists_gt x
-    · let _ : Top R := ⟨x⟩
-      let _ : OrderTop R := ⟨hu⟩
-      replace hu : x = ⊤ := rfl
-      rw [hu]
+    · refine hu.rec ?_ _
+      intro
       refine nhds_top_basis.to_hasBasis' ?_ ?_
       · intros
         refine ⟨Set.Ioi _, ?_, subset_refl _⟩
