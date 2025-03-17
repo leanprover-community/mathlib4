@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences
@@ -33,9 +34,6 @@ structure Real where ofCauchy ::
 
 @[inherit_doc]
 notation "ℝ" => Real
-
--- Porting note: unknown attribute
--- attribute [pp_using_anonymous_constructor] Real
 
 namespace CauSeq.Completion
 

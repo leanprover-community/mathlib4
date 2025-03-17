@@ -93,7 +93,8 @@ instance (priority := 100) hasCountableColimits_of_hasColimits [HasColimits C] :
   out := inferInstance
 
 universe v in
-instance [Category.{v} J] [CountableCategory J] [HasCountableColimits C] : HasColimitsOfShape J C :=
+instance [HasCountableColimits C] (J : Type*) [Category.{v} J] [CountableCategory J] :
+    HasColimitsOfShape J C :=
   have : HasColimitsOfShape (HomAsType J) C := HasCountableColimits.out (HomAsType J)
   hasColimitsOfShape_of_equivalence (homAsTypeEquiv J)
 
@@ -107,7 +108,7 @@ instance (priority := 100) hasCountableCoproducts_of_hasCoproducts [HasCoproduct
     have : HasCoproducts.{0} C := has_smallest_coproducts_of_hasCoproducts
     inferInstance
 
-instance [HasCountableCoproducts C] : HasCoproductsOfShape J C :=
+instance [HasCountableCoproducts C] (J : Type*) [Countable J] : HasCoproductsOfShape J C :=
   have : Countable (Shrink.{0} J) := Countable.of_equiv _ (equivShrink.{0} J)
   have : HasColimitsOfShape (Discrete (Shrink.{0} J)) C := HasCountableCoproducts.out _
   hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{0} J)).symm
