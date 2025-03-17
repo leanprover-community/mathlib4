@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 
 import Batteries.Data.String.Matcher
 import Mathlib.Data.Nat.Notation
+import Mathlib.Tactic.Linter.UnicodeLinter
 
 /-!
 ## Text-based linters
@@ -50,6 +51,8 @@ inductive StyleError where
   | windowsLineEnding
   /-- A line contains trailing whitespace. -/
   | trailingWhitespace
+  /-- A unicode character was used that isn't recommended -/
+  | unwantedUnicode (c : Char)
   /-- A line contains a space before a semicolon -/
   | semicolon
 deriving BEq
@@ -73,6 +76,9 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
+  | StyleError.unwantedUnicode c =>
+      s!"unicode character '{c}' ({UnicodeLinter.printCodepointHex c}) is not recommended. \
+        Consider adding it to the whitelist."
   | semicolon => "This line contains a space before a semicolon"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
@@ -82,6 +88,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
+  | StyleError.unwantedUnicode _ => "ERR_UNICODE"
   | StyleError.semicolon => "ERR_SEM"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
@@ -149,7 +156,7 @@ def outputMessage (errctx : ErrorContext) (style : ErrorFormat) : String :=
 def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
   let parts := line.split (· == ' ')
   match parts with
-    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: _errorMessage =>
+    | filename :: ":" :: "line" :: lineNumber :: ":" :: errorCode :: ":" :: errorMessage =>
       -- Turn the filename into a path. In general, this is ambiguous if we don't know if we're
       -- dealing with e.g. Windows or POSIX paths. In our setting, this is fine, since no path
       -- component contains any path separator.
@@ -163,6 +170,10 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_SEM" => some (StyleError.semicolon)
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
+        | "ERR_UNICODE" => do
+          let str ← errorMessage[2]?
+          let c ← str.get? ⟨1⟩
+          StyleError.unwantedUnicode c
         | _ => none
       match String.toNat? lineNumber with
       | some n => err.map fun e ↦ (ErrorContext.mk e n path)
@@ -240,6 +251,66 @@ def isImportsOnlyFile (lines : Array String) : Bool :=
   lines.all (fun line ↦ line.startsWith "import " || line == "" || line.startsWith "-- ")
 
 end
+
+namespace UnicodeLinter
+
+/-- Creates `StyleError`s for
+bad usage of (emoji/text)-variant-selectors.
+Note: if `pos` is not a valid position, the result is unspecified. -/
+def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
+    (err : Array StyleError := #[]) : Array StyleError :=
+  if h : pos < s.endPos then
+    have := Nat.sub_lt_sub_left h (String.lt_next s pos)
+    let posₙ := s.next pos -- `pos` is valid by assumption. `pos` is not `endPos` by check above.
+    -- `posₙ` is valid, might be `endPos`.
+    let cₙ := s.get? posₙ |>.getD '\uFFFD' -- �
+    if ! isAllowedCharacter c then
+      -- bad: character not allowed
+      let errₙ := err.push (.unwantedUnicode c)
+      findBadUnicodeAux s posₙ cₙ errₙ
+    else
+      -- okay
+      findBadUnicodeAux s posₙ cₙ err
+  else
+    err
+termination_by s.endPos.1 - pos.1
+
+@[inline, inherit_doc findBadUnicodeAux]
+def findBadUnicode (s : String) : Array StyleError :=
+  if s == "" then #[] else
+  let c := s.get 0
+  -- edge case: variant-selector as first char of the line
+  findBadUnicodeAux s 0 c
+
+end UnicodeLinter
+
+/-- Lint a collection of input strings if one of them contains unwanted unicode. -/
+def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut changed : Array String := #[]
+  let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
+  let mut lineNumber := 1
+  for line in lines do
+    let err := UnicodeLinter.findBadUnicode line
+
+    -- try to auto-fix the style error
+    let mut newLine := line
+    for e in err.reverse do -- reversing is a cheap fix to prevent shifting indices
+      match e with
+      | .unwantedUnicode c =>
+        match c with
+        | '\u00a0' =>
+          -- replace non-breaking space with normal whitespace
+          newLine := newLine.replace "\u00a0" " "
+        | _ =>
+          -- no automatic fixes available
+          pure ()
+      | _ =>
+        unreachable!
+
+    changed := changed.push newLine
+    errors := errors.append (err.map (fun e => (e, lineNumber)))
+    lineNumber := lineNumber + 1
+  return (errors, changed)
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
