@@ -163,8 +163,8 @@ theorem eval₂_pUnitAlgEquiv {f : MvPolynomial PUnit R} {φ : R →+* S} {a : S
     ((MvPolynomial.pUnitAlgEquiv R) f : Polynomial R).eval₂ φ a = f.eval₂ φ (fun _ ↦ a) := by
   simp only [MvPolynomial.pUnitAlgEquiv_apply]
   induction f using MvPolynomial.induction_on' with
-  | h1 d r => simp
-  | h2 f g hf hg => simp [hf, hg]
+  | monomial d r => simp
+  | add f g hf hg => simp [hf, hg]
 
 end Eval
 

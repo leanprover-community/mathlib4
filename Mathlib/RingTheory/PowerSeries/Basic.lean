@@ -874,13 +874,13 @@ variable (φ ψ)
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
   induction f using MvPolynomial.induction_on' with
-  | h1 d r =>
+  | monomial d r =>
     --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
     --by any element.
     have : single () (d ()) = d := by ext; simp
     simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
       Polynomial.coe_monomial, PowerSeries.monomial, this]
-  | h2 f g hf hg => simp [hf, hg]
+  | add f g hf hg => simp [hf, hg]
 
 theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
     ((f.toPowerSeries) : MvPowerSeries PUnit R)
