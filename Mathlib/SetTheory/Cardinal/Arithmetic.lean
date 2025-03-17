@@ -23,7 +23,7 @@ ordinal numbers. This is done within this file.
 cardinal arithmetic (for infinite cardinals)
 -/
 
-assert_not_exists Module Finsupp
+assert_not_exists Module Finsupp Ordinal.log
 
 noncomputable section
 
