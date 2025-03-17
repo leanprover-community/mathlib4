@@ -209,16 +209,13 @@ theorem IsWF.mono (h : IsWF t) (st : s ⊆ t) : IsWF s := h.subset st
 theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFoundedLT α := by
   simp [IsWF, wellFoundedOn_iff, isWellFounded_iff]
 
-theorem _root_.WellFoundedLT.isWF [h : WellFoundedLT α] (s : Set α) : s.IsWF :=
+theorem IsWF.of_wellFoundedLT [h : WellFoundedLT α] (s : Set α) : s.IsWF :=
   (Set.isWF_univ_iff.2 h).mono s.subset_univ
 
-@[deprecated WellFoundedLT.isWF (since := "2025-01-16")]
+@[deprecated IsWF.of_wellFoundedLT (since := "2025-01-16")]
 theorem _root_.WellFounded.isWF (h : WellFounded ((· < ·) : α → α → Prop)) (s : Set α) : s.IsWF :=
   have : WellFoundedLT α := ⟨h⟩
-  WellFoundedLT.isWF s
-
-lemma IsWF.of_wellFoundedLT [WellFoundedLT α] : IsWF s :=
-  (WellFoundedLT.isWF _).mono (subset_univ _)
+  .of_wellFoundedLT s
 
 end LT
 
