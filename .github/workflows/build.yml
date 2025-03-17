@@ -24,7 +24,7 @@ name: continuous integration
 env:
   # Disable Lake's automatic fetching of cloud builds.
   # Lake's cache is currently incompatible with Mathlib's `lake exe cache`.
-  # This is because Mathlib's Cache assumes all build aritfacts present in the build directory
+  # This is because Mathlib's Cache assumes all build artifacts present in the build directory
   # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
