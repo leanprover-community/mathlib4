@@ -87,7 +87,7 @@ theorem pUnitAlgEquiv_monomial {d : PUnit →₀ ℕ} {r : R} :
       = Polynomial.monomial (d ()) r := by
   simp [Polynomial.C_mul_X_pow_eq_monomial]
 
-theorem monomial_pUnitAlgEquiv_symm {d : PUnit →₀ ℕ} {r : R} :
+theorem pUnitAlgEquiv_symm_monomial {d : PUnit →₀ ℕ} {r : R} :
     (MvPolynomial.pUnitAlgEquiv R).symm (Polynomial.monomial (d ()) r)
       = MvPolynomial.monomial d r := by
   simp [MvPolynomial.monomial_eq]
