@@ -408,10 +408,10 @@ lemma root_space_ad_is_nilpotent
   let A := (toEnd K L M x) ^ n₀
 
   have s₁ : ∀ χ₂ ∈ s, genWeightSpace M χ₂ ≤
-      Submodule.span K (⋃ i ∈ s, (genWeightSpace M i).carrier) := by
+      Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
     intro χ₂ a m hm
     have h₁ : Submodule.span K (genWeightSpace M χ₂).carrier ≤
-        Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+        Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
       apply Submodule.span_mono
       exact fun _ hx => Set.mem_biUnion a hx
     have h₂ : genWeightSpace M χ₂ ≤ Submodule.span K (genWeightSpace M χ₂).carrier := by
@@ -421,20 +421,17 @@ lemma root_space_ad_is_nilpotent
       exact fun p => p hm
     exact h₁ (h₂ hm)
 
-  have s₂ : ⨆ χ ∈ s, genWeightSpace M χ ≤
-      Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) := by
+  have s₂ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤
+      Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
     apply sSup_le
-    intro x hf
-    simp only [mem_univ, iUnion_true, mem_range, s] at s₁
-    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at hf
-    simp only [mem_univ, iSup_pos, iUnion_true, s]
-    obtain ⟨w₁, h₁⟩ := hf
-    subst h₁
-    exact s₁ w₁ trivial
+    intro n hn
+    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at s₁ hn ⊢
+    obtain ⟨χ₂, hχ₂⟩ := hn
+    subst hχ₂
+    exact s₁ χ₂ trivial
 
-  have s₃ : Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) = ⊤ := by
-    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂
-    simp only [mem_univ, iUnion_true, s]
+  have s₃ : Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) = ⊤ := by
+    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂ ⊢
     rw [iSup_genWeightSpace_eq_top' K H M] at s₂
     apply top_le_iff.1 s₂
 
