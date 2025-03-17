@@ -146,8 +146,10 @@ private lemma WithTop.map_natCast_eq_zero {n : WithTop ℕ}
 ## Vanishing and order
 -/
 
-/-- If `f` is meromorphic in normal form at `z₀`, then `f` has order zero iff it
-does not vanish at `z₀`. -/
+/-- If `f` is meromorphic in normal form at `z₀`, then `f` has order zero iff it does not vanish at
+`z₀`.
+
+See `AnalyticAt.order_eq_zero_iff` for an analogous statement about analytic functions. -/
 theorem MeromorphicNFAt.order_eq_zero_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicNFAt f x) :
     hf.meromorphicAt.order = 0 ↔ f x ≠ 0 := by
   constructor
