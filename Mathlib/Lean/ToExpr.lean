@@ -26,7 +26,7 @@ private def List.toExprAux {α} [ToExpr α] (nilFn : Expr)
 /-- Produces the `Expr` corresponding to the finset associated to a list.
 
 `List.toFinsetExpr l` is the `Expr` representing `l.toFinset`. -/
-def List.toFinsetExpr {α : Type u} [ToLevel.{u}] [ToExpr α] (l : List α) : MetaM Expr := do
+def List.toFinsetExpr {α : Type u} [ToExpr α] (l : List α) : MetaM Expr := do
   let t₁ := toTypeExpr α
   let t₂ ← mkAppM ``Finset #[t₁]
   let nil  ← mkAppOptM ``EmptyCollection.emptyCollection #[t₂, none]
@@ -37,7 +37,7 @@ def List.toFinsetExpr {α : Type u} [ToLevel.{u}] [ToExpr α] (l : List α) : Me
 /-- Produces the `Expr` corresponding to the finset associated to a list.
 
 `l.toMultisetExpr` is an `Expr` representing `Multiset.ofList l`. -/
-def List.toMultisetExpr {α : Type u} [ToLevel.{u}] [ToExpr α] (l : List α) : MetaM Expr := do
+def List.toMultisetExpr {α : Type u} [ToExpr α] (l : List α) : MetaM Expr := do
   let t₁ := toTypeExpr α
   let t₂ ← mkAppM ``Multiset #[t₁]
   let nil  ← mkAppOptM ``EmptyCollection.emptyCollection #[t₂, none]
@@ -48,7 +48,7 @@ def List.toMultisetExpr {α : Type u} [ToLevel.{u}] [ToExpr α] (l : List α) : 
 /-- Produces the `Expr` corresponding to the finset associated to a list.
 
 `l.toSetExpr` is the `Expr` representing `{x : α | x ∈ l}`. -/
-def List.toSetExpr {α : Type u} [ToLevel.{u}] [ToExpr α] (l : List α) : MetaM Expr := do
+def List.toSetExpr {α : Type u} [ToExpr α] (l : List α) : MetaM Expr := do
   let t₁ := toTypeExpr α
   let t₂ ← mkAppM ``Set #[t₁]
   let nil  ← mkAppOptM ``EmptyCollection.emptyCollection #[t₂, none]
