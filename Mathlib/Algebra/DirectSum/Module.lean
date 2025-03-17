@@ -248,48 +248,34 @@ lemma toAddMonoidHom_lmap :
 lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
   rfl
 
-end map
-
 section
 
-variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommGroup (α i)]
+variable {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommGroup (α i)]
 variable [∀ i, AddCommGroup (β i)] (f : ∀(i : ι), α i →+ β i)
 
-lemma mem_map_ker_iff (x : ⨁ i, α i) : x ∈ (map f).ker ↔ ∀ i, x i ∈ (f i).ker := by
-  refine ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
-  · rw [AddMonoidHom.mem_ker, ← map_apply, h, zero_apply]
-  · ext i
-    exact h i
+lemma ker_map : (map f).ker =
+    (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom α) := by
+  ext
+  simp [AddSubgroup.mem_pi, DirectSum.ext_iff]
 
-lemma of_mem_map_ker_iff [DecidableEq ι] (i : ι) (x : α i) :
-    (of α i x) ∈ (map f).ker ↔ x ∈ (f i).ker := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · simp only [AddMonoidHom.mem_ker, map_of] at h
-    exact DFinsupp.single_eq_zero.mp h
-  · simp [AddMonoidHom.mem_ker.mp h]
-
-lemma mem_map_range_iff (y : ⨁ i, β i) [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] :
-    y ∈ (map f).range ↔ ∀ i, y i ∈ (f i).range := by
-  refine ⟨fun ⟨x, hx⟩ i ↦ ?_, fun h ↦ ?_⟩
-  · simp [← hx]
-  · use DirectSum.mk α y.support (fun i ↦ Classical.choose (h i))
+lemma range_map [DecidableEq ι] [(i : ι) → (x : β i) → Decidable (x ≠ 0)] : (map f).range =
+    (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) := by
+  ext x
+  simp only [AddSubgroup.mem_comap, AddSubgroup.mem_pi, DirectSum.ext_iff]
+  refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
+  · simp [← hy]
+  · use DirectSum.mk α x.support (fun i ↦ Classical.choose (h i trivial))
     ext i
     simp only [Finset.coe_sort_coe, map_apply]
-    by_cases mem : i ∈ y.support
-    · rw [← Classical.choose_spec (h i)]
-      exact congrArg (f i) (mk_apply_of_mem mem)
+    by_cases mem : i ∈ x.support
+    · convert Classical.choose_spec (h i trivial)
+      exact mk_apply_of_mem mem
     · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
       exact congrArg (f i) (mk_apply_of_not_mem mem)
 
-lemma of_mem_map_range_iff (i : ι) (y : β i) [DecidableEq ι] :
-    (of β i y) ∈ (map f).range ↔ y ∈ (f i).range := by
-  refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
-  · use x i
-    rw [← of_eq_same i y, ← hx, map_apply]
-  · use of α i x
-    simp [hx]
-
 end
+
+end map
 
 section CongrLeft
 
@@ -316,7 +302,7 @@ def sigmaLcurry : (⨁ i : Σ_, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
-theorem sigmaLcurry_apply (f : ⨁ i : Σ_, _, δ i.1 i.2) (i : ι) (j : α i) :
+theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :
     sigmaLcurry R f i j = f ⟨i, j⟩ :=
   sigmaCurry_apply f i j
 
@@ -417,7 +403,7 @@ alias IsInternal.submodule_independent := IsInternal.submodule_iSupIndep
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
 noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M where
+    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σ i, α i) R M where
   repr :=
     ((LinearEquiv.ofBijective (DirectSum.coeLinearMap A) h).symm ≪≫ₗ
         DFinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
@@ -425,7 +411,7 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
 
 @[simp]
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i ↦ ↑(v a.1 a.2) := by
+    (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σ i, α i ↦ ↑(v a.1 a.2) := by
   funext a
   -- Porting note: was
   -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
@@ -437,8 +423,9 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
   -- convert DFinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
   simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
     LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_apply,
-    sigmaFinsuppEquivDFinsupp_single, LinearEquiv.ofBijective_apply,
-    sigmaFinsuppAddEquivDFinsupp_apply]
+    AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
+    LinearEquiv.ofBijective_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
   -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
   -- appears in the goal, but the lemma is expecting
@@ -451,7 +438,7 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
   simp only [Submodule.coe_subtype]
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp
+    (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :
