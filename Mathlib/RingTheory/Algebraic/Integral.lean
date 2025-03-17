@@ -426,11 +426,12 @@ variable [NoZeroDivisors S] (S' : Type v) [CommRing S'] [Algebra R S'] [Algebra 
   [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S']
 
 theorem lift_rank_of_isFractionRing :
-    Cardinal.lift.{u} (Module.rank R' S') = Cardinal.lift.{v} (Module.rank R S) :=
-  IsLocalizedModule.lift_rank_eq _ R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl
+    Cardinal.lift.{u} (Module.rank R' S') = Cardinal.lift.{v} (Module.rank R S) := by
+  rw [IsLocalization.rank_eq R' R⁰ le_rfl,
+    IsLocalizedModule.lift_rank_eq R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl]
 
-theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S :=
-  IsLocalizedModule.finrank_eq _ R⁰ (IsScalarTower.toAlgHom R S S').toLinearMap le_rfl
+theorem finrank_of_isFractionRing : Module.finrank R' S' = Module.finrank R S := by
+  simpa using congr_arg Cardinal.toNat (lift_rank_of_isFractionRing ..)
 
 theorem rank_of_isFractionRing (S' : Type u) [CommRing S'] [Algebra R S'] [Algebra S S']
     [Module R' S'] [IsScalarTower R R' S'] [IsScalarTower R S S'] [IsFractionRing S S'] :
@@ -524,7 +525,7 @@ namespace Algebra.IsAlgebraic
 @[stacks 0G1M] theorem rank_fractionRing_polynomial :
     Module.rank (FractionRing R[X]) (FractionRing S[X]) = Module.rank R S :=
   have := (FaithfulSMul.algebraMap_injective R S).isDomain
-  IsPushout.rank_eq ..
+  ((isPushout_iff ..).mp inferInstance).rank_eq
 
 theorem rank_polynomial : Module.rank R[X] S[X] = Module.rank R S := by
   conv_rhs => rw [← rank_fractionRing_polynomial, rank_fractionRing]
@@ -534,8 +535,8 @@ open Cardinal in
     Module.rank (FractionRing (MvPolynomial σ R)) (FractionRing (MvPolynomial σ S)) =
     lift.{u} (Module.rank R S) := by
   have := (FaithfulSMul.algebraMap_injective R S).isDomain
-  have := IsPushout.lift_rank_eq
-    R (FractionRing (MvPolynomial σ R)) S (FractionRing (MvPolynomial σ S))
+  have := isPushout_iff R (FractionRing (MvPolynomial σ R)) S (FractionRing (MvPolynomial σ S))
+    |>.mp inferInstance |>.lift_rank_eq
   rwa [lift_id', lift_umax] at this
 
 theorem rank_mvPolynomial (σ : Type u) :
