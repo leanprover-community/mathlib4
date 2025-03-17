@@ -608,7 +608,7 @@ In particular, `n ↦ ∑ i ∈ range n, Y i` is a martingale.
 Then the sum `∑ i ∈ range n, Y i` is sub-Gaussian with parameter `∑ i ∈ range n, cY i`. -/
 lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : Adapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ)
-    (h_subG : ∀ i, 1 ≤ i → HasCondSubgaussianMGF (ℱ (i - 1)) (ℱ.le (i - 1)) (Y i) (cY i) μ)
+    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y (i + 1)) (cY (i + 1)) μ)
     (n : ℕ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ Finset.range n, Y i ω) (∑ i ∈ Finset.range n, cY i) μ := by
   induction n with
@@ -618,7 +618,7 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
     | zero => simp [h0]
     | succ n =>
       simp_rw [Finset.sum_range_succ _ (n + 1)]
-      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG (n + 1) (by omega))
+      refine HasSubgaussianMGF_add_of_HasCondSubgaussianMGF (ℱ.le n) ?_ (h_subG n)
       refine HasSubgaussianMGF.trim (ℱ.le n) ?_ hn
       refine Finset.measurable_sum (Finset.range (n + 1)) fun m hm ↦
         ((h_adapted m).mono (ℱ.mono ?_)).measurable
@@ -628,7 +628,7 @@ lemma HasSubgaussianMGF_sum_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure
 /-- **Azuma-Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_HasCondSubgaussianMGF [IsZeroOrProbabilityMeasure μ]
     (h_adapted : Adapted ℱ Y) (h0 : HasSubgaussianMGF (Y 0) (cY 0) μ)
-    (h_subG : ∀ i, 1 ≤ i → HasCondSubgaussianMGF (ℱ (i - 1)) (ℱ.le (i - 1)) (Y i) (cY i) μ)
+    (h_subG : ∀ i, HasCondSubgaussianMGF (ℱ i) (ℱ.le i) (Y (i + 1)) (cY (i + 1)) μ)
     (n : ℕ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, Y i ω}).toReal
       ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ Finset.range n, cY i)) :=
