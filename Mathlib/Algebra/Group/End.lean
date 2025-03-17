@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Equiv.TypeTags
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Prod
 
 /-!
 # Monoids of endomorphisms, groups of automorphisms
@@ -209,7 +210,7 @@ def sumCongrHom (α β : Type*) : Perm α × Perm β →* Perm (α ⊕ β) where
 
 theorem sumCongrHom_injective {α β : Type*} : Function.Injective (sumCongrHom α β) := by
   rintro ⟨⟩ ⟨⟩ h
-  rw [Prod.mk.inj_iff]
+  rw [Prod.mk_inj]
   constructor <;> ext i
   · simpa using Equiv.congr_fun h (Sum.inl i)
   · simpa using Equiv.congr_fun h (Sum.inr i)
@@ -269,7 +270,7 @@ def subtypeCongrHom (p : α → Prop) [DecidablePred p] :
 theorem subtypeCongrHom_injective (p : α → Prop) [DecidablePred p] :
     Function.Injective (subtypeCongrHom p) := by
   rintro ⟨⟩ ⟨⟩ h
-  rw [Prod.mk.inj_iff]
+  rw [Prod.mk_inj]
   constructor <;> ext i <;> simpa using Equiv.congr_fun h i
 
 /-- If `e` is also a permutation, we can write `permCongr`
@@ -526,10 +527,10 @@ theorem swap_eq_one_iff {i j : α} : swap i j = (1 : Perm α) ↔ i = j :=
   swap_eq_refl_iff
 
 theorem swap_mul_eq_iff {i j : α} {σ : Perm α} : swap i j * σ = σ ↔ i = j := by
-  rw [mul_left_eq_self, swap_eq_one_iff]
+  rw [mul_eq_right, swap_eq_one_iff]
 
 theorem mul_swap_eq_iff {i j : α} {σ : Perm α} : σ * swap i j = σ ↔ i = j := by
-  rw [mul_right_eq_self, swap_eq_one_iff]
+  rw [mul_eq_left, swap_eq_one_iff]
 
 theorem swap_mul_swap_mul_swap {x y z : α} (hxy : x ≠ y) (hxz : x ≠ z) :
     swap y z * swap x y * swap y z = swap z x := by
