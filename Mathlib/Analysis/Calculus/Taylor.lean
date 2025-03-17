@@ -479,7 +479,7 @@ theorem taylor_mean_remainder_lagrange' {f : ℝ → ℝ} {x x₀ : ℝ} {n : �
   use -x'; use hx''
   rw [neg_neg, taylorWithinEval_eq _ (by simp [le_of_lt hx])
                 (uniqueDiffOn_Icc (by simp [hx])) H1] at H
-  rw [taylorWithinEval_neg H1, ←taylorWithinEval_eq (Icc x x₀)
+  rw [taylorWithinEval_neg, ←taylorWithinEval_eq (Icc x x₀)
                                 (by simp [le_of_lt hx]) (uniqueDiffOn_Icc hx) (by simp [hf])] at H
   simp only [neg_neg, sub_neg_eq_add] at H
   rw [← Nat.cast_add_one] at hf H1
