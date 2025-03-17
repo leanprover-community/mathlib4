@@ -8,13 +8,11 @@ IFS=$'\n\t'
 set -x
 
 # Test if there are keys with characters outside alphanumeric, '-', '_', and ':'.
-bibtool --pass.comments=on -- 'select{$key "[^-:A-Za-z0-9_]+"}' \
-  docs/references.bib -o docs/non-ascii.bib
+invalid_keys = $(bibtool --pass.comments=on -- 'select{$key "[^-:A-Za-z0-9_]+"}' docs/references.bib)
 
-if [ -s docs/non-ascii.bib ]; then
+if [[ -n "$invalid_keys" ]]; then
   echo "::error:: There are items in references.bib with keys containing characters" \
-    "outside alphanumeric, '-', '_', and ':':"
-  cat docs/non-ascii.bib
+    "outside alphanumeric, '-', '_', and ':':" && echo "$invalid_keys"
   exit 1
 fi
 
