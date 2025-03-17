@@ -100,8 +100,7 @@ lemma HasConicalLimit.of_iso {F G : J ⥤ C} [HasConicalLimit V F] (e : F ≅ G)
   preservesLimit_eCoyoneda X := preservesLimit_of_iso_diagram (eCoyoneda V X) e
 
 instance HasConicalLimit.of_equiv (F : J ⥤ C) [HasConicalLimit V F]
-    (G : J' ⥤ J) [G.IsEquivalence] :
-    HasConicalLimit V (G ⋙ F) where
+    (G : J' ⥤ J) [G.IsEquivalence] : HasConicalLimit V (G ⋙ F) where
   exists_limit :=
     let cone : Cone (G ⋙ F) := Cone.whisker G (getLimitCone F).cone
     have isLimit : IsLimit cone :=
