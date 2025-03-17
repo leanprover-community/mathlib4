@@ -615,7 +615,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       rw [show 3 = 1 + 1 + 1 from rfl]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
-      nlinarith
+      nlinarith only [h2]
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
 
 theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) :
