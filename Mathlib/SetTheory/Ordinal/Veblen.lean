@@ -389,7 +389,7 @@ theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
 
 theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
-  natCast_lt_epsilon 0 o
+  veblen_pos 1 o
 
 /-! ### Gamma function -/
 
@@ -461,6 +461,7 @@ theorem omega0_lt_gamma (o : Ordinal) : ω < Γ_ o :=
 theorem natCast_lt_gamma (n : ℕ) : n < Γ_ o :=
   (nat_lt_omega0 n).trans (omega0_lt_gamma o)
 
+@[simp]
 theorem gamma_pos : 0 < Γ_ o :=
   natCast_lt_gamma 0
 
