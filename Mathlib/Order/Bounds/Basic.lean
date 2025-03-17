@@ -143,8 +143,8 @@ lemma upperBounds_congr_of_subset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂)
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
 
-lemma lowerBounds_eq_ofSubset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂) (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) :
-    lowerBounds s₁ = lowerBounds s₂ := le_antisymm
+lemma lowerBounds_congr_of_subset {s₁ s₂ : Set α} (hs₁ : s₁ ⊆ s₂)
+    (hs₂ : ∀ a ∈ s₂, ∃ b ∈ s₁, b ≤ a) : lowerBounds s₁ = lowerBounds s₂ := le_antisymm
   (fun c hc d hd => by
     obtain ⟨e,⟨he₁, he₂⟩⟩ := hs₂ _ hd
     exact le_trans (hc he₁) he₂)
