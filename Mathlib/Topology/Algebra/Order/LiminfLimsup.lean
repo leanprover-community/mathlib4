@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Order.Monotone
 
 /-!

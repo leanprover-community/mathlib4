@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.CategoryTheory.Galois.Prorepresentability
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 

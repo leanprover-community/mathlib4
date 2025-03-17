@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 
 /-!
