@@ -68,7 +68,7 @@ variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (CategoryTheory.shift
 
 /-- A functor from a pretriangulated category to an abelian category is an homological functor
 if it sends distinguished triangles to exact sequences. -/
-class IsHomological extends F.PreservesZeroMorphisms : Prop where
+class IsHomological : Prop extends F.PreservesZeroMorphisms where
   exact (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).map F).Exact
 
@@ -110,7 +110,7 @@ def homologicalKernel [F.IsHomological] :
     (Triangle.shift_distinguished T hT n)).isZero_of_both_zeros
       (IsZero.eq_of_src (h₁ n) _ _) (IsZero.eq_of_tgt (h₃ n) _ _))
 
-instance [F.IsHomological] : ClosedUnderIsomorphisms F.homologicalKernel.P := by
+instance [F.IsHomological] : F.homologicalKernel.P.IsClosedUnderIsomorphisms := by
   dsimp only [homologicalKernel]
   infer_instance
 
