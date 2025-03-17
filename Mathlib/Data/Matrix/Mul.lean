@@ -168,8 +168,7 @@ protected alias Matrix.dotProduct_comp_equiv_symm := dotProduct_comp_equiv_symm
 /-- Permuting vectors on both sides of a dot product is a no-op. -/
 @[simp]
 theorem comp_equiv_dotProduct_comp_equiv (e : m ≃ n) : x ∘ e ⬝ᵥ y ∘ e = x ⬝ᵥ y := by
-  -- Porting note: was `simp only` with all three lemmas
-  rw [← dotProduct_comp_equiv_symm]; simp only [Function.comp_def, Equiv.apply_symm_apply]
+  simp [← dotProduct_comp_equiv_symm, Function.comp_def _ e.symm]
 
 @[deprecated (since := "2024-12-12")]
 protected alias Matrix.comp_equiv_dotProduct_comp_equiv := comp_equiv_dotProduct_comp_equiv

@@ -56,11 +56,10 @@ end UniversalEnvelopingAlgebra
 /-- The universal enveloping algebra of a Lie algebra. -/
 def UniversalEnvelopingAlgebra :=
   RingQuot (UniversalEnvelopingAlgebra.Rel R L)
+-- The `Inhabited, Ring, Algebra R` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 namespace UniversalEnvelopingAlgebra
-
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): the next three
--- instances were derived automatically in mathlib3.
 
 instance instInhabited : Inhabited (UniversalEnvelopingAlgebra R L) :=
   inferInstanceAs (Inhabited (RingQuot (UniversalEnvelopingAlgebra.Rel R L)))

@@ -100,7 +100,6 @@ end Product
 
 namespace Germ
 
--- Porting note: added
 @[coe]
 def ofFun : (α → β) → (Germ l β) := @Quotient.mk' _ (germSetoid _ _)
 

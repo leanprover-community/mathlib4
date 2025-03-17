@@ -356,7 +356,7 @@ theorem Fintype.bilinearCombination_apply :
 
 theorem Fintype.bilinearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
     Fintype.bilinearCombination R S v (Pi.single i r) = r • v i := by
-  simp [Fintype.bilinearCombination]-- Fintype.linearCombination_apply_single]
+  simp [Fintype.bilinearCombination]
 
 section SpanRange
 

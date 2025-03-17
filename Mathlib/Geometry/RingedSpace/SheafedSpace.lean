@@ -97,12 +97,12 @@ def isoMk {X Y : SheafedSpace C} (e : X.toPresheafedSpace ≅ Y.toPresheafedSpac
 @[simps! obj map]
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
   inducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: can't derive `Full` functor automatically
 instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
   map_surjective f := ⟨f, rfl⟩
 
--- Porting note: can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
