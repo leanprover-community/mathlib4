@@ -523,13 +523,19 @@ section irrational
 
 example : Irrational √2 := by norm_num1
 example : Irrational √(5 - 2) := by norm_num1
--- big prime number
-example : Irrational
-  √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
 example : Irrational √(7/2) := by norm_num1
 example : Irrational √(1/2 + 1/2 + 1/3) := by norm_num1
-example : Irrational (100^(1/3 : ℝ)) := by norm_num1
+example : Irrational (100 ^ (1/3 : ℝ)) := by norm_num1
 example : Irrational ((87/6) ^ (54/321 : ℝ)) := by norm_num1
+
+-- Large prime number
+-- The current implementation should run in O(log n) time
+example : Irrational
+  √5210644015679228794060694325390955853335898483908056458352183851018372555735221 := by norm_num1
+
+-- Large numerator does not affect performance.
+-- We only need to check that it is coprime with the denominator.
+example : Irrational (100 ^ ((10^1000 + 10^500) / 3 : ℝ)) := by norm_num1
 
 
 end irrational

@@ -46,6 +46,53 @@ private theorem irrational_rpow_rat_of_not_power {q : ℚ} {a b : ℕ}
   · omega
   · assumption
 
+private theorem not_power_nat_pow {n p q : ℕ}
+    (h_coprime : p.Coprime q)
+    (hq : 0 < q)
+    (h : ¬ ∃ m, n = m^q) :
+    ¬ ∃ m, n^p = m^q := by
+  by_cases hn : n = 0
+  · simp [hn] at h ⊢
+    specialize h 0
+    cases q
+    · simp at hq
+    · simp at h
+  contrapose! h
+  obtain ⟨k, h⟩ := h
+  apply_fun Nat.factorization at h
+  simp at h
+  suffices ∃ f : ℕ →₀ ℕ, n.factorization = q • f by
+    obtain ⟨f, hf⟩ := this
+    have : f = (f.prod fun x1 x2 => x1 ^ x2).factorization := by
+      rw [Nat.prod_pow_factorization_eq_self]
+      intro z hz
+      apply_fun Finsupp.support at hf
+      rw [Finsupp.support_smul_eq (by omega)] at hf
+      rw [← hf] at hz
+      exact Nat.prime_of_mem_primeFactors hz
+    have hf0 : f 0 = 0 := by
+      apply_fun (· 0) at hf
+      simp at hf
+      cases hf
+      · omega
+      · assumption
+    rw [this, ← Nat.factorization_pow] at hf
+    apply Nat.factorization_inj at hf
+    · use f.prod fun x1 x2 => x1 ^ x2
+    · exact hn
+    · simp
+      suffices f 0 = 0 by tauto
+      exact hf0
+  use n.factorization.mapRange (fun e ↦ e / q) (by simp)
+  ext z
+  apply_fun (· z) at h
+  simp at h ⊢
+  rw [Nat.mul_div_cancel']
+  have : q ∣ p * n.factorization z := ⟨_, h⟩
+  apply Nat.Coprime.dvd_of_dvd_mul_left at this
+  · assumption
+  · rwa [Nat.coprime_comm]
+
 private theorem not_power_nat_of_bounds {n k d : ℕ}
     (h_left : k^d < n)
     (h_right : n < (k + 1)^d) :
@@ -56,7 +103,16 @@ private theorem not_power_nat_of_bounds {n k d : ℕ}
   have : m < k + 1 := lt_of_pow_lt_pow_left' d h_right
   omega
 
-/-- Weaker version of `not_power_rat_of_num_aux` with extra `q ≥ 0` assumption. -/
+private theorem not_power_nat_pow_of_bounds {n k p q : ℕ}
+    (hq : 0 < q)
+    (h_coprime : p.Coprime q)
+    (h_left : k^q < n)
+    (h_right : n < (k + 1)^q) :
+    ¬ ∃ m, n^p = m^q := by
+  apply not_power_nat_pow h_coprime hq
+  apply not_power_nat_of_bounds h_left h_right
+
+/-- Weaker version of `not_power_rat_of_num` with extra `q ≥ 0` assumption. -/
 private theorem not_power_rat_of_num_aux {a b d : ℕ}
     (h_coprime : a.Coprime b)
     (ha : ¬ ∃ x, a = x^d) :
@@ -168,9 +224,15 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
     (hx_isRat : IsRat x (Int.ofNat x_num) x_den)
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
-    (hn1 : k_num^y_den < x_num^y_num)
-    (hn2 : x_num^y_num < (k_num + 1)^y_den) :
+    (hy_coprime : Nat.Coprime y_num y_den)
+    (hn1 : k_num^y_den < x_num)
+    (hn2 : x_num < (k_num + 1)^y_den) :
     Irrational (x^y) := by
+  have hy_den_pos : 0 < y_den := by
+    by_contra! h
+    simp at h
+    simp [h] at hn1 hn2
+    omega
   rcases hx_isRat with ⟨hx_inv, hx_eq⟩
   rcases hy_isRat with ⟨hy_inv, hy_eq⟩
   rw [hy_eq, hx_eq]
@@ -185,7 +247,7 @@ private theorem irrational_rpow_rat_rat_of_num {x y : ℝ} {x_num x_den y_num y_
   · simp only [div_pow, ← Nat.cast_npow]
     apply not_power_rat_of_num
     · apply Nat.Coprime.pow _ _ hx_coprime
-    · apply not_power_nat_of_bounds hn1 hn2
+    · apply not_power_nat_pow_of_bounds hy_den_pos hy_coprime hn1 hn2
   · by_contra hy_den
     replace hy_den : y_den = 0 := by omega
     have : (y_den : ℝ) ≠ 0 := by apply hy_inv.ne_zero
@@ -197,24 +259,26 @@ private theorem irrational_rpow_rat_rat_of_den {x y : ℝ} {x_num x_den y_num y_
     (hx_isRat : IsRat x (Int.ofNat x_num) x_den)
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
     (hx_coprime : Nat.Coprime x_num x_den)
-    (hd1 : k_den^y_den < x_den^y_num)
-    (hd2 : x_den^y_num < (k_den + 1)^y_den) :
+    (hy_coprime : Nat.Coprime y_num y_den)
+    (hd1 : k_den^y_den < x_den)
+    (hd2 : x_den < (k_den + 1)^y_den) :
     Irrational (x^y) := by
   rcases hx_isRat with ⟨hx_inv, hx_eq⟩
   apply Irrational.of_inv
   rw [← Real.inv_rpow (by simp [hx_eq]; positivity)]
   apply irrational_rpow_rat_rat_of_num (x_num := x_den) (x_den := x_num) _ hy_isRat
-    (Nat.coprime_comm.mp hx_coprime) hd1 hd2
+    (Nat.coprime_comm.mp hx_coprime) hy_coprime hd1 hd2
   refine ⟨invertibleOfNonzero (fun _ ↦ ?_), by simp [hx_eq]⟩
   simp_all
 
 private theorem irrational_rpow_nat_rat {x y : ℝ} {x_num y_num y_den k : ℕ}
     (hx_isNat : IsNat x x_num)
     (hy_isRat : IsRat y (Int.ofNat y_num) y_den)
-    (hn1 : k^y_den < x_num^y_num)
-    (hn2 : x_num^y_num < (k + 1)^y_den) :
+    (hy_coprime : Nat.Coprime y_num y_den)
+    (hn1 : k^y_den < x_num)
+    (hn2 : x_num < (k + 1)^y_den) :
     Irrational (x^y) :=
-  irrational_rpow_rat_rat_of_num hx_isNat.to_isRat hy_isRat (by simp) hn1 hn2
+  irrational_rpow_rat_rat_of_num hx_isNat.to_isRat hy_isRat (by simp) hy_coprime hn1 hn2
 
 private theorem irrational_sqrt_rat_of_num {x : ℝ} {num den num_k : ℕ}
     (hx_isRat : IsRat x (Int.ofNat num) den)
@@ -289,29 +353,33 @@ def evalIrrationalRpow : NormNumExt where eval {u α} e := do
     | .isRat sℝ _ y_num y_den y_isRat =>
       match y_num with
       | ~q(Int.ofNat $y_num') =>
+        let ⟨gy, hy_coprime⟩ := proveNatGCD y_num' y_den
+        if gy.natLit! != 1 then failure
+        let _ : $gy =Q 1 := ⟨⟩
         match ← derive x with
         | .isNat sℝ ex x_isNat =>
-          let cert ← findNotPowerCertificate q($ex^$y_num') y_den
+          let cert ← findNotPowerCertificate q($ex) y_den
           assumeInstancesCommute
-          return .isTrue q(irrational_rpow_nat_rat $x_isNat $y_isRat $cert.pf_left $cert.pf_right)
+          return .isTrue q(irrational_rpow_nat_rat $x_isNat $y_isRat $hy_coprime
+            $cert.pf_left $cert.pf_right)
         | .isRat sℝ _ x_num x_den x_isRat =>
           match x_num with
           | ~q(Int.ofNat $x_num') =>
-            let ⟨g, pf_coprime⟩ := proveNatGCD x_num' x_den
-            if g.natLit! != 1 then failure
-            let _ : $g =Q 1 := ⟨⟩
-            let x_isRat' : Q(IsRat $x (Int.ofNat $x_num') $x_den) := x_isRat
-            let y_isRat' : Q(IsRat $y (Int.ofNat $y_num') $y_den) := y_isRat
+            let ⟨gx, hx_coprime⟩ := proveNatGCD x_num' x_den
+            if gx.natLit! != 1 then failure
+            let _ : $gx =Q 1 := ⟨⟩
+            let hx_isRat' : Q(IsRat $x (Int.ofNat $x_num') $x_den) := x_isRat
+            let hy_isRat' : Q(IsRat $y (Int.ofNat $y_num') $y_den) := y_isRat
             try
-              let numCert ← findNotPowerCertificate q($x_num'^$y_num') y_den
+              let numCert ← findNotPowerCertificate q($x_num') y_den
               assumeInstancesCommute
-              return .isTrue q(irrational_rpow_rat_rat_of_num $x_isRat' $y_isRat' $pf_coprime
-                $numCert.pf_left $numCert.pf_right)
+              return .isTrue q(irrational_rpow_rat_rat_of_num $hx_isRat' $hy_isRat'
+                $hx_coprime $hy_coprime $numCert.pf_left $numCert.pf_right)
             catch _ =>
-              let denCert ← findNotPowerCertificate q($x_den^$y_num') y_den
+              let denCert ← findNotPowerCertificate q($x_den) y_den
               assumeInstancesCommute
-              return .isTrue q(irrational_rpow_rat_rat_of_den $x_isRat' $y_isRat' $pf_coprime
-                $denCert.pf_left $denCert.pf_right)
+              return .isTrue q(irrational_rpow_rat_rat_of_den $hx_isRat' $hy_isRat'
+                $hx_coprime $hy_coprime $denCert.pf_left $denCert.pf_right)
           | _ => failure
         | _ => failure
     | _ => failure
