@@ -183,7 +183,7 @@ theorem dropUntil_of_eq {u v x y} (p : G.Walk u v) (hx : x ∈ p.support) (hy : 
     (h : y = x) : (p.dropUntil y hy).copy h rfl  = p.dropUntil x hx := by
   subst_vars
   rfl
-  
+
 theorem support_takeUntil_subset {u v w : V} (p : G.Walk v w) (h : u ∈ p.support) :
     (p.takeUntil u h).support ⊆ p.support := fun x hx => by
   rw [← take_spec p h, mem_support_append_iff]
@@ -342,11 +342,11 @@ lemma length_takeUntil_add_dropUntil {p : G.Walk u v} (h : w ∈ p.support) :
     (p.takeUntil w h).length + (p.dropUntil w h).length = p.length := by
   rw [← length_append, take_spec]
 
-@[simp]
 theorem support_rotate_eq {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).support = u :: c.support.tail.rotate (c.takeUntil _ h).length := by
   rw [support_eq_cons]
-  simp only [List.cons.injEq, true_and, rotate, tail_support_append]
+  apply List.cons_eq_cons.2 ⟨rfl, _⟩
+  rw [rotate, tail_support_append]
   nth_rw 3 [← take_spec c h]
   rw [tail_support_append, ← List.rotate_append_length_eq]
   simp
@@ -367,6 +367,30 @@ lemma getVert_rotate {n : ℕ} {c : G.Walk v v} (h : w ∈ c.support) (hn : n �
     apply getVert_takeUntil
     rwa [Nat.sub_le_iff_le_add, length_takeUntil_add_dropUntil h]
 
+lemma getVert_length_takeUntil_eq_self {u v x} (p : G.Walk u v) (h : x ∈ p.support) :
+    p.getVert (p.takeUntil _ h).length = x := by
+  induction p with
+  | nil =>
+    rw [mem_support_nil_iff, getVert_nil] at *
+    subst_vars
+    rfl
+  | @cons u v w h1 p ih =>
+    by_cases huv: u = x
+    · subst_vars
+      simp
+    · rw [support_cons, List.mem_cons] at h
+      cases h with
+    | inl h => exact (huv h.symm).elim
+    | inr h =>
+      rw [takeUntil_cons h huv h1, length_cons, getVert_cons_succ]
+      exact ih h
+
+theorem rotate_darts_eq {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
+    (c.rotate h).darts  = c.darts.rotate (c.takeUntil _ h).length := by
+  nth_rw 2 [←  c.take_spec h]
+  simp only [rotate, darts_append]
+  rw [← length_darts, ← List.rotate_append_length_eq]
+
 end WalkDecomp
 
 /-- Given a walk `w` and a node in the support, there exists a natural `n`, such that given node
@@ -378,11 +402,7 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
   classical
   constructor
   · intro h
-    obtain ⟨q, r, hqr⟩ := SimpleGraph.Walk.mem_support_iff_exists_append.mp h
-    use q.length
-    rw [hqr, Walk.getVert_append]
-    simp only [lt_self_iff_false, ↓reduceIte, Nat.sub_self, getVert_zero, length_append,
-      Nat.le_add_right, and_self]
+    exact ⟨_, p.getVert_length_takeUntil_eq_self h, p.length_takeUntil_le h⟩
   · rintro ⟨n, hn⟩
     rw [mem_support_iff]
     cases n with
@@ -399,8 +419,6 @@ termination_by p.length
 decreasing_by
 · simp_wf
   rw [Nat.lt_iff_add_one_le, length_tail_add_one hnp]
-
-
 
 lemma mem_support_rotate_iff [DecidableEq V] {u v x} {c : G.Walk u u} (h : v ∈ c.support) :
     x ∈ (c.rotate h).support ↔ x ∈ c.support := by
