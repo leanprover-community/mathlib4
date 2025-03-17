@@ -234,6 +234,7 @@ section Prod
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
 
 This is the `LinearEquiv` version of `Finsupp.finsuppProdEquiv`. -/
+@[simps]
 noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Semiring R]
     [AddCommMonoid M] [Module R M] : (α × β →₀ M) ≃ₗ[R] α →₀ β →₀ M :=
   { finsuppProdEquiv with
@@ -244,30 +245,15 @@ noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Sem
       ext
       simp [finsuppProdEquiv, curry_apply] }
 
-@[simp]
-theorem finsuppProdLEquiv_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : α × β →₀ M) (x y) : finsuppProdLEquiv R f x y = f (x, y) := by
-  rw [finsuppProdLEquiv, LinearEquiv.coe_mk, finsuppProdEquiv, Finsupp.curry_apply]
-
-@[simp]
-theorem finsuppProdLEquiv_symm_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : α →₀ β →₀ M) (xy) : (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 := by
-  conv_rhs =>
-    rw [← (finsuppProdLEquiv R).apply_symm_apply f, finsuppProdLEquiv_apply]
-
-@[simp]
 lemma finsuppProdLEquiv_single {α β R M : Type*}
     [Semiring R] [AddCommMonoid M] [Module R M] (a : α × β) (m : M) :
     finsuppProdLEquiv R (single a m) = single a.1 (single a.2 m) := by
-  show Finsupp.curry _ = _
-  simp only [Finsupp.curry, single_zero, sum_single_index]
+  simp
 
-@[simp]
 lemma finsuppProdLEquiv_symm_single_single {α β R M : Type*}
     [Semiring R] [AddCommMonoid M] [Module R M] (a : α) (b : β) (m : M) :
     (finsuppProdLEquiv R).symm (single a (single b m)) = single (a, b) m := by
-  show Finsupp.uncurry _ = _
-  simp only [Finsupp.uncurry, sum_zero_index, sum_single_index, single_zero]
+  simp
 
 end Prod
 

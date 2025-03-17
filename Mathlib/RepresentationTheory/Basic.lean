@@ -495,8 +495,7 @@ lemma finsupp_single (g : G) (x : α) (a : A) :
     ρ.finsupp α g (single x a) = single x (ρ g a) := by
   simp [finsupp_apply]
 
-/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation on
-`k[G]`. -/
+/-- The representation on `α →₀ k[G]` defined pointwise by the left regular representation. -/
 noncomputable abbrev free (k G : Type*) [CommSemiring k] [Monoid G] (α : Type*) :
     Representation k G (α →₀ G →₀ k) :=
   finsupp (leftRegular k G) α
@@ -511,8 +510,7 @@ lemma free_single_single (g h : G) (i : α) (r : k) :
 
 variable (k G) (α : Type*)
 
-/-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`
-considered as a `k[G]`-module. -/
+/-- The free `k[G]`-module on a type `α` is isomorphic to the representation `free k G α`. -/
 def finsuppLEquivFreeAsModule :
     (α →₀ MonoidAlgebra k G) ≃ₗ[MonoidAlgebra k G] (free k G α).asModule :=
   { AddEquiv.refl _ with
