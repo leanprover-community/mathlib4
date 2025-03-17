@@ -729,8 +729,7 @@ def lieSpan : LieSubmodule R L M :=
 variable {R L s}
 
 theorem mem_lieSpan {x : M} : x ∈ lieSpan R L s ↔ ∀ N : LieSubmodule R L M, s ⊆ N → x ∈ N := by
-  change x ∈ (lieSpan R L s : Set M) ↔ _
-  rw [lieSpan, sInf_coe]
+  rw [← SetLike.mem_coe, lieSpan, sInf_coe]
   exact mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
@@ -870,11 +869,8 @@ variable {f N N₂ N'}
 theorem map_le_iff_le_comap : map f N ≤ N' ↔ N ≤ comap f N' :=
   Set.image_subset_iff
 
-variable (f)
-
+variable (f) in
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
-
-variable {f}
 
 theorem map_inf_le : (N ⊓ N₂).map f ≤ N.map f ⊓ N₂.map f :=
   Set.image_inter_subset f N N₂
@@ -1036,11 +1032,8 @@ theorem map_le_iff_le_comap : map f I ≤ J ↔ I ≤ comap f J := by
   rw [map_le]
   exact Set.image_subset_iff
 
-variable (f)
-
+variable (f) in
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
-
-variable {f}
 
 @[simp]
 theorem map_sup : (I ⊔ I₂).map f = I.map f ⊔ I₂.map f :=
@@ -1464,8 +1457,6 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 
 variable {R L}
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
@@ -1497,11 +1488,7 @@ This is the Lie ideal version of `Submodule.topEquiv`. -/
 def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
   LieSubalgebra.topEquiv
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl
 
 end TopEquiv
-
-set_option linter.style.longFile 1700

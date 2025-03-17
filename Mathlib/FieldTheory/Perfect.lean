@@ -115,7 +115,7 @@ theorem iterateFrobeniusEquiv_one_apply (x : R) : iterateFrobeniusEquiv R p 1 x 
   rw [iterateFrobeniusEquiv_def, pow_one]
 
 @[simp]
-theorem iterateFrobeniusEquiv_zero  : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+theorem iterateFrobeniusEquiv_zero : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
   RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
 
 @[simp]

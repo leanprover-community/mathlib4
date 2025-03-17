@@ -194,6 +194,19 @@ theorem chain'_append_cons_cons {b c : α} {l₁ l₂ : List α} :
     Chain' R (l₁ ++ b :: c :: l₂) ↔ Chain' R (l₁ ++ [b]) ∧ R b c ∧ Chain' R (c :: l₂) := by
   rw [chain'_split, chain'_cons]
 
+theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
+    Chain' R l ↔ ∀ ⦃a b l₁ l₂⦄, l = l₁ ++ a :: b :: l₂ → R a b := by
+  refine ⟨fun h _ _ _ _ eq => (chain'_append_cons_cons.mp (eq ▸ h)).2.1, ?_⟩
+  induction l with
+  | nil => exact fun _ ↦ chain'_nil
+  | cons head tail ih =>
+    match tail with
+    | nil => exact fun _ ↦ chain'_singleton head
+    | cons head' tail =>
+      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      apply h
+      rw [eq, cons_append]
+
 theorem chain'_map (f : β → α) {l : List β} :
     Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by
   cases l <;> [rfl; exact chain_map _]

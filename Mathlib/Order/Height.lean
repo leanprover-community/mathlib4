@@ -59,7 +59,7 @@ variable [LT α] [LT β] (s t : Set α)
 def subchain : Set (List α) :=
   { l | l.Chain' (· < ·) ∧ ∀ i ∈ l, i ∈ s }
 
-@[simp] -- porting note: new `simp`
+@[simp]
 theorem nil_mem_subchain : [] ∈ s.subchain := ⟨trivial, fun _ ↦ nofun⟩
 
 variable {s} {l : List α} {a : α}
@@ -123,7 +123,7 @@ theorem chainHeight_eq_top_iff : s.chainHeight = ⊤ ↔ ∀ n, ∃ l ∈ s.subc
 @[simp]
 theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight ↔ s.Nonempty := by
   rw [← Nat.cast_one, Set.le_chainHeight_iff]
-  simp only [length_eq_one, @and_comm (_ ∈ _), @eq_comm _ _ [_], exists_exists_eq_and,
+  simp only [length_eq_one_iff, @and_comm (_ ∈ _), @eq_comm _ _ [_], exists_exists_eq_and,
     singleton_mem_subchain_iff, Set.Nonempty]
 
 @[simp]
@@ -322,9 +322,7 @@ theorem chainHeight_union_eq (s t : Set α) (H : ∀ a ∈ s, ∀ b ∈ t, a < b
 
 theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠ ⊤) :
     WellFoundedGT s := by
-  -- Porting note: added
   haveI : IsTrans { x // x ∈ s } (↑· < ↑·) := inferInstance
-
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
   refine ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ ?_⟩⟩
   refine n.lt_succ_self.not_le (WithTop.coe_le_coe.1 <| hn.symm ▸ ?_)

@@ -18,23 +18,25 @@ from `k[X_0, X_1, ..., X_(s-1)]` to `A` such that `A` is integral over `k[X_0, X
 ## Strategy of the proof
 Suppose `f` is a nonzero polynomial in `n+1` variables.
 First, we construct an algebra equivalence `T` from `k[X_0,...,X_n]` to itself such that
-  `f` is mapped to a polynomial in `X_0` with invertible leading coefficient.
+`f` is mapped to a polynomial in `X_0` with invertible leading coefficient.
 More precisely, `T` maps `X_i` to `X_i + X_0 ^ r_i` when `i ≠ 0`, and `X_0` to `X_0`.
 Here we choose `r_i` to be `up ^ i` where `up` is big enough, so that `T` maps
-  different monomials of `f` to polynomials with different degrees in `X_0`.
+different monomials of `f` to polynomials with different degrees in `X_0`.
 See `degreeOf_t_neq_of_neq`.
 
 Secondly, we construct the following maps: let `I` be an ideal containing `f` and
 let `φ : k[X_0,...X_{n-1}] ≃ₐ[k] k[X_1,...X_n][X]` be the natural isomorphism.
-  `hom1 : k[X_0,...X_{n-1}] →ₐ[k[X_0,...X_{n-1}]] k[X_1,...X_n][X]/φ(T(I))`
-  `eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ₐ[k] k[X_0,...,X_n]/T(I)`
-  `eqv2 : k[X_0,...,X_n]/T(I) ≃ₐ[k] k[X_0,...,X_n]/I`
-  `hom2 : k[X_0,...X_(n-1)] →ₐ[k] k[X_0,...X_n]/I`
+
+- `hom1 : k[X_0,...X_{n-1}] →ₐ[k[X_0,...X_{n-1}]] k[X_1,...X_n][X]/φ(T(I))`
+- `eqv1 : k[X_1,...X_n][X]/φ(T(I)) ≃ₐ[k] k[X_0,...,X_n]/T(I)`
+- `eqv2 : k[X_0,...,X_n]/T(I) ≃ₐ[k] k[X_0,...,X_n]/I`
+- `hom2 : k[X_0,...X_(n-1)] →ₐ[k] k[X_0,...X_n]/I`
+
 `hom1` is integral because `φ(T(I))` contains a monic polynomial. See `hom1_isIntegral`.
 `hom2` is integral because it's the composition of integral maps. See `hom2_isIntegral`.
 
 Finally We use induction to prove there is an injective map from `k[X_0,...,X_{s-1}]`
-  to `k[X_0,...,X_(n-1)]/I`.The case `n=0` is trivial.
+to `k[X_0,...,X_(n-1)]/I`.The case `n=0` is trivial.
 For `n+1`, if `I = 0` there is nothing to do.
 Otherwise, `hom2` induces a map `φ` by quotient kernel.
 We use the inductive hypothesis on k[X_1,...,X_n] and the kernel of `hom2` to get `s, g`.
@@ -89,9 +91,9 @@ private lemma sum_r_mul_neq (vlt : ∀ i, v i < up) (wlt : ∀ i, w i < up) (neq
   intro h
   refine neq <| Finsupp.ext <| congrFun <| ofFn_inj.mp ?_
   apply ofDigits_inj_of_len_eq (Nat.lt_add_right f.totalDegree one_lt_two)
-      (by simp) (lt_up vlt) (lt_up wlt)
+    (by simp) (lt_up vlt) (lt_up wlt)
   simpa only [ofDigits_eq_sum_mapIdx, mapIdx_eq_ofFn, get_ofFn, length_ofFn,
-      Fin.coe_cast, mul_comm, sum_ofFn] using h
+    Fin.coe_cast, mul_comm, sum_ofFn] using h
 
 private lemma degreeOf_zero_t {a : k} (ha : a ≠ 0) : ((T f) (monomial v a)).degreeOf 0 =
     ∑ i : Fin (n + 1), (r i) * v i := by
@@ -235,16 +237,16 @@ theorem exists_integral_inj_algHom_of_quotient (I : Ideal (MvPolynomial (Fin n) 
     Function.Injective g ∧ g.IsIntegral := by
   induction n with
   | zero =>
-      refine ⟨0, le_rfl, Quotient.mkₐ k I, fun a b hab ↦ ?_,
-        isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
-      rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
-      by_contra neq
-      have eq := eq_C_of_isEmpty (a - b)
-      have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
-      obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
-      have one : c • (a - b) = 1 := by
-        rw [MvPolynomial.smul_eq_C_mul, eq, ← RingHom.map_mul, eqr, MvPolynomial.C_1]
-      exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
+    refine ⟨0, le_rfl, Quotient.mkₐ k I, fun a b hab ↦ ?_,
+      isIntegral_of_surjective _ (Quotient.mkₐ_surjective k I)⟩
+    rw [Quotient.mkₐ_eq_mk, Ideal.Quotient.eq] at hab
+    by_contra neq
+    have eq := eq_C_of_isEmpty (a - b)
+    have ne : coeff 0 (a - b) ≠ 0 := fun h ↦ h ▸ eq ▸ sub_ne_zero_of_ne neq <| map_zero _
+    obtain ⟨c, _, eqr⟩ := isUnit_iff_exists.mp ne.isUnit
+    have one : c • (a - b) = 1 := by
+      rw [MvPolynomial.smul_eq_C_mul, eq, ← RingHom.map_mul, eqr, MvPolynomial.C_1]
+    exact hi ((eq_top_iff_one I).mpr (one ▸ I.smul_of_tower_mem c hab))
   | succ d hd =>
     by_cases eqi : I = 0
     · have bij : Function.Bijective (Quotient.mkₐ k I) :=

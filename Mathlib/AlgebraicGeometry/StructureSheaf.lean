@@ -74,11 +74,9 @@ namespace StructureSheaf
 def Localizations (P : PrimeSpectrum.Top R) : Type u :=
   Localization.AtPrime P.asIdeal
 
--- Porting note: can't derive `CommRing`
 instance commRingLocalizations (P : PrimeSpectrum.Top R) : CommRing <| Localizations R P :=
   inferInstanceAs <| CommRing <| Localization.AtPrime P.asIdeal
 
--- Porting note: can't derive `IsLocalRing`
 instance localRingLocalizations (P : PrimeSpectrum.Top R) : IsLocalRing <| Localizations R P :=
   inferInstanceAs <| IsLocalRing <| Localization.AtPrime P.asIdeal
 
@@ -1083,11 +1081,8 @@ theorem comap_comp (f : R →+* S) (g : S →+* P) (U : Opens (PrimeSpectrum.Top
   RingHom.ext fun s =>
     Subtype.eq <|
       funext fun p => by
-        rw [comap_apply]
-        rw [Localization.localRingHom_comp _ (PrimeSpectrum.comap g p.1).asIdeal] <;>
-        -- refl works here, because `PrimeSpectrum.comap (g.comp f) p` is defeq to
-        -- `PrimeSpectrum.comap f (PrimeSpectrum.comap g p)`
-        rfl
+        rw [comap_apply, Localization.localRingHom_comp _ (PrimeSpectrum.comap g p.1).asIdeal] <;>
+        simp
 
 @[elementwise, reassoc]
 theorem toOpen_comp_comap (f : R →+* S) (U : Opens (PrimeSpectrum.Top R)) :

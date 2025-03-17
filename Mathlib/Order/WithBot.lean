@@ -207,15 +207,6 @@ lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 
 instance orderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated coe_le_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  coe_le_coe
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated bot_le "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := bot_le
-
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where le_top x := by cases x <;> simp [le_def]
 
 instance instBoundedOrder [OrderTop α] : BoundedOrder (WithBot α) :=
@@ -257,18 +248,6 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
 @[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := by simp [lt_def]
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated coe_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem some_lt_some : @LT.lt (WithBot α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated bot_lt_coe "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem none_lt_some (a : α) : @LT.lt (WithBot α) _ none (some a) := bot_lt_coe _
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated not_lt_bot "Don't mix Option and WithBot" (since := "2024-05-27")]
-theorem not_lt_none (a : WithBot α) : ¬@LT.lt (WithBot α) _ a none := WithBot.not_lt_bot _
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
 
@@ -390,12 +369,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) where
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithBot α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithBot α)
   | ⊥, _ => isTrue <| by simp
   | (a : α), ⊥ => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
-instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithBot α) (· < ·)
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithBot α)
   | _, ⊥ => isFalse <| by simp
   | ⊥, (a : α) => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
@@ -575,7 +554,7 @@ theorem untopD_coe {α} (d x : α) : untopD d x = x :=
 @[deprecated (since := "2025-02-06")]
 alias untop'_coe := untopD_coe
 
-@[simp, norm_cast] -- Porting note: added `simp`
+@[simp, norm_cast]
 theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
   Option.some_inj
 
@@ -709,16 +688,7 @@ lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a �
 
 lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := by simp [le_def]
 
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated coe_le_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  coe_le_coe
-
 instance orderTop : OrderTop (WithTop α) where le_top := by simp [le_def]
-
--- TODO: This deprecated lemma is still used (through simp)
-@[simp, deprecated le_top "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem le_none {a : WithTop α} : @LE.le (WithTop α) _ a none := le_top
 
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where bot_le x := by cases x <;> simp [le_def]
 
@@ -761,15 +731,6 @@ lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [lt_def]
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
 @[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
-
-@[simp, deprecated coe_lt_coe "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem some_lt_some : @LT.lt (WithTop α) _ (Option.some a) (Option.some b) ↔ a < b := coe_lt_coe
-
-@[simp, deprecated coe_lt_top "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem some_lt_none (a : α) : @LT.lt (WithTop α) _ (Option.some a) none := coe_lt_top a
-
-@[simp, deprecated not_top_lt "Don't mix Option and WithTop" (since := "2024-05-27")]
-theorem not_none_lt (a : WithTop α) : ¬@LT.lt (WithTop α) _ none a := WithTop.not_top_lt _
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
 
@@ -887,12 +848,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) where
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithTop α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableLE α] : DecidableLE (WithTop α)
   | _, ⊤ => isTrue <| by simp
   | ⊤, (a : α) => isFalse <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_le_coe
 
-instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithTop α) (· < ·)
+instance decidableLT [LT α] [DecidableLT α] : DecidableLT (WithTop α)
   | ⊤, _ => isFalse <| by simp
   | (a : α), ⊤ => isTrue <| by simp
   | (a : α), (b : α) => decidable_of_iff' _ coe_lt_coe
