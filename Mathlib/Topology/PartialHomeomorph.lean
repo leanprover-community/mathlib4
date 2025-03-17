@@ -661,16 +661,27 @@ theorem refl_symm : (PartialHomeomorph.refl X).symm = PartialHomeomorph.refl X :
 /-! const: `PartialEquiv.const` as a partial homeomorphism -/
 section const
 
+variable {a : X} {b : Y}
+
 /--
 This is `PartialEquiv.single` as a partial homeomorphism: a constant map,
 whose source and target are necessarily singleton sets.
 -/
-def const {a : X} {b : Y} (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
+def const (ha : IsOpen {a}) (hb : IsOpen {b}) : PartialHomeomorph X Y where
   toPartialEquiv := PartialEquiv.single a b
   open_source := ha
   open_target := hb
   continuousOn_toFun := by simp
   continuousOn_invFun := by simp
+
+@[simp, mfld_simps]
+lemma const_apply (ha : IsOpen {a}) (hb : IsOpen {b}) (x : X) : (const ha hb) x = b := rfl
+
+@[simp, mfld_simps]
+lemma const_source (ha : IsOpen {a}) (hb : IsOpen {b}) : (const ha hb).source = {a} := rfl
+
+@[simp, mfld_simps]
+lemma const_target (ha : IsOpen {a}) (hb : IsOpen {b}) : (const ha hb).target = {b} := rfl
 
 end const
 
@@ -1394,7 +1405,7 @@ noncomputable def lift_openEmbedding (e : PartialHomeomorph X Z) (hf : IsOpenEmb
     exact ContinuousOn.congr this heq
   continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun
 
-@[simp]
+@[simp, mfld_simps]
 lemma lift_openEmbedding_toFun (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf) = extend f e (fun _ ↦ (Classical.arbitrary Z)) := rfl
 
@@ -1403,23 +1414,23 @@ lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding
   simp_rw [e.lift_openEmbedding_toFun]
   apply hf.injective.extend_apply
 
-@[simp]
+@[simp, mfld_simps]
 lemma lift_openEmbedding_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).source = f '' e.source := rfl
 
-@[simp]
+@[simp, mfld_simps]
 lemma lift_openEmbedding_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).target = e.target := rfl
 
-@[simp]
+@[simp, mfld_simps]
 lemma lift_openEmbedding_symm (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm = f ∘ e.symm := rfl
 
-@[simp]
+@[simp, mfld_simps]
 lemma lift_openEmbedding_symm_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.source = e.target := rfl
 
-@[simp]
+@[simp, mfld_simps]
 lemma lift_openEmbedding_symm_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.target = f '' e.source := by
   rw [PartialHomeomorph.symm_target, e.lift_openEmbedding_source]
@@ -1429,7 +1440,7 @@ lemma lift_openEmbedding_trans_apply
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) z = (e.symm.trans e') z := by
   simp [hf.injective.extend_apply e']
 
-@[simp]
+@[simp, mfld_simps]
 lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) = e.symm.trans e' := by
   ext z

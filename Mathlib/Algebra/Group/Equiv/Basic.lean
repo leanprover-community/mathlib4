@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
-import Mathlib.Data.FunLike.Equiv
 import Mathlib.Logic.Equiv.Basic
 
 /-!
@@ -17,6 +16,8 @@ This file contains basic results on `MulEquiv` and `AddEquiv`.
 
 Equiv, MulEquiv, AddEquiv
 -/
+
+assert_not_exists Fintype
 
 open Function
 

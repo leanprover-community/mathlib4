@@ -359,16 +359,16 @@ theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
     Fintype.card s = Fintype.card α ↔ s = Set.univ := by
   rw [← Set.toFinset_card, Finset.card_eq_iff_eq_univ, ← Set.toFinset_univ, Set.toFinset_inj]
 
-theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [DecidablePred p] :
+theorem Fintype.card_subtype_le [Fintype α] (p : α → Prop) [Fintype {a // p a}] :
     Fintype.card { x // p x } ≤ Fintype.card α :=
   Fintype.card_le_of_embedding (Function.Embedding.subtype _)
 
-theorem Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [DecidablePred p] {x : α} (hx : ¬p x) :
+lemma Fintype.card_subtype_lt [Fintype α] {p : α → Prop} [Fintype {a // p a}] {x : α} (hx : ¬p x) :
     Fintype.card { x // p x } < Fintype.card α :=
   Fintype.card_lt_of_injective_of_not_mem (b := x) (↑) Subtype.coe_injective <| by
     rwa [Subtype.range_coe_subtype]
 
-theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [DecidablePred p] :
+theorem Fintype.card_subtype [Fintype α] (p : α → Prop) [Fintype {a // p a}] [DecidablePred p] :
     Fintype.card { x // p x } = #{x | p x} := by
   refine Fintype.card_of_subtype _ ?_
   simp

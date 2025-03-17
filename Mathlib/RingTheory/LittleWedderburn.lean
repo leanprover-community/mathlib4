@@ -3,10 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Center
 import Mathlib.GroupTheory.ClassEquation
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Wedderburn's Little Theorem
