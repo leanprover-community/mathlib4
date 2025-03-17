@@ -19,7 +19,7 @@ require "leanprover-community" / "importGraph" @ git "main"
 require "leanprover-community" / "LeanSearchClient" @ git "main"
 require "leanprover-community" / "plausible" @ git "main"
 require "leanprover-community" / "lean-reducer" @ git "main"
-  from git "https://github.com/leanprover-community/lean-test-reducer" @ "bump_to_v4.18.0-rc1"
+  from git "git@github.com:leanprover-community/lean-test-reducer.git" @ "bump_to_v4.18.0-rc1"
 
 /-!
 ## Options for building mathlib
