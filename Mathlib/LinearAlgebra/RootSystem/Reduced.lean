@@ -58,6 +58,16 @@ lemma IsReduced.linearIndependent [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠
   have := IsReduced.eq_or_eq_neg (P := P) i j
   aesop
 
+lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
+    LinearIndependent R ![P.root i, P.root j] ↔ i ≠ j ∧ P.root i ≠ - P.root j := by
+  refine ⟨fun h ↦ ?_, fun ⟨h, h'⟩ ↦ linearIndependent P h h'⟩
+  rw [LinearIndependent.pair_iff] at h
+  contrapose! h
+  rcases eq_or_ne i j with rfl | h'
+  · exact ⟨1, -1, by simp⟩
+  · rw [h h']
+    exact ⟨1, 1, by simp⟩
+
 lemma infinite_of_linInd_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M]
     (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
     Infinite ι := by

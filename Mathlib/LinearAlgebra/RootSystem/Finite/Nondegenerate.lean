@@ -83,6 +83,13 @@ instance instIsAnisotropicOfIsCrystallographic [CharZero R] [P.IsCrystallographi
     IsAnisotropic P :=
   P.isAnisotropic_of_isValuedIn ℤ
 
+/-- The root form of an anisotropic pairing as an invariant form. -/
+@[simps] def toInvariantForm [P.IsAnisotropic] : P.InvariantForm where
+  form := P.RootForm
+  symm := P.rootForm_symmetric
+  ne_zero := IsAnisotropic.rootForm_root_ne_zero
+  isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
+
 end CommRing
 
 section IsDomain
