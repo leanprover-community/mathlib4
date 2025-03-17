@@ -8,6 +8,7 @@ open Lean Meta
 simproc_decl Nat.divisorsEq (Nat.divisors _) := fun e => do
   unless e.isAppOfArity `Nat.divisors 1 do return .continue
   let some n ← fromExpr? e.appArg! | return .continue
+  --TODO: do we want to define `Nat.divisorsList` and use this instead of `n.divisors.sort (· ≤ ·)`?
   let rhs ← (n.divisors.sort (· ≤ ·)).toFinsetExpr (α := ℕ)
   /- The last two lines can be replace by `return .done {expr := rhs }` since the proof is `rfl`.
   Not sure what's best here. -/
