@@ -12,7 +12,7 @@ import Mathlib.Order.Nat
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.Defs
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
- 
+
 /-!
 # Order on cardinal numbers
 
