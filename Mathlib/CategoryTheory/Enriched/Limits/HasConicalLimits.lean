@@ -130,7 +130,7 @@ theorem HasConicalLimitsOfShape.of_equiv [HasConicalLimitsOfShape J V C] (e : J 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
 instance HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
-  has_limits_of_shape _J := inferInstance
+  has_limits_of_shape _ := inferInstance
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
 example [HasConicalLimits V C] : HasLimits C := inferInstance
