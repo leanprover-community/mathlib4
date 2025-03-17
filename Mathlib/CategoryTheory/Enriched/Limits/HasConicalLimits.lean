@@ -97,10 +97,9 @@ example (F : J ⥤ C) [HasConicalLimit V F] : HasLimit F := inferInstance
 lemma HasConicalLimit.of_iso {F G : J ⥤ C} [HasConicalLimit V F] (e : F ≅ G) :
     HasConicalLimit V G where
   toHasLimit := hasLimit_of_iso e
-  preservesLimit_eCoyoneda X :=
-    preservesLimit_of_iso_diagram (eCoyoneda V X) e
+  preservesLimit_eCoyoneda X := preservesLimit_of_iso_diagram (eCoyoneda V X) e
 
-instance HasConicalLimit.hasConicalLimit_of_equiv (F : J ⥤ C) [HasConicalLimit V F] (e : J' ≌ J) :
+instance HasConicalLimit.of_equiv (F : J ⥤ C) [HasConicalLimit V F] (e : J' ≌ J) :
     HasConicalLimit V (e.functor ⋙ F) where
   exists_limit :=
     let cone : Cone (e.functor ⋙ F) := Cone.whisker e.functor (getLimitCone F).cone
@@ -109,11 +108,10 @@ instance HasConicalLimit.hasConicalLimit_of_equiv (F : J ⥤ C) [HasConicalLimit
   preservesLimit_eCoyoneda _ := inferInstance
 
 /-- If a `e ⋙ F` has a limit, and `e` is an equivalence, we can construct a limit of `F`. -/
-theorem HasConicalLimit.hasConicalLimit_of_equiv_comp (F : J ⥤ C) (e : J' ≌ J)
-    [HasConicalLimit V (e.functor ⋙ F)] : HasConicalLimit V F := by
-  have : HasConicalLimit V (e.inverse ⋙ e.functor ⋙ F) :=
-    hasConicalLimit_of_equiv V _ e.symm
-  apply HasConicalLimit.of_iso V (e.invFunIdAssoc F)
+theorem HasConicalLimit.of_equiv_comp (F : J ⥤ C) (e : J' ≌ J)
+    [HasConicalLimit V (e.functor ⋙ F)] : HasConicalLimit V F :=
+  have : HasConicalLimit V (e.inverse ⋙ e.functor ⋙ F) := of_equiv V _ e.symm
+  HasConicalLimit.of_iso V (e.invFunIdAssoc F)
 
 variable (C)
 
@@ -126,15 +124,13 @@ instance HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C
 
 /-- We can transport conical limits of shape `J` along an equivalence `J ≌ J'`. -/
 theorem HasConicalLimitsOfShape.of_equiv [HasConicalLimitsOfShape J V C] (e : J ≌ J') :
-    HasConicalLimitsOfShape J' V C := by
-  constructor
-  intro F
-  apply HasConicalLimit.hasConicalLimit_of_equiv_comp V _ e
+    HasConicalLimitsOfShape J' V C where
+  hasConicalLimit F := HasConicalLimit.of_equiv_comp V F e
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
 instance HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
-  has_limits_of_shape _ := inferInstance
+  has_limits_of_shape _J := inferInstance
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
 example [HasConicalLimits V C] : HasLimits C := inferInstance
