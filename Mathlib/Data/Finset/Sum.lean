@@ -216,6 +216,7 @@ def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β wh
 lemma sumEquiv_symm_apply {α β : Type*} (s : Finset α × Finset β) :
     sumEquiv.symm s = disjSum s.1 s.2 := rfl
 
+@[simp]
 lemma sup_disjSum
     {α β γ : Type*} [SemilatticeSup γ] [OrderBot γ] (f : (α ⊕ β) → γ)
     (s : Finset α) (t : Finset β) :
@@ -223,6 +224,7 @@ lemma sup_disjSum
   refine eq_of_forall_ge_iff fun c ↦ ?_
   simp only [Finset.sup_le_iff, Sum.forall, inl_mem_disjSum, inr_mem_disjSum, sup_le_iff]
 
+@[simp]
 lemma inf_disjSum
     {α β γ : Type*} [SemilatticeInf γ] [OrderTop γ] (f : (α ⊕ β) → γ)
     (s : Finset α) (t : Finset β) :
