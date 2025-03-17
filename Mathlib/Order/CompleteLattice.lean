@@ -1135,7 +1135,7 @@ lemma biSup_ge_eq_of_antitone [Preorder β] {f : β → α} (hf : Antitone f) (b
     ⨆ (b' ≥ b), f b' = f b :=
   biSup_le_eq_of_monotone (β := βᵒᵈ) hf.dual_left b
 
-lemma biInf_ge_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b : β) :
+lemma biInf_ge_eq_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b : β) :
     ⨅ (b' ≥ b), f b' = f b :=
   biInf_le_eq_of_antitone (β := βᵒᵈ) hf.dual_left b
 
