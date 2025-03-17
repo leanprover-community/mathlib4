@@ -85,22 +85,27 @@ end
 section delab
 
 open Lean PrettyPrinter.Delaborator SubExpr
-open Mathlib.Tactic.Superscript (subscriptable superscriptable)
+open Mathlib.Tactic (delabSubscript delabSuperscript)
 
 private def check_subscript {α : Type} (_ : α) := ()
+local syntax:arg "#" noWs subscript(term) : term
+local macro_rules | `(#$a:subscript) => `(check_subscript $a)
+
 private def check_superscript {α : Type} (_ : α) := ()
+local syntax:arg "#" noWs superscript(term) : term
+local macro_rules | `(#$a:superscript) => `(check_superscript $a)
 
 @[app_delab check_subscript]
-private def delabCheckSub : Delab := withOverApp 2 do
-  let #[_, x] := (← getExpr).getAppArgs | failure
-  let () ← withAppArg <| subscriptable x
-  `("ok")
+private def delabCheckSubscript : Delab := withOverApp 2 do
+  let #[_, e] := (← getExpr).getAppArgs | failure
+  let sub ← withAppArg <| delabSubscript e
+  `(#$sub:subscript)
 
 @[app_delab check_superscript]
-private def delabCheckSuper : Delab := withOverApp 2 do
-  let #[_, x] := (← getExpr).getAppArgs | failure
-  let () ← withAppArg <| superscriptable x
-  `("ok")
+private def delabCheckSuperscript : Delab := withOverApp 2 do
+  let #[_, e] := (← getExpr).getAppArgs | failure
+  let sup ← withAppArg <| delabSuperscript e
+  `(#$sup:superscript)
 
 /-- `α` can not be subscripted or superscripted. -/
 private def α {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
@@ -109,18 +114,18 @@ private def β {α : Type} {β : Type} : α → β → Unit := fun _ _ ↦ ()
 
 variable (n : String)
 
-/-- info: "ok" : Unit -/
-#guard_msgs in #check check_subscript (1234567890 == 1234567890)
-/-- info: "ok" : Unit -/
-#guard_msgs in #check check_subscript (β n (1 + 2 - 3 = 0))
+/-- info: #₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀ : Unit -/
+#guard_msgs in #check #₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀
+/-- info: #ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎ : Unit -/
+#guard_msgs in #check #ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎
 
 /-- info: check_subscript (α 0 0) : Unit -/
 #guard_msgs in #check check_subscript (α 0 0)
 
-/-- info: "ok" : Unit -/
-#guard_msgs in #check check_superscript (1234567890 == 1234567890)
-/-- info: "ok" : Unit -/
-#guard_msgs in #check check_superscript (β n (1 + 2 - 3 = 0))
+/-- info: #¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰ : Unit -/
+#guard_msgs in #check #¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰
+/-- info: #ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾ : Unit -/
+#guard_msgs in #check #ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾
 
 /-- info: check_superscript (α 0 0) : Unit -/
 #guard_msgs in #check check_superscript (α 0 0)
