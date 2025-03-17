@@ -196,7 +196,7 @@ def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
 /-- A subgraph is called an *induced subgraph* if vertices of `G'` are adjacent if
 they are adjacent in `G`. -/
 def IsInduced (G' : Subgraph G) : Prop :=
-  ∀ {v w : V}, v ∈ G'.verts → w ∈ G'.verts → G.Adj v w → G'.Adj v w
+  ∀ ⦃v⦄, v ∈ G'.verts → ∀ ⦃w⦄, w ∈ G'.verts → G.Adj v w → G'.Adj v w
 
 @[simp] protected lemma IsInduced.adj {G' : G.Subgraph} (hG' : G'.IsInduced) {a b : G'.verts} :
     G'.Adj a b ↔ G.Adj a b :=
@@ -419,7 +419,7 @@ theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).v
 
 @[simp] lemma coe_bot : (⊥ : G.Subgraph).coe = ⊥ := rfl
 
-@[simp] lemma IsInduced.top : (⊤ : G.Subgraph).IsInduced := fun _ _ ↦ id
+@[simp] lemma IsInduced.top : (⊤ : G.Subgraph).IsInduced := fun _ _ _ _ ↦ id
 
 /-- The graph isomorphism between the top element of `G.subgraph` and `G`. -/
 def topIso : (⊤ : G.Subgraph).coe ≃g G where
