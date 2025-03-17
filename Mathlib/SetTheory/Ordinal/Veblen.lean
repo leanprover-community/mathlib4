@@ -369,26 +369,23 @@ theorem omega0_opow_epsilon (o : Ordinal) : ω ^ ε_ o = ε_ o := by
 
 /-- `ε₀` is the limit of `0`, `ω ^ 0`, `ω ^ ω ^ 0`, … -/
 theorem lt_epsilon0 : o < ε₀ ↔ ∃ n : ℕ, o < (fun a ↦ ω ^ a)^[n] 0 := by
-  rw [epsilon0_eq_nfp, lt_nfp]
+  rw [epsilon0_eq_nfp, lt_nfp_iff]
 
 /-- `ω ^ ω ^ … ^ 0 < ε₀` -/
 theorem iterate_omega0_opow_lt_epsilon0 (n : ℕ) : (fun a ↦ ω ^ a)^[n] 0 < ε₀ := by
-  rw [lt_epsilon0]
-  use n + 1
-  induction n with
-  | zero => simp
-  | succ n IH => rwa [Function.iterate_succ_apply', Function.iterate_succ_apply',
-      opow_lt_opow_iff_right one_lt_omega0]
+  rw [epsilon0_eq_nfp]
+  apply iterate_lt_nfp (isNormal_opow one_lt_omega0).strictMono
+  simp
 
 theorem omega0_lt_epsilon (o : Ordinal) : ω < ε_ o := by
   apply lt_of_lt_of_le _ <| (veblen_right_strictMono _).monotone (Ordinal.zero_le o)
   simpa using iterate_omega0_opow_lt_epsilon0 2
 
-theorem nat_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
+theorem natCast_lt_epsilon (n : ℕ) (o : Ordinal) : n < ε_ o :=
   (nat_lt_omega0 n).trans <| omega0_lt_epsilon o
 
 theorem epsilon_pos (o : Ordinal) : 0 < ε_ o :=
-  nat_lt_epsilon 0 o
+  natCast_lt_epsilon 0 o
 
 /-! ### Gamma function -/
 
@@ -443,16 +440,13 @@ theorem gamma0_le_of_veblen_le (h : veblen o 0 ≤ o) : Γ₀ ≤ o := by
 
 /-- `Γ₀` is the limit of `0`, `veblen 0 0`, `veblen (veblen 0 0) 0`, … -/
 theorem lt_gamma0 : o < Γ₀ ↔ ∃ n : ℕ, o < (fun a ↦ veblen a 0)^[n] 0 := by
-  rw [gamma0_eq_nfp, lt_nfp]
+  rw [gamma0_eq_nfp, lt_nfp_iff]
 
 /-- `veblen (veblen … (veblen 0 0) … 0) 0 < Γ₀` -/
 theorem iterate_veblen_lt_gamma0 (n : ℕ) : (fun a ↦ veblen a 0)^[n] 0 < Γ₀ := by
-  rw [lt_gamma0]
-  use n + 1
-  induction n with
-  | zero => simp
-  | succ n _ => rwa [Function.iterate_succ_apply', Function.iterate_succ_apply',
-      veblen_zero_lt_veblen_zero]
+  rw [gamma0_eq_nfp]
+  apply iterate_lt_nfp veblen_zero_strictMono
+  simp
 
 theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
   apply lt_of_lt_of_le _ <| (gamma_le_gamma.2 (Ordinal.zero_le _))
@@ -461,10 +455,10 @@ theorem epsilon0_lt_gamma (o : Ordinal) : ε₀ < Γ_ o := by
 theorem omega0_lt_gamma (o : Ordinal) : ω < Γ_ o :=
   (omega0_lt_epsilon 0).trans (epsilon0_lt_gamma o)
 
-theorem nat_lt_gamma (n : ℕ) : n < Γ_ o :=
+theorem natCast_lt_gamma (n : ℕ) : n < Γ_ o :=
   (nat_lt_omega0 n).trans (omega0_lt_gamma o)
 
 theorem gamma_pos : 0 < Γ_ o :=
-  nat_lt_gamma 0
+  natCast_lt_gamma 0
 
 end Ordinal
