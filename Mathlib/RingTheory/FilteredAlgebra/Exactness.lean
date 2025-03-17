@@ -43,20 +43,31 @@ open DirectSum
 namespace AssociatedGradedAddMonoidHom
 
 theorem mem_ker_iff (x : AssociatedGraded FB FB_lt) :
-    x ∈ Gr+[g].ker ↔ ∀ i : ι, x i ∈ Gr+(i)[g].ker  :=
-  mem_map_ker_iff (fun i ↦ Gr+(i)[g]) x
+    x ∈ Gr+[g].ker ↔ ∀ i : ι, x i ∈ Gr+(i)[g].ker  := by
+  simp only [AssociatedGradedAddMonoidHom, DirectSum.ker_map, AddSubgroup.mem_comap,
+    coeFnAddMonoidHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  exact ⟨fun a i ↦ a i trivial, fun a i _ ↦ a i⟩
 
 theorem associatedGraded_of_mem_ker_iff {i : ι} [DecidableEq ι] (u : GradedPiece FB FB_lt i) :
-    of (GradedPiece FB FB_lt) i u ∈ Gr+[g].ker ↔ u ∈ Gr+(i)[g].ker :=
-  of_mem_map_ker_iff (fun i ↦ Gr+(i)[g]) i u
+    AssociatedGraded.of u ∈ Gr+[g].ker ↔ u ∈ Gr+(i)[g].ker := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · simp only [AssociatedGradedAddMonoidHom, AddMonoidHom.mem_ker, AssociatedGraded.of, map_of] at h
+    exact DFinsupp.single_eq_zero.mp h
+  · simp [AddMonoidHom.mem_ker.mp h]
 
 theorem mem_range_iff [DecidableEq ι] [(i : ι) → (x : GradedPiece FB FB_lt i) → Decidable (x ≠ 0)]
-    (m : AssociatedGraded FB FB_lt) : m ∈ Gr+[f].range ↔ ∀ i : ι, m i ∈ Gr+(i)[f].range :=
-  mem_map_range_iff (fun i ↦ Gr+(i)[f]) m
+    (m : AssociatedGraded FB FB_lt) : m ∈ Gr+[f].range ↔ ∀ i : ι, m i ∈ Gr+(i)[f].range := by
+  simp only [AssociatedGradedAddMonoidHom, DirectSum.range_map, AddSubgroup.mem_comap,
+    coeFnAddMonoidHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  exact ⟨fun a i ↦ a i trivial, fun a i a_1 ↦ a i⟩
 
-theorem associatedGraded_of_mem_range_iff {i : ι} [DecidableEq ι] (u : GradedPiece FB FB_lt i) :
-    (of (GradedPiece FB FB_lt) i u) ∈ Gr+[f].range ↔ u ∈ Gr+(i)[f].range :=
-  of_mem_map_range_iff (fun i ↦ Gr+(i)[f]) i u
+theorem associatedGraded_of_mem_range_iff {i : ι} [DecidableEq ι] (y : GradedPiece FB FB_lt i) :
+    (AssociatedGraded.of y) ∈ Gr+[f].range ↔ y ∈ Gr+(i)[f].range := by
+  refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
+  · use x i
+    rw [← of_eq_same i y, ← hx, AssociatedGradedAddMonoidHom_apply]
+  · use AssociatedGraded.of x
+    simp [hx]
 
 theorem GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact (i : ι) [DecidableEq ι]
     (Gexact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact Gr+(i)[f] Gr+(i)[g] := by
