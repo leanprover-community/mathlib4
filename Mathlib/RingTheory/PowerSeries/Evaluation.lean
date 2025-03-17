@@ -168,7 +168,7 @@ theorem continuous_aeval (ha : IsTopologicallyNilpotent a) :
     Continuous (aeval ha : PowerSeries R → S) :=
   MvPowerSeries.continuous_aeval (hasEval ha)
 
-@[simp, norm_cast]
+@[simp]
 theorem aeval_coe (ha : IsTopologicallyNilpotent a) (p : Polynomial R) :
     aeval ha (p : PowerSeries R) = Polynomial.aeval a p := by
   rw [coe_aeval, Polynomial.aeval_def, eval₂_coe]
