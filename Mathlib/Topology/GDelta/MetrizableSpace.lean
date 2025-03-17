@@ -41,19 +41,10 @@ instance (priority := 100) [PseudoMetrizableSpace X] : NormalSpace X where
 instance (priority := 500) [PseudoMetrizableSpace X] : PerfectlyNormalSpace X where
   closed_gdelta s hs := by
     let _ := pseudoMetrizableSpacePseudoMetric X
-    obtain rfl | he := s.eq_empty_or_nonempty
-    · exact IsGδ.empty
-    convert IsGδ.iInter_of_isOpen
-      fun n : ℕ ↦ isOpen_Iio (a := (n + 1 : ℝ)⁻¹).preimage (continuous_infDist_pt s)
-    apply subset_antisymm
-    · refine subset_iInter fun n x hx ↦ ?_
-      simp only [mem_preimage, infDist_zero_of_mem hx, mem_Iio, inv_pos]
-      positivity
-    · intro x hx
-      rw [hs.mem_iff_infDist_zero he]
-      refine le_antisymm (le_of_forall_pos_lt_add fun ε hε ↦ ?_) infDist_nonneg
-      obtain ⟨n, hn⟩ := exists_nat_one_div_lt hε
-      exact (mem_iInter.mp hx n).trans <| by simpa using hn
+    rcases (@uniformity_hasBasis_open X _).exists_antitone_subbasis with ⟨U, hUo, hU, -⟩
+    rw [← hs.closure_eq, ← hU.biInter_biUnion_ball]
+    refine .biInter (to_countable _) fun n _ => IsOpen.isGδ ?_
+    exact isOpen_biUnion fun x _ => UniformSpace.isOpen_ball _ (hUo _).2
 
 instance (priority := 100) [MetrizableSpace X] : T4Space X where
 
