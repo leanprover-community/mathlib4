@@ -827,14 +827,14 @@ lemma chevalley_mvPolynomial_mvPolynomial
       simp_rw [← (commAlgEquiv R (Fin n) (Fin m)).symm.injective.eq_iff,
         AlgEquiv.symm_apply_apply]
       induction p using MvPolynomial.induction_on with
-      | h_C q =>
+      | C q =>
         exact ⟨0, q, by simp, (commAlgEquiv _ _ _).injective <|
           by simp [commAlgEquiv_C, σ]⟩
-      | h_add p q hp hq =>
+      | add p q hp hq =>
         obtain ⟨q₁, q₂, hq₁, rfl⟩ := hp
         obtain ⟨q₃, q₄, hq₃, rfl⟩ := hq
         refine ⟨q₁ + q₃, q₂ + q₄, add_mem hq₁ hq₃, by simp only [map_add, add_add_add_comm]⟩
-      | h_X p i hp =>
+      | mul_X p i hp =>
         obtain ⟨q₁, q₂, hq₁, rfl⟩ := hp
         simp only [← (commAlgEquiv R (Fin n) (Fin m)).injective.eq_iff,
           map_mul, AlgEquiv.apply_symm_apply, commAlgEquiv_X]
