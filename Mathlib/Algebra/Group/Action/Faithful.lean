@@ -47,16 +47,16 @@ class FaithfulSMul (M : Type*) (α : Type*) [SMul M α] : Prop where
 export FaithfulSMul (eq_of_smul_eq_smul)
 export FaithfulVAdd (eq_of_vadd_eq_vadd)
 
+instance (R : Type*) [MulOneClass R] : FaithfulSMul R R := ⟨fun {r₁ r₂} h ↦ by simpa using h 1⟩
+
+lemma faithfulVAdd_iff (P : Type*) [VAdd G P] :
+    FaithfulVAdd G P ↔ ∀ {g₁ g₂ : G}, (∀ p : P, g₁ +ᵥ p = g₂ +ᵥ p) → g₁ = g₂ :=
+  ⟨fun h ↦ h.eq_of_vadd_eq_vadd, FaithfulVAdd.mk⟩
+
+lemma faithfulSMul_iff [SMul M α] :
+    FaithfulSMul M α ↔ ∀ {m₁ m₂ : M}, (∀ a : α, m₁ • a = m₂ • a) → m₁ = m₂ :=
+  ⟨fun h ↦ h.eq_of_smul_eq_smul, FaithfulSMul.mk⟩
+
 @[to_additive]
 lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
   fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
-
-/-- `Monoid.toMulAction` is faithful on cancellative monoids. -/
-@[to_additive "`AddMonoid.toAddAction` is faithful on additive cancellative monoids."]
-instance RightCancelMonoid.faithfulSMul [RightCancelMonoid α] : FaithfulSMul α α :=
-  ⟨fun h ↦ mul_right_cancel (h 1)⟩
-
-/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
-@[to_additive " `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. "]
-instance LefttCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
-  ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
