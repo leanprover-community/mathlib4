@@ -245,12 +245,6 @@ noncomputable def finsuppProdLEquiv {α β : Type*} (R : Type*) {M : Type*} [Sem
       ext
       simp [finsuppProdEquiv, curry_apply] }
 
-@[simp]
-theorem finsuppProdLEquiv_symm_apply {α β R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-    (f : α →₀ β →₀ M) (xy) : (finsuppProdLEquiv R).symm f xy = f xy.1 xy.2 := by
-  rw [← Prod.mk.eta (p := xy)]
-  simp
-
 end Prod
 
 end Finsupp
