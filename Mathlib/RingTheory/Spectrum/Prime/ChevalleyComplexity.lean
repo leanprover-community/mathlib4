@@ -21,7 +21,7 @@ polynomials.
 
 We say a closed set *has complexity at most `M`* if it can be written as the zero locus of a family
 of at most `M` polynomials each of degree at most `M`. We say a constructible set *has complexity
-at most `M`* if it can be written as `(C₁ ∪ ... ∪ Cₖ) \ D` where `k ≤ M`, `C₁, ..., Cₖ` are open
+at most `M`* if it can be written as `(C₁ ∪ ... ∪ Cₖ) \ D` where `k ≤ M`, `C₁, ..., Cₖ` are closed
 sets of complexity at most `M` and `D` is a closed set.
 
 This file proves a complexity-aware version of Chevalley's theorem, namely that a constructible set
@@ -34,11 +34,11 @@ The bound `O_{M, m, n}(1)` we find is of tower type.
 ## Sketch proof
 
 We first show the result in the case of `C : R → R[X]`. We prove this by induction on the number of
-components of the form `U \ V`, then by induction again on the number of polynomials used to
-describe `U`.
+components of the form `C \ D`, then by induction again on the number of polynomials used to
+describe `C`. See the (private) lemma `chevalley_polynomialC`.
 
 Secondly, we prove the result in the case of `C : R → R[X₁, ..., Xₘ]` by composing the first result
-with itself `m` times.
+with itself `m` times. See the (private) lemma `chevalley_mvPolynomialC`.
 
 Note that, if composing the first result for `C : R → R[X₁]` and `C : R[X₁] → R[X₁, X₂]` naïvely,
 the second map `C : R[X₁] → R[X₁, X₂]` won't *see* the `X₁`-degree of the polynomials used to
@@ -47,12 +47,16 @@ which all coefficients of all used polynomials lie in.
 
 Finally, we deduce the result for any `f : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ]` by decomposing it into
 two maps `C : R[Y₁, ..., Yₙ] → R[X₁, ..., Xₘ, Y₁, ..., Yₙ]` and
-`σ : R[X₁, ..., Xₘ, Y₁, ..., Yₙ] → R[X₁, ..., Xₘ]`.
+`σ : R[X₁, ..., Xₘ, Y₁, ..., Yₙ] → R[X₁, ..., Xₘ]`. See `chevalley_mvPolynomial_mvPolynomial`.
 
 ## Main reference
 
 The structure of the proof follows https://stacks.math.columbia.edu/tag/00FE, although they do
-not give an explicit bound on the complexity
+not give an explicit bound on the complexity.
+
+## TODO
+
+More general complexity-less version of Chevalley's theorem. This will be PRed soon.
 -/
 
 variable {R₀ R S M A : Type*} [CommRing R₀] [CommRing R] [Algebra R₀ R] [CommRing S] [Algebra R₀ S]
@@ -117,8 +121,7 @@ variable (e) in
 /-- The measure that will decrease during the induction in the `C : R → R[X]` case of
 Chevalley's theorem with complexity bound. -/
 private def degree : DegreeType n :=
-  toLex (Polynomial.degree ∘ e, ¬ ∃ i, (e i).Monic ∧
-    ∀ j, e j ≠ 0 → (e i).degree ≤ (e j).degree)
+  toLex (Polynomial.degree ∘ e, ¬ ∃ i, (e i).Monic ∧ ∀ j, e j ≠ 0 → (e i).degree ≤ (e j).degree)
 
 @[simp] private lemma ofLex_degree_fst (i) : (ofLex e.degree).fst i = (e i).degree := rfl
 
@@ -156,8 +159,8 @@ universe u
 /--
 The structure of the induction in the proof of Chevalley's theorem:
 Consider a property on a vector `e` of polynomials. Suppose that it holds for the following cases:
-1. The vector contains a single monic polynomial (and zero otherwise).
-2. The vector contains zeroes only.
+1. The vector contains zeroes only.
+2. The vector contains a single monic polynomial (and zero otherwise).
 3. Suppose `eᵢ` has the lowest degree among all monic polynomials and `eⱼ` is some other polynomial.
   If the property holds when `eⱼ` is replaced by `eⱼ % eᵢ`, then it holds for `e`.
 4. Suppose the property holds for both the localization at some leading coefficient of `eᵢ` and
@@ -167,13 +170,13 @@ Then it holds for all vectors `e` over all rings.
 -/
 private lemma induction_structure (n : ℕ)
     (P : ∀ (R : Type u) [CommRing R], (InductionObj R n) → Prop)
-    (hP₀ : ∀ (R) [CommRing R] (e : InductionObj R n) (i : Fin n),
-      (e.1 i).Monic → (∀ j ≠ i, e.1 j = 0) → P R e)
     (hP₁ : ∀ (R) [CommRing R], P R ⟨0⟩)
+    (hP₂ : ∀ (R) [CommRing R] (e : InductionObj R n) (i : Fin n),
+      (e.1 i).Monic → (∀ j ≠ i, e.1 j = 0) → P R e)
     (hP₃ : ∀ (R) [CommRing R] (e : InductionObj R n) (i j : Fin n),
       (e.1 i).Monic → (e.1 i).degree ≤ (e.1 j).degree → i ≠ j →
       P R ⟨update e.1 j (e.1 j %ₘ e.1 i)⟩ → P R e)
-    (hP : ∀ (R) [CommRing R] (c : R) (i : Fin n) (e : InductionObj R n), c = (e.1 i).leadingCoeff →
+    (hP₄ : ∀ (R) [CommRing R] (c : R) (i : Fin n) (e : InductionObj R n), c = (e.1 i).leadingCoeff →
       c ≠ 0 →
       P (Away c) ⟨Polynomial.C (IsLocalization.Away.invSelf (S := Away c) c) •
         mapRingHom (algebraMap _ _) ∘ e⟩ →
@@ -195,7 +198,7 @@ private lemma induction_structure (n : ℕ)
       -- Case I.ii : `e j = 0` for all `j ≠ i`.
       by_cases H' : ∀ j ≠ i, e.1 j = 0
       -- then `I = Ideal.span {e i}`
-      · exact hP₀ R e i hi H'
+      · exact hP₂ R e i hi H'
       -- Case I.i : There is another `e j ≠ 0`
       · simp only [ne_eq, not_forall, Classical.not_imp] at H'
         obtain ⟨j, hj, hj'⟩ := H'
@@ -228,7 +231,7 @@ private lemma induction_structure (n : ℕ)
       exact Nat.find_min' _ ⟨j, degree_eq_natDegree hj, hj⟩
     -- We replace `R` by `R ⧸ Ideal.span {(e i).leadingCoeff}` where `(e i).degree` is lowered
     -- and `Away (e i).leadingCoeff` where `(e i).leadingCoeff` becomes invertible.
-    apply hP _ _ i e rfl (by simpa using hi) (H_IH _ ?_ _ rfl) (H_IH _ ?_ _ rfl)
+    apply hP₄ _ _ i e rfl (by simpa using hi) (H_IH _ ?_ _ rfl) (H_IH _ ?_ _ rfl)
     · rw [hv, Prod.Lex.lt_iff']
       constructor
       · intro j
@@ -417,23 +420,6 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
   intro S; revert R₀; revert S
   classical
   apply induction_structure
-  · intros R _ g i hi hi_min _ R₀ _ f
-    let M := R[X] ⧸ Ideal.span {g.1 i}
-    have : Module.Free R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
-    have : Module.Finite R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
-    refine ⟨(Finset.range (Module.finrank R M)).image
-      fun j ↦ ⟨(Algebra.lmul R M (Ideal.Quotient.mk _ f)).charpoly.coeff j, 0, 0⟩, ?_, ?_⟩
-    · ext x
-      have : zeroLocus (Set.range g.val) = zeroLocus {g.1 i} := by
-        rw [Set.range_eq_iUnion, zeroLocus_iUnion]
-        refine (Set.iInter_subset _ _).antisymm (Set.subset_iInter fun j ↦ ?_)
-        by_cases hij : i = j
-        · subst hij; rfl
-        · rw [hi_min j (.symm hij), zeroLocus_singleton_zero]; exact Set.subset_univ _
-      rw [this, ← Polynomial.algebraMap_eq, mem_image_comap_zeroLocus_sdiff,
-        IsScalarTower.algebraMap_apply R[X] M, isNilpotent_tensor_residueField_iff]
-      simp [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.subset_def, M]
-    · simp
   · intro R _ R₀ _ _ f
     refine ⟨(Finset.range (f.natDegree + 2)).image fun j ↦ ⟨f.coeff j, 0, 0⟩, ?_, ?_⟩
     · convert image_comap_C_basicOpen f
@@ -453,6 +439,23 @@ private lemma statement : ∀ S : InductionObj R n, Statement R₀ R n S := by
           · exact ⟨f.natDegree + 1, by simp,
               by simp [f.coeff_eq_zero_of_natDegree_lt (lt_of_not_le hi)]⟩
         · ext; simp [eq_comm]
+    · simp
+  · intros R _ g i hi hi_min _ R₀ _ f
+    let M := R[X] ⧸ Ideal.span {g.1 i}
+    have : Module.Free R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
+    have : Module.Finite R M := .of_basis (AdjoinRoot.powerBasis' hi).basis
+    refine ⟨(Finset.range (Module.finrank R M)).image
+      fun j ↦ ⟨(Algebra.lmul R M (Ideal.Quotient.mk _ f)).charpoly.coeff j, 0, 0⟩, ?_, ?_⟩
+    · ext x
+      have : zeroLocus (Set.range g.val) = zeroLocus {g.1 i} := by
+        rw [Set.range_eq_iUnion, zeroLocus_iUnion]
+        refine (Set.iInter_subset _ _).antisymm (Set.subset_iInter fun j ↦ ?_)
+        by_cases hij : i = j
+        · subst hij; rfl
+        · rw [hi_min j (.symm hij), zeroLocus_singleton_zero]; exact Set.subset_univ _
+      rw [this, ← Polynomial.algebraMap_eq, mem_image_comap_zeroLocus_sdiff,
+        IsScalarTower.algebraMap_apply R[X] M, isNilpotent_tensor_residueField_iff]
+      simp [BasicConstructibleSetData.toSet, ConstructibleSetData.toSet, Set.subset_def, M]
     · simp
   · intro R _ c i j hi hle hne H R₀ _ _ f
     cases subsingleton_or_nontrivial R
