@@ -50,11 +50,15 @@ end Zero
 ## Simplifying Lemmas in cases where α is an AddMonoid
 -/
 @[simp]
-lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
-    (a + b).untop₀ = a.untop₀ + b.untop₀ := by
+lemma untopD_add [AddMonoid α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    (a + b).untopD c = a.untopD c + b.untopD c := by
   lift a to α using ha
   lift b to α using hb
   simp [← coe_add]
+
+@[simp]
+lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+    (a + b).untop₀ = a.untop₀ + b.untop₀ := untopD_add ha hb
 
 /-!
 ## Simplifying Lemmas in cases where α is a MulZeroClass
@@ -62,18 +66,7 @@ lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b �
 
 @[simp]
 lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
-    (a * b).untop₀ = a.untop₀ * b.untop₀ := by
-  by_cases h₁a : a = 0
-  · simp [h₁a]
-  by_cases h₁b : b = 0
-  · simp [h₁b]
-  by_cases h₂a : a = ⊤
-  · simp [h₂a, top_mul h₁b]
-  by_cases h₂b : b = ⊤
-  · simp [h₂b, mul_top h₁a]
-  lift a to α using h₂a
-  lift b to α using h₂b
-  simp [← coe_mul]
+    (a * b).untop₀ = a.untop₀ * b.untop₀ := untopD_zero_mul a b
 
 /-!
 ## Simplifying Lemmas in cases where α is a LinearOrderedAddCommGroup
