@@ -108,7 +108,7 @@ theorem dedup_idem {l : List α} : dedup (dedup l) = dedup l :=
   pwFilter_idem
 
 theorem dedup_append (l₁ l₂ : List α) : dedup (l₁ ++ l₂) = l₁ ∪ dedup l₂ := by
-  induction l₁ with | nil => rfl | cons a l₁ IH =>
+  induction l₁ with | nil => rfl | cons a l₁ IH => ?_
   simp only [cons_union] at *
   rw [← IH, cons_append]
   by_cases h : a ∈ dedup (l₁ ++ l₂)

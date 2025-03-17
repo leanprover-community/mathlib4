@@ -58,8 +58,8 @@ theorem nodup_iff_sublist {l : List α} : Nodup l ↔ ∀ a, ¬[a, a] <+ l :=
     by
       induction l <;> intro h; · exact nodup_nil
       case cons a l IH =>
-        exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons fun al =>
-        h a <| (singleton_sublist.2 al).cons_cons _⟩
+        exact (IH fun a s => h a <| sublist_cons_of_sublist _ s).cons
+          fun al => h a <| (singleton_sublist.2 al).cons_cons _⟩
 
 @[simp]
 theorem nodup_mergeSort {l : List α} {le : α → α → Bool} : (l.mergeSort le).Nodup ↔ l.Nodup :=
@@ -359,7 +359,7 @@ protected theorem Nodup.set :
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :
     l.map (Function.update f x y) =
       if x ∈ l then (l.map f).set (l.idxOf x) y else l.map f := by
-  induction l with | nil => simp | cons hd tl ihl =>
+  induction l with | nil => simp | cons hd tl ihl => ?_
   rw [nodup_cons] at hl
   simp only [mem_cons, map, ihl hl.2]
   by_cases H : hd = x
@@ -384,7 +384,7 @@ theorem Nodup.pairwise_of_set_pairwise {l : List α} {r : α → α → Prop} (h
 @[simp]
 theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
     { a | a ∈ l }.Pairwise r ↔ l.Pairwise r := by
-  induction l with | nil => simp | cons a l ih =>
+  induction l with | nil => simp | cons a l ih => ?_
   rw [List.nodup_cons] at hl
   have : ∀ b ∈ l, ¬a = b → r a b ↔ r a b := fun b hb =>
     imp_iff_right (ne_of_mem_of_not_mem hb hl.1).symm

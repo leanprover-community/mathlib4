@@ -185,7 +185,7 @@ theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f
 
 theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Function.Injective f) (x : α)
     (s : Multiset α) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction s using Multiset.induction_on with | empty => simp | cons y s ih =>
+  induction s using Multiset.induction_on with | empty => simp | cons y s ih => ?_
   by_cases hxy : y = x
   · cases hxy
     simp
@@ -193,7 +193,7 @@ theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Functi
 
 theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
     (s : Multiset α) {x : α} (h : x ∈ s) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction s using Multiset.induction_on with | empty => simp | cons y s ih =>
+  induction s using Multiset.induction_on with | empty => simp | cons y s ih => ?_
   rcases eq_or_ne y x with rfl | hxy
   · simp
   replace h : x ∈ s := by simpa [hxy.symm] using h
