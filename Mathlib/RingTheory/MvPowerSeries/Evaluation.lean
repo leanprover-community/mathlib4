@@ -81,7 +81,7 @@ theorem HasEval.mul_left [IsTopologicalRing S] [IsLinearTopology S S]
     (c : σ → S) {x : σ → S} (hx : HasEval x) : HasEval (c * x) where
   hpow s := by
     simp only [IsTopologicallyNilpotent, Pi.mul_apply, smul_eq_mul, mul_pow]
-    apply IsLinearTopology.tendsto_mul_zero_of_right _ _ (hx.hpow s)
+    exact IsLinearTopology.tendsto_mul_zero_of_right _ _ (hx.hpow s)
   tendsto_zero := IsLinearTopology.tendsto_mul_zero_of_right _ _ hx.tendsto_zero
 
 theorem HasEval.mul_right [IsTopologicalRing S] [IsLinearTopology S S]
@@ -91,12 +91,12 @@ theorem HasEval.mul_right [IsTopologicalRing S] [IsLinearTopology S S]
 /-- [Bourbaki, *Algebra*, chap. 4, §4, n°3, Prop. 4 (i) (a & b)][bourbaki1981]. -/
 theorem HasEval.map (hφ : Continuous φ) {a : σ → R} (ha : HasEval a) :
     HasEval (fun s ↦ φ (a s)) where
-  hpow := fun s ↦ IsTopologicallyNilpotent.map hφ (ha.hpow s)
+  hpow s := (ha.hpow s).map hφ
   tendsto_zero := (map_zero φ ▸ hφ.tendsto 0).comp ha.tendsto_zero
 
 protected theorem HasEval.X:
     HasEval (fun s ↦ (MvPowerSeries.X s : MvPowerSeries σ R)) where
-  hpow := fun s ↦ tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
+  hpow s := tendsto_pow_zero_of_constantCoeff_zero (constantCoeff_X s)
   tendsto_zero := variables_tendsto_zero
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
@@ -105,7 +105,7 @@ def hasEvalIdeal [IsTopologicalRing S] [IsLinearTopology S S] : Ideal (σ → S)
   carrier := {a | HasEval a}
   add_mem' := HasEval.add
   zero_mem' := HasEval.zero
-  smul_mem' c {x} hx := smul_eq_mul c x ▸ HasEval.mul_left c hx
+  smul_mem' := HasEval.mul_left
 
 theorem mem_hasEvalIdeal_iff [IsTopologicalRing S] [IsLinearTopology S S] {a : σ → S} :
     a ∈ hasEvalIdeal ↔ HasEval a := by
