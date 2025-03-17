@@ -203,18 +203,18 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | "ERR_UNICODE_VARIANT" => do
-          match (← errorMessage.get? 0) with
+          match (← errorMessage[0]?) with
           | "wrong" | "missing" =>
-            let offending := removeQuotations (← errorMessage.get? 6)
-            let charPos ← (← errorMessage.get? 5).stripSuffix ":" |>.toNat?
-            let selector := match ← errorMessage.get? 12 with
+            let offending := removeQuotations (← errorMessage[6]?)
+            let charPos ← (← errorMessage[5]?).stripSuffix ":" |>.toNat?
+            let selector := match ← errorMessage[12]? with
             | "emoji-variant:" => UnicodeVariant.emoji
             | "text-variant:" => UnicodeVariant.text
             | _ => none
             StyleError.unicodeVariant offending selector ⟨charPos⟩
           | "unexpected" =>
-            let offending := removeQuotations (← errorMessage.get? 6)
-            let charPos ← (← errorMessage.get? 5).stripSuffix ":" |>.toNat?
+            let offending := removeQuotations (← errorMessage[6]?)
+            let charPos ← (← errorMessage[5]?).stripSuffix ":" |>.toNat?
             StyleError.unicodeVariant offending none ⟨charPos⟩
           | _ => none
         | _ => none
