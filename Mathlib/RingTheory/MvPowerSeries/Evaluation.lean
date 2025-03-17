@@ -15,10 +15,10 @@ import Mathlib.Topology.Algebra.UniformRing
 
 /-! # Evaluation of multivariate power series
 
-Let `σ`, `R` `S` be types, with `CommRing R`, `CommRing S`.
-One assumes that `TopologicalRing R` and `UniformAddGroup R`,
+Let `σ`, `R`, `S` be types, with `CommRing R`, `CommRing S`.
+One assumes that `IsTopologicalRing R` and `UniformAddGroup R`,
 and that `S` is a complete and separated topological `R`-algebra,
-with `LinearTopology R`, which means there is a basis of neighborhoods of 0
+with `IsLinearTopology S S`, which means there is a basis of neighborhoods of 0
 consisting of ideals.
 
 Given `φ : R →+* S`, `a : σ → S`, and `f : MvPowerSeries σ R`,
@@ -29,15 +29,15 @@ its values are irrelevant unless `φ` is continuous and `a` satisfies two condit
 bundled in `MvPowerSeries.HasEval a` :
   - for all `s : σ`, `a s` is topologically nilpotent,
     meaning that `(a s) ^ n` tends to 0 when `n` tends to infinity
-  - when `a s` tends to  zero for the filter of cofinite subsets of `σ`.
+  - when `a s` tends to zero for the filter of cofinite subsets of `σ`.
 
 Under `Continuous φ` and `HasEval a`, the following lemmas furnish the properties of evaluation:
 
 * `MvPowerSeries.eval₂Hom`: the evaluation of multivariate power series, as a ring morphism,
-* `MvPowerSeries.aeval`: the evaluation map as an algebra map
+* `MvPowerSeries.aeval`: the evaluation map as an algebra morphism
 * `MvPowerSeries.uniformContinuous_eval₂`: uniform continuity of the evaluation
 * `MvPowerSeries.continuous_eval₂`: continuity of the evaluation
-* `MvPowerSeries.eval₂_eq_tsum`:  the evaluation is given by the sum of its monomials, evaluated.
+* `MvPowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
 
 -/
 

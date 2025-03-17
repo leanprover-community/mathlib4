@@ -14,7 +14,7 @@ Power series in one indeterminate are the particular case of multivariate power 
 for the `Unit` type of indeterminates.
 This file provides a simpler syntax.
 
-Let `R` `S` be types, with `CommRing R`, `CommRing
+Let `R`, `S` be types, with `CommRing R`, `CommRing S`.
 One assumes that `TopologicalRing R` and `UniformAddGroup R`,
 and that `S` is a complete and separated topological `R`-algebra,
 with `LinearTopology R`, which means there is a basis of ighborhoods of 0
@@ -32,10 +32,10 @@ Under `Continuous φ` and `PowerSeries.HasEval a`,
 the following lemmas furnish the properties of evaluation:
 
 * `PowerSeries.eval₂Hom`: the evaluation of multivariate power series, as a ring morphism,
-* `PowerSeries.aeval`: the evaluation map as an algebra map
+* `PowerSeries.aeval`: the evaluation map as an algebra morphism
 * `PowerSeries.uniformContinuous_eval₂`: uniform continuity of the evaluation
 * `PowerSeries.continuous_eval₂`: continuity of the evaluation
-* `PowerSeries.eval₂_eq_tsum`:  the evaluation is given by the sum of its monomials, evaluated.
+* `PowerSeries.eval₂_eq_tsum`: the evaluation is given by the sum of its monomials, evaluated.
 
 We refer to the documentation of `MvPowerSeries.eval₂` for more details.
 
