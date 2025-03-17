@@ -52,7 +52,7 @@ NOTE: the indices `i` and `j` do not correspond to the `n` in `bvar n`. Rather
 they behave like indices in `Expr.lowerLooseBVars`, `Expr.liftLooseBVars`, etc.
 -/
 def _root_.Lean.Expr.swapBVars (e : Expr) (i j : Nat) : Expr := match e with
-| .bvar n => if n = i then .bvar j else if n = j then .bvar i else .bvar n
+| .bvar n => if n = i then .bvar j else if n = j then .bvar i else e
 | .forallE _ t b _ => e.updateForallE! (t.swapBVars i j) (b.swapBVars (i + 1) (j + 1))
 | .letE _ t v b _ => e.updateLet! (t.swapBVars i j) (v.swapBVars i j) (b.swapBVars (i + 1) (j + 1))
 | .lam _ t b _ => e.updateLambdaE! (t.swapBVars i j) (b.swapBVars (i + 1) (j + 1))
