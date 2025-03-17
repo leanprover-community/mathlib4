@@ -654,7 +654,7 @@ theorem exists_prod_multiset_X_sub_C_mul (p : R[X]) :
     rw [monic_prod_multiset_X_sub_C.natDegree_mul' hq, natDegree_multiset_prod_X_sub_C_eq_card]
   · replace he := congr_arg roots he.symm
     rw [roots_mul, roots_multiset_prod_X_sub_C] at he
-    exacts [add_right_eq_self.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
+    exacts [add_eq_left.1 he, mul_ne_zero monic_prod_multiset_X_sub_C.ne_zero hq]
 
 /-- A polynomial `p` that has as many roots as its degree
 can be written `p = p.leadingCoeff * ∏(X - a)`, for `a` in `p.roots`. -/
