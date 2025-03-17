@@ -5203,6 +5203,7 @@ import Mathlib.SetTheory.Cardinal.Finsupp
 import Mathlib.SetTheory.Cardinal.Free
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
 import Mathlib.SetTheory.Cardinal.NatCount
+import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.Pigeonhole
 import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
