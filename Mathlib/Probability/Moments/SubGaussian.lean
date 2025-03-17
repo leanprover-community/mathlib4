@@ -536,11 +536,11 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
       · exact hY.mgf_le t
     _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
-lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
-    {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
+lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
+  have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -553,16 +553,14 @@ lemma sum_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
       rw [Finset.sum_apply]
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
-lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} [IsZeroOrProbabilityMeasure μ]
-    {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
-    (h_meas : ∀ i, Measurable (X i))
+lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ)
+    {c : ι → ℝ≥0} (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ s, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ s, c i)) :=
   (sum_of_iIndepFun h_indep h_meas h_subG).measure_ge_le hε
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
-lemma measure_sum_range_ge_le_of_iIndepFun [IsZeroOrProbabilityMeasure μ]
-    {X : ℕ → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ℝ≥0}
+lemma measure_sum_range_ge_le_of_iIndepFun {X : ℕ → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {n : ℕ} (h_subG : ∀ i < n, HasSubgaussianMGF (X i) c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * n * c)) := by
