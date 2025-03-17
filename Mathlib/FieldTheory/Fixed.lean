@@ -6,9 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Separable
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
@@ -111,14 +112,14 @@ theorem coe_algebraMap :
   rfl
 
 theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
-    (LinearIndependent (FixedPoints.subfield G F) fun i : (s : Set F) => (i : F)) →
-      LinearIndependent F fun i : (s : Set F) => MulAction.toFun G F i := by
+    (LinearIndepOn (FixedPoints.subfield G F) id (s : Set F)) →
+      LinearIndepOn F (MulAction.toFun G F) s := by
   classical
   have : IsEmpty ((∅ : Finset F) : Set F) := by simp
   refine Finset.induction_on s (fun _ => linearIndependent_empty_type) fun a s has ih hs => ?_
   rw [coe_insert] at hs ⊢
-  rw [linearIndependent_insert (mt mem_coe.1 has)] at hs
-  rw [linearIndependent_insert' (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha => ?_⟩
+  rw [linearIndepOn_insert (mt mem_coe.1 has)] at hs
+  rw [linearIndepOn_insert (mt mem_coe.1 has)]; refine ⟨ih hs.1, fun ha => ?_⟩
   rw [Finsupp.mem_span_image_iff_linearCombination] at ha; rcases ha with ⟨l, hl, hla⟩
   rw [Finsupp.linearCombination_apply_of_mem_supported F hl] at hla
   suffices ∀ i ∈ s, l i ∈ FixedPoints.subfield G F by
@@ -126,7 +127,8 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
     simp_rw [Pi.smul_apply, toFun_apply, one_smul] at hla
     refine hs.2 (hla ▸ Submodule.sum_mem _ fun c hcs => ?_)
     change (⟨l c, this c hcs⟩ : FixedPoints.subfield G F) • c ∈ _
-    exact Submodule.smul_mem _ _ (Submodule.subset_span <| mem_coe.2 hcs)
+    exact Submodule.smul_mem _ _ <| Submodule.subset_span <| by simpa
+
   intro i his g
   refine
     eq_of_sub_eq_zero

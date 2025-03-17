@@ -287,7 +287,7 @@ theorem gcd_content_eq_of_dvd_sub {a : R} {p q : R[X]} (h : C a ∣ p - q) :
       (lt_of_le_of_lt (le_max_right _ _) (Nat.lt_succ_self _))]
   apply Finset.gcd_eq_of_dvd_sub
   intro x _
-  cases' h with w hw
+  obtain ⟨w, hw⟩ := h
   use w.coeff x
   rw [← coeff_sub, hw, coeff_C_mul]
 

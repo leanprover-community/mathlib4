@@ -1008,7 +1008,7 @@ theorem sUnion_lem {α β : Type u} (A : α → PSet) (B : β → PSet) (αβ : 
     induction' ea : A a with γ Γ
     induction' eb : B b with δ Δ
     rw [ea, eb] at hb
-    cases' hb with γδ δγ
+    obtain ⟨γδ, δγ⟩ := hb
     let c : (A a).Type := c
     let ⟨d, hd⟩ := γδ (by rwa [ea] at c)
     use ⟨b, Eq.ndrec d (Eq.symm eb)⟩
@@ -1371,7 +1371,8 @@ instance : Insert ZFSet Class :=
 
 namespace Class
 
--- Porting note: this is no longer an automatically derived instance.
+-- Porting note: this used to be a `deriving HasSep Set` instance,
+-- it should probably be turned into notation.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
   {y | A y ∧ p y}
