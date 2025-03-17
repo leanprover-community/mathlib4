@@ -60,3 +60,8 @@ lemma faithfulSMul_iff [SMul M α] :
 @[to_additive]
 lemma smul_left_injective' [SMul M α] [FaithfulSMul M α] : Injective ((· • ·) : M → α → α) :=
   fun _ _ h ↦ FaithfulSMul.eq_of_smul_eq_smul (congr_fun h)
+
+/-- `Monoid.toOppositeMulAction` is faithful on cancellative monoids. -/
+@[to_additive " `AddMonoid.toOppositeAddAction` is faithful on additive cancellative monoids. "]
+instance LefttCancelMonoid.to_faithfulSMul_mulOpposite [LeftCancelMonoid α] : FaithfulSMul αᵐᵒᵖ α :=
+  ⟨fun h ↦ MulOpposite.unop_injective <| mul_left_cancel (h 1)⟩
