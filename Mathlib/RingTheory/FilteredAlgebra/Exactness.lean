@@ -100,8 +100,6 @@ class IsExhaustiveFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F 
 end ExhaustiveFiltration
 
 
-
-
 section DiscreteFiltration
 
 variable {ι A σ : Type*} [AddGroup A] [Preorder ι] [SetLike σ A]
@@ -111,7 +109,6 @@ class IsDiscreteFiltration (F : ι → σ) (F_lt : ι → σ) [IsFiltration F F_
   discrete : ∃ i : ι, (F i : Set A) = {0}
 
 end DiscreteFiltration
-
 
 
 section exactness
@@ -168,9 +165,6 @@ theorem exact_of_strict_exact [DecidableEq ι] (fstrict : f.IsStrict) (gstrict :
     (fun i x ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i x)
 
 end exactness
-
-
-
 
 
 section
