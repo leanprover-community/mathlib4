@@ -61,7 +61,7 @@ private theorem not_power_nat_pow {n p q : ℕ}
   contrapose! h
   obtain ⟨k, h⟩ := h
   apply_fun Nat.factorization at h
-  simp at h
+  simp only [Nat.factorization_pow] at h
   suffices ∃ f : ℕ →₀ ℕ, n.factorization = q • f by
     obtain ⟨f, hf⟩ := this
     have : f = (f.prod fun x1 x2 => x1 ^ x2).factorization := by
@@ -79,20 +79,18 @@ private theorem not_power_nat_pow {n p q : ℕ}
       · assumption
     rw [this, ← Nat.factorization_pow] at hf
     apply Nat.factorization_inj at hf
-    · use f.prod fun x1 x2 => x1 ^ x2
+    · use f.prod (· ^ ·)
     · exact hn
-    · simp
-      suffices f 0 = 0 by tauto
-      exact hf0
+    · simp only [ne_eq, Set.mem_setOf_eq, pow_eq_zero_iff', Finsupp.prod_eq_zero_iff,
+        Finsupp.mem_support_iff, existsAndEq, true_and, and_self, not_and, Decidable.not_not]
+      tauto
   use n.factorization.mapRange (fun e ↦ e / q) (by simp)
   ext z
   apply_fun (· z) at h
-  simp at h ⊢
+  simp only [Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, Finsupp.mapRange_apply] at h ⊢
   rw [Nat.mul_div_cancel']
-  have : q ∣ p * n.factorization z := ⟨_, h⟩
-  apply Nat.Coprime.dvd_of_dvd_mul_left at this
-  · assumption
-  · rwa [Nat.coprime_comm]
+  apply Nat.Coprime.dvd_of_dvd_mul_left _ ⟨_, h⟩
+  rwa [Nat.coprime_comm]
 
 private theorem not_power_nat_of_bounds {n k d : ℕ}
     (h_left : k^d < n)
@@ -120,7 +118,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
     ¬ ∃ q ≥ 0, (a / b : ℚ) = q^d := by
   by_cases hb_zero : b = 0
   · subst hb_zero
-    simp at h_coprime
+    simp only [Nat.coprime_zero_right] at h_coprime
     subst h_coprime
     absurd ha
     use 1
@@ -131,9 +129,9 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   set y := q.den
   obtain ⟨x, hx'⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ x' by rwa [Rat.num_nonneg])
   rw [hx'] at h
-  simp at ha
+  simp only [not_exists] at ha
   specialize ha x
-  simp [div_pow] at h
+  simp only [Int.cast_natCast, div_pow] at h
   rw [div_eq_div_iff] at h
   rotate_left
   · simpa
@@ -145,16 +143,16 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   have hy_zero : y ≠ 0 := by simp [y]
   by_cases ha_zero : a = 0
   · subst ha_zero
-    simp [hb_zero] at h
+    simp only [zero_mul, zero_eq_mul, pow_eq_zero_iff', ne_eq, hb_zero, or_false, y] at h
     simp [h.left, h.right] at ha
   by_cases hd_zero : d = 0
   · subst hd_zero
-    simp at h ha
+    simp only [pow_zero, mul_one, one_mul, y] at h ha
     simp [h] at h_coprime
     omega
   by_cases hx_zero : x = 0
   · subst hx_zero
-    simp [zero_pow hd_zero] at h ha
+    simp only [zero_pow hd_zero, zero_mul, mul_eq_zero, pow_eq_zero_iff', ne_eq, y] at h ha
     simp [ha, y] at h
   suffices a.factorization = (x ^ d).factorization by
     have := Nat.factorization_inj ha_zero (pow_ne_zero d hx_zero) this
@@ -163,8 +161,8 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
   obtain ⟨hax, hby, hay⟩ : a.primeFactors = x.primeFactors ∧ b.primeFactors = y.primeFactors ∧
       Disjoint a.primeFactors y.primeFactors := by
     apply_fun Finsupp.support at h
-    simp [Nat.primeFactors_mul ha_zero (pow_ne_zero d hy_zero),
-      Nat.primeFactors_mul (pow_ne_zero d hx_zero) hb_zero, Nat.primeFactors_pow _ hd_zero] at h
+    simp only [Nat.support_factorization, Nat.primeFactors_mul ha_zero (pow_ne_zero d hy_zero),
+      Nat.primeFactors_pow _ hd_zero, Nat.primeFactors_mul (pow_ne_zero d hx_zero) hb_zero, y] at h
     have hab : a.primeFactors ∩ b.primeFactors = ∅ := by
       rwa [← Finset.disjoint_iff_inter_eq_empty, Nat.disjoint_primeFactors ha_zero hb_zero]
     have hxy : x.primeFactors ∩ y.primeFactors = ∅ := by
@@ -172,7 +170,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
       have : x'.natAbs.Coprime y := Rat.reduced q
       simpa [hx'] using this
     apply_fun Finset.toSet at h hab hxy
-    simp at h hab hxy
+    simp only [Finset.coe_union, Finset.coe_inter, Finset.coe_empty, y] at h hab hxy
     constructorm* _ ∧ _
     · apply_fun Finset.toSet
       · tauto_set
@@ -190,7 +188,7 @@ private theorem not_power_rat_of_num_aux {a b d : ℕ}
     rw [h]
   rw [Nat.factorization_mul ha_zero (pow_ne_zero d hy_zero)] at h
   rw [Nat.factorization_mul (pow_ne_zero d hx_zero) hb_zero] at h
-  simp at h ⊢
+  simp at h
   have hy0 : y.factorization p = 0 := by
     rw [← Finsupp.not_mem_support_iff]
     exact Disjoint.not_mem_of_mem_left_finset hay hp
