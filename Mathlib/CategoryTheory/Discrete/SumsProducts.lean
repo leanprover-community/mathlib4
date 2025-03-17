@@ -44,43 +44,26 @@ def productEquiv {J K : Type*} : Discrete (J × K) ≌ Discrete J × Discrete K 
 /-- The discrete category on a sum is equivalent to the sum of the
 discrete categories. -/
 @[simps!]
-def sumEquiv {J K : Type u₁} : Discrete (J ⊕ K) ≌ Discrete J ⊕ Discrete K where
+def sumEquiv {J K : Type*} : Discrete (J ⊕ K) ≌ Discrete J ⊕ Discrete K where
   functor := Discrete.functor <| fun t ↦
     match t with
     | .inl j => Sum.inl (Discrete.mk j)
     | .inr k => Sum.inr (Discrete.mk k)
-  inverse := {
-    obj t :=
-      match t with
-      | .inl j => .mk (.inl j.as)
-      | .inr k => .mk (.inr k.as)
-    map {x y} f :=
-      match x, y, f with
-      | .inl x, .inl y, f => eqToHom (by change x ⟶ y at f; discrete_cases; subst f; rfl)
-      | .inr x, .inr y, f => eqToHom (by change x ⟶ y at f; discrete_cases; subst f; rfl)
-      | .inr _, .inl _, u => PEmpty.elim u
-      | .inl _, .inr _, u => PEmpty.elim u }
+  inverse := (Discrete.functor <| fun t ↦ Discrete.mk (Sum.inl t)).sum'
+    (Discrete.functor <| fun t ↦ Discrete.mk (Sum.inr t))
   unitIso := NatIso.ofComponents (fun ⟨x⟩ ↦
-      match x with
-      | .inl j => Iso.refl _
-      | .inr k => Iso.refl _)
-  counitIso := NatIso.ofComponents
-    (fun x ↦
-      match x with
-      | .inl j => Iso.refl _
-      | .inr k => Iso.refl _)
-    (fun {x y} f ↦
-      match x, y, f with
-      | .inl j, .inl j', f => by change j ⟶ j' at f; discrete_cases; dsimp at f; subst f; rfl
-      | .inr j, .inr j', f => by change j ⟶ j' at f; discrete_cases; dsimp at f; subst f; rfl
-      | .inr _, .inl _, u => PEmpty.elim u
-      | .inl _, .inr _, u => PEmpty.elim u)
+    match x with
+    | .inl x => Iso.refl _
+    | .inr x => Iso.refl _)
+  counitIso := Functor.sumIsoExt
+    (Discrete.natIso <| fun _ ↦ Iso.refl _)
+    (Discrete.natIso <| fun _ ↦ Iso.refl _)
 
 end Discrete
 
 namespace IsDiscrete
 
-variable (C C': Type u₁) [Category.{v₁} C] [Category.{v₁} C'] (D : Type*) [Category D]
+variable (C C': Type*) [Category C] [Category C'] (D : Type*) [Category D]
   [IsDiscrete C] [IsDiscrete C'] [IsDiscrete D]
 
 /-- A product of discrete categories is discrete. -/
@@ -91,16 +74,13 @@ instance prod : IsDiscrete (C × D) where
 /-- A product of discrete categories is discrete. -/
 instance sum : IsDiscrete (C ⊕ C') where
   subsingleton x y :=
-    match x, y with
-    | .inl x, .inl y => inferInstanceAs (Subsingleton (x ⟶ y))
-    | .inr x, .inr y => inferInstanceAs (Subsingleton (x ⟶ y))
-    | .inl x, .inr y => inferInstanceAs (Subsingleton PEmpty)
-    | .inr x, .inl y => inferInstanceAs (Subsingleton PEmpty)
-  eq_of_hom {x y} f :=
-    match x, y, f with
-    | .inl x, .inl y, f => by simp only [Sum.inl.injEq]; exact IsDiscrete.eq_of_hom f
-    | .inr x, .inr y, f => by simp only [Sum.inr.injEq]; exact IsDiscrete.eq_of_hom f
-    | .inl x, .inr y, u => PEmpty.elim u
-    | .inr x, .inl y, u => PEmpty.elim u
+    { allEq f g := by
+        cases f <;> cases g
+        · case inl x y f g => rw [((by assumption : IsDiscrete C).subsingleton x y).allEq f g]
+        · case inr x y f g => rw [((by assumption : IsDiscrete C').subsingleton x y).allEq f g] }
+  eq_of_hom {x y} f := by
+    cases f with
+    | inl x y f => rw [(by assumption : IsDiscrete C).eq_of_hom f]
+    | inr x y f => rw [(by assumption : IsDiscrete C').eq_of_hom f]
 
 end CategoryTheory.IsDiscrete
