@@ -514,7 +514,8 @@ theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
 If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
 Note this does not hold without the linearity assumption.
 -/
-lemma IsPWO.of_linearOrder [WellFoundedLT α] (s : Set α) : s.IsPWO := IsWF.of_wellFoundedLT.isPWO
+lemma IsPWO.of_linearOrder [WellFoundedLT α] (s : Set α) : s.IsPWO :=
+  (IsWF.of_wellFoundedLT s).isPWO
 
 end LinearOrder
 
