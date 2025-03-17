@@ -379,7 +379,7 @@ lemma root_space_ad_is_nilpotent
     _root_.IsNilpotent (toEnd K L M x) := by
   let s : Set (Weight K H M) := univ
   have nilpotency_limit : ∀ χ₂ ∈ s, ∃ n : ℕ, ∀ v : genWeightSpace M χ₂, ∀ m ≥ n,
-      ((toEnd K L M x) ^ m) v = 0 := by
+      (toEnd K L M x ^ m) v = 0 := by
     intro χ₂ he
     obtain ⟨k, ⟨hk₁, hk₂⟩⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
     use k
@@ -388,7 +388,7 @@ lemma root_space_ad_is_nilpotent
     rw [hk₂, LieSubmodule.mem_bot] at h
     exact LinearMap.pow_map_zero_of_le hm h
   have uniform_nilpotency_limit : ∃ n₀ : ℕ, ∀ χ₂ ∈ s, ∀ v : genWeightSpace M χ₂,
-      ((toEnd K L M x) ^ n₀) v = 0 := by
+      (toEnd K L M x ^ n₀) v = 0 := by
     choose fn₁ hn using nilpotency_limit
     simp only [Subtype.forall] at hn ⊢
     let n₀ := s.toFinset.sup fun χ₂ => fn₁ χ₂ (mem_univ χ₂)
