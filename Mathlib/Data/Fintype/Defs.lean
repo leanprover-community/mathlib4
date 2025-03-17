@@ -55,6 +55,29 @@ class Fintype (α : Type*) where
   /-- A proof that `elems` contains every element of the type -/
   complete : ∀ x : α, x ∈ elems
 
+/-! ### Preparatory lemmas -/
+
+namespace Finset
+
+theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
+    (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
+  simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
+
+end Finset
+
+namespace List
+
+variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+
+instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
+  -- Use custom implementation for better performance.
+  decidable_of_iff ((Multiset.map f s.val).Nodup) Finset.nodup_map_iff_injOn
+
+instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+
+end List
+
 namespace Finset
 
 variable [Fintype α] {s t : Finset α}

@@ -28,9 +28,9 @@ variable {R R' S S' T : Type*}
 namespace Prod
 
 /-- Product of two distributive types is distributive. -/
-instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) :=
-  { left_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨left_distrib _ _ _, left_distrib _ _ _⟩
-    right_distrib := fun _ _ _ => mk.inj_iff.mpr ⟨right_distrib _ _ _, right_distrib _ _ _⟩ }
+instance instDistrib [Distrib R] [Distrib S] : Distrib (R × S) where
+  left_distrib _ _ _ := by ext <;> exact left_distrib ..
+  right_distrib _ _ _ := by ext <;> exact right_distrib ..
 
 /-- Product of two `NonUnitalNonAssocSemiring`s is a `NonUnitalNonAssocSemiring`. -/
 instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring R] [NonUnitalNonAssocSemiring S] :

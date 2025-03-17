@@ -343,11 +343,10 @@ theorem limitUncurryIsoLimitCompLim_hom_π_π {j} {k} :
   dsimp [limitUncurryIsoLimitCompLim, IsLimit.conePointUniqueUpToIso, IsLimit.uniqueUpToIso]
   simp
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
 theorem limitUncurryIsoLimitCompLim_inv_π {j} {k} :
     (limitUncurryIsoLimitCompLim F).inv ≫ limit.π _ (j, k) =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ j ≫ limit.π _ k) := by
   rw [← cancel_epi (limitUncurryIsoLimitCompLim F).hom]
   simp
 
@@ -463,22 +462,18 @@ noncomputable def limitFlipCompLimIsoLimitCompLim : limit (F.flip ⋙ lim) ≅ l
           (NatIso.ofComponents fun _ => by rfl) ≪≫
         limitUncurryIsoLimitCompLim _
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k =
-      (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ k ≫ limit.π _ j) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
   simp [Equivalence.counit]
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
--- See note [dsimp, simp]
 @[simp, reassoc]
 theorem limitFlipCompLimIsoLimitCompLim_inv_π_π (k) (j) :
     (limitFlipCompLimIsoLimitCompLim F).inv ≫ limit.π _ k ≫ limit.π _ j =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
-  dsimp [limitFlipCompLimIsoLimitCompLim]
-  simp
+      (limit.π _ j ≫ limit.π _ k) := by
+  simp [limitFlipCompLimIsoLimitCompLim]
 
 end
 
@@ -525,7 +520,7 @@ the limit of the limits of the functors `G.obj (j, _)`.
 -/
 noncomputable def limitIsoLimitCurryCompLim : limit G ≅ limit (curry.obj G ⋙ lim) := by
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
-  haveI : Limits.HasLimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasLimitOfIso i
+  haveI : Limits.HasLimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasLimit_of_iso i
   trans limit (uncurry.obj ((@curry J _ K _ C _).obj G))
   · apply HasLimit.isoOfNatIso i
   · exact limitUncurryIsoLimitCompLim ((@curry J _ K _ C _).obj G)
@@ -535,11 +530,10 @@ theorem limitIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k = limit.π _ (j, k) := by
   simp [limitIsoLimitCurryCompLim, Trans.simple]
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp, reassoc]
 theorem limitIsoLimitCurryCompLim_inv_π {j} {k} :
     (limitIsoLimitCurryCompLim G).inv ≫ limit.π _ (j, k) =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ j ≫ limit.π _ k) := by
   rw [← cancel_epi (limitIsoLimitCurryCompLim G).hom]
   simp
 
@@ -555,7 +549,7 @@ the colimit of the colimits of the functors `G.obj (j, _)`.
 -/
 noncomputable def colimitIsoColimitCurryCompColim : colimit G ≅ colimit (curry.obj G ⋙ colim) := by
   have i : G ≅ uncurry.obj ((@curry J _ K _ C _).obj G) := currying.symm.unitIso.app G
-  haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimitOfIso i.symm
+  haveI : Limits.HasColimit (uncurry.obj ((@curry J _ K _ C _).obj G)) := hasColimit_of_iso i.symm
   trans colimit (uncurry.obj ((@curry J _ K _ C _).obj G))
   · apply HasColimit.isoOfNatIso i
   · exact colimitUncurryIsoColimitCompColim ((@curry J _ K _ C _).obj G)
@@ -592,11 +586,10 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
     _ ≅ limit G := HasLimit.isoOfEquivalence (Prod.braiding K J) (Iso.refl _)
     _ ≅ limit (curry.obj G ⋙ lim) := limitIsoLimitCurryCompLim _
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k =
-      (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ k ≫ limit.π _ j) := by
   dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim, Equivalence.counit]
   rw [Category.assoc, Category.assoc, limitIsoLimitCurryCompLim_hom_π_π,
     HasLimit.isoOfEquivalence_hom_π]
@@ -604,11 +597,10 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
   rw [← prod_id, G.map_id]
   simp
 
--- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 @[simp]
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).inv ≫ limit.π _ k ≫ limit.π _ j =
-      (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
+      (limit.π _ j ≫ limit.π _ k) := by
   simp [limitCurrySwapCompLimIsoLimitCurryCompLim]
 
 end

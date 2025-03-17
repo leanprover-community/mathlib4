@@ -63,7 +63,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is upward directed. -/
   directed' : DirectedOn (· ≤ ·) carrier
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
+-- TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -163,7 +163,7 @@ theorem isProper_of_not_mem {I : Ideal P} {p : P} (nmem : p ∉ I) : IsProper I 
 Note that `IsCoatom` is less general because ideals only have a top element when `P` is directed
 and nonempty. -/
 @[mk_iff]
-class IsMaximal (I : Ideal P) extends IsProper I : Prop where
+class IsMaximal (I : Ideal P) : Prop extends IsProper I where
   /-- This ideal is maximal in the collection of proper ideals. -/
   maximal_proper : ∀ ⦃J : Ideal P⦄, I < J → (J : Set P) = univ
 
@@ -366,7 +366,6 @@ instance : Lattice (Ideal P) :=
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
   rfl
 
--- Porting note: Modified `s ∩ t` to `↑s ∩ ↑t`.
 @[simp]
 theorem coe_inf : (↑(s ⊓ t) : Set P) = ↑s ∩ ↑t :=
   rfl

@@ -113,8 +113,7 @@ theorem isUnit_res_toΓSpecMapBasicOpen : IsUnit (X.toToΓSpecMapBasicOpen r r) 
   convert
     (X.presheaf.map <| (eqToHom <| X.toΓSpecMapBasicOpen_eq r).op).hom.isUnit_map
       (X.toRingedSpace.isUnit_res_basicOpen r)
-  -- Porting note: `rw [comp_apply]` to `erw [comp_apply]`
-  erw [← CommRingCat.comp_apply, ← Functor.map_comp]
+  rw [← CommRingCat.comp_apply, ← Functor.map_comp]
   congr
 
 /-- Define the sheaf hom on individual basic opens for the unit. -/
@@ -217,8 +216,8 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     rw [he]
     refine IsLocalization.map_units S (⟨r, ?_⟩ : p.asIdeal.primeCompl)
     apply (not_mem_prime_iff_unit_in_stalk _ _ _).mpr
-    rw [← toStalk_stalkMap_toΓSpec]
-    erw [CommRingCat.comp_apply, ← he]
+    rw [← toStalk_stalkMap_toΓSpec, CommRingCat.comp_apply]
+    erw [← he]
     rw [RingHom.map_mul]
     exact ht.mul <| (IsLocalization.map_units (R := Γ.obj (op X)) S s).map _
 
@@ -249,7 +248,6 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
           toOpen R (basicOpen r) ≫ β.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
-  -- Porting note: was `apply Spec.basicOpen_hom_ext`
   refine Spec.basicOpen_hom_ext w ?_
   intro r U
   rw [LocallyRingedSpace.comp_c_app]
@@ -524,6 +522,10 @@ lemma Spec.map_inj : Spec.map φ = Spec.map ψ ↔ φ = ψ := by
 
 lemma Spec.map_injective {R S : CommRingCat} : Function.Injective (Spec.map : (R ⟶ S) → _) :=
   fun _ _ ↦ Spec.map_inj.mp
+
+@[simp]
+lemma Spec.map_eq_id {R : CommRingCat} {ϕ : R ⟶ R} : Spec.map ϕ = 𝟙 (Spec R) ↔ ϕ = 𝟙 R := by
+  simp [← map_inj]
 
 /-- The preimage under Spec. -/
 def Spec.preimage : R ⟶ S := (Scheme.Spec.preimage f).unop
