@@ -6,6 +6,7 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Data.Int.Basic
 
 /-!
 # Prime numbers in the naturals and the integers

@@ -143,9 +143,6 @@ alias LT.lt.not_lt := lt_asymm
 
 alias Eq.le := le_of_eq
 
--- Porting note: no `decidable_classical` linter
--- attribute [nolint decidable_classical] LE.le.lt_or_eq_dec
-
 section
 
 variable [Preorder α] {a b c : α}
@@ -206,15 +203,13 @@ variable [Preorder α] {a b : α}
 
 @[simp] lemma le_of_subsingleton [Subsingleton α] : a ≤ b := (Subsingleton.elim a b).le
 
--- Making this a @[simp] lemma causes confluences problems downstream.
+-- Making this a @[simp] lemma causes confluence problems downstream.
 lemma not_lt_of_subsingleton [Subsingleton α] : ¬a < b := (Subsingleton.elim a b).not_lt
 
 end
 
 namespace LE.le
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem ge [LE α] {x y : α} (h : x ≤ y) : y ≥ x :=
   h
 
@@ -255,8 +250,6 @@ end LE.le
 
 namespace LT.lt
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem gt [LT α] {x y : α} (h : x < y) : y > x :=
   h
 
@@ -271,18 +264,12 @@ theorem lt_or_lt [LinearOrder α] {x y : α} (h : x < y) (z : α) : x < z ∨ z 
 
 end LT.lt
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem GE.ge.le [LE α] {x y : α} (h : x ≥ y) : y ≤ x :=
   h
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 protected theorem GT.gt.lt [LT α] {x y : α} (h : x > y) : y < x :=
   h
 
--- see Note [nolint_ge]
--- Porting note: linter not found @[nolint ge_or_gt]
 theorem ge_of_eq [Preorder α] {a b : α} (h : a = b) : a ≥ b :=
   h.ge
 
@@ -323,9 +310,6 @@ alias LE.le.eq_or_lt_dec := Decidable.eq_or_lt_of_le
 alias LE.le.eq_or_lt := eq_or_lt_of_le
 alias LE.le.eq_or_gt := eq_or_gt_of_le
 alias LE.le.gt_or_eq := gt_or_eq_of_le
-
--- Porting note: no `decidable_classical` linter
--- attribute [nolint decidable_classical] LE.le.eq_or_lt_dec
 
 theorem eq_of_le_of_not_lt (hab : a ≤ b) (hba : ¬a < b) : a = b := hab.eq_or_lt.resolve_right hba
 theorem eq_of_ge_of_not_gt (hab : a ≤ b) (hba : ¬a < b) : b = a := (eq_of_le_of_not_lt hab hba).symm
@@ -1151,7 +1135,6 @@ namespace Prod
 instance (α β : Type*) [LE α] [LE β] : LE (α × β) :=
   ⟨fun p q ↦ p.1 ≤ q.1 ∧ p.2 ≤ q.2⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance instDecidableLE (α β : Type*) [LE α] [LE β] (x y : α × β)
     [Decidable (x.1 ≤ y.1)] [Decidable (x.2 ≤ y.2)] : Decidable (x ≤ y) :=
   inferInstanceAs (Decidable (x.1 ≤ y.1 ∧ x.2 ≤ y.2))

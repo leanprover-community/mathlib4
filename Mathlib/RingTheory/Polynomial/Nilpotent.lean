@@ -79,12 +79,12 @@ protected lemma isNilpotent_iff :
       replace hp : eval 0 p = 0 := by rwa [coeff_zero_eq_aeval_zero] at hp₀
       refine isNilpotent_C_iff.mpr ⟨k, ?_⟩
       simpa [coeff_zero_eq_aeval_zero, hp] using congr_arg (fun q ↦ coeff q 0) hk
-    cases' i with i
+    rcases i with - | i
     · simpa [hp₀] using hr
     simp only [coeff_add, coeff_C_succ, add_zero]
     apply hp
     simpa using Commute.isNilpotent_sub (Commute.all _ _) hpr hr
-  · cases' i with i
+  · rcases i with - | i
     · simp
     simpa using hnp (isNilpotent_mul_X_iff.mp hpX) i
 

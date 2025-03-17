@@ -92,7 +92,6 @@ instance [Subsingleton α] : Subsingleton (Discrete α) :=
 instance instSubsingletonDiscreteHom (X Y : Discrete α) : Subsingleton (X ⟶ Y) :=
   show Subsingleton (ULift (PLift _)) from inferInstance
 
-/- Porting note: rewrote `discrete_cases` tactic -/
 /-- A simple tactic to run `cases` on any `Discrete α` hypotheses. -/
 macro "discrete_cases" : tactic =>
   `(tactic| fail_if_no_progress casesm* Discrete _, (_ : Discrete _) ⟶ (_ : Discrete _), PLift _)
@@ -110,8 +109,7 @@ to locally gives `aesop_cat` the ability to call `cases` on
 def discreteCases : TacticM Unit := do
   evalTactic (← `(tactic| discrete_cases))
 
--- Porting note:
--- investigate turning on either
+-- TODO: investigate turning on either
 -- `attribute [aesop safe cases (rule_sets := [CategoryTheory])] Discrete`
 -- or
 -- `attribute [aesop safe tactic (rule_sets := [CategoryTheory])] discreteCases`
@@ -220,12 +218,12 @@ theorem natIso_app {I : Type u₁} {F G : Discrete I ⥤ C} (f : ∀ i : Discret
 
 /-- Every functor `F` from a discrete category is naturally isomorphic (actually, equal) to
   `Discrete.functor (F.obj)`. -/
-@[simp]
+@[simps!]
 def natIsoFunctor {I : Type u₁} {F : Discrete I ⥤ C} : F ≅ Discrete.functor (F.obj ∘ Discrete.mk) :=
   natIso fun _ => Iso.refl _
 
 /-- Composing `Discrete.functor F` with another functor `G` amounts to composing `F` with `G.obj` -/
-@[simp]
+@[simps!]
 def compNatIsoDiscrete {I : Type u₁} {D : Type u₃} [Category.{v₃} D] (F : I → C) (G : C ⥤ D) :
     Discrete.functor F ⋙ G ≅ Discrete.functor (G.obj ∘ F) :=
   natIso fun _ => Iso.refl _

@@ -42,12 +42,10 @@ lemma mk' [HasFactorization W₁ W₂]
     (h : ∀ {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y),
       W₁ i → W₂ p → HasLiftingProperty i p) :
     IsWeakFactorizationSystem W₁ W₂ where
-  rlp := rlp_eq_of_le_rlp_of_hasFactorization_of_isStableUnderRetracts (by
-    intro X Y p hp A B i hi
-    exact h i p hi hp)
-  llp := llp_eq_of_le_llp_of_hasFactorization_of_isStableUnderRetracts (by
-    intro A B i hi X Y p hp
-    exact h i p hi hp)
+  rlp := rlp_eq_of_le_rlp_of_hasFactorization_of_isStableUnderRetracts
+    (fun _ _ _ hp _ _ _ hi ↦ h _ _ hi hp)
+  llp := llp_eq_of_le_llp_of_hasFactorization_of_isStableUnderRetracts
+    (fun _ _ _ hi _ _ _ hp ↦ h _ _ hi hp)
 
 end IsWeakFactorizationSystem
 
@@ -61,9 +59,8 @@ lemma llp_eq_of_wfs : W₂.llp = W₁ := IsWeakFactorizationSystem.llp
 
 variable {W₁ W₂} in
 lemma hasLiftingProperty_of_wfs {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y)
-    (hi : W₁ i) (hp : W₂ p) : HasLiftingProperty i p := by
-  rw [← llp_eq_of_wfs W₁ W₂] at hi
-  exact hi p hp
+    (hi : W₁ i) (hp : W₂ p) : HasLiftingProperty i p :=
+  (llp_eq_of_wfs W₁ W₂ ▸ hi) p hp
 
 end
 
