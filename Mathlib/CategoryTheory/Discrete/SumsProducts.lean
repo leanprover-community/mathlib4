@@ -24,8 +24,6 @@ are also discrete, both in the form of explicit equivalences and through the
 
 -/
 
-universe v₁ u₁
-
 namespace CategoryTheory
 
 namespace Discrete
