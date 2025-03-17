@@ -49,7 +49,7 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   rw [← absNorm_eq_one_iff]
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
-    exact (v.asIdeal.fintypeQuotientOfFreeOfNeBot v.ne_bot).finite
+    exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
   omega
 
 @[deprecated (since := "2025-02-28")] alias one_lt_norm := one_lt_absNorm

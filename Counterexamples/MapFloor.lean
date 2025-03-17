@@ -56,7 +56,8 @@ namespace IntWithEpsilon
 
 instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
 
--- Porting note: `inhabited` and `commRing` were `deriving` instances in mathlib3
+-- The `CommRing` and `Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
 
 instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩

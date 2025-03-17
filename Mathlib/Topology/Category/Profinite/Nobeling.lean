@@ -746,7 +746,7 @@ def P (o : Ordinal) : Prop :=
   (∀ (C : Set (I → Bool)), IsClosed C → contained C o →
     LinearIndependent ℤ (GoodProducts.eval C))
 
-theorem Products.prop_of_isGood_of_contained  {l : Products I} (o : Ordinal) (h : l.isGood C)
+theorem Products.prop_of_isGood_of_contained {l : Products I} (o : Ordinal) (h : l.isGood C)
     (hsC : contained C o) (i : I) (hi : i ∈ l.val) : ord I i < o := by
   by_contra h'
   apply h
@@ -812,7 +812,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     intro ⟨⟨l, hl⟩, hll⟩
     ext
     apply Subtype.ext
-    apply (List.Lex.nil_left_or_eq_nil l (r := (· < ·))).resolve_left
+    apply (List.lex_nil_or_eq_nil l (r := (· < ·))).resolve_left
     intro _
     apply hll
     have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
