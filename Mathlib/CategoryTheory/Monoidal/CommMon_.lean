@@ -75,8 +75,9 @@ def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
 is fully faithful. -/
 def fullyFaithfulForget₂Mon_ : (forget₂Mon_ C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 

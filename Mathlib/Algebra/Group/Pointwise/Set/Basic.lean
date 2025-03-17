@@ -497,7 +497,7 @@ protected def div : Div (Set α) :=
 scoped[Pointwise] attribute [instance] Set.div Set.sub
 
 @[to_additive (attr := simp)]
-theorem image2_div : image2 Div.div s t = s / t :=
+theorem image2_div : image2 (· / ·) s t = s / t :=
   rfl
 
 @[to_additive]
@@ -677,7 +677,7 @@ section SMul
 variable {ι : Sort*} {κ : ι → Sort*} [SMul α β] {s s₁ s₂ : Set α} {t t₁ t₂ u : Set β} {a : α}
   {b : β}
 
-@[to_additive (attr := simp)] lemma image2_smul : image2 SMul.smul s t = s • t := rfl
+@[to_additive (attr := simp)] lemma image2_smul : image2 (· • ·) s t = s • t := rfl
 
 @[to_additive vadd_image_prod]
 lemma image_smul_prod : (fun x : α × β ↦ x.fst • x.snd) '' s ×ˢ t = s • t := image_prod _
@@ -900,7 +900,7 @@ variable {ι : Sort*} {κ : ι → Sort*} [VSub α β] {s s₁ s₂ t t₁ t₂ 
 
 instance vsub : VSub (Set α) (Set β) where vsub := image2 (· -ᵥ ·)
 
-@[simp] lemma image2_vsub : (image2 VSub.vsub s t : Set α) = s -ᵥ t := rfl
+@[simp] lemma image2_vsub : image2 (· -ᵥ ·) s t = s -ᵥ t := rfl
 
 lemma image_vsub_prod : (fun x : β × β ↦ x.fst -ᵥ x.snd) '' s ×ˢ t = s -ᵥ t := image_prod _
 
