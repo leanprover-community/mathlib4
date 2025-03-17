@@ -142,7 +142,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
     h_tendsto.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
   -- Since `range u` is bounded, `V` absorbs it
   rcases (hf _ h_bounded hV).exists_pos with ⟨r, hr, h'⟩
-  cases' exists_nat_gt r with n hn
+  obtain ⟨n, hn⟩ := exists_nat_gt r
   -- We now find a contradiction between `f (u n) ∉ V` and the absorbing property
   have h1 : r ≤ ‖(n : 𝕜')‖ := by
     rw [RCLike.norm_natCast]

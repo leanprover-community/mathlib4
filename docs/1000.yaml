@@ -1324,8 +1324,8 @@ Q1146791:
 
 Q1148215:
   title: Mitchell's embedding theorem
-  # ongoing effort: going slowly; lots of work. see e.g.
-  # https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Freyd-Mitchell.20embedding
+  decl: CategoryTheory.Abelian.freyd_mitchell
+  authors: Markus Himmel, Jakob von Raumer, Paul Reichert, Joël Riou
 
 Q1149022:
   title: Fubini's theorem
@@ -3971,6 +3971,8 @@ Q25345219:
 
 Q25378690:
   title: Ionescu-Tulcea theorem
+  decl: ProbabilityTheory.Kernel.traj
+  authors: Etienne Marion
 
 Q26877569:
   title: Furry's theorem

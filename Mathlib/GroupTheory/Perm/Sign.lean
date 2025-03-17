@@ -13,8 +13,10 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -96,7 +98,7 @@ is preserved under composition with a non-trivial swap, then `P` holds for all p
 theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
+  obtain ⟨l, hl⟩ := (truncSwapFactors f).out
   induction' l with g l ih generalizing f
   · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
   · intro h1 hmul_swap
@@ -160,7 +162,7 @@ theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swa
 def finPairsLT (n : ℕ) : Finset (Σ_ : Fin n, Fin n) :=
   (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
 
-theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
+theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
   simp only [finPairsLT, Fin.lt_iff_val_lt_val, true_and, mem_attachFin, mem_range, mem_univ,
     mem_sigma]
 
@@ -429,14 +431,11 @@ theorem sign_abs (f : Perm α) :
     |(Equiv.Perm.sign f : ℤ)| = 1 := by
   rw [Int.abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
-variable (α)
-
+variable (α) in
 theorem sign_surjective [Nontrivial α] : Function.Surjective (sign : Perm α → ℤˣ) := fun a =>
   (Int.units_eq_one_or a).elim (fun h => ⟨1, by simp [h]⟩) fun h =>
     let ⟨x, y, hxy⟩ := exists_pair_ne α
     ⟨swap x y, by rw [sign_swap hxy, h]⟩
-
-variable {α}
 
 theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) : s = sign :=
   have : ∀ {f}, IsSwap f → s f = -1 := fun {f} ⟨x, y, hxy, hxy'⟩ =>
@@ -593,6 +592,12 @@ theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subt
 end congr
 
 end SignType.sign
+
+@[simp]
+theorem viaFintypeEmbedding_sign
+    [Fintype α] [Fintype β] [DecidableEq β] (e : Equiv.Perm α) (f : α ↪ β) :
+    sign (e.viaFintypeEmbedding f) = sign e := by
+  simp [viaFintypeEmbedding]
 
 section Finset
 

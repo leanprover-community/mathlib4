@@ -534,7 +534,7 @@ lemma ext_succ {F G : ComposableArrows C (n + 1)} (h₀ : F.obj' 0 = G.obj' 0)
       eqToHom (Functor.congr_obj h.symm 0)) : F = G := by
   have : ∀ i, F.obj i = G.obj i := by
     intro ⟨i, hi⟩
-    cases' i with i
+    rcases i with - | i
     · exact h₀
     · exact Functor.congr_obj h ⟨i, by valid⟩
   exact Functor.ext_of_iso (isoMkSucc (eqToIso h₀) (eqToIso h) (by
@@ -847,9 +847,8 @@ lemma mkOfObjOfMapSucc_exists : ∃ (F : ComposableArrows C n) (e : ∀ i, F.obj
       | 0 => Iso.refl _
       | ⟨i + 1, hi⟩ => e _, fun i hi => ?_⟩
     obtain _ | i := i
-    · dsimp
-      rw [assoc, Iso.inv_hom_id, comp_id]
-      erw [id_comp]
+    · simp only [← Fin.mk_zero]
+      simp
     · exact h i (by valid)
 
 /-- Given `obj : Fin (n + 1) → C` and `mapSucc i : obj i.castSucc ⟶ obj i.succ`

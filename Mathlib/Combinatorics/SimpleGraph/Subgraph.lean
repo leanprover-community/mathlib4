@@ -5,6 +5,7 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph
@@ -57,7 +58,9 @@ Thinking of `V → V → Prop` as `Set (V × V)`, a set of darts (i.e., half-edg
 `Subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
 @[ext]
 structure Subgraph {V : Type u} (G : SimpleGraph V) where
+  /-- Vertices of the subgraph -/
   verts : Set V
+  /-- Edges of the subgraph -/
   Adj : V → V → Prop
   adj_sub : ∀ {v w : V}, Adj v w → G.Adj v w
   edge_vert : ∀ {v w : V}, Adj v w → v ∈ verts
@@ -193,7 +196,11 @@ def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
 /-- A subgraph is called an *induced subgraph* if vertices of `G'` are adjacent if
 they are adjacent in `G`. -/
 def IsInduced (G' : Subgraph G) : Prop :=
-  ∀ {v w : V}, v ∈ G'.verts → w ∈ G'.verts → G.Adj v w → G'.Adj v w
+  ∀ ⦃v⦄, v ∈ G'.verts → ∀ ⦃w⦄, w ∈ G'.verts → G.Adj v w → G'.Adj v w
+
+@[simp] protected lemma IsInduced.adj {G' : G.Subgraph} (hG' : G'.IsInduced) {a b : G'.verts} :
+    G'.Adj a b ↔ G.Adj a b :=
+  ⟨coe_adj_sub _ _ _, hG' a.2 b.2⟩
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
 def support (H : Subgraph G) : Set V := Rel.dom H.Adj
@@ -412,7 +419,7 @@ theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).v
 
 @[simp] lemma coe_bot : (⊥ : G.Subgraph).coe = ⊥ := rfl
 
-@[simp] lemma IsInduced.top : (⊤ : G.Subgraph).IsInduced := fun _ _ ↦ id
+@[simp] lemma IsInduced.top : (⊤ : G.Subgraph).IsInduced := fun _ _ _ _ ↦ id
 
 /-- The graph isomorphism between the top element of `G.subgraph` and `G`. -/
 def topIso : (⊤ : G.Subgraph).coe ≃g G where
@@ -637,6 +644,9 @@ lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
 theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f = H₁.map f ⊔ H₂.map f := by
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
+@[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
+    (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..
+
 end map
 
 /-- Graph homomorphisms induce a contravariant function on subgraphs. -/
@@ -672,6 +682,20 @@ theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph
   · simp only [Relation.Map, map_adj, forall_exists_index, and_imp]
     rintro u u' hu rfl rfl
     exact (h.2 hu).2
+
+instance [DecidableEq V] [Fintype V] [DecidableRel G.Adj] : Fintype G.Subgraph := by
+  refine .ofBijective
+    (α := {H : Finset V × (V → V → Bool) //
+      (∀ a b, H.2 a b → G.Adj a b) ∧ (∀ a b, H.2 a b → a ∈ H.1) ∧ ∀ a b, H.2 a b = H.2 b a})
+    (fun H ↦ ⟨H.1.1, fun a b ↦ H.1.2 a b, @H.2.1, @H.2.2.1, by simp [Symmetric, H.2.2.2]⟩)
+    ⟨?_, fun H ↦ ?_⟩
+  · rintro ⟨⟨_, _⟩, -⟩ ⟨⟨_, _⟩, -⟩
+    simp [funext_iff]
+  · classical
+    exact ⟨⟨(H.verts.toFinset, fun a b ↦ H.Adj a b), fun a b ↦ by simpa using H.adj_sub,
+      fun a b ↦ by simpa using H.edge_vert, by simp [H.adj_comm]⟩, by simp⟩
+
+instance [Finite V] : Finite G.Subgraph := by classical cases nonempty_fintype V; infer_instance
 
 /-- Given two subgraphs, one a subgraph of the other, there is an induced injective homomorphism of
 the subgraphs as graphs. -/
@@ -774,21 +798,19 @@ theorem degree_eq_one_iff_unique_adj {G' : Subgraph G} {v : V} [Fintype (G'.neig
   rw [← finset_card_neighborSet_eq_degree, Finset.card_eq_one, Finset.singleton_iff_unique_mem]
   simp only [Set.mem_toFinset, mem_neighborSet]
 
+lemma neighborSet_eq_of_equiv {v : V} {H : Subgraph G}
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
+    H.neighborSet v = G.neighborSet v := by
+  lift H.neighborSet v to Finset V using h.set_finite_iff.mp hfin with s hs
+  lift G.neighborSet v to Finset V using hfin with t ht
+  refine congrArg _ <| Finset.eq_of_subset_of_card_le ?_ (Finset.card_eq_of_equiv h).le
+  rw [← Finset.coe_subset, hs, ht]
+  exact H.neighborSet_subset _
+
 lemma adj_iff_of_neighborSet_equiv {v : V} {H : Subgraph G}
-    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : Fintype (G.neighborSet v)) :
-    ∀ {w}, H.Adj v w ↔ G.Adj v w := by
-  classical
-  intro w
-  refine ⟨fun a => a.adj_sub, ?_⟩
-  have : Fintype (H.neighborSet v) := (h.set_finite_iff.mp hfin.finite).fintype
-  let f : H.neighborSet v → G.neighborSet v := fun a => ⟨a, a.coe_prop.adj_sub⟩
-  have hfinj : f.Injective := fun w w' hww' ↦ by aesop
-  have hfbij : f.Bijective := ⟨hfinj, hfinj.surjective_of_fintype h.symm⟩
-  intro h
-  have hv := (Fintype.bijInv hfbij ⟨w, h⟩).coe_prop
-  obtain ⟨v', hv'⟩ : ∃ v', f v' = ⟨w, h⟩ := hfbij.surjective ⟨w, h⟩
-  have : (f v') = w := by simpa using congrArg Subtype.val hv'
-  aesop
+    (h : G.neighborSet v ≃ H.neighborSet v) (hfin : (G.neighborSet v).Finite) :
+    ∀ {w}, H.Adj v w ↔ G.Adj v w :=
+  Set.ext_iff.mp (neighborSet_eq_of_equiv h hfin) _
 
 end Subgraph
 
