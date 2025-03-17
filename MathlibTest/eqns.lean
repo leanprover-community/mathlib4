@@ -19,10 +19,6 @@ theorem t_def : t = 1 := rfl
 -- this rw causes lean to generate equations itself for t before the user can register them
 theorem t_def' : t = 1 := by rw [t]
 
-/--
-error: There already exist stored eqns for 't'; registering new equations
-will not have the desired effect.
--/
 #guard_msgs(error) in
 attribute [eqns t_def] t
 
