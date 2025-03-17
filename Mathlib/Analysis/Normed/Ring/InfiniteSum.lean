@@ -52,7 +52,7 @@ theorem summable_mul_of_summable_norm' {f : ι → R} {g : ι' → R}
   let s : Finset ι × Finset ι' → Finset (ι × ι') := fun p ↦ p.1 ×ˢ p.2
   apply hasSum_of_subseq_of_summable (hf.mul_norm hg) tendsto_finset_prod_atTop
   rw [← prod_atTop_atTop_eq]
-  have := Tendsto.prod_map h'f.hasSum h'g.hasSum
+  have := Tendsto.prodMap h'f.hasSum h'g.hasSum
   rw [← nhds_prod_eq] at this
   convert ((continuous_mul (M := R)).continuousAt
       (x := (∑' (i : ι), f i, ∑' (j : ι'), g j))).tendsto.comp this with p

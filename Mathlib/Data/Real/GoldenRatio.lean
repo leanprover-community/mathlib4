@@ -190,8 +190,7 @@ theorem Real.coe_fib_eq' :
       ring_nf
       rw [mul_inv_cancel₀]; norm_num
   · exact fib_isSol_fibRec
-  · -- Porting note: Rewrote this proof
-    suffices LinearRecurrence.IsSolution fibRec
+  · suffices LinearRecurrence.IsSolution fibRec
         ((fun n ↦ (√5)⁻¹ * φ ^ n) - (fun n ↦ (√5)⁻¹ * ψ ^ n)) by
       convert this
       rw [Pi.sub_apply]
