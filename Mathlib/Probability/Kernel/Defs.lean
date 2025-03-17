@@ -117,7 +117,7 @@ def coeAddHom (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
 
 @[simp]
 theorem coeAddHom_apply (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] (κ : Kernel α β) :
-    coeAddHom κ = ⇑κ := rfl
+    coeAddHom α β κ = ⇑κ := rfl
 
 @[simp]
 theorem coe_finset_sum (I : Finset ι) (κ : ι → Kernel α β) : ⇑(∑ i ∈ I, κ i) = ∑ i ∈ I, ⇑(κ i) :=
