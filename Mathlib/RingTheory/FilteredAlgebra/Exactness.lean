@@ -141,8 +141,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     rcases fstrict.strict mem this with ⟨r, hr, eq⟩
     have : f.toFun r + s' = s := by rw [eq, neg_add_cancel_comm]
     use GradedPiece.mk FR FR_lt ⟨r, hr⟩
-    rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom]
-    simp only [GradedPiece.mk, QuotientAddGroup.mk'_eq_mk']
+    rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk, QuotientAddGroup.mk'_eq_mk']
     use ⟨s', IsFiltration.F_lt_le_F FS FS_lt i hs'⟩
     exact ⟨hs', SetCoe.ext this⟩
   · induction y using QuotientAddGroup.induction_on
@@ -285,7 +284,7 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
         have ps_mem_p : (xₚₛ (p - s)).out.val ∈ FR p := by
           suffices (xₚₛ (p - s)).out.val ∈ FR (p - s) from monoR (show p - s ≤ p by omega) this
           exact SetLike.coe_mem (xₚₛ (p - s)).out
-        set xr := (⟨(xₚₛ (p - s)).out + r, add_mem ps_mem_p r.2⟩ : FR p) with xr_def
+        set xr := (⟨(xₚₛ (p - s)).out + r, add_mem ps_mem_p r.2⟩ : FR p)
         refine ⟨xr, ⟨⟨x' - xr, hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' xr⟩, ?_⟩⟩
         simp only [AddMonoidHom.coe_range, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Nat.cast_add,
           Nat.cast_one, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe]
@@ -305,12 +304,10 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
       simp only [tsub_le_iff_right]
       obtain ⟨s, hs⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ - t₀ + t₀.natAbs + p.natAbs by omega)
       use s; rw [← hs]; omega
-    replace le_zero := le_zero (p - s) hs
     rcases this s with ⟨r, hr⟩
-    refine ⟨r, ⟨SetLike.coe_mem r, ?_⟩⟩
-    rw [le_zero, (Set.inter_eq_right.2 fun x hx ↦ hx.symm ▸ zero_mem f.range),
+    rw [le_zero (p - s) hs, (Set.inter_eq_right.2 fun x hx ↦ hx.symm ▸ zero_mem f.range),
       Set.mem_singleton_iff, sub_eq_zero] at hr
-    exact hr.symm
+    exact ⟨r, ⟨SetLike.coe_mem r, hr.symm⟩⟩
 
 
 theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
