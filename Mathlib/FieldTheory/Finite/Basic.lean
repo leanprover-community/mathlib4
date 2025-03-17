@@ -9,6 +9,7 @@ import Mathlib.Algebra.Field.ZMod
 import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.ZMod.ValMinAbs
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Perfect
 import Mathlib.FieldTheory.Separable
 import Mathlib.RingTheory.IntegralDomain
@@ -391,7 +392,7 @@ theorem bijective_frobeniusAlgEquivOfAlgebraic_pow :
 
 instance (K L) [Finite L] [Field K] [Field L] [Algebra K L] : IsCyclic (L ≃ₐ[K] L) where
   exists_zpow_surjective :=
-    have := Finite.of_injective_finite_range (RingHom.injective <| algebraMap K L)
+    have := Finite.of_injective _ (algebraMap K L).injective
     have := Fintype.ofFinite K
     ⟨frobeniusAlgEquivOfAlgebraic K L,
       fun f ↦ have ⟨n, hn⟩ := (bijective_frobeniusAlgEquivOfAlgebraic_pow K L).2 f; ⟨n, hn⟩⟩
