@@ -25,10 +25,11 @@ The main constructions are the following.
 
 ## Implementation notes
 
-It seems that instance inference would work much smoother when `V` would be made
-an `(V : outParam <| Type u')` for the `class`es below. However, this could maybe
-cause other problems, maybe such an example would be if
-different `[MonoidalCategory _]` are in scope.
+`V` has been made an `(V : outParam <| Type u')` in the classes below as it seems instance
+inference prefers this. Otherwise it failed with
+`cannot find synthesization order` on the instances below.
+However, it is not fully clear yet whether this could lead to potential issues, for example
+if there are multiple `MonoidalCategory _` instances in scope.
 -/
 
 universe v₁ u₁ v₂ u₂ w v' v u u'
@@ -40,7 +41,7 @@ open Limits
 section Definitions
 
 variable {J : Type u₁} [Category.{v₁} J]
-variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
+variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 variable {C} in
@@ -92,19 +93,17 @@ variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 example (F : J ⥤ C) [HasConicalLimit V F] : HasLimit F := inferInstance
 
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
-lemma HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
+instance HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
     HasLimitsOfShape J C where
   has_limit _ := inferInstance
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
-lemma HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
+instance HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
-  has_limits_of_shape J :=
-    HasConicalLimitsOfShape.hasLimitsOfShape J V C
+  has_limits_of_shape _ := inferInstance
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
-lemma HasConicalLimits.hasLimits [HasConicalLimits V C] : HasLimits C :=
-  HasConicalLimitsOfSize.hasLimitsOfSize V C
+example [HasConicalLimits V C] : HasLimits C := inferInstance
 
 end Results
 
