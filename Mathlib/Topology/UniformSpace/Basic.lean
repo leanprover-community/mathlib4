@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Basic results on uniform spaces
