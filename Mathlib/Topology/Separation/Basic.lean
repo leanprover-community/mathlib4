@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Group.Support
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
 
