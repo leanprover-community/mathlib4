@@ -36,8 +36,8 @@ open Function (Commute)
 theorem isFixedPt_id (x : α) : IsFixedPt id x :=
   (rfl :)
 
-/-- A function is an identity iff every point is fixed. -/
-theorem isFixedPt_eq_id_iff : (∀ x, IsFixedPt f x) ↔ f = id :=
+/-- A function fixes every point iff it is the identity. -/
+@[simp] theorem forall_isFixedPt_iff : (∀ x, IsFixedPt f x) ↔ f = id :=
   ⟨funext, fun h ↦ h ▸ isFixedPt_id⟩
 
 namespace IsFixedPt
