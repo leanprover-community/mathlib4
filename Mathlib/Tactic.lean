@@ -173,6 +173,7 @@ public import Mathlib.Tactic.Linter.PrivateModule
 public import Mathlib.Tactic.Linter.Style
 public import Mathlib.Tactic.Linter.TacticDocumentation
 public import Mathlib.Tactic.Linter.TextBased
+public import Mathlib.Tactic.Linter.UnicodeLinter
 public import Mathlib.Tactic.Linter.UnusedInstancesInType
 public import Mathlib.Tactic.Linter.UnusedTactic
 public import Mathlib.Tactic.Linter.UnusedTacticExtension
