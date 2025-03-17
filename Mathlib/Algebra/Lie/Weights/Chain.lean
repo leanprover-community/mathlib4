@@ -403,7 +403,7 @@ lemma root_space_ad_is_nilpotent
   let A := (toEnd K L M x) ^ n₀
   have s₁ : ∀ χ₂ ∈ s, genWeightSpace M χ₂ ≤
       Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
-    intro χ₂ a m hm
+    intro _ a _ hm
     exact (Submodule.span_mono (fun _ hx => Set.mem_biUnion a hx)) (Submodule.subset_span hm)
   have s₂ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤
       Submodule.span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
