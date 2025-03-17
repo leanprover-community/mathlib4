@@ -340,6 +340,8 @@ end basic
 
 variable [Fintype m] [NonUnitalCStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
+
+
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. -/
 def toCLM : CStarMatrix m n A →ₗ[ℂ] C⋆ᵐᵒᵈ(A, m → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A) where
   toFun M := { toFun := (WithCStarModule.equivL ℂ).symm ∘ M.vecMul ∘ WithCStarModule.equivL ℂ
@@ -373,10 +375,12 @@ lemma toCLM_apply_eq_sum {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, m → A)}
   ext i
   simp [toCLM_apply, Matrix.vecMul, dotProduct]
 
-variable [Fintype n]
+
+
 /-- Interpret a `CStarMatrix m n A` as a continuous linear map acting on `C⋆ᵐᵒᵈ (n → A)`. This
 version is specialized to the case `m = n` and is bundled as a non-unital algebra homomorphism. -/
-def toCLMNonUnitalAlgHom : CStarMatrix n n A →ₙₐ[ℂ] (C⋆ᵐᵒᵈ(A, n → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A))ᵐᵒᵖ :=
+def toCLMNonUnitalAlgHom [Fintype n] :
+    CStarMatrix n n A →ₙₐ[ℂ] (C⋆ᵐᵒᵈ(A, n → A) →L[ℂ] C⋆ᵐᵒᵈ(A, n → A))ᵐᵒᵖ :=
   { (MulOpposite.opLinearEquiv ℂ).toLinearMap ∘ₗ (toCLM (n := n) (m := n)) with
     map_zero' := by simp
     map_mul' := by
@@ -385,7 +389,7 @@ def toCLMNonUnitalAlgHom : CStarMatrix n n A →ₙₐ[ℂ] (C⋆ᵐᵒᵈ(A, n 
       ext
       simp [toCLM] }
 
-lemma toCLMNonUnitalAlgHom_eq_toCLM {M : CStarMatrix n n A} :
+lemma toCLMNonUnitalAlgHom_eq_toCLM [Fintype n] {M : CStarMatrix n n A} :
     toCLMNonUnitalAlgHom (A := A) M = MulOpposite.op (toCLM M) := rfl
 
 open WithCStarModule in
@@ -396,14 +400,12 @@ lemma toCLM_apply_single [DecidableEq m] {M : CStarMatrix m n A} {i : m} (a : A)
   simp [toCLM_apply, EmbeddingLike.apply_eq_iff_eq, equiv, Equiv.refl]
 
 open WithCStarModule in
-lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A} {i : m} {j : n} (a : A) :
+lemma toCLM_apply_single_apply [DecidableEq m] {M : CStarMatrix m n A}{i : m} {j : n} (a : A) :
     (toCLM M) (equiv _ _ |>.symm <| Pi.single i a) j = a * M i j := by simp
 
-variable [Fintype m]
-
 open WithCStarModule in
-lemma mul_entry_mul_eq_inner_toCLM [DecidableEq m] [DecidableEq n] {M : CStarMatrix m n A}
-    {i : m} {j : n} (a b : A) :
+lemma mul_entry_mul_eq_inner_toCLM [Fintype n] [DecidableEq m] [DecidableEq n]
+    {M : CStarMatrix m n A} {i : m} {j : n} (a b : A) :
     a * M i j * star b
       = ⟪equiv _ _ |>.symm (Pi.single j b), toCLM M (equiv _ _ |>.symm <| Pi.single i a)⟫_A := by
   simp [mul_assoc, inner_def]
@@ -416,6 +418,8 @@ lemma toCLM_injective : Function.Injective (toCLM (A := A) (m := m) (n := n)) :=
   rw [Matrix.zero_apply, ← norm_eq_zero, ← sq_eq_zero_iff, sq, ← CStarRing.norm_star_mul_self,
     ← toCLM_apply_single_apply]
   simp [h]
+
+variable [Fintype n]
 
 open WithCStarModule in
 lemma inner_toCLM_conjTranspose_left {M : CStarMatrix m n A} {v : C⋆ᵐᵒᵈ(A, n → A)}
@@ -438,7 +442,7 @@ lemma norm_def {M : CStarMatrix m n A} : ‖M‖ = ‖toCLM M‖ := rfl
 
 lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A := A) M‖ := rfl
 
-lemma normedSpaceCore: NormedSpace.Core ℂ (CStarMatrix m n A) where
+lemma normedSpaceCore : NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
   norm_triangle M₁ M₂ := by simpa [← map_add] using norm_add_le (toCLM M₁) (toCLM M₂)
