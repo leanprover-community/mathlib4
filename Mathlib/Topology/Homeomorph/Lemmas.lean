@@ -3,10 +3,9 @@ Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Sébastien Gouëzel, Zhouhang Zhou, Reid Barton
 -/
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.DenseEmbedding
-import Mathlib.Topology.Homeomorph.Defs
 
 /-!
 # Further properties of homeomorphisms
@@ -208,168 +207,7 @@ def setCongr {s t : Set X} (h : s = t) : s ≃ₜ t where
   continuous_invFun := continuous_inclusion h.symm.subset
   toEquiv := Equiv.setCongr h
 
-/-- Sum of two homeomorphisms. -/
-def sumCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X ⊕ Y ≃ₜ X' ⊕ Y' where
-  continuous_toFun := h₁.continuous.sumMap h₂.continuous
-  continuous_invFun := h₁.symm.continuous.sumMap h₂.symm.continuous
-  toEquiv := h₁.toEquiv.sumCongr h₂.toEquiv
-
-@[simp]
-lemma sumCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
-  (sumCongr h₁ h₂).symm = sumCongr h₁.symm h₂.symm := rfl
-
-@[simp]
-theorem sumCongr_refl : sumCongr (.refl X) (.refl Y) = .refl (X ⊕ Y) := by
-  ext i
-  cases i <;> rfl
-
-@[simp]
-theorem sumCongr_trans {X'' Y'' : Type*} [TopologicalSpace X''] [TopologicalSpace Y'']
-    (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') (h₃ : X' ≃ₜ X'') (h₄ : Y' ≃ₜ Y'') :
-    (sumCongr h₁ h₂).trans (sumCongr h₃ h₄) = sumCongr (h₁.trans h₃) (h₂.trans h₄) := by
-  ext i
-  cases i <;> rfl
-
-/-- Product of two homeomorphisms. -/
-def prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : X × Y ≃ₜ X' × Y' where
-  toEquiv := h₁.toEquiv.prodCongr h₂.toEquiv
-
-@[simp]
-theorem prodCongr_symm (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') :
-    (h₁.prodCongr h₂).symm = h₁.symm.prodCongr h₂.symm :=
-  rfl
-
-@[simp]
-theorem coe_prodCongr (h₁ : X ≃ₜ X') (h₂ : Y ≃ₜ Y') : ⇑(h₁.prodCongr h₂) = Prod.map h₁ h₂ :=
-  rfl
-
--- Commutativity and associativity of the disjoint union of topological spaces,
--- and the sum with an empty space.
-section sum
-
-variable (X Y W Z)
-
-/-- `X ⊕ Y` is homeomorphic to `Y ⊕ X`. -/
-def sumComm : X ⊕ Y ≃ₜ Y ⊕ X where
-  toEquiv := Equiv.sumComm X Y
-  continuous_toFun := continuous_sum_swap
-  continuous_invFun := continuous_sum_swap
-
-@[simp]
-theorem sumComm_symm : (sumComm X Y).symm = sumComm Y X :=
-  rfl
-
-@[simp]
-theorem coe_sumComm : ⇑(sumComm X Y) = Sum.swap :=
-  rfl
-
-@[continuity, fun_prop]
-lemma continuous_sumAssoc : Continuous (Equiv.sumAssoc X Y Z) :=
-  Continuous.sumElim (by fun_prop) (by fun_prop)
-
-@[continuity, fun_prop]
-lemma continuous_sumAssoc_symm : Continuous (Equiv.sumAssoc X Y Z).symm :=
-  Continuous.sumElim (by fun_prop) (by fun_prop)
-
-/-- `(X ⊕ Y) ⊕ Z` is homeomorphic to `X ⊕ (Y ⊕ Z)`. -/
-def sumAssoc : (X ⊕ Y) ⊕ Z ≃ₜ X ⊕ Y ⊕ Z where
-  toEquiv := Equiv.sumAssoc X Y Z
-  continuous_toFun := continuous_sumAssoc X Y Z
-  continuous_invFun := continuous_sumAssoc_symm X Y Z
-
-@[simp]
-lemma sumAssoc_toEquiv : (sumAssoc X Y Z).toEquiv = Equiv.sumAssoc X Y Z := rfl
-
-/-- Four-way commutativity of the disjoint union. The name matches `add_add_add_comm`. -/
-def sumSumSumComm : (X ⊕ Y) ⊕ W ⊕ Z ≃ₜ (X ⊕ W) ⊕ Y ⊕ Z where
-  toEquiv := Equiv.sumSumSumComm X Y W Z
-  continuous_toFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) ⇑(Equiv.sumComm Y W)) (@id Z)) := by continuity
-    fun_prop
-  continuous_invFun := by
-    unfold Equiv.sumSumSumComm
-    dsimp only
-    have : Continuous (Sum.map (Sum.map (@id X) (Equiv.sumComm Y W).symm) (@id Z)) := by continuity
-    fun_prop
-
-@[simp]
-lemma sumSumSumComm_toEquiv : (sumSumSumComm X Y W Z).toEquiv = (Equiv.sumSumSumComm X Y W Z) := rfl
-
-@[simp]
-lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z) := rfl
-
-/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
-@[simps! -fullyApplied apply]
-def sumEmpty [IsEmpty Y] : X ⊕ Y ≃ₜ X where
-  toEquiv := Equiv.sumEmpty X Y
-  continuous_toFun := Continuous.sumElim continuous_id (by fun_prop)
-  continuous_invFun := continuous_inl
-
-/-- The sum of `X` with any empty topological space is homeomorphic to `X`. -/
-def emptySum [IsEmpty Y] : Y ⊕ X ≃ₜ X := (sumComm Y X).trans (sumEmpty X Y)
-
-@[simp] theorem coe_emptySum [IsEmpty Y] : (emptySum X Y).toEquiv = Equiv.emptySum Y X := rfl
-
-end sum
-
--- Commutativity and associativity of the product of top. spaces, and the product with `PUnit`.
 section prod
-
-variable (X Y W Z)
-
-/-- `X × Y` is homeomorphic to `Y × X`. -/
-def prodComm : X × Y ≃ₜ Y × X where
-  continuous_toFun := continuous_snd.prod_mk continuous_fst
-  continuous_invFun := continuous_snd.prod_mk continuous_fst
-  toEquiv := Equiv.prodComm X Y
-
-@[simp]
-theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
-  rfl
-
-@[simp]
-theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
-  rfl
-
-/-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
-def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
-  continuous_toFun := continuous_fst.fst.prod_mk (continuous_fst.snd.prod_mk continuous_snd)
-  continuous_invFun := (continuous_fst.prod_mk continuous_snd.fst).prod_mk continuous_snd.snd
-  toEquiv := Equiv.prodAssoc X Y Z
-
-@[simp]
-lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
-
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
-def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
-  toEquiv := Equiv.prodProdProdComm X Y W Z
-  continuous_toFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-  continuous_invFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-
-@[simp]
-theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
-  rfl
-
-/-- `X × {*}` is homeomorphic to `X`. -/
-@[simps! -fullyApplied apply]
-def prodPUnit : X × PUnit ≃ₜ X where
-  toEquiv := Equiv.prodPUnit X
-  continuous_toFun := continuous_fst
-  continuous_invFun := continuous_id.prod_mk continuous_const
-
-/-- `{*} × X` is homeomorphic to `X`. -/
-def punitProd : PUnit × X ≃ₜ X :=
-  (prodComm _ _).trans (prodPUnit _)
-
-@[simp] theorem coe_punitProd : ⇑(punitProd X) = Prod.snd := rfl
 
 /-- The product over `S ⊕ T` of a family of topological spaces
 is homeomorphic to the product of (the product over `S`) and (the product over `T`).
@@ -380,7 +218,7 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, TopologicalSpace (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
   __ := Equiv.sumPiEquivProdPi _
-  continuous_toFun := Continuous.prod_mk (by fun_prop) (by fun_prop)
+  continuous_toFun := .prodMk (by fun_prop) (by fun_prop)
   continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
 
 /-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
@@ -429,9 +267,8 @@ def piCongr {ι₁ ι₂ : Type*} {Y₁ : ι₁ → Type*} {Y₂ : ι₂ → Typ
     (e : ι₁ ≃ ι₂) (F : ∀ i₁, Y₁ i₁ ≃ₜ Y₂ (e i₁)) : (∀ i₁, Y₁ i₁) ≃ₜ ∀ i₂, Y₂ i₂ :=
   (Homeomorph.piCongrRight F).trans (Homeomorph.piCongrLeft e)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align the order of universes with `Equiv.ulift`
 /-- `ULift X` is homeomorphic to `X`. -/
-def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X where
+def ulift.{u, v} {X : Type v} [TopologicalSpace X] : ULift.{u, v} X ≃ₜ X where
   continuous_toFun := continuous_uliftDown
   continuous_invFun := continuous_uliftUp
   toEquiv := Equiv.ulift
@@ -442,8 +279,8 @@ def ulift.{u, v} {X : Type u} [TopologicalSpace X] : ULift.{v, u} X ≃ₜ X whe
 def sumArrowHomeomorphProdArrow {ι ι' : Type*} : (ι ⊕ ι' → X) ≃ₜ (ι → X) × (ι' → X)  where
   toEquiv := Equiv.sumArrowEquivProdArrow _ _ _
   continuous_toFun := by
-    simp only [Equiv.sumArrowEquivProdArrow, Equiv.coe_fn_mk, continuous_prod_mk]
-    constructor <;> fun_prop
+    dsimp [Equiv.sumArrowEquivProdArrow]
+    fun_prop
   continuous_invFun := continuous_pi fun i ↦ match i with
     | .inl i => by apply (continuous_apply _).comp' continuous_fst
     | .inr i => by apply (continuous_apply _).comp' continuous_snd
@@ -481,19 +318,6 @@ theorem _root_.Fin.appendHomeomorph_toEquiv (m n : ℕ) :
 
 section Distrib
 
-/-- `(X ⊕ Y) × Z` is homeomorphic to `X × Z ⊕ Y × Z`. -/
-@[simps!]
-def sumProdDistrib : (X ⊕ Y) × Z ≃ₜ (X × Z) ⊕ (Y × Z) :=
-  Homeomorph.symm <|
-    homeomorphOfContinuousOpen (Equiv.sumProdDistrib X Y Z).symm
-        ((continuous_inl.prodMap continuous_id).sumElim
-          (continuous_inr.prodMap continuous_id)) <|
-      (isOpenMap_inl.prodMap IsOpenMap.id).sumElim (isOpenMap_inr.prodMap IsOpenMap.id)
-
-/-- `X × (Y ⊕ Z)` is homeomorphic to `X × Y ⊕ X × Z`. -/
-def prodSumDistrib : X × (Y ⊕ Z) ≃ₜ (X × Y) ⊕ (X × Z) :=
-  (prodComm _ _).trans <| sumProdDistrib.trans <| sumCongr (prodComm _ _) (prodComm _ _)
-
 variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 
 /-- `(Σ i, X i) × Y` is homeomorphic to `Σ i, (X i × Y)`. -/
@@ -501,7 +325,7 @@ variable {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)]
 def sigmaProdDistrib : (Σ i, X i) × Y ≃ₜ Σ i, X i × Y :=
   Homeomorph.symm <|
     homeomorphOfContinuousOpen (Equiv.sigmaProdDistrib X Y).symm
-      (continuous_sigma fun _ => continuous_sigmaMk.fst'.prod_mk continuous_snd)
+      (continuous_sigma fun _ => continuous_sigmaMk.fst'.prodMk continuous_snd)
       (isOpenMap_sigma.2 fun _ => isOpenMap_sigmaMk.prodMap IsOpenMap.id)
 
 end Distrib
@@ -517,7 +341,7 @@ def funUnique (ι X : Type*) [Unique ι] [TopologicalSpace X] : (ι → X) ≃�
 @[simps! -fullyApplied]
 def piFinTwo.{u} (X : Fin 2 → Type u) [∀ i, TopologicalSpace (X i)] : (∀ i, X i) ≃ₜ X 0 × X 1 where
   toEquiv := piFinTwoEquiv X
-  continuous_toFun := (continuous_apply 0).prod_mk (continuous_apply 1)
+  continuous_toFun := (continuous_apply 0).prodMk (continuous_apply 1)
   continuous_invFun := continuous_pi <| Fin.forall_fin_two.2 ⟨continuous_fst, continuous_snd⟩
 
 /-- Homeomorphism between `X² = Fin 2 → X` and `X × X`. -/
@@ -529,7 +353,7 @@ def finTwoArrow : (Fin 2 → X) ≃ₜ X × X :=
 -/
 @[simps!]
 def image (e : X ≃ₜ Y) (s : Set X) : s ≃ₜ e '' s where
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: by continuity!
+  -- TODO: by continuity!
   continuous_toFun := e.continuous.continuousOn.restrict_mapsTo (mapsTo_image _ _)
   continuous_invFun := (e.symm.continuous.comp continuous_subtype_val).codRestrict _
   toEquiv := e.toEquiv.image s
@@ -546,9 +370,9 @@ def Set.univ (X : Type*) [TopologicalSpace X] : (univ : Set X) ≃ₜ X where
 def Set.prod (s : Set X) (t : Set Y) : ↥(s ×ˢ t) ≃ₜ s × t where
   toEquiv := Equiv.Set.prod s t
   continuous_toFun :=
-    (continuous_subtype_val.fst.subtype_mk _).prod_mk (continuous_subtype_val.snd.subtype_mk _)
+    (continuous_subtype_val.fst.subtype_mk _).prodMk (continuous_subtype_val.snd.subtype_mk _)
   continuous_invFun :=
-    (continuous_subtype_val.fst'.prod_mk continuous_subtype_val.snd').subtype_mk _
+    (continuous_subtype_val.fst'.prodMk continuous_subtype_val.snd').subtype_mk _
 
 section
 
@@ -561,7 +385,7 @@ def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, Topologica
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i where
   toEquiv := Equiv.piEquivPiSubtypeProd p Y
   continuous_toFun := by
-    apply Continuous.prod_mk <;> exact continuous_pi fun j => continuous_apply j.1
+    apply Continuous.prodMk <;> exact continuous_pi fun j => continuous_apply j.1
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piEquivPiSubtypeProd]; split_ifs
@@ -575,7 +399,7 @@ variable [DecidableEq ι] (i : ι)
 def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
     (∀ j, Y j) ≃ₜ Y i × ∀ j : { j // j ≠ i }, Y j where
   toEquiv := Equiv.piSplitAt i Y
-  continuous_toFun := (continuous_apply i).prod_mk (continuous_pi fun j => continuous_apply j.1)
+  continuous_toFun := (continuous_apply i).prodMk (continuous_pi fun j => continuous_apply j.1)
   continuous_invFun :=
     continuous_pi fun j => by
       dsimp only [Equiv.piSplitAt]

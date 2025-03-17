@@ -182,7 +182,7 @@ theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
 
 -- TODO: again, annotation needed
---Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute
+-- Not `@[simp]` since `mem_singleton_iff` proves it.
 theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 

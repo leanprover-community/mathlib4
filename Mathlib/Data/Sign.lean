@@ -205,16 +205,15 @@ section cast
 
 variable {α : Type*} [Zero α] [One α] [Neg α]
 
-/-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance, but note it is
-only a `CoeTC` instance: see note [use has_coe_t]. -/
+/-- Turn a `SignType` into zero, one, or minus one. This is a coercion instance. -/
 @[coe]
 def cast : SignType → α
   | zero => 0
   | pos => 1
   | neg => -1
 
--- Porting note: Translated has_coe_t to CoeTC
-instance : CoeTC SignType α :=
+/-- This is a `Coe` since the type on the right (trivially) determines the type on the left. -/
+instance : Coe SignType α :=
   ⟨cast⟩
 
 /-- Casting out of `SignType` respects composition with functions preserving `0, 1, -1`. -/
