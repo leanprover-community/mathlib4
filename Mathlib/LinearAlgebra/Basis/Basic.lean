@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Finsupp.SumProd
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Basic
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # Bases
@@ -223,9 +223,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rfl
     have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
         span R (range v) := by
-      rw [← span_image, Submodule.coe_subtype]
-      -- Porting note: why doesn't `rw [h₁]` work here?
-      exact congr_arg _ h₁
+      rw [← span_image, Submodule.coe_subtype, h₁]
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
         (span R (Set.range fun i => Subtype.mk (v i) (this i))) := by
       rw [h₂]
@@ -391,8 +389,6 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
 theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
     (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) := by
-  -- Porting note: without `unfold`, Lean can't reuse the proofs included in the definition
-  -- `mkFinCons`
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
 
@@ -571,3 +567,34 @@ theorem Basis.mem_span_iff_repr_mem (m : M) :
   exact smul_mem _ _ (subset_span (Set.mem_range_self i))
 
 end RestrictScalars
+
+section AddSubgroup
+
+variable {M R : Type*} [Ring R] [Nontrivial R] [NoZeroSMulDivisors ℤ R]
+  [AddCommGroup M] [Module R M] (A : AddSubgroup M) {ι : Type*} (b : Basis ι R M)
+
+/--
+Let `A` be an subgroup of an additive commutative group `M` that is also an `R`-module.
+Construct a basis of `A` as a `ℤ`-basis from a `R`-basis of `E` that generates `A`.
+-/
+noncomputable def Basis.addSubgroupOfClosure (h : A = .closure (Set.range b)) :
+    Basis ι ℤ A.toIntSubmodule :=
+  (b.restrictScalars ℤ).map <|
+    LinearEquiv.ofEq _ _
+      (by rw [h, ← Submodule.span_int_eq_addSubgroup_closure, toAddSubgroup_toIntSubmodule])
+
+@[simp]
+theorem Basis.addSubgroupOfClosure_apply (h : A = .closure (Set.range b)) (i : ι) :
+    b.addSubgroupOfClosure A h i = b i := by
+  simp [addSubgroupOfClosure]
+
+@[simp]
+theorem Basis.addSubgroupOfClosure_repr_apply (h : A = .closure (Set.range b)) (x : A) (i : ι) :
+    (b.addSubgroupOfClosure A h).repr x i = b.repr x i := by
+  suffices Finsupp.mapRange.linearMap (Algebra.linearMap ℤ R) ∘ₗ
+      (b.addSubgroupOfClosure A h).repr.toLinearMap =
+        ((b.repr : M →ₗ[R] ι →₀ R).restrictScalars ℤ).domRestrict A.toIntSubmodule by
+    exact DFunLike.congr_fun (LinearMap.congr_fun this x) i
+  exact (b.addSubgroupOfClosure A h).ext fun _ ↦ by simp
+
+end AddSubgroup

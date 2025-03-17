@@ -5,7 +5,9 @@ Authors: Patrick Massot, Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Group.Seminorm
 import Mathlib.Data.NNReal.Basic
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.Order.Real
 
 /-!
 # Normed (semi)groups
@@ -89,6 +91,37 @@ lemma enorm_eq_nnnorm (x : E) : ‖x‖ₑ = ‖x‖₊ := rfl
 @[simp] lemma enorm_lt_top : ‖x‖ₑ < ∞ := by simp [enorm]
 
 end ENorm
+
+/-- A type `E` equipped with a continuous map `‖·‖ₑ : E → ℝ≥0∞`
+
+NB. We do not demand that the topology is somehow defined by the enorm:
+for ℝ≥0∞ (the motivating example behind this definition), this is not true. -/
+class ContinuousENorm (E : Type*) [TopologicalSpace E] extends ENorm E where
+  continuous_enorm : Continuous enorm
+
+/-- An enormed monoid is an additive monoid endowed with a continuous enorm. -/
+class ENormedAddMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, AddMonoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 0
+  protected enorm_add_le : ∀ x y : E, ‖x + y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+
+/-- An enormed monoid is a monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedMonoid (E : Type*) [TopologicalSpace E] extends ContinuousENorm E, Monoid E where
+  enorm_eq_zero : ∀ x : E, ‖x‖ₑ = 0 ↔ x = 1
+  enorm_mul_le : ∀ x y : E, ‖x * y‖ₑ ≤ ‖x‖ₑ + ‖y‖ₑ
+
+/-- An enormed commutative monoid is an additive commutative monoid
+endowed with a continuous enorm.
+
+We don't have `ENormedAddCommMonoid` extend `EMetricSpace`, since the canonical instance `ℝ≥0∞`
+is not an `EMetricSpace`. This is because `ℝ≥0∞` carries the order topology, which is distinct from
+the topology coming from `edist`. -/
+class ENormedAddCommMonoid (E : Type*) [TopologicalSpace E]
+  extends ENormedAddMonoid E, AddCommMonoid E where
+
+/-- An enormed commutative monoid is a commutative monoid endowed with a continuous enorm. -/
+@[to_additive]
+class ENormedCommMonoid (E : Type*) [TopologicalSpace E] extends ENormedMonoid E, CommMonoid E where
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -186,11 +219,7 @@ abbrev NormedGroup.ofSeparation [SeminormedGroup E] (h : ∀ x : E, ‖x‖ = 0 
   dist_eq := ‹SeminormedGroup E›.dist_eq
   toMetricSpace :=
     { eq_of_dist_eq_zero := fun hxy =>
-        div_eq_one.1 <| h _ <| by exact (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
-      -- Porting note: the `rwa` no longer worked, but it was easy enough to provide the term.
-      -- however, notice that if you make `x` and `y` accessible, then the following does work:
-      -- `have := ‹SeminormedGroup E›.dist_eq x y; rwa [← this]`, so I'm not sure why the `rwa`
-      -- was broken.
+        div_eq_one.1 <| h _ <| (‹SeminormedGroup E›.dist_eq _ _).symm.trans hxy }
 
 -- See note [reducible non-instances]
 /-- Construct a `NormedCommGroup` from a `SeminormedCommGroup` satisfying
@@ -304,8 +333,6 @@ abbrev GroupSeminorm.toSeminormedGroup [Group E] (f : GroupSeminorm E) : Seminor
   dist_self x := by simp only [div_self', map_one_eq_zero]
   dist_triangle := le_map_div_add_map_div f
   dist_comm := map_div_rev f
-  edist_dist x y := by exact ENNReal.coe_nnreal_eq _
-  -- Porting note: how did `mathlib3` solve this automatically?
 
 -- See note [reducible non-instances]
 /-- Construct a seminormed group from a seminorm, i.e., registering the pseudodistance and the
@@ -482,6 +509,10 @@ theorem abs_norm_sub_norm_le' (a b : E) : |‖a‖ - ‖b‖| ≤ ‖a / b‖ :=
 @[to_additive norm_sub_norm_le]
 theorem norm_sub_norm_le' (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a / b‖ :=
   (le_abs_self _).trans (abs_norm_sub_norm_le' a b)
+
+@[to_additive (attr := bound)]
+theorem norm_sub_le_norm_mul (a b : E) : ‖a‖ - ‖b‖ ≤ ‖a * b‖ := by
+  simpa using norm_mul_le' (a * b) (b⁻¹)
 
 @[to_additive dist_norm_norm_le]
 theorem dist_norm_norm_le' (a b : E) : dist ‖a‖ ‖b‖ ≤ ‖a / b‖ :=
@@ -673,6 +704,19 @@ lemma toReal_enorm' (x : E) : ‖x‖ₑ.toReal = ‖x‖ := by simp [enorm]
 lemma ofReal_norm' (x : E) : .ofReal ‖x‖ = ‖x‖ₑ := by
   simp [enorm, ENNReal.ofReal, Real.toNNReal, nnnorm]
 
+@[to_additive enorm_eq_iff_norm_eq]
+theorem enorm'_eq_iff_norm_eq {x : E} {y : F} : ‖x‖ₑ = ‖y‖ₑ ↔ ‖x‖ = ‖y‖ := by
+  simp only [← ofReal_norm']
+  refine ⟨fun h ↦ ?_, fun h ↦ by congr⟩
+  exact (Real.toNNReal_eq_toNNReal_iff (norm_nonneg' _) (norm_nonneg' _)).mp (ENNReal.coe_inj.mp h)
+
+@[to_additive enorm_le_iff_norm_le]
+theorem enorm'_le_iff_norm_le {x : E} {y : F} : ‖x‖ₑ ≤ ‖y‖ₑ ↔ ‖x‖ ≤ ‖y‖ := by
+  simp only [← ofReal_norm']
+  refine ⟨fun h ↦ ?_, fun h ↦ by gcongr⟩
+  rw [ENNReal.ofReal_le_ofReal_iff (norm_nonneg' _)] at h
+  exact h
+
 @[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
@@ -698,10 +742,6 @@ theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
 theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
-@[to_additive enorm_add_le]
-lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := by
-  simpa [enorm, ← ENNReal.coe_add] using nnnorm_mul_le' a b
-
 @[to_additive norm_nsmul_le]
 lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
   | 0 => by simp
@@ -714,9 +754,6 @@ lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
-
-@[to_additive (attr := simp) enorm_neg]
-lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
 @[to_additive (attr := simp) nnnorm_abs_zsmul]
 theorem nnnorm_zpow_abs (a : E) (n : ℤ) : ‖a ^ |n|‖₊ = ‖a ^ n‖₊ :=
@@ -811,7 +848,12 @@ end NNNorm
 
 section ENorm
 
-@[to_additive (attr := simp) enorm_zero] lemma enorm_one' : ‖(1 : E)‖ₑ = 0 := by simp [enorm]
+@[to_additive (attr := simp) enorm_zero]
+lemma enorm_one' {E : Type*} [TopologicalSpace E] [ENormedMonoid E] : ‖(1 : E)‖ₑ = 0 := by
+  rw [ENormedMonoid.enorm_eq_zero]
+
+@[to_additive (attr := simp) enorm_neg]
+lemma enorm_inv' (a : E) : ‖a⁻¹‖ₑ = ‖a‖ₑ := by simp [enorm]
 
 @[to_additive ofReal_norm_eq_enorm]
 lemma ofReal_norm_eq_enorm' (a : E) : .ofReal ‖a‖ = ‖a‖ₑ := ENNReal.ofReal_eq_coe_nnreal _
@@ -843,6 +885,65 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball 1 r ↔ �
 
 end ENorm
 
+section ContinuousENorm
+
+variable {E : Type*} [TopologicalSpace E] [ContinuousENorm E]
+
+@[continuity, fun_prop]
+lemma continuous_enorm : Continuous fun a : E ↦ ‖a‖ₑ := ContinuousENorm.continuous_enorm
+
+variable {X : Type*} [TopologicalSpace X] {f : X → E} {s : Set X} {a : X}
+
+@[fun_prop]
+lemma Continuous.enorm : Continuous f → Continuous (‖f ·‖ₑ) :=
+  continuous_enorm.comp
+
+lemma ContinuousAt.enorm {a : X} (h : ContinuousAt f a) : ContinuousAt (‖f ·‖ₑ) a := by fun_prop
+
+@[fun_prop]
+lemma ContinuousWithinAt.enorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a) :
+    ContinuousWithinAt (‖f ·‖ₑ) s a :=
+  (ContinuousENorm.continuous_enorm.continuousWithinAt).comp (t := Set.univ) h
+    (fun _ _ ↦ by trivial)
+
+@[fun_prop]
+lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
+  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
+
+end ContinuousENorm
+
+section ENormedMonoid
+
+variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
+
+@[to_additive enorm_add_le]
+lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
+
+@[to_additive (attr := simp) enorm_eq_zero]
+lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
+  simp [enorm, ENormedMonoid.enorm_eq_zero]
+
+@[to_additive enorm_ne_zero]
+lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
+  enorm_eq_zero'.ne
+
+@[to_additive (attr := simp) enorm_pos]
+lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
+  pos_iff_ne_zero.trans enorm_ne_zero'
+
+end ENormedMonoid
+
+open Set in
+@[to_additive]
+lemma SeminormedGroup.disjoint_nhds (x : E) (f : Filter E) :
+    Disjoint (𝓝 x) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y / x‖ := by
+  simp [NormedCommGroup.nhds_basis_norm_lt x |>.disjoint_iff_left, compl_setOf, eventually_iff]
+
+@[to_additive]
+lemma SeminormedGroup.disjoint_nhds_one (f : Filter E) :
+    Disjoint (𝓝 1) f ↔ ∃ δ > 0, ∀ᶠ y in f, δ ≤ ‖y‖ := by
+  simpa using disjoint_nhds 1 f
+
 end SeminormedGroup
 
 section Induced
@@ -858,7 +959,6 @@ structure on the domain. -/
 abbrev SeminormedGroup.induced [Group E] [SeminormedGroup F] [MonoidHomClass 𝓕 E F] (f : 𝓕) :
     SeminormedGroup E :=
   { PseudoMetricSpace.induced f toPseudoMetricSpace with
-    -- Porting note: needed to add the instance explicitly, and `‹PseudoMetricSpace F›` failed
     norm := fun x => ‖f x‖
     dist_eq := fun x y => by simp only [map_div, ← dist_eq_norm_div]; rfl }
 
@@ -997,8 +1097,6 @@ theorem norm_multiset_prod_le (m : Multiset E) : ‖m.prod‖ ≤ (m.map fun x =
   · simp only [comp_apply, norm_one', ofAdd_zero]
   · exact norm_mul_le' x y
 
--- Porting note: had to add `ι` here because otherwise the universe order gets switched compared to
--- `norm_prod_le` below
 @[bound]
 theorem norm_sum_le {ι E} [SeminormedAddCommGroup E] (s : Finset ι) (f : ι → E) :
     ‖∑ i ∈ s, f i‖ ≤ ∑ i ∈ s, ‖f i‖ :=
@@ -1118,6 +1216,8 @@ lemma nnnorm_norm' (x : E) : ‖‖x‖‖₊ = ‖x‖₊ := by simp [nnnorm]
 @[to_additive (attr := simp) enorm_norm]
 lemma enorm_norm' (x : E) : ‖‖x‖‖ₑ = ‖x‖ₑ := by simp [enorm]
 
+lemma enorm_enorm {ε : Type*} [ENorm ε] (x : ε) : ‖‖x‖ₑ‖ₑ = ‖x‖ₑ := by simp [enorm]
+
 end SeminormedCommGroup
 
 section NormedGroup
@@ -1170,21 +1270,12 @@ theorem eq_one_or_nnnorm_pos (a : E) : a = 1 ∨ 0 < ‖a‖₊ :=
 theorem nnnorm_eq_zero' : ‖a‖₊ = 0 ↔ a = 1 := by
   rw [← NNReal.coe_eq_zero, coe_nnnorm', norm_eq_zero']
 
-@[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' : ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm]
-
 @[to_additive nnnorm_ne_zero_iff]
 theorem nnnorm_ne_zero_iff' : ‖a‖₊ ≠ 0 ↔ a ≠ 1 :=
   nnnorm_eq_zero'.not
 
-@[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
-
 @[to_additive (attr := simp) nnnorm_pos]
 lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_ne_zero_iff'
-
-@[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' : 0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
 
 variable (E)
 

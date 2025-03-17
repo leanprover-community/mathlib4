@@ -137,7 +137,7 @@ theorem isOpen_biInter_finset {s : Finset α} {f : α → Set X} (h : ∀ i ∈ 
     IsOpen (⋂ i ∈ s, f i) :=
   s.finite_toSet.isOpen_biInter h
 
-@[simp] -- Porting note: added `simp`
+@[simp]
 theorem isOpen_const {p : Prop} : IsOpen { _x : X | p } := by by_cases p <;> simp [*]
 
 theorem IsOpen.and : IsOpen { x | p₁ x } → IsOpen { x | p₂ x } → IsOpen { x | p₁ x ∧ p₂ x } :=
@@ -574,7 +574,7 @@ theorem dense_compl_singleton_iff_not_open :
 @[elab_as_elim]
 lemma Dense.induction (hs : Dense s) {P : X → Prop}
     (mem : ∀ x ∈ s, P x) (isClosed : IsClosed { x | P x }) (x : X) : P x :=
-  hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr mem) trivial
+  hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr mem) (Set.mem_univ _)
 
 theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
     s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure
@@ -1662,10 +1662,10 @@ However, lemmas with this conclusion are not nice to use in practice because
     continuous_add.comp _
 
   example : Continuous (fun x : M ↦ x + x) :=
-    continuous_add.comp (continuous_id.prod_mk continuous_id)
+    continuous_add.comp (continuous_id.prodMk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
-  `continuous_add.comp (continuous_id.prod_mk continuous_id :)`
+  `continuous_add.comp (continuous_id.prodMk continuous_id :)`
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
   application the arguments in the domain might be in a different order or associated differently.

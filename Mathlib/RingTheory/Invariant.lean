@@ -6,17 +6,15 @@ Authors: Thomas Browning
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
 
 /-!
-# Invariant Extensions of Rings and Frobenius Elements
-
-In algebraic number theory, if `L/K` is a finite Galois extension of number fields, with rings of
-integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime ideal `p` of `𝓞K`, then
-there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
-`Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
-
-This file proves the existence of Frobenius elements in a more general setting.
+# Invariant Extensions of Rings
 
 Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a predicate
 `Algebra.IsInvariant A B G` which states that every fixed point of `B` lies in the image of `A`.
+
+The main application is in algebraic number theory, where `G := Gal(L/K)` is the galois group
+of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
+integers. This main result in this file implies the existence of Frobenius elements in this setting.
+See `Mathlib/RingTheory/Frobenius.lean`.
 
 ## Main statements
 
@@ -171,7 +169,8 @@ open FaithfulSMul IsScalarTower Polynomial
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-  variable (K L : Type*) [Field K] [Field L]
+
+variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K] [Algebra (B ⧸ Q) L]
   [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]

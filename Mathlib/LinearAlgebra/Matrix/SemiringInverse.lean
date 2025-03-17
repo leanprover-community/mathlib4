@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Data.Fintype.Perm
 import Mathlib.Data.Matrix.Mul
 import Mathlib.GroupTheory.Perm.Sign
 

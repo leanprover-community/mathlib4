@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Wrenna Robson
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Basic
@@ -249,7 +249,6 @@ theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     (Lagrange.basis s v i).degree = ↑(#s - 1) := by
   rw [degree_eq_natDegree (basis_ne_zero hvs hi), natDegree_basis hvs hi]
 
--- Porting note: Added `Nat.cast_withBot` rewrites
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
     ∑ j ∈ s, Lagrange.basis s v j = 1 := by
   refine eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) ?_) ?_ ?_
@@ -261,7 +260,7 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
     exact Nonempty.card_pos hs
   · intro i hi
     rw [eval_finset_sum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
-      add_right_eq_self]
+      add_eq_left]
     refine sum_eq_zero fun j hj => ?_
     rcases mem_erase.mp hj with ⟨hij, _⟩
     rw [eval_basis_of_ne hij hi]
@@ -309,7 +308,7 @@ theorem interpolate_one (hvs : Set.InjOn v s) (hs : s.Nonempty) : interpolate s 
 theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
     eval (v i) (interpolate s v r) = r i := by
   rw [interpolate_apply, eval_finset_sum, ← add_sum_erase _ _ hi]
-  simp_rw [eval_mul, eval_C, eval_basis_self hvs hi, mul_one, add_right_eq_self]
+  simp_rw [eval_mul, eval_C, eval_basis_self hvs hi, mul_one, add_eq_left]
   refine sum_eq_zero fun j H => ?_
   rw [eval_basis_of_ne (mem_erase.mp H).1 hi, mul_zero]
 
@@ -323,7 +322,6 @@ theorem degree_interpolate_le (hvs : Set.InjOn v s) :
   · simpa only [hr, map_zero, degree_zero, WithBot.bot_add] using bot_le
   · rw [degree_C hr, zero_add]
 
--- Porting note: Added `Nat.cast_withBot` rewrites
 theorem degree_interpolate_lt (hvs : Set.InjOn v s) : (interpolate s v r).degree < #s := by
   rw [Nat.cast_withBot]
   rcases eq_empty_or_nonempty s with (rfl | h)
@@ -391,7 +389,6 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
     simp only [Subtype.coe_mk, eval_interpolate_at_node _ hvs hi]
     exact dif_pos hi
 
--- Porting note: Added `Nat.cast_withBot` rewrites
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
     interpolate t v r = ∑ i ∈ s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by
@@ -415,7 +412,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
         eval_interpolate_at_node _
           (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hi, sdiff_subset⟩)))
           (mem_insert_self _ _),
-        mul_one, add_right_eq_self]
+        mul_one, add_eq_left]
       refine sum_eq_zero fun j hj => ?_
       rcases mem_erase.mp hj with ⟨hij, _⟩
       rw [eval_basis_of_ne hij hi', mul_zero]
@@ -522,7 +519,7 @@ theorem derivative_nodal [DecidableEq ι] :
 
 theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈ s) :
     eval (v i) (derivative (nodal s v)) = eval (v i) (nodal (s.erase i) v) := by
-  rw [derivative_nodal, eval_finset_sum, ← add_sum_erase _ _ hi, add_right_eq_self]
+  rw [derivative_nodal, eval_finset_sum, ← add_sum_erase _ _ hi, add_eq_left]
   exact sum_eq_zero fun j hj => (eval_nodal_at_node (mem_erase.mpr ⟨(mem_erase.mp hj).1.symm, hi⟩))
 
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/

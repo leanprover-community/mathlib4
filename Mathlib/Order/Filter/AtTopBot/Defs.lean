@@ -93,7 +93,7 @@ theorem Frequently.forall_exists_of_atBot [Preorder α] {p : α → Prop}
     (h : ∃ᶠ x in atBot, p x) (a : α) : ∃ b ≤ a, p b :=
   Frequently.forall_exists_of_atTop (α := αᵒᵈ) h _
 
-lemma atTop_eq_generate_of_forall_exists_le [LinearOrder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
+lemma atTop_eq_generate_of_forall_exists_le [Preorder α] {s : Set α} (hs : ∀ x, ∃ y ∈ s, x ≤ y) :
     (atTop : Filter α) = generate (Ici '' s) := by
   rw [atTop_eq_generate_Ici]
   apply le_antisymm

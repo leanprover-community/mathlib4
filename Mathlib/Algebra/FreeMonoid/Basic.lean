@@ -128,14 +128,14 @@ def length (a : FreeMonoid α) : ℕ := a.toList.length
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
 
 @[to_additive (attr := simp)]
-theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero
+theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero_iff
 
 @[to_additive (attr := simp)]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
 @[to_additive existing]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
-  List.length_eq_one
+  List.length_eq_one_iff
 
 @[to_additive]
 theorem length_eq_two {v : FreeMonoid α} :
@@ -385,7 +385,7 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
     simp only [map_mul, map_of] at hb
     use head
     have H := congr_arg length hb
-    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
+    simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
     rw [H, mul_one] at hb
     exact FreeMonoid.of_injective hb
   intro fs d

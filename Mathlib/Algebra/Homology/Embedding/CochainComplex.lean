@@ -3,7 +3,9 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.Embedding.TruncLE
+import Mathlib.Algebra.Homology.Embedding.TruncLEHomology
+import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
+import Mathlib.Algebra.Homology.HomotopyCategory.ShiftSequence
 
 /-!
 # Truncations on cochain complexes indexed by the integers.
@@ -202,9 +204,13 @@ lemma isGE_of_iso (n : ℤ) [K.IsGE n] : L.IsGE n := by
 
 end
 
+section
+
+variable [HasZeroObject C]
+
 /-- A cochain complex that is both strictly `≤ n` and `≥ n` is isomorphic to
 a complex `(single _ _ n).obj M` for some object `M`. -/
-lemma exists_iso_single [HasZeroObject C] (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
+lemma exists_iso_single (n : ℤ) [K.IsStrictlyGE n] [K.IsStrictlyLE n] :
     ∃ (M : C), Nonempty (K ≅ (single _ _ n).obj M) :=
   ⟨K.X n, ⟨{
       hom := mkHomToSingle (𝟙 _) (fun i (hi : i + 1 = n) ↦
@@ -219,6 +225,114 @@ lemma exists_iso_single [HasZeroObject C] (n : ℤ) [K.IsStrictlyGE n] [K.IsStri
         · apply (K.isZero_of_isStrictlyLE n i (by omega)).eq_of_tgt
       inv_hom_id := by aesop }⟩⟩
 
+instance (A : C) (n : ℤ) :
+    IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n := by
+  rw [isStrictlyGE_iff]
+  intro i hi
+  exact isZero_single_obj_X _ _ _ _ (by omega)
+
+instance (A : C) (n : ℤ) :
+    IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n := by
+  rw [isStrictlyLE_iff]
+  intro i hi
+  exact isZero_single_obj_X _ _ _ _ (by omega)
+
+variable [∀ i, K.HasHomology i] [∀ i, L.HasHomology i] (n : ℤ)
+
+instance [K.IsStrictlyGE n] : IsIso (K.πTruncGE n) := by dsimp [πTruncGE]; infer_instance
+
+instance [K.IsStrictlyLE n] : IsIso (K.ιTruncLE n) := by dsimp [ιTruncLE]; infer_instance
+
+lemma isIso_πTruncGE_iff : IsIso (K.πTruncGE n) ↔ K.IsStrictlyGE n := by
+  apply HomologicalComplex.isIso_πTruncGE_iff
+
+lemma isIso_ιTruncLE_iff : IsIso (K.ιTruncLE n) ↔ K.IsStrictlyLE n := by
+  apply HomologicalComplex.isIso_ιTruncLE_iff
+
+lemma quasiIso_πTruncGE_iff : QuasiIso (K.πTruncGE n) ↔ K.IsGE n :=
+  quasiIso_πTruncGE_iff_isSupported K (embeddingUpIntGE n)
+
+lemma quasiIso_ιTruncLE_iff : QuasiIso (K.ιTruncLE n) ↔ K.IsLE n :=
+  quasiIso_ιTruncLE_iff_isSupported K (embeddingUpIntLE n)
+
+instance [K.IsGE n] : QuasiIso (K.πTruncGE n) := by
+  rw [quasiIso_πTruncGE_iff]
+  infer_instance
+
+instance [K.IsLE n] : QuasiIso (K.ιTruncLE n) := by
+  rw [quasiIso_ιTruncLE_iff]
+  infer_instance
+
+variable {K L}
+
+lemma quasiIso_truncGEMap_iff :
+    QuasiIso (truncGEMap φ n) ↔ ∀ (i : ℤ) (_ : n ≤ i), QuasiIsoAt φ i := by
+  rw [HomologicalComplex.quasiIso_truncGEMap_iff]
+  constructor
+  · intro h i hi
+    obtain ⟨k, rfl⟩ := Int.le.dest hi
+    exact h k _ rfl
+  · rintro h i i' rfl
+    exact h _ (by dsimp; omega)
+
+lemma quasiIso_truncLEMap_iff :
+    QuasiIso (truncLEMap φ n) ↔ ∀ (i : ℤ) (_ : i ≤ n), QuasiIsoAt φ i := by
+  rw [HomologicalComplex.quasiIso_truncLEMap_iff]
+  constructor
+  · intro h i hi
+    obtain ⟨k, rfl⟩ := Int.le.dest hi
+    exact h k _ (by dsimp; omega)
+  · rintro h i i' rfl
+    exact h _ (by dsimp; omega)
+
+end
+
 end HasZeroMorphisms
+
+section Preadditive
+
+variable [Preadditive C]
+
+instance [HasZeroObject C] (A : C) (n : ℤ) : ((singleFunctor C n).obj A).IsStrictlyGE n :=
+  inferInstanceAs (IsStrictlyGE ((single C (ComplexShape.up ℤ) n).obj A) n)
+
+instance [HasZeroObject C] (A : C) (n : ℤ) : ((singleFunctor C n).obj A).IsStrictlyLE n :=
+  inferInstanceAs (IsStrictlyLE ((single C (ComplexShape.up ℤ) n).obj A) n)
+
+variable (K : CochainComplex C ℤ)
+
+lemma isStrictlyLE_shift (n : ℤ) [K.IsStrictlyLE n] (a n' : ℤ) (h : a + n' = n) :
+    (K⟦a⟧).IsStrictlyLE n' := by
+  rw [isStrictlyLE_iff]
+  intro i hi
+  exact IsZero.of_iso (K.isZero_of_isStrictlyLE n _ (by omega)) (K.shiftFunctorObjXIso a i _ rfl)
+
+lemma isStrictlyGE_shift (n : ℤ) [K.IsStrictlyGE n] (a n' : ℤ) (h : a + n' = n) :
+    (K⟦a⟧).IsStrictlyGE n' := by
+  rw [isStrictlyGE_iff]
+  intro i hi
+  exact IsZero.of_iso (K.isZero_of_isStrictlyGE n _ (by omega)) (K.shiftFunctorObjXIso a i _ rfl)
+
+section
+
+variable [CategoryWithHomology C]
+
+lemma isLE_shift (n : ℤ) [K.IsLE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsLE n' := by
+  rw [isLE_iff]
+  intro i hi
+  rw [exactAt_iff_isZero_homology]
+  exact IsZero.of_iso (K.isZero_of_isLE n (a + i) (by omega))
+    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)
+
+lemma isGE_shift (n : ℤ) [K.IsGE n] (a n' : ℤ) (h : a + n' = n) : (K⟦a⟧).IsGE n' := by
+  rw [isGE_iff]
+  intro i hi
+  rw [exactAt_iff_isZero_homology]
+  exact IsZero.of_iso (K.isZero_of_isGE n (a + i) (by omega))
+    (((homologyFunctor C _ (0 : ℤ)).shiftIso a i _ rfl).app K)
+
+end
+
+end Preadditive
 
 end CochainComplex

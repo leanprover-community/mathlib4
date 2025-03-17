@@ -70,8 +70,8 @@ from `A` to `B` which are equivariant with respect to `φ`. -/
 class NonUnitalAlgSemiHomClass (F : Type*) {R S : outParam Type*} [Monoid R] [Monoid S]
     (φ : outParam (R →* S)) (A B : outParam Type*)
     [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-    [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B]
-    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B : Prop
+    [DistribMulAction R A] [DistribMulAction S B] [FunLike F A B] : Prop
+    extends DistribMulActionSemiHomClass F φ A B, MulHomClass F A B
 
 /-- `NonUnitalAlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B` which are `R`-linear.
@@ -340,7 +340,7 @@ Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra
 section Prod
 
 variable (R A B)
-variable  [DistribMulAction R B]
+variable [DistribMulAction R B]
 
 /-- The first projection of a product is a non-unital alg_hom. -/
 @[simps]
