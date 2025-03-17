@@ -164,7 +164,7 @@ lemma isOpen_left_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s �
 lemma isOpen_right_of_isOpen_union (hst : SeparatedNhds s t) (hst' : IsOpen (s ∪ t)) : IsOpen t :=
   hst.symm.isOpen_left_of_isOpen_union (union_comm _ _ ▸ hst')
 
-lemma isOpen_union_iff_isOpen (hst : SeparatedNhds s t) : IsOpen (s ∪ t) ↔ IsOpen s ∧ IsOpen t :=
+lemma isOpen_union_iff (hst : SeparatedNhds s t) : IsOpen (s ∪ t) ↔ IsOpen s ∧ IsOpen t :=
   ⟨fun h ↦ ⟨hst.isOpen_left_of_isOpen_union h, hst.isOpen_right_of_isOpen_union h⟩,
     fun ⟨h1, h2⟩ ↦ h1.union h2⟩
 
@@ -181,8 +181,7 @@ lemma isClosed_right_of_isClosed_union (hst : SeparatedNhds s t) (hst' : IsClose
     IsClosed t :=
   hst.symm.isClosed_left_of_isClosed_union (union_comm _ _ ▸ hst')
 
-lemma isClosed_union_iff_isClosed (hst : SeparatedNhds s t) :
-    IsClosed (s ∪ t) ↔ IsClosed s ∧ IsClosed t :=
+lemma isClosed_union_iff (hst : SeparatedNhds s t) : IsClosed (s ∪ t) ↔ IsClosed s ∧ IsClosed t :=
   ⟨fun h ↦ ⟨hst.isClosed_left_of_isClosed_union h, hst.isClosed_right_of_isClosed_union h⟩,
     fun ⟨h1, h2⟩ ↦ h1.union h2⟩
 
