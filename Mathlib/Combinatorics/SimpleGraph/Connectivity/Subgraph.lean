@@ -417,7 +417,7 @@ lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq 
     have : 0 < s.ncard := (Set.ncard_pos hs).mpr ⟨x, hx.1⟩
     obtain ⟨x', hx', hx'p, h⟩ :=
       (p.takeUntil x hx.2).exists_mem_support_forall_not_adj_toSubgraph_takeUntil hs.diff hxe
-    use x', hx'.1, (p.support_takeUntil_subset _ hx'p)
+    use x', hx'.1, p.support_takeUntil_subset _ hx'p
     simp only [takeUntil_takeUntil, Set.mem_diff] at h
     intro t ht r hr
     by_cases htrx : t = x ∨ r = x
@@ -445,8 +445,7 @@ lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil {u v} [DecidableEq 
   exact fun hadj ↦ Set.disjoint_left.mp hxe this (mem_support_of_adj_toSubgraph hadj)
 termination_by p.length + s.ncard
 decreasing_by
-  simp_wf
-  simp only [Set.ncard_diff (by simp [hx.1] : {x} ⊆ s), Set.ncard_singleton, gt_iff_lt]
+  simp only [Set.ncard_diff (by simp [hx.1] : {x} ⊆ s), Set.ncard_singleton]
   omega
 
 end Walk
