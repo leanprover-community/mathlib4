@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Rothgang, Adomas Baliuka, Jon Eugster
+Authors: Michael Rothgang, Jon Eugster, Adomas Baliuka
 -/
 
 import Batteries.Data.String.Matcher
@@ -33,8 +33,6 @@ open System
 
 namespace Mathlib.Linter.TextBased
 
-open UnicodeLinter
-
 /-- Different kinds of "broad imports" that are linted against. -/
 inductive BroadImports
   /-- Importing the entire "Mathlib.Tactic" folder -/
@@ -54,14 +52,14 @@ inductive StyleError where
   | windowsLineEnding
   /-- A line contains trailing whitespace. -/
   | trailingWhitespace
+  /-- A line contains a space before a semicolon -/
+  | semicolon
   /-- Unicode variant selectors are used in a bad way.
   * `s` is the string containing the unicode character and any unicode-variant-selector following it
   * `selector` is the desired selector or `none`
   * `pos`: the character position in the line.
   -/
   | unicodeVariant (s : String) (selector: Option Char) (pos : String.Pos)
-  /-- A line contains a space before a semicolon -/
-  | semicolon
 deriving BEq
 
 /-- How to format style errors -/
@@ -76,6 +74,8 @@ inductive ErrorFormat
   | github : ErrorFormat
   deriving BEq
 
+open UnicodeLinter in
+
 /-- Create the underlying error message for a given `StyleError`. -/
 def StyleError.errorMessage (err : StyleError) : String := match err with
   | StyleError.adaptationNote =>
@@ -83,6 +83,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
   | trailingWhitespace => "This line ends with some whitespace: please remove this"
+  | semicolon => "This line contains a space before a semicolon"
   | StyleError.unicodeVariant s selector pos =>
     let variant := if selector == UnicodeVariant.emoji then
       "emoji"
@@ -106,7 +107,6 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     | _, _ =>
       s!"unexpected unicode variant-selector at char {pos}: \"{s}\" ({oldHex}). \
         Consider deleting it."
-  | semicolon => "This line contains a space before a semicolon"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -115,8 +115,8 @@ def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.windowsLineEnding => "ERR_WIN"
   | StyleError.trailingWhitespace => "ERR_TWS"
-  | StyleError.unicodeVariant _ _ _ => "ERR_UNICODE_VARIANT"
   | StyleError.semicolon => "ERR_SEM"
+  | StyleError.unicodeVariant _ _ _ => "ERR_UNICODE_VARIANT"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -208,8 +208,8 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
             let offending := removeQuotations (← errorMessage[6]?)
             let charPos ← (← errorMessage[5]?).stripSuffix ":" |>.toNat?
             let selector := match ← errorMessage[12]? with
-            | "emoji-variant:" => UnicodeVariant.emoji
-            | "text-variant:" => UnicodeVariant.text
+            | "emoji-variant:" => UnicodeLinter.UnicodeVariant.emoji
+            | "text-variant:" => UnicodeLinter.UnicodeVariant.text
             | _ => none
             StyleError.unicodeVariant offending selector ⟨charPos⟩
           | "unexpected" =>
@@ -300,8 +300,8 @@ namespace UnicodeLinter
 /-- Creates `StyleError`s for
 bad usage of (emoji/text)-variant-selectors.
 Note: if `pos` is not a valid position, the result is unspecified. -/
-def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
-    (err : Array StyleError := #[]) : Array StyleError :=
+def findBadUnicodeAux (s : String) (c : Char)
+    (err : Array StyleError := #[]) (pos : String.Pos := 0) : Array StyleError :=
   if h : pos < s.endPos then
     have := Nat.sub_lt_sub_left h (String.lt_next s pos)
     let posₙ := s.next pos -- `pos` is valid by assumption. `pos` is not `endPos` by check above.
@@ -310,22 +310,22 @@ def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
     if cₙ == UnicodeVariant.emoji && !(emojis.contains c) then
       -- bad: unwanted emoji-variant-selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
-      findBadUnicodeAux s posₙ cₙ errₙ
+      findBadUnicodeAux s  cₙ errₙ posₙ
     else if cₙ == UnicodeVariant.text && !(nonEmojis.contains c) then
       -- bad: unwanted text-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c, cₙ]⟩ none pos)
-      findBadUnicodeAux s posₙ cₙ errₙ
+      findBadUnicodeAux s  cₙ errₙ posₙ
     else if cₙ != UnicodeVariant.emoji && emojis.contains c then
       -- bad: missing emoji-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c]⟩ UnicodeVariant.emoji pos)
-      findBadUnicodeAux s posₙ cₙ errₙ
+      findBadUnicodeAux s  cₙ errₙ posₙ
     else if cₙ != UnicodeVariant.text && nonEmojis.contains c then
       -- bad: missing text-variant selector
       let errₙ := err.push (.unicodeVariant ⟨[c]⟩ UnicodeVariant.text pos)
-      findBadUnicodeAux s posₙ cₙ errₙ
+      findBadUnicodeAux s cₙ errₙ posₙ
     else
       -- okay
-      findBadUnicodeAux s posₙ cₙ err
+      findBadUnicodeAux s cₙ err posₙ
   -- emojis/non-emojis should not be the last character in the line
   else if emojis.contains c || nonEmojis.contains c then
     err.push (.unicodeVariant ⟨[c]⟩ none pos)
@@ -333,14 +333,15 @@ def findBadUnicodeAux (s : String) (pos : String.Pos) (c : Char)
     err
 termination_by s.endPos.1 - pos.1
 
-@[inline, inherit_doc findBadUnicodeAux]
+/-- Creates `StyleError`s for bad usage of (emoji/text)-variant-selectors. -/
+@[inline]
 def findBadUnicode (s : String) : Array StyleError :=
   if s == "" then #[] else
   let c := s.get 0
   -- edge case: variant-selector as first char of the line
   let initalErrors := if #[UnicodeVariant.emoji, UnicodeVariant.text].contains c then
     #[(.unicodeVariant ⟨[c]⟩ none 0)] else #[]
-  findBadUnicodeAux s 0 c initalErrors
+  findBadUnicodeAux s c initalErrors
 
 end UnicodeLinter
 
@@ -350,7 +351,7 @@ def unicodeLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors : Array (StyleError × ℕ) := Array.mkEmpty 0
   let mut lineNumber := 1
   for line in lines do
-    let err := findBadUnicode line
+    let err := UnicodeLinter.findBadUnicode line
 
     -- try to auto-fix the style error
     let mut newLine := line
