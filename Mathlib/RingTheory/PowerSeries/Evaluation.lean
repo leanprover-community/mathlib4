@@ -171,7 +171,7 @@ theorem aeval_coe (ha : IsTopologicallyNilpotent a) (p : Polynomial R) :
 
 @[simp]
 theorem aeval_unique {ε : PowerSeries R →ₐ[R] S} (hε : Continuous ε) :
-    aeval (isTopologicallyNilpotent_X.map hε) = ε:=
+    aeval (isTopologicallyNilpotent_X.map hε) = ε :=
   MvPowerSeries.aeval_unique hε
 
 theorem hasSum_aeval (ha : IsTopologicallyNilpotent a) (f : PowerSeries R) :
