@@ -426,8 +426,7 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
 theorem taylorCoeffWithin_neg {f : ℝ → ℝ} {x₀ : ℝ} (d : ℕ) :
     taylorCoeffWithin (fun x => f (-x)) d Set.univ (-x₀)
       = (-1)^d * taylorCoeffWithin f d Set.univ x₀ := by
-  have : (-1 : ℝ)^d * (-1)^d = 1 := by rw [←pow_add, ← two_mul, (even_two_mul d).neg_one_pow ]
-  field_simp [taylorCoeffWithin, iteratedDerivWithin_univ, iteratedDeriv_comp_neg, this, ←mul_assoc]
+  field_simp [taylorCoeffWithin, iteratedDerivWithin_univ, iteratedDeriv_comp_neg, ←mul_assoc]
 
 theorem taylorWithinEval_neg {f : ℝ → ℝ} (x₀ x : ℝ) {n : ℕ} :
     taylorWithinEval (fun x => f (-x)) n Set.univ (-x₀) (-x)
