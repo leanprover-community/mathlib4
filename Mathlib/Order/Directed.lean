@@ -378,8 +378,8 @@ lemma prod_all_dominated {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 
   intro ⟨p₁, p₂⟩ hp
   simp at hp
   obtain ⟨⟨r₁, hr₁⟩, ⟨r₂, hr₂⟩⟩ := hp
-  obtain ⟨q, ⟨hq1,⟨⟨hq21,hq22⟩,⟨hq31,hq32⟩⟩⟩ ⟩ := hd (p₁,r₁) hr₁ (r₂,p₂) hr₂
-  exact ⟨q, ⟨hq1, ⟨hq21, hq32⟩⟩⟩
+  obtain ⟨q, ⟨hq₁, ⟨⟨hq₂, _⟩, ⟨_, hq₃⟩⟩⟩⟩ := hd (p₁, r₁) hr₁ (r₂, p₂) hr₂
+  exact ⟨q, ⟨hq₁, ⟨hq₂, hq₃⟩⟩⟩
 
 end Prod
 
