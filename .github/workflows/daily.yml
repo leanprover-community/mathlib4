@@ -86,6 +86,7 @@ jobs:
           cd lean4checker
           # Read lean-toolchain file and checkout appropriate branch
           TOOLCHAIN=$(cat ../lean-toolchain)
+          printf '%s\n' "${TOOLCHAIN}"
           if [[ "$TOOLCHAIN" =~ ^leanprover/lean4:v ]]; then
             VERSION=${TOOLCHAIN#leanprover/lean4:}
             git checkout "$VERSION"
