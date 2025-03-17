@@ -376,13 +376,10 @@ variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 lemma root_space_ad_is_nilpotent
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  have partition := iSup_genWeightSpace_eq_top' K H M
-  set s : Set (Weight K H M) := by
+  let s : Set (Weight K H M) := by
     exact univ
-  have Mm : Finite s := by
-    exact Subtype.finite
 
-  have helpMe : ∀ χ₂ ∈ s, ∃ n : ℕ, ∀ v : genWeightSpace M χ₂, ∀ m ≥ n,
+  have nilpotency_limit : ∀ χ₂ ∈ s, ∃ n : ℕ, ∀ v : genWeightSpace M χ₂, ∀ m ≥ n,
       ((toEnd K L M x) ^ m) v = 0 := by
     intro χ₂ he
     obtain ⟨k, ⟨hk₁, hk₂⟩⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
@@ -392,9 +389,9 @@ lemma root_space_ad_is_nilpotent
     rw [hk₂, LieSubmodule.mem_bot] at h
     exact LinearMap.pow_map_zero_of_le hm h
 
-  have exists_uniform_n₀ : ∃ n₀ : ℕ, ∀ χ₂ ∈ s, ∀ v : genWeightSpace M χ₂,
+  have uniform_nilpotency_limit : ∃ n₀ : ℕ, ∀ χ₂ ∈ s, ∀ v : genWeightSpace M χ₂,
       ((toEnd K L M x) ^ n₀) v = 0 := by
-    choose fn₁ hn using helpMe
+    choose fn₁ hn using nilpotency_limit
     simp only [Subtype.forall] at hn ⊢
     let fn₂ : (χ₂ : Weight K H M) → ℕ := fun χ₂ => fn₁ χ₂ (mem_univ χ₂)
     let n₀ := s.toFinset.sup fn₂
@@ -406,7 +403,7 @@ lemma root_space_ad_is_nilpotent
       apply Finset.le_sup (mem_toFinset.2 hχ₂)
     exact hn hv n₀ this
 
-  obtain ⟨n₀, hn₀⟩ := exists_uniform_n₀
+  obtain ⟨n₀, hn₀⟩ := uniform_nilpotency_limit
   let A := (toEnd K L M x) ^ n₀
 
   have s₁ : ∀ χ₂ ∈ s, genWeightSpace M χ₂ ≤
@@ -437,22 +434,22 @@ lemma root_space_ad_is_nilpotent
   have s₃ : Submodule.span K (⋃ χ ∈ s, (genWeightSpace M χ).carrier) = ⊤ := by
     simp only [mem_univ, iSup_pos, iUnion_true, s] at s₂
     simp only [mem_univ, iUnion_true, s]
-    rw [partition] at s₂
+    rw [iSup_genWeightSpace_eq_top' K H M] at s₂
     apply top_le_iff.1 s₂
 
-  have s₄ (χ₂ : Weight K H M) (n : M) (n : genWeightSpace M χ₂) : A n = 0 :=
-    (hn₀ χ₂) (mem_univ χ₂) n
+  have s₄ (χ₂ : Weight K H M) (m : M) (m : genWeightSpace M χ₂) : A m = 0 :=
+    (hn₀ χ₂) (mem_univ χ₂) m
 
   have s₅ : A = 0 := by
     haveI := [Module K M]
     apply (Submodule.linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₃).2
-    intro s1
-    obtain ⟨a, ⟨b, ⟨⟨e, ⟨f, g⟩⟩, d⟩⟩⟩ := s1
-    rw [mem_iUnion] at d
-    obtain ⟨d1, d2⟩ := d
-    have h := s₄ e a
+    intro h₀
+    obtain ⟨m, ⟨_, ⟨⟨χ₂, ⟨_, _⟩⟩, h⟩⟩⟩ := h₀
+    rw [mem_iUnion] at h
+    obtain ⟨h₁, h₂⟩ := h
+    have h := s₄ χ₂ m
     rw [Subtype.forall] at h
-    exact h a d2
+    exact h m h₂
   use n₀
 
 end
