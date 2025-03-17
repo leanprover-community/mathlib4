@@ -5,7 +5,7 @@ Authors: María Inés de Frutos-Fernández
 -/
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.Tactic.Group
-import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # The topological abelianization of a group.

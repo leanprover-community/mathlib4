@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 
 import Mathlib.Order.Filter.AtTopBot.Group
-import Mathlib.Topology.Algebra.Group.Pointwise
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topological closure of the submonoid closure
