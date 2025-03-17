@@ -89,11 +89,20 @@ theorem Monotone.map_sInf_le [CompleteLattice β] {s : Set α} {f : α → β} (
     f (sInf s) ≤ ⨅ a ∈ s, f a :=
   hf.dual_left.map_sSup_le
 
+theorem OrderIso.map_sSup_eq_sSup_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (sSup s) = sSup (f.symm ⁻¹' s) := by
+  rw [map_sSup, ← sSup_image, f.image_eq_preimage]
+
+theorem OrderIso.map_sInf_eq_sInf_symm_preimage [CompleteLattice β] (f : α ≃o β) (s : Set α) :
+    f (sInf s) = sInf (f.symm ⁻¹' s) := by
+  rw [map_sInf, ← sInf_image, f.image_eq_preimage]
+
 end
 
 section CompleteLattice
 
-variable {α β ι : Type*} [Preorder α] [CompleteLattice β] {s : Set (α → β)} {f : ι → α → β}
+variable {α β : Type*} {ι : Sort*} [Preorder α] [CompleteLattice β] {s : Set (α → β)}
+  {f : ι → α → β}
 
 protected lemma Monotone.sSup (hs : ∀ f ∈ s, Monotone f) : Monotone (sSup s) :=
   fun _ _ h ↦ iSup_mono fun f ↦ hs f f.2 h
