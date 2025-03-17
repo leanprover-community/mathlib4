@@ -132,6 +132,10 @@ theorem MeromorphicOn.meromorphicNFAt_codiscreteWithin [CompleteSpace E] {U : Se
   filter_upwards [hf.analyticAt_codiscreteWithin] with _ ha
   exact ha.meromorphicNFAt
 
+/-!
+## Vanishing and order
+-/
+
 private lemma WithTop.map_natCast_eq_zero {n : WithTop ℕ}
   (hn : WithTop.map (Nat.cast : ℕ → ℤ) n = 0) :
   n = 0 := by
@@ -140,10 +144,6 @@ private lemma WithTop.map_natCast_eq_zero {n : WithTop ℕ}
   · simp only [WithTop.map, Option.map] at hn
     rw [Int.ofNat_eq_zero.mp (WithTop.coe_eq_zero.mp hn)]
     rfl
-
-/-!
-## Vanishing and order
--/
 
 /-- If `f` is meromorphic in normal form at `x`, then `f` has order zero iff it does not vanish at
 `x`.
