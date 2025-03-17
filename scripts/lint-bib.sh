@@ -10,7 +10,7 @@ invalid_keys=$(bibtool --pass.comments=on -- 'select{$key "[^-:A-Za-z0-9_]+"}' d
 
 if [[ -n "$invalid_keys" ]]; then
   echo "::error:: There are items in references.bib with keys containing characters" \
-    "outside alphanumeric, '-', '_', and ':':" && echo "$invalid_keys"
+    "outside alphanumeric, '-', '_', and ':':" && printf '%s\n' "$invalid_keys"
   exit 1
 fi
 
