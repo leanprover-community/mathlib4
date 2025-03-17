@@ -343,14 +343,17 @@ end veblen
 
 /-! ### Epsilon function -/
 
-/-- The epsilon function enumerates the fixed points of `ω ^ ⬝`. -/
-scoped notation "ε_ " => veblen 1
+/-- The epsilon function enumerates the fixed points of `ω ^ ⬝`.
+This is an abbreviation for `veblen 1`. -/
+abbrev epsilon := veblen 1
+
+@[inherit_doc] scoped notation "ε_ " => epsilon
 
 /-- `ε₀` is the first fixed point of `ω ^ ⬝`, i.e. the supremum of `ω`, `ω ^ ω`, `ω ^ ω ^ ω`, … -/
 scoped notation "ε₀" => ε_ 0
 
 theorem epsilon_eq_deriv (o : Ordinal) : ε_ o = deriv (fun a ↦ ω ^ a) o := by
-  rw [← succ_zero, veblen_succ, veblen_zero]
+  rw [epsilon, ← succ_zero, veblen_succ, veblen_zero]
 
 theorem epsilon0_eq_nfp : ε₀ = nfp (fun a ↦ ω ^ a) 0 := by
   rw [epsilon_eq_deriv, deriv_zero_right]
