@@ -143,21 +143,22 @@ theorem rank_eq_of_le_nonZeroDivisors {P : Type uM} [AddCommGroup P] [Module R P
 
 end
 
-variable {p} [NoZeroDivisors R] {T : Type uT} [CommRing T] [NoZeroDivisors T] [Algebra R T]
-  [FaithfulSMul R T] {P : Type uP} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
+variable {p} {T : Type uT} [CommRing T] [NoZeroDivisors T] [Algebra R T] [FaithfulSMul R T]
+  {P : Type uP} [AddCommGroup P] [Module R P] [Module T P] [IsScalarTower R T P]
   {g : M →ₗ[R] P} (bc : IsBaseChange T g)
 
 include bc
 theorem lift_rank_eq :
     Cardinal.lift.{uM} (Module.rank T P) = Cardinal.lift.{uP} (Module.rank R M) := by
+  have inj := FaithfulSMul.algebraMap_injective R T
+  have := inj.noZeroDivisors _ (map_zero _) (map_mul _)
   cases subsingleton_or_nontrivial R
   · have := (algebraMap R T).codomain_trivial; simp only [rank_subsingleton, lift_one]
   have := (isDomain_iff_noZeroDivisors_and_nontrivial T).mpr
     ⟨‹_›, (FaithfulSMul.algebraMap_injective R T).nontrivial⟩
   let FR := FractionRing R
   let FT := FractionRing T
-  have inj : Function.Injective (algebraMap R FT) :=
-    (IsFractionRing.injective T _).comp (FaithfulSMul.algebraMap_injective R T)
+  replace inj : Function.Injective (algebraMap R FT) := (IsFractionRing.injective T _).comp inj
   let g := TensorProduct.mk T FT P 1
   have : IsLocalizedModule R⁰ (TensorProduct.mk R FR FT 1) := inferInstance
   let _ : Algebra FT (FR ⊗[R] FT) := Algebra.TensorProduct.rightAlgebra
