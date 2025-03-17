@@ -106,8 +106,8 @@ theorem mem_hasEvalIdeal_iff [IsTopologicalRing S] [IsLinearTopology S S] {a : �
   simp [hasEvalIdeal]
 
 /-- The inclusion of polynomials into power series has dense image -/
-theorem _root_.MvPolynomial.coeToMvPowerSeries_denseRange :
-    DenseRange (coeToMvPowerSeries.ringHom (R := R) (σ := σ)) := fun f => by
+theorem _root_.MvPolynomial.toMvPowerSeries_denseRange :
+    DenseRange (toMvPowerSeries (R := R) (σ := σ)) := fun f => by
   have : Tendsto (fun d ↦ (trunc' R d f : MvPowerSeries σ R)) atTop (𝓝 f) := by
     rw [tendsto_iff_coeff_tendsto]
     refine fun d ↦ tendsto_atTop_of_eventually_const fun n (hdn : d ≤ n) ↦ ?_
@@ -135,19 +135,19 @@ private instance : UniformSpace (MvPolynomial σ R) :=
 private instance [UniformAddGroup R] : UniformAddGroup (MvPolynomial σ R) :=
   UniformAddGroup.comap coeToMvPowerSeries.ringHom
 
-theorem _root_.MvPolynomial.coeToMvPowerSeries_isUniformInducing :
-    IsUniformInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
-  (isUniformInducing_iff ⇑coeToMvPowerSeries.ringHom).mpr rfl
+theorem _root_.MvPolynomial.toMvPowerSeries_isUniformInducing :
+    IsUniformInducing (toMvPowerSeries (σ := σ) (R := R)) :=
+  (isUniformInducing_iff toMvPowerSeries).mpr rfl
 
-theorem _root_.MvPolynomial.coeToMvPowerSeries_isDenseInducing :
-    IsDenseInducing (coeToMvPowerSeries.ringHom (σ := σ) (R := R)) :=
-  coeToMvPowerSeries_isUniformInducing.isDenseInducing coeToMvPowerSeries_denseRange
+theorem _root_.MvPolynomial.toMvPowerSeries_isDenseInducing :
+    IsDenseInducing (toMvPowerSeries (σ := σ) (R := R)) :=
+  toMvPowerSeries_isUniformInducing.isDenseInducing toMvPowerSeries_denseRange
 
 variable {a : σ → S}
 
 /- The evaluation map on multivariate polynomials is uniformly continuous
 for the uniform structure induced by that on multivariate power series. -/
-theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
+theorem _root_.MvPolynomial.toMvPowerSeries_uniformContinuous
     [UniformAddGroup R] [UniformAddGroup S] [IsLinearTopology S S]
     (hφ : Continuous φ) (ha : HasEval a) :
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
@@ -192,7 +192,7 @@ It coincides with the evaluation of `f` as a polynomial if `f` is the coercion o
 Otherwise, it is only relevant if `φ` is continuous and `HasEval a`. -/
 noncomputable def eval₂ (f : MvPowerSeries σ R) : S :=
   if H : ∃ p : MvPolynomial σ R, p = f then (MvPolynomial.eval₂ φ a H.choose)
-  else IsDenseInducing.extend coeToMvPowerSeries_isDenseInducing (MvPolynomial.eval₂ φ a) f
+  else IsDenseInducing.extend toMvPowerSeries_isDenseInducing (MvPolynomial.eval₂ φ a) f
 
 @[simp, norm_cast]
 theorem eval₂_coe (f : MvPolynomial σ R) :
@@ -219,14 +219,14 @@ variable {φ a}
 /-- Evaluation of power series at adequate elements, as a `RingHom` -/
 noncomputable def eval₂Hom (hφ : Continuous φ) (ha : HasEval a) :
     MvPowerSeries σ R →+* S :=
-  IsDenseInducing.extendRingHom
-    coeToMvPowerSeries_isUniformInducing
-    coeToMvPowerSeries_denseRange
-    (coeToMvPowerSeries_uniformContinuous hφ ha)
+  IsDenseInducing.extendRingHom (i := coeToMvPowerSeries.ringHom)
+    toMvPowerSeries_isUniformInducing
+    toMvPowerSeries_denseRange
+    (toMvPowerSeries_uniformContinuous hφ ha)
 
 theorem eval₂Hom_eq_extend (hφ : Continuous φ) (ha : HasEval a) (f : MvPowerSeries σ R) :
     eval₂Hom hφ ha f =
-      coeToMvPowerSeries_isDenseInducing.extend (MvPolynomial.eval₂ φ a) f :=
+      toMvPowerSeries_isDenseInducing.extend (MvPolynomial.eval₂ φ a) f :=
   rfl
 
 theorem coe_eval₂Hom (hφ : Continuous φ) (ha : HasEval a) :
@@ -235,9 +235,9 @@ theorem coe_eval₂Hom (hφ : Continuous φ) (ha : HasEval a) :
   simp only [eval₂Hom_eq_extend, eval₂]
   split_ifs with h
   · obtain ⟨p, rfl⟩ := h
-    simpa [MvPolynomial.coe_eval₂Hom, coeToMvPowerSeries.ringHom_apply] using
-      coeToMvPowerSeries_isDenseInducing.extend_eq
-        (coeToMvPowerSeries_uniformContinuous hφ ha).continuous p
+    simpa [MvPolynomial.coe_eval₂Hom] using
+      toMvPowerSeries_isDenseInducing.extend_eq
+        (toMvPowerSeries_uniformContinuous hφ ha).continuous p
   · rw [← eval₂Hom_eq_extend hφ ha]
 
 -- Note: this is still true without the `T2Space` hypothesis, by arguing that the case
@@ -247,9 +247,9 @@ theorem uniformContinuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
     UniformContinuous (eval₂ φ a) := by
   rw [← coe_eval₂Hom hφ ha]
   exact uniformContinuous_uniformly_extend
-    coeToMvPowerSeries_isUniformInducing
-    coeToMvPowerSeries_denseRange
-    (coeToMvPowerSeries_uniformContinuous hφ ha)
+    toMvPowerSeries_isUniformInducing
+    toMvPowerSeries_denseRange
+    (toMvPowerSeries_uniformContinuous hφ ha)
 
 theorem continuous_eval₂ (hφ : Continuous φ) (ha : HasEval a) :
     Continuous (eval₂ φ a : MvPowerSeries σ R → S) :=
@@ -275,7 +275,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : HasEval a)
     (h : ∀ p : MvPolynomial σ R, ε p = MvPolynomial.eval₂ φ a p) :
     ε = eval₂ φ a := by
   rw [← coe_eval₂Hom hφ ha]
-  exact (coeToMvPowerSeries_isDenseInducing.extend_unique h hε).symm
+  exact (toMvPowerSeries_isDenseInducing.extend_unique h hε).symm
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : HasEval a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
