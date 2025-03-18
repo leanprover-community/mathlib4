@@ -381,16 +381,6 @@ lemma functorEquiv_inverse_map_app_inr {X Y : (A ⥤ B) × (A' ⥤ B)} (η : X �
   rfl
 
 @[simp]
-lemma functorEquiv_counitIso_hom_app (X : (A ⥤ B) × (A' ⥤ B)) :
-    (functorEquiv A A' B).counitIso.hom.app X = 𝟙 X := by
-  aesop_cat
-
-@[simp]
-lemma functorEquiv_counitIso_inv_app (X : (A ⥤ B) × (A' ⥤ B)) :
-    (functorEquiv A A' B).counitIso.inv.app X = 𝟙 X := by
-  aesop_cat
-
-@[simp]
 lemma functorEquiv_unitIso_inv_app_app_inl (X : A ⊕ A' ⥤ B) (a : A) :
     ((functorEquiv A A' B).unitIso.inv.app X).app (inl a) = 𝟙 _ :=
   rfl
