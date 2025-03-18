@@ -282,7 +282,7 @@ variable {X}
 
 /-- The canonical function `X → FreeAlgebra R X`.
 -/
-irreducible_def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
+@[irreducible] def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 
 @[simp]
 theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]

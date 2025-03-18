@@ -397,8 +397,8 @@ open Classical in
 `fst κ ⊗ₖ condKernel κ = κ` (see `MeasureTheory.Measure.compProd_fst_condKernel`).
 It exists whenever `Ω` is standard Borel and either `α` is countable
 or `β` is countably generated. -/
-noncomputable
-irreducible_def condKernel : Kernel (α × β) Ω :=
+@[irreducible] noncomputable
+def condKernel : Kernel (α × β) Ω :=
   if hα : Countable α then
     condKernelCountable (fun a ↦ (κ a).condKernel)
       fun x y h ↦ by simp [apply_congr_of_mem_measurableAtom _ h]
@@ -406,11 +406,11 @@ irreducible_def condKernel : Kernel (α × β) Ω :=
 
 /-- `condKernel κ` is a Markov kernel. -/
 instance instIsMarkovKernelCondKernel : IsMarkovKernel (condKernel κ) := by
-  rw [condKernel_def]
+  rw [condKernel]
   split_ifs <;> infer_instance
 
 instance condKernel.instIsCondKernel : κ.IsCondKernel κ.condKernel where
-  disintegrate := by rw [condKernel_def]; split_ifs with hα <;> exact disintegrate _ _
+  disintegrate := by rw [condKernel]; split_ifs with hα <;> exact disintegrate _ _
 
 end CountableOrCountablyGenerated
 

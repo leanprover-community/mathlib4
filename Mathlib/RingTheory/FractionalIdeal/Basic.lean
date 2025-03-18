@@ -514,10 +514,9 @@ This is only an auxiliary definition: the preferred way of writing `I.mul J` is 
 Elaborated terms involving `FractionalIdeal` tend to grow quite large,
 so by making definitions irreducible, we hope to avoid deep unfolds.
 -/
-irreducible_def mul (lemma := mul_def') (I J : FractionalIdeal S P) : FractionalIdeal S P :=
+@[irreducible] def mul (I J : FractionalIdeal S P) : FractionalIdeal S P :=
   ⟨I * J, I.isFractional.mul J.isFractional⟩
 
--- local attribute [semireducible] mul
 instance : Mul (FractionalIdeal S P) :=
   ⟨fun I J => mul I J⟩
 
@@ -525,8 +524,9 @@ instance : Mul (FractionalIdeal S P) :=
 theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 
+unseal mul in
 theorem mul_def (I J : FractionalIdeal S P) :
-    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
+    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul]; rfl
 
 @[simp, norm_cast]
 theorem coe_mul (I J : FractionalIdeal S P) : (↑(I * J) : Submodule R P) = I * J := by

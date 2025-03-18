@@ -172,7 +172,7 @@ variable (G : Type*) [Group G] [IsFreeGroup G]
 def Generators : Type _ := (IsFreeGroup.nonempty_basis (G := G)).choose
 
 /-- Any free group is isomorphic to "the" free group. -/
-irreducible_def mulEquiv : FreeGroup (Generators G) ≃* G :=
+@[irreducible] def mulEquiv : FreeGroup (Generators G) ≃* G :=
   (IsFreeGroup.nonempty_basis (G := G)).choose_spec.some.repr.symm
 
 /-- A free group basis of a free group `G`, over the set `Generators G`. -/

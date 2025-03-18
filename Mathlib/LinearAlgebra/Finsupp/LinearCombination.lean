@@ -410,13 +410,13 @@ variable (R)
 /-- Pick some representation of `x : span R w` as a linear combination in `w`,
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
 -/
-irreducible_def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
+@[irreducible] def Span.repr (w : Set M) (x : span R w) : w →₀ R :=
   ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose
 
 @[simp]
 theorem Span.finsupp_linearCombination_repr {w : Set M} (x : span R w) :
     Finsupp.linearCombination R ((↑) : w → M) (Span.repr R w x) = x := by
-  rw [Span.repr_def]
+  rw [Span.repr]
   exact ((Finsupp.mem_span_iff_linearCombination _ _ _).mp x.2).choose_spec
 
 end

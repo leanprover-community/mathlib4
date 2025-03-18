@@ -49,9 +49,9 @@ def smul_pow : ℕ → R → S := fun n r => r • x^n
 
 /-- Evaluate a polynomial `p` in the scalar semiring `R` at an element `x` in the target `S` using
 scalar multiple `R`-action. -/
-irreducible_def smeval : S := p.sum (smul_pow x)
+@[irreducible] def smeval : S := p.sum (smul_pow x)
 
-theorem smeval_eq_sum : p.smeval x = p.sum (smul_pow x) := by rw [smeval_def]
+theorem smeval_eq_sum : p.smeval x = p.sum (smul_pow x) := by rw [smeval]
 
 @[simp]
 theorem smeval_C : (C r).smeval x = r • x ^ 0 := by

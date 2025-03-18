@@ -154,7 +154,7 @@ theorem IsBigO.of_norm_le {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) : f =O
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant
 multiple of `‖g‖`. In other words, `‖f‖ / ‖g‖` tends to `0` along `l`, modulo division by zero
 issues that are avoided by this definition. -/
-irreducible_def IsLittleO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
+@[irreducible] def  IsLittleO (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g
 
 @[inherit_doc]
@@ -162,13 +162,13 @@ notation:100 f " =o[" l "] " g:100 => IsLittleO l f g
 
 /-- Definition of `IsLittleO` in terms of `IsBigOWith`. -/
 theorem isLittleO_iff_forall_isBigOWith : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → IsBigOWith c l f g := by
-  rw [IsLittleO_def]
+  rw [IsLittleO]
 
 alias ⟨IsLittleO.forall_isBigOWith, IsLittleO.of_isBigOWith⟩ := isLittleO_iff_forall_isBigOWith
 
 /-- Definition of `IsLittleO` in terms of filters. -/
 theorem isLittleO_iff : f =o[l] g ↔ ∀ ⦃c : ℝ⦄, 0 < c → ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ := by
-  simp only [IsLittleO_def, IsBigOWith]
+  simp only [IsLittleO, IsBigOWith]
 
 alias ⟨IsLittleO.bound, IsLittleO.of_bound⟩ := isLittleO_iff
 
@@ -327,7 +327,7 @@ theorem IsBigO.congr_right (h : f =O[l] g₁) (hg : ∀ x, g₁ x = g₂ x) : f 
   h.congr (fun _ => rfl) hg
 
 theorem isLittleO_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) : f₁ =o[l] g₁ ↔ f₂ =o[l] g₂ := by
-  simp only [IsLittleO_def]
+  simp only [IsLittleO]
   exact forall₂_congr fun c _hc => isBigOWith_congr (Eq.refl c) hf hg
 
 theorem IsLittleO.congr' (h : f₁ =o[l] g₁) (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) : f₂ =o[l] g₂ :=
@@ -408,7 +408,7 @@ theorem isBigO_map {k : β → α} {l : Filter β} : f =O[map k l] g ↔ (f ∘ 
 
 @[simp]
 theorem isLittleO_map {k : β → α} {l : Filter β} : f =o[map k l] g ↔ (f ∘ k) =o[l] (g ∘ k) := by
-  simp only [IsLittleO_def, isBigOWith_map]
+  simp only [IsLittleO, isBigOWith_map]
 
 theorem IsBigOWith.mono (h : IsBigOWith c l' f g) (hl : l ≤ l') : IsBigOWith c l f g :=
   IsBigOWith.of_bound <| hl h.bound
@@ -441,7 +441,7 @@ instance transIsBigOIsBigO :
 
 theorem IsLittleO.trans_isBigOWith (hfg : f =o[l] g) (hgk : IsBigOWith c l g k) (hc : 0 < c) :
     f =o[l] k := by
-  simp only [IsLittleO_def] at *
+  simp only [IsLittleO] at *
   intro c' c'pos
   have : 0 < c' / c := div_pos c'pos hc
   exact ((hfg this).trans hgk this.le).congr_const (div_mul_cancel₀ _ hc.ne')
@@ -458,7 +458,7 @@ instance transIsLittleOIsBigO :
 
 theorem IsBigOWith.trans_isLittleO (hfg : IsBigOWith c l f g) (hgk : g =o[l] k) (hc : 0 < c) :
     f =o[l] k := by
-  simp only [IsLittleO_def] at *
+  simp only [IsLittleO] at *
   intro c' c'pos
   have : 0 < c' / c := div_pos c'pos hc
   exact (hfg.trans (hgk this) hc.le).congr_const (mul_div_cancel₀ _ hc.ne')
@@ -607,7 +607,7 @@ protected theorem IsBigOWith.insert [TopologicalSpace α] {x : α} {s : Set α} 
 
 theorem isLittleO_insert [TopologicalSpace α] {x : α} {s : Set α} {g : α → E'} {g' : α → F'}
     (h : g x = 0) : g =o[𝓝[insert x s] x] g' ↔ g =o[𝓝[s] x] g' := by
-  simp_rw [IsLittleO_def]
+  simp_rw [IsLittleO]
   refine forall_congr' fun c => forall_congr' fun hc => ?_
   rw [isBigOWith_insert]
   rw [h, norm_zero]
@@ -651,7 +651,7 @@ alias ⟨IsBigO.of_abs_right, IsBigO.abs_right⟩ := isBigO_abs_right
 
 @[simp]
 theorem isLittleO_norm_right : (f =o[l] fun x => ‖g' x‖) ↔ f =o[l] g' := by
-  simp only [IsLittleO_def]
+  simp only [IsLittleO]
   exact forall₂_congr fun _ _ => isBigOWith_norm_right
 
 @[simp]
@@ -689,7 +689,7 @@ alias ⟨IsBigO.of_abs_left, IsBigO.abs_left⟩ := isBigO_abs_left
 
 @[simp]
 theorem isLittleO_norm_left : (fun x => ‖f' x‖) =o[l] g ↔ f' =o[l] g := by
-  simp only [IsLittleO_def]
+  simp only [IsLittleO]
   exact forall₂_congr fun _ _ => isBigOWith_norm_left
 
 @[simp]
@@ -752,7 +752,7 @@ alias ⟨IsBigO.of_neg_right, IsBigO.neg_right⟩ := isBigO_neg_right
 
 @[simp]
 theorem isLittleO_neg_right : (f =o[l] fun x => -g' x) ↔ f =o[l] g' := by
-  simp only [IsLittleO_def]
+  simp only [IsLittleO]
   exact forall₂_congr fun _ _ => isBigOWith_neg_right
 
 alias ⟨IsLittleO.of_neg_right, IsLittleO.neg_right⟩ := isLittleO_neg_right
@@ -772,7 +772,7 @@ alias ⟨IsBigO.of_neg_left, IsBigO.neg_left⟩ := isBigO_neg_left
 
 @[simp]
 theorem isLittleO_neg_left : (fun x => -f' x) =o[l] g ↔ f' =o[l] g := by
-  simp only [IsLittleO_def]
+  simp only [IsLittleO]
   exact forall₂_congr fun _ _ => isBigOWith_neg_left
 
 alias ⟨IsLittleO.of_neg_left, IsLittleO.neg_left⟩ := isLittleO_neg_left
@@ -1230,14 +1230,14 @@ theorem IsBigO.mul {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁
 
 theorem IsBigO.mul_isLittleO {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =O[l] g₁) (h₂ : f₂ =o[l] g₂) :
     (fun x => f₁ x * f₂ x) =o[l] fun x => g₁ x * g₂ x := by
-  simp only [IsLittleO_def] at *
+  simp only [IsLittleO] at *
   intro c cpos
   rcases h₁.exists_pos with ⟨c', c'pos, hc'⟩
   exact (hc'.mul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel₀ _ (ne_of_gt c'pos))
 
 theorem IsLittleO.mul_isBigO {f₁ f₂ : α → R} {g₁ g₂ : α → 𝕜} (h₁ : f₁ =o[l] g₁) (h₂ : f₂ =O[l] g₂) :
     (fun x => f₁ x * f₂ x) =o[l] fun x => g₁ x * g₂ x := by
-  simp only [IsLittleO_def] at *
+  simp only [IsLittleO] at *
   intro c cpos
   rcases h₂.exists_pos with ⟨c', c'pos, hc'⟩
   exact ((h₁ (div_pos cpos c'pos)).mul hc').congr_const (div_mul_cancel₀ _ (ne_of_gt c'pos))

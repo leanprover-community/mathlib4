@@ -211,8 +211,7 @@ theorem lof_map_one (i : I) : lof R A i 1 = 1 := by
     (lof_map_one R A i) (mul_injections R A · · |>.symm)
 
 /-- The family of canonical injection maps, with `i` left implicit -/
-irreducible_def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
-
+@[irreducible] def of {i : I} : A i →ₐ[R] FreeProduct R A := ι R A i
 
 /-- Universal property of the free product of algebras:
 for every `R`-algebra `B`, every family of maps `maps : (i : I) → (A i →ₐ[R] B)` lifts

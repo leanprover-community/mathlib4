@@ -62,17 +62,17 @@ namespace PiNat
 open Classical in
 /-- In a product space `Π n, E n`, then `firstDiff x y` is the first index at which `x` and `y`
 differ. If `x = y`, then by convention we set `firstDiff x x = 0`. -/
-irreducible_def firstDiff (x y : ∀ n, E n) : ℕ :=
+@[irreducible] def firstDiff (x y : ∀ n, E n) : ℕ :=
   if h : x ≠ y then Nat.find (ne_iff.1 h) else 0
 
 theorem apply_firstDiff_ne {x y : ∀ n, E n} (h : x ≠ y) :
     x (firstDiff x y) ≠ y (firstDiff x y) := by
-  rw [firstDiff_def, dif_pos h]
+  rw [firstDiff, dif_pos h]
   classical
   exact Nat.find_spec (ne_iff.1 h)
 
 theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDiff x y) : x n = y n := by
-  rw [firstDiff_def] at hn
+  rw [firstDiff] at hn
   split_ifs at hn with h
   · convert Nat.find_min (ne_iff.1 h) hn
     simp
@@ -80,7 +80,7 @@ theorem apply_eq_of_lt_firstDiff {x y : ∀ n, E n} {n : ℕ} (hn : n < firstDif
 
 theorem firstDiff_comm (x y : ∀ n, E n) : firstDiff x y = firstDiff y x := by
   classical
-  simp only [firstDiff_def, ne_comm]
+  simp only [firstDiff, ne_comm]
 
 theorem min_firstDiff_le (x y z : ∀ n, E n) (h : x ≠ z) :
     min (firstDiff x y) (firstDiff y z) ≤ firstDiff x z := by

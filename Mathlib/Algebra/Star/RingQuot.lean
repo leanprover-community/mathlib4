@@ -31,11 +31,12 @@ theorem Rel.star (hr : ∀ a b, r a b → r (star a) (star b))
   | mul_right _ h => rw [star_mul, star_mul]
                      exact Rel.mul_left h
 
-private irreducible_def star' (hr : ∀ a b, r a b → r (star a) (star b)) : RingQuot r → RingQuot r
+@[irreducible] private def star' (hr : ∀ a b, r a b → r (star a) (star b)) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (star : R → R) (Rel.star r hr) a⟩
 
+unseal star' in
 theorem star'_quot (hr : ∀ a b, r a b → r (star a) (star b)) {a} :
-    (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := star'_def _ _ _
+    (star' r hr ⟨Quot.mk _ a⟩ : RingQuot r) = ⟨Quot.mk _ (star a)⟩ := rfl
 
 /-- Transfer a star_ring instance through a quotient, if the quotient is invariant to `star` -/
 def starRing {R : Type u} [Semiring R] [StarRing R] (r : R → R → Prop)
