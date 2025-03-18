@@ -43,6 +43,74 @@ around `x` and `f x`, respectively such that in these charts, `f` looks like `u 
 
 XXX: why in `maximalAtlas` and not merely atlas? to given ourselves extra freedom?
 -/
+def IsImmersionAt (f : M → M') (x : M) : Prop :=
+  ∃ equiv : (E × F) ≃L[𝕜] E',
+  ∃ domChart : PartialHomeomorph M H, ∃ codChart : PartialHomeomorph M' H',
+    x ∈ domChart.source ∧ f x ∈ codChart.source ∧
+    domChart ∈ IsManifold.maximalAtlas I n M ∧
+    codChart ∈ IsManifold.maximalAtlas I' n M' ∧
+    (codChart.extend I') ∘ f ∘ (domChart.extend I).symm = equiv ∘ (·, 0)
+
+namespace IsImmersionAt
+
+variable {f : M → M'} {x : M}
+
+noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' :=
+  Classical.choose h
+
+noncomputable def domChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M H :=
+  Classical.choose (Classical.choose_spec h)
+
+noncomputable def codChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M' H' :=
+  Classical.choose (Classical.choose_spec (Classical.choose_spec h))
+
+noncomputable def mem_domChart_source (h : IsImmersionAt F I I' n f x) : x ∈ h.domChart.source :=
+  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).1
+
+noncomputable def mem_codChart_source (h : IsImmersionAt F I I' n f x) : f x ∈ h.codChart.source :=
+  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.1
+
+noncomputable def domChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
+    h.domChart ∈ IsManifold.maximalAtlas I n M :=
+  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.1
+
+noncomputable def codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
+    h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
+  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.1
+
+noncomputable def writtenInCharts (h : IsImmersionAt F I I' n f x) :
+    (h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm = h.equiv ∘ (·, 0) :=
+  (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2
+
+/-- A `C^k` immersion at `x` is `C^k` at `x`. -/
+-- continuity follows since we're in a chart, on an open set;
+-- smoothness follows since domChart and codChart are compatible with the maximal atlas
+theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x := sorry
+
+end IsImmersionAt
+
+#exit
+variable (F I I' n) in
+/-- `f : M → N` is a `C^k` immersion if around each point `x ∈ M`,
+there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively,
+such that in these charts, `f` looks like `u ↦ (u, 0)`. -/
+def IsImmersion (f : M → M') : Prop :=
+  ∃ equiv : (E × F) ≃L[𝕜] E', ∃ chartsM : M → PartialHomeomorph M H,
+  ∃ chartsM' : M' → PartialHomeomorph M' H',
+  ∀ x, x ∈ (chartsM x).source ∧
+  ∀ x, f x ∈ (chartsM' (f x)).source ∧
+  ∀ x, (chartsM x) ∈ IsManifold.maximalAtlas I n M ∧
+  ∀ x, (chartsM' (f x)) ∈ IsManifold.maximalAtlas I' n M' ∧
+  ∀ x, ((chartsM' (f x)).extend I') ∘ f ∘ ((chartsM x).extend I).symm = equiv ∘ (·, 0)
+
+#exit
+
+variable (F I I' n) in
+/-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
+around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
+
+XXX: why in `maximalAtlas` and not merely atlas? to given ourselves extra freedom?
+-/
 structure IsImmersionAt (f : M → M') (x : M) where
   equiv : (E × F) ≃L[𝕜] E'
   domChart : PartialHomeomorph M H
