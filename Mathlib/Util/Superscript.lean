@@ -227,25 +227,26 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
 
 section Delab
 
-/-- Returns `true` if every character in `s` can be subscripted. -/
-private def isSubscriptable (s : String) : Bool :=
-  s.toList.all fun x ↦ x == ' ' || Mapping.subscript.toSpecial.contains x
+private partial def isSuperscriptable : Syntax → Bool
+  | .node _ _ args => args.all isSuperscriptable
+  | .atom _ s => valid s
+  | .ident _ _ s _ => valid s.toString
+  | _ => false
+where
+  -- Returns `true` if every character in `s` can be superscripted.
+  valid (s : String) : Bool :=
+    s.toList.all fun x ↦ x == ' ' || Mapping.superscript.toSpecial.contains x
 
-/-- Returns `true` if every character in `s` can be superscripted. -/
-private def isSuperscriptable (s : String) : Bool :=
-  s.toList.all fun x ↦ x == ' ' || Mapping.superscript.toSpecial.contains x
+private partial def isSubscriptable : Syntax → Bool
+  | .node _ _ args => args.all isSubscriptable
+  | .atom _ s => valid s
+  | .ident _ _ s _ => valid s.toString
+  | _ => false
+where
+  -- Returns `true` if every character in `s` can be subscripted.
+  valid (s : String) : Bool :=
+    s.toList.all fun x ↦ x == ' ' || Mapping.subscript.toSpecial.contains x
 
-private partial def superscriptable : Syntax → DelabM Unit
-  | .node _ _ args => args.forM superscriptable
-  | .atom _ val => guard <| isSuperscriptable val
-  | .ident _ _ val _ => guard <| isSuperscriptable val.toString
-  | _ => failure
-
-private partial def subscriptable : Syntax → DelabM Unit
-  | .node _ _ args => args.forM subscriptable
-  | .atom _ s => guard <| isSubscriptable s
-  | .ident _ _ s _ => guard <| isSubscriptable s.toString
-  | _ => failure
 
 end Delab
 
@@ -295,8 +296,7 @@ superscriptable expression as input.
 See `Mapping.superscript` in this file for legal superscript characters. -/
 def delabSuperscript : Delab := do
   let de ← delab
-  let _ ← Superscript.superscriptable de.raw
-  pure de
+  if Superscript.isSuperscriptable de.raw then pure de else failure
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -341,8 +341,7 @@ subscriptable expression as input.
 
 See `Mapping.subscript` in this file for legal subscript characters. -/
 def delabSubscript : Delab := do
-  let de ← delab
-  let _ ← Superscript.subscriptable de.raw
-  pure de
+  let stx ← delab
+  if Superscript.isSubscriptable stx.raw then pure stx else failure
 
 end Mathlib.Tactic
