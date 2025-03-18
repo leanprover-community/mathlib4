@@ -230,7 +230,7 @@ open PrettyPrinter.Delaborator SubExpr
 /-- Returns the user-facing name of any constant or free variable. -/
 private def name : Expr → MetaM (Option Name)
   | Expr.const name _ => pure (privateToUserName name)
-  | Expr.fvar name => Functor.map (pure ∘ privateToUserName) name.getUserName
+  | Expr.fvar name => return privateToUserName (← name.getUserName)
   | _ => pure none
 
 /-- Returns `true` if every character in `s` can be subscripted. -/
@@ -271,7 +271,7 @@ private def constValid (e : Expr) (fname : Name → Bool) : DelabM Bool :=
 /-- Checks if the entire expression `e` can be superscripted (or subscripted). -/
 private def checkExpr (e : Expr) (fname : Name → Bool)
     (fexpr : Expr → DelabM Unit) : DelabM Unit := do
-  -- Look first for numbers, valid constants, and `() : Unit`.
+  -- Look first for numbers, constants, free variables, and `() : Unit`.
   if (← constValid e fname) then return
   -- Function application is valid if all explicit arguments are valid and the
   -- function name is valid (or one of `+`, `-`, `=`, `==`).
