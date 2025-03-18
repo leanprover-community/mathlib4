@@ -470,6 +470,22 @@ def powerBasis' (hg : g.Monic) : PowerBasis R (AdjoinRoot g) where
       have := Finset.mem_univ i
       contradiction
 
+lemma free_of_monic (hg : g.Monic) : Module.Free R (AdjoinRoot g) :=
+  .of_basis (powerBasis' hg).basis
+
+lemma finite_of_monic (hg : g.Monic) : Module.Finite R (AdjoinRoot g) :=
+  .of_basis (powerBasis' hg).basis
+
+/-- An unwrapped version of `AdjoinRoot.free_of_monic` for better discoverability. -/
+lemma _root_.Polynomial.free_quotient_of_monic (hg : g.Monic) :
+    Module.Free R (R[X] ⧸ Ideal.span {g}) :=
+  free_of_monic hg
+
+/-- An unwrapped version of `AdjoinRoot.finite_of_monic` for better discoverability. -/
+lemma _root_.Polynomial.finite_quotient_of_monic (hg : g.Monic) :
+    Module.Free R (R[X] ⧸ Ideal.span {g}) :=
+  free_of_monic hg
+
 variable [Field K] {f : K[X]}
 
 theorem isIntegral_root (hf : f ≠ 0) : IsIntegral K (root f) :=
