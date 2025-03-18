@@ -1371,7 +1371,8 @@ instance : Insert ZFSet Class :=
 
 namespace Class
 
--- Porting note: this is no longer an automatically derived instance.
+-- Porting note: this used to be a `deriving HasSep Set` instance,
+-- it should probably be turned into notation.
 /-- `{x ∈ A | p x}` is the class of elements in `A` satisfying `p` -/
 protected def sep (p : ZFSet → Prop) (A : Class) : Class :=
   {y | A y ∧ p y}

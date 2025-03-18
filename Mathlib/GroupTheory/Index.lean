@@ -465,12 +465,15 @@ lemma pow_mem_of_relindex_ne_zero_of_dvd (h : H.relindex K ≠ 0) {a : G} (ha : 
   convert pow_mem_of_index_ne_zero_of_dvd h ⟨a, ha⟩ hn
   simp [pow_mem ha, mem_subgroupOf]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) index_prod]
 lemma index_prod (H : Subgroup G) (K : Subgroup G') : (H.prod K).index = H.index * K.index := by
   simp_rw [index, ← Nat.card_prod]
   refine Nat.card_congr
     ((Quotient.congrRight (fun x y ↦ ?_)).trans (Setoid.prodQuotientEquiv _ _).symm)
   rw [QuotientGroup.leftRel_prod]
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddSubgroup.index_sum := AddSubgroup.index_prod
 
 @[to_additive (attr := simp)]
 lemma index_pi {ι : Type*} [Fintype ι] (H : ι → Subgroup G) :
@@ -605,6 +608,14 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 end MulAction
 
 namespace MonoidHom
+
+@[to_additive AddMonoidHom.surjective_of_card_ker_le_div]
+lemma surjective_of_card_ker_le_div {G M : Type*} [Group G] [Group M] [Finite G] [Finite M]
+    (f : G →* M) (h : Nat.card f.ker ≤ Nat.card G / Nat.card M) : Function.Surjective f := by
+  refine range_eq_top.1 <| SetLike.ext' <| Set.eq_of_subset_of_ncard_le (Set.subset_univ _) ?_
+  rw [Subgroup.coe_top, Set.ncard_univ, ← Set.Nat.card_coe_set_eq, SetLike.coe_sort_coe,
+    ← Nat.card_congr (QuotientGroup.quotientKerEquivRange f).toEquiv]
+  exact Nat.le_of_mul_le_mul_left (f.ker.card_mul_index ▸ Nat.mul_le_of_le_div _ _ _ h) Nat.card_pos
 
 open Finset
 

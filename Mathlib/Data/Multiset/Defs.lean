@@ -97,15 +97,14 @@ theorem lift_coe {α β : Type*} (x : List α) (f : List α → β)
 theorem coe_eq_coe {l₁ l₂ : List α} : (l₁ : Multiset α) = l₂ ↔ l₁ ~ l₂ :=
   Quotient.eq
 
--- Porting note: new instance;
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move to better place
+-- (upstream to Batteries?)
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (l₁ ≈ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
 instance [DecidableEq α] (l₁ l₂ : List α) : Decidable (isSetoid α l₁ l₂) :=
   inferInstanceAs (Decidable (l₁ ~ l₂))
 
--- Porting note: `Quotient.recOnSubsingleton₂ s₁ s₂` was in parens which broke elaboration
 instance decidableEq [DecidableEq α] : DecidableEq (Multiset α)
   | s₁, s₂ => Quotient.recOnSubsingleton₂ s₁ s₂ fun _ _ => decidable_of_iff' _ Quotient.eq_iff_equiv
 
@@ -181,7 +180,7 @@ instance : PartialOrder (Multiset α) where
   le_trans := by rintro ⟨l₁⟩ ⟨l₂⟩ ⟨l₃⟩; exact @Subperm.trans _ _ _ _
   le_antisymm := by rintro ⟨l₁⟩ ⟨l₂⟩ h₁ h₂; exact Quot.sound (Subperm.antisymm h₁ h₂)
 
-instance decidableLE [DecidableEq α] : DecidableRel ((· ≤ ·) : Multiset α → Multiset α → Prop) :=
+instance decidableLE [DecidableEq α] : DecidableLE (Multiset α) :=
   fun s t => Quotient.recOnSubsingleton₂ s t List.decidableSubperm
 
 section
@@ -355,6 +354,12 @@ theorem Nodup.ext {s t : Multiset α} : Nodup s → Nodup t → (s = t ↔ ∀ a
 
 theorem le_iff_subset {s t : Multiset α} : Nodup s → (s ≤ t ↔ s ⊆ t) :=
   Quotient.inductionOn₂ s t fun _ _ d => ⟨subset_of_le, d.subperm⟩
+
+theorem nodup_of_le {s t : Multiset α} (h : s ≤ t) : Nodup t → Nodup s :=
+  Multiset.leInductionOn h fun {_ _} => Nodup.sublist
+
+instance nodupDecidable [DecidableEq α] (s : Multiset α) : Decidable (Nodup s) :=
+  Quotient.recOnSubsingleton s fun l => l.nodupDecidable
 
 end Nodup
 

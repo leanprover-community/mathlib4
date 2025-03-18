@@ -214,8 +214,9 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
 
 /-- The Riemann-Lebesgue lemma for functions on `ℝ`. -/
 theorem Real.tendsto_integral_exp_smul_cocompact (f : ℝ → E) :
-    Tendsto (fun w : ℝ => ∫ v : ℝ, 𝐞 (-(v * w)) • f v) (cocompact ℝ) (𝓝 0) :=
-  tendsto_integral_exp_inner_smul_cocompact f
+    Tendsto (fun w : ℝ => ∫ v : ℝ, 𝐞 (-(v * w)) • f v) (cocompact ℝ) (𝓝 0) := by
+  simp_rw [mul_comm]
+  exact tendsto_integral_exp_inner_smul_cocompact f
 
 /-- The Riemann-Lebesgue lemma for functions on `ℝ`, formulated via `Real.fourierIntegral`. -/
 theorem Real.zero_at_infty_fourierIntegral (f : ℝ → E) : Tendsto (𝓕 f) (cocompact ℝ) (𝓝 0) :=

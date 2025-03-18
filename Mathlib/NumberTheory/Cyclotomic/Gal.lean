@@ -68,7 +68,6 @@ theorem autToPow_injective : Function.Injective <| hμ.autToPow K := by
   congr 2
   rw [pow_eq_pow_iff_modEq]
   convert hfg
-  -- Porting note: was `{occs := occurrences.pos [2]}` (for the second rewrite)
   conv => enter [2]; rw [hμ.eq_orderOf, ← hμ.val_toRootsOfUnity_coe]
   rw [orderOf_units, Subgroup.orderOf_coe]
 
@@ -106,7 +105,6 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       simp only [MonoidHom.toFun_eq_coe]
       apply AlgEquiv.coe_algHom_injective
       apply (hζ.powerBasis K).algHom_ext
--- Porting note: the proof is slightly different because of coercions.
       simp only [AlgHom.coe_coe]
       rw [PowerBasis.equivOfMinpoly_gen]
       simp only [IsPrimitiveRoot.powerBasis_gen, IsPrimitiveRoot.autToPow_spec]
@@ -117,7 +115,8 @@ noncomputable def autEquivPow (h : Irreducible (cyclotomic n K)) : (L ≃ₐ[K] 
       have := (hζ.powerBasis K).equivOfMinpoly_gen ((hμ x).powerBasis K) h
       rw [hζ.powerBasis_gen K] at this
       rw [this, IsPrimitiveRoot.powerBasis_gen] at key
--- Porting note: was `rw ← hζ.coe_to_roots_of_unity_coe at key {occs := occurrences.pos [1, 5]}`.
+      -- Porting note: was
+      -- `rw ← hζ.coe_to_roots_of_unity_coe at key {occs := occurrences.pos [1, 5]}`.
       conv at key =>
         congr; congr
         rw [← hζ.val_toRootsOfUnity_coe]

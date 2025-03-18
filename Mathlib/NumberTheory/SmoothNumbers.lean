@@ -226,7 +226,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
     · rw [factorization_mul (pos_iff_ne_zero.mp <| Nat.pow_pos hp.pos) hm₀]
       simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
         Pi.natCast_def, cast_id, Pi.add_apply, Pi.mul_apply, hp.factorization_self,
-        mul_one, add_right_eq_self]
+        mul_one, add_eq_left]
       rw [← primeFactorsList_count_eq, count_eq_zero]
       exact fun H ↦ hs (hm p H)
     · nth_rewrite 2 [← prod_primeFactorsList hm₀]

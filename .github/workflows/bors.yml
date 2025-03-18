@@ -17,7 +17,7 @@ name: continuous integration (staging)
 env:
   # Disable Lake's automatic fetching of cloud builds.
   # Lake's cache is currently incompatible with Mathlib's `lake exe cache`.
-  # This is because Mathlib's Cache assumes all build aritfacts present in the build directory
+  # This is because Mathlib's Cache assumes all build artifacts present in the build directory
   # are valid by-products of the Mathlib build. Build artifacts fetched from Lake's cache do
   # not necessarily satisfy this property.
   LAKE_NO_CACHE: true
@@ -129,6 +129,27 @@ jobs:
           lean --version
           lake --version
 
+      - name: cleanup .cache/mathlib
+        run: |
+          # Define the cache directory path
+          CACHE_DIR="$HOME/.cache/mathlib"
+
+          # Check if directory exists
+          if [ ! -d "$CACHE_DIR" ]; then
+            echo "::warning::Cache directory does not exist: $CACHE_DIR"
+            exit 0
+          fi
+
+          # Calculate directory size in bytes
+          DIR_SIZE=$(du -sb "$CACHE_DIR" | cut -f1)
+          printf 'Cache size (in bytes): %s\n' "$DIR_SIZE"
+
+          # Check if size exceeds 10GB
+          if [ "$DIR_SIZE" -gt "10737418240" ]; then
+            echo "Cache size exceeds threshold, running lake exe cache clean"
+            lake exe cache clean || echo "lake did not work"
+          fi
+
       - name: build cache
         run: |
           lake build cache
@@ -136,6 +157,8 @@ jobs:
       - name: get cache
         id: get
         run: |
+          rm -rf .lake/build/lib/lean/Mathlib
+          # useful pre v4.18: the following command is only present for compatibility reasons
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
           lake exe cache get Mathlib/Init.lean
@@ -163,7 +186,9 @@ jobs:
 
       - name: print the sizes of the oleans
         run: |
-          du .lake/build/lib/Mathlib || echo "This code should be unreachable"
+          du .lake/build/lib/lean/Mathlib ||
+            # This path was the correct path before v4.18: it is here just for compatibility reasons
+            du .lake/build/lib/Mathlib || echo "This code should be unreachable"
 
       - name: upload cache
         # We only upload the cache if the build started (whether succeeding, failing, or cancelled)
@@ -331,15 +356,6 @@ jobs:
           # Build lean4checker using the same toolchain
           cp ../lean-toolchain .
           lake build
-
-      - name: Add the "awaiting-CI" label
-        if: always()
-        # we use curl rather than octokit/request-action so that the job won't fail
-        # (and send an annoying email) if the labels don't exist
-        run: |
-          curl --request ADD \
-            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.issue.number }}/labels/awaiting-CI \
-            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
 
   final:
     name: Post-CI job

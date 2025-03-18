@@ -59,7 +59,7 @@ attribute [instance] IsAffine.affine
 instance (X : Scheme.{u}) [IsAffine X] : IsIso (ΓSpec.adjunction.unit.app X) := @IsAffine.affine X _
 
 /-- The canonical isomorphism `X ≅ Spec Γ(X)` for an affine scheme. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
   asIso X.toSpecΓ
 
@@ -308,7 +308,7 @@ variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 attribute [-simp] eqToHom_op in
 /-- The isomorphism `U ≅ Spec Γ(X, U)` for an affine `U`. -/
-@[simps! (config := .lemmasOnly) inv]
+@[simps! -isSimp inv]
 def isoSpec :
     ↑U ≅ Spec Γ(X, U) :=
   haveI : IsAffine U := hU

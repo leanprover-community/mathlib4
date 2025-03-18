@@ -40,7 +40,7 @@ a binary fan on `c₁.pt` and `f 0`, we can build a fan for all `n+1`.
 In `extendFanIsLimit` we show that if the two given fans are limits, then this fan is also a
 limit.
 -/
-@[simps!] -- Porting note: removed semi-reducible config
+@[simps!]
 def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i.succ)
     (c₂ : BinaryFan (f 0) c₁.pt) : Fan f :=
   Fan.mk c₂.pt
@@ -171,7 +171,7 @@ In `extendCofanIsColimit` we show that if the two given cofans are colimits,
 then this cofan is also a colimit.
 -/
 
-@[simps!] -- Porting note: removed semireducible config
+@[simps!]
 def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n => f i.succ)
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=
   Cofan.mk c₂.pt

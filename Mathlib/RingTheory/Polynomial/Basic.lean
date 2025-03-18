@@ -683,7 +683,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         apply P.sum_mem
         rintro ⟨i, j⟩ hij
         rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
-        simp only [Ne, Prod.mk.inj_iff, not_and_or] at hij
+        simp only [Ne, Prod.mk_inj, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
           omega
         · rw [mul_comm]

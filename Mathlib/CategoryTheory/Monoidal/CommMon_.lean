@@ -75,8 +75,9 @@ def forget₂Mon_ : CommMon_ C ⥤ Mon_ C :=
 is fully faithful. -/
 def fullyFaithfulForget₂Mon_ : (forget₂Mon_ C).FullyFaithful :=
   fullyFaithfulInducedFunctor _
+-- The `Full, Faithful` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 instance : (forget₂Mon_ C).Full := InducedCategory.full _
 instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
@@ -231,5 +232,20 @@ def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C �
   inverse := commMonToLaxBraided C
   unitIso := unitIso C
   counitIso := counitIso C
+
+end CommMon_
+
+namespace CommMon_
+
+variable {C}
+
+/-- Construct an object of `CommMon_ C` from an object `X : C` a `Mon_Class X` instance
+and a `IsCommMon X` insance. -/
+def mk' (X : C) [Mon_Class X] [IsCommMon X] : CommMon_ C where
+  __ := Mon_.mk' X
+  mul_comm := IsCommMon.mul_comm X
+
+instance (X : CommMon_ C) : IsCommMon X.X where
+  mul_comm' := X.mul_comm
 
 end CommMon_

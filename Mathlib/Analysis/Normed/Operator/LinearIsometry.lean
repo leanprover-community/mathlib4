@@ -796,10 +796,6 @@ instance instCoeTCContinuousLinearMap : CoeTC (E ≃ₛₗᵢ[σ₁₂] E₂) (E
 theorem coe_coe : ⇑(e : E ≃SL[σ₁₂] E₂) = e :=
   rfl
 
--- @[simp] -- Porting note: now a syntactic tautology
--- theorem coe_coe' : ((e : E ≃SL[σ₁₂] E₂) : E →SL[σ₁₂] E₂) = e :=
---   rfl
-
 @[simp]
 theorem coe_coe'' : ⇑(e : E →SL[σ₁₂] E₂) = e :=
   rfl
@@ -1004,7 +1000,7 @@ theorem Basis.ext_linearIsometryEquiv {ι : Type*} (b : Basis ι R E) {f₁ f₂
   LinearIsometryEquiv.toLinearEquiv_injective <| b.ext' h
 
 /-- Reinterpret a `LinearIsometry` as a `LinearIsometryEquiv` to the range. -/
-@[simps! apply_coe] -- Porting note: `toLinearEquiv` projection does not simplify using itself
+@[simps! apply_coe]
 noncomputable def LinearIsometry.equivRange {R S : Type*} [Semiring R] [Ring S] [Module S E]
     [Module R F] {σ₁₂ : R →+* S} {σ₂₁ : S →+* R} [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
     (f : F →ₛₗᵢ[σ₁₂] E) : F ≃ₛₗᵢ[σ₁₂] (LinearMap.range f.toLinearMap) :=

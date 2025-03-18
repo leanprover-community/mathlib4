@@ -728,20 +728,22 @@ theorem eval₂_mem {f : R →+* S} {p : MvPolynomial σ R} {s : subS}
     · exact hs i hi
     · rw [MvPolynomial.not_mem_support_iff.1 hi, f.map_zero]
       exact zero_mem s
-  induction' p using MvPolynomial.induction_on''' with a a b f ha _ ih
-  · simpa using hs 0
-  rw [eval₂_add, eval₂_monomial]
-  refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
-  · have := hs a -- Porting note: was `simpa only [...]`
-    rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
-      if_pos rfl] at this
-  have := hs i
-  rw [coeff_add, coeff_monomial] at this
-  split_ifs at this with h
-  · subst h
-    rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
-    exact zero_mem _
-  · rwa [zero_add] at this
+  induction p using MvPolynomial.monomial_add_induction_on with
+  | C a =>
+    simpa using hs 0
+  | monomial_add a b f ha _ ih =>
+    rw [eval₂_add, eval₂_monomial]
+    refine add_mem (mul_mem ?_ <| prod_mem fun i _ => pow_mem (hv _) _) (ih fun i => ?_)
+    · have := hs a -- Porting note: was `simpa only [...]`
+      rwa [coeff_add, MvPolynomial.not_mem_support_iff.1 ha, add_zero, coeff_monomial,
+        if_pos rfl] at this
+    have := hs i
+    rw [coeff_add, coeff_monomial] at this
+    split_ifs at this with h
+    · subst h
+      rw [MvPolynomial.not_mem_support_iff.1 ha, map_zero]
+      exact zero_mem _
+    · rwa [zero_add] at this
 
 theorem eval_mem {p : MvPolynomial σ S} {s : subS} (hs : ∀ i ∈ p.support, p.coeff i ∈ s) {v : σ → S}
     (hv : ∀ i, v i ∈ s) : MvPolynomial.eval v p ∈ s :=

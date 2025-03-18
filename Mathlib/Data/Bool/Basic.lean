@@ -126,7 +126,7 @@ lemma self_ne_not : ∀ b : Bool, b ≠ !b := by decide
 
 lemma eq_or_eq_not : ∀ a b, a = b ∨ a = !b := by decide
 
--- Porting note: naming issue again: these two `not` are different.
+-- TODO naming issue: these two `not` are different.
 theorem not_iff_not : ∀ {b : Bool}, !b ↔ ¬b := by simp
 
 theorem eq_true_of_not_eq_false' {a : Bool} : !a = false → a = true := by

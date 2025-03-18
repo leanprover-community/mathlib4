@@ -7,7 +7,7 @@ import Mathlib.Algebra.Order.AbsoluteValue.Basic
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.GroupTopology
 
 /-!
 
@@ -45,6 +45,9 @@ mathematically equivalent (see `IsTopologicalSemiring.continuousNeg_of_mul` or
 class IsTopologicalSemiring [TopologicalSpace α] [NonUnitalNonAssocSemiring α] : Prop
     extends ContinuousAdd α, ContinuousMul α
 
+@[deprecated (since := "2025-02-14")] alias TopologicalSemiring :=
+  IsTopologicalSemiring
+
 /-- A topological ring is a ring `R` where addition, multiplication and negation are continuous.
 
 If `R` is a (unital) ring, then continuity of negation can be derived from continuity of
@@ -53,6 +56,9 @@ multiplication as it is multiplication with `-1`. (See
 `topological_semiring.to_topological_add_group`) -/
 class IsTopologicalRing [TopologicalSpace α] [NonUnitalNonAssocRing α] : Prop
     extends IsTopologicalSemiring α, ContinuousNeg α
+
+@[deprecated (since := "2025-02-14")] alias TopologicalRing :=
+  IsTopologicalRing
 
 variable {α}
 
@@ -69,6 +75,9 @@ proving `continuous_neg`. -/
 theorem IsTopologicalSemiring.toIsTopologicalRing [TopologicalSpace α] [NonAssocRing α]
     (_ : IsTopologicalSemiring α) : IsTopologicalRing α where
   toContinuousNeg := IsTopologicalSemiring.continuousNeg_of_mul
+
+@[deprecated (since := "2025-02-14")] alias TopologicalSemiring.toTopologicalRing :=
+  IsTopologicalSemiring.toIsTopologicalRing
 
 -- See note [lower instance priority]
 instance (priority := 100) IsTopologicalRing.to_topologicalAddGroup [NonUnitalNonAssocRing α]

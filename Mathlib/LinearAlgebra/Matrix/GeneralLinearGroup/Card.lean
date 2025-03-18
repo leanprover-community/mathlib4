@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran Wu
 -/
 import Mathlib.Data.Matrix.Rank
-import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
@@ -44,10 +44,10 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
       have (s : { s : Fin k → V // LinearIndependent K s }) :
           card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =
           (q) ^ n - (q) ^ k := by
-            rw [card_compl_set, card_eq_pow_finrank (K := K)
+            rw [card_compl_set, Module.card_eq_pow_finrank (K := K)
             (V := ((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
-            rw [card_eq_pow_finrank (K := K)]
+            rw [Module.card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
         mul_comm, Fin.prod_univ_succAbove _ k]
 

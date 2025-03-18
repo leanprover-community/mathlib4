@@ -1266,7 +1266,7 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
-theorem reachable_delete_edges_iff_exists_walk {v w v' w': V} :
+theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', ¬s(v, w) ∈ p.edges := by
   constructor
   · rintro ⟨p⟩

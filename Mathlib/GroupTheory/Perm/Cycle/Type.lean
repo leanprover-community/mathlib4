@@ -107,7 +107,7 @@ theorem two_le_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType
 theorem one_lt_of_mem_cycleType {σ : Perm α} {n : ℕ} (h : n ∈ σ.cycleType) : 1 < n :=
   two_le_of_mem_cycleType h
 
-theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = [σ.support.card] :=
+theorem IsCycle.cycleType {σ : Perm α} (hσ : IsCycle σ) : σ.cycleType = {σ.support.card} :=
   cycleType_eq [σ] (mul_one σ) (fun _τ hτ => (congr_arg IsCycle (List.mem_singleton.mp hτ)).mpr hσ)
     (List.pairwise_singleton Disjoint σ)
 
@@ -147,7 +147,7 @@ theorem cycleType_conj {σ τ : Perm α} : (τ * σ * τ⁻¹).cycleType = σ.cy
 theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   induction σ using cycle_induction_on with
   | base_one => simp
-  | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
+  | base_cycles σ hσ => rw [hσ.cycleType, Multiset.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
 
 theorem card_fixedPoints (σ : Equiv.Perm α) :
@@ -273,8 +273,7 @@ theorem isConj_of_cycleType_eq {σ τ : Perm α} (h : cycleType σ = cycleType �
     have hτ := card_cycleType_eq_one.2 hσ
     rw [h, card_cycleType_eq_one] at hτ
     apply hσ.isConj hτ
-    rw [hσ.cycleType, hτ.cycleType, coe_eq_coe, List.singleton_perm] at h
-    exact List.singleton_injective h
+    rwa [hσ.cycleType, hτ.cycleType, Multiset.singleton_inj] at h
   | induction_disjoint σ π hd hc hσ hπ =>
     rw [hd.cycleType] at h
     have h' : σ.support.card ∈ τ.cycleType := by
@@ -334,7 +333,7 @@ theorem cycleType_of_card_le_mem_cycleType_add_two {n : ℕ} {g : Perm α}
     (hn2 : Fintype.card α < n + 2) (hng : n ∈ g.cycleType) : g.cycleType = {n} := by
   obtain ⟨c, g', rfl, hd, hc, rfl⟩ := mem_cycleType_iff.1 hng
   suffices g'1 : g' = 1 by
-    rw [hd.cycleType, hc.cycleType, coe_singleton, g'1, cycleType_one, add_zero]
+    rw [hd.cycleType, hc.cycleType, g'1, cycleType_one, add_zero]
   contrapose! hn2 with g'1
   apply le_trans _ (c * g').support.card_le_univ
   rw [hd.card_support_mul]

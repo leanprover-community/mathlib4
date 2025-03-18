@@ -15,10 +15,7 @@ import Mathlib.Data.List.Induction
 
 This file contains basic results on this function.
 -/
-/-
-Porting note: various auxiliary definitions such as `sublists'_aux` were left out of the port
-because they were only used to prove properties of `sublists`, and these proofs have changed.
--/
+
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
@@ -37,7 +34,6 @@ theorem sublists'_nil : sublists' (@nil α) = [[]] :=
 theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
   rfl
 
--- Porting note: Not the same as `sublists'_aux` from Lean3
 /-- Auxiliary helper definition for `sublists'` -/
 def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
   r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
@@ -63,7 +59,6 @@ theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List 
     rw [map_append, map_singleton, ← append_assoc, ← ih, sublists'Aux, foldl_append, foldl]
     simp [sublists'Aux]
 
--- Porting note: simp can prove `sublists'_singleton`
 @[simp 900]
 theorem sublists'_cons (a : α) (l : List α) :
     sublists' (a :: l) = sublists' l ++ map (cons a) (sublists' l) := by
@@ -98,7 +93,6 @@ theorem sublists_nil : sublists (@nil α) = [[]] :=
 theorem sublists_singleton (a : α) : sublists [a] = [[], [a]] :=
   rfl
 
--- Porting note: Not the same as `sublists_aux` from Lean3
 /-- Auxiliary helper function for `sublists` -/
 def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
   r.foldl (init := []) fun r l => r ++ [l, a :: l]
@@ -349,7 +343,6 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
   | [] => by simp
   | a::l => by simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp]
 
--- Porting note: moved because it is now used to prove `sublists_cons_perm_append`
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   rw [← finRange_map_get l, sublists_map, sublists'_map]
   apply Perm.map
@@ -375,7 +368,7 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
       zip_map_left] at *
-    simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_apply, Prod.exists] at h
+    simp only [Prod.mk_inj, mem_map, mem_append, Prod.map_apply, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]
       exact (ih _ _ h).append_right _

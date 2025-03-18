@@ -75,10 +75,12 @@ jobs:
               for (let pr of prs) {
                 output += "merged via #" + pr.number + ". ";
               }
+              return output
             }
-            return output
+            return ''  // Return empty string if no PRs found
 
       - name: Send Zulip message
+        if: ${{ steps.construct_message.outputs.result != '' }}
         uses: zulip/github-actions-zulip/send-message@v1
         with:
           api-key: ${{ secrets.ZULIP_API_KEY }}

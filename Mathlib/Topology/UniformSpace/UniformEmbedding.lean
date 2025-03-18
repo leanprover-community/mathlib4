@@ -372,7 +372,7 @@ theorem closure_image_mem_nhds_of_isUniformInducing {s : Set (α × α)} {e : α
     (he₁ : IsUniformInducing e) (he₂ : IsDenseInducing e) (hs : s ∈ 𝓤 α) :
     ∃ a, closure (e '' { a' | (a, a') ∈ s }) ∈ 𝓝 b := by
   obtain ⟨U, ⟨hU, hUo, hsymm⟩, hs⟩ :
-    ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ SymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
+    ∃ U, (U ∈ 𝓤 β ∧ IsOpen U ∧ IsSymmetricRel U) ∧ Prod.map e e ⁻¹' U ⊆ s := by
       rwa [← he₁.comap_uniformity, (uniformity_hasBasis_open_symmetric.comap _).mem_iff] at hs
   rcases he₂.dense.mem_nhds (UniformSpace.ball_mem_nhds b hU) with ⟨a, ha⟩
   refine ⟨a, mem_of_superset ?_ (closure_mono <| image_subset _ <| UniformSpace.ball_mono hs a)⟩
@@ -526,7 +526,7 @@ theorem completeSpace_extension {m : β → α} (hm : IsUniformInducing m) (dens
         have hg : p (Prod.swap ⁻¹' s₁) t ×ˢ p s₂ t ∈ g ×ˢ g := @prod_mem_prod α α _ _ g g hg₁ hg₂
         (g ×ˢ g).sets_of_superset hg fun ⟨_, _⟩ ⟨⟨c₁, c₁t, hc₁⟩, ⟨c₂, c₂t, hc₂⟩⟩ =>
           have : (c₁, c₂) ∈ t ×ˢ t := ⟨c₁t, c₂t⟩
-          comp_s₁ <| prod_mk_mem_compRel hc₁ <| comp_s₂ <| prod_mk_mem_compRel (prod_t this) hc₂⟩
+          comp_s₁ <| prodMk_mem_compRel hc₁ <| comp_s₂ <| prodMk_mem_compRel (prod_t this) hc₂⟩
     have : Cauchy (Filter.comap m g) := ‹Cauchy g›.comap' (le_of_eq hm.comap_uniformity) ‹_›
     let ⟨x, (hx : map m (Filter.comap m g) ≤ 𝓝 x)⟩ := h _ this
     have : ClusterPt x (map m (Filter.comap m g)) :=

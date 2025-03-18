@@ -345,7 +345,7 @@ theorem eq_one_of_smul_normalized (w : CoprodI.Word G) {i : ι} (h : H)
     rw [equiv_mul_left_of_mem (d.compl i) ⟨_, rfl⟩, hhead] at this
     simpa [((injective_iff_map_eq_one' _).1 (d.injective i))] using this
   · simp only [Word.mem_smul_iff, not_true, false_and, ne_eq, Option.mem_def, mul_right_inj,
-      exists_eq_right', mul_right_eq_self, exists_prop, true_and, false_or]
+      exists_eq_right', mul_eq_left, exists_prop, true_and, false_or]
     constructor
     · intro h
       apply_fun (d.compl i).equiv at h

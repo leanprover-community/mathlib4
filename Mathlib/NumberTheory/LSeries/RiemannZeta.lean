@@ -126,7 +126,7 @@ lemma HurwitzZeta.hurwitzZeta_zero : hurwitzZeta 0 = riemannZeta := by
 
 lemma HurwitzZeta.expZeta_zero : expZeta 0 = riemannZeta := by
   ext1 s
-  rw [expZeta, cosZeta_zero, add_right_eq_self, mul_eq_zero, eq_false_intro I_ne_zero, false_or,
+  rw [expZeta, cosZeta_zero, add_eq_left, mul_eq_zero, eq_false_intro I_ne_zero, false_or,
     ← eq_neg_self_iff, ← sinZeta_neg, neg_zero]
 
 /-- The Riemann zeta function is differentiable away from `s = 1`. -/

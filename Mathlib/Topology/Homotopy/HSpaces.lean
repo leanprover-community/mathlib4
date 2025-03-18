@@ -70,7 +70,6 @@ class HSpace (X : Type u) [TopologicalSpace X] where
 /-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
--- Porting note: opening `HSpaces` so that the above notation works
 open HSpaces
 
 instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [TopologicalSpace Y] [HSpace X]
@@ -78,7 +77,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
   hmul := ⟨fun p => (p.1.1 ⋀ p.2.1, p.1.2 ⋀ p.2.2), by fun_prop⟩
   e := (HSpace.e, HSpace.e)
   hmul_e_e := by
-    simp only [ContinuousMap.coe_mk, Prod.mk.inj_iff]
+    simp only [ContinuousMap.coe_mk, Prod.mk_inj]
     exact ⟨HSpace.hmul_e_e, HSpace.hmul_e_e⟩
   eHmul := by
     let G : I × X × Y → X × Y := fun p => (HSpace.eHmul (p.1, p.2.1), HSpace.eHmul (p.1, p.2.2))
@@ -89,7 +88,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.eHmul.1.3 x) (HSpace.eHmul.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.eHmul.2 t x h.1) (HSpace.eHmul.2 t y h.2)
   hmulE := by
     let G : I × X × Y → X × Y := fun p => (HSpace.hmulE (p.1, p.2.1), HSpace.hmulE (p.1, p.2.2))
@@ -100,7 +99,7 @@ instance HSpace.prod (X : Type u) (Y : Type v) [TopologicalSpace X] [Topological
     · rintro ⟨x, y⟩
       exact Prod.ext (HSpace.hmulE.1.3 x) (HSpace.hmulE.1.3 y)
     · rintro t ⟨x, y⟩ h
-      replace h := Prod.mk.inj_iff.mp h
+      replace h := Prod.mk_inj.mp h
       exact Prod.ext (HSpace.hmulE.2 t x h.1) (HSpace.hmulE.2 t y h.2)
 
 
@@ -201,7 +200,7 @@ def delayReflRight (θ : I) (γ : Path x y) : Path x y where
 theorem continuous_delayReflRight : Continuous fun p : I × Path x y => delayReflRight p.1 p.2 :=
   continuous_uncurry_iff.mp <|
     (continuous_snd.comp continuous_fst).eval <|
-      continuous_qRight.comp <| continuous_snd.prod_mk <| continuous_fst.comp continuous_fst
+      continuous_qRight.comp <| continuous_snd.prodMk <| continuous_fst.comp continuous_fst
 
 theorem delayReflRight_zero (γ : Path x y) : delayReflRight 0 γ = γ.trans (Path.refl y) := by
   ext t
@@ -224,7 +223,7 @@ def delayReflLeft (θ : I) (γ : Path x y) : Path x y :=
 theorem continuous_delayReflLeft : Continuous fun p : I × Path x y => delayReflLeft p.1 p.2 :=
   Path.continuous_symm.comp <|
     continuous_delayReflRight.comp <|
-      continuous_fst.prod_mk <| Path.continuous_symm.comp continuous_snd
+      continuous_fst.prodMk <| Path.continuous_symm.comp continuous_snd
 
 theorem delayReflLeft_zero (γ : Path x y) : delayReflLeft 0 γ = (Path.refl x).trans γ := by
   simp only [delayReflLeft, delayReflRight_zero, trans_symm, refl_symm, Path.symm_symm]

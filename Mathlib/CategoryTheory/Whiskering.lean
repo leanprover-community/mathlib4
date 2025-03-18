@@ -227,10 +227,6 @@ instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso 
 
 variable {B : Type u₄} [Category.{v₄} B]
 
--- Porting note: it was `attribute [local elab_without_expected_type]`,
--- but now `elab_without_expected-type` must be global
-attribute [elab_without_expected_type] whiskerLeft whiskerRight
-
 @[simp]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) = whiskerLeft (F ⋙ G) α :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
 import Mathlib.Order.Hom.CompleteLattice
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Order.Lattice
 
 /-!
@@ -90,7 +90,6 @@ namespace WithLower
 
 lemma toLower_inj {a b : α} : toLower a = toLower b ↔ a = b := Iff.rfl
 
--- Porting note: removed @[simp] to make linter happy
 theorem ofLower_inj {a b : WithLower α} : ofLower a = ofLower b ↔ a = b :=
   Iff.rfl
 
@@ -247,9 +246,6 @@ instance _root_.OrderDual.instIsUpper [Preorder α] [TopologicalSpace α] [IsLow
 instance : ClosedIciTopology α :=
   ⟨fun a ↦ isOpen_compl_iff.1 <| isOpen_iff_generate_Ici_compl.2 <| GenerateOpen.basic _ ⟨a, rfl⟩⟩
 
--- Porting note: The old `IsLower.isClosed_Ici` was removed, since one can now use
--- the general `isClosed_Ici` lemma thanks to the instance above.
-
 /-- The upper closure of a finite set is closed in the lower topology. -/
 theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α) := by
   simp only [← UpperSet.iInf_Ici, UpperSet.coe_iInf]
@@ -257,7 +253,6 @@ theorem isClosed_upperClosure (h : s.Finite) : IsClosed (upperClosure s : Set α
 
 /-- Every set open in the lower topology is a lower set. -/
 theorem isLowerSet_of_isOpen (h : IsOpen s) : IsLowerSet s := by
-  -- Porting note: `rw` leaves a shadowed assumption
   replace h := isOpen_iff_generate_Ici_compl.1 h
   induction h with
   | basic u h' => obtain ⟨a, rfl⟩ := h'; exact (isUpperSet_Ici a).compl

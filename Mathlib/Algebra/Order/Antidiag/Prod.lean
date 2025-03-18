@@ -152,7 +152,7 @@ theorem filter_fst_eq_antidiagonal (n m : A) [DecidablePred (· = m)] [Decidable
   ext ⟨a, b⟩
   suffices a = m → (a + b = n ↔ m ≤ n ∧ b = n - m) by
     rw [mem_filter, mem_antidiagonal, apply_ite (fun n ↦ (a, b) ∈ n), mem_singleton,
-      Prod.mk.inj_iff, ite_prop_iff_or]
+      Prod.mk_inj, ite_prop_iff_or]
     simpa [← and_assoc, @and_right_comm _ (a = _), and_congr_left_iff]
   rintro rfl
   constructor

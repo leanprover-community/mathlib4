@@ -4,30 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.Data.Matrix.Basis
-import Mathlib.Data.Matrix.Composition
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.RingTheory.MatrixAlgebra
 import Mathlib.RingTheory.IsTensorProduct
 
 /-!
-# Algebra isomorphism between matrices of polynomials and polynomials of matrices
+# Base change of polynomial algebras
 
-Given `[CommSemiring R] [Semiring A] [Algebra R A]`
-we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
-Combining this with the isomorphism `Matrix n n A ≃ₐ[R] (A ⊗[R] Matrix n n R)` proved earlier
-in `RingTheory.MatrixAlgebra`, we obtain the algebra isomorphism
-```
-def matPolyEquiv :
-    Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X]
-```
-which is characterized by
-```
-coeff (matPolyEquiv m) k i j = coeff (m i j) k
-```
-
-We will use this algebra isomorphism to prove the Cayley-Hamilton theorem.
+Given `[CommSemiring R] [Semiring A] [Algebra R A]` we show `A[X] ≃ₐ[R] (A ⊗[R] R[X])`.
 -/
+
+-- This file should not become entangled with `RingTheory/MatrixAlgebra`.
+assert_not_exists Matrix
 
 universe u v w
 
@@ -202,124 +188,6 @@ def polyEquivTensor' : A[X] ≃ₐ[A] A ⊗[R] R[X] where
 
 end
 
-open DMatrix Matrix
-
-variable {R}
-variable {n : Type w} [DecidableEq n] [Fintype n]
-
-/--
-The algebra isomorphism stating "matrices of polynomials are the same as polynomials of matrices".
-
-(You probably shouldn't attempt to use this underlying definition ---
-it's an algebra equivalence, and characterised extensionally by the lemma
-`matPolyEquiv_coeff_apply` below.)
--/
-noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
-  ((matrixEquivTensor n R R[X]).trans (Algebra.TensorProduct.comm R _ _)).trans
-    (polyEquivTensor R (Matrix n n R)).symm
-
-@[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
-  simp [matPolyEquiv, ← C_eq_algebraMap]
-
-@[simp] theorem matPolyEquiv_map_C (M : Matrix n n R) : matPolyEquiv (M.map C) = C M := by
-  rw [← matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
-
-@[simp] theorem matPolyEquiv_symm_X :
-    matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
-  suffices (Matrix.map 1 fun x ↦ X * algebraMap R R[X] x) = diagonal fun _ : n => (X : R[X]) by
-    simpa [matPolyEquiv]
-  rw [← Matrix.diagonal_one]
-  simp [-Matrix.diagonal_one]
-
-@[simp] theorem matPolyEquiv_diagonal_X :
-    matPolyEquiv (diagonal fun _ : n => (X : R[X])) = X := by
-  rw [← matPolyEquiv_symm_X, AlgEquiv.apply_symm_apply]
-
-open Finset
-
-unseal Algebra.TensorProduct.mul in
-theorem matPolyEquiv_coeff_apply_aux_1 (i j : n) (k : ℕ) (x : R) :
-    matPolyEquiv (stdBasisMatrix i j <| monomial k x) = monomial k (stdBasisMatrix i j x) := by
-  simp only [matPolyEquiv, AlgEquiv.trans_apply, matrixEquivTensor_apply_stdBasisMatrix]
-  apply (polyEquivTensor R (Matrix n n R)).injective
-  simp only [AlgEquiv.apply_symm_apply,Algebra.TensorProduct.comm_tmul,
-    polyEquivTensor_apply, eval₂_monomial]
-  simp only [Algebra.TensorProduct.tmul_mul_tmul, one_pow, one_mul, Matrix.mul_one,
-    Algebra.TensorProduct.tmul_pow, Algebra.TensorProduct.includeLeft_apply]
-  rw [← smul_X_eq_monomial, ← TensorProduct.smul_tmul]
-  congr with i' <;> simp [stdBasisMatrix]
-
-theorem matPolyEquiv_coeff_apply_aux_2 (i j : n) (p : R[X]) (k : ℕ) :
-    coeff (matPolyEquiv (stdBasisMatrix i j p)) k = stdBasisMatrix i j (coeff p k) := by
-  refine Polynomial.induction_on' p ?_ ?_
-  · intro p q hp hq
-    ext
-    simp [hp, hq, coeff_add, DMatrix.add_apply, stdBasisMatrix_add]
-  · intro k x
-    simp only [matPolyEquiv_coeff_apply_aux_1, coeff_monomial]
-    split_ifs <;>
-      · funext
-        simp
-
-@[simp]
-theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
-    coeff (matPolyEquiv m) k i j = coeff (m i j) k := by
-  refine Matrix.induction_on' m ?_ ?_ ?_
-  · simp
-  · intro p q hp hq
-    simp [hp, hq]
-  · intro i' j' x
-    rw [matPolyEquiv_coeff_apply_aux_2]
-    dsimp [stdBasisMatrix]
-    split_ifs <;> rename_i h
-    · rcases h with ⟨rfl, rfl⟩
-      simp [stdBasisMatrix]
-    · simp [stdBasisMatrix, h]
-
-@[simp]
-theorem matPolyEquiv_symm_apply_coeff (p : (Matrix n n R)[X]) (i j : n) (k : ℕ) :
-    coeff (matPolyEquiv.symm p i j) k = coeff p k i j := by
-  have t : p = matPolyEquiv (matPolyEquiv.symm p) := by simp
-  conv_rhs => rw [t]
-  simp only [matPolyEquiv_coeff_apply]
-
-theorem matPolyEquiv_smul_one (p : R[X]) :
-    matPolyEquiv (p • (1 : Matrix n n R[X])) = p.map (algebraMap R (Matrix n n R)) := by
-  ext m i j
-  simp only [matPolyEquiv_coeff_apply, smul_apply, one_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero, coeff_map, algebraMap_matrix_apply, Algebra.id.map_eq_id, RingHom.id_apply]
-  split_ifs <;> simp
-
-@[simp]
-lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
-    matPolyEquiv (p • M) = p.map (algebraMap _ _) * matPolyEquiv M := by
-  rw [← one_mul M, ← smul_mul_assoc, _root_.map_mul, matPolyEquiv_smul_one, one_mul]
-
-theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
-    support (m i j) ⊆ support (matPolyEquiv m) := by
-  intro k
-  contrapose
-  simp only [not_mem_support_iff]
-  intro hk
-  rw [← matPolyEquiv_coeff_apply, hk]
-  rfl
-
-variable {A}
-/-- Extend a ring hom `A → Mₙ(R)` to a ring hom `A[X] → Mₙ(R[X])`. -/
-def RingHom.polyToMatrix (f : A →+* Matrix n n R) : A[X] →+* Matrix n n R[X] :=
-  matPolyEquiv.symm.toRingHom.comp (mapRingHom f)
-
-variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
-
-lemma evalRingHom_mapMatrix_comp_polyToMatrix :
-    (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by
-  ext <;> simp [RingHom.polyToMatrix, ← AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
-
-lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
-    (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =
-      (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
-  ext; simp
-
 /-- If `A` is an `R`-algebra, then `A[X]` is an `R[X]` algebra.
 This gives a diamond for `Algebra R[X] R[X][X]`, so this is not a global instance. -/
 @[reducible] def Polynomial.algebra : Algebra R[X] A[X] :=
@@ -330,7 +198,7 @@ attribute [local instance] Polynomial.algebra
 
 instance : IsScalarTower R R[X] A[X] := .of_algebraMap_eq' (mapRingHom_comp_C _).symm
 
-variable [Algebra R S]
+variable {S : Type*} [CommSemiring S] [Algebra R S]
 
 instance : Algebra.IsPushout R S R[X] S[X] := by
   constructor

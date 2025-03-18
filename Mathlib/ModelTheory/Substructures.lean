@@ -313,7 +313,7 @@ lemma mem_closure_iff_of_isRelational [L.IsRelational] (s : Set M) (m : M) :
   rw [← SetLike.mem_coe, closure_eq_of_isRelational]
 
 theorem _root_.Set.Countable.substructure_closure
-    [Countable (Σl, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
+    [Countable (Σ l, L.Functions l)] (h : s.Countable) : Countable.{w + 1} (closure L s) := by
   haveI : Countable s := h.to_subtype
   rw [← mk_le_aleph0_iff, ← lift_le_aleph0]
   exact lift_card_closure_le_card_term.trans mk_le_aleph0

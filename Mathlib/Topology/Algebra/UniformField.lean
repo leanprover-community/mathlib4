@@ -3,7 +3,7 @@ Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Field.Subfield.Basic
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
@@ -84,7 +84,9 @@ theorem continuous_hatInv [CompletableTopField K] {x : hat K} (h : x ≠ 0) :
   · have eq_bot : 𝓝 (0 : hat K) ⊓ 𝓝 y = ⊥ := by
       by_contra h
       exact y_ne (eq_of_nhds_neBot <| neBot_iff.mpr h).symm
-    erw [isDenseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf, eq_bot]
+    rw [isDenseInducing_coe.nhds_eq_comap (0 : K), ← Filter.comap_inf]
+    norm_cast
+    rw [eq_bot]
     exact comap_bot
 
 open Classical in

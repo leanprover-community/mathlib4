@@ -139,7 +139,6 @@ theorem convexJoin_convexJoin_convexJoin_comm (s t u v : Set E) :
       convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) := by
   simp_rw [← convexJoin_assoc, convexJoin_right_comm]
 
--- Porting note: moved 3 lemmas from below to golf
 protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
     Convex 𝕜 (convexJoin 𝕜 s t) := by
   simp only [Convex, StarConvex, convexJoin, mem_iUnion]
@@ -180,7 +179,5 @@ theorem convexJoin_segment_singleton (a b c : E) :
 theorem convexJoin_singleton_segment (a b c : E) :
     convexJoin 𝕜 {a} (segment 𝕜 b c) = convexHull 𝕜 {a, b, c} := by
   rw [← segment_same 𝕜, convexJoin_segments, insert_idem]
-
--- Porting note: moved 3 lemmas up to golf
 
 end LinearOrderedField

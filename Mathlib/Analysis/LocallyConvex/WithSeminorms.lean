@@ -560,9 +560,6 @@ theorem continuous_of_continuous_comp {q : SeminormFamily 𝕝₂ F ι'} [Topolo
 theorem continuous_iff_continuous_comp {q : SeminormFamily 𝕜₂ F ι'} [TopologicalSpace E]
     [IsTopologicalAddGroup E] [TopologicalSpace F] (hq : WithSeminorms q) (f : E →ₛₗ[σ₁₂] F) :
     Continuous f ↔ ∀ i, Continuous ((q i).comp f) :=
-    -- Porting note: if we *don't* use dot notation for `Continuous.comp`, Lean tries to show
-    -- continuity of `((q i).comp f) ∘ id` because it doesn't see that `((q i).comp f)` is
-    -- actually a composition of functions.
   ⟨fun h i => (hq.continuous_seminorm i).comp h, continuous_of_continuous_comp hq f⟩
 
 theorem continuous_from_bounded {p : SeminormFamily 𝕝 E ι} {q : SeminormFamily 𝕝₂ F ι'}

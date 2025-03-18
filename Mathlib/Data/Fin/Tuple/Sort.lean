@@ -47,8 +47,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`
-    dsimp only
+    -- Porting note: proof was `simp`
     rw [Prod.ext_iff]
     simp
 
@@ -62,7 +61,7 @@ def graphEquiv₁ (f : Fin n → α) : Fin n ≃ graph f where
     -- Porting note: was `simpa [graph] using h`
     simp only [graph, Finset.mem_image, Finset.mem_univ, true_and] at h
     obtain ⟨i', hi'⟩ := h
-    obtain ⟨-, rfl⟩ := Prod.mk.inj_iff.mp hi'
+    obtain ⟨-, rfl⟩ := Prod.mk_inj.mp hi'
     simpa
 
 @[simp]
@@ -104,7 +103,7 @@ variable {n : ℕ} {α : Type*}
 
 /-- If `f₀ ≤ f₁ ≤ f₂ ≤ ⋯` is a sorted `m`-tuple of elements of `α`, then for any `j : Fin m` and
 `a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
-theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_le_iff_apply_le_of_monotone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
   suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
@@ -121,7 +120,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
     have h_le : Fintype.card { i // f i ≤ a } ≤ m := by
       conv_rhs => rw [← Fintype.card_fin m]
       exact Fintype.card_subtype_le _
-    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_right_eq_self] at he
+    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_eq_left] at he
   intro _ h
   contrapose! h
   rw [← Fin.card_Iio, Fintype.card_subtype]
@@ -131,7 +130,7 @@ theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α 
   apply h
   exact (h_sorted (le_of_not_lt hij)).trans hia
 
-theorem lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α := α) LE.le]
+theorem lt_card_ge_iff_apply_ge_of_antitone [Preorder α] [DecidableLE α]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
     j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
   lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j

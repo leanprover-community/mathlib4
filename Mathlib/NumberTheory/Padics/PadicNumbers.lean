@@ -547,7 +547,6 @@ open PadicSeq
 
 variable {p : ℕ} [Fact p.Prime]
 
--- Porting note: Expanded `⟦f⟧` to `Padic.mk f`
 theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
   dsimp [padicNormE]
@@ -609,16 +608,14 @@ theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicN
     ⟨q' N, by
       classical
       dsimp [padicNormE]
-      -- Porting note: `change` → `convert_to` (`change` times out!)
-      -- and add `PadicSeq p` type annotation
-      convert_to PadicSeq.norm (q' - const _ (q' N) : PadicSeq p) < ε
+      -- Porting note: this used to be `change`, but that times out.
+      convert_to PadicSeq.norm (q' - const _ (q' N)) < ε
       rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
       · simpa only [heq, PadicSeq.norm, dif_pos]
       · simp only [PadicSeq.norm, dif_neg hne']
         change padicNorm p (q' _ - q' _) < ε
         rcases Decidable.em (stationaryPoint hne' ≤ N) with hle | hle
-        · -- Porting note: inlined `stationaryPoint_spec` invocation.
-          have := (stationaryPoint_spec hne' le_rfl hle).symm
+        · have := (stationaryPoint_spec hne' le_rfl hle).symm
           simp only [const_apply, sub_apply, padicNorm.zero, sub_self] at this
           simpa only [this]
         · exact hN _ (lt_of_not_ge hle).le _ le_rfl⟩
@@ -727,7 +724,7 @@ instance normedField : NormedField ℚ_[p] :=
   { Padic.field,
     Padic.metricSpace p with
     dist_eq := fun _ _ ↦ rfl
-    norm_mul' := by simp [Norm.norm, map_mul]
+    norm_mul := by simp [Norm.norm, map_mul]
     norm := norm }
 
 instance isAbsoluteValue : IsAbsoluteValue fun a : ℚ_[p] ↦ ‖a‖ where
@@ -883,8 +880,6 @@ end padicNormE
 namespace Padic
 
 variable {p : ℕ} [hp : Fact p.Prime]
-
--- Porting note: remove `set_option eqn_compiler.zeta true`
 
 instance complete : CauSeq.IsComplete ℚ_[p] norm where
   isComplete f := by

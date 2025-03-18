@@ -376,7 +376,7 @@ theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyW
       le_refl := refl_of r
       le_trans := fun _ _ _ => trans_of r }
   change s.WellFoundedOn (· < ·)
-  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- Porting note: was `change _ at h`
+  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h
   rw [wellFoundedOn_iff_no_descending_seq]
   intro f hf
   obtain ⟨m, n, hlt, hle⟩ := h f hf
@@ -813,11 +813,11 @@ theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
       · exact (hhc (g' 0)).symm.trans (hhc (g' 1))
       · exact hg' (Nat.zero_le 1)
 
-theorem imageProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
+theorem imageProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO :=
   IsPWO.image_of_monotone hαβ Prod.Lex.monotone_fst
 
-theorem fiberProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
+theorem fiberProdLex [Preorder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hαβ : s.IsPWO) (a : α) : {y | toLex (a, y) ∈ s}.IsPWO := by
   let f : α ×ₗ β → β := fun x => (ofLex x).2
   have h : {y | toLex (a, y) ∈ s} = f '' (s ∩ (fun x ↦ (ofLex x).1) ⁻¹' {a}) := by

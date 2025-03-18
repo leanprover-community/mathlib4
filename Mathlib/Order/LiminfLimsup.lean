@@ -470,26 +470,26 @@ theorem bddBelow_range_of_tendsto_atTop_atTop [IsDirected α (· ≥ ·)] {u : �
 
 end Nonempty
 
-theorem isCobounded_le_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
+theorem isCobounded_le_of_bot [LE α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
   ⟨⊥, fun _ _ => bot_le⟩
 
-theorem isCobounded_ge_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.IsCobounded (· ≥ ·) :=
+theorem isCobounded_ge_of_top [LE α] [OrderTop α] {f : Filter α} : f.IsCobounded (· ≥ ·) :=
   ⟨⊤, fun _ _ => le_top⟩
 
-theorem isBounded_le_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.IsBounded (· ≤ ·) :=
+theorem isBounded_le_of_top [LE α] [OrderTop α] {f : Filter α} : f.IsBounded (· ≤ ·) :=
   ⟨⊤, Eventually.of_forall fun _ => le_top⟩
 
-theorem isBounded_ge_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsBounded (· ≥ ·) :=
+theorem isBounded_ge_of_bot [LE α] [OrderBot α] {f : Filter α} : f.IsBounded (· ≥ ·) :=
   ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
 
 @[simp]
-theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_le_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
     exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
 
 @[simp]
-theorem _root_.OrderIso.isBoundedUnder_ge_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≥ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≥ ·) l u :=
   OrderIso.isBoundedUnder_le_comp e.dual
 
@@ -548,18 +548,11 @@ macro "isBoundedDefault" : tactic =>
     | apply isBounded_ge_of_bot
     | assumption)
 
--- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
--- unsafe def is_bounded_default : tactic Unit :=
---   tactic.applyc `` is_cobounded_le_of_bot <|>
---     tactic.applyc `` is_cobounded_ge_of_top <|>
---       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
-
 
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 
--- Porting note: Renamed from Limsup and Liminf to limsSup and limsInf
 /-- The `limsSup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
 holds `x ≤ a`. -/
 def limsSup (f : Filter α) : α :=
@@ -1592,7 +1585,6 @@ theorem OrderIso.limsup_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
   rw [← g.symm.symm_apply_apply <| limsup (fun x => g (u x)) f, g.symm_symm]
   refine g.monotone ?_
   have hf : u = fun i => g.symm (g (u i)) := funext fun i => (g.symm_apply_apply (u i)).symm
-  -- Porting note: nth_rw 1 to nth_rw 2
   nth_rw 2 [hf]
   refine (OrderIso.to_galoisConnection g.symm).l_limsup_le ?_ hgu_co
   simp_rw [g.symm_apply_apply]

@@ -11,16 +11,7 @@ import Mathlib.Order.Synonym
 
 This file proves additional properties about the *canonical* homomorphism from
 the natural numbers into an additive monoid with a one (`Nat.cast`).
-
-## Main declarations
-
-* `castAddMonoidHom`: `cast` bundled as an `AddMonoidHom`.
-* `castRingHom`: `cast` bundled as a `RingHom`.
 -/
-
--- Porting note: There are many occasions below where we need `simp [map_zero f]`
--- where `simp [map_zero]` should suffice. (Similarly for `map_one`.)
--- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simp.20regression.20with.20MonoidHomClass
 
 variable {α : Type*}
 

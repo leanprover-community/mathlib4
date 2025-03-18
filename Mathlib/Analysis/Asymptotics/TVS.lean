@@ -195,7 +195,7 @@ lemma IsLittleOTVS.bot : f =o[𝕜;⊥] g :=
 
 theorem IsLittleOTVS.add [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
+    (h₁ : f₁ =o[𝕜;l] g) (h₂ : f₂ =o[𝕜;l] g) : (f₁ + f₂) =o[𝕜;l] g := by
   rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff (basis_sets _)]
   rintro U ⟨hU, hUb⟩
   rcases ((h₁.eventually_smallSets U hU).and (h₂.eventually_smallSets U hU)).exists_mem_of_smallSets

@@ -445,6 +445,9 @@ theorem mult_pos {w : InfinitePlace K} : 0 < mult w := by
 @[simp]
 theorem mult_ne_zero {w : InfinitePlace K} : mult w ≠ 0 := ne_of_gt mult_pos
 
+theorem mult_coe_ne_zero {w : InfinitePlace K} : (mult w : ℝ) ≠ 0 :=
+  Nat.cast_ne_zero.mpr mult_ne_zero
+
 theorem one_le_mult {w : InfinitePlace K} : (1 : ℝ) ≤ mult w := by
   rw [← Nat.cast_one, Nat.cast_le]
   exact mult_pos
@@ -515,7 +518,7 @@ theorem prod_eq_abs_norm (x : K) :
   classical
   convert (congr_arg (‖·‖) (@Algebra.norm_eq_prod_embeddings ℚ _ _ _ _ ℂ _ _ _ _ _ x)).symm
   · rw [norm_prod, ← Fintype.prod_equiv RingHom.equivRatAlgHom (fun f => ‖f x‖)
-      (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]; rfl]
+      (fun φ => ‖φ x‖) fun _ => by simp [RingHom.equivRatAlgHom_apply]]
     rw [← Finset.prod_fiberwise Finset.univ mk (fun φ => ‖φ x‖)]
     have (w : InfinitePlace K) (φ) (hφ : φ ∈ ({φ | mk φ = w} : Finset _)) :
         ‖φ x‖ = w x := by rw [← (Finset.mem_filter.mp hφ).2, apply]
@@ -544,7 +547,8 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
   · intro ψ hψ
     have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
-      erw [← norm_embedding_eq, hψ] at h
+      simp at hψ
+      rw [← norm_embedding_eq, hψ] at h
       contrapose! h
       exact h₂ h.symm
     rw [(mk_embedding w).symm, mk_eq_iff] at main
@@ -555,7 +559,10 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
     | inr hw =>
       refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
       have : (embedding w x).im = 0 := by
-        erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
+        rw [← Complex.conj_eq_iff_im]
+        have := RingHom.congr_fun h' x
+        simp at this
+        rw [this]
         exact hψ.symm
       rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
         zero_mul, add_zero, Complex.norm_real] at h
@@ -982,7 +989,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
-  · simp [isUnramifiedIn_comap]
+  · simp [Set.MapsTo, isUnramifiedIn_comap]
 
 open Finset in
 open scoped Classical in
@@ -1005,7 +1012,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
-  · simp [isUnramifiedIn_comap]
+  · simp [Set.MapsTo, isUnramifiedIn_comap]
 
 open scoped Classical in
 lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :

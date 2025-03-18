@@ -285,7 +285,10 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   refine hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 ?_)
   refine HasSum.sigma_of_hasSum
     (p.hasSum x_add_y_mem_ball) (fun n => ?_) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)
-  erw [(p n).map_add_univ (fun _ => x) fun _ => y]
+  -- We use a type ascription here to convert the sum of two constant functions into
+  -- a single constant function. Can this be done by an explicit rewrite?
+  have : (p n) (fun _ => x + y) = _ := (p n).map_add_univ (fun _ => x) fun _ => y
+  rw [this]
   simp_rw [← changeOriginSeriesTerm_changeOriginIndexEquiv_symm]
   exact hasSum_fintype (fun c => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
 

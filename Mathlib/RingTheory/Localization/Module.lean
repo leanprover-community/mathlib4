@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
 -/
 import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -201,6 +201,22 @@ def LinearMap.extendScalarsOfIsLocalizationEquiv : (M →ₗ[R] N) ≃ₗ[A] (M 
   left_inv := by intros _; ext; simp
   right_inv := by intros _; ext; simp
 
+/-- An `R`-linear isomorphism between `S⁻¹R`-modules is actually `S⁻¹R`-linear. -/
+@[simps!]
+def LinearEquiv.extendScalarsOfIsLocalization (f : M ≃ₗ[R] N) : M ≃ₗ[A] N :=
+  .ofLinear (LinearMap.extendScalarsOfIsLocalization S A f)
+    (LinearMap.extendScalarsOfIsLocalization S A f.symm)
+    (by ext; simp) (by ext; simp)
+
+/-- The `S⁻¹R`-linear isomorphisms between two `S⁻¹R`-modules are exactly the `R`-linear
+isomorphisms. -/
+@[simps]
+def LinearEquiv.extendScalarsOfIsLocalizationEquiv : (M ≃ₗ[R] N) ≃ M ≃ₗ[A] N where
+  toFun e := e.extendScalarsOfIsLocalization S A
+  invFun e := e.restrictScalars R
+  left_inv e := by ext; simp
+  right_inv e := by ext; simp
+
 end
 
 end Localization
@@ -221,6 +237,22 @@ variable [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S R
 noncomputable
 def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
   ((LinearMap.extendScalarsOfIsLocalizationEquiv S Rₛ).restrictScalars R).toLinearMap ∘ₗ map S f g
+
+/-- An `R`-module isomorphism `M ≃ₗ[R] N` gives an `Rₛ`-module isomorphism `Mₛ ≃ₗ[Rₛ] Nₛ`. -/
+@[simps!]
+noncomputable
+def mapEquiv (e : M ≃ₗ[R] N) : M' ≃ₗ[Rₛ] N' :=
+  LinearEquiv.ofLinear
+    (IsLocalizedModule.mapExtendScalars S f g Rₛ e)
+    (IsLocalizedModule.mapExtendScalars S g f Rₛ e.symm)
+    (by
+      apply LinearMap.restrictScalars_injective R
+      apply IsLocalizedModule.linearMap_ext S g g
+      ext; simp)
+    (by
+      apply LinearMap.restrictScalars_injective R
+      apply IsLocalizedModule.linearMap_ext S f f
+      ext; simp)
 
 end IsLocalizedModule
 

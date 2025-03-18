@@ -84,8 +84,7 @@ namespace Compactum
 
 /-- The forgetful functor to Type* -/
 def forget : Compactum ⥤ Type* :=
-  Monad.forget _ --deriving CreatesLimits, Faithful
-  -- Porting note: deriving fails, adding manually. Note `CreatesLimits` now noncomputable
+  Monad.forget _
 
 instance : forget.Faithful :=
   show (Monad.forget _).Faithful from inferInstance

@@ -43,7 +43,7 @@ variable {G G₀ α : Type*} [MeasurableSpace G] [MeasurableSpace G₀] [Measura
 
 /-- If a group `G` acts on `α` by measurable maps, then each element `c : G` defines a measurable
 automorphism of `α`. -/
-@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
+@[to_additive (attr := simps! -fullyApplied toEquiv apply)
       "If an additive group `G` acts on `α` by measurable maps, then each element `c : G`
       defines a measurable automorphism of `α`." ]
 def smul (c : G) : α ≃ᵐ α where
@@ -176,7 +176,7 @@ theorem toEquiv_mulRight₀ {g : G₀} (hg : g ≠ 0) : (mulRight₀ g hg).toEqu
 end Mul
 
 /-- Inversion as a measurable automorphism of a group or group with zero. -/
-@[to_additive (attr := simps! (config := .asFn) toEquiv apply)
+@[to_additive (attr := simps! -fullyApplied toEquiv apply)
     "Negation as a measurable automorphism of an additive group."]
 def inv (G) [MeasurableSpace G] [InvolutiveInv G] [MeasurableInv G] : G ≃ᵐ G where
   toEquiv := Equiv.inv G

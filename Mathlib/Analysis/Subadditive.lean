@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Order.Filter.AtTopBot.Archimedean
-import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Order.Filter.AtTopBot.Finite
+import Mathlib.Order.Filter.AtTopBot.Prod
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Convergence of subadditive sequences
@@ -34,7 +36,7 @@ variable {u : ℕ → ℝ} (h : Subadditive u)
 
 /-- The limit of a bounded-below subadditive sequence. The fact that the sequence indeed tends to
 this limit is given in `Subadditive.tendsto_lim` -/
-@[nolint unusedArguments] -- Porting note: was irreducible
+@[nolint unusedArguments, irreducible]
 protected def lim (_h : Subadditive u) :=
   sInf ((fun n : ℕ => u n / n) '' Ici 1)
 

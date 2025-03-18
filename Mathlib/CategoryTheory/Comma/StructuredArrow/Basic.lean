@@ -422,7 +422,6 @@ theorem mk_right (f : S.obj Y ⟶ T) : (mk f).right = ⟨⟨⟩⟩ :=
 theorem mk_hom_eq_self (f : S.obj Y ⟶ T) : (mk f).hom = f :=
   rfl
 
--- @[reassoc (attr := simp)] Porting note: simp can solve these
 @[reassoc]
 theorem w {A B : CostructuredArrow S T} (f : A ⟶ B) : S.map f.left ≫ B.hom = A.hom := by simp
 

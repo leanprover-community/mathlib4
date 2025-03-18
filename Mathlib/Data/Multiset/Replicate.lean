@@ -69,7 +69,6 @@ theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replica
   (replicate_right_injective h).eq_iff
 
 theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
-  -- Porting note: was `fun m n h => by rw [← (eq_replicate.1 h).1, card_replicate]`
   LeftInverse.injective (card_replicate · a)
 
 theorem replicate_subset_singleton (n : ℕ) (a : α) : replicate n a ⊆ {a} :=
@@ -147,5 +146,27 @@ theorem rel_replicate_right {m : Multiset α} {a : α} {r : α → α → Prop} 
   rel_flip.trans rel_replicate_left
 
 end Rel
+
+section Replicate
+
+variable {r : α → α → Prop} {s : Multiset α}
+
+theorem nodup_iff_le {s : Multiset α} : Nodup s ↔ ∀ a : α, ¬a ::ₘ a ::ₘ 0 ≤ s :=
+  Quot.induction_on s fun _ =>
+    nodup_iff_sublist.trans <| forall_congr' fun a => not_congr (@replicate_le_coe _ a 2 _).symm
+
+theorem nodup_iff_ne_cons_cons {s : Multiset α} : s.Nodup ↔ ∀ a t, s ≠ a ::ₘ a ::ₘ t :=
+  nodup_iff_le.trans
+    ⟨fun h a _ s_eq => h a (s_eq.symm ▸ cons_le_cons a (cons_le_cons a (zero_le _))), fun h a le =>
+      let ⟨t, s_eq⟩ := le_iff_exists_add.mp le
+      h a t (by rwa [cons_add, cons_add, Multiset.zero_add] at s_eq)⟩
+
+theorem nodup_iff_pairwise {α} {s : Multiset α} : Nodup s ↔ Pairwise (· ≠ ·) s :=
+  Quotient.inductionOn s fun _ => (pairwise_coe_iff_pairwise fun _ _ => Ne.symm).symm
+
+protected theorem Nodup.pairwise : (∀ a ∈ s, ∀ b ∈ s, a ≠ b → r a b) → Nodup s → Pairwise r s :=
+  Quotient.inductionOn s fun l h hl => ⟨l, rfl, hl.imp_of_mem fun {a b} ha hb => h a ha b hb⟩
+
+end Replicate
 
 end Multiset

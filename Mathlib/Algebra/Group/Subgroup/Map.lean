@@ -376,7 +376,11 @@ defined by sending subgroups to their inverse images.
 
 See also `MulEquiv.mapSubgroup` which maps subgroups to their forward images.
 -/
-@[simps]
+@[to_additive (attr := simps)
+"An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their inverse images.
+
+See also `AddEquiv.mapAddSubgroup` which maps subgroups to their forward images."]
 def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
   toFun := Subgroup.comap f
   invFun := Subgroup.comap f.symm
@@ -386,13 +390,23 @@ def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
     ⟨fun h => by simpa [Subgroup.comap_comap] using
       Subgroup.comap_mono (f := (f.symm : H →* G)) h, Subgroup.comap_mono⟩
 
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_comapSubgroup (e : G ≃* H) : comapSubgroup e = Subgroup.comap e.toMonoidHom := rfl
+
+@[to_additive (attr := simp)]
+lemma symm_comapSubgroup (e : G ≃* H) : (comapSubgroup e).symm = comapSubgroup e.symm := rfl
+
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their forward images.
 
 See also `MulEquiv.comapSubgroup` which maps subgroups to their inverse images.
 -/
-@[simps]
+@[to_additive (attr := simps)
+"An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their forward images.
+
+See also `AddEquiv.comapAddSubgroup` which maps subgroups to their inverse images."]
 def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup H where
   toFun := Subgroup.map f
   invFun := Subgroup.map f.symm
@@ -402,6 +416,12 @@ def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup 
     ⟨fun h => by simpa [Subgroup.map_map] using
       Subgroup.map_mono (f := (f.symm : H →* G)) h, Subgroup.map_mono⟩
 
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mapSubgroup (e : G ≃* H) : mapSubgroup e = Subgroup.map e.toMonoidHom := rfl
+
+@[to_additive (attr := simp)]
+lemma symm_mapSubgroup (e : G ≃* H) : (mapSubgroup e).symm = mapSubgroup e.symm := rfl
+
 end MulEquiv
 
 namespace Subgroup
@@ -409,6 +429,10 @@ namespace Subgroup
 open MonoidHom
 
 variable {N : Type*} [Group N] (f : G →* N)
+
+@[to_additive (attr := simp, norm_cast)]
+lemma comap_toSubmonoid (e : G ≃* N) (s : Subgroup N) :
+    (s.comap e).toSubmonoid = s.toSubmonoid.comap e.toMonoidHom := rfl
 
 @[to_additive]
 theorem map_comap_le (H : Subgroup N) : map f (comap f H) ≤ H :=

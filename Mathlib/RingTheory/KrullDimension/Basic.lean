@@ -63,6 +63,22 @@ theorem ringKrullDim_eq_of_ringEquiv (e : R ≃+* S) :
 
 alias RingEquiv.ringKrullDim := ringKrullDim_eq_of_ringEquiv
 
+/-- A ring has finite Krull dimension if its `PrimeSpectrum` is
+finite-dimensional (and non-empty). -/
+abbrev FiniteRingKrullDim (R : Type*) [CommSemiring R] :=
+  FiniteDimensionalOrder (PrimeSpectrum R)
+
+lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :
+    ringKrullDim R ≠ ⊤ :=
+  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
+
+lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
+    ringKrullDim R < ⊤ := ringKrullDim_ne_top.lt_top
+
+lemma finiteRingKrullDim_iff_ne_bot_and_top :
+    FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
+  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
+
 proof_wanted Polynomial.ringKrullDim_le :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1
 
