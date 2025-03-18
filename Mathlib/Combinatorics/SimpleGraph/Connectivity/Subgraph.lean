@@ -401,6 +401,13 @@ open Finset
 
 variable [DecidableEq V] {u v : V} {p : G.Walk u v}
 
+/-- This lemma states that given some finite set of vertices, of which is in the support of a walk,
+one of them is the first to be encountered. This consequence is encoded as the set of vertices,
+execept for the first, which are also in the support, being empty.  You could interpret this as
+being `takeUntilSet`, but defining this is slightly involved due to not knowing what the final
+vertex is. This could be done by defining a function to obtain the first encountered vertex
+and then use that to define `takeUntilSet`. That direction could be worthwhile if this concept
+is used a lot more widely. -/
 lemma exists_mem_support_mem_erase_mem_support_takeUntil_eq_empty (s : Finset V)
     (h : {x ∈ s | x ∈ p.support}.Nonempty) :
     ∃ x ∈ s, ∃ hx : x ∈ p.support, {t ∈ s.erase x | t ∈ (p.takeUntil x hx).support} = ∅ := by
@@ -443,7 +450,7 @@ lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil (s : Finset V)
   rw [h t ht (Subgraph.edge_vert _ h'), h w hw (Subgraph.edge_vert _ h'.symm)]
 
 lemma exists_mem_support_forall_not_adj_toSubgraph_takeUntil' {s : Set V} (hs : s.Finite)
-    (h : (s ∩ p.support.toFinset).Nonempty) :
+    (h : {x ∈ s | x ∈ p.support}.Nonempty) :
     ∃ x ∈ s, ∃ (hx : x ∈ p.support),
       ∀ t ∈ s, ∀ w ∈ s, ¬(p.takeUntil x hx).toSubgraph.Adj t w := by
   have : (filter (fun x ↦ x ∈ p.support) hs.toFinset).Nonempty := by
