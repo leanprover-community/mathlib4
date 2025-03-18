@@ -115,7 +115,7 @@ lemma equivHom_inj [Nontrivial k] [DecidableEq G] : Function.Injective (equivHom
   simp_all [single_apply]
 
 /-- The `FDRep k G` morphism induced by multiplication on `G → k`. -/
-def mulRepHom : (rightFDRep : FDRep k G) ⊗ rightFDRep ⟶ rightFDRep where
+def mulRepHom : rightFDRep (k := k) (G := G) ⊗ rightFDRep ⟶ rightFDRep where
   hom := ofHom (LinearMap.mul' k (G → k))
   comm := by
     intro
