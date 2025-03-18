@@ -149,13 +149,9 @@ See `MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd` for the analogous
 statement for meromorphic functions in normal form.
 -/
 theorem eventuallyEq_nhdNE_iff_eventuallyEq_nhd (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-    f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g := by
-  constructor
-  · intro hfg
-    rcases ((hf.sub hg).eventually_eq_zero_or_eventually_ne_zero) with h | h
-    · exact Filter.eventuallyEq_iff_sub.2 h
-    · simpa using (Filter.eventually_and.2 ⟨Filter.eventuallyEq_iff_sub.mp hfg, h⟩).exists
-  · exact (Filter.EventuallyEq.filter_mono · nhdsWithin_le_nhds)
+    f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g :=
+  ContinousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE
+    hf.continuousAt hg.continuousAt (NormedField.nhdsNE_neBot z₀)
 
 /-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a punctured
 neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
