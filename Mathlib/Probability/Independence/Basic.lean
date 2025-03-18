@@ -65,8 +65,6 @@ when defining `μ` in the example above, the measurable space used is the last o
 Part A, Chapter 4.
 -/
 
-assert_not_exists MeasureTheory.Integrable
-
 open MeasureTheory MeasurableSpace Set
 
 open scoped MeasureTheory ENNReal
@@ -722,11 +720,9 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun f μ)
 lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (f i * f j) (f k) μ := by
-  have : iIndepFun (fun i ↦ (hf_meas i).mk) μ :=
-    iIndepFun.congr hf_indep (fun i ↦ (hf_meas i).ae_eq_mk)
-  apply IndepFun.congr (this.indepFun_mul_left (fun i ↦ (hf_meas i).measurable_mk) i j k hik hjk)
-  · exact ((hf_meas i).ae_eq_mk.mul (hf_meas j).ae_eq_mk).symm
-  · exact ((hf_meas k).ae_eq_mk).symm
+  refine Kernel.iIndepFun.indepFun_mul_left₀ hf_indep ?_ i j k hik hjk
+  convert hf_meas
+  simp
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun f μ)

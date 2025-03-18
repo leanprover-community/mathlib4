@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Kernel.Basic
+import Mathlib.Probability.Kernel.Composition.MeasureComp
 import Mathlib.Tactic.Peel
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
@@ -946,6 +947,19 @@ lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)
   simp_rw [Set.preimage_comp]
   exact ha
 
+lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
+    (h : iIndepFun f κ μ) (g : ∀ i, β i → γ i)
+    (hf : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (hg : ∀ i, AEMeasurable (g i) ((κ ∘ₘ μ).map (f i))) :
+    iIndepFun (fun i ↦ g i ∘ f i) κ μ := by
+  have h : iIndepFun (fun i ↦ ((hg i).mk (g i)) ∘ f i) κ μ :=
+    iIndepFun.comp h (fun i ↦ (hg i).mk (g i)) fun i ↦ (hg i).measurable_mk
+  have h_ae i := ae_of_ae_map (hf i) (hg i).ae_eq_mk
+  refine iIndepFun.congr' h fun i ↦ ?_
+  filter_upwards [Measure.ae_ae_of_ae_comp (h_ae i)] with a ha
+  filter_upwards [ha] with ω hω
+  simpa [Function.comp_apply] using hω.symm
+
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g κ μ ↔
@@ -979,6 +993,29 @@ theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   apply hfg
   · exact ⟨φ ⁻¹' A, hφ hA, Set.preimage_comp.symm⟩
   · exact ⟨ψ ⁻¹' B, hψ hB, Set.preimage_comp.symm⟩
+
+theorem IndepFun.comp₀ {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+    {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
+    (hfg : IndepFun f g κ μ)
+    (hf : AEMeasurable f (κ ∘ₘ μ)) (hg : AEMeasurable g (κ ∘ₘ μ))
+    (hφ : AEMeasurable φ ((κ ∘ₘ μ).map f)) (hψ : AEMeasurable ψ ((κ ∘ₘ μ).map g)) :
+    IndepFun (φ ∘ f) (ψ ∘ g) κ μ := by
+  have h : IndepFun ((hφ.mk φ) ∘ (hf.mk f)) ((hψ.mk ψ) ∘ (hg.mk g)) κ μ := by
+    refine IndepFun.comp ?_ hφ.measurable_mk hψ.measurable_mk
+    exact hfg.congr' (Measure.ae_ae_of_ae_comp hf.ae_eq_mk) (Measure.ae_ae_of_ae_comp hg.ae_eq_mk)
+  have hφ_ae := ae_of_ae_map hf hφ.ae_eq_mk
+  have hψ_ae := ae_of_ae_map hg hψ.ae_eq_mk
+  refine IndepFun.congr' h ?_ ?_
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hφ_ae), Measure.ae_ae_of_ae_comp hf.ae_eq_mk]
+      with a haφ haf
+    filter_upwards [haφ, haf] with ω hωφ hωf
+    simp only [Function.comp_apply]
+    rw [← hωf, ← hωφ]
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hψ_ae), Measure.ae_ae_of_ae_comp hg.ae_eq_mk]
+      with a haψ hag
+    filter_upwards [haψ, hag] with ω hωψ hωg
+    simp only [Function.comp_apply]
+    rw [← hωg, ← hωψ]
 
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : IndepFun f g κ μ) :
@@ -1091,6 +1128,17 @@ theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
   · refine Finset.prod_congr rfl fun i hi => ?_
     rw [h_sets_s'_univ hi, Set.univ_inter]
 
+theorem iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T)
+    (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) :
+    IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) κ μ := by
+  have h : IndepFun (fun a (i : S) ↦ (hf_meas i).mk (f i) a)
+      (fun a (i : T) ↦ (hf_meas i).mk (f i) a) κ μ := by
+    refine iIndepFun.indepFun_finset S T hST ?_ fun i ↦ (hf_meas i).measurable_mk
+    exact iIndepFun.congr' hf_Indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
+  refine IndepFun.congr' h ?_ ?_
+  · sorry
+  · sorry
+
 theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a => (f i a, f j a)) (f k) κ μ := by
@@ -1150,6 +1198,22 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun f κ μ)
   have : IndepFun (fun ω => (f i ω, f j ω)) (f k) κ μ :=
     hf_indep.indepFun_prodMk hf_meas i j k hik hjk
   simpa using this.comp (measurable_fst.mul measurable_snd) measurable_id
+
+@[to_additive]
+lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
+    (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
+    IndepFun (f i * f j) (f k) κ μ := by
+  have h : IndepFun ((hf_meas i).mk (f i) * (hf_meas j).mk (f j)) ((hf_meas k).mk (f k)) κ μ := by
+    refine iIndepFun.indepFun_mul_left ?_ (fun i ↦ (hf_meas i).measurable_mk) _ _ _ hik hjk
+    exact iIndepFun.congr' hf_indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
+  refine IndepFun.congr' h ?_ ?_
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk,
+      Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk] with a hi hj
+    filter_upwards [hi, hj] with ω hωi hωj
+    simp only [Pi.mul_apply]
+    rw [← hωi, ← hωj]
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk] with a hk
+    filter_upwards [hk] with ω hωk using by rw [hωk]
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun f κ μ)
