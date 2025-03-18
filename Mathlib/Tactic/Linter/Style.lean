@@ -493,7 +493,7 @@ def extractOpenNames : Syntax → Array (TSyntax `ident)
     | `(openDecl| $arg ($_*))         => #[arg]
     | `(openDecl| $args*)             => args
     | `(openDecl| scoped $args*)      => args
-    | _ => panic! "`openClassical` linter: unexpected openDecl syntax!"
+    | _ => unreachable! -- "`openClassical` linter: unexpected openDecl syntax!"
   | _ => #[]
 
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
