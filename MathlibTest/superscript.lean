@@ -117,6 +117,15 @@ private abbrev ID {γ : Sort u} := @id γ
 
 variable (n : String)
 
+/-- info: checkSubscript testsub(₁) : Unit -/
+#guard_msgs in #check checkSubscript (checkSubscript 1)
+/-- info: testsub(testsup(¹)) : Unit -/
+#guard_msgs in #check checkSubscript (checkSuperscript 1)
+/-- info: testsup(testsup(¹)) : Unit -/
+#guard_msgs in #check checkSuperscript (checkSuperscript 1)
+/-- info: testsup(testsub(₁)) : Unit -/
+#guard_msgs in #check checkSuperscript (checkSubscript 1)
+
 section subscript
 
 /-- info: testsub(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀) : Unit -/
