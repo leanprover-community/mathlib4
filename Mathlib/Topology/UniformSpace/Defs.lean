@@ -255,7 +255,7 @@ theorem IsSymmetricRel.iInter {U : (i : ι) → Set (α × α)} (hU : ∀ i, IsS
   intro
   exact (hU _).mk_mem_comm
 
-lemma IsSymmetricRel.preimage_map {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
+lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext <| fun _ ↦ ht.mk_mem_comm
 

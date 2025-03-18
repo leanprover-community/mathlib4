@@ -35,8 +35,8 @@ lemma IsUltraUniformity.comap {u : UniformSpace Y} (h : IsUltraUniformity Y) (f 
     @IsUltraUniformity _ (u.comap f) := by
   letI := u.comap f
   refine .mk_of_hasBasis (h.hasBasis.comap (Prod.map f f)) ?_ ?_
-  · exact fun _ ⟨_, hU, _⟩ ↦ hU.preimage_map f
-  · exact fun _ ⟨_, _, hU⟩ ↦ hU.preimage_map f
+  · exact fun _ ⟨_, hU, _⟩ ↦ hU.preimage_prodMap f
+  · exact fun _ ⟨_, _, hU⟩ ↦ hU.preimage_prodMap f
 
 lemma IsUltraUniformity.inf {u u' : UniformSpace X} (h : @IsUltraUniformity _ u)
     (h' : @IsUltraUniformity _ u') :

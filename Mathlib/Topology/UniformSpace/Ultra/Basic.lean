@@ -84,7 +84,7 @@ lemma IsTransitiveRel.iInter {ι : Type*} {U : (i : ι) → Set (X × X)}
   intro i
   exact hU i (h i) (h' i)
 
-lemma IsTransitiveRel.preimage_map {Y : Type*} {t : Set (Y × Y)}
+lemma IsTransitiveRel.preimage_prodMap {Y : Type*} {t : Set (Y × Y)}
     (ht : IsTransitiveRel t) (f : X → Y) :
     IsTransitiveRel (Prod.map f f ⁻¹' t) :=
   fun _ _ _ h h' ↦ ht h h'
