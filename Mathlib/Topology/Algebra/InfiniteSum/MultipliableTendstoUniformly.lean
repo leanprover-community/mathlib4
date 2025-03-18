@@ -26,11 +26,11 @@ open scoped Interval Topology BigOperators Nat Classical Complex
 variable {α β ι : Type*}
 
 @[to_additive] --what do I call this?
-lemma TendstoUniformlyOn_Eventually_le_mul_const [UniformSpace β] [Group β]
+lemma TendstoUniformlyOn_Eventually_lt_mul_const [UniformSpace β] [Group β]
     [UniformGroup β] [LinearOrder β] [OrderTopology β] [MulLeftStrictMono β] [MulRightMono β]
     (f : ι → α → β)  {p : Filter ι} {g : α → β} {K : Set α} {T V : β} (htv : T < V)
     (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → g x ≤ T) :
-    ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x ≤ V := by
+    ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x < V := by
   rw [@tendstoUniformlyOn_iff_tendsto] at hf
   simp only [uniformity_eq_comap_inv_mul_nhds_one, tendsto_iff_eventually, eventually_comap,
     Prod.forall, uniformContinuous_def, mem_comap, forall_exists_index, and_imp] at *
@@ -43,7 +43,18 @@ lemma TendstoUniformlyOn_Eventually_le_mul_const [UniformSpace β] [Group β]
   rw [eventually_prod_principal_iff, eventually_iff_exists_mem] at *
   obtain ⟨v, hv, H⟩ := hf2
   refine ⟨v, hv, fun y hy x hx => ?_⟩
-  simpa using (mul_lt_mul_of_le_of_lt (hg x hx) (H y hy x hx)).le
+  simpa using (mul_lt_mul_of_le_of_lt (hg x hx) (H y hy x hx))
+
+@[to_additive] --what do I call this? and is there an easier way to get this from the above?
+lemma TendstoUniformlyOn_Eventually_le_mul_const [UniformSpace β] [Group β]
+    [UniformGroup β] [LinearOrder β] [OrderTopology β] [MulLeftStrictMono β] [MulRightMono β]
+    (f : ι → α → β)  {p : Filter ι} {g : α → β} {K : Set α} {T V : β} (htv : T < V)
+    (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → g x ≤ T) :
+    ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x ≤ V := by
+    have := TendstoUniformlyOn_Eventually_lt_mul_const f htv hf hg
+    rw [eventually_iff_exists_mem] at *
+    obtain ⟨v, hv, H⟩ := this
+    refine ⟨v, hv, fun n hn x hx => (H n hn x hx).le⟩
 
 lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
     {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : BddAbove ((fun x => (g x).re) '' K)) :
