@@ -445,4 +445,33 @@ note: this linter can be disabled with `set_option linter.style.openClassical fa
 open scoped Classical in
 def baz : Nat := 1
 
+-- FUTURE: after one `open Classical` statement, the linter does not fire on subsequent declarations
+
+/--
+warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
+Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
+For theorem statements, either add missing decidability assumptions or use `open Classical in`.
+note: this linter can be disabled with `set_option linter.style.openClassical false`
+-/
+#guard_msgs in
+open Classical
+
+/--
+warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
+Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
+For theorem statements, either add missing decidability assumptions or use `open Classical in`.
+note: this linter can be disabled with `set_option linter.style.openClassical false`
+-/
+#guard_msgs in
+def aux : Nat := 1
+
+/--
+warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
+Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
+For theorem statements, either add missing decidability assumptions or use `open Classical in`.
+note: this linter can be disabled with `set_option linter.style.openClassical false`
+-/
+#guard_msgs in
+def aux' : Nat := 1
+
 end openClassical
