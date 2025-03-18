@@ -26,7 +26,7 @@ variable (X : C)
 section Mon_
 
 /-- If `X` represents a presheaf of monoids, then `X` is a monoid object. -/
-def Mon_ClassOfRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
+def Mon_Class.ofRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget _).RepresentableBy X) :
     Mon_Class X where
   one := α.homEquiv.symm 1
   mul := α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X))
@@ -59,6 +59,9 @@ def Mon_ClassOfRepresentableBy (F : Cᵒᵖ ⥤ MonCat.{w}) (α : (F ⋙ forget 
     simp only [Functor.comp_map, ConcreteCategory.forget_map_eq_coe, map_mul, _root_.mul_assoc]
     simp only [← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp]
     simp
+
+@[deprecated (since := "2025-03-07")]
+alias Mon_ClassOfRepresentableBy := Mon_Class.ofRepresentableBy
 
 /-- If `X` is a monoid object, then `Hom(Y, X)` has a monoid structure. -/
 @[reducible] def monoidOfMon_Class [Mon_Class X] (Y : C) : Monoid (Y ⟶ X) where
@@ -107,20 +110,24 @@ def yonedaMonObj [Mon_Class X] : Cᵒᵖ ⥤ MonCat.{v} where
 def yonedaMonObjRepresentableBy [Mon_Class X] : (yonedaMonObj X ⋙ forget _).RepresentableBy X :=
   Functor.representableByEquiv.symm (Iso.refl _)
 
-lemma Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy [Mon_Class X] :
-    Mon_ClassOfRepresentableBy X _ (yonedaMonObjRepresentableBy X) = ‹_› := by
+lemma Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy [Mon_Class X] :
+    Mon_Class.ofRepresentableBy X _ (yonedaMonObjRepresentableBy X) = ‹_› := by
   ext
   show lift (fst X X) (snd X X) ≫ μ = μ
   rw [lift_fst_snd, Category.id_comp]
 
+@[deprecated (since := "2025-03-07")]
+alias Mon_ClassOfRepresentableBy_yonedaMonObjRepresentableBy :=
+  Mon_Class.ofRepresentableBy_yonedaMonObjRepresentableBy
+
 /-- If `X` represents a presheaf of monoids `F`, then `Hom(-, X)` is isomorphic to `F` as
 a presheaf of monoids. -/
 @[simps!]
-def yonedaMonObjMon_ClassOfRepresentableBy
+def yonedaMonObjMon_Class.ofRepresentableBy
     (F : Cᵒᵖ ⥤ MonCat.{v}) (α : (F ⋙ forget _).RepresentableBy X) :
-    letI := Mon_ClassOfRepresentableBy X F α
+    letI := Mon_Class.ofRepresentableBy X F α
     yonedaMonObj X ≅ F :=
-  letI := Mon_ClassOfRepresentableBy X F α
+  letI := Mon_Class.ofRepresentableBy X F α
   NatIso.ofComponents (fun Y ↦ MulEquiv.toMonCatIso
     { toEquiv := α.homEquiv
       map_mul' f₁ f₂ := by
@@ -189,7 +196,24 @@ lemma essImage_yonedaMon :
   · rintro ⟨X, ⟨α⟩⟩
     exact ⟨X.X, ⟨Functor.representableByEquiv.symm (isoWhiskerRight α (forget _))⟩⟩
   · rintro ⟨X, ⟨e⟩⟩
-    letI := Mon_ClassOfRepresentableBy X F e
-    exact ⟨Mon_.mk' X, ⟨yonedaMonObjMon_ClassOfRepresentableBy X F e⟩⟩
+    letI := Mon_Class.ofRepresentableBy X F e
+    exact ⟨Mon_.mk' X, ⟨yonedaMonObjMon_Class.ofRepresentableBy X F e⟩⟩
 
 end Mon_
+
+section CommMon_
+
+/-- If `X` represents a presheaf of commutative groups, then `X` is a commutative group object. -/
+lemma IsCommMon.ofRepresentableBy (F : Cᵒᵖ ⥤ CommMonCat)
+    (α : (F ⋙ forget _).RepresentableBy X) :
+    letI := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
+    IsCommMon X := by
+  letI : Mon_Class X := Mon_Class.ofRepresentableBy X (F ⋙ forget₂ CommMonCat MonCat) α
+  have : μ = α.homEquiv.symm (α.homEquiv (fst X X) * α.homEquiv (snd X X)) := rfl
+  constructor
+  simp_rw [this, ← α.homEquiv.apply_eq_iff_eq, α.homEquiv_comp, Functor.comp_map,
+    ConcreteCategory.forget_map_eq_coe, Equiv.apply_symm_apply, map_mul,
+    ← ConcreteCategory.forget_map_eq_coe, ← Functor.comp_map, ← α.homEquiv_comp, op_tensorObj,
+    Functor.comp_obj, braiding_hom_fst, braiding_hom_snd, _root_.mul_comm]
+
+end CommMon_
