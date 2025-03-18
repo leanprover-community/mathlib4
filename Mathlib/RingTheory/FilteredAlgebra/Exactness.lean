@@ -65,10 +65,8 @@ theorem mem_range_iff [DecidableEq ι] [(i : ι) → (x : GradedPiece FB FB_lt i
 theorem associatedGraded_of_mem_range_iff {i : ι} [DecidableEq ι] (y : GradedPiece FB FB_lt i) :
     (AssociatedGraded.of y) ∈ Gr+[f].range ↔ y ∈ Gr+(i)[f].range := by
   refine ⟨fun ⟨x, hx⟩ ↦ ?_, fun ⟨x, hx⟩ ↦ ?_⟩
-  · use x i
-    rw [← of_eq_same i y, ← hx, AssociatedGradedAddMonoidHom_apply]
-  · use AssociatedGraded.of x
-    simp [hx]
+  · exact ⟨x i, by rw [← of_eq_same i y, ← hx, AssociatedGradedAddMonoidHom_apply]⟩
+  · exact ⟨AssociatedGraded.of x, by simp [hx]⟩
 
 theorem GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact (i : ι) [DecidableEq ι]
     (Gexact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact Gr+(i)[f] Gr+(i)[g] := by
@@ -151,8 +149,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     have : f.toFun r + s' = s := by rw [eq, neg_add_cancel_comm]
     use GradedPiece.mk FR FR_lt ⟨r, hr⟩
     rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk, QuotientAddGroup.mk'_eq_mk']
-    use ⟨s', IsFiltration.F_lt_le_F FS FS_lt i hs'⟩
-    exact ⟨hs', SetCoe.ext this⟩
+    exact ⟨⟨s', IsFiltration.F_lt_le_F FS FS_lt i hs'⟩, ⟨hs', SetCoe.ext this⟩⟩
   · induction y using QuotientAddGroup.induction_on
     rename_i z
     rw [← hy, GradedPieceHom_comp_apply]
@@ -335,8 +332,7 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
       exact monoS (Int.min_le_right p t₀)
     have (s : ℕ) : ∃ r : R, y - f r ∈ FS (p - s) := by
       induction' s with s ih
-      · use 0
-        simpa using hy
+      · exact ⟨0, by simpa using hy⟩
       · rcases ih with ⟨r, hr⟩
         have : g (y - f r) = 0 := by simpa [yto0] using comp_zero r
         have mem_ker :
@@ -356,9 +352,8 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
           QuotientAddGroup.eq_iff_sub_mem.mp this
     rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le tlep) with ⟨s, hs⟩
     rcases this s with ⟨r, hr⟩
-    use r
     have : y - f r ∈ (FS t : Set S) := by simpa only [← hs, sub_sub_cancel] using hr
     simp only [tbot, Set.mem_singleton_iff] at this
-    rw [← zero_add (f r), ← this, sub_add_cancel]
+    exact ⟨r, by rw [← zero_add (f r), ← this, sub_add_cancel]⟩
 
 end
