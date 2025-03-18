@@ -99,8 +99,7 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
   Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
--- We keep this to be consistent with Lean 3.
+-- TODO: remove this configuration and use the default configuration.
 initialize_simps_projections SupBotHom (+toSupHom, -toFun)
 initialize_simps_projections InfTopHom (+toInfHom, -toFun)
 initialize_simps_projections LatticeHom (+toSupHom, -toFun)
@@ -1138,7 +1137,6 @@ variable (α β)
 variable [LinearOrder α] [Lattice β] [OrderHomClass F α β]
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
--- Porting note: made it an `instance` because we're no longer afraid of loops
 instance (priority := 100) toLatticeHomClass : LatticeHomClass F α β :=
   { ‹OrderHomClass F α β› with
     map_sup := fun f a b => by
@@ -1574,7 +1572,6 @@ variable [SemilatticeSup α] [SemilatticeSup β] [SemilatticeSup γ]
 /-- Adjoins a `⊤` to the domain and codomain of a `SupHom`. -/
 @[simps]
 protected def withTop (f : SupHom α β) : SupHom (WithTop α) (WithTop β) where
-  -- Porting note: this was `Option.map f`
   toFun := WithTop.map f
   map_sup' a b :=
     match a, b with

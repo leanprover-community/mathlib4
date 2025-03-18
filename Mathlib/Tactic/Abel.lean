@@ -48,7 +48,7 @@ example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by
 
 ## Future work
 
-* In mathlib 3, `abel` accepted addtional optional arguments:
+* In mathlib 3, `abel` accepted additional optional arguments:
   ```
   syntax "abel" (&" raw" <|> &" term")? (location)? : tactic
   ```
