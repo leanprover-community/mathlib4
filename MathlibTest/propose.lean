@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Algebra.Ring.Associated
