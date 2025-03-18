@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson, Jon Eugster, Emily Riehl
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 
 /-!
-# HasConicalPullbacks
+# Existence of conical pullbacks
 -/
 
 universe w v' v u u'
