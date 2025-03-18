@@ -225,30 +225,14 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   | .ok newStack =>
     set { st with stack := stack ++ newStack }
 
-section Delab
-
-private partial def isSuperscriptable : Syntax → Bool
-  | .node _ _ args => args.all isSuperscriptable
+private partial def isValid (m : Mapping) : Syntax → Bool
+  | .node _ _ args => args.all (isValid m)
   | .atom _ s => valid s
   | .ident _ _ s _ => valid s.toString
   | _ => false
 where
-  -- Returns `true` if every character in `s` can be superscripted.
   valid (s : String) : Bool :=
-    s.toList.all fun x ↦ x == ' ' || Mapping.superscript.toSpecial.contains x
-
-private partial def isSubscriptable : Syntax → Bool
-  | .node _ _ args => args.all isSubscriptable
-  | .atom _ s => valid s
-  | .ident _ _ s _ => valid s.toString
-  | _ => false
-where
-  -- Returns `true` if every character in `s` can be subscripted.
-  valid (s : String) : Bool :=
-    s.toList.all fun x ↦ x == ' ' || Mapping.subscript.toSpecial.contains x
-
-
-end Delab
+    s.toList.all fun x ↦ x == ' ' || m.toSpecial.contains x
 
 end Superscript
 
@@ -288,15 +272,15 @@ def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscri
 
 initialize register_parser_alias superscript
 
-/-- Checks that the current expression can be superscripted before delaborating.
-
-This is a conservative approximation — it may not succeed even given a valid
-superscriptable expression as input.
+/-- Successfully delaborates only if the resulting expression can be superscripted.
 
 See `Mapping.superscript` in this file for legal superscript characters. -/
 def delabSuperscript : Delab := do
-  let de ← delab
-  if Superscript.isSuperscriptable de.raw then pure de else failure
+  let stx ← delab
+  if Superscript.isValid Superscript.Mapping.superscript stx.raw then
+    pure stx
+  else
+    failure
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -334,14 +318,14 @@ def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript t
 
 initialize register_parser_alias subscript
 
-/-- Checks that the current expression can be subscripted before delaborating.
+/-- Successfully delaborates only if the resulting expression can be subscripted.
 
-This is a conservative approximation — it may not succeed even given a valid
-subscriptable expression as input.
-
-See `Mapping.subscript` in this file for legal subscript characters. -/
+See `Mapping.subscript` in this file for legal superscript characters. -/
 def delabSubscript : Delab := do
   let stx ← delab
-  if Superscript.isSubscriptable stx.raw then pure stx else failure
+  if Superscript.isValid Superscript.Mapping.subscript stx.raw then
+    pure stx
+  else
+    failure
 
 end Mathlib.Tactic
