@@ -2391,6 +2391,13 @@ alias isLimit_iff_omega_dvd := isLimit_iff_omega0_dvd
 theorem natCast_mod_omega0 (n : ℕ) : n % ω = n :=
   mod_eq_of_lt (nat_lt_omega0 n)
 
+theorem lt_add_right_of_lt_mul_omega0 {a b : Ordinal} (hb : b ≠ 0) (h : a < b * ω) : a < b + a := by
+  rw [← div_lt hb] at h
+  obtain ⟨n, hn⟩ := lt_omega0.1 h
+  rw [← div_add_mod a b, hn, ← add_assoc, ← mul_one_add, ← Nat.cast_one, ← Nat.cast_add, add_comm,
+    Nat.cast_add_one, mul_add_one, add_assoc, add_lt_add_iff_left]
+  exact (mod_lt _ hb).trans_le (le_add_right _ _)
+
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
 
