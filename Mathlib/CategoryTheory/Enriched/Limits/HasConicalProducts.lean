@@ -32,7 +32,7 @@ variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 abbrev HasConicalProduct {I : Type w} (f : I → C) :=
   HasConicalLimit V (Discrete.functor f)
 
-/-- ensure products exists of existence of conical products -/
+/-- ensure products exists from the existence of conical products -/
 example [HasConicalProducts.{w} V C] : HasProducts.{w} C := inferInstance
 
 end CategoryTheory.Enriched
