@@ -3714,6 +3714,7 @@ import Mathlib.LinearAlgebra.Dimension.RankNullity
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.Torsion.Basic
 import Mathlib.LinearAlgebra.Dimension.Torsion.Finite
+import Mathlib.LinearAlgebra.DirectSum.Basis
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.Dual.Basis
