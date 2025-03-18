@@ -416,14 +416,7 @@ note: this linter can be disabled with `set_option linter.style.openClassical fa
 open scoped Classical
 
 /--
-warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements
-which would be better stated with explicit decidability statements.
-Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
-For theorem statements, either add missing decidability assumptions or use `open Classical in`.
-note: this linter can be disabled with `set_option linter.style.openClassical false`
----
-warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements
-which would be better stated with explicit decidability statements.
+warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
 Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
 For theorem statements, either add missing decidability assumptions or use `open Classical in`.
 note: this linter can be disabled with `set_option linter.style.openClassical false`
@@ -431,11 +424,23 @@ note: this linter can be disabled with `set_option linter.style.openClassical fa
 #guard_msgs in
 open scoped Int Classical Nat Classical
 
--- `open ... in` is *not* linted.
+-- `open ... in` is *not* linted. BUG: this is false
+/--
+warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
+Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
+For theorem statements, either add missing decidability assumptions or use `open Classical in`.
+note: this linter can be disabled with `set_option linter.style.openClassical false`
+-/
 #guard_msgs in
 open Classical (choose) in
 def bar : Nat := 1
 
+/--
+warning: please avoid 'open (scoped) Classical' statements: this can hide theorem statements which would be better stated with explicit decidability statements.
+Instead, use `open Classical in` for definitions or instances, the `classical` tactic for proofs.
+For theorem statements, either add missing decidability assumptions or use `open Classical in`.
+note: this linter can be disabled with `set_option linter.style.openClassical false`
+-/
 #guard_msgs in
 open scoped Classical in
 def baz : Nat := 1
