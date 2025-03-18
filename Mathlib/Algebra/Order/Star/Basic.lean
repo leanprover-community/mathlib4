@@ -44,9 +44,9 @@ universe u
 
 variable {R : Type u}
 
-/- This lemma is placed in this file instead of `Algebra.Star.SelfAdjoint` for two reasons:
-1. `AddSubmonoid.closure` is not available in that file.
-2. This is used below to show `StarOrderedRing Rᵐᵒᵖ`.
+/- This lemma is placed in this file instead of `Algebra.Star.SelfAdjoint` because
+`AddSubmonoid.closure` is not available in that file.
+
 Note that if `R` is a group, this follows easily from `AddSubgroup.closure_le` applied with
 `SelfAdjoint R`. -/
 lemma IsSelfAdjoint.of_mem_addSubmonoid_closure [AddMonoid R] [StarAddMonoid R] {s : Set R}
