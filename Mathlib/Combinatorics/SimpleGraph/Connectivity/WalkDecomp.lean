@@ -422,4 +422,7 @@ lemma mem_support_rotate_iff [DecidableEq V] {u v x} {c : G.Walk u u} (h : v ∈
       exact List.mem_append_left _ <| end_mem_support ..
     | tail _ hb => exact List.mem_of_mem_tail <| (support_rotate c h).mem_iff.2 hb
 
+
+
+
 end SimpleGraph.Walk

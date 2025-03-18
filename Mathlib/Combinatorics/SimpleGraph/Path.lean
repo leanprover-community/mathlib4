@@ -315,7 +315,7 @@ lemma IsPath.dropLast {p : G.Walk u v} (hp : p.IsPath) (h : ¬p.Nil): p.dropLast
 lemma IsCycle.isPath_tail {c : G.Walk v v} (hc : c.IsCycle) :
     c.tail.IsPath := by
   apply IsPath.mk'
-  rw [support_tail _ hc.not_nil]
+  rw [support_tail_of_not_nil _ hc.not_nil]
   exact hc.2
 
 /-! ### About paths -/
@@ -368,6 +368,14 @@ lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤
   apply Fin.ext_iff.2 <| hinj i.2 j.2 _
   rwa [getVert_eq_support_get (Nat.le_of_lt_succ <| i.2.trans_le p.length_support.le),
         getVert_eq_support_get (Nat.le_of_lt_succ <| j.2.trans_le p.length_support.le)]
+
+lemma IsPath.not_mem_tail_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath) (hn : ¬p.Nil) :
+    u ∉ p.tail.support :=
+  fun h ↦ ((cons_isPath_iff _ _).1 ((cons_tail_eq _ hn) ▸ hp)).2 h
+
+lemma IsPath.not_mem_dropLast_support_of_not_nil {p : G.Walk u v} (hp : p.IsPath) (hn : ¬p.Nil) :
+    v ∉ p.dropLast.support :=
+  fun h ↦ ((concat_isPath_iff _ _).1 ((concat_dropLast_eq _ hn) ▸ hp)).2 h
 
 /-! ### About cycles -/
 
@@ -671,6 +679,29 @@ theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v)
 theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
   edges_bypass_subset _
 
+@[simp]
+def shortcircuit {u : V} : G.Walk u u → G.Walk u u
+  | nil => nil
+  | cons ha p => cons ha p.bypass
+
+lemma shortcircuit_cons_isCycle {u v : V} (h : G.Adj u v) (p : G.Walk v u)
+    (hs : s(u,v) ∉ p.bypass.edges) : (cons h p).shortcircuit.IsCycle :=
+  cons_isCycle_iff p.bypass _ |>.2 ⟨bypass_isPath p, hs⟩
+
+lemma IsCircuit.shortcircuit_isCycle {u : V} {p : G.Walk u u} (hs : IsCircuit p) :
+    p.shortcircuit.IsCycle :=
+  match p with
+  | nil => absurd rfl hs.2
+  | cons h p =>
+    shortcircuit_cons_isCycle _ _ <|
+      fun hf ↦ cons_isTrail_iff h p|>.1 hs.toIsTrail|>.2 <| edges_bypass_subset _ hf
+
+lemma shortcircuit_cons_isCycle_iff {u v : V} (h : G.Adj u v) (p : G.Walk v u) :
+    s(u,v) ∉ p.bypass.edges ↔ (cons h p).shortcircuit.IsCycle := by
+  constructor <;> intro hs
+  · exact cons_isCycle_iff p.bypass _ |>.2 ⟨bypass_isPath p, hs⟩
+  · exact (cons_isCycle_iff ..).1 hs|>.2
+
 end Walk
 
 /-! ### Mapping paths -/
@@ -822,6 +853,30 @@ theorem toDeleteEdges_copy {v u u' v' : V} (s : Set (Sym2 V))
       (p.toDeleteEdges s (by subst_vars; exact h)).copy hu hv := by
   subst_vars
   rfl
+
+
+lemma Brooks_aux' [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
+    (hd : d ∈ c.darts) :
+    d.toProd.2 = (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd := by
+
+  sorry
+
+
+lemma Brooks_aux [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
+    (hd : d ∈ c.darts) :
+    (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).tail.tail.support.toFinset =
+      c.support.toFinset.erase d.toProd.2 := by
+  have hr := (c.dart_fst_mem_support_of_mem_darts hd)
+  ext x
+  simp only [List.mem_toFinset, Finset.mem_erase, ne_eq]
+  constructor <;> intro h
+  · constructor
+    · sorry
+    · apply (c.mem_support_rotate_iff hr).1
+      apply support_drop_subset _ _ (support_drop_subset _ _ h)
+  ·
+    sorry
+
 
 end Walk
 
