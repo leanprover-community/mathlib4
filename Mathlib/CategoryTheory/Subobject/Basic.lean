@@ -541,9 +541,8 @@ lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
     ∃ φ, IsPullback φ ((pullback f).obj y).arrow y.arrow f := by
   obtain ⟨A, i, ⟨_, rfl⟩⟩ := mk_surjective y
   rw [pullback_obj]
-  have h := IsPullback.of_hasPullback (mk i).arrow f
   exists (underlyingIso (pullback.snd (mk i).arrow f)).hom ≫ pullback.fst (mk i).arrow f
-  exact IsPullback.of_iso h
+  exact IsPullback.of_iso (IsPullback.of_hasPullback (mk i).arrow f)
         (underlyingIso (pullback.snd (mk i).arrow f)).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
         (by simp) (by simp) (by simp) (by simp)
 
