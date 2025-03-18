@@ -738,6 +738,7 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
+  have : DiscreteUniformity K := inferInstance
   fun d ↦ UniformSpace.DiscreteUniformity.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff d)
 
 theorem Cauchy.coeff_tendsto {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) (D : ℤ) :
