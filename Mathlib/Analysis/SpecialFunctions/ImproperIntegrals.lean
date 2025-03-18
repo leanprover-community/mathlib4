@@ -56,8 +56,7 @@ theorem integrableOn_Ioi_rpow_of_lt {a : ℝ} (ha : a < -1) {c : ℝ} (hc : 0 < 
     IntegrableOn (fun t : ℝ => t ^ a) (Ioi c) := by
   have hd : ∀ x ∈ Ici c, HasDerivAt (fun t => t ^ (a + 1) / (a + 1)) (x ^ a) x := by
     intro x hx
-    -- Porting note: helped `convert` with explicit arguments
-    convert (hasDerivAt_rpow_const (p := a + 1) (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
+    convert (hasDerivAt_rpow_const (Or.inl (hc.trans_le hx).ne')).div_const _ using 1
     field_simp [show a + 1 ≠ 0 from ne_of_lt (by linarith), mul_comm]
   have ht : Tendsto (fun t => t ^ (a + 1) / (a + 1)) atTop (𝓝 (0 / (a + 1))) := by
     apply Tendsto.div_const

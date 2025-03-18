@@ -302,9 +302,8 @@ def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : A
 
 namespace lp
 
--- Porting note: was `Coe`
 instance : CoeOut (lp E p) (∀ i, E i) :=
-  ⟨Subtype.val (α := ∀ i, E i)⟩ -- Porting note: Originally `coeSubtype`
+  ⟨Subtype.val (α := ∀ i, E i)⟩
 
 instance coeFun : CoeFun (lp E p) fun _ => ∀ i, E i :=
   ⟨fun f => (f : ∀ i, E i)⟩
@@ -439,7 +438,6 @@ theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
 theorem eq_zero_iff_coeFn_eq_zero {f : lp E p} : f = 0 ↔ ⇑f = 0 := by
   rw [lp.ext_iff, coeFn_zero]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): this was very slow, so I squeezed the `simp` calls
 @[simp]
 theorem norm_neg ⦃f : lp E p⦄ : ‖-f‖ = ‖f‖ := by
   rcases p.trichotomy with (rfl | rfl | hp)
@@ -737,13 +735,10 @@ instance nonUnitalRing : NonUnitalRing (lp B ∞) :=
 
 instance nonUnitalNormedRing : NonUnitalNormedRing (lp B ∞) :=
   { lp.normedAddCommGroup, lp.nonUnitalRing with
-    norm_mul := fun f g =>
-      lp.norm_le_of_forall_le (mul_nonneg (norm_nonneg f) (norm_nonneg g)) fun i =>
-        calc
-          ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
-          _ ≤ ‖f‖ * ‖g‖ :=
-            mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
-              (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
+    norm_mul_le f g := lp.norm_le_of_forall_le (by positivity) fun i ↦ calc
+      ‖(f * g) i‖ ≤ ‖f i‖ * ‖g i‖ := norm_mul_le _ _
+      _ ≤ ‖f‖ * ‖g‖ := mul_le_mul (lp.norm_apply_le_norm ENNReal.top_ne_zero f i)
+        (lp.norm_apply_le_norm ENNReal.top_ne_zero g i) (norm_nonneg _) (norm_nonneg _) }
 
 instance nonUnitalNormedCommRing {B : I → Type*} [∀ i, NonUnitalNormedCommRing (B i)] :
     NonUnitalNormedCommRing (lp B ∞) where

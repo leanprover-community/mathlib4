@@ -178,9 +178,12 @@ theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monot
 theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
   fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
 
-theorem prod_mk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) ∈ s) (h₂ : (c, b) ∈ t) :
+theorem prodMk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) ∈ s) (h₂ : (c, b) ∈ t) :
     (a, b) ∈ s ○ t :=
   ⟨c, h₁, h₂⟩
+
+@[deprecated (since := "2025-03-10")]
+alias prod_mk_mem_compRel := prodMk_mem_compRel
 
 @[simp]
 theorem id_compRel {r : Set (α × α)} : idRel ○ r = r :=
@@ -393,7 +396,7 @@ theorem nhds_eq_comap_uniformity {x : α} : 𝓝 x = (𝓤 α).comap (Prod.mk x)
 
 theorem isOpen_uniformity {s : Set α} :
     IsOpen s ↔ ∀ x ∈ s, { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
-  simp only [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap_prod_mk]
+  simp only [isOpen_iff_mem_nhds, nhds_eq_comap_uniformity, mem_comap_prodMk]
 
 theorem refl_le_uniformity : 𝓟 idRel ≤ 𝓤 α :=
   (@UniformSpace.toCore α _).refl
@@ -548,7 +551,7 @@ lemma mem_ball_self (x : α) {V : Set (α × α)} : V ∈ 𝓤 α → x ∈ ball
 /-- The triangle inequality for `UniformSpace.ball` -/
 theorem mem_ball_comp {V W : Set (β × β)} {x y z} (h : y ∈ ball x V) (h' : z ∈ ball y W) :
     z ∈ ball x (V ○ W) :=
-  prod_mk_mem_compRel h h'
+  prodMk_mem_compRel h h'
 
 theorem ball_subset_of_comp_subset {V W : Set (β × β)} {x y} (h : x ∈ ball y W) (h' : W ○ W ⊆ V) :
     ball x W ⊆ ball y V := fun _z z_in => h' (mem_ball_comp h z_in)
@@ -602,7 +605,7 @@ open UniformSpace
 
 theorem mem_nhds_uniformity_iff_right {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.1 = x → p.2 ∈ s } ∈ 𝓤 α := by
-  simp only [nhds_eq_comap_uniformity, mem_comap_prod_mk]
+  simp only [nhds_eq_comap_uniformity, mem_comap_prodMk]
 
 theorem mem_nhds_uniformity_iff_left {x : α} {s : Set α} :
     s ∈ 𝓝 x ↔ { p : α × α | p.2 = x → p.1 ∈ s } ∈ 𝓤 α := by

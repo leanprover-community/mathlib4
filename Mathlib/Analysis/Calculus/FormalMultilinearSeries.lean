@@ -27,7 +27,6 @@ noncomputable section
 
 open Set Fin Topology
 
--- Porting note: added explicit universes to fix compile
 universe u u' v w x
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x}
 
