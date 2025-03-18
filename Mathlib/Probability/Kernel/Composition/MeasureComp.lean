@@ -31,6 +31,12 @@ of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
 lemma comp_eq_comp_const_apply : κ ∘ₘ μ = (κ ∘ₖ (Kernel.const Unit μ)) () := by
   rw [Kernel.comp_apply, Kernel.const_apply]
 
+lemma comp_eq_sum_of_countable [Countable α] [MeasurableSingletonClass α] :
+    κ ∘ₘ μ = Measure.sum (fun ω ↦ μ {ω} • κ ω) := by
+  ext s hs
+  rw [Measure.sum_apply _ hs, Measure.bind_apply hs (by fun_prop)]
+  simp [lintegral_countable', mul_comm]
+
 @[simp]
 lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
     (μ ⊗ₘ κ).snd = κ ∘ₘ μ := by
@@ -159,6 +165,11 @@ lemma AbsolutelyContinuous.comp_left (μ : Measure α) (hκη : ∀ᵐ a ∂μ, 
 lemma AbsolutelyContinuous.comp (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     κ ∘ₘ μ ≪ η ∘ₘ ν :=
   (AbsolutelyContinuous.comp_left μ hκη).trans (hμν.comp_right η)
+
+lemma absolutelyContinuous_comp_of_countable [Countable α] [MeasurableSingletonClass α] :
+    ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
+  rw [Measure.comp_eq_sum_of_countable, ae_iff_of_countable]
+  exact fun ω hμω ↦ Measure.absolutelyContinuous_sum_right ω (Measure.absolutelyContinuous_smul hμω)
 
 end AbsolutelyContinuous
 
