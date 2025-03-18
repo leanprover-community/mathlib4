@@ -87,23 +87,23 @@ section delab
 open Lean PrettyPrinter.Delaborator SubExpr
 open Mathlib.Tactic (delabSubscript delabSuperscript)
 
-private def check_subscript {α : Type} (_ : α) := ()
-local syntax:arg "test(" noWs subscript(term) noWs ")" : term
-local macro_rules | `(test($a:subscript)) => `(check_subscript $a)
+private def checkSubscript {α : Type} (_ : α) := ()
+local syntax:arg "testsub(" noWs subscript(term) noWs ")" : term
+local macro_rules | `(testsub($a:subscript)) => `(checkSubscript $a)
 
-private def check_superscript {α : Type} (_ : α) := ()
-local syntax:arg "test(" noWs superscript(term) noWs ")" : term
-local macro_rules | `(test($a:superscript)) => `(check_superscript $a)
+private def checkSuperscript {α : Type} (_ : α) := ()
+local syntax:arg "testsup(" noWs superscript(term) noWs ")" : term
+local macro_rules | `(testsup($a:superscript)) => `(checkSuperscript $a)
 
-@[app_delab check_subscript]
+@[app_delab checkSubscript]
 private def delabCheckSubscript : Delab := withOverApp 2 do
   let sub ← withAppArg delabSubscript
-  `(test($sub:subscript))
+  `(testsub($sub:subscript))
 
-@[app_delab check_superscript]
+@[app_delab checkSuperscript]
 private def delabCheckSuperscript : Delab := withOverApp 2 do
   let sup ← withAppArg delabSuperscript
-  `(test($sup:superscript))
+  `(testsup($sup:superscript))
 
 universe u v w
 
@@ -119,35 +119,35 @@ variable (n : String)
 
 section subscript
 
-/-- info: test(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀) : Unit -/
-#guard_msgs in #check test(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀)
-/-- info: test(ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎) : Unit -/
-#guard_msgs in #check test(ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎)
-/-- info: test(ᵦ) : Unit -/
-#guard_msgs in #check test(ᵦ)
-/-- info: test(ᵦ ₍₎) : Unit -/
-#guard_msgs in #check test(ᵦ ₍₎)
-/-- info: test(ᵦ ᵦ ᵦ ᵦ) : Unit -/
-#guard_msgs in #check test(ᵦ ᵦ ᵦ ᵦ)
-/-- info: test(ɪᴅ ɪᴅ ₃₇) : Unit -/
-#guard_msgs in #check test(ɪᴅ ɪᴅ ₃₇)
+/-- info: testsub(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀) : Unit -/
+#guard_msgs in #check testsub(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀)
+/-- info: testsub(ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎) : Unit -/
+#guard_msgs in #check testsub(ᵦ ₙ ₍₁ ₊ ₂ ₋ ₃ ₌ ₀₎)
+/-- info: testsub(ᵦ) : Unit -/
+#guard_msgs in #check testsub(ᵦ)
+/-- info: testsub(ᵦ ₍₎) : Unit -/
+#guard_msgs in #check testsub(ᵦ ₍₎)
+/-- info: testsub(ᵦ ᵦ ᵦ ᵦ) : Unit -/
+#guard_msgs in #check testsub(ᵦ ᵦ ᵦ ᵦ)
+/-- info: testsub(ɪᴅ ɪᴅ ₃₇) : Unit -/
+#guard_msgs in #check testsub(ɪᴅ ɪᴅ ₃₇)
 
 end subscript
 
 section superscript
 
-/-- info: test(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰) : Unit -/
-#guard_msgs in #check test(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰)
-/-- info: test(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾) : Unit -/
-#guard_msgs in #check test(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾)
-/-- info: test(ᵝ) : Unit -/
-#guard_msgs in #check test(ᵝ)
-/-- info: test(ᵝ ⁽⁾) : Unit -/
-#guard_msgs in #check test(ᵝ ⁽⁾)
-/-- info: test(ᵝ ᵝ ᵝ ᵝ) : Unit -/
-#guard_msgs in #check test(ᵝ ᵝ ᵝ ᵝ)
-/-- info: test(ⁱᵈ ⁱᵈ ³⁷) : Unit -/
-#guard_msgs in #check test(ⁱᵈ ⁱᵈ ³⁷)
+/-- info: testsup(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰) : Unit -/
+#guard_msgs in #check testsup(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰)
+/-- info: testsup(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾) : Unit -/
+#guard_msgs in #check testsup(ᵝ ⁿ ⁽¹ ⁺ ² ⁻ ³ ⁼ ⁰⁾)
+/-- info: testsup(ᵝ) : Unit -/
+#guard_msgs in #check testsup(ᵝ)
+/-- info: testsup(ᵝ ⁽⁾) : Unit -/
+#guard_msgs in #check testsup(ᵝ ⁽⁾)
+/-- info: testsup(ᵝ ᵝ ᵝ ᵝ) : Unit -/
+#guard_msgs in #check testsup(ᵝ ᵝ ᵝ ᵝ)
+/-- info: testsup(ⁱᵈ ⁱᵈ ³⁷) : Unit -/
+#guard_msgs in #check testsup(ⁱᵈ ⁱᵈ ³⁷)
 
 end superscript
 
@@ -161,58 +161,58 @@ local notation:10000 n "!" => factorial n
 
 section no_subscript
 
-/-- info: check_subscript x_x : Unit -/
-#guard_msgs in #check check_subscript x_x
-/-- info: check_subscript (α 0 0) : Unit -/
-#guard_msgs in #check check_subscript (α 0 0)
-/-- info: check_subscript (0 * 1) : Unit -/
-#guard_msgs in #check check_subscript (0 * 1)
-/-- info: check_subscript (0 ^ 1) : Unit -/
-#guard_msgs in #check check_subscript (0 ^ 1)
-/-- info: check_subscript [1] : Unit -/
-#guard_msgs in #check check_subscript [1]
-/-- info: check_subscript #n : Unit -/
-#guard_msgs in #check check_subscript #n
-/-- info: check_subscript 2! : Unit -/
-#guard_msgs in #check check_subscript 2!
+/-- info: checkSubscript x_x : Unit -/
+#guard_msgs in #check checkSubscript x_x
+/-- info: checkSubscript (α 0 0) : Unit -/
+#guard_msgs in #check checkSubscript (α 0 0)
+/-- info: checkSubscript (0 * 1) : Unit -/
+#guard_msgs in #check checkSubscript (0 * 1)
+/-- info: checkSubscript (0 ^ 1) : Unit -/
+#guard_msgs in #check checkSubscript (0 ^ 1)
+/-- info: checkSubscript [1] : Unit -/
+#guard_msgs in #check checkSubscript [1]
+/-- info: checkSubscript #n : Unit -/
+#guard_msgs in #check checkSubscript #n
+/-- info: checkSubscript 2! : Unit -/
+#guard_msgs in #check checkSubscript 2!
 
 set_option pp.mvars false in
-/-- info: check_subscript ?_ : Unit -/
-#guard_msgs in #check check_subscript ?_
+/-- info: checkSubscript ?_ : Unit -/
+#guard_msgs in #check checkSubscript ?_
 
 /- The delaborator should fail because `n` is shadowed and `✝` can not be
 subscripted. -/
-variable {x} (hx : x = test(ₙ)) (n : True) in
-/-- info: hx : x = check_subscript n✝ -/
+variable {x} (hx : x = testsub(ₙ)) (n : True) in
+/-- info: hx : x = checkSubscript n✝ -/
 #guard_msgs in #check hx
 
 end no_subscript
 
 section no_superscript
 
-/-- info: check_superscript x_x : Unit -/
-#guard_msgs in #check check_superscript x_x
-/-- info: check_superscript (α 0 0) : Unit -/
-#guard_msgs in #check check_superscript (α 0 0)
-/-- info: check_superscript (0 * 1) : Unit -/
-#guard_msgs in #check check_superscript (0 * 1)
-/-- info: check_superscript (0 ^ 1) : Unit -/
-#guard_msgs in #check check_superscript (0 ^ 1)
-/-- info: check_superscript [1] : Unit -/
-#guard_msgs in #check check_superscript [1]
-/-- info: check_superscript #n : Unit -/
-#guard_msgs in #check check_superscript #n
-/-- info: check_superscript 2! : Unit -/
-#guard_msgs in #check check_superscript 2!
+/-- info: checkSuperscript x_x : Unit -/
+#guard_msgs in #check checkSuperscript x_x
+/-- info: checkSuperscript (α 0 0) : Unit -/
+#guard_msgs in #check checkSuperscript (α 0 0)
+/-- info: checkSuperscript (0 * 1) : Unit -/
+#guard_msgs in #check checkSuperscript (0 * 1)
+/-- info: checkSuperscript (0 ^ 1) : Unit -/
+#guard_msgs in #check checkSuperscript (0 ^ 1)
+/-- info: checkSuperscript [1] : Unit -/
+#guard_msgs in #check checkSuperscript [1]
+/-- info: checkSuperscript #n : Unit -/
+#guard_msgs in #check checkSuperscript #n
+/-- info: checkSuperscript 2! : Unit -/
+#guard_msgs in #check checkSuperscript 2!
 
 set_option pp.mvars false in
-/-- info: check_superscript ?_ : Unit -/
-#guard_msgs in #check check_superscript ?_
+/-- info: checkSuperscript ?_ : Unit -/
+#guard_msgs in #check checkSuperscript ?_
 
 /- The delaborator should fail because `n` is shadowed and `✝` can not be
 superscripted. -/
-variable {x} (hx : x = test(ⁿ)) (n : True) in
-/-- info: hx : x = check_superscript n✝ -/
+variable {x} (hx : x = testsup(ⁿ)) (n : True) in
+/-- info: hx : x = checkSuperscript n✝ -/
 #guard_msgs in #check hx
 
 end no_superscript
