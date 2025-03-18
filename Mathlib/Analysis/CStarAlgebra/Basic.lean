@@ -174,7 +174,7 @@ end ProdPi
 namespace MulOpposite
 
 instance {E : Type*} [NonUnitalNormedRing E] [StarRing E] [CStarRing E] : CStarRing Eᵐᵒᵖ where
-  norm_mul_self_le x := CStarRing.norm_self_mul_star (x := unop x) |>.symm.le
+  norm_mul_self_le x := CStarRing.norm_self_mul_star (x := MulOpposite.unop x) |>.symm.le
 
 end MulOpposite
 
