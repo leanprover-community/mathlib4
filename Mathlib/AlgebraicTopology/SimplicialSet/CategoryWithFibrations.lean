@@ -40,7 +40,7 @@ lemma boundary_ι_mem_I (n : ℕ) :
 /-- The generating trivial cofibrations: this is the family of morphisms in `SSet`
 which consists of horn inclusions `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for positive `n`). -/
 def J : MorphismProperty SSet.{u} :=
-  ⨆ n, .ofHoms (fun i ↦ Λ[n + 1, i].ι)
+  ⨆ n, .ofHoms (fun (i : Fin (n + 2)) ↦ Λ[n + 1, i].ι)
 
 lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)):
     J (horn.{u} (n + 1) i).ι := by
