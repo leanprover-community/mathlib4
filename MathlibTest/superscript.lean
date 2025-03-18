@@ -105,7 +105,7 @@ private def delabCheckSuperscript : Delab := withOverApp 2 do
   let sup ← withAppArg <| delabSuperscript
   `(test($sup:superscript))
 
-universe u v
+universe u v w
 
 /-- `α` can not be subscripted or superscripted. -/
 private def α {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
@@ -116,6 +116,8 @@ private def β {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
 private abbrev ID {γ : Sort u} := @id γ
 
 variable (n : String)
+
+section subscript
 
 /-- info: test(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀) : Unit -/
 #guard_msgs in #check test(₁₂₃₄₅₆₇₈₉₀ ₌₌ ₁₂₃₄₅₆₇₈₉₀)
@@ -130,8 +132,9 @@ variable (n : String)
 /-- info: test(ɪᴅ ɪᴅ ₃₇) : Unit -/
 #guard_msgs in #check test(ɪᴅ ɪᴅ ₃₇)
 
-/-- info: check_subscript (α 0 0) : Unit -/
-#guard_msgs in #check check_subscript (α 0 0)
+end subscript
+
+section superscript
 
 /-- info: test(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰) : Unit -/
 #guard_msgs in #check test(¹²³⁴⁵⁶⁷⁸⁹⁰ ⁼⁼ ¹²³⁴⁵⁶⁷⁸⁹⁰)
@@ -146,7 +149,85 @@ variable (n : String)
 /-- info: test(ⁱᵈ ⁱᵈ ³⁷) : Unit -/
 #guard_msgs in #check test(ⁱᵈ ⁱᵈ ³⁷)
 
+end superscript
+
+variable (x_x : String)
+
+private def card {γ : Sort u} := @id γ
+local prefix:arg "#" => card
+
+private def factorial {γ : Sort u} := @id γ
+local notation:10000 n "!" => factorial n
+
+private class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
+  hSMul : α → β → γ
+instance : HSMul Nat Nat Nat where
+  hSMul a b := a * b
+infixr:73 " • " => HSMul.hSMul
+
+section no_subscript
+
+/-- info: check_subscript x_x : Unit -/
+#guard_msgs in #check check_subscript x_x
+/-- info: check_subscript (α 0 0) : Unit -/
+#guard_msgs in #check check_subscript (α 0 0)
+/-- info: check_subscript (0 * 1) : Unit -/
+#guard_msgs in #check check_subscript (0 * 1)
+/-- info: check_subscript (0 ^ 1) : Unit -/
+#guard_msgs in #check check_subscript (0 ^ 1)
+/-- info: check_subscript [1] : Unit -/
+#guard_msgs in #check check_subscript [1]
+/-- info: check_subscript #n : Unit -/
+#guard_msgs in #check check_subscript #n
+/-- info: check_subscript 2! : Unit -/
+#guard_msgs in #check check_subscript 2!
+/-- info: check_subscript (1 • 2) : Unit -/
+#guard_msgs in #check check_subscript (1 • 2)
+
+set_option pp.mvars false in
+/-- info: check_subscript ?_ : Unit -/
+#guard_msgs in #check check_subscript ?_
+
+/- The delaborator should fail because `n` is shadowed and `✝` can not be
+subscripted. -/
+variable {x} (hx : x = test(ₙ)) (n : True) in
+/-- info: hx : x = check_subscript n✝ -/
+#guard_msgs in #check hx
+
+end no_subscript
+
+section no_superscript
+
+/-- info: check_superscript x_x : Unit -/
+#guard_msgs in #check check_superscript x_x
 /-- info: check_superscript (α 0 0) : Unit -/
 #guard_msgs in #check check_superscript (α 0 0)
+/-- info: check_superscript (0 * 1) : Unit -/
+#guard_msgs in #check check_superscript (0 * 1)
+/-- info: check_superscript (0 ^ 1) : Unit -/
+#guard_msgs in #check check_superscript (0 ^ 1)
+/-- info: check_superscript [1] : Unit -/
+#guard_msgs in #check check_superscript [1]
+
+-- TODO: the two tests below currently fail
+/- /-- info: check_superscript #n : Unit -/ -/
+/- #guard_msgs in #check check_superscript #n -/
+/- /-- info: check_superscript 2! : Unit -/ -/
+/- #guard_msgs in #check check_superscript 2! -/
+
+/-- info: check_superscript (1 • 2) : Unit -/
+#guard_msgs in #check check_superscript (1 • 2)
+
+set_option pp.mvars false in
+/-- info: check_superscript ?_ : Unit -/
+#guard_msgs in #check check_superscript ?_
+
+/- The delaborator should fail because `n` is shadowed and `✝` can not be
+superscripted. -/
+variable {x} (hx : x = test(ⁿ)) (n : True) in
+/-- info: hx : x = check_superscript n✝ -/
+#guard_msgs in #check hx
+
+end no_superscript
 
 end delab
