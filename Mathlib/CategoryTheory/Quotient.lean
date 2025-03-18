@@ -5,6 +5,7 @@ Authors: David Wärn
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.EqToHom
+import Mathlib.Tactic.Cases
 
 /-!
 # Quotient category

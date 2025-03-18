@@ -5,6 +5,7 @@ Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Order.Monotone.Defs
+import Mathlib.Tactic.Cases
 
 /-!
 # Binomial coefficients

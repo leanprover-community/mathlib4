@@ -5,6 +5,7 @@ Authors: Patrick Massot, Chris Hughes, Michael Howes
 -/
 import Mathlib.Algebra.Group.End
 import Mathlib.Algebra.Group.Semiconj.Units
+import Mathlib.Tactic.Cases
 
 /-!
 # Conjugacy of group elements

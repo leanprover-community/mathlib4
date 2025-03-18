@@ -5,6 +5,7 @@ Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Data.Fin.Rev
 import Mathlib.Order.Hom.Set
+import Mathlib.Tactic.Cases
 
 /-!
 # `Fin n` forms a bounded linear order

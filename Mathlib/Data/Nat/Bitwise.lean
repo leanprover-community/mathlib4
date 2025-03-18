@@ -10,6 +10,7 @@ import Mathlib.Data.List.GetD
 import Mathlib.Data.Nat.Bits
 import Mathlib.Order.Basic
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Common
 
 /-!

@@ -11,6 +11,7 @@ import Mathlib.Data.List.Monad
 import Mathlib.Logic.OpClass
 import Mathlib.Logic.Unique
 import Mathlib.Order.Basic
+import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Common
 
 /-!
