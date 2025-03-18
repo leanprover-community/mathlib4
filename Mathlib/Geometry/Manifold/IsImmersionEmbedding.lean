@@ -89,125 +89,8 @@ noncomputable def writtenInCharts (h : IsImmersionAt F I I' n f x) :
 -- smoothness follows since domChart and codChart are compatible with the maximal atlas
 theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x := sorry
 
-end IsImmersionAt
-
-#exit
-variable (F I I' n) in
-/-- `f : M → N` is a `C^k` immersion if around each point `x ∈ M`,
-there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively,
-such that in these charts, `f` looks like `u ↦ (u, 0)`. -/
-def IsImmersion (f : M → M') : Prop :=
-  ∃ equiv : (E × F) ≃L[𝕜] E', ∃ chartsM : M → PartialHomeomorph M H,
-  ∃ chartsM' : M' → PartialHomeomorph M' H',
-  ∀ x, x ∈ (chartsM x).source ∧
-  ∀ x, f x ∈ (chartsM' (f x)).source ∧
-  ∀ x, (chartsM x) ∈ IsManifold.maximalAtlas I n M ∧
-  ∀ x, (chartsM' (f x)) ∈ IsManifold.maximalAtlas I' n M' ∧
-  ∀ x, ((chartsM' (f x)).extend I') ∘ f ∘ ((chartsM x).extend I).symm = equiv ∘ (·, 0)
-
-#exit
-
-variable (F I I' n) in
-/-- `f : M → N` is a `C^k` immersion at `x` if there are charts `φ` and `ψ` of `M` and `N`
-around `x` and `f x`, respectively such that in these charts, `f` looks like `u ↦ (u, 0)`.
-
-XXX: why in `maximalAtlas` and not merely atlas? to given ourselves extra freedom?
--/
-structure IsImmersionAt (f : M → M') (x : M) where
-  equiv : (E × F) ≃L[𝕜] E'
-  domChart : PartialHomeomorph M H
-  codChart : PartialHomeomorph M' H'
-  mem_source_x : x ∈ domChart.source
-  mem_source_fx : f x ∈ codChart.source
-  mem_atlas_domChart : domChart ∈ IsManifold.maximalAtlas I n M
-  mem_atlas_codChart : codChart ∈ IsManifold.maximalAtlas I' n M'
-  writtenInCharts : (codChart.extend I') ∘ f ∘ (domChart.extend I).symm = equiv ∘ (·, 0)
-
-variable (F I I' n) in
-/-- `f : M → N` is a `C^k` immersion on `s` if around each point `x ∈ s`,
-there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively,
-such that in these charts, `f` looks like `u ↦ (u, 0)`. -/
-structure IsImmersionOn (f : M → M') (s : Set M) where
-  equiv : (E × F) ≃L[𝕜] E'
-  chartsM : M → PartialHomeomorph M H
-  chartsM' : M' → PartialHomeomorph M' H'
-  mem_source_M : ∀ x, x ∈ s → x ∈ (chartsM x).source
-  mem_source_M' : ∀ x, x ∈ s → f x ∈ (chartsM' (f x)).source
-  mem_atlas_M: ∀ x, x ∈ s → (chartsM x) ∈ IsManifold.maximalAtlas I n M
-  mem_atlas_M': ∀ x, x ∈ s → (chartsM' (f x)) ∈ IsManifold.maximalAtlas I' n M'
-  writtenInCharts : ∀ x, x ∈ s →
-    ((chartsM' (f x)).extend I') ∘ f ∘ ((chartsM x).extend I).symm = equiv ∘ (·, 0)
-
-variable (F I I' n) in
-/-- `f : M → N` is a `C^k` immersion if around each point `x ∈ M`,
-there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively,
-such that in these charts, `f` looks like `u ↦ (u, 0)`. -/
-structure IsImmersion (f : M → M') where
-  equiv : (E × F) ≃L[𝕜] E'
-  chartsM : M → PartialHomeomorph M H
-  chartsM' : M' → PartialHomeomorph M' H'
-  mem_source_M : ∀ x, x ∈ (chartsM x).source
-  mem_source_M' : ∀ x, f x ∈ (chartsM' (f x)).source
-  mem_atlas_M: ∀ x, (chartsM x) ∈ IsManifold.maximalAtlas I n M
-  mem_atlas_M': ∀ x, (chartsM' (f x)) ∈ IsManifold.maximalAtlas I' n M'
-  writtenInCharts : ∀ x,
-    ((chartsM' (f x)).extend I') ∘ f ∘ ((chartsM x).extend I).symm = equiv ∘ (·, 0)
-
-/-- If `f` is an immersion, it is an immersion at each point. -/
-def IsImmersion.isImmersionAt {f : M → M'} (h : IsImmersion F I I' n f) (x : M) :
-    IsImmersionAt F I I' n f x where
-  equiv := h.equiv
-  domChart := h.chartsM x
-  codChart := h.chartsM' (f x)
-  mem_source_x := h.mem_source_M x
-  mem_source_fx := h.mem_source_M' x
-  mem_atlas_domChart := h.mem_atlas_M x
-  mem_atlas_codChart := h.mem_atlas_M' x
-  writtenInCharts := h.writtenInCharts x
-
-/-- If `f` is an immersion, it is an immersion on each set. -/
-def IsImmersion.isImmersionOn {f : M → M'} (h : IsImmersion F I I' n f) (s : Set M) :
-    IsImmersionOn F I I' n f s where
-  equiv := h.equiv
-  chartsM x := h.chartsM x
-  chartsM' x := h.chartsM' x
-  mem_source_M x _hx := h.mem_source_M x
-  mem_source_M' x _hx := h.mem_source_M' x
-  mem_atlas_M x _hx := h.mem_atlas_M x
-  mem_atlas_M' x _hx := h.mem_atlas_M' x
-  writtenInCharts x _hx := h.writtenInCharts x
-
-/-- If `f` is an immersion on `Set.univ`, it is an immersion. -/
-def IsImmersion.of_isImmersionOn_univ {f : M → M'} (h : IsImmersionOn F I I' n f Set.univ) :
-    IsImmersion F I I' n f where
-  equiv := h.equiv
-  chartsM := h.chartsM
-  chartsM' := h.chartsM'
-  mem_source_M x := h.mem_source_M x trivial
-  mem_source_M' x := h.mem_source_M' x trivial
-  mem_atlas_M x := h.mem_atlas_M x trivial
-  mem_atlas_M' x := h.mem_atlas_M' x trivial
-  writtenInCharts x := h.writtenInCharts x trivial
-
--- If `f` is an immersion at each `x`, it is an immersion.
--- XXX: how to encode the different equivalences? just make part of the type?
-
-/-- If `f` is a `C^k` immersion on `s`, it is an immersion at each `x ∈ s`. -/
--- The converse also holds, but is cumbersome to state, as `equiv` can vary with each point.
--- We'd have to translate between the equivalences.
-def IsImmersionOn.isImmersionAt {f : M → M'} {s : Set M} {x : M}
-    (h : IsImmersionOn F I I' n f s) (hx : x ∈ s) : IsImmersionAt F I I' n f x where
-  equiv := h.equiv
-  domChart := h.chartsM x
-  codChart := h.chartsM' (f x)
-  mem_source_x := h.mem_source_M x hx
-  mem_source_fx := h.mem_source_M' x hx
-  mem_atlas_domChart := h.mem_atlas_M x hx
-  mem_atlas_codChart := h.mem_atlas_M' x hx
-  writtenInCharts := h.writtenInCharts x hx
-
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
-theorem IsImmersionAt.mfderiv_injective {f : M → M'} {x : M}
+theorem mfderiv_injective {f : M → M'} {x : M}
     (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
   /- Outline of proof:
   (1) `mfderiv` is injective iff `fderiv (writtenInExtChart) is injective`
@@ -220,7 +103,7 @@ theorem IsImmersionAt.mfderiv_injective {f : M → M'} {x : M}
 
 /- If `M` is finite-dimensional and `mfderiv x` is injective, then `f` is immersed at `x`.
 Some sources call this condition `f is infinitesimally injective at x`. -/
-def IsImmersionAt.of_mfderiv_injective [FiniteDimensional 𝕜 E] {f : M → M'} {x : M}
+def of_mfderiv_injective [FiniteDimensional 𝕜 E] {f : M → M'} {x : M}
     (hf : Injective (mfderiv I I' f x)) : IsImmersionAt F I I' n f x :=
   -- (1) if mfderiv I I' f x is injective, the same holds in a neighbourhood of x
   -- In particular, mfderiv I I' f x has (locally) constant rank: this suffices
@@ -229,24 +112,70 @@ def IsImmersionAt.of_mfderiv_injective [FiniteDimensional 𝕜 E] {f : M → M'}
   -- This step requires the inverse function theorem (and possibly shrinking the neighbourhood).
   sorry
 
+end IsImmersionAt
+
+variable (F I I' n) in
+/-- `f : M → N` is a `C^k` immersion if around each point `x ∈ M`,
+there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`, respectively
+such that in these charts, `f` looks like `u ↦ (u, 0)`.
+
+In other words, `f` is an immersion at each `x ∈ M`.
+-/
+def IsImmersion (f : M → M')  : Prop := ∀ x, IsImmersionAt F I I' n f x
+
+namespace IsImmersion
+
+variable {f : M → M'}
+
+/-- If `f` is a `C^k` immersion, there is a single equivalence with the properties we want. -/
+-- Actually, is this true? If I'm allowed to tweak the model at every point, yes;
+-- otherwise maybe not? But I don't seem to care about this, in fact...
+noncomputable def foo [Nonempty M] (h : IsImmersion F I I' n f) :
+    ∃ equiv : (E × F) ≃L[𝕜] E',
+    ∃ domCharts : M → PartialHomeomorph M H, ∃ codCharts : M → PartialHomeomorph M' H',
+    ∀ x, x ∈ (domCharts x).source ∧ ∀ x, f x ∈ (codCharts x).source ∧
+    ∀ x, (domCharts x) ∈ IsManifold.maximalAtlas I n M ∧
+    ∀ x, (codCharts x) ∈ IsManifold.maximalAtlas I' n M' ∧
+    ∀ x, EqOn (((codCharts x).extend I') ∘ f ∘ ((domCharts x).extend I).symm) (equiv ∘ (·, 0))
+      ((domCharts x).extend I).target := by
+  inhabit M
+  use (h Inhabited.default).equiv
+  -- What's the math proof?
+  sorry
+
+/-- A `C^k` immersion is `C^k`. -/
+theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
+
 /- If `M` is finite-dimensional, `f` is `C^k` and each `mfderiv x` is injective,
 then `f` is a `C^k` immersion. -/
-def IsImmersion.of_mfderiv_injective [FiniteDimensional 𝕜 E] {f : M → M'}
+def of_mfderiv_injective [FiniteDimensional 𝕜 E] {f : M → M'}
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) : IsImmersion F I I' n f :=
   -- TODO: glue the equivalences/make a type parameters, otherwise easy from the above
   sorry
 
-variable (F I I' n) in
-/-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding
-and a `C^k` immersion. -/
-structure IsSmoothEmbedding (f : M → M') extends IsImmersion F I I' n f where
-  isEmbedding : Topology.IsEmbedding f
+end IsImmersion
 
 open Topology
 
-def IsSmoothEmbedding.of_mfderiv_injective_of_compactSpace_of_T2Space
+variable (F I I' n) in
+/-- A `C^k` map `f : M → M'` is a smooth `C^k` embedding if it is a topological embedding
+and a `C^k` immersion. -/
+def IsSmoothEmbedding (f : M → M') : Prop := IsImmersion F I I' n f ∧ IsEmbedding f
+
+namespace IsSmoothEmbedding
+
+variable {f : M → M'}
+
+theorem contMDiff (h : IsSmoothEmbedding F I I' n f) : ContMDiff I I' n f := h.1.contMDiff
+
+theorem isImmersion (h : IsSmoothEmbedding F I I' n f) : IsImmersion F I I' n f := h.1
+
+theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
+
+def of_mfderiv_injective_of_compactSpace_of_T2Space
     [FiniteDimensional 𝕜 E] [CompactSpace M] [T2Space M'] {f : M → M'}
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hf'' : Injective f) :
-    IsSmoothEmbedding F I I' n f where
-  toIsImmersion := IsImmersion.of_mfderiv_injective hf hf'
-  isEmbedding := (hf.continuous.isClosedEmbedding hf'').isEmbedding
+    IsSmoothEmbedding F I I' n f :=
+  ⟨.of_mfderiv_injective hf hf', (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
+
+end IsSmoothEmbedding
