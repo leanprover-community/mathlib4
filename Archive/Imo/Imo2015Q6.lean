@@ -31,8 +31,8 @@ and is modified at each succeeding integer time `t` as follows:
 
 Condition 1 ensures that all heights stay in [0, 2014]. Condition 2 ensures that the heights at any
 point in time are distinct, so we can model the collection as a finset of heights of monotonically
-increasing, bounded cardinality. So there is a least time where the cardinality reaches a maximum;
-we take `N` to be that least time and `b` to be that maximum cardinality. $1 ≤ b ≤ 2015$.
+increasing, bounded cardinality. So there is a time where the cardinality reaches a maximum;
+we take `N` to be that time and `b` to be that maximum cardinality. $1 ≤ b ≤ 2015$.
 
 Let $S_t$ be the sum of heights at time $t$. The key observation is that for all $t ≥ N$
 $$S_{t+1} = S_t + a_{t+1} - b$$
@@ -203,10 +203,10 @@ theorem result (ha : Condition a) :
       rw [← sum_flip, sum_range_succ, tsub_self, Nat.cast_zero, add_zero, ← sum_sub_distrib]
       have sc : ∀ x ∈ range (b - 1), (2014 - x - (b - 1 - x : ℕ)) = (2015 - b : ℤ) := fun x mx ↦ by
         rw [mem_range] at mx; omega
-      rw [Finset.sum_congr rfl sc, sum_const, card_range, nsmul_eq_mul, Nat.cast_pred bp]
+      rw [sum_congr rfl sc, sum_const, card_range, nsmul_eq_mul, Nat.cast_pred bp]
     _ ≤ _ := by
       rw [← mul_le_mul_left zero_lt_four, ← mul_assoc,
-        show 4 * 1007 ^ 2 = (((b : ℤ) - 1) + (2015 - b)) ^ 2 by simp]
+        show 4 * 1007 ^ 2 = ((b - 1 : ℤ) + (2015 - b)) ^ 2 by simp]
       exact four_mul_le_sq_add ..
 
 end Imo2015Q6
