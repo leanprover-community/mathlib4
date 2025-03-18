@@ -192,7 +192,7 @@ instance addCommGroup : AddCommGroup I :=
     rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 /-- The coercion into the ring as a `AddMonoidHom` -/
-@[simp]
+@[simps]
 def coeAddMonoidHom : I →+ R where
   toFun := (↑)
   map_zero' := rfl

@@ -18,7 +18,7 @@ In this file, we establish the basic properties of Polish spaces.
 
 * `PolishSpace α` is a mixin typeclass on a topological space, requiring that the topology is
   second-countable and compatible with a complete metric. To endow the space with such a metric,
-  use in a proof `letI := upgradeCompletelyMetrizable α`.
+  use in a proof `letI := upgradeIsCompletelyMetrizable α`.
 * `IsClosed.polishSpace`: a closed subset of a Polish space is Polish.
 * `IsOpen.polishSpace`: an open subset of a Polish space is Polish.
 * `exists_nat_nat_continuous_surjective`: any nonempty Polish space is the continuous image
@@ -53,19 +53,19 @@ variable {α : Type*} {β : Type*}
 with a metric for which it is complete.
 
 To endow a Polish space with a complete metric space structure, do
-`letI := upgradeCompletelyMetrizable α`.
+`letI := upgradeIsCompletelyMetrizable α`.
 -/
 class PolishSpace (α : Type*) [h : TopologicalSpace α] : Prop
-    extends SecondCountableTopology α, CompletelyMetrizableSpace α
+    extends SecondCountableTopology α, IsCompletelyMetrizableSpace α
 
-instance [TopologicalSpace α] [SeparableSpace α] [CompletelyMetrizableSpace α] :
+instance [TopologicalSpace α] [SeparableSpace α] [IsCompletelyMetrizableSpace α] :
     PolishSpace α := by
-  letI := upgradeCompletelyMetrizable α
+  letI := upgradeIsCompletelyMetrizable α
   haveI := UniformSpace.secondCountable_of_separable α
   constructor
 
 @[deprecated (since := "2025-03-14")] alias UpgradedPolishSpace :=
-  UpgradedCompletelyMetrizableSpace
+  UpgradedIsCompletelyMetrizableSpace
 
 @[deprecated (since := "2025-03-14")] alias polishSpaceMetric :=
   completelyMetrizableMetric
@@ -74,20 +74,20 @@ instance [TopologicalSpace α] [SeparableSpace α] [CompletelyMetrizableSpace α
   complete_completelyMetrizableMetric
 
 @[deprecated (since := "2025-03-14")] alias upgradePolishSpace :=
-  upgradeCompletelyMetrizable
+  upgradeIsCompletelyMetrizable
 
 namespace PolishSpace
 
 /-- Any nonempty Polish space is the continuous image of the fundamental space `ℕ → ℕ`. -/
 theorem exists_nat_nat_continuous_surjective (α : Type*) [TopologicalSpace α] [PolishSpace α]
     [Nonempty α] : ∃ f : (ℕ → ℕ) → α, Continuous f ∧ Surjective f :=
-  letI := upgradeCompletelyMetrizable α
+  letI := upgradeIsCompletelyMetrizable α
   exists_nat_nat_continuous_surjective_of_completeSpace α
 
 /-- Given a closed embedding into a Polish space, the source space is also Polish. -/
 theorem _root_.Topology.IsClosedEmbedding.polishSpace [TopologicalSpace α] [TopologicalSpace β]
     [PolishSpace β] {f : α → β} (hf : IsClosedEmbedding f) : PolishSpace α := by
-  letI := upgradeCompletelyMetrizable β
+  letI := upgradeIsCompletelyMetrizable β
   letI : MetricSpace α := hf.isEmbedding.comapMetricSpace f
   haveI : SecondCountableTopology α := hf.isEmbedding.secondCountableTopology
   have : CompleteSpace α := by
@@ -126,7 +126,7 @@ protected theorem iInf {ι : Type*} [Countable ι] {t : ι → TopologicalSpace 
   rcases ht₀ with ⟨i₀, hi₀⟩
   rcases CompletePseudometrizable.iInf ⟨t i₀, letI := t i₀; haveI := ht i₀; inferInstance, hi₀⟩
     fun i ↦
-      letI := t i; haveI := ht i; letI := upgradeCompletelyMetrizable α
+      letI := t i; haveI := ht i; letI := upgradeIsCompletelyMetrizable α
       ⟨inferInstance, inferInstance, inferInstance, rfl⟩
     with ⟨u, hcomp, hcount, htop⟩
   rw [← htop]
@@ -255,7 +255,7 @@ instance instCompleteSpace [CompleteSpace α] : CompleteSpace (CompleteCopy s) :
 /-- An open subset of a Polish space is also Polish. -/
 theorem _root_.IsOpen.polishSpace {α : Type*} [TopologicalSpace α] [PolishSpace α] {s : Set α}
     (hs : IsOpen s) : PolishSpace s := by
-  letI := upgradeCompletelyMetrizable α
+  letI := upgradeIsCompletelyMetrizable α
   lift s to Opens α using hs
   exact inferInstanceAs (PolishSpace s.CompleteCopy)
 

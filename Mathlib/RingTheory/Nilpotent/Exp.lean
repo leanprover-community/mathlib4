@@ -23,7 +23,7 @@ This file defines the exponential map `IsNilpotent.exp` on `ℚ`-algebras. The d
 The main result is `IsNilpotent.exp_add_of_commute`, which establishes the expected connection
 between the additive and multiplicative structures of `A` for commuting nilpotent elements.
 
-Additionally, `IsNilpotent.exp_of_nilpotent_is_unit` shows that if `a` is nilpotent in `A`, then
+Additionally, `IsNilpotent.isUnit_exp` shows that if `a` is nilpotent in `A`, then
 `IsNilpotent.exp a` is a unit in `A`.
 
 Note: Although the definition works with `ℚ`-algebras, the results can be applied to any algebra
@@ -61,9 +61,6 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
     rw [h₁, this, add_zero]
   exact sum_eq_zero fun _ h₂ => by
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
-
-theorem exp_zero_eq_one : exp (0 : A) = 1 := by
-  simpa using exp_eq_sum (pow_one (0 : A))
 
 theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp (a + b) = exp a * exp b := by
@@ -156,14 +153,26 @@ theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a)
       · simp only [implies_true]
   rwa [s₂.symm] at s₁
 
-theorem exp_of_nilpotent_is_unit {a : A} (h : IsNilpotent a) : IsUnit (exp a) := by
-  have h₁ : Commute a (-a) := Commute.neg_right rfl
-  have h₂ : IsNilpotent (-a) := IsNilpotent.neg h
-  have h₃ := exp_add_of_commute h₁ h h₂
-  rw [add_neg_cancel a, exp_zero_eq_one] at h₃
+@[simp]
+theorem exp_zero :
+    exp (0 : A) = 1 := by
+  simp [exp_eq_sum (pow_one 0)]
+
+theorem exp_mul_exp_neg_self {a : A} (h : IsNilpotent a) :
+    exp a * exp (-a) = 1 := by
+  simp [← exp_add_of_commute (Commute.neg_right rfl) h h.neg]
+
+theorem exp_neg_mul_exp_self {a : A} (h : IsNilpotent a) :
+    exp (- a) * exp a = 1 := by
+  simp [← exp_add_of_commute (Commute.neg_left rfl) h.neg h]
+
+theorem isUnit_exp {a : A} (h : IsNilpotent a) : IsUnit (exp a) := by
   apply isUnit_iff_exists.2
-  refine ⟨exp (-a), h₃.symm, ?_⟩
-  rw [← exp_add_of_commute h₁.symm h₂ h, neg_add_cancel a, exp_zero_eq_one]
+  use exp (- a)
+  exact ⟨exp_mul_exp_neg_self h, exp_neg_mul_exp_self h⟩
+
+@[deprecated (since := "2025-03-11")]
+alias exp_of_nilpotent_is_unit := isUnit_exp
 
 theorem map_exp {B F : Type*} [Ring B] [FunLike F A B] [RingHomClass F A B] [Module ℚ B]
     {a : A} (ha : IsNilpotent a) (f : F) :

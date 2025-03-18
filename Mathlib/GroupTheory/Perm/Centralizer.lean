@@ -384,7 +384,7 @@ theorem ofPermHom_support :
 
 theorem card_ofPermHom_support :
     (ofPermHom a τ).support.card =
-      ∑ c ∈ (τ : Perm g.cycleFactorsFinset).support,  c.val.support.card := by
+      ∑ c ∈ (τ : Perm g.cycleFactorsFinset).support, c.val.support.card := by
   rw [ofPermHom_support, Finset.card_biUnion]
   intro c _ d _ h
   apply Equiv.Perm.Disjoint.disjoint_support
