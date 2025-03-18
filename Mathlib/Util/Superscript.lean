@@ -246,7 +246,8 @@ private def checkArgs (f : Expr → DelabM Unit) : DelabM Unit := do
   let e ← getExpr
   let args := e.getAppArgs
   let kinds ← getParamKinds e.getAppFn args
-  -- The function may be partially-applied. We only need to check the args we have.
+  -- The function may be partially-applied. We need only check the arguments we
+  -- have. `kinds.size < args.size` indicates an error collecting ParamKinds.
   guard <| args.size <= kinds.size
   args.zipIdx.zip kinds |>.filter
     (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
