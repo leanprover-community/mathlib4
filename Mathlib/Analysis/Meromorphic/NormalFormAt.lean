@@ -126,7 +126,7 @@ theorem AnalyticAt.meromorphicNFAt (hf : AnalyticAt 𝕜 f x) :
 
 /-- Meromorphic functions have normal form outside of a discrete subset in the domain of
 meromorphicity. -/
-theorem MeromorphicOn.meromorphicNFAt_codiscreteWithin [CompleteSpace E] {U : Set 𝕜}
+theorem MeromorphicOn.meromorphicNFAt_mem_codiscreteWithin [CompleteSpace E] {U : Set 𝕜}
     (hf : MeromorphicOn f U) :
     { x | MeromorphicNFAt f x } ∈ Filter.codiscreteWithin U := by
   filter_upwards [hf.analyticAt_codiscreteWithin] with _ ha
