@@ -14,6 +14,9 @@ finite-dimensional definition: we cannot prove the implication yet.
 
 TODO complete this doc-string, once more details are clear.
 
+## TODO
+- the product of two immersions
+
 -/
 
 open scoped Manifold Topology ContDiff
@@ -23,7 +26,7 @@ open Function Set
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {F F' : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
   {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
   {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
@@ -32,7 +35,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N'] {n : WithTop ℕ∞}
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
+  {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
 
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
@@ -99,10 +103,36 @@ def congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[
       sorry
     exact EqOn.trans missing h.writtenInCharts
 
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
+    (h : IsImmersionAt F I J n f x) (h' : IsImmersionAt F' I' J' n g x') :
+    IsImmersionAt (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') :=
+  sorry
+
 /-- A `C^k` immersion at `x` is `C^k` at `x`. -/
 -- continuity follows since we're in a chart, on an open set;
 -- smoothness follows since domChart and codChart are compatible with the maximal atlas
-theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x := sorry
+theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x := by
+  suffices ContMDiffWithinAt I I' n f h.domChart.source x from
+    this.contMDiffAt <| h.domChart.open_source.mem_nhds (mem_domChart_source h)
+  rw [contMDiffWithinAt_iff_of_mem_maximalAtlas (e := h.domChart) (e' := h.codChart)]
+  constructor
+  · -- lemma: prove continuity first, follows from the local description...
+    sorry -- ContinuousWithinAt f h.domChart.source x
+  · have aux := h.writtenInCharts
+    have : ContDiffWithinAt 𝕜 n ((h.codChart.extend I') ∘ f ∘ ↑(h.domChart.extend I).symm)
+        (h.domChart.extend I).target ((h.domChart.extend I) x) := by
+      -- apply a congr lemma, and prove this for the inclusion
+      sorry
+    apply this.mono
+    -- is this true? in any case, want the lemma below
+    -- have aux2 : (h.domChart.extend I).symm ⁻¹' h.domChart.source =
+    --   (h.domChart.extend I).target := sorry
+    simp only [mfld_simps, inter_comm]
+    gcongr
+    sorry -- is this true? need to think!
+  repeat sorry
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
 theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
@@ -161,6 +191,13 @@ noncomputable def foo [Nonempty M] (h : IsImmersion F I I' n f) :
   use (h Inhabited.default).equiv
   -- What's the math proof?
   sorry
+
+/-- If `f: M → N` and `g: M' × N'` are immersions at `x` and `x'`, respectively,
+then `f × g: M × N → M' × N'` is an immersion at `(x, x')`. -/
+theorem prodMap {f : M → N} {g : M' → N'}
+    (h : IsImmersion F I J n f) (h' : IsImmersion F' I' J' n g) :
+    IsImmersion (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
+  fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
