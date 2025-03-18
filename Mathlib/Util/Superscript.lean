@@ -252,17 +252,17 @@ private def checkArgs (f : Expr → DelabM Unit) : DelabM Unit := do
     (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
     fun ((x, i), _) ↦ withNaryArg i <| f x
 
-/-- The binary operations `+`, `-`, `=`, and `==` can be super/subscripted if
-their operands can be super/subscripted. -/
+/-- The binary operations `+`, `-`, `=`, and `==` can be superscripted
+(subscripted) if their operands can be superscripted (subscripted). -/
 private def isSpecialBinOp (e : Expr) : Bool :=
   e.isAppOfArity ``HAdd.hAdd 6 ||
   e.isAppOfArity ``HSub.hSub 6 ||
   e.isAppOfArity ``Eq 3 ||
   e.isAppOfArity ``BEq.beq 4
 
-/-- Any numeral is valid in a superscript (or subscript). `() : Unit` is valid.
+/-- Any number is valid in a superscript (or subscript). `() : Unit` is valid.
 Any constant or free variable with a valid user-facing name is also valid. -/
-private def constValid (e : Expr) (fname : Name → Bool) : DelabM Bool := do
+private def constValid (e : Expr) (fname : Name → Bool) : DelabM Bool :=
   return e.isConstOf ``Unit.unit ||
     (← name e).any fname ||
     (← delab) matches `($_:num)
@@ -271,7 +271,7 @@ private def constValid (e : Expr) (fname : Name → Bool) : DelabM Bool := do
 /-- Checks if the entire expression `e` can be superscripted (or subscripted). -/
 private def checkExpr (e : Expr) (fname : Name → Bool)
     (fexpr : Expr → DelabM Unit) : DelabM Unit := do
-  -- Look for numerals, valid constants and free variables, and `() : Unit`.
+  -- Look first for numbers, valid constants, and `() : Unit`.
   if (← constValid e fname) then return
   -- Function application is valid if all explicit arguments are valid and the
   -- function name is valid (or one of `+`, `-`, `=`, `==`).
@@ -325,7 +325,10 @@ def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscri
 initialize register_parser_alias superscript
 
 open PrettyPrinter.Delaborator SubExpr in
-/-- Checks that the provided expression can be superscripted before delaborating. -/
+/-- Checks that the provided expression can be superscripted before delaborating.
+
+This is a conservative approximation — it may not succeed even given a valid
+superscriptable expression as input. -/
 def delabSuperscript : Delab := do
   Superscript.superscriptable (← getExpr); delab
 
@@ -366,7 +369,10 @@ def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript t
 initialize register_parser_alias subscript
 
 open PrettyPrinter.Delaborator SubExpr in
-/-- Checks that the provided expression can be subscripted before delaborating. -/
+/-- Checks that the provided expression can be subscripted before delaborating.
+
+This is a conservative approximation — it may not succeed even given a valid
+subscriptable expression as input. -/
 def delabSubscript : Delab := do
   Superscript.subscriptable (← getExpr); delab
 
