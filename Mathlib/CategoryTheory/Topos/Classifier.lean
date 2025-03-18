@@ -27,13 +27,6 @@ Let `C` refer to a category with a terminal object.
 * `CategoryTheory.HasClassifier C` says that there is at least one subobject classifier.
   `Ω C` denotes a choice of subobject classifier.
 
-* `CategoryTheory.Classifier.cmap` sends every subobject of `X` to its characteristic map of type
-  `X ⟶ Ω C`.
-
-* `CategoryTheory.Classifier.compr` sends every map `φ : X ⟶ Ω C` to the subobject of `X` whose
-  characteristic map is `φ` by pulling back the truth morphism along `φ`. This generalizes the
-  construction of a subset "by comprehension" from its characteristic function in set theory.
-
 ## Main results
 
 * It is a theorem that the truth morphism `⊤_ C ⟶ Ω C` is a (split, and therefore regular)
@@ -45,7 +38,7 @@ Let `C` refer to a category with a terminal object.
 * `CategoryTheory.Classifier.representableBy`: any subobject classifier `Ω` in `C` represents the
   subobjects functor `CategoryTheory.Subobject.presheaf C`.
 
-* `CategoryTheory.Classifier.fromRepresentation`: any representation `Ω` of
+* `CategoryTheory.Classifier.SubobjectRepresentableBy.classifier`: any representation `Ω` of
   `CategoryTheory.Subobject.presheaf C` is a subobject classifier in `C`.
 
 * `CategoryTheory.hasClassifier_isRepresentable_iff`: from the two above mappings, we get that a
@@ -201,29 +194,6 @@ end HasClassifier
 /-! ### The representability theorem of subobject classifiers -/
 
 section Representability
-
-/-! #### Lemmas about pullbacks and subobjects -/
-
-section SubobjectIsPullback
-
-open Subobject
-
-variable {C : Type u} [Category.{v} C]
-
-lemma eqOfIsPullback {X Y Z : C} {x x' : Subobject X}
-    {f : X ⟶ Z} {g : Y ⟶ Z} {k : (x : C) ⟶ Y} {k' : (x' : C) ⟶ Y}
-    (h : IsPullback k x.arrow g f) (h' : IsPullback k' x'.arrow g f) :
-    x = x' :=
-  eq_of_comm (IsPullback.isoIsPullback _ _ h h') (by simp)
-
-lemma arrow_isPullback {X Y Z : C}
-    (f : Y ⟶ Z) (g : X ⟶ Z) [HasPullback f g] [Mono f] :
-    IsPullback ((underlyingIso _).hom ≫ pullback.fst f g) (mk (pullback.snd f g)).arrow f g :=
-  IsPullback.of_iso (IsPullback.of_hasPullback f g)
-    (underlyingIso _).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
-    (by simp) (by simp) (by simp) (by simp)
-
-end SubobjectIsPullback
 
 namespace Classifier
 
