@@ -6,9 +6,7 @@ Authors: Dagur Asgeirsson, Jon Eugster, Emily Riehl
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 
 /-!
-# HasConicalProducts
-
-
+# Existence of conical products
 -/
 
 universe w v' v u u'
@@ -34,11 +32,7 @@ abbrev HasConicalProduct {I : Type w} (f : I → C) :=
 
 attribute [instance] HasConicalProducts.hasConicalLimitsOfShape
 
-namespace HasConicalProducts
-
 /-- ensure products exists of existence of conical products -/
 example [HasConicalProducts.{w} V C] : HasProducts.{w} C := inferInstance
-
-end HasConicalProducts
 
 end CategoryTheory.Enriched
