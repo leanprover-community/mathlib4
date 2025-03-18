@@ -580,7 +580,7 @@ alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_
 theorem iIndepFun.congr {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {f g : Π i, Ω → β i} (hf : iIndepFun f μ) (h : ∀ i, f i =ᵐ[μ] g i) :
     iIndepFun g μ :=
-  Kernel.iIndepFun.congr hf (by simp [h])
+  Kernel.iIndepFun.congr' hf (by simp [h])
 
 nonrec lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
@@ -616,7 +616,7 @@ nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
 theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g μ)
     (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFun f' g' μ := by
-  refine Kernel.IndepFun.congr hfg ?_ ?_ <;>
+  refine Kernel.IndepFun.congr' hfg ?_ ?_ <;>
     simp only [ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
   exacts [hf, hg]
 
