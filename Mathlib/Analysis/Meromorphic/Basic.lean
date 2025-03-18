@@ -264,7 +264,7 @@ section arithmetic
 
 include hf in
 /-- Meromorphic functions on `U` are analytic on `U`, outside of a discrete subset. -/
-theorem analyticAt_codiscreteWithin [CompleteSpace E] :
+theorem analyticAt_mem_codiscreteWithin [CompleteSpace E] :
     { x | AnalyticAt 𝕜 f x } ∈ Filter.codiscreteWithin U := by
   rw [mem_codiscreteWithin]
   intro x hx
