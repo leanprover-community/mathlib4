@@ -45,13 +45,13 @@ XXX: why in `maximalAtlas` and not merely atlas? to given ourselves extra freedo
 -/
 structure IsImmersionAt (f : M → M') (x : M) where
   equiv : (E × F) ≃L[𝕜] E'
-  φ : PartialHomeomorph M H
-  ψ : PartialHomeomorph M' H'
-  mem_source_x : x ∈ φ.source
-  mem_source_fx : f x ∈ ψ.source
-  mem_atlas_φ : φ ∈ IsManifold.maximalAtlas I n M
-  mem_atlas_ψ : ψ ∈ IsManifold.maximalAtlas I' n M'
-  writtenInCharts : (ψ.extend I') ∘ f ∘ (φ.extend I).symm = equiv ∘ (·, 0)
+  domChart : PartialHomeomorph M H
+  codChart : PartialHomeomorph M' H'
+  mem_source_x : x ∈ domChart.source
+  mem_source_fx : f x ∈ codChart.source
+  mem_atlas_domChart : domChart ∈ IsManifold.maximalAtlas I n M
+  mem_atlas_codChart : codChart ∈ IsManifold.maximalAtlas I' n M'
+  writtenInCharts : (codChart.extend I') ∘ f ∘ (domChart.extend I).symm = equiv ∘ (·, 0)
 
 variable (F I I' n) in
 /-- `f : M → N` is a `C^k` immersion on `s` if around each point `x ∈ s`,
@@ -87,12 +87,12 @@ structure IsImmersion (f : M → M') where
 def IsImmersion.isImmersionAt {f : M → M'} (h : IsImmersion F I I' n f) (x : M) :
     IsImmersionAt F I I' n f x where
   equiv := h.equiv
-  φ := h.chartsM x
-  ψ := h.chartsM' (f x)
+  domChart := h.chartsM x
+  codChart := h.chartsM' (f x)
   mem_source_x := h.mem_source_M x
   mem_source_fx := h.mem_source_M' x
-  mem_atlas_φ := h.mem_atlas_M x
-  mem_atlas_ψ := h.mem_atlas_M' x
+  mem_atlas_domChart := h.mem_atlas_M x
+  mem_atlas_codChart := h.mem_atlas_M' x
   writtenInCharts := h.writtenInCharts x
 
 /-- If `f` is an immersion, it is an immersion on each set. -/
@@ -128,12 +128,12 @@ def IsImmersion.of_isImmersionOn_univ {f : M → M'} (h : IsImmersionOn F I I' n
 def IsImmersionOn.isImmersionAt {f : M → M'} {s : Set M} {x : M}
     (h : IsImmersionOn F I I' n f s) (hx : x ∈ s) : IsImmersionAt F I I' n f x where
   equiv := h.equiv
-  φ := h.chartsM x
-  ψ := h.chartsM' (f x)
+  domChart := h.chartsM x
+  codChart := h.chartsM' (f x)
   mem_source_x := h.mem_source_M x hx
   mem_source_fx := h.mem_source_M' x hx
-  mem_atlas_φ := h.mem_atlas_M x hx
-  mem_atlas_ψ := h.mem_atlas_M' x hx
+  mem_atlas_domChart := h.mem_atlas_M x hx
+  mem_atlas_codChart := h.mem_atlas_M' x hx
   writtenInCharts := h.writtenInCharts x hx
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
