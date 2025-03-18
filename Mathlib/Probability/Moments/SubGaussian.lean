@@ -568,8 +568,6 @@ lemma sum_of_iIndepFun
     {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
-  have : iIndepFun (fun (i : s) ↦ X i) μ :=
-    iIndepFun.precomp (g := Subtype.val) Subtype.val_injective h_indep
   have A (i : s) : AEMeasurable (X i) μ := (h_subG i i.2).aemeasurable
   have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), (A i).mk _ ω) (∑ (i : s), c i) μ := by
     apply sum_of_iIndepFun_of_measurable
@@ -577,8 +575,7 @@ lemma sum_of_iIndepFun
         (iIndepFun.precomp (g := Subtype.val) Subtype.val_injective h_indep)
         (fun i ↦ AEMeasurable.ae_eq_mk (A i))
     · exact fun i ↦ AEMeasurable.measurable_mk (A i)
-    · intro i hi
-      apply (h_subG i i.2).congr (A i).ae_eq_mk
+    · exact fun i hi ↦ (h_subG i i.2).congr (A i).ae_eq_mk
   rw [Finset.sum_coe_sort] at this
   apply this.congr
   have : ∀ᵐ ω ∂μ, ∀ (i : s), X i ω = (A i).mk _ ω :=
