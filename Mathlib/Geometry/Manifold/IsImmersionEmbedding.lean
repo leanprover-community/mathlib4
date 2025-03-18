@@ -84,6 +84,21 @@ noncomputable def writtenInCharts (h : IsImmersionAt F I I' n f x) :
       (h.domChart.extend I).target :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2
 
+/-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
+then `g` is an immersion at `x`. -/
+def congr_of_eventuallyEq {f g : M → M'} {x : M}
+    (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) : IsImmersionAt F I I' n g x := by
+  choose s hxs hfg using h'.exists_mem
+  -- TODO: need to shrink h.domChart until its source is contained in s
+  use h.equiv, h.domChart, h.codChart
+  refine ⟨mem_domChart_source h, ?_, h.domChart_mem_maximalAtlas, h.codChart_mem_maximalAtlas, ?_⟩
+  · exact hfg (mem_of_mem_nhds hxs) ▸ mem_codChart_source h
+  · have missing : EqOn ((h.codChart.extend I') ∘ g ∘ (h.domChart.extend I).symm)
+        ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.domChart.extend I).target := by
+      -- after shrinking, this will be true
+      sorry
+    exact EqOn.trans missing h.writtenInCharts
+
 /-- A `C^k` immersion at `x` is `C^k` at `x`. -/
 -- continuity follows since we're in a chart, on an open set;
 -- smoothness follows since domChart and codChart are compatible with the maximal atlas
@@ -125,7 +140,10 @@ def IsImmersion (f : M → M')  : Prop := ∀ x, IsImmersionAt F I I' n f x
 
 namespace IsImmersion
 
-variable {f : M → M'}
+variable {f g : M → M'}
+
+/-- If `f` is an immersion, it is an immersion at each point. -/
+def isImmersionAt (h : IsImmersion F I I' n f) (x : M) : IsImmersionAt F I I' n f x := h x
 
 /-- If `f` is a `C^k` immersion, there is a single equivalence with the properties we want. -/
 -- Actually, is this true? If I'm allowed to tweak the model at every point, yes;
@@ -142,6 +160,10 @@ noncomputable def foo [Nonempty M] (h : IsImmersion F I I' n f) :
   use (h Inhabited.default).equiv
   -- What's the math proof?
   sorry
+
+/-- If `f = g` and `f` is an immersion, so is `g`. -/
+theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
+  fun x ↦ (h x).congr_of_eventuallyEq heq.eventuallyEq
 
 /-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
