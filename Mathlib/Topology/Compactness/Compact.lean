@@ -577,7 +577,7 @@ theorem Tendsto.isCompact_insert_range_of_cocompact {f : X → Y} {y}
   intro l hne hle
   by_cases hy : ClusterPt y l
   · exact ⟨y, Or.inl rfl, hy⟩
-  simp only [clusterPt_iff, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy
+  simp only [clusterPt_iff_nonempty, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy
   rcases hy with ⟨s, hsy, t, htl, hd⟩
   rcases mem_cocompact.1 (hf hsy) with ⟨K, hKc, hKs⟩
   have : f '' K ∈ l := by
@@ -857,7 +857,7 @@ theorem isCompact_range [CompactSpace X] {f : X → Y} (hf : Continuous f) : IsC
   rw [← image_univ]; exact isCompact_univ.image hf
 
 theorem isCompact_diagonal [CompactSpace X] : IsCompact (diagonal X) :=
-  @range_diag X ▸ isCompact_range (continuous_id.prod_mk continuous_id)
+  @range_diag X ▸ isCompact_range (continuous_id.prodMk continuous_id)
 
 /-- If `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map. -/
 theorem isClosedMap_snd_of_compactSpace [CompactSpace X] :
