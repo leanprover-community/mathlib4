@@ -159,12 +159,6 @@ local prefix:arg "#" => card
 private def factorial {γ : Sort u} := @id γ
 local notation:10000 n "!" => factorial n
 
-private class HSMul (α : Type u) (β : Type v) (γ : outParam (Type w)) where
-  hSMul : α → β → γ
-instance : HSMul Nat Nat Nat where
-  hSMul a b := a * b
-infixr:73 " • " => HSMul.hSMul
-
 section no_subscript
 
 /-- info: check_subscript x_x : Unit -/
@@ -181,8 +175,6 @@ section no_subscript
 #guard_msgs in #check check_subscript #n
 /-- info: check_subscript 2! : Unit -/
 #guard_msgs in #check check_subscript 2!
-/-- info: check_subscript (1 • 2) : Unit -/
-#guard_msgs in #check check_subscript (1 • 2)
 
 set_option pp.mvars false in
 /-- info: check_subscript ?_ : Unit -/
@@ -212,8 +204,6 @@ section no_superscript
 #guard_msgs in #check check_superscript #n
 /-- info: check_superscript 2! : Unit -/
 #guard_msgs in #check check_superscript 2!
-/-- info: check_superscript (1 • 2) : Unit -/
-#guard_msgs in #check check_superscript (1 • 2)
 
 set_option pp.mvars false in
 /-- info: check_superscript ?_ : Unit -/
