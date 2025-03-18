@@ -523,18 +523,13 @@ lemma IsPath.take_spec_cons  {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
 
   sorry
 
-lemma IsPath.snd_dropUntil_dart_fst_eq_snd {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
-    (hd : d ∈ p.darts) :
-    (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).snd = d.toProd.2 := by
-  rw [snd, getVert_dropUntil,
-      ← p.getVert_length_takeUntil_eq_self (dart_snd_mem_support_of_mem_darts _ hd)]
-  congr
-  have h1 := take_spec p (dart_fst_mem_support_of_mem_darts _ hd)
-  have h2 := take_spec p (dart_snd_mem_support_of_mem_darts _ hd)
-  apply_fun length at h1 h2
-  rw [length_append] at h1 h2
+lemma IsPath.snd_dropUntil_dart_fst_eq_snd {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
+    (hd : d ∈ p.darts)  (hd1 : p.getVert n = d.toProd.1 ):
+    (p.drop n).snd = d.toProd.2 := by
+  rw [snd, getVert_drop]
+  have : ⟨(p.getVert n, p.getVert (n + 1)), adj_getVert_succ p (by sorry)⟩ = d := by
+    sorry
   sorry
-
 /-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) (xS : x ∈ S)
@@ -545,6 +540,43 @@ theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) 
   ⟨_, (rotate_darts _ xp).mem_iff.1 <| (darts_takeUntil_subset _
           <| (mem_support_rotate_iff xp).2 yp) hd, hd1, hd2⟩
 
+/-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
+there exists a dart in the walk whose start is in `S` but whose end is not. -/
+theorem exists_last_getVert {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
+    ∃ n : ℕ, n < p.length ∧ p.getVert n ∈ S ∧ p.getVert (n + 1) ∉ S := by
+  induction p with
+  | nil => cases vS uS
+  | cons a p' ih =>
+    rename_i x y w
+    by_cases h : y ∈ S
+    · obtain ⟨d, hn, hd, hcd⟩ := ih h vS
+      use (d + 1)
+      simp_rw [getVert_cons_succ, length_cons]
+      simp only [Nat.add_lt_add_iff_right]
+      exact ⟨hn, hd, hcd⟩
+    · use 0
+      simp_rw [getVert_cons_succ, getVert_zero]
+      simp only [length_cons, Nat.zero_lt_succ, true_and]
+      exact ⟨uS, h⟩
+
+
+/-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
+there exists a dart in the walk whose start is in `S` but whose end is not. -/
+theorem exists_last_getVert' {u : V} {a b : ℕ} (c : G.Walk u v) (S : Set V)
+    (xS : c.getVert a ∈ S) (yS : c.getVert b ∉ S) (h : a ≤ b) :
+     ∃ n : ℕ, c.getVert n ∈ S ∧ c.getVert (n + 1) ∉ S := by
+  obtain ⟨n, hn, hd1, hd2⟩ := exists_last_getVert ((c.drop a).take (b - a)) S xS
+    (by rwa [getVert_drop, Nat.add_sub_cancel' h])
+  simp_rw [getVert_take, getVert_drop, Nat.add_sub_cancel' h] at hd1 hd2
+  have := hn.trans_le <| length_take_le (c.drop a) (b-a)
+  rw [if_neg (by omega)] at hd1
+  use (a + n)
+  split_ifs at hd2 with h1
+  · have : b = a + n + 1 := by omega
+    use hd1, this ▸ hd2
+  · use hd1
+    rw [Nat.add_succ] at hd2
+    exact hd2
 
 end WalkDecomp
 
