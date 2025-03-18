@@ -12,6 +12,7 @@ import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 
 /-! # Substitutions in power series
 
@@ -102,64 +103,6 @@ theorem MvPowerSeries.monomial_smul_const
       = (Finsupp.prod e fun s e => (r • MvPowerSeries.X s) ^ e) := by
   rw [prod_smul_X_eq_smul_monomial_one, ← map_smul, smul_eq_mul, mul_one]
   simp only [Finsupp.sum, Finsupp.prod, Finset.prod_pow_eq_pow_sum]
-
-section DiscreteUniformity
-
-/-- The discrete uniformity -/
-class DiscreteUniformity (α : Type*) [u : UniformSpace α] : Prop where
-  eq_principal_idRel : uniformity α = Filter.principal idRel
-
-/-- The bot uniformity is the discrete uniformity -/
-instance (α : Type*) : @DiscreteUniformity α ⊥ := by
-  apply @DiscreteUniformity.mk α ⊥ rfl
-
-/-- The discrete uniformity induces the discrete topology  -/
-instance (α : Type*) [UniformSpace α] [DiscreteUniformity α] :
-    DiscreteTopology α := by
-  rw [discreteTopology_iff_singleton_mem_nhds]
-  intro a
-  rw [UniformSpace.mem_nhds_iff]
-  simp only [Set.subset_singleton_iff, DiscreteUniformity.eq_principal_idRel]
-  simp only [Filter.mem_principal, idRel_subset]
-  use Set.diagonal α
-  simp only [Set.mem_diagonal_iff, implies_true, true_and]
-  intro x
-  simp only [UniformSpace.ball, Set.mem_preimage, Set.mem_diagonal_iff]
-  exact fun a => a.symm
-
-/-- The discrete uniformity makes a group a `UniformGroup -/
-@[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`"]
-instance {R : Type*} [Group R] [UniformSpace R] [DiscreteUniformity R] :
-    UniformGroup R where
-  uniformContinuous_div := fun s hs ↦ by
-    simp only [uniformity_prod, DiscreteUniformity.eq_principal_idRel, Filter.comap_principal,
-      Filter.inf_principal, Filter.map_principal, Filter.mem_principal, Set.image_subset_iff]
-    rintro ⟨⟨x, y⟩, z, t⟩
-    simp only [Set.mem_inter_iff, Set.mem_preimage, mem_idRel, and_imp]
-    rintro ⟨rfl⟩ ⟨rfl⟩
-    exact mem_uniformity_of_eq hs rfl
-
-/-- The discrete uniformity makes a space complete -/
-instance (α : Type*) [UniformSpace α] [DiscreteUniformity α] :
-    CompleteSpace α where
-  complete {f} hf := by
-    simp [cauchy_iff, bot_uniformity] at hf
-    rcases hf with ⟨f_NeBot, hf⟩
-    let d := (fun (a : α) ↦ (a, a)) '' Set.univ
-    obtain ⟨t, ht, ht'⟩ := hf d (by
-      simp only [DiscreteUniformity.eq_principal_idRel, Filter.mem_principal, idRel_subset]
-      exact (fun a ↦ Set.mem_image_of_mem (fun a => (a, a)) (Set.mem_univ a)))
-    obtain ⟨x, hx⟩ := f_NeBot.nonempty_of_mem ht
-    use x
-    intro s hs
-    apply f.sets_of_superset ht
-    intro y hy
-    convert mem_of_mem_nhds hs
-    apply symm
-    simpa only [d, Set.image_univ, Set.range_diag, Set.mem_diagonal_iff]
-      using ht' (Set.mk_mem_prod hx hy)
-
-end DiscreteUniformity
 
 namespace MvPowerSeries
 
