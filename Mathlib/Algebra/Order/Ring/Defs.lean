@@ -295,6 +295,8 @@ instance (priority := 100) AddMonoidWithOne.toCharZero {α}
   cast_injective :=
     (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
 
+-- see Note [lower instance priority]
+-- to speed up typeclass inference
 instance (priority := 100) StrictOrderedSemiring.toCharZero : CharZero α := inferInstance
 
 -- see Note [lower instance priority]
