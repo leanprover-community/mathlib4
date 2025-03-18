@@ -42,7 +42,7 @@ theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
 theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
   and_comm
 
-@[refl]
+@[simp, refl]
 theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨_root_.refl _, _root_.refl _⟩
 

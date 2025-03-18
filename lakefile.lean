@@ -32,7 +32,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.docPrime, false⟩,
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
-  ⟨`linter.refine, true⟩,
+  ⟨`linter.style.cases, true⟩,
   ⟨`linter.style.cdot, true⟩,
   ⟨`linter.style.docString, true⟩,
   ⟨`linter.style.dollarSyntax, true⟩,
@@ -44,6 +44,7 @@ abbrev mathlibOnlyLinters : Array LeanOption := #[
   ⟨`linter.style.missingEnd, true⟩,
   ⟨`linter.style.multiGoal, true⟩,
   ⟨`linter.style.openClassical, true⟩,
+  ⟨`linter.style.refine, true⟩,
   ⟨`linter.style.setOption, true⟩
 ]
 
