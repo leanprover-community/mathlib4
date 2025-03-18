@@ -409,6 +409,19 @@ theorem map_natCast_nonneg [AddMonoidWithOne α] [PartialOrder α]
   cases n <;> simp
 
 @[simp]
+lemma map_natCast_eq_zero :
+  WithTop.map (Nat.cast : ℕ → ℤ) n = 0 ↔ n = 0 := by
+  constructor
+  · intro hn
+    rcases n
+    · contradiction
+    · simp only [WithTop.map, Option.map] at hn
+      rw [Int.ofNat_eq_zero.mp (WithTop.coe_eq_zero.mp hn)]
+      rfl
+  · intro hn
+    simp [hn]
+
+@[simp]
 theorem strictMono_map_iff {f : ℕ → α} [Preorder α] : StrictMono (ENat.map f) ↔ StrictMono f :=
   WithTop.strictMono_map_iff
 
