@@ -182,12 +182,23 @@ variable [Preorder α]
 strictly monotone. -/
 @[simp] theorem sorted_lt_ofFn_iff : (ofFn f).Sorted (· < ·) ↔ StrictMono f := sorted_ofFn_iff
 
+/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≥ ·)` if and only if `f` is
+strictly antitone. -/
+@[simp] theorem sorted_gt_ofFn_iff : (ofFn f).Sorted (· > ·) ↔ StrictAnti f := sorted_ofFn_iff
+
 /-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
 @[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
 /-- The list obtained from a monotone tuple is sorted. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
+
+/-- The list `List.ofFn f` is sorted with respect to `(· ≥ ·)` if and only if `f` is antitone. -/
+@[simp] theorem sorted_ge_ofFn_iff : (ofFn f).Sorted (· ≥ ·) ↔ Antitone f :=
+  sorted_ofFn_iff.trans antitone_iff_forall_lt.symm
+
+/-- The list obtained from an antitone tuple is sorted. -/
+alias ⟨_, _root_.Antitone.ofFn_sorted⟩ := sorted_ge_ofFn_iff
 
 end Monotone
 
