@@ -89,7 +89,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
 /-- Meromorphic functions that agree in a punctured neighborhood of `z₀` have the same order at
 `z₀`. -/
 theorem order_congr {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
-    (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂):
+    (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
     hf₁.order = (hf₁.congr hf₁₂).order := by
   by_cases h₁f₁ : hf₁.order = ⊤
   · rw [h₁f₁, eq_comm, (hf₁.congr hf₁₂).order_eq_top_iff]
