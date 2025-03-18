@@ -469,6 +469,17 @@ lemma aestronglyMeasurable (h : HasSubgaussianMGF X c μ) : AEStronglyMeasurable
   have h_int := h.integrable_exp_mul 1
   simpa using (aemeasurable_of_aemeasurable_exp h_int.1.aemeasurable).aestronglyMeasurable
 
+lemma aemeasurable (h : HasSubgaussianMGF X c μ) : AEMeasurable X μ :=
+  h.aestronglyMeasurable.aemeasurable
+
+lemma congr (h : HasSubgaussianMGF X c μ) {Y : Ω → ℝ} (h' : X =ᵐ[μ] Y) :
+    HasSubgaussianMGF Y c μ := by
+  refine ⟨fun t ↦ ?_, fun t ↦ ?_⟩
+  · apply (h.integrable_exp_mul t).congr
+    filter_upwards [h'] with ω hω using by simp [hω]
+  · apply (le_of_eq _).trans (h.mgf_le t)
+    exact mgf_congr h'.symm
+
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ := by
   rw [HasSubgaussianMGF_iff_kernel] at h
@@ -536,7 +547,8 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
       · exact hY.mgf_le t
     _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
-lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
+private lemma sum_of_iIndepFun_of_measurable
+    {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     (h_meas : ∀ i, Measurable (X i))
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
@@ -552,19 +564,41 @@ lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun
     · convert h_indep'
       rw [Finset.sum_apply]
 
+lemma sum_of_iIndepFun
+    {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
+    {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
+    HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
+  have : iIndepFun (fun (i : s) ↦ X i) μ :=
+    iIndepFun.precomp (g := Subtype.val) Subtype.val_injective h_indep
+  have A (i : s) : AEMeasurable (X i) μ := (h_subG i i.2).aemeasurable
+  have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), (A i).mk _ ω) (∑ (i : s), c i) μ := by
+    apply sum_of_iIndepFun_of_measurable
+    · exact iIndepFun.ae_eq
+        (iIndepFun.precomp (g := Subtype.val) Subtype.val_injective h_indep)
+        (fun i ↦ AEMeasurable.ae_eq_mk (A i))
+    · exact fun i ↦ AEMeasurable.measurable_mk (A i)
+    · intro i hi
+      apply (h_subG i i.2).congr (A i).ae_eq_mk
+  rw [Finset.sum_coe_sort] at this
+  apply this.congr
+  have : ∀ᵐ ω ∂μ, ∀ (i : s), X i ω = (A i).mk _ ω :=
+    ae_all_iff.2 fun i ↦ AEMeasurable.ae_eq_mk (A i)
+  filter_upwards [this] with ω hω
+  conv_rhs => rw [← Finset.sum_coe_sort]
+  simp [hω]
+
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ)
-    {c : ι → ℝ≥0} (h_meas : ∀ i, Measurable (X i))
+    {c : ι → ℝ≥0}
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ s, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * ∑ i ∈ s, c i)) :=
-  (sum_of_iIndepFun h_indep h_meas h_subG).measure_ge_le hε
+  (sum_of_iIndepFun h_indep h_subG).measure_ge_le hε
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_range_ge_le_of_iIndepFun {X : ℕ → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ℝ≥0}
-    (h_meas : ∀ i, Measurable (X i))
     {n : ℕ} (h_subG : ∀ i < n, HasSubgaussianMGF (X i) c μ) {ε : ℝ} (hε : 0 ≤ ε) :
     (μ {ω | ε ≤ ∑ i ∈ Finset.range n, X i ω}).toReal ≤ exp (- ε ^ 2 / (2 * n * c)) := by
-  have h := (sum_of_iIndepFun h_indep h_meas (c := fun _ ↦ c)
+  have h := (sum_of_iIndepFun h_indep (c := fun _ ↦ c)
     (s := Finset.range n) (by simpa)).measure_ge_le hε
   simpa [← mul_assoc] using h
 
