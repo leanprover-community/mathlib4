@@ -5,6 +5,7 @@ import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Complex.Basic
+import Mathlib.Analysis.InnerProductSpace.Rayleigh
 
 open Complex Matrix
 
@@ -116,12 +117,15 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
       -- simplify the quadratic form of the norm of v
       have conv_eq : (star v ⬝ᵥ A *ᵥ v) / ‖v‖^2 = 
         (1-t) * (star x₁ ⬝ᵥ A *ᵥ x₁) + t * (star x₂ ⬝ᵥ A *ᵥ x₂) := by
+         
+        have H : ((1 : ℂ) - ↑t)^2 + ↑t^2 + 2 * ↑t * (1 - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re ≠ 0 := by
+          intro h
+          simp_all
+          sorry
 
         have rhA : A = Aᴴ := by simp [hA]
 
-        -- have H : (1 - t)^2 + t^2 + 2 * t * (1 - t) * (star x₁ ⬝ᵥ x₂).re ≠ 0 := by
-        --   intro h
-        --   simp_all
+
         
         norm_cast
         rw [exp1, exp2]
@@ -150,7 +154,54 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
           pattern (_ * (2 * _ ))
           rw [mul_comm]
         
-        sorry
+        apply div_eq_of_eq_mul H
+        -- ring_nf
+        rw [exp2]
+        -- stuck here
+        
+        sorry 
+
+
+        
+        -- have h_expanded : ((1 - ↑t) * z₁ + ↑t * z₂) * 
+        --   ((1 - ↑t) ^ 2 + ↑t ^ 2 + 2 * ↑t * (1 - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re) = 
+        --   (1 - ↑t) ^ 3 * z₁ 
+        -- + (1 - ↑t) * ↑t^2 * z₁ 
+        -- + 2 * ↑t * (1 - ↑t) ^ 2 * z₁ * ↑(star x₁ ⬝ᵥ x₂).re 
+        -- + (1 - ↑t) ^ 2 * ↑t * z₂ 
+        -- + ↑t ^ 3 * z₂ 
+        -- + 2 * ↑t ^ 2 * (1 - ↑t) * z₂ * ↑(star x₁ ⬝ᵥ x₂).re := by 
+        --   ring_nf
+
+
+        -- have h_regrouped : ((1 - ↑t) * z₁ + ↑t * z₂) * 
+        --   ((1 - ↑t) ^ 2 + ↑t ^ 2 + 2 * ↑t * (1 - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re) = 
+        --   (1  - ↑t) * z₁ * ((1 - ↑t)^2 + t^2  + 2 * ↑t * (1  - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re) 
+        -- + (↑t * z₂) * ( (1- ↑t)^2 + ↑t^2 + 2 * ↑t * (1 - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re) := by 
+        --     ring_nf
+
+        -- have rhs_rw : ((1 - ↑t) * z₁ + ↑t * z₂) * 
+        --   ((1 - ↑t) ^ 2 + ↑t ^ 2 + 2 * ↑t * (1 - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re) = 
+        --   ((1 - ↑t) * z₁ + ↑t * z₂) * ((1 - ↑t)^2 + ↑t^2 + 2 * ↑t * (1 - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re)
+        --    := by 
+        --     ring_nf
+
+
+
+        -- rw [rhs_rw]
+        -- let idk := ContinuousLinearMap.rayleighQuotient()
+        norm_cast at *
+        -- simp
+        -- ring_nf
+        
+
+        -- have lhs_rw : (1 - ↑t) ^ 2 * z₁ + ↑t ^ 2 * z₂ + 2 * first_term.re * (↑t * (1 - ↑t)) =
+        --   (1 - ↑t) * ↑t * ((1 - ↑t) * z₁ + ↑t * z₂ + 2 * first_term.re) := by 
+        --   ring_nf
+          
+
+        -- simp
+        -- ring_nf
         
         
       simp [conv_eq]
