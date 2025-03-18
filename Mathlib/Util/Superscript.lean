@@ -227,67 +227,25 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
 
 section Delab
 
-open SubExpr
-
-/-- Returns the user-facing name of any constant or free variable. -/
-private def name : Expr → MetaM (Option Name)
-  | Expr.const name _ => pure (privateToUserName name)
-  | Expr.fvar name => return privateToUserName (← name.getUserName)
-  | _ => pure none
-
 /-- Returns `true` if every character in `s` can be subscripted. -/
-private def isSubscriptable (s : Name) : Bool :=
-  s.toString.toList.all Mapping.subscript.toSpecial.contains
+private def isSubscriptable (s : String) : Bool :=
+  s.toList.all fun x ↦ x == ' ' || Mapping.subscript.toSpecial.contains x
 
 /-- Returns `true` if every character in `s` can be superscripted. -/
-private def isSuperscriptable (s : Name) : Bool :=
-  s.toString.toList.all Mapping.superscript.toSpecial.contains
+private def isSuperscriptable (s : String) : Bool :=
+  s.toList.all fun x ↦ x == ' ' || Mapping.superscript.toSpecial.contains x
 
-/-- The binary operations `+`, `-`, `=`, and `==` can be superscripted
-(subscripted) if their operands can be superscripted (subscripted). -/
-private def isSpecialBinOp (e : Expr) : Bool :=
-  e.isAppOfArity ``HAdd.hAdd 6 ||
-  e.isAppOfArity ``HSub.hSub 6 ||
-  e.isAppOfArity ``Eq 3 ||
-  e.isAppOfArity ``BEq.beq 4
+private partial def superscriptable : Syntax → DelabM Unit
+  | .node _ _ args => args.forM superscriptable
+  | .atom _ val => guard <| isSuperscriptable val
+  | .ident _ _ val _ => guard <| isSuperscriptable val.toString
+  | _ => failure
 
-/-- Any number is valid in a superscript (or subscript). `() : Unit` is valid.
-Any constant or free variable with a valid user-facing name is also valid. -/
-private def constValid (e : Expr) (fname : Name → Bool) : DelabM Bool :=
-  return e.isConstOf ``Unit.unit ||
-    (← name e).any fname ||
-    (← delab) matches `($_:num)
-
-/-- Applies the predicate `f` to every explicit argument of `e`. -/
-private def checkArgs (f : Expr → DelabM Unit) : DelabM Unit := do
-  let e ← getExpr
-  let args := e.getAppArgs
-  let kinds ← getParamKinds e.getAppFn args
-  -- The function may be partially-applied. We need only check the arguments we
-  -- have. `kinds.size < args.size` indicates an error collecting ParamKinds.
-  guard <| args.size <= kinds.size
-  args.zipIdx.zip kinds |>.filter
-    (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
-    fun ((x, i), _) ↦ withNaryArg i <| f x
-
--- TODO: what about dot notation?
-/-- Checks if the entire expression `e` can be superscripted (or subscripted). -/
-private def checkExpr (e : Expr) (fname : Name → Bool)
-    (fexpr : Expr → DelabM Unit) : DelabM Unit := do
-  -- Look first for numbers, constants, free variables, and `() : Unit`.
-  if (← constValid e fname) then return
-  -- Function application is valid if all explicit arguments are valid and the
-  -- function name is valid (or one of `+`, `-`, `=`, `==`).
-  guard <| isSpecialBinOp e || (e.isApp && (← name e.getAppFn).any fname)
-  checkArgs fexpr
-
-/-- Checks if the expression `e` can be subscripted. -/
-private partial def subscriptable (e : Expr) : DelabM Unit :=
-  checkExpr e isSubscriptable subscriptable
-
-/-- Checks if the expression `e` can be superscripted. -/
-private partial def superscriptable (e : Expr) : DelabM Unit :=
-  checkExpr e isSuperscriptable superscriptable
+private partial def subscriptable : Syntax → DelabM Unit
+  | .node _ _ args => args.forM subscriptable
+  | .atom _ s => guard <| isSubscriptable s
+  | .ident _ _ s _ => guard <| isSubscriptable s.toString
+  | _ => failure
 
 end Delab
 
@@ -336,7 +294,9 @@ superscriptable expression as input.
 
 See `Mapping.superscript` in this file for legal superscript characters. -/
 def delabSuperscript : Delab := do
-  Superscript.superscriptable (← SubExpr.getExpr); delab
+  let de ← delab
+  let _ ← Superscript.superscriptable de.raw
+  pure de
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -381,6 +341,8 @@ subscriptable expression as input.
 
 See `Mapping.subscript` in this file for legal subscript characters. -/
 def delabSubscript : Delab := do
-  Superscript.subscriptable (← SubExpr.getExpr); delab
+  let de ← delab
+  let _ ← Superscript.subscriptable de.raw
+  pure de
 
 end Mathlib.Tactic

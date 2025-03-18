@@ -97,12 +97,12 @@ local macro_rules | `(test($a:superscript)) => `(check_superscript $a)
 
 @[app_delab check_subscript]
 private def delabCheckSubscript : Delab := withOverApp 2 do
-  let sub ← withAppArg <| delabSubscript
+  let sub ← withAppArg delabSubscript
   `(test($sub:subscript))
 
 @[app_delab check_superscript]
 private def delabCheckSuperscript : Delab := withOverApp 2 do
-  let sup ← withAppArg <| delabSuperscript
+  let sup ← withAppArg delabSuperscript
   `(test($sup:superscript))
 
 universe u v w
@@ -208,13 +208,10 @@ section no_superscript
 #guard_msgs in #check check_superscript (0 ^ 1)
 /-- info: check_superscript [1] : Unit -/
 #guard_msgs in #check check_superscript [1]
-
--- TODO: the two tests below currently fail
-/- /-- info: check_superscript #n : Unit -/ -/
-/- #guard_msgs in #check check_superscript #n -/
-/- /-- info: check_superscript 2! : Unit -/ -/
-/- #guard_msgs in #check check_superscript 2! -/
-
+/-- info: check_superscript #n : Unit -/
+#guard_msgs in #check check_superscript #n
+/-- info: check_superscript 2! : Unit -/
+#guard_msgs in #check check_superscript 2!
 /-- info: check_superscript (1 • 2) : Unit -/
 #guard_msgs in #check check_superscript (1 • 2)
 
