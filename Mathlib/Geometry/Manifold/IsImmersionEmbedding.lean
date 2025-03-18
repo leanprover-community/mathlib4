@@ -49,7 +49,8 @@ def IsImmersionAt (f : M → M') (x : M) : Prop :=
     x ∈ domChart.source ∧ f x ∈ codChart.source ∧
     domChart ∈ IsManifold.maximalAtlas I n M ∧
     codChart ∈ IsManifold.maximalAtlas I' n M' ∧
-    (codChart.extend I') ∘ f ∘ (domChart.extend I).symm = equiv ∘ (·, 0)
+    EqOn ((codChart.extend I') ∘ f ∘ (domChart.extend I).symm) (equiv ∘ (·, 0))
+      (domChart.extend I).target
 
 namespace IsImmersionAt
 
@@ -79,7 +80,8 @@ noncomputable def codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.1
 
 noncomputable def writtenInCharts (h : IsImmersionAt F I I' n f x) :
-    (h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm = h.equiv ∘ (·, 0) :=
+    EqOn ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
+      (h.domChart.extend I).target :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2
 
 /-- A `C^k` immersion at `x` is `C^k` at `x`. -/
