@@ -228,7 +228,6 @@ lemma MeromorphicNFAt.meromorphicNFAt_of_smul_analytic (hf : MeromorphicNFAt f x
       simp only [Pi.smul_apply', hy, Pi.pow_apply]
       rw [smul_comm]
 
-
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `g • f` is meromorphic in normal form at `z₀`. -/
 theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic (h₁g : AnalyticAt 𝕜 g x)
