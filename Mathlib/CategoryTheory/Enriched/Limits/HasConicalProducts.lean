@@ -23,14 +23,14 @@ class HasConicalProducts
   hasConicalLimitsOfShape : ∀ J : Type w, HasConicalLimitsOfShape (Discrete J) V C := by
     infer_instance
 
+attribute [instance] HasConicalProducts.hasConicalLimitsOfShape
+
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 /-- An abbreviation for `HasConicalLimit (Discrete.functor f)`. -/
 abbrev HasConicalProduct {I : Type w} (f : I → C) :=
   HasConicalLimit V (Discrete.functor f)
-
-attribute [instance] HasConicalProducts.hasConicalLimitsOfShape
 
 /-- ensure products exists of existence of conical products -/
 example [HasConicalProducts.{w} V C] : HasProducts.{w} C := inferInstance
