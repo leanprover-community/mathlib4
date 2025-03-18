@@ -213,7 +213,7 @@ theorem IsCompact.elim_nhdsWithin_subcover (hs : IsCompact s) (U : X → Set X)
     (hU : ∀ x ∈ s, U x ∈ 𝓝[s] x) : ∃ t : Finset X, (∀ x ∈ t, x ∈ s) ∧ s ⊆ ⋃ x ∈ t, U x := by
   choose! V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
   refine (hs.elim_nhds_subcover V V_nhds).imp fun t ⟨t_sub_s, ht⟩ =>
-    ⟨t_sub_s, subset_trans ?_ (biUnion_mono (fun _ => id) fun x hx => hV x (t_sub_s x hx))⟩
+    ⟨t_sub_s, subset_trans ?_ (iUnion₂_mono fun x hx => hV x (t_sub_s x hx))⟩
   simpa [← iUnion_inter]
 
 /-- The neighborhood filter of a compact set is disjoint with a filter `l` if and only if the
