@@ -82,11 +82,7 @@ lemma rootForm_weylGroup_apply (g : P.weylGroup) (x y : M) :
   | one => simp
   | mul g₁ g₂ hg₁ hg₂ hg₁' hg₂' =>
     intro x y
-    -- TODO Right way to avoid this `change`?
-    change B.form
-      (((⟨g₁, hg₁⟩ : P.weylGroup) * (⟨g₂, hg₂⟩ : P.weylGroup)) • x)
-      (((⟨g₁, hg₁⟩ : P.weylGroup) * (⟨g₂, hg₂⟩ : P.weylGroup)) • y) = B.form x y
-    rw [mul_smul, mul_smul, hg₁', hg₂']
+    rw [← Submonoid.mk_mul_mk _ _ _ hg₁ hg₂, mul_smul, mul_smul, hg₁', hg₂']
 
 variable [NoZeroDivisors R] [NeZero (2 : R)]
 
