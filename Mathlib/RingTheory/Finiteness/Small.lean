@@ -10,6 +10,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Data.DFinsupp.Small
 
 /-! # Smallness properties of modules and algebras -/
 
@@ -18,15 +19,6 @@ universe u
 namespace Submodule
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
-
-theorem bot_small : Small.{u} (⊥ : Submodule R M) := by
-  let f : Unit → (⊥ : Submodule R M) := fun _ ↦ 0
-  have : Small.{u} Unit := small_lift Unit
-  apply small_of_surjective (f := f)
-  rintro ⟨x, hx⟩
-  simp only [mem_bot] at hx
-  use default
-  simp [← Subtype.coe_inj, f, hx]
 
 theorem small_sup {P Q : Submodule R M} (_ : Small.{u} P) (_ : Small.{u} Q) :
     Small.{u} (P ⊔ Q : Submodule R M) := by
@@ -39,35 +31,12 @@ theorem FG.small [Small.{u} R] (P : Submodule R M) (hP : P.FG) : Small.{u} P := 
   rw [← Fintype.range_linearCombination]
   apply small_range
 
-theorem small_directSum
-    {ι : Type*} {P : ι → Submodule R M} [Small.{u} ι] [∀ i, Small.{u} (P i)] :
-    Small.{u} (Π₀ (i : ι), ↥(P i)) := by
-  classical
-  -- Define somewhere else
-  have : Small.{u} (Finset ι) := small_of_injective (f := Finset.toSet) Finset.coe_injective
-  have (s : Finset ι) : Small.{u} (Π (i : s), P i) := small_Pi _
-  let h : (Σ (s : Finset ι), (Π i : s, P i)) → Π₀ i, P i := fun sf ↦ by
-    exact {
-      toFun (i : ι) := if h : i ∈ sf.1.val then sf.2 ⟨i, h⟩ else 0
-      support' := Trunc.mk ⟨sf.1.val, fun i ↦ by
-        simp only [Finset.mem_val, dite_eq_right_iff]
-        by_cases hi : i ∈ sf.1
-        · exact Or.inl hi
-        · apply Or.inr fun h ↦ False.elim (hi h)⟩}
-  apply small_of_surjective (f := h)
-  intro m
-  use ⟨m.support, fun i ↦ m i⟩
-  ext i
-  simp only [Finset.mem_val, DFinsupp.mem_support_toFun, ne_eq, dite_eq_ite, DFinsupp.coe_mk',
-    ite_not, SetLike.coe_eq_coe, ite_eq_right_iff, h]
-  simp only [eq_comm, imp_self, h]
-
 theorem small_iSup
     {ι : Type*} {P : ι → Submodule R M} (_ : Small.{u} ι) (_ : ∀ i, Small.{u} (P i)) :
     Small.{u} (iSup P : Submodule R M) := by
   classical
   rw [iSup_eq_range_dfinsupp_lsum]
-  have : Small.{u} (Π₀ (i : ι), ↥(P i)) := Submodule.small_directSum
+  have : Small.{u} (Π₀ (i : ι), ↥(P i)) := inferInstance
   apply small_range
 
 theorem small_span [Small.{u} R] (s : Set M) [Small.{u} s] :
@@ -75,16 +44,7 @@ theorem small_span [Small.{u} R] (s : Set M) [Small.{u} s] :
   suffices span R s = iSup (fun i : s ↦ span R ({(↑i : M)} : Set M)) by
     rw [this]
     exact small_iSup (by trivial) fun _ ↦ FG.small _ (fg_span_singleton _)
-  apply le_antisymm
-  · rw [span_le]
-    intro i hi
-    apply mem_iSup_of_mem (⟨i, hi⟩ : s)
-    refine span_mono (s := {i}) (by simp) (mem_span_singleton_self i)
-  · apply iSup_le
-    rintro ⟨i, hi⟩
-    simp only [span_singleton_le_iff_mem]
-    apply span_mono (s := {i}) _ (mem_span_singleton_self i)
-    simp only [Set.singleton_subset_iff, hi]
+  simp [← Submodule.span_iUnion]
 
 instance : SemilatticeSup {P : Submodule R M // Small.{u} P} where
   sup := fun P Q ↦ ⟨P.val ⊔ Q.val, small_sup P.property Q.property⟩
@@ -95,7 +55,7 @@ instance : SemilatticeSup {P : Submodule R M // Small.{u} P} where
     exact sup_le hPR hQR
 
 instance : Inhabited {P : Submodule R M // Small.{u} P} where
-  default := ⟨⊥, bot_small⟩
+  default := ⟨⊥, inferInstance⟩
 
 end Submodule
 
