@@ -193,6 +193,5 @@ theorem comp_aeval (ha : IsTopologicallyNilpotent a)
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε) :=
   MvPowerSeries.comp_aeval (hasEval ha) hε
->>>>>>> master
 
 end PowerSeries
