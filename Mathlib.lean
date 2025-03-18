@@ -5205,6 +5205,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.SetTheory.Cardinal.CountableCover
+import Mathlib.SetTheory.Cardinal.Defs
 import Mathlib.SetTheory.Cardinal.Divisibility
 import Mathlib.SetTheory.Cardinal.ENat
 import Mathlib.SetTheory.Cardinal.Finite
@@ -5212,6 +5213,7 @@ import Mathlib.SetTheory.Cardinal.Finsupp
 import Mathlib.SetTheory.Cardinal.Free
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
 import Mathlib.SetTheory.Cardinal.NatCount
+import Mathlib.SetTheory.Cardinal.Order
 import Mathlib.SetTheory.Cardinal.Ordinal
 import Mathlib.SetTheory.Cardinal.Pigeonhole
 import Mathlib.SetTheory.Cardinal.Regular
