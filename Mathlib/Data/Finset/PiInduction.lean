@@ -73,15 +73,13 @@ theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset
   induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
     h0 step
 
--- Porting note: this docstring is the exact translation of the one from mathlib3 but
--- the last sentence (here and in the next lemma) does make much sense to me...
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
 `i : ι`, and an element`x : α i` that is strictly greater than all elements of `g i`, `p g` implies
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
-version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
+version that needs `x ∉ g i` and does not need `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
@@ -97,7 +95,7 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
-version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
+version that needs `x ∉ g i` and does not need `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
