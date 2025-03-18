@@ -68,12 +68,11 @@ theorem mono (hf : LeftOrdContinuous f) : Monotone f := fun a₁ a₂ h =>
 theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdContinuous (g ∘ f) :=
   fun s x h => by simpa only [image_image] using hg (hf h)
 
--- Porting note: how to do this in non-tactic mode?
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
-    LeftOrdContinuous f^[n] := by
-  induction n with
-  | zero => exact LeftOrdContinuous.id α
-  | succ n ihn => exact ihn.comp hf
+    LeftOrdContinuous f^[n] :=
+  match n with
+  | 0 => LeftOrdContinuous.id α
+  | (n + 1) => (LeftOrdContinuous.iterate hf n).comp hf
 
 end Preorder
 

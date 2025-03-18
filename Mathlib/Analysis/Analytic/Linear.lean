@@ -173,7 +173,7 @@ alias analyticWithinOn_id := analyticOn_id
 theorem analyticAt_fst  : AnalyticAt 𝕜 (fun p : E × F ↦ p.fst) p :=
   (ContinuousLinearMap.fst 𝕜 E F).analyticAt p
 
-theorem analyticWithinAt_fst  : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
+theorem analyticWithinAt_fst : AnalyticWithinAt 𝕜 (fun p : E × F ↦ p.fst) t p :=
   analyticAt_fst.analyticWithinAt
 
 /-- `snd` is analytic -/

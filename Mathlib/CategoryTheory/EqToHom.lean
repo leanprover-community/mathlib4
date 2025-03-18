@@ -237,7 +237,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     F = G := by
   match F, G with
   | mk F_pre _ _ , mk G_pre _ _ =>
-    match F_pre, G_pre with  -- Porting note: did not unfold the Prefunctor unlike Lean3
+    match F_pre, G_pre with
     | Prefunctor.mk F_obj _ , Prefunctor.mk G_obj _ =>
     obtain rfl : F_obj = G_obj := by
       ext X

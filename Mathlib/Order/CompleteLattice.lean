@@ -289,21 +289,18 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
     CompleteLattice α :=
   completeLatticeOfSup α fun s => isLUB_sSup s
 
--- Porting note: as we cannot rename fields while extending,
--- `CompleteLinearOrder` does not directly extend `LinearOrder`.
--- Instead we add the fields by hand, and write a manual instance.
-
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
+-- Note that we do not use `extends LinearOrder α`,
+-- and instead construct the forgetful instance manually.
 class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableRel (· ≤ · : α → α → Prop)
+  decidableLE : DecidableLE α
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableRel (· < · : α → α → Prop) :=
-    @decidableLTOfDecidableLE _ _ decidableLE
+  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
   __ := i
@@ -1122,6 +1119,23 @@ lemma biInf_gt_eq_iInf {ι : Type*} [LT ι] [NoMinOrder ι] {f : ι → α} :
 lemma biInf_ge_eq_iInf {ι : Type*} [Preorder ι] {f : ι → α} : ⨅ (i) (j ≥ i), f j = ⨅ i, f i :=
   biInf_le_eq_iInf (ι := ιᵒᵈ)
 
+lemma biSup_le_eq_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b : β) :
+    ⨆ (b' ≤ b), f b' = f b :=
+  le_antisymm (iSup₂_le_iff.2 (fun _ hji ↦ hf hji))
+    (le_iSup_of_le b (le_of_eq (Eq.symm (iSup_pos (Preorder.le_refl b)))))
+
+lemma biInf_le_eq_of_antitone [Preorder β] {f : β → α} (hf : Antitone f) (b : β) :
+    ⨅ (b' ≤ b), f b' = f b :=
+  biSup_le_eq_of_monotone (α := αᵒᵈ) hf.dual_right b
+
+lemma biSup_ge_eq_of_antitone [Preorder β] {f : β → α} (hf : Antitone f) (b : β) :
+    ⨆ (b' ≥ b), f b' = f b :=
+  biSup_le_eq_of_monotone (β := βᵒᵈ) hf.dual_left b
+
+lemma biInf_ge_eq_of_monotone [Preorder β] {f : β → α} (hf : Monotone f) (b : β) :
+    ⨅ (b' ≥ b), f b' = f b :=
+  biInf_le_eq_of_antitone (β := βᵒᵈ) hf.dual_left b
+
 /-! ### `iSup` and `iInf` under `Prop` -/
 
 
@@ -1685,7 +1699,7 @@ theorem snd_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).snd = 
   congr_arg sInf (range_comp _ _).symm
 
 theorem swap_iInf [InfSet α] [InfSet β] (f : ι → α × β) : (iInf f).swap = ⨅ i, (f i).swap := by
-  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
+  simp_rw [iInf, swap_sInf, ← range_comp, comp_def]
 
 theorem iInf_mk [InfSet α] [InfSet β] (f : ι → α) (g : ι → β) :
     ⨅ i, (f i, g i) = (⨅ i, f i, ⨅ i, g i) :=
@@ -1698,7 +1712,7 @@ theorem snd_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).snd = 
   congr_arg sSup (range_comp _ _).symm
 
 theorem swap_iSup [SupSet α] [SupSet β] (f : ι → α × β) : (iSup f).swap = ⨆ i, (f i).swap := by
-  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]  -- Porting note: need to unfold `∘`
+  simp_rw [iSup, swap_sSup, ← range_comp, comp_def]
 
 theorem iSup_mk [SupSet α] [SupSet β] (f : ι → α) (g : ι → β) :
     ⨆ i, (f i, g i) = (⨆ i, f i, ⨆ i, g i) :=

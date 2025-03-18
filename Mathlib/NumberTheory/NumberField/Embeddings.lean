@@ -643,6 +643,14 @@ theorem nrRealPlaces_eq_one_of_finrank_eq_one (h : finrank ℚ K = 1) :
   have := card_add_two_mul_card_eq_rank K
   rwa [nrComplexPlaces_eq_zero_of_finrank_eq_one h, h, mul_zero, add_zero] at this
 
+theorem nrRealPlaces_pos_of_odd_finrank (h : Odd (finrank ℚ K)) :
+    0 < nrRealPlaces K := by
+  refine Nat.pos_of_ne_zero ?_
+  by_contra hc
+  refine (Nat.not_odd_iff_even.mpr ?_) h
+  rw [← card_add_two_mul_card_eq_rank, hc, zero_add]
+  exact even_two_mul (nrComplexPlaces K)
+
 /-- The restriction of an infinite place along an embedding. -/
 def comap (w : InfinitePlace K) (f : k →+* K) : InfinitePlace k :=
   ⟨w.1.comp f.injective, w.embedding.comp f,
@@ -989,7 +997,7 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
         ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
         mul_one, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
-  · simp [isUnramifiedIn_comap]
+  · simp [Set.MapsTo, isUnramifiedIn_comap]
 
 open Finset in
 open scoped Classical in
@@ -1012,7 +1020,7 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
         ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
         Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
       rwa [← isUnramifiedIn_comap]
-  · simp [isUnramifiedIn_comap]
+  · simp [Set.MapsTo, isUnramifiedIn_comap]
 
 open scoped Classical in
 lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :
