@@ -485,12 +485,15 @@ namespace Style.openClassical
 /-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
 returns an array of the syntax corresponding to the opened names,
 omitting any renamed or hidden items. -/
-def extractOpenNames : Syntax → Array Syntax
-  | `(command|open $arg hiding $_*)    => #[arg]
-  | `(command|open $arg renaming $_,*) => #[arg]
-  | `(command|open $arg ($_*))         => #[arg]  -- `openOnly`, hence the parens in `($_*)`
-  | `(command|open $args*)             => args
-  | `(command|open scoped $args*)      => args
+def extractOpenNames : Syntax → Array (TSyntax `ident)
+  | `(command|$_ in $_) => #[] -- redundant, for clarity
+  | `(command|open $decl:openDecl) => match decl with
+    | `(openDecl| $arg hiding $_*)    => #[arg]
+    | `(openDecl| $arg renaming $_,*) => #[arg]
+    | `(openDecl| $arg ($_*))         => #[arg]
+    | `(openDecl| $args*)             => args
+    | `(openDecl| scoped $args*)      => args
+    | _ => panic! "`openClassical` linter: unexpected openDecl syntax!"
   | _ => #[]
 
 @[inherit_doc Mathlib.Linter.linter.style.openClassical]
@@ -498,7 +501,7 @@ def openClassicalLinter : Linter where run stx := do
     unless Linter.getLinterValue linter.style.openClassical (← getOptions) do
       return
     if (← get).messages.hasErrors then
-     return
+      return
     -- If `stx` describes an `open` command, extract the list of opened namespaces.
     for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
       Linter.logLint linter.style.openClassical stxN "\
