@@ -129,7 +129,7 @@ meromorphicity. -/
 theorem MeromorphicOn.meromorphicNFAt_mem_codiscreteWithin [CompleteSpace E] {U : Set 𝕜}
     (hf : MeromorphicOn f U) :
     { x | MeromorphicNFAt f x } ∈ Filter.codiscreteWithin U := by
-  filter_upwards [hf.analyticAt_codiscreteWithin] with _ ha
+  filter_upwards [hf.analyticAt_mem_codiscreteWithin] with _ ha
   exact ha.meromorphicNFAt
 
 /-!
