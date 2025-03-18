@@ -295,6 +295,8 @@ instance (priority := 100) AddMonoidWithOne.toCharZero {α}
   cast_injective :=
     (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
 
+instance (priority := 100) StrictOrderedSemiring.toCharZero : CharZero α := inferInstance
+
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
   ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
