@@ -51,15 +51,29 @@ type of linear trivializations is not even particularly well-behaved.
 open TopologicalSpace Filter Set Bundle Function
 open scoped Topology
 
-variable {B : Type*} (F : Type*) {E : B → Type*}
+variable {B : Type*} {F : Type*} {E : B → Type*}
 variable {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
+
+def BundleModel (B F : Type*) [TopologicalSpace B] [TopologicalSpace F] := B × F
+
+instance [TopologicalSpace B] [TopologicalSpace F] : TopologicalSpace (BundleModel B F) :=
+  inferInstanceAs (TopologicalSpace (B × F))
+
+@[ext] lemma BundleModel.ext (p q : BundleModel B F) (h1 : p.1 = q.1) (h2 : p.2 = q.2) : p = q :=
+  Prod.ext_iff.2 ⟨h1, h2⟩
+
+@[simp, mfld_simps] lemma BundleModel.mem_prod (p : BundleModel B F) (s : Set B) (t : Set F) :
+    p ∈ (show Set (BundleModel B F) from s ×ˢ t) ↔ p.1 ∈ s ∧ p.2 ∈ t :=
+  mem_def
+
+variable (F)
 
 /-- This structure contains the information left for a local trivialization (which is implemented
 below as `Trivialization F proj`) if the total space has not been given a topology, but we
 have a topology on both the fiber and the base space. Through the construction
 `topological_fiber_prebundle F proj` it will be possible to promote a
 `Pretrivialization F proj` to a `Trivialization F proj`. -/
-structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (B × F) where
+structure Pretrivialization (proj : Z → B) extends PartialEquiv Z (BundleModel B F) where
   open_target' : IsOpen target
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -76,9 +90,9 @@ variable (e : Pretrivialization F proj) {x : Z}
 because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about
 `toPartialEquiv`. While we may want to switch to this behavior later, doing it mid-port will break a
 lot of proofs. -/
-@[coe] def toFun' : Z → (B × F) := e.toFun
+@[coe] def toFun' : Z → (BundleModel B F) := e.toFun
 
-instance : CoeFun (Pretrivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
+instance : CoeFun (Pretrivialization F proj) fun _ => Z → BundleModel B F := ⟨toFun'⟩
 
 @[ext]
 lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPartialEquiv)
@@ -96,7 +110,7 @@ lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
 
 /-- If the fiber is nonempty, then the projection also is. -/
 lemma toPartialEquiv_injective [Nonempty F] :
-    Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (B × F)) := by
+    Injective (toPartialEquiv : Pretrivialization F proj → PartialEquiv Z (BundleModel B F)) := by
   refine fun e e' h ↦ ext' _ _ h ?_
   simpa only [fst_image_prod, univ_nonempty, target_eq]
     using congr_arg (Prod.fst '' PartialEquiv.target ·) h
@@ -126,10 +140,11 @@ theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
 def setSymm : e.target → Z :=
   e.target.restrict e.toPartialEquiv.symm
 
-theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
+theorem mem_target {x : BundleModel B F} : x ∈ e.target ↔ x.1 ∈ e.baseSet := by
   rw [e.target_eq, prod_univ, mem_preimage]
 
-theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) : proj (e.toPartialEquiv.symm x) = x.1 := by
+theorem proj_symm_apply {x : BundleModel B F} (hx : x ∈ e.target) :
+    proj (e.toPartialEquiv.symm x) = x.1 := by
   have := (e.coe_fst (e.map_target hx)).symm
   rwa [← e.coe_coe, e.right_inv hx] at this
 
@@ -142,7 +157,8 @@ theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   ⟨e.toPartialEquiv.symm (b, y), e.toPartialEquiv.map_target <| e.mem_target.2 hb,
     e.proj_symm_apply' hb⟩
 
-theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toPartialEquiv.symm x) = x :=
+theorem apply_symm_apply {x : BundleModel B F} (hx : x ∈ e.target) :
+    e (e.toPartialEquiv.symm x) = x :=
   e.toPartialEquiv.right_inv hx
 
 theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
@@ -155,7 +171,8 @@ theorem symm_apply_apply {x : Z} (hx : x ∈ e.source) : e.toPartialEquiv.symm (
 @[simp, mfld_simps]
 theorem symm_apply_mk_proj {x : Z} (ex : x ∈ e.source) :
     e.toPartialEquiv.symm (proj x, (e x).2) = x := by
-  rw [← e.coe_fst ex, ← e.coe_coe, e.left_inv ex]
+  rw [← e.coe_fst ex, ← e.coe_coe]
+  exact e.left_inv ex
 
 @[simp, mfld_simps]
 theorem preimage_symm_proj_baseSet :
@@ -169,7 +186,9 @@ theorem preimage_symm_proj_inter (s : Set B) :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.baseSet → (proj (e.toPartialEquiv.symm (x, y)) ∈ s ↔ x ∈ s) by
-    simpa only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
+    simp only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
+    rw [mem_prod, mem_prod]
+    simpa
   intro h
   rw [e.proj_symm_apply' h]
 
@@ -218,7 +237,8 @@ variable [∀ x, Zero (E x)]
 
 open Classical in
 /-- A fiberwise inverse to `e`. This is the function `F → E b` that induces a local inverse
-`B × F → TotalSpace F E` of `e` on `e.baseSet`. It is defined to be `0` outside `e.baseSet`. -/
+`BundleModel B F → TotalSpace F E` of `e` on `e.baseSet`. It is defined to be `0`
+outside `e.baseSet`. -/
 protected noncomputable def symm (e : Pretrivialization F (π F E)) (b : B) (y : F) : E b :=
   if hb : b ∈ e.baseSet then
     cast (congr_arg E (e.proj_symm_apply' hb)) (e.toPartialEquiv.symm (b, y)).2
@@ -259,10 +279,11 @@ end Pretrivialization
 variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 
 /-- A structure extending partial homeomorphisms, defining a local trivialization of a projection
-`proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
-two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
+`proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `BundleModel B F`
+defined between two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on
+the first coordinate.
 -/
-structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
+structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (BundleModel B F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
   source_eq : source = proj ⁻¹' baseSet
@@ -283,13 +304,13 @@ lemma ext' (e e' : Trivialization F proj) (h₁ : e.toPartialHomeomorph = e'.toP
 because it is actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about
 `toPartialEquiv`. While we may want to switch to this behavior later, doing it mid-port will break a
 lot of proofs. -/
-@[coe] def toFun' : Z → (B × F) := e.toFun
+@[coe] def toFun' : Z → BundleModel B F := e.toFun
 
 /-- Natural identification as a `Pretrivialization`. -/
 def toPretrivialization : Pretrivialization F proj :=
   { e with }
 
-instance : CoeFun (Trivialization F proj) fun _ => Z → B × F := ⟨toFun'⟩
+instance : CoeFun (Trivialization F proj) fun _ => Z → BundleModel B F := ⟨toFun'⟩
 
 instance : Coe (Trivialization F proj) (Pretrivialization F proj) :=
   ⟨toPretrivialization⟩
@@ -321,22 +342,23 @@ theorem mk_proj_snd (ex : x ∈ e.source) : (proj x, (e x).2) = e x :=
 theorem mk_proj_snd' (ex : proj x ∈ e.baseSet) : (proj x, (e x).2) = e x :=
   Prod.ext (e.coe_fst' ex).symm rfl
 
-theorem source_inter_preimage_target_inter (s : Set (B × F)) :
+theorem source_inter_preimage_target_inter (s : Set (BundleModel B F)) :
     e.source ∩ e ⁻¹' (e.target ∩ s) = e.source ∩ e ⁻¹' s :=
   e.toPartialHomeomorph.source_inter_preimage_target_inter s
 
 @[simp, mfld_simps]
-theorem coe_mk (e : PartialHomeomorph Z (B × F)) (i j k l m) (x : Z) :
+theorem coe_mk (e : PartialHomeomorph Z (BundleModel B F)) (i j k l m) (x : Z) :
     (Trivialization.mk e i j k l m : Trivialization F proj) x = e x :=
   rfl
 
-theorem mem_target {x : B × F} : x ∈ e.target ↔ x.1 ∈ e.baseSet :=
+theorem mem_target {x : BundleModel B F} : x ∈ e.target ↔ x.1 ∈ e.baseSet :=
   e.toPretrivialization.mem_target
 
-theorem map_target {x : B × F} (hx : x ∈ e.target) : e.toPartialHomeomorph.symm x ∈ e.source :=
+theorem map_target {x : BundleModel B F} (hx : x ∈ e.target) :
+    e.toPartialHomeomorph.symm x ∈ e.source :=
   e.toPartialHomeomorph.map_target hx
 
-theorem proj_symm_apply {x : B × F} (hx : x ∈ e.target) :
+theorem proj_symm_apply {x : BundleModel B F} (hx : x ∈ e.target) :
     proj (e.toPartialHomeomorph.symm x) = x.1 :=
   e.toPretrivialization.proj_symm_apply hx
 
@@ -347,7 +369,8 @@ theorem proj_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
 theorem proj_surjOn_baseSet [Nonempty F] : Set.SurjOn proj e.source e.baseSet :=
   e.toPretrivialization.proj_surjOn_baseSet
 
-theorem apply_symm_apply {x : B × F} (hx : x ∈ e.target) : e (e.toPartialHomeomorph.symm x) = x :=
+theorem apply_symm_apply {x : BundleModel B F} (hx : x ∈ e.target) :
+    e (e.toPartialHomeomorph.symm x) = x :=
   e.toPartialHomeomorph.right_inv hx
 
 theorem apply_symm_apply' {b : B} {x : F} (hx : b ∈ e.baseSet) :
@@ -531,7 +554,8 @@ section Zero
 variable [∀ x, Zero (E x)]
 
 /-- A fiberwise inverse to `e'`. The function `F → E x` that induces a local inverse
-`B × F → TotalSpace F E` of `e'` on `e'.baseSet`. It is defined to be `0` outside `e'.baseSet`. -/
+`BundleModel B F → TotalSpace F E` of `e'` on `e'.baseSet`. It is defined to be `0`
+outside `e'.baseSet`. -/
 protected noncomputable def symm (e : Trivialization F (π F E)) (b : B) (y : F) : E b :=
   e.toPretrivialization.symm b y
 
@@ -560,7 +584,8 @@ theorem apply_mk_symm (e : Trivialization F (π F E)) {b : B} (hb : b ∈ e.base
   e.toPretrivialization.apply_mk_symm hb y
 
 theorem continuousOn_symm (e : Trivialization F (π F E)) :
-    ContinuousOn (fun z : B × F => TotalSpace.mk' F z.1 (e.symm z.1 z.2)) (e.baseSet ×ˢ univ) := by
+    ContinuousOn (fun z : BundleModel B F => TotalSpace.mk' F z.1 (e.symm z.1 z.2))
+      (e.baseSet ×ˢ univ) := by
   have : ∀ z ∈ e.baseSet ×ˢ (univ : Set F),
       TotalSpace.mk z.1 (e.symm z.1 z.2) = e.toPartialHomeomorph.symm z := by
     rintro x ⟨hx : x.1 ∈ e.baseSet, _⟩
@@ -580,7 +605,9 @@ def transFiberHomeomorph {F' : Type*} [TopologicalSpace F'] (e : Trivialization 
   baseSet := e.baseSet
   open_baseSet := e.open_baseSet
   source_eq := e.source_eq
-  target_eq := by simp [target_eq, prod_univ, preimage_preimage]
+  target_eq := by
+    simp only [PartialHomeomorph.transHomeomorph_target, target_eq, prod_univ, preimage_preimage]
+    rfl
   proj_toFun := e.proj_toFun
 
 @[simp]
@@ -644,7 +671,9 @@ theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h
   rfl
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
-    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]
+    e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by
+  rw [mem_prod]
+  simp [e.coe_fst', hx]
 
 /-- Restrict a `Trivialization` to an open set in the base. -/
 protected def restrOpen (e : Trivialization F proj) (s : Set B) (hs : IsOpen s) :
@@ -708,7 +737,7 @@ noncomputable def piecewiseLe [LinearOrder B] [OrderTopology B] (e e' : Triviali
     (a : B) (He : a ∈ e.baseSet) (He' : a ∈ e'.baseSet) : Trivialization F proj :=
   e.piecewiseLeOfEq (e'.transFiberHomeomorph (e'.coordChangeHomeomorph e He' He)) a He He' <| by
     rintro p rfl
-    ext1
+    ext
     · simp [e.coe_fst', e'.coe_fst', *]
     · simp [coordChange_apply_snd, *]
 

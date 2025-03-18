@@ -59,11 +59,11 @@ alias smoothOn_continuousLinearMapCoordChange := contMDiffOn_continuousLinearMap
 variable [∀ x, IsTopologicalAddGroup (E₂ x)] [∀ x, ContinuousSMul 𝕜 (E₂ x)]
 
 theorem hom_chart (y₀ y : LE₁E₂) :
-    chartAt (ModelProd HB (F₁ →L[𝕜] F₂)) y₀ y =
+    chartAt (HB × (F₁ →L[𝕜] F₂)) y₀ y =
       (chartAt HB y₀.1 y.1, inCoordinates F₁ E₁ F₂ E₂ y₀.1 y.1 y₀.1 y.1 y.2) := by
   rw [FiberBundle.chartedSpace_chartAt, trans_apply, PartialHomeomorph.prod_apply,
-    Trivialization.coe_coe, PartialHomeomorph.refl_apply, Function.id_def,
-    hom_trivializationAt_apply]
+    Trivialization.coe_coe, hom_trivializationAt_apply]
+  rfl
 
 theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} {n : ℕ∞} :
     ContMDiffAt IM (IB.prod 𝓘(𝕜, F₁ →L[𝕜] F₂)) n f x₀ ↔

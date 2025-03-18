@@ -150,15 +150,14 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
   simp only [FiberBundle.chartedSpace_chartAt, PartialHomeomorph.coe_trans_symm, mem_inter_iff,
     mem_preimage, Function.comp_apply, mem_range]
   constructor
-  · rw [PartialEquiv.prod_symm, PartialEquiv.refl_symm, PartialEquiv.prod_coe,
-      ModelWithCorners.toPartialEquiv_coe_symm, PartialEquiv.refl_coe,
-      PartialHomeomorph.prod_symm, PartialHomeomorph.refl_symm, PartialHomeomorph.prod_apply,
-      PartialHomeomorph.refl_apply]
+  · rw [PartialEquiv.prod_symm, PartialEquiv.prod_coe,
+      ModelWithCorners.toPartialEquiv_coe_symm,
+      PartialHomeomorph.prod_symm, PartialHomeomorph.refl_symm, PartialHomeomorph.prod_apply]
     convert hz.1
     apply Trivialization.proj_symm_apply'
     exact h's hz.1
   · rcases hz.2 with ⟨u, rfl⟩
-    exact ⟨(u, w), rfl⟩
+    exact ⟨(u, w), by simp⟩
 
 /-- In a fiber bundle, the preimage under the projection of a set with unique differentials
 in the base has unique differentials in the bundle. -/

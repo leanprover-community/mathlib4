@@ -117,8 +117,8 @@ def continuousLinearMap :
     rw [Trivialization.symmL_continuousLinearMapAt, Trivialization.symmL_continuousLinearMapAt]
     exacts [h₁, h₂]
   right_inv' := fun ⟨x, f⟩ ⟨⟨h₁, h₂⟩, _⟩ => by
-    simp only [Prod.mk_right_inj]
     ext v
+    · rfl
     dsimp only [comp_apply]
     rw [Trivialization.continuousLinearMapAt_symmL, Trivialization.continuousLinearMapAt_symmL]
     exacts [h₁, h₂]
@@ -147,7 +147,7 @@ theorem continuousLinearMap_apply (p : TotalSpace (F₁ →SL[σ] F₂) fun x =>
       ⟨p.1, .comp (e₂.continuousLinearMapAt 𝕜₂ p.1) (p.2.comp (e₁.symmL 𝕜₁ p.1))⟩ :=
   rfl
 
-theorem continuousLinearMap_symm_apply (p : B × (F₁ →SL[σ] F₂)) :
+theorem continuousLinearMap_symm_apply (p : BundleModel B (F₁ →SL[σ] F₂)) :
     (continuousLinearMap σ e₁ e₂).toPartialEquiv.symm p =
       ⟨p.1, .comp (e₂.symmL 𝕜₂ p.1) (p.2.comp (e₁.continuousLinearMapAt 𝕜₁ p.1))⟩ :=
   rfl
@@ -220,6 +220,7 @@ def Bundle.ContinuousLinearMap.vectorPrebundle :
     have : IsInducing fun x => (b, φ x) := isInducing_const_prod.mpr φ.toHomeomorph.isInducing
     convert this
     ext f
+    · rfl
     dsimp [Pretrivialization.continuousLinearMap_apply]
     rw [Trivialization.linearMapAt_def_of_mem _ (mem_baseSet_trivializationAt _ _ _)]
     rfl

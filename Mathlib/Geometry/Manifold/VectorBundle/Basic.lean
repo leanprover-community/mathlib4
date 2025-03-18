@@ -78,8 +78,8 @@ variable [TopologicalSpace F] [TopologicalSpace (TotalSpace F E)] [∀ x, Topolo
   {HB : Type*} [TopologicalSpace HB] [TopologicalSpace B] [ChartedSpace HB B] [FiberBundle F E]
 
 /-- A fiber bundle `E` over a base `B` with model fiber `F` is naturally a charted space modelled on
-`B × F`. -/
-instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) where
+`BundleModel B F`. -/
+instance FiberBundle.chartedSpace' : ChartedSpace (BundleModel B F) (TotalSpace F E) where
   atlas := (fun e : Trivialization F (π F E) => e.toPartialHomeomorph) '' trivializationAtlas F E
   chartAt x := (trivializationAt F E x.proj).toPartialHomeomorph
   mem_chart_source x :=
@@ -87,34 +87,40 @@ instance FiberBundle.chartedSpace' : ChartedSpace (B × F) (TotalSpace F E) wher
   chart_mem_atlas _ := mem_image_of_mem _ (trivialization_mem_atlas F E _)
 
 theorem FiberBundle.chartedSpace'_chartAt (x : TotalSpace F E) :
-    chartAt (B × F) x = (trivializationAt F E x.proj).toPartialHomeomorph :=
+    chartAt (BundleModel B F) x = (trivializationAt F E x.proj).toPartialHomeomorph :=
   rfl
 
-/- Porting note: In Lean 3, the next instance was inside a section with locally reducible
-`ModelProd` and it used `ModelProd B F` as the intermediate space. Using `B × F` in the middle
-gives the same instance.
--/
---attribute [local reducible] ModelProd
+/-- The product of two charted space structures, where the initial space is `BundleModel` -/
+instance prodChartedSpaceBundleModel (H : Type*) [TopologicalSpace H]
+    (M : Type*) [TopologicalSpace M]
+    [h : ChartedSpace H M] (H' : Type*) [TopologicalSpace H'] (M' : Type*) [TopologicalSpace M']
+    [h' : ChartedSpace H' M'] : ChartedSpace (H × H') (BundleModel M M') where
+  atlas := image2 PartialHomeomorph.prod_withoutAtlas h.atlas h'.atlas
+  chartAt x := (h.chartAt x.1).prod_withoutAtlas (h'.chartAt x.2)
+  mem_chart_source x := ⟨h.mem_chart_source x.1, h'.mem_chart_source x.2⟩
+  chart_mem_atlas x := mem_image2_of_mem (h.chart_mem_atlas x.1) (h'.chart_mem_atlas x.2)
 
+/-- The product of two `C^n` manifolds is naturally a `C^n` manifold. Version with `BundleModel`. -/
+instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
+    [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
+    {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    [IsManifold I n M] (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M']
+    [IsManifold I' n M'] :
+    IsManifold (I.prod I') n (BundleModel M M') :=
+  inferInstanceAs (IsManifold (I.prod I') n (M × M'))
 
-/- The next instance is dangerous: if `B` is modelled on `HB`, and `TotalSpace F E` is charted
-on `B × F`, then one gets a charted structure on `HB × F` by composition.
-*But*: as `B` is modelled on itself, this gives a new charted structure on `B × F`, different
-from the original one.
-We lower the priority to make sure that, in this case, the instance is not picked
-and the good `chartedSpace'` is used. -/
 /-- Let `B` be a charted space modelled on `HB`.  Then a fiber bundle `E` over a base `B` with model
 fiber `F` is naturally a charted space modelled on `HB.prod F`. -/
-instance (priority := 100) FiberBundle.chartedSpace : ChartedSpace (HB × F) (TotalSpace F E) :=
-  ChartedSpace.comp (HB × F) (B × F) (TotalSpace F E)
+instance FiberBundle.chartedSpace : ChartedSpace (HB × F) (TotalSpace F E) :=
+  ChartedSpace.comp (HB × F) (BundleModel B F) (TotalSpace F E)
 
 theorem FiberBundle.chartedSpace_chartAt (x : TotalSpace F E) :
     chartAt (HB × F) x =
       (trivializationAt F E x.proj).toPartialHomeomorph ≫ₕ
         (chartAt HB x.proj).prod (PartialHomeomorph.refl F) := by
   dsimp only [chartAt_comp, prodChartedSpace_chartAt, FiberBundle.chartedSpace'_chartAt]
-  simp only [chartAt_self_eq]
-  rw [Trivialization.coe_coe, Trivialization.coe_fst' _ (mem_baseSet_trivializationAt F E x.proj)]
+  simp [chartAt, prodChartedSpaceBundleModel]
 
 theorem FiberBundle.chartedSpace_chartAt_symm_fst (x : TotalSpace F E) (y : HB × F)
     (hy : y ∈ (chartAt (HB × F) x).target) :
@@ -141,6 +147,8 @@ protected theorem FiberBundle.extChartAt (x : TotalSpace F E) :
         (extChartAt IB x.proj).prod (PartialEquiv.refl F) := by
   simp_rw [extChartAt, FiberBundle.chartedSpace_chartAt, extend]
   simp only [PartialEquiv.trans_assoc, mfld_simps]
+  -- Porting note: should not be needed
+  rw [PartialEquiv.prod_trans, PartialEquiv.refl_trans]
 
 protected theorem FiberBundle.extChartAt_target (x : TotalSpace F E) :
     (extChartAt (IB.prod 𝓘(𝕜, F)) x).target =
@@ -422,7 +430,9 @@ theorem Trivialization.contMDiffOn_symm_trans :
   rintro ⟨b, x⟩ hb
   refine Prod.ext ?_ rfl
   have : (e.toPartialHomeomorph.symm (b, x)).1 ∈ e'.baseSet := by
-    simp_all only [Trivialization.mem_target, mfld_simps]
+    simp only [mem_inter_iff, mem_target] at hb
+    rw [mem_target, mem_target] at hb
+    simp only [hb, symm_coe_proj]
   exact (e'.coe_fst' this).trans (e.proj_symm_apply hb.1)
 
 variable {e e'}

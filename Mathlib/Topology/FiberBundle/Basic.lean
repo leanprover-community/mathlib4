@@ -84,16 +84,16 @@ a family of trivializations (constituting the data) which are all mutually-compa
 The PRs https://github.com/leanprover-community/mathlib4/pull/13052 and https://github.com/leanprover-community/mathlib4/pull/13175 implemented this change.
 
 There is still the choice about whether to hold this data at the level of fiber bundles or of vector
-bundles. As of PR https://github.com/leanprover-community/mathlib4/pull/17505, the data is all held in `FiberBundle`, with `VectorBundle` a
-(propositional) mixin stating fiberwise-linearity.
+bundles. As of PR https://github.com/leanprover-community/mathlib4/pull/17505, the data is all
+held in `FiberBundle`, with `VectorBundle` a (propositional) mixin stating fiberwise-linearity.
 
 This allows bundles to carry instances of typeclasses in which the scalar field, `R`, does not
 appear as a parameter. Notably, we would like a vector bundle over `R` with fiber `F` over base `B`
-to be a `ChartedSpace (B × F)`, with the trivializations providing the charts. This would be a
-dangerous instance for typeclass inference, because `R` does not appear as a parameter in
-`ChartedSpace (B × F)`. But if the data of the trivializations is held in `FiberBundle`, then a
-fiber bundle with fiber `F` over base `B` can be a `ChartedSpace (B × F)`, and this is safe for
-typeclass inference.
+to be a `ChartedSpace (BundleModel B F)`, with the trivializations providing the charts. This
+would be a dangerous instance for typeclass inference, because `R` does not appear as a parameter in
+`ChartedSpace (BundleModel B F)`. But if the data of the trivializations is held in `FiberBundle`,
+then a fiber bundle with fiber `F` over base `B` can be a `ChartedSpace (BundleModel B F)`, and
+this is safe for typeclass inference.
 
 We expect that this choice of definition will also streamline constructions of fiber bundles with
 similar underlying structure (e.g., the same bundle being both a real and complex vector bundle).
@@ -400,7 +400,8 @@ structure FiberBundleCore (ι : Type*) (B : Type*) [TopologicalSpace B] (F : Typ
   coordChange : ι → ι → B → F → F
   coordChange_self : ∀ i, ∀ x ∈ baseSet i, ∀ v, coordChange i i x v = v
   continuousOn_coordChange : ∀ i j,
-    ContinuousOn (fun p : B × F => coordChange i j p.1 p.2) ((baseSet i ∩ baseSet j) ×ˢ univ)
+    ContinuousOn (fun p : BundleModel B F => coordChange i j p.1 p.2)
+      ((baseSet i ∩ baseSet j) ×ˢ univ)
   coordChange_comp : ∀ i j k, ∀ x ∈ baseSet i ∩ baseSet j ∩ baseSet k, ∀ v,
     (coordChange j k x) (coordChange i j x v) = coordChange i k x v
 
@@ -433,7 +434,7 @@ def proj : Z.TotalSpace → B :=
   Bundle.TotalSpace.proj
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
+def trivChange (i j : ι) : PartialHomeomorph (BundleModel B F) (BundleModel B F) where
   source := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   target := (Z.baseSet i ∩ Z.baseSet j) ×ˢ univ
   toFun p := ⟨p.1, Z.coordChange i j p.1 p.2⟩
@@ -442,13 +443,13 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
   map_target' p hp := by simpa using hp
   left_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
+    simp only [BundleModel.mem_prod, mem_inter_iff, mem_univ, and_true] at hx
     dsimp only
     rw [coordChange_comp, Z.coordChange_self]
     exacts [hx.1, ⟨⟨hx.1, hx.2⟩, hx.1⟩]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ] at hx
+    simp only [BundleModel.mem_prod, mem_inter_iff, mem_univ, and_true] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     · exact hx.2
@@ -461,7 +462,7 @@ def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) where
     simpa [inter_comm] using continuous_fst.continuousOn.prod (Z.continuousOn_coordChange j i)
 
 @[simp, mfld_simps]
-theorem mem_trivChange_source (i j : ι) (p : B × F) :
+theorem mem_trivChange_source (i j : ι) (p : BundleModel B F) :
     p ∈ (Z.trivChange i j).source ↔ p.1 ∈ Z.baseSet i ∩ Z.baseSet j := by
   erw [mem_prod]
   simp
@@ -473,15 +474,15 @@ coordinate change from i to `index_at x`, so it depends on `x`.
 The local trivialization will ultimately be a partial homeomorphism. For now, we only introduce the
 partial equivalence version, denoted with a prime.
 In further developments, avoid this auxiliary version, and use `Z.local_triv` instead. -/
-def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
+def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (BundleModel B F) where
   source := Z.proj ⁻¹' Z.baseSet i
   target := Z.baseSet i ×ˢ univ
   invFun p := ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩
   toFun p := ⟨p.1, Z.coordChange (Z.indexAt p.1) i p.1 p.2⟩
   map_source' p hp := by
-    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.prodMk_mem_set_prod_eq] using hp
+    simpa only [BundleModel.mem_prod, mem_univ, and_true, proj, mem_preimage] using hp
   map_target' p hp := by
-    simpa only [Set.mem_preimage, and_true, Set.mem_univ, Set.mem_prod] using hp
+    simpa only [proj, mem_preimage, BundleModel.mem_prod, mem_univ, and_true] using hp
   left_inv' := by
     rintro ⟨x, v⟩ hx
     replace hx : x ∈ Z.baseSet i := hx
@@ -489,7 +490,7 @@ def localTrivAsPartialEquiv (i : ι) : PartialEquiv Z.TotalSpace (B × F) where
     rw [Z.coordChange_comp, Z.coordChange_self] <;> apply_rules [mem_baseSet_at, mem_inter]
   right_inv' := by
     rintro ⟨x, v⟩ hx
-    simp only [prodMk_mem_set_prod_eq, and_true, mem_univ] at hx
+    simp only [BundleModel.mem_prod, mem_univ, and_true] at hx
     dsimp only
     rw [Z.coordChange_comp, Z.coordChange_self]
     exacts [hx, ⟨⟨hx, Z.mem_baseSet_at _⟩, hx⟩]
@@ -500,7 +501,7 @@ theorem mem_localTrivAsPartialEquiv_source (p : Z.TotalSpace) :
     p ∈ (Z.localTrivAsPartialEquiv i).source ↔ p.1 ∈ Z.baseSet i :=
   Iff.rfl
 
-theorem mem_localTrivAsPartialEquiv_target (p : B × F) :
+theorem mem_localTrivAsPartialEquiv_target (p : BundleModel B F) :
     p ∈ (Z.localTrivAsPartialEquiv i).target ↔ p.1 ∈ Z.baseSet i := by
   erw [mem_prod]
   simp only [and_true, mem_univ]
@@ -515,19 +516,19 @@ theorem localTrivAsPartialEquiv_trans (i j : ι) :
       (Z.trivChange i j).toPartialEquiv := by
   constructor
   · ext x
-    simp only [mem_localTrivAsPartialEquiv_target, mfld_simps]
+    simp only [mem_localTrivAsPartialEquiv_target, mfld_simps, trivChange]
     rfl
   · rintro ⟨x, v⟩ hx
     simp only [trivChange, localTrivAsPartialEquiv, PartialEquiv.symm,
-      Prod.mk_inj, prodMk_mem_set_prod_eq, PartialEquiv.trans_source, mem_inter_iff,
+      Prod.mk_inj, BundleModel.mem_prod, PartialEquiv.trans_source, mem_inter_iff,
       mem_preimage, proj, mem_univ, eq_self_iff_true, (· ∘ ·),
       PartialEquiv.coe_trans, TotalSpace.proj] at hx ⊢
-    simp only [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
+    simp [Z.coordChange_comp, hx, mem_inter_iff, and_self_iff, mem_baseSet_at]
 
 /-- Topological structure on the total space of a fiber bundle created from core, designed so
 that all the local trivialization are continuous. -/
 instance toTopologicalSpace : TopologicalSpace (Bundle.TotalSpace F Z.Fiber) :=
-  TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (B × F)) (_ : IsOpen s),
+  TopologicalSpace.generateFrom <| ⋃ (i : ι) (s : Set (BundleModel B F)) (_ : IsOpen s),
     {(Z.localTrivAsPartialEquiv i).source ∩ Z.localTrivAsPartialEquiv i ⁻¹' s}
 
 variable (b : B) (a : F)
@@ -537,8 +538,8 @@ theorem open_source' (i : ι) : IsOpen (Z.localTrivAsPartialEquiv i).source := b
   simp only [exists_prop, mem_iUnion, mem_singleton_iff]
   refine ⟨i, Z.baseSet i ×ˢ univ, (Z.isOpen_baseSet i).prod isOpen_univ, ?_⟩
   ext p
-  simp only [localTrivAsPartialEquiv_apply, prodMk_mem_set_prod_eq, mem_inter_iff, and_self_iff,
-    mem_localTrivAsPartialEquiv_source, and_true, mem_univ, mem_preimage]
+  simp only [mem_localTrivAsPartialEquiv_source, mem_inter_iff, mem_preimage,
+    localTrivAsPartialEquiv_apply, BundleModel.mem_prod, mem_univ, and_true, and_self]
 
 /-- Extended version of the local trivialization of a fiber bundle constructed from core,
 registering additionally in its type that it is a local bundle trivialization. -/
@@ -773,7 +774,7 @@ def trivializationOfMemPretrivializationAtlas (he : e ∈ a.pretrivializationAtl
       refine isOpen_iSup_iff.mpr fun he' => ?_
       rw [isOpen_coinduced, isOpen_induced_iff]
       obtain ⟨u, hu1, hu2⟩ := continuousOn_iff'.mp (a.continuous_trivChange _ he _ he') s hs
-      have hu3 := congr_arg (fun s => (fun x : e'.target => (x : B × F)) ⁻¹' s) hu2
+      have hu3 := congr_arg (fun s => (fun x : e'.target => (x : BundleModel B F)) ⁻¹' s) hu2
       simp only [Subtype.coe_preimage_self, preimage_inter, univ_inter] at hu3
       refine ⟨u ∩ e'.toPartialEquiv.target ∩ e'.toPartialEquiv.symm ⁻¹' e.source, ?_, by
         simp only [preimage_inter, inter_univ, Subtype.coe_preimage_self, hu3.symm]; rfl⟩

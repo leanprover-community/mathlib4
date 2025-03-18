@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Heather Macbeth
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+import Mathlib.Topology.FiberBundle.Trivialization
 
 /-! # The groupoid of `C^n`, fiberwise-linear maps
 
@@ -28,11 +29,11 @@ namespace FiberwiseLinear
 variable {φ φ' : B → F ≃L[𝕜] F} {U U' : Set B}
 
 /-- For `B` a topological space and `F` a `𝕜`-normed space, a map from `U : Set B` to `F ≃L[𝕜] F`
-determines a partial homeomorphism from `B × F` to itself by its action fiberwise. -/
+determines a partial homeomorphism from `BundleModel B F` to itself by its action fiberwise. -/
 def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
     (hφ : ContinuousOn (fun x => φ x : B → F →L[𝕜] F) U)
     (h2φ : ContinuousOn (fun x => (φ x).symm : B → F →L[𝕜] F) U) :
-    PartialHomeomorph (B × F) (B × F) where
+    PartialHomeomorph (BundleModel B F) (BundleModel B F) where
   toFun x := (x.1, φ x.1 x.2)
   invFun x := (x.1, (φ x.1).symm x.2)
   source := U ×ˢ univ
@@ -44,12 +45,12 @@ def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
   open_source' := hU.prod isOpen_univ
   open_target' := hU.prod isOpen_univ
   continuousOn_toFun :=
-    have : ContinuousOn (fun p : B × F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
+    have : ContinuousOn (fun p : BundleModel B F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
       hφ.prod_map continuousOn_id
     continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
   continuousOn_invFun :=
-    haveI : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
-      h2φ.prod_map continuousOn_id
+    haveI : ContinuousOn (fun p : BundleModel B F => (((φ p.1).symm : F →L[𝕜] F), p.2))
+      (U ×ˢ univ) := h2φ.prod_map continuousOn_id
     continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
 
 /-- Compute the composition of two partial homeomorphisms induced by fiberwise linear
@@ -94,15 +95,15 @@ end FiberwiseLinear
 variable {EB : Type*} [NormedAddCommGroup EB] [NormedSpace 𝕜 EB] {HB : Type*}
   [TopologicalSpace HB] [ChartedSpace HB B] {IB : ModelWithCorners 𝕜 EB HB}
 
-/-- Let `e` be a partial homeomorphism of `B × F`.  Suppose that at every point `p` in the source of
-`e`, there is some neighbourhood `s` of `p` on which `e` is equal to a bi-`C^n` fiberwise linear
-partial homeomorphism.
+/-- Let `e` be a partial homeomorphism of `BundleModel B F`.  Suppose that at every
+point `p` in the source of `e`, there is some neighbourhood `s` of `p` on which `e` is equal to a
+bi-`C^n` fiberwise linear partial homeomorphism.
 Then the source of `e` is of the form `U ×ˢ univ`, for some set `U` in `B`, and, at any point `x` in
 `U`, admits a neighbourhood `u` of `x` such that `e` is equal on `u ×ˢ univ` to some bi-`C^n`
 fiberwise linear partial homeomorphism. -/
 theorem ContMDiffFiberwiseLinear.locality_aux₁
-    (n : WithTop ℕ∞) (e : PartialHomeomorph (B × F) (B × F))
-    (h : ∀ p ∈ e.source, ∃ s : Set (B × F), IsOpen s ∧ p ∈ s ∧
+    (n : WithTop ℕ∞) (e : PartialHomeomorph (BundleModel B F) (BundleModel B F))
+    (h : ∀ p ∈ e.source, ∃ s : Set (BundleModel B F), IsOpen s ∧ p ∈ s ∧
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u)
         (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x : F →L[𝕜] F)) u)
         (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => ((φ x).symm : F →L[𝕜] F)) u),
@@ -120,11 +121,11 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
     intro p
     rw [← e.restr_source' (s _) (hs _)]
     exact (heφ p).1
-  have hu' : ∀ p : e.source, (p : B × F).fst ∈ u p := by
+  have hu' : ∀ p : e.source, (p : BundleModel B F).fst ∈ u p := by
     intro p
-    have : (p : B × F) ∈ e.source ∩ s p := ⟨p.prop, hsp p⟩
-    simpa only [hesu, mem_prod, mem_univ, and_true] using this
-  have heu : ∀ p : e.source, ∀ q : B × F, q.fst ∈ u p → q ∈ e.source := by
+    have : (p : BundleModel B F) ∈ e.source ∩ s p := ⟨p.prop, hsp p⟩
+    simpa [hesu] using this
+  have heu : ∀ p : e.source, ∀ q : BundleModel B F, q.fst ∈ u p → q ∈ e.source := by
     intro p q hq
     have : q ∈ u p ×ˢ (univ : Set F) := ⟨hq, trivial⟩
     rw [← hesu p] at this
@@ -144,10 +145,10 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
 @[deprecated (since := "2025-01-09")]
 alias SmoothFiberwiseLinear.locality_aux₁ := ContMDiffFiberwiseLinear.locality_aux₁
 
-/-- Let `e` be a partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set `U` in
-`B`, and which, at any point `x` in `U`, admits a neighbourhood `u` of `x` such that `e` is equal
-on `u ×ˢ univ` to some bi-`C^n` fiberwise linear partial homeomorphism.  Then `e` itself
-is equal to some bi-`C^n` fiberwise linear partial homeomorphism.
+/-- Let `e` be a partial homeomorphism of `BundleModel B F` whose source is `U ×ˢ univ`,
+for some set `U` in `B`, and which, at any point `x` in `U`, admits a neighbourhood `u` of `x`
+such that `e` is equal on `u ×ˢ univ` to some bi-`C^n` fiberwise linear partial homeomorphism.
+Then `e` itself is equal to some bi-`C^n` fiberwise linear partial homeomorphism.
 
 This is the key mathematical point of the `locality` condition in the construction of the
 `StructureGroupoid` of bi-`C^n` fiberwise linear partial homeomorphisms.  The proof is by gluing
@@ -156,7 +157,8 @@ together the various bi-`C^n` fiberwise linear partial homeomorphism which exist
 The `U` in the conclusion is the same `U` as in the hypothesis. We state it like this, because this
 is exactly what we need for `contMDiffFiberwiseLinear`. -/
 theorem ContMDiffFiberwiseLinear.locality_aux₂
-    (n : WithTop ℕ∞) (e : PartialHomeomorph (B × F) (B × F)) (U : Set B) (hU : e.source = U ×ˢ univ)
+    (n : WithTop ℕ∞) (e : PartialHomeomorph (BundleModel B F) (BundleModel B F))
+    (U : Set B) (hU : e.source = U ×ˢ univ)
     (h : ∀ x ∈ U,
       ∃ (φ : B → F ≃L[𝕜] F) (u : Set B) (hu : IsOpen u) (_hUu : u ⊆ U) (_hux : x ∈ u)
         (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x : F →L[𝕜] F)) u)
@@ -223,7 +225,8 @@ alias SmoothFiberwiseLinear.locality_aux₂ := ContMDiffFiberwiseLinear.locality
 -- Having this private lemma speeds up `simp` calls below a lot.
 -- TODO: understand why and fix the underlying issue (relatedly, the `simp` calls
 -- in `contMDiffFiberwiseLinear` are quite slow, even with this change)
-private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} {n : WithTop ℕ∞} :
+private theorem mem_aux {e : PartialHomeomorph (BundleModel B F) (BundleModel B F)}
+    {n : WithTop ℕ∞} :
     (e ∈ ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
       (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => φ x : B → F →L[𝕜] F) U)
       (h2φ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => (φ x).symm : B → F →L[𝕜] F) U),
@@ -238,11 +241,11 @@ private theorem mem_aux {e : PartialHomeomorph (B × F) (B × F)} {n : WithTop �
 
 variable (F B IB)
 
-/-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
+/-- For `B` a manifold and `F` a normed space, the groupoid on `BundleModel B F` consisting of local
 homeomorphisms which are bi-`C^n` and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is `C^n`, then the composition of charts associated
 to the vector bundle belong to this groupoid. -/
-def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) where
+def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (BundleModel B F) where
   members :=
     ⋃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U)
       (hφ : ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => φ x : B → F →L[𝕜] F) U)
@@ -291,7 +294,8 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
 @[deprecated (since := "2025-01-09")] alias smoothFiberwiseLinear := contMDiffFiberwiseLinear
 
 @[simp]
-theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeomorph (B × F) (B × F)) :
+theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞}
+    (e : PartialHomeomorph (BundleModel B F) (BundleModel B F)) :
     e ∈ contMDiffFiberwiseLinear B F IB n ↔
       ∃ (φ : B → F ≃L[𝕜] F) (U : Set B) (hU : IsOpen U) (hφ :
         ContMDiffOn IB 𝓘(𝕜, F →L[𝕜] F) n (fun x => φ x : B → F →L[𝕜] F) U) (h2φ :

@@ -48,7 +48,7 @@ theorem isInducing_toProd : IsInducing (TotalSpace.toProd B F) :=
 @[deprecated (since := "2024-10-28")] alias inducing_toProd := isInducing_toProd
 
 /-- Homeomorphism between the total space of the trivial bundle and the Cartesian product. -/
-def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ B × F :=
+def homeomorphProd : TotalSpace F (Trivial B F) ≃ₜ BundleModel B F :=
   (TotalSpace.toProd _ _).toHomeomorphOfIsInducing (isInducing_toProd B F)
 
 /-- Local trivialization for trivial bundle. -/
@@ -127,7 +127,7 @@ variable (e₁ : Trivialization F₁ (π F₁ E₁)) (e₂ : Trivialization F₂
 /-- Given trivializations `e₁`, `e₂` for fiber bundles `E₁`, `E₂` over a base `B`, the forward
 function for the construction `Trivialization.prod`, the induced
 trivialization for the fiberwise product of `E₁` and `E₂`. -/
-def Prod.toFun' : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → B × F₁ × F₂ :=
+def Prod.toFun' : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂) → BundleModel B (F₁ × F₂) :=
   fun p ↦ ⟨p.1, (e₁ ⟨p.1, p.2.1⟩).2, (e₂ ⟨p.1, p.2.2⟩).2⟩
 
 variable {e₁ e₂}
@@ -168,7 +168,7 @@ theorem Prod.left_inv {x : TotalSpace (F₁ × F₂) (E₁ ×ᵇ E₂)}
   obtain ⟨h₁ : x ∈ e₁.baseSet, h₂ : x ∈ e₂.baseSet⟩ := h
   simp only [Prod.toFun', Prod.invFun', symm_apply_apply_mk, h₁, h₂]
 
-theorem Prod.right_inv {x : B × F₁ × F₂}
+theorem Prod.right_inv {x : BundleModel B (F₁ × F₂)}
     (h : x ∈ (e₁.baseSet ∩ e₂.baseSet) ×ˢ (univ : Set (F₁ × F₂))) :
     Prod.toFun' e₁ e₂ (Prod.invFun' e₁ e₂ x) = x := by
   obtain ⟨x, w₁, w₂⟩ := x
@@ -306,7 +306,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
   target := (f ⁻¹' e.baseSet) ×ˢ univ
   map_source' x h := by
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj] at h
-    simp_rw [prodMk_mem_set_prod_eq, mem_univ, and_true, mem_preimage, h]
+    simp_rw [BundleModel.mem_prod, mem_univ, and_true, mem_preimage, h]
   map_target' y h := by
     rw [mem_prod, mem_preimage] at h
     simp_rw [e.source_eq, mem_preimage, Pullback.lift_proj, h.1]
@@ -314,8 +314,9 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     simp_rw [mem_preimage, e.mem_source, Pullback.lift_proj] at h
     simp_rw [Pullback.lift, e.symm_apply_apply_mk h]
   right_inv' x h := by
-    simp_rw [mem_prod, mem_preimage, mem_univ, and_true] at h
+    simp_rw [BundleModel.mem_prod, mem_preimage, mem_univ, and_true] at h
     simp_rw [Pullback.lift_mk, e.apply_mk_symm h]
+    rfl
   open_source' := by
     simp_rw [e.source_eq, ← preimage_comp]
     exact e.open_baseSet.preimage ((map_continuous f).comp <| Pullback.continuous_proj F E f)

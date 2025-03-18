@@ -556,7 +556,7 @@ protected def TotalSpace :=
   Bundle.TotalSpace F Z.Fiber
 
 /-- Local homeomorphism version of the trivialization change. -/
-def trivChange (i j : ι) : PartialHomeomorph (B × F) (B × F) :=
+def trivChange (i j : ι) : PartialHomeomorph (BundleModel B F) (BundleModel B F) :=
   Z.toFiberBundleCore.trivChange i j
 
 @[simp, mfld_simps]
@@ -602,12 +602,12 @@ theorem baseSet_at : Z.baseSet i = (Z.localTriv i).baseSet :=
   rfl
 
 @[simp, mfld_simps]
-theorem mem_localTriv_target (p : B × F) :
+theorem mem_localTriv_target (p : BundleModel B F) :
     p ∈ (Z.localTriv i).target ↔ p.1 ∈ (Z.localTriv i).baseSet :=
   Z.toFiberBundleCore.mem_localTriv_target i p
 
 @[simp, mfld_simps]
-theorem localTriv_symm_fst (p : B × F) :
+theorem localTriv_symm_fst (p : BundleModel B F) :
     (Z.localTriv i).toPartialHomeomorph.symm p = ⟨p.1, Z.coordChange i (Z.indexAt p.1) p.1 p.2⟩ :=
   rfl
 
@@ -777,7 +777,7 @@ theorem mk_coordChange (a : VectorPrebundle R F E) {e e' : Pretrivialization F (
 def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
   { a with
     continuous_trivChange := fun e he e' he' ↦ by
-      have : ContinuousOn (fun x : B × F ↦ a.coordChange he' he x.1 x.2)
+      have : ContinuousOn (fun x : BundleModel B F ↦ a.coordChange he' he x.1 x.2)
           ((e'.baseSet ∩ e.baseSet) ×ˢ univ) :=
         isBoundedBilinearMap_apply.continuous.comp_continuousOn
           ((a.continuousOn_coordChange he' he).prod_map continuousOn_id)
