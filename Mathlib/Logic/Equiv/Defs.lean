@@ -694,6 +694,14 @@ def sigmaAssoc {α : Type*} {β : α → Type*} (γ : ∀ a : α, β a → Type*
   left_inv _ := rfl
   right_inv _ := rfl
 
+/-- Dependent product of sorts is associative up to an equivalence. -/
+def pSigmaAssoc {α : Sort*} {β : α → Sort*} (γ : ∀ a : α, β a → Sort*) :
+    (Σ' ab : Σ' a : α, β a, γ ab.1 ab.2) ≃ Σ' a : α, Σ' b : β a, γ a b where
+  toFun x := ⟨x.1.1, ⟨x.1.2, x.2⟩⟩
+  invFun x := ⟨⟨x.1, x.2.1⟩, x.2.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 end
 
 variable {p : α → Prop} {q : β → Prop} (e : α ≃ β)
