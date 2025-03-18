@@ -40,7 +40,7 @@ lemma exists_disjoint_nonempty_clopen_cover_of_mem_uniformity (hS : S ∈ 𝓤 V
     obtain ⟨R, hR, hR', hRS⟩ := comp_symm_of_uniformity hS
     obtain ⟨U, hUB, hUo, hUx⟩ := mem_nhds_iff.mp <|  (f.continuousAt x).preimage_mem_nhds
       <| UniformSpace.ball_mem_nhds _ hR
-    exact ⟨⟨U, hUo⟩, hUx, fun y hy z hz ↦ hRS <| prod_mk_mem_compRel (hR' <| hUB hy) (hUB hz)⟩
+    exact ⟨⟨U, hUo⟩, hUx, fun y hy z hz ↦ hRS <| prodMk_mem_compRel (hR' <| hUB hy) (hUB hz)⟩
   choose U hUx hUS using step1
   have hUc : IsOpenCover U := by ext x; simpa using ⟨x, hUx x⟩
   -- Now refine it to a disjoint covering.
