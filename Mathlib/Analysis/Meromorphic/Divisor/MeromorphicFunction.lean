@@ -3,9 +3,8 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-
-import Mathlib.Analysis.Meromorphic.Order
 import Mathlib.Analysis.Meromorphic.Divisor.Basic
+import Mathlib.Analysis.Meromorphic.Order
 
 /-!
 # The Divisor of a Meromorphic Function
@@ -21,12 +20,7 @@ basic lemmas about those divisors.
 - Congruence lemmas for `codiscreteWithin`
 -/
 
-open Classical
-
-variable
-  {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {U : Set 𝕜}
-  {z : 𝕜}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜} {z : 𝕜}
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [CompleteSpace E]
 
 namespace MeromorphicOn
@@ -35,6 +29,7 @@ namespace MeromorphicOn
 ## Definition of the Divisor
 -/
 
+open Classical in
 /-- The divisor of a meromorphic function `f`, mapping a point `z` to the order
   of `f` at `z`, and to zero if the order is infinite. -/
 noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
@@ -54,12 +49,13 @@ noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
     · simp only [hf, false_and, ↓reduceDIte]
       exact (Eq.eventuallyEq rfl)
 
-/-- Definition of the divisor. -/
+open Classical in
+/-- Definition of the divisor -/
 theorem divisor_def (f : 𝕜 → E) (U : Set 𝕜) :
     divisor f U z = if h : MeromorphicOn f U ∧ z ∈ U then ((h.1 z h.2).order.untopD 0) else 0 :=
   rfl
 
-/-- Simplifier lemma: On `U`, the divisor of a function `f` that is meromorphic on `U` evaluates to
+/-- Simplifier lemma: on `U`, the divisor of a function `f` that is meromorphic on `U` evaluates to
   `order.untopD`. -/
 @[simp]
 lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
@@ -69,12 +65,13 @@ lemma divisor_apply {f : 𝕜 → E} (hf : MeromorphicOn f U) (hz : z ∈ U) :
 ## Behavior under Standard Operations
 -/
 
-/-- If orders are finite, the divisor of the scalar product of two meromorphic
-  functions is the sum of the divisors.
+/--
+If orders are finite, the divisor of the scalar product of two meromorphic
+functions is the sum of the divisors.
 
-  See `MeromorphicOn.exists_order_ne_top_iff_forall` and
-  `MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to
-  guarantee conditions `h₂f₁` and `h₂f₂`.
+See `MeromorphicOn.exists_order_ne_top_iff_forall` and
+`MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to
+guarantee conditions `h₂f₁` and `h₂f₂`.
 -/
 theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
@@ -88,12 +85,13 @@ theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 �
       ← WithTop.coe_add]
   · simp [hz]
 
-/-- If orders are finite, the divisor of the product of two meromorphic
-  functions is the sum of the divisors.
+/--
+If orders are finite, the divisor of the product of two meromorphic
+functions is the sum of the divisors.
 
-  See `MeromorphicOn.exists_order_ne_top_iff_forall` and
-  `MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to
-  guarantee conditions `h₂f₁` and `h₂f₂`.
+See `MeromorphicOn.exists_order_ne_top_iff_forall` and
+`MeromorphicOn.order_ne_top_of_isPreconnected` for two convenient criteria to
+guarantee conditions `h₂f₁` and `h₂f₂`.
 -/
 theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : MeromorphicOn f₁ U)
     (h₁f₂ : MeromorphicOn f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
