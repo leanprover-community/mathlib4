@@ -279,14 +279,14 @@ theorem IsBigO.smul (h₁ : k₁ =O[l] k₂) (h₂ : f' =O[l] g') :
 
 theorem IsBigO.smul_isLittleO (h₁ : k₁ =O[l] k₂) (h₂ : f' =o[l] g') :
     (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
-  simp only [IsLittleO_def] at *
+  simp only [IsLittleO] at *
   intro c cpos
   rcases h₁.exists_pos with ⟨c', c'pos, hc'⟩
   exact (hc'.smul (h₂ (div_pos cpos c'pos))).congr_const (mul_div_cancel₀ _ (ne_of_gt c'pos))
 
 theorem IsLittleO.smul_isBigO (h₁ : k₁ =o[l] k₂) (h₂ : f' =O[l] g') :
     (fun x => k₁ x • f' x) =o[l] fun x => k₂ x • g' x := by
-  simp only [IsLittleO_def] at *
+  simp only [IsLittleO] at *
   intro c cpos
   rcases h₂.exists_pos with ⟨c', c'pos, hc'⟩
   exact ((h₁ (div_pos cpos c'pos)).smul hc').congr_const (div_mul_cancel₀ _ (ne_of_gt c'pos))
@@ -461,7 +461,7 @@ theorem isLittleO_iff_exists_eq_mul :
     u =o[l] v ↔ ∃ φ : α → 𝕜, Tendsto φ l (𝓝 0) ∧ u =ᶠ[l] φ * v := by
   constructor
   · exact fun h => ⟨fun x => u x / v x, h.tendsto_div_nhds_zero, h.eventually_mul_div_cancel.symm⟩
-  · simp only [IsLittleO_def]
+  · simp only [IsLittleO]
     rintro ⟨φ, hφ, huvφ⟩ c hpos
     rw [NormedAddCommGroup.tendsto_nhds_zero] at hφ
     exact isBigOWith_of_eq_mul _ ((hφ c hpos).mono fun x => le_of_lt) huvφ
@@ -618,7 +618,7 @@ theorem isBigO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAd
 @[simp]
 theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, NormedAddCommGroup (E' i)]
     {f : α → ∀ i, E' i} : f =o[l] g' ↔ ∀ i, (fun x => f x i) =o[l] g' := by
-  simp +contextual only [IsLittleO_def, isBigOWith_pi, le_of_lt]
+  simp +contextual only [IsLittleO, isBigOWith_pi, le_of_lt]
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 
 theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
@@ -692,7 +692,7 @@ theorem isBigO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target
 /-- Transfer `IsLittleO` over a `PartialHomeomorph`. -/
 theorem isLittleO_congr (e : PartialHomeomorph α β) {b : β} (hb : b ∈ e.target) {f : β → E}
     {g : β → F} : f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
-  simp only [IsLittleO_def]
+  simp only [IsLittleO]
   exact forall₂_congr fun c _hc => e.isBigOWith_congr hb
 
 end PartialHomeomorph
@@ -718,7 +718,7 @@ theorem isBigO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
 /-- Transfer `IsLittleO` over a `Homeomorph`. -/
 theorem isLittleO_congr (e : α ≃ₜ β) {b : β} {f : β → E} {g : β → F} :
     f =o[𝓝 b] g ↔ (f ∘ e) =o[𝓝 (e.symm b)] (g ∘ e) := by
-  simp only [IsLittleO_def]
+  simp only [IsLittleO]
   exact forall₂_congr fun c _hc => e.isBigOWith_congr
 
 end Homeomorph

@@ -285,7 +285,7 @@ variable {X}
 @[irreducible] def ι : X → FreeAlgebra R X := fun m ↦ Quot.mk _ m
 
 @[simp]
-theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι_def]
+theorem quot_mk_eq_ι (m : X) : Quot.mk (FreeAlgebra.Rel R X) m = ι R m := by rw [ι]
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 
@@ -348,7 +348,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
     invFun := fun F ↦ F ∘ ι R
     left_inv := fun f ↦ by
       ext
-      simp only [Function.comp_apply, ι_def]
+      simp only [Function.comp_apply, ι]
       rfl
     right_inv := fun F ↦ by
       ext t
@@ -356,7 +356,7 @@ def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
       induction x with
       | of =>
         change ((F : FreeAlgebra R X → A) ∘ ι R) _ = _
-        simp only [Function.comp_apply, ι_def]
+        simp only [Function.comp_apply, ι]
       | ofScalar x =>
         change algebraMap _ _ x = F (algebraMap _ _ x)
         rw [AlgHom.commutes F _]
@@ -388,12 +388,12 @@ variable {R}
 @[simp]
 theorem ι_comp_lift (f : X → A) : (lift R f : FreeAlgebra R X → A) ∘ ι R = f := by
   ext
-  rw [Function.comp_apply, ι_def, lift]
+  rw [Function.comp_apply, ι, lift]
   rfl
 
 @[simp]
 theorem lift_ι_apply (f : X → A) (x) : lift R f (ι R x) = f x := by
-  rw [ι_def, lift]
+  rw [ι, lift]
   rfl
 
 @[simp]
