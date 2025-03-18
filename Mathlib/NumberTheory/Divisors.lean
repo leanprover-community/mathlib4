@@ -653,6 +653,17 @@ lemma divisorsAntidiag_ofNat (n : ℕ) :
         (n.divisorsAntidiagonal.map <| .prodMap negNatCast negNatCast) (by
           simp +contextual [disjoint_left, eq_comm]) := rfl
 
+lemma neg_four_neg_one_iff {a b : ℤ} :
+    (a, b) = (-4, -1) ↔ (a * b ∈ ({1, 2, 3, 4} : Set ℤ) ∧ a = -4) := by
+  constructor
+  · intro h
+    rw [Prod.mk_inj] at h
+    simp [h.1, h.2]
+  · intro ⟨h1, h2⟩
+    simp only [h2, reduceNeg, Set.mem_insert_iff, Set.mem_singleton_iff] at h1
+    simp only [h2, reduceNeg, Prod.mk.injEq, true_and]
+    omega
+
 /-- This lemma justifies its existence from its utility in crystallographic root system theory. -/
 lemma mul_mem_one_two_three_iff {a b : ℤ} :
     a * b ∈ ({1, 2, 3} : Set ℤ) ↔ (a, b) ∈ ({
