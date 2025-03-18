@@ -31,7 +31,14 @@ Containment:
   This is similar to `SimpleGraph.IsSubgraph` except that the simple graphs here need not have the
   same underlying vertex type.
 * `SimpleGraph.Free` is the predicate that `H` is `G`-free, that is, `H` does not contain a copy of
-  `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
+  `A`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
+* `SimpleGraph.kill G H`: Subgraph of `H` that does not contain `G`. Obtained by arbitrarily
+  removing an edge from each copy of `G` in `H`.
+
+Induced containment:
+* Induced copies of `G` inside `H` are already defined as `G ↪g H`.
+* `SimpleGraph.IsIndContained G H` : `G` is contained as an induced subgraph in `H`.
+* `SimpleGraph.copyCount G H`: Number of copies `G` in `H`.
 
 Induced containment:
 * Induced copies of `G` inside `H` are already defined as `G ↪g H`.
@@ -348,14 +355,204 @@ lemma isIndContained_iff_exists_iso_subgraph :
 alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
   isIndContained_iff_exists_iso_subgraph
 
-@[simp] lemma top_isIndContained_iff_top_isContained :
-    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
-  mp h := h.isContained
-  mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
+/-!
+### Counting the copies
 
-@[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
-  Embedding.complEquiv.symm.nonempty_congr
+If `G` and `H` are finite graphs, we can count the number of unlabelled and labelled copies of `G`
+in `H`.
 
-protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
+#### Not necessarily induced copies
+-/
+
+section CopyCount
+variable [Fintype W]
+
+/-- `G.copyCount H` is the number of unlabelled copies of `G` in `H`.
+See `SimpleGraph.labelledCopyCount` for the number of labelled copies. -/
+noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
+  classical exact #{H' : H.Subgraph | Nonempty (G ≃g H'.coe)}
+
+@[simp] lemma copyCount_bot (H : SimpleGraph W) : copyCount (⊥ : SimpleGraph W) H = 1 := by
+  classical
+  rw [copyCount]
+  convert card_singleton (α :=  H.Subgraph)
+    { verts := .univ
+      Adj := ⊥
+      adj_sub := False.elim
+      edge_vert := False.elim }
+  simp only [eq_singleton_iff_unique_mem, mem_filter, mem_univ, Subgraph.coe_bot, true_and,
+    Nonempty.forall]
+  refine ⟨⟨⟨(Equiv.Set.univ _).symm, by simp⟩⟩, fun H' e ↦
+    Subgraph.ext ((set_fintype_card_eq_univ_iff _).1 <| Fintype.card_congr e.toEquiv.symm) ?_⟩
+  ext a b
+  simp only [Prop.bot_eq_false, Pi.bot_apply, iff_false]
+  exact fun hab ↦ e.symm.map_rel_iff.2 hab.coe
+
+@[simp] lemma copyCount_of_isEmpty [IsEmpty V] (G : SimpleGraph V) (H : SimpleGraph W) :
+    G.copyCount H = 1 := by
+  rw [copyCount]
+  convert card_singleton (⊥ : H.Subgraph)
+  simp only [eq_singleton_iff_unique_mem, mem_filter, mem_univ, Subgraph.coe_bot, true_and,
+    Nonempty.forall, Subsingleton.elim G ⊥]
+  haveI : IsEmpty (⊥ : H.Subgraph).verts := by simp
+  refine ⟨⟨⟨⟨isEmptyElim, isEmptyElim, isEmptyElim, isEmptyElim⟩, fun {a} ↦ isEmptyElim a⟩⟩,
+    fun H' e ↦ Subgraph.ext ?_ <| funext₂ fun a b ↦ ?_⟩
+  · simpa [Set.eq_empty_iff_forall_not_mem, filter_eq_empty_iff, ‹IsEmpty V›] using
+      e.toEquiv.symm.isEmpty_congr
+  · simp only [Subgraph.not_bot_adj, eq_iff_iff, iff_false]
+    exact fun hab ↦ e.symm.map_rel_iff.2 hab.coe
+
+@[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ ¬ G ⊑ H := by
+  simp [copyCount, -nonempty_subtype, isContained_iff_exists_iso_subgraph, card_pos,
+    filter_eq_empty_iff]
+
+@[simp] lemma copyCount_pos : 0 < G.copyCount H ↔ G ⊑ H := by
+  simp [copyCount, -nonempty_subtype, isContained_iff_exists_iso_subgraph, card_pos,
+    filter_nonempty_iff]
+
+end CopyCount
+
+section LabelledCopyCount
+variable [Fintype V] [Fintype W]
+
+/-- `G.labelledCopyCount H` is the number of labelled copies of `G` in `H`. See
+`SimpleGraph.copyCount` for the number of unlabelled copies. -/
+noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
+  classical exact Fintype.card (Copy G H)
+
+@[simp] lemma labelledCopyCount_of_isEmpty [IsEmpty V] (G : SimpleGraph V) (H : SimpleGraph W) :
+    G.labelledCopyCount H = 1 := by
+  convert Fintype.card_unique
+  exact { default := ⟨default, isEmptyElim⟩, uniq := fun _ ↦ Subsingleton.elim _ _ }
+
+@[simp] lemma labelledCopyCount_eq_zero : G.labelledCopyCount H = 0 ↔ ¬ G ⊑ H := by
+  simp [labelledCopyCount, IsContained, Fintype.card_eq_zero_iff, isEmpty_subtype]
+
+@[simp] lemma labelledCopyCount_pos : 0 < G.labelledCopyCount H ↔ G ⊑ H := by
+  simp [labelledCopyCount, IsContained, Fintype.card_pos_iff]
+
+/-- There's more labelled copies of `H` of-`G` than unlabelled ones. -/
+lemma copyCount_le_labelledCopyCount : G.copyCount H ≤ G.labelledCopyCount H := by
+  classical
+  rw [copyCount, ← Fintype.card_coe]
+  refine Fintype.card_le_of_surjective (fun f ↦ ⟨f.toSubgraph, ?_⟩) ?_
+  · simpa using ⟨f.isoToSubgraph⟩
+  · simpa [Surjective, -Copy.range_toSubgraph] using fun H' e ↦ Copy.toSubgraph_surjOn ⟨e⟩
+
+end LabelledCopyCount
+
+/-!
+#### Induced copies
+
+TODO
+
+### Killing a subgraph
+
+An important aspect of graph containment is that we can remove not too many edges from a graph `H`
+to get a graph `H'` that doesn't contain `G`.
+
+#### Killing not necessarily induced copies
+
+`SimpleGraph.kill G H` is a subgraph of `H` where an edge was removed from each copy of `G` in `H`.
+By construction, it doesn't contain `G` and has at most the number of copies of `G` edges less than
+`H`
+-/
+
+private lemma aux (hG : G ≠ ⊥) {H' : H.Subgraph} :
+    Nonempty (G ≃g H'.coe) → H'.edgeSet.Nonempty := by
+  obtain ⟨e, he⟩ := edgeSet_nonempty.2 hG
+  rw [← Subgraph.image_coe_edgeSet_coe]
+  exact fun ⟨f⟩ ↦ Set.Nonempty.image _ ⟨_, f.map_mem_edgeSet_iff.2 he⟩
+
+/-- `G.kill H` is a subgraph of `H` where an edge from every subgraph isomorphic to `G` was removed.
+As such, it is a big subgraph of `H` that does not contain any subgraph isomorphic to `G`, unless
+`G` had no edges to start with. -/
+noncomputable irreducible_def kill (G : SimpleGraph α) (H : SimpleGraph W) : SimpleGraph W := by
+  classical exact
+  if hG : G = ⊥ then H
+  else H.deleteEdges <| ⋃ (H' : H.Subgraph) (hH' : Nonempty (G ≃g H'.coe)), {(aux hG hH').some}
+
+/-- Removing an edge from `H` for each subgraph isomorphic to `G` results in a subgraph of `H`. -/
+lemma kill_le : G.kill H ≤ H := by rw [kill]; split_ifs; exacts [le_rfl, deleteEdges_le _]
+
+@[simp] lemma bot_kill (H : SimpleGraph W) : (⊥ : SimpleGraph α).kill H = H := by
+  rw [kill]; exact dif_pos rfl
+
+private lemma kill_of_ne_bot (hG : G ≠ ⊥) (H : SimpleGraph W) :
+    G.kill H =
+      H.deleteEdges (⋃ (H' : H.Subgraph) (hH' : Nonempty (G ≃g H'.coe)), {(aux hG hH').some}) := by
+  rw [kill]; exact dif_neg hG
+
+lemma kill_eq_right (hG : G ≠ ⊥) : G.kill H = H ↔ G.Free H := by
+  simp only [kill_of_ne_bot hG, Set.disjoint_left, isContained_iff_exists_iso_subgraph,
+    @forall_swap _ H.Subgraph, Set.iUnion_singleton_eq_range, deleteEdges_eq_self, Set.mem_iUnion,
+    Set.mem_range, not_exists, not_nonempty_iff, Nonempty.forall, Free]
+  exact forall_congr' fun H' ↦ ⟨fun h ↦ ⟨fun f ↦ h _
+    (Subgraph.edgeSet_subset _ <| (aux hG ⟨f⟩).choose_spec) f rfl⟩, fun h _ _ ↦ h.elim⟩
+
+protected lemma Free.kill_eq_right (hGH : G.Free H) : G.kill H = H := by
+  obtain rfl | hG := eq_or_ne G ⊥
+  · exact bot_kill _
+  · exact (kill_eq_right hG).2 hGH
+
+/-- Removing an edge from `H` for each subgraph isomorphic to `G` results in a graph that doesn't
+contain `G`. -/
+lemma free_kill (hG : G ≠ ⊥) : G.Free (G.kill H) := by
+  rw [kill_of_ne_bot hG, deleteEdges, Free, isContained_iff_exists_iso_subgraph]
+  rintro ⟨H', hGH'⟩
+  have hH' : (H'.map <| Hom.ofLE (sdiff_le : H \ _ ≤ H)).edgeSet.Nonempty := by
+    rw [Subgraph.edgeSet_map]
+    exact (aux hG hGH').image _
+  set e := hH'.some with he
+  have : e ∈ _ := hH'.some_mem
+  clear_value e
+  rw [← Subgraph.image_coe_edgeSet_coe] at this
+  subst he
+  obtain ⟨e, he₀, he₁⟩ := this
+  let e' : Sym2 H'.verts := Sym2.map (Copy.isoSubgraphMap (.ofLE _ _ _) _).symm e
+  have he' : e' ∈ H'.coe.edgeSet := (Iso.map_mem_edgeSet_iff _).2 he₀
+  rw [Subgraph.edgeSet_coe] at he'
+  have := Subgraph.edgeSet_subset _ he'
+  simp only [edgeSet_sdiff,  edgeSet_fromEdgeSet,  edgeSet_sdiff_sdiff_isDiag, Set.mem_diff,
+    Set.mem_iUnion, not_exists] at this
+  refine this.2 (H'.map <| Hom.ofLE sdiff_le)
+    ⟨(Copy.isoSubgraphMap (.ofLE _ _ _) _).comp hGH'.some⟩ ?_
+  rw [Sym2.map_map, Set.mem_singleton_iff, ← he₁]
+  congr 1 with x
+  exact congr_arg _ (Equiv.Set.image_symm_apply _ _ injective_id _ _)
+
+variable [Fintype H.edgeSet]
+
+noncomputable instance kill.EdgeSet.fintype : Fintype (G.kill H).edgeSet :=
+  .ofInjective (Set.inclusion <| edgeSet_mono kill_le) <| Set.inclusion_injective _
+
+/-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
+we've removed is at most the number of copies of `G` in `H`. -/
+lemma le_card_edgeFinset_kill [Fintype W] :
+    #H.edgeFinset - G.copyCount H ≤ #(G.kill H).edgeFinset := by
+  classical
+  obtain rfl | hG := eq_or_ne G ⊥
+  · simp
+  let f (H' : {H' : H.Subgraph // Nonempty (G ≃g H'.coe)}) := (aux hG H'.2).some
+  calc
+    _ = #H.edgeFinset - card {H' : H.Subgraph // Nonempty (G ≃g H'.coe)} := ?_
+    _ ≤ #H.edgeFinset - #(univ.image f) := Nat.sub_le_sub_left card_image_le _
+    _ = #H.edgeFinset - #(Set.range f).toFinset := by rw [Set.toFinset_range]
+    _ ≤ #(H.edgeFinset \ (Set.range f).toFinset) := le_card_sdiff ..
+    _ = #(G.kill H).edgeFinset := ?_
+  · simp only [Set.toFinset_card]
+    rw [← Set.toFinset_card, ← edgeFinset, copyCount, ← card_subtype, subtype_univ, card_univ]
+  simp only [kill_of_ne_bot, hG, Ne, not_false_iff, Set.iUnion_singleton_eq_range,
+    Set.toFinset_card, Fintype.card_ofFinset, edgeSet_deleteEdges]
+  simp only [Finset.sdiff_eq_inter_compl, Set.diff_eq, ← Set.iUnion_singleton_eq_range, coe_sdiff,
+    Set.coe_toFinset, coe_filter, Set.sep_mem_eq, Set.iUnion_subtype, ← Fintype.card_coe,
+    ← Finset.coe_sort_coe, coe_inter, coe_compl, Set.coe_toFinset, Set.compl_iUnion,
+    Fintype.card_ofFinset, f]
+
+/-!
+#### Killing induced copies
+
+TODO
+-/
 
 end SimpleGraph
