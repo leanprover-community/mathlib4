@@ -640,6 +640,10 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
     let ⟨⟨i, a⟩, h⟩ := sG C
     exact hc i a (congr_fun h _)
 
+theorem prod_le_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : prod f ≤ prod g :=
+  ⟨Embedding.piCongrRight fun i =>
+      Classical.choice <| by have := H i; rwa [← mk_out (f i), ← mk_out (g i)] at this⟩
+
 /-! ### The first infinite cardinal `aleph0` -/
 
 theorem aleph0_pos : 0 < ℵ₀ :=

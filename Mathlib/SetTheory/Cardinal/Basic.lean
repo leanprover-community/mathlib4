@@ -257,10 +257,6 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
         Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
     simp only [lift_id]
 
-theorem prod_le_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i ≤ g i) : prod f ≤ prod g :=
-  ⟨Embedding.piCongrRight fun i =>
-      Classical.choice <| by have := H i; rwa [← mk_out (f i), ← mk_out (g i)] at this⟩
-
 /-! ### Properties about the cast from `ℕ` -/
 
 theorem mk_finset_of_fintype [Fintype α] : #(Finset α) = 2 ^ Fintype.card α := by
