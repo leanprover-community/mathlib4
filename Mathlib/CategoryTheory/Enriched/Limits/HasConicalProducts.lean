@@ -28,7 +28,7 @@ attribute [instance] HasConicalProducts.hasConicalLimitsOfShape
 variable (V : Type u') [Category.{v'} V] [MonoidalCategory V]
 variable {C : Type u} [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
-/-- An abbreviation for `HasConicalLimit (Discrete.functor f)`. -/
+/-- An abbreviation for `HasConicalLimit V (Discrete.functor f)`. -/
 abbrev HasConicalProduct {I : Type w} (f : I → C) :=
   HasConicalLimit V (Discrete.functor f)
 
