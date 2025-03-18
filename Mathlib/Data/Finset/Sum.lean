@@ -26,7 +26,7 @@ open Function Multiset Sum
 
 namespace Finset
 
-variable {α β : Type*} (s : Finset α) (t : Finset β)
+variable {α β γ : Type*} (s : Finset α) (t : Finset β)
 
 /-- Disjoint sum of finsets. -/
 def disjSum : Finset (α ⊕ β) :=
@@ -181,6 +181,7 @@ lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
 @[simp] lemma toRight_cons_inr (hb) :
     (cons (inr b) u hb).toRight = cons b u.toRight (by simpa) := by ext y; simp
 
+section
 variable [DecidableEq α] [DecidableEq β]
 
 lemma toLeft_image_swap : (u.image Sum.swap).toLeft = u.toRight := by
@@ -203,6 +204,8 @@ lemma toRight_union : (u ∪ v).toRight = u.toRight ∪ v.toRight := by ext x; s
 lemma toLeft_sdiff : (u \ v).toLeft = u.toLeft \ v.toLeft := by ext x; simp
 lemma toRight_sdiff : (u \ v).toRight = u.toRight \ v.toRight := by ext x; simp
 
+end
+
 /-- Finsets on sum types are equivalent to pairs of finsets on each summand. -/
 @[simps apply_fst apply_snd]
 def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β where
@@ -218,25 +221,21 @@ lemma sumEquiv_symm_apply {α β : Type*} (s : Finset α × Finset β) :
 
 @[simp]
 lemma fold_disjSum
-    {α β γ : Type*} (f : α ⊕ β → γ) (b₁ b₂ : γ)
-    (s : Finset α) (t : Finset β) (op : γ → γ → γ) [Std.Commutative op] [Std.Associative op]:
+    (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) (b₁ b₂ : γ)
+    (op : γ → γ → γ) [Std.Commutative op] [Std.Associative op] :
     (s.disjSum t).fold op (op b₁ b₂) f =
       op (s.fold op b₁ (f <| .inl ·)) (t.fold op b₂ (f <| .inr ·)) := by
   dsimp [fold, disjSum, Multiset.disjSum]
   simp only [Multiset.map_add, Multiset.map_map, comp_apply, fold_add]
 
 @[simp]
-lemma sup_disjSum
-    {α β γ : Type*} [SemilatticeSup γ] [OrderBot γ] (f : (α ⊕ β) → γ)
-    (s : Finset α) (t : Finset β) :
-    (s.disjSum t).sup f = (s.sup fun x ↦ f (Sum.inl x)) ⊔ (t.sup fun x ↦ f (Sum.inr x)) :=
+lemma sup_disjSum [SemilatticeSup γ] [OrderBot γ] (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) :
+    (s.disjSum t).sup f = (s.sup fun x ↦ f (.inl x)) ⊔ (t.sup fun x ↦ f (.inr x)) :=
   congr(fold _ $(bot_sup_eq _ |>.symm) _ _).trans (fold_disjSum _ _ _ _ _ _)
 
 @[simp]
-lemma inf_disjSum
-    {α β γ : Type*} [SemilatticeInf γ] [OrderTop γ] (f : (α ⊕ β) → γ)
-    (s : Finset α) (t : Finset β) :
-    (s.disjSum t).inf f = (s.inf fun x ↦ f (Sum.inl x)) ⊓ (t.inf fun x ↦ f (Sum.inr x)) :=
+lemma inf_disjSum [SemilatticeInf γ] [OrderTop γ] (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) :
+    (s.disjSum t).inf f = (s.inf fun x ↦ f (.inl x)) ⊓ (t.inf fun x ↦ f (.inr x)) :=
   congr(fold _ $(top_inf_eq _ |>.symm) _ _).trans (fold_disjSum _ _ _ _ _ _)
 
 end Finset
