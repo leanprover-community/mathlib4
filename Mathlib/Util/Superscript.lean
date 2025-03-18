@@ -225,6 +225,8 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   | .ok newStack =>
     set { st with stack := stack ++ newStack }
 
+/-- Returns true if every character in `stx : Syntax` can be superscripted
+(or subscripted). -/
 private partial def isValid (m : Mapping) : Syntax → Bool
   | .node _ _ args => args.all (isValid m)
   | .atom _ s => valid s
