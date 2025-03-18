@@ -118,8 +118,12 @@ theorem LinearIndepOn.linearIndependent {s : Set ι} (h : LinearIndepOn R v s) :
 theorem linearIndependent_iff_injective_linearCombination :
     LinearIndependent R v ↔ Injective (Finsupp.linearCombination R v) := Iff.rfl
 
-alias ⟨LinearIndependent.injective_linearCombination, _⟩ :=
-  linearIndependent_iff_injective_linearCombination
+alias ⟨LinearIndependent.fintypeLinearCombination_injective, _⟩ :=
+  Fintype.linearIndependent_iff_injective
+
+@[deprecated (since := "2025-03-18")]
+alias LinearIndependent.injective_linearCombination :=
+  LinearIndependent.fintypeLinearCombination_injective
 
 theorem Fintype.linearIndependent_iff_injective [Fintype ι] :
     LinearIndependent R v ↔ Injective (Fintype.linearCombination R v) := by
