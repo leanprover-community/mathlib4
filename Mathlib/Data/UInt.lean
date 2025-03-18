@@ -31,9 +31,6 @@ run_cmd
   Lean.Elab.Command.elabCommand (← `(
     namespace $typeName
 
-      instance : Neg $typeName where
-        neg a := ofBitVec ⟨-a.toFin⟩
-
       instance : Pow $typeName ℕ where
         pow a n := ofBitVec ⟨a.toFin ^ n⟩
 
