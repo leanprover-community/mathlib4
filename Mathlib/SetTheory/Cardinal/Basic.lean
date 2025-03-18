@@ -127,8 +127,6 @@ theorem lift_iInf {ι} (f : ι → Cardinal) : lift.{u, v} (iInf f) = ⨅ i, lif
   convert lift_sInf (range f)
   simp_rw [← comp_apply (f := lift), range_comp]
 
-/-! ### Limit cardinals -/
-
 end Cardinal
 
 /-! ### Small sets of cardinals -/
