@@ -74,6 +74,8 @@ instance {G : Type*} [AddGroup G] [IsAddKleinFour G] : IsKleinFour (Multiplicati
 
 namespace IsKleinFour
 
+/-- This instance is scoped, because it always applies (which makes linting and typeclass inference
+potentially *a lot* slower). -/
 @[to_additive]
 scoped instance instFinite {G : Type*} [Group G] [IsKleinFour G] : Finite G :=
   Nat.finite_of_card_ne_zero <| by norm_num [IsKleinFour.card_four]
