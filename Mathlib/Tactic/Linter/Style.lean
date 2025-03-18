@@ -484,7 +484,11 @@ namespace Style.openClassical
 
 /-- If `stx` is syntax describing an `open` command, `extractOpenNames stx`
 returns an array of the syntax corresponding to the opened names,
-omitting any renamed or hidden items. -/
+omitting any renamed or hidden items.
+
+This only checks independent `open` commands: for `open ... in ...` commands,
+this linter returns an empty array.
+-/
 def extractOpenNames : Syntax → Array (TSyntax `ident)
   | `(command|$_ in $_) => #[] -- redundant, for clarity
   | `(command|open $decl:openDecl) => match decl with
