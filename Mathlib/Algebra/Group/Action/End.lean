@@ -45,6 +45,7 @@ This is generalized to bundled endomorphisms by:
 * `RingHom.applyMulSemiringAction`
 * `RingAut.applyMulSemiringAction`
 * `AlgEquiv.applyMulSemiringAction`
+* `RelIso.applyMulAction`
 -/
 instance applyMulAction : MulAction (Function.End α) α where
   smul := (· <| ·)
