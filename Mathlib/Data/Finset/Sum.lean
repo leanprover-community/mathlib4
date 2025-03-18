@@ -219,14 +219,11 @@ def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β wh
 lemma sumEquiv_symm_apply {α β : Type*} (s : Finset α × Finset β) :
     sumEquiv.symm s = disjSum s.1 s.2 := rfl
 
-@[simp]
-lemma fold_disjSum
-    (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) (b₁ b₂ : γ)
-    (op : γ → γ → γ) [Std.Commutative op] [Std.Associative op] :
+lemma fold_disjSum (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) (b₁ b₂ : γ) (op : γ → γ → γ)
+    [Std.Commutative op] [Std.Associative op] :
     (s.disjSum t).fold op (op b₁ b₂) f =
       op (s.fold op b₁ (f <| .inl ·)) (t.fold op b₂ (f <| .inr ·)) := by
-  dsimp [fold, disjSum, Multiset.disjSum]
-  simp only [Multiset.map_add, Multiset.map_map, comp_apply, fold_add]
+  simp_rw [fold, disjSum, map_disjSum, fold_add]
 
 @[simp]
 lemma sup_disjSum [SemilatticeSup γ] [OrderBot γ] (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) :
