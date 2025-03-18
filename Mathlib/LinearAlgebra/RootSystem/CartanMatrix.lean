@@ -65,6 +65,31 @@ lemma cartanMatrix_le_zero_of_ne [Finite ι] [NoZeroDivisors R]
     b.cartanMatrix i j ≤ 0 :=
   b.pairingIn_le_zero_of_ne (by rwa [ne_eq, ← Subtype.ext_iff]) i.property j.property
 
+lemma cartanMatrix_ne_neg_four [Finite ι] [NoZeroDivisors R]
+    [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] (i j : b.support) :
+    -4 ≠ b.cartanMatrix i j := by
+  simp only [Int.reduceNeg, cartanMatrix, cartanMatrixIn_def, Matrix.of_apply]
+  have h := b.linInd_root
+  contrapose! h
+  have hnz : P.pairingIn ℤ i j * P.pairingIn ℤ j i ≠ 0 := by
+    have : P.pairingIn ℤ i j ≠ 0 := by omega
+    exact Int.mul_ne_zero this fun hz ↦ this ((pairingIn_zero_iff P ℤ).mp hz)
+  have hcW : P.pairingIn ℤ i j * P.pairingIn ℤ j i ∈ ({1, 2, 3, 4} : Set ℤ):= by
+    have hcW := P.coxeterWeightIn_mem_set_of_isCrystallographic i j
+    rw [coxeterWeightIn] at hcW
+    exact mem_of_mem_insert_of_ne hcW hnz
+  have hji := (Prod.mk_inj.mp (Int.neg_four_neg_one_iff.mpr ⟨hcW, h.symm⟩)).2
+  have hsc := (P.pairingIn_neg_one_neg_four_iff ℤ j i).mp ⟨hji, h.symm⟩
+  have hij : i ≠ j := by
+    intro hij
+    rw [← hij, pairingIn_same] at h
+    omega
+  refine not_linearIndependent_iff.mpr ?_
+  use ⟨{i, j}, (by aesop)⟩
+  let g : b.support → R := indicator {i} 1 + indicator {j} 2
+  use g
+  simp [hsc, hij, hij.symm, g]
+
 end IsCrystallographic
 
 end RootPairing.Base
