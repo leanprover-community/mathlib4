@@ -179,4 +179,4 @@ def IsSmoothEmbedding.of_mfderiv_injective_of_compactSpace_of_T2Space
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hf'' : Injective f) :
     IsSmoothEmbedding F I I' n f where
   toIsImmersion := IsImmersion.of_mfderiv_injective hf hf'
-  isEmbedding := (Continuous.isClosedEmbedding hf.continuous hf'').isEmbedding
+  isEmbedding := (hf.continuous.isClosedEmbedding hf'').isEmbedding
