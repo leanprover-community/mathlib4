@@ -141,19 +141,26 @@ def elabFinsetBuilderSetOf : TermElab
 to show the domain type when the filter is over `Finset.univ`. -/
 @[app_delab Finset.filter] def delabFinsetFilter : Delab :=
   whenPPOption getPPNotation do
-  let ppDomain ← getPPOption getPPFunBinderTypes
   let #[_, p, _, t] := (← getExpr).getAppArgs | failure
   guard p.isLambda
-  let i ← withNaryArg 1 <| withBindingBodyUnusedName fun i => pure ⟨i⟩
-  let p ← withNaryArg 1 <| withBindingBody i.getId do
-    let p ← delab
-    return p
+  let i ← withNaryArg 1 <| withBindingBodyUnusedName (pure ⟨·⟩)
+  let p ← withNaryArg 1 <| withBindingBody i.getId delab
   if t.isAppOfArity ``Finset.univ 2 then
-    if ppDomain then
+    if ← getPPOption getPPFunBinderTypes then
       let ty ← withNaryArg 0 delab
       `({$i:ident : $ty | $p})
     else
       `({$i:ident | $p})
+  -- check if `t` is of the form `s₀ᶜ`, in which case we display `x ∉ s₀` instead
+  else if t.isAppOfArity ``HasCompl.compl 3 then
+    let #[_, _, s₀] := t.getAppArgs | failure
+    -- if `s₀` is a singleton, we can even use the notation `x ≠ a`
+    if s₀.isAppOfArity ``Singleton.singleton 4 then
+      let t ← withNaryArg 3 <| withNaryArg 2 <| withNaryArg 3 delab
+      `({$i:ident ≠ $t | $p})
+    else
+      let t ← withNaryArg 3 <| withNaryArg 2 delab
+      `({$i:ident ∉ $t | $p})
   else
     let t ← withNaryArg 3 delab
     `({$i:ident ∈ $t | $p})
