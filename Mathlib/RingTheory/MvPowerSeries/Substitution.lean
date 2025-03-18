@@ -27,31 +27,6 @@ The goal here is to check the relevant hypotheses:
 * Power series have a linear topology
 -/
 
-theorem Set.Finite.support_of_summable
-    {α : Type*} [AddCommGroup α] [TopologicalSpace α] [DiscreteTopology α]
-    {β : Type*} (f : β → α) (h : Summable f) : Set.Finite f.support := by
-  obtain ⟨a, ha⟩ := h
-  simp only [HasSum] at ha
-  classical
-  simp_rw [tendsto_atTop_nhds] at ha
-  obtain ⟨s, hs⟩ := ha {a} rfl (isOpen_discrete _)
-  apply Set.Finite.subset s.finite_toSet
-  intro b
-  rw [Function.mem_support, not_imp_comm]
-  intro hb
-  let hs' := hs (insert b s) (s.subset_insert b)
-  simp only [Set.mem_singleton_iff] at hs hs'
-  simpa [Finset.sum_insert hb, hs, add_eq_right] using hs'
-
-theorem IsNilpotent.finsum {α : Type*} [CommSemiring α] {β : Type*} {f : β → α}
-    (hf : ∀ b, IsNilpotent (f b)) :
-    IsNilpotent (finsum f) := by
-  classical
-  by_cases h : Set.Finite f.support
-  · rw [finsum_def, dif_pos h]
-    exact Commute.isNilpotent_sum (fun b _ ↦ hf b) (fun i j hi hj ↦ Commute.all _ _)
-  · simp only [finsum_def, dif_neg h, IsNilpotent.zero]
-
 /-- Change of coefficients in mv power series, as an `AlgHom` -/
 def MvPowerSeries.mapAlgHom {σ : Type*} {R : Type*} [CommSemiring R] {S : Type*}
     [Semiring S] [Algebra R S] {T : Type*} [Semiring T] [Algebra R T]
@@ -106,13 +81,11 @@ theorem MvPowerSeries.monomial_smul_const
 
 namespace MvPowerSeries
 
-variable {σ : Type*} -- [DecidableEq σ]
+variable {σ : Type*}
   {A : Type*} [CommSemiring A]
   {R : Type*} [CommRing R] [Algebra A R]
-  -- [TopologicalSpace α] [TopologicalRing α]
-  {τ : Type*} -- [DecidableEq τ]
+  {τ : Type*}
   {S : Type*} [CommRing S] [Algebra A S] [Algebra R S] [IsScalarTower A R S]
-  -- [TopologicalSpace R] [TopologicalRing R][TopologicalAlgebra α R]
 
 open WithPiTopology
 
@@ -281,7 +254,7 @@ theorem coeff_subst_finite (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ �
   letI : UniformSpace R := ⊥
   haveI : ContinuousSMul R S := DiscreteTopology.instContinuousSMul R S
   haveI : ContinuousSMul R (MvPowerSeries τ S) := IsScalarTower.continuousSMul S
-  Set.Finite.support_of_summable _
+  Summable.finite_support _
     ((hasSum_aeval ha.evalDomain f).map (coeff S e) (continuous_coeff S e)).summable
 
 theorem coeff_subst (ha : HasSubst a) (f : MvPowerSeries σ R) (e : τ →₀ ℕ) :
@@ -370,10 +343,9 @@ theorem eval₂_subst (ha : HasSubst a) {b : τ → T} (hb : HasEval b) (f : MvP
    f(a) (b) = substAlgHom hb (a s)
    -/
 
-variable {υ : Type*} -- [DecidableEq υ]
+variable {υ : Type*}
   {T : Type*} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
   {b : τ → MvPowerSeries υ T}
-  -- (hb : @HasSubst τ υ T _ b)
 
 -- TODO? : the converse holds when the kernel of `algebraMap R S` is a nilideal
 theorem IsNilpotent_subst (ha : HasSubst a)
@@ -381,7 +353,7 @@ theorem IsNilpotent_subst (ha : HasSubst a)
     IsNilpotent (constantCoeff τ S ((substAlgHom ha) f)) := by
   classical
   rw [coe_substAlgHom, constantCoeff_subst ha]
-  apply IsNilpotent.finsum
+  apply isNilpotent_finsum
   intro d
   by_cases hd : d = 0
   · rw [← algebraMap_smul S, smul_eq_mul, mul_comm, ← smul_eq_mul, hd]
@@ -440,14 +412,6 @@ theorem subst_comp_subst_apply (ha : HasSubst a) (hb : HasSubst b) (f : MvPowerS
     subst b (subst a f) = subst (fun s ↦ subst b (a s)) f :=
   congr_fun (subst_comp_subst (R := R) ha hb) f
 
-/-  Not the needed function
-theorem comp_substAlgHom
-    {T : Type*} [CommRing T] [Algebra R T] (ε : S →ₐ[R] T) :
-    (MvPowerSeries.mapAlgHom τ ε).comp (substAlgHom ha) = substAlgHom (ha.map ε)  := by
-  apply MvPowerSeries.comp_aeval
-  sorry
--/
-
 section rescale
 
 /-- Scale multivariate power series -/
@@ -455,7 +419,7 @@ noncomputable def rescale (a : σ → R) (f : MvPowerSeries σ R) :
     MvPowerSeries σ R :=
   subst (a • X) f
 
-theorem scale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
+theorem rescale_eq_subst (a : σ → R) (f : MvPowerSeries σ R) :
     rescale a f = subst (a • X) f := rfl
 
 variable (R) in
@@ -688,37 +652,12 @@ namespace PowerSeries
 variable
   {A : Type*} [CommRing A]
   {R : Type*} [CommRing R] [Algebra A R]
-  {τ : Type*} -- [DecidableEq τ]
-  {S : Type*} [CommRing S] -- [Algebra A S] [Algebra R S] [IsScalarTower A R S]
+  {τ : Type*}
+  {S : Type*} [CommRing S]
 
 open MvPowerSeries.WithPiTopology
-/-
-local instance us : UniformSpace R := ⊥
-local instance : TopologicalRing R := DiscreteTopology.topologicalRing
 
-local instance us2 : UniformSpace S := ⊥
-local instance : DiscreteUniformity S := discreteUniformity_bot S
-local instance : TopologicalAlgebra R S := inferInstance -/
-
--- variable [UniformSpace R] [DiscreteUniformity R] [UniformSpace S] [DiscreteUniformity S]
-
-/- noncomputable local instance : LinearTopology (MvPowerSeries τ S) :=
-  MvPowerSeries.WithPiTopology.isLinearTopology τ S
--/
-
---noncomputable local instance : TopologicalSpace (PowerSeries S) := inferInstance
-
--- TODO : PowerSeries.LinearTopology file
-/- noncomputable local instance : LinearTopology (PowerSeries S) :=
-   MvPowerSeries.isLinearTopology Unit S
--/
-
-/- noncomputable local instance : TopologicalAlgebra R (MvPowerSeries τ S) := by
-    refine DiscreteTopology.topologicalAlgebra R (MvPowerSeries τ S)
-local instance : CompleteSpace (MvPowerSeries τ S) := by refine completeSpace τ S
--/
-
-/-- Families of power series which can be substituted -/
+/-- Families of power series which can be substituted in other power series -/
 structure HasSubst (a : MvPowerSeries τ S) : Prop where
   const_coeff : IsNilpotent (MvPowerSeries.constantCoeff τ S a)
 
@@ -861,8 +800,7 @@ theorem _root_.Polynomial.toPowerSeries_toMvPowerSeries (p : Polynomial R) :
   -- we need substAlgHom_coe
   rw [← MvPolynomial.coe_X, substAlgHom]
   erw [MvPowerSeries.substAlgHom_apply]
-  rw [MvPowerSeries.subst_coe, MvPolynomial.aeval_X]
--/
+  rw [MvPowerSeries.subst_coe, MvPolynomial.aeval_X] -/
 
 theorem substAlgHom_coe [Algebra R S] (ha : HasSubst a) (p : Polynomial R) :
     substAlgHom ha (p : PowerSeries R) = ↑(Polynomial.aeval a p) := by
