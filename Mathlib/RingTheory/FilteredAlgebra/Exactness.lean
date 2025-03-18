@@ -189,28 +189,22 @@ lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
     Gr+[g] (of ((GradedPiece.mk FS fun n ↦ FS (n - 1)) y)) = 0 := by
   obtain ⟨x, hx⟩ := hy
   set yₚ := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (y : ofClass (FS p))
-  convert_to of yₚ ∈ Gr+[g].ker
+  show of yₚ ∈ Gr+[g].ker
   rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom.mem_ker_iff]
   intro i
   by_cases h : i = p
-  · rw [h]
-    convert_to yₚ ∈ Gr+(p)[g].ker
-    · exact DirectSum.of_eq_same p yₚ
-    · simp only [GradedPieceHom, GradedPiece.mk, QuotientAddGroup.mk'_apply,
-        AddMonoidHom.mem_ker, QuotientAddGroup.map_mk, QuotientAddGroup.eq_zero_iff, yₚ]
-      suffices ((g.piece_wise_hom p) y) = 0 from
-        (QuotientAddGroup.eq_zero_iff ((g.piece_wise_hom p) y)).1
-          (congrArg QuotientAddGroup.mk this)
-      suffices g y = 0 from ZeroMemClass.coe_eq_zero.1 this
+  · rw [h, DirectSum.of_eq_same p yₚ]
+    simp only [AddMonoidHom.mem_ker, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, yₚ]
+    have : g y = 0 := by
       rw [← hx]
-      suffices g.toAddMonoidHom.comp f.toAddMonoidHom x = 0 from this
+      show g.toAddMonoidHom.comp f.toAddMonoidHom x = 0
       rw [comp_eq_zero, AddMonoidHom.zero_apply]
-  · convert_to 0 ∈ Gr+(i)[g].ker
-    · exact of_eq_of_ne p i yₚ fun a ↦ h (id a.symm)
-    · simp only [AddMonoidHom.mem_ker, map_zero, yₚ]
+    have : ((g.piece_wise_hom p) y) = 0 := by apply SetCoe.ext this
+    simp only [this, map_zero, yₚ]
+  · simp [of_eq_of_ne p i yₚ (fun a ↦ h a.symm)]
 
 theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
- (exact : Function.Exact Gr+[f] Gr+[g])
+    (exact : Function.Exact Gr+[f] Gr+[g])
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
     (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
     IsStrict FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)) g := by
@@ -225,7 +219,7 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
     intro h
     induction' i with i ih
     · simpa only [Int.Nat.cast_ofNat_Int, Subtype.exists, sub_zero] using ⟨y₀, ⟨hs, gy₀z⟩⟩
-    · rcases ih <| Nat.le_of_succ_le h with ⟨y, ymem, yeq⟩
+    · rcases ih (Nat.le_of_succ_le h) with ⟨y, ymem, yeq⟩
       simp only [Subtype.exists, Nat.cast_add, Nat.cast_one, exists_prop]
       have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) = 0 := by
         have zin : z ∈ FT (p + s - i) := by
@@ -235,23 +229,21 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
           SetLike.coe_eq_coe.mp yeq
         rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, this, GradedPiece.mk_eq,
           QuotientAddGroup.eq_zero_iff]
-        apply monoT
-        linarith
-        exact zp
+        have : p ≤ p + s - i - 1 := by linarith
+        exact monoT this zp
       obtain ⟨xi, fxiy⟩ : (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) ∈
           Gr+(p + s - i)[f].range := by
         simpa only [← AddMonoidHom.exact_iff.mp
           (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
           using hy
-      obtain ⟨xiout, xiout_eq⟩ : ∃ xiout, (GradedPiece.mk FR fun n ↦ FR (n - 1)) xiout = xi :=
-        Quotient.exists_rep xi
-      rw [← xiout_eq, GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
+      induction xi using GradedPiece.induction_on
+      rename_i xiout
+      rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
         GradedPiece.mk_eq, QuotientAddGroup.eq_iff_sub_mem] at fxiy
       use y - f xiout
       constructor
-      · have : (p + s - (i + 1)) = p + s - i - 1 := by omega
-        rw [this, ← neg_sub (f xiout) y]
-        exact neg_mem fxiy
+      · have : (p + s - (i + 1)) = p + s - i - 1 := (Int.sub_sub (p + s) i 1).symm
+        simpa only [this, ← neg_sub (f xiout) y] using neg_mem fxiy
       · simp only [map_sub, yeq, sub_eq_self]
         show (g.toAddMonoidHom.comp f.toAddMonoidHom) xiout = 0
         simp only [comp_eq_zero, AddMonoidHom.zero_apply]
@@ -262,7 +254,7 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
     (exact : Function.Exact Gr+[f] Gr+[g])
     (discrete : letI := (mk_int FS monoS); IsDiscreteFiltration FS (fun n ↦ FS (n - 1)))
     (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
-  IsStrict FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)) f := by
+    IsStrict FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n - 1)) f := by
     let _ : IsFiltration FS fun n ↦ FS (n - 1) := IsFiltration.mk_int FS monoS
     refine FilteredHom.IsStrict_of_Int fun {p y} hp ⟨x', hx'⟩ ↦ ?_
     rcases discrete.discrete with ⟨t₀, t₀bot⟩
@@ -312,7 +304,6 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
     rw [le_zero (p - s) hs, (Set.inter_eq_right.2 fun x hx ↦ hx.symm ▸ zero_mem f.range),
       Set.mem_singleton_iff, sub_eq_zero] at hr
     exact ⟨r, ⟨SetLike.coe_mem r, hr.symm⟩⟩
-
 
 theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
