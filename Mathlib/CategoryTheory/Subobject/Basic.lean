@@ -537,6 +537,39 @@ theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 
+lemma isPullback_aux (f : X ⟶ Y) (y : Subobject Y) :
+    ∃ φ, IsPullback φ ((pullback f).obj y).arrow y.arrow f := by
+  obtain ⟨A, i, ⟨_, rfl⟩⟩ := mk_surjective y
+  rw [pullback_obj]
+  have h := IsPullback.of_hasPullback (mk i).arrow f
+  exists (underlyingIso (pullback.snd (mk i).arrow f)).hom ≫ pullback.fst (mk i).arrow f
+  exact IsPullback.of_iso h
+        (underlyingIso (pullback.snd (mk i).arrow f)).symm (Iso.refl _) (Iso.refl _) (Iso.refl _)
+        (by simp) (by simp) (by simp) (by simp)
+
+/-- `pullbackπ f y` is the first projection in the following pullback square:
+
+    ```
+    (pullback f).obj y ----pullbackπ f y---> (y : C)
+             |                                  |
+    ((pullback f).obj y).arrow               y.arrow
+             |                                  |
+             v                                  v
+             X ----------------f--------------> Y
+    ```
+
+    For instance in the category of sets, `pullbackπ f y` is the restriction of `f` to elements of
+    `X` that are in the preimage of `y ⊆ Y`.
+-/
+noncomputable def pullbackπ (f : X ⟶ Y) (y : Subobject Y) :
+    ((Subobject.pullback f).obj y : C) ⟶ (y : C) :=
+  (isPullback_aux f y).choose
+
+/-- This states that `pullbackπ f y` indeed forms a pullback square (see `Subobject.pullbackπ`). -/
+theorem isPullback (f : X ⟶ Y) (y : Subobject Y) :
+    IsPullback (pullbackπ f y) ((pullback f).obj y).arrow y.arrow f :=
+  (isPullback_aux f y).choose_spec
+
 end Pullback
 
 section Map
