@@ -212,37 +212,20 @@ lemma foo (i j : ι) :
     simpa only [algebraMap_pairingIn] using B.pairing_mul_eq_pairing_mul_swap i j'
   aesop
 
--- Courtesy of Bhavik and Mario
+-- With many thanks to Wang Jingting!
 theorem extracted (R : Type*) [CommRing R] [CharZero R] [NoZeroDivisors R] (x y z : R)
     (hij : x = 2 * y ∨ x = 3 * y ∨ y = 2 * x ∨ y = 3 * x)
     (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
     (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
     x = 0 ∧ y = 0 ∧ z = 0 := by
-  suffices y * z = 0 by
-    simp only [mul_eq_zero, or_assoc] at this
-    obtain rfl | rfl := this <;>
-    simp_all
-  obtain ⟨a, b, hab, hxy⟩ : ∃ a b, (a, b) ∈ ({(1, 2), (1, 3), (2, 1), (3, 1)} : Set (ℕ × ℕ)) ∧
-      a * x = b * y := by
-    simpa [exists_or, or_and_right, eq_comm] using hij
-  obtain ⟨c, d, hcd, hxz⟩ : ∃ c d, (c, d) ∈ ({(1, 2), (1, 3), (2, 1), (3, 1)} : Set (ℕ × ℕ)) ∧
-      c * x = d * z := by
-    simpa [exists_or, or_and_right, eq_comm] using hik
-  obtain ⟨e, f, hef, hyz⟩ : ∃ e f, (e, f) ∈ ({(1, 2), (1, 3), (2, 1), (3, 1)} : Set (ℕ × ℕ)) ∧
-      e * y = f * z := by
-    simpa [exists_or, or_and_right, eq_comm] using hjk
-  have h₁ : a * d * e ≠ b * c * f := by
-    suffices
-        ∀ ab ∈ ({(1, 2), (1, 3), (2, 1), (3, 1)} : Finset (ℕ × ℕ)),
-        ∀ cd ∈ ({(1, 2), (1, 3), (2, 1), (3, 1)} : Finset (ℕ × ℕ)),
-        ∀ ef ∈ ({(1, 2), (1, 3), (2, 1), (3, 1)} : Finset (ℕ × ℕ)),
-        ab.1 * cd.2 * ef.1 ≠ ab.2 * cd.1 * ef.2 by
-      exact this (a, b) (by simpa using hab) (c, d) (by simpa using hcd) (e, f) (by simpa using hef)
-    decide
-  have h₂ : (a * d * e : R) ≠ b * c * f := mod_cast h₁
-  have h₄ : (a * d * e - b * c * f) * (y * z) = 0 := by
-    linear_combination z * c * f * hxy - a * e * y * hxz + a * x * c * hyz
-  simpa [mul_eq_zero, sub_eq_zero, h₂, false_or] using h₄
+  rcases hij with (_ | _ | _ | _) <;>
+  rcases hjk with (_ | _ | _ | _) <;>
+  rcases hik with (_ | _ | _ | _) <;>
+  subst_vars <;>
+  rename_i h <;>
+  rw [← sub_eq_zero] at h <;>
+  ring_nf at h <;>
+  simpa using h
 
 -- Also worth having version of this which makes statement about just two values of
 -- `P.pairing` with no mention of root form.

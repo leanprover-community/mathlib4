@@ -42,6 +42,7 @@ variable {ι R S M N : Type*} [LinearOrderedCommRing S] [CommRing R] [Algebra S 
 
 namespace RootPairing
 
+/-- Given a root pairing, this is an invariant symmetric bilinear form. -/
 structure InvariantForm (P : RootPairing ι R M N) where
   /-- The bilinear form bundled inside an `InvariantForm`. -/
   form : LinearMap.BilinForm R M
@@ -131,6 +132,8 @@ lemma form_apply_root_ne_zero (i : ι) :
   obtain ⟨s, hs, hs'⟩ := B.exists_pos_eq i
   simpa [← hs'] using hs.ne'
 
+/-- Forgetting the positivity condition, we may regard a `RootPositiveForm` as an `InvariantForm`.
+-/
 @[simps] def toInvariantForm : InvariantForm P where
   form := B.form
   symm := B.symm
