@@ -17,38 +17,62 @@ It is complete.
 
 -/
 
-open Filter
+open Filter UniformSpace
 
 /-- The discrete uniformity -/
-class DiscreteUniformity (α : Type*) [UniformSpace α] : Prop where
-  eq_principal_idRel : uniformity α = principal idRel
+class DiscreteUniformity (X : Type*) [u : UniformSpace X] : Prop where
+  eq_bot: u = ⊥
 
 namespace DiscreteUniformity
 
 /-- The bot uniformity is the discrete uniformity -/
-instance (α : Type*) : @DiscreteUniformity α ⊥ := by
-  apply @DiscreteUniformity.mk α ⊥ rfl
+instance (X : Type*) : @DiscreteUniformity X ⊥ :=
+  @DiscreteUniformity.mk X ⊥ rfl
 
-variable (X : Type*) [UniformSpace X] [DiscreteUniformity X]
+variable (X : Type*) [u : UniformSpace X] [DiscreteUniformity X]
+
+theorem eq_principal_idRel : uniformity X = principal idRel :=
+  le_antisymm
+    (by simpa [uniformSpace_eq_bot, ← le_principal_iff] using eq_bot)
+    refl_le_uniformity
+
+theorem iff_eq_principal_idRel {X : Type*} [UniformSpace X] :
+    DiscreteUniformity X ↔ uniformity X = principal idRel :=
+  ⟨fun _ ↦ eq_principal_idRel X, fun h ↦ { eq_bot := by ext; rw [h]; rfl }⟩
 
 /-- The discrete uniformity induces the discrete topology -/
-instance : DiscreteTopology X := by
-  rw [discreteTopology_iff_singleton_mem_nhds]
-  intro a
-  rw [UniformSpace.mem_nhds_iff]
-  use Set.diagonal X
-  simp [UniformSpace.ball, eq_principal_idRel]
+instance : DiscreteTopology X where
+  eq_bot := by
+    convert UniformSpace.toTopologicalSpace_bot
+    exact eq_bot
+
+theorem idRel_mem_uniformity : idRel ∈ uniformity X := by
+  simp only [eq_principal_idRel, mem_principal, subset_refl]
+
+variable {X} in
+/-- A product of spaces with discrete uniformity has a discrete uniformity -/
+instance {Y : Type*} [UniformSpace Y] [DiscreteUniformity Y] :
+    DiscreteUniformity (X × Y) where
+  eq_bot := by
+    rw [instUniformSpaceProd, UniformSpace.uniformSpace_eq_bot, uniformity_prod_eq_comap_prod,
+      mem_comap]
+    refine ⟨idRel.prod idRel, prod_mem_prod (idRel_mem_uniformity _) (idRel_mem_uniformity _), ?_⟩
+    rintro ⟨⟨x, y⟩, x', y'⟩ h
+    simpa only [mem_idRel, Prod.mk.injEq] using h
+
+variable {x} in
+/-- On a space with a discrete uniformity, any function is uniformly continuous -/
+theorem uniformContinuous {Y : Type*} [UniformSpace Y] (f : X → Y) :
+    UniformContinuous f := fun s hs ↦ by
+  rw [mem_map]
+  apply Filter.mem_of_superset (idRel_mem_uniformity X)
+  simp only [idRel_subset, Set.mem_preimage]
+  exact fun _ ↦ mem_uniformity_of_eq hs rfl
 
 /-- The discrete uniformity makes a group a `UniformGroup -/
 @[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`"]
 instance [Group X] : UniformGroup X where
-  uniformContinuous_div := fun s hs ↦ by
-    simp only [uniformity_prod, eq_principal_idRel, comap_principal,
-      inf_principal, map_principal, mem_principal, Set.image_subset_iff]
-    rintro ⟨⟨x, y⟩, z, t⟩
-    simp only [Set.mem_inter_iff, Set.mem_preimage, mem_idRel, and_imp]
-    rintro ⟨rfl⟩ ⟨rfl⟩
-    exact mem_uniformity_of_eq hs rfl
+  uniformContinuous_div := uniformContinuous (X × X) fun p ↦ p.1 / p.2
 
 variable {X} in
 /-- A Cauchy filter in a discrete uniform space is contained in a principal filter. -/
