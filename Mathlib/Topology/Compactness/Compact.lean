@@ -206,7 +206,7 @@ theorem IsCompact.elim_nhdsWithin_subcover' (hs : IsCompact s) (U : ∀ x ∈ s,
     (hU : ∀ x (hx : x ∈ s), U x hx ∈ 𝓝[s] x) : ∃ t : Finset s, s ⊆ ⋃ x ∈ t, U x x.2 := by
   choose V V_nhds hV using fun x hx => mem_nhdsWithin_iff_exists_mem_nhds_inter.1 (hU x hx)
   refine (hs.elim_nhds_subcover' V V_nhds).imp fun t ht =>
-    subset_trans ?_ (biUnion_mono (fun _ => id) fun x _ => hV x x.2)
+    subset_trans ?_ (iUnion₂_mono fun x _ => hV x x.2)
   simpa [← iUnion_inter, ← iUnion_coe_set]
 
 theorem IsCompact.elim_nhdsWithin_subcover (hs : IsCompact s) (U : X → Set X)
