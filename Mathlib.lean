@@ -4025,6 +4025,7 @@ import Mathlib.MeasureTheory.Function.LpOrder
 import Mathlib.MeasureTheory.Function.LpSeminorm.Basic
 import Mathlib.MeasureTheory.Function.LpSeminorm.ChebyshevMarkov
 import Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp
+import Mathlib.MeasureTheory.Function.LpSeminorm.Defs
 import Mathlib.MeasureTheory.Function.LpSeminorm.TriangleInequality
 import Mathlib.MeasureTheory.Function.LpSeminorm.Trim
 import Mathlib.MeasureTheory.Function.LpSpace.Basic
