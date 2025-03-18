@@ -29,7 +29,7 @@ universe u
 
 namespace Mathlib.Tactic
 
-open Lean Parser PrettyPrinter Std
+open Lean Parser PrettyPrinter Delaborator Std
 
 namespace Superscript
 
@@ -225,7 +225,9 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   | .ok newStack =>
     set { st with stack := stack ++ newStack }
 
-open PrettyPrinter.Delaborator SubExpr
+section Delab
+
+open SubExpr
 
 /-- Returns the user-facing name of any constant or free variable. -/
 private def name : Expr → MetaM (Option Name)
@@ -241,18 +243,6 @@ private def isSubscriptable (s : Name) : Bool :=
 private def isSuperscriptable (s : Name) : Bool :=
   s.toString.toList.all Mapping.superscript.toSpecial.contains
 
-/-- Applies the predicate `f` to every explicit argument of `e`. -/
-private def checkArgs (f : Expr → DelabM Unit) : DelabM Unit := do
-  let e ← getExpr
-  let args := e.getAppArgs
-  let kinds ← getParamKinds e.getAppFn args
-  -- The function may be partially-applied. We need only check the arguments we
-  -- have. `kinds.size < args.size` indicates an error collecting ParamKinds.
-  guard <| args.size <= kinds.size
-  args.zipIdx.zip kinds |>.filter
-    (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
-    fun ((x, i), _) ↦ withNaryArg i <| f x
-
 /-- The binary operations `+`, `-`, `=`, and `==` can be superscripted
 (subscripted) if their operands can be superscripted (subscripted). -/
 private def isSpecialBinOp (e : Expr) : Bool :=
@@ -267,6 +257,18 @@ private def constValid (e : Expr) (fname : Name → Bool) : DelabM Bool :=
   return e.isConstOf ``Unit.unit ||
     (← name e).any fname ||
     (← delab) matches `($_:num)
+
+/-- Applies the predicate `f` to every explicit argument of `e`. -/
+private def checkArgs (f : Expr → DelabM Unit) : DelabM Unit := do
+  let e ← getExpr
+  let args := e.getAppArgs
+  let kinds ← getParamKinds e.getAppFn args
+  -- The function may be partially-applied. We need only check the arguments we
+  -- have. `kinds.size < args.size` indicates an error collecting ParamKinds.
+  guard <| args.size <= kinds.size
+  args.zipIdx.zip kinds |>.filter
+    (fun (_, kind) ↦ kind.isRegularExplicit) |>.forM
+    fun ((x, i), _) ↦ withNaryArg i <| f x
 
 -- TODO: what about dot notation?
 /-- Checks if the entire expression `e` can be superscripted (or subscripted). -/
@@ -286,6 +288,8 @@ private partial def subscriptable (e : Expr) : DelabM Unit :=
 /-- Checks if the expression `e` can be superscripted. -/
 private partial def superscriptable (e : Expr) : DelabM Unit :=
   checkExpr e isSuperscriptable superscriptable
+
+end Delab
 
 end Superscript
 
@@ -325,13 +329,14 @@ def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscri
 
 initialize register_parser_alias superscript
 
-open PrettyPrinter.Delaborator SubExpr in
-/-- Checks that the provided expression can be superscripted before delaborating.
+/-- Checks that the current expression can be superscripted before delaborating.
 
 This is a conservative approximation — it may not succeed even given a valid
-superscriptable expression as input. -/
+superscriptable expression as input.
+
+See `Mapping.superscript` in this file for legal superscript characters. -/
 def delabSuperscript : Delab := do
-  Superscript.superscriptable (← getExpr); delab
+  Superscript.superscriptable (← SubExpr.getExpr); delab
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -369,12 +374,13 @@ def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript t
 
 initialize register_parser_alias subscript
 
-open PrettyPrinter.Delaborator SubExpr in
-/-- Checks that the provided expression can be subscripted before delaborating.
+/-- Checks that the current expression can be subscripted before delaborating.
 
 This is a conservative approximation — it may not succeed even given a valid
-subscriptable expression as input. -/
+subscriptable expression as input.
+
+See `Mapping.subscript` in this file for legal subscript characters. -/
 def delabSubscript : Delab := do
-  Superscript.subscriptable (← getExpr); delab
+  Superscript.subscriptable (← SubExpr.getExpr); delab
 
 end Mathlib.Tactic
