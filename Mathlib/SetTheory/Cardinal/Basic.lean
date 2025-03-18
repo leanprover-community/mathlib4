@@ -73,6 +73,21 @@ theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
   rw [← lift_umax, lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
 
+theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
+    prod f = Cardinal.lift.{u} (∏ i, f i) := by
+  revert f
+  refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
+  · intro α β hβ e h f
+    letI := Fintype.ofEquiv β e.symm
+    rw [← e.prod_comp f, ← h]
+    exact mk_congr (e.piCongrLeft _).symm
+  · intro f
+    rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, Cardinal.prod, mk_eq_one]
+  · intro α hα h f
+    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, ←
+        Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
+    simp only [lift_id]
+
 /-! ### Basic cardinals -/
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
@@ -239,23 +254,6 @@ theorem lift_iSup_le_lift_iSup' {ι : Type v} {ι' : Type v'} {f : ι → Cardin
     {f' : ι' → Cardinal.{v'}} (hf : BddAbove (range f)) (hf' : BddAbove (range f')) (g : ι → ι')
     (h : ∀ i, lift.{v'} (f i) ≤ lift.{v} (f' (g i))) : lift.{v'} (iSup f) ≤ lift.{v} (iSup f') :=
   lift_iSup_le_lift_iSup hf hf' h
-
-/-! ### Indexed cardinal `prod` -/
-
-theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{v}) :
-    prod f = Cardinal.lift.{u} (∏ i, f i) := by
-  revert f
-  refine Fintype.induction_empty_option ?_ ?_ ?_ α (h_fintype := h)
-  · intro α β hβ e h f
-    letI := Fintype.ofEquiv β e.symm
-    rw [← e.prod_comp f, ← h]
-    exact mk_congr (e.piCongrLeft _).symm
-  · intro f
-    rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, Cardinal.prod, mk_eq_one]
-  · intro α hα h f
-    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, ←
-        Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
-    simp only [lift_id]
 
 /-! ### Properties about the cast from `ℕ` -/
 
