@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
 import Mathlib.Algebra.BigOperators.Expect
+import Mathlib.Algebra.BigOperators.Field
 import Mathlib.Analysis.Convex.Jensen
 import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
@@ -14,7 +15,8 @@ import Mathlib.Data.Real.ConjExponents
 
 In this file we prove several inequalities for finite sums, including AM-GM inequality,
 HM-GM inequality, Young's inequality, Hölder inequality, and Minkowski inequality. Versions for
-integrals of some of these inequalities are available in `MeasureTheory.Integral.MeanInequalities`.
+integrals of some of these inequalities are available in
+`Mathlib.MeasureTheory.Integral.MeanInequalities`.
 
 ## Main theorems
 
@@ -137,10 +139,10 @@ theorem geom_mean_le_arith_mean_weighted (w z : ι → ℝ) (hw : ∀ i ∈ s, 0
     have := convexOn_exp.map_sum_le hw hw' fun i _ => Set.mem_univ <| log (z i)
     simp only [exp_sum, smul_eq_mul, mul_comm (w _) (log _)] at this
     convert this using 1 <;> [apply prod_congr rfl;apply sum_congr rfl] <;> intro i hi
-    · cases' eq_or_lt_of_le (hz i hi) with hz hz
+    · rcases eq_or_lt_of_le (hz i hi) with hz | hz
       · simp [A i hi hz.symm]
       · exact rpow_def_of_pos hz _
-    · cases' eq_or_lt_of_le (hz i hi) with hz hz
+    · rcases eq_or_lt_of_le (hz i hi) with hz | hz
       · simp [A i hi hz.symm]
       · rw [exp_log hz]
 
@@ -428,7 +430,7 @@ theorem young_inequality (a b : ℝ≥0∞) {p q : ℝ} (hpq : p.IsConjExponent 
   by_cases h : a = ⊤ ∨ b = ⊤
   · refine le_trans le_top (le_of_eq ?_)
     repeat rw [div_eq_mul_inv]
-    cases' h with h h <;> rw [h] <;> simp [h, hpq.pos, hpq.symm.pos]
+    rcases h with h | h <;> rw [h] <;> simp [h, hpq.pos, hpq.symm.pos]
   push_neg at h
   -- if a ≠ ⊤ and b ≠ ⊤, use the nnreal version: nnreal.young_inequality_real
   rw [← coe_toNNReal h.left, ← coe_toNNReal h.right, ← coe_mul, ← coe_rpow_of_nonneg _ hpq.nonneg,
@@ -571,7 +573,7 @@ sum of the `p`-th powers of `f i`. Version for sums over finite sets, with `ℝ�
 -/
 theorem rpow_sum_le_const_mul_sum_rpow (f : ι → ℝ≥0) {p : ℝ} (hp : 1 ≤ p) :
     (∑ i ∈ s, f i) ^ p ≤ (#s : ℝ≥0) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
-  cases' eq_or_lt_of_le hp with hp hp
+  rcases eq_or_lt_of_le hp with hp | hp
   · simp [← hp]
   let q : ℝ := p / (p - 1)
   have hpq : p.IsConjExponent q := .conjExponent hp
@@ -875,11 +877,11 @@ theorem inner_le_Lp_mul_Lq (hpq : p.IsConjExponent q) :
   · replace H : (∀ i ∈ s, f i = 0) ∨ ∀ i ∈ s, g i = 0 := by
       simpa [ENNReal.rpow_eq_zero_iff, hpq.pos, hpq.symm.pos, asymm hpq.pos, asymm hpq.symm.pos,
         sum_eq_zero_iff_of_nonneg] using H
-    have : ∀ i ∈ s, f i * g i = 0 := fun i hi => by cases' H with H H <;> simp [H i hi]
+    have : ∀ i ∈ s, f i * g i = 0 := fun i hi => by rcases H with H | H <;> simp [H i hi]
     simp [sum_eq_zero this]
   push_neg at H
   by_cases H' : (∑ i ∈ s, f i ^ p) ^ (1 / p) = ⊤ ∨ (∑ i ∈ s, g i ^ q) ^ (1 / q) = ⊤
-  · cases' H' with H' H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
+  · rcases H' with H' | H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
   replace H' : (∀ i ∈ s, f i ≠ ⊤) ∧ ∀ i ∈ s, g i ≠ ⊤ := by
     simpa [ENNReal.rpow_eq_top_iff, asymm hpq.pos, asymm hpq.symm.pos, hpq.pos, hpq.symm.pos,
       ENNReal.sum_eq_top, not_or] using H'
@@ -901,11 +903,11 @@ lemma inner_le_weight_mul_Lp_of_nonneg (s : Finset ι) {p : ℝ} (hp : 1 ≤ p) 
   by_cases H : (∑ i ∈ s, w i) ^ (1 - p⁻¹) = 0 ∨ (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ = 0
   · replace H : (∀ i ∈ s, w i = 0) ∨ ∀ i ∈ s, w i = 0 ∨ f i = 0 := by
       simpa [hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_zero_iff_of_nonneg] using H
-    have (i) (hi : i ∈ s) : w i * f i = 0 := by cases' H with H H <;> simp [H i hi]
+    have (i) (hi : i ∈ s) : w i * f i = 0 := by rcases H with H | H <;> simp [H i hi]
     simp [sum_eq_zero this]
   push_neg at H
   by_cases H' : (∑ i ∈ s, w i) ^ (1 - p⁻¹) = ⊤ ∨ (∑ i ∈ s, w i * f i ^ p) ^ p⁻¹ = ⊤
-  · cases' H' with H' H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
+  · rcases H' with H' | H' <;> simp [H', -one_div, -sum_eq_zero_iff, -rpow_eq_zero_iff, H]
   replace H' : (∀ i ∈ s, w i ≠ ⊤) ∧ ∀ i ∈ s, w i * f i ^ p ≠ ⊤ := by
     simpa [rpow_eq_top_iff,hp₀, hp₁, hp₀.not_lt, hp₁.not_lt, sum_eq_top, not_or] using H'
   have := coe_le_coe.2 <| NNReal.inner_le_weight_mul_Lp s hp.le (fun i ↦ ENNReal.toNNReal (w i))
@@ -927,7 +929,7 @@ sum of the `p`-th powers of `f i`. Version for sums over finite sets, with `ℝ�
 -/
 theorem rpow_sum_le_const_mul_sum_rpow (hp : 1 ≤ p) :
     (∑ i ∈ s, f i) ^ p ≤ (card s : ℝ≥0∞) ^ (p - 1) * ∑ i ∈ s, f i ^ p := by
-  cases' eq_or_lt_of_le hp with hp hp
+  rcases eq_or_lt_of_le hp with hp | hp
   · simp [← hp]
   let q : ℝ := p / (p - 1)
   have hpq : p.IsConjExponent q := .conjExponent hp
@@ -946,7 +948,7 @@ theorem Lp_add_le (hp : 1 ≤ p) :
     (∑ i ∈ s, (f i + g i) ^ p) ^ (1 / p) ≤
       (∑ i ∈ s, f i ^ p) ^ (1 / p) + (∑ i ∈ s, g i ^ p) ^ (1 / p) := by
   by_cases H' : (∑ i ∈ s, f i ^ p) ^ (1 / p) = ⊤ ∨ (∑ i ∈ s, g i ^ p) ^ (1 / p) = ⊤
-  · cases' H' with H' H' <;> simp [H', -one_div]
+  · rcases H' with H' | H' <;> simp [H', -one_div]
   have pos : 0 < p := lt_of_lt_of_le zero_lt_one hp
   replace H' : (∀ i ∈ s, f i ≠ ⊤) ∧ ∀ i ∈ s, g i ≠ ⊤ := by
     simpa [ENNReal.rpow_eq_top_iff, asymm pos, pos, ENNReal.sum_eq_top, not_or] using H'

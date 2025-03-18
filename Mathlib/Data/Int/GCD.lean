@@ -10,6 +10,7 @@ import Mathlib.Data.Set.Operations
 import Mathlib.Order.Basic
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Data.Int.Basic
 
 /-!
 # Extended GCD and divisibility over ℤ
@@ -225,7 +226,7 @@ theorem gcd_pos_iff {i j : ℤ} : 0 < gcd i j ↔ i ≠ 0 ∨ j ≠ 0 :=
 
 theorem gcd_div {i j k : ℤ} (H1 : k ∣ i) (H2 : k ∣ j) :
     gcd (i / k) (j / k) = gcd i j / natAbs k := by
-  rw [gcd, natAbs_ediv i k H1, natAbs_ediv j k H2]
+  rw [gcd, natAbs_ediv_of_dvd i k H1, natAbs_ediv_of_dvd j k H2]
   exact Nat.gcd_div (natAbs_dvd_natAbs.mpr H1) (natAbs_dvd_natAbs.mpr H2)
 
 theorem gcd_div_gcd_div_gcd {i j : ℤ} (H : 0 < gcd i j) : gcd (i / gcd i j) (j / gcd i j) = 1 := by
@@ -374,7 +375,7 @@ end Int
 theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 1) (hn : x ^ n = 1) :
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
-  obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
+  obtain ⟨y, rfl⟩ := IsUnit.of_pow_eq_one hm m.succ_ne_zero
   rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
   rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
 

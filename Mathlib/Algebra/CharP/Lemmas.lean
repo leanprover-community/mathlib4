@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Algebra.CharP.Defs
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
 
@@ -303,7 +302,6 @@ def iterateFrobenius : R →+* R where
   map_zero' := zero_pow (expChar_pow_pos R p n).ne'
   map_add' _ _ := add_pow_expChar_pow ..
 
-
 lemma frobenius_def : frobenius R p x = x ^ p := rfl
 
 lemma iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
@@ -311,6 +309,9 @@ lemma iterateFrobenius_def : iterateFrobenius R p n x = x ^ p ^ n := rfl
 lemma iterate_frobenius : (frobenius R p)^[n] x = x ^ p ^ n := congr_fun (pow_iterate p n) x
 
 variable (R)
+
+lemma iterateFrobenius_eq_pow : iterateFrobenius R p n = frobenius R p ^ n := by
+  ext; simp [iterateFrobenius_def, iterate_frobenius]
 
 lemma coe_iterateFrobenius : iterateFrobenius R p n = (frobenius R p)^[n] :=
   (pow_iterate p n).symm

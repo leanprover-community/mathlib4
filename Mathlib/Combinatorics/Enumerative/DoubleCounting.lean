@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -26,8 +26,14 @@ and `t`.
 * `card_mul_le_card_mul`, `card_mul_le_card_mul'`: Double counting the edges of a bipartite graph
   from below and from above.
 * `card_mul_eq_card_mul`: Equality combination of the previous.
+
+## Implementation notes
+
+For the formulation of double-counting arguments where a bipartite graph is considered as a
+bipartite simple graph `G : SimpleGraph V`, see `Mathlib.Combinatorics.SimpleGraph.Bipartite`.
 -/
 
+assert_not_exists Field
 
 open Finset Function Relator
 

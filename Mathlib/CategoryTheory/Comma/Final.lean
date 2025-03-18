@@ -104,6 +104,7 @@ end NonSmall
 
 /-- Let the following diagram commute up to isomorphism:
 
+```
       L       R
   A  ---→ T  ←--- B
   |       |       |
@@ -111,6 +112,7 @@ end NonSmall
   ↓       ↓       ↓
   A' ---→ T' ←--- B'
       L'      R'
+```
 
 Let `F`, `G`, `R` and `R'` be final and `B` be filtered. Then, the induced functor between the comma
 categories of the first and second row of the diagram is final. -/

@@ -20,11 +20,11 @@ As opposed to `Even`, `Odd` does not have a multiplicative counterpart.
 
 Try to generalize `Even` lemmas further. For example, there are still a few lemmas whose `Semiring`
 assumptions I (DT) am not convinced are necessary. If that turns out to be true, they could be moved
-to `Algebra.Group.Even`.
+to `Mathlib.Algebra.Group.Even`.
 
 ## See also
 
-`Algebra.Group.Even` for the definition of even elements.
+`Mathlib.Algebra.Group.Even` for the definition of even elements.
 -/
 
 assert_not_exists DenselyOrdered OrderedRing
@@ -207,12 +207,6 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_not_eq_one]
 
 @[simp] lemma not_odd_zero : ¬Odd 0 := not_odd_iff.mpr rfl
 
-@[deprecated not_odd_iff_even (since := "2024-08-21")]
-lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
-
-@[deprecated not_even_iff_odd (since := "2024-08-21")]
-lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
-
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by
   rwa [← even_iff_two_dvd, not_even_iff_odd]
 
@@ -306,7 +300,6 @@ end
 example (m n : ℕ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
   simp [*, two_ne_zero, parity_simps]
 
-/- Porting note: the `simp` lemmas about `bit*` no longer apply. -/
 example : ¬Even 25394535 := by decide
 
 end Nat

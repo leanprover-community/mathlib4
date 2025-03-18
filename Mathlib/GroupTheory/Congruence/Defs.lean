@@ -146,9 +146,10 @@ theorem rel_mk {s : Setoid M} {h a b} : Con.mk s h a b ↔ r a b :=
 
 /-- Given a type `M` with a multiplication, a congruence relation `c` on `M`, and elements of `M`
     `x, y`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`. -/
-@[to_additive "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
+@[to_additive instMembershipProd
+  "Given a type `M` with an addition, `x, y ∈ M`, and an additive congruence relation
 `c` on `M`, `(x, y) ∈ M × M` iff `x` is related to `y` by `c`."]
-instance : Membership (M × M) (Con M) :=
+instance instMembershipProd : Membership (M × M) (Con M) :=
   ⟨fun c x => c x.1 x.2⟩
 
 variable {c}
@@ -191,7 +192,6 @@ an addition."]
 protected def Quotient :=
   Quotient c.toSetoid
 
--- Porting note: made implicit
 variable {c}
 
 /-- The morphism into the quotient by a congruence relation -/
@@ -494,7 +494,7 @@ variable {M} (c)
 binary relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the
 elements of `f⁻¹(y)` by an additive congruence relation `c`.'"]
 def mapGen (f : M → N) : Con N :=
-  conGen fun x y => ∃ a b, f a = x ∧ f b = y ∧ c a b
+  conGen <| Relation.Map c f f
 
 /-- Given a surjective multiplicative-preserving function `f` whose kernel is contained in a
     congruence relation `c`, the congruence relation on `f`'s codomain defined by '`x ≈ y` iff the
@@ -506,9 +506,9 @@ def mapOfSurjective (f : M → N) (H : ∀ x y, f (x * y) = f x * f y) (h : mulK
     (hf : Surjective f) : Con N :=
   { c.toSetoid.mapOfSurjective f h hf with
     mul' := fun h₁ h₂ => by
-      rcases h₁ with ⟨a, b, rfl, rfl, h1⟩
-      rcases h₂ with ⟨p, q, rfl, rfl, h2⟩
-      exact ⟨a * p, b * q, by rw [H], by rw [H], c.mul h1 h2⟩ }
+      rcases h₁ with ⟨a, b, h1, rfl, rfl⟩
+      rcases h₂ with ⟨p, q, h2, rfl, rfl⟩
+      exact ⟨a * p, b * q, c.mul h1 h2, by rw [H], by rw [H]⟩ }
 
 /-- A specialization of 'the smallest congruence relation containing a congruence relation `c`
     equals `c`'. -/
@@ -546,36 +546,27 @@ the additive congruence relations on the quotient of `M` by `c`."]
 def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
   toFun d :=
     d.1.mapOfSurjective (↑) (fun _ _ => rfl) (by rw [mul_ker_mk_eq]; exact d.2) <|
-      @Quotient.exists_rep _ c.toSetoid
+      Quotient.mk_surjective
   invFun d :=
     ⟨comap ((↑) : M → c.Quotient) (fun _ _ => rfl) d, fun x y h =>
       show d x y by rw [c.eq.2 h]; exact d.refl _⟩
   left_inv d :=
-    -- Porting note: by exact needed for unknown reason
-    by exact
-      Subtype.ext_iff_val.2 <|
-        ext fun x y =>
-          ⟨fun h =>
-            let ⟨a, b, hx, hy, H⟩ := h
-            d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
-            fun h => ⟨_, _, rfl, rfl, h⟩⟩
-  right_inv d :=
-    -- Porting note: by exact needed for unknown reason
-    by exact
+    Subtype.ext_iff_val.2 <|
       ext fun x y =>
-        ⟨fun h =>
-          let ⟨_, _, hx, hy, H⟩ := h
-          hx ▸ hy ▸ H,
-          Con.induction_on₂ x y fun w z h => ⟨w, z, rfl, rfl, h⟩⟩
-  map_rel_iff' := @fun s t => by
+        ⟨fun ⟨a, b, H, hx, hy⟩ =>
+          d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
+          fun h => ⟨_, _, h, rfl, rfl⟩⟩
+  right_inv d :=
+    ext fun x y =>
+      ⟨fun ⟨_, _, H, hx, hy⟩ =>
+        hx ▸ hy ▸ H,
+        Con.induction_on₂ x y fun w z h => ⟨w, z, h, rfl, rfl⟩⟩
+  map_rel_iff' {s t} := by
     constructor
     · intros h x y hs
-      rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
-      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq'.1 hx)
-        (t.1.trans ht (t.2 <| Quotient.eq'.1 hy))
-    · intros h _ _ hs
-      rcases hs with ⟨a, b, hx, hy, Hs⟩
-      exact ⟨a, b, hx, hy, h Hs⟩
+      rcases h ⟨x, y, hs, rfl, rfl⟩ with ⟨a, b, ht, hx, hy⟩
+      exact t.1.trans (t.1.symm <| t.2 <| c.eq.1 hx) (t.1.trans ht (t.2 <| c.eq.1 hy))
+    · exact Relation.map_mono
 
 end
 

@@ -158,7 +158,7 @@ lemma Scheme.Pullback.range_diagonal_subset_diagonalCoverDiagonalRange :
   rw [← hz₁, ← hy, ← Scheme.comp_base_apply, ← Scheme.comp_base_apply]
   dsimp only [diagonalCover, Cover.pullbackHom, Cover.bind_obj, openCoverOfLeftRight_obj]
   rw [← Scheme.comp_base_apply]
-  congr 4
+  congr 5
   apply pullback.hom_ext <;> simp
 
 lemma isClosedImmersion_diagonal_restrict_diagonalCoverDiagonalRange

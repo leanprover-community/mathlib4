@@ -24,7 +24,7 @@ universe v v₁ v₂ u u₁ u₂
 type of objects. We denote these arrows by `id` since categories can be understood as an extension
 of refl quivers.
 -/
-class ReflQuiver (obj : Type u) extends Quiver.{v} obj : Type max u v where
+class ReflQuiver (obj : Type u) : Type max u v extends Quiver.{v} obj where
   /-- The identity morphism on an object. -/
   id : ∀ X : obj, Hom X X
 
@@ -33,7 +33,7 @@ scoped notation "𝟙rq" => ReflQuiver.id  -- type as \b1
 
 @[simp]
 theorem ReflQuiver.homOfEq_id {V : Type*} [ReflQuiver V] {X X' : V} (hX : X = X') :
-    Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX ; rfl
+    Quiver.homOfEq (𝟙rq X) hX hX = 𝟙rq X' := by subst hX; rfl
 
 instance catToReflQuiver {C : Type u} [inst : Category.{v} C] : ReflQuiver.{v+1, u} C :=
   { inst with }
@@ -125,8 +125,12 @@ theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {
 
 end ReflPrefunctor
 
-/-- A functor has an underlying refl prefunctor.-/
+/-- A functor has an underlying refl prefunctor. -/
 def Functor.toReflPrefunctor {C D} [Category C] [Category D] (F : C ⥤ D) : C ⥤rq D := { F with }
+
+theorem Functor.toReflPrefunctor.map_comp {C D E} [Category C] [Category D] [Category E]
+    (F : C ⥤ D) (G : D ⥤ E) :
+    toReflPrefunctor (F ⋙ G) = toReflPrefunctor F ⋙rq toReflPrefunctor G := rfl
 
 @[simp]
 theorem Functor.toReflPrefunctor_toPrefunctor {C D : Cat} (F : C ⥤ D) :

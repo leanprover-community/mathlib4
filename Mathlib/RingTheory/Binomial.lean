@@ -358,7 +358,7 @@ variable {R : Type*}
 
 section
 
-/-- The binomial coefficient `choose r n` generalizes the natural number `choose` function,
+/-- The binomial coefficient `choose r n` generalizes the natural number `Nat.choose` function,
   interpreted in terms of choosing without replacement. -/
 def choose [AddCommGroupWithOne R] [Pow R ℕ] [BinomialRing R] (r : R) (n : ℕ) : R :=
   multichoose (r - n + 1) n
@@ -394,7 +394,7 @@ theorem choose_zero_succ (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [Binom
   rw [choose, Nat.cast_succ, zero_sub, neg_add, neg_add_cancel_right, multichoose_succ_neg_natCast]
 
 theorem choose_zero_pos (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
-    {k : ℕ} (h_pos: 0 < k) : choose (0 : R) k = 0 := by
+    {k : ℕ} (h_pos : 0 < k) : choose (0 : R) k = 0 := by
   rw [← Nat.succ_pred_eq_of_pos h_pos, choose_zero_succ]
 
 theorem choose_zero_ite (R) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R] [BinomialRing R]
