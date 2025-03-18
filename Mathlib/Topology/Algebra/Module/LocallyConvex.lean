@@ -31,7 +31,6 @@ In a module, this is equivalent to `0` satisfying such properties.
 
 -/
 
-
 assert_not_exists NormedSpace
 
 open TopologicalSpace Filter Set
@@ -206,7 +205,7 @@ instance LinearOrderedSemiring.toLocallyConvexSpace {R : Type*} [TopologicalSpac
       intro
       refine nhds_bot_basis.to_hasBasis' ?_ ?_
       · intros
-        refine ⟨Set.Iio _, ?_, subset_refl _⟩
+        refine ⟨Set.Iio _, ?_, .rfl⟩
         simp_all [Iio_mem_nhds, convex_Iio]
       · simp +contextual
     obtain hu | hu := isTop_or_exists_gt x
