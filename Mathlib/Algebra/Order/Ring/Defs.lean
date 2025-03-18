@@ -12,7 +12,6 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
-import ImportGraph.Imports
 
 /-!
 # Ordered rings and semirings
