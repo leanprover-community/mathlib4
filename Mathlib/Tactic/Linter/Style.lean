@@ -499,17 +499,14 @@ def openClassicalLinter : Linter where run stx := do
       return
     if (← get).messages.hasErrors then
      return
-    let scope ← getScope
-    if scope.openDecls.any (match · with
-      | .simple `Classical _ => true
-      | .explicit `Classical _ => true
-      | _ => false ) then
-      Linter.logLint linter.style.openClassical stx
-        "please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
-        which would be better stated with explicit decidability statements.\n\
-        Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
-        for proofs.\nFor theorem statements, \
-        either add missing decidability assumptions or use `open Classical in`."
+    -- If `stx` describes an `open` command, extract the list of opened namespaces.
+    for stxN in (extractOpenNames stx).filter (·.getId == `Classical) do
+      Linter.logLint linter.style.openClassical stxN "\
+      please avoid 'open (scoped) Classical' statements: this can hide theorem statements \
+      which would be better stated with explicit decidability statements.\n\
+      Instead, use `open Classical in` for definitions or instances, the `classical` tactic \
+      for proofs.\nFor theorem statements, \
+      either add missing decidability assumptions or use `open Classical in`."
 
 initialize addLinter openClassicalLinter
 
