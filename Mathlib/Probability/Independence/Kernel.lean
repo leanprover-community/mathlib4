@@ -912,7 +912,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
-theorem iIndepFun.ae_eq {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+theorem iIndepFun.congr {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {f g : Π i, Ω → β i} (hf : iIndepFun f κ μ)
     (h : ∀ i, ∀ᵐ a ∂μ, f i =ᵐ[κ a] g i) :
     iIndepFun g κ μ := by
@@ -959,7 +959,7 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
 nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
     (hfg : IndepFun f g κ μ) : IndepFun g f κ μ := hfg.symm
 
-theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
+theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g κ μ)
     (hf : ∀ᵐ a ∂μ, f =ᵐ[κ a] f') (hg : ∀ᵐ a ∂μ, g =ᵐ[κ a] g') :
     IndepFun f' g' κ μ := by
@@ -968,6 +968,8 @@ theorem IndepFun.ae_eq {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
   have h1 : f ⁻¹' A =ᵐ[κ a] f' ⁻¹' A := hf'.fun_comp A
   have h2 : g ⁻¹' B =ᵐ[κ a] g' ⁻¹' B := hg'.fun_comp B
   rwa [← measure_congr h1, ← measure_congr h2, ← measure_congr (h1.inter h2)]
+
+@[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr
 
 theorem IndepFun.comp {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {mγ : MeasurableSpace γ} {mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
