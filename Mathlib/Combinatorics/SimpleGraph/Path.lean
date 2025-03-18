@@ -310,7 +310,7 @@ lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
 lemma IsPath.dropLast {p : G.Walk u v} (hp : p.IsPath) (h : ¬p.Nil): p.dropLast.IsPath := by
   apply IsPath.mk'
   rw [support_dropLast _ h]
-  exact List.Nodup.sublist (List.dropLast_sublist p.support)  hp.support_nodup
+  exact List.Nodup.sublist (List.dropLast_sublist p.support) hp.support_nodup
 
 lemma IsCycle.isPath_tail {c : G.Walk v v} (hc : c.IsCycle) :
     c.tail.IsPath := by
@@ -497,6 +497,43 @@ lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈
   have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
     (hn.symm ▸ p.getVert_length.symm)
   omega
+
+/-- the ith dart of w is (wᵢ, wᵢ₊₁) -/
+@[simp]
+lemma ith_dart {w : G.Walk u v} {i : ℕ} (hi : i < w.length) :
+    w.darts.get ⟨i, w.length_darts.symm ▸ hi⟩ =
+      ⟨(w.getVert i, w.getVert (i+1)), w.adj_getVert_succ hi⟩:= by
+  induction w generalizing i with
+  | nil => simp at hi
+  | cons h p ih =>
+    cases i with
+    | zero => simp
+    | succ i =>
+      simp only [length_cons, Nat.add_lt_add_iff_right] at hi
+      apply ih hi
+
+lemma IsPath.take_spec_cons  {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
+    (hd : d ∈ p.darts) :
+    (p.takeUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).append
+      ((p.dropUntil _ (dart_snd_mem_support_of_mem_darts _ hd)).cons d.adj) = p := by
+  have := take_spec p (dart_fst_mem_support_of_mem_darts _ hd)
+  convert this
+  have :¬ (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).Nil := by sorry
+  rw [← cons_tail_eq _ this]
+
+  sorry
+
+lemma IsPath.snd_dropUntil_dart_fst_eq_snd {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
+    (hd : d ∈ p.darts) :
+    (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).snd = d.toProd.2 := by
+  rw [snd, getVert_dropUntil,
+      ← p.getVert_length_takeUntil_eq_self (dart_snd_mem_support_of_mem_darts _ hd)]
+  congr
+  have h1 := take_spec p (dart_fst_mem_support_of_mem_darts _ hd)
+  have h2 := take_spec p (dart_snd_mem_support_of_mem_darts _ hd)
+  apply_fun length at h1 h2
+  rw [length_append] at h1 h2
+  sorry
 
 /-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
