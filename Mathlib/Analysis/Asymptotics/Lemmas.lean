@@ -603,8 +603,8 @@ theorem isBigO_one_nat_atTop_iff {f : ℕ → E''} :
   Iff.trans (isBigO_nat_atTop_iff fun _ h => (one_ne_zero h).elim) <| by
     simp only [norm_one, mul_one]
 
-theorem isBigO_nat_of_isBigO_atTop {f g : ℕ → E''} (hfg : f =O[atTop] g) {l : Filter ℕ}
-    (h : ∀ᶠ n in l, g n = 0 → f n = 0) : f =O[l] g := by
+theorem isBigO_nat_of_isBigO_atTop {f : ℕ → E''} {g : ℕ → F''} (hfg : f =O[atTop] g)
+    {l : Filter ℕ} (h : ∀ᶠ n in l, g n = 0 → f n = 0) : f =O[l] g := by
   obtain ⟨C, hC_pos, hC⟩ := Asymptotics.bound_of_isBigO_nat_atTop hfg
   refine isBigO_iff.mpr ⟨C, ?_⟩
   filter_upwards [h] with x h
