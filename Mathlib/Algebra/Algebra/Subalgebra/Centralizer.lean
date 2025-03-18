@@ -3,7 +3,7 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
