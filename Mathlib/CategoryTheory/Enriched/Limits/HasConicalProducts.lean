@@ -19,7 +19,7 @@ open Limits
 class HasConicalProducts
     (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
     (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C] : Prop where
-  /-- All discrete diagrams of bounded size have conical products. -/
+  /-- A family of objects (parametrized by any `J : Type w`) has a conical product. -/
   hasConicalLimitsOfShape : ∀ J : Type w, HasConicalLimitsOfShape (Discrete J) V C := by
     infer_instance
 
