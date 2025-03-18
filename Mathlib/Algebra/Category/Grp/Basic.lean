@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Group.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.Data.Int.Cast.Lemmas
-import Mathlib.GroupTheory.Perm.Basic
 
 /-!
 # Category instances for Group, AddGroup, CommGroup, and AddCommGroup.
@@ -216,9 +215,6 @@ lemma ofHom_injective {X Y : Type u} [Group X] [Group Y] :
   ext
   apply ConcreteCategory.congr_hom h
 
-@[to_additive]
-instance ofUnique (G : Type*) [Group G] [i : Unique G] : Unique (Grp.of G) := i
-
 -- We verify that simp lemmas apply when coercing morphisms to functions.
 @[to_additive]
 example {R S : Grp} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
@@ -406,10 +402,6 @@ alias coe_comp' := coe_comp
 
 @[to_additive (attr := deprecated "use `coe_id` instead" (since := "2025-01-28"))]
 alias coe_id' := coe_id
-
-@[to_additive]
-instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
-  i
 
 @[to_additive]
 instance hasForgetToGroup : HasForget₂ CommGrp Grp where

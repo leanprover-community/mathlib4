@@ -51,10 +51,6 @@ def Principal (op : Ordinal → Ordinal → Ordinal) (o : Ordinal) : Prop :=
 theorem principal_swap_iff : Principal (Function.swap op) o ↔ Principal op o := by
   constructor <;> exact fun h a b ha hb => h hb ha
 
-@[deprecated principal_swap_iff (since := "2024-08-18")]
-theorem principal_iff_principal_swap : Principal op o ↔ Principal (Function.swap op) o :=
-  principal_swap_iff
-
 theorem not_principal_iff : ¬ Principal op o ↔ ∃ a < o, ∃ b < o, o ≤ op a b := by
   simp [Principal]
 

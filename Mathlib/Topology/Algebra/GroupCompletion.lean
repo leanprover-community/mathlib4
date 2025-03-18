@@ -5,6 +5,7 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Completion of topological groups:
@@ -178,12 +179,9 @@ def toCompl : α →+ Completion α where
 theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
   continuous_coe α
 
-variable (α)
-
+variable (α) in
 theorem isDenseInducing_toCompl : IsDenseInducing (toCompl : α → Completion α) :=
   isDenseInducing_coe
-
-variable {α}
 
 end UniformAddGroup
 

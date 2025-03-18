@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Subobject.Lattice
 # Subobjects in Grothendieck abelian categories
 
 We study the complete lattice of subjects of `X : C`
-when `C` is a Grothendieck abelian cateogry. In particular,
+when `C` is a Grothendieck abelian category. In particular,
 for a functor `F : J ⥤ MonoOver X` from a filtered category,
 we relate the colimit of `F` (computed in `C`) and the
 supremum of the subobjects corresponding to the objects

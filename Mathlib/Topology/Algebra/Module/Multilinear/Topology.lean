@@ -179,20 +179,20 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F]
 
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
   letI := IsTopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  haveI := uniformAddGroup_of_addCommGroup (G := F)
   inferInstance
 
 instance instContinuousConstSMul
     {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
     ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by
   letI := IsTopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  haveI := uniformAddGroup_of_addCommGroup (G := F)
   infer_instance
 
 instance instContinuousSMul [ContinuousSMul 𝕜 F] :
     ContinuousSMul 𝕜 (ContinuousMultilinearMap 𝕜 E F) :=
   letI := IsTopologicalAddGroup.toUniformSpace F
-  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  haveI := uniformAddGroup_of_addCommGroup (G := F)
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
     { toFun := (↑), map_add' := fun _ _ ↦ rfl, map_smul' := fun _ _ ↦ rfl }
   UniformOnFun.continuousSMul_induced_of_image_bounded _ _ _ _ φ
@@ -204,7 +204,7 @@ theorem hasBasis_nhds_zero_of_basis {ι : Type*} {p : ι → Prop} {b : ι → S
       (fun Si : Set (Π i, E i) × ι => IsVonNBounded 𝕜 Si.1 ∧ p Si.2)
       fun Si => { f | MapsTo f Si.1 (b Si.2) } := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   rw [nhds_induced]
   refine (UniformOnFun.hasBasis_nhds_zero_of_basis _ ?_ ?_ h).comap DFunLike.coe
   · exact ⟨∅, isVonNBounded_empty _ _⟩
@@ -221,7 +221,7 @@ variable [∀ i, ContinuousSMul 𝕜 (E i)]
 instance : ContinuousEvalConst (ContinuousMultilinearMap 𝕜 E F) (Π i, E i) F where
   continuous_eval_const x :=
     let _ := IsTopologicalAddGroup.toUniformSpace F
-    have _ := comm_topologicalAddGroup_is_uniform (G := F)
+    have _ := uniformAddGroup_of_addCommGroup (G := F)
     (uniformContinuous_eval_const x).continuous
 
 @[deprecated (since := "2024-10-05")] protected alias continuous_eval_const := continuous_eval_const
@@ -242,7 +242,7 @@ theorem isEmbedding_restrictScalars :
     IsEmbedding
       (restrictScalars 𝕜' : ContinuousMultilinearMap 𝕜 E F → ContinuousMultilinearMap 𝕜' E F) :=
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[deprecated (since := "2024-10-26")]
@@ -256,7 +256,7 @@ theorem continuous_restrictScalars :
 
 variable (𝕜') in
 /-- `ContinuousMultilinearMap.restrictScalars` as a `ContinuousLinearMap`. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def restrictScalarsLinear [ContinuousConstSMul 𝕜' F] :
     ContinuousMultilinearMap 𝕜 E F →L[𝕜'] ContinuousMultilinearMap 𝕜' E F where
   toFun := restrictScalars 𝕜'
