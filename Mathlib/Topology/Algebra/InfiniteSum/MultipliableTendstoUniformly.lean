@@ -15,13 +15,13 @@ import Mathlib.Tactic.ToAdditive
 # Products of one plus a complex number
 
 We gather some results about the uniform convergence of the product of `1 + f n x` for a
-sequence `f n x` or complex numbers.
+sequence `f n x` of complex numbers.
 
 -/
 
 open Filter Function Complex Real
 
-open scoped Interval Topology BigOperators Nat Classical Complex
+open scoped Interval Topology BigOperators Nat Complex
 
 variable {α β ι : Type*}
 
@@ -66,7 +66,7 @@ lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : 
     hf.re hT
   have w2 := tendstoUniformlyOn_univ.mpr <| UniformContinuousOn.comp_tendstoUniformly_eventually
     {x : ℂ | x.re ≤ T + 1} (fun a => K.restrict (f (a))) (fun b => g b) (by simpa using h2) ?_
-      (UniformlyContinuousOn.cexp (T + 1)) ((tendstouniformlyOn_iff_restrict).mp hf)
+      (UniformContinuousOn.cexp (T + 1)) ((tendstouniformlyOn_iff_restrict).mp hf)
   · rw [tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ]
     exact w2
   · simp only [Set.mem_setOf_eq, Subtype.forall]
@@ -116,7 +116,7 @@ lemma tendstoUniformlyOn_tprod_nat [TopologicalSpace α] {f : ℕ → α → ℂ
       intro c _
       simp_rw [log_re]
       apply ContinuousOn.log
-      · apply ContinuousOn.comp Complex.continuous_abs.continuousOn
+      · apply ContinuousOn.comp continuous_norm.continuousOn
           (ContinuousOn.add continuousOn_const (hcts c)) (Set.mapsTo_image (fun x ↦ 1 + f c x) K)
       · intro z hz
         simpa using hfn z hz c
