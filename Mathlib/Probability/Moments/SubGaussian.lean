@@ -573,7 +573,7 @@ lemma sum_of_iIndepFun
   have A (i : s) : AEMeasurable (X i) μ := (h_subG i i.2).aemeasurable
   have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), (A i).mk _ ω) (∑ (i : s), c i) μ := by
     apply sum_of_iIndepFun_of_measurable
-    · exact iIndepFun.ae_eq
+    · exact iIndepFun.congr
         (iIndepFun.precomp (g := Subtype.val) Subtype.val_injective h_indep)
         (fun i ↦ AEMeasurable.ae_eq_mk (A i))
     · exact fun i ↦ AEMeasurable.measurable_mk (A i)
