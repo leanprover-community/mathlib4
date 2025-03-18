@@ -63,7 +63,7 @@ def ofInv (s : Y ⟶ X) (hs : W s) :
     W.LeftFraction X Y := mk (𝟙 X) s hs
 
 /-- If `φ : W.LeftFraction X Y` and `L` is a functor which inverts `W`, this is the
-induced morphism `L.obj X ⟶ L.obj Y`  -/
+induced morphism `L.obj X ⟶ L.obj Y` -/
 noncomputable def map (φ : W.LeftFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.obj X ⟶ L.obj Y :=
   have := hL _ φ.hs
@@ -131,7 +131,7 @@ def ofInv (s : Y ⟶ X) (hs : W s) :
     W.RightFraction X Y := mk s hs (𝟙 Y)
 
 /-- If `φ : W.RightFraction X Y` and `L` is a functor which inverts `W`, this is the
-induced morphism `L.obj X ⟶ L.obj Y`  -/
+induced morphism `L.obj X ⟶ L.obj Y` -/
 noncomputable def map (φ : W.RightFraction X Y) (L : C ⥤ D) (hL : W.IsInvertedBy L) :
     L.obj X ⟶ L.obj Y :=
   have := hL _ φ.hs

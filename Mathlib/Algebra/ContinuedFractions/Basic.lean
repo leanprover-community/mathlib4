@@ -194,7 +194,7 @@ $$
 $$
 For convenience, one often writes `[h; b₀, b₁, b₂,...]`.
 It is encoded as the subtype of gcfs that satisfy `GenContFract.IsSimpContFract`.
- -/
+-/
 def SimpContFract [One α] :=
   { g : GenContFract α // g.IsSimpContFract }
 
@@ -231,7 +231,7 @@ variable (α)
 
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
 denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
- -/
+-/
 def ContFract [One α] [Zero α] [LT α] :=
   { s : SimpContFract α // s.IsContFract }
 

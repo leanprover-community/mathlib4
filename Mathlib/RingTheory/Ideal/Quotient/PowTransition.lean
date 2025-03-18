@@ -74,7 +74,7 @@ abbrev factorPow {m n : ℕ} (le : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) :=
   factor (smul_mono_left (Ideal.pow_le_pow_right le))
 
-/--`factorPow` for `n = m + 1`-/
+/-- `factorPow` for `n = m + 1` -/
 abbrev factorPowSucc (m : ℕ) : M ⧸ (I ^ (m + 1) • ⊤ : Submodule R M) →ₗ[R]
     M ⧸ (I ^ m • ⊤ : Submodule R M) := factorPow I M (Nat.le_succ m)
 
@@ -99,7 +99,7 @@ check whether it can be generalized to `Ideal.factor` and whether the correspond
 abbrev factorPow {m n : ℕ} (le : n ≤ m) : R ⧸ I ^ m →+* R ⧸ I ^ n :=
   factor (pow_le_pow_right le)
 
-/--`factorPow` for `m = n + 1`-/
+/-- `factorPow` for `m = n + 1` -/
 abbrev factorPowSucc (n : ℕ) : R ⧸ I ^ (n + 1) →+* R ⧸ I ^ n :=
   factorPow I (Nat.le_succ n)
 

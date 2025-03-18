@@ -257,7 +257,7 @@ theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g :
   simp only [s.cofan_inj_comp_app, h]
 
 /-- The map `X.obj Δ ⟶ Z` obtained by providing a family of morphisms on all the
-terms of decomposition given by a splitting `s : Splitting X`  -/
+terms of decomposition given by a splitting `s : Splitting X` -/
 def desc {Z : C} (Δ : SimplexCategoryᵒᵖ) (F : ∀ A : IndexSet Δ, s.N A.1.unop.len ⟶ Z) :
     X.obj Δ ⟶ Z :=
   Cofan.IsColimit.desc (s.isColimit Δ) F

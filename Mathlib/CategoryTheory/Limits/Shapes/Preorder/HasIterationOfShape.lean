@@ -35,6 +35,8 @@ class HasIterationOfShape : Prop where
 
 attribute [instance] HasIterationOfShape.hasColimitsOfShape
 
+instance [HasColimitsOfSize.{w, w} C] : HasIterationOfShape J C where
+
 variable [HasIterationOfShape J C]
 
 variable {J} in

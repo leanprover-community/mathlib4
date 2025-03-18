@@ -306,7 +306,7 @@ private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
       ((Q.comp P).jacobiMatrix (Sum.inl j) (Sum.inl i)) = Q.jacobiMatrix j i := by
   rw [jacobiMatrix_apply, jacobiMatrix_apply, comp_map, Sum.elim_inl,
     ← Q.comp_aeval_relation_inl P.toPresentation]
-  apply aeval_sum_elim_pderiv_inl
+  apply aeval_sumElim_pderiv_inl
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_₁₁_det :
@@ -316,7 +316,7 @@ private lemma jacobiMatrix_comp_₁₁_det :
   ext i j : 1
   simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P,
     Q.algebraMap_apply]
-  apply aeval_sum_elim
+  apply aeval_sumElim
 
 end Q
 

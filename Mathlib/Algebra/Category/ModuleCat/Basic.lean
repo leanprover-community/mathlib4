@@ -217,11 +217,6 @@ theorem forget₂_obj (X : ModuleCat R) :
     (forget₂ (ModuleCat R) AddCommGrp).obj X = AddCommGrp.of X :=
   rfl
 
--- Porting note: the simpNF linter correctly doesn't like this.
--- I'm not sure what this is for, actually.
--- If it is really needed, better might be a simp lemma that says
--- `AddCommGrp.of (ModuleCat.of R X) = AddCommGrp.of X`.
--- @[simp 900]
 theorem forget₂_obj_moduleCat_of (X : Type v) [AddCommGroup X] [Module R X] :
     (forget₂ (ModuleCat R) AddCommGrp).obj (of R X) = AddCommGrp.of X :=
   rfl

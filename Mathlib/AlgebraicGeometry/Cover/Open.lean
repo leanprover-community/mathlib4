@@ -48,7 +48,8 @@ def affineCover (X : Scheme.{u}) : OpenCover X where
   f x := x
   covers := by
     intro x
-    erw [TopCat.coe_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+    simp only [LocallyRingedSpace.comp_toShHom, SheafedSpace.comp_base, TopCat.hom_comp,
+      ContinuousMap.coe_comp]
     rw [Set.range_comp, Set.range_eq_univ.mpr, Set.image_univ]
     · erw [Subtype.range_coe_subtype]
       exact (X.local_affine x).choose.2
@@ -271,8 +272,8 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
     (r : (X.local_affine x).choose_spec.choose) :
     Set.range (X.affineBasisCover.map ⟨x, r⟩).base =
       (X.affineCover.map x).base '' (PrimeSpectrum.basicOpen r).1 := by
-  erw [TopCat.coe_comp]
-  rw [Set.range_comp]
+  simp only [affineBasisCover, Cover.bind_map, comp_coeBase, TopCat.hom_comp,
+    ContinuousMap.coe_comp, Set.range_comp]
   -- Porting note: `congr` fails to see the goal is comparing image of the same function
   refine congr_arg (_ '' ·) ?_
   exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
