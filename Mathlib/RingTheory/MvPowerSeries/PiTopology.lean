@@ -136,7 +136,7 @@ instance [Ring R] [IsTopologicalRing R] :
     rw [this]
     apply Continuous.comp
     · exact Continuous.mul continuous_fst continuous_snd
-    · simp only [continuous_prod_mk]
+    · simp only [continuous_prodMk]
       exact ⟨Continuous.comp continuous_C continuous_fst, continuous_snd⟩
   ext; simp
 
