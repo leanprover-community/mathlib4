@@ -9,6 +9,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.Summable
 import Mathlib.Analysis.SpecificLimits.Normed
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Data.Complex.Exponential
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # Products of one plus a complex number
@@ -24,98 +25,25 @@ open scoped Interval Topology BigOperators Nat Classical Complex
 
 variable {α β ι : Type*}
 
- /--There is likely a way more general proof of this, what should it be? -/
-lemma Real.TendstoUniformlyOn_Eventually_le_const (f : ι → α → ℝ) {p : Filter ι} {g : α → ℝ}
-    {K : Set α} {T V : ℝ} (htv : T < V) (hf : TendstoUniformlyOn f g p K)
-    (hg : ∀ x, x ∈ K → g x ≤ T) : ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x ≤ V := by
-  rw [Metric.tendstoUniformlyOn_iff] at hf
-  simp_rw [Filter.eventually_iff_exists_mem, dist_comm ] at *
-  obtain ⟨N, hN, hN2⟩ := hf (V - T) (sub_pos.mpr htv)
-  refine ⟨N, hN, fun n hn x hx => ?_⟩
-  apply le_trans (tsub_le_iff_right.mp (le_trans (Real.le_norm_self _) (hN2 n hn x hx).le))
-  linarith [hg x hx]
-/-
-/-  -This isn't much better than the above, and is actually weaker in asking that g is abs
-  bounded -/
-lemma TendstoUniformlyOn_Eventually_le_const (f : ι → α → β) [NormedAddGroup β] {p : Filter ι}
-    {g : α → β} {K : Set α} {T V : ℝ} (htv : T < V)
-    (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → ‖g x‖ ≤ T) :
-    ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → ‖f n x‖ ≤ V := by
-  rw [Metric.tendstoUniformlyOn_iff] at hf
-  simp_rw [Filter.eventually_iff_exists_mem, dist_comm ] at *
-  obtain ⟨N, hN, hN2⟩ := hf (V - T) (sub_pos.mpr htv)
-  refine ⟨N, hN, fun n hn x hx => ?_⟩
-  have := (hN2 n hn x hx).le
-  simp only [gt_iff_lt, dist_eq_norm, ge_iff_le] at *
-  rw [show f n x = (f n x - g x) + g x by exact Eq.symm (sub_add_cancel (f n x) (g x))]
-  apply le_trans (norm_add_le _ _) _
-  linarith [this, hg x hx]
- -/
-
-
-/- lemma TendstoUniformlyOn_Eventually_le_const (f : ι → α → β) [UniformSpace β] [Group β]
-    [UniformGroup β] [LinearOrder β] [OrderTopology β] {p : Filter ι}
-    {g : α → β} {K : Set α} {T V : β} (htv : T < V)
+@[to_additive] --what do I call this?
+lemma TendstoUniformlyOn_Eventually_le_mul_const [UniformSpace β] [Group β]
+    [UniformGroup β] [LinearOrder β] [OrderTopology β] [MulLeftStrictMono β] [MulRightMono β]
+    (f : ι → α → β)  {p : Filter ι} {g : α → β} {K : Set α} {T V : β} (htv : T < V)
     (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → g x ≤ T) :
     ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x ≤ V := by
   rw [@tendstoUniformlyOn_iff_tendsto] at hf
-  --rw [@tendsto_prod_iff] at hf
-  have h2 := uniformContinuous_mul_left T⁻¹
-  rw [@uniformContinuous_def] at h2
-  rw [uniformity_eq_comap_inv_mul_nhds_one] at hf h2
-  rw [@tendsto_iff_eventually] at hf
-  simp at *
-
-  rw [@Subtype.forall'] at hf
-  have hf2 := hf ⟨(fun x : β × β => x.1⁻¹ * x.2 ≤ T⁻¹ * V), by
-    rw [@eventually_iff_exists_mem]
-    use  { x : β | x < T⁻¹ * V }
-    constructor
-    refine IsOpen.mem_nhds ?_ ?_
-    exact isOpen_gt' (T⁻¹ * V)
-    simp
-
-    sorry
-    intro y hy a b hab
-    simp at *
-    rw [hab]
-    apply hy.le
-
-  /-   simp
-    rw [@eventually_iff_exists_mem]
-    have h3 := h2 { x : β × β | x.2 <  V } { x : β | x < T⁻¹ * V } (by sorry)
-    simp at h3
-
-    obtain ⟨U, hU, hU2⟩ := h3
-    refine ⟨U, hU, fun x hx => ?_⟩
-    intro a b hab
-    rw [@Set.preimage_subset_iff] at hU2
-    have hu3 := hU2 (a, b) (sorry)
-    simp at hu3
-
-
-    use { x : β | ∀ a : β, a * x <  a * T⁻¹ * V }
-    constructor
-    refine IsOpen.mem_nhds ?_ ?_
-    refine continuous_Prop.mp ?_
-    sorry
-    simp
-    sorry
-    simp
-
-
-    intro y hy a b hab
-    simp at hy
-    have := uniformContinuous_mul_left a⁻¹
-
- -/
-    ⟩
-  simp at *
-  rw [@eventually_prod_principal_iff] at hf2
-  simp at hf2
-
-  exact hf2 -/
-
+  simp only [uniformity_eq_comap_inv_mul_nhds_one, tendsto_iff_eventually, eventually_comap,
+    Prod.forall, uniformContinuous_def, mem_comap, forall_exists_index, and_imp] at *
+  rw [Subtype.forall'] at hf
+  have hf2 := hf ⟨(fun x : β × β => x.1⁻¹ * x.2 < T⁻¹ * V), by
+    rw [eventually_iff_exists_mem]
+    refine ⟨{ x : β | x < T⁻¹ * V }, IsOpen.mem_nhds (isOpen_gt' (T⁻¹ * V)) (by simp [htv]) ,
+      fun y hy a b hab => ?_⟩
+    simpa only [Subtype.forall, lt_inv_mul_iff_mul_lt, Set.mem_setOf_eq, hab] using hy⟩
+  rw [eventually_prod_principal_iff, eventually_iff_exists_mem] at *
+  obtain ⟨v, hv, H⟩ := hf2
+  refine ⟨v, hv, fun y hy x hx => ?_⟩
+  simpa using (mul_lt_mul_of_le_of_lt (hg x hx) (H y hy x hx)).le
 
 lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
     {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : BddAbove ((fun x => (g x).re) '' K)) :
@@ -123,7 +51,8 @@ lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : 
   obtain ⟨T, hT⟩ := hg
   simp only [mem_upperBounds, Set.mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂] at hT
-  have h2 := TendstoUniformlyOn_Eventually_le_const (fun n x => (f n x).re) (lt_add_one T) hf.re hT
+  have h2 := TendstoUniformlyOn_Eventually_le_add_const (fun n x => (f n x).re) (lt_add_one T)
+    hf.re hT
   have w2 := tendstoUniformlyOn_univ.mpr <| UniformContinuousOn.comp_tendstoUniformly_eventually
     {x : ℂ | x.re ≤ T + 1} (fun a => K.restrict (f (a))) (fun b => g b) (by simpa using h2) ?_
       (UniformlyContinuousOn.cexp (T + 1)) ((tendstouniformlyOn_iff_restrict).mp hf)
