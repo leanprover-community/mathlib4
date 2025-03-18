@@ -613,7 +613,7 @@ theorem image_closure_of_isCompact [T2Space Y] {s : Set X} (hs : IsCompact (clos
   Subset.antisymm hf.image_closure <|
     closure_minimal (image_subset f subset_closure) (hs.image_of_continuousOn hf).isClosed
 
-/-- Two maps continuous maps into a Hausdorff space agree at a point iff they agree in a
+/-- Two continuous maps into a Hausdorff space agree at a point iff they agree in a
 neighborhood. -/
 theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
