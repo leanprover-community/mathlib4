@@ -1091,21 +1091,19 @@ theorem ofZNum'_toNat : ∀ n : ZNum, (↑) <$> ofZNum' n = Int.toNat' n
       show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
 
 @[simp]
-theorem ofZNum_toNat : ∀ n : ZNum, (ofZNum n : ℕ) = Int.toNat n
-  | 0 => rfl
-  | ZNum.pos p => show _ = Int.toNat p by rw [← PosNum.to_nat_to_int p]; rfl
-  | ZNum.neg p =>
-    (congr_arg fun x => Int.toNat (-x)) <|
-      show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
-
-@[simp]
 theorem cast_ofZNum [AddMonoidWithOne α] (n : ZNum) : (ofZNum n : α) = Int.toNat n := by
-  rw [← cast_to_nat, ofZNum_toNat]
+  have : ∀ n : ZNum, (ofZNum n : ℕ) = Int.toNat n
+    | 0 => rfl
+    | ZNum.pos p => show _ = Int.toNat p by rw [← PosNum.to_nat_to_int p]; rfl
+    | ZNum.neg p =>
+      (congr_arg fun x => Int.toNat (-x)) <|
+        show ((p.pred' + 1 : ℕ) : ℤ) = p by rw [← succ'_to_nat]; simp
+  rw [← cast_to_nat, this]
 
 @[simp, norm_cast]
 theorem sub_to_nat (m n) : ((m - n : Num) : ℕ) = m - n :=
   show (ofZNum _ : ℕ) = _ by
-    rw [ofZNum_toNat, cast_sub', ← to_nat_to_int, ← to_nat_to_int, Int.toNat_sub]
+    rw [cast_ofZNum, Nat.cast_id, cast_sub', ← to_nat_to_int, ← to_nat_to_int, Int.toNat_sub]
 
 end Num
 
