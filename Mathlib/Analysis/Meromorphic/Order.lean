@@ -132,6 +132,24 @@ theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg 
     (hf.mul hg).order = hf.order + hg.order :=
   hf.order_smul hg
 
+/-- The order of the inverse is the negative of the order. -/
+theorem order_inv {f : 𝕜 → 𝕜} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
+    hf.inv.order = -hf.order := by
+  by_cases h₂f : hf.order = ⊤
+  · rw [h₂f, ← LinearOrderedAddCommGroupWithTop.neg_top, neg_neg]
+    rw [MeromorphicAt.order_eq_top_iff] at *
+    filter_upwards [h₂f]
+    simp
+  lift hf.order to ℤ using h₂f with a ha
+  apply (hf.inv.order_eq_int_iff (-a)).2
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff a).1 ha.symm
+  use g⁻¹, h₁g.inv h₂g, inv_eq_zero.not.2 h₂g
+  rw [eventually_nhdsWithin_iff] at *
+  filter_upwards [h₃g]
+  intro _ h₁a h₂a
+  simp only [Pi.inv_apply, h₁a h₂a, smul_eq_mul, mul_inv_rev, zpow_neg]
+  ring
+
 end MeromorphicAt
 
 /-!
