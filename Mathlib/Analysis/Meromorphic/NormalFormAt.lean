@@ -247,10 +247,18 @@ theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic (h₁g : AnalyticAt
 
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `g * f` is meromorphic in normal form at `z₀`. -/
-theorem meromorphicNFAt_iff_meromorphicNFAt_of_mul_analytic {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
+theorem meromorphicNFAt_mul_iff_right {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) :
     MeromorphicNFAt f x ↔ MeromorphicNFAt (g * f) x := by
   rw [← smul_eq_mul]
+  exact meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic h₁g h₂g
+
+/-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
+normal form at `z₀` iff `f * g` is meromorphic in normal form at `z₀`. -/
+theorem meromorphicNFAt_mul_iff_left {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
+    (h₂g : g x ≠ 0) :
+    MeromorphicNFAt f x ↔ MeromorphicNFAt (f * g) x := by
+  rw [mul_comm, ← smul_eq_mul]
   exact meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic h₁g h₂g
 
 /-!
