@@ -46,6 +46,7 @@ end LE
 section Preorder
 variable [Preorder α]
 
+@[simp]
 theorem IsCofinal.univ : IsCofinal (@Set.univ α) :=
   fun a ↦ ⟨a, ⟨⟩, le_rfl⟩
 

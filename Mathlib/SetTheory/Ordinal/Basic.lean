@@ -166,6 +166,18 @@ theorem _root_.RelIso.ordinal_type_eq {α β} {r : α → α → Prop} {s : β �
     [IsWellOrder β s] (h : r ≃r s) : type r = type s :=
   type_eq.2 ⟨h⟩
 
+theorem typeLT_eq {α β} [LinearOrder α] [WellFoundedLT α] [LinearOrder β] [WellFoundedLT β] :
+    typeLT α = typeLT β ↔ Nonempty (α ≃o β) := by
+  rw [type_eq]
+  constructor <;> rintro ⟨e⟩
+  · exact ⟨OrderIso.ofRelIsoLT e⟩
+  · exact ⟨e.toRelIsoLT⟩
+
+theorem _root_.OrderIso.ordinal_type_eq {α β}
+    [LinearOrder α] [WellFoundedLT α] [LinearOrder β] [WellFoundedLT β] (h : α ≃o β) :
+    typeLT α = typeLT β :=
+  typeLT_eq.2 ⟨h⟩
+
 theorem type_eq_zero_of_empty (r) [IsWellOrder α r] [IsEmpty α] : type r = 0 :=
   (RelIso.relIsoOfIsEmpty r _).ordinal_type_eq
 
@@ -356,6 +368,9 @@ protected theorem not_lt_zero (o : Ordinal) : ¬o < 0 :=
 
 theorem eq_zero_or_pos : ∀ a : Ordinal, a = 0 ∨ 0 < a :=
   eq_bot_or_bot_lt
+
+instance : IsEmpty (Iio (0 : Ordinal)) :=
+  ⟨fun x ↦ Ordinal.not_lt_zero _ x.2⟩
 
 instance : ZeroLEOneClass Ordinal :=
   ⟨Ordinal.zero_le _⟩
@@ -631,6 +646,11 @@ theorem _root_.RelIso.ordinal_lift_type_eq {r : α → α → Prop} {s : β → 
   ((RelIso.preimage Equiv.ulift r).trans <|
       f.trans (RelIso.preimage Equiv.ulift s).symm).ordinal_type_eq
 
+theorem _root_.OrderIso.ordinal_lift_type_eq
+    [LinearOrder α] [WellFoundedLT α] [LinearOrder β] [WellFoundedLT β] (f : α ≃o β) :
+    lift.{v} (typeLT α) = lift.{u} (typeLT β) :=
+  f.toRelIsoLT.ordinal_lift_type_eq
+
 @[simp]
 theorem type_preimage {α β : Type u} (r : α → α → Prop) [IsWellOrder α r] (f : β ≃ α) :
     type (f ⁻¹'o r) = type r :=
@@ -646,6 +666,16 @@ theorem type_lift_preimage_aux (r : α → α → Prop) [IsWellOrder α r] (f : 
     lift.{u} (@type _ (fun x y => r (f x) (f y))
       (inferInstanceAs (IsWellOrder β (f ⁻¹'o r)))) = lift.{v} (type r) :=
   type_lift_preimage r f
+
+def _root_.OrderIso.uLift [LE α] : α ≃o ULift.{v} α where
+  toFun x := ULift.up x
+  invFun x := x.down
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := Iff.rfl
+
+instance [Preorder α] [WellFoundedLT α] : WellFoundedLT (ULift.{v} α) :=
+  OrderIso.uLift.toRelIsoLT.symm.toRelEmbedding.isWellFounded
 
 /-- `lift.{max u v, u}` equals `lift.{v, u}`.
 
@@ -775,8 +805,12 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
     b < lift.{v} a ↔ ∃ a' < a, lift.{v} a' = b :=
   liftInitialSeg.lt_apply_iff
 
-/-! ### The first infinite ordinal ω -/
+@[simp]
+theorem typeLT_uLift [LinearOrder α] [WellFoundedLT α] :
+    typeLT (ULift.{v} α) = lift.{v} (typeLT α) := by
+  rw [← lift_id'.{u, v} (typeLT _), ← OrderIso.uLift.{u, v}.ordinal_lift_type_eq, lift_umax.{u, v}]
 
+/-! ### The first infinite ordinal ω -/
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 def omega0 : Ordinal.{u} :=
