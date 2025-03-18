@@ -7,7 +7,7 @@ import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Ultra.Basic
 
 /-!
-# Binary products of ultrametric (nonarchimedean) uniform spaces
+# Products of ultrametric (nonarchimedean) uniform spaces
 
 ## Main results
 
