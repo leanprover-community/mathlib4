@@ -321,6 +321,13 @@ theorem rotate_start {v} (p : G.Walk v v)  : p.rotate (start_mem_support ..) = p
   cases p <;> simp [rotate]
 
 @[simp]
+theorem rotate_not_nil {u v} {p : G.Walk v v} (hn : ¬ p.Nil) (h : u ∈ p.support) :
+    ¬ (p.rotate h).Nil := by
+  rw [rotate, nil_append_iff]
+  intro hf
+  exact hn <| (p.take_spec h) ▸ nil_append_iff.2 hf.symm
+
+@[simp]
 theorem support_rotate {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
     (c.rotate h).support.tail ~r c.support.tail := by
   simp only [rotate, tail_support_append]
@@ -342,20 +349,10 @@ lemma length_takeUntil_add_dropUntil {p : G.Walk u v} (h : w ∈ p.support) :
     (p.takeUntil w h).length + (p.dropUntil w h).length = p.length := by
   rw [← length_append, take_spec]
 
-theorem support_rotate_eq {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
-    (c.rotate h).support = u :: c.support.tail.rotate (c.takeUntil _ h).length := by
-  rw [support_eq_cons]
-  apply List.cons_eq_cons.2 ⟨rfl, _⟩
-  rw [rotate, tail_support_append]
-  nth_rw 3 [← take_spec c h]
-  rw [tail_support_append, ← List.rotate_append_length_eq]
-  simp
-
 @[simp]
 lemma length_rotate {v : V} {c : G.Walk u u} (h : v ∈ c.support) :
     (c.rotate h).length = c.length := by
-  rw [rotate, length_append, add_comm]
-  simp
+  rw [rotate, length_append, add_comm, length_takeUntil_add_dropUntil]
 
 lemma getVert_rotate {n : ℕ} {c : G.Walk v v} (h : w ∈ c.support) (hn : n ≤ c.length) :
     (c.rotate h).getVert n = if (n < (c.dropUntil _ h).length) then
@@ -365,16 +362,15 @@ lemma getVert_rotate {n : ℕ} {c : G.Walk v v} (h : w ∈ c.support) (hn : n �
   · rw [getVert_dropUntil]
   · push_neg at h1
     apply getVert_takeUntil
-    rwa [Nat.sub_le_iff_le_add, length_takeUntil_add_dropUntil h]
+    simpa
 
 lemma getVert_length_takeUntil_eq_self {u v x} (p : G.Walk u v) (h : x ∈ p.support) :
     p.getVert (p.takeUntil _ h).length = x := by
   induction p with
   | nil =>
-    rw [mem_support_nil_iff, getVert_nil] at *
-    subst_vars
-    rfl
-  | @cons u v w h1 p ih =>
+    symm
+    rwa [mem_support_nil_iff, getVert_nil] at *
+  | @cons u _ _ h1 _ ih =>
     by_cases huv: u = x
     · subst_vars
       simp
@@ -384,12 +380,6 @@ lemma getVert_length_takeUntil_eq_self {u v x} (p : G.Walk u v) (h : x ∈ p.sup
     | inr h =>
       rw [takeUntil_cons h huv h1, length_cons, getVert_cons_succ]
       exact ih h
-
-theorem rotate_darts_eq {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
-    (c.rotate h).darts  = c.darts.rotate (c.takeUntil _ h).length := by
-  nth_rw 2 [←  c.take_spec h]
-  simp only [rotate, darts_append]
-  rw [← length_darts, ← List.rotate_append_length_eq]
 
 end WalkDecomp
 

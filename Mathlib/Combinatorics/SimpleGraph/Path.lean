@@ -329,27 +329,16 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
   rw [Nat.lt_iff_add_one_le, ← length_support]
   exact hp.support_nodup.length_le_card
 
-
-/- `getVert` and `support.get` agree for `n ≤ p.length`  -/
-lemma getVert_eq_get {p : G.Walk u v} {n : ℕ} (hn : n ≤ p.length) :
-p.getVert n = p.support.get ⟨n, p.length_support ▸ (Nat.lt_add_one_of_le hn)⟩ := by
-  induction n generalizing u v with
-  | zero => cases p <;> simp
-  | succ i ih =>
-    cases p with
-    | nil => simp at hn
-    | cons h p => aesop
-
-lemma get_support_injective_iff {p : G.Walk u v} : Function.Injective p.support.get ↔ p.IsPath := by
+lemma support_get_injective_iff {p : G.Walk u v} : Function.Injective p.support.get ↔ p.IsPath := by
   rw [← List.nodup_iff_injective_get, isPath_def]
 
 lemma IsPath.getVert_injOn {p : G.Walk u v} (hp: p.IsPath) :
     Set.InjOn p.getVert {i | i ≤ p.length}:= by
-  intro i hi j hj heq
-  simp only [Set.mem_setOf_eq] at hi hj
-  by_contra!
-  rw [getVert_eq_get hi, getVert_eq_get hj] at heq
-  apply this (Fin.mk.inj (get_support_injective_iff.2 hp heq))
+  intro _ hi _ hj heq
+  rw [Set.mem_setOf_eq] at hi hj
+  by_contra! hf
+  rw [getVert_eq_support_get hi, getVert_eq_support_get hj] at heq
+  exact hf <| Fin.mk.inj <| support_get_injective_iff.2 hp heq
 
 lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 := by
@@ -368,19 +357,17 @@ lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi :
   rw [this]
   omega
 
-example(p : G.Walk u v)(i : ℕ) :  i ≤ p.length ↔ i < p.support.length := by
-  simp [length_support, Nat.le_iff_lt_add_one]
 
 lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
     p.IsPath := by
   refine ⟨?_, fun a => a.getVert_injOn⟩
   simp_rw [Nat.le_iff_lt_add_one, ← length_support]
   intro hinj
-  apply get_support_injective_iff.1
+  apply support_get_injective_iff.1
   intro i j heq
   apply Fin.ext_iff.2 <| hinj i.2 j.2 _
-  rwa [getVert_eq_get (Nat.le_of_lt_succ <| i.2.trans_le p.length_support.le),
-        getVert_eq_get (Nat.le_of_lt_succ <| j.2.trans_le p.length_support.le)]
+  rwa [getVert_eq_support_get (Nat.le_of_lt_succ <| i.2.trans_le p.length_support.le),
+        getVert_eq_support_get (Nat.le_of_lt_succ <| j.2.trans_le p.length_support.le)]
 
 /-! ### About cycles -/
 

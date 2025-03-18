@@ -716,6 +716,10 @@ theorem edges_reverse {u v : V} (p : G.Walk u v) : p.reverse.edges = p.edges.rev
 theorem length_support {u v : V} (p : G.Walk u v) : p.support.length = p.length + 1 := by
   induction p <;> simp [*]
 
+lemma getVert_eq_support_get {u v : V} {p : G.Walk u v} {n : ℕ} (hn : n ≤ p.length) :
+p.getVert n = p.support.get ⟨n, p.length_support ▸ (Nat.lt_add_one_of_le hn)⟩ :=
+  (List.get_eq_getElem ..) ▸ (List.getElem_eq_iff.mpr (getVert_eq_support_get? p hn).symm).symm
+
 @[simp]
 theorem length_darts {u v : V} (p : G.Walk u v) : p.darts.length = p.length := by
   induction p <;> simp [*]
@@ -959,11 +963,6 @@ theorem edges_drop_subset {v w : V} (p : G.Walk v w) (n : ℕ) :
     (p.drop n).edges ⊆ p.edges :=
   List.map_subset _ (p.darts_drop_subset n)
 
-@[simp]
-theorem take_append_cons_drop_succ {u v : V} (p : G.Walk u v) (n : ℕ) (hn : n < p.length)  :
-    (p.take n).append (cons (p.adj_getVert_succ hn) (p.drop (n + 1))) = p := by
-  simp [hn]
-
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
 abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
 
@@ -1053,15 +1052,12 @@ lemma support_dropLast (p : G.Walk u v) (h : ¬ p.Nil) :
      p.dropLast.support = p.support.dropLast := by
   induction p with
   | nil => exact (h Nil.nil).elim
-  | cons h p ih =>
+  | cons _ p ih =>
     cases p with
     | nil => simp_all
-    | cons h p =>
-      rw [dropLast_cons_cons]
-      simp only [penultimate_cons_cons, support_cons, List.dropLast_cons₂, List.cons.injEq,
-        true_and]
-      apply ih not_nil_cons
-
+    | cons _ _ =>
+      simp_rw [dropLast_cons_cons, support_cons, List.dropLast_cons₂]
+      exact List.cons_eq_cons.2 ⟨rfl, ih not_nil_cons⟩
 
 
 /-- The first dart of a walk. -/
@@ -1106,7 +1102,7 @@ lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
-  rw [← support_cons, cons_tail_eq _ hp]
+  simpa using congr_arg Walk.support (cons_tail_eq _ hp)
 
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
@@ -1120,9 +1116,13 @@ lemma not_nil_of_tail_not_nil {p : G.Walk v w} (hp : ¬ p.tail.Nil) : ¬ p.Nil :
     (p.copy hx hy).Nil = p.Nil := by
   subst_vars; rfl
 
-@[simp] lemma support_tail (p : G.Walk v v) (hp : ¬ p.Nil) :
-    p.tail.support = p.support.tail := by
-  rw [← cons_support_tail p hp, List.tail_cons]
+@[simp] lemma cons_tail_darts (p : G.Walk u v) (hp : ¬ p.Nil) :
+    (p.firstDart hp) :: p.tail.darts = p.darts := by
+  simpa using congr_arg Walk.darts (cons_tail_eq _ hp)
+
+@[simp] lemma cons_tail_edges (p : G.Walk u v) (hp : ¬ p.Nil) :
+    (s(u, p.snd)) :: p.tail.edges = p.edges := by
+  simpa using congr_arg Walk.edges (cons_tail_eq _ hp)
 
 @[simp]
 lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
@@ -1133,10 +1133,7 @@ lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
-  match p with
-  | .nil => simp only [nil_nil, not_true_eq_false] at hnp
-  | .cons h q =>
-    simp only [tail_cons, getVert_cons_succ, support_copy, support_cons, List.tail_cons]
+  rw [← cons_support_tail _ hnp, List.tail_cons]
 
 /-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
