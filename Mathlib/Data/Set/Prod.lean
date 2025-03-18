@@ -93,17 +93,16 @@ theorem prod_univ {s : Set α} : s ×ˢ (univ : Set β) = Prod.fst ⁻¹' s := b
 @[simp] lemma prod_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
   simp [eq_univ_iff_forall, forall_and]
 
-@[simp]
 theorem singleton_prod : ({a} : Set α) ×ˢ t = Prod.mk a '' t := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
-@[simp]
 theorem prod_singleton : s ×ˢ ({b} : Set β) = (fun a => (a, b)) '' s := by
   ext ⟨x, y⟩
   simp [and_left_comm, eq_comm]
 
-theorem singleton_prod_singleton : ({a} : Set α) ×ˢ ({b} : Set β) = {(a, b)} := by simp
+@[simp]
+theorem singleton_prod_singleton : ({a} : Set α) ×ˢ ({b} : Set β) = {(a, b)} := by ext ⟨c, d⟩; simp
 
 @[simp]
 theorem union_prod : (s₁ ∪ s₂) ×ˢ t = s₁ ×ˢ t ∪ s₂ ×ˢ t := by
@@ -321,7 +320,7 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
     let ⟨x, x_in⟩ := hs
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
 
-theorem subset_fst_image_times_snd_image (s : Set (α × β)) :
+theorem subset_fst_image_prod_snd_image {s : Set (α × β)} :
     s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ _ => by aesop
 
 lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
@@ -484,6 +483,7 @@ lemma Function.pullback_comm_sq (f : X → Y) (g : Z → Y) :
     f ∘ @fst X Y Z f g = g ∘ @snd X Y Z f g := funext fun p ↦ p.2
 
 /-- The diagonal map $\Delta: X \to X \times_Y X$. -/
+@[simps]
 def toPullbackDiag (f : X → Y) (x : X) : f.Pullback f := ⟨(x, x), rfl⟩
 
 /-- The diagonal $\Delta(X) \subseteq X \times_Y X$. -/
