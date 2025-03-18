@@ -23,16 +23,15 @@ open Function Set
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  {E'' : Type*} [NormedAddCommGroup E''] [NormedSpace 𝕜 E'']
+  {F F' : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
-  {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
-  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-  {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F G'}
+  {H'' : Type*} [TopologicalSpace H'']
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'} {I'' : ModelWithCorners 𝕜 E'' H''}
 
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N'] {n : WithTop ℕ∞}
+  {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H'' M''] {n : WithTop ℕ∞}
 
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
@@ -98,6 +97,14 @@ def congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[
       -- after shrinking, this will be true
       sorry
     exact EqOn.trans missing h.writtenInCharts
+
+/-- If `f` is an immersion at `x` and `g` is an immersion at `f x`,
+then `g ∘ f` is an immersion at `x`. -/
+theorem comp {g : M' → M''} (h : IsImmersionAt F I I' n f x)
+    (h' : IsImmersionAt F' I' I'' n g (f x)) : IsImmersionAt (F × F') I I'' n (g ∘ f) x := by
+  -- TODO: think a bit... this is probably true, but may need to work. if we have two different
+  -- slice charts, that is...
+  sorry
 
 /-- A `C^k` immersion at `x` is `C^k` at `x`. -/
 -- continuity follows since we're in a chart, on an open set;
@@ -165,6 +172,11 @@ noncomputable def foo [Nonempty M] (h : IsImmersion F I I' n f) :
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
   fun x ↦ (h x).congr_of_eventuallyEq heq.eventuallyEq
+
+/-- The composition of two immersions is an immerison. -/
+theorem comp {g : M' → M''} (h : IsImmersion F I I' n f) (h' : IsImmersion F' I' I'' n g) :
+    IsImmersion (F × F') I I'' n (g ∘ f) :=
+  fun x ↦ (h x).comp (h' (f x))
 
 /-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
