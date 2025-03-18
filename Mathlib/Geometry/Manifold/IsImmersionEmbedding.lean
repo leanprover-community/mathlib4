@@ -54,7 +54,7 @@ def IsImmersionAt (f : M → M') (x : M) : Prop :=
 
 namespace IsImmersionAt
 
-variable {f : M → M'} {x : M}
+variable {f g : M → M'} {x : M}
 
 noncomputable def equiv (h : IsImmersionAt F I I' n f x) : (E × F) ≃L[𝕜] E' :=
   Classical.choose h
@@ -86,8 +86,8 @@ noncomputable def writtenInCharts (h : IsImmersionAt F I I' n f x) :
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
-def congr_of_eventuallyEq {f g : M → M'} {x : M}
-    (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) : IsImmersionAt F I I' n g x := by
+def congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) :
+    IsImmersionAt F I I' n g x := by
   choose s hxs hfg using h'.exists_mem
   -- TODO: need to shrink h.domChart until its source is contained in s
   use h.equiv, h.domChart, h.codChart
@@ -105,8 +105,7 @@ def congr_of_eventuallyEq {f g : M → M'} {x : M}
 theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x := sorry
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
-theorem mfderiv_injective {f : M → M'} {x : M}
-    (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
+theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
   /- Outline of proof:
   (1) `mfderiv` is injective iff `fderiv (writtenInExtChart) is injective`
   I have proven this for Sard's theorem; this depends on some sorries not in mathlib yet
@@ -116,10 +115,12 @@ theorem mfderiv_injective {f : M → M'} {x : M}
   (3) (·, 0) has injective `fderiv` --- since it's linear, thus its own derivative. -/
   sorry
 
-/- If `M` is finite-dimensional and `mfderiv x` is injective, then `f` is immersed at `x`.
+/- If `M` is finite-dimensional, `f` is `C^n` at `x` and `mfderiv x` is injective,
+then `f` is immersed at `x`.
 Some sources call this condition `f is infinitesimally injective at x`. -/
-def of_mfderiv_injective [FiniteDimensional 𝕜 E] {f : M → M'} {x : M}
-    (hf : Injective (mfderiv I I' f x)) : IsImmersionAt F I I' n f x :=
+def of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
+    (hf : ContMDiffAt I I' n f x) (hf' : Injective (mfderiv I I' f x)) :
+    IsImmersionAt F I I' n f x :=
   -- (1) if mfderiv I I' f x is injective, the same holds in a neighbourhood of x
   -- In particular, mfderiv I I' f x has (locally) constant rank: this suffices
   -- (2) If mfderiv I I' f x has constant rank for all x in a neighbourhood of x,
@@ -168,12 +169,23 @@ theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n 
 /-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
 
+/-- If `f` is a `C^k` immersion, each differential `mfderiv x` is injective. -/
+theorem mfderiv_injective {x : M}
+    (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
+  /- Outline of proof:
+  (1) `mfderiv` is injective iff `fderiv (writtenInExtChart) is injective`
+  I have proven this for Sard's theorem; this depends on some sorries not in mathlib yet
+  (2) the injectivity of `fderiv (writtenInExtChart)` is independent of the choice of chart
+  in the atlas (in fact, even the rank of the resulting map is),
+  as transition maps are linear equivalences.
+  (3) (·, 0) has injective `fderiv` --- since it's linear, thus its own derivative. -/
+  sorry
+
 /- If `M` is finite-dimensional, `f` is `C^k` and each `mfderiv x` is injective,
 then `f` is a `C^k` immersion. -/
-def of_mfderiv_injective [FiniteDimensional 𝕜 E] {f : M → M'}
-    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) : IsImmersion F I I' n f :=
-  -- TODO: glue the equivalences/make a type parameters, otherwise easy from the above
-  sorry
+theorem of_mfderiv_injective [FiniteDimensional 𝕜 E] (hf : ContMDiff I I' n f)
+    (hf' : ∀ x, Injective (mfderiv I I' f x)) : IsImmersion F I I' n f :=
+  fun x ↦ IsImmersionAt.of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective (hf x) (hf' x)
 
 end IsImmersion
 
@@ -195,7 +207,7 @@ theorem isImmersion (h : IsSmoothEmbedding F I I' n f) : IsImmersion F I I' n f 
 theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 
 def of_mfderiv_injective_of_compactSpace_of_T2Space
-    [FiniteDimensional 𝕜 E] [CompactSpace M] [T2Space M'] {f : M → M'}
+    [FiniteDimensional 𝕜 E] [CompactSpace M] [T2Space M']
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hf'' : Injective f) :
     IsSmoothEmbedding F I I' n f :=
   ⟨.of_mfderiv_injective hf hf', (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
