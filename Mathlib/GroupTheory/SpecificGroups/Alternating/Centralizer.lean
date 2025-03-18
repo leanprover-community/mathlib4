@@ -111,7 +111,7 @@ theorem card_of_cycleType (m : Multiset ℕ) :
     rw [apply_ite Finset.card, Finset.card_empty]
     split_ifs with hm'
     · rw [Equiv.Perm.card_of_cycleType, if_neg]
-      cases' not_and_or.mp hm with hm hm
+      obtain hm | hm := not_and_or.mp hm
       · exact hm
       · contradiction
     · rfl

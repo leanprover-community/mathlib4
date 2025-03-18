@@ -46,7 +46,6 @@ variable (V : outParam <| Type u') [Category.{v'} V] [MonoidalCategory V]
 variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 variable {C} in
-
 /--
 `HasConicalLimit F` represents the mere existence of a conical limit for `F`.
 -/
@@ -56,7 +55,6 @@ class HasConicalLimit (F : J ⥤ C) : Prop extends HasLimit F where
 attribute [instance] HasConicalLimit.preservesLimit_eCoyoneda
 
 variable (J) in
-
 /--
 `C` has conical limits of shape `J` if there exists a conical limit for every functor `F : J ⥤ C`.
 -/
@@ -99,38 +97,30 @@ lemma HasConicalLimit.of_iso {F G : J ⥤ C} [HasConicalLimit V F] (e : F ≅ G)
   toHasLimit := hasLimit_of_iso e
   preservesLimit_eCoyoneda X := preservesLimit_of_iso_diagram (eCoyoneda V X) e
 
-instance HasConicalLimit.of_equiv (F : J ⥤ C) [HasConicalLimit V F] (e : J' ≌ J) :
-    HasConicalLimit V (e.functor ⋙ F) where
-  exists_limit :=
-    let cone : Cone (e.functor ⋙ F) := Cone.whisker e.functor (getLimitCone F).cone
-    have isLimit : IsLimit cone := IsLimit.whiskerEquivalence (getLimitCone F).isLimit e
-    ⟨cone, isLimit⟩
-  preservesLimit_eCoyoneda _ := inferInstance
+instance HasConicalLimit.of_equiv (F : J ⥤ C) [HasConicalLimit V F]
+    (G : J' ⥤ J) [G.IsEquivalence] : HasConicalLimit V (G ⋙ F) where
 
-/-- If a `e ⋙ F` has a limit, and `e` is an equivalence, we can construct a limit of `F`. -/
-lemma HasConicalLimit.of_equiv_comp (F : J ⥤ C) (e : J' ≌ J)
-    [HasConicalLimit V (e.functor ⋙ F)] : HasConicalLimit V F :=
-  have : HasConicalLimit V (e.inverse ⋙ e.functor ⋙ F) := of_equiv V _ e.symm
-  HasConicalLimit.of_iso V (e.invFunIdAssoc F)
+/-- If a `G ⋙ F` has a limit, and `G` is an equivalence, we can construct a limit of `F`. -/
+lemma HasConicalLimit.of_equiv_comp (F : J ⥤ C) (G : J' ⥤ J) [G.IsEquivalence]
+    [HasConicalLimit V (G ⋙ F)] : HasConicalLimit V F :=
+  have e : G.inv ⋙ G ⋙ F ≅ F := G.asEquivalence.invFunIdAssoc F
+  HasConicalLimit.of_iso V e
 
 variable (C)
 
 variable (J) in
-
 /-- existence of conical limits (of shape) implies existence of limits (of shape) -/
 instance HasConicalLimitsOfShape.hasLimitsOfShape [HasConicalLimitsOfShape J V C] :
     HasLimitsOfShape J C where
-  has_limit _ := inferInstance
 
-/-- We can transport conical limits of shape `J` along an equivalence `J ≌ J'`. -/
-lemma HasConicalLimitsOfShape.of_equiv [HasConicalLimitsOfShape J V C] (e : J ≌ J') :
-    HasConicalLimitsOfShape J' V C where
-  hasConicalLimit F := HasConicalLimit.of_equiv_comp V F e
+/-- We can transport conical limits of shape `J'` along an equivalence `J' ≌ J`. -/
+lemma HasConicalLimitsOfShape.of_equiv [HasConicalLimitsOfShape J' V C]
+    (G : J' ⥤ J) [G.IsEquivalence] : HasConicalLimitsOfShape J V C where
+  hasConicalLimit F := HasConicalLimit.of_equiv_comp V F G
 
 /-- existence of conical limits (of size) implies existence of limits (of size) -/
 instance HasConicalLimitsOfSize.hasLimitsOfSize [HasConicalLimitsOfSize.{v₁, u₁} V C] :
     HasLimitsOfSize.{v₁, u₁} C where
-  has_limits_of_shape _ := inferInstance
 
 /-- ensure existence of (small) conical limits implies existence of (small) limits -/
 example [HasConicalLimits V C] : HasLimits C := inferInstance
