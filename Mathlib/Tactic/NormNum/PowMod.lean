@@ -52,7 +52,7 @@ theorem natPow_zero_natMod_zero : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 0) = 
   simp [Nat.mod, Nat.modCore]
 
 theorem natPow_zero_natMod_one : Nat.mod (Nat.pow a (nat_lit 0)) (nat_lit 1) = nat_lit 0 := by
-  simp [Nat.mod, Nat.modCore]
+  simp [Nat.mod, Nat.modCore_eq]
 
 theorem natPow_zero_natMod_succ_succ :
     Nat.mod (Nat.pow a (nat_lit 0)) (Nat.succ (Nat.succ m)) = nat_lit 1 := by
