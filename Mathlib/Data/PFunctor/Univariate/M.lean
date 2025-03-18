@@ -21,9 +21,6 @@ open List
 
 variable (F : PFunctor.{u})
 
--- Porting note: the ♯ tactic is never used
--- local prefix:0 "♯" => cast (by first |simp [*]|cc|solve_by_elim)
-
 namespace PFunctor
 
 namespace Approx

@@ -159,7 +159,7 @@ lemma sups_subset_self : s ⊻ s ⊆ s ↔ SupClosed (s : Set α) := sups_subset
 
 @[simp] lemma univ_sups_univ [Fintype α] : (univ : Finset α) ⊻ univ = univ := by simp
 
-lemma filter_sups_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_sups_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊻ t | b ≤ a} = {b ∈ s | b ≤ a} ⊻ {b ∈ t | b ≤ a} := by
   simp only [← coe_inj, coe_filter, coe_sups, ← mem_coe, Set.sep_sups_le]
 
@@ -303,7 +303,7 @@ lemma infs_self_subset : s ⊼ s ⊆ s ↔ InfClosed (s : Set α) := infs_subset
 
 @[simp] lemma univ_infs_univ [Fintype α] : (univ : Finset α) ⊼ univ = univ := by simp
 
-lemma filter_infs_le [DecidableRel (α := α) (· ≤ ·)] (s t : Finset α) (a : α) :
+lemma filter_infs_le [DecidableLE α] (s t : Finset α) (a : α) :
     {b ∈ s ⊼ t | a ≤ b} = {b ∈ s | a ≤ b} ⊼ {b ∈ t | a ≤ b} := by
   simp only [← coe_inj, coe_filter, coe_infs, ← mem_coe, Set.sep_infs_le]
 

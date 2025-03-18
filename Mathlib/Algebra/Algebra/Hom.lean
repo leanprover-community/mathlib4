@@ -316,6 +316,9 @@ theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
 theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
+@[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
+   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
   h ▸ (f.commutes _).symm

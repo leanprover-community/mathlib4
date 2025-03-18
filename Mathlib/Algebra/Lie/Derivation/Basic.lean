@@ -3,9 +3,13 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
+import Mathlib.RingTheory.Nilpotent.Exp
 import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
@@ -264,6 +268,9 @@ def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where
   map_zero' := coe_zero
   map_add' := coe_add
 
+@[simp]
+lemma coeFnAddMonoidHom_apply (D : LieDerivation R L M) : coeFnAddMonoidHom D = D := rfl
+
 instance : DistribMulAction S (LieDerivation R L M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
@@ -380,5 +387,37 @@ protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
   simp [-lie_skew, ← lie_skew (D₁ x) (D₂ y), ← lie_skew (D₂ x) (D₁ y), sub_eq_neg_add]
 
 end Inner
+
+section ExpNilpotent
+
+variable {R L : Type*} [Field R] [CharZero R] [LieRing L] [LieAlgebra R L] (D : LieDerivation R L L)
+
+/-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
+automorphism. -/
+noncomputable def exp (h : IsNilpotent D.toLinearMap) :
+    L ≃ₗ⁅R⁆ L :=
+  let _i : LieAlgebra ℚ L := LieAlgebra.RestrictScalars.lieAlgebra ℚ R L
+  { toLinearMap := IsNilpotent.exp D.toLinearMap
+    map_lie' := by
+      let _i := LieRing.toNonUnitalNonAssocRing L
+      have : SMulCommClass R L L := LieAlgebra.smulCommClass R L
+      have : IsScalarTower R L L := LieAlgebra.isScalarTower R L
+      exact Module.End.exp_mul_of_derivation R L D.toLinearMap D.apply_lie_eq_add h
+    invFun x := IsNilpotent.exp (- D.toLinearMap) x
+    left_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_neg_mul_exp_self, LinearMap.one_apply]
+    right_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
+
+lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
+    exp D h = IsNilpotent.exp D.toLinearMap := by
+  ext x
+  dsimp [exp]
+  convert rfl
+  subsingleton
+
+end ExpNilpotent
 
 end LieDerivation
