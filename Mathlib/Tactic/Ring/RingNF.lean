@@ -77,7 +77,7 @@ structure Context where
   ctx : Simp.Context
   /-- A cleanup routine, which simplifies normalized polynomials to a more human-friendly
   format. -/
-  simp : Simp.Result → SimpM Simp.Result
+  simp : Simp.Result → MetaM Simp.Result
 
 /-- The monad for `RingNF` contains, in addition to the `AtomM` state,
 a simp context for the main traversal and a simp function (which has another simp context)
@@ -135,7 +135,7 @@ Runs a tactic in the `RingNF.M` monad, given initial data:
 -/
 partial def M.run
     {α : Type} (s : IO.Ref AtomM.State) (cfg : RingNF.Config) (x : M α) : MetaM α := do
-  let ctx ← Simp.mkContext { singlePass := cfg.mode matches .raw, zetaDelta := cfg.zetaDelta }
+  let ctx ← Simp.mkContext { singlePass := true, zetaDelta := cfg.zetaDelta }
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
@@ -146,7 +146,8 @@ partial def M.run
       ``_root_.pow_one, ``mul_neg, ``add_neg].foldlM (·.addConst ·) thms
     let thms ← [``nat_rawCast_0, ``nat_rawCast_1, ``nat_rawCast_2, ``int_rawCast_neg,
       ``rat_rawCast_neg, ``rat_rawCast_pos].foldlM (·.addConst · (post := false)) thms
-    let ctx' := ctx.setSimpTheorems #[thms]
+    let ctx' ← ctx.setConfig { ctx.config with singlePass := false }
+    let ctx' := ctx'.setSimpTheorems #[thms]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
   let nctx := { ctx, simp }
@@ -163,8 +164,7 @@ partial def M.run
 /-- Overrides the default error message in `ring1` to use a prettified version of the goal. -/
 initialize ringCleanupRef.set fun e => do
   M.run (← IO.mkRef {}) { recursive := false } fun nctx _ _ =>
-    return (← nctx.simp { expr := e } ({} : Lean.Meta.Simp.Methods).toMethodsRef nctx.ctx
-      |>.run {}).1.expr
+    return (← nctx.simp { expr := e }).expr
 
 open Elab.Tactic Parser.Tactic
 /-- Use `ring_nf` to rewrite the main goal. -/
