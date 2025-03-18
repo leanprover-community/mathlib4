@@ -237,11 +237,13 @@ theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
 
 theorem ascFactorial_mul_ascFactorial (n l k : ℕ) :
     n.ascFactorial l * (n + l).ascFactorial k = n.ascFactorial (l + k) := by
-  cases' n with n'
-  · cases' l with l'
+  cases n with
+  | zero =>
+    cases l
     · simp only [ascFactorial_zero, Nat.add_zero, Nat.one_mul, Nat.zero_add]
     · simp only [Nat.add_right_comm, zero_ascFactorial, Nat.zero_add, Nat.zero_mul]
-  · apply Nat.mul_left_cancel (factorial_pos n')
+  | succ n' =>
+    apply Nat.mul_left_cancel (factorial_pos n')
     simp only [Nat.add_assoc, ← Nat.mul_assoc, factorial_mul_ascFactorial]
     rw [Nat.add_comm 1 l, ← Nat.add_assoc, factorial_mul_ascFactorial, Nat.add_assoc]
 

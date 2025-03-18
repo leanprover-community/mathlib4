@@ -214,6 +214,12 @@ theorem coe_toNat_eq_self : ENat.toNat n = n ↔ n ≠ ⊤ :=
 
 alias ⟨_, coe_toNat⟩ := coe_toNat_eq_self
 
+@[simp] lemma toNat_eq_iff_eq_coe (n : ℕ∞) (m : ℕ) [NeZero m] :
+    n.toNat = m ↔ n = m := by
+  cases n
+  · simpa using NeZero.ne' m
+  · simp
+
 theorem coe_toNat_le_self (n : ℕ∞) : ↑(toNat n) ≤ n :=
   ENat.recTopCoe le_top (fun _ => le_rfl) n
 
@@ -229,13 +235,10 @@ theorem toNat_sub {n : ℕ∞} (hn : n ≠ ⊤) (m : ℕ∞) : toNat (m - n) = t
   · rw [← coe_sub, toNat_coe, toNat_coe, toNat_coe]
 
 theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
-  cases' a with a a
-  all_goals cases' b with b b
-  all_goals simp
-  all_goals try cases' a with a a
-  all_goals try cases' b with b b
-  all_goals simp
-  norm_cast
+  cases a <;> cases b <;> simp
+  · rename_i b; cases b <;> simp
+  · rename_i a; cases a <;> simp
+  · rfl
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
