@@ -912,6 +912,29 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
+theorem iIndepFun.ae_eq {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {f g : Π i, Ω → β i} (hf : iIndepFun f κ μ)
+    (h : ∀ i, ∀ᵐ a ∂μ, f i =ᵐ[κ a] g i) :
+    iIndepFun g κ μ := by
+  rw [iIndepFun_iff_measure_inter_preimage_eq_mul] at hf ⊢
+  intro S sets hmeas
+  have : ∀ᵐ a ∂μ, ∀ i ∈ S, f i =ᵐ[κ a] g i :=
+    (ae_ball_iff (Finset.countable_toSet S)).2 (fun i hi ↦ h i)
+  filter_upwards [this, hf S hmeas] with a ha h'a
+  have A i (hi : i ∈ S) : (κ a) (f i ⁻¹' sets i) = (κ a) (g i ⁻¹' sets i) := by
+    apply measure_congr
+    filter_upwards [ha i hi] with ω hω
+    change (f i ω ∈ sets i) = (g i ω ∈ sets i)
+    simp [hω]
+  have B : (κ a) (⋂ i ∈ S, g i ⁻¹' sets i) = (κ a) (⋂ i ∈ S, f i ⁻¹' sets i) := by
+    apply measure_congr
+    filter_upwards [(ae_ball_iff (Finset.countable_toSet S)).2 ha] with ω hω
+    change (ω ∈ ⋂ i ∈ S, g i ⁻¹' sets i) = (ω ∈ ⋂ i ∈ S, f i ⁻¹' sets i)
+    simp only [Finset.mem_coe] at hω
+    simp +contextual [hω]
+  convert h'a using 2 with i hi
+  exact (A i hi).symm
+
 lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
     (h : iIndepFun f κ μ) (g : ∀ i, β i → γ i) (hg : ∀ i, Measurable (g i)) :
