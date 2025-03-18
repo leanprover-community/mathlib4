@@ -218,7 +218,7 @@ theorem tail_cons (a : α) (s) : tail (cons a s) = s := by
 theorem head_eq_some {s : Seq α} {x : α} (h : s.head = some x) :
     s = cons x s.tail := by
   ext1 n
-  cases n <;> simp
+  cases n <;> simp only [get?_cons_zero, get?_cons_succ, get?_tail]
   exact h
 
 theorem head_eq_none {s : Seq α} (h : s.head = none) : s = nil :=
@@ -1106,7 +1106,7 @@ theorem take_drop {s : Seq α} {n m : ℕ} :
   induction m generalizing n s with
   | zero => simp [drop]
   | succ k ih =>
-    cases' s with x tl
+    cases s
     · simp
     cases n with
     | zero => simp
@@ -1153,7 +1153,7 @@ theorem zipWith_nil_right {f : α → β → γ} {s} :
 theorem zipWith_cons_cons {f : α → β → γ} {x s x' s'} :
     zipWith f (cons x s) (cons x' s') = cons (f x x') (zipWith f s s') := by
   ext1 n
-  cases' n <;> simp
+  cases n <;> simp
 
 @[simp]
 theorem zip_nil_left {s : Seq α} :
