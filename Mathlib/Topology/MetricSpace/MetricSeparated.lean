@@ -6,32 +6,68 @@ Authors: Yury Kudryashov
 import Mathlib.Topology.EMetricSpace.Defs
 
 /-!
-# Metric separated pairs of sets
+# Metric separation
 
-In this file we define the predicate `Metric.AreSeparated`. We say that two sets in an (extended)
-metric space are *metric separated* if the (extended) distance between `x ∈ s` and `y ∈ t` is
-bounded from below by a positive constant.
+This file defines a few notions of separations of sets in a metric space.
 
-This notion is useful, e.g., to define metric outer measures.
+## Main declarations
+
+* `Metric.IsSeparated`: A set `s` is `ε`-separated if its elements are pairwise at distance at least
+  `ε` from each other.
+* `Metric.AreSeparated`: Two sets `s` and `t` are separated if the distance between `x ∈ s` and
+  `y ∈ t` is bounded from below by a positive constant.
 -/
 
-
 open EMetric Set
+open scoped ENNReal
 
 noncomputable section
 
 namespace Metric
+variable {X : Type*} [PseudoEMetricSpace X] {s t : Set X} {ε δ : ℝ≥0∞} {x : X}
+
+/-!
+### Metric-separated sets
+
+In this section we define the predicate `Metric.IsSeparated` for `ε`-separated sets.
+-/
+
+/-- A set `s` is `ε`-separated if its elements are pairwise at distance at least `ε` from each
+other. -/
+def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < edist · ·)
+
+@[simp] protected nonrec lemma IsSeparated.empty : IsSeparated ε (∅ : Set X) := pairwise_empty _
+@[simp] protected nonrec lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton ..
+
+@[simp] lemma IsSeparated.of_subsingleton (hs : s.Subsingleton) : IsSeparated ε s := hs.pairwise _
+
+alias _root_.Set.Subsingleton.isSeparated := IsSeparated.of_subsingleton
+
+nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSeparated ε s :=
+  hs.mono' fun _ _ ↦ hεδ.trans_lt
+
+lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated ε s := hs.mono hst
+
+protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
+    IsSeparated ε (insert x s) := hs.insert_of_symmetric (fun _ _ ↦ by simp [edist_comm]) h
+
+/-!
+### Metric separated pairs of sets
+
+In this section we define the predicate `Metric.AreSeparated`. We say that two sets in an
+(extended) metric space are *metric separated* if the (extended) distance between `x ∈ s` and
+`y ∈ t` is bounded from below by a positive constant.
+
+This notion is useful, e.g., to define metric outer measures.
+-/
 
 /-- Two sets in an (extended) metric space are called *metric separated* if the (extended) distance
 between `x ∈ s` and `y ∈ t` is bounded from below by a positive constant. -/
-def AreSeparated {X : Type*} [EMetricSpace X] (s t : Set X) :=
-  ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
+def AreSeparated (s t : Set X) := ∃ r, r ≠ 0 ∧ ∀ x ∈ s, ∀ y ∈ t, r ≤ edist x y
 
 @[deprecated (since := "2025-01-21")] alias IsMetricSeparated := AreSeparated
 
 namespace AreSeparated
-
-variable {X : Type*} [EMetricSpace X] {s t : Set X}
 
 @[symm]
 theorem symm (h : AreSeparated s t) : AreSeparated t s :=
