@@ -931,7 +931,6 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
     apply measure_congr
     filter_upwards [(ae_ball_iff (Finset.countable_toSet S)).2 ha] with ω hω
     change (ω ∈ ⋂ i ∈ S, g i ⁻¹' sets i) = (ω ∈ ⋂ i ∈ S, f i ⁻¹' sets i)
-    simp only [Finset.mem_coe] at hω
     simp +contextual [hω]
   convert h'a using 2 with i hi
   exact (A i hi).symm

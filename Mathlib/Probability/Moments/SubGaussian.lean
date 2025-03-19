@@ -474,11 +474,9 @@ lemma aemeasurable (h : HasSubgaussianMGF X c μ) : AEMeasurable X μ :=
 
 lemma congr (h : HasSubgaussianMGF X c μ) {Y : Ω → ℝ} (h' : X =ᵐ[μ] Y) :
     HasSubgaussianMGF Y c μ := by
-  refine ⟨fun t ↦ ?_, fun t ↦ ?_⟩
-  · apply (h.integrable_exp_mul t).congr
-    filter_upwards [h'] with ω hω using by simp [hω]
-  · apply (le_of_eq _).trans (h.mgf_le t)
-    exact mgf_congr h'.symm
+  rw [HasSubgaussianMGF_iff_kernel] at h ⊢
+  apply h.congr
+  simpa
 
 lemma memLp_exp_mul (h : HasSubgaussianMGF X c μ) (t : ℝ) (p : ℝ≥0) :
     MemLp (fun ω ↦ exp (t * X ω)) p μ := by
@@ -571,17 +569,15 @@ lemma sum_of_iIndepFun
   have A (i : s) : AEMeasurable (X i) μ := (h_subG i i.2).aemeasurable
   have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), (A i).mk _ ω) (∑ (i : s), c i) μ := by
     apply sum_of_iIndepFun_of_measurable
-    · exact iIndepFun.congr
-        (iIndepFun.precomp (g := Subtype.val) Subtype.val_injective h_indep)
-        (fun i ↦ AEMeasurable.ae_eq_mk (A i))
-    · exact fun i ↦ AEMeasurable.measurable_mk (A i)
+    · exact (h_indep.precomp Subtype.val_injective).congr (fun i ↦ (A i).ae_eq_mk)
+    · exact fun i ↦ (A i).measurable_mk
     · exact fun i hi ↦ (h_subG i i.2).congr (A i).ae_eq_mk
   rw [Finset.sum_coe_sort] at this
   apply this.congr
   have : ∀ᵐ ω ∂μ, ∀ (i : s), X i ω = (A i).mk _ ω :=
     ae_all_iff.2 fun i ↦ AEMeasurable.ae_eq_mk (A i)
   filter_upwards [this] with ω hω
-  conv_rhs => rw [← Finset.sum_coe_sort]
+  nth_rw 2 [← Finset.sum_coe_sort]
   simp [hω]
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
