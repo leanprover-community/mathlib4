@@ -150,8 +150,8 @@ statement for meromorphic functions in normal form.
 -/
 theorem eventuallyEq_nhdNE_iff_eventuallyEq_nhd (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
     f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g :=
-  ContinousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE
-    hf.continuousAt hg.continuousAt (NormedField.nhdsNE_neBot z₀)
+  ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE
+    hf.continuousAt hg.continuousAt
 
 /-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a punctured
 neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at

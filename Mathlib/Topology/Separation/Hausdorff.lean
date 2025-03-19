@@ -645,7 +645,6 @@ theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X}
       have h₁ := (eventually_nhdsWithin_of_eventually_nhds
         ((hf.ne_iff_eventually_ne hg).1 hCon)).and hfg
       have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_not_mem (𝓝[≠] x)
-      rw [Filter.neBot_iff] at h
       by_contra H
       rw [Filter.Eventually, H] at h₁
       tauto
