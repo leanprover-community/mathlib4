@@ -115,7 +115,7 @@ private def β {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
 /-- `d` can not be subscripted, so we create an alias for `id`. -/
 private abbrev ID {γ : Sort u} := @id γ
 
-variable (n : String)
+variable (n : Nat)
 
 /-- info: checkSubscript testsub(₁) : Unit -/
 #guard_msgs in #check checkSubscript (checkSubscript 1)
@@ -160,13 +160,16 @@ section superscript
 
 end superscript
 
-variable (x_x : String)
-
 private def card {γ : Sort u} := @id γ
 local prefix:arg "#" => card
 
 private def factorial {γ : Sort u} := @id γ
 local notation:10000 n "!" => factorial n
+
+abbrev Nat' := Nat
+def Nat'.γ : Nat' → Nat' := id
+
+variable (n x_x : Nat')
 
 section no_subscript
 
@@ -185,11 +188,17 @@ section no_subscript
 /-- info: checkSubscript 2! : Unit -/
 #guard_msgs in #check checkSubscript 2!
 
+/- The delaborator should reject dot notation. -/
+open Nat' (γ) in
+/-- info: checkSubscript n.γ : Unit -/
+#guard_msgs in #check testsub(ᵧ ₙ)
+
+/- The delaborator should reject metavariables. -/
 set_option pp.mvars false in
 /-- info: checkSubscript ?_ : Unit -/
 #guard_msgs in #check checkSubscript ?_
 
-/- The delaborator should fail because `n` is shadowed and `✝` can not be
+/- The delaborator should reject because `n` is shadowed and `✝` can not be
 subscripted. -/
 variable {x} (hx : x = testsub(ₙ)) (n : True) in
 /-- info: hx : x = checkSubscript n✝ -/
@@ -214,11 +223,17 @@ section no_superscript
 /-- info: checkSuperscript 2! : Unit -/
 #guard_msgs in #check checkSuperscript 2!
 
+/- The delaborator should reject dot notation. -/
+open Nat' (γ) in
+/-- info: checkSuperscript n.γ : Unit -/
+#guard_msgs in #check testsup(ᵞ ⁿ)
+
+/- The delaborator should reject metavariables. -/
 set_option pp.mvars false in
 /-- info: checkSuperscript ?_ : Unit -/
 #guard_msgs in #check checkSuperscript ?_
 
-/- The delaborator should fail because `n` is shadowed and `✝` can not be
+/- The delaborator should reject because `n` is shadowed and `✝` can not be
 superscripted. -/
 variable {x} (hx : x = testsup(ⁿ)) (n : True) in
 /-- info: hx : x = checkSuperscript n✝ -/
