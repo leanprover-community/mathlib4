@@ -440,6 +440,7 @@ alias tendsto_logb_nhdsWithin_zero_right := tendsto_logb_nhdsGT_zero
 lemma tendsto_logb_nhdsGT_zero_of_base_lt_one (hb₀ : 0 < b) (hb : b < 1) :
     Tendsto (logb b) (𝓝[>] 0) atTop :=
   tendsto_log_nhdsGT_zero.atBot_mul_const_of_neg (inv_lt_zero.2 (log_neg hb₀ hb))
+
 @[deprecated (since := "2025-03-18")]
 alias tendsto_logb_nhdsWithin_zero_right_of_base_lt_one := tendsto_logb_nhdsGT_zero_of_base_lt_one
 
