@@ -389,9 +389,8 @@ lemma root_space_ad_is_nilpotent
   | hN χ₂ m₂ hm₂ =>
     obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
     use n
-    have h := toEnd_pow_apply_mem hx hm₂ n
-    rw [hn, LieSubmodule.mem_bot] at h
-    exact h
+    have := toEnd_pow_apply_mem hx hm₂ n
+    rwa [hn, LieSubmodule.mem_bot] at this
   | hadd m₁ m₂ hm₁ hm₂ hm₁' hm₂' =>
     obtain ⟨n₁, hn₁⟩ := hm₁'
     obtain ⟨n₂, hn₂⟩ := hm₂'
