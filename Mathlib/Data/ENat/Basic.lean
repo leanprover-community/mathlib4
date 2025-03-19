@@ -321,7 +321,7 @@ lemma forall_natCast_le_iff_le : (∀ a : ℕ, a ≤ m → a ≤ n) ↔ m ≤ n 
 
 protected lemma exists_nat_gt (hn : n ≠ ⊤) : ∃ m : ℕ, n < m := by
   simp_rw [lt_iff_not_ge n]
-  exact not_forall.mp <| eq_top_iff_forall_ge.mp.mt hn
+  exact not_forall.mp <| eq_top_iff_forall_ge.2.mt hn
 
 @[simp] lemma sub_eq_top_iff : a - b = ⊤ ↔ a = ⊤ ∧ b ≠ ⊤ := WithTop.sub_eq_top_iff
 lemma sub_ne_top_iff : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := WithTop.sub_ne_top_iff
