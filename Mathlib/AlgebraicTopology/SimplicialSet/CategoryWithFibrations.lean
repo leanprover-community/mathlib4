@@ -27,7 +27,7 @@ universe u
 
 namespace SSet
 
-namespace modelCategory
+namespace quillenModelCategory
 
 /-- The generating cofibrations: this is the family of morphisms in `SSet`
 which consists of boundary inclusions `∂Δ[n].ι : ∂Δ[n] ⟶ Δ[n]`. -/
@@ -57,10 +57,10 @@ lemma J_le_monomorphisms : J.{u} ≤ monomorphisms _ := by
   obtain ⟨n, ⟨i⟩⟩ := h
   exact monomorphisms.infer_property _
 
-instance : CategoryWithCofibrations SSet.{u} where
+scoped instance : CategoryWithCofibrations SSet.{u} where
   cofibrations := .monomorphisms _
 
-instance : CategoryWithFibrations SSet.{u} where
+scoped instance : CategoryWithFibrations SSet.{u} where
   fibrations := J.rlp
 
 lemma cofibrations_eq : cofibrations SSet.{u} = monomorphisms _ := rfl
@@ -90,6 +90,6 @@ instance [hf : Fibration f] {n : ℕ} (i : Fin (n + 2)) :
 
 end
 
-end modelCategory
+end quillenModelCategory
 
 end SSet
