@@ -735,6 +735,13 @@ lemma iIndepFun.indepFun_mul_right₀ (hf_indep : iIndepFun f μ)
   Kernel.iIndepFun.indepFun_mul_right₀ hf_indep (by simp [hf_meas]) i j k hij hik
 
 @[to_additive]
+lemma iIndepFun.indepFun_mul_mul (hf_indep : iIndepFun f μ)
+    (hf_meas : ∀ i, Measurable (f i))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    IndepFun (f i * f j) (f k * f l) μ :=
+  Kernel.iIndepFun.indepFun_mul_mul hf_indep hf_meas i j k l hik hil hjk hjl
+
+@[to_additive]
 lemma iIndepFun.indepFun_mul_mul₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ)
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
