@@ -463,22 +463,22 @@ lemma CompleteMultipartiteGraph.colorable {ι : Type*} [Fintype ι] (V : ι → 
   (CompleteMultipartiteGraph.coloring V).colorable
 
 theorem CompleteMultipartiteGraph.chromaticNumber {ι : Type*} [Fintype ι] (V : ι → Type*)
-    [∀ i, Nonempty (V i)] : (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
+    (f : ∀ (i : ι), V i) : (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
   apply le_antisymm (CompleteMultipartiteGraph.colorable V).chromaticNumber_le
   by_contra! h
-  exact CompleteMultipartiteGraph.notCliqueFree_le_card V le_rfl
+  exact CompleteMultipartiteGraph.notCliqueFree_le_card V f le_rfl
             <| cliqueFree_of_chromaticNumber_lt h
 
-theorem CompleteMultipartiteGraph.colorable_of_cliqueFree {ι : Type*} {V : ι → Type*}
-    [∀ i, Nonempty (V i)] (hc : (completeMultipartiteGraph V).CliqueFree n) :
+theorem CompleteMultipartiteGraph.colorable_of_cliqueFree {ι : Type*} (V : ι → Type*)
+    (f : ∀ (i : ι), V i) (hc : (completeMultipartiteGraph V).CliqueFree n) :
     (completeMultipartiteGraph V).Colorable (n - 1) := by
   cases n with
   | zero => apply absurd hc not_cliqueFree_zero
   | succ n =>
   have : Fintype ι := fintypeOfNotInfinite
-    fun hinf ↦ CompleteMultipartiteGraph.notCliqueFree_infinite V hc
+    fun hinf ↦ CompleteMultipartiteGraph.notCliqueFree_infinite V f hc
   apply (CompleteMultipartiteGraph.coloring V).colorable.mono
-  have := CompleteMultipartiteGraph.notCliqueFree_le_card V le_rfl
+  have := CompleteMultipartiteGraph.notCliqueFree_le_card V f le_rfl
   contrapose! this
   exact hc.mono this
 

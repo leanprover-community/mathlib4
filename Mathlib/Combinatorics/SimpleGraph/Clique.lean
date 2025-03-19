@@ -377,21 +377,22 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   exact absurd he hn
 
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts.-/
-noncomputable def CompleteMultipartiteGraph.topEmbedding {ι : Type*} (V : ι → Type*)
-    [∀ i, Nonempty (V i)] : (⊤ : SimpleGraph ι) ↪g (completeMultipartiteGraph V) where
-  toFun := fun i ↦ ⟨i, Classical.arbitrary (V i)⟩
+def CompleteMultipartiteGraph.topEmbedding {ι : Type*} (V : ι → Type*) (f : ∀ (i : ι), V i) :
+    (⊤ : SimpleGraph ι) ↪g (completeMultipartiteGraph V) where
+  toFun := fun i ↦ ⟨i, f i⟩
   inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp
 
 theorem CompleteMultipartiteGraph.notCliqueFree_le_card {ι : Type*} [Fintype ι] (V : ι → Type*)
-    [∀ i, Nonempty (V i)] (hc : n ≤ Fintype.card ι ) :
+    (f : ∀ (i : ι), V i) (hc : n ≤ Fintype.card ι ) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
-  fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <| (CompleteMultipartiteGraph.topEmbedding V).comp
-    (Iso.completeGraph (Fintype.equivFin ι).symm).toEmbedding
+  fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <|
+    (CompleteMultipartiteGraph.topEmbedding V f).comp
+      (Iso.completeGraph (Fintype.equivFin ι).symm).toEmbedding
 
 theorem CompleteMultipartiteGraph.notCliqueFree_infinite {ι : Type*} [Infinite ι] (V : ι → Type*)
-    [∀ i, Nonempty (V i)] : ¬ (completeMultipartiteGraph V).CliqueFree n :=
-  fun hf ↦ not_cliqueFree_of_top_embedding (CompleteMultipartiteGraph.topEmbedding V |>.comp
+    (f : ∀ (i : ι), V i) : ¬ (completeMultipartiteGraph V).CliqueFree n :=
+  fun hf ↦ not_cliqueFree_of_top_embedding (CompleteMultipartiteGraph.topEmbedding V f |>.comp
             <| Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι) hf
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
