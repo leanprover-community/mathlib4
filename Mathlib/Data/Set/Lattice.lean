@@ -5,9 +5,6 @@ Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Logic.Pairwise
 import Mathlib.Order.CompleteBooleanAlgebra
-import Mathlib.Order.Directed
-import Mathlib.Order.GaloisConnection.Basic
-import Mathlib.Tactic.Cases
 
 /-!
 # The set lattice
