@@ -4423,8 +4423,10 @@ import Mathlib.Order.CompactlyGenerated.Intervals
 import Mathlib.Order.Comparable
 import Mathlib.Order.Compare
 import Mathlib.Order.CompleteBooleanAlgebra
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Basic
+import Mathlib.Order.CompleteLattice.Defs
 import Mathlib.Order.CompleteLattice.Finset
+import Mathlib.Order.CompleteLattice.Lemmas
 import Mathlib.Order.CompleteLattice.SetLike
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.CompletePartialOrder
@@ -5822,6 +5824,7 @@ import Mathlib.Topology.Homotopy.Contractible
 import Mathlib.Topology.Homotopy.Equiv
 import Mathlib.Topology.Homotopy.HSpaces
 import Mathlib.Topology.Homotopy.HomotopyGroup
+import Mathlib.Topology.Homotopy.Lifting
 import Mathlib.Topology.Homotopy.Path
 import Mathlib.Topology.Homotopy.Product
 import Mathlib.Topology.IndicatorConstPointwise
