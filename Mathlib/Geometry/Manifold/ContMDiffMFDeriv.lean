@@ -92,16 +92,16 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   have h4f : ContinuousWithinAt (fun x => f x (g x)) t x₀ := by
     change ContinuousWithinAt ((Function.uncurry f) ∘ (fun x ↦ (x, g x))) t x₀
     refine ContinuousWithinAt.comp hf.continuousWithinAt ?_ (fun y hy ↦ by simp [hy, hu hy])
-    exact (continuousWithinAt_id.prod hg.continuousWithinAt)
+    exact (continuousWithinAt_id.prodMk hg.continuousWithinAt)
   have h4f := h4f.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (I := I') (f x₀ (g x₀)))
   have h3f := (contMDiffWithinAt_iff_contMDiffWithinAt_nhdsWithin (by simp)).mp
     (hf.of_le <| (self_le_add_left 1 m).trans hmn)
   simp only [Nat.cast_one, hx₀gx₀, insert_eq_of_mem] at h3f
   have h2f : ∀ᶠ x₂ in 𝓝[t] x₀, ContMDiffWithinAt I I' 1 (f x₂) u (g x₂) := by
     have : MapsTo (fun x ↦ (x, g x)) t (t ×ˢ u) := fun y hy ↦ by simp [hy, hu hy]
-    filter_upwards [((continuousWithinAt_id.prod hg.continuousWithinAt)
+    filter_upwards [((continuousWithinAt_id.prodMk hg.continuousWithinAt)
       |>.tendsto_nhdsWithin this).eventually h3f, self_mem_nhdsWithin] with x hx h'x
-    apply hx.comp (g x) (contMDiffWithinAt_const.prod_mk contMDiffWithinAt_id)
+    apply hx.comp (g x) (contMDiffWithinAt_const.prodMk contMDiffWithinAt_id)
     exact fun y hy ↦ by simp [h'x, hy]
   have h2g : g ⁻¹' (extChartAt I (g x₀)).source ∈ 𝓝[t] x₀ :=
     hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
@@ -409,12 +409,12 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
     this.mdifferentiableAt le_top
   have B : fderivWithin 𝕜 (fun x' : E ↦ (x', (0 : E))) (Set.range I) (I ((chartAt H x) x)) v
       = (v, 0) := by
-    rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prod]
+    rw [fderivWithin_eq_fderiv, DifferentiableAt.fderiv_prodMk]
     · simp
     · exact differentiableAt_id'
     · exact differentiableAt_const _
     · exact ModelWithCorners.uniqueDiffWithinAt_image I
-    · exact differentiableAt_id'.prod (differentiableAt_const _)
+    · exact differentiableAt_id'.prodMk (differentiableAt_const _)
   simp (config := { unfoldPartialApp := true }) only [Bundle.zeroSection, tangentMap, mfderiv, A,
     if_pos, chartAt, FiberBundle.chartedSpace_chartAt, TangentBundle.trivializationAt_apply,
     tangentBundleCore, Function.comp_def, ContinuousLinearMap.map_zero, mfld_simps]
@@ -423,8 +423,8 @@ theorem tangentMap_tangentBundle_pure [Is : IsManifold I 1 M]
   congr 1
   refine fderivWithin_congr (fun y hy => ?_) ?_
   · simp only [mfld_simps] at hy
-    simp only [hy, Prod.mk.inj_iff, mfld_simps]
-  · simp only [Prod.mk.inj_iff, mfld_simps]
+    simp only [hy, Prod.mk_inj, mfld_simps]
+  · simp only [Prod.mk_inj, mfld_simps]
 
 end TangentBundle
 

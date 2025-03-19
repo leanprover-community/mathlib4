@@ -71,7 +71,6 @@ theorem comp_symm_stdBasisMatrix
       (stdBasisMatrix ii.1 jj.1 (stdBasisMatrix ii.2 jj.2 r)) :=
   (comp I J K L R).symm_apply_eq.2 <| comp_stdBasisMatrix_stdBasisMatrix _ _ _ _ _ |>.symm
 
-
 @[simp]
 theorem comp_diagonal_diagonal [DecidableEq I] [DecidableEq J] [Zero R] (d : I → J → R) :
     comp I I J J R (diagonal fun i => diagonal fun j => d i j)

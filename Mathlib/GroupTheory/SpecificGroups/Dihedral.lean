@@ -7,6 +7,7 @@ import Mathlib.Data.Finite.Sum
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.Exponent
 import Mathlib.GroupTheory.GroupAction.CardCommute
+import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
 /-!
 # Dihedral Groups
@@ -18,7 +19,7 @@ represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the r
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
 
-assert_not_exists TwoSidedIdeal
+assert_not_exists Ideal TwoSidedIdeal
 
 /-- For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n`-gon.
 `r i` represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of
@@ -106,6 +107,17 @@ theorem r_zero : r 0 = (1 : DihedralGroup n) :=
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
+@[simp]
+theorem r_pow (i : ZMod n) (k : ℕ) : (r i)^k = r (i * k : ZMod n) := by
+  induction k with
+  | zero => simp only [pow_zero, Nat.cast_zero, mul_zero, r_zero]
+  | succ k IH =>
+    rw [pow_add, pow_one, IH, r_mul_r, Nat.cast_add, Nat.cast_one, r.injEq, mul_add, mul_one]
+
+@[simp]
+theorem r_zpow (i : ZMod n) (k : ℤ) : (r i)^k = r (i * k : ZMod n) := by
+  cases k <;> simp [r_pow, neg_mul_eq_mul_neg]
+
 private def fintypeHelper : (ZMod n) ⊕ (ZMod n) ≃ DihedralGroup n where
   invFun
     | r j => .inl j
@@ -137,19 +149,11 @@ theorem nat_card : Nat.card (DihedralGroup n) = 2 * n := by
   · rw [Nat.card_eq_zero_of_infinite]
   · rw [Nat.card_eq_fintype_card, card]
 
-@[simp]
 theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  induction' k with k IH
-  · rw [Nat.cast_zero]
-    rfl
-  · rw [pow_succ', IH, r_mul_r]
-    congr 1
-    norm_cast
-    rw [Nat.one_add]
+  simp only [r_pow, one_mul]
 
-@[simp]
 theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
-  cases k <;> simp
+  simp only [r_zpow, one_mul]
 
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   simp
@@ -217,10 +221,18 @@ lemma not_commutative : ∀ {n : ℕ}, n ≠ 1 → n ≠ 2 →
       one_add_one_eq_two, ← ZMod.val_eq_zero, ZMod.val_two_eq_two_mod] at h'
     simpa using Nat.le_of_dvd Nat.zero_lt_two <| Nat.dvd_of_mod_eq_zero h'
 
-lemma commutative_iff {n : ℕ} :
-    Std.Commutative (fun x y : DihedralGroup n ↦ x * y) ↔ n = 1 ∨ n = 2 where
+lemma commutative_iff : Std.Commutative (fun x y : DihedralGroup n ↦ x * y) ↔ n = 1 ∨ n = 2 where
   mp := by contrapose!; rintro ⟨h1, h2⟩; exact not_commutative h1 h2
   mpr := by rintro (rfl | rfl) <;> exact ⟨by decide⟩
+
+lemma not_isCyclic (h1 : n ≠ 1) : ¬ IsCyclic (DihedralGroup n) := fun h => by
+  by_cases h2 : n = 2
+  · simpa [exponent, card, h2] using h.exponent_eq_card
+  · exact not_commutative h1 h2 h.commutative
+
+lemma isCyclic_iff : IsCyclic (DihedralGroup n) ↔ n = 1 where
+  mp := not_imp_not.mp not_isCyclic
+  mpr h := h ▸ isCyclic_of_prime_card (p := 2) nat_card
 
 /-- If n is odd, then the Dihedral group of order $2n$ has $n(n+3)$ pairs (represented as
 $n + n + n + n*n$) of commuting elements. -/

@@ -134,7 +134,7 @@ theorem αβγ_ne_zero : α * β * γ ≠ 0 := fun h =>
 /-- The 1-form on $K^3$, the kernel of which we will take a quotient by.
 
 Our source uses $αx - βy - γz$, though since this is characteristic two we just use $αx + βy + γz$.
- -/
+-/
 @[simps!]
 def lFunc : (Fin 3 → K) →ₗ[K] K :=
   letI proj : Fin 3 → (Fin 3 → K) →ₗ[K] K := LinearMap.proj

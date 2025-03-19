@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Chris Hughes, Daniel Weber
 -/
 import Batteries.Data.Nat.Gcd
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.Ring.Divisibility.Basic
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.ENat.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Multiplicity of a divisor
@@ -649,7 +649,7 @@ theorem multiplicity_neg (a b : α) : multiplicity a (-b) = multiplicity a b :=
 
 theorem Int.emultiplicity_natAbs (a : ℕ) (b : ℤ) :
     emultiplicity a b.natAbs = emultiplicity (a : ℤ) b := by
-  cases' Int.natAbs_eq b with h h <;> conv_rhs => rw [h]
+  rcases Int.natAbs_eq b with h | h <;> conv_rhs => rw [h]
   · rw [Int.natCast_emultiplicity]
   · rw [emultiplicity_neg, Int.natCast_emultiplicity]
 
