@@ -81,11 +81,11 @@ end List
 require `Finset.sort`. -/
 
 /-- If `α` is countable, then so is `Multiset α`. -/
-instance _root_.Multiset.countable {α : Type*} [Countable α] : Countable (Multiset α) :=
+instance _root_.Multiset.countable [Countable α] : Countable (Multiset α) :=
   Quotient.countable
 
 /-- If `α` is countable, then so is `Finset α`. -/
-instance Finset.countable [Countable α] : Countable (Finset α) :=
+instance _root_.Finset.countable [Countable α] : Countable (Finset α) :=
   Finset.val_injective.countable
 
 /-- A listable type with decidable equality is encodable. -/
