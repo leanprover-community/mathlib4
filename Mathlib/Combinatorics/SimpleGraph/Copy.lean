@@ -46,7 +46,6 @@ The following notation is declared in locale `SimpleGraph`:
 ## TODO
 
 Relate `⊤ ⊑ H`/`⊥ ⊑ H` to there being a clique/independent set in `H`.
-Relate `⊤ ⊑ H` to there being an independent set in `H`.
 -/
 
 open Finset Function
