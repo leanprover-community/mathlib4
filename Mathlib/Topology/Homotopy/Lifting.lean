@@ -46,8 +46,9 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
       (∀ a, g' (0, a) = g (0, a)) ∧ ∀ t, g' (t, a) = g (t, a) := by
   -- For every `e : E`, upgrade `p` to a LocalHomeomorph `q e` around `e`.
   choose q mem_source hpq using homeo
-  /- Using the hypothesis `cont_a`, we partition the unit interval so that for each subinterval
-   [tₙ, tₙ₊₁], g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e`. -/
+  /- Using the hypothesis `cont_a`, we partition the unit interval so that for each
+    subinterval `[tₙ, tₙ₊₁]`, the image `g ([tₙ, tₙ₊₁] × {a})` is contained in the
+    domain of some local homeomorphism `q e`. -/
   obtain ⟨t, t_0, t_mono, ⟨n_max, h_max⟩, t_sub⟩ :=
     exists_monotone_Icc_subset_open_cover_unitInterval
       (fun e ↦ (q e).open_source.preimage cont_a)
