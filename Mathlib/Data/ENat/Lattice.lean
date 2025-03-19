@@ -27,8 +27,10 @@ assert_not_exists Field
 
 open Set
 
--- Porting note: was `deriving instance` but "default handlers have not been implemented yet"
--- Porting note: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
+-- The `CompleteLinearOrder` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
+-- `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 

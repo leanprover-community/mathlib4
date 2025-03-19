@@ -104,7 +104,7 @@ def toNormedField : NormedField L :=
         (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
     dist_eq := fun x y => rfl
-    norm_mul' := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
+    norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype

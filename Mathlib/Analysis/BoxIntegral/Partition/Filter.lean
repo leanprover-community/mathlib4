@@ -229,7 +229,7 @@ without additional integrability assumptions, see the module docstring for detai
 instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
-instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
+instance : DecidableLE (IntegrationParams) :=
   fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=

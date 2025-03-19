@@ -214,13 +214,6 @@ theorem limitEquivSections_symm_apply (x : F.sections) (j : J) :
     limit.π F j ((limitEquivSections F).symm x) = (x : ∀ j, F.obj j) j :=
   isLimitEquivSections_symm_apply _ _ _
 
--- Porting note: `limitEquivSections_symm_apply'` was removed because the linter
---   complains it is unnecessary
---@[simp]
---theorem limitEquivSections_symm_apply' (F : J ⥤ Type v) (x : F.sections) (j : J) :
---    limit.π F j ((limitEquivSections.{v, v} F).symm x) = (x : ∀ j, F.obj j) j :=
---  isLimitEquivSections_symm_apply _ _ _
-
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11182): removed @[ext]
 /-- Construct a term of `limit F : Type u` from a family of terms `x : Π j, F.obj j`
 which are "coherent": `∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j'`.
@@ -234,14 +227,6 @@ theorem Limit.π_mk (x : ∀ j, F.obj j) (h : ∀ (j j') (f : j ⟶ j'), F.map f
     limit.π F j (Limit.mk F x h) = x j := by
   dsimp [Limit.mk]
   simp
-
--- Porting note: `Limit.π_mk'` was removed because the linter complains it is unnecessary
---@[simp]
---theorem Limit.π_mk' (F : J ⥤ Type v) (x : ∀ j, F.obj j)
---    (h : ∀ (j j') (f : j ⟶ j'), F.map f (x j) = x j') (j) :
---    limit.π F j (Limit.mk.{v, v} F x h) = x j := by
---  dsimp [Limit.mk]
---  simp
 
 -- PROJECT: prove this for concrete categories where the forgetful functor preserves limits
 @[ext]
