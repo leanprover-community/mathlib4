@@ -49,6 +49,14 @@ nonrec lemma IsSeparated.anti (hεδ : ε ≤ δ) (hs : IsSeparated δ s) : IsSe
 
 lemma IsSeparated.subset (hst : s ⊆ t) (hs : IsSeparated ε t) : IsSeparated ε s := hs.mono hst
 
+lemma isSeparated_insert :
+    IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, x ≠ y → ε < edist x y :=
+  pairwise_insert_of_symmetric fun _ _ ↦ by simp [edist_comm]
+
+lemma isSeparated_insert_of_not_mem (hx : x ∉ s) :
+    IsSeparated ε (insert x s) ↔ IsSeparated ε s ∧ ∀ y ∈ s, ε < edist x y :=
+  pairwise_insert_of_symmetric_of_not_mem (fun _ _ ↦ by simp [edist_comm]) hx
+
 protected lemma IsSeparated.insert (hs : IsSeparated ε s) (h : ∀ y ∈ s, x ≠ y → ε < edist x y) :
     IsSeparated ε (insert x s) := hs.insert_of_symmetric (fun _ _ ↦ by simp [edist_comm]) h
 
