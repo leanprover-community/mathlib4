@@ -105,7 +105,7 @@ private def delabCheckSuperscript : Delab := withOverApp 2 do
   let sup ← withAppArg delabSuperscript
   `(testsup($sup:superscript))
 
-universe u v w
+universe u v
 
 /-- `α` can not be subscripted or superscripted. -/
 private def α {γ : Type u} {δ : Type v} : γ → δ → δ := fun _ ↦ id
