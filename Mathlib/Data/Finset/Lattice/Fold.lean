@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Fold
+import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Nat
-import Mathlib.Data.Finset.Sum
 
 /-!
 # Lattice operations on finsets
