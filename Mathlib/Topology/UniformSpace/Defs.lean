@@ -368,6 +368,10 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
   TopologicalSpace.ext_nhds fun a ↦ by
     rw [u.nhds_eq_comap_uniformity, u.toCore.nhds_toTopologicalSpace]
 
+lemma UniformSpace.mem_uniformity_ofCore_iff {u : UniformSpace.Core α} {s : Set (α × α)} :
+    s ∈ 𝓤[.ofCore u] ↔ s ∈ u.uniformity :=
+  Iff.rfl
+
 @[ext (iff := false)]
 protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁] = 𝓤[u₂]) : u₁ = u₂ := by
   have : u₁.toTopologicalSpace = u₂.toTopologicalSpace := TopologicalSpace.ext_nhds fun x ↦ by
