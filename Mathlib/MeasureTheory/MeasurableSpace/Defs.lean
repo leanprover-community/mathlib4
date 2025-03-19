@@ -35,7 +35,7 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
-assert_not_exists MonoidWithZero
+assert_not_exists Covariant MonoidWithZero
 
 open Set Encodable Function Equiv
 
