@@ -174,7 +174,7 @@ lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv :
 
 lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
     (G ⊔ edge v w).IsClique s ↔ G.IsClique (s \ {v}) ∧ G.IsClique (s \ {w}) :=
-  ⟨fun h' ↦ ⟨h'.sdiff_of_sup_edge, (edge_comm .. ▸   h').sdiff_of_sup_edge⟩,
+  ⟨fun h' ↦ ⟨h'.sdiff_of_sup_edge, (edge_comm .. ▸ h').sdiff_of_sup_edge⟩,
     fun h' ↦ isClique_sup_edge_of_ne_sdiff h h'.1 h'.2⟩
 
 end Clique
