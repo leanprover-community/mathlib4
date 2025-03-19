@@ -41,7 +41,7 @@ theorem lcm_eq {x y : PUnit} : lcm x y = unit :=
   rfl
 
 @[simp]
-theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
+theorem norm_unit_eq {x : PUnit} : normUnit x = (1 : PUnitˣ) :=
   rfl
 
 end PUnit
