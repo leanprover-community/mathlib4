@@ -23,15 +23,15 @@ equivalent to saying that there is a graph embedding `G ↪ H`.
 ## Main declarations
 
 Containment:
-* `SimpleGraph.Copy A B` is the type of copies of `A` in `B`, implemented as the subtype of
+* `SimpleGraph.Copy G H` is the type of copies of `G` in `H`, implemented as the subtype of
   *injective* homomorphisms.
-* `SimpleGraph.IsContained A B`, `A ⊑ B` is the relation that `B` contains a copy of `A`, that
-  is, the type of copies of `A` in `B` is nonempty. This is equivalent to the existence of an
-  isomorphism from `A` to a subgraph of `B`.
+* `SimpleGraph.IsContained G H`, `G ⊑ H` is the relation that `H` contains a copy of `G`, that
+  is, the type of copies of `G` in `H` is nonempty. This is equivalent to the existence of an
+  isomorphism from `G` to a subgraph of `H`.
   This is similar to `SimpleGraph.IsSubgraph` except that the simple graphs here need not have the
   same underlying vertex type.
-* `SimpleGraph.Free` is the predicate that `B` is `A`-free, that is, `B` does not contain a copy of
-  `A`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
+* `SimpleGraph.Free` is the predicate that `H` is `G`-free, that is, `H` does not contain a copy of
+  `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
 
 Induced containment:
 * Induced copies of `G` inside `H` are already defined as `G ↪g H`.
@@ -288,42 +288,51 @@ to `H` having an induced subgraph isomorphic to `G`.
 We denote "`G` is contained in `H`" by `G ⊴ H` (`\triangle_left_eq`).
 -/
 
-/-- A simple graph `G` is contained in a simple graph `H` if there exists an induced subgraph of `H`
-isomorphic to `G`. This is denoted by `G ⊴ H`. -/
-def IsIndContained (G : SimpleGraph V) (H : SimpleGraph β) : Prop := Nonempty (G ↪g H)
+/-- A simple graph `G` is inducingly contained in a simple graph `H` if there exists an induced
+subgraph of `H` isomorphic to `G`. This is denoted by `G ⊴ H`. -/
+def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G ↪g H)
 
 @[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
 
-protected lemma IsIndContained.isContained : G₁ ⊴ G₂ → G₁ ⊑ G₂ := fun ⟨f⟩ ↦ ⟨f, f.injective⟩
+protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ ⟨f.toCopy⟩
+
+/-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
 protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
+
+/-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
 protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
 
 protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
     G'.coe ⊴ G :=
-  ⟨{  toFun := (↑)
-      inj' := Subtype.coe_injective
-      map_rel_iff' := hG'.adj.symm }⟩
+  ⟨{ toFun := (↑)
+     inj' := Subtype.coe_injective
+     map_rel_iff' := hG'.adj.symm }⟩
 
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
 lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
 lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
-  ⟨{  toFun := isEmptyElim
-      inj' := isEmptyElim
-      map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
+  ⟨{ toFun := isEmptyElim
+     inj' := isEmptyElim
+     map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
+
 
 lemma isIndContained_iff_exists_iso_subgraph :
     G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by
   constructor
   · rintro ⟨f⟩
     refine ⟨Subgraph.map f.toHom ⊤, f.toCopy.isoToSubgraph, ?_⟩
-    rintro _ ⟨a, -, rfl⟩ _ ⟨b, -, rfl⟩
-    simp [Relation.map_apply_apply, f.injective]
+    simp [Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
   · rintro ⟨H', e, hH'⟩
     exact e.isIndContained.trans hH'.isIndContained
 
 alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
   isIndContained_iff_exists_iso_subgraph
+
+@[simp] lemma top_isIndContained_iff_top_isContained :
+    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
+  mp h := h.isContained
+  mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
 
 end SimpleGraph
