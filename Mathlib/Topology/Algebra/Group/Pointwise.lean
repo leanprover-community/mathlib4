@@ -320,9 +320,8 @@ theorem exists_closed_nhds_one_inv_eq_mul_subset {U : Set G} (hU : U ∈ 𝓝 1)
   obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_inv_eq_mul_subset hV.1
   refine ⟨U, hU, fun g hgS ↦ ?_⟩
   rintro (⟨_, ⟨x, hx, rfl⟩, hgx⟩|⟨_, ⟨x, hx, rfl⟩, hxg⟩) <;>
-    refine hV.2.subset ⟨hUV ?_, hgS⟩ <;> rw [← hUinv] at hx
-  · exact ⟨_, _, hgx, hx, by simp⟩
-  · exact ⟨_, _, hx, hxg, by simp⟩
+    (refine hV.2.subset ⟨hUV ?_, hgS⟩; rw [← hUinv] at hx)
+  exacts [⟨_, hgx, _, hx, by simp⟩, ⟨_, hx, _, hxg, by simp⟩]
 
 end
 
