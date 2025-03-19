@@ -212,7 +212,7 @@ theorem meromorphicNFAt_congr {g : 𝕜 → E} (hfg : f =ᶠ[𝓝 x] g) :
 /-- Helper lemma for `meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic`: if
 `f` is meromorphic in normal form at `x` and `g` is analytic without zero at
 `x`, then `g • f` is meromorphic in normal form at `x`. -/
-lemma MeromorphicNFAt.meromorphicNFAt_of_smul_analytic (hf : MeromorphicNFAt f x)
+lemma MeromorphicNFAt.smul_analytic (hf : MeromorphicNFAt f x)
     (h₁g : AnalyticAt 𝕜 g x) (h₂g : g x ≠ 0) :
     MeromorphicNFAt (g • f) x := by
   rcases hf with h₁f | ⟨n, g_f, h₁g_f, h₂g_f, h₃g_f⟩
