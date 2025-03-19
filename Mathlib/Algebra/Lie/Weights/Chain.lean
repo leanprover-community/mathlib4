@@ -394,7 +394,7 @@ lemma root_space_ad_is_nilpotent
     obtain ⟨n₂, hn₂⟩ := hm₂'
     refine ⟨max n₁ n₂, ?_⟩
     rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
-    LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
+      LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
 
 end
 
