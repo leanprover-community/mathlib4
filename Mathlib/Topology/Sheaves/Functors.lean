@@ -6,8 +6,6 @@ Authors: Junyan Xu, Andrew Yang
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.CategoryTheory.Sites.Pullback
 
-#align_import topology.sheaves.functors from "leanprover-community/mathlib"@"85d6221d32c37e68f05b2e42cde6cee658dae5e9"
-
 /-!
 # functors between categories of sheaves
 
@@ -36,10 +34,10 @@ open CategoryTheory.Limits
 
 open TopologicalSpace
 
+open scoped AlgebraicGeometry
+
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : TopCat.{w}} (f : X ⟶ Y)
-
 variable ⦃ι : Type w⦄ {U : ι → Opens Y}
 
 namespace TopCat
@@ -52,8 +50,6 @@ open Presheaf
 -/
 theorem pushforward_sheaf_of_sheaf {F : X.Presheaf C} (h : F.IsSheaf) : (f _* F).IsSheaf :=
   (Opens.map f).op_comp_isSheaf _ _ ⟨_, h⟩
-set_option linter.uppercaseLean3 false in
-#align Top.sheaf.pushforward_sheaf_of_sheaf TopCat.Sheaf.pushforward_sheaf_of_sheaf
 
 variable (C)
 
@@ -61,8 +57,6 @@ variable (C)
 -/
 def pushforward (f : X ⟶ Y) : X.Sheaf C ⥤ Y.Sheaf C :=
   (Opens.map f).sheafPushforwardContinuous _ _ _
-set_option linter.uppercaseLean3 false in
-#align Top.sheaf.pushforward TopCat.Sheaf.pushforward
 
 lemma pushforward_forget (f : X ⟶ Y) :
     pushforward C f ⋙ forget C Y = forget C X ⋙ Presheaf.pushforward C f := rfl
@@ -81,10 +75,11 @@ variable {C}
 @[simp] lemma pushforward_map (f : X ⟶ Y) {F F' : X.Sheaf C} (α : F ⟶ F') :
     ((pushforward C f).map α).1 = (Presheaf.pushforward C f).map α.1 := rfl
 
-variable (A : Type*) [Category.{w} A] [ConcreteCategory.{w} A] [HasColimits A] [HasLimits A]
-variable [PreservesLimits (CategoryTheory.forget A)]
+variable (A : Type*) [Category.{w} A] {FA : A → A → Type*} {CA : A → Type w}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA] [HasColimits A]
+variable [HasLimits A] [PreservesLimits (CategoryTheory.forget A)]
 variable [PreservesFilteredColimits (CategoryTheory.forget A)]
-variable [ReflectsIsomorphisms (CategoryTheory.forget A)]
+variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 
 /--
 The pullback functor.
@@ -92,24 +87,21 @@ The pullback functor.
 def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
   (Opens.map f).sheafPullback _ _ _
 
-lemma pullback_eq (f : X ⟶ Y) :
-    pullback A f = forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := rfl
-
 /--
 The pullback of a sheaf is isomorphic (actually definitionally equal) to the sheafification
 of the pullback as a presheaf.
 -/
 def pullbackIso (f : X ⟶ Y) :
-    pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := Iso.refl _
+    pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ :=
+  Functor.sheafPullbackConstruction.sheafPullbackIso _ _ _ _
 
 /-- The adjunction between pullback and pushforward for sheaves on topological spaces. -/
 def pullbackPushforwardAdjunction (f : X ⟶ Y) :
     pullback A f ⊣ pushforward A f :=
   (Opens.map f).sheafAdjunctionContinuous _ _ _
 
-instance : IsLeftAdjoint (pullback A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
-instance : IsRightAdjoint (pushforward A f) := ⟨_, pullbackPushforwardAdjunction A f⟩
-
+instance : (pullback A f).IsLeftAdjoint  := (pullbackPushforwardAdjunction A f).isLeftAdjoint
+instance : (pushforward A f).IsRightAdjoint := (pullbackPushforwardAdjunction A f).isRightAdjoint
 
 end Sheaf
 

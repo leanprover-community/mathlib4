@@ -5,12 +5,10 @@ Authors: Manuel Candales
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Real.Sqrt
-import Mathlib.Data.Nat.Prime
+import Mathlib.Data.Nat.Prime.Defs
 import Mathlib.NumberTheory.PrimesCongruentOne
 import Mathlib.NumberTheory.LegendreSymbol.QuadraticReciprocity
 import Mathlib.Tactic.LinearCombination
-
-#align_import imo.imo2008_q3 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
 /-!
 # IMO 2008 Q3
@@ -41,16 +39,16 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   let m := ZMod.valMinAbs y
   let n := Int.natAbs m
   have hnat₁ : p ∣ n ^ 2 + 1 := by
-    refine' Int.coe_nat_dvd.mp _
-    simp only [Int.natAbs_sq, Int.coe_nat_pow, Int.ofNat_succ, Int.coe_nat_dvd.mp]
-    refine' (ZMod.int_cast_zmod_eq_zero_iff_dvd (m ^ 2 + 1) p).mp _
-    simp only [Int.cast_pow, Int.cast_add, Int.cast_one, ZMod.coe_valMinAbs]
-    rw [pow_two, ← hy]; exact add_left_neg 1
+    refine Int.natCast_dvd_natCast.mp ?_
+    simp only [n, Int.natAbs_sq, Int.natCast_pow, Int.ofNat_succ, Int.natCast_dvd_natCast.mp]
+    refine (ZMod.intCast_zmod_eq_zero_iff_dvd (m ^ 2 + 1) p).mp ?_
+    simp only [m, Int.cast_pow, Int.cast_add, Int.cast_one, ZMod.coe_valMinAbs]
+    rw [pow_two, ← hy]; exact neg_add_cancel 1
   have hnat₂ : n ≤ p / 2 := ZMod.natAbs_valMinAbs_le y
-  have hnat₃ : p ≥ 2 * n := by linarith [Nat.div_mul_le_self p 2]
+  have hnat₃ : p ≥ 2 * n := by omega
   set k : ℕ := p - 2 * n with hnat₄
   have hnat₅ : p ∣ k ^ 2 + 4 := by
-    cases' hnat₁ with x hx
+    obtain ⟨x, hx⟩ := hnat₁
     have : (p : ℤ) ∣ (k : ℤ) ^ 2 + 4 := by
       use (p : ℤ) - 4 * n + 4 * x
       have hcast₁ : (k : ℤ) = p - 2 * n := by assumption_mod_cast
@@ -62,14 +60,13 @@ theorem p_lemma (p : ℕ) (hpp : Nat.Prime p) (hp_mod_4_eq_1 : p ≡ 1 [MOD 4]) 
   have hreal₂ : (p : ℝ) > 20 := by assumption_mod_cast
   have hreal₃ : (k : ℝ) ^ 2 + 4 ≥ p := by assumption_mod_cast
   have hreal₅ : (k : ℝ) > 4 := by
-    refine' lt_of_pow_lt_pow 2 k.cast_nonneg _
+    refine lt_of_pow_lt_pow_left₀ 2 k.cast_nonneg ?_
     linarith only [hreal₂, hreal₃]
   have hreal₆ : (k : ℝ) > sqrt (2 * n) := by
-    refine' lt_of_pow_lt_pow 2 k.cast_nonneg _
+    refine lt_of_pow_lt_pow_left₀ 2 k.cast_nonneg ?_
     rw [sq_sqrt (mul_nonneg zero_le_two n.cast_nonneg)]
     linarith only [hreal₁, hreal₃, hreal₅]
   exact ⟨n, hnat₁, by linarith only [hreal₆, hreal₁]⟩
-#align imo2008_q3.p_lemma Imo2008Q3.p_lemma
 
 end Imo2008Q3
 
@@ -82,6 +79,5 @@ theorem imo2008_q3 : ∀ N : ℕ, ∃ n : ℕ, n ≥ N ∧
   obtain ⟨n, hnat, hreal⟩ := p_lemma p hpp hpmod4 (by linarith [hineq₁, Nat.zero_le (N ^ 2)])
   have hineq₂ : n ^ 2 + 1 ≥ p := Nat.le_of_dvd (n ^ 2).succ_pos hnat
   have hineq₃ : n * n ≥ N * N := by linarith [hineq₁, hineq₂]
-  have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.mpr hineq₃
+  have hn_ge_N : n ≥ N := Nat.mul_self_le_mul_self_iff.1 hineq₃
   exact ⟨n, hn_ge_N, p, hpp, hnat, hreal⟩
-#align imo2008_q3 imo2008_q3

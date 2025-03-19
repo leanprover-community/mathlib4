@@ -5,17 +5,19 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum.Eq
 import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Invertible
 import Mathlib.Algebra.Order.Monoid.WithTop
+import Mathlib.Algebra.Order.Ring.Cast
 
 /-!
 # `norm_num` extensions for inequalities.
 -/
 
-set_option autoImplicit true
-
 open Lean Meta Qq
 
 namespace Mathlib.Meta.NormNum
+
+variable {u : Level}
 
 /-- Helper function to synthesize a typed `OrderedSemiring α` expression. -/
 def inferOrderedSemiring (α : Q(Type u)) : MetaM Q(OrderedSemiring $α) :=
@@ -31,6 +33,8 @@ def inferLinearOrderedField (α : Q(Type u)) : MetaM Q(LinearOrderedField $α) :
   return ← synthInstanceQ (q(LinearOrderedField $α) : Q(Type u)) <|>
     throwError "not a linear ordered field"
 
+variable {α : Type*}
+
 theorem isNat_le_true [OrderedSemiring α] : {a b : α} → {a' b' : ℕ} →
     IsNat a a' → IsNat b b' → Nat.ble a' b' = true → a ≤ b
   | _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, h => Nat.mono_cast (Nat.le_of_ble_eq_true h)
@@ -43,7 +47,7 @@ theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → 
     IsRat a na da → IsRat b nb db →
     decide (Int.mul na (.ofNat db) ≤ Int.mul nb (.ofNat da)) → a ≤ b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
-    have h := Int.cast_mono (α := α) <| of_decide_eq_true h
+    have h := Int.cast_mono (R := α) <| of_decide_eq_true h
     have ha : 0 ≤ ⅟(da : α) := invOf_nonneg.mpr <| Nat.cast_nonneg da
     have hb : 0 ≤ ⅟(db : α) := invOf_nonneg.mpr <| Nat.cast_nonneg db
     have h := (mul_le_mul_of_nonneg_left · hb) <| mul_le_mul_of_nonneg_right h ha
@@ -53,12 +57,12 @@ theorem isRat_le_true [LinearOrderedRing α] : {a b : α} → {na nb : ℤ} → 
 theorem isRat_lt_true [LinearOrderedRing α] [Nontrivial α] : {a b : α} → {na nb : ℤ} → {da db : ℕ} →
     IsRat a na da → IsRat b nb db → decide (na * db < nb * da) → a < b
   | _, _, _, _, da, db, ⟨_, rfl⟩, ⟨_, rfl⟩, h => by
-    have h := Int.cast_strictMono (α := α) <| of_decide_eq_true h
+    have h := Int.cast_strictMono (R := α) <| of_decide_eq_true h
     have ha : 0 < ⅟(da : α) := pos_invOf_of_invertible_cast da
     have hb : 0 < ⅟(db : α) := pos_invOf_of_invertible_cast db
     have h := (mul_lt_mul_of_pos_left · hb) <| mul_lt_mul_of_pos_right h ha
     rw [← mul_assoc, Int.commute_cast] at h
-    simp at h
+    simp? at h says simp only [Int.cast_mul, Int.cast_natCast, mul_invOf_cancel_right'] at h
     rwa [Int.commute_cast] at h
 
 theorem isRat_le_false [LinearOrderedRing α] [Nontrivial α] {a b : α} {na nb : ℤ} {da db : ℕ}
@@ -96,6 +100,7 @@ theorem isInt_lt_false [OrderedRing α] {a b : α} {a' b' : ℤ}
     (ha : IsInt a a') (hb : IsInt b b') (h : decide (b' ≤ a')) : ¬a < b :=
   not_lt_of_le (isInt_le_true hb ha h)
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a ≤ b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ ≤ _] def evalLE : NormNumExt where eval {v β} e := do
@@ -104,12 +109,21 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
+  let lα ← synthInstanceQ q(LE $α)
+  guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
+  core lα ra rb
+where
+  /-- Identify (as `true` or `false`) expressions of the form `a ≤ b`, where `a` and `b` are numeric
+  expressions whose evaluations to `NormNum.Result` have already been computed. -/
+  core {u : Level} {α : Q(Type u)} (lα : Q(LE $α)) {a b : Q($α)}
+    (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a ≤ $b)) := do
+  let e := q($a ≤ $b)
   let rec intArm : MetaM (Result e) := do
     let _i ← inferOrderedRing α
-    guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     haveI' : $e =Q ($a ≤ $b) := ⟨⟩
     let ⟨za, na, pa⟩ ← ra.toInt q(OrderedRing.toRing)
     let ⟨zb, nb, pb⟩ ← rb.toInt q(OrderedRing.toRing)
+    assumeInstancesCommute
     if decide (za ≤ zb) then
       let r : Q(decide ($na ≤ $nb) = true) := (q(Eq.refl true) : Expr)
       return .isTrue q(isInt_le_true $pa $pb $r)
@@ -121,10 +135,10 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let rec ratArm : MetaM (Result e) := do
     -- We need a division ring with an order, and `LinearOrderedField` is the closest mathlib has.
     let _i ← inferLinearOrderedField α
-    guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     haveI' : $e =Q ($a ≤ $b) := ⟨⟩
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
     let ⟨qb, nb, db, pb⟩ ← rb.toRat' q(Field.toDivisionRing)
+    assumeInstancesCommute
     if decide (qa ≤ qb) then
       let r : Q(decide ($na * $db ≤ $nb * $da) = true) := (q(Eq.refl true) : Expr)
       return (.isTrue q(isRat_le_true $pa $pb $r))
@@ -140,8 +154,8 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     let _i ← inferOrderedSemiring α
     haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
     haveI' : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
-    guard <|← withNewMCtxDepth <| isDefEq f q(LE.le (α := $α))
     haveI' : $e =Q ($a ≤ $b) := ⟨⟩
+    assumeInstancesCommute
     if na.natLit! ≤ nb.natLit! then
       let r : Q(Nat.ble $na $nb = true) := (q(Eq.refl true) : Expr)
       return .isTrue q(isNat_le_true $pa $pb $r)
@@ -151,6 +165,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     else -- Nats can appear in an `OrderedRing` without `CharZero`.
       intArm
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a < b`,
 such that `norm_num` successfully recognises both `a` and `b`. -/
 @[norm_num _ < _] def evalLT : NormNumExt where eval {v β} e := do
@@ -159,13 +174,21 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
   let ⟨u, α, a⟩ ← inferTypeQ' a
   have b : Q($α) := b
   let ra ← derive a; let rb ← derive b
+  let lα ← synthInstanceQ q(LT $α)
+  guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
+  core lα ra rb
+where
+  /-- Identify (as `true` or `false`) expressions of the form `a < b`, where `a` and `b` are numeric
+  expressions whose evaluations to `NormNum.Result` have already been computed. -/
+  core {u : Level} {α : Q(Type u)} (lα : Q(LT $α)) {a b : Q($α)}
+    (ra : NormNum.Result a) (rb : NormNum.Result b) : MetaM (NormNum.Result q($a < $b)) := do
+  let e := q($a < $b)
   let rec intArm : MetaM (Result e) := do
     let _i ← inferOrderedRing α
-    assumeInstancesCommute
-    guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
     haveI' : $e =Q ($a < $b) := ⟨⟩
     let ⟨za, na, pa⟩ ← ra.toInt q(OrderedRing.toRing)
     let ⟨zb, nb, pb⟩ ← rb.toInt q(OrderedRing.toRing)
+    assumeInstancesCommute
     if za < zb then
       if let .some _i ← trySynthInstanceQ (q(@Nontrivial $α) : Q(Prop)) then
         let r : Q(decide ($na < $nb) = true) := (q(Eq.refl true) : Expr)
@@ -180,7 +203,6 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     let _i ← inferLinearOrderedField α
     assumeInstancesCommute
     haveI' : $e =Q ($a < $b) := ⟨⟩
-    guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
     let ⟨qa, na, da, pa⟩ ← ra.toRat' q(Field.toDivisionRing)
     let ⟨qb, nb, db, pb⟩ ← rb.toRat' q(Field.toDivisionRing)
     if qa < qb then
@@ -198,7 +220,7 @@ such that `norm_num` successfully recognises both `a` and `b`. -/
     haveI' : $ra =Q by clear! $ra $rb; infer_instance := ⟨⟩
     haveI' : $rb =Q by clear! $ra $rb; infer_instance := ⟨⟩
     haveI' : $e =Q ($a < $b) := ⟨⟩
-    guard <|← withNewMCtxDepth <| isDefEq f q(LT.lt (α := $α))
+    assumeInstancesCommute
     if na.natLit! < nb.natLit! then
       if let .some _i ← trySynthInstanceQ q(CharZero $α) then
         let r : Q(Nat.ble $nb $na = false) := (q(Eq.refl false) : Expr)

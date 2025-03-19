@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Sites.CoverLifting
+import Mathlib.CategoryTheory.Sites.CoverPreserving
 
 /-! Localization
 
@@ -65,6 +66,13 @@ lemma overEquiv_symm_top {X : C} (Y : Over X) :
     (overEquiv Y).symm ⊤ = ⊤ :=
   (overEquiv Y).injective (by simp)
 
+lemma overEquiv_le_overEquiv_iff {X : C} {Y : Over X} (R₁ R₂ : Sieve Y) :
+    R₁.overEquiv Y ≤ R₂.overEquiv Y ↔ R₁ ≤ R₂ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ Sieve.functorPushforward_monotone _ _ h⟩
+  replace h : (overEquiv Y).symm (R₁.overEquiv Y) ≤ (overEquiv Y).symm (R₂.overEquiv Y) :=
+    Sieve.functorPullback_monotone _ _ h
+  simpa using h
+
 lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : Sieve Y₂) :
     overEquiv _ (S.pullback f) = (overEquiv _ S).pullback f.left := by
   ext Z g
@@ -74,9 +82,9 @@ lemma overEquiv_pullback {X : C} {Y₁ Y₂ : Over X} (f : Y₁ ⟶ Y₂) (S : S
     exact ⟨W, a ≫ f, b, h, by simp⟩
   · rintro ⟨W, a, b, h, w⟩
     let T := Over.mk (b ≫ W.hom)
-    let c : T ⟶ Y₁ := Over.homMk g (by dsimp; rw [← Over.w a, ← reassoc_of% w, Over.w f])
+    let c : T ⟶ Y₁ := Over.homMk g (by dsimp [T]; rw [← Over.w a, ← reassoc_of% w, Over.w f])
     let d : T ⟶ W := Over.homMk b
-    refine' ⟨T, c, 𝟙 Z, _, by simp⟩
+    refine ⟨T, c, 𝟙 Z, ?_, by simp [T, c]⟩
     rw [show c ≫ f = d ≫ a by ext; exact w]
     exact S.downward_closed h _
 
@@ -89,6 +97,18 @@ lemma overEquiv_iff {X : C} {Y : Over X} (S : Sieve Y) {Z : C} (f : Z ⟶ Y.left
     overEquiv Y S f ↔ S (Over.homMk f : Over.mk (f ≫ Y.hom) ⟶ Y) := by
   obtain ⟨S, rfl⟩ := (overEquiv Y).symm.surjective S
   simp
+
+@[simp]
+lemma functorPushforward_over_map {X Y : C} (f : X ⟶ Y) (Z : Over X) (S : Sieve Z.left) :
+    Sieve.functorPushforward (Over.map f) ((Sieve.overEquiv Z).symm S) =
+      (Sieve.overEquiv ((Over.map f).obj Z)).symm S := by
+  ext W g
+  constructor
+  · rintro ⟨T, a, b, ha, rfl⟩
+    exact S.downward_closed ha _
+  · intro hg
+    exact ⟨Over.mk (g.left ≫ Z.hom), Over.homMk g.left,
+      Over.homMk (𝟙 _) (by simpa using Over.w g), hg, by aesop_cat⟩
 
 end Sieve
 
@@ -126,7 +146,7 @@ lemma over_forget_coverPreserving (X : C) :
 
 lemma over_forget_compatiblePreserving (X : C) :
     CompatiblePreserving J (Over.forget X) where
-  compatible {F Z T x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+  compatible {_ Z _ _ hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
     let W' : Over X := Over.mk (f₁ ≫ Y₁.hom)
     let g₁' : W' ⟶ Y₁ := Over.homMk f₁
     let g₂' : W' ⟶ Y₂ := Over.homMk f₂ (by simpa using h.symm =≫ Z.hom)
@@ -145,6 +165,52 @@ abbrev overPullback (A : Type u') [Category.{v'} A] (X : C) :
     Sheaf J A ⥤ Sheaf (J.over X) A :=
   (Over.forget X).sheafPushforwardContinuous _ _ _
 
+lemma over_map_coverPreserving {X Y : C} (f : X ⟶ Y) :
+    CoverPreserving (J.over X) (J.over Y) (Over.map f) where
+  cover_preserve {U S} hS := by
+    obtain ⟨S, rfl⟩ := (Sieve.overEquiv U).symm.surjective S
+    rw [Sieve.functorPushforward_over_map]
+    apply overEquiv_symm_mem_over
+    simpa [mem_over_iff] using hS
+
+lemma over_map_compatiblePreserving {X Y : C} (f : X ⟶ Y) :
+    CompatiblePreserving (J.over Y) (Over.map f) where
+  compatible {F Z _ x hx Y₁ Y₂ W f₁ f₂ g₁ g₂ hg₁ hg₂ h} := by
+    let W' : Over X := Over.mk (f₁.left ≫ Y₁.hom)
+    let g₁' : W' ⟶ Y₁ := Over.homMk f₁.left
+    let g₂' : W' ⟶ Y₂ := Over.homMk f₂.left
+      (by simpa using (Over.forget _).congr_map h.symm =≫ Z.hom)
+    let e : (Over.map f).obj W' ≅ W := Over.isoMk (Iso.refl _)
+      (by simpa [W'] using (Over.w f₁).symm)
+    convert congr_arg (F.val.map e.inv.op)
+      (hx g₁' g₂' hg₁ hg₂ (by ext; exact (Over.forget _).congr_map h)) using 1
+    all_goals
+      dsimp [e, W', g₁', g₂']
+      rw [← FunctorToTypes.map_comp_apply]
+      apply congr_fun
+      congr 1
+      rw [← op_comp]
+      congr 1
+      ext
+      simp
+
+instance {X Y : C} (f : X ⟶ Y) : (Over.map f).IsContinuous (J.over X) (J.over Y) :=
+  Functor.isContinuous_of_coverPreserving
+    (over_map_compatiblePreserving J f)
+    (over_map_coverPreserving J f)
+
+/-- The pullback functor `Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A` induced
+by a morphism `f : X ⟶ Y`. -/
+abbrev overMapPullback (A : Type u') [Category.{v'} A] {X Y : C} (f : X ⟶ Y) :
+    Sheaf (J.over Y) A ⥤ Sheaf (J.over X) A :=
+  (Over.map f).sheafPushforwardContinuous _ _ _
+
 end GrothendieckTopology
+
+variable {J}
+
+/-- Given `F : Sheaf J A` and `X : C`, this is the pullback of `F` on `J.over X`. -/
+abbrev Sheaf.over {A : Type u'} [Category.{v'} A] (F : Sheaf J A) (X : C) :
+    Sheaf (J.over X) A := (J.overPullback A X).obj F
 
 end CategoryTheory

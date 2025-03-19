@@ -13,8 +13,6 @@ import Mathlib.Tactic.Recall
 See `Statement.lean` for background.
 -/
 
-set_option autoImplicit true
-
 macro "◾" : tactic => `(tactic| aesop)
 macro "◾" : term => `(term| by aesop)
 
@@ -26,27 +24,21 @@ We add some local simp lemmas so we can unfold the definitions of the normalizat
 attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
   List.disjoint
 
-/-!
-Adding these lemmas to the simp set allows Lean to handle the termination proof automatically.
--/
-attribute [local simp] Nat.lt_add_one_iff le_add_of_le_right max_add_add_right max_mul_mul_left
-
-/-!
-Some further simp lemmas for handling if-then-else statements.
--/
 attribute [local simp] apply_ite ite_eq_iff'
+
+variable {b : Bool} {f : ℕ → Bool} {i : ℕ} {t e : IfExpr}
 
 /-!
 Simp lemmas for `eval`.
 We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we know the shape of `i`.
 -/
-@[simp] theorem eval_lit : (lit b).eval f  = b := rfl
-@[simp] theorem eval_var : (var i).eval f  = f i := rfl
+@[simp] theorem eval_lit : (lit b).eval f = b := rfl
+@[simp] theorem eval_var : (var i).eval f = f i := rfl
 @[simp] theorem eval_ite_lit :
     (ite (.lit b) t e).eval f = bif b then t.eval f else e.eval f := rfl
 @[simp] theorem eval_ite_var :
     (ite (.var i) t e).eval f = bif f i then t.eval f else e.eval f := rfl
-@[simp] theorem eval_ite_ite :
+@[simp] theorem eval_ite_ite {a b c d e : IfExpr} :
     (ite (ite a b c) d e).eval f = (ite a (ite b d e) (ite c d e)).eval f := by
   cases h : eval f a <;> simp_all [eval]
 
@@ -60,7 +52,7 @@ We don't want a `simp` lemma for `(ite i t e).eval` in general, only once we kno
 `e` to the literal booleans given by `l` -/
 def normalize (l : AList (fun _ : ℕ => Bool)) :
     (e : IfExpr) → { e' : IfExpr //
-        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) (fun b => b)))
+        (∀ f, e'.eval f = e.eval (fun w => (l.lookup w).elim (f w) id))
         ∧ e'.normalized
         ∧ ∀ (v : ℕ), v ∈ vars e' → l.lookup v = none }
   | lit b => ⟨lit b, ◾⟩
@@ -79,7 +71,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp
+          simp? says simp only [apply_ite, eval_ite_var, ite_eq_iff']
           cases hfv : f v
           · simp_all
             congr
@@ -92,14 +84,14 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- normalized
           have := ht₃ v
           have := he₃ v
-          ◾
+          split <;> ◾
         · -- lookup = none
           have := ht₃ w
           have := he₃ w
           by_cases w = v <;> ◾⟩
     | some b =>
       have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
-  termination_by normalize e => e.normSize
+  termination_by e => e.normSize
 
 /-
 We recall the statement of the if-normalization problem.
@@ -112,3 +104,5 @@ recall IfNormalization :=
 
 example : IfNormalization :=
   ⟨_, fun e => ⟨(IfExpr.normalize ∅ e).2.2.1, by simp [(IfExpr.normalize ∅ e).2.1]⟩⟩
+
+end IfExpr

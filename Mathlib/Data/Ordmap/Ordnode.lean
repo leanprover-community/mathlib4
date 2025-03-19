@@ -6,9 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
-import Mathlib.Init.Data.Nat.Bitwise
-
-#align_import data.ordmap.ordnode from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
+import Mathlib.Data.Option.Basic
 
 /-!
 # Ordered sets
@@ -63,21 +61,14 @@ ordered map, ordered set, data structure
 
 -/
 
-set_option autoImplicit true
+universe u
 
-
-
-/- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
-  nil {} -/
 /-- An `Ordnode α` is a finite set of values, represented as a tree.
   The operations on this type maintain that the tree is balanced
   and correctly stores subtree sizes at each level. -/
 inductive Ordnode (α : Type u) : Type u
   | nil : Ordnode α
   | node (size : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α
-#align ordnode Ordnode
-
--- Porting note: `Nat.Partrec.Code.recOn` is noncomputable in Lean4, so we make it computable.
 compile_inductive% Ordnode
 
 namespace Ordnode
@@ -101,7 +92,6 @@ of `(3, 2)` and `(4, 2)` will work, and the proofs in
 @[inline]
 def delta :=
   3
-#align ordnode.delta Ordnode.delta
 
 /-- **Internal use only**
 
@@ -113,7 +103,6 @@ of `α` in Adam's article. -/
 @[inline]
 def ratio :=
   2
-#align ordnode.ratio Ordnode.ratio
 
 /-- O(1). Construct a singleton set containing value `a`.
 
@@ -121,9 +110,7 @@ def ratio :=
 @[inline]
 protected def singleton (a : α) : Ordnode α :=
   node 1 nil a nil
-#align ordnode.singleton Ordnode.singleton
 
--- mathport name: «exprι »
 local prefix:arg "ι" => Ordnode.singleton
 
 instance : Singleton α (Ordnode α) :=
@@ -131,20 +118,17 @@ instance : Singleton α (Ordnode α) :=
 
 /-- O(1). Get the size of the set.
 
-     size {2, 1, 1, 4} = 3  -/
+`size {2, 1, 1, 4} = 3` -/
 @[inline]
 def size : Ordnode α → ℕ
   | nil => 0
   | node sz _ _ _ => sz
-#align ordnode.size Ordnode.size
 
-theorem size_nil : size (nil : Ordnode α) = 0 :=
+@[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
   rfl
-theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
+@[simp] theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) :
+    size (node sz l x r) = sz :=
   rfl
-
-attribute [eqns size_nil size_node] size
-attribute [simp] size
 
 /-- O(1). Is the set empty?
 
@@ -154,7 +138,6 @@ attribute [simp] size
 def empty : Ordnode α → Bool
   | nil => true
   | node _ _ _ _ => false
-#align ordnode.empty Ordnode.empty
 
 /-- **Internal use only**, because it violates the BST property on the original order.
 
@@ -165,7 +148,6 @@ symmetries in the algorithms. -/
 def dual : Ordnode α → Ordnode α
   | nil => nil
   | node s l x r => node s (dual r) x (dual l)
-#align ordnode.dual Ordnode.dual
 
 /-- **Internal use only**
 
@@ -173,7 +155,6 @@ O(1). Construct a node with the correct size information, without rebalancing. -
 @[inline, reducible]
 def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
   node (size l + size r + 1) l x r
-#align ordnode.node' Ordnode.node'
 
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
@@ -186,7 +167,6 @@ def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
         [repr l n, Repr.reprPrec x n, repr r n]
         " "
       Std.Format.paren fmt
-#align ordnode.repr Ordnode.repr
 
 instance {α} [Repr α] : Repr (Ordnode α) :=
   ⟨repr⟩
@@ -197,28 +177,27 @@ instance {α} [Repr α] : Repr (Ordnode α) :=
 O(1). Rebalance a tree which was previously balanced but has had its left
 side grow by 1, or its right side shrink by 1. -/
 def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
-  cases' id r with rs
-  · cases' id l with ls ll lx lr
+  rcases id r with _ | rs
+  · rcases id l with _ | ⟨ls, ll, lx, lr⟩
     · exact ι x
-    · cases' id ll with lls
-      · cases' lr with _ _ lrx
+    · rcases id ll with _ | lls
+      · rcases lr with _ | ⟨_, _, lrx⟩
         · exact node 2 l x nil
         · exact node 3 (ι lx) lrx ι x
-      · cases' id lr with lrs lrl lrx lrr
+      · rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
         · exact node 3 ll lx ι x
         · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
                 (node (size lrr + 1) lrr x nil)
-  · cases' id l with ls ll lx lr
+  · rcases id l with _ | ⟨ls, ll, lx, lr⟩
     · exact node (rs + 1) nil x r
-    · refine' if ls > delta * rs then _ else node (ls + rs + 1) l x r
-      cases' id ll with lls
+    · refine if ls > delta * rs then ?_ else node (ls + rs + 1) l x r
+      rcases id ll with _ | lls
       · exact nil
       --should not happen
-      cases' id lr with lrs lrl lrx lrr
+      rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
       · exact nil
       --should not happen
       exact
@@ -226,35 +205,33 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         else
           node (ls + rs + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
             (node (size lrr + rs + 1) lrr x r)
-#align ordnode.balance_l Ordnode.balanceL
 
 /-- **Internal use only**
 
 O(1). Rebalance a tree which was previously balanced but has had its right
 side grow by 1, or its left side shrink by 1. -/
 def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
-  cases' id l with ls
-  · cases' id r with rs rl rx rr
+  rcases id l with _ | ls
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact ι x
-    · cases' id rr with rrs
-      · cases' rl with _ _ rlx
+    · rcases id rr with _ | rrs
+      · rcases rl with _ | ⟨_, _, rlx⟩
         · exact node 2 nil x r
         · exact node 3 (ι x) rlx ι rx
-      · cases' id rl with rls rll rlx rlr
+      · rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
         · exact node 3 (ι x) rx rr
         · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
                 (node (size rlr + rrs + 1) rlr rx rr)
-  · cases' id r with rs rl rx rr
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact node (ls + 1) l x nil
-    · refine' if rs > delta * ls then _ else node (ls + rs + 1) l x r
-      cases' id rr with rrs
+    · refine if rs > delta * ls then ?_ else node (ls + rs + 1) l x r
+      rcases id rr with _ | rrs
       · exact nil
       --should not happen
-      cases' id rl with rls rll rlx rlr
+      rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
       · exact nil
       --should not happen
       exact
@@ -262,46 +239,44 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         else
           node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
             (node (size rlr + rrs + 1) rlr rx rr)
-#align ordnode.balance_r Ordnode.balanceR
 
 /-- **Internal use only**
 
 O(1). Rebalance a tree which was previously balanced but has had one side change
 by at most 1. -/
 def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
-  cases' id l with ls ll lx lr
-  · cases' id r with rs rl rx rr
+  rcases id l with _ | ⟨ls, ll, lx, lr⟩
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
     · exact ι x
-    · cases' id rl with rls rll rlx rlr
+    · rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
       · cases id rr
         · exact node 2 nil x r
         · exact node 3 (ι x) rx rr
-      · cases' id rr with rrs
+      · rcases id rr with _ | rrs
         · exact node 3 (ι x) rlx ι rx
         · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
                 (node (size rlr + rrs + 1) rlr rx rr)
-  · cases' id r with rs rl rx rr
-    · cases' id ll with lls
-      · cases' lr with _ _ lrx
+  · rcases id r with _ | ⟨rs, rl, rx, rr⟩
+    · rcases id ll with _ | lls
+      · rcases lr with _ | ⟨_, _, lrx⟩
         · exact node 2 l x nil
         · exact node 3 (ι lx) lrx ι x
-      · cases' id lr with lrs lrl lrx lrr
+      · rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
         · exact node 3 ll lx ι x
         · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
                 (node (size lrr + 1) lrr x nil)
-    · refine'
-        if delta * ls < rs then _ else if delta * rs < ls then _ else node (ls + rs + 1) l x r
-      · cases' id rl with rls rll rlx rlr
+    · refine
+        if delta * ls < rs then ?_ else if delta * rs < ls then ?_ else node (ls + rs + 1) l x r
+      · rcases id rl with _ | ⟨rls, rll, rlx, rlr⟩
         · exact nil
         --should not happen
-        cases' id rr with rrs
+        rcases id rr with _ | rrs
         · exact nil
         --should not happen
         exact
@@ -309,10 +284,10 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
           else
             node (ls + rs + 1) (node (ls + size rll + 1) l x rll) rlx
               (node (size rlr + rrs + 1) rlr rx rr)
-      · cases' id ll with lls
+      · rcases id ll with _ | lls
         · exact nil
         --should not happen
-        cases' id lr with lrs lrl lrx lrr
+        rcases id lr with _ | ⟨lrs, lrl, lrx, lrr⟩
         · exact nil
         --should not happen
         exact
@@ -320,7 +295,6 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
           else
             node (ls + rs + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
               (node (size lrr + rs + 1) lrr x r)
-#align ordnode.balance Ordnode.balance
 
 /-- O(n). Does every element of the map satisfy property `P`?
 
@@ -329,15 +303,13 @@ def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 def All (P : α → Prop) : Ordnode α → Prop
   | nil => True
   | node _ l x r => All P l ∧ P x ∧ All P r
-#align ordnode.all Ordnode.All
 
 instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P] → Decidable (All P t)
-  | nil => decidableTrue
-  | node _ l _ r =>
+  | nil => isTrue trivial
+  | node _ l m r =>
     have : Decidable (All P l) := All.decidable l
     have : Decidable (All P r) := All.decidable r
-    And.decidable
-#align ordnode.all.decidable Ordnode.All.decidable
+    inferInstanceAs <| Decidable (All P l ∧ P m ∧ All P r)
 
 /-- O(n). Does any element of the map satisfy property `P`?
 
@@ -346,15 +318,13 @@ instance All.decidable {P : α → Prop} : (t : Ordnode α) → [DecidablePred P
 def Any (P : α → Prop) : Ordnode α → Prop
   | nil => False
   | node _ l x r => Any P l ∨ P x ∨ Any P r
-#align ordnode.any Ordnode.Any
 
 instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
-  | nil => decidableFalse
-  | node _ l _ r =>
+  | nil => isFalse id
+  | node _ l m r =>
     have : Decidable (Any P l) := Any.decidable l
     have : Decidable (Any P r) := Any.decidable r
-    Or.decidable
-#align ordnode.any.decidable Ordnode.Any.decidable
+    inferInstanceAs <| Decidable (Any P l ∨ P m ∨ Any P r)
 
 /-- O(n). Exact membership in the set. This is useful primarily for stating
 correctness properties; use `∈` for a version that actually uses the BST property
@@ -364,11 +334,9 @@ of the tree.
     Emem 4 {1, 2, 3} = false -/
 def Emem (x : α) : Ordnode α → Prop :=
   Any (Eq x)
-#align ordnode.emem Ordnode.Emem
 
 instance Emem.decidable (x : α) [DecidableEq α] : ∀ t, Decidable (Emem x t) := by
   dsimp [Emem]; infer_instance
-#align ordnode.emem.decidable Ordnode.Emem.decidable
 
 /-- O(n). Approximate membership in the set, that is, whether some element in the
 set is equivalent to this one in the preorder. This is useful primarily for stating
@@ -380,21 +348,18 @@ of the tree.
 
 To see the difference with `Emem`, we need a preorder that is not a partial order.
 For example, suppose we compare pairs of numbers using only their first coordinate. Then:
--- Porting note: Verify below example
-    emem (0, 1) {(0, 0), (1, 2)} = false
-    amem (0, 1) {(0, 0), (1, 2)} = true
+-- TODO: Verify below example
+    Emem (0, 1) {(0, 0), (1, 2)} = false
+    Amem (0, 1) {(0, 0), (1, 2)} = true
     (0, 1) ∈ {(0, 0), (1, 2)} = true
 
 The `∈` relation is equivalent to `Amem` as long as the `Ordnode` is well formed,
 and should always be used instead of `Amem`. -/
 def Amem [LE α] (x : α) : Ordnode α → Prop :=
   Any fun y => x ≤ y ∧ y ≤ x
-#align ordnode.amem Ordnode.Amem
 
-instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
-    ∀ t, Decidable (Amem x t) := by
+instance Amem.decidable [LE α] [DecidableLE α] (x : α) : ∀ t, Decidable (Amem x t) := by
   dsimp [Amem]; infer_instance
-#align ordnode.amem.decidable Ordnode.Amem.decidable
 
 /-- O(log n). Return the minimum element of the tree, or the provided default value.
 
@@ -403,7 +368,6 @@ instance Amem.decidable [LE α] [@DecidableRel α (· ≤ ·)] (x : α) :
 def findMin' : Ordnode α → α → α
   | nil, x => x
   | node _ l x _, _ => findMin' l x
-#align ordnode.find_min' Ordnode.findMin'
 
 /-- O(log n). Return the minimum element of the tree, if it exists.
 
@@ -412,7 +376,6 @@ def findMin' : Ordnode α → α → α
 def findMin : Ordnode α → Option α
   | nil => none
   | node _ l x _ => some (findMin' l x)
-#align ordnode.find_min Ordnode.findMin
 
 /-- O(log n). Return the maximum element of the tree, or the provided default value.
 
@@ -421,7 +384,6 @@ def findMin : Ordnode α → Option α
 def findMax' : α → Ordnode α → α
   | x, nil => x
   | _, node _ _ x r => findMax' x r
-#align ordnode.find_max' Ordnode.findMax'
 
 /-- O(log n). Return the maximum element of the tree, if it exists.
 
@@ -430,7 +392,6 @@ def findMax' : α → Ordnode α → α
 def findMax : Ordnode α → Option α
   | nil => none
   | node _ _ x r => some (findMax' x r)
-#align ordnode.find_max Ordnode.findMax
 
 /-- O(log n). Remove the minimum element from the tree, or do nothing if it is already empty.
 
@@ -440,7 +401,6 @@ def eraseMin : Ordnode α → Ordnode α
   | nil => nil
   | node _ nil _ r => r
   | node _ (node sz l' y r') x r => balanceR (eraseMin (node sz l' y r')) x r
-#align ordnode.erase_min Ordnode.eraseMin
 
 /-- O(log n). Remove the maximum element from the tree, or do nothing if it is already empty.
 
@@ -450,7 +410,6 @@ def eraseMax : Ordnode α → Ordnode α
   | nil => nil
   | node _ l _ nil => l
   | node _ l x (node sz l' y r') => balanceL l x (eraseMax (node sz l' y r'))
-#align ordnode.erase_max Ordnode.eraseMax
 
 /-- **Internal use only**, because it requires a balancing constraint on the inputs.
 
@@ -460,7 +419,6 @@ def splitMin' : Ordnode α → α → Ordnode α → α × Ordnode α
   | node _ ll lx lr, x, r =>
     let (xm, l') := splitMin' ll lx lr
     (xm, balanceR l' x r)
-#align ordnode.split_min' Ordnode.splitMin'
 
 /-- O(log n). Extract and remove the minimum element from the tree, if it exists.
 
@@ -469,7 +427,6 @@ def splitMin' : Ordnode α → α → Ordnode α → α × Ordnode α
 def splitMin : Ordnode α → Option (α × Ordnode α)
   | nil => none
   | node _ l x r => splitMin' l x r
-#align ordnode.split_min Ordnode.splitMin
 
 /-- **Internal use only**, because it requires a balancing constraint on the inputs.
 
@@ -479,7 +436,6 @@ def splitMax' : Ordnode α → α → Ordnode α → Ordnode α × α
   | l, x, node _ rl rx rr =>
     let (r', xm) := splitMax' rl rx rr
     (balanceL l x r', xm)
-#align ordnode.split_max' Ordnode.splitMax'
 
 /-- O(log n). Extract and remove the maximum element from the tree, if it exists.
 
@@ -488,7 +444,6 @@ def splitMax' : Ordnode α → α → Ordnode α → Ordnode α × α
 def splitMax : Ordnode α → Option (Ordnode α × α)
   | nil => none
   | node _ x l r => splitMax' x l r
-#align ordnode.split_max Ordnode.splitMax
 
 /-- **Internal use only**
 
@@ -503,7 +458,6 @@ def glue : Ordnode α → Ordnode α → Ordnode α
     else
       let (m, r') := splitMin' rl rx rr
       balanceL l m r'
-#align ordnode.glue Ordnode.glue
 
 /-- O(log(m + n)). Concatenate two trees that are ordered with respect to each other.
 
@@ -518,7 +472,6 @@ def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
           else
             if delta * rs < ls then balanceR ll lx (IHlr <| node rs rl rx rr)
             else glue (node ls ll lx lr) (node rs rl rx rr)
-#align ordnode.merge Ordnode.merge
 
 /-- O(log n). Insert an element above all the others, without any comparisons.
 (Assumes that the element is in fact above all the others).
@@ -528,7 +481,6 @@ def merge (l : Ordnode α) : Ordnode α → Ordnode α :=
 def insertMax : Ordnode α → α → Ordnode α
   | nil, x => ι x
   | node _ l y r, x => balanceR l y (insertMax r x)
-#align ordnode.insert_max Ordnode.insertMax
 
 /-- O(log n). Insert an element below all the others, without any comparisons.
 (Assumes that the element is in fact below all the others).
@@ -538,7 +490,6 @@ def insertMax : Ordnode α → α → Ordnode α
 def insertMin (x : α) : Ordnode α → Ordnode α
   | nil => ι x
   | node _ l y r => balanceR (insertMin x l) y r
-#align ordnode.insert_min Ordnode.insertMin
 
 /-- O(log(m+n)). Build a tree from an element between two trees, without any
 assumption on the relative sizes.
@@ -546,13 +497,6 @@ assumption on the relative sizes.
     link {1, 2} 4 {5, 6} = {1, 2, 4, 5, 6}
     link {1, 3} 2 {5} = precondition violation -/
 def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
-  -- Porting note: Previous code was:
-  -- (Ordnode.recOn l (insertMin x)) fun ls ll lx lr IHll IHlr r =>
-  --   (Ordnode.recOn r (insertMax l x)) fun rs rl rx rr IHrl IHrr =>
-  --     if delta * ls < rs then balanceL IHrl rx rr
-  --     else if delta * rs < ls then balanceR ll lx (IHlr r) else node' l x r
-  --
-  -- failed to elaborate eliminator, expected type is not available.
   match l with
   | nil => insertMin x
   | node ls ll lx lr => fun r ↦
@@ -562,7 +506,6 @@ def link (l : Ordnode α) (x : α) : Ordnode α → Ordnode α :=
       if delta * ls < rs then balanceL (link ll x rl) rx rr
       else if delta * rs < ls then balanceR ll lx (link lr x rr)
       else node' l x r
-#align ordnode.link Ordnode.link
 
 /-- O(n). Filter the elements of a tree satisfying a predicate.
 
@@ -573,7 +516,6 @@ def filter (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | node _ l x r => if p x then
                       link (filter p l) x (filter p r) else
                       merge (filter p l) (filter p r)
-#align ordnode.filter Ordnode.filter
 
 /-- O(n). Split the elements of a tree into those satisfying, and not satisfying, a predicate.
 
@@ -584,30 +526,16 @@ def partition (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α ×
     let (l₁, l₂) := partition p l
     let (r₁, r₂) := partition p r
     if p x then (link l₁ x r₁, merge l₂ r₂) else (merge l₁ r₁, link l₂ x r₂)
-#align ordnode.partition Ordnode.partition
 
-/- warning: ordnode.map -> Ordnode.map is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Type.{u2}}, (α -> β) -> (Ordnode.{u1} α) -> (Ordnode.{u2} β)
-but is expected to have type
-  forall {α : Type.{u2}} {β : Type.{u1}}, (α -> β) -> (Ordnode.{u2} α) -> (Ordnode.{u1} β)
-Case conversion may be inaccurate. Consider using '#align ordnode.map Ordnode.mapₓ'. -/
 /-- O(n). Map a function across a tree, without changing the structure. Only valid when
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
      partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
-     partition (λ x : ℕ, x - 2) {1, 2, 4} = precondition violation -/
+     partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)
-#align ordnode.map Ordnode.map
 
-/- warning: ordnode.fold -> Ordnode.fold is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Sort.{u2}}, β -> (β -> α -> β -> β) -> (Ordnode.{u1} α) -> β
-but is expected to have type
-  forall {α : Type.{u2}} {β : Sort.{u1}}, β -> (β -> α -> β -> β) -> (Ordnode.{u2} α) -> β
-Case conversion may be inaccurate. Consider using '#align ordnode.fold Ordnode.foldₓ'. -/
 /-- O(n). Fold a function across the structure of a tree.
 
      fold z f {1, 2, 4} = f (f z 1 z) 2 (f z 4 z)
@@ -617,35 +545,20 @@ is unspecified. -/
 def fold {β} (z : β) (f : β → α → β → β) : Ordnode α → β
   | nil => z
   | node _ l x r => f (fold z f l) x (fold z f r)
-#align ordnode.fold Ordnode.fold
 
-/- warning: ordnode.foldl -> Ordnode.foldl is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Sort.{u2}}, (β -> α -> β) -> β -> (Ordnode.{u1} α) -> β
-but is expected to have type
-  forall {α : Type.{u2}} {β : Sort.{u1}}, (β -> α -> β) -> β -> (Ordnode.{u2} α) -> β
-Case conversion may be inaccurate. Consider using '#align ordnode.foldl Ordnode.foldlₓ'. -/
 /-- O(n). Fold a function from left to right (in increasing order) across the tree.
 
      foldl f z {1, 2, 4} = f (f (f z 1) 2) 4 -/
 def foldl {β} (f : β → α → β) : β → Ordnode α → β
   | z, nil => z
   | z, node _ l x r => foldl f (f (foldl f z l) x) r
-#align ordnode.foldl Ordnode.foldl
 
-/- warning: ordnode.foldr -> Ordnode.foldr is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {β : Sort.{u2}}, (α -> β -> β) -> (Ordnode.{u1} α) -> β -> β
-but is expected to have type
-  forall {α : Type.{u2}} {β : Sort.{u1}}, (α -> β -> β) -> (Ordnode.{u2} α) -> β -> β
-Case conversion may be inaccurate. Consider using '#align ordnode.foldr Ordnode.foldrₓ'. -/
 /-- O(n). Fold a function from right to left (in decreasing order) across the tree.
 
      foldr f {1, 2, 4} z = f 1 (f 2 (f 4 z)) -/
 def foldr {β} (f : α → β → β) : Ordnode α → β → β
   | nil, z => z
   | node _ l x r, z => foldr f l (f x (foldr f r z))
-#align ordnode.foldr Ordnode.foldr
 
 /-- O(n). Build a list of elements in ascending order from the tree.
 
@@ -653,7 +566,6 @@ def foldr {β} (f : α → β → β) : Ordnode α → β → β
      toList {2, 1, 1, 4} = [1, 2, 4] -/
 def toList (t : Ordnode α) : List α :=
   foldr List.cons t []
-#align ordnode.to_list Ordnode.toList
 
 /-- O(n). Build a list of elements in descending order from the tree.
 
@@ -661,12 +573,10 @@ def toList (t : Ordnode α) : List α :=
      toRevList {2, 1, 1, 4} = [4, 2, 1] -/
 def toRevList (t : Ordnode α) : List α :=
   foldl (flip List.cons) [] t
-#align ordnode.to_rev_list Ordnode.toRevList
 
 instance [ToString α] : ToString (Ordnode α) :=
   ⟨fun t => "{" ++ String.intercalate ", " (t.toList.map toString) ++ "}"⟩
 
--- Porting note removed unsafe
 instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
   format := fun t => Std.Format.joinSep (t.toList.map Std.ToFormat.format) (Std.Format.text ", ")
 
@@ -676,40 +586,29 @@ instance [Std.ToFormat α] : Std.ToFormat (Ordnode α) where
      Equiv {1, 2, 4} {1, 2, 3} = false -/
 def Equiv (t₁ t₂ : Ordnode α) : Prop :=
   t₁.size = t₂.size ∧ t₁.toList = t₂.toList
-#align ordnode.equiv Ordnode.Equiv
 
-instance [DecidableEq α] : DecidableRel (@Equiv α) := fun _ _ => And.decidable
+instance [DecidableEq α] : DecidableRel (@Equiv α) := fun x y =>
+  inferInstanceAs (Decidable (x.size = y.size ∧ x.toList = y.toList))
 
 /-- O(2^n). Constructs the powerset of a given set, that is, the set of all subsets.
 
      powerset {1, 2, 3} = {∅, {1}, {2}, {3}, {1,2}, {1,3}, {2,3}, {1,2,3}} -/
 def powerset (t : Ordnode α) : Ordnode (Ordnode α) :=
   insertMin nil <| foldr (fun x ts => glue (insertMin (ι x) (map (insertMin x) ts)) ts) t nil
-#align ordnode.powerset Ordnode.powerset
 
 /-- O(m * n). The cartesian product of two sets: `(a, b) ∈ s.prod t` iff `a ∈ s` and `b ∈ t`.
 
      prod {1, 2} {2, 3} = {(1, 2), (1, 3), (2, 2), (2, 3)} -/
 protected def prod {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α × β) :=
   fold nil (fun s₁ a s₂ => merge s₁ <| merge (map (Prod.mk a) t₂) s₂) t₁
-#align ordnode.prod Ordnode.prod
 
 /-- O(m + n). Build a set on the disjoint union by combining sets on the factors.
 `Or.inl a ∈ s.copair t` iff `a ∈ s`, and `Or.inr b ∈ s.copair t` iff `b ∈ t`.
 
     copair {1, 2} {2, 3} = {inl 1, inl 2, inr 2, inr 3} -/
-protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (Sum α β) :=
+protected def copair {β} (t₁ : Ordnode α) (t₂ : Ordnode β) : Ordnode (α ⊕ β) :=
   merge (map Sum.inl t₁) (map Sum.inr t₂)
-#align ordnode.copair Ordnode.copair
 
-/- warning: ordnode.pmap -> Ordnode.pmap is a dubious translation:
-lean 3 declaration is
-  forall {α : Type.{u1}} {P : α -> Prop} {β : Type.{u2}}, (forall (a : α), (P a) -> β) ->
-    (forall (t : Ordnode.{u1} α), (Ordnode.All.{u1} α P t) -> (Ordnode.{u2} β))
-but is expected to have type
-  forall {α : Type.{u2}} {P : α -> Prop} {β : Type.{u1}}, (forall (a : α), (P a) -> β) ->
-    (forall (t : Ordnode.{u2} α), (Ordnode.All.{u2} α P t) -> (Ordnode.{u1} β))S
-Case conversion may be inaccurate. Consider using '#align ordnode.pmap Ordnode.pmapₓ'. -/
 /-- O(n). Map a partial function across a set. The result depends on a proof
 that the function is defined on all members of the set.
 
@@ -717,7 +616,6 @@ that the function is defined on all members of the set.
 def pmap {P : α → Prop} {β} (f : ∀ a, P a → β) : ∀ t : Ordnode α, All P t → Ordnode β
   | nil, _ => nil
   | node s l x r, ⟨hl, hx, hr⟩ => node s (pmap f l hl) (f x hx) (pmap f r hr)
-#align ordnode.pmap Ordnode.pmap
 
 /-- O(n). "Attach" the information that every element of `t` satisfies property
 P to these elements inside the set, producing a set in the subtype.
@@ -725,7 +623,6 @@ P to these elements inside the set, producing a set in the subtype.
     attach' (fun x ↦ x < 4) {1, 2} H = ({1, 2} : Ordnode {x // x<4}) -/
 def attach' {P : α → Prop} : ∀ t, All P t → Ordnode { a // P a } :=
   pmap Subtype.mk
-#align ordnode.attach' Ordnode.attach'
 
 /-- O(log n). Get the `i`th element of the set, by its index from left to right.
 
@@ -738,7 +635,6 @@ def nth : Ordnode α → ℕ → Option α
     | none => nth l i
     | some 0 => some x
     | some (j + 1) => nth r j
-#align ordnode.nth Ordnode.nth
 
 /-- O(log n). Remove the `i`th element of the set, by its index from left to right.
 
@@ -751,7 +647,6 @@ def removeNth : Ordnode α → ℕ → Ordnode α
     | none => balanceR (removeNth l i) x r
     | some 0 => glue l r
     | some (j + 1) => balanceL l x (removeNth r j)
-#align ordnode.remove_nth Ordnode.removeNth
 
 /-- Auxiliary definition for `take`. (Can also be used in lieu of `take` if you know the
 index is within the range of the data structure.)
@@ -767,7 +662,6 @@ def takeAux : Ordnode α → ℕ → Ordnode α
       | none => takeAux l i
       | some 0 => l
       | some (j + 1) => link l x (takeAux r j)
-#align ordnode.take_aux Ordnode.takeAux
 
 /-- O(log n). Get the first `i` elements of the set, counted from the left.
 
@@ -775,7 +669,6 @@ def takeAux : Ordnode α → ℕ → Ordnode α
      take 5 {a, b, c, d} = {a, b, c, d} -/
 def take (i : ℕ) (t : Ordnode α) : Ordnode α :=
   if size t ≤ i then t else takeAux t i
-#align ordnode.take Ordnode.take
 
 /-- Auxiliary definition for `drop`. (Can also be used in lieu of `drop` if you know the
 index is within the range of the data structure.)
@@ -791,7 +684,6 @@ def dropAux : Ordnode α → ℕ → Ordnode α
       | none => link (dropAux l i) x r
       | some 0 => insertMin x r
       | some (j + 1) => dropAux r j
-#align ordnode.drop_aux Ordnode.dropAux
 
 /-- O(log n). Remove the first `i` elements of the set, counted from the left.
 
@@ -799,7 +691,6 @@ def dropAux : Ordnode α → ℕ → Ordnode α
      drop 5 {a, b, c, d} = ∅ -/
 def drop (i : ℕ) (t : Ordnode α) : Ordnode α :=
   if size t ≤ i then nil else dropAux t i
-#align ordnode.drop Ordnode.drop
 
 /-- Auxiliary definition for `splitAt`. (Can also be used in lieu of `splitAt` if you know the
 index is within the range of the data structure.)
@@ -819,7 +710,6 @@ def splitAtAux : Ordnode α → ℕ → Ordnode α × Ordnode α
       | some (j + 1) =>
         let (r₁, r₂) := splitAtAux r j
         (link l x r₁, r₂)
-#align ordnode.split_at_aux Ordnode.splitAtAux
 
 /-- O(log n). Split a set at the `i`th element, getting the first `i` and everything else.
 
@@ -827,7 +717,6 @@ def splitAtAux : Ordnode α → ℕ → Ordnode α × Ordnode α
      splitAt 5 {a, b, c, d} = ({a, b, c, d}, ∅) -/
 def splitAt (i : ℕ) (t : Ordnode α) : Ordnode α × Ordnode α :=
   if size t ≤ i then (t, nil) else splitAtAux t i
-#align ordnode.split_at Ordnode.splitAt
 
 /-- O(log n). Get an initial segment of the set that satisfies the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
@@ -837,7 +726,6 @@ def splitAt (i : ℕ) (t : Ordnode α) : Ordnode α × Ordnode α :=
 def takeWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
   | node _ l x r => if p x then link l x (takeWhile p r) else takeWhile p l
-#align ordnode.take_while Ordnode.takeWhile
 
 /-- O(log n). Remove an initial segment of the set that satisfies the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
@@ -847,7 +735,6 @@ def takeWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
 def dropWhile (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α
   | nil => nil
   | node _ l x r => if p x then dropWhile p r else link (dropWhile p l) x r
-#align ordnode.drop_while Ordnode.dropWhile
 
 /-- O(log n). Split the set into those satisfying and not satisfying the predicate `p`.
 `p` is required to be antitone, that is, `x < y → p y → p x`.
@@ -863,7 +750,6 @@ def span (p : α → Prop) [DecidablePred p] : Ordnode α → Ordnode α × Ordn
     else
       let (l₁, l₂) := span p l
       (l₁, link l₂ x r)
-#align ordnode.span Ordnode.span
 
 /-- Auxiliary definition for `ofAscList`.
 
@@ -882,8 +768,7 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
         have := Nat.le_succ_of_le h
         let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
         (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
-        termination_by ofAscListAux₁ l => l.length
-#align ordnode.of_asc_list_aux₁ Ordnode.ofAscListAux₁
+        termination_by l => l.length
 
 /-- Auxiliary definition for `ofAscList`. -/
 def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
@@ -893,8 +778,7 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
       ofAscListAux₂ ys (link l x r) (s <<< 1)
-      termination_by ofAscListAux₂ l => l.length
-#align ordnode.of_asc_list_aux₂ Ordnode.ofAscListAux₂
+      termination_by l => l.length
 
 /-- O(n). Build a set from a list which is already sorted. Performs no comparisons.
 
@@ -903,11 +787,10 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
 def ofAscList : List α → Ordnode α
   | [] => nil
   | x :: xs => ofAscListAux₂ xs (ι x) 1
-#align ordnode.of_asc_list Ordnode.ofAscList
 
 section
 
-variable [LE α] [@DecidableRel α (· ≤ ·)]
+variable [LE α] [DecidableLE α]
 
 /-- O(log n). Does the set (approximately) contain the element `x`? That is,
 is there an element that is equivalent to `x` in the order?
@@ -926,7 +809,6 @@ def mem (x : α) : Ordnode α → Bool
     | Ordering.lt => mem x l
     | Ordering.eq => true
     | Ordering.gt => mem x r
-#align ordnode.mem Ordnode.mem
 
 /-- O(log n). Retrieve an element in the set that is equivalent to `x` in the order,
 if it exists.
@@ -945,14 +827,12 @@ def find (x : α) : Ordnode α → Option α
     | Ordering.lt => find x l
     | Ordering.eq => some y
     | Ordering.gt => find x r
-#align ordnode.find Ordnode.find
 
 instance : Membership α (Ordnode α) :=
-  ⟨fun x t => t.mem x⟩
+  ⟨fun t x => t.mem x⟩
 
 instance mem.decidable (x : α) (t : Ordnode α) : Decidable (x ∈ t) :=
   Bool.decEq _ _
-#align ordnode.mem.decidable Ordnode.mem.decidable
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
 If an equivalent element is already in the set, the function `f` is used to generate
@@ -972,7 +852,6 @@ def insertWith (f : α → α) (x : α) : Ordnode α → Ordnode α
     | Ordering.lt => balanceL (insertWith f x l) y r
     | Ordering.eq => node sz l (f y) r
     | Ordering.gt => balanceR l y (insertWith f x r)
-#align ordnode.insert_with Ordnode.insertWith
 
 /-- O(log n). Modify an element in the set with the given function,
 doing nothing if the key is not found.
@@ -992,7 +871,6 @@ def adjustWith (f : α → α) (x : α) : Ordnode α → Ordnode α
     | Ordering.lt => node sz (adjustWith f x l) y r
     | Ordering.eq => node sz l (f y) r
     | Ordering.gt => node sz l y (adjustWith f x r)
-#align ordnode.adjust_with Ordnode.adjustWith
 
 /-- O(log n). Modify an element in the set with the given function,
 doing nothing if the key is not found.
@@ -1011,7 +889,6 @@ def updateWith (f : α → Option α) (x : α) : Ordnode α → Ordnode α
       | none => glue l r
       | some a => node sz l a r
     | Ordering.gt => balanceL l y (updateWith f x r)
-#align ordnode.update_with Ordnode.updateWith
 
 /-- O(log n). Modify an element in the set with the given function,
 doing nothing if the key is not found.
@@ -1031,7 +908,6 @@ def alter (f : Option α → Option α) (x : α) : Ordnode α → Ordnode α
       | none => glue l r
       | some a => node sz l a r
     | Ordering.gt => balance l y (alter f x r)
-#align ordnode.alter Ordnode.alter
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
 If an equivalent element is already in the set, this replaces it.
@@ -1050,7 +926,6 @@ protected def insert (x : α) : Ordnode α → Ordnode α
     | Ordering.lt => balanceL (Ordnode.insert x l) y r
     | Ordering.eq => node sz l x r
     | Ordering.gt => balanceR l y (Ordnode.insert x r)
-#align ordnode.insert Ordnode.insert
 
 instance : Insert α (Ordnode α) :=
   ⟨Ordnode.insert⟩
@@ -1072,7 +947,6 @@ def insert' (x : α) : Ordnode α → Ordnode α
     | Ordering.lt => balanceL (insert' x l) y r
     | Ordering.eq => t
     | Ordering.gt => balanceR l y (insert' x r)
-#align ordnode.insert' Ordnode.insert'
 
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it.
 If an element equivalent to `x` is in the set, it is discarded.
@@ -1096,7 +970,6 @@ def split (x : α) : Ordnode α → Ordnode α × Ordnode α
     | Ordering.gt =>
       let (lt, gt) := split x r
       (link l y lt, gt)
-#align ordnode.split Ordnode.split
 
 /-- O(log n). Split the tree into those smaller than `x` and those greater than it,
 plus an element equivalent to `x`, if it exists.
@@ -1120,7 +993,6 @@ def split3 (x : α) : Ordnode α → Ordnode α × Option α × Ordnode α
     | Ordering.gt =>
       let (lt, f, gt) := split3 x r
       (link l y lt, f, gt)
-#align ordnode.split3 Ordnode.split3
 
 /-- O(log n). Remove an element from the set equivalent to `x`. Does nothing if there
 is no such element.
@@ -1139,13 +1011,11 @@ def erase (x : α) : Ordnode α → Ordnode α
     | Ordering.lt => balanceR (erase x l) y r
     | Ordering.eq => glue l r
     | Ordering.gt => balanceL l y (erase x r)
-#align ordnode.erase Ordnode.erase
 
 /-- Auxiliary definition for `findLt`. -/
 def findLtAux (x : α) : Ordnode α → α → α
   | nil, best => best
   | node _ l y r, best => if x ≤ y then findLtAux x l best else findLtAux x r y
-#align ordnode.find_lt_aux Ordnode.findLtAux
 
 /-- O(log n). Get the largest element in the tree that is `< x`.
 
@@ -1155,13 +1025,11 @@ def findLtAux (x : α) : Ordnode α → α → α
 def findLt (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r => if x ≤ y then findLt x l else some (findLtAux x r y)
-#align ordnode.find_lt Ordnode.findLt
 
 /-- Auxiliary definition for `findGt`. -/
 def findGtAux (x : α) : Ordnode α → α → α
   | nil, best => best
   | node _ l y r, best => if y ≤ x then findGtAux x r best else findGtAux x l y
-#align ordnode.find_gt_aux Ordnode.findGtAux
 
 /-- O(log n). Get the smallest element in the tree that is `> x`.
 
@@ -1171,7 +1039,6 @@ def findGtAux (x : α) : Ordnode α → α → α
 def findGt (x : α) : Ordnode α → Option α
   | nil => none
   | node _ l y r => if y ≤ x then findGt x r else some (findGtAux x l y)
-#align ordnode.find_gt Ordnode.findGt
 
 /-- Auxiliary definition for `findLe`. -/
 def findLeAux (x : α) : Ordnode α → α → α
@@ -1181,7 +1048,6 @@ def findLeAux (x : α) : Ordnode α → α → α
     | Ordering.lt => findLeAux x l best
     | Ordering.eq => y
     | Ordering.gt => findLeAux x r y
-#align ordnode.find_le_aux Ordnode.findLeAux
 
 /-- O(log n). Get the largest element in the tree that is `≤ x`.
 
@@ -1195,7 +1061,6 @@ def findLe (x : α) : Ordnode α → Option α
     | Ordering.lt => findLe x l
     | Ordering.eq => some y
     | Ordering.gt => some (findLeAux x r y)
-#align ordnode.find_le Ordnode.findLe
 
 /-- Auxiliary definition for `findGe`. -/
 def findGeAux (x : α) : Ordnode α → α → α
@@ -1205,9 +1070,7 @@ def findGeAux (x : α) : Ordnode α → α → α
     | Ordering.lt => findGeAux x l y
     | Ordering.eq => y
     | Ordering.gt => findGeAux x r best
-#align ordnode.find_ge_aux Ordnode.findGeAux
 
--- Porting note: find_le → findGe
 /-- O(log n). Get the smallest element in the tree that is `≥ x`.
 
      findGe 2 {1, 2, 4} = some 2
@@ -1220,7 +1083,6 @@ def findGe (x : α) : Ordnode α → Option α
     | Ordering.lt => some (findGeAux x l y)
     | Ordering.eq => some y
     | Ordering.gt => findGe x r
-#align ordnode.find_ge Ordnode.findGe
 
 /-- Auxiliary definition for `findIndex`. -/
 def findIndexAux (x : α) : Ordnode α → ℕ → Option ℕ
@@ -1230,7 +1092,6 @@ def findIndexAux (x : α) : Ordnode α → ℕ → Option ℕ
     | Ordering.lt => findIndexAux x l i
     | Ordering.eq => some (i + size l)
     | Ordering.gt => findIndexAux x r (i + size l + 1)
-#align ordnode.find_index_aux Ordnode.findIndexAux
 
 /-- O(log n). Get the index, counting from the left,
 of an element equivalent to `x` if it exists.
@@ -1240,7 +1101,6 @@ of an element equivalent to `x` if it exists.
     findIndex 5 {1, 2, 4} = none -/
 def findIndex (x : α) (t : Ordnode α) : Option ℕ :=
   findIndexAux x t 0
-#align ordnode.find_index Ordnode.findIndex
 
 /-- Auxiliary definition for `isSubset`. -/
 def isSubsetAux : Ordnode α → Ordnode α → Bool
@@ -1249,7 +1109,6 @@ def isSubsetAux : Ordnode α → Ordnode α → Bool
   | node _ l x r, t =>
     let (lt, found, gt) := split3 x t
     found.isSome && isSubsetAux l lt && isSubsetAux r gt
-#align ordnode.is_subset_aux Ordnode.isSubsetAux
 
 /-- O(m + n). Is every element of `t₁` equivalent to some element of `t₂`?
 
@@ -1257,7 +1116,6 @@ def isSubsetAux : Ordnode α → Ordnode α → Bool
      is_subset {1, 3} {1, 2, 4} = ff -/
 def isSubset (t₁ t₂ : Ordnode α) : Bool :=
   decide (size t₁ ≤ size t₂) && isSubsetAux t₁ t₂
-#align ordnode.is_subset Ordnode.isSubset
 
 /-- O(m + n). Is every element of `t₁` not equivalent to any element of `t₂`?
 
@@ -1269,7 +1127,6 @@ def disjoint : Ordnode α → Ordnode α → Bool
   | node _ l x r, t =>
     let (lt, found, gt) := split3 x t
     found.isNone && disjoint l lt && disjoint r gt
-#align ordnode.disjoint Ordnode.disjoint
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. The union of two sets, preferring members of
   `t₁` over those of `t₂` when equivalent elements are encountered.
@@ -1290,7 +1147,6 @@ def union : Ordnode α → Ordnode α → Ordnode α
       else
         let (l₂', r₂') := split x₁ t₂
         link (union l₁ l₂') x₁ (union r₁ r₂')
-#align ordnode.union Ordnode.union
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. Difference of two sets.
 
@@ -1304,7 +1160,6 @@ def diff : Ordnode α → Ordnode α → Ordnode α
       let l₁₂ := diff l₁ l₂
       let r₁₂ := diff r₁ r₂
       if size l₁₂ + size r₁₂ = size t₁ then t₁ else merge l₁₂ r₁₂
-#align ordnode.diff Ordnode.diff
 
 /-- O(m * log(|m ∪ n| + 1)), m ≤ n. Intersection of two sets, preferring members of
 `t₁` over those of `t₂` when equivalent elements are encountered.
@@ -1319,7 +1174,6 @@ def inter : Ordnode α → Ordnode α → Ordnode α
       let l₁₂ := inter l₁ l₂
       let r₁₂ := inter r₁ r₂
       cond y.isSome (link l₁₂ x r₁₂) (merge l₁₂ r₁₂)
-#align ordnode.inter Ordnode.inter
 
 /-- O(n * log n). Build a set from a list, preferring elements that appear earlier in the list
 in the case of equivalent elements.
@@ -1332,7 +1186,6 @@ Using a preorder on `ℕ × ℕ` that only compares the first coordinate:
     ofList [(1, 1), (0, 1), (1, 2)] = {(0, 1), (1, 1)} -/
 def ofList (l : List α) : Ordnode α :=
   l.foldr insert nil
-#align ordnode.of_list Ordnode.ofList
 
 /-- O(n * log n). Adaptively chooses between the linear and log-linear algorithm depending
   on whether the input list is already sorted.
@@ -1342,17 +1195,15 @@ def ofList (l : List α) : Ordnode α :=
 def ofList' : List α → Ordnode α
   | [] => nil
   | x :: xs => if List.Chain (fun a b => ¬b ≤ a) x xs then ofAscList (x :: xs) else ofList (x :: xs)
-#align ordnode.of_list' Ordnode.ofList'
 
 /-- O(n * log n). Map a function on a set. Unlike `map` this has no requirements on
 `f`, and the resulting set may be smaller than the input if `f` is noninjective.
 Equivalent elements are selected with a preference for smaller source elements.
 
     image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
-    image (λ x : ℕ, x - 2) {1, 2, 4} = {0, 2} -/
-def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
+    image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
+def image {α β} [LE β] [DecidableLE β] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
-#align ordnode.image Ordnode.image
 
 end
 

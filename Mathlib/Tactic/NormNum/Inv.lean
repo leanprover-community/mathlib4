@@ -11,7 +11,7 @@ import Mathlib.Algebra.Field.Basic
 # `norm_num` plugins for `Rat.cast` and `⁻¹`.
 -/
 
-set_option autoImplicit true
+variable {u : Lean.Level}
 
 namespace Mathlib.Meta.NormNum
 
@@ -57,6 +57,7 @@ theorem isRat_mkRat : {a na n : ℤ} → {b nb d : ℕ} → IsInt a na → IsNat
     IsRat (na / nb : ℚ) n d → IsRat (mkRat a b) n d
   | _, _, _, _, _, _, ⟨rfl⟩, ⟨rfl⟩, ⟨_, h⟩ => by rw [Rat.mkRat_eq_div]; exact ⟨_, h⟩
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `mkRat a b`,
 such that `norm_num` successfully recognises both `a` and `b`, and returns `a / b`. -/
 @[norm_num mkRat _ _]
@@ -64,21 +65,21 @@ def evalMkRat : NormNumExt where eval {u α} (e : Q(ℚ)) : MetaM (Result e) := 
   let .app (.app (.const ``mkRat _) (a : Q(ℤ))) (b : Q(ℕ)) ← whnfR e | failure
   haveI' : $e =Q mkRat $a $b := ⟨⟩
   let ra ← derive a
-  let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRingInt) : Q(Ring Int)) | failure
+  let some ⟨_, na, pa⟩ := ra.toInt (q(Int.instRing) : Q(Ring Int)) | failure
   let ⟨nb, pb⟩ ← deriveNat q($b) q(AddCommMonoidWithOne.toAddMonoidWithOne)
   let rab ← derive q($na / $nb : Rat)
-  let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.divisionRing)
+  let ⟨q, n, d, p⟩ ← rab.toRat' q(Rat.instDivisionRing)
   return .isRat' _ q n d q(isRat_mkRat $pa $pb $p)
 
-theorem isNat_ratCast [DivisionRing R] : {q : ℚ} → {n : ℕ} →
+theorem isNat_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℕ} →
     IsNat q n → IsNat (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isInt_ratCast [DivisionRing R] : {q : ℚ} → {n : ℤ} →
+theorem isInt_ratCast {R : Type*} [DivisionRing R] : {q : ℚ} → {n : ℤ} →
     IsInt q n → IsInt (q : R) n
   | _, _, ⟨rfl⟩ => ⟨by simp⟩
 
-theorem isRat_ratCast [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
+theorem isRat_ratCast {R : Type*} [DivisionRing R] [CharZero R] : {q : ℚ} → {n : ℤ} → {d : ℕ} →
     IsRat q n d → IsRat (q : R) n d
   | _, _, _, ⟨⟨qi,_,_⟩, rfl⟩ => ⟨⟨qi, by norm_cast, by norm_cast⟩, by simp only []; norm_cast⟩
 
@@ -128,10 +129,11 @@ theorem isRat_inv_neg {α} [DivisionRing α] [CharZero α] {a : α} {n d : ℕ} 
   have := invertibleOfNonzero (α := α) (Nat.cast_ne_zero.2 (Nat.succ_ne_zero n))
   generalize Nat.succ n = n at *
   use this; simp only [Int.ofNat_eq_coe, Int.cast_neg,
-    Int.cast_ofNat, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
+    Int.cast_natCast, invOf_eq_inv, inv_neg, neg_mul, mul_inv_rev, inv_inv]
 
 open Lean
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `norm_num` extension which identifies expressions of the form `a⁻¹`,
 such that `norm_num` successfully recognises `a`. -/
 @[norm_num _⁻¹] def evalInv : NormNumExt where eval {u α} e := do
@@ -159,7 +161,7 @@ such that `norm_num` successfully recognises `a`. -/
         let .isNat inst n pa := ra | failure
         haveI' : $n =Q nat_lit 1 := ⟨⟩
         assumeInstancesCommute
-        return .isNat inst n (q(isRat_inv_one $pa))
+        return .isNat inst n q(isRat_inv_one $pa)
     else if qa < 0 then
       if let some i := i then
         have lit : Q(ℕ) := na.appArg!

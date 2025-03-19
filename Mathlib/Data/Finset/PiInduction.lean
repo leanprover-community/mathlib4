@@ -3,10 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Sigma
-
-#align_import data.finset.pi_induction from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`
@@ -35,7 +34,7 @@ namespace Finset
 
 /-- General theorem for `Finset.induction_on_pi`-style induction principles. -/
 theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
-    (H_ex : ∀ (i) (s : Finset (α i)) (_ : s.Nonempty), ∃ x ∈ s, r i x (s.erase x))
+    (H_ex : ∀ (i) (s : Finset (α i)), s.Nonempty → ∃ x ∈ s, r i x (s.erase x))
     {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),
@@ -43,51 +42,44 @@ theorem induction_on_pi_of_choice (r : ∀ i, α i → Finset (α i) → Prop)
     p f := by
   cases nonempty_fintype ι
   induction' hs : univ.sigma f using Finset.strongInductionOn with s ihs generalizing f; subst s
-  cases' eq_empty_or_nonempty (univ.sigma f) with he hne
+  rcases eq_empty_or_nonempty (univ.sigma f) with he | hne
   · convert h0 using 1
     simpa [funext_iff] using he
   · rcases sigma_nonempty.1 hne with ⟨i, -, hi⟩
     rcases H_ex i (f i) hi with ⟨x, x_mem, hr⟩
     set g := update f i ((f i).erase x) with hg
--- Porting note: this tactic does not exist yet
---  clear_value g
+    clear_value g
     have hx' : x ∉ g i := by
-      rw [hg, update_same]
+      rw [hg, update_self]
       apply not_mem_erase
     rw [show f = update g i (insert x (g i)) by
-      rw [hg, update_idem, update_same, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
+      rw [hg, update_idem, update_self, insert_erase x_mem, update_eq_self]] at hr ihs ⊢
     clear hg
-    rw [update_same, erase_insert hx'] at hr
+    rw [update_self, erase_insert hx'] at hr
     refine step _ _ _ hr (ihs (univ.sigma g) ?_ _ rfl)
     rw [ssubset_iff_of_subset (sigma_mono (Subset.refl _) _)]
     exacts [⟨⟨i, x⟩, mem_sigma.2 ⟨mem_univ _, by simp⟩, by simp [hx']⟩,
       (@le_update_iff _ _ _ _ g g i _).2 ⟨subset_insert _ _, fun _ _ ↦ le_rfl⟩]
-#align finset.induction_on_pi_of_choice Finset.induction_on_pi_of_choice
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
 `i : ι`, and `x ∉ g i`, `p g` implies `p (update g i (insert x (g i)))`.
 
 See also `Finset.induction_on_pi_max` and `Finset.induction_on_pi_min` for specialized versions
-that require `∀ i, LinearOrder (α i)`.  -/
+that require `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi {p : (∀ i, Finset (α i)) → Prop} (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
-    (step :
-      ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i) (_ : x ∉ g i),
-        p g → p (update g i (insert x (g i)))) :
+    (step : ∀ (g : ∀ i, Finset (α i)) (i : ι), ∀ x ∉ g i, p g → p (update g i (insert x (g i)))) :
     p f :=
   induction_on_pi_of_choice (fun _ x s ↦ x ∉ s) (fun _ s ⟨x, hx⟩ ↦ ⟨x, hx, not_mem_erase x s⟩) f
     h0 step
-#align finset.induction_on_pi Finset.induction_on_pi
 
--- Porting note: this docstring is the exact translation of the one from mathlib3 but
--- the last sentence (here and in the next lemma) does make much sense to me...
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
 `i : ι`, and an element`x : α i` that is strictly greater than all elements of `g i`, `p g` implies
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
-version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
+version that needs `x ∉ g i` and does not need `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
@@ -96,7 +88,6 @@ theorem induction_on_pi_max [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α 
     p f :=
   induction_on_pi_of_choice (fun _ x s ↦ ∀ y ∈ s, y < x)
     (fun _ s hs ↦ ⟨s.max' hs, s.max'_mem hs, fun _ ↦ s.lt_max'_of_mem_erase_max' _⟩) f h0 step
-#align finset.induction_on_pi_max Finset.induction_on_pi_max
 
 /-- Given a predicate on functions `∀ i, Finset (α i)` defined on a finite type, it is true on all
 maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i, Finset (α i)`, an index
@@ -104,14 +95,13 @@ maps provided that it is true on `fun _ ↦ ∅` and for any function `g : ∀ i
 `p (update g i (insert x (g i)))`.
 
 This lemma requires `LinearOrder` instances on all `α i`. See also `Finset.induction_on_pi` for a
-version that `x ∉ g i` instead of ` does not need `∀ i, LinearOrder (α i)`. -/
+version that needs `x ∉ g i` and does not need `∀ i, LinearOrder (α i)`. -/
 theorem induction_on_pi_min [∀ i, LinearOrder (α i)] {p : (∀ i, Finset (α i)) → Prop}
     (f : ∀ i, Finset (α i)) (h0 : p fun _ ↦ ∅)
     (step :
       ∀ (g : ∀ i, Finset (α i)) (i : ι) (x : α i),
         (∀ y ∈ g i, x < y) → p g → p (update g i (insert x (g i)))) :
     p f :=
-  @induction_on_pi_max ι (fun i ↦ (α i)ᵒᵈ) _ _ _ _ _ _ h0 step
-#align finset.induction_on_pi_min Finset.induction_on_pi_min
+  induction_on_pi_max (α := fun i ↦ (α i)ᵒᵈ) _ h0 step
 
 end Finset

@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Pim Otte
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Algebra.BigOperators.Order
-
-#align_import data.nat.factorial.big_operators from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Tactic.Zify
 
 /-!
 # Factorial with big operators
@@ -14,32 +13,43 @@ import Mathlib.Algebra.BigOperators.Order
 This file contains some lemmas on factorials in combination with big operators.
 
 While in terms of semantics they could be in the `Basic.lean` file, importing
-`Algebra.BigOperators.Basic` leads to a cyclic import.
+`Algebra.BigOperators.Group.Finset` leads to a cyclic import.
 
 -/
 
 
-open BigOperators Finset Nat
+open Finset Nat
 
 namespace Nat
 
+lemma monotone_factorial : Monotone factorial := fun _ _ => factorial_le
+
 variable {α : Type*} (s : Finset α) (f : α → ℕ)
 
-theorem prod_factorial_pos : 0 < ∏ i in s, (f i)! :=
-  Finset.prod_pos fun i _ => factorial_pos (f i)
-#align nat.prod_factorial_pos Nat.prod_factorial_pos
+theorem prod_factorial_pos : 0 < ∏ i ∈ s, (f i)! := by positivity
 
-theorem prod_factorial_dvd_factorial_sum : (∏ i in s, (f i)!) ∣ (∑ i in s, f i)! := by
-  classical
-    induction' s using Finset.induction with a' s' has ih
-    · simp only [prod_empty, factorial, dvd_refl]
-    · simp only [Finset.prod_insert has, Finset.sum_insert has]
-      refine' dvd_trans (mul_dvd_mul_left (f a')! ih) _
-      apply Nat.factorial_mul_factorial_dvd_factorial_add
-#align nat.prod_factorial_dvd_factorial_sum Nat.prod_factorial_dvd_factorial_sum
+theorem prod_factorial_dvd_factorial_sum : (∏ i ∈ s, (f i)!) ∣ (∑ i ∈ s, f i)! := by
+  induction' s using Finset.cons_induction_on with a s has ih
+  · simp
+  · rw [prod_cons, Finset.sum_cons]
+    exact (mul_dvd_mul_left _ ih).trans (Nat.factorial_mul_factorial_dvd_factorial_add _ _)
 
-theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i in range k, (n - i)
+theorem ascFactorial_eq_prod_range (n : ℕ) : ∀ k, n.ascFactorial k = ∏ i ∈ range k, (n + i)
+  | 0 => rfl
+  | k + 1 => by rw [ascFactorial, prod_range_succ, mul_comm, ascFactorial_eq_prod_range n k]
+
+theorem descFactorial_eq_prod_range (n : ℕ) : ∀ k, n.descFactorial k = ∏ i ∈ range k, (n - i)
   | 0 => rfl
   | k + 1 => by rw [descFactorial, prod_range_succ, mul_comm, descFactorial_eq_prod_range n k]
+
+/-- `k!` divides the product of any `k` consecutive integers. -/
+lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ range k, (n + i) := by
+  rw [Int.dvd_iff_emod_eq_zero, Finset.prod_int_mod]
+  simp_rw [← Int.emod_add_emod n]
+  have hn : 0 ≤ n % k ! := Int.emod_nonneg n <| Int.natCast_ne_zero.mpr k.factorial_ne_zero
+  obtain ⟨x, hx⟩ := Int.eq_ofNat_of_zero_le hn
+  have hdivk := x.factorial_dvd_ascFactorial k
+  zify [x.ascFactorial_eq_prod_range k] at hdivk
+  rwa [← Finset.prod_int_mod, ← Int.dvd_iff_emod_eq_zero, hx]
 
 end Nat

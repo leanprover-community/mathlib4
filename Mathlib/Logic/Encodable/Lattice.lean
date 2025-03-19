@@ -5,8 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Logic.Pairwise
-
-#align_import logic.encodable.lattice from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+import Mathlib.Data.Set.Subsingleton
 
 /-!
 # Lattice operations on encodable types
@@ -30,32 +29,28 @@ theorem iSup_decode₂ [CompleteLattice α] (f : β → α) :
     ⨆ (i : ℕ) (b ∈ decode₂ β i), f b = (⨆ b, f b) := by
   rw [iSup_comm]
   simp only [mem_decode₂, iSup_iSup_eq_right]
-#align encodable.supr_decode₂ Encodable.iSup_decode₂
 
 theorem iUnion_decode₂ (f : β → Set α) : ⋃ (i : ℕ) (b ∈ decode₂ β i), f b = ⋃ b, f b :=
   iSup_decode₂ f
-#align encodable.Union_decode₂ Encodable.iUnion_decode₂
 
-/- Porting note: `@[elab_as_elim]` gives `unexpected eliminator resulting type`. -/
---@[elab_as_elim]
+@[elab_as_elim]
 theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C ∅) (H1 : ∀ b, C (f b)) {n} :
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
-    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty]
+    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty, reduceCtorEq]
     apply H0
   | some b => by
     convert H1 b
-    simp [ext_iff]
-#align encodable.Union_decode₂_cases Encodable.iUnion_decode₂_cases
+    simp [Set.ext_iff]
 
+open scoped Function in -- required for scoped `on` notation
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij
-  refine' disjoint_left.mpr fun x => _
+  refine disjoint_left.mpr fun x => ?_
   suffices ∀ a, encode a = i → x ∈ f a → ∀ b, encode b = j → x ∉ f b by simpa [decode₂_eq_some]
   rintro a rfl ha b rfl hb
   exact (hd (mt (congr_arg encode) ij)).le_bot ⟨ha, hb⟩
-#align encodable.Union_decode₂_disjoint_on Encodable.iUnion_decode₂_disjoint_on
 
 end Encodable
