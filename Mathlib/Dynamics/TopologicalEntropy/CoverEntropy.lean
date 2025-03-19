@@ -6,6 +6,7 @@ Authors: Damien Thomine, Pietro Monticone
 import Mathlib.Analysis.Asymptotics.ExpGrowth
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Real.ENatENNReal
+import Mathlib.Data.Rel.Cover
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
 
 /-!
