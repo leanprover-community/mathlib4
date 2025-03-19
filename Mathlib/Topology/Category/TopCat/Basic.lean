@@ -15,12 +15,13 @@ with the corresponding discrete, resp. trivial, topology. For a proof that these
 resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.TopCat.Adjunctions`.
 -/
 
+assert_not_exists Module
 
 open CategoryTheory TopologicalSpace Topology
 
 universe u
 
-/-- The category of semirings. -/
+/-- The category of topological spaces. -/
 structure TopCat where
   private mk ::
   /-- The underlying type. -/

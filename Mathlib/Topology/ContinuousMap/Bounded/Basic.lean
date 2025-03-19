@@ -46,7 +46,6 @@ structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpac
 
 section
 
--- Porting note: Changed type of `α β` from `Type*` to `outParam Type*`.
 /-- `BoundedContinuousMapClass F α β` states that `F` is a type of bounded continuous maps.
 
 You should also extend this typeclass when you extend `BoundedContinuousFunction`. -/
@@ -193,8 +192,6 @@ instance instPseudoMetricSpace : PseudoMetricSpace (α →ᵇ β) where
   dist_comm f g := by simp [dist_eq, dist_comm]
   dist_triangle _ _ _ := (dist_le (add_nonneg dist_nonneg' dist_nonneg')).2
     fun _ => le_trans (dist_triangle _ _ _) (add_le_add (dist_coe_le_dist _) (dist_coe_le_dist _))
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `edist_dist`
-  edist_dist x y := by dsimp; congr; simp [dist_nonneg']
 
 /-- The type of bounded continuous functions, with the uniform distance, is a metric space. -/
 instance instMetricSpace {β} [MetricSpace β] : MetricSpace (α →ᵇ β) where
@@ -261,7 +258,7 @@ alias embedding_coeFn := isEmbedding_coeFn
 
 variable (α) in
 /-- Constant as a continuous bounded function. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def const (b : β) : α →ᵇ β :=
   ⟨ContinuousMap.const α b, 0, by simp⟩
 
@@ -581,22 +578,71 @@ theorem one_compContinuous [TopologicalSpace γ] (f : C(γ, α)) : (1 : α →�
 
 end One
 
+section mul
+
+variable {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
+
+@[to_additive]
+instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
+    Mul (α →ᵇ R) where
+  mul f g :=
+    { toFun := fun x ↦ f x * g x
+      continuous_toFun := f.continuous.mul g.continuous
+      map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
+
+@[to_additive (attr := simp)]
+theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
+
+@[to_additive]
+theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
+    (f * g) x = f x * g x := rfl
+
+@[simp]
+theorem coe_nsmulRec [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
+    (f : α →ᵇ β) : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
+  | 0 => by rw [nsmulRec, zero_smul, coe_zero]
+  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec _ n]
+
+instance instSMulNat [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] :
+    SMul ℕ (α →ᵇ β) where
+  smul n f :=
+    { toContinuousMap := n • f.toContinuousMap
+      map_bounded' := by simpa [coe_nsmulRec] using (nsmulRec n f).map_bounded' }
+
+@[to_additive existing instSMulNat]
+instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
+  pow f n :=
+    { toFun := fun x ↦ (f x) ^ n
+      continuous_toFun := f.continuous.pow n
+      map_bounded' := by
+        obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
+        exact ⟨C, fun x y ↦ hC (by simp) (by simp)⟩ }
+
+@[to_additive]
+theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
+    ⇑(f ^ n) = (⇑f) ^ n := rfl
+
+@[to_additive (attr := simp)]
+theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) (x : α) :
+    (f ^ n) x = f x ^ n := rfl
+
+@[to_additive]
+instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
+    Monoid (α →ᵇ R) :=
+  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[to_additive]
+instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
+    CommMonoid (α →ᵇ R) where
+  __ := instMonoid
+  mul_comm f g := by ext x; simp [mul_apply, mul_comm]
+
+end mul
+
 section add
 
 variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
 variable (f g : α →ᵇ β) {x : α} {C : ℝ}
-
-/-- The pointwise sum of two bounded continuous functions is again bounded continuous. -/
-instance instAdd : Add (α →ᵇ β) where
-  add f g :=
-    { toFun := fun x ↦ f x + g x
-      continuous_toFun := f.continuous.add g.continuous
-      map_bounded' := add_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
-
-@[simp]
-theorem coe_add : ⇑(f + g) = f + g := rfl
-
-theorem add_apply : (f + g) x = f x + g x := rfl
 
 @[simp]
 theorem mkOfCompact_add [CompactSpace α] (f g : C(α, β)) :
@@ -604,25 +650,6 @@ theorem mkOfCompact_add [CompactSpace α] (f g : C(α, β)) :
 
 theorem add_compContinuous [TopologicalSpace γ] (h : C(γ, α)) :
     (g + f).compContinuous h = g.compContinuous h + f.compContinuous h := rfl
-
-@[simp]
-theorem coe_nsmulRec : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
-  | 0 => by rw [nsmulRec, zero_smul, coe_zero]
-  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec n]
-
-instance instSMulNat : SMul ℕ (α →ᵇ β) where
-  smul n f :=
-    { toContinuousMap := n • f.toContinuousMap
-      map_bounded' := by simpa [coe_nsmulRec] using (nsmulRec n f).map_bounded' }
-
-@[simp]
-theorem coe_nsmul (r : ℕ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rfl
-
-@[simp]
-theorem nsmul_apply (r : ℕ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
-
-instance instAddMonoid : AddMonoid (α →ᵇ β) :=
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
 
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
@@ -649,10 +676,6 @@ section comm_add
 
 variable [TopologicalSpace α]
 variable [PseudoMetricSpace β] [AddCommMonoid β] [BoundedAdd β] [ContinuousAdd β]
-
-@[to_additive]
-instance instAddCommMonoid : AddCommMonoid (α →ᵇ β) where
-  add_comm f g := by ext; simp [add_comm]
 
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
@@ -729,54 +752,11 @@ theorem intCast_apply [IntCast β] (m : ℤ) (x : α) : (m : α →ᵇ β) x = m
 
 end casts
 
-section mul
-
-variable [TopologicalSpace α] {R : Type*} [PseudoMetricSpace R]
-
-instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
-    Mul (α →ᵇ R) where
-  mul f g :=
-    { toFun := fun x ↦ f x * g x
-      continuous_toFun := f.continuous.mul g.continuous
-      map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
-
-@[simp]
-theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
-
-theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
-    (f * g) x = f x * g x := rfl
-
-instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
-  pow f n :=
-    { toFun := fun x ↦ (f x) ^ n
-      continuous_toFun := f.continuous.pow n
-      map_bounded' := by
-        obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
-        exact ⟨C, fun x y ↦ hC (by simp) (by simp)⟩ }
-
-theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
-    ⇑(f ^ n) = (⇑f) ^ n := rfl
-
-@[simp]
-theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) (x : α) :
-    (f ^ n) x = f x ^ n := rfl
-
-instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
-    Monoid (α →ᵇ R) :=
-  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-
-instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
-    CommMonoid (α →ᵇ R) where
-  __ := instMonoid
-  mul_comm f g := by ext x; simp [mul_apply, mul_comm]
-
-instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
-    [BoundedAdd R] [ContinuousAdd R] :
+instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
+    [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) :=
   Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
-
-end mul
 
 section NormedAddCommGroup
 
@@ -954,7 +934,6 @@ instance instSeminormedAddCommGroup : SeminormedAddCommGroup (α →ᵇ β) wher
 instance instNormedAddCommGroup {α β} [TopologicalSpace α] [NormedAddCommGroup β] :
     NormedAddCommGroup (α →ᵇ β) :=
   { instSeminormedAddCommGroup with
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added a proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 theorem nnnorm_def : ‖f‖₊ = nndist f 0 := rfl
@@ -993,14 +972,14 @@ theorem norm_compContinuous_le [TopologicalSpace γ] (f : α →ᵇ β) (g : C(�
 
 end NormedAddCommGroup
 
-section BoundedSMul
+section IsBoundedSMul
 
 /-!
-### `BoundedSMul` (in particular, topological module) structure
+### `IsBoundedSMul` (in particular, topological module) structure
 
 In this section, if `β` is a metric space and a `𝕜`-module whose addition and scalar multiplication
 are compatible with the metric structure, then we show that the space of bounded continuous
-functions from `α` to `β` inherits a so-called `BoundedSMul` structure (in particular, a
+functions from `α` to `β` inherits a so-called `IsBoundedSMul` structure (in particular, a
 `ContinuousMul` structure, which is the mathlib formulation of being a topological module), by
 using pointwise operations and checking that they are compatible with the uniform distance. -/
 
@@ -1009,7 +988,7 @@ variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [PseudoMe
 
 section SMul
 
-variable [Zero 𝕜] [Zero β] [SMul 𝕜 β] [BoundedSMul 𝕜 β]
+variable [Zero 𝕜] [Zero β] [SMul 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance instSMul : SMul 𝕜 (α →ᵇ β) where
   smul c f :=
@@ -1027,19 +1006,19 @@ theorem coe_smul (c : 𝕜) (f : α →ᵇ β) : ⇑(c • f) = fun x => c • f
 theorem smul_apply (c : 𝕜) (f : α →ᵇ β) (x : α) : (c • f) x = c • f x := rfl
 
 instance instIsScalarTower {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
-    [BoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
+    [IsBoundedSMul 𝕜' β] [SMul 𝕜' 𝕜] [IsScalarTower 𝕜' 𝕜 β] :
     IsScalarTower 𝕜' 𝕜 (α →ᵇ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_assoc ..
 
 instance instSMulCommClass {𝕜' : Type*} [PseudoMetricSpace 𝕜'] [Zero 𝕜'] [SMul 𝕜' β]
-    [BoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
+    [IsBoundedSMul 𝕜' β] [SMulCommClass 𝕜' 𝕜 β] :
     SMulCommClass 𝕜' 𝕜 (α →ᵇ β) where
   smul_comm _ _ _ := ext fun _ ↦ smul_comm ..
 
 instance instIsCentralScalar [SMul 𝕜ᵐᵒᵖ β] [IsCentralScalar 𝕜 β] : IsCentralScalar 𝕜 (α →ᵇ β) where
   op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
 
-instance instBoundedSMul : BoundedSMul 𝕜 (α →ᵇ β) where
+instance instIsBoundedSMul : IsBoundedSMul 𝕜 (α →ᵇ β) where
   dist_smul_pair' c f₁ f₂ := by
     rw [dist_le (mul_nonneg dist_nonneg dist_nonneg)]
     intro x
@@ -1057,7 +1036,7 @@ end SMul
 
 section MulAction
 
-variable [MonoidWithZero 𝕜] [Zero β] [MulAction 𝕜 β] [BoundedSMul 𝕜 β]
+variable [MonoidWithZero 𝕜] [Zero β] [MulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance instMulAction : MulAction 𝕜 (α →ᵇ β) :=
   DFunLike.coe_injective.mulAction _ coe_smul
@@ -1066,7 +1045,7 @@ end MulAction
 
 section DistribMulAction
 
-variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [BoundedSMul 𝕜 β]
+variable [MonoidWithZero 𝕜] [AddMonoid β] [DistribMulAction 𝕜 β] [IsBoundedSMul 𝕜 β]
 variable [BoundedAdd β] [ContinuousAdd β]
 
 instance instDistribMulAction : DistribMulAction 𝕜 (α →ᵇ β) :=
@@ -1076,7 +1055,7 @@ end DistribMulAction
 
 section Module
 
-variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [BoundedSMul 𝕜 β]
+variable [Semiring 𝕜] [AddCommMonoid β] [Module 𝕜 β] [IsBoundedSMul 𝕜 β]
 variable {f g : α →ᵇ β} {x : α} {C : ℝ}
 variable [BoundedAdd β] [ContinuousAdd β]
 
@@ -1089,7 +1068,7 @@ variable (𝕜)
 @[simps]
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
-  map_add' _ _ := add_apply _ _
+  map_add' _ _ := add_apply _ _ _
   map_smul' _ _ := smul_apply _ _ _
 
 variable (α β)
@@ -1103,7 +1082,7 @@ def toContinuousMapLinearMap : (α →ᵇ β) →ₗ[𝕜] C(α, β) where
 
 end Module
 
-end BoundedSMul
+end IsBoundedSMul
 
 section NormedSpace
 
@@ -1129,7 +1108,7 @@ variable [NontriviallyNormedField 𝕜] [NormedSpace 𝕜 β]
 variable [SeminormedAddCommGroup γ] [NormedSpace 𝕜 γ]
 variable (α)
 
--- TODO does this work in the `BoundedSMul` setting, too?
+-- TODO does this work in the `IsBoundedSMul` setting, too?
 /-- Postcomposition of bounded continuous functions into a normed module by a continuous linear map
 is a continuous linear map.
 Upgraded version of `ContinuousLinearMap.compLeftContinuous`, similar to `LinearMap.compLeft`. -/
@@ -1172,14 +1151,12 @@ instance instNonUnitalRing : NonUnitalRing (α →ᵇ R) :=
   DFunLike.coe_injective.nonUnitalRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => coe_nsmul _ _) fun _ _ => coe_zsmul _ _
 
-instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) :=
-  { instSeminormedAddCommGroup with
-    norm_mul := fun f g =>
-      norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _))
-        (fun x ↦ (norm_mul_le _ _).trans <|
-          mul_le_mul (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
-    -- Porting note: These 5 fields were missing. Add them.
-    left_distrib, right_distrib, zero_mul, mul_zero, mul_assoc }
+instance instNonUnitalSeminormedRing : NonUnitalSeminormedRing (α →ᵇ R) where
+  __ := instSeminormedAddCommGroup
+  __ := instNonUnitalRing
+  norm_mul_le f g := norm_ofNormedAddCommGroup_le _ (by positivity)
+    (fun x ↦ (norm_mul_le _ _).trans <| mul_le_mul
+      (norm_coe_le_norm f x) (norm_coe_le_norm g x) (norm_nonneg _) (norm_nonneg _))
 
 end Seminormed
 
@@ -1254,7 +1231,6 @@ In this section, if `R` is a normed commutative ring, then we show that the spac
 continuous functions from `α` to `R` inherits a normed commutative ring structure, by using
 pointwise operations and checking that they are compatible with the uniform distance. -/
 
-
 variable [TopologicalSpace α] {R : Type*}
 
 instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
@@ -1262,23 +1238,19 @@ instance instCommRing [SeminormedCommRing R] : CommRing (α →ᵇ R) where
 
 instance instSeminormedCommRing [SeminormedCommRing R] : SeminormedCommRing (α →ᵇ R) where
   __ := instCommRing
-  __ := instSeminormedAddCommGroup
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
-  norm_mul := norm_mul_le
+  __ := instNonUnitalSeminormedRing
 
 instance instNormedCommRing [NormedCommRing R] : NormedCommRing (α →ᵇ R) where
-  __ := instCommRing
+  __ := instSeminormedCommRing
   __ := instNormedAddCommGroup
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): Added proof for `norm_mul`
-  norm_mul := norm_mul_le
 
 end NormedCommRing
 
 section NonUnitalAlgebra
 
--- these hypotheses could be generalized if we generalize `BoundedSMul` to `Bornology`.
+-- these hypotheses could be generalized if we generalize `IsBoundedSMul` to `Bornology`.
 variable {𝕜 : Type*} [PseudoMetricSpace 𝕜] [TopologicalSpace α] [NonUnitalSeminormedRing β]
-variable [Zero 𝕜] [SMul 𝕜 β] [BoundedSMul 𝕜 β]
+variable [Zero 𝕜] [SMul 𝕜 β] [IsBoundedSMul 𝕜 β]
 
 instance [IsScalarTower 𝕜 β β] : IsScalarTower 𝕜 (α →ᵇ β) (α →ᵇ β) where
   smul_assoc _ _ _ := ext fun _ ↦ smul_mul_assoc ..
@@ -1353,8 +1325,8 @@ instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
 /- TODO: When `NormedModule` has been added to `Analysis.Normed.Module.Basic`, this
 shows that the space of bounded continuous functions from `α` to `β` is naturally a normed
 module over the algebra of bounded continuous functions from `α` to `𝕜`. -/
-instance : BoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=
-  BoundedSMul.of_norm_smul_le fun _ _ =>
+instance : IsBoundedSMul (α →ᵇ 𝕜) (α →ᵇ β) :=
+  IsBoundedSMul.of_norm_smul_le fun _ _ =>
     norm_ofNormedAddCommGroup_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
 
 end NormedAlgebra
@@ -1423,7 +1395,6 @@ instance instNormedLatticeAddCommGroup : NormedLatticeAddCommGroup (α →ᵇ β
       have i1 : ∀ t, ‖f t‖ ≤ ‖g t‖ := fun t => HasSolidNorm.solid (h t)
       rw [norm_le (norm_nonneg _)]
       exact fun t => (i1 t).trans (norm_coe_le_norm g t)
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `eq_of_dist_eq_zero`
     eq_of_dist_eq_zero }
 
 end NormedLatticeOrderedGroup

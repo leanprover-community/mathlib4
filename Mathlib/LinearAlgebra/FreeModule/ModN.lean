@@ -85,9 +85,7 @@ noncomputable def basis {ι : Type*} (b : Basis ι ℤ G) : Basis ι (ZMod n) (M
       exact (this ▸ (mapRange_surjective _ (map_zero _) ZMod.intCast_surjective).comp
         b.repr.surjective).of_comp
     ext x b
-    simp only [comp_apply, mapRange.linearMap_apply, AddMonoidHom.coe_toIntLinearMap,
-      Int.coe_castAddHom, mapRange_apply, Submodule.mkQ_apply, mod, g, f, H]
-    rfl
+    simp [mod, g, f, H]
 
 lemma basis_apply_eq_mkQ {ι : Type*} (b : Basis ι ℤ G) (i : ι) : basis b i = mkQ n (b i) := by
   rw [Basis.apply_eq_iff]; simp [basis, mkQ]

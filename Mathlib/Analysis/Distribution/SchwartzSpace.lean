@@ -86,9 +86,6 @@ variable {E F}
 
 namespace SchwartzMap
 
--- Porting note: removed
--- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
-
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
@@ -808,7 +805,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
       simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      (f.smooth'.prod hg.1)) ?_
+      (f.smooth'.prodMk hg.1)) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   use
