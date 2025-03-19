@@ -200,10 +200,13 @@ theorem mem_periodicPts : x ∈ periodicPts f ↔ ∃ n > 0, IsPeriodicPt f n x 
   Iff.rfl
 
 theorem periodicPts_subset_image : periodicPts f ⊆ range f := by
-  intro x h; rw [mem_periodicPts] at h; rcases h with ⟨n, h₁, h₂⟩
-  use f^[n - 1] x; nth_rw 1 [← iterate_one f]
+  intro x h
+  rw [mem_periodicPts] at h
+  rcases h with ⟨n, _, h⟩
+  use f^[n - 1] x
+  nth_rw 1 [← iterate_one f]
   rw [← iterate_add_apply, Nat.add_sub_cancel' (by omega)]
-  exact h₂
+  exact h
 
 theorem isPeriodicPt_of_mem_periodicPts_of_isPeriodicPt_iterate (hx : x ∈ periodicPts f)
     (hm : IsPeriodicPt f m (f^[n] x)) : IsPeriodicPt f m x := by
