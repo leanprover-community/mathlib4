@@ -513,7 +513,8 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
     · apply Ideal.mul_mem_left
       refine Ideal.mem_map_of_mem _ ?_
       simp only [ker_eq_ker_aeval_val, AddEquiv.toEquiv_eq_coe, RingHom.mem_ker, map_sum]
-      rw [← coeff_zero i, ← h₂]
+      conv_rhs => rw [← coeff_zero i]
+      rw [← h₂]
       clear h₂ hi
       have (x : (Q.comp P).Ring) : (Function.support fun a ↦ if a.1 = i then aeval P.val
           (monomial a.2 (coeff (e.symm a) x)) else 0) ⊆ ((support x).map e).toSet := by

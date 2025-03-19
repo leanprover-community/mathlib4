@@ -765,7 +765,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
     induction' x with r s
-    · simp
+    · simp only [map_zero, Submodule.zero_mem]
     · obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ s
       simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]
       induction x using Finsupp.induction_linear

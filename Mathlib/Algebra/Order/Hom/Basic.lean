@@ -215,7 +215,7 @@ attribute [simp] map_inv_eq_map
 attribute [to_additive] GroupSeminormClass.toMulLEAddHomClass
 
 -- See note [lower instance priority]
-instance (priority := 100) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
+instance (priority := 10) AddGroupSeminormClass.toZeroHomClass [AddGroup α]
     [OrderedAddCommMonoid β] [AddGroupSeminormClass F α β] : ZeroHomClass F α β :=
   { ‹AddGroupSeminormClass F α β› with }
 
