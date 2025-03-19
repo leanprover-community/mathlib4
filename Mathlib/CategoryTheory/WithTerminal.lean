@@ -313,7 +313,7 @@ theorem lift_map_liftStar {D : Type*} [Category D] {Z : D} (F : C ⥤ D) (M : �
     (hM : ∀ (x y : C) (f : x ⟶ y), F.map f ≫ M y = M x) (x : C) :
     (lift F M hM).map (starTerminal.from (incl.obj x)) ≫ (liftStar F M hM).hom =
       (inclLift F M hM).hom.app x ≫ M x := by
-  erw [Category.id_comp, Category.comp_id]
+  simp
   rfl
 
 /-- The uniqueness of `lift`. -/
