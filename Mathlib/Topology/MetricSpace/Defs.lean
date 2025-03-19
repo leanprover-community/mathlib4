@@ -35,7 +35,17 @@ universe u v w
 variable {α : Type u} {β : Type v} {X ι : Type*}
 variable [PseudoMetricSpace α]
 
-/-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
+/-- A metric space is a T1 topological space and uniform space equipped with a metric `dist`,
+such that the topology comes from metric.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+ensures that we do not get a diamond when doing
+`[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`: The product metric and product
+topology agree, but not definitionally so.
+
+When instantiating `MetricSpace`, the uniformity fields are not necessary, they
+will be filled in by default. There is a default value for the uniformity, that can be substituted
+in cases of interest, for instance when giving a `EMetricSpace` instance on a product. -/
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 

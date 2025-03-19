@@ -99,16 +99,17 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
-/-- Pseudo metric and Metric spaces
+/-- A pseudo metric space is a topological space and uniform space equipped with a metric `dist`,
+such that the topology comes from metric.
 
-A pseudo metric space is endowed with a distance for which the requirement `d(x,y)=0 → x = y` might
-not hold. A metric space is a pseudo metric space such that `d(x,y)=0 → x = y`.
-Each pseudo metric space induces a canonical `UniformSpace` and hence a canonical
-`TopologicalSpace` This is enforced in the type class definition, by extending the `UniformSpace`
-structure. When instantiating a `PseudoMetricSpace` structure, the uniformity fields are not
-necessary, they will be filled in by default. In the same way, each (pseudo) metric space induces a
-(pseudo) emetric space structure. It is included in the structure, but filled in by default.
--/
+We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+ensures that we do not get a diamond when doing
+`[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`: The product metric and
+product topology agree, but not definitionally so.
+
+When instantiating `PseudoMetricSpace`, the uniformity fields are not necessary, they
+will be filled in by default. There is a default value for the uniformity, that can be substituted
+in cases of interest, for instance when giving a `PseudoMetricSpace` instance on a product. -/
 class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
