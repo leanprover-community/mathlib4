@@ -376,7 +376,7 @@ variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
   [Module K M] [LieModule K L M]
   [IsTriangularizable K H M] [FiniteDimensional K M]
 
-lemma root_space_ad_is_nilpotent
+lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
   refine Module.Finite.Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
