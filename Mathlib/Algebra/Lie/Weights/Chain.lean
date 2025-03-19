@@ -369,7 +369,7 @@ end LieModule
 
 section Field
 
-open LieAlgebra LieModule Submodule
+open LieAlgebra LieModule
 
 variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
