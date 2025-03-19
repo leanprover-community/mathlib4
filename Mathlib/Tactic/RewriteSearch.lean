@@ -324,7 +324,7 @@ elab_rules : tactic |
   replaceMainGoal [min.goal]
   let type? ← if min.rfl? = some true then pure none else do pure <| some (← min.goal.getType)
   addRewriteSuggestion tk (min.history.toList.map (·.2))
-    type? (origSpan? := ← getRef)
+    type?.toLOption (origSpan? := ← getRef) (checkState? := (← saveState))
 
 end RewriteSearch
 
