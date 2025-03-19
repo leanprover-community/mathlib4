@@ -812,6 +812,11 @@ lemma forall_gt_iff_eq_top : (∀ a : α, a < y) ↔ y = ⊤ := by
 lemma forall_ge_iff_eq_top [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ :=
   WithBot.forall_le_iff_eq_bot (α := αᵒᵈ)
 
+lemma forall_coe_le_iff_le [NoMaxOrder α] {x y : WithTop α} : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
+  obtain _ | x := x
+  · simp [WithTop.none_eq_top, forall_ge_iff_eq_top]
+  · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ ham.trans hmn⟩
+
 end Preorder
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
