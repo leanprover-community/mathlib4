@@ -12,24 +12,17 @@ import Mathlib.Tactic.Cases
 /-!
 # The set lattice
 
-This file provides usual set notation for unions and intersections, a `CompleteLattice` instance
-for `Set α`, and some more set constructions.
+This file is a collection of results on the complete atomic boolean algebra structure of `Set α`.
+Notation for the complete lattice operations can be found in `Mathlib.Order.SetNotation`.
+
+This notation
 
 ## Main declarations
-
-* `Set.iUnion`: **i**ndexed **union**. Union of an indexed family of sets.
-* `Set.iInter`: **i**ndexed **inter**section. Intersection of an indexed family of sets.
-* `Set.sInter`: **s**et **inter**section. Intersection of sets belonging to a set of sets.
-* `Set.sUnion`: **s**et **union**. Union of sets belonging to a set of sets.
 * `Set.sInter_eq_biInter`, `Set.sUnion_eq_biInter`: Shows that `⋂₀ s = ⋂ x ∈ s, x` and
   `⋃₀ s = ⋃ x ∈ s, x`.
 * `Set.completeAtomicBooleanAlgebra`: `Set α` is a `CompleteAtomicBooleanAlgebra` with `≤ = ⊆`,
   `< = ⊂`, `⊓ = ∩`, `⊔ = ∪`, `⨅ = ⋂`, `⨆ = ⋃` and `\` as the set difference.
-  See `Set.BooleanAlgebra`.
-* `Set.kernImage`: For a function `f : α → β`, `s.kernImage f` is the set of `y` such that
-  `f ⁻¹ y ⊆ s`.
-* `Set.seq`: Union of the image of a set under a **seq**uence of functions. `seq s t` is the union
-  of `f '' t` over all `f ∈ s`, where `t : Set α` and `s : Set (α → β)`.
+  See `Set.instBooleanAlgebra`.
 * `Set.unionEqSigmaOfDisjoint`: Equivalence between `⋃ i, t i` and `Σ i, t i`, where `t` is an
   indexed family of disjoint sets.
 
