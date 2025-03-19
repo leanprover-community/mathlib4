@@ -290,7 +290,13 @@ to show the domain type when the product is over `Finset.univ`. -/
   | .filter ss p =>
     `(∏ $i:ident ∈ $ss with $p, $body)
   | .filterUniv p =>
-    `(∏ $i:ident with $p, $body)
+    let binder ←
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
+    `(∏ $binder:bigOpBinder with $p, $body)
 
 /-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
@@ -315,7 +321,13 @@ to show the domain type when the sum is over `Finset.univ`. -/
   | .filter ss p =>
     `(∑ $i:ident ∈ $ss with $p, $body)
   | .filterUniv p =>
-    `(∑ $i:ident with $p, $body)
+    let binder ←
+    if ppDomain then
+      let ty ← withNaryArg 0 delab
+      `(bigOpBinder| $i:ident : $ty)
+    else
+      `(bigOpBinder| $i:ident)
+    `(∑ $binder:bigOpBinder with $p, $body)
 
 end BigOperators
 
