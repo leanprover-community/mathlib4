@@ -105,6 +105,8 @@ end Prod
 
 namespace MulOpposite
 
+variable {A : Type*}
+
 instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
 
 instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
