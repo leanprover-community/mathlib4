@@ -49,8 +49,8 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
   borelize Z
   exact hg.measurable.factorsThrough
 
-variable {ι : Type*} [TopologicalSpace Z] [CompletelyMetrizableSpace Z] [Countable ι] {l : Filter ι}
-  [l.IsCountablyGenerated] {f : ι → X → Z}
+variable {ι : Type*} [TopologicalSpace Z] [IsCompletelyMetrizableSpace Z]
+  [Countable ι] {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → Z}
 
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/

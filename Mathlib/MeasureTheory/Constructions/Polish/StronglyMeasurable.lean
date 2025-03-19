@@ -23,7 +23,7 @@ open Filter MeasureTheory Set TopologicalSpace
 
 open scoped Topology
 
-variable {ι X E : Type*} [MeasurableSpace X] [TopologicalSpace E] [CompletelyMetrizableSpace E]
+variable {ι X E : Type*} [MeasurableSpace X] [TopologicalSpace E] [IsCompletelyMetrizableSpace E]
   [Countable ι] {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → E}
 
 namespace MeasureTheory.StronglyMeasurable
@@ -33,12 +33,12 @@ theorem measurableSet_exists_tendsto (hf : ∀ i, StronglyMeasurable (f i)) :
   obtain rfl | hl := eq_or_neBot l
   · simp_all
   borelize E
-  letI := upgradeCompletelyMetrizable E
+  letI := upgradeIsCompletelyMetrizable E
   let s := closure (⋃ i, range (f i))
   have : PolishSpace s :=
     { toSecondCountableTopology := @UniformSpace.secondCountable_of_separable s _ _
         (IsSeparable.iUnion (fun i ↦ (hf i).isSeparable_range)).closure.separableSpace
-      toCompletelyMetrizableSpace := isClosed_closure.CompletelyMetrizableSpace }
+      toIsCompletelyMetrizableSpace := isClosed_closure.isCompletelyMetrizableSpace }
   let g i x : s := ⟨f i x, subset_closure <| mem_iUnion.2 ⟨i, ⟨x, rfl⟩⟩⟩
   have mg i : Measurable (g i) := (hf i).measurable.subtype_mk
   convert MeasureTheory.measurableSet_exists_tendsto (l := l) mg with x
