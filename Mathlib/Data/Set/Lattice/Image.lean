@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Set.Lattice
+import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
 # The set lattice and (pre)images of functions
@@ -566,7 +567,7 @@ theorem seq_subset {s : Set (α → β)} {t : Set α} {u : Set β} :
     seq s t ⊆ u ↔ ∀ f ∈ s, ∀ a ∈ t, (f : α → β) a ∈ u :=
   image2_subset_iff
 
-@[gcongr]
+@[gcongr, mono]
 theorem seq_mono {s₀ s₁ : Set (α → β)} {t₀ t₁ : Set α} (hs : s₀ ⊆ s₁) (ht : t₀ ⊆ t₁) :
     seq s₀ t₀ ⊆ seq s₁ t₁ := image2_subset hs ht
 
