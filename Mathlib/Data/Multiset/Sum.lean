@@ -21,7 +21,7 @@ open Sum
 
 namespace Multiset
 
-variable {α β : Type*} (s : Multiset α) (t : Multiset β)
+variable {α β γ : Type*} (s : Multiset α) (t : Multiset β)
 
 /-- Disjoint sum of multisets. -/
 def disjSum : Multiset (α ⊕ β) :=
@@ -87,5 +87,9 @@ protected theorem Nodup.disjSum (hs : s.Nodup) (ht : t.Nodup) : (s.disjSum t).No
   refine ((hs.map inl_injective).add_iff <| ht.map inr_injective).2 ?_
   rw [disjoint_map_map]
   exact fun _ _ _ _ ↦ inr_ne_inl.symm
+
+theorem map_disjSum (f : α ⊕ β → γ) :
+    (s.disjSum t).map f = s.map (f <| .inl ·) + t.map (f <| .inr ·) := by
+  simp_rw [disjSum, map_add, map_map, Function.comp_def]
 
 end Multiset
