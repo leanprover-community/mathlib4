@@ -637,7 +637,7 @@ theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
 agree in a punctured neighborhood of a non-isolated point iff they agree in a neighborhood. -/
 theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X} {f g : X → Y}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) [(𝓝[≠] x).NeBot] :
-  f =ᶠ[𝓝[≠] x] g ↔ f =ᶠ[𝓝 x] g := by
+    f =ᶠ[𝓝[≠] x] g ↔ f =ᶠ[𝓝 x] g := by
   constructor <;> intro hfg
   · apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE hfg
     by_contra hCon
