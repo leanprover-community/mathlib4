@@ -193,6 +193,11 @@ end Copy
 ### Containment
 
 #### Not necessarily induced containment
+
+A graph `H` *contains* a graph `G` if there is some copy `f : Copy G H` of `G` inside `H`. This
+amounts to `H` having a subgraph isomorphic to `G`.
+
+We denote "`G` is contained in `H`" by `G ⊑ H` (`\squb`).
 -/
 
 section IsContained
@@ -285,7 +290,7 @@ end Free
 A graph `H` *inducingly contains* a graph `G` if there is some graph embedding `G ↪ H`. This amounts
 to `H` having an induced subgraph isomorphic to `G`.
 
-We denote "`G` is contained in `H`" by `G ⊴ H` (`\triangle_left_eq`).
+We denote "`G` is inducingly contained in `H`" by `G ⊴ H` (`\trianglelefteq`).
 -/
 
 /-- A simple graph `G` is inducingly contained in a simple graph `H` if there exists an induced
@@ -310,13 +315,12 @@ protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.Is
 
 @[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
 lemma IsIndContained.rfl : G ⊴ G := .refl _
-lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+@[trans] lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
 
 lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
   ⟨{ toFun := isEmptyElim
      inj' := isEmptyElim
      map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
-
 
 lemma isIndContained_iff_exists_iso_subgraph :
     G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by
