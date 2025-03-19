@@ -14,8 +14,8 @@ of its coefficients and vice versa. We prove some basic APIs for these functions
 
 ## Main definitions
 
-- `Polynomial.toFn n` associates a polynomial to the vector of its first `n` coefficients.
-- `Polynomial.ofFn n` associates a vector of lenght `n` to a polynomial that has the entries of the
+- `Polynomial.toFn n` associates to a polynomial the vector of its first `n` coefficients.
+- `Polynomial.ofFn n` associates to a vector of length `n` the polynomial that has the entries of the
   vector as coefficients.
 -/
 
@@ -35,7 +35,6 @@ def toFn (n : ℕ) : R[X] →+ Fin n → R where
     simp only [coeff_zero]
     rfl
 
-@[simp]
 theorem toFn_zero (n : ℕ) : toFn n (0 : R[X]) = 0 := by simp
 
 end toFn
@@ -57,7 +56,6 @@ def ofFn (n : ℕ) : (Fin n → R) →+ R[X] where
     · simp [h]
     · simp [List.getD_getElem?, h]
 
-@[simp]
 theorem ofFn_zero (n : ℕ) : ofFn n (0 : Fin n → R) = 0 := by simp
 
 @[simp]
