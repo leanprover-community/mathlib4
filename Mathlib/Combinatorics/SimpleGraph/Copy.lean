@@ -70,6 +70,8 @@ lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
 
 @[simp] lemma coe_mk (f : A →g B) (hf) : ⇑(.mk f hf : Copy A B) = f := rfl
 
+@[deprecated (since := "2025-03-19")] alias coe_toHom_apply := toHom_apply
+
 /-- A copy induces an embedding of edge sets. -/
 def mapEdgeSet (f : Copy A B) : A.edgeSet ↪ B.edgeSet where
   toFun := f.toHom.mapEdgeSet
