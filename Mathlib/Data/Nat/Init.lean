@@ -897,9 +897,6 @@ lemma div_ne_zero_iff_of_dvd (hba : b ∣ a) : a / b ≠ 0 ↔ a ≠ 0 ∧ b ≠
   obtain rfl | hb := Decidable.em (b = 0) <;>
     simp [Nat.div_ne_zero_iff, Nat.le_iff_ne_zero_of_dvd, *]
 
-@[simp] lemma mul_mod_mod (a b c : ℕ) : (a * (b % c)) % c = a * b % c := by
-  rw [mul_mod, mod_mod, ← mul_mod]
-
 lemma pow_mod (a b n : ℕ) : a ^ b % n = (a % n) ^ b % n := by
   induction b with
   | zero => rfl
