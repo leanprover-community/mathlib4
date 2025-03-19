@@ -650,8 +650,7 @@ instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulO
 @[to_additive (attr := simps)
 "Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
 `AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
-protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
-    [TopologicalSpace α]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) [TopologicalSpace α]
     [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
     [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
     (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
@@ -1239,9 +1238,9 @@ instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instNonUnitalSeminormedRing
 
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
-`RingHom`.  Similar to `RingHom.compLeftContinuous`. -/
+`RingHom`. Similar to `RingHom.compLeftContinuous`. -/
 @[simps!]
-protected def _root_.RingHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
+protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
     [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
     (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
   { g.toMonoidHom.compLeftContinuousBounded α hg,
@@ -1337,7 +1336,7 @@ variable (𝕜)
 /-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
 as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
 @[simps!]
-protected def AlgHom.compLeftContinuousBounded {α : Type*} [TopologicalSpace α]
+protected def AlgHom.compLeftContinuousBounded
     [NormedRing β] [NormedAlgebra 𝕜 β][NormedRing γ] [NormedAlgebra 𝕜 γ]
     (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
   { g.toRingHom.compLeftContinuousBounded α hg with
@@ -1356,14 +1355,14 @@ def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
 @[simp]
 theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
 
+variable {𝕜}
+
 /-!
 ### Structure as normed module over scalar functions
 
 If `β` is a normed `𝕜`-space, then we show that the space of bounded continuous
 functions from `α` to `β` is naturally a module over the algebra of bounded continuous
 functions from `α` to `𝕜`. -/
-
-variable {𝕜}
 
 instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=
