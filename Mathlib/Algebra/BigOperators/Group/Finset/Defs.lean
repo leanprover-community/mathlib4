@@ -228,16 +228,8 @@ elab_rules : term
 
 end deprecated
 
-open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr Qq
+open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
-
-/-- For a finset of the form `{x ∈ s | p x}`, returns `(s, some p)`. For any other finset `s`,
-returns `(s, none)`. -/
-def getFinsetFilter {u : Level} {α : Q(Type u)} (s : Q(Finset $α)) :
-    MetaM (Q(Finset $α) × Option Q($α → Prop)) := do
-  match s with
-  | ~q(@Finset.filter _ _ $s $p) => return (s, some p)
-  | _ => return (s, none)
 
 /-- The possibilities we distinguish to delaborate the finset indexing a big operator:
 * `finset s` corresponds to `∑ x ∈ s, f x`
@@ -251,7 +243,8 @@ private inductive FinsetResult where
   | filter (s : Term) (p : Term)
   | filterUniv (p : Term)
 
-/-- Delaborates a finset. In case it is a `Finset.filter`, `i` is used for the binder name. -/
+/-- Delaborates a finset indexing a big operator. In case it is a `Finset.filter`, `i` is used for
+the binder name. -/
 private def delabFinsetArg (i : Ident) : DelabM FinsetResult := do
   let s ← getExpr
   if s.isAppOfArity ``Finset.univ 2 then

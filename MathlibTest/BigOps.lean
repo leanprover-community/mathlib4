@@ -23,18 +23,18 @@ variable {ι M : Type*} [CommMonoid M] [AddCommMonoid M] [Fintype ι] {s : Finse
 
 /-- info: ∑ i with p i, f i : M -/
 #guard_msgs in
-#check Finset.sum {i | p i} fun i ↦ f i
+#check Finset.sum {j | p j} fun i ↦ f i
 
 /-- info: ∏ i with p i, f i : M -/
-#guard_msgs in 
-#check Finset.prod {i | p i} fun i ↦ f i
+#guard_msgs in
+#check Finset.prod {j | p j} fun i ↦ f i
 
 /-- info: ∑ i ∈ s with p i, f i : M -/
 #guard_msgs in
-#check Finset.sum {i ∈ s | p i} fun i ↦ f i
+#check Finset.sum {j ∈ s | p j} fun i ↦ f i
 
 /-- info: ∏ i ∈ s with p i, f i : M -/
 #guard_msgs in
-#check Finset.prod {i ∈ s | p i} fun i ↦ f i
+#check Finset.prod {j ∈ s | p j} fun i ↦ f i
 
 end
