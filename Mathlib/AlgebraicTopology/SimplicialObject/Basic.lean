@@ -255,8 +255,7 @@ notation `X _⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
 cosimplicial object notation `X ^⦋m⦌ₙ` is defined later in this file. -/
 
 open SimplexCategory.Truncated Lean PrettyPrinter.Delaborator SubExpr
-open SimplexCategory.Truncated.Meta (subscript)
-open Mathlib.Tactic (subscriptTerm)
+open Mathlib.Tactic (subscriptTerm delabSubscript)
 
 /-- For `X : Truncated C n` and `m ≤ n`, `X _⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _⦋m, p⦌ₙ`. Access
@@ -283,9 +282,9 @@ def delabMkNotation : Delab :=
     let_expr FullSubcategory.mk _ _ simplex _ := x | failure
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
     let_expr Opposite src := src | failure
-    let_expr SimplexCategory.Truncated n := src | failure
+    guard <| src.isAppOfArity ``SimplexCategory.Truncated 1
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let n ← withNaryArg 0 <| withAppArg <| withAppArg <| subscript n
+    let n ← withNaryArg 0 <| withAppArg <| withAppArg <| delabSubscript
     let m ← withAppArg <| withAppArg <| withNaryArg 2 <| withAppArg delab
     let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
@@ -738,8 +737,7 @@ notation `X ^⦋m⦌ₙ`. An analogous macro/delaborator pair for the truncated
 simplicial object notation `X _⦋m⦌ₙ` is defined earlier in this file. -/
 
 open SimplexCategory.Truncated Lean PrettyPrinter.Delaborator SubExpr
-open SimplexCategory.Truncated.Meta (subscript)
-open Mathlib.Tactic (subscriptTerm)
+open Mathlib.Tactic (subscriptTerm delabSubscript)
 
 /-- For `X : Truncated C n` and `m ≤ n`, `X ^⦋m⦌ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X ^⦋m, p⦌ₙ`. Access
@@ -762,11 +760,11 @@ def delabMkNotation : Delab :=
     let_expr Prefunctor.obj src _ _ _ f x := ← getExpr | failure
     -- check that f is a functor out of the truncated simplex category
     guard <| f.isAppOfArity ``Functor.toPrefunctor 5
+    guard <| src.isAppOfArity ``SimplexCategory.Truncated 1
     let_expr FullSubcategory.mk _ _ simplex _ := x | failure
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
-    let_expr SimplexCategory.Truncated n := src | failure
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let n ← withNaryArg 0 <| withAppArg <| subscript n
+    let n ← withNaryArg 0 <| withAppArg <| delabSubscript
     let m ← withAppArg <| withNaryArg 2 <| withAppArg delab
     let f ← withNaryArg 4 <| withAppArg delab
     if (← getPPOption getPPProofs) then
