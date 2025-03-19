@@ -383,10 +383,7 @@ lemma root_space_ad_is_nilpotent
   have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
     simp [iSup_genWeightSpace_eq_top' K H M]
   induction hm using LieSubmodule.iSup_induction' with
-  | h0 =>
-      obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ hχ
-      use 0
-      apply map_zero
+  | h0 => exact ⟨0, map_zero _⟩
   | hN χ₂ m₂ hm₂ =>
     obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
     use n
