@@ -3,11 +3,6 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Data.Nat.Lattice
-import Mathlib.Data.Set.Accumulate
-import Mathlib.Data.Set.Pairwise.Lattice
-import Mathlib.Order.CompleteLattice
-import Mathlib.MeasureTheory.PiSystem
 import Mathlib.MeasureTheory.MeasurableSpace.Pi
 
 /-! # Semirings of sets
@@ -333,7 +328,7 @@ lemma sUnion_union_disjointOfDiffUnion_of_subset (hC : IsSetSemiring C) (hs : s 
 end disjointOfDiffUnion
 section disjointOfUnion
 
-variable {j : Set α} {J : Finset (Set α)}
+variable {j : Set α} {J H : Finset (Set α)}
 
 theorem disjointOfUnion_props (hC : IsSetSemiring C) (h1 : ↑J ⊆ C) :
     ∃ K : Set α → Finset (Set α),
@@ -457,6 +452,41 @@ lemma sUnion_disjointOfUnion (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) :
     ⋃₀ ⋃ x ∈ J, (hC.disjointOfUnion hJ x : Set (Set α)) = ⋃₀ J :=
   (Exists.choose_spec (hC.disjointOfUnion_props hJ)).2.2.2.2.2.symm
 
+lemma sUnion_disjointOfUnion_setdiff (hC : IsSetSemiring C) (hJ : ↑J ⊆ C) (hH : ↑H ⊆ C) :
+    ∃ I : Finset (Set α), ↑I ⊆ C ∧ PairwiseDisjoint (I : Set (Set α)) id ∧
+      (⋃₀ H \ ⋃₀ J) = ⋃₀ (I : Set (Set α)) := by
+  classical
+  -- We write `⋃₀ H = ⋃₀ H'`, where the rhs is a disjoint union
+  let H' := ⋃ h ∈ H, ((hC.disjointOfUnion hH h) : Set (Set α))
+  have hH'0 : Fintype H' := Fintype.ofFinite ↑H'
+  have hH'1 : H' ⊆ C := iUnion₂_subset_iff.mpr (fun h hh ↦ disjointOfUnion_subset hC hH hh)
+  have hH'2 : H'.PairwiseDisjoint id := hC.pairwiseDisjoint_biUnion_disjointOfUnion hH
+  have hH'3 : ⋃₀ H' = ⋃₀ H := hC.sUnion_disjointOfUnion hH
+  -- For every `h ∈ H''`, we write `h \ ⋃₀ J = ⋃₀ I' h hJ`,
+  -- where the rhs is a disjoint union
+  let I' := fun (h : Set α) (hh : h ∈ C) ↦ hC.disjointOfDiffUnion hh hJ
+  have hI'1 (h : Set α) (hh : h ∈ C) : ((I' h hh) : Set (Set α)) ⊆ C :=
+    disjointOfDiffUnion_subset hC hh hJ
+  have hI'2 (h : Set α) (hh : h ∈ C) : PairwiseDisjoint ((I' h hh) : Set (Set α)) id :=
+    pairwiseDisjoint_disjointOfDiffUnion hC hh hJ
+  have hI'3 (h : Set α) (hh : h ∈ C) : h \ ⋃₀ J = ⋃₀ ((I' h hh) : Set (Set α)) :=
+    (diff_sUnion_eq_sUnion_disjointOfDiffUnion hC hh hJ)
+  use (⋃ (h : H'), I' h.val (hH'1 h.prop)).toFinset
+  simp only [iUnion_coe_set, coe_toFinset, iUnion_subset_iff]
+  refine ⟨fun h hh ↦ hI'1 h (hH'1 hh), fun i hi j hj hij ↦ ?_, ?_⟩
+  · simp only [mem_iUnion] at hi hj
+    obtain ⟨h1', hh1', hh1''⟩ := hi
+    obtain ⟨h2', hh2', hh2''⟩ := hj
+    by_cases h' : h1' = h2'
+    · exact hI'2 h2' (hH'1 hh2') (h' ▸ hh1'') hh2'' hij
+    · exact disjoint_of_subset (subset_of_mem_disjointOfDiffUnion hC (hH'1 hh1') hJ i hh1'')
+        (subset_of_mem_disjointOfDiffUnion hC (hH'1 hh2') hJ j hh2'') (hH'2 hh1' hh2' h')
+  · rw [← hH'3, ← biUnion_diff_eq_sUnion, iUnion₂_congr fun i j ↦ hI'3 i (hH'1 j)]
+    ext y
+    simp only [mem_iUnion, mem_sUnion, exists_prop]
+    refine ⟨fun ⟨i, hi, t, ⟨ht1, ht2⟩⟩ ↦ ⟨t, ⟨⟨i, hi, ht1⟩ , ht2⟩⟩,
+      fun ⟨t, ⟨⟨i, hi1, hi2⟩ , ht⟩⟩ ↦ ⟨i, ⟨hi1, ⟨t, hi2, ht⟩⟩⟩⟩
+
 end disjointOfUnion
 
 section piSemiring
@@ -466,7 +496,6 @@ variable {ι : Type*} {α : ι → Type*} {C : (i : ι) → Set (Set (α i))}
 /-- For `K' a : Finset (Set α i))`, define the
 `Fintype (({a} : Set ι).pi  '' ({a} : Set ι).pi K')`. -/
 noncomputable
-
 def fintype_pi_ofFinset (a : ι) (K' : (i : ι) → (Set (Set (α i)))) (K : Finset (Set (α a)))
   (hK' : K = K' a) : Fintype (({a} : Set ι).pi  '' ({a} : Set ι).pi K') := by
   let E : Set (α a) → Set (((i : ι) → α i)) :=
@@ -812,91 +841,5 @@ theorem pi {s : Set ι} (hs : Finite s)
 end piSemiring
 
 end IsSetSemiring
-
-/-- A ring of sets `C` is a family of sets containing `∅`, stable by union and set difference.
-It is then also stable by intersection (see `IsSetRing.inter_mem`). -/
-structure IsSetRing (C : Set (Set α)) : Prop where
-  empty_mem : ∅ ∈ C
-  union_mem ⦃s t⦄ : s ∈ C → t ∈ C → s ∪ t ∈ C
-  diff_mem ⦃s t⦄ : s ∈ C → t ∈ C → s \ t ∈ C
-
-namespace IsSetRing
-
-lemma inter_mem (hC : IsSetRing C) (hs : s ∈ C) (ht : t ∈ C) : s ∩ t ∈ C := by
-  rw [← diff_diff_right_self]; exact hC.diff_mem hs (hC.diff_mem hs ht)
-
-/-- A ring is a semi-ring. -/
-lemma isSetSemiring (hC : IsSetRing C) : IsSetSemiring C where
-  empty_mem := hC.empty_mem
-  inter_mem := fun _ hs _ ht => hC.inter_mem hs ht
-  diff_eq_sUnion' := by
-    refine fun s hs t ht => ⟨{s \ t}, ?_, ?_, ?_⟩
-    · simp only [coe_singleton, Set.singleton_subset_iff]
-      exact hC.diff_mem hs ht
-    · simp only [coe_singleton, pairwiseDisjoint_singleton]
-    · simp only [coe_singleton, sUnion_singleton]
-
-lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
-    (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
-    ⋃ i ∈ S, s i ∈ C := by
-  classical
-  induction S using Finset.induction with
-  | empty => simp [hC.empty_mem]
-  | @insert i S _ h =>
-    simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
-    refine hC.union_mem (hs i (mem_insert_self i S)) ?_
-    exact h (fun n hnS ↦ hs n (mem_insert_of_mem hnS))
-
-lemma biInter_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
-    (S : Finset ι) (hS : S.Nonempty) (hs : ∀ n ∈ S, s n ∈ C) :
-    ⋂ i ∈ S, s i ∈ C := by
-  classical
-  induction hS using Finset.Nonempty.cons_induction with
-  | singleton => simpa using hs
-  | cons i S hiS _ h =>
-    simp_rw [← Finset.mem_coe, Finset.coe_cons, Set.biInter_insert]
-    simp only [cons_eq_insert, Finset.mem_insert, forall_eq_or_imp] at hs
-    refine hC.inter_mem hs.1 ?_
-    exact h (fun n hnS ↦ hs.2 n hnS)
-
-lemma finsetSup_mem (hC : IsSetRing C) {ι : Type*} {s : ι → Set α} {t : Finset ι}
-    (hs : ∀ i ∈ t, s i ∈ C) :
-    t.sup s ∈ C := by
-  classical
-  induction t using Finset.induction_on with
-  | empty => exact hC.empty_mem
-  | @insert m t hm ih =>
-    simpa only [sup_insert] using
-      hC.union_mem (hs m <| mem_insert_self m t) (ih <| fun i hi ↦ hs _ <| mem_insert_of_mem hi)
-
-lemma partialSups_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
-    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ n, s n ∈ C) (n : ι) :
-    partialSups s n ∈ C := by
-  simpa only [partialSups_apply, sup'_eq_sup] using hC.finsetSup_mem (fun i hi ↦ hs i)
-
-lemma disjointed_mem {ι : Type*} [Preorder ι] [LocallyFiniteOrderBot ι]
-    (hC : IsSetRing C) {s : ι → Set α} (hs : ∀ j, s j ∈ C) (i : ι) :
-    disjointed s i ∈ C :=
-  disjointedRec (fun _ j ht ↦ hC.diff_mem ht <| hs j) (hs i)
-
-theorem iUnion_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    (⋃ i ≤ n, s i) ∈ C := by
-  induction n with
-  | zero => simp [hs 0]
-  | succ n hn => rw [biUnion_le_succ]; exact hC.union_mem hn (hs _)
-
-theorem iInter_le_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ n, s n ∈ C) (n : ℕ) :
-    (⋂ i ≤ n, s i) ∈ C := by
-  induction n with
-  | zero => simp [hs 0]
-  | succ n hn => rw [biInter_le_succ]; exact hC.inter_mem hn (hs _)
-
-theorem accumulate_mem (hC : IsSetRing C) {s : ℕ → Set α} (hs : ∀ i, s i ∈ C) (n : ℕ) :
-    Accumulate s n ∈ C := by
-  induction n with
-  | zero => simp [hs 0]
-  | succ n hn => rw [accumulate_succ]; exact hC.union_mem hn (hs _)
-
-end IsSetRing
 
 end MeasureTheory
