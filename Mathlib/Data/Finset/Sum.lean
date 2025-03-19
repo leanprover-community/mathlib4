@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Multiset.Sum
 
 /-!
