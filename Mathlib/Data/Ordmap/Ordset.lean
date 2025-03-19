@@ -225,9 +225,6 @@ def rotateL : Ordnode α → α → Ordnode α → Ordnode α
   | l, x, node _ m y r => if size m < ratio * size r then node3L l x m y r else node4L l x m y r
   | l, x, nil => node' l x nil
 
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/11467): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
-
 theorem rotateL_node (l : Ordnode α) (x : α) (sz : ℕ) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateL l x (node sz m y r) =
       if size m < ratio * size r then node3L l x m y r else node4L l x m y r :=
@@ -242,9 +239,6 @@ if balance is upset. -/
 def rotateR : Ordnode α → α → Ordnode α → Ordnode α
   | node _ l x m, y, r => if size m < ratio * size l then node3R l x m y r else node4R l x m y r
   | nil, y, r => node' nil y r
-
--- Porting note (https://github.com/leanprover-community/mathlib4/pull/11467): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
 
 theorem rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateR (node sz l x m) y r =
@@ -490,7 +484,7 @@ theorem equiv_iff {t₁ t₂ : Ordnode α} (h₁ : Sized t₁) (h₂ : Sized t�
 /-! ### `mem` -/
 
 
-theorem pos_size_of_mem [LE α] [DecidableRel (α := α) (· ≤ ·)] {x : α} {t : Ordnode α} (h : Sized t)
+theorem pos_size_of_mem [LE α] [DecidableLE α] {x : α} {t : Ordnode α} (h : Sized t)
     (h_mem : x ∈ t) : 0 < size t := by cases t; · { contradiction }; · { simp [h.1] }
 
 /-! ### `(find/erase/split)(Min/Max)` -/
@@ -563,7 +557,7 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 /-! ### `insert` -/
 
 
-theorem dual_insert [Preorder α] [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (x : α) :
+theorem dual_insert [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) :
     ∀ t : Ordnode α, dual (Ordnode.insert x t) = @Ordnode.insert αᵒᵈ _ _ x (dual t)
   | nil => rfl
   | node _ l y r => by
@@ -1311,7 +1305,7 @@ theorem Valid.merge {l r} (hl : Valid l) (hr : Valid r)
     (sep : l.All fun x => r.All fun y => x < y) : Valid (@merge α l r) :=
   (Valid'.merge_aux hl hr sep).1
 
-theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (f : α → α) (x : α)
+theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) :
     ∀ {t o₁ o₂},
       Valid' o₁ t o₂ →
@@ -1340,27 +1334,27 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (
         exact (e.add_left _).add_right _
       exact Or.inr ⟨_, e, h.3.1⟩
 
-theorem insertWith.valid [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (f : α → α) (x : α)
+theorem insertWith.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) {t} (h : Valid t) : Valid (insertWith f x t) :=
   (insertWith.valid_aux _ _ hf h ⟨⟩ ⟨⟩).1
 
-theorem insert_eq_insertWith [DecidableRel (α := α) (· ≤ ·)] (x : α) :
+theorem insert_eq_insertWith [DecidableLE α] (x : α) :
     ∀ t, Ordnode.insert x t = insertWith (fun _ => x) x t
   | nil => rfl
   | node _ l y r => by
     unfold Ordnode.insert insertWith; cases cmpLE x y <;> simp [insert_eq_insertWith]
 
-theorem insert.valid [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (x : α) {t} (h : Valid t) :
+theorem insert.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) {t} (h : Valid t) :
     Valid (Ordnode.insert x t) := by
   rw [insert_eq_insertWith]; exact insertWith.valid _ _ (fun _ _ => ⟨le_rfl, le_rfl⟩) h
 
-theorem insert'_eq_insertWith [DecidableRel (α := α) (· ≤ ·)] (x : α) :
+theorem insert'_eq_insertWith [DecidableLE α] (x : α) :
     ∀ t, insert' x t = insertWith id x t
   | nil => rfl
   | node _ l y r => by
     unfold insert' insertWith; cases cmpLE x y <;> simp [insert'_eq_insertWith]
 
-theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)]
+theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableLE α]
     (x : α) {t} (h : Valid t) : Valid (insert' x t) := by
   rw [insert'_eq_insertWith]; exact insertWith.valid _ _ (fun _ => id) h
 
@@ -1398,7 +1392,7 @@ theorem map.valid {β} [Preorder β] {f : α → β} (f_strict_mono : StrictMono
     Valid (map f t) :=
   (Valid'.map_aux f_strict_mono h).1
 
-theorem Valid'.erase_aux [DecidableRel (α := α) (· ≤ ·)] (x : α) {t a₁ a₂} (h : Valid' a₁ t a₂) :
+theorem Valid'.erase_aux [DecidableLE α] (x : α) {t a₁ a₂} (h : Valid' a₁ t a₂) :
     Valid' a₁ (erase x t) a₂ ∧ Raised (erase x t).size t.size := by
   induction t generalizing a₁ a₂ with
   | nil =>
@@ -1432,10 +1426,10 @@ theorem Valid'.erase_aux [DecidableRel (α := α) (· ≤ ·)] (x : α) {t a₁ 
           exact t_r_size
       right; exists t_r.size; exact And.intro t_r_size h.bal.1
 
-theorem erase.valid [DecidableRel (α := α) (· ≤ ·)] (x : α) {t} (h : Valid t) : Valid (erase x t) :=
+theorem erase.valid [DecidableLE α] (x : α) {t} (h : Valid t) : Valid (erase x t) :=
   (Valid'.erase_aux x h).1
 
-theorem size_erase_of_mem [DecidableRel (α := α) (· ≤ ·)] {x : α} {t a₁ a₂} (h : Valid' a₁ t a₂)
+theorem size_erase_of_mem [DecidableLE α] {x : α} {t a₁ a₂} (h : Valid' a₁ t a₂)
     (h_mem : x ∈ t) : size (erase x t) = size t - 1 := by
   induction t generalizing a₁ a₂ with
   | nil =>
@@ -1522,22 +1516,22 @@ instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, this replaces it. -/
-protected def insert [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (x : α) (s : Ordset α) :
+protected def insert [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨Ordnode.insert x s.1, insert.valid _ s.2⟩
 
-instance instInsert [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] : Insert α (Ordset α) :=
+instance instInsert [IsTotal α (· ≤ ·)] [DecidableLE α] : Insert α (Ordset α) :=
   ⟨Ordset.insert⟩
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, the set is returned as is. -/
-nonrec def insert' [IsTotal α (· ≤ ·)] [DecidableRel (α := α) (· ≤ ·)] (x : α) (s : Ordset α) :
+nonrec def insert' [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨insert' x s.1, insert'.valid _ s.2⟩
 
 section
 
-variable [DecidableRel (α := α) (· ≤ ·)]
+variable [DecidableLE α]
 
 /-- O(log n). Does the set contain the element `x`? That is,
   is there an element that is equivalent to `x` in the order? -/
@@ -1564,7 +1558,7 @@ end
 
 /-- O(log n). Remove an element from the set equivalent to `x`. Does nothing if there
 is no such element. -/
-def erase [DecidableRel (α := α) (· ≤ ·)] (x : α) (s : Ordset α) : Ordset α :=
+def erase [DecidableLE α] (x : α) (s : Ordset α) : Ordset α :=
   ⟨Ordnode.erase x s.val, Ordnode.erase.valid x s.property⟩
 
 /-- O(n). Map a function across a tree, without changing the structure. -/

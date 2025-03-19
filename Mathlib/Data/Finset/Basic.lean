@@ -447,24 +447,6 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
       intro hx hx₂
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
-section Classical
-
--- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
--- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
--- /-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
---   We don't want to redo all lemmas of `Finset.filter` for `Sep.sep`, so we make sure that `simp`
---   unfolds the notation `{x ∈ s | p x}` to `Finset.filter p s`.
--- -/
--- noncomputable instance {α : Type*} : Sep α (Finset α) :=
---   ⟨fun p x => x.filter p⟩
-
--- -- @[simp] -- Porting note: not a simp-lemma until `Sep`-notation is fixed.
--- theorem sep_def {α : Type*} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
---   ext
---   simp
-
-end Classical
-
 -- This is not a good simp lemma, as it would prevent `Finset.mem_filter` from firing
 -- on, e.g. `x ∈ s.filter (Eq b)`.
 /-- After filtering out everything that does not equal a given value, at most that value remains.
@@ -672,6 +654,13 @@ def piFinsetUnion {ι} [DecidableEq ι] (α : ι → Type*) {s t : Finset ι} (h
     ((∀ i : s, α i) × ∀ i : t, α i) ≃ ∀ i : (s ∪ t : Finset ι), α i :=
   let e := Equiv.Finset.union s t h
   sumPiEquivProdPi (fun b ↦ α (e b)) |>.symm.trans (.piCongrLeft (fun i : ↥(s ∪ t) ↦ α i) e)
+
+/-- A finset is equivalent to its coercion as a set. -/
+def _root_.Finset.equivToSet (s : Finset α) : s ≃ s.toSet where
+  toFun a := ⟨a.1, mem_coe.2 a.2⟩
+  invFun a := ⟨a.1, mem_coe.1 a.2⟩
+  left_inv := fun _ ↦ rfl
+  right_inv := fun _ ↦ rfl
 
 end Equiv
 
