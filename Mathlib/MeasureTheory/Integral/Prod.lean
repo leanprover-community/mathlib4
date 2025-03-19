@@ -193,8 +193,8 @@ theorem MeasureTheory.AEStronglyMeasurable.prodMk_left {γ : Type*} [SFinite ν]
     {f : α × β → γ} (hf : AEStronglyMeasurable f (μ.prod ν)) :
     ∀ᵐ x ∂μ, AEStronglyMeasurable (fun y => f (x, y)) ν := by
   filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with x hx
-  exact
-    ⟨fun y => hf.mk f (x, y), hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
+  exact ⟨fun y ↦ hf.mk f (x, y),
+    hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
 
 @[deprecated (since := "2025-03-05")]
 alias MeasureTheory.AEStronglyMeasurable.prod_mk_left :=
@@ -296,6 +296,12 @@ theorem Integrable.prod_mul {L : Type*} [RCLike L] {f : α → L} {g : β → L}
     (hg : Integrable g ν) : Integrable (fun z : α × β => f z.1 * g z.2) (μ.prod ν) :=
   hf.prod_smul hg
 
+theorem IntegrableOn.swap [SFinite μ] {f : α × β → E} {s : Set α} {t : Set β}
+    (hf : IntegrableOn f (s ×ˢ t) (μ.prod ν)) :
+    IntegrableOn (f ∘ Prod.swap) (t ×ˢ s) (ν.prod μ) := by
+  rw [IntegrableOn, ← Measure.prod_restrict] at hf ⊢
+  exact hf.swap
+
 end
 
 variable [NormedSpace ℝ E]
@@ -320,6 +326,10 @@ variable [SFinite μ]
 theorem integral_prod_swap (f : α × β → E) :
     ∫ z, f z.swap ∂ν.prod μ = ∫ z, f z ∂μ.prod ν :=
   measurePreserving_swap.integral_comp MeasurableEquiv.prodComm.measurableEmbedding _
+
+theorem setIntegral_prod_swap (s : Set α) (t : Set β) (f : α × β → E) :
+    ∫ (z : β × α) in t ×ˢ s, f z.swap ∂ν.prod μ = ∫ (z : α × β) in s ×ˢ t, f z ∂μ.prod ν := by
+  rw [← Measure.prod_restrict, ← Measure.prod_restrict, integral_prod_swap]
 
 variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E']
 

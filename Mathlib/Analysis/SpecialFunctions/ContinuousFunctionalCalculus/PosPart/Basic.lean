@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.StarOrdered
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 
 /-! # The positive (and negative) parts of a selfadjoint element in a C⋆-algebra
@@ -44,6 +44,12 @@ lemma posPart_zero : (0 : A)⁺ = 0 := by simp [posPart_def]
 
 @[simp]
 lemma negPart_zero : (0 : A)⁻ = 0 := by simp [negPart_def]
+
+lemma posPart_eq_zero_of_not_isSelfAdjoint {a : A} (ha : ¬IsSelfAdjoint a) : a⁺ = 0 :=
+  cfcₙ_apply_of_not_predicate a ha
+
+lemma negPart_eq_zero_of_not_isSelfAdjoint {a : A} (ha : ¬IsSelfAdjoint a) : a⁻ = 0 :=
+  cfcₙ_apply_of_not_predicate a ha
 
 @[simp]
 lemma posPart_mul_negPart (a : A) : a⁺ * a⁻ = 0 := by
