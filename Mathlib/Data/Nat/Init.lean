@@ -434,6 +434,37 @@ protected lemma div_left_inj (hda : d ∣ a) (hdb : d ∣ b) : a / d = b / d ↔
   refine ⟨fun h ↦ ?_, congrArg fun b ↦ b / d⟩
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
 
+lemma div_sub_of_dvd (h1 : 0 < n) (h2 : n ∣ m) : m / n - k = (m - n * k) / n := by
+  obtain ⟨_,hx⟩ := h2
+  simp only [hx,←Nat.mul_sub_left_distrib,Nat.mul_div_right,h1]
+
+lemma sub_div_of_dvd (h1 : 0 < k) (h2 : k ∣ n) : m - n / k = (k * m - n) / k := by
+  obtain ⟨_,hx⟩ := h2
+  simp only [hx,←Nat.mul_sub_left_distrib,Nat.mul_div_right,h1]
+
+lemma div_add_div_of_dvd {l : ℕ} (hn : 0 < n) (hd : 0 < l) (h1 : n ∣ m) (h2 : l ∣ k) :
+    m / n + k / l = (m * l + n * k) / (n * l) := by
+  obtain ⟨a,ha⟩ := h1
+  obtain ⟨_,hb⟩ := h2
+  rw [ha,hb,Nat.mul_assoc n a l,Nat.mul_comm a l,← Nat.mul_assoc,← Nat.mul_assoc,
+    ← Nat.mul_add,Nat.mul_div_right _ hn, Nat.mul_div_right _ hd,
+    Nat.mul_div_right _ (Nat.mul_pos hn hd)]
+
+lemma div_sub_div_of_dvd {l : ℕ}  (hn : 0 < n) (hd : 0 < l) (h1 : n ∣ m) (h2 : l ∣ k ) :
+    m / n - k / l = (m * l - n * k) / (n * l) := by
+  obtain ⟨a,ha⟩ := h1
+  obtain ⟨b,hb⟩ := h2
+  rw [ha,hb]
+  rw [Nat.mul_assoc,Nat.mul_comm a l,←Nat.mul_assoc,←Nat.mul_assoc,←Nat.mul_sub_left_distrib,
+    Nat.mul_div_right _ hn, Nat.mul_div_right _ hd, Nat.mul_div_right _ (Nat.mul_pos hn hd )]
+
+lemma div_mul_assoc (h : k ∣ n) : (n / k) * m = (n * m) / k := by
+  rw [Nat.mul_comm,←Nat.mul_div_assoc,Nat.mul_comm]
+  exact h
+
+lemma eq_div_iff_mul_eq_left (h1 : 0 < k) (h2 : k ∣ n) : m = n / k ↔ n = m * k:= by
+  rw [eq_comm, Nat.div_eq_iff_eq_mul_left h1 h2]
+
 lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (b * d) := by
   rintro ⟨x, rfl⟩ ⟨y, rfl⟩
   obtain rfl | hb := b.eq_zero_or_pos
@@ -524,6 +555,17 @@ protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y :
   else
     rwa [← le_div_iff_mul_le (Nat.pos_iff_ne_zero.2 hk)]
 
+theorem div_le_iff_le_mul_of_dvd (h1 : 0 < n) (h2 : n ∣ m) : m / n ≤  k ↔ m ≤ k * n := by
+  obtain ⟨_,hx⟩ := h2
+  simp only [hx]
+  rw [Nat.mul_div_right _ h1,Nat.mul_comm]
+  exact ⟨mul_le_mul_right n, fun h ↦ Nat.le_of_mul_le_mul_right h h1⟩
+
+theorem lt_div_iff_mul_lt_of_dvd (h1 : 0 < k) (h2 : k ∣ n) : m < n / k ↔ m * k < n := by
+  obtain ⟨x,hx⟩ := h2
+  simp only [hx]
+  rw [Nat.mul_div_right _ h1,Nat.mul_comm]
+  exact ⟨fun h ↦ Nat.mul_lt_mul_of_pos_left h h1,(Nat.mul_lt_mul_left h1).mp⟩
 /-!
 ### `pow`
 
