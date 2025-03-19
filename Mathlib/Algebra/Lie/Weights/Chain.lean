@@ -365,14 +365,15 @@ lemma chainTop_isNonZero (α β : Weight R L M) (hα : α.IsNonZero) :
 
 end
 
-section
+end LieModule
 
-open LieAlgebra
-open Submodule
+section Field
 
-variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
+open LieAlgebra LieModule Submodule
+
+variable {K : Type*} [Field K] [CharZero K] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
-  [AddCommGroup M] [Module K M] [LieRingModule L M] [LieModule K L M]
+  [Module K M] [LieModule K L M]
   [IsTriangularizable K H M] [FiniteDimensional K M]
 
 lemma root_space_ad_is_nilpotent
