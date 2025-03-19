@@ -5,7 +5,6 @@ Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
-import Mathlib.MeasureTheory.Function.L1Space.Integrable
 import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
@@ -370,12 +369,6 @@ theorem lintegral_rnDeriv_lt_top (μ ν : Measure α) [IsFiniteMeasure μ] :
     ∫⁻ x, μ.rnDeriv ν x ∂ν < ∞ := by
   rw [← setLIntegral_univ]
   exact lintegral_rnDeriv_lt_top_of_measure_ne_top _ (measure_lt_top _ _).ne
-
-@[fun_prop]
-lemma integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
-    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
-  integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
-    (Measure.lintegral_rnDeriv_lt_top _ _).ne
 
 /-- The Radon-Nikodym derivative of a sigma-finite measure `μ` with respect to another
 measure `ν` is `ν`-almost everywhere finite. -/
