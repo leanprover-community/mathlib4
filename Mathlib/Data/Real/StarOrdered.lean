@@ -30,14 +30,3 @@ instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
     simp only [star_trivial, mul_self_sqrt]
   · rintro ⟨p, -, rfl⟩
     exact le_self_add
-
-lemma Real.exists_nat_pos_inv_lt {b : ℝ} (hb : 0 < b) :
-    ∃ (n : ℕ), 0 < n ∧ (n : ℝ)⁻¹ < b := by
-  refine (exists_nat_gt b⁻¹).imp fun k hk ↦ ?_
-  have := (inv_pos_of_pos hb).trans hk
-  refine ⟨Nat.cast_pos.mp this, ?_⟩
-  rwa [inv_lt_comm₀ this hb]
-
-lemma NNReal.exists_nat_pos_inv_lt {b : ℝ≥0} (hb : 0 < b) :
-    ∃ (n : ℕ), 0 < n ∧ (n : ℝ≥0)⁻¹ < b :=
-  b.toReal.exists_nat_pos_inv_lt hb
