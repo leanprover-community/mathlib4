@@ -47,7 +47,7 @@ def distribNotOnceAt (hypFVar : Expr) (g : MVarId) : MetaM AssertAfterResult := 
   | ~q(¬ (($a : Prop) ∧ $b)) => do
     let h' : Q(¬($a ∧ $b)) := h.toExpr
     let _inst ← synthInstanceQ (q(Decidable $b) : Q(Type))
-    replace q(Decidable.not_and_iff_or_not_not'.mp $h')
+    replace q(Decidable.not_and_iff_not_or_not'.mp $h')
   | ~q(¬ (($a : Prop) ∨ $b)) => do
     let h' : Q(¬($a ∨ $b)) := h.toExpr
     replace q(not_or.mp $h')

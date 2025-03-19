@@ -110,7 +110,7 @@ theorem reduceOption_length_le (l : List (Option α)) : l.reduceOption.length �
 
 theorem reduceOption_length_eq_iff {l : List (Option α)} :
     l.reduceOption.length = l.length ↔ ∀ x ∈ l, Option.isSome x := by
-  rw [reduceOption_length_eq, List.filter_length_eq_length]
+  rw [reduceOption_length_eq, List.length_filter_eq_length_iff]
 
 theorem reduceOption_length_lt_iff {l : List (Option α)} :
     l.reduceOption.length < l.length ↔ none ∈ l := by
