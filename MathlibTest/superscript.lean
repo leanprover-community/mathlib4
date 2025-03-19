@@ -119,11 +119,11 @@ variable (n : Nat)
 
 /-- info: checkSubscript testsub(₁) : Unit -/
 #guard_msgs in #check checkSubscript (checkSubscript 1)
-/-- info: testsub(testsup(¹)) : Unit -/
+/-- info: checkSubscript testsup(¹) : Unit -/
 #guard_msgs in #check checkSubscript (checkSuperscript 1)
-/-- info: testsup(testsup(¹)) : Unit -/
+/-- info: checkSuperscript testsup(¹) : Unit -/
 #guard_msgs in #check checkSuperscript (checkSuperscript 1)
-/-- info: testsup(testsub(₁)) : Unit -/
+/-- info: checkSuperscript testsub(₁) : Unit -/
 #guard_msgs in #check checkSuperscript (checkSubscript 1)
 
 section subscript
