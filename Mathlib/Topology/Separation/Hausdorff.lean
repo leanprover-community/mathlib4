@@ -633,7 +633,7 @@ theorem ContinuousAt.ne_iff_eventually_ne [T2Space Y] {x : X} {f g : X → Y}
   · obtain ⟨t, h₁t, h₂t, h₃t⟩ := eventually_nhds_iff.1 hfg
     exact h₁t x h₃t
 
-/-- Local identity principle for continuous maps: Two continuous maps into a Hausdorff space
+/-- **Local identity principle** for continuous maps: Two continuous maps into a Hausdorff space
 agree in a punctured neighborhood of a non-isolated point iff they agree in a neighborhood. -/
 theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X} {f g : X → Y}
     (hf : ContinuousAt f x) (hg : ContinuousAt g x) [(𝓝[≠] x).NeBot] :
