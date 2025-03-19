@@ -3926,9 +3926,11 @@ import Mathlib.Logic.Equiv.Defs
 import Mathlib.Logic.Equiv.Embedding
 import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Logic.Equiv.Fin.Rotate
+import Mathlib.Logic.Equiv.Finset
 import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.Logic.Equiv.List
+import Mathlib.Logic.Equiv.Multiset
 import Mathlib.Logic.Equiv.Nat
 import Mathlib.Logic.Equiv.Option
 import Mathlib.Logic.Equiv.Pairwise
