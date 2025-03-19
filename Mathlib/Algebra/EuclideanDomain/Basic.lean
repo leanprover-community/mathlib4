@@ -338,13 +338,19 @@ theorem sub_div_of_dvd {x y z : R} (h1 : z ≠ 0) (h2 : z ∣ y) : x - y / z = (
   rw [mul_sub]
   rw [EuclideanDomain.mul_div_cancel' h1 h2]
 
-theorem div_div {x y z : R} (h1 : y ≠ 0) (h2 : z ≠ 0) (h3 : y ∣ x) (h4 : z ∣ (x / y)) :
+theorem div_div {x y z : R}  (h1 : y ∣ x) (h2 : z ∣ (x / y)) :
     x / y / z = x / (y * z) := by
-  obtain ⟨a,ha⟩ := h3
-  obtain ⟨n,hb⟩ := h4
-  rw [hb,mul_comm,MulDivCancelClass.mul_div_cancel _ _ h2]
-  rw [ha,mul_comm y a,MulDivCancelClass.mul_div_cancel a y h1] at hb
-  rw [ha,hb,mul_div_mul_cancel h1, mul_div_cancel_left₀ _ h2]
+  by_cases h3 : y = 0
+  · rw [h3]
+    simp only [div_zero, zero_div, zero_mul]
+  by_cases h4 : z = 0
+  · rw [h4]
+    simp only [div_zero, mul_zero]
+  obtain ⟨a,ha⟩ := h1
+  obtain ⟨n,hb⟩ := h2
+  rw [hb,mul_comm,MulDivCancelClass.mul_div_cancel _ _ h4]
+  rw [ha,mul_comm y a,MulDivCancelClass.mul_div_cancel a y h3] at hb
+  rw [ha,hb,mul_div_mul_cancel h3, mul_div_cancel_left₀ _ h4]
   use n
 
 theorem div_add_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y ∣ x) (h4 : t ∣ z) :
