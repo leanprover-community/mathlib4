@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Card
+import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Multiset.Sum
 
 /-!
@@ -34,11 +35,9 @@ def disjSum : Finset (α ⊕ β) :=
 theorem val_disjSum : (s.disjSum t).1 = s.1.disjSum t.1 :=
   rfl
 
-@[simp]
 theorem empty_disjSum : (∅ : Finset α).disjSum t = t.map Embedding.inr :=
   val_inj.1 <| Multiset.zero_disjSum _
 
-@[simp]
 theorem disjSum_empty : s.disjSum (∅ : Finset β) = s.map Embedding.inl :=
   val_inj.1 <| Multiset.disjSum_zero _
 

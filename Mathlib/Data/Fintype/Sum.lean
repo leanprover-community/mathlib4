@@ -25,27 +25,24 @@ instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (α ⊕
   complete := by rintro (_ | _) <;> simp
 
 namespace Finset
-variable {α β : Type*}
+variable {α β : Type*} {u : Finset (α ⊕ β)} {s : Finset α} {t : Finset β}
+
+lemma disjSum_subset : s.disjSum t ⊆ u ↔ s ⊆ u.toLeft ∧ t ⊆ u.toRight := by simp [subset_iff]
+lemma subset_disjSum : u ⊆ s.disjSum t ↔ u.toLeft ⊆ s ∧ u.toRight ⊆ t := by simp [subset_iff]
 
 section left
 variable [Fintype α] {u : Finset (α ⊕ β)}
 
-@[simp] lemma toLeft_eq_univ : u.toLeft = univ ↔ univ.disjSum ∅ ⊆ u := by
-  simp [eq_univ_iff_forall, subset_iff]
-
-@[simp] lemma toRight_eq_empty : u.toRight = ∅ ↔ u ⊆ univ.disjSum ∅ := by
-  simp [eq_empty_iff_forall_not_mem, subset_iff]
+lemma toLeft_eq_univ : u.toLeft = univ ↔ univ.disjSum ∅ ⊆ u := by simp [disjSum_subset]
+lemma toRight_eq_empty : u.toRight = ∅ ↔ u ⊆ univ.disjSum ∅ := by simp [subset_disjSum]
 
 end left
 
 section right
 variable [Fintype β] {u : Finset (α ⊕ β)}
 
-@[simp] lemma toRight_eq_univ : u.toRight = univ ↔ disjSum ∅ univ ⊆ u := by
-  simp [eq_univ_iff_forall, subset_iff]
-
-@[simp] lemma toLeft_eq_empty : u.toLeft = ∅ ↔ u ⊆ disjSum ∅ univ := by
-  simp [eq_empty_iff_forall_not_mem, subset_iff]
+lemma toRight_eq_univ : u.toRight = univ ↔ disjSum ∅ univ ⊆ u := by simp [disjSum_subset]
+lemma toLeft_eq_empty : u.toLeft = ∅ ↔ u ⊆ disjSum ∅ univ := by simp [subset_disjSum]
 
 end right
 
