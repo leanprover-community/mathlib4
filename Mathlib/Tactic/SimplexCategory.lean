@@ -16,8 +16,7 @@ provided using the syntax `⦋m, p⦌ₙ`. This notation is available with
 
 namespace SimplexCategory.Truncated
 
-open CategoryTheory
-open Mathlib.Tactic (subscriptTerm)
+open Mathlib.Tactic (subscriptTerm delabSubscript)
 
 /-- A quick attempt to prove that `⦋m⦌` is `n`-truncated (`⦋m⦌.len ≤ n`). -/
 scoped macro "trunc" : tactic =>
@@ -35,12 +34,9 @@ scoped macro_rules
   | `(⦋$m:term, $p:term⦌$n:subscript) =>
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
-section Delab
-open Mathlib.Tactic (delabSubscript)
-open Lean PrettyPrinter.Delaborator SubExpr
-
+open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for the notation `⦋m⦌ₙ`. -/
-@[app_delab FullSubcategory.mk]
+@[app_delab CategoryTheory.FullSubcategory.mk]
 def delabMkNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 4 do
     let #[cat, .lam x _ body _, simplex, _] := (← getExpr).getAppArgs | failure
@@ -59,5 +55,4 @@ def delabMkNotation : Delab :=
       `(⦋$m, $p⦌$n)
     else `(⦋$m⦌$n)
 
-end Delab
 end SimplexCategory.Truncated
