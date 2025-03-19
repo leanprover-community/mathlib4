@@ -3,6 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Probability.Kernel.Composition.IntegralCompProd
 import Mathlib.Probability.Kernel.Disintegration.StandardBorel
 
 /-!
@@ -194,7 +195,7 @@ lemma integral_condKernel (hf : Integrable f ρ) :
     ∫ b, ∫ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x, f x ∂ρ := by
   conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
   rw [← ρ.disintegrate ρ.condKernel] at hf
-  rw [integral_compProd hf]
+  rw [ MeasureTheory.Measure.integrable_compProd_iff hf]
 
 lemma setIntegral_condKernel {s : Set β} (hs : MeasurableSet s)
     {t : Set Ω} (ht : MeasurableSet t) (hf : IntegrableOn f (s ×ˢ t) ρ) :
