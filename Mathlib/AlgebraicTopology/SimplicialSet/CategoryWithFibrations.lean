@@ -57,9 +57,14 @@ lemma J_le_monomorphisms : J.{u} ≤ monomorphisms _ := by
   obtain ⟨n, ⟨i⟩⟩ := h
   exact monomorphisms.infer_property _
 
+/-- The cofibrations for the Quillen model category structure (TODO)
+on `SSet` are monomorphisms. -/
 scoped instance : CategoryWithCofibrations SSet.{u} where
   cofibrations := .monomorphisms _
 
+/-- The fibrations for the Quillen model category structure (TODO)
+on `SSet` are the morphisms which have the right lifting property
+with respect to horn inclusions. -/
 scoped instance : CategoryWithFibrations SSet.{u} where
   fibrations := J.rlp
 
@@ -93,3 +98,4 @@ end
 end quillenModelCategory
 
 end SSet
+#lint
