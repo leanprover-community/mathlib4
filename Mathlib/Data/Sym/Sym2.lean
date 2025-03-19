@@ -5,7 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Sets
 import Mathlib.Data.SetLike.Basic
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
