@@ -27,9 +27,6 @@ instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (α ⊕
 namespace Finset
 variable {α β : Type*} {u : Finset (α ⊕ β)} {s : Finset α} {t : Finset β}
 
-lemma disjSum_subset : s.disjSum t ⊆ u ↔ s ⊆ u.toLeft ∧ t ⊆ u.toRight := by simp [subset_iff]
-lemma subset_disjSum : u ⊆ s.disjSum t ↔ u.toLeft ⊆ s ∧ u.toRight ⊆ t := by simp [subset_iff]
-
 section left
 variable [Fintype α] {u : Finset (α ⊕ β)}
 
