@@ -47,7 +47,7 @@ Note that we do not assume that `V` is a concrete category,
 so there may not be an "honest" underlying category at all!
 -/
 class EnrichedCategory (C : Type u₁) where
-  /-- The morphisms of this category -/
+  /-- `X ⟶[V] Y` is the `V` object of morphisms from `X` to `Y`. -/
   Hom : C → C → V
   /-- The identity morphism of this catgeory -/
   id (X : C) : 𝟙_ V ⟶ Hom X X
@@ -58,8 +58,7 @@ class EnrichedCategory (C : Type u₁) where
   assoc (W X Y Z : C) : (α_ _ _ _).inv ≫ comp W X Y ▷ _ ≫ comp W Y Z =
     _ ◁ comp X Y Z ≫ comp W X Z := by aesop_cat
 
-/-- Use `X ⟶[V] Y` to obtain the `V` object of morphisms from `X` to `Y`. -/
-notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
+@[inherit_doc EnrichedCategory.Hom] notation X " ⟶[" V "] " Y:10 => (EnrichedCategory.Hom X Y : V)
 
 variable {C : Type u₁} [EnrichedCategory V C]
 
