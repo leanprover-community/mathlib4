@@ -6,25 +6,26 @@ Authors: Peter Nelson
 import Mathlib.Data.Matroid.Dual
 
 /-!
-# Matroid IsRestriction
+# Matroid Restriction
 
 Given `M : Matroid α` and `R : Set α`, the independent sets of `M` that are contained in `R`
 are the independent sets of another matroid `M ↾ R` with ground set `R`,
-called the 'isRestriction' of `M` to `R`.
-For `I, R ⊆ M.E`, `I` is a isBasis of `R` in `M` if and only if `I` is a base
-of the isRestriction `M ↾ R`, so this construction relates `Matroid.IsBasis` to `Matroid.Base`.
+called the 'restriction' of `M` to `R`.
+For `I ⊆ R ⊆ M.E`, `I` is a basis of `R` in `M` if and only if `I` is a base
+of the restriction `M ↾ R`, so this construction relates `Matroid.IsBasis` to `Matroid.IsBase`.
 
 If `N M : Matroid α` satisfy `N = M ↾ R` for some `R ⊆ M.E`,
-then we call `N` a 'isRestriction of `M`', and write `N ≤r M`. This is a partial order.
+then we call `N` a 'restriction of `M`', and write `N ≤r M`. This is a partial order.
 
-This file proves that the isRestriction is a matroid and that the `≤r` order is a partial order,
+This file proves that the restriction is a matroid and that the `≤r` order is a partial order,
 and gives related API.
-It also proves some `IsBasis` analogues of `Base` lemmas that, while they could be stated in
-`Data.Matroid.Basic`, are hard to prove without `Matroid.restrict` API.
+It also proves some `Matroid.IsBasis` analogues of `Matroid.IsBase` lemmas that,
+while they could be stated in `Data.Matroid.Basic`,
+are hard to prove without `Matroid.restrict` API.
 
 ## Main Definitions
 
-* `M.restrict R`, written `M ↾ R`, is the isRestriction of `M : Matroid α` to `R : Set α`: i.e.
+* `M.restrict R`, written `M ↾ R`, is the restriction of `M : Matroid α` to `R : Set α`: i.e.
   the matroid with ground set `R` whose independent sets are the `M`-independent subsets of `R`.
 
 * `Matroid.Restriction N M`, written `N ≤r M`, means that `N = M ↾ R` for some `R ⊆ M.E`.
@@ -35,11 +36,11 @@ It also proves some `IsBasis` analogues of `Base` lemmas that, while they could 
 
 ## Implementation Notes
 
-Since `R` and `M.E` are both terms in `Set α`, to define the isRestriction `M ↾ R`,
+Since `R` and `M.E` are both terms in `Set α`, to define the restriction `M ↾ R`,
 we need to either insist that `R ⊆ M.E`, or to say what happens when `R` contains the junk
 outside `M.E`.
 
-It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the isRestriction
+It turns out that `R ⊆ M.E` is just an unnecessary hypothesis; if we say the restriction
 `M ↾ R` has ground set `R` and its independent sets are the `M`-independent subsets of `R`,
 we always get a matroid, in which the elements of `R \ M.E` aren't in any independent sets.
 We could instead define this matroid to always be 'smaller' than `M` by setting
@@ -48,16 +49,17 @@ We could instead define this matroid to always be 'smaller' than `M` by setting
 This makes it possible to actually restrict a matroid 'upwards'; for instance, if `M : Matroid α`
 satisfies `M.E = ∅`, then `M ↾ Set.univ` is the matroid on `α` whose ground set is all of `α`,
 where the empty set is only the independent set.
-(Elements of `R` outside the ground set are all 'loops' of the matroid.)
+(In general, elements of `R \ M.E` are all 'loops' of the matroid `M ↾ R`;
+see `Matroid.loops` and `Matroid.restrict_loops_eq'` for a precise version of this statement.)
 This is mathematically strange, but is useful for API building.
 
-The cost of allowing a isRestriction of `M` to be 'bigger' than the `M` itself is that
+The cost of allowing a restriction of `M` to be 'bigger' than `M` itself is that
 the statement `M ↾ R ≤r M` is only true with the hypothesis `R ⊆ M.E`
 (at least, if we want `≤r` to be a partial order).
 But this isn't too inconvenient in practice. Indeed `(· ⊆ M.E)` proofs
 can often be automatically provided by `aesop_mat`.
 
-We define the isRestriction order `≤r` to give a `PartialOrder` instance on the type synonym
+We define the restriction order `≤r` to give a `PartialOrder` instance on the type synonym
 `Matroidᵣ α` rather than `Matroid α` itself, because the `PartialOrder (Matroid α)` instance is
 reserved for the more mathematically important 'minor' order.
 -/
@@ -235,9 +237,9 @@ scoped infix:50  " ≤r " => IsRestriction
 scoped infix:50  " <r " => IsStrictRestriction
 
 /-- A type synonym for matroids with the isRestriction order.
-  (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
+(The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
-  /-- The underlying `Matroid`.-/
+  /-- The underlying `Matroid` -/
   toMatroid : Matroid α
 
 instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where

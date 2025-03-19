@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.Order.Group.Pointwise.Interval
-import Mathlib.LinearAlgebra.AffineSpace.Basic
 import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.Tactic.Abel
-
+import Mathlib.Algebra.AddTorsor.Basic
+import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Affine maps
 
@@ -498,13 +498,10 @@ theorem lineMap_eq_right_iff [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} {c : k} 
     lineMap p₀ p₁ c = p₁ ↔ p₀ = p₁ ∨ c = 1 := by
   rw [← @lineMap_eq_lineMap_iff k V1, lineMap_apply_one]
 
-variable (k)
-
+variable (k) in
 theorem lineMap_injective [NoZeroSMulDivisors k V1] {p₀ p₁ : P1} (h : p₀ ≠ p₁) :
     Function.Injective (lineMap p₀ p₁ : k → P1) := fun _c₁ _c₂ hc =>
   (lineMap_eq_lineMap_iff.mp hc).resolve_left h
-
-variable {k}
 
 @[simp]
 theorem apply_lineMap (f : P1 →ᵃ[k] P2) (p₀ p₁ : P1) (c : k) :
@@ -652,7 +649,7 @@ variable (R)
 domain with the space of linear maps, by taking the value of the affine map at `(0 : V1)` and the
 linear part.
 
-See note [bundled maps over different rings]-/
+See note [bundled maps over different rings] -/
 @[simps]
 def toConstProdLinearMap : (V1 →ᵃ[k] V2) ≃ₗ[R] V2 × (V1 →ₗ[k] V2) where
   toFun f := ⟨f 0, f.linear⟩
@@ -727,7 +724,7 @@ theorem pi_ext_zero (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) (h₂ :
 
 /-- Two affine maps from a Pi-type of modules `(i : ι) → φv i` are equal if they are equal in their
   operation on `Pi.single` and `ι` is nonempty.  Analogous to `LinearMap.pi_ext`. See also
-  `pi_ext_zero`, which instead `Nonempty ι` requires agreement at 0.-/
+  `pi_ext_zero`, which instead of `Nonempty ι` requires agreement at 0. -/
 theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.single i x)) :
     f = g := by
   apply pi_ext_zero h
@@ -736,7 +733,7 @@ theorem pi_ext_nonempty [Nonempty ι] (h : ∀ i x, f (Pi.single i x) = g (Pi.si
   apply h
 
 /-- This is used as the ext lemma instead of `AffineMap.pi_ext_nonempty` for reasons explained in
-note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'`-/
+note [partially-applied ext lemmas]. Analogous to `LinearMap.pi_ext'` -/
 @[ext (iff := false)]
 theorem pi_ext_nonempty' [Nonempty ι] (h : ∀ i, f.comp (LinearMap.single _ _ i).toAffineMap =
     g.comp (LinearMap.single _ _ i).toAffineMap) : f = g := by

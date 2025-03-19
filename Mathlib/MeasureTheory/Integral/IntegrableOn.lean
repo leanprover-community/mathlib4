@@ -147,8 +147,8 @@ lemma Integrable.piecewise [DecidablePred (· ∈ s)]
     (hs : MeasurableSet s) (hf : IntegrableOn f s μ) (hg : IntegrableOn g sᶜ μ) :
     Integrable (s.piecewise f g) μ := by
   rw [IntegrableOn] at hf hg
-  rw [← memℒp_one_iff_integrable] at hf hg ⊢
-  exact Memℒp.piecewise hs hf hg
+  rw [← memLp_one_iff_integrable] at hf hg ⊢
+  exact MemLp.piecewise hs hf hg
 
 theorem IntegrableOn.left_of_union (h : IntegrableOn f (s ∪ t) μ) : IntegrableOn f s μ :=
   h.mono_set subset_union_left
@@ -330,11 +330,11 @@ theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
 
 theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
     (f : Lp E p μ) (hp : 1 ≤ p) (hμs : μ s ≠ ∞) : IntegrableOn f s μ := by
-  refine memℒp_one_iff_integrable.mp ?_
+  refine memLp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
   haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
-  exact ((Lp.memℒp _).restrict s).mono_exponent hp
+  exact ((Lp.memLp _).restrict s).mono_exponent hp
 
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
     (∫⁻ x, ENNReal.ofReal (f x) ∂μ) < ∞ :=
@@ -409,7 +409,7 @@ protected theorem IntegrableAtFilter.sub {f g : α → E}
   exact hf.add hg.neg
 
 protected theorem IntegrableAtFilter.smul {𝕜 : Type*} [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 E]
-    [BoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
+    [IsBoundedSMul 𝕜 E] {f : α → E} (hf : IntegrableAtFilter f l μ) (c : 𝕜) :
     IntegrableAtFilter (c • f) l μ := by
   rcases hf with ⟨s, sl, hs⟩
   exact ⟨s, sl, hs.smul c⟩

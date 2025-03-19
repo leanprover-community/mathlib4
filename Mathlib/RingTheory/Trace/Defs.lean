@@ -3,8 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.Matrix.BilinearForm
-import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Trace
 
 /-!
@@ -136,7 +136,7 @@ theorem trace_trace [Algebra S T] [IsScalarTower R S T]
   trace_trace_of_basis (Module.Free.chooseBasis R S) (Module.Free.chooseBasis S T) x
 
 /-- Let `T / S / R` be a tower of finite extensions of fields. Then
-$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$.-/
+$\text{Trace}_{T/R} = \text{Trace}_{S/R} \circ \text{Trace}_{T/S}$. -/
 @[simp, stacks 0BIJ "Trace"]
 theorem trace_comp_trace [Algebra S T] [IsScalarTower R S T]
     [Module.Free R S] [Module.Finite R S] [Module.Free S T] [Module.Finite S T] :
@@ -162,7 +162,7 @@ section TraceForm
 variable (R S)
 
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
-It is a symmetric bilinear form and is nondegenerate if the extension is separable.-/
+It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 @[stacks 0BIK "Trace pairing"]
 noncomputable def traceForm : BilinForm R S :=
   LinearMap.compr₂ (lmul R S).toLinearMap (trace R S)

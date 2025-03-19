@@ -32,7 +32,7 @@ local notation a " <" m:51 "> " b => m a b
 
 /-- `IsUnital m e` expresses that `e : X` is a left and right unit
 for the binary operation `m : X → X → X`. -/
-structure IsUnital (m : X → X → X) (e : X) extends Std.LawfulIdentity m e : Prop
+structure IsUnital (m : X → X → X) (e : X) : Prop extends Std.LawfulIdentity m e
 
 @[to_additive EckmannHilton.AddZeroClass.IsUnital]
 theorem MulOneClass.isUnital [_G : MulOneClass X] : IsUnital (· * ·) (1 : X) :=

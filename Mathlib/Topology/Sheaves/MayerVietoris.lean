@@ -55,7 +55,7 @@ noncomputable def mayerVietorisSquare' (sq : Square (Opens T))
 /-- The Mayer-Vietoris square attached to two open subsets
 of a topological space. -/
 @[simps!]
-noncomputable def mayerVietorisSquare (U V : Opens T):
+noncomputable def mayerVietorisSquare (U V : Opens T) :
     (Opens.grothendieckTopology T).MayerVietorisSquare :=
   mayerVietorisSquare'
     { X₁ := U ⊓ V

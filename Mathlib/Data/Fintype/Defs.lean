@@ -55,6 +55,29 @@ class Fintype (α : Type*) where
   /-- A proof that `elems` contains every element of the type -/
   complete : ∀ x : α, x ∈ elems
 
+/-! ### Preparatory lemmas -/
+
+namespace Finset
+
+theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
+    (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
+  simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
+
+end Finset
+
+namespace List
+
+variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
+
+instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
+  -- Use custom implementation for better performance.
+  decidable_of_iff ((Multiset.map f s.val).Nodup) Finset.nodup_map_iff_injOn
+
+instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
+  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
+
+end List
+
 namespace Finset
 
 variable [Fintype α] {s t : Finset α}
@@ -174,13 +197,19 @@ instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq
 
 end BundledHoms
 
-instance decidableInjectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] :
-    DecidablePred (Injective : (α → β) → Prop) := fun x => by unfold Injective; infer_instance
+theorem nodup_map_univ_iff_injective [Fintype α] {f : α → β} :
+    (Multiset.map f univ.val).Nodup ↔ Function.Injective f := by
+  rw [nodup_map_iff_injOn, coe_univ, Set.injective_iff_injOn_univ]
+
+instance decidableInjectiveFintype [DecidableEq β] [Fintype α] :
+    DecidablePred (Injective : (α → β) → Prop) :=
+  -- Use custom implementation for better performance.
+  fun f => decidable_of_iff ((Multiset.map f univ.val).Nodup) nodup_map_univ_iff_injective
 
 instance decidableSurjectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Surjective : (α → β) → Prop) := fun x => by unfold Surjective; infer_instance
 
-instance decidableBijectiveFintype [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] :
+instance decidableBijectiveFintype [DecidableEq β] [Fintype α] [Fintype β] :
     DecidablePred (Bijective : (α → β) → Prop) := fun x => by unfold Bijective; infer_instance
 
 instance decidableRightInverseFintype [DecidableEq α] [Fintype α] (f : α → β) (g : β → α) :
@@ -211,6 +240,9 @@ end Fintype
 
 instance Bool.fintype : Fintype Bool :=
   ⟨⟨{true, false}, by simp⟩, fun x => by cases x <;> simp⟩
+
+instance Ordering.fintype : Fintype Ordering :=
+  ⟨⟨{.lt, .eq, .gt}, by simp⟩, fun x => by cases x <;> simp⟩
 
 instance OrderDual.fintype (α : Type*) [Fintype α] : Fintype αᵒᵈ :=
   ‹Fintype α›

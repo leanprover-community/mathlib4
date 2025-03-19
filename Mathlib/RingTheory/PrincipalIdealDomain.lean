@@ -234,14 +234,14 @@ theorem to_maximal_ideal [CommRing R] [IsDomain R] [IsPrincipalIdealRing R] {S :
   isMaximal_iff.2
     ⟨(ne_top_iff_one S).1 hpi.1, by
       intro T x hST hxS hxT
-      cases' (mem_iff_generator_dvd _).1 (hST <| generator_mem S) with z hz
+      obtain ⟨z, hz⟩ := (mem_iff_generator_dvd _).1 (hST <| generator_mem S)
       cases hpi.mem_or_mem (show generator T * z ∈ S from hz ▸ generator_mem S) with
       | inl h =>
         have hTS : T ≤ S := by
           rwa [← T.span_singleton_generator, Ideal.span_le, singleton_subset_iff]
         exact (hxS <| hTS hxT).elim
       | inr h =>
-        cases' (mem_iff_generator_dvd _).1 h with y hy
+        obtain ⟨y, hy⟩ := (mem_iff_generator_dvd _).1 h
         have : generator S ≠ 0 := mt (eq_bot_iff_generator_eq_zero _).2 hS
         rw [← mul_one (generator S), hy, mul_left_comm, mul_right_inj' this] at hz
         exact hz.symm ▸ T.mul_mem_right _ (generator_mem T)⟩
@@ -287,7 +287,7 @@ instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincip
 
 end
 
-theorem IsField.isPrincipalIdealRing {R : Type*} [CommRing R] (h : IsField R) :
+theorem IsField.isPrincipalIdealRing {R : Type*} [Ring R] (h : IsField R) :
     IsPrincipalIdealRing R :=
   @EuclideanDomain.to_principal_ideal_domain R (@Field.toEuclideanDomain R h.toField)
 

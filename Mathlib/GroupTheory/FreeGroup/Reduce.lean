@@ -117,7 +117,7 @@ only reduces to itself. -/
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction' H with L1 L' L2 H1 H2 ih
   · rfl
-  · cases' H1 with L4 L5 x b
+  · obtain ⟨L4, L5, x, b⟩ := H1
     exact reduce.not H2
 
 /-- `reduce` is idempotent, i.e. the maximal reduction of the maximal reduction of a word is the
@@ -316,7 +316,7 @@ theorem norm_inv_eq {x : FreeGroup α} : norm x⁻¹ = norm x := by
 
 @[to_additive (attr := simp)]
 theorem norm_eq_zero {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
-  simp only [norm, List.length_eq_zero, toWord_eq_nil_iff]
+  simp only [norm, List.length_eq_zero_iff, toWord_eq_nil_iff]
 
 @[to_additive (attr := simp)]
 theorem norm_one : norm (1 : FreeGroup α) = 0 :=

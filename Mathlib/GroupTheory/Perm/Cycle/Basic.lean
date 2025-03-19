@@ -5,8 +5,10 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
+import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Cycles of a permutation
@@ -372,7 +374,7 @@ theorem isCycle_swap_mul_aux₂ {α : Type*} [DecidableEq α] :
     ∀ (n : ℤ) {b x : α} {f : Perm α} (_ : (swap x (f x) * f) b ≠ b) (_ : (f ^ n) (f x) = b),
       ∃ i : ℤ, ((swap x (f x) * f) ^ i) (f x) = b := by
   intro n
-  induction n with
+  cases n with
   | ofNat n => exact isCycle_swap_mul_aux₁ n
   | negSucc n =>
     intro b x f hb h
@@ -409,7 +411,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
       else by
         rw [swap_apply_of_ne_of_ne hyx hfyx]
         refine by_contradiction fun hy => ?_
-        cases' hz.2 hy with j hj
+        obtain ⟨j, hj⟩ := hz.2 hy
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
         rcases zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji | hji
         · rw [← hj, hji] at hyx
@@ -458,7 +460,7 @@ theorem IsCycle.of_pow {n : ℕ} (h1 : IsCycle (f ^ n)) (h2 : f.support ⊆ (f ^
     exact (support_pow_le _ n).antisymm h2
   obtain ⟨x, hx1, hx2⟩ := h1
   refine ⟨x, (key x).mp hx1, fun y hy => ?_⟩
-  cases' hx2 ((key y).mpr hy) with i _
+  obtain ⟨i, _⟩ := hx2 ((key y).mpr hy)
   exact ⟨n * i, by rwa [zpow_mul]⟩
 
 -- The lemma `support_zpow_le` is relevant. It means that `h2` is equivalent to
@@ -929,7 +931,7 @@ theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
   classical
     rintro m hm n hn hmn
     simp only [disjoint_left, Function.onFun, mem_map, Function.Embedding.coeFn_mk, exists_prop,
-      not_exists, not_and, forall_exists_index, and_imp, Prod.forall, Prod.mk.inj_iff]
+      not_exists, not_and, forall_exists_index, and_imp, Prod.forall, Prod.mk_inj]
     rintro _ _ _ - rfl rfl a ha rfl h
     rw [hf.pow_apply_eq_pow_apply ha] at h
     rw [mem_coe, mem_range] at hm hn
@@ -953,7 +955,7 @@ theorem product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
         (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,
-    Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop]
+    Function.Embedding.coeFn_mk, Prod.mk_inj, exists_prop]
   refine ⟨fun hx => ?_, ?_⟩
   · obtain ⟨n, hn, rfl⟩ := hf.exists_pow_eq hx.1 hx.2
     exact ⟨n, hn, a, hx.1, rfl, by rw [f.iterate_eq_pow]⟩

@@ -9,7 +9,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 /-!
 # Matrix algebra is an Azumaya algebra over R
 
-In this file we prove that finite dimesional matrix algebra `Matrix n n R` over `R`
+In this file we prove that finite dimensional matrix algebra `Matrix n n R` over `R`
 is an Azumaya algebra where `R` is a commutative ring.
 
 ## Main Results
