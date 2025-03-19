@@ -81,18 +81,16 @@ lemma neg_four_lt_cartanMatrix [Finite ι] [NoZeroDivisors R]
     omega
   have hnji : P.pairingIn ℤ j i ≠ 0 := fun hz ↦ hnij ((pairingIn_zero_iff P ℤ).mp hz)
   have hcW := mem_of_mem_insert_of_ne hcW (Int.mul_ne_zero hnij hnji)
-  have hjilt : P.pairingIn ℤ j i < 0 := by
-    refine lt_of_le_of_ne ?_ hnji
-    simpa [cartanMatrix, cartanMatrixIn_def] using (cartanMatrix_le_zero_of_ne b j i hne.symm)
   by_cases h4 : P.pairingIn ℤ i j = -4
-  · have hji := (Prod.mk_inj.mp (Int.neg_four_neg_one_iff.mpr ⟨hcW, h4⟩)).2
-    have hsc := (P.pairingIn_neg_one_neg_four_iff ℤ j i).mp ⟨hji, h4⟩
-    have hl := b.linInd_root
-    refine (not_linearIndependent_iff.mpr ?_) hl
+  · refine (not_linearIndependent_iff.mpr ?_) b.linInd_root
     use ⟨{i, j}, (by aesop)⟩
     use indicator {i} 1 + indicator {j} 2
-    simp [hsc, hne, hne.symm]
-  · have hlt : P.pairingIn ℤ ↑i ↑j < -4 := lt_of_le_of_ne h h4
+    simp [(P.pairingIn_neg_one_neg_four_iff ℤ j i).mp
+      ⟨(Prod.mk_inj.mp (Int.neg_four_neg_one_iff.mpr ⟨hcW, h4⟩)).2, h4⟩, hne, hne.symm]
+  · have hijlt : P.pairingIn ℤ i j < -4 := lt_of_le_of_ne h h4
+    have hjilt : P.pairingIn ℤ j i < 0 := by
+      refine lt_of_le_of_ne ?_ hnji
+      simpa [cartanMatrix, cartanMatrixIn_def] using (cartanMatrix_le_zero_of_ne b j i hne.symm)
     nlinarith
 
 end IsCrystallographic
