@@ -138,6 +138,11 @@ theorem count_iff_forall_not {n : ℕ} : count p n = 0 ↔ ∀ m < n, ¬p m := b
 
 alias ⟨_, count_of_forall_not⟩ := count_iff_forall_not
 
+theorem count_ne_iff_exists {n : ℕ} : count p n ≠ 0 ↔ ∃ m < n, p m := by
+  simp [count_iff_forall_not]
+
+alias ⟨exists_of_count_ne, _⟩ := count_ne_iff_exists
+
 @[simp] theorem count_false (n : ℕ) : count (fun _ ↦ False) n = 0 :=
   count_of_forall_not fun _ _ ↦ id
 
