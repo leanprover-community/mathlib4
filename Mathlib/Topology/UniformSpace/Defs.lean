@@ -247,6 +247,14 @@ theorem IsSymmetricRel.inter {U V : Set (α × α)} (hU : IsSymmetricRel U) (hV 
 @[deprecated (since := "2025-03-05")]
 alias SymmetricRel.inter := IsSymmetricRel.inter
 
+theorem IsSymmetricRel.iInter {U : (i : ι) → Set (α × α)} (hU : ∀ i, IsSymmetricRel (U i)) :
+    IsSymmetricRel (⋂ i, U i) := by
+  simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
+
+lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
+    IsSymmetricRel (Prod.map f f ⁻¹' U) :=
+  Set.ext fun _ ↦ ht.mk_mem_comm
+
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
 structure UniformSpace.Core (α : Type u) where
