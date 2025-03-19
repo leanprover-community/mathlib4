@@ -322,7 +322,7 @@ initialize register_parser_alias subscript
 
 /-- Successfully delaborates only if the resulting expression can be subscripted.
 
-See `Mapping.subscript` in this file for legal superscript characters. -/
+See `Mapping.subscript` in this file for legal subscript characters. -/
 def delabSubscript : Delab := do
   let stx ← delab
   if Superscript.isValid Superscript.Mapping.subscript stx.raw then
