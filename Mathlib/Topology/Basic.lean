@@ -422,7 +422,6 @@ alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_if
 theorem closure_univ : closure (univ : Set X) = univ :=
   isClosed_univ.closure_eq
 
-@[simp]
 theorem closure_closure : closure (closure s) = closure s :=
   isClosed_closure.closure_eq
 

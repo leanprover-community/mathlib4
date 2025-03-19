@@ -198,7 +198,7 @@ lemma closure_subset_closure (M : Matroid α) (h : X ⊆ Y) : M.closure X ⊆ M.
 lemma closure_mono (M : Matroid α) : Monotone M.closure :=
   fun _ _ ↦ M.closure_subset_closure
 
-lemma closure_closure (M : Matroid α) (X : Set α) : M.closure (M.closure X) = M.closure X :=
+@[simp] lemma closure_closure (M : Matroid α) (X : Set α) : M.closure (M.closure X) = M.closure X :=
   (M.subset_closure _).antisymm' (subset_sInter
     (fun F hF ↦ (closure_subset_closure _ (sInter_subset_of_mem hF)).trans hF.1.closure.subset))
 
