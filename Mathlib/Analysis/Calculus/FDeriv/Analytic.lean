@@ -99,7 +99,7 @@ theorem HasFPowerSeriesWithinAt.hasFDerivWithinAt (h : HasFPowerSeriesWithinAt f
   intro c hc
   have : Tendsto (fun y ↦ (y, x)) (𝓝[insert x s] x) (𝓝[insert x s ×ˢ insert x s] (x, x)) := by
     rw [nhdsWithin_prod_eq]
-    exact Tendsto.prod_mk tendsto_id (tendsto_const_nhdsWithin (by simp))
+    exact Tendsto.prodMk tendsto_id (tendsto_const_nhdsWithin (by simp))
   exact this (isLittleO_iff.1 h.hasStrictFDerivWithinAt hc)
 
 theorem HasFPowerSeriesAt.hasFDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -804,7 +804,7 @@ end HasFPowerSeriesOnBall
 namespace ContinuousLinearMap
 
 variable {ι : Type*} {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, NormedSpace 𝕜 (G i)]
-  [Fintype ι]  {H : Type*} [NormedAddCommGroup H]
+  [Fintype ι] {H : Type*} [NormedAddCommGroup H]
   [NormedSpace 𝕜 H]
 
 theorem hasFDerivAt_uncurry_of_multilinear [DecidableEq ι]

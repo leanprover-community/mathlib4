@@ -29,7 +29,7 @@ universe u
 
 namespace Mathlib.Tactic
 
-open Lean Parser PrettyPrinter Std
+open Lean Parser PrettyPrinter Delaborator Std
 
 namespace Superscript
 
@@ -64,6 +64,12 @@ def Mapping.superscript := mkMapping
 def Mapping.subscript := mkMapping
   "₀₁₂₃₄₅₆₇₈₉ₐₑₕᵢⱼₖₗₘₙₒₚᵣₛₜᵤᵥₓᴀʙᴄᴅᴇꜰɢʜɪᴊᴋʟᴍɴᴏᴘꞯʀꜱᴛᴜᴠᴡʏᴢᵦᵧᵨᵩᵪ₊₋₌₍₎"
   "0123456789aehijklmnoprstuvxABCDEFGHIJKLMNOPQRSTUVWYZβγρφχ+-=()"
+
+/-- Superscript values are wrapped in a node of kind `superscriptKind`. -/
+abbrev superscriptKind : SyntaxNodeKind := `superscript
+
+/-- Subscript values are wrapped in a node of kind `subscriptKind`. -/
+abbrev subscriptKind : SyntaxNodeKind := `subscript
 
 /-- Collects runs of text satisfying `p` followed by whitespace. Fails if the first character does
 not satisfy `p`. If `many` is true, it will parse 1 or more many whitespace-separated runs,
@@ -179,12 +185,12 @@ partial def scriptFnNoAntiquot (m : Mapping) (errorMsg : String) (p : ParserFn)
 * `antiquotName`: the name to use for antiquotation bindings `$a:antiquotName`.
   Note that the actual syntax kind bound will be the body kind (parsed by `p`), not `kind`.
 * `errorMsg`: shown when the parser does not match
+* `kind`: the term will be wrapped in a node with this kind
 * `p`: the inner parser (usually `term`), to be called on the body of the superscript
 * `many`: if false, whitespace is not allowed inside the superscript
-* `kind`: the term will be wrapped in a node with this kind
 -/
-def scriptParser (m : Mapping) (antiquotName errorMsg : String) (p : Parser)
-    (many := true) (kind : SyntaxNodeKind := by exact decl_name%) : Parser :=
+def scriptParser (m : Mapping) (antiquotName errorMsg : String)
+    (kind : SyntaxNodeKind) (p : Parser) (many := true) : Parser :=
   let tokens := "$" :: (m.toNormal.toArray.map (·.1.toString) |>.qsort (·<·)).toList
   let antiquotP := mkAntiquot antiquotName `term (isPseudoKind := true)
   let p := Superscript.scriptFnNoAntiquot m errorMsg p.fn many
@@ -225,7 +231,22 @@ def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p
   | .ok newStack =>
     set { st with stack := stack ++ newStack }
 
+/-- Returns true if every character in `stx : Syntax` can be superscripted
+(or subscripted). -/
+private partial def isValid (m : Mapping) : Syntax → Bool
+  | .node _ kind args => if scripted kind then false else args.all (isValid m)
+  | .atom _ s => valid s
+  | .ident _ _ s _ => valid s.toString
+  | _ => false
+where
+  valid (s : String) : Bool :=
+    s.toList.all fun x ↦ x == ' ' || m.toSpecial.contains x
+  scripted (kind : SyntaxNodeKind) : Bool :=
+    kind == subscriptKind || kind == superscriptKind
+
 end Superscript
+
+open Superscript (scriptParser superscriptKind subscriptKind)
 
 /--
 The parser `superscript(term)` parses a superscript. Basic usage is:
@@ -242,14 +263,14 @@ superscript, so this should not be used for complex expressions. Legal superscri
 ```
 -/
 def superscript (p : Parser) : Parser :=
-  Superscript.scriptParser .superscript "superscript" "expected superscript character" p
+  scriptParser .superscript "superscript" "expected superscript character" superscriptKind p
 /-- Formatter for the superscript parser. -/
 @[combinator_parenthesizer superscript]
-def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``superscript
+def superscript.parenthesizer := scriptParser.parenthesizer superscriptKind
 /-- Formatter for the superscript parser. -/
 @[combinator_formatter superscript]
 def superscript.formatter :=
-  Superscript.scriptParser.formatter "superscript" .superscript ``superscript
+  scriptParser.formatter "superscript" .superscript superscriptKind
 
 /-- Shorthand for `superscript(term)`.
 
@@ -262,6 +283,13 @@ for some context. -/
 def superscriptTerm := leading_parser (withAnonymousAntiquot := false) superscript termParser
 
 initialize register_parser_alias superscript
+
+/-- Successfully delaborates only if the resulting expression can be superscripted.
+
+See `Mapping.superscript` in this file for legal superscript characters. -/
+def delabSuperscript : Delab := do
+  let stx ← delab
+  if Superscript.isValid .superscript stx.raw then pure stx else failure
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -279,13 +307,13 @@ subscript, so this should not be used for complex expressions. Legal subscript c
 ```
 -/
 def subscript (p : Parser) : Parser :=
-  Superscript.scriptParser .subscript "subscript" "expected subscript character" p
+  scriptParser .subscript "subscript" "expected subscript character" subscriptKind p
 /-- Formatter for the subscript parser. -/
 @[combinator_parenthesizer subscript]
-def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscript
+def subscript.parenthesizer := scriptParser.parenthesizer subscriptKind
 /-- Formatter for the subscript parser. -/
 @[combinator_formatter subscript]
-def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
+def subscript.formatter := scriptParser.formatter "subscript" .subscript subscriptKind
 
 /-- Shorthand for `subscript(term)`.
 
@@ -298,5 +326,12 @@ for some context. -/
 def subscriptTerm := leading_parser (withAnonymousAntiquot := false) subscript termParser
 
 initialize register_parser_alias subscript
+
+/-- Successfully delaborates only if the resulting expression can be subscripted.
+
+See `Mapping.subscript` in this file for legal subscript characters. -/
+def delabSubscript : Delab := do
+  let stx ← delab
+  if Superscript.isValid .subscript stx.raw then pure stx else failure
 
 end Mathlib.Tactic

@@ -6,7 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.LinearAlgebra.Dual.Lemmas
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.RingTheory.MvPolynomial.Basic
 
 /-!
@@ -152,11 +152,11 @@ universe u
 
 variable (σ : Type u) (K : Type u) [Fintype K]
 
--- Porting note: `@[derive [AddCommGroup, Module K, Inhabited]]` done by hand.
 /-- The submodule of multivariate polynomials whose degree of each variable is strictly less
 than the cardinality of K. -/
 def R [CommRing K] : Type u :=
   restrictDegree σ K (Fintype.card K - 1)
+-- The `AddCommGroup, Module K, Inhabited` instances should be constructed by a deriving handler.
 
 noncomputable instance [CommRing K] : AddCommGroup (R σ K) :=
   inferInstanceAs (AddCommGroup (restrictDegree σ K (Fintype.card K - 1)))

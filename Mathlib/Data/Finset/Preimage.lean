@@ -60,11 +60,17 @@ theorem preimage_union [DecidableEq α] [DecidableEq β] {f : α → β} {s t : 
         preimage t f fun _ hx₁ _ hx₂ => hst (mem_union_right _ hx₁) (mem_union_right _ hx₂) :=
   Finset.coe_injective (by simp)
 
-@[simp, nolint simpNF] -- Porting note: linter complains that LHS doesn't simplify
+@[simp]
+theorem preimage_compl' [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {f : α → β}
+    (s : Finset β) (hfc : InjOn f (f ⁻¹' ↑sᶜ)) (hf : InjOn f (f ⁻¹' ↑s)) :
+    preimage sᶜ f hfc = (preimage s f hf)ᶜ :=
+  Finset.coe_injective (by simp)
+
+-- Not `@[simp]` since `simp` can't figure out `hf`; `simp`-normal form is `preimage_compl'`.
 theorem preimage_compl [DecidableEq α] [DecidableEq β] [Fintype α] [Fintype β] {f : α → β}
     (s : Finset β) (hf : Function.Injective f) :
     preimage sᶜ f hf.injOn = (preimage s f hf.injOn)ᶜ :=
-  Finset.coe_injective (by simp)
+  preimage_compl' _ _ _
 
 @[simp]
 lemma preimage_map (f : α ↪ β) (s : Finset α) : (s.map f).preimage f f.injective.injOn = s :=

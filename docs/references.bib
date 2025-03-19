@@ -2,6 +2,9 @@
 # To normalize:
 # bibtool --preserve.key.case=on --preserve.keys=on --pass.comments=on --print.use.tab=off -s -i docs/references.bib -o docs/references.bib
 
+# WARNING: Please only use alphanumeric characters, '-', '_', and ':' for the key of bibliography items!
+# Currently doc-gen does not support characters outside them and will silently errors, causing incomplete reference pages.
+
 # https://www.zbmath.org/ and https://mathscinet.ams.org/mathscinet
 # (or the free tool https://mathscinet.ams.org/mrlookup)
 # are good sources of complete bibtex entries for mathematics
@@ -1629,6 +1632,19 @@
   doi           = {10.1017/CBO9780511983948}
 }
 
+@Article{         fritz2020,
+  title         = {A synthetic approach to Markov kernels, conditional
+                  independence and theorems on sufficient statistics},
+  journal       = {Advances in Mathematics},
+  volume        = {370},
+  pages         = {107239},
+  year          = {2020},
+  issn          = {0001-8708},
+  doi           = {10.1016/j.aim.2020.107239},
+  url           = {https://www.sciencedirect.com/science/article/pii/S0001870820302656},
+  author        = {Fritz, Tobias}
+}
+
 @Book{            fuchs1963,
   author        = {Fuchs, L.},
   title         = {Partially ordered algebraic systems},
@@ -2143,6 +2159,16 @@
   year          = "1979"
 }
 
+@Article{         hollom2025,
+  title         = {A resolution of the Aharoni-Korman conjecture},
+  author        = {Lawrence Hollom},
+  year          = {2025},
+  eprint        = {2411.16844},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.CO},
+  url           = {https://arxiv.org/abs/2411.16844}
+}
+
 @Article{         hovey-2001,
   author        = {Hovey, Mark},
   title         = {Model category structures on chain complexes of sheaves},
@@ -2594,6 +2620,16 @@
   year          = {1953},
   language      = {English},
   doi           = {10.2307/1990847}
+}
+
+@Article{         kelly2005,
+  author        = {Kelly, G. M.},
+  title         = {Basic concepts of enriched category theory},
+  journal       = {Repr. Theory Appl. Categ.},
+  volume        = {10},
+  pages         = {vi+137 pp.},
+  year          = {2005},
+  language      = {English}
 }
 
 @Article{         kleiman1979,
@@ -3414,6 +3450,15 @@
   pages         = {75--91}
 }
 
+@Article{         rooij1970,
+  title         = {Non-Archimedean uniformities},
+  author        = {van Rooij, A. C. M.},
+  year          = {1970},
+  journal       = {Kyungpook Math. J.},
+  volume        = {10},
+  pages         = {21--30}
+}
+
 @Article{         Rosenlicht_1972,
   author        = {Rosenlicht, Maxwell},
   title         = {Integration in finite terms},
@@ -3885,6 +3930,18 @@
   mrnumber      = {1453167}
 }
 
+@Book{            vershynin2018high,
+  title         = {High-dimensional probability: An introduction with
+                  applications in data science},
+  author        = {Vershynin, Roman},
+  series        = {Cambridge Series in Statistical and Probabilistic
+                  Mathematics},
+  volume        = {47},
+  year          = {2018},
+  publisher     = {Cambridge university press},
+  isbn          = {9781108415194}
+}
+
 @Book{            Vickers1989,
   author        = {Vickers, Steven},
   title         = {Topology via Logic},
@@ -3982,6 +4039,17 @@
   mrreviewer    = {Karl\ Rubin},
   doi           = {10.2307/2118559},
   url           = {https://doi.org/10.2307/2118559}
+}
+
+@Article{         windisch2021,
+  title         = {Equivalent characterizations of non-Archimedean uniform
+                  spaces},
+  author        = {Daniel Windisch},
+  year          = {2021},
+  eprint        = {2111.09722},
+  archiveprefix = {arXiv},
+  primaryclass  = {math.GN},
+  url           = {https://arxiv.org/abs/2111.09722}
 }
 
 @TechReport{      zaanen1966,

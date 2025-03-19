@@ -535,9 +535,7 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
     (by intro (X, F) (Y, G) f
         ext (a : yoneda.obj X.unop ⟶ F)
         apply ULift.ext
-        simp only [Functor.prod_obj, Functor.id_obj, types_comp_apply, yonedaEvaluation_map_down]
-        erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
-        dsimp [yonedaEquiv]
+        dsimp [yonedaEvaluation, yonedaEquiv]
         simp [← FunctorToTypes.naturality])
 
 variable {C}
@@ -715,9 +713,8 @@ def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C :=
     (by intro (X, F) (Y, G) f
         ext (a : coyoneda.obj (op X) ⟶ F)
         apply ULift.ext
-        simp only [Functor.prod_obj, Functor.id_obj, types_comp_apply, coyonedaEvaluation_map_down]
-        erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
-        simp [coyonedaEquiv, ← FunctorToTypes.naturality])
+        dsimp [coyonedaEquiv, coyonedaEvaluation]
+        simp [← FunctorToTypes.naturality])
 
 variable {C}
 

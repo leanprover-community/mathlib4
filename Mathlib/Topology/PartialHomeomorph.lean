@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Logic.Equiv.PartialEquiv
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.Sets.Opens
 
 /-!
@@ -900,8 +901,8 @@ def prod (eX : PartialHomeomorph X X') (eY : PartialHomeomorph Y Y') :
     PartialHomeomorph (X × Y) (X' × Y') where
   open_source := eX.open_source.prod eY.open_source
   open_target := eX.open_target.prod eY.open_target
-  continuousOn_toFun := eX.continuousOn.prod_map eY.continuousOn
-  continuousOn_invFun := eX.continuousOn_symm.prod_map eY.continuousOn_symm
+  continuousOn_toFun := eX.continuousOn.prodMap eY.continuousOn
+  continuousOn_invFun := eX.continuousOn_symm.prodMap eY.continuousOn_symm
   toPartialEquiv := eX.toPartialEquiv.prod eY.toPartialEquiv
 
 @[simp, mfld_simps]
@@ -1112,7 +1113,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
 @[simps (config := mfld_cfg) apply symm_apply]
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a `PartialEquiv` version
+-- TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
   toFun := e
