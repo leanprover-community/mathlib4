@@ -62,9 +62,20 @@ instance {P S : Type*} [SMul P S] [SMul S R] [SMul P R] [IsScalarTower P S R] :
     IsScalarTower P S (WithVal v) :=
   ‹IsScalarTower P S R›
 
+instance {S : Type*} [Ring S] [CommRing R] [Algebra R S] :
+    Algebra (WithVal v) S := ‹Algebra R S›
+
+instance {S : Type*} [Ring S] [CommRing R] [Algebra R S] (w : Valuation S Γ₀) :
+    Algebra R (WithVal w) := ‹Algebra R S›
+
+instance {P S : Type*} [Ring S] [CommRing R] [Semiring P] [Module P R] [Module P S]
+    [Algebra R S] [IsScalarTower P R S] :
+    IsScalarTower P (WithVal v) S :=
+  ‹IsScalarTower P R S›
+
 instance (v : Valuation R Γ₀) : Valued (WithVal v) Γ₀ := Valued.mk' v
 
-/-- Canonical ring equivalence between `WithValuation v` and `R`. -/
+/-- Canonical ring equivalence between `WithVal v` and `R`. -/
 def equiv : WithVal v ≃+* R := RingEquiv.refl _
 
 theorem apply_equiv (r : WithVal v) : v (WithVal.equiv v r) = v r := rfl
@@ -95,4 +106,20 @@ instance : CoeHead (𝓞 (WithVal v)) (WithVal v) := inferInstanceAs (CoeHead (�
 
 instance : IsDedekindDomain (𝓞 (WithVal v)) := inferInstanceAs (IsDedekindDomain (𝓞 K))
 
+instance (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+    IsIntegralClosure R ℤ (WithVal v) := ‹IsIntegralClosure R ℤ K›
+
+/-- The ring equivalence between `𝓞 (WithVal v)` and an integral closure of
+`ℤ` in `K`. -/
+@[simps!]
+def withValEquiv (R : Type*) [CommRing R] [Algebra R K] [IsIntegralClosure R ℤ K] :
+    𝓞 (WithVal v) ≃+* R := NumberField.RingOfIntegers.equiv R
+
 end NumberField.RingOfIntegers
+
+open scoped NumberField in
+/-- The ring of integers of `WithVal v`, when `v` is a valuation on `ℚ`, is
+equivalent to `ℤ`. -/
+@[simps! apply]
+def Rat.ringOfIntegersWithValEquiv (v : Valuation ℚ Γ₀) : 𝓞 (WithVal v) ≃+* ℤ :=
+  NumberField.RingOfIntegers.withValEquiv v ℤ
