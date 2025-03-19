@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Bounds.Image
-import Mathlib.Order.CompleteLattice
+import Mathlib.Order.CompleteLattice.Basic
 import Mathlib.Order.GaloisConnection.Defs
 
 /-!
