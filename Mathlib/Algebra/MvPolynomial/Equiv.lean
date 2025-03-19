@@ -609,6 +609,16 @@ lemma Polynomial.toMvPolynomial_injective (i : σ) :
   exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
 
 @[simp]
+lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
+    (eval f).comp (toMvPolynomial i).toRingHom = Polynomial.evalRingHom (f i) := by
+  ext <;> simp
+
+@[simp]
+lemma MvPolynomial.eval_toMvPolynomial (f : σ → R) (i : σ) (p : R[X]) :
+    eval f (p.toMvPolynomial i) = Polynomial.eval (f i) p :=
+  DFunLike.congr_fun (eval_comp_toMvPolynomial ..) p
+
+@[simp]
 lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :
     (aeval (R := R) f).comp (toMvPolynomial i) = Polynomial.aeval (f i) := by
   ext
