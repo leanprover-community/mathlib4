@@ -3199,6 +3199,7 @@ import Mathlib.Data.Seq.WSeq
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Data.Set.Card
 import Mathlib.Data.Set.Card.Arithmetic
 import Mathlib.Data.Set.CoeSort
@@ -3222,6 +3223,7 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.Inclusion
 import Mathlib.Data.Set.Insert
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.Set.List
 import Mathlib.Data.Set.MemPartition
 import Mathlib.Data.Set.Monotone
