@@ -43,7 +43,7 @@ def characterSpace (𝕜 : Type*) (A : Type*) [CommSemiring 𝕜] [TopologicalSp
 
 variable {𝕜 : Type*} {A : Type*}
 
--- Porting note: even though the capitalization of the namespace differs, it doesn't matter
+-- Even though the capitalization of the namespace differs, it doesn't matter
 -- because there is no dot notation since `characterSpace` is only a type via `CoeSort`.
 namespace CharacterSpace
 

@@ -51,7 +51,7 @@ namespace Complex
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin := by
   change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
-  continuity
+  fun_prop
 
 @[fun_prop]
 theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
@@ -60,7 +60,7 @@ theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
 @[continuity, fun_prop]
 theorem continuous_cos : Continuous cos := by
   change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
-  continuity
+  fun_prop
 
 @[fun_prop]
 theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
@@ -69,12 +69,12 @@ theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
 @[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh := by
   change Continuous fun z => (exp z - exp (-z)) / 2
-  continuity
+  fun_prop
 
 @[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh := by
   change Continuous fun z => (exp z + exp (-z)) / 2
-  continuity
+  fun_prop
 
 end Complex
 

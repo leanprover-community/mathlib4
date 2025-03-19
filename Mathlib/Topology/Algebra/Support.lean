@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -372,7 +373,7 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate for any locally finite family of sets
+-- TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
@@ -425,3 +426,14 @@ theorem LocallyFinite.smul_right [Zero M] [SMulZeroClass R M]
   h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, smul_zero]
 
 end LocallyFinite
+
+section Homeomorph
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+@[to_additive]
+theorem HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
+    (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
+  hf.comp_isClosedEmbedding φ.isClosedEmbedding
+
+end Homeomorph
