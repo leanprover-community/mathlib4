@@ -641,6 +641,25 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
   __ := instMonoid
   mul_comm f g := by ext x; simp [mul_apply, mul_comm]
 
+@[to_additive]
+instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
+  DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
+
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
+`MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[to_additive (attr := simps)
+"Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
+`AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
+    [TopologicalSpace α]
+    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+    [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
+    (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
+    (α →ᵇ β) →* (α →ᵇ γ) where
+  toFun f := f.comp g hg
+  map_one' := ext fun _ => g.map_one
+  map_mul' _ _ := ext fun _ => g.map_mul _ _
+
 end mul
 
 section add
@@ -762,27 +781,6 @@ instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
     Semiring (α →ᵇ R) :=
   Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
-
-@[to_additive]
-instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
-  DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
-
-/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
-`MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
-@[to_additive (attr := simps)
-"Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
-`AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
-protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) {β : Type*} {γ : Type*}
-    [TopologicalSpace α]
-    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
-    [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
-    (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
-    (α →ᵇ β) →* (α →ᵇ γ) where
-  toFun f := f.comp g hg
-  map_one' := ext fun _ => g.map_one
-  map_mul' _ _ := ext fun _ => g.map_mul _ _
-
-end mul
 
 section NormedAddCommGroup
 
