@@ -265,14 +265,12 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
         GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
       obtain ⟨xₚ, hxₚ⟩ := (exact yₚ).1 <| zero_of_pieces_range ⟨x', hx'⟩ comp_eq_zero
       induction' s with s ih
-      · refine ⟨(xₚ p).out,
-          ⟨⟨x' - (xₚ p).out, hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' (xₚ p).out⟩, ?_⟩⟩
-        simp only [AddMonoidHom.coe_range, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Nat.cast_zero,
-          sub_zero, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe]
-        rw [show f (xₚ p).out.val = (f.piece_wise_hom p) (xₚ p).out by rfl,
-          sub_eq_add_neg, add_comm]
-        subst hx'
-        exact AddMemClass.add_mem (by simp only [neg_mem_iff, SetLike.coe_mem]) hp
+      · set xₚp := xₚ p
+        induction' xₚp using GradedPiece.induction_on with xₚp'
+        refine ⟨xₚp', ⟨⟨x' - xₚp', hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' xₚp'⟩, ?_⟩⟩
+        simp only [Nat.cast_zero, sub_zero, SetLike.mem_coe]
+        rw [sub_eq_add_neg, add_comm]
+        exact add_mem (neg_mem <| FilteredHom.pieces_wise (SetLike.coe_mem xₚp')) hp
       · rcases ih with ⟨r, ⟨hr₁, hr₂⟩⟩
         set yₚₛ := AssociatedGraded.of <|
           GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y - f r, hr₂⟩ : ofClass (FS (p - s)))
