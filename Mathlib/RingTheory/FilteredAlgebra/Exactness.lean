@@ -150,8 +150,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     use GradedPiece.mk FR FR_lt ⟨r, hr⟩
     rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk, QuotientAddGroup.mk'_eq_mk']
     exact ⟨⟨s', IsFiltration.F_lt_le_F FS FS_lt i hs'⟩, ⟨hs', SetCoe.ext this⟩⟩
-  · induction y using QuotientAddGroup.induction_on
-    rename_i z
+  · induction' y using QuotientAddGroup.induction_on with z
     rw [← hy, GradedPieceHom_comp_apply]
     exact congrArg (GradedPiece.mk FT FT_lt) (SetCoe.ext (fgexact.apply_apply_eq_zero z.1))
 
@@ -327,8 +326,7 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
           exact SetCoe.ext this
         rcases ((GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g _ exact) _).mp
            mem_ker with ⟨r', hr'⟩
-        induction r' using GradedPiece.induction_on
-        rename_i r'out
+        induction' r' using GradedPiece.induction_on with r'out
         have : Gr+(p - s)[f] ((GradedPiece.mk FR fun n ↦ FR (n - 1)) r'out) =
             (GradedPiece.mk FS fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩ := by
           simpa [GradedPiece.mk] using hr'
