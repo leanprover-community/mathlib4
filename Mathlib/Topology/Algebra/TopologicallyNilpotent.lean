@@ -125,6 +125,19 @@ theorem add {a b : R} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNil
     IsTopologicallyNilpotent (a + b) :=
   ha.add_of_commute hb (Commute.all ..)
 
+variable (R) in
+/-- The topological nilradical of a ring with a linear topology -/
+@[simps]
+def _root_.topologicalNilradical : Ideal R where
+  carrier := {a | IsTopologicallyNilpotent a}
+  add_mem' := add
+  zero_mem' := zero
+  smul_mem' := mul_left
+
+theorem mem_topologicalNilradical_iff {a : R} :
+    a ∈ topologicalNilradical R ↔ IsTopologicallyNilpotent a := by
+  simp [topologicalNilradical]
+
 end CommRing
 
 end IsTopologicallyNilpotent

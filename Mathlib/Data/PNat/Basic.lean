@@ -110,8 +110,9 @@ theorem add_coe (m n : ℕ+) : ((m + n : ℕ+) : ℕ) = m + n :=
   rfl
 
 /-- `coe` promoted to an `AddHom`, that is, a morphism which preserves addition. -/
+@[simps]
 def coeAddHom : AddHom ℕ+ ℕ where
-  toFun := Coe.coe
+  toFun := (↑)
   map_add' := add_coe
 
 instance addLeftMono : AddLeftMono ℕ+ :=
