@@ -9,6 +9,7 @@ import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Finset.Sort
 
 /-!
 
