@@ -84,13 +84,11 @@ def getDeprecatedSyntax : Syntax → Array (SyntaxNodeKind × Syntax × MessageD
   | _ => default
 
 /-- The deprecated syntax linter flags usages of deprecated syntax and suggests
-replacement syntax.
+replacement syntax. For each individual case, linting can be turned on or off separately.
 
-Currently the following syntax is flagged. The option to turn off linting for each individual case
-is listed at the end.
-* `refine'`, superseded by `refine` and `apply` (`linter.style.refine`)
-* `cases'`, superseded by `obtain`, `rcases` and `cases` (`linter.style.cases`)
-* `admit`, superseded by `sorry` (`linter.style.admit`)
+* `refine'`, superseded by `refine` and `apply` (controlled by `linter.style.refine`)
+* `cases'`, superseded by `obtain`, `rcases` and `cases` (controlled by `linter.style.cases`)
+* `admit`, superseded by `sorry` (controlled by `linter.style.admit`)
 -/
 def deprecatedSyntaxLinter : Linter where run := withSetOptionIn fun stx => do
   unless Linter.getLinterValue linter.style.refine (← getOptions) ||
