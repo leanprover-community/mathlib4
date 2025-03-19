@@ -202,8 +202,6 @@ protected theorem FiberBundle.isCoveringMap {F : Type*} {E : X → Type*} [Topol
     [DiscreteTopology F] [TopologicalSpace (Bundle.TotalSpace F E)] [∀ x, TopologicalSpace (E x)]
     [FiberBundle F E] : IsCoveringMap (π F E) :=
   IsFiberBundle.isCoveringMap fun x => ⟨trivializationAt F E x, mem_baseSet_trivializationAt F E x⟩
-<<<<<<< HEAD
-#align fiber_bundle.is_covering_map FiberBundle.isCoveringMap
 
 /-- Let `f : E → X` be a (not necessarily continuous) map between topological spaces, and let
   `V` be an open subset of `X`. Suppose that there is a family `U` of disjoint subsets of `E`
@@ -408,5 +406,3 @@ theorem isCoveringMap_nsmul (p : ℝ) [Fact (0 < p)] {n : ℕ} (hn : 0 < n) :
   · refine @discrete_of_t1_of_finite _ _ _ ?_
     simp_rw [AddMonoidHom.mem_ker, DistribMulAction.toAddMonoidHom_apply]
     exact Set.finite_coe_iff.mpr (AddCircle.finite_torsion p hn)
-=======
->>>>>>> origin/master
