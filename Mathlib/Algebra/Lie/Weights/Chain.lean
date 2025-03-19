@@ -7,6 +7,7 @@ import Mathlib.Algebra.DirectSum.LinearMap
 import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Data.Int.Interval
 import Mathlib.LinearAlgebra.Trace
+import Mathlib.RingTheory.Finiteness.Nilpotent
 
 /-!
 # Chains of roots and weights
@@ -377,53 +378,26 @@ variable {K L M : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 lemma root_space_ad_is_nilpotent
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
     _root_.IsNilpotent (toEnd K L M x) := by
-  let s : Set (Weight K H M) := univ
-  have nilpotency_limit : ∀ χ₂ ∈ s, ∃ n : ℕ, ∀ v : genWeightSpace M χ₂, ∀ m ≥ n,
-      (toEnd K L M x ^ m) v = 0 := by
-    intro χ₂ he
-    obtain ⟨k, ⟨hk₁, hk₂⟩⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
-    use k
-    intro v m hm
-    have h := toEnd_pow_apply_mem hx v.mem k
-    rw [hk₂, LieSubmodule.mem_bot] at h
-    exact LinearMap.pow_map_zero_of_le hm h
-  have uniform_nilpotency_limit : ∃ n₀ : ℕ, ∀ χ₂ ∈ s, ∀ v : genWeightSpace M χ₂,
-      (toEnd K L M x ^ n₀) v = 0 := by
-    choose fn₁ hn using nilpotency_limit
-    simp only [Subtype.forall] at hn ⊢
-    let n₀ := s.toFinset.sup fun χ₂ => fn₁ χ₂ (mem_univ χ₂)
-    use n₀
-    intro χ₂ hχ₂ v
-    specialize hn χ₂ hχ₂ v
-    intro hv
-    have : fn₁ χ₂ hχ₂ ≤ n₀ := by
-      apply Finset.le_sup (mem_toFinset.2 hχ₂)
-    exact hn hv n₀ this
-  obtain ⟨n₀, hn₀⟩ := uniform_nilpotency_limit
-  let A := (toEnd K L M x) ^ n₀
-  have s₁ : ⨆ χᵢ ∈ s, genWeightSpace M χᵢ ≤ span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) := by
-    apply sSup_le
-    intro n hn
-    simp only [mem_univ, iSup_pos, mem_range, exists_exists_eq_and, s] at hn ⊢
-    obtain ⟨χ₂, hχ₂⟩ := hn
-    subst hχ₂
-    intro m hm
-    exact (span_mono (fun _ hx => Set.mem_biUnion (mem_univ χ₂) hx)) (subset_span hm)
-  have s₂ : span K (⋃ χᵢ ∈ s, (genWeightSpace M χᵢ).carrier) = ⊤ := by
-    simp only [mem_univ, iSup_pos, iUnion_true, s] at s₁ ⊢
-    rw [iSup_genWeightSpace_eq_top' K H M] at s₁
-    apply top_le_iff.1 s₁
-  have s₃ : A = 0 := by
-    haveI := [Module K M]
-    apply (linearMap_eq_zero_iff_of_span_eq_top (A : M →ₗ[K] M) s₂).2
-    intro h₀
-    obtain ⟨m, ⟨_, ⟨⟨χ₂, ⟨_, _⟩⟩, h₁⟩⟩⟩ := h₀
-    rw [mem_iUnion] at h₁
-    obtain ⟨_, h₂⟩ := h₁
-    have h₃ := (hn₀ χ₂) (mem_univ χ₂)
-    rw [Subtype.forall] at h₃
-    exact h₃ m h₂
-  use n₀
+  refine Module.Finite.Module.End.isNilpotent_iff_of_finite.mpr fun m ↦ ?_
+  have hm : m ∈ ⨆ χ : LieModule.Weight K H M, genWeightSpace M χ := by
+    simp [iSup_genWeightSpace_eq_top' K H M]
+  induction hm using LieSubmodule.iSup_induction' with
+  | h0 =>
+      obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ hχ
+      use 0
+      apply map_zero
+  | hN χ₂ m₂ hm₂ =>
+    obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
+    use n
+    have h := toEnd_pow_apply_mem hx hm₂ n
+    rw [hn, LieSubmodule.mem_bot] at h
+    exact h
+  | hadd m₁ m₂ hm₁ hm₂ hm₁' hm₂' =>
+    obtain ⟨n₁, hn₁⟩ := hm₁'
+    obtain ⟨n₂, hn₂⟩ := hm₂'
+    refine ⟨max n₁ n₂, ?_⟩
+    rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
+    LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
 
 end
 
