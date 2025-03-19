@@ -59,9 +59,12 @@ variable {V W X α β γ : Type*} {G G₁ G₂ G₃ : SimpleGraph V} {H : Simple
 /-!
 ### Copies
 
-Note that induced copies of `G` inside `H` are already defined as `G ↪g H`.
-
 #### Not necessarily induced copies
+
+A copy of a subgraph `G` inside a subgraph `H` is an embedding of the vertices of `G` into the
+vertices of `H`, such that adjacency in `G` implies adjacency in `H`.
+
+We capture this concept by injective graph homomorphisms.
 -/
 
 section Copy
@@ -195,6 +198,13 @@ def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy hom_inje
 end Copy
 
 /-!
+#### Induced copies
+
+An induced copy of a graph `G` inside a graph `H` is an embedding from the vertices of
+`G` into the vertices of `H` which preserves the adjacency relation.
+
+This is already captured by the notion of graph embeddings, defined as `G ↪g H`.
+
 ### Containment
 
 #### Not necessarily induced containment
