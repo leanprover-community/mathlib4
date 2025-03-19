@@ -638,8 +638,10 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
 
 lemma ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x := Option.ne_none_iff_exists
 
-lemma forall_ne_iff_eq_top {x : WithTop α} : (∀ a : α, ↑a ≠ x) ↔ x = ⊤ :=
+lemma eq_top_iff_forall_ne {x : WithTop α} : x = ⊤ ↔ ∀ a : α, ↑a ≠ x :=
   Option.forall_some_ne_iff_eq_none
+
+@[deprecated (since := "2025-03-19")] alias eq_top_iff_forall_ne := eq_top_iff_forall_ne
 
 /-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
 def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
@@ -806,15 +808,18 @@ alias coe_untop'_le := coe_untopD_le
 @[simp]
 theorem coe_top_lt [OrderTop α] : (⊤ : α) < x ↔ x = ⊤ := by cases x <;> simp
 
-lemma forall_gt_iff_eq_top : (∀ a : α, a < y) ↔ y = ⊤ := by
+lemma eq_top_iff_forall_gt : (∀ a : α, a < y) ↔ y = ⊤ := by
   cases y <;> simp; simpa using ⟨_, lt_irrefl _⟩
 
-lemma forall_ge_iff_eq_top [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ :=
+lemma eq_top_iff_forall_ge [NoMaxOrder α] : (∀ a : α, a ≤ y) ↔ y = ⊤ :=
   WithBot.forall_le_iff_eq_bot (α := αᵒᵈ)
+
+@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_top := eq_top_iff_forall_gt
+@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_top := eq_top_iff_forall_ge
 
 lemma forall_coe_le_iff_le [NoMaxOrder α] {x y : WithTop α} : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
   obtain _ | x := x
-  · simp [WithTop.none_eq_top, forall_ge_iff_eq_top]
+  · simp [WithTop.none_eq_top, eq_top_iff_forall_ge]
   · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ ham.trans hmn⟩
 
 end Preorder
