@@ -248,12 +248,19 @@ of `e`.
   products span `LocallyConstant C ℤ`.
 -/
 
+-- move this
+@[simps]
+def _root_.LocallyConstant.eval {ι : Type*} {X : ι → Type*}
+    [∀ i, TopologicalSpace (X i)] [∀ i, DiscreteTopology (X i)] (i : ι) :
+    LocallyConstant (Π i, X i) (X i) where
+  toFun := fun f ↦ f i
+  isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i
+
 /-- `e C i` is the locally constant map from `C : Set (I → Bool)` to `ℤ` sending `f` to 1 if
 `f.val i = true`, and 0 otherwise. -/
+@[simps!]
 def e (i : I) : LocallyConstant C ℤ :=
-  LocallyConstant.map (Bool.rec 0 1) <| LocallyConstant.comap ⟨_, continuous_subtype_val⟩ 
-  { toFun := fun f ↦ f i
-    isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i }
+  LocallyConstant.map (Bool.rec 0 1) <| (LocallyConstant.eval i).comap ⟨_, continuous_subtype_val⟩
 
 variable [LinearOrder I]
 
@@ -344,23 +351,17 @@ theorem eval_eq (l : Products I) (x : C) :
     apply List.prod_eq_one
     simp only [List.mem_map, Function.comp_apply]
     rintro _ ⟨i, hi, rfl⟩
-    exact if_pos (h i hi)
-  · simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
-    push_neg at h
-    convert h with i
-    dsimp [LocallyConstant.evalMonoidHom, e]
-    simp only [ite_eq_right_iff, one_ne_zero]
+    simp [h i hi]
+  · obtain ⟨i, hi, hx⟩ : ∃ i ∈ l.1, x.1 i ≠ true := by simpa using h
+    simp only [List.map_map, List.prod_eq_zero_iff, List.mem_map, Function.comp_apply]
+    use i, hi
+    simp_all
 
 theorem evalFacProp {l : Products I} (J : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] :
     l.eval (π C J) ∘ ProjRestrict C J = l.eval C := by
   ext x
-  dsimp [ProjRestrict]
-  rw [Products.eval_eq, Products.eval_eq]
-  congr
-  apply forall_congr; intro i
-  apply forall_congr; intro hi
-  simp [h i hi, Proj]
+  simp +contextual [h, Proj, Products.eval_eq, Products.eval_eq]
 
 theorem evalFacProps {l : Products I} (J K : I → Prop)
     (h : ∀ a, a ∈ l.val → J a) [∀ j, Decidable (J j)] [∀ j, Decidable (K j)]
@@ -375,11 +376,8 @@ theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)
     (h : l.isGood (π C J)) : ∀ a, a ∈ l.val → J a := by
   intro i hi
   by_contra h'
-  apply h
-  suffices eval (π C J) l = 0 by
-    rw [this]
-    exact Submodule.zero_mem _
-  ext ⟨_, _, _, rfl⟩
+  suffices eval (π C J) l = 0 from h <| by simp [this]
+  ext ⟨_, w, hw, rfl⟩
   rw [eval_eq, if_neg fun h ↦ ?_, LocallyConstant.zero_apply]
   simpa [Proj, h'] using h i hi
 
@@ -390,13 +388,12 @@ theorem GoodProducts.span_iff_products [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
       ⊤ ≤ Submodule.span ℤ (Set.range (Products.eval C)) := by
   refine ⟨fun h ↦ le_trans h (span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ le_trans h ?_⟩
-  rw [span_le]
-  rintro f ⟨l, rfl⟩
+  rw [span_le, Set.range_subset_iff]
+  intro l
   let L : Products I → Prop := fun m ↦ m.eval C ∈ span ℤ (Set.range (GoodProducts.eval C))
   suffices L l by assumption
   apply IsWellFounded.induction (· < · : Products I → Products I → Prop)
   intro l h
-  dsimp
   by_cases hl : l.isGood C
   · apply subset_span
     exact ⟨⟨l, hl⟩, rfl⟩
@@ -492,11 +489,7 @@ theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x)
   apply List.prod_eq_one
   simp only [h, List.mem_map, LocallyConstant.evalMonoidHom, factors]
   rintro _ ⟨a, ⟨b, _, rfl⟩, rfl⟩
-  dsimp
-  split_ifs with hh
-  · rw [e, LocallyConstant.coe_mk, if_pos hh]
-  · rw [LocallyConstant.sub_apply, e, LocallyConstant.coe_mk, LocallyConstant.coe_mk, if_neg hh]
-    simp only [LocallyConstant.toFun_eq_coe, LocallyConstant.coe_one, Pi.one_apply, sub_zero]
+  split_ifs <;> simp_all [LocallyConstant.sub_apply]
 
 theorem e_mem_of_eq_true {x : (π C (· ∈ s))} {a : I} (hx : x.val a = true) :
     e (π C (· ∈ s)) a ∈ factors C s x := by
@@ -522,11 +515,9 @@ theorem factors_prod_eq_basis_of_ne {x y : (π C (· ∈ s))} (h : y ≠ x) :
   cases hx : x.val a
   · rw [hx, ne_eq, Bool.not_eq_false] at ha
     refine ⟨1 - (e (π C (· ∈ s)) a), ⟨one_sub_e_mem_of_false _ _ ha hx, ?_⟩⟩
-    rw [e, LocallyConstant.evalMonoidHom_apply, LocallyConstant.sub_apply,
-      LocallyConstant.coe_one, Pi.one_apply, LocallyConstant.coe_mk, if_pos ha, sub_self]
+    simp_all [LocallyConstant.sub_apply]
   · refine ⟨e (π C (· ∈ s)) a, ⟨e_mem_of_eq_true _ _ hx, ?_⟩⟩
-    rw [hx] at ha
-    rw [LocallyConstant.evalMonoidHom_apply, e, LocallyConstant.coe_mk, if_neg ha]
+    simp_all [LocallyConstant.sub_apply]
 
 /-- If `s` is finite, the product of the elements of the list `factors C s x`
 is the delta function at `x`. -/
