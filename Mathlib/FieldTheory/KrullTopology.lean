@@ -119,7 +119,7 @@ def galGroupBasis (K L : Type*) [Field K] [Field L] [Algebra K L] :
     let F : IntermediateField K L := E.map σ.symm.toAlgHom
     refine ⟨F.fixingSubgroup.carrier, ⟨⟨F.fixingSubgroup, ⟨F, ?_, rfl⟩, rfl⟩, fun g hg => ?_⟩⟩
     · have : FiniteDimensional K E := hE
-      exact IntermediateField.im_finiteDimensional σ.symm
+      exact IntermediateField.finiteDimensional_map σ.symm.toAlgHom
     change σ * g * σ⁻¹ ∈ E.fixingSubgroup
     rw [IntermediateField.mem_fixingSubgroup_iff]
     intro x hx

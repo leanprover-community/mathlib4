@@ -99,9 +99,9 @@ theorem eq_of_le_of_finrank_eq' [FiniteDimensional F L] (h_le : F ≤ E)
 
 /-- Mapping a finite dimensional intermediate field along an algebra equivalence gives
 a finite-dimensional intermediate field. -/
-instance im_finiteDimensional (σ : L ≃ₐ[K] L) [FiniteDimensional K E] :
-    FiniteDimensional K (E.map σ.toAlgHom) :=
-  LinearEquiv.finiteDimensional (IntermediateField.intermediateFieldMap σ E).toLinearEquiv
+instance finiteDimensional_map (f : L →ₐ[K] L) [FiniteDimensional K E] :
+    FiniteDimensional K (E.map f) :=
+  LinearEquiv.finiteDimensional (IntermediateField.equivMap E f).toLinearEquiv
 
 end FiniteDimensional
 

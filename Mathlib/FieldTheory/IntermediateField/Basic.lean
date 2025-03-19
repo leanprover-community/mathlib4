@@ -673,6 +673,43 @@ example {F : IntermediateField K L} {E : IntermediateField F L} : Algebra K E :=
 
 end Tower
 
+section equivMap
+
+variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
+  {K : Type*} [Field K] [Algebra F K] (L : IntermediateField F E) (f : E →ₐ[F] K)
+
+/-- Construct an algebra isomorphism from an equality of intermediate fields -/
+@[simps! apply]
+def equivOfEq {S T : IntermediateField F E} (h : S = T) : S ≃ₐ[F] T :=
+  Subalgebra.equivOfEq _ _ (congr_arg toSubalgebra h)
+
+@[simp]
+theorem equivOfEq_symm {S T : IntermediateField F E} (h : S = T) :
+    (equivOfEq h).symm = equivOfEq h.symm :=
+  rfl
+
+@[simp]
+theorem equivOfEq_rfl (S : IntermediateField F E) : equivOfEq (rfl : S = S) = AlgEquiv.refl :=
+  AlgEquiv.ext fun _ ↦ rfl
+
+@[simp]
+theorem equivOfEq_trans {S T U : IntermediateField F E} (hST : S = T) (hTU : T = U) :
+    (equivOfEq hST).trans (equivOfEq hTU) = equivOfEq (hST.trans hTU) :=
+  rfl
+
+theorem fieldRange_comp_val : (f.comp L.val).fieldRange = L.map f := toSubalgebra_injective <| by
+  rw [toSubalgebra_map, AlgHom.fieldRange_toSubalgebra, AlgHom.range_comp, range_val]
+
+/-- An intermediate field is isomorphic to its image under an `AlgHom`
+(which is automatically injective) -/
+noncomputable def equivMap : L ≃ₐ[F] L.map f :=
+  (AlgEquiv.ofInjective _ (f.comp L.val).injective).trans (equivOfEq (fieldRange_comp_val L f))
+
+@[simp]
+theorem coe_equivMap_apply (x : L) : ↑(equivMap L f x) = f x := rfl
+
+end equivMap
+
 end IntermediateField
 
 section ExtendScalars
