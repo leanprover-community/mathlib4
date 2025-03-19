@@ -32,19 +32,22 @@ The following notation is declared in locale `SimpleGraph`:
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
 -/
 
-namespace SimpleGraph
+open Finset Function
 
-variable {V α β γ : Type*} {G G₁ G₂ G₃ : SimpleGraph V}
+namespace SimpleGraph
+variable {V W X α β γ : Type*} {G G₁ G₂ G₃ : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph X}
   {A : SimpleGraph α} {B : SimpleGraph β} {C : SimpleGraph γ}
 
 section Copy
 
 /-- The type of copies as a subtype of *injective* homomorphisms. -/
-abbrev Copy (A : SimpleGraph α) (B : SimpleGraph β) :=
-  { f : A →g B // Function.Injective f }
+structure Copy (A : SimpleGraph α) (B : SimpleGraph β) where
+  /-- A copy gives rise to a homomorphism. -/
+  toHom : A →g B
+  injective' : Injective toHom
 
 /-- An injective homomorphism gives rise to a copy. -/
-abbrev Hom.toCopy (f : A →g B) (h : Function.Injective f) : Copy A B := ⟨f, h⟩
+abbrev Hom.toCopy (f : A →g B) (h : Injective f) : Copy A B := .mk f h
 
 /-- An embedding gives rise to a copy. -/
 abbrev Embedding.toCopy (f : A ↪g B) : Copy A B := f.toHom.toCopy f.injective
@@ -54,18 +57,18 @@ abbrev Iso.toCopy (f : A ≃g B) : Copy A B := f.toEmbedding.toCopy
 
 namespace Copy
 
-/-- A copy gives rise to a homomorphism. -/
-abbrev toHom : Copy A B → A →g B := Subtype.val
-
-@[simp] lemma coe_toHom (f : Copy A B) : ⇑f.toHom = f := rfl
-
-lemma injective : (f : Copy A B) → (Function.Injective f.toHom) := Subtype.prop
-
 instance : FunLike (Copy A B) α β where
   coe f := DFunLike.coe f.toHom
-  coe_injective' _ _ h := Subtype.val_injective (DFunLike.coe_injective h)
+  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
-@[simp] lemma coe_toHom_apply (f : Copy A B) (a : α) : ⇑f.toHom a = f a := rfl
+lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
+
+@[ext] lemma ext {f g : Copy A B} : (∀ a, f a = g a) → f = g := DFunLike.ext _ _
+
+@[simp] lemma coe_toHom (f : Copy A B) : ⇑f.toHom = f := rfl
+@[simp] lemma toHom_apply (f : Copy A B) (a : α) : ⇑f.toHom a = f a := rfl
+
+@[simp] lemma coe_mk (f : A →g B) (hf) : ⇑(.mk f hf : Copy A B) = f := rfl
 
 /-- A copy induces an embedding of edge sets. -/
 def mapEdgeSet (f : Copy A B) : A.edgeSet ↪ B.edgeSet where
@@ -117,6 +120,16 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
+
+instance [Subsingleton (V → W)] : Subsingleton (G.Copy H) := DFunLike.coe_injective.subsingleton
+
+instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) := 
+  .ofEquiv {f : G →g H // Injective f} {
+    toFun f := ⟨f.1, f.2⟩
+    invFun f := ⟨f.1, f.2⟩
+    left_inv _ := rfl
+    right_inv _ := rfl
+  }
 
 end Copy
 
