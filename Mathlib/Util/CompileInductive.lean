@@ -76,7 +76,9 @@ open Elab
 /-- Returns true if the given declaration has already been compiled, either directly or via a
 `@[csimp]` lemma. -/
 def isCompiled (env : Environment) (n : Name) : Bool :=
-  env.contains (n.str "_cstage2") || (Compiler.CSimp.ext.getState env).map.contains n
+  -- `_cstage2` is not accessible via the elab env directly, wait for the full kernel env
+  env.toKernelEnv.constants.contains (n.str "_cstage2") ||
+    (Compiler.CSimp.ext.getState env).map.contains n
 
 /--
 `compile_def% Foo.foo` adds compiled code for the definition `Foo.foo`.
