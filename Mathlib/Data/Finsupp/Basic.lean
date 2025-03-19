@@ -360,7 +360,7 @@ theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
   Int.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommRing R] (g : α → M → ℤ) :
+theorem cast_finsupp_sum [Ring R] (g : α → M → ℤ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Int.cast_sum _ _
 
@@ -1071,22 +1071,30 @@ finitely supported functions from `β` to `M`,
 protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
   f.sum fun a g => g.sum fun b c => single (a, b) c
 
+@[simp]
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
+    f.uncurry (x, y) = f x y := by
+  rw [← curry_apply (f.uncurry) x y]
+  simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
+    forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
+
+@[simp]
+theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
+  ext a b
+  rw [curry_apply, Finsupp.uncurry_apply_pair]
+
+@[simp]
+theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
+  ext ⟨a, b⟩
+  rw [Finsupp.uncurry_apply_pair, curry_apply]
+
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
-  left_inv f := by
-    rw [Finsupp.uncurry, sum_curry_index]
-    · simp_rw [Prod.mk.eta, sum_single]
-    · intros
-      apply single_zero
-    · intros
-      apply single_add
-  right_inv f := by
-    simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, sum_zero_index, sum_add_index,
-      sum_single_index, single_zero, single_add, eq_self_iff_true, forall_true_iff,
-      forall₃_true_iff, (single_sum _ _ _).symm, sum_single]
+  left_inv := uncurry_curry
+  right_inv := curry_uncurry
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by

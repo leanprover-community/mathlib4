@@ -229,6 +229,20 @@ theorem sup_eq_bot_of_isEmpty [IsEmpty β] (f : β → α) (S : Finset β) : S.s
   rw [Finset.sup_eq_bot_iff]
   exact fun x _ => False.elim <| IsEmpty.false x
 
+theorem le_sup_dite_pos (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
+    f b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
+  have : f b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply le_sup h₀
+
+theorem le_sup_dite_neg (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
+    g b h₁ ≤ s.sup fun i ↦ if h : p i then f i h else g i h := by
+  have : g b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply le_sup h₀
+
 end Sup
 
 theorem sup_eq_iSup [CompleteLattice β] (s : Finset α) (f : α → β) : s.sup f = ⨆ a ∈ s, f a :=
@@ -401,6 +415,20 @@ protected theorem inf_eq_top_iff (f : β → α) (S : Finset β) : S.inf f = ⊤
 lemma inf_disjSum (s : Finset β) (t : Finset γ) (f : β ⊕ γ → α) :
     (s.disjSum t).inf f = (s.inf fun x ↦ f (.inl x)) ⊓ (t.inf fun x ↦ f (.inr x)) :=
   congr(fold _ $(top_inf_eq _ |>.symm) _ _).trans (fold_disjSum _ _ _ _ _ _)
+
+theorem inf_dite_pos_le (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : p b) :
+    (s.inf fun i ↦ if h : p i then f i h else g i h) ≤ f b h₁ := by
+  have : f b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply inf_le h₀
+
+theorem inf_dite_neg_le (p : β → Prop) [DecidablePred p]
+    {f : (b : β) → p b → α} {g : (b : β) → ¬p b → α} {b : β} (h₀ : b ∈ s) (h₁ : ¬p b) :
+    (s.inf fun i ↦ if h : p i then f i h else g i h) ≤ g b h₁ := by
+  have : g b h₁ = (fun i ↦ if h : p i then f i h else g i h) b := by simp [h₁]
+  rw [this]
+  apply inf_le h₀
 
 end Inf
 
