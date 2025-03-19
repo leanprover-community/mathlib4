@@ -482,6 +482,11 @@ protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h 
   rw [List.IsRotated.nodup_iff (support_rotate _ _)]
   exact hc.support_nodup
 
+lemma IsCycle.isPath_dropUntil {u x : V} {p : G.Walk u u}  (hc : p.IsCycle)
+    (hx : x ∈ p.support) (hn : u ≠ x ) : (p.dropUntil _ hx).IsPath := by
+  apply isPath_of_append_right _ <| (take_spec p hx) ▸ hc
+  exact not_nil_of_ne hn
+
 lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
     (c.takeUntil w h).IsPath := by
   by_cases hvw : v = w
@@ -544,13 +549,21 @@ lemma IsPath.next_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.I
         exact (cons_isPath_iff ..|>.1 hp |>.2 <| hn ▸ (getVert_mem_support p n)).elim
       | tail _ hd => exact ih hp.of_cons hd hn
 
-/--- What should this be? -/
-lemma IsCycle.mem_dropUntil_fst_dart_of_tail {u : V} {c : G.Walk u u} {d : G.Dart}
-    (hc : c.IsCycle) (hd : d ∈ c.tail.darts) :
-    d ∈ (c.tail.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).darts :=
-  hc.isPath_tail.mem_dropUntil_fst_dart hd
-
-
+lemma IsCycle.mem_dropUntil_fst_dart {u : V} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
+    (hd : d ∈ c.darts) : d ∈ (c.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).darts := by
+  cases c with
+  | nil => simp at hc
+  | @cons u v w h p =>
+    rw [darts_cons] at hd
+    cases hd with
+    | head as => simp
+    | tail b hd' =>
+      rw [cons_isCycle_iff] at hc
+      by_cases h' : u = d.toProd.1
+      · subst_vars
+        rwa [dropUntil_start]
+      · rw [dropUntil, dif_neg h']
+        apply hc.1.mem_dropUntil_fst_dart hd'
 
 /-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
