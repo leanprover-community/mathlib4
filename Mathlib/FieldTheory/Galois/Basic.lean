@@ -180,7 +180,7 @@ def FixedPoints.intermediateField (M : Type*) [Monoid M] [MulSemiringAction M E]
 
 namespace IntermediateField
 
-/-- The intermediate field fixed by a subgroup -/
+/-- The intermediate field fixed by a subgroup. -/
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 
@@ -197,25 +197,27 @@ theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· �
     finrank (fixedField H) E = Fintype.card H :=
   FixedPoints.finrank_eq_card H E
 
-/-- The subgroup fixing an intermediate field -/
+/-- The subgroup fixing an intermediate field. -/
 nonrec def fixingSubgroup : Subgroup (E ≃ₐ[F] E) :=
   fixingSubgroup (E ≃ₐ[F] E) (K : Set E)
 
 theorem le_iff_le : K ≤ fixedField H ↔ H ≤ fixingSubgroup K :=
   ⟨fun h g hg x => h (Subtype.mem x) ⟨g, hg⟩, fun h x hx g => h (Subtype.mem g) ⟨x, hx⟩⟩
 
-/-- The map `E ↦ Gal(L/E)` is inclusion-reversing. -/
-theorem fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {E1 E2 : IntermediateField K L} (h12 : E1 ≤ E2) : E2.fixingSubgroup ≤ E1.fixingSubgroup :=
+/-- The map `K ↦ Gal(E/K)` is inclusion-reversing. -/
+theorem fixingSubgroup.antimono {K1 K2 : IntermediateField F E} (h12 : K1 ≤ K2) :
+    K2.fixingSubgroup ≤ K1.fixingSubgroup :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
-theorem fixedField.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
-    {H1 H2 : Subgroup (L ≃ₐ[K] L)} (h12 : H1 ≤ H2) :
+theorem fixedField.antimono {H1 H2 : Subgroup (E ≃ₐ[F] E)} (h12 : H1 ≤ H2) :
     fixedField H2 ≤ fixedField H1 :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
-lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) (E := E)) :=
+lemma fixingSubgroup_anti : Antitone (@fixingSubgroup F _ E _ _) :=
   fun _ _ ↦ fixingSubgroup.antimono
+
+lemma fixedField_anti : Antitone (@fixedField F _ E _ _) :=
+  fun _ _ ↦ fixedField.antimono
 
 @[simp] lemma mem_fixingSubgroup_iff (σ) : σ ∈ fixingSubgroup K ↔ ∀ x ∈ K, σ x = x :=
   _root_.mem_fixingSubgroup_iff _
@@ -228,7 +230,7 @@ lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) 
   ext
   simp [mem_bot]
 
-/-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E` -/
+/-- The fixing subgroup of `K : IntermediateField F E` is isomorphic to `E ≃ₐ[K] E`. -/
 def fixingSubgroupEquiv : fixingSubgroup K ≃* E ≃ₐ[K] E where
   toFun ϕ := { AlgEquiv.toRingEquiv (ϕ : E ≃ₐ[F] E) with commutes' := ϕ.mem }
   invFun ϕ := ⟨ϕ.restrictScalars _, ϕ.commutes⟩
@@ -311,7 +313,7 @@ def intermediateFieldEquivSubgroup [FiniteDimensional F E] [IsGalois F E] :
     rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
     rfl
 
-/-- The Galois correspondence as a `GaloisInsertion` -/
+/-- The Galois correspondence as a `GaloisInsertion`. -/
 def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
     GaloisInsertion (OrderDual.toDual ∘
       (IntermediateField.fixingSubgroup : IntermediateField F E → Subgroup (E ≃ₐ[F] E)))
@@ -322,7 +324,7 @@ def galoisInsertionIntermediateFieldSubgroup [FiniteDimensional F E] :
   le_l_u H := le_of_eq (IntermediateField.fixingSubgroup_fixedField H).symm
   choice_eq _ _ := rfl
 
-/-- The Galois correspondence as a `GaloisCoinsertion` -/
+/-- The Galois correspondence as a `GaloisCoinsertion`. -/
 def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois F E] :
     GaloisCoinsertion (OrderDual.toDual ∘
       (IntermediateField.fixingSubgroup : IntermediateField F E → Subgroup (E ≃ₐ[F] E)))
@@ -508,7 +510,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   refine LinearEquiv.finrank_eq ?_
   rfl
 
-/-- Equivalent characterizations of a Galois extension of finite degree -/
+/-- Equivalent characterizations of a Galois extension of finite degree. -/
 theorem tfae [FiniteDimensional F E] : List.TFAE [
     IsGalois F E,
     IntermediateField.fixedField (⊤ : Subgroup (E ≃ₐ[F] E)) = ⊥,
