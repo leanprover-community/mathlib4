@@ -86,8 +86,10 @@ theorem of_supset {C D : (Set α) → Prop} (hD : IsCompactSystem D) (hCD : ∀ 
 
 section ClosedCompact
 
+variable (α : Type*) [TopologicalSpace α]
+
 /-- The set of sets which are either compact and closed, or `univ`, is a compact system. -/
-theorem of_isClosedCompactOrUniv {α : Type*} [TopologicalSpace α] :
+theorem isClosedCompactOrUnivs :
     IsCompactSystem (fun s : Set α ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)) := by
   let p := fun (s : Set α) ↦ (IsCompact s ∧ IsClosed s) ∨ (s = univ)
   have h2 : ∀ (s t : Set α), p s → p t → p (s ∩ t) := by
@@ -135,21 +137,20 @@ theorem of_isClosedCompactOrUniv {α : Type*} [TopologicalSpace α] :
     simp only [Set.mem_univ, implies_true, exists_const, s']
 
 /-- The set of compact and closed sets is a compact system. -/
-theorem of_isClosedCompact {α : Type*} [TopologicalSpace α] :
+theorem isClosedCompacts :
     IsCompactSystem (fun s : Set α ↦ IsCompact s ∧ IsClosed s) :=
-  IsCompactSystem.of_supset of_isClosedCompactOrUniv (fun _ hs ↦ Or.inl hs)
+  IsCompactSystem.of_supset (isClosedCompactOrUnivs α) (fun _ hs ↦ Or.inl hs)
 
-theorem of_isCompact {α : Type*} [TopologicalSpace α]
-    (h : ∀ {s : Set α}, IsCompact s → IsClosed s) :
+theorem isCompacts (h : ∀ {s : Set α}, IsCompact s → IsClosed s) :
     IsCompactSystem (fun s : Set α ↦ IsCompact s) := by
   have h : (fun s : Set α ↦ IsCompact s) = (fun s : Set α ↦ IsCompact s ∧ IsClosed s) := by
     ext s
     refine ⟨fun h' ↦ ⟨h', h h'⟩, fun h' ↦ h'.1⟩
-  exact h ▸ of_isClosedCompact
+  exact h ▸ (isClosedCompacts α)
 
 /-- In a `T2Space` The set of compact sets is a compact system. -/
-theorem _of_isCompact_of_T2Space {α : Type*} [TopologicalSpace α] [T2Space α] :
-    IsCompactSystem (fun s : Set α ↦ IsCompact s) := of_isCompact (fun hs ↦ hs.isClosed)
+theorem _of_isCompact_of_T2Space [T2Space α] :
+    IsCompactSystem (fun s : Set α ↦ IsCompact s) := (isCompacts α) (fun hs ↦ hs.isClosed)
 
 end ClosedCompact
 
