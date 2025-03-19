@@ -9,6 +9,7 @@ import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
 import Mathlib.Topology.Separation.Profinite
 import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Finset.Sort
 
 /-!
 
@@ -812,7 +813,7 @@ instance : Unique { l // Products.isGood ({fun _ ↦ false} : Set (I → Bool)) 
     intro ⟨⟨l, hl⟩, hll⟩
     ext
     apply Subtype.ext
-    apply (List.Lex.nil_left_or_eq_nil l (r := (· < ·))).resolve_left
+    apply (List.lex_nil_or_eq_nil l (r := (· < ·))).resolve_left
     intro _
     apply hll
     have he : {Products.nil} ⊆ {m | m < ⟨l,hl⟩} := by
