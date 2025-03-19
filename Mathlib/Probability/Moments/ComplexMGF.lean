@@ -329,7 +329,7 @@ theorem MeasureTheory.ext_of_forall_complexMGF_eq [IsFiniteMeasure μ]
   intro w
   specialize h (Multiplicative.toAdd w * I)
   simp [complexMGF] at h
-  simp_rw [mul_comm ((Multiplicative.toAdd w) * I) _, ← mul_assoc] at h
+  simp_rw [mul_assoc, mul_comm I, ← mul_assoc] at h
   simp [probChar_apply, probFourierChar]
   rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
     integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]

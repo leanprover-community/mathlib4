@@ -44,13 +44,13 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
-/-- The bounded continuous mapping `fun v ↦ e (L v (Multiplicative.toAdd w))` from `V` to `ℂ`.  -/
+/-- The bounded continuous mapping `fun v ↦ e (L v (Multiplicative.toAdd w))` from `V` to `ℂ`. -/
 def probChar (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     (w : Multiplicative W) :
     V →ᵇ ℂ where
   toFun := fun v ↦ e (L v (Multiplicative.toAdd w))
   continuous_toFun :=
-    continuous_induced_dom.comp (he.comp (hL.comp (Continuous.Prod.mk_left w)))
+    continuous_induced_dom.comp (he.comp (hL.comp (Continuous.prodMk_left w)))
   map_bounded' := by
     refine ⟨2, fun x y ↦ ?_⟩
     calc dist _ _
