@@ -385,7 +385,7 @@ lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
   induction hm using LieSubmodule.iSup_induction' with
   | h0 => exact ⟨0, map_zero _⟩
   | hN χ₂ m₂ hm₂ =>
-    obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
+    obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot M χ χ₂ hχ
     use n
     have := toEnd_pow_apply_mem hx hm₂ n
     rwa [hn, LieSubmodule.mem_bot] at this
