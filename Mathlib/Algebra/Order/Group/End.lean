@@ -14,6 +14,40 @@ assert_not_exists MulAction MonoidWithZero
 
 variable {α : Type*} {r : α → α → Prop}
 
+namespace RelHom
+
+instance : Monoid (r →r r) where
+  one := .id r
+  mul := .comp
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+
+@[simp] lemma coe_one : ⇑(1 : r →r r) = id := rfl
+@[simp] lemma coe_mul (f g : r →r r) : ⇑(f * g) = f ∘ g := rfl
+
+lemma one_apply (a : α) : (1 : r →r r) a = a := rfl
+lemma mul_apply (e₁ e₂ : r →r r) (x : α) : (e₁ * e₂) x = e₁ (e₂ x) := rfl
+
+end RelHom
+
+namespace RelEmbedding
+
+instance : Monoid (r ↪r r) where
+  one := .refl r
+  mul f g := g.trans f
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+
+@[simp] lemma coe_one : ⇑(1 : r ↪r r) = id := rfl
+@[simp] lemma coe_mul (f g : r ↪r r) : ⇑(f * g) = f ∘ g := rfl
+
+lemma one_apply (a : α) : (1 : r ↪r r) a = a := rfl
+lemma mul_apply (e₁ e₂ : r ↪r r) (x : α) : (e₁ * e₂) x = e₁ (e₂ x) := rfl
+
+end RelEmbedding
+
 namespace RelIso
 
 instance : Group (r ≃r r) where
