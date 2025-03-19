@@ -385,7 +385,8 @@ lemma root_space_ad_is_nilpotent
   induction hm using LieSubmodule.iSup_induction' with
   | h0 =>
       obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ hχ
-      simp_all only [ne_eq, nsmul_eq_mul, Pi.natCast_def, map_zero, exists_const]
+      use 0
+      apply map_zero
   | hN χ₂ m₂ hm₂ =>
     obtain ⟨n, -, hn⟩ := exists_genWeightSpace_smul_add_eq_bot (M := M) χ χ₂ hχ
     use n
@@ -396,15 +397,8 @@ lemma root_space_ad_is_nilpotent
     obtain ⟨n₁, hn₁⟩ := hm₁'
     obtain ⟨n₂, hn₂⟩ := hm₂'
     refine ⟨max n₁ n₂, ?_⟩
-    have z₁ : ((toEnd K L M) x ^ (n₁ ⊔ n₂)) m₁ = 0 := by
-      have  : n₁ ≤ n₁ ⊔ n₂ := by
-        simp_all only [ne_eq, le_sup_left]
-      exact LinearMap.pow_map_zero_of_le this hn₁
-    have z₂ : ((toEnd K L M) x ^ (n₁ ⊔ n₂)) m₂ = 0 := by
-      have  : n₂ ≤ n₁ ⊔ n₂ := by
-        simp_all only [ne_eq, le_sup_right]
-      exact LinearMap.pow_map_zero_of_le this hn₂
-    simp_all only [ne_eq, map_add, add_zero]
+    rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
+    LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
 
 end
 
