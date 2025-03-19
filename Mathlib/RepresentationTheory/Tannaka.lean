@@ -166,7 +166,7 @@ lemma auxLinearMap_single_id {X : FDRep k G} (v : X) :
     _ = ∑ s ∈ {1}ᶜ, single 1 1 s • (X.ρ s⁻¹) v + single 1 1 1 • (X.ρ 1⁻¹) v :=
       Fintype.sum_eq_sum_compl_add 1 _
     _ = (single 1 1 : G → k) 1 • (X.ρ 1⁻¹) v := by
-      apply add_left_eq_self.mpr
+      apply add_eq_right.mpr
       apply sum_eq_zero
       simp_all
     _ = _ := by
