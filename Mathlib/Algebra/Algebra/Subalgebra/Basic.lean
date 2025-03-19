@@ -3,11 +3,10 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.Algebra.Algebra.Operations
-import Mathlib.LinearAlgebra.Finsupp.LinearCombination
+import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Module.Submodule.Pointwise
+import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
