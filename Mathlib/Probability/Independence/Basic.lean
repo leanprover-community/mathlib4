@@ -719,10 +719,8 @@ lemma iIndepFun.indepFun_mul_left (hf_indep : iIndepFun f μ)
 @[to_additive]
 lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (f i * f j) (f k) μ := by
-  refine Kernel.iIndepFun.indepFun_mul_left₀ hf_indep ?_ i j k hik hjk
-  convert hf_meas
-  simp
+    IndepFun (f i * f j) (f k) μ :=
+  Kernel.iIndepFun.indepFun_mul_left₀ hf_indep (by simp [hf_meas]) i j k hik hjk
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun f μ)
@@ -733,24 +731,15 @@ lemma iIndepFun.indepFun_mul_right (hf_indep : iIndepFun f μ)
 @[to_additive]
 lemma iIndepFun.indepFun_mul_right₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
-    IndepFun (f i) (f j * f k) μ := by
-  have : iIndepFun (fun i ↦ (hf_meas i).mk) μ :=
-    iIndepFun.congr hf_indep (fun i ↦ (hf_meas i).ae_eq_mk)
-  apply IndepFun.congr (this.indepFun_mul_right (fun i ↦ (hf_meas i).measurable_mk) i j k hij hik)
-  · exact ((hf_meas i).ae_eq_mk).symm
-  · exact ((hf_meas j).ae_eq_mk.mul (hf_meas k).ae_eq_mk).symm
+    IndepFun (f i) (f j * f k) μ :=
+  Kernel.iIndepFun.indepFun_mul_right₀ hf_indep (by simp [hf_meas]) i j k hij hik
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_mul₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ)
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
-    IndepFun (f i * f j) (f k * f l) μ := by
-  have : iIndepFun (fun i ↦ (hf_meas i).mk) μ :=
-    iIndepFun.congr hf_indep (fun i ↦ (hf_meas i).ae_eq_mk)
-  apply IndepFun.congr (this.indepFun_mul_mul (fun i ↦ (hf_meas i).measurable_mk) i j k l
-    hik hil hjk hjl)
-  · exact (((hf_meas i).ae_eq_mk).mul (hf_meas j).ae_eq_mk).symm
-  · exact ((hf_meas k).ae_eq_mk.mul (hf_meas l).ae_eq_mk).symm
+    IndepFun (f i * f j) (f k * f l) μ :=
+  Kernel.iIndepFun.indepFun_mul_mul₀ hf_indep (by simp [hf_meas]) i j k l hik hil hjk hjl
 
 end Mul
 
