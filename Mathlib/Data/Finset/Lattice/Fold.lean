@@ -5,7 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Multiset.Lattice
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Nat
 
