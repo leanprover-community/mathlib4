@@ -157,7 +157,7 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   right_inv := fun ⟨_, _, _⟩ => rfl
 
 /-- The subtypes corresponding to equal sets are equivalent. -/
-@[simps! apply]
+@[simps! apply symm_apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=
   subtypeEquivProp h
 
@@ -236,12 +236,11 @@ protected def singleton {α} (a : α) : ({a} : Set α) ≃ PUnit.{u} :=
     subst x
     rfl, fun ⟨⟩ => rfl⟩
 
-/-- Equal sets are equivalent.
+@[deprecated (since := "2025-03-19"), simps! apply symm_apply]
+protected alias ofEq := Equiv.setCongr
 
-TODO: this is the same as `Equiv.setCongr`! -/
-@[simps! apply symm_apply]
-protected def ofEq {α : Type u} {s t : Set α} (h : s = t) : s ≃ t :=
-  Equiv.setCongr h
+attribute [deprecated Equiv.setCongr_apply (since := "2025-03-19")] Set.ofEq_apply
+attribute [deprecated Equiv.setCongr_symm_apply (since := "2025-03-19")] Set.ofEq_symm_apply
 
 lemma Equiv.strictMono_setCongr {α : Type*} [Preorder α] {S T : Set α} (h : S = T) :
     StrictMono (setCongr h) := fun _ _ ↦ id
