@@ -327,11 +327,13 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
           exact SetCoe.ext this
         rcases ((GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g _ exact) _).mp
            mem_ker with ⟨r', hr'⟩
-        have : Gr+(p - s)[f] ((GradedPiece.mk FR fun n ↦ FR (n - 1)) r'.out) =
-          (GradedPiece.mk FS fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩ := by
+        induction r' using GradedPiece.induction_on
+        rename_i r'out
+        have : Gr+(p - s)[f] ((GradedPiece.mk FR fun n ↦ FR (n - 1)) r'out) =
+            (GradedPiece.mk FS fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩ := by
           simpa [GradedPiece.mk] using hr'
         simp only [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, Eq.comm] at this
-        use r + r'.out.1
+        use r + r'out
         simpa only [Nat.cast_add, Nat.cast_one, map_add, sub_add_eq_sub_sub] using
           QuotientAddGroup.eq_iff_sub_mem.mp this
     rcases Int.eq_ofNat_of_zero_le (Int.sub_nonneg_of_le tlep) with ⟨s, hs⟩
