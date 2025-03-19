@@ -6,6 +6,7 @@ Authors: Fabrizio Barroero
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
 import Mathlib.Data.List.ToFinsupp
+import Mathlib.LinearAlgebra.Pi
 /-!
 # `Polynomial.ofFn` and `Polynomial.toFn`
 
@@ -26,14 +27,7 @@ section toFn
 variable {R : Type*} [Semiring R]
 
 /-- `toFn n f` is the vector of the first `n` coefficients of the polynomial `f`. -/
-def toFn (n : ℕ) : R[X] →ₗ[R] Fin n → R where
-  toFun p := fun i ↦ p.coeff i
-  map_add' x y := by
-    simp only [coeff_add]
-    rfl
-  map_smul' x p := by
-    simp only [coeff_smul]
-    rfl
+def toFn (n : ℕ) : R[X] →ₗ[R] Fin n → R := LinearMap.pi (fun i ↦ lcoeff R i)
 
 theorem toFn_zero (n : ℕ) : toFn n (0 : R[X]) = 0 := by simp
 
@@ -68,19 +62,19 @@ lemma ne_zero_of_ofFn_ne_zero {n : ℕ} {v : Fin n → R} (h : ofFn n v ≠ 0) :
 
 /-- If `i < n` the `i`-th coefficient of `ofFn n v` is `v i`. -/
 @[simp]
-theorem coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
+theorem ofFn_coeff_eq_val_of_lt {n i : ℕ} (v : Fin n → R) (hi : i < n) :
     (ofFn n v).coeff i = v ⟨i, hi⟩ := by
   simp [ofFn, hi]
 
 /-- If `n ≤ i` the `i`-th coefficient of `ofFn n v` is `0`. -/
 @[simp]
-theorem coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) : (ofFn n v).coeff i = 0 := by
-  simp [ofFn, hi, Nat.not_lt_of_ge hi]
+theorem ofFn_coeff_eq_zero_of_ge {n i : ℕ} (v : Fin n → R) (hi : n ≤ i) : (ofFn n v).coeff i = 0 :=
+  by simp [ofFn, hi, Nat.not_lt_of_ge hi]
 
 /-- `ofFn n v` has `natDegree` smaller than `n`. -/
 theorem ofFn_natDegree_lt {n : ℕ} (h : 1 ≤ n) (v : Fin n → R) : (ofFn n v).natDegree < n := by
   rw [Nat.lt_iff_le_pred h, natDegree_le_iff_coeff_eq_zero]
-  exact fun _ h ↦ coeff_eq_zero_of_ge _ <| Nat.le_of_pred_lt h
+  exact fun _ h ↦ ofFn_coeff_eq_zero_of_ge _ <| Nat.le_of_pred_lt h
 
 /-- `ofFn n v` has `degree` smaller than `n`. -/
 theorem ofFn_degree_lt {n : ℕ} (v : Fin n → R) : (ofFn n v).degree < n := by
@@ -100,7 +94,8 @@ theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
     congr
     simp
 
-theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by simp [toFn]
+theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by
+  simp [toFn, ofFn, LinearMap.pi]
 
 theorem injective_ofFn (n : ℕ) : Function.Injective (ofFn (R := R) n) :=
   Function.LeftInverse.injective <| toFn_comp_ofFn_eq_id n
