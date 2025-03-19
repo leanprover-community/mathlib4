@@ -38,7 +38,7 @@ include homeo
   and `g' : I × A → E` continuous on `I × N` that agrees with `g` on `{0} × A ∪ I × {a}`.
   The proof follows [hatcher02], Proof of Theorem 1.7, p.30.
 
-  This lemma should also be true for an arbitrary space in place of `I` if `A` is locally connected
+  Possible TODO: replace `I` by an arbitrary space assuming `A` is locally connected
   and `p` is a separated map, which guarantees uniqueness and therefore well-definedness
   on the intersections. -/
 theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ g = f)
@@ -47,8 +47,9 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
       (∀ a, g' (0, a) = g (0, a)) ∧ ∀ t, g' (t, a) = g (t, a) := by
   -- For every `e : E`, upgrade `p` to a LocalHomeomorph `q e` around `e`.
   choose q mem_source hpq using homeo
-  /- Using the hypothesis `cont_a`, we partition the unit interval so that for each subinterval
-   [tₙ, tₙ₊₁], g ([tₙ, tₙ₊₁] × {a}) is contained in the domain of some local homeomorphism `q e`. -/
+  /- Using the hypothesis `cont_a`, we partition the unit interval so that for each
+    subinterval `[tₙ, tₙ₊₁]`, the image `g ([tₙ, tₙ₊₁] × {a})` is contained in the
+    domain of some local homeomorphism `q e`. -/
   obtain ⟨t, t_0, t_mono, ⟨n_max, h_max⟩, t_sub⟩ :=
     exists_monotone_Icc_subset_open_cover_unitInterval
       (fun e ↦ (q e).open_source.preimage cont_a)
@@ -82,7 +83,7 @@ theorem exists_lift_nhds {f : C(I × A, X)} {g : I × A → E} (g_lifts : p ∘ 
   classical
   /- Use the inverse of `q e` to extend g' from [0, tₙ] × Nₙ₊₁ to [0, tₙ₊₁] × Nₙ₊₁, where
     Nₙ₊₁ ⊆ v ∩ Nₙ is such that {tₙ} × Nₙ₊₁ is mapped to the domain (`source`) of `q e` by `g'`. -/
-  refine ⟨_, ?_, v_open.inter <| (cont_g'.comp (Continuous.Prod.mk <| t n).continuousOn
+  refine ⟨_, ?_, v_open.inter <| (cont_g'.comp (Continuous.prodMk_right <| t n).continuousOn
       fun a ha ↦ ⟨?_, ha⟩).isOpen_inter_preimage N_open (q e).open_source,
     fun ta ↦ if ta.1 ≤ t n then g' ta else if f ta ∈ (q e).target then (q e).symm (f ta) else g ta,
     .if (fun ta ⟨⟨_, hav, _, ha⟩, hfr⟩ ↦ ?_) (cont_g'.mono fun ta ⟨hta, ht⟩ ↦ ?_) ?_,
@@ -125,7 +126,7 @@ theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g
     homeo.exists_lift_nhds g_lifts cont_0 a (cont_A a)
   refine (cont_g'.congr fun ⟨t, a⟩ ⟨_, ha⟩ ↦ ?_).continuousAt (prod_mem_nhds Filter.univ_mem haN)
   refine congr_fun (sep.eq_of_comp_eq homeo.isLocallyInjective (cont_A a)
-    (cont_g'.comp_continuous (.Prod.mk_left a) fun _ ↦ ⟨⟨⟩, ha⟩) ?_ 0 (g'_0 a).symm) t
+    (cont_g'.comp_continuous (.prodMk_left a) fun _ ↦ ⟨⟨⟩, ha⟩) ?_ 0 (g'_0 a).symm) t
   ext t; apply congr_fun (g_lifts.trans g'_lifts.symm)
 
 /-- The abstract monodromy theorem: if `γ₀` and `γ₁` are two paths in a topological space `X`,
@@ -135,9 +136,9 @@ theorem continuous_lift (f : C(I × A, X)) {g : I × A → E} (g_lifts : p ∘ g
   endpoints of these lifts are also independent of `t`.
 
   This can be applied to continuation of analytic functions as follows: for a sheaf of analytic
-  function on an analytic manifold `X`, we may consider its étale space `E` (whose points are
+  functions on an analytic manifold `X`, we may consider its étale space `E` (whose points are
   analytic germs) with the natural projection `p : E → X`, which is a local homeomorphism and a
-  separated map (because two analytic functions agreeing on a nonempty open set agrees on the
+  separated map (because two analytic functions agreeing on a nonempty open set agree on the
   whole connected component). An analytic continuation of a germ along a path `γ (t, ·) : C(I, X)`
   corresponds to a continuous lift of `γ (t, ·)` to `E` starting from that germ. If `γ` is a
   homotopy and the germ admits continuation along every path `γ (t, ·)`, then the result of the
@@ -148,7 +149,7 @@ theorem monodromy_theorem {γ₀ γ₁ : C(I, X)} (γ : γ₀.HomotopyRel γ₁ 
     (Γ_lifts : ∀ t s, p (Γ t s) = γ (t, s)) (Γ_0 : ∀ t, Γ t 0 = Γ 0 0) (t : I) :
     Γ t 1 = Γ 0 1 := by
   have := homeo.continuous_lift sep (γ.comp .prodSwap) (g := fun st ↦ Γ st.2 st.1) ?_ ?_ ?_
-  · apply sep.const_of_comp homeo.isLocallyInjective (this.comp (.Prod.mk 1))
+  · apply sep.const_of_comp homeo.isLocallyInjective (this.comp (.prodMk_right 1))
     intro t t'; change p (Γ _ _) = p (Γ _ _); simp_rw [Γ_lifts, γ.eq_fst _ (.inr rfl)]
   · ext; apply Γ_lifts
   · simp_rw [Γ_0]; exact continuous_const
@@ -233,7 +234,7 @@ theorem exists_path_lifts : ∃ Γ : C(I,E), p ∘ Γ = γ ∧ Γ 0 = e := by
     rw [(q x).mem_source, pΓtn]
     exact t_sub ⟨le_rfl, t_mono n.le_succ⟩
   · rw [closure_le_eq continuous_id' continuous_const] at h; exact ⟨h.1.1, h.2⟩
-  · apply (q x).continuousOn_invFun.comp ((Continuous.Prod.mk_left _).comp γ.2).continuousOn
+  · apply (q x).continuousOn_invFun.comp ((Continuous.prodMk_left _).comp γ.2).continuousOn
     simp_rw [not_le, (q x).target_eq]; intro s h
     exact ⟨t_sub ⟨closure_lt_subset_le continuous_const continuous_subtype_val h.2, h.1.2⟩, ⟨⟩⟩
   · rw [Function.comp_apply]; split_ifs with h
@@ -306,7 +307,7 @@ lemma eq_liftHomotopy_iff (H' : I × A → E) : H' = cov.liftHomotopy H f H_0 �
 lemma eq_liftHomotopy_iff' (H' : C(I × A, E)) :
     H' = cov.liftHomotopy H f H_0 ↔ p ∘ H' = H ∧ ∀ a, H' (0, a) = f a := by
   simp_rw [← DFunLike.coe_fn_eq, eq_liftHomotopy_iff]
-  exact and_iff_right fun a ↦ H'.2.comp (.Prod.mk_left a)
+  exact and_iff_right fun a ↦ H'.2.comp (.prodMk_left a)
 
 variable {f₀ f₁ : C(A, X)} {S : Set A} (F : f₀.HomotopyRel f₁ S)
 
@@ -393,13 +394,14 @@ theorem monodromy_bijective {x y : X} (γ : Path.Homotopic.Quotient x y) :
 lemma injective_path_homotopic_mapFn (e₀ e₁ : E) :
     Function.Injective fun γ : Path.Homotopic.Quotient e₀ e₁ ↦ γ.mapFn ⟨p, cov.continuous⟩ := by
   refine Quotient.ind₂ fun γ₀ γ₁ ↦ ?_
+  dsimp only
   simp_rw [← Path.Homotopic.map_lift]
   iterate 2 rw [Quotient.eq]
   exact (cov.homotopicRel_iff_comp ⟨0, .inl rfl, γ₀.source.trans γ₁.source.symm⟩).mpr
 
 /-- A continuous map `f` from a simply-connected, locally path-connected space `A` to another
-  space `X` lifts through a covering map `p : E → X` (uniquely if we require that the image of
-  a specific point `a₀ : A` is lifted to a specific point `e₀ : E` over `a₀`). -/
+  space `X` lifts uniquely through a covering map `p : E → X`, after specifying any lift
+  `e₀ : E` of any point `a₀ : A`. -/
 theorem existsUnique_continuousMap_lifts [SimplyConnectedSpace A] [LocPathConnectedSpace A]
     (f : C(A, X)) (a₀ : A) (e₀ : E) (he : p e₀ = f a₀) :
     ∃! F : C(A, E), F a₀ = e₀ ∧ p ∘ F = f := by
