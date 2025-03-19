@@ -4359,6 +4359,7 @@ import Mathlib.NumberTheory.PythagoreanTriples
 import Mathlib.NumberTheory.RamificationInertia.Basic
 import Mathlib.NumberTheory.RamificationInertia.Galois
 import Mathlib.NumberTheory.Rayleigh
+import Mathlib.NumberTheory.SelbergSieve
 import Mathlib.NumberTheory.SiegelsLemma
 import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
