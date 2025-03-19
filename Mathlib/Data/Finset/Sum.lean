@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
+import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Multiset.Sum
 
 /-!
@@ -111,8 +111,7 @@ forms a quasi-inverse to `disjSum`, in that it recovers its left input.
 See also `List.partitionMap`.
 -/
 def toLeft (s : Finset (α ⊕ β)) : Finset α :=
-  s.disjiUnion (Sum.elim singleton (fun _ => ∅)) <| by
-    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+  s.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
@@ -121,8 +120,7 @@ forms a quasi-inverse to `disjSum`, in that it recovers its right input.
 See also `List.partitionMap`.
 -/
 def toRight (s : Finset (α ⊕ β)) : Finset β :=
-  s.disjiUnion (Sum.elim (fun _ => ∅) singleton) <| by
-    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+  s.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
 
 variable {u v : Finset (α ⊕ β)}
 
