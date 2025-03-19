@@ -211,7 +211,7 @@ theorem fixingSubgroup.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
 
 theorem fixedField.antimono {K L : Type*} [Field K] [Field L] [Algebra K L]
     {H1 H2 : Subgroup (L ≃ₐ[K] L)} (h12 : H1 ≤ H2) :
-    IntermediateField.fixedField H2 ≤ IntermediateField.fixedField H1 :=
+    fixedField H2 ≤ fixedField H1 :=
   fun _ hσ ⟨x, hx⟩ ↦ hσ ⟨x, h12 hx⟩
 
 lemma fixingSubgroup_anti : Antitone (IntermediateField.fixingSubgroup (F := F) (E := E)) :=
