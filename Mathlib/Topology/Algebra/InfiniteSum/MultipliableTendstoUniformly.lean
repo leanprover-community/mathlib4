@@ -1,21 +1,15 @@
 /-
-Copyright (c) 2024 Chris Birkbeck. All rights reserved.
+Copyright (c) 2025 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
-import Mathlib.Analysis.Complex.ReImTopology
-import Mathlib.Analysis.SpecialFunctions.Complex.LogBounds
 import Mathlib.Analysis.SpecialFunctions.Log.Summable
-import Mathlib.Analysis.SpecificLimits.Normed
-import Mathlib.Analysis.NormedSpace.FunctionSeries
-import Mathlib.Data.Complex.Exponential
-import Mathlib.Tactic.ToAdditive
 
 /-!
-# Products of one plus a complex number
+# Uniform limits of products of functions
 
-We gather some results about the uniform convergence of the product of `1 + f n x` for a
-sequence `f n x` of complex numbers.
+We gather some results about the uniform convergence of the products, in particular those of the
+form `1 + f n x` for a sequence `f n x` of complex numbers.
 
 -/
 
@@ -103,8 +97,8 @@ lemma tendstoUniformlyOn_tprod_nat_of_clog {f : ℕ → α → ℂ} {K : Set α}
 /-- This is the version for infinite products of with terms of the from `1 + f n x`. -/
 lemma tendstoUniformlyOn_tprod_nat [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ n x, x ∈ K → ‖f n x‖ ≤ u n)
-    (hfn : ∀ x, x ∈ K → ∀ n : ℕ, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (fun x => (f n x)) K) :
-    TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i ∈ Finset.range n, (1 + (f i a)))
+    (hfn : ∀ x, x ∈ K → ∀ n : ℕ, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (fun x => f n x) K) :
+    TendstoUniformlyOn (fun n : ℕ => fun a : α => ∏ i ∈ Finset.range n, (1 + f i a))
     (fun a => ∏' i, (1 + (f i a))) atTop K := by
   apply tendstoUniformlyOn_tprod_nat_of_clog ?_ ?_ hfn
   · have H : ContinuousOn (fun x ↦ (∑' (n : ℕ), Complex.log (1 + f n x)).re) K := by
