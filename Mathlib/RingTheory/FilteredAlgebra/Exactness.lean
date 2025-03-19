@@ -236,8 +236,7 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
         simpa only [← AddMonoidHom.exact_iff.mp
           (GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact f g (p + s - i) exact)]
           using hy
-      induction xi using GradedPiece.induction_on
-      rename_i xiout
+      induction' xi using GradedPiece.induction_on with xiout
       rw [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq,
         GradedPiece.mk_eq, QuotientAddGroup.eq_iff_sub_mem] at fxiy
       use y - f xiout
@@ -280,19 +279,16 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
           exact SetLike.coe_mem (xₚₛ (p - s)).out
         set xr := (⟨(xₚₛ (p - s)).out + r, add_mem ps_mem_p r.2⟩ : FR p)
         refine ⟨xr, ⟨⟨x' - xr, hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' xr⟩, ?_⟩⟩
-        simp only [AddMonoidHom.coe_range, AddMonoidHom.coe_mk, ZeroHom.coe_mk, Nat.cast_add,
-          Nat.cast_one, Set.mem_inter_iff, Set.mem_range, SetLike.mem_coe]
         apply_fun (· (p - s)) at hxₚₛ
         rw [AssociatedGradedAddMonoidHom_apply, GradedPiece.mk_piece_wise,
           GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
           DirectSum.of_eq_same] at hxₚₛ
         replace hxₚₛ : ⟦(f.piece_wise_hom (p - s)) (xₚₛ (p - s)).out⟧ = ⟦⟨y - f r, hr₂⟩⟧ := hxₚₛ
         rw [Quotient.eq, QuotientAddGroup.leftRel_apply] at hxₚₛ
-        rw [show f xr.val = (f.piece_wise_hom p) xr by rfl,
-          sub_eq_add_neg y, add_comm y, show xr = ⟨(xₚₛ (p - s)).out, ps_mem_p⟩ + r by rfl,
-          AddMonoidHom.map_add, AddMemClass.coe_add, neg_add_rev,
-          show ((f.piece_wise_hom p) r).val = f r by rfl, add_comm (-f r), add_assoc,
-          add_comm _ y, ← sub_eq_add_neg y, sub_add_eq_sub_sub]
+        show y - (f.piece_wise_hom p) (⟨(xₚₛ (p - s)).out, ps_mem_p⟩ + r) ∈ FS (p - (s + 1))
+        rw [sub_eq_add_neg y, add_comm y, AddMonoidHom.map_add, AddMemClass.coe_add, neg_add_rev,
+          add_comm (- ((f.piece_wise_hom p) r).val), add_assoc, add_comm _ y, ← sub_eq_add_neg y,
+          sub_add_eq_sub_sub]
         simpa only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, yₚₛ]
     obtain ⟨s, hs⟩ : ∃ s : ℕ, p - s ≤ t₀ := by
       simp only [tsub_le_iff_right]
