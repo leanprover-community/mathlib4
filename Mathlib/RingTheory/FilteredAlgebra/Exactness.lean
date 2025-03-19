@@ -274,18 +274,20 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
         set yₚₛ := AssociatedGraded.of <|
           GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y - f r, hr₂⟩ : ofClass (FS (p - s)))
         obtain ⟨xₚₛ, hxₚₛ⟩ := (exact yₚₛ).1 <| zero_of_pieces_range hr₁ comp_eq_zero
-        have ps_mem_p : (xₚₛ (p - s)).out.val ∈ FR p := by
-          suffices (xₚₛ (p - s)).out.val ∈ FR (p - s) from monoR (show p - s ≤ p by omega) this
-          exact SetLike.coe_mem (xₚₛ (p - s)).out
-        set xr := (⟨(xₚₛ (p - s)).out + r, add_mem ps_mem_p r.2⟩ : FR p)
+        set xₚₛps := (xₚₛ (p - s)) with xₚₛps_def
+        induction' h : xₚₛps using GradedPiece.induction_on with xₚₛps'
+        have ps_mem_p : xₚₛps'.val ∈ FR p := by
+          suffices xₚₛps'.val ∈ FR (p - s) from monoR (show p - s ≤ p by omega) this
+          exact SetLike.coe_mem xₚₛps'
+        set xr := (⟨xₚₛps' + r, add_mem ps_mem_p r.2⟩ : FR p)
         refine ⟨xr, ⟨⟨x' - xr, hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' xr⟩, ?_⟩⟩
         apply_fun (· (p - s)) at hxₚₛ
-        rw [AssociatedGradedAddMonoidHom_apply, GradedPiece.mk_piece_wise,
+        rw [AssociatedGradedAddMonoidHom_apply, ← xₚₛps_def, h,
           GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
           DirectSum.of_eq_same] at hxₚₛ
-        replace hxₚₛ : ⟦(f.piece_wise_hom (p - s)) (xₚₛ (p - s)).out⟧ = ⟦⟨y - f r, hr₂⟩⟧ := hxₚₛ
+        replace hxₚₛ : ⟦(f.piece_wise_hom (p - s)) xₚₛps'⟧ = ⟦⟨y - f r, hr₂⟩⟧ := hxₚₛ
         rw [Quotient.eq, QuotientAddGroup.leftRel_apply] at hxₚₛ
-        show y - (f.piece_wise_hom p) (⟨(xₚₛ (p - s)).out, ps_mem_p⟩ + r) ∈ FS (p - (s + 1))
+        show y - (f.piece_wise_hom p) (⟨xₚₛps', ps_mem_p⟩ + r) ∈ FS (p - (s + 1))
         rw [sub_eq_add_neg y, add_comm y, AddMonoidHom.map_add, AddMemClass.coe_add, neg_add_rev,
           add_comm (- ((f.piece_wise_hom p) r).val), add_assoc, add_comm _ y, ← sub_eq_add_neg y,
           sub_add_eq_sub_sub]
