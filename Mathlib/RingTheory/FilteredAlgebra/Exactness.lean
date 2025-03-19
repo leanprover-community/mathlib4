@@ -275,27 +275,27 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
         have ps_mem_p : xₚₛps.val ∈ FR p := by
           suffices xₚₛps.val ∈ FR (p - s) from monoR (show p - s ≤ p by omega) this
           exact SetLike.coe_mem xₚₛps
-        set xr := (⟨xₚₛps + r, add_mem ps_mem_p r.2⟩ : FR p)
-        refine ⟨xr, ⟨⟨x' - xr, hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' xr⟩, ?_⟩⟩
+        let xr := (⟨xₚₛps + r, add_mem ps_mem_p r.2⟩ : FR p)
+        refine ⟨xr, ⟨⟨x' - xr, hx' ▸ map_sub f.toAddMonoidHom x' xr⟩, ?_⟩⟩
         apply_fun (· (p - s)) at hxₚₛ
-        rw [AssociatedGradedAddMonoidHom_apply, h,
-          GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, AddMonoidHom.coe_mk, ZeroHom.coe_mk,
-          DirectSum.of_eq_same] at hxₚₛ
-        replace hxₚₛ : ⟦(f.piece_wise_hom (p - s)) xₚₛps⟧ = ⟦⟨y - f r, hr₂⟩⟧ := hxₚₛ
-        rw [Quotient.eq, QuotientAddGroup.leftRel_apply] at hxₚₛ
+        rw [AssociatedGradedAddMonoidHom_apply, h, DirectSum.of_eq_same,
+          GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, GradedPiece.mk_eq, GradedPiece.mk_eq,
+          Quotient.eq, QuotientAddGroup.leftRel_apply] at hxₚₛ
         show y - (f.piece_wise_hom p) (⟨xₚₛps, ps_mem_p⟩ + r) ∈ FS (p - (s + 1))
-        rw [sub_eq_add_neg y, add_comm y, AddMonoidHom.map_add, AddMemClass.coe_add, neg_add_rev,
+        rw [sub_eq_add_neg y, add_comm y, map_add, AddMemClass.coe_add, neg_add_rev,
           add_comm (- ((f.piece_wise_hom p) r).val), add_assoc, add_comm _ y, ← sub_eq_add_neg y,
           sub_add_eq_sub_sub]
-        simpa only [AddMonoidHom.coe_mk, ZeroHom.coe_mk, yₚₛ]
+        exact hxₚₛ
     obtain ⟨s, hs⟩ : ∃ s : ℕ, p - s ≤ t₀ := by
-      simp only [tsub_le_iff_right]
-      obtain ⟨s, hs⟩ := Int.eq_ofNat_of_zero_le (show 0 ≤ - t₀ + t₀.natAbs + p.natAbs by omega)
-      use s; rw [← hs]; omega
+      have : 0 ≤ - t₀ + t₀.natAbs + p.natAbs := by omega
+      rcases Int.eq_ofNat_of_zero_le this with ⟨s, hs⟩
+      use s
+      rw [← hs]
+      omega
     rcases this s with ⟨r, hr⟩
     rw [le_zero (p - s) hs, (Set.inter_eq_right.2 fun x hx ↦ hx.symm ▸ zero_mem f.range),
       Set.mem_singleton_iff, sub_eq_zero] at hr
-    exact ⟨r, ⟨SetLike.coe_mem r, hr.symm⟩⟩
+    exact ⟨r, ⟨r.2, hr.symm⟩⟩
 
 theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
