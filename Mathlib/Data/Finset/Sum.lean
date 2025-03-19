@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Union
 import Mathlib.Data.Multiset.Sum
 
@@ -232,15 +231,5 @@ lemma fold_disjSum (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) (b₁ 
     (s.disjSum t).fold op (op b₁ b₂) f =
       op (s.fold op b₁ (f <| .inl ·)) (t.fold op b₂ (f <| .inr ·)) := by
   simp_rw [fold, disjSum, Multiset.map_disjSum, fold_add]
-
-@[simp]
-lemma sup_disjSum [SemilatticeSup γ] [OrderBot γ] (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) :
-    (s.disjSum t).sup f = (s.sup fun x ↦ f (.inl x)) ⊔ (t.sup fun x ↦ f (.inr x)) :=
-  congr(fold _ $(bot_sup_eq _ |>.symm) _ _).trans (fold_disjSum _ _ _ _ _ _)
-
-@[simp]
-lemma inf_disjSum [SemilatticeInf γ] [OrderTop γ] (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) :
-    (s.disjSum t).inf f = (s.inf fun x ↦ f (.inl x)) ⊓ (t.inf fun x ↦ f (.inr x)) :=
-  congr(fold _ $(top_inf_eq _ |>.symm) _ _).trans (fold_disjSum _ _ _ _ _ _)
 
 end Finset
