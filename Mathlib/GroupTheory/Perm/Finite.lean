@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
@@ -24,8 +22,9 @@ open Equiv Function Fintype Finset
 variable {α : Type u} {β : Type v}
 
 -- An example on how to determine the order of an element of a finite group.
-example : orderOf (-1 : ℤˣ) = 2 :=
-  orderOf_eq_prime (Int.units_sq _) (by decide)
+-- import Mathlib.Data.Int.Order.Units
+-- example : orderOf (-1 : ℤˣ) = 2 :=
+--   orderOf_eq_prime (Int.units_sq _) (by decide)
 
 namespace Equiv.Perm
 
@@ -105,7 +104,7 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
       classical
         rw [← perm_inv_mapsTo_iff_mapsTo] at h
         intro x
-        cases' hx : σ x with l r)
+        rcases hx : σ x with l | r)
   · rintro ⟨a, rfl⟩
     obtain ⟨y, hy⟩ := h ⟨l, rfl⟩
     rw [← hx, σ.inv_apply_self] at hy
@@ -139,7 +138,7 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     use σ₁, σ₂
     rw [Perm.sumCongrHom_apply]
     ext x
-    cases' x with a b
+    rcases x with a | b
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
       rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
@@ -191,7 +190,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       simp only [trans_apply, symm_trans_apply, Equiv.Set.ofEq_apply, Equiv.Set.ofEq_symm_apply,
         Equiv.sumCongr_apply]
       rw [hd1', Set.mem_union] at hx
-      cases' hx with hxσ hxτ
+      rcases hx with hxσ | hxτ
       · rw [mem_coe, mem_support] at hxσ
         rw [Set.union_apply_left, Set.union_apply_left]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,

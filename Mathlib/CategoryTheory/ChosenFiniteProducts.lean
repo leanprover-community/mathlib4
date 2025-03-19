@@ -79,6 +79,10 @@ lean to do the necessary elaboration.
 lemma toUnit_unique {X : C} (f g : X ⟶ 𝟙_ _) : f = g :=
   Subsingleton.elim _ _
 
+@[reassoc (attr := simp)]
+theorem comp_toUnit {X Y : C} (f : X ⟶ Y) : f ≫ toUnit Y = toUnit X :=
+  toUnit_unique _ _
+
 /--
 Construct a morphism to the product given its two components.
 -/
@@ -189,25 +193,29 @@ lemma associator_hom_fst (X Y Z : C) :
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_fst (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ fst _ _ = fst _ _ ≫ snd _ _  := by
-  erw [lift_snd_assoc, lift_fst]
+  erw [lift_snd_assoc]
+  erw [lift_fst]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_hom_snd_snd (X Y Z : C) :
     (α_ X Y Z).hom ≫ snd _ _ ≫ snd _ _ = snd _ _  := by
-  erw [lift_snd_assoc, lift_snd]
+  erw [lift_snd_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ fst _ _ = fst _ _ := by
-  erw [lift_fst_assoc, lift_fst]
+  erw [lift_fst_assoc]
+  erw [lift_fst]
   rfl
 
 @[reassoc (attr := simp)]
 lemma associator_inv_fst_snd (X Y Z : C) :
     (α_ X Y Z).inv ≫ fst _ _ ≫ snd _ _ = snd _ _ ≫ fst _ _ := by
-  erw [lift_fst_assoc, lift_snd]
+  erw [lift_fst_assoc]
+  erw [lift_snd]
   rfl
 
 @[reassoc (attr := simp)]
@@ -268,6 +276,20 @@ theorem braiding_inv_fst {X Y : C} : (β_ X Y).inv ≫ fst _ _ = snd _ _ := by
 theorem braiding_inv_snd {X Y : C} : (β_ X Y).inv ≫ snd _ _ = fst _ _ := by
   simp [braiding_eq_braiding, fst, snd]
 
+theorem lift_snd_fst {X Y : C} : lift (snd X Y) (fst X Y) = (β_ X Y).hom := rfl
+
+@[simp, reassoc]
+lemma lift_snd_comp_fst_comp {W X Y Z : C} (g : W ⟶ X) (g' : Y ⟶ Z) :
+    lift (snd _ _ ≫ g') (fst _ _ ≫ g) = (β_ _ _).hom ≫ (g' ⊗ g) := by ext <;> simp
+
+@[reassoc (attr := simp)]
+lemma lift_braiding_hom {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
+    lift f g ≫ (β_ X Y).hom = lift g f := by aesop
+
+@[reassoc (attr := simp)]
+lemma lift_braiding_inv {T X Y : C} (f : T ⟶ X) (g : T ⟶ Y) :
+    lift f g ≫ (β_ Y X).inv = lift g f := by aesop
+
 /--
 Construct an instance of `ChosenFiniteProducts C` given an instance of `HasFiniteProducts C`.
 -/
@@ -295,7 +317,7 @@ section terminalComparison
 `terminalComparison F` is the unique map `F (𝟙_ C) ⟶ 𝟙_ D`. -/
 abbrev terminalComparison : F.obj (𝟙_ C) ⟶ 𝟙_ D := toUnit _
 
-@[reassoc (attr := simp)]
+@[reassoc]
 lemma map_toUnit_comp_terminalCompariso (A : C) :
     F.map (toUnit A) ≫ terminalComparison F = toUnit _ := toUnit_unique _ _
 
@@ -526,7 +548,7 @@ lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
  · dsimp only [BinaryFan.snd]
    simp [pairComp, prodComparison, lift, snd]
 
-  /-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
+/-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
 `Discrete (WalkingPair)`. -/
 lemma preservesLimitsOfShape_discrete_walkingPair_of_isIso_prodComparison
     [∀ A B, IsIso (prodComparison F A B)] : PreservesLimitsOfShape (Discrete WalkingPair) F := by
@@ -651,6 +673,19 @@ lemma μ_fst (X Y : C) : LaxMonoidal.μ F X Y ≫ F.map (fst X Y) = fst (F.obj X
 lemma μ_snd (X Y : C) : LaxMonoidal.μ F X Y ≫ F.map (snd X Y) = snd (F.obj X) (F.obj Y) :=
   (cancel_epi (μIso _ _ _).inv).1 (by simp)
 
+section
+
+variable {F} {E : Type u₂} [Category.{v₂} E] [ChosenFiniteProducts E] {G : D ⥤ E}
+  [PreservesFiniteProducts G]
+
+attribute [-instance] Functor.LaxMonoidal.comp Functor.Monoidal.instComp in
+@[reassoc]
+lemma μ_comp (X Y : C) :
+    LaxMonoidal.μ (F ⋙ G) X Y = LaxMonoidal.μ G _ _ ≫ G.map (LaxMonoidal.μ F X Y) := by
+  apply (cancel_mono (μIso _ _ _).inv).1
+  apply ChosenFiniteProducts.hom_ext <;> simp [← Functor.comp_obj, ← Functor.map_comp]
+
+end
 
 end
 

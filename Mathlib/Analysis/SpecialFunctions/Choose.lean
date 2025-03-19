@@ -5,11 +5,12 @@ Authors: Mitchell Horner
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
+import Mathlib.Data.Nat.Cast.Field
 
 /-!
-# Binomial coefficents and factorial variants
+# Binomial coefficients and factorial variants
 
-This file proves asymptotic theorems for binomial coefficents and factorial variants.
+This file proves asymptotic theorems for binomial coefficients and factorial variants.
 
 ## Main statements
 

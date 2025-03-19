@@ -3,13 +3,13 @@ Copyright (c) 2024 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Arend Mellendijk
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Ring.Basic
 import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
 # The Selberg Sieve
 
-We set up the working assumptions of the Selberg sieve and define the notion of an upper bound sieve
+We set up the working assumptions of the Selberg sieve, define the notion of an upper bound sieve
 and show that every upper bound sieve yields an upper bound on the size of the sifted set. We also
 define the Λ² sieve and prove that Λ² sieves are upper bound sieves. We then diagonalise the main
 term of the Λ² sieve.
@@ -27,7 +27,7 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 The `SelbergSieve.Notation` namespace includes common shorthand for the variables included in the
 `SelbergSieve` structure.
  * `A` for `support`
- * `𝒜 d` for `multSum d`
+ * `𝒜 d` for `multSum d` - the combined weight of the elements of `A` that are divisible by `d`
  * `P` for `prodPrimes`
  * `a` for `weights`
  * `X` for `totalMass`
@@ -49,25 +49,22 @@ open scoped BigOperators ArithmeticFunction
 
 open Finset Real Nat
 
-/--
-We set up the Selberg sieve as follows. Take a finite set of natural numbers `A`, whose elements
-are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented as a squarefree
+/-- We set up a sieve problem as follows. Take a finite set of natural numbers `A`, whose elements
+are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented by a squarefree
 natural number. These are the primes that we will sift from our set `A`. Suppose we can approximate
 `∑ n ∈ {k ∈ A | d ∣ k}, a n = ν d * X + R d`, where `X` is an approximation to the total size of `A`
 and `ν` is a multiplicative arithmetic function such that `0 < ν p < 1` for all primes `p ∣ P`.
 
-Then the fundamental theorem of the Selberg sieve will give us an upper bound on the size of the
-sifted sum `∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing any elements of `A` that
-are a multiple of a prime in `P`.
-
-This structure is made into a class for ease of notation during the proof. One should never declare
-an instance of this class, but rather pass it explicitly to the final theorem.
--/
-class SelbergSieve where
+Then a sieve-type theorem will give us an upper (or lower) bound on the size of the sifted sum
+`∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing any elements of `A` that are a
+multiple of a prime in `P`. -/
+class BoundingSieve where
   /-- The set of natural numbers that is to be sifted. The fundamental lemma yields an upper bound
     on the size of this set after the multiples of small primes have been removed. -/
   support : Finset ℕ
-  /-- The finite set of prime numbers whose multiples are to be sifted from `support`. -/
+  /-- The finite set of prime numbers whose multiples are to be sifted from `support`. We work with
+    their product because it lets us treat `nu` as a multiplicative arithmetic function. It also
+    plays well with Moebius inversion. -/
   prodPrimes : ℕ
   prodPrimes_squarefree : Squarefree prodPrimes
   /-- A sequence representing how much each element of `support` should be weighted. -/
@@ -82,15 +79,20 @@ class SelbergSieve where
   nu_mult : nu.IsMultiplicative
   nu_pos_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → 0 < nu p
   nu_lt_one_of_prime : ∀ p : ℕ, p.Prime → p ∣ prodPrimes → nu p < 1
+
+/-- The Selberg upper bound sieve in particular introduces a parameter called the `level` which
+  gives the user control over the size of the error term. -/
+class SelbergSieve extends BoundingSieve where
   /-- The `level` of the sieve controls how many terms we include in the inclusion-exclusion type
     sum. A higher level will yield a tighter bound for the main term, but will also increase the
     size of the error term. -/
   level : ℝ
   one_le_level : 1 ≤ level
 
-attribute [arith_mult] SelbergSieve.nu_mult
+attribute [arith_mult] BoundingSieve.nu_mult
 
 namespace SelbergSieve
+open BoundingSieve
 
 namespace Notation
 
@@ -106,18 +108,17 @@ scoped notation3 "X" => totalMass
 scoped notation3 "A" => support
 @[inherit_doc level]
 scoped notation3 "y" => level
-/-- `1 ≤ y`-/
-scoped notation3 "hy" => one_le_level
+
+theorem one_le_y [s : SelbergSieve] : 1 ≤ y := one_le_level
 
 end Notation
-
 open Notation
 
 section Lemmas
 
-variable [s : SelbergSieve]
+variable [s : BoundingSieve]
 
-/-! Lemmas aboud $P$. -/
+/-! Lemmas about $P$. -/
 
 theorem prodPrimes_ne_zero : P ≠ 0 :=
   Squarefree.ne_zero prodPrimes_squarefree
@@ -149,7 +150,7 @@ theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
   apply _root_.ne_of_gt
   exact nu_pos_of_dvd_prodPrimes hd
 
-theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
+theorem nu_lt_one_of_dvd_prodPrimes {d : ℕ} (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
   have := hd_sq.ne_zero
   calc
@@ -180,10 +181,10 @@ def rem (d : ℕ) : ℝ := 𝒜 d - ν d * X
 @[inherit_doc rem]
 scoped [SelbergSieve.Notation] notation3 "R" => rem
 
-/-- The weight of all the elements that are not a multiples of any of our finite set of primes. -/
+/-- The weight of all the elements that are not a multiple of any of our finite set of primes. -/
 def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
 
-/-- `X * mainSum μ⁺` is the main term in the upper bound on `sifted_sum`-/
+/-- `X * mainSum μ⁺` is the main term in the upper bound on `sifted_sum`. -/
 def mainSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, muPlus d * ν d
 
 /-- `errSum μ⁺` is the error term in the upper bound on `sifted_sum`. -/
@@ -200,11 +201,11 @@ theorem siftedsum_eq_sum_support_mul_ite :
 
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
-  coefficients then yield an upper bound on the sifted sum.-/
-def UpperMoebius (muPlus : ℕ → ℝ) : Prop :=
+  coefficients then yield an upper bound on the sifted sum. -/
+def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
-theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muPlus) :
+theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := by
   have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d := h
   calc siftedSum ≤
@@ -225,7 +226,7 @@ theorem siftedSum_le_sum_of_upperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebiu
     rw [sum_comm]
     simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
-theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : UpperMoebius muPlus) :
+theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : IsUpperMoebius muPlus) :
     siftedSum ≤ X * mainSum muPlus + errSum muPlus := by
   calc siftedSum ≤ ∑ d ∈ divisors P, muPlus d * multSum d := siftedSum_le_sum_of_upperMoebius _ h
    _ ≤ X * ∑ d ∈ divisors P, muPlus d * ν d + ∑ d ∈ divisors P, muPlus d * R d := ?caseA
@@ -241,14 +242,13 @@ theorem siftedSum_le_mainSum_errSum_of_upperMoebius (muPlus : ℕ → ℝ) (h : 
     rw [←abs_mul]
     exact le_abs_self (muPlus d * R d)
 
+
 end Lemmas
 
 section LambdaSquared
-/--
-  We consider a special class of upper bound sieves called the Λ² sieve. This class is parameterised
-  by a sequence of real numbers. We will later choose a set of weights that minimises the main term,
-  under a constraint that lets us control the error term.
--/
+/-- We consider a special class of upper bound sieves called the Λ² sieve. This class is
+  parameterised by a sequence of real numbers. We will later choose a set of weights that minimises
+  the main term, under a constraint that lets us control the error term. -/
 def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
   ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors, if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0
 
@@ -307,8 +307,8 @@ private theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n :
     Nat.dvd_lcm_left, Nat.dvd_lcm_right]
 
 theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) :
-    UpperMoebius <| lambdaSquared weights := by
-  dsimp [UpperMoebius, lambdaSquared]
+    IsUpperMoebius <| lambdaSquared weights := by
+  dsimp [IsUpperMoebius, lambdaSquared]
   intro n
   have h_sq :
     (∑ d ∈ n.divisors, ∑ d1 ∈ d.divisors, ∑ d2 ∈ d.divisors,
@@ -331,7 +331,7 @@ end LambdaSquared
 
 section SelbergTerms
 
-variable [s : SelbergSieve]
+variable [s : BoundingSieve]
 
 /-- These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
 
@@ -420,7 +420,7 @@ end SelbergTerms
 
 section QuadForm
 
-variable [s : SelbergSieve]
+variable [s : BoundingSieve]
 
 /-! The main sum we get from Λ² coefficients is a quadratic form. We will later choose weights that
   minimise this form. -/

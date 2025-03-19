@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
 import Mathlib.Algebra.Group.Submonoid.Operations
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Localizations of commutative monoids
@@ -254,6 +255,12 @@ theorem mk_one : mk 1 (1 : S) = 1 := OreLocalization.one_def
 @[to_additive]
 theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) := by
   induction n <;> simp [pow_succ, *, ← mk_mul, ← mk_one]
+
+@[to_additive]
+theorem mk_prod {ι} (t : Finset ι) (f : ι → M) (s : ι → S) :
+    ∏ i ∈ t, mk (f i) (s i) = mk (∏ i ∈ t, f i) (∏ i ∈ t, s i) := by
+  classical
+  induction t using Finset.induction_on <;> simp [mk_one, Finset.prod_insert, *, mk_mul]
 
 @[to_additive (attr := simp)]
 theorem ndrec_mk {p : Localization S → Sort u} (f : ∀ (a : M) (b : S), p (mk a b)) (H) (a : M)
@@ -945,7 +952,7 @@ of the induced maps equals the map of localizations induced by `l ∘ g`."]
 theorem map_map {A : Type*} [CommMonoid A] {U : Submonoid A} {R} [CommMonoid R]
     (j : LocalizationMap U R) {l : P →* A} (hl : ∀ w : T, l w ∈ U) (x) :
     k.map hl j (f.map hy k x) = f.map (fun x ↦ show l.comp g x ∈ U from hl ⟨g x, hy x⟩) j x := by
-  -- Porting note: need to specifiy `k` explicitly
+  -- Porting note: need to specify `k` explicitly
   rw [← f.map_comp_map (k := k) hy j hl]
   simp only [MonoidHom.coe_comp, comp_apply]
 
@@ -1182,8 +1189,7 @@ end Submonoid
 
 namespace Localization
 
-variable (S)
-
+variable (S) in
 /-- Natural homomorphism sending `x : M`, `M` a `CommMonoid`, to the equivalence class of
 `(x, 1)` in the Localization of `M` at a Submonoid. -/
 @[to_additive
@@ -1203,8 +1209,6 @@ def monoidOf : Submonoid.LocalizationMap S (Localization S) :=
       mk_eq_mk_iff.trans <|
         r_iff_exists.trans <|
           show (∃ c : S, ↑c * (1 * x) = c * (1 * y)) ↔ _ by rw [one_mul, one_mul] }
-
-variable {S}
 
 @[to_additive]
 theorem mk_one_eq_monoidOf_mk (x) : mk x 1 = (monoidOf S).toMap x := rfl

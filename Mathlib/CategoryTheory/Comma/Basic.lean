@@ -239,8 +239,8 @@ def map : Comma L R ⥤ Comma L' R' where
       right := F₂.map φ.right
       w := by
         dsimp
-        rw [assoc, assoc]
-        erw [α.naturality_assoc, ← β.naturality]
+        rw [assoc, assoc, ← Functor.comp_map, α.naturality_assoc, ← Functor.comp_map,
+          ← β.naturality]
         dsimp
         rw [← F.map_comp_assoc, ← F.map_comp_assoc, φ.w] }
 
@@ -544,13 +544,13 @@ def opFunctor : Comma L R ⥤ (Comma R.op L.op)ᵒᵖ where
   map f := ⟨op f.right, op f.left, Quiver.Hom.unop_inj (by simp)⟩
 
 /-- Composing the `leftOp` of `opFunctor L R` with `fst L.op R.op` is naturally isomorphic
-to `snd L R`.-/
+to `snd L R`. -/
 @[simps!]
 def opFunctorCompFst : (opFunctor L R).leftOp ⋙ fst _ _ ≅ (snd _ _).op :=
   Iso.refl _
 
 /-- Composing the `leftOp` of `opFunctor L R` with `snd L.op R.op` is naturally isomorphic
-to `fst L R`.-/
+to `fst L R`. -/
 @[simps!]
 def opFunctorCompSnd : (opFunctor L R).leftOp ⋙ snd _ _ ≅ (fst _ _).op :=
   Iso.refl _

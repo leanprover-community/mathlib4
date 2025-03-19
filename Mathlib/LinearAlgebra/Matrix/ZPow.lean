@@ -108,7 +108,7 @@ theorem _root_.IsUnit.det_zpow {A : M} (h : IsUnit A.det) (n : ℤ) : IsUnit (A 
   · simpa using h.pow n.succ
 
 theorem isUnit_det_zpow_iff {A : M} {z : ℤ} : IsUnit (A ^ z).det ↔ IsUnit A.det ∨ z = 0 := by
-  induction z using Int.induction_on with
+  induction z with
   | hz => simp
   | hp z =>
     rw [← Int.ofNat_succ, zpow_natCast, det_pow, isUnit_pow_succ_iff, ← Int.ofNat_zero,
@@ -147,7 +147,7 @@ theorem zpow_sub_one {A : M} (h : IsUnit A.det) (n : ℤ) : A ^ (n - 1) = A ^ n 
     _ = A ^ n * A⁻¹ := by rw [← zpow_add_one h, sub_add_cancel]
 
 theorem zpow_add {A : M} (ha : IsUnit A.det) (m n : ℤ) : A ^ (m + n) = A ^ m * A ^ n := by
-  induction n using Int.induction_on with
+  induction n with
   | hz => simp
   | hp n ihn => simp only [← add_assoc, zpow_add_one ha, ihn, mul_assoc]
   | hn n ihn => rw [zpow_sub_one ha, ← mul_assoc, ← ihn, ← zpow_sub_one ha, add_sub_assoc]
