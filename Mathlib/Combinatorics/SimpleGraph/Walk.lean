@@ -941,6 +941,19 @@ theorem take_append_drop {u v : V} (p : G.Walk u v) (n : ℕ)  :
   | nil => cases n <;> rfl
   | cons h p ih => cases n <;> simp [ih]
 
+@[simp]
+theorem take_append_cons_drop_succ {u v : V} (p : G.Walk u v) (n : ℕ) (hn : n < p.length)  :
+    (p.take n).append (cons (p.adj_getVert_succ hn) (p.drop (n + 1))) = p := by
+  induction p generalizing n with
+  | nil => aesop
+  | cons h p ih =>
+    cases n with
+    | zero => simp
+    | succ n =>
+      rw [length_cons, Nat.add_lt_add_iff_right] at hn
+      simp_rw [getVert_cons_succ, take_cons_succ, drop_cons_succ, cons_append] at *
+      rw [ih n hn]
+
 
 @[simp]
 lemma drop_length_le {u v : V} {n : ℕ} (p : G.Walk u v) (hn : p.length ≤ n ) :

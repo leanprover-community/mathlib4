@@ -522,30 +522,36 @@ lemma IsPath.mem_dropUntil_fst_dart {u v : V} {p : G.Walk u v} {d : G.Dart} (hp 
     exact this d h rfl
   | inr h => exact h
 
-lemma IsPath.snd_dropUntil_dart_fst_eq_snd {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
-    (hd : d ∈ p.darts) :
-    (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).snd = d.toProd.2 := by
-  
-  sorry
+@[simp]
+lemma IsPath.next_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
+    (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) : p.getVert (n + 1) = d.toProd.2 := by
+  induction p generalizing n with
+  | nil => simp_all
+  | cons h p ih =>
+    rw [getVert_cons_succ, darts_cons] at *
+    cases n with
+    | zero =>
+      cases hd with
+      | head as => simp_all
+      | tail _ hd =>
+        exfalso
+        apply cons_isPath_iff ..|>.1 hp |>.2
+        apply hn ▸ (dart_fst_mem_support_of_mem_darts _ hd)
+    | succ n =>
+      cases hd with
+      | head as =>
+        dsimp only at hn
+        exact (cons_isPath_iff ..|>.1 hp |>.2 <| hn ▸ (getVert_mem_support p n)).elim
+      | tail _ hd => exact ih hp.of_cons hd hn
 
-lemma IsPath.take_spec_cons  {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
-    (hd : d ∈ p.darts) :
-    (p.takeUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).append
-      ((p.dropUntil _ (dart_snd_mem_support_of_mem_darts _ hd)).cons d.adj) = p := by
-  have := take_spec p (dart_fst_mem_support_of_mem_darts _ hd)
-  convert this
-  have :¬ (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).Nil := by sorry
-  rw [← cons_tail_eq _ this]
+/--- What should this be? -/
+lemma IsCycle.mem_dropUntil_fst_dart_of_tail {u : V} {c : G.Walk u u} {d : G.Dart}
+    (hc : c.IsCycle) (hd : d ∈ c.tail.darts) :
+    d ∈ (c.tail.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).darts :=
+  hc.isPath_tail.mem_dropUntil_fst_dart hd
 
-  sorry
 
-lemma IsPath.snd_dropUntil_dart_fst_eq_snd {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
-    (hd : d ∈ p.darts)  (hd1 : p.getVert n = d.toProd.1 ):
-    (p.drop n).snd = d.toProd.2 := by
-  rw [snd, getVert_drop]
-  have : ⟨(p.getVert n, p.getVert (n + 1)), adj_getVert_succ p (by sorry)⟩ = d := by
-    sorry
-  sorry
+
 /-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) (xS : x ∈ S)
@@ -556,43 +562,6 @@ theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) 
   ⟨_, (rotate_darts _ xp).mem_iff.1 <| (darts_takeUntil_subset _
           <| (mem_support_rotate_iff xp).2 yp) hd, hd1, hd2⟩
 
-/-- Given a set `S` and a walk `w` from `u` to `v` such that `u ∈ S` but `v ∉ S`,
-there exists a dart in the walk whose start is in `S` but whose end is not. -/
-theorem exists_last_getVert {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ S) (vS : v ∉ S) :
-    ∃ n : ℕ, n < p.length ∧ p.getVert n ∈ S ∧ p.getVert (n + 1) ∉ S := by
-  induction p with
-  | nil => cases vS uS
-  | cons a p' ih =>
-    rename_i x y w
-    by_cases h : y ∈ S
-    · obtain ⟨d, hn, hd, hcd⟩ := ih h vS
-      use (d + 1)
-      simp_rw [getVert_cons_succ, length_cons]
-      simp only [Nat.add_lt_add_iff_right]
-      exact ⟨hn, hd, hcd⟩
-    · use 0
-      simp_rw [getVert_cons_succ, getVert_zero]
-      simp only [length_cons, Nat.zero_lt_succ, true_and]
-      exact ⟨uS, h⟩
-
-
-/-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
-there exists a dart in the walk whose start is in `S` but whose end is not. -/
-theorem exists_last_getVert' {u : V} {a b : ℕ} (c : G.Walk u v) (S : Set V)
-    (xS : c.getVert a ∈ S) (yS : c.getVert b ∉ S) (h : a ≤ b) :
-     ∃ n : ℕ, c.getVert n ∈ S ∧ c.getVert (n + 1) ∉ S := by
-  obtain ⟨n, hn, hd1, hd2⟩ := exists_last_getVert ((c.drop a).take (b - a)) S xS
-    (by rwa [getVert_drop, Nat.add_sub_cancel' h])
-  simp_rw [getVert_take, getVert_drop, Nat.add_sub_cancel' h] at hd1 hd2
-  have := hn.trans_le <| length_take_le (c.drop a) (b-a)
-  rw [if_neg (by omega)] at hd1
-  use (a + n)
-  split_ifs at hd2 with h1
-  · have : b = a + n + 1 := by omega
-    use hd1, this ▸ hd2
-  · use hd1
-    rw [Nat.add_succ] at hd2
-    exact hd2
 
 end WalkDecomp
 
@@ -939,12 +908,17 @@ theorem toDeleteEdges_copy {v u u' v' : V} (s : Set (Sym2 V))
   subst_vars
   rfl
 
-
 lemma Brooks_aux' [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
     (hd : d ∈ c.darts) :
     d.toProd.2 = (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd := by
-
-  sorry
+  rw [rotate, snd, getVert_append, if_pos]
+  · have := (c.take_spec (c.dart_fst_mem_support_of_mem_darts hd)) ▸ hc
+    have := this.isPath_of_append_right (by sorry)
+    have :=this.snd_dropUntil_dart_fst_eq_snd (d := d)
+    rw [this]
+    · rw [dropUntil_start]
+    · sorry
+  · sorry
 
 
 lemma Brooks_aux [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
