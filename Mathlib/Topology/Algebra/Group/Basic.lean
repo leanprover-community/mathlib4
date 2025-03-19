@@ -1121,20 +1121,7 @@ section
 
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
 
-namespace Subgroup
-
-variable (S : Subgroup G)
-
-@[to_additive] lemma disjoint_nhds_of_discrete [d : DiscreteTopology S] :
-    ∃ U ∈ 𝓝 (1 : G), ∀ g ∈ S, (g * ·) '' U ∩ U ≠ ∅ ∨ (· * g) '' U ∩ U ≠ ∅ → g = 1 := by
-  simp_rw [← Set.nonempty_iff_ne_empty]
-  obtain ⟨V, hV⟩ := nhds_inter_eq_singleton_of_mem_discrete S.one_mem
-  obtain ⟨U, hU, -, hUinv, hUV⟩ := exists_closed_nhds_one_inv_eq_mul_subset hV.1
-  refine ⟨U, hU, fun g hgS ↦ ?_⟩
-  rintro (⟨_, ⟨x, hx, rfl⟩, hgx⟩|⟨_, ⟨x, hx, rfl⟩, hxg⟩) <;>
-    refine hV.2.subset ⟨hUV ?_, hgS⟩ <;> rw [← hUinv] at hx
-  · exact ⟨_, _, hgx, hx, by simp⟩
-  · exact ⟨_, _, hx, hxg, by simp⟩
+variable (S : Subgroup G) [Subgroup.Normal S] [IsClosed (S : Set G)]
 
 /-- A subgroup `S` of a topological group `G` acts on `G` properly discontinuously on the left, if
 it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See also
@@ -1143,7 +1130,7 @@ it is discrete in the sense that `S ∩ K` is finite for all compact `K`. (See a
   "A subgroup `S` of an additive topological group `G` acts on `G` properly
   discontinuously on the left, if it is discrete in the sense that `S ∩ K` is finite for all compact
   `K`. (See also `DiscreteTopology`."]
-theorem properlyDiscontinuousSMul_of_tendsto_cofinite
+theorem Subgroup.properlyDiscontinuousSMul_of_tendsto_cofinite (S : Subgroup G)
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
@@ -1167,7 +1154,7 @@ to show that the quotient group `G ⧸ S` is Hausdorff. -/
 
   If `G` is Hausdorff, this can be combined with `t2Space_of_properlyDiscontinuousVAdd_of_t2Space`
   to show that the quotient group `G ⧸ S` is Hausdorff."]
-theorem properlyDiscontinuousSMul_opposite_of_tendsto_cofinite
+theorem Subgroup.properlyDiscontinuousSMul_opposite_of_tendsto_cofinite (S : Subgroup G)
     (hS : Tendsto S.subtype cofinite (cocompact G)) : ProperlyDiscontinuousSMul S.op G :=
   { finite_disjoint_inter_image := by
       intro K L hK hL
@@ -1180,8 +1167,6 @@ theorem properlyDiscontinuousSMul_opposite_of_tendsto_cofinite
       ext x
       simp only [image_smul, mem_setOf_eq, coe_subtype, mem_preimage, mem_image, Prod.exists]
       exact Set.op_smul_inter_ne_empty_iff }
-
-end Subgroup
 
 end
 
