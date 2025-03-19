@@ -396,9 +396,6 @@ lemma LieModule.isNilpotent_toEnd_of_mem_rootSpace
     rw [map_add, LinearMap.pow_map_zero_of_le le_sup_left hn₁,
       LinearMap.pow_map_zero_of_le le_sup_right hn₂, add_zero]
 
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
-  (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
-
 lemma LieAlgebra.isNilpotent_ad_of_mem_rootSpace
     [IsTriangularizable K H L] [FiniteDimensional K L]
     {x : L} {χ : H → K} (hχ : χ ≠ 0) (hx : x ∈ rootSpace H χ) :
