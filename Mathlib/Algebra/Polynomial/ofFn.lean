@@ -15,8 +15,8 @@ of its coefficients and vice versa. We prove some basic APIs for these functions
 ## Main definitions
 
 - `Polynomial.toFn n` associates to a polynomial the vector of its first `n` coefficients.
-- `Polynomial.ofFn n` associates to a vector of length `n` the polynomial that has the entries of the
-  vector as coefficients.
+- `Polynomial.ofFn n` associates to a vector of length `n` the polynomial that has the entries of
+  the vector as coefficients.
 -/
 
 namespace Polynomial
@@ -26,13 +26,13 @@ section toFn
 variable {R : Type*} [Semiring R]
 
 /-- `toFn n f` is the vector of the first `n` coefficients of the polynomial `f`. -/
-def toFn (n : ℕ) : R[X] →+ Fin n → R where
+def toFn (n : ℕ) : R[X] →ₗ[R] Fin n → R where
   toFun p := fun i ↦ p.coeff i
   map_add' x y := by
     simp only [coeff_add]
     rfl
-  map_zero' := by
-    simp only [coeff_zero]
+  map_smul' x p := by
+    simp only [coeff_smul]
     rfl
 
 theorem toFn_zero (n : ℕ) : toFn n (0 : R[X]) = 0 := by simp
@@ -40,17 +40,17 @@ theorem toFn_zero (n : ℕ) : toFn n (0 : R[X]) = 0 := by simp
 end toFn
 section ofFn
 
-variable {R : Type*} [Semiring R] [Dec : DecidableEq R]
+variable {R : Type*} [Semiring R] [DecidableEq R]
 
 /-- `ofFn n v` is the polynomial whose coefficients are the entries of the vector `v`. -/
-def ofFn (n : ℕ) : (Fin n → R) →+ R[X] where
+def ofFn (n : ℕ) : (Fin n → R) →ₗ[R] R[X] where
   toFun v := ⟨(List.ofFn v).toFinsupp⟩
   map_add' x y := by
     ext i
     by_cases h : i < n
     · simp [h]
     · simp [List.getD_getElem?, h]
-  map_zero' := by
+  map_smul' x p := by
     ext i
     by_cases h : i < n
     · simp [h]
@@ -113,9 +113,8 @@ theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R [X]} (h_deg : p.na
   ext i
   by_cases h : i < n
   · simp [h, toFn]
-  · simp only [ofFn, toFn, AddMonoidHom.coe_mk, ZeroHom.coe_mk, coeff_ofFinsupp,
-    List.toFinsupp_apply, List.getD_eq_getElem?_getD, List.getElem?_ofFn, h, ↓reduceDIte,
-    Option.getD_none]
+  · simp only [ofFn, toFn, LinearMap.coe_mk, AddHom.coe_mk, coeff_ofFinsupp, List.toFinsupp_apply,
+    List.getD_eq_getElem?_getD, List.getElem?_ofFn, h, ↓reduceDIte, Option.getD_none]
     apply (coeff_eq_zero_of_natDegree_lt _).symm
     omega
 
