@@ -75,10 +75,6 @@ theorem minimalPeriod_le_card : minimalPeriod f x ≤ card α := by
   rw [← periodicOrbit_length]
   exact List.Nodup.length_le_card nodup_periodicOrbit
 
-theorem minimalPeriod_dvd_factorial_card_of_mem_periodicPts (h : x ∈ periodicPts f) :
-    minimalPeriod f x ∣ (card α)! :=
-  Nat.dvd_factorial (minimalPeriod_pos_of_mem_periodicPts h) minimalPeriod_le_card
-
 theorem isPeriodicPt_factorial_card_of_mem_periodicPts (h : x ∈ periodicPts f) :
     IsPeriodicPt f (card α)! x :=
   isPeriodicPt_iff_minimalPeriod_dvd.mpr
