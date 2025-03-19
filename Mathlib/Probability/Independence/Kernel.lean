@@ -922,10 +922,10 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
   have : ∀ᵐ a ∂μ, ∀ i ∈ S, f i =ᵐ[κ a] g i :=
     (ae_ball_iff (Finset.countable_toSet S)).2 (fun i hi ↦ h i)
   filter_upwards [this, hf S hmeas] with a ha h'a
-  have A i (hi : i ∈ S) : (κ a) (f i ⁻¹' sets i) = (κ a) (g i ⁻¹' sets i) := by
+  have A i (hi : i ∈ S) : (κ a) (g i ⁻¹' sets i) = (κ a) (f i ⁻¹' sets i) := by
     apply measure_congr
     filter_upwards [ha i hi] with ω hω
-    change (f i ω ∈ sets i) = (g i ω ∈ sets i)
+    change (g i ω ∈ sets i) = (f i ω ∈ sets i)
     simp [hω]
   have B : (κ a) (⋂ i ∈ S, g i ⁻¹' sets i) = (κ a) (⋂ i ∈ S, f i ⁻¹' sets i) := by
     apply measure_congr
@@ -933,7 +933,7 @@ theorem iIndepFun.congr' {β : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i
     change (ω ∈ ⋂ i ∈ S, g i ⁻¹' sets i) = (ω ∈ ⋂ i ∈ S, f i ⁻¹' sets i)
     simp +contextual [hω]
   convert h'a using 2 with i hi
-  exact (A i hi).symm
+  exact A i hi
 
 lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
     {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
@@ -1135,8 +1135,20 @@ theorem iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T)
     refine iIndepFun.indepFun_finset S T hST ?_ fun i ↦ (hf_meas i).measurable_mk
     exact iIndepFun.congr' hf_Indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
   refine IndepFun.congr' h ?_ ?_
-  · sorry
-  · sorry
+  · have : ∀ᵐ (a : α) ∂μ, ∀ (i : S), f i =ᵐ[κ a] (hf_meas i).mk  := by
+      rw [ae_all_iff]
+      exact fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
+    filter_upwards [this] with a ha
+    filter_upwards [ae_all_iff.2 ha] with b hb
+    ext i
+    exact (hb i).symm
+  · have : ∀ᵐ (a : α) ∂μ, ∀ (i : T), f i =ᵐ[κ a] (hf_meas i).mk  := by
+      rw [ae_all_iff]
+      exact fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
+    filter_upwards [this] with a ha
+    filter_upwards [ae_all_iff.2 ha] with b hb
+    ext i
+    exact (hb i).symm
 
 theorem iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
