@@ -93,11 +93,12 @@ theorem tendsto_mabs_nhdsNE_one : Tendsto (mabs : G → G) (𝓝[≠] 1) (𝓝[>
   (continuous_mabs.tendsto' (1 : G) 1 mabs_one).inf <|
     tendsto_principal_principal.2 fun _x => one_lt_mabs.2
 
-@[deprecated (since := "2025-03-02")]
+@[deprecated (since := "2025-03-18")]
 alias tendsto_abs_nhdsWithin_zero := tendsto_abs_nhdsNE_zero
 
 /-- In a linearly ordered additive group, the integer multiples of an element are dense
 iff they are the whole group. -/
+@[to_additive]
 theorem denseRange_zpow_iff_surjective {a : G} :
     DenseRange (a ^ · : ℤ → G) ↔ Surjective (a ^ · : ℤ → G) := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.denseRange⟩
@@ -129,6 +130,7 @@ theorem denseRange_zpow_iff_surjective {a : G} :
 
 /-- In a nontrivial densely linearly ordered additive group,
 the integer multiples of an element can't be dense. -/
+@[to_additive]
 theorem not_denseRange_zpow [Nontrivial G] [DenselyOrdered G] {a : G} :
     ¬DenseRange (a ^ · : ℤ → G) :=
   denseRange_zpow_iff_surjective.not.mpr fun h ↦

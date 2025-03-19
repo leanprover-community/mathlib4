@@ -460,7 +460,7 @@ theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
     (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
   simpa using nhds_basis_mabs_div_lt (1 : α)
 
-@[deprecated (since := "2025-03-02")]
+@[deprecated (since := "2025-03-18")]
 alias nhds_basis_zero_abs_sub_lt := nhds_basis_zero_abs_lt
 
 @[to_additive "If `a` is positive we can form a basis from only nonnegative `Set.Ioo` intervals"]

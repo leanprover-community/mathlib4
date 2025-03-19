@@ -68,7 +68,7 @@ theorem Filter.Tendsto.atTop_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l a
 -- TODO: after removing this deprecated alias,
 -- rename `Filter.Tendsto.atTop_mul'` to `Filter.Tendsto.atTop_mul`.
 -- Same for the other 3 similar aliases below.
-@[deprecated (since := "2025-03-02")]
+@[deprecated (since := "2025-03-18")]
 alias Filter.Tendsto.atTop_mul := Filter.Tendsto.atTop_mul_pos
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a positive constant `C` and
@@ -77,7 +77,7 @@ theorem Filter.Tendsto.pos_mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (
     (hg : Tendsto g l atTop) : Tendsto (fun x => f x * g x) l atTop := by
   simpa only [mul_comm] using hg.atTop_mul_pos hC hf
 
-@[deprecated (since := "2025-03-02")]
+@[deprecated (since := "2025-03-18")]
 alias Filter.Tendsto.mul_atTop := Filter.Tendsto.pos_mul_atTop
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atTop` and `g`
@@ -101,7 +101,7 @@ theorem Filter.Tendsto.atBot_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l a
   have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul_pos hC hg
   simpa [Function.comp_def] using tendsto_neg_atTop_atBot.comp this
 
-@[deprecated (since := "2025-03-02")]
+@[deprecated (since := "2025-03-18")]
 alias Filter.Tendsto.atBot_mul := Filter.Tendsto.atBot_mul_pos
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atBot` and `g`
@@ -117,7 +117,7 @@ theorem Filter.Tendsto.pos_mul_atBot {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (
     (hg : Tendsto g l atBot) : Tendsto (fun x => f x * g x) l atBot := by
   simpa only [mul_comm] using hg.atBot_mul_pos hC hf
 
-@[deprecated (since := "2025-03-02")]
+@[deprecated (since := "2025-03-18")]
 alias Filter.Tendsto.mul_atBot := Filter.Tendsto.pos_mul_atBot
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a negative constant `C` and
