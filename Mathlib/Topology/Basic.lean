@@ -406,7 +406,6 @@ theorem closure_eq_iff_isClosed : closure s = s ↔ IsClosed s :=
 theorem closure_subset_iff_isClosed : closure s ⊆ s ↔ IsClosed s :=
   ⟨isClosed_of_closure_subset, IsClosed.closure_subset⟩
 
-@[simp]
 theorem closure_empty : closure (∅ : Set X) = ∅ :=
   isClosed_empty.closure_eq
 
@@ -420,7 +419,6 @@ theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
 
 alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_iff
 
-@[simp]
 theorem closure_univ : closure (univ : Set X) = univ :=
   isClosed_univ.closure_eq
 
