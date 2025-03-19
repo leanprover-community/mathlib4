@@ -171,7 +171,7 @@ def toCloseds (x : α) : c.Closeds := ⟨c x, c.isClosed_closure x⟩
 
 variable {c} {x y : α}
 
-@[simp] theorem IsClosed.closure_eq : c.IsClosed x → c x = x := c.isClosed_iff.1
+theorem IsClosed.closure_eq : c.IsClosed x → c x = x := c.isClosed_iff.1
 
 theorem isClosed_iff_closure_le : c.IsClosed x ↔ c x ≤ x :=
   ⟨fun h ↦ h.closure_eq.le, fun h ↦ c.isClosed_iff.2 <| h.antisymm <| c.le_closure x⟩
