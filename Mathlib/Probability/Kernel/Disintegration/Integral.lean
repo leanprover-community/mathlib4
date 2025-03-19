@@ -195,7 +195,7 @@ lemma integral_condKernel (hf : Integrable f ρ) :
     ∫ b, ∫ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x, f x ∂ρ := by
   conv_rhs => rw [← ρ.disintegrate ρ.condKernel]
   rw [← ρ.disintegrate ρ.condKernel] at hf
-  rw [ MeasureTheory.Measure.integrable_compProd_iff hf]
+  rw [integral_compProd hf]
 
 lemma setIntegral_condKernel {s : Set β} (hs : MeasurableSet s)
     {t : Set Ω} (ht : MeasurableSet t) (hf : IntegrableOn f (s ×ˢ t) ρ) :
