@@ -159,9 +159,18 @@ theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
 
 lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).IsClique s) :
     G.IsClique (s \ {v}) := by
-  intro x hx y hy hxy
+  intro _ hx _ hy hxy
   have := hc hx.1 hy.1 hxy
   simp_all [sup_adj, edge_adj]
+
+lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
+    (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
+  intro x hx y hy hxy
+  by_cases h' : x ∈ s \ {v} ∧ y ∈ s \ {v} ∨ x ∈ s \ {w} ∧ y ∈ s \ {w}
+  · obtain (⟨hx, hy⟩ | ⟨hx, hy⟩) := h'
+    · exact hv.mono le_sup_left hx hy hxy
+    · exact hw.mono le_sup_left hx hy hxy
+  · exact Or.inr ⟨by by_cases x = v <;> aesop, hxy⟩
 
 end Clique
 
