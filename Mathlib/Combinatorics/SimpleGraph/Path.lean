@@ -192,6 +192,9 @@ theorem IsTrail.length_le_card_edgeFinset [Fintype G.edgeSet] {u v : V}
     simpa [edges] using h
   exact Finset.card_le_card this
 
+lemma IsTrail.darts_nodup {u v : V} {w : G.Walk u v} (h : w.IsTrail) : w.darts.Nodup :=
+    h.edges_nodup.of_map
+
 theorem IsPath.nil {u : V} : (nil : G.Walk u u).IsPath := by constructor <;> simp
 
 theorem IsPath.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
@@ -498,19 +501,32 @@ lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈
     (hn.symm ▸ p.getVert_length.symm)
   omega
 
-/-- the ith dart of w is (wᵢ, wᵢ₊₁) -/
-@[simp]
-lemma ith_dart {w : G.Walk u v} {i : ℕ} (hi : i < w.length) :
-    w.darts.get ⟨i, w.length_darts.symm ▸ hi⟩ =
-      ⟨(w.getVert i, w.getVert (i+1)), w.adj_getVert_succ hi⟩:= by
-  induction w generalizing i with
-  | nil => simp at hi
-  | cons h p ih =>
-    cases i with
-    | zero => simp
-    | succ i =>
-      simp only [length_cons, Nat.add_lt_add_iff_right] at hi
-      apply ih hi
+lemma take_spec_support {u v w : V} {p : G.Walk u v} (h : w ∈ p.support) :
+    p.support = (p.takeUntil _ h).support ++ (p.dropUntil _ h).support.tail := by
+  rw [← support_append, congr_arg support (take_spec p h)]
+
+lemma take_spec_darts {u v w : V} {p : G.Walk u v} (h : w ∈ p.support) :
+    p.darts = (p.takeUntil _ h).darts ++ (p.dropUntil _ h).darts := by
+  rw [← darts_append, congr_arg darts (take_spec p h)]
+
+lemma IsPath.mem_dropUntil_fst_dart {u v : V} {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
+    (hd : d ∈ p.darts) :
+    d ∈ (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).darts := by
+  cases List.mem_append.1 <| (take_spec_darts (dart_fst_mem_support_of_mem_darts _ hd)) ▸ hd with
+  | inl h =>
+    exfalso
+    have := List.disjoint_of_nodup_append <| (map_fst_darts_append
+            (p.takeUntil _ (dart_fst_mem_support_of_mem_darts _ hd)))  ▸
+                (hp.takeUntil (dart_fst_mem_support_of_mem_darts _ hd)).2
+    simp only [List.disjoint_singleton, List.mem_map, not_exists, not_and] at this
+    exact this d h rfl
+  | inr h => exact h
+
+lemma IsPath.snd_dropUntil_dart_fst_eq_snd {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
+    (hd : d ∈ p.darts) :
+    (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).snd = d.toProd.2 := by
+  
+  sorry
 
 lemma IsPath.take_spec_cons  {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
     (hd : d ∈ p.darts) :
