@@ -238,7 +238,7 @@ theorem toNat_mul (a b : ℕ∞) : (a * b).toNat = a.toNat * b.toNat := by
   cases a <;> cases b <;> simp
   · rename_i b; cases b <;> simp
   · rename_i a; cases a <;> simp
-  · rfl
+  · rw [← coe_mul, toNat_coe]
 
 theorem toNat_eq_iff {m : ℕ∞} {n : ℕ} (hn : n ≠ 0) : toNat m = n ↔ m = n := by
   induction m <;> simp [hn.symm]
