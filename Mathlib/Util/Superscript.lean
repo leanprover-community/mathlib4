@@ -279,10 +279,7 @@ initialize register_parser_alias superscript
 See `Mapping.superscript` in this file for legal superscript characters. -/
 def delabSuperscript : Delab := do
   let stx ← delab
-  if Superscript.isValid Superscript.Mapping.superscript stx.raw then
-    pure stx
-  else
-    failure
+  if Superscript.isValid .superscript stx.raw then pure stx else failure
 
 /--
 The parser `subscript(term)` parses a subscript. Basic usage is:
@@ -325,9 +322,6 @@ initialize register_parser_alias subscript
 See `Mapping.subscript` in this file for legal subscript characters. -/
 def delabSubscript : Delab := do
   let stx ← delab
-  if Superscript.isValid Superscript.Mapping.subscript stx.raw then
-    pure stx
-  else
-    failure
+  if Superscript.isValid .subscript stx.raw then pure stx else failure
 
 end Mathlib.Tactic
