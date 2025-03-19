@@ -163,18 +163,23 @@ lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
 lemma disjSum_subset : s.disjSum t ⊆ u ↔ s ⊆ u.toLeft ∧ t ⊆ u.toRight := by simp [subset_iff]
 lemma subset_disjSum : u ⊆ s.disjSum t ↔ u.toLeft ⊆ s ∧ u.toRight ⊆ t := by simp [subset_iff]
 
-@[simp] lemma map_disjSum_inl_subset : s.map .inl ⊆ u ↔ s ⊆ u.toLeft := by
-  simp [← disjSum_empty, disjSum_subset]
-
-@[simp] lemma map_disjSum_inr_subset : t.map .inr ⊆ u ↔ t ⊆ u.toRight := by
-  simp [← empty_disjSum, disjSum_subset]
-
-lemma subset_map_disjSum_inl : u ⊆ s.map .inl ↔ u.toLeft ⊆ s ∧ u.toRight = ∅ := by
+lemma subset_map_inl : u ⊆ s.map .inl ↔ u.toLeft ⊆ s ∧ u.toRight = ∅ := by
   simp [← disjSum_empty, subset_disjSum]
 
-lemma subset_map_disjSum_inr : u ⊆ t.map .inr ↔ u.toLeft = ∅ ∧ u.toRight ⊆ t := by
+lemma subset_map_inr : u ⊆ t.map .inr ↔ u.toLeft = ∅ ∧ u.toRight ⊆ t := by
   simp [← empty_disjSum, subset_disjSum]
 
+lemma map_inl_subset_iff_subset_toLeft : s.map .inl ⊆ u ↔ s ⊆ u.toLeft := by
+  simp [← disjSum_empty, disjSum_subset]
+
+lemma map_inr_subset_iff_subset_toRight : t.map .inr ⊆ u ↔ t ⊆ u.toRight := by
+  simp [← empty_disjSum, disjSum_subset]
+
+lemma gc_map_inl_toLeft : GaloisConnection (·.map (.inl : α ↪ α ⊕ β)) toLeft :=
+  fun _ _ ↦ map_inl_subset_iff_subset_toLeft
+
+lemma gc_map_inr_toRight : GaloisConnection (·.map (.inr : β ↪ α ⊕ β)) toRight :=
+  fun _ _ ↦ map_inr_subset_iff_subset_toRight
 
 @[simp] lemma toLeft_map_sumComm : (u.map (Equiv.sumComm _ _).toEmbedding).toLeft = u.toRight := by
   ext x; simp
