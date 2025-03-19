@@ -181,7 +181,7 @@ scoped [SelbergSieve.Notation] notation3 "R" => rem
 /-- The weight of all the elements that are not a multiple of any of our finite set of primes. -/
 def siftedSum : ℝ := ∑ d ∈ A, if Coprime P d then a d else 0
 
-/-- `X * mainSum μ⁺` is the main term in the upper bound on `sifted_sum`-/
+/-- `X * mainSum μ⁺` is the main term in the upper bound on `sifted_sum`. -/
 def mainSum (muPlus : ℕ → ℝ) : ℝ := ∑ d ∈ divisors P, muPlus d * ν d
 
 /-- `errSum μ⁺` is the error term in the upper bound on `sifted_sum`. -/
@@ -198,7 +198,7 @@ theorem siftedsum_eq_sum_support_mul_ite :
 
 omit s in
 /-- A sequence of coefficients $\mu^{+}$ is upper Moebius if $\mu * \zeta ≤ \mu^{+} * \zeta$. These
-  coefficients then yield an upper bound on the sifted sum.-/
+  coefficients then yield an upper bound on the sifted sum. -/
 def IsUpperMoebius (muPlus : ℕ → ℝ) : Prop :=
   ∀ n : ℕ, (if n=1 then 1 else 0) ≤ ∑ d ∈ n.divisors, muPlus d
 
