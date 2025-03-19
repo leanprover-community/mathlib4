@@ -10,12 +10,13 @@ import Mathlib.Topology.EMetricSpace.Defs
 
 This file defines a few notions of separations of sets in a metric space.
 
-## Main declarations
 
-* `Metric.IsSeparated`: A set `s` is `ε`-separated if its elements are pairwise at distance at least
-  `ε` from each other.
-* `Metric.AreSeparated`: Two sets `s` and `t` are separated if the distance between `x ∈ s` and
-  `y ∈ t` is bounded from below by a positive constant.
+The first notion (`Metric.IsSeparated`) is quantitative and about a single set: A set `s` is
+`ε`-separated if its elements are pairwise at distance at least `ε` from each other.
+
+The second notion ( `Metric.AreSeparated`) is qualitative and about two sets: Two sets `s` and `t`
+are separated if the distance between `x ∈ s` and `y ∈ t` is bounded from below by a positive
+constant.
 -/
 
 open EMetric Set
