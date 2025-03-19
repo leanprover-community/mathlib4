@@ -30,16 +30,16 @@ variable {α β : Type*} {u : Finset (α ⊕ β)} {s : Finset α} {t : Finset β
 section left
 variable [Fintype α] {u : Finset (α ⊕ β)}
 
-lemma toLeft_eq_univ : u.toLeft = univ ↔ univ.disjSum ∅ ⊆ u := by simp [disjSum_subset]
-lemma toRight_eq_empty : u.toRight = ∅ ↔ u ⊆ univ.disjSum ∅ := by simp [subset_disjSum]
+lemma toLeft_eq_univ : u.toLeft = univ ↔ univ.disjSum ∅ ⊆ u := by simp
+lemma toRight_eq_empty : u.toRight = ∅ ↔ u ⊆ univ.disjSum ∅ := by simp [subset_map_disjSum_inl]
 
 end left
 
 section right
 variable [Fintype β] {u : Finset (α ⊕ β)}
 
-lemma toRight_eq_univ : u.toRight = univ ↔ disjSum ∅ univ ⊆ u := by simp [disjSum_subset]
-lemma toLeft_eq_empty : u.toLeft = ∅ ↔ u ⊆ disjSum ∅ univ := by simp [subset_disjSum]
+lemma toRight_eq_univ : u.toRight = univ ↔ disjSum ∅ univ ⊆ u := by simp
+lemma toLeft_eq_empty : u.toLeft = ∅ ↔ u ⊆ disjSum ∅ univ := by simp [subset_map_disjSum_inr]
 
 end right
 

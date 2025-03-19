@@ -35,9 +35,11 @@ def disjSum : Finset (α ⊕ β) :=
 theorem val_disjSum : (s.disjSum t).1 = s.1.disjSum t.1 :=
   rfl
 
+@[simp]
 theorem empty_disjSum : (∅ : Finset α).disjSum t = t.map Embedding.inr :=
   val_inj.1 <| Multiset.zero_disjSum _
 
+@[simp]
 theorem disjSum_empty : s.disjSum (∅ : Finset β) = s.map Embedding.inl :=
   val_inj.1 <| Multiset.disjSum_zero _
 
@@ -160,6 +162,19 @@ lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
 
 lemma disjSum_subset : s.disjSum t ⊆ u ↔ s ⊆ u.toLeft ∧ t ⊆ u.toRight := by simp [subset_iff]
 lemma subset_disjSum : u ⊆ s.disjSum t ↔ u.toLeft ⊆ s ∧ u.toRight ⊆ t := by simp [subset_iff]
+
+@[simp] lemma map_disjSum_inl_subset : s.map .inl ⊆ u ↔ s ⊆ u.toLeft := by
+  simp [← disjSum_empty, disjSum_subset]
+
+@[simp] lemma map_disjSum_inr_subset : t.map .inr ⊆ u ↔ t ⊆ u.toRight := by
+  simp [← empty_disjSum, disjSum_subset]
+
+lemma subset_map_disjSum_inl : u ⊆ s.map .inl ↔ u.toLeft ⊆ s ∧ u.toRight = ∅ := by
+  simp [← disjSum_empty, subset_disjSum]
+
+lemma subset_map_disjSum_inr : u ⊆ t.map .inr ↔ u.toLeft = ∅ ∧ u.toRight ⊆ t := by
+  simp [← empty_disjSum, subset_disjSum]
+
 
 @[simp] lemma toLeft_map_sumComm : (u.map (Equiv.sumComm _ _).toEmbedding).toLeft = u.toRight := by
   ext x; simp
