@@ -45,11 +45,14 @@ variable {α : Type*} {mα : MeasurableSpace α} {ν : Kernel α ℝ} {k : ℕ �
 section MeasureSpace
 
 structure Bandit (α : Type*) [MeasurableSpace α] where
-  ν : Kernel α ℝ -- conditional distribution of the rewards given the arm pulled
+  /-- Conditional distribution of the rewards given the arm pulled. -/
+  ν : Kernel α ℝ
   hν : IsMarkovKernel ν
-  policy : (n : ℕ) → Kernel (Iic n → α × ℝ) α  -- distribution of the next pull
+  /-- Policy or sampling rule: distribution of the next pull. -/
+  policy : (n : ℕ) → Kernel (Iic n → α × ℝ) α
   h_policy n : IsMarkovKernel (policy n)
-  p0 : Measure α  -- distribution of the first pull
+  /-- Distribution of the first pull. -/
+  p0 : Measure α
   hp0 : IsProbabilityMeasure p0
 
 instance (b : Bandit α) : IsMarkovKernel b.ν := b.hν
@@ -76,8 +79,11 @@ instance (b : Bandit α) (n : ℕ) : IsMarkovKernel (b.traj n) := by
   infer_instance
 
 def MeasurableEquiv.piIicZero (α : Type*) [MeasurableSpace α] :
-    (Iic 0 → α) ≃ᵐ α := by
-  sorry
+    (Iic 0 → α) ≃ᵐ α :=
+  have : Unique (Iic 0) := by
+    simp only [mem_Iic, nonpos_iff_eq_zero]
+    exact Unique.subtypeEq 0
+  MeasurableEquiv.funUnique _ _
 
 noncomputable
 def measure (b : Bandit α) : Measure (ℕ → α × ℝ) :=
@@ -121,6 +127,10 @@ lemma condDistrib_A [StandardBorelSpace α] [Nonempty α] (b : Bandit α) (n : �
 
 end MeasureSpace
 
+section Regret
+
+/-! ### Definitions of regret, gaps, pull counts -/
+
 noncomputable
 def regret (ν : Kernel α ℝ) (k : ℕ → α) (t : ℕ) : ℝ :=
   t * (⨆ a, (ν a)[id]) - ∑ s ∈ range t, (ν (k s))[id]
@@ -154,7 +164,20 @@ lemma regret_eq_sum_pullCount_mul_gap [Fintype α] :
   simp_rw [sum_pullCount_mul, regret, gap, sum_sub_distrib]
   simp
 
+end Regret
+
+section ETC
+
+/-! ### Explore-then-Commit algorithm -/
+
+
+
+end ETC
+
+
 section UCB
+
+/-! ### UCB algorithm -/
 
 variable [Fintype α] [Nonempty α] {c : ℝ} {μ : α → ℝ} {N : α → ℕ} {a : α}
 
