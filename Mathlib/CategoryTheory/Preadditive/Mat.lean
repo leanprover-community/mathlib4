@@ -62,8 +62,10 @@ variable (C : Type u₁) [Category.{v₁} C] [Preadditive C]
 /-- An object in `Mat_ C` is a finite tuple of objects in `C`.
 -/
 structure Mat_ where
+  /-- The index type `ι` -/
   ι : Type
   [fintype : Fintype ι]
+  /-- The map from `ι` to objects in `C` -/
   X : ι → C
 
 attribute [instance] Mat_.fintype

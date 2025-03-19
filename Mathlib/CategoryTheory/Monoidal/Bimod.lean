@@ -74,11 +74,14 @@ end
 
 /-- A bimodule object for a pair of monoid objects, all internal to some monoidal category. -/
 structure Bimod (A B : Mon_ C) where
+  /-- The underlying monoidal category -/
   X : C
+  /-- The left action of this bimodule object -/
   actLeft : A.X ⊗ X ⟶ X
   one_actLeft : (A.one ▷ X) ≫ actLeft = (λ_ X).hom := by aesop_cat
   left_assoc :
     (A.mul ▷ X) ≫ actLeft = (α_ A.X A.X X).hom ≫ (A.X ◁ actLeft) ≫ actLeft := by aesop_cat
+  /-- The right action of this bimodule object -/
   actRight : X ⊗ B.X ⟶ X
   actRight_one : (X ◁ B.one) ≫ actRight = (ρ_ X).hom := by aesop_cat
   right_assoc :
@@ -98,6 +101,7 @@ variable {A B : Mon_ C} (M : Bimod A B)
 /-- A morphism of bimodule objects. -/
 @[ext]
 structure Hom (M N : Bimod A B) where
+  /-- The morphism between `M`'s monoidal category and `N`'s monoidal category -/
   hom : M.X ⟶ N.X
   left_act_hom : M.actLeft ≫ hom = (A.X ◁ hom) ≫ N.actLeft := by aesop_cat
   right_act_hom : M.actRight ≫ hom = (hom ▷ B.X) ≫ N.actRight := by aesop_cat
