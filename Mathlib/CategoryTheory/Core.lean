@@ -88,7 +88,7 @@ def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u
   map_id α := by apply Iso.ext; funext x; exact congr_fun (EquivFunctor.map_refl' _) x
   map_comp f g := by
     apply Iso.ext; funext x; dsimp
-    erw [Iso.toEquiv_comp, EquivFunctor.map_trans']
-    rw [Function.comp]
+    erw [Iso.toEquiv_comp]
+    rw [EquivFunctor.map_trans', Function.comp]
 
 end CategoryTheory

@@ -694,7 +694,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [Module K V]
-variable {v : ι → V} {s t : Set V} {x y : V}
+variable {v : ι → V} {s t : Set ι} {x y : V}
 
 open Submodule
 
@@ -707,5 +707,11 @@ theorem linearIndependent_iff_not_mem_span :
   · intro h i a ha
     by_contra ha'
     exact False.elim (h _ ((smul_mem_iff _ ha').1 ha))
+
+lemma linearIndepOn_iff_not_mem_span :
+    LinearIndepOn K v s ↔ ∀ i ∈ s, v i ∉ span K (v '' (s \ {i})) := by
+  rw [LinearIndepOn, linearIndependent_iff_not_mem_span, ← Function.comp_def]
+  simp_rw [Set.image_comp]
+  simp [Set.image_diff Subtype.val_injective]
 
 end Module
