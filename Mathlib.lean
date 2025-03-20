@@ -6088,7 +6088,3 @@ import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
-
-open Complex
-theorem mul_I_im_re (x : ℝ) : (x * I).im = x := by
-  aesop?
