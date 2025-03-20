@@ -17,7 +17,7 @@ Separate from `Data.Finset.Range` to avoid additional imports
 
 open Finset
 
-lemma abs_sub_lt_of_mem_finset_range (N n m : ℕ) (hn : n ∈ range N) (hm : m ∈ range N) :
+lemma abs_sub_lt_of_mem_finset_range {N n m : ℕ} (hn : n ∈ range N) (hm : m ∈ range N) :
     |n - (m : ℤ)| < N := by
   rcases (Nat.lt_or_ge n m) with (h1 | h2)
   · rw [← Int.ofNat_lt, ← sub_pos] at h1
