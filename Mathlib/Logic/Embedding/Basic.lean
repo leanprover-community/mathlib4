@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Prod.PProd
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Subtype
 
 /-!
 # Injective functions
