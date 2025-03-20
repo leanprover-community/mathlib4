@@ -192,8 +192,9 @@ def fromUnit {n : ℕ} : Rˣ →* K⟮(∅ : Set <| HeightOneSpectrum R),n⟯ wh
     ⟨QuotientGroup.mk <| Units.map (algebraMap R K).toMonoidHom x, fun v _ =>
       v.valuation_of_unit_mod_eq n x⟩
   map_one' := by simp only [map_one, QuotientGroup.mk_one, Subgroup.mk_eq_one]
-  map_mul' _ _ := by simp only [RingHom.toMonoidHom_eq_coe, map_mul, QuotientGroup.mk_mul,
-    MulMemClass.mk_mul_mk]
+  map_mul' _ _ := by
+    simp only [RingHom.toMonoidHom_eq_coe, map_mul, QuotientGroup.mk_mul]
+    rfl
 
 theorem fromUnit_ker [hn : Fact <| 0 < n] :
     (@fromUnit R _ _ K _ _ _ n).ker = (powMonoidHom n : Rˣ →* Rˣ).range := by
