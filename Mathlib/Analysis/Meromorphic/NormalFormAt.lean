@@ -167,7 +167,7 @@ theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
 ## Local nature of the definition and local identity theorem
 -/
 
-/-- Local identity theorem: two meromorphic functions in normal form agree in a
+/-- **Local identity theorem**: two meromorphic functions in normal form agree in a
 neighborhood iff they agree in a pointed neighborhood.
 
 See `ContinuousAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd` for the analogous
