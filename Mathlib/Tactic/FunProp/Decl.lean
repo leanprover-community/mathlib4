@@ -91,15 +91,15 @@ def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
 
   let decls ← ext.decls.getMatch e (← read)
 
-  if decls.size = 0 then
+  if h : decls.size = 0 then
     return none
-
+  else
   if decls.size > 1 then
     throwError "\
 fun_prop bug: expression {← ppExpr e} matches multiple function properties
 {decls.map (fun d => d.funPropName)}"
 
-  let decl := decls[0]!
+  let decl := decls[0]
   unless decl.funArgId < e.getAppNumArgs do return none
   let f := e.getArg! decl.funArgId
 
