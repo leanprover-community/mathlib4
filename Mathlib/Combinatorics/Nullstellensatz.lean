@@ -110,8 +110,9 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         convert map_zero (MvPolynomial.eval x)
         ext m
         simp only [coeff_zero, optionEquivLeft_coeff_coeff]
-        set n := embDomain Function.Embedding.some m + Finsupp.single none d with hn
-        rw [option_embedding_add_single] at hn
+        set n := (embDomain Function.Embedding.some m).update none d with hn
+        -- set n := embDomain Function.Embedding.some m + Finsupp.single none d with hn
+        rw [eq_option_embedding_update_none_iff] at hn
         rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]
         by_contra hm
         apply not_le.mpr hd
@@ -127,8 +128,8 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
       apply lt_of_le_of_lt _ (Hdeg (some i))
       simp only [degreeOf_eq_sup, Finset.sup_le_iff, mem_support_iff, ne_eq]
       intro e he
-      set n : Option σ →₀ ℕ := embDomain Function.Embedding.some e + Finsupp.single none m with hn
-      rw [option_embedding_add_single] at hn
+      set n := (embDomain Function.Embedding.some e).update none m with hn
+      rw [eq_option_embedding_update_none_iff] at hn
       rw [hQ, ← hn.1, ← hn.2, optionEquivLeft_coeff_coeff, ← ne_eq,
         ← MvPolynomial.mem_support_iff] at he
       convert Finset.le_sup he
