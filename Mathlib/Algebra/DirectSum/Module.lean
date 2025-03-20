@@ -250,11 +250,6 @@ lemma toAddMonoidHom_lmap :
 lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
   rfl
 
-lemma lmap_eq_toAddMonoid [DecidableEq ι] :
-    lmap f = toModule R ι _ (fun i ↦ (lof R ι N i).comp (f i)) :=
-  sorry
-
-
 end map
 
 section CongrLeft
