@@ -413,7 +413,7 @@ theorem setIntegral_eq_integral_of_forall_compl_eq_zero (h : ∀ x, x ∉ s → 
     ∫ x in s, f x ∂μ = ∫ x, f x ∂μ :=
   setIntegral_eq_integral_of_ae_compl_eq_zero (Eventually.of_forall h)
 
-theorem setIntegral_neg_eq_setIntegral_nonpos [LinearOrder E] {f : X → E}
+theorem setIntegral_neg_eq_setIntegral_nonpos [PartialOrder E] {f : X → E}
     (hf : AEStronglyMeasurable f μ) :
     ∫ x in {x | f x < 0}, f x ∂μ = ∫ x in {x | f x ≤ 0}, f x ∂μ := by
   have h_union : {x | f x ≤ 0} = {x | f x < 0} ∪ {x | f x = 0} := by
@@ -551,8 +551,7 @@ theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
   have h0 : ∫ (x : X), f x ∂μ - ∫ x in s, f x ∂μ = ∫ x in sᶜ, f x ∂μ := by
     rw [sub_eq_iff_eq_add, add_comm, integral_add_compl hs hf1]
   have h1 : ∫ x in sᶜ, ‖f x‖ ∂μ ≤ ∫ _ in sᶜ, C ∂μ :=
-    integral_mono_ae (Integrable.restrict (Integrable.norm hf1))
-      (integrable_const C) (ae_restrict_of_ae hf)
+    integral_mono_ae hf1.norm.restrict (integrable_const C) (ae_restrict_of_ae hf)
   have h2 : ∫ _ in sᶜ, C ∂μ = (μ sᶜ).toReal * C := by
     rw [setIntegral_const C, smul_eq_mul]
   rw [h0, ← h2]
@@ -1226,12 +1225,12 @@ theorem fst_integral [CompleteSpace F] {f : X → E × F} (hf : Integrable f μ)
 theorem snd_integral [CompleteSpace E] {f : X → E × F} (hf : Integrable f μ) :
     (∫ x, f x ∂μ).2 = ∫ x, (f x).2 ∂μ := by
   rw [← Prod.fst_swap, swap_integral]
-  exact fst_integral <| hf.snd.prod_mk hf.fst
+  exact fst_integral <| hf.snd.prodMk hf.fst
 
 theorem integral_pair [CompleteSpace E] [CompleteSpace F] {f : X → E} {g : X → F}
     (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ x, (f x, g x) ∂μ = (∫ x, f x ∂μ, ∫ x, g x ∂μ) :=
-  have := hf.prod_mk hg
+  have := hf.prodMk hg
   Prod.ext (fst_integral this) (snd_integral this)
 
 theorem integral_smul_const {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] [CompleteSpace E]
@@ -1315,7 +1314,7 @@ theorem setIntegral_withDensity_eq_setIntegral_smul₀ {f : X → ℝ≥0} {s : 
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
 
 theorem setIntegral_withDensity_eq_setIntegral_smul₀' [SFinite μ] {f : X → ℝ≥0} (s : Set X)
-    (hf : AEMeasurable f (μ.restrict s)) (g : X → E)  :
+    (hf : AEMeasurable f (μ.restrict s)) (g : X → E) :
     ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity' s, integral_withDensity_eq_integral_smul₀ hf]
 
@@ -1417,7 +1416,7 @@ lemma continuousOn_integral_bilinear_of_locally_integrable_of_compact_support
     (hfs : ∀ p, ∀ x, p ∈ s → x ∉ k → f p x = 0) (hg : IntegrableOn g k μ) :
     ContinuousOn (fun x ↦ ∫ y, L (g y) (f x y) ∂μ) s := by
   have A : ∀ p ∈ s, Continuous (f p) := fun p hp ↦ by
-    refine hf.comp_continuous (continuous_const.prod_mk continuous_id') fun y => ?_
+    refine hf.comp_continuous (.prodMk_right _) fun y => ?_
     simpa only [prodMk_mem_set_prod_eq, mem_univ, and_true] using hp
   intro q hq
   apply Metric.continuousWithinAt_iff'.2 (fun ε εpos ↦ ?_)

@@ -619,6 +619,30 @@ theorem contMDiffWithinAt_iff_nat {n : ℕ∞} :
   · exact contMDiffWithinAt_infty.2 fun n => h n le_top
   · exact h n le_rfl
 
+theorem contMDiffAt_iff_nat {n : ℕ∞} :
+    ContMDiffAt I I' n f x ↔ ∀ m : ℕ, (m : ℕ∞) ≤ n → ContMDiffAt I I' m f x := by
+  simp [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_nat]
+
+/-- A function is `C^n` within a set at a point iff it is `C^m` within this set at this point, for
+any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
+`C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
+theorem contMDiffWithinAt_iff_le_ne_infty :
+    ContMDiffWithinAt I I' n f s x ↔ ∀ m, m ≤ n → m ≠ ∞ → ContMDiffWithinAt I I' m f s x := by
+  refine ⟨fun h m hm h'm ↦ h.of_le hm, fun h ↦ ?_⟩
+  cases n with
+  | top =>
+    exact h _ le_rfl (by simp)
+  | coe n =>
+    exact contMDiffWithinAt_iff_nat.2 (fun m hm ↦ h _ (mod_cast hm) (by simp))
+
+/-- A function is `C^n`at a point iff it is `C^m`at this point, for
+any `m ≤ n` which is different from `∞`. This result is useful because, when `m ≠ ∞`, being
+`C^m` extends locally to a neighborhood, giving flexibility for local proofs. -/
+theorem contMDiffAt_iff_le_ne_infty :
+    ContMDiffAt I I' n f x ↔ ∀ m, m ≤ n → m ≠ ∞ → ContMDiffAt I I' m f x := by
+  simp only [← contMDiffWithinAt_univ]
+  rw [contMDiffWithinAt_iff_le_ne_infty]
+
 /-! ### Restriction to a smaller set -/
 
 theorem ContMDiffWithinAt.mono_of_mem_nhdsWithin
