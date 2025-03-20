@@ -690,7 +690,6 @@ theorem subset_union_of_subset_left {s t : Set α} (h : s ⊆ t) (u : Set α) : 
 theorem subset_union_of_subset_right {s u : Set α} (h : s ⊆ u) (t : Set α) : s ⊆ t ∪ u :=
   h.trans subset_union_right
 
--- Porting note: replaced `⊔` in RHS
 theorem union_congr_left (ht : t ⊆ s ∪ u) (hu : u ⊆ s ∪ t) : s ∪ t = s ∪ u :=
   sup_congr_left ht hu
 

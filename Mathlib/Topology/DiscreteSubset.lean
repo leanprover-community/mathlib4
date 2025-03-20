@@ -133,7 +133,7 @@ theorem discreteTopology_of_codiscreteWithin {U s : Set X} (h : s ∈ Filter.cod
   simp_all only [h x, Set.compl_union, compl_compl, Set.mem_inter_iff, Set.mem_compl_iff]
 
 /-- Helper lemma for `codiscreteWithin_iff_locallyFiniteComplementWithin`: A set `s` is
-codiscreteWithin `U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
+`codiscreteWithin U` iff every point `z ∈ U` has a punctured neighborhood that does not intersect
 `U \ s`. -/
 lemma codiscreteWithin_iff_locallyEmptyComplementWithin {s U : Set X} :
     s ∈ codiscreteWithin U ↔ ∀ z ∈ U, ∃ t ∈ 𝓝[≠] z, t ∩ (U \ s) = ∅ := by
