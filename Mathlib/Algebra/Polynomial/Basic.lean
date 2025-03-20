@@ -890,7 +890,7 @@ theorem sum_smul_index {S : Type*} [AddCommMonoid S] (p : R[X]) (b : R) (f : ℕ
     (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b * a) :=
   Finsupp.sum_smul_index hf
 
-theorem sum_smul_index' {S T : Type*} [SMulZeroClass T R] [AddCommMonoid S] (p : R[X]) (b : T)
+theorem sum_smul_index' {S T : Type*} [DistribSMul T R] [AddCommMonoid S] (p : R[X]) (b : T)
     (f : ℕ → R → S) (hf : ∀ i, f i 0 = 0) : (b • p).sum f = p.sum fun n a => f n (b • a) :=
   Finsupp.sum_smul_index' hf
 
