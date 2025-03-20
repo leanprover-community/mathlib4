@@ -91,10 +91,6 @@ theorem compatibility_N₂_N₁_karoubi :
       karoubiChainComplexEquivalence_functor_obj_X_p, N₂_obj_p_f, eqToHom_refl,
       PInfty_f_naturality_assoc, app_comp_p, PInfty_f_idem_assoc]
 
-#adaptation_note
-/-- This maxHeartbeats bump was adding for leanprover/lean4#7544,
-but can hopefully be removed again. -/
-set_option synthInstance.maxHeartbeats 40000 in
 /-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
