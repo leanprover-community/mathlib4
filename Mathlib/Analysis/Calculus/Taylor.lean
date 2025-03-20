@@ -443,13 +443,18 @@ theorem taylorCoeffWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
   simp only [taylorCoeffWithin, iteratedDerivWithin_eq_iteratedDeriv hf hs hx,
     iteratedDerivWithin_univ]
 
+theorem taylorWithin_eq {f : ℝ → ℝ} {x₀ : ℝ} {d : ℕ}
+    {s : Set ℝ} (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorWithin f d s x₀ = taylorWithin f d Set.univ x₀ := by
+  rw [taylorWithin, taylorWithin, Finset.sum_congr rfl (fun k hk => ?_)]
+  rw [taylorCoeffWithin_eq s hx hs (ContDiff.of_le hf ?_)]
+  rwa [Nat.cast_le, Nat.le_iff_lt_add_one, ←Finset.mem_range]
+
 theorem taylorWithinEval_eq {f : Real → Real} {x₀ : Real} {d : Nat}
-    (s : Set Real) (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff Real (d + 1) f) :
-  (taylorWithinEval f d s x₀) = (taylorWithinEval f d Set.univ x₀) := by
-  ext x; simp only [taylorWithinEval, taylorWithin]; congr 1
-  apply Finset.sum_congr rfl
-  intro k hk
-  rw [taylorCoeffWithin_eq s hx hs (ContDiff.of_le hf (by norm_cast; exact Finset.mem_range_le hk))]
+    {s : Set ℝ} (hx : x₀ ∈ s) (hs : UniqueDiffOn ℝ s) (hf : ContDiff ℝ d f) :
+    taylorWithinEval f d s x₀ = taylorWithinEval f d Set.univ x₀ := by
+  ext x
+  rw [taylorWithinEval, taylorWithinEval, taylorWithin_eq hx hs hf]
 
 /-- **Taylor's theorem** with the Lagrange form of the remainder for `x < x₀`.
 
