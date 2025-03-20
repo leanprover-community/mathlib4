@@ -99,8 +99,9 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
-/-- A pseudo metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying the
-triangle inequality.
+/-- A pseudo metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
+`dist x z ≤ dist x y + dist y z`.
 
 Note that we do not require `dist x y = 0 → x = y`. See `MetricSpace` for the analogous class with
 that stronger assumption.

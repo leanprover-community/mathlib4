@@ -35,8 +35,9 @@ universe u v w
 variable {α : Type u} {β : Type v} {X ι : Type*}
 variable [PseudoMetricSpace α]
 
-/-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying the triangle
-inequality and `dist x y = 0 → x = y`.
+/-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+`dist x y = 0 ↔ x = y`, commutativity `dist x y = dist y x`, and the triangle inequality
+`dist x z ≤ dist x y + dist y z`.
 
 See `PseudoMetricSpace` for the similar class without the  `dist x y = 0 → x = y` assumption.
 

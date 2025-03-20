@@ -60,7 +60,8 @@ def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x :
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩
 
 /-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
-satisfying the triangle inequality.
+satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
+inequality `edist x z ≤ edist x y + edist y z`.
 
 Note that we do not require `edist x y = 0 → x = y`. See `EMetricSpace` for the analogous class with
 that stronger assumption.
@@ -537,8 +538,9 @@ end Compact
 
 end EMetric
 
-/-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying the
-triangle inequality and `edist x y = 0 → x = y`.
+/-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying
+`edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
+`edist x z ≤ edist x y + edist y z`.
 
 See `PseudoEMetricSpace` for the similar class without the  `edist x y = 0 → x = y` assumption.
 
