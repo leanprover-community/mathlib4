@@ -93,9 +93,10 @@ def find (r : NamePrefixRel) (n₁ n₂ : Name) : Option (Name × Name) :=
   n₁.findPrefix fun n₁' => do
     let ns ← r.find? n₁'
     n₂.findPrefix fun n₂' =>
-      if ns.contains n₂'
-      then (n₁', n₂')
-      else none
+      if ns.contains n₂' then
+        (n₁', n₂')
+      else
+        none
 
 /-- Get a prefix of `n₁` that is related to any prefix of the names in `ns`; return the prefixes.
 
@@ -107,9 +108,10 @@ def findAny (r : NamePrefixRel) (n₁ : Name) (ns : Array Name) : Option (Name �
   n₁.findPrefix fun n₁' => do
     let ns ← r.find? n₁'
     for n₂' in prefixes do
-      if ns.contains n₂'
-      then return (n₁', n₂')
-      else pure ()
+      if ns.contains n₂' then
+        return (n₁', n₂')
+      else
+        pure ()
     none
 
 /-- Is a prefix of `n₁` related to a prefix of `n₂`? -/
