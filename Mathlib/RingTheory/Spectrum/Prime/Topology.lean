@@ -653,10 +653,13 @@ theorem maximalSpectrumToPiLocalization_surjective_of_discreteTopology :
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
-def MaximalSpectrum.toPiLocalizationEquivtoLocalizationEquiv :
+def _root_.MaximalSpectrum.toPiLocalizationEquiv :
     R ≃+* MaximalSpectrum.PiLocalization R :=
   .ofBijective _ ⟨MaximalSpectrum.toPiLocalization_injective R,
     maximalSpectrumToPiLocalization_surjective_of_discreteTopology R⟩
+
+@[deprecated (since := "2025-02-12")] noncomputable alias
+MaximalSpectrum.toPiLocalizationEquivtoLocalizationEquiv := MaximalSpectrum.toPiLocalizationEquiv
 
 theorem discreteTopology_iff_toPiLocalization_surjective {R} [CommSemiring R] :
     DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toPiLocalization R) :=
@@ -1037,6 +1040,10 @@ variable [CommSemiring R] [IsLocalRing R]
 /-- The closed point in the prime spectrum of a local ring. -/
 def closedPoint : PrimeSpectrum R :=
   ⟨maximalIdeal R, (maximalIdeal.isMaximal R).isPrime⟩
+
+instance : OrderTop (PrimeSpectrum R) where
+  top := closedPoint R
+  le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
 
 variable {R}
 

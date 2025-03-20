@@ -168,9 +168,7 @@ theorem summable_bernoulli_fourier {k : ℕ} (hk : 2 ≤ k) :
   refine Summable.mul_left _ <| .of_norm ?_
   have : (fun x : ℤ => ‖1 / (x : ℂ) ^ k‖) = fun x : ℤ => |1 / (x : ℝ) ^ k| := by
     ext1 x
-    rw [norm_eq_abs, ← Complex.abs_ofReal]
-    congr 1
-    norm_cast
+    simp only [one_div, norm_inv, norm_pow, norm_intCast, pow_abs, abs_inv]
   simp_rw [this]
   rwa [summable_abs_iff, Real.summable_one_div_int_pow]
 
@@ -354,8 +352,6 @@ theorem Polynomial.bernoulli_three_eval_one_quarter :
 -/
 theorem hasSum_L_function_mod_four_eval_three :
     HasSum (fun n : ℕ => (1 : ℝ) / (n : ℝ) ^ 3 * Real.sin (π * n / 2)) (π ^ 3 / 32) := by
-  -- Porting note: times out with
-  -- convert hasSum_one_div_nat_pow_mul_sin one_ne_zero (_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   apply (congr_arg₂ HasSum ?_ ?_).to_iff.mp <|
     hasSum_one_div_nat_pow_mul_sin one_ne_zero (?_ : 1 / 4 ∈ Icc (0 : ℝ) 1)
   · ext1 n

@@ -32,12 +32,12 @@ theorem map_coe_nnreal : ENat.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ �
   rfl
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
   Nat.castOrderEmbedding.withTopMap
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
   .ENatMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
 

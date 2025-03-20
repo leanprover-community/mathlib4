@@ -99,14 +99,6 @@ theorem injOn_natAbs_Iic : InjOn natAbs (Iic 0) :=
 
 end Intervals
 
-/-! ### `toNat` -/
-
-
-theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
-  | 0, _ => rfl
-  | (n + 1 : ℕ), h => (h.not_lt (by simp)).elim
-  | -[_+1], _ => rfl
-
 /-! ### bitwise ops
 
 This lemma is orphaned from `Data.Int.Bitwise` as it also requires material from `Data.Int.Order`.
@@ -122,15 +114,17 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
   · decide
 
 /-- Like `Int.ediv_emod_unique`, but permitting negative `b`. -/
-theorem ediv_emod_unique' {a b r q : Int} (h : b ≠ 0) :
+theorem ediv_emod_unique'' {a b r q : Int} (h : b ≠ 0) :
     a / b = q ∧ a % b = r ↔ r + b * q = a ∧ 0 ≤ r ∧ r < |b| := by
   constructor
   · intro ⟨rfl, rfl⟩
-    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt _ h⟩
+    exact ⟨emod_add_ediv a b, emod_nonneg _ h, emod_lt_abs _ h⟩
   · intro ⟨rfl, hz, hb⟩
     constructor
     · rw [Int.add_mul_ediv_left r q h, ediv_eq_zero_of_lt_abs hz hb]
       simp [Int.zero_add]
     · rw [add_mul_emod_self_left, ← emod_abs, emod_eq_of_lt hz hb]
+
+@[deprecated (since := "2025-03-10")] alias ediv_emod_unique' := ediv_emod_unique''
 
 end Int
