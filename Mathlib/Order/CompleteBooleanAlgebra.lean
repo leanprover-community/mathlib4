@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.Directed
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.CompleteLattice.Lemmas
+import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection.Basic
 
 /-!
