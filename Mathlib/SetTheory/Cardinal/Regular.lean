@@ -121,21 +121,9 @@ theorem iSup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegu
     (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord_lift (by rwa [hc.cof_eq])
 
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_lift_of_isRegular (since := "2024-08-27")]
-theorem sup_lt_ord_lift_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c)
-    (hι : Cardinal.lift.{v, u} #ι < c) : (∀ i, f i < c.ord) → Ordinal.sup.{u, v} f < c.ord :=
-  iSup_lt_ord_lift_of_isRegular hc hι
-
 theorem iSup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
     (∀ i, f i < c.ord) → iSup f < c.ord :=
   iSup_lt_ord (by rwa [hc.cof_eq])
-
-set_option linter.deprecated false in
-@[deprecated iSup_lt_ord_of_isRegular (since := "2024-08-27")]
-theorem sup_lt_ord_of_isRegular {ι} {f : ι → Ordinal} {c} (hc : IsRegular c) (hι : #ι < c) :
-    (∀ i, f i < c.ord) → Ordinal.sup f < c.ord :=
-  iSup_lt_ord_of_isRegular hc hι
 
 theorem blsub_lt_ord_lift_of_isRegular {o : Ordinal} {f : ∀ a < o, Ordinal} {c} (hc : IsRegular c)
     (ho : Cardinal.lift.{v, u} o.card < c) :

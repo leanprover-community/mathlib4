@@ -131,3 +131,16 @@ theorem orderOf_neg_one [Nontrivial R] : orderOf (-1 : R) = if ringChar R = 2 th
   simpa [neg_one_eq_one_iff] using h
 
 end ringChar
+
+section CharP
+
+variable [Ring R]
+
+lemma CharP.orderOf_eq_two_iff [Nontrivial R] [NoZeroDivisors R] (p : ℕ)
+    (hp : p ≠ 2) [CharP R p] {x : R} : orderOf x = 2 ↔ x = -1 := by
+  simp only [orderOf_eq_prime_iff, sq_eq_one_iff, ne_eq, or_and_right, and_not_self, false_or,
+    and_iff_left_iff_imp]
+  rintro rfl
+  exact fun h ↦ hp ((ringChar.eq R p) ▸ (neg_one_eq_one_iff.1 h))
+
+end CharP
