@@ -424,11 +424,11 @@ TODO: show the more general version without `hA : IsUnit A.det` as
 -/
 theorem det_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι]
     {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
-    (A + col ι u * replicateRow ι v).det = A.det * (1 + replicateRow ι v * A⁻¹ * col ι u).det := by
+    (A + replicateCol ι u * replicateRow ι v).det =
+    A.det * (1 + replicateRow ι v * A⁻¹ * replicateCol ι u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
-  rwa [← Matrix.mul_nonsing_inv_cancel_left A (col ι u * replicateRow ι v),
-    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm,
-    ← Matrix.mul_assoc]
+  rwa [← Matrix.mul_nonsing_inv_cancel_left A (replicateCol ι u * replicateRow ι v),
+    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm, ← Matrix.mul_assoc]
 
 @[deprecated (since := "2025-03-20")] alias
   det_add_col_mul_row := det_add_replicateCol_mul_replicateRow

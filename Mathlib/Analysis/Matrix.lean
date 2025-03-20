@@ -134,7 +134,7 @@ instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m �
 theorem nnnorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v‖₊ := by
   simp [nnnorm_def, Pi.nnnorm_def]
 
-@[deprecated (since := "2025-03-20")] alias nnnorm_col := nnorm_replicateCol
+@[deprecated (since := "2025-03-20")] alias nnnorm_col := nnnorm_replicateCol
 
 @[simp]
 theorem norm_replicateCol (v : m → α) : ‖replicateCol ι v‖ = ‖v‖ :=
@@ -271,7 +271,7 @@ theorem linfty_opNNNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊
 
 @[simp]
 theorem linfty_opNorm_replicateCol (v : m → α) : ‖replicateCol ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_col v
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_replicateCol v
 
 @[deprecated (since := "2025-03-20")] alias linfty_opNorm_col := linfty_opNorm_replicateCol
 
@@ -283,7 +283,7 @@ theorem linfty_opNNNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊
 
 @[simp]
 theorem linfty_opNorm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ∑ i, ‖v i‖ :=
-  (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_row v).trans <| by simp [NNReal.coe_sum]
+  (congr_arg ((↑) : ℝ≥0 → ℝ) <| linfty_opNNNorm_replicateRow v).trans <| by simp [NNReal.coe_sum]
 
 @[deprecated (since := "2025-03-20")] alias linfty_opNorm_row := linfty_opNNNorm_replicateRow
 
