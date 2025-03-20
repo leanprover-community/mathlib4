@@ -27,7 +27,7 @@ variable {R : Type*} {α : Type v} {β : Type w}
 namespace Matrix
 
 /--
-`Matrix.replicateCol ι u` the matrix with all columns equal to the vector `u`.
+`Matrix.replicateCol ι u` is the matrix with all columns equal to the vector `u`.
 
 To get a column matrix with exactly one column,
 `Matrix.replicateCol (Fin 1) u` is the canonical choice.
