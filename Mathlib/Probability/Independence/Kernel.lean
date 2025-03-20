@@ -956,8 +956,7 @@ lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β
   have h_ae i := ae_of_ae_map (hf i) (hg i).ae_eq_mk
   refine iIndepFun.congr' h fun i ↦ ?_
   filter_upwards [Measure.ae_ae_of_ae_comp (h_ae i)] with a ha
-  filter_upwards [ha] with ω hω
-  simpa [Function.comp_apply] using hω.symm
+  filter_upwards [ha] with ω hω using hω.symm
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :
@@ -998,23 +997,17 @@ theorem IndepFun.comp₀ {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hfg : IndepFun f g κ μ)
     (hf : AEMeasurable f (κ ∘ₘ μ)) (hg : AEMeasurable g (κ ∘ₘ μ))
     (hφ : AEMeasurable φ ((κ ∘ₘ μ).map f)) (hψ : AEMeasurable ψ ((κ ∘ₘ μ).map g)) :
-    IndepFun (φ ∘ f) (ψ ∘ g) κ μ := by
-  have h : IndepFun ((hφ.mk φ) ∘ (hf.mk f)) ((hψ.mk ψ) ∘ (hg.mk g)) κ μ := by
-    refine IndepFun.comp ?_ hφ.measurable_mk hψ.measurable_mk
-    exact hfg.congr' (Measure.ae_ae_of_ae_comp hf.ae_eq_mk) (Measure.ae_ae_of_ae_comp hg.ae_eq_mk)
+  have h : IndepFun ((hφ.mk φ) ∘ f) ((hψ.mk ψ) ∘ g) κ μ := by
+    refine IndepFun.comp hfg hφ.measurable_mk hψ.measurable_mk
   have hφ_ae := ae_of_ae_map hf hφ.ae_eq_mk
   have hψ_ae := ae_of_ae_map hg hψ.ae_eq_mk
   refine IndepFun.congr' h ?_ ?_
-  · filter_upwards [Measure.ae_ae_of_ae_comp (hφ_ae), Measure.ae_ae_of_ae_comp hf.ae_eq_mk]
-      with a haφ haf
-    filter_upwards [haφ, haf] with ω hωφ hωf
-    simp only [Function.comp_apply]
-    rw [← hωf, ← hωφ]
-  · filter_upwards [Measure.ae_ae_of_ae_comp (hψ_ae), Measure.ae_ae_of_ae_comp hg.ae_eq_mk]
-      with a haψ hag
-    filter_upwards [haψ, hag] with ω hωψ hωg
-    simp only [Function.comp_apply]
-    rw [← hωg, ← hωψ]
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hφ_ae)] with a haφ
+    filter_upwards [haφ] with ω hωφ
+    simp [hωφ]
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hψ_ae)] with a haψ
+    filter_upwards [haψ] with ω hωψ
+    simp [hωψ]
 
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : IndepFun f g κ μ) :
@@ -1135,14 +1128,14 @@ theorem iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T)
     refine iIndepFun.indepFun_finset S T hST ?_ fun i ↦ (hf_meas i).measurable_mk
     exact iIndepFun.congr' hf_Indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
   refine IndepFun.congr' h ?_ ?_
-  · have : ∀ᵐ (a : α) ∂μ, ∀ (i : S), f i =ᵐ[κ a] (hf_meas i).mk  := by
+  · have : ∀ᵐ (a : α) ∂μ, ∀ (i : S), f i =ᵐ[κ a] (hf_meas i).mk := by
       rw [ae_all_iff]
       exact fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
     filter_upwards [this] with a ha
     filter_upwards [ae_all_iff.2 ha] with b hb
     ext i
     exact (hb i).symm
-  · have : ∀ᵐ (a : α) ∂μ, ∀ (i : T), f i =ᵐ[κ a] (hf_meas i).mk  := by
+  · have : ∀ᵐ (a : α) ∂μ, ∀ (i : T), f i =ᵐ[κ a] (hf_meas i).mk := by
       rw [ae_all_iff]
       exact fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
     filter_upwards [this] with a ha
@@ -1255,8 +1248,7 @@ lemma iIndepFun.indepFun_mul_left₀ (hf_indep : iIndepFun f κ μ)
   · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk,
       Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk] with a hi hj
     filter_upwards [hi, hj] with ω hωi hωj
-    simp only [Pi.mul_apply]
-    rw [← hωi, ← hωj]
+    simp [hωi, hωj]
   · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk] with a hk
     filter_upwards [hk] with ω hωk using by rw [hωk]
 
@@ -1279,8 +1271,7 @@ lemma iIndepFun.indepFun_mul_right₀ (hf_indep : iIndepFun f κ μ)
   · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk,
       Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk] with a hj hk
     filter_upwards [hj, hk] with ω hωj hωk
-    simp only [Pi.mul_apply]
-    rw [← hωj, ← hωk]
+    simp [hωj, hωk]
 
 @[to_additive]
 lemma iIndepFun.indepFun_mul_mul (hf_indep : iIndepFun f κ μ)
@@ -1303,13 +1294,11 @@ lemma iIndepFun.indepFun_mul_mul₀ (hf_indep : iIndepFun f κ μ)
   · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk,
       Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk] with a hi hj
     filter_upwards [hi, hj] with ω hωi hωj
-    simp only [Pi.mul_apply]
-    rw [← hωi, ← hωj]
+    simp [hωi, hωj]
   · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk,
       Measure.ae_ae_of_ae_comp (hf_meas l).ae_eq_mk] with a hk hl
     filter_upwards [hk, hl] with ω hωk hωl
-    simp only [Pi.mul_apply]
-    rw [← hωk, ← hωl]
+    simp [hωk, hωl]
 
 end Mul
 
