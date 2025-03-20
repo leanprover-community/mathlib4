@@ -252,22 +252,22 @@ section OrientableManifold
 
 class IsOrientedManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [TopologicalSpace H]
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*) [TopologicalSpace M]
-    [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H] (O : M → SignType) extends
-  HasGroupoid M (orientationPreservingGroupoid I) : Prop where
-  oriented  x y : O x = O y ↔ OrientationPreserving ((chartAt H x).symm.trans (chartAt H y))
-    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
-  reversing x y : O x ≠ O y ↔ OrientationReversing ((chartAt H x).symm.trans (chartAt H y))
-    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
+    [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H] (O : atlas H M → SignType)
+    extends HasGroupoid M (orientationPreservingGroupoid I) where
+  oriented  x y : O x = O y ↔ OrientationPreserving (x.val.symm.trans y.val)
+    (Set.range x.val ∩ Set.range y.val)
+  reversing x y : O x ≠ O y ↔ OrientationReversing (x.val.symm.trans y.val)
+    (Set.range x.val ∩ Set.range y.val)
 
 class IsOrientedSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*)
     [TopologicalSpace M] [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H] (n : ℕ∞)
-    (O : M → SignType) extends
-  HasGroupoid M (contDiffOrientationPreservingGroupoid n I) : Prop where
-  oriented  x y : O x = O y ↔ OrientationPreserving ((chartAt H x).symm.trans (chartAt H y))
-    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
-  reversing x y : O x ≠ O y ↔ OrientationReversing ((chartAt H x).symm.trans (chartAt H y))
-    (Set.range (chartAt H x) ∩ Set.range (chartAt H y))
+    (O : atlas H M → SignType)
+    extends HasGroupoid M (contDiffOrientationPreservingGroupoid n I) where
+  oriented  x y : O x = O y ↔ OrientationPreserving (x.val.symm.trans y.val)
+    (Set.range x.val ∩ Set.range y.val)
+  reversing x y : O x ≠ O y ↔ OrientationReversing (x.val.symm.trans y.val)
+    (Set.range x.val ∩ Set.range y.val)
 
 /-- Typeclass defining orientable manifolds: a finite-dimensional (topological) manifold
 is orientable if and only if it admits an orientable atlas. -/
