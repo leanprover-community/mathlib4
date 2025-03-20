@@ -3,7 +3,7 @@ Copyright (c) 2022 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.Lebesgue
+import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 import Mathlib.Topology.MetricSpace.ThickenedIndicator
 
 /-!
@@ -34,7 +34,7 @@ convergence in distribution for random variables behave somewhat well in spaces 
 
 -/
 
-open MeasureTheory Topology Metric Filter Set ENNReal NNReal
+open BoundedContinuousFunction MeasureTheory Topology Metric Filter Set ENNReal NNReal
 open scoped Topology ENNReal NNReal BoundedContinuousFunction
 
 section auxiliary
@@ -216,8 +216,8 @@ theorem measure_isClosed_eq_of_forall_lintegral_eq_of_isFiniteMeasure {Ω : Type
   simp_rw [h] at obs_μ
   exact tendsto_nhds_unique obs_μ obs_ν
 
-/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
-respect to both agree. -/
+/-- Two finite Borel measures are equal if the integrals of all non-negative bounded continuous
+functions with respect to both agree. -/
 theorem ext_of_forall_lintegral_eq_of_IsFiniteMeasure {Ω : Type*}
     [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
     [BorelSpace Ω] {μ ν : Measure Ω} [IsFiniteMeasure μ]
@@ -228,6 +228,21 @@ theorem ext_of_forall_lintegral_eq_of_IsFiniteMeasure {Ω : Type*}
   · exact fun F F_closed ↦ key F_closed
   · exact key isClosed_univ
   · rw [BorelSpace.measurable_eq (α := Ω), borel_eq_generateFrom_isClosed]
+
+/-- Two finite Borel measures are equal if the integrals of all bounded continuous functions with
+respect to both agree. -/
+theorem ext_of_forall_integral_eq_of_IsFiniteMeasure {Ω : Type*}
+    [MeasurableSpace Ω] [TopologicalSpace Ω] [HasOuterApproxClosed Ω]
+    [BorelSpace Ω] {μ ν : Measure Ω} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+    (h : ∀ (f : Ω →ᵇ ℝ), ∫ x, f x ∂μ = ∫ x, f x ∂ν) :
+    μ = ν := by
+  apply ext_of_forall_lintegral_eq_of_IsFiniteMeasure
+  intro f
+  apply (ENNReal.toReal_eq_toReal_iff' (lintegral_lt_top_of_nnreal μ f).ne
+      (lintegral_lt_top_of_nnreal ν f).ne).mp
+  rw [toReal_lintegral_coe_eq_integral f μ, toReal_lintegral_coe_eq_integral f ν]
+  exact h ⟨⟨fun x => (f x).toReal, Continuous.comp' NNReal.continuous_coe f.continuous⟩,
+      f.map_bounded'⟩
 
 end MeasureTheory -- namespace
 

@@ -221,7 +221,7 @@ variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
 theorem IsRoot.map {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
   rw [IsRoot, eval_map, eval₂_hom, h.eq_zero, f.map_zero]
 
-theorem IsRoot.of_map {R} [CommRing R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot (p.map f) (f x))
+theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot (p.map f) (f x))
     (hf : Function.Injective f) : IsRoot p x := by
   rwa [IsRoot, ← (injective_iff_map_eq_zero' f).mp hf, ← eval₂_hom, ← eval_map]
 

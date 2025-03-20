@@ -101,7 +101,6 @@ theorem basis_le_iff {J K : TwoSidedIdeal R} {d e : σ →₀ ℕ} (hK : K ≠ �
   · rintro ⟨hJK, hed⟩
     exact basis_le hJK hed
 
-
 variable [TopologicalSpace R]
 
 -- We endow MvPowerSeries σ R with the product topology.

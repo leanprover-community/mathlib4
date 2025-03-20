@@ -157,6 +157,26 @@ theorem IsClique.of_induce {S : Subgraph G} {F : Set α} {A : Set F}
   intro _ ⟨_, ainA⟩ _ ⟨_, binA⟩ anb
   exact S.adj_sub (c ainA binA (Subtype.coe_ne_coe.mp anb)).2.2
 
+lemma IsClique.sdiff_of_sup_edge {v w : α} {s : Set α} (hc : (G ⊔ edge v w).IsClique s) :
+    G.IsClique (s \ {v}) := by
+  intro _ hx _ hy hxy
+  have := hc hx.1 hy.1 hxy
+  simp_all [sup_adj, edge_adj]
+
+lemma isClique_sup_edge_of_ne_sdiff {v w : α} {s : Set α} (h : v ≠ w ) (hv : G.IsClique (s \ {v}))
+    (hw : G.IsClique (s \ {w})) : (G ⊔ edge v w).IsClique s := by
+  intro x hx y hy hxy
+  by_cases h' : x ∈ s \ {v} ∧ y ∈ s \ {v} ∨ x ∈ s \ {w} ∧ y ∈ s \ {w}
+  · obtain (⟨hx, hy⟩ | ⟨hx, hy⟩) := h'
+    · exact hv.mono le_sup_left hx hy hxy
+    · exact hw.mono le_sup_left hx hy hxy
+  · exact Or.inr ⟨by by_cases x = v <;> aesop, hxy⟩
+
+lemma isClique_sup_edge_of_ne_iff {v w : α} {s : Set α} (h : v ≠ w) :
+    (G ⊔ edge v w).IsClique s ↔ G.IsClique (s \ {v}) ∧ G.IsClique (s \ {w}) :=
+  ⟨fun h' ↦ ⟨h'.sdiff_of_sup_edge, (edge_comm .. ▸ h').sdiff_of_sup_edge⟩,
+    fun h' ↦ isClique_sup_edge_of_ne_sdiff h h'.1 h'.2⟩
+
 end Clique
 
 /-! ### `n`-cliques -/
@@ -273,6 +293,11 @@ theorem IsNClique.of_induce {S : Subgraph G} {F : Set α} {s : Finset { x // x �
   rw [isNClique_iff] at cc ⊢
   simp only [Subgraph.induce_verts, coe_map, card_map]
   exact ⟨cc.left.of_induce, cc.right⟩
+
+lemma IsNClique.erase_of_sup_edge_of_mem [DecidableEq α] {v w : α} {s : Finset α} {n : ℕ}
+    (hc : (G ⊔ edge v w).IsNClique n s) (hx : v ∈ s) : G.IsNClique (n - 1) (s.erase v) where
+  isClique := coe_erase v _ ▸ hc.1.sdiff_of_sup_edge
+  card_eq  := by rw [card_erase_of_mem hx, hc.2]
 
 end NClique
 
@@ -410,35 +435,18 @@ theorem cliqueFree_two : G.CliqueFree 2 ↔ G = ⊥ := by
   · rintro rfl
     exact cliqueFree_bot le_rfl
 
+lemma CliqueFree.mem_of_sup_edge_isNClique {x y : α} {t : Finset α} {n : ℕ} (h : G.CliqueFree n)
+    (hc : (G ⊔ edge x y).IsNClique n t) : x ∈ t := by
+  by_contra! hf
+  have ht : (t : Set α) \ {x} = t := sdiff_eq_left.mpr <| Set.disjoint_singleton_right.mpr hf
+  exact h t ⟨ht ▸ hc.1.sdiff_of_sup_edge, hc.2⟩
+
+open Classical in
 /-- Adding an edge increases the clique number by at most one. -/
 protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
-    (G ⊔ edge v w).CliqueFree (n + 1) := by
-  contrapose h
-  obtain ⟨f, ha⟩ := topEmbeddingOfNotCliqueFree h
-  simp only [ne_eq, top_adj] at ha
-  rw [not_cliqueFree_iff]
-  by_cases mw : w ∈ Set.range f
-  · obtain ⟨x, hx⟩ := mw
-    use ⟨f ∘ x.succAboveEmb, f.2.comp Fin.succAbove_right_injective⟩
-    intro a b
-    simp_rw [Embedding.coeFn_mk, comp_apply, Fin.succAboveEmb_apply, top_adj]
-    have hs := @ha (x.succAbove a) (x.succAbove b)
-    have ia : w ≠ f (x.succAbove a) :=
-      (hx ▸ f.apply_eq_iff_eq x (x.succAbove a)).ne.mpr (x.succAbove_ne a).symm
-    have ib : w ≠ f (x.succAbove b) :=
-      (hx ▸ f.apply_eq_iff_eq x (x.succAbove b)).ne.mpr (x.succAbove_ne b).symm
-    rw [sup_adj, edge_adj] at hs
-    simp only [ia.symm, ib.symm, and_false, false_and, or_false] at hs
-    rw [hs, Fin.succAbove_right_inj]
-  · use ⟨f ∘ Fin.succEmb n, (f.2.of_comp_iff _).mpr (Fin.succ_injective _)⟩
-    intro a b
-    simp only [Fin.val_succEmb, Embedding.coeFn_mk, comp_apply, top_adj]
-    have hs := @ha a.succ b.succ
-    have ia : f a.succ ≠ w := by simp_all
-    have ib : f b.succ ≠ w := by simp_all
-    rw [sup_adj, edge_adj] at hs
-    simp only [ia, ib, and_false, false_and, or_false] at hs
-    rw [hs, Fin.succ_inj]
+   (G ⊔ edge v w).CliqueFree (n + 1) :=
+  fun _ hs ↦ (hs.erase_of_sup_edge_of_mem <|
+    (h.mono n.le_succ).mem_of_sup_edge_isNClique hs).not_cliqueFree h
 
 end CliqueFree
 

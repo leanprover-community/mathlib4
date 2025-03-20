@@ -213,7 +213,9 @@ theorem absolutelyContinuous_map_mul_right (g : G) : μ ≪ map (· * g) μ := b
 @[to_additive]
 theorem absolutelyContinuous_map_div_left (g : G) : μ ≪ map (fun h => g / h) μ := by
   simp_rw [div_eq_mul_inv]
-  erw [← map_map (measurable_const_mul g) measurable_inv]
+  have := map_map (μ := μ) (measurable_const_mul g) measurable_inv
+  simp only [Function.comp_def] at this
+  rw [← this]
   conv_lhs => rw [← map_mul_left_eq_self μ g]
   exact (absolutelyContinuous_inv μ).map (measurable_const_mul g)
 
