@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Defs
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -603,16 +604,13 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
         List.recOn L (by simp)
           (by simp +contextual [List.map_cons, add_comm])⟩
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
   gc _s _t := closure_le
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
-
-variable {R}
 
 /-- Closure of a subring `S` equals `S`. -/
 @[simp]
@@ -927,7 +925,7 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   induction' hd with hd tl ih
   · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
   rw [List.forall_mem_cons] at HL
-  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> cases' HL.1 with hhd hhd
+  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> rcases HL.1 with hhd | hhd
   · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inl <| by rw [List.prod_cons, List.prod_cons, HP]⟩
@@ -1071,3 +1069,8 @@ theorem comap_map_eq_self_of_injective
   SetLike.coe_injective (Set.preimage_image_eq _ hf)
 
 end Subring
+
+theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
+    (k : R) * g ∈ G := by
+  convert AddSubgroup.zsmul_mem G h k using 1
+  rw [zsmul_eq_mul]

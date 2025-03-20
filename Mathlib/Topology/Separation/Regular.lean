@@ -351,7 +351,7 @@ section T3
 
 /-- A T₃ space is a T₀ space which is a regular space. Any T₃ space is a T₁ space, a T₂ space, and
 a T₂.₅ space. -/
-class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
+class T3Space (X : Type u) [TopologicalSpace X] : Prop extends T0Space X, RegularSpace X
 
 instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
 
@@ -449,7 +449,6 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
-set_option pp.universes true in
 /-- A regular topological space with a Lindelöf topology is a normal space. A consequence of e.g.
 Corollaries 20.8 and 20.10 of [Willard's *General Topology*][zbMATH02107988] (without the
 assumption of Hausdorff). -/
@@ -468,7 +467,7 @@ end NormalSpace
 section Normality
 
 /-- A T₄ space is a normal T₁ space. -/
-class T4Space (X : Type u) [TopologicalSpace X] extends T1Space X, NormalSpace X : Prop
+class T4Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, NormalSpace X
 
 instance (priority := 100) [T1Space X] [NormalSpace X] : T4Space X := ⟨⟩
 
@@ -545,7 +544,7 @@ instance ULift.instCompletelyNormalSpace [CompletelyNormalSpace X] :
   IsEmbedding.uliftDown.completelyNormalSpace
 
 /-- A T₅ space is a completely normal T₁ space. -/
-class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNormalSpace X : Prop
+class T5Space (X : Type u) [TopologicalSpace X] : Prop extends T1Space X, CompletelyNormalSpace X
 
 theorem Topology.IsEmbedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y}
     (he : IsEmbedding e) : T5Space X where
@@ -608,8 +607,8 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
     have H1 := (hu.union hv).isClosed_compl.isCompact.inter_iInter_nonempty
       (fun s : { s : Set X // IsClopen s ∧ x ∈ s } => s) fun s => s.2.1.1
     rw [← not_disjoint_iff_nonempty_inter, imp_not_comm, not_forall] at H1
-    cases' H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
-      with si H2
+    obtain ⟨si, H2⟩ :=
+      H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
     refine ⟨⋂ U ∈ si, Subtype.val U, ?_, ?_, ?_⟩
     · exact isClopen_biInter_finset fun s _ => s.2.1
     · exact mem_iInter₂.2 fun s _ => s.2.2
@@ -652,7 +651,7 @@ instance ConnectedComponents.t2 [T2Space X] [CompactSpace X] : T2Space (Connecte
     have h :=
       (isClosed_connectedComponent (α := X)).isCompact.elim_finite_subfamily_closed
         _ (fun s : { s : Set X // IsClopen s ∧ b ∈ s } => s.2.1.1) h
-    cases' h with fin_a ha
+    obtain ⟨fin_a, ha⟩ := h
     -- This clopen and its complement will separate the connected components of `a` and `b`
     set U : Set X := ⋂ (i : { s // IsClopen s ∧ b ∈ s }) (_ : i ∈ fin_a), i
     have hU : IsClopen U := isClopen_biInter_finset fun i _ => i.2.1

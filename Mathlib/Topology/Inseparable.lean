@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Yury Kudryashov
 -/
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.Maps.OpenQuotient
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Inseparable points in a topological space
@@ -528,12 +528,9 @@ theorem IsOpen.not_inseparable (hs : IsOpen s) (hx : x ∈ s) (hy : y ∉ s) : �
 In this section we define the quotient of a topological space by the `Inseparable` relation.
 -/
 
-
-variable (X)
-
+variable (X) in
 instance : TopologicalSpace (SeparationQuotient X) := instTopologicalSpaceQuotient
 
-variable {X}
 variable {t : Set (SeparationQuotient X)}
 
 namespace SeparationQuotient

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Analysis.InnerProductSpace.LinearMap
+import Mathlib.MeasureTheory.Function.LpSpace.ContinuousFunctions
 import Mathlib.MeasureTheory.Function.StronglyMeasurable.Inner
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
@@ -34,20 +35,29 @@ section
 
 variable {α F : Type*} {m : MeasurableSpace α} {μ : Measure α} [NormedAddCommGroup F]
 
-theorem Memℒp.integrable_sq {f : α → ℝ} (h : Memℒp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
-  simpa [← memℒp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.ofNat_ne_top
+theorem MemLp.integrable_sq {f : α → ℝ} (h : MemLp f 2 μ) : Integrable (fun x => f x ^ 2) μ := by
+  simpa [← memLp_one_iff_integrable] using h.norm_rpow two_ne_zero ENNReal.ofNat_ne_top
 
-theorem memℒp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
-    Memℒp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
-  rw [← memℒp_one_iff_integrable]
-  convert (memℒp_norm_rpow_iff hf two_ne_zero ENNReal.ofNat_ne_top).symm
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.integrable_sq := MemLp.integrable_sq
+
+theorem memLp_two_iff_integrable_sq_norm {f : α → F} (hf : AEStronglyMeasurable f μ) :
+    MemLp f 2 μ ↔ Integrable (fun x => ‖f x‖ ^ 2) μ := by
+  rw [← memLp_one_iff_integrable]
+  convert (memLp_norm_rpow_iff hf two_ne_zero ENNReal.ofNat_ne_top).symm
   · simp
   · rw [div_eq_mul_inv, ENNReal.mul_inv_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
-theorem memℒp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
-    Memℒp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
-  convert memℒp_two_iff_integrable_sq_norm hf using 3
+@[deprecated (since := "2025-02-21")]
+alias memℒp_two_iff_integrable_sq_norm := memLp_two_iff_integrable_sq_norm
+
+theorem memLp_two_iff_integrable_sq {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
+    MemLp f 2 μ ↔ Integrable (fun x => f x ^ 2) μ := by
+  convert memLp_two_iff_integrable_sq_norm hf using 3
   simp
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp_two_iff_integrable_sq := memLp_two_iff_integrable_sq
 
 end
 
@@ -58,25 +68,31 @@ variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpac
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a => ⟪c, f a⟫) p μ :=
+theorem MemLp.const_inner (c : E) {f : α → E} (hf : MemLp f p μ) : MemLp (fun a => ⟪c, f a⟫) p μ :=
   hf.of_le_mul (AEStronglyMeasurable.inner aestronglyMeasurable_const hf.1)
     (Eventually.of_forall fun _ => norm_inner_le_norm _ _)
 
-theorem Memℒp.inner_const {f : α → E} (hf : Memℒp f p μ) (c : E) : Memℒp (fun a => ⟪f a, c⟫) p μ :=
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.const_inner := MemLp.const_inner
+
+theorem MemLp.inner_const {f : α → E} (hf : MemLp f p μ) (c : E) : MemLp (fun a => ⟪f a, c⟫) p μ :=
   hf.of_le_mul (c := ‖c‖) (AEStronglyMeasurable.inner hf.1 aestronglyMeasurable_const)
     (Eventually.of_forall fun x => by rw [mul_comm]; exact norm_inner_le_norm _ _)
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.inner_const := MemLp.inner_const
 
 variable {f : α → E}
 
 @[fun_prop]
 theorem Integrable.const_inner (c : E) (hf : Integrable f μ) :
     Integrable (fun x => ⟪c, f x⟫) μ := by
-  rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
+  rw [← memLp_one_iff_integrable] at hf ⊢; exact hf.const_inner c
 
 @[fun_prop]
 theorem Integrable.inner_const (hf : Integrable f μ) (c : E) :
     Integrable (fun x => ⟪f x, c⟫) μ := by
-  rw [← memℒp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
+  rw [← memLp_one_iff_integrable] at hf ⊢; exact hf.inner_const c
 
 variable [CompleteSpace E] [NormedSpace ℝ E]
 
@@ -85,10 +101,6 @@ theorem _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
   ((innerSL 𝕜 c).restrictScalars ℝ).integral_comp_comm hf
 
 variable (𝕜)
-
--- variable binder update doesn't work for lemmas which refer to `𝕜` only via the notation
--- Porting note: removed because it causes ambiguity in the lemma below
--- local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 theorem _root_.integral_eq_zero_of_forall_integral_inner_eq_zero (f : α → E) (hf : Integrable f μ)
     (hf_int : ∀ c : E, ∫ x, ⟪c, f x⟫ ∂μ = 0) : ∫ x, f x ∂μ = 0 := by
@@ -255,13 +267,12 @@ open scoped BoundedContinuousFunction ComplexConjugate
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 (α →₂[μ] 𝕜) _ x y
 
--- Porting note: added `(E := 𝕜)`
 /-- For bounded continuous functions `f`, `g` on a finite-measure topological space `α`, the L^2
 inner product is the integral of their pointwise inner product. -/
 theorem BoundedContinuousFunction.inner_toLp (f g : α →ᵇ 𝕜) :
-    ⟪BoundedContinuousFunction.toLp (E := 𝕜) 2 μ 𝕜 f,
-        BoundedContinuousFunction.toLp (E := 𝕜) 2 μ 𝕜 g⟫ =
-      ∫ x, conj (f x) * g x ∂μ := by
+    ⟪BoundedContinuousFunction.toLp 2 μ 𝕜 f,
+        BoundedContinuousFunction.toLp 2 μ 𝕜 g⟫ =
+      ∫ x, g x * conj (f x) ∂μ := by
   apply integral_congr_ae
   have hf_ae := f.coeFn_toLp 2 μ 𝕜
   have hg_ae := g.coeFn_toLp 2 μ 𝕜
@@ -275,9 +286,8 @@ variable [CompactSpace α]
 inner product is the integral of their pointwise inner product. -/
 theorem ContinuousMap.inner_toLp (f g : C(α, 𝕜)) :
     ⟪ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 f, ContinuousMap.toLp (E := 𝕜) 2 μ 𝕜 g⟫ =
-      ∫ x, conj (f x) * g x ∂μ := by
+      ∫ x, g x * conj (f x) ∂μ := by
   apply integral_congr_ae
-  -- Porting note: added explicitly passed arguments
   have hf_ae := f.coeFn_toLp (p := 2) (𝕜 := 𝕜) μ
   have hg_ae := g.coeFn_toLp (p := 2) (𝕜 := 𝕜) μ
   filter_upwards [hf_ae, hg_ae] with _ hf hg

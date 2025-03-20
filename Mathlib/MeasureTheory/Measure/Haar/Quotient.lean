@@ -54,7 +54,7 @@ section
 @[to_additive "Measurability of the action of the additive topological group `G` on the left-coset
   space `G / Γ`."]
 instance QuotientGroup.measurableSMul {G : Type*} [Group G] {Γ : Subgroup G} [MeasurableSpace G]
-    [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
+    [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [BorelSpace (G ⧸ Γ)] :
     MeasurableSMul G (G ⧸ Γ) where
   measurable_const_smul g := (continuous_const_smul g).measurable
   measurable_smul_const _ := (continuous_id.smul continuous_const).measurable
@@ -63,7 +63,7 @@ end
 
 section smulInvariantMeasure
 
-variable {G : Type*} [Group G] [MeasurableSpace G]  (ν : Measure G) {Γ : Subgroup G}
+variable {G : Type*} [Group G] [MeasurableSpace G] (ν : Measure G) {Γ : Subgroup G}
   {μ : Measure (G ⧸ Γ)}
   [QuotientMeasureEqMeasurePreimage ν μ]
 
@@ -79,7 +79,7 @@ theorem measurePreserving_quotientGroup_mk_of_QuotientMeasureEqMeasurePreimage
 
 local notation "π" => @QuotientGroup.mk G _ Γ
 
-variable [TopologicalSpace G] [TopologicalGroup G] [BorelSpace G] [PolishSpace G]
+variable [TopologicalSpace G] [IsTopologicalGroup G] [BorelSpace G] [PolishSpace G]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)]
 
 /-- If `μ` satisfies `QuotientMeasureEqMeasurePreimage` relative to a both left- and right-
@@ -112,7 +112,7 @@ end smulInvariantMeasure
 
 section normal
 
-variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [IsTopologicalGroup G]
   [BorelSpace G] [PolishSpace G] {Γ : Subgroup G} [Subgroup.Normal Γ]
   [T2Space (G ⧸ Γ)] [SecondCountableTopology (G ⧸ Γ)] {μ : Measure (G ⧸ Γ)}
 
@@ -319,7 +319,7 @@ end normal
 
 section UnfoldingTrick
 
-variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [Group G] [MeasurableSpace G] [TopologicalSpace G] [IsTopologicalGroup G]
   [BorelSpace G] {μ : Measure G} {Γ : Subgroup G}
 
 variable {𝓕 : Set G} (h𝓕 : IsFundamentalDomain Γ.op 𝓕 μ)
@@ -431,7 +431,7 @@ end UnfoldingTrick
 section
 
 variable {G' : Type*} [AddGroup G'] [MeasurableSpace G'] [TopologicalSpace G']
-  [TopologicalAddGroup G'] [BorelSpace G']
+  [IsTopologicalAddGroup G'] [BorelSpace G']
   {μ' : Measure G'}
   {Γ' : AddSubgroup G'}
   [Countable Γ'] [MeasurableSpace (G' ⧸ Γ')] [BorelSpace (G' ⧸ Γ')]

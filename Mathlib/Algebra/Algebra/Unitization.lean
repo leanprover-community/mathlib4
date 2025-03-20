@@ -70,7 +70,6 @@ variable {R A : Type*}
 def inl [Zero A] (r : R) : Unitization R A :=
   (r, 0)
 
--- Porting note: we need a def to which we can attach `@[coe]`
 /-- The canonical inclusion `A → Unitization R A`. -/
 @[coe]
 def inr [Zero R] (a : A) : Unitization R A :=
@@ -182,7 +181,7 @@ instance instAddCommGroup [AddCommGroup R] [AddCommGroup A] : AddCommGroup (Unit
   Prod.instAddCommGroup
 
 instance instSMul [SMul S R] [SMul S A] : SMul S (Unitization R A) :=
-  Prod.smul
+  Prod.instSMul
 
 instance instIsScalarTower [SMul T R] [SMul T A] [SMul S R] [SMul S A] [SMul T S]
     [IsScalarTower T S R] [IsScalarTower T S A] : IsScalarTower T S (Unitization R A) :=
@@ -658,9 +657,6 @@ theorem algHom_ext' {φ ψ : Unitization R A →ₐ[R] C}
     φ = ψ :=
   algHom_ext'' (NonUnitalAlgHom.congr_fun h)
 
-/- porting note: this was extracted from `Unitization.lift` below, where it had previously
-been inlined. Unfortunately, `Unitization.lift` was relatively slow in Lean 3, but in Lean 4 it
-just times out. -/
 /-- A non-unital algebra homomorphism from `A` into a unital `R`-algebra `C` lifts to a unital
 algebra homomorphism from the unitization into `C`. This is extended to an `Equiv` in
 `Unitization.lift` and that should be used instead. This declaration only exists for performance

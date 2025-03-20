@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 
 /-! # Ordinal exponential
 
@@ -175,7 +175,7 @@ theorem opow_le_opow {a b c d : Ordinal} (hac : a ≤ c) (hbd : b ≤ d) (hc : 0
 
 theorem left_le_opow (a : Ordinal) {b : Ordinal} (b1 : 0 < b) : a ≤ a ^ b := by
   nth_rw 1 [← opow_one a]
-  cases' le_or_gt a 1 with a1 a1
+  rcases le_or_gt a 1 with a1 | a1
   · rcases lt_or_eq_of_le a1 with a0 | a1
     · rw [lt_one_iff_zero] at a0
       rw [a0, zero_opow Ordinal.one_ne_zero]
@@ -238,7 +238,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
     by_cases c0 : c = 0
     · simp only [c0, mul_zero, opow_zero]
     simp only [zero_opow b0, zero_opow c0, zero_opow (mul_ne_zero b0 c0)]
-  cases' eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with a1 a1
+  rcases eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with a1 | a1
   · subst a1
     simp only [one_opow]
   induction c using limitRecOn with
@@ -533,17 +533,6 @@ theorem iSup_pow {o : Ordinal} (ho : 0 < o) : ⨆ n : ℕ, o ^ n = o ^ ω := by
   · rw [one_opow]
     refine le_antisymm (Ordinal.iSup_le fun n => by rw [one_opow]) ?_
     exact_mod_cast Ordinal.le_iSup _ 0
-
-set_option linter.deprecated false in
-@[deprecated iSup_pow (since := "2024-08-27")]
-theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o ^ ω := by
-  simp_rw [← opow_natCast]
-  rcases (one_le_iff_pos.2 ho).lt_or_eq with ho₁ | rfl
-  · exact (isNormal_opow ho₁).apply_omega0
-  · rw [one_opow]
-    refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_
-    convert le_sup (fun n : ℕ => 1 ^ (n : Ordinal)) 0
-    rw [Nat.cast_zero, opow_zero]
 
 end Ordinal
 

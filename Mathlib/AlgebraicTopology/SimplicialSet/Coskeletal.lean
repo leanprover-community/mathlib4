@@ -25,14 +25,15 @@ are 2-coskeletal.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory Opposite Category Functor Limits
+open CategoryTheory Simplicial SimplexCategory Truncated
+open Opposite Category Functor Limits
 
 namespace SSet
 
 namespace Truncated
 
 /-- The identity natural transformation exhibits a simplicial set as a right extension of its
-restriction along `(Truncated.inclusion (n := n)).op`.-/
+restriction along `(Truncated.inclusion (n := n)).op`. -/
 @[simps!]
 def rightExtensionInclusion (X : SSet.{u}) (n : ℕ) :
     RightExtension (Truncated.inclusion (n := n)).op
@@ -42,9 +43,6 @@ end Truncated
 
 section
 
-local macro:max (priority := high) "⦋" n:term "⦌₂" : term =>
-  `((⟨SimplexCategory.mk $n, by dsimp; omega⟩ : SimplexCategory.Truncated 2))
-
 open StructuredArrow
 
 namespace StrictSegal
@@ -53,7 +51,7 @@ variable (X : SSet.{u}) [StrictSegal X]
 namespace isPointwiseRightKanExtensionAt
 
 /-- A morphism in `SimplexCategory` with domain `⦋0⦌`, `⦋1⦌`, or `⦋2⦌` defines an object in the
-comma category `StructuredArrow (op ⦋n⦌) (Truncated.inclusion (n := 2)).op`.-/
+comma category `StructuredArrow (op ⦋n⦌) (Truncated.inclusion (n := 2)).op`. -/
 abbrev strArrowMk₂ {i : ℕ} {n : ℕ} (φ : ⦋i⦌ ⟶ ⦋n⦌) (hi : i ≤ 2 := by omega) :
     StructuredArrow (op ⦋n⦌) (Truncated.inclusion 2).op :=
   StructuredArrow.mk (Y := op ⦋i⦌₂) φ.op
@@ -150,12 +148,12 @@ lemma fac_aux₂ {n : ℕ}
         match t with
         | 0 =>
             have : α.hom ≫ (mkOfSucc 0).op = α₂.hom :=
-              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+              Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [this, h₂, ← congr_fun (s.w β₂) x]
             rfl
         | 1 =>
             have : α.hom ≫ (mkOfSucc 1).op = α₀.hom :=
-              Quiver.Hom.unop_inj (by ext x ; fin_cases x <;> rfl)
+              Quiver.Hom.unop_inj (by ext x; fin_cases x <;> rfl)
             rw [this, h₀, ← congr_fun (s.w β₀) x]
             rfl
       rw [← StructuredArrow.w β₁, FunctorToTypes.map_comp_apply, this, ← s.w β₁]
@@ -208,7 +206,7 @@ noncomputable def isPointwiseRightKanExtensionAt (n : ℕ) :
     · exact congr_fun (hm (.mk (Y := op ⦋1⦌₂) (.op (mkOfLe _ _ (Fin.castSucc_le_succ i))))) x
 
 /-- Since `StrictSegal.isPointwiseRightKanExtensionAt` proves that the appropriate
-cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension.-/
+cones are limit cones, `rightExtensionInclusion X 2` is a pointwise right Kan extension. -/
 noncomputable def isPointwiseRightKanExtension :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtension :=
   fun Δ => isPointwiseRightKanExtensionAt X Δ.unop.len
@@ -238,12 +236,12 @@ example (C : Type u) [Category.{v} C] :
     SimplicialObject.IsCoskeletal (nerve C) 2 := by infer_instance
 
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
-recorded by the composite functor `nerveFunctor₂`.-/
+recorded by the composite functor `nerveFunctor₂`. -/
 def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
 
 /-- The natural isomorphism between `nerveFunctor` and `nerveFunctor₂ ⋙ Truncated.cosk 2` whose
 components `nerve C ≅ (Truncated.cosk 2).obj (nerveFunctor₂.obj C)` shows that nerves of categories
-are 2-coskeletal.-/
+are 2-coskeletal. -/
 noncomputable def cosk₂Iso : nerveFunctor.{v, u} ≅ nerveFunctor₂.{v, u} ⋙ Truncated.cosk 2 :=
   NatIso.ofComponents (fun C ↦ (nerve C).isoCoskOfIsCoskeletal 2)
     (fun _ ↦ (coskAdj 2).unit.naturality _)

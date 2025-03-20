@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.RingTheory.Localization.Ideal
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.Algebra.Group.Units.Hom
+import Mathlib.RingTheory.Ideal.Over
 
 /-!
 # Localizations of commutative rings at the complement of a prime ideal
@@ -63,7 +64,7 @@ theorem AtPrime.isLocalRing [IsLocalization.AtPrime S P] : IsLocalRing S :=
   IsLocalRing.of_nonunits_add
     (by
       intro x y hx hy hu
-      cases' isUnit_iff_exists_inv.1 hu with z hxyz
+      obtain ⟨z, hxyz⟩ := isUnit_iff_exists_inv.1 hu
       have : ∀ {r : R} {s : P.primeCompl}, mk' S r s ∈ nonunits S → r ∈ P := fun {r s} =>
         not_imp_comm.1 fun nr => isUnit_iff_exists_inv.2 ⟨mk' S ↑s (⟨r, nr⟩ : P.primeCompl),
           mk'_mul_mk'_eq_one' _ _ <| show r ∈ P.primeCompl from nr⟩
@@ -191,7 +192,7 @@ localization of `R` at `J.comap f` to the localization of `S` at `J`.
 
 To make this definition more flexible, we allow any ideal `I` of `R` as input, together with a proof
 that `I = J.comap f`. This can be useful when `I` is not definitionally equal to `J.comap f`.
- -/
+-/
 noncomputable def localRingHom (J : Ideal P) [J.IsPrime] (f : R →+* P) (hIJ : I = J.comap f) :
     Localization.AtPrime I →+* Localization.AtPrime J :=
   IsLocalization.map (Localization.AtPrime J) f (le_comap_primeCompl_iff.mpr (ge_of_eq hIJ))
@@ -238,6 +239,22 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
 
 namespace AtPrime
 
+section
+
+variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
+
+noncomputable instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+  Algebra (Localization.AtPrime p) (Localization.AtPrime P) :=
+    (Localization.localRingHom p P (algebraMap A B) Ideal.LiesOver.over).toAlgebra
+
+instance (p : Ideal A) [p.IsPrime] (P : Ideal B) [P.IsPrime] [P.LiesOver p] :
+  IsScalarTower A (Localization.AtPrime p) (Localization.AtPrime P) := by
+    refine IsScalarTower.of_algebraMap_eq fun x ↦ ?_
+    simp only [RingHom.algebraMap_toAlgebra, RingHom.coe_comp, Function.comp_apply,
+      Localization.localRingHom_to_map, ← IsScalarTower.algebraMap_apply]
+
+end
+
 variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
 variable {i : ι} (I : Ideal (R i)) [I.IsPrime]
 
@@ -260,3 +277,18 @@ theorem mapPiEvalRingHom_algebraMap_apply {r : Π i, R i} :
 end AtPrime
 
 end Localization
+
+variable {R : Type*} [CommRing R] (q : Ideal R) [q.IsPrime] {S : Type*} [CommRing S] [Algebra R S]
+    [IsLocalization.AtPrime S q]
+
+lemma Ideal.isPrime_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
+    (p.map (algebraMap R S)).IsPrime := by
+  have disj : Disjoint (q.primeCompl : Set R) p := by
+    simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
+  apply IsLocalization.isPrime_of_isPrime_disjoint q.primeCompl _ p (by simpa) disj
+
+lemma Ideal.under_map_of_isLocalizationAtPrime {p : Ideal R} [p.IsPrime] (hpq : p ≤ q) :
+    (p.map (algebraMap R S)).under R = p := by
+  have disj : Disjoint (q.primeCompl : Set R) p := by
+    simp [Ideal.primeCompl, ← le_compl_iff_disjoint_left, hpq]
+  exact IsLocalization.comap_map_of_isPrime_disjoint _ _ p (by simpa) disj
