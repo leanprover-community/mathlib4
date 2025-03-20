@@ -124,6 +124,6 @@ lemma exists_form_eq_form_and_form_ne_zero (B : P.InvariantForm) (i j : ι) :
   obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hv
   simp only [P.weylGroup_apply_root, SetLike.mem_coe, LinearMap.mem_ker]
   apply contra
-  simp [← RootPairing.Equiv.smul_root P j g, ← Subgroup.smul_def g]
+  simp [← Subgroup.smul_def g]
 
 end RootPairing

@@ -653,9 +653,9 @@ instance : DistribMulAction P.Aut M where
 
 @[simp] lemma reflection_smul (i : ι) (x : M) : Equiv.reflection P i • x = P.reflection i x := rfl
 
-lemma smul_root (i : ι) (g : P.Aut) :
-    g • P.root i = P.root (g.indexEquiv i) := by
-  simpa using congr_fun g.root_weightMap i
+@[simp] lemma smul_root (i : ι) (g : P.Aut) :
+    P.root (g.indexEquiv i) = g • P.root i := by
+  simpa using (congr_fun g.root_weightMap i).symm
 
 open MulOpposite in
 instance : DistribMulAction P.Autᵐᵒᵖ N where
