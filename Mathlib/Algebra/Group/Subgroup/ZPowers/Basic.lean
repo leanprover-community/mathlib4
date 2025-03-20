@@ -3,6 +3,7 @@ Copyright (c) 2020 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Group.Int.Defs
 
@@ -57,12 +58,12 @@ theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
 theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
   zpow_natCast g k ▸ zpow_mem_zpowers g k
 
--- Porting note: increasing simp priority. Better lemma than `Subtype.exists`
+-- increasing simp priority. Better lemma than `Subtype.exists`
 @[to_additive (attr := simp 1100)]
 theorem forall_zpowers {x : G} {p : zpowers x → Prop} : (∀ g, p g) ↔ ∀ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=
   Set.forall_subtype_range_iff
 
--- Porting note: increasing simp priority. Better lemma than `Subtype.exists`
+-- increasing simp priority. Better lemma than `Subtype.exists`
 @[to_additive (attr := simp 1100)]
 theorem exists_zpowers {x : G} {p : zpowers x → Prop} : (∃ g, p g) ↔ ∃ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=
   Set.exists_subtype_range_iff
@@ -145,6 +146,10 @@ theorem zpowers_inv : zpowers g⁻¹ = zpowers g :=
   eq_of_forall_ge_iff fun _ ↦ by simp only [zpowers_le, inv_mem_iff]
 
 end Subgroup
+
+theorem Int.zmultiples_natAbs (a : ℤ) :
+    AddSubgroup.zmultiples (a.natAbs : ℤ) = AddSubgroup.zmultiples a := by
+  simp [le_antisymm_iff, Int.mem_zmultiples_iff, Int.dvd_natAbs, Int.natAbs_dvd]
 
 lemma AddSubgroup.closure_singleton_int_one_eq_top : closure ({1} : Set ℤ) = ⊤ := by
   ext

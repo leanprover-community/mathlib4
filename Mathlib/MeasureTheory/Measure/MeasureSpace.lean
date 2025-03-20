@@ -458,7 +458,7 @@ theorem _root_.Directed.measure_iUnion [Countable ι] {s : ι → Set α} (hd : 
 /-- Continuity from below:
 the measure of the union of a monotone family of sets is equal to the supremum of their measures.
 The theorem assumes that the `atTop` filter on the index set is countably generated,
-so it works for a family indexed by a countable type, as well as `ℝ`.  -/
+so it works for a family indexed by a countable type, as well as `ℝ`. -/
 theorem _root_.Monotone.measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)]
     [(atTop : Filter ι).IsCountablyGenerated] {s : ι → Set α} (hs : Monotone s) :
     μ (⋃ i, s i) = ⨆ i, μ (s i) := by
@@ -619,12 +619,12 @@ theorem tendsto_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α} {μ :
     (hf : ∃ i, μ (f i) ≠ ∞) :
     Tendsto (fun i ↦ μ (⋂ j ≤ i, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
   refine .of_neBot_imp fun hne ↦ ?_
-  cases' atTop_neBot_iff.mp hne
+  cases atTop_neBot_iff.mp hne
   rw [measure_iInter_eq_iInf_measure_iInter_le hm hf]
   exact tendsto_atTop_iInf
     fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
 
-/-- Some version of continuity of a measure in the emptyset using the intersection along a set of
+/-- Some version of continuity of a measure in the empty set using the intersection along a set of
 sets. -/
 theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
     [SemilatticeSup ι] [Countable ι] {f : ι → Set α}
@@ -710,9 +710,6 @@ theorem boundedBy_measure (μ : Measure α) : OuterMeasure.boundedBy μ = μ.toO
 end OuterMeasure
 
 section
-
-/- Porting note: These variables are wrapped by an anonymous section because they interrupt
-synthesizing instances in `MeasureSpace` section. -/
 
 variable {m0 : MeasurableSpace α} {mβ : MeasurableSpace β} [MeasurableSpace γ]
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
@@ -862,6 +859,9 @@ def coeAddHom {_ : MeasurableSpace α} : Measure α →+ Set α → ℝ≥0∞ w
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+theorem coeAddHom_apply {_ : MeasurableSpace α} (μ : Measure α) : coeAddHom μ = ⇑μ := rfl
 
 @[simp]
 theorem coe_finset_sum {_m : MeasurableSpace α} (I : Finset ι) (μ : ι → Measure α) :

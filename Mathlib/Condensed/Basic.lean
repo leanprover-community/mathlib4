@@ -73,6 +73,7 @@ end Condensed
 
 namespace CondensedSet
 
+attribute [local instance] Types.instFunLike Types.instConcreteCategory in
 -- Note: `simp` can prove this when stated for `Condensed C` for a concrete category `C`.
 -- However, it doesn't seem to see through the abbreviation `CondensedSet`
 @[simp]

@@ -199,7 +199,7 @@ theorem T_insert_le_T_lmarginal_singleton [∀ i, SigmaFinite (μ i)] (hp₀ : 0
           ∏ j ∈ s, (∫⋯∫⁻_{j}, (∫⋯∫⁻_{i}, f ∂μ) ∂μ) x ^ p := by
               -- identify the result with the RHS integrand
               congr! 2 with j hj
-              · ring_nf
+              · ring
               · congr! 1
                 rw [← lmarginal_union μ f hf]
                 · congr
@@ -355,7 +355,7 @@ open Module
 /-- The constant factor occurring in the conclusion of `lintegral_pow_le_pow_lintegral_fderiv`.
 It only depends on `E`, `μ` and `p`.
 It is determined by the ratio of the measures on `E` and `ℝⁿ` and
-the operator norm of a chosen equivalence `E ≃ ℝⁿ` (raised to suitable powers involving `p`).-/
+the operator norm of a chosen equivalence `E ≃ ℝⁿ` (raised to suitable powers involving `p`). -/
 irreducible_def lintegralPowLePowLIntegralFDerivConst (p : ℝ) : ℝ≥0 := by
   let ι := Fin (finrank ℝ E)
   have : finrank ℝ E = finrank ℝ (ι → ℝ) := by
@@ -534,7 +534,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
     refine lintegral_rpow_enorm_lt_top_of_eLpNorm'_lt_top
       ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr h0p') ?_ |>.ne
     rw [← eLpNorm_nnreal_eq_eLpNorm' h0p']
-    exact hu.continuous.memℒp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
+    exact hu.continuous.memLp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
   have h6u : (∫⁻ x, ‖u x‖ₑ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ ∞ :=

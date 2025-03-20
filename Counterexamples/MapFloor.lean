@@ -56,7 +56,8 @@ namespace IntWithEpsilon
 
 instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
 
--- Porting note: `inhabited` and `commRing` were `deriving` instances in mathlib3
+-- The `CommRing` and `Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
 
 instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
@@ -113,7 +114,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
   map_mul' := mul_coeff_zero
   monotone' := monotone_iff_forall_lt.2 (by
     rintro p q ⟨n, hn⟩
-    cases' n with n
+    rcases n with - | n
     · exact hn.2.le
     · exact (hn.1 _ n.zero_lt_succ).le)
 

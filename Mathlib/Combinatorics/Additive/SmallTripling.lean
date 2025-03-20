@@ -35,32 +35,33 @@ private lemma inductive_claim_mul (hm : 3 ≤ m)
     (h : ∀ ε : Fin 3 → ℤ, (∀ i, |ε i| = 1) → #((finRange 3).map fun i ↦ A ^ ε i).prod ≤ k * #A)
     (ε : Fin m → ℤ) (hε : ∀ i, |ε i| = 1) :
     #((finRange m).map fun i ↦ A ^ ε i).prod ≤ k ^ (m - 2) * #A := by
-  induction' m, hm using Nat.le_induction with m hm ih
-  · simpa using h ε hε
-  obtain _ | m := m
-  · simp at hm
-  have hm₀ : m ≠ 0 := by simp at hm; positivity
-  have hε₀ i : ε i ≠ 0 := fun h ↦ by simpa [h] using hε i
-  obtain rfl | hA := A.eq_empty_or_nonempty
-  · simp [hε₀]
-  have hk : 0 ≤ k :=
-    nonneg_of_mul_nonneg_left ((h 1 (by simp)).trans' (by positivity)) (by positivity)
-  let π {n} (δ : Fin n → ℤ) : Finset G := ((finRange _).map fun i ↦ A ^ δ i).prod
-  let V : Finset G := π ![-ε 1, -ε 0]
-  let W : Finset G := π <| tail <| tail ε
-  refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
-  calc
-    (#A * #(π ε) : ℝ)
-      = #A * #(V⁻¹ * W) := by
-      simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def, mul_assoc]
-    _ ≤ #(A * V) * #(A * W) := by norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul ..
-    _ = #(π ![1, -ε 1, -ε 0]) * #(π <| Fin.cons 1 <| tail <| tail ε) := by
-      simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def]
-    _ ≤ (k * #A) * (k ^ (m - 1) * #A) := by
-      gcongr
-      · exact h ![1, -ε 1, -ε 0] fun i ↦ by fin_cases i <;> simp [hε]
-      · exact ih (Fin.cons 1 <| tail <| tail ε) <| Fin.cons (by simp) (by simp [hε, Fin.tail])
-    _ = #A * (k ^ m * #A) := by rw [← pow_sub_one_mul hm₀]; ring
+  induction m, hm using Nat.le_induction with
+  | base => simpa using h ε hε
+  | succ m hm ih =>
+    obtain _ | m := m
+    · simp at hm
+    have hm₀ : m ≠ 0 := by simp at hm; positivity
+    have hε₀ i : ε i ≠ 0 := fun h ↦ by simpa [h] using hε i
+    obtain rfl | hA := A.eq_empty_or_nonempty
+    · simp [hε₀]
+    have hk : 0 ≤ k :=
+      nonneg_of_mul_nonneg_left ((h 1 (by simp)).trans' (by positivity)) (by positivity)
+    let π {n} (δ : Fin n → ℤ) : Finset G := ((finRange _).map fun i ↦ A ^ δ i).prod
+    let V : Finset G := π ![-ε 1, -ε 0]
+    let W : Finset G := π <| tail <| tail ε
+    refine le_of_mul_le_mul_left ?_ (by positivity : (0 : ℝ) < #A)
+    calc
+      (#A * #(π ε) : ℝ)
+        = #A * #(V⁻¹ * W) := by
+        simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def, mul_assoc]
+      _ ≤ #(A * V) * #(A * W) := by norm_cast; exact ruzsa_triangle_inequality_invMul_mul_mul ..
+      _ = #(π ![1, -ε 1, -ε 0]) * #(π <| Fin.cons 1 <| tail <| tail ε) := by
+        simp [π, V, W, List.finRange_succ_eq_map, Fin.tail, Function.comp_def]
+      _ ≤ (k * #A) * (k ^ (m - 1) * #A) := by
+        gcongr
+        · exact h ![1, -ε 1, -ε 0] fun i ↦ by fin_cases i <;> simp [hε]
+        · exact ih (Fin.cons 1 <| tail <| tail ε) <| Fin.cons (by simp) (by simp [hε, Fin.tail])
+      _ = #A * (k ^ m * #A) := by rw [← pow_sub_one_mul hm₀]; ring
 
 @[to_additive]
 private lemma small_neg_pos_pos_mul (hA : #(A ^ 3) ≤ K * #A) : #(A⁻¹ * A * A) ≤ K ^ 2 * #A := by

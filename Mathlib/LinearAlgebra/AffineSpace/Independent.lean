@@ -353,7 +353,7 @@ variable {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V�
 independent, then the original family of points is also affine-independent. -/
 theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : AffineIndependent k (f ∘ p)) :
     AffineIndependent k p := by
-  cases' isEmpty_or_nonempty ι with h h
+  rcases isEmpty_or_nonempty ι with h | h
   · haveI := h
     apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
@@ -366,7 +366,7 @@ theorem AffineIndependent.of_comp {p : ι → P} (f : P →ᵃ[k] P₂) (hai : A
 affine-independent. -/
 theorem AffineIndependent.map' {p : ι → P} (hai : AffineIndependent k p) (f : P →ᵃ[k] P₂)
     (hf : Function.Injective f) : AffineIndependent k (f ∘ p) := by
-  cases' isEmpty_or_nonempty ι with h h
+  rcases isEmpty_or_nonempty ι with h | h
   · haveI := h
     apply affineIndependent_of_subsingleton
   obtain ⟨i⟩ := h
@@ -422,7 +422,7 @@ theorem AffineIndependent.affineSpan_disjoint_of_disjoint [Nontrivial k] {p : ι
     (ha : AffineIndependent k p) {s1 s2 : Set ι} (hd : Disjoint s1 s2) :
     Disjoint (affineSpan k (p '' s1) : Set P) (affineSpan k (p '' s2)) := by
   refine Set.disjoint_left.2 fun p0 hp0s1 hp0s2 => ?_
-  cases' ha.exists_mem_inter_of_exists_mem_inter_affineSpan hp0s1 hp0s2 with i hi
+  obtain ⟨i, hi⟩ := ha.exists_mem_inter_of_exists_mem_inter_affineSpan hp0s1 hp0s2
   exact Set.disjoint_iff.1 hd hi
 
 /-- If a family is affinely independent, a point in the family is in
@@ -571,11 +571,13 @@ theorem exists_subset_affineIndependent_affineSpan_eq_top {s : Set P}
     have hsvi := bsv.linearIndependent
     have hsvt := bsv.span_eq
     rw [Basis.coe_extend] at hsvi hsvt
+    rw [linearIndependent_subtype_iff] at hsvi h
     have hsv := h.subset_extend (Set.subset_univ _)
     have h0 : ∀ v : V, v ∈ h.extend (Set.subset_univ _) → v ≠ 0 := by
       intro v hv
       simpa [bsv] using bsv.ne_zero ⟨v, hv⟩
-    rw [linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
+    rw [← linearIndependent_subtype_iff,
+      linearIndependent_set_iff_affineIndependent_vadd_union_singleton k h0 p₁] at hsvi
     refine ⟨{p₁} ∪ (fun v => v +ᵥ p₁) '' h.extend (Set.subset_univ _), ?_, ?_⟩
     · refine Set.Subset.trans ?_ (Set.union_subset_union_right _ (Set.image_subset _ hsv))
       simp [Set.image_image]
@@ -831,9 +833,7 @@ theorem face_points' {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {
 theorem face_eq_mkOfPoint {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
     s.face (Finset.card_singleton i) = mkOfPoint k (s.points i) := by
   ext
-  simp only [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points]
-  -- Porting note: `simp` can't use the next lemma
-  rw [Finset.orderEmbOfFin_singleton]
+  simp [Affine.Simplex.mkOfPoint_points, Affine.Simplex.face_points, Finset.orderEmbOfFin_singleton]
 
 /-- The set of points of a face. -/
 @[simp]
@@ -939,6 +939,46 @@ theorem centroid_eq_of_range_eq {n : ℕ} {s₁ s₂ : Simplex k P n}
     Finset.univ.centroid_eq_of_inj_on_of_image_eq k _
       (fun _ _ _ _ he => AffineIndependent.injective s₁.independent he)
       (fun _ _ _ _ he => AffineIndependent.injective s₂.independent he) h
+
+end Simplex
+
+end Affine
+
+namespace Affine
+
+namespace Simplex
+
+variable {k V P : Type*} [OrderedRing k] [AddCommGroup V] [Module k V] [AffineSpace V P]
+
+/-- The interior of a simplex is the set of points that can be expressed as an affine combination
+of the vertices with weights strictly between 0 and 1. This is equivalent to the intrinsic
+interior of the convex hull of the vertices. -/
+protected def interior {n : ℕ} (s : Simplex k P n) : Set P :=
+  {p | ∃ w : Fin (n + 1) → k,
+    (∑ i, w i = 1) ∧ (∀ i, w i ∈ Set.Ioo 0 1) ∧ Finset.univ.affineCombination k s.points w = p}
+
+lemma affineCombination_mem_interior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
+    (hw : ∑ i, w i = 1) :
+    Finset.univ.affineCombination k s.points w ∈ s.interior ↔ ∀ i, w i ∈ Set.Ioo 0 1 := by
+  refine ⟨fun ⟨w', hw', hw'01, hww'⟩ ↦ ?_, fun h ↦ ⟨w, hw, h, rfl⟩⟩
+  simp_rw [← (affineIndependent_iff_eq_of_fintype_affineCombination_eq k s.points).1
+    s.independent w' w hw' hw hww']
+  exact hw'01
+
+/-- `s.closedInterior` is the set of points that can be expressed as an affine combination
+of the vertices with weights between 0 and 1 inclusive. This is equivalent to the convex hull of
+the vertices or the closure of the interior. -/
+protected def closedInterior {n : ℕ} (s : Simplex k P n) : Set P :=
+  {p | ∃ w : Fin (n + 1) → k,
+    (∑ i, w i = 1) ∧ (∀ i, w i ∈ Set.Icc 0 1) ∧ Finset.univ.affineCombination k s.points w = p}
+
+lemma affineCombination_mem_closedInterior_iff {n : ℕ} {s : Simplex k P n} {w : Fin (n + 1) → k}
+    (hw : ∑ i, w i = 1) :
+    Finset.univ.affineCombination k s.points w ∈ s.closedInterior ↔ ∀ i, w i ∈ Set.Icc 0 1 := by
+  refine ⟨fun ⟨w', hw', hw'01, hww'⟩ ↦ ?_, fun h ↦ ⟨w, hw, h, rfl⟩⟩
+  simp_rw [← (affineIndependent_iff_eq_of_fintype_affineCombination_eq k s.points).1
+    s.independent w' w hw' hw hww']
+  exact hw'01
 
 end Simplex
 
