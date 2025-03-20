@@ -648,8 +648,6 @@ theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X}
       by_contra H
       rw [Filter.Eventually, H] at h₁
       tauto
-    rw [← Set.nonempty_iff_ne_empty] at this
-    obtain ⟨a, ha⟩ := this
     simp at ha
   · exact hfg.filter_mono nhdsWithin_le_nhds
 
