@@ -62,7 +62,7 @@ theorem exp_mul_I_injOn : Set.InjOn (fun (θ : ℝ) => exp (θ * I)) (Set.Ioc (-
   rw [Set.mem_Ioc] at hx
   rw [Set.mem_Ioc] at hy
   exact exp_inj_of_neg_pi_lt_of_le_pi (by rw [mul_I_im, ofReal_re]; exact hx.1)
-    (by rw [mul_I_im, ofReal_re]; exact hx.2) (by rw [mul_I_im, ofReal_re]; exact hy.1)
+    (by rw [mul_I_im_re]; exact hx.2) (by rw [mul_I_im, ofReal_re]; exact hy.1)
     (by rw [mul_I_im, ofReal_re]; exact hy.2) he
 
 theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
