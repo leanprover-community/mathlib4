@@ -230,9 +230,9 @@ lemma MeromorphicNFAt.smul_analytic (hf : MeromorphicNFAt f x)
 
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `g • f` is meromorphic in normal form at `z₀`. -/
-theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic (h₁g : AnalyticAt 𝕜 g x)
+theorem meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) :
-    MeromorphicNFAt f x ↔ MeromorphicNFAt (g • f) x := by
+    MeromorphicNFAt (g • f) x ↔ MeromorphicNFAt f x := by
   constructor
   · exact fun hf ↦ hf.smul_analytic h₁g h₂g
   · intro hprod
