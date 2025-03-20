@@ -419,7 +419,6 @@ Geometry:
     boundary of a manifold: 'ModelWithCorners.boundary'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
-    vector field: VectorField
     pullback of vector fields: VectorField.pullback
     Lie bracket of vector field: VectorField.mlieBracket
     Jacobi/Leibniz identity: VectorField.leibniz_identity_mlieBracket
