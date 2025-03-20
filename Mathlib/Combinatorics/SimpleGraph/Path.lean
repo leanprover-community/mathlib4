@@ -524,51 +524,51 @@ lemma IsCycle.snd_eq_snd_of_start_eq_fst {u : V} {d : G.Dart} {c : G.Walk u u}
     | inl h => rw [h]
     | inr h => exact (hc.1.not_end_eq_fst_of_mem_darts h hu).elim
 
-@[simp]
-lemma IsPath.getVert_succ_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
-    (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) : p.getVert (n + 1) = d.toProd.2 := by
-  induction p generalizing n with
-  | nil => simp_all
-  | cons h p ih =>
-    rw [getVert_cons_succ, darts_cons] at *
-    cases n with
-    | zero =>
-      cases hd with
-      | head as => simp_all
-      | tail _ hd =>
-        exfalso
-        rw [getVert_zero] at hn
-        exact cons_isPath_iff ..|>.1 hp |>.2 (hn ▸ ((dart_fst_mem_support_of_mem_darts _ hd)))
-    | succ n =>
-      cases hd with
-      | head as =>
-        dsimp only at hn
-        exact (cons_isPath_iff ..|>.1 hp |>.2 <| hn ▸ (getVert_mem_support p n)).elim
-      | tail _ hd => exact ih hp.of_cons hd hn
+-- @[simp]
+-- lemma IsPath.getVert_succ_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
+--     (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) : p.getVert (n + 1) = d.toProd.2 := by
+--   induction p generalizing n with
+--   | nil => simp_all
+--   | cons h p ih =>
+--     rw [getVert_cons_succ, darts_cons] at *
+--     cases n with
+--     | zero =>
+--       cases hd with
+--       | head as => simp_all
+--       | tail _ hd =>
+--         exfalso
+--         rw [getVert_zero] at hn
+--         exact cons_isPath_iff ..|>.1 hp |>.2 (hn ▸ ((dart_fst_mem_support_of_mem_darts _ hd)))
+--     | succ n =>
+--       cases hd with
+--       | head as =>
+--         dsimp only at hn
+--         exact (cons_isPath_iff ..|>.1 hp |>.2 <| hn ▸ (getVert_mem_support p n)).elim
+--       | tail _ hd => exact ih hp.of_cons hd hn
 
-@[simp]
-lemma IsCycle.getVert_succ_of_mem_darts {p : G.Walk u u} {d : G.Dart} {n : ℕ} (hp : p.IsCycle)
-    (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) (hn2 : n < p.length) :
-    p.getVert (n + 1) = d.toProd.2 := by
-  cases p  with
-  | nil => simp_all
-  | cons h p =>
-    rw [getVert_cons_succ] at *
-    cases n with
-    | zero => exact hp.snd_eq_snd_of_start_eq_fst hd hn
-    | succ n =>
-      cases hd with
-      | head as =>
-        dsimp only at *
-        simp_all only [length_cons, Nat.add_lt_add_iff_right, getVert_cons_succ]
-        rw [cons_isCycle_iff] at hp
-        exfalso
-        have : p.getVert p.length = p.getVert n := hn.symm ▸ p.getVert_length
-        apply not_lt.2 (hp.1.getVert_injOn hn2.le (by simp) this.symm).ge hn2
-      | tail _ hd =>
-        rw [getVert_cons_succ] at hn
-        rw [cons_isCycle_iff] at hp
-        exact hp.1.getVert_succ_of_mem_darts hd hn
+-- @[simp]
+-- lemma IsCycle.getVert_succ_of_mem_darts {p : G.Walk u u} {d : G.Dart} {n : ℕ} (hp : p.IsCycle)
+--     (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) (hn2 : n < p.length) :
+--     p.getVert (n + 1) = d.toProd.2 := by
+--   cases p  with
+--   | nil => simp_all
+--   | cons h p =>
+--     rw [getVert_cons_succ] at *
+--     cases n with
+--     | zero => exact hp.snd_eq_snd_of_start_eq_fst hd hn
+--     | succ n =>
+--       cases hd with
+--       | head as =>
+--         dsimp only at *
+--         simp_all only [length_cons, Nat.add_lt_add_iff_right, getVert_cons_succ]
+--         rw [cons_isCycle_iff] at hp
+--         exfalso
+--         have : p.getVert p.length = p.getVert n := hn.symm ▸ p.getVert_length
+--         apply not_lt.2 (hp.1.getVert_injOn hn2.le (by simp) this.symm).ge hn2
+--       | tail _ hd =>
+--         rw [getVert_cons_succ] at hn
+--         rw [cons_isCycle_iff] at hp
+--         exact hp.1.getVert_succ_of_mem_darts hd hn
 
 /-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
@@ -751,29 +751,6 @@ theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v)
 theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
   edges_bypass_subset _
 
-@[simp]
-def shortcircuit {u : V} : G.Walk u u → G.Walk u u
-  | nil => nil
-  | cons ha p => cons ha p.bypass
-
-lemma shortcircuit_cons_isCycle {u v : V} (h : G.Adj u v) (p : G.Walk v u)
-    (hs : s(u,v) ∉ p.bypass.edges) : (cons h p).shortcircuit.IsCycle :=
-  cons_isCycle_iff p.bypass _ |>.2 ⟨bypass_isPath p, hs⟩
-
-lemma IsCircuit.shortcircuit_isCycle {u : V} {p : G.Walk u u} (hs : IsCircuit p) :
-    p.shortcircuit.IsCycle :=
-  match p with
-  | nil => absurd rfl hs.2
-  | cons h p =>
-    shortcircuit_cons_isCycle _ _ <|
-      fun hf ↦ cons_isTrail_iff h p|>.1 hs.toIsTrail|>.2 <| edges_bypass_subset _ hf
-
-lemma shortcircuit_cons_isCycle_iff {u v : V} (h : G.Adj u v) (p : G.Walk v u) :
-    s(u,v) ∉ p.bypass.edges ↔ (cons h p).shortcircuit.IsCycle := by
-  constructor <;> intro hs
-  · exact cons_isCycle_iff p.bypass _ |>.2 ⟨bypass_isPath p, hs⟩
-  · exact (cons_isCycle_iff ..).1 hs|>.2
-
 end Walk
 
 /-! ### Mapping paths -/
@@ -933,29 +910,21 @@ lemma IsCycle.snd_not_mem_tail_tail_support {u} {c : G.Walk u u} (hc : c.IsCycle
 
 lemma mem_tail_support_iff_not_nil {u v} {c : G.Walk u u} (hc : ¬ c.Nil) :
     v ∈ c.tail.support ↔ v ∈ c.support := by
-  rw [← (cons_tail_eq _ hc)]
-  simp_rw [tail_cons, support_copy, support_cons, List.mem_cons, iff_or_self]
+  rw [← cons_support_tail _ hc, List.mem_cons, iff_or_self]
   intro h
   exact h ▸ end_mem_support c.tail
 
 lemma IsCycle.mem_tail_tail_support_iff {u v} {c : G.Walk u u} (hc : c.IsCycle) :
     v ∈ c.tail.tail.support ↔ v ≠ c.snd ∧ v ∈ c.support := by
-  rw [support_tail_of_not_nil c.tail hc.tail_not_nil, support_tail_of_not_nil c hc.not_nil]
+  rw [← cons_support_tail _ hc.not_nil, ← cons_support_tail _ hc.tail_not_nil]
   constructor <;> intro h
-  · refine ⟨?_, List.mem_of_mem_tail <| List.mem_of_mem_tail h⟩
-    intro hf
-    apply hc.snd_not_mem_tail_tail_support
-    rw [support_tail_of_not_nil c.tail hc.tail_not_nil, support_tail_of_not_nil c hc.not_nil]
-    simp_rw [← hf]
-    exact h
-  · rw [← support_tail_of_not_nil c hc.not_nil]
-    rw [← mem_tail_support_iff_not_nil hc.not_nil] at h
-    rw [← cons_tail_eq _ hc.tail_not_nil] at h
-    rw [support_cons] at h
-    cases h.2 with
-    | head => exact absurd rfl h.1
-    | tail b h =>
-      rwa [← support_tail_of_not_nil c.tail hc.tail_not_nil]
+  · exact ⟨fun hf ↦  hc.snd_not_mem_tail_tail_support (hf ▸ h), by simp [h]⟩
+  · cases h.2 with
+    | head => simp
+    | tail _ h =>
+      cases h with
+      | head _ => exact absurd rfl h.1
+      | tail _ h => exact h
 
 lemma Brooks_aux' [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
     (hd : d ∈ c.darts) :

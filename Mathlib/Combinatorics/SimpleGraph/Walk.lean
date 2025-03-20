@@ -1258,7 +1258,7 @@ lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     · simp [*]
     · simp [concat, nil_iff_length_eq]
 
-lemma support_dropLast (p : G.Walk u v) (h : ¬ p.Nil) :
+lemma support_dropLast_of_not_nil (p : G.Walk u v) (h : ¬ p.Nil) :
      p.dropLast.support = p.support.dropLast := by
   induction p with
   | nil => exact (h Nil.nil).elim
