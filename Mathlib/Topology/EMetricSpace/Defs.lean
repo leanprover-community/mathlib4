@@ -228,7 +228,6 @@ namespace EMetric
 instance (priority := 900) instIsCountablyGeneratedUniformity : IsCountablyGenerated (𝓤 α) :=
   isCountablyGenerated_of_seq ⟨_, uniformity_basis_edist_inv_nat.eq_iInf⟩
 
--- Porting note: changed explicit/implicit
 /-- ε-δ characterization of uniform continuity on a set for pseudoemetric spaces -/
 theorem uniformContinuousOn_iff [PseudoEMetricSpace β] {f : α → β} {s : Set α} :
     UniformContinuousOn f s ↔
@@ -467,7 +466,7 @@ end
 theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
   simp [isOpen_iff_nhds, mem_nhds_iff]
 
-theorem isOpen_ball : IsOpen (ball x ε) :=
+@[simp] theorem isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 
 theorem isClosed_ball_top : IsClosed (ball x ⊤) :=
@@ -504,7 +503,7 @@ theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α}
 
 section Compact
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a uniform space with metrizable uniformity
+-- TODO: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
@@ -570,6 +569,8 @@ theorem edist_le_zero {x y : γ} : edist x y ≤ 0 ↔ x = y :=
 
 @[simp]
 theorem edist_pos {x y : γ} : 0 < edist x y ↔ x ≠ y := by simp [← not_le]
+
+@[simp] lemma EMetric.closedBall_zero (x : γ) : closedBall x 0 = {x} := by ext; simp
 
 /-- Two points coincide if their distance is `< ε` for all positive ε -/
 theorem eq_of_forall_edist_le {x y : γ} (h : ∀ ε > 0, edist x y ≤ ε) : x = y :=

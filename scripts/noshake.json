@@ -142,7 +142,6 @@
   "Mathlib.Tactic.Positivity",
   "Mathlib.Tactic.Positivity.Basic",
   "Mathlib.Tactic.Positivity.Finset",
-  "Mathlib.Tactic.ProjectionNotation",
   "Mathlib.Tactic.Push",
   "Mathlib.Tactic.Qify",
   "Mathlib.Tactic.RSuffices",
@@ -226,7 +225,6 @@
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
-  "Mathlib.Tactic.ProjectionNotation": ["Lean.Elab.AuxDef"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset":
   ["Mathlib.Algebra.Order.BigOperators.Group.Finset",
@@ -331,7 +329,6 @@
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
-  "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
   ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
@@ -340,6 +337,8 @@
   ["Mathlib.Algebra.MvPolynomial.CommRing", "Mathlib.Algebra.Polynomial.Basic"],
   "Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs":
   ["Mathlib.Tactic.Algebraize"],
+  "Mathlib.RingTheory.Ideal.Norm.AbsNorm":
+  ["Mathlib.LinearAlgebra.FreeModule.IdealQuotient"],
   "Mathlib.RingTheory.Finiteness.Defs":
   ["Mathlib.Data.Finsupp.Defs", "Mathlib.Tactic.Algebraize"],
   "Mathlib.RingTheory.Binomial": ["Mathlib.Algebra.Order.Floor"],
@@ -374,7 +373,8 @@
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],
-  "Mathlib.Logic.Equiv.Defs": ["Mathlib.Data.Bool.Basic"],
+  "Mathlib.Logic.Equiv.Defs":
+  ["Mathlib.Data.Bool.Basic", "Mathlib.Data.Subtype"],
   "Mathlib.Logic.Basic": ["Batteries.Tactic.Trans"],
   "Mathlib.LinearAlgebra.Matrix.Transvection": ["Mathlib.Data.Matrix.DMatrix"],
   "Mathlib.LinearAlgebra.DFinsupp": ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
@@ -473,9 +473,10 @@
   ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
   "Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital":
   ["Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital"],
+  "Mathlib.AlgebraicTopology.SimplexCategory.Defs":
+  ["Mathlib.Util.Superscript"],
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
-  "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
   "Mathlib.Algebra.Order.Ring.Nat": ["Mathlib.Algebra.Order.Group.Nat"],
@@ -485,6 +486,7 @@
   "Mathlib.Algebra.Order.Field.Subfield":
   ["Mathlib.Algebra.Order.Field.InjSurj"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
+  "Mathlib.Algebra.Notation.Lemmas": ["Batteries.Tactic.Init"],
   "Mathlib.Algebra.MonoidAlgebra.Basic":
   ["Mathlib.LinearAlgebra.Finsupp.SumProd"],
   "Mathlib.Algebra.Module.Submodule.Order":

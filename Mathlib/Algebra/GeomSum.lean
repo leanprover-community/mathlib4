@@ -118,7 +118,7 @@ theorem neg_one_geom_sum [Ring α] {n : ℕ} :
     · rw [h.neg_one_pow, add_zero]
     · rw [(Nat.not_even_iff_odd.1 h).neg_one_pow, neg_add_cancel]
 
-theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
+theorem geom_sum₂_self {α : Type*} [Semiring α] (x : α) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * x ^ (n - 1 - i) = n * x ^ (n - 1) :=
   calc
     ∑ i ∈ Finset.range n, x ^ i * x ^ (n - 1 - i) =

@@ -35,7 +35,7 @@ measurable functions, as a basis for the Bochner integral.
 ## References
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
+  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -211,7 +211,7 @@ theorem _root_.Continuous.aestronglyMeasurable [TopologicalSpace α] [OpensMeasu
 protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (fun x => (f x, g x)) μ :=
   ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
-    hf.ae_eq_mk.prod_mk hg.ae_eq_mk⟩
+    hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
 
 @[deprecated (since := "2025-03-05")]
 protected alias prod_mk := AEStronglyMeasurable.prodMk
@@ -439,7 +439,7 @@ a.e. measurability, **not** a.e. strong measurability. This is an intentional de
 for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop, measurability]
-protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem enorm {β : Type*} [TopologicalSpace β] [ENormedAddMonoid β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
 

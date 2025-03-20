@@ -447,24 +447,6 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
       intro hx hx₂
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
-section Classical
-
--- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
--- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.
--- /-- The following instance allows us to write `{x ∈ s | p x}` for `Finset.filter p s`.
---   We don't want to redo all lemmas of `Finset.filter` for `Sep.sep`, so we make sure that `simp`
---   unfolds the notation `{x ∈ s | p x}` to `Finset.filter p s`.
--- -/
--- noncomputable instance {α : Type*} : Sep α (Finset α) :=
---   ⟨fun p x => x.filter p⟩
-
--- -- @[simp] -- Porting note: not a simp-lemma until `Sep`-notation is fixed.
--- theorem sep_def {α : Type*} (s : Finset α) (p : α → Prop) : { x ∈ s | p x } = s.filter p := by
---   ext
---   simp
-
-end Classical
-
 -- This is not a good simp lemma, as it would prevent `Finset.mem_filter` from firing
 -- on, e.g. `x ∈ s.filter (Eq b)`.
 /-- After filtering out everything that does not equal a given value, at most that value remains.
@@ -654,7 +636,7 @@ open Finset
 /-- The disjoint union of finsets is a sum -/
 def Finset.union (s t : Finset α) (h : Disjoint s t) :
     s ⊕ t ≃ (s ∪ t : Finset α) :=
-  Equiv.Set.ofEq (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
+  Equiv.setCongr (coe_union _ _) |>.trans (Equiv.Set.union (disjoint_coe.mpr h)) |>.symm
 
 @[simp]
 theorem Finset.union_symm_inl (h : Disjoint s t) (x : s) :

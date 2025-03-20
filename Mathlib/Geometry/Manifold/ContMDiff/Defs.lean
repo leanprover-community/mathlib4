@@ -319,7 +319,7 @@ theorem contMDiffWithinAt_iff_source :
     refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
     · apply h.comp_of_eq
       · exact (continuousAt_extChartAt_symm x).continuousWithinAt
-      · exact MapsTo.mono_left (mapsTo_preimage _ _) inter_subset_left
+      · exact (mapsTo_preimage _ _).mono_left inter_subset_left
       · exact extChartAt_to_inv x
     · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
       have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
@@ -336,10 +336,9 @@ theorem contMDiffWithinAt_iff_source :
         simp [this]
       · simp
   rw [← this]
-  simp only [ContDiffWithinAtProp, mfld_simps]
-  rfl
+  simp only [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
 
-/-- One can reformulate being `Cⁿ` at a point as begin `Cⁿ` in the source space when
+/-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
 theorem contMDiffAt_iff_source :
     ContMDiffAt I I' n f x ↔

@@ -48,7 +48,7 @@ def MulEquiv.inv' (G : Type*) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
 
 /-- A semigroup homomorphism `f : M →ₙ* N` such that `f x` commutes with `f y` for all `x, y`
 defines a semigroup homomorphism to `Nᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
 "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
 commutes with `f y` for all `x, y` defines an additive semigroup homomorphism to `Sᵃᵒᵖ`."]
 def MulHom.toOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
@@ -58,7 +58,7 @@ def MulHom.toOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
 
 /-- A semigroup homomorphism `f : M →ₙ* N` such that `f x` commutes with `f y` for all `x, y`
 defines a semigroup homomorphism from `Mᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
 "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
 commutes with `f y` for all `x`, `y` defines an additive semigroup homomorphism from `Mᵃᵒᵖ`."]
 def MulHom.fromOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
@@ -68,7 +68,7 @@ def MulHom.fromOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
 
 /-- A monoid homomorphism `f : M →* N` such that `f x` commutes with `f y` for all `x, y` defines
 a monoid homomorphism to `Nᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
 "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
 with `f y` for all `x, y` defines an additive monoid homomorphism to `Sᵃᵒᵖ`."]
 def MonoidHom.toOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
@@ -79,7 +79,7 @@ def MonoidHom.toOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M �
 
 /-- A monoid homomorphism `f : M →* N` such that `f x` commutes with `f y` for all `x, y` defines
 a monoid homomorphism from `Mᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
 "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
 with `f y` for all `x`, `y` defines an additive monoid homomorphism from `Mᵃᵒᵖ`."]
 def MonoidHom.fromOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)

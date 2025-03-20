@@ -474,7 +474,7 @@ instance (R : Type*) [CommRing R] [IsDomain R] [IsDiscreteValuationRing R] :
     obtain ⟨ϖ, hϖ⟩ := exists_irreducible R
     simp only [← Ideal.one_eq_top, smul_eq_mul, mul_one, SModEq.zero, hϖ.maximalIdeal_eq,
       Ideal.span_singleton_pow, Ideal.mem_span_singleton, ← addVal_le_iff_dvd, hϖ.addVal_pow] at hx
-    rwa [← addVal_eq_top_iff, ← WithTop.forall_ge_iff_eq_top]
+    rwa [← addVal_eq_top_iff, WithTop.eq_top_iff_forall_ge]
 
 end IsDiscreteValuationRing
 

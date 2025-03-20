@@ -159,7 +159,6 @@ stalk of `f _ * F` at `f x` and the stalk of `F` at `x`.
 -/
 def stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) (x : X) : (f _* F).stalk (f x) ⟶ F.stalk x := by
   -- This is a hack; Lean doesn't like to elaborate the term written directly.
-  -- Porting note: The original proof was `trans; swap`, but `trans` does nothing.
   refine ?_ ≫ colimit.pre _ (OpenNhds.map f x).op
   exact colim.map (whiskerRight (NatTrans.op (OpenNhds.inclusionMapIso f x).inv) F)
 
@@ -574,7 +573,7 @@ theorem app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶
     app_surjective_of_stalkFunctor_map_bijective f U h⟩
 
 include instCC in
-theorem app_isIso_of_stalkFunctor_map_iso  {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
+theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     [∀ x : U, IsIso ((stalkFunctor C x.val).map f.1)] : IsIso (f.1.app (op U)) := by
   -- Since the forgetful functor of `C` reflects isomorphisms, it suffices to see that the
   -- underlying map between types is an isomorphism, i.e. bijective.
