@@ -154,10 +154,10 @@ private def natCast (n : ℕ) : RingQuot r :=
 @[irreducible] private def add : RingQuot r → RingQuot r → RingQuot r
   | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ (· + ·) Rel.add_right Rel.add_left a b⟩
 
-irreducible_def mul : RingQuot r → RingQuot r → RingQuot r
+private irreducible_def mul : RingQuot r → RingQuot r → RingQuot r
   | ⟨a⟩, ⟨b⟩ => ⟨Quot.map₂ (· * ·) Rel.mul_right Rel.mul_left a b⟩
 
-irreducible_def neg {R : Type uR} [Ring R] (r : R → R → Prop) : RingQuot r → RingQuot r
+private irreducible_def neg {R : Type uR} [Ring R] (r : R → R → Prop) : RingQuot r → RingQuot r
   | ⟨a⟩ => ⟨Quot.map (fun a ↦ -a) Rel.neg a⟩
 
 @[irreducible] private def sub {R : Type uR} [Ring R] (r : R → R → Prop) :
