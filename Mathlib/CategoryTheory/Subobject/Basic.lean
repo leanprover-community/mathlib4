@@ -6,6 +6,7 @@ Authors: Bhavik Mehta, Kim Morrison
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Tactic.CategoryTheory.Elementwise
 
@@ -153,6 +154,9 @@ noncomputable def equivMonoOver (X : C) : Subobject X ≌ MonoOver X :=
 noncomputable def representative {X : C} : Subobject X ⥤ MonoOver X :=
   (equivMonoOver X).functor
 
+instance : (representative (X := X)).IsEquivalence :=
+  (equivMonoOver X).isEquivalence_functor
+
 /-- Starting with `A : MonoOver X`, we can take its equivalence class in `Subobject X`
 then pick an arbitrary representative using `representative.obj`.
 This is isomorphic (in `MonoOver X`) to the original `A`.
@@ -272,6 +276,10 @@ theorem mk_eq_of_comm {B A : C} {X : Subobject B} (f : A ⟶ B) [Mono f] (i : A 
 theorem mk_eq_mk_of_comm {B A₁ A₂ : C} (f : A₁ ⟶ B) (g : A₂ ⟶ B) [Mono f] [Mono g] (i : A₁ ≅ A₂)
     (w : i.hom ≫ g = f) : mk f = mk g :=
   eq_mk_of_comm _ ((underlyingIso f).trans i) <| by simp [w]
+
+lemma mk_surjective {X : C} (S : Subobject X) :
+    ∃ (A : C) (i : A ⟶ X) (_ : Mono i), S = Subobject.mk i :=
+  ⟨_, S.arrow, inferInstance, by simp⟩
 
 -- We make `X` and `Y` explicit arguments here so that when `ofLE` appears in goal statements
 -- it is possible to see its source and target
@@ -448,9 +456,26 @@ lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ �
 
 end Subobject
 
-lemma MonoOver.subobjectMk_le_mk_of_hom {P Q : MonoOver X} (f : P ⟶ Q) :
+namespace MonoOver
+
+variable {P Q : MonoOver X} (f : P ⟶ Q)
+
+include f in
+lemma subobjectMk_le_mk_of_hom :
     Subobject.mk P.obj.hom ≤ Subobject.mk Q.obj.hom :=
   Subobject.mk_le_mk_of_comm f.left (by simp)
+
+lemma isIso_left_iff_subobjectMk_eq :
+    IsIso f.left ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom :=
+  ⟨fun _ ↦ Subobject.mk_eq_mk_of_comm _ _ (asIso f.left) (by simp),
+    fun h ↦ ⟨Subobject.ofMkLEMk _ _ h.symm.le, by simp [← cancel_mono P.1.hom],
+      by simp [← cancel_mono Q.1.hom]⟩⟩
+
+lemma isIso_iff_subobjectMk_eq :
+    IsIso f ↔ Subobject.mk P.1.hom = Subobject.mk Q.1.hom := by
+  rw [isIso_iff_isIso_left, isIso_left_iff_subobjectMk_eq]
+
+end MonoOver
 
 open CategoryTheory.Limits
 
@@ -516,6 +541,20 @@ theorem pullback_comp (f : X ⟶ Y) (g : Y ⟶ Z) (x : Subobject Z) :
     (pullback (f ≫ g)).obj x = (pullback f).obj ((pullback g).obj x) := by
   induction' x using Quotient.inductionOn' with t
   exact Quotient.sound ⟨(MonoOver.pullbackComp _ _).app t⟩
+
+theorem pullback_obj_mk {A B X Y : C} {f : Y ⟶ X} {i : A ⟶ X} [Mono i]
+    {j : B ⟶ Y} [Mono j] {f' : B ⟶ A}
+    (h : IsPullback f' j i f) :
+    (pullback f).obj (mk i) = mk j :=
+  ((equivMonoOver Y).inverse.mapIso
+    (MonoOver.pullbackObjIsoOfIsPullback _ _ _ _ h)).to_eq
+
+theorem pullback_obj {X Y : C} (f : Y ⟶ X) (x : Subobject X) :
+    (pullback f).obj x = mk (pullback.snd x.arrow f) := by
+  obtain ⟨Z, i, _, rfl⟩ := mk_surjective x
+  rw [pullback_obj_mk (IsPullback.of_hasPullback i f)]
+  exact mk_eq_mk_of_comm _ _ (asIso (pullback.map i f (mk i).arrow f
+    (underlyingIso i).inv (𝟙 _) (𝟙 _) (by simp) (by simp))) (by simp)
 
 instance (f : X ⟶ Y) : (pullback f).Faithful where
 

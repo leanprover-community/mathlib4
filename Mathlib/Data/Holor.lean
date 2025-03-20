@@ -263,12 +263,11 @@ theorem cprankMax_add [Monoid α] [AddMonoid α] :
     match hx with
     | CPRankMax.zero => simp only [zero_add, hy]
   | m + 1, n, _, y, CPRankMax.succ _ x₁ x₂ hx₁ hx₂, hy => by
-    simp only [add_comm, add_assoc]
+    suffices CPRankMax (m + n + 1) (x₁ + (x₂ + y)) by
+      simpa only [add_comm, add_assoc, add_left_comm] using this
     apply CPRankMax.succ
     · assumption
-    · -- Porting note: Single line is added.
-      simp only [Nat.add_eq, add_zero, add_comm n m]
-      exact cprankMax_add hx₂ hy
+    · exact cprankMax_add hx₂ hy
 
 theorem cprankMax_mul [Ring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)

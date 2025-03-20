@@ -5,7 +5,6 @@ Authors: Johan Commelin, Kenny Lau
 -/
 
 import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.Tactic.Linarith
 import Mathlib.LinearAlgebra.Pi
@@ -585,7 +584,7 @@ theorem X_pow_dvd_iff {s : σ} {n : ℕ} {φ : MvPowerSeries σ R} :
         split_ifs with hi
         · exfalso
           apply hne
-          rw [← hij, ← hi, Prod.mk.inj_iff]
+          rw [← hij, ← hi, Prod.mk_inj]
           refine ⟨rfl, ?_⟩
           ext t
           simp only [add_tsub_cancel_left, Finsupp.add_apply, Finsupp.tsub_apply]

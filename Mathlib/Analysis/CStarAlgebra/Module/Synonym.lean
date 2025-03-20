@@ -165,7 +165,7 @@ def addEquiv [AddCommGroup E] : C⋆ᵐᵒᵈ E ≃+ E :=
     invFun := (equiv _).symm }
 
 /-- `WithCStarModule.equiv` as a linear equivalence. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def linearEquiv [Semiring R] [AddCommGroup E] [Module R E] : C⋆ᵐᵒᵈ E ≃ₗ[R] E :=
   { LinearEquiv.refl _ _ with
     toFun := equiv _

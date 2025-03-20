@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Order.Filter.SmallSets
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Topology.ContinuousOn
 
 /-!
 # Basic results on uniform spaces
@@ -79,10 +79,10 @@ namespace UniformSpace
 open UniformSpace (ball)
 
 lemma isOpen_ball (x : α) {V : Set (α × α)} (hV : IsOpen V) : IsOpen (ball x V) :=
-  hV.preimage <| continuous_const.prod_mk continuous_id
+  hV.preimage <| .prodMk_right _
 
 lemma isClosed_ball (x : α) {V : Set (α × α)} (hV : IsClosed V) : IsClosed (ball x V) :=
-  hV.preimage <| continuous_const.prod_mk continuous_id
+  hV.preimage <| .prodMk_right _
 
 /-!
 ### Neighborhoods in uniform spaces
@@ -495,18 +495,16 @@ instance OrderDual.instUniformSpace [UniformSpace α] : UniformSpace (αᵒᵈ) 
 
 section UniformContinuousInfi
 
--- Porting note: renamed for dot notation; add an `iff` lemma?
+-- TODO: add an `iff` lemma?
 theorem UniformContinuous.inf_rng {f : α → β} {u₁ : UniformSpace α} {u₂ u₃ : UniformSpace β}
     (h₁ : UniformContinuous[u₁, u₂] f) (h₂ : UniformContinuous[u₁, u₃] f) :
     UniformContinuous[u₁, u₂ ⊓ u₃] f :=
   tendsto_inf.mpr ⟨h₁, h₂⟩
 
--- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_left {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₁, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_left hf
 
--- Porting note: renamed for dot notation
 theorem UniformContinuous.inf_dom_right {f : α → β} {u₁ u₂ : UniformSpace α} {u₃ : UniformSpace β}
     (hf : UniformContinuous[u₂, u₃] f) : UniformContinuous[u₁ ⊓ u₂, u₃] f :=
   tendsto_inf_right hf
@@ -699,6 +697,11 @@ theorem ball_entourageProd (u : Set (α × α)) (v : Set (β × β)) (x : α × 
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
   ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
 
+lemma IsSymmetricRel.entourageProd {u : Set (α × α)} {v : Set (β × β)}
+    (hu : IsSymmetricRel u) (hv : IsSymmetricRel v) :
+    IsSymmetricRel (entourageProd u v) :=
+  Set.ext fun _ ↦ and_congr hu.mk_mem_comm hv.mk_mem_comm
+
 theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
     {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → Set (α × α)} {sb : ιb → Set (β × β)}
     (ha : (𝓤 α).HasBasis pa sa) (hb : (𝓤 β).HasBasis pb sb) :
@@ -730,22 +733,31 @@ theorem uniformContinuous_snd [UniformSpace α] [UniformSpace β] :
 
 variable [UniformSpace α] [UniformSpace β] [UniformSpace γ]
 
-theorem UniformContinuous.prod_mk {f₁ : α → β} {f₂ : α → γ} (h₁ : UniformContinuous f₁)
+theorem UniformContinuous.prodMk {f₁ : α → β} {f₂ : α → γ} (h₁ : UniformContinuous f₁)
     (h₂ : UniformContinuous f₂) : UniformContinuous fun a => (f₁ a, f₂ a) := by
   rw [UniformContinuous, uniformity_prod]
   exact tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
 
-theorem UniformContinuous.prod_mk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
-    UniformContinuous fun a => f (a, b) :=
-  h.comp (uniformContinuous_id.prod_mk uniformContinuous_const)
+@[deprecated (since := "2025-03-10")]
+alias UniformContinuous.prod_mk := UniformContinuous.prodMk
 
-theorem UniformContinuous.prod_mk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
+theorem UniformContinuous.prodMk_left {f : α × β → γ} (h : UniformContinuous f) (b) :
+    UniformContinuous fun a => f (a, b) :=
+  h.comp (uniformContinuous_id.prodMk uniformContinuous_const)
+
+@[deprecated (since := "2025-03-10")]
+alias UniformContinuous.prod_mk_left := UniformContinuous.prodMk_left
+
+theorem UniformContinuous.prodMk_right {f : α × β → γ} (h : UniformContinuous f) (a) :
     UniformContinuous fun b => f (a, b) :=
-  h.comp (uniformContinuous_const.prod_mk uniformContinuous_id)
+  h.comp (uniformContinuous_const.prodMk uniformContinuous_id)
+
+@[deprecated (since := "2025-03-10")]
+alias UniformContinuous.prod_mk_right := UniformContinuous.prodMk_right
 
 theorem UniformContinuous.prodMap [UniformSpace δ] {f : α → γ} {g : β → δ}
     (hf : UniformContinuous f) (hg : UniformContinuous g) : UniformContinuous (Prod.map f g) :=
-  (hf.comp uniformContinuous_fst).prod_mk (hg.comp uniformContinuous_snd)
+  (hf.comp uniformContinuous_fst).prodMk (hg.comp uniformContinuous_snd)
 
 @[deprecated (since := "2024-10-06")] alias UniformContinuous.prod_map := UniformContinuous.prodMap
 
@@ -921,7 +933,7 @@ theorem continuousAt_iff'_left [TopologicalSpace β] {f : β → α} {b : β} :
 theorem continuousAt_iff_prod [TopologicalSpace β] {f : β → α} {b : β} :
     ContinuousAt f b ↔ Tendsto (fun x : β × β => (f x.1, f x.2)) (𝓝 (b, b)) (𝓤 α) :=
   ⟨fun H => le_trans (H.prodMap' H) (nhds_le_uniformity _), fun H =>
-    continuousAt_iff'_left.2 <| H.comp <| tendsto_id.prod_mk_nhds tendsto_const_nhds⟩
+    continuousAt_iff'_left.2 <| H.comp <| tendsto_id.prodMk_nhds tendsto_const_nhds⟩
 
 theorem continuousWithinAt_iff'_right [TopologicalSpace β] {f : β → α} {b : β} {s : Set β} :
     ContinuousWithinAt f s b ↔ Tendsto (fun x => (f b, f x)) (𝓝[s] b) (𝓤 α) := by
@@ -964,7 +976,7 @@ lemma exists_is_open_mem_uniformity_of_forall_mem_eq
     have I1 : (f y, f x) ∈ t := (htsymm.mk_mem_comm).2 (hu hy).1
     have I2 : (g x, g y) ∈ t := (hu hy).2
     rw [hfg hx] at I1
-    exact htr (prod_mk_mem_compRel I1 I2)
+    exact htr (prodMk_mem_compRel I1 I2)
   choose! t t_open xt ht using A
   refine ⟨⋃ x ∈ s, t x, isOpen_biUnion t_open, fun x hx ↦ mem_biUnion hx (xt x hx), ?_⟩
   rintro x hx

@@ -257,9 +257,7 @@ theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · -- Porting note: Originally `simpa [Wbtw, affineSegment] using h`
-    have ⟨_, _, h₂⟩ := h
-    rw [h₂.symm, lineMap_same_apply]
+  · simpa [Wbtw, affineSegment] using h
   · rw [h]
     exact wbtw_self_left R x x
 
@@ -509,7 +507,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     (h₁' : p ∈ line[R, t.points i₁, p₁]) (h₂' : p ∈ line[R, t.points i₂, p₂]) :
     Sbtw R (t.points i₁) p p₁ := by
   -- Should not be needed; see comments on local instances in `Data.Sign`.
-  letI : DecidableRel ((· < ·) : R → R → Prop) := LinearOrderedRing.decidableLT
+  letI : DecidableLT R := LinearOrderedRing.decidableLT
   have h₁₃ : i₁ ≠ i₃ := by
     rintro rfl
     simp at h₂
@@ -519,8 +517,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have h3 : ∀ i : Fin 3, i = i₁ ∨ i = i₂ ∨ i = i₃ := by omega
   have hu : (Finset.univ : Finset (Fin 3)) = {i₁, i₂, i₃} := by
     clear h₁ h₂ h₁' h₂'
-    -- Porting note: Originally `decide!`
-    revert i₁ i₂ i₃; decide
+    decide +revert
   have hp : p ∈ affineSpan R (Set.range t.points) := by
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
       refine affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) ?_

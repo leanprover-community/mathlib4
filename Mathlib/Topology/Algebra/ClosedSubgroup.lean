@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nailin Guan
 -/
 
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.GroupTheory.Index
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Closed subgroups of a topological group

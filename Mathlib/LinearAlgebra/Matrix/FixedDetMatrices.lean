@@ -73,7 +73,7 @@ private lemma reduce_aux {A : Δ m} (h : (A.1 1 0) ≠ 0) :
     |((reduceStep A).1 1 0)| < |(A.1 1 0)| := by
   suffices ((reduceStep A).1 1 0) = A.1 0 0 % A.1 1 0 by
     rw [this, abs_eq_self.mpr (Int.emod_nonneg (A.1 0 0) h)]
-    exact Int.emod_lt (A.1 0 0) h
+    exact Int.emod_lt_abs (A.1 0 0) h
   simp_rw [Int.emod_def, sub_eq_add_neg, reduceStep, smul_coe, coe_T_zpow, S]
   norm_num [vecMul, vecHead, vecTail, mul_comm]
 
@@ -179,7 +179,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
       have h2 := Int.emod_def (A.1 0 1) (A.1 1 1)
       have h4 := Int.ediv_mul_le (A.1 0 1) hd
       set n : ℤ := A.1 0 1 / A.1 1 1
-      have h3 := Int.emod_lt (A.1 0 1) hd
+      have h3 := Int.emod_lt_abs (A.1 0 1) hd
       rw [← abs_eq_self.mpr <| Int.emod_nonneg _ hd] at h3
       simp only [smul_def, Fin.isValue, coe_T_zpow]
       suffices A.1 1 0 = 0 ∧ n * A.1 1 0 < A.1 0 0 ∧
@@ -203,7 +203,7 @@ lemma reduce_mem_reps {m : ℤ} (hm : m ≠ 0) (A : Δ m) : reduce A ∈ reps m 
         exact ⟨not_lt.mp h1, A_a_ne_zero h hm⟩
       · rw [mul_comm, add_comm, ← Int.sub_eq_add_neg, ← Int.emod_def,
          abs_eq_self.mpr <| Int.emod_nonneg _ hd]
-        exact Int.emod_lt _ hd
+        exact Int.emod_lt_abs _ hd
 
 variable {C : Δ m → Prop}
 

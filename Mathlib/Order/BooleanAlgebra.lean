@@ -462,8 +462,7 @@ instance Prod.instGeneralizedBooleanAlgebra [GeneralizedBooleanAlgebra β] :
   sup_inf_sdiff _ _ := Prod.ext (sup_inf_sdiff _ _) (sup_inf_sdiff _ _)
   inf_inf_sdiff _ _ := Prod.ext (inf_inf_sdiff _ _) (inf_inf_sdiff _ _)
 
--- Porting note:
--- Once `pi_instance` has been ported, this is just `by pi_instance`.
+-- Porting note: Once `pi_instance` has been ported, this is just `by pi_instance`.
 instance Pi.instGeneralizedBooleanAlgebra {ι : Type*} {α : ι → Type*}
     [∀ i, GeneralizedBooleanAlgebra (α i)] : GeneralizedBooleanAlgebra (∀ i, α i) where
   sup_inf_sdiff := fun f g => funext fun a => sup_inf_sdiff (f a) (g a)

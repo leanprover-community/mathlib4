@@ -152,8 +152,9 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
+-- The `AddCommGroup, Module K(p, k)` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section Deriving
 
 instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=

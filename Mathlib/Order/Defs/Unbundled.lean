@@ -196,24 +196,19 @@ def AntiSymmetric := ∀ ⦃x y⦄, x ≺ y → y ≺ x → x = y
 /-- `IsTotal` as a definition, suitable for use in proofs. -/
 def Total := ∀ x y, x ≺ y ∨ y ≺ x
 
-@[deprecated Equivalence.refl (since := "2024-09-13")]
 theorem Equivalence.reflexive (h : Equivalence r) : Reflexive r := h.refl
 
-@[deprecated Equivalence.symm (since := "2024-09-13")]
 theorem Equivalence.symmetric (h : Equivalence r) : Symmetric r :=
   fun _ _ ↦ h.symm
 
-@[deprecated Equivalence.trans (since := "2024-09-13")]
 theorem Equivalence.transitive (h : Equivalence r) : Transitive r :=
   fun _ _ _ ↦ h.trans
 
 variable {β : Sort*} (r : β → β → Prop) (f : α → β)
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.trans (h : Transitive r) : Transitive (InvImage r f) :=
   fun (a₁ a₂ a₃ : α) (h₁ : InvImage r f a₁ a₂) (h₂ : InvImage r f a₂ a₃) ↦ h h₁ h₂
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-13")]
 theorem InvImage.irreflexive (h : Irreflexive r) : Irreflexive (InvImage r f) :=
   fun (a : α) (h₁ : InvImage r f a a) ↦ h (f a) h₁
 

@@ -111,35 +111,53 @@ lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
 
 /-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
 def stdSimplex.spineId (n : ℕ) : Path Δ[n] n :=
-  spine Δ[n] n (stdSimplex.id n)
+  spine Δ[n] n (objEquiv.symm (𝟙 _))
+
+@[simp]
+lemma stdSimplex.spineId_vertex (n : ℕ) (i : Fin (n + 1)) :
+    (stdSimplex.spineId n).vertex i = obj₀Equiv.symm i := rfl
+
+@[simp]
+lemma stdSimplex.spineId_arrow_apply_zero (n : ℕ) (i : Fin n) :
+    (stdSimplex.spineId n).arrow i 0 = i.castSucc := rfl
+
+@[simp]
+lemma stdSimplex.spineId_arrow_apply_one (n : ℕ) (i : Fin n) :
+    (stdSimplex.spineId n).arrow i 1 = i.succ := rfl
+
+/-- A path of a simplicial set can be lifted to a subcomplex if the vertices
+and arrows belong to this subcomplex. -/
+@[simps]
+def Subcomplex.liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p : Path X n)
+    (hp₀ : ∀ j, p.vertex j ∈ A.obj _)
+    (hp₁ : ∀ j, p.arrow j ∈ A.obj _) :
+    Path A n where
+  vertex j := ⟨p.vertex j, hp₀ _⟩
+  arrow j := ⟨p.arrow j, hp₁ _⟩
+  arrow_src j := by simpa [Subtype.ext_iff] using p.arrow_src j
+  arrow_tgt j := by simpa [Subtype.ext_iff] using p.arrow_tgt j
+
+@[simp]
+lemma Subcomplex.map_ι_liftPath {X : SSet.{u}} (A : X.Subcomplex) {n : ℕ} (p : Path X n)
+    (hp₀ : ∀ j, p.vertex j ∈ A.obj _)
+    (hp₁ : ∀ j, p.arrow j ∈ A.obj _) :
+    (A.liftPath p hp₀ hp₁).map A.ι = p := rfl
 
 /-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
 in `Δ[n]`. -/
-@[simps]
+@[simps! vertex_coe arrow_coe]
 def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
-    Path Λ[n + 2, i] (n + 2) where
-  vertex j := ⟨stdSimplex.spineId _ |>.vertex j, (horn.const n i j _).property⟩
-  arrow j := ⟨stdSimplex.spineId _ |>.arrow j, by
-    let edge := horn.primitiveEdge h₀ hₙ j
-    have ha : (stdSimplex.spineId _).arrow j = edge.val := by
-      dsimp only [edge, stdSimplex.spineId, stdSimplex.id, spine_arrow,
-        mkOfSucc, horn.primitiveEdge, horn.edge, stdSimplex.edge,
-        stdSimplex.map_apply]
-      aesop
-    rw [ha]
-    exact edge.property⟩
-  arrow_src := by
-    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact stdSimplex.spineId _ |>.arrow_src
-  arrow_tgt := by
-    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact stdSimplex.spineId _ |>.arrow_tgt
+    Path (Λ[n + 2, i] : SSet.{u}) (n + 2) :=
+  Λ[n + 2, i].liftPath (stdSimplex.spineId (n + 2)) (by simp) (fun j ↦ by
+    convert (horn.primitiveEdge.{u} h₀ hₙ j).2
+    ext a
+    fin_cases a <;> rfl)
 
 @[simp]
 lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
-    Path.map (horn.spineId i h₀ hₙ) (hornInclusion (n + 2) i) =
+    Path.map (horn.spineId.{u} i h₀ hₙ) Λ[n + 2, i].ι =
       stdSimplex.spineId (n + 2) := rfl
 
 end SSet

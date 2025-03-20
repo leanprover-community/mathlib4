@@ -53,6 +53,12 @@ theorem mem_orbit_iff {a₁ a₂ : α} : a₂ ∈ orbit M a₁ ↔ ∃ x : M, x 
 theorem mem_orbit (a : α) (m : M) : m • a ∈ orbit M a :=
   ⟨m, rfl⟩
 
+@[to_additive]
+theorem mem_orbit_of_mem_orbit {a₁ a₂ : α} (m : M) (h : a₂ ∈ orbit M a₁) :
+    m • a₂ ∈ orbit M a₁ := by
+  obtain ⟨x, rfl⟩ := mem_orbit_iff.mp h
+  simp [smul_smul]
+
 @[to_additive (attr := simp)]
 theorem mem_orbit_self (a : α) : a ∈ orbit M a :=
   ⟨1, by simp [MulAction.one_smul]⟩
@@ -471,7 +477,7 @@ def selfEquivSigmaOrbits' : α ≃ Σω : Ω, ω.orbit :=
 def selfEquivSigmaOrbits : α ≃ Σω : Ω, orbit G ω.out :=
   (selfEquivSigmaOrbits' G α).trans <|
     Equiv.sigmaCongrRight fun _ =>
-      Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
+      Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ Quotient.out_eq'
 
 /-- Decomposition of a type `X` as a disjoint union of its orbits under a group action.
 Phrased as a set union. See `MulAction.selfEquivSigmaOrbits` for the type isomorphism. -/

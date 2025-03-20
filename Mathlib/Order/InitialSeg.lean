@@ -55,9 +55,8 @@ structure InitialSeg {α β : Type*} (r : α → α → Prop) (s : β → β →
   /-- The order embedding is an initial segment -/
   mem_range_of_rel' : ∀ a b, s b (toRelEmbedding a) → b ∈ Set.range toRelEmbedding
 
--- Porting note: Deleted `scoped[InitialSeg]`
 @[inherit_doc]
-infixl:25 " ≼i " => InitialSeg
+scoped[InitialSeg] infixl:25 " ≼i " => InitialSeg
 
 /-- An `InitialSeg` between the `<` relations of two types. -/
 notation:25 α:24 " ≤i " β:25 => @InitialSeg α β (· < ·) (· < ·)
@@ -258,12 +257,13 @@ structure PrincipalSeg {α β : Type*} (r : α → α → Prop) (s : β → β �
   /-- The range of the order embedding is the set of elements `b` such that `s b top` -/
   mem_range_iff_rel' : ∀ b, b ∈ Set.range toRelEmbedding ↔ s b top
 
--- Porting note: deleted `scoped[InitialSeg]`
 @[inherit_doc]
-infixl:25 " ≺i " => PrincipalSeg
+scoped[InitialSeg] infixl:25 " ≺i " => PrincipalSeg
 
 /-- A `PrincipalSeg` between the `<` relations of two types. -/
 notation:25 α:24 " <i " β:25 => @PrincipalSeg α β (· < ·) (· < ·)
+
+open scoped InitialSeg
 
 namespace PrincipalSeg
 

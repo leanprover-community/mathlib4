@@ -196,7 +196,8 @@ theorem lintegral_bind {m : Measure α} {μ : α → Measure β} {f : β → ℝ
 theorem bind_bind {γ} [MeasurableSpace γ] {m : Measure α} {f : α → Measure β} {g : β → Measure γ}
     (hf : Measurable f) (hg : Measurable g) : bind (bind m f) g = bind m fun a => bind (f a) g := by
   ext1 s hs
-  erw [bind_apply hs hg, bind_apply hs ((measurable_bind' hg).comp hf),
+  rw [bind_apply hs hg]
+  erw [bind_apply hs ((measurable_bind' hg).comp hf),
     lintegral_bind hf ((measurable_coe hs).comp hg)]
   conv_rhs => enter [2, a]; erw [bind_apply hs hg]
   rfl

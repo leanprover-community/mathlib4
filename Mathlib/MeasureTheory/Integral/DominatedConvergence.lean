@@ -353,7 +353,8 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     refine continuousWithinAt_of_dominated_interval ?_ ?_ this ?_ <;> clear this
     · filter_upwards [self_mem_nhdsWithin]
       intro x hx
-      erw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, Iic_inter_Ioc_of_le]
+      rw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, uIoc, Iic_def,
+        Iic_inter_Ioc_of_le]
       · rw [min₁₂]
         exact (h_int' hx).1.aestronglyMeasurable
       · exact le_max_of_le_right hx.2

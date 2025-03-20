@@ -475,9 +475,7 @@ def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSu
     letI : UniformSpace G := IsTopologicalAddGroup.toUniformSpace G
     haveI : UniformAddGroup G := uniformAddGroup_of_addCommGroup
     rw [(UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous_iff]
-    -- Porting note: without this, the following doesn't work
-    change Continuous ((fun f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
-    exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
+    apply (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
 variable (E) {G}

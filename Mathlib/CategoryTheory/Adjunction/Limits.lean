@@ -288,8 +288,7 @@ def coconesIsoComponentHom {J : Type u} [Category.{v} J] {K : J ⥤ C} (Y : D)
     (t : ((cocones J D).obj (op (K ⋙ F))).obj Y) : (G ⋙ (cocones J C).obj (op K)).obj Y where
   app j := (adj.homEquiv (K.obj j) Y) (t.app j)
   naturality j j' f := by
-    erw [← adj.homEquiv_naturality_left, t.naturality]
-    dsimp
+    rw [← adj.homEquiv_naturality_left, ← Functor.comp_map, t.naturality]
     simp
 
 /-- auxiliary construction for `coconesIso` -/

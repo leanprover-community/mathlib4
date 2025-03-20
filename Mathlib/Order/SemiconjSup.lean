@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Algebra.Order.Group.End
 import Mathlib.Logic.Function.Conjugate
 import Mathlib.Order.Bounds.OrderIso
 import Mathlib.Order.OrdContinuous
-import Mathlib.Order.RelIso.Group
 
 /-!
 # Semiconjugate by `sSup`
@@ -43,7 +43,7 @@ a right adjoint, then this right adjoint is unique. -/
 def IsOrderRightAdjoint [Preorder α] [Preorder β] (f : α → β) (g : β → α) :=
   ∀ y, IsLUB { x | f x ≤ y } (g y)
 
-theorem isOrderRightAdjoint_sSup [CompleteLattice α] [Preorder β] (f : α → β) :
+theorem isOrderRightAdjoint_sSup [CompleteSemilatticeSup α] [Preorder β] (f : α → β) :
     IsOrderRightAdjoint f fun y => sSup { x | f x ≤ y } := fun _ => isLUB_sSup _
 
 theorem isOrderRightAdjoint_csSup [ConditionallyCompleteLattice α] [Preorder β] (f : α → β)

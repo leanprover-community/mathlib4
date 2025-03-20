@@ -53,7 +53,6 @@ namespace ENormedSpace
 variable {𝕜 : Type*} {V : Type*} [NormedField 𝕜] [AddCommGroup V] [Module 𝕜 V]
   (e : ENormedSpace 𝕜 V)
 
--- Porting note: added to appease norm_cast complaints
 attribute [coe] ENormedSpace.toFun
 
 instance : CoeFun (ENormedSpace 𝕜 V) fun _ => V → ℝ≥0∞ :=

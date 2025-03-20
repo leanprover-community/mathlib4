@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Data.NNReal.Defs
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Bornology.Real
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Order.Real
@@ -98,7 +99,7 @@ open Filter NNReal Set Topology
 theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
   coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
 
-@[norm_cast]
+@[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
     Tendsto (fun a => (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
   isEmbedding_coe.tendsto_nhds_iff.symm

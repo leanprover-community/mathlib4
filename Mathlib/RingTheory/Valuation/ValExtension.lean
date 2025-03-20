@@ -93,7 +93,7 @@ instance id : IsValExtension vR vR where
 
 section integer
 
-variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK: Type*}
+variable {K : Type*} [Field K] [Algebra K A] {ΓR ΓA ΓK : Type*}
     [LinearOrderedCommGroupWithZero ΓR] [LinearOrderedCommGroupWithZero ΓK]
     [LinearOrderedCommGroupWithZero ΓA] {vR : Valuation R ΓR} {vK : Valuation K ΓK}
     {vA : Valuation A ΓA} [IsValExtension vR vA]
@@ -145,7 +145,7 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
   apply RingHom.injective (algebraMap K A) h
 
 @[instance]
-theorem instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
+theorem instIsLocalHomValuationInteger {S ΓS : Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero ΓS]
     [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
     [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where

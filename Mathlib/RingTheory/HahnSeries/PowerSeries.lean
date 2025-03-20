@@ -49,7 +49,7 @@ variable [Semiring R]
 @[simps]
 def toPowerSeries : HahnSeries ℕ R ≃+* PowerSeries R where
   toFun f := PowerSeries.mk f.coeff
-  invFun f := ⟨fun n => PowerSeries.coeff R n f, (Nat.lt_wfRel.wf.isWF _).isPWO⟩
+  invFun f := ⟨fun n => PowerSeries.coeff R n f, .of_linearOrder _⟩
   left_inv f := by
     ext
     simp
@@ -141,7 +141,8 @@ theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
 /-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
 even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
-After importing `Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
+After importing `Mathlib.Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed
+instead.
 -/
 @[simps]
 def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where

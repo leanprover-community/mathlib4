@@ -301,7 +301,7 @@ theorem sum_divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) {α : Type*} [Ad
 
 theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
     ∃ a b : ℕ, 0 < a ∧ 0 < b ∧ b ^ 2 * a = n ∧ Squarefree a := by
-  classical -- Porting note: This line is not needed in Lean 3
+  classical
   set S := {s ∈ range (n + 1) | s ∣ n ∧ ∃ x, s = x ^ 2}
   have hSne : S.Nonempty := by
     use 1
@@ -319,7 +319,6 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   rw [Nat.isUnit_iff]
   by_contra hx
   refine Nat.lt_le_asymm ?_ (Finset.le_max' S ((b * x) ^ 2) ?_)
-  -- Porting note: these two goals were in the opposite order in Lean 3
   · convert lt_mul_of_one_lt_right hlts
       (one_lt_pow two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
       using 1

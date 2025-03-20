@@ -247,7 +247,7 @@ section CommRing
 
 -- Porting note: move to better place
 -- Porting note: make `S` and `T` universe polymorphic
-lemma Subring.mem_closure_image_of {S T : Type*} [CommRing S] [CommRing T] (g : S →+* T)
+lemma Subring.mem_closure_image_of {S T : Type*} [Ring S] [Ring T] (g : S →+* T)
     (u : Set S) (x : S) (hx : x ∈ Subring.closure u) : g x ∈ Subring.closure (g '' u) := by
   rw [Subring.mem_closure] at hx ⊢
   intro T₁ h₁

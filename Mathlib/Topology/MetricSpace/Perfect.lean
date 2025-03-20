@@ -133,7 +133,7 @@ from the Cantor space `ℕ → Bool`. -/
 theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   obtain ⟨D, hD, Dnonempty, hDC⟩ := exists_perfect_nonempty_of_isClosed_of_not_countable hC hunc
   obtain ⟨f, hfD, hf⟩ := hD.exists_nat_bool_injection Dnonempty
   exact ⟨f, hfD.trans hDC, hf⟩

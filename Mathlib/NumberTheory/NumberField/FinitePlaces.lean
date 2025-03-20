@@ -49,7 +49,7 @@ lemma one_lt_absNorm : 1 < absNorm v.asIdeal := by
   rw [← absNorm_eq_one_iff]
   have : 0 < absNorm v.asIdeal := by
     rw [Nat.pos_iff_ne_zero, absNorm_ne_zero_iff]
-    exact (v.asIdeal.fintypeQuotientOfFreeOfNeBot v.ne_bot).finite
+    exact v.asIdeal.finiteQuotientOfFreeOfNeBot v.ne_bot
   omega
 
 @[deprecated (since := "2025-02-28")] alias one_lt_norm := one_lt_absNorm
@@ -206,7 +206,7 @@ theorem FinitePlace.norm_eq_one_iff_not_mem (x : 𝓞 (WithVal (v.valuation K)))
 /-- The `v`-adic norm of an integer is less than 1 if and only if it is in the ideal. -/
 theorem FinitePlace.norm_lt_one_iff_mem (x : 𝓞 (WithVal (v.valuation K))) :
     ‖embedding v x‖ < 1 ↔ x ∈ v.asIdeal := by
-  erw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_absNorm_nnreal v),
+  rw [norm_def_int, NNReal.coe_lt_one, toNNReal_lt_one_iff (one_lt_absNorm_nnreal v),
     intValuation_lt_one_iff_dvd]
   exact dvd_span_singleton
 

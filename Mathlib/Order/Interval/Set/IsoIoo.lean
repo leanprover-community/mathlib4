@@ -14,12 +14,8 @@ In this file we provide an order isomorphism `orderIsoIooNegOneOne` between the 
 `(-1, 1)` in a linear ordered field and the whole field.
 -/
 
-/- Porting note: `Mathlib.Algebra.Order.Field.Basic` added to imports for `abs` -/
-
-
 open Set
 
-/- Porting note: Had to manually coerce `x : Ioo (-1 : k) 1` to `x : k`. -/
 /-- In a linear ordered field, the whole field is order isomorphic to the open interval `(-1, 1)`.
 We consider the actual implementation to be a "black box", so it is irreducible.
 -/

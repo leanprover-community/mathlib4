@@ -548,18 +548,11 @@ macro "isBoundedDefault" : tactic =>
     | apply isBounded_ge_of_bot
     | assumption)
 
--- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
--- unsafe def is_bounded_default : tactic Unit :=
---   tactic.applyc `` is_cobounded_le_of_bot <|>
---     tactic.applyc `` is_cobounded_ge_of_top <|>
---       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
-
 
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 
--- Porting note: Renamed from Limsup and Liminf to limsSup and limsInf
 /-- The `limsSup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
 holds `x ≤ a`. -/
 def limsSup (f : Filter α) : α :=
@@ -1296,14 +1289,14 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α]
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, eventually we have `u b < x + ε`. -/
-theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddMonoid α] [AddLeftStrictMono α]
+theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
     {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x)
     (hε : 0 < ε) :
     ∀ᶠ b : β in atTop, u b < x + ε :=
   eventually_lt_of_limsup_lt (lt_of_le_of_lt hu (lt_add_of_pos_right x hε)) hu_bdd
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, eventually we have `x + ε < u b`. -/
-theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeftStrictMono α]
+theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
     {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop )
     (hε : ε < 0) :
     ∀ᶠ b : β in atTop, x + ε < u b :=
@@ -1311,7 +1304,7 @@ theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeft
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural
 number `n` such that `u n < x + ε`. -/
-theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+theorem exists_lt_of_limsup_le [AddZeroClass α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) (hε : 0 < ε) :
     ∃ n : PNat, u n < x + ε := by
   have h : ∀ᶠ n : ℕ in atTop, u n < x + ε := eventually_lt_add_pos_of_limsup_le hu_bdd hu hε
@@ -1321,7 +1314,7 @@ theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α}
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, there exists a positive natural
 number `n` such that ` x + ε < u n`. -/
-theorem exists_lt_of_le_liminf [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+theorem exists_lt_of_le_liminf [AddZeroClass α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop) (hε : ε < 0) :
     ∃ n : PNat, x + ε < u n := by
   have h : ∀ᶠ n : ℕ in atTop, x + ε < u n := eventually_add_neg_lt_of_le_liminf hu_bdd hu hε
@@ -1592,7 +1585,6 @@ theorem OrderIso.limsup_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
   rw [← g.symm.symm_apply_apply <| limsup (fun x => g (u x)) f, g.symm_symm]
   refine g.monotone ?_
   have hf : u = fun i => g.symm (g (u i)) := funext fun i => (g.symm_apply_apply (u i)).symm
-  -- Porting note: nth_rw 1 to nth_rw 2
   nth_rw 2 [hf]
   refine (OrderIso.to_galoisConnection g.symm).l_limsup_le ?_ hgu_co
   simp_rw [g.symm_apply_apply]

@@ -74,9 +74,7 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   let a : Finset ℂ := ?_
   on_goal 1 => let b : Finset ℂ := ?_
   on_goal 1 => let c : Finset ℂ := ?_
-  -- Porting note: was
-  --   change a.card = b.card + c.card
-  suffices a.card = b.card + c.card by exact this
+  change a.card = b.card + c.card
   have ha : ∀ z : ℂ, z ∈ a ↔ aeval z p = 0 := by
     intro z; rw [Set.mem_toFinset, mem_rootSet_of_ne hp]
   have hb : ∀ z : ℂ, z ∈ b ↔ aeval z p = 0 ∧ z.im = 0 := by
@@ -192,7 +190,9 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
   cases eq_or_ne z.im 0 with
   | inl hz0 =>
     lift z to ℝ using hz0
-    erw [aeval_ofReal, RCLike.ofReal_eq_zero] at hz
+    -- I can't work out why `erw` is needed here. It looks like exactly the LHS of `aeval_ofReal`.
+    erw [aeval_ofReal] at hz
+    rw [RCLike.ofReal_eq_zero] at hz
     exact (degree_eq_one_of_irreducible_of_root hp hz).trans_le one_le_two
   | inr hz0 =>
     obtain ⟨q, rfl⟩ := p.quadratic_dvd_of_aeval_eq_zero_im_ne_zero hz hz0

@@ -297,7 +297,9 @@ theorem powersetCard_sup [DecidableEq α] (u : Finset α) (n : ℕ) (hn : n < u.
 theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) :
     powersetCard n (s.map f) = (powersetCard n s).map (mapEmbedding f).toEmbedding :=
   ext fun t => by
-    simp only [card_map, mem_powersetCard, le_eq_subset, gt_iff_lt, mem_map, mapEmbedding_apply]
+    -- `le_eq_subset` is a dangerous lemma since it turns the type `↪o` into `(· ⊆ ·) ↪r (· ⊆ ·)`,
+    -- which makes `simp` have trouble working with `mapEmbedding_apply`.
+    simp only [mem_powersetCard, mem_map, RelEmbedding.coe_toEmbedding, mapEmbedding_apply]
     constructor
     · classical
       intro h
@@ -309,10 +311,7 @@ theorem powersetCard_map {β : Type*} (f : α ↪ β) (n : ℕ) (s : Finset α) 
       refine ⟨_, ?_, this⟩
       rw [← card_map f, this, h.2]; simp
     · rintro ⟨a, ⟨has, rfl⟩, rfl⟩
-      dsimp [RelEmbedding.coe_toEmbedding]
-      -- Porting note: Why is `rw` required here and not `simp`?
-      rw [mapEmbedding_apply]
-      simp [has]
+      simp only [map_subset_map, has, card_map, and_self]
 
 end powersetCard
 

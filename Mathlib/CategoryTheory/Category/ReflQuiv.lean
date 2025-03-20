@@ -245,7 +245,7 @@ nonrec def adj : Cat.freeRefl.{max u v, u} ⊣ ReflQuiv.forget :=
       rw [← Functor.assoc, ← Cat.freeRefl_naturality, Functor.assoc]
       dsimp [Cat.freeRefl]
       have := adj.counit.comp_app_eq (Cat.FreeRefl V)
-      simp [Cat.of_α] at this
+      simp only [Cat.free_obj, Cat.of_α] at this
       rw [this]
       conv =>
         enter [1, 1, 2]

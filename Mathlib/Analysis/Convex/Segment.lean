@@ -54,7 +54,7 @@ Denoted as `[x -[𝕜] y]` within the `Convex` namespace. -/
 def openSegment (x y : E) : Set E :=
   { z : E | ∃ a b : 𝕜, 0 < a ∧ 0 < b ∧ a + b = 1 ∧ a • x + b • y = z }
 
-@[inherit_doc] scoped[Convex] notation (priority := high) "[" x "-[" 𝕜 "]" y "]" => segment 𝕜 x y
+@[inherit_doc] scoped[Convex] notation (priority := high) "[" x " -[" 𝕜 "] " y "]" => segment 𝕜 x y
 
 theorem segment_eq_image₂ (x y : E) :
     [x -[𝕜] y] =

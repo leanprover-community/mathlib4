@@ -141,8 +141,6 @@ variable [DecidableEq α] [DecidableEq α']
 
 /-! ### `dlookup` -/
 
-
--- Porting note: renaming to `dlookup` since `lookup` already exists
 /-- `dlookup a l` is the first value in `l` corresponding to the key `a`,
   or `none` if no such element exists. -/
 def dlookup (a : α) : List (Sigma β) → Option (β a)

@@ -25,7 +25,6 @@ variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 @[simp]
 theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
 
--- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
 of the filter `g (s i)`, then

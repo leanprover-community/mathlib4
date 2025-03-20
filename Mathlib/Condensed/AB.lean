@@ -47,10 +47,10 @@ lemma hasExactLimitsOfShape [HasLimitsOfShape J A] [HasExactLimitsOfShape J A]
 
 section Module
 
-variable (R : Type (u+1)) [Ring R]
+variable (R : Type (u + 1)) [Ring R]
 
-local instance : HasLimitsOfSize.{u, u+1} (ModuleCat.{u+1} R) :=
-  hasLimitsOfSizeShrink.{u, u+1, u+1, u} _
+local instance : HasLimitsOfSize.{u, u + 1} (ModuleCat.{u + 1} R) :=
+  hasLimitsOfSizeShrink.{u, u + 1, u + 1, u} _
 
 variable (X Y : CondensedMod.{u} R)
 

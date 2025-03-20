@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.Quasispectrum
-import Mathlib.Algebra.Algebra.Spectrum
-import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Tactic.ContinuousFunctionalCalculus
 import Mathlib.Topology.Algebra.Polynomial
 import Mathlib.Topology.Algebra.Star.Real
-import Mathlib.Topology.ContinuousMap.Ordered
-import Mathlib.Topology.ContinuousMap.Star
+import Mathlib.Topology.ContinuousMap.StarOrdered
 
 /-!
 # The continuous functional calculus
@@ -872,9 +869,8 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R]
-variable [MetricSpace R] [IsTopologicalSemiring R] [ContinuousStar R]
-variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R] [MetricSpace R]
+variable [IsTopologicalSemiring R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 
@@ -978,9 +974,8 @@ end NNReal
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
-variable [MetricSpace R] [IsTopologicalRing R] [ContinuousStar R]
-variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
+variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R] [MetricSpace R]
+variable [IsTopologicalRing R] [ContinuousStar R] [ContinuousSqrt R] [StarOrderedRing R]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
 variable [Algebra R A] [instCFC : ContinuousFunctionalCalculus R p]
 variable [NonnegSpectrumClass R A]

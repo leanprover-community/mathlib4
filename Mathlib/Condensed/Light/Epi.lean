@@ -24,7 +24,7 @@ open CategoryTheory Sheaf Limits HasForget GrothendieckTopology
 namespace LightCondensed
 
 variable (A : Type u') [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w}
-variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)][ConcreteCategory.{w} A FA]
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w} A FA]
   [PreservesFiniteProducts (CategoryTheory.forget A)]
 
 variable {X Y : LightCondensed.{u} A} (f : X ⟶ Y)

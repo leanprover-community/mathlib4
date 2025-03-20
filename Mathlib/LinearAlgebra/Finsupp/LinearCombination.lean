@@ -11,9 +11,17 @@ import Mathlib.LinearAlgebra.Finsupp.Supported
 
 ## Main definitions
 
-* `Finsupp.linearCombination R (v : ι → M)`: sends `l : ι → R` to the linear combination of
+* `Finsupp.linearCombination R (v : ι → M)`: sends `l : ι →₀ R` to the linear combination of
   `v i` with coefficients `l i`;
 * `Finsupp.linearCombinationOn`: a restricted version of `Finsupp.linearCombination` with domain
+
+* `Fintype.linearCombination R (v : ι → M)`: sends `l : ι → R` to the linear combination of
+  `v i` with coefficients `l i` (for a finite type `ι`)
+
+* `Finsupp.bilinearCombination R S`, `Fintype.bilinearCombination R S`:
+  a bilinear version of `Finsupp.linearCombination` and `Fintype.linearCombination`.
+  It requires that `M` is both an `R`-module and an `S`-module, with `SMulCommClass R S M`;
+  the case `S = R` typically requires that `R` is commutative.
 
 ## Tags
 
@@ -95,7 +103,7 @@ theorem linearCombination_surjective (h : Function.Surjective v) :
     Function.Surjective (linearCombination R v) := by
   intro x
   obtain ⟨y, hy⟩ := h x
-  exact ⟨Finsupp.single y 1, by simp [hy]⟩
+  exact ⟨single y 1, by simp [hy]⟩
 
 theorem linearCombination_range (h : Function.Surjective v) :
     LinearMap.range (linearCombination R v) = ⊤ :=
@@ -120,7 +128,7 @@ theorem range_linearCombination : LinearMap.range (linearCombination R v) = span
     intro x hx
     rcases hx with ⟨i, hi⟩
     rw [SetLike.mem_coe, LinearMap.mem_range]
-    use Finsupp.single i 1
+    use single i 1
     simp [hi]
 
 theorem lmapDomain_linearCombination (f : α → α') (g : M →ₗ[R] M') (h : ∀ i, g (v i) = v' (f i)) :
@@ -258,6 +266,25 @@ theorem linearCombination_onFinset {s : Finset α} {f : α → R} (g : α → M)
   contrapose! h
   simp [h]
 
+variable [Module S M] [SMulCommClass R S M]
+
+variable (S) in
+/-- `Finsupp.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
+in `f`, as a bilinear map of `v` and `f`.
+In the absence of `SMulCommClass R S M`, use `Finsupp.linearCombination`.
+
+See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+-/
+def bilinearCombination : (α → M) →ₗ[S] (α →₀ R) →ₗ[R] M where
+  toFun v := linearCombination R v
+  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+
+@[simp]
+theorem bilinearCombination_apply :
+    bilinearCombination R S v = linearCombination R v :=
+  rfl
+
 end LinearCombination
 
 end Finsupp
@@ -268,36 +295,29 @@ variable {α M : Type*} (R : Type*) [Fintype α] [Semiring R] [AddCommMonoid M] 
 variable (S : Type*) [Semiring S] [Module S M] [SMulCommClass R S M]
 variable (v : α → M)
 
-/-- `Fintype.linearCombination R S v f` is the linear combination of vectors in `v` with weights
+/-- `Fintype.linearCombination R v f` is the linear combination of vectors in `v` with weights
 in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
 
 This map is linear in `v` if `R` is commutative, and always linear in `f`.
 See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
 -/
-protected def Fintype.linearCombination : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
-  toFun v :=
-    { toFun := fun f => ∑ i, f i • v i
-      map_add' := fun f g => by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
-      map_smul' := fun r f => by simp_rw [Finset.smul_sum, smul_smul]; rfl }
-  map_add' u v := by ext; simp [Finset.sum_add_distrib, Pi.add_apply, smul_add]
-  map_smul' r v := by ext; simp [Finset.smul_sum, smul_comm]
+protected def Fintype.linearCombination : (α → R) →ₗ[R] M where
+  toFun f := ∑ i, f i • v i
+  map_add' f g := by simp_rw [← Finset.sum_add_distrib, ← add_smul]; rfl
+  map_smul' r f := by simp_rw [Finset.smul_sum, smul_smul]; rfl
 
-variable {S}
-
-theorem Fintype.linearCombination_apply (f) : Fintype.linearCombination R S v f = ∑ i, f i • v i :=
+theorem Fintype.linearCombination_apply (f) : Fintype.linearCombination R v f = ∑ i, f i • v i :=
   rfl
 
 @[simp]
 theorem Fintype.linearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
-    Fintype.linearCombination R S v (Pi.single i r) = r • v i := by
+    Fintype.linearCombination R v (Pi.single i r) = r • v i := by
   simp_rw [Fintype.linearCombination_apply, Pi.single_apply, ite_smul, zero_smul]
   rw [Finset.sum_ite_eq', if_pos (Finset.mem_univ _)]
 
-variable (S)
-
 theorem Finsupp.linearCombination_eq_fintype_linearCombination_apply (x : α → R) :
     linearCombination R v ((Finsupp.linearEquivFunOnFinite R R α).symm x) =
-      Fintype.linearCombination R S v x := by
+      Fintype.linearCombination R v x := by
   apply Finset.sum_subset
   · exact Finset.subset_univ _
   · intro x _ hx
@@ -306,16 +326,38 @@ theorem Finsupp.linearCombination_eq_fintype_linearCombination_apply (x : α →
 
 theorem Finsupp.linearCombination_eq_fintype_linearCombination :
     (linearCombination R v).comp (Finsupp.linearEquivFunOnFinite R R α).symm.toLinearMap =
-      Fintype.linearCombination R S v :=
-  LinearMap.ext <| linearCombination_eq_fintype_linearCombination_apply R S v
+      Fintype.linearCombination R v :=
+  LinearMap.ext <| linearCombination_eq_fintype_linearCombination_apply R v
+
+@[simp]
+theorem Fintype.range_linearCombination :
+    LinearMap.range (Fintype.linearCombination R v) = Submodule.span R (Set.range v) := by
+  rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
+      LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
+
+/-- `Fintype.bilinearCombination R S v f` is the linear combination of vectors in `v` with weights
+in `f`. This variant of `Finsupp.linearCombination` is defined on fintype indexed vectors.
+
+This map is linear in `v` if `R` is commutative, and always linear in `f`.
+See note [bundled maps over different rings] for why separate `R` and `S` semirings are used.
+-/
+protected def Fintype.bilinearCombination : (α → M) →ₗ[S] (α → R) →ₗ[R] M where
+  toFun v := Fintype.linearCombination R v
+  map_add' u v := by ext; simp [Fintype.linearCombination,
+    Finset.sum_add_distrib, Pi.add_apply, smul_add]
+  map_smul' r v := by ext; simp [Fintype.linearCombination, Finset.smul_sum, smul_comm]
 
 variable {S}
 
 @[simp]
-theorem Fintype.range_linearCombination :
-    LinearMap.range (Fintype.linearCombination R S v) = Submodule.span R (Set.range v) := by
-  rw [← Finsupp.linearCombination_eq_fintype_linearCombination, LinearMap.range_comp,
-      LinearEquiv.range, Submodule.map_top, Finsupp.range_linearCombination]
+theorem Fintype.bilinearCombination_apply :
+    Fintype.bilinearCombination R S v = Fintype.linearCombination R v :=
+  rfl
+
+theorem Fintype.bilinearCombination_apply_single [DecidableEq α] (i : α) (r : R) :
+    Fintype.bilinearCombination R S v (Pi.single i r) = r • v i := by
+  simp [Fintype.bilinearCombination]
+
 section SpanRange
 
 variable {v} {x : M}
@@ -428,3 +470,25 @@ lemma span_eq_iUnion_nat (s : Set M) :
     exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩
   · rintro ⟨f, hf, rfl⟩
     exact ⟨fun i ↦ (f i).1, fun i ↦ ⟨(f i).2, (hf i)⟩, rfl⟩
+
+section Ring
+
+variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
+
+/-- Given `c : ι → R` and an index `i` such that `c i = 0`, this is the linear isomorphism sending
+the `j`-th standard basis vector to itself plus `c j` multiplied with the `i`-th standard basis
+vector (in particular, the `i`-th standard basis vector is kept invariant). -/
+def Finsupp.addSingleEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
+  refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
+    (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
+  ext j k <;> obtain rfl | hk := eq_or_ne i k
+  · simp [h₀]
+  · simp [single_eq_of_ne hk]
+  · simp [h₀]
+  · simp [single_eq_of_ne hk]
+
+theorem Finsupp.linearCombination_comp_addSingleEquiv (v : ι → M) :
+    linearCombination R v ∘ₗ addSingleEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by
+  ext; simp [addSingleEquiv]
+
+end Ring

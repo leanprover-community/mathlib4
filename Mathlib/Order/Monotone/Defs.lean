@@ -313,7 +313,6 @@ theorem strictAnti_of_le_iff_le [Preorder α] [Preorder β] {f : α → β}
     (h : ∀ x y, x ≤ y ↔ f y ≤ f x) : StrictAnti f :=
   fun _ _ ↦ (lt_iff_lt_of_le_iff_le' (h _ _) (h _ _)).1
 
--- Porting note: mathlib3 proof uses `contrapose` tactic
 theorem injective_of_lt_imp_ne [LinearOrder α] {f : α → β} (h : ∀ x y, x < y → f x ≠ f y) :
     Injective f := by
   intro x y hf

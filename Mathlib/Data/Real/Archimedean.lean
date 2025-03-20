@@ -385,4 +385,11 @@ lemma exists_natCast_add_one_lt_pow_of_one_lt (ha : 1 < a) : ∃ m : ℕ, (m + 1
     _ = (1 / k + 1 : ℝ) ^ (2 * k ^ 2) := by rw [← pow_mul, mul_left_comm, sq]
     _ < a ^ (2 * k ^ 2) := by gcongr
 
+lemma exists_nat_pos_inv_lt {b : ℝ} (hb : 0 < b) :
+    ∃ (n : ℕ), 0 < n ∧ (n : ℝ)⁻¹ < b := by
+  refine (exists_nat_gt b⁻¹).imp fun k hk ↦ ?_
+  have := (inv_pos_of_pos hb).trans hk
+  refine ⟨Nat.cast_pos.mp this, ?_⟩
+  rwa [inv_lt_comm₀ this hb]
+
 end Real

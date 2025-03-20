@@ -33,7 +33,7 @@ adding them back in lemmas when they are needed.
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1970algebraic]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 function field, ring of integers
@@ -64,7 +64,7 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
-    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c -- Porting note: Added `(f := _)`
+    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c
     refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h

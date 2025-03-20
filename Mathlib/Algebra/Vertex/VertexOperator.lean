@@ -91,7 +91,7 @@ theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
 
 @[simp]
 theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
-    (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
+    (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
     (of_coeff f hf) [[n]] = f (-n - 1) := by
   ext v
   rw [ncoeff, coeff_apply, of_coeff_apply_coeff]

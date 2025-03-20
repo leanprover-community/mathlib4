@@ -729,8 +729,7 @@ def lieSpan : LieSubmodule R L M :=
 variable {R L s}
 
 theorem mem_lieSpan {x : M} : x ∈ lieSpan R L s ↔ ∀ N : LieSubmodule R L M, s ⊆ N → x ∈ N := by
-  change x ∈ (lieSpan R L s : Set M) ↔ _
-  rw [lieSpan, sInf_coe]
+  rw [← SetLike.mem_coe, lieSpan, sInf_coe]
   exact mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by

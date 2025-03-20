@@ -142,10 +142,8 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
       refine le_trans ?_ (le_max_left _ _)
       apply Finset.le_max'
       apply Finset.mem_image_of_mem
-      -- Porting note: was
-      -- simp only [Finset.mem_range]
-      -- linarith
-      simpa only [Finset.mem_range, Nat.lt_add_one_iff]
+      simp only [Finset.mem_range]
+      omega
     refine ⟨M⁻¹ * δ n, by positivity, fun i hi x => ?_⟩
     calc
       ‖iteratedFDeriv ℝ i ((M⁻¹ * δ n) • g n) x‖ = ‖(M⁻¹ * δ n) • iteratedFDeriv ℝ i (g n) x‖ := by
@@ -488,7 +486,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
           rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩
           simp only [hR, uncurry_apply_pair, if_true, Function.comp_apply]
         apply (y_smooth E).comp
-        · apply ContDiffOn.prod
+        · apply ContDiffOn.prodMk
           · refine
               (contDiffOn_fst.sub contDiffOn_const).div (contDiffOn_fst.add contDiffOn_const) ?_
             rintro ⟨R, x⟩ ⟨hR : 1 < R, _⟩

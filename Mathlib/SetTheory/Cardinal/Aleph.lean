@@ -560,7 +560,7 @@ set_option linter.deprecated false in
 theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   preAleph_omega0
 
-@[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
 alias aleph'_omega := aleph'_omega0
 
 @[deprecated aleph_eq_preAleph (since := "2024-10-22")]
@@ -583,7 +583,7 @@ theorem aleph'_isNormal : IsNormal (ord ∘ aleph') :=
   preAleph_isNormal
 
 /-- Ordinals that are cardinals are unbounded. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-24")]
 theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b } :=
   unbounded_lt_iff.2 fun a =>
     ⟨_,
@@ -592,18 +592,18 @@ theorem ord_card_unbounded : Unbounded (· < ·) { b : Ordinal | b.card.ord = b 
         rw [card_ord], (lt_ord_succ_card a).le⟩⟩
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-24")]
 theorem eq_aleph'_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) : ∃ a, (aleph' a).ord = o :=
   ⟨aleph'.symm o.card, by simpa using ho⟩
 
 set_option linter.deprecated false in
 /-- Infinite ordinals that are cardinals are unbounded. -/
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-24")]
 theorem ord_card_unbounded' : Unbounded (· < ·) { b : Ordinal | b.card.ord = b ∧ ω ≤ b } :=
   (unbounded_lt_inter_le ω).2 ord_card_unbounded
 
 set_option linter.deprecated false in
-@[deprecated "No deprecation message was provided."  (since := "2024-09-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-09-24")]
 theorem eq_aleph_of_eq_card_ord {o : Ordinal} (ho : o.card.ord = o) (ho' : ω ≤ o) :
     ∃ a, (ℵ_ a).ord = o := by
   obtain ⟨a, ha⟩ := eq_aleph'_of_eq_card_ord ho
@@ -771,5 +771,18 @@ theorem isNormal_beth : IsNormal (ord ∘ beth) :=
 @[deprecated isNormal_beth (since := "2024-10-11")]
 theorem beth_normal : IsNormal.{u} fun o => (beth o).ord :=
   isNormal_beth
+
+theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit (ℶ_ o) := by
+  rcases eq_or_ne o 0 with (rfl | h)
+  · rw [beth_zero]
+    exact isStrongLimit_aleph0
+  · refine ⟨beth_ne_zero o, fun a ha ↦ ?_⟩
+    rw [beth_limit] at ha
+    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+      have := power_le_power_left two_ne_zero ha.le
+      rw [← beth_succ] at this
+      exact this.trans_lt (beth_strictMono (H.succ_lt hi))
+    · rw [isLimit_iff]
+      exact ⟨h, H⟩
 
 end Cardinal

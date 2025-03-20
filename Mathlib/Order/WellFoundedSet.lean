@@ -5,17 +5,17 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Data.Prod.Lex
 import Mathlib.Data.Sigma.Lex
-import Mathlib.Order.Antichain
-import Mathlib.Order.OrderIsoNat
-import Mathlib.Order.WellFounded
+import Mathlib.Order.RelIso.Set
+import Mathlib.Order.WellQuasiOrder
 import Mathlib.Tactic.TFAE
 
 /-!
 # Well-founded sets
 
-A well-founded subset of an ordered type is one on which the relation `<` is well-founded.
+This file introduces versions of `WellFounded` and `WellQuasiOrdered` for sets.
 
 ## Main Definitions
+
  * `Set.WellFoundedOn s r` indicates that the relation `r` is
   well-founded when restricted to the set `s`.
  * `Set.IsWF s` indicates that `<` is well-founded when restricted to `s`.
@@ -25,6 +25,7 @@ A well-founded subset of an ordered type is one on which the relation `<` is wel
   monotone subsequence. Note that this is equivalent to containing only two comparable elements.
 
 ## Main Results
+
  * Higman's Lemma, `Set.PartiallyWellOrderedOn.partiallyWellOrderedOn_sublistForall₂`,
   shows that if `r` is partially well-ordered on `s`, then `List.SublistForall₂` is partially
   well-ordered on the set of lists of elements of `s`. The result was originally published by
@@ -37,7 +38,8 @@ A well-founded subset of an ordered type is one on which the relation `<` is wel
 
 ## TODO
 
-Prove that `s` is partial well ordered iff it has no infinite descending chain or antichain.
+* Prove that `s` is partial well ordered iff it has no infinite descending chain or antichain.
+* Rename `Set.PartiallyWellOrderedOn` to `Set.WellQuasiOrderedOn` and `Set.IsPWO` to `Set.IsWQO`.
 
 ## References
  * [Higman, *Ordering by Divisibility in Abstract Algebras*][Higman52]
@@ -54,10 +56,9 @@ namespace Set
 
 /-! ### Relations well-founded on sets -/
 
-
-/-- `s.WellFoundedOn r` indicates that the relation `r` is well-founded when restricted to `s`. -/
+/-- `s.WellFoundedOn r` indicates that the relation `r` is `WellFounded` when restricted to `s`. -/
 def WellFoundedOn (s : Set α) (r : α → α → Prop) : Prop :=
-  WellFounded fun a b : s => r a b
+  WellFounded (Subrel r (· ∈ s))
 
 @[simp]
 theorem wellFoundedOn_empty (r : α → α → Prop) : WellFoundedOn ∅ r :=
@@ -73,7 +74,7 @@ variable {f : β → α} {s t : Set α} {x y : α}
 
 theorem wellFoundedOn_iff :
     s.WellFoundedOn r ↔ WellFounded fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s := by
-  have f : RelEmbedding (fun (a : s) (b : s) => r a b) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
+  have f : RelEmbedding (Subrel r (· ∈ s)) fun a b : α => r a b ∧ a ∈ s ∧ b ∈ s :=
     ⟨⟨(↑), Subtype.coe_injective⟩, by simp⟩
   refine ⟨fun h => ?_, f.wellFounded⟩
   rw [WellFounded.wellFounded_iff_has_min]
@@ -137,7 +138,7 @@ theorem acc_iff_wellFoundedOn {α} {r : α → α → Prop} {a : α} :
       WellFoundedOn { b | ReflTransGen r b a } r,
       WellFoundedOn { b | TransGen r b a } r] := by
   tfae_have 1 → 2 := by
-    refine fun h => ⟨fun b => InvImage.accessible _ ?_⟩
+    refine fun h => ⟨fun b => InvImage.accessible Subtype.val ?_⟩
     rw [← acc_transGen_iff] at h ⊢
     obtain h' | h' := reflTransGen_iff_eq_or_transGen.1 b.2
     · rwa [h'] at h
@@ -203,13 +204,18 @@ def IsWF (s : Set α) : Prop :=
 theorem isWF_empty : IsWF (∅ : Set α) :=
   wellFounded_of_isEmpty _
 
-theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFounded ((· < ·) : α → α → Prop) := by
-  simp [IsWF, wellFoundedOn_iff]
-
 theorem IsWF.mono (h : IsWF t) (st : s ⊆ t) : IsWF s := h.subset st
 
-lemma IsWF.of_wellFoundedLT [WellFoundedLT α] : IsWF s :=
-  (isWF_univ_iff.2 wellFounded_lt).mono (subset_univ _)
+theorem isWF_univ_iff : IsWF (univ : Set α) ↔ WellFoundedLT α := by
+  simp [IsWF, wellFoundedOn_iff, isWellFounded_iff]
+
+theorem IsWF.of_wellFoundedLT [h : WellFoundedLT α] (s : Set α) : s.IsWF :=
+  (Set.isWF_univ_iff.2 h).mono s.subset_univ
+
+@[deprecated IsWF.of_wellFoundedLT (since := "2025-01-16")]
+theorem _root_.WellFounded.isWF (h : WellFounded ((· < ·) : α → α → Prop)) (s : Set α) : s.IsWF :=
+  have : WellFoundedLT α := ⟨h⟩
+  .of_wellFoundedLT s
 
 end LT
 
@@ -234,69 +240,75 @@ theorem isWF_iff_no_descending_seq :
 
 end Preorder
 
-/-!
-### Partially well-ordered sets
+/-! ### Partially well-ordered sets -/
+
+/-- `s.PartiallyWellOrderedOn r` indicates that the relation `r` is `WellQuasiOrdered` when
+restricted to `s`.
 
 A set is partially well-ordered by a relation `r` when any infinite sequence contains two elements
 where the first is related to the second by `r`. Equivalently, any antichain (see `IsAntichain`) is
 finite, see `Set.partiallyWellOrderedOn_iff_finite_antichains`.
--/
 
-
-/-- A subset is partially well-ordered by a relation `r` when any infinite sequence contains
-  two elements where the first is related to the second by `r`. -/
+TODO: rename this to `WellQuasiOrderedOn` to match `WellQuasiOrdered`. -/
 def PartiallyWellOrderedOn (s : Set α) (r : α → α → Prop) : Prop :=
-  ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ m n : ℕ, m < n ∧ r (f m) (f n)
+  WellQuasiOrdered (Subrel r (· ∈ s))
 
 section PartiallyWellOrderedOn
 
 variable {r : α → α → Prop} {r' : β → β → Prop} {f : α → β} {s : Set α} {t : Set α} {a : α}
 
+theorem PartiallyWellOrderedOn.exists_lt (hs : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ n, f n ∈ s) : ∃ m n, m < n ∧ r (f m) (f n) :=
+  hs fun n ↦ ⟨_, hf n⟩
+
+theorem partiallyWellOrderedOn_iff_exists_lt : s.PartiallyWellOrderedOn r ↔
+    ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ m n, m < n ∧ r (f m) (f n) :=
+  ⟨PartiallyWellOrderedOn.exists_lt, fun hf f ↦ hf _ fun n ↦ (f n).2⟩
+
 theorem PartiallyWellOrderedOn.mono (ht : t.PartiallyWellOrderedOn r) (h : s ⊆ t) :
-    s.PartiallyWellOrderedOn r := fun f hf => ht f fun n => h <| hf n
+    s.PartiallyWellOrderedOn r :=
+  fun f ↦ ht (Set.inclusion h ∘ f)
 
 @[simp]
-theorem partiallyWellOrderedOn_empty (r : α → α → Prop) : PartiallyWellOrderedOn ∅ r := fun _ h =>
-  (h 0).elim
+theorem partiallyWellOrderedOn_empty (r : α → α → Prop) : PartiallyWellOrderedOn ∅ r :=
+  wellQuasiOrdered_of_isEmpty _
 
 theorem PartiallyWellOrderedOn.union (hs : s.PartiallyWellOrderedOn r)
     (ht : t.PartiallyWellOrderedOn r) : (s ∪ t).PartiallyWellOrderedOn r := by
-  rintro f hf
-  rcases Nat.exists_subseq_of_forall_mem_union f hf with ⟨g, hgs | hgt⟩
-  · rcases hs _ hgs with ⟨m, n, hlt, hr⟩
+  intro f
+  obtain ⟨g, hgs | hgt⟩ := Nat.exists_subseq_of_forall_mem_union _ fun x ↦ (f x).2
+  · rcases hs.exists_lt hgs with ⟨m, n, hlt, hr⟩
     exact ⟨g m, g n, g.strictMono hlt, hr⟩
-  · rcases ht _ hgt with ⟨m, n, hlt, hr⟩
+  · rcases ht.exists_lt hgt with ⟨m, n, hlt, hr⟩
     exact ⟨g m, g n, g.strictMono hlt, hr⟩
 
 @[simp]
 theorem partiallyWellOrderedOn_union :
     (s ∪ t).PartiallyWellOrderedOn r ↔ s.PartiallyWellOrderedOn r ∧ t.PartiallyWellOrderedOn r :=
-  ⟨fun h => ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h =>
-    h.1.union h.2⟩
+  ⟨fun h ↦ ⟨h.mono subset_union_left, h.mono subset_union_right⟩, fun h ↦ h.1.union h.2⟩
 
 theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrderedOn r)
     (hf : ∀ a₁ ∈ s, ∀ a₂ ∈ s, r a₁ a₂ → r' (f a₁) (f a₂)) : (f '' s).PartiallyWellOrderedOn r' := by
+  rw [partiallyWellOrderedOn_iff_exists_lt] at *
   intro g' hg'
   choose g hgs heq using hg'
   obtain rfl : f ∘ g = g' := funext heq
   obtain ⟨m, n, hlt, hmn⟩ := hs g hgs
   exact ⟨m, n, hlt, hf _ (hgs m) _ (hgs n) hmn⟩
 
+-- TODO: prove this in terms of `IsAntichain.finite_of_wellQuasiOrdered`
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
   refine not_infinite.1 fun hi => ?_
-  obtain ⟨m, n, hmn, h⟩ := hp (fun n => hi.natEmbedding _ n) fun n => (hi.natEmbedding _ n).2
+  obtain ⟨m, n, hmn, h⟩ := hp (hi.natEmbedding _)
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
 
 section IsRefl
-
 variable [IsRefl α r]
 
-protected theorem Finite.partiallyWellOrderedOn (hs : s.Finite) : s.PartiallyWellOrderedOn r := by
-  intro f hf
-  obtain ⟨m, n, hmn, h⟩ := hs.exists_lt_map_eq_of_forall_mem hf
-  exact ⟨m, n, hmn, h.subst <| refl (f m)⟩
+protected theorem Finite.partiallyWellOrderedOn (hs : s.Finite) : s.PartiallyWellOrderedOn r :=
+  hs.to_subtype.wellQuasiOrdered _
 
 theorem _root_.IsAntichain.partiallyWellOrderedOn_iff (hs : IsAntichain r s) :
     s.PartiallyWellOrderedOn r ↔ s.Finite :=
@@ -323,7 +335,8 @@ protected theorem PartiallyWellOrderedOn.insert (h : PartiallyWellOrderedOn s r)
 theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
     s.PartiallyWellOrderedOn r ↔ ∀ t, t ⊆ s → IsAntichain r t → t.Finite := by
   refine ⟨fun h t ht hrt => hrt.finite_of_partiallyWellOrderedOn (h.mono ht), ?_⟩
-  rintro hs f hf
+  rw [partiallyWellOrderedOn_iff_exists_lt]
+  intro hs f hf
   by_contra! H
   refine infinite_range_of_injective (fun m n hmn => ?_) (hs _ (range_subset_iff.2 hf) ?_)
   · obtain h | h | h := lt_trichotomy m n
@@ -339,48 +352,36 @@ theorem partiallyWellOrderedOn_iff_finite_antichains [IsSymm α r] :
   · exact H _ _ h
   · exact mt symm (H _ _ h)
 
-variable [IsTrans α r]
+end IsRefl
 
-theorem PartiallyWellOrderedOn.exists_monotone_subseq (h : s.PartiallyWellOrderedOn r) (f : ℕ → α)
-    (hf : ∀ n, f n ∈ s) : ∃ g : ℕ ↪o ℕ, ∀ m n : ℕ, m ≤ n → r (f (g m)) (f (g n)) := by
-  obtain ⟨g, h1 | h2⟩ := exists_increasing_or_nonincreasing_subseq r f
-  · refine ⟨g, fun m n hle => ?_⟩
-    obtain hlt | rfl := hle.lt_or_eq
-    exacts [h1 m n hlt, refl_of r _]
-  · exfalso
-    obtain ⟨m, n, hlt, hle⟩ := h (f ∘ g) fun n => hf _
-    exact h2 m n hlt hle
+section IsPreorder
+variable [IsPreorder α r]
+
+theorem PartiallyWellOrderedOn.exists_monotone_subseq (h : s.PartiallyWellOrderedOn r) {f : ℕ → α}
+    (hf : ∀ n, f n ∈ s) : ∃ g : ℕ ↪o ℕ, ∀ m n : ℕ, m ≤ n → r (f (g m)) (f (g n)) :=
+  WellQuasiOrdered.exists_monotone_subseq h fun n ↦ ⟨_, hf n⟩
 
 theorem partiallyWellOrderedOn_iff_exists_monotone_subseq :
     s.PartiallyWellOrderedOn r ↔
       ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, ∀ m n : ℕ, m ≤ n → r (f (g m)) (f (g n)) := by
-  constructor <;> intro h f hf
-  · exact h.exists_monotone_subseq f hf
-  · obtain ⟨g, gmon⟩ := h f hf
-    exact ⟨g 0, g 1, g.lt_iff_lt.2 Nat.zero_lt_one, gmon _ _ (Nat.zero_le 1)⟩
+  use PartiallyWellOrderedOn.exists_monotone_subseq
+  rw [PartiallyWellOrderedOn, wellQuasiOrdered_iff_exists_monotone_subseq]
+  exact fun H f ↦ H _ fun n ↦ (f n).2
 
 protected theorem PartiallyWellOrderedOn.prod {t : Set β} (hs : PartiallyWellOrderedOn s r)
     (ht : PartiallyWellOrderedOn t r') :
     PartiallyWellOrderedOn (s ×ˢ t) fun x y : α × β => r x.1 y.1 ∧ r' x.2 y.2 := by
+  rw [partiallyWellOrderedOn_iff_exists_lt]
   intro f hf
-  obtain ⟨g₁, h₁⟩ := hs.exists_monotone_subseq (Prod.fst ∘ f) fun n => (hf n).1
-  obtain ⟨m, n, hlt, hle⟩ := ht (Prod.snd ∘ f ∘ g₁) fun n => (hf _).2
+  obtain ⟨g₁, h₁⟩ := hs.exists_monotone_subseq fun n => (hf n).1
+  obtain ⟨m, n, hlt, hle⟩ := ht.exists_lt fun n => (hf _).2
   exact ⟨g₁ m, g₁ n, g₁.strictMono hlt, h₁ _ _ hlt.le, hle⟩
 
-end IsRefl
+theorem PartiallyWellOrderedOn.wellFoundedOn (h : s.PartiallyWellOrderedOn r) :
+    s.WellFoundedOn fun a b => r a b ∧ ¬ r b a :=
+  h.wellFounded
 
-theorem PartiallyWellOrderedOn.wellFoundedOn [IsPreorder α r] (h : s.PartiallyWellOrderedOn r) :
-    s.WellFoundedOn fun a b => r a b ∧ ¬r b a := by
-  letI : Preorder α :=
-    { le := r
-      le_refl := refl_of r
-      le_trans := fun _ _ _ => trans_of r }
-  change s.WellFoundedOn (· < ·)
-  replace h : s.PartiallyWellOrderedOn (· ≤ ·) := h -- Porting note: was `change _ at h`
-  rw [wellFoundedOn_iff_no_descending_seq]
-  intro f hf
-  obtain ⟨m, n, hlt, hle⟩ := h f hf
-  exact (f.map_rel_iff.2 hlt).not_le hle
+end IsPreorder
 
 end PartiallyWellOrderedOn
 
@@ -395,9 +396,9 @@ def IsPWO (s : Set α) : Prop :=
 
 nonrec theorem IsPWO.mono (ht : t.IsPWO) : s ⊆ t → s.IsPWO := ht.mono
 
-nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
+nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) {f : ℕ → α} (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
-  h.exists_monotone_subseq f hf
+  h.exists_monotone_subseq hf
 
 theorem isPWO_iff_exists_monotone_subseq :
     s.IsPWO ↔ ∀ f : ℕ → α, (∀ n, f n ∈ s) → ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
@@ -498,16 +499,12 @@ section LinearOrder
 
 variable [LinearOrder α] {s : Set α}
 
-protected theorem IsWF.isPWO (hs : s.IsWF) : s.IsPWO := by
-  intro f hf
-  lift f to ℕ → s using hf
-  rcases hs.has_min (range f) (range_nonempty _) with ⟨_, ⟨m, rfl⟩, hm⟩
-  simp only [forall_mem_range, not_lt] at hm
-  exact ⟨m, m + 1, by omega, hm _⟩
-
 /-- In a linear order, the predicates `Set.IsPWO` and `Set.IsWF` are equivalent. -/
-theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF :=
-  ⟨IsPWO.isWF, IsWF.isPWO⟩
+theorem isPWO_iff_isWF : s.IsPWO ↔ s.IsWF := by
+  change WellQuasiOrdered (· ≤ ·) ↔ WellFounded (· < ·)
+  rw [← wellQuasiOrderedLE_def, ← isWellFounded_iff, wellQuasiOrderedLE_iff_wellFoundedLT]
+
+alias ⟨_, IsWF.isPWO⟩ := isPWO_iff_isWF
 
 @[deprecated isPWO_iff_isWF (since := "2025-01-21")]
 theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
@@ -517,7 +514,8 @@ theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
 If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
 Note this does not hold without the linearity assumption.
 -/
-lemma IsPWO.of_linearOrder [WellFoundedLT α] : s.IsPWO := IsWF.of_wellFoundedLT.isPWO
+lemma IsPWO.of_linearOrder [WellFoundedLT α] (s : Set α) : s.IsPWO :=
+  (IsWF.of_wellFoundedLT s).isPWO
 
 end LinearOrder
 
@@ -681,6 +679,8 @@ namespace Set.PartiallyWellOrderedOn
 
 variable {r : α → α → Prop}
 
+-- TODO: move this material to the main file on WQOs.
+
 /-- In the context of partial well-orderings, a bad sequence is a nonincreasing sequence
   whose range is contained in a particular set `s`. One exists if and only if `s` is not
   partially well-ordered. -/
@@ -688,8 +688,9 @@ def IsBadSeq (r : α → α → Prop) (s : Set α) (f : ℕ → α) : Prop :=
   (∀ n, f n ∈ s) ∧ ∀ m n : ℕ, m < n → ¬r (f m) (f n)
 
 theorem iff_forall_not_isBadSeq (r : α → α → Prop) (s : Set α) :
-    s.PartiallyWellOrderedOn r ↔ ∀ f, ¬IsBadSeq r s f :=
-  forall_congr' fun f => by simp [IsBadSeq]
+    s.PartiallyWellOrderedOn r ↔ ∀ f, ¬IsBadSeq r s f := by
+  rw [partiallyWellOrderedOn_iff_exists_lt]
+  exact forall_congr' fun f => by simp [IsBadSeq]
 
 /-- This indicates that every bad sequence `g` that agrees with `f` on the first `n`
   terms has `rk (f n) ≤ rk (g n)`. -/
@@ -744,7 +745,7 @@ theorem iff_not_exists_isMinBadSeq (rk : α → ℕ) {s : Set α} :
   partially well-ordered on a set `s`, the relation `List.SublistForall₂ r` is partially
   well-ordered on the set of lists of elements of `s`. That relation is defined so that
   `List.SublistForall₂ r l₁ l₂` whenever `l₁` related pointwise by `r` to a sublist of `l₂`. -/
-theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl α r] [IsTrans α r]
+theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsPreorder α r]
     {s : Set α} (h : s.PartiallyWellOrderedOn r) :
     { l : List α | ∀ x, x ∈ l → x ∈ s }.PartiallyWellOrderedOn (List.SublistForall₂ r) := by
   rcases isEmpty_or_nonempty α
@@ -754,9 +755,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
   rintro ⟨f, hf1, hf2⟩
   have hnil : ∀ n, f n ≠ List.nil := fun n con =>
     hf1.2 n n.succ n.lt_succ_self (con.symm ▸ List.SublistForall₂.nil)
-  have : ∀ n, (f n).headI ∈ s :=
-    fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
-  obtain ⟨g, hg⟩ := h.exists_monotone_subseq (fun n => (f n).headI) this
+  obtain ⟨g, hg⟩ := h.exists_monotone_subseq fun n => hf1.1 n _ (List.head!_mem_self (hnil n))
   have hf' :=
     hf2 (g 0) (fun n => if n < g 0 then f n else List.tail (f (g (n - g 0))))
       (fun m hm => (if_pos hm).symm) ?_
@@ -785,6 +784,7 @@ theorem partiallyWellOrderedOn_sublistForall₂ (r : α → α → Prop) [IsRefl
 theorem subsetProdLex [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)}
     (hα : ((fun (x : α ×ₗ β) => (ofLex x).1)'' s).IsPWO)
     (hβ : ∀ a, {y | toLex (a, y) ∈ s}.IsPWO) : s.IsPWO := by
+  rw [IsPWO, partiallyWellOrderedOn_iff_exists_lt]
   intro f hf
   rw [isPWO_iff_exists_monotone_subseq] at hα
   obtain ⟨g, hg⟩ : ∃ (g : (ℕ ↪o ℕ)), Monotone fun n => (ofLex f (g n)).1 :=
@@ -838,9 +838,6 @@ theorem ProdLex_iff [PartialOrder α] [Preorder β] {s : Set (α ×ₗ β)} :
 
 end Set.PartiallyWellOrderedOn
 
-theorem WellFounded.isWF [LT α] (h : WellFounded ((· < ·) : α → α → Prop)) (s : Set α) : s.IsWF :=
-  (Set.isWF_univ_iff.2 h).mono s.subset_univ
-
 /-- A version of **Dickson's lemma** any subset of functions `Π s : σ, α s` is partially well
 ordered, when `σ` is a `Fintype` and each `α s` is a linear well order.
 This includes the classical case of Dickson's lemma that `ℕ ^ n` is a well partial order.
@@ -859,8 +856,7 @@ theorem Pi.isPWO {α : ι → Type*} [∀ i, LinearOrder (α i)] [∀ i, IsWellO
     exists RelEmbedding.refl (· ≤ ·)
     simp only [IsEmpty.forall_iff, imp_true_iff, forall_const, Finset.not_mem_empty]
   · intro x s hx ih f
-    obtain ⟨g, hg⟩ :=
-      (IsWellFounded.wf.isWF univ).isPWO.exists_monotone_subseq (fun n => f n x) mem_univ
+    obtain ⟨g, hg⟩ := (IsPWO.of_linearOrder univ).exists_monotone_subseq (f := (f · x)) mem_univ
     obtain ⟨g', hg'⟩ := ih (f ∘ g)
     refine ⟨g'.trans g, fun a b hab => (Finset.forall_mem_cons _ _).2 ?_⟩
     exact ⟨hg (OrderHomClass.mono g' hab), hg' hab⟩
@@ -906,7 +902,7 @@ theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on 
     convert PSigma.Lex.right (⟨_, c', rfl⟩ : range f) _ using 1; swap
     · exact ⟨c, h'⟩
     · exact PSigma.subtype_ext (Subtype.ext h') rfl
-    · dsimp only [Subtype.coe_mk] at *
+    · dsimp only [Subtype.coe_mk, Subrel, Order.Preimage] at *
       revert h'
       generalize f c = d
       rintro rfl h''
