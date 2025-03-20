@@ -228,7 +228,7 @@ namespace UniformSpace
 variable {α : Type*}
 
 -- TODO: move (some of) these results to the file about topological rings
-theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [IsTopologicalRing α] :
+theorem inseparableSetoid_ring (α) [Ring α] [TopologicalSpace α] [IsTopologicalRing α] :
     inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
     addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_def _).symm

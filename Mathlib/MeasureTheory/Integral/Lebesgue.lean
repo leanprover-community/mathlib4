@@ -30,7 +30,7 @@ We introduce the following notation for the lower Lebesgue integral of a functio
 
 -/
 
-assert_not_exists NormedSpace
+assert_not_exists Basis NormedSpace
 
 noncomputable section
 
@@ -1356,7 +1356,9 @@ theorem setLIntegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Mea
 
 theorem lintegral_map {mβ : MeasurableSpace β} {f : β → ℝ≥0∞} {g : α → β} (hf : Measurable f)
     (hg : Measurable g) : ∫⁻ a, f a ∂map g μ = ∫⁻ a, f (g a) ∂μ := by
-  erw [lintegral_eq_iSup_eapprox_lintegral hf, lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
+  rw [lintegral_eq_iSup_eapprox_lintegral hf]
+  simp only [← Function.comp_apply (f := f) (g := g)]
+  rw [lintegral_eq_iSup_eapprox_lintegral (hf.comp hg)]
   congr with n : 1
   convert SimpleFunc.lintegral_map _ hg
   ext1 x; simp only [eapprox_comp hf hg, coe_comp]
@@ -1393,8 +1395,8 @@ theorem setLIntegral_map [MeasurableSpace β] {f : β → ℝ≥0∞} {g : α �
 theorem lintegral_indicator_const_comp {mβ : MeasurableSpace β} {f : α → β} {s : Set β}
     (hf : Measurable f) (hs : MeasurableSet s) (c : ℝ≥0∞) :
     ∫⁻ a, s.indicator (fun _ => c) (f a) ∂μ = c * μ (f ⁻¹' s) := by
-  erw [lintegral_comp (measurable_const.indicator hs) hf, lintegral_indicator_const hs,
-    Measure.map_apply hf hs]
+  erw [lintegral_comp (measurable_const.indicator hs) hf]
+  rw [lintegral_indicator_const hs, Measure.map_apply hf hs]
 
 /-- If `g : α → β` is a measurable embedding and `f : β → ℝ≥0∞` is any function (not necessarily
 measurable), then `∫⁻ a, f a ∂(map g μ) = ∫⁻ a, f (g a) ∂μ`. Compare with `lintegral_map` which
