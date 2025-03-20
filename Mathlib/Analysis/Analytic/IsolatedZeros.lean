@@ -142,17 +142,6 @@ theorem frequently_eq_iff_eventually_eq (hf : AnalyticAt 𝕜 f z₀) (hg : Anal
     (∃ᶠ z in 𝓝[≠] z₀, f z = g z) ↔ ∀ᶠ z in 𝓝 z₀, f z = g z := by
   simpa [sub_eq_zero] using frequently_zero_iff_eventually_zero (hf.sub hg)
 
-/-- Local identity theorem: two analytic functions agree on a punctured
-neighborhood iff they agree on a neighborhood.
-
-See `MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd` for the analogous
-statement for meromorphic functions in normal form.
--/
-theorem eventuallyEq_nhdNE_iff_eventuallyEq_nhd (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) :
-    f =ᶠ[𝓝[≠] z₀] g ↔ f =ᶠ[𝓝 z₀] g :=
-  ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE
-    hf.continuousAt hg.continuousAt
-
 /-- For a function `f` on `𝕜`, and `z₀ ∈ 𝕜`, there exists at most one `n` such that on a punctured
 neighbourhood of `z₀` we have `f z = (z - z₀) ^ n • g z`, with `g` analytic and nonvanishing at
 `z₀`. We formulate this with `n : ℤ`, and deduce the case `n : ℕ` later, for applications to

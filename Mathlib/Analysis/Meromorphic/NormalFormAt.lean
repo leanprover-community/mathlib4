@@ -182,9 +182,9 @@ theorem MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E}
     have t₀ := hf.meromorphicAt.order_congr h
     by_cases cs : hf.meromorphicAt.order = 0
     · rw [cs] at t₀
-      have Z := (hf.order_nonneg_iff_analyticAt.1 (le_of_eq cs.symm))
-      have W := hg.order_nonneg_iff_analyticAt.1 (le_of_eq t₀)
-      exact (AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd Z W).1 h
+      have Z := (hf.order_nonneg_iff_analyticAt.1 (le_of_eq cs.symm)).continuousAt
+      have W := (hg.order_nonneg_iff_analyticAt.1 (le_of_eq t₀)).continuousAt
+      exact (ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE Z W).1 h
     · apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE h
       let h₁f := cs
       rw [hf.order_eq_zero_iff] at h₁f
@@ -316,7 +316,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
       split_ifs with h₃f
       · obtain ⟨h₁G, _, h₃G⟩ := Classical.choose_spec ((hf.order_eq_int_iff 0).1 (h₃f ▸ hn.symm))
         apply Filter.EventuallyEq.eq_of_nhds
-        apply (h₁G.eventuallyEq_nhdNE_iff_eventuallyEq_nhd (by fun_prop)).1
+        apply (h₁G.continuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE (by fun_prop)).1
         filter_upwards [h₃g, h₃G]
         simp_all
       · simp [h₃f, zero_zpow]
@@ -351,7 +351,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
           have : g =ᶠ[𝓝 x] (Classical.choose ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)) := by
             obtain ⟨h₀, h₁, h₂⟩ := Classical.choose_spec
               ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)
-            rw [← h₁g.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₀]
+            rw [← h₁g.continuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE h₀.continuousAt]
             rw [hn] at h₃g
             simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂
             exact (h₃g.filter_mono nhdsWithin_le_nhds).symm.trans h₂
