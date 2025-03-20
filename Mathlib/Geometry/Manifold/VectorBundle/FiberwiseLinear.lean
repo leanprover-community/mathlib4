@@ -45,12 +45,12 @@ def partialHomeomorph (φ : B → F ≃L[𝕜] F) (hU : IsOpen U)
   open_target := hU.prod isOpen_univ
   continuousOn_toFun :=
     have : ContinuousOn (fun p : B × F => ((φ p.1 : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
-      hφ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
+      hφ.prodMap continuousOn_id
+    continuousOn_fst.prodMk (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
   continuousOn_invFun :=
-    haveI : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
-      h2φ.prod_map continuousOn_id
-    continuousOn_fst.prod (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
+    have : ContinuousOn (fun p : B × F => (((φ p.1).symm : F →L[𝕜] F), p.2)) (U ×ˢ univ) :=
+      h2φ.prodMap continuousOn_id
+    continuousOn_fst.prodMk (isBoundedBilinearMap_apply.continuous.comp_continuousOn this)
 
 /-- Compute the composition of two partial homeomorphisms induced by fiberwise linear
 equivalences. -/

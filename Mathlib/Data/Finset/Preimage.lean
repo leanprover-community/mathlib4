@@ -146,19 +146,12 @@ namespace Equiv
 
 /-- Given an equivalence `e : α ≃ β` and `s : Finset β`, restrict `e` to an equivalence
 from `e ⁻¹' s` to `s`. -/
-def frestrict (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
+@[simps]
+def restrictPreimageFinset (e : α ≃ β) (s : Finset β) : (s.preimage e e.injective.injOn) ≃ s where
   toFun := fun a ↦ ⟨e a, Finset.mem_preimage.1 a.2⟩
   invFun := fun b ↦ ⟨e.symm b, by simp⟩
   left_inv := fun _ ↦ by simp
   right_inv := fun _ ↦ by simp
-
-variable {e : α ≃ β} {s : Finset β}
-
-@[simp]
-lemma frestrict_apply (a : s.preimage e e.injective.injOn) : e.frestrict s a = e a := rfl
-
-@[simp]
-lemma frestrict_symm_apply (b : s) : (e.frestrict s).symm b = e.symm b := rfl
 
 end Equiv
 
@@ -166,7 +159,7 @@ end Equiv
 of this `Finset` and then reindexing. -/
 lemma Finset.restrict_comp_piCongrLeft {π : β → Type*} (s : Finset β) (e : α ≃ β) :
     s.restrict ∘ ⇑(e.piCongrLeft π) =
-    ⇑((e.frestrict s).piCongrLeft (fun b : s ↦ (π b))) ∘
+    ⇑((e.restrictPreimageFinset s).piCongrLeft (fun b : s ↦ (π b))) ∘
     (s.preimage e e.injective.injOn).restrict := by
   ext x b
   simp only [comp_apply, restrict, Equiv.piCongrLeft_apply_eq_cast, cast_inj]
