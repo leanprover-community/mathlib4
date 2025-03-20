@@ -337,10 +337,21 @@ A flag inherits the grading of its ambient order.
 -/
 
 namespace Flag
-variable [PartialOrder α] {s : Flag α}
+variable [PartialOrder α] {s : Flag α} {a b : s}
 
-@[simp]
-lemma coe_covby_coe {a b : s} : (a : α) ⋖ b ↔ a ⋖ b := by
+@[simp, norm_cast]
+lemma coe_wcovBy_coe : (a : α) ⩿ b ↔ a ⩿ b := by
+  refine and_congr_right' ⟨fun h c hac ↦ h hac, fun h c hac hcb ↦
+    @h ⟨c, mem_iff_forall_le_or_ge.2 fun d hd ↦ ?_⟩ hac hcb⟩
+  classical
+  obtain hda | had := le_or_lt (⟨d, hd⟩ : s) a
+  · exact .inr ((Subtype.coe_le_coe.2 hda).trans hac.le)
+  obtain hbd | hdb := le_or_lt b ⟨d, hd⟩
+  · exact .inl (hcb.le.trans hbd)
+  · cases h had hdb
+
+@[simp, norm_cast]
+lemma coe_covBy_coe : (a : α) ⋖ b ↔ a ⋖ b := by
   refine and_congr_right' ⟨fun h c hac ↦ h hac, fun h c hac hcb ↦
     @h ⟨c, mem_iff_forall_le_or_ge.2 fun d hd ↦ ?_⟩ hac hcb⟩
   classical
@@ -351,7 +362,7 @@ lemma coe_covby_coe {a b : s} : (a : α) ⋖ b ↔ a ⋖ b := by
   · cases h had hdb
 
 @[simp]
-lemma isMax_coe {a : s} : IsMax (a : α) ↔ IsMax a where
+lemma isMax_coe : IsMax (a : α) ↔ IsMax a where
   mp h b hab := h hab
   mpr h b hab := by
     refine @h ⟨b, mem_iff_forall_le_or_ge.2 fun c hc ↦ ?_⟩ hab
@@ -359,7 +370,7 @@ lemma isMax_coe {a : s} : IsMax (a : α) ↔ IsMax a where
     exact .inr <| hab.trans' <| h.isTop ⟨c, hc⟩
 
 @[simp]
-lemma isMin_coe {a : s} : IsMin (a : α) ↔ IsMin a where
+lemma isMin_coe : IsMin (a : α) ↔ IsMin a where
   mp h b hba := h hba
   mpr h b hba := by
     refine @h ⟨b, mem_iff_forall_le_or_ge.2 fun c hc ↦ ?_⟩ hba
@@ -369,16 +380,16 @@ lemma isMin_coe {a : s} : IsMin (a : α) ↔ IsMin a where
 variable [Preorder 𝕆]
 
 instance [GradeOrder 𝕆 α] (s : Flag α) : GradeOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) fun _ _ ↦ coe_covby_coe.2
+  .liftRight _ (Subtype.strictMono_coe _) fun _ _ ↦ coe_covBy_coe.2
 
 instance [GradeMinOrder 𝕆 α] (s : Flag α) : GradeMinOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covby_coe.2) fun _ ↦ isMin_coe.2
+  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMin_coe.2
 
 instance [GradeMaxOrder 𝕆 α] (s : Flag α) : GradeMaxOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covby_coe.2) fun _ ↦ isMax_coe.2
+  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) fun _ ↦ isMax_coe.2
 
 instance [GradeBoundedOrder 𝕆 α] (s : Flag α) : GradeBoundedOrder 𝕆 s :=
-  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covby_coe.2) (fun _ ↦ isMin_coe.2)
+  .liftRight _ (Subtype.strictMono_coe _) (fun _ _ ↦ coe_covBy_coe.2) (fun _ ↦ isMin_coe.2)
     fun _ ↦ isMax_coe.2
 
 @[simp, norm_cast] lemma grade_coe [GradeOrder 𝕆 α] (a : s) : grade 𝕆 (a : α) = grade 𝕆 a := rfl
