@@ -1315,10 +1315,40 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun f κ μ)
   simpa using this.comp (measurable_fst.div measurable_snd) measurable_id
 
 @[to_additive]
+lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f κ μ)
+    (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
+    IndepFun (f i / f j) (f k) κ μ := by
+  have h : IndepFun ((hf_meas i).mk (f i) / (hf_meas j).mk (f j)) ((hf_meas k).mk (f k)) κ μ := by
+    refine iIndepFun.indepFun_div_left ?_ (fun i ↦ (hf_meas i).measurable_mk) _ _ _ hik hjk
+    exact iIndepFun.congr' hf_indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
+  refine IndepFun.congr' h ?_ ?_
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk,
+      Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk] with a hi hj
+    filter_upwards [hi, hj] with ω hωi hωj
+    simp [hωi, hωj]
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk] with a hk
+    filter_upwards [hk] with ω hωk using by rw [hωk]
+
+@[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun f κ μ)
     (hf_meas : ∀ i, Measurable (f i)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
     IndepFun (f i) (f j / f k) κ μ :=
   (hf_indep.indepFun_div_left hf_meas _ _ _ hij.symm hik.symm).symm
+
+@[to_additive]
+lemma iIndepFun.indepFun_div_right₀ (hf_indep : iIndepFun f κ μ)
+    (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
+    IndepFun (f i) (f j / f k) κ μ := by
+  have h : IndepFun ((hf_meas i).mk (f i)) ((hf_meas j).mk (f j) / (hf_meas k).mk (f k)) κ μ := by
+    refine iIndepFun.indepFun_div_right ?_ (fun i ↦ (hf_meas i).measurable_mk) _ _ _ hij hik
+    exact iIndepFun.congr' hf_indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
+  refine IndepFun.congr' h ?_ ?_
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk] with a hi
+    filter_upwards [hi] with ω hω using by rw [hω]
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk,
+      Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk] with a hj hk
+    filter_upwards [hj, hk] with ω hωj hωk
+    simp [hωj, hωk]
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun f κ μ)
@@ -1327,6 +1357,25 @@ lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun f κ μ)
     IndepFun (f i / f j) (f k / f l) κ μ :=
   (hf_indep.indepFun_prodMk_prodMk hf_meas i j k l hik hil hjk hjl).comp
     measurable_div measurable_div
+
+@[to_additive]
+lemma iIndepFun.indepFun_div_div₀ (hf_indep : iIndepFun f κ μ)
+    (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ))
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    IndepFun (f i / f j) (f k / f l) κ μ := by
+  have h : IndepFun ((hf_meas i).mk (f i) / (hf_meas j).mk (f j))
+      ((hf_meas k).mk (f k) / (hf_meas l).mk (f l)) κ μ := by
+    refine iIndepFun.indepFun_div_div ?_ (fun i ↦ (hf_meas i).measurable_mk) _ _ _ _ hik hil hjk hjl
+    exact iIndepFun.congr' hf_indep fun i ↦ Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk
+  refine IndepFun.congr' h ?_ ?_
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk,
+      Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk] with a hi hj
+    filter_upwards [hi, hj] with ω hωi hωj
+    simp [hωi, hωj]
+  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk,
+      Measure.ae_ae_of_ae_comp (hf_meas l).ae_eq_mk] with a hk hl
+    filter_upwards [hk, hl] with ω hωk hωl
+    simp [hωk, hωl]
 
 end Div
 
