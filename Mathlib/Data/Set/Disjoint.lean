@@ -111,12 +111,6 @@ alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_lef
 
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
 
-theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆ t)
-    (hu : t ⊆ s ∪ u) : (s \ t) ∪ (t \ u) = s \ u := by
-  rw [← diff_eq_empty, inter_diff_right_comm, ← disjoint_iff_inter_eq_empty] at hi
-  simpa [subset_antisymm_iff, subset_diff, diff_subset_iff, disjoint_sdiff_left, union_comm u,
-    hu, union_assoc, ← union_assoc (a := s \ t)]
-
 @[simp]
 theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
   sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
