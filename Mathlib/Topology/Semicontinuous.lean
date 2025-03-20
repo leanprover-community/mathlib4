@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
@@ -324,7 +324,7 @@ theorem lowerSemicontinuous_iff_isClosed_epigraph {f : α → γ} :
           simpa using (eventually_principal.2 fun (_ : α × γ) ↦ id).filter_mono h
     _ = y := h'.2.liminf_eq
   · rw [lowerSemicontinuous_iff_isClosed_preimage]
-    exact fun hf y ↦ hf.preimage (Continuous.Prod.mk_left y)
+    exact fun hf y ↦ hf.preimage (.prodMk_left y)
 
 alias ⟨LowerSemicontinuous.isClosed_epigraph, _⟩ := lowerSemicontinuous_iff_isClosed_epigraph
 

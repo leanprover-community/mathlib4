@@ -40,7 +40,7 @@ theorem exists_partition_int (n : ℕ) {ε : ℝ} (hε : 0 < ε) {b : ℤ} (hb :
     apply lt_of_lt_of_le _ (Nat.le_ceil _)
     gcongr
     rw [div_lt_one hb', cast_lt]
-    exact Int.emod_lt _ hb
+    exact Int.emod_lt_abs _ hb
   intro i₀ i₁ hi
   have hi : (⌊↑(A i₀ % b) / abs b • ε⌋.natAbs : ℤ) = ⌊↑(A i₁ % b) / abs b • ε⌋.natAbs :=
     congr_arg ((↑) : ℕ → ℤ) (Fin.mk_eq_mk.mp hi)

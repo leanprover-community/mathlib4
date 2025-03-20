@@ -193,7 +193,7 @@ theorem infEdist_image (hΦ : Isometry Φ) : infEdist (Φ x) (Φ '' t) = infEdis
   simp only [infEdist, iInf_image, hΦ.edist_eq]
 
 @[to_additive (attr := simp)]
-theorem infEdist_smul {M} [SMul M α] [IsometricSMul M α] (c : M) (x : α) (s : Set α) :
+theorem infEdist_smul {M} [SMul M α] [IsIsometricSMul M α] (c : M) (x : α) (s : Set α) :
     infEdist (c • x) (c • s) = infEdist x s :=
   infEdist_image (isometry_smul _ _)
 
@@ -445,6 +445,10 @@ value `∞` instead, use `EMetric.infEdist`, which takes values in `ℝ≥0∞`)
 @[simp]
 theorem infDist_empty : infDist x ∅ = 0 := by simp [infDist]
 
+lemma isGLB_infDist (hs : s.Nonempty) : IsGLB ((dist x ·) '' s) (infDist x s) := by
+  simpa [infDist_eq_iInf, sInf_image']
+    using isGLB_csInf (hs.image _) ⟨0, by simp [lowerBounds, dist_nonneg]⟩
+
 /-- In a metric space, the minimal edistance to a nonempty set is finite. -/
 theorem infEdist_ne_top (h : s.Nonempty) : infEdist x s ≠ ⊤ := by
   rcases h with ⟨y, hy⟩
@@ -471,10 +475,13 @@ theorem infDist_le_dist_of_mem (h : y ∈ s) : infDist x s ≤ dist x y := by
 theorem infDist_le_infDist_of_subset (h : s ⊆ t) (hs : s.Nonempty) : infDist x t ≤ infDist x s :=
   ENNReal.toReal_mono (infEdist_ne_top hs) (infEdist_anti h)
 
+lemma le_infDist {r : ℝ} (hs : s.Nonempty) : r ≤ infDist x s ↔ ∀ ⦃y⦄, y ∈ s → r ≤ dist x y := by
+  simp_rw [infDist, ← ENNReal.ofReal_le_iff_le_toReal (infEdist_ne_top hs), le_infEdist,
+    ENNReal.ofReal_le_iff_le_toReal (edist_ne_top _ _), ← dist_edist]
+
 /-- The minimal distance to a set `s` is `< r` iff there exists a point in `s` at distance `< r`. -/
 theorem infDist_lt_iff {r : ℝ} (hs : s.Nonempty) : infDist x s < r ↔ ∃ y ∈ s, dist x y < r := by
-  simp_rw [infDist, ← ENNReal.lt_ofReal_iff_toReal_lt (infEdist_ne_top hs), infEdist_lt_iff,
-    ENNReal.lt_ofReal_iff_toReal_lt (edist_ne_top _ _), ← dist_edist]
+  simp [← not_le, le_infDist hs]
 
 /-- The minimal distance from `x` to `s` is bounded by the distance from `y` to `s`, modulo
 the distance between `x` and `y`. -/

@@ -86,7 +86,7 @@ protected lemma map_add [AddMonoid S] (f : R →+ S) {x y : HahnSeries Γ R} :
 Hahn series over `Γ` with coefficients in the opposite additive monoid `Rᵃᵒᵖ`
 and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def addOppositeEquiv : HahnSeries Γ (Rᵃᵒᵖ) ≃+ (HahnSeries Γ R)ᵃᵒᵖ where
   toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
   invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
@@ -225,7 +225,7 @@ theorem coeff_order_of_eq_add_single {R} [AddCancelCommMonoid R] [Zero Γ] {x y 
   have hxx :
       (single x.order x.leadingCoeff).coeff xo = (single x.order x.leadingCoeff).leadingCoeff := by
     simp [leadingCoeff_of_single, coeff_single, this]
-  rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_of_single, self_eq_add_left, this] at hx
+  rw [← (leadingCoeff_of_ne h), hxx, leadingCoeff_of_single, right_eq_add, this] at hx
   exact hx
 
 theorem order_lt_order_of_eq_add_single {R} {Γ} [LinearOrder Γ] [Zero Γ] [AddCancelCommMonoid R]
