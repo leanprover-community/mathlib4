@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+import Mathlib.Analysis.Normed.Module.Complemented
 
 /-! # Linear maps which split
 
@@ -15,9 +16,10 @@ TODO: better doc-string, move this to a better place
 
 open Function Set
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' : Type*}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
 noncomputable section
 
@@ -71,23 +73,41 @@ lemma _root_.ContinuousLinearEquiv.splits (f : E ≃L[𝕜] F) : f.toContinuousL
     exact Submodule.closedComplemented_top
 
 /-- If `f` and `g` split, then so does `f × g`. -/
-lemma prodMap (h : f.Splits) (h' : g.Splits) : (f.prodMap g).Splits := by
-  refine ⟨h.injective.prodMap h'.injective, ?_, ?_⟩
+lemma prodMap (hf : f.Splits) (hg : g.Splits) : (f.prodMap g).Splits := by
+  refine ⟨hf.injective.prodMap hg.injective, ?_, ?_⟩
   · rw [coe_prodMap', range_prod_map]
-    exact (h.isClosed_range).prod h'.isClosed_range
+    exact (hf.isClosed_range).prod hg.isClosed_range
   · have : LinearMap.range (f.prodMap g) = (LinearMap.range f).prod (LinearMap.range g) := by
       -- seems to be missing...
       sorry
     rw [this]
     sorry -- also missing: Submodule.ClosedComplemented.prod
 
-/-- The composition of split continuous linear maps splits. -/
-lemma comp {g : F →L[𝕜] F'} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := sorry
+-- Outline of missing ingredient:
+-- Thm. X, Y Banach, f:X\to Y continuous linear. Then
+-- f injective with closed range <=> \exists 0 < c, ∀ x, c|x| ≤ |f x|
+-- Reduce: range (g ∘ f) below, and also g(F') below are closed:
+--   (if s ⊆ G is closed, then g(s) is closed, uses injectivity and the open mapping theorem)
 
-lemma compCLE_left {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) : (f.comp f₀.toContinuousLinearMap).Splits :=
+-- XXX: is this completeness hypothesis required?
+/-- The composition of split continuous linear maps splits. -/
+lemma comp [CompleteSpace G] {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
+  have h1 : IsClosed (range ⇑(g.comp f)) := sorry
+  refine ⟨hg.injective.comp hf.injective, h1, ?_⟩
+  · let F' := hf.complement
+    let G' := hg.complement
+    rw [Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl]
+    refine ⟨h1, (F'.map g) + G', ?_, ?_⟩
+    · -- missing (also missing hypotheses?): sum of closed submodules is closed
+      sorry
+    · sorry
+
+lemma compCLE_left [CompleteSpace F] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
+    (f.comp f₀.toContinuousLinearMap).Splits :=
   f₀.splits.comp hf
 
-lemma compCLE_right {g : F ≃L[𝕜] F'} (hf : f.Splits) : (g.toContinuousLinearMap.comp f).Splits :=
+lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.Splits) :
+    (g.toContinuousLinearMap.comp f).Splits :=
   hf.comp g.splits
 
 section RCLike
