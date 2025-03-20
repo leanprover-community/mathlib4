@@ -614,10 +614,9 @@ which rather than using explicit hypotheses for transitivity and totality,
 use Mathlib order typeclasses instead.
 -/
 
-unseal merge mergeSort in
 example :
     mergeSort [5, 27, 221, 95, 17, 43, 7, 2, 98, 567, 23, 12] (fun m n => m / 10 ≤ n / 10) =
-      [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := rfl
+      [5, 7, 2, 17, 12, 27, 23, 43, 95, 98, 221, 567] := by simp [mergeSort]
 
 section MergeSort
 

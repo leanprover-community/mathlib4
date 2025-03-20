@@ -589,18 +589,18 @@ def degBound (k : ℕ) (D : ℕ → ℕ) : ℕ → ℕ
 
 end
 
-@[simp] lemma degBound_zero (k : ℕ) (D : ℕ → ℕ) : degBound k D 0 = 1 := by delta degBound; rfl
-@[simp] lemma numBound_zero (k : ℕ) (D : ℕ → ℕ) : numBound k D 0 = k := by delta numBound; rfl
+@[simp] lemma degBound_zero (k : ℕ) (D : ℕ → ℕ) : degBound k D 0 = 1 := by rw [degBound]
+@[simp] lemma numBound_zero (k : ℕ) (D : ℕ → ℕ) : numBound k D 0 = k := by rw [numBound]
 
 @[simp]
 lemma degBound_succ (k : ℕ) (D : ℕ → ℕ) (n) :
     degBound k D (n + 1) = numBound k D (n + 1) ^ numBound k D (n + 1) * degBound k D n := by
-  delta degBound numBound; rfl
+  rw [degBound]
 
 @[simp]
 lemma numBound_succ (k : ℕ) (D : ℕ → ℕ) (n) :
     numBound k D (n + 1) = numBound k D n * degBound k D n * D n := by
-  delta degBound numBound; rfl
+  rw [numBound]
 
 mutual
 
