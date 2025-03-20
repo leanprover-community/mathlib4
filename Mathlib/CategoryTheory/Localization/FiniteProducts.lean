@@ -118,7 +118,7 @@ identities and is stable by finite products,
 then any localization functor for `W` preserves finite products. -/
 lemma preservesFiniteProducts :
     PreservesFiniteProducts L where
-  preserves J _ := preservesProductsOfShape L W J
+  preserves _ := preservesProductsOfShape L W _
       (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)
 
 instance : HasFiniteProducts (W.Localization) := hasFiniteProducts W.Q W

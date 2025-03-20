@@ -325,7 +325,7 @@ If `α` might be empty, then `TopologicalSpace.exists_countable_dense` is the ma
 separability of `α`. -/
 theorem exists_dense_seq [SeparableSpace α] [Nonempty α] : ∃ u : ℕ → α, DenseRange u := by
   obtain ⟨s : Set α, hs, s_dense⟩ := exists_countable_dense α
-  cases' Set.countable_iff_exists_subset_range.mp hs with u hu
+  obtain ⟨u, hu⟩ := Set.countable_iff_exists_subset_range.mp hs
   exact ⟨u, s_dense.mono hu⟩
 
 /-- A dense sequence in a non-empty separable topological space.
@@ -597,8 +597,6 @@ lemma isOpenMap_eval (i : ι) : IsOpenMap (Function.eval i : (∀ i, π i) → �
 
 end
 
--- Porting note: moved `DenseRange.separableSpace` up
-
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
@@ -704,14 +702,11 @@ instance isCountablyGenerated_nhdsWithin (x : α) [IsCountablyGenerated (𝓝 x)
     IsCountablyGenerated (𝓝[s] x) :=
   Inf.isCountablyGenerated _ _
 
-variable (α)
-
+variable (α) in
 /-- A second-countable space is one with a countable basis. -/
 class _root_.SecondCountableTopology : Prop where
   /-- There exists a countable set of sets that generates the topology. -/
   is_open_generated_countable : ∃ b : Set (Set α), b.Countable ∧ t = TopologicalSpace.generateFrom b
-
-variable {α}
 
 protected theorem IsTopologicalBasis.secondCountableTopology {b : Set (Set α)}
     (hb : IsTopologicalBasis b) (hc : b.Countable) : SecondCountableTopology α :=

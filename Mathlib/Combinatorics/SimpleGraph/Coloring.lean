@@ -230,8 +230,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     let f := Embedding.completeGraph (@Fin.valEmbedding n)
     use f.toHom.comp C
     intro v
-    cases' C with color valid
-    exact Fin.is_lt (color v)
+    exact Fin.is_lt (C.1 v)
   · rintro ⟨C, Cf⟩
     refine ⟨Coloring.mk ?_ ?_⟩
     · exact fun v => ⟨C v, Cf v⟩
@@ -318,7 +317,7 @@ theorem colorable_of_chromaticNumber_ne_top (h : G.chromaticNumber ≠ ⊤) :
 
 theorem Colorable.mono_left {G' : SimpleGraph V} (h : G ≤ G') {n : ℕ} (hc : G'.Colorable n) :
     G.Colorable n :=
-  ⟨hc.some.comp (Hom.mapSpanningSubgraphs h)⟩
+  ⟨hc.some.comp (.ofLE h)⟩
 
 theorem chromaticNumber_le_of_forall_imp {V' : Type*} {G' : SimpleGraph V'}
     (h : ∀ n, G'.Colorable n → G.Colorable n) :

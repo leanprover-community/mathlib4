@@ -3,12 +3,11 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.NNReal.Star
+import Mathlib.Data.NNReal.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.Ring.Real
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topology on `ℝ≥0`
@@ -53,7 +52,7 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
   (continuous_id.max continuous_const).subtype_mk _
 
 /-- `Real.toNNReal` bundled as a continuous map for convenience. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 

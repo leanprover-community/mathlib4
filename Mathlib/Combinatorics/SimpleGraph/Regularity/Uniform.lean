@@ -3,11 +3,11 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Order.Partition.Equipartition
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Graph uniformity and uniform partitions
@@ -282,7 +282,7 @@ lemma IsEquipartition.card_interedges_sparsePairs_le' (hP : P.IsEquipartition)
     (_ : ℕ) ≤ _ := sum_le_card_nsmul P.parts.offDiag (fun i ↦ #i.1 * #i.2)
             ((#A / #P.parts + 1)^2 : ℕ) ?_
     _ ≤ (#P.parts * (#A / #P.parts) + #P.parts) ^ 2 := ?_
-    _ ≤ _ := Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le _ _) _) _
+    _ ≤ _ := Nat.pow_le_pow_left (add_le_add_right (Nat.mul_div_le _ _) _) _
   · simp only [Prod.forall, Finpartition.mk_mem_nonUniforms, and_imp, mem_offDiag, sq]
     rintro U V hU hV -
     exact_mod_cast Nat.mul_le_mul (hP.card_part_le_average_add_one hU)
@@ -302,7 +302,7 @@ private lemma aux {i j : ℕ} (hj : 0 < j) : j * (j - 1) * (i / j + 1) ^ 2 < (i 
     rw [sq]; exact Nat.mul_lt_mul_of_pos_left (Nat.sub_lt hj zero_lt_one) hj
   apply (Nat.mul_lt_mul_of_pos_right this <| pow_pos Nat.succ_pos' _).trans_le
   rw [← mul_pow]
-  exact Nat.pow_le_pow_of_le_left (add_le_add_right (Nat.mul_div_le i j) _) _
+  exact Nat.pow_le_pow_left (add_le_add_right (Nat.mul_div_le i j) _) _
 
 lemma IsEquipartition.card_biUnion_offDiag_le' (hP : P.IsEquipartition) :
     (#(P.parts.biUnion offDiag) : 𝕜) ≤ #A * (#A + #P.parts) / #P.parts := by

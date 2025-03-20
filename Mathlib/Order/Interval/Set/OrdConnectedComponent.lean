@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # Order connected components of a set
@@ -176,8 +176,8 @@ theorem disjoint_ordT5Nhd : Disjoint (ordT5Nhd s t) (ordT5Nhd t s) := by
   rw [mem_ordConnectedComponent, subset_inter_iff] at ha hb
   wlog hab : a ≤ b with H
   · exact H b hbt hb a has ha (le_of_not_le hab)
-  cases' ha with ha ha'
-  cases' hb with hb hb'
+  obtain ⟨ha, ha'⟩ := ha
+  obtain ⟨hb, hb'⟩ := hb
   have hsub : [[a, b]] ⊆ (ordSeparatingSet s t).ordConnectedSectionᶜ := by
     rw [ordSeparatingSet_comm, uIcc_comm] at hb'
     calc

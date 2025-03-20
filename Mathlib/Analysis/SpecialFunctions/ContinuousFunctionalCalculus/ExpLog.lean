@@ -7,7 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousMap.StarOrdered
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -58,7 +58,7 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
   [ContinuousFunctionalCalculus 𝕜 p]
 
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
@@ -76,7 +76,7 @@ end RCLikeNormed
 section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
-  [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
