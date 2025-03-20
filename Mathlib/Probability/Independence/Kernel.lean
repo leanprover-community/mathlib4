@@ -997,6 +997,7 @@ theorem IndepFun.comp₀ {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     (hfg : IndepFun f g κ μ)
     (hf : AEMeasurable f (κ ∘ₘ μ)) (hg : AEMeasurable g (κ ∘ₘ μ))
     (hφ : AEMeasurable φ ((κ ∘ₘ μ).map f)) (hψ : AEMeasurable ψ ((κ ∘ₘ μ).map g)) :
+    IndepFun (φ ∘ f) (ψ ∘ g) κ μ := by
   have h : IndepFun ((hφ.mk φ) ∘ f) ((hψ.mk ψ) ∘ g) κ μ := by
     refine IndepFun.comp hfg hφ.measurable_mk hψ.measurable_mk
   have hφ_ae := ae_of_ae_map hf hφ.ae_eq_mk
