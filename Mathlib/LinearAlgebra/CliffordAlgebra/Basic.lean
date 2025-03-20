@@ -181,6 +181,10 @@ theorem hom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : CliffordAlgebra Q 
   rw [lift_symm_apply, lift_symm_apply]
   simp only [h]
 
+#adaptation_note
+/-- This maxHeartbeats bump was adding for leanprover/lean4#7544,
+but can hopefully be removed again. -/
+set_option synthInstance.maxHeartbeats 40000 in
 -- This proof closely follows `TensorAlgebra.induction`
 /-- If `C` holds for the `algebraMap` of `r : R` into `CliffordAlgebra Q`, the `ι` of `x : M`,
 and is preserved under addition and multiplication, then it holds for all of `CliffordAlgebra Q`.
