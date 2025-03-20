@@ -77,7 +77,7 @@ lemma evalEval_finset_sum {ι : Type*} (s : Finset ι) (x y : R) (f : ι → R[X
   simp only [evalEval, eval_finset_sum]
 
 @[simp]
-lemma evalEval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (x y : R) (s : S)
+lemma evalEval_smul [DistribSMul S R] [IsScalarTower S R R] (x y : R) (s : S)
     (p : R[X][Y]) : (s • p).evalEval x y = s • p.evalEval x y := by
   simp only [evalEval, eval_smul]
 
