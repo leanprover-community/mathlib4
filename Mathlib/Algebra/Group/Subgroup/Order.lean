@@ -123,6 +123,6 @@ lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*} [OrderedCommMonoid G] {S
 
 @[to_additive]
 lemma MulEquiv.strictMono_symm {G G' : Type*} [LinearOrderedCommMonoid G]
-    [LinearOrderedCommMonoid G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+    [OrderedCommMonoid G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]

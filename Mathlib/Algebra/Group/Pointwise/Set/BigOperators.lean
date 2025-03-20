@@ -104,7 +104,7 @@ theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf
       (ih fun i hi ↦ hf i <| List.mem_cons_of_mem _ hi)
 
 @[to_additive]
-theorem list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
+theorem list_prod_singleton {M : Type*} [Monoid M] (s : List M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_list_prod (singletonMonoidHom : M →* Set M) _).symm
 
