@@ -607,6 +607,76 @@ lemma root'_apply_apply_mem_of_mem_span [Module S N] [IsScalarTower S R N] [P.Is
     P.root' i x ∈ LinearMap.range (Algebra.linearMap S R) :=
   P.flip.coroot'_apply_apply_mem_of_mem_span S hx i
 
+/-- The `S`-span of roots. -/
+abbrev rootSpanIn [Module S M] := span S (range P.root)
+
+/-- The `S`-span of coroots. -/
+abbrev corootSpanIn [Module S N] := span S (range P.coroot)
+
+instance [Module S M] [Finite ι] :
+    Module.Finite S <| P.rootSpanIn S :=
+  Finite.span_of_finite S <| finite_range _
+
+instance [Module S N] [Finite ι] :
+    Module.Finite S <| P.corootSpanIn S :=
+  Finite.span_of_finite S <| finite_range _
+
+/-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
+def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
+    Dual S (span S (range P.coroot)) where
+  toFun x := (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose
+  map_add' x y := by
+    simp only
+    have hinj : Function.Injective <| Algebra.linearMap S R := by -- make this a lemma?
+      rw [Algebra.coe_linearMap]
+      exact FaithfulSMul.algebraMap_injective S R
+    refine hinj ?_
+    rw [map_add, (P.root'_apply_apply_mem_of_mem_span S (x + y).2 i).choose_spec, Submodule.coe_add,
+      LinearMap.map_add, (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose_spec,
+      (P.root'_apply_apply_mem_of_mem_span S y.2 i).choose_spec]
+  map_smul' s x := by
+    have hinj : Function.Injective <| Algebra.linearMap S R := by
+      rw [Algebra.coe_linearMap]
+      exact FaithfulSMul.algebraMap_injective S R
+    refine hinj ?_
+    simp only
+    rw [map_smul, (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose_spec, RingHom.id_apply,
+      (P.root'_apply_apply_mem_of_mem_span S (s • x).2 i).choose_spec, Submodule.coe_smul_of_tower,
+      LinearMap.map_smul_of_tower]
+
+@[simp]
+lemma algebraMap_root'In_apply [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
+    [P.IsValuedIn S] (i : ι) (x : span S (range P.coroot)) :
+    algebraMap S R (P.root'In S i x) = P.root' i x := by
+  simp only [root'In, Algebra.linearMap_apply, LinearMap.coe_mk, AddHom.coe_mk]
+  exact (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose_spec
+
+/-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
+def coroot'In
+ [Module S M] [IsScalarTower S R M] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
+    Dual S (span S (range P.root)) where
+  toFun x := (P.coroot'_apply_apply_mem_of_mem_span S x.2 i).choose
+  map_add' x y := by
+    simp only
+    refine (FaithfulSMul.algebraMap_injective S R) ?_
+    rw [map_add, (P.coroot'_apply_apply_mem_of_mem_span S (x + y).2 i).choose_spec,
+      Submodule.coe_add, (P.coroot'_apply_apply_mem_of_mem_span S x.2 i).choose_spec,
+      (P.coroot'_apply_apply_mem_of_mem_span S y.2 i).choose_spec, LinearMap.map_add]
+  map_smul' s x := by
+    simp only
+    refine (FaithfulSMul.algebraMap_injective S R) ?_
+    rw [(P.coroot'_apply_apply_mem_of_mem_span S (s • x).2 i).choose_spec, RingHom.id_apply,
+      Algebra.id.smul_eq_mul, RingHom.map_mul, Submodule.coe_smul_of_tower,
+      (P.coroot'_apply_apply_mem_of_mem_span S x.2 i).choose_spec,
+      LinearMap.map_smul_of_tower, ← Algebra.smul_def]
+
+@[simp]
+lemma algebraMap_coroot'In_apply [Module S M] [IsScalarTower S R M] [FaithfulSMul S R]
+    [P.IsValuedIn S] (i : ι) (x : span S (range P.root)) :
+    algebraMap S R (P.coroot'In S i x) = P.coroot' i x := by
+  simp only [coroot'In, Algebra.linearMap_apply, LinearMap.coe_mk, AddHom.coe_mk]
+  exact (P.coroot'_apply_apply_mem_of_mem_span S x.2 i).choose_spec
+
 end IsValuedIn
 
 variable {P} in

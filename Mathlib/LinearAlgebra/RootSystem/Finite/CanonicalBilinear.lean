@@ -83,6 +83,27 @@ instance [Finite ι] : Module.Finite R P.corootSpan := .span_of_finite R <| fini
 
 variable [Fintype ι]
 
+
+section PairingIn
+
+variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
+[P.IsValuedIn S] [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
+
+/-- Polarization restricted to `S`-span of roots. -/
+def PolarizationIn : span S (range P.root) →ₗ[S] span S (range P.coroot) :=
+  ∑ i, LinearMap.toSpanSingleton S (span S (range P.coroot))
+    ⟨P.coroot i, Submodule.subset_span (mem_range_self i)⟩ ∘ₗ P.coroot'In S i
+
+omit [IsScalarTower S R N] in
+lemma PolarizationIn_apply (x : span S (range P.root)) :
+    P.PolarizationIn S x = ∑ i, P.coroot'In S i x • P.coroot i := by
+  simp [PolarizationIn]
+
+--TODO: CopolarizationIn
+
+end PairingIn
+
+
 /-- An invariant linear map from weight space to coweight space. -/
 def Polarization : M →ₗ[R] N :=
   ∑ i, LinearMap.toSpanSingleton R N (P.coroot i) ∘ₗ P.coroot' i

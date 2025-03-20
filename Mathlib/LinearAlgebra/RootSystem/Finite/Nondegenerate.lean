@@ -250,6 +250,28 @@ lemma _root_.RootSystem.rootForm_anisotropic (P : RootSystem ι R M N) :
 
 end LinearOrderedCommRing
 
+section LinearOrderedCommRingAlg
+
+variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
+(S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
+[Module S M] [IsScalarTower S R M]
+
+/-!
+lemma zero_le_rootFormIn (x : span S (range P.root)) :
+    0 ≤ (P.posRootForm S).posForm x x := by
+  refine IsSumSq.nonneg ?_
+  simp only [RootPositiveForm.posForm, posRootForm, RootForm]
+
+
+  --set s := (P.posRootForm S).posForm x x with hs
+
+  --exact (P.rootForm_self_sum_of_squares x).nonneg
+  sorry
+-/
+
+end LinearOrderedCommRingAlg
+
+
 -- faithful Weyl action on roots: for all x, w(x)-x lies in R-span of roots.
 --If all roots are fixed by w, then (w(x)-x, r) = (x, w^-1r -r)=0. w(x) - w by nondeg on R-span.
 -- finiteness of Weyl follows from finiteness of permutations of roots.
