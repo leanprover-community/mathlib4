@@ -373,14 +373,14 @@ variable {M α β : Type*} [SMul M α] [SMul M β]
 variable (M α β) in
 /-- `Prod.fst` as a bundled `MulActionHom`. -/
 @[to_additive (attr := simps -fullyApplied) "`Prod.fst` as a bundled `AddActionHom`."]
-def fst : (α × β) →[M] α where
+def fst : α × β →[M] α where
   toFun := Prod.fst
   map_smul' _ _ := rfl
 
 variable (M α β) in
 /-- `Prod.snd` as a bundled `MulActionHom`. -/
 @[to_additive (attr := simps -fullyApplied) "`Prod.snd` as a bundled `AddActionHom`."]
-def snd : (α × β) →[M] β where
+def snd : α × β →[M] β where
   toFun := Prod.snd
   map_smul' _ _ := rfl
 
@@ -391,7 +391,7 @@ variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N �
 /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
 @[to_additive (attr := simps -fullyApplied)
   "If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`."]
-def prodMk (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] (γ × δ) where
+def prodMk (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
   toFun x := (f x, g x)
   map_smul' _ _ := Prod.ext (map_smulₛₗ f _ _) (map_smulₛₗ g _ _)
 
@@ -407,7 +407,7 @@ lemma prodMk_fst_snd : prodMk (fst M α β) (snd M α β) = .id .. := rfl
 /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
 @[to_additive (attr := simps -fullyApplied)
   "If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`."]
-def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : (α × β) →ₑ[σ] (γ × δ) where
+def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] γ × δ where
   toFun := Prod.map f g
   __ := (f.comp (fst ..)).prodMk (g.comp (snd ..))
 
