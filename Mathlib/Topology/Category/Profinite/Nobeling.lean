@@ -446,19 +446,13 @@ instance : Fintype (π C (· ∈ s)) := by
   let f : π C (· ∈ s) → (s → Bool) := fun x j ↦ x.val j.val
   refine Fintype.ofInjective f ?_
   intro ⟨_, x, hx, rfl⟩ ⟨_, y, hy, rfl⟩ h
-  ext i
-  by_cases hi : i ∈ s
-  · exact congrFun h ⟨i, hi⟩
-  · simp only [Proj, if_neg hi]
+  simp_all [Proj, f, funext_iff]
 
-open scoped Classical in
 /-- The Kronecker delta as a locally constant map from `π C (· ∈ s)` to `ℤ`. -/
+@[simps!]
 noncomputable
-def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ where
-  toFun := fun y ↦ if y = x then 1 else 0
-  isLocallyConstant :=
-    haveI : DiscreteTopology (π C (· ∈ s)) := Finite.instDiscreteTopology
-    IsLocallyConstant.of_discrete _
+def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ :=
+  LocallyConstant.indicator (U := {x}) 1 <| isClopen_discrete {x}
 
 open scoped Classical in
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by
@@ -466,11 +460,11 @@ theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis 
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
   use Finsupp.onFinset (Finset.univ) f.toFun (fun _ _ ↦ Finset.mem_univ _)
   ext x
+  -- TODO: add a `sum_apply` lemma for `LocallyConstant`
   change LocallyConstant.evalₗ ℤ x _ = _
-  simp only [zsmul_eq_mul, map_finsupp_sum, LocallyConstant.evalₗ_apply,
-    LocallyConstant.coe_mul, Pi.mul_apply, spanFinBasis, LocallyConstant.coe_mk, mul_ite, mul_one,
-    mul_zero, Finsupp.sum_ite_eq, Finsupp.mem_support_iff, ne_eq, ite_not]
-  split_ifs with h <;> [exact h.symm; rfl]
+  have : (if f x = 0 then 0 else (f x : LocallyConstant _ ℤ) x) = f x := by
+    split_ifs with h <;> [exact h.symm; rfl]
+  simp [map_finsupp_sum, Set.indicator_apply, this]
 
 /-- A certain explicit list of locally constant maps. The theorem `factors_prod_eq_basis` shows that
 the product of the elements in this list is the delta function `spanFinBasis C s x`. -/
@@ -480,15 +474,23 @@ def factors (x : π C (· ∈ s)) : List (LocallyConstant (π C (· ∈ s)) ℤ)
 
 theorem list_prod_apply {I} (C : Set (I → Bool)) (x : C) (l : List (LocallyConstant C ℤ)) :
     l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
-  rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l]
-  rfl
+  simp [← map_list_prod (LocallyConstant.evalMonoidHom x) l]
+
+-- move this
+lemma ite_apply {α β F : Type*} [DFunLike F α β] : sorry := sorry
 
 theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x) :
     (factors C s x).prod y = 1 := by
+  subst x
   rw [list_prod_apply (π C (· ∈ s)) y _]
   apply List.prod_eq_one
-  simp only [h, List.mem_map, LocallyConstant.evalMonoidHom, factors]
-  rintro _ ⟨a, ⟨b, _, rfl⟩, rfl⟩
+  simp only [LocallyConstant.evalMonoidHom, MonoidHom.coe_comp, factors, ge_iff_le, List.mem_map,
+    Finset.mem_sort, Function.comp_apply, Pi.evalMonoidHom_apply,
+    LocallyConstant.coeFnMonoidHom_apply, exists_exists_and_eq_and, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+  intro a ha
+  -- TODO: add simp-proc that simplifies the `then` and `else' branches under `if` 
+  -- (with the appropriate assumption in context)
   split_ifs <;> simp_all [LocallyConstant.sub_apply]
 
 theorem e_mem_of_eq_true {x : (π C (· ∈ s))} {a : I} (hx : x.val a = true) :
