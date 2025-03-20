@@ -338,8 +338,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule
   duplicateImportsCheck importIds
-  if let some msg ← directoryDependencyCheck mainModule
-  then Linter.logLint linter.directoryDependency stx msg
+  if let some msg ← directoryDependencyCheck mainModule then
+    Linter.logLint linter.directoryDependency stx msg
 
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
