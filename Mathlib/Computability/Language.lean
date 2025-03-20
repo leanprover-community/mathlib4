@@ -213,9 +213,7 @@ theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
       exact ⟨a, hS.1, _, ⟨S, rfl, rfl, hS.2⟩, rfl⟩
 
 theorem kstar_eq_iSup_pow (l : Language α) : l∗ = ⨆ i : ℕ, l ^ i := by
-  ext x
-  simp_rw [mem_kstar, mem_iSup, mem_pow]
-  tauto
+  aesop (add simp [mem_iSup, mem_pow, mem_kstar])
 
 @[simp]
 theorem map_kstar (f : α → β) (l : Language α) : map f l∗ = (map f l)∗ := by
