@@ -291,6 +291,14 @@ lemma MeromorphicAt.eq_nhdNE_toMeromorphicNFAt (hf : MeromorphicAt f x) :
     f =ᶠ[𝓝[≠] x] toMeromorphicNFAt f x :=
   eventually_nhdsWithin_of_forall (fun _ hz ↦ hf.eqOn_compl_singleton_toMermomorphicNFAt hz)
 
+/-- Two analytic functions agree on a punctured neighborhood iff they agree on a neighborhood. -/
+private lemma AnalyticAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E} {z₀ : 𝕜}
+    (hf : AnalyticAt 𝕜 f z₀) (hg : AnalyticAt 𝕜 g z₀) (hfg : f =ᶠ[𝓝[≠] z₀] g) :
+    f =ᶠ[𝓝 z₀] g := by
+  rcases ((hf.sub hg).eventually_eq_zero_or_eventually_ne_zero) with h | h
+  · exact Filter.eventuallyEq_iff_sub.2 h
+  · simpa using (Filter.eventually_and.2 ⟨Filter.eventuallyEq_iff_sub.mp hfg, h⟩).exists
+
 /-- After conversion to normal form at `x`, the function has normal form. -/
 theorem meromorphicNFAt_toMeromorphicNFAt :
     MeromorphicNFAt (toMeromorphicNFAt f x) x := by
