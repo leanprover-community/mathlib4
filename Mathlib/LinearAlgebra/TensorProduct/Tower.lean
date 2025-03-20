@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Tower
-import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # The `A`-module structure on `M ⊗[R] N`

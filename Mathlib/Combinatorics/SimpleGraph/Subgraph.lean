@@ -5,6 +5,7 @@ Authors: Hunter Monroe, Kyle Miller, Alena Gusakov
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Fintype.Powerset
 
 /-!
 # Subgraphs of a simple graph
@@ -57,7 +58,9 @@ Thinking of `V → V → Prop` as `Set (V × V)`, a set of darts (i.e., half-edg
 `Subgraph.adj_sub` is that the darts of a subgraph are a subset of the darts of `G`. -/
 @[ext]
 structure Subgraph {V : Type u} (G : SimpleGraph V) where
+  /-- Vertices of the subgraph -/
   verts : Set V
+  /-- Edges of the subgraph -/
   Adj : V → V → Prop
   adj_sub : ∀ {v w : V}, Adj v w → G.Adj v w
   edge_vert : ∀ {v w : V}, Adj v w → v ∈ verts
@@ -193,7 +196,11 @@ def spanningCoeEquivCoeOfSpanning (G' : Subgraph G) (h : G'.IsSpanning) :
 /-- A subgraph is called an *induced subgraph* if vertices of `G'` are adjacent if
 they are adjacent in `G`. -/
 def IsInduced (G' : Subgraph G) : Prop :=
-  ∀ {v w : V}, v ∈ G'.verts → w ∈ G'.verts → G.Adj v w → G'.Adj v w
+  ∀ ⦃v⦄, v ∈ G'.verts → ∀ ⦃w⦄, w ∈ G'.verts → G.Adj v w → G'.Adj v w
+
+@[simp] protected lemma IsInduced.adj {G' : G.Subgraph} (hG' : G'.IsInduced) {a b : G'.verts} :
+    G'.Adj a b ↔ G.Adj a b :=
+  ⟨coe_adj_sub _ _ _, hG' a.2 b.2⟩
 
 /-- `H.support` is the set of vertices that form edges in the subgraph `H`. -/
 def support (H : Subgraph G) : Set V := Rel.dom H.Adj
@@ -412,7 +419,7 @@ theorem verts_iInf {f : ι → G.Subgraph} : (⨅ i, f i).verts = ⋂ i, (f i).v
 
 @[simp] lemma coe_bot : (⊥ : G.Subgraph).coe = ⊥ := rfl
 
-@[simp] lemma IsInduced.top : (⊤ : G.Subgraph).IsInduced := fun _ _ ↦ id
+@[simp] lemma IsInduced.top : (⊤ : G.Subgraph).IsInduced := fun _ _ _ _ ↦ id
 
 /-- The graph isomorphism between the top element of `G.subgraph` and `G`. -/
 def topIso : (⊤ : G.Subgraph).coe ≃g G where
@@ -637,6 +644,12 @@ lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
 theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f = H₁.map f ⊔ H₂.map f := by
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
+@[simp] lemma map_iso_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
+  ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
+
+@[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
+    (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..
+
 end map
 
 /-- Graph homomorphisms induce a contravariant function on subgraphs. -/
@@ -659,6 +672,9 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
     intro
     apply h.2
 
+@[simp] lemma comap_equiv_top {H : SimpleGraph W} (f : G →g H) : Subgraph.comap f ⊤ = ⊤ := by
+  ext <;> simp +contextual [f.map_adj]
+
 theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) (H' : G'.Subgraph) :
     H.map f ≤ H' ↔ H ≤ H'.comap f := by
   refine ⟨fun h ↦ ⟨fun v hv ↦ ?_, fun v w hvw ↦ ?_⟩, fun h ↦ ⟨fun v ↦ ?_, fun v w ↦ ?_⟩⟩
@@ -672,6 +688,20 @@ theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph
   · simp only [Relation.Map, map_adj, forall_exists_index, and_imp]
     rintro u u' hu rfl rfl
     exact (h.2 hu).2
+
+instance [DecidableEq V] [Fintype V] [DecidableRel G.Adj] : Fintype G.Subgraph := by
+  refine .ofBijective
+    (α := {H : Finset V × (V → V → Bool) //
+      (∀ a b, H.2 a b → G.Adj a b) ∧ (∀ a b, H.2 a b → a ∈ H.1) ∧ ∀ a b, H.2 a b = H.2 b a})
+    (fun H ↦ ⟨H.1.1, fun a b ↦ H.1.2 a b, @H.2.1, @H.2.2.1, by simp [Symmetric, H.2.2.2]⟩)
+    ⟨?_, fun H ↦ ?_⟩
+  · rintro ⟨⟨_, _⟩, -⟩ ⟨⟨_, _⟩, -⟩
+    simp [funext_iff]
+  · classical
+    exact ⟨⟨(H.verts.toFinset, fun a b ↦ H.Adj a b), fun a b ↦ by simpa using H.adj_sub,
+      fun a b ↦ by simpa using H.edge_vert, by simp [H.adj_comm]⟩, by simp⟩
+
+instance [Finite V] : Finite G.Subgraph := by classical cases nonempty_fintype V; infer_instance
 
 /-- Given two subgraphs, one a subgraph of the other, there is an induced injective homomorphism of
 the subgraphs as graphs. -/
@@ -694,8 +724,13 @@ protected def hom (x : Subgraph G) : x.coe →g G where
 @[simp] lemma coe_hom (x : Subgraph G) :
     (x.hom : x.verts → V) = (fun (v : x.verts) => (v : V)) := rfl
 
-theorem hom.injective {x : Subgraph G} : Function.Injective x.hom :=
+theorem hom_injective {x : Subgraph G} : Function.Injective x.hom :=
   fun _ _ ↦ Subtype.ext
+
+@[deprecated (since := "2025-03-15")] alias hom.injective := hom_injective
+
+@[simp] lemma map_hom_top (G' : G.Subgraph) : Subgraph.map G'.hom ⊤ = G' := by
+  aesop (add unfold safe Relation.Map, unsafe G'.edge_vert, unsafe Adj.symm)
 
 /-- There is an induced injective homomorphism of a subgraph of `G` as
 a spanning subgraph into `G`. -/
@@ -704,8 +739,10 @@ def spanningHom (x : Subgraph G) : x.spanningCoe →g G where
   toFun := id
   map_rel' := x.adj_sub
 
-theorem spanningHom.injective {x : Subgraph G} : Function.Injective x.spanningHom :=
+theorem spanningHom_injective {x : Subgraph G} : Function.Injective x.spanningHom :=
   fun _ _ ↦ id
+
+@[deprecated (since := "2025-03-15")] alias spanningHom.injective := spanningHom_injective
 
 theorem neighborSet_subset_of_subgraph {x y : Subgraph G} (h : x ≤ y) (v : V) :
     x.neighborSet v ⊆ y.neighborSet v :=

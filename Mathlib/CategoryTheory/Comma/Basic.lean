@@ -239,8 +239,8 @@ def map : Comma L R ⥤ Comma L' R' where
       right := F₂.map φ.right
       w := by
         dsimp
-        rw [assoc, assoc]
-        erw [α.naturality_assoc, ← β.naturality]
+        rw [assoc, assoc, ← Functor.comp_map, α.naturality_assoc, ← Functor.comp_map,
+          ← β.naturality]
         dsimp
         rw [← F.map_comp_assoc, ← F.map_comp_assoc, φ.w] }
 

@@ -56,11 +56,7 @@ def pullbackConeIsLimit (f : X ⟶ Z) (g : Y ⟶ Z) : IsLimit (pullbackCone f g)
       · exact ofHom
           { toFun := fun x =>
               ⟨⟨S.fst x, S.snd x⟩, by simpa using ConcreteCategory.congr_hom S.condition x⟩
-            continuous_toFun := by
-              apply Continuous.subtype_mk <| Continuous.prod_mk ?_ ?_
-              · exact (PullbackCone.fst S).hom.continuous_toFun
-              · exact (PullbackCone.snd S).hom.continuous_toFun
-          }
+            continuous_toFun := by fun_prop }
       refine ⟨?_, ?_, ?_⟩
       · delta pullbackCone
         ext a
@@ -159,12 +155,10 @@ def pullbackHomeoPreimage
     convert x.prop
     exact Exists.choose_spec (p := fun y ↦ g y = f (↑x : X × Y).1) _
   right_inv := fun _ ↦ rfl
-  continuous_toFun := by
-    apply Continuous.subtype_mk
-    exact continuous_fst.comp continuous_subtype_val
+  continuous_toFun := by fun_prop
   continuous_invFun := by
     apply Continuous.subtype_mk
-    refine continuous_prod_mk.mpr ⟨continuous_subtype_val, hg.isInducing.continuous_iff.mpr ?_⟩
+    refine continuous_subtype_val.prodMk <| hg.isInducing.continuous_iff.mpr ?_
     convert hf.comp continuous_subtype_val
     ext x
     exact Exists.choose_spec x.2

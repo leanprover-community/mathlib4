@@ -432,7 +432,7 @@ theorem count_inv (I : FractionalIdeal R⁰ K) :
 /-- `val_v(Iⁿ) = n*val_v(I)` for every `n ∈ ℤ`. -/
 theorem count_zpow (n : ℤ) (I : FractionalIdeal R⁰ K) :
     count K v (I ^ n) = n * count K v I := by
-  cases' n with n
+  obtain n | n := n
   · rw [ofNat_eq_coe, zpow_natCast]
     exact count_pow K v n I
   · rw [negSucc_coe, count_neg_zpow, zpow_natCast, count_pow]
