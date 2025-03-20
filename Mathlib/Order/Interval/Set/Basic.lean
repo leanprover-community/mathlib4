@@ -9,7 +9,6 @@ import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.MinMax
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Says
-import Mathlib.Tactic.DeprecateTo
 
 /-!
 # Intervals
