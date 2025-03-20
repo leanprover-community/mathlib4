@@ -176,7 +176,7 @@ theorem Abelian.tfae_mono {X Y : C} (f : X ⟶ Y) (Z : C) :
   tfae_finish
 
 open List in
-theorem Abelian.tfae_epi {X Y : C} (f : X ⟶ Y) (Z : C ) :
+theorem Abelian.tfae_epi {X Y : C} (f : X ⟶ Y) (Z : C) :
     TFAE [Epi f, cokernel.π f = 0, (ShortComplex.mk f (0 : Y ⟶ Z) comp_zero).Exact] := by
   tfae_have 2 → 1 := epi_of_cokernel_π_eq_zero _
   tfae_have 1 → 2

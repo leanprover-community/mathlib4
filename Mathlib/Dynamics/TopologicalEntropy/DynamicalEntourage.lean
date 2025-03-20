@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damien Thomine, Pietro Monticone
 -/
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Topology.Constructions
+import Mathlib.Topology.Constructions.SumProd
 import Mathlib.Topology.UniformSpace.Defs
 
 /-!
@@ -75,6 +75,9 @@ lemma _root_.IsSymmetricRel.dynEntourage (T : X → X) {U : Set (X × X)}
   simp only [Dynamics.dynEntourage, map_iterate, mem_preimage, mem_iInter]
   refine forall₂_congr fun k _ ↦ ?_
   exact map_apply' _ _ _ ▸ IsSymmetricRel.mk_mem_comm h
+
+@[deprecated (since := "2025-03-05")]
+alias _root_.SymmetricRel.dynEntourage := _root_.IsSymmetricRel.dynEntourage
 
 lemma dynEntourage_comp_subset (T : X → X) (U V : Set (X × X)) (n : ℕ) :
     (dynEntourage T U n) ○ (dynEntourage T V n) ⊆ dynEntourage T (U ○ V) n := by

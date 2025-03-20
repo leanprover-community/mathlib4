@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Antoine Labelle
 import Mathlib.Algebra.Module.Defs
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!

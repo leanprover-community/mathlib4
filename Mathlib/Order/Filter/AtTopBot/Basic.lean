@@ -180,7 +180,6 @@ lemma exists_le_of_tendsto_atTop (h : Tendsto u atTop atTop) (a : α) (b : β) :
     (eventually_ge_atTop a).and (h.eventually <| eventually_ge_atTop b)
   exact this.exists
 
--- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem exists_le_of_tendsto_atBot (h : Tendsto u atTop atBot) :
     ∀ a b, ∃ a' ≥ a, u a' ≤ b := exists_le_of_tendsto_atTop (β := βᵒᵈ) h
 
@@ -190,7 +189,6 @@ theorem exists_lt_of_tendsto_atTop [NoMaxOrder β] (h : Tendsto u atTop atTop) (
   rcases exists_le_of_tendsto_atTop h a b' with ⟨a', ha', ha''⟩
   exact ⟨a', ha', lt_of_lt_of_le hb' ha''⟩
 
--- @[nolint ge_or_gt] -- Porting note: restore attribute
 theorem exists_lt_of_tendsto_atBot [NoMinOrder β] (h : Tendsto u atTop atBot) :
     ∀ a b, ∃ a' ≥ a, u a' < b := exists_lt_of_tendsto_atTop (β := βᵒᵈ) h
 
