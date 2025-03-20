@@ -178,11 +178,11 @@ example {R : Type*} [Semiring R] {a b c d : R} :
   simp [Matrix.vecHead, Matrix.vecTail]
 
 /- Check that matrix notation works with `row` and `col` -/
-example : Matrix.row _ ![1, 1] = !![1, 1] := by
+example : Matrix.replicateRow _ ![1, 1] = !![1, 1] := by
   ext i j
   simp
 
-example : Matrix.col _ ![1, 1] = !![1; 1] := by
+example : Matrix.replicateCol _ ![1, 1] = !![1; 1] := by
   ext i j
   fin_cases i <;> simp
 
