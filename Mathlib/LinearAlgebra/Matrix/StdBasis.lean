@@ -50,3 +50,13 @@ theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq 
   simp [stdBasis, stdBasisMatrix_eq_of_single_single]
 
 end Matrix
+
+namespace Module.Free
+
+variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
+
+/-- The module of finite matrices is free. -/
+instance matrix {m n : Type*} [Finite m] [Finite n] : Module.Free R (Matrix m n M) :=
+  Module.Free.pi R _
+
+end Module.Free
