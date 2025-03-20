@@ -457,4 +457,22 @@ theorem freeMonoidCongr_symm_of (e : α ≃ β) (b : β) :
 
 end IsomorphicTypes
 
+/-- The bijection between the free group on the empty type, and a type with one element. -/
+@[to_additive "The bijection between the additive free monoid on the empty type, and a type with one
+  element."]
+def freeMonoidEmptyEquivUnit : FreeMonoid Empty ≃ Unit where
+  toFun _ := ()
+  invFun _ := 1
+  left_inv x := Eq.symm (Subsingleton.eq_one x)
+  right_inv _ := rfl
+
+/-- The bijection between the free monoid on a singleton, and the natural numbers. -/
+@[to_additive "The bijection between the additive free monoid on a singleton, and the natural
+numbers."]
+def freeMonoidUnitEquivNat : FreeMonoid Unit ≃ ℕ where
+  toFun x := x.length
+  invFun x := FreeMonoid.of () ^ x
+  left_inv x := by induction x <;> simp_all [pow_add]
+  right_inv x := by induction x <;> simp_all [pow_add]
+
 end FreeMonoid
