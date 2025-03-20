@@ -57,7 +57,12 @@ attribute [instance] HasConicalLimit.preservesLimit_eCoyoneda
 Mirrors `LimitCone F`.
 -/
 structure ConicalLimitCone (F : J ⥤ C) where
+  /-- the underlying limit cone of a conical limit cone -/
   limitCone : LimitCone F
+  /--
+  proof that the cone obtained by applying the coyoneda
+  functor `(X ⟶[V] -)` to the ordinary limit cone (`limitCone.cone`) is a limit cone in `V`.
+  -/
   isConicalLimit (X : C) : IsLimit <| (eCoyoneda V X).mapCone limitCone.cone
 
 variable (C)
