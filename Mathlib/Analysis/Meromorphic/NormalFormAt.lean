@@ -234,7 +234,6 @@ theorem meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g : AnalyticAt 𝕜 g 
     (h₂g : g x ≠ 0) :
     MeromorphicNFAt (g • f) x ↔ MeromorphicNFAt f x := by
   constructor
-  · exact fun hf ↦ hf.smul_analytic h₁g h₂g
   · intro hprod
     have : f =ᶠ[𝓝 x] g⁻¹ • g • f := by
       filter_upwards [h₁g.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.mpr h₂g)]
@@ -244,22 +243,23 @@ theorem meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g : AnalyticAt 𝕜 g 
       simp [hy]
     rw [meromorphicNFAt_congr this]
     exact hprod.smul_analytic (h₁g.inv h₂g) (inv_ne_zero h₂g)
+  · exact fun hf ↦ hf.smul_analytic h₁g h₂g
 
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `g * f` is meromorphic in normal form at `z₀`. -/
 theorem meromorphicNFAt_mul_iff_right {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) :
-    MeromorphicNFAt f x ↔ MeromorphicNFAt (g * f) x := by
+    MeromorphicNFAt (g * f) x ↔ MeromorphicNFAt f x := by
   rw [← smul_eq_mul]
-  exact meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic h₁g h₂g
+  exact meromorphicNFAt_smul_iff_right_of_analyticAt h₁g h₂g
 
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `f * g` is meromorphic in normal form at `z₀`. -/
 theorem meromorphicNFAt_mul_iff_left {f : 𝕜 → 𝕜} (h₁g : AnalyticAt 𝕜 g x)
     (h₂g : g x ≠ 0) :
-    MeromorphicNFAt f x ↔ MeromorphicNFAt (f * g) x := by
+    MeromorphicNFAt (f * g) x ↔ MeromorphicNFAt f x := by
   rw [mul_comm, ← smul_eq_mul]
-  exact meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic h₁g h₂g
+  exact meromorphicNFAt_smul_iff_right_of_analyticAt h₁g h₂g
 
 /-!
 ## Continuous extension and conversion to normal form
@@ -351,7 +351,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
           have : g =ᶠ[𝓝 x] (Classical.choose ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)) := by
             obtain ⟨h₀, h₁, h₂⟩ := Classical.choose_spec
               ((h₀f.meromorphicAt.order_eq_int_iff 0).1 h₃f)
-            apply (h₁g.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₀).1
+            rw [← h₁g.eventuallyEq_nhdNE_iff_eventuallyEq_nhd h₀]
             rw [hn] at h₃g
             simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂
             exact (h₃g.filter_mono nhdsWithin_le_nhds).symm.trans h₂
