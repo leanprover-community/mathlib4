@@ -138,7 +138,7 @@ theorem nnnorm_replicateCol (v : m → α) : ‖replicateCol ι v‖₊ = ‖v�
 
 @[simp]
 theorem norm_replicateCol (v : m → α) : ‖replicateCol ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_col v
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_replicateCol v
 
 @[deprecated (since := "2025-03-20")] alias norm_col := norm_replicateCol
 
@@ -150,7 +150,7 @@ theorem nnnorm_replicateRow (v : n → α) : ‖replicateRow ι v‖₊ = ‖v�
 
 @[simp]
 theorem norm_replicateRow (v : n → α) : ‖replicateRow ι v‖ = ‖v‖ :=
-  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_row v
+  congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_replicateRow v
 
 @[deprecated (since := "2025-03-20")] alias norm_row := norm_replicateRow
 

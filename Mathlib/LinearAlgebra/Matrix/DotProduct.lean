@@ -173,8 +173,8 @@ lemma mul_conjTranspose_mul_self_eq_zero {p} (A : Matrix m n R) (B : Matrix p n 
 
 lemma conjTranspose_mul_self_mulVec_eq_zero (A : Matrix m n R) (v : n → R) :
     (Aᴴ * A) *ᵥ v = 0 ↔ A *ᵥ v = 0 := by
-  simpa only [← Matrix.col_mulVec, col_eq_zero] using
-    conjTranspose_mul_self_mul_eq_zero A (col (Fin 1) v)
+  simpa only [← Matrix.replicateCol_mulVec, replicateCol_eq_zero] using
+    conjTranspose_mul_self_mul_eq_zero A (replicateCol (Fin 1) v)
 
 lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
     (A * Aᴴ) *ᵥ v = 0 ↔ Aᴴ *ᵥ v = 0 := by
@@ -182,7 +182,7 @@ lemma self_mul_conjTranspose_mulVec_eq_zero (A : Matrix m n R) (v : m → R) :
 
 lemma vecMul_conjTranspose_mul_self_eq_zero (A : Matrix m n R) (v : n → R) :
     v ᵥ* (Aᴴ * A) = 0 ↔ v ᵥ* Aᴴ = 0 := by
-  simpa only [← Matrix.row_vecMul, row_eq_zero] using
+  simpa only [← Matrix.replicateRow_vecMul, replicateRow_eq_zero] using
     mul_conjTranspose_mul_self_eq_zero A (replicateRow (Fin 1) v)
 
 lemma vecMul_self_mul_conjTranspose_eq_zero (A : Matrix m n R) (v : m → R) :
