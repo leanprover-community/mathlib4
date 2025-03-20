@@ -49,16 +49,7 @@ class Ideal.FiniteHeight : Prop where
 
 lemma Ideal.finiteHeight_iff_lt {I : Ideal R} :
     Ideal.FiniteHeight I ↔ I = ⊤ ∨ I.height < ⊤ := by
-  constructor
-  · intro h
-    cases h.eq_top_or_height_ne_top with
-    | inl h => exact Or.inl h
-    | inr h => exact Or.inr (lt_of_le_of_ne le_top h)
-  · intro h
-    constructor
-    cases h with
-    | inl h => exact Or.inl h
-    | inr h => exact Or.inr (ne_top_of_lt h)
+  rw [Ideal.finiteHeight_iff, lt_top_iff_ne_top]
 
 lemma Ideal.height_ne_top {I : Ideal R} (hI : I ≠ ⊤) [I.FiniteHeight] :
     I.height ≠ ⊤ :=
@@ -144,13 +135,11 @@ lemma Ideal.height_le_ringKrullDim_of_ne_top {I : Ideal R} (h : I ≠ ⊤) :
 
 instance (priority := 900) Ideal.finiteHeight_of_finiteRingKrullDim {I : Ideal R}
     [FiniteRingKrullDim R] : I.FiniteHeight := by
-  by_cases h : I = ⊤
-  · exact ⟨Or.inl h⟩
-  · refine ⟨Or.inr ?_⟩
-    have h1 := ringKrullDim_lt_top (R := R)
-    have h2 := Ideal.height_le_ringKrullDim_of_ne_top h
-    rw [← lt_top_iff_ne_top]
-    exact WithBot.coe_lt_coe.mp (lt_of_le_of_lt h2 h1)
+  rw [finiteHeight_iff, or_iff_not_imp_left, ← lt_top_iff_ne_top, ← WithBot.coe_lt_coe]
+  intro h
+  have h1 := ringKrullDim_lt_top (R := R)
+  have h2 := Ideal.height_le_ringKrullDim_of_ne_top h
+  exact lt_of_le_of_lt h2 h1
 
 /-- If J has finite height and I ≤ J, then I has finite height -/
 lemma Ideal.finiteHeight_of_le {I J : Ideal R} (e : I ≤ J) (hJ : J ≠ ⊤) [FiniteHeight J] :
@@ -178,8 +167,7 @@ lemma Ideal.primeHeight_eq_zero_iff {I : Ideal R} [I.IsPrime] :
   simp only [bot_le, and_true, Set.mem_setOf_eq, Minimal, IsMin]
   constructor
   · intro h
-    by_contra h'
-    push_neg at h'
+    by_contra! h'
     obtain ⟨P, ⟨hP₁, ⟨hP₂, hP₃⟩⟩⟩ := h' (inferInstance)
     exact hP₃ (h (b := ⟨P, hP₁⟩) hP₂)
   · rintro ⟨hI, hI'⟩ b hb
