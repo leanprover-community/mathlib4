@@ -470,6 +470,11 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
+@[to_additive (attr := simp)]
+theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
+  rw [insert_eq, closure_union]
+  simp [one_mem]
+
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
