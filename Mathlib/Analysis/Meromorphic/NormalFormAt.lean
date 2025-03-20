@@ -234,7 +234,7 @@ theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic (h₁g : AnalyticAt
     (h₂g : g x ≠ 0) :
     MeromorphicNFAt f x ↔ MeromorphicNFAt (g • f) x := by
   constructor
-  · exact fun hf ↦ hf.meromorphicNFAt_of_smul_analytic h₁g h₂g
+  · exact fun hf ↦ hf.smul_analytic h₁g h₂g
   · intro hprod
     have : f =ᶠ[𝓝 x] g⁻¹ • g • f := by
       filter_upwards [h₁g.continuousAt.preimage_mem_nhds (compl_singleton_mem_nhds_iff.mpr h₂g)]
@@ -243,7 +243,7 @@ theorem meromorphicNFAt_iff_meromorphicNFAt_of_smul_analytic (h₁g : AnalyticAt
         Set.mem_singleton_iff] at hy
       simp [hy]
     rw [meromorphicNFAt_congr this]
-    exact hprod.meromorphicNFAt_of_smul_analytic (h₁g.inv h₂g) (inv_ne_zero h₂g)
+    exact hprod.smul_analytic (h₁g.inv h₂g) (inv_ne_zero h₂g)
 
 /-- If `f` is any function and `g` is analytic without zero at `z₀`, then `f` is meromorphic in
 normal form at `z₀` iff `g * f` is meromorphic in normal form at `z₀`. -/
