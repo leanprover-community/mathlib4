@@ -139,36 +139,33 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         apply mem_inter.2 ⟨hx, this hx⟩
       have hdisj2 := (append_isPath_iff.1 hq).2.2
       by_cases hr : ((q.append v41)).support.toFinset = s
-      · sorry
-        --Main case 1
-
-        -- rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
-        -- simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
-        -- rw [v41sup, List.tail] at hdisj2
-        -- obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
-        --   have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
-        --   rw [← card_neighborFinset_eq_degree] at this
-        --   have :  1 ≤ #((G.neighborFinset v₂) \ {v₁, v₃}) := by
-        --     rw [card_sdiff]
-        --     · rw [card_pair hne]
-        --       omega
-        --     · intro x hx; simp only [mem_insert, mem_singleton, mem_neighborFinset] at *
-        --       cases hx with
-        --       | inl h => exact h ▸ h1.1
-        --       | inr h => exact h ▸ h3.1.symm
-        --   obtain ⟨vⱼ, hj⟩ := card_pos.1 this
-        --   use vⱼ
-        --   simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
-        --   exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
-        -- have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
-        --   rw [←hr, union_comm]
-        --   congr! 1
-        --   rw [insert_comm, insert_comm v₁]
-        --   congr! 1
-        --   exact pair_comm _ _
-        -- convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
-        --   hnadj (by aesop)  (by aesop)
-
+      · --Main case 1
+        rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
+        simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
+        rw [v41sup, List.tail] at hdisj2
+        obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
+          have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
+          rw [← card_neighborFinset_eq_degree] at this
+          have :  1 ≤ #((G.neighborFinset v₂) \ {v₁, v₃}) := by
+            rw [card_sdiff]
+            · rw [card_pair hne]
+              omega
+            · intro x hx; simp only [mem_insert, mem_singleton, mem_neighborFinset] at *
+              cases hx with
+              | inl h => exact h ▸ h1.1
+              | inr h => exact h ▸ h3.1.symm
+          obtain ⟨vⱼ, hj⟩ := card_pos.1 this
+          use vⱼ
+          simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
+          exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
+        have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
+          rw [←hr, union_comm]
+          congr! 1
+          rw [insert_comm, insert_comm v₁]
+          congr! 1
+          exact pair_comm _ _
+        convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
+          hnadj (by aesop)  (by aesop)
       · -- Main case 2
         have hssf :(q.append v41).support.toFinset ⊂ s :=
           Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| List.mem_toFinset.1 hy, hr⟩
@@ -238,7 +235,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           have hsdc := sdiff_union_of_subset hsub.1
           have heq : (insert d.toProd.2 (s \ c.support.toFinset)
             ∪ p.reverse.support.toFinset) = s := by
-              rwa [support_reverse, List.toFinset_reverse, Brooks_aux G hcy hd, insert_union,
+              rwa [support_reverse, List.toFinset_reverse, Brooks_aux hcy hd, insert_union,
                   ← erase_eq_of_not_mem hd2', ← erase_union_distrib,
                   insert_erase (hsdc.symm ▸ (hsub.1 hd2))]
           have hps : p.support.toFinset ⊆ c.support.toFinset := by
@@ -251,10 +248,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             rw [support_reverse, List.toFinset_reverse]
             apply disjoint_insert_left.2
             constructor
-            · rw [List.mem_toFinset]
-              have := Brooks_aux' G hcy hd
-              rw [this]
-              sorry
+            · rw [List.mem_toFinset, Brooks_aux' hcy hd]
+              exact (hcy.rotate hr).snd_not_mem_tail_tail_support
             · exact disjoint_of_subset_right hps sdiff_disjoint
 
           use C₃.copy heq
@@ -274,8 +269,6 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       rw [copy_eq, ofEmpty_eq]
       exact Nat.zero_lt_of_lt hk
   exact H #s le_rfl
-
-
 
 theorem Brooks (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :
     G.Colorable k := by

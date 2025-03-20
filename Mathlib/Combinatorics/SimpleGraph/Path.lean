@@ -483,17 +483,16 @@ protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h 
   exact hc.support_nodup
 
 lemma IsCycle.isPath_dropUntil {u x : V} {p : G.Walk u u}  (hc : p.IsCycle)
-    (hx : x ∈ p.support) (hn : u ≠ x ) : (p.dropUntil _ hx).IsPath := by
-  apply isPath_of_append_right _ <| (take_spec p hx) ▸ hc
-  exact not_nil_of_ne hn
+    (hx : x ∈ p.support) (hn : u ≠ x ) : (p.dropUntil _ hx).IsPath :=
+  isPath_of_append_right (not_nil_of_ne hn) <| (take_spec p hx) ▸ hc
+
 
 lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
     (c.takeUntil w h).IsPath := by
-  by_cases hvw : v = w
+  by_cases hvw : w = v
   · subst hvw
     simp
-  rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
-  exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
+  exact isPath_of_append_left (not_nil_of_ne hvw) <| (take_spec c h) ▸ hc
 
 lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
     (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
@@ -506,29 +505,27 @@ lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈
     (hn.symm ▸ p.getVert_length.symm)
   omega
 
-lemma take_spec_support {u v w : V} {p : G.Walk u v} (h : w ∈ p.support) :
-    p.support = (p.takeUntil _ h).support ++ (p.dropUntil _ h).support.tail := by
-  rw [← support_append, congr_arg support (take_spec p h)]
+lemma IsPath.not_end_eq_fst_of_mem_darts {u v : V} {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
+    (hd : d ∈ p.darts) : v ≠ d.toProd.1 :=
+  fun hf ↦ List.disjoint_of_nodup_append (p.map_fst_darts_append ▸ hp.support_nodup)
+    (List.mem_map.2 ⟨_, hd, rfl⟩) <| List.mem_singleton.mpr hf.symm
 
-lemma take_spec_darts {u v w : V} {p : G.Walk u v} (h : w ∈ p.support) :
-    p.darts = (p.takeUntil _ h).darts ++ (p.dropUntil _ h).darts := by
-  rw [← darts_append, congr_arg darts (take_spec p h)]
+lemma IsPath.not_start_eq_snd_of_mem_darts {u v : V} {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
+    (hd : d ∈ p.darts) : u ≠ d.toProd.2 :=
+  hp.reverse.not_end_eq_fst_of_mem_darts (show d.symm ∈ p.reverse.darts by simp [hd])
 
-lemma IsPath.mem_dropUntil_fst_dart {u v : V} {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
-    (hd : d ∈ p.darts) :
-    d ∈ (p.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).darts := by
-  cases List.mem_append.1 <| (take_spec_darts (dart_fst_mem_support_of_mem_darts _ hd)) ▸ hd with
-  | inl h =>
-    exfalso
-    have := List.disjoint_of_nodup_append <| (map_fst_darts_append
-            (p.takeUntil _ (dart_fst_mem_support_of_mem_darts _ hd)))  ▸
-                (hp.takeUntil (dart_fst_mem_support_of_mem_darts _ hd)).2
-    simp only [List.disjoint_singleton, List.mem_map, not_exists, not_and] at this
-    exact this d h rfl
-  | inr h => exact h
+lemma IsCycle.snd_eq_snd_of_start_eq_fst {u : V} {d : G.Dart} {c : G.Walk u u}
+    (hc : c.IsCycle) (hd : d ∈ c.darts) (hu : u = d.toProd.1): c.snd = d.toProd.2 := by
+  cases c  with
+  | nil => simp_all
+  | cons h p =>
+    simp_rw [darts_cons, cons_isCycle_iff, List.mem_cons, getVert_cons_succ, getVert_zero] at *
+    cases hd with
+    | inl h => rw [h]
+    | inr h => exact (hc.1.not_end_eq_fst_of_mem_darts h hu).elim
 
 @[simp]
-lemma IsPath.next_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
+lemma IsPath.getVert_succ_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
     (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) : p.getVert (n + 1) = d.toProd.2 := by
   induction p generalizing n with
   | nil => simp_all
@@ -540,8 +537,8 @@ lemma IsPath.next_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.I
       | head as => simp_all
       | tail _ hd =>
         exfalso
-        apply cons_isPath_iff ..|>.1 hp |>.2
-        apply hn ▸ (dart_fst_mem_support_of_mem_darts _ hd)
+        rw [getVert_zero] at hn
+        exact cons_isPath_iff ..|>.1 hp |>.2 (hn ▸ ((dart_fst_mem_support_of_mem_darts _ hd)))
     | succ n =>
       cases hd with
       | head as =>
@@ -549,21 +546,29 @@ lemma IsPath.next_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.I
         exact (cons_isPath_iff ..|>.1 hp |>.2 <| hn ▸ (getVert_mem_support p n)).elim
       | tail _ hd => exact ih hp.of_cons hd hn
 
-lemma IsCycle.mem_dropUntil_fst_dart {u : V} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
-    (hd : d ∈ c.darts) : d ∈ (c.dropUntil _ (dart_fst_mem_support_of_mem_darts _ hd)).darts := by
-  cases c with
-  | nil => simp at hc
-  | @cons u v w h p =>
-    rw [darts_cons] at hd
-    cases hd with
-    | head as => simp
-    | tail b hd' =>
-      rw [cons_isCycle_iff] at hc
-      by_cases h' : u = d.toProd.1
-      · subst_vars
-        rwa [dropUntil_start]
-      · rw [dropUntil, dif_neg h']
-        apply hc.1.mem_dropUntil_fst_dart hd'
+@[simp]
+lemma IsCycle.getVert_succ_of_mem_darts {p : G.Walk u u} {d : G.Dart} {n : ℕ} (hp : p.IsCycle)
+    (hd : d ∈ p.darts) (hn : p.getVert n = d.toProd.1) (hn2 : n < p.length) :
+    p.getVert (n + 1) = d.toProd.2 := by
+  cases p  with
+  | nil => simp_all
+  | cons h p =>
+    rw [getVert_cons_succ] at *
+    cases n with
+    | zero => exact hp.snd_eq_snd_of_start_eq_fst hd hn
+    | succ n =>
+      cases hd with
+      | head as =>
+        dsimp only at *
+        simp_all only [length_cons, Nat.add_lt_add_iff_right, getVert_cons_succ]
+        rw [cons_isCycle_iff] at hp
+        exfalso
+        have : p.getVert p.length = p.getVert n := hn.symm ▸ p.getVert_length
+        apply not_lt.2 (hp.1.getVert_injOn hn2.le (by simp) this.symm).ge hn2
+      | tail _ hd =>
+        rw [getVert_cons_succ] at hn
+        rw [cons_isCycle_iff] at hp
+        exact hp.1.getVert_succ_of_mem_darts hd hn
 
 /-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
@@ -921,18 +926,44 @@ theorem toDeleteEdges_copy {v u u' v' : V} (s : Set (Sym2 V))
   subst_vars
   rfl
 
+variable {G}
+lemma IsCycle.snd_not_mem_tail_tail_support {u} {c : G.Walk u u} (hc : c.IsCycle) :
+    c.snd ∉ c.tail.tail.support :=
+  hc.isPath_tail.not_mem_tail_support_of_not_nil hc.tail_not_nil
+
+lemma mem_tail_support_iff_not_nil {u v} {c : G.Walk u u} (hc : ¬ c.Nil) :
+    v ∈ c.tail.support ↔ v ∈ c.support := by
+  rw [← (cons_tail_eq _ hc)]
+  simp_rw [tail_cons, support_copy, support_cons, List.mem_cons, iff_or_self]
+  intro h
+  exact h ▸ end_mem_support c.tail
+
+lemma IsCycle.mem_tail_tail_support_iff {u v} {c : G.Walk u u} (hc : c.IsCycle) :
+    v ∈ c.tail.tail.support ↔ v ≠ c.snd ∧ v ∈ c.support := by
+  rw [support_tail_of_not_nil c.tail hc.tail_not_nil, support_tail_of_not_nil c hc.not_nil]
+  constructor <;> intro h
+  · refine ⟨?_, List.mem_of_mem_tail <| List.mem_of_mem_tail h⟩
+    intro hf
+    apply hc.snd_not_mem_tail_tail_support
+    rw [support_tail_of_not_nil c.tail hc.tail_not_nil, support_tail_of_not_nil c hc.not_nil]
+    simp_rw [← hf]
+    exact h
+  · rw [← support_tail_of_not_nil c hc.not_nil]
+    rw [← mem_tail_support_iff_not_nil hc.not_nil] at h
+    rw [← cons_tail_eq _ hc.tail_not_nil] at h
+    rw [support_cons] at h
+    cases h.2 with
+    | head => exact absurd rfl h.1
+    | tail b h =>
+      rwa [← support_tail_of_not_nil c.tail hc.tail_not_nil]
+
 lemma Brooks_aux' [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
     (hd : d ∈ c.darts) :
     d.toProd.2 = (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd := by
-  rw [rotate, snd, getVert_append, if_pos]
-  · have := (c.take_spec (c.dart_fst_mem_support_of_mem_darts hd)) ▸ hc
-    have := this.isPath_of_append_right (by sorry)
-    have :=this.snd_dropUntil_dart_fst_eq_snd (d := d)
-    rw [this]
-    · rw [dropUntil_start]
-    · sorry
-  · sorry
-
+  have hd' := (c.rotate_darts (c.dart_fst_mem_support_of_mem_darts hd)).mem_iff.2 hd
+  symm
+  apply (hc.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd_eq_snd_of_start_eq_fst hd'
+  rfl
 
 lemma Brooks_aux [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
     (hd : d ∈ c.darts) :
@@ -940,15 +971,8 @@ lemma Brooks_aux [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCyc
       c.support.toFinset.erase d.toProd.2 := by
   have hr := (c.dart_fst_mem_support_of_mem_darts hd)
   ext x
-  simp only [List.mem_toFinset, Finset.mem_erase, ne_eq]
-  constructor <;> intro h
-  · constructor
-    · sorry
-    · apply (c.mem_support_rotate_iff hr).1
-      apply support_drop_subset _ _ (support_drop_subset _ _ h)
-  ·
-    sorry
-
+  simp only [List.mem_toFinset, Finset.mem_erase]
+  rw [ Brooks_aux' hc hd, (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
 end Walk
 

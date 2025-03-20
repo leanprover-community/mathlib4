@@ -1224,9 +1224,15 @@ lemma tail_cons_eq (h : G.Adj u v) (p : G.Walk v w) :
   | .nil => rfl
   | .cons h q => rfl
 
+@[simp]
 lemma tail_cons_cons_not_nil {z : V} (h1 : G.Adj u v) (h2 : G.Adj v w) (p : G.Walk w z) :
     ¬ ((p.cons h2).cons h1).tail.Nil := by
   simp [tail_cons_eq]
+
+lemma not_nil_tail_iff_lt_length {p : G.Walk v w} : ¬ p.tail.Nil ↔ 1 < p.length := by
+  cases p with
+  | nil => simp
+  | cons _ p => cases p <;> simp
 
 @[simp]
 lemma dropLast_nil : (@nil _ G v).dropLast = nil := rfl
@@ -1334,6 +1340,10 @@ lemma tail_cons {t u v} (p : G.Walk u v) (h : G.Adj t u) :
   match p with
   | .nil => rfl
   | .cons h q => rfl
+
+lemma support_tail_subset_tail_support (p : G.Walk u v) :
+    p.support.tail ⊆ p.tail.support := by
+  cases p <;> simp_all
 
 lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
