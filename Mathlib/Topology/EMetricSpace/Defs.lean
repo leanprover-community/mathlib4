@@ -73,7 +73,8 @@ Note that a T1 pseudo extended metric space is just an extended metric space.
 We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
 ensures that we do not get a diamond when doing
 `[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
-The product metric and product topology agree, but not definitionally so. -/
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
 class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
@@ -542,7 +543,8 @@ end EMetric
 `edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
 `edist x z ≤ edist x y + edist y z`.
 
-See `PseudoEMetricSpace` for the similar class without the  `edist x y = 0 → x = y` assumption.
+See `PseudoEMetricSpace` for the similar class with the `edist x y = 0 ↔ x = y` assumption
+weakened to `edist x x = 0`.
 
 Any extended metric space is a T1 topological space and a uniform space,
 where the topology and uniformity come from the metric.
@@ -550,7 +552,8 @@ where the topology and uniformity come from the metric.
 We make the uniformity/topology part of the data instead of deriving it from the metric.
 This eg ensures that we do not get a diamond when doing
 `[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`:
-The product metric and product topology agree, but not definitionally so. -/
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
 class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 

@@ -113,7 +113,8 @@ Note that a T1 pseudo metric space is just a metric space.
 We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
 ensures that we do not get a diamond when doing
 `[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
-The product metric and product topology agree, but not definitionally so. -/
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
 class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x

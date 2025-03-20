@@ -39,7 +39,8 @@ variable [PseudoMetricSpace α]
 `dist x y = 0 ↔ x = y`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
 
-See `PseudoMetricSpace` for the similar class without the  `dist x y = 0 → x = y` assumption.
+See `PseudoMetricSpace` for the similar class with the `dist x y = 0 ↔ x = y` assumption
+weakened to `dist x x = 0`.
 
 Any metric space is a T1 topological space and a uniform space,
 where the topology and uniformity come from the metric.
@@ -47,7 +48,8 @@ where the topology and uniformity come from the metric.
 We make the uniformity/topology part of the data instead of deriving it from the metric.
 This eg ensures that we do not get a diamond when doing
 `[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
-The product metric and product topology agree, but not definitionally so. -/
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 
