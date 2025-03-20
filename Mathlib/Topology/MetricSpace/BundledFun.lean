@@ -190,11 +190,19 @@ lemma isSymmetricRel_ball [Add R] [Zero R] [Preorder R] (d : PseudoMetric X R) {
     IsSymmetricRel {xy | d xy.1 xy.2 < ε} := by
   simp [IsSymmetricRel, d.symm]
 
+lemma isSymmetricRel_closedBall [Add R] [Zero R] [LE R] (d : PseudoMetric X R) {ε : R} :
+    IsSymmetricRel {xy | d xy.1 xy.2 ≤ ε} := by
+  simp [IsSymmetricRel, d.symm]
+
 lemma IsUltra.isTransitiveRel_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R) {ε : R}
     (h : d.IsUltra) :
     IsTransitiveRel {xy | d xy.1 xy.2 < ε} :=
   fun x y z hxy hyz ↦ (h x y z).trans_lt (max_lt hxy hyz)
 
+lemma IsUltra.isTransitiveRel_closedBall [Add R] [Zero R] [SemilatticeSup R] (d : PseudoMetric X R)
+    {ε : R} (h : d.IsUltra) :
+    IsTransitiveRel {xy | d xy.1 xy.2 ≤ ε} :=
+  fun x y z hxy hyz ↦ (h x y z).trans (sup_le hxy hyz)
 end ball
 
 end PseudoMetric
