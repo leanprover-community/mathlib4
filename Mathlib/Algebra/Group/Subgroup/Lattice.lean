@@ -470,6 +470,17 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
+theorem closure_toAddSubgroup {G : Type*} [Group G] (s : Set G) :
+    (Subgroup.closure s).toAddSubgroup = AddSubgroup.closure (Additive.ofMul '' s) := by
+  rw [OrderIso.apply_eq_iff_eq_symm_apply, AddSubgroup.closure,
+    OrderIso.map_sInf_eq_sInf_symm_preimage, OrderIso.symm_symm]
+  simp_rw [Set.preimage_setOf_eq, coe_toAddSubgroup_apply, Set.preimage_equiv_eq_image_symm,
+    Additive.toMul_symm_eq, Set.image_subset_iff, Equiv.preimage_image, closure]
+
+theorem _AddSubgroup.closure_toSubgroup {G : Type*} [AddGroup G] (s : Set G) :
+    (AddSubgroup.closure s).toSubgroup = Subgroup.closure (Multiplicative.ofAdd '' s) := by
+  sorry
+
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
     {x : G} : x ∈ (iSup K : Subgroup G) ↔ ∃ i, x ∈ K i := by
