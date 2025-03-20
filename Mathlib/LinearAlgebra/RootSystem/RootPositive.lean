@@ -76,7 +76,7 @@ lemma apply_reflection_reflection (x y : M) :
   B.isOrthogonal_reflection i x y
 
 @[simp]
-lemma rootForm_weylGroup_apply (g : P.weylGroup) (x y : M) :
+lemma rootForm_weylGroup_smul (g : P.weylGroup) (x y : M) :
     B.form (g • x) (g • y) = B.form x y := by
   revert x y
   obtain ⟨g, hg⟩ := g
