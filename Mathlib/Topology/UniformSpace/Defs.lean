@@ -247,6 +247,19 @@ theorem IsSymmetricRel.inter {U V : Set (α × α)} (hU : IsSymmetricRel U) (hV 
 @[deprecated (since := "2025-03-05")]
 alias SymmetricRel.inter := IsSymmetricRel.inter
 
+theorem IsSymmetricRel.iInter {U : (i : ι) → Set (α × α)} (hU : ∀ i, IsSymmetricRel (U i)) :
+    IsSymmetricRel (⋂ i, U i) := by
+  simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
+
+lemma IsSymmetricRel.sInter {s : Set (Set (α × α))} (h : ∀ i ∈ s, IsSymmetricRel i) :
+    IsSymmetricRel (⋂₀ s) := by
+  rw [sInter_eq_iInter]
+  exact IsSymmetricRel.iInter (by simpa)
+
+lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
+    IsSymmetricRel (Prod.map f f ⁻¹' U) :=
+  Set.ext fun _ ↦ ht.mk_mem_comm
+
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
 structure UniformSpace.Core (α : Type u) where
@@ -359,6 +372,10 @@ theorem UniformSpace.toCore_toTopologicalSpace (u : UniformSpace α) :
     u.toCore.toTopologicalSpace = u.toTopologicalSpace :=
   TopologicalSpace.ext_nhds fun a ↦ by
     rw [u.nhds_eq_comap_uniformity, u.toCore.nhds_toTopologicalSpace]
+
+lemma UniformSpace.mem_uniformity_ofCore_iff {u : UniformSpace.Core α} {s : Set (α × α)} :
+    s ∈ 𝓤[.ofCore u] ↔ s ∈ u.uniformity :=
+  Iff.rfl
 
 @[ext (iff := false)]
 protected theorem UniformSpace.ext {u₁ u₂ : UniformSpace α} (h : 𝓤[u₁] = 𝓤[u₂]) : u₁ = u₂ := by
