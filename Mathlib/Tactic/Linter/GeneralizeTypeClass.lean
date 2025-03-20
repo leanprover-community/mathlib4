@@ -82,6 +82,12 @@ def getStruct (n : Name) : CommandElabM (Option StructureInfo) := do
     return none
 
 def moreGeneralizations : Std.HashMap Name (List Name) := Std.HashMap.ofList [
+  (`Module, [`MulActionWithZero]),
+  (`DistribMulAction, [`SMulZeroClass, `DistribSMul]),
+  (`MulZeroClass, [`SMulWithZero]),
+  (`MulActionWithZero, [`SMulWithZero]),
+  (`MonoidWithZero, [`MulActionWithZero]),
+
   (`Group, [`DivisionMonoid, `CancelMonoid]),
   (`AddGroup, [`SubtractionMonoid, `AddCancelMonoid]),
   (`CommGroup, [`CancelCommMonoid, `DivisionCommMonoid]),
