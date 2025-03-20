@@ -641,7 +641,7 @@ theorem ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE [T2Space Y] {x : X}
   constructor <;> intro hfg
   · apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE hfg
     by_contra hCon
-    have : {x | f x ≠ g x ∧ f x = g x} ≠ ∅ := by
+    obtain ⟨a, ha⟩ : {x | f x ≠ g x ∧ f x = g x}.Noenmpty := by
       have h₁ := (eventually_nhdsWithin_of_eventually_nhds
         ((hf.ne_iff_eventually_ne hg).1 hCon)).and hfg
       have h₂ : ∅ ∉ 𝓝[≠] x := by exact empty_not_mem (𝓝[≠] x)
