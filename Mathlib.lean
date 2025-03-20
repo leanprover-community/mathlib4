@@ -3605,6 +3605,7 @@ public import Mathlib.Data.Finset.Powerset
 public import Mathlib.Data.Finset.Preimage
 public import Mathlib.Data.Finset.Prod
 public import Mathlib.Data.Finset.Range
+public import Mathlib.Data.Finset.RangeDistance
 public import Mathlib.Data.Finset.SDiff
 public import Mathlib.Data.Finset.SMulAntidiagonal
 public import Mathlib.Data.Finset.Sigma
