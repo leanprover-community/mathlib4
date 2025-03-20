@@ -136,77 +136,178 @@ end ContinuousLinearMap.Splits
 
 end
 
+-- section
+
+-- variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
+--   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+--   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+--   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+-- variable {f : E → F} {x : E} {n : WithTop ℕ∞}
+
+-- -- TODO: I'm not very happy yet with the naming... want to namespace, but this is not it yet
+
+-- variable (𝕜) in
+-- /-- If `f : E → F` is differentiable at `x`, we say `f` splits at `x` iff `fderiv 𝕜 f x` splits. -/
+-- def DifferentiableAt.SplitsAt (f : E → F) (x : E) : Prop :=
+--   DifferentiableAt 𝕜 f x ∧ (fderiv 𝕜 f x).Splits
+
+-- variable (𝕜) in
+-- /-- If `f : E → F` is differentiable, we say `f` splits iff it splits at every `x`,
+-- i.e. each `fderiv 𝕜 f x` splits. -/
+-- def Differentiable.Splits (f : E → F) : Prop := ∀ x, DifferentiableAt.SplitsAt 𝕜 f x
+
+-- open scoped Manifold
+
+-- namespace DifferentiableAt.SplitsAt
+
+-- lemma comp [CompleteSpace G] {f : E → F} {g : F → G}
+--     (hf : SplitsAt 𝕜 f x) (hg : SplitsAt 𝕜 g (f x)) : SplitsAt 𝕜 (g ∘ f) x := by
+--   dsimp only [SplitsAt] at hf hg ⊢
+--   rw [fderiv_comp _ hg.1 hf.1]
+--   exact ⟨hg.1.comp _ hf.1, hf.2.comp hg.2⟩
+
+-- -- prodMap also
+
+-- lemma congr {f g : E → F} (hf : SplitsAt 𝕜 f x) (hfg : g =ᶠ[nhds x] f) : SplitsAt 𝕜 g x := by
+--   dsimp only [SplitsAt] at hf ⊢
+--   constructor
+--   · exact hf.1.congr_of_eventuallyEq hfg
+--   · have : fderiv 𝕜 f x = fderiv 𝕜 g x := sorry -- missing?
+--     rw [← this]
+--     exact hf.2
+
+-- end DifferentiableAt.SplitsAt
+
+-- namespace Differentiable.Splits
+
+-- lemma prodMap {f : E → F} {g : E' → F'} (hf : Splits 𝕜 f) (hg : Splits 𝕜 g) :
+--     Splits 𝕜 (Prod.map f g) :=
+--   sorry
+
+-- lemma comp [CompleteSpace G] {f : E → F} {g : F → G} (hf : Splits 𝕜 f) (hg : Splits 𝕜 g) :
+--     Splits 𝕜 (g ∘ f) :=
+--   fun x ↦ (hf x).comp (hg (f x))
+
+-- -- comp_left, comp_right
+
+-- lemma congr {f g : E → F} (hf : Splits 𝕜 f) (hfg : g = f) : Splits 𝕜 g :=
+--   fun x ↦ (hf x).congr hfg.eventuallyEq
+
+-- section RCLike
+
+-- -- TODO: copy the analogous statements from above
+
+-- end RCLike
+
+-- end Differentiable.Splits
+
+-- end
+
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-variable {f : E → F} {x : E} {n : WithTop ℕ∞}
+  {H : Type*} [TopologicalSpace H] {H' : Type*} [TopologicalSpace H']
+  {G : Type*} [TopologicalSpace G] {G' : Type*} [TopologicalSpace G']
+  {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
+  {J : ModelWithCorners 𝕜 F G} {J' : ModelWithCorners 𝕜 F G'}
 
--- TODO: I'm not very happy yet with the naming... want to namespace, but this is not it yet
+variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
+  {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+  {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
+  {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
+  {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
+variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
-variable (𝕜) in
-/-- If `f : E → F` is differentiable at `x`, we say `f` splits at `x` iff `fderiv 𝕜 f x` splits. -/
-def DifferentiableAt.SplitsAt (f : E → F) (x : E) : Prop :=
-  DifferentiableAt 𝕜 f x ∧ (fderiv 𝕜 f x).Splits
+local instance : NormedAddCommGroup (TangentSpace I x) := by
+  show NormedAddCommGroup E
+  infer_instance
 
-variable (𝕜) in
-/-- If `f : E → F` is differentiable, we say `f` splits iff it splits at every `x`,
-i.e. each `fderiv 𝕜 f x` splits. -/
-def Differentiable.Splits (f : E → F) : Prop := ∀ x, DifferentiableAt.SplitsAt 𝕜 f x
+local instance : NormedSpace 𝕜 (TangentSpace I x) := by
+  show NormedSpace 𝕜 E
+  infer_instance
 
-open scoped Manifold
+variable (I I' f x) in
+/-- If `f : M → M` is differentiable at `x`,
+we say `f` splits at `x` iff `mfderiv 𝕜 f I I' x` splits. -/
+def MSplitsAt (f : M → M') (x : M) : Prop :=
+  MDifferentiableAt I I' f x ∧ (mfderiv I I' f x).Splits
 
-namespace DifferentiableAt.SplitsAt
+namespace MSplitsAt
 
-lemma comp [CompleteSpace G] {f : E → F} {g : F → G}
-    (hf : SplitsAt 𝕜 f x) (hg : SplitsAt 𝕜 g (f x)) : SplitsAt 𝕜 (g ∘ f) x := by
-  dsimp only [SplitsAt] at hf hg ⊢
-  rw [fderiv_comp _ hg.1 hf.1]
-  exact ⟨hg.1.comp _ hf.1, hf.2.comp hg.2⟩
+variable {f g : M → M'} {x : M}
 
--- prodMap also
-
-lemma congr {f g : E → F} (hf : SplitsAt 𝕜 f x) (hfg : g =ᶠ[nhds x] f) : SplitsAt 𝕜 g x := by
-  dsimp only [SplitsAt] at hf ⊢
-  constructor
-  · exact hf.1.congr_of_eventuallyEq hfg
-  · have : fderiv 𝕜 f x = fderiv 𝕜 g x := sorry -- missing?
-    rw [← this]
-    exact hf.2
-
-end DifferentiableAt.SplitsAt
-
-namespace Differentiable.Splits
-
-lemma _root_.IsLocalDiffeomorphAt.splitsAt {f : E → F}
-    (hf : IsLocalDiffeomorphAt (𝓘(𝕜, E)) (𝓘(𝕜, F)) n f x) : DifferentiableAt.SplitsAt 𝕜 f x := by
-  constructor
-  · let asdf := hf.mdifferentiableAt
-    sorry -- reduce to normed spaces...
-  · -- proven on a different branch: differential is a continuous linear equivalence
-    sorry -- apply ContinuousLinearEquiv.splits
-
-lemma _root_.IsLocalDiffeomorph.splits {f : E → F}
-    (hf : IsLocalDiffeomorph (𝓘(𝕜, E)) (𝓘(𝕜, F)) n f) : Differentiable.Splits 𝕜 f :=
-  fun x ↦ (hf x).splitsAt
-
-lemma _root_.Diffeomorph.splits (f : Diffeomorph (𝓘(𝕜, E)) (𝓘(𝕜, F)) E F n) : Splits 𝕜 f :=
-  f.isLocalDiffeomorph.splits
-
-lemma prodMap {f : E → F} {g : E' → F'} (hf : Splits 𝕜 f) (hg : Splits 𝕜 g) :
-    Splits 𝕜 (Prod.map f g) :=
+lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' g x := by
+  obtain ⟨hdiff, hdf⟩ := hf
+  refine ⟨hdiff.congr_of_eventuallyEq hfg, ?_⟩
+  -- mfderivWithin_congr helps
   sorry
 
-lemma comp [CompleteSpace G] {f : E → F} {g : F → G} (hf : Splits 𝕜 f) (hg : Splits 𝕜 g) :
-    Splits 𝕜 (g ∘ f) :=
+lemma _root_.IsLocalDiffeomorphAt.msplitsAt {f : M → M'}
+    (hf : IsLocalDiffeomorphAt I I' n f x) (hn : 1 ≤ n) : MSplitsAt I I' f x := by
+  refine ⟨hf.mdifferentiableAt hn, ?_⟩
+  -- proven on a different branch: differential is a continuous linear equivalence
+  sorry -- apply ContinuousLinearEquiv.splits
+
+/-- if `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
+lemma comp [CompleteSpace F] {g : M' → N} (hf : MSplitsAt I I' f x) (hg : MSplitsAt I' J g (f x)) :
+    MSplitsAt I J (g ∘ f) x := by
+  refine ⟨hg.1.comp x hf.1, ?_⟩
+  · rw [mfderiv_comp x hg.1 hf.1]
+    have : CompleteSpace (TangentSpace J ((g ∘ f) x)) := by show CompleteSpace F; assumption
+    exact hf.2.comp hg.2
+
+end MSplitsAt
+
+variable (I I') in
+/-- If `f : M → M` is differentiable, we say `f` splits iff it splits at every `x`,
+i.e. each `mfderiv 𝕜 I I' f x` splits. -/
+def MSplits (f : M → M') : Prop := ∀ x, MSplitsAt I I' f x
+
+namespace MSplits
+
+variable {f g : M → M'}
+
+lemma congr (hf : MSplits I I' f) (hfg : g = f) : MSplits I I' g :=
+  fun x ↦ (hf x).congr hfg.eventuallyEq
+
+lemma _root_.IsLocalDiffeomorph.splits {f : M → M'}
+    (hf : IsLocalDiffeomorph I I' n f) (hn : 1 ≤ n) : MSplits I I' f :=
+  fun x ↦ (hf x).msplitsAt hn
+
+lemma _root_.Diffeomorph.splits (f : Diffeomorph I I' M M' n) (hn : 1 ≤ n) : MSplits I I' f :=
+  f.isLocalDiffeomorph.splits hn
+
+/-- If `f` and `g` split, then so does `g ∘ f`. -/
+lemma comp [CompleteSpace F] {g : M' → N} (hf : MSplits I I' f) (hg : MSplits I' J g) :
+    MSplits I J (g ∘ f) :=
   fun x ↦ (hf x).comp (hg (f x))
 
--- comp_left, comp_right
+-- TODO: transfer all these to MSplitsAt, then prove these lemmas in terms of them
 
-lemma congr {f g : E → F} (hf : Splits 𝕜 f) (hfg : g = f) : Splits 𝕜 g :=
-  fun x ↦ (hf x).congr hfg.eventuallyEq
+lemma compDiffeomorph_left [CompleteSpace E'] (hf : MSplits I I' f)
+    (f₀ : Diffeomorph J I N M n) (hn : 1 ≤ n) : MSplits J I' (f ∘ f₀) :=
+  (f₀.splits hn).comp hf
+
+lemma compDiffeomorph_left_iff [CompleteSpace E'] (f₀ : Diffeomorph J I N M n) (hn : 1 ≤ n) :
+    MSplits I I' f ↔ MSplits J I' (f ∘ f₀) :=
+  ⟨fun hf ↦ hf.compDiffeomorph_left f₀ hn,
+    fun h ↦ (h.compDiffeomorph_left f₀.symm hn).congr (by ext; simp)⟩
+
+lemma compDiffeomorph_right [CompleteSpace F] (g : Diffeomorph I' J M' N n) (hn : 1 ≤ n)
+    (hf : MSplits I I' f) : MSplits I J (g ∘ f) :=
+  hf.comp (g.splits hn)
+
+lemma compDiffeomorph_right_iff [CompleteSpace F] [CompleteSpace E']
+    {g : Diffeomorph I' J M' N n} (hn : 1 ≤ n) : MSplits I I' f ↔  MSplits I J (g ∘ f) :=
+  ⟨fun hf ↦ hf.compDiffeomorph_right g hn,
+    fun h ↦ (h.compDiffeomorph_right g.symm hn).congr (by ext; simp)⟩
+
+-- corollary: MSplitsAt holds iff some coordinate representation splits
+--   iff *any* coordinate representation splits
+
 
 section RCLike
 
@@ -214,6 +315,8 @@ section RCLike
 
 end RCLike
 
-end Differentiable.Splits
+end MSplits
+
+open scoped Manifold
 
 end
