@@ -154,7 +154,7 @@ theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
       tauto
     · have : n = 0 := by
         by_contra hContra
-        have := Filter.EventuallyEq.eq_of_nhds h₃g
+        have := h₃g.eq_of_nhds
         simp only [Pi.smul_apply', Pi.pow_apply, sub_self, zero_zpow n hContra, zero_smul] at this
         tauto
       simp only [this, zpow_zero, smul_eq_mul, one_mul] at h₃g
