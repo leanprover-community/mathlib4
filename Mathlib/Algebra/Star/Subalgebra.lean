@@ -841,28 +841,3 @@ lemma StarAlgebra.adjoin_nonUnitalStarSubalgebra (s : Set A) :
   le_antisymm
     (adjoin_le <| NonUnitalStarAlgebra.adjoin_le_starAlgebra_adjoin R s)
     (adjoin_le <| (NonUnitalStarAlgebra.subset_adjoin R s).trans <| subset_adjoin R _)
-
-section Span
-
-/-- If a set `s : Set A` is closed under `star`, then the span of `s` is closed under `star`. -/
-theorem Subalgebra.of_span_submonoid_starmem {R : Type u} {A : Type v} [CommSemiring R]
-    [Semiring A] [Algebra R A][StarRing R] [StarRing A] [StarModule R A] {s : Set A}
-    (h : ∀ x, x ∈ s → star x ∈ s) :
-    ∀ x, x ∈ Submodule.span R s → star x ∈ Submodule.span R s := by
-  intro x hx
-  obtain ⟨n, f, g, hfgx⟩ := mem_span_set'.1 hx
-  simp [of_span_submonoid, of_span_set, mem_span_set']
-  let fStar := fun i => star (f i)
-  let gStar : Fin n → s := fun i => ⟨star (g i), h (g i) (Subtype.coe_prop (g i))⟩
-  use n, fStar, gStar
-  rw [← hfgx]
-  simp only [star_sum, star_smul, fStar, gStar]
-
-/-- The `star subalgebra` spanned by `s : Submonoid A` which is closed under `star` -/
-def StarSubalgebra.of_span_submonoid (R : Type u) {A : Type v} [CommSemiring R] [Semiring A]
-    [Algebra R A] [StarRing R] [StarRing A] [StarModule R A] (s : Submonoid A)
-    (hstar : ∀ x, x ∈ s → star x ∈ s) : StarSubalgebra R A :=
-  { Subalgebra.of_span_submonoid R s with
-    star_mem' := fun hx => Subalgebra.of_span_submonoid_starmem hstar _ hx  }
-
-end Span

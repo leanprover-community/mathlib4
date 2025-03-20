@@ -323,7 +323,7 @@ theorem MeasureTheory.ext_of_forall_complexMGF_eq [IsFiniteMeasure μ]
     (h : ∀ z, complexMGF X μ z = complexMGF Y μ' z) :
     μ.map X = μ'.map Y := by
   have inner_ne_zero (x : ℝ) (h : x ≠ 0) : bilinFormOfRealInner x ≠ 0 :=
-    DFunLike.ne_iff.mpr (inner_ne_zero_of_ne_zero h)
+    DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
   apply MeasureTheory.ext_of_charFun_eq Circle.exp.continuous probFourierChar_ne_one
     inner_ne_zero continuous_inner (μ.map X) (μ'.map Y)
   intro w

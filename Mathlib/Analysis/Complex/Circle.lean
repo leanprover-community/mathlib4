@@ -139,8 +139,7 @@ lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
   · simp only [Submonoid.unitSphere, SetLike.coe_mem]
 
 @[simp]
-lemma starRingEnd_addChar (x : ℝ) : starRingEnd ℂ (e x) = e (-x) := by
-  exact star_addChar x
+lemma starRingEnd_addChar (x : ℝ) : starRingEnd ℂ (e x) = e (-x) := star_addChar x
 
 variable {α β M : Type*}
 
