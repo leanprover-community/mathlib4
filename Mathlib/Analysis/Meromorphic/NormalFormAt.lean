@@ -183,7 +183,7 @@ theorem MeromorphicNFAt.eventuallyEq_nhdNE_iff_eventuallyEq_nhd {g : 𝕜 → E}
     · rw [cs] at t₀
       have Z := (hf.order_nonneg_iff_analyticAt.1 (le_of_eq cs.symm)).continuousAt
       have W := (hg.order_nonneg_iff_analyticAt.1 (le_of_eq t₀)).continuousAt
-      exact (ContinuousAt.eventuallyEq_nhd_iff_eventuallyEq_nhdNE Z W).1 h
+      exact (Z.eventuallyEq_nhd_iff_eventuallyEq_nhdNE W).1 h
     · apply eventuallyEq_nhds_of_eventuallyEq_nhdsNE h
       let h₁f := cs
       rw [hf.order_eq_zero_iff] at h₁f
