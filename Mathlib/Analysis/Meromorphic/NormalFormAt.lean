@@ -146,7 +146,7 @@ theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
   · intro h₁f
     have h₂f := hf.order_nonneg_iff_analyticAt.1 (le_of_eq h₁f.symm)
     apply h₂f.order_eq_zero_iff.1
-    apply ENat.map_natCast_eq_zero.1
+    apply (ENat.map_natCast_eq_zero (α := ℤ)).1
     rwa [h₂f.meromorphicAt_order] at h₁f
   · intro h
     rcases id hf with h₁ | ⟨n, g, h₁g, h₂g, h₃g⟩
@@ -158,7 +158,7 @@ theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
         simp only [Pi.smul_apply', Pi.pow_apply, sub_self, zero_zpow n hContra, zero_smul] at this
         tauto
       simp only [this, zpow_zero, smul_eq_mul, one_mul] at h₃g
-      apply (hf'.meromorphicAt.order_eq_int_iff 0).2
+      apply (hf.meromorphicAt.order_eq_int_iff 0).2
       use g, h₁g, h₂g
       simp only [zpow_zero, smul_eq_mul, one_mul]
       exact h₃g.filter_mono nhdsWithin_le_nhds
