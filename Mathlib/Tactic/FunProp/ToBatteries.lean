@@ -71,7 +71,7 @@ def mkProdElem (xs : Array Expr) : MetaM Expr := do
   match h : xs.size with
   | 0 => return default
   | 1 => return xs[0]
-  | n+1 =>
+  | n + 1 =>
     xs[0:n].foldrM (init := xs[n]) fun x p => mkAppM ``Prod.mk #[x,p]
 
 /--
