@@ -328,11 +328,7 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 
 @[simp]
 lemma toNNReal_sub (hb : b ≠ ∞) : (a - b).toNNReal = a.toNNReal - b.toNNReal := by
-  lift b to ℝ≥0 using hb
-  obtain rfl | ha := eq_or_ne a ∞
-  · simp
-  lift a to ℝ≥0 using ha
-  simp [← coe_sub]
+  lift b to ℝ≥0 using hb; induction a <;> simp [← coe_sub]
 
 @[simp]
 lemma toReal_sub (hba : b ≤ a) (ha : a ≠ ∞) : (a - b).toReal = a.toReal - b.toReal := by
