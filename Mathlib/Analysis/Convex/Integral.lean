@@ -70,7 +70,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   refine hsc.mem_of_tendsto this (Eventually.of_forall fun n => hs.sum_mem ?_ ?_ ?_)
   · exact fun _ _ => ENNReal.toReal_nonneg
   · rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
-      ENNReal.one_toReal]
+      ENNReal.toReal_one]
     exact fun _ _ => measure_ne_top _ _
   · simp only [SimpleFunc.mem_range, forall_mem_range]
     intro x
@@ -220,7 +220,7 @@ theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integ
   refine hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' => ?_; clear ht'
   simp only [const_apply, setIntegral_const]
   by_cases h₀ : μ t = 0
-  · rw [restrict_eq_zero.2 h₀, integral_zero_measure, h₀, ENNReal.zero_toReal, zero_smul]
+  · rw [restrict_eq_zero.2 h₀, integral_zero_measure, h₀, ENNReal.toReal_zero, zero_smul]
   by_cases h₀' : μ tᶜ = 0
   · rw [← ae_eq_univ] at h₀'
     rw [restrict_congr_set h₀', restrict_univ, measure_congr h₀', measure_smul_average]
