@@ -22,12 +22,12 @@ The linear order also allows to define the supremum of two pseudometrics.
 
 -/
 
-variable {X R : Type*} [LinearOrderedAddCommMonoid R]
+variable {X R : Type*}
 
 variable (X R) in
 /-- A pseudometric as a bundled function. -/
 @[ext]
-structure PseudoMetric where
+structure PseudoMetric [Zero R] [Add R] [LE R] where
   /-- The underlying binary function mapping into a linearly ordered additive monoid. -/
   toFun : X → X → R
   /-- A pseudometric must take identical elements to 0. -/
@@ -39,11 +39,13 @@ structure PseudoMetric where
 
 namespace PseudoMetric
 
+section Basic
+
+variable [Zero R] [Add R] [LE R] (d : PseudoMetric X R)
+
 instance : FunLike (PseudoMetric X R) X (X → R) where
   coe := PseudoMetric.toFun
   coe_injective' _ := by aesop
-
-variable (d : PseudoMetric X R)
 
 @[simp, norm_cast]
 lemma coe_mk (d : X → X → R) (refl symm triangle) : mk d refl symm triangle = d := rfl
@@ -64,27 +66,27 @@ protected lemma coe_le_coe_iff_le {d d' : PseudoMetric X R} :
     (d : X → X → R) ≤ d' ↔ d ≤ d'  :=
   Iff.rfl
 
-instance : PartialOrder (PseudoMetric X R) where
-  le_refl := by simp [← PseudoMetric.coe_le_coe_iff_le]
-  le_trans f _ _ := le_trans (a := ⇑f)
-  le_antisymm f g := by simpa [← PseudoMetric.coe_le_coe_iff_le, PseudoMetric.ext_iff]
-    using le_antisymm
+end Basic
 
-instance : Bot (PseudoMetric X R) where
+instance [Zero R] [Add R] [PartialOrder R] : PartialOrder (PseudoMetric X R) :=
+  .lift _ DFunLike.coe_injective
+
+instance [AddZeroClass R] [Preorder R] : Bot (PseudoMetric X R) where
   bot.toFun := 0
   bot.refl' _ := rfl
   bot.symm' _ _ := rfl
   bot.triangle' _ _ _ := by simp
 
 @[simp, norm_cast]
-lemma coe_bot : ⇑(⊥ : PseudoMetric X R) = 0 := rfl
+lemma coe_bot [AddZeroClass R] [Preorder R] : ⇑(⊥ : PseudoMetric X R) = 0 := rfl
 
 @[simp]
-protected lemma bot_apply (x y : X) :
+protected lemma bot_apply [AddZeroClass R] [Preorder R] (x y : X) :
     (⊥ : PseudoMetric X R) x y = 0 :=
   rfl
 
-instance : Max (PseudoMetric X R) where
+instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
+    Max (PseudoMetric X R) where
   max d d' := {
     toFun := fun x y ↦ (d x y) ⊔ (d' x y)
     refl' _ := by simp
@@ -96,11 +98,19 @@ instance : Max (PseudoMetric X R) where
       apply add_le_add <;> simp
   }
 
-@[simp]
-protected lemma sup_apply (d' : PseudoMetric X R) (x y : X) :
-    (d ⊔ d') x y = (d x y) ⊔ (d' x y) := rfl
+@[simp, push_cast]
+lemma coe_sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R]
+    (d d' : PseudoMetric X R) :
+    ((d ⊔ d' : PseudoMetric X R) : X → X → R) = (d : X → X → R) ⊔ d' := rfl
 
-instance : SemilatticeSup (PseudoMetric X R) where
+@[simp]
+protected lemma sup_apply [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R]
+    (d d' : PseudoMetric X R) (x y : X) :
+    (d ⊔ d') x y = d x y ⊔ d' x y :=
+  rfl
+
+instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
+    SemilatticeSup (PseudoMetric X R) where
   sup := max
   le_sup_left := by simp [← PseudoMetric.coe_le_coe_iff_le, Pi.le_def]
   le_sup_right := by simp [← PseudoMetric.coe_le_coe_iff_le, Pi.le_def]
@@ -108,18 +118,26 @@ instance : SemilatticeSup (PseudoMetric X R) where
 
 section OrderBot
 
-variable [AddLeftStrictMono R]
+variable [LinearOrderedAddCommMonoid R] [AddLeftStrictMono R]
 
-protected lemma nonneg (x y : X) : 0 ≤ d x y := by
+protected lemma nonneg (d : PseudoMetric X R) (x y : X) : 0 ≤ d x y := by
   by_contra! H
   have : d x x < 0 := by
     calc d x x ≤ d x y + d y x := d.triangle' x y x
       _ < 0 + 0 := by refine add_lt_add H (d.symm x y ▸ H)
       _ = 0 := by simp
-  exact this.not_le (d.refl' x).ge
+  exact this.ne (d.refl x)
 
 instance : OrderBot (PseudoMetric X R) where
   bot_le f _ _ := f.nonneg _ _
+
+@[simp, push_cast]
+lemma coe_finsetSup {Y : Type*} {f : Y → PseudoMetric X R} {s : Finset Y}
+    (hs : s.Nonempty) :
+    ⇑(s.sup f) = s.sup' hs (f ·) := by
+  induction hs using Finset.Nonempty.cons_induction with
+  | singleton i => simp
+  | cons a s ha hs ih => funext; simp [hs, ih]
 
 lemma finsetSup_apply {Y : Type*} {f : Y → PseudoMetric X R}
     {s : Finset Y} (hs : s.Nonempty) (x y : X) :
@@ -134,21 +152,22 @@ section IsUltra
 
 /-- A pseudometric can be nonarchimedean (or ultrametric), with a stronger triangle
 inequality such that `d x z ≤ max (d x y) (d y z)`. -/
-def IsUltra (d : PseudoMetric X R) : Prop :=
+def IsUltra [Zero R] [Add R] [LE R] [Max R] (d : PseudoMetric X R) : Prop :=
   ∀ x y z, d x z ≤ d x y ⊔ d y z
 
-protected lemma IsUltra.bot : IsUltra (⊥ : PseudoMetric X R) := by
+protected lemma IsUltra.bot [AddZeroClass R] [SemilatticeSup R] :
+    IsUltra (⊥ : PseudoMetric X R) := by
   simp [IsUltra]
 
-protected lemma IsUltra.sup {d d' : PseudoMetric X R} (hd : IsUltra d)
-    (hd' : IsUltra d') : IsUltra (d ⊔ d') := by
+protected lemma IsUltra.sup [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R]
+    {d d' : PseudoMetric X R} (hd : IsUltra d) (hd' : IsUltra d') : IsUltra (d ⊔ d') := by
   intro x y z
   simp only [PseudoMetric.sup_apply]
   calc d x z ⊔ d' x z ≤ d x y ⊔ d y z ⊔ (d' x y ⊔ d' y z) := sup_le_sup (hd x y z) (hd' x y z)
   _ ≤ d x y ⊔ d' x y ⊔ (d y z ⊔ d' y z) := by simp [sup_comm, sup_assoc, sup_left_comm]
 
-lemma IsUltra.finsetSup {Y : Type*} [AddLeftStrictMono R] {f : Y → PseudoMetric X R}
-    {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :
+lemma IsUltra.finsetSup {Y : Type*} [LinearOrderedAddCommMonoid R] [AddLeftStrictMono R]
+    {f : Y → PseudoMetric X R} {s : Finset Y} (h : ∀ d ∈ s, IsUltra (f d)) :
     IsUltra (s.sup f) := by
   intro x y z
   rcases s.eq_empty_or_nonempty with rfl|hs
@@ -167,11 +186,11 @@ end IsUltra
 
 section ball
 
-lemma isSymmetricRel_ball (ε : R) :
+lemma isSymmetricRel_ball [Add R] [Zero R] [Preorder R] (d : PseudoMetric X R) {ε : R} :
     IsSymmetricRel {xy | d xy.1 xy.2 < ε} := by
   simp [IsSymmetricRel, d.symm]
 
-lemma isTransitiveRel_ball_of_isTriangleMax {d : PseudoMetric X R} (ε : R)
+lemma IsUltra.isTransitiveRel_ball [Add R] [Zero R] [LinearOrder R] (d : PseudoMetric X R) {ε : R}
     (h : d.IsUltra) :
     IsTransitiveRel {xy | d xy.1 xy.2 < ε} :=
   fun x y z hxy hyz ↦ (h x y z).trans_lt (max_lt hxy hyz)
