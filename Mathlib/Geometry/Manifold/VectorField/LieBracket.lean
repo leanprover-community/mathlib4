@@ -757,7 +757,6 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
   apply contMDiffWithinAt_iff_le_ne_infty.2 (fun m' hm' h'm' ↦ ?_)
   have hn : 1 ≤ m' + 1 := le_add_self
   have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) (le_minSmoothness.trans hmn)
-  have : IsManifold I (m' + 1) M := IsManifold.of_le (n := n + 1) (hm'n.trans le_self_add)
   have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
       ∈ 𝓝[s] x := by
     filter_upwards [self_mem_nhdsWithin,
