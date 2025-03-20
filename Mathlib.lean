@@ -5243,7 +5243,6 @@ import Mathlib.SetTheory.Game.Domineering
 import Mathlib.SetTheory.Game.Impartial
 import Mathlib.SetTheory.Game.Nim
 import Mathlib.SetTheory.Game.Ordinal
-import Mathlib.SetTheory.Game.PGame
 import Mathlib.SetTheory.Game.Short
 import Mathlib.SetTheory.Game.State
 import Mathlib.SetTheory.Lists
@@ -5263,6 +5262,9 @@ import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Rank
 import Mathlib.SetTheory.Ordinal.Topology
 import Mathlib.SetTheory.Ordinal.Veblen
+import Mathlib.SetTheory.PGame.Algebra
+import Mathlib.SetTheory.PGame.Basic
+import Mathlib.SetTheory.PGame.Order
 import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.SetTheory.Surreal.Dyadic
 import Mathlib.SetTheory.Surreal.Multiplication
