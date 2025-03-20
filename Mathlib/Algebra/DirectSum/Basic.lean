@@ -427,6 +427,9 @@ lemma map_eq_iff (x y : ⨁ i, α i) :
     map f x = map f y ↔ ∀ i, f i (x i) = f i (y i) := by
   simp_rw [DirectSum.ext_iff, map_apply]
 
+lemma map_eq_toAddMonoid [DecidableEq ι] : map f = toAddMonoid (fun i ↦ (of β i).comp (f i)) := by
+  ext i x j; simp
+
 end map
 
 end DirectSum

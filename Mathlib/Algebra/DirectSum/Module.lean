@@ -69,6 +69,8 @@ def lof : ∀ i : ι, M i →ₗ[R] ⨁ i, M i :=
 
 theorem lof_eq_of (i : ι) (b : M i) : lof R ι M i b = of M i b := rfl
 
+@[simp] theorem lof_toAddMonoidHom_eq_of (i : ι) : (lof R ι M i).toAddMonoidHom = of M i := rfl
+
 variable {ι M}
 
 theorem single_eq_lof (i : ι) (b : M i) : DFinsupp.single i b = lof R ι M i b := rfl
@@ -247,6 +249,11 @@ lemma toAddMonoidHom_lmap :
 
 lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
   rfl
+
+lemma lmap_eq_toAddMonoid [DecidableEq ι] :
+    lmap f = toModule R ι _ (fun i ↦ (lof R ι N i).comp (f i)) :=
+  sorry
+
 
 end map
 
