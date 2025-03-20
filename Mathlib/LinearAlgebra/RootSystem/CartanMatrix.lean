@@ -65,33 +65,19 @@ lemma cartanMatrix_le_zero_of_ne [Finite ι] [NoZeroDivisors R]
     b.cartanMatrix i j ≤ 0 :=
   b.pairingIn_le_zero_of_ne (by rwa [ne_eq, ← Subtype.ext_iff]) i.property j.property
 
-lemma neg_four_lt_cartanMatrix [Finite ι] [NoZeroDivisors R]
-    [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N] (i j : b.support) :
-    -4 < b.cartanMatrix i j := by
-  simp only [Int.reduceNeg, cartanMatrix, cartanMatrixIn_def]
-  have hcW := P.coxeterWeightIn_mem_set_of_isCrystallographic i j
-  have hcWle := coxeterWeightIn_le_four P ℤ i j
-  rw [coxeterWeightIn] at hcW hcWle
-  by_contra h
-  rw [Int.not_gt_eq] at h
-  have hnij : P.pairingIn ℤ i j ≠ 0 := by omega
-  have hne : i ≠ j := by
-    intro he
-    rw [he, pairingIn_same] at h
-    omega
-  have hnji : P.pairingIn ℤ j i ≠ 0 := fun hz ↦ hnij ((pairingIn_zero_iff P ℤ).mp hz)
-  have hcW := mem_of_mem_insert_of_ne hcW (Int.mul_ne_zero hnij hnji)
-  by_cases h4 : P.pairingIn ℤ i j = -4
-  · refine (not_linearIndependent_iff.mpr ?_) b.linInd_root
-    use ⟨{i, j}, (by aesop)⟩
-    use indicator {i} 1 + indicator {j} 2
-    simp [(P.pairingIn_neg_one_neg_four_iff ℤ j i).mp
-      ⟨(Prod.mk_inj.mp (Int.neg_four_neg_one_iff.mpr ⟨hcW, h4⟩)).2, h4⟩, hne, hne.symm]
-  · have hijlt : P.pairingIn ℤ i j < -4 := lt_of_le_of_ne h h4
-    have hjilt : P.pairingIn ℤ j i < 0 := by
-      refine lt_of_le_of_ne ?_ hnji
-      simpa [cartanMatrix, cartanMatrixIn_def] using (cartanMatrix_le_zero_of_ne b j i hne.symm)
-    nlinarith
+lemma cartanMatrix_mem_of_ne [Finite ι] [NoZeroDivisors R] [NoZeroSMulDivisors R M]
+    [NoZeroSMulDivisors R N] {i j : b.support} (hij : i ≠ j) :
+    b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by
+  simp only [cartanMatrix, cartanMatrixIn_def]
+  have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
+  have h₂ : P.pairingIn ℤ i j ≤ 0 := b.cartanMatrix_le_zero_of_ne i j hij
+  suffices P.pairingIn ℤ i j ≠ -4 by aesop
+  by_contra contra
+  replace contra : P.pairingIn ℤ j i = -1 ∧ P.pairingIn ℤ i j = -4 := ⟨by aesop, contra⟩
+  rw [pairingIn_neg_one_neg_four_iff] at contra
+  refine (not_linearIndependent_iff.mpr ?_) b.linInd_root
+  refine ⟨⟨{i, j}, by simpa⟩, Finsupp.single i (1 : R) + Finsupp.single j (2 : R), ?_⟩
+  simp [contra, hij, hij.symm]
 
 end IsCrystallographic
 
