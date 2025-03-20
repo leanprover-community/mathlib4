@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
@@ -55,11 +54,7 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
--- TODO
--- assert_not_exists MonoidWithZero
-assert_not_exists Cardinal
-assert_not_exists Finset.dens
-assert_not_exists MulAction
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction
 
 open Function MulOpposite
 
