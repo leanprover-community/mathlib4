@@ -685,7 +685,7 @@ lemma IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf [DecidableEq G] (hx : IsOfF
 `Subgroup.zmultiples a`, sending `i` to `i • a`."]
 noncomputable def finEquivZPowers (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ (zpowers x : Set G) :=
-  (finEquivPowers hx).trans <| Equiv.Set.ofEq hx.powers_eq_zpowers
+  (finEquivPowers hx).trans <| Equiv.setCongr hx.powers_eq_zpowers
 
 @[to_additive]
 lemma finEquivZPowers_apply (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :

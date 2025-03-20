@@ -17,6 +17,17 @@ assert_not_exists Monoid Multiset.sort
 open List
 open Nat List
 
+namespace Equiv
+
+/-- An equivalence between `α` and `β` generates an equivalence between `List α` and `List β`. -/
+def listEquivOfEquiv {α β} (e : α ≃ β) : List α ≃ List β where
+  toFun := List.map e
+  invFun := List.map e.symm
+  left_inv l := by rw [List.map_map, e.symm_comp_self, List.map_id]
+  right_inv l := by rw [List.map_map, e.self_comp_symm, List.map_id]
+
+end Equiv
+
 namespace Encodable
 
 variable {α : Type*}

@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
+import Batteries.WF
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
-import Batteries.WF
+import Mathlib.Tactic.GeneralizeProofs
 
 /-!
 # Partial functions

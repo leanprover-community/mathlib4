@@ -89,7 +89,7 @@ theorem toENat_cardinalMk_subtype (P : α → Prop) :
     encard (s : Set α) = s.card := by
   rw [Finite.encard_eq_coe_toFinset_card (Finset.finite_toSet s)]; simp
 
-theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
+@[simp] theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
   have := h.to_subtype
   rw [encard, ENat.card_eq_top_of_infinite]
 

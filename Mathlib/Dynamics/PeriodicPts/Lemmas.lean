@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Dynamics.PeriodicPts.Defs
 
 /-!
