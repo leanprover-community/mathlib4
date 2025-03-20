@@ -677,9 +677,6 @@ lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
 
 variable (R)
 
-theorem adjoin_singleton_one : adjoin R ({1} : Set A) = ⊥ :=
-  eq_bot_iff.2 <| adjoin_le <| Set.singleton_subset_iff.2 <| SetLike.mem_coe.2 <| one_mem _
-
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin (Set.mem_singleton_iff.mpr rfl)
 
