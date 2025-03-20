@@ -464,9 +464,13 @@ section PPrime
 variable {x n} {p : ℕ} [hp : Fact p.Prime]
 
 @[to_additive]
+theorem orderOf_eq_prime_iff : orderOf x = p ↔ x ^ p = 1 ∧ x ≠ 1 := by
+  rw [orderOf, minimalPeriod_eq_prime_iff, isPeriodicPt_mul_iff_pow_eq_one, IsFixedPt, mul_one]
+
+/-- The backward direction of `orderOf_eq_prime_iff`. -/
+@[to_additive "The backward direction of `addOrderOf_eq_prime_iff`."]
 theorem orderOf_eq_prime (hg : x ^ p = 1) (hg1 : x ≠ 1) : orderOf x = p :=
-  minimalPeriod_eq_prime ((isPeriodicPt_mul_iff_pow_eq_one _).mpr hg)
-    (by rwa [IsFixedPt, mul_one])
+  orderOf_eq_prime_iff.mpr ⟨hg, hg1⟩
 
 @[to_additive addOrderOf_eq_prime_pow]
 theorem orderOf_eq_prime_pow (hnot : ¬x ^ p ^ n = 1) (hfin : x ^ p ^ (n + 1) = 1) :
@@ -681,7 +685,7 @@ lemma IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf [DecidableEq G] (hx : IsOfF
 `Subgroup.zmultiples a`, sending `i` to `i • a`."]
 noncomputable def finEquivZPowers (hx : IsOfFinOrder x) :
     Fin (orderOf x) ≃ (zpowers x : Set G) :=
-  (finEquivPowers hx).trans <| Equiv.Set.ofEq hx.powers_eq_zpowers
+  (finEquivPowers hx).trans <| Equiv.setCongr hx.powers_eq_zpowers
 
 @[to_additive]
 lemma finEquivZPowers_apply (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
