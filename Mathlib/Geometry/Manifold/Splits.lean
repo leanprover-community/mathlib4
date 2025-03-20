@@ -259,6 +259,41 @@ lemma comp [CompleteSpace F] {g : M' → N} (hf : MSplitsAt I I' f x) (hg : MSpl
     have : CompleteSpace (TangentSpace J ((g ∘ f) x)) := by show CompleteSpace F; assumption
     exact hf.2.comp hg.2
 
+lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E'] (hf : MSplitsAt I I' f x)
+    {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : 1 ≤ n) :
+    MSplitsAt J I' (f ∘ f₀) y := by
+  refine (hf₀.msplitsAt hn).comp ?_
+  convert hf -- proper way: custom congr lemma...
+
+lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E'] {f₀ : N → M} {y : N} (hxy : f₀ y = x)
+    (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : 1 ≤ n) :
+    MSplitsAt I I' f x ↔ MSplitsAt J I' (f ∘ f₀) y := by
+  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn,
+    fun h ↦ ?_⟩
+  let g₀ : M → N := sorry -- TODO: choose the local inverse of f₀
+  have hg₀ : IsLocalDiffeomorphAt I J n g₀ x := sorry
+  have : g₀ x = y := sorry
+  let asdf := h.comp_isLocalDiffeomorphAt_left this hg₀ hn
+  apply asdf.congr
+  sorry -- locally, the inverse agrees
+
+lemma comp_isLocalDiffeomorphAt_right [CompleteSpace F] {g : M' → N}
+    (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : 1 ≤ n) (hf : MSplitsAt I I' f x) :
+    MSplitsAt I J (g ∘ f) x :=
+  hf.comp (hg.msplitsAt hn)
+
+-- TODO: complete this proof later
+lemma comp_isLocalDiffeomorphAt_right_iff [CompleteSpace F] [CompleteSpace E']
+    {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : 1 ≤ n) :
+    MSplitsAt I I' f x ↔  MSplitsAt I J (g ∘ f) x := by
+  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_right hg hn,
+    fun h ↦ ?_⟩
+  sorry
+  -- let asdf := h.comp_isLocalDiffeomorphAt_right hg.symm hn--).congr (by ext; simp)⟩
+
+-- corollary: MSplitsAt holds iff some coordinate representation splits
+--   iff *any* coordinate representation splits
+
 end MSplitsAt
 
 variable (I I') in
@@ -285,25 +320,26 @@ lemma comp [CompleteSpace F] {g : M' → N} (hf : MSplits I I' f) (hg : MSplits 
     MSplits I J (g ∘ f) :=
   fun x ↦ (hf x).comp (hg (f x))
 
--- TODO: transfer all these to MSplitsAt, then prove these lemmas in terms of them
+-- NB. the next four lemmas could be generalised to local diffeomorphism,
+-- and perhaps even proven in terms of their MSplitsAt versions
 
-lemma compDiffeomorph_left [CompleteSpace E'] (hf : MSplits I I' f)
+lemma comp_diffeomorph_left [CompleteSpace E'] (hf : MSplits I I' f)
     (f₀ : Diffeomorph J I N M n) (hn : 1 ≤ n) : MSplits J I' (f ∘ f₀) :=
   (f₀.splits hn).comp hf
 
-lemma compDiffeomorph_left_iff [CompleteSpace E'] (f₀ : Diffeomorph J I N M n) (hn : 1 ≤ n) :
+lemma comp_diffeomorph_left_iff [CompleteSpace E'] (f₀ : Diffeomorph J I N M n) (hn : 1 ≤ n) :
     MSplits I I' f ↔ MSplits J I' (f ∘ f₀) :=
-  ⟨fun hf ↦ hf.compDiffeomorph_left f₀ hn,
-    fun h ↦ (h.compDiffeomorph_left f₀.symm hn).congr (by ext; simp)⟩
+  ⟨fun hf ↦ hf.comp_diffeomorph_left f₀ hn,
+    fun h ↦ (h.comp_diffeomorph_left f₀.symm hn).congr (by ext; simp)⟩
 
-lemma compDiffeomorph_right [CompleteSpace F] (g : Diffeomorph I' J M' N n) (hn : 1 ≤ n)
+lemma comp_diffeomorph_right [CompleteSpace F] (g : Diffeomorph I' J M' N n) (hn : 1 ≤ n)
     (hf : MSplits I I' f) : MSplits I J (g ∘ f) :=
   hf.comp (g.splits hn)
 
-lemma compDiffeomorph_right_iff [CompleteSpace F] [CompleteSpace E']
+lemma comp_diffeomorph_right_iff [CompleteSpace F] [CompleteSpace E']
     {g : Diffeomorph I' J M' N n} (hn : 1 ≤ n) : MSplits I I' f ↔  MSplits I J (g ∘ f) :=
-  ⟨fun hf ↦ hf.compDiffeomorph_right g hn,
-    fun h ↦ (h.compDiffeomorph_right g.symm hn).congr (by ext; simp)⟩
+  ⟨fun hf ↦ hf.comp_diffeomorph_right g hn,
+    fun h ↦ (h.comp_diffeomorph_right g.symm hn).congr (by ext; simp)⟩
 
 -- corollary: MSplitsAt holds iff some coordinate representation splits
 --   iff *any* coordinate representation splits
