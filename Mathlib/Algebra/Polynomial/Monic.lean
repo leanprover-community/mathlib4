@@ -526,7 +526,7 @@ theorem degree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
     refine h ?_
     simpa using hm m le_rfl
 
-theorem natDegree_smul_of_smul_regular {S : Type*} [Monoid S] [SMulZeroClass S R] {k : S}
+theorem natDegree_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
     (p : R[X]) (h : IsSMulRegular R k) : (k • p).natDegree = p.natDegree := by
   by_cases hp : p = 0
   · simp [hp]
@@ -536,7 +536,7 @@ theorem natDegree_smul_of_smul_regular {S : Type*} [Monoid S] [SMulZeroClass S R
   rw [← smul_zero k] at hp
   exact h.polynomial hp
 
-theorem leadingCoeff_smul_of_smul_regular {S : Type*} [Monoid S] [SMulZeroClass S R] {k : S}
+theorem leadingCoeff_smul_of_smul_regular {S : Type*} [SMulZeroClass S R] {k : S}
     (p : R[X]) (h : IsSMulRegular R k) : (k • p).leadingCoeff = k • p.leadingCoeff := by
   rw [Polynomial.leadingCoeff, Polynomial.leadingCoeff, coeff_smul,
     natDegree_smul_of_smul_regular p h]
