@@ -45,7 +45,7 @@
    "type": "git",
    "subDir": null,
    "scope": "leanprover-community",
-   "rev": "8659ea3609e84247fecbe5bd68f1af5934ce29c1",
+   "rev": "93d05e2ab7eecbbce25efeffda56128280b2cd47",
    "name": "aesop",
    "manifestFile": "lake-manifest.json",
    "inputRev": "nightly-testing",
