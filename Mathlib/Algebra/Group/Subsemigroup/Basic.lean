@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzza
 Amelia Livingston, Yury Kudryashov, Yakov Pechersky
 -/
 import Mathlib.Algebra.Group.Subsemigroup.Defs
-import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Subsemigroups: `CompleteLattice` structure

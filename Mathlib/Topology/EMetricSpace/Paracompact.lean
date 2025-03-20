@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.EMetricSpace.Basic
-import Mathlib.SetTheory.Cardinal.Order
+import Mathlib.SetTheory.Cardinal.Basic
 
 /-!
 # (Extended) metric spaces are paracompact

@@ -5,7 +5,6 @@ Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.RingTheory.Ideal.Span
 
 /-!

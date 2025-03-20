@@ -641,7 +641,7 @@ def ker : AddSubgroup V₁ :=
   f.toAddMonoidHom.ker
 
 theorem mem_ker (v : V₁) : v ∈ f.ker ↔ f v = 0 := by
-  rw [ker, f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
+  erw [f.toAddMonoidHom.mem_ker, coe_toAddMonoidHom]
 
 /-- Given a normed group hom `f : V₁ → V₂` satisfying `g.comp f = 0` for some `g : V₂ → V₃`,
     the corestriction of `f` to the kernel of `g`. -/
@@ -689,8 +689,7 @@ theorem mem_range_self (v : V₁) : f v ∈ f.range :=
   ⟨v, rfl⟩
 
 theorem comp_range : (g.comp f).range = AddSubgroup.map g.toAddMonoidHom f.range := by
-  unfold range
-  rw [AddMonoidHom.map_range]
+  erw [AddMonoidHom.map_range]
   rfl
 
 theorem incl_range (s : AddSubgroup V₁) : (incl s).range = s := by

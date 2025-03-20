@@ -6,7 +6,6 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
-import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Separable
 import Mathlib.LinearAlgebra.Dual.Lemmas

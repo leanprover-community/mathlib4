@@ -6,7 +6,7 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.MinImports
 
 /-!

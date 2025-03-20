@@ -644,9 +644,6 @@ lemma map_monotone : Monotone (Subgraph.map f) := fun _ _ ↦ map_mono
 theorem map_sup (f : G →g G') (H₁ H₂ : G.Subgraph) : (H₁ ⊔ H₂).map f = H₁.map f ⊔ H₂.map f := by
   ext <;> simp [Set.image_union, map_adj, sup_adj, Relation.Map, or_and_right, exists_or]
 
-@[simp] lemma map_iso_top {H : SimpleGraph W} (e : G ≃g H) : Subgraph.map e.toHom ⊤ = ⊤ := by
-  ext <;> simp [Relation.Map, e.apply_eq_iff_eq_symm_apply, ← e.map_rel_iff]
-
 @[simp] lemma edgeSet_map (f : G →g G') (H : G.Subgraph) :
     (H.map f).edgeSet = Sym2.map f '' H.edgeSet := Sym2.fromRel_relationMap ..
 
@@ -671,9 +668,6 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
     simp +contextual only [comap_adj, and_imp, true_and]
     intro
     apply h.2
-
-@[simp] lemma comap_equiv_top {H : SimpleGraph W} (f : G →g H) : Subgraph.comap f ⊤ = ⊤ := by
-  ext <;> simp +contextual [f.map_adj]
 
 theorem map_le_iff_le_comap {G' : SimpleGraph W} (f : G →g G') (H : G.Subgraph) (H' : G'.Subgraph) :
     H.map f ≤ H' ↔ H ≤ H'.comap f := by
@@ -724,13 +718,8 @@ protected def hom (x : Subgraph G) : x.coe →g G where
 @[simp] lemma coe_hom (x : Subgraph G) :
     (x.hom : x.verts → V) = (fun (v : x.verts) => (v : V)) := rfl
 
-theorem hom_injective {x : Subgraph G} : Function.Injective x.hom :=
+theorem hom.injective {x : Subgraph G} : Function.Injective x.hom :=
   fun _ _ ↦ Subtype.ext
-
-@[deprecated (since := "2025-03-15")] alias hom.injective := hom_injective
-
-@[simp] lemma map_hom_top (G' : G.Subgraph) : Subgraph.map G'.hom ⊤ = G' := by
-  aesop (add unfold safe Relation.Map, unsafe G'.edge_vert, unsafe Adj.symm)
 
 /-- There is an induced injective homomorphism of a subgraph of `G` as
 a spanning subgraph into `G`. -/
@@ -739,10 +728,8 @@ def spanningHom (x : Subgraph G) : x.spanningCoe →g G where
   toFun := id
   map_rel' := x.adj_sub
 
-theorem spanningHom_injective {x : Subgraph G} : Function.Injective x.spanningHom :=
+theorem spanningHom.injective {x : Subgraph G} : Function.Injective x.spanningHom :=
   fun _ _ ↦ id
-
-@[deprecated (since := "2025-03-15")] alias spanningHom.injective := spanningHom_injective
 
 theorem neighborSet_subset_of_subgraph {x y : Subgraph G} (h : x ≤ y) (v : V) :
     x.neighborSet v ⊆ y.neighborSet v :=

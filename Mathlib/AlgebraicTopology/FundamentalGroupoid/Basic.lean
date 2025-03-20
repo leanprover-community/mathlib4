@@ -199,10 +199,32 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
   · rfl
-  iterate 6 exfalso; linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
   · have h : 2 * (2 * (x : ℝ)) - 1 = 2 * (2 * (↑x + 1 / 4) - 1) := by linarith
     simp [h₂, h₁, h, dif_neg (show ¬False from id), dif_pos True.intro, if_false, if_true]
-  iterate 6 exfalso; linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
+  · exfalso
+    linarith
   · congr
     ring
 

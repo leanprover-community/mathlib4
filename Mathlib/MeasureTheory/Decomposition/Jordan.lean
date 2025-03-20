@@ -270,8 +270,7 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
   on_goal 1 =>
     have a := hsu (hu.diff hv) diff_subset
     have b := hsv (hv.diff hu) diff_subset
-    rw [Set.symmDiff_def,
-      of_union (v := s) (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
+    erw [of_union (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor

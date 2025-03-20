@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Vector.Basic
-import Mathlib.Logic.Equiv.Finset
+import Mathlib.Logic.Equiv.List
 
 /-!
 # Encodability of Pi types

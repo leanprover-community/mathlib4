@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice
+import Mathlib.Order.CompleteLattice
 
 /-!
 

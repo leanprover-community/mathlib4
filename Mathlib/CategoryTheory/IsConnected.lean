@@ -439,7 +439,9 @@ theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
     (α : (Functor.const J).obj X ⟶ (Functor.const J).obj Y) :
     ∀ j j' : J, α.app j = (α.app j' : X ⟶ Y) :=
   @constant_of_preserves_morphisms _ _ _ (X ⟶ Y) (fun j => α.app j) fun _ _ f => by
-    simpa using (α.naturality f).symm
+    have := α.naturality f
+    erw [id_comp, comp_id] at this
+    exact this.symm
 
 instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
   map_surjective f := ⟨f.app (Classical.arbitrary J), by

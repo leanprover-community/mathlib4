@@ -360,7 +360,7 @@ theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
   Int.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [Ring R] (g : α → M → ℤ) :
+theorem cast_finsupp_sum [CommRing R] (g : α → M → ℤ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Int.cast_sum _ _
 

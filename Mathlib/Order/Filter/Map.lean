@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Control.Basic
-import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Filter.Basic
 
 /-!

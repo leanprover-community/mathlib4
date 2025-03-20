@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kenny Lau
 -/
 
 import Mathlib.Algebra.Order.Antidiag.Finsupp
+import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.Tactic.Linarith
 import Mathlib.LinearAlgebra.Pi

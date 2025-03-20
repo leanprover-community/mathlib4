@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Module.Presentation.Basic
-import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Logic.UnivLE
 

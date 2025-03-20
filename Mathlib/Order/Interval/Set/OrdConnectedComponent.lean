@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
-import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Order connected components of a set

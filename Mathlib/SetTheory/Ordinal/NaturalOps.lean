@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Family
+import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.Abel
 
 /-!
@@ -377,6 +377,9 @@ instance : CharZero NatOrdinal where
     apply_fun toOrdinal at h
     simpa using h
 
+@[deprecated toOrdinal_natCast (since := "2024-03-05")]
+alias toOrdinal_cast_nat := toOrdinal_natCast
+
 end NatOrdinal
 
 open NatOrdinal
@@ -392,6 +395,9 @@ theorem nadd_eq_add (a b : Ordinal) : a ♯ b = toOrdinal (toNatOrdinal a + toNa
 theorem toNatOrdinal_natCast (n : ℕ) : toNatOrdinal n = n := by
   rw [← toOrdinal_natCast n]
   rfl
+
+@[deprecated toNatOrdinal_natCast (since := "2024-03-05")]
+alias toNatOrdinal_cast_nat := toNatOrdinal_natCast
 
 theorem lt_of_nadd_lt_nadd_left : ∀ {a b c}, a ♯ b < a ♯ c → b < c :=
   @lt_of_add_lt_add_left NatOrdinal _ _ _

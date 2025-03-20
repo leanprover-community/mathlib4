@@ -21,7 +21,7 @@ open CategoryTheory TopologicalSpace Topology
 
 universe u
 
-/-- The category of topological spaces. -/
+/-- The category of semirings. -/
 structure TopCat where
   private mk ::
   /-- The underlying type. -/

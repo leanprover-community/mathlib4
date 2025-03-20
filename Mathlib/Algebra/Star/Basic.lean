@@ -547,12 +547,8 @@ instance [Mul R] [StarMul R] : StarMul Rᵐᵒᵖ where
 instance [AddMonoid R] [StarAddMonoid R] : StarAddMonoid Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
 
-instance [NonUnitalSemiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
+instance [Semiring R] [StarRing R] : StarRing Rᵐᵒᵖ where
   star_add x y := unop_injective (star_add x.unop y.unop)
-
-instance {M : Type*} [Star R] [Star M] [SMul R M] [StarModule R M] :
-    StarModule R Mᵐᵒᵖ where
-  star_smul r x := unop_injective (star_smul r x.unop)
 
 end MulOpposite
 

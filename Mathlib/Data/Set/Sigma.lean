@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.BooleanAlgebra
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Sets in sigma types

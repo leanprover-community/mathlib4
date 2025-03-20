@@ -8,9 +8,8 @@ import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Variables
-import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.MvPolynomial.WeightedHomogeneous
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # Homogeneous polynomials

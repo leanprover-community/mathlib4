@@ -5,7 +5,7 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.Notation.Prod
 import Mathlib.Data.Nat.Sqrt
-import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Naturals pairing function

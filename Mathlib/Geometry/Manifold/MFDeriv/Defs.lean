@@ -252,7 +252,8 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
   rw [MDifferentiableAt, liftPropAt_iff]
   congrm _ ∧ ?_
-  simp [DifferentiableWithinAtProp, Set.univ_inter, Function.comp_assoc]
+  simp [DifferentiableWithinAtProp, Set.univ_inter]
+  rfl
 
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :
     ContinuousAt f x :=

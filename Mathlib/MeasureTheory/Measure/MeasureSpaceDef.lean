@@ -52,7 +52,6 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
-assert_not_exists Basis
 
 noncomputable section
 
