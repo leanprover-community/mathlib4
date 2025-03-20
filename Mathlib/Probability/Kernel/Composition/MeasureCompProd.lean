@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
-import Mathlib.Probability.Kernel.Composition.CompProd
 import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Probability.Kernel.Composition.CompProd
 
 /-!
 # Composition-Product of a measure and a kernel

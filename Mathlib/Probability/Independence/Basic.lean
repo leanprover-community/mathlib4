@@ -616,9 +616,7 @@ nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
 theorem IndepFun.congr {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     {f' : Ω → β} {g' : Ω → β'} (hfg : IndepFun f g μ)
     (hf : f =ᵐ[μ] f') (hg : g =ᵐ[μ] g') : IndepFun f' g' μ := by
-  refine Kernel.IndepFun.congr' hfg ?_ ?_ <;>
-    simp only [ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
-  exacts [hf, hg]
+  refine Kernel.IndepFun.congr' hfg ?_ ?_ <;> simpa
 
 @[deprecated (since := "2025-03-18")] alias IndepFun.ae_eq := IndepFun.congr
 

@@ -953,10 +953,8 @@ lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β
     iIndepFun (fun i ↦ g i ∘ f i) κ μ := by
   have h : iIndepFun (fun i ↦ ((hg i).mk (g i)) ∘ f i) κ μ :=
     iIndepFun.comp h (fun i ↦ (hg i).mk (g i)) fun i ↦ (hg i).measurable_mk
-  have h_ae i := ae_of_ae_map (hf i) (hg i).ae_eq_mk
-  refine iIndepFun.congr' h fun i ↦ ?_
-  filter_upwards [Measure.ae_ae_of_ae_comp (h_ae i)] with a ha
-  filter_upwards [ha] with ω hω using hω.symm
+  have h_ae i := ae_of_ae_map (hf i) (hg i).ae_eq_mk.symm
+  exact iIndepFun.congr' h fun i ↦ Measure.ae_ae_of_ae_comp (h_ae i)
 
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :
@@ -1188,8 +1186,7 @@ theorem iIndepFun.indepFun_prodMk₀ (hf_Indep : iIndepFun f κ μ)
       Measure.ae_ae_of_ae_comp (hf_meas j).ae_eq_mk] with a hi hj
     filter_upwards [hi, hj] with ω hωi hωj
     rw [← hωi, ← hωj]
-  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk] with a hk
-    filter_upwards [hk] with ω hωk using by rw [hωk]
+  · exact Measure.ae_ae_of_ae_comp (hf_meas k).ae_eq_mk.symm
 
 open Finset in
 lemma iIndepFun.indepFun_prodMk_prodMk (hf_indep : iIndepFun f κ μ)
@@ -1364,10 +1361,8 @@ theorem iIndepFun.indepFun_finset_prod_of_not_mem₀ (hf_Indep : iIndepFun f κ 
     filter_upwards [this] with a ha
     filter_upwards [ae_all_iff.2 ha] with ω hω
     simp only [Finset.prod_apply]
-    refine Finset.prod_congr rfl fun i hi ↦ ?_
-    exact (hω ⟨i, hi⟩).symm
-  · filter_upwards [Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk] with a hi
-    filter_upwards [hi] with ω hω using by rw [hω]
+    exact Finset.prod_congr rfl fun i hi ↦ (hω ⟨i, hi⟩).symm
+  · exact Measure.ae_ae_of_ae_comp (hf_meas i).ae_eq_mk.symm
 
 @[to_additive]
 theorem iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β}
