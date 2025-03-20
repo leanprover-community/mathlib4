@@ -166,58 +166,47 @@ lemma root_add_root_mem_of_pairingIn_neg (h : P.pairingIn ℤ i j < 0) (h' : α 
   replace h' : i ≠ -j := by contrapose! h'; simp [h']
   simpa using P.root_sub_root_mem_of_pairingIn_pos h h'
 
-section RootForm
+namespace InvariantForm
 
 omit [NoZeroSMulDivisors R N]
-variable [P.IsReduced] [P.IsIrreducible] (B : P.InvariantForm)
+variable [P.IsReduced] (B : P.InvariantForm)
+variable {P}
 
--- I think best to break this lemma in three:
--- First part which assumes `P.pairingIn ℤ i j ≠ 0` (but not irreducible) and second which
--- has assumptions as shown. With third part doing the Weyl group argument.
-open LinearMap MulAction in
-lemma foo (i j : ι) :
+lemma apply_eq_or_aux (i j : ι) (h : P.pairingIn ℤ i j ≠ 0) :
     B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j) ∨
     B.form (P.root i) (P.root i) = 2 * B.form (P.root j) (P.root j) ∨
     B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
     B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
     B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
-  obtain ⟨j', h₁, h₂⟩ : ∃ j',
-      B.form (P.root j') (P.root j') = B.form (P.root j) (P.root j) ∧
-      B.form (P.root i) (P.root j') ≠ 0 := by
-    -- TODO Probably break this out into its own lemma
-    have := P.span_orbit_eq_top j
-    contrapose! this
-    replace this : span R (orbit P.weylGroup (P.root j)) ≤ ker (B.form (P.root i)) := by
-      refine Submodule.span_le.mpr fun v hv ↦ ?_
-      obtain ⟨g, rfl⟩ := mem_orbit_iff.mp hv
-      rw [P.weylGroup_apply_root]
-      simp only [MonoidHom.restrict_apply, Equiv.indexHom_apply]
-      specialize this (P.weylGroupToPerm g j)
-      simp only [MonoidHom.restrict_apply, Equiv.indexHom_apply] at this
-      apply this
-      suffices P.root ((g : P.Aut).indexEquiv j) = g • P.root j by simp [this]
-      exact (RootPairing.Equiv.smul_root P j g).symm
-    intro contra
-    apply B.ne_zero i
-    suffices B.form (P.root i) = 0 by simp [this]
-    simpa [contra] using this
-  replace h₂ : P.pairingIn ℤ i j' ≠ 0 := by
-    contrapose! h₂
-    replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
-    exact (B.apply_root_root_zero_iff i j').mpr h₂
-  have h₃ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced i j'
-  have h₄ : P.pairingIn ℤ j' i * B.form (P.root i) (P.root i) =
-            P.pairingIn ℤ i j' * B.form (P.root j') (P.root j') := by
-    change (algebraMap ℤ R (P.pairingIn ℤ j' i)) * _ = (algebraMap ℤ R (P.pairingIn ℤ i j')) * _
-    simpa only [algebraMap_pairingIn] using B.pairing_mul_eq_pairing_mul_swap i j'
+  have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced i j
+  have h₂ : algebraMap ℤ R (P.pairingIn ℤ j i) * B.form (P.root i) (P.root i) =
+            algebraMap ℤ R (P.pairingIn ℤ i j) * B.form (P.root j) (P.root j) := by
+    simpa only [algebraMap_pairingIn] using B.pairing_mul_eq_pairing_mul_swap i j
   aesop
 
--- With many thanks to Mario Carneiro, Johan Commelin, Bhavik Mehta, Wang Jingting.
-theorem extracted (R : Type*) [CommRing R] [CharZero R] [NoZeroDivisors R] (x y z : R)
+variable [P.IsIrreducible]
+
+/-- Relative of lengths of roots in a reduced irreducible finite crystallographic root pairing are
+very constrained. -/
+lemma apply_eq_or (i j : ι) :
+    B.form (P.root i) (P.root i) = B.form (P.root j) (P.root j) ∨
+    B.form (P.root i) (P.root i) = 2 * B.form (P.root j) (P.root j) ∨
+    B.form (P.root i) (P.root i) = 3 * B.form (P.root j) (P.root j) ∨
+    B.form (P.root j) (P.root j) = 2 * B.form (P.root i) (P.root i) ∨
+    B.form (P.root j) (P.root j) = 3 * B.form (P.root i) (P.root i) := by
+  obtain ⟨j', h₁, h₂⟩ := P.exists_form_eq_form_and_form_ne_zero B i j
+  suffices P.pairingIn ℤ i j' ≠ 0 by simp only [← h₁]; exact B.apply_eq_or_aux i j' this
+  contrapose! h₂
+  replace h₂ : P.pairing i j' = 0 := by rw [← P.algebraMap_pairingIn ℤ, h₂, map_zero]
+  exact (B.apply_root_root_zero_iff i j').mpr h₂
+
+theorem exists_apply_eq_or_aux {x y z : R}
     (hij : x = 2 * y ∨ x = 3 * y ∨ y = 2 * x ∨ y = 3 * x)
     (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
     (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
     x = 0 ∧ y = 0 ∧ z = 0 := by
+  /- The below proof (due to Mario Carneiro, Johan Commelin, Bhavik Mehta, Wang Jingting) should
+     not really be necessary: we should have a tactic to crush this. -/
   suffices y = 0 ∨ z = 0 by apply this.elim <;> rintro rfl <;> simp_all
   let S : Finset (ℕ × ℕ) := {(1, 2), (1, 3), (2, 1), (3, 1)}
   obtain ⟨⟨ab, hab, hxy⟩, ⟨cd, hcd, hxz⟩, ⟨ef, hef, hyz⟩⟩ :
@@ -231,12 +220,9 @@ theorem extracted (R : Type*) [CommRing R] [CharZero R] [NoZeroDivisors R] (x y 
     linear_combination z * cd.1 * ef.2 * hxy - ab.1 * ef.1 * y * hxz + ab.1 * x * cd.1 * hyz
   simp_all only [ne_eq, mul_eq_zero, sub_eq_zero, false_or, S]
 
--- Also worth having version of this which makes statement about just two values of
--- `P.pairing` with no mention of root form.
-open Submodule in
 /-- A reduced irreducible finite crystallographic root system has roots of at most two different
 lengths. -/
-lemma bar [Nonempty ι] : ∃ i j, ∀ k,
+lemma exists_apply_eq_or [Nonempty ι] : ∃ i j, ∀ k,
     B.form (P.root k) (P.root k) = B.form (P.root i) (P.root i) ∨
     B.form (P.root k) (P.root k) = B.form (P.root j) (P.root j) := by
   obtain ⟨i⟩ := inferInstanceAs (Nonempty ι)
@@ -247,13 +233,13 @@ lemma bar [Nonempty ι] : ∃ i j, ∀ k,
     refine ⟨i, j, fun k ↦ ?_⟩
     by_contra! hk
     obtain ⟨hki_ne, hkj_ne⟩ := hk
-    have hij := (P.foo B i j).resolve_left hji_ne.symm
-    have hik := (P.foo B i k).resolve_left hki_ne.symm
-    have hjk := (P.foo B j k).resolve_left hkj_ne.symm
-    have := extracted R _ _ _ hij hik hjk
+    have hij := (B.apply_eq_or i j).resolve_left hji_ne.symm
+    have hik := (B.apply_eq_or i k).resolve_left hki_ne.symm
+    have hjk := (B.apply_eq_or j k).resolve_left hkj_ne.symm
+    have := exists_apply_eq_or_aux hij hik hjk
     aesop
 
-end RootForm
+end InvariantForm
 
 namespace Base
 

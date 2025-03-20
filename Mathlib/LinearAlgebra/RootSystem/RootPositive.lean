@@ -54,6 +54,9 @@ namespace InvariantForm
 
 variable {P : RootPairing ι R M N} (B : P.InvariantForm) (i j : ι)
 
+lemma apply_root_ne_zero : B.form (P.root i) ≠ 0 :=
+  fun contra ↦ B.ne_zero i <| by simp [contra]
+
 lemma two_mul_apply_root_root :
     2 * B.form (P.root i) (P.root j) = P.pairing i j * B.form (P.root j) (P.root j) := by
   rw [two_mul, ← eq_sub_iff_add_eq]
