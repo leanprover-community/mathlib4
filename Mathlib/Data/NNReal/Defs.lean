@@ -914,13 +914,10 @@ lemma nnreal_dichotomy (r : ℝ) : ∃ x : ℝ≥0, r = x ∨ r = -x := by
     aesop
 
 /-- Every real number is either zero, positive or negative, phrased using `ℝ≥0`. -/
-lemma nnreal_trichotomy (r : ℝ) : r = 0 ∨ ∃ x : ℝ≥0, 0 < x ∧ (r = x  ∨ r = -x) := by
-  obtain (hr | rfl | hr) : 0 < r ∨ 0 = r ∨ 0 < -r := by simpa using lt_trichotomy 0 r
-  case inr.inl => exact .inl rfl
-  all_goals
-    rw [← neg_neg r]
-    lift (_ : ℝ) to ℝ≥0 using hr.le with r
-    aesop
+lemma nnreal_trichotomy (r : ℝ) : r = 0 ∨ ∃ x : ℝ≥0, 0 < x ∧ (r = x ∨ r = -x) := by
+  obtain ⟨x, hx⟩ := nnreal_dichotomy r
+  rw [or_iff_not_imp_left]
+  aesop (add simp pos_iff_ne_zero)
 
 /-- To prove a property holds for real numbers it suffices to show that it holds for `x : ℝ≥0`,
 and if it holds for `x : ℝ≥0`, then it does also for `(-↑x : ℝ)`. -/
