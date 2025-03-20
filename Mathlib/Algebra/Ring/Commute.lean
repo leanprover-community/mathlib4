@@ -21,9 +21,9 @@ For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 -/
 
 
-universe u v w x
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {R : Type u}
 
 open Function
 
@@ -75,15 +75,11 @@ end
 
 section
 
-variable [MulOneClass R] [HasDistribNeg R] {a : R}
+variable [MulOneClass R] [HasDistribNeg R]
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_right (a : R) : Commute a (-1) :=
   SemiconjBy.neg_one_right a
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_left (a : R) : Commute (-1) a :=
   SemiconjBy.neg_one_left a
 
@@ -137,7 +133,6 @@ lemma neg_pow' (a : R) (n : ℕ) : (-a) ^ n = a ^ n * (-1) ^ n :=
 
 lemma neg_sq (a : R) : (-a) ^ 2 = a ^ 2 := by simp [sq]
 
--- Porting note: removed the simp attribute to please the simpNF linter
 lemma neg_one_sq : (-1 : R) ^ 2 = 1 := by simp [neg_sq, one_pow]
 
 alias neg_pow_two := neg_sq
@@ -147,7 +142,7 @@ alias neg_one_pow_two := neg_one_sq
 end HasDistribNeg
 
 section Ring
-variable [Ring R] {a b : R} {n : ℕ}
+variable [Ring R] {a : R} {n : ℕ}
 
 @[simp] lemma neg_one_pow_mul_eq_zero_iff : (-1) ^ n * a = 0 ↔ a = 0 := by
   rcases neg_one_pow_eq_or R n with h | h <;> simp [h]
@@ -196,6 +191,9 @@ alias sub_pow_two := sub_sq
 
 lemma sub_sq' (a b : R) : (a - b) ^ 2 = a ^ 2 + b ^ 2 - 2 * a * b := by
   rw [sub_eq_add_neg, add_sq', neg_sq, mul_neg, ← sub_eq_add_neg]
+
+lemma sub_sq_comm (a b : R) : (a - b) ^ 2 = (b - a) ^ 2 := by
+  rw [sub_sq', mul_right_comm, add_comm, sub_sq']
 
 variable [NoZeroDivisors R] {a b : R}
 

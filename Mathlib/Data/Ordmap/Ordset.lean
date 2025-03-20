@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Group.Int
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Tactic.Abel
@@ -151,7 +150,7 @@ and nothing on the other. -/
 def BalancedSz (l r : ℕ) : Prop :=
   l + r ≤ 1 ∨ l ≤ delta * r ∧ r ≤ delta * l
 
-instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => Or.decidable
+instance BalancedSz.dec : DecidableRel BalancedSz := fun _ _ => inferInstanceAs (Decidable (_ ∨ _))
 
 /-- The `Balanced t` asserts that the tree `t` satisfies the balance invariants
 (at every level). -/
@@ -174,7 +173,7 @@ theorem BalancedSz.symm {l r : ℕ} : BalancedSz l r → BalancedSz r l :=
   Or.imp (by rw [add_comm]; exact id) And.symm
 
 theorem balancedSz_zero {l : ℕ} : BalancedSz l 0 ↔ l ≤ 1 := by
-  simp (config := { contextual := true }) [BalancedSz]
+  simp +contextual [BalancedSz]
 
 theorem balancedSz_up {l r₁ r₂ : ℕ} (h₁ : r₁ ≤ r₂) (h₂ : l + r₂ ≤ 1 ∨ r₂ ≤ delta * l)
     (H : BalancedSz l r₁) : BalancedSz l r₂ := by
@@ -226,9 +225,6 @@ def rotateL : Ordnode α → α → Ordnode α → Ordnode α
   | l, x, node _ m y r => if size m < ratio * size r then node3L l x m y r else node4L l x m y r
   | l, x, nil => node' l x nil
 
--- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
-
 theorem rotateL_node (l : Ordnode α) (x : α) (sz : ℕ) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateL l x (node sz m y r) =
       if size m < ratio * size r then node3L l x m y r else node4L l x m y r :=
@@ -243,9 +239,6 @@ if balance is upset. -/
 def rotateR : Ordnode α → α → Ordnode α → Ordnode α
   | node _ l x m, y, r => if size m < ratio * size l then node3R l x m y r else node4R l x m y r
   | nil, y, r => node' nil y r
-
--- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
--- to emulate the old Lean 3 behaviour.
 
 theorem rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateR (node sz l x m) y r =
@@ -313,15 +306,15 @@ theorem dual_balance' (l : Ordnode α) (x : α) (r : Ordnode α) :
 theorem dual_balanceL (l : Ordnode α) (x : α) (r : Ordnode α) :
     dual (balanceL l x r) = balanceR (dual r) x (dual l) := by
   unfold balanceL balanceR
-  cases' r with rs rl rx rr
-  · cases' l with ls ll lx lr; · rfl
-    cases' ll with lls lll llx llr <;> cases' lr with lrs lrl lrx lrr <;> dsimp only [dual, id] <;>
-      try rfl
+  obtain - | ⟨rs, rl, rx, rr⟩ := r
+  · obtain - | ⟨ls, ll, lx, lr⟩ := l; · rfl
+    obtain - | ⟨lls, lll, llx, llr⟩ := ll <;> obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr <;>
+      dsimp only [dual, id] <;> try rfl
     split_ifs with h <;> repeat simp [h, add_comm]
-  · cases' l with ls ll lx lr; · rfl
+  · obtain - | ⟨ls, ll, lx, lr⟩ := l; · rfl
     dsimp only [dual, id]
     split_ifs; swap; · simp [add_comm]
-    cases' ll with lls lll llx llr <;> cases' lr with lrs lrl lrx lrr <;> try rfl
+    obtain - | ⟨lls, lll, llx, llr⟩ := ll <;> obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr <;> try rfl
     dsimp only [dual, id]
     split_ifs with h <;> simp [h, add_comm]
 
@@ -378,7 +371,7 @@ theorem Sized.rotateR_size {l x r} (hl : Sized l) :
   rw [← size_dual, dual_rotateR, hl.dual.rotateL_size, size_dual, size_dual, add_comm (size l)]
 
 theorem Sized.balance' {l x r} (hl : @Sized α l) (hr : Sized r) : Sized (balance' l x r) := by
-  unfold balance'; split_ifs
+  unfold Ordnode.balance'; split_ifs
   · exact hl.node' hr
   · exact hl.rotateL hr
   · exact hl.rotateR hr
@@ -459,7 +452,7 @@ theorem all_balance' {P l x r} : @All α P (balance' l x r) ↔ All P l ∧ P x 
 
 
 theorem foldr_cons_eq_toList : ∀ (t : Ordnode α) (r : List α), t.foldr List.cons r = toList t ++ r
-  | nil, r => rfl
+  | nil, _ => rfl
   | node _ l x r, r' => by
     rw [foldr, foldr_cons_eq_toList l, foldr_cons_eq_toList r, ← List.cons_append,
         ← List.append_assoc, ← foldr_cons_eq_toList l]; rfl
@@ -491,7 +484,7 @@ theorem equiv_iff {t₁ t₂ : Ordnode α} (h₁ : Sized t₁) (h₂ : Sized t�
 /-! ### `mem` -/
 
 
-theorem pos_size_of_mem [LE α] [@DecidableRel α (· ≤ ·)] {x : α} {t : Ordnode α} (h : Sized t)
+theorem pos_size_of_mem [LE α] [DecidableLE α] {x : α} {t : Ordnode α} (h : Sized t)
     (h_mem : x ∈ t) : 0 < size t := by cases t; · { contradiction }; · { simp [h.1] }
 
 /-! ### `(find/erase/split)(Min/Max)` -/
@@ -513,7 +506,7 @@ theorem findMax_dual (t : Ordnode α) : findMax (dual t) = findMin t := by
 
 theorem dual_eraseMin : ∀ t : Ordnode α, dual (eraseMin t) = eraseMax (dual t)
   | nil => rfl
-  | node _ nil x r => rfl
+  | node _ nil _ _ => rfl
   | node _ (node sz l' y r') x r => by
     rw [eraseMin, dual_balanceR, dual_eraseMin (node sz l' y r'), dual, dual, dual, eraseMax]
 
@@ -522,20 +515,20 @@ theorem dual_eraseMax (t : Ordnode α) : dual (eraseMax t) = eraseMin (dual t) :
 
 theorem splitMin_eq :
     ∀ (s l) (x : α) (r), splitMin' l x r = (findMin' l x, eraseMin (node s l x r))
-  | _, nil, x, r => rfl
+  | _, nil, _, _ => rfl
   | _, node ls ll lx lr, x, r => by rw [splitMin', splitMin_eq ls ll lx lr, findMin', eraseMin]
 
 theorem splitMax_eq :
     ∀ (s l) (x : α) (r), splitMax' l x r = (eraseMax (node s l x r), findMax' x r)
-  | _, l, x, nil => rfl
+  | _, _, _, nil => rfl
   | _, l, x, node ls ll lx lr => by rw [splitMax', splitMax_eq ls ll lx lr, findMax', eraseMax]
 
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+@[elab_as_elim]
 theorem findMin'_all {P : α → Prop} : ∀ (t) (x : α), All P t → P x → P (findMin' t x)
   | nil, _x, _, hx => hx
   | node _ ll lx _, _, ⟨h₁, h₂, _⟩, _ => findMin'_all ll lx h₁ h₂
 
--- @[elab_as_elim] -- Porting note: unexpected eliminator resulting type
+@[elab_as_elim]
 theorem findMax'_all {P : α → Prop} : ∀ (x : α) (t), P x → All P t → P (findMax' x t)
   | _x, nil, hx, _ => hx
   | _, node _ _ lx lr, _, ⟨_, h₂, h₃⟩ => findMax'_all lx lr h₂ h₃
@@ -564,7 +557,7 @@ theorem merge_node {ls ll lx lr rs rl rx rr} :
 /-! ### `insert` -/
 
 
-theorem dual_insert [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x : α) :
+theorem dual_insert [LE α] [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) :
     ∀ t : Ordnode α, dual (Ordnode.insert x t) = @Ordnode.insert αᵒᵈ _ _ x (dual t)
   | nil => rfl
   | node _ l y r => by
@@ -578,16 +571,16 @@ theorem dual_insert [Preorder α] [IsTotal α (· ≤ ·)] [@DecidableRel α (·
 
 theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Sized l)
     (sr : Sized r) : @balance α l x r = balance' l x r := by
-  cases' l with ls ll lx lr
-  · cases' r with rs rl rx rr
+  obtain - | ⟨ls, ll, lx, lr⟩ := l
+  · obtain - | ⟨rs, rl, rx, rr⟩ := r
     · rfl
     · rw [sr.eq_node'] at hr ⊢
-      cases' rl with rls rll rlx rlr <;> cases' rr with rrs rrl rrx rrr <;>
+      obtain - | ⟨rls, rll, rlx, rlr⟩ := rl <;> obtain - | ⟨rrs, rrl, rrx, rrr⟩ := rr <;>
         dsimp [balance, balance']
       · rfl
       · have : size rrl = 0 ∧ size rrr = 0 := by
           have := balancedSz_zero.1 hr.1.symm
-          rwa [size, sr.2.2.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero_iff] at this
+          rwa [size, sr.2.2.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero] at this
         cases sr.2.2.2.1.size_eq_zero.1 this.1
         cases sr.2.2.2.2.size_eq_zero.1 this.2
         obtain rfl : rrs = 1 := sr.2.2.1
@@ -595,7 +588,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         all_goals dsimp only [size]; decide
       · have : size rll = 0 ∧ size rlr = 0 := by
           have := balancedSz_zero.1 hr.1
-          rwa [size, sr.2.1.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero_iff] at this
+          rwa [size, sr.2.1.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero] at this
         cases sr.2.1.2.1.size_eq_zero.1 this.1
         cases sr.2.1.2.2.size_eq_zero.1 this.2
         obtain rfl : rls = 1 := sr.2.1.1
@@ -607,14 +600,14 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
           · simp [node4L, node', sr.2.1.1]; abel
         · apply Nat.zero_lt_succ
         · exact not_le_of_gt (Nat.succ_lt_succ (add_pos sr.2.1.pos sr.2.2.pos))
-  · cases' r with rs rl rx rr
+  · obtain - | ⟨rs, rl, rx, rr⟩ := r
     · rw [sl.eq_node'] at hl ⊢
-      cases' ll with lls lll llx llr <;> cases' lr with lrs lrl lrx lrr <;>
+      obtain - | ⟨lls, lll, llx, llr⟩ := ll <;> obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr <;>
         dsimp [balance, balance']
       · rfl
       · have : size lrl = 0 ∧ size lrr = 0 := by
           have := balancedSz_zero.1 hl.1.symm
-          rwa [size, sl.2.2.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero_iff] at this
+          rwa [size, sl.2.2.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero] at this
         cases sl.2.2.2.1.size_eq_zero.1 this.1
         cases sl.2.2.2.2.size_eq_zero.1 this.2
         obtain rfl : lrs = 1 := sl.2.2.1
@@ -622,7 +615,7 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         all_goals dsimp only [size]; decide
       · have : size lll = 0 ∧ size llr = 0 := by
           have := balancedSz_zero.1 hl.1
-          rwa [size, sl.2.1.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero_iff] at this
+          rwa [size, sl.2.1.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero] at this
         cases sl.2.1.2.1.size_eq_zero.1 this.1
         cases sl.2.1.2.2.size_eq_zero.1 this.2
         obtain rfl : lls = 1 := sl.2.1.1
@@ -640,10 +633,10 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         · have rd : delta ≤ size rl + size rr := by
             have := lt_of_le_of_lt (Nat.mul_le_mul_left _ sl.pos) h
             rwa [sr.1, Nat.lt_succ_iff] at this
-          cases' rl with rls rll rlx rlr
+          obtain - | ⟨rls, rll, rlx, rlr⟩ := rl
           · rw [size, zero_add] at rd
             exact absurd (le_trans rd (balancedSz_zero.1 hr.1.symm)) (by decide)
-          cases' rr with rrs rrl rrx rrr
+          obtain - | ⟨rrs, rrl, rrx, rrr⟩ := rr
           · exact absurd (le_trans rd (balancedSz_zero.1 hr.1)) (by decide)
           dsimp [rotateL]; split_ifs
           · simp [node3L, node', sr.1]; abel
@@ -651,10 +644,10 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
         · have ld : delta ≤ size ll + size lr := by
             have := lt_of_le_of_lt (Nat.mul_le_mul_left _ sr.pos) h_1
             rwa [sl.1, Nat.lt_succ_iff] at this
-          cases' ll with lls lll llx llr
+          obtain - | ⟨lls, lll, llx, llr⟩ := ll
           · rw [size, zero_add] at ld
             exact absurd (le_trans ld (balancedSz_zero.1 hl.1.symm)) (by decide)
-          cases' lr with lrs lrl lrx lrr
+          obtain - | ⟨lrs, lrl, lrx, lrr⟩ := lr
           · exact absurd (le_trans ld (balancedSz_zero.1 hl.1)) (by decide)
           dsimp [rotateR]; split_ifs
           · simp [node3R, node', sl.1]; abel
@@ -665,12 +658,12 @@ theorem balance_eq_balance' {l x r} (hl : Balanced l) (hr : Balanced r) (sl : Si
 theorem balanceL_eq_balance {l x r} (sl : Sized l) (sr : Sized r) (H1 : size l = 0 → size r ≤ 1)
     (H2 : 1 ≤ size l → 1 ≤ size r → size r ≤ delta * size l) :
     @balanceL α l x r = balance l x r := by
-  cases' r with rs rl rx rr
+  obtain - | ⟨rs, rl, rx, rr⟩ := r
   · rfl
-  · cases' l with ls ll lx lr
+  · obtain - | ⟨ls, ll, lx, lr⟩ := l
     · have : size rl = 0 ∧ size rr = 0 := by
         have := H1 rfl
-        rwa [size, sr.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero_iff] at this
+        rwa [size, sr.1, Nat.succ_le_succ_iff, Nat.le_zero, add_eq_zero] at this
       cases sr.2.1.size_eq_zero.1 this.1
       cases sr.2.2.size_eq_zero.1 this.2
       rw [sr.eq_node']; rfl
@@ -692,7 +685,7 @@ theorem raised_iff {n m} : Raised n m ↔ n ≤ m ∧ m ≤ n + 1 := by
     · exact Or.inr (le_antisymm h₂ h₁)
 
 theorem Raised.dist_le {n m} (H : Raised n m) : Nat.dist n m ≤ 1 := by
-  cases' raised_iff.1 H with H1 H2; rwa [Nat.dist_eq_sub_of_le H1, tsub_le_iff_left]
+  obtain ⟨H1, H2⟩ := raised_iff.1 H; rwa [Nat.dist_eq_sub_of_le H1, tsub_le_iff_left]
 
 theorem Raised.dist_le' {n m} (H : Raised n m) : Nat.dist m n ≤ 1 := by
   rw [Nat.dist_comm]; exact H.dist_le
@@ -793,7 +786,7 @@ def Bounded : Ordnode α → WithBot α → WithTop α → Prop
 theorem Bounded.dual :
     ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → @Bounded αᵒᵈ _ (dual t) o₂ o₁
   | nil, o₁, o₂, h => by cases o₁ <;> cases o₂ <;> trivial
-  | node _ l x r, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
+  | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨Or.dual, ol.dual⟩
 
 theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
     Bounded t o₁ o₂ ↔ @Bounded αᵒᵈ _ (.dual t) o₂ o₁ :=
@@ -802,11 +795,11 @@ theorem Bounded.dual_iff {t : Ordnode α} {o₁ o₂} :
 
 theorem Bounded.weak_left : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t ⊥ o₂
   | nil, o₁, o₂, h => by cases o₂ <;> trivial
-  | node _ l x r, _, _, ⟨ol, Or⟩ => ⟨ol.weak_left, Or⟩
+  | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨ol.weak_left, Or⟩
 
 theorem Bounded.weak_right : ∀ {t : Ordnode α} {o₁ o₂}, Bounded t o₁ o₂ → Bounded t o₁ ⊤
   | nil, o₁, o₂, h => by cases o₁ <;> trivial
-  | node _ l x r, _, _, ⟨ol, Or⟩ => ⟨ol, Or.weak_right⟩
+  | node _ _ _ _, _, _, ⟨ol, Or⟩ => ⟨ol, Or.weak_right⟩
 
 theorem Bounded.weak {t : Ordnode α} {o₁ o₂} (h : Bounded t o₁ o₂) : Bounded t ⊥ ⊤ :=
   h.weak_left.weak_right
@@ -929,8 +922,8 @@ theorem Valid'.node {s l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Va
   ⟨⟨hl.1, hr.1⟩, ⟨hs, hl.2, hr.2⟩, ⟨H, hl.3, hr.3⟩⟩
 
 theorem Valid'.dual : ∀ {t : Ordnode α} {o₁ o₂}, Valid' o₁ t o₂ → @Valid' αᵒᵈ _ o₂ (dual t) o₁
-  | .nil, o₁, o₂, h => valid'_nil h.1.dual
-  | .node _ l x r, o₁, o₂, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
+  | .nil, _, _, h => valid'_nil h.1.dual
+  | .node _ l _ r, _, _, ⟨⟨ol, Or⟩, ⟨rfl, sl, sr⟩, ⟨b, bl, br⟩⟩ =>
     let ⟨ol', sl', bl'⟩ := Valid'.dual ⟨ol, sl, bl⟩
     let ⟨or', sr', br'⟩ := Valid'.dual ⟨Or, sr, br⟩
     ⟨⟨or', ol'⟩, ⟨by simp [size_dual, add_comm], sr', sl'⟩,
@@ -1005,13 +998,13 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
             delta * size l ≤ size m + size r ∧
               3 * (size m + size r) ≤ 16 * size l + 9 ∧ size m ≤ delta * size r) :
     Valid' o₁ (@node4L α l x m y r) o₂ := by
-  cases' m with s ml z mr; · cases Hm
+  obtain - | ⟨s, ml, z, mr⟩ := m; · cases Hm
   suffices
     BalancedSz (size l) (size ml) ∧
       BalancedSz (size mr) (size r) ∧ BalancedSz (size l + size ml + 1) (size mr + size r + 1) from
     Valid'.node' (hl.node' hm.left this.1) (hm.right.node' hr this.2.1) this.2.2
   rcases H with (⟨l0, m1, r0⟩ | ⟨l0, mr₁, lr₁, lr₂, mr₂⟩)
-  · rw [hm.2.size_eq, Nat.succ_inj', add_eq_zero_iff] at m1
+  · rw [hm.2.size_eq, Nat.succ_inj', add_eq_zero] at m1
     rw [l0, m1.1, m1.2]; revert r0; rcases size r with (_ | _ | _) <;>
       [decide; decide; (intro r0; unfold BalancedSz delta; omega)]
   · rcases Nat.eq_zero_or_pos (size r) with r0 | r0
@@ -1069,7 +1062,7 @@ theorem Valid'.rotateL_lemma₄ {a b : ℕ} (H3 : 2 * b ≤ 9 * a + 3) : 3 * b �
 theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H1 : ¬size l + size r ≤ 1) (H2 : delta * size l < size r)
     (H3 : 2 * size r ≤ 9 * size l + 5 ∨ size r ≤ 3) : Valid' o₁ (@rotateL α l x r) o₂ := by
-  cases' r with rs rl rx rr; · cases H2
+  obtain - | ⟨rs, rl, rx, rr⟩ := r; · cases H2
   rw [hr.2.size_eq, Nat.lt_succ_iff] at H2
   rw [hr.2.size_eq] at H3
   replace H3 : 2 * (size rl + size rr) ≤ 9 * size l + 3 ∨ size rl + size rr ≤ 2 :=
@@ -1111,7 +1104,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
   · rcases Nat.eq_zero_or_pos (size rl) with rl0 | rl0
     · rw [rl0, not_lt, Nat.le_zero, Nat.mul_eq_zero] at h
       replace h := h.resolve_left (by decide)
-      erw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
+      rw [rl0, h, Nat.le_zero, Nat.mul_eq_zero] at H2
       rw [hr.2.size_eq, rl0, h, H2.resolve_left (by decide)] at H1
       cases H1 (by decide)
     refine hl.node4L hr.left hr.right rl0 ?_
@@ -1147,10 +1140,7 @@ theorem Valid'.balance'_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (h
 theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
     (H2 : Nat.dist (@size α l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l') :
     2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3 := by
-  suffices @size α r ≤ 3 * (size l + 1) by
-    rcases Nat.eq_zero_or_pos (size l) with l0 | l0
-    · apply Or.inr; rwa [l0] at this
-    change 1 ≤ _ at l0; apply Or.inl; omega
+  suffices @size α r ≤ 3 * (size l + 1) by omega
   rcases H2 with (⟨hl, rfl⟩ | ⟨hr, rfl⟩) <;> rcases H1 with (h | ⟨_, h₂⟩)
   · exact le_trans (Nat.le_add_left _ _) (le_trans h (Nat.le_add_left _ _))
   · exact
@@ -1239,11 +1229,11 @@ theorem eraseMax.valid {t} (h : @Valid α _ t) : Valid (eraseMax t) := by
 theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o₁ r o₂)
     (sep : l.All fun x => r.All fun y => x < y) (bal : BalancedSz (size l) (size r)) :
     Valid' o₁ (@glue α l r) o₂ ∧ size (glue l r) = size l + size r := by
-  cases' l with ls ll lx lr; · exact ⟨hr, (zero_add _).symm⟩
-  cases' r with rs rl rx rr; · exact ⟨hl, rfl⟩
+  obtain - | ⟨ls, ll, lx, lr⟩ := l; · exact ⟨hr, (zero_add _).symm⟩
+  obtain - | ⟨rs, rl, rx, rr⟩ := r; · exact ⟨hl, rfl⟩
   dsimp [glue]; split_ifs
   · rw [splitMax_eq]
-    · cases' Valid'.eraseMax_aux hl with v e
+    · obtain ⟨v, e⟩ := Valid'.eraseMax_aux hl
       suffices H : _ by
         refine ⟨Valid'.balanceR v (hr.of_gt ?_ ?_) H, ?_⟩
         · refine findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
@@ -1254,11 +1244,11 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
       refine Or.inl ⟨_, Or.inr e, ?_⟩
       rwa [hl.2.eq_node'] at bal
   · rw [splitMin_eq]
-    · cases' Valid'.eraseMin_aux hr with v e
+    · obtain ⟨v, e⟩ := Valid'.eraseMin_aux hr
       suffices H : _ by
         refine ⟨Valid'.balanceL (hl.of_lt ?_ ?_) v H, ?_⟩
         · refine @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
-            rl rx (sep.2.1.1.imp ?_) hr.1.1.to_nil
+            _ rl rx (sep.2.1.1.imp ?_) hr.1.1.to_nil
           exact fun y h => hl.1.1.to_nil.mono_right (le_of_lt h)
         · exact
             @findMin'_all _ (fun a => All (· < a) (.node ls ll lx lr)) rl rx
@@ -1301,12 +1291,10 @@ theorem Valid'.merge_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' 
   induction' r with rs rl rx rr IHrl _ generalizing o₁ o₂
   · exact ⟨hl, rfl⟩
   rw [merge_node]; split_ifs with h h_1
-  · cases'
-      IHrl (hl.of_lt hr.1.1.to_nil <| sep.imp fun x h => h.2.1) hr.left
-        (sep.imp fun x h => h.1) with
-      v e
+  · obtain ⟨v, e⟩ := IHrl (hl.of_lt hr.1.1.to_nil <| sep.imp fun x h => h.2.1) hr.left
+      (sep.imp fun x h => h.1)
     exact Valid'.merge_aux₁ hl hr h v e
-  · cases' IHlr hl.right (hr.of_gt hl.1.2.to_nil sep.2.1) sep.2.2 with v e
+  · obtain ⟨v, e⟩ := IHlr hl.right (hr.of_gt hl.1.2.to_nil sep.2.1) sep.2.2
     have := Valid'.merge_aux₁ hr.dual hl.dual h_1 v.dual
     rw [size_dual, add_comm, size_dual, ← dual_balanceR, ← Valid'.dual_iff, size_dual,
       add_comm rs] at this
@@ -1317,14 +1305,14 @@ theorem Valid.merge {l r} (hl : Valid l) (hr : Valid r)
     (sep : l.All fun x => r.All fun y => x < y) : Valid (@merge α l r) :=
   (Valid'.merge_aux hl hr sep).1
 
-theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (f : α → α) (x : α)
+theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) :
     ∀ {t o₁ o₂},
       Valid' o₁ t o₂ →
         Bounded nil o₁ x →
           Bounded nil x o₂ →
             Valid' o₁ (insertWith f x t) o₂ ∧ Raised (size t) (size (insertWith f x t))
-  | nil, o₁, o₂, _, bl, br => ⟨valid'_singleton bl br, Or.inr rfl⟩
+  | nil, _, _, _, bl, br => ⟨valid'_singleton bl br, Or.inr rfl⟩
   | node sz l y r, o₁, o₂, h, bl, br => by
     rw [insertWith, cmpLE]
     split_ifs with h_1 h_2 <;> dsimp only
@@ -1346,28 +1334,28 @@ theorem insertWith.valid_aux [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ 
         exact (e.add_left _).add_right _
       exact Or.inr ⟨_, e, h.3.1⟩
 
-theorem insertWith.valid [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (f : α → α) (x : α)
+theorem insertWith.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (f : α → α) (x : α)
     (hf : ∀ y, x ≤ y ∧ y ≤ x → x ≤ f y ∧ f y ≤ x) {t} (h : Valid t) : Valid (insertWith f x t) :=
   (insertWith.valid_aux _ _ hf h ⟨⟩ ⟨⟩).1
 
-theorem insert_eq_insertWith [@DecidableRel α (· ≤ ·)] (x : α) :
+theorem insert_eq_insertWith [DecidableLE α] (x : α) :
     ∀ t, Ordnode.insert x t = insertWith (fun _ => x) x t
   | nil => rfl
   | node _ l y r => by
     unfold Ordnode.insert insertWith; cases cmpLE x y <;> simp [insert_eq_insertWith]
 
-theorem insert.valid [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x : α) {t} (h : Valid t) :
+theorem insert.valid [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) {t} (h : Valid t) :
     Valid (Ordnode.insert x t) := by
   rw [insert_eq_insertWith]; exact insertWith.valid _ _ (fun _ _ => ⟨le_rfl, le_rfl⟩) h
 
-theorem insert'_eq_insertWith [@DecidableRel α (· ≤ ·)] (x : α) :
+theorem insert'_eq_insertWith [DecidableLE α] (x : α) :
     ∀ t, insert' x t = insertWith id x t
   | nil => rfl
   | node _ l y r => by
     unfold insert' insertWith; cases cmpLE x y <;> simp [insert'_eq_insertWith]
 
-theorem insert'.valid [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x : α) {t} (h : Valid t) :
-    Valid (insert' x t) := by
+theorem insert'.valid [IsTotal α (· ≤ ·)] [DecidableLE α]
+    (x : α) {t} (h : Valid t) : Valid (insert' x t) := by
   rw [insert'_eq_insertWith]; exact insertWith.valid _ _ (fun _ => id) h
 
 theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : StrictMono f) {t a₁ a₂}
@@ -1378,14 +1366,14 @@ theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : Stric
     simp only [map, size_nil, and_true]; apply valid'_nil
     cases a₁; · trivial
     cases a₂; · trivial
-    simp only [Bounded]
+    simp only [Option.map, Bounded]
     exact f_strict_mono h.ord
   | node _ _ _ _ t_ih_l t_ih_r =>
     have t_ih_l' := t_ih_l h.left
     have t_ih_r' := t_ih_r h.right
     clear t_ih_l t_ih_r
-    cases' t_ih_l' with t_l_valid t_l_size
-    cases' t_ih_r' with t_r_valid t_r_size
+    obtain ⟨t_l_valid, t_l_size⟩ := t_ih_l'
+    obtain ⟨t_r_valid, t_r_size⟩ := t_ih_r'
     simp only [map, size_node, and_true]
     constructor
     · exact And.intro t_l_valid.ord t_r_valid.ord
@@ -1404,7 +1392,7 @@ theorem map.valid {β} [Preorder β] {f : α → β} (f_strict_mono : StrictMono
     Valid (map f t) :=
   (Valid'.map_aux f_strict_mono h).1
 
-theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (h : Valid' a₁ t a₂) :
+theorem Valid'.erase_aux [DecidableLE α] (x : α) {t a₁ a₂} (h : Valid' a₁ t a₂) :
     Valid' a₁ (erase x t) a₂ ∧ Raised (erase x t).size t.size := by
   induction t generalizing a₁ a₂ with
   | nil =>
@@ -1414,8 +1402,8 @@ theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (
     have t_ih_l' := t_ih_l h.left
     have t_ih_r' := t_ih_r h.right
     clear t_ih_l t_ih_r
-    cases' t_ih_l' with t_l_valid t_l_size
-    cases' t_ih_r' with t_r_valid t_r_size
+    obtain ⟨t_l_valid, t_l_size⟩ := t_ih_l'
+    obtain ⟨t_r_valid, t_r_size⟩ := t_ih_r'
     cases cmpLE x t_x <;> rw [h.sz.1]
     · suffices h_balanceable : _ by
         constructor
@@ -1425,7 +1413,7 @@ theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (
           exact t_l_size
       left; exists t_l.size; exact And.intro t_l_size h.bal.1
     · have h_glue := Valid'.glue h.left h.right h.bal.1
-      cases' h_glue with h_glue_valid h_glue_sized
+      obtain ⟨h_glue_valid, h_glue_sized⟩ := h_glue
       constructor
       · exact h_glue_valid
       · right; rw [h_glue_sized]
@@ -1438,10 +1426,10 @@ theorem Valid'.erase_aux [@DecidableRel α (· ≤ ·)] (x : α) {t a₁ a₂} (
           exact t_r_size
       right; exists t_r.size; exact And.intro t_r_size h.bal.1
 
-theorem erase.valid [@DecidableRel α (· ≤ ·)] (x : α) {t} (h : Valid t) : Valid (erase x t) :=
+theorem erase.valid [DecidableLE α] (x : α) {t} (h : Valid t) : Valid (erase x t) :=
   (Valid'.erase_aux x h).1
 
-theorem size_erase_of_mem [@DecidableRel α (· ≤ ·)] {x : α} {t a₁ a₂} (h : Valid' a₁ t a₂)
+theorem size_erase_of_mem [DecidableLE α] {x : α} {t a₁ a₂} (h : Valid' a₁ t a₂)
     (h_mem : x ∈ t) : size (erase x t) = size t - 1 := by
   induction t generalizing a₁ a₂ with
   | nil =>
@@ -1456,24 +1444,24 @@ theorem size_erase_of_mem [@DecidableRel α (· ≤ ·)] {x : α} {t a₁ a₂} 
     · have t_ih_l := t_ih_l' h_mem
       clear t_ih_l' t_ih_r'
       have t_l_h := Valid'.erase_aux x h.left
-      cases' t_l_h with t_l_valid t_l_size
+      obtain ⟨t_l_valid, t_l_size⟩ := t_l_h
       rw [size_balanceR t_l_valid.bal h.right.bal t_l_valid.sz h.right.sz
           (Or.inl (Exists.intro t_l.size (And.intro t_l_size h.bal.1)))]
       rw [t_ih_l, h.sz.1]
       have h_pos_t_l_size := pos_size_of_mem h.left.sz h_mem
-      revert h_pos_t_l_size; cases' t_l.size with t_l_size <;> intro h_pos_t_l_size
+      revert h_pos_t_l_size; rcases t_l.size with - | t_l_size <;> intro h_pos_t_l_size
       · cases h_pos_t_l_size
       · simp [Nat.add_right_comm]
     · rw [(Valid'.glue h.left h.right h.bal.1).2, h.sz.1]; rfl
     · have t_ih_r := t_ih_r' h_mem
       clear t_ih_l' t_ih_r'
       have t_r_h := Valid'.erase_aux x h.right
-      cases' t_r_h with t_r_valid t_r_size
+      obtain ⟨t_r_valid, t_r_size⟩ := t_r_h
       rw [size_balanceL h.left.bal t_r_valid.bal h.left.sz t_r_valid.sz
           (Or.inr (Exists.intro t_r.size (And.intro t_r_size h.bal.1)))]
       rw [t_ih_r, h.sz.1]
       have h_pos_t_r_size := pos_size_of_mem h.right.sz h_mem
-      revert h_pos_t_r_size; cases' t_r.size with t_r_size <;> intro h_pos_t_r_size
+      revert h_pos_t_r_size; rcases t_r.size with - | t_r_size <;> intro h_pos_t_r_size
       · cases h_pos_t_r_size
       · simp [Nat.add_assoc]
 
@@ -1528,22 +1516,22 @@ instance Empty.instDecidablePred : DecidablePred (@Empty α _) :=
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, this replaces it. -/
-protected def insert [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x : α) (s : Ordset α) :
+protected def insert [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨Ordnode.insert x s.1, insert.valid _ s.2⟩
 
-instance instInsert [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] : Insert α (Ordset α) :=
+instance instInsert [IsTotal α (· ≤ ·)] [DecidableLE α] : Insert α (Ordset α) :=
   ⟨Ordset.insert⟩
 
 /-- O(log n). Insert an element into the set, preserving balance and the BST property.
   If an equivalent element is already in the set, the set is returned as is. -/
-nonrec def insert' [IsTotal α (· ≤ ·)] [@DecidableRel α (· ≤ ·)] (x : α) (s : Ordset α) :
+nonrec def insert' [IsTotal α (· ≤ ·)] [DecidableLE α] (x : α) (s : Ordset α) :
     Ordset α :=
   ⟨insert' x s.1, insert'.valid _ s.2⟩
 
 section
 
-variable [@DecidableRel α (· ≤ ·)]
+variable [DecidableLE α]
 
 /-- O(log n). Does the set contain the element `x`? That is,
   is there an element that is equivalent to `x` in the order? -/
@@ -1556,7 +1544,7 @@ def find (x : α) (s : Ordset α) : Option α :=
   Ordnode.find x s.val
 
 instance instMembership : Membership α (Ordset α) :=
-  ⟨fun x s => mem x s⟩
+  ⟨fun s x => mem x s⟩
 
 instance mem.decidable (x : α) (s : Ordset α) : Decidable (x ∈ s) :=
   instDecidableEqBool _ _
@@ -1570,7 +1558,7 @@ end
 
 /-- O(log n). Remove an element from the set equivalent to `x`. Does nothing if there
 is no such element. -/
-def erase [@DecidableRel α (· ≤ ·)] (x : α) (s : Ordset α) : Ordset α :=
+def erase [DecidableLE α] (x : α) (s : Ordset α) : Ordset α :=
   ⟨Ordnode.erase x s.val, Ordnode.erase.valid x s.property⟩
 
 /-- O(n). Map a function across a tree, without changing the structure. -/
@@ -1578,3 +1566,5 @@ def map {β} [Preorder β] (f : α → β) (f_strict_mono : StrictMono f) (s : O
   ⟨Ordnode.map f s.val, Ordnode.map.valid f_strict_mono s.property⟩
 
 end Ordset
+
+set_option linter.style.longFile 1700

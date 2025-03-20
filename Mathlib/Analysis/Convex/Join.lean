@@ -59,7 +59,6 @@ theorem convexJoin_singleton_left (t : Set E) (x : E) :
 theorem convexJoin_singleton_right (s : Set E) (y : E) :
     convexJoin 𝕜 s {y} = ⋃ x ∈ s, segment 𝕜 x y := by simp [convexJoin]
 
--- Porting note (#10618): simp can prove it
 theorem convexJoin_singletons (x : E) : convexJoin 𝕜 {x} {y} = segment 𝕜 x y := by simp
 
 @[simp]
@@ -105,7 +104,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t u : Set E} {x y : E}
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
@@ -113,19 +112,13 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
   rintro _ ⟨z, ⟨x, hx, y, hy, a₁, b₁, ha₁, hb₁, hab₁, rfl⟩, z, hz, a₂, b₂, ha₂, hb₂, hab₂, rfl⟩
   obtain rfl | hb₂ := hb₂.eq_or_lt
   · refine ⟨x, hx, y, ⟨y, hy, z, hz, left_mem_segment 𝕜 _ _⟩, a₁, b₁, ha₁, hb₁, hab₁, ?_⟩
-    rw [add_zero] at hab₂
-    rw [hab₂, one_smul, zero_smul, add_zero]
-  have ha₂b₁ : 0 ≤ a₂ * b₁ := mul_nonneg ha₂ hb₁
-  have hab : 0 < a₂ * b₁ + b₂ := add_pos_of_nonneg_of_pos ha₂b₁ hb₂
+    linear_combination (norm := module) -hab₂ • (a₁ • x + b₁ • y)
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
-      ⟨y, hy, z, hz, _, _, ?_, ?_, ?_, rfl⟩,
-      a₂ * a₁, a₂ * b₁ + b₂, mul_nonneg ha₂ ha₁, hab.le, ?_, ?_⟩
-  · exact div_nonneg ha₂b₁ hab.le
-  · exact div_nonneg hb₂.le hab.le
-  · rw [← add_div, div_self hab.ne']
-  · rw [← add_assoc, ← mul_add, hab₁, mul_one, hab₂]
-  · simp_rw [smul_add, ← mul_smul, mul_div_cancel₀ _ hab.ne', add_assoc]
+      ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,
+      a₂ * a₁, a₂ * b₁ + b₂, by positivity, by positivity, ?_, ?_⟩
+  · linear_combination a₂ * hab₁ + hab₂
+  · match_scalars <;> field_simp
 
 theorem convexJoin_assoc (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u = convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
@@ -146,7 +139,6 @@ theorem convexJoin_convexJoin_convexJoin_comm (s t u v : Set E) :
       convexJoin 𝕜 (convexJoin 𝕜 s u) (convexJoin 𝕜 t v) := by
   simp_rw [← convexJoin_assoc, convexJoin_right_comm]
 
--- Porting note: moved 3 lemmas from below to golf
 protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
     Convex 𝕜 (convexJoin 𝕜 s t) := by
   simp only [Convex, StarConvex, convexJoin, mem_iUnion]
@@ -155,9 +147,9 @@ protected theorem Convex.convexJoin (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) :
   rcases hs.exists_mem_add_smul_eq hx₁ hx₂ (mul_nonneg hp ha₁) (mul_nonneg hq ha₂) with ⟨x, hxs, hx⟩
   rcases ht.exists_mem_add_smul_eq hy₁ hy₂ (mul_nonneg hp hb₁) (mul_nonneg hq hb₂) with ⟨y, hyt, hy⟩
   refine ⟨_, hxs, _, hyt, p * a₁ + q * a₂, p * b₁ + q * b₂, ?_, ?_, ?_, ?_⟩ <;> try positivity
-  · rwa [add_add_add_comm, ← mul_add, ← mul_add, hab₁, hab₂, mul_one, mul_one]
-  · rw [hx, hy, add_add_add_comm]
-    simp only [smul_add, smul_smul]
+  · linear_combination p * hab₁ + q * hab₂ + hpq
+  · rw [hx, hy]
+    module
 
 protected theorem Convex.convexHull_union (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hs₀ : s.Nonempty)
     (ht₀ : t.Nonempty) : convexHull 𝕜 (s ∪ t) = convexJoin 𝕜 s t :=
@@ -187,7 +179,5 @@ theorem convexJoin_segment_singleton (a b c : E) :
 theorem convexJoin_singleton_segment (a b c : E) :
     convexJoin 𝕜 {a} (segment 𝕜 b c) = convexHull 𝕜 {a, b, c} := by
   rw [← segment_same 𝕜, convexJoin_segments, insert_idem]
-
--- Porting note: moved 3 lemmas up to golf
 
 end LinearOrderedField

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Simon Hudon
 -/
 import Batteries.Data.List.Lemmas
-import Batteries.Tactic.Classical
 import Mathlib.Tactic.TypeStar
 
 /-!
@@ -33,7 +32,7 @@ theorem tfae_singleton (p) : TFAE [p] := by simp [TFAE, -eq_iff_iff]
 
 theorem tfae_cons_of_mem {a b} {l : List Prop} (h : b ∈ l) : TFAE (a :: l) ↔ (a ↔ b) ∧ TFAE l :=
   ⟨fun H => ⟨H a (by simp) b (Mem.tail a h),
-    fun p hp q hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
+    fun _ hp _ hq => H _ (Mem.tail a hp) _ (Mem.tail a hq)⟩,
       by
         rintro ⟨ab, H⟩ p (_ | ⟨_, hp⟩) q (_ | ⟨_, hq⟩)
         · rfl
@@ -61,9 +60,11 @@ theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a 
     have := IH ⟨bc, ch⟩ (ab ∘ h_last)
     exact ⟨⟨ab, h_last ∘ (this.2 c (.head _) _ (getLastD_mem_cons _ _)).1 ∘ bc⟩, this⟩
 
-theorem TFAE.out {l} (h : TFAE l) (n₁ n₂) {a b} (h₁ : List.get? l n₁ = some a := by rfl)
-    (h₂ : List.get? l n₂ = some b := by rfl) : a ↔ b :=
-  h _ (List.get?_mem h₁) _ (List.get?_mem h₂)
+theorem TFAE.out {l} (h : TFAE l) (n₁ n₂ : Nat) {a b}
+    (h₁ : l[n₁]? = some a := by rfl)
+    (h₂ : l[n₂]? = some b := by rfl) :
+    a ↔ b :=
+  h _ (List.mem_of_getElem? h₁) _ (List.mem_of_getElem? h₂)
 
 /-- If `P₁ x ↔ ... ↔ Pₙ x` for all `x`, then `(∀ x, P₁ x) ↔ ... ↔ (∀ x, Pₙ x)`.
 Note: in concrete cases, Lean has trouble finding the list `[P₁, ..., Pₙ]` from the list

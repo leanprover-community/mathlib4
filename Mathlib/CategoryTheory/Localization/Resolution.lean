@@ -19,7 +19,7 @@ A right resolution consists of an object `X₁ : C₁` and a morphism
 The type of right resolutions `Φ.RightResolution X₂` is endowed with a category
 structure when the morphism property `W₁` is multiplicative.
 
-Similiar definitions are done from left resolutions.
+Similar definitions are done from left resolutions.
 
 ## Future works
 

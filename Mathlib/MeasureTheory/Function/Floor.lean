@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
@@ -24,7 +24,7 @@ theorem Int.measurable_floor [OpensMeasurableSpace R] : Measurable (Int.floor : 
   measurable_to_countable fun x => by
     simpa only [Int.preimage_floor_singleton] using measurableSet_Ico
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.floor [OpensMeasurableSpace R] {f : α → R} (hf : Measurable f) :
     Measurable fun x => ⌊f x⌋ :=
   Int.measurable_floor.comp hf
@@ -33,7 +33,7 @@ theorem Int.measurable_ceil [OpensMeasurableSpace R] : Measurable (Int.ceil : R 
   measurable_to_countable fun x => by
     simpa only [Int.preimage_ceil_singleton] using measurableSet_Ioc
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.ceil [OpensMeasurableSpace R] {f : α → R} (hf : Measurable f) :
     Measurable fun x => ⌈f x⌉ :=
   Int.measurable_ceil.comp hf
@@ -43,7 +43,7 @@ theorem measurable_fract [BorelSpace R] : Measurable (Int.fract : R → R) := by
   rw [Int.preimage_fract]
   exact MeasurableSet.iUnion fun z => measurable_id.sub_const _ (hs.inter measurableSet_Ico)
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.fract [BorelSpace R] {f : α → R} (hf : Measurable f) :
     Measurable fun x => Int.fract (f x) :=
   measurable_fract.comp hf
@@ -64,7 +64,7 @@ theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
   measurable_to_countable fun n => by
     rcases eq_or_ne ⌊n⌋₊ 0 with h | h <;> simp [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.nat_floor (hf : Measurable f) : Measurable fun x => ⌊f x⌋₊ :=
   Nat.measurable_floor.comp hf
 
@@ -72,7 +72,7 @@ theorem Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
   measurable_to_countable fun n => by
     rcases eq_or_ne ⌈n⌉₊ 0 with h | h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.nat_ceil (hf : Measurable f) : Measurable fun x => ⌈f x⌉₊ :=
   Nat.measurable_ceil.comp hf
 

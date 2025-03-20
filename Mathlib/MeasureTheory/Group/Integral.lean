@@ -20,7 +20,7 @@ open Measure TopologicalSpace
 open scoped ENNReal
 
 variable {𝕜 M α G E F : Type*} [MeasurableSpace G]
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [NormedAddCommGroup F]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
 variable {μ : Measure G} {f : G → E} {g : G}
 
 section MeasurableInv
@@ -48,7 +48,7 @@ variable [Group G] [MeasurableMul G]
 left-invariant measure. -/
 @[to_additive
       "Translating a function by left-addition does not change its integral with respect to a
-      left-invariant measure."] -- Porting note: was `@[simp]`
+      left-invariant measure."]
 theorem integral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (g * x) ∂μ) = ∫ x, f x ∂μ := by
   have h_mul : MeasurableEmbedding fun x => g * x := (MeasurableEquiv.mulLeft g).measurableEmbedding
@@ -58,19 +58,17 @@ theorem integral_mul_left_eq_self [IsMulLeftInvariant μ] (f : G → E) (g : G) 
 right-invariant measure. -/
 @[to_additive
       "Translating a function by right-addition does not change its integral with respect to a
-      right-invariant measure."] -- Porting note: was `@[simp]`
+      right-invariant measure."]
 theorem integral_mul_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (x * g) ∂μ) = ∫ x, f x ∂μ := by
   have h_mul : MeasurableEmbedding fun x => x * g :=
     (MeasurableEquiv.mulRight g).measurableEmbedding
   rw [← h_mul.integral_map, map_mul_right_eq_self]
 
-@[to_additive] -- Porting note: was `@[simp]`
+@[to_additive]
 theorem integral_div_right_eq_self [IsMulRightInvariant μ] (f : G → E) (g : G) :
     (∫ x, f (x / g) ∂μ) = ∫ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv]
-  -- Porting note: was `simp_rw`
-  rw [integral_mul_right_eq_self f g⁻¹]
+  simp_rw [div_eq_mul_inv, integral_mul_right_eq_self f g⁻¹]
 
 /-- If some left-translate of a function negates it, then the integral of the function with respect
 to a left-invariant measure is 0. -/
@@ -113,19 +111,18 @@ theorem Integrable.comp_div_left {f : G → F} [IsInvInvariant μ] [IsMulLeftInv
     (hf : Integrable f μ) (g : G) : Integrable (fun t => f (g / t)) μ :=
   ((measurePreserving_div_left μ g).integrable_comp hf.aestronglyMeasurable).mpr hf
 
-@[to_additive] -- Porting note: was `@[simp]`
+@[to_additive]
 theorem integrable_comp_div_left (f : G → F) [IsInvInvariant μ] [IsMulLeftInvariant μ] (g : G) :
     Integrable (fun t => f (g / t)) μ ↔ Integrable f μ := by
   refine ⟨fun h => ?_, fun h => h.comp_div_left g⟩
   convert h.comp_inv.comp_mul_left g⁻¹
   simp_rw [div_inv_eq_mul, mul_inv_cancel_left]
 
-@[to_additive] -- Porting note: was `@[simp]`
+@[to_additive]
 theorem integral_div_left_eq_self (f : G → E) (μ : Measure G) [IsInvInvariant μ]
     [IsMulLeftInvariant μ] (x' : G) : (∫ x, f (x' / x) ∂μ) = ∫ x, f x ∂μ := by
-  simp_rw [div_eq_mul_inv]
-  -- Porting note: was `simp_rw`
-  rw [integral_inv_eq_self (fun x => f (x' * x)) μ, integral_mul_left_eq_self f x']
+  simp_rw [div_eq_mul_inv, integral_inv_eq_self (fun x => f (x' * x)) μ,
+    integral_mul_left_eq_self f x']
 
 end MeasurableMul
 
@@ -133,7 +130,7 @@ section SMul
 
 variable [Group G] [MeasurableSpace α] [MulAction G α] [MeasurableSMul G α]
 
-@[to_additive] -- Porting note: was `@[simp]`
+@[to_additive]
 theorem integral_smul_eq_self {μ : Measure α} [SMulInvariantMeasure G α μ] (f : α → E) {g : G} :
     (∫ x, f (g • x) ∂μ) = ∫ x, f x ∂μ := by
   have h : MeasurableEmbedding fun x : α => g • x := (MeasurableEquiv.smul g).measurableEmbedding

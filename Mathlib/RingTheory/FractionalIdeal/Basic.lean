@@ -84,7 +84,7 @@ namespace FractionalIdeal
 open Set Submodule
 
 variable {R : Type*} [CommRing R] {S : Submonoid R} {P : Type*} [CommRing P]
-variable [Algebra R P] [loc : IsLocalization S P]
+variable [Algebra R P]
 
 /-- Map a fractional ideal `I` to a submodule by forgetting that `∃ a, a I ⊆ R`.
 
@@ -132,7 +132,7 @@ noncomputable def equivNum [Nontrivial P] [NoZeroSMulDivisors R P]
     (LinearEquiv.ofBijective ((DistribMulAction.toLinearMap R P I.den).restrict fun _ hx ↦ ?_)
       ⟨fun _ _ hxy ↦ ?_, fun ⟨y, hy⟩ ↦ ?_⟩)
     (Submodule.equivMapOfInjective (Algebra.linearMap R P)
-      (NoZeroSMulDivisors.algebraMap_injective R P) (num I)).symm
+      (FaithfulSMul.algebraMap_injective R P) (num I)).symm
   · rw [← den_mul_self_eq_num]
     exact Submodule.smul_mem_pointwise_smul _ _ _ hx
   · simp_rw [LinearMap.restrict_apply, DistribMulAction.toLinearMap_apply, Subtype.mk.injEq] at hxy
@@ -215,7 +215,7 @@ theorem isFractional_of_le_one (I : Submodule R P) (h : I ≤ 1) : IsFractional 
   use 1, S.one_mem
   intro b hb
   rw [one_smul]
-  obtain ⟨b', b'_mem, rfl⟩ := h hb
+  obtain ⟨b', b'_mem, rfl⟩ := mem_one.mp (h hb)
   exact Set.mem_range_self b'
 
 theorem isFractional_of_le {I : Submodule R P} {J : FractionalIdeal S P} (hIJ : I ≤ J) :
@@ -289,14 +289,14 @@ theorem coe_zero : ↑(0 : FractionalIdeal S P) = (⊥ : Submodule R P) :=
 theorem coeIdeal_bot : ((⊥ : Ideal R) : FractionalIdeal S P) = 0 :=
   rfl
 
-variable (P)
+section
+variable [loc : IsLocalization S P]
 
+variable (P) in
 @[simp]
 theorem exists_mem_algebraMap_eq {x : R} {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (∃ x', x' ∈ I ∧ algebraMap R P x' = algebraMap R P x) ↔ x ∈ I :=
   ⟨fun ⟨_, hx', Eq⟩ => IsLocalization.injective _ h Eq ▸ hx', fun h => ⟨x, h, rfl⟩⟩
-
-variable {P}
 
 theorem coeIdeal_injective' (h : S ≤ nonZeroDivisors R) :
     Function.Injective (fun (I : Ideal R) ↦ (I : FractionalIdeal S P)) := fun _ _ h' =>
@@ -315,6 +315,8 @@ theorem coeIdeal_eq_zero' {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
 theorem coeIdeal_ne_zero' {I : Ideal R} (h : S ≤ nonZeroDivisors R) :
     (I : FractionalIdeal S P) ≠ 0 ↔ I ≠ (⊥ : Ideal R) :=
   not_iff_not.mpr <| coeIdeal_eq_zero' h
+
+end
 
 theorem coeToSubmodule_eq_bot {I : FractionalIdeal S P} : (I : Submodule R P) = ⊥ ↔ I = 0 :=
   ⟨fun h => coeToSubmodule_injective (by simp [h]), fun h => by simp [h]⟩
@@ -425,14 +427,14 @@ theorem _root_.IsFractional.inf_right {I : Submodule R P} :
       rcases mem_inf.mp hb with ⟨hbI, _⟩
       exact hI b hbI⟩
 
-instance : Inf (FractionalIdeal S P) :=
+instance : Min (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊓ J, I.isFractional.inf_right J⟩⟩
 
 @[simp, norm_cast]
 theorem coe_inf (I J : FractionalIdeal S P) : ↑(I ⊓ J) = (I ⊓ J : Submodule R P) :=
   rfl
 
-instance : Sup (FractionalIdeal S P) :=
+instance : Max (FractionalIdeal S P) :=
   ⟨fun I J => ⟨I ⊔ J, I.isFractional.sup J.isFractional⟩⟩
 
 @[norm_cast]
@@ -459,6 +461,10 @@ theorem sup_eq_add (I J : FractionalIdeal S P) : I ⊔ J = I + J :=
 @[simp, norm_cast]
 theorem coe_add (I J : FractionalIdeal S P) : (↑(I + J) : Submodule R P) = I + J :=
   rfl
+
+theorem mem_add (I J : FractionalIdeal S P) (x : P) :
+    x ∈ I + J ↔ ∃ i ∈ I, ∃ j ∈ J, i + j = x := by
+  rw [← mem_coe, coe_add, Submodule.add_eq_sup]; exact Submodule.mem_sup
 
 @[simp, norm_cast]
 theorem coeIdeal_sup (I J : Ideal R) : ↑(I ⊔ J) = (I + J : FractionalIdeal S P) :=
@@ -520,7 +526,7 @@ theorem mul_eq_mul (I J : FractionalIdeal S P) : mul I J = I * J :=
   rfl
 
 theorem mul_def (I J : FractionalIdeal S P) :
-    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul]
+    I * J = ⟨I * J, I.isFractional.mul J.isFractional⟩ := by simp only [← mul_eq_mul, mul_def']
 
 @[simp, norm_cast]
 theorem coe_mul (I J : FractionalIdeal S P) : (↑(I * J) : Submodule R P) = I * J := by
@@ -570,9 +576,6 @@ instance : NatCast (FractionalIdeal S P) :=
 theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
   show ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
-
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul

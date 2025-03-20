@@ -5,7 +5,8 @@ Authors: Mario Carneiro
 -/
 
 import Mathlib.Algebra.Module.LinearMap.End
-import Mathlib.Algebra.Module.Submodule.Basic
+import Mathlib.Algebra.Module.Submodule.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 
@@ -46,9 +47,21 @@ protected def subtype : S' →ₗ[R] M where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+variable {S'} in
 @[simp]
-protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
+lemma subtype_apply (x : S') :
+    SMulMemClass.subtype S' x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (SMulMemClass.subtype S') :=
+  Subtype.coe_injective
+
+@[simp]
+protected theorem coe_subtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2025-02-18")]
+protected alias coeSubtype := SMulMemClass.coe_subtype
 
 end SMulMemClass
 
@@ -71,18 +84,25 @@ protected def subtype : p →ₗ[R] M where
   map_add' := by simp [coe_smul]
   map_smul' := by simp [coe_smul]
 
+variable {p} in
+@[simp]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
 
+lemma subtype_injective :
+    Function.Injective p.subtype :=
+  Subtype.coe_injective
+
 @[simp]
-theorem coeSubtype : (Submodule.subtype p : p → M) = Subtype.val :=
+theorem coe_subtype : (Submodule.subtype p : p → M) = Subtype.val :=
   rfl
+
+@[deprecated (since := "2024-09-27")] alias coeSubtype := coe_subtype
 
 theorem injective_subtype : Injective p.subtype :=
   Subtype.coe_injective
 
 /-- Note the `AddSubmonoid` version of this lemma is called `AddSubmonoid.coe_finset_sum`. -/
--- Porting note: removing the `@[simp]` attribute since it's literally `AddSubmonoid.coe_finset_sum`
 theorem coe_sum (x : ι → p) (s : Finset ι) : ↑(∑ i ∈ s, x i) = ∑ i ∈ s, (x i : M) :=
   map_sum p.subtype _ _
 
@@ -181,6 +201,13 @@ lemma restrict_comp
     (g ∘ₗ f).restrict hfg = (g.restrict hg) ∘ₗ (f.restrict hf) :=
   rfl
 
+-- TODO Consider defining `Algebra R (p.compatibleMaps p)`, `AlgHom` version of `LinearMap.restrict`
+lemma restrict_smul_one
+    {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M] {p : Submodule R M}
+    (μ : R) (h : ∀ x ∈ p, (μ • (1 : Module.End R M)) x ∈ p := fun _ ↦ p.smul_mem μ) :
+    (μ • 1 : Module.End R M).restrict h = μ • (1 : Module.End R p) :=
+  rfl
+
 lemma restrict_commute {f g : M →ₗ[R] M} (h : Commute f g) {p : Submodule R M}
     (hf : MapsTo f p p) (hg : MapsTo g p p) :
     Commute (f.restrict hf) (g.restrict hg) := by
@@ -229,9 +256,10 @@ variable {f' : M →ₗ[R] M}
 
 theorem pow_apply_mem_of_forall_mem {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p) (x : M)
     (hx : x ∈ p) : (f' ^ n) x ∈ p := by
-  induction' n with n ih generalizing x
-  · simpa
-  · simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
+  induction n generalizing x with
+  | zero => simpa
+  | succ n ih =>
+    simpa only [iterate_succ, coe_comp, Function.comp_apply, restrict_apply] using ih _ (h _ hx)
 
 theorem pow_restrict {p : Submodule R M} (n : ℕ) (h : ∀ x ∈ p, f' x ∈ p)
     (h' := pow_apply_mem_of_forall_mem n h) :

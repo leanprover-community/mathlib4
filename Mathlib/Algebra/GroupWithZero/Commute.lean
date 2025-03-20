@@ -14,7 +14,7 @@ import Mathlib.Tactic.Nontriviality
 
 assert_not_exists DenselyOrdered
 
-variable {α M₀ G₀ M₀' G₀' F F' : Type*}
+variable {M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
 
 namespace Ring
@@ -37,6 +37,10 @@ lemma inverse_pow (r : M₀) : ∀ n : ℕ, Ring.inverse r ^ n = Ring.inverse (r
   | n + 1 => by
     rw [pow_succ', pow_succ, Ring.mul_inverse_rev' ((Commute.refl r).pow_left n),
       Ring.inverse_pow r n]
+
+lemma inverse_pow_mul_eq_iff_eq_mul {a : M₀} (b c : M₀) (ha : IsUnit a) {k : ℕ} :
+    Ring.inverse a ^ k * b = c ↔ b = a ^ k * c := by
+  rw [Ring.inverse_pow, Ring.inverse_mul_eq_iff_eq_mul _ _ _ (IsUnit.pow _ ha)]
 
 end Ring
 
@@ -83,7 +87,7 @@ theorem div_left (hac : Commute a c) (hbc : Commute b c) : Commute (a / b) c := 
 end Commute
 
 section GroupWithZero
-variable {G₀ : Type*} [GroupWithZero G₀] {a : G₀} {m n : ℕ}
+variable [GroupWithZero G₀]
 
 theorem pow_inv_comm₀ (a : G₀) (m n : ℕ) : a⁻¹ ^ m * a ^ n = a ^ n * a⁻¹ ^ m :=
   (Commute.refl a).inv_left₀.pow_pow m n

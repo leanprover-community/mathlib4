@@ -1,11 +1,13 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.CharP.Invertible
-import Mathlib.Algebra.Star.Order
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.Data.Real.Sqrt
+import Mathlib.Data.Real.Star
 import Mathlib.Tactic.Polyrith
 
 /-!
@@ -81,7 +83,6 @@ the `Aᵢ` commute with the `Bⱼ`.
 The physical interpretation is that `A₀` and `A₁` are a pair of boolean observables which
 are spacelike separated from another pair `B₀` and `B₁` of boolean observables.
 -/
---@[nolint has_nonempty_instance] Porting note(#5171): linter not ported yet
 structure IsCHSHTuple {R} [Monoid R] [StarMul R] (A₀ A₁ B₀ B₁ : R) : Prop where
   A₀_inv : A₀ ^ 2 = 1
   A₁_inv : A₁ ^ 2 = 1
@@ -120,7 +121,7 @@ theorem CHSH_inequality_of_comm [OrderedCommRing R] [StarRing R] [StarOrderedRin
   have i₁ : 0 ≤ P := by
     have idem : P * P = 4 * P := CHSH_id T.A₀_inv T.A₁_inv T.B₀_inv T.B₁_inv
     have idem' : P = (1 / 4 : ℝ) • (P * P) := by
-      have h : 4 * P = (4 : ℝ) • P := by simp [Algebra.smul_def]
+      have h : 4 * P = (4 : ℝ) • P := by simp [map_ofNat, Algebra.smul_def]
       rw [idem, h, ← mul_smul]
       norm_num
     have sa : star P = P := by
@@ -150,7 +151,7 @@ we prepare some easy lemmas about √2.
 -- defeated me. Thanks for the rescue from Shing Tak Lam!
 theorem tsirelson_inequality_aux : √2 * √2 ^ 3 = √2 * (2 * (√2)⁻¹ + 4 * ((√2)⁻¹ * 2⁻¹)) := by
   ring_nf
-  rw [mul_inv_cancel (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
+  rw [mul_inv_cancel₀ (ne_of_gt (Real.sqrt_pos.2 (show (2 : ℝ) > 0 by norm_num)))]
   convert congr_arg (· ^ 2) (@Real.sq_sqrt 2 (by norm_num)) using 1 <;>
     (try simp only [← pow_mul]) <;> norm_num
 

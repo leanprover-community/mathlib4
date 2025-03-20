@@ -3,9 +3,12 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.GroupTheory.GroupAction.Quotient
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.Multilinear.TensorProduct
-import Mathlib.GroupTheory.GroupAction.Quotient
+
 /-!
 # Exterior product of alternating maps
 
@@ -24,7 +27,7 @@ variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [CommSemiring R'] [AddCommGroup N
 
 namespace Equiv.Perm
 
-/-- Elements which are considered equivalent if they differ only by swaps within α or β  -/
+/-- Elements which are considered equivalent if they differ only by swaps within α or β -/
 abbrev ModSumCongr (α β : Type*) :=
   _ ⧸ (Equiv.Perm.sumCongrHom α β).range
 
@@ -56,7 +59,7 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
       TensorProduct.smul_tmul']
     simp only [Sum.map_inr, Perm.sumCongrHom_apply, Perm.sumCongr_apply, Sum.map_inl,
       Function.comp_apply, Perm.coe_mul]
-    -- Porting note (#10691): was `rw`.
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`.
     erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
 
 theorem domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
@@ -79,7 +82,7 @@ theorem domCoprod.summand_add_swap_smul_eq_zero (a : Mᵢ [⋀^ιa]→ₗ[R'] N�
   simp only [one_mul, neg_mul, Function.comp_apply, Units.neg_smul, Perm.coe_mul, Units.val_neg,
     MultilinearMap.smul_apply, MultilinearMap.neg_apply, MultilinearMap.domDomCongr_apply,
     MultilinearMap.domCoprod_apply]
-  convert add_right_neg (G := N₁ ⊗[R'] N₂) _ using 6 <;>
+  convert add_neg_cancel (G := N₁ ⊗[R'] N₂) _ using 6 <;>
     · ext k
       rw [Equiv.apply_swap_eq_self hv]
 
@@ -93,7 +96,7 @@ theorem domCoprod.summand_eq_zero_of_smul_invariant (a : Mᵢ [⋀^ιa]→ₗ[R'
   dsimp only [Quotient.liftOn'_mk'', Quotient.map'_mk'', MultilinearMap.smul_apply,
     MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply, domCoprod.summand]
   intro hσ
-  cases' hi : σ⁻¹ i with val val <;> cases' hj : σ⁻¹ j with val_1 val_1 <;>
+  rcases hi : σ⁻¹ i with val | val <;> rcases hj : σ⁻¹ j with val_1 | val_1 <;>
     rw [Perm.inv_eq_iff_eq] at hi hj <;> substs hi hj <;> revert val val_1
   -- Porting note: `on_goal` is not available in `case _ | _ =>`, so the proof gets tedious.
   -- the term pairs with and cancels another term
@@ -224,16 +227,16 @@ theorem MultilinearMap.domCoprod_alternization [DecidableEq ιa] [DecidableEq ι
   refine Quotient.inductionOn' σ fun σ => ?_
   -- unfold the quotient mess left by `Finset.sum_partition`
   -- Porting note: Was `conv in .. => ..`.
-  erw
-    [@Finset.filter_congr _ _ (fun a => @Quotient.decidableEq _ _
+  rw
+    [@Finset.filter_congr _ _ _ (fun a => @Quotient.decidableEq _ _
       (QuotientGroup.leftRelDecidable (MonoidHom.range (Perm.sumCongrHom ιa ιb)))
       (Quotient.mk (QuotientGroup.leftRel (MonoidHom.range (Perm.sumCongrHom ιa ιb))) a)
       (Quotient.mk'' σ)) _ (s := Finset.univ)
     fun x _ => QuotientGroup.eq (s := MonoidHom.range (Perm.sumCongrHom ιa ιb)) (a := x) (b := σ)]
   -- eliminate a multiplication
   rw [← Finset.map_univ_equiv (Equiv.mulLeft σ), Finset.filter_map, Finset.sum_map]
-  simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, (· ∘ ·), mul_inv_rev, inv_mul_cancel_right,
-    Subgroup.inv_mem_iff, MonoidHom.mem_range, Finset.univ_filter_exists,
+  simp_rw [Equiv.coe_toEmbedding, Equiv.coe_mulLeft, Function.comp_def, mul_inv_rev,
+    inv_mul_cancel_right, Subgroup.inv_mem_iff, MonoidHom.mem_range, Finset.univ_filter_exists,
     Finset.sum_image Perm.sumCongrHom_injective.injOn]
   -- now we're ready to clean up the RHS, pulling out the summation
   rw [domCoprod.summand_mk'', MultilinearMap.domCoprod_alternization_coe, ← Finset.sum_product',

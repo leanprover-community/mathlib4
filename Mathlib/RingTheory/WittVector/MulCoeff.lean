@@ -118,11 +118,10 @@ theorem mul_polyOfInterest_aux1 (n : ℕ) :
     congr 1
     have hsupp : (Finsupp.single i (p ^ (n - i))).support = {i} := by
       rw [Finsupp.support_eq_singleton]
-      simp only [and_true_iff, Finsupp.single_eq_same, eq_self_iff_true, Ne]
+      simp only [and_true, Finsupp.single_eq_same, eq_self_iff_true, Ne]
       exact pow_ne_zero _ hp.out.ne_zero
     simp only [bind₁_monomial, hsupp, Int.cast_natCast, prod_singleton, eq_intCast,
-      Finsupp.single_eq_same, C_pow, mul_eq_mul_left_iff, true_or_iff, eq_self_iff_true,
-      Int.cast_pow]
+      Finsupp.single_eq_same, C_pow, mul_eq_mul_left_iff, eq_self_iff_true, Int.cast_pow]
   · simp only [map_mul, bind₁_X_right]
 
 theorem mul_polyOfInterest_aux2 (n : ℕ) :
@@ -131,7 +130,8 @@ theorem mul_polyOfInterest_aux2 (n : ℕ) :
   rw [sum_range_succ, add_comm, Nat.sub_self, pow_zero, pow_one]
   rfl
 
-theorem mul_polyOfInterest_aux3 (n : ℕ) : wittPolyProd p (n + 1) =
+-- We redeclare `p` here to locally discard the unneeded `p.Prime` hypothesis.
+theorem mul_polyOfInterest_aux3 (p n : ℕ) : wittPolyProd p (n + 1) =
     -((p : 𝕄) ^ (n + 1) * X (0, n + 1)) * ((p : 𝕄) ^ (n + 1) * X (1, n + 1)) +
     (p : 𝕄) ^ (n + 1) * X (0, n + 1) * rename (Prod.mk (1 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
     (p : 𝕄) ^ (n + 1) * X (1, n + 1) * rename (Prod.mk (0 : Fin 2)) (wittPolynomial p ℤ (n + 1)) +
@@ -221,10 +221,10 @@ theorem peval_polyOfInterest' (n : ℕ) (x y : 𝕎 k) :
   rw [peval_polyOfInterest]
   have : (p : k) = 0 := CharP.cast_eq_zero k p
   simp only [this, Nat.cast_pow, ne_eq, add_eq_zero, and_false, zero_pow, zero_mul, add_zero,
-    not_false_eq_true]
+    not_false_eq_true, reduceCtorEq]
   have sum_zero_pow_mul_pow_p (y : 𝕎 k) : ∑ x ∈ range (n + 1 + 1),
       (0 : k) ^ x * y.coeff x ^ p ^ (n + 1 - x) = y.coeff 0 ^ p ^ (n + 1) := by
-    rw [Finset.sum_eq_single_of_mem 0] <;> simp (config := { contextual := true })
+    rw [Finset.sum_eq_single_of_mem 0] <;> simp +contextual
   congr <;> apply sum_zero_pow_mul_pow_p
 
 variable (k)
@@ -242,18 +242,23 @@ theorem nth_mul_coeff' (n : ℕ) :
     apply f₀
     rintro ⟨a, ha⟩
     apply Function.uncurry ![x, y]
-    simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
-      Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
+    simp_rw [product_val, this, range_val, Multiset.range_succ] at ha
+    let S : Set (Fin 2 × ℕ) := (fun a => a.2 = n ∨ a.2 < n)
+    have ha' : a ∈ S := by
+      convert ha
+      dsimp [S]
+      congr!
+      simp
     refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
-    cases' ha with ha ha <;> omega
+    obtain ⟨ha, ha⟩ := ha' <;> omega
   use f
   intro x y
   dsimp [f, peval]
   rw [← hf₀]
   congr
   ext a
-  cases' a with a ha
-  cases' a with i m
+  obtain ⟨a, ha⟩ := a
+  obtain ⟨i, m⟩ := a
   fin_cases i <;> rfl -- surely this case split is not necessary
 
 theorem nth_mul_coeff (n : ℕ) :

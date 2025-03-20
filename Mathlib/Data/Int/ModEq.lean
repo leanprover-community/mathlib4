@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Nat.ModEq
-import Mathlib.Tactic.Abel
-import Mathlib.Tactic.GCongr.Core
 
 /-!
 
@@ -33,7 +31,6 @@ notation:50 a " ≡ " b " [ZMOD " n "]" => ModEq n a b
 
 variable {m n a b c d : ℤ}
 
--- Porting note: This instance should be derivable automatically
 instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
@@ -92,8 +89,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
--- Porting note: Restore old proof once #3309 is through
-  simp [-sub_neg_eq_add, neg_sub_neg, modEq_iff_dvd, dvd_sub_comm]
+  simp only [modEq_iff_dvd, (by omega : -b - -a = -(b - a)), Int.dvd_neg]
 
 @[simp]
 theorem modEq_neg : a ≡ b [ZMOD -n] ↔ a ≡ b [ZMOD n] := by simp [modEq_iff_dvd]
@@ -105,9 +101,9 @@ protected theorem of_dvd (d : m ∣ n) (h : a ≡ b [ZMOD n]) : a ≡ b [ZMOD m]
 
 protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n] := by
   obtain hc | rfl | hc := lt_trichotomy c 0
-  · rw [← neg_modEq_neg, ← modEq_neg, ← neg_mul, ← neg_mul, ← neg_mul]
+  · rw [← neg_modEq_neg, ← modEq_neg, ← Int.neg_mul, ← Int.neg_mul, ← Int.neg_mul]
     simp only [ModEq, mul_emod_mul_of_pos _ _ (neg_pos.2 hc), h.eq]
-  · simp only [zero_mul, ModEq.rfl]
+  · simp only [Int.zero_mul, ModEq.rfl]
   · simp only [ModEq, mul_emod_mul_of_pos _ _ hc, h.eq]
 
 protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * c] := by
@@ -115,7 +111,7 @@ protected theorem mul_right' (h : a ≡ b [ZMOD n]) : a * c ≡ b * c [ZMOD n * 
 
 @[gcongr]
 protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + c ≡ b + d [ZMOD n] :=
-  modEq_iff_dvd.2 <| by convert dvd_add h₁.dvd h₂.dvd using 1; abel
+  modEq_iff_dvd.2 <| by convert Int.dvd_add h₁.dvd h₂.dvd using 1; omega
 
 @[gcongr] protected theorem add_left (c : ℤ) (h : a ≡ b [ZMOD n]) : c + a ≡ c + b [ZMOD n] :=
   ModEq.rfl.add h
@@ -125,10 +121,10 @@ protected theorem add (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a + 
 
 protected theorem add_left_cancel (h₁ : a ≡ b [ZMOD n]) (h₂ : a + c ≡ b + d [ZMOD n]) :
     c ≡ d [ZMOD n] :=
-  have : d - c = b + d - (a + c) - (b - a) := by abel
+  have : d - c = b + d - (a + c) - (b - a) := by omega
   modEq_iff_dvd.2 <| by
     rw [this]
-    exact dvd_sub h₂.dvd h₁.dvd
+    exact Int.dvd_sub h₂.dvd h₁.dvd
 
 protected theorem add_left_cancel' (c : ℤ) (h : c + a ≡ c + b [ZMOD n]) : a ≡ b [ZMOD n] :=
   ModEq.rfl.add_left_cancel h
@@ -181,9 +177,8 @@ theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
   letI d := gcd m c
   rw [modEq_iff_dvd] at h ⊢
-  -- Porting note: removed `show` due to leanprover-community/mathlib4#3305
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, sub_mul]
+  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, Int.sub_mul]
     exact Int.ediv_dvd_ediv gcd_dvd_left h
   · rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat,
       Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
@@ -233,7 +228,7 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     _ ≡ b [ZMOD n] := by rw [add_zero]
 
 theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
-  convert Int.modEq_add_fac (-c) ha using 1; rw [mul_neg, sub_eq_add_neg]
+  convert Int.modEq_add_fac (-c) ha using 1; rw [Int.mul_neg, sub_eq_add_neg]
 
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
   modEq_add_fac _ ModEq.rfl
@@ -247,24 +242,26 @@ theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡
       _ ≡ 1 [ZMOD ↑b] := by rw [← Nat.gcd_eq_gcd_ab, hgcd]; rfl
       ⟩
 
-theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
+theorem existsUnique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
     ∃ z : ℤ, 0 ≤ z ∧ z < b ∧ z ≡ a [ZMOD b] :=
   ⟨a % b, emod_nonneg _ (ne_of_gt hb),
     by
-      have : a % b < |b| := emod_lt _ (ne_of_gt hb)
+      have : a % b < |b| := emod_lt_abs _ (ne_of_gt hb)
       rwa [abs_of_pos hb] at this, by simp [ModEq]⟩
 
-theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
-  let ⟨z, hz1, hz2, hz3⟩ := exists_unique_equiv a hb
+@[deprecated (since := "2024-12-17")] alias exists_unique_equiv := existsUnique_equiv
+
+theorem existsUnique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
+  let ⟨z, hz1, hz2, hz3⟩ := existsUnique_equiv a hb
   ⟨z.natAbs, by
     constructor <;> rw [natAbs_of_nonneg hz1] <;> assumption⟩
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_equiv_nat := existsUnique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
   (mod_modEq _ _).of_mul_right _
 
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
-
-@[deprecated (since := "2024-04-02")] alias coe_nat_modEq_iff := natCast_modEq_iff
 
 end Int

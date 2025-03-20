@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Data.Real.Star
 import Mathlib.Topology.Algebra.Module.Star
 
 /-!
@@ -76,8 +77,6 @@ for every `x`. Note that this condition actually implies equality, as is shown i
 `norm_star_mul_self` below. -/
 class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
-
-@[deprecated (since := "2024-08-04")] alias CstarRing := CStarRing
 
 instance : CStarRing ℝ where
   norm_mul_self_le x := by
@@ -172,12 +171,18 @@ instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
 
 end ProdPi
 
+namespace MulOpposite
+
+instance {E : Type*} [NonUnitalNormedRing E] [StarRing E] [CStarRing E] : CStarRing Eᵐᵒᵖ where
+  norm_mul_self_le x := CStarRing.norm_self_mul_star (x := MulOpposite.unop x) |>.symm.le
+
+end MulOpposite
+
 section Unital
 
 
 variable [NormedRing E] [StarRing E] [CStarRing E]
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
 theorem norm_one [Nontrivial E] : ‖(1 : E)‖ = 1 := by
   have : 0 < ‖(1 : E)‖ := norm_pos_iff.mpr one_ne_zero
   rw [← mul_left_inj' this.ne', ← norm_star_mul_self, mul_one, star_one, one_mul]
@@ -187,7 +192,7 @@ instance (priority := 100) [Nontrivial E] : NormOneClass E :=
   ⟨norm_one⟩
 
 theorem norm_coe_unitary [Nontrivial E] (U : unitary E) : ‖(U : E)‖ = 1 := by
-  rw [← sq_eq_sq (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CStarRing.norm_star_mul_self,
+  rw [← sq_eq_sq₀ (norm_nonneg _) zero_le_one, one_pow 2, sq, ← CStarRing.norm_star_mul_self,
     unitary.coe_star_mul_self, CStarRing.norm_one]
 
 @[simp]
@@ -233,7 +238,7 @@ end CStarRing
 theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CStarRing E] {x : E}
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
-  · simp only [pow_zero, pow_one, Nat.zero_eq]
+  · simp only [pow_zero, pow_one]
   · rw [pow_succ', pow_mul', sq]
     nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
     rw [← star_pow, CStarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
@@ -247,15 +252,13 @@ section starₗᵢ
 variable [CommSemiring 𝕜] [StarRing 𝕜]
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
-variable (𝕜)
 
+variable (𝕜) in
 /-- `star` bundled as a linear isometric equivalence -/
 def starₗᵢ : E ≃ₗᵢ⋆[𝕜] E :=
   { starAddEquiv with
     map_smul' := star_smul
     norm_map' := norm_star }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_starₗᵢ : (starₗᵢ 𝕜 : E → E) = star :=

@@ -39,21 +39,25 @@ the source of some `e : PartialHomeomorph X Y` with `f = e`. -/
 def IsLocalHomeomorphOn :=
   ∀ x ∈ s, ∃ e : PartialHomeomorph X Y, x ∈ e.source ∧ f = e
 
-theorem isLocalHomeomorphOn_iff_openEmbedding_restrict {f : X → Y} :
-    IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
+theorem isLocalHomeomorphOn_iff_isOpenEmbedding_restrict {f : X → Y} :
+    IsLocalHomeomorphOn f s ↔ ∀ x ∈ s, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
   refine ⟨fun h x hx ↦ ?_, fun h x hx ↦ ?_⟩
   · obtain ⟨e, hxe, rfl⟩ := h x hx
-    exact ⟨e.source, e.open_source.mem_nhds hxe, e.openEmbedding_restrict⟩
+    exact ⟨e.source, e.open_source.mem_nhds hxe, e.isOpenEmbedding_restrict⟩
   · obtain ⟨U, hU, emb⟩ := h x hx
-    have : OpenEmbedding ((interior U).restrict f) := by
-      refine emb.comp ⟨embedding_inclusion interior_subset, ?_⟩
+    have : IsOpenEmbedding ((interior U).restrict f) := by
+      refine emb.comp ⟨.inclusion interior_subset, ?_⟩
       rw [Set.range_inclusion]; exact isOpen_induced isOpen_interior
-    obtain ⟨cont, inj, openMap⟩ := openEmbedding_iff_continuous_injective_open.mp this
+    obtain ⟨cont, inj, openMap⟩ := isOpenEmbedding_iff_continuous_injective_isOpenMap.mp this
     haveI : Nonempty X := ⟨x⟩
     exact ⟨PartialHomeomorph.ofContinuousOpenRestrict
       (Set.injOn_iff_injective.mpr inj).toPartialEquiv
       (continuousOn_iff_continuous_restrict.mpr cont) openMap isOpen_interior,
       mem_interior_iff_mem_nhds.mpr hU, rfl⟩
+
+@[deprecated (since := "2024-10-18")]
+alias isLocalHomeomorphOn_iff_openEmbedding_restrict :=
+  isLocalHomeomorphOn_iff_isOpenEmbedding_restrict
 
 namespace IsLocalHomeomorphOn
 
@@ -113,7 +117,7 @@ protected theorem continuousAt (hf : IsLocalHomeomorphOn f s) {x : X} (hx : x �
   (hf.map_nhds_eq hx).le
 
 protected theorem continuousOn (hf : IsLocalHomeomorphOn f s) : ContinuousOn f s :=
-  ContinuousAt.continuousOn fun _x ↦ hf.continuousAt
+  continuousOn_of_forall_continuousAt fun _x ↦ hf.continuousAt
 
 protected theorem comp (hg : IsLocalHomeomorphOn g t) (hf : IsLocalHomeomorphOn f s)
     (h : Set.MapsTo f s t) : IsLocalHomeomorphOn (g ∘ f) s := by
@@ -141,14 +145,20 @@ theorem isLocalHomeomorph_iff_isLocalHomeomorphOn_univ :
 protected theorem IsLocalHomeomorph.isLocalHomeomorphOn (hf : IsLocalHomeomorph f) :
     IsLocalHomeomorphOn f s := fun x _ ↦ hf x
 
-theorem isLocalHomeomorph_iff_openEmbedding_restrict {f : X → Y} :
-    IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, OpenEmbedding (U.restrict f) := by
+theorem isLocalHomeomorph_iff_isOpenEmbedding_restrict {f : X → Y} :
+    IsLocalHomeomorph f ↔ ∀ x : X, ∃ U ∈ 𝓝 x, IsOpenEmbedding (U.restrict f) := by
   simp_rw [isLocalHomeomorph_iff_isLocalHomeomorphOn_univ,
-    isLocalHomeomorphOn_iff_openEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
+    isLocalHomeomorphOn_iff_isOpenEmbedding_restrict, imp_iff_right (Set.mem_univ _)]
 
-theorem OpenEmbedding.isLocalHomeomorph (hf : OpenEmbedding f) : IsLocalHomeomorph f :=
-  isLocalHomeomorph_iff_openEmbedding_restrict.mpr fun _ ↦
-    ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).openEmbedding⟩
+@[deprecated (since := "2024-10-18")]
+alias isLocalHomeomorph_iff_openEmbedding_restrict := isLocalHomeomorph_iff_isOpenEmbedding_restrict
+
+theorem Topology.IsOpenEmbedding.isLocalHomeomorph (hf : IsOpenEmbedding f) : IsLocalHomeomorph f :=
+  isLocalHomeomorph_iff_isOpenEmbedding_restrict.mpr fun _ ↦
+    ⟨_, Filter.univ_mem, hf.comp (Homeomorph.Set.univ X).isOpenEmbedding⟩
+
+@[deprecated (since := "2024-10-18")]
+alias OpenEmbedding.isLocalHomeomorph := IsOpenEmbedding.isLocalHomeomorph
 
 variable (f)
 
@@ -194,15 +204,21 @@ protected theorem comp (hg : IsLocalHomeomorph g) (hf : IsLocalHomeomorph f) :
     (hg.isLocalHomeomorphOn.comp hf.isLocalHomeomorphOn (Set.univ.mapsTo_univ f))
 
 /-- An injective local homeomorphism is an open embedding. -/
-theorem openEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
-    OpenEmbedding f :=
-  openEmbedding_of_continuous_injective_open hf.continuous hi hf.isOpenMap
+theorem isOpenEmbedding_of_injective (hf : IsLocalHomeomorph f) (hi : f.Injective) :
+    IsOpenEmbedding f :=
+  .of_continuous_injective_isOpenMap hf.continuous hi hf.isOpenMap
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_of_injective := isOpenEmbedding_of_injective
 
 /-- A surjective embedding is a homeomorphism. -/
-noncomputable def _root_.Embedding.toHomeomeomorph_of_surjective (hf : Embedding f)
+noncomputable def _root_.Topology.IsEmbedding.toHomeomorph_of_surjective (hf : IsEmbedding f)
     (hsurj : Function.Surjective f) : X ≃ₜ Y :=
-  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.inj, hsurj⟩)
-    hf.continuous (hf.toOpenEmbedding_of_surjective hsurj).isOpenMap
+  Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f ⟨hf.injective, hsurj⟩)
+    hf.continuous (hf.isOpenEmbedding_of_surjective hsurj).isOpenMap
+
+@[deprecated (since := "2024-10-26")]
+alias _root_.Embedding.toHomeomeomorph_of_surjective := IsEmbedding.toHomeomorph_of_surjective
 
 /-- A bijective local homeomorphism is a homeomorphism. -/
 noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.Bijective) :
@@ -210,9 +226,12 @@ noncomputable def toHomeomorph_of_bijective (hf : IsLocalHomeomorph f) (hb : f.B
   Homeomorph.homeomorphOfContinuousOpen (Equiv.ofBijective f hb) hf.continuous hf.isOpenMap
 
 /-- Continuous local sections of a local homeomorphism are open embeddings. -/
-theorem openEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : OpenEmbedding (g ∘ f))
-    (cont : Continuous f) : OpenEmbedding f :=
-  (hgf.isLocalHomeomorph.of_comp hf cont).openEmbedding_of_injective hgf.inj.of_comp
+theorem isOpenEmbedding_of_comp (hf : IsLocalHomeomorph g) (hgf : IsOpenEmbedding (g ∘ f))
+    (cont : Continuous f) : IsOpenEmbedding f :=
+  (hgf.isLocalHomeomorph.of_comp hf cont).isOpenEmbedding_of_injective hgf.injective.of_comp
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_of_comp := isOpenEmbedding_of_comp
 
 open TopologicalSpace in
 /-- Ranges of continuous local sections of a local homeomorphism
@@ -221,7 +240,8 @@ theorem isTopologicalBasis (hf : IsLocalHomeomorph f) : IsTopologicalBasis
     {U : Set X | ∃ V : Set Y, IsOpen V ∧ ∃ s : C(V,X), f ∘ s = (↑) ∧ Set.range s = U} := by
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ fun x U hx hU ↦ ?_
   · rintro _ ⟨U, hU, s, hs, rfl⟩
-    refine (openEmbedding_of_comp hf (hs ▸ ⟨embedding_subtype_val, ?_⟩) s.continuous).isOpen_range
+    refine (isOpenEmbedding_of_comp hf (hs ▸ ⟨IsEmbedding.subtypeVal, ?_⟩)
+      s.continuous).isOpen_range
     rwa [Subtype.range_val]
   · obtain ⟨f, hxf, rfl⟩ := hf x
     refine ⟨f.source ∩ U, ⟨f.target ∩ f.symm ⁻¹' U, f.symm.isOpen_inter_preimage hU,

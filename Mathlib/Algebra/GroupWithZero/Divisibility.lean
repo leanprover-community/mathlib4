@@ -6,6 +6,7 @@ Neil Strickland, Aaron Anderson
 -/
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Divisibility.Units
+import Mathlib.Data.Nat.Basic
 
 /-!
 # Divisibility in groups with zero.
@@ -139,9 +140,6 @@ theorem dvd_antisymm : a ∣ b → b ∣ a → a = b := by
   rw [mul_assoc, eq_comm, mul_right_eq_self₀, mul_eq_one] at hcd
   obtain ⟨rfl, -⟩ | rfl := hcd <;> simp
 
--- Porting note: `attribute [protected]` is currently unsupported
--- attribute [protected] Nat.dvd_antisymm --This lemma is in core, so we protect it here
-
 theorem dvd_antisymm' : a ∣ b → b ∣ a → b = a :=
   flip dvd_antisymm
 
@@ -171,3 +169,18 @@ lemma pow_dvd_pow_iff (ha₀ : a ≠ 0) (ha : ¬IsUnit a) : a ^ n ∣ a ^ m ↔ 
   · apply pow_dvd_pow
 
 end CancelCommMonoidWithZero
+
+section GroupWithZero
+variable [GroupWithZero α]
+
+/-- `∣` is not a useful definition if an inverse is available. -/
+@[simp]
+lemma GroupWithZero.dvd_iff {m n : α} : m ∣ n ↔ (m = 0 → n = 0) := by
+  refine ⟨fun ⟨a, ha⟩ hm => ?_, fun h => ?_⟩
+  · simp [hm, ha]
+  · refine ⟨m⁻¹ * n, ?_⟩
+    obtain rfl | hn := eq_or_ne n 0
+    · simp
+    · rw [mul_inv_cancel_left₀ (mt h hn)]
+
+end GroupWithZero

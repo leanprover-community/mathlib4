@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
+Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yury G. Kudryashov
+Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inverse
 import Mathlib.Analysis.Calculus.InverseFunctionTheorem.FDeriv
@@ -23,6 +23,7 @@ noncomputable section
 namespace HasStrictDerivAt
 
 variable (f' a : 𝕜) (hf : HasStrictDerivAt f f' a) (hf' : f' ≠ 0)
+include hf hf'
 
 /-- A function that is inverse to `f` near `a`. -/
 abbrev localInverse : 𝕜 → 𝕜 :=
@@ -48,5 +49,3 @@ variable {f}
 theorem isOpenMap_of_hasStrictDerivAt {f' : 𝕜 → 𝕜}
     (hf : ∀ x, HasStrictDerivAt f (f' x) x) (h0 : ∀ x, f' x ≠ 0) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => ((hf x).map_nhds_eq (h0 x)).ge
-@[deprecated (since := "2024-03-23")]
-alias open_map_of_strict_deriv := isOpenMap_of_hasStrictDerivAt

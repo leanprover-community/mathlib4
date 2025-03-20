@@ -3,9 +3,9 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner
 -/
-import Lean
-import Mathlib.Tactic.Eqns
 import Mathlib.Data.Subtype
+import Mathlib.Tactic.Eqns
+import Mathlib.Util.TermReduce
 
 /-!
 # Irreducible definitions
@@ -32,14 +32,6 @@ namespace Lean.Elab.Command
 
 open Term Meta
 
-/-- `delta% t` elaborates to a head-delta reduced version of `t`. -/
-elab "delta% " t:term : term <= expectedType => do
-  let t ← elabTerm t expectedType
-  synthesizeSyntheticMVars
-  let t ← instantiateMVars t
-  let some t ← delta? t | throwError "cannot delta reduce {t}"
-  pure t
-
 /-- `eta_helper f = (· + 3)` elabs to `∀ x, f x = x + 3` -/
 local elab "eta_helper " t:term : term => do
   let t ← elabTerm t none
@@ -50,7 +42,7 @@ local elab "eta_helper " t:term : term => do
     let lhs := (mkAppN lhs xs).headBeta
     mkForallFVars xs <|← mkEq lhs rhs
 
-/-- `val_proj x` elabs to the *primitive projection* `@x.val`.  -/
+/-- `val_proj x` elabs to the *primitive projection* `@x.val`. -/
 local elab "val_proj " e:term : term => do
   let e ← elabTerm (← `(($e : Subtype _))) none
   return mkProj ``Subtype 0 e
@@ -113,3 +105,5 @@ elab mods:declModifiers "irreducible_def" n_id:declId n_def:(irredDefLemma)?
     attribute [$attrs:attrInstance,*] $n)
   if prot.isSome then
     modifyEnv (addProtected · ((← getCurrNamespace) ++ n.getId))
+
+end Lean.Elab.Command

@@ -10,6 +10,7 @@ import Mathlib.Util.CompileInductive
 import Batteries.Tactic.Lint.Basic
 import Batteries.Data.List.Lemmas
 import Batteries.Data.RBMap.Basic
+import Batteries.Logic
 
 /-!
 ## Definitions on lists
@@ -29,14 +30,25 @@ variable {α β γ δ ε ζ : Type*}
 instance [DecidableEq α] : SDiff (List α) :=
   ⟨List.diff⟩
 
--- mathlib3 `array` is not ported.
--- Porting note: see
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/List.2Ehead/near/313204716
--- for the fooI naming convention.
 /-- "Inhabited" `get` function: returns `default` instead of `none` in the case
   that the index is out of bounds. -/
 def getI [Inhabited α] (l : List α) (n : Nat) : α :=
   getD l n default
+
+/-- The head of a list, or the default element of the type is the list is `nil`. -/
+def headI [Inhabited α] : List α → α
+  | []       => default
+  | (a :: _) => a
+
+@[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
+@[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl
+
+/-- The last element of a list, with the default if list empty -/
+def getLastI [Inhabited α] : List α → α
+  | [] => default
+  | [a] => a
+  | [_, b] => b
+  | _ :: _ :: l => getLastI l
 
 /-- "Inhabited" `take` function: Take `n` elements from a list `l`. If `l` has less than `n`
   elements, append `n - length l` elements `default`. -/
@@ -142,10 +154,9 @@ def permutationsAux2 (t : α) (ts : List α) (r : List β) : List α → (List �
     let (us, zs) := permutationsAux2 t ts r ys (fun x : List α => f (y :: x))
     (y :: us, f (t :: y :: us) :: zs)
 
--- Porting note: removed `[elab_as_elim]` per Mario C
--- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Status.20of.20data.2Elist.2Edefs.3F/near/313571979
 /-- A recursor for pairs of lists. To have `C l₁ l₂` for all `l₁`, `l₂`, it suffices to have it for
 `l₂ = []` and to be able to pour the elements of `l₁` into `l₂`. -/
+@[elab_as_elim]
 def permutationsAux.rec {C : List α → List α → Sort v} (H0 : ∀ is, C [] is)
     (H1 : ∀ t ts is, C ts (t :: is) → C is [] → C (t :: ts) is) : ∀ l₁ l₂, C l₁ l₂
   | [], is => H0 is
@@ -194,7 +205,7 @@ but are equal up to permutation, as shown by `List.permutations_perm_permutation
 @[simp]
 def permutations' : List α → List (List α)
   | [] => [[]]
-  | t :: ts => (permutations' ts).bind <| permutations'Aux t
+  | t :: ts => (permutations' ts).flatMap <| permutations'Aux t
 
 end Permutations
 
@@ -249,9 +260,6 @@ def destutter' (R : α → α → Prop) [DecidableRel R] : α → List α → Li
 def destutter (R : α → α → Prop) [DecidableRel R] : List α → List α
   | h :: l => destutter' R h l
   | [] => []
--- Porting note: replace ilast' by getLastD
--- Porting note: remove last' from Batteries
-
 
 section Choose
 
@@ -363,12 +371,11 @@ map₂Right f as bs = (map₂Right' f as bs).fst
 def map₂Right (f : Option α → β → γ) (as : List α) (bs : List β) : List γ :=
   map₂Left (flip f) bs as
 
--- porting note -- was `unsafe` but removed for Lean 4 port
 -- TODO: naming is awkward...
 /-- Asynchronous version of `List.map`.
 -/
 def mapAsyncChunked {α β} (f : α → β) (xs : List α) (chunk_size := 1024) : List β :=
-  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).bind Task.get
+  ((xs.toChunks chunk_size).map fun xs => Task.spawn fun _ => List.map f xs).flatMap Task.get
 
 
 /-!
@@ -430,5 +437,48 @@ theorem iterateTR_loop_eq (f : α → α) (a : α) (n : ℕ) (l : List α) :
 theorem iterate_eq_iterateTR : @iterate = @iterateTR := by
   funext α f a n
   exact Eq.symm <| iterateTR_loop_eq f a n []
+
+section MapAccumr
+
+/-- Runs a function over a list returning the intermediate results and a final result. -/
+def mapAccumr (f : α → γ → γ × β) : List α → γ → γ × List β
+  | [], c => (c, [])
+  | y :: yr, c =>
+    let r := mapAccumr f yr c
+    let z := f y r.1
+    (z.1, z.2 :: r.2)
+
+/-- Length of the list obtained by `mapAccumr`. -/
+@[simp]
+theorem length_mapAccumr :
+    ∀ (f : α → γ → γ × β) (x : List α) (s : γ), length (mapAccumr f x s).2 = length x
+  | f, _ :: x, s => congr_arg succ (length_mapAccumr f x s)
+  | _, [], _ => rfl
+
+/-- Runs a function over two lists returning the intermediate results and a final result. -/
+def mapAccumr₂ (f : α → β → γ → γ × δ) : List α → List β → γ → γ × List δ
+  | [], _, c => (c, [])
+  | _, [], c => (c, [])
+  | x :: xr, y :: yr, c =>
+    let r := mapAccumr₂ f xr yr c
+    let q := f x y r.1
+    (q.1, q.2 :: r.2)
+
+/-- Length of a list obtained using `mapAccumr₂`. -/
+@[simp]
+theorem length_mapAccumr₂ :
+    ∀ (f : α → β → γ → γ × δ) (x y c), length (mapAccumr₂ f x y c).2 = min (length x) (length y)
+  | f, _ :: x, _ :: y, c =>
+    calc
+      succ (length (mapAccumr₂ f x y c).2) = succ (min (length x) (length y)) :=
+        congr_arg succ (length_mapAccumr₂ f x y c)
+      _ = min (succ (length x)) (succ (length y)) := Eq.symm (succ_min_succ (length x) (length y))
+  | _, _ :: _, [], _ => rfl
+  | _, [], _ :: _, _ => rfl
+  | _, [], [], _ => rfl
+
+end MapAccumr
+
+alias ⟨eq_or_mem_of_mem_cons, _⟩ := mem_cons
 
 end List

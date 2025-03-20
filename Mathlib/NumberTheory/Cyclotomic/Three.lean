@@ -31,7 +31,7 @@ open NumberField Units InfinitePlace nonZeroDivisors Polynomial
 
 namespace IsCyclotomicExtension.Rat.Three
 
-variable {K : Type*} [Field K] [NumberField K] [IsCyclotomicExtension {3} ℚ K]
+variable {K : Type*} [Field K]
 variable {ζ : K} (hζ : IsPrimitiveRoot ζ ↑(3 : ℕ+)) (u : (𝓞 K)ˣ)
 local notation3 "η" => (IsPrimitiveRoot.isUnit (hζ.toInteger_isPrimitiveRoot) (by decide)).unit
 local notation3 "λ" => hζ.toInteger - 1
@@ -44,7 +44,8 @@ lemma _root_.IsPrimitiveRoot.toInteger_cube_eq_one : hζ.toInteger ^ 3 = 1 :=
 /-- Let `u` be a unit in `(𝓞 K)ˣ`, then `u ∈ [1, -1, η, -η, η^2, -η^2]`. -/
 -- Here `List` is more convenient than `Finset`, even if further from the informal statement.
 -- For example, `fin_cases` below does not work with a `Finset`.
-theorem Units.mem : u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
+theorem Units.mem [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
+    u ∈ [1, -1, η, -η, η ^ 2, -η ^ 2] := by
   have hrank : rank K = 0 := by
     dsimp only [rank]
     rw [card_eq_nrRealPlaces_add_nrComplexPlaces, nrRealPlaces_eq_zero (n := 3) K (by decide),
@@ -89,7 +90,8 @@ lemma eta_sq : (η ^ 2 : 𝓞 K) = - η - 1 := by
 /-- If a unit `u` is congruent to an integer modulo `λ ^ 2`, then `u = 1` or `u = -1`.
 
 This is a special case of the so-called *Kummer's lemma*. -/
-theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ (u - n : 𝓞 K)) :
+theorem eq_one_or_neg_one_of_unit_of_congruent
+    [NumberField K] [IsCyclotomicExtension {3} ℚ K] (hcong : ∃ n : ℤ, λ ^ 2 ∣ (u - n : 𝓞 K)) :
     u = 1 ∨ u = -1 := by
   replace hcong : ∃ n : ℤ, (3 : 𝓞 K) ∣ (↑u - n : 𝓞 K) := by
     obtain ⟨n, x, hx⟩ := hcong
@@ -120,15 +122,16 @@ theorem eq_one_or_neg_one_of_unit_of_congruent (hcong : ∃ n : ℤ, λ ^ 2 ∣ 
 variable (x : 𝓞 K)
 
 /-- Let `(x : 𝓞 K)`. Then we have that `λ` divides one amongst `x`, `x - 1` and `x + 1`. -/
-lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
+lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one [NumberField K] [IsCyclotomicExtension {3} ℚ K] :
+    λ ∣ x ∨ λ ∣ x - 1 ∨ λ ∣ x + 1 := by
   classical
   have := hζ.finite_quotient_toInteger_sub_one (by decide)
   let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {λ})
   let _ : Ring (𝓞 K ⧸ Ideal.span {λ}) := CommRing.toRing -- to speed up instance synthesis
-  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- dito
+  let _ : AddGroup (𝓞 K ⧸ Ideal.span {λ}) := AddGroupWithOne.toAddGroup -- ditto
   have := Finset.mem_univ (Ideal.Quotient.mk (Ideal.span {λ}) x)
   have h3 : Fintype.card (𝓞 K ⧸ Ideal.span {λ}) = 3 := by
-    rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one (by decide),
+    rw [← Nat.card_eq_fintype_card, hζ.card_quotient_toInteger_sub_one,
       hζ.norm_toInteger_sub_one_of_prime_ne_two' (by decide)]
     simp only [PNat.val_ofNat, Nat.cast_ofNat, Int.reduceAbs]
   rw [Finset.univ_of_card_le_three h3.le] at this
@@ -141,7 +144,7 @@ lemma lambda_dvd_or_dvd_sub_one_or_dvd_add_one : λ ∣ x ∨ λ ∣ x - 1 ∨ �
     rw [RingHom.map_sub, h, RingHom.map_one, sub_self]
   · right; right
     refine Ideal.mem_span_singleton.1 <| Ideal.Quotient.eq_zero_iff_mem.1 ?_
-    rw [RingHom.map_add, h, RingHom.map_one, add_left_neg]
+    rw [RingHom.map_add, h, RingHom.map_one, neg_add_cancel]
 
 /-- We have that `η ^ 2 + η + 1 = 0`. -/
 lemma eta_sq_add_eta_add_one : (η : 𝓞 K) ^ 2 + η + 1 = 0 := by
@@ -155,6 +158,8 @@ lemma cube_sub_one_eq_mul : x ^ 3 - 1 = (x - 1) * (x - η) * (x - η ^ 2) := by
   _ = x ^ 3 - x ^ 2 * (η ^ 2 + η + 1) + x * (η ^ 2 + η + 1) - 1 := by
     simp [hζ.toInteger_cube_eq_one]
   _ = x ^ 3 - 1 := by rw [eta_sq_add_eta_add_one hζ]; ring
+
+variable [NumberField K] [IsCyclotomicExtension {3} ℚ K]
 
 /-- We have that `λ` divides `x * (x - 1) * (x - (η + 1))`. -/
 lemma lambda_dvd_mul_sub_one_mul_sub_eta_add_one : λ ∣ x * (x - 1) * (x - (η + 1)) := by

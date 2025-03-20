@@ -60,7 +60,7 @@ theorem binaryCofan_inr {A B : C} [MonoCoprod C] (c : BinaryCofan A B) (hc : IsC
     Mono c.inr := by
   haveI hc' : IsColimit (BinaryCofan.mk c.inr c.inl) :=
     BinaryCofan.IsColimit.mk _ (fun f₁ f₂ => hc.desc (BinaryCofan.mk f₂ f₁))
-      (by aesop_cat) (by aesop_cat)
+      (by simp) (by simp)
       (fun f₁ f₂ m h₁ h₂ => BinaryCofan.IsColimit.hom_ext hc (by aesop_cat) (by aesop_cat))
   exact binaryCofan_inl _ hc'
 
@@ -109,6 +109,7 @@ section
 variable {I₁ I₂ : Type*} {X : I₁ ⊕ I₂ → C} (c : Cofan X)
   (c₁ : Cofan (X ∘ Sum.inl)) (c₂ : Cofan (X ∘ Sum.inr))
   (hc : IsColimit c) (hc₁ : IsColimit c₁) (hc₂ : IsColimit c₂)
+include hc hc₁ hc₂
 
 /-- Given a family of objects `X : I₁ ⊕ I₂ → C`, a cofan of `X`, and two colimit cofans
 of `X ∘ Sum.inl` and `X ∘ Sum.inr`, this is a cofan for `c₁.pt` and `c₂.pt` whose
@@ -172,7 +173,9 @@ lemma mono_of_injective_aux (hι : Function.Injective ι) (c : Cofan X) (c₁ : 
 
 variable (hι : Function.Injective ι) (c : Cofan X) (c₁ : Cofan (X ∘ ι))
   (hc : IsColimit c) (hc₁ : IsColimit c₁)
+include hι
 
+include hc in
 lemma mono_of_injective [HasCoproduct (fun (k : ((Set.range ι)ᶜ : Set I)) => X k.1)] :
     Mono (Cofan.IsColimit.desc hc₁ (fun i => c.inj (ι i))) :=
   mono_of_injective_aux X ι hι c c₁ hc hc₁ _ (colimit.isColimit _)
@@ -236,13 +239,19 @@ end Preservation
 
 section Concrete
 
-instance [ConcreteCategory C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
+instance [HasForget C] [PreservesColimitsOfShape (Discrete WalkingPair) (forget C)]
     [ReflectsMonomorphisms (forget C)] : MonoCoprod C :=
   monoCoprod_of_preservesCoprod_of_reflectsMono (forget C)
 
 end Concrete
 
 end MonoCoprod
+
+instance (A : C) [HasCoproducts.{u} C] [MonoCoprod C] :
+    (sigmaConst.{u}.obj A).PreservesMonomorphisms where
+  preserves {J I} ι hι := by
+    rw [mono_iff_injective] at hι
+    exact MonoCoprod.mono_map'_of_injective (fun (i : I) ↦ A) ι hι
 
 end Limits
 

@@ -29,7 +29,7 @@ quasiconcavity, and monotonicity implies quasilinearity.
 
 open Function OrderDual Set
 
-variable {𝕜 E F β : Type*}
+variable {𝕜 E β : Type*}
 
 section OrderedSemiring
 
@@ -37,7 +37,7 @@ variable [OrderedSemiring 𝕜]
 
 section AddCommMonoid_E
 
-variable [AddCommMonoid E] [AddCommMonoid F]
+variable [AddCommMonoid E]
 
 section LE_β
 
@@ -105,7 +105,7 @@ end Semilattice_β
 
 section LinearOrder_β
 
-variable [LinearOrder β] [SMul 𝕜 E] {s : Set E} {f g : E → β}
+variable [LinearOrder β] [SMul 𝕜 E] {s : Set E} {f : E → β}
 
 theorem quasiconvexOn_iff_le_max : QuasiconvexOn 𝕜 s f ↔ Convex 𝕜 s ∧ ∀ ⦃x⦄, x ∈ s → ∀ ⦃y⦄,
     y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 ≤ a → 0 ≤ b → a + b = 1 → f (a • x + b • y) ≤ max (f x) (f y) :=

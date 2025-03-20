@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Expand
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
 
@@ -65,7 +66,7 @@ open Finsupp (single)
 --attribute [-simp] coe_eval₂_hom
 
 variable (p : ℕ)
-variable (R : Type*) [CommRing R] [DecidableEq R]
+variable (R : Type*) [CommRing R]
 
 /-- `wittPolynomial p R n` is the `n`-th Witt polynomial
 with respect to a prime `p` with coefficients in a commutative ring `R`.
@@ -201,8 +202,7 @@ theorem xInTermsOfW_eq [Invertible (p : R)] {n : ℕ} : xInTermsOfW p R n =
 @[simp]
 theorem constantCoeff_xInTermsOfW [hp : Fact p.Prime] [Invertible (p : R)] (n : ℕ) :
     constantCoeff (xInTermsOfW p R n) = 0 := by
-  apply Nat.strongInductionOn n; clear n
-  intro n IH
+  induction n using Nat.strongRecOn with | ind n IH => ?_
   rw [xInTermsOfW_eq, mul_comm, RingHom.map_mul, RingHom.map_sub, map_sum, constantCoeff_C,
     constantCoeff_X, zero_sub, mul_neg, neg_eq_zero]
   -- Porting note: here, we should be able to do `rw [sum_eq_zero]`, but the goal that
@@ -227,12 +227,11 @@ variable [hp : Fact p.Prime]
 
 theorem xInTermsOfW_vars_aux (n : ℕ) :
     n ∈ (xInTermsOfW p ℚ n).vars ∧ (xInTermsOfW p ℚ n).vars ⊆ range (n + 1) := by
-  apply Nat.strongInductionOn n; clear n
-  intro n ih
-  rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (nonzero_of_invertible _),
+  induction n using Nat.strongRecOn with | ind n ih => ?_
+  rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
     vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
   on_goal 1 =>
-    simp only [true_and_iff, true_or_iff, eq_self_iff_true, mem_union, mem_singleton]
+    simp only [true_and, true_or, eq_self_iff_true, mem_union, mem_singleton]
     intro i
     rw [mem_union, mem_union]
     apply Or.imp id
@@ -276,15 +275,13 @@ theorem bind₁_xInTermsOfW_wittPolynomial [Invertible (p : R)] (k : ℕ) :
 @[simp]
 theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
     bind₁ (W_ R) (xInTermsOfW p R n) = X n := by
-  apply Nat.strongInductionOn n
-  clear n
-  intro n H
+  induction n using Nat.strongRecOn with | ind n H => ?_
   rw [xInTermsOfW_eq, map_mul, map_sub, bind₁_X_right, algHom_C, map_sum,
     show X n = (X n * C ((p : R) ^ n)) * C ((⅟p : R) ^ n) by
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
   rw [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm,
-    tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_right_eq_self, sub_eq_zero]
+    tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_eq_left, sub_eq_zero]
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h

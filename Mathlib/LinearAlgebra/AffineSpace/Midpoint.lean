@@ -3,6 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 /-!
@@ -99,6 +100,14 @@ theorem midpoint_pointReflection_right (x y : P) :
     midpoint R y (Equiv.pointReflection x y) = x :=
   midpoint_eq_iff.2 rfl
 
+nonrec lemma AffineEquiv.midpoint_pointReflection_left (x y : P) :
+    midpoint R (pointReflection R x y) y = x :=
+  midpoint_pointReflection_left x y
+
+nonrec lemma AffineEquiv.midpoint_pointReflection_right (x y : P) :
+    midpoint R y (pointReflection R x y) = x :=
+  midpoint_pointReflection_right x y
+
 @[simp]
 theorem midpoint_vsub_left (p₁ p₂ : P) : midpoint R p₁ p₂ -ᵥ p₁ = (⅟ 2 : R) • (p₂ -ᵥ p₁) :=
   lineMap_vsub_left _ _ _
@@ -192,7 +201,7 @@ theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y
 
 @[simp]
 theorem midpoint_self_neg (x : V) : midpoint R x (-x) = 0 := by
-  rw [midpoint_eq_smul_add, add_neg_self, smul_zero]
+  rw [midpoint_eq_smul_add, add_neg_cancel, smul_zero]
 
 @[simp]
 theorem midpoint_neg_self (x : V) : midpoint R (-x) x = 0 := by simpa using midpoint_self_neg R (-x)

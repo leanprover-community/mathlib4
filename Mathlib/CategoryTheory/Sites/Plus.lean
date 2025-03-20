@@ -39,7 +39,7 @@ variable (P : Cᵒᵖ ⥤ D)
 @[simps]
 def diagram (X : C) : (J.Cover X)ᵒᵖ ⥤ D where
   obj S := multiequalizer (S.unop.index P)
-  map {S T} f :=
+  map {S _} f :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) (I.map f.unop))
       (fun I => Multiequalizer.condition (S.unop.index P) (Cover.Relation.mk' (I.r.map f.unop)))
 
@@ -56,7 +56,7 @@ between diagrams whose colimits define the values of `plus`. -/
 @[simps]
 def diagramNatTrans {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (X : C) : J.diagram P X ⟶ J.diagram Q X where
   app W :=
-    Multiequalizer.lift _ _ (fun i => Multiequalizer.ι _ _ ≫ η.app _) (fun i => by
+    Multiequalizer.lift _ _ (fun _ => Multiequalizer.ι _ _ ≫ η.app _) (fun i => by
       dsimp only
       erw [Category.assoc, Category.assoc, ← η.naturality, ← η.naturality,
         Multiequalizer.condition_assoc]
@@ -67,35 +67,29 @@ theorem diagramNatTrans_id (X : C) (P : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (𝟙 P) X = 𝟙 (J.diagram P X) := by
   ext : 2
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
-  dsimp
-  simp only [limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app, Category.id_comp]
-  erw [Category.comp_id]
+  simp
 
 @[simp]
 theorem diagramNatTrans_zero [Preadditive D] (X : C) (P Q : Cᵒᵖ ⥤ D) :
     J.diagramNatTrans (0 : P ⟶ Q) X = 0 := by
   ext : 2
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
-  dsimp
-  rw [zero_comp, Multiequalizer.lift_ι, comp_zero]
+  simp
 
 @[simp]
 theorem diagramNatTrans_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) (X : C) :
     J.diagramNatTrans (η ≫ γ) X = J.diagramNatTrans η X ≫ J.diagramNatTrans γ X := by
   ext : 2
   refine Multiequalizer.hom_ext _ _ _ (fun i => ?_)
-  dsimp
   simp
 
-variable (D)
-
+variable (D) in
 /-- `J.diagram P`, as a functor in `P`. -/
 @[simps]
 def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
   obj P := J.diagram P X
   map η := J.diagramNatTrans η X
 
-variable {D}
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 /-- The plus construction, associating a presheaf to any presheaf.
@@ -110,7 +104,7 @@ def plusObj : Cᵒᵖ ⥤ D where
     simp only [diagramPullback_app, colimit.ι_pre, ι_colimMap_assoc, Category.comp_id]
     let e := S.unop.pullbackId
     dsimp only [Functor.op, pullback_obj]
-    erw [← colimit.w _ e.inv.op, ← Category.assoc]
+    rw [← colimit.w _ e.inv.op, ← Category.assoc]
     convert Category.id_comp (colimit.ι (diagram J P (unop X)) S)
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
@@ -127,7 +121,7 @@ def plusObj : Cᵒᵖ ⥤ D where
       Category.assoc]
     let e := S.unop.pullbackComp g.unop f.unop
     dsimp only [Functor.op, pullback_obj]
-    erw [← colimit.w _ e.inv.op, ← Category.assoc, ← Category.assoc]
+    rw [← colimit.w _ e.inv.op, ← Category.assoc, ← Category.assoc]
     congr 1
     refine Multiequalizer.hom_ext _ _ _ (fun I => ?_)
     dsimp
@@ -172,15 +166,12 @@ theorem plusMap_comp {P Q R : Cᵒᵖ ⥤ D} (η : P ⟶ Q) (γ : Q ⟶ R) :
   refine colimit.hom_ext (fun S => ?_)
   simp [plusMap, J.diagramNatTrans_comp]
 
-variable (D)
-
+variable (D) in
 /-- The plus construction, a functor sending `P` to `J.plusObj P`. -/
 @[simps]
 def plusFunctor : (Cᵒᵖ ⥤ D) ⥤ Cᵒᵖ ⥤ D where
   obj P := J.plusObj P
   map η := J.plusMap η
-
-variable {D}
 
 /-- The canonical map from `P` to `J.plusObj P`.
 See `toPlusNatTrans` for a functorial version. -/
@@ -211,14 +202,11 @@ theorem toPlus_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   congr 1
   exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
 
-variable (D)
-
+variable (D) in
 /-- The natural transformation from the identity functor to `plus`. -/
 @[simps]
 def toPlusNatTrans : 𝟭 (Cᵒᵖ ⥤ D) ⟶ J.plusFunctor D where
   app P := J.toPlus P
-
-variable {D}
 
 /-- `(P ⟶ P⁺)⁺ = P⁺ ⟶ P⁺⁺` -/
 @[simp]
@@ -246,7 +234,7 @@ theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P)
   rw [Presheaf.isSheaf_iff_multiequalizer] at hP
   suffices ∀ X, IsIso ((J.toPlus P).app X) from NatIso.isIso_of_isIso_app _
   intro X
-  suffices IsIso (colimit.ι (J.diagram P X.unop) (op ⊤)) from IsIso.comp_isIso
+  refine IsIso.comp_isIso' inferInstance ?_
   suffices ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f) from
     isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop) _
   intro S T e

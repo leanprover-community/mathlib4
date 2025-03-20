@@ -16,7 +16,6 @@ This file extends the theory of `ℕ+` with `gcd`, `lcm` and `Prime` functions, 
 
 namespace Nat.Primes
 
--- Porting note (#11445): new definition
 /-- The canonical map from `Nat.Primes` to `ℕ+` -/
 @[coe] def toPNat : Nat.Primes → ℕ+ :=
   fun p => ⟨(p : ℕ), p.property.pos⟩

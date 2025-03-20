@@ -5,7 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
 -/
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.MinMax
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Defs
 
 /-!
 # Units in ordered monoids
@@ -36,7 +36,7 @@ instance [Monoid α] [LinearOrder α] : LinearOrder αˣ :=
   LinearOrder.lift' val Units.ext
 
 /-- `val : αˣ → α` as an order embedding. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "`val : add_units α → α` as an order embedding."]
 def orderEmbeddingVal [Monoid α] [LinearOrder α] : αˣ ↪o α :=
   ⟨⟨val, ext⟩, Iff.rfl⟩

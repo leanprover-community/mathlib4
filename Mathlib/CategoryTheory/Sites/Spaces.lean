@@ -43,7 +43,7 @@ open CategoryTheory TopologicalSpace CategoryTheory.Limits
 /-- The Grothendieck topology associated to a topological space. -/
 def grothendieckTopology : GrothendieckTopology (Opens T) where
   sieves X S := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), S f ∧ x ∈ U
-  top_mem' X x hx := ⟨_, 𝟙 _, trivial, hx⟩
+  top_mem' _ _ hx := ⟨_, 𝟙 _, trivial, hx⟩
   pullback_stable' X Y S f hf y hy := by
     rcases hf y (f.le hy) with ⟨U, g, hg, hU⟩
     refine ⟨U ⊓ Y, homOfLE inf_le_right, ?_, hU, hy⟩
@@ -56,7 +56,7 @@ def grothendieckTopology : GrothendieckTopology (Opens T) where
 /-- The Grothendieck pretopology associated to a topological space. -/
 def pretopology : Pretopology (Opens T) where
   coverings X R := ∀ x ∈ X, ∃ (U : _) (f : U ⟶ X), R f ∧ x ∈ U
-  has_isos X Y f i x hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
+  has_isos _ _ f _ _ hx := ⟨_, _, Presieve.singleton_self _, (inv f).le hx⟩
   pullbacks X Y f S hS x hx := by
     rcases hS _ (f.le hx) with ⟨U, g, hg, hU⟩
     refine ⟨_, _, Presieve.pullbackArrows.mk _ _ hg, ?_⟩

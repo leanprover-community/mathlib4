@@ -15,8 +15,8 @@ This file characterises sheaves for the coherent topology
 ## Main result
 
 * `isSheaf_coherent`: a presheaf of types for the is a sheaf for the coherent topology if and only
-  if it satisfies the sheaf condition with respect to every presieve consiting of a finite effective
-  epimorphic family.
+  if it satisfies the sheaf condition with respect to every presieve consisting of a finite
+  effective epimorphic family.
 -/
 
 namespace CategoryTheory
@@ -59,8 +59,8 @@ theorem isSheaf_yoneda_obj (W : C) : Presieve.IsSheaf (coherentTopology C) (yone
 
 variable (C) in
 /-- The coherent topology on a precoherent category is subcanonical. -/
-theorem subcanonical : Sheaf.Subcanonical (coherentTopology C) :=
-  Sheaf.Subcanonical.of_yoneda_isSheaf _ isSheaf_yoneda_obj
+instance subcanonical : (coherentTopology C).Subcanonical :=
+  GrothendieckTopology.Subcanonical.of_isSheaf_yoneda_obj _ isSheaf_yoneda_obj
 
 end coherentTopology
 

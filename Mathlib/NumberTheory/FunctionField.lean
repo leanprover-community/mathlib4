@@ -33,7 +33,7 @@ adding them back in lemmas when they are needed.
 ## References
 * [D. Marcus, *Number Fields*][marcus1977number]
 * [J.W.S. Cassels, A. Frölich, *Algebraic Number Theory*][cassels1967algebraic]
-* [P. Samuel, *Algebraic Theory of Numbers*][samuel1970algebraic]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 function field, ring of integers
@@ -42,9 +42,9 @@ function field, ring of integers
 
 noncomputable section
 
-open scoped nonZeroDivisors Polynomial DiscreteValuation
+open scoped nonZeroDivisors Polynomial Multiplicative
 
-variable (Fq F : Type) [Field Fq] [Field F]
+variable (Fq F : Type*) [Field Fq] [Field F]
 
 /-- `F` is a function field over the finite field `Fq` if it is a finite
 extension of the field of rational functions in one variable over `Fq`.
@@ -54,7 +54,6 @@ Note that `F` can be a function field over multiple, non-isomorphic, `Fq`.
 abbrev FunctionField [Algebra (RatFunc Fq) F] : Prop :=
   FiniteDimensional (RatFunc Fq) F
 
--- Porting note: Removed `protected`
 /-- `F` is a function field over `Fq` iff it is a finite extension of `Fq(t)`. -/
 theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     [IsFractionRing Fq[X] Fqt] [Algebra (RatFunc Fq) F] [Algebra Fqt F] [Algebra Fq[X] F]
@@ -65,22 +64,25 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     intro c x
     rw [Algebra.smul_def, Algebra.smul_def]
     congr
-    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c -- Porting note: Added `(f := _)`
+    refine congr_fun (f := fun c => algebraMap Fqt F (e c)) ?_ c
     refine IsLocalization.ext (nonZeroDivisors Fq[X]) _ _ ?_ ?_ ?_ ?_ ?_ <;> intros <;>
       simp only [map_one, map_mul, AlgEquiv.commutes, ← IsScalarTower.algebraMap_apply]
   constructor <;> intro h
-  · let b := FiniteDimensional.finBasis (RatFunc Fq) F
+  · let b := Module.finBasis (RatFunc Fq) F
     exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
-  · let b := FiniteDimensional.finBasis Fqt F
+  · let b := Module.finBasis Fqt F
     refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
+
+namespace FunctionField
 
 theorem algebraMap_injective [Algebra Fq[X] F] [Algebra (RatFunc Fq) F]
     [IsScalarTower Fq[X] (RatFunc Fq) F] : Function.Injective (⇑(algebraMap Fq[X] F)) := by
   rw [IsScalarTower.algebraMap_eq Fq[X] (RatFunc Fq) F]
   exact (algebraMap (RatFunc Fq) F).injective.comp (IsFractionRing.injective Fq[X] (RatFunc Fq))
 
-namespace FunctionField
+@[deprecated (since := "2025-03-03")]
+alias _root_.algebraMap_injective := FunctionField.algebraMap_injective
 
 /-- The function field analogue of `NumberField.ringOfIntegers`:
 `FunctionField.ringOfIntegers Fq Fqt F` is the integral closure of `Fq[t]` in `F`.
@@ -208,12 +210,12 @@ theorem inftyValuation.C {k : Fq} (hk : k ≠ 0) :
 theorem inftyValuation.X : inftyValuationDef Fq RatFunc.X = Multiplicative.ofAdd (1 : ℤ) := by
   rw [inftyValuationDef, if_neg RatFunc.X_ne_zero, RatFunc.intDegree_X]
 
-@[simp]
+-- Dropped attribute `@[simp]` due to issue described here:
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/.60synthInstance.2EmaxHeartbeats.60.20error.20but.20only.20in.20.60simpNF.60
 theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
       Multiplicative.ofAdd (p.natDegree : ℤ) := by
-  have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by
-    rw [Ne, RatFunc.algebraMap_eq_zero_iff]; exact hp
+  have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by simpa
   rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
 
 /-- The valued field `Fq(t)` with the valuation at infinity. -/

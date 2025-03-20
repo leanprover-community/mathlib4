@@ -52,6 +52,7 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
+assert_not_exists Basis
 
 noncomputable section
 
@@ -72,7 +73,7 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
 /-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Measure[" mα "]" α:arg => @Measure α mα
+scoped notation "Measure[" mα "] " α:arg => @Measure α mα
 
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
@@ -82,9 +83,9 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
   coe μ := μ.toOuterMeasure
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
+
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
-  measure_empty m := m.empty'
+  measure_empty m := measure_empty (μ := m.toOuterMeasure)
   measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
 
@@ -203,15 +204,11 @@ theorem exists_measurable_superset_iff_measure_eq_zero :
   ⟨fun ⟨_t, hst, _, ht⟩ => measure_mono_null hst ht, exists_measurable_superset_of_null⟩
 
 theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
-    (hfin : ∀ i ∈ s, μ (f i) ≠ ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
+    (hfin : ∀ i ∈ s, μ (f i) < ∞) : μ (⋃ i ∈ s, f i) < ∞ := by
   convert (measure_biUnion_finset_le (μ := μ) hs.toFinset f).trans_lt _ using 3
   · ext
     rw [Finite.mem_toFinset]
-  · apply ENNReal.sum_lt_top; simpa only [Finite.mem_toFinset]
-
-@[deprecated measure_iUnion_null_iff (since := "2024-01-14")]
-theorem measure_iUnion_null_iff' {ι : Prop} {s : ι → Set α} : μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
-  measure_iUnion_null_iff
+  · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
 
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
   (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
@@ -265,7 +262,8 @@ disjoint unions, then the predicate holds for almost every `x : β` and all meas
 
 This is an AE version of `MeasurableSpace.induction_on_inter` where the condition is dependent
 on a measurable space `β`. -/
-theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {μ : Measure β}
+theorem _root_.MeasurableSpace.ae_induction_on_inter
+    {α β : Type*} [MeasurableSpace β] {μ : Measure β}
     {C : β → Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
     (h_eq : m = MeasurableSpace.generateFrom s)
     (h_inter : IsPiSystem s) (h_empty : ∀ᵐ x ∂μ, C x ∅) (h_basic : ∀ᵐ x ∂μ, ∀ t ∈ s, C x t)
@@ -274,7 +272,8 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter {β} [MeasurableSpace β] {
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
     ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
   filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
-    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
+    using MeasurableSpace.induction_on_inter (C := fun t _ ↦ C x t)
+      h_eq h_inter hx_empty hx_basic hx_compl hx_union
 
 end ae
 
@@ -298,8 +297,6 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
   HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
-
-  --(subset_toMeasurable _ _).EventuallyLE
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :
@@ -376,6 +373,9 @@ theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 
 namespace AEMeasurable
+
+lemma of_discrete [DiscreteMeasurableSpace α] : AEMeasurable f μ :=
+  Measurable.of_discrete.aemeasurable
 
 /-- Given an almost everywhere measurable function `f`, associate to it a measurable function
 that coincides with it almost everywhere. `f` is explicit in the definition to make sure that
