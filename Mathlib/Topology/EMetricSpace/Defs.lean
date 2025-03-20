@@ -59,17 +59,20 @@ def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x :
     ⟨ε / 2, ENNReal.half_pos ε0.ne', fun _ h₁ _ h₂ =>
       (ENNReal.add_lt_add h₁ h₂).trans_eq (ENNReal.add_halves _)⟩
 
-/-- An extended pseudo metric space is a topological space and uniform space equipped with an
-extended metric `edist`, possibly taking the value `∞`, such that the topology comes from metric.
+/-- A pseudo extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist`
+satisfying the triangle inequality.
+
+Note that we do not require `edist x y = 0 → x = y`. See `EMetricSpace` for the analogous class with
+that stronger assumption.
+
+Any pseudo extended metric space is a topological space and a uniform space,
+where the topology and uniformity come from the metric.
+Note that a T1 pseudo extended metric space is just an extended metric space.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
 ensures that we do not get a diamond when doing
-`[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`: The product metric and
-product topology agree, but not definitionally so.
-
-When instantiating `PseudoEMetricSpace`, the uniformity fields are not necessary, they
-will be filled in by default. There is a default value for the uniformity, that can be substituted
-in cases of interest, for instance when giving an `EMetricSpace` instance on a product. -/
+`[PseudoEMetricSpace α] [PseudoEMetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so. -/
 class PseudoEMetricSpace (α : Type u) : Type u extends EDist α  where
   edist_self : ∀ x : α, edist x x = 0
   edist_comm : ∀ x y : α, edist x y = edist y x
@@ -534,17 +537,18 @@ end Compact
 
 end EMetric
 
-/-- An extended metric space is a T1 topological space and uniform space equipped with an extended
-metric `edist`, possibly taking the value `∞`, such that the topology comes from metric.
+/-- An extended metric space is a type endowed with a `ℝ≥0∞`-valued distance `edist` satisfying the
+triangle inequality and `edist x y = 0 → x = y`.
 
-We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
-ensures that we do not get a diamond when doing
-`[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`: The product metric and product
-topology agree, but not definitionally so.
+See `PseudoEMetricSpace` for the similar class without the  `edist x y = 0 → x = y` assumption.
 
-When instantiating `EMetricSpace`, the uniformity fields are not necessary, they
-will be filled in by default. There is a default value for the uniformity, that can be substituted
-in cases of interest, for instance when giving an `EMetricSpace` instance on a product. -/
+Any extended metric space is a T1 topological space and a uniform space,
+where the topology and uniformity come from the metric.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric.
+This eg ensures that we do not get a diamond when doing
+`[EMetricSpace α] [EMetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so. -/
 class EMetricSpace (α : Type u) : Type u extends PseudoEMetricSpace α where
   eq_of_edist_eq_zero : ∀ {x y : α}, edist x y = 0 → x = y
 
