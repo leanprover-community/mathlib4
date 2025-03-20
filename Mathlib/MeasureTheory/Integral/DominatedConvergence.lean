@@ -544,7 +544,7 @@ theorem continuous_parametric_primitive_of_continuous
       suffices Tendsto
         (fun δ ↦ (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal)
           (𝓝 0) (𝓝 ((M + 1) * (0 : ℝ≥0∞).toReal + 0 * (μ (Icc a b)).toReal)) by
-        simp only [zero_toReal, mul_zero, zero_mul, add_zero] at this
+        simp only [toReal_zero, mul_zero, zero_mul, add_zero] at this
         exact (tendsto_order.1 this).2 _ εpos
       apply Tendsto.add (Tendsto.mul tendsto_const_nhds _)
         (Tendsto.mul tendsto_id tendsto_const_nhds)
