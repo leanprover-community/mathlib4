@@ -178,18 +178,18 @@ theorem conjTranspose_ofNat [DecidableEq n] [NonAssocSemiring α] [StarRing α] 
   conjTranspose_natCast _
 
 @[simp]
-theorem conjTranspose_eq_ofNat [DecidableEq n] [Semiring α] [StarRing α]
+theorem conjTranspose_eq_ofNat [DecidableEq n] [NonAssocSemiring α] [StarRing α]
     {M : Matrix n n α} {d : ℕ} [d.AtLeastTwo] :
     Mᴴ = ofNat(d) ↔ M = OfNat.ofNat d :=
   conjTranspose_eq_natCast
 
 @[simp]
-theorem conjTranspose_intCast [DecidableEq n] [Ring α] [StarRing α] (d : ℤ) :
+theorem conjTranspose_intCast [DecidableEq n] [NonAssocRing α] [StarRing α] (d : ℤ) :
     (d : Matrix n n α)ᴴ = d := by
   simp [conjTranspose, Matrix.map_intCast, diagonal_intCast]
 
 @[simp]
-theorem conjTranspose_eq_intCast [DecidableEq n] [Ring α] [StarRing α]
+theorem conjTranspose_eq_intCast [DecidableEq n] [NonAssocRing α] [StarRing α]
     {M : Matrix n n α} {d : ℤ} :
     Mᴴ = d ↔ M = d :=
   (Function.Involutive.eq_iff conjTranspose_conjTranspose).trans <|

@@ -38,7 +38,7 @@ theorem nsmul_le {F α : Type*} [AddGroup α] [FunLike F α ℝ]
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
   we have `f (n * a) ≤ (f a)`. -/
-theorem nmul_le {F α : Type*} [Ring α] [FunLike F α ℝ] [AddGroupSeminormClass F α ℝ]
+theorem nmul_le {F α : Type*} [NonAssocRing α] [FunLike F α ℝ] [AddGroupSeminormClass F α ℝ]
     {f : F} (hna : IsNonarchimedean f) {n : ℕ} {a : α} : f (n * a) ≤ f a := by
   rw [← nsmul_eq_mul]
   exact nsmul_le hna
