@@ -3,14 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Regular.Pow
+import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Support
+import Mathlib.Algebra.Regular.Pow
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Order.SymmDiff
-import Mathlib.RingTheory.Adjoin.Basic
-import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Multivariate polynomials

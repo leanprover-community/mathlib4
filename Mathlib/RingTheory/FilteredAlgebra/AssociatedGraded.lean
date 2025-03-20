@@ -275,25 +275,22 @@ instance [IsRingFiltration F F_lt] : GradedMonoid.GOne (GradedPiece F F_lt) wher
 
 lemma GradedPiece.HEq_one_mul [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq ((1 : GradedPiece F F_lt 0) * x) x := by
-  induction x using GradedPiece.induction_on
-  rename_i rx
+  induction' x using GradedPiece.induction_on with rx
   exact HEq_eq_mk_eq F F_lt (zero_add i) (one_mul (rx : R)) _ _
     (gradedMul_def F F_lt (1 : F 0) rx) rfl
 
 lemma GradedPiece.HEq_mul_one [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (x * (1 : GradedPiece F F_lt 0)) x := by
-  induction x using GradedPiece.induction_on
-  rename_i rx
+  induction' x using GradedPiece.induction_on with rx
   exact HEq_eq_mk_eq F F_lt (add_zero i) (mul_one (rx : R)) _ _
     (gradedMul_def F F_lt rx (1 : F 0)) rfl
 
 lemma GradedPiece.HEq_mul_assoc [hasGMul F F_lt] {i j k : ι}
     (a : GradedPiece F F_lt i) (b : GradedPiece F F_lt j) (c : GradedPiece F F_lt k) :
     HEq (a * b * c) (a * (b * c)) := by
-  induction a using GradedPiece.induction_on
-  induction b using GradedPiece.induction_on
-  induction c using GradedPiece.induction_on
-  rename_i ra rb rc
+  induction' a using GradedPiece.induction_on with ra
+  induction' b using GradedPiece.induction_on with rb
+  induction' c using GradedPiece.induction_on with rc
   exact HEq_eq_mk_eq F F_lt (add_assoc i j k) (mul_assoc (ra : R) rb rc) _ _
     (gradedMul_def F F_lt (ra * rb) rc) (gradedMul_def F F_lt ra (rb * rc))
 
@@ -334,16 +331,14 @@ lemma gnpow_def [hasGMul F F_lt] (n : ℕ) {i : ι} (x : F i) :
 
 lemma GradedPiece.gnpow_zero' [hasGMul F F_lt] {i : ι} (x : GradedPiece F F_lt i) :
     HEq (gnpow F F_lt 0 x) (1 : GradedPiece F F_lt 0) := by
-  induction x using GradedPiece.induction_on
-  rename_i rx
+  induction' x using GradedPiece.induction_on with rx
   apply HEq_eq_mk_eq F F_lt (zero_nsmul i) (pow_zero rx.1) (Filtration.pow_mem F F_lt 0 rx)
     (1 : F 0).2 _ rfl
   nth_rw 1 [gnpow_def F F_lt 0 rx]
 
 lemma GradedPiece.gnpow_succ' [hasGMul F F_lt] (n : ℕ) {i : ι} (x : GradedPiece F F_lt i) :
     HEq (gnpow F F_lt n.succ x) (gnpow F F_lt n x * x) := by
-  induction x using GradedPiece.induction_on
-  rename_i rx
+  induction' x using GradedPiece.induction_on with rx
   have : rx.1 ^ n * rx.1 ∈ (F (n • i + i)) :=
     IsRingFiltration.toGradedMonoid.mul_mem (Filtration.pow_mem F F_lt n rx) rx.2
   exact HEq_eq_mk_eq F F_lt (succ_nsmul i n) (pow_succ rx.1 n) _ this rfl rfl
@@ -375,20 +370,18 @@ lemma GradedPiece.zero_mul [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i
 
 lemma GradedPiece.mul_add [hasGMul F F_lt] {i j : ι} (a : GradedPiece F F_lt i)
     (b c : GradedPiece F F_lt j) : a * (b + c) = a * b + a * c := by
-  induction a using GradedPiece.induction_on
-  induction b using GradedPiece.induction_on
-  induction c using GradedPiece.induction_on
-  rename_i ra rb rc
+  induction' a using GradedPiece.induction_on with ra
+  induction' b using GradedPiece.induction_on with rb
+  induction' c using GradedPiece.induction_on with rc
   simp only [← map_add, mk_mul]
   congr
   exact SetCoe.ext (_root_.mul_add ra.1 rb.1 rc.1)
 
 lemma GradedPiece.add_mul [hasGMul F F_lt] {i j : ι} (a b : GradedPiece F F_lt i)
     (c : GradedPiece F F_lt j) : (a + b) * c = a * c + b * c := by
-  induction a using GradedPiece.induction_on
-  induction b using GradedPiece.induction_on
-  induction c using GradedPiece.induction_on
-  rename_i ra rb rc
+  induction' a using GradedPiece.induction_on with ra
+  induction' b using GradedPiece.induction_on with rb
+  induction' c using GradedPiece.induction_on with rc
   simp only [← map_add, mk_mul]
   congr
   exact SetCoe.ext (_root_.add_mul ra.1 rb.1 rc.1)
@@ -519,16 +512,14 @@ lemma GradedPiece.algebraMap.map_mul [hasGMul F F_lt] (r s : R) : GradedMonoid.m
 
 lemma GradedPiece.algebraMap.commutes [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
     HEq ((mk F F_lt (r • (1 : F 0))) * a) (a * (mk F F_lt (r • (1 : F 0)))) := by
-  induction a using GradedPiece.induction_on
-  rename_i ra
+  induction' a using GradedPiece.induction_on with ra
   simp only [mk_mul]
   have : (r • (1 : A)) * ra.1 = ra.1 * (r • (1 : A)) := by simp
   exact HEq_eq_mk_coe_eq F F_lt _ _ (add_comm 0 i) this rfl rfl
 
 lemma GradedPiece.algebraMap.smul_def [hasGMul F F_lt] (r : R) (i : ι) (a : GradedPiece F F_lt i) :
     HEq (r • a) ((mk F F_lt (r • (1 : F 0))) * a) := by
-  induction a using GradedPiece.induction_on
-  rename_i ra
+  induction' a using GradedPiece.induction_on with ra
   simp only [mk_mul, GradedPiece.mk_smul]
   have : r • ra.1 = (r • (1 : A)) * ra := by simp
   exact HEq_eq_mk_coe_eq F F_lt _ _ (zero_add i).symm this rfl rfl
