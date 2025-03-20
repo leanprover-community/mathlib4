@@ -9,13 +9,24 @@ import Mathlib.Geometry.Manifold.Instances.Real
 /-!
 ## (Unoriented) bordism theory
 
-This file defines the beginnings of (unoriented) bordism theory. For the full definition of
-smooth oriented bordism groups, a number of prerequisites are missing from mathlib. However,
-a significant amount of this work is already possible.
+This file defines the beginnings of unoriented bordism theory. We define singular n-manifolds,
+the building blocks of unoriented bordism groups. Future pull requests will define bordisms
+and the bordism groups of a topological space, and prove it these are abelian groups.
 
-Currently, this file only contains the definition of *singular *n*-manifolds*:
-bordism classes are the equivalence classes of singular n-manifolds w.r.t. the (co)bordism relation
-and will be added in a future PR, as well as the definition of the (unoriented) bordism groups.
+The basic concept of bordism theory are *singular *n*-manifolds*: a singular n-manifold on a
+topological space `X` is a closed n-dimensional smooth manifold `M` together with and a continuous
+map `M → F`. (The word *singular* does not refer to singularities, but is by analogy to singular
+n-chains in the definition of singular homology.)
+
+The next key concept is the definition of (unoriented) bordisms between singular n-manifolds:
+given two singular n-manifolds `s` and `t`, a bordism between `s` and `t` is a compact smooth
+`n+1`-dimensional manifold whose boundary is (diffeomorphic to) the disjoint union of `s` and `t`,
+together with a map which restricts to the maps on `s` and `t`.
+We call `s` and `t` bordant if there exists a bordism between them: this turns out to define an
+equivalence relation. (Transitivity is the hardest part, and uses the collar neighbourhood theorem.)
+Finally, the `n`obordism group of `X` is the set of bordism classes of singular `n`-manifolds on`X`.
+
+XXX design decisions, model parameters etc.
 
 ## Main definitions
 
@@ -23,6 +34,9 @@ and will be added in a future PR, as well as the definition of the (unoriented) 
   `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝ^n`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
+
+## Main results
+
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
   of singular n-manifolds
 - `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X`
@@ -42,29 +56,32 @@ and will be added in a future PR, as well as the definition of the (unoriented) 
 To be written! Document the design decisions and why they were made.
 
 ## TODO
-- define cobordisms and the cobordism relation
-- prove that the cobordisms relation is an equivalence relation
-- define unoriented bordisms groups (as a set of equivalence classes),
-prove they are a group
+- define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitive)
+  and operations (e.g. disjoint union, sum with the empty set)
+- define the bordism relation and prove it is an equivalence relation
+- define the unoriented bordism group (the set of bordism classes) and prove it is an abelian group
+- for bordisms on a one-point space, define multiplication and prove the bordism ring structure
 - define relative bordism groups (generalising the previous three points)
 - prove that relative unoriented bordism groups define an extraordinary homology theory
 
 ## Tags
 
-singular n-manifold, cobordism
+singular n-manifold, bordism, bordism group
 -/
 
 open scoped Manifold
 open Module Set
 
-noncomputable section
+suppress_compilation
 
 /-- A **singular `n`-manifold** on a topological space `X`, for `n ∈ ℕ`, is a pair `(M, f)`
 of a closed `n`-dimensional `C^k` manifold `M` together with a continuous map `M → X`.
 We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
 
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
-to compute bordism groups; for the definition, this makes no difference.) -/
+to compute bordism groups; for the definition, this makes no difference.)
+
+This is parametrised on the universe `M` lives in; take care `u` is the first universe argument. -/
 structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
   {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
@@ -102,21 +119,27 @@ instance {s : SingularNManifold X k I} : BoundarylessManifold I s.M := s.boundar
 
 /-- A map of topological spaces induces a corresponding map of singular n-manifolds. -/
 -- This is part of proving functoriality of the bordism groups.
-noncomputable def map (s : SingularNManifold X k I)
-    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold Y k I where
+def map.{u} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {k : WithTop ℕ∞}
+    {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+    [TopologicalSpace H] {I : ModelWithCorners ℝ E H} (s : SingularNManifold.{u} X k I)
+    {φ : X → Y} (hφ : Continuous φ) : SingularNManifold.{u} Y k I where
   f := φ ∘ s.f
   hf := hφ.comp s.hf
 
-@[simp]
+@[simp, mfld_simps]
 lemma map_f (s : SingularNManifold X k I) {φ : X → Y} (hφ : Continuous φ) :
     (s.map hφ).f = φ ∘ s.f :=
+  rfl
+
+@[simp, mfld_simps]
+lemma map_M (s : SingularNManifold X k I) {φ : X → Y} (hφ : Continuous φ) :
+    (s.map hφ).M = s.M :=
   rfl
 
 lemma map_comp (s : SingularNManifold X k I)
     {φ : X → Y} {ψ : Y → Z} (hφ : Continuous φ) (hψ : Continuous ψ) :
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
-  rfl
 
 -- Let M' and W be real C^k manifolds.
 variable {E' E'' E''' H' H'' H''' : Type*}
@@ -141,21 +164,34 @@ noncomputable def comap (s : SingularNManifold X k I)
   f := s.f ∘ φ
   hf := s.hf.comp hφ
 
-@[simp]
+@[simp, mfld_simps]
+lemma comap_M (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
+    (s.comap hφ).M = M := by
+  rfl
+
+@[simp, mfld_simps]
 lemma comap_f (s : SingularNManifold X k I) {φ : M → s.M} (hφ : Continuous φ) :
     (s.comap hφ).f = s.f ∘ φ :=
   rfl
 
-variable (M I) in
+variable (X) in
 /-- The canonical singular `n`-manifold associated to the empty set (seen as an `n`-dimensional
 manifold, i.e. modelled on an `n`-dimensional space). -/
-def empty (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    {I : ModelWithCorners ℝ E H} [IsManifold I k M] [IsEmpty M] : SingularNManifold X k I where
+def empty.{u} (M : Type u) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners ℝ E H) [IsManifold I k M] [IsEmpty M] : SingularNManifold X k I where
   M := M
-  f := fun x ↦ (IsEmpty.false x).elim
+  f x := (IsEmpty.false x).elim
   hf := by
     rw [continuous_iff_continuousAt]
     exact fun x ↦ (IsEmpty.false x).elim
+
+omit [CompactSpace M] [BoundarylessManifold I M] in
+@[simp, mfld_simps]
+lemma empty_M [IsEmpty M] : (empty X M I (k := k)).M = M := rfl
+
+instance [IsEmpty M] : IsEmpty (SingularNManifold.empty X M I (k := k)).M := by
+  unfold SingularNManifold.empty
+  infer_instance
 
 variable (M I) in
 /-- An `n`-dimensional manifold induces a singular `n`-manifold on the one-point space. -/
@@ -183,6 +219,12 @@ variable (s t : SingularNManifold X k I)
 def sum (s t : SingularNManifold X k I) : SingularNManifold X k I where
   M := s.M ⊕ t.M
   f := Sum.elim s.f t.f
-  hf := s.hf.sum_elim t.hf
+  hf := s.hf.sumElim t.hf
+
+@[simp, mfld_simps]
+lemma sum_M (s t : SingularNManifold X k I) : (s.sum t).M = (s.M ⊕ t.M) := rfl
+
+@[simp, mfld_simps]
+lemma sum_f (s t : SingularNManifold X k I) : (s.sum t).f = Sum.elim s.f t.f := rfl
 
 end SingularNManifold
