@@ -539,22 +539,34 @@ instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
   ⟨frobenius_norm_conjTranspose⟩
 
 @[simp]
-theorem frobenius_norm_row (v : m → α) : ‖replicateRow ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_replicateRow (v : m → α) :
+    ‖replicateRow ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [row_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [replicateRow_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+
+@[deprecated (since := "2025-03-20")] alias frobenius_norm_row := frobenius_norm_replicateRow
 
 @[simp]
-theorem frobenius_nnnorm_row (v : m → α) : ‖replicateRow ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_row v
+theorem frobenius_nnnorm_replicateRow (v : m → α) :
+    ‖replicateRow ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+  Subtype.ext <| frobenius_norm_replicateRow v
+
+@[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_row := frobenius_nnnorm_replicateRow
 
 @[simp]
-theorem frobenius_norm_col (v : n → α) : ‖replicateCol ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
+theorem frobenius_norm_replicateCol (v : n → α) :
+    ‖replicateCol ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by
   simp_rw [frobenius_norm_def, Fintype.sum_unique, PiLp.norm_eq_of_L2, Real.sqrt_eq_rpow]
-  simp only [col_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+  simp only [replicateCol_apply, Real.rpow_two, WithLp.equiv_symm_pi_apply]
+
+@[deprecated (since := "2025-03-20")] alias frobenius_norm_col := frobenius_norm_replicateCol
 
 @[simp]
-theorem frobenius_nnnorm_col (v : n → α) : ‖replicateCol ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
-  Subtype.ext <| frobenius_norm_col v
+theorem frobenius_nnnorm_replicateCol (v : n → α) :
+    ‖replicateCol ι v‖₊ = ‖(WithLp.equiv 2 _).symm v‖₊ :=
+  Subtype.ext <| frobenius_norm_replicateCol v
+
+@[deprecated (since := "2025-03-20")] alias frobenius_nnnorm_col := frobenius_nnnorm_replicateCol
 
 @[simp]
 theorem frobenius_nnnorm_diagonal [DecidableEq n] (v : n → α) :
