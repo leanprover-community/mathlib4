@@ -57,9 +57,17 @@ scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
 open Interval
 
-@[simp] lemma dual_uIcc (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
+@[simp]
+lemma uIcc_toDual (a b : α) : [[toDual a, toDual b]] = ofDual ⁻¹' [[a, b]] :=
   -- Note: needed to hint `(α := α)` after https://github.com/leanprover-community/mathlib4/pull/8386 (elaboration order?)
-  dual_Icc (α := α)
+  Icc_toDual (α := α)
+
+@[deprecated (since := "2025-03-20")]
+alias dual_uIcc := uIcc_toDual
+
+@[simp]
+theorem uIcc_ofDual (a b : αᵒᵈ) : [[ofDual a, ofDual b]] = toDual ⁻¹' [[a, b]] :=
+  Icc_ofDual
 
 @[simp]
 lemma uIcc_of_le (h : a ≤ b) : [[a, b]] = Icc a b := by rw [uIcc, inf_eq_left.2 h, sup_eq_right.2 h]
@@ -306,8 +314,16 @@ Note that we define it more generally in a lattice as `Set.Ioo (a ⊓ b) (a ⊔ 
 `uIoo` corresponds to the bounding box of the two elements. -/
 def uIoo (a b : α) : Set α := Ioo (a ⊓ b) (a ⊔ b)
 
-@[simp] lemma dual_uIoo (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
-  dual_Ioo (α := α)
+@[simp]
+lemma uIoo_toDual (a b : α) : uIoo (toDual a) (toDual b) = ofDual ⁻¹' uIoo a b :=
+  Ioo_toDual (α := α)
+
+@[deprecated (since := "2025-03-20")]
+alias dual_uIoo := uIoo_toDual
+
+@[simp]
+theorem uIoo_ofDual (a b : αᵒᵈ) : uIoo (ofDual a) (ofDual b) = toDual ⁻¹' uIoo a b :=
+  Ioo_ofDual
 
 @[simp] lemma uIoo_of_le (h : a ≤ b) : uIoo a b = Ioo a b := by
   rw [uIoo, inf_eq_left.2 h, sup_eq_right.2 h]

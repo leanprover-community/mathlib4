@@ -130,7 +130,7 @@ theorem Ico_disjoint_Ico : Disjoint (Ico a₁ a₂) (Ico b₁ b₂) ↔ min a₂
 @[simp]
 theorem Ioc_disjoint_Ioc : Disjoint (Ioc a₁ a₂) (Ioc b₁ b₂) ↔ min a₂ b₂ ≤ max a₁ b₁ := by
   have h : _ ↔ min (toDual a₁) (toDual b₁) ≤ max (toDual a₂) (toDual b₂) := Ico_disjoint_Ico
-  simpa only [dual_Ico] using h
+  simpa only [Ico_toDual] using h
 
 @[simp]
 theorem Ioo_disjoint_Ioo [DenselyOrdered α] :
