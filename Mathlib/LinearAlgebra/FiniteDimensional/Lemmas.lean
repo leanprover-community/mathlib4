@@ -239,21 +239,20 @@ theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [
   Basis.coe_mk _ _
 
 /-- In a vector space `ι → K`, a linear independent family indedex by `ι` is a basis. -/
-noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι] {b : ι → (ι → K)}
-    (hb : LinearIndependent K b) :
-    Basis ι K (ι → K) := by
-  by_cases hι : Nonempty ι
-  · refine basisOfLinearIndependentOfCardEqFinrank hb (Module.finrank_fintype_fun_eq_card K).symm
-  · rw [not_nonempty_iff] at hι
-    exact Basis.empty _
+noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
+    [Decidable (Nonempty ι)] {b : ι → (ι → K)} (hb : LinearIndependent K b) : Basis ι K (ι → K) :=
+  if hι : Nonempty ι then
+    basisOfLinearIndependentOfCardEqFinrank hb (Module.finrank_fintype_fun_eq_card K).symm
+  else
+    have : IsEmpty ι := not_nonempty_iff.mp hι
+    Basis.empty _
 
 @[simp]
-theorem coe_basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι] {b : ι → (ι → K)}
-    (hb : LinearIndependent K b) :
+theorem coe_basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι] [Decidable (Nonempty ι)]
+    {b : ι → (ι → K)} (hb : LinearIndependent K b) :
     ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
   by_cases hι : Nonempty ι
-  · rw [basisOfPiSpaceOfLinearIndependent, dif_pos hι]
-    exact coe_basisOfLinearIndependentOfCardEqFinrank hb _
+  · simp [hι, basisOfPiSpaceOfLinearIndependent]
   · rw [basisOfPiSpaceOfLinearIndependent, dif_neg hι]
     ext i
     exact ((not_nonempty_iff.mp hι).false i).elim
