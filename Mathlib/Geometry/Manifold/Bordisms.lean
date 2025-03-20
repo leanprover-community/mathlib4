@@ -32,15 +32,17 @@ XXX design decisions, model parameters etc.
 
 - **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
   `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
-  We don't assume `M` to be modelled on `ℝ^n`, but add the model topological space `H`,
+  We don't assume `M` to be modelled on `ℝⁿ`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
+  To define a disjoint unions of singular n-manifolds, we require their domains to be manifolds
+  over the same model with corners: the model must be explicit (or M be modelled over `ℝⁿ`)
 
 ## Main results
 
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
-  of singular n-manifolds
-- `SingularNManifold.comap`: if `(N,f)` is a singular n-manifold on `X`
-  and `φ: M → N` is continuous, the `comap` of `(N,f)` and `φ`
+  of singular n-manifolds. This will be used to define functoriality of bordism groups.
+- `SingularNManifold.comap`: if `(N, f)` is a singular n-manifold on `X`
+  and `φ: M → N` is continuous, the `comap` of `(N, f)` and `φ`
   is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
 - `SingularNManifold.empty`: the empty set `M`, viewed as an `n`-manifold,
   as a singular `n`-manifold over any space `X`.
@@ -53,7 +55,17 @@ XXX design decisions, model parameters etc.
 
 ## Implementation notes
 
-To be written! Document the design decisions and why they were made.
+* We choose a bundled design for singular n-manifolds (and also for bordisms): to construct a group
+  structure on the set of bordism classes, having that be a type is useful.
+* The underlying model with corners is a type parameter, as defining a disjoint union of singular
+  n-manifolds (which is one part of defining the group operation)
+  requires their domains to be manifolds over the same model with corners. Thus, either we restrict
+  to manifolds modelled over `𝓡n` (which we prefer not to), or the model must be a type parameter.
+* Having `SingularNManifold` contain the type `M` as explicit parameter is not ideal, but the best
+  solution we found --- as this adds a universe parameter to the structure. We generally cannot have
+  `M` live in the same universe as `X` (a common case is `X` being `PUnit`),
+  determining the universe of `M` via the universes of `E` and `H` makes `SingularNManifold.map`
+  painful to state (as that would require `ULift`ing `M`).
 
 ## TODO
 - define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitive)
@@ -81,7 +93,7 @@ We assume that `M` is a manifold over the pair `(E, H)` with model `I`.
 In practice, one commonly wants to take `k=∞` (as then e.g. the intersection form is a powerful tool
 to compute bordism groups; for the definition, this makes no difference.)
 
-This is parametrised on the universe `M` lives in; take care `u` is the first universe argument. -/
+This is parametrised on the universe `M` lives in; ensure `u` is the first universe argument. -/
 structure SingularNManifold.{u} (X : Type*) [TopologicalSpace X] (k : WithTop ℕ∞)
   {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   [TopologicalSpace H] (I : ModelWithCorners ℝ E H) where
@@ -141,18 +153,13 @@ lemma map_comp (s : SingularNManifold X k I)
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
 
--- Let M' and W be real C^k manifolds.
 variable {E' E'' E''' H' H'' H''' : Type*}
   [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
   [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
   [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  {I' : ModelWithCorners ℝ E' H'} [IsManifold I' k M']
-  [BoundarylessManifold I' M'] [CompactSpace M'] [FiniteDimensional ℝ E']
-
 variable (M I) in
-/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself.-/
+/-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
 noncomputable def refl : SingularNManifold M k I where
   f := id
   hf := continuous_id
@@ -199,6 +206,8 @@ def toPUnit : SingularNManifold PUnit k I where
   M := M
   f := fun _ ↦ PUnit.unit
   hf := continuous_const
+
+variable {I' : ModelWithCorners ℝ E' H'} [FiniteDimensional ℝ E']
 
 /-- The product of a singular `n`- and a singular `m`-manifold into a one-point space
 is a singular `n+m`-manifold. -/
