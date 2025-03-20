@@ -84,6 +84,11 @@ lemma exists_finite_isNet_of_isCompact (hε : ε ≠ 0) (hs : IsCompact s) :
   gcongr
   exact ball_subset_closedBall
 
+lemma IsNet.of_subset_cthickening_of_lt {δ : ℝ≥0} (hsN : s ⊆ cthickening ε N) (hεδ : ε < δ) :
+    IsNet δ s N :=
+  .of_subset_iUnion_closedBall <| hsN.trans (cthickening_subset_iUnion_closedBall_of_lt _
+    (NNReal.zero_le_coe.trans_lt hεδ) hεδ)
+
 variable [ProperSpace X]
 
 lemma isNet_iff_subset_cthickening (hN : IsClosed N) : IsNet ε s N ↔ s ⊆ cthickening ε N := by
