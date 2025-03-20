@@ -39,8 +39,8 @@ variable [PseudoMetricSpace α]
 `dist x y = 0 ↔ x = y`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
 
-See `PseudoMetricSpace` for the similar class with the `dist x y = 0 ↔ x = y` assumption
-weakened to `dist x x = 0`.
+See pseudometric spaces (`PseudoMetricSpace`) for the similar class with the `dist x y = 0 ↔ x = y`
+assumption weakened to `dist x x = 0`.
 
 Any metric space is a T1 topological space and a uniform space,
 where the topology and uniformity come from the metric.

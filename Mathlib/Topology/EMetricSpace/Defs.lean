@@ -63,8 +63,8 @@ def uniformSpaceOfEDist (edist : α → α → ℝ≥0∞) (edist_self : ∀ x :
 satisfying reflexivity `edist x x = 0`, commutativity `edist x y = edist y x`, and the triangle
 inequality `edist x z ≤ edist x y + edist y z`.
 
-Note that we do not require `edist x y = 0 → x = y`. See `EMetricSpace` for the analogous class with
-that stronger assumption.
+Note that we do not require `edist x y = 0 → x = y`. See extended metric spaces (`EMetricSpace`) for
+the similar class with that stronger assumption.
 
 Any pseudo extended metric space is a topological space and a uniform space,
 where the topology and uniformity come from the metric.
@@ -543,8 +543,8 @@ end EMetric
 `edist x y = 0 ↔ x = y`, commutativity `edist x y = edist y x`, and the triangle inequality
 `edist x z ≤ edist x y + edist y z`.
 
-See `PseudoEMetricSpace` for the similar class with the `edist x y = 0 ↔ x = y` assumption
-weakened to `edist x x = 0`.
+See pseudo extended metric spaces (`PseudoEMetricSpace`) for the similar class with the
+`edist x y = 0 ↔ x = y` assumption weakened to `edist x x = 0`.
 
 Any extended metric space is a T1 topological space and a uniform space,
 where the topology and uniformity come from the metric.

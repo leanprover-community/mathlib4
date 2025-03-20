@@ -103,8 +103,8 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
 reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
 
-Note that we do not require `dist x y = 0 → x = y`. See `MetricSpace` for the analogous class with
-that stronger assumption.
+Note that we do not require `dist x y = 0 → x = y`. See metric spaces (`MetricSpace`) for the
+similar class with that stronger assumption.
 
 Any pseudometric space is a topological space and a uniform space,
 where the topology and uniformity come from the metric.
