@@ -764,12 +764,8 @@ lemma iIndepFun.indepFun_div_left (hf_indep : iIndepFun f μ)
 @[to_additive]
 lemma iIndepFun.indepFun_div_left₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
-    IndepFun (f i / f j) (f k) μ := by
-  have : iIndepFun (fun i ↦ (hf_meas i).mk) μ :=
-    iIndepFun.congr hf_indep (fun i ↦ (hf_meas i).ae_eq_mk)
-  apply IndepFun.congr (this.indepFun_div_left (fun i ↦ (hf_meas i).measurable_mk) i j k hik hjk)
-  · exact ((hf_meas i).ae_eq_mk.div (hf_meas j).ae_eq_mk).symm
-  · exact ((hf_meas k).ae_eq_mk).symm
+    IndepFun (f i / f j) (f k) μ :=
+  Kernel.iIndepFun.indepFun_div_left₀ hf_indep (by simp [hf_meas]) i j k hik hjk
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun f μ)
@@ -780,12 +776,8 @@ lemma iIndepFun.indepFun_div_right (hf_indep : iIndepFun f μ)
 @[to_additive]
 lemma iIndepFun.indepFun_div_right₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) (i j k : ι) (hij : i ≠ j) (hik : i ≠ k) :
-    IndepFun (f i) (f j / f k) μ := by
-  have : iIndepFun (fun i ↦ (hf_meas i).mk) μ :=
-    iIndepFun.congr hf_indep (fun i ↦ (hf_meas i).ae_eq_mk)
-  apply IndepFun.congr (this.indepFun_div_right (fun i ↦ (hf_meas i).measurable_mk) i j k hij hik)
-  · exact ((hf_meas i).ae_eq_mk).symm
-  · exact ((hf_meas j).ae_eq_mk.div (hf_meas k).ae_eq_mk).symm
+    IndepFun (f i) (f j / f k) μ :=
+  Kernel.iIndepFun.indepFun_div_right₀ hf_indep (by simp [hf_meas]) i j k hij hik
 
 @[to_additive]
 lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun f μ)
@@ -798,13 +790,8 @@ lemma iIndepFun.indepFun_div_div (hf_indep : iIndepFun f μ)
 lemma iIndepFun.indepFun_div_div₀ (hf_indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ)
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
-    IndepFun (f i / f j) (f k / f l) μ := by
-  have : iIndepFun (fun i ↦ (hf_meas i).mk) μ :=
-    iIndepFun.congr hf_indep (fun i ↦ (hf_meas i).ae_eq_mk)
-  apply IndepFun.congr (this.indepFun_div_div (fun i ↦ (hf_meas i).measurable_mk) i j k l
-    hik hil hjk hjl)
-  · exact (((hf_meas i).ae_eq_mk).div (hf_meas j).ae_eq_mk).symm
-  · exact ((hf_meas k).ae_eq_mk.div (hf_meas l).ae_eq_mk).symm
+    IndepFun (f i / f j) (f k / f l) μ :=
+  Kernel.iIndepFun.indepFun_div_div₀ hf_indep (by simp [hf_meas]) i j k l hik hil hjk hjl
 
 end Div
 
@@ -820,13 +807,8 @@ lemma iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun f μ)
 @[to_additive]
 lemma iIndepFun.indepFun_finset_prod_of_not_mem₀ (hf_Indep : iIndepFun f μ)
     (hf_meas : ∀ i, AEMeasurable (f i) μ) {s : Finset ι} {i : ι} (hi : i ∉ s) :
-    IndepFun (∏ j ∈ s, f j) (f i) μ := by
-  have : iIndepFun (fun i ↦ (hf_meas i).mk) μ :=
-    iIndepFun.congr hf_Indep (fun i ↦ (hf_meas i).ae_eq_mk)
-  apply IndepFun.congr (this.indepFun_finset_prod_of_not_mem (fun i ↦ (hf_meas i).measurable_mk)
-    hi)
-  · apply eventuallyEq_prod (fun i hi ↦ (hf_meas i).ae_eq_mk.symm)
-  · exact (hf_meas i).ae_eq_mk.symm
+    IndepFun (∏ j ∈ s, f j) (f i) μ :=
+  Kernel.iIndepFun.indepFun_finset_prod_of_not_mem₀ hf_Indep (by simp [hf_meas]) hi
 
 @[to_additive]
 lemma iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β} (hf_Indep : iIndepFun f μ)
