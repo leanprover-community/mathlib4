@@ -187,7 +187,7 @@ lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
   (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
     Gr+[g] (of ((GradedPiece.mk FS fun n ↦ FS (n - 1)) y)) = 0 := by
   obtain ⟨x, hx⟩ := hy
-  set yₚ := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (y : ofClass (FS p))
+  let yₚ := GradedPiece.mk FS (fun n ↦ FS (n - 1)) (y : ofClass (FS p))
   show of yₚ ∈ Gr+[g].ker
   rw [FilteredAddGroupHom.AssociatedGradedAddMonoidHom.mem_ker_iff]
   intro i
@@ -207,7 +207,7 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
     (exhaustiveS : letI := (mk_int FS monoS); IsExhaustiveFiltration FS (fun n ↦ FS (n - 1)))
     (comp_eq_zero : g.toAddMonoidHom.comp f.toAddMonoidHom = 0) :
     IsStrict FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)) g := by
-  refine IsStrict_of_Int ?_
+  apply IsStrict_of_Int
   intro p z zp ⟨y₀, gy₀z⟩
   obtain ⟨s, hs⟩ : ∃ s : ℕ, y₀ ∈ FS (p + s) := by
     have : y₀ ∈ ⋃ i, (FS i : Set S) := by simp only [exhaustiveS.exhaustive, Set.mem_univ]
@@ -217,7 +217,7 @@ theorem strict_of_exhaustive_exact (monoS : Monotone FS) (monoT : Monotone FT)
   have (i : ℕ) : i ≤ s → ∃ y ∈ FS (p + s - i), g y = z := by
     intro h
     induction' i with i ih
-    · simpa only [Int.Nat.cast_ofNat_Int, Subtype.exists, sub_zero] using ⟨y₀, ⟨hs, gy₀z⟩⟩
+    · simpa using ⟨y₀, ⟨hs, gy₀z⟩⟩
     · rcases ih (Nat.le_of_succ_le h) with ⟨y, ymem, yeq⟩
       simp only [Subtype.exists, Nat.cast_add, Nat.cast_one, exists_prop]
       have hy : Gr+(p + s - i)[g] (GradedPiece.mk FS (fun n ↦ FS (n - 1)) ⟨y, ymem⟩) = 0 := by
@@ -256,7 +256,7 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
     refine FilteredHom.IsStrict_of_Int fun {p y} hp ⟨x', hx'⟩ ↦ ?_
     rcases discrete.discrete with ⟨t₀, t₀bot⟩
     have le_zero : ∀ t ≤ t₀, (FS t : Set S) = {0} := fun t ht ↦ (Set.Nonempty.subset_singleton_iff
-      Set.Nonempty.of_subtype).1 <| le_of_eq_of_le' t₀bot (monoS ht)
+      Set.Nonempty.of_subtype).mp (le_of_eq_of_le' t₀bot (monoS ht))
     have (s : ℕ) : ∃ r : FR p, y - f r ∈ (f.range : Set S) ∩ FS (p - s) := by
       set yₚ := AssociatedGraded.of <|
         GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
@@ -266,15 +266,13 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
         refine ⟨xₚp, ⟨⟨x' - xₚp, hx' ▸ AddMonoidHom.map_sub f.toAddMonoidHom x' xₚp⟩, ?_⟩⟩
         simp only [Nat.cast_zero, sub_zero, SetLike.mem_coe]
         rw [sub_eq_add_neg, add_comm]
-        exact add_mem (neg_mem <| FilteredHom.pieces_wise (SetLike.coe_mem xₚp)) hp
+        exact add_mem (neg_mem (FilteredHom.pieces_wise xₚp.2)) hp
       · rcases ih with ⟨r, ⟨hr₁, hr₂⟩⟩
         set yₚₛ := AssociatedGraded.of <|
           GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y - f r, hr₂⟩ : ofClass (FS (p - s)))
-        obtain ⟨xₚₛ, hxₚₛ⟩ := (exact yₚₛ).1 <| zero_of_pieces_range hr₁ comp_eq_zero
+        obtain ⟨xₚₛ, hxₚₛ⟩ := (exact yₚₛ).mp (zero_of_pieces_range hr₁ comp_eq_zero)
         induction' h : xₚₛ (p - s) using GradedPiece.induction_on with xₚₛps
-        have ps_mem_p : xₚₛps.val ∈ FR p := by
-          suffices xₚₛps.val ∈ FR (p - s) from monoR (show p - s ≤ p by omega) this
-          exact SetLike.coe_mem xₚₛps
+        have ps_mem_p : xₚₛps.val ∈ FR p := monoR (by omega) xₚₛps.2
         let xr := (⟨xₚₛps + r, add_mem ps_mem_p r.2⟩ : FR p)
         refine ⟨xr, ⟨⟨x' - xr, hx' ▸ map_sub f.toAddMonoidHom x' xr⟩, ?_⟩⟩
         apply_fun (· (p - s)) at hxₚₛ
@@ -329,7 +327,7 @@ theorem ker_in_range_of_graded_exact (monoS : Monotone FS)
         induction' r' using GradedPiece.induction_on with r'out
         have : Gr+(p - s)[f] ((GradedPiece.mk FR fun n ↦ FR (n - 1)) r'out) =
             (GradedPiece.mk FS fun n ↦ FS (n - 1)) ⟨y - f r, hr⟩ := by
-          simpa [GradedPiece.mk] using hr'
+          simpa using hr'
         simp only [GradedPieceHom_apply_mk_eq_mk_piece_wise_hom, Eq.comm] at this
         use r + r'out
         simpa only [Nat.cast_add, Nat.cast_one, map_add, sub_add_eq_sub_sub] using
