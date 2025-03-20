@@ -265,6 +265,12 @@ theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 
 theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 
+theorem mul_I_im_re (x : ℝ) : (x * I).im = x := by
+  rw [mul_I_im, ofReal_re]
+
+theorem I_mul_im_re (x : ℝ) : (I * x).im = x := by
+  rw [I_mul_im, ofReal_re]
+
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
   ext <;> simp [Complex.equivRealProd, ofReal]
