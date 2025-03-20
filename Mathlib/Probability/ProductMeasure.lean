@@ -188,7 +188,7 @@ lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ
 end Measure
 
 theorem partialTraj_const_restrict₂ {a b : ℕ} :
-    (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ (Ioc_subset_Iic_self (a := a))) =
+    (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ Ioc_subset_Iic_self) =
     const _ (Measure.pi (fun i : Ioc a b ↦ μ i)) := by
   obtain hab | hba := lt_or_le a b
   · refine Nat.le_induction ?_ (fun n hn hind ↦ ?_) b (Nat.succ_le.2 hab) <;> ext1 x₀
@@ -220,8 +220,7 @@ theorem partialTraj_const {a b : ℕ} :
 namespace Measure
 
 theorem isProjectiveLimit_infinitePiNat :
-    IsProjectiveLimit (infinitePiNat μ)
-      (fun I : Finset ℕ ↦ (Measure.pi (fun i : I ↦ μ i))) := by
+    IsProjectiveLimit (infinitePiNat μ) (fun I : Finset ℕ ↦ (Measure.pi (fun i : I ↦ μ i))) := by
   intro I
   rw [isProjectiveMeasureFamily_pi μ _ _ I.subset_Iic_sup_id,
     ← restrict₂_comp_restrict I.subset_Iic_sup_id, ← map_map, ← frestrictLe, infinitePiNat,
