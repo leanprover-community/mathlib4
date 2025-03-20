@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
+import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 
 /-! # Linear maps which split
 
@@ -48,6 +48,7 @@ lemma complement_isClosed (h : f.Splits) : IsClosed (X := F) h.complement :=
 lemma complement_isCompl (h : f.Splits) : IsCompl (LinearMap.range f) h.complement :=
   (Classical.choose_spec h.closedComplemented.exists_isClosed_isCompl).2
 
+/-- TODO! add missing documentation -/
 def foo (h : f.Splits) : F ≃L[𝕜] E × h.complement :=
   -- use `Submodule.ClosedComplemented.exists_submodule_equiv_prod `, or so!
   -- choose a complement E' of im f (in Lean: is h.complement)
@@ -80,10 +81,36 @@ lemma prodMap (h : f.Splits) (h' : g.Splits) : (f.prodMap g).Splits := by
     rw [this]
     sorry -- also missing: Submodule.ClosedComplemented.prod
 
-lemma of_injective_of_findim [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
-  refine ⟨hf, ?_, ?_⟩
-  · sorry
-  · sorry -- apply Submodule.ClosedComplemented.of_finiteDimensional (range f)
+/-- The composition of split continuous linear maps splits. -/
+lemma comp {g : F →L[𝕜] F'} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := sorry
+
+lemma compCLE_left {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) : (f.comp f₀.toContinuousLinearMap).Splits :=
+  f₀.splits.comp hf
+
+lemma compCLE_right {g : F ≃L[𝕜] F'} (hf : f.Splits) : (g.toContinuousLinearMap.comp f).Splits :=
+  hf.comp g.splits
+
+section RCLike
+
+variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [FiniteDimensional 𝕜 F] {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}
+
+/-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
+lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
+  have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
+  exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
+
+/-- If `f : E → F` is injective, `E` is finite-dimensional and `F` is Banach, then `f` splits. -/
+lemma of_injective_of_finiteDimensional_of_completeSpace
+    [FiniteDimensional 𝕜 E] [CompleteSpace F] (hf : Injective f) : f.Splits := by
+  have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
+  exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
+
+-- If `f : E → F` is injective, `E` and `F` are Banach and `f` is Fredholm, then `f` splits.
+
+end RCLike
 
 end ContinuousLinearMap.Splits
 
