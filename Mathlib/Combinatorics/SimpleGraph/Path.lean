@@ -277,6 +277,12 @@ lemma  IsCycle.tail_not_nil {v : V} {p : G.Walk v v} (hp : p.IsCycle) : ¬ p.tai
   rw [← length_tail_add_one hp.not_nil] at this
   omega
 
+lemma  IsCycle.tail_tail_not_nil {v : V} {p : G.Walk v v} (hp : p.IsCycle) : ¬ p.tail.tail.Nil := by
+  have := hp.three_le_length
+  rw [not_nil_iff_lt_length]
+  rw [← length_tail_add_one hp.not_nil, ← length_tail_add_one hp.tail_not_nil] at this
+  omega
+
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
   simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
