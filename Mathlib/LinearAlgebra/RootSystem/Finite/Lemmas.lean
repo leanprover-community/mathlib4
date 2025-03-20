@@ -205,7 +205,7 @@ theorem exists_apply_eq_or_aux {x y z : R}
     (hik : x = 2 * z ∨ x = 3 * z ∨ z = 2 * x ∨ z = 3 * x)
     (hjk : y = 2 * z ∨ y = 3 * z ∨ z = 2 * y ∨ z = 3 * y) :
     x = 0 ∧ y = 0 ∧ z = 0 := by
-  /- The below proof (due to Mario Carneiro, Johan Commelin, Bhavik Mehta, Wang Jingting) should
+  /- The below proof (due to Mario Carneiro, Johan Commelin, Bhavik Mehta, Jingting Wang) should
      not really be necessary: we should have a tactic to crush this. -/
   suffices y = 0 ∨ z = 0 by apply this.elim <;> rintro rfl <;> simp_all
   let S : Finset (ℕ × ℕ) := {(1, 2), (1, 3), (2, 1), (3, 1)}
