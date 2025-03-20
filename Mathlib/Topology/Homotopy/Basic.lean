@@ -213,8 +213,8 @@ def trans {f₀ f₁ f₂ : C(X, Y)} (F : Homotopy f₀ f₁) (G : Homotopy f₁
   continuous_toFun := by
     refine
       continuous_if_le (continuous_induced_dom.comp continuous_fst) continuous_const
-        (F.continuous.comp (by continuity)).continuousOn
-        (G.continuous.comp (by continuity)).continuousOn ?_
+        (F.continuous.comp (by fun_prop)).continuousOn
+        (G.continuous.comp (by fun_prop)).continuousOn ?_
     rintro x hx
     norm_num [hx]
   map_zero_left x := by norm_num
