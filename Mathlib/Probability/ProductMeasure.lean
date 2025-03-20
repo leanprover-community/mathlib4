@@ -260,7 +260,7 @@ lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i
   rw [map_apply _ hS.cylinder, cylinder, ← Set.preimage_comp, coe_piCongrLeft,
     restrict_comp_piCongrLeft, Set.preimage_comp, ← map_apply,
     infinitePiNat_map_restrict (fun n ↦ μ (e n)), ← cylinder, piContent_cylinder μ hS,
-    ← pi_map_piCongrLeft (e.frestrict I), map_apply _ hS]
+    ← pi_map_piCongrLeft (e.restrictPreimageFinset I), map_apply _ hS]
   · rfl
   any_goals fun_prop
   exact hS.preimage (by fun_prop)
