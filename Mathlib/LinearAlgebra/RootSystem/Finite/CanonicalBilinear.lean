@@ -264,14 +264,6 @@ lemma zero_lt_pairingIn_iff' [Finite ι] :
   let _i : Fintype ι := Fintype.ofFinite ι
   zero_lt_pairingIn_iff (P.posRootForm S) i j
 
-omit [Module S M] [IsScalarTower S R M] in
-lemma pairingIn_zero_iff [Finite ι] [NoZeroDivisors R] :
-    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
-  let _i : Fintype ι := Fintype.ofFinite ι
-  have _i := Algebra.charZero_of_charZero S R
-  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn]
-  exact (P.posRootForm S).toInvariantForm.pairing_zero_iff i j
-
 end IsValuedInOrdered
 
 end RootPairing
