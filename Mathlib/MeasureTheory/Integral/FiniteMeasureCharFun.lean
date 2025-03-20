@@ -100,41 +100,41 @@ theorem probChar_SeparatesPoints (he : Continuous e) (he' : e ≠ 1)
   _ ≠ 1 := ha
 
 /-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v (Multiplicative.toAdd w))`. -/
-def probChar_monoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+def probCharMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     Multiplicative W →* (V →ᵇ ℂ) where
   toFun := probChar he hL
   map_one' := probChar_one
   map_mul' := probChar_mul (he := he) (hL := hL)
 
 @[simp]
-lemma probChar_monoidHom_apply (w : Multiplicative W) (v : V) :
-    probChar_monoidHom he hL w v = e (L v (Multiplicative.toAdd w)) := by simp [probChar_monoidHom]
+lemma probCharMonoidHom_apply (w : Multiplicative W) (v : V) :
+    probCharMonoidHom he hL w v = e (L v (Multiplicative.toAdd w)) := by simp [probCharMonoidHom]
 
 /-- Algebra homomorphism mapping `w` to `fun v ↦ e (L v (Multiplicative.toAdd w))`. -/
 noncomputable
-def probChar_AlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+def probCharAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     AddMonoidAlgebra ℂ W →ₐ[ℂ] (V →ᵇ ℂ) :=
-  AddMonoidAlgebra.lift ℂ W (V →ᵇ ℂ) (probChar_monoidHom he hL)
+  AddMonoidAlgebra.lift ℂ W (V →ᵇ ℂ) (probCharMonoidHom he hL)
 
 @[simp]
-lemma probChar_AlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
-    probChar_AlgHom he hL w v = ∑ a ∈ w.support, w a * (e (L v a) : ℂ) := by
-  simp only [probChar_AlgHom, AddMonoidAlgebra.lift_apply]
+lemma probCharAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
+    probCharAlgHom he hL w v = ∑ a ∈ w.support, w a * (e (L v a) : ℂ) := by
+  simp only [probCharAlgHom, AddMonoidAlgebra.lift_apply]
   rw [Finsupp.sum_of_support_subset w subset_rfl]
-  · simp only [coe_sum, BoundedContinuousFunction.coe_smul, probChar_monoidHom_apply, toAdd_ofAdd,
+  · simp only [coe_sum, BoundedContinuousFunction.coe_smul, probCharMonoidHom_apply, toAdd_ofAdd,
       smul_eq_mul, Finset.sum_apply]
   · simp
 
-lemma probChar_AlgHom_star_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    {x : V →ᵇ ℂ} (hx : x ∈ (probChar_AlgHom he hL).range) :
-    star x ∈ (probChar_AlgHom he hL).range := by
+lemma probCharAlgHom_star_mem (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
+    {x : V →ᵇ ℂ} (hx : x ∈ (probCharAlgHom he hL).range) :
+    star x ∈ (probCharAlgHom he hL).range := by
   simp only [AlgHom.mem_range] at hx ⊢
   obtain ⟨y, rfl⟩ := hx
   let z := Finsupp.mapRange star (star_zero _) y
   let f : W ↪ W := ⟨fun x ↦ -x, (fun _ _ ↦ neg_inj.mp)⟩
   refine ⟨z.embDomain f, ?_⟩
   ext1 u
-  simp only [probChar_AlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
+  simp only [probCharAlgHom_apply, Finsupp.support_embDomain, Finset.sum_map,
     Finsupp.embDomain_apply, star_apply, star_sum, star_mul', Circle.star_addChar]
   rw [Finsupp.support_mapRange_of_injective (star_zero _) y star_injective]
   simp_rw [← map_neg (L u)]
@@ -142,17 +142,17 @@ lemma probChar_AlgHom_star_mem (he : Continuous e) (hL : Continuous fun p : V ×
 
 /-- The star-subalgebra of exponential polynomials. -/
 noncomputable
-def probChar_Poly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
+def probCharPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     StarSubalgebra ℂ (V →ᵇ ℂ) where
-  toSubalgebra := (probChar_AlgHom he hL).range
+  toSubalgebra := (probCharAlgHom he hL).range
   star_mem' := by
     intro x hx
-    exact probChar_AlgHom_star_mem he hL hx
+    exact probCharAlgHom_star_mem he hL hx
 
-lemma mem_probChar_Poly (f : V →ᵇ ℂ) :
-    f ∈ probChar_Poly he hL
+lemma mem_probCharPoly (f : V →ᵇ ℂ) :
+    f ∈ probCharPoly he hL
       ↔ ∃ w : AddMonoidAlgebra ℂ W, f = fun x ↦ ∑ a ∈ w.support, w a * (e (L x a) : ℂ) := by
-  change f ∈ (probChar_AlgHom he hL).range ↔ _
+  change f ∈ (probCharAlgHom he hL).range ↔ _
   rw [AlgHom.mem_range]
   constructor
   · rintro ⟨y, rfl⟩
@@ -164,8 +164,8 @@ lemma mem_probChar_Poly (f : V →ᵇ ℂ) :
     ext
     simp [h]
 
-lemma probChar_mem_probChar_Poly (w : W) : probChar he hL w ∈ probChar_Poly he hL := by
-  rw [mem_probChar_Poly]
+lemma probChar_mem_probCharPoly (w : W) : probChar he hL w ∈ probCharPoly he hL := by
+  rw [mem_probCharPoly]
   refine ⟨AddMonoidAlgebra.single w 1, ?_⟩
   ext v
   simp only [probChar_apply, AddMonoidAlgebra.single]
@@ -175,15 +175,15 @@ lemma probChar_mem_probChar_Poly (w : W) : probChar he hL w ∈ probChar_Poly he
   · simp [Finsupp.single_apply_ne_zero]
   · simp
 
-lemma probChar_Poly_separatesPoints (he : Continuous e) (he' : e ≠ 1)
+lemma probCharPoly_separatesPoints (he : Continuous e) (he' : e ≠ 1)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) :
-    ((probChar_Poly he hL).map (toContinuousMapStarₐ ℂ)).SeparatesPoints := by
+    ((probCharPoly he hL).map (toContinuousMapStarₐ ℂ)).SeparatesPoints := by
   intro v v' hvv'
   obtain ⟨w, hw⟩ := probChar_SeparatesPoints he he' hL hL' hvv'
   use probChar he hL w
   simp only [StarSubalgebra.coe_toSubalgebra, StarSubalgebra.coe_map, Set.mem_image,
     SetLike.mem_coe, exists_exists_and_eq_and, ne_eq, SetLike.coe_eq_coe]
-  exact ⟨⟨probChar he hL w, probChar_mem_probChar_Poly w, rfl⟩, hw⟩
+  exact ⟨⟨probChar he hL w, probChar_mem_probCharPoly w, rfl⟩, hw⟩
 
 section ext
 
@@ -201,9 +201,9 @@ theorem ext_of_charFun_eq (he : Continuous e) (he' : e ≠ 1)
     (h : ∀ w, ∫ v, probChar he hL w v ∂P = ∫ v, probChar he hL w v ∂P') :
     P = P' := by
   apply ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
-      (probChar_Poly_separatesPoints he he' hL hL')
+      (probCharPoly_separatesPoints he he' hL hL')
   intro g hg
-  simp [StarSubalgebra.mem_map, mem_probChar_Poly] at hg
+  simp [StarSubalgebra.mem_map, mem_probCharPoly] at hg
   obtain ⟨w, hw⟩ := hg
   rw [hw]
   have hsum (P : Measure V) [IsFiniteMeasure P] :
