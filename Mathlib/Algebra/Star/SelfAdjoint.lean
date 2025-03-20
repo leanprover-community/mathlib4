@@ -584,6 +584,11 @@ protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [St
     IsStarNormal (f r) where
   star_comm_self := by simpa [map_star] using congr(f $(hr.star_comm_self))
 
+protected instance IsStarNormal.smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
+    [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]
+    (r : R) (a : A) [ha : IsStarNormal a] : IsStarNormal (r • a) where
+  star_comm_self := star_smul r a ▸ ha.star_comm_self.smul_left (star r) |>.smul_right r
+
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]
     {x : R} : IsStarNormal x :=
