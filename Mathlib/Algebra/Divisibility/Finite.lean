@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Data.Fintype.Defs
 
 /-!
 # Divisibility in finite types

@@ -115,7 +115,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
   have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl -- should this be a lemma?
   rw [this]
-  apply hf.comp <| contDiffOn_id.prod hα
+  apply hf.comp <| contDiffOn_id.prodMk hα
   intro _ ht
   rw [mem_prod]
   exact ⟨ht, hmem _ ht⟩

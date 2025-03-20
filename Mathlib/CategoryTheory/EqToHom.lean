@@ -51,6 +51,14 @@ theorem eqToHom_trans {X Y Z : C} (p : X = Y) (q : Y = Z) :
   cases q
   simp
 
+/-- `eqToHom h` is heterogeneously equal to the identity of its domain. -/
+lemma eqToHom_heq_id_dom (X Y : C) (h : X = Y) : HEq (eqToHom h) (𝟙 X) := by
+  subst h; rfl
+
+/-- `eqToHom h` is heterogeneously equal to the identity of its codomain. -/
+lemma eqToHom_heq_id_cod (X Y : C) (h : X = Y) : HEq (eqToHom h) (𝟙 Y) := by
+  subst h; rfl
+
 /-- Two morphisms are conjugate via eqToHom if and only if they are heterogeneously equal.
 Note this used to be in the Functor namespace, where it doesn't belong. -/
 theorem conj_eqToHom_iff_heq {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) (h : W = Y) (h' : X = Z) :
@@ -229,7 +237,7 @@ theorem ext {F G : C ⥤ D} (h_obj : ∀ X, F.obj X = G.obj X)
     F = G := by
   match F, G with
   | mk F_pre _ _ , mk G_pre _ _ =>
-    match F_pre, G_pre with  -- Porting note: did not unfold the Prefunctor unlike Lean3
+    match F_pre, G_pre with
     | Prefunctor.mk F_obj _ , Prefunctor.mk G_obj _ =>
     obtain rfl : F_obj = G_obj := by
       ext X
@@ -352,8 +360,9 @@ def Equivalence.induced {T : Type*} (e : T ≃ D) :
           eqToHom (e.apply_symm_apply Y).symm
       map_comp {X Y Z} f g := by
         dsimp
-        erw [Category.assoc, Category.assoc, Category.assoc]
-        rw [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
+        rw [Category.assoc]
+        erw [Category.assoc]
+        rw [Category.assoc, eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
   unitIso := NatIso.ofComponents (fun _ ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
     dsimp
     erw [eqToHom_trans_assoc _ (by simp), eqToHom_refl, Category.id_comp]

@@ -336,7 +336,7 @@ theorem adjoin.algebraMap_mem (x : F) : algebraMap F E x ∈ adjoin F S :=
 
 theorem adjoin.range_algebraMap_subset : Set.range (algebraMap F E) ⊆ adjoin F S := by
   intro x hx
-  cases' hx with f hf
+  obtain ⟨f, hf⟩ := hx
   rw [← hf]
   exact adjoin.algebraMap_mem F S f
 

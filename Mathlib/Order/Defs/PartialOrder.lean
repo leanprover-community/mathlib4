@@ -93,7 +93,7 @@ instance (priority := 900) : @Trans α α α GT.gt GE.ge GT.gt := ⟨gt_of_gt_of
 instance (priority := 900) : @Trans α α α GE.ge GT.gt GT.gt := ⟨gt_of_ge_of_gt⟩
 
 /-- `<` is decidable if `≤` is. -/
-def decidableLTOfDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := α) (· < ·)
+def decidableLTOfDecidableLE [DecidableLE α] : DecidableLT α
   | a, b =>
     if hab : a ≤ b then
       if hba : b ≤ a then isFalse fun hab' => not_le_of_gt hab' hba
@@ -125,7 +125,7 @@ lemma lt_of_le_of_ne : a ≤ b → a ≠ b → a < b := fun h₁ h₂ =>
   lt_of_le_not_le h₁ <| mt (le_antisymm h₁) h₂
 
 /-- Equality is decidable if `≤` is. -/
-def decidableEqOfDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableEq α
+def decidableEqOfDecidableLE [DecidableLE α] : DecidableEq α
   | a, b =>
     if hab : a ≤ b then
       if hba : b ≤ a then isTrue (le_antisymm hab hba) else isFalse fun heq => hba (heq ▸ le_refl _)
@@ -133,7 +133,7 @@ def decidableEqOfDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableEq
 
 namespace Decidable
 
-variable [DecidableRel (α := α) (· ≤ ·)]
+variable [DecidableLE α]
 
 lemma lt_or_eq_of_le (hab : a ≤ b) : a < b ∨ a = b :=
   if hba : b ≤ a then Or.inr (le_antisymm hab hba) else Or.inl (lt_of_le_not_le hab hba)

@@ -75,15 +75,15 @@ def det : GL n R →* Rˣ where
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
-/-- Given a matrix with invertible determinant we get an element of `GL n R`-/
+/-- Given a matrix with invertible determinant, we get an element of `GL n R`. -/
 def mk' (A : Matrix n n R) (_ : Invertible (Matrix.det A)) : GL n R :=
   unitOfDetInvertible A
 
-/-- Given a matrix with unit determinant we get an element of `GL n R`-/
+/-- Given a matrix with unit determinant, we get an element of `GL n R`. -/
 noncomputable def mk'' (A : Matrix n n R) (h : IsUnit (Matrix.det A)) : GL n R :=
   nonsingInvUnit A h
 
-/-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`-/
+/-- Given a matrix with non-zero determinant over a field, we get an element of `GL n K`. -/
 def mkOfDetNeZero {K : Type*} [Field K] (A : Matrix n n K) (h : Matrix.det A ≠ 0) : GL n K :=
   mk' A (invertibleOfNonzero h)
 
