@@ -5,7 +5,6 @@ Authors: Jeremy Avigad, Andrew Zipperer, Haitao Zhang, Minchao Wu, Yury Kudryash
 -/
 import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Restrict
-import Mathlib.Logic.Function.Conjugate
 
 /-!
 # Functions over sets
@@ -398,44 +397,6 @@ end injOn
 section graphOn
 variable {x : α × β}
 
-@[simp] lemma mem_graphOn : x ∈ s.graphOn f ↔ x.1 ∈ s ∧ f x.1 = x.2 := by aesop (add simp graphOn)
-
-@[simp] lemma graphOn_empty (f : α → β) : graphOn f ∅ = ∅ := image_empty _
-@[simp] lemma graphOn_eq_empty : graphOn f s = ∅ ↔ s = ∅ := image_eq_empty
-@[simp] lemma graphOn_nonempty : (s.graphOn f).Nonempty ↔ s.Nonempty := image_nonempty
-
-protected alias ⟨_, Nonempty.graphOn⟩ := graphOn_nonempty
-
-@[simp]
-lemma graphOn_union (f : α → β) (s t : Set α) : graphOn f (s ∪ t) = graphOn f s ∪ graphOn f t :=
-  image_union ..
-
-@[simp]
-lemma graphOn_singleton (f : α → β) (x : α) : graphOn f {x} = {(x, f x)} :=
-  image_singleton ..
-
-@[simp]
-lemma graphOn_insert (f : α → β) (x : α) (s : Set α) :
-    graphOn f (insert x s) = insert (x, f x) (graphOn f s) :=
-  image_insert_eq ..
-
-@[simp]
-lemma image_fst_graphOn (f : α → β) (s : Set α) : Prod.fst '' graphOn f s = s := by
-  simp [graphOn, image_image]
-
-@[simp] lemma image_snd_graphOn (f : α → β) : Prod.snd '' s.graphOn f = f '' s := by ext x; simp
-
-lemma fst_injOn_graph : (s.graphOn f).InjOn Prod.fst := by aesop (add simp InjOn)
-
-lemma graphOn_comp (s : Set α) (f : α → β) (g : β → γ) :
-    s.graphOn (g ∘ f) = (fun x ↦ (x.1, g x.2)) '' s.graphOn f := by
-  simpa using image_comp (fun x ↦ (x.1, g x.2)) (fun x ↦ (x, f x)) _
-
-lemma graphOn_univ_eq_range : univ.graphOn f = range fun x ↦ (x, f x) := image_univ
-
-@[simp] lemma graphOn_inj {g : α → β} : s.graphOn f = s.graphOn g ↔ s.EqOn f g := by
-  simp [Set.ext_iff, funext_iff, forall_swap, EqOn]
-
 lemma graphOn_univ_inj {g : α → β} : univ.graphOn f = univ.graphOn g ↔ f = g := by simp
 
 lemma graphOn_univ_injective : Injective (univ.graphOn : (α → β) → Set (α × β)) :=
@@ -458,14 +419,6 @@ lemma exists_eq_graphOn [Nonempty β] {s : Set (α × β)} :
     (∃ f t, s = graphOn f t) ↔ InjOn Prod.fst s :=
   .trans ⟨fun ⟨f, t, hs⟩ ↦ ⟨f, by rw [hs, image_fst_graphOn]⟩, fun ⟨f, hf⟩ ↦ ⟨f, _, hf⟩⟩
     exists_eq_graphOn_image_fst
-
-lemma graphOn_prod_graphOn (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
-    s.graphOn f ×ˢ t.graphOn g = Equiv.prodProdProdComm .. ⁻¹' (s ×ˢ t).graphOn (Prod.map f g) := by
-  aesop
-
-lemma graphOn_prod_prodMap (s : Set α) (t : Set β) (f : α → γ) (g : β → δ) :
-    (s ×ˢ t).graphOn (Prod.map f g) = Equiv.prodProdProdComm .. ⁻¹' s.graphOn f ×ˢ t.graphOn g := by
-  aesop
 
 end graphOn
 
@@ -1065,169 +1018,6 @@ lemma bijOn_comm {g : β → α} (h : InvOn f g t s) : BijOn f s t ↔ BijOn g t
 
 end Set
 
-/-! ### Piecewise defined function -/
-namespace Set
-
-variable {δ : α → Sort*} (s : Set α) (f g : ∀ i, δ i)
-
-@[simp]
-theorem piecewise_empty [∀ i : α, Decidable (i ∈ (∅ : Set α))] : piecewise ∅ f g = g := by
-  ext i
-  simp [piecewise]
-
-@[simp]
-theorem piecewise_univ [∀ i : α, Decidable (i ∈ (Set.univ : Set α))] :
-    piecewise Set.univ f g = f := by
-  ext i
-  simp [piecewise]
-
-theorem piecewise_insert_self {j : α} [∀ i, Decidable (i ∈ insert j s)] :
-    (insert j s).piecewise f g j = f j := by simp [piecewise]
-
-variable [∀ j, Decidable (j ∈ s)]
-
-theorem piecewise_insert [DecidableEq α] (j : α) [∀ i, Decidable (i ∈ insert j s)] :
-    (insert j s).piecewise f g = Function.update (s.piecewise f g) j (f j) := by
-  simp (config := { unfoldPartialApp := true }) only [piecewise, mem_insert_iff]
-  ext i
-  by_cases h : i = j
-  · rw [h]
-    simp
-  · by_cases h' : i ∈ s <;> simp [h, h']
-
-@[simp]
-theorem piecewise_eq_of_mem {i : α} (hi : i ∈ s) : s.piecewise f g i = f i :=
-  if_pos hi
-
-@[simp]
-theorem piecewise_eq_of_not_mem {i : α} (hi : i ∉ s) : s.piecewise f g i = g i :=
-  if_neg hi
-
-theorem piecewise_singleton (x : α) [∀ y, Decidable (y ∈ ({x} : Set α))] [DecidableEq α]
-    (f g : α → β) : piecewise {x} f g = Function.update g x (f x) := by
-  ext y
-  by_cases hy : y = x
-  · subst y
-    simp
-  · simp [hy]
-
-theorem piecewise_eqOn (f g : α → β) : EqOn (s.piecewise f g) f s := fun _ =>
-  piecewise_eq_of_mem _ _ _
-
-theorem piecewise_eqOn_compl (f g : α → β) : EqOn (s.piecewise f g) g sᶜ := fun _ =>
-  piecewise_eq_of_not_mem _ _ _
-
-theorem piecewise_le {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
-    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g i) (h₂ : ∀ i ∉ s, f₂ i ≤ g i) :
-    s.piecewise f₁ f₂ ≤ g := fun i => if h : i ∈ s then by simp [*] else by simp [*]
-
-theorem le_piecewise {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α} [∀ j, Decidable (j ∈ s)]
-    {f₁ f₂ g : ∀ i, δ i} (h₁ : ∀ i ∈ s, g i ≤ f₁ i) (h₂ : ∀ i ∉ s, g i ≤ f₂ i) :
-    g ≤ s.piecewise f₁ f₂ :=
-  @piecewise_le α (fun i => (δ i)ᵒᵈ) _ s _ _ _ _ h₁ h₂
-
-@[gcongr]
-theorem piecewise_mono {δ : α → Type*} [∀ i, Preorder (δ i)] {s : Set α}
-    [∀ j, Decidable (j ∈ s)] {f₁ f₂ g₁ g₂ : ∀ i, δ i} (h₁ : ∀ i ∈ s, f₁ i ≤ g₁ i)
-    (h₂ : ∀ i ∉ s, f₂ i ≤ g₂ i) : s.piecewise f₁ f₂ ≤ s.piecewise g₁ g₂ := by
-  apply piecewise_le <;> intros <;> simp [*]
-
-@[deprecated (since := "2024-10-06")] alias piecewise_le_piecewise := piecewise_mono
-
-@[simp]
-theorem piecewise_insert_of_ne {i j : α} (h : i ≠ j) [∀ i, Decidable (i ∈ insert j s)] :
-    (insert j s).piecewise f g i = s.piecewise f g i := by simp [piecewise, h]
-
-@[simp]
-theorem piecewise_compl [∀ i, Decidable (i ∈ sᶜ)] : sᶜ.piecewise f g = s.piecewise g f :=
-  funext fun x => if hx : x ∈ s then by simp [hx] else by simp [hx]
-
-@[simp]
-theorem piecewise_range_comp {ι : Sort*} (f : ι → α) [∀ j, Decidable (j ∈ range f)]
-    (g₁ g₂ : α → β) : (range f).piecewise g₁ g₂ ∘ f = g₁ ∘ f :=
-  (piecewise_eqOn ..).comp_eq
-
-theorem MapsTo.piecewise_ite {s s₁ s₂ : Set α} {t t₁ t₂ : Set β} {f₁ f₂ : α → β}
-    [∀ i, Decidable (i ∈ s)] (h₁ : MapsTo f₁ (s₁ ∩ s) (t₁ ∩ t))
-    (h₂ : MapsTo f₂ (s₂ ∩ sᶜ) (t₂ ∩ tᶜ)) :
-    MapsTo (s.piecewise f₁ f₂) (s.ite s₁ s₂) (t.ite t₁ t₂) := by
-  refine (h₁.congr ?_).union_union (h₂.congr ?_)
-  exacts [(piecewise_eqOn s f₁ f₂).symm.mono inter_subset_right,
-    (piecewise_eqOn_compl s f₁ f₂).symm.mono inter_subset_right]
-
-theorem eqOn_piecewise {f f' g : α → β} {t} :
-    EqOn (s.piecewise f f') g t ↔ EqOn f g (t ∩ s) ∧ EqOn f' g (t ∩ sᶜ) := by
-  simp only [EqOn, ← forall_and]
-  refine forall_congr' fun a => ?_; by_cases a ∈ s <;> simp [*]
-
-theorem EqOn.piecewise_ite' {f f' g : α → β} {t t'} (h : EqOn f g (t ∩ s))
-    (h' : EqOn f' g (t' ∩ sᶜ)) : EqOn (s.piecewise f f') g (s.ite t t') := by
-  simp [eqOn_piecewise, *]
-
-theorem EqOn.piecewise_ite {f f' g : α → β} {t t'} (h : EqOn f g t) (h' : EqOn f' g t') :
-    EqOn (s.piecewise f f') g (s.ite t t') :=
-  (h.mono inter_subset_left).piecewise_ite' s (h'.mono inter_subset_left)
-
-theorem piecewise_preimage (f g : α → β) (t) : s.piecewise f g ⁻¹' t = s.ite (f ⁻¹' t) (g ⁻¹' t) :=
-  ext fun x => by by_cases x ∈ s <;> simp [*, Set.ite]
-
-theorem apply_piecewise {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) {x : α} :
-    h x (s.piecewise f g x) = s.piecewise (fun x => h x (f x)) (fun x => h x (g x)) x := by
-  by_cases hx : x ∈ s <;> simp [hx]
-
-theorem apply_piecewise₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i)
-    {x : α} :
-    h x (s.piecewise f g x) (s.piecewise f' g' x) =
-      s.piecewise (fun x => h x (f x) (f' x)) (fun x => h x (g x) (g' x)) x := by
-  by_cases hx : x ∈ s <;> simp [hx]
-
-theorem piecewise_op {δ' : α → Sort*} (h : ∀ i, δ i → δ' i) :
-    (s.piecewise (fun x => h x (f x)) fun x => h x (g x)) = fun x => h x (s.piecewise f g x) :=
-  funext fun _ => (apply_piecewise _ _ _ _).symm
-
-theorem piecewise_op₂ {δ' δ'' : α → Sort*} (f' g' : ∀ i, δ' i) (h : ∀ i, δ i → δ' i → δ'' i) :
-    (s.piecewise (fun x => h x (f x) (f' x)) fun x => h x (g x) (g' x)) = fun x =>
-      h x (s.piecewise f g x) (s.piecewise f' g' x) :=
-  funext fun _ => (apply_piecewise₂ _ _ _ _ _ _).symm
-
-@[simp]
-theorem piecewise_same : s.piecewise f f = f := by
-  ext x
-  by_cases hx : x ∈ s <;> simp [hx]
-
-theorem range_piecewise (f g : α → β) : range (s.piecewise f g) = f '' s ∪ g '' sᶜ := by
-  ext y; constructor
-  · rintro ⟨x, rfl⟩
-    by_cases h : x ∈ s <;> [left; right] <;> use x <;> simp [h]
-  · rintro (⟨x, hx, rfl⟩ | ⟨x, hx, rfl⟩) <;> use x <;> simp_all
-
-theorem injective_piecewise_iff {f g : α → β} :
-    Injective (s.piecewise f g) ↔
-      InjOn f s ∧ InjOn g sᶜ ∧ ∀ x ∈ s, ∀ y ∉ s, f x ≠ g y := by
-  rw [injective_iff_injOn_univ, ← union_compl_self s, injOn_union (@disjoint_compl_right _ _ s),
-    (piecewise_eqOn s f g).injOn_iff, (piecewise_eqOn_compl s f g).injOn_iff]
-  refine and_congr Iff.rfl (and_congr Iff.rfl <| forall₄_congr fun x hx y hy => ?_)
-  rw [piecewise_eq_of_mem s f g hx, piecewise_eq_of_not_mem s f g hy]
-
-theorem piecewise_mem_pi {δ : α → Type*} {t : Set α} {t' : ∀ i, Set (δ i)} {f g} (hf : f ∈ pi t t')
-    (hg : g ∈ pi t t') : s.piecewise f g ∈ pi t t' := by
-  intro i ht
-  by_cases hs : i ∈ s <;> simp [hf i ht, hg i ht, hs]
-
-@[simp]
-theorem pi_piecewise {ι : Type*} {α : ι → Type*} (s s' : Set ι) (t t' : ∀ i, Set (α i))
-    [∀ x, Decidable (x ∈ s')] : pi s (s'.piecewise t t') = pi (s ∩ s') t ∩ pi (s \ s') t' :=
-  pi_if _ _ _
-
-theorem univ_pi_piecewise {ι : Type*} {α : ι → Type*} (s : Set ι) (t t' : ∀ i, Set (α i))
-    [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t t') = pi s t ∩ pi sᶜ t' := by
-  simp [compl_eq_univ_diff]
-
-theorem univ_pi_piecewise_univ {ι : Type*} {α : ι → Type*} (s : Set ι) (t : ∀ i, Set (α i))
-    [∀ x, Decidable (x ∈ s)] : pi univ (s.piecewise t fun _ => univ) = pi s t := by simp
-
-end Set
-
 namespace Function
 
 open Set
@@ -1427,54 +1217,3 @@ lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
     simp [*, swap_apply_of_ne_of_ne]
 
 end Equiv
-
-/-! ### Vertical line test -/
-
-namespace Set
-
-/-- **Vertical line test** for functions.
-
-Let `f : α → β × γ` be a function to a product. Assume that `f` is surjective on the first factor
-and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` at most once.
-Then the image of `f` is the graph of some monoid homomorphism `f' : β → γ`. -/
-lemma exists_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
-    (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
-    ∃ f' : β → γ, range f = univ.graphOn f' := by
-  refine ⟨fun h ↦ (f (hf₁ h).choose).snd, ?_⟩
-  ext x
-  simp only [mem_range, comp_apply, mem_graphOn, mem_univ, true_and]
-  refine ⟨?_, fun hi ↦ ⟨(hf₁ x.1).choose, Prod.ext (hf₁ x.1).choose_spec hi⟩⟩
-  rintro ⟨g, rfl⟩
-  exact hf _ _ (hf₁ (f g).1).choose_spec
-
-/-- **Line test** for equivalences.
-
-Let `f : α → β × γ` be a homomorphism to a product of monoids. Assume that `f` is surjective on both
-factors and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` and every
-"horizontal line" `{(b, c) | b : β}` at most once. Then the image of `f` is the graph of some
-equivalence `f' : β ≃ γ`. -/
-lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
-    (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
-    ∃ e : β ≃ γ, range f = univ.graphOn e := by
-  obtain ⟨e₁, he₁⟩ := exists_range_eq_graphOn_univ hf₁ fun _ _ ↦ (hf _ _).1
-  obtain ⟨e₂, he₂⟩ := exists_range_eq_graphOn_univ (f := Equiv.prodComm _ _ ∘ f) (by simpa) <|
-    by simp [hf]
-  have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
-    rw [Set.ext_iff] at he₁ he₂
-    aesop (add simp [Prod.swap_eq_iff_eq_swap])
-  exact ⟨
-  { toFun := e₁
-    invFun := e₂
-    left_inv := fun h ↦ by rw [← he₁₂]
-    right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
-
-/-- **Vertical line test** for functions.
-
-Let `s : Set (β × γ)` be a set in a product. Assume that `s` maps bijectively to the first factor.
-Then `s` is the graph of some function `f : β → γ`. -/
-lemma exists_eq_mgraphOn_univ {s : Set (β × γ)}
-    (hs₁ : Bijective (Prod.fst ∘ (Subtype.val : s → β × γ))) : ∃ f : β → γ, s = univ.graphOn f := by
-  simpa using exists_range_eq_graphOn_univ hs₁.surjective
-    fun a b h ↦ congr_arg (Prod.snd ∘ (Subtype.val : s → β × γ)) (hs₁.injective h)
-
-end Set
