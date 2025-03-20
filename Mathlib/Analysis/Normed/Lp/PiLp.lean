@@ -795,11 +795,11 @@ end piLpCurry
 
 section sumPiLpEquivProdLpPiLp
 
-variable {ι κ : Type} (α : ι ⊕ κ → Type*) {p : ENNReal}
+variable {ι κ : Type*} (α : ι ⊕ κ → Type*) {p : ENNReal}
 variable [∀ i, SeminormedAddCommGroup (α i)]
 variable [∀ i, Module 𝕜 (α i)] [Fintype ι] [Fintype κ] [Fact (1 ≤ p)]
 
-/-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry -/
+/-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry. -/
 @[simps! +simpRhs]
 def sumPiLpEquivProdLpPiLp :
     WithLp p (Π i, α i) ≃ₗᵢ[𝕜]
