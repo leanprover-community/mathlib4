@@ -565,15 +565,13 @@ private lemma sum_of_iIndepFun_of_forall_aemeasurable
 lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
-  have A (i : s) : AEMeasurable (X i) μ := (h_subG i i.2).aemeasurable
   have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), X i ω) (∑ (i : s), c i) μ := by
     apply sum_of_iIndepFun_of_forall_aemeasurable
     · exact h_indep.precomp Subtype.val_injective
-    · exact fun i ↦ (A i)
+    · exact fun i ↦ (h_subG i i.2).aemeasurable
     · exact fun i _ ↦ h_subG i i.2
   rw [Finset.sum_coe_sort] at this
-  apply this.congr (ae_of_all _ fun ω ↦ ?_)
-  exact Finset.sum_attach s (fun i ↦ X i ω)
+  exact this.congr (ae_of_all _ fun ω ↦ Finset.sum_attach s (fun i ↦ X i ω))
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ)
