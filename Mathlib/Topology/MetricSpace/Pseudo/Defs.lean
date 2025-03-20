@@ -99,16 +99,16 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
-/-- A pseudo metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+/-- A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
 reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
 `dist x z ≤ dist x y + dist y z`.
 
 Note that we do not require `dist x y = 0 → x = y`. See `MetricSpace` for the analogous class with
 that stronger assumption.
 
-Any pseudo metric space is a topological space and a uniform space,
+Any pseudometric space is a topological space and a uniform space,
 where the topology and uniformity come from the metric.
-Note that a T1 pseudo metric space is just a metric space.
+Note that a T1 pseudometric space is just a metric space.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
 ensures that we do not get a diamond when doing
