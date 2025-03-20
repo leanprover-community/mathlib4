@@ -360,6 +360,7 @@ import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Algebra.Group.Pointwise.Set.Card
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
 import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Group.Semiconj.Basic
@@ -3236,8 +3237,10 @@ import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
+import Mathlib.Data.Set.Restrict
 import Mathlib.Data.Set.SMulAntidiagonal
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma

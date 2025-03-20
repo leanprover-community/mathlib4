@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Submonoid.MulAction
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Definition of `orbit`, `fixedPoints` and `stabilizer`
