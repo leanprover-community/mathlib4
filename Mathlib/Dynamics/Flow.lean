@@ -83,6 +83,8 @@ structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd 
   map_add' : ∀ t₁ t₂ x, toFun (t₁ + t₂) x = toFun t₁ (toFun t₂ x)
   map_zero' : ∀ x, toFun 0 x = x
 
+attribute [fun_prop] Flow.cont'
+
 namespace Flow
 
 variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ]
@@ -105,8 +107,8 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 
 @[continuity, fun_prop]
 protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
-    {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
-  ϕ.cont'.comp (ht.prodMk hf)
+    {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) := by
+  fun_prop
 
 alias _root_.Continuous.flow := Flow.continuous
 
@@ -168,6 +170,8 @@ def toHomeomorph (t : τ) : (α ≃ₜ α) where
   invFun := ϕ (-t)
   left_inv x := by rw [← map_add, neg_add_cancel, map_zero_apply]
   right_inv x := by rw [← map_add, add_neg_cancel, map_zero_apply]
+  continuous_toFun := by fun_prop
+  continuous_invFun := by fun_prop
 
 theorem image_eq_preimage (t : τ) (s : Set α) : ϕ t '' s = ϕ (-t) ⁻¹' s :=
   (ϕ.toHomeomorph t).toEquiv.image_eq_preimage s
