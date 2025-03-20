@@ -53,7 +53,7 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ Finite
 open normal subgroups ordered by inclusion -/
 def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
-  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ => rfl⟩
+  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ ↦ fun _ _ ↦ rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
@@ -80,7 +80,7 @@ def toLimit (P : ProfiniteGrp.{u}) : P ⟶
   ofHom { toLimit_fun P with
   continuous_toFun := toLimit_fun_continuous P }
 
-/-- An auxiliary result, superceded by `toLimit_surjective` -/
+/-- An auxiliary result, superseded by `toLimit_surjective` -/
 theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩

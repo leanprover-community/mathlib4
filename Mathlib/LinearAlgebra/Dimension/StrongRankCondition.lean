@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
@@ -263,8 +264,8 @@ theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w
     exact linearIndependent_le_infinite_basis b v i
 
 /-- `StrongRankCondition` implies that if there is an injective linear map `(α →₀ R) →ₗ[R] β →₀ R`,
-  then the cardinal of `α` is smaller than or equal to the cardinal of `β`.
- -/
+then the cardinal of `α` is smaller than or equal to the cardinal of `β`.
+-/
 theorem card_le_of_injective'' {α : Type v} {β : Type v} (f : (α →₀ R) →ₗ[R] β →₀ R)
     (i : Injective f) : #α ≤ #β := by
   let b : Basis β R (β →₀ R) := ⟨1⟩

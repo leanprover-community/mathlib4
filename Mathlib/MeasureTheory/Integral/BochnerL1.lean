@@ -480,14 +480,11 @@ attribute [local instance] simpleFunc.normedSpace
 
 open ContinuousLinearMap
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The Bochner integral in L1 space as a continuous linear map. -/
 nonrec def integralCLM' : (α →₁[μ] E) →L[𝕜] E :=
   (integralCLM' α E 𝕜 μ).extend (coeToLp α E 𝕜) (simpleFunc.denseRange one_ne_top)
     simpleFunc.isUniformInducing
-
-variable {𝕜}
 
 /-- The Bochner integral in L1 space as a continuous linear map over ℝ. -/
 def integralCLM : (α →₁[μ] E) →L[ℝ] E :=

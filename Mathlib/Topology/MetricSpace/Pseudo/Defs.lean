@@ -58,7 +58,6 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
   .ofFun dist dist_self dist_comm dist_triangle ofDist_aux
 
--- Porting note: dropped the `dist_self` argument
 /-- Construct a bornology from a distance function and metric space axioms. -/
 abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
     (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
@@ -83,6 +82,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
   a nonnegative real number `dist x y` given `x y : α`. -/
 @[ext]
 class Dist (α : Type*) where
+  /-- Distance between two points -/
   dist : α → α → ℝ
 
 export Dist (dist)
@@ -109,10 +109,11 @@ structure. When instantiating a `PseudoMetricSpace` structure, the uniformity fi
 necessary, they will be filled in by default. In the same way, each (pseudo) metric space induces a
 (pseudo) emetric space structure. It is included in the structure, but filled in by default.
 -/
-class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
+class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
+  /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
     intros x y; exact ENNReal.coe_nnreal_eq _
@@ -242,6 +243,7 @@ example {x y : α} : 0 ≤ dist x y := by positivity
 
 /-- A version of `Dist` that takes value in `ℝ≥0`. -/
 class NNDist (α : Type*) where
+  /-- Nonnegative distance between two points -/
   nndist : α → α → ℝ≥0
 
 export NNDist (nndist)
@@ -287,8 +289,6 @@ theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
 
 /-- `nndist x x` vanishes -/
 @[simp] theorem nndist_self (a : α) : nndist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
-
--- Porting note: `dist_nndist` and `coe_nndist` moved up
 
 @[simp, norm_cast]
 theorem dist_lt_coe {x y : α} {c : ℝ≥0} : dist x y < c ↔ nndist x y < c :=
@@ -760,7 +760,7 @@ theorem nhds_basis_closedBall_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
 theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
   simp only [isOpen_iff_mem_nhds, mem_nhds_iff]
 
-theorem isOpen_ball : IsOpen (ball x ε) :=
+@[simp] theorem isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 
 theorem ball_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
@@ -1097,7 +1097,6 @@ theorem PseudoMetricSpace.dist_eq_of_dist_zero (x : α) {y z : α} (h : dist y z
     dist x y = dist x z :=
   dist_comm y x ▸ dist_comm z x ▸ sub_eq_zero.1 (abs_nonpos_iff.1 (h ▸ abs_dist_sub_le y z x))
 
--- Porting note: 3 new lemmas
 theorem dist_dist_dist_le_left (x y z : α) : dist (dist x z) (dist y z) ≤ dist x y :=
   abs_dist_sub_le ..
 

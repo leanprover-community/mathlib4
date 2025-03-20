@@ -35,7 +35,7 @@ measurable functions, as a basis for the Bochner integral.
 ## References
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
+  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -208,10 +208,13 @@ theorem _root_.Continuous.aestronglyMeasurable [TopologicalSpace α] [OpensMeasu
     AEStronglyMeasurable f μ :=
   hf.stronglyMeasurable.aestronglyMeasurable
 
-protected theorem prod_mk {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable[m] f μ)
+protected theorem prodMk {f : α → β} {g : α → γ} (hf : AEStronglyMeasurable[m] f μ)
     (hg : AEStronglyMeasurable[m] g μ) : AEStronglyMeasurable[m] (fun x => (f x, g x)) μ :=
-  ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prod_mk hg.stronglyMeasurable_mk,
-    hf.ae_eq_mk.prod_mk hg.ae_eq_mk⟩
+  ⟨fun x => (hf.mk f x, hg.mk g x), hf.stronglyMeasurable_mk.prodMk hg.stronglyMeasurable_mk,
+    hf.ae_eq_mk.prodMk hg.ae_eq_mk⟩
+
+@[deprecated (since := "2025-03-05")]
+protected alias prod_mk := AEStronglyMeasurable.prodMk
 
 /-- The composition of a continuous function of two variables and two ae strongly measurable
 functions is ae strongly measurable. -/
@@ -220,7 +223,7 @@ theorem _root_.Continuous.comp_aestronglyMeasurable₂
     {g : β → β' → γ} {f : α → β} {f' : α → β'} (hg : Continuous g.uncurry)
     (hf : AEStronglyMeasurable[m] f μ) (h'f : AEStronglyMeasurable[m] f' μ) :
     AEStronglyMeasurable[m] (fun x => g (f x) (f' x)) μ :=
-  hg.comp_aestronglyMeasurable (hf.prod_mk h'f)
+  hg.comp_aestronglyMeasurable (hf.prodMk h'f)
 
 /-- In a space with second countable topology, measurable implies ae strongly measurable. -/
 @[fun_prop, aesop unsafe 30% apply (rule_sets := [Measurable])]
@@ -294,7 +297,7 @@ theorem mul_iff_left [CommGroup β] [IsTopologicalGroup β] (hf : AEStronglyMeas
 protected theorem smul {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
     {g : α → β} (hf : AEStronglyMeasurable[m] f μ) (hg : AEStronglyMeasurable[m] g μ) :
     AEStronglyMeasurable[m] (fun x => f x • g x) μ :=
-  continuous_smul.comp_aestronglyMeasurable (hf.prod_mk hg)
+  continuous_smul.comp_aestronglyMeasurable (hf.prodMk hg)
 
 @[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable])) const_nsmul]
 protected theorem pow [Monoid β] [ContinuousMul β] (hf : AEStronglyMeasurable[m] f μ) (n : ℕ) :
@@ -314,7 +317,7 @@ protected theorem const_smul' {𝕜} [SMul 𝕜 β] [ContinuousConstSMul 𝕜 β
 @[to_additive (attr := measurability)]
 protected theorem smul_const {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
     (hf : AEStronglyMeasurable[m] f μ) (c : β) : AEStronglyMeasurable[m] (fun x => f x • c) μ :=
-  continuous_smul.comp_aestronglyMeasurable (hf.prod_mk aestronglyMeasurable_const)
+  continuous_smul.comp_aestronglyMeasurable (hf.prodMk aestronglyMeasurable_const)
 
 end Arithmetic
 
@@ -417,7 +420,7 @@ end SecondCountableAEStronglyMeasurable
 protected theorem dist {β : Type*} [PseudoMetricSpace β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEStronglyMeasurable (fun x => dist (f x) (g x)) μ :=
-  continuous_dist.comp_aestronglyMeasurable (hf.prod_mk hg)
+  continuous_dist.comp_aestronglyMeasurable (hf.prodMk hg)
 
 @[measurability]
 protected theorem norm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
@@ -436,7 +439,7 @@ a.e. measurability, **not** a.e. strong measurability. This is an intentional de
 for functions taking values in ℝ≥0∞, a.e. measurability is much more useful than
 a.e. strong measurability. -/
 @[fun_prop, measurability]
-protected theorem enorm {β : Type*} [SeminormedAddCommGroup β] {f : α → β}
+protected theorem enorm {β : Type*} [TopologicalSpace β] [ENormedAddMonoid β] {f : α → β}
     (hf : AEStronglyMeasurable f μ) : AEMeasurable (‖f ·‖ₑ) μ :=
   (continuous_enorm.comp_aestronglyMeasurable hf).aemeasurable
 
@@ -451,7 +454,7 @@ a.e. measurability is much more useful than a.e. strong measurability. -/
 protected theorem edist {β : Type*} [SeminormedAddCommGroup β] {f g : α → β}
     (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     AEMeasurable (fun a => edist (f a) (g a)) μ :=
-  (continuous_edist.comp_aestronglyMeasurable (hf.prod_mk hg)).aemeasurable
+  (continuous_edist.comp_aestronglyMeasurable (hf.prodMk hg)).aemeasurable
 
 @[measurability]
 protected theorem real_toNNReal {f : α → ℝ} (hf : AEStronglyMeasurable f μ) :
@@ -491,7 +494,7 @@ lemma nullMeasurableSet_mulSupport {E} [TopologicalSpace E] [MetrizableSpace E] 
     (hf : AEStronglyMeasurable f μ) : NullMeasurableSet (mulSupport f) μ :=
   (hf.nullMeasurableSet_eq_fun stronglyMeasurable_const.aestronglyMeasurable).compl
 
-theorem nullMeasurableSet_lt [LinearOrder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
+theorem nullMeasurableSet_lt [Preorder β] [OrderClosedTopology β] [PseudoMetrizableSpace β]
     {f g : α → β} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     NullMeasurableSet { a | f a < g a } μ := by
   apply

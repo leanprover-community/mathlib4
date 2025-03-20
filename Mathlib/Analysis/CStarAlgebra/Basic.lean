@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.Algebra.Star.Unitary
+import Mathlib.Data.Real.Star
 import Mathlib.Topology.Algebra.Module.Star
 
 /-!
@@ -76,8 +77,6 @@ for every `x`. Note that this condition actually implies equality, as is shown i
 `norm_star_mul_self` below. -/
 class CStarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_mul_self_le : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x⋆ * x‖
-
-@[deprecated (since := "2024-08-04")] alias CstarRing := CStarRing
 
 instance : CStarRing ℝ where
   norm_mul_self_le x := by
@@ -172,6 +171,13 @@ instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
 
 end ProdPi
 
+namespace MulOpposite
+
+instance {E : Type*} [NonUnitalNormedRing E] [StarRing E] [CStarRing E] : CStarRing Eᵐᵒᵖ where
+  norm_mul_self_le x := CStarRing.norm_self_mul_star (x := MulOpposite.unop x) |>.symm.le
+
+end MulOpposite
+
 section Unital
 
 
@@ -246,15 +252,13 @@ section starₗᵢ
 variable [CommSemiring 𝕜] [StarRing 𝕜]
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
 variable [Module 𝕜 E] [StarModule 𝕜 E]
-variable (𝕜)
 
+variable (𝕜) in
 /-- `star` bundled as a linear isometric equivalence -/
 def starₗᵢ : E ≃ₗᵢ⋆[𝕜] E :=
   { starAddEquiv with
     map_smul' := star_smul
     norm_map' := norm_star }
-
-variable {𝕜}
 
 @[simp]
 theorem coe_starₗᵢ : (starₗᵢ 𝕜 : E → E) = star :=

@@ -235,6 +235,18 @@ theorem factorial_mul_ascFactorial' (n k : ℕ) (h : 0 < n) :
   nth_rw 2 [Nat.eq_add_of_sub_eq h rfl]
   rw [Nat.sub_one, factorial_mul_ascFactorial]
 
+theorem ascFactorial_mul_ascFactorial (n l k : ℕ) :
+    n.ascFactorial l * (n + l).ascFactorial k = n.ascFactorial (l + k) := by
+  cases n with
+  | zero =>
+    cases l
+    · simp only [ascFactorial_zero, Nat.add_zero, Nat.one_mul, Nat.zero_add]
+    · simp only [Nat.add_right_comm, zero_ascFactorial, Nat.zero_add, Nat.zero_mul]
+  | succ n' =>
+    apply Nat.mul_left_cancel (factorial_pos n')
+    simp only [Nat.add_assoc, ← Nat.mul_assoc, factorial_mul_ascFactorial]
+    rw [Nat.add_comm 1 l, ← Nat.add_assoc, factorial_mul_ascFactorial, Nat.add_assoc]
+
 /-- Avoid in favor of `Nat.factorial_mul_ascFactorial` if you can. ℕ-division isn't worth it. -/
 theorem ascFactorial_eq_div (n k : ℕ) : (n + 1).ascFactorial k = (n + k)! / n ! :=
   Nat.eq_div_of_mul_eq_right n.factorial_ne_zero (factorial_mul_ascFactorial _ _)
@@ -440,7 +452,7 @@ lemma two_pow_mul_factorial_le_factorial_two_mul (n : ℕ) : 2 ^ n * n ! ≤ (2 
   rw [Nat.mul_comm, Nat.two_mul]
   calc
     _ ≤ (n + 1)! * (n + 2) ^ (n + 1) :=
-      Nat.mul_le_mul_left _ (pow_le_pow_of_le_left (le_add_left _ _) _)
+      Nat.mul_le_mul_left _ (pow_le_pow_left (le_add_left _ _) _)
     _ ≤ _ := Nat.factorial_mul_pow_le_factorial
 
 end Nat

@@ -53,7 +53,10 @@ namespace MeasureTheory
 finite measures. -/
 @[ext]
 structure JordanDecomposition (α : Type*) [MeasurableSpace α] where
-  (posPart negPart : Measure α)
+  /-- Positive part of the Jordan decomposition -/
+  posPart : Measure α
+  /-- Negative part of the Jordan decomposition -/
+  negPart : Measure α
   [posPart_finite : IsFiniteMeasure posPart]
   [negPart_finite : IsFiniteMeasure negPart]
   mutuallySingular : posPart ⟂ₘ negPart
@@ -267,7 +270,8 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
   on_goal 1 =>
     have a := hsu (hu.diff hv) diff_subset
     have b := hsv (hv.diff hu) diff_subset
-    erw [of_union (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
+    rw [Set.symmDiff_def,
+      of_union (v := s) (Set.disjoint_of_subset_left diff_subset disjoint_sdiff_self_right)
         (hu.diff hv) (hv.diff hu)] at hs
     rw [zero_apply] at a b
     constructor
