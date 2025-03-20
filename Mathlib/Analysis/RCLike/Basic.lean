@@ -1057,6 +1057,9 @@ theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 
+theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
+  ofRealLI.lipschitz
+
 end LinearMaps
 
 /-!

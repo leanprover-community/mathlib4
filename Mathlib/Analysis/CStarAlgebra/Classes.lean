@@ -102,3 +102,17 @@ noncomputable instance [CommCStarAlgebra A] [CommCStarAlgebra B] : CommCStarAlge
   mul_comm := mul_comm
 
 end Prod
+
+namespace MulOpposite
+
+variable {A : Type*}
+
+instance [NonUnitalCStarAlgebra A] : NonUnitalCStarAlgebra Aᵐᵒᵖ where
+
+instance [NonUnitalCommCStarAlgebra A] : NonUnitalCommCStarAlgebra Aᵐᵒᵖ where
+
+noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
+
+noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
+
+end MulOpposite
