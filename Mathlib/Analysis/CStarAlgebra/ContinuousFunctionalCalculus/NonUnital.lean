@@ -224,7 +224,7 @@ variable (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := 
 variable (ha : p a := by cfc_tac)
 
 lemma cfcₙ_apply : cfcₙ f a = cfcₙHom (a := a) ha ⟨⟨_, hf.restrict⟩, hf0⟩ := by
-  rw [cfcₙ_def, dif_pos ⟨ha, hf, hf0⟩]
+  rw [cfcₙ, dif_pos ⟨ha, hf, hf0⟩]
 
 lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (σₙ R a) := by cfc_cont_tac)
@@ -236,19 +236,19 @@ lemma cfcₙ_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha := by cfc_ta
 lemma cfcₙ_apply_of_not_and_and {f : R → R} (a : A)
     (ha : ¬ (p a ∧ ContinuousOn f (σₙ R a) ∧ f 0 = 0)) :
     cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dif_neg ha]
+  rw [cfcₙ, dif_neg ha]
 
 lemma cfcₙ_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
     cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dif_neg (not_and_of_not_left _ ha)]
+  rw [cfcₙ, dif_neg (not_and_of_not_left _ ha)]
 
 lemma cfcₙ_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (σₙ R a)) :
     cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dif_neg (not_and_of_not_right _ (not_and_of_not_left _ hf))]
+  rw [cfcₙ, dif_neg (not_and_of_not_right _ (not_and_of_not_left _ hf))]
 
 lemma cfcₙ_apply_of_not_map_zero {f : R → R} (a : A) (hf : ¬ f 0 = 0) :
     cfcₙ f a = 0 := by
-  rw [cfcₙ_def, dif_neg (not_and_of_not_right _ (not_and_of_not_right _ hf))]
+  rw [cfcₙ, dif_neg (not_and_of_not_right _ (not_and_of_not_right _ hf))]
 
 lemma cfcₙHom_eq_cfcₙ_extend {a : A} (g : R → R) (ha : p a) (f : C(σₙ R a, R)₀) :
     cfcₙHom ha f = cfcₙ (Function.extend Subtype.val f g) a := by
