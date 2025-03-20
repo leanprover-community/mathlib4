@@ -251,6 +251,11 @@ theorem IsSymmetricRel.iInter {U : (i : ι) → Set (α × α)} (hU : ∀ i, IsS
     IsSymmetricRel (⋂ i, U i) := by
   simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
 
+lemma IsSymmetricRel.sInter {s : Set (Set (α × α))} (h : ∀ i ∈ s, IsSymmetricRel i) :
+    IsSymmetricRel (⋂₀ s) := by
+  rw [sInter_eq_iInter]
+  exact IsSymmetricRel.iInter (by simpa)
+
 lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
     IsSymmetricRel (Prod.map f f ⁻¹' U) :=
   Set.ext fun _ ↦ ht.mk_mem_comm
