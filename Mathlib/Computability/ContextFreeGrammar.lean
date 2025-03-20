@@ -88,8 +88,7 @@ theorem rewrites_iff :
   ⟨Rewrites.exists_parts, by rintro ⟨p, q, rfl, rfl⟩; apply rewrites_of_exists_parts⟩
 
 lemma Rewrites.nonterminal_input_mem : r.Rewrites u v → .nonterminal r.input ∈ u := by
-  simp_rw [rewrites_iff, List.append_assoc]
-  exact fun _ ↦ List.mem_iff_append.mpr (by tauto)
+  simp +contextual [rewrites_iff, List.append_assoc]
 
 /-- Add extra prefix to context-free rewriting. -/
 lemma Rewrites.append_left (hvw : r.Rewrites u v) (p : List (Symbol T N)) :
@@ -224,11 +223,7 @@ lemma derives_nonterminal {t : g.NT} (hgt : ∀ r ∈ g.rules, r.input ≠ t) :
   tauto
 
 lemma language_eq_zero_of_forall_input_ne_initial (hg : ∀ r ∈ g.rules, r.input ≠ g.initial) :
-    g.language = 0 :=
-  Language.ext fun _ ↦ ⟨
-    (absurd · (derives_nonterminal hg _ (by simp))),
-    False.elim
-  ⟩
+    g.language = 0 := by ext; simp +contextual [derives_nonterminal, hg]
 
 end ContextFreeGrammar
 
