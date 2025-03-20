@@ -382,7 +382,7 @@ lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycl
     exact Set.ncard_pair hpc.snd_ne_penultimate
   push_neg at he
   rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
-  exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
+  exact Set.ncard_pair (hpc.getVert_sub_one_ne_getVert_add_one (by omega))
 
 lemma exists_isCycle_snd_verts_eq {p : G.Walk v v} (h : p.IsCycle) (hadj : p.toSubgraph.Adj v w) :
     ∃ (p' : G.Walk v v), p'.IsCycle ∧ p'.snd = w ∧ p'.toSubgraph.verts = p.toSubgraph.verts := by

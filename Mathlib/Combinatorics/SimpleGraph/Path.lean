@@ -265,17 +265,15 @@ lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ 
   | .cons _ (.cons _ .nil) => simp at hp
   | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
 
-lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
-    ¬ p.Nil := by
-  have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
-  rw [Walk.not_nil_iff_lt_length]
-  omega
-
 lemma  IsCycle.tail_not_nil {v : V} {p : G.Walk v v} (hp : p.IsCycle) : ¬ p.tail.Nil := by
   have := hp.three_le_length
   rw [not_nil_iff_lt_length]
   rw [← length_tail_add_one hp.not_nil] at this
   omega
+
+lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
+    ¬ p.Nil := by
+  simpa using hc.tail_not_nil
 
 lemma  IsCycle.tail_tail_not_nil {v : V} {p : G.Walk v v} (hp : p.IsCycle) : ¬ p.tail.tail.Nil := by
   have := hp.three_le_length
@@ -310,21 +308,31 @@ lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.
     (hcyc : (p.append q).IsCycle) : p.IsPath :=
   p.isPath_reverse_iff.mp ((reverse_append _ _ ▸ hcyc.reverse).isPath_of_append_right (by simpa))
 
-lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
-  cases p with
-  | nil => simp
-  | cons hadj p =>
-    simp_all [Walk.isPath_def]
+protected theorem IsTrail.take {v w : V} {p : G.Walk v w} (hc : p.IsTrail) (n : ℕ) :
+  (p.take n).IsTrail :=
+  IsTrail.of_append_left (by rwa [← take_append_drop p n] at hc)
 
-lemma IsPath.dropLast {p : G.Walk u v} (hp : p.IsPath) (h : ¬p.Nil): p.dropLast.IsPath := by
-  apply IsPath.mk'
-  rw [support_dropLast _ h]
-  exact List.Nodup.sublist (List.dropLast_sublist p.support) hp.support_nodup
+protected theorem IsTrail.drop {v w : V} {p : G.Walk v w} (hc : p.IsTrail) (n : ℕ) :
+  (p.drop n).IsTrail :=
+  IsTrail.of_append_right (by rwa [← take_append_drop p n] at hc)
+
+protected theorem IsPath.take {v w : V} {p : G.Walk v w} (hc : p.IsPath) (n : ℕ) :
+  (p.take n).IsPath :=
+  IsPath.of_append_left (by rwa [← take_append_drop p n] at hc)
+
+protected theorem IsPath.drop {v w : V} {p : G.Walk v w} (hc : p.IsPath) (n : ℕ)  :
+  (p.drop n).IsPath :=
+  IsPath.of_append_right (by rwa [← take_append_drop p n] at hc)
+
+protected lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := hp.drop 1
+
+protected lemma IsPath.dropLast {p : G.Walk u v} (hp : p.IsPath) : p.dropLast.IsPath :=
+  hp.take (p.length -1)
 
 lemma IsCycle.isPath_tail {c : G.Walk v v} (hc : c.IsCycle) :
     c.tail.IsPath := by
   apply IsPath.mk'
-  rw [support_tail_of_not_nil _ hc.not_nil]
+  rw [support_tail _ hc.not_nil]
   exact hc.2
 
 /-! ### About paths -/
@@ -365,7 +373,6 @@ lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi :
     show p.length - (p.length - i) = i from by omega] at this
   rw [this]
   omega
-
 
 lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
     p.IsPath := by
@@ -422,7 +429,7 @@ lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p
   apply hp.getVert_injOn (by simp; omega) (by simp; omega) at h
   omega
 
-lemma IsCycle.getVert_eq_end_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
+lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
   refine ⟨?_, by aesop⟩
   rw [or_iff_not_imp_left]
@@ -436,7 +443,7 @@ lemma IsCycle.getVert_sub_one_ne_getVert_add_one {i : ℕ} {p : G.Walk u u} (hpc
   by_cases hi' : i ≥ p.length - 1
   · intro h'
     rw [p.getVert_of_length_le (by omega : p.length ≤ i + 1),
-      hpc.getVert_eq_end_iff (by omega)] at h'
+      hpc.getVert_endpoint_iff (by omega)] at h'
     omega
   intro h'
   have := hpc.getVert_injOn' (by simp only [Set.mem_setOf_eq, Nat.sub_le_iff_le_add]; omega)
@@ -511,6 +518,18 @@ lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈
     (hn.symm ▸ p.getVert_length.symm)
   omega
 
+/-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
+there exists a dart in the walk whose start is in `S` but whose end is not. -/
+theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) (xS : x ∈ S)
+    (yS : y ∉ S) (xp : x ∈ c.support) (yp : y ∈ c.support) :
+    ∃ d : G.Dart, d ∈ c.darts ∧ d.fst ∈ S ∧ d.snd ∉ S :=
+  let ⟨_, hd, hd1, hd2⟩ := exists_boundary_dart
+      ((c.rotate xp).takeUntil _ ((mem_support_rotate_iff xp).2 yp)) S xS yS
+  ⟨_, (rotate_darts _ xp).mem_iff.1 <| (darts_takeUntil_subset _
+          <| (mem_support_rotate_iff xp).2 yp) hd, hd1, hd2⟩
+
+end WalkDecomp
+
 lemma IsPath.not_end_eq_fst_of_mem_darts {u v : V} {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
     (hd : d ∈ p.darts) : v ≠ d.toProd.1 :=
   fun hf ↦ List.disjoint_of_nodup_append (p.map_fst_darts_append ▸ hp.support_nodup)
@@ -576,18 +595,6 @@ lemma IsCycle.snd_eq_snd_of_start_eq_fst {u : V} {d : G.Dart} {c : G.Walk u u}
 --         rw [cons_isCycle_iff] at hp
 --         exact hp.1.getVert_succ_of_mem_darts hd hn
 
-/-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
-there exists a dart in the walk whose start is in `S` but whose end is not. -/
-theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) (xS : x ∈ S)
-    (yS : y ∉ S) (xp : x ∈ c.support) (yp : y ∈ c.support) :
-    ∃ d : G.Dart, d ∈ c.darts ∧ d.fst ∈ S ∧ d.snd ∉ S :=
-  let ⟨_, hd, hd1, hd2⟩ := exists_boundary_dart
-      ((c.rotate xp).takeUntil _ ((mem_support_rotate_iff xp).2 yp)) S xS yS
-  ⟨_, (rotate_darts _ xp).mem_iff.1 <| (darts_takeUntil_subset _
-          <| (mem_support_rotate_iff xp).2 yp) hd, hd1, hd2⟩
-
-
-end WalkDecomp
 
 end Walk
 

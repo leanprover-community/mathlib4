@@ -402,7 +402,7 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       have hnp : ¬ p.Nil := by
         rw [nil_iff_length_eq]
         omega
-      rw [← support_tail_of_not_nil _ hnp, mem_support_iff_exists_getVert]
+      rw [← support_tail _ hnp, mem_support_iff_exists_getVert]
       use n
       rwa [getVert_tail, ← Nat.add_one_le_add_one_iff, length_tail_add_one hnp]
 termination_by p.length

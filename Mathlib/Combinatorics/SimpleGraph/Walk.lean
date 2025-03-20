@@ -1249,7 +1249,7 @@ lemma dropLast_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Nil) 
   p.notNilRec (by simp) hp h
 
 @[simp]
-lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
+lemma dropLast_concat_eq {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     (p.concat h).dropLast = p.copy rfl (by simp) := by
   induction p
   · rfl
@@ -1258,17 +1258,85 @@ lemma dropLast_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     · simp [*]
     · simp [concat, nil_iff_length_eq]
 
-lemma support_dropLast_of_not_nil (p : G.Walk u v) (h : ¬ p.Nil) :
-     p.dropLast.support = p.support.dropLast := by
+lemma concat_dropLast_eq {u v} (p : G.Walk u v) (h : ¬ p.Nil) :
+    concat p.dropLast (p.adj_penultimate h) = p := by
   induction p with
-  | nil => exact (h Nil.nil).elim
-  | cons _ p ih =>
+  | nil => simp at h
+  | cons h p ih =>
     cases p with
-    | nil => simp_all
-    | cons _ _ =>
-      simp_rw [dropLast_cons_cons, support_cons, List.dropLast_cons₂]
-      exact List.cons_eq_cons.2 ⟨rfl, ih not_nil_cons⟩
+    | nil =>
+      simp_rw [penultimate_cons_nil, dropLast_cons_nil]
+      rfl
+    | cons h q => simp [ih not_nil_cons]
 
+
+lemma penultimate_cons_reverse {u v w} (h : G.Adj u v) (p : G.Walk v w) :
+  v = (cons h p).reverse.penultimate := by
+  cases p with
+  | nil => rfl
+  | cons h p =>
+    simp only [reverse_cons, penultimate_concat]
+    rw [penultimate, getVert_append]
+    simp
+
+lemma dropLast_concat_nil {u v w} (h : G.Adj v w) (p : G.Walk u v) :
+    (p.concat h).dropLast = p.copy rfl (by simp) := by simp
+
+lemma dropLast_reverse_cons {u v w} (h : G.Adj u v) (p : G.Walk v w) :
+    (cons h p).reverse.dropLast = p.reverse.copy rfl (penultimate_cons_reverse _ _) := by
+  have := reverse_cons h p
+  convert dropLast_concat_eq p.reverse h.symm
+
+lemma dropLast_reverse {u v} (p : G.Walk u v) :
+    p.reverse.dropLast = p.tail.reverse.copy (by simp ) (by simp) := by
+  cases p with
+  | nil => rfl
+  | cons h p =>
+    rw [dropLast_reverse_cons, tail_cons_eq]
+    simp
+
+lemma reverse_tail_cons {u v w} (h : G.Adj u v) (p : G.Walk v w) :
+    (cons h p).tail.reverse = p.reverse.copy rfl (by simp) := by
+  have := congr_arg reverse <| tail_cons_eq h p
+  simpa using this
+
+lemma reverse_dropLast {u v} (p : G.Walk u v) :
+    p.dropLast.reverse = p.reverse.tail.copy (by simp) rfl := by
+  cases p with
+  | nil => rfl
+  | cons h p =>
+    have := reverse_cons h p
+    have : p.reverse.snd = p.penultimate := snd_reverse p
+
+    apply_fun reverse
+
+    · rw [reverse_reverse]
+      convert dropLast_reverse (cons h p).reverse
+      · rw [reverse_reverse]
+      · rw [reverse_reverse]
+
+      ·
+        sorry
+    · exact reverse_injective
+
+
+
+@[simp]
+lemma reverse_dropLast_reverse {u v} (p : G.Walk u v) :
+    p.reverse.dropLast.reverse = p.tail.copy (by simp) rfl := by
+  have := p.dropLast_reverse
+  apply_fun reverse at this
+  simpa using this
+
+@[simp]
+lemma dropLast_concat_support {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) :
+    p.dropLast.support ++ [v] = p.support := by
+  simpa using congr_arg Walk.support (concat_dropLast_eq _ hp)
+
+lemma support_dropLast_of_not_nil {u v : V} (p : G.Walk u v) (h : ¬ p.Nil) :
+     p.dropLast.support = p.support.dropLast := by
+  rw [ ← dropLast_concat_support _ h]
+  simp
 
 /-- The first dart of a walk. -/
 @[simps]
@@ -1299,16 +1367,6 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   | nil => simp at hp
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
-
-@[simp]
-lemma concat_dropLast_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
-    p.dropLast.concat (p.adj_penultimate hp) = p  := by
-  induction p with
-  | nil => simp at hp
-  | cons hadj p hind =>
-    cases p with
-    | nil => rfl
-    | _ => simp [hind]
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
@@ -1345,7 +1403,7 @@ lemma support_tail_subset_tail_support (p : G.Walk u v) :
     p.support.tail ⊆ p.tail.support := by
   cases p <;> simp_all
 
-lemma support_tail_of_not_nil (p : G.Walk u v) (hnp : ¬p.Nil) :
+lemma support_tail (p : G.Walk u v) (hnp : ¬p.Nil) :
     p.tail.support = p.support.tail := by
   rw [← cons_support_tail _ hnp, List.tail_cons]
 
