@@ -9,7 +9,7 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Notation.Prod
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Logic.Equiv.Prod
 
 /-!
 # Monoid, group etc structures on `M × N`

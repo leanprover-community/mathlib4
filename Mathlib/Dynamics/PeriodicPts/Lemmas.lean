@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Data.PNat.Basic
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Dynamics.PeriodicPts.Defs
 
 /-!
@@ -27,10 +28,17 @@ theorem bijOn_periodicPts : BijOn f (periodicPts f) (periodicPts f) :=
   iUnion_pNat_ptsOfPeriod f ▸
     bijOn_iUnion_of_directed (directed_ptsOfPeriod_pNat f) fun i => bijOn_ptsOfPeriod f i.pos
 
+theorem minimalPeriod_eq_prime_iff {p : ℕ} [hp : Fact p.Prime] :
+    minimalPeriod f x = p ↔ IsPeriodicPt f p x ∧ ¬IsFixedPt f x := by
+  rw [Function.isPeriodicPt_iff_minimalPeriod_dvd, Nat.dvd_prime hp.out,
+    ← minimalPeriod_eq_one_iff_isFixedPt.not, or_and_right, and_not_self_iff, false_or,
+    iff_self_and]
+  exact fun h ↦ ne_of_eq_of_ne h hp.out.ne_one
+
+/-- The backward direction of `minimalPeriod_eq_prime_iff`. -/
 theorem minimalPeriod_eq_prime {p : ℕ} [hp : Fact p.Prime] (hper : IsPeriodicPt f p x)
     (hfix : ¬IsFixedPt f x) : minimalPeriod f x = p :=
-  (hp.out.eq_one_or_self_of_dvd _ hper.minimalPeriod_dvd).resolve_left
-    (mt minimalPeriod_eq_one_iff_isFixedPt.1 hfix)
+  minimalPeriod_eq_prime_iff.mpr ⟨hper, hfix⟩
 
 theorem minimalPeriod_eq_prime_pow {p k : ℕ} [hp : Fact p.Prime] (hk : ¬IsPeriodicPt f (p ^ k) x)
     (hk1 : IsPeriodicPt f (p ^ (k + 1)) x) : minimalPeriod f x = p ^ (k + 1) := by

@@ -551,8 +551,7 @@ theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
   have h0 : ∫ (x : X), f x ∂μ - ∫ x in s, f x ∂μ = ∫ x in sᶜ, f x ∂μ := by
     rw [sub_eq_iff_eq_add, add_comm, integral_add_compl hs hf1]
   have h1 : ∫ x in sᶜ, ‖f x‖ ∂μ ≤ ∫ _ in sᶜ, C ∂μ :=
-    integral_mono_ae (Integrable.restrict (Integrable.norm hf1))
-      (integrable_const C) (ae_restrict_of_ae hf)
+    integral_mono_ae hf1.norm.restrict (integrable_const C) (ae_restrict_of_ae hf)
   have h2 : ∫ _ in sᶜ, C ∂μ = (μ sᶜ).toReal * C := by
     rw [setIntegral_const C, smul_eq_mul]
   rw [h0, ← h2]
