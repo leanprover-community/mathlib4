@@ -85,10 +85,6 @@ theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
 
-theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
-    Disjoint s t ↔ s = ∅ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
-
 /-! ### Lemmas about complement -/
 
 theorem subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=
@@ -110,6 +106,20 @@ alias ⟨_, _root_.Disjoint.subset_compl_left⟩ := subset_compl_iff_disjoint_le
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_left⟩ := disjoint_compl_left_iff_subset
 
 alias ⟨_, _root_.HasSubset.Subset.disjoint_compl_right⟩ := disjoint_compl_right_iff_subset
+
+theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆ t)
+    (hu : t ⊆ s ∪ u) : (s \ t) ∪ (t \ u) = s \ u := by
+  rw [← diff_eq_empty, inter_diff_right_comm, ← disjoint_iff_inter_eq_empty] at hi
+  simpa [subset_antisymm_iff, subset_diff, diff_subset_iff, disjoint_sdiff_left, union_comm u,
+    hu, union_assoc, ← union_assoc (a := s \ t)]
+
+@[simp]
+theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
+  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
+
+theorem _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
+    t \ s ⊂ t := by
+  simpa [inter_eq_self_of_subset_right hst]
 
 end Set
 
@@ -144,17 +154,3 @@ theorem subset_right_of_subset_union (h : s ⊆ t ∪ u) (hab : Disjoint s t) : 
   hab.left_le_of_le_sup_left h
 
 end Disjoint
-
-theorem diff_union_diff_cancel_of_inter_subset_of_subset_union (hi : s ∩ u ⊆ t) (hu : t ⊆ s ∪ u) :
-    (s \ t) ∪ (t \ u) = s \ u := by
-  rw [← diff_eq_empty, inter_diff_right_comm, ← inter_eq_empty] at hi
-  simpa [subset_antisymm_iff, subset_diff, diff_subset_iff, disjoint_sdiff_left, union_comm u,
-    hu, union_assoc, ← union_assoc (a := s \ t)]
-
-@[simp]
-theorem diff_ssubset_left_iff : s \ t ⊂ s ↔ (s ∩ t).Nonempty :=
-  sdiff_lt_left.trans <| by rw [not_disjoint_iff_nonempty_inter, inter_comm]
-
-theorem _root_.HasSubset.Subset.diff_ssubset_of_nonempty (hst : s ⊆ t) (hs : s.Nonempty) :
-    t \ s ⊂ t := by
-  simpa [inter_eq_self_of_subset_right hst]
