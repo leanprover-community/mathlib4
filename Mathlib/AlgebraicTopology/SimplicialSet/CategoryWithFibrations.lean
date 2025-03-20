@@ -27,7 +27,7 @@ universe u
 
 namespace SSet
 
-namespace quillenModelCategory
+namespace modelStructureQuillen
 
 /-- The generating cofibrations: this is the family of morphisms in `SSet`
 which consists of boundary inclusions `∂Δ[n].ι : ∂Δ[n] ⟶ Δ[n]`. -/
@@ -95,6 +95,6 @@ instance [hf : Fibration f] {n : ℕ} (i : Fin (n + 2)) :
 
 end
 
-end quillenModelCategory
+end modelStructureQuillen
 
 end SSet

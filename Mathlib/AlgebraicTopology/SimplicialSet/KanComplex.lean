@@ -29,7 +29,7 @@ namespace SSet
 
 open CategoryTheory Simplicial Limits
 
-open quillenModelCategory in
+open modelStructureQuillen in
 /-- A simplicial set `S` is a Kan complex if it is fibrant, which means that
 the projection `S ⟶ ⊤_ _` has the right lifting property with respect to horn inclusions. -/
 abbrev KanComplex (S : SSet.{u}) : Prop := HomotopicalAlgebra.IsFibrant S
