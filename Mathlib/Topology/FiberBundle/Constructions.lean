@@ -132,7 +132,7 @@ theorem FiberBundle.Prod.continuous_of_continuous_fst_comp_of_continuous_snd_com
     (h2 : Continuous (TotalSpace.Prod.snd F₁ F₂ E₁ E₂ ∘ φ)) :
     Continuous φ := by
   rw [(FiberBundle.Prod.isInducing_diag F₁ E₁ F₂ E₂).continuous_iff]
-  exact h1.prod_mk h2
+  exact h1.prodMk h2
 
 variable {F₁ F₂ E₁ E₂} in
 /-- Given fiber bundles `E₁`, `E₂` over a space `B`, a map `φ` into the total space of `E₁ ×ᵇ E₂` is
@@ -351,7 +351,7 @@ theorem Pullback.continuous_of_continuous_proj_comp_of_continuous_lift_comp
     (h1 : Continuous (TotalSpace.proj ∘ φ)) (h2 : Continuous (Pullback.lift f ∘ φ)) :
     Continuous φ := by
   rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuous_iff]
-  apply h1.prod_mk h2
+  apply h1.prodMk h2
 
 variable {F E} in
 /-- Given a fiber bundle `E` over a manifold `B` and a continuous map `f : B' → B`, if `φ` is
