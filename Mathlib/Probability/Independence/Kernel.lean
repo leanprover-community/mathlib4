@@ -1375,6 +1375,12 @@ theorem iIndepFun.indepFun_prod_range_succ {f : ℕ → Ω → β}
     IndepFun (∏ j ∈ Finset.range n, f j) (f n) κ μ :=
   hf_Indep.indepFun_finset_prod_of_not_mem hf_meas Finset.not_mem_range_self
 
+@[to_additive]
+theorem iIndepFun.indepFun_prod_range_succ₀ {f : ℕ → Ω → β}
+    (hf_Indep : iIndepFun f κ μ) (hf_meas : ∀ i, AEMeasurable (f i) (κ ∘ₘ μ)) (n : ℕ) :
+    IndepFun (∏ j ∈ Finset.range n, f j) (f n) κ μ :=
+  hf_Indep.indepFun_finset_prod_of_not_mem₀ hf_meas Finset.not_mem_range_self
+
 end CommMonoid
 
 theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β} {s : ι → Set Ω}
