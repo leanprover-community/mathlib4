@@ -66,8 +66,8 @@ inequality `edist x z ≤ edist x y + edist y z`.
 Note that we do not require `edist x y = 0 → x = y`. See extended metric spaces (`EMetricSpace`) for
 the similar class with that stronger assumption.
 
-Any pseudo extended metric space is a topological space and a uniform space,
-where the topology and uniformity come from the metric.
+Any pseudo extended metric space is a topological space and a uniform space (see `TopologicalSpace`,
+`UniformSpace`), where the topology and uniformity come from the metric.
 Note that a T1 pseudo extended metric space is just an extended metric space.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
@@ -546,8 +546,8 @@ end EMetric
 See pseudo extended metric spaces (`PseudoEMetricSpace`) for the similar class with the
 `edist x y = 0 ↔ x = y` assumption weakened to `edist x x = 0`.
 
-Any extended metric space is a T1 topological space and a uniform space,
-where the topology and uniformity come from the metric.
+Any extended metric space is a T1 topological space and a uniform space (see `TopologicalSpace`,
+`T1Space`, `UniformSpace`), where the topology and uniformity come from the metric.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric.
 This eg ensures that we do not get a diamond when doing

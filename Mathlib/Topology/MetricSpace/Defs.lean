@@ -42,8 +42,8 @@ variable [PseudoMetricSpace α]
 See pseudometric spaces (`PseudoMetricSpace`) for the similar class with the `dist x y = 0 ↔ x = y`
 assumption weakened to `dist x x = 0`.
 
-Any metric space is a T1 topological space and a uniform space,
-where the topology and uniformity come from the metric.
+Any metric space is a T1 topological space and a uniform space (see `TopologicalSpace`, `T1Space`,
+`UniformSpace`), where the topology and uniformity come from the metric.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric.
 This eg ensures that we do not get a diamond when doing

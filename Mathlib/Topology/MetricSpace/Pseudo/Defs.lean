@@ -106,8 +106,8 @@ reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangl
 Note that we do not require `dist x y = 0 → x = y`. See metric spaces (`MetricSpace`) for the
 similar class with that stronger assumption.
 
-Any pseudometric space is a topological space and a uniform space,
-where the topology and uniformity come from the metric.
+Any pseudometric space is a topological space and a uniform space (see `TopologicalSpace`,
+`UniformSpace`), where the topology and uniformity come from the metric.
 Note that a T1 pseudometric space is just a metric space.
 
 We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
