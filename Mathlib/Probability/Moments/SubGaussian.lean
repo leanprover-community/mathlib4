@@ -545,9 +545,9 @@ lemma add_of_indepFun {Y : Ω → ℝ} {cX cY : ℝ≥0} (hX : HasSubgaussianMGF
       · exact hY.mgf_le t
     _ = exp ((cX + cY) * t ^ 2 / 2) := by rw [← exp_add]; congr; ring
 
-private lemma sum_of_iIndepFun_of_measurable
+private lemma sum_of_iIndepFun_of_forall_aemeasurable
     {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
-    (h_meas : ∀ i, Measurable (X i))
+    (h_meas : ∀ i, AEMeasurable (X i) μ)
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
@@ -556,29 +556,24 @@ private lemma sum_of_iIndepFun_of_measurable
   | empty => simp
   | @insert i s his h =>
     simp_rw [← Finset.sum_apply, Finset.sum_insert his, Pi.add_apply, Finset.sum_apply]
-    have h_indep' := (h_indep.indepFun_finset_sum_of_not_mem h_meas his).symm
+    have h_indep' := (h_indep.indepFun_finset_sum_of_not_mem₀ h_meas his).symm
     refine add_of_indepFun (h_subG _ (Finset.mem_insert_self _ _)) (h ?_) ?_
     · exact fun i hi ↦ h_subG _ (Finset.mem_insert_of_mem hi)
     · convert h_indep'
       rw [Finset.sum_apply]
 
-lemma sum_of_iIndepFun
-    {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
+lemma sum_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ) {c : ι → ℝ≥0}
     {s : Finset ι} (h_subG : ∀ i ∈ s, HasSubgaussianMGF (X i) (c i) μ) :
     HasSubgaussianMGF (fun ω ↦ ∑ i ∈ s, X i ω) (∑ i ∈ s, c i) μ := by
   have A (i : s) : AEMeasurable (X i) μ := (h_subG i i.2).aemeasurable
-  have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), (A i).mk _ ω) (∑ (i : s), c i) μ := by
-    apply sum_of_iIndepFun_of_measurable
-    · exact (h_indep.precomp Subtype.val_injective).congr (fun i ↦ (A i).ae_eq_mk)
-    · exact fun i ↦ (A i).measurable_mk
-    · exact fun i hi ↦ (h_subG i i.2).congr (A i).ae_eq_mk
+  have : HasSubgaussianMGF (fun ω ↦ ∑ (i : s), X i ω) (∑ (i : s), c i) μ := by
+    apply sum_of_iIndepFun_of_forall_aemeasurable
+    · exact h_indep.precomp Subtype.val_injective
+    · exact fun i ↦ (A i)
+    · exact fun i _ ↦ h_subG i i.2
   rw [Finset.sum_coe_sort] at this
-  apply this.congr
-  have : ∀ᵐ ω ∂μ, ∀ (i : s), X i ω = (A i).mk _ ω :=
-    ae_all_iff.2 fun i ↦ AEMeasurable.ae_eq_mk (A i)
-  filter_upwards [this] with ω hω
-  nth_rw 2 [← Finset.sum_coe_sort]
-  simp [hω]
+  apply this.congr (ae_of_all _ fun ω ↦ ?_)
+  exact Finset.sum_attach s (fun i ↦ X i ω)
 
 /-- **Hoeffding inequality** for sub-Gaussian random variables. -/
 lemma measure_sum_ge_le_of_iIndepFun {ι : Type*} {X : ι → Ω → ℝ} (h_indep : iIndepFun X μ)
