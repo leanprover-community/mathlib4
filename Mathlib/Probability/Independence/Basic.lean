@@ -587,6 +587,12 @@ nonrec lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace
     (h : iIndepFun f μ) (g : ∀ i, β i → γ i) (hg : ∀ i, Measurable (g i)) :
     iIndepFun (fun i ↦ g i ∘ f i) μ := h.comp _ hg
 
+nonrec lemma iIndepFun.comp₀ {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
+    (h : iIndepFun f μ) (g : ∀ i, β i → γ i)
+    (hf : ∀ i, AEMeasurable (f i) μ) (hg : ∀ i, AEMeasurable (g i) (μ.map (f i))) :
+    iIndepFun (fun i ↦ g i ∘ f i) μ := h.comp₀ _ (by simp [hf]) (by simp [hg])
+
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g μ ↔
@@ -626,6 +632,13 @@ theorem IndepFun.comp {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
     IndepFun (φ ∘ f) (ψ ∘ g) μ :=
   Kernel.IndepFun.comp hfg hφ hψ
 
+theorem IndepFun.comp₀ {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'}
+    {_mγ : MeasurableSpace γ} {_mγ' : MeasurableSpace γ'} {φ : β → γ} {ψ : β' → γ'}
+    (hfg : IndepFun f g μ) (hf : AEMeasurable f μ) (hg : AEMeasurable g μ)
+    (hφ : AEMeasurable φ (μ.map f)) (hψ : AEMeasurable ψ (μ.map g)) :
+    IndepFun (φ ∘ f) (ψ ∘ g) μ :=
+  Kernel.IndepFun.comp₀ hfg (by simp [hf]) (by simp [hg]) (by simp [hφ]) (by simp [hψ])
+
 theorem IndepFun.neg_right {_mβ : MeasurableSpace β} {_mβ' : MeasurableSpace β'} [Neg β']
     [MeasurableNeg β'] (hfg : IndepFun f g μ) :
     IndepFun f (-g) μ := hfg.comp measurable_id measurable_neg
@@ -648,6 +661,14 @@ lemma iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T) (hf_Indep
     IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
   Kernel.iIndepFun.indepFun_finset S T hST hf_Indep hf_meas
 
+/-- If `f` is a family of mutually independent random variables (`iIndepFun m f μ`) and `S, T` are
+two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
+tuple `(f i)_i` for `i ∈ T`. -/
+lemma iIndepFun.indepFun_finset₀ (S T : Finset ι) (hST : Disjoint S T) (hf_Indep : iIndepFun f μ)
+    (hf_meas : ∀ i, AEMeasurable (f i) μ) :
+    IndepFun (fun a (i : S) ↦ f i a) (fun a (i : T) ↦ f i a) μ :=
+  Kernel.iIndepFun.indepFun_finset₀ S T hST hf_Indep (by simp [hf_meas])
+
 lemma iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, Measurable (f i))
     (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
     IndepFun (fun a => (f i a, f j a)) (f k) μ :=
@@ -656,18 +677,25 @@ lemma iIndepFun.indepFun_prodMk (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, Me
 @[deprecated (since := "2025-03-05")]
 alias iIndepFun.indepFun_prod_mk := iIndepFun.indepFun_prodMk
 
+lemma iIndepFun.indepFun_prodMk₀ (hf_Indep : iIndepFun f μ) (hf_meas : ∀ i, AEMeasurable (f i) μ)
+    (i j k : ι) (hik : i ≠ k) (hjk : j ≠ k) :
+    IndepFun (fun a => (f i a, f j a)) (f k) μ :=
+  Kernel.iIndepFun.indepFun_prodMk₀ hf_Indep (by simp [hf_meas]) i j k hik hjk
+
 open Finset in
 lemma iIndepFun.indepFun_prodMk_prodMk (h_indep : iIndepFun f μ) (hf : ∀ i, Measurable (f i))
     (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
-    IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ := by
-  classical
-  let g (i j : ι) (v : Π x : ({i, j} : Finset ι), β x) : β i × β j :=
-    ⟨v ⟨i, mem_insert_self _ _⟩, v ⟨j, mem_insert_of_mem <| mem_singleton_self _⟩⟩
-  have hg (i j : ι) : Measurable (g i j) := by fun_prop
-  exact (h_indep.indepFun_finset {i, j} {k, l} (by aesop) hf).comp (hg i j) (hg k l)
+    IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ :=
+  Kernel.iIndepFun.indepFun_prodMk_prodMk h_indep hf i j k l hik hil hjk hjl
 
 @[deprecated (since := "2025-03-05")]
 alias iIndepFun.indepFun_prod_mk_prod_mk := iIndepFun.indepFun_prodMk_prodMk
+
+open Finset in
+lemma iIndepFun.indepFun_prodMk_prodMk₀ (h_indep : iIndepFun f μ) (hf : ∀ i, AEMeasurable (f i) μ)
+    (i j k l : ι) (hik : i ≠ k) (hil : i ≠ l) (hjk : j ≠ k) (hjl : j ≠ l) :
+    IndepFun (fun a ↦ (f i a, f j a)) (fun a ↦ (f k a, f l a)) μ :=
+  Kernel.iIndepFun.indepFun_prodMk_prodMk₀ h_indep (by simp [hf]) i j k l hik hil hjk hjl
 
 variable {ι' : Type*} {α : ι → Type*} [∀ i, MeasurableSpace (α i)]
 
