@@ -149,8 +149,7 @@ theorem MeromorphicNFAt.order_eq_zero_iff (hf : MeromorphicNFAt f x) :
     apply ENat.map_natCast_eq_zero.1
     rwa [h₂f.meromorphicAt_order] at h₁f
   · intro h
-    have hf' := hf
-    rcases hf with h₁ | ⟨n, g, h₁g, h₂g, h₃g⟩
+    rcases id hf with h₁ | ⟨n, g, h₁g, h₂g, h₃g⟩
     · have := h₁.eq_of_nhds
       tauto
     · have : n = 0 := by
