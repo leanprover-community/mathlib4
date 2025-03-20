@@ -336,8 +336,7 @@ theorem contMDiffWithinAt_iff_source :
         simp [this]
       · simp
   rw [← this]
-  simp only [ContDiffWithinAtProp, mfld_simps]
-  rfl
+  simp only [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
 
 /-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
 composing with the extended chart. -/
