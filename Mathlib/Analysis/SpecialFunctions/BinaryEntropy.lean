@@ -267,12 +267,12 @@ private lemma tendsto_log_one_sub_sub_log_nhdsGT_atAtop :
     filter_upwards [Ioc_mem_nhdsGT h₁] with p hx
     gcongr
     linarith [hx.2]
-  · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsWithin_zero_right
+  · apply tendsto_neg_atTop_iff.mpr tendsto_log_nhdsGT_zero
 
 private lemma tendsto_log_one_sub_sub_log_nhdsLT_one_atBot :
     Tendsto (fun p ↦ log (1 - p) - log p) (𝓝[<] 1) atBot := by
   apply Filter.tendsto_atBot_add_right_of_ge' (𝓝[<] 1) (-log (1 - 2⁻¹))
-  · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsWithin_zero_right
+  · have : Tendsto log (𝓝[>] 0) atBot := Real.tendsto_log_nhdsGT_zero
     apply Tendsto.comp (f := (1 - ·)) (g := log) this
     have contF : Continuous ((1 : ℝ) - ·) := continuous_sub_left 1
     have : MapsTo ((1 : ℝ) - ·) (Iio 1) (Ioi 0) := by
