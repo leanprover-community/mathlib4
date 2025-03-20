@@ -3,7 +3,8 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.NeZero
 
@@ -55,7 +56,8 @@ variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] 
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`. -/
 class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [MulZeroOneClass α]
-  [MulZeroOneClass β] [FunLike F α β] extends MonoidHomClass F α β, ZeroHomClass F α β : Prop
+    [MulZeroOneClass β] [FunLike F α β] : Prop
+  extends MonoidHomClass F α β, ZeroHomClass F α β
 
 /-- `α →*₀ β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
@@ -175,11 +177,11 @@ lemma comp_assoc (f : α →*₀ β) (g : β →*₀ γ) (h : γ →*₀ δ) :
 
 lemma cancel_right {g₁ g₂ : β →*₀ γ} {f : α →*₀ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ ext $ hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 lemma cancel_left {g : β →*₀ γ} {f₁ f₂ : α →*₀ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ ext fun x ↦ hg $ by rw [← comp_apply, h,
+  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h,
     comp_apply], fun h ↦ h ▸ rfl⟩
 
 lemma toMonoidHom_injective : Injective (toMonoidHom : (α →*₀ β) → α →* β) :=

@@ -28,7 +28,7 @@ namespace MeasureTheory
 
 universe u v w
 
-variable {G : Type u} {M : Type v} {α : Type w} {s : Set α}
+variable {G : Type u} {M : Type v} {α : Type w}
 
 namespace SMulInvariantMeasure
 
@@ -57,7 +57,7 @@ end SMulInvariantMeasure
 
 section AE_smul
 
-variable {m : MeasurableSpace α} [MeasurableSpace G] [SMul G α]
+variable {m : MeasurableSpace α} [SMul G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ] {s : Set α}
 
 /-- See also `measure_preimage_smul_of_nullMeasurableSet` and `measure_preimage_smul`. -/
@@ -88,7 +88,7 @@ end AE_smul
 
 section AE
 
-variable {m : MeasurableSpace α} [MeasurableSpace G] [Group G] [MulAction G α]
+variable {m : MeasurableSpace α} [Group G] [MulAction G α]
   (μ : Measure α) [SMulInvariantMeasure G α μ]
 
 @[to_additive (attr := simp)]
@@ -171,7 +171,7 @@ theorem smulInvariantMeasure_iterateMulAct
 section SMulHomClass
 
 universe uM uN uα uβ
-variable {M : Type uM} {N : Type uN}  {α : Type uα} {β : Type uβ}
+variable {M : Type uM} {N : Type uN} {α : Type uα} {β : Type uβ}
   [MeasurableSpace M] [MeasurableSpace N] [MeasurableSpace α] [MeasurableSpace β]
 
 @[to_additive]
@@ -198,9 +198,9 @@ instance smulInvariantMeasure_map_smul [SMul M α] [SMul N α] [SMulCommClass N 
 
 end SMulHomClass
 
-variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] [MeasurableSpace G]
-  [MeasurableSMul G α] (c : G) (μ : Measure α)
+variable (G) {m : MeasurableSpace α} [Group G] [MulAction G α] (μ : Measure α)
 
+variable [MeasurableSpace G] [MeasurableSMul G α] in
 /-- Equivalent definitions of a measure invariant under a multiplicative action of a group.
 
 - 0: `SMulInvariantMeasure G α μ`;
@@ -226,23 +226,17 @@ theorem smulInvariantMeasure_tfae :
         ∀ (c : G) (s), μ (c • s) = μ s,
         ∀ c : G, Measure.map (c • ·) μ = μ,
         ∀ c : G, MeasurePreserving (c • ·) μ μ] := by
-  tfae_have 1 ↔ 2
-  · exact ⟨fun h => h.1, fun h => ⟨h⟩⟩
-  tfae_have 1 → 6
-  · intro h c
-    exact (measurePreserving_smul c μ).map_eq
-  tfae_have 6 → 7
-  · exact fun H c => ⟨measurable_const_smul c, H c⟩
-  tfae_have 7 → 4
-  · exact fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
+  tfae_have 1 ↔ 2 := ⟨fun h => h.1, fun h => ⟨h⟩⟩
+  tfae_have 1 → 6 := fun h c => (measurePreserving_smul c μ).map_eq
+  tfae_have 6 → 7 := fun H c => ⟨measurable_const_smul c, H c⟩
+  tfae_have 7 → 4 := fun H c => (H c).measure_preimage_emb (measurableEmbedding_const_smul c)
   tfae_have 4 → 5
-  · exact fun H c s => by
-      rw [← preimage_smul_inv]
-      apply H
-  tfae_have 5 → 3
-  · exact fun H c s _ => H c s
+  | H, c, s => by
+    rw [← preimage_smul_inv]
+    apply H
+  tfae_have 5 → 3 := fun H c s _ => H c s
   tfae_have 3 → 2
-  · intro H c s hs
+  | H, c, s, hs => by
     rw [preimage_smul]
     exact H c⁻¹ s hs
   tfae_finish
@@ -268,7 +262,7 @@ variable {G}
 variable [SMulInvariantMeasure G α μ]
 
 variable {μ}
-
+variable [MeasurableSpace G] [MeasurableSMul G α] in
 @[to_additive]
 theorem NullMeasurableSet.smul {s} (hs : NullMeasurableSet s μ) (c : G) :
     NullMeasurableSet (c • s) μ := by
@@ -280,6 +274,7 @@ section IsMinimal
 variable (G)
 variable [TopologicalSpace α] [ContinuousConstSMul G α] [MulAction.IsMinimal G α] {K U : Set α}
 
+include G in
 /-- If measure `μ` is invariant under a group action and is nonzero on a compact set `K`, then it is
 positive on any nonempty open set. In case of a regular measure, one can assume `μ ≠ 0` instead of
 `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_smulInvariant_of_ne_zero`. -/
@@ -297,6 +292,8 @@ then it is positive on any nonempty open set. In case of a regular measure, one 
 instead of `μ K ≠ 0`, see `MeasureTheory.measure_isOpen_pos_of_vaddInvariant_of_ne_zero`. -/
 add_decl_doc measure_isOpen_pos_of_vaddInvariant_of_compact_ne_zero
 
+include G
+
 @[to_additive]
 theorem isLocallyFiniteMeasure_of_smulInvariant (hU : IsOpen U) (hne : U.Nonempty) (hμU : μ U ≠ ∞) :
     IsLocallyFiniteMeasure μ :=
@@ -310,7 +307,7 @@ variable [Measure.Regular μ]
 @[to_additive]
 theorem measure_isOpen_pos_of_smulInvariant_of_ne_zero (hμ : μ ≠ 0) (hU : IsOpen U)
     (hne : U.Nonempty) : 0 < μ U :=
-  let ⟨_K, hK, hμK⟩ := Regular.exists_compact_not_null.mpr hμ
+  let ⟨_K, hK, hμK⟩ := Regular.exists_isCompact_not_null.mpr hμ
   measure_isOpen_pos_of_smulInvariant_of_compact_ne_zero G hK hμK hU hne
 
 @[to_additive]

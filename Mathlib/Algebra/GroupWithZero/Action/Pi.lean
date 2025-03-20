@@ -21,15 +21,12 @@ This file defines instances for `MulActionWithZero` and related structures on `P
 -/
 
 
-universe u v w
+universe u v
 
 variable {I : Type u}
 
 -- The indexing type
 variable {f : I → Type v}
-
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 

@@ -57,7 +57,7 @@ rather than more literally with `affineSegment`.
 -/
 
 
-open Affine Affine.Simplex EuclideanGeometry FiniteDimensional
+open Affine Affine.Simplex EuclideanGeometry Module
 
 open scoped Affine EuclideanGeometry Real
 

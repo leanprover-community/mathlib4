@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
 -/
 import Mathlib.Topology.Order.ProjIcc
-import Mathlib.Topology.ContinuousFunction.Ordered
+import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.CompactOpen
 import Mathlib.Topology.UnitInterval
 
@@ -82,8 +82,8 @@ section
 
 You should extend this class when you extend `ContinuousMap.Homotopy`. -/
 class HomotopyLike {X Y : outParam Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y]
-    extends ContinuousMapClass F (I × X) Y : Prop where
+    (F : Type*) (f₀ f₁ : outParam <| C(X, Y)) [FunLike F (I × X) Y] : Prop
+    extends ContinuousMapClass F (I × X) Y where
   /-- value of the homotopy at 0 -/
   map_zero_left (f : F) : ∀ x, f (0, x) = f₀ x
   /-- value of the homotopy at 1 -/
@@ -160,7 +160,6 @@ theorem extend_apply_of_one_le (F : Homotopy f₀ f₁) {t : ℝ} (ht : 1 ≤ t)
   rw [← F.apply_one]
   exact ContinuousMap.congr_fun (Set.IccExtend_of_right_le (zero_le_one' ℝ) F.curry ht) x
 
-@[simp]
 theorem extend_apply_coe (F : Homotopy f₀ f₁) (t : I) (x : X) : F.extend t x = F (t, x) :=
   ContinuousMap.congr_fun (Set.IccExtend_val (zero_le_one' ℝ) F.curry t) x
 
@@ -369,10 +368,10 @@ The type of homotopies between `f₀ f₁ : C(X, Y)`, where the intermediate map
 `P : C(X, Y) → Prop`
 -/
 structure HomotopyWith (f₀ f₁ : C(X, Y)) (P : C(X, Y) → Prop) extends Homotopy f₀ f₁ where
-  -- Porting note (#11215): TODO: use `toHomotopy.curry t`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `toHomotopy.curry t`
   /-- the intermediate maps of the homotopy satisfy the property -/
   prop' : ∀ t, P ⟨fun x => toFun (t, x),
-    Continuous.comp continuous_toFun (continuous_const.prod_mk continuous_id')⟩
+    Continuous.comp continuous_toFun (continuous_const.prodMk continuous_id')⟩
 
 namespace HomotopyWith
 
@@ -400,8 +399,7 @@ theorem ext {F G : HomotopyWith f₀ f₁ P} (h : ∀ x, F x = G x) : F = G := D
 because it is a composition of multiple projections. -/
 def Simps.apply (F : HomotopyWith f₀ f₁ P) : I × X → Y := F
 
-initialize_simps_projections HomotopyWith (toHomotopy_toContinuousMap_toFun → apply,
-  -toHomotopy_toContinuousMap)
+initialize_simps_projections HomotopyWith (toFun → apply, -toHomotopy_toContinuousMap)
 
 @[continuity]
 protected theorem continuous (F : HomotopyWith f₀ f₁ P) : Continuous F :=
@@ -415,7 +413,6 @@ theorem apply_zero (F : HomotopyWith f₀ f₁ P) (x : X) : F (0, x) = f₀ x :=
 theorem apply_one (F : HomotopyWith f₀ f₁ P) (x : X) : F (1, x) = f₁ x :=
   F.map_one_left x
 
--- Porting note: removed `simp`
 theorem coe_toContinuousMap (F : HomotopyWith f₀ f₁ P) : ⇑F.toContinuousMap = F :=
   rfl
 
@@ -515,7 +512,7 @@ theorem symm ⦃f g : C(X, Y)⦄ (h : HomotopicWith f g P) : HomotopicWith g f P
 
 -- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
 -- the `trans` tactic could not use it.
--- An update to the trans tactic coming in mathlib4#7014 will reject this attribute.
+-- An update to the trans tactic coming in https://github.com/leanprover-community/mathlib4/pull/7014 will reject this attribute.
 -- It could be restored by changing the argument order to `HomotopicWith P f g`.
 @[trans]
 theorem trans ⦃f g h : C(X, Y)⦄ (h₀ : HomotopicWith f g P) (h₁ : HomotopicWith g h P) :

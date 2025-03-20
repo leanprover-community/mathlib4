@@ -3,8 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.Data.Finsupp.Order
+import Mathlib.Data.Sym.Basic
 
 /-!
 # Equivalence between `Multiset` and `ℕ`-valued finitely supported functions
@@ -29,8 +30,9 @@ Under the additional assumption of `[DecidableEq α]`, this is available as
 is only needed for one direction. -/
 def toMultiset : (α →₀ ℕ) →+ Multiset α where
   toFun f := Finsupp.sum f fun a n => n • {a}
-  -- Porting note: times out if h is not specified
-  map_add' _f _g := sum_add_index' (h := fun a n => n • ({a} : Multiset α))
+  -- Porting note: have to specify `h` or add a `dsimp only` before `sum_add_index'`.
+  -- see also: https://github.com/leanprover-community/mathlib4/issues/12129
+  map_add' _f _g := sum_add_index' (h := fun _ n => n • _)
     (fun _ ↦ zero_nsmul _) (fun _ ↦ add_nsmul _)
   map_zero' := sum_zero_index
 
@@ -53,7 +55,7 @@ theorem toMultiset_sum {f : ι → α →₀ ℕ} (s : Finset ι) :
 
 theorem toMultiset_sum_single (s : Finset ι) (n : ℕ) :
     Finsupp.toMultiset (∑ i ∈ s, single i n) = n • s.val := by
-  simp_rw [toMultiset_sum, Finsupp.toMultiset_single, sum_nsmul, sum_multiset_singleton]
+  simp_rw [toMultiset_sum, Finsupp.toMultiset_single, Finset.sum_nsmul, sum_multiset_singleton]
 
 @[simp]
 theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.sum fun _ => id := by
@@ -104,12 +106,12 @@ theorem count_toMultiset [DecidableEq α] (f : α →₀ ℕ) (a : α) : (toMult
 theorem toMultiset_sup [DecidableEq α] (f g : α →₀ ℕ) :
     toMultiset (f ⊔ g) = toMultiset f ∪ toMultiset g := by
   ext
-  simp_rw [Multiset.count_union, Finsupp.count_toMultiset, Finsupp.sup_apply, sup_eq_max]
+  simp_rw [Multiset.count_union, Finsupp.count_toMultiset, Finsupp.sup_apply]
 
 theorem toMultiset_inf [DecidableEq α] (f g : α →₀ ℕ) :
     toMultiset (f ⊓ g) = toMultiset f ∩ toMultiset g := by
   ext
-  simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply, inf_eq_min]
+  simp_rw [Multiset.count_inter, Finsupp.count_toMultiset, Finsupp.inf_apply]
 
 @[simp]
 theorem mem_toMultiset (f : α →₀ ℕ) (i : α) : i ∈ toMultiset f ↔ i ∈ f.support := by
@@ -128,7 +130,7 @@ the multiplicities of the elements of `s`. -/
 def toFinsupp : Multiset α ≃+ (α →₀ ℕ) where
   toFun s := ⟨s.toFinset, fun a => s.count a, fun a => by simp⟩
   invFun f := Finsupp.toMultiset f
-  map_add' s t := Finsupp.ext fun _ => count_add _ _ _
+  map_add' _ _ := Finsupp.ext fun _ => count_add _ _ _
   right_inv f :=
     Finsupp.ext fun a => by
       simp only [Finsupp.toMultiset_apply, Finsupp.sum, Multiset.count_sum',
@@ -163,11 +165,11 @@ theorem toFinsupp_eq_iff {s : Multiset α} {f : α →₀ ℕ} :
 
 theorem toFinsupp_union (s t : Multiset α) : toFinsupp (s ∪ t) = toFinsupp s ⊔ toFinsupp t := by
   ext
-  simp [sup_eq_max]
+  simp
 
 theorem toFinsupp_inter (s t : Multiset α) : toFinsupp (s ∩ t) = toFinsupp s ⊓ toFinsupp t := by
   ext
-  simp [inf_eq_min]
+  simp
 
 @[simp]
 theorem toFinsupp_sum_eq (s : Multiset α) : s.toFinsupp.sum (fun _ ↦ id) = Multiset.card s := by

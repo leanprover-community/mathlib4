@@ -3,9 +3,10 @@ Copyright (c) 2015, 2017 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.Order.Compact
+import Mathlib.Topology.Order.Compact
 import Mathlib.Topology.MetricSpace.ProperSpace
 import Mathlib.Topology.MetricSpace.Cauchy
+import Mathlib.Topology.EMetricSpace.Diam
 
 /-!
 ## Boundedness in (pseudo)-metric spaces
@@ -15,7 +16,7 @@ This file contains one definition, and various results on boundedness in pseudo-
   Defined in terms of `EMetric.diam`, for better handling of the case when it should be infinite.
 
 * `isBounded_iff_subset_closedBall`: a non-empty set is bounded if and only if
-   it is is included in some closed ball
+   it is included in some closed ball
 * describing the cobounded filter, relating to the cocompact filter
 * `IsCompact.isBounded`: compact sets are bounded
 * `TotallyBounded.isBounded`: totally bounded sets are bounded
@@ -28,6 +29,8 @@ diameter of a subset, and its relation to boundedness
 
 metric, pseudo_metric, bounded, diameter, Heine-Borel theorem
 -/
+
+assert_not_exists Basis
 
 open Set Filter Bornology
 open scoped ENNReal Uniformity Topology Pointwise
@@ -194,7 +197,7 @@ theorem _root_.CauchySeq.isBounded_range {f : ℕ → α} (hf : CauchySeq f) : I
 theorem isBounded_range_of_tendsto_cofinite {f : β → α} {a : α} (hf : Tendsto f cofinite (𝓝 a)) :
     IsBounded (range f) :=
   isBounded_range_of_tendsto_cofinite_uniformity <|
-    (hf.prod_map hf).mono_right <| nhds_prod_eq.symm.trans_le (nhds_le_uniformity a)
+    (hf.prodMap hf).mono_right <| nhds_prod_eq.symm.trans_le (nhds_le_uniformity a)
 
 /-- In a compact space, all sets are bounded -/
 theorem isBounded_of_compactSpace [CompactSpace α] : IsBounded s :=
@@ -274,8 +277,7 @@ theorem _root_.Bornology.IsBounded.isCompact_closure [ProperSpace α] (h : IsBou
     IsCompact (closure s) :=
   isCompact_of_isClosed_isBounded isClosed_closure h.closure
 
--- Porting note (#11215): TODO: assume `[MetricSpace α]`
--- instead of `[PseudoMetricSpace α] [T2Space α]`
+-- TODO: assume `[MetricSpace α]` instead of `[PseudoMetricSpace α] [T2Space α]`
 /-- The **Heine–Borel theorem**:
 In a proper Hausdorff space, a set is compact if and only if it is closed and bounded. -/
 theorem isCompact_iff_isClosed_bounded [T2Space α] [ProperSpace α] :
@@ -391,8 +393,7 @@ theorem diam_le_of_forall_dist_le_of_nonempty (hs : s.Nonempty) {C : ℝ}
 theorem dist_le_diam_of_mem' (h : EMetric.diam s ≠ ⊤) (hx : x ∈ s) (hy : y ∈ s) :
     dist x y ≤ diam s := by
   rw [diam, dist_edist]
-  rw [ENNReal.toReal_le_toReal (edist_ne_top _ _) h]
-  exact EMetric.edist_le_diam_of_mem hx hy
+  exact ENNReal.toReal_mono h <| EMetric.edist_le_diam_of_mem hx hy
 
 /-- Characterize the boundedness of a set in terms of the finiteness of its emetric.diameter. -/
 theorem isBounded_iff_ediam_ne_top : IsBounded s ↔ EMetric.diam s ≠ ⊤ :=

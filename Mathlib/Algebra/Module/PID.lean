@@ -7,7 +7,7 @@ import Mathlib.Algebra.Module.DedekindDomain
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.Algebra.Module.Projective
 import Mathlib.Algebra.Category.ModuleCat.Biproducts
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.SimpleModule.Basic
 
 /-!
 # Structure of finitely generated modules over a PID
@@ -53,7 +53,7 @@ assert_not_exists TopologicalSpace
 
 universe u v
 
-variable {R : Type u} [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
+variable {R : Type u} [CommRing R] [IsPrincipalIdealRing R]
 variable {M : Type v} [AddCommGroup M] [Module R M]
 variable {N : Type max u v} [AddCommGroup N] [Module R N]
 
@@ -68,6 +68,8 @@ theorem Submodule.isSemisimple_torsionBy_of_irreducible {a : R} (h : Irreducible
   haveI := PrincipalIdealRing.isMaximal_of_irreducible h
   letI := Ideal.Quotient.field (R ∙ a)
   (submodule_torsionBy_orderIso a).complementedLattice
+
+variable [IsDomain R]
 
 /-- A finitely generated torsion module over a PID is an internal direct sum of its
 `p i ^ e i`-torsion submodules for some primes `p i` and numbers `e i`. -/
@@ -105,6 +107,8 @@ variable [dec : ∀ x : M, Decidable (x = 0)]
 
 open Ideal Submodule.IsPrincipal
 
+include hp
+
 theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
     torsionOf R M x = span {p ^ pOrder hM x} := by
   classical
@@ -121,8 +125,6 @@ theorem _root_.Ideal.torsionOf_eq_span_pow_pOrder (x : M) :
 
 theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ pOrder hM y))
     (h : p ^ k • x ∈ R ∙ y) : ∃ a : R, p ^ k • x = p ^ k • a • y := by
-  -- Porting note: needed to make `smul_smul` work below.
-  letI : MulAction R M := MulActionWithZero.toMulAction
   by_cases hk : k ≤ pOrder hM y
   · let f :=
       ((R ∙ p ^ (pOrder hM y - k) * p ^ k).quotEquivOfEq _ ?_).trans
@@ -170,8 +172,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
     ∃ (d : ℕ) (k : Fin d → ℕ), Nonempty <| N ≃ₗ[R] ⨁ i : Fin d, R ⧸ R ∙ p ^ (k i : ℕ) := by
   obtain ⟨d, s, hs⟩ := @Module.Finite.exists_fin _ _ _ _ _ h'; use d; clear h'
   induction' d with d IH generalizing N
-  · -- Porting note: was `use fun i => finZeroElim i`
-    use finZeroElim
+  · use finZeroElim
     rw [Set.range_eq_empty, Submodule.span_empty] at hs
     haveI : Unique N :=
       ⟨⟨0⟩, fun x => by dsimp; rw [← Submodule.mem_bot R, hs]; exact Submodule.mem_top⟩
@@ -221,7 +222,7 @@ theorem torsion_by_prime_power_decomposition (hN : Module.IsTorsion' N (Submonoi
         ⟨(@hN x).choose, by rw [← Quotient.mk_smul, (@hN x).choose_spec, Quotient.mk_zero]⟩
     · have hs' := congr_arg (Submodule.map <| mkQ <| R ∙ s j) hs
       rw [Submodule.map_span, Submodule.map_top, range_mkQ] at hs'; simp only [mkQ_apply] at hs'
-      simp only [s']; rw [← Function.comp.assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
+      simp only [s']; rw [← Function.comp_assoc, Set.range_comp (_ ∘ s), Fin.range_succAbove]
       rw [← Set.range_comp, ← Set.insert_image_compl_eq_range _ j, Function.comp_apply,
         (Quotient.mk_eq_zero _).mpr (Submodule.mem_span_singleton_self _), span_insert_zero] at hs'
       exact hs'
@@ -251,7 +252,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
           (DFinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
             (DirectSum.sigmaLcurryEquiv R).symm.trans
               (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ ?_)⟩⟩
-  cases' i with i j
+  obtain ⟨i, j⟩ := i
   simp only
 
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated

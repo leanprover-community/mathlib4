@@ -1,8 +1,9 @@
 /-
 Copyright (c) 2018 Michael Jendrusch. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Michael Jendrusch, Scott Morrison, Bhavik Mehta, Jakob von Raumer
+Authors: Michael Jendrusch, Kim Morrison, Bhavik Mehta, Jakob von Raumer
 -/
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Functor.Trifunctor
 import Mathlib.CategoryTheory.Products.Basic
 
@@ -123,7 +124,7 @@ scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
-@[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
+@[app_delab CategoryTheory.MonoidalCategoryStruct.tensorUnit]
 def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
@@ -139,6 +140,13 @@ scoped notation "λ_" => MonoidalCategoryStruct.leftUnitor
 /-- Notation for the `rightUnitor`: `X ⊗ 𝟙_C ≃ X` -/
 scoped notation "ρ_" => MonoidalCategoryStruct.rightUnitor
 
+/-- The property that the pentagon relation is satisfied by four objects
+in a category equipped with a `MonoidalCategoryStruct`. -/
+def Pentagon {C :Type u} [Category.{v} C] [MonoidalCategoryStruct C]
+    (Y₁ Y₂ Y₃ Y₄ : C) : Prop :=
+  (α_ Y₁ Y₂ Y₃).hom ▷ Y₄ ≫ (α_ Y₁ (Y₂ ⊗ Y₃) Y₄).hom ≫ Y₁ ◁ (α_ Y₂ Y₃ Y₄).hom =
+    (α_ (Y₁ ⊗ Y₂) Y₃ Y₄).hom ≫ (α_ Y₁ Y₂ (Y₃ ⊗ Y₄)).hom
+
 end MonoidalCategory
 
 open MonoidalCategory
@@ -148,10 +156,8 @@ In a monoidal category, we can take the tensor product of objects, `X ⊗ Y` and
 Tensor product does not need to be strictly associative on objects, but there is a
 specified associator, `α_ X Y Z : (X ⊗ Y) ⊗ Z ≅ X ⊗ (Y ⊗ Z)`. There is a tensor unit `𝟙_ C`,
 with specified left and right unitor isomorphisms `λ_ X : 𝟙_ C ⊗ X ≅ X` and `ρ_ X : X ⊗ 𝟙_ C ≅ X`.
-These associators and unitors satisfy the pentagon and triangle equations.
-
-See <https://stacks.math.columbia.edu/tag/0FFK>.
--/
+These associators and unitors satisfy the pentagon and triangle equations. -/
+@[stacks 0FFK]
 -- Porting note: The Mathport did not translate the temporary notation
 class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCategoryStruct C where
   tensorHom_def {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ ⟶ Y₂) :
@@ -160,8 +166,8 @@ class MonoidalCategory (C : Type u) [𝒞 : Category.{v} C] extends MonoidalCate
   /-- Tensor product of identity maps is the identity: `(𝟙 X₁ ⊗ 𝟙 X₂) = 𝟙 (X₁ ⊗ X₂)` -/
   tensor_id : ∀ X₁ X₂ : C, 𝟙 X₁ ⊗ 𝟙 X₂ = 𝟙 (X₁ ⊗ X₂) := by aesop_cat
   /--
-  Composition of tensor products is tensor product of compositions:
-  `(f₁ ⊗ g₁) ∘ (f₂ ⊗ g₂) = (f₁ ∘ f₂) ⊗ (g₁ ⊗ g₂)`
+  Tensor product of compositions is composition of tensor products:
+  `(f₁ ≫ g₁) ⊗ (f₂ ≫ g₂) = (f₁ ⊗ f₂) ≫ (g₁ ⊗ g₂)`
   -/
   tensor_comp :
     ∀ {X₁ Y₁ Z₁ X₂ Y₂ Z₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂) (g₁ : Y₁ ⟶ Z₁) (g₂ : Y₂ ⟶ Z₂),
@@ -279,15 +285,6 @@ theorem tensorHom_def' {X₁ Y₁ X₂ Y₂ : C} (f : X₁ ⟶ Y₁) (g : X₂ �
     f ⊗ g = X₁ ◁ g ≫ f ▷ Y₂ :=
   whisker_exchange f g ▸ tensorHom_def f g
 
-end MonoidalCategory
-
-open scoped MonoidalCategory
-open MonoidalCategory
-
-variable {C : Type u} [𝒞 : Category.{v} C] [MonoidalCategory C]
-
-namespace MonoidalCategory
-
 @[reassoc (attr := simp)]
 theorem whiskerLeft_hom_inv (X : C) {Y Z : C} (f : Y ≅ Z) :
     X ◁ f.hom ≫ X ◁ f.inv = 𝟙 (X ⊗ Y) := by
@@ -384,11 +381,9 @@ lemma whiskerRightIso_trans {X Y Z : C} (f : X ≅ Y) (g : Y ≅ Z) (W : C) :
 lemma whiskerRightIso_symm {X Y : C} (f : X ≅ Y) (W : C) :
     (whiskerRightIso f W).symm = whiskerRightIso f.symm W := rfl
 
-end MonoidalCategory
-
 /-- The tensor product of two isomorphisms is an isomorphism. -/
 @[simps]
-def tensorIso {C : Type u} {X Y X' Y' : C} [Category.{v} C] [MonoidalCategory.{v} C] (f : X ≅ Y)
+def tensorIso {X Y X' Y' : C} (f : X ≅ Y)
     (g : X' ≅ Y') : X ⊗ X' ≅ Y ⊗ Y' where
   hom := f.hom ⊗ g.hom
   inv := f.inv ⊗ g.inv
@@ -396,13 +391,15 @@ def tensorIso {C : Type u} {X Y X' Y' : C} [Category.{v} C] [MonoidalCategory.{v
   inv_hom_id := by rw [← tensor_comp, Iso.inv_hom_id, Iso.inv_hom_id, ← tensor_id]
 
 /-- Notation for `tensorIso`, the tensor product of isomorphisms -/
-infixr:70 " ⊗ " => tensorIso
+scoped infixr:70 " ⊗ " => tensorIso
 
-namespace MonoidalCategory
+theorem tensorIso_def {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
+    f ⊗ g = whiskerRightIso f X' ≪≫ whiskerLeftIso Y g :=
+  Iso.ext (tensorHom_def f.hom g.hom)
 
-section
-
-variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C]
+theorem tensorIso_def' {X Y X' Y' : C} (f : X ≅ Y) (g : X' ≅ Y') :
+    f ⊗ g = whiskerLeftIso X g ≪≫ whiskerRightIso f Y' :=
+  Iso.ext (tensorHom_def' f.hom g.hom)
 
 instance tensor_isIso {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g] : IsIso (f ⊗ g) :=
   (asIso f ⊗ asIso g).isIso_hom
@@ -412,7 +409,7 @@ theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g]
     inv (f ⊗ g) = inv f ⊗ inv g := by
   simp [tensorHom_def ,whisker_exchange]
 
-variable {U V W X Y Z : C}
+variable {W X Y Z : C}
 
 theorem whiskerLeft_dite {P : Prop} [Decidable P]
     (X : C) {Y Z : C} (f : P → (Y ⟶ Z)) (f' : ¬P → (Y ⟶ Z)) :
@@ -759,8 +756,6 @@ theorem tensor_left_iff {X Y : C} (f g : X ⟶ Y) : 𝟙 (𝟙_ C) ⊗ f = 𝟙 
 
 theorem tensor_right_iff {X Y : C} (f g : X ⟶ Y) : f ⊗ 𝟙 (𝟙_ C) = g ⊗ 𝟙 (𝟙_ C) ↔ f = g := by simp
 
-end
-
 section
 
 variable (C)
@@ -828,19 +823,16 @@ abbrev tensorUnitRight : C ⥤ C := tensorRight (𝟙_ C)
 
 -- We can express the associator and the unitors, given componentwise above,
 -- as natural isomorphisms.
--- Porting Note: Had to add a `simps!` because Lean was complaining this wasn't a constructor app.
 /-- The associator as a natural isomorphism. -/
 @[simps!]
 def associatorNatIso : leftAssocTensor C ≅ rightAssocTensor C :=
   NatIso.ofComponents (fun _ => MonoidalCategory.associator _ _ _)
 
--- Porting Note: same as above
 /-- The left unitor as a natural isomorphism. -/
 @[simps!]
 def leftUnitorNatIso : tensorUnitLeft C ≅ 𝟭 C :=
   NatIso.ofComponents MonoidalCategory.leftUnitor
 
--- Porting Note: same as above
 /-- The right unitor as a natural isomorphism. -/
 @[simps!]
 def rightUnitorNatIso : tensorUnitRight C ≅ 𝟭 C :=
@@ -992,5 +984,30 @@ theorem prodMonoidal_rightUnitor_inv_snd (X : C₁ × C₂) :
 end
 
 end MonoidalCategory
+
+namespace NatTrans
+
+variable {J : Type*} [Category J] {C : Type*} [Category C] [MonoidalCategory C]
+  {F G F' G' : J ⥤ C} (α : F ⟶ F') (β : G ⟶ G')
+
+@[reassoc]
+lemma tensor_naturality {X Y X' Y' : J} (f : X ⟶ Y) (g : X' ⟶ Y') :
+    (F.map f ⊗ G.map g) ≫ (α.app Y ⊗ β.app Y') =
+      (α.app X ⊗ β.app X') ≫ (F'.map f ⊗ G'.map g) := by
+  simp only [← tensor_comp, naturality]
+
+@[reassoc]
+lemma whiskerRight_app_tensor_app {X Y : J} (f : X ⟶ Y) (X' : J) :
+    F.map f ▷ G.obj X' ≫ (α.app Y ⊗ β.app X') =
+      (α.app X ⊗ β.app X') ≫ F'.map f ▷ (G'.obj X') := by
+  simpa using tensor_naturality α β f (𝟙 X')
+
+@[reassoc]
+lemma whiskerLeft_app_tensor_app {X' Y' : J} (f : X' ⟶ Y') (X : J) :
+    F.obj X ◁ G.map f ≫ (α.app X ⊗ β.app Y') =
+      (α.app X ⊗ β.app X') ≫ F'.obj X ◁ G'.map f := by
+  simpa using tensor_naturality α β (𝟙 X) f
+
+end NatTrans
 
 end CategoryTheory

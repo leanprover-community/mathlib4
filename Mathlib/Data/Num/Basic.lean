@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Data.Int.Notation
-import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Data.Nat.Bits
+import Mathlib.Data.Nat.BinaryRec
+import Mathlib.Tactic.TypeStar
+
 /-!
 # Binary representation of integers using inductive types
 
@@ -136,7 +138,7 @@ def ofNatSucc : ℕ → PosNum
 def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 
-instance {n : ℕ} : OfNat PosNum (n + 1) where
+instance (priority := low) {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering
@@ -157,10 +159,10 @@ instance : LT PosNum :=
 instance : LE PosNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel PosNum (· < ·)
+instance decidableLT : DecidableLT PosNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel PosNum (· ≤ ·)
+instance decidableLE : DecidableLE PosNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end PosNum
@@ -169,32 +171,26 @@ section
 
 variable {α : Type*} [One α] [Add α]
 
-section deprecated
-set_option linter.deprecated false
-
 /-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castPosNum : PosNum → α
   | 1 => 1
   | PosNum.bit0 a => castPosNum a + castPosNum a
   | PosNum.bit1 a => castPosNum a + castPosNum a + 1
 
 /-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castNum [Zero α] : Num → α
   | 0 => 0
   | Num.pos p => castPosNum p
 
 -- see Note [coercion into rings]
-@[deprecated (since := "2023-03-31")] instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
+instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
   ⟨castPosNum⟩
 
 -- see Note [coercion into rings]
-@[deprecated (since := "2023-03-31")]
 instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
   ⟨castNum⟩
-
-end deprecated
 
 instance : Repr PosNum :=
   ⟨fun n _ => repr (n : ℕ)⟩
@@ -274,10 +270,10 @@ instance : LT Num :=
 instance : LE Num :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel Num (· < ·)
+instance decidableLT : DecidableLT Num
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel Num (· ≤ ·)
+instance decidableLE : DecidableLE Num
   | a, b => by dsimp [LE.le]; infer_instance
 
 /-- Converts a `Num` to a `ZNum`. -/
@@ -483,10 +479,10 @@ instance : LT ZNum :=
 instance : LE ZNum :=
   ⟨fun a b => ¬b < a⟩
 
-instance decidableLT : @DecidableRel ZNum (· < ·)
+instance decidableLT : DecidableLT ZNum
   | a, b => by dsimp [LT.lt]; infer_instance
 
-instance decidableLE : @DecidableRel ZNum (· ≤ ·)
+instance decidableLE : DecidableLE ZNum
   | a, b => by dsimp [LE.le]; infer_instance
 
 end ZNum
@@ -509,7 +505,7 @@ def divMod (d : PosNum) : PosNum → Num × Num
     divModAux d q (Num.bit1 r₁)
   | 1 => divModAux d 0 1
 
-/-- Division of `PosNum`, -/
+/-- Division of `PosNum` -/
 def div' (n d : PosNum) : Num :=
   (divMod d n).1
 
@@ -593,19 +589,17 @@ def gcd (a b : ZNum) : Num :=
 end ZNum
 
 section
-
-set_option linter.deprecated false
 variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
 
 /-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
-@[deprecated (since := "2022-11-18"), coe]
+@[coe]
 def castZNum : ZNum → α
   | 0 => 0
   | ZNum.pos p => p
   | ZNum.neg p => -p
 
 -- see Note [coercion into rings]
-@[deprecated (since := "2023-03-31")] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
+instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
   ⟨castZNum⟩
 
 instance : Repr ZNum :=

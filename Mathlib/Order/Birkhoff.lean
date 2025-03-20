@@ -185,7 +185,7 @@ open Classical in
 lattice is isomorphic to the lattice of lower sets of its sup-irreducible elements. -/
 noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a : α // SupIrred a} :=
   Equiv.toOrderIso
-    { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun b c hcb hba ↦ hba.trans' hcb⟩
+    { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun _ _ hcb hba ↦ hba.trans' hcb⟩
       invFun := fun s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
       left_inv := fun a ↦ by
         refine le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) ?_
@@ -200,7 +200,7 @@ noncomputable def OrderIso.lowerSetSupIrred [OrderBot α] : α ≃o LowerSet {a 
           exact s.lower ha (Set.mem_toFinset.1 hi)
         · dsimp
           exact le_sup (Set.mem_toFinset.2 ha) }
-    (fun b c hbc d ↦ le_trans' hbc) fun s t hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
+    (fun _ _ hbc _ ↦ le_trans' hbc) fun _ _ hst ↦ Finset.sup_mono <| Set.toFinset_mono hst
 
 namespace OrderEmbedding
 

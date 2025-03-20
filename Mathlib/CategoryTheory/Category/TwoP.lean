@@ -38,10 +38,9 @@ instance : CoeSort TwoP Type* :=
   ⟨TwoP.X⟩
 
 /-- Turns a two-pointing into a two-pointed type. -/
-def of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
+abbrev of {X : Type*} (toTwoPointing : TwoPointing X) : TwoP :=
   ⟨X, toTwoPointing⟩
 
-@[simp]
 theorem coe_of {X : Type*} (toTwoPointing : TwoPointing X) : ↥(of toTwoPointing) = X :=
   rfl
 
@@ -62,7 +61,8 @@ theorem coe_toBipointed (X : TwoP) : ↥X.toBipointed = ↥X :=
 noncomputable instance largeCategory : LargeCategory TwoP :=
   InducedCategory.category toBipointed
 
-noncomputable instance concreteCategory : ConcreteCategory TwoP :=
+noncomputable instance concreteCategory : ConcreteCategory TwoP
+    (fun X Y => Bipointed.HomSubtype X.toBipointed Y.toBipointed) :=
   InducedCategory.concreteCategory toBipointed
 
 noncomputable instance hasForgetToBipointed : HasForget₂ TwoP Bipointed :=
@@ -77,14 +77,11 @@ noncomputable def swap : TwoP ⥤ TwoP where
 
 /-- The equivalence between `TwoP` and itself induced by `Prod.swap` both ways. -/
 @[simps!]
-noncomputable def swapEquiv : TwoP ≌ TwoP :=
-  CategoryTheory.Equivalence.mk swap swap
-    (NatIso.ofComponents fun X =>
-      { hom := ⟨id, rfl, rfl⟩
-        inv := ⟨id, rfl, rfl⟩ })
-    (NatIso.ofComponents fun X =>
-      { hom := ⟨id, rfl, rfl⟩
-        inv := ⟨id, rfl, rfl⟩ })
+noncomputable def swapEquiv : TwoP ≌ TwoP where
+  functor := swap
+  inverse := swap
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 @[simp]
 theorem swapEquiv_symm : swapEquiv.symm = swapEquiv :=
@@ -144,7 +141,7 @@ noncomputable def pointedToTwoPFstForgetCompBipointedToPointedFstAdjunction :
             cases x
             · exact f.map_snd.symm
             · rfl
-          right_inv := fun f => Pointed.Hom.ext rfl }
+          right_inv := fun _ => Pointed.Hom.ext rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x
@@ -163,7 +160,7 @@ noncomputable def pointedToTwoPSndForgetCompBipointedToPointedSndAdjunction :
             cases x
             · exact f.map_fst.symm
             · rfl
-          right_inv := fun f => Pointed.Hom.ext rfl }
+          right_inv := fun _ => Pointed.Hom.ext rfl }
       homEquiv_naturality_left_symm := fun f g => by
         apply Bipointed.Hom.ext
         funext x

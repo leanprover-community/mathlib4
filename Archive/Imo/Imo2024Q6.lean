@@ -39,6 +39,7 @@ symmetric form). -/
 def Aquaesulian (f : G → G) : Prop := ∀ x y, f (f y + x) = f x + y ∨ f (f x + y) = f y + x
 
 variable {f : G → G} (h : Aquaesulian f)
+include h
 
 lemma Aquaesulian.apply_apply_add (x : G) : f (f x + x) = f x + x := by
   rcases h x x with hx | hx <;> exact hx

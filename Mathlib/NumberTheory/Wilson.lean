@@ -24,6 +24,7 @@ This could be generalized to similar results about finite abelian groups.
 * Give `wilsons_lemma` a descriptive name.
 -/
 
+assert_not_exists legendreSym.quadratic_reciprocity
 
 open Finset Nat FiniteField ZMod
 
@@ -42,12 +43,8 @@ theorem wilsons_lemma : ((p - 1)! : ZMod p) = -1 := by
         rw [← Finset.prod_Ico_id_eq_factorial, prod_natCast]
       _ = ∏ x : (ZMod p)ˣ, (x : ZMod p) := ?_
       _ = -1 := by
-        -- Porting note: `simp` is less powerful.
-        -- simp_rw [← Units.coeHom_apply, ← (Units.coeHom (ZMod p)).map_prod,
-        --   prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
-        simp_rw [← Units.coeHom_apply]
-        rw [← map_prod (Units.coeHom (ZMod p))]
-        simp_rw [prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
+        simp_rw [← Units.coeHom_apply, ← map_prod (Units.coeHom (ZMod p)),
+          prod_univ_units_id_eq_neg_one, Units.coeHom_apply, Units.val_neg, Units.val_one]
   have hp : 0 < p := (Fact.out (p := p.Prime)).pos
   symm
   refine prod_bij (fun a _ => (a : ZMod p).val) ?_ ?_ ?_ ?_
@@ -99,5 +96,3 @@ theorem prime_iff_fac_equiv_neg_one (h : n ≠ 1) : Prime n ↔ ((n - 1)! : ZMod
   exact ZMod.wilsons_lemma n
 
 end Nat
-
-assert_not_exists legendre_sym.quadratic_reciprocity

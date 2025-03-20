@@ -20,6 +20,8 @@ and that it is triangulated.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated Localization
@@ -33,8 +35,8 @@ namespace MorphismProperty
 
 /-- Given `W` is a class of morphisms in a pretriangulated category `C`, this is the condition
 that `W` is compatible with the triangulation on `C`. -/
-class IsCompatibleWithTriangulation (W : MorphismProperty C)
-    extends W.IsCompatibleWithShift ℤ : Prop where
+class IsCompatibleWithTriangulation (W : MorphismProperty C) : Prop
+    extends W.IsCompatibleWithShift ℤ where
   compatible_with_triangulation (T₁ T₂ : Triangle C)
     (_ : T₁ ∈ distTriang C) (_ : T₂ ∈ distTriang C)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (_ : W a) (_ : W b)
@@ -120,6 +122,7 @@ namespace Localization
 variable (W : MorphismProperty C) [L.IsLocalization W]
   [W.HasLeftCalculusOfFractions]
 
+include W in
 lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     ∃ (Z : D) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)⟧),
       Triangle.mk f g h ∈ L.essImageDistTriang := by
@@ -133,11 +136,12 @@ lemma distinguished_cocone_triangle {X Y : D} (f : X ⟶ Y) :
     (Iso.refl _) e.inv.w.symm (by simp) ?_
   dsimp
   simp only [assoc, id_comp, ← Functor.map_comp, ← Arrow.comp_left, e.hom_inv_id, Arrow.id_left,
-    Functor.mapArrow_obj_left, Functor.map_id, comp_id]
+    Functor.mapArrow_obj, Arrow.mk_left, Functor.map_id, comp_id]
 
 section
 variable [W.IsCompatibleWithTriangulation]
 
+include W in
 lemma complete_distinguished_triangle_morphism (T₁ T₂ : Triangle D)
     (hT₁ : T₁ ∈ L.essImageDistTriang) (hT₂ : T₂ ∈ L.essImageDistTriang)
     (a : T₁.obj₁ ⟶ T₂.obj₁) (b : T₁.obj₂ ⟶ T₂.obj₂) (fac : T₁.mor₁ ≫ b = a ≫ T₂.mor₁) :
@@ -200,6 +204,7 @@ end
 
 variable [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
 
+include W in
 lemma isTriangulated [Pretriangulated D] [L.IsTriangulated] [IsTriangulated C] :
     IsTriangulated D := by
   have := essSurj_mapComposableArrows L W 2
