@@ -271,6 +271,7 @@ theorem map_toDual_max (s : Finset α) : s.max.map toDual = (s.image toDual).min
   rw [min_eq_inf_withTop, inf_image]
   exact congr_fun Option.map_id _
 
+set_option synthInstance.maxHeartbeats 40000 in
 theorem ofDual_min' {s : Finset αᵒᵈ} (hs : s.Nonempty) :
     ofDual (min' s hs) = max' (s.image ofDual) (hs.image _) := by
   rw [← WithBot.coe_eq_coe]
