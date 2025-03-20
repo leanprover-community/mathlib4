@@ -1890,33 +1890,24 @@ lemma inv_nonpos_of_nonpos {a : EReal} (h : a ≤ 0) : a⁻¹ ≤ 0 := by
   | coe a => rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]; exact EReal.coe_nonpos.1 h
 
 lemma inv_pos_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
-  cases a with
-  | bot => exact (not_lt_bot h).rec
-  | coe a =>  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
-  | top => exact (h' (Eq.refl ⊤)).rec
+  lift a to ℝ using ⟨h', ne_bot_of_gt h⟩
+  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
 
 lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
-  cases a with
-  | bot => exact (h' (Eq.refl ⊥)).rec
-  | coe a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
-  | top => exact (not_top_lt h).rec
+  lift a to ℝ using ⟨ne_top_of_lt h, h'⟩
+  rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
 
-lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0)
-  | ⊤ => fun _ _ _ h ↦ (not_top_lt h).rec
-  | ⊥ => fun h ↦ (not_lt_bot (mem_Ioi.1 h)).rec
-  | (a : ℝ) => by
-    intro a_0 b
-    match b with
-    | ⊤ =>
-      intro _ _
-      simp only [EReal.inv_top]
-      exact inv_pos_of_pos_ne_top (mem_Ioi.1 a_0) (EReal.coe_ne_top a)
-    | ⊥ => exact fun h ↦ (not_lt_bot (mem_Ioi.1 h)).rec
-    | (b : ℝ) =>
-      intro b_0 a_b
-      simp only [← EReal.coe_inv, EReal.coe_lt_coe_iff]
-      exact _root_.inv_strictAntiOn (mem_Ioi.2 <| EReal.coe_pos.1 <| mem_Ioi.1 a_0)
-        (mem_Ioi.2 <| EReal.coe_pos.1 <| mem_Ioi.1 b_0) (EReal.coe_lt_coe_iff.1 a_b)
+lemma inv_strictAntiOn : StrictAntiOn (fun (x : EReal) => x⁻¹) (Ioi 0) := by
+  intro a a_0 b b_0 a_b
+  simp only [mem_Ioi] at *
+  lift a to ℝ using ⟨ne_top_of_lt a_b, ne_bot_of_gt a_0⟩
+  match b with
+  | ⊤ => exact inv_top ▸ inv_pos_of_pos_ne_top a_0 (coe_ne_top a)
+  | ⊥ => exact (not_lt_bot b_0).rec
+  | (b : ℝ) =>
+    rw [← coe_inv a, ← coe_inv b, EReal.coe_lt_coe_iff]
+    exact _root_.inv_strictAntiOn (EReal.coe_pos.1 a_0) (EReal.coe_pos.1 b_0)
+      (EReal.coe_lt_coe_iff.1 a_b)
 
 /-! ### Division -/
 
