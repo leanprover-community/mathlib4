@@ -121,7 +121,6 @@ def join (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
         · exact h _  h3 _ hv hadj.symm
         · exact C₂.valid hv hw hadj hf
 
-
 lemma join_eq {v : α} (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w) :
     (C₁.join C₂ h) v = ite (v ∈ s) (C₁ v) (C₂ v) := rfl
@@ -141,7 +140,7 @@ variable [Fintype α] [DecidableRel G.Adj]
 def toColoring (C : G.PartialColoring univ) : G.Coloring ℕ :=
     ⟨C, fun hab ↦ C.valid (mem_univ _) (mem_univ _) hab⟩
 
-lemma next (C : G.PartialColoring s) (a : α)  :
+lemma next (C : G.PartialColoring s) (a : α) :
     (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).Nonempty := by
   apply card_pos.1 <| (Nat.sub_pos_of_lt _).trans_le <| le_card_sdiff _ _
   apply card_image_le.trans_lt
@@ -259,18 +258,6 @@ theorem Greedy_of_tail_path (C : G.PartialColoring s) {p : G.Walk u v}
       rw [support_cons]
       exact fun y hy ↦ List.mem_toFinset.2 <| List.mem_cons_of_mem _ <| List.mem_toFinset.1 hy
 
-
-
-theorem Greedy_of_concat_path (C : G.PartialColoring s) {p : G.Walk u v} {h : G.Adj v w}
-    (hbdd : ∀ v, G.degree v ≤ k) (hp : (p.concat h).IsPath) (hlt : ∀ y, C y < k)
-    (hdisj : Disjoint s (p.concat h).support.toFinset) :
-    (C.Greedy p.reverse.support) x < k := by
-  rw [← reverse_reverse (p.concat h)] at *
-  rw [reverse_concat, isPath_reverse_iff ] at *
-  apply Greedy_of_tail_path C hbdd hp hlt _
-  rwa [support_reverse, List.toFinset_reverse] at hdisj
-
-
 lemma insert_lt_of_lt {k : ℕ} {C : G.PartialColoring s} {a : α} (h : ∀ v,  C v < k)
     (hg : C.extend a < k) (w : α) : (C.insert_extend a).col w < k := by
   rw [insert_extend]; dsimp
@@ -292,15 +279,6 @@ lemma extend_eq_degreeOn {C : G.PartialColoring s} {a : α} (h : C.extend a = G.
     rwa [Nat.sub_le_iff_le_add, add_comm 1, Nat.succ_le_succ_iff] at this
   rw [← coe_inter]
   exact injOn_of_card_image_eq <| le_antisymm card_image_le h3
--- --       <| (card_le_card inter_subset_left).trans h3
---   have hs : G.neighborFinset a ⊆ s:= by
---     have h3 := h3.trans (card_image_le (s := G.neighborFinset a ∩ s) (f := C))
---     rw [← coe_inter] at hinj1
---     have h4 :=card_image_of_injOn hinj1
---     have h5 := (le_antisymm (by rwa [degree] at h3)  (card_le_card inter_subset_left)).le
---     contrapose! h5
---     exact card_lt_card ⟨inter_subset_left,fun h ↦ h5 fun x hx ↦ (mem_of_mem_inter_right (h hx))⟩
---   exact ⟨by rwa [← coe_inter, inter_eq_left.mpr hs] at hinj1, hs⟩
 
 /-- If two neighbors of `a` have the same color in `s` then greedily coloring `a` uses a color
 less-than the `degreeOn s` of `a` -/
@@ -312,11 +290,6 @@ lemma extend_lt_of_not_injOn {C : G.PartialColoring s} {a : α} {u v : α} (hus 
     apply hne
     apply extend_eq_degreeOn hf <;> simp_all
 
-/- If `a` has an uncolored neighbor then greedily coloring `a` uses a color less-than
-  the degree of `a`-/
--- lemma extend_lt_of_not_colored {C : G.PartialColoring s} {a : α} {u : α} (hu : G.Adj a u)
---     (h : u ∉ s) : C.extend a < G.degree a := lt_of_le_of_ne (C.extend_le_degree _)
---         fun hf ↦ h <| (next_eq_degree hf).2 <| (mem_neighborFinset ..).mpr hu
 theorem Greedy_of_path_notInj {x y : α} (C : G.PartialColoring s)
     {p : G.Walk u v} (hbdd : ∀ v, G.degree v ≤ k) (hp : p.IsPath) (hlt : ∀ y, C y < k)
     (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj u x) (huy : G.Adj u y) (hne : x ≠ y)
@@ -338,11 +311,6 @@ theorem Greedy_of_path_notInj {x y : α} (C : G.PartialColoring s)
   · rw [Greedy_not_mem ha]
     exact hlt a
 
-/- If `a` has an uncolored neighbor then greedily coloring `a` uses a color less-than
-  the degree of `a`-/
--- lemma extend_lt_of_not_colored {C : G.PartialColoring s} {a : α} {u : α} (hu : G.Adj a u)
---     (h : u ∉ s) : C.extend a < G.degree a := lt_of_le_of_ne (C.extend_le_degree _)
---         fun hf ↦ h <| (next_eq_degree hf).2 <| (mem_neighborFinset ..).mpr hu
 theorem Greedy_of_path_concat_notInj {x y a : α} (C : G.PartialColoring s) {p : G.Walk u v}
 {h : G.Adj v w}(hbdd : ∀ v, G.degree v ≤ k) (hp : (p.concat h).IsPath) (hlt : ∀ y, C y < k)
     (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj w x) (huy : G.Adj w y) (hne : x ≠ y)
@@ -351,22 +319,6 @@ theorem Greedy_of_path_concat_notInj {x y a : α} (C : G.PartialColoring s) {p :
   apply Greedy_of_path_notInj C hbdd hp.reverse hlt hxs hys hux huy hne heq
   rwa [support_reverse, List.toFinset_reverse]
 
-theorem Greedy_of_path_concat_notAdj {x y a : α} {p : G.Walk u v} (hk : 0 < k)
-{h : G.Adj v w} (hbdd : ∀ v, G.degree v ≤ k) (hp : (p.concat h).IsPath)
-   (hxs : x ∈ s) (hys : y ∈ s) (hux : G.Adj w x) (huy : G.Adj w y) (hne : x ≠ y)
-    (heq : ¬ G.Adj x y) (hdisj : Disjoint s (p.concat h).support.toFinset) :
-    ((G.ofNotAdj heq).Greedy (p.concat h).reverse.support) a < k := by
-  apply Greedy_of_path_notInj (G.ofNotAdj heq) hbdd hp.reverse _ (by simp) (by simp)
-    hux huy hne rfl
-  · rw [support_reverse, List.toFinset_reverse]
-    apply disjoint_of_subset_left _ hdisj
-    intro _ hz
-    rw [mem_insert, mem_singleton] at hz
-    cases hz <;> subst_vars <;> assumption
-  · intro y
-    rwa [ofNotAdj_eq heq]
-
-#check Walk.reverse_concat
 end PartialColoring
 open Walk Finset PartialColoring
 variable {G}

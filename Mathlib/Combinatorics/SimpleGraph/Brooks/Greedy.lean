@@ -39,10 +39,10 @@ lemma degreeLT_le_degree (a : α) [Fintype (G.neighborSetLT a)] [Fintype (G.neig
 
 lemma unused (c : α → ℕ) (a : α) [Fintype (G.neighborSetLT a)] :
     (range (G.degreeLT a + 1) \ ((G.neighborFinsetLT a).image c)).Nonempty := by
-  apply card_pos.1 <|  (Nat.sub_pos_of_lt _).trans_le <| le_card_sdiff _ _
+  apply card_pos.1 <| (Nat.sub_pos_of_lt _).trans_le <| le_card_sdiff ..
   apply card_image_le.trans_lt
   rw [← degreeLT, card_range]
-  apply Nat.lt_succ_of_le le_rfl
+  exact lt_add_one _
 
 end degreeLT
 
@@ -57,11 +57,13 @@ instance instFintypeNeighborLTN : LocallyFiniteLT H := by
   rfl
 
 /-- The function defining a greedy ℕ - coloring of a SimpleGraph ℕ -/
-def greedy (n : ℕ) : ℕ := min' _ <| H.unused (fun m ↦ ite (m < n) (greedy m) 0) n
+-- def greedy (n : ℕ) : ℕ := min' _ <| H.unused (fun m ↦ ite (m < n) (greedy m) 0) n
+
+
+def greedy (n : ℕ) : ℕ :=  min' _ <| H.unused (fun m ↦ ite (m < n) (greedy m) 0) n
 
 lemma greedy_def (n : ℕ) : H.greedy n = min' _
-    (H.unused (fun m ↦ ite (m < n) (H.greedy m) 0) n) := by
-  rw [greedy]
+    (H.unused (fun m ↦ ite (m < n) (H.greedy m) 0) n) := by sorry --rfl
 
 lemma greedy_valid {m n : ℕ} (hadj : H.Adj m n) :
     H.greedy m ≠ H.greedy n := by

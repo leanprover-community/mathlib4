@@ -7,48 +7,6 @@ variable {α : Type*} {G : SimpleGraph α}
 section Walks
 namespace Walk
 open Finset
-variable {u v x : α}
-/-- the ith dart of w is (wᵢ, wᵢ₊₁) -/
-@[simp]
-lemma get_dart_eq {w : G.Walk u v} {i : ℕ} (hi : i < w.length) :
-    w.darts.get ⟨i, w.length_darts.symm ▸ hi⟩ =
-    ⟨(w.getVert i, w.getVert (i + 1)), w.adj_getVert_succ hi⟩ := by
-  induction w generalizing i with
-  | nil => simp at hi
-  | cons h p ih =>
-    cases i with
-    | zero => simp
-    | succ i => aesop
-
-
-lemma getVert_induct {w : G.Walk u v} (P : α → Prop) (hstart : P u)
-   (hsucc : ∀ n, P (w.getVert n) → P (w.getVert (n + 1))) (hx : x ∈ w.support) : P x := by
-  induction w with
-  | nil => exact (mem_support_nil_iff.1 hx) ▸ hstart
-  | cons h p ih =>
-    have := getVert_zero .. ▸  (getVert_cons_succ ..) ▸ hsucc 0 hstart
-    rw [support_cons] at hx
-    cases hx with
-    | head as => exact hstart
-    | tail b hb =>
-      apply ih this
-      · intro n hn
-        have := hsucc (n + 1)
-        simp_rw [getVert_cons_succ] at this
-        exact this hn
-      · exact hb
-
-lemma exists_getVert_change (w : G.Walk u v) (P : α → Prop) {x : α} (hu : P u) (hx : x ∈ w.support)
-    (hxP : ¬ P x) : ∃ n, P (w.getVert n) ∧ ¬ P (w.getVert (n + 1)) ∧ n + 1 ≤ w.length := by
-  have ⟨n, h1, h2⟩ : ∃ n, P (w.getVert n) ∧ ¬ P (w.getVert (n + 1)) := by
-    by_contra! hc
-    exact  hxP <| getVert_induct P hu hc hx
-  use n, h1, h2
-  by_contra! hf
-  apply h2
-  rw [getVert_of_length_le _ (Nat.le_of_succ_le_succ hf)] at h1
-  rwa [getVert_of_length_le _ hf.le]
-
 section LFDEq
 
 lemma exists_maximal_path_subset [DecidableEq α] {u v : α} [LocallyFinite G] (s : Finset α)
@@ -96,7 +54,6 @@ lemma IsPath.eq_penultimate_of_end_mem_edge (hp : p.IsPath) (hs : s(x, v) ∈ p.
      x = p.penultimate :=
   p.snd_reverse.symm ▸
     hp.reverse.eq_snd_of_start_mem_edge (p.edges_reverse ▸ (List.mem_reverse.mpr hs))
-
 
 /-- The first vertex in a walk `p` that satisfies a predicate `P` or its end vertex if no such
  vertex exists. -/
