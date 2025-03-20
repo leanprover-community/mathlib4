@@ -45,7 +45,7 @@ theorem replicateCol_apply {ι : Type*} (w : m → α) (i) (j : ι) : replicateC
 @[deprecated (since := "2025-03-20")] alias col_apply := replicateCol_apply
 
 /--
-`Matrix.row ι u` the matrix with all rows equal to the vector `u`.
+`Matrix.replicateRow ι u` is the matrix with all rows equal to the vector `u`.
 
 To get a row matrix with exactly one row, `Matrix.replicateRow (Fin 1) u` is the canonical choice.
 -/
