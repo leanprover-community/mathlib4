@@ -85,6 +85,10 @@ theorem disjoint_sdiff_inter : Disjoint (s \ t) (s ∩ t) :=
 
 lemma subset_diff : s ⊆ t \ u ↔ s ⊆ t ∧ Disjoint s u := le_iff_subset.symm.trans le_sdiff
 
+theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
+    Disjoint s t ↔ s = ∅ :=
+  disjoint_of_le_iff_left_eq_bot h
+
 /-! ### Lemmas about complement -/
 
 theorem subset_compl_iff_disjoint_left : s ⊆ tᶜ ↔ Disjoint t s :=

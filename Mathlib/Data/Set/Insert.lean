@@ -417,8 +417,10 @@ theorem insert_inter_of_not_mem (h : a ∉ t) : insert a s ∩ t = s ∩ t :=
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
 
-theorem diff_singleton_sSubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s := by
+theorem diff_singleton_ssubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s := by
   simp
+
+@[deprecated (since := "2025-03-20")] alias diff_singleton_sSubset := diff_singleton_ssubset
 
 @[simp]
 theorem insert_diff_singleton {a : α} {s : Set α} : insert a (s \ {a}) = insert a s := by

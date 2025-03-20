@@ -968,10 +968,6 @@ theorem inter_diff_distrib_right (s t u : Set α) : (s \ t) ∩ u = (s ∩ u) \ 
 theorem diff_inter_distrib_right (s t r : Set α) : (t ∩ r) \ s = (t \ s) ∩ (r \ s) :=
   inf_sdiff
 
-theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
-    Disjoint s t ↔ s = ∅ := by
-  simp only [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
-
 /-! ### Lemmas about complement -/
 
 theorem compl_def (s : Set α) : sᶜ = { x | x ∉ s } :=
