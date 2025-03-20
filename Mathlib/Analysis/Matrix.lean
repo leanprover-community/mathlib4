@@ -326,7 +326,8 @@ theorem linfty_opNorm_mul (A : Matrix l m α) (B : Matrix m n α) : ‖A * B‖ 
   linfty_opNNNorm_mul _ _
 
 theorem linfty_opNNNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖₊ ≤ ‖A‖₊ * ‖v‖₊ := by
-  rw [← linfty_opNNNorm_col (ι := Fin 1) (A *ᵥ v), ← linfty_opNNNorm_col v (ι := Fin 1)]
+  rw [← linfty_opNNNorm_replicateCol (ι := Fin 1) (A *ᵥ v),
+    ← linfty_opNNNorm_replicateCol v (ι := Fin 1)]
   exact linfty_opNNNorm_mul A (replicateCol (Fin 1) v)
 
 theorem linfty_opNorm_mulVec (A : Matrix l m α) (v : m → α) : ‖A *ᵥ v‖ ≤ ‖A‖ * ‖v‖ :=
