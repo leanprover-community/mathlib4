@@ -123,7 +123,7 @@ theorem polar_add_left_iff {f : M → N} {x x' y : M} :
   rw [add_comm y x, add_right_comm _ _ (f (x + y)), add_comm _ (f (x + y)),
     add_right_comm (f (x + y)), add_left_inj]
 
-theorem polar_comp {F : Type*} [CommRing S] [FunLike F N S] [AddMonoidHomClass F N S]
+theorem polar_comp {F : Type*} [AddCommGroup S] [FunLike F N S] [AddMonoidHomClass F N S]
     (f : M → N) (g : F) (x y : M) :
     polar (g ∘ f) x y = g (polar f x y) := by
   simp only [polar, Pi.smul_apply, Function.comp_apply, map_sub]
@@ -232,7 +232,7 @@ protected theorem map_zero : Q 0 = 0 := by
 instance zeroHomClass : ZeroHomClass (QuadraticMap R M N) M N :=
   { QuadraticMap.instFunLike (R := R) (M := M) (N := N) with map_zero := QuadraticMap.map_zero }
 
-theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [Module S M] [IsScalarTower S R M]
+theorem map_smul_of_tower [CommSemiring S] [Algebra S R] [SMul S M] [IsScalarTower S R M]
     [Module S N] [IsScalarTower S R N] (a : S)
     (x : M) : Q (a • x) = (a * a) • Q x := by
   rw [← IsScalarTower.algebraMap_smul R a x, Q.map_smul, ← RingHom.map_mul, algebraMap_smul]
@@ -1134,7 +1134,7 @@ def PosDef (Q₂ : QuadraticMap R₂ M N) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 
 
-theorem PosDef.smul {R} [CommRing R] [LinearOrder R]
+theorem PosDef.smul {R} [CommSemiring R] [PartialOrder R]
     [Module R M] [Module R N] [PosSMulStrictMono R N]
     {Q : QuadraticMap R M N} (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) :=
   fun x hx => smul_pos a_pos (h x hx)
@@ -1163,7 +1163,7 @@ theorem PosDef.add [AddLeftStrictMono N]
     PosDef (Q + Q') :=
   fun x hx => add_pos (hQ x hx) (hQ' x hx)
 
-theorem linMulLinSelfPosDef {R} [CommRing R] [Module R M]
+theorem linMulLinSelfPosDef {R} [CommSemiring R] [Module R M]
     [Semiring A] [LinearOrder A] [IsStrictOrderedRing A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
     (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (A := A) f f) :=

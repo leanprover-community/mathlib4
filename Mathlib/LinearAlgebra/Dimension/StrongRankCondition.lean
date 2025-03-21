@@ -290,7 +290,7 @@ theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearInde
 
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
-theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Ring R] [StrongRankCondition R]
+theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Semiring R] [StrongRankCondition R]
     (n : ℕ) {m : ℕ} (v : Fin m → Fin n → R) : LinearIndependent R v → m ≤ n := fun h => by
   simpa using linearIndependent_le_basis (Pi.basisFun R (Fin n)) v h
 
