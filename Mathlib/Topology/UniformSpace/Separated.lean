@@ -3,12 +3,19 @@ Copyright (c) 2025 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.UniformSpace.Defs
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Topology.UniformSpace.Entourage
 
 /-!
 # Uniform separation
 
 This file defines a notion of separation of a set given a uniformity.
+
+A `U`-separated set `s` is a set such that every pair of elements of `s` is `U`-far.
+
+The concept of uniformly separated sets is used to define two further notions of separation:
+* Metric separation: `Metric.IsSeparated`, defined using the distance entourage.
+* Dynamical nets: `Dynamics.IsDynNetIn`, defined using the dynamical entourage.
 -/
 
 open Set
