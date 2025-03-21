@@ -178,9 +178,26 @@ theorem integrable_add_measure {f : α → β} :
   ⟨fun h => ⟨h.left_of_add_measure, h.right_of_add_measure⟩, fun h => h.1.add_measure h.2⟩
 
 @[simp]
-theorem integrable_zero_measure {_ : MeasurableSpace α} {f : α → β} :
+theorem integrable_zero_measure {f : α → β} :
     Integrable f (0 : Measure α) :=
   ⟨aestronglyMeasurable_zero_measure f, hasFiniteIntegral_zero_measure f⟩
+
+/-- In a measurable space with measurable singletons, every function is integrable with respect to
+a Dirac measure.
+See `integrable_dirac'` for a version which requires `f` to be strongly measurable but does not
+need singletons to be measurable. -/
+@[fun_prop]
+lemma integrable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    Integrable f (Measure.dirac a) :=
+  ⟨aestronglyMeasurable_dirac, by simp [HasFiniteIntegral]⟩
+
+/-- Every strongly measurable function is integrable with respect to a Dirac measure.
+See `integrable_dirac` for a version which requires that singletons are measurable sets but has no
+hypothesis on `f`. -/
+@[fun_prop]
+lemma integrable_dirac' {a : α} {f : α → β} (hf : StronglyMeasurable f) :
+    Integrable f (Measure.dirac a) :=
+  ⟨hf.aestronglyMeasurable, by simp [HasFiniteIntegral, lintegral_dirac' _ hf.enorm]⟩
 
 theorem integrable_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → β} {μ : ι → Measure α}
     {s : Finset ι} : Integrable f (∑ i ∈ s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by

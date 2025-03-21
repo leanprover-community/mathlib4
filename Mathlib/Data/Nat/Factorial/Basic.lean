@@ -56,8 +56,8 @@ theorem factorial_succ (n : ℕ) : (n + 1)! = (n + 1) * n ! :=
 @[simp] theorem factorial_two : 2! = 2 :=
   rfl
 
-theorem mul_factorial_pred (hn : 0 < n) : n * (n - 1)! = n ! :=
-  Nat.sub_add_cancel (Nat.succ_le_of_lt hn) ▸ rfl
+theorem mul_factorial_pred (hn : n ≠ 0) : n * (n - 1)! = n ! :=
+  Nat.sub_add_cancel (one_le_iff_ne_zero.mpr hn) ▸ rfl
 
 theorem factorial_pos : ∀ n, 0 < n !
   | 0 => Nat.zero_lt_one
