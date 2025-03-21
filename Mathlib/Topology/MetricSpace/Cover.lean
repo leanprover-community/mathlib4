@@ -30,7 +30,7 @@ namespace Metric
 variable {X : Type*}
 
 section PseudoEMetricSpace
-variable [PseudoEMetricSpace X] {ε : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
+variable [PseudoEMetricSpace X] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
 
 /-- A set `N` is an *`ε`-cover* of a set `s` if every point of `s` lies at distance at most `ε` of
 some point of `N`.
@@ -42,9 +42,15 @@ def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := UniformSpace.IsCover {(x, y) 
 
 @[simp] protected nonrec lemma IsCover.empty : IsCover ε ∅ N := .empty
 
+@[simp] protected nonrec lemma IsCover.nonempty (hsN : IsCover ε s N) (hs : s.Nonempty) :
+    N.Nonempty := hsN.nonempty hs
+
 nonrec lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCover ε s N₂ := h₁.mono hN
 
 nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N := ht.anti hst
+
+lemma IsCover.mono' (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
+  hε.mono_uniformity fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
 lemma isCover_iff_subset_iUnion_emetricClosedBall :
     IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by
