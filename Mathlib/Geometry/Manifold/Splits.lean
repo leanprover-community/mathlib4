@@ -17,34 +17,6 @@ TODO: better doc-string, move this to a better place
 
 open Function Set
 
-section
-
-variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [CompleteSpace E] [CompleteSpace F]
-
-/-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are real or complex Banach
-spaces), `f` is anti-Lipschitz. -/
-lemma ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
-    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f := by
-  let S : (LinearMap.range f) →L[𝕜] E := (f.equivRange hf hf').symm
-  use ⟨S.opNorm, S.opNorm_nonneg⟩
-  apply ContinuousLinearMap.antilipschitz_of_bound
-  intro x
-  calc ‖x‖
-    _ = ‖S ⟨f x, by simp⟩‖ := by simp [S]
-    _ ≤ S.opNorm * ‖f x‖ := le_opNorm S ⟨f x, by simp⟩
-
-/-- An injective bounded linear operator between real or complex Banach spaces
-is injective iff it has closed range. -/
-lemma ContinuousLinearMap.isClosed_range_if_antilipschitz_of_injective (f : E →L[𝕜] F)
-    (hf : Injective f) : IsClosed (Set.range f) ↔ ∃ K, AntilipschitzWith K f := by
-  refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
-  choose K hf' using h
-  exact hf'.isClosed_range f.uniformContinuous
-
-end
-
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
