@@ -3,13 +3,14 @@ Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.BinaryRec
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Zify
+import Mathlib.Data.Nat.Choose.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Fibonacci Numbers

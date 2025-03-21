@@ -15,6 +15,8 @@ Given an action of a group `G` on a type `α`, we say that a set `s : Set α` su
 This is crucial in Fourier-Motzkin constructions.
 -/
 
+assert_not_exists MonoidWithZero
+
 open Pointwise
 
 variable {G H α β : Type*}

@@ -334,7 +334,7 @@ noncomputable def Module.basisOfFiniteTypeTorsionFree [Fintype ι] {s : ι → M
     (hs : span R (range s) = ⊤) [NoZeroSMulDivisors R M] : Σn : ℕ, Basis (Fin n) R M := by
   classical
     -- We define `N` as the submodule spanned by a maximal linear independent subfamily of `s`
-    have := exists_maximal_independent R s
+    have := exists_maximal_linearIndepOn R s
     let I : Set ι := this.choose
     obtain
       ⟨indepI : LinearIndependent R (s ∘ (fun x => x) : I → M), hI :
@@ -654,11 +654,3 @@ end Ideal
 end SmithNormal
 
 end PrincipalIdealDomain
-
-/-- A set of linearly independent vectors in a module `M` over a semiring `S` is also linearly
-independent over a subring `R` of `K`. -/
-theorem LinearIndependent.restrict_scalars_algebras {R S M ι : Type*} [CommSemiring R] [Semiring S]
-    [AddCommMonoid M] [Algebra R S] [Module R M] [Module S M] [IsScalarTower R S M]
-    (hinj : Function.Injective (algebraMap R S)) {v : ι → M} (li : LinearIndependent S v) :
-    LinearIndependent R v :=
-  LinearIndependent.restrict_scalars (by rwa [Algebra.algebraMap_eq_smul_one'] at hinj) li

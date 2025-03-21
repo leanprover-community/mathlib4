@@ -123,7 +123,6 @@ theorem nhdsWithin_eq_iff_eventuallyEq {s t : Set α} {x : α} : 𝓝[s] x = �
 theorem nhdsWithin_le_iff {s t : Set α} {x : α} : 𝓝[s] x ≤ 𝓝[t] x ↔ t ∈ 𝓝[s] x :=
   set_eventuallyLE_iff_inf_principal_le.symm.trans set_eventuallyLE_iff_mem_inf_principal
 
--- Porting note: golfed, dropped an unneeded assumption
 theorem preimage_nhdsWithin_coinduced' {π : α → β} {s : Set β} {t : Set α} {a : α} (h : a ∈ t)
     (hs : s ∈ @nhds β (.coinduced (fun x : t => π x) inferInstance) (π a)) :
     π ⁻¹' s ∈ 𝓝[t] a := by
@@ -278,8 +277,14 @@ theorem insert_mem_nhds_iff {a : α} {s : Set α} : insert a s ∈ 𝓝 a ↔ s 
     insert_def]
 
 @[simp]
-theorem nhdsWithin_compl_singleton_sup_pure (a : α) : 𝓝[≠] a ⊔ pure a = 𝓝 a := by
+theorem nhdsNE_sup_pure (a : α) : 𝓝[≠] a ⊔ pure a = 𝓝 a := by
   rw [← nhdsWithin_singleton, ← nhdsWithin_union, compl_union_self, nhdsWithin_univ]
+
+@[deprecated (since := "2025-03-02")]
+alias nhdsWithin_compl_singleton_sup_pure := nhdsNE_sup_pure
+
+@[simp]
+theorem pure_sup_nhdsNE (a : α) : pure a ⊔ 𝓝[≠] a = 𝓝 a := by rw [← sup_comm, nhdsNE_sup_pure]
 
 theorem nhdsWithin_prod {α : Type*} [TopologicalSpace α] {β : Type*} [TopologicalSpace β]
     {s u : Set α} {t v : Set β} {a : α} {b : β} (hu : u ∈ 𝓝[s] a) (hv : v ∈ 𝓝[t] b) :
@@ -577,7 +582,6 @@ theorem continuousOn_iff_continuous_restrict :
   intro h x xs
   exact (continuousWithinAt_iff_continuousAt_restrict f xs).mpr (h ⟨x, xs⟩)
 
--- Porting note: 2 new lemmas
 alias ⟨ContinuousOn.restrict, _⟩ := continuousOn_iff_continuous_restrict
 
 theorem ContinuousOn.restrict_mapsTo {t : Set β} (hf : ContinuousOn f s) (ht : MapsTo f s t) :
@@ -686,7 +690,6 @@ theorem continuousOn_to_generateFrom_iff {β : Type*} {T : Set (Set β)} {f : α
       and_imp]
     exact forall_congr' fun t => forall_swap
 
--- Porting note: dropped an unneeded assumption
 theorem continuousOn_isOpen_of_generateFrom {β : Type*} {s : Set α} {T : Set (Set β)} {f : α → β}
     (h : ∀ t ∈ T, IsOpen (s ∩ f ⁻¹' t)) :
     @ContinuousOn α β _ (.generateFrom T) f s :=

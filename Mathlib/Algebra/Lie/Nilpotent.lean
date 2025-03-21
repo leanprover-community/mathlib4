@@ -304,7 +304,7 @@ theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule 
 variable (R L M)
 
 instance (priority := 100) trivialIsNilpotent [IsTrivial L M] : IsNilpotent L M :=
-  ⟨by use 1; change ⁅⊤, ⊤⁆ = ⊥; simp⟩
+  ⟨by use 1; simp⟩
 
 instance instIsNilpotentSup (M₁ M₂ : LieSubmodule R L M) [IsNilpotent L M₁] [IsNilpotent L M₂] :
     IsNilpotent L (M₁ ⊔ M₂ : LieSubmodule R L M) := by
@@ -926,6 +926,12 @@ theorem coe_lcs_eq [LieModule R L M] :
     · rintro ⟨⟨x, hx⟩, m, hm, rfl⟩
       exact ⟨x, hx, m, hm, rfl⟩
 
+instance [IsNilpotent L I] : LieRing.IsNilpotent I := by
+  let f : I →ₗ⁅R⁆ L := I.incl
+  let g : I →ₗ⁅R⁆ I := LieHom.id
+  have hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆ := by aesop
+  exact Function.injective_id.lieModuleIsNilpotent hfg
+
 end LieIdeal
 
 section OfAssociative
@@ -1000,6 +1006,9 @@ theorem LieIdeal.isNilpotent_iff_le_maxNilpotentIdeal [IsNoetherian R L] (I : Li
 
 theorem center_le_maxNilpotentIdeal : center R L ≤ maxNilpotentIdeal R L :=
   le_sSup (trivialIsNilpotent L (center R L))
+
+theorem maxNilpotentIdeal_le_radical : maxNilpotentIdeal R L ≤ radical R L :=
+  sSup_le_sSup fun I (_ : IsNilpotent L I) ↦ isSolvable_of_isNilpotent I
 
 @[simp] lemma maxNilpotentIdeal_eq_top_of_isNilpotent [LieRing.IsNilpotent L] :
     maxNilpotentIdeal R L = ⊤ :=

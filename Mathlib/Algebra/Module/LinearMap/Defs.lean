@@ -103,8 +103,8 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 `f (c • x) = (σ c) • f x`. -/
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
-    [Module R M] [Module S M₂] [FunLike F M M₂]
-    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂ : Prop
+    [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
+    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
 
 end
 
@@ -510,6 +510,15 @@ theorem cancel_right (hg : Surjective g) : f.comp g = f'.comp g ↔ f = f' :=
 lemma _root_.Function.Injective.injective_linearMapComp_left (hf : Injective f) :
     Injective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g :=
   fun g₁ g₂ (h : f.comp g₁ = f.comp g₂) ↦ ext fun x ↦ hf <| by rw [← comp_apply, h, comp_apply]
+
+theorem surjective_comp_left_of_exists_rightInverse {σ₃₂ : R₃ →+* R₂}
+    [RingHomInvPair σ₂₃ σ₃₂] [RingHomCompTriple σ₁₃ σ₃₂ σ₁₂]
+    (hf : ∃ f' : M₃ →ₛₗ[σ₃₂] M₂, f.comp f' = .id) :
+    Surjective fun g : M₁ →ₛₗ[σ₁₂] M₂ ↦ f.comp g := by
+  intro h
+  obtain ⟨f', hf'⟩ := hf
+  refine ⟨f'.comp h, ?_⟩
+  simp_rw [← comp_assoc, hf', id_comp]
 
 @[simp]
 theorem cancel_left (hf : Injective f) : f.comp g = f.comp g' ↔ g = g' :=

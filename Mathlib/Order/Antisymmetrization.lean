@@ -42,6 +42,9 @@ def AntisymmRel (a b : α) : Prop :=
 theorem antisymmRel_swap : AntisymmRel (swap r) = AntisymmRel r :=
   funext₂ fun _ _ ↦ propext and_comm
 
+theorem antisymmRel_swap_apply : AntisymmRel (swap r) a b ↔ AntisymmRel r a b :=
+  and_comm
+
 @[refl]
 theorem AntisymmRel.refl [IsRefl α r] (a : α) : AntisymmRel r a a :=
   ⟨_root_.refl _, _root_.refl _⟩
@@ -56,6 +59,9 @@ instance [IsRefl α r] : IsRefl α (AntisymmRel r) where
   refl := .refl r
 
 variable {r}
+
+theorem AntisymmRel.of_eq [IsRefl α r] {a b : α} (h : a = b) : AntisymmRel r a b := h ▸ .rfl
+alias Eq.antisymmRel := AntisymmRel.of_eq
 
 @[symm]
 theorem AntisymmRel.symm : AntisymmRel r a b → AntisymmRel r b a :=
@@ -84,10 +90,16 @@ theorem antisymmRel_iff_eq [IsRefl α r] [IsAntisymm α r] : AntisymmRel r a b �
 
 alias ⟨AntisymmRel.eq, _⟩ := antisymmRel_iff_eq
 
-theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
-theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
-
 end Relation
+
+section LE
+
+variable [LE α]
+
+theorem AntisymmRel.le (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
+theorem AntisymmRel.ge (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
+
+end LE
 
 section IsPreorder
 
@@ -287,6 +299,7 @@ theorem ofAntisymmetrization_lt_ofAntisymmetrization_iff {a b : Antisymmetrizati
 @[mono]
 theorem toAntisymmetrization_mono : Monotone (@toAntisymmetrization α (· ≤ ·) _) := fun _ _ => id
 
+open scoped Relator in
 private theorem liftFun_antisymmRel (f : α →o β) :
     ((AntisymmRel.setoid α (· ≤ ·)).r ⇒ (AntisymmRel.setoid β (· ≤ ·)).r) f f := fun _ _ h =>
   ⟨f.mono h.1, f.mono h.2⟩

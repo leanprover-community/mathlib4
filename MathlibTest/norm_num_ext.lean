@@ -14,6 +14,7 @@ import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Data.Rat.Floor
 import Mathlib.Tactic.NormNum.LegendreSymbol
 import Mathlib.Tactic.NormNum.Pow
+import Mathlib.Tactic.NormNum.RealSqrt
 
 /-!
 # Tests for `norm_num` extensions
@@ -479,3 +480,16 @@ example : (-6 / 15 : ℚ).num = -2 := by norm_num1
 example : (-6 / 15 : ℚ).den = 5 := by norm_num1
 
 end num_den
+
+section real_sqrt
+
+example : Real.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (25 / 16) = 5 / 4 := by norm_num
+example : Real.sqrt (0.25) = 1/2 := by norm_num
+example : NNReal.sqrt 25 = 5 := by norm_num
+example : Real.sqrt (-37) = 0 := by norm_num
+example : Real.sqrt (-5 / 3) = 0 := by norm_num
+example : Real.sqrt 0 = 0 := by norm_num
+example : NNReal.sqrt 0 = 0 := by norm_num
+
+end real_sqrt

@@ -469,7 +469,7 @@ def sumLiftRelInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum
 @[simps]
 def sumLiftRelMap (f : r ↪r s) (g : t ↪r u) : Sum.LiftRel r t ↪r Sum.LiftRel s u where
   toFun := Sum.map f g
-  inj' := f.injective.sum_map g.injective
+  inj' := f.injective.sumMap g.injective
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 
 /-- `Sum.inl` as a relation embedding into `Sum.Lex r s`. -/
@@ -490,7 +490,7 @@ def sumLexInr (r : α → α → Prop) (s : β → β → Prop) : s ↪r Sum.Lex
 @[simps]
 def sumLexMap (f : r ↪r s) (g : t ↪r u) : Sum.Lex r t ↪r Sum.Lex s u where
   toFun := Sum.map f g
-  inj' := f.injective.sum_map g.injective
+  inj' := f.injective.sumMap g.injective
   map_rel_iff' := by rintro (a | b) (c | d) <;> simp [f.map_rel_iff, g.map_rel_iff]
 
 /-- `fun b ↦ Prod.mk a b` as a relation embedding. -/

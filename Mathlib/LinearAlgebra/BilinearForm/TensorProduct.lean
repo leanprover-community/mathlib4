@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.LinearAlgebra.BilinearForm.Hom
 import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.TensorProduct.Tower
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 
 /-!
 # The bilinear form on a tensor product

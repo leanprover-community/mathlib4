@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
+import Mathlib.Logic.Pairwise
 
 /-!
 # Operation on tuples
@@ -307,6 +308,11 @@ theorem range_fin_succ {α} (f : Fin (n + 1) → α) :
 theorem range_cons {α} {n : ℕ} (x : α) (b : Fin n → α) :
     Set.range (Fin.cons x b : Fin n.succ → α) = insert x (Set.range b) := by
   rw [range_fin_succ, cons_zero, tail_cons]
+
+theorem pairwise_fin_two {n : ℕ} {r : Fin (n + 2) → Fin (n + 2) → Prop} (h : Pairwise r) :
+      Pairwise (r.onFun (Fin.cons 0 (fun (_ : Fin 1) => Fin.last _))) := by
+    apply Pairwise.comp_of_injective h
+    simp [Function.Injective, Fin.forall_fin_two]
 
 section Append
 
@@ -1151,6 +1157,15 @@ theorem contractNth_apply_of_ne (j : Fin (n + 1)) (op : α → α → α) (g : F
   · exact False.elim (hjk h.symm)
   · rwa [j.succAbove_of_le_castSucc, contractNth_apply_of_gt]
     · exact Fin.le_iff_val_le_val.2 (le_of_lt h)
+
+lemma comp_contractNth {β : Sort*} (opα : α → α → α) (opβ : β → β → β) {f : α → β}
+    (hf : ∀ x y, f (opα x y) = opβ (f x) (f y)) (j : Fin (n + 1)) (g : Fin (n + 1) → α) :
+    f ∘ contractNth j opα g = contractNth j opβ (f ∘ g) := by
+  ext x
+  rcases lt_trichotomy (x : ℕ) j with (h|h|h)
+  · simp only [Function.comp_apply, contractNth_apply_of_lt, h]
+  · simp only [Function.comp_apply, contractNth_apply_of_eq, h, hf]
+  · simp only [Function.comp_apply, contractNth_apply_of_gt, h]
 
 end ContractNth
 

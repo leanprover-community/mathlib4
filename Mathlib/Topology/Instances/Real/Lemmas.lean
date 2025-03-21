@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Periodic
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Topological properties of ℝ

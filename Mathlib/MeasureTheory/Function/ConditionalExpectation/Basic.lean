@@ -376,7 +376,7 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
 section RCLike
 variable [InnerProductSpace 𝕜 E]
 
-lemma Memℒp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : Memℒp f 2 μ)
+lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : MemLp f 2 μ)
     [SigmaFinite (μ.trim hm)] : condExpL2 E 𝕜 hm hf2.toLp =ᵐ[μ] μ[f | m] := by
   refine ae_eq_condExp_of_forall_setIntegral_eq hm hf1
     (fun s hs htop ↦ integrableOn_condExpL2_of_measure_ne_top hm htop.ne _) (fun s hs htop ↦ ?_)
@@ -385,9 +385,15 @@ lemma Memℒp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ)
   refine setIntegral_congr_ae (hm _ hs) ?_
   filter_upwards [hf2.coeFn_toLp] with ω hω _ using hω
 
-lemma Memℒp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : Memℒp f 2 μ) [IsFiniteMeasure μ] :
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.condExpL2_ae_eq_condExp' := MemLp.condExpL2_ae_eq_condExp'
+
+lemma MemLp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : MemLp f 2 μ) [IsFiniteMeasure μ] :
     condExpL2 E 𝕜 hm hf.toLp =ᵐ[μ] μ[f | m] :=
-  hf.condExpL2_ae_eq_condExp' hm (memℒp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
+  hf.condExpL2_ae_eq_condExp' hm (memLp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.condExpL2_ae_eq_condExp := MemLp.condExpL2_ae_eq_condExp
 
 end RCLike
 
@@ -406,16 +412,19 @@ lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
     simp
   obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
   · simp [hf]
-  replace hf : Memℒp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
+  replace hf : MemLp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
   rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := ℝ) hm hfi)]
   refine le_trans (eLpNorm_condExpL2_le hm _) ?_
   rw [eLpNorm_congr_ae hf.coeFn_toLp]
 
-protected lemma Memℒp.condExp (hf : Memℒp f 2 μ) : Memℒp (μ[f | m]) 2 μ := by
+protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f | m]) 2 μ := by
   by_cases hm : m ≤ m₀
   · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
       eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
   · simp [condExp_of_not_le hm]
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.condExp := MemLp.condExp
 
 end Real
 end NormedAddCommGroup
