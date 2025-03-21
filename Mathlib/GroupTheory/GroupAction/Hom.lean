@@ -391,25 +391,25 @@ variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N �
 /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
 @[to_additive (attr := simps -fullyApplied)
   "If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`."]
-def prodMk (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
+def prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
   toFun x := (f x, g x)
   map_smul' _ _ := Prod.ext (map_smulₛₗ f _ _) (map_smulₛₗ g _ _)
 
 @[to_additive (attr := simp)]
-lemma fst_comp_prodMk (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (fst _ _ _).comp (prodMk f g) = f := rfl
+lemma fst_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (fst _ _ _).comp (prod f g) = f := rfl
 
 @[to_additive (attr := simp)]
-lemma snd_comp_prodMk (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (snd _ _ _).comp (prodMk f g) = g := rfl
+lemma snd_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (snd _ _ _).comp (prod f g) = g := rfl
 
 @[to_additive (attr := simp)]
-lemma prodMk_fst_snd : prodMk (fst M α β) (snd M α β) = .id .. := rfl
+lemma prod_fst_snd : prod (fst M α β) (snd M α β) = .id .. := rfl
 
 /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
 @[to_additive (attr := simps -fullyApplied)
   "If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`."]
 def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] γ × δ where
   toFun := Prod.map f g
-  __ := (f.comp (fst ..)).prodMk (g.comp (snd ..))
+  __ := (f.comp (fst ..)).prod (g.comp (snd ..))
 
 end MulActionHom
 
