@@ -64,7 +64,7 @@ protected lemma triangle (x y z : X) : d x z ≤ d x y + d y z := d.triangle' x 
 instance : LE (PseudoMetric X R) := ⟨fun d d' ↦ ⇑d ≤ d'⟩
 
 @[simp, norm_cast]
-protected lemma coe_le_coe_iff_le {d d' : PseudoMetric X R} :
+protected lemma coe_le_coe {d d' : PseudoMetric X R} :
     (d : X → X → R) ≤ d' ↔ d ≤ d'  :=
   Iff.rfl
 
@@ -114,8 +114,8 @@ protected lemma sup_apply [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [A
 instance [AddZeroClass R] [SemilatticeSup R] [AddLeftMono R] [AddRightMono R] :
     SemilatticeSup (PseudoMetric X R) where
   sup := max
-  le_sup_left := by simp [← PseudoMetric.coe_le_coe_iff_le, Pi.le_def]
-  le_sup_right := by simp [← PseudoMetric.coe_le_coe_iff_le, Pi.le_def]
+  le_sup_left := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
+  le_sup_right := by simp [← PseudoMetric.coe_le_coe, Pi.le_def]
   sup_le _ _ _ := fun h h' _ _ ↦ sup_le (h _ _) (h' _ _)
 
 section OrderBot
@@ -143,7 +143,7 @@ lemma coe_finsetSup {Y : Type*} {f : Y → PseudoMetric X R} {s : Finset Y}
 
 lemma finsetSup_apply {Y : Type*} {f : Y → PseudoMetric X R}
     {s : Finset Y} (hs : s.Nonempty) (x y : X) :
-    (s.sup f) x y = s.sup' hs fun i ↦ (f i) x y := by
+    s.sup f x y = s.sup' hs fun i ↦ f i x y := by
   induction hs using Finset.Nonempty.cons_induction with
   | singleton i => simp
   | cons a s ha hs ih => simp [hs, ih]
