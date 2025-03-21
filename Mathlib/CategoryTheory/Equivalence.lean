@@ -132,17 +132,17 @@ a morphism `e ⟶ f`. -/
 def asNatTrans {e f : C ≌ D} (η : e ⟶ f) : e.functor ⟶ f.functor := η
 
 @[ext]
-lemma homExt {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := by
+lemma ext {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := by
   apply NatTrans.ext
   exact NatTrans.ext_iff.mp h
 
 @[simp]
-lemma mkHom_asNatTrans {e f : C ≌ D} (η : e.functor ⟶ f.functor) :
+lemma mk_asNatTrans {e f : C ≌ D} (η : e.functor ⟶ f.functor) :
     mk (asNatTrans η) = η :=
   rfl
 
 @[simp]
-lemma asNatTrans_mkHom {e f : C ≌ D} (η : e ⟶ f) :
+lemma asNatTrans_mk {e f : C ≌ D} (η : e ⟶ f) :
     asNatTrans (mk η) = η :=
   rfl
 
@@ -158,10 +158,10 @@ lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
   rfl
 
 @[simp]
-lemma mkHom_id_functor {e : C ≌ D} : mk (𝟙 e.functor) = 𝟙 e := rfl
+lemma mk_id_functor {e : C ≌ D} : mk (𝟙 e.functor) = 𝟙 e := rfl
 
 @[simp]
-lemma mkHom_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
+lemma mk_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
     mk (α ≫ β) = (mk α) ≫ (mk β) :=
   rfl
 
@@ -335,7 +335,7 @@ def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 
 @[simp]
-lemma mkHom_id_inverse {e : C ≌ D} : Hom.mk (𝟙 e.inverse) = 𝟙 e.symm := rfl
+lemma Hom.mk_id_inverse {e : C ≌ D} : Hom.mk (𝟙 e.inverse) = 𝟙 e.symm := rfl
 
 variable {E : Type u₃} [Category.{v₃} E]
 
