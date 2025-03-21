@@ -110,6 +110,78 @@ abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
 abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
   e.counitIso.inv
 
+section CategoryStructure
+
+/-- A morphism between equivalences of categories is a natural transformation between their
+functors. -/
+def Hom : (C ≌ D) → (C ≌ D) → Type (max u₁ v₂) :=
+  fun f g ↦ (f.functor ⟶ g.functor)
+
+instance : Category.{max u₁ v₂} (C ≌ D) where
+  Hom e f := Hom e f
+  id e := 𝟙 e.functor
+  comp {a b c} f g := ((f :) ≫ (g :) : a.functor ⟶ _)
+
+namespace Hom
+
+/-- Promote a natural transformation `e.functor ⟶ f.functor` to a morphism in `C ≌ D`. -/
+def mk {e f : C ≌ D} (η : e.functor ⟶ f.functor) : e ⟶ f := η
+
+/-- Recover a natural transformation between `e.functor` and `f.functor` from the data of
+a morphism `e ⟶ f`. -/
+def asNatTrans {e f : C ≌ D} (η : e ⟶ f) : e.functor ⟶ f.functor := η
+
+@[ext]
+lemma homExt {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := by
+  apply NatTrans.ext
+  exact NatTrans.ext_iff.mp h
+
+@[simp]
+lemma mkHom_asNatTrans {e f : C ≌ D} (η : e.functor ⟶ f.functor) :
+    mk (asNatTrans η) = η :=
+  rfl
+
+@[simp]
+lemma asNatTrans_mkHom {e f : C ≌ D} (η : e ⟶ f) :
+    asNatTrans (mk η) = η :=
+  rfl
+
+@[simp]
+lemma id_asNatTrans {e : C ≌ D} : asNatTrans (𝟙 e) = 𝟙 _ := rfl
+
+@[simp]
+lemma id_asNatTrans' {e : C ≌ D} : asNatTrans (𝟙 e.functor) = 𝟙 _ := rfl
+
+@[simp]
+lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
+    asNatTrans (α ≫ β) = asNatTrans α ≫ asNatTrans β :=
+  rfl
+
+@[simp]
+lemma mkHom_id_functor {e : C ≌ D} : mk (𝟙 e.functor) = 𝟙 e := rfl
+
+@[simp]
+lemma mkHom_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
+    mk (α ≫ β) = (mk α) ≫ (mk β) :=
+  rfl
+
+end Hom
+
+/-- Construct an isomorphism in `C ≌ D` from a natural isomorphism between the functors
+of the equivalences. -/
+@[simps]
+def Iso.mk {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
+  hom := Hom.mk η.hom
+  inv := Hom.mk η.inv
+
+/-- The `functor` functor that sends an equivalence of categories to its functor. -/
+@[simps!]
+def functorFunctor : (C ≌ D) ⥤ (C ⥤ D) where
+  obj f := f.functor
+  map α := Hom.asNatTrans α
+
+end CategoryStructure
+
 /- While these abbreviations are convenient, they also cause some trouble,
 preventing structure projections from unfolding. -/
 @[simp]
@@ -262,6 +334,9 @@ instance : Inhabited (C ≌ C) :=
 def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 
+@[simp]
+lemma mkHom_id_inverse {e : C ≌ D} : Hom.mk (𝟙 e.inverse) = 𝟙 e.symm := rfl
+
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
@@ -339,6 +414,13 @@ def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
       fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _
   counitIso := NatIso.ofComponents
       fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor
+
+variable (E) in
+/-- Promoting `Equivalence.congrRight` to a functor. -/
+@[simps]
+def congrRightFunctor : (C ≌ D) ⥤ ((E ⥤ C) ≌ (E ⥤ D)) where
+  obj e := e.congrRight
+  map {e f} α := Hom.mk <| (whiskeringRight _ _ _).map <| Hom.asNatTrans α
 
 section CancellationLemmas
 
@@ -612,6 +694,15 @@ end Equivalence
 
 namespace Iso
 
+/-- Obtain a natural isomorphism between the functors of two equivalences from
+  an isomorphism in `C ≌ D`. -/
+@[simps]
+def asNatIso {e f : C ≌ D} (η : e ≅ f) : e.functor ≅ f.functor where
+  hom := Equivalence.Hom.asNatTrans η.hom
+  inv := Equivalence.Hom.asNatTrans η.inv
+  hom_inv_id := by simp [← Equivalence.Hom.comp_asNatTrans]
+  inv_hom_id := by simp [← Equivalence.Hom.comp_asNatTrans]
+
 variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ E} {G : C ⥤ D} {H : D ⥤ E}
 
 /-- Construct an isomorphism `F ⋙ H.inverse ≅ G` from an isomorphism `F ≅ G ⋙ H.functor`. -/
@@ -663,5 +754,17 @@ lemma isoInverseOfIsoFunctor_isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inve
   isoFunctorOfIsoInverse_isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
 
 end Iso
+
+section Category
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
+
+namespace Equivalence
+
+variable (C D)
+
+end Equivalence
+
+end Category
 
 end CategoryTheory
