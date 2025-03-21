@@ -9,6 +9,7 @@ import Mathlib.Data.Finset.Pairwise
 import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Lattice
+import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
 # Graph cliques
@@ -376,24 +377,36 @@ theorem cliqueFree_completeMultipartiteGraph {ι : Type*} [Fintype ι] (V : ι �
   rw [← top_adj, ← f.map_adj_iff, comap_adj, top_adj] at hn
   exact absurd he hn
 
+namespace completeMultipartiteGraph
+
+variable {ι : Type*} (V : ι → Type*)
+
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts.-/
-def CompleteMultipartiteGraph.topEmbedding {ι : Type*} (V : ι → Type*) (f : ∀ (i : ι), V i) :
-    (⊤ : SimpleGraph ι) ↪g (completeMultipartiteGraph V) where
+def topEmbedding (f : ∀ (i : ι), V i) :
+    (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
   toFun := fun i ↦ ⟨i, f i⟩
   inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp
 
-theorem CompleteMultipartiteGraph.notCliqueFree_le_card {ι : Type*} [Fintype ι] (V : ι → Type*)
-    (f : ∀ (i : ι), V i) (hc : n ≤ Fintype.card ι ) :
+theorem notCliqueFree_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ Fintype.card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
   fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <|
-    (CompleteMultipartiteGraph.topEmbedding V f).comp
-      (Iso.completeGraph (Fintype.equivFin ι).symm).toEmbedding
+    (topEmbedding V f).comp (Iso.completeGraph (Fintype.equivFin ι).symm).toEmbedding
 
-theorem CompleteMultipartiteGraph.notCliqueFree_infinite {ι : Type*} [Infinite ι] (V : ι → Type*)
-    (f : ∀ (i : ι), V i) : ¬ (completeMultipartiteGraph V).CliqueFree n :=
-  fun hf ↦ not_cliqueFree_of_top_embedding (CompleteMultipartiteGraph.topEmbedding V f |>.comp
+theorem notCliqueFree_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
+    ¬ (completeMultipartiteGraph V).CliqueFree n :=
+  fun hf ↦ not_cliqueFree_of_top_embedding (topEmbedding V f |>.comp
             <| Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι) hf
+
+theorem notCliqueFree_le_encard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
+    ¬ (completeMultipartiteGraph V).CliqueFree n := by
+  by_cases h : Infinite ι
+  · exact notCliqueFree_infinite V f
+  · have : Fintype ι := fintypeOfNotInfinite h
+    rw [ENat.card_eq_coe_fintype_card, Nat.cast_le] at hc
+    exact notCliqueFree_le_card V f hc
+
+end completeMultipartiteGraph
 
 /-- Clique-freeness is preserved by `replaceVertex`. -/
 protected theorem CliqueFree.replaceVertex [DecidableEq α] (h : G.CliqueFree n) (s t : α) :
