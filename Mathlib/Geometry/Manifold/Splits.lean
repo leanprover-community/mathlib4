@@ -136,73 +136,6 @@ end ContinuousLinearMap.Splits
 
 end
 
--- section
-
--- variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
---   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
---   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
---   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
--- variable {f : E → F} {x : E} {n : WithTop ℕ∞}
-
--- -- TODO: I'm not very happy yet with the naming... want to namespace, but this is not it yet
-
--- variable (𝕜) in
--- /-- If `f : E → F` is differentiable at `x`, we say `f` splits at `x` iff `fderiv 𝕜 f x` splits. -/
--- def DifferentiableAt.SplitsAt (f : E → F) (x : E) : Prop :=
---   DifferentiableAt 𝕜 f x ∧ (fderiv 𝕜 f x).Splits
-
--- variable (𝕜) in
--- /-- If `f : E → F` is differentiable, we say `f` splits iff it splits at every `x`,
--- i.e. each `fderiv 𝕜 f x` splits. -/
--- def Differentiable.Splits (f : E → F) : Prop := ∀ x, DifferentiableAt.SplitsAt 𝕜 f x
-
--- open scoped Manifold
-
--- namespace DifferentiableAt.SplitsAt
-
--- lemma comp [CompleteSpace G] {f : E → F} {g : F → G}
---     (hf : SplitsAt 𝕜 f x) (hg : SplitsAt 𝕜 g (f x)) : SplitsAt 𝕜 (g ∘ f) x := by
---   dsimp only [SplitsAt] at hf hg ⊢
---   rw [fderiv_comp _ hg.1 hf.1]
---   exact ⟨hg.1.comp _ hf.1, hf.2.comp hg.2⟩
-
--- -- prodMap also
-
--- lemma congr {f g : E → F} (hf : SplitsAt 𝕜 f x) (hfg : g =ᶠ[nhds x] f) : SplitsAt 𝕜 g x := by
---   dsimp only [SplitsAt] at hf ⊢
---   constructor
---   · exact hf.1.congr_of_eventuallyEq hfg
---   · have : fderiv 𝕜 f x = fderiv 𝕜 g x := sorry -- missing?
---     rw [← this]
---     exact hf.2
-
--- end DifferentiableAt.SplitsAt
-
--- namespace Differentiable.Splits
-
--- lemma prodMap {f : E → F} {g : E' → F'} (hf : Splits 𝕜 f) (hg : Splits 𝕜 g) :
---     Splits 𝕜 (Prod.map f g) :=
---   sorry
-
--- lemma comp [CompleteSpace G] {f : E → F} {g : F → G} (hf : Splits 𝕜 f) (hg : Splits 𝕜 g) :
---     Splits 𝕜 (g ∘ f) :=
---   fun x ↦ (hf x).comp (hg (f x))
-
--- -- comp_left, comp_right
-
--- lemma congr {f g : E → F} (hf : Splits 𝕜 f) (hfg : g = f) : Splits 𝕜 g :=
---   fun x ↦ (hf x).congr hfg.eventuallyEq
-
--- section RCLike
-
--- -- TODO: copy the analogous statements from above
-
--- end RCLike
-
--- end Differentiable.Splits
-
--- end
-
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
@@ -347,7 +280,25 @@ lemma comp_diffeomorph_right_iff [CompleteSpace F] [CompleteSpace E']
 
 section RCLike
 
--- TODO: copy the analogous statements from above
+-- TODO: modify these statements mutatis mutandis
+
+-- variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' : Type*}
+--   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+--   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+--   [FiniteDimensional 𝕜 F] {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}
+
+-- /-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
+-- lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
+--   have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
+--   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
+
+-- /-- If `f : E → F` is injective, `E` is finite-dimensional and `F` is Banach, then `f` splits. -/
+-- lemma of_injective_of_finiteDimensional_of_completeSpace
+--     [FiniteDimensional 𝕜 E] [CompleteSpace F] (hf : Injective f) : f.Splits := by
+--   have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
+--   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
+
+-- -- If `f : E → F` is injective, `E` and `F` are Banach and `f` is Fredholm, then `f` splits.
 
 end RCLike
 
