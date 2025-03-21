@@ -94,8 +94,8 @@ end
 namespace List
 
 @[to_additive]
-theorem smul_prod [Monoid α] [Monoid β] [MulAction α β] [IsScalarTower α β β] [SMulCommClass α β β]
-    (l : List β) (m : α) :
+theorem smul_prod [Monoid α] [MulOneClass β] [MulAction α β] [IsScalarTower α β β]
+    [SMulCommClass α β β] (l : List β) (m : α) :
     m ^ l.length • l.prod = (l.map (m • ·)).prod := by
   induction l with
   | nil => simp
