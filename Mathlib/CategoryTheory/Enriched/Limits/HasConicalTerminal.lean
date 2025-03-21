@@ -24,8 +24,6 @@ variable (C : Type u) [Category.{v} C] [EnrichedOrdinaryCategory V C]
 
 example [HasConicalTerminal V C] : HasTerminal C := inferInstance
 
-example [HasConicalProducts.{0} V C] : HasConicalTerminal V C := inferInstance
-
 instance HasConicalProducts.hasConicalTerminal [HasConicalProducts.{w} V C] :
     HasConicalTerminal V C :=
   HasConicalLimitsOfShape.of_equiv V C (emptyEquivalence.functor)
