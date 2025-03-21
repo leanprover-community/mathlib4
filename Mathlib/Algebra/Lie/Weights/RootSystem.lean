@@ -414,14 +414,15 @@ instance : (rootSystem H).IsCrystallographic where
   exists_value α β :=
     ⟨chainBotCoeff β.1 α.1 - chainTopCoeff β.1 α.1, by simp [apply_coroot_eq_cast β.1 α.1]⟩
 
-theorem isReduced_rootSystem : (rootSystem H).IsReduced := by
-  intro ⟨α, hα⟩ ⟨β, hβ⟩ e
-  rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSystem_root_apply, ne_eq, not_not] at e
-  obtain ⟨u, hu⟩ := e
-  obtain (h | h) :=
-    eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u (by ext x; exact DFunLike.congr_fun hu.symm x)
-  · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
-  · left; ext x; simpa using DFunLike.congr_fun h.symm x
+instance : (rootSystem H).IsReduced where
+  eq_or_eq_neg := by
+    intro ⟨α, hα⟩ ⟨β, hβ⟩ e
+    rw [LinearIndependent.pair_iff' ((rootSystem H).ne_zero _), not_forall] at e
+    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, rootSystem_root_apply, ne_eq, not_not] at e
+    obtain ⟨u, hu⟩ := e
+    obtain (h | h) := eq_neg_or_eq_of_eq_smul α β (by simpa using hβ) u
+      (by ext x; exact DFunLike.congr_fun hu.symm x)
+    · right; ext x; simpa [neg_eq_iff_eq_neg] using DFunLike.congr_fun h.symm x
+    · left; ext x; simpa using DFunLike.congr_fun h.symm x
 
 end LieAlgebra.IsKilling

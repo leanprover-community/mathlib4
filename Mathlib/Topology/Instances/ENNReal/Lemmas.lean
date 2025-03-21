@@ -172,7 +172,7 @@ theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ =
 theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) Iic :=
   nhds_bot_basis_Iic
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a TC for `≠ ∞`?
+-- TODO: add a TC for `≠ ∞`?
 @[instance]
 theorem nhdsGT_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
   nhdsGT_neBot_of_exists_gt ⟨∞, ENNReal.coe_lt_top⟩
@@ -327,7 +327,7 @@ protected theorem Tendsto.sub {f : Filter α} {ma : α → ℝ≥0∞} {mb : α 
     (hma : Tendsto ma f (𝓝 a)) (hmb : Tendsto mb f (𝓝 b)) (h : a ≠ ∞ ∨ b ≠ ∞) :
     Tendsto (fun a => ma a - mb a) f (𝓝 (a - b)) :=
   show Tendsto ((fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) ∘ fun a => (ma a, mb a)) f (𝓝 (a - b)) from
-    Tendsto.comp (ENNReal.tendsto_sub h) (hma.prod_mk_nhds hmb)
+    Tendsto.comp (ENNReal.tendsto_sub h) (hma.prodMk_nhds hmb)
 
 protected theorem tendsto_mul (ha : a ≠ 0 ∨ b ≠ ∞) (hb : b ≠ 0 ∨ a ≠ ∞) :
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) (𝓝 (a, b)) (𝓝 (a * b)) := by
@@ -355,7 +355,7 @@ protected theorem Tendsto.mul {f : Filter α} {ma : α → ℝ≥0∞} {mb : α 
     (hma : Tendsto ma f (𝓝 a)) (ha : a ≠ 0 ∨ b ≠ ∞) (hmb : Tendsto mb f (𝓝 b))
     (hb : b ≠ 0 ∨ a ≠ ∞) : Tendsto (fun a => ma a * mb a) f (𝓝 (a * b)) :=
   show Tendsto ((fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 * p.2) ∘ fun a => (ma a, mb a)) f (𝓝 (a * b)) from
-    Tendsto.comp (ENNReal.tendsto_mul ha hb) (hma.prod_mk_nhds hmb)
+    Tendsto.comp (ENNReal.tendsto_mul ha hb) (hma.prodMk_nhds hmb)
 
 theorem _root_.ContinuousOn.ennreal_mul [TopologicalSpace α] {f g : α → ℝ≥0∞} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₁ : ∀ x ∈ s, f x ≠ 0 ∨ g x ≠ ∞)
@@ -436,7 +436,7 @@ theorem continuousOn_sub :
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
   change Continuous (Function.uncurry Sub.sub ∘ (a, ·))
-  refine continuousOn_sub.comp_continuous (Continuous.Prod.mk a) fun x => ?_
+  refine continuousOn_sub.comp_continuous (.prodMk_right a) fun x => ?_
   simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk_inj, false_and, not_false_iff]
 
 theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
@@ -504,7 +504,7 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
   | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
-@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
+@[simp] -- TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
@@ -639,11 +639,11 @@ protected theorem tsum_eq_iSup_sum' {ι : Type*} (s : ι → Finset α) (hs : �
   exact (Finset.sum_mono_set f).iSup_comp_eq hs
 
 protected theorem tsum_sigma {β : α → Type*} (f : ∀ a, β a → ℝ≥0∞) :
-    ∑' p : Σa, β a, f p.1 p.2 = ∑' (a) (b), f a b :=
+    ∑' p : Σ a, β a, f p.1 p.2 = ∑' (a) (b), f a b :=
   tsum_sigma' (fun _ => ENNReal.summable) ENNReal.summable
 
-protected theorem tsum_sigma' {β : α → Type*} (f : (Σa, β a) → ℝ≥0∞) :
-    ∑' p : Σa, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
+protected theorem tsum_sigma' {β : α → Type*} (f : (Σ a, β a) → ℝ≥0∞) :
+    ∑' p : Σ a, β a, f p = ∑' (a) (b), f ⟨a, b⟩ :=
   tsum_sigma' (fun _ => ENNReal.summable) ENNReal.summable
 
 protected theorem tsum_prod {f : α → β → ℝ≥0∞} : ∑' p : α × β, f p.1 p.2 = ∑' (a) (b), f a b :=
@@ -905,7 +905,7 @@ theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b
   · rw [← ENNReal.coe_tsum h, ENNReal.toNNReal_coe]
   · have A := tsum_eq_zero_of_not_summable h
     simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Classical.not_not] at h
-    simp only [h, ENNReal.top_toNNReal, A]
+    simp only [h, ENNReal.toNNReal_top, A]
 
 /-- Comparison test of convergence of `ℝ≥0`-valued series. -/
 theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b, g b ≤ f b) (hfr : HasSum f r) :
@@ -1191,11 +1191,11 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
 @[continuity, fun_prop]
 theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
-  continuous_edist.comp (hf.prod_mk hg :)
+  continuous_edist.comp (hf.prodMk hg :)
 
 theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
-  (continuous_edist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
+  (continuous_edist.tendsto (a, b)).comp (hf.prodMk_nhds hg)
 
 /-- If the extended distance between consecutive points of a sequence is estimated
 by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/

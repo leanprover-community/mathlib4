@@ -92,6 +92,9 @@ theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s 
   simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
   aesop
 
+theorem _root_.HasSubset.Subset.ssubset_of_mem_not_mem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
+    s ⊂ t := hst.ssubset_of_not_subset fun a ↦ has (a hat)
+
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff_insert.2 ⟨a, h, Subset.rfl⟩
 
@@ -130,8 +133,6 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
     (x) (h : x ∈ insert a s) : P x :=
   h.elim (fun e => e.symm ▸ ha) (H _)
 
-/- Porting note: ∃ x ∈ insert a s, P x is parsed as ∃ x, x ∈ insert a s ∧ P x,
- where in Lean3 it was parsed as `∃ x, ∃ (h : x ∈ insert a s), P x` -/
 theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
@@ -184,7 +185,7 @@ theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
 
 -- TODO: again, annotation needed
---Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute
+-- Not `@[simp]` since `mem_singleton_iff` proves it.
 theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 
@@ -414,9 +415,10 @@ theorem insert_inter_of_not_mem (h : a ∉ t) : insert a s ∩ t = s ∩ t :=
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
 
-@[simp]
-theorem diff_singleton_sSubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s :=
-  sdiff_le.lt_iff_ne.trans <| sdiff_eq_left.not.trans <| by simp
+theorem diff_singleton_ssubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s := by
+  simp
+
+@[deprecated (since := "2025-03-20")] alias diff_singleton_sSubset := diff_singleton_ssubset
 
 @[simp]
 theorem insert_diff_singleton {a : α} {s : Set α} : insert a (s \ {a}) = insert a s := by
@@ -426,6 +428,10 @@ theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
     insert a (s \ {b}) = insert a s \ {b} := by
   simp_rw [← union_singleton, union_diff_distrib,
     diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
+
+@[simp]
+theorem insert_diff_insert : insert a (s \ insert a t) = insert a (s \ t) := by
+  rw [← union_singleton (s := t), ← diff_diff, insert_diff_singleton]
 
 theorem mem_diff_singleton {x y : α} {s : Set α} : x ∈ s \ {y} ↔ x ∈ s ∧ x ≠ y :=
   Iff.rfl
@@ -514,7 +520,6 @@ namespace Set
 
 variable {α : Type u} (s t : Set α) (a b : α)
 
--- Porting note: Lean 3 unfolded `{a}` before finding instances but Lean 4 needs additional help
 instance decidableSingleton [Decidable (a = b)] : Decidable (a ∈ ({b} : Set α)) :=
   inferInstanceAs (Decidable (a = b))
 
