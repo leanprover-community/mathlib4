@@ -33,9 +33,8 @@ open scoped Cardinal nonZeroDivisors
 
 universe u
 
-/-- A finite division ring has prime power cardinality. -/
-theorem Fintype.isPrimePow_card_of_divisionring {α} [Fintype α] [DivisionRing α] :
-    IsPrimePow ‖α‖ := by
+/-- A finite field has prime power cardinality. -/
+theorem Fintype.isPrimePow_card_of_field {α} [Fintype α] [Field α] : IsPrimePow ‖α‖ := by
   -- TODO: `Algebra` version of `CharP.exists`, of type `∀ p, Algebra (ZMod p) α`
   obtain ⟨p, _⟩ := CharP.exists α
   haveI hp := Fact.mk (CharP.char_is_prime α p)
@@ -46,12 +45,9 @@ theorem Fintype.isPrimePow_card_of_divisionring {α} [Fintype α] [DivisionRing 
   rw [← Module.finrank_eq_card_basis b]
   exact Module.finrank_pos.ne'
 
-@[deprecated (since := "2025-03-21")]
-alias Fintype.isPrimePow_card_of_field := Fintype.isPrimePow_card_of_divisionring
-
 /-- A `Fintype` can be given a field structure iff its cardinality is a prime power. -/
 theorem Fintype.nonempty_field_iff {α} [Fintype α] : Nonempty (Field α) ↔ IsPrimePow ‖α‖ := by
-  refine ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_divisionring, ?_⟩
+  refine ⟨fun ⟨h⟩ => Fintype.isPrimePow_card_of_field, ?_⟩
   rintro ⟨p, n, hp, hn, hα⟩
   haveI := Fact.mk hp.nat_prime
   haveI : Fintype (GaloisField p n) := Fintype.ofFinite (GaloisField p n)
