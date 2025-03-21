@@ -78,7 +78,7 @@ theorem leadingCoeff_one [MulZeroOneClass R] : (1 : HahnSeries Γ R).leadingCoef
   simp [leadingCoeff_eq]
 
 @[simp]
-protected lemma map_one [MonoidWithZero R] [MonoidWithZero S] (f : R →*₀ S) :
+protected lemma map_one [MulZeroOneClass R] [MulZeroOneClass S] (f : R →*₀ S) :
     (1 : HahnSeries Γ R).map f = (1 : HahnSeries Γ S) := by
   ext g
   by_cases h : g = 0 <;> simp [h]
@@ -238,7 +238,7 @@ instance instDistribSMul [MonoidWithZero R] [DistribSMul R V] : DistribSMul (Hah
     (HahnModule Γ' R V) where
   smul_add := smul_add
 
-theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
+theorem add_smul [AddMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
     {z : HahnModule Γ' R V} (h : ∀ (r s : R) (u : V), (r + s) • u = r • u + s • u) :
     (x + y) • z = x • z + y • z := by
   ext a
@@ -255,7 +255,7 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
     intro h
     rw [h.1, h.2, add_zero]
 
-theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : HahnModule Γ' R V}
+theorem coeff_single_smul_vadd [Zero R] [SMulWithZero R V] {r : R} {x : HahnModule Γ' R V}
     {a : Γ'} {b : Γ} :
     ((of R).symm (HahnSeries.single b r • x)).coeff (b +ᵥ a) = r • ((of R).symm x).coeff a := by
   by_cases hr : r = 0
@@ -288,7 +288,7 @@ theorem coeff_single_smul_vadd [MulZeroClass R] [SMulWithZero R V] {r : R} {x : 
 @[deprecated (since := "2025-01-31")] alias single_smul_coeff_add := coeff_single_smul_vadd
 
 theorem coeff_single_zero_smul {Γ} [OrderedAddCommMonoid Γ] [AddAction Γ Γ']
-    [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {r : R}
+    [IsOrderedCancelVAdd Γ Γ'] [Zero R] [SMulWithZero R V] {r : R}
     {x : HahnModule Γ' R V} {a : Γ'} :
     ((of R).symm ((HahnSeries.single 0 r : HahnSeries Γ R) • x)).coeff a =
     r • ((of R).symm x).coeff a := by
@@ -299,7 +299,7 @@ theorem coeff_single_zero_smul {Γ} [OrderedAddCommMonoid Γ] [AddAction Γ Γ']
 
 @[simp]
 theorem single_zero_smul_eq_smul (Γ) [OrderedAddCommMonoid Γ] [AddAction Γ Γ']
-    [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {r : R}
+    [IsOrderedCancelVAdd Γ Γ'] [Zero R] [SMulWithZero R V] {r : R}
     {x : HahnModule Γ' R V} :
     (HahnSeries.single (0 : Γ) r) • x = r • x := by
   ext
@@ -318,7 +318,7 @@ theorem one_smul' {Γ} [OrderedAddCommMonoid Γ] [AddAction Γ Γ'] [IsOrderedCa
   ext g
   exact coeff_single_zero_smul.trans (one_smul R (x.coeff g))
 
-theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
+theorem support_smul_subset_vadd_support' [Zero R] [SMul R V] {x : HahnSeries Γ R}
     {y : HahnModule Γ' R V} :
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
   apply Set.Subset.trans (fun x hx => _) support_vaddAntidiagonal_subset_vadd
@@ -329,13 +329,13 @@ theorem support_smul_subset_vadd_support' [MulZeroClass R] [SMulWithZero R V] {x
   simp only [Set.mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
   simp [hx, coeff_smul]
 
-theorem support_smul_subset_vadd_support [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
+theorem support_smul_subset_vadd_support [Zero R] [SMul R V] {x : HahnSeries Γ R}
     {y : HahnModule Γ' R V} :
     ((of R).symm (x • y)).support ⊆ x.support +ᵥ ((of R).symm y).support := by
   exact support_smul_subset_vadd_support'
 
 theorem orderTop_vAdd_le_orderTop_smul {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ'] [VAdd Γ Γ']
-    [IsOrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
+    [IsOrderedCancelVAdd Γ Γ'] [Zero R] [SMulWithZero R V] {x : HahnSeries Γ R}
     [VAdd (WithTop Γ) (WithTop Γ')] {y : HahnModule Γ' R V}
     (h : ∀ (γ : Γ) (γ' : Γ'), γ +ᵥ γ' = (γ : WithTop Γ) +ᵥ (γ' : WithTop Γ')) :
     x.orderTop +ᵥ ((of R).symm y).orderTop ≤ ((of R).symm (x • y)).orderTop := by
@@ -472,7 +472,7 @@ theorem coeff_single_zero_mul [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSer
 @[deprecated (since := "2025-01-31")] alias single_zero_mul_coeff := coeff_single_zero_mul
 
 @[simp]
-theorem single_zero_mul_eq_smul [Semiring R] {r : R} {x : HahnSeries Γ R} :
+theorem single_zero_mul_eq_smul [NonUnitalNonAssocSemiring R] {r : R} {x : HahnSeries Γ R} :
     single 0 r * x = r • x := by
   ext
   exact coeff_single_zero_mul
