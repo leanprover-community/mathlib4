@@ -68,7 +68,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
     | h n ih =>
     by_cases hd : ∃ v ∈ s, G.degreeOn (s.erase v) v < k
     · obtain ⟨v, hv, hlt⟩ := hd
-      obtain ⟨C, hC⟩:= ih _ (Nat.lt_of_lt_of_le (card_erase_lt_of_mem hv) hn) _ le_rfl
+      obtain ⟨C, hC⟩ := ih _ (Nat.lt_of_lt_of_le (card_erase_lt_of_mem hv) hn) _ le_rfl
       have hvlt : C.extend v < k := (C.extend_le_degreeOn _).trans_lt hlt
       have (w : α)  := insert_lt_of_lt hC hvlt w
       use (C.insert_extend v).copy (by simp_all)
@@ -127,7 +127,6 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       obtain ⟨vᵣ, q, hq, hss, hmax⟩ : ∃ vᵣ, ∃ q : G.Walk vᵣ v₄, (q.append v41).IsPath ∧
         (∀ y, y ∈ (q.append v41).support → y ∈ s) ∧
           ∀ y, G.Adj vᵣ y → y ∈ ((q.append v41)).support := by
-
         obtain ⟨vᵣ, q, hq, hs, hnb⟩ := exists_maximal_path_subset s h41 v41s
         use vᵣ, q, hq, hs
         have vrs : vᵣ ∈ s := by apply hs; simp
@@ -165,7 +164,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           congr! 1
           exact pair_comm _ _
         convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
-          hnadj (by aesop)  (by aesop)
+          hnadj (by aesop) (by aesop)
       · -- Main case 2
         have hssf :(q.append v41).support.toFinset ⊂ s :=
           Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| List.mem_toFinset.1 hy, hr⟩
@@ -176,7 +175,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         have hcmp :=  IsCloseableMaxPath.mk' hp
           (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
         let c:= ((p.dropUntil p.close find_mem_support).cons hcmp.isClosable.adj)
-        have hps : p.support = (q.append v41).support.reverse :=by rw [support_reverse]
+        have hps : p.support = (q.append v41).support.reverse := by rw [support_reverse]
         have ⟨hcy, hcym⟩ := IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hp
           (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
         change c.IsCycle at hcy
@@ -215,7 +214,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             exists_boundary_dart_of_closed c _ xS rS hx (start_mem_support ..)
           replace hd2 : ∀ b ∈ s \ c.support.toFinset, ¬ G.Adj d.toProd.2 b := by
             contrapose! hd2 ; exact hd2
-          obtain ⟨C₁, hC₁⟩:= ih _ hsdcard _ le_rfl
+          obtain ⟨C₁, hC₁⟩ := ih _ hsdcard _ le_rfl
           -- we know `hcym : vᵣ` has all its neighbors in `c` while
           -- `hnbc : ∃ x ∈ c` that has a neighbor in `s \ c`
           let C₂ := C₁.insertNotAdj hd2 y
@@ -231,7 +230,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           let C₃ := C₂.Greedy p.reverse.support
           have hd2 : d.toProd.2 ∈ c.support.toFinset :=
             List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
-          have hd2': d.toProd.2 ∉ (s \ c.support.toFinset) := not_mem_sdiff_of_mem_right hd2
+          have hd2' : d.toProd.2 ∉ (s \ c.support.toFinset) := not_mem_sdiff_of_mem_right hd2
           have hsdc := sdiff_union_of_subset hsub.1
           have heq : (insert d.toProd.2 (s \ c.support.toFinset)
             ∪ p.reverse.support.toFinset) = s := by
@@ -251,7 +250,6 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             · rw [List.mem_toFinset, Brooks_aux' hcy hd]
               exact (hcy.rotate hr).snd_not_mem_tail_tail_support
             · exact disjoint_of_subset_right hps sdiff_disjoint
-
           use C₃.copy heq
           simp_rw [copy_eq]
           exact C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self ..)
