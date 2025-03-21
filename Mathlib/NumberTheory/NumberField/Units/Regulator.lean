@@ -26,6 +26,59 @@ family `u` is equal to the absolute value of the determinant of the matrix
 number field, units, regulator
 -/
 
+section index
+
+open Subgroup
+
+@[to_additive]
+theorem Subgroup.index_map_equiv {G G' : Type*} [Group G] [Group G']
+    (H : Subgroup G) (e : G ≃* G') :
+    (map e.toMonoidHom H).index = H.index := sorry
+
+@[to_additive]
+theorem Subgroup.relindex_map_equiv {G G' : Type*} [Group G] [Group G'] (H K : Subgroup G) (e : G ≃* G') :
+    (map e.toMonoidHom H).relindex (map e.toMonoidHom K) = H.relindex K := sorry
+
+@[to_additive (attr := simp)]
+theorem Subgroup.map_comap_map {G G' : Type*} [Group G] [Group G'] (H : Subgroup G) {f : G →* G'} :
+    map f (comap f (map f H)) = map f H :=
+  (gc_map_comap f).l_u_l_eq_l _
+
+@[to_additive]
+theorem Subgroup.relindex_map_map {G G' : Type*} [Group G] [Group G'] (H K : Subgroup G)
+    (f : G →* G'):
+    (map f H).relindex (map f K) = (H ⊔ f.ker).relindex (K ⊔ f.ker) := by
+  rw [← comap_map_eq, ← comap_map_eq, relindex_comap, Subgroup.map_comap_map]
+
+@[to_additive]
+lemma Subgroup.index_ne_zero_iff_finite {G : Type*} [Group G] (H : Subgroup G) :
+    H.index ≠ 0 ↔ Finite (G ⧸ H) := by
+  simp [index_eq_zero_iff_infinite]
+
+theorem Subgroup.closure_toAddSubgroup {G : Type*} [Group G] (s : Set G) :
+    (Subgroup.closure s).toAddSubgroup = AddSubgroup.closure (Additive.ofMul '' s) := by
+  rw [OrderIso.apply_eq_iff_eq_symm_apply, AddSubgroup.closure,
+    OrderIso.map_sInf_eq_sInf_symm_preimage, OrderIso.symm_symm]
+  simp_rw [Set.preimage_setOf_eq, coe_toAddSubgroup_apply, Set.preimage_equiv_eq_image_symm,
+    Additive.toMul_symm_eq, Set.image_subset_iff, Equiv.preimage_image, closure]
+
+theorem AddSubgroup.closure_toSubgroup {G : Type*} [AddGroup G] (s : Set G) :
+    (AddSubgroup.closure s).toSubgroup = Subgroup.closure (Multiplicative.ofAdd '' s) := by
+  sorry
+
+end index
+
+section units
+
+open NumberField Units
+
+variable (K : Type*) [Field K] [NumberField K]
+
+theorem zap :
+    Subgroup.closure (Set.range (fundSystem K)) ⊔ torsion K = ⊤ := sorry
+
+end units
+
 open scoped NumberField
 
 noncomputable section
@@ -70,11 +123,24 @@ def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
   exact (basisOfPiSpaceOfLinearIndependent
     ((linearIndependent_equiv (equivFinRank K).symm).mpr hu)).reindex (equivFinRank K).symm
 
+@[simp]
 theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) (i : Fin (rank K)) :
     (basisOfIsMaxRank hu) i = logEmbedding K (Additive.ofMul (u i)) := by
   classical
   simp [basisOfIsMaxRank, Basis.coe_reindex,  Equiv.symm_symm, Function.comp_apply,
     coe_basisOfPiSpaceOfLinearIndependent]
+
+theorem toto {u : Fin (rank K) → (𝓞 K)ˣ} :
+    AddSubgroup.map (logEmbedding K) (Subgroup.closure (Set.range u)).toAddSubgroup =
+      (span ℤ (Set.range (fun i ↦ logEmbedding K (Additive.ofMul (u i))))).toAddSubgroup := by
+  rw [Subgroup.closure_toAddSubgroup, AddMonoidHom.map_closure, ← span_int_eq_addSubgroup_closure]
+  congr; ext; simp
+
+theorem span_basisOfIsMaxRank_toAddSubgroup {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+    (span ℤ (Set.range ⇑(basisOfIsMaxRank hu))).toAddSubgroup =
+      AddSubgroup.map (logEmbedding K) (Subgroup.closure (Set.range u)).toAddSubgroup := by
+  rw [Subgroup.closure_toAddSubgroup, AddMonoidHom.map_closure, ← span_int_eq_addSubgroup_closure]
+  congr; ext; simp
 
 /--
 The regulator of a family of units of `K`.
@@ -201,6 +267,8 @@ theorem finrank_mul_regOfFamily_eq_det (u : Fin (rank K) → (𝓞 K)ˣ) (w' : I
 
 end regOfFamily
 
+section regulator
+
 open scoped Classical in
 /-- The regulator of a number field `K`. -/
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
@@ -228,6 +296,238 @@ theorem regulator_pos : 0 < regulator K :=
 
 theorem regulator_ne_zero : regulator K ≠ 0 :=
   (regulator_pos K).ne'
+
+end regulator
+section index
+
+open ZLattice
+
+variable {K}
+
+theorem isMaxRank_iff {u : Fin (rank K) → (𝓞 K)ˣ} :
+    isMaxRank u ↔ Finite ((𝓞 K)ˣ ⧸  Subgroup.closure (Set.range u)) := by
+  classical
+--  have : Module.Finite ℤ (logSpace K) := sorry
+--  have : Module.Free ℤ (logSpace K) := sorry
+  let φ := (logEmbeddingEquiv K) ∘ Additive.ofMul ∘ QuotientGroup.mk
+  have h₁ := finiteQuotient_iff (span ℤ (Set.range (φ ∘ u)))
+  have h₂ : Finite ((𝓞 K)ˣ ⧸ Subgroup.closure (Set.range u)) ↔
+    Finite (unitLattice K ⧸ span ℤ (Set.range (φ ∘ u))) := sorry
+  rw [h₂, h₁]
+  simp [unitLattice_rank, φ]
+  rw [eq_comm]
+  have : rank K = Fintype.card (Fin (rank K)) := by exact Eq.symm (Fintype.card_fin (rank K))
+  nth_rewrite 1 [this]
+  rw [← Set.finrank]
+
+
+#exit
+  rw [isMaxRank, linearIndependent_iff_card_eq_finrank_span, Fintype.card_fin, eq_comm]
+  have : Set.finrank ℤ (Set.range ((logEmbeddingEquiv K ∘ ⇑Additive.ofMul ∘ QuotientGroup.mk) ∘ u))
+    = Set.finrank ℤ (Set.range (fun i ↦ logEmbedding K (Additive.ofMul (u i)))) := sorry
+  rw [← Set.finrank]
+  rw?
+  sorry
+  -- simp only [Fintype.card_fin, ne_eq, φ]
+  -- rw [← Set.finrank]
+  -- simp
+  -- have : Set.finrank ℤ (Set.range ((logEmbeddingEquiv K ∘ ⇑Additive.ofMul ∘ QuotientGroup.mk) ∘ u))
+  --   = Set.finrank ℤ (Set.range (fun i ↦ logEmbedding K (Additive.ofMul (u i)))) := sorry
+  -- rw [this]
+  -- rw [linearIndependent_iff_card_le_finrank_span]
+  -- simp
+
+theorem regOfFamily_div_regOfFamily' {u v : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u)
+    (hv : isMaxRank v)
+    (h : Subgroup.closure (Set.range u) ≤ Subgroup.closure (Set.range v)) :
+    regOfFamily u / regOfFamily v = (Subgroup.closure (Set.range u) ⊔ (torsion K)).relindex
+      (Subgroup.closure (Set.range v) ⊔ (torsion K)) := by
+  classical
+  rw [regOfFamily_of_isMaxRank hu, regOfFamily_of_isMaxRank hv, covolume_div_covolume_eq_relindex,
+    span_basisOfIsMaxRank_toAddSubgroup hu,  span_basisOfIsMaxRank_toAddSubgroup hv,
+    AddSubgroup.relindex_map_map, logEmbedding_ker, ← OrderIso.map_sup, ← OrderIso.map_sup,
+    ← Subgroup.relindex_toAddSubgroup]
+  rw [← toAddSubgroup_le, span_basisOfIsMaxRank_toAddSubgroup hu,
+    span_basisOfIsMaxRank_toAddSubgroup hv]
+  exact AddSubgroup.map_mono (by rwa [OrderIso.le_iff_le])
+
+theorem regOfFamily_div_regulator' {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+    regOfFamily u / regulator K = (Subgroup.closure (Set.range u) ⊔ (torsion K)).index := by
+  rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_div_regOfFamily' hu (isMaxRank_fundSystem K),
+    zap, Subgroup.relindex_top_right]
+  sorry
+
+theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : isMaxRank v)
+    (h : Subgroup.closure (Set.range u) ≤ Subgroup.closure (Set.range v)) :
+    regOfFamily u / regOfFamily v = (Subgroup.closure (Set.range u) ⊔ (torsion K)).relindex
+      (Subgroup.closure (Set.range v) ⊔ (torsion K)) := by
+  by_cases hu : isMaxRank u
+  · exact regOfFamily_div_regOfFamily' hu hv h
+  · rw [regOfFamily_eq_zero hu, zero_div, eq_comm, Nat.cast_eq_zero]
+    have h₁ := Subgroup.relindex_mul_index h
+    have h₂ := isMaxRank_iff.not.mp hu
+    rw [not_finite_iff_infinite, ← Subgroup.index_eq_zero_iff_infinite] at h₂
+    rw [h₂] at h₁
+    rw [Nat.mul_eq_zero] at h₁
+
+
+
+
+
+
+
+#exit
+
+
+
+
+
+theorem regOfFamily_div_regOfFamily (u : Fin (rank K) → (𝓞 K)ˣ) (v : Fin (rank K) → (𝓞 K)ˣ)
+    (hv : isMaxRank v) (h : Subgroup.closure (Set.range u) ≤ Subgroup.closure (Set.range v)) :
+    regOfFamily u / regOfFamily v = (Subgroup.closure (Set.range u) ⊔ (torsion K)).relindex
+      (Subgroup.closure (Set.range v) ⊔ (torsion K)) := by
+  classical
+  by_cases hu : isMaxRank u
+  · let U := (Subgroup.closure (Set.range u)).toAddSubgroup
+    let V := (Subgroup.closure (Set.range v)).toAddSubgroup
+    have hU : (span ℤ (Set.range ⇑(basisOfIsMaxRank hu))).toAddSubgroup =
+        AddSubgroup.map (logEmbedding K) U := by
+      exact span_basisOfIsMaxRank_toAddSubgroup hu
+    have hV : (span ℤ (Set.range ⇑(basisOfIsMaxRank hv))).toAddSubgroup =
+      AddSubgroup.map (logEmbedding K) V := by
+      exact span_basisOfIsMaxRank_toAddSubgroup hv
+    rw [regOfFamily_of_isMaxRank hu, regOfFamily_of_isMaxRank hv, covolume_div_covolume_eq_relindex]
+    · rw [hU, hV]
+      rw [AddSubgroup.relindex_map_map, logEmbedding_ker]
+      unfold U V
+      rw [← OrderIso.map_sup, ← OrderIso.map_sup]
+      rw [Subgroup.relindex_toAddSubgroup]
+    · rw [← Subgroup.toAddSubgroup.le_iff_le] at h
+      have := Set.image_mono (f := logEmbedding K) h
+      rw [← toAddSubgroup_le, hU, hV]
+      exact this
+  ·
+    rw [regOfFamily_eq_zero hu, zero_div]
+
+    rw [← Subgroup.relindex_toAddSubgroup, OrderIso.map_sup,
+      OrderIso.map_sup, ← logEmbedding_ker]
+    rw [← AddSubgroup.relindex_map_map]
+
+
+    rw [Subgroup.closure_toAddSubgroup, Subgroup.closure_toAddSubgroup]
+    rw [AddMonoidHom.map_closure, AddMonoidHom.map_closure]
+    rw [← Submodule.span_int_eq_addSubgroup_closure, ← Submodule.span_int_eq_addSubgroup_closure]
+    rw [eq_comm, Nat.cast_eq_zero]
+    -- refine AddSubgroup.relindex_eq_zero_of_le_left (K := ⊤) ?_ ?_
+    sorry
+
+
+#exit
+
+
+    rw [AddSubgroup.index_eq_zero_iff_infinite]
+    rw [← not_finite_iff_infinite]
+    rw [finiteQuotient_iff]
+
+#exit
+
+    rw [regOfFamily_eq_zero hu, zero_div]
+    rw [← Subgroup.relindex_toAddSubgroup, OrderIso.map_sup,
+      OrderIso.map_sup, ← logEmbedding_ker]
+    rw [← AddSubgroup.relindex_map_map]
+    rw [eq_comm, Nat.cast_eq_zero]
+    rw [Subgroup.closure_toAddSubgroup, Subgroup.closure_toAddSubgroup]
+    rw [← Submodule.span_int_eq_addSubgroup_closure, ← Submodule.span_int_eq_addSubgroup_closure]
+    rw [AddSubgroup.relindex]
+    rw [AddSubgroup.index_eq_zero_iff_infinite]
+    rw [← not_finite_iff_infinite]
+    rw [finiteQuotient_iff]
+
+
+    sorry
+
+example (u : Fin (rank K) → (𝓞 K)ˣ) :
+    isMaxRank u ↔ (Subgroup.closure (Set.range u) ⊔ (torsion K)).index ≠ 0 := by
+  rw [← Subgroup.relindex_top_right]
+  have : (⊤ : Subgroup (𝓞 K)ˣ) = (Subgroup.closure (Set.range (fundSystem K)) ⊔ (torsion K)) :=
+    sorry
+  rw [this]
+  rw [← Nat.cast_ne_zero (R := ℝ)]
+  rw [← regOfFamily_div_regOfFamily]
+  simp only [ne_eq, div_eq_zero_iff, not_or]
+  rw [← regulator_eq_regOfFamily_fundSystem]
+  simp_rw [regulator_ne_zero]
+  simp [regOfFamily_ne_zero_iff]
+  exact isMaxRank_fundSystem K
+  rw [← this]
+  exact le_top
+
+
+
+#exit
+
+  classical
+  let A := AddSubgroup.closure (Set.range (Additive.ofMul ∘ (QuotientGroup.mk' (torsion K)) ∘ u))
+  have : Finite ((𝓞 K)ˣ ⧸ Subgroup.closure (Set.range u)) ↔
+    A.index ≠ 0 := sorry -- Finite (Additive ((𝓞 K)ˣ ⧸ (torsion K)) ⧸ A) := sorry
+  rw [this]
+  rw [← AddSubgroup.index_map_equiv _ (logEmbeddingEquiv K).toAddEquiv]
+  rw [AddSubgroup.index_ne_zero_iff_finite]
+  simp only [ne_eq, LinearEquiv.coe_toAddEquiv, AddEquiv.toAddMonoidHom_eq_coe]
+  have : Finite ((unitLattice K) ⧸ AddSubgroup.map ((logEmbeddingEquiv K)) A) ↔
+    Finite ((unitLattice K) ⧸ (AddSubgroup.map ((logEmbeddingEquiv K)) A).toIntSubmodule) := sorry
+  erw [this]
+  rw [finiteQuotient_iff ]
+  simp
+
+#exit
+
+  classical
+  rw [isMaxRank]
+  rw [linearIndependent_iff_card_eq_finrank_span]
+  rw [Set.finrank]
+  have := unitLattice_rank K
+  rw [Fintype.card_fin]
+  simp_rw [← this]
+
+
+
+#exit
+
+example (u : Fin (rank K) → (𝓞 K)ˣ) :
+    (Subgroup.closure (Set.range u)).index ≠ 0 ↔ isMaxRank u :=
+  have : (Subgroup.closure (Set.range u)).index = torsionOrder K *
+
+  sorry
+
+example (u : Fin (rank K) → (𝓞 K)ˣ) :
+    (Subgroup.closure (Set.range u)).index =
+      (torsionOrder K) * regOfFamily u / regulator K := by
+--  rw [← Subgroup.relindex_top_right]
+  convert_to (AddSubgroup.closure (Set.range (Additive.ofMul ∘ u))).index =
+    torsionOrder K * regOfFamily u / regulator K
+  sorry
+  rw [← AddSubgroup.relindex_top_right]
+  rw [← AddSubgroup.relindex_map_of_injective (f := logEmbedding K)]
+  have : (AddSubgroup.map (logEmbedding K) ⊤) = (unitLattice K).toAddSubgroup := sorry
+  rw [this]
+  have : (AddSubgroup.map (logEmbedding K) (AddSubgroup.closure (Set.range (Additive.ofMul ∘ u)))) =
+    (span ℤ (Set.range (basisOfIsMaxRank (u := u) sorry))).toAddSubgroup := sorry
+  rw [this]
+  classical
+  rw [← ZLattice.covolume_div_covolume_eq_relindex]
+  rw [regOfFamily_of_isMaxRank, regulator]
+
+
+
+
+
+example (u : Fin (rank K) → (𝓞 K)ˣ) :
+  (AddSubgroup.closure (Set.range (Additive.ofMul ∘ QuotientGroup.mk' (torsion K) ∘ u))).index =
+    regOfFamily u / regulator K := by
+  let v := Additive.ofMul ∘ QuotientGroup.mk' (torsion K) ∘ u
+
+end index
 
 end Units
 
