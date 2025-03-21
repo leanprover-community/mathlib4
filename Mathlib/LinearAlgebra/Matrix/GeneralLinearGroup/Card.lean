@@ -71,6 +71,7 @@ noncomputable def equiv_GL_linearindependent :
     apply linearIndependent_iff_card_eq_finrank_span.2
     rw [Set.finrank, ← rank_eq_finrank_span_cols, rank_unit]⟩
   invFun M := GeneralLinearGroup.mk'' (transpose (M.1)) <| by
+    classical
     let b := basisOfPiSpaceOfLinearIndependent M.2
     have := (Pi.basisFun 𝔽 (Fin n)).invertibleToMatrix b
     rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
