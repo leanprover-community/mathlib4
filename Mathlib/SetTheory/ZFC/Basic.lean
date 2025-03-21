@@ -3,9 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.Set.Lattice
 import Mathlib.Logic.Small.Basic
-import Mathlib.Logic.Function.OfArity
 import Mathlib.Order.WellFounded
 
 /-!
@@ -50,8 +50,6 @@ respectively as "`Set`" and "ZFC set".
 
 
 universe u v
-
-open Function (OfArity)
 
 /-- The type of pre-sets in universe `u`. A pre-set
   is a family of pre-sets indexed by a type in `Type u`.
