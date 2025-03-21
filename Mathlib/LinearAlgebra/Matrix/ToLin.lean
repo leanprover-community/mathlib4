@@ -99,7 +99,7 @@ theorem range_vecMulLinear (M : Matrix m n R) :
   unfold vecMul
   simp_rw [single_dotProduct, one_mul]
 
-theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} :
+theorem Matrix.vecMul_injective_iff {R : Type*} [Ring R] {M : Matrix m n R} :
     Function.Injective M.vecMul ↔ LinearIndependent R (fun i ↦ M i) := by
   rw [← coe_vecMulLinear]
   simp only [← LinearMap.ker_eq_bot, Fintype.linearIndependent_iff, Submodule.eq_bot_iff,
@@ -112,7 +112,7 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [CommRing R] {M : Matrix m n R} 
     ext j
     simp [vecMul, dotProduct]
 
-lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [CommRing R] {A : Matrix m m R}
+lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [Ring R] {A : Matrix m m R}
     [DecidableEq m] (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
   rw [← Matrix.vecMul_injective_iff]
   exact Matrix.vecMul_injective_of_isUnit ha

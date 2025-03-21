@@ -377,21 +377,20 @@ lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsC
   trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
   · rfl -- is there an API lemma for this already?
   dsimp only [equivRange_symm]
-  --apply LinearEquiv.ofInjective_symm_apply hinj
   set x' : LinearMap.range f := ⟨f x, by simp⟩
-  -- rw [LinearEquiv.ofInjective_symm_apply f (h := hinj) x']
-  -- #check LinearEquiv.ofInjective_symm_apply f (h := hinj) x'
-  -- goal state: f ((LinearEquiv.ofInjective (↑f) hinj).symm x') = f x
-  sorry
+  set f' : E →ₛₗ[σ] F := ↑f
+  change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _
+  rw [LinearEquiv.ofInjective_symm_apply (f := f') (h := hinj) x']
 
 section
 
-variable {E F : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [CompleteSpace E] [CompleteSpace F]
+variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [CompleteSpace E] [CompleteSpace F]
 
-/-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are real or complex Banach
-spaces), `f` is anti-Lipschitz. -/
+-- TODO: generalise the next two results to Fredholm operators, once mathlib has them
+
+/-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
+`f` is anti-Lipschitz. -/
 lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f := by
   let S : (LinearMap.range f) →L[𝕜] E := (f.equivRange hf hf').symm
@@ -402,8 +401,8 @@ lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     _ = ‖S ⟨f x, by simp⟩‖ := by simp [S]
     _ ≤ S.opNorm * ‖f x‖ := le_opNorm S ⟨f x, by simp⟩
 
-/-- An injective bounded linear operator between real or complex Banach spaces
-is injective iff it has closed range. -/
+/-- An injective bounded linear operator between Banach spaces has closed range
+iff it is anti-Lipschitz. -/
 lemma isClosed_range_if_antilipschitz_of_injective (f : E →L[𝕜] F)
     (hf : Injective f) : IsClosed (Set.range f) ↔ ∃ K, AntilipschitzWith K f := by
   refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩

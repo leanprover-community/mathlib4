@@ -41,7 +41,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
   {F : Type*}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type*} [TopologicalSpace G]
   {J : ModelWithCorners 𝕜 F G} {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
-  [Js : IsManifold J n N]
+  [Js : IsManifold J 1 N]
   -- declare a charted space `N'` over the pair `(F', G')`.
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
@@ -55,7 +55,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
 /-! ### The derivative of a `C^(n+1)` function is `C^n` -/
 
 section mfderiv
-variable [Is : IsManifold I n M] [I's : IsManifold I' n M']
+variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
 
 /-- The function that sends `x` to the `y`-derivative of `f (x, y)` at `g (x)` is `C^m` at `x₀`,
 where the derivative is taken as a continuous linear map.
@@ -68,15 +68,9 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     (hf : ContMDiffWithinAt (J.prod I) I' n (Function.uncurry f) (t ×ˢ u) (x₀, g x₀))
     (hg : ContMDiffWithinAt J I m g t x₀) (hx₀ : x₀ ∈ t)
     (hu : MapsTo g t u) (hmn : m + 1 ≤ n) (h'u : UniqueMDiffOn I u) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
       (inTangentCoordinates I I' g (fun x => f x (g x))
         (fun x => mfderivWithin I I' (f x) u (g x)) x₀) t x₀ := by
-  have : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-  have : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
-  have : IsManifold J 1 N := .of_le (le_trans le_add_self hmn)
-  have : IsManifold J m N := .of_le (le_trans le_self_add hmn)
   -- first localize the result to a smaller set, to make sure everything happens in chart domains
   let t' := t ∩ g ⁻¹' ((extChartAt I (g x₀)).source)
   have ht't : t' ⊆ t := inter_subset_left
@@ -146,8 +140,8 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
         fderivWithin 𝕜 (extChartAt I' (f x₀ (g x₀)) ∘ f x ∘ (extChartAt I (g x₀)).symm)
         ((extChartAt I (g x₀)).target ∩ (extChartAt I (g x₀)).symm ⁻¹' u)
           (extChartAt I (g x₀) (g x))) t' x₀ := by
-    simp_rw [contMDiffWithinAt_iff_source_of_mem_source (mem_chart_source G x₀),
-      contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def] at this ⊢
+    simp_rw [contMDiffWithinAt_iff_source (x := x₀),
+      contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def]
     exact this
   -- finally, argue that the map we control in the previous point coincides locally with the map we
   -- want to prove the regularity of, so regularity of the latter follows from regularity of the
@@ -203,8 +197,6 @@ parameters and `g = id`.
 theorem ContMDiffWithinAt.mfderivWithin_const {x₀ : M} {f : M → M'}
     (hf : ContMDiffWithinAt I I' n f s x₀)
     (hmn : m + 1 ≤ n) (hx : x₀ ∈ s) (hs : UniqueMDiffOn I s) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiffWithinAt I 𝓘(𝕜, E →L[𝕜] E') m
       (inTangentCoordinates I I' id f (mfderivWithin I I' f s) x₀) s x₀ := by
   have : ContMDiffWithinAt (I.prod I) I' n (fun x : M × M => f x.2) (s ×ˢ s) (x₀, x₀) :=
@@ -225,8 +217,6 @@ theorem ContMDiffWithinAt.mfderivWithin_apply {x₀ : N'}
     (hg : ContMDiffWithinAt J I m g t (g₁ x₀)) (hg₁ : ContMDiffWithinAt J' J m g₁ v x₀)
     (hg₂ : ContMDiffWithinAt J' 𝓘(𝕜, E) m g₂ v x₀) (hmn : m + 1 ≤ n) (h'g₁ : MapsTo g₁ v t)
     (hg₁x₀ : g₁ x₀ ∈ t) (h'g : MapsTo g t u) (hu : UniqueMDiffOn I u) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiffWithinAt J' 𝓘(𝕜, E') m
       (fun x => (inTangentCoordinates I I' g (fun x => f x (g x))
         (fun x => mfderivWithin I I' (f x) u (g x)) (g₁ x₀) (g₁ x)) (g₂ x)) v x₀ :=
@@ -242,8 +232,6 @@ This result is used to show that maps into the 1-jet bundle and cotangent bundle
 protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N → M)
     (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (x₀, g x₀)) (hg : ContMDiffAt J I m g x₀)
     (hmn : m + 1 ≤ n) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiffAt J 𝓘(𝕜, E →L[𝕜] E') m
       (inTangentCoordinates I I' g (fun x ↦ f x (g x)) (fun x ↦ mfderiv I I' (f x) (g x)) x₀)
       x₀ := by
@@ -261,8 +249,6 @@ This is a special case of `ContMDiffAt.mfderiv` where `f` does not contain any p
 -/
 theorem ContMDiffAt.mfderiv_const {x₀ : M} {f : M → M'} (hf : ContMDiffAt I I' n f x₀)
     (hmn : m + 1 ≤ n) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiffAt I 𝓘(𝕜, E →L[𝕜] E') m (inTangentCoordinates I I' id f (mfderiv I I' f) x₀) x₀ :=
   haveI : ContMDiffAt (I.prod I) I' n (fun x : M × M => f x.2) (x₀, x₀) :=
     ContMDiffAt.comp (x₀, x₀) hf contMDiffAt_snd
@@ -280,8 +266,6 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
     (hf : ContMDiffAt (J.prod I) I' n (Function.uncurry f) (g₁ x₀, g (g₁ x₀)))
     (hg : ContMDiffAt J I m g (g₁ x₀)) (hg₁ : ContMDiffAt J' J m g₁ x₀)
     (hg₂ : ContMDiffAt J' 𝓘(𝕜, E) m g₂ x₀) (hmn : m + 1 ≤ n) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiffAt J' 𝓘(𝕜, E') m
       (fun x => inTangentCoordinates I I' g (fun x => f x (g x))
         (fun x => mfderiv I I' (f x) (g x)) (g₁ x₀) (g₁ x) (g₂ x)) x₀ :=
@@ -293,19 +277,15 @@ end mfderiv
 
 section tangentMap
 
-variable [Is : IsManifold I n M] [I's : IsManifold I' n M']
+variable [Is : IsManifold I 1 M] [I's : IsManifold I' 1 M']
 
 /-- If a function is `C^n` on a domain with unique derivatives, then its bundled derivative
 is `C^m` when `m+1 ≤ n`. -/
 theorem ContMDiffOn.contMDiffOn_tangentMapWithin
     (hf : ContMDiffOn I I' n f s) (hmn : m + 1 ≤ n)
     (hs : UniqueMDiffOn I s) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiffOn I.tangent I'.tangent m (tangentMapWithin I I' f s)
       (π E (TangentSpace I) ⁻¹' s) := by
-  have : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-  have : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
   intro x₀ hx₀
   let s' : Set (TangentBundle I M) := (π E (TangentSpace I) ⁻¹' s)
   let b₁ : TangentBundle I M → M := fun p ↦ p.1
@@ -340,11 +320,7 @@ alias ContMDiffOn.continuousOn_tangentMapWithin_aux := ContMDiffOn.contMDiffOn_t
 derivative is continuous there. -/
 theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (hmn : 1 ≤ n)
     (hs : UniqueMDiffOn I s) :
-    haveI : IsManifold I 1 M := .of_le hmn
-    haveI : IsManifold I' 1 M' := .of_le hmn
     ContinuousOn (tangentMapWithin I I' f s) (π E (TangentSpace I) ⁻¹' s) := by
-  have : IsManifold I 1 M := .of_le hmn
-  have : IsManifold I' 1 M' := .of_le hmn
   have :
     ContMDiffOn I.tangent I'.tangent 0 (tangentMapWithin I I' f s) (π E (TangentSpace I) ⁻¹' s) :=
     hf.contMDiffOn_tangentMapWithin hmn hs
@@ -352,22 +328,14 @@ theorem ContMDiffOn.continuousOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) 
 
 /-- If a function is `C^n`, then its bundled derivative is `C^m` when `m+1 ≤ n`. -/
 theorem ContMDiff.contMDiff_tangentMap (hf : ContMDiff I I' n f) (hmn : m + 1 ≤ n) :
-    haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-    haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
     ContMDiff I.tangent I'.tangent m (tangentMap I I' f) := by
-  haveI : IsManifold I 1 M := .of_le (le_trans le_add_self hmn)
-  haveI : IsManifold I' 1 M' := .of_le (le_trans le_add_self hmn)
   rw [← contMDiffOn_univ] at hf ⊢
   convert hf.contMDiffOn_tangentMapWithin hmn uniqueMDiffOn_univ
   rw [tangentMapWithin_univ]
 
 /-- If a function is `C^n`, with `1 ≤ n`, then its bundled derivative is continuous. -/
 theorem ContMDiff.continuous_tangentMap (hf : ContMDiff I I' n f) (hmn : 1 ≤ n) :
-    haveI : IsManifold I 1 M := .of_le hmn
-    haveI : IsManifold I' 1 M' := .of_le hmn
     Continuous (tangentMap I I' f) := by
-  haveI : IsManifold I 1 M := .of_le hmn
-  haveI : IsManifold I' 1 M' := .of_le hmn
   rw [← contMDiffOn_univ] at hf
   rw [continuous_iff_continuousOn_univ]
   convert hf.continuousOn_tangentMapWithin hmn uniqueMDiffOn_univ

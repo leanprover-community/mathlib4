@@ -81,7 +81,7 @@ scoped notation "Var[" X "]" => Var[X; MeasureTheory.MeasureSpace.volume]
 theorem evariance_lt_top [IsFiniteMeasure μ] (hX : MemLp X 2 μ) : evariance X μ < ∞ := by
   have := ENNReal.pow_lt_top (hX.sub <| memLp_const <| μ[X]).2 2
   rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top, ← ENNReal.rpow_two] at this
-  simp only [ENNReal.toReal_ofNat, Pi.sub_apply, ENNReal.one_toReal, one_div] at this
+  simp only [ENNReal.toReal_ofNat, Pi.sub_apply, ENNReal.toReal_one, one_div] at this
   rw [← ENNReal.rpow_mul, inv_mul_cancel₀ (two_ne_zero : (2 : ℝ) ≠ 0), ENNReal.rpow_one] at this
   simp_rw [ENNReal.rpow_two] at this
   exact this
@@ -96,7 +96,7 @@ theorem evariance_eq_top [IsFiniteMeasure μ] (hXm : AEStronglyMeasurable X μ) 
   have : MemLp (fun ω => X ω - μ[X]) 2 μ := by
     refine ⟨hXm.sub aestronglyMeasurable_const, ?_⟩
     rw [eLpNorm_eq_lintegral_rpow_enorm two_ne_zero ENNReal.ofNat_ne_top]
-    simp only [ENNReal.toReal_ofNat, ENNReal.one_toReal, ENNReal.rpow_two, Ne]
+    simp only [ENNReal.toReal_ofNat, ENNReal.toReal_one, ENNReal.rpow_two, Ne]
     exact ENNReal.rpow_lt_top_of_nonneg (by linarith) h.ne
   refine hX ?_
   convert this.add (memLp_const μ[X])
@@ -166,7 +166,7 @@ theorem evariance_mul (c : ℝ) (X : Ω → ℝ) (μ : Measure Ω) :
 
 @[simp]
 theorem variance_zero (μ : Measure Ω) : variance 0 μ = 0 := by
-  simp only [variance, evariance_zero, ENNReal.zero_toReal]
+  simp only [variance, evariance_zero, ENNReal.toReal_zero]
 
 theorem variance_nonneg (X : Ω → ℝ) (μ : Measure Ω) : 0 ≤ variance X μ :=
   ENNReal.toReal_nonneg
@@ -195,7 +195,7 @@ theorem variance_def' [IsProbabilityMeasure μ] {X : Ω → ℝ} (hX : MemLp X 2
   · apply hX.integrable_sq.add
     apply integrable_const
   · exact ((hX.integrable one_le_two).const_mul 2).mul_const' _
-  simp only [Pi.pow_apply, integral_const, measure_univ, ENNReal.one_toReal, smul_eq_mul, one_mul,
+  simp only [Pi.pow_apply, integral_const, measure_univ, ENNReal.toReal_one, smul_eq_mul, one_mul,
     Pi.mul_apply, Pi.ofNat_apply, Nat.cast_ofNat, integral_mul_right, integral_mul_left]
   ring
 

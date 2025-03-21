@@ -7,6 +7,7 @@ import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 import Mathlib.Analysis.Normed.Unbundled.SeminormFromBounded
 import Mathlib.Analysis.Normed.Unbundled.SmoothingSeminorm
 import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 
 
 /-!
@@ -235,7 +236,11 @@ theorem exists_nonarchimedean_pow_mul_seminorm_of_finiteDimensional (hfd : Finit
         have hfk : ‖k‖ = (smoothingSeminorm f hf_1 hf_na) ((algebraMap K L) k) := by
           rw [← hf_ext k, eq_comm, smoothingSeminorm_apply_of_map_mul_eq_mul f hf_1 hf_na hk]
         simp only [hfk, hF']
-        erw [← smoothingSeminorm_of_mul f hf_1 hf_na hk y, Algebra.smul_def]
+        -- TODO: There are missing `simp` lemmas here, that should be able to convert
+        -- `((smoothingSeminorm f hf_1 hf_na).toRingNorm ⋯).toRingSeminorm y` to
+        -- `(smoothingSeminorm f hf_1 hf_na y)`, after which the `erw` would work as a `rw`.
+        erw [← smoothingSeminorm_of_mul f hf_1 hf_na hk y]
+        rw [Algebra.smul_def]
         rfl }
   have hF_ext (k : K) : F ((algebraMap K L) k) = ‖k‖ := by
     rw [← hf_ext]
