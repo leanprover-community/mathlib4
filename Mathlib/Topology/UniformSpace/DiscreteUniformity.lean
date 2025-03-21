@@ -20,8 +20,9 @@ It is complete.
 open Filter UniformSpace
 
 /-- The discrete uniformity -/
+@[mk_iff discreteUniformity_iff_eq_bot]
 class DiscreteUniformity (X : Type*) [u : UniformSpace X] : Prop where
-  eq_bot: u = ⊥
+  eq_bot : u = ⊥
 
 namespace DiscreteUniformity
 
@@ -31,20 +32,18 @@ instance (X : Type*) : @DiscreteUniformity X ⊥ :=
 
 variable (X : Type*) [u : UniformSpace X] [DiscreteUniformity X]
 
-theorem eq_principal_idRel : uniformity X = principal idRel :=
-  le_antisymm
-    (by simpa [uniformSpace_eq_bot, ← le_principal_iff] using eq_bot)
-    refl_le_uniformity
+theorem _root_.discreteUniformity_iff_eq_principal_idRel {X : Type*} [UniformSpace X] :
+    DiscreteUniformity X ↔ uniformity X = principal idRel := by
+  rw [discreteUniformity_iff_eq_bot, UniformSpace.ext_iff, Filter.ext_iff]
+  rfl
 
-theorem iff_eq_principal_idRel {X : Type*} [UniformSpace X] :
-    DiscreteUniformity X ↔ uniformity X = principal idRel :=
-  ⟨fun _ ↦ eq_principal_idRel X, fun h ↦ { eq_bot := by ext; rw [h]; rfl }⟩
+theorem eq_principal_idRel : uniformity X = principal idRel :=
+  discreteUniformity_iff_eq_principal_idRel.mp inferInstance
 
 /-- The discrete uniformity induces the discrete topology -/
 instance : DiscreteTopology X where
   eq_bot := by
-    convert UniformSpace.toTopologicalSpace_bot
-    exact eq_bot
+    rw [DiscreteUniformity.eq_bot (X := X), UniformSpace.toTopologicalSpace_bot]
 
 theorem idRel_mem_uniformity : idRel ∈ uniformity X := by
   simp only [eq_principal_idRel, mem_principal, subset_refl]
