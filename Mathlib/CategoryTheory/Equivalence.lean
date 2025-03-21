@@ -117,10 +117,10 @@ functors. -/
 def Hom : (C ≌ D) → (C ≌ D) → Type (max u₁ v₂) :=
   fun f g ↦ (f.functor ⟶ g.functor)
 
-instance : Category.{max u₁ v₂} (C ≌ D) where
+instance : Category (C ≌ D) where
   Hom e f := Hom e f
   id e := 𝟙 e.functor
-  comp {a b c} f g := ((f :) ≫ (g :) : a.functor ⟶ _)
+  comp {a b c} f g := (f ≫ g : a.functor ⟶ _)
 
 namespace Hom
 
