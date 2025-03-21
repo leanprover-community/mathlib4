@@ -168,7 +168,7 @@ section
 open AddSubgroup IsFiltration FilteredHom
 open FilteredAddGroupHom AssociatedGradedAddMonoidHom
 
-variable {ι R S T σR σS σT : Type*} [DecidableEq ι]
+variable {ι R S T σR σS σT : Type*}
 
 variable [AddCommGroup R] [SetLike σR R] [AddSubgroupClass σR R] {FR : ℤ → σR}
 
@@ -180,7 +180,8 @@ variable (f : FilteredAddGroupHom FR (fun n ↦ FR (n - 1)) FS (fun n ↦ FS (n 
 
 variable (g : FilteredAddGroupHom FS (fun n ↦ FS (n - 1)) FT (fun n ↦ FT (n - 1)))
 
-open AssociatedGraded in
+open AssociatedGraded
+
 omit [AddSubgroupClass σR R] in
 variable {f g} in
 lemma zero_of_pieces_range {p : ℤ} {y : FS p} (hy : y.1 ∈ Set.range f)
@@ -258,8 +259,7 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
     have le_zero : ∀ t ≤ t₀, (FS t : Set S) = {0} := fun t ht ↦ (Set.Nonempty.subset_singleton_iff
       Set.Nonempty.of_subtype).mp (le_of_eq_of_le' t₀bot (monoS ht))
     have (s : ℕ) : ∃ r : FR p, y - f r ∈ (f.range : Set S) ∩ FS (p - s) := by
-      set yₚ := AssociatedGraded.of <|
-        GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p))
+      let yₚ := of (GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y, hp⟩ : ofClass (FS p)))
       obtain ⟨xₚ, hxₚ⟩ := (exact yₚ).1 <| zero_of_pieces_range ⟨x', hx'⟩ comp_eq_zero
       induction' s with s ih
       · induction' xₚ p using GradedPiece.induction_on with xₚp
@@ -268,8 +268,8 @@ theorem strict_of_exact_discrete (monoR : Monotone FR) (monoS : Monotone FS)
         rw [sub_eq_add_neg, add_comm]
         exact add_mem (neg_mem (FilteredHom.pieces_wise xₚp.2)) hp
       · rcases ih with ⟨r, ⟨hr₁, hr₂⟩⟩
-        set yₚₛ := AssociatedGraded.of <|
-          GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y - f r, hr₂⟩ : ofClass (FS (p - s)))
+        let yₚₛ :=
+          of (GradedPiece.mk FS (fun n ↦ FS (n - 1)) (⟨y - f r, hr₂⟩ : ofClass (FS (p - s))))
         obtain ⟨xₚₛ, hxₚₛ⟩ := (exact yₚₛ).mp (zero_of_pieces_range hr₁ comp_eq_zero)
         induction' h : xₚₛ (p - s) using GradedPiece.induction_on with xₚₛps
         have ps_mem_p : xₚₛps.val ∈ FR p := monoR (by omega) xₚₛps.2
