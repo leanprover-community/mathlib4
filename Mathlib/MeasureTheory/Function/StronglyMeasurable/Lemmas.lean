@@ -29,7 +29,7 @@ variable {α β γ : Type*} {m : MeasurableSpace α} {μ : Measure α} [Topologi
 
 lemma aestronglyMeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
     AEStronglyMeasurable f (Measure.dirac a) :=
-  ⟨fun _ ↦ f a, stronglyMeasurable_const, by simp only [ae_dirac_eq]; rfl⟩
+  ⟨fun _ ↦ f a, stronglyMeasurable_const, ae_eq_dirac f⟩
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_measurePreserving
     {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α} {f : γ → α} {μ : Measure γ}
