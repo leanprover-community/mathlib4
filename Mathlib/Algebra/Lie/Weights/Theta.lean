@@ -35,13 +35,17 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
-noncomputable def theta [IsTriangularizable K H L] {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
-    (he : e ∈ rootSpace H α)  (hf : f ∈ rootSpace H (- α)) : L ≃ₗ⁅K⁆ L := by
-  let D := LieDerivation.instDerivation K L e
-  have n2 : IsNilpotent D.toLinearMap := by
-    dsimp [D]
-    apply LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he
-  exact LieEquiv.trans (LieDerivation.exp D n2) (LieDerivation.exp D n2)
+noncomputable def theta [IsTriangularizable K H L] {α : Weight K H L} {h e f : L} (hα : α.IsNonZero)
+    (ht : IsSl2Triple h e f) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) : L ≃ₗ⁅K⁆ L := by
+  let D1 := LieDerivation.instDerivation K L e
+  let D2 := LieDerivation.instDerivation K L f
+  let ttt := rootSpace H (- α)
+  let n₀ := ((- α) : H → K)
+  have n00 : n₀ ≠ 0 := by
+    exact neg_ne_zero.mpr hα
+  have n₁ : IsNilpotent D1.toLinearMap := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he
+  have n₂ : IsNilpotent D2.toLinearMap := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H n00 hf
+  exact LieEquiv.trans (LieDerivation.exp D1 n₁) (LieDerivation.exp D2 n₂)
 
 
 /-
