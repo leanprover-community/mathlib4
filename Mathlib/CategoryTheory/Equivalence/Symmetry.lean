@@ -43,17 +43,17 @@ def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
 
 @[simps!]
 def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
-  Functor.leftOp {
-    obj e := Opposite.op e.symm
-    map {e f} α := Quiver.Hom.op <| Hom.mk <|
-      conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| Hom.asNatTrans α
-    map_comp {e f g} α β := by
-      simp only [Equiv.toFun_as_coe, Hom.asNatTrans, ← op_comp]
-      congr 1
-      apply Hom.ext
-      simp only [symm_functor, symm_inverse, Equiv.invFun_as_coe, Hom.asNatTrans_mk,
-        Hom.comp_asNatTrans, conjugateEquiv_symm_comp, EmbeddingLike.apply_eq_iff_eq]
-      rfl }
+  Functor.leftOp
+    { obj e := Opposite.op e.symm
+      map {e f} α := Quiver.Hom.op <| Hom.mk <|
+        conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| Hom.asNatTrans α
+      map_comp {e f g} α β := by
+        simp only [Equiv.toFun_as_coe, Hom.asNatTrans, ← op_comp]
+        congr 1
+        apply Hom.ext
+        simp only [symm_functor, symm_inverse, Equiv.invFun_as_coe, Hom.asNatTrans_mk,
+          Hom.comp_asNatTrans, conjugateEquiv_symm_comp, EmbeddingLike.apply_eq_iff_eq]
+        rfl }
 
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
@@ -107,13 +107,14 @@ variable (C D) in
 /-- Promoting `Equivalence.congrLeft` to a functor. -/
 @[simps!]
 def congrLeftFunctor (E : Type*) [Category E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
-  Functor.rightOp <| {
-  obj f := f.unop.congrLeft
-  map {e f} α := Hom.mk <| (whiskeringLeft _ _ _).map <|
-    conjugateEquiv e.unop.toAdjunction f.unop.toAdjunction <| Hom.asNatTrans <| Quiver.Hom.unop α
-  map_comp _ _ := by
-    ext
-    simp [← map_comp] }
+  Functor.rightOp
+    { obj f := f.unop.congrLeft
+      map {e f} α := Hom.mk <| (whiskeringLeft _ _ _).map <|
+        conjugateEquiv e.unop.toAdjunction f.unop.toAdjunction <| Hom.asNatTrans <|
+          Quiver.Hom.unop α
+      map_comp _ _ := by
+        ext
+        simp [← map_comp] }
 
 end Equivalence
 
