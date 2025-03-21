@@ -5,7 +5,6 @@ Authors: Floris van Doorn, Yury Kudryashov, Sébastien Gouëzel, Chris Hughes
 -/
 import Mathlib.Data.Fin.Rev
 import Mathlib.Data.Nat.Find
-import Mathlib.Logic.Pairwise
 
 /-!
 # Operation on tuples
