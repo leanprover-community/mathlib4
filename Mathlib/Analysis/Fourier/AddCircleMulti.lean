@@ -166,7 +166,7 @@ theorem orthonormal_mFourier : Orthonormal ℂ (mFourierLp (d := d) 2) := by
   intro m n
   simp only [ContinuousMap.inner_toLp, ← mFourier_neg, ← mFourier_add]
   split_ifs with h
-  · simpa only [h, add_neg_cancel, mFourier_zero, measure_univ, ENNReal.one_toReal, one_smul] using
+  · simpa only [h, add_neg_cancel, mFourier_zero, measure_univ, ENNReal.toReal_one, one_smul] using
       integral_const (α := UnitAddTorus d) (μ := volume) (1 : ℂ)
   rw [mFourier, ContinuousMap.coe_mk, MeasureTheory.integral_fintype_prod_eq_prod]
   obtain ⟨i, hi⟩ := Function.ne_iff.mp h

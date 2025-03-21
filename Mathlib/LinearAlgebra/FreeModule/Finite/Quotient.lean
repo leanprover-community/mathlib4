@@ -23,7 +23,7 @@ namespace Submodule
 open scoped DirectSum
 
 variable {ι R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-variable  [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]
+variable [IsDomain R] [IsPrincipalIdealRing R] [Finite ι]
 
 /--
 We can write the quotient by a submodule of full rank over a PID as a product of quotients
@@ -69,9 +69,7 @@ noncomputable def quotientEquivPiSpan (N : Submodule R M) (b : Basis ι R M)
   refine (Submodule.Quotient.equiv N N' b'.equivFun this).trans (re₂₃ := inferInstance)
     (re₃₂ := inferInstance) ?_
   classical
-    let this :=
-      Submodule.quotientPi (show _ → Submodule R R from fun i => span R ({a i} : Set R))
-    exact this
+  exact Submodule.quotientPi (show _ → Submodule R R from fun i => span R ({a i} : Set R))
 
 /--
 Quotients by submodules of full rank of free finite `ℤ`-modules are isomorphic
@@ -86,19 +84,21 @@ noncomputable def quotientEquivPiZMod (N : Submodule ℤ M) (b : Basis ι ℤ M)
     AddEquiv.piCongrRight fun i => ↑(Int.quotientSpanEquivZMod (a i))
   (↑(e : (M ⧸ N) ≃ₗ[ℤ] _) : M ⧸ N ≃+ _).trans e'
 
-/-- A submodule of full rank of a free finite `ℤ`-module has a finite quotient.
-
-Can't be an instance because of the side condition and more importantly,
-because the choice of `Fintype` instance is non-canonical.
+/--
+A submodule of full rank of a free finite `ℤ`-module has a finite quotient.
+It can't be an instance because of the side condition `Module.finrank ℤ N = Module.finrank ℤ M`.
 -/
-noncomputable def fintypeQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
-    (N : Submodule ℤ M) (h : Module.finrank ℤ N = Module.finrank ℤ M) : Fintype (M ⧸ N) := by
+theorem finiteQuotientOfFreeOfRankEq [Module.Free ℤ M] [Module.Finite ℤ M]
+    (N : Submodule ℤ M) (h : Module.finrank ℤ N = Module.finrank ℤ M) : Finite (M ⧸ N) := by
   let b := Module.Free.chooseBasis ℤ M
   let a := smithNormalFormCoeffs b h
   let e := N.quotientEquivPiZMod b h
-  haveI : ∀ i, NeZero (a i).natAbs := fun i =>
+  have : ∀ i, NeZero (a i).natAbs := fun i ↦
     ⟨Int.natAbs_ne_zero.mpr (smithNormalFormCoeffs_ne_zero b h i)⟩
-  classical exact Fintype.ofEquiv (∀ i, ZMod (a i).natAbs) e.symm
+  exact Finite.of_equiv (Π i, ZMod (a i).natAbs) e.symm
+
+@[deprecated (since := "2025-03-15")] alias fintypeQuotientOfFreeOfRankEq :=
+  finiteQuotientOfFreeOfRankEq
 
 variable (F : Type*) [CommRing F] [Algebra F R] [Module F M] [IsScalarTower F R M]
   (b : Basis ι R M) {N : Submodule R M}
