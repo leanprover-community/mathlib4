@@ -361,10 +361,6 @@ instance : OrderedCancelAddCommMonoid NatOrdinal :=
 instance : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
-@[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
-theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
-  (Order.succ_eq_add_one a).symm
-
 @[simp]
 theorem toOrdinal_natCast (n : ℕ) : toOrdinal n = n := by
   induction' n with n hn
