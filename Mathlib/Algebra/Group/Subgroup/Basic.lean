@@ -416,8 +416,11 @@ theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ H.normal
 @[to_additive]
 theorem le_normalizer_of_normal' [hH : H.Normal] : K ≤ H.normalizer := subset_normalizer_of_normal
 
-@[to_additive (attr := deprecated le_normalizer_of_normal_subgroupOf (since := "2025-03-06"))]
-alias le_normalizer_of_normal := le_normalizer_of_normal_subgroupOf
+@[deprecated (since := "2025-03-06")] alias le_normalizer_of_normal
+  := le_normalizer_of_normal_subgroupOf
+
+@[deprecated (since := "2025-03-06")] alias _root_.AddSubgroup.le_normalizer_of_normal
+  := AddSubgroup.le_normalizer_of_normal_addSubgroupOf
 
 @[to_additive]
 theorem inf_normalizer_le_normalizer_inf : H.normalizer ⊓ K.normalizer ≤ (H ⊓ K).normalizer :=
