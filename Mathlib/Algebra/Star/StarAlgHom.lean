@@ -62,15 +62,6 @@ structure NonUnitalStarAlgHom (R A B : Type*) [Monoid R] [NonUnitalNonAssocSemir
 by forgetting the interaction with the star operation. -/
 add_decl_doc NonUnitalStarAlgHom.toNonUnitalAlgHom
 
-/-- `NonUnitalStarAlgHomClass F R A B` asserts `F` is a type of bundled non-unital ⋆-algebra
-homomorphisms from `A` to `B`. -/
-@[deprecated StarHomClass (since := "2024-09-08")]
-class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
-  [Monoid R] [Star A] [Star B] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-  [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
-    Prop
-  extends StarHomClass F A B
-
 namespace NonUnitalStarAlgHomClass
 
 variable {F R A B : Type*} [Monoid R]
@@ -306,12 +297,6 @@ structure StarAlgHom (R A B : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 by forgetting the interaction with the star operation. -/
 add_decl_doc StarAlgHom.toAlgHom
 
-/-- `StarAlgHomClass F R A B` states that `F` is a type of ⋆-algebra homomorphisms.
-You should also extend this typeclass when you extend `StarAlgHom`. -/
-@[deprecated StarHomClass (since := "2024-09-08")]
-class StarAlgHomClass (F : Type*) (R A B : outParam Type*)
-    [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
-    [FunLike F A B] [AlgHomClass F R A B] : Prop extends StarHomClass F A B
 namespace StarAlgHomClass
 
 variable {F R A B : Type*}
@@ -647,16 +632,6 @@ Mostly an implementation detail for `StarAlgEquivClass`.
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
   extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
-
-/-- `StarAlgEquivClass F R A B` asserts `F` is a type of bundled ⋆-algebra equivalences between
-`A` and `B`.
-You should also extend this typeclass when you extend `StarAlgEquiv`. -/
-@[deprecated StarHomClass (since := "2024-09-08")]
-class StarAlgEquivClass (F : Type*) (R A B : outParam Type*)
-  [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
-  [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] : Prop where
-  /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
-  protected map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 
 namespace StarAlgEquivClass
 

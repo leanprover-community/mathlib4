@@ -51,10 +51,6 @@ instance wfDvdMonoid_associates : WfDvdMonoid (Associates α) :=
 theorem wellFoundedLT_associates : WellFoundedLT (Associates α) :=
   ⟨Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit⟩
 
-@[deprecated wellFoundedLT_associates (since := "2024-09-02")]
-theorem wellFounded_associates : WellFounded ((· < ·) : Associates α → Associates α → Prop) :=
-  Subrelation.wf dvdNotUnit_of_lt wellFounded_dvdNotUnit
-
 end WfDvdMonoid
 
 theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
@@ -62,15 +58,6 @@ theorem WfDvdMonoid.of_wellFoundedLT_associates [CancelCommMonoidWithZero α]
   WfDvdMonoid.of_wfDvdMonoid_associates
     ⟨by
       convert h.wf
-      ext
-      exact Associates.dvdNotUnit_iff_lt⟩
-
-@[deprecated WfDvdMonoid.of_wellFoundedLT_associates (since := "2024-09-02")]
-theorem WfDvdMonoid.of_wellFounded_associates [CancelCommMonoidWithZero α]
-    (h : WellFounded ((· < ·) : Associates α → Associates α → Prop)) : WfDvdMonoid α :=
-  WfDvdMonoid.of_wfDvdMonoid_associates
-    ⟨by
-      convert h
       ext
       exact Associates.dvdNotUnit_iff_lt⟩
 
