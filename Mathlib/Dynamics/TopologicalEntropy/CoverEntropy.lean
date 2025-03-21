@@ -61,7 +61,7 @@ The most painful part of many manipulations involving topological entropy is goi
 a division, a `liminf`/`limsup`, and multiple coercions. The best thing to do would be to write
 a file on "exponential growth" to make a clean pathway from estimates on `coverMincard`
 to estimates on `coverEntropyInf`/`coverEntropy`. It would also be useful
-in other similar contexts, including the definition of entropy using nets.
+in other similar contexts, including the definition of entropy using packings.
 
 Get versions of the topological entropy on (pseudo-e)metric spaces.
 -/
@@ -338,7 +338,7 @@ lemma coverMincard_finite_of_isCompact_invariant [UniformSpace X] {T : X → X} 
 
 /-- All dynamical balls of a minimal dynamical cover of `F` intersect `F`. This lemma is the key
   to relate Bowen-Dinaburg's definition of topological entropy with covers and their definition
-  of topological entropy with nets. -/
+  of topological entropy with packings. -/
 lemma nonempty_inter_of_coverMincard {T : X → X} {F : Set X} {U : Set (X × X)} {n : ℕ}
     {s : Finset X} (h : IsDynCoverOf T F U n s) (h' : s.card = coverMincard T F U n) :
     ∀ x ∈ s, (F ∩ ball x (dynEntourage T U n)).Nonempty := by
