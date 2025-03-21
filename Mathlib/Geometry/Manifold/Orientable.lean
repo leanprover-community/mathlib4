@@ -214,7 +214,7 @@ def orientationPreservingGroupoid [FiniteDimensional ℝ E] : StructureGroupoid 
   (orientationPreservingPregroupoid I).groupoid
 
 /-- The groupoid of orientation-preserving `n` times continuously differentiable maps -/
-def contDiffOrientationPreservingGroupoid (n : ℕ∞) (I : ModelWithCorners ℝ E H)
+def contDiffOrientationPreservingGroupoid (n : WithTop  ℕ∞) (I : ModelWithCorners ℝ E H)
     [FiniteDimensional ℝ E] : StructureGroupoid H :=
   (orientationPreservingGroupoid I) ⊓ (contDiffGroupoid n I)
 
@@ -254,17 +254,17 @@ class IsOrientedManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
     (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*) [TopologicalSpace M]
     [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H] (O : atlas H M → SignType)
     extends HasGroupoid M (orientationPreservingGroupoid I) where
-  oriented  x y : O x = O y ↔ OrientationPreserving (x.val.symm.trans y.val)
+  oriented x y : O x = O y ↔ OrientationPreserving (x.val.symm.trans y.val)
     (Set.range x.val ∩ Set.range y.val)
   reversing x y : O x ≠ O y ↔ OrientationReversing (x.val.symm.trans y.val)
     (Set.range x.val ∩ Set.range y.val)
 
 class IsOrientedSmoothManifold {E H : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [TopologicalSpace H] (I : ModelWithCorners ℝ E H) [FiniteDimensional ℝ E] (M : Type*)
-    [TopologicalSpace M] [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H] (n : ℕ∞)
-    (O : atlas H M → SignType)
+    [TopologicalSpace M] [ChartedSpace H M] [NormedAddCommGroup H] [NormedSpace ℝ H]
+    (n : WithTop ℕ∞) (O : atlas H M → SignType)
     extends HasGroupoid M (contDiffOrientationPreservingGroupoid n I) where
-  oriented  x y : O x = O y ↔ OrientationPreserving (x.val.symm.trans y.val)
+  oriented x y : O x = O y ↔ OrientationPreserving (x.val.symm.trans y.val)
     (Set.range x.val ∩ Set.range y.val)
   reversing x y : O x ≠ O y ↔ OrientationReversing (x.val.symm.trans y.val)
     (Set.range x.val ∩ Set.range y.val)

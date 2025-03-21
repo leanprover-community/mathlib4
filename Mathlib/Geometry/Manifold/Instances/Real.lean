@@ -13,7 +13,7 @@ import Mathlib.Analysis.InnerProductSpace.PiL2
 We introduce the necessary bits to be able to define manifolds modelled over `ℝ^n`, boundaryless
 or with boundary or with corners. As a concrete example, we construct explicitly the manifold with
 boundary structure on the real interval `[x, y]`, and prove that it is orientable and its boundary
-is indeed `{x,y}` whenever `x < y`.
+is indeed `{x, y}` whenever `x < y`.
 As a corollary, a product `M × [x, y]` with a manifold `M` without boundary has
 boundary `M × {x, y}`.
 
@@ -171,12 +171,12 @@ end
 Definition of the model with corners `(EuclideanSpace ℝ (Fin n), EuclideanHalfSpace n)`, used as
 a model for manifolds with boundary. In the locale `Manifold`, use the shortcut `𝓡∂ n`.
 -/
-def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] (ε : SignType) :
-    ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n ε) where
+def modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
+    ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n) where
   toFun := Subtype.val
-  invFun x := ⟨update x 0 (ε * max (x 0) 0), by cases ε <;> simp⟩
+  invFun x := ⟨update x 0 (max (x 0) 0), by simp [le_refl]⟩
   source := univ
-  target := { x | 0 ≤ ε * x 0 }
+  target := { x | 0 ≤ x 0 }
   map_source' x _ := x.property
   map_target' _ _ := mem_univ _
   left_inv' := fun ⟨xval, xprop⟩ _ => by
@@ -499,9 +499,18 @@ instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
+def IccOrientation [Fact (x < y)] : atlas (EuclideanHalfSpace 1) (Icc x y) → SignType :=
+  fun t ↦ if t.val.source = {⟨y, ⟨Fact.out, le_refl y⟩⟩} then -1 else 1 -- needs decidability
+
+instance : NormedAddCommGroup (EuclideanHalfSpace 1) := by
+  sorry
+
+instance : NormedSpace ℝ (EuclideanHalfSpace 1) := by
+  sorry
+
 /-- The manifold structure on `[x, y]` is orientable. -/
 instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
-    OrientableManifold (𝓡∂ 1) (Icc x y) where
+    IsOrientedManifold (𝓡∂ 1) (Icc x y) IccOrientation where
   compatible {e₁ e₂} he₁ he₂ := by
     simp only [atlas, mem_singleton_iff, mem_insert_iff] at he₁ he₂
     rcases he₁ with (rfl | rfl) <;> rcases he₂ with (rfl | rfl)
@@ -532,16 +541,20 @@ instance Icc_orientable_manifold (x y : ℝ) [Fact (x < y)] :
     · sorry -- similar, with left and right swapped
     · exact mem_groupoid_of_pregroupoid.mpr
       <| symm_trans_mem_orientationPreservingGroupoid (𝓡∂ 1) (IccRightChart x y)
+  oriented x y := sorry
+  reversing x y := sorry
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
 `instIccChartedSpace` and `instIsManifoldIcc`. -/
 section
 
-instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by
+  infer_instance
 
 instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by
   infer_instance
 
-instance : OrientableManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance : IsOrientedManifold (𝓡∂ 1) (Icc (0 : ℝ) 1) IccOrientation := by
+  infer_instance
 
 end
