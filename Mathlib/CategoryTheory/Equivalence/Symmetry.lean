@@ -34,24 +34,26 @@ variable (C : Type*) [Category C] (D : Type*) [Category D]
 @[simps]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   obj e := Opposite.op e.symm
-  map {e f} η := (Hom.mk <| conjugateEquiv f.toAdjunction e.toAdjunction <| Hom.asNatTrans η).op
+  map {e f} α := (Hom.mk <| conjugateEquiv f.toAdjunction e.toAdjunction <| Hom.asNatTrans α).op
   map_comp {e f g} α β := by
     simp only [Equiv.toFun_as_coe, Hom.comp_asNatTrans, ← op_comp]
     congr 1
-    apply Hom.homExt
+    apply Hom.ext
     simp
 
 @[simps!]
 def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
   Functor.leftOp {
     obj e := Opposite.op e.symm
-    map {e f} η := Quiver.Hom.op <| Hom.mk <|
-      conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| asNatTrans η
+    map {e f} α := Quiver.Hom.op <| Hom.mk <|
+      conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| Hom.asNatTrans α
     map_comp {e f g} α β := by
-      simp only [Equiv.toFun_as_coe, asNatTrans, ← op_comp]
+      simp only [Equiv.toFun_as_coe, Hom.asNatTrans, ← op_comp]
       congr 1
-      apply homExt
-      simp }
+      apply Hom.ext
+      simp only [symm_functor, symm_inverse, Equiv.invFun_as_coe, Hom.asNatTrans_mk,
+        Hom.comp_asNatTrans, conjugateEquiv_symm_comp, EmbeddingLike.apply_eq_iff_eq]
+      rfl }
 
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
@@ -60,7 +62,7 @@ def symmEquiv : (C ≌ D) ≌ (D ≌ C)ᵒᵖ where
   functor := symmEquivFunctor _ _
   inverse := symmEquivInverse _ _
   counitIso :=
-    NatIso.ofComponents (fun e ↦ Iso.op <| Iso.refl _) <| fun {e f} η ↦ by
+    NatIso.ofComponents (fun e ↦ Iso.op <| Iso.refl _) <| fun _ ↦ by
       simp only [comp_obj, symmEquivFunctor_obj, id_obj, Functor.comp_map, symmEquivFunctor_map,
         Equiv.toFun_as_coe, Iso.refl_symm, Iso.op_hom, Iso.refl_hom, ← op_comp,
         Functor.id_map]
@@ -68,7 +70,7 @@ def symmEquiv : (C ≌ D) ≌ (D ≌ C)ᵒᵖ where
       ext c
       simp [symm, symmEquivInverse]
   unitIso :=
-    NatIso.ofComponents (fun e ↦ Iso.refl _) <| fun {e f} η ↦ by
+    NatIso.ofComponents (fun e ↦ Iso.refl _) <| fun _ ↦ by
       ext c
       simp [symm, symmEquivInverse]
   functor_unitIso_comp X := by
@@ -90,7 +92,8 @@ def inverseFunctorObjIso (e : C ≌ D) :
 an isomorphism `e ≌ f` via `inverseFunctor` with the way we get obtain one one through
 `Iso.isoInverseOfIsoFunctor`. -/
 lemma inverseFunctorM_mapIso_symm_eq_isoInverseOfIsoFunctor {e f: C ≌ D} (α : e ≅ f) :
-    Iso.unop ((inverseFunctor C D).mapIso α.symm) = Iso.isoInverseOfIsoFunctor (asNatIso α) := by
+    Iso.unop ((inverseFunctor C D).mapIso α.symm) =
+    Iso.isoInverseOfIsoFunctor (Iso.asNatIso α) := by
   ext x
   simp
 
@@ -106,8 +109,8 @@ variable (C D) in
 def congrLeftFunctor (E : Type*) [Category E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
   Functor.rightOp <| {
   obj f := f.unop.congrLeft
-  map {e f} α := mkHom <| (whiskeringLeft _ _ _).map <|
-    conjugateEquiv e.unop.toAdjunction f.unop.toAdjunction <| asNatTrans <| Quiver.Hom.unop α
+  map {e f} α := Hom.mk <| (whiskeringLeft _ _ _).map <|
+    conjugateEquiv e.unop.toAdjunction f.unop.toAdjunction <| Hom.asNatTrans <| Quiver.Hom.unop α
   map_comp _ _ := by
     ext
     simp [← map_comp] }
