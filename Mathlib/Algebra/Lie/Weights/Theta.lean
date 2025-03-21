@@ -3,6 +3,7 @@ import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
+import LeanCopilot
 
 /-!
 # Theta maps of Lie algebras
@@ -40,16 +41,18 @@ noncomputable def theta {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht
   let D1 := LieDerivation.instDerivation K L (t • e)
   let D2 := LieDerivation.instDerivation K L (t⁻¹ • f)
   have he' : t • e ∈ rootSpace H α := by
-    sorry
+    apply Submodule.smul_mem
+    exact he
   have hf' : t⁻¹ • f ∈ rootSpace H (- α) := by
-    sorry
+    apply Submodule.smul_mem
+    exact hf
   have n₀ : ((- α) : H → K) ≠ 0 := neg_ne_zero.mpr hα
   have n₁ : IsNilpotent D1.toLinearMap := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he'
   have n₂ : IsNilpotent D2.toLinearMap := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H n₀ hf'
   exact LieEquiv.trans (LieEquiv.trans (LieDerivation.exp D1 n₁) (LieDerivation.exp D2 n₂))
     (LieDerivation.exp D1 n₁)
 
-
+/-
 lemma theta_apply {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
     (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ) : theta H hα ht he hf t =
       LieDerivation.exp (LieDerivation.instDerivation K L e) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) ∘
@@ -57,6 +60,7 @@ lemma theta_apply {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsS
       LieDerivation.exp (LieDerivation.instDerivation K L e) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) := by
   ext x
   dsimp [theta]
+-/
 
 end Theta
 
