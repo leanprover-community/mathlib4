@@ -19,7 +19,6 @@ open Finset
 
 lemma abs_sub_lt_of_mem_finset_range {N n m : ℕ} (hn : n ∈ range N) (hm : m ∈ range N) :
     |n - (m : ℤ)| < N := by
-  rw [← max_sub_min_eq_abs', sub_lt_iff_lt_add, ← Lean.Omega.Int.ofNat_max,
-    ← Lean.Omega.Int.ofNat_min]
-  norm_cast
-  exact Nat.lt_add_right (n ⊓ m) (sup_lt_iff.mpr ⟨List.mem_range.mp hn, List.mem_range.mp hm⟩)
+  rw [← max_self (N : ℤ)]
+  exact abs_sub_lt_of_lt_lt (Int.ofNat_zero_le n) (Int.ofNat_zero_le m)
+    (by norm_cast; exact List.mem_range.mp hn) (by norm_cast; exact List.mem_range.mp hm)

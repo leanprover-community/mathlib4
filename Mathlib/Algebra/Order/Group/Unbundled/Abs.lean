@@ -257,6 +257,11 @@ variable [MulRightMono α]
 @[to_additive] lemma max_div_min_eq_mabs (a b : α) : max a b / min a b = |b / a|ₘ := by
   rw [mabs_div_comm, max_div_min_eq_mabs']
 
+@[to_additive] lemma abs_div_lt_of_lt_lt {N M n m : α} (hn : 1 ≤ n) (hm : 1 ≤ m) (hnN : n < N)
+    (hmM : m < M) : |n / m|ₘ < N ⊔ M := by
+  rw [← max_div_min_eq_mabs', div_lt_iff_lt_mul]
+  exact gt_of_ge_of_gt (le_mul_of_one_le_right' (le_min hn hm)) (max_lt_max hnN hmM)
+
 end LinearOrder
 
 namespace LatticeOrderedAddCommGroup
