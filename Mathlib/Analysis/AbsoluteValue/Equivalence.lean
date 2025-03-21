@@ -349,8 +349,9 @@ theorem exists_one_lt_lt_one {n : ℕ} {v : Fin (n + 2) → AbsoluteValue F ℝ}
     -- Assume the result is true for all smaller collections of absolute values
     -- Let `a : K` be the value from the collection with the last absolute value removed
     let ⟨a, ha⟩ := ih n le_rfl (fun _ => h _) (hv.comp_of_injective <| Fin.castSucc_injective _)
-    -- Let `b : K` be the value using then first and last absolute value
-    let ⟨b, hb⟩ := ih 0 (by linarith) (fun _ => h _) <| Pairwise.forall_fin_two hv
+    -- Let `b : K` be the value using the first and last absolute value
+    have : ![0, Fin.last (n + 2)].Injective := by simp [Function.Injective, Fin.forall_fin_two]
+    let ⟨b, hb⟩ := ih 0 (by linarith) (fun _ => h _) <| hv.comp_of_injective this
     simp [Fin.forall_fin_two] at hb
     -- If `v last < 1` then `a` works.
     by_cases ha₀ : v (Fin.last _) a < 1
