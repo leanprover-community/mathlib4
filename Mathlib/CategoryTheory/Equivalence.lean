@@ -755,16 +755,4 @@ lemma isoInverseOfIsoFunctor_isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inve
 
 end Iso
 
-section Category
-
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
-namespace Equivalence
-
-variable (C D)
-
-end Equivalence
-
-end Category
-
 end CategoryTheory
