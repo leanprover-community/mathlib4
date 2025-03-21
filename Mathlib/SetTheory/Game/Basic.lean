@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade, Yuyang Zhao
 -/
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.SetTheory.Game.PGame
+import Mathlib.SetTheory.PGame.Algebra
 import Mathlib.Tactic.Abel
 
 /-!
@@ -925,7 +925,7 @@ def invVal {l r} (L : l → PGame) (R : r → PGame) (IHl : l → PGame) (IHr : 
 @[simp]
 theorem invVal_isEmpty {l r : Type u} {b} (L R IHl IHr) (i : InvTy l r b) (x) [IsEmpty l]
     [IsEmpty r] : invVal L R IHl IHr x i = 0 := by
-  cases' i with a _ a _ a _ a
+  obtain - | a | a | a | a := i
   · rfl
   all_goals exact isEmptyElim a
 

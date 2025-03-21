@@ -59,7 +59,7 @@ attribute [instance] IsAffine.affine
 instance (X : Scheme.{u}) [IsAffine X] : IsIso (ΓSpec.adjunction.unit.app X) := @IsAffine.affine X _
 
 /-- The canonical isomorphism `X ≅ Spec Γ(X)` for an affine scheme. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
   asIso X.toSpecΓ
 
@@ -100,7 +100,7 @@ def AffineScheme.ofHom {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     AffineScheme.of X ⟶ AffineScheme.of Y :=
   f
 
-theorem mem_Spec_essImage (X : Scheme) : X ∈ Scheme.Spec.essImage ↔ IsAffine X :=
+theorem mem_Spec_essImage (X : Scheme) : Scheme.Spec.essImage X ↔ IsAffine X :=
   ⟨fun h => ⟨Functor.essImage.unit_isIso h⟩,
     fun _ => ΓSpec.adjunction.mem_essImage_of_unit_isIso _⟩
 
@@ -308,7 +308,7 @@ variable {X Y : Scheme.{u}} {U : X.Opens} (hU : IsAffineOpen U) (f : Γ(X, U))
 
 attribute [-simp] eqToHom_op in
 /-- The isomorphism `U ≅ Spec Γ(X, U)` for an affine `U`. -/
-@[simps! (config := .lemmasOnly) inv]
+@[simps! -isSimp inv]
 def isoSpec :
     ↑U ≅ Spec Γ(X, U) :=
   haveI : IsAffine U := hU

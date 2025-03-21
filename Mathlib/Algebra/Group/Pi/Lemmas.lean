@@ -5,7 +5,8 @@ Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Data.Set.Function
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Logic.Pairwise
 
 /-!

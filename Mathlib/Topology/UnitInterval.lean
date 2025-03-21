@@ -5,7 +5,7 @@ Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Order.Interval.Set.ProjIcc
-import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # The unit interval, as a topological space
@@ -107,10 +107,9 @@ theorem symm_bijective : Function.Bijective (symm : I → I) := symm_involutive.
 theorem coe_symm_eq (x : I) : (σ x : ℝ) = 1 - x :=
   rfl
 
--- Porting note: Proof used to be `by continuity!`
 @[continuity, fun_prop]
-theorem continuous_symm : Continuous σ := by
-  apply Continuous.subtype_mk (by fun_prop)
+theorem continuous_symm : Continuous σ :=
+  Continuous.subtype_mk (by fun_prop) _
 
 /-- `unitInterval.symm` as a `Homeomorph`. -/
 @[simps]
