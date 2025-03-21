@@ -26,6 +26,6 @@ example [HasConicalTerminal V C] : HasTerminal C := inferInstance
 
 instance HasConicalProducts.hasConicalTerminal [HasConicalProducts.{w} V C] :
     HasConicalTerminal V C :=
-  HasConicalLimitsOfShape.of_equiv V C (emptyEquivalence.functor)
+  HasConicalLimitsOfShape.of_equiv V C emptyEquivalence.functor
 
 end CategoryTheory.Enriched
