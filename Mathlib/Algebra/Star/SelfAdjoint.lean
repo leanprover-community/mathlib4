@@ -282,12 +282,12 @@ end Semifield
 section SMul
 
 @[aesop safe apply]
-theorem smul [Star R] [AddMonoid A] [StarAddMonoid A] [SMul R A] [StarModule R A]
+theorem smul [Star R] [Star A] [SMul R A] [StarModule R A]
     {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
     IsSelfAdjoint (r • x) := by
   simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
 
-theorem smul_iff [Monoid R] [StarMul R] [AddMonoid A] [StarAddMonoid A]
+theorem smul_iff [Monoid R] [StarMul R] [Star A]
     [MulAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
     IsSelfAdjoint (r • x) ↔ IsSelfAdjoint x := by
   refine ⟨fun hrx ↦ ?_, .smul hr⟩
