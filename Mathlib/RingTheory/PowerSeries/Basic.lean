@@ -785,8 +785,8 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
-section CommSemiring
-variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
+section Semiring
+variable {R : Type*} [Semiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
@@ -869,7 +869,11 @@ theorem coe_eq_zero_iff : (φ : PowerSeries R) = 0 ↔ φ = 0 := by rw [← coe_
 @[simp]
 theorem coe_eq_one_iff : (φ : PowerSeries R) = 1 ↔ φ = 1 := by rw [← coe_one, coe_inj]
 
-variable (φ ψ)
+end Semiring
+
+section CommSemiring
+
+variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
     (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
