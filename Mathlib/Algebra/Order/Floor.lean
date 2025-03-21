@@ -953,9 +953,10 @@ theorem fract_neg_eq_zero {x : α} : fract (-x) = 0 ↔ fract x = 0 := by
   constructor <;> rintro ⟨z, hz⟩ <;> use -z <;> simp [← hz]
 
 theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a * b) = z := by
-  induction' b with c hc
-  · use 0; simp
-  · rcases hc with ⟨z, hz⟩
+  induction b with
+  | zero => use 0; simp
+  | succ c hc =>
+    rcases hc with ⟨z, hz⟩
     rw [Nat.cast_add, mul_add, mul_add, Nat.cast_one, mul_one, mul_one]
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
