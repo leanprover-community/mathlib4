@@ -4,11 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Analytic.IsolatedZeros
-import Mathlib.Analysis.Calculus.Deriv.ZPow
-import Mathlib.Analysis.NormedSpace.Pointwise
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
 
 /-!
 # Integral over a circle in `ℂ`
