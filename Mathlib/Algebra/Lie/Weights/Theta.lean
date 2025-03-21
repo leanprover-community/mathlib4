@@ -40,10 +40,10 @@ noncomputable def theta {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht
     (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ) : L ≃ₗ⁅K⁆ L := by
   let D1 := LieDerivation.instDerivation K L ((t : K) • e)
   let D2 := LieDerivation.instDerivation K L ((t⁻¹ : K) • f)
-  have he' : t • e ∈ rootSpace H α := by
+  have he' : (t : K) • e ∈ rootSpace H α := by
     apply Submodule.smul_mem
     exact he
-  have hf' : t⁻¹ • f ∈ rootSpace H (- α) := by
+  have hf' : (t⁻¹ : K) • f ∈ rootSpace H (- α) := by
     apply Submodule.smul_mem
     exact hf
   have n₀ : ((- α) : H → K) ≠ 0 := neg_ne_zero.mpr hα
