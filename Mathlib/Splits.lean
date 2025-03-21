@@ -112,6 +112,8 @@ lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzCons
 lemma isClosedMap (hf : f.Splits) : IsClosedMap f :=
   (hf.antilipschitzWith.isClosedEmbedding f.uniformContinuous).isClosedMap
 
+-- Open question: is the following statement true? We really want the composition of immersions
+-- to be an immersion, but the proof below has a serious gap, at least.
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
 lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
@@ -123,11 +125,12 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
     refine ⟨h, (F'.map g) + hg.complement, ?_, ?_⟩
     · have : IsClosed (X := G) (F'.map g) := hg.isClosedMap _ hf.complement_isClosed
       have : IsClosed (X := G) hg.complement := hg.complement_isClosed
-      -- "sum of closed submodules is closed" would prove this
+      -- "sum of closed submodules is closed" would prove this;
+      -- alas, that is *false* in general.
+      -- (It becomes true if e.g. one summand is finite-dimensional).
       sorry
     · sorry
 
-#exit
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
   f₀.splits.comp hf
