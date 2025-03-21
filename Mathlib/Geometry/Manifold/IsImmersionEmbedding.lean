@@ -147,11 +147,23 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv I I' f x` splits. -/
 theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x := by
-  -- the rhs of writtenInCharts splits (easy computation!)
-  -- congr lemma => lhs splits
-  -- use comp_left,right to transfer this to any chart      actually, I don't this step
-  -- change of coords are local diffeos: I wrote this for Sard's theorem
-  -- => comp_{left,right}_iff implies h splits
+  let rhs := h.equiv ∘ fun x ↦ (x, 0)
+  have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E')) rhs (I (h.domChart x)) := by
+    refine ⟨?_, ?_⟩
+    · sorry -- rhs is linear, hence smooth...
+    · rw [mfderiv_eq_fderiv]
+      -- should be an easy computation: rhs is linear, hence its own fderiv. Do it!
+      sorry
+  have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E'))
+      ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (I (h.domChart x)) := by
+    apply this.congr
+    apply Set.EqOn.eventuallyEq_of_mem h.writtenInCharts
+    simp only [PartialHomeomorph.extend, PartialEquiv.trans_target, ModelWithCorners.target_eq,
+      ModelWithCorners.toPartialEquiv_coe_symm, Filter.inter_mem_iff]
+    -- This is close to true... but perhaps the neighbourhood in my definition is wrong!
+    constructor <;> sorry
+  -- extended charts are local diffeomorphism, right? (double-check; I wrote this for Sard)
+  -- thus comp_left,right_iff lemmas imply f splits at f
   sorry
 
 /-- `f` is an immersion at `x` iff `mfderiv I I' f x` splits. -/
