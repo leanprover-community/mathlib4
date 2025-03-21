@@ -24,7 +24,8 @@ open scoped Manifold Topology ContDiff
 
 open Function Set
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+-- XXX: does NontriviallyNormedField also work? Splits seems to require more...
+variable {𝕜 : Type*} [RCLike 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   {F F' : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
@@ -144,29 +145,51 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
   · exact mem_domChart_source h
   · exact mem_codChart_source h
 
-/-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
-theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
-  /- Outline of proof:
-  (1) `mfderiv` is injective iff `fderiv (writtenInExtChart) is injective`
-  I have proven this for Sard's theorem; this depends on some sorries not in mathlib yet
-  (2) the injectivity of `fderiv (writtenInExtChart)` is independent of the choice of chart
-  in the atlas (in fact, even the rank of the resulting map is),
-  as transition maps are linear equivalences.
-  (3) (·, 0) has injective `fderiv` --- since it's linear, thus its own derivative. -/
+/-- If `f` is a `C^k` immersion at `x`, then `mfderiv I I' f x` splits. -/
+theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x := by
+  -- the rhs of writtenInCharts splits (easy computation!)
+  -- congr lemma => lhs splits
+  -- use comp_left,right to transfer this to any chart      actually, I don't this step
+  -- change of coords are local diffeos: I wrote this for Sard's theorem
+  -- => comp_{left,right}_iff implies h splits
   sorry
 
-/- If `M` is finite-dimensional, `f` is `C^n` at `x` and `mfderiv x` is injective,
-then `f` is immersed at `x`.
-Some sources call this condition `f is infinitesimally injective at x`. -/
-def of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
-    (hf : ContMDiffAt I I' n f x) (hf' : Injective (mfderiv I I' f x)) :
-    IsImmersionAt F I I' n f x :=
+/-- `f` is an immersion at `x` iff `mfderiv I I' f x` splits. -/
+theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
+    IsImmersionAt F I I' n f x ↔ MSplitsAt I I' f x := by
+  refine ⟨fun h ↦ h.msplitsAt, fun h ↦ ?_⟩
+  -- This direction uses the inverse function theorem: this is the hard part!
+
+  -- Old proof in finite dimensions
   -- (1) if mfderiv I I' f x is injective, the same holds in a neighbourhood of x
   -- In particular, mfderiv I I' f x has (locally) constant rank: this suffices
   -- (2) If mfderiv I I' f x has constant rank for all x in a neighbourhood of x,
   -- then f is immersion at x.
   -- This step requires the inverse function theorem (and possibly shrinking the neighbourhood).
   sorry
+
+/-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
+theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
+  h.msplitsAt.mfderiv_injective
+--   /- Outline of proof:
+--   (1) `mfderiv` is injective iff `fderiv (writtenInExtChart) is injective`
+--   I have proven this for Sard's theorem; this depends on some sorries not in mathlib yet
+--   (2) the injectivity of `fderiv (writtenInExtChart)` is independent of the choice of chart
+--   in the atlas (in fact, even the rank of the resulting map is),
+--   as transition maps are linear equivalences.
+--   (3) (·, 0) has injective `fderiv` --- since it's linear, thus its own derivative. -/
+--   sorry
+
+/- If `M` is finite-dimensional, `f` is `C^n` at `x` and `mfderiv x` is injective,
+then `f` is immersed at `x`.
+Some sources call this condition `f is infinitesimally injective at x`. -/
+def of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
+    (hf : ContMDiffAt I I' n f x) (hf' : Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
+    IsImmersionAt F I I' n f x := by
+  rw [isImmersionAt_iff_msplitsAt]
+  refine ⟨hf.mdifferentiableAt hn, ?_⟩
+  convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_dom hf'
+  show FiniteDimensional 𝕜 E; assumption
 
 end IsImmersionAt
 
@@ -217,22 +240,15 @@ theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n 
 theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
 
 /-- If `f` is a `C^k` immersion, each differential `mfderiv x` is injective. -/
-theorem mfderiv_injective {x : M}
-    (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
-  /- Outline of proof:
-  (1) `mfderiv` is injective iff `fderiv (writtenInExtChart) is injective`
-  I have proven this for Sard's theorem; this depends on some sorries not in mathlib yet
-  (2) the injectivity of `fderiv (writtenInExtChart)` is independent of the choice of chart
-  in the atlas (in fact, even the rank of the resulting map is),
-  as transition maps are linear equivalences.
-  (3) (·, 0) has injective `fderiv` --- since it's linear, thus its own derivative. -/
-  sorry
+theorem mfderiv_injective (h : IsImmersion F I I' n f) (x : M) : Injective (mfderiv I I' f x) :=
+  (h x).mfderiv_injective
+
 
 /- If `M` is finite-dimensional, `f` is `C^k` and each `mfderiv x` is injective,
 then `f` is a `C^k` immersion. -/
 theorem of_mfderiv_injective [FiniteDimensional 𝕜 E] (hf : ContMDiff I I' n f)
-    (hf' : ∀ x, Injective (mfderiv I I' f x)) : IsImmersion F I I' n f :=
-  fun x ↦ IsImmersionAt.of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective (hf x) (hf' x)
+    (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) : IsImmersion F I I' n f :=
+  fun x ↦ IsImmersionAt.of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective (hf x) (hf' x) hn
 
 end IsImmersion
 
@@ -255,8 +271,8 @@ theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 
 def of_mfderiv_injective_of_compactSpace_of_T2Space
     [FiniteDimensional 𝕜 E] [CompactSpace M] [T2Space M']
-    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hf'' : Injective f) :
-    IsSmoothEmbedding F I I' n f :=
-  ⟨.of_mfderiv_injective hf hf', (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
+    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x))
+    (hf'' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f :=
+  ⟨.of_mfderiv_injective hf hf' hn, (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
 
 end IsSmoothEmbedding

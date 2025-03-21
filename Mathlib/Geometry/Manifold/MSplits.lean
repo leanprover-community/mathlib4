@@ -54,6 +54,9 @@ namespace MSplitsAt
 
 variable {f g : M → M'} {x : M}
 
+lemma mfderiv_injective (hf : MSplitsAt I I' f x) : Injective (mfderiv I I' f x) :=
+  hf.2.injective
+
 lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' g x := by
   obtain ⟨hdiff, hdf⟩ := hf
   refine ⟨hdiff.congr_of_eventuallyEq hfg, ?_⟩

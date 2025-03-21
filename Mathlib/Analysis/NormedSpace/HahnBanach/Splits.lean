@@ -177,14 +177,15 @@ lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.Splits) :
 
 omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
 
-/-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
+/-- If `f : E → F` is injective and `E` is finite-dimensional, then `f` splits. -/
+lemma of_injective_of_finiteDimensional_dom
+    [FiniteDimensional 𝕜 E] (hf : Injective f) : f.Splits := by
   have aux : IsClosed (X := F) (LinearMap.range f) := Submodule.closed_of_finiteDimensional _
   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
 
-/-- If `f : E → F` is injective and `E` is finite-dimensional, then `f` splits. -/
-lemma of_injective_of_finiteDimensional_of_completeSpace
-    [FiniteDimensional 𝕜 E] (hf : Injective f) : f.Splits := by
+/-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
+lemma of_injective_of_finiteDimensional_cod [FiniteDimensional 𝕜 F] (hf : Injective f) :
+    f.Splits := by
   have aux : IsClosed (X := F) (LinearMap.range f) := Submodule.closed_of_finiteDimensional _
   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
 
