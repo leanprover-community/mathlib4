@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
+import Mathlib.Analysis.NormedSpace.HahnBanach.Splits
 import Mathlib.Analysis.Normed.Module.Complemented
 import Mathlib.Analysis.Normed.Operator.Banach
 
