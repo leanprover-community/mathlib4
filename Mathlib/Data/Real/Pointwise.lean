@@ -131,24 +131,24 @@ theorem Real.iInf_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨅ i, f i) *
 theorem Real.iSup_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨆ i, f i) * r = ⨅ i, f i * r := by
   simp only [Real.mul_iSup_of_nonpos ha, mul_comm]
 
-/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative and `∀ i j, f i * g j ≤ a`, then
- `iSup f * iSup g ≤ a`. -/
-theorem Real.iSup_mul_iSup_le_of_nonneg {ι : Type*} [Nonempty ι] {a : ℝ} {f g : ι → ℝ}
-    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) (H : ∀ i j, f i * g j ≤ a) :
-    iSup f * iSup g ≤ a := by
+/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative and `∀ i j, f i * g j ≤ r`, then
+ `iSup f * iSup g ≤ r`. -/
+theorem Real.iSup_mul_iSup_le_of_nonneg [Nonempty ι] {f g : ι → ℝ}
+    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) (H : ∀ i j, f i * g j ≤ r) :
+    iSup f * iSup g ≤ r := by
   rw [Real.iSup_mul_of_nonneg (Real.iSup_nonneg hg_nn)]
   apply ciSup_le
   intro i
   rw [Real.mul_iSup_of_nonneg (hf_nn i)]
   exact ciSup_le fun j ↦ H i j
 
-/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative, then `supr (f*g) ≤ supr f * supr g`. -/
+/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative, then `iSup (f * g) ≤ iSup f * iSup g`. -/
 theorem Real.iSup_mul_le_mul_iSup_of_nonneg {ι : Type*} [Nonempty ι] [Finite ι] {f g : ι → ℝ}
     (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) : (⨆ i : ι, f i * g i) ≤ iSup f * iSup g :=
   ciSup_le fun x ↦ mul_le_mul (le_ciSup (Finite.bddAbove_range f) x)
     (le_ciSup (Finite.bddAbove_range g) x) (hg_nn x) (Real.iSup_nonneg hf_nn)
 
-/-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(supr f)^n = supr (f^n)`. -/
+/-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
 theorem Real.iSup_pow {ι : Type*} [Nonempty ι] [Finite ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
     (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
   cases nonempty_fintype ι
