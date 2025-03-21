@@ -5912,6 +5912,7 @@ import Mathlib.Topology.MetricSpace.Closeds
 import Mathlib.Topology.MetricSpace.Completion
 import Mathlib.Topology.MetricSpace.Congruence
 import Mathlib.Topology.MetricSpace.Contracting
+import Mathlib.Topology.MetricSpace.Cover
 import Mathlib.Topology.MetricSpace.Defs
 import Mathlib.Topology.MetricSpace.Dilation
 import Mathlib.Topology.MetricSpace.DilationEquiv
@@ -5929,7 +5930,6 @@ import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.MetricSpace.Kuratowski
 import Mathlib.Topology.MetricSpace.Lipschitz
 import Mathlib.Topology.MetricSpace.MetricSeparated
-import Mathlib.Topology.MetricSpace.Net
 import Mathlib.Topology.MetricSpace.PartitionOfUnity
 import Mathlib.Topology.MetricSpace.Perfect
 import Mathlib.Topology.MetricSpace.PiNat
