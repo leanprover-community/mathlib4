@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Ring.Action.Basic
-import Mathlib.Algebra.Notation.Prod
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
+import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Notation.Prod
+import Mathlib.Algebra.Ring.Action.Basic
 
 /-!
 # Equivariant homomorphisms
@@ -389,23 +389,23 @@ end FstSnd
 variable {M N α β γ δ : Type*} [SMul M α] [SMul M β] [SMul N γ] [SMul N δ] {σ : M → N}
 
 /-- If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`. -/
-@[to_additive (attr := simps -fullyApplied)
+@[to_additive (attr := simps -fullyApplied) prod
   "If `f` and `g` are equivariant maps, then so is `x ↦ (f x, g x)`."]
 def prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : α →ₑ[σ] γ × δ where
   toFun x := (f x, g x)
   map_smul' _ _ := Prod.ext (map_smulₛₗ f _ _) (map_smulₛₗ g _ _)
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) fst_comp_prod]
 lemma fst_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (fst _ _ _).comp (prod f g) = f := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) snd_comp_prod]
 lemma snd_comp_prod (f : α →ₑ[σ] γ) (g : α →ₑ[σ] δ) : (snd _ _ _).comp (prod f g) = g := rfl
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp) prod_fst_snd]
 lemma prod_fst_snd : prod (fst M α β) (snd M α β) = .id .. := rfl
 
 /-- If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`. -/
-@[to_additive (attr := simps -fullyApplied)
+@[to_additive (attr := simps -fullyApplied) prodMap
   "If `f` and `g` are equivariant maps, then so is `(x, y) ↦ (f x, g y)`."]
 def prodMap (f : α →ₑ[σ] γ) (g : β →ₑ[σ] δ) : α × β →ₑ[σ] γ × δ where
   toFun := Prod.map f g
