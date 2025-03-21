@@ -235,12 +235,8 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
         simp [@eq_comm _ ∅, hι, hr₀]
       · rcases Hpos with ⟨c₀, hc₀, hc₀r⟩
         exact ⟨c₀, .inl hc₀, by simp, hc₀r⟩
-    · -- TODO: add `Set.Finite.exists_isMinOn`
-      obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ := by
-        rcases hI.exists_maximal_wrt (‖c ·‖ₑ) I hIne with ⟨i₀, hi₀I, hci₀⟩
-        refine ⟨i₀, hi₀I, fun j hj ↦ ?_⟩
-        simp only [mem_setOf_eq, ← not_lt]
-        exact fun hlt ↦ by simpa [hlt.ne, hlt.le] using hci₀ j hj
+    · obtain ⟨i₀, hi₀I, hc_max⟩ : ∃ i₀ ∈ I, IsMaxOn (‖c ·‖ₑ) I i₀ :=
+        exists_max_image _ (‖c ·‖ₑ) hI hIne
       by_cases H : c i₀ ≠ 0 ∨ I = univ
       · exact ⟨c i₀, H, fun i hi ↦ by simpa [enorm] using hc_max hi, hcr _ hi₀I⟩
       · push_neg at H
