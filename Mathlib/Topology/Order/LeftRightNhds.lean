@@ -463,7 +463,14 @@ theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
 @[deprecated (since := "2025-03-18")]
 alias nhds_basis_zero_abs_sub_lt := nhds_basis_zero_abs_lt
 
-@[to_additive "If `a` is positive we can form a basis from only nonnegative `Set.Ioo` intervals"]
+/-- If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
+form a basis of neighborhoods of `a`.
+
+This upper bound for `ε` guarantees that all elements of these intervals are greater than one. -/
+@[to_additive "If `a` is positive, then the intervals `(a - ε, a + ε)`, `0 < ε ≤ a`,
+form a basis of neighborhoods of `a`.
+
+This upper bound for `ε` guarantees that all elements of these intervals are positive."]
 theorem nhds_basis_Ioo_one_lt_of_one_lt [NoMaxOrder α] {a : α} (ha : 1 < a) :
     (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a / ε) (a * ε) :=
   (nhds_basis_Ioo_one_lt a).restrict fun ε hε ↦
