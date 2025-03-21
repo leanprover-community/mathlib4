@@ -29,6 +29,17 @@ def keys (s : Multiset (Sigma β)) : Multiset α :=
 theorem coe_keys {l : List (Sigma β)} : keys (l : Multiset (Sigma β)) = (l.keys : Multiset α) :=
   rfl
 
+@[simp]
+theorem keys_empty : keys (∅ : Multiset (Sigma β)) = ∅ := rfl
+
+@[simp]
+theorem keys_insert {a : α} {b : β a} {s : Multiset (Sigma β)} :
+    keys (insert ⟨a, b⟩ s) = insert a (keys s) := by
+  simp [keys]
+
+@[simp]
+theorem keys_singleton {a : α} {b : β a} : keys ({⟨a, b⟩} : Multiset (Sigma β)) = {a} := rfl
+
 /-- `NodupKeys s` means that `s` has no duplicate keys. -/
 def NodupKeys (s : Multiset (Sigma β)) : Prop :=
   Quot.liftOn s List.NodupKeys fun _ _ p => propext <| perm_nodupKeys p
@@ -209,7 +220,7 @@ theorem keys_singleton (a : α) (b : β a) : (singleton a b).keys = {a} :=
 
 @[simp]
 theorem mem_singleton (x y : α) (b : β y) : x ∈ singleton y b ↔ x = y := by
-  simp only [singleton]; erw [mem_cons, mem_nil_iff, or_false]
+  simp [singleton, mem_def]
 
 section
 
