@@ -24,10 +24,21 @@ variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
 
 /-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are real or complex Banach
 spaces), `f` is anti-Lipschitz. -/
-lemma ContinuousLinearMap.antiLipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+lemma ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f := by
+
   -- exhibit a bound K, then `use K` and `apply ContinuousLinearMap.antilipschitz_of_bound`
   sorry
+
+#exit
+
+/-- An injective bounded linear operator between real or complex Banach spaces
+is injective iff it has closed range. -/
+lemma ContinuousLinearMap.isClosed_range_if_antilipschitz_of_injective (f : E →L[𝕜] F)
+    (hf : Injective f) : IsClosed (Set.range f) ↔ ∃ K, AntilipschitzWith K f := by
+  refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
+  choose K hf' using h
+  exact hf'.isClosed_range f.uniformContinuous
 
 end
 
@@ -115,7 +126,7 @@ variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
 /-- If `f : E → F` splits and `E`, `F` are real or complex Banach spaces, `f` is anti-Lipschitz.
 This result is unseful to prove that the composition of split maps is a split map. -/
 lemma antilipschitz_aux (hf : f.Splits) : ∃ K, AntilipschitzWith K f :=
-  ContinuousLinearMap.antiLipschitz_of_injective_of_isClosed_range f hf.injective hf.isClosed_range
+  ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range f hf.injective hf.isClosed_range
 
 def antilipschitzConstant (hf : f.Splits) : NNReal := Classical.choose hf.antilipschitz_aux
 
