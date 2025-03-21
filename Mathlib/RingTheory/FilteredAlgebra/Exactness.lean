@@ -56,8 +56,8 @@ theorem associatedGraded_of_mem_ker_iff {i : ι} [DecidableEq ι] (u : GradedPie
     exact DFinsupp.single_eq_zero.mp h
   · simp [AddMonoidHom.mem_ker.mp h]
 
-theorem mem_range_iff [DecidableEq ι] [(i : ι) → (x : GradedPiece FB FB_lt i) → Decidable (x ≠ 0)]
-    (m : AssociatedGraded FB FB_lt) : m ∈ Gr+[f].range ↔ ∀ i : ι, m i ∈ Gr+(i)[f].range := by
+theorem mem_range_iff (m : AssociatedGraded FB FB_lt) :
+    m ∈ Gr+[f].range ↔ ∀ i : ι, m i ∈ Gr+(i)[f].range := by
   simp only [AssociatedGradedAddMonoidHom, DirectSum.range_map, AddSubgroup.mem_comap,
     coeFnAddMonoidHom, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
   exact ⟨fun a i ↦ a i trivial, fun a i a_1 ↦ a i⟩
@@ -68,16 +68,17 @@ theorem associatedGraded_of_mem_range_iff {i : ι} [DecidableEq ι] (y : GradedP
   · exact ⟨x i, by rw [← of_eq_same i y, ← hx, AssociatedGradedAddMonoidHom_apply]⟩
   · exact ⟨AssociatedGraded.of x, by simp [hx]⟩
 
-theorem GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact (i : ι) [DecidableEq ι]
+theorem GradedPieceHom_exact_of_AssociatedGradedAddMonoidHom_exact (i : ι)
     (Gexact : Function.Exact Gr+[f] Gr+[g]) : Function.Exact Gr+(i)[f] Gr+(i)[g] := by
+  classical
   rw [AddMonoidHom.exact_iff]
   ext u
   rw [← associatedGraded_of_mem_ker_iff g u, Gexact.addMonoidHom_ker_eq,
     ← associatedGraded_of_mem_range_iff f u]
 
-theorem AssociatedGradedAddMonoidHom_exact_of_GradedPieceHom_exact [DecidableEq ι]
-    [(i : ι) → (x : GradedPiece FB FB_lt i) → Decidable (x ≠ 0)]
+theorem AssociatedGradedAddMonoidHom_exact_of_GradedPieceHom_exact
     (h : ∀ i, Function.Exact Gr+(i)[f] Gr+(i)[g]) : Function.Exact Gr+[f] Gr+[g] := by
+  classical
   rw [AddMonoidHom.exact_iff]
   ext x
   rw [mem_ker_iff, mem_range_iff]
@@ -154,8 +155,7 @@ lemma exact_component_of_strict_exact_component (fstrict : f.IsStrict) (gstrict 
     rw [← hy, GradedPieceHom_comp_apply]
     exact congrArg (GradedPiece.mk FT FT_lt) (SetCoe.ext (fgexact.apply_apply_eq_zero z.1))
 
-theorem exact_of_strict_exact [DecidableEq ι] (fstrict : f.IsStrict) (gstrict : g.IsStrict)
-    [(i : ι) → (x : GradedPiece FS FS_lt i) → Decidable (x ≠ 0)]
+theorem exact_of_strict_exact (fstrict : f.IsStrict) (gstrict : g.IsStrict)
     (exact : Function.Exact f.toAddMonoidHom g.toAddMonoidHom) : Function.Exact Gr+[f] Gr+[g] :=
   AssociatedGradedAddMonoidHom_exact_of_GradedPieceHom_exact f g
     (fun i x ↦ exact_component_of_strict_exact_component f g fstrict gstrict exact i x)
