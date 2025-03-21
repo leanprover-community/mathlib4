@@ -38,7 +38,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
+  {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
 
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
@@ -168,6 +168,14 @@ theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
   -- This step requires the inverse function theorem (and possibly shrinking the neighbourhood).
   sorry
 
+/-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
+then `g ∘ f` is an immersion at `x`. -/
+def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] {g : M' → N}
+    (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) :
+    IsImmersionAt (F × F') I J n (g ∘ f) x := by
+  rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
+  exact hg.comp hf
+
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
 theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
   h.msplitsAt.mfderiv_injective
@@ -243,12 +251,17 @@ theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦
 theorem mfderiv_injective (h : IsImmersion F I I' n f) (x : M) : Injective (mfderiv I I' f x) :=
   (h x).mfderiv_injective
 
-
 /- If `M` is finite-dimensional, `f` is `C^k` and each `mfderiv x` is injective,
 then `f` is a `C^k` immersion. -/
 theorem of_mfderiv_injective [FiniteDimensional 𝕜 E] (hf : ContMDiff I I' n f)
     (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) : IsImmersion F I I' n f :=
   fun x ↦ IsImmersionAt.of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective (hf x) (hf' x) hn
+
+/-- The composition of two immersions is an immersion. -/
+def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {g : M' → N} (hg : IsImmersion F' I' J n g) (hf : IsImmersion F I I' n f) :
+    IsImmersion (F × F') I J n (g ∘ f) :=
+  fun x ↦ (hg (f x)).comp (hf x)
 
 end IsImmersion
 
@@ -274,5 +287,11 @@ def of_mfderiv_injective_of_compactSpace_of_T2Space
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x))
     (hf'' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f :=
   ⟨.of_mfderiv_injective hf hf' hn, (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
+
+/-- The composition of two smooth embeddings is a smooth embedding. -/
+def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {g : M' → N} (hg : IsSmoothEmbedding F' I' J n g) (hf : IsSmoothEmbedding F I I' n f) :
+    IsSmoothEmbedding (F × F') I J n (g ∘ f) :=
+  ⟨hg.1.comp hf.1, hg.2.comp hf.2⟩
 
 end IsSmoothEmbedding
