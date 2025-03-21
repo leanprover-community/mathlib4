@@ -349,7 +349,7 @@ lemma IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
   exact (hB <| ne_of_apply_ne _ hg).preimage _
 
 @[to_additive]
-theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
+theorem IsBlock.image {H Y : Type*} [MulOneClass H] [SMul H Y]
     {φ : G →* H} (j : X →ₑ[φ] Y)
     (hφ : Function.Surjective φ) (hj : Function.Injective j)
     (hB : IsBlock G B) :
