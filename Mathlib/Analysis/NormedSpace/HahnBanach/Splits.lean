@@ -124,11 +124,48 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
     refine ⟨h, (F'.map g) + hg.complement, ?_, ?_⟩
     · have : IsClosed (X := G) (F'.map g) := hg.isClosedMap _ hf.complement_isClosed
       have : IsClosed (X := G) hg.complement := hg.complement_isClosed
-      -- "sum of closed submodules is closed" would prove this;
-      -- alas, that is *false* in general.
-      -- (It becomes true if e.g. one summand is finite-dimensional).
+      -- In general, the sum of closed subspaces need not be closed.
+      -- In this case, however, this is true (as F'.map G is a closed subspace of range g,
+      -- and range g + hg.complement = G' is closed.
+      -- TODO: think about the best proof for formalising.
       sorry
-    · sorry
+    · constructor
+      · rw [Submodule.disjoint_def]
+        intro x h1 h2
+        -- Write x = g (f x₀)
+        choose x₀ hxx₀ using h1
+        -- Write x = y + z, for y = g y₀ ∈ g(F') and z ∈ h.complement.
+        rw [Submodule.add_eq_sup, Submodule.mem_sup] at h2
+        choose y hy z hz hxyz using h2
+        choose y₀ hy₀ hyy₀ using hy
+        -- Since z in range g and hg.complement is complementary to range g, z = 0 follows.
+        -- These lines are too tedious.
+        have : z = x - y := by rw [← hxyz]; module
+        have : z ∈ range g := by
+          rw [this, ← hxx₀, ← hyy₀, coe_comp', Function.comp_apply, ← map_sub]
+          use f x₀ - y₀ -- should be a simproc now?
+        have : z = 0 := by
+          have aux := hg.complement_isCompl.1
+          rw [Submodule.disjoint_def] at aux
+          exact aux z this hz
+        -- g y₀ = y = x = g (f x₀), thus f x₀ = y₀.
+        have hxy : x = y := by rw [← add_zero y, ← this, hxyz]
+        have aux := calc g y₀
+          _ = y := hyy₀
+          _ = x := hxy.symm
+          _ = g (f x₀) := by rw [coe_comp', Function.comp_apply] at hxx₀; exact hxx₀.symm
+        replace aux := hg.injective aux
+        -- Now, y₀ ∈ range f and y₀ ∈ F', hence y₀ = 0.
+        have : y₀ = 0 := by
+          have := hf.complement_isCompl.1
+          rw [Submodule.disjoint_def] at this
+          apply this y₀
+          · use x₀; exact aux.symm
+          · exact hy₀
+        simp [hxy, ← hyy₀, this]
+      · -- rw [Submodule.codisjoint_iff]
+        intro h hg hf' s _hx -- they span...
+        sorry
 
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
