@@ -309,11 +309,6 @@ theorem range_cons {α} {n : ℕ} (x : α) (b : Fin n → α) :
     Set.range (Fin.cons x b : Fin n.succ → α) = insert x (Set.range b) := by
   rw [range_fin_succ, cons_zero, tail_cons]
 
-theorem pairwise_fin_two {n : ℕ} {r : Fin (n + 2) → Fin (n + 2) → Prop} (h : Pairwise r) :
-      Pairwise (r.onFun (Fin.cons 0 (fun (_ : Fin 1) => Fin.last _))) := by
-    apply Pairwise.comp_of_injective h
-    simp [Function.Injective, Fin.forall_fin_two]
-
 section Append
 
 variable {α : Sort*}
