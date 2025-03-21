@@ -715,7 +715,7 @@ open NNReal ENNReal
 is an element whose `𝕜₂` spectrum restricts to `𝕜₁`, then the spectral radii over each scalar
 field coincide. -/
 lemma spectralRadius_eq {𝕜₁ 𝕜₂ A : Type*} [NormedField 𝕜₁] [NormedField 𝕜₂]
-    [NormedRing A] [NormedAlgebra 𝕜₁ A] [NormedAlgebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
+    [Ring A] [Algebra 𝕜₁ A] [Algebra 𝕜₂ A] [NormedAlgebra 𝕜₁ 𝕜₂]
     [IsScalarTower 𝕜₁ 𝕜₂ A] {f : 𝕜₂ → 𝕜₁} {a : A} (h : SpectrumRestricts a f) :
     spectralRadius 𝕜₁ a = spectralRadius 𝕜₂ a := by
   rw [spectralRadius, spectralRadius]

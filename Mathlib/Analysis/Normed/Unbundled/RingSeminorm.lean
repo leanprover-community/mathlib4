@@ -452,7 +452,8 @@ def normRingNorm (R : Type*) [NonUnitalNormedRing R] : RingNorm R :=
 
 /-- A multiplicative ring norm satisfies `f n ≤ n` for every `n : ℕ`. -/
 @[deprecated "Use AbsoluteValue.apply_nat_le_self instead" (since := "2025-01-07")]
-lemma MulRingNorm_nat_le_nat {R : Type*} [Ring R] (n : ℕ) (f : MulRingNorm R) : f n ≤ n := by
+lemma MulRingNorm_nat_le_nat {R : Type*} [NonAssocRing R] (n : ℕ) (f : MulRingNorm R) :
+    f n ≤ n := by
   induction n with
   | zero => simp only [Nat.cast_zero, map_zero, le_refl]
   | succ n hn =>
@@ -466,7 +467,8 @@ open Int
 
 /-- A multiplicative norm composed with the absolute value on integers equals the norm itself. -/
 @[deprecated "Use AbsoluteValue.apply_natAbs_eq instead" (since := "2025-01-07")]
-lemma MulRingNorm.apply_natAbs_eq {R : Type*} [Ring R] (x : ℤ) (f : MulRingNorm R) : f (natAbs x) =
+lemma MulRingNorm.apply_natAbs_eq {R : Type*} [NonAssocRing R] (x : ℤ) (f : MulRingNorm R) :
+    f (natAbs x) =
     f x := by
   obtain ⟨n, rfl | rfl⟩ := eq_nat_or_neg x <;>
   simp only [natAbs_neg, natAbs_ofNat, cast_neg, cast_natCast, map_neg_eq_map]

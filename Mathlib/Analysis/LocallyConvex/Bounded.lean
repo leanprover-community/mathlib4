@@ -174,7 +174,7 @@ lemma isVonNBounded_iff_tendsto_smallSets_nhds {𝕜 E : Type*} [NormedDivisionR
 alias ⟨IsVonNBounded.tendsto_smallSets_nhds, _⟩ := isVonNBounded_iff_tendsto_smallSets_nhds
 
 lemma isVonNBounded_iff_absorbing_le {𝕜 E : Type*} [NormedDivisionRing 𝕜]
-    [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E] {S : Set E} :
+    [Zero E] [MulAction 𝕜 E] [TopologicalSpace E] {S : Set E} :
     IsVonNBounded 𝕜 S ↔ Filter.absorbing 𝕜 S ≤ 𝓝 0 :=
   .rfl
 
@@ -204,7 +204,7 @@ end Image
 
 section sequence
 
-theorem IsVonNBounded.smul_tendsto_zero [NormedField 𝕜]
+theorem IsVonNBounded.smul_tendsto_zero [NormedDivisionRing 𝕜]
     [AddCommGroup E] [Module 𝕜 E] [TopologicalSpace E]
     {S : Set E} {ε : ι → 𝕜} {x : ι → E} {l : Filter ι}
     (hS : IsVonNBounded 𝕜 S) (hxS : ∀ᶠ n in l, x n ∈ S) (hε : Tendsto ε l (𝓝 0)) :
@@ -251,7 +251,7 @@ then it is also von Neumann bounded with respect to a larger field.
 See also `Bornology.IsVonNBounded.restrict_scalars` below. -/
 theorem IsVonNBounded.extend_scalars [NontriviallyNormedField 𝕜]
     {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-    (𝕝 : Type*) [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝]
+    (𝕝 : Type*) [NontriviallyNormedField 𝕝] [Algebra 𝕜 𝕝]
     [Module 𝕝 E] [TopologicalSpace E] [ContinuousSMul 𝕝 E] [IsScalarTower 𝕜 𝕝 E]
     {s : Set E} (h : IsVonNBounded 𝕜 s) : IsVonNBounded 𝕝 s := by
   obtain ⟨ε, hε, hε₀⟩ : ∃ ε : ℕ → 𝕜, Tendsto ε atTop (𝓝 0) ∧ ∀ᶠ n in atTop, ε n ≠ 0 := by
