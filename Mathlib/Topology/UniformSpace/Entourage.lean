@@ -91,7 +91,7 @@ lemma subset_iterate_compRel (h : idRel ⊆ U) : ∀ {V} n, V ⊆ (U ○ ·)^[n]
   | _V, n + 1 => (right_subset_compRel h).trans <| subset_iterate_compRel h n
 
 /-- The relation is invariant under swapping factors. -/
-def IsSymmetricRel (U : Set (α × α)) : Prop := Prod.swap ⁻¹' U = U
+def IsSymmetricRel (U : Set (α × α)) : Prop := ∀ ⦃a b⦄, (a, b) ∈ U → (b, a) ∈ U
 
 @[deprecated (since := "2025-03-05")] alias SymmetricRel := IsSymmetricRel
 
@@ -99,7 +99,7 @@ def IsSymmetricRel (U : Set (α × α)) : Prop := Prod.swap ⁻¹' U = U
 def symmetrizeRel (U : Set (α × α)) : Set (α × α) := U ∩ Prod.swap ⁻¹' U
 
 lemma symmetric_symmetrizeRel (U : Set (α × α)) : IsSymmetricRel (symmetrizeRel U) := by
-  simp [IsSymmetricRel, symmetrizeRel, preimage_inter, inter_comm, ← preimage_comp]
+  simp +contextual [IsSymmetricRel, symmetrizeRel]
 
 lemma symmetrizeRel_subset_self (U : Set (α × α)) : symmetrizeRel U ⊆ U := sep_subset _ _
 
@@ -107,24 +107,28 @@ lemma symmetrizeRel_subset_self (U : Set (α × α)) : symmetrizeRel U ⊆ U := 
   inter_subset_inter h <| preimage_mono h
 
 lemma IsSymmetricRel.mk_mem_comm (hU : IsSymmetricRel U) : (x, y) ∈ U ↔ (y, x) ∈ U :=
-  Set.ext_iff.1 hU (y, x)
+  ⟨@hU _ _, @hU _ _⟩
 
 @[deprecated (since := "2025-03-05")] alias SymmetricRel.mk_mem_comm := IsSymmetricRel.mk_mem_comm
 
-lemma IsSymmetricRel.eq (hU : IsSymmetricRel U) : Prod.swap ⁻¹' U = U := hU
+lemma IsSymmetricRel.eq (hU : IsSymmetricRel U) : Prod.swap ⁻¹' U = U := ext fun _ ↦ hU.mk_mem_comm
 
 @[deprecated (since := "2025-03-05")] alias SymmetricRel.eq := IsSymmetricRel.eq
 
 lemma IsSymmetricRel.inter (hU : IsSymmetricRel U) (hV : IsSymmetricRel V) :
-    IsSymmetricRel (U ∩ V) := by rw [IsSymmetricRel, preimage_inter, hU.eq, hV.eq]
+    IsSymmetricRel (U ∩ V) := fun _ _ ⟨h₁, h₂⟩ ↦ ⟨hU h₁, hV h₂⟩
 
 @[deprecated (since := "2025-03-05")] alias SymmetricRel.inter := IsSymmetricRel.inter
 
 lemma IsSymmetricRel.iInter {U : (i : ι) → Set (α × α)} (hU : ∀ i, IsSymmetricRel (U i)) :
-    IsSymmetricRel (⋂ i, U i) := by simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
+    IsSymmetricRel (⋂ i, U i) := by
+  simp only [IsSymmetricRel, mem_iInter]; exact fun a b h i ↦ hU i <| h i
 
 lemma IsSymmetricRel.preimage_prodMap (hU : IsSymmetricRel U) (f : β → α) :
-    IsSymmetricRel (Prod.map f f ⁻¹' U) := Set.ext fun _ ↦ hU.mk_mem_comm
+    IsSymmetricRel (Prod.map f f ⁻¹' U) := fun _ _ ↦ @hU _ _
+
+lemma IsSymmetricRel.comp_self (hU : IsSymmetricRel U) : IsSymmetricRel (U ○ U) :=
+  fun _x _z ↦ .imp fun _y ⟨hxy, hyz⟩ ↦ ⟨hU hyz, hU hxy⟩
 
 /-!
 ### Balls
