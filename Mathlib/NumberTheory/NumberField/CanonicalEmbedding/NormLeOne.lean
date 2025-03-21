@@ -35,7 +35,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
   see the description of `logSpace` below) the fundamental system of units given by
   `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
-  `(w (ηᵢ)_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
+  `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
   subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
   get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
   the property that, for `i ≠ w₀`, the image of `completeBasis K i` by the
@@ -258,7 +258,14 @@ variable (K) in
 A family of elements in the `realSpace K` formed of the image of the fundamental units
 and the vector `(mult w)_w`. This family is in fact a basis of `realSpace K`, see `completeBasis`.
 -/
-def completeFamily : InfinitePlace K → realSpace K := by
+def completeFamily : InfinitePlace K → realSpace K :=
+  fun i ↦ by
+    classical
+    exact if hi : i = w₀ then fun w ↦ mult w else
+      expMap.symm
+        (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
+
+def completeFamily' : InfinitePlace K → realSpace K := by
   intro i
   by_cases hi : i = w₀
   · exact fun w ↦ mult w
