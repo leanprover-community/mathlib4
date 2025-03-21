@@ -191,8 +191,6 @@ theorem Perm.foldl_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : (l�
 theorem Perm.foldr_op_eq {l₁ l₂ : List α} {a : α} (h : l₁ ~ l₂) : l₁.foldr op a = l₂.foldr op a :=
   h.foldr_eq _
 
-@[deprecated (since := "2024-09-28")] alias Perm.fold_op_eq := Perm.foldl_op_eq
-
 end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
