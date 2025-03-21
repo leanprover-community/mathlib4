@@ -174,6 +174,7 @@ def Iso.mk {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
   hom := Hom.mk η.hom
   inv := Hom.mk η.inv
 
+variable (C D) in
 /-- The `functor` functor that sends an equivalence of categories to its functor. -/
 @[simps!]
 def functorFunctor : (C ≌ D) ⥤ (C ⥤ D) where
