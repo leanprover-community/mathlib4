@@ -157,7 +157,7 @@ theorem tendsto_pow_zero_of_constantCoeff_zero [CommSemiring R]
 
 /-- The powers of a `MvPowerSeries` converge to 0 iff its constant coefficient is nilpotent.
 N. Bourbaki, *Algebra II*, [bourbaki1981] (chap. 4, §4, n°2, corollaire de la prop. 3) -/
-theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommRing R] [DiscreteTopology R] (f) :
+theorem tendsto_pow_of_constantCoeff_nilpotent_iff [CommSemiring R] [DiscreteTopology R] (f) :
     Tendsto (fun n : ℕ => f ^ n) atTop (nhds 0) ↔
       IsNilpotent (constantCoeff σ R f) := by
   refine ⟨?_, tendsto_pow_zero_of_constantCoeff_nilpotent⟩

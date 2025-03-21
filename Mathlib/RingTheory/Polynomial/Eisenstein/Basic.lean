@@ -58,7 +58,7 @@ section CommSemiring
 
 variable [CommSemiring R] {𝓟 : Ideal R} {f : R[X]}
 
-theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommRing A] (φ : R →+* A) :
+theorem map (hf : f.IsWeaklyEisensteinAt 𝓟) {A : Type v} [CommSemiring A] (φ : R →+* A) :
     (f.map φ).IsWeaklyEisensteinAt (𝓟.map φ) := by
   refine (isWeaklyEisensteinAt_iff _ _).2 fun hn => ?_
   rw [coeff_map]
