@@ -85,7 +85,7 @@ variable (x y : ℂ)
 theorem exp_zero : exp 0 = 1 := by
   rw [exp]
   refine lim_eq_of_equiv_const fun ε ε0 => ⟨1, fun j hj => ?_⟩
-  convert (config := .unfoldSameFun) ε0 -- Porting note: ε0 : ε > 0 but goal is _ < ε
+  convert (config := .unfoldSameFun) ε0 -- ε0 : ε > 0 but goal is _ < ε
   rcases j with - | j
   · exact absurd hj (not_le_of_gt zero_lt_one)
   · dsimp [exp']
@@ -116,7 +116,6 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
   simp only [hj]
   exact cauchy_product (isCauSeq_norm_exp x) (isCauSeq_exp y)
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℂ` to `ℂ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℂ) ℂ :=
@@ -193,7 +192,6 @@ theorem exp_zero : exp 0 = 1 := by simp [Real.exp]
 
 nonrec theorem exp_add : exp (x + y) = exp x * exp y := by simp [exp_add, exp]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- the exponential function as a monoid hom from `Multiplicative ℝ` to `ℝ` -/
 @[simps]
 noncomputable def expMonoidHom : MonoidHom (Multiplicative ℝ) ℝ :=
@@ -612,7 +610,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       -- Porting note: was `norm_num [Finset.sum] <;> nlinarith`
       -- This proof should be restored after the norm_num plugin for big operators is ported.
       -- (It may also need the positivity extensions in https://github.com/leanprover-community/mathlib4/pull/3907.)
-      erw [Finset.sum_range_succ]
+      rw [show 3 = 1 + 1 + 1 from rfl]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
       nlinarith

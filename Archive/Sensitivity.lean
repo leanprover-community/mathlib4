@@ -5,12 +5,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.ApplyFun
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.FinCases
 
 /-!
 # Huang's sensitivity theorem
@@ -321,7 +321,7 @@ theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by

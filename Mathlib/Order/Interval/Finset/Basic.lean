@@ -433,7 +433,7 @@ theorem Iic_disjoint_Ioc (h : a ≤ b) : Disjoint (Iic a) (Ioc b c) :=
   disjoint_left.2 fun _ hax hbcx ↦ (mem_Iic.1 hax).not_lt <| lt_of_le_of_lt h (mem_Ioc.1 hbcx).1
 
 /-- An equivalence between `Finset.Iic a` and `Set.Iic a`. -/
-def _root_.Equiv.Iic_finset_set (a : α) : Iic a ≃ Set.Iic a where
+def _root_.Equiv.IicFinsetSet (a : α) : Iic a ≃ Set.Iic a where
   toFun b := ⟨b.1, coe_Iic a ▸ mem_coe.2 b.2⟩
   invFun b := ⟨b.1, by rw [← mem_coe, coe_Iic a]; exact b.2⟩
   left_inv := fun _ ↦ rfl
@@ -643,12 +643,12 @@ variable {β : Type*}
 section sectL
 
 lemma uIcc_map_sectL [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β) :
+    [DecidableLE (α × β)] (a b : α) (c : β) :
     (uIcc a b).map (.sectL _ c) = uIcc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm])
 
 variable [Preorder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β)
+  [DecidableLE (α × β)] (a b : α) (c : β)
 
 lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm])
@@ -667,12 +667,12 @@ end sectL
 section sectR
 
 lemma uIcc_map_sectR [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β) :
+    [DecidableLE (α × β)] (c : α) (a b : β) :
     (uIcc a b).map (.sectR c _) = uIcc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm])
 
 variable [PartialOrder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β)
+  [DecidableLE (α × β)] (c : α) (a b : β)
 
 lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm])

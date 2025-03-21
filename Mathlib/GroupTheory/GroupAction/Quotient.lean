@@ -231,7 +231,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
     β ≃ Σω : Ω, orbitRel.Quotient.orbit ω := selfEquivSigmaOrbits' α β
     _ ≃ Σω : Ω, α ⧸ stabilizer α (φ ω) :=
       Equiv.sigmaCongrRight fun ω =>
-        (Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
+        (Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
 
 /-- **Class formula** for a finite group acting on a finite type. See
@@ -430,7 +430,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
 /-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
 See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
-@[to_additive "If `α` acts freely on `β`, `β` is equivalent
+@[to_additive selfEquivOrbitsQuotientProd' "If `α` acts freely on `β`, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
 See `AddAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`."]
 noncomputable def selfEquivOrbitsQuotientProd'
@@ -442,13 +442,20 @@ noncomputable def selfEquivOrbitsQuotientProd'
       (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf α)).trans <|
     Equiv.sigmaEquivProd _ _
 
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum' := AddAction.selfEquivOrbitsQuotientProd'
+
 /-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
 `α`. -/
-@[to_additive "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
+@[to_additive selfEquivOrbitsQuotientProd
+  "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
 `α` and `α`."]
 noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
     β ≃ Quotient (MulAction.orbitRel α β) × α :=
   MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum := AddAction.selfEquivOrbitsQuotientProd
 
 end MulAction
 

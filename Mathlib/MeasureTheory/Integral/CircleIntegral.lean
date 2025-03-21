@@ -165,7 +165,7 @@ theorem analyticOnNhd_circleMap (c : ℂ) (R : ℝ) :
   intro z hz
   apply analyticAt_const.add
   apply analyticAt_const.mul
-  rw [(by rfl : (fun θ ↦ exp (θ * I) : ℝ → ℂ) = cexp ∘ (fun θ : ℝ ↦ (θ * I)))]
+  rw [← Function.comp_def]
   apply analyticAt_cexp.restrictScalars.comp ((ofRealCLM.analyticAt z).mul (by fun_prop))
 
 /-- The circleMap is continuously differentiable. -/
@@ -268,8 +268,9 @@ theorem CircleIntegrable.congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ :
   · simp [hR]
   apply (intervalIntegrable_congr_codiscreteWithin _).1 hf₁
   rw [eventuallyEq_iff_exists_mem]
-  use (circleMap c R)⁻¹' {z | f₁ z = f₂ z}, codiscreteWithin.mono
-    (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf), (by tauto)
+  exact ⟨(circleMap c R)⁻¹' {z | f₁ z = f₂ z},
+    codiscreteWithin.mono (by simp only [Set.subset_univ]) (circleMap_preimage_codiscrete hR hf),
+    by tauto⟩
 
 /-- Circle integrability is invariant when functions change along discrete sets. -/
 theorem circleIntegrable_congr_codiscreteWithin {c : ℂ} {R : ℝ} {f₁ f₂ : ℂ → ℂ}
@@ -388,6 +389,11 @@ theorem integral_undef {f : ℂ → E} {c : ℂ} {R : ℝ} (hf : ¬CircleIntegra
     (∮ z in C(c, R), f z) = 0 :=
   intervalIntegral.integral_undef (mt (circleIntegrable_iff R).mpr hf)
 
+theorem integral_add {f g : ℂ → E} {c : ℂ} {R : ℝ} (hf : CircleIntegrable f c R)
+    (hg : CircleIntegrable g c R) :
+    (∮ z in C(c, R), f z + g z) = (∮ z in C(c, R), f z) + (∮ z in C(c, R), g z) := by
+  simp only [circleIntegral, smul_add, intervalIntegral.integral_add hf.out hg.out]
+
 theorem integral_sub {f g : ℂ → E} {c : ℂ} {R : ℝ} (hf : CircleIntegrable f c R)
     (hg : CircleIntegrable g c R) :
     (∮ z in C(c, R), f z - g z) = (∮ z in C(c, R), f z) - ∮ z in C(c, R), g z := by
@@ -459,9 +465,7 @@ theorem integral_const_mul (a : ℂ) (f : ℂ → ℂ) (c : ℂ) (R : ℝ) :
 @[simp]
 theorem integral_sub_center_inv (c : ℂ) {R : ℝ} (hR : R ≠ 0) :
     (∮ z in C(c, R), (z - c)⁻¹) = 2 * π * I := by
-  simp [circleIntegral, ← div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center hR),
-    -- Porting note: `simp` didn't need a hint to apply `integral_const` here
-    intervalIntegral.integral_const I]
+  simp [circleIntegral, ← div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center hR)]
 
 /-- If `f' : ℂ → E` is a derivative of a complex differentiable function on the circle
 `Metric.sphere c |R|`, then `∮ z in C(c, R), f' z = 0`. -/
