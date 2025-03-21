@@ -207,7 +207,7 @@ lemma restrict₂_preimage [DecidablePred (· ∈ s)] (hst : s ⊆ t) (u : (i : 
   refine ⟨fun h i hi ↦ ?_, fun h i i_mem ↦ by simpa [i_mem] using h i (hst i_mem)⟩
   split_ifs with i_mem
   · exact h i i_mem
-  · trivial
+  · exact Set.mem_univ _
 
 end Pi
 

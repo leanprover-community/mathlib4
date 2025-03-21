@@ -191,7 +191,7 @@ theorem eq_zero_of_measure_zero {β : Type*} [NormedAddCommGroup β] {T : Set α
     T s = 0 := by
   refine norm_eq_zero.mp ?_
   refine ((hT.2 s hs (by simp [hs_zero])).trans (le_of_eq ?_)).antisymm (norm_nonneg _)
-  rw [hs_zero, ENNReal.zero_toReal, mul_zero]
+  rw [hs_zero, ENNReal.toReal_zero, mul_zero]
 
 theorem eq_zero {β : Type*} [NormedAddCommGroup β] {T : Set α → β} {C : ℝ} {_ : MeasurableSpace α}
     (hT : DominatedFinMeasAdditive (0 : Measure α) T C) {s : Set α} (hs : MeasurableSet s) :
@@ -1201,7 +1201,9 @@ theorem setToFun_smul_left' (hT : DominatedFinMeasAdditive μ T C)
 
 @[simp]
 theorem setToFun_zero (hT : DominatedFinMeasAdditive μ T C) : setToFun μ T hT (0 : α → E) = 0 := by
-  erw [setToFun_eq hT (integrable_zero _ _ _), Integrable.toL1_zero, ContinuousLinearMap.map_zero]
+  rw [Pi.zero_def, setToFun_eq hT (integrable_zero _ _ _)]
+  simp only [← Pi.zero_def]
+  rw [Integrable.toL1_zero, ContinuousLinearMap.map_zero]
 
 @[simp]
 theorem setToFun_zero_left {hT : DominatedFinMeasAdditive μ (0 : Set α → E →L[ℝ] F) C} :

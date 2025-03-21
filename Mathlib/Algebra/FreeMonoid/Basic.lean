@@ -77,6 +77,16 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
+-- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
+-- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
+@[to_additive (attr := simp)]
+theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
+
+-- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
+-- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
+@[to_additive (attr := simp)]
+theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
+
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
 
@@ -344,7 +354,7 @@ theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
   unfold map
   simp only [MonoidHom.coe_mk, OneHom.coe_mk, toList_ofList, List.map_map]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem toList_map (f : α → β) (xs : FreeMonoid α) : toList (map f xs) = xs.toList.map f := rfl
 
 @[to_additive]

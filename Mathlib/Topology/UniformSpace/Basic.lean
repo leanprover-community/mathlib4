@@ -697,6 +697,11 @@ theorem ball_entourageProd (u : Set (α × α)) (v : Set (β × β)) (x : α × 
     ball x (entourageProd u v) = ball x.1 u ×ˢ ball x.2 v := by
   ext p; simp only [ball, entourageProd, Set.mem_setOf_eq, Set.mem_prod, Set.mem_preimage]
 
+lemma IsSymmetricRel.entourageProd {u : Set (α × α)} {v : Set (β × β)}
+    (hu : IsSymmetricRel u) (hv : IsSymmetricRel v) :
+    IsSymmetricRel (entourageProd u v) :=
+  Set.ext fun _ ↦ and_congr hu.mk_mem_comm hv.mk_mem_comm
+
 theorem Filter.HasBasis.uniformity_prod {ιa ιb : Type*} [UniformSpace α] [UniformSpace β]
     {pa : ιa → Prop} {pb : ιb → Prop} {sa : ιa → Set (α × α)} {sb : ιb → Set (β × β)}
     (ha : (𝓤 α).HasBasis pa sa) (hb : (𝓤 β).HasBasis pb sb) :

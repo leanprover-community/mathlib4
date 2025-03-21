@@ -469,7 +469,7 @@ theorem blockDiag_transpose (M : Matrix (m × o) (n × o) α) (k : o) :
   ext fun _ _ => rfl
 
 @[simp]
-theorem blockDiag_conjTranspose {α : Type*} [AddMonoid α] [StarAddMonoid α]
+theorem blockDiag_conjTranspose {α : Type*} [Star α]
     (M : Matrix (m × o) (n × o) α) (k : o) : blockDiag Mᴴ k = (blockDiag M k)ᴴ :=
   ext fun _ _ => rfl
 
@@ -512,7 +512,7 @@ theorem blockDiag_one [DecidableEq o] [DecidableEq m] [One α] :
 end Zero
 
 @[simp]
-theorem blockDiag_add [AddZeroClass α] (M N : Matrix (m × o) (n × o) α) :
+theorem blockDiag_add [Add α] (M N : Matrix (m × o) (n × o) α) :
     blockDiag (M + N) = blockDiag M + blockDiag N :=
   rfl
 
@@ -539,7 +539,7 @@ theorem blockDiag_sub [AddGroup α] (M N : Matrix (m × o) (n × o) α) :
   map_sub (blockDiagAddMonoidHom m n o α) M N
 
 @[simp]
-theorem blockDiag_smul {R : Type*} [Monoid R] [AddMonoid α] [DistribMulAction R α] (x : R)
+theorem blockDiag_smul {R : Type*} [SMul R α] (x : R)
     (M : Matrix (m × o) (n × o) α) : blockDiag (x • M) = x • blockDiag M :=
   rfl
 
@@ -699,7 +699,7 @@ theorem blockDiagonal'_pow [∀ i, DecidableEq (m' i)] [Fintype o] [∀ i, Finty
   map_pow (blockDiagonal'RingHom m' α) M n
 
 @[simp]
-theorem blockDiagonal'_smul {R : Type*} [Semiring R] [AddCommMonoid α] [Module R α] (x : R)
+theorem blockDiagonal'_smul {R : Type*} [Zero α] [SMulZeroClass R α] (x : R)
     (M : ∀ i, Matrix (m' i) (n' i) α) : blockDiagonal' (x • M) = x • blockDiagonal' M := by
   ext
   simp only [blockDiagonal'_apply, Pi.smul_apply, smul_apply]
@@ -730,7 +730,7 @@ theorem blockDiag'_transpose (M : Matrix (Σ i, m' i) (Σ i, n' i) α) (k : o) :
   ext fun _ _ => rfl
 
 @[simp]
-theorem blockDiag'_conjTranspose {α : Type*} [AddMonoid α] [StarAddMonoid α]
+theorem blockDiag'_conjTranspose {α : Type*} [Star α]
     (M : Matrix (Σ i, m' i) (Σ i, n' i) α) (k : o) : blockDiag' Mᴴ k = (blockDiag' M k)ᴴ :=
   ext fun _ _ => rfl
 
@@ -775,7 +775,7 @@ theorem blockDiag'_one [DecidableEq o] [∀ i, DecidableEq (m' i)] [One α] :
 end Zero
 
 @[simp]
-theorem blockDiag'_add [AddZeroClass α] (M N : Matrix (Σ i, m' i) (Σ i, n' i) α) :
+theorem blockDiag'_add [Add α] (M N : Matrix (Σ i, m' i) (Σ i, n' i) α) :
     blockDiag' (M + N) = blockDiag' M + blockDiag' N :=
   rfl
 
@@ -804,7 +804,7 @@ theorem blockDiag'_sub [AddGroup α] (M N : Matrix (Σ i, m' i) (Σ i, n' i) α)
   map_sub (blockDiag'AddMonoidHom m' n' α) M N
 
 @[simp]
-theorem blockDiag'_smul {R : Type*} [Monoid R] [AddMonoid α] [DistribMulAction R α] (x : R)
+theorem blockDiag'_smul {R : Type*} [SMul R α] (x : R)
     (M : Matrix (Σ i, m' i) (Σ i, n' i) α) : blockDiag' (x • M) = x • blockDiag' M :=
   rfl
 

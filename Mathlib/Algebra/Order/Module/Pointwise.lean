@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Order.Bounds.OrderIso
+import Mathlib.Order.GaloisConnection.Basic
 
 /-!
 # Bounds on scalar multiplication of set

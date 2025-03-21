@@ -25,8 +25,8 @@ variable {A : Type*} [NonUnitalNormedRing A] [NormedSpace ℝ A] [SMulCommClass 
 
 @[simp]
 lemma CStarAlgebra.norm_posPart_le (a : A) : ‖a⁺‖ ≤ ‖a‖ := by
-  refine (em (IsSelfAdjoint a)).elim (fun ha ↦ ?_)
-    fun ha ↦ by simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha]
+  by_cases ha : IsSelfAdjoint a
+  case neg => simp [CFC.posPart_def, cfcₙ_apply_of_not_predicate a ha]
   refine norm_cfcₙ_le fun x hx ↦ ?_
   obtain (h | h) := le_or_lt x 0
   · simp [posPart_def, max_eq_right h]

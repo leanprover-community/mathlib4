@@ -422,7 +422,7 @@ theorem eq_natCast_sub_of_add_eq_natCast {x y : PartENat} {n : ℕ} (h : x + y =
 protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ ⊤) : x + z < y + z := by
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   rcases ne_top_iff.mp hz with ⟨k, rfl⟩
-  induction' y using PartENat.casesOn with n
+  induction y using PartENat.casesOn
   · rw [top_add]
     exact_mod_cast natCast_lt_top _
   norm_cast at h
@@ -443,13 +443,13 @@ theorem lt_add_one {x : PartENat} (hx : x ≠ ⊤) : x < x + 1 := by
   norm_cast
 
 theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
-  induction' y using PartENat.casesOn with n
+  induction y using PartENat.casesOn
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   exact_mod_cast Nat.le_of_lt_succ (by norm_cast at h)
 
 theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
-  induction' y using PartENat.casesOn with n
+  induction y using PartENat.casesOn
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   exact_mod_cast Nat.succ_le_of_lt (by norm_cast at h)
@@ -457,7 +457,7 @@ theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
 theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
   refine ⟨fun h => ?_, add_one_le_of_lt⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
-  induction' y using PartENat.casesOn with n
+  induction y using PartENat.casesOn
   · apply natCast_lt_top
   exact_mod_cast Nat.lt_of_succ_le (by norm_cast at h)
 
@@ -467,7 +467,7 @@ theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e 
 theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
   refine ⟨le_of_lt_add_one, fun h => ?_⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
-  induction' y using PartENat.casesOn with n
+  induction y using PartENat.casesOn
   · rw [top_add]
     apply natCast_lt_top
   exact_mod_cast Nat.lt_succ_of_le (by norm_cast at h)

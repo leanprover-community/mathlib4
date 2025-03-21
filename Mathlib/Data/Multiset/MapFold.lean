@@ -185,8 +185,7 @@ theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f
 
 theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Function.Injective f) (x : α)
     (s : Multiset α) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
-  · simp
+  induction s using Multiset.induction_on with | empty => simp | cons y s ih => ?_
   by_cases hxy : y = x
   · cases hxy
     simp
@@ -194,8 +193,7 @@ theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Functi
 
 theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
     (s : Multiset α) {x : α} (h : x ∈ s) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
-  · simp
+  induction s using Multiset.induction_on with | empty => simp | cons y s ih => ?_
   rcases eq_or_ne y x with rfl | hxy
   · simp
   replace h : x ∈ s := by simpa [hxy.symm] using h
@@ -204,9 +202,10 @@ theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
 theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f) :
     Function.Surjective (map f) := by
   intro s
-  induction' s using Multiset.induction_on with x s ih
-  · exact ⟨0, map_zero _⟩
-  · obtain ⟨y, rfl⟩ := hf x
+  induction s using Multiset.induction_on with
+  | empty => exact ⟨0, map_zero _⟩
+  | cons x s ih =>
+    obtain ⟨y, rfl⟩ := hf x
     obtain ⟨t, rfl⟩ := ih
     exact ⟨y ::ₘ t, map_cons _ _ _⟩
 

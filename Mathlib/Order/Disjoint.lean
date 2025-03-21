@@ -356,31 +356,31 @@ end Codisjoint
 
 open OrderDual
 
-theorem Disjoint.dual [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem Disjoint.dual [PartialOrder α] [OrderBot α] {a b : α} :
     Disjoint a b → Codisjoint (toDual a) (toDual b) :=
   id
 
-theorem Codisjoint.dual [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem Codisjoint.dual [PartialOrder α] [OrderTop α] {a b : α} :
     Codisjoint a b → Disjoint (toDual a) (toDual b) :=
   id
 
 @[simp]
-theorem disjoint_toDual_iff [SemilatticeSup α] [OrderTop α] {a b : α} :
+theorem disjoint_toDual_iff [PartialOrder α] [OrderTop α] {a b : α} :
     Disjoint (toDual a) (toDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem disjoint_ofDual_iff [SemilatticeInf α] [OrderBot α] {a b : αᵒᵈ} :
+theorem disjoint_ofDual_iff [PartialOrder α] [OrderBot α] {a b : αᵒᵈ} :
     Disjoint (ofDual a) (ofDual b) ↔ Codisjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_toDual_iff [SemilatticeInf α] [OrderBot α] {a b : α} :
+theorem codisjoint_toDual_iff [PartialOrder α] [OrderBot α] {a b : α} :
     Codisjoint (toDual a) (toDual b) ↔ Disjoint a b :=
   Iff.rfl
 
 @[simp]
-theorem codisjoint_ofDual_iff [SemilatticeSup α] [OrderTop α] {a b : αᵒᵈ} :
+theorem codisjoint_ofDual_iff [PartialOrder α] [OrderTop α] {a b : αᵒᵈ} :
     Codisjoint (ofDual a) (ofDual b) ↔ Disjoint a b :=
   Iff.rfl
 

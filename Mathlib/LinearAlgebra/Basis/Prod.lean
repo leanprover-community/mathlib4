@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Bases for the product of modules
@@ -91,5 +92,13 @@ theorem prod_apply (i) :
 end Prod
 
 end Basis
+
+namespace Free
+
+variable (R M N : Type*) [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+instance prod [Module.Free R M] [Module.Free R N] : Module.Free R (M × N) :=
+  .of_basis <| (Module.Free.chooseBasis R M).prod (Module.Free.chooseBasis R N)
+
+end Free
 
 end Module

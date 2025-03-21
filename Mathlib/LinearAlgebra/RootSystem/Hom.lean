@@ -651,6 +651,12 @@ instance : DistribMulAction P.Aut M where
   smul_zero w := show weightHom P w 0 = 0 by simp
   smul_add w x y := show weightHom P w (x + y) = weightHom P w x + weightHom P w y by simp
 
+@[simp] lemma reflection_smul (i : ι) (x : M) : Equiv.reflection P i • x = P.reflection i x := rfl
+
+@[simp] lemma root_indexEquiv_eq_smul (i : ι) (g : P.Aut) :
+    P.root (g.indexEquiv i) = g • P.root i := by
+  simpa using (congr_fun g.root_weightMap i).symm
+
 open MulOpposite in
 instance : DistribMulAction P.Autᵐᵒᵖ N where
   smul w x := unop (coweightHom P (unop w)) x

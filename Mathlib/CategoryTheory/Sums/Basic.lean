@@ -136,8 +136,7 @@ variable (F : A ⥤ C) (G : B ⥤ C)
 
 /-- The sum of two functors that land in a given category `C`. -/
 def sum' : A ⊕ B ⥤ C where
-  obj X :=
-  match X with
+  obj
   | inl X => F.obj X
   | inr X => G.obj X
   map {X Y} f := Sum.homInduction (inl := fun _ _ f ↦ F.map f) (inr := fun _ _ g ↦ G.map g) f
@@ -235,7 +234,7 @@ variable (F : A ⊕ B ⥤ C)
 
 /-- Any functor out of a sum is the sum of its precomposition with the inclusions. -/
 def isoSum : F ≅ (Sum.inl_ A B ⋙ F).sum' (Sum.inr_ A B ⋙ F) :=
-    sumIsoExt (Iso.refl _) (Iso.refl _)
+  sumIsoExt (Iso.refl _) (Iso.refl _)
 
 variable (a : A) (b : B)
 
@@ -263,8 +262,8 @@ def sum {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) : F.sum H 
     match X with
     | inl X => (Sum.inl_ B D).map (α.app X)
     | inr X => (Sum.inr_ B D).map (β.app X)
-  naturality X Y f :=
-    by cases f <;> simp [← Functor.map_comp]
+  naturality X Y f := by
+    cases f <;> simp [← Functor.map_comp]
 
 @[simp]
 theorem sum_app_inl {F G : A ⥤ B} {H I : C ⥤ D} (α : F ⟶ G) (β : H ⟶ I) (a : A) :

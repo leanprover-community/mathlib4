@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2017 Yakov Pechersky. All rights reserved.
+Copyright (c) 2025 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
@@ -24,7 +24,7 @@ In this file we define `IsUltraUniformity`, a Prop mixin typeclass.
 
 ## Implementation notes
 
-As in the `Topology/UniformSpace/Defs.lean` file, we do not reuse `Data/Rel.lean`
+As in the `Mathlib/Topology/UniformSpace/Defs.lean` file, we do not reuse `Mathlib/Data/Rel.lean`
 but rather extend the relation properties as needed.
 
 ## TODOs
@@ -36,7 +36,6 @@ but rather extend the relation properties as needed.
 * Generalize results about open/closed balls and spheres in `IsUltraUniformity` to
   combine applications for `MetricSpace.ball` and valued "balls"
 * Use `IsUltraUniformity` to work with profinite/totally separated spaces
-* Define the nonarchimedean uniformity of a space that is a product of `IsUltraUniformity`s
 * Show that the `UniformSpace.Completion` of an `IsUltraUniformity` is `IsUltraUniformity`
 
 ## References
@@ -72,6 +71,28 @@ lemma isTransitiveRel_univ : IsTransitiveRel (X := X) Set.univ := by
 
 lemma isTransitiveRel_singleton (x y : X) : IsTransitiveRel {(x, y)} := by
   simp +contextual [IsTransitiveRel]
+
+lemma IsTransitiveRel.inter {s t : Set (X × X)} (hs : IsTransitiveRel s) (ht : IsTransitiveRel t) :
+    IsTransitiveRel (s ∩ t) :=
+  fun _ _ _ h h' ↦ ⟨hs h.left h'.left, ht h.right h'.right⟩
+
+lemma IsTransitiveRel.iInter {ι : Type*} {U : (i : ι) → Set (X × X)}
+    (hU : ∀ i, IsTransitiveRel (U i)) :
+    IsTransitiveRel (⋂ i, U i) := by
+  intro _ _ _ h h'
+  simp only [mem_iInter] at h h' ⊢
+  intro i
+  exact hU i (h i) (h' i)
+
+lemma IsTransitiveRel.sInter {s : Set (Set (X × X))} (h : ∀ i ∈ s, IsTransitiveRel i) :
+    IsTransitiveRel (⋂₀ s) := by
+  rw [sInter_eq_iInter]
+  exact IsTransitiveRel.iInter (by simpa)
+
+lemma IsTransitiveRel.preimage_prodMap {Y : Type*} {t : Set (Y × Y)}
+    (ht : IsTransitiveRel t) (f : X → Y) :
+    IsTransitiveRel (Prod.map f f ⁻¹' t) :=
+  fun _ _ _ h h' ↦ ht h h'
 
 lemma IsTransitiveRel.symmetrizeRel {s : Set (X × X)}
     (h : IsTransitiveRel s) :

@@ -59,23 +59,32 @@ instance (priority := 100) LinearOrderedField.topologicalRing : IsTopologicalRin
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atTop` and `g`
 tends to a positive constant `C` then `f * g` tends to `Filter.atTop`. -/
-theorem Filter.Tendsto.atTop_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
+theorem Filter.Tendsto.atTop_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atTop := by
   refine tendsto_atTop_mono' _ ?_ (hf.atTop_mul_const (half_pos hC))
-  filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0]
-    with x hg hf using mul_le_mul_of_nonneg_left hg.le hf
+  filter_upwards [hg.eventually (lt_mem_nhds (half_lt_self hC)), hf.eventually_ge_atTop 0] with x hg
+    hf using mul_le_mul_of_nonneg_left hg.le hf
+
+-- TODO: after removing this deprecated alias,
+-- rename `Filter.Tendsto.atTop_mul'` to `Filter.Tendsto.atTop_mul`.
+-- Same for the other 3 similar aliases below.
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.atTop_mul := Filter.Tendsto.atTop_mul_pos
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a positive constant `C` and
 `g` tends to `Filter.atTop` then `f * g` tends to `Filter.atTop`. -/
-theorem Filter.Tendsto.mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
+theorem Filter.Tendsto.pos_mul_atTop {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
     (hg : Tendsto g l atTop) : Tendsto (fun x => f x * g x) l atTop := by
-  simpa only [mul_comm] using hg.atTop_mul hC hf
+  simpa only [mul_comm] using hg.atTop_mul_pos hC hf
+
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.mul_atTop := Filter.Tendsto.pos_mul_atTop
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atTop` and `g`
 tends to a negative constant `C` then `f * g` tends to `Filter.atBot`. -/
 theorem Filter.Tendsto.atTop_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l atTop)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atBot := by
-  have := hf.atTop_mul (neg_pos.2 hC) hg.neg
+  have := hf.atTop_mul_pos (neg_pos.2 hC) hg.neg
   simpa only [Function.comp_def, neg_mul_eq_mul_neg, neg_neg] using
     tendsto_neg_atTop_atBot.comp this
 
@@ -87,10 +96,13 @@ theorem Filter.Tendsto.neg_mul_atTop {C : 𝕜} (hC : C < 0) (hf : Tendsto f l (
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atBot` and `g`
 tends to a positive constant `C` then `f * g` tends to `Filter.atBot`. -/
-theorem Filter.Tendsto.atBot_mul {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atBot)
+theorem Filter.Tendsto.atBot_mul_pos {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l atBot)
     (hg : Tendsto g l (𝓝 C)) : Tendsto (fun x => f x * g x) l atBot := by
-  have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul hC hg
+  have := (tendsto_neg_atBot_atTop.comp hf).atTop_mul_pos hC hg
   simpa [Function.comp_def] using tendsto_neg_atTop_atBot.comp this
+
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.atBot_mul := Filter.Tendsto.atBot_mul_pos
 
 /-- In a linearly ordered field with the order topology, if `f` tends to `Filter.atBot` and `g`
 tends to a negative constant `C` then `f * g` tends to `Filter.atTop`. -/
@@ -101,9 +113,12 @@ theorem Filter.Tendsto.atBot_mul_neg {C : 𝕜} (hC : C < 0) (hf : Tendsto f l a
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a positive constant `C` and
 `g` tends to `Filter.atBot` then `f * g` tends to `Filter.atBot`. -/
-theorem Filter.Tendsto.mul_atBot {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
+theorem Filter.Tendsto.pos_mul_atBot {C : 𝕜} (hC : 0 < C) (hf : Tendsto f l (𝓝 C))
     (hg : Tendsto g l atBot) : Tendsto (fun x => f x * g x) l atBot := by
-  simpa only [mul_comm] using hg.atBot_mul hC hf
+  simpa only [mul_comm] using hg.atBot_mul_pos hC hf
+
+@[deprecated (since := "2025-03-18")]
+alias Filter.Tendsto.mul_atBot := Filter.Tendsto.pos_mul_atBot
 
 /-- In a linearly ordered field with the order topology, if `f` tends to a negative constant `C` and
 `g` tends to `Filter.atBot` then `f * g` tends to `Filter.atTop`. -/

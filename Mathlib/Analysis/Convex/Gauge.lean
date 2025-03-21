@@ -326,7 +326,7 @@ theorem gauge_eq_zero (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s
   refine ⟨fun h₀ ↦ by_contra fun (hne : x ≠ 0) ↦ ?_, fun h ↦ h.symm ▸ gauge_zero⟩
   have : {x}ᶜ ∈ comap (gauge s) (𝓝 0) :=
     comap_gauge_nhds_zero_le hs hb (isOpen_compl_singleton.mem_nhds hne.symm)
-  rcases ((nhds_basis_zero_abs_sub_lt _).comap _).mem_iff.1 this with ⟨r, hr₀, hr⟩
+  rcases ((nhds_basis_zero_abs_lt _).comap _).mem_iff.1 this with ⟨r, hr₀, hr⟩
   exact hr (by simpa [h₀]) rfl
 
 theorem gauge_pos (hs : Absorbent ℝ s) (hb : Bornology.IsVonNBounded ℝ s) :

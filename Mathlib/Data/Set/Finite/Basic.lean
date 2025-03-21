@@ -358,6 +358,18 @@ theorem finite_toSet (s : Finset α) : (s : Set α).Finite :=
 theorem finite_toSet_toFinset (s : Finset α) : s.finite_toSet.toFinset = s := by
   rw [toFinite_toFinset, toFinset_coe]
 
+/-- This is a kind of induction principle. See `Finset.induction` for the usual induction principle
+for finsets. -/
+lemma «forall» {p : Finset α → Prop} :
+    (∀ s, p s) ↔ ∀ (s : Set α) (hs : s.Finite), p hs.toFinset where
+  mp h s hs := h _
+  mpr h s := by simpa using h s s.finite_toSet
+
+lemma «exists» {p : Finset α → Prop} :
+    (∃ s, p s) ↔ ∃ (s : Set α) (hs : s.Finite), p hs.toFinset where
+  mp := fun ⟨s, hs⟩ ↦ ⟨s, s.finite_toSet, by simpa⟩
+  mpr := fun ⟨s, hs, hs'⟩ ↦ ⟨hs.toFinset, hs'⟩
+
 end Finset
 
 namespace Multiset

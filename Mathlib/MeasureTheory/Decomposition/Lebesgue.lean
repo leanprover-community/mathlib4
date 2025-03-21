@@ -469,7 +469,7 @@ theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecompositio
     (μ₁ + μ₂).singularPart ν = μ₁.singularPart ν + μ₂.singularPart ν := by
   refine (eq_singularPart ((measurable_rnDeriv μ₁ ν).add (measurable_rnDeriv μ₂ ν))
     ((mutuallySingular_singularPart _ _).add_left (mutuallySingular_singularPart _ _)) ?_).symm
-  erw [withDensity_add_left (measurable_rnDeriv μ₁ ν)]
+  rw [← Pi.add_def, withDensity_add_left (measurable_rnDeriv μ₁ ν)]
   conv_rhs => rw [add_assoc, add_comm (μ₂.singularPart ν), ← add_assoc, ← add_assoc]
   rw [← haveLebesgueDecomposition_add μ₁ ν, add_assoc, add_comm (ν.withDensity (μ₂.rnDeriv ν)),
     ← haveLebesgueDecomposition_add μ₂ ν]

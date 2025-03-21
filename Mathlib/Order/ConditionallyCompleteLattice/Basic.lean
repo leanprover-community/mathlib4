@@ -563,7 +563,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 section ConditionallyCompleteLinearOrderBot
 
 @[simp]
-theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}

@@ -1289,14 +1289,14 @@ section ConditionallyCompleteLinearOrder
 variable [ConditionallyCompleteLinearOrder α]
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, eventually we have `u b < x + ε`. -/
-theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddMonoid α] [AddLeftStrictMono α]
+theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
     {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x)
     (hε : 0 < ε) :
     ∀ᶠ b : β in atTop, u b < x + ε :=
   eventually_lt_of_limsup_lt (lt_of_le_of_lt hu (lt_add_of_pos_right x hε)) hu_bdd
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, eventually we have `x + ε < u b`. -/
-theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeftStrictMono α]
+theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
     {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop )
     (hε : ε < 0) :
     ∀ᶠ b : β in atTop, x + ε < u b :=
@@ -1304,7 +1304,7 @@ theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddMonoid α] [AddLeft
 
 /-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural
 number `n` such that `u n < x + ε`. -/
-theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+theorem exists_lt_of_limsup_le [AddZeroClass α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) (hε : 0 < ε) :
     ∃ n : PNat, u n < x + ε := by
   have h : ∀ᶠ n : ℕ in atTop, u n < x + ε := eventually_lt_add_pos_of_limsup_le hu_bdd hu hε
@@ -1314,7 +1314,7 @@ theorem exists_lt_of_limsup_le [AddMonoid α] [AddLeftStrictMono α] {x ε : α}
 
 /-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, there exists a positive natural
 number `n` such that ` x + ε < u n`. -/
-theorem exists_lt_of_le_liminf [AddMonoid α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+theorem exists_lt_of_le_liminf [AddZeroClass α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
     (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop) (hε : ε < 0) :
     ∃ n : PNat, x + ε < u n := by
   have h : ∀ᶠ n : ℕ in atTop, x + ε < u n := eventually_add_neg_lt_of_le_liminf hu_bdd hu hε

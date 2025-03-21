@@ -797,6 +797,10 @@ protected theorem zpow_pos {x : ℝ≥0} (hx : x ≠ 0) (n : ℤ) : 0 < x ^ n :=
 theorem inv_lt_inv {x y : ℝ≥0} (hx : x ≠ 0) (h : x < y) : y⁻¹ < x⁻¹ :=
   inv_strictAnti₀ hx.bot_lt h
 
+lemma exists_nat_pos_inv_lt {b : ℝ≥0} (hb : 0 < b) :
+    ∃ (n : ℕ), 0 < n ∧ (n : ℝ≥0)⁻¹ < b :=
+  b.toReal.exists_nat_pos_inv_lt hb
+
 end Inv
 
 @[simp]

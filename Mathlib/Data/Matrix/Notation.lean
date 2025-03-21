@@ -315,8 +315,8 @@ theorem cons_mulVec [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (w : 
   refine Fin.cases ?_ ?_ i <;> simp [mulVec]
 
 @[simp]
-theorem mulVec_cons {α} [CommSemiring α] (A : m' → Fin n.succ → α) (x : α) (v : Fin n → α) :
-    (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
+theorem mulVec_cons {α} [NonUnitalCommSemiring α] (A : m' → Fin n.succ → α) (x : α)
+    (v : Fin n → α) : (of A) *ᵥ (vecCons x v) = x • vecHead ∘ A + (of (vecTail ∘ A)) *ᵥ v := by
   ext i
   simp [mulVec, mul_comm]
 

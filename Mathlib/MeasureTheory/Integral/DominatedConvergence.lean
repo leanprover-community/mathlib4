@@ -353,7 +353,8 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
     refine continuousWithinAt_of_dominated_interval ?_ ?_ this ?_ <;> clear this
     · filter_upwards [self_mem_nhdsWithin]
       intro x hx
-      erw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, Iic_inter_Ioc_of_le]
+      rw [aestronglyMeasurable_indicator_iff, Measure.restrict_restrict, uIoc, Iic_def,
+        Iic_inter_Ioc_of_le]
       · rw [min₁₂]
         exact (h_int' hx).1.aestronglyMeasurable
       · exact le_max_of_le_right hx.2
@@ -543,7 +544,7 @@ theorem continuous_parametric_primitive_of_continuous
       suffices Tendsto
         (fun δ ↦ (M + 1) * (μ (Icc (b₀ - δ) (b₀ + δ))).toReal + δ * (μ (Icc a b)).toReal)
           (𝓝 0) (𝓝 ((M + 1) * (0 : ℝ≥0∞).toReal + 0 * (μ (Icc a b)).toReal)) by
-        simp only [zero_toReal, mul_zero, zero_mul, add_zero] at this
+        simp only [toReal_zero, mul_zero, zero_mul, add_zero] at this
         exact (tendsto_order.1 this).2 _ εpos
       apply Tendsto.add (Tendsto.mul tendsto_const_nhds _)
         (Tendsto.mul tendsto_id tendsto_const_nhds)

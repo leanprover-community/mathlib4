@@ -138,17 +138,17 @@ theorem diagonal_map [Zero α] [Zero β] {f : α → β} (h : f 0 = 0) {d : n �
   simp only [diagonal_apply, map_apply]
   split_ifs <;> simp [h]
 
-protected theorem map_natCast [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_natCast [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h
 
-protected theorem map_ofNat [AddMonoidWithOne α] [AddMonoidWithOne β]
+protected theorem map_ofNat [AddMonoidWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℕ) [d.AtLeastTwo] :
     (ofNat(d) : Matrix n n α).map f = diagonal (fun _ => f (OfNat.ofNat d)) :=
   diagonal_map h
 
-protected theorem map_intCast [AddGroupWithOne α] [AddGroupWithOne β]
+protected theorem map_intCast [AddGroupWithOne α] [Zero β]
     {f : α → β} (h : f 0 = 0) (d : ℤ) :
     (d : Matrix n n α).map f = diagonal (fun _ => f d) :=
   diagonal_map h

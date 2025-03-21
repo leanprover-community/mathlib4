@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Data.Rat.Encodable
+import Mathlib.Data.Finset.Sort
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Fraisse
 import Mathlib.Order.CountableDenseLinearOrder

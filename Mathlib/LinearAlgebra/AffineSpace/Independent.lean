@@ -965,7 +965,7 @@ lemma affineCombination_mem_interior_iff {n : ℕ} {s : Simplex k P n} {w : Fin 
     s.independent w' w hw' hw hww']
   exact hw'01
 
-/-- `s.closedInterior is the set of points that can be expressed as an affine combination
+/-- `s.closedInterior` is the set of points that can be expressed as an affine combination
 of the vertices with weights between 0 and 1 inclusive. This is equivalent to the convex hull of
 the vertices or the closure of the interior. -/
 protected def closedInterior {n : ℕ} (s : Simplex k P n) : Set P :=
