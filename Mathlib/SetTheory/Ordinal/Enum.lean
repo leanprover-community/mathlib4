@@ -33,11 +33,6 @@ termination_by o
 
 variable {s : Set Ordinal.{u}}
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-20")]
-theorem enumOrd_def (o : Ordinal.{u}) :
-    enumOrd s o = sInf (s ∩ { b | ∀ c, c < o → enumOrd s c < b }) := by
-  rw [enumOrd]
-
 theorem enumOrd_le_of_forall_lt (ha : a ∈ s) (H : ∀ b < o, enumOrd s b < a) : enumOrd s o ≤ a := by
   rw [enumOrd]
   exact csInf_le' ⟨ha, H⟩
