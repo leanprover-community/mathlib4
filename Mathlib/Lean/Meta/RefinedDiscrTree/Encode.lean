@@ -76,7 +76,7 @@ where
         failure
     | _ => failure
 
-/-- The context for the `LazyM` monad-/
+/-- The context for the `LazyM` monad -/
 private structure Context where
   /-- Variables that come from a lambda or forall binder.
   The list index gives the De Bruijn index. -/

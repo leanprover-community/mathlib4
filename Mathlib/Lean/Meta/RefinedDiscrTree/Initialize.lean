@@ -59,7 +59,7 @@ private def modifyAt (d : PreDiscrTree α) (k : Key)
   | some i =>
     { root, tries := tries.modify i f }
 
-/-- Add an entry to the pre-discrimination tree.-/
+/-- Add an entry to the pre-discrimination tree. -/
 def push (d : PreDiscrTree α) (k : Key) (e : LazyEntry × α) : PreDiscrTree α :=
   d.modifyAt k (·.push e)
 
