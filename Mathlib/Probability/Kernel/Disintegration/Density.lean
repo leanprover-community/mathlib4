@@ -610,7 +610,7 @@ lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
     Tendsto (fun m ↦ ∫ x, density κ ν a x (seq m) ∂(ν a)) atTop (𝓝 0) := by
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
   simp_rw [integral_density hκν a (hseq_meas _)]
-  rw [← ENNReal.zero_toReal]
+  rw [← ENNReal.toReal_zero]
   have h_cont := ENNReal.continuousAt_toReal ENNReal.zero_ne_top
   refine h_cont.tendsto.comp ?_
   have h : Tendsto (fun m ↦ κ a (univ ×ˢ seq m)) atTop

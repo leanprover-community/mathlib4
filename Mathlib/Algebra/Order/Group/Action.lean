@@ -6,6 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Tactic.Cases
 
 /-!
 # Results about `CovariantClass G α HSMul.hSMul LE.le`

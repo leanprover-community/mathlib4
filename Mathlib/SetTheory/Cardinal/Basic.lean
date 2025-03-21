@@ -394,28 +394,6 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
 
-section deprecated
-
-set_option linter.deprecated false in
-@[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
-theorem isLimit_aleph0 : IsLimit ℵ₀ :=
-  ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
-
-set_option linter.deprecated false in
-@[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
-lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
-  | 0, e => e.1 rfl
-  | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
-
-set_option linter.deprecated false in
-@[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
-theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra! h'
-  rcases lt_aleph0.1 h' with ⟨n, rfl⟩
-  exact not_isLimit_natCast n h
-
-end deprecated
-
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=
   exists_eq_of_iSup_eq_of_not_isSuccLimit.{u, v} f hf (not_isSuccLimit_natCast n) h
