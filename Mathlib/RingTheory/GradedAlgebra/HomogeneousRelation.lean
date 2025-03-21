@@ -218,7 +218,7 @@ lemma RingEquiv.comp_inj {A B C : Type*} [Semiring A] [Semiring B] [Semiring C]
     (h : f.comp e.toRingHom = g.comp e.toRingHom) : f = g := RingHom.ext
     fun x ↦ (by simpa using congr($h (e.symm x)))
 
-def RingHomAux : (⨁ i, 𝒜 i) →+* ⨁ i, (AddSubmonoid.map (RingQuot.mkRingHom rel) ∘ 𝒜) i := by
+private def RingHomAux : (⨁ i, 𝒜 i) →+* ⨁ i, (AddSubmonoid.map (RingQuot.mkRingHom rel) ∘ 𝒜) i := by
   apply toSemiring (fun i ↦ (of _ i).comp <| (RingQuot.mkRingHom rel).addSubmonoidMap (𝒜 i))
   · simp only [Function.comp_apply, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp]
     congr 1; ext
@@ -235,7 +235,7 @@ variable [IsHomogeneousRelation 𝒜 rel]
 noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) := by
   refine GradedRing.ofRingHom ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜)
     (RingQuot.lift ⟨(RingHomAux 𝒜 rel).comp (decomposeRingEquiv 𝒜), ?_⟩) ?_ ?_
-  · intro x y h ; ext j
+  · intro x y h; ext j
     simp only [Function.comp_apply, RingHomAux, RingHom.toAddMonoidHom_eq_coe, RingHom.coe_comp,
       RingHom.coe_coe, decomposeRingEquiv_apply, toSemiring_apply, SetLike.coe_eq_coe]
     rw [← map_eq_toAddMonoid]
@@ -331,7 +331,6 @@ instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) :
     erw [coeAlgHom_of]
     rfl
   · intro i ⟨_, ⟨y, hy, rfl⟩⟩
-    -- simp [decompose_of_mem 𝒜 hy]
     simp [decompose_of_mem 𝒜 hy]
     rfl
 
@@ -339,3 +338,5 @@ instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) :
 end GradedAlgebra
 
 end HomogeneousRelation
+
+#lint
