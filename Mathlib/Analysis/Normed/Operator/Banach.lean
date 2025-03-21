@@ -377,12 +377,10 @@ lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsC
   trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
   · rfl -- is there an API lemma for this already?
   dsimp only [equivRange_symm]
-  --apply LinearEquiv.ofInjective_symm_apply hinj
   set x' : LinearMap.range f := ⟨f x, by simp⟩
-  -- rw [LinearEquiv.ofInjective_symm_apply f (h := hinj) x']
-  -- #check LinearEquiv.ofInjective_symm_apply f (h := hinj) x'
-  -- goal state: f ((LinearEquiv.ofInjective (↑f) hinj).symm x') = f x
-  sorry
+  set f' : E →ₛₗ[σ] F := ↑f
+  change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _
+  rw [LinearEquiv.ofInjective_symm_apply (f := f') (h := hinj) x']
 
 section
 
