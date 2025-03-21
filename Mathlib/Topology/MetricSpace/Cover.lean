@@ -32,13 +32,16 @@ variable {X : Type*}
 section PseudoEMetricSpace
 variable [PseudoEMetricSpace X] {ε δ : ℝ≥0} {s t N N₁ N₂ : Set X} {x : X}
 
+instance : SetRel.IsRefl {(x, y) : X × X | edist x y ≤ ε} where refl := by simp
+instance : SetRel.IsSymm {(x, y) : X × X | edist x y ≤ ε} where symm := by simp [edist_comm]
+
 /-- A set `N` is an *`ε`-cover* of a set `s` if every point of `s` lies at distance at most `ε` of
 some point of `N`.
 
 This is also called an *`ε`-net* in the literature.
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.1. -/
-def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := UniformSpace.IsCover {(x, y) | edist x y ≤ ε} s N
+def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := SetRel.IsCover {(x, y) | edist x y ≤ ε} s N
 
 @[simp] protected nonrec lemma IsCover.empty : IsCover ε ∅ N := .empty
 
@@ -50,19 +53,18 @@ nonrec lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCo
 nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N := ht.anti hst
 
 lemma IsCover.mono' (hεδ : ε ≤ δ) (hε : IsCover ε s N) : IsCover δ s N :=
-  hε.mono_uniformity fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
+  hε.mono_entourage fun xy hxy ↦ by dsimp at *; exact le_trans hxy <| mod_cast hεδ
 
 lemma isCover_iff_subset_iUnion_emetricClosedBall :
     IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by
-  simp [IsCover, UniformSpace.IsCover, subset_def]
+  simp [IsCover, SetRel.IsCover, subset_def]
 
 /-- A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.6. -/
 nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧ IsSeparated ε N) N) :
     IsCover ε s N :=
-  .of_maximal_isSeparated (by simp) (by simp [IsSymmetricRel, edist_comm]) <| by
-    simpa [isSeparated_iff_uniformSpaceIsSeparated] using hN
+  .of_maximal_isSeparated <| by simpa [isSeparated_iff_setRelIsSeparated] using hN
 
 end PseudoEMetricSpace
 
@@ -70,7 +72,7 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace X] {ε : ℝ≥0} {s N : Set X}
 
 lemma isCover_iff_subset_iUnion_closedBall : IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, closedBall y ε := by
-  simp [IsCover, UniformSpace.IsCover, subset_def]
+  simp [IsCover, SetRel.IsCover, subset_def]
 
 alias ⟨IsCover.subset_iUnion_closedBall, IsCover.of_subset_iUnion_closedBall⟩ :=
   isCover_iff_subset_iUnion_closedBall

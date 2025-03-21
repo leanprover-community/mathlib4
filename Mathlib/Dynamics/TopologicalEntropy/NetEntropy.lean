@@ -82,12 +82,9 @@ lemma isDynNetIn_singleton (T : X → X) (U : SetRel X X) (n : ℕ) (h : x ∈ F
 lemma IsDynNetIn.card_le_card_of_isDynCoverOf [U.IsSymm] {s t : Finset X}
     (hs : IsDynNetIn T F U n s) (ht : IsDynCoverOf T F U n t) :
     s.card ≤ t.card := by
-  have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, x ∈ ball z (dynEntourage T U n) := by
-    specialize ht (hs.1 x_s)
-    simp only [mem_iUnion, exists_prop] at ht
-    exact ht
+  have (x : X) (x_s : x ∈ s) : ∃ z ∈ t, z ∈ ball x (dynEntourage T U n) := by
+    simpa using ht (hs.1 x_s)
   choose! F s_t using this
-  simp only [mem_ball_symmetry] at s_t
   apply Finset.card_le_card_of_injOn F fun x x_s ↦ (s_t x x_s).1
   exact fun x x_s y y_s Fx_Fy ↦
     PairwiseDisjoint.elim_set hs.2 x_s y_s (F x) (s_t x x_s).2 (Fx_Fy ▸ (s_t y y_s).2)
@@ -225,6 +222,7 @@ lemma coverMincard_le_netMaxcard (T : X → X) (F : Set X) [U.IsRefl] [U.IsSymm]
   --  We have to check that `s` is a cover for `dynEntourage T F (U ○ U) n`.
   -- If `s` is not a cover, then we can add to `s` a point `x` which is not covered
   -- and get a new net. This contradicts the maximality of `s`.
+  rw [IsDynCoverOf, isCover_iff_subset_iUnion_ball U_symm.comp_self.dynEntourage]
   by_contra h
   obtain ⟨x, x_F, x_uncov⟩ := not_subset.1 h
   simp only [Finset.mem_coe, mem_iUnion, exists_prop, not_exists, not_and] at x_uncov
@@ -331,9 +329,9 @@ theorem coverEntropyInf_eq_iSup_netEntropyInfEntourage :
   · obtain ⟨V, V_uni, V_symm, V_U⟩ := comp_symm_mem_uniformity_sets U_uni
     have := SetRel.id_subset_iff.1 <| refl_le_uniformity V_uni
     apply (coverEntropyInfEntourage_antitone T F V_U).trans (le_iSup₂_of_le V V_uni _)
-    exact coverEntropyInfEntourage_le_netEntropyInfEntourage T F
-  · apply (netEntropyInfEntourage_antitone T F SetRel.symmetrize_subset_self).trans
-    apply (le_iSup₂ (SetRel.symmetrize U) (symmetrize_mem_uniformity U_uni)).trans'
+    exact coverEntropyInfEntourage_le_netEntropyInfEntourage T F (refl_le_uniformity V_uni) V_symm
+  · apply (netEntropyInfEntourage_antitone T F (symmetrizeRel_subset_self U)).trans
+    apply (le_iSup₂ (symmetrizeRel U) (symmetrize_mem_uniformity U_uni)).trans'
     exact netEntropyInfEntourage_le_coverEntropyInfEntourage T F
 
 /-- Bowen-Dinaburg's definition of topological entropy using nets is
@@ -345,10 +343,9 @@ theorem coverEntropy_eq_iSup_netEntropyEntourage :
   apply le_antisymm <;> refine iSup₂_le fun U U_uni ↦ ?_
   · obtain ⟨V, V_uni, V_symm, V_comp_U⟩ := comp_symm_mem_uniformity_sets U_uni
     apply (coverEntropyEntourage_antitone T F V_comp_U).trans (le_iSup₂_of_le V V_uni _)
-    have := SetRel.id_subset_iff.1 <| refl_le_uniformity V_uni
-    exact coverEntropyEntourage_le_netEntropyEntourage T F
-  · apply (netEntropyEntourage_antitone T F SetRel.symmetrize_subset_self).trans
-    apply (le_iSup₂ (SetRel.symmetrize U) (symmetrize_mem_uniformity U_uni)).trans'
+    exact coverEntropyEntourage_le_netEntropyEntourage T F (refl_le_uniformity V_uni) V_symm
+  · apply (netEntropyEntourage_antitone T F (symmetrizeRel_subset_self U)).trans
+    apply (le_iSup₂ (symmetrizeRel U) (symmetrize_mem_uniformity U_uni)).trans'
     exact netEntropyEntourage_le_coverEntropyEntourage T F
 
 lemma coverEntropyInf_eq_iSup_basis_netEntropyInfEntourage {ι : Sort*} {p : ι → Prop}
