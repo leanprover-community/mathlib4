@@ -6,7 +6,7 @@ Authors: Dagur Asgeirsson, Jon Eugster, Emily Riehl
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
 
 /-!
-## existence of conical terminal objects
+# Existence of conical terminal objects
 -/
 
 universe w v' v u u'
