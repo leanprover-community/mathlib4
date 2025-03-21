@@ -1156,9 +1156,9 @@ theorem ceil_zero : ⌈(0 : α)⌉ = 0 := by rw [← cast_zero, ceil_intCast]
 @[simp]
 theorem ceil_one : ⌈(1 : α)⌉ = 1 := by rw [← cast_one, ceil_intCast]
 
+@[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
 
-@[bound]
 theorem ceil_nonneg_of_neg_one_lt (ha : -1 < a) : 0 ≤ ⌈a⌉ := by
   rwa [Int.le_ceil_iff, Int.cast_zero, zero_sub]
 
