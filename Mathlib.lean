@@ -1932,6 +1932,7 @@ import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Equivalence
+import Mathlib.CategoryTheory.Equivalence.Category
 import Mathlib.CategoryTheory.EssentialImage
 import Mathlib.CategoryTheory.EssentiallySmall
 import Mathlib.CategoryTheory.Extensive
