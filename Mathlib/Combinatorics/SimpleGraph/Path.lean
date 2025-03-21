@@ -929,7 +929,7 @@ theorem Iso.preconnected_iff {G : SimpleGraph V} {H : SimpleGraph V'} (e : G ≃
   ⟨Preconnected.map e.toHom e.toEquiv.surjective,
     Preconnected.map e.symm.toHom e.symm.toEquiv.surjective⟩
 
-lemma Preconnected.support_eq_univ {V : Type*} [Nontrivial V] {G : SimpleGraph V}
+lemma Preconnected.support_eq_univ [Nontrivial V] {G : SimpleGraph V}
     (h : G.Preconnected) : G.support = Set.univ := by
   simp only [Set.eq_univ_iff_forall]
   intro v
@@ -938,6 +938,32 @@ lemma Preconnected.support_eq_univ {V : Type*} [Nontrivial V] {G : SimpleGraph V
   cases p with
   | nil => contradiction
   | @cons _ w => use w
+
+lemma adj_of_in_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil) {x : V}
+    (hx : x ∈ p.support) : ∃y ∈ p.support, G.Adj x y := by
+  induction p with
+  | nil =>
+    exact (hp Walk.Nil.nil).elim
+  | @cons u v w h p ih =>
+    cases List.mem_cons.mp hx with
+    | inl hxu =>
+      rw [hxu]
+      exact ⟨v, ⟨((Walk.cons h p).mem_support_iff).mpr (Or.inr p.start_mem_support), h⟩⟩
+    | inr hxp =>
+      cases Decidable.em p.Nil with
+      | inl hnil =>
+        rw [Walk.nil_iff_support_eq.mp hnil] at hxp
+        have hxv : x = v := by simp_all only [List.mem_cons, List.not_mem_nil, or_false]
+        rw [hxv]
+        exact ⟨u, ⟨(Walk.cons h p).start_mem_support, G.adj_symm h⟩⟩
+      | inr hnotnil =>
+        obtain ⟨y, hy⟩ := ih hnotnil hxp
+        exact ⟨y, ⟨(Walk.mem_support_iff' h p).mpr (Or.inr hy.left), hy.right⟩⟩
+
+lemma in_support_of_in_walk_support (u v : V) (p : G.Walk u v) (hp : ¬p.Nil) (w : V)
+    (hw : w ∈ p.support) : w ∈ G.support := by
+  obtain ⟨y, hy⟩ := adj_of_in_walk_support p hp hw
+  exact (mem_support G).mpr ⟨y, hy.right⟩
 
 /-- A graph is connected if it's preconnected and contains at least one vertex.
 This follows the convention observed by mathlib that something is connected iff it has
