@@ -1,11 +1,13 @@
 -- This module serves as the root of the `ToeplitzHausdorff` library.
 -- Import modules here that should be built as part of the library.
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 import Mathlib.Analysis.Convex.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Data.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Rayleigh
+import Mathlib.LinearAlgebra.Matrix.ToLin
 
 open Complex Matrix
 
@@ -19,7 +21,13 @@ def convex_set (S : Set ℂ) : Prop :=
   ∀ (z1 z2: ℂ) (t : ℝ) , (z1 ∈ S) -> (z2 ∈ S) -> (0 <= t) -> (t <= 1) -> 
     (1 - t) * z1 + t * z2 ∈ S
 
+-- noncomputable def T : EuclideanSpace ℂ n →L[ℂ] EuclideanSpace ℂ n :=
+--   (Matrix.toLin' A).toContinuousLinearMap
+--
 open Classical
+
+-- noncomputable instance : InnerProductSpace ℂ (EuclideanSpace ℂ n) := by infer_instance
+-- noncomputable instance : Star (EuclideanSpace ℂ n →L[ℂ] EuclideanSpace ℂ n) := by infer_instance 
 
 lemma sum_complex_star {n : Type*} [Fintype n] (x₁ x₂ : n → ℂ) :
   ∑ x : n, ( (x₂ x).re * (x₁ x).re + (x₂ x).im * (x₁ x).im )
@@ -32,8 +40,14 @@ lemma sum_complex_star {n : Type*} [Fintype n] (x₁ x₂ : n → ℂ) :
     simp [Complex.re_sum]
 
 
+-- Z is in the range of A iff t in Range(2I + BA)
+-- I = identity matrix
+-- alpha = - z2/(z1-z2)
+-- beta = 1 / (z1 - z2)
+-- 0 <= t <= 1
 
-theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
+theorem toeplitz_hausdorff {A : Matrix n n ℂ}
+ (hA : Aᴴ = A):
   -- TODO use Convex rather than convex_set
   convex_set (numericalRange A) := 
   by 
@@ -41,38 +55,40 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
     obtain ⟨x₁, hx₁, hz₁'⟩ := hz₁
     obtain ⟨x₂, hx₂, hz₂'⟩ := hz₂
 
+    -- let v := (1 - t) • x₁ + t • x₂
     let v := (1 - t) • x₁ + t • x₂
     by_cases hv : v = 0
     {
-      have eq_v : (1 - t) • x₁ + t • x₂ = 0 := hv
-      have eq_1 : (1 - t) • x₁ = -(t • x₂) := by 
-        rw[add_eq_zero_iff_eq_neg] at eq_v; exact eq_v
-      have norm_eq : ‖(1 - t) • x₁‖ = ‖-(t • x₂)‖ := congrArg (fun v => ‖v‖) eq_1
-      rw [norm_smul, hx₁, norm_neg, norm_smul, hx₂, mul_one, mul_one] at norm_eq
-      have h1t: 0 <= 1 - t  := sub_nonneg.mpr ht
-      have rm_norm1 : ‖(1 - t)‖ = 1 - t := abs_of_nonneg h1t
-      have rm_norm2: ‖t‖ = t := abs_of_nonneg ht₀
-      rw [rm_norm1 , rm_norm2] at norm_eq
-      have t_eq_half : t = 1/2 := by linarith
-      rw [t_eq_half] at eq_1
-      ring_nf at eq_1
-      rw [←smul_neg, smul_right_inj (by norm_num)] at eq_1
-      simp_all [numericalRange, hA]
-      have z_eq : z₁ = z₂ := by
-        calc
-          z₁ = -(star x₂ ⬝ᵥ (A *ᵥ -x₂)) := hz₁'
-          _ = star x₂ ⬝ᵥ - -(A *ᵥ x₂) := by rw [ ←mulVec_neg, dotProduct_neg]
-          _ = star x₂ ⬝ᵥ A *ᵥ x₂ := by ring_nf
-          _ = z₂ := by rw [hz₂']
-      have conv_eq : (1-t)*z₁ + t*z₂ = z₁ := by
-        rw [t_eq_half, z_eq]
-        ring_nf
-      use x₂
-      simp_all [hx₂]
+      sorry
+      -- have eq_v : (1 - t) • z₁ + t • z₂ = 0 := hv
+      -- have eq_1 : (1 - t) • z₁ = -(t • z₂) := by 
+      --   rw[add_eq_zero_iff_eq_neg] at eq_v; exact eq_v
+      -- have norm_eq : ‖(1 - t) • z₁‖ = ‖-(t • z₂)‖ := congrArg (fun v => ‖v‖) eq_1
+      -- rw [norm_smul, norm_neg, norm_smul] at norm_eq
+      -- have h1t: 0 <= 1 - t  := sub_nonneg.mpr ht
+      -- have rm_norm1 : ‖(1 - t)‖ = 1 - t := abs_of_nonneg h1t
+      -- have rm_norm2: ‖t‖ = t := abs_of_nonneg ht₀
+      -- rw [rm_norm1 , rm_norm2] at norm_eq
+      -- simp_all
+      -- sorry
+      -- have t_eq_half : t = 1/2 := by linarith
+      -- rw [t_eq_half] at eq_1
+      -- ring_nf at eq_1
+      -- rw [←smul_neg, smul_right_inj (by norm_num)] at eq_1
+      -- simp_all [numericalRange, hA]
+      -- have z_eq : z₁ = z₂ := by
+      --   calc
+      --     z₁ = -(star x₂ ⬝ᵥ (A *ᵥ -x₂)) := hz₁'
+      --     _ = star x₂ ⬝ᵥ - -(A *ᵥ x₂) := by rw [ ←mulVec_neg, dotProduct_neg]
+      --     _ = star x₂ ⬝ᵥ A *ᵥ x₂ := by ring_nf
+      --     _ = z₂ := by rw [hz₂']
+      -- have conv_eq : (1-t)*z₁ + t*z₂ = z₁ := by
+      --   rw [t_eq_half, z_eq]
+      --   ring_nf
+      -- use x₂
+      -- simp_all [hx₂]
     }
     {
-      let xₜ := ‖v‖⁻¹ • v
-      use xₜ
       have h_norm : ‖‖v‖⁻¹ • v‖ = 1 := by
          simp [norm_smul, hv]
       simp_all
@@ -122,6 +138,7 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
           intro h
           simp_all
           sorry
+          
 
         have rhA : A = Aᴴ := by simp [hA]
 
@@ -148,20 +165,19 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
           ring_nf
 
         rw [h_cross]
-
-        -- pull the two out of the numerator
-        conv_lhs =>
-          pattern (_ * (2 * _ ))
-          rw [mul_comm]
+        field_simp
+        unfold first_term
+        rw []
         
-        apply div_eq_of_eq_mul H
-        -- ring_nf
-        rw [exp2]
+
+        --pull the two out of the numerator
+        -- conv_lhs =>
+        --   pattern (_ * (2 * _ ))
+        --   rw [mul_comm]
+        
+        
         -- stuck here
         
-        sorry 
-
-
         
         -- have h_expanded : ((1 - ↑t) * z₁ + ↑t * z₂) * 
         --   ((1 - ↑t) ^ 2 + ↑t ^ 2 + 2 * ↑t * (1 - ↑t) * ↑(star x₁ ⬝ᵥ x₂).re) = 
@@ -187,21 +203,6 @@ theorem toeplitz_hausdorff {A : Matrix n n ℂ} (hA : Aᴴ = A):
         --     ring_nf
 
 
-
-        -- rw [rhs_rw]
-        -- let idk := ContinuousLinearMap.rayleighQuotient()
-        norm_cast at *
-        -- simp
-        -- ring_nf
-        
-
-        -- have lhs_rw : (1 - ↑t) ^ 2 * z₁ + ↑t ^ 2 * z₂ + 2 * first_term.re * (↑t * (1 - ↑t)) =
-        --   (1 - ↑t) * ↑t * ((1 - ↑t) * z₁ + ↑t * z₂ + 2 * first_term.re) := by 
-        --   ring_nf
-          
-
-        -- simp
-        -- ring_nf
         
         
       simp [conv_eq]
