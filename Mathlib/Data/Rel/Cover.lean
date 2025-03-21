@@ -26,8 +26,8 @@ The concept of uniform covers is used to define two further notions of covering:
 
 open Set UniformSpace
 
-namespace Rel
-variable {X : Type*} {U V : Rel X X} {s t N N₁ N₂ : Set X} {x : X}
+namespace SetRel
+variable {X : Type*} {U V : SetRel X X} {s t N N₁ N₂ : Set X} {x : X}
 
 /-- For an entourage `U`, a set `N` is a *`U`-cover* of a set `s` if every point of `s` is `U`-close
 to some point of `N`.
@@ -35,7 +35,7 @@ to some point of `N`.
 This is also called a *`U`-net* in the literature.
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.1. -/
-def IsCover (U : Rel X X) (s N : Set X) : Prop := ∀ ⦃x⦄, x ∈ s → ∃ y ∈ N, (x, y) ∈ U
+def IsCover (U : SetRel X X) (s N : Set X) : Prop := ∀ ⦃x⦄, x ∈ s → ∃ y ∈ N, x ~[U] y
 
 @[simp] lemma IsCover.empty : IsCover U ∅ N := by simp [IsCover]
 
@@ -71,6 +71,6 @@ lemma IsCover.of_maximal_isSeparated [U.IsRefl] [U.IsSymm]
   simpa [U.rfl] using h _ <| hN.2 (y := insert x N) ⟨by simp [insert_subset_iff, hx, hN.1.1],
     hN.1.2.insert fun y hy hxy ↦ (h y hy hxy).elim⟩ (subset_insert _ _) (mem_insert _ _)
 
-@[simp] lemma isCover_relId : IsCover Rel.id s N ↔ s ⊆ N := by simp [IsCover, subset_def]
+@[simp] lemma isCover_relId : IsCover .id s N ↔ s ⊆ N := by simp [IsCover, subset_def]
 
-end Rel
+end SetRel

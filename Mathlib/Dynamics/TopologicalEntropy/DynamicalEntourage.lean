@@ -40,7 +40,7 @@ namespace Dynamics
 open Prod Set UniformSpace
 open scoped SetRel Topology Uniformity
 
-variable {X : Type*}
+variable {X : Type*} {T : X → X} {U V : Set (X × X)} {m n : ℕ}
 
 /-- The dynamical entourage associated to a transformation `T`, entourage `U` and time `n`
 is the entourage where `x` and `y` are close iff `T^[k] x` and `T^[k] y` are `U`-close
@@ -101,9 +101,18 @@ lemma dynEntourage_monotone (T : X → X) (n : ℕ) :
     Monotone (fun U : SetRel X X ↦ dynEntourage T U n) :=
   fun _ _ h ↦ iInter₂_mono fun _ _ ↦ preimage_mono h
 
+@[gcongr] lemma dynEntourage_mono (hUV : U ⊆ V) : dynEntourage T U n ⊆ dynEntourage T V n :=
+  dynEntourage_monotone _ _ hUV
+
 lemma dynEntourage_antitone (T : X → X) (U : SetRel X X) :
     Antitone (fun n : ℕ ↦ dynEntourage T U n) :=
   fun m n m_n ↦ iInter₂_mono' fun k k_m ↦ by use k, lt_of_lt_of_le k_m m_n
+
+@[gcongr] lemma dynEntourage_anti (hnm : n ≤ m) : dynEntourage T U m ⊆ dynEntourage T U n :=
+  dynEntourage_antitone _ _ hnm
+
+@[gcongr] protected lemma GCongr.dynEntourage_mono (hUV : U ⊆ V) (hnm : n ≤ m) :
+    dynEntourage T U m ⊆ dynEntourage T V n := (dynEntourage_mono hUV).trans (dynEntourage_anti hnm)
 
 @[simp]
 lemma dynEntourage_zero {T : X → X} {U : SetRel X X} :
