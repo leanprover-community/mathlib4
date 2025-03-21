@@ -114,7 +114,7 @@ lemma isClosedMap (hf : f.Splits) : IsClosedMap f :=
 -- Open question: is the following statement true? We really want the composition of immersions
 -- to be an immersion, but the proof below has a serious gap, at least.
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
-lemma comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).Splits := by
+theorem comp {g : F →L[𝕜] G} (hg : g.Splits) (hf : f.Splits) : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
     rw [range_comp]
     apply hg.isClosedMap _ hf.isClosed_range

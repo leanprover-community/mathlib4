@@ -162,8 +162,11 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
       ModelWithCorners.toPartialEquiv_coe_symm, Filter.inter_mem_iff]
     -- This is close to true... but perhaps the neighbourhood in my definition is wrong!
     constructor <;> sorry
-  -- extended charts are local diffeomorphism, right? (double-check; I wrote this for Sard)
-  -- thus comp_left,right_iff lemmas imply f splits at f
+  -- extended charts are local diffeomorphism (at least for boundaryless manifolds)
+  -- #9273 contains a proof
+  -- TODO: what about boundary points?
+
+  -- thus: apply comp_left,right_iff lemmas to imply f splits at f
   sorry
 
 /-- `f` is an immersion at `x` iff `mfderiv I I' f x` splits. -/
@@ -171,13 +174,6 @@ theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
     IsImmersionAt F I I' n f x ↔ MSplitsAt I I' f x := by
   refine ⟨fun h ↦ h.msplitsAt, fun h ↦ ?_⟩
   -- This direction uses the inverse function theorem: this is the hard part!
-
-  -- Old proof in finite dimensions
-  -- (1) if mfderiv I I' f x is injective, the same holds in a neighbourhood of x
-  -- In particular, mfderiv I I' f x has (locally) constant rank: this suffices
-  -- (2) If mfderiv I I' f x has constant rank for all x in a neighbourhood of x,
-  -- then f is immersion at x.
-  -- This step requires the inverse function theorem (and possibly shrinking the neighbourhood).
   sorry
 
 /-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
