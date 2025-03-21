@@ -159,39 +159,33 @@ theorem pi_lt_four : π < 4 := by
 theorem pi_gt_d2 : 3.14 < π := by
   -- bound[314*^-2, Iters -> 4, Rounding -> 1.5, Precision -> 8]
   pi_lower_bound [338 / 239, 704 / 381, 1940 / 989, 1447 / 727]
-@[deprecated (since := "2024-09-19")] alias pi_gt_314 := pi_gt_d2
 
 theorem pi_lt_d2 : π < 3.15 := by
   -- bound[315*^-2, Iters -> 4, Rounding -> 1.4, Precision -> 7]
   pi_upper_bound [41 / 29, 109 / 59, 865 / 441, 412 / 207]
-@[deprecated (since := "2024-09-19")] alias pi_lt_315 := pi_lt_d2
 
 theorem pi_gt_d4 : 3.1415 < π := by
   -- bound[31415*^-4, Iters -> 6, Rounding -> 1.1, Precision -> 10]
   pi_lower_bound [
     1970 / 1393, 3010 / 1629, 11689 / 5959, 10127 / 5088, 33997 / 17019, 23235 / 11621]
-@[deprecated (since := "2024-09-19")] alias pi_gt_31415 := pi_gt_d4
 
 theorem pi_lt_d4 : π < 3.1416 := by
   -- bound[31416*^-4, Iters -> 9, Rounding -> .9, Precision -> 16]
   pi_upper_bound [
     4756/3363, 14965/8099, 21183/10799, 49188/24713, 2-53/22000, 2-71/117869, 2-47/312092,
     2-17/451533, 2-4/424971]
-@[deprecated (since := "2024-09-19")] alias pi_lt_31416 := pi_lt_d4
 
 theorem pi_gt_d6 : 3.141592 < π := by
   -- bound[3141592*^-6, Iters -> 10, Rounding -> .8, Precision -> 16]
   pi_lower_bound [
     11482/8119, 7792/4217, 54055/27557, 2-623/64690, 2-337/139887, 2-208/345307, 2-167/1108925,
     2-64/1699893, 2-31/3293535, 2-48/20398657]
-@[deprecated (since := "2024-09-19")] alias pi_gt_3141592 := pi_gt_d6
 
 theorem pi_lt_d6 : π < 3.141593 := by
   -- bound[3141593*^-6, Iters -> 11, Rounding -> .5, Precision -> 17]
   pi_upper_bound [
     35839/25342, 49143/26596, 145729/74292, 294095/147759, 2-137/56868, 2-471/781921, 2-153/1015961,
     2-157/4170049, 2-28/2974805, 2-9/3824747, 2-7/11899211]
-@[deprecated (since := "2024-09-19")] alias pi_lt_3141593 := pi_lt_d6
 
 theorem pi_gt_d20 : 3.14159265358979323846 < π := by
   -- bound[314159265358979323846*^-20, Iters -> 34, Rounding -> .6, Precision -> 46]
