@@ -523,7 +523,7 @@ lemma card_sdiff_comm (h : #s = #t) : #(s \ t) = #(t \ s) :=
   Nat.add_right_cancel (m := #t) <| by
     simp_rw [card_sdiff_add_card, ← h, card_sdiff_add_card, union_comm]
 
-theorem diff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
+theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
   rw [nonempty_iff_ne_empty, Ne, sdiff_eq_empty_iff_subset]
   exact fun h' ↦ h.not_le (card_le_card h')
 
