@@ -44,7 +44,7 @@ Euler product, multiplicative function
 
 /-- If `f` is multiplicative and summable, then its values at natural numbers `> 1`
 have norm strictly less than `1`. -/
-lemma Summable.norm_lt_one {F : Type*} [NormedField F] [CompleteSpace F] {f : ℕ →* F}
+lemma Summable.norm_lt_one {F : Type*} [NormedDivisionRing F] [CompleteSpace F] {f : ℕ →* F}
     (hsum : Summable f) {p : ℕ} (hp : 1 < p) :
     ‖f p‖ < 1 := by
   refine summable_geometric_iff_norm_lt_one.mp ?_
