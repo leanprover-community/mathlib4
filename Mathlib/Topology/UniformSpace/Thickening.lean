@@ -6,70 +6,28 @@ Authors: Kalle Kytölä
 import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
-# Thickening in uniform spaces
+# Thickenings in pseudo-metric spaces
 
 ## Main definitions
-* `UniformSpace.thicken s U`, the thickening of `s` by an entourage `U`.
+* `Metric.thickening δ s`, the open thickening by radius `δ` of a set `s` in a pseudo emetric space.
+* `Metric.cthickening δ s`, the closed thickening by radius `δ` of a set `s` in a pseudo emetric
+  space.
+
+## Main results
+* `Disjoint.exists_thickenings`: two disjoint sets admit disjoint thickenings
+* `Disjoint.exists_cthickenings`: two disjoint sets admit disjoint closed thickenings
+* `IsCompact.exists_cthickening_subset_open`: if `s` is compact, `t` is open and `s ⊆ t`,
+  some `cthickening` of `s` is contained in `t`.
+
+* `Metric.hasBasis_nhdsSet_cthickening`: the `cthickening`s of a compact set `K` form a basis
+  of the neighbourhoods of `K`
+* `Metric.closure_eq_iInter_cthickening'`: the closure of a set equals the intersection
+  of its closed thickenings of positive radii accumulating at zero.
+  The same holds for open thickenings.
+* `IsCompact.cthickening_eq_biUnion_closedBall`: if `s` is compact, `cthickening δ s` is the union
+  of `closedBall`s of radius `δ` around `x : E`.
+
 -/
-
-namespace UniformSpace
-section Thicken
-
-open Set Uniformity UniformSpace
-
-variable {α : Type*}
-
-/-- The composition of relations -/
-def thicken (s : Set α) (U : Set (α × α)) :=
-  ⋃ x ∈ s, ball x U
-
-lemma thicken_def {s : Set α} {U : Set (α × α)} {x : α} :
-    x ∈ thicken s U ↔ ∃ y ∈ s, x ∈ ball y U := by
-  simp only [thicken, mem_iUnion, exists_prop]
-
-lemma mem_thicken {s : Set α} {U : Set (α × α)} {x y : α} (hy : y ∈ s) (h : x ∈ ball y U) :
-    x ∈ thicken s U :=
-  thicken_def.2 ⟨y, hy, h⟩
-
-lemma thicken_mono_left {s t : Set α} (h : s ⊆ t) (U : Set (α × α)) :
-    thicken s U ⊆ thicken t U :=
-  biUnion_subset_biUnion_left h
-
-lemma thicken_mono_right (s : Set α) {U V : Set (α × α)} (h : U ⊆ V) :
-    thicken s U ⊆ thicken s V :=
-  biUnion_mono (subset_refl s) (fun x _  ↦ ball_mono h x)
-
-@[simp]
-lemma thicken_empty {U : Set (α × α)} :
-    thicken ∅ U = ∅ :=
-  biUnion_empty (fun x ↦ ball x U)
-
-@[simp]
-lemma thicken_singleton (x : α) (U : Set (α × α)) :
-    thicken {x} U = ball x U :=
-  biUnion_singleton x (fun y ↦ ball y U)
-
-lemma ball_sub_thicken {s : Set α} (U : Set (α × α)) {x : α} (h : x ∈ s) :
-    ball x U ⊆ thicken s U :=
-  subset_biUnion_of_mem (u := fun y ↦ ball y U) h
-
-lemma thicken_compRel {s : Set α} {U V : Set (α × α)} :
-    thicken (thicken s U) V = thicken s (U ○ V) := by
-  apply subset_antisymm <;> intro x x_s
-  · obtain ⟨y, y_s, y_x⟩ := thicken_def.1 x_s
-    obtain ⟨z, z_s, z_y⟩ := thicken_def.1 y_s
-    exact mem_thicken z_s (prodMk_mem_compRel z_y y_x)
-  · obtain ⟨z, z_s, z_x⟩ := thicken_def.1 x_s
-    obtain ⟨y, z_y, y_x⟩ := mem_compRel.1 z_x
-    exact mem_thicken (mem_thicken z_s z_y) y_x
-
-
-
-
-
-
-end Thicken
-
 
 noncomputable section
 open NNReal ENNReal Topology Set Filter Bornology
@@ -153,9 +111,6 @@ theorem frontier_thickening_disjoint (A : Set α) :
   apply_fun ENNReal.toReal at h
   rwa [ENNReal.toReal_ofReal h₁, ENNReal.toReal_ofReal (h₁.trans hr.le)] at h
 
-
--- TODO
-
 /-- Any set is contained in the complement of the δ-thickening of the complement of its
 δ-thickening. -/
 lemma subset_compl_thickening_compl_thickening_self (δ : ℝ) (E : Set α) :
@@ -172,12 +127,6 @@ lemma thickening_compl_thickening_self_subset_compl (δ : ℝ) (E : Set α) :
     thickening δ (thickening δ E)ᶜ ⊆ Eᶜ := by
   apply compl_subset_compl.mp
   simpa only [compl_compl] using subset_compl_thickening_compl_thickening_self δ E
-
--- end TODO
-
-
-
-
 
 variable {X : Type u} [PseudoMetricSpace X]
 
