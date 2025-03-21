@@ -13,7 +13,7 @@ variable {α : Type*} [Fintype α] {p : α → Prop} {s : Finset α} {a : α}
 
 /-- info: {x ≠ a | p x} : Finset α -/
 #guard_msgs in
-#check ({x ≠ a | p x} : Finset α) -- {x ∈ {a}ᶜ | p x} : Finset α
+#check ({x ≠ a | p x} : Finset α)
 
 /-- info: {x ∉ s | p x} : Finset α -/
 #guard_msgs in
