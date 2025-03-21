@@ -35,27 +35,24 @@ variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L]
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
-noncomputable def theta [IsTriangularizable K H L] {α : Weight K H L} {h e f : L} (hα : α.IsNonZero)
-    (ht : IsSl2Triple h e f) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) : L ≃ₗ⁅K⁆ L := by
+noncomputable def theta {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
+    (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) : L ≃ₗ⁅K⁆ L := by
   let D1 := LieDerivation.instDerivation K L e
   let D2 := LieDerivation.instDerivation K L f
-  let ttt := rootSpace H (- α)
-  let n₀ := ((- α) : H → K)
-  have n00 : n₀ ≠ 0 := by
-    exact neg_ne_zero.mpr hα
+  have n₀ : ((- α) : H → K) ≠ 0 := neg_ne_zero.mpr hα
   have n₁ : IsNilpotent D1.toLinearMap := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he
-  have n₂ : IsNilpotent D2.toLinearMap := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H n00 hf
-  exact LieEquiv.trans (LieDerivation.exp D1 n₁) (LieDerivation.exp D2 n₂)
+  have n₂ : IsNilpotent D2.toLinearMap := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H n₀ hf
+  exact LieEquiv.trans (LieEquiv.trans (LieDerivation.exp D1 n₁) (LieDerivation.exp D2 n₂))
+    (LieDerivation.exp D1 n₁)
 
 
-/-
-lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
-    exp D h = IsNilpotent.exp D.toLinearMap := by
+lemma theta_apply {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
+    (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) : theta H hα ht he hf =
+      LieDerivation.exp (LieDerivation.instDerivation K L e) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) ∘
+      LieDerivation.exp (LieDerivation.instDerivation K L f) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H (neg_ne_zero.mpr hα) hf) ∘
+      LieDerivation.exp (LieDerivation.instDerivation K L e) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) := by
   ext x
-  dsimp [exp]
-  convert rfl
-  subsingleton
--/
+  dsimp [theta]
 
 end Theta
 
