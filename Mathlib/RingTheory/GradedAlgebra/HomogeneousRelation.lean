@@ -213,8 +213,8 @@ open DirectSum
 lemma decomposeRingEquiv_apply (a : A) :
     decomposeRingEquiv 𝒜 a = decompose 𝒜 a := rfl
 
-lemma RingEquiv.comp_inj {A B C : Type*} [Semiring A] [Semiring B] [Semiring C]
-    (e : A ≃+* B) {f g : B →+* C}
+lemma RingEquiv.comp_inj {A B C : Type*} [NonAssocSemiring A] [NonAssocSemiring B]
+    [NonAssocSemiring C] (e : A ≃+* B) {f g : B →+* C}
     (h : f.comp e.toRingHom = g.comp e.toRingHom) : f = g := RingHom.ext
     fun x ↦ (by simpa using congr($h (e.symm x)))
 
@@ -334,9 +334,6 @@ instance : GradedAlgebra ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) :
     simp [decompose_of_mem 𝒜 hy]
     rfl
 
-
 end GradedAlgebra
 
 end HomogeneousRelation
-
-#lint
