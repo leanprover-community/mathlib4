@@ -193,8 +193,8 @@ theorem MeasureTheory.AEStronglyMeasurable.prodMk_left {γ : Type*} [SFinite ν]
     {f : α × β → γ} (hf : AEStronglyMeasurable f (μ.prod ν)) :
     ∀ᵐ x ∂μ, AEStronglyMeasurable (fun y => f (x, y)) ν := by
   filter_upwards [ae_ae_of_ae_prod hf.ae_eq_mk] with x hx
-  exact
-    ⟨fun y => hf.mk f (x, y), hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
+  exact ⟨fun y ↦ hf.mk f (x, y),
+    hf.stronglyMeasurable_mk.comp_measurable measurable_prodMk_left, hx⟩
 
 @[deprecated (since := "2025-03-05")]
 alias MeasureTheory.AEStronglyMeasurable.prod_mk_left :=

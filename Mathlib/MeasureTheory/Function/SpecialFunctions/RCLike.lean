@@ -35,19 +35,19 @@ section RCLikeComposition
 variable {α 𝕜 : Type*} [RCLike 𝕜] {m : MeasurableSpace α} {f : α → 𝕜}
   {μ : MeasureTheory.Measure α}
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.re (hf : Measurable f) : Measurable fun x => RCLike.re (f x) :=
   RCLike.measurable_re.comp hf
 
-@[measurability]
+@[measurability, fun_prop]
 theorem AEMeasurable.re (hf : AEMeasurable f μ) : AEMeasurable (fun x => RCLike.re (f x)) μ :=
   RCLike.measurable_re.comp_aemeasurable hf
 
-@[measurability]
+@[measurability, fun_prop]
 theorem Measurable.im (hf : Measurable f) : Measurable fun x => RCLike.im (f x) :=
   RCLike.measurable_im.comp hf
 
-@[measurability]
+@[measurability, fun_prop]
 theorem AEMeasurable.im (hf : AEMeasurable f μ) : AEMeasurable (fun x => RCLike.im (f x)) μ :=
   RCLike.measurable_im.comp_aemeasurable hf
 

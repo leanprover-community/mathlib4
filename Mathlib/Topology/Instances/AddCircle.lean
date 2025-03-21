@@ -474,7 +474,7 @@ theorem card_addOrderOf_eq_totient {n : ℕ} :
   · simp only [Nat.totient_zero, addOrderOf_eq_zero_iff]
     rcases em (∃ u : AddCircle p, ¬IsOfFinAddOrder u) with (⟨u, hu⟩ | h)
     · have : Infinite { u : AddCircle p // ¬IsOfFinAddOrder u } := by
-        erw [infinite_coe_iff]
+        rw [← coe_setOf, infinite_coe_iff]
         exact infinite_not_isOfFinAddOrder hu
       exact Nat.card_eq_zero_of_infinite
     · have : IsEmpty { u : AddCircle p // ¬IsOfFinAddOrder u } := by simpa [isEmpty_subtype] using h
@@ -629,6 +629,9 @@ theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (
 theorem liftIco_zero_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f 0 = f p)
     (hc : ContinuousOn f <| Icc 0 p) : Continuous (liftIco p 0 f) :=
   liftIco_continuous (by rwa [zero_add] : f 0 = f (0 + p)) (by rwa [zero_add])
+
+@[simp] lemma coe_fract (x : ℝ) : (↑(Int.fract x) : AddCircle (1 : ℝ)) = x := by
+  simp [← Int.self_sub_floor]
 
 end AddCircle
 
