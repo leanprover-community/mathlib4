@@ -81,35 +81,34 @@ theorem isPeriodicPt_factorial_card_of_mem_periodicPts (h : x ∈ periodicPts f)
     (Nat.dvd_factorial (minimalPeriod_pos_of_mem_periodicPts h) minimalPeriod_le_card)
 
 theorem mem_periodicPts_iff_isPeriodicPt_factorial_card :
-    x ∈ periodicPts f ↔ IsPeriodicPt f (card α)! x :=
-  ⟨isPeriodicPt_factorial_card_of_mem_periodicPts, fun h ↦
-   minimalPeriod_pos_iff_mem_periodicPts.mp
-    (IsPeriodicPt.minimalPeriod_pos (Nat.factorial_pos _) h)⟩
+    x ∈ periodicPts f ↔ IsPeriodicPt f (card α)! x where
+  mp := isPeriodicPt_factorial_card_of_mem_periodicPts
+  mpr h := minimalPeriod_pos_iff_mem_periodicPts.mp
+    (IsPeriodicPt.minimalPeriod_pos (Nat.factorial_pos _) h)
 
 open Finset in
 theorem mem_periodicPts_of_injective (h : Injective f) : x ∈ periodicPts f := by
-  have h₁ : ∀ a ∈ (range (card α).succ), f^[a] x ∈ Finset.univ := fun _ _ ↦ mem_univ _
+  have h₁ (a) (ha : a ∈ range (card α).succ) : f^[a] x ∈ Finset.univ := mem_univ _
   rcases exists_ne_map_eq_of_card_lt_of_maps_to (by simp) h₁ with ⟨_, _, _, _, h₂, h₃⟩
   rcases lt_or_gt_of_ne h₂ with h₂ | h₂
   · exact mk_mem_periodicPts (by omega) (iterate_cancel h h₃.symm)
   · exact mk_mem_periodicPts (by omega) (iterate_cancel h h₃)
 
-theorem forall_mem_periodicPts_iff_injective :
-    (∀ x, x ∈ periodicPts f) ↔ Injective f :=
-  ⟨fun h ↦ ((bijective_iff_injective_and_card f).mp
-    ((bijective_iff_surjective_and_card f).mpr ⟨Set.range_eq_univ.mp
-      (ext fun _ ↦ ⟨fun _ ↦ mem_univ _, fun _ ↦ periodicPts_subset_image (h _)⟩), rfl⟩)).1,
-   fun h _ ↦ mem_periodicPts_of_injective h⟩
+theorem injective_iff_forall_mem_periodicPts : Injective f ↔ periodicPts f = univ := by
+  constructor <;> intro h
+  · ext; simp only [mem_univ, mem_periodicPts_of_injective h]
+  · exact ((bijective_iff_injective_and_card f).mp
+      ((bijective_iff_surjective_and_card f).mpr ⟨Set.range_eq_univ.mp
+        (Subset.antisymm (subset_univ _) (h ▸ periodicPts_subset_image)), rfl⟩)).1
 
 theorem injective_iff_iterate_factorial_card_eq_id :
     Injective f ↔ f^[(card α)!] = id := by
+  rw [injective_iff_forall_mem_periodicPts]
   constructor <;> intro h
-  · simp_rw [← forall_isFixedPt_iff]; intro
-    rw [← forall_mem_periodicPts_iff_injective] at h
-    exact mem_periodicPts_iff_isPeriodicPt_factorial_card.mp (h _)
-  · rw [← forall_mem_periodicPts_iff_injective]; intro
-    rw [mem_periodicPts_iff_isPeriodicPt_factorial_card]
-    simp only [IsPeriodicPt, isFixedPt_id, h]
+  · simp_rw [← forall_isFixedPt_iff]
+    exact fun _ ↦ mem_periodicPts_iff_isPeriodicPt_factorial_card.mp (h ▸ mem_univ _)
+  · ext; simp only [mem_univ, iff_true, mem_periodicPts_iff_isPeriodicPt_factorial_card,
+      IsPeriodicPt, isFixedPt_id, h]
 
 end Fintype
 
