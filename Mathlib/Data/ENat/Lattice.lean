@@ -67,7 +67,7 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · simp
   · norm_cast
 
-@[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
+@[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
   simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
