@@ -381,6 +381,18 @@ instance instLieModule : LieModule R L (LieDerivation R L M) where
   smul_lie t x D := by ext; simp
   lie_smul t x D := by ext; simp
 
+instance instDerivation (x : L) : LieDerivation R L L where
+  toFun := LieAlgebra.ad R L x
+  map_add' := by
+    exact fun a b ↦ LinearMap.map_add ((LieAlgebra.ad R L) x) a b
+  map_smul' := by
+    exact fun m a ↦ LinearMap.CompatibleSMul.map_smul ((LieAlgebra.ad R L) x) m a
+  leibniz' := by
+    intro a b
+    simp_all
+    rw [LieRing.leibniz_lie x a b, add_comm, ← lie_skew ⁅x, a⁆ b]
+    exact Eq.symm (sub_eq_add_neg ⁅a, ⁅x, b⁆⁆ ⁅b, ⁅x, a⁆⁆)
+
 protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
     ⁅x, ⁅D₁, D₂⁆⁆ = ⁅⁅x, D₁⁆, D₂⁆ + ⁅D₁, ⁅x, D₂⁆⁆ := by
   ext y
