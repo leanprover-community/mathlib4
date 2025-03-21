@@ -34,8 +34,7 @@ variable (X : Type*) [u : UniformSpace X] [DiscreteUniformity X]
 
 theorem _root_.discreteUniformity_iff_eq_principal_idRel {X : Type*} [UniformSpace X] :
     DiscreteUniformity X ↔ uniformity X = principal idRel := by
-  rw [discreteUniformity_iff_eq_bot, UniformSpace.ext_iff, Filter.ext_iff]
-  rfl
+  rw [discreteUniformity_iff_eq_bot, UniformSpace.ext_iff, Filter.ext_iff, bot_uniformity]
 
 theorem eq_principal_idRel : uniformity X = principal idRel :=
   discreteUniformity_iff_eq_principal_idRel.mp inferInstance
@@ -45,8 +44,12 @@ instance : DiscreteTopology X where
   eq_bot := by
     rw [DiscreteUniformity.eq_bot (X := X), UniformSpace.toTopologicalSpace_bot]
 
-theorem idRel_mem_uniformity : idRel ∈ uniformity X := by
-  simp only [eq_principal_idRel, mem_principal, subset_refl]
+theorem idRel_mem_uniformity_iff {X : Type*} [UniformSpace X] :
+    idRel ∈ uniformity X ↔ DiscreteUniformity X := by
+  rw [← uniformSpace_eq_bot, discreteUniformity_iff_eq_bot]
+
+theorem idRel_mem_uniformity : idRel ∈ uniformity X :=
+  idRel_mem_uniformity_iff.mpr inferInstance
 
 variable {X} in
 /-- A product of spaces with discrete uniformity has a discrete uniformity -/
@@ -62,11 +65,8 @@ instance {Y : Type*} [UniformSpace Y] [DiscreteUniformity Y] :
 variable {x} in
 /-- On a space with a discrete uniformity, any function is uniformly continuous -/
 theorem uniformContinuous {Y : Type*} [UniformSpace Y] (f : X → Y) :
-    UniformContinuous f := fun s hs ↦ by
-  rw [mem_map]
-  apply Filter.mem_of_superset (idRel_mem_uniformity X)
-  simp only [idRel_subset, Set.mem_preimage]
-  exact fun _ ↦ mem_uniformity_of_eq hs rfl
+    UniformContinuous f := by
+  simp only [uniformContinuous_iff, DiscreteUniformity.eq_bot, bot_le]
 
 /-- The discrete uniformity makes a group a `UniformGroup -/
 @[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`"]
