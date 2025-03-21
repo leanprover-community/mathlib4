@@ -505,8 +505,6 @@ theorem _root_.Directed.measure_iInter [Countable ι] {s : ι → Set α}
     gcongr
   · exact hd.mono_comp _ fun _ _ => diff_subset_diff_right
 
-@[deprecated (since := "2024-09-30")] alias measure_iInter_eq_iInf := Directed.measure_iInter
-
 /-- **Continuity from above**:
 the measure of the intersection of a monotone family of measurable sets
 indexed by a type with countably generated `atBot` filter
@@ -554,9 +552,6 @@ theorem measure_iInter_eq_iInf_measure_iInter_le {α ι : Type*} {_ : Measurable
   · refine hfin.imp fun k hk ↦ ne_top_of_le_ne_top hk <| measure_mono <| iInter₂_subset k ?_
     rfl
 
-@[deprecated (since := "2024-09-30")]
-alias measure_iInter_eq_iInf' := measure_iInter_eq_iInf_measure_iInter_le
-
 /-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
 measurable) sets is the limit of the measures. -/
 theorem tendsto_measure_iUnion_atTop [Preorder ι] [IsCountablyGenerated (atTop : Filter ι)]
@@ -591,9 +586,6 @@ theorem tendsto_measure_iInter_atTop [Preorder ι]
   have := (atTop_neBot_iff.1 h).2
   rw [hm.measure_iInter hs hf]
   exact tendsto_atTop_iInf fun n m hnm => measure_mono <| hm hnm
-
-@[deprecated (since := "2024-09-30")]
-alias tendsto_measure_iInter := tendsto_measure_iInter_atTop
 
 /-- Continuity from above: the measure of the intersection of an increasing sequence of measurable
 sets is the limit of the measures. -/

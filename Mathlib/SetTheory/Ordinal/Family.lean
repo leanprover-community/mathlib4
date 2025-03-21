@@ -1024,9 +1024,6 @@ theorem iSup_natCast : iSup Nat.cast = ω :=
 theorem IsNormal.apply_omega0 {f : Ordinal.{u} → Ordinal.{v}} (hf : IsNormal f) :
     ⨆ n : ℕ, f n = f ω := by rw [← iSup_natCast, hf.map_iSup]
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias IsNormal.apply_omega := IsNormal.apply_omega0
-
 @[simp]
 theorem iSup_add_nat (o : Ordinal) : ⨆ n : ℕ, o + n = o + ω :=
   (isNormal_add_right o).apply_omega0

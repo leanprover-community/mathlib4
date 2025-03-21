@@ -360,10 +360,6 @@ rather than `b`. -/
 protected lemma sub_eq_of_eq_add_rev' (ha : a ≠ ∞) : a = b + c → a - b = c :=
   (cancel_of_ne ha).tsub_eq_of_eq_add_rev'
 
-@[deprecated ENNReal.sub_eq_of_eq_add (since := "2024-09-30")]
-theorem sub_eq_of_add_eq (hb : b ≠ ∞) (hc : a + b = c) : c - b = a :=
-  ENNReal.sub_eq_of_eq_add hb hc.symm
-
 @[simp]
 protected theorem add_sub_cancel_left (ha : a ≠ ∞) : a + b - a = b :=
   (cancel_of_ne ha).add_tsub_cancel_left

@@ -559,9 +559,6 @@ set_option linter.deprecated false in
 theorem aleph'_omega0 : aleph' ω = ℵ₀ :=
   preAleph_omega0
 
-@[deprecated "No deprecation message was provided." (since := "2024-09-30")]
-alias aleph'_omega := aleph'_omega0
-
 @[deprecated aleph_eq_preAleph (since := "2024-10-22")]
 theorem aleph_eq_aleph' (o : Ordinal) : ℵ_ o = preAleph (ω + o) :=
   rfl
