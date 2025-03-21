@@ -364,6 +364,24 @@ theorem coe_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed
     (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
+@[simp]
+lemma equivRange_symm (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    (f.equivRange hinj hclo).symm.toLinearEquiv =
+      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
+  rfl
+
+lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f))
+    (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
+  suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
+  trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
+  · rfl -- is there an API lemma for this already?
+  dsimp only [equivRange_symm]
+  --apply LinearEquiv.ofInjective_symm_apply hinj
+  set x' : LinearMap.range f := ⟨f x, by simp⟩
+  -- rw [LinearEquiv.ofInjective_symm_apply f (h := hinj) x']
+  -- #check LinearEquiv.ofInjective_symm_apply f (h := hinj) x'
+  sorry
+
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
