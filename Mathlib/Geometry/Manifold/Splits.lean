@@ -16,6 +16,21 @@ TODO: better doc-string, move this to a better place
 
 open Function Set
 
+section
+
+variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [CompleteSpace E] [CompleteSpace F]
+
+/-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are real or complex Banach
+spaces), `f` is anti-Lipschitz. -/
+lemma ContinuousLinearMap.antiLipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f := by
+  -- exhibit a bound K, then `use K` and `apply ContinuousLinearMap.antilipschitz_of_bound`
+  sorry
+
+end
+
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
@@ -89,20 +104,43 @@ lemma prodMap (hf : f.Splits) (hg : g.Splits) : (f.prodMap g).Splits := by
 -- Reduce: range (g ∘ f) below, and also g(F') below are closed:
 --   (if s ⊆ G is closed, then g(s) is closed, uses injectivity and the open mapping theorem)
 
--- XXX: is this completeness hypothesis required?
-/-- The composition of split continuous linear maps splits. -/
-lemma comp [CompleteSpace G] {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
-  have h1 : IsClosed (range ⇑(g.comp f)) := sorry
-  refine ⟨hg.injective.comp hf.injective, h1, ?_⟩
-  · let F' := hf.complement
-    let G' := hg.complement
-    rw [Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl]
-    refine ⟨h1, (F'.map g) + G', ?_, ?_⟩
-    · -- missing (also missing hypotheses?): sum of closed submodules is closed
+section RCLike
+
+variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' G : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
+  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [CompleteSpace E] [CompleteSpace F] [CompleteSpace G] {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}
+
+/-- If `f : E → F` splits and `E`, `F` are real or complex Banach spaces, `f` is anti-Lipschitz.
+This result is unseful to prove that the composition of split maps is a split map. -/
+lemma antilipschitz_aux (hf : f.Splits) : ∃ K, AntilipschitzWith K f :=
+  ContinuousLinearMap.antiLipschitz_of_injective_of_isClosed_range f hf.injective hf.isClosed_range
+
+def antilipschitzConstant (hf : f.Splits) : NNReal := Classical.choose hf.antilipschitz_aux
+
+lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzConstant f :=
+  Classical.choose_spec hf.antilipschitz_aux
+
+lemma isClosedMap (hf : f.Splits) : IsClosedMap f :=
+  (hf.antilipschitzWith.isClosedEmbedding f.uniformContinuous).isClosedMap
+
+/-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
+lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
+  have h : IsClosed (range (g ∘ f)) := by
+    rw [range_comp]
+    apply hg.isClosedMap _ hf.isClosed_range
+  refine ⟨hg.injective.comp hf.injective, h, ?_⟩
+  · rw [Submodule.closedComplemented_iff_isClosed_exists_isClosed_isCompl]
+    let F' := hf.complement
+    refine ⟨h, (F'.map g) + hg.complement, ?_, ?_⟩
+    · have : IsClosed (X := G) (F'.map g) := hg.isClosedMap _ hf.complement_isClosed
+      have : IsClosed (X := G) hg.complement := hg.complement_isClosed
+      -- remaining (also missing hypotheses?): sum of closed submodules is closed
       sorry
     · sorry
 
-lemma compCLE_left [CompleteSpace F] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
+lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
     (f.comp f₀.toContinuousLinearMap).Splits :=
   f₀.splits.comp hf
 
@@ -110,12 +148,8 @@ lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.Splits) :
     (g.toContinuousLinearMap.comp f).Splits :=
   hf.comp g.splits
 
-section RCLike
-
-variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' : Type*}
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
-  [FiniteDimensional 𝕜 F] {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}
+omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
+variable [FiniteDimensional 𝕜 F]
 
 /-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
