@@ -265,13 +265,6 @@ def completeFamily : InfinitePlace K → realSpace K :=
       expMap.symm
         (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
 
-def completeFamily' : InfinitePlace K → realSpace K := by
-  intro i
-  by_cases hi : i = w₀
-  · exact fun w ↦ mult w
-  · exact expMap.symm
-      (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
-
 /--
 An auxiliary map from `realSpace K` to `logSpace K` used to prove that `completeFamily` is
 linearly independent, see `linearIndependent_completeFamily`.
