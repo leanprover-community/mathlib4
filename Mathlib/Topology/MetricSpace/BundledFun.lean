@@ -14,11 +14,13 @@ This allows one to define a semilattice on them, and to construct families of ps
 
 ## Implementation notes
 
-The `PseudoMetric` definition works over any ordered commutative additive monoid,
-which allows one to talk about functions mapping into `ℝ`, `ℝ≥0`, `ℝ≥0∞`, etc.
-Proving that the pseudometric is nonnegative relies on a linear order,
-so the `PseudoMetric` is (overly) restricted to require a linear order in the codomain.
-The linear order also allows to define the supremum of two pseudometrics.
+The `PseudoMetric` definition is made as general as possible without any required axioms
+for the codomain. The axioms come into play only in proofs and further constructions
+like the `SemilatticeSup` instance. This allows one to talk about functions mapping into
+something like `{ fuel: ℕ, time: ℕ }` even though there is no linear order.
+
+In most cases, the codomain will be a linear ordered additive monoid like
+`ℝ`, `ℝ≥0`, `ℝ≥0∞`, in which all of the axioms below are satisfied.
 
 -/
 
