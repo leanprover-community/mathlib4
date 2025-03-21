@@ -6,6 +6,7 @@ Authors: Michael Rothgang
 import Mathlib.Geometry.Manifold.LocalDiffeomorph
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.Normed.Module.Complemented
+import Mathlib.Analysis.Normed.Operator.Banach
 
 /-! # Linear maps which split
 
@@ -26,9 +27,17 @@ variable {𝕜 : Type*} [RCLike 𝕜] {E F : Type*}
 spaces), `f` is anti-Lipschitz. -/
 lemma ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
     (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f := by
-
-  -- exhibit a bound K, then `use K` and `apply ContinuousLinearMap.antilipschitz_of_bound`
-  sorry
+  let S : (LinearMap.range f) →L[𝕜] E := (f.equivRange hf hf').symm
+  use ⟨S.opNorm, S.opNorm_nonneg⟩
+  apply ContinuousLinearMap.antilipschitz_of_bound
+  intro x
+  have aux : f x ∈ LinearMap.range f := by simp
+  have : x = S ⟨f x, by simp⟩ := by
+    simp only [ContinuousLinearEquiv.coe_coe, S]
+    sorry
+  calc ‖x‖
+    _ = ‖S ⟨f x, by simp⟩‖ := by nth_rw 1 [this]
+    _ ≤ S.opNorm * ‖f x‖ := le_opNorm S ⟨f x, by simp⟩
 
 #exit
 
@@ -181,6 +190,7 @@ end ContinuousLinearMap.Splits
 
 end
 
+#exit
 section
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E E' F F' G : Type*}
