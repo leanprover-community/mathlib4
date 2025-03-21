@@ -110,6 +110,14 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     IsImmersionAt (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') :=
   sorry
 
+theorem continuousWithinAt (h : IsImmersionAt F I I' n f x) : ContinuousWithinAt f h.domChart.source x := by
+  -- TODO: follows from the local description...
+  sorry
+
+/-- A `C^k` immersion at `x` is continuous at `x`. -/
+theorem continuousAt (h : IsImmersionAt F I I' n f x) : ContinuousAt f x :=
+  h.continuousWithinAt.continuousAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
+
 /-- A `C^k` immersion at `x` is `C^k` at `x`. -/
 -- continuity follows since we're in a chart, on an open set;
 -- smoothness follows since domChart and codChart are compatible with the maximal atlas
@@ -117,10 +125,8 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
   suffices ContMDiffWithinAt I I' n f h.domChart.source x from
     this.contMDiffAt <| h.domChart.open_source.mem_nhds (mem_domChart_source h)
   rw [contMDiffWithinAt_iff_of_mem_maximalAtlas (e := h.domChart) (e' := h.codChart)]
-  constructor
-  · -- lemma: prove continuity first, follows from the local description...
-    sorry -- ContinuousWithinAt f h.domChart.source x
-  · have aux := h.writtenInCharts
+  · refine ⟨h.continuousWithinAt, ?_⟩
+    have aux := h.writtenInCharts
     have : ContDiffWithinAt 𝕜 n ((h.codChart.extend I') ∘ f ∘ ↑(h.domChart.extend I).symm)
         (h.domChart.extend I).target ((h.domChart.extend I) x) := by
       -- apply a congr lemma, and prove this for the inclusion
@@ -132,7 +138,10 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
     simp only [mfld_simps, inter_comm]
     gcongr
     sorry -- is this true? need to think!
-  repeat sorry
+  · exact h.domChart_mem_maximalAtlas
+  · exact codChart_mem_maximalAtlas h
+  · exact mem_domChart_source h
+  · exact mem_codChart_source h
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
 theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
