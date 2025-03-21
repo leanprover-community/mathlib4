@@ -5,9 +5,10 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Topology.MetricSpace.MetricSeparated
 import Mathlib.Topology.MetricSpace.Thickening
+import Mathlib.Topology.UniformSpace.Cover
 
 /-!
-# Covers
+# Covers in a metric space
 
 This file defines covers, aka nets, which are a quantitative notion of compactness in a metric
 space.
@@ -37,27 +38,25 @@ some point of `N`.
 This is also called an *`ε`-net* in the literature.
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.1. -/
-def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := ∀ ⦃x⦄, x ∈ s → ∃ y ∈ N, edist x y ≤ ε
+def IsCover (ε : ℝ≥0) (s N : Set X) : Prop := UniformSpace.IsCover {(x, y) | edist x y ≤ ε} s N
 
-@[simp] lemma IsCover.empty : IsCover ε ∅ N := by simp [IsCover]
+@[simp] protected nonrec lemma IsCover.empty : IsCover ε ∅ N := .empty
 
-lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCover ε s N₂ :=
-  fun _x hx ↦ let ⟨y, hy, hxy⟩ := h₁ hx; ⟨y, hN hy, hxy⟩
+nonrec lemma IsCover.mono (hN : N₁ ⊆ N₂) (h₁ : IsCover ε s N₁) : IsCover ε s N₂ := h₁.mono hN
 
-lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N := fun _x hx ↦ ht <| hst hx
+nonrec lemma IsCover.anti (hst : s ⊆ t) (ht : IsCover ε t N) : IsCover ε s N := ht.anti hst
 
 lemma isCover_iff_subset_iUnion_emetricClosedBall :
-    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by simp [IsCover, subset_def]
+    IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, EMetric.closedBall y ε := by
+  simp [IsCover, UniformSpace.IsCover, subset_def]
 
 /-- A maximal `ε`-separated subset of a set `s` is an `ε`-cover of `s`.
 
 [R. Vershynin, *High Dimensional Probability*][vershynin2018high], 4.2.6. -/
-lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧ IsSeparated ε N) N) :
-    IsCover ε s N := by
-  rintro x hx
-  by_contra! h
-  simpa using h _ <| hN.2 (y := insert x N) ⟨by simp [insert_subset_iff, hx, hN.1.1],
-    hN.1.2.insert fun y hy _ ↦ h y hy⟩ (subset_insert _ _) (mem_insert _ _)
+nonrec lemma IsCover.of_maximal_isSeparated (hN : Maximal (fun N ↦ N ⊆ s ∧ IsSeparated ε N) N) :
+    IsCover ε s N :=
+  .of_maximal_isSeparated (by simp) (by simp [IsSymmetricRel, edist_comm]) <| by
+    simpa [isSeparated_iff_uniformSpaceIsSeparated] using hN
 
 end PseudoEMetricSpace
 
@@ -65,7 +64,7 @@ section PseudoMetricSpace
 variable [PseudoMetricSpace X] {ε : ℝ≥0} {s N : Set X}
 
 lemma isCover_iff_subset_iUnion_closedBall : IsCover ε s N ↔ s ⊆ ⋃ y ∈ N, closedBall y ε := by
-  simp [IsCover, subset_def]
+  simp [IsCover, UniformSpace.IsCover, subset_def]
 
 alias ⟨IsCover.subset_iUnion_closedBall, IsCover.of_subset_iUnion_closedBall⟩ :=
   isCover_iff_subset_iUnion_closedBall
