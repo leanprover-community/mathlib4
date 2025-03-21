@@ -528,8 +528,7 @@ theorem sdiff_nonempty_of_card_lt_card (h : #s < #t) : (t \ s).Nonempty := by
   exact fun h' ↦ h.not_le (card_le_card h')
 
 theorem exists_mem_not_mem_of_card_lt_card (h : #s < #t) :  ∃ e, e ∈ t ∧ e ∉ s := by
-  obtain ⟨e, he⟩ := diff_nonempty_of_card_lt_card h
-  exact ⟨e, mem_sdiff.mp he⟩
+  simpa [Finset.Nonempty] using sdiff_nonempty_of_card_lt_card h
 
 @[simp]
 lemma card_sdiff_add_card_inter (s t : Finset α) :
