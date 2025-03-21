@@ -3,11 +3,10 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Justus Springer
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
 # Limits in lattice categories are given by infimums and supremums.

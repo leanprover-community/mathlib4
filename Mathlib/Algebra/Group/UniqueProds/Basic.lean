@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
 
@@ -542,7 +545,8 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       · exact ihA _ ((A.filter_subset _).ssubset_of_ne hA)
 
 open ULift in
-@[to_additive]instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
+@[to_additive]
+instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
     TwoUniqueProds (G × H) := by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›

@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Cardinal.Order
 
 /-!
 # Theory of univariate polynomials
