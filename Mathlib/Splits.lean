@@ -3,16 +3,15 @@ Copyright (c) 2025 Michael Rothgang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
-import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.Analysis.Normed.Module.Complemented
-import Mathlib.Analysis.Normed.Operator.Banach
+import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 
 /-! # Linear maps which split
 
 This file defines split continuous linear maps: an injective continuous linear map splits if and
 only if it has closed range and its image has a closed complement. We prove that
 * the product of split maps is split,
-* the composition of split maps between Banach spaces is split,
+* (in progress/under discussion) the composition of split maps between Banach spaces is split,
 as well as various weakenings: for instance, an injective linear map on a finite-dimensional space
 always splits.
 
@@ -140,17 +139,16 @@ lemma compCLE_right [CompleteSpace F'] {g : F ≃L[𝕜] F'} (hf : f.Splits) :
   hf.comp g.splits
 
 omit [CompleteSpace E] [CompleteSpace F] [CompleteSpace G]
-variable [FiniteDimensional 𝕜 F]
 
 /-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
-  have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
+  have aux : IsClosed (X := F) (LinearMap.range f) := Submodule.closed_of_finiteDimensional _
   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
 
-/-- If `f : E → F` is injective, `E` is finite-dimensional and `F` is Banach, then `f` splits. -/
+/-- If `f : E → F` is injective and `E` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional_of_completeSpace
-    [FiniteDimensional 𝕜 E] [CompleteSpace F] (hf : Injective f) : f.Splits := by
-  have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
+    [FiniteDimensional 𝕜 E] (hf : Injective f) : f.Splits := by
+  have aux : IsClosed (X := F) (LinearMap.range f) := Submodule.closed_of_finiteDimensional _
   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
 
 -- If `f : E → F` is injective, `E` and `F` are Banach and `f` is Fredholm, then `f` splits.
