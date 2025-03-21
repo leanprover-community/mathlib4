@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Robin Carlier
 -/
 import Mathlib.CategoryTheory.Equivalence
-import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Binary disjoint unions of categories
