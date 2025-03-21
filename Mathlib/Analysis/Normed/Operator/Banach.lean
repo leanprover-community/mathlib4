@@ -370,6 +370,7 @@ lemma equivRange_symm (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed 
       (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
   rfl
 
+@[simp]
 lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f))
     (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
   suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this

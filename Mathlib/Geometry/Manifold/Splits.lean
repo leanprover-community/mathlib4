@@ -31,15 +31,9 @@ lemma ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range (f : E �
   use ⟨S.opNorm, S.opNorm_nonneg⟩
   apply ContinuousLinearMap.antilipschitz_of_bound
   intro x
-  have aux : f x ∈ LinearMap.range f := by simp
-  have : x = S ⟨f x, by simp⟩ := by
-    simp only [ContinuousLinearEquiv.coe_coe, S]
-    sorry
   calc ‖x‖
-    _ = ‖S ⟨f x, by simp⟩‖ := by nth_rw 1 [this]
+    _ = ‖S ⟨f x, by simp⟩‖ := by simp [S]
     _ ≤ S.opNorm * ‖f x‖ := le_opNorm S ⟨f x, by simp⟩
-
-#exit
 
 /-- An injective bounded linear operator between real or complex Banach spaces
 is injective iff it has closed range. -/
