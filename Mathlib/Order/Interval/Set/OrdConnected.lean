@@ -226,7 +226,7 @@ theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α �
 
 @[simp]
 theorem dual_ordConnected_iff {s : Set α} : OrdConnected (ofDual ⁻¹' s) ↔ OrdConnected s := by
-  simp_rw [ordConnected_def, toDual.surjective.forall, dual_Icc, Subtype.forall']
+  simp_rw [ordConnected_def, toDual.surjective.forall, Icc_toDual, Subtype.forall']
   exact forall_swap
 
 @[instance]
