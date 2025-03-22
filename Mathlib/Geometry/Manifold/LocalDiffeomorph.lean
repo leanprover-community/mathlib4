@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 
-import Mathlib.Analysis.NormedSpace.Banach
 import Mathlib.Geometry.Manifold.Diffeomorph
 import Mathlib.Topology.IsLocalHomeomorph
 
@@ -25,25 +24,24 @@ at every `x ∈ s`, and a **local diffeomorphism** iff it is a local diffeomorph
 
 ## Main results
 * Each of `Diffeomorph`, `IsLocalDiffeomorph`, `IsLocalDiffeomorphOn` and `IsLocalDiffeomorphAt`
-  implies the next condition.
+  implies the next.
 * `IsLocalDiffeomorph.isLocalHomeomorph`: a local diffeomorphisms is a local homeomorphism,
   similarly for local diffeomorphism on `s`
 * `IsLocalDiffeomorph.isOpen_range`: the image of a local diffeomorphism is open
 * `IslocalDiffeomorph.diffeomorph_of_bijective`:
   a bijective local diffeomorphism is a diffeomorphism
 
-* `Diffeomorph.mfderiv_toContinuousLinearEquiv`: each differential of a `C^n` diffeomorphism
-(`n ≥ 1`) is a linear equivalence.
-* `LocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv`: if `f` is a local diffeomorphism
-at `x`, the differential `mfderiv I J n f x` is a continuous linear equivalence.
-* `LocalDiffeomorph.differential_toContinuousLinearEquiv`: if `f` is a local diffeomorphism,
-each differential `mfderiv I J n f x` is a continuous linear equivalence.
-
 ## TODO
 * an injective local diffeomorphism is a diffeomorphism to its image
-* if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
+* each differential of a `C^n` diffeomorphism (`n ≥ 1`) is a linear equivalence.
+* if `f` is a local diffeomorphism at `x`, the differential `mfderiv I J n f x`
+is a continuous linear isomorphism.
+* conversely, if `f` is `C^n` at `x` and `mfderiv I J n f x` is a linear isomorphism,
 `f` is a local diffeomorphism at `x`.
-* if `f` is `C^n` and each differential is a linear isomorphism, `f` is a local diffeomorphism.
+* if `f` is a local diffeomorphism, each differential `mfderiv I J n f x`
+is a continuous linear isomorphism.
+* Conversely, if `f` is `C^n` and each differential is a linear isomorphism,
+`f` is a local diffeomorphism.
 
 ## Implementation notes
 
@@ -57,10 +55,10 @@ local diffeomorphism, manifold
 
 -/
 
-open Function Manifold Set TopologicalSpace
+open Manifold Set TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {E : Type*} [instE: NormedAddCommGroup E] [instE': NormedSpace 𝕜 E]
+  {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   {H : Type*} [TopologicalSpace H]
   {G : Type*} [TopologicalSpace G]
@@ -138,6 +136,89 @@ variable {M N}
 open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such that `f = Φ` on `U`. -/
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
+
+lemma PartialDiffeomorph.isLocalDiffeomorphAt (φ : PartialDiffeomorph I J M N n)
+    {x : M} (hx : x ∈ φ.source) : IsLocalDiffeomorphAt I J n φ x := by
+  use φ
+  exact ⟨hx, fun ⦃x⦄ ↦ congrFun rfl⟩
+
+namespace IsLocalDiffeomorphAt
+
+variable {f : M → N} {x : M}
+
+variable {I I' J n}
+
+/-- An arbitrary choice of local inverse of `f` near `x`. -/
+noncomputable def localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+    PartialDiffeomorph J I N M n := (Classical.choose hf).symm
+
+lemma localInverse_open_source (hf : IsLocalDiffeomorphAt I J n f x) :
+    IsOpen hf.localInverse.source :=
+  PartialDiffeomorph.open_source _
+
+lemma localInverse_mem_source (hf : IsLocalDiffeomorphAt I J n f x) :
+    f x ∈ hf.localInverse.source := by
+  rw [(hf.choose_spec.2 hf.choose_spec.1)]
+  exact (Classical.choose hf).map_source hf.choose_spec.1
+
+lemma localInverse_mem_target (hf : IsLocalDiffeomorphAt I J n f x) :
+    x ∈ hf.localInverse.target :=
+  hf.choose_spec.1
+
+lemma contmdiffOn_localInverse (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffOn J I n hf.localInverse hf.localInverse.source :=
+  hf.localInverse.contMDiffOn_toFun
+
+lemma localInverse_right_inv (hf : IsLocalDiffeomorphAt I J n f x) {y : N}
+    (hy : y ∈ hf.localInverse.source) : f (hf.localInverse y) = y := by
+  have : hf.localInverse y ∈ hf.choose.source := by
+    rw [← hf.choose.symm_target]
+    exact hf.choose.symm.map_source hy
+  rw [hf.choose_spec.2 this]
+  exact hf.choose.right_inv hy
+
+lemma localInverse_eqOn_right (hf : IsLocalDiffeomorphAt I J n f x) :
+    EqOn (f ∘ hf.localInverse) id hf.localInverse.source :=
+  fun _y hy ↦ hf.localInverse_right_inv hy
+
+lemma localInverse_eventuallyEq_right (hf : IsLocalDiffeomorphAt I J n f x) :
+    f ∘ hf.localInverse =ᶠ[nhds (f x)] id :=
+  Filter.eventuallyEq_of_mem
+    (hf.localInverse.open_source.mem_nhds hf.localInverse_mem_source)
+    hf.localInverse_eqOn_right
+
+lemma localInverse_left_inv (hf : IsLocalDiffeomorphAt I J n f x) {x' : M}
+    (hx' : x' ∈ hf.localInverse.target) : hf.localInverse (f x') = x' := by
+  rw [hf.choose_spec.2 (hf.choose.symm_target ▸ hx')]
+  exact hf.choose.left_inv hx'
+
+lemma localInverse_eqOn_left (hf : IsLocalDiffeomorphAt I J n f x) :
+    EqOn (hf.localInverse ∘ f) id hf.localInverse.target :=
+  fun _ hx ↦ hf.localInverse_left_inv hx
+
+lemma localInverse_eventuallyEq_left (hf : IsLocalDiffeomorphAt I J n f x) :
+    hf.localInverse ∘ f =ᶠ[nhds x] id :=
+  Filter.eventuallyEq_of_mem
+    (hf.localInverse.open_target.mem_nhds hf.localInverse_mem_target) hf.localInverse_eqOn_left
+
+lemma localInverse_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    IsLocalDiffeomorphAt J I n (hf.localInverse) (f x) :=
+  hf.localInverse.isLocalDiffeomorphAt _ _ _ hf.localInverse_mem_source
+
+lemma localInverse_contMDiffOn (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffOn J I n hf.localInverse hf.localInverse.source :=
+  hf.localInverse.contMDiffOn_toFun
+
+lemma localInverse_contMDiffAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    ContMDiffAt J I n hf.localInverse (f x) :=
+  hf.localInverse_contMDiffOn.contMDiffAt
+    (hf.localInverse.open_source.mem_nhds hf.localInverse_mem_source)
+
+lemma localInverse_mdifferentiableAt (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    MDifferentiableAt J I hf.localInverse (f x) :=
+  hf.localInverse_contMDiffAt.mdifferentiableAt hn
+
+end IsLocalDiffeomorphAt
 
 /-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
 at each `x : s`. -/
@@ -273,114 +354,61 @@ noncomputable def IslocalDiffeomorph.diffeomorph_of_bijective
 
 end Basic
 
-/-! ## The differential of a local diffeomorphism is an isomorphism -/
-section Differential
-variable {I J n} {f : M → N} {x : M} (hn : 1 ≤ n)
-  [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-  [hE: CompleteSpace E] [hF: CompleteSpace F]
+section helper -- FIXME: move to Algebra.Module.Basic
+variable {R : Type*} [Ring R]
+variable {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module R E]
+variable {F : Type*} [TopologicalSpace F] [AddCommMonoid F] [Module R F]
 
-/-- A local diffeomorphism `f` at `x` has injective differential `mfderiv I J n f x`. -/
-lemma IsLocalDiffeomorphAt.mfderiv_injective (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    LinearMap.ker (mfderiv I J f x) = ⊥ := by
-  choose Φ hyp using hf
-  rcases hyp with ⟨hxU, heq⟩
-  let A := mfderiv I J f x
-  have hA : A = mfderiv I J Φ x := calc A
-    _ = mfderivWithin I J f Φ.source x := (mfderivWithin_of_isOpen Φ.open_source hxU).symm
-    _ = mfderivWithin I J Φ Φ.source x :=
-      mfderivWithin_congr (Φ.open_source.uniqueMDiffWithinAt hxU) heq (heq hxU)
-    _ = mfderiv I J Φ x := mfderivWithin_of_isOpen Φ.open_source hxU
-  let B := mfderiv J I Φ.invFun (Φ x)
-  have : B.comp A = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := calc B.comp A
-    _ = B.comp (mfderiv I J Φ x) := by rw [hA]
-    _ = mfderiv I I (Φ.invFun ∘ Φ) x :=
-      (mfderiv_comp x (Φ.symm.mdifferentiableAt hn (Φ.map_source hxU))
-        (Φ.mdifferentiableAt hn hxU)).symm
-    _ = mfderivWithin I I (Φ.invFun ∘ Φ) Φ.source x :=
-      (mfderivWithin_of_isOpen Φ.open_source hxU).symm
-    _ = mfderivWithin I I id Φ.source x := by
-      have : EqOn (Φ.invFun ∘ Φ) id Φ.source := fun _ hx ↦ Φ.left_inv' hx
-      apply mfderivWithin_congr (Φ.open_source.uniqueMDiffWithinAt hxU) this (this hxU)
-    _ = mfderiv I I id x := mfderivWithin_of_isOpen Φ.open_source hxU
-    _ = ContinuousLinearMap.id 𝕜 (TangentSpace I x) := mfderiv_id I
-  have : LeftInverse B A := ContinuousLinearMap.congr_fun this
-  exact (LinearMapClass.ker_eq_bot _).mpr this.injective
+/-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
+lemma LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
+  have : g ∘ f = id := calc g ∘ f
+      _ = ↑(g.comp f) := by rw [ContinuousLinearMap.coe_comp']
+      _ = ↑( ContinuousLinearMap.id R E) := by rw [hinv]
+      _ = id := by rw [ContinuousLinearMap.coe_id']
+  exact congrFun this
 
-/-- A local diffeomorphism `f` at `x` has surjective differential `mfderiv I J n f x`. -/
-lemma IsLocalDiffeomorphAt.mfderiv_surjective (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    LinearMap.range (mfderiv I J f x) = ⊤ := by
-  choose Φ hyp using hf
-  rcases hyp with ⟨hxU, heq⟩
-  let A := mfderiv I J f x
-  have hA : A = mfderiv I J Φ x := calc A
-    _ = mfderivWithin I J f Φ.source x := (mfderivWithin_of_isOpen Φ.open_source hxU).symm
-    _ = mfderivWithin I J Φ Φ.source x :=
-      mfderivWithin_congr (Φ.open_source.uniqueMDiffWithinAt hxU) heq (heq hxU)
-    _ = mfderiv I J Φ x := mfderivWithin_of_isOpen Φ.open_source hxU
-  let B := mfderiv J I Φ.invFun (Φ x)
-  have : A.comp B = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := calc A.comp B
-    _ = (mfderiv I J Φ x).comp B := by rw [hA]
-    _ = mfderiv J J (Φ ∘ Φ.invFun) (Φ x) := by
-        -- Use the chain rule: need to rewrite both the base point Φ (Φ.invFun x)
-        -- and the map Φ.invFun ∘ Φ.
-        have hΦ : MDifferentiableAt I J Φ x := Φ.mdifferentiableAt hn hxU
-        rw [← (Φ.left_inv hxU)] at hΦ
-        let r := mfderiv_comp (Φ x) hΦ (Φ.symm.mdifferentiableAt hn (Φ.map_source hxU))
-        rw [(Φ.left_inv hxU)] at r
-        exact r.symm
-    _ = mfderivWithin J J (Φ ∘ Φ.invFun) Φ.target (Φ x) :=
-      (mfderivWithin_of_isOpen Φ.open_target (Φ.map_source hxU)).symm
-    _ = mfderivWithin J J id Φ.target (Φ x) := by
-      have : EqOn (Φ ∘ Φ.invFun) id Φ.target := fun _ hx ↦ Φ.right_inv' hx
-      apply mfderivWithin_congr ?_ this (this (Φ.map_source hxU))
-      exact (Φ.open_target.uniqueMDiffWithinAt (Φ.map_source hxU))
-    _ = mfderiv J J id (Φ x) := mfderivWithin_of_isOpen Φ.open_target (Φ.map_source hxU)
-    _ = ContinuousLinearMap.id 𝕜 (TangentSpace J (Φ x)) := mfderiv_id J
-  have : RightInverse B A := ContinuousLinearMap.congr_fun this
-  exact LinearMap.range_eq_top.mpr this.surjective
+/-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
+lemma RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
+  LeftInverse.of_composition hinv
 
-/-- `TangentSpace I x` is defeq to `E`, hence also a normed additive abelian group. -/
-local instance (x : M) : NormedAddCommGroup (TangentSpace I x) := instE
-/-- `TangentSpace I x` is defeq to `E`, hence also a normed space. -/
-local instance (x : M) : NormedSpace 𝕜 (TangentSpace I x) := instE'
+end helper
 
-/-- If `f` is a `C^n` local diffeomorphism of Banach manifolds at `x`, for `n ≥ 1`,
+variable {f : M → N} {s : Set M} {x : M}
+
+variable {I I' J n} in
+/-- If `f` is a `C^n` local diffeomorphism at `x`, for `n ≥ 1`,
   the differential `df_x` is a linear equivalence. -/
 noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
     (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) := by
-  haveI : CompleteSpace (TangentSpace I x) := hE
-  have : CompleteSpace (TangentSpace J (f x)) := hF
-  exact ContinuousLinearEquiv.ofBijective (mfderiv I J f x) (hf.mfderiv_injective hn)
-    (hf.mfderiv_surjective hn)
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) where
+  toFun := mfderiv I J f x
+  invFun := mfderiv J I hf.localInverse (f x)
+  left_inv := by
+    apply LeftInverse.of_composition
+    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
+    have hf'' : MDifferentiableAt I J f x := hf.mdifferentiableAt hn
+    have hg'' : MDifferentiableAt J I hf.localInverse (f x) := hf.localInverse_mdifferentiableAt hn
+    symm
+    --apply mfderiv_comp (g := f) (f := hf.localInverse) (x := f x) (I := J) (I'' := J) (I' := I)
+    sorry -- apply mfderiv_comp hg'' hf''
+  right_inv := by
+    apply RightInverse.of_composition
+    rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
+    have hf'' : MDifferentiableAt I J f x := hf.mdifferentiableAt hn
+    have hf''' : MDifferentiableAt I J f (hf.localInverse (f x)) := sorry -- hf.mdifferentiableAt hn
+    have hg'' : MDifferentiableAt J I hf.localInverse (f x) := hf.localInverse_mdifferentiableAt hn
+    symm
+    --#check mfderiv_comp hf''' hg''
+    --apply mfderiv_comp (g := f) (f := hf.localInverse) (x := f x) (I := J) (I'' := J) (I' := I)
+    sorry
+  continuous_toFun := (mfderiv I J f x).cont
+  continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
+  map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
+  map_smul' := by intros; simp
 
--- FIXME: can I make hn appear after hf?
-lemma IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv_coe
-    (hf : IsLocalDiffeomorphAt I J n f x) :
+variable {I I' J n} in
+@[simp, mfld_simps]
+lemma mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
     hf.mfderiv_toContinuousLinearEquiv hn = mfderiv I J f x := rfl
-
-/-- Each differential of a `C^n` diffeomorphism of Banach manifolds (`n ≥ 1`)
-  is a linear equivalence. -/
-noncomputable def Diffeomorph.mfderiv_toContinuousLinearEquiv
-    (Φ : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) (x : M) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (Φ x)) :=
-  (Φ.isLocalDiffeomorph x).mfderiv_toContinuousLinearEquiv hn
-
--- FIXME: can I make hn appear after hf?
-lemma Diffeomorph.mfderiv_toContinuousLinearEquiv_coe (Φ : M ≃ₘ^n⟮I, J⟯ N) :
-    (Φ.mfderiv_toContinuousLinearEquiv hn x).toFun = mfderiv I J Φ x := by rfl
-
-variable (x) in -- FIXME: can I make hn appear after hf?
-/-- If `f` is a `C^n` local diffeomorphism of Banach manifolds (`n ≥ 1`),
-  each differential is a linear equivalence. -/
-noncomputable def IsLocalDiffeomorph.mfderiv_toContinuousLinearEquiv
-    (hf : IsLocalDiffeomorph I J n f) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
-  (hf x).mfderiv_toContinuousLinearEquiv hn
-
-variable (x) in -- FIXME: can I make hn appear after hf?
-lemma IsLocalDiffeomorph.mfderiv_toContinuousLinearEquiv_coe (hf : IsLocalDiffeomorph I J n f) :
-    hf.mfderiv_toContinuousLinearEquiv x hn = mfderiv I J f x :=
-  (hf x).mfderiv_toContinuousLinearEquiv_coe hn
-
-end Differential
