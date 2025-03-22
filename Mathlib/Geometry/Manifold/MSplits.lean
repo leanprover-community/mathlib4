@@ -36,6 +36,27 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
 variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
+-- The following results are proven in #8738 (in progress).
+section prereq8738
+
+namespace IsLocalDiffeomorphAt
+/-- If `f` is a `C^n` local diffeomorphism of Banach manifolds at `x`, for `n ≥ 1`,
+  the differential `df_x` is a linear equivalence. -/
+noncomputable def mfderiv_toContinuousLinearEquiv
+    {f : M → N} {x : M} (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+  sorry
+
+@[simp, mfld_simps]
+lemma mfderiv_toContinuousLinearEquiv_coe
+    {f : M → N} {x : M} (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    (hf.mfderiv_toContinuousLinearEquiv hn).toContinuousLinearMap = mfderiv I J f x :=
+  sorry
+
+end IsLocalDiffeomorphAt
+
+end prereq8738
+
 local instance : NormedAddCommGroup (TangentSpace I x) := by
   show NormedAddCommGroup E
   infer_instance
@@ -63,11 +84,53 @@ lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' 
   -- mfderivWithin_congr helps
   sorry
 
+section
+
+variable [IsManifold I 1 M] {e : PartialHomeomorph M H} {x : M}
+
+/-- The `mfderiv` of an extended chart is a local diffeomorphism. -/
+-- XXX: proven on a prior version of #9273; without any assumptions on the boundary
+def extend_mfderiv_toContinousLinearEquiv
+    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) E := sorry
+
+@[simp, mfld_simps]
+lemma extend_mfderiv_toContinousLinearEquiv_coe
+    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
+    (extend_mfderiv_toContinousLinearEquiv he hx).toContinuousLinearMap =
+      mfderiv I (modelWithCornersSelf 𝕜 E) (e.extend I) x :=
+  sorry -- rfl
+
+def extend_symm_mfderiv_toContinousLinearEquiv
+    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) E (TangentSpace I x) := sorry
+
+@[simp, mfld_simps]
+lemma extend_symm_mfderiv_toContinousLinearEquiv_coe
+    (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
+    (extend_symm_mfderiv_toContinousLinearEquiv he hx).toContinuousLinearMap =
+      mfderiv (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) := sorry
+
+------------------
+
+lemma extend (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
+    MSplitsAt I (modelWithCornersSelf 𝕜 E) (e.extend I) x := by
+  constructor
+  · sorry -- analogue of mdifferentiableAt_extChartAt... also on my old branch?
+  · exact (extend_mfderiv_toContinousLinearEquiv he hx).splits.congr (by simp)
+
+lemma extend_symm (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
+    MSplitsAt (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) := by
+  constructor
+  · sorry -- analogue of mdifferentiableAt_extChartAt_symm ... also on my old branch?
+  · exact (extend_symm_mfderiv_toContinousLinearEquiv he hx).splits.congr (by simp)
+
+end
+
 lemma _root_.IsLocalDiffeomorphAt.msplitsAt {f : M → M'}
-    (hf : IsLocalDiffeomorphAt I I' n f x) (hn : 1 ≤ n) : MSplitsAt I I' f x := by
-  refine ⟨hf.mdifferentiableAt hn, ?_⟩
-  -- proven on a different branch: differential is a continuous linear equivalence
-  sorry -- apply ContinuousLinearEquiv.splits
+    (hf : IsLocalDiffeomorphAt I I' n f x) (hn : 1 ≤ n) : MSplitsAt I I' f x :=
+  ⟨hf.mdifferentiableAt hn,
+    (hf.mfderiv_toContinuousLinearEquiv hn).splits.congr (by symm; simp)⟩
 
 /-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
 lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
@@ -80,8 +143,9 @@ lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     have : CompleteSpace (TangentSpace J (g (f x))) := by show CompleteSpace F; assumption
     exact hg.2.comp hf.2
 
-lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] (hf : MSplitsAt I I' f x)
-    {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : 1 ≤ n) :
+lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    (hf : MSplitsAt I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
+    (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : 1 ≤ n) :
     MSplitsAt J I' (f ∘ f₀) y := by
   have : CompleteSpace (TangentSpace I x) := by show CompleteSpace E; assumption
   have : CompleteSpace (TangentSpace I' (f x)) := by show CompleteSpace E'; assumption
