@@ -79,10 +79,6 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 ### `circleMap`, a parametrization of a circle
 -/
 
-/-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
-  simp [circleMap, add_mul, exp_periodic _]
-
 theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
     (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
   show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
