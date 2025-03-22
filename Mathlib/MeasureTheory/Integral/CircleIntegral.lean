@@ -79,14 +79,6 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 ### `circleMap`, a parametrization of a circle
 -/
 
-/-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
-`c` and radius `|R|`. -/
-def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
-
-/-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
-  simp [circleMap, add_mul, exp_periodic _]
-
 theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
     (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
   show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
