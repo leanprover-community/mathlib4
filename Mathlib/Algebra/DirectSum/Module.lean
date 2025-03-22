@@ -40,17 +40,16 @@ lemma mrange_mapRangeAddMonoidHom :
       (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap coeFnAddMonoidHom := by
   classical
   ext x
-  simp only [AddSubgroup.mem_comap, AddSubmonoid.pi, DirectSum.ext_iff]
+  simp only [AddSubmonoid.mem_comap, mapRange.addMonoidHom_apply, coeFnAddMonoidHom_apply]
   refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
   · simp [← hy]
-  · use DFinsupp.mk x.support (fun i ↦ Classical.choose (h i trivial))
+  · choose g hg using fun i => h i (Set.mem_univ _)
+    use DFinsupp.mk x.support (g ·)
     ext i
     simp only [Finset.coe_sort_coe, mapRange.addMonoidHom_apply, mapRange_apply]
     by_cases mem : i ∈ x.support
-    · convert Classical.choose_spec (h i trivial)
-      exact mk_of_mem mem
-    · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
-      exact congrArg (f i) (mk_of_not_mem mem)
+    · rw [mk_of_mem mem, hg]
+    · rw [DFinsupp.not_mem_support_iff.mp mem, mk_of_not_mem mem, map_zero]
 
 end AddCommMonoid
 
