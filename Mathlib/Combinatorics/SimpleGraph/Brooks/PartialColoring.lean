@@ -1,7 +1,7 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Brooks.First
 import Mathlib.Combinatorics.SimpleGraph.Brooks.DegreeOn
-
+set_option linter.style.header false
 namespace SimpleGraph
 section partialcol
 variable {α : Type*} {G : SimpleGraph α}
@@ -15,6 +15,14 @@ valid : ∀ ⦃v w⦄, v ∈ s → w ∈ s → G.Adj v w → col v ≠ col w
 instance (s : Finset α): FunLike (G.PartialColoring s) α  ℕ where
   coe := PartialColoring.col
   coe_injective' := fun _ _ h ↦ PartialColoring.ext h
+
+instance (s : Finset α) : Coe (G.PartialColoring s) ((G.induce s).Coloring ℕ) where
+  coe := fun C ↦ ⟨fun x ↦ C x.val, by
+    intro a b hab hne;
+    exact C.valid (coe_mem a) (coe_mem b) hab hne⟩
+
+
+
 
 def ofEmpty : G.PartialColoring ∅ where
   col := fun _ ↦ 0
@@ -57,6 +65,8 @@ variable [DecidableEq α]
 open Finset
 variable {s : Finset α} {b : ℕ} {i : α}
 
+
+-- NOTE: This could be defined by giving `C a` directly rather than `a`
 /-- If `C` is a PartialColoring of `s` and `b` is not adjacent to anything
 in `s` then we can color `b` with the color of `a` to give a PartialColoring of `insert b s`.
 (Note: this is mainly useful when `a ∈ s` and `b ∉ s`.) -/
@@ -99,6 +109,8 @@ lemma lt_of_insertNotAdj_lt {b : α} {k : ℕ} (C : G.PartialColoring s)
   rw [ofinsertNotAdj]
   split_ifs <;> exact hlt _
 
+-- NOTE: the use of this could be decduced from if `G` and `H` are `k`-colorable and `G ⊓ H ≤ ⊥`
+-- then so is `G ⊔ H`
 variable {t : Finset α }
 def join (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w) : G.PartialColoring (s ∪ t) where

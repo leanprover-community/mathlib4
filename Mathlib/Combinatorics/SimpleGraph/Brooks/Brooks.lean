@@ -1,5 +1,5 @@
 import Mathlib.Combinatorics.SimpleGraph.Brooks.PartialColoring
-
+set_option linter.style.header false
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
 open Finset
@@ -66,6 +66,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
   have H  (n : ℕ) (hn : #s ≤ n) : ∃ C : G.PartialColoring s, ∀ v,  C v < k := by
     induction n using Nat.strong_induction_on generalizing s with
     | h n ih =>
+    -- Case 0 : there is v ∈ s with d_s(v) < k, so we can extend a k-coloring of
+    -- s.erase v greedily
     by_cases hd : ∃ v ∈ s, G.degreeOn (s.erase v) v < k
     · obtain ⟨v, hv, hlt⟩ := hd
       obtain ⟨C, hC⟩ := ih _ (Nat.lt_of_lt_of_le (card_erase_lt_of_mem hv) hn) _ le_rfl
@@ -73,6 +75,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       have (w : α)  := insert_lt_of_lt hC hvlt w
       use (C.insert_extend v).copy (by simp_all)
       exact this
+    -- So all vertices in `s` have d_s(v) = k (and hence have no neighbors outside `s`)
     push_neg at hd
     replace hd : ∀ v ∈ s, G.degreeOn (s.erase v) v = k := fun v hv ↦ le_antisymm
           ((degreeOn_le_degree ..).trans (hbdd v)) <| hd _ hv
@@ -84,9 +87,14 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       have := degreeOn_lt_degree ⟨by rwa [← mem_neighborFinset] at ha, hns⟩
       rw [← degreeOn_erase, hd _ hv] at this
       exact this.not_le (hbdd v)
+    -- `s` is either Nonempty (main case) or empty (easy)
     by_cases hem : s.Nonempty
     · obtain ⟨v₂, hv₂⟩ := hem
+      -- Since `G` is `k + 1`-cliquefree and `v₂` is a vertex in `s` (so has degree `k` in `s`)
+      -- we know that `Γ(v₂).insert v₂` is not a clique
       have nc := hc <| insert v₂ (G.neighborFinset v₂ ∩ s)
+      -- Since `Γ(v₂).insert v₂` is not a clique `v₂` has distinct non-adjacent neighbors
+      -- in `s`, `v₁` and `v₃`
       have ⟨v₁, v₃, h1, h3, hne, hnadj⟩ : ∃ v₁ v₃, v₁ ∈ G.neighborFinset v₂ ∩ s ∧
           v₃ ∈ G.neighborFinset v₂ ∩ s ∧ v₁ ≠ v₃ ∧ ¬ G.Adj v₁ v₃ := by
         contrapose! nc
@@ -94,6 +102,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           ⟨fun _ ha _ hb hne ↦ nc _ _ ha hb hne, by rw [← hd _ hv₂, degreeOn_erase]⟩
         intro b hb; rw [mem_inter, mem_neighborFinset] at hb
         exact hb.1
+      -- Since `v₃` has degree at least 3 so it has another neighbor `v₄ ≠ v₂`
       have ⟨v₄, h24, h4⟩ : ∃ v₄, G.Adj v₃ v₄ ∧ v₄ ≠ v₂ := by
         simp_rw [← mem_neighborFinset, Ne, ← mem_singleton, ← mem_sdiff]
         apply card_pos.1
@@ -102,6 +111,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         exact (Nat.lt_of_succ_lt hk).trans_le (hbdd' v₃ (mem_inter.1 h3).2).symm.le
       rw [mem_inter, mem_neighborFinset] at h1 h3
       rw [adj_comm] at h3
+      -- We can build the path v₁v₂v₃v₄`
       let v41 := ((Walk.cons h1.1 nil).cons h3.1).cons h24.symm
       have h41 : v41.IsPath := by
         rw [cons_isPath_iff]
@@ -124,6 +134,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
               cases hx with
               | head as => exact h1.2
               | tail b _ => contradiction
+      -- Now extend `v₁v₂v₃v₄` to a maximal path in `s` i.e. a path `v₁ ⋯ vᵣ`
+      -- with all neighbors of `vᵣ` in the path
       obtain ⟨vᵣ, q, hq, hss, hmax⟩ : ∃ vᵣ, ∃ q : G.Walk vᵣ v₄, (q.append v41).IsPath ∧
         (∀ y, y ∈ (q.append v41).support → y ∈ s) ∧
           ∀ y, G.Adj vᵣ y → y ∈ ((q.append v41)).support := by
@@ -137,8 +149,9 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         apply hnb
         apply mem_inter.2 ⟨hx, this hx⟩
       have hdisj2 := (append_isPath_iff.1 hq).2.2
+      -- either this path is the whole of `s` or it is a proper subset
       by_cases hr : ((q.append v41)).support.toFinset = s
-      · --Main case 1
+      · --Main Case 1 the path is all of s
         rw [support_append, v41sup, List.tail,List.toFinset_append] at hr
         simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
         rw [v41sup, List.tail] at hdisj2
@@ -165,7 +178,9 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           exact pair_comm _ _
         convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
           hnadj (by aesop) (by aesop)
-      · -- Main case 2
+      · -- Main case 2 the path is a proper subset of s
+        -- in which case we can build a cycle `c` from `vᵣ` such that all the neighbors
+        -- of `vᵣ` lie in `c`
         have hssf :(q.append v41).support.toFinset ⊂ s :=
           Finset.ssubset_iff_subset_ne.2 ⟨fun y hy ↦ hss _ <| List.mem_toFinset.1 hy, hr⟩
         have  h1 : 1 < G.degree vᵣ := Nat.lt_of_succ_lt <| hk.trans
@@ -174,13 +189,14 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         have hp : p.IsPath := hq.reverse
         have hcmp :=  IsCloseableMaxPath.mk' hp
           (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
-        let c:= ((p.dropUntil p.close find_mem_support).cons hcmp.isClosable.adj)
+        let c := ((p.dropUntil p.close find_mem_support).cons hcmp.isClosable.adj)
         have hps : p.support = (q.append v41).support.reverse := by rw [support_reverse]
         have ⟨hcy, hcym⟩ := IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hp
           (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
         change c.IsCycle at hcy
         change c.IsMaximal at hcym
         rw [IsMaximal.iff] at hcym
+        -- the vertices of `c` are a proper subset of `s`
         have hsub : c.support.toFinset ⊂ s := by
           apply Finset.ssubset_of_subset_of_ssubset _ hssf
           intro y hy
@@ -192,20 +208,25 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             have := (support_dropUntil_subset _ _) hy
             rw [support_reverse] at this
             rwa [List.mem_reverse] at this
+        -- `c` has vertices`
         have hnemp : 0 < #c.support.toFinset := by
           apply card_pos.2;
           use vᵣ
           rw [List.mem_toFinset]
           exact start_mem_support ..
+        -- so we will be able to color `c` and `s \ c` by induction if needed
         have hccard : #c.support.toFinset < n := (card_lt_card hsub).trans_le hn
         have hsdcard : #(s \ c.support.toFinset) < n := by
           rw [card_sdiff hsub.1]
           apply lt_of_lt_of_le _ hn
           rw [Nat.sub_lt_iff_lt_add (card_le_card hsub.1)]
           exact Nat.lt_add_of_pos_left hnemp
-         -- Two cases either cycle has no neighbors outside of c
+         -- Two subcases either `c` has a neighbor in `s \ c` or not
         by_cases hnbc : ∃ x, x ∈ c.support ∧ ∃ y, y ∈ s \ c.support.toFinset ∧ G.Adj x y
         · obtain ⟨x, hx, y, hy, had⟩ := hnbc
+          --`x ∈ c` has a neighbor `y ∈ s \ c` (but `vᵣ ∈ c` has no neighbors in `s \ c`)
+          -- so there is a first dart `d = (d₁, d₂)` in `c` such that `d₁` is adjacent
+          -- to something `s \ c` and `d₂` is not
           let S : Set α := {a |  ∃ b ∈ s \ c.support.toFinset, G.Adj a b}
           have xS : x ∈ S := ⟨ _, hy, had⟩
           have rS : vᵣ ∉ S := fun ⟨ _, hy , had⟩ ↦
@@ -214,12 +235,16 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             exists_boundary_dart_of_closed c _ xS rS hx (start_mem_support ..)
           replace hd2 : ∀ b ∈ s \ c.support.toFinset, ¬ G.Adj d.toProd.2 b := by
             contrapose! hd2 ; exact hd2
+          -- We color `s \ c` by induction
           obtain ⟨C₁, hC₁⟩ := ih _ hsdcard _ le_rfl
-          -- we know `hcym : vᵣ` has all its neighbors in `c` while
-          -- `hnbc : ∃ x ∈ c` that has a neighbor in `s \ c`
+          -- we then extend this coloring to `d₂` by coloring `d₂` with the color of `y`
+          -- the neighbor of `d₁` (so now `d₁` is a vertex on `c` that has two neigbors
+          -- colored with the same color)
           let C₂ := C₁.insertNotAdj hd2 y
           have hC₂ := C₁.lt_of_insertNotAdj_lt hd2 y hC₁
           let hr := (c.dart_fst_mem_support_of_mem_darts hd)
+          -- we take the path given by removing `d₂` from `c` (we do this by rotating
+          -- `c` to start at `d₁` and then removing its last two darts)
           let p := (c.rotate hr).tail.tail
           have hp : p.IsPath := (hcy.rotate hr).isPath_tail.tail
           have hne : d.toProd.2 ≠ y := by
@@ -227,6 +252,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             exact (mem_sdiff.1 hy1).2
             <| List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
           have hc2eq : C₂ d.toProd.2 = C₂ y := C₁.eq_ofinsertNotAdj hd2
+          -- We now color the vertices in `p` greedily in reverse order, so ending with `d₁`
           let C₃ := C₂.Greedy p.reverse.support
           have hd2 : d.toProd.2 ∈ c.support.toFinset :=
             List.mem_toFinset.2 (c.dart_snd_mem_support_of_mem_darts hd)
@@ -252,16 +278,21 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             · exact disjoint_of_subset_right hps sdiff_disjoint
           use C₃.copy heq
           simp_rw [copy_eq]
+          -- We know that when extending a coloring greedily along a path whose end point
+          -- already has two neighbors colored with the same color we never need to use
+          -- more that `k` colors along the path.
           exact C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self ..)
                     (mem_insert_of_mem hy1) d.adj hd1 hne hc2eq hdisj2
-        ·  -- Can now color `c` and `s \ c` by induction
+        · -- The cycle `c` has no edges into `s \ c` and so we can now color
+          -- `c` and `s \ c` by induction
           obtain ⟨C₁, hC₁⟩:= ih _ hccard  _ le_rfl
           obtain ⟨C₂, hC₂⟩:= ih _ hsdcard _ le_rfl
           push_neg at hnbc
           use (C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1)
           intro v; rw [copy_eq]
           apply C₁.join_lt_of_lt hC₁ hC₂
-    · rw [not_nonempty_iff_eq_empty] at hem
+    · -- `s` is empty so easy to `k`-color
+      rw [not_nonempty_iff_eq_empty] at hem
       use (ofEmpty G).copy hem.symm
       intros
       rw [copy_eq, ofEmpty_eq]

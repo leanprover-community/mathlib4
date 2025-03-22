@@ -1,4 +1,5 @@
 import Mathlib.Combinatorics.SimpleGraph.Finite
+set_option linter.style.header false
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
 open Finset

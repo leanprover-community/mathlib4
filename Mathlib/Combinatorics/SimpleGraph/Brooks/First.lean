@@ -1,5 +1,6 @@
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
+set_option linter.style.header false
 namespace SimpleGraph
 variable {α : Type*} {G : SimpleGraph α}
 --import Mathlib.Combinatorics.SimpleGraph.Greedy
