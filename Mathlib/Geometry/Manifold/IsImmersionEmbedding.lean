@@ -341,3 +341,5 @@ def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F
   ⟨hg.1.comp hf.1, hg.2.comp hf.2⟩
 
 end IsSmoothEmbedding
+
+#lint

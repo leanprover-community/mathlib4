@@ -36,27 +36,6 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
 variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
--- The following results are proven in #8738 (in progress).
-section prereq8738
-
-namespace IsLocalDiffeomorphAt
-/-- If `f` is a `C^n` local diffeomorphism of Banach manifolds at `x`, for `n ≥ 1`,
-  the differential `df_x` is a linear equivalence. -/
-noncomputable def mfderiv_toContinuousLinearEquiv
-    {f : M → N} {x : M} (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
-  sorry
-
-@[simp, mfld_simps]
-lemma mfderiv_toContinuousLinearEquiv_coe
-    {f : M → N} {x : M} (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    (hf.mfderiv_toContinuousLinearEquiv hn).toContinuousLinearMap = mfderiv I J f x :=
-  sorry
-
-end IsLocalDiffeomorphAt
-
-end prereq8738
-
 local instance : NormedAddCommGroup (TangentSpace I x) := by
   show NormedAddCommGroup E
   infer_instance
@@ -157,12 +136,14 @@ lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [C
     MSplitsAt I I' f x ↔ MSplitsAt J I' (f ∘ f₀) y := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn,
     fun h ↦ ?_⟩
-  let g₀ : M → N := hf₀.invAt -- TODO: choose the local inverse of f₀
-  have hg₀ : IsLocalDiffeomorphAt I J n g₀ x := sorry
-  have : g₀ x = y := sorry
-  let asdf := h.comp_isLocalDiffeomorphAt_left this hg₀ hn
-  apply asdf.congr
-  sorry -- locally, the inverse agrees
+  let g₀ : M → N := hf₀.localInverse
+  have hg₀' : IsLocalDiffeomorphAt I J n hf₀.localInverse (f₀ y) :=
+    hf₀.localInverse_isLocalDiffeomorphAt
+  have hg₀ : IsLocalDiffeomorphAt I J n (hf₀.localInverse) (f₀ y) := hxy ▸ hg₀'
+  have : g₀ x = y := hxy ▸ hf₀.localInverse_left_inv hf₀.localInverse_mem_target
+  sorry -- let asdf := h.comp_isLocalDiffeomorphAt_left this hg₀ hn
+  -- apply asdf.congr
+  -- locally, the inverse agrees: TODO complete all the details!
 
 lemma comp_isLocalDiffeomorphAt_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {g : M' → N} (hg : IsLocalDiffeomorphAt I' J n g (f x)) (hn : 1 ≤ n) (hf : MSplitsAt I I' f x) :
