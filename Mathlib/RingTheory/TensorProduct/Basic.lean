@@ -1078,7 +1078,6 @@ theorem leftComm_toLinearEquiv :
     (leftComm R A B C : _ ≃ₗ[R] _) = _root_.TensorProduct.leftComm R A B C := rfl
 
 variable (R S A B C D) in
-set_option maxSynthPendingDepth 2 in
 /-- Tensor product of algebras analogue of `mul_mul_mul_comm`.
 
 This is the algebra version of `TensorProduct.AlgebraTensorModule.tensorTensorTensorComm`. -/

@@ -1204,6 +1204,10 @@ theorem normAtAllPlaces_mixedSpaceOfRealSpace {x : realSpace K} (hx : ∀ w, 0 �
   ext
   rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hx _)]
 
+theorem normAtAllPlaces_mixedEmbedding (x : K) (w : InfinitePlace K) :
+    normAtAllPlaces (mixedEmbedding K x) w = w x := by
+  rw [normAtAllPlaces_apply, normAtPlace_apply]
+
 theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
     normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
   normAtAllPlaces_mixedSpaceOfRealSpace fun _ ↦ (normAtAllPlaces_nonneg _ _)
@@ -1217,7 +1221,7 @@ theorem normAtAllPlaces_norm_at_real_places (x : mixedSpace K) :
 
 theorem normAtComplexPlaces_normAtAllPlaces (x : mixedSpace K) :
     normAtComplexPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
-   normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
+  normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
 
 theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
     (h: normAtComplexPlaces x = normAtComplexPlaces y) :

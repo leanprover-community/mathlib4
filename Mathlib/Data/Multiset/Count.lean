@@ -201,9 +201,10 @@ variable {δ : Type*} {r : α → β → Prop} {p : γ → δ → Prop}
 
 theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
-  induction' s using Multiset.induction_on with y s ih generalizing t
-  · rw [rel_zero_left.mp h]
-  · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
+  induction s using Multiset.induction_on generalizing t with
+  | empty => rw [rel_zero_left.mp h]
+  | cons y s ih =>
+    obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]
     simp only [decide_eq_true_eq, Nat.add_right_inj]
     exact (if_congr ⟨fun h => _root_.trans h hb1, fun h => _root_.trans h (symm hb1)⟩ rfl rfl)
