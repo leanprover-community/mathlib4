@@ -100,7 +100,7 @@ theorem IsTutteViolator.empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator 
   classical
   have ⟨c, hc⟩ := Classical.inhabited_of_nonempty
     (Finite.card_pos_iff.mp <| Odd.pos <|
-    (odd_card_iff_odd_components ((⊤ : Subgraph G).deleteVerts ∅).coe).mp (by
+    (odd_ncard_oddComponents ((⊤ : Subgraph G).deleteVerts ∅).coe).mpr (by
     simpa [Fintype.card_congr (Equiv.Set.univ V)] using hodd))
   rw [IsTutteViolator, Set.ncard_empty, Set.ncard_pos]
   use c
@@ -109,11 +109,11 @@ theorem IsTutteViolator.empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator 
 lemma not_IsTutteViolator {M : Subgraph G} (hM : M.IsPerfectMatching) (u : Set V) :
     ¬G.IsTutteViolator u := by
   simpa [IsTutteViolator, Set.Nat.card_coe_set_eq] using Finite.card_le_of_injective
-      (fun c => ⟨(c.1.odd_matches_node_outside hM c.2).choose,
-        (c.1.odd_matches_node_outside hM c.2).choose_spec.1⟩) (by
+      (fun c => ⟨(ConnectedComponent.odd_matches_node_outside hM c).choose,
+        (ConnectedComponent.odd_matches_node_outside hM c).choose_spec.1⟩) (by
     intro x y hxy
-    obtain ⟨v, hv⟩ := (x.1.odd_matches_node_outside hM x.2).choose_spec.2
-    obtain ⟨w, hw⟩ := (y.1.odd_matches_node_outside hM y.2).choose_spec.2
+    obtain ⟨v, hv⟩ := (ConnectedComponent.odd_matches_node_outside hM x).choose_spec.2
+    obtain ⟨w, hw⟩ := (ConnectedComponent.odd_matches_node_outside hM y).choose_spec.2
     obtain ⟨v', hv'⟩ := (M.isPerfectMatching_iff).mp hM _
     rw [Subtype.mk_eq_mk.mp hxy,
       (Subtype.val_injective (hv'.2 _ hw.1.symm ▸ hv'.2 _ hv.1.symm) : v = w)] at hv

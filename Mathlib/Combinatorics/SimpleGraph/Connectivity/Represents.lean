@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
 
-import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 import Mathlib.Data.Set.Card
 
 /-!
@@ -75,11 +75,6 @@ lemma ncard_sdiff_of_not_mem (hrep : Represents s C) (h : c ∉ C) :
   rw [(disjoint_supp_of_not_mem hrep h).sdiff_eq_right]
 
 end ConnectedComponent.Represents
-
-/-- The odd components are the connected components of odd cardinality. This definition excludes
-infinite components. -/
-abbrev oddComponents (G : SimpleGraph V) : Set G.ConnectedComponent :=
-  {c : G.ConnectedComponent | Odd c.supp.ncard}
 
 lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedComponent)
     (hrep : ConnectedComponent.Represents s G.oddComponents) :
