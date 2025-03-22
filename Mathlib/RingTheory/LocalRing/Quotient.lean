@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.Dimension.DivisionRing
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nakayama
 
 /-!
@@ -96,7 +97,7 @@ lemma basisQuotient_repr {ι} [Fintype ι] (b : Basis ι R S) (x) (i) :
   apply (basisQuotient b).repr.symm.injective
   simp only [Finsupp.linearEquivFunOnFinite_symm_coe, LinearEquiv.symm_apply_apply,
     Basis.repr_symm_apply]
-  rw [Finsupp.linearCombination_eq_fintype_linearCombination_apply _ (R ⧸ p),
+  rw [Finsupp.linearCombination_eq_fintype_linearCombination_apply (R ⧸ p),
     Fintype.linearCombination_apply]
   simp only [Function.comp_apply, basisQuotient_apply,
     Ideal.Quotient.mk_smul_mk_quotient_map_quotient, ← Algebra.smul_def]

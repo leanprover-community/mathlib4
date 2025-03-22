@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Topology.Bases
-import Mathlib.Topology.Homeomorph
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Order.CompactlyGenerated.Basic
 import Mathlib.Order.Copy
@@ -55,16 +54,13 @@ variable {ι α β γ : Type*} [TopologicalSpace α] [TopologicalSpace β] [Topo
 
 namespace TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- The type of open subsets of a topological space. -/
 structure Opens where
   /-- The underlying set of a bundled `TopologicalSpace.Opens` object. -/
   carrier : Set α
   /-- The `TopologicalSpace.Opens.carrier _` is an open set. -/
   is_open' : IsOpen carrier
-
-variable {α}
 
 namespace Opens
 
@@ -164,6 +160,9 @@ theorem mk_inf_mk {U V : Set α} {hU : IsOpen U} {hV : IsOpen V} :
 theorem coe_inf (s t : Opens α) : (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t :=
   rfl
 
+@[simp]
+lemma mem_inf {s t : Opens α} {x : α} : x ∈ s ⊓ t ↔ x ∈ s ∧ x ∈ t := Iff.rfl
+
 @[simp, norm_cast]
 theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
   rfl
@@ -171,6 +170,9 @@ theorem coe_sup (s t : Opens α) : (↑(s ⊔ t) : Set α) = ↑s ∪ ↑t :=
 @[simp, norm_cast]
 theorem coe_bot : ((⊥ : Opens α) : Set α) = ∅ :=
   rfl
+
+@[simp]
+lemma mem_bot {x : α} : x ∈ (⊥ : Opens α) ↔ False := Iff.rfl
 
 @[simp] theorem mk_empty : (⟨∅, isOpen_empty⟩ : Opens α) = ⊥ := rfl
 
@@ -381,7 +383,7 @@ theorem comap_injective [T0Space β] : Injective (comap : C(α, β) → FrameHom
         show a ∈ f ⁻¹' s ↔ a ∈ g ⁻¹' s from Set.ext_iff.1 (coe_inj.2 this) a
 
 /-- A homeomorphism induces an order-preserving equivalence on open sets, by taking comaps. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β where
   toFun := Opens.comap (f.symm : C(β, α))
   invFun := Opens.comap (f : C(α, β))

@@ -58,6 +58,9 @@ def map (f : F) (p : Submodule R M) : Submodule R₂ M₂ :=
 theorem map_coe (f : F) (p : Submodule R M) : (map f p : Set M₂) = f '' p :=
   rfl
 
+@[simp]
+theorem map_coe_toLinearMap (f : F) (p : Submodule R M) : map (f : M →ₛₗ[σ₁₂] M₂) p = map f p := rfl
+
 theorem map_toAddSubmonoid (f : M →ₛₗ[σ₁₂] M₂) (p : Submodule R M) :
     (p.map f).toAddSubmonoid = p.toAddSubmonoid.map (f : M →+ M₂) :=
   SetLike.coe_injective rfl
@@ -173,6 +176,9 @@ def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M�
 @[simp]
 theorem comap_coe (f : F) (p : Submodule R₂ M₂) : (comap f p : Set M) = f ⁻¹' p :=
   rfl
+
+@[simp] theorem comap_coe_toLinearMap (f : F) (p : Submodule R₂ M₂) :
+    comap (f : M →ₛₗ[σ₁₂] M₂) p = comap f p := rfl
 
 @[simp]
 theorem AddMonoidHom.coe_toIntLinearMap_comap {A A₂ : Type*} [AddCommGroup A] [AddCommGroup A₂]
@@ -299,6 +305,15 @@ lemma comap_lt_comap_iff_of_surjective {p q : Submodule R₂ M₂} : p.comap f <
 
 theorem comap_strictMono_of_surjective : StrictMono (comap f) :=
   (giMapComap hf).strictMono_u
+
+variable {p q}
+
+theorem le_map_of_comap_le_of_surjective (h : q.comap f ≤ p) : q ≤ p.map f :=
+  map_comap_eq_of_surjective hf q ▸ map_mono h
+
+theorem lt_map_of_comap_lt_of_surjective (h : q.comap f < p) : q < p.map f := by
+  rw [lt_iff_le_not_le] at h ⊢; rw [map_le_iff_le_comap]
+  exact h.imp_left (le_map_of_comap_le_of_surjective hf)
 
 end GaloisInsertion
 
@@ -488,7 +503,6 @@ variable {τ₁₂ : R →+* R₂} {τ₂₁ : R₂ →+* R}
 variable [RingHomInvPair τ₁₂ τ₂₁] [RingHomInvPair τ₂₁ τ₁₂]
 variable (p : Submodule R M) (q : Submodule R₂ M₂)
 
--- Porting note: Was `@[simp]`.
 @[simp high]
 theorem mem_map_equiv {e : M ≃ₛₗ[τ₁₂] M₂} {x : M₂} :
     x ∈ p.map (e : M →ₛₗ[τ₁₂] M₂) ↔ e.symm x ∈ p := by
@@ -558,10 +572,7 @@ theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ 
 the set of maps $\{f ∈ Hom(M, M₂) | f(p) ⊆ q \}$ is a submodule of `Hom(M, M₂)`. -/
 def compatibleMaps : Submodule R (N →ₗ[R] N₂) where
   carrier := { fₗ | pₗ ≤ comap fₗ qₗ }
-  zero_mem' := by
-    change pₗ ≤ comap (0 : N →ₗ[R] N₂) qₗ
-    rw [comap_zero]
-    exact le_top
+  zero_mem' := by simp
   add_mem' {f₁ f₂} h₁ h₂ := by
     apply le_trans _ (inf_comap_le_comap_add qₗ f₁ f₂)
     rw [le_inf_iff]

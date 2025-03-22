@@ -48,7 +48,6 @@ variable {L : GrothendieckTopology E}
 
 /-- An auxiliary structure that witnesses the fact that `f` factors through an image object of `G`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure Presieve.CoverByImageStructure (G : C ⥤ D) {V U : D} (f : V ⟶ U) where
   obj : C
   lift : V ⟶ G.obj obj
@@ -401,8 +400,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     (whiskerRight α (coyoneda.obj _)) hf.some.map (𝟙 _)
   simpa using this
 
-variable (G)
-
+variable (G) in
 /--
 If the pullback map is obtained via whiskering,
 then the result `sheaf_hom (whisker_left G.op α)` is equal to `α`.
@@ -421,8 +419,6 @@ theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom (whiskerLeft G.op α) = �
   conv_lhs => rw [← hf.some.fac]
   dsimp
   simp
-
-variable {G}
 
 /--
 A locally-full and cover-dense functor `G` induces an equivalence between morphisms into a sheaf and

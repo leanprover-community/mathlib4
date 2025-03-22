@@ -38,7 +38,7 @@ include hW
 
 lemma inverts :
     (W.functorCategory (Discrete J)).IsInvertedBy (lim ⋙ L) :=
-  fun _ _ f hf => Localization.inverts L W _ (hW.lim_map f hf)
+  fun _ _ f hf => Localization.inverts L W _ (hW.limMap f hf)
 
 variable [W.ContainsIdentities] [Finite J]
 
@@ -118,7 +118,7 @@ identities and is stable by finite products,
 then any localization functor for `W` preserves finite products. -/
 lemma preservesFiniteProducts :
     PreservesFiniteProducts L where
-  preserves J _ := preservesProductsOfShape L W J
+  preserves _ := preservesProductsOfShape L W _
       (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)
 
 instance : HasFiniteProducts (W.Localization) := hasFiniteProducts W.Q W

@@ -65,7 +65,7 @@ variable {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G] {f g : G → E} 
 
 theorem ContDiffWithinAt.inner (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x) :
     ContDiffWithinAt ℝ n (fun x => ⟪f x, g x⟫) s x :=
-  contDiffAt_inner.comp_contDiffWithinAt x (hf.prod hg)
+  contDiffAt_inner.comp_contDiffWithinAt x (hf.prodMk hg)
 
 nonrec theorem ContDiffAt.inner (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) :
     ContDiffAt ℝ n (fun x => ⟪f x, g x⟫) x :=
@@ -76,7 +76,7 @@ theorem ContDiffOn.inner (hf : ContDiffOn ℝ n f s) (hg : ContDiffOn ℝ n g s)
 
 theorem ContDiff.inner (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) :
     ContDiff ℝ n fun x => ⟪f x, g x⟫ :=
-  contDiff_inner.comp (hf.prod hg)
+  contDiff_inner.comp (hf.prodMk hg)
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   added `by exact` to handle a unification issue. -/
@@ -85,19 +85,19 @@ theorem HasFDerivWithinAt.inner (hf : HasFDerivWithinAt f f' s x)
     HasFDerivWithinAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') s
       x := by
   exact isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
-    |>.hasFDerivAt (f x, g x) |>.comp_hasFDerivWithinAt x (hf.prod hg)
+    |>.hasFDerivAt (f x, g x) |>.comp_hasFDerivWithinAt x (hf.prodMk hg)
 
 theorem HasStrictFDerivAt.inner (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x) :
     HasStrictFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x :=
   isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
-    |>.hasStrictFDerivAt (f x, g x) |>.comp x (hf.prod hg)
+    |>.hasStrictFDerivAt (f x, g x) |>.comp x (hf.prodMk hg)
 
 #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
   added `by exact` to handle a unification issue. -/
 theorem HasFDerivAt.inner (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) :
     HasFDerivAt (fun t => ⟪f t, g t⟫) ((fderivInnerCLM 𝕜 (f x, g x)).comp <| f'.prod g') x := by
   exact isBoundedBilinearMap_inner (𝕜 := 𝕜) (E := E)
-    |>.hasFDerivAt (f x, g x) |>.comp x (hf.prod hg)
+    |>.hasFDerivAt (f x, g x) |>.comp x (hf.prodMk hg)
 
 theorem HasDerivWithinAt.inner {f g : ℝ → E} {f' g' : E} {s : Set ℝ} {x : ℝ}
     (hf : HasDerivWithinAt f f' s x) (hg : HasDerivWithinAt g g' s x) :

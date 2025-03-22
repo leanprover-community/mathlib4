@@ -11,16 +11,17 @@ import Mathlib.Data.Matroid.Dual
 Given `M : Matroid α` and `R : Set α`, the independent sets of `M` that are contained in `R`
 are the independent sets of another matroid `M ↾ R` with ground set `R`,
 called the 'restriction' of `M` to `R`.
-For `I, R ⊆ M.E`, `I` is a basis of `R` in `M` if and only if `I` is a base
-of the restriction `M ↾ R`, so this construction relates `Matroid.Basis` to `Matroid.Base`.
+For `I ⊆ R ⊆ M.E`, `I` is a basis of `R` in `M` if and only if `I` is a base
+of the restriction `M ↾ R`, so this construction relates `Matroid.IsBasis` to `Matroid.IsBase`.
 
 If `N M : Matroid α` satisfy `N = M ↾ R` for some `R ⊆ M.E`,
 then we call `N` a 'restriction of `M`', and write `N ≤r M`. This is a partial order.
 
 This file proves that the restriction is a matroid and that the `≤r` order is a partial order,
 and gives related API.
-It also proves some `Basis` analogues of `Base` lemmas that, while they could be stated in
-`Data.Matroid.Basic`, are hard to prove without `Matroid.restrict` API.
+It also proves some `Matroid.IsBasis` analogues of `Matroid.IsBase` lemmas that,
+while they could be stated in `Data.Matroid.Basic`,
+are hard to prove without `Matroid.restrict` API.
 
 ## Main Definitions
 
@@ -29,7 +30,7 @@ It also proves some `Basis` analogues of `Base` lemmas that, while they could be
 
 * `Matroid.Restriction N M`, written `N ≤r M`, means that `N = M ↾ R` for some `R ⊆ M.E`.
 
-* `Matroid.StrictRestriction N M`, written `N <r M`, means that `N = M ↾ R` for some `R ⊂ M.E`.
+* `Matroid.IsStrictRestriction N M`, written `N <r M`, means that `N = M ↾ R` for some `R ⊂ M.E`.
 
 * `Matroidᵣ α` is a type synonym for `Matroid α`, equipped with the `PartialOrder` `≤r`.
 
@@ -48,10 +49,11 @@ We could instead define this matroid to always be 'smaller' than `M` by setting
 This makes it possible to actually restrict a matroid 'upwards'; for instance, if `M : Matroid α`
 satisfies `M.E = ∅`, then `M ↾ Set.univ` is the matroid on `α` whose ground set is all of `α`,
 where the empty set is only the independent set.
-(Elements of `R` outside the ground set are all 'loops' of the matroid.)
+(In general, elements of `R \ M.E` are all 'loops' of the matroid `M ↾ R`;
+see `Matroid.loops` and `Matroid.restrict_loops_eq'` for a precise version of this statement.)
 This is mathematically strange, but is useful for API building.
 
-The cost of allowing a restriction of `M` to be 'bigger' than the `M` itself is that
+The cost of allowing a restriction of `M` to be 'bigger' than `M` itself is that
 the statement `M ↾ R ≤r M` is only true with the hypothesis `R ⊆ M.E`
 (at least, if we want `≤r` to be a partial order).
 But this isn't too inconvenient in practice. Indeed `(· ⊆ M.E)` proofs
@@ -79,11 +81,11 @@ section restrict
   indep_empty := ⟨M.empty_indep, empty_subset _⟩
   indep_subset := fun _ _ h hIJ ↦ ⟨h.1.subset hIJ, hIJ.trans h.2⟩
   indep_aug := by
-    rintro I I' ⟨hI, hIY⟩ (hIn : ¬ M.Basis' I R) (hI' : M.Basis' I' R)
-    rw [basis'_iff_basis_inter_ground] at hIn hI'
-    obtain ⟨B', hB', rfl⟩ := hI'.exists_base
-    obtain ⟨B, hB, hIB, hBIB'⟩ := hI.exists_base_subset_union_base hB'
-    rw [hB'.inter_basis_iff_compl_inter_basis_dual, diff_inter_diff] at hI'
+    rintro I I' ⟨hI, hIY⟩ (hIn : ¬ M.IsBasis' I R) (hI' : M.IsBasis' I' R)
+    rw [isBasis'_iff_isBasis_inter_ground] at hIn hI'
+    obtain ⟨B', hB', rfl⟩ := hI'.exists_isBase
+    obtain ⟨B, hB, hIB, hBIB'⟩ := hI.exists_isBase_subset_union_isBase hB'
+    rw [hB'.inter_isBasis_iff_compl_inter_isBasis_dual, diff_inter_diff] at hI'
 
     have hss : M.E \ (B' ∪ (R ∩ M.E)) ⊆ M.E \ (B ∪ (R ∩ M.E)) := by
       apply diff_subset_diff_right
@@ -96,11 +98,11 @@ section restrict
 
     have h_eq := hI'.eq_of_subset_indep hi hss
       (diff_subset_diff_right subset_union_right)
-    rw [h_eq, ← diff_inter_diff, ← hB.inter_basis_iff_compl_inter_basis_dual] at hI'
+    rw [h_eq, ← diff_inter_diff, ← hB.inter_isBasis_iff_compl_inter_isBasis_dual] at hI'
 
-    obtain ⟨J, hJ, hIJ⟩ := hI.subset_basis_of_subset
+    obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis_of_subset
       (subset_inter hIB (subset_inter hIY hI.subset_ground))
-    obtain rfl := hI'.indep.eq_of_basis hJ
+    obtain rfl := hI'.indep.eq_of_isBasis hJ
 
     have hIJ' : I ⊂ B ∩ (R ∩ M.E) := hIJ.ssubset_of_ne (fun he ↦ hIn (by rwa [he]))
     obtain ⟨e, he⟩ := exists_of_ssubset hIJ'
@@ -108,7 +110,7 @@ section restrict
       hI'.indep.subset (insert_subset he.1 hIJ), insert_subset he.1.2.1 hIY⟩
   indep_maximal := by
     rintro A hAR I ⟨hI, _⟩ hIA
-    obtain ⟨J, hJ, hIJ⟩ := hI.subset_basis'_of_subset hIA
+    obtain ⟨J, hJ, hIJ⟩ := hI.subset_isBasis'_of_subset hIA
     use J
     simp only [hIJ, and_assoc, maximal_subset_iff, hJ.indep, hJ.subset, and_imp, true_and,
       hJ.subset.trans hAR]
@@ -116,8 +118,8 @@ section restrict
   subset_ground _ := And.right
 
 /-- Change the ground set of a matroid to some `R : Set α`. The independent sets of the restriction
-  are the independent subsets of the new ground set. Most commonly used when `R ⊆ M.E`,
-  but it is convenient not to require this. The elements of `R \ M.E` become 'loops'. -/
+are the independent subsets of the new ground set. Most commonly used when `R ⊆ M.E`,
+but it is convenient not to require this. The elements of `R \ M.E` become 'loops'. -/
 def restrict (M : Matroid α) (R : Set α) : Matroid α := (M.restrictIndepMatroid R).matroid
 
 /-- `M ↾ R` means `M.restrict R`. -/
@@ -151,19 +153,22 @@ theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ �
 @[simp] theorem restrict_idem (M : Matroid α) (R : Set α) : M ↾ R ↾ R = M ↾ R := by
   rw [M.restrict_restrict_eq Subset.rfl]
 
-@[simp] theorem base_restrict_iff (hX : X ⊆ M.E := by aesop_mat) :
-    (M ↾ X).Base I ↔ M.Basis I X := by
-  simp_rw [base_iff_maximal_indep, Basis, and_iff_left hX, maximal_iff, restrict_indep_iff]
+@[simp] theorem isBase_restrict_iff (hX : X ⊆ M.E := by aesop_mat) :
+    (M ↾ X).IsBase I ↔ M.IsBasis I X := by
+  simp_rw [isBase_iff_maximal_indep, IsBasis, and_iff_left hX, maximal_iff, restrict_indep_iff]
 
-theorem base_restrict_iff' : (M ↾ X).Base I ↔ M.Basis' I X := by
-  simp_rw [base_iff_maximal_indep, Basis', maximal_iff, restrict_indep_iff]
+theorem isBase_restrict_iff' : (M ↾ X).IsBase I ↔ M.IsBasis' I X := by
+  simp_rw [isBase_iff_maximal_indep, IsBasis', maximal_iff, restrict_indep_iff]
 
-theorem Basis.restrict_base (h : M.Basis I X) : (M ↾ X).Base I :=
-  (base_restrict_iff h.subset_ground).2 h
+theorem IsBasis'.isBase_restrict (hI : M.IsBasis' I X) : (M ↾ X).IsBase I :=
+  isBase_restrict_iff'.1 hI
 
-instance restrict_finiteRk [M.FiniteRk] (R : Set α) : (M ↾ R).FiniteRk :=
-  let ⟨_, hB⟩ := (M ↾ R).exists_base
-  hB.finiteRk_of_finite (hB.indep.of_restrict.finite)
+theorem IsBasis.restrict_isBase (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
+  (isBase_restrict_iff h.subset_ground).2 h
+
+instance restrict_rankFinite [M.RankFinite] (R : Set α) : (M ↾ R).RankFinite :=
+  let ⟨_, hB⟩ := (M ↾ R).exists_isBase
+  hB.rankFinite_of_finite (hB.indep.of_restrict.finite)
 
 instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by
   refine ⟨fun I hI ↦ ?_⟩
@@ -172,28 +177,32 @@ instance restrict_finitary [Finitary M] (R : Set α) : Finitary (M ↾ R) := by
   exact ⟨fun J hJ hJfin ↦ (hI J hJ hJfin).1,
     fun e heI ↦ singleton_subset_iff.1 (hI _ (by simpa) (toFinite _)).2⟩
 
-@[simp] theorem Basis.base_restrict (h : M.Basis I X) : (M ↾ X).Base I :=
-  (base_restrict_iff h.subset_ground).mpr h
+@[simp] theorem IsBasis.isBase_restrict (h : M.IsBasis I X) : (M ↾ X).IsBase I :=
+  (isBase_restrict_iff h.subset_ground).mpr h
 
-theorem Basis.basis_restrict_of_subset (hI : M.Basis I X) (hXY : X ⊆ Y) : (M ↾ Y).Basis I X := by
-  rwa [← base_restrict_iff, M.restrict_restrict_eq hXY, base_restrict_iff]
+theorem IsBasis.isBasis_restrict_of_subset (hI : M.IsBasis I X) (hXY : X ⊆ Y) :
+    (M ↾ Y).IsBasis I X := by
+  rwa [← isBase_restrict_iff, M.restrict_restrict_eq hXY, isBase_restrict_iff]
 
-theorem basis'_restrict_iff : (M ↾ R).Basis' I X ↔ M.Basis' I (X ∩ R) ∧ I ⊆ R := by
-  simp_rw [Basis', maximal_iff, restrict_indep_iff, subset_inter_iff, and_imp]
+theorem isBasis'_restrict_iff : (M ↾ R).IsBasis' I X ↔ M.IsBasis' I (X ∩ R) ∧ I ⊆ R := by
+  simp_rw [IsBasis', maximal_iff, restrict_indep_iff, subset_inter_iff, and_imp]
   tauto
 
-theorem basis_restrict_iff' : (M ↾ R).Basis I X ↔ M.Basis I (X ∩ M.E) ∧ X ⊆ R := by
-  rw [basis_iff_basis'_subset_ground, basis'_restrict_iff, restrict_ground_eq, and_congr_left_iff,
-    ← basis'_iff_basis_inter_ground]
+theorem isBasis_restrict_iff' : (M ↾ R).IsBasis I X ↔ M.IsBasis I (X ∩ M.E) ∧ X ⊆ R := by
+  rw [isBasis_iff_isBasis'_subset_ground, isBasis'_restrict_iff, restrict_ground_eq,
+    and_congr_left_iff, ← isBasis'_iff_isBasis_inter_ground]
   intro hXR
   rw [inter_eq_self_of_subset_left hXR, and_iff_left_iff_imp]
   exact fun h ↦ h.subset.trans hXR
 
-theorem basis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
-    (M ↾ R).Basis I X ↔ M.Basis I X ∧ X ⊆ R := by
-  rw [basis_restrict_iff', and_congr_left_iff]
+theorem isBasis_restrict_iff (hR : R ⊆ M.E := by aesop_mat) :
+    (M ↾ R).IsBasis I X ↔ M.IsBasis I X ∧ X ⊆ R := by
+  rw [isBasis_restrict_iff', and_congr_left_iff]
   intro hXR
-  rw [← basis'_iff_basis_inter_ground, basis'_iff_basis]
+  rw [← isBasis'_iff_isBasis_inter_ground, isBasis'_iff_isBasis]
+
+lemma isBasis'_iff_isBasis_restrict_univ : M.IsBasis' I X ↔ (M ↾ univ).IsBasis I X := by
+  rw [isBasis_restrict_iff', isBasis'_iff_isBasis_inter_ground, and_iff_left (subset_univ _)]
 
 theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
     M ↾ X = M' ↾ X ↔ ∀ I, I ⊆ X → (M.Indep I ↔ M'.Indep I) := by
@@ -207,26 +216,30 @@ theorem restrict_eq_restrict_iff (M M' : Matroid α) (X : Set α) :
 
 end restrict
 
-section Restriction
+section IsRestriction
 
 variable {N : Matroid α}
 
 /-- `Restriction N M` means that `N = M ↾ R` for some subset `R` of `M.E` -/
-def Restriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
+def IsRestriction (N M : Matroid α) : Prop := ∃ R ⊆ M.E, N = M ↾ R
 
-/-- `StrictRestriction N M` means that `N = M ↾ R` for some strict subset `R` of `M.E` -/
-def StrictRestriction (N M : Matroid α) : Prop := Restriction N M ∧ ¬ Restriction M N
+@[deprecated (since := "2025-02-14")] alias Restriction := IsRestriction
+
+/-- `IsStrictRestriction N M` means that `N = M ↾ R` for some strict subset `R` of `M.E` -/
+def IsStrictRestriction (N M : Matroid α) : Prop := IsRestriction N M ∧ ¬ IsRestriction M N
+
+@[deprecated (since := "2025-02-14")] alias StrictRestriction := IsStrictRestriction
 
 /-- `N ≤r M` means that `N` is a `Restriction` of `M`. -/
-scoped infix:50  " ≤r " => Restriction
+scoped infix:50  " ≤r " => IsRestriction
 
-/-- `N <r M` means that `N` is a `StrictRestriction` of `M`. -/
-scoped infix:50  " <r " => StrictRestriction
+/-- `N <r M` means that `N` is a `IsStrictRestriction` of `M`. -/
+scoped infix:50  " <r " => IsStrictRestriction
 
-/-- A type synonym for matroids with the restriction order.
-  (The `PartialOrder` on `Matroid α` is reserved for the minor order)  -/
+/-- A type synonym for matroids with the isRestriction order.
+(The `PartialOrder` on `Matroid α` is reserved for the minor order) -/
 @[ext] structure Matroidᵣ (α : Type*) where ofMatroid ::
-  /-- The underlying `Matroid`.-/
+  /-- The underlying `Matroid` -/
   toMatroid : Matroid α
 
 instance {α : Type*} : CoeOut (Matroidᵣ α) (Matroid α) where
@@ -265,181 +278,204 @@ theorem ofMatroid_lt_iff {M M' : Matroid α} :
     Matroidᵣ.ofMatroid M < Matroidᵣ.ofMatroid M' ↔ M <r M' := by
   simp
 
-theorem Restriction.refl : M ≤r M :=
+theorem IsRestriction.refl : M ≤r M :=
   le_refl (Matroidᵣ.ofMatroid M)
 
-theorem Restriction.antisymm {M' : Matroid α} (h : M ≤r M') (h' : M' ≤r M) : M = M' := by
+theorem IsRestriction.antisymm {M' : Matroid α} (h : M ≤r M') (h' : M' ≤r M) : M = M' := by
   simpa using (ofMatroid_le_iff.2 h).antisymm (ofMatroid_le_iff.2 h')
 
-theorem Restriction.trans {M₁ M₂ M₃ : Matroid α} (h : M₁ ≤r M₂) (h' : M₂ ≤r M₃) : M₁ ≤r M₃ :=
+theorem IsRestriction.trans {M₁ M₂ M₃ : Matroid α} (h : M₁ ≤r M₂) (h' : M₂ ≤r M₃) : M₁ ≤r M₃ :=
   le_trans (α := Matroidᵣ α) h h'
 
-theorem restrict_restriction (M : Matroid α) (R : Set α) (hR : R ⊆ M.E := by aesop_mat) :
+theorem restrict_isRestriction (M : Matroid α) (R : Set α) (hR : R ⊆ M.E := by aesop_mat) :
     M ↾ R ≤r M :=
   ⟨R, hR, rfl⟩
 
-theorem Restriction.eq_restrict (h : N ≤r M) : M ↾ N.E = N := by
+theorem IsRestriction.eq_restrict (h : N ≤r M) : M ↾ N.E = N := by
   obtain ⟨R, -, rfl⟩ := h; rw [restrict_ground_eq]
 
-theorem Restriction.subset (h : N ≤r M) : N.E ⊆ M.E := by
+theorem IsRestriction.subset (h : N ≤r M) : N.E ⊆ M.E := by
   obtain ⟨R, hR, rfl⟩ := h; exact hR
 
-theorem Restriction.exists_eq_restrict (h : N ≤r M) : ∃ R ⊆ M.E, N = M ↾ R :=
+theorem IsRestriction.exists_eq_restrict (h : N ≤r M) : ∃ R ⊆ M.E, N = M ↾ R :=
   h
 
-theorem Restriction.of_subset {R' : Set α} (M : Matroid α) (h : R ⊆ R') : (M ↾ R) ≤r (M ↾ R') := by
-  rw [← restrict_restrict_eq M h]; exact restrict_restriction _ _ h
+theorem IsRestriction.of_subset {R' : Set α} (M : Matroid α) (h : R ⊆ R') :
+    (M ↾ R) ≤r (M ↾ R') := by
+  rw [← restrict_restrict_eq M h]; exact restrict_isRestriction _ _ h
 
-theorem restriction_iff_exists : (N ≤r M) ↔ ∃ R, R ⊆ M.E ∧ N = M ↾ R := by
-  use Restriction.exists_eq_restrict; rintro ⟨R, hR, rfl⟩; exact restrict_restriction M R hR
+theorem isRestriction_iff_exists : (N ≤r M) ↔ ∃ R, R ⊆ M.E ∧ N = M ↾ R := by
+  use IsRestriction.exists_eq_restrict; rintro ⟨R, hR, rfl⟩; exact restrict_isRestriction M R hR
 
-theorem StrictRestriction.restriction (h : N <r M) : N ≤r M :=
+theorem IsStrictRestriction.isRestriction (h : N <r M) : N ≤r M :=
   h.1
 
-theorem StrictRestriction.ne (h : N <r M) : N ≠ M := by
+theorem IsStrictRestriction.ne (h : N <r M) : N ≠ M := by
   rintro rfl; rw [← ofMatroid_lt_iff] at h; simp at h
 
-theorem StrictRestriction.irrefl (M : Matroid α) : ¬ (M <r M) :=
+theorem IsStrictRestriction.irrefl (M : Matroid α) : ¬ (M <r M) :=
   fun h ↦ h.ne rfl
 
-theorem StrictRestriction.ssubset (h : N <r M) : N.E ⊂ M.E := by
+theorem IsStrictRestriction.ssubset (h : N <r M) : N.E ⊂ M.E := by
   obtain ⟨R, -, rfl⟩ := h.1
-  refine h.restriction.subset.ssubset_of_ne (fun h' ↦ h.2 ⟨R, Subset.rfl, ?_⟩)
+  refine h.isRestriction.subset.ssubset_of_ne (fun h' ↦ h.2 ⟨R, Subset.rfl, ?_⟩)
   rw [show R = M.E from h', restrict_idem, restrict_ground_eq_self]
 
-theorem StrictRestriction.eq_restrict (h : N <r M) : M ↾ N.E = N :=
-  h.restriction.eq_restrict
+theorem IsStrictRestriction.eq_restrict (h : N <r M) : M ↾ N.E = N :=
+  h.isRestriction.eq_restrict
 
-theorem StrictRestriction.exists_eq_restrict (h : N <r M) : ∃ R, R ⊂ M.E ∧ N = M ↾ R :=
+theorem IsStrictRestriction.exists_eq_restrict (h : N <r M) : ∃ R, R ⊂ M.E ∧ N = M ↾ R :=
   ⟨N.E, h.ssubset, by rw [h.eq_restrict]⟩
 
-theorem Restriction.strictRestriction_of_ne (h : N ≤r M) (hne : N ≠ M) : N <r M :=
+theorem IsRestriction.isStrictRestriction_of_ne (h : N ≤r M) (hne : N ≠ M) : N <r M :=
   ⟨h, fun h' ↦ hne <| h.antisymm h'⟩
 
-theorem Restriction.eq_or_strictRestriction (h : N ≤r M) : N = M ∨ N <r M := by
+theorem IsRestriction.eq_or_isStrictRestriction (h : N ≤r M) : N = M ∨ N <r M := by
   simpa using eq_or_lt_of_le (ofMatroid_le_iff.2 h)
 
-theorem restrict_strictRestriction {M : Matroid α} (hR : R ⊂ M.E) : M ↾ R <r M := by
-  refine (M.restrict_restriction R hR.subset).strictRestriction_of_ne (fun h ↦ ?_)
+theorem restrict_isStrictRestriction {M : Matroid α} (hR : R ⊂ M.E) : M ↾ R <r M := by
+  refine (M.restrict_isRestriction R hR.subset).isStrictRestriction_of_ne (fun h ↦ ?_)
   rw [← h, restrict_ground_eq] at hR
   exact hR.ne rfl
 
-theorem Restriction.strictRestriction_of_ground_ne (h : N ≤r M) (hne : N.E ≠ M.E) : N <r M := by
+theorem IsRestriction.isStrictRestriction_of_ground_ne (h : N ≤r M) (hne : N.E ≠ M.E) : N <r M := by
   rw [← h.eq_restrict]
-  exact restrict_strictRestriction (h.subset.ssubset_of_ne hne)
+  exact restrict_isStrictRestriction (h.subset.ssubset_of_ne hne)
 
-theorem StrictRestriction.of_ssubset {R' : Set α} (M : Matroid α) (h : R ⊂ R') :
+theorem IsStrictRestriction.of_ssubset {R' : Set α} (M : Matroid α) (h : R ⊂ R') :
     (M ↾ R) <r (M ↾ R') :=
-  (Restriction.of_subset M h.subset).strictRestriction_of_ground_ne h.ne
+  (IsRestriction.of_subset M h.subset).isStrictRestriction_of_ground_ne h.ne
 
-theorem Restriction.finite {M : Matroid α} [M.Finite] (h : N ≤r M) : N.Finite := by
+theorem IsRestriction.finite {M : Matroid α} [M.Finite] (h : N ≤r M) : N.Finite := by
   obtain ⟨R, hR, rfl⟩ := h
   exact restrict_finite <| M.ground_finite.subset hR
 
-theorem Restriction.finiteRk {M : Matroid α} [FiniteRk M] (h : N ≤r M) : N.FiniteRk := by
+theorem IsRestriction.rankFinite {M : Matroid α} [RankFinite M] (h : N ≤r M) : N.RankFinite := by
   obtain ⟨R, -, rfl⟩ := h
   infer_instance
 
-theorem Restriction.finitary {M : Matroid α} [Finitary M] (h : N ≤r M) : N.Finitary := by
+theorem IsRestriction.finitary {M : Matroid α} [Finitary M] (h : N ≤r M) : N.Finitary := by
   obtain ⟨R, -, rfl⟩ := h
   infer_instance
 
-theorem finite_setOf_restriction (M : Matroid α) [M.Finite] : {N | N ≤r M}.Finite :=
+theorem finite_setOf_isRestriction (M : Matroid α) [M.Finite] : {N | N ≤r M}.Finite :=
   (M.ground_finite.finite_subsets.image (fun R ↦ M ↾ R)).subset <|
     by rintro _ ⟨R, hR, rfl⟩; exact ⟨_, hR, rfl⟩
 
-theorem Indep.of_restriction (hI : N.Indep I) (hNM : N ≤r M) : M.Indep I := by
+theorem Indep.of_isRestriction (hI : N.Indep I) (hNM : N ≤r M) : M.Indep I := by
   obtain ⟨R, -, rfl⟩ := hNM; exact hI.of_restrict
 
-theorem Indep.indep_restriction (hI : M.Indep I) (hNM : N ≤r M) (hIN : I ⊆ N.E) : N.Indep I := by
+theorem Indep.indep_isRestriction (hI : M.Indep I) (hNM : N ≤r M) (hIN : I ⊆ N.E) : N.Indep I := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hI]
 
-theorem Basis.basis_restriction (hI : M.Basis I X) (hNM : N ≤r M) (hX : X ⊆ N.E) : N.Basis I X := by
-  obtain ⟨R, hR, rfl⟩ := hNM; rwa [basis_restrict_iff, and_iff_left (show X ⊆ R from hX)]
+theorem IsRestriction.indep_iff (hMN : N ≤r M) : N.Indep I ↔ M.Indep I ∧ I ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_isRestriction hMN, h.subset_ground⟩, fun h ↦ h.1.indep_isRestriction hMN h.2⟩
 
-theorem Basis.of_restriction (hI : N.Basis I X) (hNM : N ≤r M) : M.Basis I X := by
-  obtain ⟨R, hR, rfl⟩ := hNM; exact ((basis_restrict_iff hR).1 hI).1
+theorem IsBasis.isBasis_isRestriction (hI : M.IsBasis I X) (hNM : N ≤r M) (hX : X ⊆ N.E) :
+    N.IsBasis I X := by
+  obtain ⟨R, hR, rfl⟩ := hNM; rwa [isBasis_restrict_iff, and_iff_left (show X ⊆ R from hX)]
 
-theorem Base.basis_of_restriction (hI : N.Base I) (hNM : N ≤r M) : M.Basis I N.E := by
-  obtain ⟨R, hR, rfl⟩ := hNM; rwa [base_restrict_iff] at hI
+theorem IsBasis.of_isRestriction (hI : N.IsBasis I X) (hNM : N ≤r M) : M.IsBasis I X := by
+  obtain ⟨R, hR, rfl⟩ := hNM; exact ((isBasis_restrict_iff hR).1 hI).1
 
-theorem Dep.of_restriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
+theorem IsBase.isBasis_of_isRestriction (hI : N.IsBase I) (hNM : N ≤r M) : M.IsBasis I N.E := by
+  obtain ⟨R, hR, rfl⟩ := hNM; rwa [isBase_restrict_iff] at hI
+
+theorem IsRestriction.base_iff (hMN : N ≤r M) {B : Set α} : N.IsBase B ↔ M.IsBasis B N.E :=
+  ⟨fun h ↦ IsBase.isBasis_of_isRestriction h hMN,
+    fun h ↦ by simpa [hMN.eq_restrict] using h.restrict_isBase⟩
+
+theorem IsRestriction.isBasis_iff (hMN : N ≤r M) : N.IsBasis I X ↔ M.IsBasis I X ∧ X ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_isRestriction hMN, h.subset_ground⟩, fun h ↦ h.1.isBasis_isRestriction hMN h.2⟩
+
+theorem Dep.of_isRestriction (hX : N.Dep X) (hNM : N ≤r M) : M.Dep X := by
   obtain ⟨R, hR, rfl⟩ := hNM
   rw [restrict_dep_iff] at hX
   exact ⟨hX.1, hX.2.trans hR⟩
 
-theorem Dep.dep_restriction (hX : M.Dep X) (hNM : N ≤r M) (hXE : X ⊆ N.E := by aesop_mat) :
+theorem Dep.dep_isRestriction (hX : M.Dep X) (hNM : N ≤r M) (hXE : X ⊆ N.E := by aesop_mat) :
     N.Dep X := by
   obtain ⟨R, -, rfl⟩ := hNM; simpa [hX.not_indep]
 
-end Restriction
+theorem IsRestriction.dep_iff (hMN : N ≤r M) : N.Dep X ↔ M.Dep X ∧ X ⊆ N.E :=
+  ⟨fun h ↦ ⟨h.of_isRestriction hMN, h.subset_ground⟩, fun h ↦ h.1.dep_isRestriction hMN h.2⟩
+
+end IsRestriction
 
 /-!
-### `Basis` and `Base`
-The lemmas below exploit the fact that `(M ↾ X).Base I ↔ M.Basis I X` to transfer facts about
-`Matroid.Base` to facts about `Matroid.Basis`.
+### `IsBasis` and `Base`
+The lemmas below exploit the fact that `(M ↾ X).Base I ↔ M.IsBasis I X` to transfer facts about
+`Matroid.Base` to facts about `Matroid.IsBasis`.
 Their statements thematically belong in `Data.Matroid.Basic`, but they appear here because their
 proofs depend on the API for `Matroid.restrict`,
 -/
 
-section Basis
+section IsBasis
 
 variable {B J : Set α} {e : α}
 
-theorem Basis.transfer (hIX : M.Basis I X) (hJX : M.Basis J X) (hXY : X ⊆ Y) (hJY : M.Basis J Y) :
-    M.Basis I Y := by
-  rw [← base_restrict_iff]; rw [← base_restrict_iff] at hJY
-  exact hJY.base_of_basis_superset hJX.subset (hIX.basis_restrict_of_subset hXY)
+theorem IsBasis.transfer (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) (hXY : X ⊆ Y)
+    (hJY : M.IsBasis J Y) : M.IsBasis I Y := by
+  rw [← isBase_restrict_iff]; rw [← isBase_restrict_iff] at hJY
+  exact hJY.isBase_of_isBasis_superset hJX.subset (hIX.isBasis_restrict_of_subset hXY)
 
-theorem Basis.basis_of_basis_of_subset_of_subset (hI : M.Basis I X) (hJ : M.Basis J Y) (hJX : J ⊆ X)
-    (hIY : I ⊆ Y) : M.Basis I Y := by
-  have hI' := hI.basis_subset (subset_inter hI.subset hIY) inter_subset_left
-  have hJ' := hJ.basis_subset (subset_inter hJX hJ.subset) inter_subset_right
+theorem IsBasis.isBasis_of_isBasis_of_subset_of_subset (hI : M.IsBasis I X) (hJ : M.IsBasis J Y)
+    (hJX : J ⊆ X) (hIY : I ⊆ Y) : M.IsBasis I Y := by
+  have hI' := hI.isBasis_subset (subset_inter hI.subset hIY) inter_subset_left
+  have hJ' := hJ.isBasis_subset (subset_inter hJX hJ.subset) inter_subset_right
   exact hI'.transfer hJ' inter_subset_right hJ
 
-theorem Indep.exists_basis_subset_union_basis (hI : M.Indep I) (hIX : I ⊆ X) (hJ : M.Basis J X) :
-    ∃ I', M.Basis I' X ∧ I ⊆ I' ∧ I' ⊆ I ∪ J := by
+theorem Indep.exists_isBasis_subset_union_isBasis (hI : M.Indep I) (hIX : I ⊆ X)
+    (hJ : M.IsBasis J X) : ∃ I', M.IsBasis I' X ∧ I ⊆ I' ∧ I' ⊆ I ∪ J := by
   obtain ⟨I', hI', hII', hI'IJ⟩ :=
-    (hI.indep_restrict_of_subset hIX).exists_base_subset_union_base (Basis.base_restrict hJ)
-  rw [base_restrict_iff] at hI'
+    (hI.indep_restrict_of_subset hIX).exists_isBase_subset_union_isBase (IsBasis.isBase_restrict hJ)
+  rw [isBase_restrict_iff] at hI'
   exact ⟨I', hI', hII', hI'IJ⟩
 
-theorem Indep.exists_insert_of_not_basis (hI : M.Indep I) (hIX : I ⊆ X) (hI' : ¬M.Basis I X)
-    (hJ : M.Basis J X) : ∃ e ∈ J \ I, M.Indep (insert e I) := by
-  rw [← base_restrict_iff] at hI'; rw [← base_restrict_iff] at hJ
-  obtain ⟨e, he, hi⟩ := (hI.indep_restrict_of_subset hIX).exists_insert_of_not_base hI' hJ
+theorem Indep.exists_insert_of_not_isBasis (hI : M.Indep I) (hIX : I ⊆ X) (hI' : ¬M.IsBasis I X)
+    (hJ : M.IsBasis J X) : ∃ e ∈ J \ I, M.Indep (insert e I) := by
+  rw [← isBase_restrict_iff] at hI'; rw [← isBase_restrict_iff] at hJ
+  obtain ⟨e, he, hi⟩ := (hI.indep_restrict_of_subset hIX).exists_insert_of_not_isBase hI' hJ
   exact ⟨e, he, (restrict_indep_iff.mp hi).1⟩
 
-theorem Basis.base_of_base_subset (hIX : M.Basis I X) (hB : M.Base B) (hBX : B ⊆ X) : M.Base I :=
-  hB.base_of_basis_superset hBX hIX
+theorem IsBasis.isBase_of_isBase_subset (hIX : M.IsBasis I X) (hB : M.IsBase B) (hBX : B ⊆ X) :
+    M.IsBase I :=
+  hB.isBase_of_isBasis_superset hBX hIX
 
-theorem Basis.exchange (hIX : M.Basis I X) (hJX : M.Basis J X) (he : e ∈ I \ J) :
-    ∃ f ∈ J \ I, M.Basis (insert f (I \ {e})) X := by
-  obtain ⟨y,hy, h⟩ := hIX.restrict_base.exchange hJX.restrict_base he
-  exact ⟨y, hy, by rwa [base_restrict_iff] at h⟩
+theorem IsBasis.exchange (hIX : M.IsBasis I X) (hJX : M.IsBasis J X) (he : e ∈ I \ J) :
+    ∃ f ∈ J \ I, M.IsBasis (insert f (I \ {e})) X := by
+  obtain ⟨y,hy, h⟩ := hIX.restrict_isBase.exchange hJX.restrict_isBase he
+  exact ⟨y, hy, by rwa [isBase_restrict_iff] at h⟩
 
-theorem Basis.eq_exchange_of_diff_eq_singleton (hI : M.Basis I X) (hJ : M.Basis J X)
+theorem IsBasis.eq_exchange_of_diff_eq_singleton (hI : M.IsBasis I X) (hJ : M.IsBasis J X)
     (hIJ : I \ J = {e}) : ∃ f ∈ J \ I, J = insert f I \ {e} := by
-  rw [← base_restrict_iff] at hI hJ; exact hI.eq_exchange_of_diff_eq_singleton hJ hIJ
+  rw [← isBase_restrict_iff] at hI hJ; exact hI.eq_exchange_of_diff_eq_singleton hJ hIJ
 
-theorem Basis'.encard_eq_encard (hI : M.Basis' I X) (hJ : M.Basis' J X) : I.encard = J.encard := by
-  rw [← base_restrict_iff'] at hI hJ; exact hI.card_eq_card_of_base hJ
+theorem IsBasis'.encard_eq_encard (hI : M.IsBasis' I X) (hJ : M.IsBasis' J X) :
+    I.encard = J.encard := by
+  rw [← isBase_restrict_iff'] at hI hJ; exact hI.encard_eq_encard_of_isBase hJ
 
-theorem Basis.encard_eq_encard (hI : M.Basis I X) (hJ : M.Basis J X) : I.encard = J.encard :=
-  hI.basis'.encard_eq_encard hJ.basis'
+theorem IsBasis.encard_eq_encard (hI : M.IsBasis I X) (hJ : M.IsBasis J X) : I.encard = J.encard :=
+  hI.isBasis'.encard_eq_encard hJ.isBasis'
 
 /-- Any independent set can be extended into a larger independent set. -/
 theorem Indep.augment (hI : M.Indep I) (hJ : M.Indep J) (hIJ : I.encard < J.encard) :
     ∃ e ∈ J \ I, M.Indep (insert e I) := by
   by_contra! he
-  have hb : M.Basis I (I ∪ J) := by
-    simp_rw [hI.basis_iff_forall_insert_dep subset_union_left, union_diff_left, mem_diff,
+  have hb : M.IsBasis I (I ∪ J) := by
+    simp_rw [hI.isBasis_iff_forall_insert_dep subset_union_left, union_diff_left, mem_diff,
       and_imp, dep_iff, insert_subset_iff, and_iff_left hI.subset_ground]
     exact fun e heJ heI ↦ ⟨he e ⟨heJ, heI⟩, hJ.subset_ground heJ⟩
-  obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_basis_of_subset I.subset_union_right
+  obtain ⟨J', hJ', hJJ'⟩ := hJ.subset_isBasis_of_subset I.subset_union_right
   rw [← hJ'.encard_eq_encard hb] at hIJ
   exact hIJ.not_le (encard_mono hJJ')
 
-end Basis
+lemma Indep.augment_finset {I J : Finset α} (hI : M.Indep I) (hJ : M.Indep J)
+    (hIJ : I.card < J.card) : ∃ e ∈ J, e ∉ I ∧ M.Indep (insert e I) := by
+  obtain ⟨x, hx, hxI⟩ := hI.augment hJ (by simpa [encard_eq_coe_toFinset_card])
+  simp only [mem_diff, Finset.mem_coe] at hx
+  exact ⟨x, hx.1, hx.2, hxI⟩
+
+end IsBasis
 
 end Matroid

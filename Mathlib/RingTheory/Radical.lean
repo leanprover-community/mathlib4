@@ -47,14 +47,13 @@ This is different from the radical of an ideal.
 
 noncomputable section
 
-open scoped Classical
-
 namespace UniqueFactorizationMonoid
 
 -- `CancelCommMonoidWithZero` is required by `UniqueFactorizationMonoid`
 variable {M : Type*} [CancelCommMonoidWithZero M] [NormalizationMonoid M]
   [UniqueFactorizationMonoid M]
 
+open scoped Classical in
 /-- The finite set of prime factors of an element in a unique factorization monoid. -/
 def primeFactors (a : M) : Finset M :=
   (normalizedFactors a).toFinset
@@ -74,10 +73,12 @@ def radical (a : M) : M :=
 
 @[simp]
 theorem radical_zero_eq : radical (0 : M) = 1 := by
+  classical
   rw [radical, primeFactors, normalizedFactors_zero, Multiset.toFinset_zero, Finset.prod_empty]
 
 @[simp]
 theorem radical_one_eq : radical (1 : M) = 1 := by
+  classical
   rw [radical, primeFactors, normalizedFactors_one, Multiset.toFinset_zero, Finset.prod_empty]
 
 theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = radical b := by
@@ -100,6 +101,7 @@ theorem radical_pow (a : M) {n : Nat} (hn : 0 < n) : radical (a ^ n) = radical a
   simp_rw [radical, primeFactors_pow a hn]
 
 theorem radical_dvd_self (a : M) : radical a ∣ a := by
+  classical
   by_cases ha : a = 0
   · rw [ha]
     apply dvd_zero
@@ -147,13 +149,15 @@ theorem disjoint_normalizedFactors {a b : R} (hc : IsCoprime a b) :
 
 /-- Coprime elements have disjoint prime factors (as finsets). -/
 theorem disjoint_primeFactors {a b : R} (hc : IsCoprime a b) :
-    Disjoint (primeFactors a) (primeFactors b) :=
-  Multiset.disjoint_toFinset.mpr (disjoint_normalizedFactors hc)
+    Disjoint (primeFactors a) (primeFactors b) := by
+  classical
+  exact Multiset.disjoint_toFinset.mpr (disjoint_normalizedFactors hc)
 
 theorem mul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
     (hc : IsCoprime a b) :
     primeFactors (a * b) =
     (primeFactors a).disjUnion (primeFactors b) (disjoint_primeFactors hc) := by
+  classical
   rw [Finset.disjUnion_eq_union]
   simp_rw [primeFactors]
   rw [normalizedFactors_mul ha hb, Multiset.toFinset_add]

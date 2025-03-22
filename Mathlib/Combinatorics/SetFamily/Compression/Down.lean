@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Data.Finset.Card
 import Mathlib.Data.Finset.Lattice.Fold
 
 /-!
@@ -154,7 +155,7 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.family_induction_on.`-/
+See also `Finset.family_induction_on.` -/
 @[elab_as_elim]
 lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
@@ -163,15 +164,18 @@ lemma memberFamily_induction_on {p : Finset (Finset α) → Prop}
   set u := 𝒜.sup id
   have hu : ∀ s ∈ 𝒜, s ⊆ u := fun s ↦ le_sup (f := id)
   clear_value u
-  induction' u using Finset.induction with a u _ ih generalizing 𝒜
-  · simp_rw [subset_empty] at hu
+  induction u using Finset.induction generalizing 𝒜 with
+  | empty =>
+    simp_rw [subset_empty] at hu
     rw [← subset_singleton_iff', subset_singleton_iff] at hu
     obtain rfl | rfl := hu <;> assumption
-  refine subfamily a (ih _ ?_) (ih _ ?_)
-  · simp only [mem_nonMemberSubfamily, and_imp]
-    exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 <| hu _ hs
-  · simp only [mem_memberSubfamily, and_imp]
-    exact fun s hs ha ↦ (insert_subset_insert_iff ha).1 <| hu _ hs
+  | insert _ ih =>
+    rename_i a u _
+    refine subfamily a (ih _ ?_) (ih _ ?_)
+    · simp only [mem_nonMemberSubfamily, and_imp]
+      exact fun s hs has ↦ (subset_insert_iff_of_not_mem has).1 <| hu _ hs
+    · simp only [mem_memberSubfamily, and_imp]
+      exact fun s hs ha ↦ (insert_subset_insert_iff ha).1 <| hu _ hs
 
 /-- Induction principle for finset families. To prove a statement for every finset family,
 it suffices to prove it for
@@ -185,7 +189,7 @@ it suffices to prove it for
 
 This is a way of formalising induction on `n` where `𝒜` is a finset family on `n` elements.
 
-See also `Finset.memberFamily_induction_on.`-/
+See also `Finset.memberFamily_induction_on.` -/
 @[elab_as_elim]
 protected lemma family_induction_on {p : Finset (Finset α) → Prop}
     (𝒜 : Finset (Finset α)) (empty : p ∅) (singleton_empty : p {∅})
@@ -212,7 +216,7 @@ def compression (a : α) (𝒜 : Finset (Finset α)) : Finset (Finset α) :=
 
 @[inherit_doc]
 scoped[FinsetFamily] notation "𝓓 " => Down.compression
--- Porting note: had to open this
+
 open FinsetFamily
 
 /-- `a` is in the down-compressed family iff it's in the original and its compression is in the
