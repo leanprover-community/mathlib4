@@ -114,7 +114,8 @@ theorem der_cons_replicate_I_replicate_U_append_of_der_cons_replicate_I_append (
     Derivable (↑(M :: (replicate c I ++ replicate k U)) ++ xs) := by
   revert xs
   induction k with
-  | zero => simp only [replicate, zero_eq, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
+  | zero =>
+    simp only [replicate, zero_eq, mul_zero, add_zero, append_nil, forall_true_iff, imp_self]
   | succ a ha =>
     intro xs
     specialize ha (U :: xs)
@@ -252,9 +253,10 @@ conditions under which `count I ys = length ys`.
 -/
 theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count U ys = 0)
     (hm : M ∉ ys) : count I ys = length ys := by
-  induction' ys with x xs hxs
-  · rfl
-  · cases x
+  induction ys with
+  | nil => rfl
+  | cons x xs hxs =>
+    cases x
     · -- case `x = M` gives a contradiction.
       exfalso; exact hm (mem_cons_self M xs)
     · -- case `x = I`
@@ -290,9 +292,10 @@ relate to `count U`.
 
 
 theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
-  induction' xs with z zs hzs
-  · exfalso; rw [count] at h; contradiction
-  · rw [mem_cons]
+  induction xs with
+  | nil => exfalso; rw [count] at h; contradiction
+  | cons z zs hzs =>
+    rw [mem_cons]
     cases z <;> try exact Or.inl rfl
     all_goals right; simp only [count_cons, if_false] at h; exact hzs h
 
