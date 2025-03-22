@@ -231,13 +231,13 @@ end deprecated
 open Lean Meta Parser.Term PrettyPrinter.Delaborator SubExpr
 open scoped Batteries.ExtendedBinder
 
-/-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.prod`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
 @[app_delab Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
@@ -252,13 +252,13 @@ to show the domain type when the product is over `Finset.univ`. -/
     let ss ← withNaryArg 3 <| delab
     `(∏ $(.mk i):ident ∈ $ss, $body)
 
-/-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
+/-- Delaborator for `Finset.sum`. The `pp.funBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
 @[app_delab Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
-  let ppDomain ← getPPOption getPPPiBinderTypes
+  let ppDomain ← getPPOption getPPFunBinderTypes
   let (i, body) ← withAppArg <| withBindingBodyUnusedName fun i => do
     return (i, ← delab)
   if s.isAppOfArity ``Finset.univ 2 then
