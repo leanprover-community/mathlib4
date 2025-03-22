@@ -363,7 +363,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
       (Ideal.pow_le_self (Nat.ne_zero_of_lt kpos)) hmax.ne_top.lt_top)
   have findeq {n : ℕ} (npos : n > 0) : Nat.find (map_ntriv' npos ntriv) = Nat.find ntriv :=
     map_ntriv_findeq' npos ntriv
-  choose h_series' hh series_uniq using fun (n : {n : ℕ // n > 0}) ↦ preparation_lift n.2
+  choose h_series' hh series_uniq using fun (n : ℕ+) ↦ preparation_lift n.2
     (f.map (Ideal.Quotient.mk (m ^ n.1))) (map_ntriv' n.2 ntriv)
   dsimp at hh series_uniq
   conv at hh =>
