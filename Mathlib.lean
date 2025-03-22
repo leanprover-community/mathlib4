@@ -1612,6 +1612,7 @@ import Mathlib.Analysis.Normed.Ring.Lemmas
 import Mathlib.Analysis.Normed.Ring.Ultra
 import Mathlib.Analysis.Normed.Ring.Units
 import Mathlib.Analysis.Normed.Ring.WithAbs
+import Mathlib.Analysis.Normed.Unbundled.AlgNormOfGalois
 import Mathlib.Analysis.Normed.Unbundled.AlgebraNorm
 import Mathlib.Analysis.Normed.Unbundled.FiniteExtension
 import Mathlib.Analysis.Normed.Unbundled.IsPowMulFaithful
