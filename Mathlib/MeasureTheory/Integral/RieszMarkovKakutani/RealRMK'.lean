@@ -344,9 +344,7 @@ theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(ri
       rw [h']
       exact tsum_fintype fun b ↦ μ (E b)
     rw [h_sum_measure_En]
-    -- True only if `μ (E i) < ⊤` for each `i`.
-
-    sorry
+    exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ LT.lt.ne_top (h_E_lt_top n)
 
   -- Define sets `V` which are open approximations to the sets `E`
   obtain ⟨V, hV⟩ := open_approx f hε'.1 E μ
