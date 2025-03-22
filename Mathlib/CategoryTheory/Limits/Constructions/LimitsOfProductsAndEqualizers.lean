@@ -135,9 +135,6 @@ theorem hasFiniteLimits_of_hasEqualizers_and_finite_products [HasFiniteProducts 
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-/- Porting note: Removed this and made whatever necessary noncomputable -/
--- noncomputable section
-
 section
 
 variable [HasLimitsOfShape (Discrete J) C] [HasLimitsOfShape (Discrete (Σ p : J × J, p.1 ⟶ p.2)) C]
@@ -185,15 +182,9 @@ lemma preservesLimit_of_preservesEqualizers_and_product :
       apply equalizerIsEqualizer
     · refine Cones.ext (Iso.refl _) ?_
       intro j; dsimp [P, Q, I, i]; simp
--- See note [dsimp, simp].
 
 end
 
-/- Porting note: the original parameter [∀ (J) [Fintype J], PreservesColimitsOfShape
-(Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter
-with type Fintype J does not have forward dependencies, type class resolution cannot
-use this kind of local instance because it will not be able to infer a value for this
-parameter." Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves equalizers and finite products, it preserves finite limits. -/
 lemma preservesFiniteLimits_of_preservesEqualizers_and_finiteProducts [HasEqualizers C]
     [HasFiniteProducts C] (G : C ⥤ D) [PreservesLimitsOfShape WalkingParallelPair G]
@@ -410,8 +401,6 @@ theorem hasFiniteColimits_of_hasCoequalizers_and_finite_coproducts [HasFiniteCop
     [HasCoequalizers C] : HasFiniteColimits C where
   out _ := { has_colimit := fun F => hasColimit_of_coequalizer_and_coproduct F }
 
--- Porting note: removed and added individually
--- noncomputable section
 section
 
 variable [HasColimitsOfShape (Discrete.{w} J) C]
@@ -461,15 +450,9 @@ lemma preservesColimit_of_preservesCoequalizers_and_coproduct :
     intro j
     dsimp [P, Q, I, i]
     simp
--- See note [dsimp, simp].
 
 end
 
-/- Porting note: the original parameter [∀ (J) [Fintype J], PreservesColimitsOfShape
-(Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter
-with type Fintype J does not have forward dependencies, type class resolution cannot use
-this kind of local instance because it will not be able to infer a value for this parameter."
-Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
 /-- If G preserves coequalizers and finite coproducts, it preserves finite colimits. -/
 lemma preservesFiniteColimits_of_preservesCoequalizers_and_finiteCoproducts
     [HasCoequalizers C] [HasFiniteCoproducts C] (G : C ⥤ D)

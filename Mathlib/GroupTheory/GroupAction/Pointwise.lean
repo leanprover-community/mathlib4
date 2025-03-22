@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Set.Function
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!

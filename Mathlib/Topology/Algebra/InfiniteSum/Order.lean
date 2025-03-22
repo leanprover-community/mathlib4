@@ -314,3 +314,29 @@ theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace 
   inv_inv f ▸ Filter.Tendsto.inv_tendsto_nhdsGT_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
       Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)
+
+namespace Mathlib.Meta.Positivity
+
+open Qq Lean Meta Finset
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- Positivity extension for infinite sums.
+
+This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
+requires more assumptions. -/
+@[positivity tsum _]
+def evalTsum : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@tsum _ $instCommMonoid $instTopSpace $ι $f) =>
+    lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
+      let #[(i : Q($ι))] := args | failure
+      let rbody ← core zα pα body
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
+      assertInstancesCommute
+      return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f $pr)
+  | _ => throwError "not tsum"
+
+end Mathlib.Meta.Positivity
