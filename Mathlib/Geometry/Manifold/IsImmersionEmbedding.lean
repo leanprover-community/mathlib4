@@ -40,6 +40,18 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
 
+-- the following result is proven in #8738 (in progress)
+section prereq8738
+
+/-- If `f` is a `C^n` local diffeomorphism of Banach manifolds at `x`, for `n ≥ 1`,
+  the differential `df_x` is a linear equivalence. -/
+noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
+    {f : M → N} {x : M} (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
+    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
+  sorry
+
+end prereq8738
+
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
 
@@ -182,12 +194,19 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
       ModelWithCorners.toPartialEquiv_coe_symm, Filter.inter_mem_iff]
     -- This is close to true... but perhaps the neighbourhood in my definition is wrong!
     constructor <;> sorry
-  -- extended charts are local diffeomorphism (at least for boundaryless manifolds)
-  -- #9273 contains a proof
-  -- TODO: what about boundary points?
 
-  -- thus: apply comp_left,right_iff lemmas to imply f splits at f
-  sorry
+  have : MSplitsAt I (𝓘(𝕜, E'))
+      ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm ∘ (h.domChart.extend I)) x := by
+    --apply this.comp
+    sorry -- pre-compose, apply comp_left lemmas and the pre-requisites above
+  have : MSplitsAt I (𝓘(𝕜, E')) ((h.codChart.extend I') ∘ f) x := by
+    apply this.congr
+    -- on some nbhd, an extended chart and its inverse cancel
+    sorry
+  have : MSplitsAt I I' ((h.codChart.extend I').symm ∘ (h.codChart.extend I') ∘ f) x := by
+    sorry -- post-compose
+  apply this.congr
+  sorry -- extended chart and its inverse cancel
 
 /-- `f` is an immersion at `x` iff `mfderiv I I' f x` splits. -/
 theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
