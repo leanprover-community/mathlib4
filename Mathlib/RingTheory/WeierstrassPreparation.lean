@@ -636,39 +636,38 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
   · exact ⟨mon, hg, by rw [← eq, f'_spec]⟩
   · intro (k', h', g') h_khg'
     rcases h_khg' with ⟨mon', hg', eq'⟩
-    have keq : k' = k := by
-      have : Nat.find exist_nmem = k' + 1 := by
-        apply (Nat.find_eq_iff exist_nmem).mpr
-        constructor
-        · use g'.natDegree
-          simp only [eq', map_smul, smul_eq_mul]
-          have nmem : (g' * h'.1).coeff R g'.natDegree ∉ m := by
-            apply Ideal.Quotient.eq_zero_iff_mem.not.mp
-            have mapg : g'.map (Ideal.Quotient.mk m) = Polynomial.X ^ g'.natDegree := by
-              ext i
-              by_cases ne : i = g'.natDegree
-              · simp [ne, mon']
-              · rcases lt_or_gt_of_ne ne with lt|gt
-                · simpa [ne] using eq_zero_iff_mem.mpr (hg' i (Polynomial.coe_lt_degree.mpr lt))
-                · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
-            simp only [← coeff_map, _root_.map_mul, ← Polynomial.polynomial_map_coe, mapg,
-              Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul', le_refl, ↓reduceIte]
-            simpa only [coeff_map, coeff_zero_eq_constantCoeff, tsub_self]
-              using ((Ideal.Quotient.mk m).isUnit_map (isUnit_constantCoeff h'.1 h'.isUnit)).ne_zero
-          by_contra h
-          rw [← prin, Ideal.span_singleton_pow] at h
-          rcases Ideal.mem_span_singleton.mp h with ⟨r, hr⟩
-          simp only [pow_add, pow_one, mul_assoc, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0,
-            ne_eq, false_and, or_false] at hr
-          absurd nmem
-          rw [← prin, Ideal.mem_span_singleton]
-          use r
-        · simp only [not_exists, Decidable.not_not]
-          intro k hk i
-          apply Ideal.pow_le_pow_right (Nat.le_of_lt_succ hk)
-          simpa [← prin, Ideal.span_singleton_pow, eq']
-            using Ideal.mem_span_singleton.mpr (dvd_mul_right _ _)
-      simp [k, this]
+    have mapg : g'.map (Ideal.Quotient.mk m) = Polynomial.X ^ g'.natDegree := by
+      ext i
+      by_cases ne : i = g'.natDegree
+      · simp [ne, mon']
+      · rcases lt_or_gt_of_ne ne with lt|gt
+        · simpa [ne] using eq_zero_iff_mem.mpr (hg' i (Polynomial.coe_lt_degree.mpr lt))
+        · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
+    have : Nat.find exist_nmem = k' + 1 := by
+      apply (Nat.find_eq_iff exist_nmem).mpr
+      constructor
+      · use g'.natDegree
+        simp only [eq', map_smul, smul_eq_mul]
+        have nmem : (g' * h'.1).coeff R g'.natDegree ∉ m := by
+          apply Ideal.Quotient.eq_zero_iff_mem.not.mp
+          simp only [← coeff_map, _root_.map_mul, ← Polynomial.polynomial_map_coe, mapg,
+            Polynomial.coe_pow, Polynomial.coe_X, coeff_X_pow_mul', le_refl, ↓reduceIte]
+          simpa only [coeff_map, coeff_zero_eq_constantCoeff, tsub_self]
+            using ((Ideal.Quotient.mk m).isUnit_map (isUnit_constantCoeff h'.1 h'.isUnit)).ne_zero
+        by_contra h
+        rw [← prin, Ideal.span_singleton_pow] at h
+        rcases Ideal.mem_span_singleton.mp h with ⟨r, hr⟩
+        simp only [pow_add, pow_one, mul_assoc, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0,
+          ne_eq, false_and, or_false] at hr
+        absurd nmem
+        rw [← prin, Ideal.mem_span_singleton]
+        use r
+      · simp only [not_exists, Decidable.not_not]
+        intro k hk i
+        apply Ideal.pow_le_pow_right (Nat.le_of_lt_succ hk)
+        simpa [← prin, Ideal.span_singleton_pow, eq']
+          using Ideal.mem_span_singleton.mpr (dvd_mul_right _ _)
+    have keq : k' = k := by simp [k, this]
     rw [keq] at eq'
     have heq : h' = h := by
       apply uniq
