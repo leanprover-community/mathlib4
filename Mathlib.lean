@@ -1884,6 +1884,7 @@ import Mathlib.CategoryTheory.Comma.LocallySmall
 import Mathlib.CategoryTheory.Comma.Over.Basic
 import Mathlib.CategoryTheory.Comma.Over.OverClass
 import Mathlib.CategoryTheory.Comma.Over.Pullback
+import Mathlib.CategoryTheory.Comma.Over.Sections
 import Mathlib.CategoryTheory.Comma.Presheaf.Basic
 import Mathlib.CategoryTheory.Comma.Presheaf.Colimit
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
