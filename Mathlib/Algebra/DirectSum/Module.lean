@@ -313,12 +313,12 @@ variable [∀ i, AddCommGroup (β i)] (f : ∀ i, α i →+ β i)
 
 lemma ker_map : (map f).ker =
     (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom α) :=
-  DFinsupp.ker_mapRangeAddMonoidHom f
+  DFinsupp.AddCommGroup.ker_mapRangeAddMonoidHom f
 
 lemma range_map : (map f).range =
     (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) := by
   classical
-  exact DFinsupp.range_mapRangeAddMonoidHom f
+  exact DFinsupp.AddCommGroup.range_mapRangeAddMonoidHom f
 
 end
 
