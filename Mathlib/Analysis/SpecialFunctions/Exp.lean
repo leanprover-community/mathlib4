@@ -493,3 +493,16 @@ open Complex in
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.cexp {ι : Type*} {f : ι → ℂ} {a : ℂ} (h : HasSum f a) : HasProd (cexp ∘ f) (cexp a) :=
   Filter.Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.cexp h
+
+@[simp]
+theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
+  simp [circleMap]
+
+open Complex in
+theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
+  zero_add _
+
+@[simp]
+theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
+
+@[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero

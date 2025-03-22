@@ -79,26 +79,6 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 ### `circleMap`, a parametrization of a circle
 -/
 
-theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
-    (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
-  show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
-      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
-    (((hs.preimage (add_right_injective _)).preimage <|
-      mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
-        mul_left_injective₀ I_ne_zero).preimage ofReal_injective
-
-@[simp]
-theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
-  simp [circleMap]
-
-theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
-  zero_add _
-
-@[simp]
-theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
-
-@[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
-
 theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
 
 theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
