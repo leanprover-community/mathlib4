@@ -6,6 +6,7 @@ Authors: Calle Sönne
 
 import Mathlib.CategoryTheory.Bicategory.LocallyDiscrete
 import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.FiberedCategory.Fibered
 
 /-!
 # The Grothendieck construction
@@ -117,6 +118,54 @@ factor. -/
 def forget : ∫ F ⥤ 𝒮 where
   obj X := X.base
   map f := f.base
+
+variable {a : ∫ F} {b : 𝒮} (f : b ⟶ (forget F).obj a)
+
+/-- The domain of the cartesian lift of `f`. -/
+@[simps]
+def domainCartesianLift : ∫ F :=
+  ⟨b, (F.map f.op.toLoc).obj a.fiber⟩
+
+/-- The cartesian lift of `f`. -/
+@[simps]
+def cartesianLift : domainCartesianLift F f ⟶ a :=
+  ⟨f, 𝟙 _⟩
+
+lemma isHomLift_cartesianLift :
+    IsHomLift (forget F) f (cartesianLift F f) :=
+  ⟨IsHomLiftAux.map (p := forget F) (a := domainCartesianLift F f) ⟨f, 𝟙 _⟩⟩
+
+/-- Given some lift `g` of `f`, the canonical map from the domain of `g` to the domain of
+the cartesian lift of `f`. -/
+def homCartesianLift {a' : ∫ F} (g : a' ⟶ a) [inst : (forget F).IsHomLift f g] :
+    a' ⟶ domainCartesianLift F f where
+  base := eqToHom <| IsHomLift.domain_eq (forget F) f g
+  fiber :=
+    have : g.base = eqToHom _ ≫ f := by simpa using IsHomLift.fac' (forget F) f g
+    g.fiber ≫ ((eqToIso (congrArg (fun u ↦ F.map u.op.toLoc) this)).app a.fiber).hom ≫
+      ((F.mapComp f.op.toLoc _).app _).hom
+
+lemma isHomLift_homCartesianLift {a' : ∫ F} (g : a' ⟶ a) [(forget F).IsHomLift f g] :
+    (forget F).IsHomLift (𝟙 b) (homCartesianLift F f g) := by
+  apply IsHomLift.of_fac'
+  · simp; rfl
+  · apply IsHomLift.domain_eq (forget F) f g
+  · rfl
+
+/-- The preFibered structure on `∫ F`, using the forgetful functor `forget F`. -/
+instance isPreFibered : IsPreFibered (forget F) := by
+  refine ⟨fun {a b} f ↦ ⟨domainCartesianLift F f, cartesianLift F f, ?_⟩⟩
+  refine {cond := (isHomLift_cartesianLift F f).cond, universal_property := ?_}
+  intro a' g hfg
+  refine ⟨homCartesianLift F f g, ?_⟩
+  simp only [categoryStruct_Hom, and_imp, homCartesianLift, cartesianLift]
+  refine ⟨⟨isHomLift_homCartesianLift _ _ _, ?_⟩, ?_⟩
+  · exact Hom.ext _ _ (by simpa using (IsHomLift.fac' (forget F) f g).symm) (by simp)
+  · rintro H K rfl
+    apply Hom.ext
+    · have := by simpa using IsHomLift.fac' (forget F) (𝟙 b) H
+      simp [F.mapComp_congr rfl (congrArg (fun u ↦ u.op.toLoc) this)]
+    · simpa using IsHomLift.fac' (forget F) (𝟙 b) H
 
 end Pseudofunctor.Grothendieck
 
