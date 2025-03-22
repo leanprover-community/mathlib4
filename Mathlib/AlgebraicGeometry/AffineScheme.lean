@@ -121,7 +121,13 @@ to the arrow of the morphism on prime spectra induced by the map on global secti
 noncomputable
 def arrowIsoSpecΓOfIsAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
     Arrow.mk f ≅ Arrow.mk (Spec.map f.appTop) :=
-  Arrow.isoMk X.isoSpec Y.isoSpec (ΓSpec.adjunction.unit_naturality _)
+  Arrow.isoMk X.isoSpec Y.isoSpec
+    (by
+      simp only [Arrow.mk_left, Scheme.Hom.appLE, Opens.map_top, homOfLE_refl, op_id,
+        Arrow.mk_right, Functor.id_obj, Arrow.mk_hom, CategoryTheory.Functor.map_id,
+        Category.comp_id]
+      -- TODO: add a lemma here
+      apply ΓSpec.adjunction.unit_naturality _)
 
 /-- If `f : A ⟶ B` is a ring homomorphism, the corresponding arrow is isomorphic
 to the arrow of the morphism induced on global sections by the map on prime spectra. -/
@@ -290,7 +296,11 @@ def Scheme.Opens.toSpecΓ {X : Scheme.{u}} (U : X.Opens) :
 lemma Scheme.Opens.toSpecΓ_SpecMap_map {X : Scheme} (U V : X.Opens) (h : U ≤ V) :
     U.toSpecΓ ≫ Spec.map (X.presheaf.map (homOfLE h).op) = X.homOfLE h ≫ V.toSpecΓ := by
   delta Scheme.Opens.toSpecΓ
-  simp [← Spec.map_comp, ← X.presheaf.map_comp, toSpecΓ_naturality_assoc]
+  simp only [topIso_inv, eqToHom_op, homOfLE_leOfHom, Category.assoc, ← Spec.map_comp, ←
+    X.presheaf.map_comp, homOfLE_op_comp_eqToHom, toSpecΓ_naturality_assoc, Hom.appTop, Hom.appLE,
+    Opens.map_top, homOfLE_app, homOfLE_refl, op_id, toScheme_presheaf_map, unop_id,
+    CategoryTheory.Functor.map_id]
+  simp [← X.presheaf.map_comp_assoc]
 
 @[simp]
 lemma Scheme.Opens.toSpecΓ_top {X : Scheme} :
