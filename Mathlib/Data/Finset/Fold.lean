@@ -141,8 +141,9 @@ theorem fold_ite [Std.IdempotentOp op] {g : α → β} (p : α → Prop) [Decida
 theorem fold_op_rel_iff_and {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y z) ↔ r x y ∧ r x z)
     {c : β} : r c (s.fold op b f) ↔ r c b ∧ ∀ x ∈ s, r c (f x) := by
   classical
-    induction' s using Finset.induction_on with a s ha IH
-    · simp
+    induction s using Finset.induction_on with
+    | empty => simp
+    | @insert a s ha IH => ?_
     rw [Finset.fold_insert ha, hr, IH, ← and_assoc, @and_comm (r c (f a)), and_assoc]
     apply and_congr Iff.rfl
     constructor
@@ -158,8 +159,9 @@ theorem fold_op_rel_iff_and {r : β → β → Prop} (hr : ∀ {x y z}, r x (op 
 theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y z) ↔ r x y ∨ r x z)
     {c : β} : r c (s.fold op b f) ↔ r c b ∨ ∃ x ∈ s, r c (f x) := by
   classical
-    induction' s using Finset.induction_on with a s ha IH
-    · simp
+    induction s using Finset.induction_on with
+    | empty => simp
+    | @insert a s ha IH => ?_
     rw [Finset.fold_insert ha, hr, IH, ← or_assoc, @or_comm (r c (f a)), or_assoc]
     apply or_congr Iff.rfl
     constructor
@@ -173,9 +175,9 @@ theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y
 @[simp]
 theorem fold_union_empty_singleton [DecidableEq α] (s : Finset α) :
     Finset.fold (· ∪ ·) ∅ singleton s = s := by
-  induction' s using Finset.induction_on with a s has ih
-  · simp only [fold_empty]
-  · rw [fold_insert has, ih, insert_eq]
+  induction s using Finset.induction_on with
+  | empty => simp only [fold_empty]
+  | @insert a s has ih => rw [fold_insert has, ih, insert_eq]
 
 theorem fold_sup_bot_singleton [DecidableEq α] (s : Finset α) :
     Finset.fold (· ⊔ ·) ⊥ singleton s = s :=

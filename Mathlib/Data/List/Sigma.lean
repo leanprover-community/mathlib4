@@ -517,9 +517,9 @@ theorem kerase_comm (a₁ a₂) (l : List (Sigma β)) :
 theorem sizeOf_kerase [SizeOf (Sigma β)] (x : α)
     (xs : List (Sigma β)) : SizeOf.sizeOf (List.kerase x xs) ≤ SizeOf.sizeOf xs := by
   simp only [SizeOf.sizeOf, _sizeOf_1]
-  induction' xs with y ys
-  · simp
-  · by_cases x = y.1 <;> simp [*]
+  induction xs with
+  | nil => simp
+  | cons y ys => by_cases x = y.1 <;> simp [*]
 
 /-! ### `kinsert` -/
 
@@ -602,8 +602,9 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
     · exact l_ih.kerase _
 
 theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys l) = dlookup a l := by
-  induction' l with l_hd _ l_ih
-  · rfl
+  induction l with
+  | nil => rfl
+  | cons l_hd _ l_ih => ?_
   obtain ⟨a', b⟩ := l_hd
   by_cases h : a = a'
   · subst a'

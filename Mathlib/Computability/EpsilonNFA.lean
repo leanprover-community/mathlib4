@@ -73,7 +73,7 @@ theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.
       solve_by_elim [εClosure.step]
   mpr := by
     intro ⟨t, _, h⟩
-    induction' h <;> subst_vars <;> solve_by_elim [εClosure.step]
+    induction h <;> subst_vars <;> solve_by_elim [εClosure.step]
 
 /-- `M.stepSet S a` is the union of the ε-closure of `M.step s a` for all `s ∈ S`. -/
 def stepSet (S : Set σ) (a : α) : Set σ :=
@@ -170,10 +170,12 @@ alias ⟨_, IsPath.singleton⟩ := isPath_singleton
 theorem isPath_append {x y : List (Option α)} :
     M.IsPath s u (x ++ y) ↔ ∃ t, M.IsPath s t x ∧ M.IsPath t u y where
   mp := by
-    induction' x with x a ih generalizing s
-    · rw [List.nil_append]
+    induction x generalizing s with
+    | nil =>
+      rw [List.nil_append]
       tauto
-    · rintro (_ | ⟨t, _, _, _, _, _, h⟩)
+    | cons x a ih =>
+      rintro (_ | ⟨t, _, _, _, _, _, h⟩)
       apply ih at h
       tauto
   mpr := by

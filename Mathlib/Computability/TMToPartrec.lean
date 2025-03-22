@@ -641,9 +641,11 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
 theorem copy_ok (q s a b c d) :
     Reaches₁ (TM2.step tr) ⟨some (Λ'.copy q), s, K'.elim a b c d⟩
       ⟨some q, none, K'.elim (List.reverseAux b a) [] c (List.reverseAux b d)⟩ := by
-  induction' b with x b IH generalizing a d s
-  · refine TransGen.single ?_
+  induction b generalizing a d s with
+  | nil =>
+    refine TransGen.single ?_
     simp
+  | cons x b IH => ?_
   refine TransGen.head rfl ?_
   rw [tr]
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_rev, List.head?_cons, Option.isSome_some,

@@ -1155,9 +1155,9 @@ theorem toList_nil : toList (nil : WSeq α) = Computation.pure [] :=
   destruct_eq_pure rfl
 
 theorem toList_ofList (l : List α) : l ∈ toList (ofList l) := by
-  induction' l with a l IH
-  · simp [ret_mem]
-  · simpa [ret_mem] using think_mem (Computation.mem_map _ IH)
+  induction l with
+  | nil => simp [ret_mem]
+  | cons a l IH => simpa [ret_mem] using think_mem (Computation.mem_map _ IH)
 
 @[simp]
 theorem destruct_ofSeq (s : Seq α) :

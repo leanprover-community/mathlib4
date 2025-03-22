@@ -51,9 +51,10 @@ alias injOn_insertNth_index_of_not_mem := injOn_insertIdx_index_of_not_mem
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
   rintro _ ⟨l, rfl⟩
-  induction' l with b l H
-  · exact ⟨[], rfl⟩
-  · obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
+  induction l with
+  | nil => exact ⟨[], rfl⟩
+  | cons b l H =>
+    obtain ⟨c, hgf⟩ := hfg (Set.mem_range_self b)
     obtain ⟨m, hgf'⟩ := H
     rw [foldr_cons, ← hgf, ← hgf']
     exact ⟨c :: m, rfl⟩

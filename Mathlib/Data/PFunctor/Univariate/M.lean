@@ -137,11 +137,13 @@ theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x
   rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
   cases h₁ : x 1
   dsimp only [head']
-  induction' n with n n_ih
-  · rw [h₁] at h₀
+  induction n with
+  | zero =>
+    rw [h₁] at h₀
     cases h₀
     trivial
-  · have H := Hconsistent (succ n)
+  | succ n n_ih =>
+    have H := Hconsistent (succ n)
     cases h₂ : x (succ n)
     rw [h₀, h₂] at H
     apply n_ih (truncate ∘ f₀)
@@ -274,8 +276,9 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   apply ext'
   intro n
   dsimp only [M.mk]
-  induction' n with n
-  · apply @Subsingleton.elim _ CofixA.instSubsingleton
+  induction n with
+  | zero => apply @Subsingleton.elim _ CofixA.instSubsingleton
+  | succ n => ?_
   dsimp only [Approx.sMk, dest, head]
   rcases h : x.approx (succ n) with - | ⟨hd, ch⟩
   have h' : hd = head' (x.approx 1) := by
@@ -337,9 +340,10 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       intro i
       apply n_ih
       apply hagree
-  · induction' n with _ n_ih generalizing x y
-    · constructor
-    · obtain - | @⟨_, a, x', y'⟩ := h
+    induction n generalizing x y with
+    | zero => constructor
+    | succ _ n_ih =>
+      obtain - | @⟨_, a, x', y'⟩ := h
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f
       simp only [approx_mk]
@@ -471,15 +475,17 @@ theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map 
 theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx : Agree' n z x)
     (hy : Agree' n z y) (hrec : ∀ ps : Path F, n = ps.length → iselect ps x = iselect ps y) :
     x.approx (n + 1) = y.approx (n + 1) := by
-  induction' n with n n_ih generalizing x y z
-  · specialize hrec [] rfl
+  induction n generalizing x y z with
+  | zero =>
+    specialize hrec [] rfl
     induction x using PFunctor.M.casesOn'
     induction y using PFunctor.M.casesOn'
     simp only [iselect_nil] at hrec
     subst hrec
     simp only [approx_mk, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
       heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
-  · cases hx
+  | succ n n_ih =>
+    cases hx
     cases hy
     induction x using PFunctor.M.casesOn'
     induction y using PFunctor.M.casesOn'

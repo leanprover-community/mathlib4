@@ -62,9 +62,10 @@ theorem ascPochhammer_succ_left (n : ℕ) :
 
 theorem monic_ascPochhammer (n : ℕ) [Nontrivial S] [NoZeroDivisors S] :
     Monic <| ascPochhammer S n := by
-  induction' n with n hn
-  · simp
-  · have : leadingCoeff (X + 1 : S[X]) = 1 := leadingCoeff_X_add_C 1
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    have : leadingCoeff (X + 1 : S[X]) = 1 := leadingCoeff_X_add_C 1
     rw [ascPochhammer_succ_left, Monic.def, leadingCoeff_mul,
       leadingCoeff_comp (ne_zero_of_eq_one <| natDegree_X_add_C 1 : natDegree (X + 1) ≠ 0), hn,
       monic_X, one_mul, one_mul, this, one_pow]
@@ -141,9 +142,10 @@ theorem ascPochhammer_succ_comp_X_add_one (n : ℕ) :
 
 theorem ascPochhammer_mul (n m : ℕ) :
     ascPochhammer S n * (ascPochhammer S m).comp (X + (n : S[X])) = ascPochhammer S (n + m) := by
-  induction' m with m ih
-  · simp
-  · rw [ascPochhammer_succ_right, Polynomial.mul_X_add_natCast_comp, ← mul_assoc, ih,
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    rw [ascPochhammer_succ_right, Polynomial.mul_X_add_natCast_comp, ← mul_assoc, ih,
       ← add_assoc, ascPochhammer_succ_right, Nat.cast_add, add_assoc]
 
 theorem ascPochhammer_nat_eq_ascFactorial (n : ℕ) :
@@ -251,9 +253,10 @@ theorem descPochhammer_succ_left (n : ℕ) :
 
 theorem monic_descPochhammer (n : ℕ) [Nontrivial R] [NoZeroDivisors R] :
     Monic <| descPochhammer R n := by
-  induction' n with n hn
-  · simp
-  · have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    have h : leadingCoeff (X - 1 : R[X]) = 1 := leadingCoeff_X_sub_C 1
     have : natDegree (X - (1 : R[X])) ≠ 0 := ne_zero_of_eq_one <| natDegree_X_sub_C (1 : R)
     rw [descPochhammer_succ_left, Monic.def, leadingCoeff_mul, leadingCoeff_comp this, hn, monic_X,
         one_mul, one_mul, h, one_pow]
@@ -349,9 +352,10 @@ theorem descPochhammer_eval_eq_ascPochhammer (r : R) (n : ℕ) :
 
 theorem descPochhammer_mul (n m : ℕ) :
     descPochhammer R n * (descPochhammer R m).comp (X - (n : R[X])) = descPochhammer R (n + m) := by
-  induction' m with m ih
-  · simp
-  · rw [descPochhammer_succ_right, Polynomial.mul_X_sub_intCast_comp, ← mul_assoc, ih,
+  induction m with
+  | zero => simp
+  | succ m ih =>
+    rw [descPochhammer_succ_right, Polynomial.mul_X_sub_intCast_comp, ← mul_assoc, ih,
       ← add_assoc, descPochhammer_succ_right, Nat.cast_add, sub_add_eq_sub_sub]
 
 theorem ascPochhammer_eval_neg_eq_descPochhammer (r : R) : ∀ (k : ℕ),

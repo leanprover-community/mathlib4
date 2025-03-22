@@ -483,9 +483,10 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   rw [Polynomial.aeval_eq_sum_range]
   refine Submodule.sum_mem _ fun i hi => Submodule.smul_mem _ _ ?_
   clear hi
-  induction' i with i ih
-  · rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
-  · show x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
+  induction i with
+  | zero => rw [pow_zero]; exact one_mem_inv_coe_ideal hI0
+  | succ i ih =>
+    show x ^ i.succ ∈ (I⁻¹ : FractionalIdeal A⁰ K)
     rw [pow_succ']; exact x_mul_mem _ ih
 
 /-- Nonzero fractional ideals in a Dedekind domain are units.

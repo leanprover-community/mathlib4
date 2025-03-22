@@ -51,9 +51,10 @@ theorem verschiebung_zmod (x : 𝕎 (ZMod p)) : verschiebung x = x * p := by
 variable (p R)
 
 theorem coeff_p_pow [CharP R p] (i : ℕ) : ((p : 𝕎 R) ^ i).coeff i = 1 := by
-  induction' i with i h
-  · simp only [one_coeff_zero, Ne, pow_zero]
-  · rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP,
+  induction i with
+  | zero => simp only [one_coeff_zero, Ne, pow_zero]
+  | succ i h =>
+    rw [pow_succ, ← frobenius_verschiebung, coeff_frobenius_charP,
       verschiebung_coeff_succ, h, one_pow]
 
 theorem coeff_p_pow_eq_zero [CharP R p] {i j : ℕ} (hj : j ≠ i) : ((p : 𝕎 R) ^ i).coeff j = 0 := by
@@ -109,9 +110,10 @@ theorem mul_charP_coeff_succ [CharP R p] (x : 𝕎 R) (i : ℕ) :
 
 theorem mul_pow_charP_coeff_zero [CharP R p] (x : 𝕎 R) {m n : ℕ} (h : m < n) :
     (x * p ^ n).coeff m = 0 := by
-  induction' n with n ih generalizing m
-  · contradiction
-  · rw [pow_succ, ← mul_assoc]
+  induction n generalizing m with
+  | zero => contradiction
+  | succ n ih =>
+    rw [pow_succ, ← mul_assoc]
     cases m with
     | zero => exact mul_charP_coeff_zero _
     | succ m' =>
@@ -120,9 +122,10 @@ theorem mul_pow_charP_coeff_zero [CharP R p] (x : 𝕎 R) {m n : ℕ} (h : m < n
 
 theorem mul_pow_charP_coeff_succ [CharP R p] (x : 𝕎 R) {m n : ℕ} :
     (x * p ^ n).coeff (m + n) = x.coeff m ^ (p ^ n) := by
-  induction' n with n ih generalizing m
-  · simp
-  · rw [pow_succ, ← mul_assoc, ← add_assoc,mul_charP_coeff_succ, pow_succ, pow_mul]
+  induction n generalizing m with
+  | zero => simp
+  | succ n ih =>
+    rw [pow_succ, ← mul_assoc, ← add_assoc,mul_charP_coeff_succ, pow_succ, pow_mul]
     congr
     exact ih
 
@@ -144,9 +147,10 @@ open Function
 
 theorem iterate_verschiebung_coeff_eq_zero (x : 𝕎 R) {n : ℕ} {m : ℕ} (h : m < n) :
     (verschiebung^[n] x).coeff m = 0 := by
-  induction' n with n ih generalizing m
-  · contradiction
-  · rw [iterate_succ_apply']
+  induction n generalizing m with
+  | zero => contradiction
+  | succ n ih =>
+    rw [iterate_succ_apply']
     cases m with
     | zero => exact verschiebung_coeff_zero _
     | succ m' =>
@@ -155,16 +159,17 @@ theorem iterate_verschiebung_coeff_eq_zero (x : 𝕎 R) {n : ℕ} {m : ℕ} (h :
 
 theorem iterate_verschiebung_coeff (x : 𝕎 R) (n k : ℕ) :
     (verschiebung^[n] x).coeff (k + n) = x.coeff k := by
-  induction' n with k ih
-  · simp
-  · rw [iterate_succ_apply', Nat.add_succ, verschiebung_coeff_succ]
+  induction n with
+  | zero => simp
+  | succ k ih =>
+    rw [iterate_succ_apply', Nat.add_succ, verschiebung_coeff_succ]
     exact ih
 
 theorem iterate_verschiebung_mul_left (x y : 𝕎 R) (i : ℕ) :
     verschiebung^[i] x * y = verschiebung^[i] (x * frobenius^[i] y) := by
-  induction' i with i ih generalizing y
-  · simp
-  · rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
+  induction i generalizing y with
+  | zero => simp
+  | succ i ih => rw [iterate_succ_apply', ← verschiebung_mul_frobenius, ih, iterate_succ_apply']; rfl
 
 section CharP
 
@@ -190,9 +195,10 @@ theorem iterate_verschiebung_mul (x y : 𝕎 R) (i j : ℕ) :
 -- Porting note: `ring_nf` doesn't handle powers yet; needed to add `Nat.pow_succ` rewrite
 theorem iterate_frobenius_coeff (x : 𝕎 R) (i k : ℕ) :
     (frobenius^[i] x).coeff k = x.coeff k ^ p ^ i := by
-  induction' i with i ih
-  · simp
-  · rw [iterate_succ_apply', coeff_frobenius_charP, ih, Nat.pow_succ]
+  induction i with
+  | zero => simp
+  | succ i ih =>
+    rw [iterate_succ_apply', coeff_frobenius_charP, ih, Nat.pow_succ]
     ring_nf
 
 /-- This is a slightly specialized form of [Hazewinkel, *Witt Vectors*][Haze09] 6.2 equation 5. -/
@@ -214,9 +220,9 @@ theorem iterate_verschiebung_iterate_frobenius (x : 𝕎 R) (n : ℕ) :
     verschiebung^[n] (frobenius^[n] x) = x * (p ^ n) := by
   rw [← comp_apply (f := verschiebung^[n]),
       ← Function.Commute.comp_iterate verschiebung_frobenius_comm]
-  induction' n with n ih
-  · simp
-  · rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
+  induction n with
+  | zero => simp
+  | succ n ih => rw [iterate_succ_apply', ih, pow_succ, comp_apply, verschiebung_frobenius, mul_assoc]
 
 end CharP
 

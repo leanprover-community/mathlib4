@@ -177,7 +177,7 @@ theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} 
     (h : IsPrimitiveRoot ζ n) : ∃ P : ℤ[X], map (Int.castRingHom K) P =
       cyclotomic' n K ∧ P.degree = (cyclotomic' n K).degree ∧ P.Monic := by
   refine lifts_and_degree_eq_and_monic ?_ (cyclotomic'.monic n K)
-  induction' n using Nat.strong_induction_on with k ihk generalizing ζ
+  induction n using Nat.strong_induction_on generalizing ζ with | h k ihk => ?_
   rcases k.eq_zero_or_pos with (rfl | hpos)
   · use 1
     simp only [cyclotomic'_zero, coe_mapRingHom, Polynomial.map_one]
@@ -465,7 +465,7 @@ theorem X_pow_sub_one_dvd_prod_cyclotomic (R : Type*) [CommRing R] {n m : ℕ} (
 theorem cyclotomic_eq_prod_X_sub_primitiveRoots {K : Type*} [CommRing K] [IsDomain K] {ζ : K}
     {n : ℕ} (hz : IsPrimitiveRoot ζ n) : cyclotomic n K = ∏ μ ∈ primitiveRoots n K, (X - C μ) := by
   rw [← cyclotomic']
-  induction' n using Nat.strong_induction_on with k hk generalizing ζ
+  induction n using Nat.strong_induction_on generalizing ζ with | h k hk => ?_
   obtain hzero | hpos := k.eq_zero_or_pos
   · simp only [hzero, cyclotomic'_zero, cyclotomic_zero]
   have h : ∀ i ∈ k.properDivisors, cyclotomic i K = cyclotomic' i K := by
@@ -505,8 +505,9 @@ theorem cyclotomic_prime_pow_eq_geom_sum {R : Type*} [CommRing R] {p n : ℕ} (h
       (pow_pos hp.pos (m + 1))
     rw [eq_comm] at this
     rw [this, Nat.prod_properDivisors_prime_pow hp]
-  induction' n with n_n n_ih
-  · haveI := Fact.mk hp; simp [cyclotomic_prime]
+  induction n with
+  | zero => haveI := Fact.mk hp; simp [cyclotomic_prime]
+  | succ n_n n_ih => ?_
   rw [((eq_cyclotomic_iff (pow_pos hp.pos (n_n + 1 + 1)) _).mpr _).symm]
   rw [Nat.prod_properDivisors_prime_pow hp, Finset.prod_range_succ, n_ih]
   rw [this] at n_ih
@@ -521,7 +522,7 @@ theorem cyclotomic_prime_pow_mul_X_pow_sub_one (R : Type*) [CommRing R] (p k : �
 /-- The constant term of `cyclotomic n R` is `1` if `2 ≤ n`. -/
 theorem cyclotomic_coeff_zero (R : Type*) [CommRing R] {n : ℕ} (hn : 1 < n) :
     (cyclotomic n R).coeff 0 = 1 := by
-  induction' n using Nat.strong_induction_on with n hi
+  induction n using Nat.strong_induction_on with | h n hi => ?_
   have hprod : (∏ i ∈ Nat.properDivisors n, (Polynomial.cyclotomic i R).coeff 0) = -1 := by
     rw [← Finset.insert_erase (Nat.one_mem_properDivisors_iff_one_lt.2
       (lt_of_lt_of_le one_lt_two hn)), Finset.prod_insert (Finset.not_mem_erase 1 _),

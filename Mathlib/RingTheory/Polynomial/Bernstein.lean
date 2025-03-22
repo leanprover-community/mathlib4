@@ -137,9 +137,10 @@ theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
   rcases ν with - | ν
   · rintro ⟨⟩
   · rw [Nat.lt_succ_iff]
-    induction' k with k ih generalizing n ν
-    · simp [eval_at_0]
-    · simp only [derivative_succ, Int.natCast_eq_zero, mul_eq_zero, Function.comp_apply,
+    induction k generalizing n ν with
+    | zero => simp [eval_at_0]
+    | succ k ih =>
+      simp only [derivative_succ, Int.natCast_eq_zero, mul_eq_zero, Function.comp_apply,
         Function.iterate_succ, Polynomial.iterate_derivative_sub,
         Polynomial.iterate_derivative_natCast_mul, Polynomial.eval_mul, Polynomial.eval_natCast,
         Polynomial.eval_sub]

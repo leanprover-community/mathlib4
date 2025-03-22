@@ -41,9 +41,10 @@ lemma modEq_list_prod_iff {a b} {l : List ℕ} (co : l.Pairwise Coprime) :
 
 lemma modEq_list_prod_iff' {a b} {s : ι → ℕ} {l : List ι} (co : l.Pairwise (Coprime on s)) :
     a ≡ b [MOD (l.map s).prod] ↔ ∀ i ∈ l, a ≡ b [MOD s i] := by
-  induction' l with i l ih
-  · simp [modEq_one]
-  · have : Coprime (s i) (l.map s).prod := by
+  induction l with
+  | nil => simp [modEq_one]
+  | cons i l ih =>
+    have : Coprime (s i) (l.map s).prod := by
       simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
         forall_apply_eq_imp_iff₂]
       intro j hj
@@ -94,9 +95,10 @@ theorem chineseRemainderOfList_lt_prod (l : List ι)
 theorem chineseRemainderOfList_modEq_unique (l : List ι)
     (co : l.Pairwise (Coprime on s)) {z} (hz : ∀ i ∈ l, z ≡ a i [MOD s i]) :
     z ≡ chineseRemainderOfList a s l co [MOD (l.map s).prod] := by
-  induction' l with i l ih
-  · simp [modEq_one]
-  · simp only [List.map_cons, List.prod_cons, chineseRemainderOfList]
+  induction l with
+  | nil => simp [modEq_one]
+  | cons i l ih =>
+    simp only [List.map_cons, List.prod_cons, chineseRemainderOfList]
     have : Coprime (s i) (l.map s).prod := by
       simp only [coprime_list_prod_right_iff, List.mem_map, forall_exists_index, and_imp,
         forall_apply_eq_imp_iff₂]

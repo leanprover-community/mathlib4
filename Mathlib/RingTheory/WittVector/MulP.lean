@@ -62,9 +62,10 @@ theorem mulN_isPoly (n : ℕ) : IsPoly p fun _ _Rcr x => x * n :=
 @[simp]
 theorem bind₁_wittMulN_wittPolynomial (n k : ℕ) :
     bind₁ (wittMulN p n) (wittPolynomial p ℤ k) = n * wittPolynomial p ℤ k := by
-  induction' n with n ih
-  · simp [wittMulN, Nat.cast_zero, zero_mul, bind₁_zero_wittPolynomial]
-  · rw [wittMulN, ← bind₁_bind₁, wittAdd, wittStructureInt_prop]
+  induction n with
+  | zero => simp [wittMulN, Nat.cast_zero, zero_mul, bind₁_zero_wittPolynomial]
+  | succ n ih =>
+    rw [wittMulN, ← bind₁_bind₁, wittAdd, wittStructureInt_prop]
     simp only [map_add, Nat.cast_succ, bind₁_X_right]
     rw [add_mul, one_mul, bind₁_rename, bind₁_rename]
     simp only [ih, Function.uncurry, Function.comp_def, bind₁_X_left, AlgHom.id_apply,

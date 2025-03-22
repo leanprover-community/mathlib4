@@ -372,9 +372,10 @@ theorem mem_adjoin_of_smul_prime_pow_smul_of_minpoly_isEisensteinAt {B : PowerBa
     (hp : Prime p) (hBint : IsIntegral R B.gen) {n : ℕ} {z : L} (hzint : IsIntegral R z)
     (hz : p ^ n • z ∈ adjoin R ({B.gen} : Set L)) (hei : (minpoly R B.gen).IsEisensteinAt 𝓟) :
     z ∈ adjoin R ({B.gen} : Set L) := by
-  induction' n with n hn
-  · simpa using hz
-  · rw [_root_.pow_succ', mul_smul] at hz
+  induction n with
+  | zero => simpa using hz
+  | succ n hn =>
+    rw [_root_.pow_succ', mul_smul] at hz
     exact
       hn (mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt hp hBint (hzint.smul _) hz hei)
 

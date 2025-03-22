@@ -99,9 +99,10 @@ theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
     P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
   cases nonempty_fintype α
   obtain ⟨l, hl⟩ := (truncSwapFactors f).out
-  induction' l with g l ih generalizing f
-  · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
-  · intro h1 hmul_swap
+  induction l generalizing f with
+  | nil => simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
+  | cons g l ih =>
+    intro h1 hmul_swap
     rcases hl.2 g (by simp) with ⟨x, y, hxy⟩
     rw [← hl.1, List.prod_cons, hxy.2]
     exact
@@ -514,9 +515,11 @@ theorem prod_prodExtendRight {α : Type*} [DecidableEq α] (σ : α → Perm β)
     obtain ⟨_, prod_eq⟩ := Or.resolve_right this (not_and.mpr fun h _ => h (mem_l a))
     rw [prod_eq, prodCongrRight_apply]
   clear mem_l
-  induction' l with a' l ih
-  · refine Or.inr ⟨List.not_mem_nil _, ?_⟩
+  induction l with
+  | nil =>
+    refine Or.inr ⟨List.not_mem_nil _, ?_⟩
     rw [List.map_nil, List.prod_nil, one_apply]
+  | cons a' l ih => ?_
   rw [List.map_cons, List.prod_cons, mul_apply]
   rcases ih (List.nodup_cons.mp hl).2 with (⟨mem_l, prod_eq⟩ | ⟨not_mem_l, prod_eq⟩) <;>
     rw [prod_eq]

@@ -49,11 +49,13 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear_aux {Du Eu 
     the spaces of linear maps that appear in the induction should be in the same universe as the
     original spaces, which explains why we assume in the lemma that all spaces live in the same
     universe. -/
-  induction' n with n IH generalizing Eu Fu Gu
-  · simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
+  induction n generalizing Eu Fu Gu with
+  | zero =>
+    simp only [norm_iteratedFDerivWithin_zero, zero_add, Finset.range_one,
       Finset.sum_singleton, Nat.choose_self, Nat.cast_one, one_mul, Nat.sub_zero, ← mul_assoc]
     apply B.le_opNorm₂
-  · have In : (n : WithTop ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
+  | succ n IH =>
+    have In : (n : WithTop ℕ∞) + 1 ≤ n.succ := by simp only [Nat.cast_succ, le_refl]
     -- Porting note: the next line is a hack allowing Lean to find the operator norm instance.
     let norm := @ContinuousLinearMap.hasOpNorm _ _ Eu ((Du →L[𝕜] Fu) →L[𝕜] Du →L[𝕜] Gu) _ _ _ _ _ _
       (RingHom.id 𝕜)
