@@ -528,7 +528,7 @@ class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G
   finiteIndex : H.index ≠ 0
 
 @[to_additive]
-theorem finiteIndex_iff {G : Type*} [Group G] (H : Subgroup G) :
+theorem finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} : 
     H.FiniteIndex ↔ H.index ≠ 0 :=
   ⟨fun h ↦ h.finiteIndex, fun h ↦ ⟨h⟩⟩
 
