@@ -53,7 +53,7 @@ lemma mrange_mapRangeAddMonoidHom :
 
 end AddCommMonoid
 
-namespace AddCommGroup
+section AddCommGroup
 variable [∀ i, AddCommGroup (M i)] [∀ i, AddCommGroup (N i)] (f : ∀ i : ι, M i →+ N i)
 
 lemma ker_mapRangeAddMonoidHom :
