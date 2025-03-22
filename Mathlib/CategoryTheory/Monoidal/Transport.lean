@@ -79,16 +79,16 @@ categories.
 -/
 def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     (fData : InducingFunctorData F) :
-    MonoidalCategory.{v₂} D where
-  tensorHom_def {X₁ Y₁ X₂ Y₂} f g := F.map_injective <| by
+    MonoidalCategory.{v₂} D := ofTensorComp
+  (tensorHom_def := fun {X₁ Y₁ X₂ Y₂} f g => F.map_injective <| by
     rw [fData.tensorHom_eq, Functor.map_comp, fData.whiskerRight_eq, fData.whiskerLeft_eq]
-    simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc]
-  tensor_id X₁ X₂ := F.map_injective <| by cases fData; aesop_cat
-  tensor_comp {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ := F.map_injective <| by cases fData; aesop_cat
-  whiskerLeft_id X Y := F.map_injective <| by simp [fData.whiskerLeft_eq]
-  id_whiskerRight X Y := F.map_injective <| by simp [fData.whiskerRight_eq]
-  triangle X Y := F.map_injective <| by cases fData; aesop_cat
-  pentagon W X Y Z := F.map_injective <| by
+    simp only [tensorHom_def, assoc, Iso.hom_inv_id_assoc])
+  (tensor_comp := fun {X₁ Y₁ Z₁ X₂ Y₂ Z₂} f₁ f₂ g₁ g₂ =>
+    F.map_injective <| by cases fData; aesop_cat)
+  (whiskerLeft_id := fun X Y => F.map_injective <| by simp [fData.whiskerLeft_eq])
+  (id_whiskerRight := fun X Y => F.map_injective <| by simp [fData.whiskerRight_eq])
+  (triangle := fun X Y => F.map_injective <| by cases fData; aesop_cat)
+  (pentagon := fun W X Y Z => F.map_injective <| by
     simp only [Functor.map_comp, fData.whiskerRight_eq, fData.associator_eq, Iso.trans_assoc,
       Iso.trans_hom, Iso.symm_hom, tensorIso_hom, Iso.refl_hom, tensorHom_id, id_tensorHom,
       comp_whiskerRight, whisker_assoc, assoc, fData.whiskerLeft_eq,
@@ -97,13 +97,13 @@ def induced [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
     slice_lhs 5 6 =>
       rw [← MonoidalCategory.whiskerLeft_comp, hom_inv_whiskerRight]
     rw [whisker_exchange_assoc]
-    simp
-  leftUnitor_naturality {X Y : D} f := F.map_injective <| by
-    simp [fData.leftUnitor_eq, fData.whiskerLeft_eq, whisker_exchange_assoc]
-  rightUnitor_naturality {X Y : D} f := F.map_injective <| by
-    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc]
-  associator_naturality {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ := F.map_injective <| by
-    simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc]
+    simp)
+  (leftUnitor_naturality := fun {X Y : D} f => F.map_injective <| by
+    simp [fData.leftUnitor_eq, fData.whiskerLeft_eq, whisker_exchange_assoc])
+  (rightUnitor_naturality := fun {X Y : D} f => F.map_injective <| by
+    simp [fData.rightUnitor_eq, fData.whiskerRight_eq, ← whisker_exchange_assoc])
+  (associator_naturality := fun {X₁ X₂ X₃ Y₁ Y₂ Y₃} f₁ f₂ f₃ => F.map_injective <| by
+    simp [fData.tensorHom_eq, fData.associator_eq, tensorHom_def, whisker_exchange_assoc])
 
 /-- A faithful functor equipped with a `InducingFunctorData` structure is monoidal. -/
 def fromInducedCoreMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithful]
