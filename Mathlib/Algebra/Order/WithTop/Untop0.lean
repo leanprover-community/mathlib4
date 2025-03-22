@@ -50,14 +50,14 @@ end Zero
 ## Simplifying Lemmas in cases where α is an AddMonoid
 -/
 @[simp]
-lemma untopD_add [AddMonoid α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+lemma untopD_add [Add α] {a b : WithTop α} {c : α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untopD c = a.untopD c + b.untopD c := by
   lift a to α using ha
   lift b to α using hb
   simp [← coe_add]
 
 @[simp]
-lemma untop₀_add [AddMonoid α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
+lemma untop₀_add [AddZeroClass α] {a b : WithTop α} (ha : a ≠ ⊤) (hb : b ≠ ⊤) :
     (a + b).untop₀ = a.untop₀ + b.untop₀ := untopD_add ha hb
 
 /-!
