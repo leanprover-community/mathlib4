@@ -253,17 +253,15 @@ def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
+open scoped Classical in
 variable (K) in
 /--
 A family of elements in the `realSpace K` formed of the image of the fundamental units
 and the vector `(mult w)_w`. This family is in fact a basis of `realSpace K`, see `completeBasis`.
 -/
 def completeFamily : InfinitePlace K → realSpace K :=
-  fun i ↦ by
-    classical
-    exact if hi : i = w₀ then fun w ↦ mult w else
-      expMap.symm
-        (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
+  fun i ↦ if hi : i = w₀ then fun w ↦ mult w else
+    expMap.symm (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
 
 /--
 An auxiliary map from `realSpace K` to `logSpace K` used to prove that `completeFamily` is
@@ -355,7 +353,8 @@ theorem expMap_basis_of_eq :
 theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     expMap (completeBasis K i) =
       normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
-  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp [expMap_target])]
+  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _
+    (by simp [expMap_target, pos_at_place])]
 
 end completeBasis
 
