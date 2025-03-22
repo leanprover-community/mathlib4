@@ -62,6 +62,7 @@ algebra structure `DirectSum.GAlgebra R (fun i ↦ ↥(𝒜 i))`, which in turn 
 -/
 class GradedRing (𝒜 : ι → σ) extends SetLike.GradedMonoid 𝒜, DirectSum.Decomposition 𝒜
 
+/-- The `GradedRing` version of `GradedAlgebra.ofAlgHom`. -/
 abbrev GradedRing.ofRingHom (𝒜 : ι → σ) [SetLike.GradedMonoid 𝒜] (decompose : A →+* ⨁ i, 𝒜 i)
     (right_inv : (DirectSum.coeRingHom 𝒜).comp decompose = RingHom.id A)
     (left_inv : ∀ i (x : 𝒜 i), decompose (x : A) = DirectSum.of (fun i => ↥(𝒜 i)) i x) :
