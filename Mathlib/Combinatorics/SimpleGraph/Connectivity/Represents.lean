@@ -14,7 +14,6 @@ import Mathlib.Data.Set.Card
 
 * `SimpleGraph.ConnectedComponent.Represents` says that a set of vertices represents a set of
   components if it contains exactly one vertex from each component.
-* `SimpleGraph.oddComponents` is the set of connected components of odd cardinality.
 -/
 
 universe u
