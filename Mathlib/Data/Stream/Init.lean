@@ -343,14 +343,10 @@ theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g 
   unfold unfolds; rw [corec_eq]
 
 theorem get_unfolds_head_tail : ∀ (n : ℕ) (s : Stream' α),
-    get (unfolds head tail s) n = get s n := by
+    get (unfolds head tail s) n = get s n := fun n ↦ by
   induction n with
-  | zero =>
-    intro s
-    rfl
-  | succ n' ih =>
-    intro s
-    rw [get_succ, get_succ, unfolds_eq, tail_cons, ih]
+  | zero => intro s; rfl
+  | succ n' ih => intro s; rw [get_succ, get_succ, unfolds_eq, tail_cons, ih]
 
 theorem unfolds_head_eq : ∀ s : Stream' α, unfolds head tail s = s := fun s =>
   Stream'.ext fun n => get_unfolds_head_tail n s
@@ -648,14 +644,10 @@ theorem tails_eq (s : Stream' α) : tails s = tail s::tails (tail s) := by
   unfold tails; rw [corec_eq]; rfl
 
 @[simp]
-theorem get_tails : ∀ (n : ℕ) (s : Stream' α), get (tails s) n = drop n (tail s) := by
+theorem get_tails : ∀ (n : ℕ) (s : Stream' α), get (tails s) n = drop n (tail s) := fun n ↦ by
   induction n with
-  | zero =>
-    intros
-    rfl
-  | succ n' ih =>
-    intro s
-    rw [get_succ, drop_succ, tails_eq, tail_cons, ih]
+  | zero => intros; rfl
+  | succ n' ih => intro s; rw [get_succ, drop_succ, tails_eq, tail_cons, ih]
 
 theorem tails_eq_iterate (s : Stream' α) : tails s = iterate tail (tail s) :=
   rfl
@@ -687,11 +679,9 @@ theorem cons_get_inits_core :
     rfl
 
 @[simp]
-theorem get_inits : ∀ (n : ℕ) (s : Stream' α), get (inits s) n = take (succ n) s := by
+theorem get_inits : ∀ (n : ℕ) (s : Stream' α), get (inits s) n = take (succ n) s := fun n ↦ by
   induction n with
-  | zero =>
-    intros
-    rfl
+  | zero => intros; rfl
   | succ n' ih =>
     intros
     rw [get_succ, take_succ, ← ih, tail_inits, inits_tail, cons_get_inits_core]

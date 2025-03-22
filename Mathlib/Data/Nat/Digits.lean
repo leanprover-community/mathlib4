@@ -489,7 +489,7 @@ theorem sum_le_ofDigits {p : ℕ} (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDig
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
   induction' n with n
   · exact digits_zero _ ▸ Nat.le_refl (List.sum [])
-    induction p with
+  · induction p with
     | zero => rw [digits_zero_succ, List.sum_cons, List.sum_nil, add_zero]
     | succ p =>
       nth_rw 2 [← ofDigits_digits p.succ (n + 1)]

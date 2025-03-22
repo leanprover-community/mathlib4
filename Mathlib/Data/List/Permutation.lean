@@ -126,7 +126,8 @@ theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
   induction ts with
   | nil => rfl
-  | cons a ts ih => simp only [permutations'Aux, map_cons, map_map, ← ih, cons.injEq, true_and, Function.comp_def]
+  | cons a ts ih =>
+    simp only [permutations'Aux, map_cons, map_map, ← ih, cons.injEq, true_and, Function.comp_def]
 
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by

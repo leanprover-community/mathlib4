@@ -250,9 +250,9 @@ instance : KleeneAlgebra (Language α) :=
       refine iSup_le (fun n ↦ ?_)
       induction n with
       | zero => simp
-      | succ n ih => ?_
-      rw [pow_succ, mul_assoc (l^n) l m]
-      exact le_trans (le_mul_congr le_rfl h) ih,
+      | succ n ih =>
+        rw [pow_succ, mul_assoc (l^n) l m]
+        exact le_trans (le_mul_congr le_rfl h) ih,
     mul_kstar_le_self := fun l m h ↦ by
       rw [kstar_eq_iSup_pow, mul_iSup]
       refine iSup_le (fun n ↦ ?_)
@@ -283,10 +283,10 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
       intro i
       induction i with
       | zero =>
-        rw [pow_zero, one_mul, add_comm]
+        rw [h, pow_zero, one_mul, add_comm]
         exact le_self_add
       | succ _ ih =>
-        rw [add_comm, pow_add, pow_one, mul_assoc]
+        rw [h, add_comm, pow_add, pow_one, mul_assoc]
         exact le_add_right (mul_le_mul_left' ih _)
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]
 

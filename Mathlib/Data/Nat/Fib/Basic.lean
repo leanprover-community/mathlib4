@@ -121,11 +121,8 @@ lemma fib_lt_fib {m : ℕ} (hm : 2 ≤ m) : ∀ {n}, fib m < fib n ↔ m < n
 
 theorem le_fib_self {n : ℕ} (five_le_n : 5 ≤ n) : n ≤ fib n := by
   induction five_le_n with
-  | zero =>
-    -- 5 ≤ fib 5
-    rfl
-  | succ n five_le_n =>
-    -- n + 1 ≤ fib (n + 1) for 5 ≤ n
+  | refl => rfl -- 5 ≤ fib 5
+  | @step n five_le_n IH => -- n + 1 ≤ fib (n + 1) for 5 ≤ n
     rw [succ_le_iff]
     calc
       n ≤ fib n := IH

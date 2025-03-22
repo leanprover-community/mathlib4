@@ -345,8 +345,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 @[to_additive]
 theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n := by
   induction h with
-  | nil => exact ⟨0, rfl⟩
-  | cons L₂ L₃ _h₁₂ =>
+  | refl => exact ⟨0, rfl⟩
+  | tail _ h₂₃ ih =>
     rcases ih with ⟨n, eq⟩
     exists 1 + n
     simp [Nat.mul_add, eq, (Step.length h₂₃).symm, add_assoc]
