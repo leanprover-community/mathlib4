@@ -53,7 +53,7 @@ lemma mrange_mapRangeAddMonoidHom :
 
 end AddCommMonoid
 
-namespace AddCommGroup
+section AddCommGroup
 variable [∀ i, AddCommGroup (M i)] [∀ i, AddCommGroup (N i)] (f : ∀ i : ι, M i →+ N i)
 
 lemma ker_mapRangeAddMonoidHom :
@@ -313,12 +313,12 @@ variable [∀ i, AddCommGroup (β i)] (f : ∀ i, α i →+ β i)
 
 lemma ker_map : (map f).ker =
     (AddSubgroup.pi Set.univ (f · |>.ker)).comap (DirectSum.coeFnAddMonoidHom α) :=
-  DFinsupp.AddCommGroup.ker_mapRangeAddMonoidHom f
+  DFinsupp.ker_mapRangeAddMonoidHom f
 
 lemma range_map : (map f).range =
     (AddSubgroup.pi Set.univ (f · |>.range)).comap (DirectSum.coeFnAddMonoidHom β) := by
   classical
-  exact DFinsupp.AddCommGroup.range_mapRangeAddMonoidHom f
+  exact DFinsupp.range_mapRangeAddMonoidHom f
 
 end
 
