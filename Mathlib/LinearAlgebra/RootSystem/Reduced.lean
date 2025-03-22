@@ -39,18 +39,34 @@ namespace RootPairing
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/
-def IsReduced : Prop :=
-  ∀ i j, ¬ LinearIndependent R ![P.root i, P.root j] → (P.root i = P.root j ∨ P.root i = - P.root j)
+@[mk_iff] class IsReduced : Prop where
+  eq_or_eq_neg (i j : ι) (h : ¬ LinearIndependent R ![P.root i, P.root j]) :
+    P.root i = P.root j ∨ P.root i = - P.root j
 
-lemma isReduced_iff : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
+lemma isReduced_iff' : P.IsReduced ↔ ∀ i j : ι, i ≠ j →
     ¬ LinearIndependent R ![P.root i, P.root j] → P.root i = - P.root j := by
-  rw [IsReduced]
+  rw [isReduced_iff]
   refine ⟨fun h i j hij hLin ↦ ?_, fun h i j hLin  ↦ ?_⟩
   · specialize h i j hLin
     simp_all only [ne_eq, EmbeddingLike.apply_eq_iff_eq, false_or]
   · rcases eq_or_ne i j with rfl | h'
     · tauto
     · exact Or.inr (h i j h' hLin)
+
+lemma IsReduced.linearIndependent [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ - P.root j) :
+    LinearIndependent R ![P.root i, P.root j] := by
+  have := IsReduced.eq_or_eq_neg (P := P) i j
+  aesop
+
+lemma IsReduced.linearIndependent_iff [Nontrivial R] [P.IsReduced] :
+    LinearIndependent R ![P.root i, P.root j] ↔ i ≠ j ∧ P.root i ≠ - P.root j := by
+  refine ⟨fun h ↦ ?_, fun ⟨h, h'⟩ ↦ linearIndependent P h h'⟩
+  rw [LinearIndependent.pair_iff] at h
+  contrapose! h
+  rcases eq_or_ne i j with rfl | h'
+  · exact ⟨1, -1, by simp⟩
+  · rw [h h']
+    exact ⟨1, 1, by simp⟩
 
 lemma infinite_of_linInd_coxeterWeight_four [NeZero (2 : R)] [NoZeroSMulDivisors ℤ M]
     (hl : LinearIndependent R ![P.root i, P.root j]) (hc : P.coxeterWeight i j = 4) :
@@ -196,6 +212,11 @@ lemma linearIndependent_iff_coxeterWeightIn_ne_four :
 lemma coxeterWeightIn_eq_four_iff_not_linearIndependent :
     P.coxeterWeightIn S i j = 4 ↔ ¬ LinearIndependent R ![P.root i, P.root j] := by
   rw [P.linearIndependent_iff_coxeterWeightIn_ne_four S, not_not]
+
+lemma coxeterWeightIn_ne_four [P.IsReduced] (h : i ≠ j) (h' : P.root i ≠ - P.root j) :
+    P.coxeterWeightIn S i j ≠ 4 := by
+  rw [ne_eq, coxeterWeightIn_eq_four_iff_not_linearIndependent, not_not]
+  exact IsReduced.linearIndependent P h h'
 
 variable (i j)
 

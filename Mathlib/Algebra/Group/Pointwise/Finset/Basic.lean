@@ -3,10 +3,9 @@ Copyright (c) 2020 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Pointwise.Set.ListOfFn
-import Mathlib.Data.Finset.Density
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Finset.Preimage
@@ -53,9 +52,7 @@ finset multiplication, finset addition, pointwise addition, pointwise multiplica
 pointwise subtraction
 -/
 
--- TODO
--- assert_not_exists MonoidWithZero
-assert_not_exists MulAction Cardinal
+assert_not_exists Cardinal Finset.dens MonoidWithZero MulAction OrderedCommMonoid
 
 open Function MulOpposite
 
@@ -283,9 +280,6 @@ theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.tra
 
 @[to_additive (attr := simp)]
 theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
-
-@[to_additive (attr := simp)]
-lemma dens_inv [Fintype α] (s : Finset α) : s⁻¹.dens = s.dens := by simp [dens]
 
 @[to_additive (attr := simp)]
 theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) inv_injective.injOn = s⁻¹ :=
@@ -1094,11 +1088,6 @@ protected def commMonoid : CommMonoid (Finset α) :=
 
 scoped[Pointwise] attribute [instance] Finset.commMonoid Finset.addCommMonoid
 
-@[to_additive (attr := simp, norm_cast)]
-theorem coe_prod {ι : Type*} (s : Finset ι) (f : ι → Finset α) :
-    ↑(∏ i ∈ s, f i) = ∏ i ∈ s, (f i : Set α) :=
-  map_prod ((coeMonoidHom) : Finset α →* Set α) _ _
-
 end CommMonoid
 
 open Pointwise
@@ -1536,26 +1525,6 @@ theorem image_smul_comm [DecidableEq β] [DecidableEq γ] [SMul α β] [SMul α 
     (s : Finset β) : (∀ b, f (a • b) = a • f b) → (a • s).image f = a • s.image f :=
   image_comm
 
-section BigOps
-section CommMonoid
-variable [CommMonoid α] {ι : Type*} [DecidableEq ι]
-
-@[to_additive (attr := simp)] lemma prod_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∏ i ∈ s⁻¹, f i = ∏ i ∈ s, f i⁻¹ := prod_image inv_injective.injOn
-
-@[to_additive existing, simp] lemma prod_neg_index [InvolutiveNeg ι] (s : Finset ι) (f : ι → α) :
-    ∏ i ∈ -s, f i = ∏ i ∈ s, f (-i) := prod_image neg_injective.injOn
-
-end CommMonoid
-
-section AddCommMonoid
-variable [AddCommMonoid α] {ι : Type*} [DecidableEq ι]
-
-@[to_additive existing, simp] lemma sum_inv_index [InvolutiveInv ι] (s : Finset ι) (f : ι → α) :
-    ∑ i ∈ s⁻¹, f i = ∑ i ∈ s, f i⁻¹ := sum_image inv_injective.injOn
-
-end AddCommMonoid
-end BigOps
 end Finset
 
 namespace Fintype

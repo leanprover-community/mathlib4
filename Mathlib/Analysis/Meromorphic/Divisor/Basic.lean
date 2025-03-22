@@ -3,7 +3,8 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Divisors on subsets of normed fields
@@ -82,6 +83,11 @@ lemma coe_injective : Function.Injective (· : DivisorOn U → 𝕜 → ℤ) := 
 /-!
 ## Elementary properties of the support
 -/
+
+/-- Simplifier lemma: A divisor on `U` evaluates to zero outside of `U`. -/
+@[simp]
+lemma apply_eq_zero_of_not_mem {z : 𝕜} (D : DivisorOn U) (hz : z ∉ U) :
+    D z = 0 := Function.nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
 /-- The support of a divisor is discrete. -/
 theorem discreteSupport (D : DivisorOn U) : DiscreteTopology D.support := by

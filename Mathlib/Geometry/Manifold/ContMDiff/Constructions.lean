@@ -51,7 +51,7 @@ theorem ContMDiffWithinAt.prodMk {f : M → M'} {g : M → N'} (hf : ContMDiffWi
     (hg : ContMDiffWithinAt I J' n g s x) :
     ContMDiffWithinAt I (I'.prod J') n (fun x => (f x, g x)) s x := by
   rw [contMDiffWithinAt_iff] at *
-  exact ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+  exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 @[deprecated (since := "2025-03-08")]
 alias ContMDiffWithinAt.prod_mk := ContMDiffWithinAt.prodMk
@@ -60,7 +60,7 @@ theorem ContMDiffWithinAt.prodMk_space {f : M → E'} {g : M → F'}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, E') n f s x) (hg : ContMDiffWithinAt I 𝓘(𝕜, F') n g s x) :
     ContMDiffWithinAt I 𝓘(𝕜, E' × F') n (fun x => (f x, g x)) s x := by
   rw [contMDiffWithinAt_iff] at *
-  exact ⟨hf.1.prod hg.1, hf.2.prod hg.2⟩
+  exact ⟨hf.1.prodMk hg.1, hf.2.prodMk hg.2⟩
 
 @[deprecated (since := "2025-03-08")]
 alias ContMDiffWithinAt.prod_mk_space := ContMDiffWithinAt.prodMk_space
