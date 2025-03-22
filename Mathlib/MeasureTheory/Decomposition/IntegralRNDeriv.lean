@@ -25,6 +25,12 @@ namespace MeasureTheory
 
 variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α} {f : ℝ → ℝ}
 
+@[fun_prop]
+lemma Measure.integrable_toReal_rnDeriv [IsFiniteMeasure μ] :
+    Integrable (fun x ↦ (μ.rnDeriv ν x).toReal) ν :=
+  integrable_toReal_of_lintegral_ne_top (Measure.measurable_rnDeriv _ _).aemeasurable
+    (Measure.lintegral_rnDeriv_lt_top _ _).ne
+
 /-- For a convex continuous function `f` on `[0, ∞)`, if `μ` is absolutely continuous
 with respect to a probability measure `ν`, then
 `f (μ univ).toReal ≤ ∫ x, f (μ.rnDeriv ν x).toReal ∂ν`. -/
