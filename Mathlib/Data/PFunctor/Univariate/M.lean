@@ -110,12 +110,13 @@ def sCorec : X → ∀ n, CofixA F n
   | j, succ _ => CofixA.intro (f j).1 fun i => sCorec ((f j).2 i) _
 
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
-  induction' n with n n_ih generalizing i
-  constructor
-  obtain ⟨y, g⟩ := f i
-  constructor
-  introv
-  apply n_ih
+  induction n generalizing i with
+  | zero => constructor
+  | succ n n_ih =>
+    obtain ⟨y, g⟩ := f i
+    constructor
+    introv
+    apply n_ih
 
 /-- `Path F` provides indices to access internal nodes in `Corec F` -/
 def Path (F : PFunctor.{u}) :=
@@ -322,17 +323,16 @@ theorem approx_mk (a : F.A) (f : F.B a → M F) (i : ℕ) :
 
 @[simp]
 theorem agree'_refl {n : ℕ} (x : M F) : Agree' n x x := by
-  induction' n with _ n_ih generalizing x <;>
-  induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
-  intros
-  apply n_ih
+  induction n generalizing x <;> induction x using PFunctor.M.casesOn' <;> constructor <;> try rfl
+  simp_all
 
 theorem agree_iff_agree' {n : ℕ} (x y : M F) :
     Agree (x.approx n) (y.approx <| n + 1) ↔ Agree' n x y := by
   constructor <;> intro h
-  · induction' n with _ n_ih generalizing x y
-    · constructor
-    · induction x using PFunctor.M.casesOn'
+  · induction n generalizing x y with
+    | zero => constructor
+    | succ _ n_ih =>
+      induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
       obtain - | ⟨_, _, hagree⟩ := h
@@ -340,12 +340,12 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       intro i
       apply n_ih
       apply hagree
-    induction n generalizing x y with
+  · induction n generalizing x y with
     | zero => constructor
     | succ _ n_ih =>
       obtain - | @⟨_, a, x', y'⟩ := h
-      induction' x using PFunctor.M.casesOn' with x_a x_f
-      induction' y using PFunctor.M.casesOn' with y_a y_f
+      induction x using PFunctor.M.casesOn' with | f x_a x_f => ?_
+      induction y using PFunctor.M.casesOn' with | f y_a y_f => ?_
       simp only [approx_mk]
       have h_a_1 := mk_inj ‹M.mk ⟨x_a, x_f⟩ = M.mk ⟨a, x'⟩›
       cases h_a_1
@@ -416,12 +416,14 @@ def iselect [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) : M F → F.A := f
 
 theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x : M F)
     (h : ¬IsPath ps x) : iselect ps x = head default := by
-  induction' ps with ps_hd ps_tail ps_ih generalizing x
-  · exfalso
+  induction ps generalizing x with
+  | nil =>
+    exfalso
     apply h
     constructor
-  · obtain ⟨a, i⟩ := ps_hd
-    induction' x using PFunctor.M.casesOn' with x_a x_f
+  | cons ps_hd ps_tail ps_ih =>
+    obtain ⟨a, i⟩ := ps_hd
+    induction x using PFunctor.M.casesOn' with | f x_a x_f => ?_
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
     · subst x_a
@@ -516,11 +518,13 @@ attribute [local instance] Classical.propDecidable
 theorem ext [Inhabited (M F)] (x y : M F) (H : ∀ ps : Path F, iselect ps x = iselect ps y) :
     x = y := by
   apply ext'; intro i
-  induction' i with i i_ih
-  · cases x.approx 0
+  induction i with
+  | zero =>
+    cases x.approx 0
     cases y.approx 0
     constructor
-  · apply ext_aux x y x
+  | succ i i_ih =>
+    apply ext_aux x y x
     · rw [← agree_iff_agree']
       apply x.consistent
     · rw [← agree_iff_agree', i_ih]
@@ -552,24 +556,26 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
             isubtree ps s₁ = M.mk ⟨a, f⟩ ∧
               isubtree ps s₂ = M.mk ⟨a, f'⟩ ∧ ∀ i : F.B a, f i ~ f' i := by
   intro h₀ hh
-  induction' s₁ using PFunctor.M.casesOn' with a f
-  induction' s₂ using PFunctor.M.casesOn' with a' f'
+  induction s₁ using PFunctor.M.casesOn' with | f a f => ?_
+  induction s₂ using PFunctor.M.casesOn' with | f a' f' => ?_
   obtain rfl : a = a' := bisim.head h₀
-  induction' ps with i ps ps_ih generalizing a f f'
-  · exists rfl, a, f, f', rfl, rfl
+  induction ps generalizing a f f' with
+  | nil =>
+    exists rfl, a, f, f', rfl, rfl
     apply bisim.tail h₀
-  obtain ⟨a', i⟩ := i
-  obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
-  dsimp only [iselect] at ps_ih ⊢
-  have h₁ := bisim.tail h₀ i
-  induction' h : f i using PFunctor.M.casesOn' with a₀ f₀
-  induction' h' : f' i using PFunctor.M.casesOn' with a₁ f₁
-  simp only [h, h', isubtree_cons] at ps_ih ⊢
-  rw [h, h'] at h₁
-  obtain rfl : a₀ = a₁ := bisim.head h₁
-  apply ps_ih _ _ _ h₁
-  rw [← h, ← h']
-  apply Or.imp isPath_cons' isPath_cons' hh
+  | cons i ps ps_ih =>
+    obtain ⟨a', i⟩ := i
+    obtain rfl : a = a' := by rcases hh with hh | hh <;> cases isPath_cons hh <;> rfl
+    dsimp only [iselect] at ps_ih ⊢
+    have h₁ := bisim.tail h₀ i
+    induction h : f i using PFunctor.M.casesOn' with | f a₀ f₀ => ?_
+    induction h' : f' i using PFunctor.M.casesOn' with | f a₁ f₁ => ?_
+    simp only [h, h', isubtree_cons] at ps_ih ⊢
+    rw [h, h'] at h₁
+    obtain rfl : a₀ = a₁ := bisim.head h₁
+    apply ps_ih _ _ _ h₁
+    rw [← h, ← h']
+    apply Or.imp isPath_cons' isPath_cons' hh
 
 theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂, R s₁ s₂ → s₁ = s₂ := by
   inhabit M F

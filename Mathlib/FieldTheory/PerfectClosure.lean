@@ -347,16 +347,18 @@ theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) :
       ← pow_add, mul_assoc, ← pow_add]⟩
 
 theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
-  induction' n with n ih
+  induction n with
+  | zero =>
     induction x with
     | zero => simp
-    | succ x ih => ?_
-    rw [Nat.cast_succ, Nat.cast_succ, ih]
-    rfl
-  rw [ih]; apply Quot.sound
-  suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
-    rwa [frobenius_natCast K p x] at this
-  apply R.intro
+    | succ x ih =>
+      rw [Nat.cast_succ, Nat.cast_succ, ih]
+      rfl
+  | succ n ih =>
+    rw [ih]; apply Quot.sound
+    suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
+      rwa [frobenius_natCast K p x] at this
+    apply R.intro
 
 theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
   cases x <;> simp [natCast K p 0]

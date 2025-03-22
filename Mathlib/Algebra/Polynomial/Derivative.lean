@@ -285,7 +285,8 @@ theorem iterate_derivative_map [Semiring S] (p : R[X]) (f : R →+* S) (k : ℕ)
     Polynomial.derivative^[k] (p.map f) = (Polynomial.derivative^[k] p).map f := by
   induction k generalizing p with
   | zero => simp
-  | succ k ih => simp only [ih, Function.iterate_succ, Polynomial.derivative_map, Function.comp_apply]
+  | succ k ih =>
+    simp only [ih, Function.iterate_succ, Polynomial.derivative_map, Function.comp_apply]
 
 theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
     derivative ((n : R[X]) * f) = n * derivative f := by
@@ -294,7 +295,7 @@ theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
 @[simp]
 theorem iterate_derivative_natCast_mul {n k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
-  induction' k with k ih generalizing f <;> simp [*]
+  induction k generalizing f <;> simp [*]
 
 theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
@@ -590,7 +591,7 @@ theorem derivative_intCast_mul {n : ℤ} {f : R[X]} : derivative ((n : R[X]) * f
 @[simp]
 theorem iterate_derivative_intCast_mul {n : ℤ} {k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
-  induction' k with k ih generalizing f <;> simp [*]
+  induction k generalizing f <;> simp [*]
 
 end Ring
 

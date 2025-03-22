@@ -247,7 +247,7 @@ theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → L
       ⟨cf.comp cg, fun v => by
         simp [hg, hf, map_bind, seq_bind_eq, Function.comp_def]
         rfl⟩
-  induction n with
+  clear hf f; induction n with
   | zero => exact ⟨nil, fun v => by simp [Vector.mOfFn, Bind.bind]; rfl⟩
   | succ n IH =>
     obtain ⟨cg, hg₁⟩ := hg 0

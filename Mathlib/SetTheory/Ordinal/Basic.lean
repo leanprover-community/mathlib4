@@ -1146,7 +1146,8 @@ theorem ord_nat (n : ℕ) : ord n = n :=
     (by
       induction n with
       | zero => apply Ordinal.zero_le
-      | succ n IH => exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n)))
+      | succ n IH =>
+        exact succ_le_of_lt (IH.trans_lt <| ord_lt_ord.2 <| Nat.cast_lt.2 (Nat.lt_succ_self n)))
 
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1

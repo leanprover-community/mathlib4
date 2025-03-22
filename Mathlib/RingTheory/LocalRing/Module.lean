@@ -253,8 +253,9 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   rw [linearIndependent_iff']; intro s f hfv
   classical
   induction s using Finset.induction generalizing v with
-  | empty => exact (Finset.not_mem_empty _ hi).elim
+  | empty => exact fun i hi ↦ (Finset.not_mem_empty _ hi).elim
   | @insert n s hn ih => ?_
+  intro i hi
   rw [← Finset.sum_coe_sort] at hfv
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
   have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by
