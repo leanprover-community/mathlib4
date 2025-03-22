@@ -53,7 +53,7 @@ section Field
 
 variable {𝕜 E F : Type*} [Field 𝕜] [TopologicalSpace 𝕜] [AddCommGroup E] [Module 𝕜 E]
   [TopologicalSpace E] [AddCommGroup F] [Module 𝕜 F] [TopologicalSpace F] [IsTopologicalAddGroup F]
-  [ContinuousSMul 𝕜 F]
+  [ContinuousConstSMul 𝕜 F]
 
 /-- The space of continuous linear maps between finite-dimensional spaces is finite-dimensional. -/
 instance [FiniteDimensional 𝕜 E] [FiniteDimensional 𝕜 F] : FiniteDimensional 𝕜 (E →L[𝕜] F) :=
@@ -450,6 +450,21 @@ theorem constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : v.constrL 
   v.constr_basis 𝕜 _ _
 
 end Basis
+
+variable (𝕜 E) in
+/-- A (non necessary Hausdorff) finite dimensional topological vector space
+over a nontrivially normed field admits a linear quotient map to a function space `Fin n → 𝕜`.
+
+If the original space is not Hausdorff, then `n` is strictly less than the dimension of `E`.  -/
+theorem exists_linearMap_fun_isQuotientMap [FiniteDimensional 𝕜 E] :
+    ∃ (n : ℕ) (f : E →L[𝕜] (Fin n → 𝕜)), IsQuotientMap f := by
+  -- TODO: move to an instance
+  have : Module.Finite 𝕜 (SeparationQuotient E) :=
+    .of_surjective (SeparationQuotient.mkCLM _ _).toLinearMap Quotient.mk_surjective
+  let b := Module.finBasis 𝕜 (SeparationQuotient E)
+  use finrank 𝕜 (SeparationQuotient E)
+  use b.equivFunL ∘L SeparationQuotient.mkCLM _ _
+  exact b.equivFunL.toHomeomorph.isQuotientMap.comp SeparationQuotient.isQuotientMap_mk
 
 namespace ContinuousLinearMap
 
