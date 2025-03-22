@@ -69,11 +69,19 @@ package mathlib where
 ## Mathlib libraries
 -/
 
+/-- This file is read by syntax linters (Mathlib/Tactic/Linter/DocPrime.lean), and so must be
+registered as a target for that file to depend on. -/
+target no_lints_prime_decls (pkg) : System.FilePath :=
+  inputTextFile <| pkg.dir / "scripts" / "no_lints_prime_decls.txt"
+
 @[default_target]
 lean_lib Mathlib where
   leanOptions := mathlibLeanOptions
   -- Mathlib also enforces these linter options, which are not active by default.
   moreServerOptions := mathlibOnlyLinters
+  -- Any data file read by syntax linters in mathlib. Files read by standalone scripts do not need
+  -- to be listed here.
+  extraDepTargets := #[`no_lints_prime_decls]
 
 -- NB. When adding further libraries, check if they should be excluded from `getLeanLibs` in
 -- `scripts/mk_all.lean`.
