@@ -21,12 +21,9 @@ variable {α E : Type*} {m0 : MeasurableSpace α} [NormedAddCommGroup E]
 theorem pow_mul_meas_ge_le_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
     (ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal }) ^ (1 / p.toReal) ≤ eLpNorm f p μ := by
-  rw [eLpNorm_eq_lintegral_rpow_nnnorm hp_ne_zero hp_ne_top]
+  rw [eLpNorm_eq_lintegral_rpow_enorm hp_ne_zero hp_ne_top]
   gcongr
-  exact mul_meas_ge_le_lintegral₀ (hf.ennnorm.pow_const _) ε
-
-@[deprecated (since := "2024-07-27")]
-alias pow_mul_meas_ge_le_snorm := pow_mul_meas_ge_le_eLpNorm
+  exact mul_meas_ge_le_lintegral₀ (hf.enorm.pow_const _) ε
 
 theorem mul_meas_ge_le_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) (ε : ℝ≥0∞) :
@@ -34,13 +31,10 @@ theorem mul_meas_ge_le_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
   have : 1 / p.toReal * p.toReal = 1 := by
     refine one_div_mul_cancel ?_
     rw [Ne, ENNReal.toReal_eq_zero_iff]
-    exact not_or_of_not hp_ne_zero hp_ne_top
+    exact not_or_intro hp_ne_zero hp_ne_top
   rw [← ENNReal.rpow_one (ε * μ { x | ε ≤ (‖f x‖₊ : ℝ≥0∞) ^ p.toReal }), ← this, ENNReal.rpow_mul]
   gcongr
   exact pow_mul_meas_ge_le_eLpNorm μ hp_ne_zero hp_ne_top hf ε
-
-@[deprecated (since := "2024-07-27")]
-alias mul_meas_ge_le_pow_snorm := mul_meas_ge_le_pow_eLpNorm
 
 /-- A version of Chebyshev-Markov's inequality using Lp-norms. -/
 theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
@@ -49,9 +43,6 @@ theorem mul_meas_ge_le_pow_eLpNorm' (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ �
   convert mul_meas_ge_le_pow_eLpNorm μ hp_ne_zero hp_ne_top hf (ε ^ p.toReal) using 4
   ext x
   rw [ENNReal.rpow_le_rpow_iff (ENNReal.toReal_pos hp_ne_zero hp_ne_top)]
-
-@[deprecated (since := "2024-07-27")]
-alias mul_meas_ge_le_pow_snorm' := mul_meas_ge_le_pow_eLpNorm'
 
 theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : AEStronglyMeasurable f μ) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
@@ -64,10 +55,7 @@ theorem meas_ge_le_mul_pow_eLpNorm (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞
     ENNReal.mul_inv_cancel hεpow hεpow', one_mul]
   exact mul_meas_ge_le_pow_eLpNorm' μ hp_ne_zero hp_ne_top hf ε
 
-@[deprecated (since := "2024-07-27")]
-alias meas_ge_le_mul_pow_snorm := meas_ge_le_mul_pow_eLpNorm
-
-theorem Memℒp.meas_ge_lt_top' {μ : Measure α} (hℒp : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
+theorem MemLp.meas_ge_lt_top' {μ : Measure α} (hℒp : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {ε : ℝ≥0∞} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
   apply (meas_ge_le_mul_pow_eLpNorm μ hp_ne_zero hp_ne_top hℒp.aestronglyMeasurable hε).trans_lt
@@ -75,10 +63,16 @@ theorem Memℒp.meas_ge_lt_top' {μ : Measure α} (hℒp : Memℒp f p μ) (hp_n
   · simp [hε, lt_top_iff_ne_top]
   · simp [hℒp.eLpNorm_lt_top.ne, lt_top_iff_ne_top]
 
-theorem Memℒp.meas_ge_lt_top {μ : Measure α} (hℒp : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.meas_ge_lt_top' := MemLp.meas_ge_lt_top'
+
+theorem MemLp.meas_ge_lt_top {μ : Measure α} (hℒp : MemLp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) {ε : ℝ≥0} (hε : ε ≠ 0) :
     μ { x | ε ≤ ‖f x‖₊ } < ∞ := by
   simp_rw [← ENNReal.coe_le_coe]
   apply hℒp.meas_ge_lt_top' hp_ne_zero hp_ne_top (by simp [hε])
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.meas_ge_lt_top := MemLp.meas_ge_lt_top
 
 end MeasureTheory

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
+import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Module.Submodule.Map
 
 /-!
@@ -29,7 +30,7 @@ open Function
 
 open Pointwise
 
-variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R : Type*} {R₂ : Type*} {R₃ : Type*}
 variable {K : Type*}
 variable {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
 variable {V : Type*} {V₂ : Type*}
@@ -43,13 +44,11 @@ section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 
 open Submodule
 
-variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
+variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
@@ -111,15 +110,19 @@ theorem le_ker_iff_map [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} 
 theorem ker_codRestrict {τ₂₁ : R₂ →+* R} (p : Submodule R M) (f : M₂ →ₛₗ[τ₂₁] M) (hf) :
     ker (codRestrict p f hf) = ker f := by rw [ker, comap_codRestrict, Submodule.map_bot]; rfl
 
+lemma ker_domRestrict [AddCommMonoid M₁] [Module R M₁] (p : Submodule R M) (f : M →ₗ[R] M₁) :
+    ker (domRestrict f p) = (ker f).comap p.subtype := ker_comp ..
+
 theorem ker_restrict [AddCommMonoid M₁] [Module R M₁] {p : Submodule R M} {q : Submodule R M₁}
     {f : M →ₗ[R] M₁} (hf : ∀ x : M, x ∈ p → f x ∈ q) :
-    ker (f.restrict hf) = LinearMap.ker (f.domRestrict p) := by
-  rw [restrict_eq_codRestrict_domRestrict, ker_codRestrict]
+    ker (f.restrict hf) = (ker f).comap p.subtype := by
+  rw [restrict_eq_codRestrict_domRestrict, ker_codRestrict, ker_domRestrict]
 
 @[simp]
 theorem ker_zero : ker (0 : M →ₛₗ[τ₁₂] M₂) = ⊤ :=
   eq_top_iff'.2 fun x => by simp
 
+@[simp]
 theorem ker_eq_top {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊤ ↔ f = 0 :=
   ⟨fun h => ext fun _ => mem_ker.1 <| h.symm ▸ trivial, fun h => h.symm ▸ ker_zero⟩
 
@@ -128,13 +131,9 @@ theorem _root_.AddMonoidHom.coe_toIntLinearMap_ker {M M₂ : Type*} [AddCommGrou
     (f : M →+ M₂) : LinearMap.ker f.toIntLinearMap = AddSubgroup.toIntSubmodule f.ker := rfl
 
 theorem ker_eq_bot_of_injective {f : F} (hf : Injective f) : ker f = ⊥ := by
-  have : Disjoint ⊤ (ker f) := by
-    -- Porting note: `← map_zero f` should work here, but it needs to be directly applied to H.
-    rw [disjoint_ker]
-    intros _ _ H
-    rw [← map_zero f] at H
-    exact hf H
-  simpa [disjoint_iff_inf_le]
+  rw [eq_bot_iff]
+  intro x hx
+  simpa only [mem_ker, mem_bot, ← map_zero f, hf.eq_iff] using hx
 
 /-- The increasing sequence of submodules consisting of the kernels of the iterates of a linear map.
 -/
@@ -150,11 +149,10 @@ end AddCommMonoid
 
 section Ring
 
-variable [Ring R] [Ring R₂] [Ring R₃]
-variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
+variable [Ring R] [Ring R₂]
+variable [AddCommGroup M] [AddCommGroup M₂]
+variable [Module R M] [Module R₂ M₂]
+variable {τ₁₂ : R →+* R₂}
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 variable {f : F}
 
@@ -175,12 +173,9 @@ theorem injOn_of_disjoint_ker {p : Submodule R M} {s : Set M} (h : s ⊆ p)
     (hd : Disjoint p (ker f)) : Set.InjOn f s := fun _ hx _ hy =>
   disjoint_ker'.1 hd _ (h hx) _ (h hy)
 
-variable (F)
-
+variable (F) in
 theorem _root_.LinearMapClass.ker_eq_bot : ker f = ⊥ ↔ Injective f := by
   simpa [disjoint_iff_inf_le] using disjoint_ker' (f := f) (p := ⊤)
-
-variable {F}
 
 theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective f :=
   LinearMapClass.ker_eq_bot _
@@ -201,7 +196,8 @@ theorem ker_eq_bot {f : M →ₛₗ[τ₁₂] M₂} : ker f = ⊥ ↔ Injective 
 @[simp] theorem injective_restrict_iff_disjoint {p : Submodule R M} {f : M →ₗ[R] M}
     (hf : ∀ x ∈ p, f x ∈ p) :
     Injective (f.restrict hf) ↔ Disjoint p (ker f) := by
-  rw [← ker_eq_bot, ker_restrict hf, ker_eq_bot, injective_domRestrict_iff, disjoint_iff]
+  rw [← ker_eq_bot, ker_restrict hf, ← ker_domRestrict, ker_eq_bot, injective_domRestrict_iff,
+    disjoint_iff]
 
 end Ring
 
@@ -227,7 +223,7 @@ section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
 variable [Module R M] [Module R₂ M₂]
-variable (p p' : Submodule R M) (q : Submodule R₂ M₂)
+variable (p : Submodule R M)
 variable {τ₁₂ : R →+* R₂}
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 

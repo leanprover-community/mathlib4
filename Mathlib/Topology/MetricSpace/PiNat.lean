@@ -51,7 +51,7 @@ noncomputable section
 
 open Topology TopologicalSpace Set Metric Filter Function
 
-attribute [local simp] pow_le_pow_iff_right one_lt_two inv_le_inv zero_le_two zero_lt_two
+attribute [local simp] pow_le_pow_iff_right₀ one_lt_two inv_le_inv₀ zero_le_two zero_lt_two
 
 variable {E : ℕ → Type*}
 
@@ -197,18 +197,23 @@ theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induc
 /-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`. -/
 theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
-  constructor <;> intro h <;> induction' n with n ih; · simp
-  · intro m hm
-    rw [Nat.lt_succ_iff_lt_or_eq] at hm
-    simp only [res_succ, cons.injEq] at h
-    cases' hm with hm hm
-    · exact ih h.2 hm
-    rw [hm]
-    exact h.1
-  · simp
-  simp only [res_succ, cons.injEq]
-  refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
-  exact h (hm.trans (Nat.lt_succ_self _))
+  constructor <;> intro h
+  · induction n with
+    | zero => simp
+    | succ n ih =>
+      intro m hm
+      rw [Nat.lt_succ_iff_lt_or_eq] at hm
+      simp only [res_succ, cons.injEq] at h
+      rcases hm with hm | hm
+      · exact ih h.2 hm
+      rw [hm]
+      exact h.1
+  · induction n with
+    | zero => simp
+    | succ n ih =>
+      simp only [res_succ, cons.injEq]
+      refine ⟨h (Nat.lt_succ_self _), ih fun m hm => ?_⟩
+      exact h (hm.trans (Nat.lt_succ_self _))
 
 theorem res_injective : Injective (@res α) := by
   intro x y h
@@ -264,8 +269,8 @@ theorem dist_triangle_nonarch (x y z : ∀ n, E n) : dist x z ≤ max (dist x y)
   · simp
   rcases eq_or_ne y z with (rfl | hyz)
   · simp
-  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv, one_div, inv_pow, zero_lt_two, Ne,
-    not_false_iff, le_max_iff, pow_le_pow_iff_right, one_lt_two, pow_pos,
+  simp only [dist_eq_of_ne, hxz, hxy, hyz, inv_le_inv₀, one_div, inv_pow, zero_lt_two, Ne,
+    not_false_iff, le_max_iff, pow_le_pow_iff_right₀, one_lt_two, pow_pos,
     min_le_iff.1 (min_firstDiff_le x y z hxz)]
 
 protected theorem dist_triangle (x y z : ∀ n, E n) : dist x z ≤ dist x y + dist y z :=
@@ -294,7 +299,7 @@ theorem apply_eq_of_dist_lt {x y : ∀ n, E n} {n : ℕ} (h : dist x y < (1 / 2)
   rcases eq_or_ne x y with (rfl | hne)
   · rfl
   have : n < firstDiff x y := by
-    simpa [dist_eq_of_ne hne, inv_lt_inv, pow_lt_pow_iff_right, one_lt_two] using h
+    simpa [dist_eq_of_ne hne, inv_lt_inv₀, pow_lt_pow_iff_right₀, one_lt_two] using h
   exact apply_eq_of_lt_firstDiff (hi.trans_lt this)
 
 /-- A function to a pseudo-metric-space is `1`-Lipschitz if and only if points in the same cylinder
@@ -620,7 +625,7 @@ theorem exists_lipschitz_retraction_of_isClosed {s : Set (∀ n, E n)} (hs : IsC
         -- common part to `x` and `y` -- then `f x = f y`.
         by_cases H : longestPrefix x s < firstDiff x y ∨ longestPrefix y s < firstDiff x y
         · have : cylinder x (longestPrefix x s) = cylinder y (longestPrefix y s) := by
-            cases' H with H H
+            rcases H with H | H
             · exact cylinder_longestPrefix_eq_of_longestPrefix_lt_firstDiff hs hne H xs ys
             · symm
               rw [firstDiff_comm] at H
@@ -681,7 +686,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
   let s : Set (ℕ → ℕ) := { x | (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty }
   let g : s → α := fun x => x.2.some
   have A : ∀ (x : s) (n : ℕ), dist (g x) (u ((x : ℕ → ℕ) n)) ≤ (1 / 2) ^ n := fun x n =>
-    (mem_iInter.1 x.2.some_mem n : _)
+    (mem_iInter.1 x.2.some_mem n :)
   have g_cont : Continuous g := by
     refine continuous_iff_continuousAt.2 fun y => ?_
     refine continuousAt_of_locally_lipschitz zero_lt_one 4 fun x hxy => ?_
@@ -732,7 +737,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       rw [mul_zero] at this
       exact
         squeeze_zero (fun n => diam_nonneg) (fun n => diam_closedBall (pow_nonneg I0.le _)) this
-    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_ball)
+    refine nonempty_iInter_of_nonempty_biInter (fun n => isClosed_closedBall)
       (fun n => isBounded_closedBall) (fun N ↦ ?_) L
     obtain ⟨y, hxy, ys⟩ : ∃ y, y ∈ ball x ((1 / 2) ^ N) ∩ s :=
       clusterPt_principal_iff.1 hx _ (ball_mem_nhds x (pow_pos I0 N))
@@ -786,7 +791,7 @@ theorem min_dist_le_dist_pi (x y : ∀ i, F i) (i : ι) :
 
 theorem dist_le_dist_pi_of_dist_lt {x y : ∀ i, F i} {i : ι} (h : dist x y < (1 / 2) ^ encode i) :
     dist (x i) (y i) ≤ dist x y := by
-  simpa only [not_le.2 h, false_or_iff] using min_le_iff.1 (min_dist_le_dist_pi x y i)
+  simpa only [not_le.2 h, false_or] using min_le_iff.1 (min_dist_le_dist_pi x y i)
 
 open Topology Filter NNReal
 

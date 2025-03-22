@@ -284,7 +284,7 @@ lemma measure_compl_sigmaFiniteSetWRT (hμν : μ ≪ ν) [SigmaFinite μ] [SFin
   by_contra h0
   refine ENNReal.top_ne_zero ?_
   rw [← h h0, ← Measure.iSup_restrict_spanningSets]
-  simp_rw [Measure.restrict_apply' (measurable_spanningSets μ _), ENNReal.iSup_eq_zero]
+  simp_rw [Measure.restrict_apply' (measurableSet_spanningSets μ _), ENNReal.iSup_eq_zero]
   intro i
   by_contra h_ne_zero
   have h_zero_top := measure_eq_top_of_subset_compl_sigmaFiniteSetWRT

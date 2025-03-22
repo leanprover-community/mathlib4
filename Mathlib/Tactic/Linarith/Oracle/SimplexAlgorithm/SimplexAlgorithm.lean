@@ -21,7 +21,7 @@ inductive SimplexAlgorithmException
 
 /-- The monad for the Simplex Algorithm. -/
 abbrev SimplexAlgorithmM (matType : Nat → Nat → Type) [UsableInSimplexAlgorithm matType] :=
-  ExceptT SimplexAlgorithmException <| StateM (Tableau matType)
+  ExceptT SimplexAlgorithmException <| StateT (Tableau matType) Lean.CoreM
 
 variable {matType : Nat → Nat → Type} [UsableInSimplexAlgorithm matType]
 
@@ -48,8 +48,8 @@ def doPivotOperation (exitIdx enterIdx : Nat) : SimplexAlgorithmM matType Unit :
     let newBasic := s.basic.set! exitIdx s.free[enterIdx]!
     let newFree := s.free.set! enterIdx s.basic[exitIdx]!
 
-    have hb : newBasic.size = s.basic.size := by apply Array.size_setD
-    have hf : newFree.size = s.free.size := by apply Array.size_setD
+    have hb : newBasic.size = s.basic.size := by apply Array.size_setIfInBounds
+    have hf : newFree.size = s.free.size := by apply Array.size_setIfInBounds
 
     return (⟨newBasic, newFree, hb ▸ hf ▸ mat⟩ : Tableau matType)
 
@@ -60,7 +60,7 @@ nonnegative.
 def checkSuccess : SimplexAlgorithmM matType Bool := do
   let lastIdx := (← get).free.size - 1
   return (← get).mat[(0, lastIdx)]! > 0 &&
-    (← Nat.allM (← get).basic.size (fun i => do return (← get).mat[(i, lastIdx)]! >= 0))
+    (← (← get).basic.size.allM (fun i _ => do return (← get).mat[(i, lastIdx)]! ≥ 0))
 
 /--
 Chooses an entering variable: among the variables with a positive coefficient in the objective
@@ -77,7 +77,7 @@ def chooseEnteringVar : SimplexAlgorithmM matType Nat := do
 
   /- If there is no such variable the solution does not exist for sure. -/
   match enterIdxOpt with
-  | .none => throw SimplexAlgorithmException.infeasible
+  | .none => throwThe SimplexAlgorithmException SimplexAlgorithmException.infeasible
   | .some enterIdx => return enterIdx
 
 /--
@@ -116,6 +116,7 @@ such exists.
 -/
 def runSimplexAlgorithm : SimplexAlgorithmM matType Unit := do
   while !(← checkSuccess) do
+    Lean.Core.checkSystem decl_name%.toString
     let ⟨exitIdx, enterIdx⟩ ← choosePivots
     doPivotOperation exitIdx enterIdx
 

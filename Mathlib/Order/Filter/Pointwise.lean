@@ -3,9 +3,15 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yaël Dillies
 -/
-import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.Order.Group.Defs
+import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.Filter.AtTopBot.Map
+import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.NAry
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Pointwise operations on filters
@@ -126,8 +132,6 @@ theorem tendsto_one {a : Filter β} {f : β → α} : Tendsto f a 1 ↔ ∀ᶠ x
 theorem one_prod_one [One β] : (1 : Filter α) ×ˢ (1 : Filter β) = 1 :=
   prod_pure_pure
 
-@[deprecated (since := "2024-08-16")] alias zero_sum_zero := zero_prod_zero
-
 /-- `pure` as a `OneHom`. -/
 @[to_additive "`pure` as a `ZeroHom`."]
 def pureOneHom : OneHom α (Filter α) where
@@ -144,9 +148,8 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 variable [One β]
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
-  rw [Filter.map_one', map_one, pure_one]
+  simp
 
 end One
 
@@ -301,20 +304,18 @@ theorem mul_pure : f * pure b = f.map (· * b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) :=
-  map₂_pure
+theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) := by simp
 
 @[to_additive (attr := simp)]
 theorem le_mul_iff : h ≤ f * g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈ g → s * t ∈ h :=
   le_map₂_iff
 
 @[to_additive]
-instance covariant_mul : CovariantClass (Filter α) (Filter α) (· * ·) (· ≤ ·) :=
+instance mulLeftMono : MulLeftMono (Filter α) :=
   ⟨fun _ _ _ => map₂_mono_left⟩
 
 @[to_additive]
-instance covariant_swap_mul : CovariantClass (Filter α) (Filter α) (swap (· * ·)) (· ≤ ·) :=
+instance mulRightMono : MulRightMono (Filter α) :=
   ⟨fun _ _ _ => map₂_mono_right⟩
 
 @[to_additive]
@@ -406,9 +407,7 @@ theorem div_pure : f / pure b = f.map (· / b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) :=
-  map₂_pure
+theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) := by simp
 
 @[to_additive]
 protected theorem div_le_div : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ / g₁ ≤ f₂ / g₂ :=
@@ -549,7 +548,7 @@ theorem pow_mem_pow (hs : s ∈ f) : ∀ n : ℕ, s ^ n ∈ f ^ n
 
 @[to_additive (attr := simp) nsmul_bot]
 theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', bot_mul]
+  rw [← Nat.sub_one_add_one hn, pow_succ', bot_mul]
 
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
@@ -610,11 +609,11 @@ protected theorem mul_eq_one_iff : f * g = 1 ↔ ∃ a b, f = pure a ∧ g = pur
  `α` is."]
 protected def divisionMonoid : DivisionMonoid (Filter α) :=
   { Filter.monoid, Filter.instInvolutiveInv, Filter.instDiv, Filter.instZPow (α := α) with
-    mul_inv_rev := fun s t => map_map₂_antidistrib mul_inv_rev
+    mul_inv_rev := fun _ _ => map_map₂_antidistrib mul_inv_rev
     inv_eq_of_mul := fun s t h => by
       obtain ⟨a, b, rfl, rfl, hab⟩ := Filter.mul_eq_one_iff.1 h
       rw [inv_pure, inv_eq_of_mul_eq_one_right hab]
-    div_eq_mul_inv := fun f g => map_map₂_distrib_right div_eq_mul_inv }
+    div_eq_mul_inv := fun _ _ => map_map₂_distrib_right div_eq_mul_inv }
 
 @[to_additive]
 theorem isUnit_iff : IsUnit f ↔ ∃ a, f = pure a ∧ IsUnit a := by
@@ -713,7 +712,7 @@ theorem isUnit_pure (a : α) : IsUnit (pure a : Filter α) :=
 
 @[simp]
 theorem isUnit_iff_singleton : IsUnit f ↔ ∃ a, f = pure a := by
-  simp only [isUnit_iff, Group.isUnit, and_true_iff]
+  simp only [isUnit_iff, Group.isUnit, and_true]
 
 @[to_additive]
 theorem map_inv' : f⁻¹.map m = (f.map m)⁻¹ :=
@@ -824,9 +823,7 @@ theorem smul_pure : f • pure b = f.map (· • b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) :=
-  map₂_pure
+theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) := by simp
 
 @[to_additive]
 theorem smul_le_smul : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ • g₁ ≤ f₂ • g₂ :=
@@ -912,9 +909,7 @@ theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map (a -ᵥ ·) :=
 theorem vsub_pure : f -ᵥ pure b = f.map (· -ᵥ b) :=
   map₂_pure_right
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) :=
-  map₂_pure
+theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) := by simp
 
 theorem vsub_le_vsub : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ -ᵥ g₁ ≤ f₂ -ᵥ g₂ :=
   map₂_mono
@@ -1041,7 +1036,7 @@ instance isCentralScalar [SMul α β] [SMul αᵐᵒᵖ β] [IsCentralScalar α 
  of `Filter α` on `Filter β`"]
 protected def mulAction [Monoid α] [MulAction α β] : MulAction (Filter α) (Filter β) where
   one_smul f := map₂_pure_left.trans <| by simp_rw [one_smul, map_id']
-  mul_smul f g h := map₂_assoc mul_smul
+  mul_smul _ _ _ := map₂_assoc mul_smul
 
 /-- A multiplicative action of a monoid on a type `β` gives a multiplicative action on `Filter β`.
 -/

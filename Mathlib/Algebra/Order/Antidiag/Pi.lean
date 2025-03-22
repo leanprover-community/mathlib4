@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández, Eric Wieser, Bhavik Mehta,
   Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Finset.Pointwise.Basic
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
+import Mathlib.Data.Finset.Sym
 
 /-!
 # Antidiagonal of functions as finsets
@@ -79,7 +80,7 @@ where
             simp_rw [Finset.mem_map, Embedding.coeFn_mk] at hti htj
             obtain ⟨ai, hai, hij'⟩ := hti
             obtain ⟨aj, haj, rfl⟩ := htj
-            rw [Fin.cons_eq_cons] at hij'
+            rw [Fin.cons_inj] at hij'
             ext
             · exact hij'.1
             · obtain ⟨-, rfl⟩ := hij'
@@ -127,7 +128,7 @@ variable {s : Finset ι} {n : μ} {f : ι → μ}
   constructor
   · rintro ⟨f, ⟨hf, rfl⟩, rfl⟩
     rw [sum_dite_of_true fun _ ↦ id]
-    exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp (config := { contextual := true })⟩
+    exact ⟨Fintype.sum_equiv e _ _ (by simp), by simp +contextual⟩
   · rintro ⟨rfl, hf⟩
     refine ⟨f ∘ (↑) ∘ e.symm, ?_, by ext i; have := not_imp_comm.1 (hf i); aesop⟩
     rw [← sum_attach s]
@@ -188,7 +189,8 @@ lemma piAntidiag_insert [DecidableEq (ι → μ)] (hi : i ∉ s) (n : μ) :
 end AddCancelCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
-variable [DecidableEq ι] [CanonicallyOrderedAddCommMonoid μ] [HasAntidiagonal μ] [DecidableEq μ]
+variable [DecidableEq ι] [OrderedAddCommMonoid μ] [CanonicallyOrderedAdd μ]
+  [HasAntidiagonal μ] [DecidableEq μ]
 
 @[simp] lemma piAntidiag_zero (s : Finset ι) : piAntidiag s (0 : μ) = {0} := by
   ext; simp [Fintype.sum_eq_zero_iff_of_nonneg, funext_iff, not_imp_comm, ← forall_and]
@@ -222,11 +224,12 @@ lemma nsmul_piAntidiag [DecidableEq (ι → ℕ)] (s : Finset ι) (m : ℕ) {n :
     · rw [not_imp_comm.1 (hfsup _) hi]
       exact dvd_zero _
   refine ⟨fun i ↦ f i / n, ?_⟩
-  simpa [Nat.sum_div, Nat.div_ne_zero_iff_of_dvd, funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  simp [funext_iff, Nat.mul_div_cancel', ← Nat.sum_div, *]
+  aesop
 
 lemma map_nsmul_piAntidiag (s : Finset ι) (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag s m).map
-      ⟨(n • ·), fun f g h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+      ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
         (piAntidiag s (n * m)).filter fun f : ι → ℕ ↦ ∀ i ∈ s, n ∣ f i := by
   classical rw [map_eq_image]; exact nsmul_piAntidiag _ _ hn
 
@@ -237,7 +240,7 @@ lemma nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
 
 lemma map_nsmul_piAntidiag_univ [Fintype ι] (m : ℕ) {n : ℕ} (hn : n ≠ 0) :
     (piAntidiag (univ : Finset ι) m).map
-        ⟨(n • ·), fun f g h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
+        ⟨(n • ·), fun _ _ h ↦ funext fun i ↦ mul_right_injective₀ hn (congr_fun h i)⟩ =
       (piAntidiag univ (n * m)).filter fun f : ι → ℕ ↦ ∀ i, n ∣ f i := by
   simpa using map_nsmul_piAntidiag (univ : Finset ι) m hn
 
@@ -254,7 +257,7 @@ lemma map_sym_eq_piAntidiag [DecidableEq ι] (s : Finset ι) (n : ℕ) :
     simpa [← hf, Multiset.sum_count_eq_card hm]
   · rintro ⟨rfl, hf⟩
     refine ⟨∑ a ∈ s, f a • {a}, ?_, ?_⟩
-    · simp (config := { contextual := true })
+    · simp +contextual
     · simpa [Multiset.count_sum', Multiset.count_singleton, not_imp_comm, eq_comm (a := 0)] using hf
 
 end Finset

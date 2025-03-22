@@ -3,9 +3,9 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.FunLike.Basic
+import Mathlib.Data.Finite.Prod
 
 /-!
 # Finiteness of `DFunLike` types
@@ -26,7 +26,7 @@ You can use these to produce instances for specific `DFunLike` types.
 They can't be instances themselves since they can cause loops.
 -/
 
--- Porting note: `Type` is a reserved word, switched to `Type'`
+-- `Type` is a reserved word, switched to `Type'`
 section Type'
 
 variable (F G : Type*) {α γ : Type*} {β : α → Type*} [DFunLike F α β] [FunLike G α γ]
@@ -50,7 +50,7 @@ noncomputable def FunLike.fintype [DecidableEq α] [Fintype α] [Fintype γ] : F
 
 end Type'
 
--- Porting note: `Sort` is a reserved word, switched to `Sort'`
+-- `Sort` is a reserved word, switched to `Sort'`
 section Sort'
 
 variable (F G : Sort*) {α γ : Sort*} {β : α → Sort*} [DFunLike F α β] [FunLike G α γ]

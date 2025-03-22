@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 import Mathlib.CategoryTheory.Sites.LocallyBijective
 import Mathlib.CategoryTheory.Sites.PreservesLocallyBijective
 import Mathlib.CategoryTheory.Sites.Whiskering
@@ -146,7 +146,7 @@ def transportSheafificationAdjunction : transportAndSheafify J K e A ⊣ sheafTo
     (transportIsoSheafToPresheaf _ _ _ _)
 
 noncomputable instance : PreservesFiniteLimits <| transportAndSheafify J K e A where
-  preservesFiniteLimits _ := compPreservesLimitsOfShape _ _
+  preservesFiniteLimits _ := comp_preservesLimitsOfShape _ _
 
 include K e in
 /-- Transport `HasSheafify` along an equivalence of sites. -/
@@ -166,9 +166,6 @@ theorem hasSheafCompose : J.HasSheafCompose F where
     replace hP' : Presheaf.IsSheaf J (e.functor.op ⋙ e.inverse.op ⋙ P ⋙ F) :=
       e.functor.op_comp_isSheaf _ _ ⟨_, hP'⟩
     exact (Presheaf.isSheaf_of_iso_iff ((isoWhiskerRight e.op.unitIso.symm (P ⋙ F)))).mp hP'
-
-variable [ConcreteCategory.{w} A]
-variable {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G)
 
 end Equivalence
 
@@ -272,8 +269,9 @@ lemma PreservesSheafification.transport
       K.W_whiskerLeft_iff (G := G) (J := J) (f := whiskerRight f F)] at this
 
 variable [Functor.IsContinuous.{v₃} G K J] [(G.sheafPushforwardContinuous A K J).EssSurj]
-variable [G.IsCocontinuous K J] [ConcreteCategory A]
-  [K.WEqualsLocallyBijective A]
+variable [G.IsCocontinuous K J] {FA : A → A → Type*} {CA : A → Type*}
+variable [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA]
+variable [K.WEqualsLocallyBijective A]
 
 lemma WEqualsLocallyBijective.transport (hG : CoverPreserving K J G) :
     J.WEqualsLocallyBijective A where

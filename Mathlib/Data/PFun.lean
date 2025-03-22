@@ -3,9 +3,10 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
 -/
+import Batteries.WF
 import Mathlib.Data.Part
 import Mathlib.Data.Rel
-import Batteries.WF
+import Mathlib.Tactic.GeneralizeProofs
 
 /-!
 # Partial functions
@@ -99,6 +100,7 @@ theorem ext' {f g : α →. β} (H1 : ∀ a, a ∈ Dom f ↔ a ∈ Dom g) (H2 : 
     f = g :=
   funext fun a => Part.ext' (H1 a) (H2 a)
 
+@[ext]
 theorem ext {f g : α →. β} (H : ∀ a b, b ∈ f a ↔ b ∈ g a) : f = g :=
   funext fun a => Part.ext (H a)
 
@@ -109,8 +111,8 @@ def asSubtype (f : α →. β) (s : f.Dom) : β :=
 /-- The type of partial functions `α →. β` is equivalent to
 the type of pairs `(p : α → Prop, f : Subtype p → β)`. -/
 def equivSubtype : (α →. β) ≃ Σp : α → Prop, Subtype p → β :=
-  ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun f =>
-    funext fun a => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
+  ⟨fun f => ⟨fun a => (f a).Dom, asSubtype f⟩, fun f x => ⟨f.1 x, fun h => f.2 ⟨x, h⟩⟩, fun _ =>
+    funext fun _ => Part.eta _, fun ⟨p, f⟩ => by dsimp; congr⟩
 
 theorem asSubtype_eq_of_mem {f : α →. β} {x : α} {y : β} (fxy : y ∈ f x) (domx : x ∈ f.Dom) :
     f.asSubtype ⟨x, domx⟩ = y :=
@@ -191,9 +193,9 @@ instance monad : Monad (PFun α) where
   map := PFun.map
 
 instance lawfulMonad : LawfulMonad (PFun α) := LawfulMonad.mk'
-  (bind_pure_comp := fun f x => funext fun a => Part.bind_some_eq_map _ _)
+  (bind_pure_comp := fun _ _ => funext fun _ => Part.bind_some_eq_map _ _)
   (id_map := fun f => by funext a; dsimp [Functor.map, PFun.map]; cases f a; rfl)
-  (pure_bind := fun x f => funext fun a => Part.bind_some _ (f x))
+  (pure_bind := fun x f => funext fun _ => Part.bind_some _ (f x))
   (bind_assoc := fun f g k => funext fun a => (f a).bind_assoc (fun b => g b a) fun b => k b a)
 
 theorem pure_defined (p : Set α) (x : β) : p ⊆ (@PFun.pure α _ x).Dom :=
@@ -229,7 +231,7 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
     let ⟨h₁, h₂⟩ := Part.mem_assert_iff.1 h
     rw [WellFounded.fixFEq] at h₂
     simp only [Part.mem_assert_iff] at h₂
-    cases' h₂ with h₂ h₃
+    obtain ⟨h₂, h₃⟩ := h₂
     split at h₃
     next e => simp only [Part.mem_some_iff] at h₃; subst b; exact Or.inl ⟨h₂, e⟩
     next e => exact Or.inr ⟨_, ⟨_, e⟩, Part.mem_assert _ h₃⟩,
@@ -247,11 +249,11 @@ theorem mem_fix_iff {f : α →. β ⊕ α} {a : α} {b : β} :
         next e =>
           injection h₂.symm.trans e
     · simp only [fix, Part.mem_assert_iff] at h₃
-      cases' h₃ with h₃ h₄
+      obtain ⟨h₃, h₄⟩ := h₃
       refine ⟨⟨_, fun y h' => ?_⟩, ?_⟩
       · injection Part.mem_unique h h' with e
         exact e ▸ h₃
-      · cases' h with h₁ h₂
+      · obtain ⟨h₁, h₂⟩ := h
         rw [WellFounded.fixFEq]
         -- Porting note: used to be simp [h₁, h₂, h₄]
         apply Part.mem_assert h₁
@@ -292,7 +294,7 @@ def fixInduction {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h
 
 theorem fixInduction_spec {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
-    @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
+    @fixInduction _ _ C _ _ _ h H = H a h fun _ h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
   generalize_proofs
   induction ‹Acc _ _›
@@ -318,7 +320,7 @@ theorem fixInduction'_stop {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {
     @fixInduction' _ _ C _ _ _ h hbase hind = hbase a fa := by
   unfold fixInduction'
   rw [fixInduction_spec]
-  -- Porting note: the explicit motive required because `simp` behaves differently
+  -- Porting note: the explicit motive required because `simp` does not apply `Part.get_eq_of_mem`
   refine Eq.rec (motive := fun x e ↦
       Sum.casesOn x ?_ ?_ (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = hbase a fa) ?_
     (Part.get_eq_of_mem fa (dom_of_mem_fix h)).symm
@@ -331,7 +333,7 @@ theorem fixInduction'_fwd {C : α → Sort*} {f : α →. β ⊕ α} {b : β} {a
     @fixInduction' _ _ C _ _ _ h hbase hind = hind a a' h' fa (fixInduction' h' hbase hind) := by
   unfold fixInduction'
   rw [fixInduction_spec]
-  -- Porting note: the explicit motive required because `simp` behaves differently
+  -- Porting note: the explicit motive required because `simp` does not apply `Part.get_eq_of_mem`
   refine Eq.rec (motive := fun x e =>
       Sum.casesOn (motive := fun y => (f a).get (dom_of_mem_fix h) = y → C a) x ?_ ?_
       (Eq.trans (Part.get_eq_of_mem fa (dom_of_mem_fix h)) e) = _) ?_
@@ -468,7 +470,7 @@ theorem mem_toSubtype_iff {p : β → Prop} {f : α → β} {a : α} {b : Subtyp
 protected def id (α : Type*) : α →. α :=
   Part.some
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id (α : Type*) : ((id : α → α) : α →. α) = PFun.id α :=
   rfl
 
@@ -544,7 +546,6 @@ theorem mem_prodLift {f : α →. β} {g : α →. γ} {x : α} {y : β × γ} :
     y ∈ f.prodLift g x ↔ y.1 ∈ f x ∧ y.2 ∈ g x := by
   trans ∃ hp hq, (f x).get hp = y.1 ∧ (g x).get hq = y.2
   · simp only [prodLift, Part.mem_mk_iff, And.exists, Prod.ext_iff]
-  -- Porting note: was just `[exists_and_left, exists_and_right]`
   · simp only [exists_and_left, exists_and_right, Membership.mem, Part.Mem]
 
 /-- Product of partial functions. -/
@@ -575,17 +576,17 @@ theorem mem_prodMap {f : α →. γ} {g : β →. δ} {x : α × β} {y : γ × 
 theorem prodLift_fst_comp_snd_comp (f : α →. γ) (g : β →. δ) :
     prodLift (f.comp ((Prod.fst : α × β → α) : α × β →. α))
         (g.comp ((Prod.snd : α × β → β) : α × β →. β)) =
-      prodMap f g :=
-  ext fun a => by simp
+      prodMap f g := by
+  aesop
 
 @[simp]
-theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ :=
-  ext fun _ _ ↦ by simp [eq_comm]
+theorem prodMap_id_id : (PFun.id α).prodMap (PFun.id β) = PFun.id _ := by
+  aesop
 
 @[simp]
 theorem prodMap_comp_comp (f₁ : α →. β) (f₂ : β →. γ) (g₁ : δ →. ε) (g₂ : ε →. ι) :
-    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) := -- by
-  -- Porting note: was `by tidy`, below is a golfed version of the `tidy?` proof
+    (f₂.comp f₁).prodMap (g₂.comp g₁) = (f₂.prodMap g₂).comp (f₁.prodMap g₁) :=
+  -- `aesop` can prove this but takes over a second, so we do it manually
   ext <| fun ⟨_, _⟩ ⟨_, _⟩ ↦
   ⟨fun ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩,
    fun ⟨⟨⟨h1l1, h1r1⟩, ⟨h1l2, h1r2⟩⟩, h2⟩ ↦ ⟨⟨⟨h1l1, h1l2⟩, ⟨h1r1, h1r2⟩⟩, h2⟩⟩

@@ -103,8 +103,6 @@ noncomputable def mapComposableArrows₅ (i j : ι) (hij : c.Rel i j) :
     (naturality' (mapComposableArrows₂ φ j) 0 1)
     (naturality' (mapComposableArrows₂ φ j) 1 2)
 
-attribute [local instance] epi_comp
-
 include hS₁ hS₂
 
 lemma mono_homologyMap_τ₃ (i : ι)

@@ -3,9 +3,8 @@ Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Algebra.Ring.Equiv
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
 # Rings and `Fin`

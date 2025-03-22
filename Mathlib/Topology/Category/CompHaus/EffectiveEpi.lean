@@ -29,8 +29,6 @@ universe u
 
 open CategoryTheory Limits CompHausLike
 
-attribute [local instance] ConcreteCategory.instFunLike
-
 namespace CompHaus
 
 open List in
@@ -41,12 +39,9 @@ theorem effectiveEpi_tfae
     , Epi π
     , Function.Surjective π
     ] := by
-  tfae_have 1 → 2
-  · intro; infer_instance
-  tfae_have 2 ↔ 3
-  · exact epi_iff_surjective π
-  tfae_have 3 → 1
-  · exact fun hπ ↦ ⟨⟨effectiveEpiStruct π hπ⟩⟩
+  tfae_have 1 → 2 := fun _ ↦ inferInstance
+  tfae_have 2 ↔ 3 := epi_iff_surjective π
+  tfae_have 3 → 1 := fun hπ ↦ ⟨⟨effectiveEpiStruct π hπ⟩⟩
   tfae_finish
 
 instance : Preregular CompHaus :=
@@ -65,12 +60,12 @@ theorem effectiveEpiFamily_tfae
     , ∀ b : B, ∃ (a : α) (x : X a), π a x = b
     ] := by
   tfae_have 2 → 1
-  · intro
+  | _ => by
     simpa [← effectiveEpi_desc_iff_effectiveEpiFamily, (effectiveEpi_tfae (Sigma.desc π)).out 0 1]
   tfae_have 1 → 2
-  · intro; infer_instance
+  | _ => inferInstance
   tfae_have 3 → 2
-  · intro e
+  | e => by
     rw [epi_iff_surjective]
     intro b
     obtain ⟨t, x, h⟩ := e b
@@ -78,7 +73,8 @@ theorem effectiveEpiFamily_tfae
     change (Sigma.ι X t ≫ Sigma.desc π) x = _
     simpa using h
   tfae_have 2 → 3
-  · intro e; rw [epi_iff_surjective] at e
+  | e => by
+    rw [epi_iff_surjective] at e
     let i : ∐ X ≅ finiteCoproduct X :=
       (colimit.isColimit _).coconePointUniqueUpToIso (finiteCoproduct.isColimit _)
     intro b

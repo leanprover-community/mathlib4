@@ -14,6 +14,8 @@ ordered field. Reciprocally, such an ordered ring homomorphism exists when the c
 conditionally complete.
 -/
 
+assert_not_exists Finset
+
 variable {α β : Type*}
 
 /-- There is at most one ordered ring homomorphism from a linear ordered field to an archimedean

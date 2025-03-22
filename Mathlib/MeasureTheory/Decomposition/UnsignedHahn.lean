@@ -26,13 +26,12 @@ open Set Filter Topology ENNReal
 
 namespace MeasureTheory
 
-variable {α : Type*} [MeasurableSpace α] {μ ν : Measure α}
+variable {α : Type*} {mα : MeasurableSpace α}
 
 /-- **Hahn decomposition theorem** -/
-theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
-    ∃ s,
-      MeasurableSet s ∧
-        (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧ ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
+theorem hahn_decomposition (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
+    ∃ s, MeasurableSet s ∧ (∀ t, MeasurableSet t → t ⊆ s → ν t ≤ μ t) ∧
+      ∀ t, MeasurableSet t → t ⊆ sᶜ → μ t ≤ ν t := by
   let d : Set α → ℝ := fun s => ((μ s).toNNReal : ℝ) - (ν s).toNNReal
   let c : Set ℝ := d '' { s | MeasurableSet s }
   let γ : ℝ := sSup c
@@ -50,14 +49,15 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
   have d_Union (s : ℕ → Set α) (hm : Monotone s) :
     Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋃ n, s n))) := by
     refine Tendsto.sub ?_ ?_ <;>
-      refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal ?_).comp <| tendsto_measure_iUnion hm
+      refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal ?_).comp <|
+        tendsto_measure_iUnion_atTop hm
     · exact hμ _
     · exact hν _
   have d_Inter (s : ℕ → Set α) (hs : ∀ n, MeasurableSet (s n)) (hm : ∀ n m, n ≤ m → s m ⊆ s n) :
         Tendsto (fun n => d (s n)) atTop (𝓝 (d (⋂ n, s n))) := by
     refine Tendsto.sub ?_ ?_ <;>
       refine NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal <| ?_).comp <|
-        tendsto_measure_iInter (fun n ↦ (hs n).nullMeasurableSet) hm ?_
+        tendsto_measure_iInter_atTop (fun n ↦ (hs n).nullMeasurableSet) hm ?_
     exacts [hμ _, ⟨0, hμ _⟩, hν _, ⟨0, hν _⟩]
   have bdd_c : BddAbove c := by
     use (μ univ).toNNReal

@@ -66,8 +66,6 @@ def ofEpi (σ : M.GeneratingSections) (p : M ⟶ N) [Epi p] :
     rw [← freeHomEquiv_symm_comp]
     apply epi_comp
 
-attribute [local instance] epi_comp
-
 lemma opEpi_id (σ : M.GeneratingSections) :
     σ.ofEpi (𝟙 M) = σ := rfl
 

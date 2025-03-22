@@ -3,8 +3,9 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
-import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.BigOperators.Finsupp.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.GroupWithZero.Associated
 
 /-!
 # Products of associated, prime, and irreducible elements.
@@ -14,6 +15,7 @@ and products of multisets, finsets, and finsupps.
 
 -/
 
+assert_not_exists Field
 
 variable {α β γ δ : Type*}
 
@@ -74,6 +76,46 @@ theorem exists_associated_mem_of_dvd_prod [CancelCommMonoidWithZero α] {p : α}
     · rcases ih (fun r hr => hs _ (Multiset.mem_cons.2 (Or.inr hr))) h with ⟨q, hq₁, hq₂⟩
       exact ⟨q, Multiset.mem_cons.2 (Or.inr hq₁), hq₂⟩
 
+open Submonoid in
+/-- Let x, y ∈ α. If x * y can be written as a product of units and prime elements, then x can be
+written as a product of units and prime elements. -/
+theorem divisor_closure_eq_closure [CancelCommMonoidWithZero α]
+    (x y : α) (hxy : x * y ∈ closure { r : α | IsUnit r ∨ Prime r}) :
+    x ∈ closure { r : α | IsUnit r ∨ Prime r} := by
+  obtain ⟨m, hm, hprod⟩ := exists_multiset_of_mem_closure hxy
+  induction m using Multiset.induction generalizing x y with
+  | empty =>
+    apply subset_closure
+    simp only [Set.mem_setOf]
+    simp only [Multiset.prod_zero] at hprod
+    left; exact isUnit_of_mul_eq_one _ _ hprod.symm
+  | @cons c s hind =>
+    simp only [Multiset.mem_cons, forall_eq_or_imp, Set.mem_setOf] at hm
+    simp only [Multiset.prod_cons] at hprod
+    simp only [Set.mem_setOf_eq] at hind
+    obtain ⟨ha₁ | ha₂, hs⟩ := hm
+    · rcases ha₁.exists_right_inv with ⟨k, hk⟩
+      refine hind x (y*k) ?_ hs ?_
+      · simp only [← mul_assoc, ← hprod, ← Multiset.prod_cons, mul_comm]
+        refine multiset_prod_mem _ _ (Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_),
+          Multiset.forall_mem_cons.2 ⟨subset_closure (Set.mem_def.2 ?_), (fun t ht =>
+          subset_closure (hs t ht))⟩⟩)
+        · left; exact isUnit_of_mul_eq_one_right _ _ hk
+        · left; exact ha₁
+      · rw [← mul_one s.prod, ← hk, ← mul_assoc, ← mul_assoc, mul_eq_mul_right_iff, mul_comm]
+        left; exact hprod
+    · rcases ha₂.dvd_mul.1 (Dvd.intro _ hprod) with ⟨c, hc⟩ | ⟨c, hc⟩
+      · rw [hc]; rw [hc, mul_assoc] at hprod
+        refine Submonoid.mul_mem _ (subset_closure (Set.mem_def.2 ?_))
+          (hind _ _ ?_ hs (mul_left_cancel₀ ha₂.ne_zero hprod))
+        · right; exact ha₂
+        rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
+        exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
+      rw [hc, mul_comm x _, mul_assoc, mul_comm c _] at hprod
+      refine hind x c ?_ hs (mul_left_cancel₀ ha₂.ne_zero hprod)
+      rw [← mul_left_cancel₀ ha₂.ne_zero hprod]
+      exact multiset_prod_mem _ _ (fun t ht => subset_closure (hs t ht))
+
 theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
     [∀ a : α, DecidablePred (Associated a)] {s : Multiset α} (n : α) (h : ∀ a ∈ s, Prime a)
     (div : ∀ a ∈ s, a ∣ n) (uniq : ∀ a, s.countP (Associated a) ≤ 1) : s.prod ∣ n := by
@@ -95,7 +137,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
       Multiset.countP_pos] at this
     exact this ⟨b, b_in_s, assoc.symm⟩
 
-theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : Finset α} (n : α)
+theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Subsingleton αˣ] {s : Finset α} (n : α)
     (h : ∀ a ∈ s, Prime a) (div : ∀ a ∈ s, a ∣ n) : (∏ p ∈ s, p) ∣ n := by
   classical
     exact
@@ -116,10 +158,7 @@ theorem prod_mk {p : Multiset α} : (p.map Associates.mk).prod = Associates.mk p
 
 theorem finset_prod_mk {p : Finset β} {f : β → α} :
     (∏ i ∈ p, Associates.mk (f i)) = Associates.mk (∏ i ∈ p, f i) := by
-  -- Porting note: added
-  have : (fun i => Associates.mk (f i)) = Associates.mk ∘ f :=
-    funext fun x => Function.comp_apply
-  rw [Finset.prod_eq_multiset_prod, this, ← Multiset.map_map, prod_mk,
+  rw [Finset.prod_eq_multiset_prod, ← Function.comp_def, ← Multiset.map_map, prod_mk,
     ← Finset.prod_eq_multiset_prod]
 
 theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
@@ -130,7 +169,7 @@ theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
 theorem prod_eq_one_iff {p : Multiset (Associates α)} :
     p.prod = 1 ↔ ∀ a ∈ p, (a : Associates α) = 1 :=
   Multiset.induction_on p (by simp)
-    (by simp (config := { contextual := true }) [mul_eq_one, or_imp, forall_and])
+    (by simp +contextual [mul_eq_one, or_imp, forall_and])
 
 theorem prod_le_prod {p q : Multiset (Associates α)} (h : p ≤ q) : p.prod ≤ q.prod := by
   haveI := Classical.decEq (Associates α)
@@ -147,7 +186,7 @@ variable [CancelCommMonoidWithZero α]
 
 theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates α)} {p : Associates α}
     (hp : Prime p) : p ≤ s.prod → ∃ a ∈ s, p ≤ a :=
-  Multiset.induction_on s (fun ⟨d, Eq⟩ => (hp.ne_one (mul_eq_one.1 Eq.symm).1).elim)
+  Multiset.induction_on s (fun ⟨_, eq⟩ => (hp.ne_one (mul_eq_one.1 eq.symm).1).elim)
     fun a s ih h =>
     have : p ≤ a * s.prod := by simpa using h
     match Prime.le_or_le hp this with

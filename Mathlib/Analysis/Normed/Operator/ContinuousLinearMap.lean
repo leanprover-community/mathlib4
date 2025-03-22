@@ -5,7 +5,8 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo
 -/
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.Analysis.Normed.MulAction
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.DFinsupp
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-! # Constructions of continuous linear maps between (semi-)normed spaces
 
@@ -126,7 +127,7 @@ end SeminormedAddCommGroup
 
 section SeminormedBounded
 variable [SeminormedRing 𝕜] [Ring 𝕜₂] [SeminormedAddCommGroup E]
-variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- Reinterpret a linear map `𝕜 →ₗ[𝕜] E` as a continuous linear map. This construction
 is generalized to the case of any finite dimensional domain
@@ -153,9 +154,13 @@ variable [Ring 𝕜] [Ring 𝕜₂]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F] [Module 𝕜 E] [Module 𝕜₂ F]
 variable {σ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ] F) (x y z : E)
 
-theorem ContinuousLinearMap.uniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
-    UniformEmbedding f :=
-  (AddMonoidHomClass.antilipschitz_of_bound f hf).uniformEmbedding f.uniformContinuous
+theorem ContinuousLinearMap.isUniformEmbedding_of_bound {K : ℝ≥0} (hf : ∀ x, ‖x‖ ≤ K * ‖f x‖) :
+    IsUniformEmbedding f :=
+  (AddMonoidHomClass.antilipschitz_of_bound f hf).isUniformEmbedding f.uniformContinuous
+
+@[deprecated (since := "2024-10-01")]
+alias ContinuousLinearMap.uniformEmbedding_of_bound :=
+  ContinuousLinearMap.isUniformEmbedding_of_bound
 
 end Normed
 
@@ -171,7 +176,7 @@ variable {σ : 𝕜 →+* 𝕜₂} (f : E →ₛₗ[σ] F)
     Since the field `𝕜` need not have `ℝ` as a subfield, this theorem is not directly deducible from
     the corresponding theorem about isometries plus a theorem about scalar multiplication.  Likewise
     for the other theorems about homotheties in this file.
- -/
+-/
 def ContinuousLinearMap.ofHomothety (f : E →ₛₗ[σ] F) (a : ℝ) (hf : ∀ x, ‖f x‖ = a * ‖x‖) :
     E →SL[σ] F :=
   f.mkContinuous a fun x => le_of_eq (hf x)

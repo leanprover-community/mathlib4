@@ -3,9 +3,11 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Int.ModEq
 import Mathlib.Algebra.Field.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
+import Mathlib.Data.Int.ModEq
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Equality modulo an element
@@ -171,16 +173,13 @@ protected theorem sub_iff_right :
     a₂ ≡ b₂ [PMOD p] → (a₁ - a₂ ≡ b₁ - b₂ [PMOD p] ↔ a₁ ≡ b₁ [PMOD p]) := fun ⟨m, hm⟩ =>
   (Equiv.subRight m).symm.exists_congr_left.trans <| by simp [sub_sub_sub_comm, hm, sub_smul, ModEq]
 
-alias ⟨add_left_cancel, add⟩ := ModEq.add_iff_left
+protected alias ⟨add_left_cancel, add⟩ := ModEq.add_iff_left
 
-alias ⟨add_right_cancel, _⟩ := ModEq.add_iff_right
+protected alias ⟨add_right_cancel, _⟩ := ModEq.add_iff_right
 
-alias ⟨sub_left_cancel, sub⟩ := ModEq.sub_iff_left
+protected alias ⟨sub_left_cancel, sub⟩ := ModEq.sub_iff_left
 
-alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
-
--- Porting note: doesn't work
--- attribute [protected] add_left_cancel add_right_cancel add sub_left_cancel sub_right_cancel sub
+protected alias ⟨sub_right_cancel, _⟩ := ModEq.sub_iff_right
 
 protected theorem add_left (c : α) (h : a ≡ b [PMOD p]) : c + a ≡ c + b [PMOD p] :=
   modEq_rfl.add h
@@ -279,5 +278,16 @@ variable [DivisionRing α] {a b c p : α}
 @[simp] lemma div_modEq_div (hc : c ≠ 0) : a / c ≡ b / c [PMOD p] ↔ a ≡ b [PMOD (p * c)] := by
   simp [ModEq, ← sub_div, div_eq_iff hc, mul_assoc]
 
+@[simp] lemma mul_modEq_mul_right (hc : c ≠ 0) : a * c ≡ b * c [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  rw [div_eq_mul_inv, ← div_modEq_div (inv_ne_zero hc), div_inv_eq_mul, div_inv_eq_mul]
+
 end DivisionRing
+
+section Field
+variable [Field α] {a b c p : α}
+
+@[simp] lemma mul_modEq_mul_left (hc : c ≠ 0) : c * a ≡ c * b [PMOD p] ↔ a ≡ b [PMOD (p / c)] := by
+  simp [mul_comm c, hc]
+
+end Field
 end AddCommGroup

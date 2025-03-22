@@ -43,8 +43,6 @@ such that
     `t' : V i j ×[U i] V i k ⟶ V j k ×[U j] V j i`.
 10. `t' i j k ≫ t' j k i ≫ t' k i j = 𝟙 _`.
 -/
--- Porting note(#5171): linter not ported yet
--- @[nolint has_nonempty_instance]
 structure GlueData where
   J : Type v
   U : J → C
@@ -124,31 +122,11 @@ def sigmaOpens [HasCoproduct D.U] : C :=
   ∐ D.U
 
 /-- (Implementation) The diagram to take colimit of. -/
-def diagram : MultispanIndex C where
-  L := D.J × D.J
-  R := D.J
-  fstFrom := _root_.Prod.fst
-  sndFrom := _root_.Prod.snd
+def diagram : MultispanIndex (.prod D.J) C where
   left := D.V
   right := D.U
   fst := fun ⟨i, j⟩ => D.f i j
   snd := fun ⟨i, j⟩ => D.t i j ≫ D.f j i
-
-@[simp]
-theorem diagram_l : D.diagram.L = (D.J × D.J) :=
-  rfl
-
-@[simp]
-theorem diagram_r : D.diagram.R = D.J :=
-  rfl
-
-@[simp]
-theorem diagram_fstFrom (i j : D.J) : D.diagram.fstFrom ⟨i, j⟩ = i :=
-  rfl
-
-@[simp]
-theorem diagram_sndFrom (i j : D.J) : D.diagram.sndFrom ⟨i, j⟩ = j :=
-  rfl
 
 @[simp]
 theorem diagram_fst (i j : D.J) : D.diagram.fst ⟨i, j⟩ = D.f i j :=
@@ -231,8 +209,8 @@ def mapGlueData : GlueData C' where
   U i := F.obj (D.U i)
   V i := F.obj (D.V i)
   f i j := F.map (D.f i j)
-  f_mono i j := preserves_mono_of_preservesLimit _ _
-  f_id i := inferInstance
+  f_mono _ _ := preserves_mono_of_preservesLimit _ _
+  f_id _ := inferInstance
   t i j := F.map (D.t i j)
   t_id i := by
     simp [D.t_id i]
@@ -251,8 +229,8 @@ def diagramIso : D.diagram.multispan ⋙ F ≅ (D.mapGlueData F).diagram.multisp
   NatIso.ofComponents
     (fun x =>
       match x with
-      | WalkingMultispan.left a => Iso.refl _
-      | WalkingMultispan.right b => Iso.refl _)
+      | WalkingMultispan.left _ => Iso.refl _
+      | WalkingMultispan.right _ => Iso.refl _)
     (by
       rintro (⟨_, _⟩ | _) _ (_ | _ | _)
       · erw [Category.comp_id, Category.id_comp, Functor.map_id]
@@ -299,14 +277,14 @@ end
 variable [HasMulticoequalizer D.diagram] [PreservesColimit D.diagram.multispan F]
 
 theorem hasColimit_multispan_comp : HasColimit (D.diagram.multispan ⋙ F) :=
-  ⟨⟨⟨_, PreservesColimit.preserves (colimit.isColimit _)⟩⟩⟩
+  ⟨⟨⟨_, isColimitOfPreserves _ (colimit.isColimit _)⟩⟩⟩
 
 attribute [local instance] hasColimit_multispan_comp
 
 variable [∀ i j k, PreservesLimit (cospan (D.f i j) (D.f i k)) F]
 
 theorem hasColimit_mapGlueData_diagram : HasMulticoequalizer (D.mapGlueData F).diagram :=
-  hasColimitOfIso (D.diagramIso F).symm
+  hasColimit_of_iso (D.diagramIso F).symm
 
 attribute [local instance] hasColimit_mapGlueData_diagram
 
@@ -318,7 +296,7 @@ def gluedIso : F.obj D.glued ≅ (D.mapGlueData F).glued :=
 @[reassoc (attr := simp)]
 theorem ι_gluedIso_hom (i : D.J) : F.map (D.ι i) ≫ (D.gluedIso F).hom = (D.mapGlueData F).ι i := by
   haveI : HasColimit (MultispanIndex.multispan (diagram (mapGlueData D F))) := inferInstance
-  erw [ι_preservesColimitsIso_hom_assoc]
+  erw [ι_preservesColimitIso_hom_assoc]
   rw [HasColimit.isoOfNatIso_ι_hom]
   erw [Category.id_comp]
   rfl
@@ -388,14 +366,13 @@ structure GlueData' where
   cocycle : ∀ i j k hij hik hjk, t' i j k hij hik hjk ≫
     t' j k i hjk hij.symm hik.symm ≫ t' k i j hik.symm hjk.symm hij = 𝟙 _
 
-attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback mono_comp
+attribute [local instance] GlueData'.f_mono GlueData'.f_hasPullback
 
 attribute [reassoc (attr := simp)] GlueData'.t_inv GlueData'.cocycle
 
 variable {C}
 
-open scoped Classical
-
+open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.f` from a `GlueData'`. -/
 abbrev GlueData'.f' (D : GlueData' C) (i j : D.J) :
     (if h : i = j then D.U i else D.V i j h) ⟶ D.U i :=
@@ -421,6 +398,7 @@ instance (D : GlueData' C) (i j k : D.J) :
     have {X Y Z : C} (f : X ⟶ Y) (e : Z = X) : HEq (eqToHom e ≫ f) f := by subst e; simp
     convert D.f_hasPullback i j k hij hik <;> simp [GlueData'.f', hij, hik, this]
 
+open scoped Classical in
 /-- (Implementation detail) the constructed `GlueData.t'` from a `GlueData'`. -/
 def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
     pullback (D.f' i j) (D.f' i k) ⟶ pullback (D.f' j k) (D.f' j i) :=
@@ -443,11 +421,12 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
   else
     haveI := Ne.symm hij
     pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dif_neg hik]))
-        (eqToHom (by aesop)) (by aesop) (by delta f'; aesop) ≫
+        (eqToHom (by simp)) (by delta f'; aesop) (by delta f'; aesop) ≫
       D.t' i j k hij hik hjk ≫
-      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by aesop))
+      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
         (by delta f'; aesop) (by delta f'; aesop)
 
+open scoped Classical in
 /--
 The constructed `GlueData` of a `GlueData'`, where `GlueData'` is a variant of `GlueData` that only
 requires conditions on `V (i, j)` when `i ≠ j`.

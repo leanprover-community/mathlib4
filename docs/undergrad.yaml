@@ -130,7 +130,7 @@ Ring Theory:
     product of rings: 'Pi.ring'
   Ideals and Quotients:
     ideal of a commutative ring: 'Ideal'
-    quotient rings: 'Ideal.instHasQuotient'
+    quotient rings: 'Ideal.Quotient.ring'
     prime ideals: 'Ideal.IsPrime'
     maximal ideals: 'Ideal.IsMaximal'
     Chinese remainder theorem: 'Ideal.quotientInfRingEquivPiQuotient'
@@ -312,7 +312,7 @@ Single Variable Real Analysis:
   Differentiability:
     derivative at a point: 'HasDerivAt'
     differentiable functions: 'HasDerivAt'
-    derivative of a composition of functions: 'deriv.comp'
+    derivative of a composition of functions: 'deriv_comp'
     derivative of the inverse of a function: 'HasStrictDerivAt.of_local_left_inverse'
     Rolle's theorem: 'exists_deriv_eq_zero'
     mean value theorem: 'exists_ratio_deriv_eq_ratio_slope'
@@ -356,7 +356,9 @@ Single Variable Real Analysis:
     Weierstrass trigonometric approximation theorem: 'span_fourier_closure_eq_top'
   Convexity:
     convex functions of a real variable: 'ConvexOn'
-    continuity and differentiability of convex functions: 'https://en.wikipedia.org/wiki/Convex_function#Functions_of_one_variable'
+    continuity and differentiability of convex functions:
+      continuity: 'ConvexOn.continuousOn'
+      differentiability: 'https://en.wikipedia.org/wiki/Convex_function#Functions_of_one_variable'
     characterizations of convexity: 'convexOn_of_deriv2_nonneg'
     convexity inequalities: 'analysis/mean_inequalities.html'
 
@@ -387,7 +389,7 @@ Single Variable Complex Analysis:
     Cauchy formulas: 'Complex.two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable'
     analyticity of a holomorphic function: 'DifferentiableOn.analyticAt'
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
-    principle of analytic continuation: 'AnalyticOn.eqOn_of_preconnected_of_frequently_eq'
+    principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     maximum principle: 'Complex.eventually_eq_of_isLocalMax_norm'
     isolated singularities: ''
     Laurent series: ''
@@ -417,7 +419,7 @@ Topology:
     complete metric spaces: 'Metric.complete_of_cauchySeq_tendsto'
     contraction mapping theorem: 'ContractingWith.exists_fixedPoint'
   Normed vector spaces on $\R$ and $\C$:
-    topology on a normed vector space: 'NormedSpace.boundedSMul'
+    topology on a normed vector space: 'NormedSpace.isBoundedSMul'
     equivalent norms: ''
     Banach open mapping theorem: 'ContinuousLinearMap.isOpenMap'
     equivalence of norms in finite dimension: 'LinearEquiv.toContinuousLinearEquiv'

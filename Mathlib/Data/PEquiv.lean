@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Option.Basic
-import Mathlib.Data.Set.Basic
 import Batteries.Tactic.Congr
+import Mathlib.Data.Set.Basic
+import Mathlib.Tactic.Contrapose
 
 /-!
 
@@ -39,6 +40,7 @@ pequiv, partial equivalence
 
 -/
 
+assert_not_exists RelIso
 
 universe u v w x
 
@@ -50,7 +52,7 @@ structure PEquiv (α : Type u) (β : Type v) where
   toFun : α → Option β
   /-- The partial inverse of `toFun` -/
   invFun : β → Option α
-  /-- `invFun` is the partial inverse of `toFun`  -/
+  /-- `invFun` is the partial inverse of `toFun` -/
   inv : ∀ (a : α) (b : β), a ∈ invFun b ↔ b ∈ toFun a
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset
@@ -244,7 +246,7 @@ theorem self_trans_symm (f : α ≃. β) : f.trans f.symm = ofSet { a | (f a).is
   constructor
   · rintro ⟨b, hb₁, hb₂⟩
     exact ⟨PEquiv.inj _ hb₂ hb₁, b, hb₂⟩
-  · simp (config := { contextual := true })
+  · simp +contextual
 
 theorem symm_trans_self (f : α ≃. β) : f.symm.trans f = ofSet { b | (f.symm b).isSome } :=
   symm_injective <| by simp [symm_trans_rev, self_trans_symm, -symm_symm]
@@ -362,7 +364,7 @@ section Order
 instance instPartialOrderPEquiv : PartialOrder (α ≃. β) where
   le f g := ∀ (a : α) (b : β), b ∈ f a → b ∈ g a
   le_refl _ _ _ := id
-  le_trans f g h fg gh a b := gh a b ∘ fg a b
+  le_trans _ _ _ fg gh a b := gh a b ∘ fg a b
   le_antisymm f g fg gf :=
     ext
       (by
@@ -390,7 +392,7 @@ instance [DecidableEq α] [DecidableEq β] : SemilatticeInf (α ≃. β) :=
           · contrapose! h2
             rw [h2]
             rw [← h1, hf, h2] at hg
-            simp only [mem_def, true_iff_iff, eq_self_iff_true] at hg
+            simp only [mem_def, true_iff, eq_self_iff_true] at hg
             rw [hg]
           · contrapose! h1
             rw [h1] at hf h2
@@ -431,6 +433,7 @@ theorem toPEquiv_trans (f : α ≃ β) (g : β ≃ γ) :
 theorem toPEquiv_symm (f : α ≃ β) : f.symm.toPEquiv = f.toPEquiv.symm :=
   rfl
 
+@[simp]
 theorem toPEquiv_apply (f : α ≃ β) (x : α) : f.toPEquiv x = some (f x) :=
   rfl
 

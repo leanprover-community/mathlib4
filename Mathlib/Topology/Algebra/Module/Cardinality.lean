@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Algebra.Module.Card
-import Mathlib.SetTheory.Cardinal.CountableCover
-import Mathlib.SetTheory.Cardinal.Continuum
 import Mathlib.Analysis.SpecificLimits.Normed
+import Mathlib.SetTheory.Cardinal.Continuum
+import Mathlib.SetTheory.Cardinal.CountableCover
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.MetricSpace.Perfect
 
 /-!
@@ -40,7 +41,7 @@ theorem continuum_le_cardinal_of_nontriviallyNormedField
   have B : ∀ᶠ n in atTop, x + c^n ∈ U := tendsto_def.1 A U hU
   rcases B.exists with ⟨n, hn⟩
   refine ⟨x + c^n, by simpa using hn, ?_⟩
-  simp only [ne_eq, add_right_eq_self]
+  simp only [add_ne_left]
   apply pow_ne_zero
   simpa using c_pos
 
@@ -77,7 +78,7 @@ lemma cardinal_eq_of_mem_nhds_zero
         simp_rw [← inv_pow]
         apply tendsto_pow_atTop_nhds_zero_of_norm_lt_one
         rw [norm_inv]
-        exact inv_lt_one hc
+        exact inv_lt_one_of_one_lt₀ hc
       exact Tendsto.smul_const this x
     rw [zero_smul] at this
     filter_upwards [this hs] with n (hn : (c ^ n)⁻¹ • x ∈ s)

@@ -3,12 +3,8 @@ Copyright (c) 2022 Antoine Labelle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
-import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.MonoidAlgebra.Basic
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.LinearAlgebra.Contraction
-import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Algebra.Group.Equiv.TypeTags
 
 /-!
 # Monoid representations
@@ -18,11 +14,10 @@ representations.
 
 ## Main definitions
 
-  * Representation.Representation
-  * Representation.character
-  * Representation.tprod
-  * Representation.linHom
-  * Representation.dual
+  * `Representation`
+  * `Representation.tprod`
+  * `Representation.linHom`
+  * `Representation.dual`
 
 ## Implementation notes
 
@@ -31,7 +26,7 @@ homomorphisms `G →* (V →ₗ[k] V)`. We use the abbreviation `Representation`
 
 The theorem `asAlgebraHom_def` constructs a module over the group `k`-algebra of `G` (implemented
 as `MonoidAlgebra k G`) corresponding to a representation. If `ρ : Representation k G V`, this
-module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G-module `M`
+module can be accessed via `ρ.asModule`. Conversely, given a `MonoidAlgebra k G`-module `M`,
 `M.ofModule` is the associociated representation seen as a homomorphism.
 -/
 
@@ -55,28 +50,33 @@ namespace Representation
 
 section trivial
 
-variable (k : Type*) {G V : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable (k G V : Type*) [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
 
 /-- The trivial representation of `G` on a `k`-module V.
 -/
 def trivial : Representation k G V :=
   1
 
--- Porting note: why is `V` implicit
-theorem trivial_def (g : G) (v : V) : trivial k (V := V) g v = v :=
+variable {G V}
+
+@[simp]
+theorem trivial_apply (g : G) (v : V) : trivial k G V g v = v :=
   rfl
 
 variable {k}
 
 /-- A predicate for representations that fix every element. -/
 class IsTrivial (ρ : Representation k G V) : Prop where
-  out : ∀ g x, ρ g x = x := by aesop
+  out : ∀ g, ρ g = LinearMap.id := by aesop
 
-instance : IsTrivial (trivial k (G := G) (V := V)) where
+instance : IsTrivial (trivial k G V) where
 
-@[simp] theorem apply_eq_self
-    (ρ : Representation k G V) (g : G) (x : V) [h : IsTrivial ρ] :
-    ρ g x = x := h.out g x
+@[simp]
+theorem isTrivial_def (ρ : Representation k G V) [IsTrivial ρ] (g : G) :
+    ρ g = LinearMap.id := IsTrivial.out g
+
+theorem isTrivial_apply (ρ : Representation k G V) [IsTrivial ρ] (g : G) (x : V) :
+    ρ g x = x := congr($(isTrivial_def ρ g) x)
 
 end trivial
 
@@ -95,10 +95,11 @@ theorem asAlgebraHom_def : asAlgebraHom ρ = (lift k G _) ρ :=
   rfl
 
 @[simp]
-theorem asAlgebraHom_single (g : G) (r : k) : asAlgebraHom ρ (Finsupp.single g r) = r • ρ g := by
+theorem asAlgebraHom_single (g : G) (r : k) :
+    asAlgebraHom ρ (MonoidAlgebra.single g r) = r • ρ g := by
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_single]
 
-theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (Finsupp.single g 1) = ρ g := by simp
+theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (MonoidAlgebra.single g 1) = ρ g := by simp
 
 theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by
   simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul]
@@ -112,7 +113,8 @@ You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 def asModule (_ : Representation k G V) :=
   V
 
--- Porting note: no derive handler
+-- The `AddCommMonoid` and `Module` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
 
 instance : Inhabited ρ.asModule where
@@ -121,10 +123,9 @@ instance : Inhabited ρ.asModule where
 /-- A `k`-linear representation of `G` on `V` can be thought of as
 a module over `MonoidAlgebra k G`.
 -/
-noncomputable instance asModuleModule : Module (MonoidAlgebra k G) ρ.asModule :=
+noncomputable instance instModuleAsModule : Module (MonoidAlgebra k G) ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 
--- Porting note: ρ.asModule doesn't unfold now
 instance : Module k ρ.asModule := inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
@@ -132,24 +133,23 @@ of the representative.
 
 This is just the identity, but it is helpful for typechecking and keeping track of instances.
 -/
-def asModuleEquiv : ρ.asModule ≃+ V :=
-  AddEquiv.refl _
+def asModuleEquiv : ρ.asModule ≃ₗ[k] V :=
+  LinearEquiv.refl _ _
 
 @[simp]
 theorem asModuleEquiv_map_smul (r : MonoidAlgebra k G) (x : ρ.asModule) :
     ρ.asModuleEquiv (r • x) = ρ.asAlgebraHom r (ρ.asModuleEquiv x) :=
   rfl
 
-@[simp]
 theorem asModuleEquiv_symm_map_smul (r : k) (x : V) :
     ρ.asModuleEquiv.symm (r • x) = algebraMap k (MonoidAlgebra k G) r • ρ.asModuleEquiv.symm x := by
-  apply_fun ρ.asModuleEquiv
+  rw [LinearEquiv.symm_apply_eq]
   simp
 
 @[simp]
 theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
     ρ.asModuleEquiv.symm (ρ g x) = MonoidAlgebra.of k G g • ρ.asModuleEquiv.symm x := by
-  apply_fun ρ.asModuleEquiv
+  rw [LinearEquiv.symm_apply_eq]
   simp
 
 /-- Build a `Representation k G M` from a `[Module (MonoidAlgebra k G) M]`.
@@ -231,6 +231,23 @@ theorem smul_ofModule_asModule (r : MonoidAlgebra k G) (m : (ofModule M).asModul
 
 end
 
+@[simp]
+lemma single_smul (t : k) (g : G) (v : ρ.asModule) :
+    MonoidAlgebra.single (g : G) t • v = t • ρ g (ρ.asModuleEquiv v) := by
+  rw [← LinearMap.smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
+  rfl
+
+instance : IsScalarTower k (MonoidAlgebra k G) ρ.asModule where
+  smul_assoc t x v := by
+    revert t
+    apply x.induction_on
+    · simp
+    · intro y z hy hz
+      simp [add_smul, hy, hz]
+    · intro s y hy t
+      rw [← smul_assoc, smul_eq_mul, hy (t * s), ← smul_eq_mul, smul_assoc]
+      aesop
+
 end MonoidAlgebra
 
 section AddCommGroup
@@ -263,6 +280,7 @@ variable {k G H}
 theorem ofMulAction_def (g : G) : ofMulAction k G H g = Finsupp.lmapDomain k k (g • ·) :=
   rfl
 
+@[simp]
 theorem ofMulAction_single (g : G) (x : H) (r : k) :
     ofMulAction k G H g (Finsupp.single x r) = Finsupp.single (g • x) r :=
   Finsupp.mapDomain_single
@@ -298,7 +316,7 @@ def ofMulDistribMulAction : Representation ℤ M (Additive G) :=
     ((monoidEndToAdditive G : _ →* _).comp (MulDistribMulAction.toMonoidEnd M G))
 
 @[simp] theorem ofMulDistribMulAction_apply_apply (g : M) (a : Additive G) :
-    ofMulDistribMulAction M G g a = Additive.ofMul (g • Additive.toMul a) := rfl
+    ofMulDistribMulAction M G g a = Additive.ofMul (g • a.toMul) := rfl
 
 end MulDistribMulAction
 section Group
@@ -345,7 +363,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
 @[simps]
 noncomputable def ofMulActionSelfAsModuleEquiv :
     (ofMulAction k G G).asModule ≃ₗ[MonoidAlgebra k G] MonoidAlgebra k G :=
-  { asModuleEquiv _ with map_smul' := ofMulAction_self_smul_eq_mul }
+  { (asModuleEquiv _).toAddEquiv with map_smul' := ofMulAction_self_smul_eq_mul }
 
 /-- When `G` is a group, a `k`-linear representation of `G` on `V` can be thought of as
 a group homomorphism from `G` into the invertible `k`-linear endomorphisms of `V`.
@@ -419,11 +437,11 @@ def linHom : Representation k G (V →ₗ[k] W) where
       map_smul' := fun r f => by simp_rw [RingHom.id_apply, smul_comp, comp_smul] }
   map_one' :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note (#11227):now needed
+      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [inv_one, map_one, one_eq_id, comp_id, id_comp]
   map_mul' g h :=
     LinearMap.ext fun x => by
-      dsimp -- Porting note (#11227):now needed
+      dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
       simp_rw [mul_inv_rev, map_mul, mul_eq_comp, comp_assoc]
 
 @[simp]
@@ -442,11 +460,11 @@ def dual : Representation k G (Module.Dual k V) where
         simp only [coe_comp, Function.comp_apply, smul_apply, RingHom.id_apply] }
   map_one' := by
     ext
-    dsimp -- Porting note (#11227):now needed
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
     simp only [coe_comp, Function.comp_apply, map_one, inv_one, coe_mk, one_apply]
   map_mul' g h := by
     ext
-    dsimp -- Porting note (#11227):now needed
+    dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227):now needed
     simp only [coe_comp, Function.comp_apply, mul_inv_rev, map_mul, coe_mk, mul_apply]
 
 @[simp]
@@ -454,7 +472,7 @@ theorem dual_apply (g : G) : (dual ρV) g = Module.Dual.transpose (R := k) (ρV 
   rfl
 
 /-- Given $k$-modules $V, W$, there is a homomorphism $φ : V^* ⊗ W → Hom_k(V, W)$
-(implemented by `LinearAlgebra.Contraction.dualTensorHom`).
+(implemented by `dualTensorHom` in `Mathlib.LinearAlgebra.Contraction`).
 Given representations of $G$ on $V$ and $W$,there are representations of $G$ on $V^* ⊗ W$ and on
 $Hom_k(V, W)$.
 This lemma says that $φ$ is $G$-linear.

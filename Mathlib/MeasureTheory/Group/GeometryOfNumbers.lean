@@ -36,7 +36,7 @@ Hermann Minkowski.
 
 namespace MeasureTheory
 
-open ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure Set Filter
+open ENNReal Module MeasureTheory MeasureTheory.Measure Set Filter
 
 open scoped Pointwise NNReal
 
@@ -65,10 +65,10 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddC
     ∃ x ≠ 0, ((x : L) : E) ∈ s := by
   have h_vol : μ F < μ ((2⁻¹ : ℝ) • s) := by
     rw [addHaar_smul_of_nonneg μ (by norm_num : 0 ≤ (2 : ℝ)⁻¹) s, ←
-      mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (pow_ne_top two_ne_top),
+      mul_lt_mul_right (pow_ne_zero (finrank ℝ E) (two_ne_zero' _)) (pow_ne_top ofNat_ne_top),
       mul_right_comm, ofReal_pow (by norm_num : 0 ≤ (2 : ℝ)⁻¹), ofReal_inv_of_pos zero_lt_two]
     norm_num
-    rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero two_ne_top, one_pow, one_mul]
+    rwa [← mul_pow, ENNReal.inv_mul_cancel two_ne_zero ofNat_ne_top, one_pow, one_mul]
   obtain ⟨x, y, hxy, h⟩ :=
     exists_pair_mem_lattice_not_disjoint_vadd fund ((h_conv.smul _).nullMeasurableSet _) h_vol
   obtain ⟨_, ⟨v, hv, rfl⟩, w, hw, hvw⟩ := Set.not_disjoint_iff.mp h
@@ -134,7 +134,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     rw [show μ s < _ ↔ 1 * μ s < _ by rw [one_mul]]
     refine (mul_lt_mul_right h_mes (ne_of_lt h_cpt.measure_lt_top)).mpr ?_
     rw [ofReal_pow (NNReal.coe_nonneg _)]
-    refine one_lt_pow ?_ (ne_of_gt finrank_pos)
-    simp [(exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
+    refine one_lt_pow₀ ?_ (ne_of_gt finrank_pos)
+    simp [u, K, S, Z, (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
 
 end MeasureTheory

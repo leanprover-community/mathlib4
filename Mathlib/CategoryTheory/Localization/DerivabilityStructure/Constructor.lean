@@ -90,7 +90,7 @@ lemma isConnected :
       (isPreconnected_zigzag (RightResolution.mk (𝟙 _) (W₂.id_mem _))
         (RightResolution.mk ρ.w.right ρ.hw.2))
   refine Zigzag.trans ?_ (Zigzag.trans this ?_)
-  · exact Zigzag.of_hom (eqToHom (by aesop))
+  · exact Zigzag.of_hom (eqToHom (by simp))
   · apply Zigzag.of_inv
     refine CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp)) ?_
     ext

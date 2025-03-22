@@ -1,0 +1,42 @@
+name: Zulip Emoji Merge Delegate
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  zulip-emoji-merged:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout mathlib repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        fetch-depth: 0 # download the full repository
+
+    - name: Set up Python
+      uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install zulip
+
+    - name: Run Zulip Emoji Merge Delegate Script
+      env:
+        ZULIP_API_KEY: ${{ secrets.ZULIP_API_KEY }}
+        ZULIP_EMAIL: github-mathlib4-bot@leanprover.zulipchat.com
+        ZULIP_SITE: https://leanprover.zulipchat.com
+      run: |
+          # scan the commits of the past 10 minutes, assuming that the timezone of the current machine
+          # is the same that performed the commit
+          git log --since="10 minutes ago" --pretty=oneline
+
+          printf $'Scanning commits:\n%s\n\nContinuing\n' "$(git log --since="10 minutes ago" --pretty=oneline)"
+          while read -r pr_number; do
+            printf $'Running the python script with pr "%s"\n' "${pr_number}"
+            python scripts/zulip_emoji_merge_delegate.py "$ZULIP_API_KEY" "$ZULIP_EMAIL" "$ZULIP_SITE" "[Merged by Bors]" "${pr_number}"
+          done < <(git log --oneline -n 10 | awk -F# '{ gsub(/)$/, ""); print $NF}')

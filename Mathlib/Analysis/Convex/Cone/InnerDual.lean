@@ -27,12 +27,7 @@ We prove the following theorems:
   [Farkas lemma](https://en.wikipedia.org/wiki/Farkas%27_lemma#Geometric_interpretation).
 -/
 
-open Set LinearMap
-
-open scoped Classical
-open Pointwise
-
-variable {𝕜 E F G : Type*}
+open Set LinearMap Pointwise
 
 /-! ### The dual cone -/
 
@@ -147,6 +142,7 @@ section CompleteSpace
 
 variable [CompleteSpace H]
 
+open scoped InnerProductSpace in
 /-- This is a stronger version of the Hahn-Banach separation theorem for closed convex cones. This
 is also the geometric interpretation of Farkas' lemma. -/
 theorem ConvexCone.hyperplane_separation_of_nonempty_of_isClosed_of_nmem (K : ConvexCone ℝ H)

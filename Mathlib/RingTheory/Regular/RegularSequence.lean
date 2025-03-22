@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 import Mathlib.RingTheory.Regular.IsSMulRegular
-import Mathlib.RingTheory.Artinian
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.Nakayama
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -145,7 +147,7 @@ lemma isWeaklyRegular_iff_Fin (rs : List R) :
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
 @[mk_iff]
-structure IsRegular (rs : List R) extends IsWeaklyRegular M rs : Prop where
+structure IsRegular (rs : List R) : Prop extends IsWeaklyRegular M rs where
   top_ne_smul : (⊤ : Submodule R M) ≠ Ideal.ofList rs • ⊤
 
 end Definitions
@@ -333,7 +335,7 @@ def recIterModByRegularWithRing
     {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
     [Module R M] → {rs : List R} → (h : IsWeaklyRegular M rs) → motive R M rs h
   | R, _, M, _, _, [], _ => nil R M
-  | R, _, M, _, _, r :: rs, h =>
+  | _, _, M, _, _, r :: rs, h =>
     let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff' M r rs).mp h
     cons r rs h1 h2 (recIterModByRegularWithRing nil cons h2)
   termination_by _ _ _ _ _ rs => List.length rs
@@ -510,14 +512,14 @@ lemma isRegular_iff_isWeaklyRegular_of_subset_jacobson_annihilator
   Iff.trans (isRegular_iff M rs) <| and_iff_left <|
     top_ne_ideal_smul_of_le_jacobson_annihilator <| Ideal.span_le.mpr h
 
-lemma _root_.LocalRing.isRegular_iff_isWeaklyRegular_of_subset_maximalIdeal
-    [LocalRing R] [Nontrivial M] [Module.Finite R M] {rs : List R}
-    (h : ∀ r ∈ rs, r ∈ LocalRing.maximalIdeal R) :
+lemma _root_.IsLocalRing.isRegular_iff_isWeaklyRegular_of_subset_maximalIdeal
+    [IsLocalRing R] [Nontrivial M] [Module.Finite R M] {rs : List R}
+    (h : ∀ r ∈ rs, r ∈ IsLocalRing.maximalIdeal R) :
     IsRegular M rs ↔ IsWeaklyRegular M rs :=
   have H h' := bot_ne_top.symm <| annihilator_eq_top_iff.mp <|
     Eq.trans annihilator_top h'
   isRegular_iff_isWeaklyRegular_of_subset_jacobson_annihilator fun r hr =>
-    LocalRing.jacobson_eq_maximalIdeal (Module.annihilator R M) H ▸ h r hr
+    IsLocalRing.jacobson_eq_maximalIdeal (Module.annihilator R M) H ▸ h r hr
 
 open IsWeaklyRegular IsArtinian in
 lemma eq_nil_of_isRegular_on_artinian [IsArtinian R M] :
@@ -653,22 +655,25 @@ lemma IsRegular.of_perm_of_subset_jacobson_annihilator [IsNoetherian R M]
     top_ne_ideal_smul_of_le_jacobson_annihilator <|
       Ideal.span_le.mpr (h3 · <| h2.mem_iff.mpr ·)⟩
 
-lemma _root_.LocalRing.isWeaklyRegular_of_perm_of_subset_maximalIdeal
-    [LocalRing R] [IsNoetherian R M] {rs rs' : List R}
+lemma _root_.IsLocalRing.isWeaklyRegular_of_perm_of_subset_maximalIdeal
+    [IsLocalRing R] [IsNoetherian R M] {rs rs' : List R}
     (h1 : IsWeaklyRegular M rs) (h2 : List.Perm rs rs')
-    (h3 : ∀ r ∈ rs, r ∈ LocalRing.maximalIdeal R) : IsWeaklyRegular M rs' :=
+    (h3 : ∀ r ∈ rs, r ∈ IsLocalRing.maximalIdeal R) : IsWeaklyRegular M rs' :=
   IsWeaklyRegular.of_perm_of_subset_jacobson_annihilator h1 h2 fun r hr =>
-    LocalRing.maximalIdeal_le_jacobson _ (h3 r hr)
+    IsLocalRing.maximalIdeal_le_jacobson _ (h3 r hr)
 
-lemma _root_.LocalRing.isRegular_of_perm [LocalRing R] [IsNoetherian R M]
+lemma _root_.IsLocalRing.isRegular_of_perm [IsLocalRing R] [IsNoetherian R M]
     {rs rs' : List R} (h1 : IsRegular M rs) (h2 : List.Perm rs rs') :
     IsRegular M rs' := by
   obtain ⟨h3, h4⟩ := h1
-  refine ⟨LocalRing.isWeaklyRegular_of_perm_of_subset_maximalIdeal h3 h2 ?_, ?_⟩
+  refine ⟨IsLocalRing.isWeaklyRegular_of_perm_of_subset_maximalIdeal h3 h2 ?_, ?_⟩
   · intro x (h6 : x ∈ { r | r ∈ rs })
-    refine LocalRing.le_maximalIdeal ?_ (Ideal.subset_span h6)
+    refine IsLocalRing.le_maximalIdeal ?_ (Ideal.subset_span h6)
     exact h4 ∘ Eq.trans (top_smul _).symm ∘ Eq.symm ∘ congrArg (· • ⊤)
   · refine ne_of_ne_of_eq h4 (congrArg (Ideal.span · • ⊤) ?_)
     exact Set.ext fun _ => h2.mem_iff
+
+@[deprecated (since := "2024-11-09")]
+alias _root_.LocalRing.isRegular_of_perm := _root_.IsLocalRing.isRegular_of_perm
 
 end RingTheory.Sequence

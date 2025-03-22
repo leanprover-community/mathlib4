@@ -16,7 +16,8 @@ variable {α : Type*}
 
 section CanonicallyOrderedAddCommMonoid
 
-variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [AddCommMonoid α] [PartialOrder α] [CanonicallyOrderedAdd α]
+  [Sub α] [OrderedSub α] {a b c : α}
 
 theorem add_tsub_cancel_iff_le : a + (b - a) = b ↔ a ≤ b :=
   ⟨fun h => le_iff_exists_add.mpr ⟨b - a, h.symm⟩, add_tsub_cancel_of_le⟩
@@ -32,14 +33,14 @@ theorem tsub_eq_zero_iff_le : a - b = 0 ↔ a ≤ b := by
 
 alias ⟨_, tsub_eq_zero_of_le⟩ := tsub_eq_zero_iff_le
 
-attribute [simp] tsub_eq_zero_of_le
-
+@[simp]
 theorem tsub_self (a : α) : a - a = 0 :=
   tsub_eq_zero_of_le le_rfl
 
 theorem tsub_le_self : a - b ≤ a :=
   tsub_le_iff_left.mpr <| le_add_left le_rfl
 
+@[simp]
 theorem zero_tsub (a : α) : 0 - a = 0 :=
   tsub_eq_zero_of_le <| zero_le a
 
@@ -76,7 +77,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 theorem tsub_le_tsub_iff_left (h : c ≤ a) : a - b ≤ a - c ↔ c ≤ b :=
   Contravariant.AddLECancellable.tsub_le_tsub_iff_left Contravariant.AddLECancellable h
@@ -105,7 +106,8 @@ end CanonicallyOrderedAddCommMonoid
 
 section CanonicallyLinearOrderedAddCommMonoid
 
-variable [CanonicallyLinearOrderedAddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
+variable [LinearOrderedAddCommMonoid α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
+  {a b c : α}
 
 @[simp]
 theorem tsub_pos_iff_lt : 0 < a - b ↔ b < a := by rw [tsub_pos_iff_not_le, not_le]
@@ -117,9 +119,11 @@ theorem tsub_eq_tsub_min (a b : α) : a - b = a - min a b := by
 
 namespace AddLECancellable
 
+omit [CanonicallyOrderedAdd α] in
 protected theorem lt_tsub_iff_right (hc : AddLECancellable c) : a < b - c ↔ a + c < b :=
   ⟨lt_imp_lt_of_le_imp_le tsub_le_iff_right.mpr, hc.lt_tsub_of_add_lt_right⟩
 
+omit [CanonicallyOrderedAdd α] in
 protected theorem lt_tsub_iff_left (hc : AddLECancellable c) : a < b - c ↔ c + a < b :=
   ⟨lt_imp_lt_of_le_imp_le tsub_le_iff_left.mpr, hc.lt_tsub_of_add_lt_left⟩
 
@@ -147,7 +151,7 @@ end AddLECancellable
 
 section Contra
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 /-- This lemma also holds for `ENNReal`, but we need a different proof for that. -/
 theorem tsub_lt_tsub_iff_right (h : c ≤ a) : a - c < b - c ↔ a < b :=
@@ -188,8 +192,7 @@ theorem tsub_add_min : a - b + min a b = a := by
   apply min_le_left
 
 -- `Odd.tsub` requires `CanonicallyLinearOrderedSemiring`, which we don't have
-lemma Even.tsub
-    [ContravariantClass α α (· + ·) (· ≤ ·)] {m n : α} (hm : Even m) (hn : Even n) :
+lemma Even.tsub [AddLeftReflectLE α] {m n : α} (hm : Even m) (hn : Even n) :
     Even (m - n) := by
   obtain ⟨a, rfl⟩ := hm
   obtain ⟨b, rfl⟩ := hn

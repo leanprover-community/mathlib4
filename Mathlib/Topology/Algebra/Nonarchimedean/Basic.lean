@@ -25,25 +25,25 @@ group is nonarchimedean.
 
 -/
 
-
-open scoped Pointwise Topology
+open Topology
+open scoped Pointwise
 
 /-- A topological additive group is nonarchimedean if every neighborhood of 0
   contains an open subgroup. -/
-class NonarchimedeanAddGroup (G : Type*) [AddGroup G] [TopologicalSpace G] extends
-  TopologicalAddGroup G : Prop where
+class NonarchimedeanAddGroup (G : Type*) [AddGroup G] [TopologicalSpace G] : Prop
+  extends IsTopologicalAddGroup G where
   is_nonarchimedean : ∀ U ∈ 𝓝 (0 : G), ∃ V : OpenAddSubgroup G, (V : Set G) ⊆ U
 
 /-- A topological group is nonarchimedean if every neighborhood of 1 contains an open subgroup. -/
 @[to_additive]
-class NonarchimedeanGroup (G : Type*) [Group G] [TopologicalSpace G] extends TopologicalGroup G :
-  Prop where
+class NonarchimedeanGroup (G : Type*) [Group G] [TopologicalSpace G] : Prop
+  extends IsTopologicalGroup G where
   is_nonarchimedean : ∀ U ∈ 𝓝 (1 : G), ∃ V : OpenSubgroup G, (V : Set G) ⊆ U
 
 /-- A topological ring is nonarchimedean if its underlying topological additive
   group is nonarchimedean. -/
-class NonarchimedeanRing (R : Type*) [Ring R] [TopologicalSpace R] extends TopologicalRing R :
-  Prop where
+class NonarchimedeanRing (R : Type*) [Ring R] [TopologicalSpace R] : Prop
+  extends IsTopologicalRing R where
   is_nonarchimedean : ∀ U ∈ 𝓝 (0 : R), ∃ V : OpenAddSubgroup R, (V : Set R) ⊆ U
 
 -- see Note [lower instance priority]
@@ -55,12 +55,12 @@ instance (priority := 100) NonarchimedeanRing.to_nonarchimedeanAddGroup (R : Typ
 namespace NonarchimedeanGroup
 
 variable {G : Type*} [Group G] [TopologicalSpace G] [NonarchimedeanGroup G]
-variable {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H]
+variable {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H]
 variable {K : Type*} [Group K] [TopologicalSpace K] [NonarchimedeanGroup K]
 
 /-- If a topological group embeds into a nonarchimedean group, then it is nonarchimedean. -/
 @[to_additive]
-theorem nonarchimedean_of_emb (f : G →* H) (emb : OpenEmbedding f) : NonarchimedeanGroup H :=
+theorem nonarchimedean_of_emb (f : G →* H) (emb : IsOpenEmbedding f) : NonarchimedeanGroup H :=
   { is_nonarchimedean := fun U hU =>
       have h₁ : f ⁻¹' U ∈ 𝓝 (1 : G) := by
         apply emb.continuous.tendsto
@@ -75,10 +75,10 @@ the cartesian product of two nonarchimedean groups contains the cartesian produc
 an open neighborhood in each group."]
 theorem prod_subset {U} (hU : U ∈ 𝓝 (1 : G × K)) :
     ∃ (V : OpenSubgroup G) (W : OpenSubgroup K), (V : Set G) ×ˢ (W : Set K) ⊆ U := by
-  erw [nhds_prod_eq, Filter.mem_prod_iff] at hU
+  rw [nhds_prod_eq, Filter.mem_prod_iff] at hU
   rcases hU with ⟨U₁, hU₁, U₂, hU₂, h⟩
-  cases' is_nonarchimedean _ hU₁ with V hV
-  cases' is_nonarchimedean _ hU₂ with W hW
+  obtain ⟨V, hV⟩ := is_nonarchimedean _ hU₁
+  obtain ⟨W, hW⟩ := is_nonarchimedean _ hU₂
   use V; use W
   rw [Set.prod_subset_iff]
   intro x hX y hY
@@ -96,16 +96,14 @@ theorem prod_self_subset {U} (hU : U ∈ 𝓝 (1 : G × G)) :
 
 /-- The cartesian product of two nonarchimedean groups is nonarchimedean. -/
 @[to_additive "The cartesian product of two nonarchimedean groups is nonarchimedean."]
-instance : NonarchimedeanGroup (G × K) where
-  is_nonarchimedean U hU :=
+instance Prod.instNonarchimedeanGroup : NonarchimedeanGroup (G × K) where
+  is_nonarchimedean _ hU :=
     let ⟨V, W, h⟩ := prod_subset hU
     ⟨V.prod W, ‹_›⟩
 
 end NonarchimedeanGroup
 
 namespace NonarchimedeanRing
-
-open NonarchimedeanRing
 
 open NonarchimedeanAddGroup
 

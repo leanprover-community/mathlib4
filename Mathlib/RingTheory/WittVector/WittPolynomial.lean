@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Invertible
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Algebra.MvPolynomial.Expand
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
 
@@ -230,7 +231,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
   rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
     vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
   on_goal 1 =>
-    simp only [true_and_iff, true_or_iff, eq_self_iff_true, mem_union, mem_singleton]
+    simp only [true_and, true_or, eq_self_iff_true, mem_union, mem_singleton]
     intro i
     rw [mem_union, mem_union]
     apply Or.imp id
@@ -280,7 +281,7 @@ theorem bind₁_wittPolynomial_xInTermsOfW [Invertible (p : R)] (n : ℕ) :
       rw [mul_assoc, ← C_mul, ← mul_pow, mul_invOf_self, one_pow, map_one, mul_one]]
   congr 1
   rw [wittPolynomial_eq_sum_C_mul_X_pow, sum_range_succ_comm,
-    tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_right_eq_self, sub_eq_zero]
+    tsub_self, pow_zero, pow_one, mul_comm (X n), add_sub_assoc, add_eq_left, sub_eq_zero]
   apply sum_congr rfl
   intro i h
   rw [mem_range] at h

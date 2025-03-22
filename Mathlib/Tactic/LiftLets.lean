@@ -117,10 +117,10 @@ example : (let x := 1; x) = 1 := by
 
 During the lifting process, let bindings are merged if they have the same type and value.
 -/
-syntax (name := lift_lets) "lift_lets" (Parser.Tactic.config)? (ppSpace location)? : tactic
+syntax (name := lift_lets) "lift_lets" optConfig (ppSpace location)? : tactic
 
 elab_rules : tactic
-  | `(tactic| lift_lets $[$cfg:config]? $[$loc:location]?) => do
+  | `(tactic| lift_lets $cfg:optConfig $[$loc:location]?) => do
     let config ← elabConfig (mkOptionalNode cfg)
     withLocation (expandOptLocation (Lean.mkOptionalNode loc))
       (atLocal := fun h ↦ liftMetaTactic1 fun mvarId ↦ do

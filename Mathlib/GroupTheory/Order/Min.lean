@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.GroupTheory.Torsion
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Minimum order of an element
@@ -49,7 +50,7 @@ lemma minOrder_le_orderOf (ha : a ≠ 1) (ha' : IsOfFinOrder a) : minOrder α �
 
 end Monoid
 
-variable [Group α] {s : Subgroup α} {n : ℕ}
+variable [Group α] {s : Subgroup α}
 
 @[to_additive]
 lemma le_minOrder_iff_forall_subgroup {n : ℕ∞} :

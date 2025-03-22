@@ -245,7 +245,7 @@ noncomputable def inrCompHomotopy (hc : ∀ j, ∃ i, c.Rel i j) :
     Homotopy (φ ≫ inr φ) 0 where
   hom i j :=
     if hij : c.Rel j i then inlX φ i j hij else 0
-  zero i j hij := dif_neg hij
+  zero _ _ hij := dif_neg hij
   comm j := by
     obtain ⟨i, hij⟩ := hc j
     rw [prevD_eq _ hij, dif_pos hij]

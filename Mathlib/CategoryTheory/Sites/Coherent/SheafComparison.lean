@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Sites.Coherent.Comparison
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
-import Mathlib.CategoryTheory.Sites.InducedTopology
+import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 import Mathlib.CategoryTheory.Sites.Whiskering
 /-!
 
@@ -85,7 +85,9 @@ lemma eq_induced : haveI := F.reflects_precoherent
 
 instance : haveI := F.reflects_precoherent;
     F.IsDenseSubsite (coherentTopology C) (coherentTopology D) where
-  functorPushforward_mem_iff := by simp_rw [eq_induced F]; rfl
+  functorPushforward_mem_iff := by
+    rw [eq_induced F]
+    rfl
 
 lemma coverPreserving : haveI := F.reflects_precoherent
     CoverPreserving (coherentTopology _) (coherentTopology _) F :=
@@ -181,7 +183,9 @@ lemma eq_induced : haveI := F.reflects_preregular
 
 instance : haveI := F.reflects_preregular;
     F.IsDenseSubsite (regularTopology C) (regularTopology D) where
-  functorPushforward_mem_iff := by simp_rw [eq_induced F]; rfl
+  functorPushforward_mem_iff := by
+    rw [eq_induced F]
+    rfl
 
 lemma coverPreserving : haveI := F.reflects_preregular
     CoverPreserving (regularTopology _) (regularTopology _) F :=
@@ -223,7 +227,7 @@ theorem isSheaf_coherent_iff_regular_and_extensive [Preregular C] [FinitaryPreEx
 theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
     [Preregular C] [FinitaryExtensive C]
     [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] :
-    IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) ∧
+    IsSheaf (coherentTopology C) F ↔ PreservesFiniteProducts F ∧
       EqualizerCondition F := by
   rw [isSheaf_coherent_iff_regular_and_extensive]
   exact and_congr (isSheaf_iff_preservesFiniteProducts _)
@@ -231,12 +235,12 @@ theorem isSheaf_iff_preservesFiniteProducts_and_equalizerCondition
 
 noncomputable instance [Preregular C] [FinitaryExtensive C]
     (F : Sheaf (coherentTopology C) A) : PreservesFiniteProducts F.val :=
-  ((Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
-    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1).some
+  (Presheaf.isSheaf_iff_preservesFiniteProducts F.val).1
+    ((Presheaf.isSheaf_coherent_iff_regular_and_extensive F.val).mp F.cond).1
 
 theorem isSheaf_iff_preservesFiniteProducts_of_projective [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] :
-    IsSheaf (coherentTopology C) F ↔ Nonempty (PreservesFiniteProducts F) := by
+    IsSheaf (coherentTopology C) F ↔ PreservesFiniteProducts F := by
   rw [isSheaf_coherent_iff_regular_and_extensive, and_iff_left (isSheaf_of_projective F),
     isSheaf_iff_preservesFiniteProducts]
 
@@ -268,8 +272,8 @@ lemma isSheaf_coherent_of_hasPullbacks_comp [Preregular C] [FinitaryExtensive C]
     [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f] [PreservesFiniteLimits s]
     (hF : IsSheaf (coherentTopology C) F) : IsSheaf (coherentTopology C) (F ⋙ s) := by
   rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
-  have := hF.1.some
-  refine ⟨⟨inferInstance⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  have := hF.1
+  refine ⟨inferInstance, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
   exact isLimitForkMapOfIsLimit s _ (hF.2 π c hc).some
 
 lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive C]
@@ -277,24 +281,23 @@ lemma isSheaf_coherent_of_hasPullbacks_of_comp [Preregular C] [FinitaryExtensive
     [ReflectsFiniteLimits s]
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_and_equalizerCondition (h := h)] at hF ⊢
-  refine ⟨⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
-  · exact isLimitOfReflects s ((hF.1.some.1 J).1.1 hc)
-  · exact isLimitOfIsLimitForkMap s _ (hF.2 π c hc).some
+  obtain ⟨_, hF₂⟩ := hF
+  refine ⟨⟨fun n ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩, fun _ _ π _ c hc ↦ ⟨?_⟩⟩
+  · exact ⟨isLimitOfReflects s (isLimitOfPreserves (F ⋙ s) hc)⟩
+  · exact isLimitOfIsLimitForkMap s _ (hF₂ π c hc).some
 
 lemma isSheaf_coherent_of_projective_comp [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X] [PreservesFiniteProducts s]
     (hF : IsSheaf (coherentTopology C) F) : IsSheaf (coherentTopology C) (F ⋙ s) := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
-  have := hF.some
-  exact ⟨inferInstance⟩
+  infer_instance
 
 lemma isSheaf_coherent_of_projective_of_comp [Preregular C] [FinitaryExtensive C]
     [∀ (X : C), Projective X]
     [ReflectsFiniteProducts s]
     (hF : IsSheaf (coherentTopology C) (F ⋙ s)) : IsSheaf (coherentTopology C) F := by
   rw [isSheaf_iff_preservesFiniteProducts_of_projective] at hF ⊢
-  refine ⟨⟨fun J _ ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ?_⟩⟩⟩⟩
-  exact isLimitOfReflects s ((hF.some.1 J).1.1 hc)
+  exact ⟨fun n ↦ ⟨fun {K} ↦ ⟨fun {c} hc ↦ ⟨isLimitOfReflects s (isLimitOfPreserves (F ⋙ s) hc)⟩⟩⟩⟩
 
 instance [Preregular C] [FinitaryExtensive C]
     [h : ∀ {Y X : C} (f : Y ⟶ X) [EffectiveEpi f], HasPullback f f]

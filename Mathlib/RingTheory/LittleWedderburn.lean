@@ -3,10 +3,9 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Eric Rodriguez
 -/
+import Mathlib.Algebra.GroupWithZero.Action.Center
 import Mathlib.GroupTheory.ClassEquation
-import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
 /-!
 # Wedderburn's Little Theorem
@@ -48,7 +47,7 @@ private def InductionHyp : Prop :=
 
 namespace InductionHyp
 
-open FiniteDimensional Polynomial
+open Module Polynomial
 
 variable {D}
 
@@ -69,7 +68,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   set q := card Z with card_Z
   have hq : 1 < q := by rw [card_Z]; exact one_lt_card
   let n := finrank Z D
-  have card_D : card D = q ^ n := card_eq_pow_finrank
+  have card_D : card D = q ^ n := Module.card_eq_pow_finrank
   have h1qn : 1 ≤ q ^ n := by rw [← card_D]; exact card_pos
   -- We go about this by looking at the class equation for `Dˣ`:
   -- `q ^ n - 1 = q - 1 + ∑ x : conjugacy classes (D ∖ Dˣ), |x|`.
@@ -117,7 +116,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   letI : Field Zx := hD.field hZx.lt_top
   letI : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
   let d := finrank Z Zx
-  have card_Zx : card Zx = q ^ d := card_eq_pow_finrank
+  have card_Zx : card Zx = q ^ d := Module.card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
   haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
   rw [card_units, card_Zx, Int.natCast_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
@@ -128,7 +127,7 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   rw [← aux, ← aux, ← eval_mul]
   refine (evalRingHom ↑q).map_dvd (X_pow_sub_one_mul_cyclotomic_dvd_X_pow_sub_one_of_dvd ℤ ?_)
   refine Nat.mem_properDivisors.mpr ⟨⟨_, (finrank_mul_finrank Z Zx D).symm⟩, ?_⟩
-  rw [← pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
+  rw [← Nat.pow_lt_pow_iff_right hq, ← card_D, ← card_Zx]
   obtain ⟨b, -, hb⟩ := SetLike.exists_of_lt hZx.lt_top
   refine card_lt_of_injective_of_not_mem _ Subtype.val_injective (?_ : b ∉ _)
   rintro ⟨b, rfl⟩

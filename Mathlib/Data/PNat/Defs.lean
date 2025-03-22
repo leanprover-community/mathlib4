@@ -3,13 +3,13 @@ Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Neil Strickland
 -/
-import Mathlib.Algebra.NeZero
-import Mathlib.Data.Nat.Defs
+import Mathlib.Algebra.Notation.Defs
+import Mathlib.Data.Int.Order.Basic
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.PNat.Notation
 import Mathlib.Order.Basic
-import Mathlib.Order.TypeTags
 import Mathlib.Tactic.Coe
 import Mathlib.Tactic.Lift
-import Mathlib.Data.Int.Order.Basic
 
 /-!
 # The positive natural numbers
@@ -92,13 +92,9 @@ open Nat
  obvious way, but there are a few things to be said about
  subtraction, division and powers.
 -/
--- Porting note: no `simp`  because simp can prove it
-theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k :=
-  Iff.rfl
+theorem mk_le_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) ≤ ⟨k, hk⟩ ↔ n ≤ k := by simp
 
--- Porting note: no `simp`  because simp can prove it
-theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k :=
-  Iff.rfl
+theorem mk_lt_mk (n k : ℕ) (hn : 0 < n) (hk : 0 < k) : (⟨n, hn⟩ : ℕ+) < ⟨k, hk⟩ ↔ n < k := by simp
 
 @[simp, norm_cast]
 theorem coe_le_coe (n k : ℕ+) : (n : ℕ) ≤ k ↔ n ≤ k :=
@@ -115,7 +111,7 @@ theorem pos (n : ℕ+) : 0 < (n : ℕ) :=
 theorem eq {m n : ℕ+} : (m : ℕ) = n → m = n :=
   Subtype.eq
 
-theorem coe_injective : Function.Injective (fun (a : ℕ+) => (a : ℕ)) :=
+theorem coe_injective : Function.Injective PNat.val :=
   Subtype.coe_injective
 
 @[simp]

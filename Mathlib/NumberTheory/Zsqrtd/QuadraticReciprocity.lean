@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 import Mathlib.NumberTheory.LegendreSymbol.Basic
-import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
 # Facts about the gaussian integers relying on quadratic reciprocity.
@@ -31,20 +31,12 @@ open PrincipalIdealRing
 theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
     (hpi : Prime (p : ℤ[i])) : p % 4 = 3 :=
   hp.1.eq_two_or_odd.elim
-    (fun hp2 =>
-      absurd hpi
-        (mt irreducible_iff_prime.2 fun ⟨_, h⟩ => by
-          have := h ⟨1, 1⟩ ⟨1, -1⟩ (hp2.symm ▸ rfl)
-          rw [← norm_eq_one_iff, ← norm_eq_one_iff] at this
-          exact absurd this (by decide)))
+    (fun hp2 => by
+      have := hpi.irreducible.isUnit_or_isUnit (a := ⟨1, 1⟩) (b := ⟨1, -1⟩)
+      simp [hp2, Zsqrtd.ext_iff, ← norm_eq_one_iff, norm_def] at this)
     fun hp1 =>
     by_contradiction fun hp3 : p % 4 ≠ 3 => by
-      have hp41 : p % 4 = 1 := by
-        rw [← Nat.mod_mul_left_mod p 2 2, show 2 * 2 = 4 from rfl] at hp1
-        have := Nat.mod_lt p (show 0 < 4 by decide)
-        revert this hp3 hp1
-        generalize p % 4 = m
-        intros; interval_cases m <;> simp_all -- Porting note (#11043): was `decide!`
+      have hp41 : p % 4 = 1 := by omega
       let ⟨k, hk⟩ := (ZMod.exists_sq_eq_neg_one_iff (p := p)).2 <| by rw [hp41]; decide
       obtain ⟨k, k_lt_p, rfl⟩ : ∃ (k' : ℕ) (_ : k' < p), (k' : ZMod p) = k := by
         exact ⟨k.val, k.val_lt, ZMod.natCast_zmod_val k⟩
@@ -80,13 +72,13 @@ theorem mod_four_eq_three_of_nat_prime_of_prime (p : ℕ) [hp : Fact p.Prime]
       clear_aux_decl
       tauto
 
-theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [hp : Fact p.Prime] (hp3 : p % 4 = 3) :
+theorem prime_of_nat_prime_of_mod_four_eq_three (p : ℕ) [Fact p.Prime] (hp3 : p % 4 = 3) :
     Prime (p : ℤ[i]) :=
   irreducible_iff_prime.1 <|
     by_contradiction fun hpi =>
       let ⟨a, b, hab⟩ := sq_add_sq_of_nat_prime_of_not_irreducible p hpi
       have : ∀ a b : ZMod 4, a ^ 2 + b ^ 2 ≠ (p : ZMod 4) := by
-        erw [← ZMod.natCast_mod p 4, hp3]; decide
+        rw [← ZMod.natCast_mod p 4, hp3]; decide
       this a b (hab ▸ by simp)
 
 /-- A prime natural number is prime in `ℤ[i]` if and only if it is `3` mod `4` -/

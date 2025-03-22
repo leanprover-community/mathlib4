@@ -32,6 +32,7 @@ graph metric, distance
 
 -/
 
+assert_not_exists Field
 
 namespace SimpleGraph
 
@@ -127,7 +128,7 @@ theorem edist_eq_one_iff_adj : G.edist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · obtain ⟨w, hw⟩ := exists_walk_of_edist_ne_top <| by rw [h]; simp
     exact w.adj_of_length_eq_one <| Nat.cast_eq_one.mp <| h ▸ hw
-  · exact le_antisymm (edist_le h.toWalk) (ENat.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
+  · exact le_antisymm (edist_le h.toWalk) (Order.one_le_iff_pos.mpr <| edist_pos_of_ne h.ne)
 
 lemma edist_bot_of_ne (h : u ≠ v) : (⊥ : SimpleGraph V).edist u v = ⊤ := by
   rwa [ne_eq, ← reachable_bot.not, ← edist_ne_top_iff_reachable.not, not_not] at h
@@ -147,7 +148,7 @@ theorem edist_anti {G' : SimpleGraph V} (h : G ≤ G') :
     G'.edist u v ≤ G.edist u v := by
   by_cases hr : G.Reachable u v
   · obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_edist
-    rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+    rw [← hw, ← Walk.length_map (.ofLE h)]
     apply edist_le
   · exact edist_eq_top_of_not_reachable hr ▸ le_top
 
@@ -272,7 +273,7 @@ lemma dist_top [DecidableEq V] : (⊤ : SimpleGraph V).dist u v = (if u = v then
 protected theorem Reachable.dist_anti {G' : SimpleGraph V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.dist u v ≤ G.dist u v := by
   obtain ⟨_, hw⟩ := hr.exists_walk_length_eq_dist
-  rw [← hw, ← Walk.length_map (Hom.mapSpanningSubgraphs h)]
+  rw [← hw, ← Walk.length_map (.ofLE h)]
   apply dist_le
 
 end dist

@@ -54,11 +54,6 @@ attribute [coe] toPointedCone
 instance : Coe (ProperCone 𝕜 E) (PointedCone 𝕜 E) :=
   ⟨toPointedCone⟩
 
--- Porting note: now a syntactic tautology
--- @[simp]
--- theorem toConvexCone_eq_coe (K : ProperCone 𝕜 E) : K.toConvexCone = K :=
---   rfl
-
 theorem toPointedCone_injective : Function.Injective ((↑) : ProperCone 𝕜 E → PointedCone 𝕜 E) :=
   fun S T h => by cases S; cases T; congr
 
@@ -170,6 +165,7 @@ def dual (K : ProperCone ℝ E) : ProperCone ℝ E where
 theorem coe_dual (K : ProperCone ℝ E) : K.dual = (K : Set E).innerDualCone :=
   rfl
 
+open scoped InnerProductSpace in
 @[simp]
 theorem mem_dual {K : ProperCone ℝ E} {y : E} : y ∈ dual K ↔ ∀ ⦃x⦄, x ∈ K → 0 ≤ ⟪x, y⟫_ℝ := by
   aesop
@@ -200,6 +196,8 @@ theorem mem_comap {f : E →L[ℝ] F} {S : ProperCone ℝ F} {x : E} : x ∈ S.c
 end InnerProductSpace
 
 section CompleteSpace
+
+open scoped InnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]

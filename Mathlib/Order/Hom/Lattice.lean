@@ -43,44 +43,63 @@ open Function OrderDual
 variable {F ι α β γ δ : Type*}
 
 /-- The type of `⊔`-preserving functions from `α` to `β`. -/
-structure SupHom (α β : Type*) [Sup α] [Sup β] where
-  /-- The underlying function of a `SupHom` -/
+structure SupHom (α β : Type*) [Max α] [Max β] where
+  /-- The underlying function of a `SupHom`.
+
+  Do not use this function directly. Instead use the coercion coming from the `FunLike`
+  instance. -/
   toFun : α → β
-  /-- A `SupHom` preserves suprema. -/
+  /-- A `SupHom` preserves suprema.
+
+  Do not use this directly. Use `map_sup` instead. -/
   map_sup' (a b : α) : toFun (a ⊔ b) = toFun a ⊔ toFun b
 
 /-- The type of `⊓`-preserving functions from `α` to `β`. -/
-structure InfHom (α β : Type*) [Inf α] [Inf β] where
-  /-- The underlying function of an `InfHom` -/
+structure InfHom (α β : Type*) [Min α] [Min β] where
+  /-- The underlying function of an `InfHom`.
+
+  Do not use this function directly. Instead use the coercion coming from the `FunLike`
+  instance. -/
   toFun : α → β
-  /-- An `InfHom` preserves infima. -/
+  /-- An `InfHom` preserves infima.
+
+  Do not use this directly. Use `map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of finitary supremum-preserving homomorphisms from `α` to `β`. -/
-structure SupBotHom (α β : Type*) [Sup α] [Sup β] [Bot α] [Bot β] extends SupHom α β where
-  /-- A `SupBotHom` preserves the bottom element. -/
+structure SupBotHom (α β : Type*) [Max α] [Max β] [Bot α] [Bot β] extends SupHom α β where
+  /-- A `SupBotHom` preserves the bottom element.
+
+  Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
 /-- The type of finitary infimum-preserving homomorphisms from `α` to `β`. -/
-structure InfTopHom (α β : Type*) [Inf α] [Inf β] [Top α] [Top β] extends InfHom α β where
-  /-- An `InfTopHom` preserves the top element. -/
+structure InfTopHom (α β : Type*) [Min α] [Min β] [Top α] [Top β] extends InfHom α β where
+  /-- An `InfTopHom` preserves the top element.
+
+  Do not use this directly. Use `map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
 
 /-- The type of lattice homomorphisms from `α` to `β`. -/
 structure LatticeHom (α β : Type*) [Lattice α] [Lattice β] extends SupHom α β where
-  /-- A `LatticeHom` preserves infima. -/
+  /-- A `LatticeHom` preserves infima.
+
+  Do not use this directly. Use `map_inf` instead. -/
   map_inf' (a b : α) : toFun (a ⊓ b) = toFun a ⊓ toFun b
 
 /-- The type of bounded lattice homomorphisms from `α` to `β`. -/
 structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
   [BoundedOrder β] extends LatticeHom α β where
-  /-- A `BoundedLatticeHom` preserves the top element. -/
+  /-- A `BoundedLatticeHom` preserves the top element.
+
+  Do not use this directly. Use `map_top` instead. -/
   map_top' : toFun ⊤ = ⊤
-  /-- A `BoundedLatticeHom` preserves the bottom element. -/
+  /-- A `BoundedLatticeHom` preserves the bottom element.
+
+  Do not use this directly. Use `map_bot` instead. -/
   map_bot' : toFun ⊥ = ⊥
 
--- Porting note (#11215): TODO: remove this configuration and use the default configuration.
--- We keep this to be consistent with Lean 3.
+-- TODO: remove this configuration and use the default configuration.
 initialize_simps_projections SupBotHom (+toSupHom, -toFun)
 initialize_simps_projections InfTopHom (+toInfHom, -toFun)
 initialize_simps_projections LatticeHom (+toSupHom, -toFun)
@@ -91,38 +110,38 @@ section
 /-- `SupHomClass F α β` states that `F` is a type of `⊔`-preserving morphisms.
 
 You should extend this class when you extend `SupHom`. -/
-class SupHomClass (F α β : Type*) [Sup α] [Sup β] [FunLike F α β] : Prop where
+class SupHomClass (F α β : Type*) [Max α] [Max β] [FunLike F α β] : Prop where
   /-- A `SupHomClass` morphism preserves suprema. -/
   map_sup (f : F) (a b : α) : f (a ⊔ b) = f a ⊔ f b
 
 /-- `InfHomClass F α β` states that `F` is a type of `⊓`-preserving morphisms.
 
 You should extend this class when you extend `InfHom`. -/
-class InfHomClass (F α β : Type*) [Inf α] [Inf β] [FunLike F α β] : Prop where
+class InfHomClass (F α β : Type*) [Min α] [Min β] [FunLike F α β] : Prop where
   /-- An `InfHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 
 /-- `SupBotHomClass F α β` states that `F` is a type of finitary supremum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class SupBotHomClass (F α β : Type*) [Sup α] [Sup β] [Bot α] [Bot β] [FunLike F α β]
-  extends SupHomClass F α β : Prop where
+class SupBotHomClass (F α β : Type*) [Max α] [Max β] [Bot α] [Bot β] [FunLike F α β] : Prop
+  extends SupHomClass F α β where
   /-- A `SupBotHomClass` morphism preserves the bottom element. -/
   map_bot (f : F) : f ⊥ = ⊥
 
 /-- `InfTopHomClass F α β` states that `F` is a type of finitary infimum-preserving morphisms.
 
 You should extend this class when you extend `SupBotHom`. -/
-class InfTopHomClass (F α β : Type*) [Inf α] [Inf β] [Top α] [Top β] [FunLike F α β]
-  extends InfHomClass F α β : Prop where
+class InfTopHomClass (F α β : Type*) [Min α] [Min β] [Top α] [Top β] [FunLike F α β] : Prop
+  extends InfHomClass F α β where
   /-- An `InfTopHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
 
 /-- `LatticeHomClass F α β` states that `F` is a type of lattice morphisms.
 
 You should extend this class when you extend `LatticeHom`. -/
-class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β]
-  extends SupHomClass F α β : Prop where
+class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α β] : Prop
+  extends SupHomClass F α β where
   /-- A `LatticeHomClass` morphism preserves infima. -/
   map_inf (f : F) (a b : α) : f (a ⊓ b) = f a ⊓ f b
 
@@ -130,7 +149,8 @@ class LatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [FunLike F α 
 
 You should extend this class when you extend `BoundedLatticeHom`. -/
 class BoundedLatticeHomClass (F α β : Type*) [Lattice α] [Lattice β] [BoundedOrder α]
-  [BoundedOrder β] [FunLike F α β] extends LatticeHomClass F α β : Prop where
+    [BoundedOrder β] [FunLike F α β] : Prop
+  extends LatticeHomClass F α β where
   /-- A `BoundedLatticeHomClass` morphism preserves the top element. -/
   map_top (f : F) : f ⊤ = ⊤
   /-- A `BoundedLatticeHomClass` morphism preserves the bottom element. -/
@@ -164,12 +184,12 @@ instance (priority := 100) InfHomClass.toOrderHomClass [SemilatticeInf α] [Semi
     map_rel := fun f a b h => by rw [← inf_eq_left, ← map_inf, inf_eq_left.2 h] }
 
 -- See note [lower instance priority]
-instance (priority := 100) SupBotHomClass.toBotHomClass [Sup α] [Sup β] [Bot α]
+instance (priority := 100) SupBotHomClass.toBotHomClass [Max α] [Max β] [Bot α]
     [Bot β] [SupBotHomClass F α β] : BotHomClass F α β :=
   { ‹SupBotHomClass F α β› with }
 
 -- See note [lower instance priority]
-instance (priority := 100) InfTopHomClass.toTopHomClass [Inf α] [Inf β] [Top α]
+instance (priority := 100) InfTopHomClass.toTopHomClass [Min α] [Min β] [Top α]
     [Top β] [InfTopHomClass F α β] : TopHomClass F α β :=
   { ‹InfTopHomClass F α β› with }
 
@@ -256,17 +276,18 @@ end OrderEmbedding
 
 section BoundedLattice
 
-variable [Lattice α] [BoundedOrder α] [Lattice β] [BoundedOrder β]
-variable [FunLike F α β] [BoundedLatticeHomClass F α β]
-variable (f : F) {a b : α}
+variable [Lattice α] [Lattice β] [FunLike F α β]
 
-theorem Disjoint.map (h : Disjoint a b) : Disjoint (f a) (f b) := by
+theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomClass F α β] {a b : α}
+    (f : F) (h : Disjoint a b) : Disjoint (f a) (f b) := by
   rw [disjoint_iff, ← map_inf, h.eq_bot, map_bot]
 
-theorem Codisjoint.map (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
+theorem Codisjoint.map [OrderTop α] [OrderTop β] [TopHomClass F α β] [SupHomClass F α β] {a b : α}
+    (f : F) (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
   rw [codisjoint_iff, ← map_sup, h.eq_top, map_top]
 
-theorem IsCompl.map (h : IsCompl a b) : IsCompl (f a) (f b) :=
+theorem IsCompl.map [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] {a b : α}
+    (f : F) (h : IsCompl a b) : IsCompl (f a) (f b) :=
   ⟨h.1.map _, h.2.map _⟩
 
 end BoundedLattice
@@ -293,16 +314,16 @@ end BooleanAlgebra
 
 variable [FunLike F α β]
 
-instance [Sup α] [Sup β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
+instance [Max α] [Max β] [SupHomClass F α β] : CoeTC F (SupHom α β) :=
   ⟨fun f => ⟨f, map_sup f⟩⟩
 
-instance [Inf α] [Inf β] [InfHomClass F α β] : CoeTC F (InfHom α β) :=
+instance [Min α] [Min β] [InfHomClass F α β] : CoeTC F (InfHom α β) :=
   ⟨fun f => ⟨f, map_inf f⟩⟩
 
-instance [Sup α] [Sup β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) :=
+instance [Max α] [Max β] [Bot α] [Bot β] [SupBotHomClass F α β] : CoeTC F (SupBotHom α β) :=
   ⟨fun f => ⟨f, map_bot f⟩⟩
 
-instance [Inf α] [Inf β] [Top α] [Top β] [InfTopHomClass F α β] : CoeTC F (InfTopHom α β) :=
+instance [Min α] [Min β] [Top α] [Top β] [InfTopHomClass F α β] : CoeTC F (InfTopHom α β) :=
   ⟨fun f => ⟨f, map_top f⟩⟩
 
 instance [Lattice α] [Lattice β] [LatticeHomClass F α β] : CoeTC F (LatticeHom α β) :=
@@ -323,11 +344,11 @@ instance [Lattice α] [Lattice β] [BoundedOrder α] [BoundedOrder β] [BoundedL
 
 namespace SupHom
 
-variable [Sup α]
+variable [Max α]
 
 section Sup
 
-variable [Sup β] [Sup γ] [Sup δ]
+variable [Max β] [Max γ] [Max δ]
 
 instance : FunLike (SupHom α β) α β where
   coe := SupHom.toFun
@@ -366,7 +387,7 @@ protected def id : SupHom α α :=
 instance : Inhabited (SupHom α α) :=
   ⟨SupHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(SupHom.id α) = id :=
   rfl
 
@@ -426,7 +447,7 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 
 variable {α}
 
-instance : Sup (SupHom α β) :=
+instance : Max (SupHom α β) :=
   ⟨fun f g =>
     ⟨f ⊔ g, fun a b => by
       rw [Pi.sup_apply, map_sup, map_sup]
@@ -499,11 +520,11 @@ end SupHom
 
 namespace InfHom
 
-variable [Inf α]
+variable [Min α]
 
 section Inf
 
-variable [Inf β] [Inf γ] [Inf δ]
+variable [Min β] [Min γ] [Min δ]
 
 instance : FunLike (InfHom α β) α β where
   coe := InfHom.toFun
@@ -542,7 +563,7 @@ protected def id : InfHom α α :=
 instance : Inhabited (InfHom α α) :=
   ⟨InfHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(InfHom.id α) = id :=
   rfl
 
@@ -602,7 +623,7 @@ theorem const_apply (b : β) (a : α) : const α b a = b :=
 
 variable {α}
 
-instance : Inf (InfHom α β) :=
+instance : Min (InfHom α β) :=
   ⟨fun f g =>
     ⟨f ⊓ g, fun a b => by
       rw [Pi.inf_apply, map_inf, map_inf]
@@ -674,11 +695,11 @@ end InfHom
 
 namespace SupBotHom
 
-variable [Sup α] [Bot α]
+variable [Max α] [Bot α]
 
 section Sup
 
-variable [Sup β] [Bot β] [Sup γ] [Bot γ] [Sup δ] [Bot δ]
+variable [Max β] [Bot β] [Max γ] [Bot γ] [Max δ] [Bot δ]
 
 /-- Reinterpret a `SupBotHom` as a `BotHom`. -/
 def toBotHom (f : SupBotHom α β) : BotHom α β :=
@@ -727,7 +748,7 @@ protected def id : SupBotHom α α :=
 instance : Inhabited (SupBotHom α α) :=
   ⟨SupBotHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(SupBotHom.id α) = id :=
   rfl
 
@@ -772,7 +793,7 @@ end Sup
 
 variable [SemilatticeSup β] [OrderBot β]
 
-instance : Sup (SupBotHom α β) :=
+instance : Max (SupBotHom α β) :=
   ⟨fun f g => { f.toBotHom ⊔ g.toBotHom with toSupHom := f.toSupHom ⊔ g.toSupHom }⟩
 
 instance : SemilatticeSup (SupBotHom α β) :=
@@ -825,11 +846,11 @@ end SupBotHom
 
 namespace InfTopHom
 
-variable [Inf α] [Top α]
+variable [Min α] [Top α]
 
 section Inf
 
-variable [Inf β] [Top β] [Inf γ] [Top γ] [Inf δ] [Top δ]
+variable [Min β] [Top β] [Min γ] [Top γ] [Min δ] [Top δ]
 
 /-- Reinterpret an `InfTopHom` as a `TopHom`. -/
 def toTopHom (f : InfTopHom α β) : TopHom α β :=
@@ -878,7 +899,7 @@ protected def id : InfTopHom α α :=
 instance : Inhabited (InfTopHom α α) :=
   ⟨InfTopHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(InfTopHom.id α) = id :=
   rfl
 
@@ -923,7 +944,7 @@ end Inf
 
 variable [SemilatticeInf β] [OrderTop β]
 
-instance : Inf (InfTopHom α β) :=
+instance : Min (InfTopHom α β) :=
   ⟨fun f g => { f.toTopHom ⊓ g.toTopHom with toInfHom := f.toInfHom ⊓ g.toInfHom }⟩
 
 instance : SemilatticeInf (InfTopHom α β) :=
@@ -1023,7 +1044,7 @@ protected def id : LatticeHom α α where
 instance : Inhabited (LatticeHom α α) :=
   ⟨LatticeHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(LatticeHom.id α) = id :=
   rfl
 
@@ -1095,7 +1116,7 @@ def subtypeVal {P : β → Prop}
     letI := Subtype.lattice Psup Pinf
     LatticeHom {x : β // P x} β :=
   letI := Subtype.lattice Psup Pinf
-  .mk (SupHom.subtypeVal Psup) (by simp)
+  .mk (SupHom.subtypeVal Psup) (by simp [Subtype.coe_inf Pinf])
 
 @[simp]
 lemma subtypeVal_apply {P : β → Prop}
@@ -1116,7 +1137,6 @@ variable (α β)
 variable [LinearOrder α] [Lattice β] [OrderHomClass F α β]
 
 /-- An order homomorphism from a linear order is a lattice homomorphism. -/
--- Porting note: made it an `instance` because we're no longer afraid of loops
 instance (priority := 100) toLatticeHomClass : LatticeHomClass F α β :=
   { ‹OrderHomClass F α β› with
     map_sup := fun f a b => by
@@ -1204,7 +1224,7 @@ protected def id : BoundedLatticeHom α α :=
 instance : Inhabited (BoundedLatticeHom α α) :=
   ⟨BoundedLatticeHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BoundedLatticeHom.id α) = id :=
   rfl
 
@@ -1306,7 +1326,7 @@ end BoundedLatticeHom
 
 namespace SupHom
 
-variable [Sup α] [Sup β] [Sup γ]
+variable [Max α] [Max β] [Max γ]
 
 /-- Reinterpret a supremum homomorphism as an infimum homomorphism between the dual lattices. -/
 @[simps]
@@ -1339,7 +1359,7 @@ end SupHom
 
 namespace InfHom
 
-variable [Inf α] [Inf β] [Inf γ]
+variable [Min α] [Min β] [Min γ]
 
 /-- Reinterpret an infimum homomorphism as a supremum homomorphism between the dual lattices. -/
 @[simps]
@@ -1372,7 +1392,7 @@ end InfHom
 
 namespace SupBotHom
 
-variable [Sup α] [Bot α] [Sup β] [Bot β] [Sup γ] [Bot γ]
+variable [Max α] [Bot α] [Max β] [Bot β] [Max γ] [Bot γ]
 
 /-- Reinterpret a finitary supremum homomorphism as a finitary infimum homomorphism between the dual
 lattices. -/
@@ -1403,7 +1423,7 @@ end SupBotHom
 
 namespace InfTopHom
 
-variable [Inf α] [Top α] [Inf β] [Top β] [Inf γ] [Top γ]
+variable [Min α] [Top α] [Min β] [Top β] [Min γ] [Top γ]
 
 /-- Reinterpret a finitary infimum homomorphism as a finitary supremum homomorphism between the dual
 lattices. -/
@@ -1552,7 +1572,6 @@ variable [SemilatticeSup α] [SemilatticeSup β] [SemilatticeSup γ]
 /-- Adjoins a `⊤` to the domain and codomain of a `SupHom`. -/
 @[simps]
 protected def withTop (f : SupHom α β) : SupHom (WithTop α) (WithTop β) where
-  -- Porting note: this was `Option.map f`
   toFun := WithTop.map f
   map_sup' a b :=
     match a, b with
@@ -1567,7 +1586,6 @@ theorem withTop_id : (SupHom.id α).withTop = SupHom.id _ := DFunLike.coe_inject
 @[simp]
 theorem withTop_comp (f : SupHom β γ) (g : SupHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of a `SupHom`. -/
@@ -1588,7 +1606,6 @@ theorem withBot_id : (SupHom.id α).withBot = SupBotHom.id _ := DFunLike.coe_inj
 @[simp]
 theorem withBot_comp (f : SupHom β γ) (g : SupHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of a `SupHom`. -/
@@ -1638,7 +1655,6 @@ theorem withTop_id : (InfHom.id α).withTop = InfTopHom.id _ := DFunLike.coe_inj
 @[simp]
 theorem withTop_comp (f : InfHom β γ) (g : InfHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of an `InfHom`. -/
@@ -1658,7 +1674,6 @@ theorem withBot_id : (InfHom.id α).withBot = InfHom.id _ := DFunLike.coe_inject
 @[simp]
 theorem withBot_comp (f : InfHom β γ) (g : InfHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊤` to the codomain of an `InfHom`. -/
@@ -1708,7 +1723,6 @@ theorem withTop_id : (LatticeHom.id α).withTop = LatticeHom.id _ :=
 @[simp]
 theorem withTop_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withTop = f.withTop.comp g.withTop :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊥` to the domain and codomain of a `LatticeHom`. -/
@@ -1729,7 +1743,6 @@ theorem withBot_id : (LatticeHom.id α).withBot = LatticeHom.id _ :=
 @[simp]
 theorem withBot_comp (f : LatticeHom β γ) (g : LatticeHom α β) :
     (f.comp g).withBot = f.withBot.comp g.withBot :=
--- Porting note: Proof was `DFunLike.coe_injective (Option.map_comp_map _ _).symm`
   DFunLike.coe_injective <| Eq.symm <| Option.map_comp_map _ _
 
 /-- Adjoins a `⊤` and `⊥` to the domain and codomain of a `LatticeHom`. -/

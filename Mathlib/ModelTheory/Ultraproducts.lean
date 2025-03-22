@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.ModelTheory.Quotients
+import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.Germ.Basic
-import Mathlib.Order.Filter.Ultrafilter
+import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 # Ultraproducts and Łoś's Theorem
@@ -46,8 +47,8 @@ namespace Ultraproduct
 instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :=
   { (u : Filter α).productSetoid M with
     toStructure :=
-      { funMap := fun {n} f x a => funMap f fun i => x i a
-        RelMap := fun {n} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
+      { funMap := fun {_} f x a => funMap f fun i => x i a
+        RelMap := fun {_} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
     fun_equiv := fun {n} f x y xy => by
       refine mem_of_superset (iInter_mem.2 xy) fun a ha => ?_
       simp only [Set.mem_iInter, Set.mem_setOf_eq] at ha
@@ -153,7 +154,7 @@ it is true in is in the ultrafilter. -/
 theorem sentence_realize (φ : L.Sentence) :
     (u : Filter α).Product M ⊨ φ ↔ ∀ᶠ a : α in u, M a ⊨ φ := by
   simp_rw [Sentence.Realize]
-  erw [← realize_formula_cast φ, iff_eq_eq]
+  rw [← realize_formula_cast φ, iff_eq_eq]
   exact congr rfl (Subsingleton.elim _ _)
 
 nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=

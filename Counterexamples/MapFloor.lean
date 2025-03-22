@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Order.Floor
+import Mathlib.Algebra.Order.Round
 import Mathlib.Algebra.Order.Group.PiLex
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Algebra.Polynomial.Reverse
@@ -56,7 +56,8 @@ namespace IntWithEpsilon
 
 instance nontrivial : Nontrivial IntWithEpsilon := inferInstance
 
--- Porting note: `inhabited` and `commRing` were `deriving` instances in mathlib3
+-- The `CommRing` and `Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance commRing : CommRing IntWithEpsilon := Polynomial.commRing
 
 instance inhabited : Inhabited IntWithEpsilon := ⟨69⟩
@@ -113,7 +114,7 @@ def forgetEpsilons : ℤ[ε] →+*o ℤ where
   map_mul' := mul_coeff_zero
   monotone' := monotone_iff_forall_lt.2 (by
     rintro p q ⟨n, hn⟩
-    cases' n with n
+    rcases n with - | n
     · exact hn.2.le
     · exact (hn.1 _ n.zero_lt_succ).le)
 
@@ -125,7 +126,7 @@ theorem forgetEpsilons_apply (p : ℤ[ε]) : forgetEpsilons p = coeff p 0 :=
 itself. -/
 theorem forgetEpsilons_floor_lt (n : ℤ) :
     forgetEpsilons ⌊(n - ↑ε : ℤ[ε])⌋ < ⌊forgetEpsilons (n - ↑ε)⌋ := by
-  suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [this]
+  suffices ⌊(n - ↑ε : ℤ[ε])⌋ = n - 1 by simp [map_sub, this]
   have : (0 : ℤ[ε]) < ε := ⟨1, by simp⟩
   exact (if_neg <| by rw [coeff_sub, intCast_coeff_zero]; simp [this]).trans (by
     rw [coeff_sub, intCast_coeff_zero]; simp)

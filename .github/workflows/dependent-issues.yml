@@ -3,6 +3,7 @@ name: Dependent Issues
 on:
   schedule:
     - cron: '*/15 * * * *' # run every 15 minutes
+  workflow_dispatch:
 
 jobs:
   cancel:
@@ -10,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     # timeout-minutes: 3
     steps:
-      - uses: styfle/cancel-workflow-action@0.11.0
+      - uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
         with:
           all_but_latest: true
           access_token: ${{ github.token }}

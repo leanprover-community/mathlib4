@@ -3,18 +3,18 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
-import Mathlib.Data.List.Sort
-import Mathlib.Data.Nat.Bitwise
 import Mathlib.Algebra.BigOperators.Ring.List
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Star.Basic
-import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.Order.Sub.Basic
+import Mathlib.Data.List.Sort
+import Mathlib.Data.Nat.Bitwise
 
 /-!
 # Bit Indices
 
 Given `n : ℕ`, we define `Nat.bitIndices n`, which is the `List` of indices of `1`s in the
-binary expansion of `n`. If `s : Finset ℕ` and `n = ∑ i in s, 2^i`, then
+binary expansion of `n`. If `s : Finset ℕ` and `n = ∑ i ∈ s, 2^i`, then
 `Nat.bitIndices n` is the sorted list of elements of `s`.
 
 The lemma `twoPowSum_bitIndices` proves that summing `2 ^ i` over this list gives `n`.
@@ -30,22 +30,22 @@ namespace Nat
 
 variable {a n : ℕ}
 
-/-- The function which maps each natural number `∑ i in s, 2^i` to the list of
+/-- The function which maps each natural number `∑ i ∈ s, 2^i` to the list of
 elements of `s` in increasing order. -/
 def bitIndices (n : ℕ) : List ℕ :=
   @binaryRec (fun _ ↦ List ℕ) [] (fun b _ s ↦ b.casesOn (s.map (· + 1)) (0 :: s.map (· + 1))) n
 
-@[simp] theorem bitIndices_zero : bitIndices 0 = [] := by rfl
+@[simp] theorem bitIndices_zero : bitIndices 0 = [] := by simp [bitIndices]
 
-@[simp] theorem bitIndices_one : bitIndices 1 = [0] := by rfl
+@[simp] theorem bitIndices_one : bitIndices 1 = [0] := by simp [bitIndices]
 
 theorem bitIndices_bit_true (n : ℕ) :
     bitIndices (bit true n) = 0 :: ((bitIndices n).map (· + 1)) :=
-  binaryRec_eq rfl _ _
+  binaryRec_eq _ _ (.inl rfl)
 
 theorem bitIndices_bit_false (n : ℕ) :
     bitIndices (bit false n) = (bitIndices n).map (· + 1) :=
-  binaryRec_eq rfl _ _
+  binaryRec_eq _ _ (.inl rfl)
 
 @[simp] theorem bitIndices_two_mul_add_one (n : ℕ) :
     bitIndices (2 * n + 1) = 0 :: (bitIndices n).map (· + 1) := by
@@ -85,8 +85,7 @@ theorem bitIndices_bit_false (n : ℕ) :
 See `Finset.equivBitIndices` for this bijection. -/
 theorem bitIndices_twoPowsum {L : List ℕ} (hL : List.Sorted (· < ·) L) :
     (L.map (fun i ↦ 2^i)).sum.bitIndices = L := by
-  cases' L with a L
-  · simp
+  cases L with | nil => simp | cons a L =>
   obtain ⟨haL, hL⟩ := sorted_cons.1 hL
   simp_rw [Nat.lt_iff_add_one_le] at haL
   have h' : ∃ (L₀ : List ℕ), L₀.Sorted (· < ·) ∧ L = L₀.map (· + a + 1) := by
@@ -114,6 +113,6 @@ theorem two_pow_le_of_mem_bitIndices (ha : a ∈ n.bitIndices) : 2^a ≤ n := by
   exact List.single_le_sum (by simp) _ <| mem_map_of_mem _ ha
 
 theorem not_mem_bitIndices_self (n : ℕ) : n ∉ n.bitIndices :=
-  fun h ↦ (lt_two_pow n).not_le <| two_pow_le_of_mem_bitIndices h
+  fun h ↦ (n.lt_two_pow_self).not_le <| two_pow_le_of_mem_bitIndices h
 
 end Nat

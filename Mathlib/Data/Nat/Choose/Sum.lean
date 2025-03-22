@@ -5,9 +5,8 @@ Authors: Chris Hughes, Patrick Stevens
 -/
 import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
-import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
@@ -74,6 +73,17 @@ theorem add_pow [CommSemiring R] (x y : R) (n : ℕ) :
     (x + y) ^ n = ∑ m ∈ range (n + 1), x ^ m * y ^ (n - m) * n.choose m :=
   (Commute.all x y).add_pow n
 
+/-- A special case of the **binomial theorem** -/
+theorem sub_pow [CommRing R] (x y : R) (n : ℕ) :
+    (x - y) ^ n = ∑ m ∈ range (n + 1), (-1) ^ (m + n) * x ^ m * y ^ (n - m) * n.choose m := by
+  rw [sub_eq_add_neg, add_pow]
+  congr! 1 with m hm
+  have : (-1 : R) ^ (n - m) = (-1) ^ (n + m) := by
+    rw [mem_range] at hm
+    simp [show n + m = n - m + 2 * m by omega, pow_add]
+  rw [neg_pow, this]
+  ring
+
 namespace Nat
 
 /-- The sum of entries in a row of Pascal's triangle -/
@@ -94,11 +104,7 @@ theorem sum_range_choose_halfway (m : ℕ) : (∑ i ∈ range (m + 1), (2 * m + 
             ∑ i ∈ Ico (m + 1) (2 * m + 2), (2 * m + 1).choose i := by
         rw [range_eq_Ico, sum_Ico_reflect _ _ (by omega)]
         congr
-        have A : m + 1 ≤ 2 * m + 1 := by omega
-        rw [add_comm, add_tsub_assoc_of_le A, ← add_comm]
-        congr
-        rw [tsub_eq_iff_eq_add_of_le A]
-        ring
+        omega
       _ = ∑ i ∈ range (2 * m + 2), (2 * m + 1).choose i := sum_range_add_sum_Ico _ (by omega)
       _ = 2 ^ (2 * m + 1) := sum_range_choose (2 * m + 1)
       _ = 2 * 4 ^ m := by rw [pow_succ, pow_mul, mul_comm]; rfl
@@ -113,7 +119,7 @@ theorem four_pow_le_two_mul_add_one_mul_central_binom (n : ℕ) :
   calc
     4 ^ n = (1 + 1) ^ (2 * n) := by norm_num [pow_mul]
     _ = ∑ m ∈ range (2 * n + 1), (2 * n).choose m := by set_option simprocs false in simp [add_pow]
-    _ ≤ ∑ m ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
+    _ ≤ ∑ _ ∈ range (2 * n + 1), (2 * n).choose (2 * n / 2) := by gcongr; apply choose_le_middle
     _ = (2 * n + 1) * choose (2 * n) n := by simp
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `Icc`. -/
@@ -123,8 +129,8 @@ theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).cho
   · induction n, h using le_induction with
     | base => simp
     | succ n _ ih =>
-      rw [← Ico_insert_right (by omega), sum_insert (by simp),
-        show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
+      rw [← Ico_insert_right (by omega), sum_insert (by simp), Ico_succ_right, ih,
+        choose_succ_succ' (n + 1)]
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.
 Summing `(i + k).choose k` for `i ∈ [0, n]` gives `(n + k + 1).choose (k + 1)`.
@@ -158,8 +164,8 @@ theorem Int.alternating_sum_range_choose_of_ne {n : ℕ} (h0 : n ≠ 0) :
 namespace Finset
 
 theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → α) {x : Finset β} :
-    ∑ m ∈ x.powerset, f m.card = ∑ m ∈ range (x.card + 1), x.card.choose m • f m := by
-  trans ∑ m ∈ range (x.card + 1), ∑ j ∈ x.powerset.filter fun z ↦ z.card = m, f j.card
+    ∑ m ∈ x.powerset, f #m = ∑ m ∈ range (#x + 1), (#x).choose m • f m := by
+  trans ∑ m ∈ range (#x + 1), ∑ j ∈ x.powerset with #j = m, f #j
   · refine (sum_fiberwise_of_maps_to ?_ _).symm
     intro y hy
     rw [mem_range, Nat.lt_succ_iff]
@@ -171,17 +177,17 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     rw [(mem_powersetCard.1 hz).2]
 
 theorem sum_powerset_neg_one_pow_card {α : Type*} [DecidableEq α] {x : Finset α} :
-    (∑ m ∈ x.powerset, (-1 : ℤ) ^ m.card) = if x = ∅ then 1 else 0 := by
+    (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = if x = ∅ then 1 else 0 := by
   rw [sum_powerset_apply_card]
   simp only [nsmul_eq_mul', ← card_eq_zero, Int.alternating_sum_range_choose]
 
 theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (h0 : x.Nonempty) :
-    (∑ m ∈ x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
+    (∑ m ∈ x.powerset, (-1 : ℤ) ^ #m) = 0 := by
   classical
   rw [sum_powerset_neg_one_pow_card]
   exact if_neg (nonempty_iff_ne_empty.mp h0)
 
-variable {M R : Type*} [CommMonoid M] [NonAssocSemiring R]
+variable [NonAssocSemiring R]
 
 @[to_additive sum_choose_succ_nsmul]
 theorem prod_pow_choose_succ {M : Type*} [CommMonoid M] (f : ℕ → ℕ → M) (n : ℕ) :
@@ -224,9 +230,9 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
   simpa only [nsmul_eq_mul] using sum_antidiagonal_choose_succ_nsmul f n
 
 theorem sum_antidiagonal_choose_add (d n : ℕ) :
-    (∑ ij ∈ antidiagonal n, (d + ij.2).choose d) = (d + n).choose d + (d + n).choose (d + 1) := by
+    (∑ ij ∈ antidiagonal n, (d + ij.2).choose d) = (d + n + 1).choose (d + 1) := by
   induction n with
   | zero => simp
-  | succ n hn => simpa [Nat.sum_antidiagonal_succ] using hn
+  | succ n hn => rw [Nat.sum_antidiagonal_succ, hn, Nat.choose_succ_succ (d + (n + 1)), ← add_assoc]
 
 end Finset

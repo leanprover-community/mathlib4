@@ -51,8 +51,6 @@ theorem multinomial_spec : (∏ i ∈ s, (f i)!) * multinomial s f = (∑ i ∈ 
 
 @[simp] lemma multinomial_empty : multinomial ∅ f = 1 := by simp [multinomial]
 
-@[deprecated (since := "2024-06-01")] alias multinomial_nil := multinomial_empty
-
 variable {s f}
 
 lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :
@@ -121,8 +119,8 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
 theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
     (f a + f b).succ * multinomial {a, b} f =
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
-  rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_same,
-    Function.update_noteq (ne_comm.mp h)]
+  rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_self,
+    Function.update_of_ne h.symm]
   rw [succ_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 
 /-! ### Simple cases -/
@@ -164,7 +162,7 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
     · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
-      exact Nat.multinomial_congr fun _ h ↦ (Function.update_noteq (mem_erase.1 h).1 0 f).symm
+      exact Nat.multinomial_congr fun _ h ↦ (Function.update_of_ne (mem_erase.1 h).1 0 f).symm
     rw [not_mem_support_iff] at h
     rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
 
@@ -188,8 +186,8 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
   · ext1 a
     rw [toFinsupp_apply, count_filter, Finsupp.coe_update]
     split_ifs with h
-    · rw [Function.update_noteq h.symm, toFinsupp_apply]
-    · rw [not_ne_iff.1 h, Function.update_same]
+    · rw [Function.update_of_ne h.symm, toFinsupp_apply]
+    · rw [not_ne_iff.1 h, Function.update_self]
 
 @[simp]
 theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := by
@@ -207,12 +205,14 @@ variable {α R : Type*} [DecidableEq α]
 section Semiring
 variable [Semiring R]
 
+open scoped Function -- required for scoped `on` notation
+
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
-    (hc : (s : Set α).Pairwise fun i j ↦ Commute (f i) (f j)) (n : ℕ) :
-    (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k *
-      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun i j h ↦ h.pow_pow ..) := by
+    (hc : (s : Set α).Pairwise (Commute on f)) (n : ℕ) :
+    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k *
+      s.noncommProd (fun i ↦ f i ^ k i) (hc.mono' fun _ _ h ↦ h.pow_pow ..) := by
   classical
   induction' s using Finset.cons_induction with a s has ih generalizing n
   · cases n <;> simp
@@ -222,11 +222,11 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
     if_true, sum_add_distrib, sum_ite_eq', has, if_false, add_zero,
     addLeftEmbedding_eq_addRightEmbedding, addRightEmbedding_apply]
   suffices ∀ p : ℕ × ℕ, p ∈ antidiagonal n →
-    ∑ g in piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
+    ∑ g ∈ piAntidiag s p.2, ((g a + p.1 + s.sum g).choose (g a + p.1) : R) *
       multinomial s (g + fun i ↦ ite (i = a) p.1 0) *
         (f a ^ (g a + p.1) * s.noncommProd (fun i ↦ f i ^ (g i + ite (i = a) p.1 0))
           ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) =
-      ∑ g in piAntidiag s p.2, n.choose p.1 * multinomial s g * (f a ^ p.1 *
+      ∑ g ∈ piAntidiag s p.2, n.choose p.1 * multinomial s g * (f a ^ p.1 *
         s.noncommProd (fun i ↦ f i ^ g i) ((hc.mono (by simp)).mono' fun i j h ↦ h.pow_pow ..)) by
     rw [sum_congr rfl this]
     simp only [Nat.antidiagonal_eq_map, sum_map, Function.Embedding.coeFn_mk]
@@ -250,7 +250,7 @@ lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)
 
 /-- The **multinomial theorem**. -/
 theorem sum_pow_of_commute (x : α → R) (s : Finset α)
-    (hc : (s : Set α).Pairwise fun i j => Commute (x i) (x j)) :
+    (hc : (s : Set α).Pairwise (Commute on x)) :
     ∀ n,
       s.sum x ^ n =
         ∑ k : s.sym n,
@@ -260,18 +260,13 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
   induction' s using Finset.induction with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
-      -- Porting note: Lean cannot infer this instance by itself
-    · haveI : Subsingleton (Sym α 0) := Unique.instSubsingleton
-      rw [_root_.pow_zero, Fintype.sum_subsingleton]
+    · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
-        -- Porting note: Lean cannot infer this instance by itself
-      · have : Zero (Sym α 0) := Sym.instZeroSym
-        exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
+      · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
       simp
     · rw [_root_.pow_succ, mul_zero]
-      -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
@@ -293,7 +288,7 @@ section CommSemiring
 variable [CommSemiring R] {f : α → R} {s : Finset α}
 
 lemma sum_pow_eq_sum_piAntidiag (s : Finset α) (f : α → R) (n : ℕ) :
-    (∑ i in s, f i) ^ n = ∑ k in piAntidiag s n, multinomial s k * ∏ i in s, f i ^ k i := by
+    (∑ i ∈ s, f i) ^ n = ∑ k ∈ piAntidiag s n, multinomial s k * ∏ i ∈ s, f i ^ k i := by
   simp_rw [← noncommProd_eq_prod]
   rw [← sum_pow_eq_sum_piAntidiag_of_commute _ _ fun _ _ _ _ _ ↦ Commute.all ..]
 
@@ -310,7 +305,7 @@ namespace Nat
 variable {ι : Type*} {s : Finset ι} {f : ι → ℕ}
 
 lemma multinomial_two_mul_le_mul_multinomial :
-    multinomial s (fun i ↦ 2 * f i) ≤ ((∑ i in s, f i) ^ ∑ i in s, f i) * multinomial s f := by
+    multinomial s (fun i ↦ 2 * f i) ≤ ((∑ i ∈ s, f i) ^ ∑ i ∈ s, f i) * multinomial s f := by
   rw [multinomial, multinomial, ← mul_sum,
     ← Nat.mul_div_assoc _ (prod_factorial_dvd_factorial_sum ..)]
   refine Nat.div_le_div_of_mul_le_mul (by positivity)
@@ -341,7 +336,7 @@ theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {
   · refine congrArg _ ?_
     rw [coe_fill, coe_replicate, Multiset.filter_add]
     rw [Multiset.filter_eq_self.mpr]
-    · rw [add_right_eq_self]
+    · rw [add_eq_left]
       rw [Multiset.filter_eq_nil]
       exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
     · exact fun j hj h ↦ hx <| by simpa [h] using hj

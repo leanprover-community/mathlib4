@@ -84,7 +84,7 @@ Hausdorff measure, Hausdorff dimension, dimension
 
 open scoped MeasureTheory ENNReal NNReal Topology
 
-open MeasureTheory MeasureTheory.Measure Set TopologicalSpace FiniteDimensional Filter
+open MeasureTheory MeasureTheory.Measure Set TopologicalSpace Module Filter
 
 variable {ι X Y : Type*} [EMetricSpace X] [EMetricSpace Y]
 
@@ -186,10 +186,10 @@ theorem dimH_sUnion {S : Set (Set X)} (hS : S.Countable) : dimH (⋃₀ S) = ⨆
 
 @[simp]
 theorem dimH_union (s t : Set X) : dimH (s ∪ t) = max (dimH s) (dimH t) := by
-  rw [union_eq_iUnion, dimH_iUnion, iSup_bool_eq, cond, cond, ENNReal.sup_eq_max]
+  rw [union_eq_iUnion, dimH_iUnion, iSup_bool_eq, cond, cond]
 
 theorem dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
-  biUnion_of_singleton s ▸ by simp only [dimH_bUnion hs, dimH_singleton, ENNReal.iSup_zero_eq_zero]
+  biUnion_of_singleton s ▸ by simp only [dimH_bUnion hs, dimH_singleton, ENNReal.iSup_zero]
 
 alias Set.Countable.dimH_zero := dimH_countable
 
@@ -232,7 +232,7 @@ theorem bsupr_limsup_dimH (s : Set X) : ⨆ x ∈ s, limsup dimH (𝓝[s] x).sma
   refine le_antisymm (iSup₂_le fun x _ => ?_) ?_
   · refine limsup_le_of_le isCobounded_le_of_bot ?_
     exact eventually_smallSets.2 ⟨s, self_mem_nhdsWithin, fun t => dimH_mono⟩
-  · refine le_of_forall_ge_of_dense fun r hr => ?_
+  · refine le_of_forall_lt_imp_le_of_dense fun r hr => ?_
     rcases exists_mem_nhdsWithin_lt_dimH_of_lt_dimH hr with ⟨x, hxs, hxr⟩
     refine le_iSup₂_of_le x hxs ?_; rw [limsup_eq]; refine le_sInf fun b hb => ?_
     rcases eventually_smallSets.1 hb with ⟨t, htx, ht⟩
@@ -254,7 +254,7 @@ end
 -/
 
 
-variable {C K r : ℝ≥0} {f : X → Y} {s t : Set X}
+variable {C K r : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f` is a Hölder continuous map with exponent `r > 0`, then `dimH (f '' s) ≤ dimH s / r`. -/
 theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
@@ -262,7 +262,7 @@ theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :
   borelize X Y
   refine dimH_le fun d hd => ?_
   have := h.hausdorffMeasure_image_le hr d.coe_nonneg
-  rw [hd, ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
+  rw [hd, ← ENNReal.coe_rpow_of_nonneg _ d.coe_nonneg, top_le_iff] at this
   have Hrd : μH[(r * d : ℝ≥0)] s = ⊤ := by
     contrapose this
     exact ENNReal.mul_ne_top ENNReal.coe_ne_top this
@@ -441,7 +441,7 @@ theorem dimH_univ_pi_fin (n : ℕ) : dimH (univ : Set (Fin n → ℝ)) = n := by
 
 theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finrank ℝ E := by
   have e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
-    ContinuousLinearEquiv.ofFinrankEq (FiniteDimensional.finrank_fin_fun ℝ).symm
+    ContinuousLinearEquiv.ofFinrankEq (Module.finrank_fin_fun ℝ).symm
   rw [← e.dimH_image]
   refine le_antisymm ?_ ?_
   · exact (dimH_mono (subset_univ _)).trans_eq (dimH_univ_pi_fin _)
@@ -459,7 +459,7 @@ theorem dimH_univ_eq_finrank : dimH (univ : Set E) = finrank ℝ E :=
   dimH_of_mem_nhds (@univ_mem _ (𝓝 0))
 
 theorem dimH_univ : dimH (univ : Set ℝ) = 1 := by
-  rw [dimH_univ_eq_finrank ℝ, FiniteDimensional.finrank_self, Nat.cast_one]
+  rw [dimH_univ_eq_finrank ℝ, Module.finrank_self, Nat.cast_one]
 
 variable {E}
 

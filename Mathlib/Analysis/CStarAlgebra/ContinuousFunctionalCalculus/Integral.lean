@@ -30,7 +30,7 @@ that the integral commutes with the continuous functional calculus under appropr
 + Use this to prove operator monotonicity and concavity/convexity of `rpow` and `log`
 -/
 
-open MeasureTheory
+open MeasureTheory Topology
 open scoped ContinuousMapZero
 
 section unital
@@ -38,7 +38,7 @@ section unital
 variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X}
   [NormedRing A] [StarRing A] [NormedAlgebra 𝕜 A] [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 p]
+  [ContinuousFunctionalCalculus 𝕜 A p]
 
 lemma cfcL_integral (a : A) (f : X → C(spectrum 𝕜 a, 𝕜)) (hf₁ : Integrable f μ)
     (ha : p a := by cfc_tac) :
@@ -92,7 +92,7 @@ section nonunital
 variable {X : Type*} {𝕜 : Type*} {A : Type*} {p : A → Prop} [RCLike 𝕜]
   [MeasurableSpace X] {μ : Measure X} [NonUnitalNormedRing A] [StarRing A] [CompleteSpace A]
   [NormedSpace 𝕜 A] [NormedSpace ℝ A] [IsScalarTower 𝕜 A A] [SMulCommClass 𝕜 A A]
-  [NonUnitalContinuousFunctionalCalculus 𝕜 p]
+  [NonUnitalContinuousFunctionalCalculus 𝕜 A p]
 
 lemma cfcₙL_integral (a : A) (f : X → C(quasispectrum 𝕜 a, 𝕜)₀) (hf₁ : Integrable f μ)
     (ha : p a := by cfc_tac) :
@@ -141,7 +141,7 @@ lemma cfcₙ_integral' [TopologicalSpace X] [OpensMeasurableSpace X] (f : X → 
   refine cfcₙ_integral f bound a ?_ hf₂ ?_ hbound hbound_finite_integral
   · exact (continuousOn_iff_continuous_restrict.mpr <| hf.uncurry_left ·)
   · let g := ((↑) : C(quasispectrum 𝕜 a, 𝕜)₀ → C(quasispectrum 𝕜 a, 𝕜))
-    refine (Inducing.continuous_iff (g := g) ((inducing_iff g).mpr rfl)).mpr ?_
+    refine ((isInducing_iff g).mpr rfl).continuous_iff.mpr ?_
     exact ContinuousMap.curry ⟨_, hf⟩ |>.continuous
 
 end nonunital

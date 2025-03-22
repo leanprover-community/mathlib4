@@ -23,7 +23,7 @@ All lemmas and definitions are in the `Set` namespace to give access to dot nota
 * `Set.einfsep`: Extended infimum separation of a set.
 * `Set.infsep`: Infimum separation of a set (when in a pseudometric space).
 
-!-/
+-/
 
 
 variable {α β : Type*}
@@ -171,7 +171,7 @@ end EDist
 
 section PseudoEMetricSpace
 
-variable [PseudoEMetricSpace α] {x y z : α} {s t : Set α}
+variable [PseudoEMetricSpace α] {x y z : α} {s : Set α}
 
 theorem einfsep_pair (hxy : x ≠ y) : ({x, y} : Set α).einfsep = edist x y := by
   nth_rw 1 [← min_self (edist x y)]
@@ -238,7 +238,7 @@ end PseudoMetricSpace
 
 section EMetricSpace
 
-variable [EMetricSpace α] {x y z : α} {s t : Set α} {C : ℝ≥0∞} {sC : Set ℝ≥0∞}
+variable [EMetricSpace α] {s : Set α}
 
 theorem einfsep_pos_of_finite [Finite s] : 0 < s.einfsep := by
   cases nonempty_fintype s
@@ -246,7 +246,7 @@ theorem einfsep_pos_of_finite [Finite s] : 0 < s.einfsep := by
   · rcases hs.einfsep_exists_of_finite with ⟨x, _hx, y, _hy, hxy, hxy'⟩
     exact hxy'.symm ▸ edist_pos.2 hxy
   · rw [not_nontrivial_iff] at hs
-    exact hs.einfsep.symm ▸ WithTop.zero_lt_top
+    exact hs.einfsep.symm ▸ WithTop.top_pos
 
 theorem relatively_discrete_of_finite [Finite s] :
     ∃ C > 0, ∀ x ∈ s, ∀ y ∈ s, x ≠ y → C ≤ edist x y := by
@@ -312,12 +312,12 @@ end EDist
 
 section PseudoEMetricSpace
 
-variable [PseudoEMetricSpace α] {x y : α} {s : Set α}
+variable [PseudoEMetricSpace α] {x y : α}
 
 theorem infsep_pair_eq_toReal : ({x, y} : Set α).infsep = (edist x y).toReal := by
   by_cases hxy : x = y
   · rw [hxy]
-    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.zero_toReal]
+    simp only [infsep_singleton, pair_eq_singleton, edist_self, ENNReal.toReal_zero]
   · rw [infsep, einfsep_pair hxy]
 
 end PseudoEMetricSpace

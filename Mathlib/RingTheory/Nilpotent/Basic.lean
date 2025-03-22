@@ -3,12 +3,10 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.Group.Action.Prod
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.SMulWithZero
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
 import Mathlib.RingTheory.Nilpotent.Defs
@@ -81,6 +79,23 @@ theorem IsNilpotent.isUnit_add_right_of_commute [Ring R] {r u : R}
     (hnil : IsNilpotent r) (hu : IsUnit u) (h_comm : Commute r u) :
     IsUnit (r + u) :=
   add_comm r u ▸ hnil.isUnit_add_left_of_commute hu h_comm
+
+lemma IsUnit.not_isNilpotent [Ring R] [Nontrivial R] {x : R} (hx : IsUnit x) :
+    ¬ IsNilpotent x := by
+  intro H
+  simpa using H.isUnit_add_right_of_commute hx.neg (by simp)
+
+lemma IsNilpotent.not_isUnit [Ring R] [Nontrivial R] {x : R} (hx : IsNilpotent x) :
+    ¬ IsUnit x :=
+  mt IsUnit.not_isNilpotent (by simpa only [not_not] using hx)
+
+lemma IsIdempotentElem.eq_zero_of_isNilpotent [MonoidWithZero R] {e : R}
+    (idem : IsIdempotentElem e) (nilp : IsNilpotent e) : e = 0 := by
+  obtain ⟨rfl | n, hn⟩ := nilp
+  · rw [pow_zero] at hn; rw [← one_mul e, hn, zero_mul]
+  · rw [← hn, idem.pow_succ_eq]
+
+alias IsNilpotent.eq_zero_of_isIdempotentElem := IsIdempotentElem.eq_zero_of_isNilpotent
 
 instance [Zero R] [Pow R ℕ] [Zero S] [Pow S ℕ] [IsReduced R] [IsReduced S] : IsReduced (R × S) where
   eq_zero _ := fun ⟨n, hn⟩ ↦ have hn := Prod.ext_iff.1 hn

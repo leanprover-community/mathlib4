@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
 import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 
 /-!
 # Lemmas about quotients in characteristic zero
@@ -31,7 +33,7 @@ theorem zsmul_mem_zmultiples_iff_exists_sub_div {r : R} {z : ℤ} (hz : z ≠ 0)
     simp_rw [← h]
     refine ⟨⟨(k % z).toNat, ?_⟩, k / z, ?_⟩
     · rw [← Int.ofNat_lt, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
-      exact (Int.emod_lt _ hz).trans_eq (Int.abs_eq_natAbs _)
+      exact (Int.emod_lt_abs _ hz).trans_eq (Int.abs_eq_natAbs _)
     rw [Fin.val_mk, Int.toNat_of_nonneg (Int.emod_nonneg _ hz)]
     nth_rewrite 3 [← Int.ediv_add_emod k z]
     rfl
@@ -51,12 +53,12 @@ namespace QuotientAddGroup
 
 theorem zmultiples_zsmul_eq_zsmul_iff {ψ θ : R ⧸ AddSubgroup.zmultiples p} {z : ℤ} (hz : z ≠ 0) :
     z • ψ = z • θ ↔ ∃ k : Fin z.natAbs, ψ = θ + ((k : ℕ) • (p / z) : R) := by
-  induction ψ using Quotient.inductionOn'
-  induction θ using Quotient.inductionOn'
+  induction ψ using Quotient.inductionOn
+  induction θ using Quotient.inductionOn
   -- Porting note: Introduced Zp notation to shorten lines
   let Zp := AddSubgroup.zmultiples p
-  have : (Quotient.mk'' : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
-  simp only [this]
+  have : (Quotient.mk _ : R → R ⧸ Zp) = ((↑) : R → R ⧸ Zp) := rfl
+  simp only [Zp, this]
   simp_rw [← QuotientAddGroup.mk_zsmul, ← QuotientAddGroup.mk_add,
     QuotientAddGroup.eq_iff_sub_mem, ← smul_sub, ← sub_sub]
   exact AddSubgroup.zsmul_mem_zmultiples_iff_exists_sub_div hz

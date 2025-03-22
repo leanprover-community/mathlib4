@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.BooleanAlgebra
 
 /-!
 # Sets in sigma types
@@ -14,7 +14,7 @@ This file defines `Set.sigma`, the indexed sum of sets.
 
 namespace Set
 
-variable {ι ι' : Type*} {α β : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
+variable {ι ι' : Type*} {α : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
   {u : Set (Σ i, α i)} {x : Σ i, α i} {i j : ι} {a : α i}
 
 @[simp]
@@ -68,15 +68,17 @@ theorem exists_sigma_iff {p : (Σi, α i) → Prop} :
     (∃ x ∈ s.sigma t, p x) ↔ ∃ i ∈ s, ∃ a ∈ t i, p ⟨i, a⟩ :=
   ⟨fun ⟨⟨i, a⟩, ha, h⟩ ↦ ⟨i, ha.1, a, ha.2, h⟩, fun ⟨i, hi, a, ha, h⟩ ↦ ⟨⟨i, a⟩, ⟨hi, ha⟩, h⟩⟩
 
-@[simp] theorem sigma_empty : s.sigma (fun i ↦ (∅ : Set (α i))) = ∅ := ext fun _ ↦ and_false_iff _
+@[simp] theorem sigma_empty : s.sigma (fun i ↦ (∅ : Set (α i))) = ∅ :=
+  ext fun _ ↦ iff_of_eq (and_false _)
 
-@[simp] theorem empty_sigma : (∅ : Set ι).sigma t = ∅ := ext fun _ ↦ false_and_iff _
+@[simp] theorem empty_sigma : (∅ : Set ι).sigma t = ∅ := ext fun _ ↦ iff_of_eq (false_and _)
 
-theorem univ_sigma_univ : (@univ ι).sigma (fun _ ↦ @univ (α i)) = univ := ext fun _ ↦ true_and_iff _
+theorem univ_sigma_univ : (@univ ι).sigma (fun _ ↦ @univ (α i)) = univ :=
+  ext fun _ ↦ iff_of_eq (true_and _)
 
 @[simp]
 theorem sigma_univ : s.sigma (fun _ ↦ univ : ∀ i, Set (α i)) = Sigma.fst ⁻¹' s :=
-  ext fun _ ↦ and_true_iff _
+  ext fun _ ↦ iff_of_eq (and_true _)
 
 @[simp] theorem univ_sigma_preimage_mk (s : Set (Σ i, α i)) :
     (univ : Set ι).sigma (fun i ↦ Sigma.mk i ⁻¹' s) = s :=

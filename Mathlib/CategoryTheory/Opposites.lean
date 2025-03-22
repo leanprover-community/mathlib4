@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison
+Authors: Stephen Morgan, Kim Morrison
 -/
 import Mathlib.CategoryTheory.Equivalence
 
@@ -60,10 +60,8 @@ namespace CategoryTheory
 
 variable [Category.{v₁} C]
 
-/-- The opposite category.
-
-See <https://stacks.math.columbia.edu/tag/001M>.
--/
+/-- The opposite category. -/
+@[stacks 001M]
 instance Category.opposite : Category.{v₁} Cᵒᵖ where
   comp f g := (g.unop ≫ f.unop).op
   id X := (𝟙 (unop X)).op
@@ -120,7 +118,7 @@ end
 
 /-- If `f` is an isomorphism, so is `f.op` -/
 instance isIso_op {X Y : C} (f : X ⟶ Y) [IsIso f] : IsIso f.op :=
-  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by aesop_cat), Quiver.Hom.unop_inj (by aesop_cat)⟩⟩⟩
+  ⟨⟨(inv f).op, ⟨Quiver.Hom.unop_inj (by simp), Quiver.Hom.unop_inj (by simp)⟩⟩⟩
 
 /-- If `f.op` is an isomorphism `f` must be too.
 (This cannot be an instance as it would immediately loop!)
@@ -171,12 +169,12 @@ protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
 /-- The isomorphism between `F.op.unop` and `F`. -/
 @[simps!]
 def opUnopIso (F : C ⥤ D) : F.op.unop ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The isomorphism between `F.unop.op` and `F`. -/
 @[simps!]
 def unopOpIso (F : Cᵒᵖ ⥤ Dᵒᵖ) : F.unop.op ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 variable (C D)
 
@@ -187,7 +185,7 @@ def opHom : (C ⥤ D)ᵒᵖ ⥤ Cᵒᵖ ⥤ Dᵒᵖ where
   obj F := (unop F).op
   map α :=
     { app := fun X => (α.unop.app (unop X)).op
-      naturality := fun X Y f => Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
+      naturality := fun _ _ f => Quiver.Hom.unop_inj (α.unop.naturality f.unop).symm }
 
 /-- Take the "unopposite" of a functor is functorial.
 -/
@@ -197,7 +195,7 @@ def opInv : (Cᵒᵖ ⥤ Dᵒᵖ) ⥤ (C ⥤ D)ᵒᵖ where
   map α :=
     Quiver.Hom.op
       { app := fun X => (α.app (op X)).unop
-        naturality := fun X Y f => Quiver.Hom.op_inj <| (α.naturality f.op).symm }
+        naturality := fun _ _ f => Quiver.Hom.op_inj <| (α.naturality f.op).symm }
 
 variable {C D}
 
@@ -246,12 +244,12 @@ instance leftOp_full {F : C ⥤ Dᵒᵖ} [Full F] : Full F.leftOp where
 /-- The isomorphism between `F.leftOp.rightOp` and `F`. -/
 @[simps!]
 def leftOpRightOpIso (F : C ⥤ Dᵒᵖ) : F.leftOp.rightOp ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The isomorphism between `F.rightOp.leftOp` and `F`. -/
 @[simps!]
 def rightOpLeftOpIso (F : Cᵒᵖ ⥤ D) : F.rightOp.leftOp ≅ F :=
-  NatIso.ofComponents fun X => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 /-- Whenever possible, it is advisable to use the isomorphism `rightOpLeftOpIso`
 instead of this equality of functors. -/
@@ -363,7 +361,7 @@ taking `op` of each component gives a natural transformation `G.rightOp ⟶ F.ri
 -/
 @[simps]
 protected def rightOp (α : F ⟶ G) : G.rightOp ⟶ F.rightOp where
-  app X := (α.app _).op
+  app _ := (α.app _).op
   naturality X Y f := Quiver.Hom.unop_inj (by simp)
 
 @[simp]

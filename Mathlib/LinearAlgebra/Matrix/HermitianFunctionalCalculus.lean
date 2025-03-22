@@ -7,7 +7,7 @@ Authors: Jon Bannon, Jireh Loreaux
 import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
-import Mathlib.Topology.ContinuousFunction.Units
+import Mathlib.Topology.ContinuousMap.Units
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
@@ -31,13 +31,15 @@ This file defines an instance of the continuous functional calculus for Hermitia
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
 
+open Topology
+
 namespace Matrix
 
 variable {n 𝕜 : Type*} [RCLike 𝕜] [Fintype n] [DecidableEq n] {A : Matrix n n 𝕜}
 
 lemma finite_real_spectrum : (spectrum ℝ A).Finite := by
   rw [← spectrum.preimage_algebraMap 𝕜]
-  exact A.finite_spectrum.preimage (NoZeroSMulDivisors.algebraMap_injective ℝ 𝕜).injOn
+  exact A.finite_spectrum.preimage (FaithfulSMul.algebraMap_injective ℝ 𝕜).injOn
 
 instance : Finite (spectrum ℝ A) := A.finite_real_spectrum
 
@@ -87,10 +89,10 @@ noncomputable def cfcAux : C(spectrum ℝ A, ℝ) →⋆ₐ[ℝ] (Matrix n n �
     ext
     simp
 
-lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
+lemma isClosedEmbedding_cfcAux : IsClosedEmbedding hA.cfcAux := by
   have h0 : FiniteDimensional ℝ C(spectrum ℝ A, ℝ) :=
     FiniteDimensional.of_injective (ContinuousMap.coeFnLinearMap ℝ (M := ℝ)) DFunLike.coe_injective
-  refine LinearMap.closedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ))
+  refine LinearMap.isClosedEmbedding_of_injective (𝕜 := ℝ) (E := C(spectrum ℝ A, ℝ))
     (F := Matrix n n 𝕜) (f := hA.cfcAux) <| LinearMap.ker_eq_bot'.mpr fun f hf ↦ ?_
   have h2 :
       diagonal (RCLike.ofReal ∘ f ∘ fun i ↦ ⟨hA.eigenvalues i, hA.eigenvalues_mem_spectrum_real i⟩)
@@ -107,6 +109,9 @@ lemma closedEmbedding_cfcAux : ClosedEmbedding hA.cfcAux := by
   have := (diagonal_eq_diagonal_iff).mp h2
   refine RCLike.ofReal_eq_zero.mp (this i)
 
+@[deprecated (since := "2024-10-20")]
+alias closedEmbedding_cfcAux := isClosedEmbedding_cfcAux
+
 lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
   conv_rhs => rw [hA.spectral_theorem]
   congr!
@@ -114,10 +119,10 @@ lemma cfcAux_id : hA.cfcAux (.restrict (spectrum ℝ A) (.id ℝ)) = A := by
 /-- Instance of the continuous functional calculus for a Hermitian matrix over `𝕜` with
 `RCLike 𝕜`. -/
 instance instContinuousFunctionalCalculus :
-    ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : Matrix n n 𝕜 → Prop) where
+    ContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) IsSelfAdjoint where
   exists_cfc_of_predicate a ha := by
     replace ha : IsHermitian a := ha
-    refine ⟨ha.cfcAux, ha.closedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,
+    refine ⟨ha.cfcAux, ha.isClosedEmbedding_cfcAux, ha.cfcAux_id, fun f ↦ ?map_spec,
       fun f ↦ ?hermitian⟩
     case map_spec =>
       apply Set.eq_of_subset_of_subset
@@ -135,13 +140,12 @@ instance instContinuousFunctionalCalculus :
       rw [star_eq_conjTranspose, diagonal_conjTranspose]
       congr!
       simp [Pi.star_def, Function.comp_def]
+  spectrum_nonempty a ha := by
+    obtain (h | h) := isEmpty_or_nonempty n
+    · obtain ⟨x, y, hxy⟩ := exists_pair_ne (Matrix n n 𝕜)
+      exact False.elim <| Matrix.of.symm.injective.ne hxy <| Subsingleton.elim _ _
+    · exact eigenvalues_eq_spectrum_real ha ▸ Set.range_nonempty _
   predicate_zero := .zero _
-
-instance instUniqueContinuousFunctionalCalculus :
-    UniqueContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) :=
-  let _ : NormedRing (Matrix n n 𝕜) := Matrix.linftyOpNormedRing
-  let _ : NormedAlgebra ℝ (Matrix n n 𝕜) := Matrix.linftyOpNormedAlgebra
-  inferInstance
 
 /-- The continuous functional calculus of a Hermitian matrix as a triple product using the
 spectral theorem. Note that this actually operates on bare functions since every function is
@@ -154,7 +158,7 @@ protected noncomputable def cfc (f : ℝ → ℝ) : Matrix n n 𝕜 :=
 
 lemma cfc_eq (f : ℝ → ℝ) : cfc f A = hA.cfc f := by
   have hA' : IsSelfAdjoint A := hA
-  have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.closedEmbedding_cfcAux.continuous
+  have := cfcHom_eq_of_continuous_of_map_id hA' hA.cfcAux hA.isClosedEmbedding_cfcAux.continuous
     hA.cfcAux_id
   rw [cfc_apply f A hA' (by rw [continuousOn_iff_continuous_restrict]; fun_prop), this]
   simp only [cfcAux_apply, ContinuousMap.coe_mk, Function.comp_def, Set.restrict_apply,

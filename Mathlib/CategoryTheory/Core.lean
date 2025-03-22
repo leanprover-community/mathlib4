@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Control.EquivFunctor
 import Mathlib.CategoryTheory.Groupoid
@@ -28,9 +28,6 @@ universe v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
--- Porting note(#5171): linter not yet ported
--- @[nolint has_nonempty_instance]
-
 def Core (C : Type u₁) := C
 
 variable {C : Type u₁} [Category.{v₁} C]
@@ -39,7 +36,7 @@ instance coreCategory : Groupoid.{v₁} (Core C) where
   Hom (X Y : C) := X ≅ Y
   id (X : C) := Iso.refl X
   comp f g := Iso.trans f g
-  inv {X Y} f := Iso.symm f
+  inv {_ _} f := Iso.symm f
 
 namespace Core
 
@@ -91,7 +88,7 @@ def ofEquivFunctor (m : Type u₁ → Type u₂) [EquivFunctor m] : Core (Type u
   map_id α := by apply Iso.ext; funext x; exact congr_fun (EquivFunctor.map_refl' _) x
   map_comp f g := by
     apply Iso.ext; funext x; dsimp
-    erw [Iso.toEquiv_comp, EquivFunctor.map_trans']
-    rw [Function.comp]
+    erw [Iso.toEquiv_comp]
+    rw [EquivFunctor.map_trans', Function.comp]
 
 end CategoryTheory

@@ -32,7 +32,7 @@ theorem Option.id_traverse {α} (x : Option α) : Option.traverse (pure : α →
 theorem Option.comp_traverse {α β γ} (f : β → F γ) (g : α → G β) (x : Option α) :
     Option.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
       Comp.mk (Option.traverse f <$> Option.traverse g x) := by
-  cases x <;> simp! [functor_norm] <;> rfl
+  cases x <;> (simp! [functor_norm] <;> rfl)
 
 theorem Option.traverse_eq_map_id {α β} (f : α → β) (x : Option α) :
     Option.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by cases x <;> rfl
@@ -42,7 +42,7 @@ variable (η : ApplicativeTransformation F G)
 theorem Option.naturality [LawfulApplicative F] {α β} (f : α → F β) (x : Option α) :
     η (Option.traverse f x) = Option.traverse (@η _ ∘ f) x := by
   -- Porting note: added `ApplicativeTransformation` theorems
-  cases' x with x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
+  rcases x with - | x <;> simp! [*, functor_norm, ApplicativeTransformation.preserves_map,
     ApplicativeTransformation.preserves_seq, ApplicativeTransformation.preserves_pure]
 
 end Option
@@ -148,7 +148,7 @@ variable [LawfulApplicative G]
 protected theorem comp_traverse {α β γ : Type u} (f : β → F γ) (g : α → G β) (x : σ ⊕ α) :
     Sum.traverse (Comp.mk ∘ (f <$> ·) ∘ g) x =
     Comp.mk.{u} (Sum.traverse f <$> Sum.traverse g x) := by
-  cases x <;> simp! [Sum.traverse, map_id, functor_norm] <;> rfl
+  cases x <;> (simp! [Sum.traverse, map_id, functor_norm] <;> rfl)
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) (x : σ ⊕ α) :
     Sum.traverse ((pure : _ → Id _) ∘ f) x = (pure : _ → Id _) (f <$> x) := by

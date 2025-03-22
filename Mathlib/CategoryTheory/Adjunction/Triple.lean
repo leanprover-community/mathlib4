@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Monad.Adjunction
 
 This file concerns adjoint triples `F ⊣ G ⊣ H` of functors `F H : C ⥤ D`, `G : D ⥤ C`.
 
-Currently, the only result is that `F` is fully faithful if and only if `H` is fully faithful.
+Currently, the only result is that `F` is fully faithful if and only if `H` is fully faithful.
 -/
 
 namespace CategoryTheory.Adjunction
@@ -31,7 +31,7 @@ lemma isIso_unit_iff_isIso_counit : IsIso adj₁.unit ↔ IsIso adj₂.counit :=
     exact adj₁.isIso_unit_of_iso (adjId.leftAdjointUniq id)
 
 /--
-Given an adjoint triple `F ⊣ G ⊣ H`, the left adjoint `F` is fully faithful if and only if the
+Given an adjoint triple `F ⊣ G ⊣ H`, the left adjoint `F` is fully faithful if and only if the
 right adjoint `H` is fully faithful.
 -/
 noncomputable def fullyFaithfulEquiv : F.FullyFaithful ≃ H.FullyFaithful where

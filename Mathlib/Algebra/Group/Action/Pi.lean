@@ -3,8 +3,9 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Data.Set.Function
+import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Data.Set.Piecewise
 
 /-!
 # Pi instances for multiplicative actions
@@ -21,7 +22,7 @@ This file defines instances for `MulAction` and related structures on `Pi` types
 
 assert_not_exists MonoidWithZero
 
-variable {ι M N : Type*} {α β γ : ι → Type*} (x y : ∀ i, α i) (i : ι)
+variable {ι M N : Type*} {α β γ : ι → Type*} (i : ι)
 
 namespace Pi
 
@@ -36,7 +37,6 @@ lemma smul_def' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) 
 lemma smul_apply' [∀ i, SMul (α i) (β i)] (s : ∀ i, α i) (x : ∀ i, β i) : (s • x) i = s i • x i :=
   rfl
 
--- Porting note: `to_additive` fails to correctly translate name
 @[to_additive Pi.vaddAssocClass]
 instance isScalarTower [SMul M N] [∀ i, SMul N (α i)] [∀ i, SMul M (α i)]
     [∀ i, IsScalarTower M N (α i)] : IsScalarTower M N (∀ i, α i) where

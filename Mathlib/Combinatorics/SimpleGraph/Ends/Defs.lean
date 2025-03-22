@@ -17,7 +17,7 @@ assigning, to each finite set of vertices, the connected components of its compl
 
 universe u
 
-variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
+variable {V : Type u} (G : SimpleGraph V) (K L M : Set V)
 
 namespace SimpleGraph
 
@@ -78,13 +78,11 @@ for adjacent vertices.
 protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
     (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K), G.Adj v w → f hv = f hw) : G.ComponentCompl K → β :=
   ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
-    induction' p with _ u v w a q ih
-    · rintro _
-      rfl
-    · rintro h'
-      exact (h u.prop v.prop a).trans (ih h'.of_cons)
+    induction p with
+    | nil => rintro _; rfl
+    | cons a q ih => rename_i u v w; rintro h'; exact (h u.prop v.prop a).trans (ih h'.of_cons)
 
-@[elab_as_elim] -- Porting note: added
+@[elab_as_elim]
 protected theorem ind {β : G.ComponentCompl K → Prop}
     (f : ∀ ⦃v⦄ (hv : v ∉ K), β (G.componentComplMk hv)) : ∀ C : G.ComponentCompl K, β C := by
   apply ConnectedComponent.ind
@@ -179,12 +177,12 @@ theorem hom_eq_iff_not_disjoint (C : G.ComponentCompl L) (h : K ⊆ L) (D : G.Co
 
 theorem hom_refl (C : G.ComponentCompl L) : C.hom (subset_refl L) = C := by
   change C.map _ = C
-  erw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
+  rw [induceHom_id G Lᶜ, ConnectedComponent.map_id]
 
 theorem hom_trans (C : G.ComponentCompl L) (h : K ⊆ L) (h' : M ⊆ K) :
     C.hom (h'.trans h) = (C.hom h).hom h' := by
   change C.map _ = (C.map _).map _
-  erw [ConnectedComponent.map_comp, induceHom_comp]
+  rw [ConnectedComponent.map_comp, induceHom_comp]
   rfl
 
 theorem hom_mk {v : V} (vnL : v ∉ L) (h : K ⊆ L) :

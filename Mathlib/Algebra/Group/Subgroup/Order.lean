@@ -5,6 +5,7 @@ Authors: Damiano Testa, Ruben Van de Velde
 -/
 import Mathlib.Order.Atoms
 import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
@@ -14,13 +15,14 @@ import Mathlib.Algebra.Order.Group.Unbundled.Abs
 
 open Subgroup
 
-@[simp] theorem abs_mem_iff {S G} [AddGroup G] [LinearOrder G] {_ : SetLike S G}
-    [NegMemClass S G] {H : S} {x : G} : |x| ∈ H ↔ x ∈ H := by
-  cases abs_choice x <;> simp [*]
+@[to_additive (attr := simp)]
+theorem mabs_mem_iff {S G} [Group G] [LinearOrder G] {_ : SetLike S G}
+    [InvMemClass S G] {H : S} {x : G} : |x|ₘ ∈ H ↔ x ∈ H := by
+  cases mabs_choice x <;> simp [*]
 
 section ModularLattice
 
-variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
+variable {C : Type*} [CommGroup C]
 
 @[to_additive]
 instance : IsModularLattice (Subgroup C) :=
@@ -40,7 +42,7 @@ variable {G : Type*} [Group G] (H : Subgroup G)
 /-- In a group that satisfies the normalizer condition, every maximal subgroup is normal -/
 theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax : IsCoatom H) :
     H.Normal :=
-  normalizer_eq_top.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
+  normalizer_eq_top_iff.mp (hmax.2 _ (hnc H (lt_top_iff_ne_top.mpr hmax.1)))
 
 @[simp]
 theorem isCoatom_comap {H : Type*} [Group H] (f : G ≃* H) {K : Subgroup H} :

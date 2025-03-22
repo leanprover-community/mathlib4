@@ -98,7 +98,7 @@ theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
     intro q
     refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [h]; rfl
-    · rw [← coe_to_affineMap, h]; rfl
+    · rw [← coe_toAffineMap, h, AffineMap.const_apply, coe_const, Function.const_apply]
   simp_rw [h₁, h₂]
   exact (f : P →ᵃ[R] Q).linear_eq_zero_iff_exists_const
 
@@ -175,13 +175,12 @@ noncomputable instance : NormedAddCommGroup (V →ᴬ[𝕜] W) :=
           simp only [norm_eq_zero, coe_const, Function.const_apply] at h₁
           rw [h₁]
           rfl
-        · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
+        · rw [norm_eq_zero, contLinear_eq_zero_iff_exists_const] at h₁
           obtain ⟨q, rfl⟩ := h₁
           simp only [norm_le_zero_iff, coe_const, Function.const_apply] at h₂
           rw [h₂]
           rfl }
 
-set_option maxSynthPendingDepth 2 in
 instance : NormedSpace 𝕜 (V →ᴬ[𝕜] W) where
   norm_smul_le t f := by
     simp only [norm_def, coe_smul, Pi.smul_apply, norm_smul, smul_contLinear,
@@ -220,7 +219,7 @@ def toConstProdContinuousLinearMap : (V →ᴬ[𝕜] W) ≃ₗᵢ[𝕜] W × (V 
   right_inv := by rintro ⟨v, f⟩; ext <;> simp
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  norm_map' f := rfl
+  norm_map' _ := rfl
 
 @[simp]
 theorem toConstProdContinuousLinearMap_fst (f : V →ᴬ[𝕜] W) :

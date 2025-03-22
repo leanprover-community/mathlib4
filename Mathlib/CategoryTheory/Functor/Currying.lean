@@ -1,8 +1,9 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
+import Mathlib.CategoryTheory.EqToHom
 import Mathlib.CategoryTheory.Products.Basic
 
 /-!
@@ -87,16 +88,36 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
       dsimp at f₁ f₂ ⊢
       simp only [← F.map_comp, prod_comp, Category.comp_id, Category.id_comp]))
 
+/-- The functor `uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E` is fully faithful. -/
+def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
+  currying.fullyFaithfulFunctor
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
+  fullyFaithfulUncurry.full
+
+instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Faithful :=
+  fullyFaithfulUncurry.faithful
+
+/-- Given functors `F₁ : C ⥤ D`, `F₂ : C' ⥤ D'` and `G : D × D' ⥤ E`, this is the isomorphism
+between `curry.obj ((F₁.prod F₂).comp G)` and
+`F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂` in the category `C ⥤ C' ⥤ E`. -/
+@[simps!]
+def curryObjProdComp {C' D' : Type*} [Category C'] [Category D']
+    (F₁ : C ⥤ D) (F₂ : C' ⥤ D') (G : D × D' ⥤ E) :
+    curry.obj ((F₁.prod F₂).comp G) ≅
+      F₁ ⋙ curry.obj G ⋙ (whiskeringLeft C' D' E).obj F₂ :=
+  NatIso.ofComponents (fun X₁ ↦ NatIso.ofComponents (fun X₂ ↦ Iso.refl _))
+
 /-- `F.flip` is isomorphic to uncurrying `F`, swapping the variables, and currying. -/
 @[simps!]
 def flipIsoCurrySwapUncurry (F : C ⥤ D ⥤ E) : F.flip ≅ curry.obj (Prod.swap _ _ ⋙ uncurry.obj F) :=
-  NatIso.ofComponents fun d => NatIso.ofComponents fun c => Iso.refl _
+  NatIso.ofComponents fun d => NatIso.ofComponents fun _ => Iso.refl _
 
 /-- The uncurrying of `F.flip` is isomorphic to
 swapping the factors followed by the uncurrying of `F`. -/
 @[simps!]
 def uncurryObjFlip (F : C ⥤ D ⥤ E) : uncurry.obj F.flip ≅ Prod.swap _ _ ⋙ uncurry.obj F :=
-  NatIso.ofComponents fun p => Iso.refl _
+  NatIso.ofComponents fun _ => Iso.refl _
 
 variable (B C D E)
 

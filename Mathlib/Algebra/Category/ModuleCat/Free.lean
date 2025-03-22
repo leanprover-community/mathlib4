@@ -26,7 +26,7 @@ linear algebra, module, free
 
 -/
 
-open CategoryTheory
+open CategoryTheory Module
 
 namespace ModuleCat
 
@@ -48,7 +48,7 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) ?_
-  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f), hS.moduleCat_range_eq_ker]
+  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f.hom), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
 
 include hv hm in
@@ -66,8 +66,8 @@ where the top row is an exact sequence of modules and the maps on the bottom are
 independent. -/
 theorem linearIndependent_leftExact : LinearIndependent R u := by
   rw [linearIndependent_sum]
-  refine ⟨?_, LinearIndependent.of_comp S.g hw, disjoint_span_sum hS hw huv⟩
-  rw [huv, LinearMap.linearIndependent_iff S.f]; swap
+  refine ⟨?_, LinearIndependent.of_comp S.g.hom hw, disjoint_span_sum hS hw huv⟩
+  rw [huv, LinearMap.linearIndependent_iff S.f.hom]; swap
   · rw [LinearMap.ker_eq_bot, ← mono_iff_injective]
     infer_instance
   exact hv
@@ -78,7 +78,7 @@ include hS' hv in
 /-- Given a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0` of `R`-modules and linearly independent
     families `v : ι → N` and `w : ι' → P`, we get a linearly independent family `ι ⊕ ι' → M` -/
 theorem linearIndependent_shortExact {w : ι' → S.X₃} (hw : LinearIndependent R w) :
-    LinearIndependent R (Sum.elim (S.f ∘ v) (S.g.toFun.invFun ∘ w)) := by
+    LinearIndependent R (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w)) := by
   apply linearIndependent_leftExact hS'.exact hv _ hS'.mono_f rfl
   dsimp
   convert hw
@@ -109,7 +109,7 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hgm
   obtain ⟨cm, hm⟩ := hgm
   let m' : S.X₂ := Finsupp.sum cm fun j a ↦ a • (u (Sum.inr j))
-  have hsub : m - m' ∈ LinearMap.range S.f := by
+  have hsub : m - m' ∈ LinearMap.range S.f.hom := by
     rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
     rw [← hm, map_finsupp_sum]
@@ -138,13 +138,13 @@ include hS in
     families `v : ι → X₁` and `w : ι' → X₃`, we get a spanning family `ι ⊕ ι' → X₂` -/
 theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     (hw : ⊤ ≤ span R (range w)) (hE : Epi S.g) :
-    ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.toFun.invFun ∘ w))) := by
+    ⊤ ≤ span R (range (Sum.elim (S.f ∘ v) (S.g.hom.toFun.invFun ∘ w))) := by
   refine span_exact hS ?_ hv ?_
   · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inl]
   · convert hw
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
     rw [ModuleCat.epi_iff_surjective] at hE
-    rw [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hE),
+    rw [← Function.comp_assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hE),
       Function.id_comp]
 
 end Span
@@ -177,11 +177,11 @@ theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
 
 theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.Free R S.X₃]
     [Module.Finite R S.X₁] [Module.Finite R S.X₃]
-    (hN : FiniteDimensional.finrank R S.X₁ = n)
-    (hP : FiniteDimensional.finrank R S.X₃ = p)
+    (hN : Module.finrank R S.X₁ = n)
+    (hP : Module.finrank R S.X₃ = p)
     [StrongRankCondition R] :
-    FiniteDimensional.finrank R S.X₂ = n + p := by
-  apply FiniteDimensional.finrank_eq_of_rank_eq
+    finrank R S.X₂ = n + p := by
+  apply finrank_eq_of_rank_eq
   rw [free_shortExact_rank_add hS', ← hN, ← hP]
   simp only [Nat.cast_add, finrank_eq_rank]
 

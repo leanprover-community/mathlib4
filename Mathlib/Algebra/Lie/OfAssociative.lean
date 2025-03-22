@@ -135,12 +135,6 @@ def toLieHom : A →ₗ⁅R⁆ B :=
 instance : Coe (A →ₐ[R] B) (A →ₗ⁅R⁆ B) :=
   ⟨toLieHom⟩
 
-/- Porting note: is a syntactic tautology
-@[simp]
-theorem toLieHom_coe : f.toLieHom = ↑f :=
-  rfl
--/
-
 @[simp]
 theorem coe_toLieHom : ((f : A →ₗ⁅R⁆ B) : A → B) = f :=
   rfl
@@ -204,6 +198,45 @@ theorem LieSubalgebra.toEnd_eq (K : LieSubalgebra R L) {x : K} :
 theorem LieSubalgebra.toEnd_mk (K : LieSubalgebra R L) {x : L} (hx : x ∈ K) :
     LieModule.toEnd R K M ⟨x, hx⟩ = LieModule.toEnd R L M x :=
   rfl
+
+section IsFaithful
+
+open Function
+
+namespace LieModule
+
+/-- A Lie module is *faithful* if the associated map `L → End M` is injective. -/
+@[mk_iff]
+class IsFaithful : Prop where
+  injective_toEnd : Injective <| toEnd R L M
+
+@[simp]
+lemma toEnd_eq_iff [IsFaithful R L M] {x y : L} :
+    toEnd R L M x = toEnd R L M y ↔ x = y :=
+  IsFaithful.injective_toEnd.eq_iff
+
+variable {R L} in
+lemma ext_of_isFaithful [IsFaithful R L M] {x y : L} (h : ∀ m : M, ⁅x, m⁆ = ⁅y, m⁆) :
+    x = y :=
+  (toEnd_eq_iff R L M).mp <| LinearMap.ext h
+
+@[simp]
+lemma toEnd_eq_zero_iff [IsFaithful R L M] {x : L} :
+    toEnd R L M x = 0 ↔ x = 0 := by
+  simp [- LieHom.map_zero, ← (toEnd R L M).map_zero]
+
+lemma isFaithful_iff' : IsFaithful R L M ↔ ∀ x : L, (∀ m : M, ⁅x, m⁆ = 0) → x = 0 := by
+  refine ⟨fun h x hx ↦ ?_, fun h ↦ ⟨fun x y hxy ↦ ?_⟩⟩
+  · replace hx : toEnd R L M x = 0 := by ext m; simpa using hx m
+    simpa using hx
+  · rw [← sub_eq_zero]
+    refine h _ fun m ↦ ?_
+    rw [sub_lie, sub_eq_zero, ← toEnd_apply_apply R, ← toEnd_apply_apply R, hxy]
+
+end LieModule
+
+end IsFaithful
+
 
 section
 
@@ -300,7 +333,10 @@ theorem toEnd_comp_subtype_mem (m : M) (hm : m ∈ (N : Submodule R M)) :
 @[simp]
 theorem toEnd_restrict_eq_toEnd (h := N.toEnd_comp_subtype_mem x) :
     (toEnd R L M x).restrict h = toEnd R L N x := by
-  ext; simp only [LinearMap.restrict_apply, toEnd_apply_apply]; rfl
+  ext
+  simp only [LinearMap.restrict_coe_apply, toEnd_apply_apply, ← coe_bracket,
+    SetLike.coe_eq_coe]
+  rfl
 
 lemma mapsTo_pow_toEnd_sub_algebraMap {φ : R} {k : ℕ} {x : L} :
     MapsTo ((toEnd R L M x - algebraMap R (Module.End R M) φ) ^ k) N N := by
@@ -395,7 +431,7 @@ of the endomorphism `ad(x)` of `L` by `e` is the endomorphism `ad(e x)` of `L'`.
 @[simp]
 lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : LinearEquiv.conj e (ad R L x) = ad R L' (e x) := by
   ext y'
-  rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_to_linearEquiv, map_lie,
-    ← coe_to_linearEquiv, LinearEquiv.apply_symm_apply]
+  rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_toLinearEquiv, map_lie,
+    ← coe_toLinearEquiv, LinearEquiv.apply_symm_apply]
 
 end LieAlgebra

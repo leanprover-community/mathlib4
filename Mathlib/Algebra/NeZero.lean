@@ -3,38 +3,18 @@ Copyright (c) 2021 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
+import Mathlib.Algebra.Notation.Defs
 import Mathlib.Logic.Basic
-import Mathlib.Algebra.Group.ZeroOne
-import Mathlib.Order.Defs
+import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # `NeZero` typeclass
 
-We create a typeclass `NeZero n` which carries around the fact that `(n : R) ≠ 0`.
+We give basic facts about the `NeZero n` typeclass.
 
-## Main declarations
-
-* `NeZero`: `n ≠ 0` as a typeclass.
 -/
 
 variable {R : Type*} [Zero R]
-
-/-- A type-class version of `n ≠ 0`. -/
-class NeZero (n : R) : Prop where
-  /-- The proposition that `n` is not zero. -/
-  out : n ≠ 0
-
-theorem NeZero.ne (n : R) [h : NeZero n] : n ≠ 0 :=
-  h.out
-
-theorem NeZero.ne' (n : R) [h : NeZero n] : 0 ≠ n :=
-  h.out.symm
-
-theorem neZero_iff {n : R} : NeZero n ↔ n ≠ 0 :=
-  ⟨fun h ↦ h.out, NeZero.mk⟩
-
-@[simp] lemma neZero_zero_iff_false {α : Type*} [Zero α] : NeZero (0 : α) ↔ False :=
-  ⟨fun h ↦ h.ne rfl, fun h ↦ h.elim⟩
 
 theorem not_neZero {n : R} : ¬NeZero n ↔ n = 0 := by simp [neZero_iff]
 
@@ -77,10 +57,6 @@ namespace NeZero
 
 variable {M : Type*} {x : M}
 
-instance succ {n : ℕ} : NeZero (n + 1) := ⟨n.succ_ne_zero⟩
-
 theorem of_pos [Preorder M] [Zero M] (h : 0 < x) : NeZero x := ⟨ne_of_gt h⟩
 
 end NeZero
-
-lemma Nat.pos_of_neZero (n : ℕ) [NeZero n] : 0 < n := Nat.pos_of_ne_zero (NeZero.ne _)

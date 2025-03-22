@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Sym.Card
 
 /-!
@@ -92,27 +93,35 @@ theorem edgeFinset_inf [DecidableEq V] : (G₁ ⊓ G₂).edgeFinset = G₁.edgeF
 theorem edgeFinset_sdiff [DecidableEq V] :
     (G₁ \ G₂).edgeFinset = G₁.edgeFinset \ G₂.edgeFinset := by simp [edgeFinset]
 
-theorem edgeFinset_card : G.edgeFinset.card = Fintype.card G.edgeSet :=
+lemma disjoint_edgeFinset : Disjoint G₁.edgeFinset G₂.edgeFinset ↔ Disjoint G₁ G₂ := by
+  simp_rw [← Finset.disjoint_coe, coe_edgeFinset, disjoint_edgeSet]
+
+lemma edgeFinset_eq_empty : G.edgeFinset = ∅ ↔ G = ⊥ := by
+  rw [← edgeFinset_bot, edgeFinset_inj]
+
+lemma edgeFinset_nonempty : G.edgeFinset.Nonempty ↔ G ≠ ⊥ := by
+  rw [Finset.nonempty_iff_ne_empty, edgeFinset_eq_empty.ne]
+
+theorem edgeFinset_card : #G.edgeFinset = Fintype.card G.edgeSet :=
   Set.toFinset_card _
 
 @[simp]
-theorem edgeSet_univ_card : (univ : Finset G.edgeSet).card = G.edgeFinset.card :=
+theorem edgeSet_univ_card : #(univ : Finset G.edgeSet) = #G.edgeFinset :=
   Fintype.card_of_subtype G.edgeFinset fun _ => mem_edgeFinset
 
 variable [Fintype V]
 
 @[simp]
 theorem edgeFinset_top [DecidableEq V] :
-    (⊤ : SimpleGraph V).edgeFinset = univ.filter fun e => ¬e.IsDiag := by
-  rw [← coe_inj]; simp
+    (⊤ : SimpleGraph V).edgeFinset = ({e | ¬e.IsDiag} : Finset _) := by simp [← coe_inj]
 
 /-- The complete graph on `n` vertices has `n.choose 2` edges. -/
 theorem card_edgeFinset_top_eq_card_choose_two [DecidableEq V] :
-    (⊤ : SimpleGraph V).edgeFinset.card = (Fintype.card V).choose 2 := by
+    #(⊤ : SimpleGraph V).edgeFinset = (Fintype.card V).choose 2 := by
   simp_rw [Set.toFinset_card, edgeSet_top, Set.coe_setOf, ← Sym2.card_subtype_not_diag]
 
 /-- Any graph on `n` vertices has at most `n.choose 2` edges. -/
-theorem card_edgeFinset_le_card_choose_two : G.edgeFinset.card ≤ (Fintype.card V).choose 2 := by
+theorem card_edgeFinset_le_card_choose_two : #G.edgeFinset ≤ (Fintype.card V).choose 2 := by
   classical
   rw [← card_edgeFinset_top_eq_card_choose_two]
   exact card_le_card (edgeFinset_mono le_top)
@@ -127,20 +136,19 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 
 section DeleteFar
 
--- Porting note: added `Fintype (Sym2 V)` argument.
 variable {𝕜 : Type*} [OrderedRing 𝕜]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 
 /-- A graph is `r`-*delete-far* from a property `p` if we must delete at least `r` edges from it to
 get a graph with the property `p`. -/
 def DeleteFar (p : SimpleGraph V → Prop) (r : 𝕜) : Prop :=
-  ∀ ⦃s⦄, s ⊆ G.edgeFinset → p (G.deleteEdges s) → r ≤ s.card
+  ∀ ⦃s⦄, s ⊆ G.edgeFinset → p (G.deleteEdges s) → r ≤ #s
 
 variable {G}
 
 theorem deleteFar_iff [Fintype (Sym2 V)] :
     G.DeleteFar p r ↔ ∀ ⦃H : SimpleGraph _⦄ [DecidableRel H.Adj],
-      H ≤ G → p H → r ≤ G.edgeFinset.card - H.edgeFinset.card := by
+      H ≤ G → p H → r ≤ #G.edgeFinset - #H.edgeFinset := by
   classical
   refine ⟨fun h H _ hHG hH ↦ ?_, fun h s hs hG ↦ ?_⟩
   · have := h (sdiff_subset (t := H.edgeFinset))
@@ -194,15 +202,10 @@ theorem singleton_disjoint_neighborFinset : Disjoint {v} (G.neighborFinset v) :=
   Finset.disjoint_singleton_left.mpr <| not_mem_neighborFinset_self _ _
 
 /-- `G.degree v` is the number of vertices adjacent to `v`. -/
-def degree : ℕ :=
-  (G.neighborFinset v).card
+def degree : ℕ := #(G.neighborFinset v)
 
--- Porting note: in Lean 3 we could do `simp [← degree]`, but that gives
--- "invalid '←' modifier, 'SimpleGraph.degree' is a declaration name to be unfolded".
--- In any case, having this lemma is good since there's no guarantee we won't still change
--- the definition of `degree`.
 @[simp]
-theorem card_neighborFinset_eq_degree : (G.neighborFinset v).card = G.degree v := rfl
+theorem card_neighborFinset_eq_degree : #(G.neighborFinset v) = G.degree v := rfl
 
 @[simp]
 theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v :=
@@ -210,6 +213,12 @@ theorem card_neighborSet_eq_degree : Fintype.card (G.neighborSet v) = G.degree v
 
 theorem degree_pos_iff_exists_adj : 0 < G.degree v ↔ ∃ w, G.Adj v w := by
   simp only [degree, card_pos, Finset.Nonempty, mem_neighborFinset]
+
+theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
+  rw [G.degree_pos_iff_exists_adj v, mem_support]
+
+theorem degree_eq_zero_iff_not_mem_support : G.degree v = 0 ↔ v ∉ G.support := by
+  rw [← G.degree_pos_iff_mem_support v, Nat.pos_iff_ne_zero, not_ne_iff]
 
 theorem degree_compl [Fintype (Gᶜ.neighborSet v)] [Fintype V] :
     Gᶜ.degree v = Fintype.card V - 1 - G.degree v := by
@@ -231,8 +240,7 @@ theorem card_incidenceSet_eq_degree [DecidableEq V] :
   simp
 
 @[simp]
-theorem card_incidenceFinset_eq_degree [DecidableEq V] :
-    (G.incidenceFinset v).card = G.degree v := by
+theorem card_incidenceFinset_eq_degree [DecidableEq V] : #(G.incidenceFinset v) = G.degree v := by
   rw [← G.card_incidenceSet_eq_degree]
   apply Set.toFinset_card
 
@@ -242,10 +250,18 @@ theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
   Set.mem_toFinset
 
 theorem incidenceFinset_eq_filter [DecidableEq V] [Fintype G.edgeSet] :
-    G.incidenceFinset v = G.edgeFinset.filter (v ∈ ·) := by
+    G.incidenceFinset v = {e ∈ G.edgeFinset | v ∈ e} := by
   ext e
   induction e
   simp [mk'_mem_incidenceSet_iff]
+
+variable {G v}
+
+/-- If `G ≤ H` then `G.degree v ≤ H.degree v` for any vertex `v`. -/
+lemma degree_le_of_le {H : SimpleGraph V} [Fintype (H.neighborSet v)] (hle : G ≤ H) :
+    G.degree v ≤ H.degree v := by
+  simp_rw [← card_neighborSet_eq_degree]
+  exact Set.card_le_card fun v hv => hle hv
 
 end FiniteAt
 
@@ -285,9 +301,7 @@ instance neighborSetFintype [DecidableRel G.Adj] (v : V) : Fintype (G.neighborSe
     _
 
 theorem neighborFinset_eq_filter {v : V} [DecidableRel G.Adj] :
-    G.neighborFinset v = Finset.univ.filter (G.Adj v) := by
-  ext
-  simp
+    G.neighborFinset v = ({w | G.Adj v w} : Finset _) := by ext; simp
 
 theorem neighborFinset_compl [DecidableEq V] [DecidableRel G.Adj] (v : V) :
     Gᶜ.neighborFinset v = (G.neighborFinset v)ᶜ \ {v} := by
@@ -312,7 +326,7 @@ theorem IsRegularOfDegree.top [DecidableEq V] :
 The key properties of this are given in `exists_minimal_degree_vertex`, `minDegree_le_degree`
 and `le_minDegree_of_forall_le_degree`. -/
 def minDegree [DecidableRel G.Adj] : ℕ :=
-  WithTop.untop' 0 (univ.image fun v => G.degree v).min
+  WithTop.untopD 0 (univ.image fun v => G.degree v).min
 
 /-- There exists a vertex of minimal degree. Note the assumption of being nonempty is necessary, as
 the lemma implies there exists a vertex. -/
@@ -336,6 +350,22 @@ theorem le_minDegree_of_forall_le_degree [DecidableRel G.Adj] [Nonempty V] (k : 
   rcases G.exists_minimal_degree_vertex with ⟨v, hv⟩
   rw [hv]
   apply h
+
+/-- If there are no vertices then the `minDegree` is zero. -/
+@[simp]
+lemma minDegree_of_isEmpty [DecidableRel G.Adj] [IsEmpty V] : G.minDegree = 0 := by
+  rw [minDegree, WithTop.untopD_eq_self_iff]
+  simp
+
+variable {G} in
+/-- If `G` is a subgraph of `H` then `G.minDegree ≤ H.minDegree`. -/
+lemma minDegree_le_minDegree {H : SimpleGraph V} [DecidableRel G.Adj] [DecidableRel H.Adj]
+    (hle : G ≤ H) : G.minDegree ≤ H.minDegree := by
+  by_cases hne : Nonempty V
+  · apply le_minDegree_of_forall_le_degree
+    exact fun v ↦ (G.minDegree_le_degree v).trans (G.degree_le_of_le hle)
+  · rw [not_nonempty_iff] at hne
+    simp
 
 /-- The maximum degree of all vertices (and `0` if there are no vertices).
 The key properties of this are given in `exists_maximal_degree_vertex`, `degree_le_maxDegree`
@@ -386,7 +416,7 @@ that `V` is nonempty is necessary, as otherwise this would assert the existence 
 natural number less than zero. -/
 theorem maxDegree_lt_card_verts [DecidableRel G.Adj] [Nonempty V] :
     G.maxDegree < Fintype.card V := by
-  cases' G.exists_maximal_degree_vertex with v hv
+  obtain ⟨v, hv⟩ := G.exists_maximal_degree_vertex
   rw [hv]
   apply G.degree_lt_card_verts v
 
@@ -408,7 +438,7 @@ the best we can do in general. -/
 theorem Adj.card_commonNeighbors_lt_degree {G : SimpleGraph V} [DecidableRel G.Adj] {v w : V}
     (h : G.Adj v w) : Fintype.card (G.commonNeighbors v w) < G.degree v := by
   classical
-  erw [← Set.toFinset_card]
+  rw [← Set.toFinset_card]
   apply Finset.card_lt_card
   rw [Finset.ssubset_iff]
   use w
@@ -429,5 +459,81 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
   · simp only [Set.toFinset_subset_toFinset, Set.subset_univ]
 
 end Finite
+
+section Support
+
+variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+
+lemma edgeFinset_subset_sym2_of_support_subset (h : G.support ⊆ s) :
+    G.edgeFinset ⊆ s.toFinset.sym2 := by
+  simp_rw [subset_iff, Sym2.forall,
+    mem_edgeFinset, mem_edgeSet, mk_mem_sym2_iff, Set.mem_toFinset]
+  intro _ _ hadj
+  exact ⟨h ⟨_, hadj⟩, h ⟨_, hadj.symm⟩⟩
+
+instance : DecidablePred (· ∈ G.support) :=
+  inferInstanceAs <| DecidablePred (· ∈ { v | ∃ w, G.Adj v w })
+
+variable [DecidableEq V]
+
+theorem map_edgeFinset_induce :
+    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map
+      = G.edgeFinset ∩ s.toFinset.sym2 := by
+  simp_rw [Finset.ext_iff, Sym2.forall, mem_inter, mk_mem_sym2_iff, mem_map, Sym2.exists,
+    Set.mem_toFinset, mem_edgeSet, comap_adj, Embedding.sym2Map_apply, Embedding.coe_subtype,
+    Sym2.map_pair_eq, Sym2.eq_iff]
+  intro v w
+  constructor
+  · rintro ⟨x, y, hadj, ⟨hv, hw⟩ | ⟨hw, hv⟩⟩
+    all_goals rw [← hv, ← hw]
+    · exact ⟨hadj, x.prop, y.prop⟩
+    · exact ⟨hadj.symm, y.prop, x.prop⟩
+  · intro ⟨hadj, hv, hw⟩
+    use ⟨v, hv⟩, ⟨w, hw⟩, hadj
+    tauto
+
+theorem map_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
+    (G.induce s).edgeFinset.map (Embedding.subtype s).sym2Map = G.edgeFinset := by
+  simpa [map_edgeFinset_induce] using edgeFinset_subset_sym2_of_support_subset h
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
+`s` has the same number of edges as `G`. -/
+theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
+    #(G.induce s).edgeFinset = #G.edgeFinset := by
+  rw [← map_edgeFinset_induce_of_support_subset h, card_map]
+
+theorem card_edgeFinset_induce_support :
+    #(G.induce G.support).edgeFinset = #G.edgeFinset :=
+  card_edgeFinset_induce_of_support_subset subset_rfl
+
+theorem map_neighborFinset_induce (v : s) :
+    ((G.induce s).neighborFinset v).map (.subtype s)
+      = G.neighborFinset v ∩ s.toFinset := by
+  ext; simp [Set.mem_def]
+
+theorem map_neighborFinset_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
+    ((G.induce s).neighborFinset v).map (.subtype s) = G.neighborFinset v := by
+  rwa [← Set.toFinset_subset_toFinset, ← neighborFinset_def, ← inter_eq_left,
+    ← map_neighborFinset_induce v] at h
+
+/-- If the neighbor set of a vertex `v` is a subset of `s`, then the degree of the vertex in the
+induced subgraph of `s` is the same as in `G`. -/
+theorem degree_induce_of_neighborSet_subset {v : s} (h : G.neighborSet v ⊆ s) :
+    (G.induce s).degree v = G.degree v := by
+  simp_rw [← card_neighborFinset_eq_degree,
+    ← map_neighborFinset_induce_of_neighborSet_subset h, card_map]
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the degree of vertices
+in the induced subgraph of `s` are the same as in `G`. -/
+theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
+    (G.induce s).degree v = G.degree v :=
+  degree_induce_of_neighborSet_subset <| (G.neighborSet_subset_support v).trans h
+
+@[simp]
+theorem degree_induce_support (v : G.support) :
+    (G.induce G.support).degree v = G.degree v :=
+  degree_induce_of_support_subset subset_rfl v
+
+end Support
 
 end SimpleGraph

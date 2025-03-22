@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Order.Ideal
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -33,11 +33,13 @@ noncomputable section
 
 namespace Order
 
+variable {α β : Type*} [LinearOrder α] [LinearOrder β]
+
 /-- Suppose `α` is a nonempty dense linear order without endpoints, and
     suppose `lo`, `hi`, are finite subsets with all of `lo` strictly
     before `hi`. Then there is an element of `α` strictly between `lo`
     and `hi`. -/
-theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+theorem exists_between_finsets [DenselyOrdered α] [NoMinOrder α]
     [NoMaxOrder α] [nonem : Nonempty α] (lo hi : Finset α) (lo_lt_hi : ∀ x ∈ lo, ∀ y ∈ hi, x < y) :
     ∃ m : α, (∀ x ∈ lo, x < m) ∧ ∀ y ∈ hi, m < y :=
   if nlo : lo.Nonempty then
@@ -61,7 +63,40 @@ theorem exists_between_finsets {α : Type*} [LinearOrder α] [DenselyOrdered α]
           nonem.elim
         fun m ↦ ⟨m, fun x hx ↦ (nlo ⟨x, hx⟩).elim, fun y hy ↦ (nhi ⟨y, hy⟩).elim⟩
 
-variable (α β : Type*) [LinearOrder α] [LinearOrder β]
+lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β]
+    [nonem : Nonempty β]  (S : Finset α) (f : S ↪o β) (a : α) :
+    ∃ (g : (insert a S : Finset α) ↪o β),
+      g ∘ (Set.inclusion ((S.subset_insert a) : ↑S ⊆ ↑(insert a S))) = f := by
+  let Slt := (S.attach.filter (fun (x : S) => x < a)).image f
+  let Sgt := (S.attach.filter (fun (x : S) => a < x)).image f
+  obtain ⟨b, hb, hb'⟩ := Order.exists_between_finsets Slt Sgt (fun x hx y hy => by
+    simp only [Finset.mem_image, Finset.mem_filter, Finset.mem_attach, true_and, Subtype.exists,
+      exists_and_left, Slt, Sgt] at hx hy
+    obtain ⟨_, hx, _, rfl⟩ := hx
+    obtain ⟨_, hy, _, rfl⟩ := hy
+    exact f.strictMono (hx.trans hy))
+  refine ⟨OrderEmbedding.ofStrictMono
+    (fun (x : (insert a S : Finset α)) => if hx : x.1 ∈ S then f ⟨x.1, hx⟩ else b) ?_, ?_⟩
+  · rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
+    if hxS : x ∈ S
+    then if hyS : y ∈ S
+      then simpa only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
+      else
+        obtain rfl := Finset.eq_of_mem_insert_of_not_mem hy hyS
+        simp only [hxS, hyS, ↓reduceDIte]
+        exact hb _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
+    else
+      obtain rfl := Finset.eq_of_mem_insert_of_not_mem hx hxS
+      if hyS : y ∈ S
+      then
+        simp only [hxS, hyS, ↓reduceDIte]
+        exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
+      else simp only [Finset.eq_of_mem_insert_of_not_mem hy hyS, lt_self_iff_false] at hxy
+  · ext x
+    simp only [Finset.coe_sort_coe, OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
+      Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
+
+variable (α β)
 
 -- Porting note: Mathport warning: expanding binder collection (p q «expr ∈ » f)
 /-- The type of partial order isomorphisms between `α` and `β` defined on finite subsets.
@@ -89,7 +124,7 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
     (f : PartialIso α β) (a : α) :
     ∃ b : β, ∀ p ∈ f.val, cmp (Prod.fst p) a = cmp (Prod.snd p) b := by
   by_cases h : ∃ b, (a, b) ∈ f.val
-  · cases' h with b hb
+  · obtain ⟨b, hb⟩ := h
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩
   have :
     ∀ x ∈ (f.val.filter fun p : α × β ↦ p.fst < a).image Prod.snd,
@@ -101,11 +136,11 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
     rw [Finset.mem_filter] at hp1 hq1
     rw [← lt_iff_lt_of_cmp_eq_cmp (f.prop _ hp1.1 _ hq1.1)]
     exact lt_trans hp1.right hq1.right
-  cases' exists_between_finsets _ _ this with b hb
+  obtain ⟨b, hb⟩ := exists_between_finsets _ _ this
   use b
   rintro ⟨p1, p2⟩ hp
   have : p1 ≠ a := fun he ↦ h ⟨p2, he ▸ hp⟩
-  cases' lt_or_gt_of_ne this with hl hr
+  rcases lt_or_gt_of_ne this with hl | hr
   · have : p1 < a ∧ p2 < b :=
       ⟨hl, hb.1 _ (Finset.mem_image.mpr ⟨(p1, p2), Finset.mem_filter.mpr ⟨hp, hl⟩, rfl⟩)⟩
     rw [← cmp_eq_lt_iff, ← cmp_eq_lt_iff] at this
@@ -135,8 +170,8 @@ variable (β)
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ b : β, (a, b) ∈ f.val}
-  mem_gt f := by
-    cases' exists_across f a with b a_b
+  isCofinal f := by
+    obtain ⟨b, a_b⟩ := exists_across f a
     refine
       ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
         Finset.subset_insert _ _⟩
@@ -155,8 +190,8 @@ variable (α) {β}
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ a, (a, b) ∈ f.val}
-  mem_gt f := by
-    rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
+  isCofinal f := by
+    rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
       rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]
@@ -191,7 +226,7 @@ theorem embedding_from_countable_to_dense [Countable α] [DenselyOrdered β] [No
     Nonempty (α ↪o β) := by
   cases nonempty_encodable α
   rcases exists_pair_lt β with ⟨x, y, hxy⟩
-  cases' exists_between hxy with a ha
+  obtain ⟨a, ha⟩ := exists_between hxy
   haveI : Nonempty (Set.Ioo x y) := ⟨⟨a, ha⟩⟩
   let our_ideal : Ideal (PartialIso α _) :=
     idealOfCofinals default (definedAtLeft (Set.Ioo x y))

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck, Inna Capdeboscq, Johan Commelin, Thomas Lanard, Peiran Wu
 -/
 import Mathlib.Data.Matrix.Rank
-import Mathlib.FieldTheory.Finite.Basic
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
 
 /-!
@@ -27,7 +27,7 @@ variable {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V]
 variable [Fintype K] [Finite V]
 
 local notation "q" => Fintype.card K
-local notation "n" => FiniteDimensional.finrank K V
+local notation "n" => Module.finrank K V
 
 attribute [local instance] Fintype.ofFinite in
 open Fintype in
@@ -38,16 +38,16 @@ theorem card_linearIndependent {k : ℕ} (hk : k ≤ n) :
       ∏ i : Fin k, (q ^ n - q ^ i.val) := by
   rw [Nat.card_eq_fintype_card]
   induction k with
-  | zero => simp only [LinearIndependent, Finsupp.linearCombination_fin_zero, ker_zero,
+  | zero => simp only [linearIndependent_iff_ker, Finsupp.linearCombination_fin_zero, ker_zero,
       card_ofSubsingleton, Finset.univ_eq_empty, Finset.prod_empty]
   | succ k ih =>
       have (s : { s : Fin k → V // LinearIndependent K s }) :
           card ((Submodule.span K (Set.range (s : Fin k → V)))ᶜ : Set (V)) =
           (q) ^ n - (q) ^ k := by
-            rw [card_compl_set, card_eq_pow_finrank (K := K)
+            rw [card_compl_set, Module.card_eq_pow_finrank (K := K)
             (V := ((Submodule.span K (Set.range (s : Fin k → V))) : Set (V)))]
             simp only [SetLike.coe_sort_coe, finrank_span_eq_card s.2, card_fin]
-            rw [card_eq_pow_finrank (K := K)]
+            rw [Module.card_eq_pow_finrank (K := K)]
       simp [card_congr (equiv_linearIndependent k), sum_congr _ _ this, ih (Nat.le_of_succ_le hk),
         mul_comm, Fin.prod_univ_succAbove _ k]
 
@@ -77,7 +77,7 @@ noncomputable def equiv_GL_linearindependent (hn : 0 < n) :
     rw [← Basis.coePiBasisFun.toMatrix_eq_transpose,
       ← coe_basisOfLinearIndependentOfCardEqFinrank M.2]
     exact isUnit_det_of_invertible _
-  left_inv := fun x ↦ Units.ext (ext fun i j ↦ rfl)
+  left_inv := fun _ ↦ Units.ext (ext fun _ _ ↦ rfl)
   right_inv := by exact congrFun rfl
 
 /-- The cardinal of the general linear group over a finite field. -/
@@ -86,8 +86,8 @@ theorem card_GL_field :
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · simp [Nat.card_eq_fintype_card]
   · rw [Nat.card_congr (equiv_GL_linearindependent n hn), card_linearIndependent,
-    FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin]
-    simp only [FiniteDimensional.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
+    Module.finrank_fintype_fun_eq_card, Fintype.card_fin]
+    simp only [Module.finrank_fintype_fun_eq_card, Fintype.card_fin, le_refl]
 
 end field
 

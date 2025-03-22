@@ -1,13 +1,14 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.LinearIndependent.Lemmas
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
 /-!
@@ -133,7 +134,7 @@ theorem derivative_zero (n : ℕ) :
 
 theorem iterate_derivative_at_0_eq_zero_of_lt (n : ℕ) {ν k : ℕ} :
     k < ν → (Polynomial.derivative^[k] (bernsteinPolynomial R n ν)).eval 0 = 0 := by
-  cases' ν with ν
+  rcases ν with - | ν
   · rintro ⟨⟩
   · rw [Nat.lt_succ_iff]
     induction' k with k ih generalizing n ν
@@ -169,9 +170,7 @@ theorem iterate_derivative_at_0 (n ν : ℕ) :
         eval_natCast, Function.comp_apply, Function.iterate_succ, ascPochhammer_succ_left]
       obtain rfl | h'' := ν.eq_zero_or_pos
       · simp
-      · have : n - 1 - (ν - 1) = n - ν := by
-          rw [gt_iff_lt, ← Nat.succ_le_iff] at h''
-          rw [← tsub_add_eq_tsub_tsub, add_comm, tsub_add_cancel_of_le h'']
+      · have : n - 1 - (ν - 1) = n - ν := by omega
         rw [this, ascPochhammer_eval_succ]
         rw_mod_cast [tsub_add_cancel_of_le (h'.trans n.pred_le)]
   · simp only [not_le] at h
@@ -236,7 +235,7 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       simp only [Fin.val_last, Fin.init_def]
       dsimp
       apply not_mem_span_of_apply_not_mem_span_image (@Polynomial.derivative ℚ _ ^ (n - k))
-      -- Note: #8386 had to change `span_image` into `span_image _`
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `span_image` into `span_image _`
       simp only [not_exists, not_and, Submodule.mem_map, Submodule.span_image _]
       intro p m
       apply_fun Polynomial.eval (1 : ℚ)
@@ -246,13 +245,13 @@ theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
       suffices (Polynomial.derivative^[n - k] p).eval 1 = 0 by
         rw [this]
         exact (iterate_derivative_at_1_ne_zero ℚ n k h).symm
-      refine span_induction m ?_ ?_ ?_ ?_
+      refine span_induction ?_ ?_ ?_ ?_ m
       · simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
         rintro ⟨a, w⟩; simp only [Fin.val_mk]
         rw [iterate_derivative_at_1_eq_zero_of_lt ℚ n ((tsub_lt_tsub_iff_left_of_le h).mpr w)]
       · simp
-      · intro x y hx hy; simp [hx, hy]
-      · intro a x h; simp [h]
+      · intro x y _ _ hx hy; simp [hx, hy]
+      · intro a x _ h; simp [h]
 
 /-- The Bernstein polynomials are linearly independent.
 

@@ -30,7 +30,6 @@ The type synonym `Lex (α →₀ N)` has an order given by `Finsupp.Lex (· < ·
 protected def Lex (r : α → α → Prop) (s : N → N → Prop) (x y : α →₀ N) : Prop :=
   Pi.Lex r s x y
 
--- Porting note: Added `_root_` to better align with Lean 3.
 theorem _root_.Pi.lex_eq_finsupp_lex {r : α → α → Prop} {s : N → N → Prop} (a b : α →₀ N) :
     Pi.Lex r s a b = Finsupp.Lex r s a b :=
   rfl
@@ -45,6 +44,16 @@ theorem lex_eq_invImage_dfinsupp_lex (r : α → α → Prop) (s : N → N → P
 
 instance [LT α] [LT N] : LT (Lex (α →₀ N)) :=
   ⟨fun f g ↦ Finsupp.Lex (· < ·) (· < ·) (ofLex f) (ofLex g)⟩
+
+theorem lex_lt_iff [LT α] [LT N] {a b : Lex (α →₀ N)} :
+    a < b ↔ ∃ i, (∀ j, j < i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i :=
+  Finsupp.lex_def
+
+theorem lex_lt_iff_of_unique [Preorder α] [LT N] [Unique α] {a b : Lex (α →₀ N)} :
+    a < b ↔ ofLex a default < ofLex b default := by
+  simp only [lex_lt_iff, Unique.exists_iff, and_iff_right_iff_imp]
+  refine fun _ j hj ↦ False.elim (lt_irrefl j ?_)
+  simpa only [Unique.uniq] using hj
 
 theorem lex_lt_of_lt_of_preorder [Preorder N] (r) [IsStrictOrder α r] {x y : α →₀ N} (hlt : x < y) :
     ∃ i, (∀ j, r j i → x j ≤ y j ∧ y j ≤ x j) ∧ x i < y i :=
@@ -75,6 +84,25 @@ instance Lex.linearOrder [LinearOrder N] : LinearOrder (Lex (α →₀ N)) where
   le := (· ≤ ·)
   __ := LinearOrder.lift' (toLex ∘ toDFinsupp ∘ ofLex) finsuppEquivDFinsupp.injective
 
+theorem Lex.single_strictAnti : StrictAnti (fun (a : α) ↦ toLex (single a 1)) := by
+  intro a b h
+  simp only [LT.lt, Finsupp.lex_def]
+  simp only [ofLex_toLex, Nat.lt_eq]
+  use a
+  constructor
+  · intro d hd
+    simp only [Finsupp.single_eq_of_ne hd.ne', Finsupp.single_eq_of_ne (hd.trans h).ne']
+  · simp only [single_eq_same, single_eq_of_ne (ne_of_lt h).symm, zero_lt_one]
+
+theorem Lex.single_lt_iff {a b : α} : toLex (single b 1) < toLex (single a 1) ↔ a < b :=
+  Lex.single_strictAnti.lt_iff_lt
+
+theorem Lex.single_le_iff {a b : α} : toLex (single b 1) ≤ toLex (single a 1) ↔ a ≤ b :=
+  Lex.single_strictAnti.le_iff_le
+
+theorem Lex.single_antitone : Antitone (fun (a : α) ↦ toLex (single a 1)) :=
+  Lex.single_strictAnti.antitone
+
 variable [PartialOrder N]
 
 theorem toLex_monotone : Monotone (@toLex (α →₀ N)) :=
@@ -84,6 +112,13 @@ theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
 
+theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
+    a ≤ b ↔ ofLex a default ≤ ofLex b default := by
+  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  apply or_congr _ lex_lt_iff_of_unique
+  conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
+  simp only [Finsupp.ext_iff, Unique.forall_iff]
+
 end NHasZero
 
 section Covariants
@@ -91,39 +126,35 @@ section Covariants
 variable [LinearOrder α] [AddMonoid N] [LinearOrder N]
 
 /-!  We are about to sneak in a hypothesis that might appear to be too strong.
-We assume `CovariantClass` with *strict* inequality `<` also when proving the one with the
-*weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to be
-monotone, when it is "just" monotone on `N`.
+We assume `AddLeftStrictMono` (covariant with *strict* inequality `<`) also when proving the one
+with the *weak* inequality `≤`.  This is actually necessary: addition on `Lex (α →₀ N)` may fail to
+be monotone, when it is "just" monotone on `N`.
 
 See `Counterexamples/ZeroDivisorsInAddMonoidAlgebras.lean` for a counterexample. -/
 
 
 section Left
 
-variable [CovariantClass N N (· + ·) (· < ·)]
+variable [AddLeftStrictMono N]
 
-instance Lex.covariantClass_lt_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· < ·) :=
+instance Lex.addLeftStrictMono : AddLeftStrictMono (Lex (α →₀ N)) :=
   ⟨fun _ _ _ ⟨a, lta, ha⟩ ↦ ⟨a, fun j ja ↦ congr_arg _ (lta j ja), add_lt_add_left ha _⟩⟩
 
-instance Lex.covariantClass_le_left :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (· + ·) (· ≤ ·) :=
-  covariantClass_le_of_lt _ _ _
+instance Lex.addLeftMono : AddLeftMono (Lex (α →₀ N)) :=
+  addLeftMono_of_addLeftStrictMono _
 
 end Left
 
 section Right
 
-variable [CovariantClass N N (Function.swap (· + ·)) (· < ·)]
+variable [AddRightStrictMono N]
 
-instance Lex.covariantClass_lt_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· < ·) :=
+instance Lex.addRightStrictMono : AddRightStrictMono (Lex (α →₀ N)) :=
   ⟨fun f _ _ ⟨a, lta, ha⟩ ↦
     ⟨a, fun j ja ↦ congr_arg (· + ofLex f j) (lta j ja), add_lt_add_right ha _⟩⟩
 
-instance Lex.covariantClass_le_right :
-    CovariantClass (Lex (α →₀ N)) (Lex (α →₀ N)) (Function.swap (· + ·)) (· ≤ ·) :=
-  covariantClass_le_of_lt _ _ _
+instance Lex.addRightMono : AddRightMono (Lex (α →₀ N)) :=
+  addRightMono_of_addRightStrictMono _
 
 end Right
 
@@ -133,7 +164,8 @@ section OrderedAddMonoid
 
 variable [LinearOrder α]
 
-instance Lex.orderBot [CanonicallyOrderedAddCommMonoid N] : OrderBot (Lex (α →₀ N)) where
+instance Lex.orderBot [AddCommMonoid N] [PartialOrder N] [CanonicallyOrderedAdd N] :
+    OrderBot (Lex (α →₀ N)) where
   bot := 0
   bot_le _ := Finsupp.toLex_monotone bot_le
 

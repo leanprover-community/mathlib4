@@ -28,7 +28,7 @@ underlying spaces are normed.
 
 * `LinearPMap.closable_iff_exists_closed_extension`: an unbounded operator is closable iff it has a
   closed extension.
-* `LinearPMap.closable.exists_unique`: there exists a unique closure
+* `LinearPMap.closable.existsUnique`: there exists a unique closure
 * `LinearPMap.closureHasCore`: the domain of `f` is a core of its closure
 
 ## References
@@ -71,7 +71,7 @@ theorem IsClosed.isClosable {f : E →ₗ.[R] F} (hf : f.IsClosed) : f.IsClosabl
 /-- If `g` has a closable extension `f`, then `g` itself is closable. -/
 theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg : g ≤ f) :
     g.IsClosable := by
-  cases' hf with f' hf
+  obtain ⟨f', hf⟩ := hf
   have : g.graph.topologicalClosure ≤ f'.graph := by
     rw [← hf]
     exact Submodule.topologicalClosure_mono (le_graph_of_le hfg)
@@ -82,7 +82,7 @@ theorem IsClosable.leIsClosable {f g : E →ₗ.[R] F} (hf : f.IsClosable) (hfg 
 /-- The closure is unique. -/
 theorem IsClosable.existsUnique {f : E →ₗ.[R] F} (hf : f.IsClosable) :
     ∃! f' : E →ₗ.[R] F, f.graph.topologicalClosure = f'.graph := by
-  refine exists_unique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
+  refine existsUnique_of_exists_of_unique hf fun _ _ hy₁ hy₂ => eq_of_eq_graph ?_
   rw [← hy₁, ← hy₂]
 
 open Classical in
@@ -150,14 +150,14 @@ Note that we don't require that `f` is closable, due to the definition of the cl
 theorem closureHasCore (f : E →ₗ.[R] F) : f.closure.HasCore f.domain := by
   refine ⟨f.le_closure.1, ?_⟩
   congr
-  ext x y hxy
+  ext x h1 h2
   · simp only [domRestrict_domain, Submodule.mem_inf, and_iff_left_iff_imp]
     intro hx
     exact f.le_closure.1 hx
-  let z : f.closure.domain := ⟨y.1, f.le_closure.1 y.2⟩
-  have hyz : (y : E) = z := by simp
+  let z : f.closure.domain := ⟨x, f.le_closure.1 h2⟩
+  have hyz : x = z := rfl
   rw [f.le_closure.2 hyz]
-  exact domRestrict_apply (hxy.trans hyz)
+  exact domRestrict_apply hyz
 
 /-! ### Topological properties of the inverse -/
 

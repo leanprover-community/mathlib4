@@ -6,8 +6,8 @@ Authors: Frédéric Dupuis
 
 import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.SpecialFunctions.Exponential
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital
-import Mathlib.Topology.ContinuousFunction.StarOrdered
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-!
 # The exponential and logarithm based on the continuous functional calculus
@@ -58,13 +58,13 @@ namespace CFC
 section RCLikeNormed
 
 variable {𝕜 : Type*} {A : Type*} [RCLike 𝕜] {p : A → Prop} [NormedRing A]
-  [StarRing A] [TopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus 𝕜 p]
+  [StarRing A] [IsTopologicalRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A]
+  [ContinuousFunctionalCalculus 𝕜 A p]
 
 lemma exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc (exp 𝕜 : 𝕜 → 𝕜) a = exp 𝕜 a := by
   conv_rhs => rw [← cfc_id 𝕜 a ha, cfc_apply id a ha]
-  have h := (cfcHom_closedEmbedding (R := 𝕜) (show p a from ha)).continuous
+  have h := (cfcHom_isClosedEmbedding (R := 𝕜) (show p a from ha)).continuous
   have _ : ContinuousOn (exp 𝕜) (spectrum 𝕜 a) := exp_continuous.continuousOn
   simp_rw [← map_exp 𝕜 _ h, cfc_apply (exp 𝕜) a ha]
   congr 1
@@ -76,8 +76,8 @@ end RCLikeNormed
 section RealNormed
 
 variable {A : Type*} [NormedRing A] [StarRing A]
-  [TopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+  [IsTopologicalRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
+  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 lemma real_exp_eq_normedSpace_exp {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     cfc Real.exp a = exp ℝ a :=
@@ -95,8 +95,7 @@ end RealNormed
 section ComplexNormed
 
 variable {A : Type*} {p : A → Prop} [NormedRing A] [StarRing A]
-  [TopologicalRing A] [NormedAlgebra ℂ A] [CompleteSpace A]
-  [ContinuousFunctionalCalculus ℂ p]
+  [NormedAlgebra ℂ A] [CompleteSpace A] [ContinuousFunctionalCalculus ℂ A p]
 
 lemma complex_exp_eq_normedSpace_exp {a : A} (ha : p a := by cfc_tac) :
     cfc Complex.exp a = exp ℂ a :=
@@ -110,7 +109,7 @@ section real_log
 open scoped ComplexOrder
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A]
-  [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+  [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
 
 /-- The real logarithm, defined via the continuous functional calculus. This can be used on
 matrices, operators on a Hilbert space, elements of a C⋆-algebra, etc. -/
@@ -127,8 +126,6 @@ protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_
 @[simp]
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by
   simp [log]
-
-variable [UniqueContinuousFunctionalCalculus ℝ A]
 
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r)
@@ -153,7 +150,7 @@ lemma log_pow (n : ℕ) (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x)
 variable [CompleteSpace A]
 
 lemma log_exp (a : A) (ha : IsSelfAdjoint a := by cfc_tac) : log (NormedSpace.exp ℝ a) = a := by
-  have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := aesop)
+  have hcont : ContinuousOn Real.log (Real.exp '' spectrum ℝ a) := by fun_prop (disch := simp)
   rw [log, ← real_exp_eq_normedSpace_exp, ← cfc_comp' Real.log Real.exp a hcont]
   simp [cfc_id' (R := ℝ) a]
 
