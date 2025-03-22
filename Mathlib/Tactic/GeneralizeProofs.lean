@@ -195,7 +195,7 @@ def mkLambdaFVarsUsedOnly (fvars : Array Expr) (e : Expr) : MetaM (Array Expr ×
   for i' in [0:fvars.size] do
     let i := fvars.size - i' - 1
     let fvar := fvars[i]!
-    e ← mkLambdaFVars #[fvar] e
+    e ← mkLambdaFVars #[fvar] e (usedOnly := false) (usedLetOnly := false)
     match e with
     | .letE _ _ v b _ =>
       e := b.instantiate1 v
