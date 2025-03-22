@@ -407,6 +407,7 @@ protected lemma continuousOn (hf : LocallyLipschitzOn s f) : ContinuousOn f s :=
 
 end LocallyLipschitzOn
 
+/-- If `f` is locally Lipschitz on a compact set `s`, then `f` is Lipschitz on `s`. -/
 theorem LocallyLipschitzOn.lipshitzOnWith_of_isCompact [PseudoEMetricSpace α] [PseudoMetricSpace β]
     {f : α → β} {s : Set α} (hs : IsCompact s) (hf : LocallyLipschitzOn s f) :
     ∃ K, LipschitzOnWith K f s := by
