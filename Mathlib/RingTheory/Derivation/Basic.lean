@@ -67,6 +67,9 @@ instance : AddMonoidHomClass (Derivation R A M) A M where
   map_add D := D.toLinearMap.map_add'
   map_zero D := D.toLinearMap.map_zero
 
+instance : LinearMapClass (Derivation R A M) R A M where
+  map_smulₛₗ D := D.toLinearMap.map_smul
+
 -- Not a simp lemma because it can be proved via `coeFn_coe` + `toLinearMap_eq_coe`
 theorem toFun_eq_coe : D.toFun = ⇑D :=
   rfl
