@@ -3,7 +3,10 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
-import Mathlib
+import Mathlib.RingTheory.SimpleRing.TensorProduct
+import Mathlib.Algebra.BrauerGroup.Defs
+import Mathlib.Algebra.Central.TensorProduct
+import Mathlib.RingTheory.SimpleRing.Congr
 
 /-!
 # Basic facts/instances about BrauerGroup and Central Simple Algebras over field K
@@ -26,16 +29,12 @@ abbrev one : CSA K := ⟨AlgebraCat.of K K⟩
 
 abbrev ofAlgEquiv {A : CSA K} (A' : Type*) [Ring A'] [Algebra K A'] (e : A ≃ₐ[K] A') : CSA K := {
   __ := AlgebraCat.of K A',
-  isCentral := Algebra.IsCentral.of_algEquiv K A A' e
-  isSimple := by sorry
-  fin_dim := by sorry
+  isCentral := .of_algEquiv K A A' e
+  isSimple := .of_ringEquiv e.toRingEquiv inferInstance
+  fin_dim := e.toLinearEquiv.finiteDimensional
   }
 
-def mul (A B : CSA K) : CSA K := {
-  __ := AlgebraCat.of K (A ⊗[K] B)
-  isCentral := sorry
-  isSimple := sorry
-}
+def mul (A B : CSA K) : CSA K := ⟨AlgebraCat.of K (A ⊗[K] B)⟩
 
 end CentralSimple
 

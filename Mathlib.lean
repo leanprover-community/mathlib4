@@ -75,6 +75,7 @@ import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Algebra.BigOperators.RingEquiv
 import Mathlib.Algebra.BigOperators.Sym
 import Mathlib.Algebra.BigOperators.WithTop
+import Mathlib.Algebra.BrauerGroup.Basic
 import Mathlib.Algebra.BrauerGroup.Defs
 import Mathlib.Algebra.Category.AlgebraCat.Basic
 import Mathlib.Algebra.Category.AlgebraCat.Limits
@@ -5119,6 +5120,7 @@ import Mathlib.RingTheory.SimpleRing.Congr
 import Mathlib.RingTheory.SimpleRing.Defs
 import Mathlib.RingTheory.SimpleRing.Field
 import Mathlib.RingTheory.SimpleRing.Matrix
+import Mathlib.RingTheory.SimpleRing.TensorProduct
 import Mathlib.RingTheory.Smooth.Basic
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.Local
