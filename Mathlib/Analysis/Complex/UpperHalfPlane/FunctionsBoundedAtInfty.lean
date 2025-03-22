@@ -41,7 +41,7 @@ def IsBoundedAtImInfty {α : Type*} [Norm α] (f : ℍ → α) : Prop :=
 def IsZeroAtImInfty {α : Type*} [Zero α] [TopologicalSpace α] (f : ℍ → α) : Prop :=
   ZeroAtFilter atImInfty f
 
-theorem zero_form_isBoundedAtImInfty {α : Type*} [NormedField α] :
+theorem zero_form_isBoundedAtImInfty {α : Type*} [NormedRing α] :
     IsBoundedAtImInfty (0 : ℍ → α) :=
   const_boundedAtFilter atImInfty (0 : α)
 
