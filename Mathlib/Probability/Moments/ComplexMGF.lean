@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Complex.CauchyIntegral
+import Mathlib.MeasureTheory.Integral.FiniteMeasureCharFun
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
 
@@ -296,5 +297,43 @@ lemma eqOn_complexMGF_of_mgf [IsProbabilityMeasure μ]
   exact (mgf_pos (by simp)).ne'
 
 end EqOfMGF
+
+section ext
+
+variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
+
+/-- Exponential map onto the circle, defined as additive character -/
+noncomputable
+def probFourierChar : AddChar ℝ Circle where
+  toFun z := Circle.exp (z)
+  map_zero_eq_one' := by simp only; rw [Circle.exp_zero]
+  map_add_eq_mul' x y := by simp only; rw [Circle.exp_add]
+
+lemma probFourierChar_ne_one : probFourierChar ≠ 1 := by
+    rw [DFunLike.ne_iff]
+    use Real.pi
+    simp only [probFourierChar, AddChar.coe_mk, AddChar.one_apply]
+    intro h
+    have heq := congrArg Subtype.val h
+    rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
+    norm_num at heq
+
+theorem MeasureTheory.ext_of_forall_complexMGF_eq [IsFiniteMeasure μ]
+    [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
+    (h : ∀ z, complexMGF X μ z = complexMGF Y μ' z) :
+    μ.map X = μ'.map Y := by
+  have inner_ne_zero (x : ℝ) (h : x ≠ 0) : bilinFormOfRealInner x ≠ 0 :=
+    DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
+  apply MeasureTheory.ext_of_charFun_eq Circle.exp.continuous probFourierChar_ne_one
+    inner_ne_zero continuous_inner (μ.map X) (μ'.map Y)
+  intro w
+  specialize h (Multiplicative.toAdd w * I)
+  simp [complexMGF] at h
+  simp_rw [mul_assoc, mul_comm I, ← mul_assoc] at h
+  simp [probChar_apply, probFourierChar]
+  rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
+    integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
+
+end ext
 
 end ProbabilityTheory
