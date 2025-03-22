@@ -150,6 +150,13 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
 
 @[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
 
+omit nN in
+private theorem lift_aux (φ : G →* M) (HN : N ≤ φ.ker) {x y : G} (h : x⁻¹ * y ∈ N) :
+    φ x = φ y :=
+  calc
+    φ x = φ (y * (x⁻¹ * y)⁻¹) := by rw [mul_inv_rev, inv_inv, mul_inv_cancel_left]
+    _ = φ y := by rw [φ.map_mul, HN (N.inv_mem h), mul_one]
+
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
@@ -157,10 +164,7 @@ group homomorphism `G/N →* M`. -/
 def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
   (QuotientGroup.con N).lift φ fun x y h => by
     simp only [QuotientGroup.con, leftRel_apply, Con.rel_mk] at h
-    rw [Con.ker_rel]
-    calc
-      φ x = φ (y * (x⁻¹ * y)⁻¹) := by rw [mul_inv_rev, inv_inv, mul_inv_cancel_left]
-      _ = φ y := by rw [φ.map_mul, HN (N.inv_mem h), mul_one]
+    exact (Con.ker_rel _).mpr <| lift_aux N φ HN h
 
 @[to_additive (attr := simp)]
 theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
@@ -175,6 +179,20 @@ theorem lift_mk' {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (mk 
 theorem lift_quot_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) :
     lift N φ HN (Quot.mk _ g : Q) = φ g :=
   rfl
+
+@[to_additive]
+theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective φ) (HN : N ≤ φ.ker) :
+    Function.Surjective (QuotientGroup.lift N φ HN) :=
+  fun x ↦ ⟨mk (hφ x).choose, by rw [lift_mk, (hφ x).choose_spec]⟩
+
+@[to_additive]
+theorem lift_ker (φ : G →* M) (HN : N ≤ φ.ker) :
+    (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
+  ext x
+  obtain ⟨a, rfl⟩ := QuotientGroup.mk_surjective x
+  simp only [Subgroup.mem_map, MonoidHom.mem_ker, lift_mk, mk'_apply]
+  exact ⟨fun ha ↦ ⟨a, ha, rfl⟩,
+    fun ⟨b, h₁, h₂⟩ ↦ by rwa [← lift_aux N φ HN (QuotientGroup.eq.mp h₂)]⟩
 
 /-- A group homomorphism `f : G →* H` induces a map `G/N →* H/M` if `N ⊆ f⁻¹(M)`. -/
 @[to_additive
@@ -195,6 +213,18 @@ theorem map_mk (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) 
 theorem map_mk' (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ M.comap f) (x : G) :
     map N M f h (mk' _ x) = ↑(f x) :=
   rfl
+
+@[to_additive]
+theorem map_surjective_of_surjective (M : Subgroup H) [M.Normal] (f : G →* H)
+    (hf : Function.Surjective (mk ∘ f : G → H ⧸ M)) (h : N ≤ M.comap f) :
+    Function.Surjective (map N M f h) :=
+  lift_surjective_of_surjective _ _ hf _
+
+@[to_additive]
+theorem map_ker (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ Subgroup.comap f M) :
+    (map N M f h).ker = Subgroup.map (mk' N) (M.comap f) := by
+  simp_rw [← ker_mk' M, MonoidHom.comap_ker]
+  exact QuotientGroup.lift_ker _ _ _
 
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
