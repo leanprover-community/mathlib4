@@ -4,13 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.InjSurj
-import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.AddGroupWithTop
+import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Data.Set.Monotone
+import Mathlib.Order.Interval.Set.Defs
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -27,6 +30,16 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 -/
 
 variable {α : Type*}
+
+section MultiplicativeNotation
+
+/-- Notation for `WithZero (Multiplicative ℕ)` -/
+scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
+
+/-- Notation for `WithZero (Multiplicative ℤ)` -/
+scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
+
+end MultiplicativeNotation
 
 /-- A linearly ordered commutative monoid with a zero element. -/
 class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
@@ -167,6 +180,10 @@ theorem lt_of_mul_lt_mul_of_le₀ (h : a * b < c * d) (hc : 0 < c) (hh : c ≤ a
   rw [← inv_le_inv₀ (zero_lt_iff.2 ha) hc] at hh
   simpa [inv_mul_cancel_left₀ ha, inv_mul_cancel_left₀ hc.ne']
     using mul_lt_mul_of_le_of_lt_of_nonneg_of_pos hh  h zero_le' (inv_pos.2 hc)
+
+theorem mul_lt_mul_right₀ {a b c : α}
+    (hc : 0 < c) : a * c < b * c ↔ a < b := by
+  simpa only [mul_comm a, mul_comm b] using mul_lt_mul_left hc
 
 @[deprecated div_le_div_iff_of_pos_right (since := "2024-11-18")]
 theorem div_le_div_right₀ (hc : c ≠ 0) : a / c ≤ b / c ↔ a ≤ b :=
@@ -396,14 +413,51 @@ instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
   __ := instLinearOrderedCommMonoidWithZero
   __ := commGroupWithZero
 
+theorem one_lt_div' [LinearOrderedCommGroupWithZero α] (a : α) {b : α} (hb : b ≠ 0) :
+    1 < a / b ↔ b < a := by
+  rw [← mul_lt_mul_right₀ (zero_lt_iff.mpr hb), one_mul, div_eq_mul_inv, inv_mul_cancel_right₀ hb]
+
+theorem strictMonoOn_zpow [LinearOrderedCommGroup α] {n : ℤ} (hn : 0 < n) :
+    StrictMonoOn (fun x : (WithZero α) ↦ x ^ n) (Set.Ioi 0) :=
+  fun a ha b _ hab ↦ by
+    have han : a ^ n ≠ 0 := by
+      obtain ⟨x, hx⟩ := ne_zero_iff_exists (x := a).mp (ne_of_gt ha)
+      rw [← hx, ← coe_zpow, ne_zero_iff_exists]
+      use x ^ n
+    simpa only [← one_lt_div' (b ^ n) han, ← div_zpow] using
+      one_lt_zpow (one_lt_div' _ (ne_of_gt ha)|>.mpr hab) hn
+
+
+theorem zpow_left_injOn {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} (hn : n ≠ 0) :
+    Set.InjOn (fun x : (WithZero α) ↦ x ^ n) (Set.Ioi 0) := by
+  rcases hn.symm.lt_or_lt with h | h
+  · exact (strictMonoOn_zpow h).injOn
+  · refine fun a ha b hb (hab : a ^ n = b ^ n) ↦ (strictMonoOn_zpow (neg_pos.mpr h)).injOn ha hb ?_
+    simp only [zpow_neg, zpow_neg, hab]
+
+open Set in
+theorem zpow_left_inj {α : Type*} [LinearOrderedCommGroup α] {n : ℤ} {a b : WithZero α}
+    (ha : a ≠ 0) (hb : b ≠ 0) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
+  InjOn.eq_iff (zpow_left_injOn hn) (mem_Ioi.mpr (zero_lt_iff.mpr ha))
+    (mem_Ioi.mpr (zero_lt_iff.mpr hb))
+
+section Int
+
+open Int Multiplicative
+
+theorem lt_succ_iff_le  (x : ℤₘ₀) (m : ℤ) :
+    x < ↑(↑(ofAdd (m + 1)) : ℤₘ₀) ↔ x ≤ (↑(ofAdd m) : ℤₘ₀) := by
+  by_cases hx : x = 0
+  · simpa only [hx, zero_le', iff_true, zero_lt_iff] using coe_ne_zero
+  · obtain ⟨-, rfl⟩ := ne_zero_iff_exists.mp hx
+    simpa only [coe_le_coe, coe_lt_coe, ← toAdd_le, ← toAdd_lt, toAdd_ofAdd] using
+      ⟨le_of_lt_add_one, lt_add_one_of_le⟩
+
+
+theorem Int.ofAdd_neg_one_lt_one : (↑(Multiplicative.ofAdd (-1 : ℤ)) : ℤₘ₀) < (1 : ℤₘ₀) := by
+  rw [← coe_one, coe_lt_coe, ← ofAdd_zero, ofAdd_lt]
+  omega
+
+end Int
+
 end WithZero
-
-section MultiplicativeNotation
-
-/-- Notation for `WithZero (Multiplicative ℕ)` -/
-scoped[Multiplicative] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
-
-/-- Notation for `WithZero (Multiplicative ℤ)` -/
-scoped[Multiplicative] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
-
-end MultiplicativeNotation

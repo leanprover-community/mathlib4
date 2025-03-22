@@ -31,7 +31,7 @@ technical.
 
 ## Definitions
 
-In all that follows, `α` is an orders which has a `0` and a multiplication. Note however that we do
+In all that follows, `α` is an order which has a `0` and a multiplication. Note however that we do
 not use lawfulness of this action in most of the file. Hence `*` should be considered here as a
 mostly arbitrary function `α → α → α`.
 
