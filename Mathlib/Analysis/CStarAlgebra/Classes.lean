@@ -116,3 +116,33 @@ noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
 noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
 
 end MulOpposite
+
+section real_imaginary_part
+
+variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
+  [NormedStarGroup A]
+
+lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by
+  have hmain : ‖x + star x‖ ≤ 2 * ‖x‖ := calc
+    _ ≤ ‖x‖ + ‖star x‖ := norm_add_le x (star x)
+    _ = 2 * ‖x‖ := by simp [two_mul]
+  rw [realPart]
+  dsimp
+  rw [norm_smul]
+  simp only [invOf_eq_inv, norm_inv, Real.norm_ofNat]
+  calc _ ≤ 2⁻¹ * (2 * ‖x‖) := by gcongr
+    _ = ‖x‖ := by ring
+
+lemma imaginaryPart.norm_le (x : A) : ‖imaginaryPart x‖ ≤ ‖x‖ := by
+  have hmain : ‖x - star x‖ ≤ 2 * ‖x‖ := calc
+    _ ≤ ‖x‖ + ‖star x‖ := norm_sub_le x (star x)
+    _ = 2 * ‖x‖ := by simp [two_mul]
+  rw [imaginaryPart]
+  dsimp
+  rw [norm_smul]
+  simp only [norm_neg, Complex.norm_I, invOf_eq_inv, norm_smul, norm_inv, RCLike.norm_ofNat,
+    one_mul, ge_iff_le]
+  calc _ ≤ 2⁻¹ * (2 * ‖x‖) := by gcongr
+    _ = ‖x‖ := by ring
+
+end real_imaginary_part

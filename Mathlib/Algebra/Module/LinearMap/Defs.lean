@@ -371,6 +371,11 @@ theorem map_smul_of_tower [CompatibleSMul M M₂ R S] (fₗ : M →ₗ[S] M₂) 
     fₗ (c • x) = c • fₗ x :=
   CompatibleSMul.map_smul fₗ c x
 
+theorem _root_.LinearMapClass.map_smul_of_tower {F : Type*} [CompatibleSMul M M₂ R S]
+    [FunLike F M M₂] [LinearMapClass F S M M₂] (fₗ : F) (c : R) (x : M) :
+    fₗ (c • x) = c • fₗ x :=
+  LinearMap.CompatibleSMul.map_smul (fₗ : M →ₗ[S] M₂) c x
+
 variable (R R) in
 theorem isScalarTower_of_injective [SMul R S] [CompatibleSMul M M₂ R S] [IsScalarTower R S M₂]
     (f : M →ₗ[S] M₂) (hf : Function.Injective f) : IsScalarTower R S M where
