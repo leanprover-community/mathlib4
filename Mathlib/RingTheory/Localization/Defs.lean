@@ -536,7 +536,7 @@ theorem lift_injective_iff :
 
 variable (M) in
 include M in
-lemma injective_iff_map_algebraMap_eq {T} [CommRing T] (f : S →+* T) :
+lemma injective_iff_map_algebraMap_eq {T} [CommSemiring T] (f : S →+* T) :
     Function.Injective f ↔ ∀ x y,
       algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
   rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]

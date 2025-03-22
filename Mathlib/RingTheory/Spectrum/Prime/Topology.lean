@@ -1109,7 +1109,7 @@ alias LocalRing.PrimeSpectrum.comap_residue := IsLocalRing.PrimeSpectrum.comap_r
 
 section KrullDimension
 
-theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
+theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommSemiring R] :
     topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
   Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
   (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm

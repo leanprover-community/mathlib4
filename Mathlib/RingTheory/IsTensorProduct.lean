@@ -533,7 +533,7 @@ where the left-hand square is a pushout. Then the following are equivalent:
 
 Note that this is essentially the isomorphism `T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'`.
 -/
-lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommRing T'] [Algebra R T']
+lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
     [IsScalarTower R T T'] [IsScalarTower S T T'] [IsScalarTower S S' T']
     [IsScalarTower R R' T'] [IsScalarTower R S' T'] [IsScalarTower R' S' T']
