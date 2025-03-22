@@ -68,8 +68,7 @@ lemma d_none_eq_zero' (i j : Option ι) (hj : j = none) :
 lemma d_eq {i j : Option ι} {a b : ι} (hi : i = some a) (hj : j = some b) :
     d K i j = (XIso K hi).hom ≫ K.d a b ≫ (XIso K hj).inv := by
   subst hi hj
-  dsimp [XIso, d]
-  erw [id_comp, comp_id]
+  simp [XIso, X, d]
 
 @[reassoc]
 lemma XOpIso_hom_d_op (i j : Option ι) :
