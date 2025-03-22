@@ -125,11 +125,8 @@ lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
 lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     (hf : MSplitsAt I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
     (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : 1 ≤ n) :
-    MSplitsAt J I' (f ∘ f₀) y := by
-  have : CompleteSpace (TangentSpace I x) := by show CompleteSpace E; assumption
-  have : CompleteSpace (TangentSpace I' (f x)) := by show CompleteSpace E'; assumption
-  apply MSplitsAt.comp ?_ (hf₀.msplitsAt hn)
-  convert hf -- proper way: custom congr lemma...
+    MSplitsAt J I' (f ∘ f₀) y :=
+  MSplitsAt.comp (hxy ▸ hf) (hf₀.msplitsAt hn)
 
 lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {f₀ : N → M} {y : N} (hxy : f₀ y = x) (hf₀ : IsLocalDiffeomorphAt J I n f₀ y) (hn : 1 ≤ n) :
@@ -189,26 +186,31 @@ lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {g : M' → N} (hg : MSplits I' J g) (hf : MSplits I I' f) : MSplits I J (g ∘ f) :=
   fun x ↦ (hg (f x)).comp (hf x)
 
--- NB. the next four lemmas could be generalised to local diffeomorphism,
--- and perhaps even proven in terms of their MSplitsAt versions
+lemma comp_isLocalDiffeomorph_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    (hf : MSplits I I' f) {f₀ : N → M} (hf₀ : IsLocalDiffeomorph J I n f₀) (hn : 1 ≤ n) :
+    MSplits J I' (f ∘ f₀) :=
+  hf.comp (hf₀.splits hn)
 
-lemma comp_diffeomorph_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (hf : MSplits I I' f) (f₀ : Diffeomorph J I N M n) (hn : 1 ≤ n) : MSplits J I' (f ∘ f₀) :=
-  hf.comp (f₀.splits hn)
-
+-- XXX: is this true if hf₀ is just a local diffeomorphism and *not* surjective?
+-- (With surjective, this reduces to its MSplitsAt cousin.)
 lemma comp_diffeomorph_left_iff [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     (f₀ : Diffeomorph J I N M n) (hn : 1 ≤ n) : MSplits I I' f ↔ MSplits J I' (f ∘ f₀) :=
-  ⟨fun hf ↦ hf.comp_diffeomorph_left f₀ hn,
-    fun h ↦ (h.comp_diffeomorph_left f₀.symm hn).congr (by ext; simp)⟩
+  ⟨fun hf ↦ hf.comp_isLocalDiffeomorph_left f₀.isLocalDiffeomorph hn,
+    fun h ↦ (h.comp_isLocalDiffeomorph_left f₀.symm.isLocalDiffeomorph hn).congr (by ext; simp)⟩
 
-lemma comp_diffeomorph_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    (g : Diffeomorph I' J M' N n) (hn : 1 ≤ n) (hf : MSplits I I' f) : MSplits I J (g ∘ f) :=
-  (g.splits hn).comp hf
+lemma comp_isLocalDiffeomorph_right [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+    {g : M' → N} (hg : IsLocalDiffeomorph I' J n g) (hn : 1 ≤ n) (hf : MSplits I I' f) :
+    MSplits I J (g ∘ f) :=
+  (hg.splits hn).comp hf
 
 lemma comp_diffeomorph_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSpace E']
-    {g : Diffeomorph I' J M' N n} (hn : 1 ≤ n) : MSplits I I' f ↔  MSplits I J (g ∘ f) :=
-  ⟨fun hf ↦ hf.comp_diffeomorph_right g hn,
-    fun h ↦ (h.comp_diffeomorph_right g.symm hn).congr (by ext; simp)⟩
+    {g : M' → N} (hg : IsLocalDiffeomorph I' J n g) (hn : 1 ≤ n) :
+    MSplits I I' f ↔  MSplits I J (g ∘ f) := by
+  refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorph_right hg hn, fun h x ↦ ?_⟩
+  rw [MSplitsAt.comp_isLocalDiffeomorphAt_right_iff (hg (f x)) hn (I := I)]
+  exact h x
+
+#exit
 
 -- corollary: MSplitsAt holds iff some coordinate representation splits
 --   iff *any* coordinate representation splits
