@@ -94,7 +94,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
 lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
-    {V : Set X} (h : tsupport f ⊆ V) : .ofReal (Λ f) ≤ rieszMeasure hΛ V := by
+    {V : Set X} (h : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ V := by
   apply le_trans _ (measure_mono h)
   rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
   apply le_rieszMeasure_of_isCompact_tsupport_subset hΛ hf
@@ -102,12 +102,17 @@ lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x :
     exact f.hasCompactSupport
   exact subset_rfl
 
-/-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure V ≤ Λ f`.-/
+/-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`.-/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
     (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure hΛ K ≤ ENNReal.ofReal (Λ f) := by
+
+  -- The definition of `rieszMeasure` is based on `rieszContentAux` which is defined as follows:
+  -- `def rieszContentAux : Compacts X → ℝ≥0 := fun K =>`
+  -- `  sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })`
+  -- Consequently this result is a special case of the general defintion.
   sorry
 
-/-- An `Ioc` partitions into an `iUnion` of `Ioc`s. -/
+/-- An `Ioc` partitions into a finite union of `Ioc`s. -/
 lemma iUnion_Fin_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) :
     ⋃ n : Fin N, Ioc (c + n * δ) (c + n * δ + δ) = Ioc (c) (c + N * δ) := by
   ext x
