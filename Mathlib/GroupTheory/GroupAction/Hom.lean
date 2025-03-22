@@ -361,8 +361,9 @@ end MulActionHom
 /-- Evaluation at a point as a `MulActionHom`. -/
 @[to_additive (attr := simps) "Evaluation at a point as an `AddActionHom`."]
 def Pi.evalMulActionHom {ι M : Type*} {X : ι → Type*} [∀ i, SMul M (X i)] (i : ι) :
-    (∀ i, X i) →[M] X i :=
-  ⟨Function.eval i, fun _ _ ↦ rfl⟩
+    (∀ i, X i) →[M] X i where
+  toFun := Function.eval i
+  map_smul' _ _ := rfl
 
 namespace MulActionHom
 
