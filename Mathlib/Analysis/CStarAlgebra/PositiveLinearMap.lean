@@ -8,7 +8,6 @@ import Mathlib.Algebra.Module.LinearMap.PositiveLinearMap
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Isometric
 
 /-! # Positive linear maps in C⋆-algebras
 
