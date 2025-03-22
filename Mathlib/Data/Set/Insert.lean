@@ -264,6 +264,21 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
   eq_singleton_iff_unique_mem.trans <|
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 
+theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
+    { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
+  simpa +contextual [Set.ext_iff, iff_iff_implies_and_implies, forall_and, List.eq_replicate_iff,
+    List.length_pos_iff_exists_mem] using ⟨fun _ _ ↦ ⟨_, ‹_›⟩, fun x hx h ↦ h _ hx ▸ hx⟩
+
+theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} :
+    { x | x ∈ l } = {a} ↔ l = [a] := by
+  constructor
+  · rw [setOf_mem_list_eq_replicate]
+    rintro ⟨n, hn, rfl⟩
+    simp only [List.nodup_replicate] at H
+    simp [show n = 1 by omega]
+  · rintro rfl
+    simp
+
 -- while `simp` is capable of proving this, it is not capable of turning the LHS into the RHS.
 @[simp]
 theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl⟩ :=
