@@ -38,7 +38,7 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
   {N : Type*} [TopologicalSpace N] [ChartedSpace G N]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
-  {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
+  {n : WithTop ℕ∞}
 
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
@@ -71,28 +71,28 @@ noncomputable def domChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph 
 noncomputable def codChart (h : IsImmersionAt F I I' n f x) : PartialHomeomorph M' H' :=
   Classical.choose (Classical.choose_spec (Classical.choose_spec h))
 
-noncomputable def mem_domChart_source (h : IsImmersionAt F I I' n f x) : x ∈ h.domChart.source :=
+lemma mem_domChart_source (h : IsImmersionAt F I I' n f x) : x ∈ h.domChart.source :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).1
 
-noncomputable def mem_codChart_source (h : IsImmersionAt F I I' n f x) : f x ∈ h.codChart.source :=
+lemma mem_codChart_source (h : IsImmersionAt F I I' n f x) : f x ∈ h.codChart.source :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.1
 
-noncomputable def domChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
+lemma domChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.domChart ∈ IsManifold.maximalAtlas I n M :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.1
 
-noncomputable def codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
+lemma codChart_mem_maximalAtlas (h : IsImmersionAt F I I' n f x) :
     h.codChart ∈ IsManifold.maximalAtlas I' n M' :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.1
 
-noncomputable def writtenInCharts (h : IsImmersionAt F I I' n f x) :
+lemma writtenInCharts (h : IsImmersionAt F I I' n f x) :
     EqOn ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (h.equiv ∘ (·, 0))
       (h.domChart.extend I).target :=
   (Classical.choose_spec ((Classical.choose_spec (Classical.choose_spec h)))).2.2.2.2
 
 /-- If `f` is an immersion at `x` and `g = f` on some neighbourhood of `x`,
 then `g` is an immersion at `x`. -/
-def congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) :
+lemma congr_of_eventuallyEq {x : M} (h : IsImmersionAt F I I' n f x) (h' : f =ᶠ[nhds x] g) :
     IsImmersionAt F I I' n g x := by
   choose s hxs hfg using h'.exists_mem
   -- TODO: need to shrink h.domChart until its source is contained in s
@@ -112,13 +112,16 @@ theorem prodMap {f : M → N} {g : M' → N'} {x' : M'}
     IsImmersionAt (F × F') (I.prod I') (J.prod J') n (Prod.map f g) (x, x') :=
   sorry
 
-theorem continuousWithinAt (h : IsImmersionAt F I I' n f x) : ContinuousWithinAt f h.domChart.source x := by
+theorem continuousWithinAt (h : IsImmersionAt F I I' n f x) :
+    ContinuousWithinAt f h.domChart.source x := by
   -- TODO: follows from the local description...
   sorry
 
 /-- A `C^k` immersion at `x` is continuous at `x`. -/
 theorem continuousAt (h : IsImmersionAt F I I' n f x) : ContinuousAt f x :=
   h.continuousWithinAt.continuousAt (h.domChart.open_source.mem_nhds (mem_domChart_source h))
+
+variable [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
 
 /-- A `C^k` immersion at `x` is `C^k` at `x`. -/
 -- continuity follows since we're in a chart, on an open set;
@@ -207,7 +210,7 @@ theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
 
 /-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
 then `g ∘ f` is an immersion at `x`. -/
-def comp [CompleteSpace F'] {g : M' → N}
+lemma comp [CompleteSpace F'] {g : M' → N}
     (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) :
     IsImmersionAt (F × F') I J n (g ∘ f) x := by
   --rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
@@ -228,7 +231,7 @@ theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (
 /- If `M` is finite-dimensional, `f` is `C^n` at `x` and `mfderiv x` is injective,
 then `f` is immersed at `x`.
 Some sources call this condition `f is infinitesimally injective at x`. -/
-def of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
+lemma of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
     (hf : ContMDiffAt I I' n f x) (hf' : Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
     IsImmersionAt F I I' n f x := by
   rw [isImmersionAt_iff_msplitsAt]
@@ -252,12 +255,12 @@ namespace IsImmersion
 variable {f g : M → M'}
 
 /-- If `f` is an immersion, it is an immersion at each point. -/
-def isImmersionAt (h : IsImmersion F I I' n f) (x : M) : IsImmersionAt F I I' n f x := h x
+lemma isImmersionAt (h : IsImmersion F I I' n f) (x : M) : IsImmersionAt F I I' n f x := h x
 
 /-- If `f` is a `C^k` immersion, there is a single equivalence with the properties we want. -/
 -- Actually, is this true? If I'm allowed to tweak the model at every point, yes;
 -- otherwise maybe not? But I don't seem to care about this, in fact...
-noncomputable def foo [Nonempty M] (h : IsImmersion F I I' n f) :
+lemma foo [Nonempty M] (h : IsImmersion F I I' n f) :
     ∃ equiv : (E × F) ≃L[𝕜] E',
     ∃ domCharts : M → PartialHomeomorph M H, ∃ codCharts : M → PartialHomeomorph M' H',
     ∀ x, x ∈ (domCharts x).source ∧ ∀ x, f x ∈ (codCharts x).source ∧
@@ -277,10 +280,11 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsImmersion (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
   fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
-omit [IsManifold I n M] [IsManifold I' n M'] in
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
   fun x ↦ (h x).congr_of_eventuallyEq heq.eventuallyEq
+
+variable [IsManifold I n M] [IsManifold I' n M']
 
 /-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
@@ -299,9 +303,9 @@ theorem of_mfderiv_injective [FiniteDimensional 𝕜 E] (hf : ContMDiff I I' n f
     (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) : IsImmersion F I I' n f :=
   fun x ↦ IsImmersionAt.of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective (hf x) (hf' x) hn
 
+variable [IsManifold J n N] in
 /-- The composition of two immersions is an immersion. -/
-def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
-    {g : M' → N} (hg : IsImmersion F' I' J n g) (hf : IsImmersion F I I' n f) :
+lemma comp {g : M' → N} (hg : IsImmersion F' I' J n g) (hf : IsImmersion F I I' n f) :
     IsImmersion (F × F') I J n (g ∘ f) :=
   fun x ↦ (hg (f x)).comp (hf x)
 
@@ -316,7 +320,7 @@ def IsSmoothEmbedding (f : M → M') : Prop := IsImmersion F I I' n f ∧ IsEmbe
 
 namespace IsSmoothEmbedding
 
-variable {f : M → M'}
+variable {f : M → M'} [IsManifold I n M] [IsManifold I' n M']
 
 theorem contMDiff (h : IsSmoothEmbedding F I I' n f) : ContMDiff I I' n f := h.1.contMDiff
 
@@ -327,19 +331,18 @@ omit [IsManifold I n M] [IsManifold I' n M'] in
 theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 
 variable [IsManifold I 1 M] [IsManifold I' 1 M'] in
-def of_mfderiv_injective_of_compactSpace_of_T2Space
+lemma of_mfderiv_injective_of_compactSpace_of_T2Space
     [FiniteDimensional 𝕜 E] [CompleteSpace E'] [CompleteSpace F] [CompactSpace M] [T2Space M']
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x))
     (hf'' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f := by
   have := FiniteDimensional.complete (𝕜 := 𝕜) E
   exact ⟨.of_mfderiv_injective hf hf' hn, (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
 
+variable [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J n N] in
 /-- The composition of two smooth embeddings is a smooth embedding. -/
-def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
+lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
     {g : M' → N} (hg : IsSmoothEmbedding F' I' J n g) (hf : IsSmoothEmbedding F I I' n f) :
     IsSmoothEmbedding (F × F') I J n (g ∘ f) :=
   ⟨hg.1.comp hf.1, hg.2.comp hf.2⟩
 
 end IsSmoothEmbedding
-
-#lint
