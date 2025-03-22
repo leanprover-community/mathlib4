@@ -75,8 +75,7 @@ lemma norm_apply_le_of_nonneg (f : B₁ →P[ℂ] B₂) (x : B₁) (hx : 0 ≤ x
 open Filter in
 /--
 If `f` is a positive map, then it is bounded on positive operators. This is a stepping stone
-towards the strictly more general result See the strictly more general result below
-`exists_norm_apply_le`.
+towards the strictly more general result `exists_norm_apply_le` found below.
 -/
 lemma exists_norm_apply_le_of_nonneg (f : A₁ →P[ℂ] A₂) :
     ∃ C : ℝ≥0, ∀ a, 0 ≤ a → ‖f a‖ ≤ C * ‖a‖ := by
@@ -145,8 +144,7 @@ lemma exists_norm_apply_le_of_nonneg (f : A₁ →P[ℂ] A₂) :
 
 /--
 If `f` is a positive map, then it is bounded on self-adjoint operators. This is a stepping stone
-towards the strictly more general result See the strictly more general result below
-`exists_norm_apply_le`.
+towards the strictly more general result `exists_norm_apply_le` found below.
 -/
 lemma exists_norm_apply_le_of_isSelfAdjoint (f : A₁ →P[ℂ] A₂) :
     ∃ C : ℝ≥0, ∀ a, IsSelfAdjoint a → ‖f a‖ ≤ C * ‖a‖ := by
