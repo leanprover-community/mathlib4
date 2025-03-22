@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Order.Filter.Tendsto
 import Mathlib.Tactic.Monotonicity.Basic
 import Mathlib.Topology.Order
+import Mathlib.Topology.UniformSpace.Entourage
 
 /-!
 # Uniform spaces
@@ -108,157 +109,10 @@ But it makes a more systematic use of the filter library.
 -/
 
 open Set Filter Topology
+open scoped Uniformity
 
-universe u v ua ub uc ud
-
-/-!
-### Relations, seen as `Set (α × α)`
--/
-
-variable {α : Type ua} {β : Type ub} {γ : Type uc} {δ : Type ud} {ι : Sort*}
-
-/-- The identity relation, or the graph of the identity function -/
-def idRel {α : Type*} :=
-  { p : α × α | p.1 = p.2 }
-
-@[simp]
-theorem mem_idRel {a b : α} : (a, b) ∈ @idRel α ↔ a = b :=
-  Iff.rfl
-
-@[simp]
-theorem idRel_subset {s : Set (α × α)} : idRel ⊆ s ↔ ∀ a, (a, a) ∈ s := by
-  simp [subset_def]
-
-theorem eq_singleton_left_of_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} := by
-  rcases hS, hT with ⟨⟨s, hs⟩, ⟨t, ht⟩⟩
-  refine ⟨s, eq_singleton_iff_nonempty_unique_mem.mpr ⟨⟨s, hs⟩, fun x hx ↦ ?_⟩⟩
-  rw [prod_subset_iff] at h_diag
-  replace hs := h_diag s hs t ht
-  replace hx := h_diag x hx t ht
-  simp only [idRel, mem_setOf_eq] at hx hs
-  rwa [← hs] at hx
-
-theorem eq_singleton_right_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, T = {x} := by
-  rw [Set.prod_subset_iff] at h_diag
-  replace h_diag := fun x hx y hy => (h_diag y hy x hx).symm
-  exact eq_singleton_left_of_prod_subset_idRel hT hS (prod_subset_iff.mpr h_diag)
-
-theorem eq_singleton_prod_subset_idRel {X : Type*} {S T : Set X} (hS : S.Nonempty)
-    (hT : T.Nonempty) (h_diag : S ×ˢ T ⊆ idRel) : ∃ x, S = {x} ∧ T = {x} := by
-  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩⟩ := eq_singleton_left_of_prod_subset_idRel hS hT h_diag,
-    eq_singleton_right_prod_subset_idRel hS hT h_diag
-  refine ⟨x, ⟨hx, ?_⟩⟩
-  rw [hy, Set.singleton_eq_singleton_iff]
-  exact (Set.prod_subset_iff.mp h_diag x (by simp only [hx, Set.mem_singleton]) y
-    (by simp only [hy, Set.mem_singleton])).symm
-
-/-- The composition of relations -/
-def compRel (r₁ r₂ : Set (α × α)) :=
-  { p : α × α | ∃ z : α, (p.1, z) ∈ r₁ ∧ (z, p.2) ∈ r₂ }
-
-@[inherit_doc]
-scoped[Uniformity] infixl:62 " ○ " => compRel
-open Uniformity
-
-@[simp]
-theorem mem_compRel {α : Type u} {r₁ r₂ : Set (α × α)} {x y : α} :
-    (x, y) ∈ r₁ ○ r₂ ↔ ∃ z, (x, z) ∈ r₁ ∧ (z, y) ∈ r₂ :=
-  Iff.rfl
-
-@[simp]
-theorem swap_idRel : Prod.swap '' idRel = @idRel α :=
-  Set.ext fun ⟨a, b⟩ => by simpa [image_swap_eq_preimage_swap] using eq_comm
-
-theorem Monotone.compRel [Preorder β] {f g : β → Set (α × α)} (hf : Monotone f) (hg : Monotone g) :
-    Monotone fun x => f x ○ g x := fun _ _ h _ ⟨z, h₁, h₂⟩ => ⟨z, hf h h₁, hg h h₂⟩
-
-@[mono, gcongr]
-theorem compRel_mono {f g h k : Set (α × α)} (h₁ : f ⊆ h) (h₂ : g ⊆ k) : f ○ g ⊆ h ○ k :=
-  fun _ ⟨z, h, h'⟩ => ⟨z, h₁ h, h₂ h'⟩
-
-theorem prodMk_mem_compRel {a b c : α} {s t : Set (α × α)} (h₁ : (a, c) ∈ s) (h₂ : (c, b) ∈ t) :
-    (a, b) ∈ s ○ t :=
-  ⟨c, h₁, h₂⟩
-
-@[deprecated (since := "2025-03-10")]
-alias prod_mk_mem_compRel := prodMk_mem_compRel
-
-@[simp]
-theorem id_compRel {r : Set (α × α)} : idRel ○ r = r :=
-  Set.ext fun ⟨a, b⟩ => by simp
-
-theorem compRel_assoc {r s t : Set (α × α)} : r ○ s ○ t = r ○ (s ○ t) := by
-  ext ⟨a, b⟩; simp only [mem_compRel]; tauto
-
-theorem left_subset_compRel {s t : Set (α × α)} (h : idRel ⊆ t) : s ⊆ s ○ t := fun ⟨_x, y⟩ xy_in =>
-  ⟨y, xy_in, h <| rfl⟩
-
-theorem right_subset_compRel {s t : Set (α × α)} (h : idRel ⊆ s) : t ⊆ s ○ t := fun ⟨x, _y⟩ xy_in =>
-  ⟨x, h <| rfl, xy_in⟩
-
-theorem subset_comp_self {s : Set (α × α)} (h : idRel ⊆ s) : s ⊆ s ○ s :=
-  left_subset_compRel h
-
-theorem subset_iterate_compRel {s t : Set (α × α)} (h : idRel ⊆ s) (n : ℕ) :
-    t ⊆ (s ○ ·)^[n] t := by
-  induction n generalizing t with
-  | zero => exact Subset.rfl
-  | succ n ihn => exact (right_subset_compRel h).trans ihn
-
-/-- The relation is invariant under swapping factors. -/
-def IsSymmetricRel (V : Set (α × α)) : Prop :=
-  Prod.swap ⁻¹' V = V
-
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel := IsSymmetricRel
-
-/-- The maximal symmetric relation contained in a given relation. -/
-def symmetrizeRel (V : Set (α × α)) : Set (α × α) :=
-  V ∩ Prod.swap ⁻¹' V
-
-theorem symmetric_symmetrizeRel (V : Set (α × α)) : IsSymmetricRel (symmetrizeRel V) := by
-  simp [IsSymmetricRel, symmetrizeRel, preimage_inter, inter_comm, ← preimage_comp]
-
-theorem symmetrizeRel_subset_self (V : Set (α × α)) : symmetrizeRel V ⊆ V :=
-  sep_subset _ _
-
-@[mono]
-theorem symmetrize_mono {V W : Set (α × α)} (h : V ⊆ W) : symmetrizeRel V ⊆ symmetrizeRel W :=
-  inter_subset_inter h <| preimage_mono h
-
-theorem IsSymmetricRel.mk_mem_comm {V : Set (α × α)} (hV : IsSymmetricRel V) {x y : α} :
-    (x, y) ∈ V ↔ (y, x) ∈ V :=
-  Set.ext_iff.1 hV (y, x)
-
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel.mk_mem_comm := IsSymmetricRel.mk_mem_comm
-
-theorem IsSymmetricRel.eq {U : Set (α × α)} (hU : IsSymmetricRel U) : Prod.swap ⁻¹' U = U :=
-  hU
-
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel.eq := IsSymmetricRel.eq
-
-theorem IsSymmetricRel.inter {U V : Set (α × α)} (hU : IsSymmetricRel U) (hV : IsSymmetricRel V) :
-    IsSymmetricRel (U ∩ V) := by rw [IsSymmetricRel, preimage_inter, hU.eq, hV.eq]
-
-@[deprecated (since := "2025-03-05")]
-alias SymmetricRel.inter := IsSymmetricRel.inter
-
-theorem IsSymmetricRel.iInter {U : (i : ι) → Set (α × α)} (hU : ∀ i, IsSymmetricRel (U i)) :
-    IsSymmetricRel (⋂ i, U i) := by
-  simp_rw [IsSymmetricRel, preimage_iInter, (hU _).eq]
-
-lemma IsSymmetricRel.sInter {s : Set (Set (α × α))} (h : ∀ i ∈ s, IsSymmetricRel i) :
-    IsSymmetricRel (⋂₀ s) := by
-  rw [sInter_eq_iInter]
-  exact IsSymmetricRel.iInter (by simpa)
-
-lemma IsSymmetricRel.preimage_prodMap {U : Set (β × β)} (ht : IsSymmetricRel U) (f : α → β) :
-    IsSymmetricRel (Prod.map f f ⁻¹' U) :=
-  Set.ext fun _ ↦ ht.mk_mem_comm
+universe u
+variable {ι : Sort*} {α β γ : Type*}
 
 /-- This core description of a uniform space is outside of the type class hierarchy. It is useful
   for constructions of uniform spaces, when the topology is derived from the uniform space. -/
@@ -464,15 +318,15 @@ theorem tendsto_const_uniformity {a : α} {f : Filter β} : Tendsto (fun _ => (a
   tendsto_diag_uniformity (fun _ => a) f
 
 theorem symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, (∀ a b, (a, b) ∈ t → (b, a) ∈ t) ∧ t ⊆ s :=
+    ∃ t ∈ 𝓤 α, IsSymmetricRel t ∧ t ⊆ s :=
   have : preimage Prod.swap s ∈ 𝓤 α := symm_le_uniformity hs
   ⟨s ∩ preimage Prod.swap s, inter_mem hs this, fun _ _ ⟨h₁, h₂⟩ => ⟨h₂, h₁⟩, inter_subset_left⟩
 
 theorem comp_symm_of_uniformity {s : Set (α × α)} (hs : s ∈ 𝓤 α) :
-    ∃ t ∈ 𝓤 α, (∀ {a b}, (a, b) ∈ t → (b, a) ∈ t) ∧ t ○ t ⊆ s :=
+    ∃ t ∈ 𝓤 α, IsSymmetricRel t ∧ t ○ t ⊆ s :=
   let ⟨_t, ht₁, ht₂⟩ := comp_mem_uniformity_sets hs
   let ⟨t', ht', ht'₁, ht'₂⟩ := symm_of_uniformity ht₁
-  ⟨t', ht', ht'₁ _ _, Subset.trans (monotone_id.compRel monotone_id ht'₂) ht₂⟩
+  ⟨t', ht', ht'₁, Subset.trans (monotone_id.compRel monotone_id ht'₂) ht₂⟩
 
 theorem uniformity_le_symm : 𝓤 α ≤ @Prod.swap α α <$> 𝓤 α := by
   rw [map_swap_eq_comap_swap]; exact tendsto_swap_uniformity.le_comap
@@ -556,61 +410,7 @@ theorem comp_comp_symm_mem_uniformity_sets {s : Set (α × α)} (hs : s ∈ 𝓤
 
 namespace UniformSpace
 
-/-- The ball around `(x : β)` with respect to `(V : Set (β × β))`. Intended to be
-used for `V ∈ 𝓤 β`, but this is not needed for the definition. Recovers the
-notions of metric space ball when `V = {p | dist p.1 p.2 < r }`. -/
-def ball (x : β) (V : Set (β × β)) : Set β := Prod.mk x ⁻¹' V
-
-open UniformSpace (ball)
-
 lemma mem_ball_self (x : α) {V : Set (α × α)} : V ∈ 𝓤 α → x ∈ ball x V := refl_mem_uniformity
-
-/-- The triangle inequality for `UniformSpace.ball` -/
-theorem mem_ball_comp {V W : Set (β × β)} {x y z} (h : y ∈ ball x V) (h' : z ∈ ball y W) :
-    z ∈ ball x (V ○ W) :=
-  prodMk_mem_compRel h h'
-
-theorem ball_subset_of_comp_subset {V W : Set (β × β)} {x y} (h : x ∈ ball y W) (h' : W ○ W ⊆ V) :
-    ball x W ⊆ ball y V := fun _z z_in => h' (mem_ball_comp h z_in)
-
-theorem ball_mono {V W : Set (β × β)} (h : V ⊆ W) (x : β) : ball x V ⊆ ball x W :=
-  preimage_mono h
-
-theorem ball_inter (x : β) (V W : Set (β × β)) : ball x (V ∩ W) = ball x V ∩ ball x W :=
-  preimage_inter
-
-theorem ball_inter_left (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x V :=
-  ball_mono inter_subset_left x
-
-theorem ball_inter_right (x : β) (V W : Set (β × β)) : ball x (V ∩ W) ⊆ ball x W :=
-  ball_mono inter_subset_right x
-
-theorem mem_ball_symmetry {V : Set (β × β)} (hV : IsSymmetricRel V) {x y} :
-    x ∈ ball y V ↔ y ∈ ball x V :=
-  show (x, y) ∈ Prod.swap ⁻¹' V ↔ (x, y) ∈ V by
-    unfold IsSymmetricRel at hV
-    rw [hV]
-
-theorem ball_eq_of_symmetry {V : Set (β × β)} (hV : IsSymmetricRel V) {x} :
-    ball x V = { y | (y, x) ∈ V } := by
-  ext y
-  rw [mem_ball_symmetry hV]
-  exact Iff.rfl
-
-theorem mem_comp_of_mem_ball {V W : Set (β × β)} {x y z : β} (hV : IsSymmetricRel V)
-    (hx : x ∈ ball z V) (hy : y ∈ ball z W) : (x, y) ∈ V ○ W := by
-  rw [mem_ball_symmetry hV] at hx
-  exact ⟨z, hx, hy⟩
-
-theorem mem_comp_comp {V W M : Set (β × β)} (hW' : IsSymmetricRel W) {p : β × β} :
-    p ∈ V ○ M ○ W ↔ (ball p.1 V ×ˢ ball p.2 W ∩ M).Nonempty := by
-  obtain ⟨x, y⟩ := p
-  constructor
-  · rintro ⟨z, ⟨w, hpw, hwz⟩, hzy⟩
-    exact ⟨(w, z), ⟨hpw, by rwa [mem_ball_symmetry hW']⟩, hwz⟩
-  · rintro ⟨⟨w, z⟩, ⟨w_in, z_in⟩, hwz⟩
-    rw [mem_ball_symmetry hW'] at z_in
-    exact ⟨z, ⟨w, w_in, hwz⟩, z_in⟩
 
 end UniformSpace
 
