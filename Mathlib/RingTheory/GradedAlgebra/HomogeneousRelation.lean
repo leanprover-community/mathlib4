@@ -150,22 +150,24 @@ theorem eqvGen_proj_mul_left {a b c : A} (n : ι)
 
 variable [IsHomogeneousRelation 𝒜 rel]
 
-instance : IsHomogeneousRelation 𝒜 (RingQuot.Rel rel) := ⟨by
-  intro x y h; induction h
-  case of x y h_rel =>
+instance : IsHomogeneousRelation 𝒜 (RingQuot.Rel rel) := by
+  apply IsHomogeneousRelation.mk
+  intro x y h
+  induction h with
+  | of h_rel =>
     intro n
     apply eqvGen_ringQuot_of_eqvGen
     exact IsHomogeneousRelation.is_homogeneous' h_rel n
-  case add_left a b c h_rel h =>
+  | add_left _ h =>
     intro n
     rw [map_add, map_add]
     exact eqvGen_ringQuot_add_right rel (h n)
-  case mul_left a b c h_rel h =>
+  | mul_left _ h =>
     intro n
     exact eqvGen_proj_mul_right 𝒜 rel n h
-  case mul_right c a b h_rel h =>
+  | mul_right _ h =>
     intro n
-    exact eqvGen_proj_mul_left 𝒜 rel n h⟩
+    exact eqvGen_proj_mul_left 𝒜 rel n h
 
 instance : IsHomogeneousRelation 𝒜 (Relation.EqvGen rel) := by
   apply IsHomogeneousRelation.mk
@@ -192,20 +194,9 @@ section GradedRing
 variable (𝒜 : ι → AddSubmonoid A) [inst : GradedRing 𝒜] (rel : A → A → Prop)
 
 instance : SetLike.GradedMonoid ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) where
-  one_mem := by
-    use 1
-    constructor
-    · exact SetLike.GradedOne.one_mem
-    · exact map_one (RingQuot.mkRingHom rel)
-  mul_mem := by
-    intro x y gi gj hi hj
-    simp only [Function.comp_apply, Submodule.mem_map]
-    rcases hi with ⟨a, ha1, ha2⟩
-    rcases hj with ⟨b, hb1, hb2⟩
-    use a * b
-    constructor
-    · exact SetLike.GradedMul.mul_mem ha1 hb1
-    · rw [map_mul, ha2, hb2]
+  one_mem := ⟨1, ⟨SetLike.GradedOne.one_mem, map_one (RingQuot.mkRingHom rel)⟩⟩
+  mul_mem := fun x y gi gj ⟨a, ha1, ha2⟩ ⟨b, hb1, hb2⟩ ↦
+    ⟨(a * b), ⟨SetLike.GradedMul.mul_mem ha1 hb1, by rw [map_mul, ha2, hb2]⟩⟩
 
 open DirectSum
 
@@ -213,13 +204,18 @@ open DirectSum
 lemma decomposeRingEquiv_apply (a : A) :
     decomposeRingEquiv 𝒜 a = decompose 𝒜 a := rfl
 
-lemma RingEquiv.comp_inj {A B C : Type*} [NonAssocSemiring A] [NonAssocSemiring B]
-    [NonAssocSemiring C] (e : A ≃+* B) {f g : B →+* C}
+lemma RingEquiv.comp_inj {R S S' : Type*} [NonAssocSemiring R] [NonAssocSemiring S]
+    [NonAssocSemiring S'] (e : R ≃+* S) {f g : S →+* S'}
     (h : f.comp e.toRingHom = g.comp e.toRingHom) : f = g := RingHom.ext
     fun x ↦ (by simpa using congr($h (e.symm x)))
 
-private def RingHomAux : (⨁ i, 𝒜 i) →+* ⨁ i, (AddSubmonoid.map (RingQuot.mkRingHom rel) ∘ 𝒜) i := by
-  apply toSemiring (fun i ↦ (of _ i).comp <| (RingQuot.mkRingHom rel).addSubmonoidMap (𝒜 i))
+variable [IsHomogeneousRelation 𝒜 rel]
+
+noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) := by
+  refine GradedRing.ofRingHom ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜)
+    (RingQuot.lift ⟨(toSemiring
+      (fun i ↦ (of _ i).comp (RingQuot.mkRingHom rel |>.addSubmonoidMap (𝒜 i)))
+        ?_ ?_).comp (decomposeRingEquiv 𝒜), ?_⟩) ?_ ?_
   · simp only [Function.comp_apply, RingHom.toAddMonoidHom_eq_coe, AddMonoidHom.coe_comp]
     congr 1; ext
     exact map_one (RingQuot.mkRingHom rel)
@@ -229,14 +225,8 @@ private def RingHomAux : (⨁ i, 𝒜 i) →+* ⨁ i, (AddSubmonoid.map (RingQuo
       gMulHom_apply_apply]
     congr 1; ext
     exact map_mul (RingQuot.mkRingHom rel) _ _
-
-variable [IsHomogeneousRelation 𝒜 rel]
-
-noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜) := by
-  refine GradedRing.ofRingHom ((AddSubmonoid.map (RingQuot.mkRingHom rel)).comp 𝒜)
-    (RingQuot.lift ⟨(RingHomAux 𝒜 rel).comp (decomposeRingEquiv 𝒜), ?_⟩) ?_ ?_
   · intro x y h; ext j
-    simp only [Function.comp_apply, RingHomAux, RingHom.toAddMonoidHom_eq_coe, RingHom.coe_comp,
+    simp only [Function.comp_apply, RingHom.toAddMonoidHom_eq_coe, RingHom.coe_comp,
       RingHom.coe_coe, decomposeRingEquiv_apply, toSemiring_apply, SetLike.coe_eq_coe]
     rw [← map_eq_toAddMonoid]
     apply Subtype.ext
@@ -254,14 +244,14 @@ noncomputable instance : GradedRing ((AddSubmonoid.map (RingQuot.mkRingHom rel))
   · apply RingQuot.ringQuot_ext
     apply RingEquiv.comp_inj (decomposeRingEquiv 𝒜).symm
     ext i x
-    simp only [Function.comp_apply, RingHomAux, RingHom.toAddMonoidHom_eq_coe,
-      RingEquiv.toRingHom_eq_coe, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, RingHom.coe_comp,
-      RingHom.coe_coe, RingQuot.lift_mkRingHom_apply, RingEquiv.apply_symm_apply, toSemiring_apply,
-      toAddMonoid_of, RingHomCompTriple.comp_eq]
+    simp only [Function.comp_apply, RingHom.toAddMonoidHom_eq_coe, RingEquiv.toRingHom_eq_coe,
+      AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, RingHom.coe_comp, RingHom.coe_coe,
+      RingQuot.lift_mkRingHom_apply, RingEquiv.apply_symm_apply, toSemiring_apply, toAddMonoid_of,
+      RingHomCompTriple.comp_eq]
     erw [coeRingHom_of, coeRingHom_of]
     rfl
   · intro i ⟨_, ⟨y, hy, rfl⟩⟩
-    simp [RingHomAux, decompose_of_mem 𝒜 hy]
+    simp [decompose_of_mem 𝒜 hy]
     rfl
 
 end GradedRing
@@ -272,20 +262,9 @@ variable {R : Type*} [CommSemiring R] [Algebra R A]
 variable (𝒜 : ι → Submodule R A) [inst : GradedAlgebra 𝒜] (rel : A → A → Prop)
 
 instance : SetLike.GradedMonoid ((Submodule.map (RingQuot.mkAlgHom R rel)).comp 𝒜) where
-  one_mem := by
-    use 1
-    constructor
-    · exact SetLike.GradedOne.one_mem
-    · exact map_one (RingQuot.mkAlgHom R rel)
-  mul_mem := by
-    intro x y gi gj hi hj
-    simp only [Function.comp_apply, Submodule.mem_map]
-    rcases hi with ⟨a, ha1, ha2⟩
-    rcases hj with ⟨b, hb1, hb2⟩
-    use a * b
-    constructor
-    · exact SetLike.GradedMul.mul_mem ha1 hb1
-    · rw [map_mul, ha2, hb2]
+  one_mem := ⟨1, ⟨SetLike.GradedOne.one_mem, map_one (RingQuot.mkAlgHom R rel)⟩⟩
+  mul_mem := fun x y gi gj ⟨a, ha1, ha2⟩ ⟨b, hb1, hb2⟩ ↦
+    ⟨(a * b), ⟨SetLike.GradedMul.mul_mem ha1 hb1, by rw [map_mul, ha2, hb2]⟩⟩
 
 open DirectSum
 
