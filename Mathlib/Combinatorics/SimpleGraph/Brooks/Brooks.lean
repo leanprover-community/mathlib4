@@ -176,8 +176,29 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           rw [insert_comm, insert_comm v₁]
           congr! 1
           exact pair_comm _ _
-        convert Brooks1' q hk hj.1.symm hbdd hq.of_append_left (by aesop) h1.1 h3.1.symm hne
-          hnadj (by aesop) (by aesop)
+        have hv2q : v₂ ∉ q.support := by
+          intro hf
+          rw [append_isPath_iff] at hq
+          apply hq.2.2 hf
+          rw [v41sup, List.tail, List.mem_cons, List.mem_cons]
+          exact Or.inr (Or.inl rfl)
+        have h13q : Disjoint {v₁, v₃} q.support.toFinset := by
+          rw [disjoint_insert_left, List.mem_toFinset, disjoint_singleton_left, List.mem_toFinset]
+          exact ⟨fun h ↦ hdisj2 h (by simp),fun h ↦ hdisj2 h (by simp)⟩
+        have hj123: vⱼ ∉ ({v₃ , v₂, v₁} : Finset α) := by
+          simp_rw [mem_insert, mem_singleton, not_or]
+          exact ⟨hj.2.2.1,hj.1.symm.ne,hj.2.1⟩
+        have hvjq : vⱼ ∈ q.support := by
+          subst hr
+          apply List.mem_toFinset.1
+          cases (mem_union.1 hj.2.2.2) with
+          | inl h => exact h
+          | inr h => exact (hj123 h).elim
+        obtain ⟨C,hC⟩ := Brooks1' q hk hj.1.symm hbdd hq.of_append_left hvjq
+                            h1.1 h3.1.symm hne hnadj h13q hv2q
+        use C.copy this.symm
+        simp_rw [copy_eq]
+        exact hC
       · -- Main case 2 the path is a proper subset of s
         -- in which case we can build a cycle `c` from `vᵣ` such that all the neighbors
         -- of `vᵣ` lie in `c`
