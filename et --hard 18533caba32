@@ -1,0 +1,40 @@
+[33m3fcade7cb2b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmarkimunro/row-operations-gaussian-elimination[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m HEAD@{0}: reset: moving to origin/master
+[33m18533caba32[m[33m ([m[1;31morigin/markimunro/row-operations-gaussian-elimination[m[33m)[m HEAD@{1}: commit: Troubleshooting
+[33m1d367d8a4b9[m HEAD@{2}: commit (merge): Merge remote-tracking branch 'origin/master' into markimunro/row-operations-gaussian-elimination
+[33mae67d90d92a[m HEAD@{3}: pull: Fast-forward
+[33m81f3ef09953[m HEAD@{4}: reset: moving to 81f3ef0
+[33mae67d90d92a[m HEAD@{5}: merge origin/master: updating HEAD
+[33mae67d90d92a[m HEAD@{6}: reset: moving to HEAD~1
+[33m4a584b44a11[m HEAD@{7}: commit (merge): Merge remote-tracking branch 'origin/master' into markimunro/row-operations-gaussian-elimination
+[33mae67d90d92a[m HEAD@{8}: commit: Very big organization of GaussianElimination file
+[33m0894444298e[m HEAD@{9}: reset: moving to HEAD~1
+[33m9dd2cb67008[m HEAD@{10}: commit: Very big organization of GaussianElimination.lean
+[33m0894444298e[m HEAD@{11}: commit: Fix old bad practices up until maxColVal
+[33m81f3ef09953[m HEAD@{12}: pull: Fast-forward
+[33m2ae6d776fb8[m HEAD@{13}: checkout: moving from markimunro/row-operations-gaussian-elimination to markimunro/row-operations-gaussian-elimination
+[33m2ae6d776fb8[m HEAD@{14}: checkout: moving from markimunro/row-operations-gaussian-elimination to markimunro/row-operations-gaussian-elimination
+[33m2ae6d776fb8[m HEAD@{15}: merge origin/master: Merge made by the 'ort' strategy.
+[33mcebf5dd7180[m[33m ([m[1;32mpr-21018[m[33m)[m HEAD@{16}: checkout: moving from markimunro/row-operations-gaussian-elimination to markimunro/row-operations-gaussian-elimination
+[33mcebf5dd7180[m[33m ([m[1;32mpr-21018[m[33m)[m HEAD@{17}: checkout: moving from cebf5dd7180b60069abbc7449adf84ee7fa51dff to markimunro/row-operations-gaussian-elimination
+[33mcebf5dd7180[m[33m ([m[1;32mpr-21018[m[33m)[m HEAD@{18}: checkout: moving from markimunro/row-operations-gaussian-elimination to cebf5dd7180b60069abbc7449adf84ee7fa51dff
+[33mcebf5dd7180[m[33m ([m[1;32mpr-21018[m[33m)[m HEAD@{19}: checkout: moving from markimunro/row-operations-gaussian-elimination to markimunro/row-operations-gaussian-elimination
+[33mcebf5dd7180[m[33m ([m[1;32mpr-21018[m[33m)[m HEAD@{20}: pull: Fast-forward
+[33m05f907adaa5[m HEAD@{21}: commit: Removed unused import that did not pass CI
+[33m7322d5cacb4[m HEAD@{22}: commit (merge): Merge branch 'markimunro/row-operations-gaussian-elimination' of https://github.com/leanprover-community/mathlib4 into markimunro/row-operations-gaussian-elimination
+[33ma3abce77d17[m HEAD@{23}: commit: Changes that came from lake exe mk_all
+[33ma29618a860a[m HEAD@{24}: commit: Removed unneeded files.
+[33m75775bd2fb0[m HEAD@{25}: commit: Final changes before PR
+[33m36047c374b1[m HEAD@{26}: commit: Correct version, cleanup is left.
+[33m0090c4d101e[m HEAD@{27}: commit: got mulRow good
+[33m99272c25669[m HEAD@{28}: commit: Generalized that mulRow and addMulrow are equivalent to those operations made to the identity matrix
+[33m673dab73fad[m HEAD@{29}: reset: moving to 673dab73fad67878d4271fc212064dba284a9258
+[33m666fc2ebe15[m HEAD@{30}: reset: moving to 666fc2ebe15824b1c53231cd485aad42e7d463c6
+[33m666fc2ebe15[m HEAD@{31}: commit (merge): Merge branch 'master' of https://github.com/leanprover-community/mathlib4 into markimunro/row-operations-gaussian-elimination
+[33m6476adc1414[m HEAD@{32}: commit: commented out unfinished funcion
+[33m673dab73fad[m HEAD@{33}: commit: added docstring, fixed spacing, added theorems, etc.
+[33mc013810789f[m HEAD@{34}: commit: Changed all swapRow theorem names, variables, and types to keep consistency, except for swapImpliesSwapMat and swapMatImpliesSwap
+[33m7bb83bf9b57[m HEAD@{35}: commit: removed lines over 100 lines to check it goes through CI
+[33m9b8b7b29538[m HEAD@{36}: commit: ran lake exe mk_all to update Mathlib.lean to ensure that all files are imported there
+[33mc1e72437826[m HEAD@{37}: commit: initial commit
+[33m2ae1eb8bb18[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{38}: checkout: moving from master to markimunro/row-operations-gaussian-elimination
+[33m2ae1eb8bb18[m[33m ([m[1;32mmaster[m[33m)[m HEAD@{39}: clone: from https://github.com/leanprover-community/mathlib4.git
