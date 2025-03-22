@@ -516,3 +516,15 @@ theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
 theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ closedBall c R :=
   sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
+
+open Complex in
+@[simp]
+theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
+  simp [circleMap, exp_ne_zero]
+
+@[simp]
+theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
+  funext fun _ => circleMap_eq_center_iff.2 rfl
+
+theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
+  mt circleMap_eq_center_iff.1 hR
