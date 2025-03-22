@@ -108,9 +108,8 @@ protected theorem map_add : D (a + b) = D a + D b :=
 protected theorem map_zero : D 0 = 0 :=
   map_zero D
 
-@[simp]
-theorem map_smul : D (r • a) = r • D a :=
-  D.toLinearMap.map_smul r a
+protected theorem map_smul : D (r • a) = r • D a :=
+  map_smul D r a
 
 @[simp]
 theorem leibniz : D (a * b) = a • D b + b • D a :=
