@@ -108,6 +108,8 @@ class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiri
   map_zero := fun f => by
     rw [←zero_smul R 0, map_smulₛₗ, RingHom.map_zero, zero_smul]
 
+attribute [instance 100] SemilinearMapClass.toAddMonoidHomClass
+
 end
 
 -- `map_smulₛₗ` should be `@[simp]` but doesn't fire due to https://github.com/leanprover/lean4/pull/3701.
