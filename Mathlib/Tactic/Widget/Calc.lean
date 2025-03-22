@@ -118,7 +118,7 @@ def suggestSteps (pos : Array Lean.SubExpr.GoalsLocation) (goalType : Expr) (par
 @[server_rpc_method]
 def CalcPanel.rpc := mkSelectionPanelRPC suggestSteps
   "Please select subterms using Shift-click."
-  "Calc 🔍"
+  "Calc 🔍️"
 
 /-- The calc widget. -/
 @[widget_module]
