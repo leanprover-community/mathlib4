@@ -551,6 +551,7 @@ import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
 import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.CartanCriterion
 import Mathlib.Algebra.Lie.CartanExists
 import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Algebra.Lie.CartanSubalgebra
