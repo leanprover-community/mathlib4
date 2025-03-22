@@ -17,7 +17,7 @@ This file is a home for lemmas about semisimple and reductive Lie algebras.
  * `LieAlgebra.hasTrivialRadical_and_of_isIrreducible_of_isFaithful`: a finite-dimensional Lie
    algebra with a irreducible faithful finite-dimensional trace-free representation is semisimple.
 
-## TODO
+## TODO
 
  * It appears that the lemmas in this file may hold for any principal ideal domain (of
    characteristic zero) instead of a field. The plan would be to define the nilradical of a Lie

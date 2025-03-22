@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Category.Quiv
 /-!
 # The category of refl quivers
 
-The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful adjunction between
+The category `ReflQuiv` of (bundled) reflexive quivers, and the free/forgetful adjunction between
 `Cat` and `ReflQuiv`.
 -/
 
