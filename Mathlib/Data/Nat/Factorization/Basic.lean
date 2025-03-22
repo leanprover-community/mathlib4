@@ -50,6 +50,11 @@ theorem factorization_eq_zero_iff' (n : ℕ) : n.factorization = 0 ↔ n = 0 ∨
 
 /-! ## Lemmas about factorizations of products and powers -/
 
+/-- Modified version of `factorization_prod` that accounts for inputs. -/
+theorem factorization_prod_apply {α : Type*} {p : ℕ}
+    {S : Finset α} {g : α → ℕ} (hS : ∀ x ∈ S, g x ≠ 0) :
+    (S.prod g).factorization p = S.sum fun x => (g x).factorization p := by
+  rw [factorization_prod hS, finset_sum_apply]
 
 /-- A product over `n.factorization` can be written as a product over `n.primeFactors`; -/
 lemma prod_factorization_eq_prod_primeFactors {β : Type*} [CommMonoid β] (f : ℕ → ℕ → β) :
@@ -61,10 +66,12 @@ lemma prod_primeFactors_prod_factorization {β : Type*} [CommMonoid β] (f : ℕ
 
 /-! ## Lemmas about factorizations of primes and prime powers -/
 
-
 /-- The multiplicity of prime `p` in `p` is `1` -/
 @[simp]
 theorem Prime.factorization_self {p : ℕ} (hp : Prime p) : p.factorization p = 1 := by simp [hp]
+
+theorem factorization_pow_self {p n : ℕ} (hp : p.Prime) : (p ^ n).factorization p = n := by
+  simp [factorization_pow, Prime.factorization_self hp]
 
 /-- If the factorization of `n` contains just one number `p` then `n` is a power of `p` -/
 theorem eq_pow_of_factorization_eq_single {n p k : ℕ} (hn : n ≠ 0)
@@ -568,8 +575,6 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 
 /-! ### Lemmas about factorizations of particular functions -/
 
-
--- TODO: Port lemmas from `Data/Nat/Multiplicity` to here, re-written in terms of `factorization`
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
 See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := by
