@@ -23,23 +23,21 @@ in this file.
 
 -/
 
-section
-
+namespace DFinsupp
 variable {ι : Type*} {M : ι → Type*} {N : ι → Type*}
 
-namespace DFinsupp
+section AddCommMonoid
+variable [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀ i : ι, M i →+ N i)
 
-variable [∀ i, AddCommMonoid (M i)] [∀ i, AddCommMonoid (N i)] (f : ∀(i : ι), M i →+ N i)
-
-lemma mker_mapRangeAddMonoidHom : AddMonoidHom.mker (mapRange.addMonoidHom f) =
-    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap
-    DFinsupp.coeFnAddMonoidHom := by
+lemma mker_mapRangeAddMonoidHom :
+    AddMonoidHom.mker (mapRange.addMonoidHom f) =
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mker (f i))).comap coeFnAddMonoidHom := by
   ext
   simp [AddSubmonoid.pi, DFinsupp.ext_iff]
 
-lemma mrange_mapRangeAddMonoidHom : AddMonoidHom.mrange (mapRange.addMonoidHom f) =
-    (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap
-    DFinsupp.coeFnAddMonoidHom := by
+lemma mrange_mapRangeAddMonoidHom :
+    AddMonoidHom.mrange (mapRange.addMonoidHom f) =
+      (AddSubmonoid.pi Set.univ (fun i ↦ AddMonoidHom.mrange (f i))).comap coeFnAddMonoidHom := by
   classical
   ext x
   simp only [AddSubgroup.mem_comap, AddSubmonoid.pi, DirectSum.ext_iff]
@@ -54,36 +52,24 @@ lemma mrange_mapRangeAddMonoidHom : AddMonoidHom.mrange (mapRange.addMonoidHom f
     · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
       exact congrArg (f i) (mk_of_not_mem mem)
 
-end DFinsupp
+end AddCommMonoid
 
-namespace DFinsupp
+namespace AddCommGroup
+variable [∀ i, AddCommGroup (M i)] [∀ i, AddCommGroup (N i)] (f : ∀ i : ι, M i →+ N i)
 
-variable [∀ i, AddCommGroup (M i)] [∀ i, AddCommGroup (N i)] (f : ∀(i : ι), M i →+ N i)
+lemma ker_mapRangeAddMonoidHom :
+    (mapRange.addMonoidHom f).ker =
+      (AddSubgroup.pi Set.univ (f · |>.ker)).comap coeFnAddMonoidHom :=
+  AddSubgroup.toAddSubmonoid_injective <| mker_mapRangeAddMonoidHom f
 
-lemma ker_mapRangeAddMonoidHom : (mapRange.addMonoidHom f).ker =
-    (AddSubgroup.pi Set.univ (f · |>.ker)).comap DFinsupp.coeFnAddMonoidHom := by
-  ext
-  simp [AddSubgroup.mem_pi, DFinsupp.ext_iff]
+lemma range_mapRangeAddMonoidHom :
+    (mapRange.addMonoidHom f).range =
+      (AddSubgroup.pi Set.univ (f · |>.range)).comap coeFnAddMonoidHom :=
+  AddSubgroup.toAddSubmonoid_injective <| mrange_mapRangeAddMonoidHom f
 
-lemma range_mapRangeAddMonoidHom : (mapRange.addMonoidHom f).range =
-    (AddSubgroup.pi Set.univ (f · |>.range)).comap DFinsupp.coeFnAddMonoidHom := by
-  classical
-  ext x
-  simp only [AddSubgroup.mem_comap, AddSubgroup.mem_pi, DirectSum.ext_iff]
-  refine ⟨fun ⟨y, hy⟩ i hi ↦ ?_, fun h ↦ ?_⟩
-  · simp [← hy]
-  · use DFinsupp.mk x.support (fun i ↦ Classical.choose (h i trivial))
-    ext i
-    simp only [Finset.coe_sort_coe, mapRange.addMonoidHom_apply, mapRange_apply]
-    by_cases mem : i ∈ x.support
-    · convert Classical.choose_spec (h i trivial)
-      exact mk_of_mem mem
-    · rw [DFinsupp.not_mem_support_iff.mp mem, ← map_zero (f i)]
-      exact congrArg (f i) (mk_of_not_mem mem)
+end AddCommGroup
 
 end DFinsupp
-
-end
 
 universe u v w u₁
 
