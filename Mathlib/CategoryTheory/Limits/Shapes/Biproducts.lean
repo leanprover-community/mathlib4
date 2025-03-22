@@ -440,6 +440,7 @@ theorem biproduct.ι_π_ne (f : J → C) [HasBiproduct f] {j j' : J} (h : j ≠ 
     biproduct.ι f j ≫ biproduct.π f j' = 0 := by simp [biproduct.ι_π, h]
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]
@@ -449,6 +450,7 @@ theorem biproduct.eqToHom_comp_ι (f : J → C) [HasBiproduct f] {j j' : J} (w :
   simp
 
 -- The `simpNF` linter incorrectly identifies these as simp lemmas that could never apply.
+-- It seems the side condition `w` is not applied by `simpNF`.
 -- https://github.com/leanprover-community/mathlib4/issues/5049
 -- They are used by `simp` in `biproduct.whiskerEquiv` below.
 @[reassoc (attr := simp, nolint simpNF)]

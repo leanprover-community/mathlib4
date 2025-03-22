@@ -104,6 +104,7 @@ theorem ofDirectSum_toDirectSum (x : TensorAlgebra R M) :
   AlgHom.congr_fun ofDirectSum_comp_toDirectSum x
 
 -- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+-- It seems the side condition `h` is not applied by `simpNF`.
 @[simp, nolint simpNF]
 theorem mk_reindex_cast {n m : ℕ} (h : n = m) (x : ⨂[R]^n M) :
     GradedMonoid.mk (A := fun i => (⨂[R]^i) M) m

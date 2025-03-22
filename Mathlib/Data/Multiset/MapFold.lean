@@ -136,6 +136,7 @@ theorem map_eq_cons [DecidableEq α] (f : α → β) (s : Multiset α) (t : Mult
 
 -- The simpNF linter says that the LHS can be simplified via `Multiset.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `H` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {s : Multiset α} :

@@ -287,6 +287,7 @@ def ofIsComplProdEquiv {p q : Submodule R₁ E} (h : IsCompl p q) :
 end
 
 @[simp, nolint simpNF] -- Porting note: linter claims that LHS doesn't simplify, but it does
+-- It seems the side condition `hf` is not applied by `simpNF`.
 theorem linearProjOfIsCompl_of_proj (f : E →ₗ[R] p) (hf : ∀ x : p, f x = x) :
     p.linearProjOfIsCompl (ker f) (isCompl_of_proj hf) = f := by
   ext x
