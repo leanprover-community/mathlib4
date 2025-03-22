@@ -58,7 +58,6 @@ def UniformSpace.ofDist (dist : α → α → ℝ) (dist_self : ∀ x : α, dist
     (dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z) : UniformSpace α :=
   .ofFun dist dist_self dist_comm dist_triangle ofDist_aux
 
--- Porting note: dropped the `dist_self` argument
 /-- Construct a bornology from a distance function and metric space axioms. -/
 abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x y, dist x y = dist y x)
     (dist_triangle : ∀ x y z, dist x z ≤ dist x y + dist y z) : Bornology α :=
@@ -83,6 +82,7 @@ abbrev Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀
   a nonnegative real number `dist x y` given `x y : α`. -/
 @[ext]
 class Dist (α : Type*) where
+  /-- Distance between two points -/
   dist : α → α → ℝ
 
 export Dist (dist)
@@ -99,20 +99,27 @@ private theorem dist_nonneg' {α} {x y : α} (dist : α → α → ℝ)
     _ = 2 * dist x y := by rw [two_mul, dist_comm]
   nonneg_of_mul_nonneg_right this two_pos
 
-/-- Pseudo metric and Metric spaces
+/-- A pseudometric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+reflexivity `dist x x = 0`, commutativity `dist x y = dist y x`, and the triangle inequality
+`dist x z ≤ dist x y + dist y z`.
 
-A pseudo metric space is endowed with a distance for which the requirement `d(x,y)=0 → x = y` might
-not hold. A metric space is a pseudo metric space such that `d(x,y)=0 → x = y`.
-Each pseudo metric space induces a canonical `UniformSpace` and hence a canonical
-`TopologicalSpace` This is enforced in the type class definition, by extending the `UniformSpace`
-structure. When instantiating a `PseudoMetricSpace` structure, the uniformity fields are not
-necessary, they will be filled in by default. In the same way, each (pseudo) metric space induces a
-(pseudo) emetric space structure. It is included in the structure, but filled in by default.
--/
-class PseudoMetricSpace (α : Type u) extends Dist α : Type u where
+Note that we do not require `dist x y = 0 → x = y`. See metric spaces (`MetricSpace`) for the
+similar class with that stronger assumption.
+
+Any pseudometric space is a topological space and a uniform space (see `TopologicalSpace`,
+`UniformSpace`), where the topology and uniformity come from the metric.
+Note that a T1 pseudometric space is just a metric space.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric. This eg
+ensures that we do not get a diamond when doing
+`[PseudoMetricSpace α] [PseudoMetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
+class PseudoMetricSpace (α : Type u) : Type u extends Dist α where
   dist_self : ∀ x : α, dist x x = 0
   dist_comm : ∀ x y : α, dist x y = dist y x
   dist_triangle : ∀ x y z : α, dist x z ≤ dist x y + dist y z
+  /-- Extended distance between two points -/
   edist : α → α → ℝ≥0∞ := fun x y => ENNReal.ofNNReal ⟨dist x y, dist_nonneg' _ ‹_› ‹_› ‹_›⟩
   edist_dist : ∀ x y : α, edist x y = ENNReal.ofReal (dist x y) := by
     intros x y; exact ENNReal.coe_nnreal_eq _
@@ -242,6 +249,7 @@ example {x y : α} : 0 ≤ dist x y := by positivity
 
 /-- A version of `Dist` that takes value in `ℝ≥0`. -/
 class NNDist (α : Type*) where
+  /-- Nonnegative distance between two points -/
   nndist : α → α → ℝ≥0
 
 export NNDist (nndist)
@@ -251,17 +259,17 @@ export NNDist (nndist)
 instance (priority := 100) PseudoMetricSpace.toNNDist : NNDist α :=
   ⟨fun a b => ⟨dist a b, dist_nonneg⟩⟩
 
-/-- Express `dist` in terms of `nndist`-/
+/-- Express `dist` in terms of `nndist` -/
 theorem dist_nndist (x y : α) : dist x y = nndist x y := rfl
 
 @[simp, norm_cast]
 theorem coe_nndist (x y : α) : ↑(nndist x y) = dist x y := rfl
 
-/-- Express `edist` in terms of `nndist`-/
+/-- Express `edist` in terms of `nndist` -/
 theorem edist_nndist (x y : α) : edist x y = nndist x y := by
   rw [edist_dist, dist_nndist, ENNReal.ofReal_coe_nnreal]
 
-/-- Express `nndist` in terms of `edist`-/
+/-- Express `nndist` in terms of `edist` -/
 theorem nndist_edist (x y : α) : nndist x y = (edist x y).toNNReal := by
   simp [edist_nndist]
 
@@ -288,8 +296,6 @@ theorem edist_ne_top (x y : α) : edist x y ≠ ⊤ :=
 /-- `nndist x x` vanishes -/
 @[simp] theorem nndist_self (a : α) : nndist a a = 0 := NNReal.coe_eq_zero.1 (dist_self a)
 
--- Porting note: `dist_nndist` and `coe_nndist` moved up
-
 @[simp, norm_cast]
 theorem dist_lt_coe {x y : α} {c : ℝ≥0} : dist x y < c ↔ nndist x y < c :=
   Iff.rfl
@@ -307,7 +313,7 @@ theorem edist_le_ofReal {x y : α} {r : ℝ} (hr : 0 ≤ r) :
     edist x y ≤ ENNReal.ofReal r ↔ dist x y ≤ r := by
   rw [edist_dist, ENNReal.ofReal_le_ofReal_iff hr]
 
-/-- Express `nndist` in terms of `dist`-/
+/-- Express `nndist` in terms of `dist` -/
 theorem nndist_dist (x y : α) : nndist x y = Real.toNNReal (dist x y) := by
   rw [dist_nndist, Real.toNNReal_coe]
 
@@ -323,7 +329,7 @@ theorem nndist_triangle_left (x y z : α) : nndist x y ≤ nndist z x + nndist z
 theorem nndist_triangle_right (x y z : α) : nndist x y ≤ nndist x z + nndist y z :=
   dist_triangle_right _ _ _
 
-/-- Express `dist` in terms of `edist`-/
+/-- Express `dist` in terms of `edist` -/
 theorem dist_edist (x y : α) : dist x y = (edist x y).toReal := by
   rw [edist_dist, ENNReal.toReal_ofReal dist_nonneg]
 
@@ -760,7 +766,7 @@ theorem nhds_basis_closedBall_pow {r : ℝ} (h0 : 0 < r) (h1 : r < 1) :
 theorem isOpen_iff : IsOpen s ↔ ∀ x ∈ s, ∃ ε > 0, ball x ε ⊆ s := by
   simp only [isOpen_iff_mem_nhds, mem_nhds_iff]
 
-theorem isOpen_ball : IsOpen (ball x ε) :=
+@[simp] theorem isOpen_ball : IsOpen (ball x ε) :=
   isOpen_iff.2 fun _ => exists_ball_subset_ball
 
 theorem ball_mem_nhds (x : α) {ε : ℝ} (ε0 : 0 < ε) : ball x ε ∈ 𝓝 x :=
@@ -1097,7 +1103,6 @@ theorem PseudoMetricSpace.dist_eq_of_dist_zero (x : α) {y z : α} (h : dist y z
     dist x y = dist x z :=
   dist_comm y x ▸ dist_comm z x ▸ sub_eq_zero.1 (abs_nonpos_iff.1 (h ▸ abs_dist_sub_le y z x))
 
--- Porting note: 3 new lemmas
 theorem dist_dist_dist_le_left (x y z : α) : dist (dist x z) (dist y z) ≤ dist x y :=
   abs_dist_sub_le ..
 
@@ -1153,6 +1158,36 @@ theorem denseRange_iff {f : β → α} : DenseRange f ↔ ∀ x, ∀ r > 0, ∃ 
 
 end Metric
 
+open Additive Multiplicative
+
 instance : PseudoMetricSpace (Additive α) := ‹_›
 instance : PseudoMetricSpace (Multiplicative α) := ‹_›
+
+section
+
+variable [PseudoMetricSpace X]
+
+@[simp] theorem nndist_ofMul (a b : X) : nndist (ofMul a) (ofMul b) = nndist a b := rfl
+
+@[simp] theorem nndist_ofAdd (a b : X) : nndist (ofAdd a) (ofAdd b) = nndist a b := rfl
+
+@[simp] theorem nndist_toMul (a b : Additive X) : nndist a.toMul b.toMul = nndist a b := rfl
+
+@[simp]
+theorem nndist_toAdd (a b : Multiplicative X) : nndist a.toAdd b.toAdd = nndist a b := rfl
+
+end
+
+open OrderDual
+
 instance : PseudoMetricSpace αᵒᵈ := ‹_›
+
+section
+
+variable [PseudoMetricSpace X]
+
+@[simp] theorem nndist_toDual (a b : X) : nndist (toDual a) (toDual b) = nndist a b := rfl
+
+@[simp] theorem nndist_ofDual (a b : Xᵒᵈ) : nndist (ofDual a) (ofDual b) = nndist a b := rfl
+
+end

@@ -20,11 +20,8 @@ namespace List
 
 @[simp]
 theorem count_not_add_count (l : List Bool) (b : Bool) : count (!b) l + count b l = length l := by
-  -- Porting note: Proof re-written
-  -- Old proof: simp only [length_eq_countP_add_countP (Eq (!b)), Bool.not_not_eq, count]
-  simp only [length_eq_countP_add_countP (· == !b), count, add_right_inj]
-  suffices (fun x => x == b) = (fun a => decide ¬(a == !b) = true) by rw [this]
-  ext x; cases x <;> cases b <;> rfl
+  have := length_eq_countP_add_countP (· == !b)
+  aesop (add simp this)
 
 @[simp]
 theorem count_add_count_not (l : List Bool) (b : Bool) : count b l + count (!b) l = length l := by
@@ -56,11 +53,7 @@ theorem count_not_eq_count (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) (b
   · rfl
   rw [length_cons, Nat.even_add_one, Nat.not_even_iff] at h2
   suffices count (!x) (x :: l) = count x (x :: l) by
-    -- Porting note: old proof is
-    -- cases b <;> cases x <;> try exact this;
-    cases b <;> cases x <;>
-    revert this <;> simp only [Bool.not_false, Bool.not_true] <;> intro this <;>
-    (try exact this) <;> exact this.symm
+    cases b <;> cases x <;> (try exact this) <;> exact this.symm
   rw [count_cons_of_ne x.not_ne_self, hl.count_not, h2, count_cons_self]
 
 theorem count_false_eq_count_true (hl : Chain' (· ≠ ·) l) (h2 : Even (length l)) :

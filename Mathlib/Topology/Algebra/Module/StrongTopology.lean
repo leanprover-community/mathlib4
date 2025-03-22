@@ -156,7 +156,7 @@ instance instUniformAddGroup [UniformSpace F] [UniformAddGroup F] (𝔖 : Set (S
 instance instIsTopologicalAddGroup [TopologicalSpace F] [IsTopologicalAddGroup F]
     (𝔖 : Set (Set E)) : IsTopologicalAddGroup (UniformConvergenceCLM σ F 𝔖) := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   infer_instance
 
 theorem continuousEvalConst [TopologicalSpace F] [IsTopologicalAddGroup F]
@@ -164,14 +164,14 @@ theorem continuousEvalConst [TopologicalSpace F] [IsTopologicalAddGroup F]
     ContinuousEvalConst (UniformConvergenceCLM σ F 𝔖) E F where
   continuous_eval_const x := by
     letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-    haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+    haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
     exact (UniformOnFun.uniformContinuous_eval h𝔖 x).continuous.comp
       (isEmbedding_coeFn σ F 𝔖).continuous
 
 theorem t2Space [TopologicalSpace F] [IsTopologicalAddGroup F] [T2Space F]
     (𝔖 : Set (Set E)) (h𝔖 : ⋃₀ 𝔖 = univ) : T2Space (UniformConvergenceCLM σ F 𝔖) := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   haveI : T2Space (E →ᵤ[𝔖] F) := UniformOnFun.t2Space_of_covering h𝔖
   exact (isEmbedding_coeFn σ F 𝔖).t2Space
 
@@ -188,7 +188,7 @@ theorem continuousSMul [RingHomSurjective σ] [RingHomIsometric σ]
     (h𝔖₃ : ∀ S ∈ 𝔖, IsVonNBounded 𝕜₁ S) :
     ContinuousSMul 𝕜₂ (UniformConvergenceCLM σ F 𝔖) := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   let φ : (UniformConvergenceCLM σ F 𝔖) →ₗ[𝕜₂] E → F :=
     ⟨⟨DFunLike.coe, fun _ _ => rfl⟩, fun _ _ => rfl⟩
   exact UniformOnFun.continuousSMul_induced_of_image_bounded 𝕜₂ E F (UniformConvergenceCLM σ F 𝔖) φ
@@ -201,7 +201,7 @@ theorem hasBasis_nhds_zero_of_basis [TopologicalSpace F] [IsTopologicalAddGroup 
       (fun Si : Set E × ι => Si.1 ∈ 𝔖 ∧ p Si.2)
       fun Si => { f : E →SL[σ] F | ∀ x ∈ Si.1, f x ∈ b Si.2 } := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   rw [(isEmbedding_coeFn σ F 𝔖).isInducing.nhds_eq_comap]
   exact (UniformOnFun.hasBasis_nhds_zero_of_basis 𝔖 h𝔖₁ h𝔖₂ h).comap DFunLike.coe
 
@@ -218,7 +218,7 @@ theorem nhds_zero_eq_of_basis [TopologicalSpace F] [IsTopologicalAddGroup F] (�
       ⨅ (s : Set E) (_ : s ∈ 𝔖) (i : ι) (_ : p i),
         𝓟 {f : UniformConvergenceCLM σ F 𝔖 | MapsTo f s (b i)} := by
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   rw [(isEmbedding_coeFn σ F 𝔖).isInducing.nhds_eq_comap,
     UniformOnFun.nhds_eq_of_basis _ _ h.uniformity_of_nhds_zero]
   simp [MapsTo]
@@ -278,7 +278,7 @@ instance instContinuousConstSMul (M : Type*)
     [TopologicalSpace F] [IsTopologicalAddGroup F] [ContinuousConstSMul M F] (𝔖 : Set (Set E)) :
     ContinuousConstSMul M (UniformConvergenceCLM σ F 𝔖) :=
   let _ := IsTopologicalAddGroup.toUniformSpace F
-  have _ : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  have _ : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   have _ := uniformContinuousConstSMul_of_continuousConstSMul M F
   inferInstance
 
@@ -325,7 +325,7 @@ theorem uniformSpace_mono [UniformSpace F] [UniformAddGroup F] (h : 𝔖₂ ⊆ 
 theorem topologicalSpace_mono [TopologicalSpace F] [IsTopologicalAddGroup F] (h : 𝔖₂ ⊆ 𝔖₁) :
     instTopologicalSpace σ F 𝔖₁ ≤ instTopologicalSpace σ F 𝔖₂ := by
   letI := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   simp_rw [← uniformity_toTopologicalSpace_eq]
   exact UniformSpace.toTopologicalSpace_mono (uniformSpace_mono σ F h)
 
@@ -473,11 +473,9 @@ def precomp [IsTopologicalAddGroup G] [ContinuousConstSMul 𝕜₃ G] [RingHomSu
   map_smul' a f := smul_comp a f L
   cont := by
     letI : UniformSpace G := IsTopologicalAddGroup.toUniformSpace G
-    haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+    haveI : UniformAddGroup G := uniformAddGroup_of_addCommGroup
     rw [(UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous_iff]
-    -- Porting note: without this, the following doesn't work
-    change Continuous ((fun f ↦ UniformOnFun.ofFun _ (f ∘ L)) ∘ DFunLike.coe)
-    exact (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
+    apply (UniformOnFun.precomp_uniformContinuous fun S hS => hS.image L).continuous.comp
         (UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous
 
 variable (E) {G}
@@ -493,9 +491,9 @@ def postcomp [IsTopologicalAddGroup F] [IsTopologicalAddGroup G] [ContinuousCons
   map_smul' := comp_smulₛₗ L
   cont := by
     letI : UniformSpace G := IsTopologicalAddGroup.toUniformSpace G
-    haveI : UniformAddGroup G := comm_topologicalAddGroup_is_uniform
+    haveI : UniformAddGroup G := uniformAddGroup_of_addCommGroup
     letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-    haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+    haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
     rw [(UniformConvergenceCLM.isEmbedding_coeFn _ _ _).continuous_iff]
     exact
       (UniformOnFun.postcomp_uniformContinuous L.uniformContinuous).continuous.comp
@@ -553,7 +551,7 @@ variable [TopologicalSpace F] [IsTopologicalAddGroup F] [Module 𝕜 F]
 theorem isEmbedding_restrictScalars :
     IsEmbedding (restrictScalars 𝕜' : (E →L[𝕜] F) → (E →L[𝕜'] F)) :=
   letI : UniformSpace F := IsTopologicalAddGroup.toUniformSpace F
-  haveI : UniformAddGroup F := comm_topologicalAddGroup_is_uniform
+  haveI : UniformAddGroup F := uniformAddGroup_of_addCommGroup
   (isUniformEmbedding_restrictScalars _).isEmbedding
 
 @[deprecated (since := "2024-10-26")]

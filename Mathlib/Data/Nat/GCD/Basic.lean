@@ -107,6 +107,31 @@ theorem gcd_self_sub_left {m n : ℕ} (h : m ≤ n) : gcd (n - m) n = gcd m n :=
 theorem gcd_self_sub_right {m n : ℕ} (h : m ≤ n) : gcd n (n - m) = gcd n m := by
   rw [gcd_comm, gcd_self_sub_left h, gcd_comm]
 
+@[simp]
+theorem pow_sub_one_mod_pow_sub_one (a b c : ℕ) : (a ^ c - 1) % (a ^ b - 1) = a ^ (c % b) - 1 := by
+  rcases eq_zero_or_pos a with rfl | ha0
+  · simp [zero_pow_eq]; split_ifs <;> simp
+  rcases Nat.eq_or_lt_of_le ha0 with rfl | ha1
+  · simp
+  rcases eq_zero_or_pos b with rfl | hb0
+  · simp
+  rcases lt_or_le c b with h | h
+  · rw [mod_eq_of_lt, mod_eq_of_lt h]
+    rwa [Nat.sub_lt_sub_iff_right (one_le_pow c a ha0), Nat.pow_lt_pow_iff_right ha1]
+  · suffices a ^ (c - b + b) - 1 = a ^ (c - b) * (a ^ b - 1) + (a ^ (c - b) - 1) by
+      rw [← Nat.sub_add_cancel h, add_mod_right, this, add_mod, mul_mod, mod_self,
+        mul_zero, zero_mod, zero_add, mod_mod, pow_sub_one_mod_pow_sub_one]
+    rw [← Nat.add_sub_assoc (one_le_pow (c - b) a ha0), ← mul_add_one, pow_add,
+      Nat.sub_add_cancel (one_le_pow b a ha0)]
+
+@[simp]
+theorem pow_sub_one_gcd_pow_sub_one (a b c : ℕ) :
+    gcd (a ^ b - 1) (a ^ c - 1) = a ^ gcd b c - 1 := by
+  rcases eq_zero_or_pos b with rfl | hb
+  · simp
+  replace hb : c % b < b := mod_lt c hb
+  rw [gcd_rec, pow_sub_one_mod_pow_sub_one, pow_sub_one_gcd_pow_sub_one, ← gcd_rec]
+
 /-! ### `lcm` -/
 
 theorem lcm_dvd_mul (m n : ℕ) : lcm m n ∣ m * n :=

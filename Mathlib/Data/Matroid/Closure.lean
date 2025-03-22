@@ -10,7 +10,7 @@ import Mathlib.Order.CompleteLatticeIntervals
 /-!
 # Matroid Closure
 
-A `IsFlat` of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
+A flat (`IsFlat`) of a matroid `M` is a combinatorial analogue of a subspace of a vector space,
 and is defined to be a subset `F` of the ground set of `M` such that for each isBasis
 `I` for `M`, every set having `I` as a isBasis is contained in `F`.
 
@@ -85,7 +85,7 @@ variable {ι α : Type*} {M : Matroid α} {F X Y : Set α} {e f : α}
 
 section IsFlat
 
-/-- A flat is a maximal set having a given basis  -/
+/-- A flat is a maximal set having a given basis -/
 @[mk_iff]
 structure IsFlat (M : Matroid α) (F : Set α) : Prop where
   subset_of_isBasis_of_isBasis : ∀ ⦃I X⦄, M.IsBasis I F → M.IsBasis I X → X ⊆ F
@@ -436,6 +436,15 @@ lemma isBase_iff_indep_closure_eq : M.IsBase B ↔ M.Indep B ∧ M.closure B = M
   exact fun hI ↦ ⟨fun h ↦ (M.closure_subset_ground _).antisymm h.2,
     fun h ↦ ⟨(M.subset_closure B).trans_eq h, h.symm.subset⟩⟩
 
+lemma IsBase.exchange_base_of_not_mem_closure (hB : M.IsBase B) (he : e ∈ B)
+    (hf : f ∉ M.closure (B \ {e})) (hfE : f ∈ M.E := by aesop_mat) :
+    M.IsBase (insert f (B \ {e})) := by
+  obtain rfl | hne := eq_or_ne f e
+  · simpa [he]
+  have ⟨hi, hfB⟩ : M.Indep (insert f (B \ {e})) ∧ f ∉ B := by
+    simpa [(hB.indep.diff _).not_mem_closure_iff, hne] using hf
+  exact hB.exchange_isBase_of_indep hfB hi
+
 lemma Indep.isBase_iff_ground_subset_closure (hI : M.Indep I) : M.IsBase I ↔ M.E ⊆ M.closure I :=
   ⟨fun h ↦ h.closure_eq.symm.subset, hI.isBase_of_ground_subset_closure⟩
 
@@ -646,7 +655,7 @@ lemma indep_iff_forall_closure_ssubset_of_ssubset (hI : I ⊆ M.E := by aesop_ma
     M.Indep I ↔ ∀ ⦃J⦄, J ⊂ I → M.closure J ⊂ M.closure I := by
   refine ⟨fun h _ ↦ h.closure_ssubset_closure,
     fun h ↦ (indep_iff_forall_not_mem_closure_diff hI).2 fun e heI hecl ↦ ?_⟩
-  refine (h (diff_singleton_sSubset.2 heI)).ne ?_
+  refine (h (diff_singleton_ssubset.2 heI)).ne ?_
   rw [show I = insert e (I \ {e}) by simp [heI], ← closure_insert_closure_eq_closure_insert,
     insert_eq_of_mem hecl]
   simp

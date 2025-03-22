@@ -288,14 +288,14 @@ class OuterRegular (μ : Measure α) : Prop where
   - it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
   - it is inner regular for open sets, using compact sets:
     `μ(U) = sup {μ(K) | K ⊆ U compact}` for `U` open. -/
-class Regular (μ : Measure α) extends IsFiniteMeasureOnCompacts μ, OuterRegular μ : Prop where
+class Regular (μ : Measure α) : Prop extends IsFiniteMeasureOnCompacts μ, OuterRegular μ where
   innerRegular : InnerRegularWRT μ IsCompact IsOpen
 
 /-- A measure `μ` is weakly regular if
   - it is outer regular: `μ(A) = inf {μ(U) | A ⊆ U open}` for `A` measurable;
   - it is inner regular for open sets, using closed sets:
     `μ(U) = sup {μ(F) | F ⊆ U closed}` for `U` open. -/
-class WeaklyRegular (μ : Measure α) extends OuterRegular μ : Prop where
+class WeaklyRegular (μ : Measure α) : Prop extends OuterRegular μ where
   protected innerRegular : InnerRegularWRT μ IsClosed IsOpen
 
 /-- A measure `μ` is inner regular if, for any measurable set `s`, then

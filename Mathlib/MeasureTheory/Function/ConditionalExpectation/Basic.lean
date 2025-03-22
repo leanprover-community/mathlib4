@@ -82,8 +82,9 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 open scoped Classical in
 variable (m) in
-/-- Conditional expectation of a function. It is defined as 0 if any one of the following conditions
-is true:
+/-- Conditional expectation of a function, with notation `μ[f|m]`.
+
+It is defined as 0 if any one of the following conditions is true:
 - `m` is not a sub-σ-algebra of `m₀`,
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
@@ -97,8 +98,20 @@ noncomputable irreducible_def condExp (μ : Measure[m₀] α) (f : α → E) : �
 
 @[deprecated (since := "2025-01-21")] alias condexp := condExp
 
--- We define notation `μ[f|m]` for the conditional expectation of `f` with respect to `m`.
-@[inherit_doc] scoped notation μ "[" f "|" m "]" => MeasureTheory.condExp m μ f
+@[inherit_doc MeasureTheory.condExp]
+scoped macro:max μ:term noWs "[" f:term "|" m:term "]" : term =>
+  `(MeasureTheory.condExp $m $μ $f)
+
+/-- Unexpander for `μ[f|m]` notation. -/
+@[app_unexpander MeasureTheory.condExp]
+def condExpUnexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ $m $μ $f) => `($μ[$f|$m])
+  | _ => throw ()
+
+/-- info: μ[f|m] : α → E -/
+#guard_msgs in #check μ[f | m]
+/-- info: μ[f|m] sorry : E -/
+#guard_msgs in #check μ[f | m] (sorry : α)
 
 theorem condExp_of_not_le (hm_not : ¬m ≤ m₀) : μ[f|m] = 0 := by rw [condExp, dif_neg hm_not]
 
@@ -203,6 +216,11 @@ theorem condExp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
 
 @[deprecated (since := "2025-01-21")] alias condexp_congr_ae := condExp_congr_ae
 
+lemma condExp_congr_ae_trim (hm : m ≤ m₀) (hfg : f =ᵐ[μ] g) :
+    μ[f|m] =ᵐ[μ.trim hm] μ[g|m] :=
+  StronglyMeasurable.ae_eq_trim_of_stronglyMeasurable hm
+    stronglyMeasurable_condExp stronglyMeasurable_condExp (condExp_congr_ae hfg)
+
 theorem condExp_of_aestronglyMeasurable' (hm : m ≤ m₀) [hμm : SigmaFinite (μ.trim hm)] {f : α → E}
     (hf : AEStronglyMeasurable[m] f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
   refine ((condExp_congr_ae hf.ae_eq_mk).trans ?_).trans hf.ae_eq_mk.symm
@@ -272,7 +290,7 @@ theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
   · have h : ¬SigmaFinite (μ.trim bot_le) := by rwa [sigmaFinite_trim_bot_iff]
     rw [not_isFiniteMeasure_iff] at hμ_finite
     rw [condExp_of_not_sigmaFinite bot_le h]
-    simp only [hμ_finite, ENNReal.top_toReal, inv_zero, zero_smul]
+    simp only [hμ_finite, ENNReal.toReal_top, inv_zero, zero_smul]
     rfl
   have h_meas : StronglyMeasurable[⊥] (μ[f|⊥]) := stronglyMeasurable_condExp
   obtain ⟨c, h_eq⟩ := stronglyMeasurable_bot_iff.mp h_meas
@@ -294,7 +312,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
 @[deprecated (since := "2025-01-21")] alias condexp_bot_ae_eq := condExp_bot_ae_eq
 
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
-  refine (condExp_bot' f).trans ?_; rw [measure_univ, ENNReal.one_toReal, inv_one, one_smul]
+  refine (condExp_bot' f).trans ?_; rw [measure_univ, ENNReal.toReal_one, inv_one, one_smul]
 
 @[deprecated (since := "2025-01-21")] alias condexp_bot := condExp_bot
 
@@ -376,7 +394,7 @@ theorem condExp_condExp_of_le {m₁ m₂ m₀ : MeasurableSpace α} {μ : Measur
 section RCLike
 variable [InnerProductSpace 𝕜 E]
 
-lemma Memℒp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : Memℒp f 2 μ)
+lemma MemLp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ) (hf2 : MemLp f 2 μ)
     [SigmaFinite (μ.trim hm)] : condExpL2 E 𝕜 hm hf2.toLp =ᵐ[μ] μ[f | m] := by
   refine ae_eq_condExp_of_forall_setIntegral_eq hm hf1
     (fun s hs htop ↦ integrableOn_condExpL2_of_measure_ne_top hm htop.ne _) (fun s hs htop ↦ ?_)
@@ -385,9 +403,15 @@ lemma Memℒp.condExpL2_ae_eq_condExp' (hm : m ≤ m₀) (hf1 : Integrable f μ)
   refine setIntegral_congr_ae (hm _ hs) ?_
   filter_upwards [hf2.coeFn_toLp] with ω hω _ using hω
 
-lemma Memℒp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : Memℒp f 2 μ) [IsFiniteMeasure μ] :
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.condExpL2_ae_eq_condExp' := MemLp.condExpL2_ae_eq_condExp'
+
+lemma MemLp.condExpL2_ae_eq_condExp (hm : m ≤ m₀) (hf : MemLp f 2 μ) [IsFiniteMeasure μ] :
     condExpL2 E 𝕜 hm hf.toLp =ᵐ[μ] μ[f | m] :=
-  hf.condExpL2_ae_eq_condExp' hm (memℒp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
+  hf.condExpL2_ae_eq_condExp' hm (memLp_one_iff_integrable.1 <| hf.mono_exponent one_le_two)
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.condExpL2_ae_eq_condExp := MemLp.condExpL2_ae_eq_condExp
 
 end RCLike
 
@@ -406,16 +430,19 @@ lemma eLpNorm_condExp_le : eLpNorm (μ[f | m]) 2 μ ≤ eLpNorm f 2 μ := by
     simp
   obtain hf | hf := eq_or_ne (eLpNorm f 2 μ) ∞
   · simp [hf]
-  replace hf : Memℒp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
+  replace hf : MemLp f 2 μ := ⟨hfi.1, Ne.lt_top' fun a ↦ hf (id (Eq.symm a))⟩
   rw [← eLpNorm_congr_ae (hf.condExpL2_ae_eq_condExp' (𝕜 := ℝ) hm hfi)]
   refine le_trans (eLpNorm_condExpL2_le hm _) ?_
   rw [eLpNorm_congr_ae hf.coeFn_toLp]
 
-protected lemma Memℒp.condExp (hf : Memℒp f 2 μ) : Memℒp (μ[f | m]) 2 μ := by
+protected lemma MemLp.condExp (hf : MemLp f 2 μ) : MemLp (μ[f | m]) 2 μ := by
   by_cases hm : m ≤ m₀
   · exact ⟨(stronglyMeasurable_condExp.mono hm).aestronglyMeasurable,
       eLpNorm_condExp_le.trans_lt hf.eLpNorm_lt_top⟩
   · simp [condExp_of_not_le hm]
+
+@[deprecated (since := "2025-02-21")]
+alias Memℒp.condExp := MemLp.condExp
 
 end Real
 end NormedAddCommGroup
