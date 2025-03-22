@@ -40,18 +40,6 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
   {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M'] [IsManifold J n N]
 
--- the following result is proven in #8738 (in progress)
-section prereq8738
-
-/-- If `f` is a `C^n` local diffeomorphism of Banach manifolds at `x`, for `n ≥ 1`,
-  the differential `df_x` is a linear equivalence. -/
-noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
-    {f : M → N} {x : M} (hf : IsLocalDiffeomorphAt I J n f x) (hn : 1 ≤ n) :
-    ContinuousLinearEquiv (RingHom.id 𝕜) (TangentSpace I x) (TangentSpace J (f x)) :=
-  sorry
-
-end prereq8738
-
 -- XXX: should the next three definitions be a class instead?
 -- Are these slice charts canonical enough that we want the typeclass system to kick in?
 
@@ -160,6 +148,8 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
 -- These are required to argue that `Splits` composes.
 variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace F]
 
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
+
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv I I' f x` splits. -/
 theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x := by
   -- The local representative of f in the nice charts at x, as a continuous linear map.
@@ -187,7 +177,7 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
     rw [mfderiv_eq_fderiv, rhs.fderiv]
     exact this
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E'))
-      ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (I (h.domChart x)) := by
+      ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) ((h.domChart.extend I x)) := by
     apply this.congr
     apply Set.EqOn.eventuallyEq_of_mem h.writtenInCharts
     simp only [PartialHomeomorph.extend, PartialEquiv.trans_target, ModelWithCorners.target_eq,
@@ -196,15 +186,15 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
     constructor <;> sorry
 
   have : MSplitsAt I (𝓘(𝕜, E'))
-      ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm ∘ (h.domChart.extend I)) x := by
-    --apply this.comp
-    sorry -- pre-compose, apply comp_left lemmas and the pre-requisites above
+      ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm ∘ (h.domChart.extend I)) x :=
+    this.comp (MSplitsAt.extend h.domChart_mem_maximalAtlas (mem_chart_source _ x))
   have : MSplitsAt I (𝓘(𝕜, E')) ((h.codChart.extend I') ∘ f) x := by
     apply this.congr
     -- on some nbhd, an extended chart and its inverse cancel
     sorry
   have : MSplitsAt I I' ((h.codChart.extend I').symm ∘ (h.codChart.extend I') ∘ f) x := by
-    sorry -- post-compose
+    refine MSplitsAt.comp ?_ this
+    exact MSplitsAt.extend_symm h.codChart_mem_maximalAtlas (mem_chart_source _ (f x))
   apply this.congr
   sorry -- extended chart and its inverse cancel
 
@@ -220,8 +210,8 @@ then `g ∘ f` is an immersion at `x`. -/
 def comp [CompleteSpace F'] {g : M' → N}
     (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) :
     IsImmersionAt (F × F') I J n (g ∘ f) x := by
-  rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
-  exact hg.comp hf
+  --rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
+  sorry --exact hg.comp hf
 
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv x` is injective. -/
 theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (mfderiv I I' f x) :=
@@ -287,6 +277,7 @@ theorem prodMap {f : M → N} {g : M' → N'}
     IsImmersion (F × F') (I.prod I') (J.prod J') n (Prod.map f g) :=
   fun ⟨x, x'⟩ ↦ (h x).prodMap (h' x')
 
+omit [IsManifold I n M] [IsManifold I' n M'] in
 /-- If `f = g` and `f` is an immersion, so is `g`. -/
 theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n g :=
   fun x ↦ (h x).congr_of_eventuallyEq heq.eventuallyEq
@@ -296,6 +287,7 @@ theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦
 
 -- These are required to argue that `Splits` composes.
 variable [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
 /-- If `f` is a `C^k` immersion, each differential `mfderiv x` is injective. -/
 theorem mfderiv_injective (h : IsImmersion F I I' n f) (x : M) : Injective (mfderiv I I' f x) :=
@@ -334,6 +326,7 @@ theorem isImmersion (h : IsSmoothEmbedding F I I' n f) : IsImmersion F I I' n f 
 omit [IsManifold I n M] [IsManifold I' n M'] in
 theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 
+variable [IsManifold I 1 M] [IsManifold I' 1 M'] in
 def of_mfderiv_injective_of_compactSpace_of_T2Space
     [FiniteDimensional 𝕜 E] [CompleteSpace E'] [CompleteSpace F] [CompactSpace M] [T2Space M']
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x))
