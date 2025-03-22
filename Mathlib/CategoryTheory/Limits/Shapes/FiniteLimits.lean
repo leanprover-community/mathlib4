@@ -88,6 +88,7 @@ class HasFiniteColimits : Prop where
   and which has `Fintype` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 
+-- See note [instance argument order]
 instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits [HasFiniteColimits C]
     (J : Type w) [SmallCategory J] [FinCategory J] : HasColimitsOfShape J C := by
   refine @hasColimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
