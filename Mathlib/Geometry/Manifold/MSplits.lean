@@ -210,34 +210,31 @@ lemma comp_diffeomorph_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSp
   rw [MSplitsAt.comp_isLocalDiffeomorphAt_right_iff (hg (f x)) hn (I := I)]
   exact h x
 
-#exit
-
 -- corollary: MSplitsAt holds iff some coordinate representation splits
 --   iff *any* coordinate representation splits
 
-section RCLike
+-- TODO: should I augment the definition of MSplits, to demand being C^n?
 
--- TODO: modify these statements mutatis mutandis
+/-- If `f : M → N` is `C^n` and injective and `M` is finite-dimensional, then `f` splits. -/
+lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
+    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
+    MSplits I I' f := by
+  intro x
+  have : FiniteDimensional 𝕜 (TangentSpace I x) := by show FiniteDimensional 𝕜 E; assumption
+  exact ⟨((hf x).contMDiffAt (by simp)).mdifferentiableAt hn,
+    ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_dom (hf' x)⟩
 
--- variable {𝕜 : Type*} [RCLike 𝕜] {E E' F F' : Type*}
---   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
---   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup F'] [NormedSpace 𝕜 F']
---   [FiniteDimensional 𝕜 F] {f : E →L[𝕜] F} {g : E' →L[𝕜] F'}
+/-- If `f : M → N` is `C^n` and injective and `N` is finite-dimensional, then `f` splits. -/
+lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 E']
+    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
+    MSplits I I' f := by
+  intro x
+  have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := by show FiniteDimensional 𝕜 E'; assumption
+  exact ⟨((hf x).contMDiffAt (by simp)).mdifferentiableAt hn,
+    ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_cod (hf' x)⟩
 
--- /-- If `f : E → F` is injective and `F` is finite-dimensional, then `f` splits. -/
--- lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 F] (hf : Injective f) : f.Splits := by
---   have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
---   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
-
--- /-- If `f : E → F` is injective, `E` is finite-dimensional and `F` is Banach, then `f` splits. -/
--- lemma of_injective_of_finiteDimensional_of_completeSpace
---     [FiniteDimensional 𝕜 E] [CompleteSpace F] (hf : Injective f) : f.Splits := by
---   have aux : IsClosed (Set.range f) := sorry -- should follow from fin-dim
---   exact ⟨hf, aux, Submodule.ClosedComplemented.of_finiteDimensional (LinearMap.range f)⟩
-
--- -- If `f : E → F` is injective, `E` and `F` are Banach and `f` is Fredholm, then `f` splits.
-
-end RCLike
+-- If `f : M → N` is injective, `M` and `N` are Banach manifolds and each differential
+-- mfderiv I J f x is Fredholm, then `f` splits.
 
 end MSplits
 
