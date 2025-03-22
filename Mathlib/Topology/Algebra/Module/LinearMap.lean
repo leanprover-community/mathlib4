@@ -1111,16 +1111,6 @@ theorem closedComplemented_bot : ClosedComplemented (⊥ : Submodule R M) :=
 theorem closedComplemented_top : ClosedComplemented (⊤ : Submodule R M) :=
   ⟨(id R M).codRestrict ⊤ fun _x => trivial, fun x => Subtype.ext_iff_val.2 <| by simp⟩
 
-theorem ClosedComplemented.prod {p q : Submodule R M}
-    (hp : ClosedComplemented p) (hq : ClosedComplemented q) : ClosedComplemented (p.prod q) := by
-  choose f hf using hp
-  choose g hg using hq
-  unfold ClosedComplemented
-  have sfd := ContinuousLinearMap.prodMap f g
-  let h : M × M →L[R] (p.prod q) := f.prodMap (g := g)
-  --use (f.prod g)
-  sorry
-
 end Submodule
 
 theorem ContinuousLinearMap.closedComplemented_ker_of_rightInverse {R : Type*} [Ring R]

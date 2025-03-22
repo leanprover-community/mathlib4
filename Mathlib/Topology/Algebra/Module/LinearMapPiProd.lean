@@ -348,26 +348,3 @@ end AddCommGroup
 end coprod
 
 end ContinuousLinearMap
-
-namespace Submodule
-
-variable {R : Type*} [Ring R] {M : Type*} [TopologicalSpace M] [AddCommGroup M] [Module R M]
-
-open ContinuousLinearMap
-
-theorem ClosedComplemented.prod {p q : Submodule R M}
-    (hp : ClosedComplemented p) (hq : ClosedComplemented q) : ClosedComplemented (p.prod q) := by
-  choose f hf using hp
-  choose g hg using hq
-  unfold ClosedComplemented
-  have sfd := ContinuousLinearMap.prodMap f g
-  let wanted : M × M →L[R] ↥p × ↥q := by
-    intro x
-    let y := sfd x
-    sorry
-  --let h : M × M →L[R] (p.prod q) := sfd
-  use sfd
-  --use (f.prod g)
-  sorry
-
-end Submodule
