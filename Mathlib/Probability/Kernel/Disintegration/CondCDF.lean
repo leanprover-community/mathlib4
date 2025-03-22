@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Probability.Kernel.Disintegration.CDFToKernel
 
 /-!
@@ -213,7 +214,7 @@ lemma isRatCondKernelCDFAux_preCDF (ρ : Measure (α × ℝ)) [IsFiniteMeasure �
   tendsto_integral_of_antitone a s _ hs_tendsto := by
     simp_rw [Kernel.const_apply, integral_preCDF_fst ρ]
     have h := ρ.tendsto_IicSnd_atBot MeasurableSet.univ
-    rw [← ENNReal.zero_toReal]
+    rw [← ENNReal.toReal_zero]
     have h0 : Tendsto ENNReal.toReal (𝓝 0) (𝓝 0) :=
       ENNReal.continuousAt_toReal ENNReal.zero_ne_top
     exact h0.comp (h.comp hs_tendsto)

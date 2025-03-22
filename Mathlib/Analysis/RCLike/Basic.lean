@@ -54,7 +54,9 @@ This typeclass captures properties shared by ℝ and ℂ, with an API that close
 -/
 class RCLike (K : semiOutParam Type*) extends DenselyNormedField K, StarRing K,
     NormedAlgebra ℝ K, CompleteSpace K where
+  /-- The real part as an additive monoid homomorphism -/
   re : K →+ ℝ
+  /-- The imaginary part as an additive monoid homomorphism -/
   im : K →+ ℝ
   /-- Imaginary unit in `K`. Meant to be set to `0` for `K = ℝ`. -/
   I : K
@@ -656,7 +658,7 @@ theorem im_le_norm (z : K) : im z ≤ ‖z‖ :=
   (abs_le.1 (abs_im_le_norm _)).2
 
 theorem im_eq_zero_of_le {a : K} (h : ‖a‖ ≤ re a) : im a = 0 := by
-  simpa only [mul_self_norm a, normSq_apply, self_eq_add_right, mul_self_eq_zero]
+  simpa only [mul_self_norm a, normSq_apply, left_eq_add, mul_self_eq_zero]
     using congr_arg (fun z => z * z) ((re_le_norm a).antisymm h)
 
 theorem re_eq_self_of_le {a : K} (h : ‖a‖ ≤ re a) : (re a : K) = a := by
@@ -1054,6 +1056,9 @@ theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
 @[continuity]
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
+
+theorem lipschitzWith_ofReal : LipschitzWith 1 (ofReal : ℝ → K) :=
+  ofRealLI.lipschitz
 
 end LinearMaps
 

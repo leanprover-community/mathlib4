@@ -5,12 +5,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Johan Commelin, Jesse Michael Han, Chris Hughes, Robert Y. Lewis,
   Patrick Massot
 -/
-import Mathlib.Tactic.FinCases
-import Mathlib.Tactic.ApplyFun
-import Mathlib.LinearAlgebra.FiniteDimensional
-import Mathlib.LinearAlgebra.Dual
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Data.Real.Sqrt
+import Mathlib.LinearAlgebra.Dual.Lemmas
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.Tactic.ApplyFun
+import Mathlib.Tactic.FinCases
 
 /-!
 # Huang's sensitivity theorem
@@ -154,7 +154,13 @@ end Q
 /-- The free vector space on vertices of a hypercube, defined inductively. -/
 def V : ℕ → Type
   | 0 => ℝ
-  | Nat.succ n => V n × V n
+  | n + 1 => V n × V n
+
+@[simp]
+theorem V_zero : V 0 = ℝ := rfl
+
+@[simp]
+theorem V_succ {n : ℕ} : V (n + 1) = (V n × V n) := rfl
 
 namespace V
 
@@ -197,7 +203,6 @@ theorem duality (p q : Q n) : ε p (e q) = if p = q then 1 else 0 := by
   · rw [show p = q from Subsingleton.elim (α := Q 0) p q]
     dsimp [ε, e]
     simp
-    rfl
   · dsimp [ε, e]
     cases hp : p 0 <;> cases hq : q 0
     all_goals
@@ -256,7 +261,7 @@ theorem finrank_V : finrank ℝ (V n) = 2 ^ n := by
 defined inductively as a ℝ-linear map from `V n` to `V n`. -/
 noncomputable def f : ∀ n, V n →ₗ[ℝ] V n
   | 0 => 0
-  | Nat.succ n =>
+  | n + 1 =>
     LinearMap.prod (LinearMap.coprod (f n) LinearMap.id) (LinearMap.coprod LinearMap.id (-f n))
 
 /-! The preceding definition uses linear map constructions to automatically
@@ -294,6 +299,7 @@ theorem f_matrix : ∀ p q : Q n, |ε q (f n (e p))| = if p ∈ q.adjacent then 
   · intro p q
     dsimp [f]
     simp [Q.not_adjacent_zero]
+    rfl
   · intro p q
     have ite_nonneg : ite (π q = π p) (1 : ℝ) 0 ≥ 0 := by split_ifs <;> norm_num
     dsimp only [e, ε, f, V]; rw [LinearMap.prod_apply]; dsimp; cases hp : p 0 <;> cases hq : q 0
@@ -316,12 +322,12 @@ variable {m : ℕ}
 
 
 theorem g_apply : ∀ v, g m v = (f m v + √ (m + 1) • v, v) := by
-  delta g; intro v; erw [LinearMap.prod_apply]; simp
+  delta g; intro v; simp [V]
 
 theorem g_injective : Injective (g m) := by
   rw [g]
   intro x₁ x₂ h
-  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk.inj_iff, Pi.prod] at h
+  simp only [V, LinearMap.prod_apply, LinearMap.id_apply, Prod.mk_inj, Pi.prod] at h
   exact h.right
 
 theorem f_image_g (w : V m.succ) (hv : ∃ v, g m v = w) : f m.succ w = √ (m + 1) • w := by
@@ -425,7 +431,7 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     _ =
         |(coeffs y).sum fun (i : Q m.succ) (a : ℝ) =>
             a • (ε q ∘ f m.succ ∘ fun i : Q m.succ => e i) i| := by
-      erw [(f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
+      rw [lc_def, (f m.succ).map_finsupp_linearCombination, (ε q).map_finsupp_linearCombination,
            Finsupp.linearCombination_apply]
     _ ≤ ∑ p ∈ (coeffs y).support, |coeffs y p * (ε q <| f m.succ <| e p)| :=
       (norm_sum_le _ fun p => coeffs y p * _)

@@ -6,7 +6,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 import Mathlib.Order.Basic
 import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Option.Basic
-import Mathlib.Tactic.Cases
 
 /-! ### List.scanl and List.scanr -/
 
@@ -42,16 +41,20 @@ theorem getElem_scanl_zero {h : 0 < (scanl f b l).length} : (scanl f b l)[0] = b
   · simp [scanl_nil]
   · simp [scanl_cons, singleton_append]
 
-theorem get?_succ_scanl {i : ℕ} : (scanl f b l).get? (i + 1) =
-    ((scanl f b l).get? i).bind fun x => (l.get? i).map fun y => f x y := by
-  induction' l with hd tl hl generalizing b i
-  · symm
-    simp only [Option.bind_eq_none', get?, forall₂_true_iff, not_false_iff, Option.map_none',
-      scanl_nil, Option.not_mem_none, forall_true_iff]
-  · simp only [scanl_cons, singleton_append]
+theorem getElem?_succ_scanl {i : ℕ} : (scanl f b l)[i + 1]? =
+    (scanl f b l)[i]?.bind fun x => l[i]?.map fun y => f x y := by
+  induction l generalizing b i with
+  | nil =>
+    symm
+    simp only [scanl, getElem?_nil, Option.map_none', Option.bind_none, getElem?_cons_succ]
+  | cons hd tl hl =>
+    simp only [scanl_cons, singleton_append]
     cases i
     · simp
-    · simp only [hl, get?]
+    · simp only [hl, getElem?_cons_succ]
+
+@[deprecated (since := "2025-02-21")]
+alias get?_succ_scanl := getElem?_succ_scanl
 
 theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
     (scanl f b l)[i + 1] =
@@ -70,13 +73,6 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
       rw [getElem_append_right]
       · simp only [length, Nat.zero_add 1, succ_add_sub_one, hi]; rfl
       · simp only [length_singleton]; omega
-
-@[deprecated getElem_succ_scanl (since := "2024-08-22")]
-theorem get_succ_scanl {i : ℕ} {h : i + 1 < (scanl f b l).length} :
-    (scanl f b l).get ⟨i + 1, h⟩ =
-      f ((scanl f b l).get ⟨i, Nat.lt_of_succ_lt h⟩)
-        (l.get ⟨i, Nat.lt_of_succ_lt_succ (lt_of_lt_of_le h (le_of_eq (length_scanl b l)))⟩) :=
-  getElem_succ_scanl h
 
 -- scanr
 @[simp]

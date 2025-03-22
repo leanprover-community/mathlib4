@@ -181,40 +181,40 @@ private theorem fFold_fFold (m : M) (x : A × S f) : fFold f m (fFold f m x) = Q
     · rintro _ ⟨b, m₃, rfl⟩
       change f.bilin _ _ * (f.bilin _ _ * b) = Q m • (f.bilin _ _ * b)
       rw [← smul_mul_assoc, ← mul_assoc, f.contract_mid]
-    · change f.bilin m₁ m * 0 = Q m • (0 : A)  -- Porting note: `•` now needs the type of `0`
-      rw [mul_zero, smul_zero]
+    · suffices f.bilin m₁ m * 0 = Q m • (0 : A) by simp
+      simp
     · rintro x y _hx _hy ihx ihy
       rw [LinearMap.add_apply, LinearMap.add_apply, mul_add, smul_add, ihx, ihy]
     · rintro x hx _c ihx
       rw [LinearMap.smul_apply, LinearMap.smul_apply, mul_smul_comm, ihx, smul_comm]
 
 -- Porting note: In Lean 3, `aux_apply` isn't a simp lemma. I changed `{ attrs := [] }` to
--- `.lemmasOnly`, so that `aux_apply` isn't a simp lemma.
+-- `-isSimp`, so that `aux_apply` isn't a simp lemma.
 /-- The final auxiliary construction for `CliffordAlgebra.even.lift`. This map is the forwards
 direction of that equivalence, but not in the fully-bundled form. -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
   refine ?_ ∘ₗ (even Q).val.toLinearMap
   -- Porting note: added, can't be found otherwise
   letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
   exact LinearMap.fst R _ _ ∘ₗ foldr Q (fFold f) (fFold_fFold f) (1, 0)
 
-@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
+@[simp]
 theorem aux_one : aux f 1 = 1 :=
   congr_arg Prod.fst (foldr_one _ _ _ _)
 
-@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
+@[simp]
 theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
     (by
       rw [foldr_ι, foldr_ι]
       exact mul_one _)
 
-@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
+@[simp]
 theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
   (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 
-@[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout https://github.com/leanprover-community/mathlib4/pull/8386
+@[simp]
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
   obtain ⟨x, x_property⟩ := x
   cases y
@@ -248,7 +248,7 @@ def even.lift : EvenHom Q A ≃ (CliffordAlgebra.even Q →ₐ[R] A) where
   left_inv f := EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι f
   right_inv _ := even.algHom_ext Q <| EvenHom.ext <| LinearMap.ext₂ <| even.lift.aux_ι _
 
--- @[simp] -- Porting note: simpNF linter times out on this one
+@[simp]
 theorem even.lift_ι (f : EvenHom Q A) (m₁ m₂ : M) :
     even.lift Q f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
   even.lift.aux_ι _ _ _

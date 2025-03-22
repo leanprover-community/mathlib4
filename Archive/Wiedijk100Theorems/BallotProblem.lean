@@ -96,7 +96,7 @@ theorem length_of_mem_countedSequence {p q} {l : List ℤ} (hl : l ∈ countedSe
 
 theorem counted_eq_nil_iff {p q : ℕ} {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l = [] ↔ p = 0 ∧ q = 0 :=
-  List.length_eq_zero.symm.trans <| by simp [length_of_mem_countedSequence hl]
+  List.length_eq_zero_iff.symm.trans <| by simp [length_of_mem_countedSequence hl]
 
 theorem counted_ne_nil_left {p q : ℕ} (hp : p ≠ 0) {l : List ℤ} (hl : l ∈ countedSequence p q) :
     l ≠ [] := by simp [counted_eq_nil_iff hl, hp]
@@ -316,7 +316,7 @@ theorem ballot_problem' :
     simp
   · intro p
     rw [ballot_edge]
-    simp only [ENNReal.one_toReal, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
+    simp only [ENNReal.toReal_one, Nat.cast_add, Nat.cast_one, Nat.cast_zero, sub_zero, add_zero]
     rw [div_self]
     exact Nat.cast_add_one_ne_zero p
   · intro q p qp h₁ h₂

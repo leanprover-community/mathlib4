@@ -130,7 +130,7 @@ instance : (forget Grp.{u}).IsRightAdjoint  :=
 section Abelianization
 
 /-- The abelianization functor `Group ⥤ CommGroup` sending a group `G` to its abelianization `Gᵃᵇ`.
- -/
+-/
 def abelianize : Grp.{u} ⥤ CommGrp.{u} where
   obj G := CommGrp.of (Abelianization G)
   map f := CommGrp.ofHom (Abelianization.lift (Abelianization.of.comp f.hom))

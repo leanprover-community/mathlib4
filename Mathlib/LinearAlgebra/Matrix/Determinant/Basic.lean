@@ -255,7 +255,7 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
     _ = c ^ Fintype.card n * det A := by simp
 
 @[simp]
-theorem det_smul_of_tower {α} [Monoid α] [DistribMulAction α R] [IsScalarTower α R R]
+theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : α) (A : Matrix n n R) :
     det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
@@ -467,6 +467,18 @@ theorem det_updateCol_add_smul_self (A : Matrix n n R) {i j : n} (hij : i ≠ j)
 @[deprecated (since := "2024-12-11")]
 alias det_updateColumn_add_smul_self := det_updateCol_add_smul_self
 
+theorem linearIndependent_rows_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
+    LinearIndependent R (fun i ↦ A i) := by
+  contrapose! hA
+  obtain ⟨c, hc0, i, hci⟩ := Fintype.not_linearIndependent_iff.1 hA
+  have h0 := A.det_updateRow_sum i c
+  rwa [det_eq_zero_of_row_eq_zero (i := i) (fun j ↦ by simp [hc0]), smul_eq_mul, eq_comm,
+    mul_eq_zero_iff_left hci] at h0
+
+theorem linearIndependent_cols_of_det_ne_zero [IsDomain R] {A : Matrix m m R} (hA : A.det ≠ 0) :
+    LinearIndependent R (fun i ↦ Aᵀ i) :=
+  Matrix.linearIndependent_rows_of_det_ne_zero (by simpa)
+
 theorem det_eq_of_forall_row_eq_smul_add_const_aux {A B : Matrix n n R} {s : Finset n} :
     ∀ (c : n → R) (_ : ∀ i, i ∉ s → c i = 0) (k : n) (_ : k ∉ s)
       (_ : ∀ i j, A i j = B i j + c i * B k j), det A = det B := by
@@ -593,7 +605,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
           prodCongrLeft (fun k => σ k (Finset.mem_univ _)) (k, x) =
             prodCongrLeft (fun k => σ' k (Finset.mem_univ _)) (k, x) :=
         fun k x => by rw [eq]
-      simp only [prodCongrLeft_apply, Prod.mk.inj_iff] at this
+      simp only [prodCongrLeft_apply, Prod.mk_inj] at this
       exact (this k x).1
     · intro σ hσ
       rw [mem_preserving_snd] at hσ
