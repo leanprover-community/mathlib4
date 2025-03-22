@@ -197,7 +197,7 @@ theorem exists_measurable_superset_ae_eq (h : NullMeasurableSet s μ) :
     simpa only [union_empty] using hst.symm.union this
 
 theorem toMeasurable_ae_eq (h : NullMeasurableSet s μ) : toMeasurable μ s =ᵐ[μ] s := by
-  rw [toMeasurable_def, dif_pos]
+  rw [toMeasurable, dif_pos]
   exact (exists_measurable_superset_ae_eq h).choose_spec.2.2
 
 theorem compl_toMeasurable_compl_ae_eq (h : NullMeasurableSet s μ) : (toMeasurable μ sᶜ)ᶜ =ᵐ[μ] s :=

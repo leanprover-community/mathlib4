@@ -50,30 +50,30 @@ variable {α : Type*} {mα : MeasurableSpace α} {μ ν : Measure α}
 
 open Classical in
 /-- Kullback-Leibler divergence between two measures. -/
-noncomputable irreducible_def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
+@[irreducible] noncomputable def klDiv (μ ν : Measure α) : ℝ≥0∞ :=
   if μ ≪ ν ∧ Integrable (llr μ ν) μ
     then ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal)
     else ∞
 
 lemma klDiv_of_ac_of_integrable (h1 : μ ≪ ν) (h2 : Integrable (llr μ ν) μ) :
     klDiv μ ν = ENNReal.ofReal (∫ x, llr μ ν x ∂μ + (ν univ).toReal - (μ univ).toReal) := by
-  rw [klDiv_def]
+  rw [klDiv]
   exact if_pos ⟨h1, h2⟩
 
 @[simp]
 lemma klDiv_of_not_ac (h : ¬ μ ≪ ν) : klDiv μ ν = ∞ := by
-  rw [klDiv_def]
+  rw [klDiv]
   exact if_neg (not_and_of_not_left _ h)
 
 @[simp]
 lemma klDiv_of_not_integrable (h : ¬ Integrable (llr μ ν) μ) : klDiv μ ν = ∞ := by
-  rw [klDiv_def]
+  rw [klDiv]
   exact if_neg (not_and_of_not_right _ h)
 
 @[simp]
 lemma klDiv_self (μ : Measure α) [SigmaFinite μ] : klDiv μ μ = 0 := by
   have h := llr_self μ
-  rw [klDiv_def, if_pos]
+  rw [klDiv, if_pos]
   · simp [integral_congr_ae h]
   · rw [integrable_congr h]
     exact ⟨Measure.AbsolutelyContinuous.rfl, integrable_zero _ _ μ⟩
@@ -105,7 +105,7 @@ lemma klDiv_eq_integral_klFun :
     klDiv μ ν = if μ ≪ ν ∧ Integrable (llr μ ν) μ
       then ENNReal.ofReal (∫ x, klFun (μ.rnDeriv ν x).toReal ∂ν)
       else ∞ := by
-  rw [klDiv_def]
+  rw [klDiv]
   exact if_ctx_congr Iff.rfl (fun h ↦ by rw [integral_klFun_rnDeriv h.1 h.2]) fun _ ↦ rfl
 
 open Classical in

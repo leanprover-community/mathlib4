@@ -259,7 +259,7 @@ instance [∀ x : B, TopologicalSpace (E x)] : ∀ x : B', TopologicalSpace ((f 
 variable [TopologicalSpace B'] [TopologicalSpace (TotalSpace F E)]
 
 /-- Definition of `Pullback.TotalSpace.topologicalSpace`, which we make irreducible. -/
-irreducible_def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
+@[irreducible] def pullbackTopology : TopologicalSpace (TotalSpace F (f *ᵖ E)) :=
   induced TotalSpace.proj ‹TopologicalSpace B'› ⊓
     induced (Pullback.lift f) ‹TopologicalSpace (TotalSpace F E)›
 
@@ -269,18 +269,18 @@ instance Pullback.TotalSpace.topologicalSpace : TopologicalSpace (TotalSpace F (
   pullbackTopology F E f
 
 theorem Pullback.continuous_proj (f : B' → B) : Continuous (π F (f *ᵖ E)) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology]
   exact inf_le_left
 
 theorem Pullback.continuous_lift (f : B' → B) : Continuous (@Pullback.lift B F E B' f) := by
-  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+  rw [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, pullbackTopology]
   exact inf_le_right
 
 theorem inducing_pullbackTotalSpaceEmbedding (f : B' → B) :
     IsInducing (@pullbackTotalSpaceEmbedding B F E B' f) := by
   constructor
   simp_rw [instTopologicalSpaceProd, induced_inf, induced_compose,
-    Pullback.TotalSpace.topologicalSpace, pullbackTopology_def]
+    Pullback.TotalSpace.topologicalSpace, pullbackTopology]
   rfl
 
 section FiberBundle
@@ -290,7 +290,7 @@ variable [TopologicalSpace F] [TopologicalSpace B]
 theorem Pullback.continuous_totalSpaceMk [∀ x, TopologicalSpace (E x)] [FiberBundle F E]
     {f : B' → B} {x : B'} : Continuous (@TotalSpace.mk _ F (f *ᵖ E) x) := by
   simp only [continuous_iff_le_induced, Pullback.TotalSpace.topologicalSpace, induced_compose,
-    induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology_def]
+    induced_inf, Function.comp_def, induced_const, top_inf_eq, pullbackTopology]
   exact (FiberBundle.totalSpaceMk_isInducing F E (f x)).eq_induced.le
 
 variable {E F}

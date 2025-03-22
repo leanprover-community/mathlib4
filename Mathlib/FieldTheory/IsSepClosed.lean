@@ -283,7 +283,7 @@ variable [Algebra.IsSeparable K L] {L}
 
 /-- A (random) homomorphism from a separable extension L of K into a separably
   closed extension M of K. -/
-noncomputable irreducible_def lift : L →ₐ[K] M :=
+@[irreducible]noncomputable def lift : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsSeparable.isIntegral K x,
       splits_codomain _ (Algebra.IsSeparable.isSeparable K x)⟩)

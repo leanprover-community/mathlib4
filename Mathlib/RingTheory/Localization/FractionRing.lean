@@ -104,7 +104,7 @@ protected theorem isDomain : IsDomain K :=
   isDomain_of_le_nonZeroDivisors _ (le_refl (nonZeroDivisors A))
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
+@[irreducible] protected noncomputable def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2

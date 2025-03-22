@@ -87,7 +87,7 @@ namespace Orientation
 /-- An antisymmetric bilinear form on an oriented real inner product space of dimension 2 (usual
 notation `ω`). When evaluated on two vectors, it gives the oriented area of the parallelogram they
 span. -/
-irreducible_def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
+@[irreducible] def areaForm : E →ₗ[ℝ] E →ₗ[ℝ] ℝ := by
   let z : E [⋀^Fin 0]→ₗ[ℝ] ℝ ≃ₗ[ℝ] ℝ :=
     AlternatingMap.constLinearEquivOfIsEmpty.symm
   let y : E [⋀^Fin 1]→ₗ[ℝ] ℝ →ₗ[ℝ] E →ₗ[ℝ] ℝ :=
@@ -165,7 +165,7 @@ theorem areaForm_comp_linearIsometryEquiv (φ : E ≃ₗᵢ[ℝ] E)
 
 /-- Auxiliary construction for `Orientation.rightAngleRotation`, rotation by 90 degrees in an
 oriented real inner product space of dimension 2. -/
-irreducible_def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
+@[irreducible] def rightAngleRotationAux₁ : E →ₗ[ℝ] E :=
   let to_dual : E ≃ₗ[ℝ] E →ₗ[ℝ] ℝ :=
     (InnerProductSpace.toDual ℝ E).toLinearEquiv ≪≫ₗ LinearMap.toContinuousLinearMap.symm
   ↑to_dual.symm ∘ₗ ω
@@ -228,7 +228,7 @@ theorem rightAngleRotationAux₁_rightAngleRotationAux₁ (x : E) :
 /-- An isometric automorphism of an oriented real inner product space of dimension 2 (usual notation
 `J`). This automorphism squares to -1. We will define rotations in such a way that this
 automorphism is equal to rotation by 90 degrees. -/
-irreducible_def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
+@[irreducible] def rightAngleRotation : E ≃ₗᵢ[ℝ] E :=
   LinearIsometryEquiv.ofLinearIsometry o.rightAngleRotationAux₂ (-o.rightAngleRotationAux₁)
     (by ext; simp [rightAngleRotationAux₂]) (by ext; simp [rightAngleRotationAux₂])
 

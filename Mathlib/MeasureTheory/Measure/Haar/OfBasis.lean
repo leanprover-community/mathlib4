@@ -245,7 +245,7 @@ variable [MeasurableSpace E] [BorelSpace E]
 
 /-- The Lebesgue measure associated to a basis, giving measure `1` to the parallelepiped spanned
 by the basis. -/
-irreducible_def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
+@[irreducible] def Basis.addHaar (b : Basis ι ℝ E) : Measure E :=
   Measure.addHaarMeasure b.parallelepiped
 
 instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure b.addHaar := by
@@ -253,14 +253,14 @@ instance IsAddHaarMeasure_basis_addHaar (b : Basis ι ℝ E) : IsAddHaarMeasure 
 
 instance (b : Basis ι ℝ E) : SigmaFinite b.addHaar := by
   have : FiniteDimensional ℝ E := FiniteDimensional.of_fintype_basis b
-  rw [Basis.addHaar_def]; exact sigmaFinite_addHaarMeasure
+  rw [Basis.addHaar]; exact sigmaFinite_addHaarMeasure
 
 /-- Let `μ` be a σ-finite left invariant measure on `E`. Then `μ` is equal to the Haar measure
 defined by `b` iff the parallelepiped defined by `b` has measure `1` for `μ`. -/
 theorem Basis.addHaar_eq_iff [SecondCountableTopology E] (b : Basis ι ℝ E) (μ : Measure E)
     [SigmaFinite μ] [IsAddLeftInvariant μ] :
     b.addHaar = μ ↔ μ b.parallelepiped = 1 := by
-  rw [Basis.addHaar_def]
+  rw [Basis.addHaar]
   exact addHaarMeasure_eq_iff b.parallelepiped μ
 
 @[simp]

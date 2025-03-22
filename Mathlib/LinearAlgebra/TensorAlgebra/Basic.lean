@@ -102,7 +102,7 @@ variable {M}
 
 /-- The canonical linear map `M →ₗ[R] TensorAlgebra R M`.
 -/
-irreducible_def ι : M →ₗ[R] TensorAlgebra R M :=
+@[irreducible] def ι : M →ₗ[R] TensorAlgebra R M :=
   { toFun := fun m => RingQuot.mkAlgHom R _ (FreeAlgebra.ι R m)
     map_add' := fun x y => by
       rw [← map_add (RingQuot.mkAlgHom R (Rel R M))]
@@ -116,7 +116,6 @@ theorem ringQuot_mkAlgHom_freeAlgebra_ι_eq_ι (m : M) :
   rw [ι]
   rfl
 
--- Porting note: Changed `irreducible_def` to `def` to get `@[simps symm_apply]` to work
 /-- Given a linear map `f : M → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
 of `f` to a morphism of `R`-algebras `TensorAlgebra R M → A`.
 -/

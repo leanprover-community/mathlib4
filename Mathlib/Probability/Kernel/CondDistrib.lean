@@ -57,7 +57,7 @@ For almost all `a`, `condDistrib Y X μ` evaluated at `X a` and a measurable set
 the conditional expectation `μ⟦Y ⁻¹' s | mβ.comap X⟧ a`. It also satisfies the equality
 `μ[(fun a => f (X a, Y a)) | mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a, y) ∂(condDistrib Y X μ (X a))`
 for all integrable functions `f`. -/
-noncomputable irreducible_def condDistrib {_ : MeasurableSpace α} [MeasurableSpace β] (Y : α → Ω)
+@[irreducible] noncomputable def condDistrib {_ : MeasurableSpace α} [MeasurableSpace β] (Y : α → Ω)
     (X : α → β) (μ : Measure α) [IsFiniteMeasure μ] : Kernel β Ω :=
   (μ.map fun a => (X a, Y a)).condKernel
 

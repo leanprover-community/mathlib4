@@ -141,7 +141,7 @@ theorem summable_mk {f : α → ℝ} (hf : ∀ n, 0 ≤ f n) :
 theorem coe_tsum {f : α → ℝ≥0} : ↑(∑' a, f a) = ∑' a, (f a : ℝ) := by
   classical
   exact if hf : Summable f then Eq.symm <| (hasSum_coe.2 <| hf.hasSum).tsum_eq
-  else by simp [tsum_def, hf, mt summable_coe.1 hf]
+  else by simp [tsum, hf, mt summable_coe.1 hf]
 
 theorem coe_tsum_of_nonneg {f : α → ℝ} (hf₁ : ∀ n, 0 ≤ f n) :
     (⟨∑' n, f n, tsum_nonneg hf₁⟩ : ℝ≥0) = (∑' n, ⟨f n, hf₁ n⟩ : ℝ≥0) :=

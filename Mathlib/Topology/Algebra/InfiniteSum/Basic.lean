@@ -367,7 +367,7 @@ theorem tprod_congr_subtype (f : β → α) {P Q : β → Prop} (h : ∀ x, P x 
 
 @[to_additive]
 theorem tprod_eq_finprod (hf : (mulSupport f).Finite) :
-    ∏' b, f b = ∏ᶠ b, f b := by simp [tprod_def, multipliable_of_finite_mulSupport hf, hf]
+    ∏' b, f b = ∏ᶠ b, f b := by simp [tprod, multipliable_of_finite_mulSupport hf, hf]
 
 @[to_additive]
 theorem tprod_eq_prod' {s : Finset β} (hf : mulSupport f ⊆ s) :
@@ -454,7 +454,7 @@ theorem Function.Injective.tprod_eq {g : γ → β} (hg : Injective g) {f : β �
     simp [this]
   · have hf_fin' : ¬ Set.Finite (mulSupport (f ∘ g)) := by
       rwa [this, Set.finite_image_iff hg.injOn] at hf_fin
-    simp_rw [tprod_def, if_neg hf_fin, if_neg hf_fin', Multipliable,
+    simp_rw [tprod, if_neg hf_fin, if_neg hf_fin', Multipliable,
       funext fun a => propext <| hg.hasProd_iff (mulSupport_subset_iff'.1 hf) (a := a)]
 
 @[to_additive]
@@ -546,7 +546,7 @@ theorem Function.Surjective.tprod_eq_tprod_of_hasProd_iff_hasProd {α' : Type*} 
     {g : γ → α'} (h : ∀ {a}, HasProd f (e a) ↔ HasProd g a) : ∏' b, f b = e (∏' c, g c) :=
   by_cases (fun x ↦ (h.mpr x.hasProd).tprod_eq) fun hg : ¬Multipliable g ↦ by
     have hf : ¬Multipliable f := mt (hes.multipliable_iff_of_hasProd_iff @h).1 hg
-    simp [tprod_def, hf, hg, h1]
+    simp [tprod, hf, hg, h1]
 
 @[to_additive]
 theorem tprod_eq_tprod_of_hasProd_iff_hasProd {f : β → α} {g : γ → α}
