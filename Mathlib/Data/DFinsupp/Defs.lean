@@ -504,7 +504,6 @@ theorem single_eq_zero {i : ι} {xi : β i} : single i xi = 0 ↔ xi = 0 := by
   rw [← single_zero i, single_eq_single_iff]
   simp
 
-@[simp]
 theorem single_ne_zero {i : ι} {xi : β i} : single i xi ≠ 0 ↔ xi ≠ 0 :=
   single_eq_zero.not
 
