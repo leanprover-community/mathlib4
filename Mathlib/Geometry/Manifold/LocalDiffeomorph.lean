@@ -137,6 +137,50 @@ open sets `U ∋ x` and `V ∋ f x` and a diffeomorphism `Φ : U → V` such tha
 def IsLocalDiffeomorphAt (f : M → N) (x : M) : Prop :=
   ∃ Φ : PartialDiffeomorph I J M N n, x ∈ Φ.source ∧ EqOn f Φ Φ.source
 
+lemma PartialDiffeomorph.isLocalDiffeomorphAt (φ : PartialDiffeomorph I J M N n)
+    {x : M} (hx : x ∈ φ.source) : IsLocalDiffeomorphAt I J n φ x := by
+  use φ
+  exact ⟨hx, fun ⦃x⦄ ↦ congrFun rfl⟩
+
+section InvAt
+
+namespace IsLocalDiffeomorphAt
+
+variable {f : M → N} {x : M}
+
+variable {I I' J n}
+
+/-- An arbitrary choice of local inverse of `f` near `x`. -/
+noncomputable def invAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    PartialDiffeomorph J I N M n := (Classical.choose hf).symm
+
+lemma invAt_open_source (hf : IsLocalDiffeomorphAt I J n f x) : IsOpen hf.invAt.source :=
+  PartialDiffeomorph.open_source _
+
+-- want invAt_eqOn, also, right?
+
+lemma invAt_mem_source (hf : IsLocalDiffeomorphAt I J n f x) : f x ∈ hf.invAt.source := by
+  have : (Classical.choose hf) x = f x := sorry
+  rw [← this]
+  exact (Classical.choose hf).map_source hf.choose_spec.1
+
+lemma invAt_inv_apply (hf : IsLocalDiffeomorphAt I J n f x) {y : N} (hy : y ∈ hf.invAt.source) :
+    f (hf.invAt y) = y := by
+  let Φ := Classical.choose hf
+  have : hf.invAt.toPartialEquiv y ∈ Φ.source := by
+    rw [← Φ.symm_target]
+    exact Φ.symm.map_source hy
+  rw [hf.choose_spec.2 this]
+  exact Φ.right_inv hy
+
+lemma invAt_isLocalDiffeomorphAt (hf : IsLocalDiffeomorphAt I J n f x) :
+    IsLocalDiffeomorphAt J I n (hf.invAt) (f x) :=
+  hf.invAt.isLocalDiffeomorphAt _ _ _ hf.invAt_mem_source
+
+#exit
+end IsLocalDiffeomorphAt
+
+#exit
 /-- `f : M → N` is called a **`C^n` local diffeomorphism on *s*** iff it is a local diffeomorphism
 at each `x : s`. -/
 def IsLocalDiffeomorphOn (f : M → N) (s : Set M) : Prop :=

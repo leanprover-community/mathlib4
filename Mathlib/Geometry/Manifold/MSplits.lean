@@ -157,7 +157,7 @@ lemma comp_isLocalDiffeomorphAt_left_iff [CompleteSpace E] [CompleteSpace E'] [C
     MSplitsAt I I' f x ↔ MSplitsAt J I' (f ∘ f₀) y := by
   refine ⟨fun hf ↦ hf.comp_isLocalDiffeomorphAt_left hxy hf₀ hn,
     fun h ↦ ?_⟩
-  let g₀ : M → N := sorry -- TODO: choose the local inverse of f₀
+  let g₀ : M → N := hf₀.invAt -- TODO: choose the local inverse of f₀
   have hg₀ : IsLocalDiffeomorphAt I J n g₀ x := sorry
   have : g₀ x = y := sorry
   let asdf := h.comp_isLocalDiffeomorphAt_left this hg₀ hn
