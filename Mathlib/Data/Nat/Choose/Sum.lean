@@ -129,7 +129,7 @@ theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).cho
   · induction n, h using le_induction with
     | base => simp
     | succ n _ ih =>
-      rw [← Ico_insert_right (by omega), sum_insert (by simp), Ico_succ_right, ih,
+      rw [← Ico_insert_right (by omega), sum_insert (by simp), Ico_add_one_right_eq_Icc, ih,
         choose_succ_succ' (n + 1)]
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.
@@ -144,7 +144,7 @@ lemma sum_range_add_choose (n k : ℕ) :
     ∑ i ∈ Finset.range (n + 1), (i + k).choose k = (n + k + 1).choose (k + 1) := by
   rw [← sum_Icc_choose, range_eq_Ico]
   convert (sum_map _ (addRightEmbedding k) (·.choose k)).symm using 2
-  rw [map_add_right_Ico, zero_add, add_right_comm, Nat.Ico_succ_right]
+  rw [map_add_right_Ico, zero_add, add_right_comm, Ico_add_one_right_eq_Icc]
 
 end Nat
 
