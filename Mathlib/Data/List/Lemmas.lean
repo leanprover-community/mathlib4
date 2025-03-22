@@ -17,6 +17,10 @@ variable {α β γ : Type*}
 
 namespace List
 
+@[simp]
+theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
+  Set.eq_empty_iff_forall_not_mem.trans eq_nil_iff_forall_not_mem.symm
+
 set_option linter.deprecated false in
 @[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
 lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
