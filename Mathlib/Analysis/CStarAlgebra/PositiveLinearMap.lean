@@ -163,6 +163,7 @@ lemma exists_norm_apply_le_of_isSelfAdjoint (f : A₁ →P[ℂ] A₂) :
           · exact CStarAlgebra.norm_negPart_le a
     _ = (2 * C) * ‖a‖ := by ring
 
+open Complex in
 /--
 If `f` is a positive map, then it is bounded (and therefore continuous).
 -/
@@ -173,8 +174,8 @@ lemma exists_norm_apply_le (f : A₁ →P[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a, �
   let a₁ : A₁ := realPart a
   let a₂ : A₁ := imaginaryPart a
   nth_rewrite 1 [← realPart_add_I_smul_imaginaryPart a]
-  calc _ = ‖f a₁ + Complex.I • f a₂‖ := by simp; rfl
-    _ ≤ ‖f a₁‖ + ‖Complex.I • f a₂‖ := norm_add_le (f a₁) (Complex.I • f a₂)
+  calc _ = ‖f a₁ + I • f a₂‖ := by simp; rfl
+    _ ≤ ‖f a₁‖ + ‖I • f a₂‖ := norm_add_le (f a₁) (I • f a₂)
     _ ≤ ‖f a₁‖ + ‖f a₂‖ := by gcongr; simp [norm_smul]
     _ ≤ C * ‖a₁‖ + C * ‖a₂‖ := by
           gcongr
