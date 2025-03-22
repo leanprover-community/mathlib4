@@ -506,3 +506,13 @@ theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
 theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
 
 @[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
+
+theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
+
+theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
+    circleMap c R θ ∈ sphere c R := by
+  simpa only [abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
+
+theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
+    circleMap c R θ ∈ closedBall c R :=
+  sphere_subset_closedBall (circleMap_mem_sphere c hR θ)

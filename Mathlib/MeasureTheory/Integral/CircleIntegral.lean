@@ -79,16 +79,6 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 ### `circleMap`, a parametrization of a circle
 -/
 
-theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
-
-theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
-    circleMap c R θ ∈ sphere c R := by
-  simpa only [abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
-
-theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
-    circleMap c R θ ∈ closedBall c R :=
-  sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
-
 theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [dist_eq, le_abs_self]
 
