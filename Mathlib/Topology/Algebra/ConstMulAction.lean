@@ -438,6 +438,35 @@ class ProperlyDiscontinuousVAdd (Γ : Type*) (T : Type*) [TopologicalSpace T] [V
 
 attribute [to_additive] ProperlyDiscontinuousSMul
 
+export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
+export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
+
+section
+
+variable (Γ) {T} [TopologicalSpace T] [SMul Γ T] [ProperlyDiscontinuousSMul Γ T] (x : T)
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer' : {γ : Γ | γ • x = x}.Finite := by
+  simp_rw [←mem_singleton_iff, ←singleton_inter_nonempty, ←image_singleton, nonempty_iff_ne_empty]
+  exact finite_disjoint_inter_image isCompact_singleton isCompact_singleton
+
+@[to_additive] lemma ProperlyDiscontinuousSMul.disjoint_image_nhds
+    [T2Space T] [WeaklyLocallyCompactSpace T] [ContinuousConstSMul Γ T] (x : T) :
+    ∃ U ∈ 𝓝 x, ∀ γ : Γ, (γ • ·) '' U ∩ U ≠ ∅ → γ • x = x := by
+  obtain ⟨V, V_cpt, V_nhd⟩ := exists_compact_mem_nhds x
+  let Γ₀ := {γ : Γ | (γ • ·) '' V ∩ V ≠ ∅ ∧ γ • x ≠ x}
+  have : Finite Γ₀ := finite_coe_iff.mpr
+    ((finite_disjoint_inter_image V_cpt V_cpt).subset fun _ ↦ And.left)
+  choose u v hu hv u_v_disjoint using fun γ : Γ₀ ↦ t2_separation_nhds γ.2.2
+  refine ⟨V ∩ ⋂ γ : Γ₀, (γ.1 • ·) ⁻¹' u γ ∩ v γ, inter_mem V_nhd (iInter_mem.mpr fun γ ↦
+    inter_mem ((continuous_const_smul _).continuousAt <| hu γ) (hv γ)), fun γ hγ ↦ ?_⟩
+  obtain ⟨_, ⟨z, hz, rfl⟩, hγz⟩ := nonempty_iff_ne_empty.mpr hγ
+  by_contra h
+  rw [mem_inter_iff, mem_iInter] at hz hγz
+  let γ : Γ₀ := ⟨γ, nonempty_iff_ne_empty.mp ⟨_, ⟨z, hz.1, rfl⟩, hγz.1⟩, h⟩
+  exact (u_v_disjoint γ).le_bot ⟨(hz.2 γ).1, (hγz.2 γ).2⟩
+
+end
+
 variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ T]
 
 /-- A finite group action is always properly discontinuous. -/
@@ -445,8 +474,9 @@ variable {Γ : Type*} [Group Γ] {T : Type*} [TopologicalSpace T] [MulAction Γ 
 instance (priority := 100) Finite.to_properlyDiscontinuousSMul [Finite Γ] :
     ProperlyDiscontinuousSMul Γ T where finite_disjoint_inter_image _ _ := Set.toFinite _
 
-export ProperlyDiscontinuousSMul (finite_disjoint_inter_image)
-export ProperlyDiscontinuousVAdd (finite_disjoint_inter_image)
+@[to_additive] lemma ProperlyDiscontinuousSMul.finite_stabilizer [ProperlyDiscontinuousSMul Γ T]
+    (x : T) : (MulAction.stabilizer Γ x : Set Γ).Finite :=
+  ProperlyDiscontinuousSMul.finite_stabilizer' Γ x
 
 /-- The quotient map by a group action is open, i.e. the quotient by a group action is an open
   quotient. -/
