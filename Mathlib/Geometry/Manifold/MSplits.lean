@@ -59,9 +59,8 @@ lemma mfderiv_injective (hf : MSplitsAt I I' f x) : Injective (mfderiv I I' f x)
 
 lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' g x := by
   obtain ⟨hdiff, hdf⟩ := hf
-  refine ⟨hdiff.congr_of_eventuallyEq hfg, ?_⟩
-  -- mfderivWithin_congr helps
-  sorry
+  have : mfderiv I I' f x = mfderiv I I' g x := hfg.symm.mfderiv_eq
+  exact ⟨hdiff.congr_of_eventuallyEq hfg, this ▸ hdf⟩
 
 section
 
