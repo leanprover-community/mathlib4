@@ -5,6 +5,9 @@ Authors: Junyan Xu
 -/
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.Order.Category.Preord
+import Mathlib.CategoryTheory.Limits.TypesFiltered
 
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
@@ -56,13 +59,23 @@ the distinguished bijection that is compatible with the projections to all `X i`
 
 -/
 
-open Order Set
+open Order Set CategoryTheory
 
-variable {ι : Type*} [Preorder ι] {F₁ F₂ F X : ι → Type*}
+open scoped CategoryTheory
 
+universe u v
+
+variable {ι : Type v} [Preorder ι] -- {F₁ F₂ F X : ι → Type*}
+
+variable (ι) in
+abbrev DirectedSystem := ι ⥤  Type u
+
+section DirectedSystem
+
+/-
 variable (F) in
 /-- A directed system is a functor from a category (directed poset) to another category. -/
-class DirectedSystem (f : ∀ ⦃i j⦄, i ≤ j → F i → F j) : Prop where
+class DirectedSystem' (f : ∀ ⦃i j⦄, i ≤ j → F i → F j) : Prop where
   map_self ⦃i⦄ (x : F i) : f le_rfl x = x
   map_map ⦃k j i⦄ (hij : i ≤ j) (hjk : j ≤ k) (x : F i) : f hjk (f hij x) = f (hij.trans hjk) x
 
@@ -85,40 +98,90 @@ theorem DirectedSystem.map_self' ⦃i⦄ (x) : f i i le_rfl x = x :=
 theorem DirectedSystem.map_map' ⦃i j k⦄ (hij hjk x) :
     f j k hjk (f i j hij x) = f i k (hij.trans hjk) x :=
   DirectedSystem.map_map (f := (f · · ·)) hij hjk x
+-/
 
 namespace DirectLimit
-open DirectedSystem
 
-variable [IsDirected ι (· ≤ ·)]
+-- open DirectedSystem
+open CategoryTheory.Limits
+
+variable [IsDirected ι (· ≤ ·)] (F : DirectedSystem.{max 0 u v} ι)
 
 /-- The setoid on the sigma type defining the direct limit. -/
-def setoid : Setoid (Σ i, F i) where
-  r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
+def setoid : Setoid (Σ i, F.obj i) where
+  r := Types.FilteredColimit.Rel F
+  iseqv := Types.FilteredColimit.rel_equiv F
+/-   r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
   iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
     fun ⟨j, hx, _, jeq⟩ ⟨k, _, hz, keq⟩ ↦
       have ⟨i, hji, hki⟩ := exists_ge_ge j k
       ⟨i, hx.trans hji, hz.trans hki, by
-        rw [← map_map' _ hx hji, ← map_map' _ hz hki, jeq, ← keq, map_map', map_map']⟩⟩
+        rw [← map_map' _ hx hji, ← map_map' _ hz hki, jeq, ← keq, map_map', map_map']⟩⟩ -/
 
-theorem r_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) : (setoid f).r x ⟨i, f _ _ h x.2⟩ :=
-  ⟨i, h, le_rfl, (map_map' _ _ _ _).symm⟩
+example (x : Σ i, F.obj i) (i : ι) (h : x.fst ≤ i) : F.obj i :=
+  F.map h.hom x.snd
 
-variable (F) in
+/-- If `F` is a directed system, the cocone underlying `setoid F` -/
+def cocone : Cocone F where
+  pt := Quotient (setoid F)
+  ι := {
+    app i x := ⟦⟨i, x⟩⟧
+    naturality  i j h := by
+      ext x
+      simp only [Functor.const_obj_obj, types_comp_apply, Functor.const_obj_map, types_id_apply,
+        Quotient.eq]
+      exact ⟨j, 𝟙 j, h, by simp⟩ }
+
+variable {F} in
+theorem exists_eq_mk (z : (cocone F).pt) : ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
+
+noncomputable def colimit : IsColimit (cocone F) := by
+  apply Types.FilteredColimit.isColimitOf
+  · rintro ⟨i, x⟩
+    exact ⟨i, x, rfl⟩
+  · intro i j x y h
+    simp [Types.FilteredColimit.colimit_eq_iff] at h
+    sorry
+
+noncomputable def colimit : IsColimit (cocone F) where
+  desc c z := by
+    choose i x h using exists_eq_mk z
+    exact (c.ι).app i x
+  fac c i := by
+    ext x
+    set e := exists_eq_mk ((cocone F).ι.app i x)
+    set j := Classical.choose e with j_eq
+    set y : F.obj j := Classical.choose (Classical.choose_spec e) with y_eq
+    set h : (cocone F).ι.app i x = (cocone F).ι.app j y :=
+      Classical.choose_spec (Classical.choose_spec e)
+    change c.ι.app j y = c.ι.app i x
+    choose k hi hj using IsDirected.directed (r := fun x y ↦ x ≤ y) i j
+    rw [← c.w hi.hom, ← c.w hj.hom]
+    simp only [Functor.const_obj_obj, homOfLE_leOfHom, types_comp_apply]
+    apply congr_arg
+    sorry
+  uniq := sorry
+
+
+
+theorem r_of_le (x : Σ i, F.obj i) (i : ι) (h : x.1 ≤ i) :
+    (setoid F).r x ⟨i, F.map h.hom x.snd⟩ :=
+  Types.FilteredColimit.rel_of_quot_rel F x ⟨i, F.map h.hom x.snd⟩ ⟨h.hom, rfl⟩
+
 /-- The direct limit of a directed system. -/
-abbrev _root_.DirectLimit : Type _ := Quotient (setoid f)
+abbrev _root_.DirectLimit : Type _ := Quotient (setoid F)
 
-variable {f} in
-theorem eq_of_le (x : Σ i, F i) (i : ι) (h : x.1 ≤ i) :
-    (⟦x⟧ : DirectLimit F f) = ⟦⟨i, f _ _ h x.2⟩⟧ :=
+theorem eq_of_le (x : Σ i, F.obj i) (i : ι) (h : x.1 ≤ i) :
+    (⟦x⟧ : DirectLimit F) = ⟦⟨i, F.map h.hom x.snd⟩⟧ :=
   Quotient.sound (r_of_le _ x i h)
 
-@[elab_as_elim] protected theorem induction {C : DirectLimit F f → Prop}
-    (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F f) : C x :=
+@[elab_as_elim] protected theorem induction {C : DirectLimit F → Prop}
+    (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F) : C x :=
   Quotient.ind (fun _ ↦ ih _ _) x
 
-theorem exists_eq_mk (z : DirectLimit F f) : ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
+theorem exists_eq_mk (z : DirectLimit F) : ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
 
-theorem exists_eq_mk₂ (z w : DirectLimit F f) : ∃ i x y, z = ⟦⟨i, x⟩⟧ ∧ w = ⟦⟨i, y⟩⟧ :=
+theorem exists_eq_mk₂ (z w : DirectLimit F) : ∃ i x y, z = ⟦⟨i, x⟩⟧ ∧ w = ⟦⟨i, y⟩⟧ :=
   z.inductionOn₂ w fun x y ↦
     have ⟨i, hxi, hyi⟩ := exists_ge_ge x.1 y.1
     ⟨i, _, _, eq_of_le x i hxi, eq_of_le y i hyi⟩
