@@ -87,4 +87,16 @@ lemma isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb
 lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
   Or.elim (eq_one_or_neg_one_of_mul_eq_neg_one' h) (fun H => Or.inl H.1) fun H => Or.inr H.1
 
+instance : Neg ℤˣ where neg u := ⟨-u, -u⁻¹, by simp, by simp⟩
+
+@[simp] lemma unitsVal_neg (u : ℤˣ) : (-u).val = -u := rfl
+
+instance : InvolutiveNeg ℤˣ where neg_neg u := by ext; simp
+
+lemma units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
+  simpa only [Units.ext_iff] using isUnit_eq_one_or u.isUnit
+
+lemma units_ne_iff_eq_neg {u v : ℤˣ} : u ≠ v ↔ u = -v := by
+  simpa only [Ne, Units.ext_iff] using isUnit_ne_iff_eq_neg u.isUnit v.isUnit
+
 end Int
