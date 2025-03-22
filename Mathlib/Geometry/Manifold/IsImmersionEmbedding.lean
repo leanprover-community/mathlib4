@@ -145,15 +145,35 @@ theorem contMDiffAt (h : IsImmersionAt F I I' n f x) : ContMDiffAt I I' n f x :=
   · exact mem_domChart_source h
   · exact mem_codChart_source h
 
+-- These are required to argue that `Splits` composes.
+variable [CompleteSpace E'] [CompleteSpace E] [CompleteSpace F]
+
 /-- If `f` is a `C^k` immersion at `x`, then `mfderiv I I' f x` splits. -/
 theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x := by
-  let rhs := h.equiv ∘ fun x ↦ (x, 0)
-  have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E')) rhs (I (h.domChart x)) := by
-    refine ⟨?_, ?_⟩
-    · sorry -- rhs is linear, hence smooth...
-    · rw [mfderiv_eq_fderiv]
-      -- should be an easy computation: rhs is linear, hence its own fderiv. Do it!
+  -- The local representative of f in the nice charts at x, as a continuous linear map.
+  let rhs : E →L[𝕜] E' := h.equiv.toContinuousLinearMap.comp ((ContinuousLinearMap.id _ _).prod 0)
+  have : rhs.Splits := by
+    apply h.equiv.splits.comp
+    refine ⟨?_, ?_, ?_⟩
+    · intro x y hxy
+      simp at hxy; exact hxy
+    · have hrange : range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
+          Set.prod (Set.univ) {0} := by
+        sorry
+      rw [hrange]
+      exact isClosed_univ.prod isClosed_singleton
+    · have hrange : LinearMap.range ((ContinuousLinearMap.id 𝕜 E).prod (0 : E →L[𝕜] F)) =
+          Submodule.prod ⊤ ⊥ := by
+        -- rw [LinearMap.range_prod_eq] applies, but only partially
+        sorry
+      simp_rw [hrange]
+      -- want: ClosedComplemented.prod, then use this for top and bottom
       sorry
+  -- Since rhs is linear, it is smooth - and it equals its own fderiv.
+  have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E')) rhs (I (h.domChart x)) := by
+    refine ⟨rhs.differentiable.mdifferentiable.mdifferentiableAt, ?_⟩
+    rw [mfderiv_eq_fderiv, rhs.fderiv]
+    exact this
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E'))
       ((h.codChart.extend I') ∘ f ∘ (h.domChart.extend I).symm) (I (h.domChart x)) := by
     apply this.congr
@@ -178,7 +198,7 @@ theorem _root_.isImmersionAt_iff_msplitsAt {x : M} :
 
 /-- If `f` is an immersion at `x` and `g` is an immersion at `g x`,
 then `g ∘ f` is an immersion at `x`. -/
-def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] {g : M' → N}
+def comp [CompleteSpace F'] {g : M' → N}
     (hg : IsImmersionAt F' I' J n g (f x)) (hf : IsImmersionAt F I I' n f x) :
     IsImmersionAt (F × F') I J n (g ∘ f) x := by
   rw [isImmersionAt_iff_msplitsAt] at hf hg ⊢
@@ -255,6 +275,9 @@ theorem congr (h : IsImmersion F I I' n f) (heq : f = g) : IsImmersion F I I' n 
 /-- A `C^k` immersion is `C^k`. -/
 theorem contMDiff (h : IsImmersion F I I' n f) : ContMDiff I I' n f := fun x ↦ (h x).contMDiffAt
 
+-- These are required to argue that `Splits` composes.
+variable [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
+
 /-- If `f` is a `C^k` immersion, each differential `mfderiv x` is injective. -/
 theorem mfderiv_injective (h : IsImmersion F I I' n f) (x : M) : Injective (mfderiv I I' f x) :=
   (h x).mfderiv_injective
@@ -286,18 +309,21 @@ variable {f : M → M'}
 
 theorem contMDiff (h : IsSmoothEmbedding F I I' n f) : ContMDiff I I' n f := h.1.contMDiff
 
+omit [IsManifold I n M] [IsManifold I' n M'] in
 theorem isImmersion (h : IsSmoothEmbedding F I I' n f) : IsImmersion F I I' n f := h.1
 
+omit [IsManifold I n M] [IsManifold I' n M'] in
 theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 
 def of_mfderiv_injective_of_compactSpace_of_T2Space
-    [FiniteDimensional 𝕜 E] [CompactSpace M] [T2Space M']
+    [FiniteDimensional 𝕜 E] [CompleteSpace E'] [CompleteSpace F] [CompactSpace M] [T2Space M']
     (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x))
-    (hf'' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f :=
-  ⟨.of_mfderiv_injective hf hf' hn, (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
+    (hf'' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f := by
+  have := FiniteDimensional.complete (𝕜 := 𝕜) E
+  exact ⟨.of_mfderiv_injective hf hf' hn, (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
 
 /-- The composition of two smooth embeddings is a smooth embedding. -/
-def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
+def comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F] [CompleteSpace F']
     {g : M' → N} (hg : IsSmoothEmbedding F' I' J n g) (hf : IsSmoothEmbedding F I I' n f) :
     IsSmoothEmbedding (F × F') I J n (g ∘ f) :=
   ⟨hg.1.comp hf.1, hg.2.comp hf.2⟩
