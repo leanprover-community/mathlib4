@@ -12,7 +12,9 @@ import Mathlib.Analysis.Meromorphic.Basic
 This file defines the order of a meromorphic function `f` at a point `z₀`, as an element of
 `ℤ ∪ {∞}`.
 
-TODO: Uniformize API between analytic and meromorphic functions
+## TODO
+
+Uniformize API between analytic and meromorphic functions
 -/
 
 open Filter Set WithTop.LinearOrderedAddCommGroup
@@ -34,24 +36,24 @@ unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z
 and does not vanish at `z₀`. See `MeromorphicAt.order_eq_top_iff` and
 `MeromorphicAt.order_eq_nat_iff` for these equivalences. -/
 noncomputable def order {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : WithTop ℤ :=
-  (hf.choose_spec.order.map (↑· : ℕ → ℤ)) - hf.choose
+  ((eanalyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x).map (↑· : ℕ → ℤ)) - hf.choose
 
 /-- The order of a meromorphic function `f` at a `z₀` is infinity iff `f` vanishes locally around
 `z₀`. -/
 lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
     hf.order = ⊤ ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 := by
   unfold order
-  by_cases h : hf.choose_spec.order = ⊤
+  by_cases h : eanalyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x = ⊤
   · rw [h, ENat.map_top, ← WithTop.coe_natCast,
       top_sub, eq_self, true_iff, eventually_nhdsWithin_iff]
-    rw [AnalyticAt.order_eq_top_iff] at h
-    filter_upwards [h] with z hf hz
+    rw [eanalyticOrderAt_eq_top] at h
+    filter_upwards [h.2] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
   · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
     simp only [← hm, ENat.map_coe, WithTop.coe_natCast, sub_eq_top_iff, WithTop.natCast_ne_top,
       or_self, false_iff]
     contrapose! h
-    rw [AnalyticAt.order_eq_top_iff]
+    rw [hf.choose_spec.eanalyticOrderAt_eq_top]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
     apply Eventually.frequently
     filter_upwards [h] with z hfz
@@ -62,10 +64,10 @@ written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not va
 lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   unfold order
-  by_cases h : hf.choose_spec.order = ⊤
+  by_cases h : eanalyticOrderAt (fun z ↦ (z - x) ^ hf.choose • f z) x = ⊤
   · rw [h, ENat.map_top, ← WithTop.coe_natCast, top_sub,
       eq_false_intro WithTop.top_ne_coe, false_iff]
-    rw [AnalyticAt.order_eq_top_iff] at h
+    rw [hf.choose_spec.eanalyticOrderAt_eq_top] at h
     refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
     apply EventuallyEq.eq_of_nhds
     rw [EventuallyEq, ← AnalyticAt.frequently_eq_iff_eventually_eq hg_an analyticAt_const]
@@ -76,7 +78,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
   · obtain ⟨m, h⟩ := ENat.ne_top_iff_exists.mp h
     rw [← h, ENat.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
-    obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _ _).mp h.symm
+    obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := hf.choose_spec.eanalyticOrderAt_eq_natCast.mp h.symm
     replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
       rw [eventually_nhdsWithin_iff]
       filter_upwards [hg_eq] with z hg_eq hz
@@ -88,13 +90,12 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
 
 /-- Compatibility of notions of `order` for analytic and meromorphic functions. -/
 lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
-    hf.meromorphicAt.order = hf.order.map (↑) := by
-  rcases eq_or_ne hf.order ⊤ with ho | ho
-  · rw [ho, ENat.map_top, order_eq_top_iff]
-    exact (hf.order_eq_top_iff.mp ho).filter_mono nhdsWithin_le_nhds
-  · obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp ho
-    simp_rw [← hn, ENat.map_coe, order_eq_int_iff, zpow_natCast]
-    rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
+    hf.meromorphicAt.order = (eanalyticOrderAt f x).map (↑) := by
+  cases hn : eanalyticOrderAt f x
+  · rw [ENat.map_top, order_eq_top_iff]
+    exact (hf.eanalyticOrderAt_eq_top.mp hn).filter_mono nhdsWithin_le_nhds
+  · simp_rw [ENat.map_coe, order_eq_int_iff, zpow_natCast]
+    rcases hf.eanalyticOrderAt_eq_natCast.mp hn with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
 
 /-!
@@ -256,6 +257,6 @@ theorem codiscrete_setOf_order_eq_zero_or_top [CompleteSpace E] :
     use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
     exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_diff_of_mem h₃t hax⟩
   · filter_upwards [(hf x hx).eventually_analyticAt, h₁f] with a h₁a
-    simp +contextual [h₁a.meromorphicAt_order, h₁a.order_eq_zero_iff.2]
+    simp +contextual [h₁a.meromorphicAt_order, h₁a.eanalyticOrderAt_eq_zero.2]
 
 end MeromorphicOn
