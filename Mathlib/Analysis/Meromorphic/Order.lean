@@ -86,6 +86,29 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
+/-- The order of a meromorphic function `f` at `z₀` is finite iff f can locally be written as
+`f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`. -/
+theorem order_ne_top_iff {f : 𝕜 → E} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
+    hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧
+      f =ᶠ[𝓝[≠] z₀] fun z ↦ (z - z₀) ^ (hf.order.untopD 0) • g z :=
+  ⟨fun h ↦ (hf.order_eq_int_iff (hf.order.untopD 0)).1 (WithTop.untopD_of_ne_top h).symm,
+    fun h ↦ Option.ne_none_iff_exists'.2 ⟨hf.order.untopD 0,
+      (hf.order_eq_int_iff (hf.order.untopD 0)).2 h⟩⟩
+
+/-- The order of a meromorphic function `f` depends only on its behaviour on a pointed
+neighborhood. -/
+theorem order_congr {f₁ f₂ : 𝕜 → E} {z₀ : 𝕜} (hf₁ : MeromorphicAt f₁ z₀) (h : f₁ =ᶠ[𝓝[≠] z₀] f₂):
+    hf₁.order = (hf₁.congr h).order := by
+  by_cases hord : hf₁.order = ⊤
+  · rw [hord, eq_comm, (hf₁.congr h).order_eq_top_iff]
+    rw [hf₁.order_eq_top_iff] at hord
+    exact EventuallyEq.rw hord (fun x => Eq (f₂ x)) h.symm
+  · obtain ⟨n, hn : hf₁.order = n⟩ := Option.ne_none_iff_exists'.mp hord
+    obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf₁.order_eq_int_iff n).1 hn
+    rw [hn, eq_comm, (hf₁.congr h).order_eq_int_iff]
+    use g, h₁g, h₂g
+    exact EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) h.symm
+
 /-- Compatibility of notions of `order` for analytic and meromorphic functions. -/
 lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     hf.meromorphicAt.order = hf.order.map (↑) := by
@@ -96,6 +119,11 @@ lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : An
     simp_rw [← hn, ENat.map_coe, order_eq_int_iff, zpow_natCast]
     rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
+
+/-- Analytic functions have non-negative orders. -/
+theorem _root_.AnalyticAt.meromorphicAt_order_nonneg {f : 𝕜 → E} {z₀ : 𝕜} (hf : AnalyticAt 𝕜 f z₀) :
+    0 ≤ hf.meromorphicAt.order := by
+  simp [hf.meromorphicAt_order, (by rfl : (0 : WithTop ℤ) = WithTop.map Nat.cast (0 : ℕ∞))]
 
 /-!
 ## Order at a Point: Behaviour under Ring Operations
