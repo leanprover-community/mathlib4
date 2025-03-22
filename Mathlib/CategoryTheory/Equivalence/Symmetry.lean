@@ -31,6 +31,7 @@ namespace Equivalence
 
 variable (C : Type*) [Category C] (D : Type*) [Category D]
 
+/-- The forward functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   obj e := Opposite.op e.symm
@@ -41,6 +42,7 @@ def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
     apply Hom.ext
     simp
 
+/-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
 def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
   Functor.leftOp
