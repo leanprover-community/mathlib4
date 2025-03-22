@@ -326,9 +326,15 @@ theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(ri
   let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
 
   have h_E_lt_top (n : Fin N) : μ (E n) < ⊤ := by
-    -- based on `hrieszMeasureErestlttop`
-
-    sorry
+    have h (n : Fin N) : E n ⊆ K := by
+      dsimp [K]
+      rw [hE.1]
+      exact subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a
+    apply lt_of_le_of_lt <| MeasureTheory.measure_mono (h n)
+    dsimp [μ, K]
+    rw [rieszMeasure, show f = f.toFun by rfl,
+      MeasureTheory.Content.measure_apply _ f.2.measurableSet]
+    exact MeasureTheory.Content.outerMeasure_lt_top_of_isCompact _ f.2
 
   have h_sum_measure_En' : ∑ i : Fin N, (μ (E i)).toReal = (μ K).toReal := by
     have h_sum_measure_En : μ K = ∑ i : Fin N, (μ (E i)) := by
