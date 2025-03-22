@@ -320,7 +320,7 @@ theorem coe_toAdditive_ker (f : G →* G') :
     (MonoidHom.toAdditive f).ker = Subgroup.toAddSubgroup f.ker := rfl
 
 @[simp]
-theorem coe_toMultiplicative_ker {A A' : Type*} [AddGroup A] [AddGroup A'] (f : A →+ A') :
+theorem coe_toMultiplicative_ker {A A' : Type*} [AddGroup A] [AddZeroClass A'] (f : A →+ A') :
     (AddMonoidHom.toMultiplicative f).ker = AddSubgroup.toSubgroup f.ker := rfl
 
 end Ker

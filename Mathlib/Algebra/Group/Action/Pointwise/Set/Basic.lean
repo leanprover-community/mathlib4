@@ -92,14 +92,14 @@ open scoped RightActions
 end Mul
 
 @[to_additive]
-lemma image_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+lemma image_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
     (f : F) (a : α) (s : Set α) :
     f '' (a • s) = f a • f '' s :=
   image_comm <| map_mul _ _
 
 open scoped RightActions in
 @[to_additive]
-lemma image_op_smul_distrib [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+lemma image_op_smul_distrib [Mul α] [Mul β] [FunLike F α β] [MulHomClass F α β]
     (f : F) (a : α) (s : Set α) : f '' (s <• a) = f '' s <• f a := image_comm fun _ ↦ map_mul ..
 
 section Semigroup
