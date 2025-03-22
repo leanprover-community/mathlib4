@@ -470,17 +470,17 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
-theorem closure_toAddSubgroup (S : Set G) :
+theorem toAddSubgroup_closure (S : Set G) :
     (Subgroup.closure S).toAddSubgroup =
       AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
   le_antisymm (toAddSubgroup.le_symm_apply.mp <|
       (closure_le _).mpr (AddSubgroup.subset_closure (G := Additive G)))
     ((AddSubgroup.closure_le _).mpr (subset_closure (G := G)))
 
-theorem _root_.AddSubgroup.closure_toSubgroup {A : Type*} [AddGroup A] (S : Set A) :
+theorem _root_.AddSubgroup.toSubgroup_closure {A : Type*} [AddGroup A] (S : Set A) :
     (AddSubgroup.closure S).toSubgroup =
       Subgroup.closure (Multiplicative.toAdd ⁻¹' S) :=
-  Subgroup.toAddSubgroup.injective (Subgroup.closure_toAddSubgroup _).symm
+  Subgroup.toAddSubgroup.injective (Subgroup.toAddSubgroup_closure _).symm
 
 @[to_additive]
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {K : ι → Subgroup G} (hK : Directed (· ≤ ·) K)
