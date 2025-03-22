@@ -214,7 +214,6 @@ theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
   Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
 
-
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=
   continuous_iff_continuousOn_univ.mpr <| (expMap_source K) ▸ expMap.continuousOn
