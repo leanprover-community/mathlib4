@@ -104,7 +104,9 @@ is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
 class SemilinearMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
   (σ : outParam (R →+* S)) (M M₂ : outParam Type*) [AddCommMonoid M] [AddCommMonoid M₂]
     [Module R M] [Module S M₂] [FunLike F M M₂] : Prop
-    extends AddHomClass F M M₂, MulActionSemiHomClass F σ M M₂
+    extends AddMonoidHomClass F M M₂, MulActionSemiHomClass F σ M M₂ where
+  map_zero := fun f => by
+    rw [←zero_smul R 0, map_smulₛₗ, RingHom.map_zero, zero_smul]
 
 end
 
@@ -133,18 +135,10 @@ variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂] [AddCommMon
 variable [Module R M] [Module R M₂] [Module S M₃]
 variable {σ : R →+* S}
 
-instance (priority := 100) instAddMonoidHomClass [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
-    AddMonoidHomClass F M M₃ :=
-  { SemilinearMapClass.toAddHomClass with
-    map_zero := fun f ↦
-      show f 0 = 0 by
-        rw [← zero_smul R (0 : M), map_smulₛₗ]
-        simp }
-
 instance (priority := 100) distribMulActionSemiHomClass
     [FunLike F M M₃] [SemilinearMapClass F σ M M₃] :
     DistribMulActionSemiHomClass F σ M M₃ :=
-  { SemilinearMapClass.toAddHomClass with
+  { SemilinearMapClass.toAddMonoidHomClass with
     map_smulₛₗ := fun f c x ↦ by rw [map_smulₛₗ] }
 
 variable {F} (f : F) [FunLike F M M₃] [SemilinearMapClass F σ M M₃]
