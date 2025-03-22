@@ -402,15 +402,13 @@ def MonoidalClosed.linearHomEquivComm : (A ⊗ B ⟶ C) ≃ₗ[k] A ⟶ B ⟶[Re
 
 variable {A B C}
 
--- `simpNF` times out
-@[simp, nolint simpNF]
+@[simp]
 theorem MonoidalClosed.linearHomEquiv_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquiv A B C f).hom =
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom).flip :=
   rfl
 
--- `simpNF` times out
-@[simp, nolint simpNF]
+@[simp]
 theorem MonoidalClosed.linearHomEquivComm_hom (f : A ⊗ B ⟶ C) :
     (MonoidalClosed.linearHomEquivComm A B C f).hom =
       ModuleCat.ofHom (TensorProduct.curry f.hom.hom) :=
