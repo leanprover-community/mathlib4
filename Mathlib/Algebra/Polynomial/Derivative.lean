@@ -205,7 +205,7 @@ theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :
     Polynomial.derivative^[x] p = 0 := by
-  induction' h : p.natDegree using Nat.strong_induction_on with _ ih generalizing p x
+  induction h : p.natDegree using Nat.strong_induction_on generalizing p x with | h _ ih => ?_
   subst h
   obtain ⟨t, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (pos_of_gt hx).ne'
   rw [Function.iterate_succ_apply]
@@ -283,9 +283,10 @@ theorem derivative_map [Semiring S] (p : R[X]) (f : R →+* S) :
 @[simp]
 theorem iterate_derivative_map [Semiring S] (p : R[X]) (f : R →+* S) (k : ℕ) :
     Polynomial.derivative^[k] (p.map f) = (Polynomial.derivative^[k] p).map f := by
-  induction' k with k ih generalizing p
-  · simp
-  · simp only [ih, Function.iterate_succ, Polynomial.derivative_map, Function.comp_apply]
+  induction k generalizing p with
+  | zero => simp
+  | succ k ih =>
+    simp only [ih, Function.iterate_succ, Polynomial.derivative_map, Function.comp_apply]
 
 theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
     derivative ((n : R[X]) * f) = n * derivative f := by
@@ -294,7 +295,7 @@ theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
 @[simp]
 theorem iterate_derivative_natCast_mul {n k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
-  induction' k with k ih generalizing f <;> simp [*]
+  induction k generalizing f <;> simp [*]
 
 theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
@@ -590,7 +591,7 @@ theorem derivative_intCast_mul {n : ℤ} {f : R[X]} : derivative ((n : R[X]) * f
 @[simp]
 theorem iterate_derivative_intCast_mul {n : ℤ} {k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
-  induction' k with k ih generalizing f <;> simp [*]
+  induction k generalizing f <;> simp [*]
 
 end Ring
 
@@ -604,9 +605,9 @@ theorem derivative_comp_one_sub_X (p : R[X]) :
 @[simp]
 theorem iterate_derivative_comp_one_sub_X (p : R[X]) (k : ℕ) :
     derivative^[k] (p.comp (1 - X)) = (-1) ^ k * (derivative^[k] p).comp (1 - X) := by
-  induction' k with k ih generalizing p
-  · simp
-  · simp [ih (derivative p), iterate_derivative_neg, derivative_comp, pow_succ]
+  induction k generalizing p with
+  | zero => simp
+  | succ k ih => simp [ih (derivative p), iterate_derivative_neg, derivative_comp, pow_succ]
 
 theorem eval_multiset_prod_X_sub_C_derivative [DecidableEq R]
     {S : Multiset R} {r : R} (hr : r ∈ S) :

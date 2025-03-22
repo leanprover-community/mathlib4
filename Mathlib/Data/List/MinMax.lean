@@ -376,10 +376,10 @@ theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a 
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 
 theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
-  induction' l <;> simp [maximum_cons, *]
+  induction l <;> simp [maximum_cons, *]
 
 theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
-  induction' l <;> simp [minimum_cons, *]
+  induction l <;> simp [minimum_cons, *]
 
 theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
@@ -500,9 +500,9 @@ theorem foldr_max_of_ne_nil (h : l ≠ []) : ↑(l.foldr max ⊥) = l.maximum :=
     · simp [IH h]
 
 theorem max_le_of_forall_le (l : List α) (a : α) (h : ∀ x ∈ l, x ≤ a) : l.foldr max ⊥ ≤ a := by
-  induction' l with y l IH
-  · simp
-  · simpa [h y (mem_cons_self _ _)] using IH fun x hx => h x <| mem_cons_of_mem _ hx
+  induction l with
+  | nil => simp
+  | cons y l IH => simpa [h y (mem_cons_self _ _)] using IH fun x hx => h x <| mem_cons_of_mem _ hx
 
 theorem le_max_of_le {l : List α} {a x : α} (hx : x ∈ l) (h : a ≤ x) : a ≤ l.foldr max ⊥ := by
   induction' l with y l IH

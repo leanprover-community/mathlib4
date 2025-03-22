@@ -32,9 +32,9 @@ instance (A : Type*) : SetLike (tree A) (List A) := SetLike.instSubtypeSet
 variable {A : Type*} {T : tree A}
 
 lemma mem_of_append {x y : List A} (h : x ++ y ∈ T) : x ∈ T := by
-  induction' y with y ys ih generalizing x
-  · simpa using h
-  · exact T.prop (ih (by simpa))
+  induction y generalizing x with
+  | nil => simpa using h
+  | cons y ys ih => exact T.prop (ih (by simpa))
 
 lemma mem_of_prefix {x y : List A} (h' : x <+: y) (h : y ∈ T) : x ∈ T := by
   obtain ⟨_, rfl⟩ := h'; exact mem_of_append h

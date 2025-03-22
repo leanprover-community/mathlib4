@@ -53,9 +53,10 @@ lemma P_succ (q : ℕ) : (P (q+1) : K[X] ⟶ K[X]) = P q ≫ (𝟙 _ + Hσ q) :=
 /-- All the `P q` coincide with `𝟙 _` in degree 0. -/
 @[simp]
 theorem P_f_0_eq (q : ℕ) : ((P q).f 0 : X _⦋0⦌ ⟶ X _⦋0⦌) = 𝟙 _ := by
-  induction' q with q hq
-  · rfl
-  · simp only [P_succ, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
+  induction q with
+  | zero => rfl
+  | succ q hq =>
+    simp only [P_succ, HomologicalComplex.add_f_apply, HomologicalComplex.comp_f,
       HomologicalComplex.id_f, id_comp, hq, Hσ_eq_zero, add_zero]
 
 /-- `Q q` is the complement projection associated to `P q` -/
@@ -147,10 +148,12 @@ theorem Q_idem (q : ℕ) : (Q q : K[X] ⟶ K[X]) ≫ Q q = Q q := by
 def natTransP (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComplex C where
   app _ := P q
   naturality _ _ f := by
-    induction' q with q hq
-    · dsimp [alternatingFaceMapComplex]
+    induction q with
+    | zero =>
+      dsimp [alternatingFaceMapComplex]
       simp only [P_zero, id_comp, comp_id]
-    · simp only [P_succ, add_comp, comp_add, assoc, comp_id, hq, reassoc_of% hq]
+    | succ q hq =>
+      simp only [P_succ, add_comp, comp_add, assoc, comp_id, hq, reassoc_of% hq]
       -- `erw` is needed to see through `natTransHσ q).app = Hσ q`
       erw [(natTransHσ q).naturality f]
       rfl
@@ -176,10 +179,12 @@ def natTransQ (q : ℕ) : alternatingFaceMapComplex C ⟶ alternatingFaceMapComp
 theorem map_P {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (q n : ℕ) :
     G.map ((P q : K[X] ⟶ _).f n) = (P q : K[((whiskering C D).obj G).obj X] ⟶ _).f n := by
-  induction' q with q hq
-  · simp only [P_zero]
+  induction q with
+  | zero =>
+    simp only [P_zero]
     apply G.map_id
-  · simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
+  | succ q hq =>
+    simp only [P_succ, comp_add, HomologicalComplex.comp_f, HomologicalComplex.add_f_apply,
       comp_id, Functor.map_add, Functor.map_comp, hq, map_Hσ]
 
 theorem map_Q {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]

@@ -898,8 +898,9 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   have h0 : C 0 := add_neg_cancel (1 : R) ▸ ha h1 hneg1
   rcases exists_list_of_mem_closure hx with ⟨L, HL, rfl⟩
   clear hx
-  induction' L with hd tl ih
-  · exact h0
+  induction L with
+  | nil => exact h0
+  | cons hd tl ih => ?_
   rw [List.forall_mem_cons] at HL
   suffices C (List.prod hd) by
     rw [List.map_cons, List.sum_cons]
@@ -910,15 +911,17 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
   · rw [HP]
     clear HP HL hd
-    induction' L with hd tl ih
-    · exact h1
+    induction L with
+    | nil => exact h1
+    | cons hd tl ih => ?_
     rw [List.forall_mem_cons] at HL'
     rw [List.prod_cons]
     exact hs _ HL'.1 _ (ih HL'.2)
   · rw [HP]
     clear HP HL hd
-    induction' L with hd tl ih
-    · exact hneg1
+    induction L with
+    | nil => exact hneg1
+    | cons hd tl ih => ?_
     rw [List.prod_cons, neg_mul_eq_mul_neg]
     rw [List.forall_mem_cons] at HL'
     exact hs _ HL'.1 _ (ih HL'.2)

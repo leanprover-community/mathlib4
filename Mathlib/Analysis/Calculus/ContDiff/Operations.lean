@@ -241,9 +241,10 @@ variable {i : ℕ}
 -- prove it from `ContinuousLinearEquiv.iteratedFDerivWithin_comp_left`
 theorem iteratedFDerivWithin_neg_apply {f : E → F} (hu : UniqueDiffOn 𝕜 s) (hx : x ∈ s) :
     iteratedFDerivWithin 𝕜 i (-f) s x = -iteratedFDerivWithin 𝕜 i f s x := by
-  induction' i with i hi generalizing x
-  · ext; simp
-  · ext h
+  induction i generalizing x with
+  | zero => ext; simp
+  | succ i hi =>
+    ext h
     calc
       iteratedFDerivWithin 𝕜 (i + 1) (-f) s x h =
           fderivWithin 𝕜 (iteratedFDerivWithin 𝕜 i (-f) s) s x (h 0) (Fin.tail h) :=
@@ -288,9 +289,10 @@ theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {
     (h : ∀ i ∈ s, ContDiffWithinAt 𝕜 n (fun x => f i x) t x) :
     ContDiffWithinAt 𝕜 n (fun x => ∑ i ∈ s, f i x) t x := by
   classical
-    induction' s using Finset.induction_on with i s is IH
-    · simp [contDiffWithinAt_const]
-    · simp only [is, Finset.sum_insert, not_false_iff]
+    induction s using Finset.induction_on with
+    | empty => simp [contDiffWithinAt_const]
+    | @insert i s is IH =>
+      simp only [is, Finset.sum_insert, not_false_iff]
       exact (h _ (Finset.mem_insert_self i s)).add
         (IH fun j hj => h _ (Finset.mem_insert_of_mem hj))
 

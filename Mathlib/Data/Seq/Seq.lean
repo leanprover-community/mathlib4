@@ -181,7 +181,7 @@ def destruct (s : Seq α) : Option (Seq1 α) :=
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
-  induction' f0 : get? s 0 <;> intro h
+  induction f0 : get? s 0 <;> intro h
   · apply Subtype.eq
     funext n
     induction' n with n IH
@@ -291,14 +291,16 @@ theorem head_eq_none_iff {s : Seq α} : s.head = none ↔ s = nil := by
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
   obtain ⟨k, e⟩ := M; unfold Stream'.get at e
-  induction' k with k IH generalizing s
-  · have TH : s = cons a (tail s) := by
+  induction k generalizing s with
+  | zero =>
+    have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
       unfold destruct get? Functor.map
       rw [← e]
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
+  | succ k IH => ?_
   cases s with
   | nil => injection e
   | cons b s' =>

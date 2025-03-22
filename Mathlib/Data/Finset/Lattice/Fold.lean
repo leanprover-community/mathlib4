@@ -192,10 +192,12 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
     (hs : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s) (t : Finset α) :
     (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
-    induction' t using Finset.induction_on with a r _ ih h
-    · simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
+    induction t using Finset.induction_on with
+    | empty =>
+      simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
         sup_empty, forall_true_iff, not_mem_empty]
-    · intro h
+    | @insert a r _ ih =>
+      intro h
       have incs : (r : Set α) ⊆ ↑(insert a r) := by
         rw [Finset.coe_subset]
         apply Finset.subset_insert
@@ -1116,14 +1118,14 @@ variable [DecidableEq α] {s : Finset ι} {f : ι → Finset α} {a : α}
 
 set_option linter.docPrime false in
 @[simp] lemma mem_sup' (hs) : a ∈ s.sup' hs f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 set_option linter.docPrime false in
 @[simp] lemma mem_inf' (hs) : a ∈ s.inf' hs f ↔ ∀ i ∈ s, a ∈ f i := by
-  induction' hs using Nonempty.cons_induction <;> simp [*]
+  induction hs using Nonempty.cons_induction <;> simp [*]
 
 @[simp] lemma mem_sup : a ∈ s.sup f ↔ ∃ i ∈ s, a ∈ f i := by
-  induction' s using cons_induction <;> simp [*]
+  induction s using cons_induction <;> simp [*]
 
 @[simp]
 theorem sup_singleton'' (s : Finset β) (f : β → α) :

@@ -306,10 +306,12 @@ variable {ℱ : Filtration ℕ m0}
 theorem Adapted.isStoppingTime_crossing (hf : Adapted ℱ f) :
     IsStoppingTime ℱ (upperCrossingTime a b f N n) ∧
       IsStoppingTime ℱ (lowerCrossingTime a b f N n) := by
-  induction' n with k ih
-  · refine ⟨isStoppingTime_const _ 0, ?_⟩
+  induction n with
+  | zero =>
+    refine ⟨isStoppingTime_const _ 0, ?_⟩
     simp [hitting_isStoppingTime hf measurableSet_Iic]
-  · obtain ⟨_, ih₂⟩ := ih
+  | succ k ih =>
+    obtain ⟨_, ih₂⟩ := ih
     have : IsStoppingTime ℱ (upperCrossingTime a b f N (k + 1)) := by
       intro n
       simp_rw [upperCrossingTime_succ_eq]

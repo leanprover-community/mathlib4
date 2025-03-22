@@ -409,9 +409,10 @@ If two composition series start and finish at the same place, they are equivalen
 theorem jordan_holder (s₁ s₂ : CompositionSeries X)
     (hb : s₁.head = s₂.head) (ht : s₁.last = s₂.last) :
     Equivalent s₁ s₂ := by
-  induction' hle : s₁.length with n ih generalizing s₁ s₂
-  · rw [eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht hle]
-  · have h0s₂ : 0 < s₂.length :=
+  induction hle : s₁.length generalizing s₁ s₂ with
+  | zero => rw [eq_of_head_eq_head_of_last_eq_last_of_length_eq_zero hb ht hle]
+  | succ n ih =>
+    have h0s₂ : 0 < s₂.length :=
       length_pos_of_head_eq_head_of_last_eq_last_of_length_pos hb ht (hle.symm ▸ Nat.succ_pos _)
     rcases exists_last_eq_snoc_equivalent s₁ s₂.eraseLast.last
         (ht.symm ▸ isMaximal_eraseLast_last h0s₂)

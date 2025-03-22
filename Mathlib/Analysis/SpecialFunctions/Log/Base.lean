@@ -474,8 +474,9 @@ theorem continuousAt_logb_iff (hb₀ : 0 < b) (hb : b ≠ 1) : ContinuousAt (log
 theorem logb_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     logb b (∏ i ∈ s, f i) = ∑ i ∈ s, logb b (f i) := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
-    · simp
+    induction s using Finset.induction_on with
+    | empty => simp
+    | @insert a s ha ih => ?_
     simp only [Finset.mem_insert, forall_eq_or_imp] at hf
     simp [ha, ih hf.2, logb_mul hf.1 (Finset.prod_ne_zero_iff.2 hf.2)]
 

@@ -89,10 +89,11 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   simp_rw [← @Nat.cast_pos α] at a_pos
   /- Declare the induction
     `ih` will be the induction hypothesis -/
-  induction' n with n ih
+  induction n with
   /- Base case
     Claim that the sum equals `1` -/
-  · refine ⟨1, ?_, ?_⟩
+  | zero =>
+    refine ⟨1, ?_, ?_⟩
     -- Check that this indeed equals the sum
     · rw [Nat.cast_one, Finset.sum_range_one]
       norm_num
@@ -104,6 +105,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
   /- Induction step
     `b` is the value of the previous sum as a natural, `hb` is the proof that it is indeed the
     value, and `han` is the divisibility condition -/
+  | succ n ih => ?_
   obtain ⟨b, hb, han⟩ :=
     ih (fun i hi => ha i <| Nat.le_succ_of_le hi) fun i hi => a_pos i <| Nat.le_succ_of_le hi
   specialize ha n le_rfl

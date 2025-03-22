@@ -125,9 +125,9 @@ theorem formPerm_mem_iff_mem : l.formPerm x ∈ l ↔ x ∈ l :=
 @[simp]
 theorem formPerm_cons_concat_apply_last (x y : α) (xs : List α) :
     formPerm (x :: (xs ++ [y])) y = x := by
-  induction' xs with z xs IH generalizing x y
-  · simp
-  · simp [IH]
+  induction xs generalizing x y with
+  | nil => simp
+  | cons z xs IH => simp [IH]
 
 @[simp]
 theorem formPerm_apply_getLast (x : α) (xs : List α) :
@@ -284,11 +284,13 @@ theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :
   · rw [length_rotate, hl]
   · intro k hk hk'
     rw [getElem_rotate]
-    induction' k with k IH
-    · refine Eq.trans ?_ hx'
+    induction k with
+    | zero =>
+      refine Eq.trans ?_ hx'
       congr
       simpa using hn
-    · conv => congr <;> · arg 2; (rw [← Nat.mod_eq_of_lt hk'])
+    | succ k IH =>
+      conv => congr <;> · arg 2; (rw [← Nat.mod_eq_of_lt hk'])
       rw [← formPerm_apply_getElem _ hd' k (k.lt_succ_self.trans hk'),
         ← IH (k.lt_succ_self.trans hk), ← h, formPerm_apply_getElem _ hd]
       congr 1

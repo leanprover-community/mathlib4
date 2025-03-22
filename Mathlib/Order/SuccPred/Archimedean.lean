@@ -58,9 +58,10 @@ theorem exists_succ_iterate_iff_le : (∃ n, succ^[n] a = b) ↔ a ≤ b := by
 theorem Succ.rec {P : α → Prop} {m : α} (h0 : P m) (h1 : ∀ n, m ≤ n → P n → P (succ n)) ⦃n : α⦄
     (hmn : m ≤ n) : P n := by
   obtain ⟨n, rfl⟩ := hmn.exists_succ_iterate; clear hmn
-  induction' n with n ih
-  · exact h0
-  · rw [Function.iterate_succ_apply']
+  induction n with
+  | zero => exact h0
+  | succ n ih =>
+    rw [Function.iterate_succ_apply']
     exact h1 _ (id_le_iterate_of_id_le le_succ n m) ih
 
 theorem Succ.rec_iff {p : α → Prop} (hsucc : ∀ a, p a ↔ p (succ a)) {a b : α} (h : a ≤ b) :
@@ -396,8 +397,9 @@ lemma monotoneOn_of_le_succ (hs : s.OrdConnected)
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_succ_iterate_of_le hab
   clear hab
-  induction' n with n hn
-  · simp
+  induction n with
+  | zero => simp
+  | succ n hn => ?_
   rw [Function.iterate_succ_apply'] at hb ⊢
   have : succ^[n] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
   by_cases hb' : IsMax (succ^[n] a)
@@ -416,8 +418,9 @@ lemma strictMonoOn_of_lt_succ (hs : s.OrdConnected)
   obtain _ | n := n
   · simp at hab
   apply not_isMax_of_lt at hab
-  induction' n with n hn
-  · simpa using hf _ hab ha hb
+  induction n with
+  | zero => simpa using hf _ hab ha hb
+  | succ n hn => ?_
   rw [Function.iterate_succ_apply'] at hb ⊢
   have : succ^[n + 1] a ∈ s := hs.1 ha hb ⟨le_succ_iterate .., le_succ _⟩
   by_cases hb' : IsMax (succ^[n + 1] a)
@@ -451,8 +454,9 @@ lemma monotoneOn_of_pred_le (hs : s.OrdConnected)
   rintro a ha b hb hab
   obtain ⟨n, rfl⟩ := exists_pred_iterate_of_le hab
   clear hab
-  induction' n with n hn
-  · simp
+  induction n with
+  | zero => simp
+  | succ n hn => ?_
   rw [Function.iterate_succ_apply'] at ha ⊢
   have : pred^[n] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
   by_cases ha' : IsMin (pred^[n] b)
@@ -471,8 +475,9 @@ lemma strictMonoOn_of_pred_lt (hs : s.OrdConnected)
   obtain _ | n := n
   · simp at hab
   apply not_isMin_of_lt at hab
-  induction' n with n hn
-  · simpa using hf _ hab hb ha
+  induction n with
+  | zero => simpa using hf _ hab hb ha
+  | succ n hn => ?_
   rw [Function.iterate_succ_apply'] at ha ⊢
   have : pred^[n + 1] b ∈ s := hs.1 ha hb ⟨pred_le _, pred_iterate_le ..⟩
   by_cases ha' : IsMin (pred^[n + 1] b)
