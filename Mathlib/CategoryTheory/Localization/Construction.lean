@@ -289,7 +289,7 @@ namespace WhiskeringLeftEquivalence
 composition with `W.Q : C ⥤ W.Localization`. -/
 @[simps!]
 def functor : (W.Localization ⥤ D) ⥤ W.FunctorsInverting D :=
-  FullSubcategory.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
+  ObjectProperty.lift _ ((whiskeringLeft _ _ D).obj W.Q) fun _ =>
     MorphismProperty.IsInvertedBy.of_comp W W.Q W.Q_inverts _
 
 /-- The function `(W.FunctorsInverting D) ⥤ (W.Localization ⥤ D)` induced by
