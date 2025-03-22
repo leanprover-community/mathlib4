@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.RingTheory.Congruence.Basic
+import Mathlib.RingTheory.Congruence.Hom
 import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Ideal.Span
 
