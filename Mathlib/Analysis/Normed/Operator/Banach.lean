@@ -364,6 +364,54 @@ theorem coe_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed
     (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
+@[simp]
+lemma equivRange_symm (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+    (f.equivRange hinj hclo).symm.toLinearEquiv =
+      (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
+  rfl
+
+@[simp]
+lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f))
+    (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
+  suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
+  trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
+  · rfl -- is there an API lemma for this already?
+  dsimp only [equivRange_symm]
+  set x' : LinearMap.range f := ⟨f x, by simp⟩
+  set f' : E →ₛₗ[σ] F := ↑f
+  change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _
+  rw [LinearEquiv.ofInjective_symm_apply (f := f') (h := hinj) x']
+
+section
+
+variable {E F : Type*}
+  [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+  [CompleteSpace E] [CompleteSpace F]
+
+-- TODO: generalise this to Fredholm operators, once these are in mathlib
+
+/-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
+`f` is anti-Lipschitz. -/
+lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
+    (hf : Injective f) (hf' : IsClosed (Set.range f)) : ∃ K, AntilipschitzWith K f := by
+  let S : (LinearMap.range f) →L[𝕜] E := (f.equivRange hf hf').symm
+  use ⟨S.opNorm, S.opNorm_nonneg⟩
+  apply ContinuousLinearMap.antilipschitz_of_bound
+  intro x
+  calc ‖x‖
+    _ = ‖S ⟨f x, by simp⟩‖ := by simp [S]
+    _ ≤ S.opNorm * ‖f x‖ := le_opNorm S ⟨f x, by simp⟩
+
+/-- An injective bounded linear operator between Banach spaces has closed range
+iff it is anti-Lipschitz. -/
+lemma isClosed_range_if_antilipschitz_of_injective (f : E →L[𝕜] F)
+    (hf : Injective f) : IsClosed (Set.range f) ↔ ∃ K, AntilipschitzWith K f := by
+  refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
+  choose K hf' using h
+  exact hf'.isClosed_range f.uniformContinuous
+
+end
+
 end ContinuousLinearMap
 
 namespace ContinuousLinearEquiv
