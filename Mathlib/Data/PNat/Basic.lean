@@ -165,9 +165,10 @@ not only to `Prop`. -/
 @[elab_as_elim, induction_eliminator]
 def recOn (n : ℕ+) {p : ℕ+ → Sort*} (one : p 1) (succ : ∀ n, p n → p (n + 1)) : p n := by
   rcases n with ⟨n, h⟩
-  induction' n with n IH
-  · exact absurd h (by decide)
-  · rcases n with - | n
+  induction n with
+  | zero => exact absurd h (by decide)
+  | succ n IH =>
+    rcases n with - | n
     · exact one
     · exact succ _ (IH n.succ_pos)
 
