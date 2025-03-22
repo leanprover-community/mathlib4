@@ -252,9 +252,10 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
       (π (ω.drop (j + 1)))⁻¹
         * (Option.map (cs.simple) ω[j]?).getD 1
         * π (ω.drop (j + 1)) := by
-  induction' ω with i ω ih generalizing j
-  · simp
-  · dsimp only [rightInvSeq]
+  induction ω generalizing j with
+  | nil => simp
+  | cons i ω ih =>
+    dsimp only [rightInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
     · simp only [getD_eq_getElem?_getD] at ih
@@ -272,9 +273,10 @@ theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
       π (ω.take j)
         * (Option.map (cs.simple) ω[j]?).getD 1
         * (π (ω.take j))⁻¹ := by
-  induction' ω with i ω ih generalizing j
-  · simp
-  · dsimp [leftInvSeq]
+  induction ω generalizing j with
+  | nil => simp
+  | cons i ω ih =>
+    dsimp [leftInvSeq]
     rcases j with _ | j'
     · simp [getD_cons_zero]
     · rw [getD_cons_succ]
@@ -309,8 +311,9 @@ theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
 
 theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
     ris (ω.drop j) = (ris ω).drop j := by
-  induction' j with j ih₁ generalizing ω
-  · simp
+  induction j generalizing ω with
+  | zero => simp
+  | succ j ih₁ =>
     induction ω with
     | nil => simp
     | cons k ω _ => rw [drop_succ_cons, ih₁ ω, rightInvSeq, drop_succ_cons]
@@ -325,9 +328,10 @@ theorem leftInvSeq_take (ω : List B) (j : ℕ) :
 
 theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by
-  induction' ω with i ω ih
-  · simp at ht
-  · dsimp [rightInvSeq] at ht
+  induction ω with
+  | nil => simp at ht
+  | cons i ω ih =>
+    dsimp [rightInvSeq] at ht
     rcases ht with _ | ⟨_, mem⟩
     · use (π ω)⁻¹, i
       group
