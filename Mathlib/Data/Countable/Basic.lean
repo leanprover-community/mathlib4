@@ -139,7 +139,8 @@ instance [Countable α] [Countable β] : Countable (PProd α β) :=
 instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) :=
   Countable.of_equiv (Σa : PLift α, PLift (π a.down)) (Equiv.psigmaEquivSigmaPLift π).symm
 
-instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
+-- See note [instance argument order]
+instance [∀ a, Countable (π a)] [Finite α] : Countable (∀ a, π a) := by
   have : ∀ n, Countable (Fin n → ℕ) := by
     intro n
     induction' n with n ihn
