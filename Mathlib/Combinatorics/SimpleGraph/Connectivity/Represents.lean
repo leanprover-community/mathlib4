@@ -79,7 +79,7 @@ end ConnectedComponent.Represents
 /-- The odd components are the connected components of odd cardinality. This definition excludes
 infinite components. -/
 abbrev oddComponents (G : SimpleGraph V) : Set G.ConnectedComponent :=
-    {c : G.ConnectedComponent | Odd c.supp.ncard}
+  {c : G.ConnectedComponent | Odd c.supp.ncard}
 
 lemma ConnectedComponent.even_ncard_supp_sdiff_rep {s : Set V} (K : G.ConnectedComponent)
     (hrep : ConnectedComponent.Represents s G.oddComponents) :

@@ -16,13 +16,14 @@ import Mathlib.Data.Fintype.Card
 * `SimpleGraph.TutteViolator G u` is a set of vertices `u` which certifies non-existance of a
   perfect matching.
 -/
+
 namespace SimpleGraph
 
 universe u
 variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V} [Fintype V]
 
 /-- A set certifying non-existance of a perfect matching -/
-def IsTutteViolator (G: SimpleGraph V) (u : Set V) : Prop :=
+def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
 
 /-- This lemma states that a graph in which the universal vertices do not violate the
@@ -77,7 +78,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
   exact ⟨M1 ⊔ M2, hM1.2.sup hM2 disjointM12, this⟩
 
 /-- This lemma states that a graph in which the universal vertices do not violate the
-Tutte-condition, if the graph decomposes into cliques, it has a perfect matching -/
+Tutte-condition, if the graph decomposes into cliques, it has a perfect matching. -/
 theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (hveven : Even (Fintype.card V)) (h : ¬G.IsTutteViolator G.universalVerts)
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
@@ -95,7 +96,7 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     simp only [hM.support_eq_verts, hM'.2.support_eq_verts, hM'.1, Subgraph.verts_sup]
     exact (Set.disjoint_compl_left_iff_subset.mpr fun ⦃a⦄ a ↦ a).symm), hspan⟩
 
-theorem isTutteViolator_empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator ∅ := by
+theorem IsTutteViolator.empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator ∅ := by
   classical
   have ⟨c, hc⟩ := Classical.inhabited_of_nonempty
     (Finite.card_pos_iff.mp <| Odd.pos <|
