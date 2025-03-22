@@ -290,7 +290,7 @@ lemma locally_isStableUnderBaseChange (hPi : RespectsIso P) (hPb : IsStableUnder
     simp [RingHom.algebraMap_toAlgebra]
   haveI (a : s) : Algebra.IsPushout T (Localization.Away a.val) (S ⊗[R] T)
       (S ⊗[R] Localization.Away a.val) := by
-    rw [← Algebra.IsPushout.comp_iff (R := R) (R' := S)]
+    rw [← Algebra.IsPushout.comp_iff R _ S]
     infer_instance
   refine ⟨s, fun a ↦ Algebra.TensorProduct.includeRight a.val, ?_,
       fun a ↦ (S ⊗[R] Localization.Away a.val), inferInstance, inferInstance, ?_, ?_⟩
