@@ -44,7 +44,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 
 5. At this point, we can construct the map `expMapBasis` that plays a crucial part in the proof.
   It is the map that sends `x : realSpace K` to `Real.exp (x w₀) * ∏_{i ≠ w₀} |ηᵢ| ^ x i`, see
-  `expMapBasis_apply'`. Then, we prove a change a variable formula for `expMapBasis`, see
+  `expMapBasis_apply'`. Then, we prove a change of variable formula for `expMapBasis`, see
   `setLIntegral_expMapBasis_image`.
 
 ## Spaces and maps
