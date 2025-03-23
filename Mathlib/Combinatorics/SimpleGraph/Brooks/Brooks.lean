@@ -113,13 +113,12 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       let v41 := ((Walk.cons h1.1 nil).cons h3.1).cons h24.symm
       have h41 : v41.IsPath := by
         rw [cons_isPath_iff]
-        simp only [cons_isPath_iff, isPath_iff_eq_nil, support_nil, List.mem_cons,
-         List.not_mem_nil, or_false, true_and, support_cons, not_or]
-        exact ⟨⟨h1.1.ne, h3.1.ne, hne.symm⟩, h24.symm.ne, h4 ,fun hf ↦ hnadj (hf ▸ h24.symm)⟩
+        simpa using ⟨⟨h1.1.ne, h3.1.ne, hne.symm⟩, h24.symm.ne, h4, fun hf ↦ hnadj (hf ▸ h24.symm)⟩
       have v41sup : v41.support = [v₄, v₃, v₂, v₁] := by
         rw [support_cons, support_cons, support_cons, support_nil]
       have v41s : ∀ y, y ∈ v41.support → y ∈ s := by
-        intro x hx; rw [support_cons, support_cons, support_cons, support_nil] at hx
+        rw [v41sup]
+        intro x hx
         cases hx with
         | head as => exact hins _ h3.2 _ h24
         | tail b hx =>

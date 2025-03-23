@@ -395,11 +395,17 @@ theorem Brooks1' {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} (p : G.Walk xᵣ x₄) (hk
   ((p.takeUntil xⱼ hj).concat hc).reverse.support.toFinset = {x₁, x₂, x₃} ∪ p.support.toFinset := by
     rw [support_reverse, List.toFinset_reverse, support_concat]
     nth_rw 3 [← take_spec p hj]
-    rw [support_append]
-    aesop
+    rw [support_append, union_assoc, union_comm (p.dropUntil _ hj).support.tail.toFinset,
+        ← union_assoc, List.concat_eq_append, List.toFinset_append, union_comm
+        (p.takeUntil _ hj).support.toFinset,  List.toFinset_append, ← union_assoc, ← union_assoc]
+    congr
+    rw [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq, insert_union]
+    congr
+    ext; simp_rw [mem_union, mem_singleton, mem_insert, mem_singleton]
+    rw [or_comm]
   use C'.copy st
   rw [copy_eq]
-  exact  Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
+  exact Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
 
 end partialcol
 end SimpleGraph
