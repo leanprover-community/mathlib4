@@ -85,7 +85,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `ext` here?
+-- TODO: move `ext` here?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -169,7 +169,7 @@ theorem preimage_symm_proj_inter (s : Set B) :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.baseSet → (proj (e.toPartialEquiv.symm (x, y)) ∈ s ↔ x ∈ s) by
-    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
+    simpa only [prodMk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
   intro h
   rw [e.proj_symm_apply' h]
 
@@ -762,7 +762,7 @@ def liftCM (T : Trivialization F proj) : C(T.source × T.baseSet, T.source) wher
   continuous_toFun := by
     apply Continuous.subtype_mk
     refine T.continuousOn_invFun.comp_continuous ?_ (by simp [mem_target])
-    refine .prod_mk (by fun_prop) (.snd ?_)
+    refine .prodMk (by fun_prop) (.snd ?_)
     exact T.continuousOn_toFun.comp_continuous (by fun_prop) (by simp)
 
 variable {ι : Type*} [TopologicalSpace ι] [LocallyCompactPair ι T.baseSet]

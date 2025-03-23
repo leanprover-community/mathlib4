@@ -402,7 +402,7 @@ corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular f
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
 `(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -643,11 +643,11 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   obtain ⟨he', he'_symm⟩ := he'
   constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
-  · have h3 := ContDiffOn.prod_map he he'
+  · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
-  · have h3 := ContDiffOn.prod_map he_symm he'_symm
+  · have h3 := ContDiffOn.prodMap he_symm he'_symm
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
@@ -675,8 +675,8 @@ smooth manifold and `n = ω` means analytic manifold). -/
 class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
-    [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid n I) : Prop
+    [TopologicalSpace M] [ChartedSpace H M] : Prop
+    extends HasGroupoid M (contDiffGroupoid n I)
 
 @[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners := IsManifold
 
@@ -916,7 +916,9 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
--- Porting note: was deriving TopologicalSpace, AddCommGroup, IsTopologicalAddGroup
+-- The `TopologicalSpace, AddCommGroup, IsTopologicalAddGroup` instances should be constructed by a
+-- deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 /- In general, the definition of `TangentSpace` is not reducible, so that type class inference
 does not pick wrong instances. We record the right instances for them. -/

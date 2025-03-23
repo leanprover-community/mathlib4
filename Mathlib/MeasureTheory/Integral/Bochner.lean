@@ -216,6 +216,10 @@ theorem integral_zero : ∫ _ : α, (0 : G) ∂μ = 0 := by
 theorem integral_zero' : integral μ (0 : α → G) = 0 :=
   integral_zero α G
 
+lemma integral_indicator₂ {β : Type*} (f : β → α → G) (s : Set β) (b : β) :
+    ∫ y, s.indicator (f · y) b ∂μ = s.indicator (fun x ↦ ∫ y, f x y ∂μ) b := by
+  by_cases hb : b ∈ s <;> simp [hb]
+
 variable {α G}
 
 theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ :=
@@ -477,7 +481,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
         intro a h
         simp only [h, neg_nonpos, ofReal_eq_zero]
       · exact measurable_ofReal.comp_aemeasurable hfm.aemeasurable.neg
-    rw [h_min, zero_toReal, _root_.sub_zero]
+    rw [h_min, toReal_zero, _root_.sub_zero]
   · rw [integral_undef hfi]
     simp_rw [Integrable, hfm, hasFiniteIntegral_iff_norm, lt_top_iff_ne_top, Ne, true_and,
       Classical.not_not] at hfi
@@ -485,7 +489,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
       refine lintegral_congr_ae (hf.mono fun a h => ?_)
       dsimp only
       rw [Real.norm_eq_abs, abs_of_nonneg h]
-    rw [this, hfi, top_toReal]
+    rw [this, hfi, toReal_top]
 
 theorem integral_norm_eq_lintegral_enorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : AEStronglyMeasurable f μ) : ∫ x, ‖f x‖ ∂μ = (∫⁻ x, ‖f x‖ₑ ∂μ).toReal := by
@@ -738,7 +742,7 @@ section NormedAddCommGroup
 variable {H : Type*} [NormedAddCommGroup H]
 
 theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a‖ ∂μ := by
-  simp only [eLpNorm, eLpNorm'_eq_lintegral_enorm, ENNReal.one_toReal, ENNReal.rpow_one,
+  simp only [eLpNorm, eLpNorm'_eq_lintegral_enorm, ENNReal.toReal_one, ENNReal.rpow_one,
     Lp.norm_def, if_false, ENNReal.one_ne_top, one_ne_zero, _root_.div_one]
   rw [integral_eq_lintegral_of_nonneg_ae (Eventually.of_forall (by simp [norm_nonneg]))
       (Lp.aestronglyMeasurable f).norm]
@@ -964,7 +968,7 @@ theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
   · simp [integral, hG]
   -- First we consider the “degenerate” case `c = ∞`
   rcases eq_or_ne c ∞ with (rfl | hc)
-  · rw [ENNReal.top_toReal, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
+  · rw [ENNReal.toReal_top, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
   -- Main case: `c ≠ ∞`
   simp_rw [integral_eq_setToFun, ← setToFun_smul_left]
   have hdfma : DominatedFinMeasAdditive μ (weightedSMul (c • μ) : Set α → G →L[ℝ] G) c.toReal :=
@@ -1329,10 +1333,10 @@ theorem eLpNorm_one_le_of_le {r : ℝ≥0} (hfint : Integrable f μ) (hfint' : 0
     ENNReal.ofReal_le_iff_le_toReal
       (ENNReal.mul_ne_top (ENNReal.mul_ne_top ENNReal.ofNat_ne_top <| @measure_ne_top _ _ _ hμ _)
         ENNReal.coe_ne_top)]
-  simp_rw [ENNReal.one_toReal, _root_.inv_one, Real.rpow_one, Real.norm_eq_abs, ←
+  simp_rw [ENNReal.toReal_one, _root_.inv_one, Real.rpow_one, Real.norm_eq_abs, ←
     max_zero_add_max_neg_zero_eq_abs_self, ← Real.coe_toNNReal']
   rw [integral_add hfint.real_toNNReal]
-  · simp only [Real.coe_toNNReal', ENNReal.toReal_mul, ENNReal.one_toReal, ENNReal.coe_toReal,
+  · simp only [Real.coe_toNNReal', ENNReal.toReal_mul, ENNReal.toReal_one, ENNReal.coe_toReal,
       Left.nonneg_neg_iff, Left.neg_nonpos_iff, toReal_ofNat] at hfint' ⊢
     refine (add_le_add_left hfint' _).trans ?_
     rwa [← two_mul, mul_assoc, mul_le_mul_left (two_pos : (0 : ℝ) < 2)]

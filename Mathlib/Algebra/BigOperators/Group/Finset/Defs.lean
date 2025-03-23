@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Data.Fintype.Sets
@@ -136,20 +137,20 @@ def processBigOpBinders (binders : TSyntax ``bigOpBinders) :
 def bigOpBindersPattern (processed : (Array (Term × Term))) :
     MacroM Term := do
   let ts := processed.map Prod.fst
-  if ts.size == 1 then
-    return ts[0]!
+  if h : ts.size = 1 then
+    return ts[0]
   else
     `(⟨$ts,*⟩)
 
 /-- Collect the terms into a product of sets. -/
 def bigOpBindersProd (processed : (Array (Term × Term))) :
     MacroM Term := do
-  if processed.isEmpty then
+  if h₀ : processed.size = 0 then
     `((Finset.univ : Finset Unit))
-  else if processed.size == 1 then
-    return processed[0]!.2
+  else if h₁ : processed.size = 1 then
+    return processed[0].2
   else
-    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back!.2
+    processed.foldrM (fun s p => `(SProd.sprod $(s.2) $p)) processed.back.2
       (start := processed.size - 1)
 
 /--

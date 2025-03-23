@@ -214,12 +214,39 @@ def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
 
 @[simp] theorem lmap_apply (x i) : lmap f x i = f i (x i) := rfl
 
+@[simp] lemma lmap_of [DecidableEq ι] (i : ι) (x : M i) :
+    lmap f (of M i x) = of N i (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ => map_zero _)
+
 @[simp] theorem lmap_lof [DecidableEq ι] (i) (x : M i) :
     lmap f (lof R _ _ _ x) = lof R _ _ _ (f i x) :=
   DFinsupp.mapRange_single (hf := fun _ ↦ map_zero _)
 
+@[simp] lemma lmap_id :
+    (lmap (fun i ↦ LinearMap.id (R := R) (M := M i))) = LinearMap.id :=
+  DFinsupp.mapRange.linearMap_id
+
+@[simp] lemma lmap_comp {K : ι → Type*} [∀ i, AddCommMonoid (K i)] [∀ i, Module R (K i)]
+    (g : ∀ (i : ι), N i →ₗ[R] K i) :
+    (lmap (fun i ↦ (g i) ∘ₗ (f i))) = (lmap g) ∘ₗ (lmap f) :=
+  DFinsupp.mapRange.linearMap_comp _ _
+
 theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
   classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+
+theorem lmap_surjective : Function.Surjective (lmap f) ↔ (∀ i, Function.Surjective (f i)) := by
+  classical exact DFinsupp.mapRange_surjective (hf := fun _ ↦ map_zero _)
+
+lemma lmap_eq_iff (x y : ⨁ i, M i) :
+    lmap f x = lmap f y ↔ ∀ i, f i (x i) = f i (y i) :=
+  map_eq_iff (fun i => (f i).toAddMonoidHom) _ _
+
+lemma toAddMonoidHom_lmap :
+    (lmap f).toAddMonoidHom = map (fun i => (f i).toAddMonoidHom) :=
+  rfl
+
+lemma lmap_eq_map (x : ⨁ i, M i) : lmap f x = map (fun i => (f i).toAddMonoidHom) x :=
+  rfl
 
 end map
 
@@ -248,7 +275,7 @@ def sigmaLcurry : (⨁ i : Σ_, _, δ i.1 i.2) →ₗ[R] ⨁ (i) (j), δ i j :=
   { sigmaCurry with map_smul' := fun r ↦ by convert DFinsupp.sigmaCurry_smul (δ := δ) r }
 
 @[simp]
-theorem sigmaLcurry_apply (f : ⨁ i : Σ_, _, δ i.1 i.2) (i : ι) (j : α i) :
+theorem sigmaLcurry_apply (f : ⨁ i : Σ _, _, δ i.1 i.2) (i : ι) (j : α i) :
     sigmaLcurry R f i j = f ⟨i, j⟩ :=
   sigmaCurry_apply f i j
 
@@ -349,7 +376,7 @@ alias IsInternal.submodule_independent := IsInternal.submodule_iSupIndep
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
 noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σi, α i) R M where
+    (v : ∀ i, Basis (α i) R (A i)) : Basis (Σ i, α i) R M where
   repr :=
     ((LinearEquiv.ofBijective (DirectSum.coeLinearMap A) h).symm ≪≫ₗ
         DFinsupp.mapRange.linearEquiv fun i ↦ (v i).repr) ≪≫ₗ
@@ -357,7 +384,7 @@ noncomputable def IsInternal.collectedBasis (h : IsInternal A) {α : ι → Type
 
 @[simp]
 theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σi, α i ↦ ↑(v a.1 a.2) := by
+    (v : ∀ i, Basis (α i) R (A i)) : ⇑(h.collectedBasis v) = fun a : Σ i, α i ↦ ↑(v a.1 a.2) := by
   funext a
   -- Porting note: was
   -- simp only [IsInternal.collectedBasis, toModule, coeLinearMap, Basis.coe_ofRepr,
@@ -369,8 +396,9 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
   -- convert DFinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
   simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
     LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_apply,
-    sigmaFinsuppEquivDFinsupp_single, LinearEquiv.ofBijective_apply,
-    sigmaFinsuppAddEquivDFinsupp_apply]
+    AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
+    LinearEquiv.ofBijective_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
   -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
   -- appears in the goal, but the lemma is expecting
@@ -383,7 +411,7 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
   simp only [Submodule.coe_subtype]
 
 theorem IsInternal.collectedBasis_mem (h : IsInternal A) {α : ι → Type*}
-    (v : ∀ i, Basis (α i) R (A i)) (a : Σi, α i) : h.collectedBasis v a ∈ A a.1 := by simp
+    (v : ∀ i, Basis (α i) R (A i)) (a : Σ i, α i) : h.collectedBasis v a ∈ A a.1 := by simp
 
 theorem IsInternal.collectedBasis_repr_of_mem (h : IsInternal A) {α : ι → Type*}
     (v : ∀ i, Basis (α i) R (A i)) {x : M} {i : ι} {a : α i} (hx : x ∈ A i) :

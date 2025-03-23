@@ -95,7 +95,7 @@ lemma isCircuit_iff_minimal_not_indep (hCE : C ⊆ M.E) : M.IsCircuit C ↔ Mini
     fun _ hJ hJC ↦ (h.eq_of_superset hJ.not_indep hJC).le⟩⟩
 
 lemma IsCircuit.diff_singleton_indep (hC : M.IsCircuit C) (he : e ∈ C) : M.Indep (C \ {e}) :=
-  hC.ssubset_indep (diff_singleton_sSubset.2 he)
+  hC.ssubset_indep (diff_singleton_ssubset.2 he)
 
 lemma isCircuit_iff_forall_ssubset : M.IsCircuit C ↔ M.Dep C ∧ ∀ ⦃I⦄, I ⊂ C → M.Indep I := by
   rw [IsCircuit, minimal_iff_forall_ssubset, and_congr_right_iff]
@@ -579,7 +579,7 @@ lemma isCocircuit_iff_minimal_compl_nonspanning :
   convert isCocircuit_iff_minimal with K
   simp_rw [spanning_iff_exists_isBase_subset (S := M.E \ K), not_exists, subset_diff, not_and,
     not_disjoint_iff_nonempty_inter, ← and_imp, and_iff_left_of_imp IsBase.subset_ground,
-      inter_comm K]
+    inter_comm K]
 
 /-- For an element `e` of a base `B`, the complement of the closure of `B \ {e}` is a cocircuit. -/
 lemma IsBase.compl_closure_diff_singleton_isCocircuit (hB : M.IsBase B) (he : e ∈ B) :
@@ -613,7 +613,7 @@ lemma IsCircuit.inter_isCocircuit_ne_singleton (hC : M.IsCircuit C) (hK : M.IsCo
   intro he
   have heC : e ∈ C := (he.symm.subset rfl).1
   simp_rw [isCocircuit_iff_minimal_compl_nonspanning, minimal_iff_forall_ssubset, not_not] at hK
-  have' hKe := hK.2 (t := K \ {e}) (diff_singleton_sSubset.2 (he.symm.subset rfl).2)
+  have' hKe := hK.2 (t := K \ {e}) (diff_singleton_ssubset.2 (he.symm.subset rfl).2)
   apply hK.1
   rw [spanning_iff_ground_subset_closure]
   nth_rw 1 [← hKe.closure_eq, diff_diff_eq_sdiff_union]
