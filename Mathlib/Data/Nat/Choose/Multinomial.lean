@@ -265,6 +265,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
       · exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       convert @Nat.cast_one R _
+      simp
     · rw [_root_.pow_succ, mul_zero]
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
