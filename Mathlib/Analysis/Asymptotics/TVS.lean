@@ -301,8 +301,7 @@ lemma IsLittleOTVS.insert [TopologicalSpace α] {x : α} {s : Set α}
 lemma IsLittleOTVS.bot : f =o[𝕜;⊥] g :=
   ⟨fun u hU ↦ ⟨univ, by simp [EventuallyLE]⟩⟩
 
-theorem IsLittleOTVS.prodMk [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {k : α → G}
+theorem IsLittleOTVS.prodMk [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k : α → G}
     (hf : f =o[𝕜; l] k) (hg : g =o[𝕜; l] k) : (fun x ↦ (f x, g x)) =o[𝕜; l] k := by
   rw [((nhds_basis_balanced 𝕜 E).prod_nhds (nhds_basis_balanced 𝕜 F)).isLittleOTVS_iff
     (basis_sets _)]
@@ -323,16 +322,38 @@ protected theorem IsLittleOTVS.snd {f : α → E × F} {g : α → G} (h : f =o[
   ContinuousLinearMap.snd 𝕜 E F |>.isBigOTVS_comp |>.trans_isLittleOTVS h
 
 @[simp]
-theorem isLittleOTVS_prodMk_left [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {k : α → G} :
+theorem isLittleOTVS_prodMk_left [ContinuousSMul 𝕜 E] [ContinuousSMul 𝕜 F] {k : α → G} :
     (fun x ↦ (f x, g x)) =o[𝕜; l] k ↔ f =o[𝕜; l] k ∧ g =o[𝕜; l] k :=
   ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.elim .prodMk⟩
 
-theorem IsLittleOTVS.add [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+theorem IsLittleOTVS.add [ContinuousAdd E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =o[𝕜;l] g) (h₂ : f₂ =o[𝕜;l] g) : (f₁ + f₂) =o[𝕜;l] g :=
   ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
     |>.trans_isLittleOTVS <| h₁.prodMk h₂
+
+protected theorem IsLittleOTVS.pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+    [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
+    {f : ∀ i, α → E i} (h : ∀ i, f i =o[𝕜; l] g) : (fun x i ↦ f i x) =o[𝕜; l] g := by
+  have := hasBasis_pi fun i ↦ nhds_basis_balanced 𝕜 (E i)
+  rw [← nhds_pi, ← Pi.zero_def] at this
+  simp only [this.isLittleOTVS_iff (basis_sets _), forall_and, Prod.forall, id]
+  rintro I U ⟨hIf, hU, Ub⟩
+  have := fun i hi ↦ (h i).eventually_smallSets (U i) (hU i hi)
+  rcases (hIf.eventually_all.mpr this).exists_mem_of_smallSets with ⟨V, hV₀, hV⟩
+  refine ⟨V, hV₀, fun ε hε ↦ ?_⟩
+  refine (hIf.eventually_all.mpr (hV · · ε hε)).mono fun x hx ↦ ?_
+  simpa only [id, egauge_pi hIf Ub, iSup₂_le_iff]
+
+theorem IsLittleOTVS.proj {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+    [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] {f : α → ∀ i, E i}
+    (h : f =o[𝕜; l] g) (i : ι) : (f · i) =o[𝕜; l] g :=
+  ContinuousLinearMap.proj i |>.isBigOTVS_comp |>.trans_isLittleOTVS h
+
+theorem isLittleOTVS_pi {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)]
+    [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)] [∀ i, ContinuousSMul 𝕜 (E i)]
+    {f : α → ∀ i, E i} : f =o[𝕜; l] g ↔ ∀ i, (f · i) =o[𝕜; l] g :=
+  ⟨.proj, .pi⟩
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜;l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜;l] (fun x ↦ c x • g x) := by
