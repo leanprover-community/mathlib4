@@ -176,7 +176,7 @@ theorem msplitsAt {x : M} (h : IsImmersionAt F I I' n f x) : MSplitsAt I I' f x 
       sorry
   -- Since rhs is linear, it is smooth - and it equals its own fderiv.
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E')) rhs (I (h.domChart x)) := by
-    refine ⟨rhs.differentiable.mdifferentiable.mdifferentiableAt, ?_⟩
+    dsimp only [MSplitsAt]
     rw [mfderiv_eq_fderiv, rhs.fderiv]
     exact this
   have : MSplitsAt (𝓘(𝕜, E)) (𝓘(𝕜, E'))
@@ -228,14 +228,11 @@ theorem mfderiv_injective {x : M} (h : IsImmersionAt F I I' n f x) : Injective (
 --   (3) (·, 0) has injective `fderiv` --- since it's linear, thus its own derivative. -/
 --   sorry
 
-/- If `M` is finite-dimensional, `f` is `C^n` at `x` and `mfderiv x` is injective,
-then `f` is immersed at `x`.
+/- If `M` is finite-dimensional, and `mfderiv I I' f x` is injective, then `f` is immersed at `x`.
 Some sources call this condition `f is infinitesimally injective at x`. -/
-lemma of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
-    (hf : ContMDiffAt I I' n f x) (hf' : Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
-    IsImmersionAt F I I' n f x := by
+lemma of_finiteDimensional_of_mfderiv_injective [FiniteDimensional 𝕜 E] {x : M}
+    (hf' : Injective (mfderiv I I' f x)) : IsImmersionAt F I I' n f x := by
   rw [isImmersionAt_iff_msplitsAt]
-  refine ⟨hf.mdifferentiableAt hn, ?_⟩
   convert ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_dom hf'
   show FiniteDimensional 𝕜 E; assumption
 
@@ -297,11 +294,11 @@ variable [IsManifold I 1 M] [IsManifold I' 1 M']
 theorem mfderiv_injective (h : IsImmersion F I I' n f) (x : M) : Injective (mfderiv I I' f x) :=
   (h x).mfderiv_injective
 
-/- If `M` is finite-dimensional, `f` is `C^k` and each `mfderiv x` is injective,
-then `f` is a `C^k` immersion. -/
-theorem of_mfderiv_injective [FiniteDimensional 𝕜 E] (hf : ContMDiff I I' n f)
-    (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) : IsImmersion F I I' n f :=
-  fun x ↦ IsImmersionAt.of_finiteDimensional_of_contMDiffAt_of_mfderiv_injective (hf x) (hf' x) hn
+/- If `M` is finite-dimensional and each `mfderiv I I' f x` is injective,
+then `f: M → M'` is a `C^k` immersion. -/
+theorem of_mfderiv_injective [FiniteDimensional 𝕜 E]
+    (hf : ∀ x, Injective (mfderiv I I' f x)) : IsImmersion F I I' n f :=
+  fun x ↦ IsImmersionAt.of_finiteDimensional_of_mfderiv_injective (hf x)
 
 variable [IsManifold J n N] in
 /-- The composition of two immersions is an immersion. -/
@@ -333,10 +330,14 @@ theorem isEmbedding (h : IsSmoothEmbedding F I I' n f) : IsEmbedding f := h.2
 variable [IsManifold I 1 M] [IsManifold I' 1 M'] in
 lemma of_mfderiv_injective_of_compactSpace_of_T2Space
     [FiniteDimensional 𝕜 E] [CompleteSpace E'] [CompleteSpace F] [CompactSpace M] [T2Space M']
-    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x))
-    (hf'' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f := by
+    (hf : ∀ x, Injective (mfderiv I I' f x))
+    (hf' : Injective f) (hn : 1 ≤ n) : IsSmoothEmbedding F I I' n f := by
   have := FiniteDimensional.complete (𝕜 := 𝕜) E
-  exact ⟨.of_mfderiv_injective hf hf' hn, (hf.continuous.isClosedEmbedding hf'').isEmbedding⟩
+  constructor
+  · exact IsImmersion.of_mfderiv_injective hf
+  · -- The following does it, but need to extract the previous step
+    -- apply (this.contMDiff.continuous.isClosedEmbedding hf').isEmbedding
+    sorry
 
 variable [IsManifold I 1 M] [IsManifold I' 1 M'] [IsManifold J n N] in
 /-- The composition of two smooth embeddings is a smooth embedding. -/
