@@ -478,7 +478,8 @@ theorem prod_deriv_expMap_single (x : realSpace K) :
       (Finset.prod_ne_zero_iff.mpr <| fun _ _ ↦ Real.exp_ne_zero _), mul_one]
   · simp [prod_eq_prod_mul_prod, mult_isReal, mult_isComplex]
 
-variable (K) in
+variable (K)
+
 /--
 The derivative of `expMapBasis`, see `hasFDerivAt_expMapBasis`.
 -/
@@ -486,13 +487,11 @@ abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K 
   (fderiv_expMap ((completeBasis K).equivFun.symm x)).comp
     (completeBasis K).equivFunL.symm.toContinuousLinearMap
 
-variable (K) in
 theorem hasFDerivAt_expMapBasis (x : realSpace K) :
     HasFDerivAt expMapBasis (fderiv_expMapBasis K x) x := by
   change HasFDerivAt (expMap ∘ (completeBasis K).equivFunL.symm) (fderiv_expMapBasis K x) x
   exact (hasFDerivAt_expMap _).comp x (completeBasis K).equivFunL.symm.hasFDerivAt
 
-variable (K) in
 open Classical ContinuousLinearMap in
 theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     |(fderiv_expMapBasis K x).det| =
@@ -505,6 +504,8 @@ theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
   simp_rw [abs_mul, Real.exp_mul, abs_pow, Real.rpow_natCast, abs_of_nonneg (Real.exp_nonneg _),
     abs_inv, abs_prod, abs_of_nonneg (expMapBasis_nonneg _ _), Nat.abs_ofNat]
   ring
+
+variable {S}
 
 open scoped Classical in
 theorem setLIntegral_expMapBasis_image {s : Set (realSpace K)} (hs : MeasurableSet s)
