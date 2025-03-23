@@ -6,7 +6,6 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
 import Mathlib.Logic.Relation
-import Mathlib.Tactic.Cases
 
 /-!
 # Relations holding pairwise
@@ -165,6 +164,7 @@ theorem Pairwise.insert_of_symmetric (hs : s.Pairwise r) (hr : Symmetric r)
     (h : ∀ b ∈ s, a ≠ b → r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric hr).2 ⟨hs, h⟩
 
+@[deprecated Pairwise.insert_of_symmetric (since := "2025-03-19")]
 theorem Pairwise.insert_of_symmetric_of_not_mem (hs : s.Pairwise r) (hr : Symmetric r) (ha : a ∉ s)
     (h : ∀ b ∈ s, r a b) : (insert a s).Pairwise r :=
   (pairwise_insert_of_symmetric_of_not_mem hr ha).2 ⟨hs, h⟩
