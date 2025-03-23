@@ -122,11 +122,25 @@ lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
   _ = -((t : K) ^ 2 • e) := by
     simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀, neg_smul]
 
+theorem tttt (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
+  calc
+    (((t : K) • (ad K L e)) ^ 3) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 2) f) := by
+      rfl
+    _ = ((t : K) • (ad K L e)) (((2 : ℕ).factorial : ℚ) • ((2 : ℕ).factorial : ℚ)⁻¹ • ((((t : K) • (ad K L e)) ^ 2)) f) := by
+      simp_all only [LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat, ne_eq, OfNat.ofNat_ne_zero,
+        not_false_eq_true, smul_inv_smul₀]
+    _ = ((t : K) • (ad K L e)) (((2 : ℕ).factorial : ℚ) • (-(t : K) ^ 2 • e)) := by
+      rw [pow_2_ad_e_f t ht]
+    _ = ((2 : ℕ).factorial : ℚ) • (-(t : K) ^ 2) • (((t : K) • (ad K L e)) e) := by
+      simp_all only [Nat.factorial_two, Nat.cast_ofNat, neg_smul, smul_neg, LinearMap.smul_apply, ad_apply, lie_neg,
+        lie_smul, lie_self, smul_zero, neg_zero]
+    _ = 0 := by
+      simp_all only [Nat.factorial_two, Nat.cast_ofNat, LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
 
 
 
 lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
-    (exp_ad_e H hα he t) f = f + h - e := by
+    (exp_ad_e H hα he t) f = f + (t : K) • h - ((t : K) ^ 2) • e := by
   rw [exp_ad_e_apply]
   simp
   have ttt := LieDerivation.exp_apply ((t : K) • (LieDerivation.ad K L) e) (nil2 H t he hα)
@@ -135,9 +149,7 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
     apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))
 
   rw [ttt2]
-  have tttt : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
-    sorry
-  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) tttt
+  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (tttt t ht)
   simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply,
     LinearMap.smul_def, smul_assoc]
   have unf : ∑ x ∈ range 3, (x.factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ x) f =
@@ -151,27 +163,11 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
     simp_all only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, LinearMap.one_apply, one_smul, zero_add,
       Nat.factorial_one, pow_one, LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat]
   rw [unf]
-
-
-  --rw [sss]
-
-  /-
-  dsimp [IsNilpotent.exp]
-  have ttt : (((ad K L ((t : K) • e))) ^ 3) e = 0 := by
-    sorry
-  --simp [toLinearMap]
-  --simp
-  --unfold IsNilpotent.exp
-  --simp [LieEquiv]
-
+  rw [pow_0_ad_e_f t ht, pow_1_ad_e_f t ht, pow_2_ad_e_f t ht]
   simp
-  let n := nilpotencyClass (t • (ad K L) e)
-  let A := ∑ x ∈ Finset.range n, ((x.factorial : ℚ) : K)⁻¹ • ((t • (ad K L) e) ^ x)
-  search_proof
-  --apply IsNilpotent.exp_eq_sum' ttt
-  -/
-
-  sorry
+  simp_all only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, LinearMap.one_apply, one_smul,
+    Nat.factorial_one, pow_one, LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat]
+  abel
 
 /-
 theorem theta_e {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
