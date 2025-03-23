@@ -83,13 +83,7 @@ theorem x_not_pseudo_eq : ¬PseudoEqual _ x y := by
   let π₂ := (biprod.snd : of ℤ ℚ ⊞ of ℤ ℚ ⟶ _)
   have ha₂ := congr_arg π₂ ha
   rw [← ModuleCat.comp_apply, ← ModuleCat.comp_apply] at ha₂
-  simp only [π₁, π₂, φ, BinaryBiproduct.bicone_snd, biprod.lift_snd, CategoryTheory.id_apply,
-    biprod.lift_fst_assoc, Category.id_comp, biprod.lift_snd_assoc, Linear.smul_comp,
-    Preadditive.add_comp, BinaryBicone.inl_snd, BinaryBicone.inr_snd, zero_add, two_smul] at ha₂
-  erw [add_apply, ModuleCat.id_apply] at ha₂
-  subst ha₁
-  simp only [self_eq_add_right] at ha₂
-  exact one_ne_zero' ℚ ha₂
+  simp_all [π₁, π₂, φ]
 
 attribute [local instance] Pseudoelement.setoid
 

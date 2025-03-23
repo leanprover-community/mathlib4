@@ -194,21 +194,20 @@ open SSet.stdSimplex in
 protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     SimplicialObject.Augmented.ExtraDegeneracy (stdSimplex.obj Δ) where
   s' _ := objMk (OrderHom.const _ 0)
-  s  _ f := (objEquiv _ _).symm
-    (shift (objEquiv _ _ f))
+  s _ f := objEquiv.symm (shift (objEquiv f))
   s'_comp_ε := by
     dsimp
     subsingleton
   s₀_comp_δ₁ := by
     dsimp
     ext1 x
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     ext j
     fin_cases j
     rfl
   s_comp_δ₀ n := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext i : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.stdSimplex,
@@ -216,7 +215,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     simp only [shiftFun_succ]
   s_comp_δ n i := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.δ, SimplexCategory.δ, SSet.stdSimplex,
@@ -229,7 +228,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
         Fin.succAboveOrderEmb_apply]
   s_comp_σ n i := by
     ext1 φ
-    apply (objEquiv _ _).injective
+    apply objEquiv.injective
     apply SimplexCategory.Hom.ext
     ext j : 2
     dsimp [SimplicialObject.σ, SimplexCategory.σ, SSet.stdSimplex,
@@ -287,8 +286,7 @@ theorem ExtraDegeneracy.s_comp_π_0 (n : ℕ) :
       @WidePullback.base _ _ _ f.right (fun _ : Fin (n + 1) => f.left) (fun _ => f.hom) _ ≫
         S.section_ := by
   dsimp [ExtraDegeneracy.s]
-  simp only [WidePullback.lift_π]
-  rfl
+  simp [WidePullback.lift_π]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as the linter complains the LHS is not in normal form
 theorem ExtraDegeneracy.s_comp_π_succ (n : ℕ) (i : Fin (n + 1)) :

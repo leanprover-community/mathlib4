@@ -76,7 +76,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       (isOpen_ne_fun continuous_snd continuous_const)
   continuousOn_invFun := by fun_prop
   continuousOn_toFun := by
-    refine .prod (by fun_prop) ?_
+    refine .prodMk (by fun_prop) ?_
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
@@ -85,9 +85,10 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+@[fun_prop]
 theorem continuous_polarCoord_symm :
-    Continuous (polarCoord.symm) :=
-  Continuous.prod_mk (by fun_prop) (by fun_prop)
+    Continuous polarCoord.symm :=
+  .prodMk (by fun_prop) (by fun_prop)
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=

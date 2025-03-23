@@ -133,8 +133,8 @@ theorem dist_lt_iff (C0 : (0 : ℝ) < C) : dist f g < C ↔ ∀ x : α, dist (f 
   rw [← dist_mkOfCompact, dist_lt_iff_of_compact C0]
   simp only [mkOfCompact_apply]
 
-instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [BoundedSMul R β] :
-    BoundedSMul R C(α, β) where
+instance {R} [Zero R] [Zero β] [PseudoMetricSpace R] [SMul R β] [IsBoundedSMul R β] :
+    IsBoundedSMul R C(α, β) where
   dist_smul_pair' r f g := by
     simpa only [← dist_mkOfCompact] using dist_smul_pair r (mkOfCompact f) (mkOfCompact g)
   dist_pair_smul' r₁ r₂ f := by
@@ -234,7 +234,7 @@ variable {R : Type*}
 instance [NonUnitalSeminormedRing R] : NonUnitalSeminormedRing C(α, R) where
   __ : SeminormedAddCommGroup C(α, R) := inferInstance
   __ : NonUnitalRing C(α, R) := inferInstance
-  norm_mul f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
+  norm_mul_le f g := norm_mul_le (mkOfCompact f) (mkOfCompact g)
 
 instance [NonUnitalSeminormedCommRing R] : NonUnitalSeminormedCommRing C(α, R) where
   __ : NonUnitalSeminormedRing C(α, R) := inferInstance
@@ -321,12 +321,12 @@ theorem linearIsometryBoundedOfCompact_of_compact_toEquiv :
 end
 
 @[simp] lemma nnnorm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖₊ = ‖f‖₊ * ‖b‖₊ := by
   simp only [nnnorm_eq_iSup_nnnorm, smul_apply', const_apply, nnnorm_smul, iSup_mul]
 
 @[simp] lemma norm_smul_const {R β : Type*} [NormedAddCommGroup β] [NormedDivisionRing R]
-    [Module R β] [BoundedSMul R β] (f : C(α, R)) (b : β) :
+    [Module R β] [IsBoundedSMul R β] (f : C(α, R)) (b : β) :
     ‖f • const α b‖ = ‖f‖ * ‖b‖ := by
   simp only [← coe_nnnorm, NNReal.coe_mul, nnnorm_smul_const]
 
@@ -459,7 +459,7 @@ theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f :
   rfl
 
 instance [CompactSpace α] : NormedStarGroup C(α, β) where
-  norm_star f := by
+  norm_star_le f := by
     rw [← BoundedContinuousFunction.norm_mkOfCompact, BoundedContinuousFunction.mkOfCompact_star,
       norm_star, BoundedContinuousFunction.norm_mkOfCompact]
 
