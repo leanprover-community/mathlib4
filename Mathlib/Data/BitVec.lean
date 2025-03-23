@@ -80,7 +80,7 @@ theorem ofFin_intCast (z : ℤ) : ofFin (z : Fin (2^w)) = ↑z := by
     · rw [ofInt_negSucc_eq_not_ofNat]
       simp only [Nat.cast_add, Nat.cast_one, neg_add_rev]
       rw [← add_ofFin, ofFin_neg, ofFin_ofNat, ofNat_eq_ofNat, ofFin_neg, ofFin_natCast,
-        natCast_eq_ofNat, negOne_eq_allOnes, ← sub_toAdd, allOnes_sub_eq_not]
+        natCast_eq_ofNat, neg_one_eq_allOnes, ← sub_eq_add_neg, allOnes_sub_eq_not]
 
 theorem toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z := by
   apply toFin_inj.mpr <| (ofFin_intCast z).symm
