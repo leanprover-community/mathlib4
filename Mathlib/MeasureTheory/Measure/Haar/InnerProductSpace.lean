@@ -29,14 +29,14 @@ namespace LinearIsometryEquiv
 variable (f : E ≃ₗᵢ[ℝ] F)
 
 /-- Every linear isometry equivalence is a measurable equivalence. -/
-def toMeasureEquiv : E ≃ᵐ F where
+def toMeasurableEquiv : E ≃ᵐ F where
   toEquiv := f
   measurable_toFun := f.continuous.measurable
   measurable_invFun := f.symm.continuous.measurable
 
-@[simp] theorem coe_toMeasureEquiv : (f.toMeasureEquiv : E → F) = f := rfl
+@[simp] theorem coe_toMeasurableEquiv : (f.toMeasurableEquiv : E → F) = f := rfl
 
-theorem toMeasureEquiv_symm : f.toMeasureEquiv.symm = f.symm.toMeasureEquiv := rfl
+theorem toMeasurableEquiv_symm : f.toMeasurableEquiv.symm = f.symm.toMeasurableEquiv := rfl
 
 end LinearIsometryEquiv
 
