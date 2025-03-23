@@ -60,7 +60,7 @@ jobs:
       - name: Check whether user is a mathlib admin
         id: user_permission
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' || ! steps.merge_or_delegate.outputs.removeLabels == '' }}
-        uses: actions-cool/check-user-permission@v2
+        uses: actions-cool/check-user-permission@7b90a27f92f3961b368376107661682c441f6103 # v2.3.0
         with:
           require: 'admin'
 
@@ -69,7 +69,7 @@ jobs:
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
-        uses: octokit/request-action@v2.x
+        uses: octokit/request-action@dad4362715b7fb2ddedf9772c8670824af564f0d # v2.4.0
         with:
           route: POST /repos/:repository/issues/:issue_number/labels
           repository: ${{ github.repository }}
@@ -108,7 +108,7 @@ jobs:
         if: ${{ ! steps.merge_or_delegate.outputs.mOrD == '' &&
           ( steps.user_permission.outputs.require-result == 'true' ||
             steps.merge_or_delegate.outputs.bot == 'true' ) }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
           python-version: '3.x'
 
@@ -120,7 +120,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install zulip
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           sparse-checkout: |
             scripts/zulip_emoji_merge_delegate.py
