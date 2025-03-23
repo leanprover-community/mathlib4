@@ -3,8 +3,11 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau
 -/
-import Mathlib.Algebra.Group.Prod
 import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Algebra.Group.InjSurj
+import Mathlib.Algebra.Group.Equiv.Defs
+import Mathlib.Algebra.Group.Pi.Basic
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # Dependent functions with finite support
@@ -227,6 +230,10 @@ def coeFnAddMonoidHom [∀ i, AddZeroClass (β i)] : (Π₀ i, β i) →+ ∀ i,
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
+
+@[simp]
+lemma coeFnAddMonoidHom_apply [∀ i, AddZeroClass (β i)] (v : Π₀ i, β i) : coeFnAddMonoidHom v = v :=
+  rfl
 
 instance addCommMonoid [∀ i, AddCommMonoid (β i)] : AddCommMonoid (Π₀ i, β i) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
@@ -562,8 +569,7 @@ theorem erase_same {i : ι} {f : Π₀ i, β i} : (f.erase i) i = 0 := by simp
 
 theorem erase_ne {i i' : ι} {f : Π₀ i, β i} (h : i' ≠ i) : (f.erase i) i' = f i' := by simp [h]
 
-theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι)
-    [∀ i' : ι, Decidable <| (i' ∈ ({i} : Set ι))] : -- Porting note: added Decidable hypothesis
+theorem piecewise_single_erase (x : Π₀ i, β i) (i : ι) :
     (single i (x i)).piecewise (x.erase i) {i} = x := by
   ext j; rw [piecewise_apply]; split_ifs with h
   · rw [(id h : j = i), single_eq_same]
@@ -1134,18 +1140,14 @@ section SigmaCurry
 
 variable {α : ι → Type*} {δ : ∀ i, α i → Type v}
 
--- lean can't find these instances -- Porting note: but Lean 4 can!!!
 instance hasAdd₂ [∀ i j, AddZeroClass (δ i j)] : Add (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.hasAdd ι (fun i => Π₀ j, δ i j) _
 
 instance addZeroClass₂ [∀ i j, AddZeroClass (δ i j)] : AddZeroClass (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.addZeroClass ι (fun i => Π₀ j, δ i j) _
 
 instance addMonoid₂ [∀ i j, AddMonoid (δ i j)] : AddMonoid (Π₀ (i : ι) (j : α i), δ i j) :=
   inferInstance
-  -- @DFinsupp.addMonoid ι (fun i => Π₀ j, δ i j) _
 
 end SigmaCurry
 
