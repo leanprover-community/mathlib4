@@ -528,3 +528,9 @@ theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
 
 theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
   mt circleMap_eq_center_iff.1 hR
+
+open Complex in
+lemma circleMap_zero_int_mul (R θ : ℝ) (n : ℤ) :
+    circleMap 0 (R^n) (n * θ) = (circleMap 0 R θ)^n := by
+  rw [circleMap_zero, circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc, ofReal_zpow, ofReal_mul,
+    ofReal_intCast]
