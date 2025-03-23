@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Jireh Loreaux
 import Mathlib.Analysis.MeanInequalities
 import Mathlib.Data.Fintype.Order
 import Mathlib.LinearAlgebra.Matrix.Basis
-import Mathlib.Analysis.Normed.Lp.WithLp
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # `L^p` distance on finite products of metric spaces
@@ -95,11 +95,7 @@ variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 variable [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 variable (x y : PiLp p β) (i : ι)
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
-
-(It appears to also be unused in Mathlib.) -/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply : (0 : PiLp p β) i = 0 :=
   rfl
 
@@ -792,6 +788,31 @@ def _root_.LinearIsometryEquiv.piLpCurry :
   rfl
 
 end piLpCurry
+
+section sumPiLpEquivProdLpPiLp
+
+variable {ι κ : Type*} (p : ℝ≥0∞) (α : ι ⊕ κ → Type*) [Fintype ι] [Fintype κ] [Fact (1 ≤ p)]
+variable [∀ i, SeminormedAddCommGroup (α i)] [∀ i, Module 𝕜 (α i)]
+
+/-- `LinearEquiv.sumPiEquivProdPi` for `PiLp`, as an isometry. -/
+@[simps! +simpRhs]
+def sumPiLpEquivProdLpPiLp :
+    WithLp p (Π i, α i) ≃ₗᵢ[𝕜]
+      WithLp p (WithLp p (Π i, α (.inl i)) × WithLp p (Π i, α (.inr i))) where
+  toLinearEquiv :=
+    WithLp.linearEquiv p _ _
+      ≪≫ₗ LinearEquiv.sumPiEquivProdPi _ _ _ α
+      ≪≫ₗ LinearEquiv.prod (WithLp.linearEquiv p _ _).symm (WithLp.linearEquiv p _ _).symm
+      ≪≫ₗ (WithLp.linearEquiv p _ _).symm
+  norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
+    obtain rfl | hp := p.dichotomy
+    · simp [← Finset.univ_disjSum_univ, Finset.sup_disjSum, Pi.norm_def]
+    · have : 0 < p.toReal := by positivity
+      have hpt : p ≠ ⊤ := (toReal_pos_iff_ne_top p).mp this
+      simp_rw [← coe_nnnorm]; congr 1 -- convert to nnnorm to avoid needing positivity arguments
+      simp [nnnorm_eq_sum hpt, WithLp.prod_nnnorm_eq_add hpt, NNReal.rpow_inv_rpow this.ne']
+
+end sumPiLpEquivProdLpPiLp
 
 section Single
 

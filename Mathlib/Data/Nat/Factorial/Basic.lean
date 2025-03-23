@@ -12,6 +12,8 @@ import Mathlib.Tactic.Monotonicity.Attr
 # Factorial and variants
 
 This file defines the factorial, along with the ascending and descending variants.
+For the proof that the factorial of `n` counts the permutations of an `n`-element set,
+see `Fintype.card_perm`.
 
 ## Main declarations
 
