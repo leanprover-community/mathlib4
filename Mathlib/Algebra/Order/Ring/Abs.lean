@@ -157,7 +157,7 @@ private def geomSum : ℕ → α
   | n + 1 => a * geomSum n + b ^ (n + 1)
 
 private theorem abs_geomSum_le : |geomSum a b n| ≤ (n + 1) * max |a| |b| ^ n := by
-  induction' n with n ih; · simp [geomSum]
+  induction n with | zero => simp [geomSum] | succ n ih => ?_
   refine (abs_add_le ..).trans ?_
   rw [abs_mul, abs_pow, Nat.cast_succ, add_one_mul]
   refine add_le_add ?_ (pow_le_pow_left₀ (abs_nonneg _) le_sup_right _)
@@ -167,7 +167,7 @@ private theorem abs_geomSum_le : |geomSum a b n| ≤ (n + 1) * max |a| |b| ^ n :
 
 private theorem pow_sub_pow_eq_sub_mul_geomSum :
     a ^ (n + 1) - b ^ (n + 1) = (a - b) * geomSum a b n := by
-  induction' n with n ih; · simp [geomSum]
+  induction n with | zero => simp [geomSum] | succ n ih => ?_
   rw [geomSum, mul_add, mul_comm a, ← mul_assoc, ← ih,
     sub_mul, sub_mul, ← pow_succ, ← pow_succ', mul_comm, sub_add_sub_cancel]
 

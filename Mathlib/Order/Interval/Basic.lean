@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.Interval.Set.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.SetLike.Basic
 
 /-!
@@ -451,7 +451,7 @@ instance semilatticeSup : SemilatticeSup (Interval α) :=
 
 section Decidable
 
-variable [DecidableRel (α := α) (· ≤ ·)]
+variable [DecidableLE α]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
@@ -574,8 +574,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance completeLattice [DecidableRel (α := α) (· ≤ ·)] :
-    CompleteLattice (Interval α) := by
+noncomputable instance completeLattice [DecidableLE α] : CompleteLattice (Interval α) := by
   classical
   exact
       { Interval.lattice, Interval.boundedOrder with
@@ -659,8 +658,7 @@ noncomputable instance completeLattice [DecidableRel (α := α) (· ≤ ·)] :
   }
 
 @[simp, norm_cast]
-theorem coe_sInf [DecidableRel (α := α) (· ≤ ·)] (S : Set (Interval α)) :
-    ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
+theorem coe_sInf [DecidableLE α] (S : Set (Interval α)) : ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
   classical
   change ((dite _ _ _ : Interval α) : Set α) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
@@ -676,11 +674,11 @@ theorem coe_sInf [DecidableRel (α := α) (· ≤ ·)] (S : Set (Interval α)) :
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2
 
 @[simp, norm_cast]
-theorem coe_iInf [DecidableRel (α := α) (· ≤ ·)] (f : ι → Interval α) :
+theorem coe_iInf [DecidableLE α] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 
 @[norm_cast]
-theorem coe_iInf₂ [DecidableRel (α := α) (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
+theorem coe_iInf₂ [DecidableLE α] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 
 end CompleteLattice

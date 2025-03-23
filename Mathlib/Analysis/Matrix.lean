@@ -128,7 +128,7 @@ theorem norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A : Matrix m
   congr_arg ((↑) : ℝ≥0 → ℝ) <| nnnorm_conjTranspose A
 
 instance [StarAddMonoid α] [NormedStarGroup α] : NormedStarGroup (Matrix m m α) :=
-  ⟨norm_conjTranspose⟩
+  ⟨(le_of_eq <| norm_conjTranspose ·)⟩
 
 @[simp]
 theorem nnnorm_col (v : m → α) : ‖col ι v‖₊ = ‖v‖₊ := by
@@ -520,7 +520,7 @@ theorem frobenius_norm_conjTranspose [StarAddMonoid α] [NormedStarGroup α] (A 
 
 instance frobenius_normedStarGroup [StarAddMonoid α] [NormedStarGroup α] :
     NormedStarGroup (Matrix m m α) :=
-  ⟨frobenius_norm_conjTranspose⟩
+  ⟨(le_of_eq <| frobenius_norm_conjTranspose ·)⟩
 
 @[simp]
 theorem frobenius_norm_row (v : m → α) : ‖row ι v‖ = ‖(WithLp.equiv 2 _).symm v‖ := by

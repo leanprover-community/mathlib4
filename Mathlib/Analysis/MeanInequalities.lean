@@ -327,6 +327,21 @@ theorem geom_mean_le_arith_mean4_weighted {w₁ w₂ w₃ w₄ p₁ p₂ p₃ p�
       ⟨p₂, hp₂⟩ ⟨p₃, hp₃⟩ ⟨p₄, hp₄⟩ <|
     NNReal.coe_inj.1 <| by assumption
 
+/-- As an example application of AM-GM we prove that the **Motzkin polynomial** is nonnegative.
+This bivariate polynomial cannot be written as a sum of squares. -/
+lemma motzkin_polynomial_nonneg (x y : ℝ) :
+    0 ≤ x ^ 4 * y ^ 2 + x ^ 2 * y ^ 4 - 3 * x ^ 2 * y ^ 2 + 1 := by
+  have nn₁ : 0 ≤ x ^ 4 * y ^ 2 := by positivity
+  have nn₂ : 0 ≤ x ^ 2 * y ^ 4 := by positivity
+  have key := geom_mean_le_arith_mean3_weighted (by norm_num) (by norm_num) (by norm_num)
+    nn₁ nn₂ zero_le_one (add_thirds 1)
+  rw [one_rpow, mul_one, ← mul_rpow nn₁ nn₂, ← mul_add, ← mul_add,
+    show x ^ 4 * y ^ 2 * (x ^ 2 * y ^ 4) = (x ^ 2) ^ 3 * (y ^ 2) ^ 3 by ring,
+    mul_rpow (by positivity) (by positivity),
+    ← rpow_natCast _ 3, ← rpow_mul (sq_nonneg x), ← rpow_natCast _ 3, ← rpow_mul (sq_nonneg y),
+    show ((3 : ℕ) * ((1 : ℝ) / 3)) = 1 by norm_num, rpow_one, rpow_one] at key
+  linarith
+
 end Real
 
 end GeomMeanLEArithMean
