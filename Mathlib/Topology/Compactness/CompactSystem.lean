@@ -302,6 +302,108 @@ theorem _of_isCompact_of_T2Space [T2Space α] :
 
 end ClosedCompact
 
+section Union
+
+example (s t : Set α) (hst : s ⊆ t) (ht : Finite t) : Finite s := by
+  exact Finite.Set.subset t hst
+
+lemma l1 (p : ℕ → Prop) (hp : ∀ n, p (n+1) → p n) (hi : Infinite (p⁻¹' {True})) (n : ℕ) : p n := by
+  have hp' (n : ℕ): ¬(p n) → ¬(p (n+1)) := by
+    exact fun a b ↦ a (hp n b)
+  by_contra h
+  have hp'' (m : ℕ) : ¬(p (n + m)) := by
+    induction m with
+    | zero => exact (add_zero n) ▸ h
+    | succ m hm => exact hp' (n+m) hm
+  rw [← not_finite_iff_infinite] at hi
+  apply hi
+  have hf : (p ⁻¹' {True}) ⊆ {k | k ≤ n} := by
+    intro x hx
+    simp only [preimage_singleton_true, mem_setOf_eq] at hx
+    refine mem_setOf.mpr ?_
+    by_contra h
+    simp only [not_le] at h
+    have h' := hp'' (x - n)
+    rw [add_sub_of_le h.le] at h'
+    exact h' hx
+  apply Finite.Set.subset {k | k ≤ n} hf
+
+-- theorem fin (p : α → Prop) (s : Set α) (hp : p ⋃₀ s)
+
+lemma l2 [Fintype α] (p : α → ℕ → Prop) (h : ∀ a, Finite { n | p a n }) : ∃ n, ∀ a, ¬(p a n) := by
+  by_contra! h₁
+  have h' : Finite (⋃ a, {n | p a n}) := by
+    exact Finite.Set.finite_iUnion (fun (a : α) ↦ {n | p a n})
+  obtain ⟨k, hk⟩ := Finite.exists_not_mem h'
+  obtain ⟨a, ha⟩ := h₁ k
+  apply hk
+  simp only [mem_iUnion]
+  use a
+  exact ha
+
+
+theorem main (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
+    (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
+    (hc : ∀ (n : ℕ), ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅) :
+    ∃ (K : ℕ → Set α), (∀ n, (K n ∈ L n)) ∧
+      (∀ N k, ⋂ (i ≤ N), K i ∩ ⋂ (j ≤ k), ⋃₀ (L (N + j)) ≠ ∅) := by
+  -- `q K n` is true, if `K ∩ ⋂ (k ≤ n), ⋃₀ (L k) ≠ ∅`
+  let (q : (L 0) → ℕ → Prop) := fun (K : L 0) (n : ℕ) ↦ (K : Set α) ∩ ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅
+  have h'' (K : L 0) := Finite.exists_infinite_fiber (fun n ↦ q K n)
+  have h''' : ∃ (K : L 0), Infinite ((fun n ↦ q K n) ⁻¹' {True}) := by
+    by_contra! h
+    simp only [preimage_singleton_true, coe_setOf, not_infinite_iff_finite, Subtype.forall] at h
+
+
+    -- apply hc 0
+    simp only [nonpos_iff_eq_zero, iInter_iInter_eq_left, sUnion_eq_empty, Finset.mem_coe]
+
+    sorry
+
+  have h : ∃ (K : L 0), ∀ n, q K n:= by
+    by_contra h'
+    push_neg at h'
+
+      sorry
+
+    simp_rw [q] at h'
+  -- Finite.exists_infinite_fiber
+    sorry
+  sorry
+
+open Classical in
+example (x : α) (H : Finset (Set α)) : x ∉ ⋃₀ ↑H ↔ ∀ h ∈ H, x ∉ h := by
+  simp only [mem_sUnion, Finset.mem_coe, not_exists, not_and]
+
+theorem union (h : IsCompactSystem p) : IsCompactSystem (fun s ↦ ∃ (D : Finset (Set (α))),
+    (∀ d ∈ D, p d) ∧ s = ⋃₀ (D : Set (Set α))) := by
+  intro q hq h_empty
+  simp only at hq
+  choose f hf1 hf2 using hq
+  simp_rw [Dissipate, hf2] at h_empty ⊢
+  -- simp_rw [sUnion_eq_iUnion, iInter_iUnion_distr] at h_empty
+  simp_rw [iInter_eq_empty_iff, mem_sUnion, Finset.mem_coe, not_exists, not_and] at h_empty ⊢
+  by_contra h
+  revert h_empty
+  simp only [imp_false]
+  push_neg at h ⊢
+
+  simp only [nonempty_iInter, mem_sUnion, Finset.mem_coe] at h ⊢
+  simp_rw [Dissipate, nonempty_iInter] at h
+
+
+
+  apply exists_mem_of_nonempty
+
+
+
+
+
+
+  sorry
+
+end Union
+
 end IsCompactSystem
 
 section pi
