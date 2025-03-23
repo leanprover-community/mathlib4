@@ -22,7 +22,9 @@ variable {ι M : Type*} [CommMonoid M] [AddCommMonoid M] [Fintype ι] {s : Finse
 #guard_msgs in
 #check Finset.prod {j ∈ s | p j} fun i ↦ f i
 
-/-! ### Big operators over a finset with `piBinderTypes` on -/
+/-! ### Big operators over a finset with `funBinderTypes` on -/
+
+set_option pp.funBinderTypes true
 
 /-- info: ∑ i : ι, f i : M -/
 #guard_msgs in
@@ -40,9 +42,9 @@ variable {ι M : Type*} [CommMonoid M] [AddCommMonoid M] [Fintype ι] {s : Finse
 #guard_msgs in
 #check Finset.prod {j | p j} fun i ↦ f i
 
-/-! ### Big operators over a finset with `piBinderTypes` off -/
+/-! ### Big operators over a finset with `funBinderTypes` off -/
 
-set_option pp.piBinderTypes false
+set_option pp.funBinderTypes false
 
 /-- info: ∑ i, f i : M -/
 #guard_msgs in
