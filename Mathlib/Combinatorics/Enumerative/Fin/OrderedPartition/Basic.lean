@@ -1,11 +1,12 @@
 import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Combinatorics.Enumerative.Composition
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Inv
-import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Data.List.Indexes
-import Mathlib.Combinatorics.Enumerative.Composition
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Order.Interval.Set.Fin
 
 open Set Function List
 open scoped Finset
@@ -613,10 +614,9 @@ def bindRight (c : OrderedPartition n)
   · simp only [← Multiset.coe_eq_coe, ← Multiset.coe_join, ← Multiset.map_coe, ← Multiset.coe_bind]
     rw [← Multiset.bind, Multiset.bind_assoc]
     simp only [Multiset.bind_map, ← Multiset.map_coe, ← Multiset.map_bind, multisetBind_parts]
-    simp only [Multiset.map_coe, map_getElem_finRange]
-    conv_rhs => rw [← c.multisetBind_parts, ← map_getElem_finRange c.parts, ← Multiset.map_coe,
+    simp only [Multiset.map_coe, finRange_map_getElem, Fin.getElem_fin]
+    conv_rhs => rw [← c.multisetBind_parts, ← finRange_map_getElem c.parts, ← Multiset.map_coe,
       Multiset.bind_map]
-    rfl
 
 def ofNodup.orderIso {m : ℕ} (L : List (List (Fin n))) (nodup : L.flatten.Nodup)
     (hm : L.flatten.length = m) : Fin m ≃o {x // x ∈ L.flatten} :=
@@ -793,7 +793,7 @@ theorem length_flatten_dropLast_add_length_appendLastDropLastList (c : OrderedPa
   rw [length_appendLastDropLastList, ← Nat.add_sub_assoc]
   · apply tsub_eq_of_eq_add
     simpa using congrArg (length ∘ flatten) (dropLast_concat_getLast c.parts_ne_nil)
-  · exact length_pos.2 <| c.ne_nil_of_mem_parts <| getLast_mem _
+  · exact length_pos_iff.2 <| c.ne_nil_of_mem_parts <| getLast_mem _
 
 theorem length_flatten_dropLast_eq_sub (c : OrderedPartition (n + 1)) :
     c.parts.dropLast.flatten.length = n - c.appendLastDropLastList.length :=
@@ -852,7 +852,7 @@ def toComposition (c : OrderedPartition n) : Composition n where
   blocks := c.parts.map length
   blocks_pos := by
     rw [List.forall_mem_map]
-    exact fun l hl ↦ length_pos.mpr <| c.ne_nil_of_mem_parts hl
+    exact fun l hl ↦ length_pos_iff.mpr <| c.ne_nil_of_mem_parts hl
   blocks_sum := c.sum_length_parts
 
 @[simp]
