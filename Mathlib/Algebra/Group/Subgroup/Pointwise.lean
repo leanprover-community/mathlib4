@@ -271,13 +271,13 @@ theorem le_normalizer_mul (N H : Subgroup G) (hLE : H ≤ N.normalizer) :
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `N` is normal."]
 theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N :=
-  mul_le_normalizer H N le_normalizer_of_normal'
+  mul_le_normalizer H N le_normalizer_of_normal
 
 /-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
 when `N` is normal."]
 theorem normal_mul (N H : Subgroup G) [N.Normal] : (↑(N ⊔ H) : Set G) = N * H :=
-  le_normalizer_mul N H le_normalizer_of_normal'
+  le_normalizer_mul N H le_normalizer_of_normal
 
 @[to_additive]
 theorem mul_inf_assoc (A B C : Subgroup G) (h : A ≤ C) :

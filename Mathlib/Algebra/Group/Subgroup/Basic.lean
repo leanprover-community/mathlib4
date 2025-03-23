@@ -405,22 +405,12 @@ theorem le_normalizer_of_normal_subgroupOf [hK : (H.subgroupOf K).Normal] (HK : 
     K ≤ H.normalizer :=
   (normal_subgroupOf_iff_le_normalizer HK).mp hK
 
-
 @[to_additive]
 theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ H.normalizer :=
   (@normalizer_eq_top _ _ H hH) ▸ le_top
 
-/- TODO: rename `le_normalizer_of_normal'` to `le_normalizer_of_normal` when the current deprecation
-`le_normalizer_of_normal` -> `le_normalizer_of_normal_subgroupOf` is completed.
--/
 @[to_additive]
-theorem le_normalizer_of_normal' [hH : H.Normal] : K ≤ H.normalizer := subset_normalizer_of_normal
-
-@[deprecated (since := "2025-03-06")] alias le_normalizer_of_normal :=
-  le_normalizer_of_normal_subgroupOf
-
-@[deprecated (since := "2025-03-06")] alias _root_.AddSubgroup.le_normalizer_of_normal :=
-  AddSubgroup.le_normalizer_of_normal_addSubgroupOf
+theorem le_normalizer_of_normal [H.Normal] : K ≤ H.normalizer := subset_normalizer_of_normal
 
 @[to_additive]
 theorem inf_normalizer_le_normalizer_inf : H.normalizer ⊓ K.normalizer ≤ (H ⊓ K).normalizer :=
