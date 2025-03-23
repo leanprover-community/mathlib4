@@ -282,7 +282,7 @@ lemma exists_map_eq_of_sorted_nonempty_iff_sbtw {l : List P} (hl : l ≠ []) :
     · cases l with
       | nil => simp at hl
       | cons head tail =>
-        simp only [length_cons, add_left_eq_self, length_eq_zero_iff, head_cons]
+        simp only [length_cons, add_eq_right, length_eq_zero_iff, head_cons]
         cases tail with
         | nil => simp
         | cons head2 tail =>
