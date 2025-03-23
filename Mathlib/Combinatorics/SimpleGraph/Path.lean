@@ -953,8 +953,7 @@ lemma adj_of_in_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp 
       cases Decidable.em p.Nil with
       | inl hnil =>
         rw [Walk.nil_iff_support_eq.mp hnil] at hxp
-        have hxv : x = v := by simp_all only [List.mem_cons, List.not_mem_nil, or_false]
-        rw [hxv]
+        rw [show (x = v) by simp_all]
         exact ⟨u, ⟨(Walk.cons h p).start_mem_support, G.adj_symm h⟩⟩
       | inr hnotnil =>
         obtain ⟨y, hy⟩ := ih hnotnil hxp
