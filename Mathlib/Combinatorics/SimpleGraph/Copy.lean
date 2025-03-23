@@ -34,11 +34,12 @@ Containment:
   `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
 * `SimpleGraph.killCopies G H`: Subgraph of `G` that does not contain `H`. Obtained by arbitrarily
   removing an edge from each copy of `H` in `G`.
+* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`.
+* `SimpleGraph.labelledCopyCount G H`: Number of labelled copies of `H` in `G`.
 
 Induced containment:
 * Induced copies of `G` inside `H` are already defined as `G ↪g H`.
 * `SimpleGraph.IsIndContained G H` : `G` is contained as an induced subgraph in `H`.
-* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`.
 
 ## Notation
 
