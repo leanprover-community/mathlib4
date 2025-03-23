@@ -19,8 +19,6 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 ## Main definitions
 
-* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$;
-
 * `CircleIntegrable f c R`: a function `f : ℂ → E` is integrable on the circle with center `c` and
   radius `R` if `f ∘ circleMap c R` is integrable on `[0, 2π]`;
 
