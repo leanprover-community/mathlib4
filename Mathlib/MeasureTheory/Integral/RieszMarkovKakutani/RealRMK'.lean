@@ -190,8 +190,8 @@ lemma range_cut_partition' [Nonempty X] (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (
   have hErestsubtsupport (n : Fin N) : E n ⊆ tsupport f := by simp only [inter_subset_right, E, y]
   have hrangefsubiunion: range f ⊆ ⋃ n : Fin N, Ioc (y n - ε) (y n) := by
     intro z hz
-    have h (n : Fin N) : y n - ε = (a + ↑↑n * ε) := by dsimp [y]; linarith
-    have h' (n : Fin N) : y n = a + ↑↑n * ε + ε := by dsimp [y]; linarith
+    have h (n : Fin N) : y n - ε = (a + n * ε) := by dsimp [y]; linarith
+    have h' (n : Fin N) : y n = a + n * ε + ε := by dsimp [y]; linarith
     simp_rw [h, h']
     rw [iUnion_Fin_Ioc hN a hε, mem_Ioc]
     exact ⟨(hf hz).1, le_of_lt (hf hz).2⟩
@@ -202,7 +202,7 @@ lemma range_cut_partition' [Nonempty X] (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (
     constructor
     · use j
     · exact hx
-  have h_E_partition : tsupport ⇑f = ⋃ j, E j := by
+  have h_E_partition : tsupport f = ⋃ j, E j := by
     apply subset_antisymm
     · exact htsupportsubErest
     · exact iUnion_subset hErestsubtsupport
@@ -213,13 +213,34 @@ lemma range_cut_partition' [Nonempty X] (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (
     · exact measurableSet_closure
   exact ⟨h_E_partition, h_E_disjoint, fun n x a ↦ bdd n x a, h_E_measurable⟩
 
+omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` there exists a set `V` such that
   `E ⊆ V` and the sets are similar in terms of the value of `f` and measure of the sets. -/
-lemma open_approx' (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) (μ : Measure X):
-    ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, ∃ x' ∈ E, f x ≤ f x' + ε) ∧
-    (μ V).toReal < (μ E).toReal + ε := by
-
-  sorry
+lemma open_approx' (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
+    (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
+    ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
+  have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
+  obtain ⟨V₁ : Opens X, hV₁⟩ := MeasureTheory.Content.outerMeasure_exists_open μ hμ hε'
+  let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage f.1.2 isOpen_Iio⟩
+  use V₁ ⊓ V₂
+  have h : (∀ x ∈ V₁ ⊓ V₂, f x < c) := by
+    suffices (∀ x ∈ V₂.carrier, f x < c) by
+      exact fun x h ↦ (this x h.2)
+    intro _ hx
+    rw [mem_preimage, mem_Iio] at hx
+    exact hx
+  have h' : μ.measure ↑(V₁ ⊓ V₂) ≤ μ.measure E + ENNReal.ofReal ε := calc
+      _ ≤ μ.measure V₁ := by apply measure_mono; simp
+      _ = μ.outerMeasure ↑V₁ := by
+        rw [MeasureTheory.Content.measure_apply μ ?_]
+        exact V₁.2.measurableSet
+      _ ≤ μ.outerMeasure E + ↑ε.toNNReal := by
+        exact hV₁.2
+      _ = _ := by
+        rw [MeasureTheory.Content.measure_apply μ ?_]
+        congr
+        exact hμ'
+  exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
 /-- Given a collection of sets `E`, a function `f : C_c(X, ℝ)` and `0 < ε` there exists a collection
   of sets `V` such that, for each `n`, `E n ⊆ V n` and the sets are similar in terms of the value of
@@ -228,12 +249,8 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) {N : ℕ} (E : Fin
     ∃ (V : Fin N → Opens X), (∀ n, E n ⊆ V n ∧ (∀ x ∈ V n, ∃ x' ∈ E n, f x ≤ f x' + ε) ∧
     (μ (V n)) ≤ (μ (E n)) + ENNReal.ofReal (ε / N)):= by
 
-  set V := fun (n : Fin N) ↦ Classical.choose (open_approx' f hε (E n) μ) with hV
-  use V
-
   sorry
 
--- #count_heartbeats in
 /-- `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)` -/
 theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
 
@@ -252,11 +269,11 @@ theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(ri
       intro x hx
       constructor
       · calc
-          _ < a' := by dsimp [a]; linarith
+          _ < a' := sub_one_lt a'
           _ ≤ _ := ha hx
       · calc
           _ ≤ b' := hb hx
-          _ < _ := by dsimp [b]; linarith
+          _ < _ := lt_add_one b'
     have hab : a' ≤ b' := by
       obtain ⟨c, hc⟩ := instNonemptyRange f
       exact le_trans (mem_lowerBounds.mp ha c hc) (mem_upperBounds.mp hb c hc)
