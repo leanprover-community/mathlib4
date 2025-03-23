@@ -142,10 +142,9 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         have vrs : vᵣ ∈ s := by apply hs; simp
         intro x hx
         have := (G.degreeOn_erase s vᵣ) ▸ ((hbdd vᵣ).trans (hd vᵣ vrs).symm.le)
-        rw [← mem_neighborFinset] at hx
         rw [degree_le_degreeOn_iff] at this
-        apply hnb
-        apply mem_inter.2 ⟨hx, this hx⟩
+        exact hnb x hx <| this <| (mem_neighborFinset ..).2 hx
+        --apply mem_inter.2 ⟨hx, this hx⟩
       have hdisj2 := (append_isPath_iff.1 hq).2.2
       -- either this path is the whole of `s` or it is a proper subset
       by_cases hr : ((q.append v41)).support.toFinset = s

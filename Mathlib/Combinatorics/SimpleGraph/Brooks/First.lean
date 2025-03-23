@@ -13,7 +13,7 @@ section LFDEq
 lemma exists_maximal_path_subset [DecidableEq α] {u v : α} [LocallyFinite G] (s : Finset α)
     {q : G.Walk u v} (hq : q.IsPath) (hs : ∀ y , y ∈ q.support → y ∈ s) : ∃ x, ∃ p : G.Walk x u,
     (p.append q).IsPath ∧ (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
-    ∀ y, y ∈ G.neighborFinset x ∩ s → y ∈ (p.append q).support := by
+    ∀ y, G.Adj x y → y ∈ s → y ∈ (p.append q).support := by
   by_contra! hf
   have : ∀ n, ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ x, x ∈ (p.append q).support → x ∈ s) ∧
     n ≤ (p.append q).length := by
@@ -24,8 +24,7 @@ lemma exists_maximal_path_subset [DecidableEq α] {u v : α} [LocallyFinite G] (
     | succ n ih =>
       obtain ⟨x, p, hp, hs, hc⟩ := ih
       obtain ⟨y, hy⟩ := hf x p hp hs
-      rw [mem_inter, mem_neighborFinset] at hy
-      use y, p.cons hy.1.1.symm
+      use y, p.cons hy.1.symm
       aesop
   obtain ⟨_, _, hp, hc⟩ := this #s
   simp_rw [← List.mem_toFinset] at hc
@@ -132,7 +131,7 @@ lemma eq_of_mem_takeUntil_find (hp : b ∈ (p.takeUntil (p.find P) find_mem_supp
       cases hp with
       | head as => contradiction
       | tail b h' => exact ih h'
-
+#check List.find?
 /-- If `x ∈ p.support` and `P x` holds then `x` is also in the walk `p.dropUntil (p.find P)`. -/
 lemma mem_dropUntil_find_of_mem_prop (hx : x ∈ p.support ∧ P x) :
     x ∈ (p.dropUntil (p.find P) find_mem_support).support := by
@@ -146,7 +145,8 @@ lemma mem_dropUntil_find_of_mem_prop (hx : x ∈ p.support ∧ P x) :
   | inr h => exact List.mem_of_mem_tail h
 
 open Finset
-
+#check List.find?_isSome
+#check List.find?_eq_some_iff_append
 lemma IsPath.cons_takeUntil_isCycle  (hp : p.IsPath) (ha : G.Adj x u) (hx : x ∈ p.support)
     (hs : x ≠ p.snd) : ((p.takeUntil x hx).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.takeUntil _, fun hf ↦
