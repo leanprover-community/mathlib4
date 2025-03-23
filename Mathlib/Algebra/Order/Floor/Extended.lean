@@ -79,7 +79,7 @@ noncomputable def ceil : ℝ≥0∞ → ℕ∞
 
 @[simp] lemma floor_eq_top : ⌊r⌋ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
 @[simp] lemma ceil_eq_top : ⌈r⌉ₑ = ⊤ ↔ r = ∞ := by cases r <;> simp
-@[simp] lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
+lemma floor_lt_top : ⌊r⌋ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 @[simp] lemma ceil_lt_top : ⌈r⌉ₑ < ⊤ ↔ r < ∞ := by cases r <;> simp
 
 @[simp] lemma le_floor : n ≤ ⌊r⌋ₑ ↔ n ≤ r := by cases r <;> cases n <;> simp [Nat.le_floor_iff]
@@ -208,7 +208,7 @@ lemma ceil_add_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌈r + ofNat(n)
 lemma floor_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌊r - ofNat(n)⌋ₑ = ⌊r⌋ₑ - ofNat(n) :=
   floor_sub_toENNReal r n
 
-@[simp] lemma ceil_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌈r - n⌉ₑ = ⌈r⌉ₑ - n :=
+@[simp] lemma ceil_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌈r - ofNat(n)⌉ₑ = ⌈r⌉ₑ - ofNat(n) :=
   ceil_sub_toENNReal r n
 
 @[bound]
