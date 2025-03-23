@@ -247,8 +247,9 @@ noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
     have : IsEmpty ι := not_nonempty_iff.mp hι
     Basis.empty _
 
+open Classical in
 @[simp]
-theorem coe_basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι] [Decidable (Nonempty ι)]
+theorem coe_basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
     {b : ι → (ι → K)} (hb : LinearIndependent K b) :
     ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
   by_cases hι : Nonempty ι
