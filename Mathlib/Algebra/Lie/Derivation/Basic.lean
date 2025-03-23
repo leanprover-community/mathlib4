@@ -11,6 +11,7 @@ import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
 import Mathlib.RingTheory.Nilpotent.Exp
 import Mathlib.RingTheory.Noetherian.Basic
+import LeanCopilot
 
 /-!
 # Lie derivations
@@ -381,7 +382,7 @@ instance instLieModule : LieModule R L (LieDerivation R L M) where
   smul_lie t x D := by ext; simp
   lie_smul t x D := by ext; simp
 
-instance instDerivation (x : L) : LieDerivation R L L where
+def adDerivation (x : L) : LieDerivation R L L where
   toFun := LieAlgebra.ad R L x
   map_add' := by
     exact fun a b ↦ LinearMap.map_add ((LieAlgebra.ad R L) x) a b
@@ -392,6 +393,11 @@ instance instDerivation (x : L) : LieDerivation R L L where
     simp_all
     rw [LieRing.leibniz_lie x a b, add_comm, ← lie_skew ⁅x, a⁆ b]
     exact Eq.symm (sub_eq_add_neg ⁅a, ⁅x, b⁆⁆ ⁅b, ⁅x, a⁆⁆)
+
+lemma adDerivation_apply (x : L) :
+    adDerivation R L x = LieAlgebra.ad R L x := by
+  ext x
+  convert rfl
 
 protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
     ⁅x, ⁅D₁, D₂⁆⁆ = ⁅⁅x, D₁⁆, D₂⁆ + ⁅D₁, ⁅x, D₂⁆⁆ := by
@@ -429,6 +435,11 @@ lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
   dsimp [exp]
   convert rfl
   subsingleton
+
+lemma exp_apply_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) (l : L) :
+    exp D h l = IsNilpotent.exp D.toLinearMap l := by
+  have ttt := exp_apply D h
+  exact Eq.symm (DFunLike.congr (id (Eq.symm ttt)) rfl)
 
 end ExpNilpotent
 

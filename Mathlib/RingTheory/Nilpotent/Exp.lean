@@ -186,6 +186,10 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
     exp (g • a) = g • exp a :=
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
 
+theorem exp_eq_sum' {M : Type*} [AddCommGroup M] [Module A M] {a : A} {m : M} {k : ℕ}
+    (h : (a ^ k) • m = 0) : (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
+  sorry
+
 end IsNilpotent
 
 namespace Module.End
