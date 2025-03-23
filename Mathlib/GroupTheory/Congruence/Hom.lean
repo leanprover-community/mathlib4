@@ -87,8 +87,8 @@ attribute [deprecated Con.ker_mkMulHom_eq (since := "2025-03-23")] mul_ker_mk_eq
 attribute [deprecated AddCon.ker_mkAddHom_eq (since := "2025-03-23")] AddCon.add_ker_mk_eq
 
 /-- Given a function `f`, the smallest congruence relation containing the binary relation on `f`'s
-    image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)`
-    by a congruence relation `c`.' -/
+image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)`
+by a congruence relation `c`.' -/
 @[to_additive "Given a function `f`, the smallest additive congruence relation containing the
 binary relation on `f`'s image defined by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the
 elements of `f⁻¹(y)` by an additive congruence relation `c`.'"]
@@ -96,31 +96,29 @@ def mapGen {c : Con M} (f : M → N) : Con N :=
   conGen <| Relation.Map c f f
 
 /-- Given a surjective multiplicative-preserving function `f` whose kernel is contained in a
-    congruence relation `c`, the congruence relation on `f`'s codomain defined by '`x ≈ y` iff the
-    elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)` by `c`.' -/
+congruence relation `c`, the congruence relation on `f`'s codomain defined by '`x ≈ y` iff the
+elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)` by `c`.' -/
 @[to_additive "Given a surjective addition-preserving function `f` whose kernel is contained in
 an additive congruence relation `c`, the additive congruence relation on `f`'s codomain defined
 by '`x ≈ y` iff the elements of `f⁻¹(x)` are related to the elements of `f⁻¹(y)` by `c`.'"]
-def mapOfSurjective {c : Con M} (f : F) (h : ker f ≤ c)
-    (hf : Surjective f) : Con N :=
-  { c.toSetoid.mapOfSurjective f h hf with
-    mul' := fun h₁ h₂ => by
-      rcases h₁ with ⟨a, b, h1, rfl, rfl⟩
-      rcases h₂ with ⟨p, q, h2, rfl, rfl⟩
-      exact ⟨a * p, b * q, c.mul h1 h2, map_mul f _ _, map_mul f _ _⟩ }
+def mapOfSurjective {c : Con M} (f : F) (h : ker f ≤ c) (hf : Surjective f) : Con N where
+  __ := c.toSetoid.mapOfSurjective f h hf
+  mul' h₁ h₂ := by
+    rcases h₁ with ⟨a, b, h1, rfl, rfl⟩
+    rcases h₂ with ⟨p, q, h2, rfl, rfl⟩
+    exact ⟨a * p, b * q, c.mul h1 h2, map_mul f _ _, map_mul f _ _⟩
 
 /-- A specialization of 'the smallest congruence relation containing a congruence relation `c`
-    equals `c`'. -/
+equals `c`'. -/
 @[to_additive "A specialization of 'the smallest additive congruence relation containing
 an additive congruence relation `c` equals `c`'."]
 theorem mapOfSurjective_eq_mapGen {c : Con M} {f : F} (h : ker f ≤ c) (hf : Surjective f) :
     c.mapGen f = c.mapOfSurjective f h hf := by
   rw [← conGen_of_con (c.mapOfSurjective f h hf)]; rfl
 
-
 /-- Given a congruence relation `c` on a type `M` with a multiplication, the order-preserving
-    bijection between the set of congruence relations containing `c` and the congruence relations
-    on the quotient of `M` by `c`. -/
+bijection between the set of congruence relations containing `c` and the congruence relations
+on the quotient of `M` by `c`. -/
 @[to_additive "Given an additive congruence relation `c` on a type `M` with an addition,
 the order-preserving bijection between the set of additive congruence relations containing `c` and
 the additive congruence relations on the quotient of `M` by `c`."]
