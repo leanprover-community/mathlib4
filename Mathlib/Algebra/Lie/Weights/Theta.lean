@@ -3,6 +3,8 @@ import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Field.Basic
+--import Mathlib.Algebra.GroupWithZero.Units
 import LeanCopilot
 
 /-!
@@ -25,7 +27,7 @@ namespace Theta
 
 open LieModule
 
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [Module ℚ L]
+variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [LieAlgebra ℚ L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
   [IsTriangularizable K H L] [FiniteDimensional K L]
 
@@ -91,36 +93,34 @@ lemma pow_1_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
 lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
   ((2 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 2) f = -(t : K) ^ 2 • e := by
   simp
-  have mi : ((t : K) * (t : K)) • 2 • e = 2 • ((t : K) * (t : K)) • e := by
-    sorry
+  have mi : (t : K) • (t : K) • (2 : ℕ) • e = (2 : ℚ) • (t : K) • (t : K) • e := by
+    simp [two_smul]
 
-  have hhhh : ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • ((t : K) • -((2 : ℚ) • e))) = -(t : K) ^ 2 • e := by
+  have mi2 [Field K] [CharZero K] (t : Kˣ) : (t : K) * (t : K) = (t : K) ^ 2 := by
+    ring
+
+  have hhhh : (2 : ℚ)⁻¹ • ((t : K) • ((t : K) • ((2 : ℕ) • e))) = (t : K) ^ 2 • e := by
+    rw [mi]
+    rw [← mul_smul]
     simp
     rw [← mul_smul]
-
-    --norm_cast
-    --simp
-
-
-
-    have hhhhh: ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • ((t : K) • (-((2 : ℚ) • e)))) = (((2 : ℕ).factorial : ℚ)⁻¹ * (t : K)) • ((t : K) • -((2 : ℚ)  • e)) := by
-      --nth_rewrite 1 [← mul_smul]
-      simp
-
-
-
+    rw [mi2]
 
   calc
   ((2 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 2) f = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) (((t : K) • (ad K L) e) f) := by
     exact rfl
   _ = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) (((1 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 1) f) := by
-    sorry
+    simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀, Nat.factorial_two, Nat.cast_ofNat,
+      LinearMap.smul_apply, ad_apply, map_smul, Nat.factorial_one, Nat.cast_one, inv_one, pow_one, one_smul]
   _ = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) ((t : K) • h) := by rw [pow_1_ad_e_f t ht]
   _ = -(t : K) ^ 2 • e := by
     simp
     rw [← lie_skew]
     rw [ht.lie_h_e_nsmul]
-    --search_proof
+    simp
+    rw [hhhh]
+  _ = -((t : K) ^ 2 • e) := by
+    simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀, neg_smul]
 
 
 
@@ -131,8 +131,8 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
   simp
   have ttt := LieDerivation.exp_apply ((t : K) • (LieDerivation.ad K L) e) (nil2 H t he hα)
 
-  have ttt2 : ((t : K) • (LieDerivation.ad K L) e).exp (nil2 H t he hα) f = IsNilpotent.exp ((t : K) • (LieDerivation.ad K L) e).toLinearMap f := by
-    apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L) e) (nil2 H t he hα) f
+  have ttt2 : ((t : K) • (LieDerivation.ad K L e)).exp (nil2 H t he hα) f = IsNilpotent.exp ((t : K) • (LieDerivation.ad K L e)).toLinearMap f := by
+    apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))
 
   rw [ttt2]
   have tttt : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
