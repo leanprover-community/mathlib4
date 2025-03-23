@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Defs
-import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
-import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.AddGroupWithTop
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Algebra.Order.Monoid.Unbundled.MinMax
+import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
+import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
+import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.Hom.Basic
 
 /-!
 
@@ -45,6 +45,7 @@ most references rely on `Semiring (Tropical R)` for building up the whole theory
 
 -/
 
+assert_not_exists Nat.instMulOneClass
 
 universe u v
 
