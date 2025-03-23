@@ -109,18 +109,18 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   -- `  sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })`
   -- Consequently this result should follow from `rieszContentAux_le`.
 
-  dsimp [rieszMeasure]
-  -- rw [MeasureTheory.Content.measure_apply]
-  -- have := MeasureTheory.Content.outerMeasure_le (rieszContent (toNNRealLinear Λ hΛ))
-  unfold rieszContent
-  have g : X →C_c ℝ≥0 := sorry
-  have K' : Compacts X := sorry
-  have hfK' : ∀ x ∈ K', 1 ≤ g x := sorry
-  have Λ' := (toNNRealLinear Λ hΛ)
-  have := rieszContentAux_le Λ' hfK'
-  -- have hfK'' : ∀ x ∈ K, 1 ≤ f x := by
-  --   sorry
-  -- sorry
+  -- dsimp [rieszMeasure]
+  -- -- rw [MeasureTheory.Content.measure_apply]
+  -- -- have := MeasureTheory.Content.outerMeasure_le (rieszContent (toNNRealLinear Λ hΛ))
+  -- unfold rieszContent
+  -- have g : X →C_c ℝ≥0 := sorry
+  -- have K' : Compacts X := sorry
+  -- have hfK' : ∀ x ∈ K', 1 ≤ g x := sorry
+  -- have Λ' := (toNNRealLinear Λ hΛ)
+  -- have := rieszContentAux_le Λ' hfK'
+  -- -- have hfK'' : ∀ x ∈ K, 1 ≤ f x := by
+  -- --   sorry
+  -- -- sorry
   sorry
 
 /-- An `Ioc` partitions into a finite union of `Ioc`s. -/
