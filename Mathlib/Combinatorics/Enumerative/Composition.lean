@@ -197,7 +197,7 @@ theorem blocks_eq_nil : c.blocks = [] ↔ n = 0 := by
   · intro h
     simpa using congr(List.sum $h)
   · rintro rfl
-    rw [← length_eq_zero, ← nonpos_iff_eq_zero]
+    rw [← length_eq_zero_iff, ← nonpos_iff_eq_zero]
     exact c.length_le
 
 protected theorem length_eq_zero : c.length = 0 ↔ n = 0 := by
@@ -572,6 +572,105 @@ theorem ne_single_iff {n : ℕ} (hn : 0 < n) {c : Composition n} :
             fun _ _ _ => zero_le _
 
     simpa using Fintype.card_eq_one_of_forall_eq this
+
+variable {m : ℕ}
+
+/-- Change `n` in `(c : Composition n)` to a propositionally equal value. -/
+@[simps]
+protected def cast (c : Composition m) (hmn : m = n) : Composition n where
+  __ := c
+  blocks_sum := c.blocks_sum.trans hmn
+
+@[simp]
+theorem cast_rfl (c : Composition n) : c.cast rfl = c := rfl
+
+theorem cast_heq (c : Composition m) (hmn : m = n) : HEq (c.cast hmn) c := by subst m; rfl
+
+theorem cast_eq_cast (c : Composition m) (hmn : m = n) :
+    c.cast hmn = cast (hmn ▸ rfl) c := by
+  subst m
+  rfl
+
+/-- Append two compositions to get a composition of the sum of numbers. -/
+@[simps]
+def append (c₁ : Composition m) (c₂ : Composition n) : Composition (m + n) where
+  blocks := c₁.blocks ++ c₂.blocks
+  blocks_pos := by
+    intro i hi
+    rw [mem_append] at hi
+    exact hi.elim c₁.blocks_pos c₂.blocks_pos
+  blocks_sum := by simp
+
+/-- Reverse the order of blocks in a composition. -/
+@[simps]
+def reverse (c : Composition n) : Composition n where
+  blocks := c.blocks.reverse
+  blocks_pos hi := c.blocks_pos (mem_reverse.mp hi)
+  blocks_sum := by simp [List.sum_reverse]
+
+@[simp]
+lemma reverse_reverse (c : Composition n) : c.reverse.reverse = c :=
+  Composition.ext <| List.reverse_reverse _
+
+lemma reverse_involutive : Function.Involutive (@reverse n) := reverse_reverse
+lemma reverse_bijective : Function.Bijective (@reverse n) := reverse_involutive.bijective
+lemma reverse_injective : Function.Injective (@reverse n) := reverse_involutive.injective
+lemma reverse_surjective : Function.Surjective (@reverse n) := reverse_involutive.surjective
+
+@[simp]
+lemma reverse_inj {c₁ c₂ : Composition n} : c₁.reverse = c₂.reverse ↔ c₁ = c₂ :=
+  reverse_injective.eq_iff
+
+@[simp]
+lemma reverse_ones : (ones n).reverse = ones n := by ext1; simp
+
+@[simp]
+lemma reverse_single (hn : 0 < n) : (single n hn).reverse = single n hn := by ext1; simp
+
+@[simp]
+lemma reverse_eq_ones {c : Composition n} : c.reverse = ones n ↔ c = ones n :=
+  reverse_injective.eq_iff' reverse_ones
+
+@[simp]
+lemma reverse_eq_single {hn : 0 < n} {c : Composition n} :
+    c.reverse = single n hn ↔ c = single n hn :=
+  reverse_injective.eq_iff' <| reverse_single _
+
+lemma reverse_append (c₁ : Composition m) (c₂ : Composition n) :
+    reverse (append c₁ c₂) = (append c₂.reverse c₁.reverse).cast (add_comm _ _) :=
+  Composition.ext <| by simp
+
+/-- Induction (recursion) principle on `c : Composition _`
+that corresponds to the usual induction on the list of blocks of `c`. -/
+@[elab_as_elim]
+def recOnSingleAppend {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
+    (zero : motive 0 (ones 0))
+    (single_append : ∀ k n c, motive n c →
+      motive (k + 1 + n) (append (single (k + 1) k.succ_pos) c)) :
+    motive n c :=
+  match n, c with
+  | _, ⟨blocks, blocks_pos, rfl⟩ =>
+    match blocks with
+    | [] => zero
+    | 0 :: _ => by simp at blocks_pos
+    | (k + 1) :: l =>
+      single_append k l.sum ⟨l, fun hi ↦ blocks_pos <| mem_cons_of_mem _ hi, rfl⟩ <|
+        recOnSingleAppend _ zero single_append
+  decreasing_by simp
+
+/-- Induction (recursion) principle on `c : Composition _`
+that corresponds to the reverse induction on the list of blocks of `c`. -/
+@[elab_as_elim]
+def recOnAppendSingle {motive : ∀ n, Composition n → Sort*} {n : ℕ} (c : Composition n)
+    (zero : motive 0 (ones 0))
+    (append_single : ∀ k n c, motive n c →
+      motive (n + (k + 1)) (append c (single (k + 1) k.succ_pos))) :
+    motive n c :=
+  reverse_reverse c ▸ c.reverse.recOnSingleAppend zero fun k n c ih ↦ by
+    convert append_single k n c.reverse ih using 1
+    · apply add_comm
+    · rw [reverse_append, reverse_single]
+      apply cast_heq
 
 end Composition
 
