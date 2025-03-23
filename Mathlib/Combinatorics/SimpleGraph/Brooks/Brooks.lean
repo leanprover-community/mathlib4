@@ -63,7 +63,7 @@ variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α] {s : Finse
 
 theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)
     (s : Finset α) : ∃ C : G.PartialColoring s, ∀ v, C v < k := by
-  have H  (n : ℕ) (hn : #s ≤ n) : ∃ C : G.PartialColoring s, ∀ v,  C v < k := by
+  have H (n : ℕ) (hn : #s ≤ n) : ∃ C : G.PartialColoring s, ∀ v,  C v < k := by
     induction n using Nat.strong_induction_on generalizing s with
     | h n ih =>
     -- Case 0 : there is v ∈ s with d_s(v) < k, so we can extend a k-coloring of
@@ -72,9 +72,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
     · obtain ⟨v, hv, hlt⟩ := hd
       obtain ⟨C, hC⟩ := ih _ (Nat.lt_of_lt_of_le (card_erase_lt_of_mem hv) hn) _ le_rfl
       have hvlt : C.extend v < k := (C.extend_le_degreeOn _).trans_lt hlt
-      have (w : α)  := insert_lt_of_lt hC hvlt w
-      use (C.insert_extend v).copy (by simp_all)
-      exact this
+      exact ⟨(C.insert_extend v).copy (insert_erase hv), insert_lt_of_lt hC hvlt⟩
     -- So all vertices in `s` have d_s(v) = k (and hence have no neighbors outside `s`)
     push_neg at hd
     replace hd : ∀ v ∈ s, G.degreeOn (s.erase v) v = k := fun v hv ↦ le_antisymm
@@ -194,11 +192,9 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           cases (mem_union.1 hj.2.2.2) with
           | inl h => exact h
           | inr h => exact (hj123 h).elim
-        obtain ⟨C,hC⟩ := Brooks1' q hk hj.1.symm hbdd hq.of_append_left hvjq
+        obtain ⟨C, hC⟩ := Brooks1' q hk hj.1.symm hbdd hq.of_append_left hvjq
                             h1.1 h3.1.symm hne hnadj h13q hv2q
-        use C.copy this.symm
-        simp_rw [copy_eq]
-        exact hC
+        exact ⟨C.copy this.symm, hC⟩
       · -- Main case 2 the path is a proper subset of s
         -- in which case we can build a cycle `c` from `vᵣ` such that all the neighbors
         -- of `vᵣ` lie in `c`
@@ -297,30 +293,25 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
             · rw [List.mem_toFinset, Brooks_aux' hcy hd]
               exact (hcy.rotate hr).snd_not_mem_tail_tail_support
             · exact disjoint_of_subset_right hps sdiff_disjoint
-          use C₃.copy heq
-          simp_rw [copy_eq]
           -- We know that when extending a coloring greedily along a path whose end point
           -- already has two neighbors colored with the same color we never need to use
           -- more that `k` colors along the path.
-          exact C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self ..)
-                    (mem_insert_of_mem hy1) d.adj hd1 hne hc2eq hdisj2
+          exact ⟨C₃.copy heq, C₂.Greedy_of_path_notInj hbdd hp.reverse hC₂ (mem_insert_self ..)
+                    (mem_insert_of_mem hy1) d.adj hd1 hne hc2eq hdisj2⟩
         · -- The cycle `c` has no edges into `s \ c` and so we can now color
           -- `c` and `s \ c` by induction
-          obtain ⟨C₁, hC₁⟩:= ih _ hccard  _ le_rfl
-          obtain ⟨C₂, hC₂⟩:= ih _ hsdcard _ le_rfl
+          obtain ⟨C₁, hC₁⟩ := ih _ hccard  _ le_rfl
+          obtain ⟨C₂, hC₂⟩ := ih _ hsdcard _ le_rfl
           push_neg at hnbc
           use (C₁.join C₂ (by simpa using hnbc)).copy (union_sdiff_of_subset hsub.1)
-          intro v; rw [copy_eq]
-          apply C₁.join_lt_of_lt hC₁ hC₂
+          simpa using C₁.join_lt_of_lt hC₁ hC₂
     · -- `s` is empty so easy to `k`-color
-      rw [not_nonempty_iff_eq_empty] at hem
-      use (ofEmpty G).copy hem.symm
+      use (ofEmpty G).copy (not_nonempty_iff_eq_empty.1 hem).symm
       intros
-      rw [copy_eq, ofEmpty_eq]
-      exact Nat.zero_lt_of_lt hk
+      simpa using Nat.zero_lt_of_lt hk
   exact H #s le_rfl
 
-theorem Brooks (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :
+theorem Brooks_3 (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k) :
     G.Colorable k := by
   rw [colorable_iff_exists_bdd_nat_coloring]
   obtain ⟨C, heq⟩ := BrooksPartial hk hc hbdd (univ : Finset α)

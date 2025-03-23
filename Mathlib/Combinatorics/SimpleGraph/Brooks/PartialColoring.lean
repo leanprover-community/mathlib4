@@ -8,22 +8,23 @@ variable {α : Type*} {G : SimpleGraph α}
 open Finset
 variable (G)
 @[ext]
-structure PartialColoring (s : Finset α)  where
+structure PartialColoring (s : Finset α) where
 col : α → ℕ
 valid : ∀ ⦃v w⦄, v ∈ s → w ∈ s → G.Adj v w → col v ≠ col w
 
 instance (s : Finset α): FunLike (G.PartialColoring s) α  ℕ where
   coe := PartialColoring.col
   coe_injective' := fun _ _ h ↦ PartialColoring.ext h
-
+-- Not used
 instance (s : Finset α) : Coe (G.PartialColoring s) ((G.induce s).Coloring ℕ) where
   coe := fun C ↦ ⟨fun x ↦ C x.val, by
     intro a b hab hne;
     exact C.valid (coe_mem a) (coe_mem b) hab hne⟩
 
+abbrev PColoring (s : Set α) := (G.induce s).spanningCoe.Coloring
 
-
-
+abbrev PColoring' (H : G.Subgraph) := H.coe.Coloring
+-- Notused
 def ofEmpty : G.PartialColoring ∅ where
   col := fun _ ↦ 0
   valid := fun _ _ h  _ ↦ False.elim <| not_mem_empty _ h
@@ -40,11 +41,12 @@ def ofNotAdj [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) : G.PartialColoring 
 
 namespace PartialColoring
 @[simp]
-lemma ofEmpty_eq (v : α): G.ofEmpty v = 0 := rfl
+lemma ofEmpty_eq : ∀ v, G.ofEmpty v = 0 := fun _ ↦ rfl
 variable {G}
 
 @[simp]
-lemma ofNotAdj_eq [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) (w : α): (G.ofNotAdj h) w = 0 := rfl
+lemma ofNotAdj_eq [DecidableEq α] {u v : α} (h : ¬ G.Adj u v) : ∀ w, (G.ofNotAdj h) w = 0 :=
+  fun _ ↦ rfl
 
 protected def copy {s t} (c : G.PartialColoring s) (h : s = t) : G.PartialColoring t where
   col := c.col
@@ -60,7 +62,7 @@ theorem copy_copy {s t u} (c : G.PartialColoring s) (hs : s = t) (ht : t = u) :
   rfl
 
 @[simp]
-lemma copy_eq {s t} (c : G.PartialColoring s) (hs : s = t) (v : α) : (c.copy hs) v = c v := rfl
+lemma copy_eq {s t} (c : G.PartialColoring s) (hs : s = t) : ⇑(c.copy hs) = c  := rfl
 variable [DecidableEq α]
 open Finset
 variable {s : Finset α} {b : ℕ} {i : α}
@@ -138,9 +140,10 @@ lemma join_eq {v : α} (C₁ : G.PartialColoring s) (C₂ : G.PartialColoring t)
     (C₁.join C₂ h) v = ite (v ∈ s) (C₁ v) (C₂ v) := rfl
 
 
-lemma join_lt_of_lt {k : ℕ} {v : α} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
+lemma join_lt_of_lt {k : ℕ} {C₁ : G.PartialColoring s} {C₂ : G.PartialColoring t}
     {h : ∀ v, v ∈ s → ∀ w, w ∈ t → ¬ G.Adj v w} (h1 : ∀  v, C₁ v < k) (h2 : ∀  v, C₂ v < k) :
-    (C₁.join C₂ h) v < k := by
+   ∀ v, (C₁.join C₂ h) v < k := by
+  intro v
   rw [join_eq]
   split_ifs
   · exact h1 _
@@ -271,7 +274,8 @@ theorem Greedy_of_tail_path (C : G.PartialColoring s) {p : G.Walk u v}
       exact fun y hy ↦ List.mem_toFinset.2 <| List.mem_cons_of_mem _ <| List.mem_toFinset.1 hy
 
 lemma insert_lt_of_lt {k : ℕ} {C : G.PartialColoring s} {a : α} (h : ∀ v,  C v < k)
-    (hg : C.extend a < k) (w : α) : (C.insert_extend a).col w < k := by
+    (hg : C.extend a < k) : ∀ w, (C.insert_extend a).col w < k := by
+  intro w
   rw [insert_extend]; dsimp
   by_cases ha : w = a
   · rwa [if_pos ha]
@@ -394,7 +398,7 @@ theorem Brooks1' {x₁ x₂ x₃ x₄ xⱼ xᵣ : α} (p : G.Walk xᵣ x₄) (hk
     rw [support_append]
     aesop
   use C'.copy st
-  simp_rw [copy_eq]
+  rw [copy_eq]
   exact  Brooks1 (Nat.zero_lt_of_lt hk) hc hbdd hp hj (by simp) (by simp) h21 h23 hne heq h1d h2d
 
 end partialcol
