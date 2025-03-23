@@ -36,6 +36,22 @@ variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
   {n : WithTop ℕ∞} [IsManifold I n M] [IsManifold I' n M']
 variable {f : M → M'} {x : M} {n : WithTop ℕ∞}
 
+-- move, perhaps to e.g. ContMDiff.Basic
+/-- If `f : M → M'` has injective differential at `x`, it is `mdifferentiable` at `x`. -/
+lemma mdifferentiableAt_of_mfderiv_injective {f : M → M'} (hf : Injective (mfderiv I I' f x)) :
+    MDifferentiableAt I I' f x := by
+  replace hf : LinearMap.ker (mfderiv I I' f x).toLinearMap = ⊥ := by
+    rw [LinearMap.ker_eq_bot]; exact hf
+  by_cases h: Subsingleton E
+  · exact mdifferentiable_of_subsingleton.mdifferentiableAt
+  · by_contra h'
+    have : (⊥ : Submodule 𝕜 (TangentSpace I x)) = ⊤ := by
+      simp [mfderiv_zero_of_not_mdifferentiableAt h', ← hf]
+    have : Subsingleton (Submodule 𝕜 E) := by
+      show Subsingleton (Submodule 𝕜 (TangentSpace I x))
+      exact subsingleton_of_bot_eq_top this
+    simp_all only [Submodule.subsingleton_iff]
+
 local instance : NormedAddCommGroup (TangentSpace I x) := by
   show NormedAddCommGroup E
   infer_instance
