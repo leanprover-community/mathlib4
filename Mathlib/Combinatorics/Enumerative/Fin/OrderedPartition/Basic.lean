@@ -96,24 +96,6 @@ lemma castLT_le_of_le_castLE {j : Fin m} {i : Fin n} (h₁ : m ≤ n) (h₂ : i 
   h₂
 
 @[simp]
-lemma image_castLE_setIic (i : Fin n) (h : n ≤ m) :
-    castLE h '' Set.Iic i = Set.Iic (i.castLE h) := by
-  aesop (add unsafe castLT_le_of_le_castLE)
-
-@[simp]
-lemma image_castAdd_setIic (m) (i : Fin n) :
-    castAdd m '' Set.Iic i = Set.Iic (i.castAdd m) :=
-  image_castLE_setIic i _
-
-@[simp]
-lemma image_castSucc_setIic (i : Fin n) : castSucc '' Set.Iic i = Set.Iic i.castSucc :=
-  image_castAdd_setIic _ _
-
-@[simp]
-lemma image_cast_setIic (i : Fin n) (h : n = m) : Fin.cast h '' Set.Iic i = Set.Iic (i.cast h) :=
-  image_castLE_setIic i h.le
-
-@[simp]
 lemma image_castLE_finsetIic (i : Fin n) (h : n ≤ m) :
     (Finset.Iic i).image (castLE h) = Finset.Iic (i.castLE h) := by
   simp [← Finset.coe_inj]
