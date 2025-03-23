@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.IntervalCases
 
 /-!

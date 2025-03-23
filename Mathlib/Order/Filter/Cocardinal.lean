@@ -83,7 +83,7 @@ theorem _root_.Set.Finite.compl_mem_cocardinal {s : Set α} (hs : s.Finite) :
     sᶜ ∈ cocardinal α hreg :=
   compl_mem_cocardinal_of_card_lt <| lt_of_lt_of_le (Finite.lt_aleph0 hs) (hreg.aleph0_le)
 
-theorem eventually_cocardinal_nmem_of_card_lt  {s : Set α} (hs : #s < c) :
+theorem eventually_cocardinal_nmem_of_card_lt {s : Set α} (hs : #s < c) :
     ∀ᶠ x in cocardinal α hreg, x ∉ s :=
   compl_mem_cocardinal_of_card_lt hs
 

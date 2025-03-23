@@ -484,7 +484,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     apply h'f.comp_left
     simp only [v, thickenedIndicator_apply, NNReal.coe_eq_zero]
     rw [thickenedIndicatorAux_zero (u_mem n).1]
-    · simp only [ENNReal.zero_toNNReal]
+    · simp only [ENNReal.toNNReal_zero]
     · simpa using (u_mem n).2.le
   have I1 := I μ' (by infer_instance)
   simp_rw [M] at I1

@@ -18,7 +18,7 @@ functions, started in `Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic`.
 ## References
 
 * [Hytönen, Tuomas, Jan Van Neerven, Mark Veraar, and Lutz Weis. Analysis in Banach spaces.
-  Springer, 2016.][Hytönen_VanNeerven_Veraar_Wies_2016]
+  Springer, 2016.][Hytonen_VanNeerven_Veraar_Wies_2016]
 
 -/
 
@@ -26,6 +26,10 @@ open MeasureTheory Filter Set ENNReal NNReal
 
 variable {α β γ : Type*} {m : MeasurableSpace α} {μ : Measure α} [TopologicalSpace β]
   [TopologicalSpace γ] {f g : α → β}
+
+lemma aestronglyMeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    AEStronglyMeasurable f (Measure.dirac a) :=
+  ⟨fun _ ↦ f a, stronglyMeasurable_const, ae_eq_dirac f⟩
 
 theorem MeasureTheory.AEStronglyMeasurable.comp_measurePreserving
     {γ : Type*} {_ : MeasurableSpace γ} {_ : MeasurableSpace α} {f : γ → α} {μ : Measure γ}

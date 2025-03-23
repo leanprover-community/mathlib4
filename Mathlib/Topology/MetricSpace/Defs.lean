@@ -25,6 +25,8 @@ for `PseudoMetricSpace`s in `PseudoMetric.lean`.
 metric, pseudo_metric, dist
 -/
 
+assert_not_exists Finset.sum
+
 open Set Filter Bornology
 open scoped NNReal Uniformity
 
@@ -33,7 +35,21 @@ universe u v w
 variable {α : Type u} {β : Type v} {X ι : Type*}
 variable [PseudoMetricSpace α]
 
-/-- We now define `MetricSpace`, extending `PseudoMetricSpace`. -/
+/-- A metric space is a type endowed with a `ℝ`-valued distance `dist` satisfying
+`dist x y = 0 ↔ x = y`, commutativity `dist x y = dist y x`, and the triangle inequality
+`dist x z ≤ dist x y + dist y z`.
+
+See pseudometric spaces (`PseudoMetricSpace`) for the similar class with the `dist x y = 0 ↔ x = y`
+assumption weakened to `dist x x = 0`.
+
+Any metric space is a T1 topological space and a uniform space (see `TopologicalSpace`, `T1Space`,
+`UniformSpace`), where the topology and uniformity come from the metric.
+
+We make the uniformity/topology part of the data instead of deriving it from the metric.
+This eg ensures that we do not get a diamond when doing
+`[MetricSpace α] [MetricSpace β] : TopologicalSpace (α × β)`:
+The product metric and product topology agree, but not definitionally so.
+See Note [forgetful inheritance]. -/
 class MetricSpace (α : Type u) : Type u extends PseudoMetricSpace α where
   eq_of_dist_eq_zero : ∀ {x y : α}, dist x y = 0 → x = y
 

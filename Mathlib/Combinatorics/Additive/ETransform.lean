@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.Algebra.Ring.Nat
 
 /-!
 # e-transforms
