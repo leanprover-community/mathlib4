@@ -32,16 +32,12 @@ namespace LinearMap
 
 lemma range_prodMap {f : E →L[𝕜] F} {g : E' →L[𝕜] F'} :
     range (f.prodMap g) = (range f).prod (range g) := by
-  ext x
-  rw [Submodule.mem_prod]
-  simp_rw [LinearMap.mem_range]
-  constructor <;> intro h
-  · have : x ∈ Set.range (Prod.map f g) := h
-    rcases h with ⟨⟨y1, y₂⟩, hy⟩
-    all_goals simp_all
-  · choose y₁ hy₁ using h.1
-    choose y₂ hy₂ using h.2
-    use (y₁, y₂), by simp [hy₁, hy₂]
+  ext; simp [Prod.ext_iff]
+/- find_home! suggests these; the second or fourth suggestion could be reasonable
+Mathlib.Analysis.CStarAlgebra.Basic, Mathlib.Analysis.Normed.Module.Span,
+Mathlib.Analysis.Normed.Affine.Isometry, Mathlib.Topology.Algebra.Module.FiniteDimension,
+Mathlib.Topology.Algebra.Module.StrongTopology, Mathlib.Analysis.Normed.Affine.AddTorsor]
+-/
 
 end LinearMap
 
