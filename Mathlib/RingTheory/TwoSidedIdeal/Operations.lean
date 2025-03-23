@@ -6,7 +6,6 @@ Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
 import Mathlib.RingTheory.TwoSidedIdeal.Instances
 
 /-!
