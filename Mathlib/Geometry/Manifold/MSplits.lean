@@ -63,20 +63,19 @@ local instance : NormedSpace 𝕜 (TangentSpace I x) := by
 variable (I I' f x) in
 /-- If `f : M → M` is differentiable at `x`,
 we say `f` splits at `x` iff `mfderiv 𝕜 f I I' x` splits. -/
-def MSplitsAt (f : M → M') (x : M) : Prop :=
-  MDifferentiableAt I I' f x ∧ (mfderiv I I' f x).Splits
+def MSplitsAt (f : M → M') (x : M) : Prop := (mfderiv I I' f x).Splits
 
 namespace MSplitsAt
 
 variable {f g : M → M'} {x : M}
 
 lemma mfderiv_injective (hf : MSplitsAt I I' f x) : Injective (mfderiv I I' f x) :=
-  hf.2.injective
+  hf.injective
 
 lemma congr (hf : MSplitsAt I I' f x) (hfg : g =ᶠ[nhds x] f) : MSplitsAt I I' g x := by
-  obtain ⟨hdiff, hdf⟩ := hf
   have : mfderiv I I' f x = mfderiv I I' g x := hfg.symm.mfderiv_eq
-  exact ⟨hdiff.congr_of_eventuallyEq hfg, this ▸ hdf⟩
+  unfold MSplitsAt
+  exact this ▸ hf
 
 section
 
@@ -108,34 +107,30 @@ lemma extend_symm_mfderiv_toContinousLinearEquiv_coe
 ------------------
 
 lemma extend (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    MSplitsAt I (modelWithCornersSelf 𝕜 E) (e.extend I) x := by
-  constructor
-  · sorry -- analogue of mdifferentiableAt_extChartAt... also on my old branch?
-  · exact (extend_mfderiv_toContinousLinearEquiv he hx).splits.congr (by simp)
+    MSplitsAt I (modelWithCornersSelf 𝕜 E) (e.extend I) x :=
+  (extend_mfderiv_toContinousLinearEquiv he hx).splits.congr (by simp)
 
 lemma extend_symm (he : e ∈ IsManifold.maximalAtlas I n M) (hx : x ∈ (chartAt H x).source) :
-    MSplitsAt (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) := by
-  constructor
-  · sorry -- analogue of mdifferentiableAt_extChartAt_symm ... also on my old branch?
-  · exact (extend_symm_mfderiv_toContinousLinearEquiv he hx).splits.congr (by simp)
+    MSplitsAt (modelWithCornersSelf 𝕜 E) I (e.extend I).symm (e.extend I x) :=
+  (extend_symm_mfderiv_toContinousLinearEquiv he hx).splits.congr (by simp)
 
 end
 
 lemma _root_.IsLocalDiffeomorphAt.msplitsAt {f : M → M'}
     (hf : IsLocalDiffeomorphAt I I' n f x) (hn : 1 ≤ n) : MSplitsAt I I' f x :=
-  ⟨hf.mdifferentiableAt hn,
-    (hf.mfderiv_toContinuousLinearEquiv hn).splits.congr (by symm; simp)⟩
+  (hf.mfderiv_toContinuousLinearEquiv hn).splits.congr (by symm; simp)
 
 /-- If `f` is split at `x` and `g` is split at `f x`, then `g ∘ f` is split at `x`. -/
 lemma comp [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     {g : M' → N} (hg : MSplitsAt I' J g (f x)) (hf : MSplitsAt I I' f x) :
     MSplitsAt I J (g ∘ f) x := by
-  refine ⟨hg.1.comp x hf.1, ?_⟩
-  · rw [mfderiv_comp x hg.1 hf.1]
-    have : CompleteSpace (TangentSpace I x) := by show CompleteSpace E; assumption
-    have : CompleteSpace (TangentSpace I' (f x)) := by show CompleteSpace E'; assumption
-    have : CompleteSpace (TangentSpace J (g (f x))) := by show CompleteSpace F; assumption
-    exact hg.2.comp hf.2
+  unfold MSplitsAt at hf hg ⊢
+  rw [mfderiv_comp x (mdifferentiableAt_of_mfderiv_injective hg.1)
+    (mdifferentiableAt_of_mfderiv_injective hf.1)]
+  have : CompleteSpace (TangentSpace I x) := by show CompleteSpace E; assumption
+  have : CompleteSpace (TangentSpace I' (f x)) := by show CompleteSpace E'; assumption
+  have : CompleteSpace (TangentSpace J (g (f x))) := by show CompleteSpace F; assumption
+  exact hg.comp hf
 
 lemma comp_isLocalDiffeomorphAt_left [CompleteSpace E] [CompleteSpace E'] [CompleteSpace F]
     (hf : MSplitsAt I I' f x) {f₀ : N → M} {y : N} (hxy : f₀ y = x)
@@ -230,23 +225,19 @@ lemma comp_diffeomorph_right_iff [CompleteSpace E] [CompleteSpace F] [CompleteSp
 
 -- TODO: should I augment the definition of MSplits, to demand being C^n?
 
-/-- If `f : M → N` is `C^n` and injective and `M` is finite-dimensional, then `f` splits. -/
+/-- If `f : M → N` is injective and `M` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional [FiniteDimensional 𝕜 E]
-    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
-    MSplits I I' f := by
+    (hf' : ∀ x, Injective (mfderiv I I' f x)) : MSplits I I' f := by
   intro x
   have : FiniteDimensional 𝕜 (TangentSpace I x) := by show FiniteDimensional 𝕜 E; assumption
-  exact ⟨((hf x).contMDiffAt (by simp)).mdifferentiableAt hn,
-    ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_dom (hf' x)⟩
+  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_dom (hf' x)
 
-/-- If `f : M → N` is `C^n` and injective and `N` is finite-dimensional, then `f` splits. -/
+/-- If `f : M → N` is injective and `N` is finite-dimensional, then `f` splits. -/
 lemma of_injective_of_finiteDimensional' [FiniteDimensional 𝕜 E']
-    (hf : ContMDiff I I' n f) (hf' : ∀ x, Injective (mfderiv I I' f x)) (hn : 1 ≤ n) :
-    MSplits I I' f := by
+    (hf' : ∀ x, Injective (mfderiv I I' f x)) : MSplits I I' f := by
   intro x
   have : FiniteDimensional 𝕜 (TangentSpace I' (f x)) := by show FiniteDimensional 𝕜 E'; assumption
-  exact ⟨((hf x).contMDiffAt (by simp)).mdifferentiableAt hn,
-    ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_cod (hf' x)⟩
+  exact ContinuousLinearMap.Splits.of_injective_of_finiteDimensional_cod (hf' x)
 
 -- If `f : M → N` is injective, `M` and `N` are Banach manifolds and each differential
 -- mfderiv I J f x is Fredholm, then `f` splits.
