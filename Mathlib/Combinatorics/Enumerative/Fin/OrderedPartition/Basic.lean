@@ -107,7 +107,7 @@ lemma image_castLE_setIic (i : Fin n) (h : n ≤ m) :
 lemma image_castAdd_setIic (m) (i : Fin n) :
     castAdd m '' Set.Iic i = Set.Iic (i.castAdd m) :=
   image_castLE_setIic i _
-  
+
 @[simp]
 lemma image_castSucc_setIic (i : Fin n) : castSucc '' Set.Iic i = Set.Iic i.castSucc :=
   image_castAdd_setIic _ _
