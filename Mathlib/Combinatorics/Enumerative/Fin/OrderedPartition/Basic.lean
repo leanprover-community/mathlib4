@@ -3,7 +3,7 @@ import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Inv
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
 import Mathlib.Data.List.Indexes
 import Mathlib.Combinatorics.Enumerative.Composition
 
@@ -13,10 +13,6 @@ open scoped Finset
 namespace List
 
 variable {α β γ : Type*}
-
-theorem mem_unattach {p : α → Prop} {l : List (Subtype p)} {x : α} :
-    x ∈ l.unattach ↔ ∃ y ∈ l, y.1 = x :=
-  mem_map
 
 /-- A version of `modify_id` that uses `fun x => x` instead of `id`. -/
 @[simp]
@@ -417,7 +413,7 @@ theorem parts_ne_nil [NeZero n] (c : OrderedPartition n) : c.parts ≠ [] :=
   c.parts_eq_nil.not.mpr (NeZero.ne n)
 
 theorem length_parts_neZero [NeZero n] (c : OrderedPartition n) : NeZero c.parts.length :=
-  ⟨(length_eq_zero.trans c.parts_eq_nil).not.mpr (NeZero.ne n)⟩
+  ⟨(length_eq_zero_iff.trans c.parts_eq_nil).not.mpr (NeZero.ne n)⟩
 
 attribute [scoped instance] length_parts_neZero
 
