@@ -452,19 +452,20 @@ theorem constrL_basis (v : Basis ι 𝕜 E) (f : ι → F) (i : ι) : v.constrL 
 end Basis
 
 variable (𝕜 E) in
-/-- A (non necessary Hausdorff) finite dimensional topological vector space
-over a nontrivially normed field admits a linear quotient map to a function space `Fin n → 𝕜`.
+/-- A finite dimensional topological vector space over a nontrivially normed field
+admits a linear topology inducing quotient map to a function space `Fin n → 𝕜`.
 
-If the original space is not Hausdorff, then `n` is strictly less than the dimension of `E`.  -/
-theorem exists_linearMap_fun_isQuotientMap [FiniteDimensional 𝕜 E] :
-    ∃ (n : ℕ) (f : E →L[𝕜] (Fin n → 𝕜)), IsQuotientMap f := by
+If the original space is not Hausdorff, then `n` is strictly less than the dimension of `E`. -/
+theorem exists_continuousLinearMap_fun_isInducing_isOpenQuotientMap [FiniteDimensional 𝕜 E] :
+    ∃ (n : ℕ) (f : E →L[𝕜] (Fin n → 𝕜)), IsInducing f ∧ IsOpenQuotientMap f := by
   -- TODO: move to an instance
   have : Module.Finite 𝕜 (SeparationQuotient E) :=
     .of_surjective (SeparationQuotient.mkCLM _ _).toLinearMap Quotient.mk_surjective
   let b := Module.finBasis 𝕜 (SeparationQuotient E)
   use finrank 𝕜 (SeparationQuotient E)
   use b.equivFunL ∘L SeparationQuotient.mkCLM _ _
-  exact b.equivFunL.toHomeomorph.isQuotientMap.comp SeparationQuotient.isQuotientMap_mk
+  use b.equivFunL.toHomeomorph.isInducing.comp SeparationQuotient.isInducing_mk
+  exact b.equivFunL.toHomeomorph.isOpenQuotientMap.comp SeparationQuotient.isOpenQuotientMap_mk
 
 namespace ContinuousLinearMap
 

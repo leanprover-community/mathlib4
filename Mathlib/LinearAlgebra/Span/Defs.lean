@@ -367,6 +367,7 @@ theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'
 
 end
 
+@[simp]
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
   subset_span rfl
 
