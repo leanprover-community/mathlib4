@@ -406,6 +406,16 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
 
+/-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
+def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
+  toFun f := ⟨f.toEmbedding, by simp⟩
+  invFun f := ⟨f.toEmbedding, fun {v w} ↦ by
+    obtain rfl | hvw := eq_or_ne v w
+    · simp
+    · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
+  left_inv f := rfl
+  right_inv f := rfl
+
 end Embedding
 
 section induceHom

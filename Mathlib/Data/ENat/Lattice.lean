@@ -67,12 +67,8 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · simp
   · norm_cast
 
-lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
-  cases isEmpty_or_nonempty ι
-  · simp
-  · norm_cast
-    rw [iInf, Nat.sInf_eq_zero]
-    exact ⟨fun h ↦ by simp_all, .inl⟩
+@[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
+  simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 
