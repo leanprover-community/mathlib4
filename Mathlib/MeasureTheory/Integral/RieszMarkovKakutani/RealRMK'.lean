@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Yoh Tanimioto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yoh Tanimoto
+Authors: Yoh Tanimoto, Oliver Butterley
 -/
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
@@ -22,8 +22,6 @@ no negation.
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
 -/
-
-set_option maxHeartbeats 400000
 
 noncomputable section
 
@@ -63,7 +61,7 @@ variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `K`, then
-`Λ f ≤ rieszMeasure K`. -/
+  `Λ f ≤ rieszMeasure K`. -/
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
     (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) :
     ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ K := by
@@ -109,7 +107,20 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   -- The definition of `rieszMeasure` is based on `rieszContentAux` which is defined as follows:
   -- `def rieszContentAux : Compacts X → ℝ≥0 := fun K =>`
   -- `  sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })`
-  -- Consequently this result is a special case of the general defintion.
+  -- Consequently this result should follow from `rieszContentAux_le`.
+
+  dsimp [rieszMeasure]
+  -- rw [MeasureTheory.Content.measure_apply]
+  -- have := MeasureTheory.Content.outerMeasure_le (rieszContent (toNNRealLinear Λ hΛ))
+  unfold rieszContent
+  have g : X →C_c ℝ≥0 := sorry
+  have K' : Compacts X := sorry
+  have hfK' : ∀ x ∈ K', 1 ≤ g x := sorry
+  have Λ' := (toNNRealLinear Λ hΛ)
+  have := rieszContentAux_le Λ' hfK'
+  -- have hfK'' : ∀ x ∈ K, 1 ≤ f x := by
+  --   sorry
+  -- sorry
   sorry
 
 /-- An `Ioc` partitions into a finite union of `Ioc`s. -/
@@ -132,8 +143,7 @@ lemma iUnion_Fin_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) 
     rw [hk]; clear hk
     induction' k with k hk
     · simp
-    · rw [Nat.cast_add, Nat.cast_one]
-      rw [Nat.cast_add, Nat.cast_one] at hk
+    · rw [Nat.cast_add, Nat.cast_one]; rw [Nat.cast_add, Nat.cast_one] at hk
       rcases (le_or_lt x (c + (↑k + 1) * δ)) with hc | hc
       · rw [Nat.cast_add, Nat.cast_one, mem_Ioc, mem_iUnion, and_imp]
         intro hx hx'
@@ -187,7 +197,7 @@ lemma range_cut_partition' [Nonempty X] (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (
         _ ≤ y m - ε := by linarith [hy hc]
         _ < _ := hx.1
   -- The sets `E n` are a partition of the support of `f`.
-  have hErestsubtsupport (n : Fin N) : E n ⊆ tsupport f := by simp only [inter_subset_right, E, y]
+  have hErestsubtsupport (n : Fin N) : E n ⊆ tsupport f := by simp [inter_subset_right, E]
   have hrangefsubiunion: range f ⊆ ⋃ n : Fin N, Ioc (y n - ε) (y n) := by
     intro z hz
     have h (n : Fin N) : y n - ε = (a + n * ε) := by dsimp [y]; linarith
@@ -214,8 +224,8 @@ lemma range_cut_partition' [Nonempty X] (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (
   exact ⟨h_E_partition, h_E_disjoint, fun n x a ↦ bdd n x a, h_E_measurable⟩
 
 omit [LocallyCompactSpace X] in
-/-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` there exists a set `V` such that
-  `E ⊆ V` and the sets are similar in terms of the value of `f` and measure of the sets. -/
+/-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists a
+  set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
 lemma open_approx' (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
     (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
@@ -231,7 +241,7 @@ lemma open_approx' (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ :
     exact hx
   have h' : μ.measure ↑(V₁ ⊓ V₂) ≤ μ.measure E + ENNReal.ofReal ε := calc
       _ ≤ μ.measure V₁ := by apply measure_mono; simp
-      _ = μ.outerMeasure ↑V₁ := by
+      _ = μ.outerMeasure V₁ := by
         rw [MeasureTheory.Content.measure_apply μ ?_]
         exact V₁.2.measurableSet
       _ ≤ μ.outerMeasure E + ↑ε.toNNReal := by
@@ -241,15 +251,6 @@ lemma open_approx' (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ :
         congr
         exact hμ'
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
-
-/-- Given a collection of sets `E`, a function `f : C_c(X, ℝ)` and `0 < ε` there exists a collection
-  of sets `V` such that, for each `n`, `E n ⊆ V n` and the sets are similar in terms of the value of
-  `f` and measure of the sets. -/
-lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) {N : ℕ} (E : Fin N → Set X) (μ : Measure X):
-    ∃ (V : Fin N → Opens X), (∀ n, E n ⊆ V n ∧ (∀ x ∈ V n, ∃ x' ∈ E n, f x ≤ f x' + ε) ∧
-    (μ (V n)) ≤ (μ (E n)) + ENNReal.ofReal (ε / N)):= by
-
-  sorry
 
 /-- `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)` -/
 theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
@@ -369,7 +370,25 @@ theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(ri
     exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ LT.lt.ne_top (h_E_lt_top n)
 
   -- Define sets `V` which are open approximations to the sets `E`
-  obtain ⟨V, hV⟩ := open_approx f hε'.1 E μ
+  have exists_open_approx : ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε') ∧
+      μ (V n) ≤ μ (E n) + ENNReal.ofReal (ε' / N) := by
+    have h (n : Fin N) : ∀ x ∈ E n, f x < y n + ε' := by
+      intro x hx
+      dsimp [y]
+      linarith [(hE.2.2.1 n x hx).2]
+    have h' (n : Fin N) : (rieszContent (toNNRealLinear Λ hΛ)).outerMeasure (E n) ≠ ⊤ := by
+      rw [← MeasureTheory.Content.measure_apply (rieszContent (toNNRealLinear Λ hΛ)) (hE.2.2.2 n)]
+      exact LT.lt.ne_top (h_E_lt_top n)
+    have h'' (n : Fin N) : MeasurableSet (E n) := hE.2.2.2 n
+    have h''' : 0 < ε' / N := div_pos hε'.1 (Nat.cast_pos'.mpr hN)
+    let V (n : Fin N) := Classical.choose <|
+      (open_approx' (f : C_c(X, ℝ)) h''' (E n) (h' n) (h'' n) (h n))
+    use V
+    intro n
+    let hV'' := Classical.choose_spec (open_approx' (f : C_c(X, ℝ)) h''' (E n) (h' n) (h'' n) (h n))
+    exact ⟨hV''.1, hV''.2.1, hV''.2.2⟩
+
+  obtain ⟨V, hV⟩ := exists_open_approx
 
   -- Define a partition of unity subordinated to the sets `V`
   have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
@@ -409,11 +428,7 @@ theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(ri
     by_cases hx : x ∈ tsupport (g n)
     · rw [mul_comm]
       apply mul_le_mul_of_nonneg_right ?_ (hg.2.2.1 n x).1
-      obtain ⟨x', hx'⟩ := (hV n).2.1 x <| Set.mem_of_subset_of_mem (hg.1 n) hx
-      calc
-        _ ≤ f x' + ε' := hx'.2
-        _ ≤ _ := by
-          gcongr; exact (hE.2.2.1 n x' hx'.1).2
+      exact le_of_lt <| (hV n).2.1 x <| Set.mem_of_subset_of_mem (hg.1 n) hx
     · simp [image_eq_zero_of_nmem_tsupport hx]
   · -- use that `Λ (g n) ≤ μ (V n)).toReal ≤ μ (E n)).toReal + ε' / ↑N`
     gcongr with n hn
