@@ -81,13 +81,10 @@ lemma le_egauge_pi {ι : Type*} {E : ι → Type*} [∀ i, SMul 𝕜 (E i)] {I :
 
 variable {F : Type*} [SMul 𝕜 F]
 
-lemma le_egauge_prod_left (s : Set E) (t : Set F) (a : E) (b : F) :
-    egauge 𝕜 s a ≤ egauge 𝕜 (s ×ˢ t) (a, b) :=
-  MapsTo.egauge_le 𝕜 (MulActionHom.fst 𝕜 E F) mapsTo_fst_prod (a, b)
-
-lemma le_egauge_prod_right (s : Set E) (t : Set F) (a : E) (b : F) :
-    egauge 𝕜 t b ≤ egauge 𝕜 (s ×ˢ t) (a, b) :=
-  MapsTo.egauge_le 𝕜 (MulActionHom.snd 𝕜 E F) mapsTo_snd_prod (a, b)
+lemma le_egauge_prod (s : Set E) (t : Set F) (a : E) (b : F) :
+    max (egauge 𝕜 s a) (egauge 𝕜 t b) ≤ egauge 𝕜 (s ×ˢ t) (a, b) :=
+  max_le (mapsTo_fst_prod.egauge_le 𝕜 (MulActionHom.fst 𝕜 E F) (a, b))
+    (MapsTo.egauge_le 𝕜 (MulActionHom.snd 𝕜 E F) mapsTo_snd_prod (a, b))
 
 end SMul
 
@@ -102,7 +99,7 @@ variable (𝕜 : Type*) [NNNorm 𝕜] [Nonempty 𝕜] {E : Type*} [Zero E] [SMul
 
 end SMulZero
 
-section Module
+section NormedDivisionRing
 
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
     {c : 𝕜} {s : Set E} {x : E}
@@ -194,9 +191,26 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     refine (le_egauge_smul_right _ _ _).trans_eq ?_
     rw [inv_smul_smul₀ hc]
 
-end Module
+/-- The extended gauge of a point `(a, b)` with respect to the product of balanced sets `U` and `V`
+is equal to the maximum of the extended gauges of `a` with respect to `U`
+and `b` with respect to `V`.
+-/
+theorem egauge_prod_mk {F : Type*} [AddCommGroup F] [Module 𝕜 F] {U : Set E} {V : Set F}
+    (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
+    egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
+  refine le_antisymm (le_of_forall_lt' fun r hr ↦ ?_) (le_egauge_prod _ _ _ _)
+  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod, mk_mem_prod] at hr ⊢
+  rcases hr with ⟨⟨x, hx, hxr⟩, ⟨y, hy, hyr⟩⟩
+  cases le_total ‖x‖ ‖y‖ with
+  | inl hle => exact ⟨y, ⟨hU.smul_mono hle hx, hy⟩, hyr⟩
+  | inr hle => exact ⟨x, ⟨hx, hV.smul_mono hle hy⟩, hxr⟩
 
-section NormedDivisionRing
+theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a b : E) :
+    egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
+  rw [← egauge_prod_mk hU hV a b, ← add_image_prod]
+  exact MapsTo.egauge_le 𝕜 (LinearMap.fst 𝕜 E E + LinearMap.snd 𝕜 E E) (mapsTo_image _ _) (a, b)
+
+end NormedDivisionRing
 
 section Pi
 
@@ -255,59 +269,30 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
   intro i hi
   exact (hU i hi).smul_mono (hc₀I i hi) (hc i hi)
 
+/-- The extended gauge of a point `x` in an indexed product with finite index type
+with respect to a product of balanced sets `U i`,
+is the supremum of the extended gauges of the components of `x`
+with respect to the corresponding balanced set.
+-/
+theorem egauge_univ_pi [Finite ι] {U : ∀ i, Set (E i)} (hU : ∀ i, Balanced 𝕜 (U i)) (x : ∀ i, E i) :
+    egauge 𝕜 (univ.pi U) x = ⨆ i, egauge 𝕜 (U i) (x i) :=
+  egauge_pi' finite_univ (fun i _ ↦ hU i) x (.inl rfl) |>.trans <| by simp
+
 /-- The extended gauge of a point `x` in an indexed product
 with respect to a product of finitely many balanced sets `U i`, `i ∈ I`,
 (and the whole spaces for the other indices)
 is the supremum of the extended gauges of the components of `x`
 with respect to the corresponding balanced set.
 
-This version assumes the following technical condition:
-- either `I` is the universal set;
-- or one of `x i`, `i ∈ I`, is nonzero;
-- or `𝕜` is nontrivially normed.
+This version assumes that `𝕜` is a nontrivially normed division ring.
+See also `egauge_pi'` for a version with more choices of the technical assumptions.
 -/
-theorem egauge_univ_pi [Finite ι] {U : ∀ i, Set (E i)} (hU : ∀ i, Balanced 𝕜 (U i)) (x : ∀ i, E i) :
-    egauge 𝕜 (univ.pi U) x = ⨆ i, egauge 𝕜 (U i) (x i) :=
-  egauge_pi' finite_univ (fun i _ ↦ hU i) x (.inl rfl) |>.trans <| by simp
-
-end Pi
-
-variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
-  {F : Type*} [AddCommGroup F] [Module 𝕜 F]
-
-/-- The extended gauge of a point `(a, b)` with respect to the product of balanced sets `U` and `V`
-is equal to the maximum of the extended gauges of `a` with respect to `U`
-and `b` with respect to `V`.
--/
-theorem egauge_prod_mk {U : Set E} {V : Set F}
-    (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a : E) (b : F) :
-    egauge 𝕜 (U ×ˢ V) (a, b) = max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
-  refine le_antisymm ?_ (max_le (le_egauge_prod_left _ _ _ _) (le_egauge_prod_right _ _ _ _))
-  refine le_of_forall_lt' fun r hr ↦ ?_
-  simp only [max_lt_iff, egauge_lt_iff, smul_set_prod, mk_mem_prod] at hr ⊢
-  rcases hr with ⟨⟨x, hx, hxr⟩, ⟨y, hy, hyr⟩⟩
-  cases le_total ‖x‖ ‖y‖ with
-  | inl hle => exact ⟨y, ⟨hU.smul_mono hle hx, hy⟩, hyr⟩
-  | inr hle => exact ⟨x, ⟨hx, hV.smul_mono hle hy⟩, hxr⟩
-
-theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a b : E) :
-    egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
-  rw [← egauge_prod_mk hU hV a b, ← add_image_prod]
-  exact MapsTo.egauge_le 𝕜 (LinearMap.fst 𝕜 E E + LinearMap.snd 𝕜 E E) (mapsTo_image _ _) (a, b)
-
-end NormedDivisionRing
-
-section NontriviallyNormedField
-
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-  {ι : Type*} {E : ι → Type*} [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)]
-
-theorem egauge_pi {I : Set ι} {U : ∀ i, Set (E i)}
+theorem egauge_pi [(𝓝[≠] (0 : 𝕜)).NeBot] {I : Set ι} {U : ∀ i, Set (E i)}
     (hI : I.Finite) (hU : ∀ i ∈ I, Balanced 𝕜 (U i)) (x : ∀ i, E i) :
     egauge 𝕜 (I.pi U) x = ⨆ i ∈ I, egauge 𝕜 (U i) (x i) :=
   egauge_pi' hI hU x <| .inr <| .inr inferInstance
 
-end NontriviallyNormedField
+end Pi
 
 section SeminormedAddCommGroup
 
