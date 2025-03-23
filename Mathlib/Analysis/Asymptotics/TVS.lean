@@ -9,6 +9,7 @@ import Mathlib.Analysis.Seminorm
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 import Mathlib.Analysis.Asymptotics.Defs
+import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -120,6 +121,15 @@ section congr
 
 variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
 
+theorem isLittleOTVS_iff_tendsto_div :
+    f =o[𝕜; l] g ↔ ∀ U ∈ 𝓝 0, ∃ V ∈ 𝓝 0,
+      Tendsto (fun x ↦ egauge 𝕜 U (f x) / egauge 𝕜 V (g x)) l (𝓝 0) := by
+  simp only [isLittleOTVS_iff, ← ENNReal.coe_zero, ENNReal.nhds_coe, ← NNReal.bot_eq_zero,
+    (nhds_bot_basis_Iic.map _).tendsto_right_iff]
+  simp +contextual [ENNReal.div_le_iff_le_mul, pos_iff_ne_zero, EventuallyLE]
+
+alias ⟨IsLittleOTVS.tendsto_div, IsLittleOTVS.of_tendsto_div⟩ := isLittleOTVS_iff_tendsto_div
+
 theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : Set E} (hU : U ∈ 𝓝 0) :
     ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ 0, (fun x ↦ egauge 𝕜 U (f x)) ≤ᶠ[l] (fun x ↦ ε * egauge 𝕜 V (g x)) := by
   obtain ⟨V, hV₀, hV⟩ := h.exists_eventuallyLE_mul U hU
@@ -130,11 +140,9 @@ theorem IsLittleOTVS.exists_eventuallyLE_mul_ennreal (h : f =o[𝕜; l] g) {U : 
 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =o[𝕜;l] g₁ ↔ f₂ =o[𝕜;l] g₂ := by
-  simp only [isLittleOTVS_iff]
-  peel with U hU V hV ε hε
-  apply eventually_congr
-  filter_upwards [hf, hg] with x hfx hgx
-  rw [hfx, hgx]
+  simp only [isLittleOTVS_iff_tendsto_div]
+  peel with U hU V hV
+  exact tendsto_congr' (hf.comp₂ (egauge _ _ · / egauge _ _ ·) hg)
 
 /-- A stronger version of `IsLittleOTVS.congr` that requires the functions only agree along the
 filter. -/
@@ -241,18 +249,37 @@ theorem isLittleOTVS_map {k : β → α} {l : Filter β} :
     f =o[𝕜; map k l] g ↔ (f ∘ k) =o[𝕜;l] (g ∘ k) := by
   simp [isLittleOTVS_iff, EventuallyLE]
 
+@[simp]
+theorem isBigOTVS_map {k : β → α} {l : Filter β} :
+    f =O[𝕜; map k l] g ↔ (f ∘ k) =O[𝕜;l] (g ∘ k) := by
+  simp [isBigOTVS_iff, EventuallyLE]
+
 lemma IsLittleOTVS.mono (hf : f =o[𝕜;l₁] g) (h : l₂ ≤ l₁) : f =o[𝕜;l₂] g :=
   ⟨fun U hU ↦ let ⟨V, hV0, hV⟩ := hf.1 U hU; ⟨V, hV0, fun ε hε ↦ (hV ε hε).filter_mono h⟩⟩
+
+lemma IsBigOTVS.mono (hf : f =O[𝕜;l₁] g) (h : l₂ ≤ l₁) : f =O[𝕜;l₂] g :=
+  ⟨fun U hU ↦ let ⟨V, hV0, C, hC⟩ := hf.1 U hU; ⟨V, hV0, C, hC.filter_mono h⟩⟩
 
 lemma IsLittleOTVS.comp_tendsto {k : β → α} {lb : Filter β} (h : f =o[𝕜; l] g)
     (hk : Tendsto k lb l) : (f ∘ k) =o[𝕜; lb] (g ∘ k) :=
   isLittleOTVS_map.mp (h.mono hk)
+
+lemma IsBigOTVS.comp_tendsto {k : β → α} {lb : Filter β} (h : f =O[𝕜; l] g)
+    (hk : Tendsto k lb l) : (f ∘ k) =O[𝕜; lb] (g ∘ k) :=
+  isBigOTVS_map.mp (h.mono hk)
 
 lemma isLittleOTVS_sup : f =o[𝕜; l₁ ⊔ l₂] g ↔ f =o[𝕜; l₁] g ∧ f =o[𝕜; l₂] g := by
   simp only [isLittleOTVS_iff_smallSets, ← forall_and, ← eventually_and, eventually_sup]
 
 lemma IsLittleOTVS.sup (hf₁ : f =o[𝕜; l₁] g) (hf₂ : f =o[𝕜; l₂] g) : f =o[𝕜; l₁ ⊔ l₂] g :=
   isLittleOTVS_sup.mpr ⟨hf₁, hf₂⟩
+
+lemma _root_.ContinuousLinearMap.isBigOTVS_id {l : Filter E} (f : E →L[𝕜] F) : f =O[𝕜; l] id :=
+  ⟨fun U hU ↦ ⟨f ⁻¹' U, (map_continuous f).tendsto' 0 0 (map_zero f) hU, 1, .of_forall <| by
+    simpa using (mapsTo_preimage f U).egauge_le 𝕜 f⟩⟩
+
+lemma _root_.ContinuousLinearMap.isBigOTVS_comp (g : E →L[𝕜] F) : (g <| f ·) =O[𝕜; l] f :=
+  g.isBigOTVS_id.comp_tendsto tendsto_top
 
 @[simp]
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜;l] g := by
@@ -274,8 +301,8 @@ lemma IsLittleOTVS.insert [TopologicalSpace α] {x : α} {s : Set α}
 lemma IsLittleOTVS.bot : f =o[𝕜;⊥] g :=
   ⟨fun u hU ↦ ⟨univ, by simp [EventuallyLE]⟩⟩
 
-theorem IsLittleOTVS.prodMk [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
-    [TopologicalAddGroup F] [ContinuousSMul 𝕜 F] {k : α → G}
+theorem IsLittleOTVS.prodMk [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {k : α → G}
     (hf : f =o[𝕜; l] k) (hg : g =o[𝕜; l] k) : (fun x ↦ (f x, g x)) =o[𝕜; l] k := by
   rw [((nhds_basis_balanced 𝕜 E).prod_nhds (nhds_basis_balanced 𝕜 F)).isLittleOTVS_iff
     (basis_sets _)]
@@ -284,19 +311,28 @@ theorem IsLittleOTVS.prodMk [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     with ⟨W, hW, hWf, hWg⟩
   refine ⟨W, hW, fun ε hε ↦ ?_⟩
   filter_upwards [hWf ε hε, hWg ε hε] with x hfx hgx
-  rw [egauge_prod_pair, max_le_iff]
+  rw [egauge_prod_mk, max_le_iff]
   exacts [⟨hfx, hgx⟩, hUb, hVb]
+
+protected theorem IsLittleOTVS.fst {f : α → E × F} {g : α → G} (h : f =o[𝕜; l] g) :
+    (f · |>.fst) =o[𝕜; l] g :=
+  ContinuousLinearMap.fst 𝕜 E F |>.isBigOTVS_comp |>.trans_isLittleOTVS h
+
+protected theorem IsLittleOTVS.snd {f : α → E × F} {g : α → G} (h : f =o[𝕜; l] g) :
+    (f · |>.snd) =o[𝕜; l] g :=
+  ContinuousLinearMap.snd 𝕜 E F |>.isBigOTVS_comp |>.trans_isLittleOTVS h
+
+@[simp]
+theorem isLittleOTVS_prodMk_left [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+    [IsTopologicalAddGroup F] [ContinuousSMul 𝕜 F] {k : α → G} :
+    (fun x ↦ (f x, g x)) =o[𝕜; l] k ↔ f =o[𝕜; l] k ∧ g =o[𝕜; l] k :=
+  ⟨fun h ↦ ⟨h.fst, h.snd⟩, fun h ↦ h.elim .prodMk⟩
 
 theorem IsLittleOTVS.add [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
-    (h₁ : f₁ =o[𝕜;l] g) (h₂ : f₂ =o[𝕜;l] g) : (f₁ + f₂) =o[𝕜;l] g := by
-  rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff (basis_sets _)]
-  rintro U ⟨hU, hUb⟩
-  rcases ((h₁.eventually_smallSets U hU).and (h₂.eventually_smallSets U hU)).exists_mem_of_smallSets
-    with ⟨V, hV, hVf₁, hVf₂⟩
-  refine ⟨V, hV, fun ε hε ↦ ?_⟩
-  filter_upwards [hVf₁ ε hε, hVf₂ ε hε] with x hx₁ hx₂
-  exact (egauge_add_add_le hUb hUb _ _).trans (max_le hx₁ hx₂)
+    (h₁ : f₁ =o[𝕜;l] g) (h₂ : f₂ =o[𝕜;l] g) : (f₁ + f₂) =o[𝕜;l] g :=
+  ContinuousLinearMap.fst 𝕜 E E + ContinuousLinearMap.snd 𝕜 E E |>.isBigOTVS_comp
+    |>.trans_isLittleOTVS <| h₁.prodMk h₂
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜;l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜;l] (fun x ↦ c x • g x) := by
