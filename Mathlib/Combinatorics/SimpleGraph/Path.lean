@@ -960,10 +960,16 @@ lemma adj_of_in_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp 
         obtain ⟨y, hy⟩ := ih hnotnil hxp
         exact ⟨y, ⟨(Walk.mem_support_iff' h p).mpr (Or.inr hy.left), hy.right⟩⟩
 
-lemma in_support_of_in_walk_support (u v : V) (p : G.Walk u v) (hp : ¬p.Nil) (w : V)
-    (hw : w ∈ p.support) : w ∈ G.support := by
+lemma in_support_of_in_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil)
+    {w : V} (hw : w ∈ p.support) : w ∈ G.support := by
   obtain ⟨y, hy⟩ := adj_of_in_walk_support p hp hw
   exact (mem_support G).mpr ⟨y, hy.right⟩
+
+lemma in_support_of_reachable {G : SimpleGraph V} {u v : V} (huv : u ≠ v) (h : G.Reachable u v) :
+    u ∈ G.support := by
+  let p : G.Walk u v := Classical.choice h
+  have hp : ¬p.Nil := Walk.not_nil_of_ne huv
+  exact in_support_of_in_walk_support p hp p.start_mem_support
 
 /-- A graph is connected if it's preconnected and contains at least one vertex.
 This follows the convention observed by mathlib that something is connected iff it has
