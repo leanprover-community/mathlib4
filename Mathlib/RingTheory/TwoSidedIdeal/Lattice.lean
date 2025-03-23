@@ -130,13 +130,13 @@ instance : CompleteLattice (TwoSidedIdeal R) where
   bot_le _ := by rw [ringCon_le_iff]; exact bot_le
 
 @[simp]
-lemma coe_bot_set : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := by
+lemma coe_bot : ((⊥ : TwoSidedIdeal R) : Set R) = {0} := by
   ext x
   simp only [SetLike.mem_coe, Set.mem_singleton_iff]
   rfl
 
 @[simp]
-lemma coe_top_set : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := by
+lemma coe_top : ((⊤ : TwoSidedIdeal R) : Set R) = Set.univ := by
   ext x
   simp only [SetLike.mem_coe, Set.mem_univ]
   rfl
