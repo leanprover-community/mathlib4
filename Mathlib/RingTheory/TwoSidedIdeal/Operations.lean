@@ -273,14 +273,8 @@ lemma mem_span_ideal_iff_exists_fin (s : Ideal R) (x : R) :
     exact ⟨n, fin, 1, xR, y, by simp⟩
 
 lemma span_le {s : Set R} {I : TwoSidedIdeal R} : s ⊆ I ↔ span s ≤ I := by
-  rw [le_iff]
-  constructor
-  · intro h x hx
-    rw [SetLike.mem_coe, mem_span_iff_exists_fin] at hx
-    obtain ⟨n, finn, xL, xR, y, rfl⟩ := hx
-    exact I.finsetSum_mem _ _ fun i _ => I.mul_mem_right _ _ (I.mul_mem_left _ _ <| h (y i).2)
-  · intro h x hx
-    exact h <| subset_span hx
+  rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
+  exact ⟨fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy), fun h x hx ↦ by aesop⟩
 
 open Pointwise Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
