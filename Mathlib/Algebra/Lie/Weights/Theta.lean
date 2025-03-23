@@ -79,6 +79,52 @@ open scoped Nat
 
 noncomputable def nilpo (t : Kˣ) (e : L) : ℕ := nilpotencyClass (t • (ad K L) e)
 
+lemma pow_0_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
+  ((0 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 0) f = f := by
+  simp
+
+lemma pow_1_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
+  ((1 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 1) f = (t : K) • h := by
+  simp
+  rw [ht.lie_e_f]
+
+lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
+  ((2 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 2) f = -(t : K) ^ 2 • e := by
+  simp
+  have mi : ((t : K) * (t : K)) • 2 • e = 2 • ((t : K) * (t : K)) • e := by
+    sorry
+
+  have hhhh : ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • ((t : K) • -((2 : ℚ) • e))) = -(t : K) ^ 2 • e := by
+    simp
+    rw [← mul_smul]
+
+    --norm_cast
+    --simp
+
+
+
+    have hhhhh: ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • ((t : K) • (-((2 : ℚ) • e)))) = (((2 : ℕ).factorial : ℚ)⁻¹ * (t : K)) • ((t : K) • -((2 : ℚ)  • e)) := by
+      --nth_rewrite 1 [← mul_smul]
+      simp
+
+
+
+
+  calc
+  ((2 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 2) f = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) (((t : K) • (ad K L) e) f) := by
+    exact rfl
+  _ = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) (((1 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 1) f) := by
+    sorry
+  _ = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) ((t : K) • h) := by rw [pow_1_ad_e_f t ht]
+  _ = -(t : K) ^ 2 • e := by
+    simp
+    rw [← lie_skew]
+    rw [ht.lie_h_e_nsmul]
+    --search_proof
+
+
+
+
 lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_e H hα he t) f = f + h - e := by
   rw [exp_ad_e_apply]
