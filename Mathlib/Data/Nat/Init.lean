@@ -434,35 +434,42 @@ protected lemma div_left_inj (hda : d ∣ a) (hdb : d ∣ b) : a / d = b / d ↔
   refine ⟨fun h ↦ ?_, congrArg fun b ↦ b / d⟩
   rw [← Nat.mul_div_cancel' hda, ← Nat.mul_div_cancel' hdb, h]
 
-lemma div_sub_of_dvd (h1 : 0 < n) (h2 : n ∣ m) : m / n - k = (m - n * k) / n := by
+/-- TODO: Replace `Nat.sub_mul_div` in core. -/
+lemma sub_mul_div' : (a - b * c) / b = a / b - c  := by
+  by_cases h : b * c ≤ a
+  · rw [Nat.sub_mul_div _ _ _ h]
+  · simp only [Nat.not_le] at h
+    rw [ Nat.sub_eq_zero_of_le (Nat.le_of_lt h),Nat.zero_div]
+    by_cases hn : b = 0
+    · simp only [hn, Nat.div_zero, zero_le, Nat.sub_eq_zero_of_le]
+    · have h2 : a / b ≤ (b * c) / b := Nat.div_le_div_right (Nat.le_of_lt h)
+      rw [Nat.mul_div_cancel_left _ (zero_lt_of_ne_zero hn)] at h2
+      rw [Nat.sub_eq_zero_of_le h2]
+
+lemma mul_sub_div_of_dvd (h1 : 0 < c) (h2 : c ∣ b) :  (c * a - b) / c = a - b / c := by
   obtain ⟨_,hx⟩ := h2
   simp only [hx,←Nat.mul_sub_left_distrib,Nat.mul_div_right,h1]
 
-lemma sub_div_of_dvd (h1 : 0 < k) (h2 : k ∣ n) : m - n / k = (k * m - n) / k := by
-  obtain ⟨_,hx⟩ := h2
-  simp only [hx,←Nat.mul_sub_left_distrib,Nat.mul_div_right,h1]
+lemma mul_add_mul_div_of_dvd  (hb : 0 < b) (hd : 0 < d) (h1 : b ∣ a) (h2 : d ∣ c) :
+    (a * d + b * c) / (b * d) = a / b + c / d := by
+  obtain ⟨n,hn⟩ := h1
+  obtain ⟨_,hm⟩ := h2
+  rw [hn,hm,Nat.mul_assoc b n d,Nat.mul_comm n d,← Nat.mul_assoc,← Nat.mul_assoc,
+    ← Nat.mul_add,Nat.mul_div_right _ hb, Nat.mul_div_right _ hd,
+    Nat.mul_div_right _ (Nat.mul_pos hb hd)]
 
-lemma div_add_div_of_dvd {l : ℕ} (hn : 0 < n) (hd : 0 < l) (h1 : n ∣ m) (h2 : l ∣ k) :
-    m / n + k / l = (m * l + n * k) / (n * l) := by
-  obtain ⟨a,ha⟩ := h1
-  obtain ⟨_,hb⟩ := h2
-  rw [ha,hb,Nat.mul_assoc n a l,Nat.mul_comm a l,← Nat.mul_assoc,← Nat.mul_assoc,
-    ← Nat.mul_add,Nat.mul_div_right _ hn, Nat.mul_div_right _ hd,
-    Nat.mul_div_right _ (Nat.mul_pos hn hd)]
+lemma mul_sub_mul_div_of_dvd (hb : 0 < b) (hd : 0 < d) (h1 : b ∣ a) (h2 : d ∣ c) :
+    (a * d - b * c) / (b * d)  = a / b - c / d:= by
+  obtain ⟨n,hn⟩ := h1
+  obtain ⟨m,hm⟩ := h2
+  rw [hn,hm]
+  rw [Nat.mul_assoc,Nat.mul_comm n d,←Nat.mul_assoc,←Nat.mul_assoc,←Nat.mul_sub_left_distrib,
+    Nat.mul_div_right _ hb, Nat.mul_div_right _ hd, Nat.mul_div_right _ (Nat.mul_pos hb hd )]
 
-lemma div_sub_div_of_dvd {l : ℕ}  (hn : 0 < n) (hd : 0 < l) (h1 : n ∣ m) (h2 : l ∣ k ) :
-    m / n - k / l = (m * l - n * k) / (n * l) := by
-  obtain ⟨a,ha⟩ := h1
-  obtain ⟨b,hb⟩ := h2
-  rw [ha,hb]
-  rw [Nat.mul_assoc,Nat.mul_comm a l,←Nat.mul_assoc,←Nat.mul_assoc,←Nat.mul_sub_left_distrib,
-    Nat.mul_div_right _ hn, Nat.mul_div_right _ hd, Nat.mul_div_right _ (Nat.mul_pos hn hd )]
+lemma div_mul_assoc (h : b ∣ a) : (a / b) * c = (a * c) / b := by
+  rw [Nat.mul_comm,←Nat.mul_div_assoc _ h,Nat.mul_comm]
 
-lemma div_mul_assoc (h : k ∣ n) : (n / k) * m = (n * m) / k := by
-  rw [Nat.mul_comm,←Nat.mul_div_assoc,Nat.mul_comm]
-  exact h
-
-lemma eq_div_iff_mul_eq_left (h1 : 0 < k) (h2 : k ∣ n) : m = n / k ↔ n = m * k:= by
+lemma eq_div_iff_mul_eq_left (h1 : 0 < c) (h2 : c ∣ b) : a = b / c ↔ b = a * c:= by
   rw [eq_comm, Nat.div_eq_iff_eq_mul_left h1 h2]
 
 lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (b * d) := by
@@ -555,13 +562,13 @@ protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y :
   else
     rwa [← le_div_iff_mul_le (Nat.pos_iff_ne_zero.2 hk)]
 
-theorem div_le_iff_le_mul_of_dvd (h1 : 0 < n) (h2 : n ∣ m) : m / n ≤  k ↔ m ≤ k * n := by
+theorem div_le_iff_le_mul_of_dvd (h1 : 0 < b) (h2 : b ∣ a) : a / b ≤ c ↔ a ≤ c * b := by
   obtain ⟨_,hx⟩ := h2
   simp only [hx]
   rw [Nat.mul_div_right _ h1,Nat.mul_comm]
-  exact ⟨mul_le_mul_right n, fun h ↦ Nat.le_of_mul_le_mul_right h h1⟩
+  exact ⟨mul_le_mul_right b, fun h ↦ Nat.le_of_mul_le_mul_right h h1⟩
 
-theorem lt_div_iff_mul_lt_of_dvd (h1 : 0 < k) (h2 : k ∣ n) : m < n / k ↔ m * k < n := by
+theorem lt_div_iff_mul_lt_of_dvd (h1 : 0 < c) (h2 : c ∣ b) : a < b / c ↔ a * c < b := by
   obtain ⟨x,hx⟩ := h2
   simp only [hx]
   rw [Nat.mul_div_right _ h1,Nat.mul_comm]
