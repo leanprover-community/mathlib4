@@ -102,12 +102,34 @@ lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x :
 
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`.-/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
-    (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure hΛ K ≤ ENNReal.ofReal (Λ f) := by
-  -- The definition of `rieszMeasure` is based on `rieszContentAux`:
-  -- `def rieszContentAux : Compacts X → ℝ≥0 := fun K =>`
-  -- `  sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })`
-  -- Consequently this result should follow from `rieszContentAux_le`.
-  sorry
+    (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) :
+    (rieszContent (toNNRealLinear Λ hΛ)).measure K ≤ ENNReal.ofReal (Λ f) := by
+  rw [show K = TopologicalSpace.Compacts.mk K hK by exact rfl,
+    MeasureTheory.Content.measure_eq_content_of_regular _
+    (contentRegular_rieszContent (toNNRealLinear Λ hΛ))]
+  apply ENNReal.coe_le_iff.mpr
+  intro p hp
+  rw [← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_eq_ofReal_iff] at hp
+  · apply csInf_le
+    · use 0
+      rw [mem_lowerBounds]
+      simp only [Set.mem_image, Set.mem_setOf_eq, zero_le, implies_true]
+    rw [Set.mem_image]
+    use f.nnrealPart
+    simp only [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
+    refine ⟨?_, ?_⟩
+    · intro x hx
+      exact Eq.ge (hfK x hx)
+    · apply NNReal.eq
+      simp only [toNNRealLinear_apply]
+      have : f.nnrealPart.toReal = f := by
+        ext z
+        simp only [toReal_apply, nnrealPart_apply, Real.coe_toNNReal', sup_eq_left]
+        exact hf z
+      rw [this]
+      exact hp
+  · exact hΛ f hf
+  exact NNReal.zero_le_coe
 
 /-- An `Ioc` partitions into a finite union of `Ioc`s. -/
 lemma iUnion_Fin_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) :
