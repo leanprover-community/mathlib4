@@ -241,7 +241,7 @@ theorem set_mul_normal_comm (S : Set G) (N : Subgroup G) [hN : N.Normal] :
 when `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `H` is a subgroup of the normalizer of `N` in `G`."]
-theorem mul_le_normalizer (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
+theorem coe_mul_of_left_le_normalizer_right (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
     (↑(H ⊔ N) : Set G) = H * N := by
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
@@ -263,7 +263,7 @@ theorem mul_le_normalizer (H N : Subgroup G) (hLE : H ≤ N.normalizer) :
 `H` is a subgroup of the normalizer of `N` in `G`. -/
 @[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
 when `H` is a subgroup of the normalizer of `N` in `G`."]
-theorem le_normalizer_mul (N H : Subgroup G) (hLE : H ≤ N.normalizer) :
+theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ N.normalizer) :
     (↑(N ⊔ H) : Set G) = N * H := by
   rw [← set_mul_normalizer_comm _ _ hLE, sup_comm, mul_le_normalizer _ _ hLE]
 
