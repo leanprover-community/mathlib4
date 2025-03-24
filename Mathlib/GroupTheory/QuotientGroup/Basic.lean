@@ -274,7 +274,7 @@ noncomputable def quotientInfEquivProdNormalizerQuotient (H N : Subgroup G)
     x.inductionOn' <| by
       rintro ⟨y, hy : y ∈ (H ⊔ N)⟩
       rw [← SetLike.mem_coe] at hy
-      rw [mul_le_normalizer H N hLE] at hy
+      rw [coe_mul_of_left_le_normalizer_right H N hLE] at hy
       rcases hy with ⟨h, hh, n, hn, rfl⟩
       use ⟨h, hh⟩
       let _ : Setoid ↑(H ⊔ N) :=
