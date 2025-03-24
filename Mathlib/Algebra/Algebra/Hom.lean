@@ -36,6 +36,14 @@ infixr:25 " →ₐ " => AlgHom _
 @[inherit_doc]
 notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 
+/-- The algebra morphism underlying `algebraMap` -/
+def Algebra.algHom (R A B : Type*)
+    [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
+    [Algebra A B] [IsScalarTower R A B] :
+    A →ₐ[R] B where
+  toRingHom := algebraMap A B
+  commutes' r := by simpa [Algebra.smul_def] using smul_assoc r (1 : A) (1 : B)
+
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
@@ -47,12 +55,6 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
 -- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
 -- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
-
-/-- The algebra morphism underlying `algebraMap` -/
-def Algebra.algHom (R : Type*) [CommSemiring R] (S : Type*) [Semiring S] [Algebra R S] :
-    R →ₐ[R] S where
-  toRingHom := algebraMap R S
-  commutes' := fun _ ↦ rfl
 
 namespace AlgHomClass
 

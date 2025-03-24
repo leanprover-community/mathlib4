@@ -67,19 +67,18 @@ structure PolynomialLaw (R : Type u) [CommSemiring R]
 /-- `M →ₚ[R] N` is the type of `R`-polynomial laws from `M` to `N`. -/
 notation:25 M " →ₚ[" R:25 "] " N:0 => PolynomialLaw R M N
 
-variable {R M N f} in
+@[local simp]
 theorem PolynomialLaw.isCompat_apply'
-    {R : Type u} [CommSemiring R]
-    {M : Type*} [AddCommMonoid M] [Module R M] {N : Type*} [AddCommMonoid N] [Module R N]
-    {f : M →ₚ[R] N}
+    {R : Type u} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
+    {N : Type*} [AddCommMonoid N] [Module R N]{f : M →ₚ[R] N}
     {S : Type u} [CommSemiring S] [Algebra R S] {S' : Type u} [CommSemiring S'] [Algebra R S']
     (φ : S →ₐ[R] S') (x : S ⊗[R] M) :
     (φ.toLinearMap.rTensor N) ((f.toFun' S) x) = (f.toFun' S') (φ.toLinearMap.rTensor M x) := by
   simpa only using _root_.congr_fun (f.isCompat' φ) x
 
+attribute [local simp] PolynomialLaw.isCompat_apply'
 
 namespace PolynomialLaw
-
 
 section Module
 
@@ -96,12 +95,16 @@ theorem zero_def (S : Type u) [CommSemiring S] [Algebra R S] :
 
 instance : Inhabited (PolynomialLaw R M N) := ⟨Zero.zero⟩
 
+/-- The identity as a polynomial law -/
+def id : M →ₚ[R] M where
+  toFun' S _ _ := _root_.id
+
+theorem id_apply' {S : Type u} [CommSemiring S] [Algebra R S] :
+    (id : M →ₚ[R] M).toFun' S = _root_.id := rfl
+
 /-- The sum of two polynomial laws -/
 noncomputable def add : M →ₚ[R] N where
   toFun' S _ _ := f.toFun' S + g.toFun' S
-  isCompat' φ  := by
-    ext
-    simp only [Function.comp_apply, Pi.add_apply, map_add, isCompat_apply']
 
 instance : Add (PolynomialLaw R M N) := ⟨add⟩
 
@@ -115,9 +118,6 @@ theorem add_def_apply (S : Type u) [CommSemiring S] [Algebra R S] (m : S ⊗[R] 
 /-- External multiplication of a `f : M →ₚ[R] N` by `r : R` -/
 def smul : M →ₚ[R] N where
   toFun' S _ _ := r • f.toFun' S
-  isCompat' φ  := by
-    ext
-    simp only [Function.comp_apply, Pi.smul_apply, map_smul, isCompat_apply']
 
 instance : SMul R (M →ₚ[R] N) := ⟨smul⟩
 
@@ -125,7 +125,6 @@ instance : SMul R (M →ₚ[R] N) := ⟨smul⟩
 theorem smul_def (S : Type u) [CommSemiring S] [Algebra R S] :
     (r • f).toFun' S = r • f.toFun' S := rfl
 
-@[simp]
 theorem smul_def_apply (S : Type u) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
     (r • f).toFun' S m = r • f.toFun' S m := rfl
 
@@ -160,6 +159,7 @@ instance : Module R (M →ₚ[R] N) where
 end CommSemiring
 
 section CommRing
+
 variable {R : Type u} [CommRing R]
   {M : Type*} [AddCommGroup M] [Module R M] {N : Type*} [AddCommGroup N] [Module R N]
   (f : M →ₚ[R] N)
@@ -167,9 +167,6 @@ variable {R : Type u} [CommRing R]
 /-- The opposite of a polynomial law -/
 noncomputable def neg : M →ₚ[R] N where
   toFun' S _ _ := (-1 : R) • f.toFun' S
-  isCompat' φ  := by
-    ext
-    simp only [map_smul, Function.comp_apply, Pi.neg_apply, map_neg, isCompat_apply', Pi.smul_apply]
 
 instance : Neg (M →ₚ[R] N) := ⟨neg⟩
 
@@ -211,19 +208,15 @@ variable (f : M →ₚ[R] N)
 /-- The map `M → N` associated with a `f : M →ₚ[R] N` (essentially, `f.toFun' R`) -/
 def ground : M → N := (TensorProduct.lid R N) ∘ (f.toFun' R) ∘ (TensorProduct.lid R M).symm
 
-lemma _root_.TensorProduct.includeRight_lid
-    {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S] [Algebra R S]
-    {M : Type*} [AddCommMonoid M] [Module R M] (m : R ⊗[R] M) :
-    (1 : S) ⊗ₜ[R] (TensorProduct.lid R M) m = (rTensor M (Algebra.algHom R S).toLinearMap) m := by
-  suffices ∀ m, (rTensor M (Algebra.algHom R S).toLinearMap).comp
-    (TensorProduct.lid R M).symm.toLinearMap m = 1 ⊗ₜ[R] m by
-    simp [← this]
-  intros; simp
+theorem ground_apply (m : M) : f.ground m = TensorProduct.lid R N (f.toFun' R (1 ⊗ₜ[R] m)) := rfl
+
+instance : CoeFun (M →ₚ[R] N) (fun _ ↦ M → N) where
+  coe := ground
 
 theorem isCompat_apply'_ground {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
-  simp only [ground]
-  convert f.isCompat_apply' (Algebra.algHom R S) (1 ⊗ₜ[R] x)
+  rw [ground_apply]
+  convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
   · simp only [Function.comp_apply, lid_symm_apply, includeRight_lid]
   · rw [rTensor_tmul, toLinearMap_apply, map_one]
 
@@ -233,6 +226,12 @@ def lground : (M →ₚ[R] N) →ₗ[R] (M → N) where
   toFun         := ground
   map_add' x y  := by ext m; simp [ground]
   map_smul' r x := by ext m; simp [ground]
+
+theorem ground_id : (id : M →ₚ[R] M).ground = _root_.id := by
+  ext; simp [ground_apply, id_apply']
+
+theorem ground_id_apply (m : M) : (id : M →ₚ[R] M).ground m = m := by
+  rw [ground_id, id_eq]
 
 end ground
 
@@ -253,9 +252,12 @@ def comp (g : N →ₚ[R] P) (f : M →ₚ[R] N) : M →ₚ[R] P where
 theorem comp_toFun' (S : Type u) [CommSemiring S] [Algebra R S] :
   (g.comp f).toFun' S = (g.toFun' S).comp (f.toFun' S) := rfl
 
-theorem comp_assoc :
-  h.comp (g.comp f) = (h.comp g).comp f := by
+theorem comp_assoc : h.comp (g.comp f) = (h.comp g).comp f := by
   ext; simp only [comp_toFun'] ; rfl
+
+theorem comp_id : g.comp id = g := by ext; rfl
+
+theorem id_comp : id.comp f = f := by ext; rfl
 
 end Composition
 
