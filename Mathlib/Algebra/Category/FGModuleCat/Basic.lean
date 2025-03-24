@@ -35,15 +35,15 @@ noncomputable section
 
 open CategoryTheory ModuleCat.monoidalCategory
 
-universe u
+universe u v w
 
 section Ring
 
-variable (R : Type u) [Ring R]
+variable (R : Type v) [Ring R] [Small.{u} R]
 
 /-- Define `FGModuleCat` as the subtype of `ModuleCat.{u} R` of finitely generated modules. -/
 def FGModuleCat :=
-  FullSubcategory fun V : ModuleCat.{u} R => Module.Finite R V
+  FullSubcategory fun V : ModuleCat.{u} (Shrink.{u} R) => Module.Finite (Shrink.{u} R) V
 -- The `LargeCategory, HasForget, Preadditive` instances should be constructed by a deriving
 -- handler.
 -- https://github.com/leanprover-community/mathlib4/issues/380
@@ -86,7 +86,7 @@ namespace FGModuleCat
 
 section Ring
 
-variable (R : Type u) [Ring R]
+variable (R : Type v) [Ring R]
 
 @[simp] lemma hom_comp (A B C : FGModuleCat R) (f : A ⟶ B) (g : B ⟶ C) :
   (f ≫ g).hom = g.hom.comp f.hom := rfl
