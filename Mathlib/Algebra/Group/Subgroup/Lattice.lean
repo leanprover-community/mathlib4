@@ -470,6 +470,11 @@ theorem closure_eq_top_of_mclosure_eq_top {S : Set G} (h : Submonoid.closure S =
     closure S = ⊤ :=
   (eq_top_iff' _).2 fun _ => le_closure_toSubmonoid _ <| h.symm ▸ trivial
 
+@[to_additive (attr := simp)]
+theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
+  rw [insert_eq, closure_union]
+  simp [one_mem]
+
 theorem toAddSubgroup_closure (S : Set G) :
     (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
   le_antisymm (toAddSubgroup.le_symm_apply.mp <|
