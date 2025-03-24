@@ -428,8 +428,25 @@ theorem finprod_mem_eq_prod_of_subset (f : α → M) {s : Set α} {t : Finset α
     (h₁ : s ∩ mulSupport f ⊆ t) (h₂ : ↑t ⊆ s) : ∏ᶠ i ∈ s, f i = ∏ i ∈ t, f i :=
   finprod_cond_eq_prod_of_cond_iff _ fun hx => ⟨fun h => h₁ ⟨h, hx⟩, fun h => h₂ h⟩
 
-@[to_additive]
+/--
+The `finprod` over a finite set `s` is the corresponding `Finset.prod` over
+`s ∩ mulSupport f` if this set is finite. See `finprod_mem_eq_prod'` for a version
+giving a product over `s`.
+-/
+@[to_additive "The `finsum` over a finite set `s` is the corresponding `Finset.sum` over
+`s ∩ support f` if this set is finite. See `finsum_mem_eq_sum'` for a version
+giving a sum over `s`."]
 theorem finprod_mem_eq_prod (f : α → M) {s : Set α} (hf : (s ∩ mulSupport f).Finite) :
+    ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset, f i :=
+  finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp [inter_assoc]
+
+/--
+The `finprod` over a finite set `s` is the corresponding `Finset.prod` over
+`s` if this set is finite.
+-/
+@[to_additive "The `finsum` over a finite set `s` is the corresponding `Finset.sum` over
+`s` if this set is finite."]
+theorem finprod_mem_eq_prod' (f : α → M) {s : Set α} (hf : s.Finite) :
     ∏ᶠ i ∈ s, f i = ∏ i ∈ hf.toFinset, f i :=
   finprod_mem_eq_prod_of_inter_mulSupport_eq _ <| by simp [inter_assoc]
 
@@ -625,6 +642,10 @@ product of `f i` over `i ∈ s` equals the product of `g (f i)` over `s`. -/
 theorem MonoidHom.map_finprod_mem (f : α → M) (g : M →* N) (hs : s.Finite) :
     g (∏ᶠ j ∈ s, f j) = ∏ᶠ i ∈ s, g (f i) :=
   g.map_finprod_mem' (hs.inter_of_left _)
+
+theorem smul_finsum_mem {R M : Type*} [Monoid R] [AddCommMonoid M] [DistribMulAction R M] (c : R)
+    {f : ι → M} {s : Set ι} (hs : s.Finite) : (c • ∑ᶠ i ∈ s, f i) = ∑ᶠ i ∈ s, c • f i :=
+  (DistribMulAction.toAddMonoidHom M c).map_finsum_mem _ hs
 
 @[to_additive]
 theorem MulEquiv.map_finprod_mem (g : M ≃* N) (f : α → M) {s : Set α} (hs : s.Finite) :
