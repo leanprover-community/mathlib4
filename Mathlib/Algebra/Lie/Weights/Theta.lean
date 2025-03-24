@@ -88,18 +88,22 @@ section Nilpotent
 omit [LieAlgebra ℚ L]
 
 lemma nilpotent_e (t : Kˣ) (he : e ∈ rootSpace H α) (hα : α.IsNonZero) :
+    IsNilpotent (t • (ad K L e)) := by
+  have := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα (he' H t he)
+  rwa [LieHom.map_smul] at this
+
+lemma nilpotent_e' (t : Kˣ) (he : e ∈ rootSpace H α) (hα : α.IsNonZero) :
     IsNilpotent ((t : K) • (LieDerivation.ad K L e)).toLinearMap := by
-  have ttt := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα (he' H t he)
-  simp_all only [LieHom.map_smul]
-  simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
+  have := nilpotent_e H t he hα
+  rwa [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
 
 end Nilpotent
 
 noncomputable def exp_ad_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) : L ≃ₗ⁅K⁆ L := by
-  exact LieDerivation.exp ((t : K) • (LieDerivation.ad K L e)) (nilpotent_e H t he hα)
+  exact LieDerivation.exp ((t : K) • (LieDerivation.ad K L e)) (nilpotent_e' H t he hα)
 
 lemma exp_ad_e_apply (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) : exp_ad_e H hα he t =
-    LieDerivation.exp ((t : K)  • LieDerivation.ad K L e) (nilpotent_e H t he hα) := by
+    LieDerivation.exp ((t : K)  • LieDerivation.ad K L e) (nilpotent_e' H t he hα) := by
   ext x
   convert rfl
 
@@ -126,27 +130,19 @@ open scoped Nat
 
 lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) :
     (exp_ad_e H hα he t) e = e := by
-  rw [exp_ad_e_apply]
-  have ttt2 : ((t : K) • (LieDerivation.ad K L e)).exp (nilpotent_e H t he hα) e =
-      IsNilpotent.exp ((t : K) • (LieDerivation.ad K L e)).toLinearMap e := by
-    apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))
-  rw [ttt2]
-  have nil3 : IsNilpotent (t • (ad K L e)) := by
-    have ttt := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα (he' H t he)
-    simp_all only [LieHom.map_smul]
-    simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
-    exact ttt
-  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_1_ad_e_e t) nil3
-  simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply,
-    LinearMap.smul_def, smul_assoc]
-  simp
-
+  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  have := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_1_ad_e_e t)
+    (nilpotent_e H t he hα)
+  simp only [LinearMap.one_apply, LieDerivation.coe_smul_linearMap,
+    LieDerivation.coe_ad_apply_eq_ad_apply]
+  simp only [range_one, sum_singleton] at this
+  rwa [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul] at this
 
 lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_e H hα he t) f = f + (t : K) • h - ((t : K) ^ 2) • e := by
   rw [exp_ad_e_apply]
-  have ttt := LieDerivation.exp_apply ((t : K) • (LieDerivation.ad K L) e) (nilpotent_e H t he hα)
-  have ttt2 : ((t : K) • (LieDerivation.ad K L e)).exp (nilpotent_e H t he hα) f =
+  have ttt := LieDerivation.exp_apply ((t : K) • (LieDerivation.ad K L) e) (nilpotent_e' H t he hα)
+  have ttt2 : ((t : K) • (LieDerivation.ad K L e)).exp (nilpotent_e' H t he hα) f =
       IsNilpotent.exp ((t : K) • (LieDerivation.ad K L e)).toLinearMap f := by
     apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))
   rw [ttt2]
