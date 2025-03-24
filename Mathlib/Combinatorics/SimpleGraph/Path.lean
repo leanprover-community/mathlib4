@@ -764,6 +764,45 @@ theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v)
 theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
   edges_bypass_subset _
 
+@[simp]
+def shortcircuit {u : V} : G.Walk u u → G.Walk u u
+  | nil => nil
+  | cons ha p => cons ha p.bypass
+
+@[simp]
+theorem shortcircuit_copy {u u'} (p : G.Walk u u) (hu : u = u')  :
+    (p.copy hu hu).shortcircuit = p.shortcircuit.copy hu hu := by
+  subst_vars
+  rfl
+  
+lemma isCycle_cons_shortcircuit_iff {u v : V} (h : G.Adj u v) (p : G.Walk v u) :
+     s(u,v) ∉ p.bypass.edges ↔ (cons h p).shortcircuit.IsCycle := by
+  constructor <;> intro hs
+  · exact cons_isCycle_iff p.bypass _ |>.2 ⟨bypass_isPath p, hs⟩
+  · intro hf; apply ((cons_isCycle_iff ..).1 hs).2 hf
+
+lemma IsCircuit.isCycle_shortcircuit {u : V} {p : G.Walk u u} (hs : IsCircuit p) :
+    p.shortcircuit.IsCycle :=
+  match p with
+  | nil => absurd rfl hs.2
+  | cons .. =>
+    (isCycle_cons_shortcircuit_iff ..).1 <|
+      fun hf ↦ cons_isTrail_iff ..|>.1 hs.toIsTrail|>.2 <| edges_bypass_subset _ hf
+
+lemma support_shortcircuit_subset {u : V} (p : G.Walk u u) : p.shortcircuit.support ⊆ p.support:= by
+  cases p with
+  | nil => simp
+  | cons h p =>
+  rw [shortcircuit, support_cons, support_cons]
+  apply List.cons_subset_cons _ (support_bypass_subset _)
+
+theorem darts_shortcircuit_subset {u : V} (p : G.Walk u u) : p.shortcircuit.darts ⊆ p.darts := by
+  cases p with
+  | nil => simp
+  | cons h p =>
+    rw [shortcircuit, darts_cons, darts_cons]
+    apply List.cons_subset_cons _ (darts_bypass_subset _)
+
 end Walk
 
 /-! ### Mapping paths -/
