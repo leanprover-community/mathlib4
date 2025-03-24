@@ -186,8 +186,9 @@ theorem theta_h {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2
     _ = (((t⁻¹) ^ 2 : K) * (t ^ 2 : K)) • ⁅f, e⁆ := by
       simp
     _ = ⁅f, e⁆ := by
-      simp_all only [Units.val_inv_eq_inv_val, inv_pow, isUnit_iff_ne_zero, ne_eq, OfNat.ofNat_ne_zero,
-        not_false_eq_true, pow_eq_zero_iff, Units.ne_zero, IsUnit.inv_mul_cancel, one_smul]
+      simp_all only [Units.val_inv_eq_inv_val, inv_pow, isUnit_iff_ne_zero, ne_eq,
+        OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Units.ne_zero,
+          IsUnit.inv_mul_cancel, one_smul]
     _ = - ⁅e, f⁆ := by
       rw [lie_skew]
     _ = - h := by
@@ -202,9 +203,12 @@ theorem theta_h {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2
 /-
 lemma theta_apply {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
     (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ) : theta H hα ht he hf t =
-      LieDerivation.exp (LieDerivation.instDerivation K L e) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) ∘
-      LieDerivation.exp (LieDerivation.instDerivation K L f) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H (neg_ne_zero.mpr hα) hf) ∘
-      LieDerivation.exp (LieDerivation.instDerivation K L e) (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) := by
+      LieDerivation.exp (LieDerivation.instDerivation K L e)
+        (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) ∘
+      LieDerivation.exp (LieDerivation.instDerivation K L f)
+        (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H (neg_ne_zero.mpr hα) hf) ∘
+      LieDerivation.exp (LieDerivation.instDerivation K L e)
+        (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) := by
   ext x
   dsimp [theta]
 -/
