@@ -30,11 +30,11 @@ theorem coe_keys {l : List (Sigma β)} : keys (l : Multiset (Sigma β)) = (l.key
   rfl
 
 @[simp]
-theorem keys_empty : keys (∅ : Multiset (Sigma β)) = ∅ := rfl
+theorem keys_zero : keys (0 : Multiset (Sigma β)) = 0 := rfl
 
 @[simp]
-theorem keys_insert {a : α} {b : β a} {s : Multiset (Sigma β)} :
-    keys (insert ⟨a, b⟩ s) = insert a (keys s) := by
+theorem keys_cons {a : α} {b : β a} {s : Multiset (Sigma β)} :
+    keys (⟨a, b⟩ ::ₘ s) = a ::ₘ keys s := by
   simp [keys]
 
 @[simp]
