@@ -7,11 +7,13 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Tactic.FieldSimp
+import LeanCopilot
 
 /-!
 # Exponential map on algebras
@@ -187,8 +189,21 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
 
 theorem exp_eq_sum' {M : Type*} [AddCommGroup M] [Module A M] {a : A} {m : M} {k : ℕ}
-    (h : (a ^ k) • m = 0) : (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
-  sorry
+    (h : (a ^ k) • m = 0) (hn : IsNilpotent a) : (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
+  --dsimp [exp]
+  rcases le_or_lt (nilpotencyClass a) k with h | h
+  have r : a ^ k = 0 := by
+    have rr : a ^ (nilpotencyClass a) = 0 := pow_nilpotencyClass hn
+    exact pow_eq_zero_of_le h rr
+  have r := exp_eq_sum r
+  rw [r]
+  rw [Finset.sum_smul]
+
+
+
+
+
+
 
 end IsNilpotent
 

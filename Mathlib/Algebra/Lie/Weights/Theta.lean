@@ -4,7 +4,6 @@ import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Field.Basic
---import Mathlib.Algebra.GroupWithZero.Units
 import LeanCopilot
 
 /-!
@@ -71,9 +70,6 @@ noncomputable def theta (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f
 open Finset
 open scoped Nat
 
-
-noncomputable def nilpo (t : Kˣ) (e : L) : ℕ := nilpotencyClass (t • (ad K L) e)
-
 lemma pow_0_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
   ((0 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L e)) ^ 0) f = f := by
   simp
@@ -115,7 +111,7 @@ lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
   _ = -((t : K) ^ 2 • e) := by
     simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀, neg_smul]
 
-theorem tttt (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
+theorem pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
   calc
     (((t : K) • (ad K L e)) ^ 3) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 2) f) := by
       rfl
@@ -142,7 +138,7 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
     apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))
 
   rw [ttt2]
-  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (tttt t ht)
+  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht)
   simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply,
     LinearMap.smul_def, smul_assoc]
   have unf : ∑ x ∈ range 3, (x.factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ x) f =
