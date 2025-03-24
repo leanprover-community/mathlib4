@@ -210,7 +210,7 @@ theorem count_bagInter {a : α} :
       by_cases ab : a = b
       · rw [← ab] at hb
         rw [count_eq_zero.2 hb, Nat.min_zero, Nat.min_zero]
-      · rw [count_cons_of_ne ab]
+      · rw [count_cons_of_ne (Ne.symm ab)]
 
 theorem bagInter_sublist_left : ∀ l₁ l₂ : List α, l₁.bagInter l₂ <+ l₁
   | [], l₂ => by simp

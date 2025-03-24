@@ -51,7 +51,7 @@ def defaultfindArgs : findArgType := fun _ className args ↦ do
   if arity == args.size then
     return args.map some
   else if h : args.size = 1 then
-    return mkArray arity args[0]
+    return .replicate arity args[0]
   else
     throwError "initialize_simps_projections cannot automatically find arguments for class \
       {className}"
@@ -83,7 +83,7 @@ def findCoercionArgs : findArgType := fun str className args ↦ do
   let some classExpr := (← getEnv).find? className | throwError "no such class {className}"
   let arity := classExpr.type.getNumHeadForalls
   let eStr := mkAppN (← mkConstWithLevelParams str) args
-  let classArgs := mkArray (arity - 1) none
+  let classArgs := .replicate (arity - 1) none
   return #[some eStr] ++ classArgs
 
 /-- Data needed to generate automatic projections. This data is associated to a name of a projection
