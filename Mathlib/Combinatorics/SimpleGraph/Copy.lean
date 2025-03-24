@@ -35,7 +35,7 @@ Containment:
   `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
 * `SimpleGraph.killCopies G H`: Subgraph of `G` that does not contain `H`. Obtained by arbitrarily
   removing an edge from each copy of `H` in `G`.
-* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, ie number of subgroups of `G`
+* `SimpleGraph.copyCount G H`: Number of copies of `H` in `G`, ie number of subgraphs of `G`
   isomorphic to `H`.
 * `SimpleGraph.labelledCopyCount G H`: Number of labelled copies of `H` in `G`, ie number of
   graph embeddings from `H` to `G`.
@@ -400,8 +400,8 @@ end LabelledCopyCount
 section CopyCount
 variable [Fintype V]
 
-/-- `G.copyCount H` is the number of unlabelled copies of `H` in `G`.
-See `SimpleGraph.labelledCopyCount` for the number of labelled copies. -/
+/-- `G.copyCount H` is the number of unlabelled copies of `H` in `G`, i.e. the number of subgraphs
+of `G` isomorphic to `H`. See `SimpleGraph.labelledCopyCount` for the number of labelled copies. -/
 noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
   classical exact #{G' : G.Subgraph | Nonempty (H ≃g G'.coe)}
 
@@ -474,7 +474,8 @@ private lemma aux (hH : H ≠ ⊥) {G' : G.Subgraph} :
 
 /-- `G.killCopies H` is a subgraph of `G` where an *arbitrary* edge was removed from each copy of
 `H` in `G`. By construction, it doesn't contain `H` (unless `H` had no edges) and has at most the
-number of copies of `H` edges less than `G`. -/
+number of copies of `H` edges less than `G`. See `free_killCopies` and
+`le_card_edgeFinset_killCopies` for these two properties. -/
 noncomputable irreducible_def killCopies (G : SimpleGraph V) (H : SimpleGraph W) :
     SimpleGraph V := by
   classical exact
@@ -493,6 +494,8 @@ private lemma killCopies_of_ne_bot (hH : H ≠ ⊥) (G : SimpleGraph V) :
       G.deleteEdges (⋃ (G' : G.Subgraph) (hG' : Nonempty (H ≃g G'.coe)), {(aux hH hG').some}) := by
   rw [killCopies]; exact dif_neg hH
 
+/-- `G.killCopies H` has no effect on `G` if and only if `G` already contained no copies of `H`. See
+`Free.killCopies_eq_left` for the reverse implication with no assumption on `H`. -/
 lemma killCopies_eq_left (hH : H ≠ ⊥) : G.killCopies H = G ↔ H.Free G := by
   simp only [killCopies_of_ne_bot hH, Set.disjoint_left, isContained_iff_exists_iso_subgraph,
     @forall_swap _ G.Subgraph, Set.iUnion_singleton_eq_range, deleteEdges_eq_self, Set.mem_iUnion,
