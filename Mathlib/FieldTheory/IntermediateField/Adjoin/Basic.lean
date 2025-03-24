@@ -614,7 +614,7 @@ section Minpoly
 
 open AlgEquiv
 
-variable {K L : Type _} [Field K] [Field L] [Algebra K L]
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 namespace AdjoinRoot
 
 /-- The canonical algebraic homomorphism from `AdjoinRoot p` to `AdjoinRoot q`, where
