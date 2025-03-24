@@ -394,11 +394,7 @@ noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
   left_inv := by
     apply LeftInverse.of_composition
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_left.mfderiv_eq]
-    have hf'' : MDifferentiableAt I J f x := hf.mdifferentiableAt hn
-    have hg'' : MDifferentiableAt J I hf.localInverse (f x) := hf.localInverse_mdifferentiableAt hn
-    symm
-    --apply mfderiv_comp (g := f) (f := hf.localInverse) (x := f x) (I := J) (I'' := J) (I' := I)
-    sorry -- apply mfderiv_comp hg'' hf''
+    exact (mfderiv_comp _ (hf.localInverse_mdifferentiableAt hn) (hf.mdifferentiableAt hn)).symm
   right_inv := by
     apply RightInverse.of_composition
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
