@@ -8,12 +8,12 @@ import Mathlib.Data.Matrix.ConjTranspose
 /-!
 # Row and column matrices
 
-This file provides results about row and column matrices
+This file provides results about row and column matrices.
 
 ## Main definitions
 
-* `Matrix.replicateRow r : Matrix (Fin 1) n α`: a matrix with a single row
-* `Matrix.replicateCol c : Matrix m (Fin 1) α`: a matrix with a single column
+* `Matrix.replicateRow ι r : Matrix ι n α`: the matrix where every row is the vector `r : n → α`
+* `Matrix.replicateCol ι c : Matrix m ι α`: the matrix where every column is the vector `c : m → α`
 * `Matrix.updateRow M i r`: update the `i`th row of `M` to `r`
 * `Matrix.updateCol M j c`: update the `j`th column of `M` to `c`
 
