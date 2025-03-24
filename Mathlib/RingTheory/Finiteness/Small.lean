@@ -10,6 +10,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Basis.Cardinality
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.Data.DFinsupp.Small
 
 /-! # Smallness properties of modules and algebras -/
@@ -41,7 +42,6 @@ instance small_iSup
     Small.{u} (iSup P : Submodule R M) := by
   classical
   rw [iSup_eq_range_dfinsupp_lsum]
-  have : Small.{u} (Π₀ (i : ι), ↥(P i)) := inferInstance
   apply small_range
 
 theorem FG.small [Small.{u} R] (P : Submodule R M) (hP : P.FG) : Small.{u} P := by
@@ -50,12 +50,10 @@ theorem FG.small [Small.{u} R] (P : Submodule R M) (hP : P.FG) : Small.{u} P := 
   rw [← Fintype.range_linearCombination]
   apply small_range
 
-theorem Finite.small [Small.{u} R] [Module.Finite R M] : Small.{u} M := by
+theorem _root_.Module.Finite.small [Small.{u} R] [Module.Finite R M] : Small.{u} M := by
   have : Small.{u} (⊤ : Submodule R M) :=
     FG.small _ (Module.finite_def.mp inferInstance)
-  apply small_of_surjective (f := Submodule.subtype (⊤ : Submodule R M))
-  intro m
-  exact ⟨⟨m, mem_top⟩, rfl⟩
+  rwa [← small_univ_iff]
 
 instance small_span_singleton [Small.{u} R] (m : M) :
     Small.{u} (span R {m}) := FG.small _ (fg_span_singleton _)
@@ -77,14 +75,8 @@ open MvPolynomial AlgHom
 
 instance small_adjoin [Small.{u} R] {s : Set S} [Small.{u} s] :
     Small.{u} (adjoin R s : Subalgebra R S) := by
-  let j' := mapEquiv (Shrink.{u} s) (Shrink.ringEquiv R)
-  have : Small.{u} (MvPolynomial (Shrink.{u} s) R) := small_of_surjective j'.surjective
-  let j : MvPolynomial (Shrink.{u} s) R →ₐ[R] S := aeval (fun i ↦ (equivShrink s).symm i)
-  have hj : adjoin R s = j.range := by
-    rw [← adjoin_range_eq_range_aeval, ← Function.comp_def]
-    simp
-  rw [hj]
-  apply small_range (f := j)
+  rw [Algebra.adjoin_eq_range]
+  apply small_range
 
 theorem FiniteType.small [Small.{u} R] [Algebra.FiniteType R S] :
     Small.{u} S := by
