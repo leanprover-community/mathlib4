@@ -115,6 +115,13 @@ lemma prod_add_prod_le {i : ι} {f g h : ι → R} (hi : i ∈ s) (h2i : g i + h
     simp only [and_imp, mem_sdiff, mem_singleton]
     exact fun j hj hji ↦ le_trans (hg j hj) (hgf j hj hji)
 
+theorem le_prod_of_submultiplicative_of_nonneg {M : Type*} [CommMonoid M]
+    (f : M → R) (h_nonneg : ∀ a, 0 ≤ f a) (h_one : f 1 = 1)
+    (h_mul : ∀ x y : M, f (x * y) ≤ f x * f y) (s : Finset ι) (g : ι → M) :
+    f (s.prod fun i : ι ↦ g i) ≤ s.prod fun i : ι ↦ f (g i) :=
+  le_trans (Multiset.le_prod_of_submultiplicative_of_nonneg f h_nonneg h_one h_mul _)
+    (by simp [Multiset.map_map])
+
 end OrderedCommSemiring
 
 theorem sum_mul_self_eq_zero_iff [LinearOrderedSemiring R] [ExistsAddOfLE R] (s : Finset ι)
