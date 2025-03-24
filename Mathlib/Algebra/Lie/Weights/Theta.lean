@@ -249,6 +249,20 @@ lemma exp_ad_f_f (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) :
   simp only [range_one, sum_singleton] at this
   rwa [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, one_smul] at this
 
+lemma exp_ad_f_h (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) (ht : IsSl2Triple h e f) :
+    (exp_ad_f H hα hf t) h = h - (2 : ℤ) • (t⁻¹ : K) • f := by
+  rw [exp_ad_f_apply, LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
+  have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_2_ad_f_h t ht)
+    (nilpotent_f H t hf hα)
+  simp only [LinearMap.smul_def, smul_assoc] at this
+  simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
+  rw [this, Finset.sum_range_succ, Finset.sum_range_succ,
+    Finset.sum_range_zero, zero_add, pow_0_ad_f_h t, pow_1_ad_f_h t ht,
+      Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Nat.factorial_one]
+  abel_nf
+  refine (add_right_inj h).mpr ?_
+  rw [Nat.cast_one, inv_one, neg_smul, smul_neg, one_smul]
+
 end ExpAdAction
 
 /-
