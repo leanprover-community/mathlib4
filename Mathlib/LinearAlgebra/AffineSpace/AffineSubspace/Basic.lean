@@ -441,8 +441,8 @@ theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : 
       sInf_le_sInf fun p hp =>
         Set.Subset.trans
           (Set.singleton_subset_iff.2
-            (vsub_mem_vsub (mem_spanPoints k p₂ _ (Set.mem_union_right _ hp₂))
-              (mem_spanPoints k p₁ _ (Set.mem_union_left _ hp₁))))
+            (vsub_mem_vsub (mem_affineSpan k (Set.mem_union_right _ hp₂))
+              (mem_affineSpan k (Set.mem_union_left _ hp₁))))
           hp
 
 /-- The direction of the span of the result of adding a point to a nonempty affine subspace is the
