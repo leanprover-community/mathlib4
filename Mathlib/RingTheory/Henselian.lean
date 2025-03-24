@@ -231,7 +231,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
         clear hmn
         induction' k with k ih
-        · rw [add_zero]; rfl
+        · rw [add_zero]
         rw [← add_assoc, hc, ← add_zero (c m), sub_eq_add_neg]
         refine ih.add ?_
         symm
