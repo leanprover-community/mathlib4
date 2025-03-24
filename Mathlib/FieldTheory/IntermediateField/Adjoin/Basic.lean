@@ -808,11 +808,9 @@ def AdjoinDouble.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoinDouble_left K x y⟩
 /-- The second generator of an intermediate field of the form `K⟮x, y⟯`. -/
 def AdjoinDouble.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoinDouble_right K x y⟩
 
-@[simp]
 theorem AdjoinDouble.algebraMap_gen₁ :
     (algebraMap (↥K⟮x, y⟯) L) (IntermediateField.AdjoinDouble.gen₁ K x y) = x := rfl
 
-@[simp]
 theorem AdjoinDouble.algebraMap_gen₂ :
     (algebraMap (↥K⟮x, y⟯) L) (IntermediateField.AdjoinDouble.gen₂ K x y) = y := rfl
 
