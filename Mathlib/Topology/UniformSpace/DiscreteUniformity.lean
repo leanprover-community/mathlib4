@@ -49,7 +49,7 @@ theorem _root_.discreteUniformity_iff_idRel_mem_uniformity {X : Type*} [UniformS
   rw [← uniformSpace_eq_bot, discreteUniformity_iff_eq_bot]
 
 theorem idRel_mem_uniformity : idRel ∈ uniformity X :=
-  idRel_mem_uniformity_iff.mpr inferInstance
+  discreteUniformity_iff_idRel_mem_uniformity.mp inferInstance
 
 variable {X} in
 /-- A product of spaces with discrete uniformity has a discrete uniformity. -/
