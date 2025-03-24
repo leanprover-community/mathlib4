@@ -55,7 +55,7 @@ instance Quotient.group : Group (G ⧸ N) :=
 
 /--
 The congruence relation defined by the kernel of a group homomorphism `f` is equal to the symmetric
-of congruence relation defined by the kernel of `f`.
+of the congruence relation defined by the kernel of `f`.
 -/
 @[to_additive
 "The additive congruence relation defined by the kernel of a additive group homomorphism `f`
