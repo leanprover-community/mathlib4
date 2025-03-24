@@ -85,10 +85,6 @@ instance : CanLift (Submodule R M) (LieSubmodule R L M) (·)
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 
