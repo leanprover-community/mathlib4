@@ -105,23 +105,22 @@ namespace DirectLimit
 -- open DirectedSystem
 open CategoryTheory.Limits
 
-variable [IsDirected ι (· ≤ ·)] (F : DirectedSystem.{max 0 u v} ι)
+set_option pp.universes true
+
+variable [IsDirected ι (· ≤ ·)] (F : DirectedSystem.{max u v} ι)
+
+/-
+ Universe nightmare :
+ DirectedSystem.{v} ι doesn't work
+ It seems to be necessary to take F : DirectedSystem.{max u v},
+ i.e, the universe type of `F` is a type higher than the universe of `ι`. -/
 
 /-- The setoid on the sigma type defining the direct limit. -/
 def setoid : Setoid (Σ i, F.obj i) where
   r := Types.FilteredColimit.Rel F
   iseqv := Types.FilteredColimit.rel_equiv F
-/-   r x y := ∃ᵉ (i) (hx : x.1 ≤ i) (hy : y.1 ≤ i), f _ _ hx x.2 = f _ _ hy y.2
-  iseqv := ⟨fun x ↦ ⟨x.1, le_rfl, le_rfl, rfl⟩, fun ⟨i, hx, hy, eq⟩ ↦ ⟨i, hy, hx, eq.symm⟩,
-    fun ⟨j, hx, _, jeq⟩ ⟨k, _, hz, keq⟩ ↦
-      have ⟨i, hji, hki⟩ := exists_ge_ge j k
-      ⟨i, hx.trans hji, hz.trans hki, by
-        rw [← map_map' _ hx hji, ← map_map' _ hz hki, jeq, ← keq, map_map', map_map']⟩⟩ -/
 
-example (x : Σ i, F.obj i) (i : ι) (h : x.fst ≤ i) : F.obj i :=
-  F.map h.hom x.snd
-
-/-- If `F` is a directed system, the cocone underlying `setoid F` -/
+/-- The canonical cocone of a directed system -/
 def cocone : Cocone F where
   pt := Quotient (setoid F)
   ι := {
@@ -132,110 +131,114 @@ def cocone : Cocone F where
         Quotient.eq]
       exact ⟨j, 𝟙 j, h, by simp⟩ }
 
-variable {F} in
-theorem exists_eq_mk (z : (cocone F).pt) : ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
+theorem cocone_mk_eq_mk_iff {i j : ι} {x : F.obj i} {y : F.obj j} :
+    (cocone F).ι.app i x = (cocone F).ι.app j y ↔
+      ∃ k, ∃ (hi : i ≤ k), ∃ (hj : j ≤ k), F.map hi.hom x = F.map hj.hom y := by
+  change (⟦⟨i, x⟩⟧ : Quotient (setoid F)) = ⟦⟨j, y⟩⟧ ↔ _
+  simp only [setoid, Quotient.eq, homOfLE_leOfHom, Types.FilteredColimit.Rel]
+  apply exists_congr
+  intro _
+  constructor
+  · rintro ⟨f, g, h⟩
+    exact ⟨leOfHom f, leOfHom g, h⟩
+  · rintro ⟨hi, hj, h⟩
+    exact ⟨hi.hom, hj.hom, h⟩
 
+/-- The canonical colimit of a functor from a directed order to `Type` -/
 noncomputable def colimit : IsColimit (cocone F) := by
   apply Types.FilteredColimit.isColimitOf
   · rintro ⟨i, x⟩
     exact ⟨i, x, rfl⟩
   · intro i j x y h
-    simp [Types.FilteredColimit.colimit_eq_iff] at h
-    sorry
+    rw [cocone_mk_eq_mk_iff] at h
+    obtain ⟨k, hi, hj, h⟩ := h
+    exact ⟨k, hi.hom, hj.hom, h⟩
 
-noncomputable def colimit : IsColimit (cocone F) where
-  desc c z := by
-    choose i x h using exists_eq_mk z
-    exact (c.ι).app i x
-  fac c i := by
-    ext x
-    set e := exists_eq_mk ((cocone F).ι.app i x)
-    set j := Classical.choose e with j_eq
-    set y : F.obj j := Classical.choose (Classical.choose_spec e) with y_eq
-    set h : (cocone F).ι.app i x = (cocone F).ι.app j y :=
-      Classical.choose_spec (Classical.choose_spec e)
-    change c.ι.app j y = c.ι.app i x
-    choose k hi hj using IsDirected.directed (r := fun x y ↦ x ≤ y) i j
-    rw [← c.w hi.hom, ← c.w hj.hom]
-    simp only [Functor.const_obj_obj, homOfLE_leOfHom, types_comp_apply]
-    apply congr_arg
-    sorry
-  uniq := sorry
+/-- The direct limit of a directed system. -/
+abbrev _root_.DirectLimit : Type _ := (cocone F).pt
 
-
+variable {F}
 
 theorem r_of_le (x : Σ i, F.obj i) (i : ι) (h : x.1 ≤ i) :
     (setoid F).r x ⟨i, F.map h.hom x.snd⟩ :=
   Types.FilteredColimit.rel_of_quot_rel F x ⟨i, F.map h.hom x.snd⟩ ⟨h.hom, rfl⟩
 
-/-- The direct limit of a directed system. -/
-abbrev _root_.DirectLimit : Type _ := Quotient (setoid F)
-
 theorem eq_of_le (x : Σ i, F.obj i) (i : ι) (h : x.1 ≤ i) :
     (⟦x⟧ : DirectLimit F) = ⟦⟨i, F.map h.hom x.snd⟩⟧ :=
-  Quotient.sound (r_of_le _ x i h)
+  Quotient.sound (r_of_le x i h)
 
 @[elab_as_elim] protected theorem induction {C : DirectLimit F → Prop}
     (ih : ∀ i x, C ⟦⟨i, x⟩⟧) (x : DirectLimit F) : C x :=
   Quotient.ind (fun _ ↦ ih _ _) x
 
-theorem exists_eq_mk (z : DirectLimit F) : ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
+theorem exists_eq_mk (z : DirectLimit F) :
+    ∃ i x, z = ⟦⟨i, x⟩⟧ := by rcases z; exact ⟨_, _, rfl⟩
 
-theorem exists_eq_mk₂ (z w : DirectLimit F) : ∃ i x y, z = ⟦⟨i, x⟩⟧ ∧ w = ⟦⟨i, y⟩⟧ :=
+theorem exists_eq_mk₂ (z w : DirectLimit F) :
+    ∃ i x y, z = ⟦⟨i, x⟩⟧ ∧ w = ⟦⟨i, y⟩⟧ :=
   z.inductionOn₂ w fun x y ↦
     have ⟨i, hxi, hyi⟩ := exists_ge_ge x.1 y.1
     ⟨i, _, _, eq_of_le x i hxi, eq_of_le y i hyi⟩
 
-theorem exists_eq_mk₃ (w u v : DirectLimit F f) :
+theorem exists_eq_mk₃ (w u v : DirectLimit F) :
     ∃ i x y z, w = ⟦⟨i, x⟩⟧ ∧ u = ⟦⟨i, y⟩⟧ ∧ v = ⟦⟨i, z⟩⟧ :=
   w.inductionOn₃ u v fun x y z ↦
     have ⟨i, hxi, hyi, hzi⟩ := directed_of₃ (· ≤ ·) x.1 y.1 z.1
     ⟨i, _, _, _, eq_of_le x i hxi, eq_of_le y i hyi, eq_of_le z i hzi⟩
 
-@[elab_as_elim] protected theorem induction₂ {C : DirectLimit F f → DirectLimit F f → Prop}
-    (ih : ∀ i x y, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧) (x y : DirectLimit F f) : C x y := by
-  obtain ⟨_, _, _, rfl, rfl⟩ := exists_eq_mk₂ f x y; apply ih
+@[elab_as_elim] protected theorem induction₂
+    {C : DirectLimit F → DirectLimit F → Prop}
+    (ih : ∀ i x y, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧) (x y : DirectLimit F) : C x y := by
+  obtain ⟨_, _, _, rfl, rfl⟩ := exists_eq_mk₂ x y; apply ih
 
 @[elab_as_elim] protected theorem induction₃
-    {C : DirectLimit F f → DirectLimit F f → DirectLimit F f → Prop}
-    (ih : ∀ i x y z, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ ⟦⟨i, z⟩⟧) (x y z : DirectLimit F f) : C x y z := by
-  obtain ⟨_, _, _, _, rfl, rfl, rfl⟩ := exists_eq_mk₃ f x y z; apply ih
+    {C : DirectLimit F → DirectLimit F → DirectLimit F → Prop}
+    (ih : ∀ i x y z, C ⟦⟨i, x⟩⟧ ⟦⟨i, y⟩⟧ ⟦⟨i, z⟩⟧) (x y z : DirectLimit F) :
+    C x y z := by
+  obtain ⟨_, _, _, _, rfl, rfl, rfl⟩ := exists_eq_mk₃ x y z; apply ih
 
-theorem mk_injective (h : ∀ i j hij, Function.Injective (f i j hij)) (i) :
-    Function.Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F f) :=
+theorem mk_injective
+    (h : ∀ i j (hij : i ≤ j), Function.Injective (F.map hij.hom)) (i) :
+    Function.Injective fun x ↦ (⟦⟨i, x⟩⟧ : DirectLimit F) :=
   fun _ _ eq ↦ have ⟨_, _, _, eq⟩ := Quotient.eq.mp eq; h _ _ _ eq
 
 section map₀
 
-variable [Nonempty ι] (ih : ∀ i, F i)
+variable [Nonempty ι] (ih : ∀ i, F.obj i)
 
 /-- "Nullary map" to construct an element in the direct limit. -/
-noncomputable def map₀ : DirectLimit F f := ⟦⟨Classical.arbitrary ι, ih _⟩⟧
+noncomputable def map₀ : DirectLimit F := ⟦⟨Classical.arbitrary ι, ih _⟩⟧
 
-theorem map₀_def (compat : ∀ i j h, f i j h (ih i) = ih j) (i) : map₀ f ih = ⟦⟨i, ih i⟩⟧ :=
+theorem map₀_def (compat : ∀ i j (h : i ≤ j), F.map h.hom (ih i) = ih j) (i) :
+    map₀ ih = ⟦⟨i, ih i⟩⟧ :=
   have ⟨j, hcj, hij⟩ := exists_ge_ge (Classical.arbitrary ι) i
-  Quotient.sound ⟨j, hcj, hij, (compat ..).trans (compat ..).symm⟩
+  Quotient.sound ⟨j, hcj.hom, hij.hom, (compat ..).trans (compat ..).symm⟩
 
 end map₀
 
 section lift
 
-variable {C : Sort*} (ih : ∀ i, F i → C) (compat : ∀ i j h x, ih i x = ih j (f i j h x))
+variable {C : Sort*}
+    (ih : ∀ i, F.obj i → C)
+    (compat : ∀ {i j} (h : i ≤ j) x, ih i x = ih j (F.map h.hom x))
 
 /-- To define a function from the direct limit, it suffices to provide one function from each
 component subject to a compatibility condition. -/
-protected def lift (z : DirectLimit F f) : C :=
+protected def lift (z : DirectLimit F) : C :=
   z.recOn (fun x ↦ ih x.1 x.2) fun x y ⟨k, hxk, hyk, eq⟩ ↦ by
-    simp_rw [eq_rec_constant, compat _ _ hxk, compat _ _ hyk, eq]
+    simp only [compat (leOfHom hxk), eq_rec_constant, compat (leOfHom hyk)]
+    congr
 
-theorem lift_def (x) : DirectLimit.lift f ih compat ⟦x⟧ = ih x.1 x.2 := rfl
+theorem lift_def (x) : DirectLimit.lift ih compat ⟦x⟧ = ih x.1 x.2 := rfl
 
 theorem lift_injective (h : ∀ i, Function.Injective (ih i)) :
-    Function.Injective (DirectLimit.lift f ih compat) :=
-  DirectLimit.induction₂ _ fun i x y eq ↦ by simp_rw [lift_def] at eq; rw [h i eq]
+    Function.Injective (DirectLimit.lift ih compat) :=
+  DirectLimit.induction₂ fun i x y eq ↦ by simp_rw [lift_def] at eq; rw [h i eq]
 
 end lift
 
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 section map
 
 variable (ih : ∀ i, F₁ i → F₂ i) (compat : ∀ i j h x, f₂ i j h (ih i x) = ih j (f₁ i j h x))
