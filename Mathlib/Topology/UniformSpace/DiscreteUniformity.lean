@@ -55,11 +55,8 @@ variable {X} in
 /-- A product of spaces with discrete uniformity has a discrete uniformity. -/
 instance {Y : Type*} [UniformSpace Y] [DiscreteUniformity Y] :
     DiscreteUniformity (X × Y) := by
-  simp [discreteUniformity_iff_eq_principal_idRel, uniformity_prod_eq_comap_prod, 
+  simp [discreteUniformity_iff_eq_principal_idRel, uniformity_prod_eq_comap_prod,
     eq_principal_idRel, idRel, Set.prod_eq, Prod.ext_iff, Set.setOf_and]
-
-@[deprecated (since := "2025-03-23")]
-alias _root_.UniformSpace.DiscreteUnif.cauchy_le_pure := cauchy_eq_pure
 
 variable {x} in
 /-- On a space with a discrete uniformity, any function is uniformly continuous. -/
@@ -82,23 +79,26 @@ theorem eq_pure_of_cauchy {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pu
     (Filter.nonempty_of_mem hT) H
   exact ⟨x, α_ne_bot.le_pure_iff.mp <| le_pure_iff.mpr hS⟩
 
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.cauchy_le_pure := eq_pure_of_cauchy
+
 /-- The discrete uniformity makes a space complete. -/
 instance : CompleteSpace X where
   complete {f} hf := by
-    obtain ⟨x, rfl⟩ := cauchy_le_pure hf
+    obtain ⟨x, rfl⟩ := eq_pure_of_cauchy hf
     exact ⟨x, pure_le_nhds x⟩
 
 variable {X}
 
 /-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
 noncomputable def cauchyConst {α : Filter X} (hα : Cauchy α) : X :=
-  (cauchy_le_pure hα).choose
+  (eq_pure_of_cauchy hα).choose
 
 @[deprecated (since := "2025-03-23")]
 alias _root_.UniformSpace.DiscreteUnif.cauchyConst := cauchyConst
 
 theorem eq_pure_cauchyConst {α : Filter X} (hα : Cauchy α) : α = pure (cauchyConst hα) :=
-  (DiscreteUniformity.cauchy_le_pure hα).choose_spec
+  (eq_pure_of_cauchy hα).choose_spec
 
 @[deprecated (since := "2025-03-23")]
 alias _root_.UniformSpace.DiscreteUnif.eq_const_of_cauchy := eq_pure_cauchyConst
