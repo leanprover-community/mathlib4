@@ -31,7 +31,7 @@ def mull₃ : R →+ R →+ R →+ R where
   map_add' := fun x y => by ext; simp [add_mul]
 
 @[simp]
-theorem mull₃_apply (x y z : R) : mull₃ x y z = (x * y) * z := by simp [mull₃]
+theorem mull₃_apply (x y z : R) : mull₃ x y z = (x * y) * z := rfl
 
 /-- The multiplication `x * (y * z)` of three elements of a (non-associative)
 (semi)-ring is an `AddMonoidHom` in each argument. -/
@@ -41,19 +41,31 @@ def mulr₃ : R →+ R →+ R →+ R where
   map_add' := fun x y => by ext; simp [add_mul]
 
 @[simp]
-theorem mulr₃_apply (x y z : R) : mulr₃ x y z = x * (y * z) := by simp [mulr₃]
+theorem mulr₃_apply (x y z : R) : mulr₃ x y z = x * (y * z) := rfl
 
 /-- An a priori non-associative semiring is associative if the `AddMonoidHom` versions of
 the multiplications `(x * y) * z` and `x * (y * z)` agree. -/
-theorem associative_iff_mull₃_eq_mulr₃ : (∀ (x y z : R), (x * y) * z = x * (y * z)) ↔
+theorem associative_iff_mull₃_eq_mulr₃ : Std.Associative (fun (x y : R) ↦ x * y) ↔
   mull₃ (R := R) = mulr₃ := by
   constructor
-  · intro h
+  · rintro ⟨h⟩
     ext x y z
     simp [h x y z]
-  · intro h x y z
+  · intro h
+    apply Std.Associative.mk
+    intro x y z
     rw [← mull₃_apply, ← mulr₃_apply, h]
+
 end NonUnitalNonAssocSemiring
+
+section NonUnitalSemiring
+variable {R : Type u} [NonUnitalSemiring R]
+
+theorem mull₃_eq_mulr₃ : mull₃ (R := R) = mulr₃ := by
+  ext x y z
+  simp [mul_assoc]
+
+end NonUnitalSemiring
 
 section NonUnitalNonAssocRing
 variable {R : Type u} [NonUnitalNonAssocRing R] (a b c d : R)
@@ -62,7 +74,7 @@ variable {R : Type u} [NonUnitalNonAssocRing R] (a b c d : R)
 `AddMonoidHom` in each argument. -/
 def associator : R →+ R →+ R →+ R := mull₃ - mulr₃
 
-theorem associator_apply : associator a b c = (a * b) * c - a * (b * c) := by simp [associator]
+theorem associator_apply : associator a b c = (a * b) * c - a * (b * c) := rfl
 
 theorem associator_cocycle : a * associator b c d - associator (a * b) c d + associator a (b * c) d
     - associator a b (c * d) + (associator a b c) * d = 0 := by
@@ -70,7 +82,7 @@ theorem associator_cocycle : a * associator b c d - associator (a * b) c d + ass
     abel1
 
 /-- An a priori non-associative ring is associative iff the associator vanishes. -/
-theorem associative_iff_associator_eq_zero : (∀ (x y z : R), (x * y) * z = x * (y * z)) ↔
+theorem associative_iff_associator_eq_zero : Std.Associative (fun (x y : R) ↦ x * y) ↔
   associator (R := R) = 0 := by simp [associative_iff_mull₃_eq_mulr₃, associator, sub_eq_zero]
 
 end NonUnitalNonAssocRing
