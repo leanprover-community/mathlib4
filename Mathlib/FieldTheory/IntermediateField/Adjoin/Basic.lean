@@ -771,4 +771,51 @@ theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
     #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
   simpa using lift_cardinalMk_adjoin_le F s
 
+section AdjoinDouble
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L] {x y : L}
+
+theorem AdjoinDouble.isAlgebraic (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
+    Algebra.IsAlgebraic K K⟮x, y⟯ := by
+  apply IntermediateField.isAlgebraic_adjoin
+  intro z hz
+  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
+  rcases hz with hz | hz
+  · exact hz ▸ hx.isIntegral
+  · exact hz ▸ hy.isIntegral
+
+theorem AdjoinDouble.finiteDimensional (hx : IsIntegral K x) (hy : IsIntegral K y) :
+    FiniteDimensional K K⟮x, y⟯ := by
+  haveI hx_fd : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx
+  have hy' : IsIntegral K⟮x⟯ y := IsIntegral.tower_top hy
+  haveI hy_fd : FiniteDimensional K⟮x⟯ K⟮x⟯⟮y⟯ := adjoin.finiteDimensional hy'
+  rw [← adjoin_simple_adjoin_simple]
+  apply FiniteDimensional.trans K K⟮x⟯ K⟮x⟯⟮y⟯
+
+variable (K x y)
+
+theorem mem_adjoinDouble_left : x ∈ K⟮x, y⟯ := by
+  rw [← adjoin_simple_adjoin_simple, adjoin_simple_comm]
+  exact subset_adjoin K⟮y⟯ {x} (Set.mem_singleton x)
+
+theorem mem_adjoinDouble_right : y ∈ K⟮x, y⟯ := by
+  rw [← adjoin_simple_adjoin_simple]
+  exact subset_adjoin K⟮x⟯ {y} (Set.mem_singleton y)
+
+/-- The first generator of an intermediate field of the form `K⟮x, y⟯`. -/
+def AdjoinDouble.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoinDouble_left K x y⟩
+
+/-- The second generator of an intermediate field of the form `K⟮x, y⟯`. -/
+def AdjoinDouble.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoinDouble_right K x y⟩
+
+@[simp]
+theorem AdjoinDouble.algebraMap_gen₁ :
+    (algebraMap (↥K⟮x, y⟯) L) (IntermediateField.AdjoinDouble.gen₁ K x y) = x := rfl
+
+@[simp]
+theorem AdjoinDouble.algebraMap_gen₂ :
+    (algebraMap (↥K⟮x, y⟯) L) (IntermediateField.AdjoinDouble.gen₂ K x y) = y := rfl
+
+end AdjoinDouble
+
 end IntermediateField
