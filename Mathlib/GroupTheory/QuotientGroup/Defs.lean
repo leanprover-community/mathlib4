@@ -8,6 +8,7 @@ Authors: Kevin Buzzard, Patrick Massot
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.Coset.Defs
+import Mathlib.GroupTheory.Congruence.Opposite
 
 /-!
 # Quotients of groups by normal subgroups
@@ -52,6 +53,18 @@ protected def con : Con G where
 @[to_additive]
 instance Quotient.group : Group (G ⧸ N) :=
   (QuotientGroup.con N).group
+
+/--
+The congruence relation defined by the kernel of a group homomorphism `f` is equal to the symmetric
+of congruence relation defined by the kernel of `f`.
+-/
+@[to_additive
+"The additive congruence relation defined by the kernel of a additive group homomorphism `f`
+is equal to the symmetric of the additive congruence relation defined by the kernel of `f`"]
+theorem con_ker_eq_Con_ker {M : Type*} [Monoid M] (f : G →* M) {x y : G} :
+    QuotientGroup.con f.ker x y = Con.ker f y x  := by
+  ext
+  simp [QuotientGroup.con, leftRel_apply, MonoidHom.eq_iff]
 
 /-- The group homomorphism from `G` to `G/N`. -/
 @[to_additive "The additive group homomorphism from `G` to `G/N`."]
@@ -150,17 +163,64 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
 
 @[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
 
+/-- The subgroup of `G` defined by the class of `1` for a congruence relation on a group `G`. -/
+@[to_additive "The `AddSubgroup` of `G` defined by the class of `0` for an additive
+congruence relation on an `AddGroup` `M`."]
+protected def _root_.Con.subgroup (c : Con G) : Subgroup G where
+  carrier := { x | c 1 x }
+  one_mem' := c.refl 1
+  mul_mem' hx hy := by simpa using c.mul hx hy
+  inv_mem' h := by simpa using c.inv h
+
+@[to_additive (attr := simp)]
+theorem _root_.Con.subgroup_mem_iff {c : Con G} {x : G} :
+    x ∈ c.subgroup ↔ c 1 x := Iff.rfl
+
+@[to_additive]
+instance (c : Con G) : c.subgroup.Normal :=
+  ⟨fun x hx g ↦ by simpa using (c.mul (c.mul (c.refl g) hx) (c.refl g⁻¹))⟩
+
+@[to_additive]
+theorem _root_.Con.subgroup_QuotientGroup_con (H : Subgroup G) [H.Normal] :
+    (QuotientGroup.con H).subgroup = H := by
+  ext
+  simp [QuotientGroup.con, leftRel_apply]
+
+@[to_additive]
+theorem con_subgroup (c : Con G) :
+    QuotientGroup.con c.subgroup = c := by
+  ext x y
+  rw [QuotientGroup.con, Con.rel_mk, leftRel_apply, Con.subgroup_mem_iff]
+  exact ⟨fun h ↦ by simpa using c.mul (c.refl x) h, fun h ↦ by simpa using c.mul (c.refl x⁻¹) h⟩
+
+/--
+The normal subgroups correspond to congruence relations on a group.
+-/
+@[to_additive]
+def _root_.Subgroup.orderIsoCon :
+    { N : Subgroup G // N.Normal } ≃o Con G where
+  toFun := fun ⟨N, _⟩ ↦ QuotientGroup.con N
+  invFun c := ⟨c.subgroup, inferInstance⟩
+  left_inv := fun ⟨N, _⟩ ↦ Subtype.mk_eq_mk.mpr (Con.subgroup_QuotientGroup_con N)
+  right_inv c := QuotientGroup.con_subgroup c
+  map_rel_iff' := by
+    simp only [QuotientGroup.con, Equiv.coe_fn_mk, Con.le_def, Con.rel_mk, leftRel_apply]
+    refine ⟨fun h x _ ↦ ?_, fun hle _ _ h ↦ hle h⟩
+    specialize @h 1 x
+    simp_all
+
+@[to_additive]
+lemma con_le_iff {N M : Subgroup G} [N.Normal] [M.Normal] :
+    N ≤ M ↔ QuotientGroup.con N ≤ QuotientGroup.con M :=
+  (Subgroup.orderIsoCon.map_rel_iff (a := ⟨N, inferInstance⟩) (b := ⟨M, inferInstance⟩)).symm
+
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
  to a group homomorphism `G/N →* M`."]
 def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
-  (QuotientGroup.con N).lift φ fun x y h => by
-    simp only [QuotientGroup.con, leftRel_apply, Con.rel_mk] at h
-    rw [Con.ker_rel]
-    calc
-      φ x = φ (y * (x⁻¹ * y)⁻¹) := by rw [mul_inv_rev, inv_inv, mul_inv_cancel_left]
-      _ = φ y := by rw [φ.map_mul, HN (N.inv_mem h), mul_one]
+  (QuotientGroup.con N).lift φ fun _ _ h =>
+    (con_ker_eq_Con_ker φ).mp <| (QuotientGroup.con φ.ker).symm <| con_le_iff.mp HN h
 
 @[to_additive (attr := simp)]
 theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
