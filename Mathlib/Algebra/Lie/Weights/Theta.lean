@@ -68,6 +68,25 @@ lemma pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
     _ = 0 := by
       simp only [LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
 
+lemma pow_0_ad_e_h (t : Kˣ) : (((t : K) • (ad K L e)) ^ 0) h = h := rfl
+
+lemma pow_1_ad_e_h (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 1) h =
+    (-2 : ℤ) • (t : K) • e := by
+  have h₁ : (t : K) • -(2 • e) = (-2 : ℤ) • (t : K) • e := by
+    simp [two_smul]
+  rw [pow_one, LinearMap.smul_apply, ad_apply, ← lie_skew, ht.lie_h_e_nsmul]
+  rw [h₁]
+
+lemma pow_2_ad_e_h (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 2) h = 0 := by
+  calc
+    (((t : K) • (ad K L e)) ^ 2) h = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) h) := rfl
+    _ = ((t : K) • (ad K L e)) ((-2 : ℤ) • (t : K) • e) := by
+      rw [pow_1_ad_e_h t ht]
+    _ = (-2 : ℤ) • (t : K) • (((t : K) • (ad K L e)) e) := by
+      simp only [LinearMap.smul_apply, ad_apply,  lie_smul, lie_self, smul_zero]
+    _ = 0 := by
+      simp only [LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
+
 end AdAction
 
 variable (H : LieSubalgebra K L) [LieRing.IsNilpotent H] {α : Weight K H L} [CharZero K]
@@ -144,6 +163,22 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
     (exp_ad_e H hα he t) f = f + (t : K) • h - ((t : K) ^ 2) • e := by
   rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
   have := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht)
+    (nilpotent_e H t he hα)
+  simp only [LinearMap.smul_def, smul_assoc] at this
+  simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
+  rw [this, Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
+    Finset.sum_range_zero, zero_add, pow_0_ad_e_f t, pow_1_ad_e_f t ht, pow_2_ad_e_f t ht,
+      Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Nat.factorial_one, Nat.factorial_two]
+  abel_nf
+  refine (add_right_inj f).mpr ?_
+  simp only [neg_smul, smul_neg, add_right_inj]
+  rw [two_smul, smul_add, ← add_smul]
+  field_simp
+
+lemma exp_ad_e_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
+    (exp_ad_e H hα he t) h = f + (t : K) • h - ((t : K) ^ 2) • e := by
+  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  have := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_3_ad_e_h t ht)
     (nilpotent_e H t he hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
   simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
