@@ -106,7 +106,8 @@ end withN
 section withEncodable
 open Encodable
 
-/-- The SimpleGraph ℕ formed from a SimpleGraph β given by permuting β by π and then encoding in ℕ-/
+/-- The `SimpleGraph ℕ` formed from a `SimpleGraph β` given by permuting `β` by `π` and then
+encoding in `ℕ` -/
 abbrev label {β : Type*} [Encodable β] (H : SimpleGraph β) (π : β ≃ β) : SimpleGraph ℕ :=
     H.map (π.toEmbedding.trans (encode' β))
 
@@ -180,68 +181,50 @@ instance instFintypeNeighborLTEquiv [DecidableRel H.Adj] (π : β ≃ β) (b : �
   intro x y h1 hlt heq h2
   use (π x)
 
-/-- Given a graph on an encodable type β and a permutation of β this is the corresponding
-greedy ℕ-coloring -/
+/-- Given a graph on an `Encodable` type `β` and a permutation of `β` this is the corresponding
+greedy `ℕ` - coloring -/
 abbrev GreedyColoring [DecidableRel H.Adj] (π : β ≃ β) : H.Coloring ℕ :=
   Coloring.mk (fun v ↦ (H.label π).greedy (encode (π v)))
     (fun h h' ↦ (H.label π).greedy_valid (label_adj.mpr h) h')
 
-/-- Given a graph on an encodable type β and a permutation of β for which degreeLT is bounded above
-by Δ this is the corresponding greedy Fin (Δ + 1)-coloring -/
-def GreedyColoringDegreeLT {Δ : ℕ} [DecidableRel H.Adj] (π : β ≃ β)
+/-- Given a graph on an encodable type `β` and a permutation of `β` for which `degreeLT` is bounded
+above by `Δ` this is the corresponding greedy `Fin (Δ + 1)`-coloring -/
+def GreedyColoringBddDegreeLT {Δ : ℕ} [DecidableRel H.Adj] (π : β ≃ β)
     (h : ∀ v, (H.label π).degreeLT v ≤ Δ) : H.Coloring (Fin (Δ + 1)) :=
   Coloring.mk
     (fun v ↦ ⟨(H.label π).greedy (encode (π v)), (H.label π).greedy_bdd_degLT h (encode (π v))⟩)
     (fun h h' ↦ (H.label π).greedy_valid (label_adj.mpr h) (by simpa using h'))
 
-abbrev GreedyColorable [DecidableRel H.Adj] (n : ℕ) : Prop :=
-    Nonempty ({π : β ≃ β // ∀ v, H.GreedyColoring π v < n})
 
-abbrev ColorOrder (C : H.Coloring ℕ) (π : β ≃ β) : Prop :=
-  ∀ a b, C a < C b → encode (π a) < encode (π b)
-
-lemma exists_color_order  (C : H.Coloring ℕ) : Nonempty ({π : β ≃ β // H.ColorOrder C π}) := by
-  have e:=equivRangeEncode β
-  sorry
-
-lemma greedy_le_colorOrder [DecidableRel H.Adj] {C : H.Coloring ℕ} {π : β ≃ β} {n : ℕ} {b : β}
-(h : H.ColorOrder C π) (hb : b ∈ decode₂ β n) :
-    (H.label π).greedy n ≤ C (π.symm b)  := by
-  induction n using Nat.strong_induction_on generalizing b
-  rename_i ih
-  by_contra! h'
-  obtain ⟨m, hlt, hadj, heq⟩ := (H.label π).greedy_witness h'
-  obtain ⟨_, hc⟩ := label_mem_decode₂_of_adj hadj
-  cases (ih m hlt hc).lt_or_eq with
-  | inl hl =>
-    have := h _ _ (heq ▸ hl)
-    simp_rw [Equiv.apply_symm_apply] at this
-    rw [mem_decode₂] at hb hc
-    subst_vars
-    exact hlt.not_lt this
-  | inr he =>
-    exact C.valid ((label_adj' hc hb).1 hadj) (heq ▸ he).symm
+lemma degreeLT_le_degree' [LocallyFinite H] [DecidableRel H.Adj] (π : β ≃ β) (a : β) :
+    (H.label π).degreeLT (encode (π a)) ≤ H.degree a := by
+  rw [degreeLT, degree]
+  have : (H.label π).neighborFinsetLT (encode (π a)) ⊆
+     (H.neighborFinset a).image (encode ∘ π) := by
+    intro x hx
+    simp_rw [mem_neighborFinsetLT, mem_image, mem_neighborFinset] at *
+    obtain ⟨y, h⟩ := label_mem_decode₂_of_adj hx.2
+    rw [mem_decode₂] at h
+    rw [← h, ← Equiv.apply_symm_apply π y, label_adj] at hx
+    exact ⟨π.symm y, hx.2.symm, by simpa using h⟩
+  exact (card_le_card this).trans card_image_le
 
 
-lemma colorable_iff_greedyColorable [DecidableRel H.Adj] {n : ℕ} :
-    H.Colorable n ↔ H.GreedyColorable n := by
-  rw [colorable_iff_exists_bdd_nat_coloring]
-  constructor
-  · intro ⟨C, hC⟩
-    obtain ⟨π, hp⟩ := H.exists_color_order C
-    use π
+def GreedyColoringDegree {Δ : ℕ} [LocallyFinite H] [DecidableRel H.Adj]
+    (hdeg : ∀ v, H.degree v ≤ Δ) : H.Coloring (Fin (Δ + 1)) := by
+  have := degreeLT_le_degree' H  (Equiv.refl β)
+  have : ∀ v, (H.label (Equiv.refl β)).degreeLT v ≤ Δ := by
     intro v
-    rw [GreedyColoring]
-    apply (H.greedy_le_colorOrder hp _).trans_lt <| hC (π.symm (π v))
-    simp
-  · intro ⟨f ,_⟩
-    use H.GreedyColoring f
-
-def GreedyOrder_ofColoring (C : H.Coloring ℕ) : β ≃ β where
-  toFun := fun v => sorry
-  invFun := fun v => sorry
-  left_inv := fun v => sorry
-  right_inv := fun v => sorry
+    by_cases hnem : (((H.label (Equiv.refl β)).neighborFinsetLT v)).Nonempty
+    · obtain ⟨w, hw⟩ := hnem
+      rw [mem_neighborFinsetLT] at hw
+      obtain ⟨y, h⟩ := label_mem_decode₂_of_adj hw.2.symm
+      rw [mem_decode₂] at h
+      convert (this y).trans (hdeg y)
+      simpa using h.symm
+    · rw [not_nonempty_iff_eq_empty, ←card_eq_zero] at hnem
+      rw [degreeLT, hnem]; exact zero_le'
+  exact H.GreedyColoringBddDegreeLT (Equiv.refl β) this
 
 end withEncodable
 
