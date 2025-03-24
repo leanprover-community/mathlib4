@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
 
 In finite dimensions, the theory of simultaneous eigenvalues for a family of linear endomorphisms
 `i ↦ f i` enjoys similar properties to that of a single endomorphism, provided the family obeys a
-compatibilty condition. This condition is that the maximum generalised eigenspaces of each
+compatibility condition. This condition is that the maximum generalised eigenspaces of each
 endomorphism are invariant under the action of all members of the family. It is trivially satisfied
 for commuting endomorphisms but there are important more general situations where it also holds
 (e.g., representations of nilpotent Lie algebras).
@@ -100,8 +100,7 @@ lemma independent_iInf_maxGenEigenspace_of_forall_mapsTo
   intro χ₁ s
   induction s using Finset.induction_on with
   | empty => simp
-  | insert _n ih =>
-  rename_i χ₂ s
+  | @insert χ₂ s _n ih =>
   intro hχ₁₂
   obtain ⟨hχ₁₂ : χ₁ ≠ χ₂, hχ₁ : χ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hχ₁₂
   specialize ih hχ₁

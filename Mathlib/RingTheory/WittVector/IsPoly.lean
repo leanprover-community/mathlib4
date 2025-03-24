@@ -326,30 +326,14 @@ theorem IsPoly.map [Fact p.Prime] {f} (hf : IsPoly p f) (g : R →+* S) (x : �
   -- see `IsPoly₂.map` for a slightly more general proof strategy
   obtain ⟨φ, hf⟩ := hf
   ext n
-  simp only [map_coeff, hf, map_aeval]
-  apply eval₂Hom_congr (RingHom.ext_int _ _) _ rfl
-  ext  -- Porting note: this `ext` was not present in the mathport output
-  simp only [map_coeff]
+  simp_rw [map_coeff, hf, map_aeval, funext (map_coeff g _), RingHom.ext_int _ (algebraMap ℤ S),
+    aeval_eq_eval₂Hom]
 
 namespace IsPoly₂
 
 -- porting note: the argument `(fun _ _ => (· + ·))` to `IsPoly₂` was just `_`.
 instance [Fact p.Prime] : Inhabited (IsPoly₂ p (fun _ _ => (· + ·))) :=
   ⟨addIsPoly₂⟩
-
--- Porting note: maybe just drop this now that it works by `inferInstance`
-/-- The composition of a binary polynomial function
- with a unary polynomial function in the first argument is polynomial. -/
-theorem compLeft {g f} [IsPoly₂ p g] [IsPoly p f] :
-    IsPoly₂ p fun _R _Rcr x y => g (f x) y :=
-  inferInstance
-
--- Porting note: maybe just drop this now that it works by `inferInstance`
-/-- The composition of a binary polynomial function
- with a unary polynomial function in the second argument is polynomial. -/
-theorem compRight {g f} [IsPoly₂ p g] [IsPoly p f] :
-    IsPoly₂ p fun _R _Rcr x y => g x (f y) :=
-  inferInstance
 
 theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
     (h : ∀ (R : Type u) [_Rcr : CommRing R] (x y : 𝕎 R) (n : ℕ),
@@ -360,7 +344,6 @@ theorem ext [Fact p.Prime] {f g} (hf : IsPoly₂ p f) (hg : IsPoly₂ p g)
   intros
   ext n
   rw [hf, hg, poly_eq_of_wittPolynomial_bind_eq' p φ ψ]
-  -- porting note: `clear x y` does not work, since `x, y` are now hygienic
   intro k
   apply MvPolynomial.funext
   intro x

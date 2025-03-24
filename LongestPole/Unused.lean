@@ -63,6 +63,8 @@ def unusedImportsCLI (args : Cli.Parsed) : IO UInt32 := do
   -- The code below assumes that it is "deeper files first", as reported by `lake exe pole`.
 
   searchPathRef.set compile_time_search_path%
+  -- It may be reasonable to remove this again after https://github.com/leanprover/lean4/pull/6325
+  unsafe enableInitializersExecution
   let (unused, _) ← unsafe withImportModules #[{module := `Mathlib}] {} (trustLevel := 1024)
     fun env => Prod.fst <$> Core.CoreM.toIO
         (ctx := { fileName := "<CoreM>", fileMap := default }) (s := { env := env }) do

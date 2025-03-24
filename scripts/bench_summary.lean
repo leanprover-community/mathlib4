@@ -147,7 +147,9 @@ open Lean Elab Command in
 as a comment to a pull request.  It takes as input
 * the number `PR` and the name `repo` as a `String` containing the relevant pull-request
   (it reads and posts comments there)
-* the optional `jobID` string for reporting the action that produced the output
+* the optional `jobID` numeral for reporting the action that produced the output
+  (`jobID` is a natural number, even though it gets converted to a `String` -- this is mostly
+  due to the fact that it is easier to get CI to pass a number, than a string with quotations)
 * the `String` `tempFile` of a temporary file where the command stores transient information.
 
 The code itself interfaces with the shell to retrieve and process json data and eventually
@@ -163,7 +165,7 @@ Here is a summary of the steps:
 * process the final string to produce a summary (using `benchOutput`),
 * finally post the resulting output to the PR (using `gh pr comment ...`).
 -/
-def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
+def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : Nat := 0)
     (author : String := "leanprover-bot") (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
   let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID})"
@@ -192,9 +194,9 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
   -- retrieve the data from the speed-center
   let curlSpeedCenter : IO.Process.SpawnArgs :=
     { cmd := "curl"
-      args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
+      args := #[s!"https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
   dbg_trace "\n#running\n\
-    curl http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
+    curl https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
   let bench ← IO.Process.run curlSpeedCenter
   IO.FS.writeFile (tempFile ++ ".src") bench
 

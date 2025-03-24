@@ -38,6 +38,7 @@ section gammaSet_def
 /-- The set of pairs of coprime integers congruent to `a` mod `N`. -/
 def gammaSet := {v : Fin 2 → ℤ | (↑) ∘ v = a ∧ IsCoprime (v 0) (v 1)}
 
+open scoped Function in -- required for scoped `on` notation
 lemma pairwise_disjoint_gammaSet : Pairwise (Disjoint on gammaSet N) := by
   refine fun u v huv ↦ ?_
   contrapose! huv
@@ -50,7 +51,7 @@ lemma gammaSet_one_eq (a a' : Fin 2 → ZMod 1) : gammaSet 1 a = gammaSet 1 a' :
 
 /-- For level `N = 1`, the gamma sets are all equivalent; this is the equivalence. -/
 def gammaSet_one_equiv (a a' : Fin 2 → ZMod 1) : gammaSet 1 a ≃ gammaSet 1 a' :=
-  Equiv.Set.ofEq (gammaSet_one_eq a a')
+  Equiv.setCongr (gammaSet_one_eq a a')
 
 end gammaSet_def
 

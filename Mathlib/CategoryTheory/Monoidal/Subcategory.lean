@@ -128,7 +128,7 @@ instance fullBraidedSubcategory : BraidedCategory (FullSubcategory P) :=
   braidedCategoryOfFaithful (fullSubcategoryInclusion P)
     (fun X Y =>
       ⟨(β_ X.1 Y.1).hom, (β_ X.1 Y.1).inv, (β_ X.1 Y.1).hom_inv_id, (β_ X.1 Y.1).inv_hom_id⟩)
-    fun X Y => by aesop_cat
+    fun X Y => by simp
 
 /-- The forgetful braided functor from a full braided subcategory into the original category
 ("forgetting" the condition).

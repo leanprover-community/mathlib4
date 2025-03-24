@@ -60,7 +60,7 @@ theorem continuous_thickenedIndicatorAux {δ : ℝ} (δ_pos : 0 < δ) (E : Set �
 
 theorem thickenedIndicatorAux_le_one (δ : ℝ) (E : Set α) (x : α) :
     thickenedIndicatorAux δ E x ≤ 1 := by
-  apply @tsub_le_self _ _ _ _ (1 : ℝ≥0∞)
+  apply tsub_le_self (α := ℝ≥0∞)
 
 theorem thickenedIndicatorAux_lt_top {δ : ℝ} {E : Set α} {x : α} :
     thickenedIndicatorAux δ E x < ∞ :=
@@ -172,7 +172,7 @@ theorem thickenedIndicator_le_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) (x :
 
 theorem thickenedIndicator_one_of_mem_closure {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
     (x_mem : x ∈ closure E) : thickenedIndicator δ_pos E x = 1 := by
-  rw [thickenedIndicator_apply, thickenedIndicatorAux_one_of_mem_closure δ E x_mem, one_toNNReal]
+  rw [thickenedIndicator_apply, thickenedIndicatorAux_one_of_mem_closure δ E x_mem, toNNReal_one]
 
 lemma one_le_thickenedIndicator_apply' {X : Type _} [PseudoEMetricSpace X]
     {δ : ℝ} (δ_pos : 0 < δ) {F : Set X} {x : X} (hxF : x ∈ closure F) :
@@ -190,7 +190,7 @@ theorem thickenedIndicator_one {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α
 
 theorem thickenedIndicator_zero {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) {x : α}
     (x_out : x ∉ thickening δ E) : thickenedIndicator δ_pos E x = 0 := by
-  rw [thickenedIndicator_apply, thickenedIndicatorAux_zero δ_pos E x_out, zero_toNNReal]
+  rw [thickenedIndicator_apply, thickenedIndicatorAux_zero δ_pos E x_out, toNNReal_zero]
 
 theorem indicator_le_thickenedIndicator {δ : ℝ} (δ_pos : 0 < δ) (E : Set α) :
     (E.indicator fun _ => (1 : ℝ≥0)) ≤ thickenedIndicator δ_pos E := by
@@ -225,7 +225,7 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   intro x
   rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
         (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
-      by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
+      by refine (congr_fun (comp_indicator_const 1 ENNReal.toNNReal toNNReal_zero) x).symm]
   refine Tendsto.comp (tendsto_toNNReal ?_) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 

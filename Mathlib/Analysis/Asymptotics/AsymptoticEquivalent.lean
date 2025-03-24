@@ -3,7 +3,7 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
-import Mathlib.Analysis.Asymptotics.Asymptotics
+import Mathlib.Analysis.Asymptotics.Lemmas
 import Mathlib.Analysis.Asymptotics.Theta
 import Mathlib.Analysis.Normed.Order.Basic
 
@@ -66,8 +66,9 @@ section NormedAddCommGroup
 
 variable {α β : Type*} [NormedAddCommGroup β]
 
-/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l` when
-    `u x - v x = o(v x)` as `x` converges along `l`. -/
+/-- Two functions `u` and `v` are said to be asymptotically equivalent along a filter `l`
+  (denoted as `u ~[l] v` in the `Asymptotics` namespace)
+  when `u x - v x = o(v x)` as `x` converges along `l`. -/
 def IsEquivalent (l : Filter α) (u v : α → β) :=
   (u - v) =o[l] v
 
@@ -219,7 +220,6 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
     (fun x ↦ a x • u x) ~[l] fun x ↦ b x • v x := by
   rcases hab.exists_eq_mul with ⟨φ, hφ, habφ⟩
   have : ((fun x ↦ a x • u x) - (fun x ↦ b x • v x)) =ᶠ[l] fun x ↦ b x • (φ x • u x - v x) := by
-    -- Porting note: `convert` has become too strong, so we need to specify `using 1`.
     convert (habφ.comp₂ (· • ·) <| EventuallyEq.refl _ u).sub
       (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
@@ -254,12 +254,29 @@ end SMul
 
 section mul_inv
 
-variable {α β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
+variable {α ι β : Type*} [NormedField β] {t u v w : α → β} {l : Filter α}
 
-theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
+protected theorem IsEquivalent.mul (htu : t ~[l] u) (hvw : v ~[l] w) : t * v ~[l] u * w :=
   htu.smul hvw
 
-theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x ↦ (v x)⁻¹ := by
+theorem IsEquivalent.listProd {L : List ι} {f g : ι → α → β} (h : ∀ i ∈ L, f i ~[l] g i) :
+    (fun x ↦ (L.map (f · x)).prod) ~[l] (fun x ↦ (L.map (g · x)).prod) := by
+  induction L with
+  | nil => simp [IsEquivalent.refl]
+  | cons i L ihL =>
+    simp only [List.forall_mem_cons, List.map_cons, List.prod_cons] at h ⊢
+    exact h.1.mul (ihL h.2)
+
+theorem IsEquivalent.multisetProd {s : Multiset ι} {f g : ι → α → β} (h : ∀ i ∈ s, f i ~[l] g i) :
+    (fun x ↦ (s.map (f · x)).prod) ~[l] (fun x ↦ (s.map (g · x)).prod) := by
+  obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
+  exact listProd h
+
+theorem IsEquivalent.finsetProd {s : Finset ι} {f g : ι → α → β} (h : ∀ i ∈ s, f i ~[l] g i) :
+    (∏ i ∈ s, f i ·) ~[l] (∏ i ∈ s, g i ·) :=
+  multisetProd h
+
+protected theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x ↦ (v x)⁻¹ := by
   rw [isEquivalent_iff_exists_eq_mul] at *
   rcases huv with ⟨φ, hφ, h⟩
   rw [← inv_one]
@@ -267,7 +284,7 @@ theorem IsEquivalent.inv (huv : u ~[l] v) : (fun x ↦ (u x)⁻¹) ~[l] fun x �
   convert h.inv
   simp [mul_comm]
 
-theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
+protected theorem IsEquivalent.div (htu : t ~[l] u) (hvw : v ~[l] w) :
     (fun x ↦ t x / v x) ~[l] fun x ↦ u x / w x := by
   simpa only [div_eq_mul_inv] using htu.mul hvw.inv
 
@@ -280,7 +297,7 @@ variable {α β : Type*} [NormedLinearOrderedField β] {u v : α → β} {l : Fi
 theorem IsEquivalent.tendsto_atTop [OrderTopology β] (huv : u ~[l] v) (hu : Tendsto u l atTop) :
     Tendsto v l atTop :=
   let ⟨φ, hφ, h⟩ := huv.symm.exists_eq_mul
-  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul zero_lt_one hφ)
+  Tendsto.congr' h.symm (mul_comm u φ ▸ hu.atTop_mul_pos zero_lt_one hφ)
 
 theorem IsEquivalent.tendsto_atTop_iff [OrderTopology β] (huv : u ~[l] v) :
     Tendsto u l atTop ↔ Tendsto v l atTop :=

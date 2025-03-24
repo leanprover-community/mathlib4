@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -550,7 +550,7 @@ lemma bar (x y : Int) (h : 0 ≤ y ∧ 1 ≤ x) : 1 ≤ y + x * x := by linarith
 -- lemma mytest (j : ℕ) (h : 0 < j) : j-1 < j := by linarith
 
 example {α} [LinearOrderedCommRing α] (h : ∃ x : α, 0 ≤ x) : True := by
-  cases' h with x h
+  obtain ⟨x, h⟩ := h
   have : 0 ≤ x := by linarith
   trivial
 

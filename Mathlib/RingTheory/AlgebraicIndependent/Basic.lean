@@ -3,6 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.MvPolynomial.Equiv
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Algebra.MvPolynomial.Supported
@@ -32,8 +33,6 @@ transcendence basis, transcendence degree, transcendence
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
-
-open scoped Classical
 
 variable {ι ι' R K A A' : Type*} {x : ι → A}
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
@@ -263,8 +262,14 @@ theorem algebraicIndependent_subtype {s : Set A} :
 theorem algebraicIndependent_of_finite (s : Set A)
     (H : ∀ t ⊆ s, t.Finite → AlgebraicIndependent R ((↑) : t → A)) :
     AlgebraicIndependent R ((↑) : s → A) :=
-  algebraicIndependent_subtype.2 fun p hp =>
+  algebraicIndependent_subtype.2 fun p hp ↦
     algebraicIndependent_subtype.1 (H _ (mem_supported.1 hp) (Finset.finite_toSet _)) _ (by simp)
+
+theorem algebraicIndependent_of_finite_type
+    (H : ∀ t : Set ι, t.Finite → AlgebraicIndependent R fun i : t ↦ x i) :
+    AlgebraicIndependent R x :=
+  (injective_iff_map_eq_zero _).mpr fun p ↦
+    algebraicIndependent_comp_subtype.1 (H _ p.vars.finite_toSet) _ p.mem_supported_vars
 
 theorem AlgebraicIndependent.image_of_comp {ι ι'} (s : Set ι) (f : ι → ι') (g : ι' → A)
     (hs : AlgebraicIndependent R fun x : s => g (f x)) :

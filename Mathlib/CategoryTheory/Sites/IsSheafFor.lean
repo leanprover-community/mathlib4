@@ -65,7 +65,7 @@ which can be convenient.
 -/
 
 
-universe w v₁ v₂ u₁ u₂
+universe w w' v₁ v₂ u₁ u₂
 
 namespace CategoryTheory
 
@@ -83,9 +83,10 @@ A presheaf is a sheaf (resp, separated) if every *compatible* family of elements
 (resp, at most one) amalgamation.
 
 This data is referred to as a `family` in [MM92], Chapter III, Section 4. It is also a concrete
-version of the elements of the middle object in https://stacks.math.columbia.edu/tag/00VM which is
+version of the elements of the middle object in the Stacks entry which is
 more useful for direct calculations. It is also used implicitly in Definition C2.1.2 in [Elephant].
 -/
+@[stacks 00VM "This is a concrete version of the elements of the middle object there."]
 def FamilyOfElements (P : Cᵒᵖ ⥤ Type w) (R : Presieve X) :=
   ∀ ⦃Y : C⦄ (f : Y ⟶ X), R f → P.obj (op Y)
 
@@ -356,7 +357,7 @@ theorem FamilyOfElements.IsAmalgamation.compPresheafMap {x : FamilyOfElements P 
 
 theorem is_compatible_of_exists_amalgamation (x : FamilyOfElements P R)
     (h : ∃ t, x.IsAmalgamation t) : x.Compatible := by
-  cases' h with t ht
+  obtain ⟨t, ht⟩ := h
   intro Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ comm
   rw [← ht _ h₁, ← ht _ h₂, ← FunctorToTypes.map_comp_apply, ← op_comp, comm]
   simp
@@ -416,8 +417,8 @@ This version is also useful to establish that being a sheaf is preserved under i
 presheaves.
 
 See the discussion before Equation (3) of [MM92], Chapter III, Section 4. See also C2.1.4 of
-[Elephant]. This is also a direct reformulation of <https://stacks.math.columbia.edu/tag/00Z8>.
--/
+[Elephant]. -/
+@[stacks 00Z8 "Direct reformulation"]
 def YonedaSheafCondition (P : Cᵒᵖ ⥤ Type v₁) (S : Sieve X) : Prop :=
   ∀ f : S.functor ⟶ P, ∃! g, S.functorInclusion ≫ g = f
 
@@ -489,7 +490,6 @@ to `P` can be (uniquely) extended to all of `yoneda.obj X`.
    S  →  P
    ↓  ↗
    yX
-
 -/
 noncomputable def IsSheafFor.extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P (S : Presieve X))
     (f : S.functor ⟶ P) : yoneda.obj X ⟶ P :=
@@ -503,7 +503,6 @@ that the triangle below commutes, provided `P` is a sheaf for `S`
    S  →  P
    ↓  ↗
    yX
-
 -/
 @[reassoc (attr := simp)]
 theorem IsSheafFor.functorInclusion_comp_extend {P : Cᵒᵖ ⥤ Type v₁} (h : IsSheafFor P S.arrows)
@@ -533,7 +532,7 @@ theorem isSeparatedFor_and_exists_isAmalgamation_iff_isSheafFor :
   intro x
   constructor
   · intro z hx
-    exact exists_unique_of_exists_of_unique (z.2 hx) z.1
+    exact existsUnique_of_exists_of_unique (z.2 hx) z.1
   · intro h
     refine ⟨?_, ExistsUnique.exists ∘ h⟩
     intro t₁ t₂ ht₁ ht₂
@@ -603,21 +602,41 @@ theorem isSheafFor_top_sieve (P : Cᵒᵖ ⥤ Type w) : IsSheafFor P ((⊤ : Sie
   rw [← isSheafFor_iff_generate]
   apply isSheafFor_singleton_iso
 
+/-- If `P₁ : Cᵒᵖ ⥤ Type w` and `P₂  : Cᵒᵖ ⥤ Type w` are two naturally equivalent
+presheaves, and `P₁` is a sheaf for a presieve `R`, then `P₂` is also a sheaf for `R`. -/
+lemma isSheafFor_of_nat_equiv {P₁ : Cᵒᵖ ⥤ Type w} {P₂ : Cᵒᵖ ⥤ Type w'}
+    (e : ∀ ⦃X : C⦄, P₁.obj (op X) ≃ P₂.obj (op X))
+    (he : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₁.obj (op Y)),
+      e (P₁.map f.op x) = P₂.map f.op (e x))
+    {X : C} {R : Presieve X} (hP₁ : IsSheafFor P₁ R) :
+    IsSheafFor P₂ R := fun x₂ hx₂ ↦ by
+  have he' : ∀ ⦃X Y : C⦄ (f : X ⟶ Y) (x : P₂.obj (op Y)),
+    e.symm (P₂.map f.op x) = P₁.map f.op (e.symm x) := fun X Y f x ↦
+      e.injective (by simp only [Equiv.apply_symm_apply, he])
+  let x₁ : FamilyOfElements P₁ R := fun Y f hf ↦ e.symm (x₂ f hf)
+  have hx₁ : x₁.Compatible := fun Y₁ Y₂ Z g₁ g₂ f₁ f₂ h₁ h₂ fac ↦ e.injective
+    (by simp only [he, Equiv.apply_symm_apply, hx₂ g₁ g₂ h₁ h₂ fac, x₁])
+  have : ∀ (t₂ : P₂.obj (op X)),
+      x₂.IsAmalgamation t₂ ↔ x₁.IsAmalgamation (e.symm t₂) := fun t₂ ↦ by
+    simp only [FamilyOfElements.IsAmalgamation, x₁,
+      ← he', EmbeddingLike.apply_eq_iff_eq]
+  refine ⟨e (hP₁.amalgamate x₁ hx₁), ?_, ?_⟩
+  · dsimp
+    simp only [this, Equiv.symm_apply_apply]
+    exact IsSheafFor.isAmalgamation hP₁ hx₁
+  · intro t₂ ht₂
+    refine e.symm.injective ?_
+    simp only [Equiv.symm_apply_apply]
+    exact hP₁.isSeparatedFor x₁ _ _ (by simpa only [this] using ht₂)
+      (IsSheafFor.isAmalgamation hP₁ hx₁)
+
 /-- If `P` is a sheaf for `S`, and it is iso to `P'`, then `P'` is a sheaf for `S`. This shows that
 "being a sheaf for a presieve" is a mathematical or hygienic property.
 -/
-theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') : IsSheafFor P R → IsSheafFor P' R := by
-  intro h x hx
-  let x' := x.compPresheafMap i.inv
-  have : x'.Compatible := FamilyOfElements.Compatible.compPresheafMap i.inv hx
-  obtain ⟨t, ht1, ht2⟩ := h x' this
-  use i.hom.app _ t
-  fconstructor
-  · convert FamilyOfElements.IsAmalgamation.compPresheafMap i.hom ht1
-    simp [x']
-  · intro y hy
-    rw [show y = (i.inv.app (op X) ≫ i.hom.app (op X)) y by simp]
-    simp [ht2 (i.inv.app _ y) (FamilyOfElements.IsAmalgamation.compPresheafMap i.inv hy)]
+theorem isSheafFor_iso {P' : Cᵒᵖ ⥤ Type w} (i : P ≅ P') (hP : IsSheafFor P R) :
+    IsSheafFor P' R :=
+  isSheafFor_of_nat_equiv (fun X ↦ (i.app (op X)).toEquiv)
+    (fun _ _ f x ↦ congr_fun (i.hom.naturality f.op) x) hP
 
 /-- If a presieve `R` on `X` has a subsieve `S` such that:
 

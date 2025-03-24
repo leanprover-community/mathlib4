@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.Polynomial.Reverse
 import Mathlib.Algebra.Regular.SMul
 
@@ -431,7 +430,7 @@ theorem monic_X_pow_sub_C {R : Type u} [Ring R] (a : R) {n : ℕ} (h : n ≠ 0) 
     (X ^ n - C a).Monic := by
   simpa only [map_neg, ← sub_eq_add_neg] using monic_X_pow_add_C (-a) h
 
-theorem not_isUnit_X_pow_sub_one (R : Type*) [CommRing R] [Nontrivial R] (n : ℕ) :
+theorem not_isUnit_X_pow_sub_one (R : Type*) [Ring R] [Nontrivial R] (n : ℕ) :
     ¬IsUnit (X ^ n - 1 : R[X]) := by
   intro h
   rcases eq_or_ne n 0 with (rfl | hn)

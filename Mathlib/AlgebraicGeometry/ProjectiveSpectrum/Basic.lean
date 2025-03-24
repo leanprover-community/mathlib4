@@ -106,13 +106,13 @@ lemma basicOpenToSpec_app_top :
 noncomputable
 def toSpecZero : Proj 𝒜 ⟶ Spec (.of (𝒜 0)) :=
   (Scheme.topIso _).inv ≫ (Scheme.isoOfEq _ (basicOpen_one _)).inv ≫
-    basicOpenToSpec 𝒜 1 ≫ Spec.map (fromZeroRingHom 𝒜 _)
+    basicOpenToSpec 𝒜 1 ≫ Spec.map (CommRingCat.ofHom (fromZeroRingHom 𝒜 _))
 
 variable {m} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 
 /-- The canonical isomorphism `Proj A |_ D₊(f) ≅ Spec (A_f)₀`
 when `f` is homogeneous of positive degree. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 noncomputable
 def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of (Away 𝒜 f)) :=
   have : IsIso (basicOpenToSpec 𝒜 f) := by
@@ -126,7 +126,7 @@ def basicOpenIsoSpec : (basicOpen 𝒜 f).toScheme ≅ Spec (.of (Away 𝒜 f)) 
 
 /-- The canonical isomorphism `(A_f)₀ ≅ Γ(Proj A, D₊(f))`
 when `f` is homogeneous of positive degree. -/
-@[simps! (config := .lemmasOnly) hom]
+@[simps! -isSimp hom]
 noncomputable
 def basicOpenIsoAway : CommRingCat.of (Away 𝒜 f) ≅ Γ(Proj 𝒜, basicOpen 𝒜 f) :=
   have : IsIso (awayToSection 𝒜 f) := by
@@ -177,10 +177,9 @@ lemma awayMap_awayToSection  :
   apply Subtype.ext
   ext ⟨i, hi⟩
   obtain ⟨⟨n, a, ⟨b, hb'⟩, i, rfl : _ = b⟩, rfl⟩ := mk_surjective a
-  simp only [CommRingCat.forget_obj, CommRingCat.coe_of, CommRingCat.ofHom, CommRingCat.coe_comp_of,
-    RingHom.coe_comp, Function.comp_apply, homOfLE_leOfHom]
+  simp only [homOfLE_leOfHom, CommRingCat.hom_comp, RingHom.coe_comp, Function.comp_apply]
   erw [ProjectiveSpectrum.Proj.awayToSection_apply]
-  rw [val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
+  rw [CommRingCat.hom_ofHom, val_awayMap_mk, Localization.mk_eq_mk', IsLocalization.map_mk',
     ← Localization.mk_eq_mk']
   refine Localization.mk_eq_mk_iff.mpr ?_
   rw [Localization.r_iff_exists]
@@ -251,7 +250,7 @@ lemma pullbackAwayιIso_inv_snd :
   rw [← pullbackAwayιIso_hom_SpecMap_awayMap_right, Iso.inv_hom_id_assoc]
 
 open TopologicalSpace.Opens in
-/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelavent ideal,
+/-- Given a family of homogeneous elements `f` of positive degree that spans the irrelevant ideal,
 `Spec (A_f)₀ ⟶ Proj A` forms an affine open cover of `Proj A`. -/
 noncomputable
 def openCoverOfISupEqTop {ι : Type*} (f : ι → A) {m : ι → ℕ}

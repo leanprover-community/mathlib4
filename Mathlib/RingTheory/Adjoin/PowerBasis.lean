@@ -33,9 +33,7 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : adjoin K ({x} : Set S)) := by
     apply (isIntegral_algebraMap_iff hST).mp
     convert hx
-  apply
-    @Basis.mk (Fin (minpoly K x).natDegree) _ (adjoin K {x}) fun i =>
-      ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ)
+  apply Basis.mk (v := fun i : Fin _ ↦ ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ))
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : adjoin K {x})
     rwa [← minpoly.algebraMap_eq hST] at this
@@ -94,7 +92,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen) [IsDomain S]
   let Q := X ^ n %ₘ minpoly R B.gen
   have : B.gen ^ n = aeval B.gen Q := by
     rw [← @aeval_X_pow R _ _ _ _ B.gen, ← modByMonic_add_div (X ^ n) (minpoly.monic hB)]
-    simp
+    simp [Q]
   by_cases hQ : Q = 0
   · simp [this, hQ, isIntegral_zero]
   have hlt : Q.natDegree < B.dim := by

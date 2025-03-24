@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Defs
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Subrings
@@ -384,6 +385,15 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 instance : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
+/-- The center of isomorphic (not necessarily associative) rings are isomorphic. -/
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a (not necessarily associative) ring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
+
 end
 
 section DivisionRing
@@ -594,8 +604,7 @@ theorem exists_list_of_mem_closure {s : Set R} {x : R} (hx : x ∈ closure s) :
         List.recOn L (by simp)
           (by simp +contextual [List.map_cons, add_comm])⟩
 
-variable (R)
-
+variable (R) in
 /-- `closure` forms a Galois insertion with the coercion to set. -/
 protected def gi : GaloisInsertion (@closure R _) (↑) where
   choice s _ := closure s
@@ -603,9 +612,8 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
   le_l_u _s := subset_closure
   choice_eq _s _h := rfl
 
-variable {R}
-
 /-- Closure of a subring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subring R) : closure (s : Set R) = s :=
   (Subring.gi R).l_u_eq s
 
@@ -872,13 +880,8 @@ theorem ofLeftInverse_symm_apply {g : S → R} {f : R →+* S} (h : Function.Lef
 
 /-- Given an equivalence `e : R ≃+* S` of rings and a subring `s` of `R`,
 `subringMap e s` is the induced equivalence between `s` and `s.map e` -/
-@[simps!]
 def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
-
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] RingEquiv.subringMap_symm_apply_coe
-  RingEquiv.subringMap_apply_coe
 
 end RingEquiv
 
@@ -922,7 +925,7 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
   induction' hd with hd tl ih
   · exact ⟨[], List.forall_mem_nil _, Or.inl rfl⟩
   rw [List.forall_mem_cons] at HL
-  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> cases' HL.1 with hhd hhd
+  rcases ih HL.2 with ⟨L, HL', HP | HP⟩ <;> rcases HL.1 with hhd | hhd
   · exact
       ⟨hd::L, List.forall_mem_cons.2 ⟨hhd, HL'⟩,
         Or.inl <| by rw [List.prod_cons, List.prod_cons, HP]⟩
@@ -1066,3 +1069,8 @@ theorem comap_map_eq_self_of_injective
   SetLike.coe_injective (Set.preimage_image_eq _ hf)
 
 end Subring
+
+theorem AddSubgroup.int_mul_mem {G : AddSubgroup R} (k : ℤ) {g : R} (h : g ∈ G) :
+    (k : R) * g ∈ G := by
+  convert AddSubgroup.zsmul_mem G h k using 1
+  rw [zsmul_eq_mul]

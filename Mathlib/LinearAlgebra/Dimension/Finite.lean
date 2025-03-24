@@ -3,7 +3,6 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison
 -/
-import Mathlib.Algebra.Module.Torsion
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
@@ -15,7 +14,6 @@ import Mathlib.LinearAlgebra.Dimension.Constructions
 Also contains characterization for when rank equals zero or rank equals one.
 
 -/
-
 
 noncomputable section
 
@@ -100,11 +98,6 @@ theorem rank_pos [Nontrivial M] : 0 < Module.rank R M :=
   rank_pos_iff_nontrivial.mpr ‹_›
 
 end
-
-lemma rank_eq_zero_iff_isTorsion {R M} [CommRing R] [IsDomain R] [AddCommGroup M] [Module R M] :
-    Module.rank R M = 0 ↔ Module.IsTorsion R M := by
-  rw [Module.IsTorsion, rank_eq_zero_iff]
-  simp [mem_nonZeroDivisors_iff_ne_zero]
 
 variable (R M)
 
@@ -208,24 +201,24 @@ theorem setFinite [Module.Finite R M] {b : Set M}
 end LinearIndependent
 
 lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
-    ∃ s : Set M, #s = n ∧ LinearIndependent R ((↑) : s → M) := by
+    ∃ s : Set M, #s = n ∧ LinearIndepOn R id s := by
   obtain ⟨⟨s, hs⟩, hs'⟩ := exists_lt_of_lt_ciSup' (hn.trans_eq (Module.rank_def R M))
   obtain ⟨t, ht, ht'⟩ := le_mk_iff_exists_subset.mp hs'.le
-  exact ⟨t, ht', .mono ht hs⟩
+  exact ⟨t, ht', hs.mono ht⟩
 
 lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
-    ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
+    ∃ s : Finset M, s.card = n ∧ LinearIndepOn R id (s : Set M) := by
   have := nonempty_linearIndependent_set
-  cases' hn.eq_or_lt with h h
+  rcases hn.eq_or_lt with h | h
   · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
       (Cardinal.bddAbove_range _) _ (h.trans (Module.rank_def R M)).symm
     have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0 n)
     cases nonempty_fintype s
-    exact ⟨s.toFinset, by simpa using hs', by convert hs using 3 <;> exact Set.mem_toFinset⟩
+    refine ⟨s.toFinset, by simpa using hs', by simpa⟩
   · obtain ⟨s, hs, hs'⟩ := exists_set_linearIndependent_of_lt_rank h
     have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ nat_lt_aleph0 n)
     cases nonempty_fintype s
-    exact ⟨s.toFinset, by simpa using hs, by convert hs' using 3 <;> exact Set.mem_toFinset⟩
+    exact ⟨s.toFinset, by simpa using hs, by simpa⟩
 
 lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=
@@ -429,13 +422,6 @@ theorem Module.finrank_pos [NoZeroSMulDivisors R M] [h : Nontrivial M] :
 theorem Module.finrank_eq_zero_iff :
     finrank R M = 0 ↔ ∀ x : M, ∃ a : R, a ≠ 0 ∧ a • x = 0 := by
   rw [← rank_eq_zero_iff (R := R), ← finrank_eq_rank]
-  norm_cast
-
-/-- The `StrongRankCondition` is automatic. See `commRing_strongRankCondition`. -/
-theorem Module.finrank_eq_zero_iff_isTorsion {R} [CommRing R] [StrongRankCondition R]
-    [IsDomain R] [Module R M] [Module.Finite R M] :
-    finrank R M = 0 ↔ Module.IsTorsion R M := by
-  rw [← rank_eq_zero_iff_isTorsion (R := R), ← finrank_eq_rank]
   norm_cast
 
 /-- A finite dimensional space has zero `finrank` iff it is a subsingleton.

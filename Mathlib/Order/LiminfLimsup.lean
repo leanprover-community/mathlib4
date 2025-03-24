@@ -3,12 +3,13 @@ Copyright (c) 2018 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Johannes Hölzl, Rémy Degenne
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Hom.CompleteLattice
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # liminfs and limsups of functions and filters
@@ -97,6 +98,16 @@ theorem IsBounded.isBoundedUnder {q : β → β → Prop} {u : α → β}
 theorem IsBoundedUnder.comp {l : Filter γ} {q : β → β → Prop} {u : γ → α} {v : α → β}
     (hv : ∀ a₀ a₁, r a₀ a₁ → q (v a₀) (v a₁)) : l.IsBoundedUnder r u → l.IsBoundedUnder q (v ∘ u)
   | ⟨a, h⟩ => ⟨v a, show ∀ᶠ x in map u l, q (v x) (v a) from h.mono fun x => hv x a⟩
+
+lemma isBoundedUnder_map_iff {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter κ} :
+    (map φ 𝓕).IsBoundedUnder r f ↔ 𝓕.IsBoundedUnder r (f ∘ φ) :=
+  Iff.rfl
+
+lemma Tendsto.isBoundedUnder_comp {ι κ X : Type*} {r : X → X → Prop} {f : ι → X} {φ : κ → ι}
+    {𝓕 : Filter ι} {𝓖 : Filter κ} (φ_tendsto : Tendsto φ 𝓖 𝓕) (𝓕_bounded : 𝓕.IsBoundedUnder r f) :
+    𝓖.IsBoundedUnder r (f ∘ φ) :=
+  isBoundedUnder_map_iff.mp (𝓕_bounded.mono φ_tendsto)
 
 section Preorder
 variable [Preorder α] {f : Filter β} {u : β → α} {s : Set β}
@@ -459,26 +470,26 @@ theorem bddBelow_range_of_tendsto_atTop_atTop [IsDirected α (· ≥ ·)] {u : �
 
 end Nonempty
 
-theorem isCobounded_le_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
+theorem isCobounded_le_of_bot [LE α] [OrderBot α] {f : Filter α} : f.IsCobounded (· ≤ ·) :=
   ⟨⊥, fun _ _ => bot_le⟩
 
-theorem isCobounded_ge_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.IsCobounded (· ≥ ·) :=
+theorem isCobounded_ge_of_top [LE α] [OrderTop α] {f : Filter α} : f.IsCobounded (· ≥ ·) :=
   ⟨⊤, fun _ _ => le_top⟩
 
-theorem isBounded_le_of_top [Preorder α] [OrderTop α] {f : Filter α} : f.IsBounded (· ≤ ·) :=
+theorem isBounded_le_of_top [LE α] [OrderTop α] {f : Filter α} : f.IsBounded (· ≤ ·) :=
   ⟨⊤, Eventually.of_forall fun _ => le_top⟩
 
-theorem isBounded_ge_of_bot [Preorder α] [OrderBot α] {f : Filter α} : f.IsBounded (· ≥ ·) :=
+theorem isBounded_ge_of_bot [LE α] [OrderBot α] {f : Filter α} : f.IsBounded (· ≥ ·) :=
   ⟨⊥, Eventually.of_forall fun _ => bot_le⟩
 
 @[simp]
-theorem _root_.OrderIso.isBoundedUnder_le_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_le_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≤ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≤ ·) l u :=
   (Function.Surjective.exists e.surjective).trans <|
     exists_congr fun a => by simp only [eventually_map, e.le_iff_le]
 
 @[simp]
-theorem _root_.OrderIso.isBoundedUnder_ge_comp [Preorder α] [Preorder β] (e : α ≃o β) {l : Filter γ}
+theorem _root_.OrderIso.isBoundedUnder_ge_comp [LE α] [LE β] (e : α ≃o β) {l : Filter γ}
     {u : γ → α} : (IsBoundedUnder (· ≥ ·) l fun x => e (u x)) ↔ IsBoundedUnder (· ≥ ·) l u :=
   OrderIso.isBoundedUnder_le_comp e.dual
 
@@ -537,18 +548,11 @@ macro "isBoundedDefault" : tactic =>
     | apply isBounded_ge_of_bot
     | assumption)
 
--- Porting note: The above is a lean 4 reconstruction of (note that applyc is not available (yet?)):
--- unsafe def is_bounded_default : tactic Unit :=
---   tactic.applyc `` is_cobounded_le_of_bot <|>
---     tactic.applyc `` is_cobounded_ge_of_top <|>
---       tactic.applyc `` is_bounded_le_of_top <|> tactic.applyc `` is_bounded_ge_of_bot
-
 
 section ConditionallyCompleteLattice
 
 variable [ConditionallyCompleteLattice α] {s : Set α} {u : β → α}
 
--- Porting note: Renamed from Limsup and Liminf to limsSup and limsInf
 /-- The `limsSup` of a filter `f` is the infimum of the `a` such that, eventually for `f`,
 holds `x ≤ a`. -/
 def limsSup (f : Filter α) : α :=
@@ -904,11 +908,6 @@ lemma limsInf_principal_eq_sInf (s : Set α) : limsInf (𝓟 s) = sInf s := by
 @[simp] lemma liminf_top_eq_iInf (u : β → α) : liminf u ⊤ = ⨅ i, u i := by
   rw [liminf, map_top, limsInf_principal_eq_sInf, sInf_range]
 
-@[deprecated (since := "2024-08-27")] alias limsSup_principal := limsSup_principal_eq_sSup
-@[deprecated (since := "2024-08-27")] alias limsInf_principal := limsInf_principal_eq_sInf
-@[deprecated (since := "2024-08-27")] alias limsup_top := limsup_top_eq_iSup
-@[deprecated (since := "2024-08-27")] alias liminf_top := liminf_top_eq_iInf
-
 theorem blimsup_congr' {f : Filter β} {p q : β → Prop} {u : β → α}
     (h : ∀ᶠ x in f, u x ≠ ⊥ → (p x ↔ q x)) : blimsup u f p = blimsup u f q := by
   simp only [blimsup_eq]
@@ -1002,17 +1001,11 @@ theorem _root_.CompleteLatticeHom.apply_limsup_iterate (f : CompleteLatticeHom �
   simp only [zero_add, Function.comp_apply, iSup_le_iff]
   exact fun i => le_iSup (fun i => f^[i] a) (i + 1)
 
-@[deprecated (since := "2024-07-21")]
-alias CompleteLatticeHom.apply_limsup_iterate := CompleteLatticeHom.apply_limsup_iterate
-
 /-- If `f : α → α` is a morphism of complete lattices, then the liminf of its iterates of any
 `a : α` is a fixed point. -/
 theorem _root_.CompleteLatticeHom.apply_liminf_iterate (f : CompleteLatticeHom α α) (a : α) :
     f (liminf (fun n => f^[n] a) atTop) = liminf (fun n => f^[n] a) atTop :=
   (CompleteLatticeHom.dual f).apply_limsup_iterate _
-
-@[deprecated (since := "2024-07-21")]
-alias CompleteLatticeHom.apply_liminf_iterate := CompleteLatticeHom.apply_liminf_iterate
 
 variable {f g : Filter β} {p q : β → Prop} {u v : β → α}
 
@@ -1097,15 +1090,9 @@ theorem _root_.OrderIso.apply_blimsup [CompleteLattice γ] (e : α ≃o γ) :
   simp only [blimsup_eq, map_sInf, Function.comp_apply, e.image_eq_preimage,
     Set.preimage_setOf_eq, e.le_symm_apply]
 
-@[deprecated (since := "2024-07-21")]
-alias OrderIso.apply_blimsup := OrderIso.apply_blimsup
-
 theorem _root_.OrderIso.apply_bliminf [CompleteLattice γ] (e : α ≃o γ) :
     e (bliminf u f p) = bliminf (e ∘ u) f p :=
   e.dual.apply_blimsup
-
-@[deprecated (since := "2024-07-21")]
-alias OrderIso.apply_bliminf := OrderIso.apply_bliminf
 
 theorem _root_.sSupHom.apply_blimsup_le [CompleteLattice γ] (g : sSupHom α γ) :
     g (blimsup u f p) ≤ blimsup (g ∘ u) f p := by
@@ -1113,15 +1100,9 @@ theorem _root_.sSupHom.apply_blimsup_le [CompleteLattice γ] (g : sSupHom α γ)
   refine ((OrderHomClass.mono g).map_iInf₂_le _).trans ?_
   simp only [_root_.map_iSup, le_refl]
 
-@[deprecated (since := "2024-07-21")]
-alias SupHom.apply_blimsup_le := sSupHom.apply_blimsup_le
-
 theorem _root_.sInfHom.le_apply_bliminf [CompleteLattice γ] (g : sInfHom α γ) :
     bliminf (g ∘ u) f p ≤ g (bliminf u f p) :=
   (sInfHom.dual g).apply_blimsup_le
-
-@[deprecated (since := "2024-07-21")]
-alias InfHom.le_apply_bliminf := sInfHom.le_apply_bliminf
 
 end CompleteLattice
 
@@ -1303,6 +1284,45 @@ theorem eventually_lt_of_limsup_lt {f : Filter α} [ConditionallyCompleteLinearO
     ∀ᶠ a in f, u a < b :=
   eventually_lt_of_lt_liminf (β := βᵒᵈ) h hu
 
+section ConditionallyCompleteLinearOrder
+
+variable [ConditionallyCompleteLinearOrder α]
+
+/-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, eventually we have `u b < x + ε`. -/
+theorem eventually_lt_add_pos_of_limsup_le [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
+    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x)
+    (hε : 0 < ε) :
+    ∀ᶠ b : β in atTop, u b < x + ε :=
+  eventually_lt_of_limsup_lt (lt_of_le_of_lt hu (lt_add_of_pos_right x hε)) hu_bdd
+
+/-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, eventually we have `x + ε < u b`. -/
+theorem eventually_add_neg_lt_of_le_liminf [Preorder β] [AddZeroClass α] [AddLeftStrictMono α]
+    {x ε : α} {u : β → α} (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop )
+    (hε : ε < 0) :
+    ∀ᶠ b : β in atTop, x + ε < u b :=
+  eventually_lt_of_lt_liminf (lt_of_lt_of_le (add_lt_of_neg_right x hε) hu) hu_bdd
+
+/-- If `Filter.limsup u atTop ≤ x`, then for all `ε > 0`, there exists a positive natural
+number `n` such that `u n < x + ε`. -/
+theorem exists_lt_of_limsup_le [AddZeroClass α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+    (hu_bdd : IsBoundedUnder LE.le atTop u) (hu : Filter.limsup u atTop ≤ x) (hε : 0 < ε) :
+    ∃ n : PNat, u n < x + ε := by
+  have h : ∀ᶠ n : ℕ in atTop, u n < x + ε := eventually_lt_add_pos_of_limsup_le hu_bdd hu hε
+  simp only [eventually_atTop] at h
+  obtain ⟨n, hn⟩ := h
+  exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
+
+/-- If `x ≤ Filter.liminf u atTop`, then for all `ε < 0`, there exists a positive natural
+number `n` such that ` x + ε < u n`. -/
+theorem exists_lt_of_le_liminf [AddZeroClass α] [AddLeftStrictMono α] {x ε : α} {u : ℕ → α}
+    (hu_bdd : IsBoundedUnder GE.ge atTop u) (hu : x ≤ Filter.liminf u atTop) (hε : ε < 0) :
+    ∃ n : PNat, x + ε < u n := by
+  have h : ∀ᶠ n : ℕ in atTop, x + ε < u n := eventually_add_neg_lt_of_le_liminf hu_bdd hu hε
+  simp only [eventually_atTop] at h
+  obtain ⟨n, hn⟩ := h
+  exact ⟨⟨n + 1, Nat.succ_pos _⟩, hn (n + 1) (Nat.le_succ _)⟩
+end ConditionallyCompleteLinearOrder
+
 theorem le_limsup_of_frequently_le {α β} [ConditionallyCompleteLinearOrder β] {f : Filter α}
     {u : α → β} {b : β} (hu_le : ∃ᶠ x in f, b ≤ u x)
     (hu : f.IsBoundedUnder (· ≤ ·) u := by isBoundedDefault) :
@@ -1430,7 +1450,7 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply Subset.antisymm
     · apply iUnion_subset (fun j ↦ ?_)
       by_cases hj : j ∈ m
-      · have : j = liminf_reparam f s p j := by simp only [liminf_reparam, hj, ite_true]
+      · have : j = liminf_reparam f s p j := by simp only [m, liminf_reparam, hj, ite_true]
         conv_lhs => rw [this]
         apply subset_iUnion _ j
       · simp only [m, mem_setOf_eq, ← nonempty_iInter_Iic_iff, not_nonempty_iff_eq_empty] at hj
@@ -1443,8 +1463,8 @@ theorem HasBasis.liminf_eq_ciSup_ciInf {v : Filter ι}
     apply (Iic_ciInf _).symm
     change liminf_reparam f s p j ∈ m
     by_cases Hj : j ∈ m
-    · simpa only [liminf_reparam, if_pos Hj] using Hj
-    · simp only [liminf_reparam, if_neg Hj]
+    · simpa only [m, liminf_reparam, if_pos Hj] using Hj
+    · simp only [m, liminf_reparam, if_neg Hj]
       have Z : ∃ n, (exists_surjective_nat (Subtype p)).choose n ∈ m ∨ ∀ j, j ∉ m := by
         rcases (exists_surjective_nat (Subtype p)).choose_spec j0 with ⟨n, rfl⟩
         exact ⟨n, Or.inl hj0⟩
@@ -1565,7 +1585,6 @@ theorem OrderIso.limsup_apply {γ} [ConditionallyCompleteLattice β] [Conditiona
   rw [← g.symm.symm_apply_apply <| limsup (fun x => g (u x)) f, g.symm_symm]
   refine g.monotone ?_
   have hf : u = fun i => g.symm (g (u i)) := funext fun i => (g.symm_apply_apply (u i)).symm
-  -- Porting note: nth_rw 1 to nth_rw 2
   nth_rw 2 [hf]
   refine (OrderIso.to_galoisConnection g.symm).l_limsup_le ?_ hgu_co
   simp_rw [g.symm_apply_apply]

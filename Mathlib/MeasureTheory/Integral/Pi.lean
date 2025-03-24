@@ -28,7 +28,7 @@ theorem Integrable.fin_nat_prod {n : ℕ} {E : Fin n → Type*}
     {f : (i : Fin n) → E i → 𝕜} (hf : ∀ i, Integrable (f i)) :
     Integrable (fun (x : (i : Fin n) → E i) ↦ ∏ i, f i (x i)) := by
   induction n with
-  | zero => simp only [Finset.univ_eq_empty, Finset.prod_empty, volume_pi,
+  | zero => simp only [Finset.univ_eq_empty, Finset.prod_empty, volume_pi, isFiniteMeasure_iff,
       integrable_const_iff, one_ne_zero, pi_empty_univ, ENNReal.one_lt_top, or_true]
   | succ n n_ih =>
       have := ((measurePreserving_piFinSuccAbove (fun i => (volume : Measure (E i))) 0).symm)
@@ -69,7 +69,7 @@ theorem integral_fin_nat_prod_eq_prod {n : ℕ} {E : Fin n → Type*}
   induction n with
   | zero =>
       simp only [volume_pi, Finset.univ_eq_empty, Finset.prod_empty, integral_const,
-        pi_empty_univ, ENNReal.one_toReal, smul_eq_mul, mul_one, pow_zero, one_smul]
+        pi_empty_univ, ENNReal.toReal_one, smul_eq_mul, mul_one, pow_zero, one_smul]
   | succ n n_ih =>
       calc
         _ = ∫ x : E 0 × ((i : Fin n) → E (Fin.succ i)),

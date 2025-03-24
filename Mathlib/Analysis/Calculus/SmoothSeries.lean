@@ -3,7 +3,7 @@ Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
 import Mathlib.Analysis.Calculus.UniformLimitsDeriv
 import Mathlib.Topology.Algebra.InfiniteSum.Module
 import Mathlib.Analysis.NormedSpace.FunctionSeries
@@ -16,7 +16,7 @@ function in the series is and additionally suitable uniform summable bounds are 
 
 More specifically,
 * `differentiable_tsum` ensures that a series of differentiable functions is differentiable.
-* `contDiff_tsum` ensures that a series of smooth functions is smooth.
+* `contDiff_tsum` ensures that a series of `C^n` functions is `C^n`.
 
 We also give versions of these statements which are localized to a set.
 -/
@@ -46,7 +46,6 @@ theorem summable_of_summable_hasFDerivAt_of_isPreconnected (hu : Summable u) (hs
   rw [summable_iff_cauchySeq_finset] at hf0 ⊢
   have A : UniformCauchySeqOn (fun t : Finset α => fun x => ∑ i ∈ t, f' i x) atTop s :=
     (tendstoUniformlyOn_tsum hu hf').uniformCauchySeqOn
-  -- Porting note: Lean 4 failed to find `f` by unification
   refine cauchy_map_of_uniformCauchySeqOn_fderiv (f := fun t x ↦ ∑ i ∈ t, f i x)
     hs h's A (fun t y hy => ?_) hx₀ hx hf0
   exact HasFDerivAt.sum fun i _ => hf i y hy
@@ -183,7 +182,7 @@ theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
 
 /-! ### Higher smoothness -/
 
-/-- Consider a series of smooth functions, with summable uniform bounds on the successive
+/-- Consider a series of `C^n` functions, with summable uniform bounds on the successive
 derivatives. Then the iterated derivative of the sum is the sum of the iterated derivative. -/
 theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))

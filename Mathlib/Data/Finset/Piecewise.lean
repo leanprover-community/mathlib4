@@ -3,7 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.BooleanAlgebra
+import Mathlib.Data.Set.Piecewise
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
@@ -105,13 +106,13 @@ lemma update_piecewise [DecidableEq ι] (i : ι) (v : π i) :
 lemma update_piecewise_of_mem [DecidableEq ι] {i : ι} (hi : i ∈ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise (update f i v) g := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_noteq ?_ _ _
+  refine s.piecewise_congr (fun _ _ => rfl) fun j hj => update_of_ne ?_ ..
   exact fun h => hj (h.symm ▸ hi)
 
 lemma update_piecewise_of_not_mem [DecidableEq ι] {i : ι} (hi : i ∉ s) (v : π i) :
     update (s.piecewise f g) i v = s.piecewise f (update g i v) := by
   rw [update_piecewise]
-  refine s.piecewise_congr (fun j hj => update_noteq ?_ _ _) fun _ _ => rfl
+  refine s.piecewise_congr (fun j hj => update_of_ne ?_ ..) fun _ _ => rfl
   exact fun h => hi (h ▸ hj)
 
 lemma piecewise_same : s.piecewise f f = f := by

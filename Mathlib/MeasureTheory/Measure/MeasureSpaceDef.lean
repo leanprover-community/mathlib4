@@ -52,6 +52,7 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
+assert_not_exists Basis
 
 noncomputable section
 
@@ -72,7 +73,7 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
 /-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Measure[" mα "]" α:arg => @Measure α mα
+scoped notation "Measure[" mα "] " α:arg => @Measure α mα
 
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
@@ -271,7 +272,8 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
     ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
   filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
-    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
+    using MeasurableSpace.induction_on_inter (C := fun t _ ↦ C x t)
+      h_eq h_inter hx_empty hx_basic hx_compl hx_union
 
 end ae
 

@@ -389,7 +389,6 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 
--- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
@@ -1004,7 +1003,7 @@ instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
     rcases cauchy_iff.mp hF |>.2 _ <| UniformOnFun.gen_mem_uniformity _ _ hs hU
       with ⟨V, hV, hVU⟩
     filter_upwards [hV] with f hf x hx
-    refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prod_mk_nhds tendsto_const_nhds) ?_
+    refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prodMk_nhds tendsto_const_nhds) ?_
     filter_upwards [hV] with g' hg' using hVU (mk_mem_prod hg' hf) _ hx
 
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform
@@ -1065,16 +1064,6 @@ theorem isClosed_setOf_continuous [TopologicalSpace α] (h : RestrictGenTopology
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ h.continuous_iff.2 fun s hs ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf
   exact (huf s hs).continuousOn <| hu fun _ ↦ Continuous.continuousOn
-
-/-- Suppose that the topology on `α` is defined by its restrictions to the sets of `𝔖`.
-
-Then the set of continuous functions is closed
-in the topology of uniform convergence on the sets of `𝔖`. -/
-@[deprecated isClosed_setOf_continuous (since := "2024-06-29")]
-theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
-    (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
-    IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} :=
-  isClosed_setOf_continuous ⟨fun u hu ↦ h _ <| by simpa only [isOpen_iSup_iff, isOpen_coinduced]⟩
 
 variable (𝔖) in
 theorem uniformSpace_eq_inf_precomp_of_cover {δ₁ δ₂ : Type*} (φ₁ : δ₁ → α) (φ₂ : δ₂ → α)

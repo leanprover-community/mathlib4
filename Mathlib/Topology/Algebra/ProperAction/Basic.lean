@@ -129,15 +129,15 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
   have proper_f : IsProperMap f := by
     refine IsClosedEmbedding.isProperMap ⟨?_, ?_⟩
     · let g := fun gx : G × X ↦ gx.2
-      have : Function.LeftInverse g f := fun x ↦ by simp
+      have : Function.LeftInverse g f := fun x ↦ by simp [f, g]
       exact this.isEmbedding (by fun_prop) (by fun_prop)
-    · have : range f = ({1} ×ˢ univ) := by simp
+    · have : range f = ({1} ×ˢ univ) := by simp [f, Set.singleton_prod]
       rw [this]
       exact isClosed_singleton.prod isClosed_univ
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
-  have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp
+  have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp [f, g]
   have range_gf : range (g ∘ f) = diagonal X := by simp [this]
   rw [← range_gf]
   exact (proper_f.comp proper_g).isClosed_range

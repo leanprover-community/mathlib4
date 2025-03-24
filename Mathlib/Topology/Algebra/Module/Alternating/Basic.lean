@@ -5,6 +5,7 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 -/
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.BilinearMap
+import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
@@ -462,9 +463,9 @@ theorem map_update_sub [DecidableEq ι] (m : ι → M) (i : ι) (x y : M) :
 
 @[deprecated (since := "2024-11-03")] protected alias map_sub := map_update_sub
 
-section TopologicalAddGroup
+section IsTopologicalAddGroup
 
-variable [TopologicalAddGroup N]
+variable [IsTopologicalAddGroup N]
 
 instance : Neg (M [⋀^ι]→L[R] N) :=
   ⟨fun f => { -f.toAlternatingMap with toContinuousMultilinearMap := -f.1 }⟩
@@ -488,7 +489,7 @@ instance : AddCommGroup (M [⋀^ι]→L[R] N) :=
   toContinuousMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-end TopologicalAddGroup
+end IsTopologicalAddGroup
 
 end Ring
 
@@ -545,7 +546,7 @@ def toContinuousMultilinearMapLinear :
 
 /-- Linear map version of the map `toAlternatingMap`
 associating to a continuous alternating map the corresponding alternating map. -/
-@[simps (config := .asFn) apply]
+@[simps -fullyApplied apply]
 def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A] N) where
   toFun := toAlternatingMap
   map_add' := by simp
@@ -606,11 +607,11 @@ end ContinuousAlternatingMap
 namespace ContinuousMultilinearMap
 
 variable {R M N ι : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [TopologicalSpace M]
-  [AddCommGroup N] [Module R N] [TopologicalSpace N] [TopologicalAddGroup N] [Fintype ι]
+  [AddCommGroup N] [Module R N] [TopologicalSpace N] [IsTopologicalAddGroup N] [Fintype ι]
   [DecidableEq ι] (f : ContinuousMultilinearMap R (fun _ : ι => M) N)
 
 /-- Alternatization of a continuous multilinear map. -/
-@[simps (config := .lemmasOnly) apply_toContinuousMultilinearMap]
+@[simps -isSimp apply_toContinuousMultilinearMap]
 def alternatization : ContinuousMultilinearMap R (fun _ : ι => M) N →+ M [⋀^ι]→L[R] N where
   toFun f :=
     { toContinuousMultilinearMap := ∑ σ : Equiv.Perm ι, Equiv.Perm.sign σ • f.domDomCongr σ

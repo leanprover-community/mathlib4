@@ -34,13 +34,14 @@ variable {m0 : MeasurableSpace α} [MeasurableSpace β] {μ ν ν₁ ν₂ : Mea
 section IsFiniteMeasure
 
 /-- A measure `μ` is called finite if `μ univ < ∞`. -/
+@[mk_iff]
 class IsFiniteMeasure (μ : Measure α) : Prop where
   measure_univ_lt_top : μ univ < ∞
 
-theorem not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ Set.univ = ∞ := by
-  refine ⟨fun h => ?_, fun h => fun h' => h'.measure_univ_lt_top.ne h⟩
-  by_contra h'
-  exact h ⟨lt_top_iff_ne_top.mpr h'⟩
+lemma not_isFiniteMeasure_iff : ¬IsFiniteMeasure μ ↔ μ univ = ∞ := by simp [isFiniteMeasure_iff]
+
+lemma isFiniteMeasure_restrict : IsFiniteMeasure (μ.restrict s) ↔ μ s ≠ ∞ := by
+  simp [isFiniteMeasure_iff, lt_top_iff_ne_top]
 
 instance Restrict.isFiniteMeasure (μ : Measure α) [hs : Fact (μ s < ∞)] :
     IsFiniteMeasure (μ.restrict s) :=
@@ -231,6 +232,10 @@ lemma prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α}
   apply (measure_mono (subset_univ _)).trans
   rcases IsZeroOrProbabilityMeasure.measure_univ (μ := μ) with h | h <;> simp [h]
 
+lemma toReal_prob_le_one {μ : Measure α} [IsZeroOrProbabilityMeasure μ] {s : Set α} :
+    (μ s).toReal ≤ 1 :=
+  ENNReal.toReal_le_of_le_ofReal zero_le_one (ENNReal.ofReal_one.symm ▸ prob_le_one)
+
 @[simp]
 theorem one_le_prob_iff {μ : Measure α} [IsZeroOrProbabilityMeasure μ] : 1 ≤ μ s ↔ μ s = 1 :=
   ⟨fun h => le_antisymm prob_le_one h, fun h => h ▸ le_refl _⟩
@@ -267,13 +272,11 @@ theorem IsProbabilityMeasure.ne_zero (μ : Measure α) [IsProbabilityMeasure μ]
 instance (priority := 100) IsProbabilityMeasure.neZero (μ : Measure α) [IsProbabilityMeasure μ] :
     NeZero μ := ⟨IsProbabilityMeasure.ne_zero μ⟩
 
--- Porting note: no longer an `instance` because `inferInstance` can find it now
 theorem IsProbabilityMeasure.ae_neBot [IsProbabilityMeasure μ] : NeBot (ae μ) := inferInstance
 
 theorem prob_add_prob_compl [IsProbabilityMeasure μ] (h : MeasurableSet s) : μ s + μ sᶜ = 1 :=
   (measure_add_measure_compl h).trans measure_univ
 
--- Porting note: made an `instance`, using `NeZero`
 instance isProbabilityMeasureSMul [IsFiniteMeasure μ] [NeZero μ] :
     IsProbabilityMeasure ((μ univ)⁻¹ • μ) :=
   ⟨ENNReal.inv_mul_cancel (NeZero.ne (μ univ)) (measure_ne_top _ _)⟩
@@ -379,6 +382,10 @@ lemma prob_compl_le_one_sub_of_le_prob {p : ℝ≥0∞} (hμs : p ≤ μ s) (s_m
   rcases eq_zero_or_isProbabilityMeasure μ with rfl | h
   · simp
   · simpa [prob_compl_eq_one_sub s_mble] using tsub_le_tsub_left hμs 1
+
+@[simp]
+lemma inv_measure_univ_smul_eq_self : (μ univ)⁻¹ • μ = μ := by
+  rcases eq_zero_or_isProbabilityMeasure μ with h | h <;> simp [h]
 
 end IsZeroOrProbabilityMeasure
 
@@ -540,8 +547,6 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   about the sets, such as that they are monotone.
   `SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
   finite spanning sets in the collection of all measurable sets. -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
   protected set : ℕ → Set α
   protected set_mem : ∀ i, set i ∈ C
@@ -628,12 +633,6 @@ theorem exists_isFiniteMeasure_absolutelyContinuous [SFinite μ] :
     simp [(hc₀ _).ne']
   refine ⟨.sum fun n ↦ c n • sfiniteSeq μ n, ⟨?_⟩, fun _ ↦ this.1, fun _ ↦ this.2⟩
   simpa [mul_comm] using hc
-
-variable (μ) in
-@[deprecated exists_isFiniteMeasure_absolutelyContinuous (since := "2024-08-25")]
-theorem exists_absolutelyContinuous_isFiniteMeasure [SFinite μ] :
-    ∃ ν : Measure α, IsFiniteMeasure ν ∧ μ ≪ ν :=
-  let ⟨ν, hfin, h, _⟩ := exists_isFiniteMeasure_absolutelyContinuous μ; ⟨ν, hfin, h⟩
 
 end SFinite
 
@@ -1304,9 +1303,6 @@ theorem exists_pos_ball [PseudoMetricSpace α] (x : α) (hμ : μ ≠ 0) :
 
 /-- If a set has zero measure in a neighborhood of each of its points, then it has zero measure
 in a second-countable space. -/
-@[deprecated (since := "2024-05-14")]
-alias null_of_locally_null := measure_null_of_locally_null
-
 theorem exists_ne_forall_mem_nhds_pos_measure_preimage {β} [TopologicalSpace β] [T1Space β]
     [SecondCountableTopology β] [Nonempty β] {f : α → β} (h : ∀ b, ∃ᵐ x ∂μ, f x ≠ b) :
     ∃ a b : β, a ≠ b ∧ (∀ s ∈ 𝓝 a, 0 < μ (f ⁻¹' s)) ∧ ∀ t ∈ 𝓝 b, 0 < μ (f ⁻¹' t) := by
@@ -1331,14 +1327,14 @@ theorem ext_on_measurableSpace_of_generate_finite {α} (m₀ : MeasurableSpace �
     constructor
     rw [← h_univ]
     apply IsFiniteMeasure.measure_univ_lt_top
-  refine induction_on_inter hA hC (by simp) hμν ?_ ?_ hs
-  · intro t h1t h2t
-    have h1t_ : @MeasurableSet α m₀ t := h _ h1t
-    rw [@measure_compl α m₀ μ t h1t_ (@measure_ne_top α m₀ μ _ t),
-      @measure_compl α m₀ ν t h1t_ (@measure_ne_top α m₀ ν _ t), h_univ, h2t]
-  · intro f h1f h2f h3f
-    have h2f_ : ∀ i : ℕ, @MeasurableSet α m₀ (f i) := fun i => h _ (h2f i)
-    simp [measure_iUnion, h1f, h3f, h2f_]
+  induction s, hs using induction_on_inter hA hC with
+  | empty => simp
+  | basic t ht => exact hμν t ht
+  | compl t htm iht =>
+    rw [measure_compl (h t htm) (measure_ne_top _ _), measure_compl (h t htm) (measure_ne_top _ _),
+      iht, h_univ]
+  | iUnion f hfd hfm ihf =>
+    simp [measure_iUnion, hfd, h _ (hfm _), ihf]
 
 /-- Two finite measures are equal if they are equal on the π-system generating the σ-algebra
   (and `univ`). -/

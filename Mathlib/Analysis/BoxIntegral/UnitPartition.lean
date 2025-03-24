@@ -17,7 +17,7 @@ vectors `ν : ι → ℤ`.
 
 Let `B` be a `BoxIntegral`. A `unitPartition.box` is admissible for `B` (more precisely its index is
 admissible) if it is contained in `B`. There are finitely many admissible `unitPartition.box` for
-`B` and thus we can form the corresponing tagged prepartition, see
+`B` and thus we can form the corresponding tagged prepartition, see
 `BoxIntegral.unitPartition.prepartition` (note that each `unitPartition.box` comes with its
 tag situated at its "upper most" vertex). If `B` satisfies `hasIntegralVertices`, that
 is its vertices are in `ι → ℤ`, then the corresponding prepartition is actually a partition.
@@ -73,13 +73,14 @@ theorem BoxIntegral.le_hasIntegralVertices_of_isBounded [Finite ι] {s : Set (ι
   let C : ℕ := ⌈R⌉₊
   have hC := Nat.ceil_pos.mpr hR₁
   let I : Box ι := Box.mk (fun _ ↦ - C) (fun _ ↦ C )
-    (fun _ ↦ by simp only [neg_lt_self_iff, Nat.cast_pos, hC])
+    (fun _ ↦ by simp [C, neg_lt_self_iff, Nat.cast_pos, hC])
   refine ⟨I, ⟨fun _ ↦ - C, fun _ ↦ C, fun i ↦ (Int.cast_neg_natCast C).symm, fun _ ↦ rfl⟩,
     le_trans hR₂ ?_⟩
   suffices Metric.ball (0 : ι → ℝ) C ≤ I from
     le_trans (Metric.ball_subset_ball (Nat.le_ceil R)) this
   intro x hx
-  simp_rw [mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC), Real.norm_eq_abs, abs_lt] at hx
+  simp_rw [C, mem_ball_zero_iff, pi_norm_lt_iff (Nat.cast_pos.mpr hC),
+    Real.norm_eq_abs, abs_lt] at hx
   exact fun i ↦ ⟨(hx i).1, le_of_lt (hx i).2⟩
 
 end hasIntegralVertices
@@ -103,7 +104,7 @@ theorem box_lower [NeZero n] (ν : ι → ℤ) :
 
 @[simp]
 theorem box_upper [NeZero n] (ν : ι → ℤ) :
-    (box n ν).upper = fun i ↦ ((ν i + 1)/ n : ℝ) := rfl
+    (box n ν).upper = fun i ↦ ((ν i + 1) / n : ℝ) := rfl
 
 variable {n} in
 @[simp]
@@ -371,7 +372,7 @@ theorem integralSum_eq_tsum_div {B : Box ι} (hB : hasIntegralVertices B) (hs₀
   · rw [Set.mem_toFinset] at hx
     rw [volume_box, prepartition_tag n (mem_admissibleIndex_of_mem_box n hB (hs₀ hx.1)),
       tag_index_eq_self_of_mem_smul_span n hx.2, ENNReal.toReal_div,
-      ENNReal.one_toReal, ENNReal.toReal_pow, ENNReal.toReal_nat, mul_comm_div, one_mul]
+      ENNReal.toReal_one, ENNReal.toReal_pow, ENNReal.toReal_natCast, mul_comm_div, one_mul]
 
 open Filter
 

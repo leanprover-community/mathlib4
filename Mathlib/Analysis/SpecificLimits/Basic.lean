@@ -8,7 +8,7 @@ import Mathlib.Order.Filter.AtTopBot.Archimedean
 import Mathlib.Order.Iterate
 import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.InfiniteSum.Real
-import Mathlib.Topology.Instances.EReal
+import Mathlib.Topology.Instances.EReal.Lemmas
 
 /-!
 # A collection of specific limit computations
@@ -18,14 +18,11 @@ important specific limit computations in metric spaces, in ordered rings/fields,
 instances of these such as `ℝ`, `ℝ≥0` and `ℝ≥0∞`.
 -/
 
+assert_not_exists Basis NormedSpace
 
 noncomputable section
 
-open scoped Classical
-open Set Function Filter Finset Metric
-
-open scoped Classical
-open Topology Nat uniformity NNReal ENNReal
+open Set Function Filter Finset Metric Topology Nat uniformity NNReal ENNReal
 
 variable {α : Type*} {β : Type*} {ι : Type*}
 
@@ -113,7 +110,7 @@ theorem Filter.EventuallyEq.div_mul_cancel_atTop {α K : Type*} [LinearOrderedSe
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) :
     (fun x ↦ f x / g x * g x) =ᶠ[l] fun x ↦ f x :=
   div_mul_cancel <| hg.mono_right <| le_principal_iff.mpr <|
-    mem_of_superset (Ioi_mem_atTop 0) <| by aesop
+    mem_of_superset (Ioi_mem_atTop 0) <| by simp
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
@@ -121,19 +118,18 @@ theorem Tendsto.num {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [
     {f g : α → K} {l : Filter α} (hg : Tendsto g l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
     Tendsto f l atTop :=
-  Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hg) (Tendsto.mul_atTop ha hlim hg)
+  (hlim.pos_mul_atTop ha hg).congr' (EventuallyEq.div_mul_cancel_atTop hg)
 
 /-- If when `x` tends to `∞`, `g` tends to `∞` and `f x / g x` tends to a positive
   constant, then `f` tends to `∞`. -/
 theorem Tendsto.den {α K : Type*} [LinearOrderedField K] [TopologicalSpace K] [OrderTopology K]
     [ContinuousInv K] {f g : α → K} {l : Filter α} (hf : Tendsto f l atTop) {a : K} (ha : 0 < a)
     (hlim : Tendsto (fun x => f x / g x) l (𝓝 a)) :
-    Tendsto g l atTop := by
+    Tendsto g l atTop :=
   have hlim' : Tendsto (fun x => g x / f x) l (𝓝 a⁻¹) := by
     simp_rw [← inv_div (f _)]
     exact Filter.Tendsto.inv (f := fun x => f x / g x) hlim
-  apply Tendsto.congr' (EventuallyEq.div_mul_cancel_atTop hf)
-    (Tendsto.mul_atTop (inv_pos_of_pos ha) hlim' hf)
+  (hlim'.pos_mul_atTop (inv_pos_of_pos ha) hf).congr' (.div_mul_cancel_atTop hf)
 
 /-- If when `x` tends to `∞`, `f x / g x` tends to a positive constant, then `f` tends to `∞` if
   and only if `g` tends to `∞`. -/
@@ -367,7 +363,7 @@ theorem tsum_geometric_nnreal {r : ℝ≥0} (hr : r < 1) : ∑' n : ℕ, r ^ n =
 and for `1 ≤ r` the RHS equals `∞`. -/
 @[simp]
 theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ := by
-  cases' lt_or_le r 1 with hr hr
+  rcases lt_or_le r 1 with hr | hr
   · rcases ENNReal.lt_iff_exists_coe.1 hr with ⟨r, rfl, hr'⟩
     norm_cast at *
     convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
@@ -552,6 +548,7 @@ def posSumOfEncodable {ε : ℝ} (hε : 0 < ε) (ι) [Encodable ι] :
 
 theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ, (∀ i, 0 < ε' i) ∧ ∃ c, HasSum (fun i : s ↦ ε' i) c ∧ c ≤ ε := by
+  classical
   haveI := hs.toEncodable
   rcases posSumOfEncodable hε s with ⟨f, hf0, ⟨c, hfc, hcε⟩⟩
   refine ⟨fun i ↦ if h : i ∈ s then f ⟨i, h⟩ else 1, fun i ↦ ?_, ⟨c, ?_, hcε⟩⟩
@@ -563,6 +560,7 @@ theorem Set.Countable.exists_pos_hasSum_le {ι : Type*} {s : Set ι} (hs : s.Cou
 theorem Set.Countable.exists_pos_forall_sum_le {ι : Type*} {s : Set ι} (hs : s.Countable) {ε : ℝ}
     (hε : 0 < ε) : ∃ ε' : ι → ℝ,
     (∀ i, 0 < ε' i) ∧ ∀ t : Finset ι, ↑t ⊆ s → ∑ i ∈ t, ε' i ≤ ε := by
+  classical
   rcases hs.exists_pos_hasSum_le hε with ⟨ε', hpos, c, hε'c, hcε⟩
   refine ⟨ε', hpos, fun t ht ↦ ?_⟩
   rw [← sum_subtype_of_mem _ ht]

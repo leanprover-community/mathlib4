@@ -200,7 +200,7 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   classical
   rw [← Finset.sum_sdiff hI, ρ.sum_finsupport hx₀]
   suffices ∑ i ∈ I \ ρ.finsupport x₀, (ρ i) x₀ = ∑ i ∈ I \ ρ.finsupport x₀, 0 by
-    rw [this, add_left_eq_self, Finset.sum_const_zero]
+    rw [this, add_eq_right, Finset.sum_const_zero]
   apply Finset.sum_congr rfl
   rintro x hx
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
@@ -665,15 +665,4 @@ theorem exists_continuous_sum_one_of_isOpen_isCompact [T2Space X] [LocallyCompac
           exact hj)]
     rfl
   intro i x
-  refine ⟨f.nonneg i x, ?_⟩
-  by_cases h0 : f i x = 0
-  · rw [h0]
-    exact zero_le_one
-  rw [← Finset.sum_singleton (f ·  x) i]
-  apply le_trans _ (f.sum_le_one' x)
-  rw [finsum_eq_sum (f.toFun ·  x) (by exact toFinite (support (f.toFun · x)))]
-  simp only [Finite.toFinset_setOf, ne_eq]
-  gcongr with z hz
-  · exact fun j _ _ => f.nonneg j x
-  simp only [Finset.singleton_subset_iff, Finset.mem_filter, Finset.mem_univ, true_and]
-  exact h0
+  exact ⟨f.nonneg i x, PartitionOfUnity.le_one f i x⟩

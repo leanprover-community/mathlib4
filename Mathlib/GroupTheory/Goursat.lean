@@ -152,20 +152,21 @@ lemma goursat :
   · ext ⟨g, h⟩
     constructor
     · intro hgh
-      simpa only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists, Prod.exists,
-        MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply, MonoidHom.coe_snd,
-        exists_eq_right, exists_and_right, exists_eq_right_right, MonoidHom.coe_fst]
+      simpa only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
+        MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
+        MonoidHom.coe_fst]
         using ⟨⟨h, hgh⟩, ⟨g, hgh⟩, g, h, hgh, ⟨rfl, rfl⟩⟩
-    · simp only [mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists, Prod.exists,
-        MonoidHom.coe_prodMap, coeSubtype, Prod.mk.injEq, Prod.map_apply, MonoidHom.coe_snd,
-        exists_eq_right, exists_and_right, exists_eq_right_right, MonoidHom.coe_fst,
-        forall_exists_index, and_imp]
+    · simp only [G', H', mem_map, MonoidHom.mem_range, MonoidHom.prod_apply, Subtype.exists,
+        Prod.exists, MonoidHom.coe_prodMap, coe_subtype, Prod.mk.injEq, Prod.map_apply,
+        MonoidHom.coe_snd, exists_eq_right, exists_and_right, exists_eq_right_right,
+        MonoidHom.coe_fst, forall_exists_index, and_imp]
       rintro h₁ hgh₁ g₁ hg₁h g₂ h₂ hg₂h₂ hP hQ
       simp only [Subtype.ext_iff] at hP hQ
       rwa [← hP, ← hQ]
   · convert goursatFst_prod_goursatSnd_le (P.prod Q).range
     ext ⟨g, h⟩
-    simp_rw [MonoidHom.mem_ker, MonoidHom.coe_prodMap, Prod.map_apply, Subgroup.mem_prod,
+    simp_rw [G', H', MonoidHom.mem_ker, MonoidHom.coe_prodMap, Prod.map_apply, Subgroup.mem_prod,
       Prod.one_eq_mk, Prod.ext_iff, ← MonoidHom.mem_ker, QuotientGroup.ker_mk']
 
 end Subgroup

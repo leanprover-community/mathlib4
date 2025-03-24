@@ -127,7 +127,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
       Polynomial.map_mul]
     refine IsCoprime.mul_dvd ?_ ?_ ?_
     · have aux := IsPrimitive.Int.irreducible_iff_irreducible_map_cast Pmonic.isPrimitive
-      refine (dvd_or_coprime _ _ (aux.1 Pirr)).resolve_left ?_
+      refine (dvd_or_isCoprime _ _ (aux.1 Pirr)).resolve_left ?_
       rw [map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic]
       intro hdiv
       refine hdiff (eq_of_monic_of_associated Pmonic Qmonic ?_)
@@ -149,10 +149,8 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
   have hfree : Squarefree (X ^ n - 1 : (ZMod p)[X]) :=
     (separable_X_pow_sub_C 1 (fun h => hdiv <| (ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 h)
         one_ne_zero).squarefree
-  cases'
-    (multiplicity.squarefree_iff_emultiplicity_le_one (X ^ n - 1)).1 hfree
-      (map (Int.castRingHom (ZMod p)) P) with
-    hle hunit
+  rcases (squarefree_iff_emultiplicity_le_one (X ^ n - 1)).1 hfree
+      (map (Int.castRingHom (ZMod p)) P) with hle | hunit
   · rw [Nat.cast_one] at habs; exact hle.not_lt habs
   · replace hunit := degree_eq_zero_of_isUnit hunit
     rw [degree_map_eq_of_leadingCoeff_ne_zero (Int.castRingHom (ZMod p)) _] at hunit

@@ -63,7 +63,7 @@ def binaryRec {motive : Nat → Sort u} (z : motive 0) (f : ∀ b n, motive n �
 decreasing_by exact bitwise_rec_lemma n0
 
 /-- The same as `binaryRec`, but the induction step can assume that if `n=0`,
-  the bit being appended is `true`-/
+  the bit being appended is `true` -/
 @[elab_as_elim, specialize]
 def binaryRec' {motive : Nat → Sort u} (z : motive 0)
     (f : ∀ b n, (n = 0 → b = true) → motive n → motive (bit b n)) :

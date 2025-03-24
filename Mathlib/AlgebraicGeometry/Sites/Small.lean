@@ -162,7 +162,7 @@ abbrev smallGrothendieckTopology : GrothendieckTopology (P.Over ⊤ S) :=
 
 variable [Q.IsStableUnderBaseChange] [Q.HasOfPostcompProperty Q]
 
-/-- The pretopology defind on the subcategory of `S`-schemes satisfying `Q` where coverings
+/-- The pretopology defined on the subcategory of `S`-schemes satisfying `Q` where coverings
 are given by `P`-coverings in `S`-schemes satisfying `Q`.
 The most common case is `P = Q`. In this case, this is simply surjective families
 in `S`-schemes with `P`. -/

@@ -38,8 +38,6 @@ variable {R : Type*}
 
 section OrderBasic
 
-open multiplicity
-
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
@@ -213,7 +211,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   norm_cast
   omega
 
-theorem coeff_mul_one_sub_of_lt_order {R : Type*} [CommRing R] {φ ψ : R⟦X⟧} (n : ℕ)
+theorem coeff_mul_one_sub_of_lt_order {R : Type*} [Ring R] {φ ψ : R⟦X⟧} (n : ℕ)
     (h : ↑n < ψ.order) : coeff R n (φ * (1 - ψ)) = coeff R n φ := by
   simp [coeff_mul_of_lt_order h, mul_sub]
 
@@ -317,7 +315,7 @@ variable [CommRing R] [IsDomain R]
 theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := by
   classical
   simp only [order_eq_emultiplicity_X]
-  rw [emultiplicity_mul X_prime]
+  exact emultiplicity_mul X_prime
 
 -- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
 @[simp]
@@ -331,9 +329,9 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       divided_by_X_pow_order (mul_ne_zero hf hg) := by
   set df := f.order.lift (order_finite_iff_ne_zero.mpr hf)
   set dg := g.order.lift (order_finite_iff_ne_zero.mpr hg)
-  set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg)) with hdfg
+  set dfg := (f * g).order.lift (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg))
   have H_add_d : df + dg = dfg := by
-    simp_all [order_mul f g]
+    simp_all [df, dg, dfg, order_mul f g]
   have H := self_eq_X_pow_order_mul_divided_by_X_pow_order (mul_ne_zero hf hg)
   have : f * g = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by
     calc

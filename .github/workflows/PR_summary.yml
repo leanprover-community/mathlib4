@@ -10,12 +10,33 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         fetch-depth: 0
 
+    - name: Update the merge-conflict label
+      run: |
+        printf 'PR number: "%s"\n' "${{ github.event.pull_request.number }}"
+        if git merge origin/master --no-ff --no-commit
+        then
+          git merge --abort || true
+          echo "This PR does not have merge conflicts with master."
+          # we use curl rather than octokit/request-action so that the job won't fail
+          # (and send an annoying email) if the labels don't exist
+          curl --request DELETE \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+        else
+          echo "This PR has merge conflicts with main."
+          # we use curl rather than octokit/request-action so that the job won't fail
+          # (and send an annoying email) if the labels don't exist
+          curl --request POST \
+            --url https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/labels/merge-conflict \
+            --header 'authorization: Bearer ${{ secrets.GITHUB_TOKEN }}'
+        fi
+
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
       with:
         python-version: 3.12
 
@@ -99,6 +120,8 @@ jobs:
         ## Technical debt changes
         techDebtVar="$(./scripts/technical-debt-metrics.sh pr_summary)"
 
-        message="$(printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}")"
+        # store in a file, to avoid "long arguments" error.
+        printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > please_merge_master.md
 
-        ./scripts/update_PR_comment.sh "${message}" "${title}" "${PR}"
+        cat please_merge_master.md
+        ./scripts/update_PR_comment.sh please_merge_master.md "${title}" "${PR}"

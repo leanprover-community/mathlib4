@@ -44,6 +44,3 @@ theorem ExpChar.pow_prime_pow_mul_eq_one_iff (p k m : ℕ) [ExpChar R p] (x : R)
   rw [pow_mul']
   convert ← (iterateFrobenius_inj R p k).eq_iff
   apply map_one
-
-@[deprecated (since := "2024-02-02")]
-alias CharP.pow_prime_pow_mul_eq_one_iff := ExpChar.pow_prime_pow_mul_eq_one_iff

@@ -3,6 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
+import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Rat
@@ -26,10 +27,6 @@ open scoped NNReal ENNReal uniformity
 
 section SeminormedAddCommGroup
 
-section Prio
-
--- set_option extends_priority 920 -- Porting note: option unsupported
-
 -- Here, we set a rather high priority for the instance `[NormedSpace 𝕜 E] : Module 𝕜 E`
 -- to take precedence over `Semiring.toModule` as this leads to instance paths with better
 -- unification properties.
@@ -42,24 +39,22 @@ typeclass can be used for "semi normed spaces" too, just as `Module` can be used
 "semi modules". -/
 class NormedSpace (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [SeminormedAddCommGroup E]
     extends Module 𝕜 E where
-  norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
+  protected norm_smul_le : ∀ (a : 𝕜) (b : E), ‖a • b‖ ≤ ‖a‖ * ‖b‖
 
 attribute [inherit_doc NormedSpace] NormedSpace.norm_smul_le
-
-end Prio
 
 variable [NormedField 𝕜] [SeminormedAddCommGroup E] [SeminormedAddCommGroup F]
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 -- see Note [lower instance priority]
-instance (priority := 100) NormedSpace.boundedSMul [NormedSpace 𝕜 E] : BoundedSMul 𝕜 E :=
-  BoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
+instance (priority := 100) NormedSpace.isBoundedSMul [NormedSpace 𝕜 E] : IsBoundedSMul 𝕜 E :=
+  IsBoundedSMul.of_norm_smul_le NormedSpace.norm_smul_le
 
 instance NormedField.toNormedSpace : NormedSpace 𝕜 𝕜 where norm_smul_le a b := norm_mul_le a b
 
 -- shortcut instance
-instance NormedField.to_boundedSMul : BoundedSMul 𝕜 𝕜 :=
-  NormedSpace.boundedSMul
+instance NormedField.to_isBoundedSMul : IsBoundedSMul 𝕜 𝕜 :=
+  NormedSpace.isBoundedSMul
 
 variable (𝕜) in
 theorem norm_zsmul (n : ℤ) (x : E) : ‖n • x‖ = ‖(n : 𝕜)‖ * ‖x‖ := by
@@ -102,7 +97,7 @@ open NormedField
 instance ULift.normedSpace : NormedSpace 𝕜 (ULift E) :=
   { __ := ULift.seminormedAddCommGroup (E := E),
     __ := ULift.module'
-    norm_smul_le := fun s x => (norm_smul_le s x.down : _) }
+    norm_smul_le := fun s x => (norm_smul_le s x.down :) }
 
 /-- The product of two normed spaces is a normed space, with the sup norm. -/
 instance Prod.normedSpace : NormedSpace 𝕜 (E × F) :=
@@ -149,33 +144,6 @@ abbrev NormedSpace.induced {F : Type*} (𝕜 E G : Type*) [NormedField 𝕜] [Ad
     @NormedSpace 𝕜 E _ (SeminormedAddCommGroup.induced E G f) :=
   let _ := SeminormedAddCommGroup.induced E G f
   ⟨fun a b ↦ by simpa only [← map_smul f a b] using norm_smul_le a (f b)⟩
-
-section NormedAddCommGroup
-
-variable [NormedField 𝕜]
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-variable [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
-open NormedField
-
-/-- While this may appear identical to `NormedSpace.toModule`, it contains an implicit argument
-involving `NormedAddCommGroup.toSeminormedAddCommGroup` that typeclass inference has trouble
-inferring.
-
-Specifically, the following instance cannot be found without this `NormedSpace.toModule'`:
-```lean
-example
-  (𝕜 ι : Type*) (E : ι → Type*)
-  [NormedField 𝕜] [Π i, NormedAddCommGroup (E i)] [Π i, NormedSpace 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by infer_instance
-```
-
-[This Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/245151099)
-gives some more context. -/
-instance (priority := 100) NormedSpace.toModule' : Module 𝕜 F :=
-  NormedSpace.toModule
-
-end NormedAddCommGroup
 
 section NontriviallyNormedSpace
 
@@ -263,24 +231,8 @@ variable (𝕜')
 variable [NormedField 𝕜] [SeminormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜']
 
 instance (priority := 100) NormedAlgebra.toNormedSpace : NormedSpace 𝕜 𝕜' :=
-  -- Porting note: previous Lean could figure out what we were extending
   { NormedAlgebra.toAlgebra.toModule with
   norm_smul_le := NormedAlgebra.norm_smul_le }
-
-/-- While this may appear identical to `NormedAlgebra.toNormedSpace`, it contains an implicit
-argument involving `NormedRing.toSeminormedRing` that typeclass inference has trouble inferring.
-
-Specifically, the following instance cannot be found without this `NormedSpace.toModule'`:
-```lean
-example
-  (𝕜 ι : Type*) (E : ι → Type*)
-  [NormedField 𝕜] [Π i, NormedRing (E i)] [Π i, NormedAlgebra 𝕜 (E i)] :
-  Π i, Module 𝕜 (E i) := by infer_instance
-```
-
-See `NormedSpace.toModule'` for a similar situation. -/
-instance (priority := 100) NormedAlgebra.toNormedSpace' {𝕜'} [NormedRing 𝕜'] [NormedAlgebra 𝕜 𝕜'] :
-    NormedSpace 𝕜 𝕜' := by infer_instance
 
 theorem norm_algebraMap (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ * ‖(1 : 𝕜')‖ := by
   rw [Algebra.algebraMap_eq_smul_one]
@@ -293,17 +245,17 @@ theorem dist_algebraMap (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y * ‖(1 : 𝕜')‖ := by
   simp only [dist_eq_norm, ← map_sub, norm_algebraMap]
 
-/-- This is a simpler version of `norm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
+/-- This is a simpler version of `norm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem norm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖ = ‖x‖ := by
   rw [norm_algebraMap, norm_one, mul_one]
 
-/-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
+/-- This is a simpler version of `nnnorm_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem nnnorm_algebraMap' [NormOneClass 𝕜'] (x : 𝕜) : ‖algebraMap 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| norm_algebraMap' _ _
 
-/-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`.-/
+/-- This is a simpler version of `dist_algebraMap` when `‖1‖ = 1` in `𝕜'`. -/
 @[simp]
 theorem dist_algebraMap' [NormOneClass 𝕜'] (x y : 𝕜) :
     (dist (algebraMap 𝕜 𝕜' x) (algebraMap 𝕜 𝕜' y)) = dist x y := by
@@ -355,7 +307,6 @@ instance Prod.normedAlgebra {E F : Type*} [SeminormedRing E] [SeminormedRing F] 
     [NormedAlgebra 𝕜 F] : NormedAlgebra 𝕜 (E × F) :=
   { Prod.normedSpace, Prod.algebra 𝕜 E F with }
 
--- Porting note: Lean 3 could synth the algebra instances for Pi Pr
 /-- The product of finitely many normed algebras is a normed algebra, with the sup norm. -/
 instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, SeminormedRing (E i)]
     [∀ i, NormedAlgebra 𝕜 (E i)] : NormedAlgebra 𝕜 (∀ i, E i) :=
@@ -385,7 +336,6 @@ abbrev NormedAlgebra.induced {F : Type*} (𝕜 R S : Type*) [NormedField 𝕜] [
   letI := SeminormedRing.induced R S f
   ⟨fun a b ↦ show ‖f (a • b)‖ ≤ ‖a‖ * ‖f b‖ from (map_smul f a b).symm ▸ norm_smul_le a (f b)⟩
 
--- Porting note: failed to synth NonunitalAlgHomClass
 instance Subalgebra.toNormedAlgebra {𝕜 A : Type*} [SeminormedRing A] [NormedField 𝕜]
     [NormedAlgebra 𝕜 A] (S : Subalgebra 𝕜 A) : NormedAlgebra 𝕜 S :=
   NormedAlgebra.induced 𝕜 S A S.val
@@ -637,8 +587,9 @@ abbrev SeminormedAddCommGroup.ofCoreReplaceAll {𝕜 : Type*} {E : Type*} [Norme
 /-- A structure encapsulating minimal axioms needed to defined a normed vector space, as found
 in textbooks. This is meant to be used to easily define `NormedAddCommGroup E` and `NormedSpace E`
 instances from scratch on a type with no preexisting distance or topology. -/
-structure NormedSpace.Core (𝕜 : Type*) (E : Type*) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-    [Norm E] extends SeminormedAddCommGroup.Core 𝕜 E : Prop where
+structure NormedSpace.Core (𝕜 : Type*) (E : Type*)
+    [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E] : Prop
+    extends SeminormedAddCommGroup.Core 𝕜 E where
   norm_eq_zero_iff (x : E) : ‖x‖ = 0 ↔ x = 0
 
 variable {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] [Norm E]
@@ -693,3 +644,34 @@ abbrev NormedSpace.ofCore {𝕜 : Type*} {E : Type*} [NormedField 𝕜] [Seminor
   norm_smul_le r x := by rw [core.norm_smul r x]
 
 end Core
+
+variable {G H : Type*} [SeminormedAddCommGroup G] [SeminormedAddCommGroup H] [NormedSpace ℝ H]
+  {s : Set G}
+
+/-- A group homomorphism from a normed group to a real normed space,
+bounded on a neighborhood of `0`, must be continuous. -/
+lemma AddMonoidHom.continuous_of_isBounded_nhds_zero (f : G →+ H) (hs : s ∈ 𝓝 (0 : G))
+    (hbounded : IsBounded (f '' s)) : Continuous f := by
+  obtain ⟨δ, hδ, hUε⟩ := Metric.mem_nhds_iff.mp hs
+  obtain ⟨C, hC⟩ := (isBounded_iff_subset_ball 0).1 (hbounded.subset <| image_subset f hUε)
+  refine continuous_of_continuousAt_zero _ (continuousAt_iff.2 fun ε (hε : _ < _) => ?_)
+  simp only [dist_zero_right, _root_.map_zero, exists_prop]
+  simp only [subset_def, mem_image, mem_ball, dist_zero_right, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂] at hC
+  have hC₀ : 0 < C := (norm_nonneg _).trans_lt <| hC 0 (by simpa)
+  obtain ⟨n, hn⟩ := exists_nat_gt (C / ε)
+  have hnpos : 0 < (n : ℝ) := (div_pos hC₀ hε).trans hn
+  have hn₀ : n ≠ 0 := by rintro rfl; simp at hnpos
+  refine ⟨δ / n, div_pos hδ hnpos, fun {x} hxδ => ?_⟩
+  calc
+    ‖f x‖
+    _ = ‖(n : ℝ)⁻¹ • f (n • x)‖ := by simp [← Nat.cast_smul_eq_nsmul ℝ, hn₀]
+    _ ≤ ‖(n : ℝ)⁻¹‖ * ‖f (n • x)‖ := norm_smul_le ..
+    _ < ‖(n : ℝ)⁻¹‖ * C := by
+      gcongr
+      · simpa [pos_iff_ne_zero]
+      · refine hC _ <| norm_nsmul_le.trans_lt ?_
+        simpa only [norm_mul, Real.norm_natCast, lt_div_iff₀ hnpos, mul_comm] using hxδ
+    _ = (n : ℝ)⁻¹ * C := by simp
+    _ < (C / ε : ℝ)⁻¹ * C := by gcongr
+    _ = ε := by simp [hC₀.ne']

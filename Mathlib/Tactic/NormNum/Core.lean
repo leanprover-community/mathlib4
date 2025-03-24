@@ -148,10 +148,10 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
  { d with erased := d.erased.insert declName }
 
 /--
-  Erase a name marked as a `norm_num` attribute.
+Erase a name marked as a `norm_num` attribute.
 
-  Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
-  found somewhere in the state's tree, and is not erased.
+Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
+found somewhere in the state's tree, and is not erased.
 -/
 def NormNums.erase {m : Type → Type} [Monad m] [MonadError m] (d : NormNums) (declName : Name) :
     m NormNums := do
@@ -292,8 +292,9 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 -/
 -- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
 def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let g ← getMainGoal
+  g.withContext do
+  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let res ← match expandOptLocation loc with
   | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
   | .wildcard => normNumAt g ctx (← g.getNondepPropHyps) (simplifyTarget := true) useSimp
