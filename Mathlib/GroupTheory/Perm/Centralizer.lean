@@ -712,7 +712,7 @@ variable {α} in
 lemma card_of_cycleType_singleton {n : ℕ} (hn' : 2 ≤ n) (hα : n ≤ card α) :
     ({g | g.cycleType = {n}} : Finset (Perm α)).card = (n - 1)! * (choose (card α) n) := by
   have hn₀ : n ≠ 0 := by omega
-  have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred (by omega)]
+  have aux : n ! = (n - 1)! * n := by rw [mul_comm, mul_factorial_pred hn₀]
   rw [mul_comm, ← Nat.mul_left_inj hn₀, mul_assoc, ← aux, ← Nat.mul_left_inj (factorial_ne_zero _),
     Nat.choose_mul_factorial_mul_factorial hα, mul_assoc]
   simpa [ite_and, if_pos hα, if_pos hn', mul_comm _ n, mul_assoc]

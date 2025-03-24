@@ -102,29 +102,6 @@ lemma prodMkLeft_comp_compProd {η : Kernel β γ} [SFinite μ] [IsSFiniteKernel
 
 end CompProd
 
-section Integrable
-
-variable {E : Type*} [NormedAddCommGroup E] {f : β → E}
-
-lemma integrable_compProd_snd_iff [SFinite μ] [IsSFiniteKernel κ]
-    (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
-    Integrable (fun p ↦ f p.2) (μ ⊗ₘ κ) ↔ Integrable f (κ ∘ₘ μ) := by
-  rw [← snd_compProd, Measure.snd, integrable_map_measure _ measurable_snd.aemeasurable,
-    Function.comp_def]
-  rwa [← Measure.snd, snd_compProd]
-
-lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    ∀ᵐ x ∂μ, Integrable f (κ x) := by
-  rw [comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
-  exact h_int.1
-
-lemma integrable_integral_norm_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
-  rw [comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
-  exact h_int.2
-
-end Integrable
-
 section AddSMul
 
 @[simp]
