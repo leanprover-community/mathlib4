@@ -49,13 +49,10 @@ theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
   borelize Z
   exact hg.measurable.factorsThrough
 
-variable {ι : Type*} [TopologicalSpace Z] [IsCompletelyMetrizableSpace Z]
-  [Countable ι] {l : Filter ι} [l.IsCountablyGenerated] {f : ι → X → Z}
-
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
-then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/
-theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] {f : X → Y} {g : X → Z}
-    (hg : StronglyMeasurable[mY.comap f] g) :
+then there exists some strongly measurable function `h : Y → Z` such that `g = h ∘ f`. -/
+theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSpace Z]
+    [IsCompletelyMetrizableSpace Z] (hg : StronglyMeasurable[mY.comap f] g) :
     ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f := by
   let mX : MeasurableSpace X := mY.comap f
   induction g, hg using StronglyMeasurable.induction' with
@@ -72,6 +69,15 @@ theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] {f : X → Y} 
     ext x
     rw [Function.comp_apply, Tendsto.limUnder_eq]
     simp_all
+
+/-- If a function `g` is measurable with respect to the pullback along some function `f`,
+then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/
+theorem _root_.Measurable.exists_eq_measurable_comp [Nonempty Z] [MeasurableSpace Z]
+    [StandardBorelSpace Z] (hg : Measurable[mY.comap f] g) :
+    ∃ h : Y → Z, Measurable h ∧ g = h ∘ f := by
+  letI := upgradeStandardBorel Z
+  obtain ⟨h, mh, hh⟩ := hg.stronglyMeasurable.exists_eq_measurable_comp
+  exact ⟨h, mh.measurable, hh⟩
 
 end FactorsThrough
 
