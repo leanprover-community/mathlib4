@@ -37,7 +37,7 @@ The proof is loosely based on the strategy given in [D. Marcus, *Number Fields*]
 4. Denote by `ηᵢ` (with `i ≠ w₀` where `w₀` is the distinguished infinite place,
   see the description of `logSpace` below) the fundamental system of units given by
   `fundSystem` and let `|ηᵢ|` denote `normAtAllPlaces (mixedEmbedding ηᵢ))`, that is the vector
-  `(w (ηᵢ)_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
+  `(w (ηᵢ))_w` in `realSpace K`. Then, the image of `|ηᵢ|` by `expMap.symm` form a basis of the
   subspace `{x : realSpace K | ∑ w, x w = 0}`. We complete by adding the vector `(mult w)_w` to
   get a basis, called `completeBasis`, of `realSpace K`. The basis `completeBasis K` has
   the property that, for `i ≠ w₀`, the image of `completeBasis K i` by the
@@ -96,7 +96,7 @@ variable (K : Type*) [Field K]
 open Finset NumberField NumberField.InfinitePlace NumberField.mixedEmbedding NumberField.Units
   NumberField.Units.dirichletUnitTheorem
 
-namespace NumberField.mixedEmbedding
+namespace NumberField.mixedEmbedding.fundamentalCone
 
 section normAtAllPlaces
 
@@ -128,8 +128,7 @@ variable [NumberField K]
 /--
 The set of elements of the `fundamentalCone` of `norm ≤ 1`.
 -/
-abbrev normLeOne : Set (mixedSpace K) :=
-  {x | x ∈ fundamentalCone K ∧ mixedEmbedding.norm x ≤ 1}
+abbrev normLeOne : Set (mixedSpace K) := fundamentalCone K ∩ {x | mixedEmbedding.norm x ≤ 1}
 
 variable {K} in
 theorem mem_normLeOne {x : mixedSpace K} :
@@ -164,7 +163,7 @@ theorem normAtAllPlaces_normLeOne :
     · rwa [Set.mem_preimage, ← logMap_normAtAllPlaces] at h₁
     · exact fun w ↦ normAtPlace_nonneg w y
     · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₂
-    · rwa [← norm_normAtAllPlaces] at h₃
+    · rwa [Set.mem_setOf_eq, ← norm_normAtAllPlaces] at h₃
   · exact ⟨mixedSpaceOfRealSpace x, ⟨⟨h₁, h₃⟩, h₄⟩, normAtAllPlaces_mixedSpaceOfRealSpace h₂⟩
 
 end normLeOne_def
@@ -226,7 +225,6 @@ theorem expMap_target :
 theorem injective_expMap :
     Function.Injective (expMap : realSpace K → realSpace K) :=
   Set.injective_iff_injOn_univ.mpr ((expMap_source K) ▸ expMap.injOn)
-
 
 theorem continuous_expMap :
     Continuous (expMap : realSpace K → realSpace K) :=
@@ -301,18 +299,15 @@ def equivFinRank : Fin (rank K) ≃ {w : InfinitePlace K // w ≠ w₀} :=
   Fintype.equivOfCardEq <| by
     rw [Fintype.card_subtype_compl, Fintype.card_ofSubsingleton, Fintype.card_fin, rank]
 
+open scoped Classical in
 variable (K) in
 /--
-A family of elements in the `realSpace K` formed by the pullback of `basisUnitLattice`, see
-`realSpaceToLogSpace_completeFamily_of_ne`, and the vector `(mult w)_w`. This family is
-in fact a basis of `realSpace K`, see `completeBasis`.
+A family of elements in the `realSpace K` formed of the image of the fundamental units
+and the vector `(mult w)_w`. This family is in fact a basis of `realSpace K`, see `completeBasis`.
 -/
-def completeFamily : InfinitePlace K → realSpace K := by
-  intro i
-  by_cases hi : i = w₀
-  · exact fun w ↦ mult w
-  · exact expMap.symm
-      (normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm ⟨i, hi⟩))))
+def completeFamily : InfinitePlace K → realSpace K :=
+  fun i ↦ if hi : i = w₀ then fun w ↦ mult w else
+    expMap.symm <| normAtAllPlaces <| mixedEmbedding K <| fundSystem K <| equivFinRank.symm ⟨i, hi⟩
 
 /--
 An auxiliary map from `realSpace K` to `logSpace K` used to prove that `completeFamily` is
@@ -378,7 +373,7 @@ theorem linearIndependent_completeFamily :
   exact ⟨h₁, h₂⟩
 
 /--
-The basis formed by the pullback in `realSpace K` of the vectors of `basisUnitLattice`
+A basis of `realSpace K` formed by the image of the fundamental units
 (which form a basis of a subspace `{x : realSpace K | ∑ w, x w = 0}`) and the vector `(mult w)_w`.
 For `i ≠ w₀`, the image of `completeBasis K i` by the natural restriction map
 `realSpace K → logSpace K` is `basisUnitLattice K`
@@ -404,7 +399,7 @@ theorem expMap_basis_of_eq :
 theorem expMap_basis_of_ne (i : {w : InfinitePlace K // w ≠ w₀}) :
     expMap (completeBasis K i) =
       normAtAllPlaces (mixedEmbedding K (fundSystem K (equivFinRank.symm i))) := by
-  rw [completeBasis_apply_of_ne, PartialHomeomorph.right_inv _ (by simp [expMap_target])]
+  rw [completeBasis_apply_of_ne, expMap.right_inv (by simp [expMap_target, pos_at_place])]
 
 theorem abs_det_completeBasis_equivFunL_symm :
     |((completeBasis K).equivFunL.symm : realSpace K →L[ℝ] realSpace K).det| =
@@ -539,7 +534,8 @@ theorem prod_deriv_expMap_single (x : realSpace K) :
       (Finset.prod_ne_zero_iff.mpr <| fun _ _ ↦ Real.exp_ne_zero _), mul_one]
   · simp [prod_eq_prod_mul_prod, mult_isReal, mult_isComplex]
 
-variable (K) in
+variable (K)
+
 /--
 The derivative of `expMapBasis`, see `hasFDerivAt_expMapBasis`.
 -/
@@ -547,13 +543,11 @@ abbrev fderiv_expMapBasis (x : realSpace K) : realSpace K →L[ℝ] realSpace K 
   (fderiv_expMap ((completeBasis K).equivFun.symm x)).comp
     (completeBasis K).equivFunL.symm.toContinuousLinearMap
 
-variable (K) in
 theorem hasFDerivAt_expMapBasis (x : realSpace K) :
     HasFDerivAt expMapBasis (fderiv_expMapBasis K x) x := by
   change HasFDerivAt (expMap ∘ (completeBasis K).equivFunL.symm) (fderiv_expMapBasis K x) x
   exact (hasFDerivAt_expMap _).comp x (completeBasis K).equivFunL.symm.hasFDerivAt
 
-variable (K) in
 open Classical ContinuousLinearMap in
 theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
     |(fderiv_expMapBasis K x).det| =
@@ -566,6 +560,8 @@ theorem abs_det_fderiv_expMapBasis (x : realSpace K) :
   simp_rw [abs_mul, Real.exp_mul, abs_pow, Real.rpow_natCast, abs_of_nonneg (Real.exp_nonneg _),
     abs_inv, abs_prod, abs_of_nonneg (expMapBasis_nonneg _ _), Nat.abs_ofNat]
   ring
+
+variable {K}
 
 open ENNReal MeasureTheory
 
@@ -680,5 +676,4 @@ theorem volume_normLeOne : volume (normLeOne K) =
 
 end main_results
 
-
-end NumberField.mixedEmbedding
+end NumberField.mixedEmbedding.fundamentalCone

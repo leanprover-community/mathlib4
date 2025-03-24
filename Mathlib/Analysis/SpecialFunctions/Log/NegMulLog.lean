@@ -76,7 +76,7 @@ private lemma tendsto_deriv_mul_log_nhdsWithin_zero :
     intro x hx
     rw [Set.mem_Ioi] at hx
     exact deriv_mul_log hx.ne'
-  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsWithin_zero_right]
+  simp only [tendsto_congr' this, tendsto_atBot_add_const_right, tendsto_log_nhdsGT_zero]
 
 open Filter in
 lemma tendsto_deriv_mul_log_atTop :

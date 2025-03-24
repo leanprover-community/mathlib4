@@ -8,7 +8,6 @@ import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.RingTheory.MvPolynomial.Basic
 import Mathlib.RingTheory.TensorProduct.MvPolynomial
 
 /-!

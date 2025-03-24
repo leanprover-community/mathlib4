@@ -334,13 +334,13 @@ initialize_simps_projections AddConstMap (toFun → coe, as_prefix coe)
 -/
 
 /-- The identity map as `G →+c[a, a] G`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def id : G →+c[a, a] G := ⟨id, fun _ ↦ rfl⟩
 
 instance : Inhabited (G →+c[a, a] G) := ⟨.id⟩
 
 /-- Composition of two `AddConstMap`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H) :
     G →+c[a, c] K :=
   ⟨g ∘ f, by simp⟩
@@ -349,7 +349,7 @@ def comp {K : Type*} [Add K] {c : K} (g : H →+c[b, c] K) (f : G →+c[a, b] H)
 @[simp] theorem id_comp (f : G →+c[a, b] H) : .comp .id f = f := rfl
 
 /-- Change constants `a` and `b` in `(f : G →+c[a, b] H)` to improve definitional equalities. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def replaceConsts (f : G →+c[a, b] H) (a' b') (ha : a = a') (hb : b = b') :
     G →+c[a', b'] H where
   toFun := f
@@ -396,7 +396,7 @@ theorem one_def : (1 : G →+c[a, a] G) = .id := rfl
 theorem pow_apply (f : G →+c[a, a] G) (n : ℕ) (x : G) : (f ^ n) x = f^[n] x := rfl
 
 /-- Coercion to functions as a monoid homomorphism to `Function.End G`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def toEnd : (G →+c[a, a] G) →* Function.End G where
   toFun := DFunLike.coe
   map_mul' _ _ := rfl
@@ -419,7 +419,7 @@ but we don't do this at the moment because we don't need this.
 -/
 
 /-- Pointwise scalar multiplication of `f : G →+c[a, b] H` as a map `G →+c[a, c • b] H`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def smul [DistribSMul K H] (c : K) (f : G →+c[a, b] H) : G →+c[a, c • b] H where
   toFun := c • ⇑f
   map_add_const' x := by simp [smul_add]
@@ -432,7 +432,7 @@ variable {G : Type*} [AddMonoid G] {a : G}
 
 /-- The map that sends `c` to a translation by `c`
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
   toFun c := c.toAdd +ᵥ .id
   map_one' := by ext; apply zero_add
