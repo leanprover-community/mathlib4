@@ -62,7 +62,7 @@ structure PolynomialLaw (R : Type u) [CommSemiring R]
   /-- The compatibility relations between the functions underlying a polynomial law -/
   isCompat' {S : Type u} [CommSemiring S] [Algebra R S]
     {S' : Type u} [CommSemiring S'] [Algebra R S'] (φ : S →ₐ[R] S') :
-    φ.toLinearMap.rTensor N ∘ toFun' S = toFun' S' ∘ φ.toLinearMap.rTensor M
+    φ.toLinearMap.rTensor N ∘ toFun' S = toFun' S' ∘ φ.toLinearMap.rTensor M := by aesop
 
 /-- `M →ₚ[R] N` is the type of `R`-polynomial laws from `M` to `N`. -/
 notation:25 M " →ₚ[" R:25 "] " N:0 => PolynomialLaw R M N
@@ -88,9 +88,7 @@ section CommSemiring
 variable {R : Type u} [CommSemiring R] {M : Type*} [AddCommMonoid M] [Module R M]
   {N : Type*} [AddCommMonoid N] [Module R N] (r a b : R) (f g : M →ₚ[R] N)
 
-instance : Zero (M →ₚ[R] N) := ⟨{
-  toFun'    := fun _ => 0
-  isCompat' := fun _ => rfl }⟩
+instance : Zero (M →ₚ[R] N) := ⟨{ toFun' _ := 0 }⟩
 
 @[simp]
 theorem zero_def (S : Type u) [CommSemiring S] [Algebra R S] :
@@ -111,7 +109,6 @@ instance : Add (PolynomialLaw R M N) := ⟨add⟩
 theorem add_def (S : Type u) [CommSemiring S] [Algebra R S] :
     (f + g).toFun' S = f.toFun' S + g.toFun' S := rfl
 
-@[simp]
 theorem add_def_apply (S : Type u) [CommSemiring S] [Algebra R S] (m : S ⊗[R] M) :
     (f + g).toFun' S m = f.toFun' S m + g.toFun' S m := rfl
 
