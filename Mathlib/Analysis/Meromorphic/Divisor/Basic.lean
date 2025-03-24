@@ -48,7 +48,8 @@ structure Function.discretesuppWithin (U : Set 𝕜) where
   supportDiscreteWithinDomain' : toFun =ᶠ[codiscreteWithin U] 0
 
 /-- A divisor is a divisor on `⊤ : Set 𝕜`. -/
-def Divisor (𝕜 : Type*) [NontriviallyNormedField 𝕜] := Function.discretesuppWithin (⊤ : Set 𝕜)
+def Function.discretesupp (𝕜 : Type*) [NontriviallyNormedField 𝕜] :=
+  Function.discretesuppWithin (⊤ : Set 𝕜)
 
 /-- The condition `supportDiscreteWithinU` in a divisor is equivalent to saying
 that the support is locally finite near every point of `U`. -/
