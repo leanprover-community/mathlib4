@@ -3,15 +3,18 @@ Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Retract
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
 # Stability properties of monomorphisms in Type
 
 In this file, we show that in the category `Type u`, monomorphisms
-are stable under cobase change and filtered colimits.
+are stable under cobase change, filtered colimits and
+transfinite compositions.
 
 -/
 
@@ -52,6 +55,74 @@ lemma isStableUnderColimitsOfShape_monomorphisms_of_isFiltered
   obtain ⟨k, α, hk⟩ := (FilteredColimit.isColimit_eq_iff' hc₂ _ _).1 h
   simp only [← FunctorToTypes.naturality] at hk
   rw [← c₁.w α, types_comp_apply, types_comp_apply, hf _ hk]
+
+section
+
+variable {J : Type u'} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+namespace isStableUnderTransfiniteCompositionOfShape_monomorphisms
+
+variable {X Y : Type u} {f : X ⟶ Y}
+  (h : (monomorphisms (Type u)).TransfiniteCompositionOfShape J f)
+
+attribute [local instance] IsCofiltered.isConnected
+
+instance (j : J) : Mono (h.F.map (homOfLE bot_le : ⊥ ⟶ j)) := by
+  induction j using SuccOrder.limitRecOn with
+  | hm j hj =>
+    obtain rfl := hj.eq_bot
+    exact inferInstanceAs (Mono (h.F.map (𝟙 _)))
+  | hs j hj hj' =>
+    have : Mono _ := h.map_mem j hj
+    rw [← homOfLE_comp bot_le (Order.le_succ j), Functor.map_comp]
+    infer_instance
+  | hl j hj hj' =>
+    have : OrderBot (Set.Iio j) :=
+      { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj ⟩
+        bot_le _ := bot_le }
+    let φ : (Functor.const _).obj (h.F.obj ⊥) ⟶
+        (Set.principalSegIio j).monotone.functor ⋙ h.F :=
+      { app k := h.F.map (homOfLE bot_le)
+        naturality k k' hkk' := by
+          dsimp
+          rw [Category.id_comp, ← Functor.map_comp]
+          rfl }
+    have (k : Set.Iio j) : Mono (φ.app k) := hj' k.1 k.2
+    convert isStableUnderColimitsOfShape_monomorphisms_of_isFiltered _ _ _ _ _
+      (isColimitConstCocone (Set.Iio j) (h.F.obj ⊥))
+      (h.F.isColimitOfIsWellOrderContinuous j hj) φ
+        (fun _ ↦ monomorphisms.infer_property _)
+    apply (isColimitConstCocone (Set.Iio j) (h.F.obj ⊥)).hom_ext
+    intro j
+    rw [IsColimit.fac]
+    dsimp [φ]
+    simp only [Category.id_comp, ← Functor.map_comp, homOfLE_comp]
+
+include h in
+lemma mono : Mono f := by
+  let φ : (Functor.const _).obj X ⟶ h.F :=
+    { app k := h.isoBot.inv ≫ h.F.map (homOfLE bot_le)
+      naturality k k' hkk' := by
+        dsimp
+        rw [Category.id_comp, Category.assoc, ← Functor.map_comp]
+        rfl }
+  convert isStableUnderColimitsOfShape_monomorphisms_of_isFiltered J _ _ _ _
+    (isColimitConstCocone J X) h.isColimit φ (fun _ ↦ monomorphisms.infer_property _)
+  apply (isColimitConstCocone J X).hom_ext
+  intro j
+  rw [IsColimit.fac]
+  simp [φ]
+
+end isStableUnderTransfiniteCompositionOfShape_monomorphisms
+
+instance : (monomorphisms (Type u)).IsStableUnderTransfiniteCompositionOfShape J where
+  le := by
+    rintro X Y f ⟨hf⟩
+    exact isStableUnderTransfiniteCompositionOfShape_monomorphisms.mono hf
+
+instance : IsStableUnderTransfiniteComposition.{u'} (monomorphisms (Type u)) where
+
+end
 
 end Types
 

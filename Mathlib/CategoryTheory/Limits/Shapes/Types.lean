@@ -887,7 +887,10 @@ lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
   · rintro ⟨s, rfl, rfl⟩
     apply Rel'.inl_inr
 
-instance mono_inr [Mono f] : Mono (inr f g) := sorry
+instance mono_inr [Mono f] : Mono (inr f g) := by
+  rw [mono_iff_injective]
+  intro x₂ y₂ h
+  simpa using (Pushout.quot_mk_eq_iff f g (Sum.inr x₂) (Sum.inr y₂)).1 h
 
 end Pushout
 
