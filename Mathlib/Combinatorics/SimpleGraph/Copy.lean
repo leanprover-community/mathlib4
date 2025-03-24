@@ -379,8 +379,8 @@ in `H`.
 section LabelledCopyCount
 variable [Fintype V] [Fintype W]
 
-/-- `G.labelledCopyCount H` is the number of labelled copies of `H` in `G`. See
-`SimpleGraph.copyCount` for the number of unlabelled copies. -/
+/-- `G.labelledCopyCount H` is the number of labelled copies of `H` in `G`, i.e. the number of graph
+embeddings from `H` to `G`. See `SimpleGraph.copyCount` for the number of unlabelled copies. -/
 noncomputable def labelledCopyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
   classical exact Fintype.card (Copy H G)
 
@@ -405,6 +405,14 @@ See `SimpleGraph.labelledCopyCount` for the number of labelled copies. -/
 noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
   classical exact #{G' : G.Subgraph | Nonempty (H ≃g G'.coe)}
 
+lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective f}]
+    [DecidableEq G.Subgraph] :
+    copyCount G H = #((Finset.univ : Finset (H.Copy G)).image Copy.toSubgraph) := by
+  rw [copyCount]
+  congr
+  refine Finset.coe_injective ?_
+  simpa [-Copy.range_toSubgraph] using Copy.range_toSubgraph.symm
+
 @[simp] lemma copyCount_eq_zero : G.copyCount H = 0 ↔ H.Free G := by
   simp [copyCount, Free, -nonempty_subtype, isContained_iff_exists_iso_subgraph, card_pos,
     filter_eq_empty_iff]
@@ -415,11 +423,7 @@ noncomputable def copyCount (G : SimpleGraph V) (H : SimpleGraph W) : ℕ := by
 
 /-- There's more labelled copies of `H` in `G` than unlabelled ones. -/
 lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledCopyCount H := by
-  classical
-  rw [copyCount, ← Fintype.card_coe]
-  refine Fintype.card_le_of_surjective (fun f ↦ ⟨f.toSubgraph, ?_⟩) ?_
-  · simpa using ⟨f.isoToSubgraph⟩
-  · simpa [Surjective, -Copy.range_toSubgraph] using fun H' e ↦ Copy.toSubgraph_surjOn ⟨e⟩
+  classical rw [copyCount_eq_card_image_copyToSubgraph]; exact card_image_le
 
 @[simp] lemma copyCount_bot (G : SimpleGraph V) : copyCount G (⊥ : SimpleGraph V) = 1 := by
   classical
@@ -528,7 +532,7 @@ lemma free_killCopies (hH : H ≠ ⊥) : H.Free (G.killCopies H) := by
 
 variable [Fintype G.edgeSet]
 
-noncomputable instance killCopies.EdgeSet.instFintype : Fintype (G.killCopies H).edgeSet :=
+noncomputable instance killCopies.edgeSet.instFintype : Fintype (G.killCopies H).edgeSet :=
   .ofInjective (Set.inclusion <| edgeSet_mono killCopies_le_left) <| Set.inclusion_injective _
 
 /-- Removing an edge from `H` for each subgraph isomorphic to `G` means that the number of edges
