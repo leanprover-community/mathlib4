@@ -20,17 +20,22 @@ Text here please.
 Tags here please.
 -/
 
-namespace LieAlgebra
-
 namespace Theta
+
+open LieAlgebra
 
 open LieModule
 
-variable {K L : Type*} [Field K] [CharZero K] [LieRing L] [LieAlgebra K L] [LieAlgebra ℚ L]
+variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
   (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
   [IsTriangularizable K H L] [FiniteDimensional K L]
 
-variable {α : Weight K H L} {h e f : L}
+variable {h e f : L}
+
+variable [CharZero K] [LieAlgebra ℚ L] (H : LieSubalgebra K L) [LieRing.IsNilpotent H]
+  [IsTriangularizable K H L] [FiniteDimensional K L]
+
+variable {α : Weight K H L}
 
 lemma he' (t : Kˣ) (he : e ∈ rootSpace H α) : (t : K) • e ∈ rootSpace H α := by
   apply Submodule.smul_mem
@@ -225,5 +230,3 @@ lemma theta_apply {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsS
 -/
 
 end Theta
-
-end LieAlgebra
