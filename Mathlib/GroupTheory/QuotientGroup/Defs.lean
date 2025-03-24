@@ -54,16 +54,16 @@ instance Quotient.group : Group (G ⧸ N) :=
   (QuotientGroup.con N).group
 
 /--
-The congruence relation defined by the kernel of a group homomorphism `f` is equal to the symmetric
-of the congruence relation defined by the kernel of `f`.
+The congruence relation defined by the kernel of a group homomorphism is equal to its kernel
+as a congruence relation.
 -/
 @[to_additive
-"The additive congruence relation defined by the kernel of a additive group homomorphism `f`
-is equal to the symmetric of the additive congruence relation defined by the kernel of `f`"]
-theorem con_ker_eq_Con_ker {M : Type*} [Monoid M] (f : G →* M) {x y : G} :
-    QuotientGroup.con f.ker x y = Con.ker f y x  := by
+"The additive congruence relation defined by the kernel of an additive group homomorphism is
+equal to its kernel as an additive congruence relation."]
+theorem con_ker_eq_Con_ker {M : Type*} [Monoid M] (f : G →* M) :
+    QuotientGroup.con f.ker = Con.ker f := by
   ext
-  simp [QuotientGroup.con, leftRel_apply, MonoidHom.eq_iff]
+  rw [QuotientGroup.con, Con.rel_mk, Setoid.comm', leftRel_apply, Con.ker_rel, MonoidHom.eq_iff]
 
 /-- The group homomorphism from `G` to `G/N`. -/
 @[to_additive "The additive group homomorphism from `G` to `G/N`."]
@@ -162,9 +162,12 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
 
 @[to_additive (attr := simp)] lemma map_mk'_self : N.map (mk' N) = ⊥ := by aesop
 
-/-- The subgroup of `G` defined by the class of `1` for a congruence relation on a group `G`. -/
-@[to_additive "The `AddSubgroup` of `G` defined by the class of `0` for an additive
-congruence relation on an `AddGroup` `G`."]
+/--
+The subgroup defined by the class of `1` for a congruence relation on a group.
+-/
+@[to_additive
+"The `AddSubgroup` defined by the class of `0` for an additive congruence relation
+on an `AddGroup`."]
 protected def _root_.Con.subgroup (c : Con G) : Subgroup G where
   carrier := { x | c 1 x }
   one_mem' := c.refl 1
@@ -193,10 +196,10 @@ theorem con_subgroup (c : Con G) :
   exact ⟨fun h ↦ by simpa using c.mul (c.refl x) h, fun h ↦ by simpa using c.mul (c.refl x⁻¹) h⟩
 
 /--
-The normal subgroups correspond to congruence relations on a group.
+The normal subgroups correspond to the congruence relations on a group.
 -/
 @[to_additive
-"The normal subgroups correspond to additive congruence relations on an `AddGroup`."]
+"The normal subgroups correspond to the additive congruence relations on an `AddGroup`."]
 def _root_.Subgroup.orderIsoCon :
     { N : Subgroup G // N.Normal } ≃o Con G where
   toFun := fun ⟨N, _⟩ ↦ QuotientGroup.con N
@@ -219,8 +222,7 @@ group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
  to a group homomorphism `G/N →* M`."]
 def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
-  (QuotientGroup.con N).lift φ fun _ _ h =>
-    (con_ker_eq_Con_ker φ).mp <| (QuotientGroup.con φ.ker).symm <| con_le_iff.mp HN h
+  (QuotientGroup.con N).lift φ <| con_ker_eq_Con_ker φ ▸ con_le_iff.mp HN
 
 @[to_additive (attr := simp)]
 theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
