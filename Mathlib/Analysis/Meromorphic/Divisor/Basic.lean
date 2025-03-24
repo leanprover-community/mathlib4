@@ -149,7 +149,9 @@ protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
         Function.nmem_support.1 fun a ↦ hx (hg.1 a)]
     · filter_upwards [hf.2.add hg.2] with a ha
       simp [ha]
-  neg_mem' {f} hf := ⟨fun x hx ↦ hf.1 <| by simpa using hx, hf.2.neg⟩
+  neg_mem' {f} hf := by
+    have : -f =ᶠ[codiscreteWithin U] 0 := by simpa using hf.2.neg
+    simp_all
 
 protected lemma memAddSubgroup  [AddCommGroup Y] (D : Function.discretesuppWithin U Y) :
     (D : X → Y) ∈ Function.discretesuppWithin.addSubgroup U :=
@@ -201,10 +203,10 @@ instance [LE Y] [Zero Y] : LE (Function.discretesuppWithin U Y) where
 lemma le_def [LE Y] [Zero Y] {D₁ D₂ : Function.discretesuppWithin U Y} :
     D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
 
-instance [LT Y] [Zero Y] : LT (Function.discretesuppWithin U Y) where
+instance [Preorder Y] [Zero Y] : LT (Function.discretesuppWithin U Y) where
   lt := fun D₁ D₂ ↦ (D₁ : X → Y) < D₂
 
-lemma lt_def [LT Y] [Zero Y] {D₁ D₂ : Function.discretesuppWithin U Y} :
+lemma lt_def [Preorder Y] [Zero Y] {D₁ D₂ : Function.discretesuppWithin U Y} :
     D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·),(·)⟩
 
 instance [Lattice Y] [Zero Y] : Max (Function.discretesuppWithin U Y) where
@@ -250,7 +252,7 @@ instance  [Lattice Y] [Zero Y] : Lattice (Function.discretesuppWithin U Y) where
   le_trans D₁ D₂ D₃ h₁₂ h₂₃ := fun x ↦ (h₁₂ x).trans (h₂₃ x)
   le_antisymm D₁ D₂ h₁₂ h₂₁ := by
     ext x
-    exact Int.le_antisymm (h₁₂ x) (h₂₁ x)
+    exact le_antisymm (h₁₂ x) (h₂₁ x)
   sup := max
   le_sup_left D₁ D₂ := fun x ↦ by simp
   le_sup_right D₁ D₂ := fun x ↦ by simp
@@ -261,7 +263,8 @@ instance  [Lattice Y] [Zero Y] : Lattice (Function.discretesuppWithin U Y) where
   le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
 
 /-- Divisors form an ordered commutative group -/
-instance  [OrderedAddCommGroup Y] : OrderedAddCommGroup (Function.discretesuppWithin U Y) where
+instance  [LinearOrderedAddCommGroup Y] :
+    OrderedAddCommGroup (Function.discretesuppWithin U Y) where
   __ := inferInstanceAs (AddCommGroup (Function.discretesuppWithin U Y))
   __ := inferInstanceAs (Lattice (Function.discretesuppWithin U Y))
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
