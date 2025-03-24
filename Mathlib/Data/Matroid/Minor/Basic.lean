@@ -271,6 +271,19 @@ lemma contract_dual (M : Matroid α) (X : Set α) : (M ／ X)✶ = M✶ ＼ X :=
 lemma dual_contract_dual (M : Matroid α) (X : Set α) : (M✶ ／ X)✶ = M ＼ X := by
   simp
 
+@[simp]
+lemma contract_contract (M : Matroid α) (C₁ C₂ : Set α) : M ／ C₁ ／ C₂ = M ／ (C₁ ∪ C₂) := by
+  simp [← dual_inj]
+
+lemma contract_comm (M : Matroid α) (C₁ C₂ : Set α) : M ／ C₁ ／ C₂ = M ／ C₂ ／ C₁ := by
+  simp [union_comm]
+
+lemma contract_delete_dual (M : Matroid α) (X Y : Set α) : (M ／ X ＼ Y)✶ = M✶ ＼ X ／ Y := by
+  simp
+
+lemma delete_contract_dual (M : Matroid α) (X Y : Set α) : (M ＼ X ／ Y)✶ = M✶ ／ X ＼ Y := by
+  simp
+
 end Contract
 
 end Matroid
