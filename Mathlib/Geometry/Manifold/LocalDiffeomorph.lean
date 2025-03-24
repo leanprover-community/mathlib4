@@ -398,13 +398,13 @@ noncomputable def IsLocalDiffeomorphAt.mfderiv_toContinuousLinearEquiv
   right_inv := by
     apply RightInverse.of_composition
     rw [← mfderiv_id, ← hf.localInverse_eventuallyEq_right.mfderiv_eq]
-    have hf'' : MDifferentiableAt I J f x := hf.mdifferentiableAt hn
-    have hf''' : MDifferentiableAt I J f (hf.localInverse (f x)) := sorry -- hf.mdifferentiableAt hn
-    have hg'' : MDifferentiableAt J I hf.localInverse (f x) := hf.localInverse_mdifferentiableAt hn
-    symm
-    --#check mfderiv_comp hf''' hg''
-    --apply mfderiv_comp (g := f) (f := hf.localInverse) (x := f x) (I := J) (I'' := J) (I' := I)
-    sorry
+    -- We need to rewrite the base point hf.localInverse (f x) = x twice,
+    -- in the differentiability hypothesis and for applying the chain rule.
+    have hf' : MDifferentiableAt I J f (hf.localInverse (f x)) := by
+      rw [hf.localInverse_left_inv hf.localInverse_mem_target]
+      exact hf.mdifferentiableAt hn
+    rw [mfderiv_comp _ hf' (hf.localInverse_mdifferentiableAt hn),
+      hf.localInverse_left_inv hf.localInverse_mem_target]
   continuous_toFun := (mfderiv I J f x).cont
   continuous_invFun := (mfderiv J I hf.localInverse (f x)).cont
   map_add' := fun x_1 y ↦ ContinuousLinearMap.map_add _ x_1 y
