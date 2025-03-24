@@ -110,6 +110,22 @@ lemma pow_0_ad_f_f (t : Kˣ) : ((-(t⁻¹ : K) • (ad K L f)) ^ 0) f = f := rfl
 lemma pow_1_ad_f_f (t : Kˣ) : ((-(t⁻¹ : K) • (ad K L f)) ^ 1) f = 0 := by
   rw [pow_one, LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
 
+lemma pow_0_ad_f_h (t : Kˣ) : ((-(t⁻¹ : K) • (ad K L f)) ^ 0) h = h := rfl
+
+lemma pow_1_ad_f_h (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad K L f)) ^ 1) h =
+    (-2 : ℤ) • (t⁻¹ : K) • f := by
+  rw [pow_one, LinearMap.smul_apply, ad_apply, ← lie_skew, ht.lie_h_f_nsmul]
+  simp only [two_smul, neg_add_rev, neg_neg, smul_add, neg_smul]
+
+lemma pow_2_ad_f_h (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad K L f)) ^ 2) h = 0 := by
+  calc
+    (((t : K) • (ad K L e)) ^ 2) h = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) h) := rfl
+    _ = ((t : K) • (ad K L e)) ((-2 : ℤ) • (t : K) • e) := by
+      rw [pow_1_ad_e_h t ht]
+    _ = 0 := by
+      simp only [LinearMap.smul_apply, ad_apply, lie_smul, lie_self, smul_zero]
+
+
 end AdAction
 
 variable (H : LieSubalgebra K L) [LieRing.IsNilpotent H] {α : Weight K H L} [CharZero K]
