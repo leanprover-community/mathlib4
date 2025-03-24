@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Gabriel Ebner, Damiano Testa, Kyle Miller
 -/
 import Mathlib.Tactic.TermCongr
+import Mathlib.Tactic.WithoutCDot
 
 /-!
 # The `congrm` tactic
@@ -75,6 +76,6 @@ elab_rules : tactic
     withMainContext do
       let gStx ← Term.exprToSyntax (← getMainTarget)
       -- Gives the expected type to `refine` as a workaround for its elaboration order.
-      evalTactic <| ← `(tactic| refine (congr($(⟨pattern⟩)) : $gStx))
+      evalTactic <| ← `(tactic| refine without_cdot(congr($(⟨pattern⟩)) : $gStx))
 
 end Mathlib.Tactic
