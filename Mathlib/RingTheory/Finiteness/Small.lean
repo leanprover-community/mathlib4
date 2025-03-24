@@ -50,6 +50,7 @@ theorem FG.small [Small.{u} R] (P : Submodule R M) (hP : P.FG) : Small.{u} P := 
   rw [← Fintype.range_linearCombination]
   apply small_range
 
+variable (R M) in
 theorem _root_.Module.Finite.small [Small.{u} R] [Module.Finite R M] : Small.{u} M := by
   have : Small.{u} (⊤ : Submodule R M) :=
     FG.small _ (Module.finite_def.mp inferInstance)
