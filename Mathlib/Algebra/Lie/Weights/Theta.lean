@@ -89,8 +89,7 @@ lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
     rw [← mul_smul]
     ring_nf
   calc
-    (((t : K) • (ad K L e)) ^ 2) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) f) := by
-      exact rfl
+    (((t : K) • (ad K L e)) ^ 2) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) f) := rfl
     _ = (-2 : ℚ) • (t : K) ^ 2 • e := by
       rw [pow_1_ad_e_f t ht, map_smul, LinearMap.smul_apply, ad_apply, neg_smul, ← lie_skew,
         ht.lie_h_e_nsmul]
@@ -100,8 +99,7 @@ lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
 
 theorem pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
   calc
-    (((t : K) • (ad K L e)) ^ 3) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 2) f) := by
-      rfl
+    (((t : K) • (ad K L e)) ^ 3) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 2) f) := rfl
     _ = ((t : K) • (ad K L e)) (((2 : ℕ).factorial : ℚ) • ((2 : ℕ).factorial : ℚ)⁻¹ • ((((t : K) • (ad K L e)) ^ 2)) f) := by
       simp_all only [LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat, ne_eq, OfNat.ofNat_ne_zero,
         not_false_eq_true, smul_inv_smul₀]
