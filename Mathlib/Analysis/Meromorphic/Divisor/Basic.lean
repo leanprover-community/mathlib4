@@ -3,7 +3,6 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Ring.Lemmas
 
 /-!
@@ -115,11 +114,9 @@ theorem closedSupport [Zero Y] (D : Function.discretesuppWithin U Y) (hU : IsClo
     IsClosed D.support := by
   convert isClosed_sdiff_of_codiscreteWithin D.supportDiscreteWithinDomain hU
   ext x
-  constructor
-  · intro hx
-    simp_all [D.supportWithinDomain hx]
-  · intro hx
-    simp_all
+  constructor <;> intro hx
+  · simp_all [D.supportWithinDomain hx]
+  · simp_all
 
 /-- If `U` is closed, the the support of a divisor on `U` is finite. -/
 theorem finiteSupport [T2Space X] [Zero Y] (D : Function.discretesuppWithin U Y)
