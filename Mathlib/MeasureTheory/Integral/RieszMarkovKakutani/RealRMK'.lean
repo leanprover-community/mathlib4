@@ -103,24 +103,10 @@ lemma le_rieszMeasure_of_isOpen_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x :
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`.-/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
     (hK : IsCompact K) (hfK : ∀ x ∈ K, f x = 1) : rieszMeasure hΛ K ≤ ENNReal.ofReal (Λ f) := by
-
-  -- The definition of `rieszMeasure` is based on `rieszContentAux` which is defined as follows:
+  -- The definition of `rieszMeasure` is based on `rieszContentAux`:
   -- `def rieszContentAux : Compacts X → ℝ≥0 := fun K =>`
   -- `  sInf (Λ '' { f : C_c(X, ℝ≥0) | ∀ x ∈ K, (1 : ℝ≥0) ≤ f x })`
   -- Consequently this result should follow from `rieszContentAux_le`.
-
-  -- dsimp [rieszMeasure]
-  -- -- rw [MeasureTheory.Content.measure_apply]
-  -- -- have := MeasureTheory.Content.outerMeasure_le (rieszContent (toNNRealLinear Λ hΛ))
-  -- unfold rieszContent
-  -- have g : X →C_c ℝ≥0 := sorry
-  -- have K' : Compacts X := sorry
-  -- have hfK' : ∀ x ∈ K', 1 ≤ g x := sorry
-  -- have Λ' := (toNNRealLinear Λ hΛ)
-  -- have := rieszContentAux_le Λ' hfK'
-  -- -- have hfK'' : ∀ x ∈ K, 1 ≤ f x := by
-  -- --   sorry
-  -- -- sorry
   sorry
 
 /-- An `Ioc` partitions into a finite union of `Ioc`s. -/
@@ -159,7 +145,7 @@ lemma iUnion_Fin_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) 
 omit [T2Space X] [LocallyCompactSpace X] in
 /-- Given `f : C_c(X, ℝ)` such that `range f ⊆ [a, b]` we obtain a partition of the support of `f`
   determined by partitioning `[a, b]` into `N` pieces. -/
-lemma range_cut_partition [Nonempty X] (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) {N : ℕ}
+lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) {N : ℕ}
     (hN : 0 < N) (hf : range f ⊆ Ioo a (a + N * ε)): ∃ (E : Fin N → Set X), tsupport f = ⋃ j, E j ∧
     univ.PairwiseDisjoint E ∧ (∀ n : Fin N, ∀ x ∈ E n, a + ε * n < f x ∧ f x ≤ a + ε * (n + 1)) ∧
     ∀ n : Fin N, MeasurableSet (E n) := by
@@ -241,6 +227,57 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : 
         congr; exact hμ'
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
+/-- Choose `N` sufficiently large such that particular quantity is small. -/
+lemma RMK_le_aux {a b c ε : ℝ} (hab : a < b) (h' : 0 ≤ c) (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
+    (b - a) / N * (2 * c + |a| + b + (b - a) / N) ≤ ε := by
+  let ε''' := ε / (2 * c + |a| + b + 1)
+  let ε'' := min ε''' 1
+  let N' := (b - a) / ε''
+  let N := ⌈N'⌉₊
+  use N
+  let ε' := (b - a) / N
+  have h : 0 ≤ |a| + b := by
+    by_cases hc : 0 ≤ b
+    · positivity
+    · linarith [abs_of_neg (show a < 0 by linarith)]
+  have hN : 0 < N := by
+    apply Nat.ceil_pos.mpr
+    refine div_pos (sub_pos.mpr hab) ?_
+    simp only [lt_inf_iff, zero_lt_one, and_true, ε'', N']
+    apply div_pos hε ?_
+    linarith
+  have hε' : 0 < ε' := by exact div_pos (sub_pos.mpr hab) (Nat.cast_pos'.mpr hN)
+  have h'' : ε' ≤ ε'' := calc
+    _ = (b - a) / N := by rfl
+    _ ≤ (b - a) / N' := by
+      gcongr
+      · exact sub_nonneg_of_le <| le_of_lt <| gt_iff_lt.mpr hab
+      · exact Nat.one_le_ceil_iff.mp hN
+      · exact Nat.le_ceil N'
+    _ = _ := by
+      rw [div_div_cancel₀]
+      linarith
+  have h''' : ε'' ≤ ε''' := by simp [ε'']
+  constructor
+  · exact hN
+  · calc
+      _ ≤ ε'' * (2 * c + |a| + b + ε') := by
+        refine mul_le_mul_of_nonneg_right h'' ?_
+        linarith
+      _ ≤ ε'' * (2 * c + |a| + b + 1) := by
+        gcongr
+        · linarith
+        · calc
+            _ ≤ ε'' := h''
+            _ ≤ 1 := by simp [ε'']
+      _ ≤ ε''' * (2 * c + |a| + b + 1) := by
+        refine mul_le_mul_of_nonneg_right h''' ?_
+        linarith
+      _ = _ := by
+        dsimp [ε''']
+        refine div_mul_cancel₀ ε ?_
+        linarith
+
 /-- `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)` -/
 theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
   let μ := rieszMeasure hΛ
@@ -264,61 +301,10 @@ theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(ri
     use a, b
   obtain ⟨a, b, hab⟩ := exists_ab
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
-  have exists_N : ∃ (N : ℕ), 0 < N ∧
-      (b - a) / N * (2 * (μ K).toReal + |a| + b + (b - a) / N) ≤ ε := by
-    let ε''' := ε / (2 * (μ K).toReal + |a| + b + 1)
-    let ε'' := min ε''' 1
-    let N' := (b - a) / ε''
-    let N := ⌈N'⌉₊
-    use N
-    set ε' := (b - a) / N with h_ε
-    have h : 0 ≤ |a| + b := by
-      by_cases hc : 0 ≤ b
-      · positivity
-      · linarith [abs_of_neg (show a < 0 by linarith)]
-    have h' : 0 ≤ (μ K).toReal := by exact ENNReal.toReal_nonneg
-    have hN : 0 < N := by
-      apply Nat.ceil_pos.mpr
-      refine div_pos (sub_pos.mpr hab.1) ?_
-      simp only [lt_inf_iff, zero_lt_one, and_true, ε'', N']
-      apply div_pos hε ?_
-      linarith
-    have hε' : 0 < ε' := by exact div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN)
-    have h'' : ε' ≤ ε'' := calc
-      _ = (b - a) / N := by rfl
-      _ ≤ (b - a) / N' := by
-        gcongr
-        · exact sub_nonneg_of_le <| le_of_lt <| gt_iff_lt.mpr hab.1
-        · exact Nat.one_le_ceil_iff.mp hN
-        · exact Nat.le_ceil N'
-      _ = _ := by
-        rw [div_div_cancel₀]
-        linarith
-    have h''' : ε'' ≤ ε''' := by simp [ε'']
-    constructor
-    · exact hN
-    · calc
-        _ ≤ ε'' * (2 * (μ K).toReal + |a| + b + ε') := by
-          refine mul_le_mul_of_nonneg_right h'' ?_
-          linarith
-        _ ≤ ε'' * (2 * (μ K).toReal + |a| + b + 1) := by
-          gcongr
-          · linarith
-          · calc
-              _ ≤ ε'' := h''
-              _ ≤ 1 := by simp [ε'']
-        _ ≤ ε''' * (2 * (μ K).toReal + |a| + b + 1) := by
-          refine mul_le_mul_of_nonneg_right h''' ?_
-          linarith
-        _ = _ := by
-          dsimp [ε''']
-          refine div_mul_cancel₀ ε ?_
-          linarith
-  obtain ⟨N, hN, hε'⟩ := exists_N
+  obtain ⟨N, hN, hε'⟩ := RMK_le_aux hab.1 (show 0 ≤ (μ K).toReal by exact ENNReal.toReal_nonneg) hε
   let ε' := (b - a) / N
   replace hε' : 0 < ε' ∧  ε' * (2 * (μ K).toReal + |a| + b + ε') ≤ ε :=
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
-
   -- Take a partition of the support of `f` into sets `E` by partitioning the range.
   obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 hN (by field_simp [ε', ← mul_div_assoc,
     mul_div_cancel_left₀, hab.2])
