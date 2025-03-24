@@ -53,6 +53,10 @@ theorem add_eq_max_of_ne {F α : Type*} [AddGroup α] [FunLike F α ℝ]
   simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq] at hne ⊢
   exact norm_add_eq_max_of_norm_ne_norm hne
 
+section Finset
+
+open Finset
+
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a finset
   `t : Finset β`, we can always find `b : β`, belonging to `t` if `t` is nonempty, such that
   `f (t.sum g) ≤ f (g b)` . -/
@@ -75,6 +79,28 @@ theorem finset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLik
   obtain ⟨b, hbt, hbf⟩ := finset_image_add hna g t
   exact ⟨b, hbt ht, hbf⟩
 
+theorem isNonarchimedean_finset_powerset_image_add {F α : Type*} [CommRing α] [FunLike F α ℝ]
+    [AddGroupSeminormClass F α ℝ] {f : F} (hf_na : IsNonarchimedean f) {n : ℕ} (b : Fin n → α)
+    (m : ℕ) : ∃ s : powersetCard (Fintype.card (Fin n) - m) (@univ (Fin n) _),
+      f ((powersetCard (Fintype.card (Fin n) - m) univ).sum fun t : Finset (Fin n) ↦
+        t.prod fun i : Fin n ↦ -b i) ≤ f (s.val.prod fun i : Fin n ↦ -b i) := by
+  set g := fun t : Finset (Fin n) ↦ t.prod fun i : Fin n ↦ - b i
+  obtain ⟨b, hb_in, hb⟩ := IsNonarchimedean.finset_image_add hf_na g
+      (powersetCard (Fintype.card (Fin n) - m) univ)
+  have hb_ne : (powersetCard (Fintype.card (Fin n) - m) (univ : Finset (Fin n))).Nonempty := by
+    rw [Fintype.card_fin]
+    have hmn : n - m ≤ (univ : Finset (Fin n)).card := by
+      rw [card_fin]
+      exact Nat.sub_le n m
+    exact powersetCard_nonempty.mpr hmn
+  use ⟨b, hb_in hb_ne⟩, hb
+
+end Finset
+
+section Multiset
+
+open Multiset
+
 /-- Given a nonarchimedean additive group seminorm `f` on `α`, a function `g : β → α` and a
   multiset `s : Multiset β`, we can always find `b : β`, belonging to `s` if `s` is nonempty,
   such that `f (t.sum g) ≤ f (g b)` . -/
@@ -93,9 +119,27 @@ theorem multiset_image_add {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ
 theorem multiset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] [Nonempty β] {f : F} (hna : IsNonarchimedean f)
     (g : β → α) {s : Multiset β} (hs : s ≠ 0) :
-    ∃ b : β, (b ∈ s) ∧ f (Multiset.map g s).sum ≤ f (g b) := by
+    ∃ b : β, (b ∈ s) ∧ f (map g s).sum ≤ f (g b) := by
   obtain ⟨b, hbs, hbf⟩ := multiset_image_add hna g s
   exact ⟨b, hbs hs, hbf⟩
+
+theorem isNonarchimedean_multiset_powerset_image_add {F α : Type*} [CommRing α] [FunLike F α ℝ]
+    [AddGroupSeminormClass F α ℝ] {f : F}
+    (hf_na : IsNonarchimedean f) (s : Multiset α) (m : ℕ) :
+    ∃ t : Multiset α, card t = card s - m ∧ (∀ x : α, x ∈ t → x ∈ s) ∧
+      f (map prod (powersetCard (card s - m) s)).sum ≤ f t.prod := by
+  set g := fun t : Multiset α ↦ t.prod
+  obtain ⟨b, hb_in, hb_le⟩ :=
+    IsNonarchimedean.multiset_image_add hf_na g (powersetCard (card s - m) s)
+  have hb : b ≤ s ∧ card b = card s - m := by
+    rw [← mem_powersetCard]
+    apply hb_in
+    refine card_pos.mp ?_
+    rw [card_powersetCard]
+    exact Nat.choose_pos ((card s).sub_le m)
+  exact ⟨b, hb.2, fun x hx ↦ mem_of_le hb.left hx, hb_le⟩
+
+end Multiset
 
 /-- If `f` is a nonarchimedean additive group seminorm on a commutative ring `α`, `n : ℕ`, and
   `a b : α`, then we can find `m : ℕ` such that `m ≤ n` and
