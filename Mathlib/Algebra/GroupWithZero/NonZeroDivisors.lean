@@ -114,6 +114,7 @@ open nonZeroDivisors
 section MonoidWithZero
 variable {F M₀ M₀' : Type*} [MonoidWithZero M₀] [MonoidWithZero M₀'] {r x y : M₀}
 
+-- this lemma reflects symmetry-breaking in the definition of `nonZeroDivisors`
 lemma nonZeroDivisorsLeft_eq_nonZeroDivisors : nonZeroDivisorsLeft M₀ = nonZeroDivisors M₀ := rfl
 
 lemma nonZeroDivisorsRight_eq_nonZeroSMulDivisors :
