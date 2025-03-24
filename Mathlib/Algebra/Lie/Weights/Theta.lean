@@ -100,15 +100,11 @@ lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
 theorem pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
   calc
     (((t : K) • (ad K L e)) ^ 3) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 2) f) := rfl
-    _ = ((t : K) • (ad K L e)) (((2 : ℕ).factorial : ℚ) • ((2 : ℕ).factorial : ℚ)⁻¹ • ((((t : K) • (ad K L e)) ^ 2)) f) := by
-      simp_all only [LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat, ne_eq, OfNat.ofNat_ne_zero,
-        not_false_eq_true, smul_inv_smul₀]
-    _ = ((t : K) • (ad K L e)) (((2 : ℕ).factorial : ℚ) • (-(t : K) ^ 2 • e)) := by
+    _ = ((t : K) • (ad K L e)) ((-2 : ℚ) • ((t : K) ^ 2 • e)) := by
       rw [pow_2_ad_e_f t ht]
-      simp
-    _ = ((2 : ℕ).factorial : ℚ) • (-(t : K) ^ 2) • (((t : K) • (ad K L e)) e) := by
-      simp_all only [Nat.factorial_two, Nat.cast_ofNat, neg_smul, smul_neg, LinearMap.smul_apply, ad_apply, lie_neg,
-        lie_smul, lie_self, smul_zero, neg_zero]
+    _ = (-2 : ℚ) • (-(t : K) ^ 2) • (((t : K) • (ad K L e)) e) := by
+      simp only [neg_smul, LinearMap.smul_apply, ad_apply, lie_neg, lie_smul, lie_self, smul_zero,
+        neg_zero]
     _ = 0 := by
       simp_all only [Nat.factorial_two, Nat.cast_ofNat, LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
 
