@@ -2994,6 +2994,7 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Matroid.Loop
 import Mathlib.Data.Matroid.Map
+import Mathlib.Data.Matroid.Minor.Basic
 import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.Data.Matroid.Restrict
