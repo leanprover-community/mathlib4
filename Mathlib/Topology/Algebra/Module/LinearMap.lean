@@ -450,11 +450,7 @@ variable {R E F : Type*} [Semiring R]
 /-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
 lemma _root_.LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
     (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
-  have : g ∘ f = _root_.id := calc g ∘ f
-      _ = (g.comp f) := by rw [ContinuousLinearMap.coe_comp']
-      _ = ( ContinuousLinearMap.id R E) := by rw [hinv]
-      _ = _root_.id := by rw [ContinuousLinearMap.coe_id']
-  exact congrFun this
+  simpa [← Function.rightInverse_iff_comp] using congr(⇑$hinv)
 
 /-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
 lemma _root_.RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
