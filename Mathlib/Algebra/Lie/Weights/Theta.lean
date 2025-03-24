@@ -52,6 +52,7 @@ lemma exp_ad_e_apply (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) 
   convert rfl
 
 
+
 /-
 noncomputable def exp_ad_f (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) : L ≃ₗ⁅K⁆ L := by
   let D := LieDerivation.instDerivation K L (-(t⁻¹ : K) • f)
@@ -70,46 +71,35 @@ noncomputable def theta (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f
 open Finset
 open scoped Nat
 
-lemma pow_0_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
-  ((0 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L e)) ^ 0) f = f := by
-  simp
+lemma pow_0_ad_e_e (t : Kˣ) : (((t : K) • (ad K L e)) ^ 0) e = e := rfl
+
+lemma pow_1_ad_e_e (t : Kˣ) : (((t : K) • (ad K L e)) ^ 1) e = 0 := by
+  rw [pow_one, LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
+
+lemma pow_0_ad_e_f (t : Kˣ) : (((t : K) • (ad K L e)) ^ 0) f = f := rfl
 
 lemma pow_1_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
-  ((1 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L e)) ^ 1) f = (t : K) • h := by
-  simp
-  rw [ht.lie_e_f]
+  (((t : K) • (ad K L e)) ^ 1) f = (t : K) • h := by
+  rw [pow_one, LinearMap.smul_apply, ad_apply, ht.lie_e_f]
 
-lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
-  ((2 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L e)) ^ 2) f = -(t : K) ^ 2 • e := by
-  simp
-  have mi : (t : K) • (t : K) • (2 : ℕ) • e = (2 : ℚ) • (t : K) • (t : K) • e := by
+lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 2) f =
+    (-2 : ℚ) • (t : K) ^ 2 • e := by
+  have h₁ : ((t : K) • ((t : K) • ((2 : ℕ) • e))) = 2 • (t : K) ^ 2 • e := by
     simp [two_smul]
-
-  have mi2 [Field K] [CharZero K] (t : Kˣ) : (t : K) * (t : K) = (t : K) ^ 2 := by
-    ring
-
-  have hhhh : (2 : ℚ)⁻¹ • ((t : K) • ((t : K) • ((2 : ℕ) • e))) = (t : K) ^ 2 • e := by
-    rw [mi]
     rw [← mul_smul]
-    simp
-    rw [← mul_smul]
-    rw [mi2]
+    ring_nf
 
   calc
-  ((2 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 2) f = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) (((t : K) • (ad K L) e) f) := by
-    exact rfl
-  _ = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) (((1 : ℕ).factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ 1) f) := by
-    simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀, Nat.factorial_two, Nat.cast_ofNat,
-      LinearMap.smul_apply, ad_apply, map_smul, Nat.factorial_one, Nat.cast_one, inv_one, pow_one, one_smul]
-  _ = ((2 : ℕ).factorial : ℚ)⁻¹ • ((t : K) • (ad K L) e) ((t : K) • h) := by rw [pow_1_ad_e_f t ht]
-  _ = -(t : K) ^ 2 • e := by
-    simp
-    rw [← lie_skew]
-    rw [ht.lie_h_e_nsmul]
-    simp
-    rw [hhhh]
-  _ = -((t : K) ^ 2 • e) := by
-    simp_all only [ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_smul_smul₀, neg_smul]
+    (((t : K) • (ad K L e)) ^ 2) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) f) := by
+      exact rfl
+    _ = (-2 : ℚ) • (t : K) ^ 2 • e := by
+      rw [pow_1_ad_e_f t ht, map_smul, LinearMap.smul_apply, ad_apply, neg_smul, ← lie_skew,
+        ht.lie_h_e_nsmul]
+      simp only [smul_neg, neg_inj]
+      rw [h₁]
+      exact Eq.symm (ofNat_smul_eq_nsmul ℚ 2 (↑t ^ 2 • e))
+
+
 
 theorem pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
   calc
@@ -120,12 +110,31 @@ theorem pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L 
         not_false_eq_true, smul_inv_smul₀]
     _ = ((t : K) • (ad K L e)) (((2 : ℕ).factorial : ℚ) • (-(t : K) ^ 2 • e)) := by
       rw [pow_2_ad_e_f t ht]
+      simp
     _ = ((2 : ℕ).factorial : ℚ) • (-(t : K) ^ 2) • (((t : K) • (ad K L e)) e) := by
       simp_all only [Nat.factorial_two, Nat.cast_ofNat, neg_smul, smul_neg, LinearMap.smul_apply, ad_apply, lie_neg,
         lie_smul, lie_self, smul_zero, neg_zero]
     _ = 0 := by
       simp_all only [Nat.factorial_two, Nat.cast_ofNat, LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
 
+
+
+
+lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
+    (exp_ad_e H hα he t) e = e := by
+  rw [exp_ad_e_apply]
+  have ttt2 : ((t : K) • (LieDerivation.ad K L e)).exp (nil2 H t he hα) e = IsNilpotent.exp ((t : K) • (LieDerivation.ad K L e)).toLinearMap e := by
+    apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))
+  rw [ttt2]
+  have nil3 : IsNilpotent (t • (ad K L e)) := by
+    have ttt := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα (he' H t he)
+    simp_all only [LieHom.map_smul]
+    simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
+    exact ttt
+  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_1_ad_e_e t) nil3
+  simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply,
+    LinearMap.smul_def, smul_assoc]
+  simp
 
 
 lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
@@ -158,11 +167,12 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
     simp_all only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, LinearMap.one_apply, one_smul, zero_add,
       Nat.factorial_one, pow_one, LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat]
   rw [unf]
-  rw [pow_0_ad_e_f t ht, pow_1_ad_e_f t ht, pow_2_ad_e_f t ht]
+  rw [pow_0_ad_e_f t, pow_1_ad_e_f t ht, pow_2_ad_e_f t ht]
   simp
   simp_all only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, LinearMap.one_apply, one_smul,
     Nat.factorial_one, pow_one, LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat]
-  abel
+  abel_nf
+
 
 /-
 theorem theta_e {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
