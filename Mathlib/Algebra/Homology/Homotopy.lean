@@ -266,7 +266,7 @@ of complexes. -/
 theorem nullHomotopicMap'_comp (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) (g : D ⟶ E) :
     nullHomotopicMap' hom ≫ g = nullHomotopicMap' fun i j hij => hom i j hij ≫ g.f j := by
   ext n
-  rw [nullHomotopicMap',nullHomotopicMap_comp]
+  rw [nullHomotopicMap', nullHomotopicMap_comp]
   congr
   ext i j
   split_ifs
