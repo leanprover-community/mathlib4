@@ -5,7 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Order.Bounds.Image
 import Mathlib.Order.CompleteLattice.Basic
-import Mathlib.Order.GaloisConnection.Defs
+import Mathlib.Order.WithBot
 
 /-!
 # Galois connections, insertions and coinsertions
