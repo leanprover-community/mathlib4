@@ -30,8 +30,7 @@ instance instNoMaxOrder : NoMaxOrder ℕ where
 
 /-! ### Miscellaneous lemmas -/
 
--- We want to use this lemma earlier than the lemma simp can prove it with
-@[simp, nolint simpNF] protected lemma bot_eq_zero : ⊥ = 0 := rfl
+@[simp high] protected lemma bot_eq_zero : ⊥ = 0 := rfl
 
 /-- `Nat.find` is the minimum natural number satisfying a predicate `p`. -/
 lemma isLeast_find {p : ℕ → Prop} [DecidablePred p] (hp : ∃ n, p n) :
