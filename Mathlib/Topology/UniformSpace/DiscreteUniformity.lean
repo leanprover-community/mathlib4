@@ -44,8 +44,8 @@ instance : DiscreteTopology X where
   eq_bot := by
     rw [DiscreteUniformity.eq_bot (X := X), UniformSpace.toTopologicalSpace_bot]
 
-theorem idRel_mem_uniformity_iff {X : Type*} [UniformSpace X] :
-    idRel ∈ uniformity X ↔ DiscreteUniformity X := by
+theorem _root_.discreteUniformity_iff_idRel_mem_uniformity {X : Type*} [UniformSpace X] :
+    DiscreteUniformity X ↔ idRel ∈ uniformity X := by
   rw [← uniformSpace_eq_bot, discreteUniformity_iff_eq_bot]
 
 theorem idRel_mem_uniformity : idRel ∈ uniformity X :=
@@ -70,7 +70,8 @@ instance [Group X] : UniformGroup X where
   uniformContinuous_div := uniformContinuous (X × X) fun p ↦ p.1 / p.2
 
 variable {X} in
-/-- A Cauchy filter in a discrete uniform space is contained in a principal filter. -/
+/-- A Cauchy filter in a discrete uniform space is contained in the principal filter
+of a point. -/
 theorem eq_pure_of_cauchy {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
   rcases hα with ⟨α_ne_bot, α_le⟩
   simp only [DiscreteUniformity.eq_principal_idRel, le_principal_iff, mem_prod_iff] at α_le
