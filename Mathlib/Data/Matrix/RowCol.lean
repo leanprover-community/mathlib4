@@ -37,7 +37,7 @@ def replicateCol (ι : Type*) (w : m → α) : Matrix m ι α :=
 
 @[deprecated (since := "2025-03-20")] alias col := replicateCol
 
--- TODO: set as an equation lemma for `col`, see https://github.com/leanprover-community/mathlib4/pull/3024
+-- TODO: set as an equation lemma for `replicateCol`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem replicateCol_apply {ι : Type*} (w : m → α) (i) (j : ι) : replicateCol ι w i j = w i :=
   rfl
@@ -56,7 +56,7 @@ def replicateRow (ι : Type*) (v : n → α) : Matrix ι n α :=
 
 variable {ι : Type*}
 
--- TODO: set as an equation lemma for `row`, see https://github.com/leanprover-community/mathlib4/pull/3024
+-- TODO: set as an equation lemma for `replicateRow`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem replicateRow_apply (v : n → α) (i : ι) (j) : replicateRow ι v i j = v j :=
   rfl
