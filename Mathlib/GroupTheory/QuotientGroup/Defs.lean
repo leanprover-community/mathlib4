@@ -8,7 +8,6 @@ Authors: Kevin Buzzard, Patrick Massot
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.GroupTheory.Congruence.Opposite
 
 /-!
 # Quotients of groups by normal subgroups
@@ -56,7 +55,7 @@ instance Quotient.group : Group (G ⧸ N) :=
 
 /--
 The congruence relation defined by the kernel of a group homomorphism `f` is equal to the symmetric
-of congruence relation defined by the kernel of `f`.
+of the congruence relation defined by the kernel of `f`.
 -/
 @[to_additive
 "The additive congruence relation defined by the kernel of a additive group homomorphism `f`
@@ -165,7 +164,7 @@ theorem mk_zpow (a : G) (n : ℤ) : ((a ^ n : G) : Q) = (a : Q) ^ n :=
 
 /-- The subgroup of `G` defined by the class of `1` for a congruence relation on a group `G`. -/
 @[to_additive "The `AddSubgroup` of `G` defined by the class of `0` for an additive
-congruence relation on an `AddGroup` `M`."]
+congruence relation on an `AddGroup` `G`."]
 protected def _root_.Con.subgroup (c : Con G) : Subgroup G where
   carrier := { x | c 1 x }
   one_mem' := c.refl 1
