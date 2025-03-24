@@ -337,7 +337,7 @@ theorem sub_div_of_dvd {x y z : R} (h1 : z ≠ 0) (h2 : z ∣ y) : x - y / z = (
   rw [mul_sub]
   rw [EuclideanDomain.mul_div_cancel' h1 h2]
 
-theorem div_div {x y z : R}  (h1 : y ∣ x) (h2 : z ∣ (x / y)) :
+theorem div_div {x y z : R} (h1 : y ∣ x) (h2 : z ∣ (x / y)) :
     x / y / z = x / (y * z) := by
   by_cases h3 : y = 0
   · rw [h3]
