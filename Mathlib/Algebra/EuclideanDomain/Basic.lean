@@ -320,8 +320,7 @@ theorem mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b
 
 theorem div_add_of_dvd {x y z : R} (h1 : y ≠ 0) (h2 : y ∣ x) : x / y + z = (x + y * z) / y := by
   apply eq_div_of_mul_eq_right h1
-  rw [mul_add]
-  rw [EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
 
 theorem div_sub_of_dvd {x y z : R} (h1 : y ≠ 0) (h2 : y ∣ x) : x / y - z = (x - y * z) / y := by
   apply eq_div_of_mul_eq_right h1
