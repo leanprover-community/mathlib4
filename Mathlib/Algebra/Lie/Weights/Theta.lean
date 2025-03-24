@@ -138,7 +138,13 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
     apply LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))
 
   rw [ttt2]
-  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht)
+  have nil3 : IsNilpotent (t • (ad K L e)) := by
+    have ttt := LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα (he' H t he)
+    simp_all only [LieHom.map_smul]
+    simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
+    exact ttt
+
+  have sss := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht) nil3
   simp_all only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply,
     LinearMap.smul_def, smul_assoc]
   have unf : ∑ x ∈ range 3, (x.factorial : ℚ)⁻¹ • (((t : K) • (ad K L) e) ^ x) f =

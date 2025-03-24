@@ -198,6 +198,8 @@ theorem exp_eq_sum' {M : Type*} [AddCommGroup M] [Module A M] {a : A} {m : M} {k
   have r := exp_eq_sum r
   rw [r]
   rw [Finset.sum_smul]
+  sorry
+
 
 
 
