@@ -4533,10 +4533,12 @@ import Mathlib.Order.Heyting.Hom
 import Mathlib.Order.Heyting.Regular
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Hom.Bounded
+import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Ideal
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Interval.Basic
