@@ -112,6 +112,9 @@ noncomputable def infinitePiNat : Measure (Π n, X n) :=
 instance : IsProbabilityMeasure (Measure.infinitePiNat μ) := by
   rw [Measure.infinitePiNat]; infer_instance
 
+/-- Let `μ : (i : Ioc a c) → Measure (X i)` be a family of measures. Up to an equivalence,
+`(⨂ i : Ioc a b, μ i) ⊗ (⨂ i : Ioc b c, μ i) = ⨂ i : Ioc a c, μ i`, where `⊗` denotes the
+product of measures. -/
 lemma pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) :
     ((Measure.pi (fun i : Ioc a b ↦ μ i)).prod (Measure.pi (fun i : Ioc b c ↦ μ i))).map
       (IocProdIoc a b c) = Measure.pi (fun i : Ioc a c ↦ μ i) := by
@@ -125,6 +128,9 @@ lemma pi_prod_map_IocProdIoc {a b c : ℕ} (hab : a ≤ b) (hbc : b ≤ c) :
   · rw [Function.extend_val_apply hx, Function.extend_val_apply (Ioc_subset_Ioc_left hab hx),
     restrict₂]
 
+/-- Let `μ : (i : Iic b) → Measure (X i)` be a family of measures. Up to an equivalence,
+`(⨂ i : Iic a, μ i) ⊗ (⨂ i : Ioc a b, μ i) = ⨂ i : Iic b, μ i`, where `⊗` denotes the
+product of measures. -/
 lemma pi_prod_map_IicProdIoc {a b : ℕ} :
     ((Measure.pi (fun i : Iic a ↦ μ i)).prod (Measure.pi (fun i : Ioc a b ↦ μ i))).map
       (IicProdIoc a b) = Measure.pi (fun i : Iic b ↦ μ i) := by
@@ -142,6 +148,8 @@ lemma pi_prod_map_IicProdIoc {a b : ℕ} :
     · exact isProjectiveMeasureFamily_pi μ (Iic a) (Iic b) (Iic_subset_Iic.2 hba) |>.symm
     all_goals fun_prop
 
+/-- Let `μ (i + 1) : Measure (X (i + 1))` be a measure. Up to an equivalence,
+`μ i = ⨂ j : Ioc i (i + 1), μ i`, where `⊗` denotes the product of measures. -/
 lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ n)] (n : ℕ) :
     (μ (n + 1)).map (piSingleton n) = Measure.pi (fun i : Ioc n (n + 1) ↦ μ i) := by
   refine (Measure.pi_eq fun s hs ↦ ?_).symm
@@ -155,6 +163,9 @@ lemma map_piSingleton (μ : (n : ℕ) → Measure (X n)) [∀ n, SigmaFinite (μ
 
 end Measure
 
+/-- `partialTraj κ a b` is a kernel which up to an equivalence is equal to
+`Kernel.id ×ₖ (κ a ⊗ₖ ... ⊗ₖ κ (b - 1))`. This lemma therefore states that if the kernels `κ`
+are constant then their composition-product is the product measure. -/
 theorem partialTraj_const_restrict₂ {a b : ℕ} :
     (partialTraj (fun n ↦ const _ (μ (n + 1))) a b).map (restrict₂ Ioc_subset_Iic_self) =
     const _ (Measure.pi (fun i : Ioc a b ↦ μ i)) := by
@@ -180,6 +191,10 @@ theorem partialTraj_const_restrict₂ {a b : ℕ} :
     · rw [Set.not_nonempty_iff_eq_empty.1 hs]
       simp
 
+/-- `partialTraj κ a b` is a kernel which up to an equivalence is equal to
+`Kernel.id ×ₖ (κ a ⊗ₖ ... ⊗ₖ κ (b - 1))`. This lemma therefore states that if the kernel `κ i`
+is constant equal to `μ i` for all `i`, then up to an equivalence
+`partialTraj κ a b = Kernel.id ×ₖ Kernel.const (⨂ μ i)`. -/
 theorem partialTraj_const {a b : ℕ} :
     partialTraj (fun n ↦ const _ (μ (n + 1))) a b =
       (Kernel.id ×ₖ (const _ (Measure.pi (fun i : Ioc a b ↦ μ i)))).map (IicProdIoc a b) := by
@@ -196,11 +211,13 @@ theorem isProjectiveLimit_infinitePiNat :
     compProd_const, pi_prod_map_IicProdIoc]
   all_goals fun_prop
 
+/-- Restricting the product measure to a product indexed by a finset yields the usual
+product measure. -/
 lemma infinitePiNat_map_restrict (I : Finset ℕ) :
     (infinitePiNat μ).map I.restrict = Measure.pi fun i : I ↦ μ i :=
   isProjectiveLimit_infinitePiNat μ I
 
-theorem piContent_eq_infinitePiNat {A : Set ((n : ℕ) → X n)} (hA : A ∈ measurableCylinders X) :
+theorem piContent_eq_infinitePiNat {A : Set (Π n, X n)} (hA : A ∈ measurableCylinders X) :
     piContent μ A = infinitePiNat μ A := by
   obtain ⟨s, S, mS, rfl⟩ : ∃ s S, MeasurableSet S ∧ A = cylinder s S := by
     simpa [mem_measurableCylinders] using hA
@@ -220,6 +237,9 @@ open Measure
 variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
   (μ : (i : ι) → Measure (X i)) [hμ : ∀ i, IsProbabilityMeasure (μ i)]
 
+/-- If we push the product measure forward by a reindexing equivalence, we get a product measure
+on the reindexed product in the sense that it coincides with `piContent μ` over
+measurable cylinders. -/
 lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i)}
     (hs : s ∈ measurableCylinders X) :
     (infinitePiNat (fun n ↦ μ (e n))).map (piCongrLeft X e) s = piContent μ s := by
@@ -339,6 +359,8 @@ theorem isProjectiveLimit_infinitePi :
   · exact generateFrom_measurableCylinders.symm
   · exact cylinder_mem_measurableCylinders _ _ hs
 
+/-- Restricting the product measure to a product indexed by a finset yields the usual
+product measure. -/
 theorem infinitePi_map_restrict {I : Finset ι} :
     (Measure.infinitePi μ).map I.restrict = Measure.pi fun i : I ↦ μ i :=
   isProjectiveLimit_infinitePi μ I
@@ -348,6 +370,8 @@ instance : IsProbabilityMeasure (infinitePi μ) := by
   rw [← cylinder_univ ∅, cylinder, ← map_apply (measurable_restrict _) .univ,
     infinitePi_map_restrict, measure_univ]
 
+/-- To prove that a measure is equal to the product measure it is enough to check that it
+it gives the same measure to measurable boxes. -/
 theorem eq_infinitePi {ν : Measure (Π i, X i)}
     (hν : ∀ s : Finset ι, ∀ t : (i : ι) → Set (X i),
       (∀ i ∈ s, MeasurableSet (t i)) → ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)) :
