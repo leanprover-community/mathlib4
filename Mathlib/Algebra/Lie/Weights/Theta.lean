@@ -152,7 +152,7 @@ open scoped Nat
 lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) :
     (exp_ad_e H hα he t) e = e := by
   rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
-  have := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_1_ad_e_e t)
+  have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_1_ad_e_e t)
     (nilpotent_e H t he hα)
   simp only [LinearMap.one_apply, LieDerivation.coe_smul_linearMap,
     LieDerivation.coe_ad_apply_eq_ad_apply]
@@ -162,7 +162,7 @@ lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) :
 lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_e H hα he t) f = f + (t : K) • h - ((t : K) ^ 2) • e := by
   rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
-  have := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht)
+  have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht)
     (nilpotent_e H t he hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
   simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
@@ -176,20 +176,18 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
   field_simp
 
 lemma exp_ad_e_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
-    (exp_ad_e H hα he t) h = f + (t : K) • h - ((t : K) ^ 2) • e := by
+    (exp_ad_e H hα he t) h = h - (2 : ℤ) • (t : K) • e := by
   rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
-  have := IsNilpotent.exp_eq_sum' (M := L) (A := (Module.End K L)) (pow_3_ad_e_h t ht)
+  have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_2_ad_e_h t ht)
     (nilpotent_e H t he hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
   simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
-  rw [this, Finset.sum_range_succ, Finset.sum_range_succ, Finset.sum_range_succ,
-    Finset.sum_range_zero, zero_add, pow_0_ad_e_f t, pow_1_ad_e_f t ht, pow_2_ad_e_f t ht,
-      Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Nat.factorial_one, Nat.factorial_two]
+  rw [this, Finset.sum_range_succ, Finset.sum_range_succ,
+    Finset.sum_range_zero, zero_add, pow_0_ad_e_h t, pow_1_ad_e_h t ht,
+      Nat.factorial_zero, Nat.cast_one, inv_one, one_smul, Nat.factorial_one]
   abel_nf
-  refine (add_right_inj f).mpr ?_
-  simp only [neg_smul, smul_neg, add_right_inj]
-  rw [two_smul, smul_add, ← add_smul]
-  field_simp
+  refine (add_right_inj h).mpr ?_
+  rw [Nat.cast_one, inv_one, neg_smul, smul_neg, one_smul]
 
 end ExpAdAction
 
