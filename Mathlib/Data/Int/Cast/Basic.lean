@@ -70,7 +70,7 @@ theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
-  rw [← natCast_one, cast_natCast, Nat.cast_one]
+  rw [← Int.natCast_one, cast_natCast, Nat.cast_one]
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
