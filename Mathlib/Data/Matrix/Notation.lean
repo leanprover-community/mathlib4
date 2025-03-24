@@ -121,7 +121,7 @@ def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption
     withAppArg do
       if m = 0 then
         guard <| (← getExpr).isAppOfArity ``vecEmpty 1
-        let commas := mkArray n (mkAtom ",")
+        let commas := .replicate n (mkAtom ",")
         `(!![$[,%$commas]*])
       else
         if n = 0 then
