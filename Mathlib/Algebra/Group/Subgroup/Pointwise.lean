@@ -271,7 +271,7 @@ theorem coe_mul_of_right_le_normalizer_left (N H : Subgroup G) (hLE : H ≤ N.no
 @[to_additive "The carrier of `H ⊔ N` is just `↑H + ↑N` (pointwise set addition)
 when `N` is normal."]
 theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) = H * N :=
-  mul_le_normalizer H N le_normalizer_of_normal
+  coe_mul_of_left_le_normalizer_right H N le_normalizer_of_normal
 
 /-- The carrier of `N ⊔ H` is just `↑N * ↑H` (pointwise set product) when `N` is normal. -/
 @[to_additive "The carrier of `N ⊔ H` is just `↑N + ↑H` (pointwise set addition)
