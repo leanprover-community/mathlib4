@@ -8,7 +8,7 @@ import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-! # Discrete uniformity
 
-The discrete uniformity is the smallest possibly uniformity, the one for which
+The discrete uniformity is the smallest possible uniformity, the one for which
 the diagonal is an entourage of itself.
 
 It induces the discrete topology.
@@ -26,7 +26,7 @@ class DiscreteUniformity (X : Type*) [u : UniformSpace X] : Prop where
 
 namespace DiscreteUniformity
 
-/-- The bot uniformity is the discrete uniformity -/
+/-- The bot uniformity is the discrete uniformity. -/
 instance (X : Type*) : @DiscreteUniformity X ⊥ :=
   @DiscreteUniformity.mk X ⊥ rfl
 
@@ -39,7 +39,7 @@ theorem _root_.discreteUniformity_iff_eq_principal_idRel {X : Type*} [UniformSpa
 theorem eq_principal_idRel : uniformity X = principal idRel :=
   discreteUniformity_iff_eq_principal_idRel.mp inferInstance
 
-/-- The discrete uniformity induces the discrete topology -/
+/-- The discrete uniformity induces the discrete topology. -/
 instance : DiscreteTopology X where
   eq_bot := by
     rw [DiscreteUniformity.eq_bot (X := X), UniformSpace.toTopologicalSpace_bot]
@@ -52,30 +52,29 @@ theorem idRel_mem_uniformity : idRel ∈ uniformity X :=
   idRel_mem_uniformity_iff.mpr inferInstance
 
 variable {X} in
-/-- A product of spaces with discrete uniformity has a discrete uniformity -/
+/-- A product of spaces with discrete uniformity has a discrete uniformity. -/
 instance {Y : Type*} [UniformSpace Y] [DiscreteUniformity Y] :
-    DiscreteUniformity (X × Y) where
-  eq_bot := by
-    rw [instUniformSpaceProd, UniformSpace.uniformSpace_eq_bot, uniformity_prod_eq_comap_prod,
-      mem_comap]
-    refine ⟨idRel.prod idRel, prod_mem_prod (idRel_mem_uniformity _) (idRel_mem_uniformity _), ?_⟩
-    rintro ⟨⟨x, y⟩, x', y'⟩ h
-    simpa only [mem_idRel, Prod.mk.injEq] using h
+    DiscreteUniformity (X × Y) := by
+  simp [discreteUniformity_iff_eq_principal_idRel, uniformity_prod_eq_comap_prod, 
+    eq_principal_idRel, idRel, Set.prod_eq, Prod.ext_iff, Set.setOf_and]
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.cauchy_le_pure := cauchy_eq_pure
 
 variable {x} in
-/-- On a space with a discrete uniformity, any function is uniformly continuous -/
+/-- On a space with a discrete uniformity, any function is uniformly continuous. -/
 theorem uniformContinuous {Y : Type*} [UniformSpace Y] (f : X → Y) :
     UniformContinuous f := by
   simp only [uniformContinuous_iff, DiscreteUniformity.eq_bot, bot_le]
 
-/-- The discrete uniformity makes a group a `UniformGroup -/
-@[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`"]
+/-- The discrete uniformity makes a group a `UniformGroup. -/
+@[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`."]
 instance [Group X] : UniformGroup X where
   uniformContinuous_div := uniformContinuous (X × X) fun p ↦ p.1 / p.2
 
 variable {X} in
 /-- A Cauchy filter in a discrete uniform space is contained in a principal filter. -/
-theorem cauchy_le_pure {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
+theorem eq_pure_of_cauchy {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
   rcases hα with ⟨α_ne_bot, α_le⟩
   simp only [DiscreteUniformity.eq_principal_idRel, le_principal_iff, mem_prod_iff] at α_le
   obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := α_le
@@ -83,11 +82,11 @@ theorem cauchy_le_pure {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure 
     (Filter.nonempty_of_mem hT) H
   exact ⟨x, α_ne_bot.le_pure_iff.mp <| le_pure_iff.mpr hS⟩
 
-/-- The discrete uniformity makes a space complete -/
+/-- The discrete uniformity makes a space complete. -/
 instance : CompleteSpace X where
   complete {f} hf := by
     obtain ⟨x, rfl⟩ := cauchy_le_pure hf
-    exact ⟨x, Specializes.pure_le_nhds fun ⦃U⦄ a ↦ a⟩
+    exact ⟨x, pure_le_nhds x⟩
 
 variable {X}
 
@@ -95,7 +94,13 @@ variable {X}
 noncomputable def cauchyConst {α : Filter X} (hα : Cauchy α) : X :=
   (cauchy_le_pure hα).choose
 
-theorem eq_const_of_cauchy {α : Filter X} (hα : Cauchy α) : α = pure (cauchyConst hα) :=
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.cauchyConst := cauchyConst
+
+theorem eq_pure_cauchyConst {α : Filter X} (hα : Cauchy α) : α = pure (cauchyConst hα) :=
   (DiscreteUniformity.cauchy_le_pure hα).choose_spec
+
+@[deprecated (since := "2025-03-23")]
+alias _root_.UniformSpace.DiscreteUnif.eq_const_of_cauchy := eq_pure_cauchyConst
 
 end DiscreteUniformity
