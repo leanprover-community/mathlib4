@@ -208,8 +208,8 @@ lemma ceil_add_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌈r + ofNat(n)
 lemma floor_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌊r - ofNat(n)⌋ₑ = ⌊r⌋ₑ - ofNat(n) :=
   floor_sub_toENNReal r n
 
-@[simp] lemma ceil_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] : ⌈r - ofNat(n)⌉ₑ = ⌈r⌉ₑ - ofNat(n) :=
-  ceil_sub_toENNReal r n
+@[simp] lemma ceil_sub_ofNat (r : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
+    ⌈r - ofNat(n)⌉ₑ = ⌈r⌉ₑ - ofNat(n) := ceil_sub_toENNReal r n
 
 @[bound]
 lemma ceil_lt_add_one (hr : r ≠ ∞) : (⌈r⌉ₑ : ℝ≥0∞) < r + 1 := by
