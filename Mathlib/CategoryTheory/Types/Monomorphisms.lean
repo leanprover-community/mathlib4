@@ -6,7 +6,6 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Limits.Connected
 import Mathlib.CategoryTheory.Limits.TypesFiltered
 import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 
 /-!
