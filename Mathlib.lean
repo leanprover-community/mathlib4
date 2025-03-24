@@ -5578,7 +5578,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.Field
 import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.InfiniteSum.GroupCompletion
 import Mathlib.Topology.Algebra.InfiniteSum.Module
-import Mathlib.Topology.Algebra.InfiniteSum.MultipliableTendstoUniformly
 import Mathlib.Topology.Algebra.InfiniteSum.NatInt
 import Mathlib.Topology.Algebra.InfiniteSum.Nonarchimedean
 import Mathlib.Topology.Algebra.InfiniteSum.Order
@@ -6029,6 +6028,7 @@ import Mathlib.Topology.UniformSpace.HeineCantor
 import Mathlib.Topology.UniformSpace.Matrix
 import Mathlib.Topology.UniformSpace.OfCompactT2
 import Mathlib.Topology.UniformSpace.OfFun
+import Mathlib.Topology.UniformSpace.MultipliableTendstoUniformly
 import Mathlib.Topology.UniformSpace.Pi
 import Mathlib.Topology.UniformSpace.Real
 import Mathlib.Topology.UniformSpace.Separation

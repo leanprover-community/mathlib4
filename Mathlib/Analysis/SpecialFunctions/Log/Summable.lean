@@ -13,10 +13,8 @@ import Mathlib.Analysis.NormedSpace.FunctionSeries
 We give conditions under which the logarithms of a summble sequence is summable. We also give some
 results about when the sums converge uniformly.
 
-TODO: Generalise the indexing set from ℕ to some arbitrary type, but this needs
-Summable.tendsto_atTop_zero to first be done. Also remove hff from
-`Complex.multipliable_one_add_of_summable` once we have vanishing/non-vanishing results for infinite
-products.
+TODO: Remove hff from `Complex.multipliable_one_add_of_summable` once we have
+vanishing/non-vanishing results for infinite products.
 
 -/
 
@@ -52,29 +50,15 @@ lemma Real.multipliable_one_add_of_summable (f : ι → ℝ) (hf : Summable f) :
 
 lemma Complex.tendstoUniformlyOn_tsum_log_one_add {α : Type*} {f : ι → α → ℂ} (K : Set α)
     {u : ι → ℝ} (hu : Summable u) (h : ∀ᶠ n in cofinite, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun n a => ∑ i ∈ n, (Complex.log (1 + f i a)))
-    (fun a => ∑' i : ι, Complex.log (1 + f i a)) atTop K := by
-  apply tendstoUniformlyOn_tsum_of_cofinite_eventually (hu.mul_left (3/2))
-  have := ((Summable.tendsto_cofinite_zero hu.norm)).eventually_le_const (one_half_pos)
-  rw [eventually_iff_exists_mem] at *
-  obtain ⟨N, hn1, hN⟩ := this
-  obtain ⟨N2, hn2, hN2⟩ := h
-  refine ⟨min N N2, ?_ , fun n hn x hx => ?_⟩
-  · simp [hn1, hn2]
-  apply le_trans (Complex.norm_log_one_add_half_le_self (z := (f n x)) ?_)
-  · simp only [ Nat.ofNat_pos, div_pos_iff_of_pos_left, mul_le_mul_left]
-    apply hN2
-    · exact Set.mem_of_mem_inter_right hn
-    · exact hx
-  · apply le_trans (hN2 n (Set.mem_of_mem_inter_right hn) x hx)
-      (le_trans (Real.le_norm_self (u n)) (hN n ((Set.mem_of_mem_inter_left hn))))
+    TendstoUniformlyOn (fun s a ↦ ∑ i ∈ s, log (1 + f i a)) (fun a ↦ ∑' i, log (1 + f i a))
+    atTop K := by
+  apply tendstoUniformlyOn_tsum_of_cofinite_eventually <| hu.mul_left (3 / 2)
+  filter_upwards [h, hu.tendsto_cofinite_zero.eventually_le_const one_half_pos] with i hi hn' x hx
+    using (norm_log_one_add_half_le_self <| (hi x hx).trans hn').trans (by simpa using hi x hx)
 
 lemma Complex.tendstoUniformlyOn_tsum_nat_log_one_add {α : Type*} {f : ℕ → α → ℂ} (K : Set α)
     {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) :
-    TendstoUniformlyOn (fun n a => ∑ i ∈ Finset.range n,
-    (Complex.log (1 + f i a))) (fun a => ∑' i : ℕ, Complex.log (1 + f i a)) atTop K := by
-  intro v hv
-  apply tendsto_finset_range.eventually
-    (Complex.tendstoUniformlyOn_tsum_log_one_add K hu (f := f) ?_ v hv)
-  rw [Nat.cofinite_eq_atTop]
-  exact h
+    TendstoUniformlyOn (fun n a ↦ ∑ i ∈ Finset.range n, log (1 + f i a))
+    (fun a ↦ ∑' i : ℕ, log (1 + f i a)) atTop K :=
+  fun v hv ↦ tendsto_finset_range.eventually
+    <| tendstoUniformlyOn_tsum_log_one_add K hu (Nat.cofinite_eq_atTop ▸ h) v hv

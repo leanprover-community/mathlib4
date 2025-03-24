@@ -13,42 +13,35 @@ form `1 + f n x` for a sequence `f n x` of complex numbers.
 
 -/
 
-open Filter Function Complex Real
-
-open scoped Interval Topology BigOperators Nat Complex
+open Filter Function Complex
 
 variable {α β ι : Type*}
 
-@[to_additive] --what do I call this?
-lemma TendstoUniformlyOn_Eventually_lt_mul_const [UniformSpace β] [Group β]
-    [UniformGroup β] [LinearOrder β] [OrderTopology β] [MulLeftStrictMono β] [MulRightMono β]
-    (f : ι → α → β)  {p : Filter ι} {g : α → β} {K : Set α} {T V : β} (htv : T < V)
+lemma TendstoUniformlyOn.eventually_forall_lt [UniformSpace β] [AddGroup β]
+    [UniformAddGroup β] [LinearOrder β] [OrderTopology β] [AddLeftStrictMono β] [AddRightMono β]
+    {f : ι → α → β} {p : Filter ι} {g : α → β} {K : Set α} {T V : β} (htv : T < V)
     (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → g x ≤ T) :
     ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x < V := by
-  rw [@tendstoUniformlyOn_iff_tendsto] at hf
-  simp only [uniformity_eq_comap_inv_mul_nhds_one, tendsto_iff_eventually, eventually_comap,
-    Prod.forall, uniformContinuous_def, mem_comap, forall_exists_index, and_imp] at *
+  rw [tendstoUniformlyOn_iff_tendsto] at hf
+  simp only [uniformity_eq_comap_neg_add_nhds_zero, tendsto_iff_eventually, eventually_comap,
+    Prod.forall] at *
   rw [Subtype.forall'] at hf
-  have hf2 := hf ⟨(fun x : β × β => x.1⁻¹ * x.2 < T⁻¹ * V), by
+  have hf2 := hf ⟨(fun x : β × β => -x.1 + x.2 < -T + V), by
     rw [eventually_iff_exists_mem]
-    refine ⟨{ x : β | x < T⁻¹ * V }, IsOpen.mem_nhds (isOpen_gt' (T⁻¹ * V)) (by simp [htv]) ,
+    refine ⟨{ x : β | x < -T + V }, IsOpen.mem_nhds (isOpen_gt' (-T + V)) (by simp [htv]) ,
       fun y hy a b hab => ?_⟩
-    simpa only [Subtype.forall, lt_inv_mul_iff_mul_lt, Set.mem_setOf_eq, hab] using hy⟩
+    simpa [hab] using hy⟩
   rw [eventually_prod_principal_iff, eventually_iff_exists_mem] at *
   obtain ⟨v, hv, H⟩ := hf2
   refine ⟨v, hv, fun y hy x hx => ?_⟩
-  simpa using (mul_lt_mul_of_le_of_lt (hg x hx) (H y hy x hx))
+  simpa using (add_lt_add_of_le_of_lt (hg x hx) (H y hy x hx))
 
-@[to_additive] --what do I call this? and is there an easier way to get this from the above?
-lemma TendstoUniformlyOn_Eventually_le_mul_const [UniformSpace β] [Group β]
-    [UniformGroup β] [LinearOrder β] [OrderTopology β] [MulLeftStrictMono β] [MulRightMono β]
+lemma TendstoUniformlyOn.eventually_forall_le [UniformSpace β] [AddGroup β]
+    [UniformAddGroup β] [LinearOrder β] [OrderTopology β] [AddLeftStrictMono β] [AddRightMono β]
     (f : ι → α → β)  {p : Filter ι} {g : α → β} {K : Set α} {T V : β} (htv : T < V)
     (hf : TendstoUniformlyOn f g p K) (hg : ∀ x, x ∈ K → g x ≤ T) :
     ∀ᶠ (n : ι) in p, ∀ x, x ∈ K → f n x ≤ V := by
-    have := TendstoUniformlyOn_Eventually_lt_mul_const f htv hf hg
-    rw [eventually_iff_exists_mem] at *
-    obtain ⟨v, hv, H⟩ := this
-    refine ⟨v, hv, fun n hn x hx => (H n hn x hx).le⟩
+    filter_upwards [hf.eventually_forall_lt htv hg] with i hi x hx using (hi x hx).le
 
 lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
     {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : BddAbove ((fun x => (g x).re) '' K)) :
@@ -56,7 +49,7 @@ lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : 
   obtain ⟨T, hT⟩ := hg
   simp only [mem_upperBounds, Set.mem_image, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂] at hT
-  have h2 := TendstoUniformlyOn_Eventually_le_add_const (fun n x => (f n x).re) (lt_add_one T)
+  have h2 := TendstoUniformlyOn.eventually_forall_le (fun n x => (f n x).re) (lt_add_one T)
     hf.re hT
   have w2 := tendstoUniformlyOn_univ.mpr <| UniformContinuousOn.comp_tendstoUniformly_eventually
     {x : ℂ | x.re ≤ T + 1} (fun a => K.restrict (f (a))) (fun b => g b) (by simpa using h2) ?_
@@ -84,7 +77,8 @@ lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
   congr
   exact funext fun y ↦ Complex.exp_log (hfn x hx y)
 
-/-- This is a version for nat that uses range in the products. -/
+/-- This is a version of `tendstoUniformlyOn_tprod_of_clog` for nat that uses range
+in the products. -/
 lemma tendstoUniformlyOn_tprod_nat_of_clog {f : ℕ → α → ℂ} {K : Set α}
     (h : ∀ x, x ∈ K → Summable fun n => log (f n x))
     (hf : TendstoUniformlyOn (fun n a => ∑ i ∈ n, log (f i a)) (fun a : α => ∑' n : ℕ, log (f n a))
