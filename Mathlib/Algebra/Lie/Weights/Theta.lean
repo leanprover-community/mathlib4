@@ -88,7 +88,6 @@ lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
     simp [two_smul]
     rw [← mul_smul]
     ring_nf
-
   calc
     (((t : K) • (ad K L e)) ^ 2) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) f) := by
       exact rfl
@@ -97,9 +96,7 @@ lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
         ht.lie_h_e_nsmul]
       simp only [smul_neg, neg_inj]
       rw [h₁]
-      exact Eq.symm (ofNat_smul_eq_nsmul ℚ 2 (↑t ^ 2 • e))
-
-
+      exact (ofNat_smul_eq_nsmul ℚ 2 ((t : K) ^ 2 • e)).symm
 
 theorem pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
   calc
