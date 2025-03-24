@@ -3,10 +3,9 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.Analytic.IsolatedZeros
 import Mathlib.Analysis.Calculus.ParametricIntegral
 import Mathlib.Analysis.Complex.CauchyIntegral
-import Mathlib.MeasureTheory.Integral.FiniteMeasureCharFun
+import Mathlib.MeasureTheory.Measure.CharacteristicFunction
 import Mathlib.Probability.Moments.Basic
 import Mathlib.Probability.Moments.IntegrableExpMul
 
@@ -302,37 +301,37 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
-/-- Exponential map onto the circle, defined as additive character -/
-noncomputable
-def probFourierChar : AddChar ℝ Circle where
-  toFun z := Circle.exp (z)
-  map_zero_eq_one' := by simp only; rw [Circle.exp_zero]
-  map_add_eq_mul' x y := by simp only; rw [Circle.exp_add]
+lemma expAddChar_ne_one : Circle.expAddChar ≠ 1 := by
+  rw [DFunLike.ne_iff]
+  use Real.pi
+  simp only [Circle.expAddChar, AddChar.coe_mk, AddChar.one_apply]
+  intro h
+  have heq := congrArg Subtype.val h
+  rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
+  norm_num at heq
 
-lemma probFourierChar_ne_one : probFourierChar ≠ 1 := by
-    rw [DFunLike.ne_iff]
-    use Real.pi
-    simp only [probFourierChar, AddChar.coe_mk, AddChar.one_apply]
-    intro h
-    have heq := congrArg Subtype.val h
-    rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
-    norm_num at heq
-
-theorem MeasureTheory.ext_of_forall_complexMGF_eq [IsFiniteMeasure μ]
+theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
-    (h : ∀ z, complexMGF X μ z = complexMGF Y μ' z) :
+    (h : complexMGF X μ = complexMGF Y μ') :
     μ.map X = μ'.map Y := by
   have inner_ne_zero (x : ℝ) (h : x ≠ 0) : bilinFormOfRealInner x ≠ 0 :=
     DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
-  apply MeasureTheory.ext_of_charFun_eq Circle.exp.continuous probFourierChar_ne_one
+  apply MeasureTheory.ext_of_charFun_eq Circle.exp.continuous expAddChar_ne_one
     inner_ne_zero continuous_inner (μ.map X) (μ'.map Y)
   intro w
+  rw [funext_iff] at h
   specialize h (Multiplicative.toAdd w * I)
-  simp [complexMGF] at h
-  simp_rw [mul_assoc, mul_comm I, ← mul_assoc] at h
-  simp [probChar_apply, probFourierChar]
+  simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
+  simp only [Circle.expAddChar, probChar_apply, bilinFormOfRealInner_apply_apply,
+    RCLike.inner_apply, conj_trivial, AddChar.coe_mk, Circle.coe_exp, ofReal_mul]
   rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
     integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
+
+lemma _root_.MeasureTheory.Measure.ext_of_complexMGF_id_eq
+    {μ μ' : Measure ℝ} [IsFiniteMeasure μ] [IsFiniteMeasure μ']
+    (h : complexMGF id μ = complexMGF id μ') :
+    μ = μ' := by
+  simpa using Measure.ext_of_complexMGF_eq aemeasurable_id aemeasurable_id h
 
 end ext
 

@@ -129,6 +129,13 @@ def expHom : ℝ →+ Additive Circle where
 @[simp] lemma exp_sub (x y : ℝ) : exp (x - y) = exp x / exp y := expHom.map_sub x y
 @[simp] lemma exp_neg (x : ℝ) : exp (-x) = (exp x)⁻¹ := expHom.map_neg x
 
+/-- Exponential map onto the circle, defined as additive character -/
+noncomputable
+def expAddChar : AddChar ℝ Circle where
+  toFun z := Circle.exp (z)
+  map_zero_eq_one' := by simp only; rw [Circle.exp_zero]
+  map_add_eq_mul' x y := by simp only; rw [Circle.exp_add]
+
 variable {e : AddChar ℝ Circle}
 
 @[simp]
