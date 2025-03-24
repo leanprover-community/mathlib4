@@ -10,8 +10,9 @@ import Mathlib.Probability.Kernel.IonescuTulcea.Traj
 # Infinite product of probability measures
 
 This file provides a definition for the product measure of an arbitrary family of probability
-measures. Given `μ : (i : ι) → Measure (X i)`, `Measure.infinitePi μ` is the only probability
-measure `ν` over `Π i, X i` such that `ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)`, with `s : Finset ι` and
+measures. Given `μ : (i : ι) → Measure (X i)` such that each `μ i` is a probability measure,
+`Measure.infinitePi μ` is the only probability measure `ν` over `Π i, X i` such that
+`ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)`, with `s : Finset ι` and
 such that `∀ i ∈ s, MeasurableSet (t i)` (see `eq_infinitePi` and `infinitePi_boxes`).
 We also provide a few results regarding integration against this measure.
 
