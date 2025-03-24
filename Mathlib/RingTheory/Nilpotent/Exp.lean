@@ -67,24 +67,12 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
 theorem exp_eq_sum_apply {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}
     {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
       (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
-  rcases le_or_lt (nilpotencyClass a) k with h₁ | h₁
-  · have r : a ^ k = 0 := by
-      have rr : a ^ (nilpotencyClass a) = 0 := pow_nilpotencyClass hn
-      exact pow_eq_zero_of_le h₁ rr
-    have r := exp_eq_sum r
-    rw [r]
-    rw [Finset.sum_smul]
+  rcases le_or_lt (nilpotencyClass a) k with h₀ | h₀
+  · rw [exp_eq_sum (pow_eq_zero_of_le h₀ (pow_nilpotencyClass hn)), Finset.sum_smul]
   dsimp [exp]
-  rw [Finset.sum_smul]
-  have h0 : k ≤ nilpotencyClass a := by linarith
-  have h₂ : ∑ i ∈ range (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m =
-      ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m +
-        ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
-    apply (sum_range_add_sum_Ico _ h0).symm
-  rw [h₂]
+  rw [Finset.sum_smul, (sum_range_add_sum_Ico _ (Nat.le_of_succ_le h₀)).symm]
   suffices ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m = 0 by
-    rw [this]
-    rw [add_zero]
+    rw [this, add_zero]
   exact sum_eq_zero fun r h₂ => by
     simp at h₂
     have h₃ := h₂.1
