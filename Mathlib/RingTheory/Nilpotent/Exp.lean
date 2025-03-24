@@ -64,6 +64,45 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
   exact sum_eq_zero fun _ h₂ => by
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
 
+theorem exp_eq_sum_apply {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}
+    {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
+      (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
+  rcases le_or_lt (nilpotencyClass a) k with h₁ | h₁
+  · have r : a ^ k = 0 := by
+      have rr : a ^ (nilpotencyClass a) = 0 := pow_nilpotencyClass hn
+      exact pow_eq_zero_of_le h₁ rr
+    have r := exp_eq_sum r
+    rw [r]
+    rw [Finset.sum_smul]
+  dsimp [exp]
+  rw [Finset.sum_smul]
+  have h0 : k ≤ nilpotencyClass a := by linarith
+  have h₂ : ∑ i ∈ range (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m =
+      ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m +
+        ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
+    apply (sum_range_add_sum_Ico _ h0).symm
+  rw [h₂]
+  suffices ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m = 0 by
+    rw [this]
+    rw [add_zero]
+  exact sum_eq_zero fun r h₂ => by
+    simp at h₂
+    have h₃ := h₂.1
+    have rrr : ((r.factorial : ℚ)⁻¹ • a ^ r) • m = (r.factorial : ℚ)⁻¹ • (a ^ r • m) := by
+      simp_all only [smul_assoc, true_and]
+    rw [rrr]
+    have rr : (a ^ (r - k) • a ^ k) = a ^ r := by
+      apply pow_sub_mul_pow
+      exact h₃
+    have rrr2 : a ^ r • m = 0 := by
+      rw [rr.symm]
+      simp
+      rw [mul_smul]
+      rw [h]
+      exact MulActionWithZero.smul_zero (a ^ (r - k))
+    rw [rrr2]
+    simp_all only [smul_assoc, true_and, smul_zero, smul_eq_mul]
+
 theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp (a + b) = exp a * exp b := by
   obtain ⟨n₁, hn₁⟩ := h₂
@@ -187,61 +226,6 @@ theorem exp_smul {G : Type*} [Monoid G] [MulSemiringAction G A]
     (g : G) {a : A} (ha : IsNilpotent a) :
     exp (g • a) = g • exp a :=
   (map_exp ha (MulSemiringAction.toRingHom G A g)).symm
-
-theorem exp_eq_sum' {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M} {k : ℕ}
-    (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
-      (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
-  rcases le_or_lt (nilpotencyClass a) k with h₁ | h₁
-  · have r : a ^ k = 0 := by
-      have rr : a ^ (nilpotencyClass a) = 0 := pow_nilpotencyClass hn
-      exact pow_eq_zero_of_le h₁ rr
-    have r := exp_eq_sum r
-    rw [r]
-    rw [Finset.sum_smul]
-  dsimp [exp]
-  rw [Finset.sum_smul]
-  have h0 : k ≤ nilpotencyClass a := by linarith
-  have h₂ : ∑ i ∈ range (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m =
-      ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m +
-        ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
-    apply (sum_range_add_sum_Ico _ h0).symm
-  rw [h₂]
-  suffices ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m = 0 by
-    rw [this]
-    rw [add_zero]
-  exact sum_eq_zero fun r h₂ => by
-    simp at h₂
-    have h₃ := h₂.1
-    have rrr : ((r.factorial : ℚ)⁻¹ • a ^ r) • m = (r.factorial : ℚ)⁻¹ • (a ^ r • m) := by
-      simp_all only [smul_assoc, true_and]
-    rw [rrr]
-    have rr : (a ^ (r - k) • a ^ k) = a ^ r := by
-      apply pow_sub_mul_pow
-      exact h₃
-    have rrr2 : a ^ r • m = 0 := by
-      rw [rr.symm]
-      simp
-      rw [mul_smul]
-      rw [h]
-      exact MulActionWithZero.smul_zero (a ^ (r - k))
-    rw [rrr2]
-    simp_all only [smul_assoc, true_and, smul_zero, smul_eq_mul]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 end IsNilpotent
 
