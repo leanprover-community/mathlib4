@@ -88,6 +88,11 @@ theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
 theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
   simpa [norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
 
+theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) < v x := by
+  erw [← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom (v (R := L))),
+    StrictMono.lt_iff_lt]
+  exact RankOne.strictMono v
+
 variable (L) (Γ₀)
 
 /-- The normed field structure determined by a rank one valuation. -/
