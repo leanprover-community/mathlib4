@@ -36,7 +36,7 @@ The divisor of a meromorphic function `f`, mapping a point `z` to the order of `
 zero if the order is infinite.
 -/
 noncomputable def divisor (f : 𝕜 → E) (U : Set 𝕜) :
-    Function.discretesuppWithin U ℤ where
+    Function.locallyFinSuppWithin U ℤ where
   toFun := fun z ↦ if h : MeromorphicOn f U ∧ z ∈ U then ((h.1 z h.2).order.untop₀) else 0
   supportWithinDomain' z hz := by
     by_contra h₂z
