@@ -83,26 +83,26 @@ lemma pow_1_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
   rw [pow_one, LinearMap.smul_apply, ad_apply, ht.lie_e_f]
 
 lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 2) f =
-    (-2 : ℚ) • (t : K) ^ 2 • e := by
+    (-2 : ℤ) • (t : K) ^ 2 • e := by
   have h₁ : ((t : K) • ((t : K) • ((2 : ℕ) • e))) = 2 • (t : K) ^ 2 • e := by
     simp [two_smul]
     rw [← mul_smul]
     ring_nf
   calc
     (((t : K) • (ad K L e)) ^ 2) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) f) := rfl
-    _ = (-2 : ℚ) • (t : K) ^ 2 • e := by
+    _ = (-2 : ℤ) • (t : K) ^ 2 • e := by
       rw [pow_1_ad_e_f t ht, map_smul, LinearMap.smul_apply, ad_apply, neg_smul, ← lie_skew,
         ht.lie_h_e_nsmul]
       simp only [smul_neg, neg_inj]
       rw [h₁]
-      exact (ofNat_smul_eq_nsmul ℚ 2 ((t : K) ^ 2 • e)).symm
+      exact (ofNat_smul_eq_nsmul ℤ 2 ((t : K) ^ 2 • e)).symm
 
 theorem pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
   calc
     (((t : K) • (ad K L e)) ^ 3) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 2) f) := rfl
-    _ = ((t : K) • (ad K L e)) ((-2 : ℚ) • ((t : K) ^ 2 • e)) := by
+    _ = ((t : K) • (ad K L e)) ((-2 : ℤ) • ((t : K) ^ 2 • e)) := by
       rw [pow_2_ad_e_f t ht]
-    _ = (-2 : ℚ) • (-(t : K) ^ 2) • (((t : K) • (ad K L e)) e) := by
+    _ = (-2 : ℤ) • (-(t : K) ^ 2) • (((t : K) • (ad K L e)) e) := by
       simp only [neg_smul, LinearMap.smul_apply, ad_apply, lie_neg, lie_smul, lie_self, smul_zero,
         neg_zero]
     _ = 0 := by
@@ -163,6 +163,14 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
   simp_all only [Nat.factorial_zero, Nat.cast_one, inv_one, pow_zero, LinearMap.one_apply, one_smul,
     Nat.factorial_one, pow_one, LinearMap.smul_apply, ad_apply, Nat.factorial_two, Nat.cast_ofNat]
   abel_nf
+  refine (add_right_inj f).mpr ?_
+  refine (add_right_inj ((t : K) • h)).mpr ?_
+  simp
+  rw [two_smul]
+  simp only [smul_add]
+  rw [← add_smul]
+  field_simp
+
 
 
 /-
