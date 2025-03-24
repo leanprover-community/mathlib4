@@ -20,34 +20,13 @@ namespace Submodule
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
 
-theorem small_sup {P Q : Submodule R M} (_ : Small.{u} P) (_ : Small.{u} Q) :
+instance small_sup {P Q : Submodule R M} [smallP : Small.{u} P] [smallQ : Small.{u} Q] :
     Small.{u} (P ⊔ Q : Submodule R M) := by
   rw [Submodule.sup_eq_range]
   exact small_range _
 
-theorem FG.small [Small.{u} R] (P : Submodule R M) (hP : P.FG) : Small.{u} P := by
-  rw [fg_iff_exists_fin_generating_family] at hP
-  obtain ⟨n, s, rfl⟩ := hP
-  rw [← Fintype.range_linearCombination]
-  apply small_range
-
-theorem small_iSup
-    {ι : Type*} {P : ι → Submodule R M} (_ : Small.{u} ι) (_ : ∀ i, Small.{u} (P i)) :
-    Small.{u} (iSup P : Submodule R M) := by
-  classical
-  rw [iSup_eq_range_dfinsupp_lsum]
-  have : Small.{u} (Π₀ (i : ι), ↥(P i)) := inferInstance
-  apply small_range
-
-theorem small_span [Small.{u} R] (s : Set M) [Small.{u} s] :
-    Small.{u} (span R s) := by
-  suffices span R s = iSup (fun i : s ↦ span R ({(↑i : M)} : Set M)) by
-    rw [this]
-    exact small_iSup (by trivial) fun _ ↦ FG.small _ (fg_span_singleton _)
-  simp [← Submodule.span_iUnion]
-
 instance : SemilatticeSup {P : Submodule R M // Small.{u} P} where
-  sup := fun P Q ↦ ⟨P.val ⊔ Q.val, small_sup P.property Q.property⟩
+  sup := fun P Q ↦ ⟨P.val ⊔ Q.val, small_sup (smallP := P.property) (smallQ := Q.property)⟩
   le_sup_left := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_left
   le_sup_right := fun P Q ↦ by rw [← Subtype.coe_le_coe]; exact le_sup_right
   sup_le := fun _ _ _ hPR hQR ↦ by
@@ -57,6 +36,37 @@ instance : SemilatticeSup {P : Submodule R M // Small.{u} P} where
 instance : Inhabited {P : Submodule R M // Small.{u} P} where
   default := ⟨⊥, inferInstance⟩
 
+instance small_iSup
+    {ι : Type*} {P : ι → Submodule R M} [Small.{u} ι] [∀ i, Small.{u} (P i)] :
+    Small.{u} (iSup P : Submodule R M) := by
+  classical
+  rw [iSup_eq_range_dfinsupp_lsum]
+  have : Small.{u} (Π₀ (i : ι), ↥(P i)) := inferInstance
+  apply small_range
+
+theorem FG.small [Small.{u} R] (P : Submodule R M) (hP : P.FG) : Small.{u} P := by
+  rw [fg_iff_exists_fin_generating_family] at hP
+  obtain ⟨n, s, rfl⟩ := hP
+  rw [← Fintype.range_linearCombination]
+  apply small_range
+
+theorem Finite.small [Small.{u} R] [Module.Finite R M] : Small.{u} M := by
+  have : Small.{u} (⊤ : Submodule R M) :=
+    FG.small _ (Module.finite_def.mp inferInstance)
+  apply small_of_surjective (f := Submodule.subtype (⊤ : Submodule R M))
+  intro m
+  exact ⟨⟨m, mem_top⟩, rfl⟩
+
+instance small_span_singleton [Small.{u} R] (m : M) :
+    Small.{u} (span R {m}) := FG.small _ (fg_span_singleton _)
+
+theorem small_span [Small.{u} R] (s : Set M) [Small.{u} s] :
+    Small.{u} (span R s) := by
+  suffices span R s = iSup (fun i : s ↦ span R ({(↑i : M)} : Set M)) by
+    rw [this]
+    apply small_iSup
+  simp [← Submodule.span_iUnion]
+
 end Submodule
 
 variable {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
@@ -65,7 +75,7 @@ namespace Algebra
 
 open MvPolynomial AlgHom
 
-theorem small_adjoin [Small.{u} R] {s : Set S} [Small.{u} s] :
+instance small_adjoin [Small.{u} R] {s : Set S} [Small.{u} s] :
     Small.{u} (adjoin R s : Subalgebra R S) := by
   let j' := mapEquiv (Shrink.{u} s) (Shrink.ringEquiv R)
   have : Small.{u} (MvPolynomial (Shrink.{u} s) R) := small_of_surjective j'.surjective
