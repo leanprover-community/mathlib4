@@ -119,12 +119,12 @@ lemma pow_1_ad_f_h (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad 
 
 lemma pow_2_ad_f_h (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad K L f)) ^ 2) h = 0 := by
   calc
-    (((t : K) • (ad K L e)) ^ 2) h = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) h) := rfl
-    _ = ((t : K) • (ad K L e)) ((-2 : ℤ) • (t : K) • e) := by
-      rw [pow_1_ad_e_h t ht]
+    ((-(t⁻¹ : K) • (ad K L f)) ^ 2) h = (-(t⁻¹ : K) • (ad K L f))
+      (((-(t⁻¹ : K) • (ad K L f)) ^ 1) h) := rfl
+    _ = (-(t⁻¹ : K) • (ad K L f)) ((-2 : ℤ) • (t⁻¹ : K) • f) := by
+      rw [pow_1_ad_f_h t ht]
     _ = 0 := by
       simp only [LinearMap.smul_apply, ad_apply, lie_smul, lie_self, smul_zero]
-
 
 end AdAction
 
