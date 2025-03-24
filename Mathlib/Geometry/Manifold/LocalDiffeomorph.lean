@@ -357,27 +357,6 @@ IslocalDiffeomorph.diffeomorph_of_bijective := IsLocalDiffeomorph.diffeomorph_of
 
 end Basic
 
-section helper -- FIXME: move to Algebra.Module.Basic
-variable {R : Type*} [Ring R]
-variable {E : Type*} [TopologicalSpace E] [AddCommMonoid E] [Module R E]
-variable {F : Type*} [TopologicalSpace F] [AddCommMonoid F] [Module R F]
-
-/-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
-lemma LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
-    (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
-  have : g ∘ f = id := calc g ∘ f
-      _ = ↑(g.comp f) := by rw [ContinuousLinearMap.coe_comp']
-      _ = ↑( ContinuousLinearMap.id R E) := by rw [hinv]
-      _ = id := by rw [ContinuousLinearMap.coe_id']
-  exact congrFun this
-
-/-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
-lemma RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
-    (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
-  LeftInverse.of_composition hinv
-
-end helper
-
 section Differential
 
 variable {f : M → N} {s : Set M} {x : M}

@@ -441,6 +441,28 @@ theorem comp_id (f : M₁ →SL[σ₁₂] M₂) : f.comp (id R₁ M₁) = f :=
 theorem id_comp (f : M₁ →SL[σ₁₂] M₂) : (id R₂ M₂).comp f = f :=
   ext fun _x => rfl
 
+section
+
+variable {R E F : Type*} [Semiring R]
+  [TopologicalSpace E] [AddCommMonoid E] [Module R E]
+  [TopologicalSpace F] [AddCommMonoid F] [Module R F]
+
+/-- `g ∘ f = id` as `ContinuousLinearMap`s implies `g ∘ f = id` as functions. -/
+lemma _root_.LeftInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : g.comp f = ContinuousLinearMap.id R E) : Function.LeftInverse g f := by
+  have : g ∘ f = _root_.id := calc g ∘ f
+      _ = (g.comp f) := by rw [ContinuousLinearMap.coe_comp']
+      _ = ( ContinuousLinearMap.id R E) := by rw [hinv]
+      _ = _root_.id := by rw [ContinuousLinearMap.coe_id']
+  exact congrFun this
+
+/-- `f ∘ g = id` as `ContinuousLinearMap`s implies `f ∘ g = id` as functions. -/
+lemma _root_.RightInverse.of_composition {f : E →L[R] F} {g : F →L[R] E}
+    (hinv : f.comp g = ContinuousLinearMap.id R F) : Function.RightInverse g f :=
+  LeftInverse.of_composition hinv
+
+end
+
 @[simp]
 theorem comp_zero (g : M₂ →SL[σ₂₃] M₃) : g.comp (0 : M₁ →SL[σ₁₂] M₂) = 0 := by
   ext
