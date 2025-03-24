@@ -74,22 +74,8 @@ theorem exp_eq_sum_apply {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M
   suffices ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m = 0 by
     rw [this, add_zero]
   exact sum_eq_zero fun r h₂ => by
-    simp at h₂
-    have h₃ := h₂.1
-    have rrr : ((r.factorial : ℚ)⁻¹ • a ^ r) • m = (r.factorial : ℚ)⁻¹ • (a ^ r • m) := by
-      simp_all only [smul_assoc, true_and]
-    rw [rrr]
-    have rr : (a ^ (r - k) • a ^ k) = a ^ r := by
-      apply pow_sub_mul_pow
-      exact h₃
-    have rrr2 : a ^ r • m = 0 := by
-      rw [rr.symm]
-      simp
-      rw [mul_smul]
-      rw [h]
-      exact MulActionWithZero.smul_zero (a ^ (r - k))
-    rw [rrr2]
-    simp_all only [smul_assoc, true_and, smul_zero, smul_eq_mul]
+    rw [smul_assoc, (pow_sub_mul_pow a (mem_Ico.1 h₂).1).symm, mul_smul, h, smul_zero (a ^ (r - k)),
+      smul_zero]
 
 theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp (a + b) = exp a * exp b := by
