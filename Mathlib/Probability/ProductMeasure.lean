@@ -426,7 +426,7 @@ theorem lintegral_restrict_infinitePi {s : Finset ι}
 
 open Filtration
 
-theorem StronglyMeasurable.integral_of_piFinset [DecidableEq ι] {E : Type*} [NormedAddCommGroup E]
+theorem integral_infinitePi_of_piFinset [DecidableEq ι] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {s : Finset ι} {f : (Π i, X i) → E}
     (mf : StronglyMeasurable[piFinset s] f) (x : Π i, X i) :
     ∫ y, f y ∂infinitePi μ =
@@ -438,7 +438,7 @@ theorem StronglyMeasurable.integral_of_piFinset [DecidableEq ι] {E : Type*} [No
   exact mf.comp_measurable (measurable_updateFinset.mono le_rfl (piFinset.le s))
     |>.aestronglyMeasurable
 
-theorem _root_.Measurable.lintegral_of_piFinset [DecidableEq ι] {s : Finset ι}
+theorem lintegral_infinitePi_of_piFinset [DecidableEq ι] {s : Finset ι}
     {f : (Π i, X i) → ℝ≥0∞} (mf : Measurable[piFinset s] f)
     (x : Π i, X i) : ∫⁻ y, f y ∂infinitePi μ = (∫⋯∫⁻_s, f ∂μ) x := by
   let g : (Π i : s, X i) → ℝ≥0∞ := fun y ↦ f (Function.updateFinset x _ y)
