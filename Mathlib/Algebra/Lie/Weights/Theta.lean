@@ -61,7 +61,7 @@ lemma pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
     _ = ((t : K) • (ad K L e)) ((-2 : ℤ) • ((t : K) ^ 2 • e)) := by
       rw [pow_2_ad_e_f t ht]
     _ = 0 := by
-      simp_all only [LinearMap.smul_apply, ad_apply, lie_smul, lie_self, smul_zero]
+      simp only [LinearMap.smul_apply, ad_apply, lie_smul, lie_self, smul_zero]
 
 lemma pow_0_ad_e_h (t : Kˣ) : (((t : K) • (ad K L e)) ^ 0) h = h := rfl
 
@@ -96,7 +96,6 @@ lemma pow_2_ad_f_e (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad 
     _ = (-2 : ℤ) • (t : K) ^ (-2 : ℤ) • f := by
       rw [pow_1_ad_f_e t ht, map_smul, LinearMap.smul_apply, ad_apply, neg_smul, ← lie_skew,
         ht.lie_h_f_nsmul]
-      simp_all
       simp [two_smul]
       rw [← mul_smul]
       ring_nf
