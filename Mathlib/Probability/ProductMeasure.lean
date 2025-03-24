@@ -239,7 +239,7 @@ variable {ι : Type*} {X : ι → Type*} {mX : ∀ i, MeasurableSpace (X i)}
 
 /-- If we push the product measure forward by a reindexing equivalence, we get a product measure
 on the reindexed product in the sense that it coincides with `piContent μ` over
-measurable cylinders. -/
+measurable cylinders. See `infinitePi_map_piCongrLeft` for a general version. -/
 lemma Measure.infinitePiNat_map_piCongrLeft (e : ℕ ≃ ι) {s : Set (Π i, X i)}
     (hs : s ∈ measurableCylinders X) :
     (infinitePiNat (fun n ↦ μ (e n))).map (piCongrLeft X e) s = piContent μ s := by
@@ -397,6 +397,20 @@ lemma infinitePi_boxes {s : Finset ι} {t : (i : ι) → Set (X i)}
   · rw [univ_eq_attach, prod_attach _ (fun i ↦ (μ i) (t i))]
   · exact measurable_restrict _
   · exact .univ_pi fun i ↦ mt i.1 i.2
+
+/-- If we push the product measure forward by a reindexing equivalence, we get a product measure
+on the reindexed product. -/
+theorem infinitePi_map_piCongrLeft {α : Type*} (e : α ≃ ι) :
+    (infinitePi (fun i ↦ μ (e i))).map (piCongrLeft X e) = infinitePi μ := by
+  refine eq_infinitePi μ fun s t ht ↦ ?_
+  conv_lhs => enter [2, 1]; rw [← e.image_preimage s, ← coe_preimage _ e.injective.injOn]
+  rw [Measure.map_apply, coe_piCongrLeft, Equiv.piCongrLeft_preimage_pi, infinitePi_boxes,
+    Finset.prod_equiv e]
+  · simp
+  · simp
+  · simp_all
+  · fun_prop
+  · exact .pi ((countable_toSet _).image e) (by simp_all)
 
 theorem infinitePi_eq_pi [Fintype ι] : infinitePi μ = Measure.pi μ := by
   refine (pi_eq fun s hs ↦ ?_).symm
