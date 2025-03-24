@@ -624,6 +624,45 @@ lemma bijOn_id (s : Set α) : BijOn id s s := ⟨s.mapsTo_id, s.injOn_id, s.surj
 theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :=
   BijOn.mk (hg.mapsTo.comp hf.mapsTo) (hg.injOn.comp hf.injOn hf.mapsTo) (hg.surjOn.comp hf.surjOn)
 
+/-- If `f : α → β` and `g : β → γ` and if `f` is injective on `s`, then `f ∘ g` is a bijection
+on `s` iff  `g` is a bijection on `f '' s`. -/
+theorem bijOn_comp_iff_bijOn_image {α β γ : Type*} {f : α → β} {g : β → γ} {s : Set α}
+    (hf : InjOn f s) {t : Set γ} : BijOn (g ∘ f) s t ↔ BijOn g (f '' s) t := by
+  constructor
+  · rintro ⟨h₁, h₂, h₃⟩
+    refine ⟨mapsTo_image_iff.mpr h₁, InjOn.image_of_comp h₂, fun x hx ↦ ?_⟩
+    obtain ⟨y, hy, rfl⟩ := h₃ hx
+    exact ⟨f y, ⟨y, hy, rfl⟩, rfl⟩
+  · rintro ⟨h₁, h₂, h₃⟩
+    exact ⟨mapsTo_image_iff.mp h₁, InjOn.comp h₂ hf <| mapsTo_image f s,
+      SurjOn.comp h₃ <| surjOn_image _ _⟩
+
+/--
+If we have a commutative square
+
+α --f--> β
+|        |
+p₁       p₂
+|        |
+\/       \/
+γ --g--> δ
+
+and `f` induces a bijection from `s : Set α` to `t : Set β` then `g`
+induces a bijection from the image of `s` to the image of `t`, as long as `g` is
+is injective on the image of `s`.
+-/
+theorem bijOn_image_image {α β γ δ : Type*} {f : α → β} {p₁ : α → γ} {p₂ : β → δ}
+    {g : γ → δ} (comm : ∀ a, p₂ (f a) = g (p₁ a)) {s : Set α} {t : Set β}
+    (hbij : BijOn f s t) (hinj: InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
+  obtain ⟨h1, h2, h3⟩ := hbij
+  refine ⟨?_, hinj, ?_⟩
+  · rintro _ ⟨a, ha, rfl⟩
+    exact ⟨f a, h1 ha, by rw [comm a]⟩
+  · rintro _ ⟨b, hb, rfl⟩
+    obtain ⟨a, ha, rfl⟩ := h3 hb
+    rw [← image_comp, comm]
+    exact ⟨a, ha, rfl⟩
+
 lemma BijOn.iterate {f : α → α} {s : Set α} (h : BijOn f s s) : ∀ n, BijOn f^[n] s s
   | 0 => s.bijOn_id
   | (n + 1) => (h.iterate n).comp h
