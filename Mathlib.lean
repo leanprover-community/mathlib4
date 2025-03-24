@@ -1925,6 +1925,7 @@ import Mathlib.CategoryTheory.Enriched.HomCongr
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalPullbacks
+import Mathlib.CategoryTheory.Enriched.Limits.HasConicalTerminal
 import Mathlib.CategoryTheory.Enriched.Opposite
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.EpiMono
@@ -5421,7 +5422,6 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
-import Mathlib.Tactic.Linter.AdmitLinter
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
