@@ -45,28 +45,23 @@ lemma pow_1_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) :
 
 lemma pow_2_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 2) f =
     (-2 : ℤ) • (t : K) ^ 2 • e := by
-  have h₁ : ((t : K) • ((t : K) • ((2 : ℕ) • e))) = 2 • (t : K) ^ 2 • e := by
-    simp [two_smul]
-    rw [← mul_smul]
-    ring_nf
   calc
     (((t : K) • (ad K L e)) ^ 2) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 1) f) := rfl
     _ = (-2 : ℤ) • (t : K) ^ 2 • e := by
       rw [pow_1_ad_e_f t ht, map_smul, LinearMap.smul_apply, ad_apply, neg_smul, ← lie_skew,
         ht.lie_h_e_nsmul]
       simp only [smul_neg, neg_inj]
-      rw [h₁]
-      exact (ofNat_smul_eq_nsmul ℤ 2 ((t : K) ^ 2 • e)).symm
+      simp [two_smul]
+      rw [← mul_smul]
+      ring_nf
 
 lemma pow_3_ad_e_f (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)) ^ 3) f = 0 := by
   calc
     (((t : K) • (ad K L e)) ^ 3) f = ((t : K) • (ad K L e)) ((((t : K) • (ad K L e)) ^ 2) f) := rfl
     _ = ((t : K) • (ad K L e)) ((-2 : ℤ) • ((t : K) ^ 2 • e)) := by
       rw [pow_2_ad_e_f t ht]
-    _ = (-2 : ℤ) • (-(t : K) ^ 2) • (((t : K) • (ad K L e)) e) := by
-      simp only [LinearMap.smul_apply, ad_apply, lie_neg, lie_smul, lie_self, smul_zero, neg_zero]
     _ = 0 := by
-      simp only [LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
+      simp_all only [LinearMap.smul_apply, ad_apply, lie_smul, lie_self, smul_zero]
 
 lemma pow_0_ad_e_h (t : Kˣ) : (((t : K) • (ad K L e)) ^ 0) h = h := rfl
 
@@ -86,6 +81,35 @@ lemma pow_2_ad_e_h (t : Kˣ) (ht : IsSl2Triple h e f) : (((t : K) • (ad K L e)
       simp only [LinearMap.smul_apply, ad_apply,  lie_smul, lie_self, smul_zero]
     _ = 0 := by
       simp only [LinearMap.smul_apply, ad_apply, lie_self, smul_zero]
+
+lemma pow_0_ad_f_e (t : Kˣ) : ((-(t⁻¹ : K) • (ad K L f)) ^ 0) e = e := rfl
+
+lemma pow_1_ad_f_e (t : Kˣ) (ht : IsSl2Triple h e f) :
+  ((-(t⁻¹ : K) • (ad K L f)) ^ 1) e = (t⁻¹ : K) • h := by
+  rw [pow_one, LinearMap.smul_apply, ad_apply, ← lie_skew, ht.lie_e_f, neg_smul_neg (t : K)⁻¹ h]
+
+lemma pow_2_ad_f_e (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad K L f)) ^ 2) e =
+    (-2 : ℤ) • (t : K) ^ (-2 : ℤ) • f := by
+  calc
+    ((-(t⁻¹ : K) • (ad K L f)) ^ 2) e =
+      (-(t⁻¹ : K) • (ad K L f)) (((-(t⁻¹ : K) • (ad K L f)) ^ 1) e) := rfl
+    _ = (-2 : ℤ) • (t : K) ^ (-2 : ℤ) • f := by
+      rw [pow_1_ad_f_e t ht, map_smul, LinearMap.smul_apply, ad_apply, neg_smul, ← lie_skew,
+        ht.lie_h_f_nsmul]
+      simp_all
+      simp [two_smul]
+      rw [← mul_smul]
+      ring_nf
+      norm_cast
+
+lemma pow_3_ad_f_e (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad K L f)) ^ 3) e = 0 := by
+  calc
+    ((-(t⁻¹ : K) • (ad K L f)) ^ 3) e = (-(t⁻¹ : K) • (ad K L f))
+      (((-(t⁻¹ : K) • (ad K L f)) ^ 2) e) := rfl
+    _ = (-(t⁻¹ : K) • (ad K L f)) ((-2 : ℤ) • (t : K) ^ (-2 : ℤ) • f) := by
+      rw [pow_2_ad_f_e t ht]
+    _ = 0 := by
+      simp only [LinearMap.smul_apply, ad_apply, lie_smul, lie_self, smul_zero]
 
 lemma pow_0_ad_f_f (t : Kˣ) : ((-(t⁻¹ : K) • (ad K L f)) ^ 0) f = f := rfl
 
