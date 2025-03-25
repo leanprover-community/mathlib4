@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Iso
+import Mathlib.CategoryTheory.Functor.FullyFaithful
 
 /-!
 # Functors which reflect isomorphisms
@@ -13,6 +14,7 @@ A functor `F` reflects isomorphisms if whenever `F.map f` is an isomorphism, `f`
 
 It is formalized as a `Prop` valued typeclass `ReflectsIsomorphisms F`.
 
+Any fully faithful functor reflects isomorphisms.
 -/
 
 open CategoryTheory CategoryTheory.Functor
@@ -41,6 +43,15 @@ theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.ma
 lemma isIso_iff_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [F.ReflectsIsomorphisms] :
     IsIso (F.map f) ↔ IsIso f :=
   ⟨fun _ => isIso_of_reflects_iso f F, fun _ => inferInstance⟩
+
+lemma Functor.FullyFaithful.reflectsIsomorphisms {F : C ⥤ D} (hF : F.FullyFaithful) :
+    F.ReflectsIsomorphisms where
+  reflects _ _ := hF.isIso_of_isIso_map _
+
+instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
+    (F : C ⥤ D) [F.Full] [F.Faithful] :
+    F.ReflectsIsomorphisms :=
+  (Functor.FullyFaithful.ofFullyFaithful F).reflectsIsomorphisms
 
 instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
