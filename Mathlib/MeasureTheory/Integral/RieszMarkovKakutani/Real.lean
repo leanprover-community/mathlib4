@@ -39,8 +39,6 @@ standard proof one has to prove the inequalities by considering `Λ f` and `Λ (
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
 
-noncomputable section
-
 open scoped BoundedContinuousFunction ENNReal NNReal
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
   TopologicalSpace MeasureTheory
@@ -54,7 +52,7 @@ variable {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f
 /-- The measure induced for `Real`-linear positive functional `Λ`, defined through `toNNRealLinear`
 and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK`, while
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
-def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
+noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `K`, then
 `Λ f ≤ rieszMeasure K`. -/
