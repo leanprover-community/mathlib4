@@ -680,15 +680,39 @@ variable [SeminormedAddCommGroup α] [Mul α] [NormMulClass α] (a b : α)
 
 end SeminormedAddCommGroup
 
+section NormedAddCommGroup
+
+variable [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial α]
+
+/-- Deduce `NormOneClass` from `NormMulClass` under a suitable nontriviality hypothesis. -/
+instance NormMulClass.toNormOneClass : NormOneClass α := by
+  constructor
+  obtain ⟨u, hu⟩ := exists_ne (0 : α)
+  simpa [mul_eq_left₀ (norm_ne_zero_iff.mpr hu)] using (norm_mul u 1).symm
+
+end NormedAddCommGroup
+
 section NormedRing
 
-variable [NormedRing α] [NormOneClass α] [NormMulClass α]
+variable [NormedRing α] [NormMulClass α]
 
 instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := norm_eq_zero
   abv_add' := norm_add_le
   abv_mul' := norm_mul
+
+variable [Nontrivial α]
+
+instance NormMulClass.isDomain : IsDomain α where
+  mul_left_cancel_of_ne_zero {a b c} ha h := by
+    rw [← sub_eq_zero] at h ⊢
+    rwa [← mul_sub, ← norm_eq_zero, norm_mul, mul_eq_zero_iff_left (norm_ne_zero_iff.mpr ha),
+      norm_eq_zero] at h
+  mul_right_cancel_of_ne_zero {a b c} ha h := by
+    rw [← sub_eq_zero] at h ⊢
+    rwa [← sub_mul, ← norm_eq_zero, norm_mul, mul_eq_zero_iff_right (norm_ne_zero_iff.mpr ha),
+      norm_eq_zero] at h
 
 /-- `norm` as a `MonoidWithZeroHom`. -/
 @[simps]
@@ -726,7 +750,7 @@ end NormedRing
 
 section NormedCommRing
 
-variable [NormedCommRing α] [NormMulClass α] [NormOneClass α]
+variable [NormedCommRing α] [NormMulClass α] [Nontrivial α]
 
 @[simp]
 theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=

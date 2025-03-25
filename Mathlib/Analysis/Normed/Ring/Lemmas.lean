@@ -209,8 +209,5 @@ instance Int.instNormedCommRing : NormedCommRing ℤ where
   __ := instNormedAddCommGroup
   norm_mul_le m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
 
-instance Int.instNormOneClass : NormOneClass ℤ :=
-  ⟨by simp [← Int.norm_cast_real]⟩
-
 instance Int.instNormMulClass : NormMulClass ℤ :=
   ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
