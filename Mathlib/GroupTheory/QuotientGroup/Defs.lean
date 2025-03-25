@@ -181,7 +181,7 @@ theorem _root_.Con.mem_subgroup_iff {c : Con G} {x : G} :
 instance (c : Con G) : c.subgroup.Normal :=
   ⟨fun x hx g ↦ by simpa using (c.mul (c.mul (c.refl g) hx) (c.refl g⁻¹))⟩
 
-@[to_additive? (attr := simp)]
+@[to_additive (attr := simp)]
 theorem _root_.Con.subgroup_quotientGroupCon (H : Subgroup G) [H.Normal] :
     (QuotientGroup.con H).subgroup = H := by
   ext
