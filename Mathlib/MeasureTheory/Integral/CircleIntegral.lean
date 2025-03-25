@@ -16,8 +16,6 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
 ## Main definitions
 
-* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$;
-
 * `CircleIntegrable f c R`: a function `f : ℂ → E` is integrable on the circle with center `c` and
   radius `R` if `f ∘ circleMap c R` is integrable on `[0, 2π]`;
 
@@ -75,15 +73,7 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 /-!
 ### `circleMap`, a parametrization of a circle
 -/
-
-/-- The exponential map $θ ↦ c + R e^{θi}$. The range of this map is the circle in `ℂ` with center
-`c` and radius `|R|`. -/
-def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I)
-
-/-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
-  simp [circleMap, add_mul, exp_periodic _]
-
+<<<<<<< HEAD
 lemma circleMap_eq_circleMap_iff {a b R : ℝ} (c : ℂ) (h_R : R ≠ 0) :
     circleMap c R a = circleMap c R b ↔ ∃ (n : ℤ), a * I = b * I + n * (2 * π * I) := by
   have : circleMap c R a = circleMap c R b ↔ (exp (a * I)).arg = (exp (b * I)).arg := by
@@ -111,36 +101,8 @@ theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_
   rw [abs_lt]
   constructor <;> linarith [max_sub_min_eq_abs' a b]
 
-theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
-    (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
-  show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
-      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
-    (((hs.preimage (add_right_injective _)).preimage <|
-      mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
-        mul_left_injective₀ I_ne_zero).preimage ofReal_injective
-
-@[simp]
-theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
-  simp [circleMap]
-
-theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
-  zero_add _
-
-@[simp]
-theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
-
-@[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
-
-theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
-
-theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
-    circleMap c R θ ∈ sphere c R := by
-  simpa only [abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
-
-theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
-    circleMap c R θ ∈ closedBall c R :=
-  sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
-
+=======
+>>>>>>> master
 theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [dist_eq, le_abs_self]
 
@@ -163,17 +125,6 @@ theorem range_circleMap (c : ℂ) (R : ℝ) : range (circleMap c R) = sphere c |
 @[simp]
 theorem image_circleMap_Ioc (c : ℂ) (R : ℝ) : circleMap c R '' Ioc 0 (2 * π) = sphere c |R| := by
   rw [← range_circleMap, ← (periodic_circleMap c R).image_Ioc Real.two_pi_pos 0, zero_add]
-
-@[simp]
-theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
-  simp [circleMap, exp_ne_zero]
-
-@[simp]
-theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
-  funext fun _ => circleMap_eq_center_iff.2 rfl
-
-theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
-  mt circleMap_eq_center_iff.1 hR
 
 theorem hasDerivAt_circleMap (c : ℂ) (R : ℝ) (θ : ℝ) :
     HasDerivAt (circleMap c R) (circleMap 0 R θ * I) θ := by

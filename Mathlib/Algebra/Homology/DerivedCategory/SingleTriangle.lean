@@ -66,7 +66,8 @@ noncomputable def singleTriangleIso :
   · aesop_cat
   · dsimp [singleδ, e]
     rw [Category.assoc, Category.assoc, ← Functor.map_comp, SingleFunctors.inv_hom_id_hom_app]
-    erw [Functor.map_id, comp_id]
+    erw [Functor.map_id]
+    rw [comp_id]
 
 /-- The distinguished triangle in the derived category of `C` given by a
 short exact short complex in `C`. -/

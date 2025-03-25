@@ -43,7 +43,7 @@ lemma covBySMul_zero : CovBySMul M 0 A B ↔ A = ∅ := by simp [CovBySMul]
 lemma CovBySMul.mono (hKL : K ≤ L) : CovBySMul M K A B → CovBySMul M L A B := by
   rintro ⟨F, hF, hFAB⟩; exact ⟨F, hF.trans hKL, hFAB⟩
 
-@[to_additive] lemma CovBySMul.trans [MulAction M N] [IsScalarTower M N X]
+@[to_additive] lemma CovBySMul.trans [SMul M N] [IsScalarTower M N X]
     (hAB : CovBySMul M K A B) (hBC : CovBySMul N L B C) : CovBySMul N (K * L) A C := by
   classical
   have := hAB.nonneg
