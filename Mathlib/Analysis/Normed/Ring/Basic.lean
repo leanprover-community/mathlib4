@@ -745,7 +745,6 @@ lemma NormMulClass.toNormOneClass : NormOneClass α where
 end NormedAddCommGroup
 
 section NormedRing
-
 variable [NormedRing α] [NormMulClass α]
 
 instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
