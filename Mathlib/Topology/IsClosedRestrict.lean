@@ -90,6 +90,12 @@ def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, Topologi
       exact fun _ ↦ (continuous_apply _).comp continuous_subtype_val
   continuous_invFun := continuous_reorderRestrictProd.subtype_mk _
 
+/-- The image by `preimageImageRestrict α S s` of `s` seen as a set of
+`Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)` is a set of `Sᶜ.restrict '' s × (Π i : S, α i)`, and the
+image of that set by `Prod.snd` is `S.restrict '' s`.
+
+Used in `IsCompact.isClosed_image_restrict` to prove that the restriction of a compact closed set
+in a product space to a set of coordinates is closed. -/
 lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
     Prod.snd '' (Homeomorph.preimageImageRestrict α S s ''
         ((fun (x : Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)) ↦ (x : Π j, α j)) ⁻¹' s))
