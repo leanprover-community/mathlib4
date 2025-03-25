@@ -16,18 +16,27 @@ There are many closely related variations of the theorem. This file contains tha
 version where the space is a locally compact T2 space, the linear functionals are real and the
 continuous functions have compact support.
 
-## References
+## Main definitions
 
-* [Walter Rudin, Real and Complex Analysis.][Rud87]
+* `RealRMK.rieszMeasure`: the measure induced by a real linear positive functional.
 
-## Implementation notes:
+## Main statements
 
-The measure is defined through `rieszContent` which is for `NNReal` using the
-`toNNRealLinear`-version of `Λ`.
+* `RealRMK.integral_rieszMeasure`: the Riesz–Markov–Kakutani representation theorem for a real
+linear positive functional.
+
+## Implementation notes
+
+The measure is defined through `rieszContent` which is for `NNReal` using the `toNNRealLinear`
+version of `Λ`.
 
 The Riesz–Markov–Kakutani representation theorem is first proved for `Real`-linear `Λ` because in a
 standard proof one has to prove the inequalities by considering `Λ f` and `Λ (-f)` for all functions
 `f`, yet on `C_c(X, ℝ≥0)` there is no negation.
+
+## References
+
+* [Walter Rudin, Real and Complex Analysis.][Rud87]
 -/
 
 noncomputable section
