@@ -287,7 +287,8 @@ is the supremum of the extended gauges of the components of `x`
 with respect to the corresponding balanced set.
 
 This version assumes that `𝕜` is a nontrivially normed division ring.
-See also `egauge_univ_pi` for when `s = univ`, and `egauge_pi'` for a version with more choices of the technical assumptions.
+See also `egauge_univ_pi` for when `s = univ`,
+and `egauge_pi'` for a version with more choices of the technical assumptions.
 -/
 theorem egauge_pi [(𝓝[≠] (0 : 𝕜)).NeBot] {I : Set ι} {U : ∀ i, Set (E i)}
     (hI : I.Finite) (hU : ∀ i ∈ I, Balanced 𝕜 (U i)) (x : ∀ i, E i) :
