@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Symmetric
-import Mathlib.CategoryTheory.Functor.ReflectsIso.FullyFaithful
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Groupoids
