@@ -57,7 +57,7 @@ instance Quotient.group : Group (G ⧸ N) :=
 The congruence relation defined by the kernel of a group homomorphism is equal to its kernel
 as a congruence relation.
 -/
-@[to_additive
+@[to_additive QuotientAddGroup.con_ker_eq_addConKer
 "The additive congruence relation defined by the kernel of an additive group homomorphism is
 equal to its kernel as an additive congruence relation."]
 theorem con_ker_eq_conKer {M : Type*} [Monoid M] (f : G →* M) :
@@ -182,7 +182,7 @@ theorem _root_.Con.mem_subgroup_iff {c : Con G} {x : G} :
 instance (c : Con G) : c.subgroup.Normal :=
   ⟨fun x hx g ↦ by simpa using (c.mul (c.mul (c.refl g) hx) (c.refl g⁻¹))⟩
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem _root_.Con.subgroup_quotientGroupCon (H : Subgroup G) [H.Normal] :
     (QuotientGroup.con H).subgroup = H := by
   ext
@@ -199,7 +199,7 @@ theorem con_subgroup (c : Con G) :
 /--
 The normal subgroups correspond to the congruence relations on a group.
 -/
-@[to_additive
+@[to_additive (attr := simps)
 "The normal subgroups correspond to the additive congruence relations on an `AddGroup`."]
 def _root_.Subgroup.orderIsoCon :
     { N : Subgroup G // N.Normal } ≃o Con G where
@@ -213,12 +213,12 @@ def _root_.Subgroup.orderIsoCon :
     specialize @h 1 x
     simp_all
 
-@[to_additive]
+@[to_additive (attr := simp)]
 lemma con_le_iff {N M : Subgroup G} [N.Normal] [M.Normal] :
     QuotientGroup.con N ≤ QuotientGroup.con M ↔ N ≤ M :=
   (Subgroup.orderIsoCon.map_rel_iff (a := ⟨N, inferInstance⟩) (b := ⟨M, inferInstance⟩))
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 lemma con_mono {N M : Subgroup G} [hN : N.Normal] [hM : M.Normal] (h : N ≤ M) :
     QuotientGroup.con N ≤ QuotientGroup.con M :=
   con_le_iff.mpr h
