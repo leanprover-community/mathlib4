@@ -1200,6 +1200,10 @@ theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
       simp only [induce_adj, Set.mem_insert_iff, Set.mem_singleton_iff, top_adj] at h
       obtain ⟨rfl | rfl, rfl | rfl, ha⟩ := h <;> first |exact (ha.ne rfl).elim|simp
 
+instance instDecidableRel_induce_adj (s : Set V) [∀ a, Decidable (a ∈ s)] [DecidableRel G'.Adj] :
+    DecidableRel (G'.induce s).Adj :=
+  fun _ _ ↦ instDecidableAnd
+
 end Induce
 
 /-- Given a subgraph and a set of vertices, delete all the vertices from the subgraph,
