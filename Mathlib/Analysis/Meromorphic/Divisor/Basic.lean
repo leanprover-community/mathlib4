@@ -38,7 +38,7 @@ structure Function.locallyFinSuppWithin [Zero Y] where
   /-- A proof that the support of `toFun` is contained in `U` -/
   supportWithinDomain' : toFun.support ⊆ U
   /-- A proof the the support is discrete within `U` -/
-  supportDiscreteWithinDomain' : toFun =ᶠ[codiscreteWithin U] 0
+  supportLocallyFiniteWithinDomain' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ toFun.support)
 
 variable (X Y) in
 /-- A divisor is a divisor on `⊤ : Set X`. -/
@@ -71,8 +71,8 @@ abbrev support [Zero Y] (D : Function.locallyFinSuppWithin U Y) := Function.supp
 lemma supportWithinDomain [Zero Y] (D : Function.locallyFinSuppWithin U Y) :
     D.support ⊆ U := D.supportWithinDomain'
 
-lemma supportDiscreteWithinDomain [Zero Y] (D : Function.locallyFinSuppWithin U Y) :
-    D =ᶠ[codiscreteWithin U] 0 := D.supportDiscreteWithinDomain'
+lemma supportLocallyFiniteWithinDomain [Zero Y] (D : Function.locallyFinSuppWithin U Y) :
+    ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ D.support) := D.supportLocallyFiniteWithinDomain'
 
 @[ext]
 lemma ext [Zero Y] {D₁ D₂ : Function.locallyFinSuppWithin U Y} (h : ∀ a, D₁ a = D₂ a) :
@@ -92,16 +92,19 @@ lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : Function.locallyFinSuppWith
     D z = 0 := Function.nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
 
 /-- The support of a divisor is discrete. -/
-theorem discreteSupport [Zero Y] (D : Function.locallyFinSuppWithin U Y) :
+theorem discreteSupport [Zero Y] [T1Space X] (D : Function.locallyFinSuppWithin U Y) :
     DiscreteTopology D.support := by
-  have : Function.support D = {x | D x = 0}ᶜ ∩ U := by
+  have : D.support = {x | D x = 0}ᶜ ∩ U := by
     ext x
     constructor
     · exact fun hx ↦ ⟨by tauto, D.supportWithinDomain hx⟩
     · intro hx
       rw [mem_inter_iff, mem_compl_iff, mem_setOf_eq] at hx
       tauto
-  convert discreteTopology_of_codiscreteWithin (D.supportDiscreteWithinDomain)
+  rw [this]
+  apply discreteTopology_of_codiscreteWithin
+  apply (supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
+  exact D.supportLocallyFiniteWithinDomain
 
 /-- If `U` is closed, the the support of a divisor on `U` is also closed. -/
 theorem closedSupport [Zero Y] (D : Function.locallyFinSuppWithin U Y) (hU : IsClosed U) :
