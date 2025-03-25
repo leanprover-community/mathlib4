@@ -95,6 +95,9 @@ Both of these files should tend to zero over time;
 please do not add new entries to these files. PRs removing (the need for) entries are welcome.
 
 **API surrounding CI**
+- `parse_lake_manifest_changes.py` compares two versions of `lake-manifest.json` to report
+  dependency changes in Zulip notifications. Used by the `update_dependencies_zulip.yml` workflow
+  to show which dependencies were updated, added, or removed, with links to GitHub diffs.
 - `update_PR_comment.sh` is a script that edits an existing message (or creates a new one).
   It is used by the `PR_summary` workflow to maintain an up-to-date report with a searchable history.
 - `get_tlabel.sh` extracts the `t-`label that a PR has (assuming that there is exactly one).
