@@ -752,70 +752,74 @@ lemma some_update_some (f : Option α →₀ M) (x : α) (y : M) :
 Extend a finitely supported function on `α` to a finitely supported function on `Option α`,
 provided a default value for `none`.
 -/
-def optionElim (y : M) (f : α →₀ M) : Option α →₀ M :=
+def optionElim' (y : M) (f : α →₀ M) : Option α →₀ M :=
   (Finsupp.embDomain Function.Embedding.some f).update none y
 
-lemma optionElim_apply_none (y : M) (f : α →₀ M) : f.optionElim y none = y := by
-  simp [optionElim]
+lemma optionElim'_apply_none (y : M) (f : α →₀ M) : f.optionElim' y none = y := by
+  simp [optionElim']
 
-lemma optionElim_apply_some (y : M) (f : α →₀ M) (x : α) :
-    f.optionElim y (Option.some x) = f x := by
+lemma optionElim'_apply_some (y : M) (f : α →₀ M) (x : α) :
+    f.optionElim' y (Option.some x) = f x := by
   have : Option.some x = Embedding.some x := by simp only [Embedding.some_apply]
-  simp only [optionElim, ne_eq, reduceCtorEq, not_false_eq_true, update_apply_of_ne]
+  simp only [optionElim', ne_eq, reduceCtorEq, not_false_eq_true, update_apply_of_ne]
   rw  [this, embDomain_apply]
 
 @[simp]
-lemma optionElim_apply (y : M) (f : α →₀ M) (a : Option α) :
-    f.optionElim y a = Option.elim a y f := by
+lemma optionElim'_apply (y : M) (f : α →₀ M) (a : Option α) :
+    f.optionElim' y a = a.elim y f := by
   cases a with
-  | none => exact optionElim_apply_none y f
-  | some x => simp only [optionElim_apply_some, Option.elim_some]
+  | none => exact optionElim'_apply_none y f
+  | some x => simp only [optionElim'_apply_some, Option.elim_some]
+
+lemma optionElim'_eq_elim' (y : M) (f : α →₀ M) (a : Option α) :
+    optionElim' y f a = Option.elim' y f a := by
+  simp [Option.elim'_eq_elim]
 
 @[simp]
-lemma some_optionElim (y : M) (f : α →₀ M) : (f.optionElim y).some = f := by
+lemma some_optionElim' (y : M) (f : α →₀ M) : (f.optionElim' y).some = f := by
   ext
   simp
 
 @[simp]
-lemma optionElim_some (f : Option α →₀ M) : f.some.optionElim (f none) = f := by
+lemma optionElim'_some (f : Option α →₀ M) : f.some.optionElim' (f none) = f := by
   ext a
   cases a
-  · rw [optionElim_apply_none]
+  · rw [optionElim'_apply_none]
   · simp
 
 @[simp]
-theorem optionElim_zero (y : M) : (0 : α →₀ M).optionElim y = single none y := by
+theorem optionElim'_zero (y : M) : (0 : α →₀ M).optionElim' y = single none y := by
   ext a
   cases a
   · simp
   · simp
 
-theorem optionElim_ne_zero_of_left (y : M) (f : α →₀ M) (h : y ≠ 0) : f.optionElim y ≠ 0 := by
+theorem optionElim'_ne_zero_of_left (y : M) (f : α →₀ M) (h : y ≠ 0) : f.optionElim' y ≠ 0 := by
   contrapose! h with c
-  have : f.optionElim y none = (0 : Option α →₀ M) none := by
+  have : f.optionElim' y none = (0 : Option α →₀ M) none := by
     rw [c]
-  simp only [optionElim_apply, Option.elim_none, coe_zero, Pi.zero_apply] at this
+  simp only [optionElim'_apply, Option.elim_none, coe_zero, Pi.zero_apply] at this
   exact this
 
-theorem optionElim_ne_zero_of_right (y : M) (f : α →₀ M) (h : f ≠ 0) : f.optionElim y ≠ 0 := by
+theorem optionElim'_ne_zero_of_right (y : M) (f : α →₀ M) (h : f ≠ 0) : f.optionElim' y ≠ 0 := by
   contrapose! h with c
   ext a
-  have : f.optionElim y (Option.some a) = (0 : Option α →₀ M) (Option.some a) := by
+  have : f.optionElim' y (Option.some a) = (0 : Option α →₀ M) (Option.some a) := by
     rw [c]
-  simp only [optionElim_apply, Option.elim_some, coe_zero, Pi.zero_apply] at this
+  simp only [optionElim'_apply, Option.elim_some, coe_zero, Pi.zero_apply] at this
   exact this
 
-theorem optionElim_ne_zero_iff (y : M) (f : α →₀ M) :
-    f.optionElim y ≠ 0 ↔ f ≠ 0 ∨ y ≠ 0 := by
+theorem optionElim'_ne_zero_iff (y : M) (f : α →₀ M) :
+    f.optionElim' y ≠ 0 ↔ f ≠ 0 ∨ y ≠ 0 := by
   constructor
   · intro h
     contrapose! h
     rcases h with ⟨rfl, rfl⟩
-    rw [optionElim_zero, single_zero]
+    rw [optionElim'_zero, single_zero]
   · intro h
     cases h with
-    | inl h => exact optionElim_ne_zero_of_right y f h
-    | inr h => exact optionElim_ne_zero_of_left y f h
+    | inl h => exact optionElim'_ne_zero_of_right y f h
+    | inr h => exact optionElim'_ne_zero_of_left y f h
 
 end Zero
 
