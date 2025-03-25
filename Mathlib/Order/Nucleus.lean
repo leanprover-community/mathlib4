@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
+import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Lattice
 
 /-!
