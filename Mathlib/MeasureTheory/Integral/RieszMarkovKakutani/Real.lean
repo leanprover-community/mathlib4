@@ -225,10 +225,10 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : 
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
-lemma RMK_le_aux (a b c : ℝ)  {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
-    (b - a) / N * (2 * c + |a| + b + (b - a) / N) ≤ ε := by
-  have A : Tendsto (fun (N : ℝ) ↦ (b - a) / N * (2 * c + |a| + b + (b - a) / N)) atTop
-      (𝓝 (0 * (2 * c + |a| + b + 0))) := by
+lemma RMK_le_aux (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
+    a' / N * (b' + a' / N) ≤ ε := by
+  have A : Tendsto (fun (N : ℝ) ↦ a' / N * (b' + a' / N)) atTop
+      (𝓝 (0 * (b' + 0))) := by
     apply Tendsto.mul
     · exact Tendsto.div_atTop tendsto_const_nhds tendsto_id
     · exact Tendsto.add tendsto_const_nhds (Tendsto.div_atTop tendsto_const_nhds tendsto_id)
@@ -259,7 +259,7 @@ theorem RMK_le [Nonempty X] (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(ri
       exact lt_trans (lt_of_lt_of_le (sub_one_lt a') hab) (lt_add_one b')
     use a, b
   -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
-  obtain ⟨N, hN, hε'⟩ := RMK_le_aux a b (μ K).toReal hε
+  obtain ⟨N, hN, hε'⟩ := RMK_le_aux (b - a) (2 * (μ K).toReal + |a| + b) hε
   let ε' := (b - a) / N
   replace hε' : 0 < ε' ∧  ε' * (2 * (μ K).toReal + |a| + b + ε') ≤ ε :=
     ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
