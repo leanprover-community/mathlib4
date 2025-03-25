@@ -57,9 +57,11 @@ section MeasurableInv
 
 variable [InvolutiveInv G] [MeasurableInv G]
 
-/-- Involuting a function does not change its Lebesgue integral with respect to a
-inverse-invariant measure. -/
-@[to_additive]
+/-- The Lebesgue integral of a function with respect to an inverse invariant measure is
+invariant under the change of variables x ↦ x⁻¹. -/
+@[to_additive
+      "The Lebesgue integral of a function with respect to an inverse invariant measure is
+invariant under the change of variables x ↦ -x."]
 theorem lintegral_inv_eq_self [IsInvInvariant μ] (f : G → ℝ≥0∞) :
    ∫⁻ x, f x⁻¹ ∂μ = ∫⁻ x, f x ∂μ := by
  convert (lintegral_map_equiv f <| MeasurableEquiv.inv _).symm
