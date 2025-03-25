@@ -54,7 +54,7 @@ lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : 
   · rw [tendstouniformlyOn_iff_restrict, ← tendstoUniformlyOn_univ]
     exact w2
   · simp only [Set.mem_setOf_eq, Subtype.forall]
-    apply fun a ha => le_trans (hT a ha) (by aesop)
+    exact fun a ha => le_trans (hT a ha) (by aesop)
 
 lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
     (h : ∀ x, x ∈ K → Summable fun n => log (f n x))
