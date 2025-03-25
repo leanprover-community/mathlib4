@@ -74,33 +74,6 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 ### `circleMap`, a parametrization of a circle
 -/
 
-lemma circleMap_eq_circleMap_iff {a b R : ℝ} (c : ℂ) (h_R : R ≠ 0) :
-    circleMap c R a = circleMap c R b ↔ ∃ (n : ℤ), a * I = b * I + n * (2 * π * I) := by
-  have : circleMap c R a = circleMap c R b ↔ (exp (a * I)).arg = (exp (b * I)).arg := by
-    simp [circleMap, ext_norm_arg_iff, h_R]
-  simp [this, arg_eq_arg_iff, exp_eq_exp_iff_exists_int]
-
-lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - b| < 2 * π)
-    (h : circleMap c R a = circleMap c R b) : a = b := by
-  rw [circleMap_eq_circleMap_iff_exists_int h_R] at h
-  obtain ⟨n, hn⟩ := h
-  simp only [show n * (2 * π * I) = (n * 2 * π) * I by ring, ← add_mul, mul_eq_mul_right_iff,
-    I_ne_zero, or_false] at hn
-  norm_cast at hn
-  simp only [hn, Int.cast_mul, Int.cast_ofNat, mul_assoc, add_sub_cancel_left, abs_mul,
-    Nat.abs_ofNat, abs_of_pos Real.pi_pos] at h_dist
-  field_simp at h_dist
-  norm_cast at h_dist
-  simp [hn, Int.abs_lt_one_iff.mp h_dist]
-
-/-- `circleMap` is injective on `Ι a b` if the distance between `a` and `b` is at most `2π`. -/
-theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : |a - b| ≤ 2 * π) :
-    (Ι a b).InjOn (circleMap c R) := by
-  rintro _ ⟨_, _⟩ _ ⟨_, _⟩ h
-  apply eq_of_circleMap_eq h_R _ h
-  rw [abs_lt]
-  constructor <;> linarith [max_sub_min_eq_abs' a b]
-
 theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [dist_eq, le_abs_self]
 
