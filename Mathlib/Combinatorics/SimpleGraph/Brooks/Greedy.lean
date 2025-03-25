@@ -53,8 +53,8 @@ instance instFintypeNeighborLTN (H : SimpleGraph ℕ) [DecidableRel H.Adj] : Loc
   intro m; rw [mem_filter, mem_range, adj_comm]
   rfl
 
-def greedy (H : SimpleGraph ℕ) [DecidableRel H.Adj] (n : ℕ): ℕ :=
-  let c := (fun m ↦ ite (m < n) (H.greedy m) 0)
+def greedy (H : SimpleGraph ℕ) [DecidableRel H.Adj] (n : ℕ) : ℕ :=
+  let c := fun m ↦ ite (m < n) (H.greedy m) 0
   min' _ (H.unused c n)
 
 variable (H : SimpleGraph ℕ) [DecidableRel H.Adj]
@@ -87,6 +87,13 @@ def GreedyColoringNBddDegreeLT {Δ : ℕ} [DecidableRel H.Adj]
   Coloring.mk
     (fun v ↦ ⟨H.greedy v, H.greedy_bdd_degLT h v⟩)
     (fun h h' ↦ H.greedy_valid h (Fin.val_eq_of_eq h'))
+
+def GreedyColoringNBddDegree {Δ : ℕ} [DecidableRel H.Adj] [LocallyFinite H]
+    (h : ∀ v, H.degree v ≤ Δ) : H.Coloring (Fin (Δ + 1)) :=
+  H.GreedyColoringNBddDegreeLT (fun v ↦ (H.degreeLT_le_degree v).trans (h v))
+
+
+
 
 /-- If we used a color larger than `c` at vertex `n` then `n` must have an earlier neighbor that
 was already colored with `c` -/

@@ -518,6 +518,7 @@ lemma end_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈
     (hn.symm ▸ p.getVert_length.symm)
   omega
 
+
 /-- Given a set `S` and closed walk `c` from `u` to `u` containing `x ∈ S` and `y ∉ S`,
 there exists a dart in the walk whose start is in `S` but whose end is not. -/
 theorem exists_boundary_dart_of_closed {u x y : V} (c : G.Walk u u) (S : Set V) (xS : x ∈ S)
@@ -774,7 +775,7 @@ theorem shortcircuit_copy {u u'} (p : G.Walk u u) (hu : u = u')  :
     (p.copy hu hu).shortcircuit = p.shortcircuit.copy hu hu := by
   subst_vars
   rfl
-  
+
 lemma isCycle_cons_shortcircuit_iff {u v : V} (h : G.Adj u v) (p : G.Walk v u) :
      s(u,v) ∉ p.bypass.edges ↔ (cons h p).shortcircuit.IsCycle := by
   constructor <;> intro hs
