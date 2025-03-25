@@ -1130,11 +1130,7 @@ def SwapTrue : (I → Bool) → I → Bool :=
 
 theorem continuous_swapTrue : Continuous (SwapTrue o : (I → Bool) → I → Bool) := by
   dsimp (config := { unfoldPartialApp := true }) [SwapTrue]
-  apply continuous_pi
-  intro i
-  apply Continuous.comp'
-  · apply continuous_bot
-  · apply continuous_apply
+  fun_prop
 
 variable {o}
 
@@ -1184,45 +1180,32 @@ def Linear_CC' : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ
 theorem CC_comp_zero : ∀ y, (Linear_CC' C hsC ho) ((πs C o) y) = 0 := by
   intro y
   ext x
-  dsimp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.sub_apply]
-  simp only [Pi.zero_apply, sub_eq_zero]
-  congr 1
+  suffices ProjRestrict C (ord I · < o) (CC'₁ C hsC ho x) =
+      ProjRestrict C (ord I · < o) (CC'₀ C ho x) by
+    simp [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.sub_apply, sub_eq_zero, this]
   ext i
-  dsimp [CC'₀, CC'₁, ProjRestrict, Proj]
-  apply if_ctx_congr Iff.rfl _ (fun _ ↦ rfl)
-  simp only [SwapTrue, ite_eq_right_iff]
-  intro h₁ h₂
-  exact (h₁.ne h₂).elim
+  simp +contextual [ne_of_lt, CC'₀, CC'₁, ProjRestrict, Proj, SwapTrue]
 
 include hsC in
 theorem C0_projOrd {x : I → Bool} (hx : x ∈ C0 C ho) : Proj (ord I · < o) x = x := by
   ext i
-  simp only [Proj, Set.mem_setOf, ite_eq_left_iff, not_lt]
-  intro hi
-  rw [le_iff_lt_or_eq] at hi
-  rcases hi with hi | hi
-  · specialize hsC x hx.1 i
-    rw [← not_imp_not] at hsC
-    simp only [not_lt, Bool.not_eq_true, Order.succ_le_iff] at hsC
-    exact (hsC hi).symm
-  · simp only [C0, Set.mem_inter_iff, Set.mem_setOf_eq] at hx
-    rw [eq_comm, ord_term ho] at hi
-    rw [← hx.2, hi]
+  simp only [Proj, Set.mem_setOf, ite_eq_left_iff, not_lt, le_iff_lt_or_eq]
+  rintro (hi | hi)
+  · suffices x i = true → ¬o < ord I i by aesop
+    simpa only [Order.lt_succ_iff, ← not_lt] using hsC x hx.1 i
+  · rw [eq_comm, ord_term ho] at hi
+    simp_all [C0]
 
 include hsC in
 theorem C1_projOrd {x : I → Bool} (hx : x ∈ C1 C ho) : SwapTrue o (Proj (ord I · < o) x) = x := by
   ext i
   dsimp [SwapTrue, Proj]
   split_ifs with hi h
-  · rw [ord_term ho] at hi
-    rw [← hx.2, hi]
+  · simp_all [C1, ord_term ho]
   · rfl
-  · simp only [not_lt] at h
-    have h' : o < ord I i := lt_of_le_of_ne h (Ne.symm hi)
-    specialize hsC x hx.1 i
-    rw [← not_imp_not] at hsC
-    simp only [not_lt, Bool.not_eq_true, Order.succ_le_iff] at hsC
-    exact (hsC h').symm
+  · have h' : o < ord I i := (Ne.symm hi).lt_of_le (not_lt.mp h)
+    suffices x i = true → ¬o < ord I i by aesop
+    simpa only [Order.lt_succ_iff, ← not_lt] using hsC x hx.1 i
 
 include hC in
 open scoped Classical in
