@@ -82,10 +82,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
     {V : Set X} (h : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ V := by
   apply le_trans _ (measure_mono h)
   rw [← Compacts.coe_mk (tsupport f) f.2]
-  apply le_rieszMeasure_of_isCompact_tsupport_subset hΛ hf
-  · simp only [Compacts.coe_mk]
-    exact f.hasCompactSupport
-  · exact subset_rfl
+  exact le_rieszMeasure_of_isCompact_tsupport_subset hΛ hf f.hasCompactSupport subset_rfl
 
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`.-/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
