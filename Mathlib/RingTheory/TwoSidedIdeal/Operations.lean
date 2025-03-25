@@ -211,9 +211,9 @@ section Ring
 
 variable {R : Type*} [Ring R]
 
-lemma span_le {s : Set R} {I : TwoSidedIdeal R} : s ⊆ I ↔ span s ≤ I := by
+lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
   rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
-  exact ⟨fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy), fun h x hx ↦ by aesop⟩
+  exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
 
 open Pointwise Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
