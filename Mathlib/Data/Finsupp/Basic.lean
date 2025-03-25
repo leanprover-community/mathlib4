@@ -756,6 +756,81 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
 
+/--
+Extend a finitely supported function on `α` to a finitely supported function on `Option α`,
+provided a default value for `none`.
+-/
+def optionElim [Zero M] (f : α →₀ M) (y : M) : Option α →₀ M :=
+  (Finsupp.embDomain Function.Embedding.some f).update none y
+
+@[simp]
+lemma optionElim_apply_none [Zero M] (f : α →₀ M) (y : M) : f.optionElim y none = y := by
+  simp [optionElim]
+
+@[simp]
+lemma optionElim_apply_some [Zero M] (f : α →₀ M) (y : M) (x : α) :
+    f.optionElim y (Option.some x) = f x := by
+  have : Option.some x = Embedding.some x := by simp only [Embedding.some_apply]
+  simp only [optionElim, ne_eq, reduceCtorEq, not_false_eq_true, update_apply_of_ne]
+  rw  [this, embDomain_apply]
+
+lemma some_optionElim [Zero M] (f : α →₀ M) (y : M) : (f.optionElim y).some = f := by
+  ext
+  simp
+
+lemma some_update_none [Zero M] (f : Option α →₀ M) (y : M) : (update f none y).some = f.some := by
+  ext
+  simp
+
+lemma some_update_some [Zero M] (f : Option α →₀ M) (x : α) (y : M) :
+    (update f (Option.some x) y).some = (f.update x y).some := by
+  ext
+  simp
+
+lemma optionElim_some [Zero M] (f : Option α →₀ M) : f.some.optionElim (f none) = f := by
+  ext a
+  cases a
+  · rw [optionElim_apply_none]
+  · simp
+
+@[simp]
+theorem optionElim_zero [Zero M] (y : M) : (0 : α →₀ M).optionElim y = single none y := by
+  ext a
+  cases a
+  · simp
+  · simp
+
+variable {y}
+
+theorem optionElim_ne_zero_of_left [Zero M] (f : α →₀ M) (h : y ≠ 0) : f.optionElim y ≠ 0 := by
+  contrapose! h with c
+  have : f.optionElim y none = (0 : Option α →₀ M) none := by
+    rw [c]
+  simp at this
+  exact this
+
+theorem optionElim_ne_zero_of_right [Zero M] (f : α →₀ M) (h : f ≠ 0) : f.optionElim y ≠ 0 := by
+  contrapose! h with c
+  ext a
+  have : f.optionElim y (Option.some a) = (0 : Option α →₀ M) (Option.some a) := by
+    rw [c]
+  simp at this
+  exact this
+
+theorem optionElim_ne_zero_iff [Zero M] (f : α →₀ M) (y : M) :
+    f.optionElim y ≠ 0 ↔ f ≠ 0 ∨ y ≠ 0 := by
+  constructor
+  · intro h
+    contrapose! h
+    rcases h with ⟨rfl, rfl⟩
+    simp only [optionElim_zero, single_zero]
+  · intro h
+    cases h
+    · apply optionElim_ne_zero_of_right f
+      assumption
+    · apply optionElim_ne_zero_of_left f
+      assumption
+
 end Option
 
 /-! ### Declarations about `Finsupp.filter` -/

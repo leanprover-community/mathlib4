@@ -250,7 +250,7 @@ end Single
 
 section Update
 
-variable [Zero M] (f : α →₀ M) (a : α) (b : M) (i : α)
+variable [Zero M] (f : α →₀ M) (a a' : α) (b : M) (i : α)
 
 /-- Replace the value of a `α →₀ M` at a given point `a : α` by a given value `b : M`.
 If `b = 0`, this amounts to removing `a` from the `Finsupp.support`.
@@ -285,6 +285,18 @@ theorem coe_update [DecidableEq α] : (f.update a b : α → M) = Function.updat
   ext
   dsimp
   split_ifs <;> simp
+
+theorem update_apply [DecidableEq α] : f.update a b a' = if a' = a then b else f a' := by
+  rw [coe_update, Function.update_apply]
+
+@[simp]
+theorem update_self_apply : f.update a b a = b := by
+  simp [update]
+
+@[simp]
+theorem update_apply_of_ne (h : a' ≠ a) : f.update a b a' = f a' := by
+  classical
+  simp [update_apply, h]
 
 @[simp]
 theorem update_self : f.update a (f a) = f := by
