@@ -351,12 +351,9 @@ theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
       rw [ht.lie_e_f]
     _ = ⁅theta H hα he hf t e, theta H hα he hf t f⁆ := by
       apply LieHom.map_lie
-    _ = ⁅(-(t : K) ^ (-2 : ℤ) : K) • f, (-(t ^ (2 : ℤ)) : K) • e⁆ := by
-      rw [theta_e H hα he hf t ht, theta_f H hα he hf t ht]
-    _ = ((t : K) ^ (2 : ℤ))⁻¹ • (t : K) ^ (2 : ℤ) • ⁅f, e⁆ := by
-      rw [smul_lie, lie_smul, zpow_neg, neg_smul, ← smul_neg, neg_smul, neg_neg]
     _ = (((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ (2 : ℤ)) • ⁅f, e⁆ := by
-      rw [mul_smul]
+      rw [theta_e H hα he hf t ht, theta_f H hα he hf t ht, smul_lie, lie_smul, zpow_neg, neg_smul,
+        ← smul_neg, neg_smul, neg_neg, mul_smul]
     _ = ⁅f, e⁆ := by
       norm_cast
       field_simp
