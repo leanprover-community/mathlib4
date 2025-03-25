@@ -142,10 +142,6 @@ def toList (s : WSeq α) : Computation (List α) :=
 def append : WSeq α → WSeq α → WSeq α :=
   Seq.append
 
-/-- Map a function over a weak sequence -/
-def map (f : α → β) : WSeq α → WSeq β :=
-  Seq.map (Option.map f)
-
 /-- Flatten a sequence of weak sequences. (Note that this allows
   empty sequences, unlike `Seq.join`.) -/
 def join (S : WSeq (WSeq α)) : WSeq α :=
@@ -156,9 +152,26 @@ def join (S : WSeq (WSeq α)) : WSeq α :=
         | some s => (none, s)) <$>
       S)
 
+/-- Map a function over a weak sequence -/
+def map (f : α → β) : WSeq α → WSeq β :=
+  Seq.map (Option.map f)
+
+/-- The monadic `return a` is a singleton list containing `a`. -/
+def ret (a : α) : WSeq α :=
+  ofList [a]
+
 /-- Monadic bind operator for weak sequences -/
 def bind (s : WSeq α) (f : α → WSeq β) : WSeq β :=
   join (map f s)
+
+/-- Unfortunately, `WSeq` is not a lawful monad, because it does not satisfy the monad laws exactly,
+only up to sequence equivalence. Furthermore, even quotienting by the equivalence is not sufficient,
+because the join operation involves lists of quotient elements, with a lifted equivalence relation,
+and pure quotients cannot handle this type of construction. -/
+instance monad : Monad WSeq where
+  map := @map
+  pure := @ret
+  bind := @bind
 
 open Computation
 
@@ -633,10 +646,6 @@ theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)
 theorem get?_ofSeq (s : Seq α) (n) : get? (ofSeq s) n = Computation.pure (Seq.get? s n) := by
   dsimp [get?]; rw [dropn_ofSeq, head_ofSeq, Seq.head_dropn]
 
-/-- The monadic `return a` is a singleton list containing `a`. -/
-def ret (a : α) : WSeq α :=
-  ofList [a]
-
 @[simp]
 theorem map_nil (f : α → β) : map f nil = nil :=
   rfl
@@ -776,25 +785,6 @@ theorem map_join (f : α → β) (S) : map f (join S) = join (map (map f) S) := 
         · exact ⟨_, _, rfl, rfl⟩
   · refine ⟨nil, S, ?_, ?_⟩ <;> simp
 
-instance monad : Monad WSeq where
-  map := @map
-  pure := @ret
-  bind := @bind
-
-/-
-  Unfortunately, WSeq is not a lawful monad, because it does not satisfy
-  the monad laws exactly, only up to sequence equivalence.
-  Furthermore, even quotienting by the equivalence is not sufficient,
-  because the join operation involves lists of quotient elements,
-  with a lifted equivalence relation, and pure quotients cannot handle
-  this type of construction.
-
-instance lawfulMonad : LawfulMonad WSeq :=
-  { id_map := @map_id,
-    bind_pure_comp := @bind_ret,
-    pure_bind := @ret_bind,
-    bind_assoc := @bind_assoc }
--/
 end WSeq
 
 end Stream'
