@@ -27,7 +27,6 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          chmod +x ./scripts/parse_lake_manifest_changes.py
           echo "changes=$(./scripts/parse_lake_manifest_changes.py)" >> $GITHUB_OUTPUT
 
       - name: Construct message
@@ -90,7 +89,6 @@ jobs:
       - name: Parse dependency changes
         id: parse_changes
         run: |
-          chmod +x ./scripts/parse_lake_manifest_changes.py
           echo "changes=$(./scripts/parse_lake_manifest_changes.py)" >> $GITHUB_OUTPUT
 
       - name: Construct success message
@@ -121,6 +119,6 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: 'mathlib reviewers'
           type: 'stream'
-          topic: 'Mathlib `lake update` failure'
+          topic: 'Mathlib `lake update` success'
           content: |
             ${{ steps.construct_message.outputs.result }}

@@ -4,72 +4,120 @@ import json
 import subprocess
 import sys
 
-def get_git_diff():
-    """Get the git diff for lake-manifest.json between HEAD and HEAD~1"""
+def get_json_at_rev(rev, filename):
+    """Get contents of JSON file at specific revision"""
     try:
         result = subprocess.run(
-            ['git', 'diff', 'HEAD~1..HEAD', '--', 'lake-manifest.json'],
+            ['git', 'show', f'{rev}:{filename}'],
             capture_output=True,
             text=True,
             check=True
         )
-        return result.stdout
+        return json.loads(result.stdout)
     except subprocess.CalledProcessError:
-        print("Error: Failed to get git diff", file=sys.stderr)
+        print(f"Error: Failed to get {filename} at revision {rev}", file=sys.stderr)
         return None
 
-def parse_manifest_changes(diff_text):
-    """Parse the diff to find version changes in dependencies"""
+def find_package_changes(old_manifest, new_manifest):
+    """Compare two manifest files and find package version changes"""
     changes = []
-    old_version = None
-    new_version = None
-    package_name = None
 
-    lines = diff_text.split('\n')
-    for i, line in enumerate(lines):
-        # When we find a rev change
-        if line.startswith('-   "rev":'):
-            old_version = line.split('"')[3]
-            # Look ahead for the new version
-            for next_line in lines[i:]:
-                if next_line.startswith('+   "rev":'):
-                    new_version = next_line.split('"')[3]
-                    # Look ahead for the package name
-                    for name_line in lines[i:]:
-                        if name_line.startswith('   "name":'):
-                            package_name = name_line.split('"')[3]
-                            changes.append({
-                                'dependency': package_name,
-                                'old_version': old_version,
-                                'new_version': new_version
-                            })
-                            break
-                    break
-            # Reset for next package
-            old_version = None
-            new_version = None
-            package_name = None
+    # Create lookup tables by package name
+    old_packages = {pkg['name']: pkg for pkg in old_manifest['packages']}
+    new_packages = {pkg['name']: pkg for pkg in new_manifest['packages']}
+
+    # Find packages with different revisions and new packages
+    for name, new_pkg in new_packages.items():
+        if name in old_packages:
+            old_pkg = old_packages[name]
+            if old_pkg['rev'] != new_pkg['rev']:
+                changes.append({
+                    'type': 'update',
+                    'dependency': name,
+                    'old_version': old_pkg['rev'],
+                    'new_version': new_pkg['rev'],
+                    'url': new_pkg['url']
+                })
+        else:
+            changes.append({
+                'type': 'add',
+                'dependency': name,
+                'version': new_pkg['rev'],
+                'url': new_pkg['url']
+            })
+
+    # Find removed packages
+    for name in old_packages:
+        if name not in new_packages:
+            changes.append({
+                'type': 'remove',
+                'dependency': name,
+                'version': old_packages[name]['rev'],
+                'url': old_packages[name]['url']
+            })
 
     return changes
+
+def get_github_diff_url(pkg_url, old_rev, new_rev):
+    """Convert a package URL to a GitHub compare URL"""
+    # For updates: compare URL
+    if old_rev and new_rev:
+        return f"{pkg_url}/compare/{old_rev}...{new_rev}"
+    # For additions: single new commit URL
+    elif new_rev is not None and old_rev is None:
+        return f"{pkg_url}/commit/{new_rev}"
+    # For removals: single old commit URL
+    elif old_rev is not None and new_rev is None:
+        return f"{pkg_url}/commit/{old_rev}"
+    # Handle case where no revisions are provided
+    else:
+        return pkg_url
 
 def format_changes(changes):
     """Format the changes into a readable message"""
     if not changes:
         return "No dependency versions were changed"
 
-    lines = ["The following dependencies were updated:"]
-    for change in changes:
-        lines.append(f"* {change['dependency']}: {change['old_version']} → {change['new_version']}")
+    def short_hash(hash):
+        """Return first 7 characters of commit hash"""
+        return hash[:7]
+
+    lines = []
+    updates = [c for c in changes if c['type'] == 'update']
+    additions = [c for c in changes if c['type'] == 'add']
+    removals = [c for c in changes if c['type'] == 'remove']
+
+    if updates:
+        lines.append("The following dependencies were updated:")
+        for change in updates:
+            url = get_github_diff_url(change['url'], change['old_version'], change['new_version'])
+            lines.append(f"* {change['dependency']}: {short_hash(change['old_version'])} → {short_hash(change['new_version'])} [[GitHub link]]({url})")
+
+    if additions:
+        if lines: lines.append("")
+        lines.append("The following dependencies were added:")
+        for change in additions:
+            url = get_github_diff_url(change['url'], None, change['version'])
+            lines.append(f"* {change['dependency']}: {short_hash(change['version'])} [[GitHub link]]({url})")
+
+    if removals:
+        if lines: lines.append("")
+        lines.append("The following dependencies were removed:")
+        for change in removals:
+            url = get_github_diff_url(change['url'], change['version'], None)
+            lines.append(f"* {change['dependency']}: {short_hash(change['version'])} [[GitHub link]]({url})")
 
     return "\n".join(lines)
 
 def main():
-    diff = get_git_diff()
-    if not diff:
-        print("No changes found in lake-manifest.json")
+    old_manifest = get_json_at_rev('HEAD~1', 'lake-manifest.json')
+    new_manifest = get_json_at_rev('HEAD', 'lake-manifest.json')
+
+    if not old_manifest or not new_manifest:
+        print("Failed to read lake-manifest.json versions")
         return 1
 
-    changes = parse_manifest_changes(diff)
+    changes = find_package_changes(old_manifest, new_manifest)
     message = format_changes(changes)
     print(message)
     return 0
