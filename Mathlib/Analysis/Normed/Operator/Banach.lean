@@ -348,30 +348,32 @@ variable [CompleteSpace E] [RingHomInvPair σ' σ]
 
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
-noncomputable def equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+noncomputable def equivRange {f : E →SL[σ] F} (hinj : Injective f) (hclo : IsClosed (range f)) :
     E ≃SL[σ] LinearMap.range f :=
   have : CompleteSpace (LinearMap.range f) := hclo.completeSpace_coe
   LinearEquiv.toContinuousLinearEquivOfContinuous (LinearEquiv.ofInjective f.toLinearMap hinj) <|
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
 
+variable {f : E →SL[σ] F}
+
 @[simp]
-theorem coe_linearMap_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+theorem coe_linearMap_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
     f.equivRange hinj hclo = f.rangeRestrict :=
   rfl
 
 @[simp]
-theorem coe_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+theorem coe_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo : E → LinearMap.range f) = f.rangeRestrict :=
   rfl
 
 @[simp]
-lemma equivRange_symm_toLinearEquiv (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo).symm.toLinearEquiv =
       (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
   rfl
 
 @[simp]
-lemma equivRange_symm_apply (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f))
+lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
     (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
   suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
   trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
