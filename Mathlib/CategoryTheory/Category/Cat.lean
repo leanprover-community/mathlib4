@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Bundled
 import Mathlib.CategoryTheory.DiscreteCategory
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 import Mathlib.CategoryTheory.Bicategory.Strict
 
 /-!

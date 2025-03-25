@@ -6,7 +6,7 @@ Authors: Kim Morrison
 import Mathlib.Control.EquivFunctor
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # The core of a category

@@ -281,7 +281,7 @@ if it is multiplicative and stable under transfinite composition of any shape
 class IsStableUnderTransfiniteComposition : Prop where
   isStableUnderTransfiniteCompositionOfShape
     (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
-    W.IsStableUnderTransfiniteCompositionOfShape J
+    W.IsStableUnderTransfiniteCompositionOfShape J := by infer_instance
 
 namespace IsStableUnderTransfiniteComposition
 
