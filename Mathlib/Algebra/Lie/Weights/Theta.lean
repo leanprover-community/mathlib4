@@ -26,9 +26,23 @@ open LieAlgebra
 
 open LieModule
 
-variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L]
+variable {K : Type*} [Field K]
 
-variable {h e f : L}
+section FieldUnit
+
+theorem fu₁ (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ 2 = 1 := by
+  norm_cast
+  field_simp
+
+theorem fu₂ (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) = (t : K)⁻¹ := by
+  have : (t : K) ^ (2 : ℤ) = (t : K) ^ (2 : ℕ) := by
+    norm_cast
+  rw [this, pow_two (t : K), mul_inv_rev, IsUnit.inv_mul_cancel_right]
+  exact Units.isUnit t
+
+end FieldUnit
+
+variable {L : Type*} {h e f : L} [LieRing L] [LieAlgebra K L]
 
 section AdAction
 
@@ -275,26 +289,6 @@ lemma theta_apply (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ r
   ext x
   rfl
 
-theorem rrr44 (t : Kˣ) : (t : K) ^ (2 : ℤ) = (t : K) * (t : K) := by
-  have ssss : (t : K) ^ (2 : ℤ) = (t : K) ^ (2 : ℕ) := by
-    norm_cast
-  rw [ssss]
-  exact pow_two (t : K)
-
-
-theorem rrrrr2 (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) = (t : K)⁻¹ := by
-  have : (t : K) ≠ (0 : K) := by
-    exact Units.ne_zero t
-  field_simp
-  rw [rrr44 t]
-  simp_all only [ne_eq, Units.ne_zero, not_false_eq_true, mul_eq_zero, or_self, div_self]
-
-
-theorem rrrr (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ 2 = 1 := by
-  norm_cast
-  field_simp
-
-
 theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t e = (-(t : K) ^ (-2 : ℤ) : K) • f := by
   dsimp [theta]
@@ -312,7 +306,7 @@ theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
     apply LinearMap.map_smul
   rw [ttt4, exp_ad_e_e H hα he t, exp_ad_e_f H hα he t ht, exp_ad_e_h H hα he t ht, smul_sub,
     two_smul, smul_add, ← add_smul, add_smul, ← mul_smul, add_sub, smul_sub, smul_add, ← mul_smul,
-      ← mul_smul, zpow_neg, neg_smul, rrrr t, rrrrr2 t, IsUnit.inv_mul_cancel, one_smul,
+      ← mul_smul, zpow_neg, neg_smul, fu₁ t, fu₂ t, IsUnit.inv_mul_cancel, one_smul,
         add_sub_add_left_eq_sub, sub_sub_sub_cancel_right, sub_add_cancel_right]
   exact Units.isUnit t
 
