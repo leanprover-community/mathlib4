@@ -22,6 +22,7 @@ In this file we define and prove properties about the convolutions of two measur
 namespace MeasureTheory
 
 namespace Measure
+open scoped ENNReal
 
 variable {M : Type*} [Monoid M] [MeasurableSpace M]
 
@@ -31,10 +32,10 @@ noncomputable def mconv (μ : Measure M) (ν : Measure M) :
     Measure M := Measure.map (fun x : M × M ↦ x.1 * x.2) (μ.prod ν)
 
 /-- Scoped notation for the multiplicative convolution of measures. -/
-scoped[MeasureTheory] infix:80 " ∗ " => MeasureTheory.Measure.mconv
+scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.mconv
 
 /-- Scoped notation for the additive convolution of measures. -/
-scoped[MeasureTheory] infix:80 " ∗ " => MeasureTheory.Measure.conv
+scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive lintegral_conv]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ : Measure M} {ν : Measure M} [SFinite ν]
@@ -63,13 +64,13 @@ theorem mconv_dirac_one [MeasurableMul₂ M]
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
 @[to_additive (attr := simp) zero_conv]
-theorem mconv_zero (μ : Measure M) : (0 : Measure M) ∗ μ = (0 : Measure M) := by
+theorem zero_mconv (μ : Measure M) : (0 : Measure M) ∗ μ = (0 : Measure M) := by
   unfold mconv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
 @[to_additive (attr := simp) conv_zero]
-theorem zero_mconv (μ : Measure M) : μ ∗ (0 : Measure M) = (0 : Measure M) := by
+theorem mconv_zero (μ : Measure M) : μ ∗ (0 : Measure M) = (0 : Measure M) := by
   unfold mconv
   simp
 
