@@ -313,35 +313,20 @@ theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
         add_sub_add_left_eq_sub, sub_sub_sub_cancel_right, sub_add_cancel_right]
   exact Units.isUnit t
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-/-
-theorem theta_f {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
-    (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ) :
-      theta H hα ht he hf t f = ((t ^ 2) : K) • e := by
+theorem theta_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
+    (ht : IsSl2Triple h e f) : theta H hα he hf t f = (-(t ^ (2 : ℤ)) : K) • e := by
   sorry
 
-theorem theta_h {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
-    (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ) :
-      theta H hα ht he hf t h = - h := by
+/-
+theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
+    (ht : IsSl2Triple h e f) : theta H hα he hf t h = -h := by
   calc
-    theta H hα ht he hf t h = theta H hα ht he hf t ⁅e, f⁆ := by
+    theta H hα he hf t h = theta H hα he hf t ⁅e, f⁆ := by
       rw [ht.lie_e_f]
-    _ = ⁅theta H hα ht he hf t e, theta H hα ht he hf t f⁆ := by
+    _ = ⁅theta H hα he hf t e, theta H hα he hf t f⁆ := by
       apply LieHom.map_lie
     _ = ⁅((t⁻¹) ^ 2 : K) • f, (t ^ 2 : K) • e⁆ := by
-      rw [theta_e H hα ht he hf t, theta_f H hα ht he hf t]
+      rw [theta_e H hα he hf t ht, theta_f H hα he hf t ht]
     _ = ((t⁻¹) ^ 2 : K) • ⁅f, (t ^ 2 : K) • e⁆ := by
       rw [smul_lie]
     _ = ((t⁻¹) ^ 2 : K) • (t ^ 2 : K) • ⁅f, e⁆ := by
@@ -356,9 +341,9 @@ theorem theta_h {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2
       rw [lie_skew]
     _ = - h := by
       rw [ht.lie_e_f]
-
-
 -/
+
+
 
 
 
