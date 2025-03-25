@@ -1409,7 +1409,7 @@ instance instSup : Max (α →ᵇ β) where
         obtain ⟨C₁, hf⟩ := f.bounded
         obtain ⟨C₂, hg⟩ := g.bounded
         refine ⟨C₁ + C₂, fun x y ↦ ?_⟩
-        simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
+        simp_rw [dist_eq_norm_sub] at hf hg ⊢
         exact (norm_sup_sub_sup_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
 
 instance instInf : Min (α →ᵇ β) where
@@ -1420,7 +1420,7 @@ instance instInf : Min (α →ᵇ β) where
         obtain ⟨C₁, hf⟩ := f.bounded
         obtain ⟨C₂, hg⟩ := g.bounded
         refine ⟨C₁ + C₂, fun x y ↦ ?_⟩
-        simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
+        simp_rw [dist_eq_norm_sub] at hf hg ⊢
         exact (norm_inf_sub_inf_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
 
 @[simp, norm_cast] lemma coe_sup (f g : α →ᵇ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g := rfl
