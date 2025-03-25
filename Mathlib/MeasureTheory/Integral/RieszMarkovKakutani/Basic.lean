@@ -44,7 +44,8 @@ lemma CompactlySupportedContinuousMap.monotone_of_nnreal : Monotone Λ := by
   rw [← hg]
   simp
 
-lemma CompactlySupportedContinuousMap.monotone_of_nonneg (Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ)
+/-- The positivity of a linear functional `Λ` implies that `Λ` is monotone. -/
+lemma CompactlySupportedContinuousMap.monotone_of_nonneg {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ}
     (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f) : Monotone Λ := by
   intro f₁ f₂ h
   have : 0 ≤ Λ (f₂ - f₁) := by
