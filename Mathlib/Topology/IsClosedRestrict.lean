@@ -24,7 +24,7 @@ open Set
 
 variable {ι : Type*} {α : ι → Type*} {s : Set (Π i, α i)} {i : ι} {S : Set ι}
 
-namespace Homeomorph
+namespace Topology
 
 open Classical in
 /-- Given a set in a product space `s : Set (Π j, α j)` and a set of coordinates `S : Set ι`,
@@ -76,7 +76,7 @@ lemma reorderRestrictProd_restrict_compl (x : Sᶜ.restrict ⁻¹' (Sᶜ.restric
 /-- Homeomorphism between the set of functions that concide with a given set of functions away
 from a given set `S`, and dependent functions away from `S` times any value on `S`. -/
 noncomputable
-def preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
+def _root_.Homeomorph.preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
     (S : Set ι) (s : Set (Π j, α j)) :
     Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) ≃ₜ Sᶜ.restrict '' s × (Π i : S, α i) where
   toFun x := ⟨⟨Sᶜ.restrict x, x.2⟩, fun i ↦ (x : Π j, α j) i⟩
@@ -105,7 +105,7 @@ lemma image_snd_preimageImageRestrict [∀ i, TopologicalSpace (α i)] :
     exact ⟨Sᶜ.restrict z, mem_image_of_mem Sᶜ.restrict hz_mem, z, hz_mem,
       ⟨⟨⟨z, hz_mem, rfl⟩, rfl⟩, hzx⟩⟩
 
-end Homeomorph
+end Topology
 
 section IsClosed
 
@@ -115,7 +115,7 @@ variable [∀ i, TopologicalSpace (α i)]
 theorem IsCompact.isClosed_image_restrict (S : Set ι)
     (hs_compact : IsCompact s) (hs_closed : IsClosed s) :
     IsClosed (S.restrict '' s) := by
-  rw [← Homeomorph.image_snd_preimageImageRestrict]
+  rw [← Topology.image_snd_preimageImageRestrict]
   have : CompactSpace (Sᶜ.restrict '' s) :=
     isCompact_iff_compactSpace.mp (hs_compact.image (Pi.continuous_restrict _))
   refine isClosedMap_snd_of_compactSpace _ ?_
