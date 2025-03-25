@@ -48,7 +48,7 @@ variable (X Y) in
 A function with locally finite support is a function with locally finite support within
 `⊤ : Set X`.
 -/
-def Function.discretesupp [Zero Y] := locallyFinsuppWithin (⊤ : Set X) Y
+def Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (⊤ : Set X) Y
 
 /--
 For T1 spaces, the condition `supportLocallyFiniteWithinDomain'` is equivalent to saying that the
