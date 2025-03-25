@@ -454,17 +454,34 @@ noncomputable
 def spanFinBasis (x : π C (· ∈ s)) : LocallyConstant (π C (· ∈ s)) ℤ :=
   LocallyConstant.indicator (U := {x}) 1 <| isClopen_discrete {x}
 
+-- move this
+lemma _root_.Finsupp.sum_apply''
+    {α M F X Y : Type*} [AddZeroClass M] [AddCommMonoid Y] [AddCommMonoid F] [FunLike F X Y]
+    (f : α →₀ M) (g : α → M → F) (x : X)
+    (hg0 : ∀ (a : α), g a 0 = 0) (hgadd : ∀ (a : α) (b₁ b₂ : M), g a (b₁ + b₂) = g a b₁ + g a b₂)
+    (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
+    f.sum g x = f.sum (fun i a ↦ g i a x) := by
+  induction f using Finsupp.induction with
+  | h0 => simp [h0]
+  | ha i a f hf ha ih =>
+    rw [Finsupp.sum_add_index' hg0 hgadd, Finsupp.sum_add_index', hadd, ih]
+    · congr 1
+      rw [Finsupp.sum_single_index (hg0 i), Finsupp.sum_single_index]
+      simp [hg0, h0]
+    · simp [hg0, h0]
+    · simp [hgadd, hadd]
+
 open scoped Classical in
 theorem spanFinBasis.span : ⊤ ≤ Submodule.span ℤ (Set.range (spanFinBasis C s)) := by
   intro f _
   rw [Finsupp.mem_span_range_iff_exists_finsupp]
   use Finsupp.onFinset (Finset.univ) f (fun _ _ ↦ Finset.mem_univ _)
   ext x
-  -- TODO: add a `sum_apply` lemma for `LocallyConstant`
-  change LocallyConstant.evalₗ ℤ x _ = _
-  have : (if f x = 0 then 0 else (f x : LocallyConstant _ ℤ) x) = f x := by
-    split_ifs with h <;> [exact h.symm; rfl]
-  simp [map_finsupp_sum, Set.indicator_apply, this]
+  rw [Finsupp.sum_apply'']
+  · have : (if f x = 0 then 0 else (f x : LocallyConstant _ ℤ) x) = f x := by
+      split_ifs with h <;> [exact h.symm; rfl]
+    simp [map_finsupp_sum, Set.indicator_apply, this]
+  all_goals simp [add_mul]
 
 /-- A certain explicit list of locally constant maps. The theorem `factors_prod_eq_basis` shows that
 the product of the elements in this list is the delta function `spanFinBasis C s x`. -/
