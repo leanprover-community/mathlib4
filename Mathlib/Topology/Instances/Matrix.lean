@@ -93,12 +93,12 @@ instance [Star R] [ContinuousStar R] : ContinuousStar (Matrix m m R) :=
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_col {ι : Type*} {A : X → n → R} (hA : Continuous A) :
-    Continuous fun x => col ι (A x) :=
+    Continuous fun x => replicateCol ι (A x) :=
   continuous_matrix fun i _ => (continuous_apply i).comp hA
 
 @[continuity, fun_prop]
 theorem Continuous.matrix_row {ι : Type*} {A : X → n → R} (hA : Continuous A) :
-    Continuous fun x => row ι (A x) :=
+    Continuous fun x => replicateRow ι (A x) :=
   continuous_matrix fun _ _ => (continuous_apply _).comp hA
 
 @[continuity, fun_prop]
