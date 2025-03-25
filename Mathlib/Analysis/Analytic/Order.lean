@@ -60,8 +60,12 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
-/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as
-`f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`. -/
+/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as `f z =
+  (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`.
+
+See `MeromorphicNFAt.order_eq_zero_iff` for an analogous statement about meromorphic functions in
+normal form.
+-/
 lemma order_ne_top_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
       ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
