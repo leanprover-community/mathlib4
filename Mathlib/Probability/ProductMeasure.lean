@@ -404,8 +404,8 @@ theorem infinitePi_map_piCongrLeft {α : Type*} (e : α ≃ ι) :
     (infinitePi (fun i ↦ μ (e i))).map (piCongrLeft X e) = infinitePi μ := by
   refine eq_infinitePi μ fun s t ht ↦ ?_
   conv_lhs => enter [2, 1]; rw [← e.image_preimage s, ← coe_preimage _ e.injective.injOn]
-  rw [Measure.map_apply, coe_piCongrLeft, Equiv.piCongrLeft_preimage_pi, infinitePi_boxes,
-    Finset.prod_equiv e]
+  rw [map_apply, coe_piCongrLeft, Equiv.piCongrLeft_preimage_pi, infinitePi_boxes,
+    prod_equiv e]
   · simp
   · simp
   · simp_all
