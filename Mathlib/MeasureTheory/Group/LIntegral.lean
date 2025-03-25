@@ -55,7 +55,7 @@ end MeasurableMul
 
 section MeasurableInv
 
-variable [Group G] [MeasurableInv G]
+variable [InvolutiveInv G] [MeasurableInv G]
 
 /-- Involuting a function does not change its Lebesgue integral with respect to a
 inverse-invariant measure. -/
