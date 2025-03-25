@@ -39,7 +39,7 @@ scoped[MeasureTheory] infixl:80 " ∗ " => MeasureTheory.Measure.conv
 
 @[to_additive lintegral_conv]
 theorem lintegral_mconv [MeasurableMul₂ M] {μ ν : Measure M} [SFinite ν]
-    {f : M → ℝ≥0∞} (hf : Measurable f):
+    {f : M → ℝ≥0∞} (hf : Measurable f) :
     ∫⁻ z, f z ∂(μ ∗ ν) = ∫⁻ x, ∫⁻ y, f (x * y) ∂ν ∂μ := by
   rw[mconv, lintegral_map hf measurable_mul, lintegral_prod]
   fun_prop
