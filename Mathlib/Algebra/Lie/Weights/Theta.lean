@@ -289,67 +289,32 @@ theorem rrrrr2 (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) = (t : K)⁻¹ :
   rw [rrr44 t]
   simp_all only [ne_eq, Units.ne_zero, not_false_eq_true, mul_eq_zero, or_self, div_self]
 
-  --search_proof
+
+theorem rrrr (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ 2 = 1 := by
+  norm_cast
+  field_simp
+
 
 theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t e = (-(t : K) ^ (-2 : ℤ) : K) • f := by
-  rw [theta_apply]
-  simp
-  rw [exp_ad_e_e H hα he t]
-  rw [exp_ad_f_e H hα hf t ht]
-  --rw [exp_ad_e_apply]
-  --simp [LinearMap.map_add]
-  --apply LinearMap.map_add
-  have ttt0 : (e + (t : K)⁻¹ • h) - ((t : K) ^ (-2 : ℤ) • f) = (e + (t : K)⁻¹ • h) + (- (t : K) ^ (-2 : ℤ) • f) := by
-    simp_all only [Int.reduceNeg, zpow_neg, neg_smul]
-    abel
-  rw [ttt0]
-  have ttt : (exp_ad_e H hα he t) ((e + (t : K)⁻¹ • h) + (- (t : K) ^ (-2 : ℤ) • f)) = (exp_ad_e H hα he t) (e + (t : K)⁻¹ • h) + (exp_ad_e H hα he t) (- (t : K) ^ (-2 : ℤ) • f) := by
-    apply LinearMap.map_add
+  dsimp [theta]
+  rw [exp_ad_e_e H hα he t, exp_ad_f_e H hα hf t ht]
+  have ttt : (exp_ad_e H hα he t) ((e + (t : K)⁻¹ • h) - ((t : K) ^ (-2 : ℤ) • f)) = (exp_ad_e H hα he t) (e + (t : K)⁻¹ • h) - (exp_ad_e H hα he t) ((t : K) ^ (-2 : ℤ) • f) := by
+    apply LinearMap.map_sub
   rw [ttt]
-  --have help : (t : K)⁻¹ = (t⁻¹ : K) := by
-  --  field_simp
-  --rw [help]
   have ttt2 : (exp_ad_e H hα he t) (e + (t : K)⁻¹ • h) = (exp_ad_e H hα he t) e + (exp_ad_e H hα he t) ((t : K)⁻¹ • h) := by
     apply LinearMap.map_add
   rw [ttt2]
   have ttt3 : (exp_ad_e H hα he t) ((t : K)⁻¹ • h) = (t : K)⁻¹ • ((exp_ad_e H hα he t) h) := by
     apply LinearMap.map_smul
   rw [ttt3]
-  have ttt4 : (exp_ad_e H hα he t) (-(t : K) ^ (-2 : ℤ) • f) = -(t : K) ^ (-2 : ℤ) • ((exp_ad_e H hα he t) f) := by
+  have ttt4 : (exp_ad_e H hα he t) ((t : K) ^ (-2 : ℤ) • f) = (t : K) ^ (-2 : ℤ) • ((exp_ad_e H hα he t) f) := by
     apply LinearMap.map_smul
-  rw [ttt4]
-  rw [exp_ad_e_e H hα he t]
-  rw [exp_ad_e_f H hα he t ht]
-  rw [exp_ad_e_h H hα he t ht]
-  simp
-
-  have s5 : (t : K)⁻¹ • (2 : ℤ) • (t : K) • e = 2 • e := by
-    rw [two_smul, smul_add, ← add_smul]
-    rw [add_smul]
-    rw [← mul_smul]
-    simp
-    rw [two_smul]
-  have s4 : e + (t : K)⁻¹ • (h - (2 : ℤ) • (t : K) • e) = (t : K)⁻¹ • h - e := by
-    rw [smul_sub]
-    rw [s5]
-    abel
-  rw [s4]
-  rw [smul_sub]
-  rw [smul_add]
-  simp
-  rw [← mul_smul]
-  have : (t : K) ≠ (0 : K) := by
-    exact Units.ne_zero t
-  have rrrr : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ 2 = 1 := by
-    norm_cast
-    field_simp
-  rw [rrrr]
-  simp
-  rw [← mul_smul]
-  rw [rrrrr2 t]
-  simp
-
+  rw [ttt4, exp_ad_e_e H hα he t, exp_ad_e_f H hα he t ht, exp_ad_e_h H hα he t ht, smul_sub,
+    two_smul, smul_add, ← add_smul, add_smul, ← mul_smul, add_sub, smul_sub, smul_add, ← mul_smul,
+      ← mul_smul, zpow_neg, neg_smul, rrrr t, rrrrr2 t, IsUnit.inv_mul_cancel, one_smul,
+        add_sub_add_left_eq_sub, sub_sub_sub_cancel_right, sub_add_cancel_right]
+  exact Units.isUnit t
 
 
 
