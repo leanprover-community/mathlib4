@@ -6,7 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.GroupWithZero.Hom
 
-/-! ### Equivalences -/
+/-! # Isomorphisms of monoids with zero -/
 
 namespace MulEquivClass
 variable {F α β : Type*} [EquivLike F α β]
