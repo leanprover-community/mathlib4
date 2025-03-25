@@ -198,13 +198,11 @@ theorem con_subgroup (c : Con G) :
 /--
 The normal subgroups correspond to the congruence relations on a group.
 -/
-@[to_additive  (attr := simps) AddSubgroup.orderIsoAddCon
+@[to_additive (attr := simps) AddSubgroup.orderIsoAddCon
 "The normal subgroups correspond to the additive congruence relations on an `AddGroup`."]
 def _root_.Subgroup.orderIsoCon :
     { N : Subgroup G // N.Normal } ≃o Con G where
-  toFun N :=
-    have : N.val.Normal := N.prop
-    QuotientGroup.con N
+  toFun N := letI : N.val.Normal := N.prop; QuotientGroup.con N
   invFun c := ⟨c.subgroup, inferInstance⟩
   left_inv := fun ⟨N, _⟩ ↦ Subtype.mk_eq_mk.mpr (Con.subgroup_quotientGroupCon N)
   right_inv c := QuotientGroup.con_subgroup c
