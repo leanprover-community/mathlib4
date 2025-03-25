@@ -7,20 +7,27 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-!
-#  Riesz–Markov–Kakutani representation theorem for real-linear functionals
+# Riesz–Markov–Kakutani representation theorem for real-linear functionals
 
-This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
-T2 space `X` for `Real`-linear functionals `Λ`.
+The Riesz–Markov–Kakutani representation theorem relates linear functionals on spaces of continuous
+functions on a locally compact space to measures.
 
-The measure is first defined through `rieszContent` for `toNNRealLinear`-version of `Λ`.
-The result is first proved for `Real`-linear `Λ` because in a standard proof one has to prove the
-inequalities by considering `Λ f` and `Λ (-f)` for all functions `f`, yet on `C_c(X, ℝ≥0)` there is
-no negation.
+There are many closely related variations of the theorem. This file contains that proof of the
+version where the space is a locally compact T2 space, the linear functionals are real and the
+continuous functions have compact support.
 
 ## References
 
 * [Walter Rudin, Real and Complex Analysis.][Rud87]
 
+## Implementation notes:
+
+The measure is defined through `rieszContent` which is for `NNReal` using the
+`toNNRealLinear`-version of `Λ`.
+
+The Riesz–Markov–Kakutani representation theorem is first proved for `Real`-linear `Λ` because in a
+standard proof one has to prove the inequalities by considering `Λ f` and `Λ (-f)` for all functions
+`f`, yet on `C_c(X, ℝ≥0)` there is no negation.
 -/
 
 noncomputable section
@@ -29,20 +36,19 @@ open scoped BoundedContinuousFunction ENNReal NNReal
 open CompactlySupported CompactlySupportedContinuousMap Filter Function Set Topology
   TopologicalSpace MeasureTheory
 
-variable {X : Type*} [TopologicalSpace X]
-variable {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f)
-
 namespace RealRMK
 
-variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
+variable {X : Type*} [TopologicalSpace X] [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X]
+  [BorelSpace X]
+variable {Λ : C_c(X, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f → 0 ≤ Λ f)
 
 /-- The measure induced for `Real`-linear positive functional `Λ`, defined through `toNNRealLinear`
-  and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK`, while
-  `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
+and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK`, while
+`rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `K`, then
-  `Λ f ≤ rieszMeasure K`. -/
+`Λ f ≤ rieszMeasure K`. -/
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
     (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) :
     ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ K := by
@@ -141,7 +147,7 @@ lemma iUnion_Fin_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) 
 
 omit [T2Space X] [LocallyCompactSpace X] in
 /-- Given `f : C_c(X, ℝ)` such that `range f ⊆ [a, b]` we obtain a partition of the support of `f`
-  determined by partitioning `[a, b]` into `N` pieces. -/
+determined by partitioning `[a, b]` into `N` pieces. -/
 lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) {N : ℕ}
     (hN : 0 < N) (hf : range f ⊆ Ioo a (a + N * ε)) : ∃ (E : Fin N → Set X), tsupport f = ⋃ j, E j ∧
     univ.PairwiseDisjoint E ∧ (∀ n : Fin N, ∀ x ∈ E n, a + ε * n < f x ∧ f x ≤ a + ε * (n + 1)) ∧
@@ -198,7 +204,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
 
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
-  open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
+open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
 lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
     (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
@@ -237,7 +243,8 @@ lemma RMK_le_aux (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N 
   obtain ⟨N, hN, h'N⟩ := (((tendsto_order.1 B).2 _ hε ).and (Ici_mem_atTop 1)).exists
   exact ⟨N, h'N, hN.le⟩
 
-/-- `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)` -/
+/-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
+integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
 theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
   -- The case `IsEmpty X` is elementry.
@@ -450,9 +457,9 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
             rw [div_mul_cancel₀ _ (Nat.cast_ne_zero.mpr <| Nat.not_eq_zero_of_lt hN)]
             simp
 
-/-- The **Riesz-Markov-Kakutani theorem** for a positive linear functional `Λ`. -/
-theorem integral_rieszMeasure (f : C_c(X, ℝ)) :
-    ∫ (x : X), f x ∂(rieszMeasure hΛ) = Λ f := by
+/-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
+the integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal to `Λ f`. -/
+theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ (x : X), f x ∂(rieszMeasure hΛ) = Λ f := by
   -- `RMK_le` tells that `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)`, we apply this to `f` and `-f`.
   apply le_antisymm
   -- prove the inequality for `- f`
