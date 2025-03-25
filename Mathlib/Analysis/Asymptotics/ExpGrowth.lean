@@ -208,14 +208,12 @@ lemma expGrowthInf_mul_le' (h : expGrowthInf u ≠ ⊥ ∨ expGrowthSup v ≠ �
   exact expGrowthInf_mul_le h'.symm h.symm
 
 /-- See `le_expGrowthSup_mul'` for a version with swapped argument `u` and `v`. -/
-lemma le_expGrowthSup_mul :
-    expGrowthSup u + expGrowthInf v ≤ expGrowthSup (u * v) := by
+lemma le_expGrowthSup_mul : expGrowthSup u + expGrowthInf v ≤ expGrowthSup (u * v) := by
   refine le_limsup_add.trans_eq (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, log_mul_add, add_div_of_nonneg_right n.cast_nonneg']
 
 /-- See `le_expGrowthSup_mul` for a version with swapped argument `u` and `v`. -/
-lemma le_expGrowthSup_mul' :
-    expGrowthInf u + expGrowthSup v ≤ expGrowthSup (u * v) := by
+lemma le_expGrowthSup_mul' : expGrowthInf u + expGrowthSup v ≤ expGrowthSup (u * v) := by
   rw [mul_comm, add_comm]
   exact le_expGrowthSup_mul
 
@@ -225,14 +223,12 @@ lemma expGrowthSup_mul_le (h : expGrowthSup u ≠ ⊥ ∨ expGrowthSup v ≠ ⊤
   refine (limsup_add_le h h').trans_eq' (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, log_mul_add, add_div_of_nonneg_right n.cast_nonneg']
 
-lemma expGrowthInf_inv :
-    expGrowthInf u⁻¹ = - expGrowthSup u := by
+lemma expGrowthInf_inv : expGrowthInf u⁻¹ = - expGrowthSup u := by
   rw [expGrowthSup, ← liminf_neg]
   refine liminf_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.inv_apply, div_eq_mul_inv, div_eq_mul_inv, ← EReal.neg_mul, log_inv]
 
-lemma expGrowthSup_inv :
-    expGrowthSup u⁻¹ = - expGrowthInf u := by
+lemma expGrowthSup_inv : expGrowthSup u⁻¹ = - expGrowthInf u := by
   rw [expGrowthInf, ← limsup_neg]
   refine limsup_congr (Eventually.of_forall fun n ↦ ?_)
   rw [Pi.neg_apply, Pi.inv_apply, div_eq_mul_inv, div_eq_mul_inv, ← EReal.neg_mul, log_inv]
@@ -326,12 +322,10 @@ lemma expGrowthSup_iSup {ι : Type*} [Finite ι] (u : ι → ℕ → ℝ≥0∞)
 
 /-! ### Addition -/
 
-lemma le_expGrowthInf_add :
-    expGrowthInf u ⊔ expGrowthInf v ≤ expGrowthInf (u + v) :=
+lemma le_expGrowthInf_add : expGrowthInf u ⊔ expGrowthInf v ≤ expGrowthInf (u + v) :=
   sup_le (expGrowthInf_monotone le_self_add) (expGrowthInf_monotone le_add_self)
 
-lemma expGrowthSup_add :
-    expGrowthSup (u + v) = expGrowthSup u ⊔ expGrowthSup v := by
+lemma expGrowthSup_add : expGrowthSup (u + v) = expGrowthSup u ⊔ expGrowthSup v := by
   rw [← expGrowthSup_sup]
   apply le_antisymm
   · refine expGrowthSup_le_of_eventually_le (b := 2) ofNat_ne_top (Eventually.of_forall fun n ↦ ?_)
@@ -360,8 +354,6 @@ end basic_properties
 section composition
 
 variable {u : ℕ → ℝ≥0∞} {v : ℕ → ℕ}
-
-
 
 lemma Real.eventually_atTop_exists_int_between {a b : ℝ} (h : a < b) :
     ∀ᶠ x : ℝ in atTop, ∃ n : ℤ, a * x ≤ n ∧ n ≤ b * x := by
