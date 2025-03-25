@@ -388,7 +388,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [CompleteSpace E] [CompleteSpace F]
 
--- TODO: generalise this to Fredholm operators, once these are in mathlib
+-- TODO: once mathlib has Fredholm operators, generalise the next two lemmas
 
 /-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
 `f` is anti-Lipschitz. -/
