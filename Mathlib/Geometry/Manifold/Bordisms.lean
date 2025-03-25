@@ -22,7 +22,7 @@ and is called the `n`-th (unoriented) bordism group.
 
 This construction can be generalised one step further, to produce an extraordinary homology theory.
 Given a topological space `X`, a **singular `n`-manifold** on `X` is a closed `n`-dimensional smooth
-manifold `M` together with and a continuous map `M → F`. (The word *singular* does not refer to
+manifold `M` together with a continuous map `M → F`. (The word *singular* does not refer to
 singularities, but is by analogy to singular `n`-chains in the definition of singular homology.)
 
 Given two singular `n`-manifolds `s` and `t`, an (oriented) bordism between `s` and `t` is a compact
@@ -30,19 +30,20 @@ smooth `n+1`-dimensional manifold `W` whose boundary is (diffeomorphic to) the d
 of `s` and `t`, together with a map `W → X` which restricts to the maps on `s` and `t`.
 We call `s` and `t` bordant if there exists a bordism between them: again, this defines an
 equivalence relation. The `n`-th bordism group of `X` is the set of bordism classes of singular
-`n`-manifolds on`X`.
+`n`-manifolds on`X`. If `X` is a single point, this recovers the bordism groups from the preceding
+paragraph.
 
 These absolute bordism groups can be generalised further to relative bordism groups, for each
 topological pair `(X, A)`; in fact, these define an extra-ordinary homology theory.
 
 ## Main definitions
 
-- **SingularNManifold**: a singular `n`-manifold on a topological space `X`, for `n ∈ ℕ`, is a pair
-  `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
+- **SingularNManifold X k I**: a singular manifold on a topological space `X`, is a pair `(M, f)` of
+  a closed `C^k`-manifold manifold `M` modelled on `I` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝⁿ`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
   To define a disjoint unions of singular `n`-manifolds, we require their domains to be manifolds
-  over the same model with corners: the model must be explicit (or M be modelled over `ℝⁿ`)
+  over the same model with corners: this is why we make the model explicit.
 
 ## Main results
 
@@ -68,11 +69,11 @@ topological pair `(X, A)`; in fact, these define an extra-ordinary homology theo
   `n`-manifolds requires their domains to be manifolds over the same model with corners.
   Thus, either we restrict to manifolds modelled over `𝓡n` (which we prefer not to),
   or the model must be a type parameter.
-* Having `SingularNManifold` contain the type `M` as explicit field is not ideal, but the best
-  solution we found --- as this adds a universe parameter to the structure. We generally cannot have
-  `M` live in the same universe as `X` (a common case is `X` being `PUnit`),
-  determining the universe of `M` via the universes of `E` and `H` makes `SingularNManifold.map`
-  painful to state (as that would require `ULift`ing `M`).
+* Having `SingularNManifold` contain the type `M` as explicit structure field is not ideal,
+  as this adds a universe parameter to the structure. However, this is the best solution we found:
+  we generally cannot have `M` live in the same universe as `X` (a common case is `X` being
+  `PUnit`), and determining the universe of `M` from the universes of `E` and `H` would make
+  `SingularNManifold.map` painful to state (as that would require `ULift`ing `M`).
 
 ## TODO
 - define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitivity)
