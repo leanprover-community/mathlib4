@@ -47,7 +47,7 @@ instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionR
 
 -- see Note [lower instance priority]
 /-- The norm on a normed division ring is strictly multiplicative. -/
-instance (priority := 100) NormedDivisionRing.toNormMulClass [β : NormedDivisionRing α] :
+instance (priority := 100) NormedDivisionRing.toNormMulClass [NormedDivisionRing α] :
     NormMulClass α where
   norm_mul := NormedDivisionRing.norm_mul
 
