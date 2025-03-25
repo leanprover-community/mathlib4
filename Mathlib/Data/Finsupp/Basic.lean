@@ -760,9 +760,9 @@ lemma optionElim'_apply_none (y : M) (f : α →₀ M) : f.optionElim' y none = 
 
 lemma optionElim'_apply_some (y : M) (f : α →₀ M) (x : α) :
     f.optionElim' y (Option.some x) = f x := by
-  have : Option.some x = Embedding.some x := by simp only [Embedding.some_apply]
+  have : Option.some x = Embedding.some x := by rfl
   simp only [optionElim', ne_eq, reduceCtorEq, not_false_eq_true, update_apply_of_ne]
-  rw  [this, embDomain_apply]
+  rw [this, embDomain_apply]
 
 @[simp]
 lemma optionElim'_apply (y : M) (f : α →₀ M) (a : Option α) :
@@ -773,7 +773,7 @@ lemma optionElim'_apply (y : M) (f : α →₀ M) (a : Option α) :
 
 lemma optionElim'_eq_elim' (y : M) (f : α →₀ M) (a : Option α) :
     optionElim' y f a = Option.elim' y f a := by
-  simp [Option.elim'_eq_elim]
+  rw [optionElim'_apply, Option.elim'_eq_elim]
 
 @[simp]
 lemma some_optionElim' (y : M) (f : α →₀ M) : (f.optionElim' y).some = f := by
