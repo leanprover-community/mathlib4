@@ -638,14 +638,26 @@ variable (c : F) (s x L)
 theorem hasDerivAtFilter_const : HasDerivAtFilter (fun _ => c) 0 x L :=
   (hasFDerivAtFilter_const c x L).hasDerivAtFilter
 
+theorem hasDerivAtFilter_zero : HasDerivAtFilter (0 : 𝕜 → F) 0 x L := by
+  simp [hasDerivAtFilter_iff_isLittleO]
+
 theorem hasStrictDerivAt_const : HasStrictDerivAt (fun _ => c) 0 x :=
   (hasStrictFDerivAt_const c x).hasStrictDerivAt
+
+theorem hasStrictDerivAtFilter_zero : HasDerivAtFilter (0 : 𝕜 → F) 0 x L := by
+  simp [hasDerivAtFilter_iff_isLittleO]
 
 theorem hasDerivWithinAt_const : HasDerivWithinAt (fun _ => c) 0 s x :=
   hasDerivAtFilter_const _ _ _
 
+theorem hasDerivWithinAt_zero : HasDerivWithinAt (0 : 𝕜 → F) 0 s x :=
+  hasDerivAtFilter_zero _ _
+
 theorem hasDerivAt_const : HasDerivAt (fun _ => c) 0 x :=
   hasDerivAtFilter_const _ _ _
+
+theorem hasDerivAt_zero : HasDerivAt (0 : 𝕜 → F) 0 x :=
+  hasDerivAtFilter_zero _ _
 
 theorem deriv_const : deriv (fun _ => c) x = 0 :=
   HasDerivAt.deriv (hasDerivAt_const x c)
