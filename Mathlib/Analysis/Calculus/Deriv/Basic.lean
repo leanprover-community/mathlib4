@@ -677,6 +677,12 @@ theorem hasDerivAt_const : HasDerivAt (fun _ => c) 0 x :=
 theorem hasDerivAt_zero : HasDerivAt (0 : 𝕜 → F) 0 x :=
   hasDerivAtFilter_zero _ _
 
+theorem hasDerivAt_one [One F] : HasDerivAt (1 : 𝕜 → F) 0 x :=
+  hasDerivAt_const _ _
+
+theorem hasDerivAt_natCast [NatCast F] (n : ℕ) : HasDerivAt (n : 𝕜 → F) 0 x :=
+  hasDerivAt_const _ _
+
 theorem deriv_const : deriv (fun _ => c) x = 0 :=
   HasDerivAt.deriv (hasDerivAt_const x c)
 
