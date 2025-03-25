@@ -161,10 +161,7 @@ lemma map_comp (s : SingularNManifold X k I)
     ((s.map hφ).map hψ).f = (ψ ∘ φ) ∘ s.f := by
   simp [Function.comp_def]
 
-variable {E' E'' E''' H' H'' H''' : Type*}
-  [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedAddCommGroup E'']  [NormedSpace ℝ E'']
-  [NormedAddCommGroup E'''] [NormedSpace ℝ E''']
-  [TopologicalSpace H'] [TopologicalSpace H''] [TopologicalSpace H''']
+variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [TopologicalSpace H']
 
 variable (M I) in
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
@@ -232,9 +229,6 @@ def prod (s : SingularNManifold PUnit k I) (t : SingularNManifold PUnit k I') :
 variable (s t : SingularNManifold X k I)
 
 /-- The disjoint union of two singular `n`-manifolds on `X` is a singular `n`-manifold on `X`. -/
--- We need to choose a model space for the disjoint union (as a priori `s` and `t` could be
--- modelled on very different spaces: for simplicity, we choose `ℝ^n`; all real work is contained
--- in the two instances above.
 def sum (s t : SingularNManifold X k I) : SingularNManifold X k I where
   M := s.M ⊕ t.M
   f := Sum.elim s.f t.f
