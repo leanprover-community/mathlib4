@@ -3203,7 +3203,6 @@ import Mathlib.Data.Semiquot
 import Mathlib.Data.Seq.Computation
 import Mathlib.Data.Seq.Parallel
 import Mathlib.Data.Seq.Seq
-import Mathlib.Data.Seq.WSeq
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
@@ -3298,6 +3297,7 @@ import Mathlib.Data.Vector3
 import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
+import Mathlib.Data.WSeq.Basic
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Coprime
