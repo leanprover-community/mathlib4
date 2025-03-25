@@ -71,6 +71,4 @@ theorem mlconvolution_measurable [MeasurableMul₂ G] [MeasurableInv G]
   apply Measurable.lintegral_prod_right
   fun_prop
 
-/- Test Comment -/
-
 end MeasureTheory
