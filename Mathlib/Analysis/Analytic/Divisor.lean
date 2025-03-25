@@ -81,7 +81,7 @@ See `AnalyticOnNhd.exists_order_ne_top_iff_forall` and
 `AnalyticOnNhd.order_ne_top_of_isPreconnected` for two convenient criteria to guarantee conditions
 `h₂f₁` and `h₂f₂`.
 -/
-theorem divisor_smul [CompleteSpace 𝕜] {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : AnalyticOnNhd 𝕜 f₁ U)
+theorem divisor_smul {f₁ : 𝕜 → 𝕜} {f₂ : 𝕜 → E} (h₁f₁ : AnalyticOnNhd 𝕜 f₁ U)
     (h₁f₂ : AnalyticOnNhd 𝕜 f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
     divisor (f₁ • f₂) U = divisor f₁ U + divisor f₂ U := by
@@ -102,7 +102,7 @@ See `AnalyticOn.exists_order_ne_top_iff_forall` and
 `AnalyticOn.order_ne_top_of_isPreconnected` for two convenient criteria to guarantee conditions
 `h₂f₁` and `h₂f₂`.
 -/
-theorem divisor_mul [CompleteSpace 𝕜] {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : AnalyticOnNhd 𝕜 f₁ U)
+theorem divisor_mul {f₁ f₂ : 𝕜 → 𝕜} (h₁f₁ : AnalyticOnNhd 𝕜 f₁ U)
     (h₁f₂ : AnalyticOnNhd 𝕜 f₂ U) (h₂f₁ : ∀ z, (hz : z ∈ U) → (h₁f₁ z hz).order ≠ ⊤)
     (h₂f₂ : ∀ z, (hz : z ∈ U) → (h₁f₂ z hz).order ≠ ⊤) :
     divisor (f₁ * f₂) U = divisor f₁ U + divisor f₂ U :=
