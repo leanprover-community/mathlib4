@@ -60,7 +60,7 @@ as a congruence relation.
 @[to_additive
 "The additive congruence relation defined by the kernel of an additive group homomorphism is
 equal to its kernel as an additive congruence relation."]
-theorem con_ker_eq_Con_ker {M : Type*} [Monoid M] (f : G →* M) :
+theorem con_ker_eq_conKer {M : Type*} [Monoid M] (f : G →* M) :
     QuotientGroup.con f.ker = Con.ker f := by
   ext
   rw [QuotientGroup.con, Con.rel_mk, Setoid.comm', leftRel_apply, Con.ker_rel, MonoidHom.eq_iff]
@@ -169,31 +169,32 @@ The subgroup defined by the class of `1` for a congruence relation on a group.
 "The `AddSubgroup` defined by the class of `0` for an additive congruence relation
 on an `AddGroup`."]
 protected def _root_.Con.subgroup (c : Con G) : Subgroup G where
-  carrier := { x | c 1 x }
+  carrier := { x | c x 1 }
   one_mem' := c.refl 1
   mul_mem' hx hy := by simpa using c.mul hx hy
   inv_mem' h := by simpa using c.inv h
 
 @[to_additive (attr := simp)]
-theorem _root_.Con.subgroup_mem_iff {c : Con G} {x : G} :
-    x ∈ c.subgroup ↔ c 1 x := Iff.rfl
+theorem _root_.Con.mem_subgroup_iff {c : Con G} {x : G} :
+    x ∈ c.subgroup ↔ c x 1 := Iff.rfl
 
 @[to_additive]
 instance (c : Con G) : c.subgroup.Normal :=
   ⟨fun x hx g ↦ by simpa using (c.mul (c.mul (c.refl g) hx) (c.refl g⁻¹))⟩
 
 @[to_additive]
-theorem _root_.Con.subgroup_QuotientGroup_con (H : Subgroup G) [H.Normal] :
+theorem _root_.Con.subgroup_quotientGroupCon (H : Subgroup G) [H.Normal] :
     (QuotientGroup.con H).subgroup = H := by
   ext
   simp [QuotientGroup.con, leftRel_apply]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem con_subgroup (c : Con G) :
     QuotientGroup.con c.subgroup = c := by
   ext x y
-  rw [QuotientGroup.con, Con.rel_mk, leftRel_apply, Con.subgroup_mem_iff]
-  exact ⟨fun h ↦ by simpa using c.mul (c.refl x) h, fun h ↦ by simpa using c.mul (c.refl x⁻¹) h⟩
+  rw [QuotientGroup.con, Con.rel_mk, leftRel_apply, Con.mem_subgroup_iff]
+  exact ⟨fun h ↦ by simpa using c.mul (c.refl x) (c.symm h),
+    fun h ↦ by simpa using c.mul (c.refl x⁻¹) (c.symm h)⟩
 
 /--
 The normal subgroups correspond to the congruence relations on a group.
@@ -204,7 +205,7 @@ def _root_.Subgroup.orderIsoCon :
     { N : Subgroup G // N.Normal } ≃o Con G where
   toFun := fun ⟨N, _⟩ ↦ QuotientGroup.con N
   invFun c := ⟨c.subgroup, inferInstance⟩
-  left_inv := fun ⟨N, _⟩ ↦ Subtype.mk_eq_mk.mpr (Con.subgroup_QuotientGroup_con N)
+  left_inv := fun ⟨N, _⟩ ↦ Subtype.mk_eq_mk.mpr (Con.subgroup_quotientGroupCon N)
   right_inv c := QuotientGroup.con_subgroup c
   map_rel_iff' := by
     simp only [QuotientGroup.con, Equiv.coe_fn_mk, Con.le_def, Con.rel_mk, leftRel_apply]
@@ -214,15 +215,20 @@ def _root_.Subgroup.orderIsoCon :
 
 @[to_additive]
 lemma con_le_iff {N M : Subgroup G} [N.Normal] [M.Normal] :
-    N ≤ M ↔ QuotientGroup.con N ≤ QuotientGroup.con M :=
-  (Subgroup.orderIsoCon.map_rel_iff (a := ⟨N, inferInstance⟩) (b := ⟨M, inferInstance⟩)).symm
+    QuotientGroup.con N ≤ QuotientGroup.con M ↔ N ≤ M :=
+  (Subgroup.orderIsoCon.map_rel_iff (a := ⟨N, inferInstance⟩) (b := ⟨M, inferInstance⟩))
+
+@[to_additive]
+lemma con_mono {N M : Subgroup G} [hN : N.Normal] [hM : M.Normal] (h : N ≤ M) :
+    QuotientGroup.con N ≤ QuotientGroup.con M :=
+  con_le_iff.mpr h
 
 /-- A group homomorphism `φ : G →* M` with `N ⊆ ker(φ)` descends (i.e. `lift`s) to a
 group homomorphism `G/N →* M`. -/
 @[to_additive "An `AddGroup` homomorphism `φ : G →+ M` with `N ⊆ ker(φ)` descends (i.e. `lift`s)
  to a group homomorphism `G/N →* M`."]
 def lift (φ : G →* M) (HN : N ≤ φ.ker) : Q →* M :=
-  (QuotientGroup.con N).lift φ <| con_ker_eq_Con_ker φ ▸ con_le_iff.mp HN
+  (QuotientGroup.con N).lift φ <| con_ker_eq_conKer φ ▸ con_mono HN
 
 @[to_additive (attr := simp)]
 theorem lift_mk {φ : G →* M} (HN : N ≤ φ.ker) (g : G) : lift N φ HN (g : Q) = φ g :=
