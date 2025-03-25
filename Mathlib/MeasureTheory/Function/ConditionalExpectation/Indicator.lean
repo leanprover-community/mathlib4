@@ -44,7 +44,7 @@ theorem condExp_ae_eq_restrict_zero (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.re
     rw [← restrict_trim hm _ hs]
     exact Restrict.sigmaFinite _ s
   by_cases hf_int : Integrable f μ
-  swap; · rw [condExp_undef hf_int]
+  swap; · rw [condExp_of_not_integrable hf_int]
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm ?_ ?_ ?_ ?_ ?_
   · exact fun t _ _ => integrable_condExp.integrableOn.integrableOn
   · exact fun t _ _ => (integrable_zero _ _ _).integrableOn
@@ -152,7 +152,7 @@ theorem condExp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
   rw [ae_eq_restrict_iff_indicator_ae_eq (hm _ hs_m)]
   have hs_m₂ : MeasurableSet[m₂] s := by rwa [← Set.inter_univ s, ← hs Set.univ, Set.inter_univ]
   by_cases hf_int : Integrable f μ
-  swap; · simp_rw [condExp_undef hf_int]; rfl
+  swap; · simp_rw [condExp_of_not_integrable hf_int]; rfl
   refine ((condExp_indicator hf_int hs_m).symm.trans ?_).trans (condExp_indicator hf_int hs_m₂)
   refine ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm₂
     (fun s _ _ => integrable_condExp.integrableOn)

@@ -3,7 +3,7 @@ Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 
 /-!
@@ -41,20 +41,24 @@ theorem sameRay_iff_arg_div_eq_zero : SameRay ℝ x y ↔ arg (x / y) = 0 := by
   by_cases hy : y = 0; · simp [hy]
   simp [hx, hy, arg_div_coe_angle, sub_eq_zero]
 
--- Porting note: `(x + y).abs` stopped working.
-theorem abs_add_eq_iff : abs (x + y) = abs x + abs y ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
+theorem norm_add_eq_iff : ‖x + y‖ = ‖x‖ + ‖y‖ ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
   sameRay_iff_norm_add.symm.trans sameRay_iff
 
-theorem abs_sub_eq_iff : abs (x - y) = |abs x - abs y| ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
+theorem norm_sub_eq_iff : ‖x - y‖ = |‖x‖ - ‖y‖| ↔ x = 0 ∨ y = 0 ∨ x.arg = y.arg :=
   sameRay_iff_norm_sub.symm.trans sameRay_iff
 
 theorem sameRay_of_arg_eq (h : x.arg = y.arg) : SameRay ℝ x y :=
   sameRay_iff.mpr <| Or.inr <| Or.inr h
 
-theorem abs_add_eq (h : x.arg = y.arg) : abs (x + y) = abs x + abs y :=
+theorem norm_add_eq (h : x.arg = y.arg) : ‖x + y‖ = ‖x‖ + ‖y‖ :=
   (sameRay_of_arg_eq h).norm_add
 
-theorem abs_sub_eq (h : x.arg = y.arg) : abs (x - y) = ‖abs x - abs y‖ :=
+theorem norm_sub_eq (h : x.arg = y.arg) : ‖x - y‖ = ‖‖x‖ - ‖y‖‖ :=
   (sameRay_of_arg_eq h).norm_sub
+
+@[deprecated (since := "2025-02-17")] alias abs_add_eq_iff := norm_add_eq_iff
+@[deprecated (since := "2025-02-17")] alias abs_sub_eq_iff := norm_sub_eq_iff
+@[deprecated (since := "2025-02-17")] alias abs_add_eq := norm_add_eq
+@[deprecated (since := "2025-02-17")] alias abs_sub_eq := norm_sub_eq
 
 end Complex

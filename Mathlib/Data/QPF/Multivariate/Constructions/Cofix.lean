@@ -268,7 +268,7 @@ theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
   rw [← split_dropFun_lastFun f₀, ← split_dropFun_lastFun f₁]
   rw [appendFun_comp_splitFun, appendFun_comp_splitFun]
   rw [id_comp, id_comp]
-  congr 2 with (i j); cases' i with _ i
+  congr 2 with (i j); rcases i with - | i
   · apply Quot.sound
     apply h' _ j
   · change f₀ _ j = f₁ _ j
@@ -465,8 +465,8 @@ elab_rules : tactic
             refine MvQPF.Cofix.bisim₂ $sR ?_ _ _ ⟨_, rfl, rfl⟩;
             rintro $(← idss 1) $(← idss 2) ⟨$(← idss 3), $(← idss 4), $(← idss 5)⟩)
           liftMetaTactic fun g => return [← g.clear f.fvarId!]
-    for n in [6 : ids.size] do
-      let name := ids[n]!
+    for h : n in [6 : ids.size] do
+      let name := ids[n]
       logWarningAt name m!"unused name: {name}"
 
 end Mathlib.Tactic.MvBisim

@@ -27,8 +27,10 @@ assert_not_exists Field
 
 open Set
 
--- Porting note: was `deriving instance` but "default handlers have not been implemented yet"
--- Porting note: `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
+-- The `CompleteLinearOrder` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
+-- `noncomputable` through 'Nat.instConditionallyCompleteLinearOrderBotNat'
 noncomputable instance : CompleteLinearOrder ENat :=
   inferInstanceAs (CompleteLinearOrder (WithTop ℕ))
 
@@ -65,12 +67,8 @@ lemma iInf_toNat : (⨅ i, (f i : ℕ∞)).toNat = ⨅ i, f i := by
   · simp
   · norm_cast
 
-lemma iInf_eq_zero : ⨅ i, (f i : ℕ∞) = 0 ↔ ∃ i, f i = 0 := by
-  cases isEmpty_or_nonempty ι
-  · simp
-  · norm_cast
-    rw [iInf, Nat.sInf_eq_zero]
-    exact ⟨fun h ↦ by simp_all, .inl⟩
+@[simp] lemma iInf_eq_zero {f : ι → ℕ∞} : ⨅ i, f i = 0 ↔ ∃ i, f i = 0 := by
+  simpa [lt_one_iff_eq_zero] using iInf_lt_iff (α := ℕ∞) (a := 1)
 
 variable {f : ι → ℕ∞} {s : Set ℕ∞}
 

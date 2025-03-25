@@ -176,9 +176,6 @@ def Scheme.openCoverOfISupEqTop {s : Type*} (X : Scheme.{u}) (U : s → X.Opens)
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : X.Opens) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
 
-@[deprecated (since := "2024-07-24")]
-noncomputable alias Scheme.openCoverOfSuprEqTop := Scheme.openCoverOfISupEqTop
-
 /-- The open sets of an open subscheme corresponds to the open sets containing in the subset. -/
 @[simps!]
 def opensRestrict :
@@ -246,7 +243,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ (X.homOfLE e ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
   simp only [← SetLike.coe_subset_coe, IsOpenMap.coe_functor_obj, Set.image_subset_iff,
-    Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_apply]
+    Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_hom_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
 
@@ -409,6 +406,26 @@ lemma Scheme.Hom.preimageIso_inv_ι {X Y : Scheme.{u}} (f : X.Hom Y) [IsIso (C :
 
 @[deprecated (since := "2024-10-20")] alias Scheme.restrictMapIso := Scheme.Hom.preimageIso
 
+/-- If `U ≤ V` are opens of `X`, the restriction of `U` to `V` is isomorphic to `U`. -/
+noncomputable def Scheme.Opens.isoOfLE {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) : (V.ι ⁻¹ᵁ U).toScheme ≅ U :=
+  IsOpenImmersion.isoOfRangeEq ((V.ι ⁻¹ᵁ U).ι ≫ V.ι) U.ι <| by
+    have : V.ι ''ᵁ (V.ι ⁻¹ᵁ U) = U := by simpa [Scheme.Hom.image_preimage_eq_opensRange_inter]
+    rw [Scheme.comp_coeBase, TopCat.coe_comp, Scheme.Opens.range_ι, Set.range_comp, ← this]
+    simp
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.isoOfLE_hom_ι {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) :
+    (Scheme.Opens.isoOfLE hUV).hom ≫ U.ι = (V.ι ⁻¹ᵁ U).ι ≫ V.ι := by
+  simp [isoOfLE]
+
+@[reassoc (attr := simp)]
+lemma Scheme.Opens.isoOfLE_inv_ι {X : Scheme.{u}} {U V : X.Opens}
+    (hUV : U ≤ V) :
+    (Scheme.Opens.isoOfLE hUV).inv ≫ (V.ι ⁻¹ᵁ U).ι ≫ V.ι = U.ι := by
+  simp [isoOfLE]
+
 section MorphismRestrict
 
 /-- Given a morphism `f : X ⟶ Y` and an open set `U ⊆ Y`, we have `X ×[Y] U ≅ X |_{f ⁻¹ U}` -/
@@ -457,8 +474,8 @@ theorem isPullback_morphismRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Open
   refine
     (IsPullback.of_horiz_isIso ⟨?_⟩).paste_horiz
       (IsPullback.of_hasPullback f (Y.ofRestrict U.isOpenEmbedding)).flip
-  -- Porting note: changed `rw` to `erw`
-  erw [pullbackRestrictIsoRestrict_inv_fst]; rw [Category.comp_id]
+  erw [pullbackRestrictIsoRestrict_inv_fst]
+  rw [Category.comp_id]
 
 lemma isPullback_opens_inf_le {X : Scheme} {U V W : X.Opens} (hU : U ≤ W) (hV : V ≤ W) :
     IsPullback (X.homOfLE inf_le_left) (X.homOfLE inf_le_right) (X.homOfLE hU) (X.homOfLE hV) := by
@@ -512,8 +529,6 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
   constructor
   · rintro ⟨⟨x, hx⟩, hx' : (f ∣_ U).base _ ∈ V, rfl⟩
     refine ⟨⟨_, hx⟩, ?_, rfl⟩
-    -- Porting note: this rewrite was not necessary
-    rw [SetLike.mem_coe]
     convert hx'
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is not compiling
     refine Subtype.ext ?_
@@ -521,7 +536,7 @@ theorem image_morphismRestrict_preimage {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.
   · rintro ⟨⟨x, hx⟩, hx' : _ ∈ V.1, rfl : x = _⟩
     refine ⟨⟨_, hx⟩, (?_ : (f ∣_ U).base ⟨x, hx⟩ ∈ V.1), rfl⟩
     convert hx'
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is compiling
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext1` is not compiling
     refine Subtype.ext ?_
     exact morphismRestrict_base_coe f U ⟨x, hx⟩
 
@@ -619,8 +634,7 @@ def morphismRestrictRestrictBasicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Op
   have e := Scheme.preimage_basicOpen U.ι r
   rw [Scheme.Opens.ι_app] at e
   rw [← U.toScheme.basicOpen_res_eq _ (eqToHom U.inclusion'_map_eq_top).op]
-  erw [← CommRingCat.comp_apply]
-  erw [← Y.presheaf.map_comp]
+  erw [← elementwise_of% Y.presheaf.map_comp]
   rw [eqToHom_op, eqToHom_op, eqToHom_map, eqToHom_trans]
   erw [← e]
   ext1
@@ -741,8 +755,8 @@ def Scheme.OpenCover.restrict {X : Scheme.{u}} (𝒰 : X.OpenCover) (U : Opens X
     U.toScheme.OpenCover := by
   refine Cover.copy (𝒰.pullbackCover U.ι) 𝒰.J _ (𝒰.map · ∣_ U) (Equiv.refl _)
     (fun i ↦ IsOpenImmersion.isoOfRangeEq (Opens.ι _) (pullback.snd _ _) ?_) ?_
-  · erw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.map i)]
-    rw [Opens.opensRange_ι]
+  · dsimp only [Cover.pullbackCover_obj, Cover.pullbackCover_J, Equiv.refl_apply]
+    rw [IsOpenImmersion.range_pullback_snd_of_left U.ι (𝒰.map i), Opens.opensRange_ι]
     exact Subtype.range_val
   · intro i
     rw [← cancel_mono U.ι]

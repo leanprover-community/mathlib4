@@ -65,31 +65,11 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
     { hom := 𝟙 _
       inv := 𝟙 _ }
   counitIso :=
-    { hom :=
-        { app := fun _ => 𝟙 _
-          naturality := fun X Y f => by
-            change f ≫ 𝟙 _ = 𝟙 _ ≫ f
-            simp }
-      inv :=
-        { app := fun _ => 𝟙 _
-          naturality := fun X Y f => by
-            change f ≫ 𝟙 _ = 𝟙 _ ≫ f
-            simp }
-      hom_inv_id := by
-        ext
-        change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
-        simp
-      inv_hom_id := by
-        ext
-        change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
-        simp }
-  functor_unitIso_comp X := by
-    change 𝟙 X ≫ 𝟙 X = 𝟙 X
-    simp
+    { hom := { app := fun _ => 𝟙 _ }
+      inv := { app := fun _ => 𝟙 _ } }
 
 section ULiftHom
-/- Porting note: obviously we don't want code that looks like this long term
-the ability to turn off unused universe parameter error is desirable -/
+
 /-- `ULiftHom.{w} C` is an alias for `C`, which is endowed with a category instance
   whose morphisms are obtained by applying `ULift.{w}` to the morphisms from `C`.
 -/
@@ -121,13 +101,13 @@ instance ULiftHom.category : Category.{max v₂ v₁} (ULiftHom.{v₂} C) where
   id _ := ⟨𝟙 _⟩
   comp f g := ⟨f.down ≫ g.down⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.up : C ⥤ ULiftHom C where
   obj := ULiftHom.objUp
   map f := ⟨f⟩
 
-/-- One half of the quivalence between `C` and `ULiftHom C`. -/
+/-- One half of the equivalence between `C` and `ULiftHom C`. -/
 @[simps]
 def ULiftHom.down : ULiftHom C ⥤ C where
   obj := ULiftHom.objDown
@@ -141,9 +121,7 @@ def ULiftHom.equiv : C ≌ ULiftHom C where
   counitIso := NatIso.ofComponents fun _ => eqToIso rfl
 
 end ULiftHom
-/- Porting note: we want to keep around the category instance on `D`
-so Lean can figure out things further down. So `AsSmall` has been
-nolinted. -/
+
 /-- `AsSmall C` is a small category equivalent to `C`.
   More specifically, if `C : Type u` is endowed with `Category.{v} C`, then
   `AsSmall.{w} C : Type (max w v u)` is endowed with an instance of a small category.

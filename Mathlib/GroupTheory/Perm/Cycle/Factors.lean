@@ -6,6 +6,8 @@ Authors: Chris Hughes, Yaël Dillies
 
 import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
+import Mathlib.GroupTheory.NoncommPiCoprod
+import Mathlib.Tactic.Group
 
 /-!
 # Cycle factors of a permutation
@@ -64,9 +66,10 @@ theorem cycleOf_pow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α)
 theorem cycleOf_zpow_apply_self (f : Perm α) [DecidableRel f.SameCycle] (x : α) :
     ∀ n : ℤ, (cycleOf f x ^ n) x = (f ^ n) x := by
   intro z
-  induction' z with z hz
-  · exact cycleOf_pow_apply_self f x z
-  · rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
+  cases z with
+  | ofNat z => exact cycleOf_pow_apply_self f x z
+  | negSucc z =>
+    rw [zpow_negSucc, ← inv_pow, cycleOf_inv, zpow_negSucc, ← inv_pow, cycleOf_pow_apply_self]
 
 theorem SameCycle.cycleOf_apply [DecidableRel f.SameCycle] :
     SameCycle f x y → cycleOf f x y = f y :=
@@ -178,7 +181,7 @@ theorem cycleOf_mul_of_apply_right_eq_self [DecidableRel f.SameCycle]
 theorem Disjoint.cycleOf_mul_distrib [DecidableRel f.SameCycle] [DecidableRel g.SameCycle]
     [DecidableRel (f * g).SameCycle] [DecidableRel (g * f).SameCycle] (h : f.Disjoint g) (x : α) :
     (f * g).cycleOf x = f.cycleOf x * g.cycleOf x := by
-  cases' (disjoint_iff_eq_or_eq.mp h) x with hfx hgx
+  rcases (disjoint_iff_eq_or_eq.mp h) x with hfx | hgx
   · simp [h.commute.eq, cycleOf_mul_of_apply_right_eq_self h.symm.commute, hfx]
   · simp [cycleOf_mul_of_apply_right_eq_self h.commute, hgx]
 
@@ -262,11 +265,6 @@ theorem two_le_card_support_cycleOf_iff [DecidableEq α] [Fintype α] :
   rw [← two_le_card_support_cycleOf_iff, ← card_pos, ← Nat.succ_le_iff]
   exact ⟨fun h => Or.resolve_left h.eq_or_lt (card_support_ne_one _).symm, zero_lt_two.trans_le⟩
 
-@[deprecated support_cycleOf_nonempty (since := "2024-06-16")]
-theorem card_support_cycleOf_pos_iff [DecidableEq α] [Fintype α] :
-    0 < #(cycleOf f x).support ↔ f x ≠ x := by
-  rw [card_pos, support_cycleOf_nonempty]
-
 theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
     y ∈ support (f.cycleOf x) ↔ SameCycle f x y ∧ x ∈ support f :=
   mem_support_cycleOf_iff_aux
@@ -274,6 +272,13 @@ theorem mem_support_cycleOf_iff [DecidableEq α] [Fintype α] :
 theorem mem_support_cycleOf_iff' (hx : f x ≠ x) [DecidableEq α] [Fintype α] :
     y ∈ support (f.cycleOf x) ↔ SameCycle f x y :=
   mem_support_cycleOf_iff'_aux hx
+
+theorem sameCycle_iff_cycleOf_eq_of_mem_support [DecidableEq α] [Fintype α]
+    {g : Perm α} {x y : α} (hx : x ∈ g.support) (hy : y ∈ g.support) :
+    g.SameCycle x y ↔ g.cycleOf x = g.cycleOf y := by
+  refine ⟨SameCycle.cycleOf_eq, fun h ↦ ?_⟩
+  rw [← mem_support_cycleOf_iff' (mem_support.mp hx), h,
+    mem_support_cycleOf_iff' (mem_support.mp hy)]
 
 theorem support_cycleOf_eq_nil_iff [DecidableEq α] [Fintype α] :
     (f.cycleOf x).support = ∅ ↔ x ∉ f.support := by simp
@@ -310,7 +315,7 @@ theorem SameCycle.exists_pow_eq [DecidableEq α] [Fintype α] (f : Perm α) (h :
     ∃ i : ℕ, 0 < i ∧ i ≤ #(f.cycleOf x).support + 1 ∧ (f ^ i) x = y := by
   by_cases hx : x ∈ f.support
   · obtain ⟨k, hk, hk'⟩ := h.exists_pow_eq_of_mem_support hx
-    cases' k with k
+    rcases k with - | k
     · refine ⟨#(f.cycleOf x).support, ?_, self_le_add_right _ _, ?_⟩
       · refine zero_lt_one.trans (one_lt_card_support_of_ne_one ?_)
         simpa using hx
@@ -523,8 +528,17 @@ theorem cycleFactorsFinset_pairwise_disjoint :
     (cycleFactorsFinset f : Set (Perm α)).Pairwise Disjoint :=
   (cycleFactorsFinset_eq_finset.mp rfl).2.choose
 
+/-- Two cycles of a permutation commute. -/
 theorem cycleFactorsFinset_mem_commute : (cycleFactorsFinset f : Set (Perm α)).Pairwise Commute :=
   (cycleFactorsFinset_pairwise_disjoint _).mono' fun _ _ => Disjoint.commute
+
+/-- Two cycles of a permutation commute. -/
+theorem cycleFactorsFinset_mem_commute' {g1 g2 : Perm α}
+    (h1 : g1 ∈ f.cycleFactorsFinset) (h2 : g2 ∈ f.cycleFactorsFinset) :
+    Commute g1 g2 := by
+  rcases eq_or_ne g1 g2 with rfl | h
+  · apply Commute.refl
+  · exact Equiv.Perm.cycleFactorsFinset_mem_commute f h1 h2 h
 
 /-- The product of cycle factors is equal to the original `f : perm α`. -/
 theorem cycleFactorsFinset_noncommProd
@@ -575,6 +589,40 @@ lemma support_zpowers_of_mem_cycleFactorsFinset_le {g : Perm α}
   obtain ⟨m, hm⟩ := v.prop
   simp only [← hm]
   exact le_trans (support_zpow_le _ _) (mem_cycleFactorsFinset_support_le c.prop)
+
+theorem pairwise_disjoint_of_mem_zpowers :
+    Pairwise fun (i j : f.cycleFactorsFinset) ↦
+      ∀ (x y : Perm α), x ∈ Subgroup.zpowers ↑i → y ∈ Subgroup.zpowers ↑j → Disjoint x y :=
+  fun c d  hcd ↦ fun x y hx hy ↦ by
+  obtain ⟨m, hm⟩ := hx; obtain ⟨n, hn⟩ := hy
+  simp only [← hm, ← hn]
+  apply Disjoint.zpow_disjoint_zpow
+  exact f.cycleFactorsFinset_pairwise_disjoint c.prop d.prop (Subtype.coe_ne_coe.mpr hcd)
+
+lemma pairwise_commute_of_mem_zpowers :
+    Pairwise fun (i j : f.cycleFactorsFinset) ↦
+      ∀ (x y : Perm α), x ∈ Subgroup.zpowers ↑i → y ∈ Subgroup.zpowers ↑j → Commute x y :=
+  f.pairwise_disjoint_of_mem_zpowers.mono
+    (fun _ _ ↦ forall₂_imp (fun _ _ h hx hy ↦ (h hx hy).commute))
+
+lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
+    (v : (c : { x // x ∈ f.cycleFactorsFinset }) → (Subgroup.zpowers (c : Perm α))) :
+    Disjoint (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) := by
+  apply Finset.noncommProd_induction
+  · intro a _ b _ h
+    apply f.pairwise_commute_of_mem_zpowers h <;> simp only [Subgroup.coe_subtype, SetLike.coe_mem]
+  · intro x y
+    exact Disjoint.mul_right
+  · exact disjoint_one_right _
+  · intro c _
+    simp only [Subgroup.coe_subtype]
+    exact Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u)
+      le_rfl (support_zpowers_of_mem_cycleFactorsFinset_le (v c))
+
+lemma commute_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
+    (v : (c : { x // x ∈ f.cycleFactorsFinset }) → (Subgroup.zpowers (c : Perm α))) :
+    Commute (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) :=
+  Disjoint.commute (f.disjoint_ofSubtype_noncommPiCoprod u v)
 
 theorem mem_support_iff_mem_support_of_mem_cycleFactorsFinset {g : Equiv.Perm α} {x : α} :
     x ∈ g.support ↔ ∃ c ∈ g.cycleFactorsFinset, x ∈ c.support := by
@@ -681,6 +729,12 @@ theorem eq_cycleOf_of_mem_cycleFactorsFinset_iff
   rw [mem_support, cycleOf_apply_self, ne_eq, ← cycleOf_eq_one_iff]
   exact (mem_cycleFactorsFinset_iff.mp hc).left.ne_one
 
+theorem zpow_apply_mem_support_of_mem_cycleFactorsFinset_iff {g : Perm α}
+    {x : α} {m : ℤ} {c : g.cycleFactorsFinset} :
+    (g ^ m) x ∈ (c : Perm α).support ↔ x ∈ (c : Perm α).support := by
+  rw [← g.eq_cycleOf_of_mem_cycleFactorsFinset_iff _ c.prop, cycleOf_self_apply_zpow,
+    eq_cycleOf_of_mem_cycleFactorsFinset_iff _ _ c.prop]
+
 /-- A permutation `c` is a cycle of `g` iff `k * c * k⁻¹` is a cycle of `k * g * k⁻¹` -/
 theorem mem_cycleFactorsFinset_conj (g k c : Perm α) :
     k * c * k⁻¹ ∈ (k * g * k⁻¹).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
@@ -734,7 +788,7 @@ theorem mem_support_cycle_of_cycle {g d c : Perm α}
       Commute.eq (cycleFactorsFinset_mem_commute g hc hd h),
       mul_apply, EmbeddingLike.apply_eq_iff_eq]
 
-/-- If a permutation is a cycle of `g`, then its support is invariant under `g`-/
+/-- If a permutation is a cycle of `g`, then its support is invariant under `g`. -/
 theorem mem_cycleFactorsFinset_support {g c : Perm α} (hc : c ∈ g.cycleFactorsFinset) (a : α) :
     a ∈ c.support ↔ g a ∈ c.support :=
   mem_support_iff_of_commute (self_mem_cycle_factors_commute hc).symm a
@@ -781,7 +835,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
         erase_eq_of_not_mem, mul_assoc, Disjoint.cycleFactorsFinset_mul_eq_union, hσ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
-        cases' hd.symm x with hx hx
+        rcases hd.symm x with hx | hx
         · exact Or.inl hx
         · refine Or.inr ?_
           by_cases hfx : f x = x
@@ -796,7 +850,7 @@ theorem cycleFactorsFinset_mul_inv_mem_eq_sdiff [DecidableEq α] [Fintype α] {f
         Disjoint.cycleFactorsFinset_mul_eq_union, hτ hf]
       · rw [mem_cycleFactorsFinset_iff] at hf
         intro x
-        cases' hd x with hx hx
+        rcases hd x with hx | hx
         · exact Or.inl hx
         · refine Or.inr ?_
           by_cases hfx : f x = x
@@ -827,7 +881,7 @@ theorem subtypePerm_on_cycleFactorsFinset [DecidableEq α] [Fintype α]
   simp only [subtypePerm_apply, Subtype.coe_mk, subtypePermOfSupport]
   exact ((mem_cycleFactorsFinset_iff.mp hc).2 x hx).symm
 
-theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α]{g k c : Equiv.Perm α}
+theorem commute_iff_of_mem_cycleFactorsFinset [DecidableEq α] [Fintype α] {g k c : Equiv.Perm α}
     (hc : c ∈ g.cycleFactorsFinset) :
     Commute k c ↔
       ∃ hc' : ∀ x : α, x ∈ c.support ↔ k x ∈ c.support,

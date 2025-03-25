@@ -446,12 +446,12 @@ theorem eval_gcd_eq_zero [DecidableEq R] {f g : R[X]} {α : R}
 
 theorem root_left_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : f.eval₂ ϕ α = 0 := by
-  cases' EuclideanDomain.gcd_dvd_left f g with p hp
+  obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_left f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
 theorem root_right_of_root_gcd [CommSemiring k] [DecidableEq R] {ϕ : R →+* k} {f g : R[X]} {α : k}
     (hα : (EuclideanDomain.gcd f g).eval₂ ϕ α = 0) : g.eval₂ ϕ α = 0 := by
-  cases' EuclideanDomain.gcd_dvd_right f g with p hp
+  obtain ⟨p, hp⟩ := EuclideanDomain.gcd_dvd_right f g
   rw [hp, Polynomial.eval₂_mul, hα, zero_mul]
 
 theorem root_gcd_iff_root_left_right [CommSemiring k] [DecidableEq R]
@@ -591,27 +591,18 @@ theorem degree_pos_of_irreducible (hp : Irreducible p) : 0 < p.degree :=
     have := eq_C_of_degree_le_zero hp0
     not_irreducible_C (p.coeff 0) <| this ▸ hp
 
-/- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero
-into multiple decls because the original proof was timing out -/
 theorem X_sub_C_mul_divByMonic_eq_sub_modByMonic {K : Type*} [Field K] (f : K[X]) (a : K) :
     (X - C a) * (f /ₘ (X - C a)) = f - f %ₘ (X - C a) := by
   rw [eq_sub_iff_add_eq, ← eq_sub_iff_add_eq', modByMonic_eq_sub_mul_div]
   exact monic_X_sub_C a
 
-/- Porting note: factored out a have statement from isCoprime_of_is_root_of_eval_derivative_ne_zero
-because the original proof was timing out -/
 theorem divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative
     {K : Type*} [Field K] (f : K[X]) (a : K) :
     f /ₘ (X - C a) + (X - C a) * derivative (f /ₘ (X - C a)) = derivative f := by
   have key := by apply congrArg derivative <| X_sub_C_mul_divByMonic_eq_sub_modByMonic f a
-  rw [modByMonic_X_sub_C_eq_C_eval] at key
-  rw [derivative_mul,derivative_sub,derivative_X,derivative_sub] at key
-  rw [derivative_C,sub_zero,one_mul] at key
-  rw [derivative_C,sub_zero] at key
-  assumption
+  simpa only [derivative_mul, derivative_sub, derivative_X, derivative_C, sub_zero, one_mul,
+    modByMonic_X_sub_C_eq_C_eval] using key
 
-/- Porting note: factored out another have statement from
-isCoprime_of_is_root_of_eval_derivative_ne_zero because the original proof was timing out -/
 theorem X_sub_C_dvd_derivative_of_X_sub_C_dvd_divByMonic {K : Type*} [Field K] (f : K[X]) {a : K}
     (hf : (X - C a) ∣ f /ₘ (X - C a)) : X - C a ∣ derivative f := by
   have key := divByMonic_add_X_sub_C_mul_derivate_divByMonic_eq_derivative f a

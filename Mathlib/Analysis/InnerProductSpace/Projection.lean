@@ -119,7 +119,7 @@ theorem exists_norm_eq_iInf_of_complete_convex {K : Set F} (ne : K.Nonempty) (h�
           _ =
               absR (2 : ℝ) * ‖u - half • (wq + wp)‖ * (absR (2 : ℝ) * ‖u - half • (wq + wp)‖) +
                 ‖wp - wq‖ * ‖wp - wq‖ := by
-            rw [_root_.abs_of_nonneg]
+            rw [abs_of_nonneg]
             exact zero_le_two
           _ =
               ‖(2 : ℝ) • (u - half • (wq + wp))‖ * ‖(2 : ℝ) • (u - half • (wq + wp))‖ +
@@ -744,14 +744,11 @@ theorem Submodule.sup_orthogonal_inf_of_completeSpace {K₁ K₂ : Submodule �
     exact K₂.add_mem (h hy) hz.2
   · exact fun hx => ⟨v, v.prop, x - v, ⟨hvm, K₂.sub_mem hx (h v.prop)⟩, add_sub_cancel _ _⟩
 
-variable {K}
-
+variable {K} in
 /-- If `K` is complete, `K` and `Kᗮ` span the whole space. -/
 theorem Submodule.sup_orthogonal_of_completeSpace [HasOrthogonalProjection K] : K ⊔ Kᗮ = ⊤ := by
   convert Submodule.sup_orthogonal_inf_of_completeSpace (le_top : K ≤ ⊤) using 2
   simp
-
-variable (K)
 
 /-- If `K` is complete, any `v` in `E` can be expressed as a sum of elements of `K` and `Kᗮ`. -/
 theorem Submodule.exists_add_mem_mem_orthogonal [HasOrthogonalProjection K] (v : E) :
@@ -916,8 +913,7 @@ theorem Submodule.topologicalClosure_eq_top_iff [CompleteSpace E] :
 
 namespace Dense
 
-/- Porting note: unneeded assumption `[CompleteSpace E]` was removed from all theorems in this
-section. TODO: Move to another file? -/
+/- TODO: Move to another file? -/
 open Submodule
 
 variable {x y : E}
@@ -1008,7 +1004,6 @@ theorem linearEquiv_det_reflection : (reflection K).det = (-1) ^ finrank 𝕜 K�
 
 end FiniteDimensional
 
--- Porting note: relax assumptions, swap LHS with RHS
 /-- If the orthogonal projection to `K` is well-defined, then a vector splits as the sum of its
 orthogonal projections onto a complete submodule `K` and onto the orthogonal complement of `K`. -/
 theorem orthogonalProjection_add_orthogonalProjection_orthogonal [HasOrthogonalProjection K]
@@ -1236,8 +1231,6 @@ open DirectSum
 theorem OrthogonalFamily.sum_projection_of_mem_iSup [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (x : E) (hx : x ∈ iSup V) : (∑ i, (orthogonalProjection (V i) x : E)) = x := by
-  -- Porting note: switch to the better `induction _ using`. Need the primed induction principle,
-  -- the unprimed one doesn't work with `induction` (as it isn't as syntactically general)
   induction hx using Submodule.iSup_induction' with
   | mem i x hx =>
     refine
@@ -1327,7 +1320,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     refine ⟨insert e v, v.subset_insert e, ⟨?_, ?_⟩, (ne_insert_of_not_mem v he'').symm⟩
     · -- show that the elements of `insert e v` have unit length
       rintro ⟨a, ha'⟩
-      cases' eq_or_mem_of_mem_insert ha' with ha ha
+      rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · simp [ha, he]
       · exact hv.1 ⟨a, ha⟩
     · -- show that the elements of `insert e v` are orthogonal
@@ -1335,7 +1328,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
         intro a ha
         exact he' a (Submodule.subset_span ha)
       rintro ⟨a, ha'⟩
-      cases' eq_or_mem_of_mem_insert ha' with ha ha
+      rcases eq_or_mem_of_mem_insert ha' with ha | ha
       · rintro ⟨b, hb'⟩ hab'
         have hb : b ∈ v := by
           refine mem_of_mem_insert_of_ne hb' ?_
@@ -1345,7 +1338,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
         rw [inner_eq_zero_symm]
         simpa [ha] using h_end b hb
       rintro ⟨b, hb'⟩ hab'
-      cases' eq_or_mem_of_mem_insert hb' with hb hb
+      rcases eq_or_mem_of_mem_insert hb' with hb | hb
       · simpa [hb] using h_end a ha
       have : (⟨a, ha⟩ : v) ≠ ⟨b, hb⟩ := by
         intro hab''

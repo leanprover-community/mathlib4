@@ -77,6 +77,16 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
+-- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
+-- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
+@[to_additive (attr := simp)]
+theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
+
+-- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
+-- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
+@[to_additive (attr := simp)]
+theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
+
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
 
@@ -128,14 +138,14 @@ def length (a : FreeMonoid α) : ℕ := a.toList.length
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
 
 @[to_additive (attr := simp)]
-theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero
+theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero_iff
 
 @[to_additive (attr := simp)]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
 @[to_additive existing]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
-  List.length_eq_one
+  List.length_eq_one_iff
 
 @[to_additive]
 theorem length_eq_two {v : FreeMonoid α} :
@@ -344,7 +354,7 @@ theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
   unfold map
   simp only [MonoidHom.coe_mk, OneHom.coe_mk, toList_ofList, List.map_map]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem toList_map (f : α → β) (xs : FreeMonoid α) : toList (map f xs) = xs.toList.map f := rfl
 
 @[to_additive]
@@ -372,7 +382,7 @@ theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
-    (List.append_eq_nil.mp this).1
+    (List.append_eq_nil_iff.mp this).1
 
 @[to_additive (attr := simp)]
 theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
@@ -385,7 +395,7 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
     simp only [map_mul, map_of] at hb
     use head
     have H := congr_arg length hb
-    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
+    simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
     rw [H, mul_one] at hb
     exact FreeMonoid.of_injective hb
   intro fs d
@@ -434,9 +444,9 @@ isomorphic"]
 def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
   toFun := FreeMonoid.map ⇑e
   invFun := FreeMonoid.map ⇑e.symm
-  left_inv := fun _ => map_symm_apply_map_eq e
-  right_inv := fun _ => map_apply_map_symm_eq e
-  map_mul' := (by simp [map_mul])
+  left_inv _ := map_symm_apply_map_eq e
+  right_inv _ := map_apply_map_symm_eq e
+  map_mul' := by simp [map_mul]
 
 @[to_additive (attr := simp)]
 theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) = of (e a) := rfl

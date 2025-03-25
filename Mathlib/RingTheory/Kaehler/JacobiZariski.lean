@@ -46,47 +46,13 @@ attribute [local instance] SMulCommClass.of_commMonoid
 
 namespace Generators
 
-/--
-Given `R[X] → S` and `S[Y] → T`, this is the lift of an element in `ker(S[Y] → T)`
-to `ker(R[X][Y] → S[Y] → T)` constructed from `P.σ`.
--/
-noncomputable
-def kerCompPreimage (x : Q.ker) :
-    (Q.comp P).ker := by
-  refine ⟨x.1.sum fun n r ↦ rename Sum.inr (P.σ r) * monomial (n.mapDomain Sum.inl) 1, ?_⟩
-  simp only [ker_eq_ker_aeval_val, RingHom.mem_ker]
-  conv_rhs => rw [← aeval_val_eq_zero x.2, ← x.1.support_sum_monomial_coeff]
-  simp only [Finsupp.sum, map_sum, map_mul, aeval_rename, Function.comp_def, comp_val,
-    Sum.elim_inr, aeval_monomial, map_one, Finsupp.prod_mapDomain_index_inj Sum.inl_injective,
-    Sum.elim_inl, one_mul]
-  congr! with v i
-  simp_rw [← IsScalarTower.toAlgHom_apply R, ← comp_aeval, AlgHom.comp_apply, P.aeval_val_σ]
-  rfl
-
-lemma ofComp_kerCompPreimage (x : Q.ker) :
-    (Q.ofComp P).toAlgHom (kerCompPreimage Q P x) = x := by
-  rw [← x.1.support_sum_monomial_coeff, kerCompPreimage, map_finsupp_sum, Finsupp.sum]
-  refine Finset.sum_congr rfl fun j _ ↦ ?_
-  rw [_root_.map_mul, Hom.toAlgHom_monomial, ofComp_toAlgHom_rename]
-  simp [Finsupp.prod_mapDomain_index_inj Sum.inl_injective, monomial_eq, coeff]
-
-lemma Cotangent.map_ofComp_ker :
-    Submodule.map (Q.ofComp P).toAlgHom.toLinearMap ((Q.comp P).ker.restrictScalars R) =
-      Q.ker.restrictScalars R := by
-  apply le_antisymm
-  · rintro _ ⟨x, hx, rfl⟩
-    simp only [ker_eq_ker_aeval_val, Submodule.coe_restrictScalars, SetLike.mem_coe,
-      RingHom.mem_ker, AlgHom.toLinearMap_apply, Submodule.restrictScalars_mem] at hx ⊢
-    rw [← hx, Hom.algebraMap_toAlgHom, id.map_eq_id, RingHom.id_apply]
-  · intro x hx
-    exact ⟨_, (kerCompPreimage Q P ⟨x, hx⟩).2, ofComp_kerCompPreimage Q P ⟨x, hx⟩⟩
-
 lemma Cotangent.surjective_map_ofComp :
     Function.Surjective (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) := by
   intro x
   obtain ⟨⟨x, hx⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-  have : x ∈ Q.ker.restrictScalars R := hx
-  rw [← map_ofComp_ker Q P] at this
+  have : x ∈ Q.ker := hx
+  rw [← map_ofComp_ker Q P, Ideal.mem_map_iff_of_surjective
+    _ (toAlgHom_ofComp_surjective Q P)] at this
   obtain ⟨x, hx', rfl⟩ := this
   exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
 
@@ -119,12 +85,12 @@ lemma Cotangent.exact :
     · simp [aeval_val_eq_zero hx]
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
-    replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by rwa [map_mk, mk_eq_zero_iff] at hx
-    rw [← Submodule.restrictScalars_mem R, pow_two, Submodule.restrictScalars_mul,
-      ← map_ofComp_ker (P := P), ← Submodule.map_mul, ← Submodule.restrictScalars_mul] at hx
+    replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
+      simpa only [map_mk, val_mk, val_zero, Ideal.toCotangent_eq_zero] using congr(($hx).val)
+    rw [pow_two, ← map_ofComp_ker (P := P), ← Ideal.map_mul, Ideal.mem_map_iff_of_surjective
+      _ (toAlgHom_ofComp_surjective Q P)] at hx
     obtain ⟨y, hy, e⟩ := hx
-    rw [AlgHom.toLinearMap_apply, eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker,
-      ← map_toComp_ker] at e
+    rw [eq_comm, ← sub_eq_zero, ← map_sub, ← RingHom.mem_ker, ← map_toComp_ker] at e
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
@@ -230,7 +196,7 @@ lemma CotangentSpace.map_toComp_injective :
       ((Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T) := by
   rw [← compEquiv_symm_inr]
   apply (compEquiv Q P).symm.injective.comp
-  exact Prod.mk.inj_left _
+  exact Prod.mk_right_injective _
 
 lemma CotangentSpace.map_ofComp_surjective :
     Function.Surjective (Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom) := by
@@ -391,6 +357,7 @@ def δ :
 
 lemma exact_δ_map :
     Function.Exact (δ Q P) (mapBaseChange R S T) := by
+  simp only [δ]
   apply SnakeLemma.exact_δ_left (π₂ := (Q.comp P).toExtension.toKaehler)
     (hπ₂ := (Q.comp P).toExtension.exact_cotangentComplex_toKaehler)
   · apply (P.cotangentSpaceBasis.baseChange T).ext
@@ -409,6 +376,7 @@ lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
     (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
       (Q.comp P).toExtension.cotangentComplex y) :
     δ Q P x = P.toExtension.toKaehler.baseChange T z := by
+  simp only [δ]
   apply SnakeLemma.δ_eq
   exacts [hy, hz]
 
@@ -443,6 +411,7 @@ lemma δ_eq_δ : δ Q P = δ Q P' := by
 
 lemma exact_map_δ :
     Function.Exact (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom) (δ Q P) := by
+  simp only [δ]
   apply SnakeLemma.exact_δ_right
     (ι₂ := (Q.comp P).toExtension.h1Cotangentι)
     (hι₂ := LinearMap.exact_subtype_ker_map _)

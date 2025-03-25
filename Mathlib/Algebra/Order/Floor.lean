@@ -3,12 +3,14 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Kappelmann
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Group.Int.Even
 import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Data.Int.Lemmas
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Nat.Cast.Order.Field
+import Mathlib.Data.Set.Function
+import Mathlib.Data.Set.Monotone
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
@@ -160,8 +162,6 @@ theorem floor_natCast (n : ℕ) : ⌊(n : α)⌋₊ = n :=
     rw [le_floor_iff, Nat.cast_le]
     exact n.cast_nonneg
 
-@[deprecated (since := "2024-06-08")] alias floor_coe := floor_natCast
-
 @[simp]
 theorem floor_zero : ⌊(0 : α)⌋₊ = 0 := by rw [← Nat.cast_zero, floor_natCast]
 
@@ -201,7 +201,6 @@ theorem floor_lt' (hn : n ≠ 0) : ⌊a⌋₊ < n ↔ a < n :=
   lt_iff_lt_of_le_iff_le <| le_floor_iff' hn
 
 theorem floor_pos : 0 < ⌊a⌋₊ ↔ 1 ≤ a := by
-  -- Porting note: broken `convert le_floor_iff' Nat.one_ne_zero`
   rw [Nat.lt_iff_add_one_le, zero_add, le_floor_iff' Nat.one_ne_zero, cast_one]
 
 theorem pos_of_floor_pos (h : 0 < ⌊a⌋₊) : 0 < a :=
@@ -240,7 +239,6 @@ theorem floor_eq_on_Ico' (n : ℕ) :
 theorem preimage_floor_zero : (floor : α → ℕ) ⁻¹' {0} = Iio 1 :=
   ext fun _ => floor_eq_zero
 
--- Porting note: in mathlib3 there was no need for the type annotation in `(n:α)`
 theorem preimage_floor_of_ne_zero {n : ℕ} (hn : n ≠ 0) :
     (floor : α → ℕ) ⁻¹' {n} = Ico (n : α) (n + 1) :=
   ext fun _ => floor_eq_iff' hn
@@ -325,58 +323,49 @@ theorem ceil_eq_iff (hn : n ≠ 0) : ⌈a⌉₊ = n ↔ ↑(n - 1) < a ∧ a ≤
 theorem preimage_ceil_zero : (Nat.ceil : α → ℕ) ⁻¹' {0} = Iic 0 :=
   ext fun _ => ceil_eq_zero
 
--- Porting note: in mathlib3 there was no need for the type annotation in `(↑(n - 1))`
 theorem preimage_ceil_of_ne_zero (hn : n ≠ 0) : (Nat.ceil : α → ℕ) ⁻¹' {n} = Ioc (↑(n - 1) : α) n :=
   ext fun _ => ceil_eq_iff hn
 
 /-! #### Intervals -/
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Ioo {a b : α} (ha : 0 ≤ a) :
     (Nat.cast : ℕ → α) ⁻¹' Set.Ioo a b = Set.Ioo ⌊a⌋₊ ⌈b⌉₊ := by
   ext
   simp [floor_lt, lt_ceil, ha]
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Ico {a b : α} : (Nat.cast : ℕ → α) ⁻¹' Set.Ico a b = Set.Ico ⌈a⌉₊ ⌈b⌉₊ := by
   ext
   simp [ceil_le, lt_ceil]
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Ioc {a b : α} (ha : 0 ≤ a) (hb : 0 ≤ b) :
     (Nat.cast : ℕ → α) ⁻¹' Set.Ioc a b = Set.Ioc ⌊a⌋₊ ⌊b⌋₊ := by
   ext
   simp [floor_lt, le_floor_iff, hb, ha]
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Icc {a b : α} (hb : 0 ≤ b) :
     (Nat.cast : ℕ → α) ⁻¹' Set.Icc a b = Set.Icc ⌈a⌉₊ ⌊b⌋₊ := by
   ext
   simp [ceil_le, hb, le_floor_iff]
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Ioi {a : α} (ha : 0 ≤ a) : (Nat.cast : ℕ → α) ⁻¹' Set.Ioi a = Set.Ioi ⌊a⌋₊ := by
   ext
   simp [floor_lt, ha]
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Ici {a : α} : (Nat.cast : ℕ → α) ⁻¹' Set.Ici a = Set.Ici ⌈a⌉₊ := by
   ext
   simp [ceil_le]
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Iio {a : α} : (Nat.cast : ℕ → α) ⁻¹' Set.Iio a = Set.Iio ⌈a⌉₊ := by
   ext
   simp [lt_ceil]
 
--- Porting note: changed `(coe : ℕ → α)` to `(Nat.cast : ℕ → α)`
 @[simp]
 theorem preimage_Iic {a : α} (ha : 0 ≤ a) : (Nat.cast : ℕ → α) ⁻¹' Set.Iic a = Set.Iic ⌊a⌋₊ := by
   ext
@@ -395,7 +384,6 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
       exact le_add_of_nonneg_right <| ha.trans <| le_add_of_nonneg_right d.cast_nonneg
 
 theorem floor_add_one (ha : 0 ≤ a) : ⌊a + 1⌋₊ = ⌊a⌋₊ + 1 := by
-  -- Porting note: broken `convert floor_add_nat ha 1`
   rw [← cast_one, floor_add_nat ha 1]
 
 theorem floor_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
@@ -432,7 +420,6 @@ theorem ceil_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌈a + n⌉₊ = ⌈a⌉₊ + n 
     · exact iff_of_true (lt_add_of_nonneg_of_lt ha <| cast_lt.2 hb) (Nat.lt_add_left _ hb)
 
 theorem ceil_add_one (ha : 0 ≤ a) : ⌈a + 1⌉₊ = ⌈a⌉₊ + 1 := by
-  -- Porting note: broken `convert ceil_add_nat ha 1`
   rw [cast_one.symm, ceil_add_nat ha 1]
 
 theorem ceil_add_ofNat (ha : 0 ≤ a) (n : ℕ) [n.AtLeastTwo] :
@@ -541,7 +528,7 @@ theorem subsingleton_floorSemiring {α} [LinearOrderedSemiring α] :
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
   have : H₁.floor = H₂.floor := by
     ext a
-    cases' lt_or_le a 0 with h h
+    rcases lt_or_le a 0 with h | h
     · rw [H₁.floor_of_neg, H₂.floor_of_neg] <;> exact h
     · refine eq_of_forall_le_iff fun n => ?_
       rw [H₁.gc_floor, H₂.gc_floor] <;> exact h
@@ -701,7 +688,6 @@ theorem floor_mono : Monotone (floor : α → ℤ) :=
 @[gcongr, bound] lemma floor_le_floor (hab : a ≤ b) : ⌊a⌋ ≤ ⌊b⌋ := floor_mono hab
 
 theorem floor_pos : 0 < ⌊a⌋ ↔ 1 ≤ a := by
-  -- Porting note: broken `convert le_floor`
   rw [Int.lt_iff_add_one_le, zero_add, le_floor, cast_one]
 
 @[simp]
@@ -711,7 +697,6 @@ theorem floor_add_int (a : α) (z : ℤ) : ⌊a + z⌋ = ⌊a⌋ + z :=
 
 @[simp]
 theorem floor_add_one (a : α) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
-  -- Porting note: broken `convert floor_add_int a 1`
   rw [← cast_one, floor_add_int]
 
 @[bound]
@@ -785,10 +770,12 @@ theorem floor_eq_on_Ico (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), ⌊a⌋ 
 theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : α) (n + 1), (⌊a⌋ : α) = n := fun a ha =>
   congr_arg _ <| floor_eq_on_Ico n a ha
 
--- Porting note: in mathlib3 there was no need for the type annotation in `(m:α)`
 @[simp]
 theorem preimage_floor_singleton (m : ℤ) : (floor : α → ℤ) ⁻¹' {m} = Ico (m : α) (m + 1) :=
   ext fun _ => floor_eq_iff
+
+lemma floor_eq_self_iff_mem (a : α) : ⌊a⌋ = a ↔ a ∈ Set.range Int.cast := by
+  aesop
 
 /-! #### Fractional part -/
 
@@ -966,16 +953,16 @@ theorem fract_neg_eq_zero {x : α} : fract (-x) = 0 ↔ fract x = 0 := by
   constructor <;> rintro ⟨z, hz⟩ <;> use -z <;> simp [← hz]
 
 theorem fract_mul_nat (a : α) (b : ℕ) : ∃ z : ℤ, fract a * b - fract (a * b) = z := by
-  induction' b with c hc
-  · use 0; simp
-  · rcases hc with ⟨z, hz⟩
+  induction b with
+  | zero => use 0; simp
+  | succ c hc =>
+    rcases hc with ⟨z, hz⟩
     rw [Nat.cast_add, mul_add, mul_add, Nat.cast_one, mul_one, mul_one]
     rcases fract_add (a * c) a with ⟨y, hy⟩
     use z - y
     rw [Int.cast_sub, ← hz, ← hy]
     abel
 
--- Porting note: in mathlib3 there was no need for the type annotation in `(m:α)`
 theorem preimage_fract (s : Set α) :
     fract ⁻¹' s = ⋃ m : ℤ, (fun x => x - (m : α)) ⁻¹' (s ∩ Ico (0 : α) 1) := by
   ext x
@@ -1011,8 +998,7 @@ theorem sub_floor_div_mul_nonneg (a : k) (hb : 0 < b) : 0 ≤ a - ⌊a / b⌋ * 
 
 theorem sub_floor_div_mul_lt (a : k) (hb : 0 < b) : a - ⌊a / b⌋ * b < b :=
   sub_lt_iff_lt_add.2 <| by
-    -- Porting note: `← one_add_mul` worked in mathlib3 without the argument
-    rw [← one_add_mul _ b, ← div_lt_iff₀ hb, add_comm]
+    rw [← one_add_mul, ← div_lt_iff₀ hb, add_comm]
     exact lt_floor_add_one _
 
 theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) = ↑(m % n) / n := by
@@ -1047,17 +1033,14 @@ theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     simpa [m₁, ← @cast_le k, ← div_le_iff₀ hn] using FloorRing.gc_ceil_coe.le_u_l _
   calc
     fract ((Int.cast (-(m₀ : ℤ)) : k) / (n : k))
-      -- Porting note: the `rw [cast_neg, cast_natCast]` was `push_cast`
-      = fract (-(m₀ : k) / n) := by rw [cast_neg, cast_natCast]
+      = fract (-(m₀ : k) / n) := by simp
     _ = fract ((m₁ : k) / n) := ?_
     _ = Int.cast (m₁ % (n : ℤ)) / Nat.cast n := this hm₁
     _ = Int.cast (-(↑m₀ : ℤ) % ↑n) / Nat.cast n := ?_
-
   · rw [← fract_int_add q, ← mul_div_cancel_right₀ (q : k) hn.ne', ← add_div, ← sub_eq_add_neg]
-    -- Porting note: the `simp` was `push_cast`
     simp [m₁]
   · congr 2
-    change (q * ↑n - (↑m₀ : ℤ)) % ↑n = _
+    simp only [m₁]
     rw [sub_eq_add_neg, add_comm (q * ↑n), add_mul_emod_self]
 
 end LinearOrderedField
@@ -1123,7 +1106,6 @@ theorem ceil_add_nat (a : α) (n : ℕ) : ⌈a + n⌉ = ⌈a⌉ + n := by rw [�
 
 @[simp]
 theorem ceil_add_one (a : α) : ⌈a + 1⌉ = ⌈a⌉ + 1 := by
-  -- Porting note: broken `convert ceil_add_int a (1 : ℤ)`
   rw [← ceil_add_int a (1 : ℤ), cast_one]
 
 @[simp]
@@ -1178,6 +1160,9 @@ theorem ceil_one : ⌈(1 : α)⌉ = 1 := by rw [← cast_one, ceil_intCast]
 @[bound]
 theorem ceil_nonneg (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
 
+theorem ceil_nonneg_of_neg_one_lt (ha : -1 < a) : 0 ≤ ⌈a⌉ := by
+  rwa [Int.le_ceil_iff, Int.cast_zero, zero_sub]
+
 theorem ceil_eq_iff : ⌈a⌉ = z ↔ ↑z - 1 < a ∧ a ≤ z := by
   rw [← ceil_le, ← Int.cast_one, ← Int.cast_sub, ← lt_ceil, Int.sub_one_lt_iff, le_antisymm_iff,
     and_comm]
@@ -1191,6 +1176,9 @@ theorem ceil_eq_on_Ioc (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, ⌈a⌉ = z
 theorem ceil_eq_on_Ioc' (z : ℤ) : ∀ a ∈ Set.Ioc (z - 1 : α) z, (⌈a⌉ : α) = z := fun a ha =>
   mod_cast ceil_eq_on_Ioc z a ha
 
+lemma ceil_eq_self_iff_mem (a : α) : ⌈a⌉ = a ↔ a ∈ Set.range Int.cast := by
+  aesop
+
 @[bound]
 theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=
   cast_le.1 <| (floor_le _).trans <| le_ceil _
@@ -1199,7 +1187,14 @@ theorem floor_le_ceil (a : α) : ⌊a⌋ ≤ ⌈a⌉ :=
 theorem floor_lt_ceil_of_lt {a b : α} (h : a < b) : ⌊a⌋ < ⌈b⌉ :=
   cast_lt.1 <| (floor_le a).trans_lt <| h.trans_le <| le_ceil b
 
--- Porting note: in mathlib3 there was no need for the type annotation in `(m : α)`
+lemma ceil_eq_floor_add_one_iff_not_mem (a : α) : ⌈a⌉ = ⌊a⌋ + 1 ↔ a ∉ Set.range Int.cast := by
+  refine ⟨fun h ht => ?_, fun h => ?_⟩
+  · have := ((floor_eq_self_iff_mem _).mpr ht).trans ((ceil_eq_self_iff_mem _).mpr ht).symm
+    linarith [Int.cast_inj.mp this]
+  · apply le_antisymm (Int.ceil_le_floor_add_one _)
+    rw [Int.add_one_le_ceil_iff]
+    exact lt_of_le_of_ne (Int.floor_le a) ((iff_false_right h).mp (floor_eq_self_iff_mem a))
+
 @[simp]
 theorem preimage_ceil_singleton (m : ℤ) : (ceil : α → ℤ) ⁻¹' {m} = Ioc ((m : α) - 1) m :=
   ext fun _ => ceil_eq_iff
@@ -1402,14 +1397,17 @@ theorem Int.natCast_floor_eq_floor (ha : 0 ≤ a) : (⌊a⌋₊ : ℤ) = ⌊a⌋
 theorem Int.natCast_ceil_eq_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
   rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg ha)]
 
+theorem Int.natCast_ceil_eq_ceil_of_neg_one_lt (ha : -1 < a) : (⌈a⌉₊ : ℤ) = ⌈a⌉ := by
+  rw [← Int.ceil_toNat, Int.toNat_of_nonneg (Int.ceil_nonneg_of_neg_one_lt ha)]
+
 theorem natCast_floor_eq_intCast_floor (ha : 0 ≤ a) : (⌊a⌋₊ : α) = ⌊a⌋ := by
   rw [← Int.natCast_floor_eq_floor ha, Int.cast_natCast]
 
 theorem natCast_ceil_eq_intCast_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
   rw [← Int.natCast_ceil_eq_ceil ha, Int.cast_natCast]
 
-@[deprecated (since := "2024-08-20")] alias Int.ofNat_floor_eq_floor := natCast_floor_eq_floor
-@[deprecated (since := "2024-08-20")] alias Int.ofNat_ceil_eq_ceil := natCast_ceil_eq_ceil
+theorem natCast_ceil_eq_intCast_ceil_of_neg_one_lt (ha : -1 < a) : (⌈a⌉₊ : α) = ⌈a⌉ := by
+  rw [← Int.natCast_ceil_eq_ceil_of_neg_one_lt ha, Int.cast_natCast]
 
 end FloorRingToSemiring
 

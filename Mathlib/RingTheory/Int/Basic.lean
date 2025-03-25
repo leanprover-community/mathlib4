@@ -53,7 +53,7 @@ theorem sq_of_gcd_eq_one {a b c : ℤ} (h : Int.gcd a b = 1) (heq : a * b = c ^ 
   obtain ⟨d, ⟨u, hu⟩⟩ := exists_associated_pow_of_mul_eq_pow h' heq
   use d
   rw [← hu]
-  cases' Int.units_eq_one_or u with hu' hu' <;>
+  rcases Int.units_eq_one_or u with hu' | hu' <;>
     · rw [hu']
       simp
 
@@ -94,7 +94,7 @@ theorem Int.Prime.dvd_pow' {n : ℤ} {k p : ℕ} (hp : Nat.Prime p) (h : (p : �
 
 theorem prime_two_or_dvd_of_dvd_two_mul_pow_self_two {m : ℤ} {p : ℕ} (hp : Nat.Prime p)
     (h : (p : ℤ) ∣ 2 * m ^ 2) : p = 2 ∨ p ∣ Int.natAbs m := by
-  cases' Int.Prime.dvd_mul hp h with hp2 hpp
+  rcases Int.Prime.dvd_mul hp h with hp2 | hpp
   · apply Or.intro_left
     exact le_antisymm (Nat.le_of_dvd zero_lt_two hp2) (Nat.Prime.two_le hp)
   · apply Or.intro_right
@@ -111,11 +111,6 @@ theorem Int.prime_iff_natAbs_prime {k : ℤ} : Prime k ↔ Nat.Prime k.natAbs :=
 
 namespace Int
 
-theorem zmultiples_natAbs (a : ℤ) :
-    AddSubgroup.zmultiples (a.natAbs : ℤ) = AddSubgroup.zmultiples a :=
-  le_antisymm (AddSubgroup.zmultiples_le_of_mem (mem_zmultiples_iff.mpr (dvd_natAbs.mpr dvd_rfl)))
-    (AddSubgroup.zmultiples_le_of_mem (mem_zmultiples_iff.mpr (natAbs_dvd.mpr dvd_rfl)))
-
 theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Ideal.span {a} := by
   rw [Ideal.span_singleton_eq_span_singleton]
   exact (associated_natAbs _).symm
@@ -127,20 +122,12 @@ theorem eq_pow_of_mul_eq_pow_odd_left {a b c : ℤ} (hab : IsCoprime a b) {k : �
   rw [associated_iff_natAbs, natAbs_eq_natAbs_iff, ← hk.neg_pow] at hd
   obtain rfl | rfl := hd <;> exact ⟨_, rfl⟩
 
-@[deprecated (since := "2024-07-12")]
-alias eq_pow_of_mul_eq_pow_bit1_left := eq_pow_of_mul_eq_pow_odd_left
-
 theorem eq_pow_of_mul_eq_pow_odd_right {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : ∃ d, b = d ^ k :=
   eq_pow_of_mul_eq_pow_odd_left (c := c) hab.symm hk (by rwa [mul_comm] at h)
 
-@[deprecated (since := "2024-07-12")]
-alias eq_pow_of_mul_eq_pow_bit1_right := eq_pow_of_mul_eq_pow_odd_right
-
 theorem eq_pow_of_mul_eq_pow_odd {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ} (hk : Odd k)
     (h : a * b = c ^ k) : (∃ d, a = d ^ k) ∧ ∃ e, b = e ^ k :=
   ⟨eq_pow_of_mul_eq_pow_odd_left hab hk h, eq_pow_of_mul_eq_pow_odd_right hab hk h⟩
-
-@[deprecated (since := "2024-07-12")] alias eq_pow_of_mul_eq_pow_bit1 := eq_pow_of_mul_eq_pow_odd
 
 end Int

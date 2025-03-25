@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Batteries.Data.RBMap.Alter
-import Mathlib.Logic.Basic
 import Mathlib.Tactic.CC.Datatypes
 import Mathlib.Tactic.CC.Lemmas
 import Mathlib.Tactic.Relation.Rfl
@@ -474,9 +473,9 @@ partial def getEqProofCore (e₁ e₂ : Expr) (asHEq : Bool) : CCM (Option Expr)
   -- 4. Build transitivity proof
   let mut pr? : Option Expr := none
   let mut lhs := e₁
-  for i in [:path₁.size] do
-    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i]! Hs₁[i]! heqProofs) heqProofs
-    lhs := path₁[i]!
+  for h : i in [:path₁.size] do
+    pr? ← some <$> mkTransOpt pr? (← mkProof lhs path₁[i] Hs₁[i]! heqProofs) heqProofs
+    lhs := path₁[i]
   let mut i := Hs₂.size
   while i > 0 do
     i := i - 1

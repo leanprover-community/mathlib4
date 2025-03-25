@@ -32,7 +32,7 @@ jobs:
         ./elan-init -y --default-toolchain none
         echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
     - name: If using a lean-pr-release toolchain, uninstall
       run: |
@@ -48,8 +48,10 @@ jobs:
 
     - name: add minImports linter option
       run: |
-        # set `linter.minImports option` to true in `lakefile`
-        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n=}' lakefile.lean
+        # we disable checking for backticks inside single quotes with the next line
+        # shellcheck disable=SC2016
+        # set `linter.minImports option` to true and `Elab.async` to false in `lakefile`
+        sed -i -- '/^  -- '\`'latest_import.yml'\`' uses this comment/{s=^=  ⟨`linter.minImports, true⟩,\n  ⟨`Elab.async, false⟩,\n=}' lakefile.lean
 
         # import the `minImports` linter in `Mathlib.Init`
         sed -i -z 's=^=import Mathlib.Tactic.Linter.MinImports\n=' Mathlib/Init.lean
@@ -66,7 +68,7 @@ jobs:
 
     - name: build mathlib
       id: build
-      uses: liskin/gh-problem-matcher-wrap@v3
+      uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3.0.0
       with:
         linters: gcc
         run: |
@@ -84,7 +86,7 @@ jobs:
           tee "$GITHUB_OUTPUT"
 
     - name: Post output to Zulip
-      uses: zulip/github-actions-zulip/send-message@v1
+      uses: zulip/github-actions-zulip/send-message@e4c8f27c732ba9bd98ac6be0583096dea82feea5 # v1.0.2
       with:
         api-key: ${{ secrets.ZULIP_API_KEY }}
         email: 'github-mathlib4-bot@leanprover.zulipchat.com'

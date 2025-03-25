@@ -34,7 +34,6 @@ by a sequence of simple functions.
 
 open Set Function Filter TopologicalSpace ENNReal EMetric Finset
 
-open scoped Classical
 open Topology ENNReal MeasureTheory
 
 variable {α β ι E F 𝕜 : Type*}
@@ -133,6 +132,7 @@ theorem approxOn_mem {f : β → α} (hf : Measurable f) {s : Set α} {y₀ : α
   exacts [h₀, Subtype.mem _]
 
 @[simp, nolint simpNF] -- Porting note: LHS doesn't simplify.
+-- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
 theorem approxOn_comp {γ : Type*} [MeasurableSpace γ] {f : β → α} (hf : Measurable f) {g : γ → β}
     (hg : Measurable g) {s : Set α} {y₀ : α} (h₀ : y₀ ∈ s) [SeparableSpace s] (n : ℕ) :
     approxOn (f ∘ g) (hf.comp hg) s y₀ h₀ n = (approxOn f hf s y₀ h₀ n).comp g hg :=
