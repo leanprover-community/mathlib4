@@ -41,7 +41,7 @@ theorem Chain.iff_mem {a : α} {l : List α} :
     | nil => exact nil
     | @cons _ _ _ r _ IH =>
       constructor
-      · exact ⟨mem_cons_self _ _, mem_cons_self _ _, r⟩
+      · exact ⟨mem_cons_self, mem_cons_self, r⟩
       · exact IH.imp fun a b ⟨am, bm, h⟩ => ⟨mem_cons_of_mem _ am, mem_cons_of_mem _ bm, h⟩,
     Chain.imp fun _ _ h => h.2.2⟩
 
@@ -348,7 +348,7 @@ theorem chain'_attachWith {l : List α} {p : α → Prop} (h : ∀ x ∈ l, p x)
     intro hc b (hb : _ = _)
     · simp_rw [hb, Option.pbind_some] at hc
       have hb' := h b (mem_cons_of_mem a (mem_of_mem_head? hb))
-      exact ⟨h a (mem_cons_self a l), hb', hc ⟨b, hb'⟩ rfl⟩
+      exact ⟨h a mem_cons_self, hb', hc ⟨b, hb'⟩ rfl⟩
     · cases l <;> aesop
 
 theorem chain'_attach {l : List α} {r : {a // a ∈ l} → {a // a ∈ l} → Prop} :
@@ -414,7 +414,7 @@ That is, we can propagate the predicate all the way up the chain.
 theorem Chain.backwards_induction_head (p : α → Prop) (l : List α) (h : Chain r a l)
     (hb : getLast (a :: l) (cons_ne_nil _ _) = b) (carries : ∀ ⦃x y : α⦄, r x y → p y → p x)
     (final : p b) : p a :=
-  (Chain.backwards_induction p l h hb carries final) _ (mem_cons_self _ _)
+  (Chain.backwards_induction p l h hb carries final) _ mem_cons_self
 
 /--
 If there is an `r`-chain starting from `a` and ending at `b`, then `a` and `b` are related by the

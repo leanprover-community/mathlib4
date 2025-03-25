@@ -38,7 +38,7 @@ theorem reduceOption_map {l : List (Option α)} {f : α → β} :
 
 theorem reduceOption_append (l l' : List (Option α)) :
     (l ++ l').reduceOption = l.reduceOption ++ l'.reduceOption :=
-  filterMap_append l l' id
+  filterMap_append
 
 @[simp]
 theorem reduceOption_replicate_none {n : ℕ} : (replicate n (@none α)).reduceOption = [] := by

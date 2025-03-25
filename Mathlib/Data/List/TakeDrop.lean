@@ -98,7 +98,7 @@ theorem takeI_eq_take : ∀ {n} {l : List α}, n ≤ length l → takeI n l = ta
 
 @[simp]
 theorem takeI_left (l₁ l₂ : List α) : takeI (length l₁) (l₁ ++ l₂) = l₁ :=
-  (takeI_eq_take (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
+  (takeI_eq_take (by simp only [length_append, Nat.le_add_right])).trans take_left
 
 theorem takeI_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : takeI n (l₁ ++ l₂) = l₁ := by
   rw [← h]; apply takeI_left
@@ -121,7 +121,7 @@ theorem takeD_eq_take : ∀ {n} {l : List α} a, n ≤ length l → takeD n l a 
 
 @[simp]
 theorem takeD_left (l₁ l₂ : List α) (a : α) : takeD (length l₁) (l₁ ++ l₂) a = l₁ :=
-  (takeD_eq_take a (by simp only [length_append, Nat.le_add_right])).trans (take_left _ _)
+  (takeD_eq_take a (by simp only [length_append, Nat.le_add_right])).trans take_left
 
 theorem takeD_left' {l₁ l₂ : List α} {n} {a} (h : length l₁ = n) : takeD n (l₁ ++ l₂) a = l₁ := by
   rw [← h]; apply takeD_left

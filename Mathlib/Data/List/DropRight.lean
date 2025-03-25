@@ -75,7 +75,7 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
   induction' l using List.reverseRecOn with xs x IH generalizing n
   · simp
   · cases n
-    · exact drop_length _
+    · exact drop_length
     · simp [drop_append_eq_append_drop, IH]
 
 @[simp]
