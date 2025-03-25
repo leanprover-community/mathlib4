@@ -737,8 +737,8 @@ variable [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial 
 
 /-- Deduce `NormOneClass` from `NormMulClass` under a suitable nontriviality hypothesis. Not
 an instance, in order to avoid loops with `NormOneClass.nontrivial`. -/
-lemma NormMulClass.toNormOneClass : NormOneClass α := by
-  constructor
+lemma NormMulClass.toNormOneClass : NormOneClass α where
+  norm_one := by
   obtain ⟨u, hu⟩ := exists_ne (0 : α)
   simpa [mul_eq_left₀ (norm_ne_zero_iff.mpr hu)] using (norm_mul u 1).symm
 
