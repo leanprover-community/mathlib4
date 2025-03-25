@@ -4637,8 +4637,13 @@ import Mathlib.Order.TransfiniteIteration
 import Mathlib.Order.TypeTags
 import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
+import Mathlib.Order.UpperLower.CompleteLattice
+import Mathlib.Order.UpperLower.Fibration
 import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
+import Mathlib.Order.UpperLower.Principal
+import Mathlib.Order.UpperLower.Prod
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
