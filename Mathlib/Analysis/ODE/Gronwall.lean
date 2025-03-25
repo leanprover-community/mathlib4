@@ -374,9 +374,9 @@ theorem ODE_solution_unique_univ
     use (min (-|t|) (-|t₀|) - 1), (max |t| |t₀| + 1)
     rw [Set.mem_Ioo, Set.mem_Ioo]
     refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
-    · apply lt_of_lt_of_le (sub_one_lt _) (le_trans (min_le_left _ _) (neg_abs_le t))
-    · apply lt_of_le_of_lt (le_trans (le_abs_self _) (le_max_left _ _)) (lt_add_one _)
-    · apply lt_of_lt_of_le (sub_one_lt _) (le_trans (min_le_right _ _) (neg_abs_le t₀))
-    · apply lt_of_le_of_lt (le_trans (le_abs_self _) (le_max_right _ _)) (lt_add_one _)
-  apply ODE_solution_unique_of_mem_Ioo (fun t _ => hv t) Ht₀ (fun t _ => hf t)
-    (fun t _ => hg t) heq Ht
+    · exact sub_one_lt _ |>.trans_le <| min_le_left _ _ |>.trans <| neg_abs_le t
+    · exact le_abs_self _ |>.trans_lt <| le_max_left _ _ |>.trans_lt <| lt_add_one _
+    · exact sub_one_lt _ |>.trans_le <| min_le_right _ _ |>.trans <| neg_abs_le t₀
+    · exact le_abs_self _ |>.trans_lt <| le_max_right _ _ |>.trans_lt <| lt_add_one _
+  exact ODE_solution_unique_of_mem_Ioo
+    (fun t _ => hv t) Ht₀ (fun t _ => hf t) (fun t _ => hg t) heq Ht
