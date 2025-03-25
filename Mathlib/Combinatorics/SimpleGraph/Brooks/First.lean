@@ -121,7 +121,6 @@ lemma dropUntil_append_of_mem_left  [DecidableEq α] {u v w x : α} (p : G.Walk 
     · simp_rw [dif_neg hxu]
       simpa using ih _ (List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx)
 
-
 lemma dropUntil_append_of_mem_right  [DecidableEq α] {u v w x : α} (p : G.Walk u v) (q : G.Walk v w)
     (hxn : x ∉ p.support) (hx : x ∈ q.support) :
     (p.append q).dropUntil x (subset_support_append_right _ _ hx) = q.dropUntil _ hx := by
@@ -132,6 +131,12 @@ lemma dropUntil_append_of_mem_right  [DecidableEq α] {u v w x : α} (p : G.Walk
     rw [support_cons] at hxn
     rw [dropUntil, dif_neg (List.ne_of_not_mem_cons hxn).symm]
     simpa using ih _ (List.not_mem_of_not_mem_cons hxn) hx
+
+lemma dropUntil_dropUntil {w x : α} [DecidableEq α] (p : G.Walk u v) (hw : w ∈ p.support)
+    (hx : x ∈ (p.dropUntil w hw).support) (hxn : x ∉ (p.takeUntil w hw).support) :
+    (p.dropUntil w hw).dropUntil x hx = p.dropUntil x (p.support_dropUntil_subset hw hx) := by
+  rw [← dropUntil_append_of_mem_right _ _ hxn hx]
+  simp_rw [take_spec]
 
 /-- Given a walk that starts in a set S but ends in Sᶜ, there is a first vertex of the walk in the
  set. -/
