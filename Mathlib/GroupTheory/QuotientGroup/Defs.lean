@@ -60,8 +60,7 @@ as a congruence relation.
 @[to_additive QuotientAddGroup.con_ker_eq_addConKer
 "The additive congruence relation defined by the kernel of an additive group homomorphism is
 equal to its kernel as an additive congruence relation."]
-theorem con_ker_eq_conKer {M : Type*} [Monoid M] (f : G →* M) :
-    QuotientGroup.con f.ker = Con.ker f := by
+theorem con_ker_eq_conKer (f : G →* M) : QuotientGroup.con f.ker = Con.ker f := by
   ext
   rw [QuotientGroup.con, Con.rel_mk, Setoid.comm', leftRel_apply, Con.ker_rel, MonoidHom.eq_iff]
 
