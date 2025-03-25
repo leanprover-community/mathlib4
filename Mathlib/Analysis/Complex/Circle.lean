@@ -132,9 +132,11 @@ def expHom : ℝ →+ Additive Circle where
 /-- Exponential map onto the circle, defined as additive character -/
 noncomputable
 def expAddChar : AddChar ℝ Circle where
-  toFun z := Circle.exp (z)
-  map_zero_eq_one' := by simp only; rw [Circle.exp_zero]
-  map_add_eq_mul' x y := by simp only; rw [Circle.exp_add]
+  toFun := Circle.exp
+  map_zero_eq_one' := Circle.exp_zero
+  map_add_eq_mul' := Circle.exp_add
+
+lemma continuous_expAddChar : Continuous expAddChar := ContinuousMap.continuous exp
 
 variable {e : AddChar ℝ Circle}
 

@@ -301,28 +301,18 @@ section ext
 
 variable {Ω' : Type*} {mΩ' : MeasurableSpace Ω'} {Y : Ω' → ℝ} {μ' : Measure Ω'}
 
-lemma expAddChar_ne_one : Circle.expAddChar ≠ 1 := by
-  rw [DFunLike.ne_iff]
-  use Real.pi
-  simp only [Circle.expAddChar, AddChar.coe_mk, AddChar.one_apply]
-  intro h
-  have heq := congrArg Subtype.val h
-  rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
-  norm_num at heq
-
 theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
     [IsFiniteMeasure μ'] (hX : AEMeasurable X μ) (hY : AEMeasurable Y μ')
     (h : complexMGF X μ = complexMGF Y μ') :
     μ.map X = μ'.map Y := by
   have inner_ne_zero (x : ℝ) (h : x ≠ 0) : bilinFormOfRealInner x ≠ 0 :=
     DFunLike.ne_iff.mpr ⟨x, inner_self_ne_zero.mpr h⟩
-  apply MeasureTheory.ext_of_charFun_eq Circle.exp.continuous expAddChar_ne_one
-    inner_ne_zero continuous_inner (μ.map X) (μ'.map Y)
-  intro w
+  apply MeasureTheory.ext_of_charFun_eq inner_ne_zero continuous_inner (μ.map X) (μ'.map Y)
+  ext w
   rw [funext_iff] at h
   specialize h (Multiplicative.toAdd w * I)
   simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
-  simp only [Circle.expAddChar, probChar_apply, bilinFormOfRealInner_apply_apply,
+  simp only [charFun, Circle.expAddChar, probChar_apply, bilinFormOfRealInner_apply_apply,
     RCLike.inner_apply, conj_trivial, AddChar.coe_mk, Circle.coe_exp, ofReal_mul]
   rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
     integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
