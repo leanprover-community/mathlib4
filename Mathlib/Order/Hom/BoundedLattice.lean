@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.SymmDiff
 
@@ -157,6 +158,14 @@ end Equiv
 section BoundedLattice
 
 variable [Lattice α] [Lattice β] [FunLike F α β]
+
+theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomClass F α β] {a b : α}
+    (f : F) (h : Disjoint a b) : Disjoint (f a) (f b) := by
+  rw [disjoint_iff, ← map_inf, h.eq_bot, map_bot]
+
+theorem Codisjoint.map [OrderTop α] [OrderTop β] [TopHomClass F α β] [SupHomClass F α β] {a b : α}
+    (f : F) (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
+  rw [codisjoint_iff, ← map_sup, h.eq_top, map_top]
 
 theorem IsCompl.map [BoundedOrder α] [BoundedOrder β] [BoundedLatticeHomClass F α β] {a b : α}
     (f : F) (h : IsCompl a b) : IsCompl (f a) (f b) :=

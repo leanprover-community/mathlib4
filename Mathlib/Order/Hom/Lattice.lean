@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Order.Hom.Bounded
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Unbounded lattice homomorphisms
@@ -96,7 +96,7 @@ export SupHomClass (map_sup)
 
 export InfHomClass (map_inf)
 
-attribute [simp] map_top map_bot map_sup map_inf
+attribute [simp] map_sup map_inf
 
 section Hom
 
@@ -163,20 +163,6 @@ def orderEmbeddingOfInjective [SemilatticeInf α] [SemilatticeInf β] (f : F) [I
     rwa [← inf_eq_left, ← hf.eq_iff, map_inf, inf_eq_left])
 
 end OrderEmbedding
-
-section BoundedLattice
-
-variable [Lattice α] [Lattice β] [FunLike F α β]
-
-theorem Disjoint.map [OrderBot α] [OrderBot β] [BotHomClass F α β] [InfHomClass F α β] {a b : α}
-    (f : F) (h : Disjoint a b) : Disjoint (f a) (f b) := by
-  rw [disjoint_iff, ← map_inf, h.eq_bot, map_bot]
-
-theorem Codisjoint.map [OrderTop α] [OrderTop β] [TopHomClass F α β] [SupHomClass F α β] {a b : α}
-    (f : F) (h : Codisjoint a b) : Codisjoint (f a) (f b) := by
-  rw [codisjoint_iff, ← map_sup, h.eq_top, map_top]
-
-end BoundedLattice
 
 variable [FunLike F α β]
 
