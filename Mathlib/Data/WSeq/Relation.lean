@@ -297,9 +297,6 @@ theorem mem_congr {s t : WSeq α} (h : s ~ʷ t) (a) : a ∈ s ↔ a ∈ t :=
   let ⟨_, hn⟩ := exists_get?_of_mem as
   get?_mem ((get?_congr h _ _).1 hn)
 
-theorem productive_congr {s t : WSeq α} (h : s ~ʷ t) : Productive s ↔ Productive t := by
-  simp only [productive_iff]; exact forall_congr' fun n => terminates_congr <| get?_congr h _
-
 theorem Equiv.ext {s t : WSeq α} (h : ∀ n, get? s n ~ get? t n) : s ~ʷ t :=
   ⟨fun s t => ∀ n, get? s n ~ get? t n, h, fun {s t} h => by
     refine liftRel_def.2 ⟨?_, ?_⟩

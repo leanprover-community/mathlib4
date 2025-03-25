@@ -137,21 +137,6 @@ def toList (s : WSeq α) : Computation (List α) :=
       | some (some a, s') => Sum.inr (a::l, s'))
     ([], s)
 
-/-- A weak sequence is *productive* if it never stalls forever - there are
- always a finite number of `think`s between `cons` constructors.
- The sequence itself is allowed to be infinite though. -/
-class Productive (s : WSeq α) : Prop where
-  get?_terminates : ∀ n, (get? s n).Terminates
-
-theorem productive_iff (s : WSeq α) : Productive s ↔ ∀ n, (get? s n).Terminates :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
-
-instance get?_terminates (s : WSeq α) [h : Productive s] : ∀ n, (get? s n).Terminates :=
-  h.get?_terminates
-
-instance head_terminates (s : WSeq α) [Productive s] : (head s).Terminates :=
-  s.get?_terminates 0
-
 /-- Append two weak sequences. As with `Seq.append`, this may not use
   the second sequence if the first one takes forever to compute -/
 def append : WSeq α → WSeq α → WSeq α :=
@@ -379,25 +364,6 @@ theorem head_some_of_get?_some {s : WSeq α} {a n} (h : some a ∈ get? s n) :
   | succ n IH =>
       let ⟨a', h'⟩ := head_some_of_head_tail_some h
       exact IH h'
-
-instance productive_tail (s : WSeq α) [Productive s] : Productive (tail s) :=
-  ⟨fun n => by rw [get?_tail]; infer_instance⟩
-
-instance productive_dropn (s : WSeq α) [Productive s] (n) : Productive (drop s n) :=
-  ⟨fun m => by rw [← get?_add]; infer_instance⟩
-
-/-- Given a productive weak sequence, we can collapse all the `think`s to
-  produce a sequence. -/
-def toSeq (s : WSeq α) [Productive s] : Seq α :=
-  ⟨fun n => (get? s n).get,
-   fun {n} h => by
-    cases e : Computation.get (get? s (n + 1))
-    · assumption
-    have := Computation.mem_of_get_eq _ e
-    simp? [get?] at this h says simp only [get?] at this h
-    obtain ⟨a', h'⟩ := head_some_of_head_tail_some this
-    have := mem_unique h' (@Computation.mem_of_get_eq _ _ _ _ h)
-    contradiction⟩
 
 theorem get?_terminates_le {s : WSeq α} {m n} (h : m ≤ n) :
     Terminates (get? s n) → Terminates (get? s m) := by
@@ -666,14 +632,6 @@ theorem dropn_ofSeq (s : Seq α) : ∀ n, drop (ofSeq s) n = ofSeq (s.drop n)
 
 theorem get?_ofSeq (s : Seq α) (n) : get? (ofSeq s) n = Computation.pure (Seq.get? s n) := by
   dsimp [get?]; rw [dropn_ofSeq, head_ofSeq, Seq.head_dropn]
-
-instance productive_ofSeq (s : Seq α) : Productive (ofSeq s) :=
-  ⟨fun n => by rw [get?_ofSeq]; infer_instance⟩
-
-theorem toSeq_ofSeq (s : Seq α) : toSeq (ofSeq s) = s := by
-  apply Subtype.eq; funext n
-  dsimp [toSeq]; apply get_eq_of_mem
-  rw [get?_ofSeq]; apply ret_mem
 
 /-- The monadic `return a` is a singleton list containing `a`. -/
 def ret (a : α) : WSeq α :=
