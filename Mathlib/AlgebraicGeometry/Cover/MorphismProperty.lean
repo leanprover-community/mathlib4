@@ -54,7 +54,7 @@ structure Cover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
   obj (j : J) : Scheme
   /-- the components map to `X` -/
   map (j : J) : obj j ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x`  -/
+  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
   f (x : X) : J
   /-- the components cover `X` -/
   covers (x : X) : x ∈ Set.range (map (f x)).base
@@ -113,7 +113,7 @@ def Cover.bind [P.IsStableUnderComposition] (f : ∀ x : 𝒰.J, (𝒰.obj x).Co
     rcases (f (𝒰.f x)).covers y with ⟨z, hz⟩
     change x ∈ Set.range ((f (𝒰.f x)).map ((f (𝒰.f x)).f y) ≫ 𝒰.map (𝒰.f x)).base
     use z
-    erw [CategoryTheory.comp_apply]
+    simp only [comp_coeBase, TopCat.hom_comp, ContinuousMap.comp_apply]
     rw [hz, hy]
   map_prop _ := P.comp_mem _ _ ((f _).map_prop _) (𝒰.map_prop _)
 
@@ -291,7 +291,7 @@ structure AffineCover (P : MorphismProperty Scheme.{u}) (X : Scheme.{u}) where
   obj (j : J) : CommRingCat.{u}
   /-- the components map to `X` -/
   map (j : J) : Spec (obj j) ⟶ X
-  /-- given a point of `x : X`, `f x` is the index of the component which contains `x`  -/
+  /-- given a point of `x : X`, `f x` is the index of the component which contains `x` -/
   f (x : X) : J
   /-- the components cover `X` -/
   covers (x : X) : x ∈ Set.range (map (f x)).base

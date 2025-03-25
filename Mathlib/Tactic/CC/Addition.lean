@@ -100,7 +100,7 @@ def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
 
 /-- Auxiliary function for comparing `lhs₁ ~ rhs₁` and `lhs₂ ~ rhs₂`,
     when `~` is symmetric/commutative.
-    It returns `true` (equal) for `a ~ b` `b ~ a`-/
+It returns `true` (equal) for `a ~ b` `b ~ a`. -/
 def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
   let lhs₁ ← getRoot lhs₁
   let rhs₁ ← getRoot rhs₁
@@ -275,9 +275,9 @@ def insertEraseROccs (e lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
   match e with
   | .apps _ args =>
     insertEraseROcc args[0]! lhs inLHS isInsert
-    for i in [1:args.size] do
-      if args[i]! != args[i - 1]! then
-        insertEraseROcc args[i]! lhs inLHS isInsert
+    for h : i in [1:args.size] do
+      if args[i] != args[i - 1]! then
+        insertEraseROcc args[i] lhs inLHS isInsert
   | .ofExpr e => insertEraseROcc e lhs inLHS isInsert
 
 /-- Insert `lhs` to the occurrences of arguments of `e` on an equality in `acR`. -/

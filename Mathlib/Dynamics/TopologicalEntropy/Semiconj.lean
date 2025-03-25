@@ -65,7 +65,7 @@ lemma IsDynCoverOf.image (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)} {n
   rw [← h.preimage_dynEntourage V n, ball_preimage]
 
 lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) {n : ℕ} {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
+    (V_symm : IsSymmetricRel V) {n : ℕ} {t : Finset Y} (h' : IsDynCoverOf T (φ '' F) V n t) :
     ∃ s : Finset X, IsDynCoverOf S F ((map φ φ) ⁻¹' (V ○ V)) n s ∧ s.card ≤ t.card := by
   classical
   rcases isEmpty_or_nonempty X with _ | _
@@ -89,7 +89,7 @@ lemma IsDynCoverOf.preimage (h : Semiconj φ S T) {F : Set X} {V : Set (Y × Y)}
   exact ⟨x_i, gs_cover⟩
 
 lemma le_coverMincard_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) (n : ℕ) :
+    (V_symm : IsSymmetricRel V) (n : ℕ) :
     coverMincard S F ((map φ φ) ⁻¹' (V ○ V)) n ≤ coverMincard T (φ '' F) V n := by
   rcases eq_top_or_lt_top (coverMincard T (φ '' F) V n) with h' | h'
   · exact h' ▸ le_top
@@ -112,13 +112,13 @@ lemma coverMincard_image_le (h : Semiconj φ S T) (F : Set X) (V : Set (Y × Y))
 open ENNReal EReal Filter
 
 lemma le_coverEntropyEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) :
+    (V_symm : IsSymmetricRel V) :
     coverEntropyEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyEntourage T (φ '' F) V :=
   limsup_le_limsup (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
     (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))
 
 lemma le_coverEntropyInfEntourage_image (h : Semiconj φ S T) (F : Set X) {V : Set (Y × Y)}
-    (V_symm : SymmetricRel V) :
+    (V_symm : IsSymmetricRel V) :
     coverEntropyInfEntourage S F ((map φ φ) ⁻¹' (V ○ V)) ≤ coverEntropyInfEntourage T (φ '' F) V :=
   liminf_le_liminf (Eventually.of_forall fun n ↦ (monotone_div_right_of_nonneg (Nat.cast_nonneg' n)
     (log_monotone (ENat.toENNReal_mono (le_coverMincard_image h F V_symm n)))))
@@ -134,7 +134,7 @@ lemma coverEntropyInfEntourage_image_le (h : Semiconj φ S T) (F : Set X) (V : S
     (log_monotone (ENat.toENNReal_mono (coverMincard_image_le h F V n)))))
 
 /-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
-  of the uniform structure of `Y`.-/
+  of the uniform structure of `Y`. -/
 theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropy T (φ '' F) = @coverEntropy X (comap φ u) S F := by
@@ -152,7 +152,7 @@ theorem coverEntropy_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y �
     exact coverEntropyEntourage_le_coverEntropy T (φ '' F) W_uni
 
 /-- The entropy of `φ '' F` equals the entropy of `F` if `X` is endowed with the pullback by `φ`
-  of the uniform structure of `Y`. This version uses a `liminf`.-/
+  of the uniform structure of `Y`. This version uses a `liminf`. -/
 theorem coverEntropyInf_image_of_comap (u : UniformSpace Y) {S : X → X} {T : Y → Y} {φ : X → Y}
     (h : Semiconj φ S T) (F : Set X) :
     coverEntropyInf T (φ '' F) = @coverEntropyInf X (comap φ u) S F := by
@@ -184,12 +184,12 @@ lemma coverEntropyInf_restrict_subset [UniformSpace X] {T : X → X} {F G : Set 
     inter_eq_right.2 hF]
 
 /-- The entropy of the restriction of `T` to an invariant set `F` is `coverEntropy S F`. This
-theorem justifies our definition of `coverEntropy T F`.-/
+theorem justifies our definition of `coverEntropy T F`. -/
 theorem coverEntropy_restrict [UniformSpace X] {T : X → X} {F : Set X} (h : MapsTo T F F) :
     coverEntropy (h.restrict T F F) univ = coverEntropy T F := by
   rw [← coverEntropy_restrict_subset Subset.rfl h, coe_preimage_self F]
 
-/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous.-/
+/-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous. -/
 theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropy T (φ '' F) ≤ coverEntropy S F := by
@@ -197,7 +197,7 @@ theorem coverEntropy_image_le_of_uniformContinuous [UniformSpace X] [UniformSpac
   exact coverEntropy_antitone S F (uniformContinuous_iff.1 h')
 
 /-- The entropy of `φ '' F` is lower than entropy of `F` if  `φ` is uniformly continuous. This
-  version uses a `liminf`.-/
+  version uses a `liminf`. -/
 theorem coverEntropyInf_image_le_of_uniformContinuous [UniformSpace X] [UniformSpace Y] {S : X → X}
     {T : Y → Y} {φ : X → Y} (h : Semiconj φ S T) (h' : UniformContinuous φ) (F : Set X) :
     coverEntropyInf T (φ '' F) ≤ coverEntropyInf S F := by

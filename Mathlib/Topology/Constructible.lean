@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Order.BooleanSubalgebra
+import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Spectral.Hom
 
 /-!
@@ -59,9 +60,10 @@ private lemma supClosed_isRetrocompact : SupClosed {s : Set X | IsRetrocompact s
 
 lemma IsRetrocompact.finsetSup {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsRetrocompact (t i)) : IsRetrocompact (s.sup t) := by
-  induction' s using Finset.cons_induction with i s ih hi
-  · simp
-  · rw [Finset.sup_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s ih hi =>
+    rw [Finset.sup_cons]
     exact (ht _ <| by simp).union <| hi <| Finset.forall_of_forall_cons ht
 
 set_option linter.docPrime false in
@@ -91,9 +93,10 @@ private lemma infClosed_isRetrocompact : InfClosed {s : Set X | IsRetrocompact s
 
 lemma IsRetrocompact.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsRetrocompact (t i)) : IsRetrocompact (s.inf t) := by
-  induction' s using Finset.cons_induction with i s ih hi
-  · simp
-  · rw [Finset.inf_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s ih hi =>
+    rw [Finset.inf_cons]
     exact (ht _ <| by simp).inter <| hi <| Finset.forall_of_forall_cons ht
 
 set_option linter.docPrime false in
@@ -296,10 +299,13 @@ variable [CompactSpace X] {P : ∀ s : Set X, IsConstructible s → Prop} {B : S
 lemma _root_.IsRetrocompact.isCompact (hs : IsRetrocompact s) : IsCompact s := by
   simpa using hs CompactSpace.isCompact_univ
 
+variable [QuasiSeparatedSpace X]
+
 /-- Variant of `TopologicalSpace.IsTopologicalBasis.isRetrocompact_iff_isCompact` for a
 non-indexed topological basis. -/
+@[stacks 0069 "Iff form of (2). Note that Stacks doesn't define quasi-separated spaces."]
 lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact_iff_isCompact'
-    (basis : IsTopologicalBasis B) (compact_inter : ∀ U ∈ B, ∀ V ∈ B, IsCompact (U ∩ V))
+    (basis : IsTopologicalBasis B) (isCompact_basis : ∀ U ∈ B, IsCompact U)
     (hU : IsOpen U) : IsRetrocompact U ↔ IsCompact U := by
   refine ⟨IsRetrocompact.isCompact, fun hU' {V} hV' hV ↦ ?_⟩
   obtain ⟨s, rfl⟩ := eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _ basis _ hU' hU
@@ -308,43 +314,44 @@ lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact_iff_isCompact'
   refine ((s.finite_toSet.image _).prod (t.finite_toSet.image _)).isCompact_biUnion ?_
   simp only [mem_prod, mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right,
     and_imp, forall_exists_index, Prod.forall]
-  exact fun u v hu _ hv _ ↦ compact_inter _ hu _ hv
+  exact fun u v hu _ hv _ ↦ (isCompact_basis _ hu).inter_of_isOpen (isCompact_basis _ hv)
+    (basis.isOpen hu) (basis.isOpen hv)
 
+@[stacks 0069 "Iff form of (2). Note that Stacks doesn't define quasi-separated spaces."]
 lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact_iff_isCompact
-    (basis : IsTopologicalBasis (range b)) (compact_inter : ∀ i j, IsCompact (b i ∩ b j))
+    (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i))
     (hU : IsOpen U) : IsRetrocompact U ↔ IsCompact U :=
-  basis.isRetrocompact_iff_isCompact' (by simpa using compact_inter) hU
+  basis.isRetrocompact_iff_isCompact' (by simpa using isCompact_basis) hU
 
 /-- Variant of `TopologicalSpace.IsTopologicalBasis.isRetrocompact` for a non-indexed topological
 basis. -/
 lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact' (basis : IsTopologicalBasis B)
-    (compact_inter : ∀ U ∈ B, ∀ V ∈ B, IsCompact (U ∩ V)) (hU : U ∈ B) : IsRetrocompact U :=
-  (basis.isRetrocompact_iff_isCompact' compact_inter <| basis.isOpen hU).2 <| by
-    simpa using compact_inter _ hU _ hU
+    (isCompact_basis : ∀ U ∈ B, IsCompact U) (hU : U ∈ B) : IsRetrocompact U :=
+  (basis.isRetrocompact_iff_isCompact' isCompact_basis <| basis.isOpen hU).2 <| isCompact_basis _ hU
 
 lemma _root_.TopologicalSpace.IsTopologicalBasis.isRetrocompact
-    (basis : IsTopologicalBasis (range b)) (compact_inter : ∀ i j, IsCompact (b i ∩ b j)) (i : ι) :
+    (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i)) (i : ι) :
     IsRetrocompact (b i) :=
-  (basis.isRetrocompact_iff_isCompact compact_inter <| basis.isOpen <| mem_range_self _).2 <| by
-    simpa using compact_inter i i
+  (basis.isRetrocompact_iff_isCompact isCompact_basis <| basis.isOpen <| mem_range_self _).2 <|
+    isCompact_basis _
 
 /-- Variant of `TopologicalSpace.IsTopologicalBasis.isConstructible` for a non-indexed topological
 basis. -/
 lemma _root_.TopologicalSpace.IsTopologicalBasis.isConstructible' (basis : IsTopologicalBasis B)
-    (compact_inter : ∀ U ∈ B, ∀ V ∈ B, IsCompact (U ∩ V)) (hU : U ∈ B) : IsConstructible U :=
-  (basis.isRetrocompact' compact_inter hU).isConstructible <| basis.isOpen hU
+    (isCompact_basis : ∀ U ∈ B, IsCompact U) (hU : U ∈ B) : IsConstructible U :=
+  (basis.isRetrocompact' isCompact_basis hU).isConstructible <| basis.isOpen hU
 
 lemma _root_.TopologicalSpace.IsTopologicalBasis.isConstructible
-    (basis : IsTopologicalBasis (range b)) (compact_inter : ∀ i j, IsCompact (b i ∩ b j)) (i : ι) :
+    (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i)) (i : ι) :
     IsConstructible (b i) :=
-  (basis.isRetrocompact compact_inter _).isConstructible <| basis.isOpen <| mem_range_self _
+  (basis.isRetrocompact isCompact_basis _).isConstructible <| basis.isOpen <| mem_range_self _
 
 @[elab_as_elim]
 lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι] (b : ι → Set X)
-    (basis : IsTopologicalBasis (range b)) (compact_inter : ∀ i j, IsCompact (b i ∩ b j))
+    (basis : IsTopologicalBasis (range b)) (isCompact_basis : ∀ i, IsCompact (b i))
     (sdiff : ∀ i s (hs : Set.Finite s), P (b i \ ⋃ j ∈ s, b j)
-      ((basis.isConstructible compact_inter _).sdiff <| .biUnion hs fun _ _ ↦
-        basis.isConstructible compact_inter _))
+      ((basis.isConstructible isCompact_basis _).sdiff <| .biUnion hs fun _ _ ↦
+        basis.isConstructible isCompact_basis _))
     (union : ∀ s hs t ht, P s hs → P t ht → P (s ∪ t) (hs.union ht))
     (s : Set X) (hs : IsConstructible s) : P s hs := by
   induction s, hs using BooleanSubalgebra.closure_sdiff_sup_induction with
@@ -354,8 +361,7 @@ lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι]
   | bot_mem => exact ⟨isOpen_empty, .empty⟩
   | top_mem => exact ⟨isOpen_univ, .univ⟩
   | sdiff U hU V hV =>
-    have := isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis _ basis
-        fun i ↦ by simpa using compact_inter i i
+    have := isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis _ basis isCompact_basis
     obtain ⟨s, hs, rfl⟩ := (this _).1 ⟨hU.2.isCompact, hU.1⟩
     obtain ⟨t, ht, rfl⟩ := (this _).1 ⟨hV.2.isCompact, hV.1⟩
     simp_rw [iUnion_diff]
@@ -364,11 +370,11 @@ lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι]
     | @insert i s hi hs ih =>
       simp_rw [biUnion_insert]
       exact union _ _ _
-        (.biUnion hs fun i _ ↦ (basis.isConstructible compact_inter _).sdiff <|
-          .biUnion ht fun j _ ↦ basis.isConstructible compact_inter _)
+        (.biUnion hs fun i _ ↦ (basis.isConstructible isCompact_basis _).sdiff <|
+          .biUnion ht fun j _ ↦ basis.isConstructible isCompact_basis _)
         (sdiff _ _ ht)
         (ih ⟨isOpen_biUnion fun  _ _ ↦ basis.isOpen ⟨_, rfl⟩, .biUnion hs
-          fun i _ ↦ basis.isRetrocompact compact_inter _⟩)
+          fun i _ ↦ basis.isRetrocompact isCompact_basis _⟩)
   | sup s _ t _ hs' ht' => exact union _ _ _ _ hs' ht'
 
 end CompactSpace
@@ -409,9 +415,10 @@ lemma IsLocallyConstructible.inter (hs : IsLocallyConstructible s) (ht : IsLocal
 
 lemma IsLocallyConstructible.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsLocallyConstructible (t i)) : IsLocallyConstructible (s.inf t) := by
-  induction' s using Finset.cons_induction with i s ih hi
-  · simp
-  · rw [Finset.inf_cons]
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons i s ih hi =>
+    rw [Finset.inf_cons]
     exact (ht _ <| by simp).inter <| hi <| Finset.forall_of_forall_cons ht
 
 set_option linter.docPrime false in

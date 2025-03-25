@@ -30,9 +30,6 @@ theorem eLpNorm'_add_le (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
       simp only [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe, nnnorm_add_le]
     _ ≤ eLpNorm' f q μ + eLpNorm' g q μ := ENNReal.lintegral_Lp_add_le hf.enorm hg.enorm hq1
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_add_le := eLpNorm'_add_le
-
 theorem eLpNorm'_add_le_of_le_one (hf : AEStronglyMeasurable f μ) (hq0 : 0 ≤ q) (hq1 : q ≤ 1) :
     eLpNorm' (f + g) q μ ≤ (2 : ℝ≥0∞) ^ (1 / q - 1) * (eLpNorm' f q μ + eLpNorm' g q μ) :=
   calc
@@ -43,17 +40,11 @@ theorem eLpNorm'_add_le_of_le_one (hf : AEStronglyMeasurable f μ) (hq0 : 0 ≤ 
     _ ≤ (2 : ℝ≥0∞) ^ (1 / q - 1) * (eLpNorm' f q μ + eLpNorm' g q μ) :=
       ENNReal.lintegral_Lp_add_le_of_le_one hf.enorm hq0 hq1
 
-@[deprecated (since := "2024-07-27")]
-alias snorm'_add_le_of_le_one := eLpNorm'_add_le_of_le_one
-
 theorem eLpNormEssSup_add_le {f g : α → E} :
     eLpNormEssSup (f + g) μ ≤ eLpNormEssSup f μ + eLpNormEssSup g μ := by
   refine le_trans (essSup_mono_ae (Eventually.of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
   simp_rw [Pi.add_apply, enorm_eq_nnnorm, ← ENNReal.coe_add, ENNReal.coe_le_coe]
   exact nnnorm_add_le _ _
-
-@[deprecated (since := "2024-07-27")]
-alias snormEssSup_add_le := eLpNormEssSup_add_le
 
 theorem eLpNorm_add_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (hp1 : 1 ≤ p) : eLpNorm (f + g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
@@ -62,12 +53,9 @@ theorem eLpNorm_add_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : A
   by_cases hp_top : p = ∞
   · simp [hp_top, eLpNormEssSup_add_le]
   have hp1_real : 1 ≤ p.toReal := by
-    rwa [← ENNReal.one_toReal, ENNReal.toReal_le_toReal ENNReal.one_ne_top hp_top]
+    rwa [← ENNReal.toReal_one, ENNReal.toReal_le_toReal ENNReal.one_ne_top hp_top]
   repeat rw [eLpNorm_eq_eLpNorm' hp0 hp_top]
   exact eLpNorm'_add_le hf hg hp1_real
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_add_le := eLpNorm_add_le
 
 /-- A constant for the inequality `‖f + g‖_{L^p} ≤ C * (‖f‖_{L^p} + ‖g‖_{L^p})`. It is equal to `1`
 for `p ≥ 1` or `p = 0`, and `2^(1/p-1)` in the more tricky interval `(0, 1)`. -/
@@ -87,8 +75,8 @@ theorem LpAddConst_zero : LpAddConst 0 = 1 := by
 theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   rw [LpAddConst]
   split_ifs with h
-  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.two_ne_top
-    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.one_toReal]
+  · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.ofNat_ne_top
+    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.toReal_one]
     exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
 
@@ -103,9 +91,6 @@ theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
       simp only [LpAddConst, if_pos this]
     · simpa using ENNReal.toReal_mono ENNReal.one_ne_top h'p.le
   · simpa [LpAddConst_of_one_le h'p] using eLpNorm_add_le hf hg h'p
-
-@[deprecated (since := "2024-07-27")]
-alias snorm_add_le' := eLpNorm_add_le'
 
 variable (μ E)
 
@@ -137,17 +122,11 @@ theorem eLpNorm_sub_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasura
     (p : ℝ≥0∞) : eLpNorm (f - g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) := by
   simpa only [sub_eq_add_neg, eLpNorm_neg] using eLpNorm_add_le' hf hg.neg p
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_sub_le' := eLpNorm_sub_le'
-
 theorem eLpNorm_sub_le {f g : α → E} (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)
     (hp : 1 ≤ p) : eLpNorm (f - g) p μ ≤ eLpNorm f p μ + eLpNorm g p μ := by
   simpa [LpAddConst_of_one_le hp] using eLpNorm_sub_le' hf hg p
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_sub_le := eLpNorm_sub_le
-
-theorem eLpNorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
+theorem eLpNorm_add_lt_top {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) :
     eLpNorm (f + g) p μ < ∞ :=
   calc
     eLpNorm (f + g) p μ ≤ LpAddConst p * (eLpNorm f p μ + eLpNorm g p μ) :=
@@ -156,18 +135,12 @@ theorem eLpNorm_add_lt_top {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp 
       apply ENNReal.mul_lt_top (LpAddConst_lt_top p)
       exact ENNReal.add_lt_top.2 ⟨hf.2, hg.2⟩
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_add_lt_top := eLpNorm_add_lt_top
-
 theorem eLpNorm'_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hq1 : 1 ≤ q) :
     eLpNorm' (∑ i ∈ s, f i) q μ ≤ ∑ i ∈ s, eLpNorm' (f i) q μ :=
   Finset.le_sum_of_subadditive_on_pred (fun f : α → E => eLpNorm' f q μ)
     (fun f => AEStronglyMeasurable f μ) (eLpNorm'_zero (zero_lt_one.trans_le hq1))
     (fun _f _g hf hg => eLpNorm'_add_le hf hg hq1) (fun _f _g hf hg => hf.add hg) _ hfs
-
-@[deprecated (since := "2024-07-27")]
-alias snorm'_sum_le := eLpNorm'_sum_le
 
 theorem eLpNorm_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (hfs : ∀ i, i ∈ s → AEStronglyMeasurable (f i) μ) (hp1 : 1 ≤ p) :
@@ -176,29 +149,26 @@ theorem eLpNorm_sum_le {ι} {f : ι → α → E} {s : Finset ι}
     (fun f => AEStronglyMeasurable f μ) eLpNorm_zero (fun _f _g hf hg => eLpNorm_add_le hf hg hp1)
     (fun _f _g hf hg => hf.add hg) _ hfs
 
-@[deprecated (since := "2024-07-27")]
-alias snorm_sum_le := eLpNorm_sum_le
-
-theorem Memℒp.add {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f + g) p μ :=
+theorem MemLp.add {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f + g) p μ :=
   ⟨AEStronglyMeasurable.add hf.1 hg.1, eLpNorm_add_lt_top hf hg⟩
 
-theorem Memℒp.sub {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) : Memℒp (f - g) p μ := by
+theorem MemLp.sub {f g : α → E} (hf : MemLp f p μ) (hg : MemLp g p μ) : MemLp (f - g) p μ := by
   rw [sub_eq_add_neg]
   exact hf.add hg.neg
 
-theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (fun a => ∑ i ∈ s, f i a) p μ := by
+theorem memLp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
+    MemLp (fun a => ∑ i ∈ s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
   refine Finset.induction_on s ?_ ?_
-  · simp only [Memℒp.zero', Finset.sum_empty, imp_true_iff]
+  · simp only [MemLp.zero', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]
     exact (hf i (s.mem_insert_self i)).add (ih fun j hj => hf j (Finset.mem_insert_of_mem hj))
 
-theorem memℒp_finset_sum' {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Memℒp (f i) p μ) :
-    Memℒp (∑ i ∈ s, f i) p μ := by
-  convert memℒp_finset_sum s hf using 1
+theorem memLp_finset_sum' {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, MemLp (f i) p μ) :
+    MemLp (∑ i ∈ s, f i) p μ := by
+  convert memLp_finset_sum s hf using 1
   ext x
   simp
 

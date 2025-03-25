@@ -3,10 +3,6 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Ring.Int.Parity
-import Mathlib.Algebra.Ring.Int.Units
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
 
 /-!
@@ -45,31 +41,18 @@ namespace Int
 theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2) :
     m = ((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2 :=
   have : Even (x ^ 2 + y ^ 2) := by simp [← h, even_mul]
-  have hxaddy : Even (x + y) := by simpa [sq, parity_simps]
-  have hxsuby : Even (x - y) := by simpa [sq, parity_simps]
   mul_right_injective₀ (show (2 * 2 : ℤ) ≠ 0 by decide) <|
     calc
       2 * 2 * m = (x - y) ^ 2 + (x + y) ^ 2 := by rw [mul_assoc, h]; ring
       _ = (2 * ((x - y) / 2)) ^ 2 + (2 * ((x + y) / 2)) ^ 2 := by
-        rw [even_iff_two_dvd] at hxsuby hxaddy
-        rw [Int.mul_ediv_cancel' hxsuby, Int.mul_ediv_cancel' hxaddy]
-      _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by
-        set_option simprocs false in
-        simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
+        rw [Int.mul_ediv_cancel' _, Int.mul_ediv_cancel' _] <;>
+          simpa [sq, parity_simps, ← even_iff_two_dvd]
+      _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by nlinarith
 
 theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k * m)
     (ha : 2 * a < m) (hb : 2 * b < m) (hc : 2 * c < m) (hd : 2 * d < m) :
-    k < m := by
-  refine _root_.lt_of_mul_lt_mul_right
-    (_root_.lt_of_mul_lt_mul_left ?_ (zero_le (2 ^ 2))) (zero_le m)
-  calc
-    2 ^ 2 * (k * ↑m) = ∑ i : Fin 4, (2 * ![a, b, c, d] i) ^ 2 := by
-      simp [← h, Fin.sum_univ_succ, mul_add, mul_pow, add_assoc]
-    _ < ∑ _i : Fin 4, m ^ 2 := Finset.sum_lt_sum_of_nonempty Finset.univ_nonempty fun i _ ↦ by
-      refine Nat.pow_lt_pow_left ?_ two_ne_zero
-      fin_cases i <;> assumption
-    _ = 2 ^ 2 * (m * m) := by simp; ring
+    k < m := by nlinarith
 
 theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
     ∃ (a b k : ℕ), 0 < k ∧ k < p ∧ a ^ 2 + b ^ 2 + 1 = k * p := by

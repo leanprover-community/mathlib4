@@ -7,6 +7,7 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
+import Mathlib.Data.Real.StarOrdered
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -71,7 +72,7 @@ section NonUnital
 
 variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [StarRing A]
   [Module ℝ A] [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [NonUnitalContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
 
 /- ## `nnrpow` -/
 
@@ -122,7 +123,7 @@ lemma zero_nnrpow {x : ℝ≥0} : (0 : A) ^ x = 0 := by simp [nnrpow_def]
 
 section Unique
 
-variable [TopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A]
 
 @[simp]
 lemma nnrpow_nnrpow {a : A} {x y : ℝ≥0} : (a ^ x) ^ y = a ^ (x * y) := by
@@ -172,7 +173,7 @@ lemma sqrt_eq_nnrpow {a : A} : sqrt a = a ^ (1 / 2 : ℝ≥0) := by
 @[simp]
 lemma sqrt_zero : sqrt (0 : A) = 0 := by simp [sqrt]
 
-variable [TopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A]
 
 @[simp]
 lemma nnrpow_sqrt {a : A} {x : ℝ≥0} : (sqrt a) ^ x = a ^ (x / 2) := by
@@ -218,7 +219,7 @@ end NonUnital
 section Unital
 
 variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
-  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)]
 
 /- ## `rpow` -/
 
@@ -269,7 +270,7 @@ lemma rpow_add {a : A} {x y : ℝ} (ha : 0 ∉ spectrum ℝ≥0 a) :
   simp [NNReal.rpow_add this _ _]
 
 -- TODO: relate to a strict positivity condition
-lemma rpow_rpow [TopologicalRing A] [T2Space A]
+lemma rpow_rpow [IsTopologicalRing A] [T2Space A]
     (a : A) (x y : ℝ) (ha₁ : 0 ∉ spectrum ℝ≥0 a) (hx : x ≠ 0) (ha₂ : 0 ≤ a := by cfc_tac) :
     (a ^ x) ^ y = a ^ (x * y) := by
   simp only [rpow_def]
@@ -277,7 +278,7 @@ lemma rpow_rpow [TopologicalRing A] [T2Space A]
   refine cfc_congr fun _ _ => ?_
   simp [NNReal.rpow_mul]
 
-lemma rpow_rpow_of_exponent_nonneg [TopologicalRing A] [T2Space A] (a : A) (x y : ℝ)
+lemma rpow_rpow_of_exponent_nonneg [IsTopologicalRing A] [T2Space A] (a : A) (x y : ℝ)
     (hx : 0 ≤ x) (hy : 0 ≤ y) (ha₂ : 0 ≤ a := by cfc_tac) : (a ^ x) ^ y = a ^ (x * y) := by
   simp only [rpow_def]
   rw [← cfc_comp _ _ a]
@@ -298,11 +299,11 @@ lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
   simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
 
 lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
-    [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] (a : A) :
+    [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 A (0 ≤ ·)] (a : A) :
     a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=
   cfc_congr fun x _ ↦ NNReal.rpow_neg_one x
 
-lemma rpow_neg [TopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
+lemma rpow_neg [IsTopologicalRing A] [T2Space A] (a : Aˣ) (x : ℝ)
     (ha' : (0 : A) ≤ a := by cfc_tac) : (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by
   suffices h₁ : ContinuousOn (fun z ↦ z ^ x) (Inv.inv '' (spectrum ℝ≥0 (a : A))) by
     rw [← cfc_inv_id (R := ℝ≥0) a, rpow_def, rpow_def,
@@ -321,7 +322,7 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
 
 section unital_vs_nonunital
 
-variable [TopologicalRing A] [T2Space A]
+variable [IsTopologicalRing A] [T2Space A]
 
 -- provides instance `ContinuousFunctionalCalculus.compactSpace_spectrum`
 open scoped ContinuousFunctionalCalculus

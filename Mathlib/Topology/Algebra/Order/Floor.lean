@@ -155,31 +155,31 @@ theorem tendsto_ceil_right' (n : ℤ) :
 
 end OrderClosedTopology
 
-theorem continuousOn_fract [TopologicalAddGroup α] (n : ℤ) :
+theorem continuousOn_fract [IsTopologicalAddGroup α] (n : ℤ) :
     ContinuousOn (fract : α → α) (Ico n (n + 1) : Set α) :=
   continuousOn_id.sub (continuousOn_floor n)
 
-theorem continuousAt_fract [OrderClosedTopology α] [TopologicalAddGroup α]
+theorem continuousAt_fract [OrderClosedTopology α] [IsTopologicalAddGroup α]
     {x : α} (h : x ≠ ⌊x⌋) : ContinuousAt fract x :=
   (continuousOn_fract ⌊x⌋).continuousAt <|
     Ico_mem_nhds ((floor_le _).lt_of_ne h.symm) (lt_floor_add_one _)
 
-theorem tendsto_fract_left' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_left' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝 1) := by
   rw [← sub_sub_cancel (n : α) 1]
   refine (tendsto_id.mono_left nhdsWithin_le_nhds).sub ?_
   exact tendsto_floor_left' n
 
-theorem tendsto_fract_left [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_left [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[<] n) (𝓝[<] 1) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_left' _)
     (Eventually.of_forall fract_lt_one)
 
-theorem tendsto_fract_right' [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_right' [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝 0) :=
   sub_self (n : α) ▸ (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).sub (tendsto_floor_right' n)
 
-theorem tendsto_fract_right [OrderClosedTopology α] [TopologicalAddGroup α] (n : ℤ) :
+theorem tendsto_fract_right [OrderClosedTopology α] [IsTopologicalAddGroup α] (n : ℤ) :
     Tendsto (fract : α → α) (𝓝[≥] n) (𝓝[≥] 0) :=
   tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ (tendsto_fract_right' _)
     (Eventually.of_forall fract_nonneg)
@@ -198,12 +198,12 @@ theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncur
   · rw [ContinuousAt, nhds_prod_eq, ← nhdsLT_sup_nhdsGE (n : α), prod_sup, tendsto_sup]
     constructor
     · refine (((h (s, 1) ⟨trivial, zero_le_one, le_rfl⟩).tendsto.mono_left ?_).comp
-        (tendsto_id.prod_map (tendsto_fract_left _))).mono_right (le_of_eq ?_)
+        (tendsto_id.prodMap (tendsto_fract_left _))).mono_right (le_of_eq ?_)
       · rw [nhdsWithin_prod_eq, nhdsWithin_univ, ← nhdsWithin_Ico_eq_nhdsLT one_pos]
         exact Filter.prod_mono le_rfl (nhdsWithin_mono _ Ico_subset_Icc_self)
       · simp [hf]
     · refine (((h (s, 0) ⟨trivial, le_rfl, zero_le_one⟩).tendsto.mono_left <| le_of_eq ?_).comp
-        (tendsto_id.prod_map (tendsto_fract_right _))).mono_right (le_of_eq ?_) <;>
+        (tendsto_id.prodMap (tendsto_fract_right _))).mono_right (le_of_eq ?_) <;>
         simp [nhdsWithin_prod_eq, nhdsWithin_univ]
   · replace ht : t ≠ ⌊t⌋ := fun ht' => ht ⟨_, ht'⟩
     refine (h.continuousAt ?_).comp (continuousAt_id.prodMap (continuousAt_fract ht))
@@ -212,7 +212,7 @@ theorem ContinuousOn.comp_fract' {f : β → α → γ} (h : ContinuousOn (uncur
 theorem ContinuousOn.comp_fract {s : β → α} {f : β → α → γ}
     (h : ContinuousOn (uncurry f) <| univ ×ˢ Icc 0 1) (hs : Continuous s)
     (hf : ∀ s, f s 0 = f s 1) : Continuous fun x : β => f x <| Int.fract (s x) :=
-  (h.comp_fract' hf).comp (continuous_id.prod_mk hs)
+  (h.comp_fract' hf).comp (continuous_id.prodMk hs)
 
 /-- A special case of `ContinuousOn.comp_fract`. -/
 theorem ContinuousOn.comp_fract'' {f : α → β} (h : ContinuousOn f I) (hf : f 0 = f 1) :

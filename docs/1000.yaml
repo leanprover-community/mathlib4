@@ -1324,8 +1324,8 @@ Q1146791:
 
 Q1148215:
   title: Mitchell's embedding theorem
-  # ongoing effort: going slowly; lots of work. see e.g.
-  # https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Freyd-Mitchell.20embedding
+  decl: CategoryTheory.Abelian.freyd_mitchell
+  authors: Markus Himmel, Jakob von Raumer, Paul Reichert, Joël Riou
 
 Q1149022:
   title: Fubini's theorem
@@ -1603,8 +1603,6 @@ Q1535225:
 
 Q1542114:
   title: Bézout's theorem
-  decl: Nat.gcd_eq_gcd_ab
-  authors: mathlib
 
 Q1543149:
   title: Sokhatsky–Weierstrass theorem
@@ -1738,12 +1736,9 @@ Q1765521:
 
 Q1766814:
   title: Smn theorem
-  decls:
-    - Nat.Partrec.Code.smn
-    - Nat.Partrec'.part_iff
+  decl: Nat.Partrec.Code.smn
   authors: Mario Carneiro
   date: 2018
-  comment: "This theorem is trivial when using Mathlib's computability definition, but this definition is equivalent to the usual one, as shown in `Nat.Partrec'.part_iff`."
 
 Q1785610:
   title: Poncelet's closure theorem
@@ -2835,6 +2830,10 @@ Q5125859:
 
 Q5127710:
   title: Clark–Ocone theorem
+
+Q513028:
+  title: Bézout's identity
+  decl: Nat.gcd_eq_gcd_ab
 
 Q5132839:
   title: Clifford's circle theorems
@@ -3972,6 +3971,8 @@ Q25345219:
 
 Q25378690:
   title: Ionescu-Tulcea theorem
+  decl: ProbabilityTheory.Kernel.traj
+  authors: Etienne Marion
 
 Q26877569:
   title: Furry's theorem

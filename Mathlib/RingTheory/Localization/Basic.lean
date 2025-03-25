@@ -128,8 +128,7 @@ variable {g : R →+* P} (hg : ∀ y : M, IsUnit (g y))
 
 variable (M) in
 include M in
-/- This is not an instance because the submonoid `M` would become a metavariable
-  in typeclass search. -/
+-- This is not an instance since the submonoid `M` would become a metavariable in typeclass search.
 theorem algHom_subsingleton [Algebra R P] : Subsingleton (S →ₐ[R] P) :=
   ⟨fun f g =>
     AlgHom.coe_ringHom_injective <|
@@ -356,9 +355,6 @@ open IsLocalization
 theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
 
-@[deprecated (since := "2024-04-17")]
-alias mk_nat_cast := mk_natCast
-
 variable [IsLocalization M S]
 
 section
@@ -411,9 +407,6 @@ namespace Localization
 
 theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
-
-@[deprecated (since := "2024-04-17")]
-alias mk_int_cast := mk_intCast
 
 end Localization
 

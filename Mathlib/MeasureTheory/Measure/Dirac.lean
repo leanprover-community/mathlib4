@@ -136,6 +136,11 @@ theorem ae_eq_dirac' [MeasurableSingletonClass β] {a : α} {f : α → β} (hf 
 theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
 
+@[fun_prop]
+lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    AEMeasurable f (Measure.dirac a) :=
+  ⟨fun _ ↦ f a, measurable_const, ae_eq_dirac f⟩
+
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩
 

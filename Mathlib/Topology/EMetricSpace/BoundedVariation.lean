@@ -44,7 +44,6 @@ that the sets one uses are nonempty and bounded above as these are only conditio
 open scoped NNReal ENNReal Topology UniformConvergence
 open Set Filter
 
--- Porting note: sectioned variables because a `wlog` was broken due to extra variables in context
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
 
 /-- The (extended real valued) variation of a function `f` on a set `s` inside a linear order is
@@ -416,7 +415,7 @@ theorem add_le_union (f : α → E) {s t : Set α} (h : ∀ x ∈ s, ∀ y ∈ t
       · apply Finset.sum_le_sum_of_subset _
         rintro i hi
         simp only [Finset.mem_union, Finset.mem_range, Finset.mem_Ico] at hi ⊢
-        cases' hi with hi hi
+        rcases hi with hi | hi
         · exact lt_of_lt_of_le hi (n.le_succ.trans (n.succ.le_add_right m))
         · exact hi.2
       · refine Finset.disjoint_left.2 fun i hi h'i => ?_
@@ -594,7 +593,7 @@ variable (f : α → E) (s : Set α)
 
 protected theorem self (a : α) : variationOnFromTo f s a a = 0 := by
   dsimp only [variationOnFromTo]
-  rw [if_pos le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.zero_toReal]
+  rw [if_pos le_rfl, Icc_self, eVariationOn.subsingleton, ENNReal.toReal_zero]
   exact fun x hx y hy => hx.2.trans hy.2.symm
 
 protected theorem nonneg_of_le {a b : α} (h : a ≤ b) : 0 ≤ variationOnFromTo f s a b := by
@@ -649,7 +648,7 @@ protected theorem edist_zero_of_eq_zero (hf : LocallyBoundedVariationOn f s)
 protected theorem eq_left_iff {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b c : α} (ha : a ∈ s) (hb : b ∈ s) (hc : c ∈ s) :
     variationOnFromTo f s a b = variationOnFromTo f s a c ↔ variationOnFromTo f s b c = 0 := by
-  simp only [← variationOnFromTo.add hf ha hb hc, self_eq_add_right]
+  simp only [← variationOnFromTo.add hf ha hb hc, left_eq_add]
 
 protected theorem eq_zero_iff_of_le {f : α → E} {s : Set α} (hf : LocallyBoundedVariationOn f s)
     {a b : α} (ha : a ∈ s) (hb : b ∈ s) (ab : a ≤ b) :

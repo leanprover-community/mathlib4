@@ -5,6 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -23,7 +24,7 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 
 -/
 
-universe w v u
+universe w w' v u
 
 namespace CategoryTheory
 
@@ -52,6 +53,10 @@ lemma le_pullbacks : P ≤ P.pullbacks := by
   intro A B q hq
   exact P.pullbacks_mk IsPullback.of_id_fst hq
 
+lemma pullbacks_monotone : Monotone (pullbacks (C := C)) := by
+  rintro _ _ h _ _ _ ⟨_, _, _, _, _, hp, sq⟩
+  exact ⟨_, _, _, _, _, h _ hp, sq⟩
+
 /-- Given a class of morphisms `P`, this is the class of pushouts
 of morphisms in `P`. -/
 def pushouts : MorphismProperty C := fun X Y q ↦
@@ -67,6 +72,10 @@ lemma le_pushouts : P ≤ P.pushouts := by
   intro X Y p hp
   exact P.pushouts_mk IsPushout.of_id_fst hp
 
+lemma pushouts_monotone : Monotone (pushouts (C := C)) := by
+  rintro _ _ h _ _ _ ⟨_, _, _, _, _, hp, sq⟩
+  exact ⟨_, _, _, _, _, h _ hp, sq⟩
+
 instance : P.pushouts.RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro q q' e ⟨A, B, p, f, g, hp, h⟩
@@ -78,6 +87,16 @@ instance : P.pullbacks.RespectsIso :=
     rintro q q' e ⟨X, Y, p, f, g, hp, h⟩
     exact ⟨X, Y, p, e.inv.left ≫ f, e.inv.right ≫ g, hp,
       IsPullback.paste_horiz (IsPullback.of_horiz_isIso ⟨e.inv.w⟩) h⟩)
+
+/-- If `P : MorphismPropety C` is such that any object in `C` maps to the
+target of some morphism in `P`, then `P.pushouts` contains the isomorphisms. -/
+lemma isomorphisms_le_pushouts
+    (h : ∀ (X : C), ∃ (A B : C) (p : A ⟶ B) (_ : P p) (_ : B ⟶ X), IsIso p) :
+    isomorphisms C ≤ P.pushouts := by
+  intro X Y f (_ : IsIso f)
+  obtain ⟨A, B, p, hp, g, _⟩ := h X
+  exact ⟨A, B, p, p ≫ g, g ≫ f, hp, (IsPushout.of_id_snd (f := p ≫ g)).of_iso
+    (Iso.refl _) (Iso.refl _) (asIso p) (asIso f) (by simp) (by simp) (by simp) (by simp)⟩
 
 /-- A morphism property is `IsStableUnderBaseChange` if the base change of such a morphism
 still falls in the class. -/
@@ -116,6 +135,9 @@ lemma isStableUnderBaseChange_iff_pullbacks_le :
     constructor
     intro _ _ _ _ _ _ _ _ h₁ h₂
     exact h _ ⟨_, _, _, _, _, h₂, h₁⟩
+
+lemma pullbacks_le [P.IsStableUnderBaseChange] : P.pullbacks ≤ P := by
+  rwa [← isStableUnderBaseChange_iff_pullbacks_le]
 
 variable {P} in
 /-- Alternative constructor for `IsStableUnderBaseChange`. -/
@@ -211,6 +233,14 @@ theorem pullback_map [HasPullbacks C]
   exacts [baseChange_map _ (Over.homMk _ e₂.symm : Over.mk g ⟶ Over.mk g') h₂,
     baseChange_map _ (Over.homMk _ e₁.symm : Over.mk f ⟶ Over.mk f') h₁]
 
+instance IsStableUnderBaseChange.hasOfPostcompProperty_monomorphisms
+    [P.IsStableUnderBaseChange] : P.HasOfPostcompProperty (MorphismProperty.monomorphisms C) where
+  of_postcomp {X Y Z} f g (hg : Mono g) hcomp := by
+    have : f = (asIso (pullback.fst (f ≫ g) g)).inv ≫ pullback.snd (f ≫ g) g := by
+      simp [Iso.eq_inv_comp, ← cancel_mono g, pullback.condition]
+    rw [this, cancel_left_of_respectsIso (P := P)]
+    exact P.pullback_snd _ _ hcomp
+
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.pullback_map := pullback_map
 
 lemma of_isPushout [P.IsStableUnderCobaseChange]
@@ -227,6 +257,17 @@ lemma isStableUnderCobaseChange_iff_pushouts_le :
     constructor
     intro _ _ _ _ _ _ _ _ h₁ h₂
     exact h _ ⟨_, _, _, _, _, h₂, h₁⟩
+
+lemma pushouts_le [P.IsStableUnderCobaseChange] : P.pushouts ≤ P := by
+  rwa [← isStableUnderCobaseChange_iff_pushouts_le]
+
+@[simp]
+lemma pushouts_le_iff {P Q : MorphismProperty C} [Q.IsStableUnderCobaseChange] :
+    P.pushouts ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact le_trans P.le_pushouts
+  · intro h
+    exact le_trans (pushouts_monotone h) pushouts_le
 
 /-- An alternative constructor for `IsStableUnderCobaseChange`. -/
 theorem IsStableUnderCobaseChange.mk' [RespectsIso P]
@@ -276,6 +317,14 @@ theorem pushout_inr [IsStableUnderCobaseChange P]
 
 @[deprecated (since := "2024-11-06")] alias IsStableUnderBaseChange.inr := pushout_inr
 
+instance IsStableUnderCobaseChange.hasOfPrecompProperty_epimorphisms
+    [P.IsStableUnderCobaseChange] : P.HasOfPrecompProperty (MorphismProperty.epimorphisms C) where
+  of_precomp {X Y Z} f g (hf : Epi f) hcomp := by
+    have : g = pushout.inr (f ≫ g) f ≫ (asIso (pushout.inl (f ≫ g) f)).inv := by
+      rw [asIso_inv, IsIso.eq_comp_inv, ← cancel_epi f, ← pushout.condition, assoc]
+    rw [this, cancel_right_of_respectsIso (P := P)]
+    exact P.pushout_inr _ _ hcomp
+
 instance IsStableUnderCobaseChange.op [IsStableUnderCobaseChange P] :
     IsStableUnderBaseChange P.op where
   of_isPullback sq hg := P.of_isPushout sq.unop hg
@@ -314,6 +363,12 @@ inductive limitsOfShape : MorphismProperty C
   | mk (X₁ X₂ : J ⥤ C) (c₁ : Cone X₁) (c₂ : Cone X₂)
     (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       limitsOfShape (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
+
+lemma limitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
+    (J : Type*) [Category J] :
+    W₁.limitsOfShape J ≤ W₂.limitsOfShape J := by
+  rintro _ _ _ ⟨_, _, _, _, h₁, _, f, hf⟩
+  exact ⟨_, _, _, _, h₁, _, f, fun j ↦ h _ (hf j)⟩
 
 instance : (W.limitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
@@ -379,6 +434,33 @@ inductive colimitsOfShape : MorphismProperty C
     (h₁ : IsColimit c₁) (h₂ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f) :
       colimitsOfShape (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
 
+lemma colimitsOfShape_monotone {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
+    (J : Type*) [Category J] :
+    W₁.colimitsOfShape J ≤ W₂.colimitsOfShape J := by
+  rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
+  exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
+
+variable {J} in
+lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.Final] :
+    W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
+  intro _ _ _ ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
+  have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
+  have h₂' : IsColimit (c₂.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₂).symm h₂
+  have : h₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι)) =
+      h₁'.desc (Cocone.mk c₂.pt (whiskerLeft _ f ≫ (c₂.whisker F).ι)) :=
+    h₁'.hom_ext (fun j ↦ by
+      have := h₁'.fac (Cocone.mk c₂.pt (whiskerLeft F f ≫ whiskerLeft F c₂.ι)) j
+      dsimp at this ⊢
+      simp [this])
+  rw [this]
+  exact ⟨_, _, _, _, h₁', h₂', _, fun _ ↦ hf _⟩
+
+variable {J} in
+lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category J'] (e : J ≌ J') :
+    W.colimitsOfShape J = W.colimitsOfShape J' :=
+  le_antisymm (W.colimitsOfShape_le_of_final e.inverse)
+    (W.colimitsOfShape_le_of_final e.functor)
+
 instance : (W.colimitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro ⟨_, _, f⟩ ⟨Y₁, Y₂, g⟩ e ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
@@ -429,6 +511,14 @@ lemma IsStableUnderColimitsOfShape.colimMap
     W (colimMap f) :=
   hW.colimitsOfShape_le _ (colimitsOfShape_colimMap _ _ hf)
 
+variable (C J) in
+lemma IsStableUnderColimitsOfShape.isomorphisms :
+    (isomorphisms C).IsStableUnderColimitsOfShape J := by
+  intro F₁ F₂ c₁ c₂ h₁ h₂ f (_ : ∀ j, IsIso (f.app j))
+  have := NatIso.isIso_of_isIso_app f
+  exact ⟨h₂.desc (Cocone.mk _ (inv f ≫ c₁.ι)),
+    h₁.hom_ext (by simp), h₂.hom_ext (by simp)⟩
+
 end ColimitsOfShape
 
 section Coproducts
@@ -437,6 +527,7 @@ variable (W : MorphismProperty C)
 
 /-- Given `W : MorphismProperty C`, this is class of morphisms that are
 isomorphic to a coproduct of a family (indexed by some `J : Type w`) of maps in `W`. -/
+@[pp_with_univ]
 def coproducts : MorphismProperty C := ⨆ (J : Type w), W.colimitsOfShape (Discrete J)
 
 lemma colimitsOfShape_le_coproducts (J : Type w) :
@@ -446,6 +537,39 @@ lemma colimitsOfShape_le_coproducts (J : Type w) :
 lemma coproducts_iff {X Y : C} (f : X ⟶ Y) :
     coproducts.{w} W f ↔ ∃ (J : Type w), W.colimitsOfShape (Discrete J) f := by
   simp only [coproducts, iSup_iff]
+
+lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
+    (hf : W.colimitsOfShape (Discrete J) f) [Small.{w} J] :
+    coproducts.{w} W f := by
+  rw [coproducts_iff]
+  refine ⟨Shrink J, ?_⟩
+  rwa [← W.colimitsOfShape_eq_of_equivalence (Discrete.equivalence (equivShrink.{w} J))]
+
+lemma le_colimitsOfShape_punit : W ≤ W.colimitsOfShape (Discrete PUnit.{w + 1}) := by
+  intro X₁ X₂ f hf
+  have h := initialIsInitial (C := Discrete (PUnit.{w + 1}))
+  let c₁ := coconeOfDiagramInitial (F := Discrete.functor (fun _ ↦ X₁)) h
+  let c₂ := coconeOfDiagramInitial (F := Discrete.functor (fun _ ↦ X₂)) h
+  have hc₁ : IsColimit c₁ := colimitOfDiagramInitial h _
+  have hc₂ : IsColimit c₂ := colimitOfDiagramInitial h _
+  have : hc₁.desc (Cocone.mk _ (Discrete.natTrans (fun _ ↦ by exact f) ≫ c₂.ι)) = f :=
+    hc₁.hom_ext (fun x ↦ by
+      obtain rfl : x = ⊥_ _ := by ext
+      rw [IsColimit.fac]
+      simp [c₁, c₂])
+  rw [← this]
+  exact ⟨_, _, _, _, _, hc₂, _, fun _ ↦ hf⟩
+
+lemma le_coproducts : W ≤ coproducts.{w} W :=
+  (le_colimitsOfShape_punit.{w} W).trans
+    (colimitsOfShape_le_coproducts W PUnit.{w + 1})
+
+lemma coproducts_monotone : Monotone (coproducts.{w} (C := C)) := by
+  rintro W₁ W₂ h X Y f hf
+  rw [coproducts_iff] at hf
+  obtain ⟨J, hf⟩ := hf
+  exact W₂.colimitsOfShape_le_coproducts J _
+    (colimitsOfShape_monotone h _ _ hf)
 
 end Coproducts
 
@@ -468,9 +592,9 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
   have : HasLimit X₁ := ⟨c₁, hc₁⟩
   have : HasLimit X₂ := ⟨c₂, hc₂⟩
   have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
   have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    hasLimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).2 hf'
   refine Arrow.isoMk
@@ -489,9 +613,9 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
   have : HasColimit X₁ := ⟨c₁, hc₁⟩
   have : HasColimit X₂ := ⟨c₂, hc₂⟩
   have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
-    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
   have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
-    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+    hasColimit_of_iso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).1 hf'
   refine Arrow.isoMk
@@ -518,6 +642,36 @@ lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
     (J : Type) [Finite J] [W.IsStableUnderFiniteCoproducts] :
     W.IsStableUnderCoproductsOfShape J :=
   IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
+
+/-- The condition that a property of morphisms is stable by coproducts. -/
+@[pp_with_univ]
+class IsStableUnderCoproducts : Prop where
+  isStableUnderCoproductsOfShape (J : Type w) : W.IsStableUnderCoproductsOfShape J
+
+lemma isStableUnderCoproductsOfShape_of_isStableUnderCoproducts
+    [IsStableUnderCoproducts.{w} W] (J : Type w) :
+    W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderCoproducts.isStableUnderCoproductsOfShape _
+
+lemma coproducts_le [IsStableUnderCoproducts.{w} W] :
+    coproducts.{w} W ≤ W := by
+  intro X Y f hf
+  rw [coproducts_iff] at hf
+  obtain ⟨J, hf⟩ := hf
+  exact (isStableUnderCoproductsOfShape_of_isStableUnderCoproducts W J).colimitsOfShape_le _ hf
+
+@[simp]
+lemma coproducts_eq_self [IsStableUnderCoproducts.{w} W] :
+    coproducts.{w} W = W :=
+  le_antisymm W.coproducts_le W.le_coproducts
+
+@[simp]
+lemma coproducts_le_iff {P Q : MorphismProperty C} [IsStableUnderCoproducts.{w} Q] :
+    coproducts.{w} P ≤ Q ↔ P ≤ Q := by
+  constructor
+  · exact le_trans P.le_coproducts
+  · intro h
+    exact le_trans (coproducts_monotone h) Q.coproducts_le
 
 end Products
 

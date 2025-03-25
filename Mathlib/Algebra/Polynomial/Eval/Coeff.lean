@@ -157,9 +157,6 @@ theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
   | h_monomial n r =>
     simp only [map_natCast f, eval_monomial, map_monomial, f.map_pow, f.map_mul]
 
-@[deprecated (since := "2024-04-17")]
-alias eval_nat_cast_map := eval_natCast_map
-
 @[simp]
 theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
@@ -168,9 +165,6 @@ theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
   | h_monomial n r =>
     simp only [map_intCast, eval_monomial, map_monomial, map_pow, map_mul]
-
-@[deprecated (since := "2024-04-17")]
-alias eval_int_cast_map := eval_intCast_map
 
 end Map
 
@@ -227,7 +221,7 @@ variable [CommSemiring R] [CommSemiring S] (f : R →+* S)
 theorem IsRoot.map {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot p x) : IsRoot (p.map f) (f x) := by
   rw [IsRoot, eval_map, eval₂_hom, h.eq_zero, f.map_zero]
 
-theorem IsRoot.of_map {R} [CommRing R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot (p.map f) (f x))
+theorem IsRoot.of_map {R} [Ring R] {f : R →+* S} {x : R} {p : R[X]} (h : IsRoot (p.map f) (f x))
     (hf : Function.Injective f) : IsRoot p x := by
   rwa [IsRoot, ← (injective_iff_map_eq_zero' f).mp hf, ← eval₂_hom, ← eval_map]
 

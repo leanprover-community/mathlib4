@@ -5,10 +5,9 @@ Authors: Johannes Hölzl, Yury Kudryashov, Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Algebra.NonUnitalHom
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Algebra.MonoidAlgebra.Defs
-import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.MonoidAlgebra.MapDomain
+import Mathlib.Data.Finsupp.SMul
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 
 /-!
@@ -63,7 +62,6 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
       toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
-        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
         beta_reduce
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc, MonoidHom.id_apply]
@@ -110,7 +108,6 @@ instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid
   algebraMap := singleOneRingHom.comp (algebraMap k A)
   smul_def' := fun r a => by
     ext
-    -- Porting note: Newly required.
     rw [Finsupp.coe_smul]
     simp [single_one_mul_apply, Algebra.smul_def, Pi.smul_apply]
   commutes' := fun r f => by
@@ -169,7 +166,7 @@ theorem algHom_ext ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   AlgHom.toLinearMap_injective <| Finsupp.lhom_ext' fun a => LinearMap.ext_ring (h a)
 
--- Porting note: The priority must be `high`.
+-- The priority must be `high`.
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem algHom_ext' ⦃φ₁ φ₂ : MonoidAlgebra k G →ₐ[k] A⦄
@@ -296,8 +293,6 @@ end lift
 
 section
 
--- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
-
 variable (k)
 
 /-- When `V` is a `k[G]`-module, multiplication by a group element `g` is a `k`-linear map. -/
@@ -328,7 +323,6 @@ def equivariantOfLinearOfComm
   toFun := f
   map_add' v v' := by simp
   map_smul' c v := by
-    -- Porting note: Was `apply`.
     refine Finsupp.induction c ?_ ?_
     · simp
     · intro g r c' _nm _nz w
@@ -400,7 +394,6 @@ instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
   algebraMap := singleZeroRingHom.comp (algebraMap R k)
   smul_def' := fun r a => by
     ext
-    -- Porting note: Newly required.
     rw [Finsupp.coe_smul]
     simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
   commutes' := fun r f => by

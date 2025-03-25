@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.MeasureTheory.Measure.Dirac
+import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
 
 /-!
 # Counting measure
@@ -34,18 +35,15 @@ theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
     _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 
-theorem count_apply (hs : MeasurableSet s) : count s = ∑' _ : s, 1 := by
-  simp only [count, sum_apply, hs, dirac_apply', ← tsum_subtype s (1 : α → ℝ≥0∞), Pi.one_apply]
+theorem count_apply (hs : MeasurableSet s) : count s = s.encard := by
+  simp [count, hs, ← tsum_subtype, Set.encard]
 
-theorem count_empty : count (∅ : Set α) = 0 := by rw [count_apply MeasurableSet.empty, tsum_empty]
+@[deprecated measure_empty (since := "2025-02-06")]
+theorem count_empty : count (∅ : Set α) = 0 := measure_empty
 
 @[simp]
-theorem count_apply_finset' {s : Finset α} (s_mble : MeasurableSet (s : Set α)) :
-    count (↑s : Set α) = s.card :=
-  calc
-    count (↑s : Set α) = ∑' _ : (↑s : Set α), 1 := count_apply s_mble
-    _ = ∑ _ ∈ s, 1 := s.tsum_subtype 1
-    _ = s.card := by simp
+theorem count_apply_finset' {s : Finset α} (hs : MeasurableSet (s : Set α)) :
+    count (↑s : Set α) = s.card := by simp [count_apply hs]
 
 @[simp]
 theorem count_apply_finset [MeasurableSingletonClass α] (s : Finset α) :
@@ -102,7 +100,7 @@ theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.F
 theorem count_eq_zero_iff : count s = 0 ↔ s = ∅ where
   mp h := eq_empty_of_forall_not_mem fun x hx ↦ by
     simpa [hx] using ((ENNReal.le_tsum x).trans <| le_sum_apply _ _).trans_eq h
-  mpr := by rintro rfl; exact count_empty
+  mpr := by rintro rfl; exact measure_empty
 
 lemma count_ne_zero_iff : count s ≠ 0 ↔ s.Nonempty :=
   count_eq_zero_iff.not.trans nonempty_iff_ne_empty.symm
@@ -113,6 +111,13 @@ alias ⟨_, count_ne_zero⟩ := count_ne_zero_iff
 @[deprecated (since := "2024-11-20")] alias empty_of_count_eq_zero' := empty_of_count_eq_zero
 @[deprecated (since := "2024-11-20")] alias count_eq_zero_iff' := count_eq_zero_iff
 @[deprecated (since := "2024-11-20")] alias count_ne_zero' := count_ne_zero
+
+@[simp]
+lemma ae_count_iff {p : α → Prop} : (∀ᵐ x ∂count, p x) ↔ ∀ x, p x := by
+  refine ⟨fun h x ↦ ?_, ae_of_all _⟩
+  rw [ae_iff, count_eq_zero_iff] at h
+  by_contra hx
+  rwa [← mem_empty_iff_false x, ← h]
 
 @[simp]
 theorem count_singleton' {a : α} (ha : MeasurableSet ({a} : Set α)) : count ({a} : Set α) = 1 := by
@@ -145,10 +150,10 @@ theorem count_injective_image [MeasurableSingletonClass α] [MeasurableSingleton
 
 instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
-  ⟨by cases nonempty_fintype α; simp [Measure.count_apply, tsum_fintype]⟩
+  ⟨by cases nonempty_fintype α; simp [Measure.count_apply, finite_univ]⟩
 
-@[simp] lemma count_univ [Fintype α] : count (univ : Set α) = Fintype.card α := by
-  rw [count_apply .univ]; exact (tsum_univ 1).trans (by simp [tsum_fintype])
+@[simp]
+lemma count_univ : count (univ : Set α) = ENat.card α := by simp [count_apply .univ, encard_univ]
 
 end Measure
 

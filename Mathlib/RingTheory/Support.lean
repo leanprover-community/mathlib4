@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Basic
-import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Localization.Defs
 import Mathlib.Algebra.Exact
 import Mathlib.Algebra.Module.LocalizedModule.Basic
 
@@ -50,8 +50,8 @@ lemma Module.not_mem_support_iff :
 
 lemma Module.not_mem_support_iff' :
     p ∉ Module.support R M ↔ ∀ m : M, ∃ r ∉ p.asIdeal, r • m = 0 := by
-  rw [not_mem_support_iff, LocalizedModule.subsingleton_iff]
-  rfl
+  simp only [not_mem_support_iff, Ideal.primeCompl, LocalizedModule.subsingleton_iff,
+    Submonoid.mem_mk, Subsemigroup.mem_mk, Set.mem_compl_iff, SetLike.mem_coe]
 
 lemma Module.mem_support_iff' :
     p ∈ Module.support R M ↔ ∃ m : M, ∀ r ∉ p.asIdeal, r • m ≠ 0 := by
