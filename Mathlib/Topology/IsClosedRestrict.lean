@@ -3,7 +3,7 @@ Copyright (c) 2025 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-! # Restriction of a closed compact set in a product space to a set of coordinates
 
@@ -84,7 +84,7 @@ def preimageImageRestrict (α : ι → Type*) [∀ i, TopologicalSpace (α i)]
   left_inv x := by ext; simp
   right_inv p := by ext <;> simp
   continuous_toFun := by
-    refine Continuous.prod_mk ?_ ?_
+    refine Continuous.prodMk ?_ ?_
     · exact ((Pi.continuous_restrict _).comp continuous_subtype_val).subtype_mk _
     · rw [continuous_pi_iff]
       exact fun _ ↦ (continuous_apply _).comp continuous_subtype_val
