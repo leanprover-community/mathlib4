@@ -401,8 +401,16 @@ instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).No
   (normal_subgroupOf_iff_le_normalizer H.le_normalizer).mpr le_rfl
 
 @[to_additive]
-theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
+theorem le_normalizer_of_normal_subgroupOf [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) :
+    K ≤ H.normalizer :=
   (normal_subgroupOf_iff_le_normalizer HK).mp hK
+
+@[to_additive]
+theorem subset_normalizer_of_normal {S : Set G} [hH : H.Normal] : S ⊆ H.normalizer :=
+  (@normalizer_eq_top _ _ H hH) ▸ le_top
+
+@[to_additive]
+theorem le_normalizer_of_normal [H.Normal] : K ≤ H.normalizer := subset_normalizer_of_normal
 
 @[to_additive]
 theorem inf_normalizer_le_normalizer_inf : H.normalizer ⊓ K.normalizer ≤ (H ⊓ K).normalizer :=
@@ -896,6 +904,18 @@ theorem commute_of_normal_of_disjoint (H₁ H₂ : Subgroup G) (hH₁ : H₁.Nor
   · show x * y * x⁻¹ * y⁻¹ ∈ H₂
     apply H₂.mul_mem _ (H₂.inv_mem hy)
     apply hH₂.conj_mem _ hy
+
+@[to_additive]
+theorem normal_subgroupOf_of_le_normalizer {H N : Subgroup G}
+    (hLE : H ≤ N.normalizer) : (N.subgroupOf H).Normal := by
+  rw [normal_subgroupOf_iff_le_normalizer_inf]
+  exact (le_inf hLE H.le_normalizer).trans inf_normalizer_le_normalizer_inf
+
+@[to_additive]
+theorem normal_subgroupOf_sup_of_le_normalizer {H N : Subgroup G}
+    (hLE : H ≤ N.normalizer) : (N.subgroupOf (H ⊔ N)).Normal := by
+  rw [normal_subgroupOf_iff_le_normalizer le_sup_right]
+  exact sup_le hLE le_normalizer
 
 end SubgroupNormal
 

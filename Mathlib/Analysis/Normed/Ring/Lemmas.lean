@@ -211,3 +211,6 @@ instance Int.instNormedCommRing : NormedCommRing ℤ where
 
 instance Int.instNormOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
+
+instance Int.instNormMulClass : NormMulClass ℤ :=
+  ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩

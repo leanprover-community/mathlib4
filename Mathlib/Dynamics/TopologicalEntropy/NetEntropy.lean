@@ -202,7 +202,7 @@ lemma netMaxcard_infinite_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : 
     simp only [Nat.cast_lt, Subtype.exists, exists_prop] at h
     rcases h with ⟨s, s_net, s_k⟩
     exact ⟨s, ⟨s_net, s_k.le⟩⟩
-  · refine WithTop.forall_gt_iff_eq_top.1 fun k ↦ ?_
+  · refine WithTop.eq_top_iff_forall_gt.2 fun k ↦ ?_
     specialize h (k + 1)
     rcases h with ⟨s, s_net, s_card⟩
     apply s_net.card_le_netMaxcard.trans_lt'

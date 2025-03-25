@@ -42,9 +42,6 @@ def IsTransitive (x : ZFSet) : Prop :=
 @[simp]
 theorem isTransitive_empty : IsTransitive ∅ := fun y hy => (not_mem_empty y hy).elim
 
-@[deprecated isTransitive_empty (since := "2024-09-21")]
-alias empty_isTransitive := isTransitive_empty
-
 theorem IsTransitive.subset_of_mem (h : x.IsTransitive) : y ∈ x → y ⊆ x := h y
 
 theorem isTransitive_iff_mem_trans : z.IsTransitive ↔ ∀ {x y : ZFSet}, x ∈ y → y ∈ z → x ∈ z :=
