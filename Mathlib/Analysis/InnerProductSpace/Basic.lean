@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 import Mathlib.Algebra.BigOperators.Field
-import Mathlib.Algebra.EuclideanDomain.Field
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.InnerProductSpace.Defs
 import Mathlib.GroupTheory.MonoidLocalization.Basic
