@@ -73,7 +73,7 @@ open Complex MeasureTheory TopologicalSpace Metric Function Set Filter Asymptoti
 /-!
 ### `circleMap`, a parametrization of a circle
 -/
-<<<<<<< HEAD
+
 lemma circleMap_eq_circleMap_iff {a b R : ℝ} (c : ℂ) (h_R : R ≠ 0) :
     circleMap c R a = circleMap c R b ↔ ∃ (n : ℤ), a * I = b * I + n * (2 * π * I) := by
   have : circleMap c R a = circleMap c R b ↔ (exp (a * I)).arg = (exp (b * I)).arg := by
@@ -101,8 +101,6 @@ theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_
   rw [abs_lt]
   constructor <;> linarith [max_sub_min_eq_abs' a b]
 
-=======
->>>>>>> master
 theorem circleMap_not_mem_ball (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∉ ball c R := by
   simp [dist_eq, le_abs_self]
 
