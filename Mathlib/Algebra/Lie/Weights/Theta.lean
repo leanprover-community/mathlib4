@@ -354,9 +354,7 @@ theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
     _ = ⁅(-(t : K) ^ (-2 : ℤ) : K) • f, (-(t ^ (2 : ℤ)) : K) • e⁆ := by
       rw [theta_e H hα he hf t ht, theta_f H hα he hf t ht]
     _ = ((t : K) ^ (2 : ℤ))⁻¹ • (t : K) ^ (2 : ℤ) • ⁅f, e⁆ := by
-      rw [smul_lie]
-      rw [lie_smul]
-      simp
+      rw [smul_lie, lie_smul, zpow_neg, neg_smul, ← smul_neg, neg_smul, neg_neg]
     _ = (((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ (2 : ℤ)) • ⁅f, e⁆ := by
       rw [mul_smul]
     _ = ⁅f, e⁆ := by
