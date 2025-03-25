@@ -26,31 +26,7 @@ open LieAlgebra
 
 open LieModule
 
-variable {K : Type*} [Field K]
-
-section FieldUnit
-
-theorem fu₁ (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ 2 = 1 := by
-  norm_cast
-  field_simp
-
-theorem fu (t : Kˣ) : (t : K) ^ 2 * ((t : K) ^ (2 : ℤ))⁻¹ = 1 := by
-  norm_cast
-  field_simp
-
-theorem fuu (t : Kˣ) : (t : K) ^ 2 * (t : K)⁻¹ = (t : K) := by
-  field_simp
-  rw [pow_two (t : K)]
-
-theorem fu₂ (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) = (t : K)⁻¹ := by
-  have : (t : K) ^ (2 : ℤ) = (t : K) ^ (2 : ℕ) := by
-    norm_cast
-  rw [this, pow_two (t : K), mul_inv_rev, IsUnit.inv_mul_cancel_right]
-  exact Units.isUnit t
-
-end FieldUnit
-
-variable {L : Type*} {h e f : L} [LieRing L] [LieAlgebra K L]
+variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] {h e f : L}
 
 section AdAction
 
@@ -312,40 +288,22 @@ theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
   have : (exp_ad_e H hα he t) ((t : K)⁻¹ • h) = (t : K)⁻¹ • ((exp_ad_e H hα he t) h) := by
     apply LinearMap.map_smul
   rw [this]
+  have fu₁ : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ 2 = 1 := by
+    norm_cast
+    field_simp
+  have fu₂ : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) = (t : K)⁻¹ := by
+    have : (t : K) ^ (2 : ℤ) = (t : K) ^ (2 : ℕ) := by
+      norm_cast
+    rw [this, pow_two (t : K), mul_inv_rev, IsUnit.inv_mul_cancel_right]
+    exact Units.isUnit t
   have : (exp_ad_e H hα he t) ((t : K) ^ (-2 : ℤ) • f) =
       (t : K) ^ (-2 : ℤ) • ((exp_ad_e H hα he t) f) := by
     apply LinearMap.map_smul
   rw [this, exp_ad_e_e H hα he t, exp_ad_e_f H hα he t ht, exp_ad_e_h H hα he t ht, smul_sub,
     two_smul, smul_add, ← add_smul, add_smul, ← mul_smul, add_sub, smul_sub, smul_add, ← mul_smul,
-      ← mul_smul, zpow_neg, neg_smul, fu₁ t, fu₂ t, IsUnit.inv_mul_cancel, one_smul,
+      ← mul_smul, zpow_neg, neg_smul, fu₁, fu₂, IsUnit.inv_mul_cancel, one_smul,
         add_sub_add_left_eq_sub, sub_sub_sub_cancel_right, sub_add_cancel_right]
   exact Units.isUnit t
-
-theorem s (t : Kˣ) : -((t : K) • (2 : ℤ) • (t : K)⁻¹ • f) = -2 • f := by
-  rw [two_smul]
-  rw [smul_add]
-  rw [← mul_smul]
-  field_simp
-  simp [two_smul]
-
-theorem rr (t : Kˣ) : f + (t : K) • (h - (2 : ℤ) • (t : K)⁻¹ • f) -
-    (t : K) ^ 2 • (e + (t : K)⁻¹ • h - ((t : K) ^ (2 : ℤ))⁻¹ • f) = - (t : K) ^ 2 • e := by
-  rw [smul_sub]
-  rw [smul_sub]
-  simp
-  rw [← mul_smul]
-  rw [← mul_smul]
-  rw [fu t]
-  rw [fuu t]
-  simp
-  rw [add_sub]
-  rw [sub_sub]
-  rw [add_sub]
-  abel_nf
-  simp
-  rw [s t]
-  simp
-
 
 theorem theta_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t f = (-(t ^ (2 : ℤ)) : K) • e := by
@@ -365,14 +323,25 @@ theorem theta_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
   have : (exp_ad_f H hα hf t) ((t : K) ^ 2 • e) = (t : K) ^ 2 • (exp_ad_f H hα hf t) e := by
     apply LinearMap.map_smul
   rw [this]
-  rw [exp_ad_f_e H hα hf t ht, exp_ad_f_f H hα hf t, exp_ad_f_h H hα hf t ht]
-  simp
-  rw [rr t]
+  rw [exp_ad_f_e H hα hf t ht, exp_ad_f_f H hα hf t, exp_ad_f_h H hα hf t ht, zpow_neg]
+  have : f + (t : K) • (h - (2 : ℤ) • (t : K)⁻¹ • f) -
+      (t : K) ^ 2 • (e + (t : K)⁻¹ • h - ((t : K) ^ (2 : ℤ))⁻¹ • f) = - (t : K) ^ 2 • e := by
+    have h₁ : (t : K) ^ 2 * ((t : K) ^ (2 : ℤ))⁻¹ = 1 := by
+      norm_cast
+      field_simp
+    have h₂ : (t : K) ^ 2 * (t : K)⁻¹ = (t : K) := by
+      field_simp
+      rw [pow_two (t : K)]
+    have h₃ : ((t : K) • (2 : ℤ) • (t : K)⁻¹ • f) = 2 • f := by
+      rw [two_smul, smul_add, ← mul_smul, two_smul, IsUnit.mul_inv_cancel, one_smul]
+      exact Units.isUnit t
+    rw [smul_sub, smul_sub, smul_add, neg_smul, ← mul_smul, ← mul_smul, h₁, h₂, add_sub, sub_sub,
+      add_sub, h₃, two_smul, one_smul]
+    abel
+  rw [this]
   have : (exp_ad_e H hα he t) (-(t : K) ^ 2 • e) = -(t : K) ^ 2 • (exp_ad_e H hα he t) e := by
      apply LinearMap.map_smul
-  rw [this]
-  rw [exp_ad_e_e H hα he t]
-  simp
+  rw [this, exp_ad_e_e H hα he t, neg_smul, neg_smul]
   norm_cast
 
 
