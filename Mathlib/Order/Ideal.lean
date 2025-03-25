@@ -5,10 +5,8 @@ Authors: David Wärn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.Chain
 import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma
@@ -63,7 +61,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   /-- The ideal is upward directed. -/
   directed' : DirectedOn (· ≤ ·) carrier
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
+-- TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -366,7 +364,6 @@ instance : Lattice (Ideal P) :=
 theorem coe_sup : ↑(s ⊔ t) = { x | ∃ a ∈ s, ∃ b ∈ t, x ≤ a ⊔ b } :=
   rfl
 
--- Porting note: Modified `s ∩ t` to `↑s ∩ ↑t`.
 @[simp]
 theorem coe_inf : (↑(s ⊓ t) : Set P) = ↑s ∩ ↑t :=
   rfl

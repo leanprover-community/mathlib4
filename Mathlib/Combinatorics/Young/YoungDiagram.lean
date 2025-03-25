@@ -5,6 +5,7 @@ Authors: Jake Levinson
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.UpperLower.Basic
 
 /-!

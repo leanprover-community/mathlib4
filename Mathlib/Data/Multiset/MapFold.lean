@@ -136,6 +136,7 @@ theorem map_eq_cons [DecidableEq α] (f : α → β) (s : Multiset α) (t : Mult
 
 -- The simpNF linter says that the LHS can be simplified via `Multiset.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `H` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {s : Multiset α} :
@@ -153,11 +154,10 @@ theorem map_id (s : Multiset α) : map id s = s :=
 theorem map_id' (s : Multiset α) : map (fun x => x) s = s :=
   map_id s
 
--- Porting note: was a `simp` lemma in mathlib3
+-- `simp`-normal form lemma is `map_const'`
 theorem map_const (s : Multiset α) (b : β) : map (const α b) s = replicate (card s) b :=
   Quot.inductionOn s fun _ => congr_arg _ <| List.map_const' _ _
 
--- Porting note: was not a `simp` lemma in mathlib3 because `Function.const` was reducible
 @[simp] theorem map_const' (s : Multiset α) (b : β) : map (fun _ ↦ b) s = replicate (card s) b :=
   map_const _ _
 
@@ -186,8 +186,7 @@ theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f
 
 theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Function.Injective f) (x : α)
     (s : Multiset α) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
-  · simp
+  induction s using Multiset.induction_on with | empty => simp | cons y s ih => ?_
   by_cases hxy : y = x
   · cases hxy
     simp
@@ -195,8 +194,7 @@ theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Functi
 
 theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
     (s : Multiset α) {x : α} (h : x ∈ s) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
-  · simp
+  induction s using Multiset.induction_on with | empty => simp | cons y s ih => ?_
   rcases eq_or_ne y x with rfl | hxy
   · simp
   replace h : x ∈ s := by simpa [hxy.symm] using h
@@ -205,9 +203,10 @@ theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
 theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f) :
     Function.Surjective (map f) := by
   intro s
-  induction' s using Multiset.induction_on with x s ih
-  · exact ⟨0, map_zero _⟩
-  · obtain ⟨y, rfl⟩ := hf x
+  induction s using Multiset.induction_on with
+  | empty => exact ⟨0, map_zero _⟩
+  | cons x s ih =>
+    obtain ⟨y, rfl⟩ := hf x
     obtain ⟨t, rfl⟩ := ih
     exact ⟨y ::ₘ t, map_cons _ _ _⟩
 
@@ -327,7 +326,7 @@ theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (s) :
     ∀ H, pmap f s H = s.attach.map fun x => f x.1 (H _ x.2) :=
   Quot.inductionOn s fun l H => congr_arg _ <| List.pmap_eq_map_attach f l H
 
--- @[simp] -- Porting note: Left hand does not simplify
+@[simp]
 theorem attach_map_val' (s : Multiset α) (f : α → β) : (s.attach.map fun i => f i.val) = s.map f :=
   Quot.inductionOn s fun l => congr_arg _ <| List.attach_map_val l f
 

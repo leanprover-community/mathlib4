@@ -73,6 +73,9 @@ namespace ihom
 def adjunction : tensorLeft A ⊣ ihom A :=
   Closed.adj
 
+instance : (tensorLeft A).IsLeftAdjoint  :=
+  (ihom.adjunction A).isLeftAdjoint
+
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
   (ihom.adjunction A).counit
@@ -493,6 +496,5 @@ lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) 
 end OrdinaryEnriched
 
 end MonoidalClosed
-attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
-  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
+
 end CategoryTheory

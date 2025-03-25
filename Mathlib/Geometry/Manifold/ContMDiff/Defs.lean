@@ -306,6 +306,45 @@ theorem contMDiffAt_iff_target {x : M} :
 
 @[deprecated (since := "2024-11-20")] alias smoothAt_iff_target := contMDiffAt_iff_target
 
+/-- One can reformulate being `Cⁿ` within a set at a point as being `Cⁿ` in the source space when
+composing with the extended chart. -/
+theorem contMDiffWithinAt_iff_source :
+    ContMDiffWithinAt I I' n f s x ↔
+      ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm)
+        ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff']
+  have : ContinuousWithinAt f s x
+      ↔ ContinuousWithinAt (f ∘ ↑(extChartAt I x).symm) (↑(extChartAt I x).symm ⁻¹' s ∩ range ↑I)
+        (extChartAt I x x) := by
+    refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+    · apply h.comp_of_eq
+      · exact (continuousAt_extChartAt_symm x).continuousWithinAt
+      · exact (mapsTo_preimage _ _).mono_left inter_subset_left
+      · exact extChartAt_to_inv x
+    · rw [← continuousWithinAt_inter (extChartAt_source_mem_nhds (I := I) x)]
+      have : ContinuousWithinAt ((f ∘ ↑(extChartAt I x).symm) ∘ ↑(extChartAt I x))
+          (s ∩ (extChartAt I x).source) x := by
+        apply h.comp (continuousAt_extChartAt x).continuousWithinAt
+        intro y hy
+        have : (chartAt H x).symm ((chartAt H x) y) = y :=
+          PartialHomeomorph.left_inv _ (by simpa using hy.2)
+        simpa [this] using hy.1
+      apply this.congr
+      · intro y hy
+        have : (chartAt H x).symm ((chartAt H x) y) = y :=
+          PartialHomeomorph.left_inv _ (by simpa using hy.2)
+        simp [this]
+      · simp
+  rw [← this]
+  simp only [ContDiffWithinAtProp, mfld_simps, preimage_comp, comp_assoc]
+
+/-- One can reformulate being `Cⁿ` at a point as being `Cⁿ` in the source space when
+composing with the extended chart. -/
+theorem contMDiffAt_iff_source :
+    ContMDiffAt I I' n f x ↔
+      ContMDiffWithinAt 𝓘(𝕜, E) I' n (f ∘ (extChartAt I x).symm) (range I) (extChartAt I x x) := by
+  rw [← contMDiffWithinAt_univ, contMDiffWithinAt_iff_source]
+  simp
 
 section IsManifold
 

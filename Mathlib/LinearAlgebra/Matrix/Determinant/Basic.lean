@@ -255,7 +255,7 @@ theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n
     _ = c ^ Fintype.card n * det A := by simp
 
 @[simp]
-theorem det_smul_of_tower {α} [Monoid α] [DistribMulAction α R] [IsScalarTower α R R]
+theorem det_smul_of_tower {α} [Monoid α] [MulAction α R] [IsScalarTower α R R]
     [SMulCommClass α R R] (c : α) (A : Matrix n n R) :
     det (c • A) = c ^ Fintype.card n • det A := by
   rw [← smul_one_smul R c A, det_smul, smul_pow, one_pow, smul_mul_assoc, one_mul]
@@ -605,7 +605,7 @@ theorem det_blockDiagonal {o : Type*} [Fintype o] [DecidableEq o] (M : o → Mat
           prodCongrLeft (fun k => σ k (Finset.mem_univ _)) (k, x) =
             prodCongrLeft (fun k => σ' k (Finset.mem_univ _)) (k, x) :=
         fun k x => by rw [eq]
-      simp only [prodCongrLeft_apply, Prod.mk.inj_iff] at this
+      simp only [prodCongrLeft_apply, Prod.mk_inj] at this
       exact (this k x).1
     · intro σ hσ
       rw [mem_preserving_snd] at hσ

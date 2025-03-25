@@ -122,7 +122,7 @@ theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x :
 
 namespace Submonoid
 
-/-- The actual `Submonoid` obtained from an element of a `SubmonoidClass`-/
+/-- The actual `Submonoid` obtained from an element of a `SubmonoidClass` -/
 @[to_additive "The actual `AddSubmonoid` obtained from an element of a `AddSubmonoidClass`"]
 def ofClass {S M : Type*} [Monoid M] [SetLike S M] [SubmonoidClass S M] (s : S) : Submonoid M :=
   ⟨⟨s, MulMemClass.mul_mem⟩, OneMemClass.one_mem s⟩
@@ -149,10 +149,7 @@ initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=
   Iff.rfl
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[to_additive (attr := simp, nolint simpNF)] -- See https://github.com/leanprover-community/mathlib4/issues/10675
+@[to_additive]
 theorem mem_carrier {s : Submonoid M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 

@@ -548,9 +548,120 @@ noncomputable def Submodule.smithNormalForm [Finite ι] (b : Basis ι R M) (N : 
       Submodule.comapSubtypeEquivOfLe_apply_coe, Basis.reindex_apply,
       Equiv.toEmbedding_apply, Function.Embedding.trans_apply, Equiv.symm_apply_apply]⟩
 
+section full_rank
+
+variable {N : Submodule R M}
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix.
+
+See `Submodule.exists_smith_normal_form_of_rank_eq` for a version that states the
+existence of the basis.
+-/
+noncomputable def Submodule.smithNormalFormOfRankEq [Fintype ι] (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) :
+    Basis.SmithNormalForm N ι (Fintype.card ι) :=
+  let ⟨n, bM, bN, f, a, snf⟩ := N.smithNormalForm b
+  let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by
+    simp only [Fintype.card_fin, ← Module.finrank_eq_card_basis bM, ← h,
+      Module.finrank_eq_card_basis bN])
+  ⟨bM, bN.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
+    simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
+      (· ∘ ·)]⟩
+
+variable [Finite ι]
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix.
+
+See also `Submodule.smithNormalFormOfRankEq` for a version of this theorem that returns
+a `Basis.SmithNormalForm`.
+-/
+theorem Submodule.exists_smith_normal_form_of_rank_eq (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) :
+    ∃ (b' : Basis ι R M) (a : ι → R) (ab' : Basis ι R N), ∀ i, (ab' i : M) = a i • b' i := by
+  cases nonempty_fintype ι
+  let ⟨bM, bN, f, a, snf⟩ := N.smithNormalFormOfRankEq b h
+  let e : Fin (Fintype.card ι) ≃ ι :=
+    Equiv.ofBijective f
+      ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
+  have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
+  exact
+    ⟨bM, a ∘ e.symm, bN.reindex e, fun i ↦ by
+      simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
+          restrictScalarsEquiv_apply, Basis.coe_reindex, (· ∘ ·)]⟩
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix; this is the basis for `M`. See:
+* `Submodule.smithNormalFormBotBasis` for the basis on `N`,
+* `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
+-/
+noncomputable def Submodule.smithNormalFormTopBasis (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R M :=
+  (exists_smith_normal_form_of_rank_eq b h).choose
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix; this is the basis for `N`. See:
+* `Submodule.smithNormalFormTopBasis` for the basis on `M`,
+* `Submodule.smithNormalFormCoeffs` for the entries of the diagonal matrix
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
+-/
+noncomputable def Submodule.smithNormalFormBotBasis (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) : Basis ι R N :=
+  (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose
+
+/--
+If `M` is finite free over a PID `R`, then for any submodule `N` of the same rank,
+we can find basis for `M` and `N` with the same indexing such that the inclusion map
+is a square diagonal matrix; these are the entries of the diagonal matrix. See:
+* `Submodule.smithNormalFormTopBasis` for the basis on `M`,
+* `Submodule.smithNormalFormBotBasis` for the basis on `N`,
+* `Submodule.smithNormalFormBotBasis_def` for the proof that the inclusion map
+  forms a square diagonal matrix.
+-/
+noncomputable def Submodule.smithNormalFormCoeffs (b : Basis ι R M)
+  (h : Module.finrank R N = Module.finrank R M) : ι → R :=
+  (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose
+
+@[simp]
+theorem Submodule.smithNormalFormBotBasis_def (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) :
+    ∀ i, (smithNormalFormBotBasis b h i : M) =
+      smithNormalFormCoeffs b h i • smithNormalFormTopBasis b h i :=
+  (exists_smith_normal_form_of_rank_eq b h).choose_spec.choose_spec.choose_spec
+
+@[simp]
+theorem Submodule.smithNormalFormCoeffs_ne_zero (b : Basis ι R M)
+    (h : Module.finrank R N = Module.finrank R M) (i : ι) :
+    smithNormalFormCoeffs b h i ≠ 0 := by
+  intro hi
+  apply Basis.ne_zero (smithNormalFormBotBasis b h) i
+  refine Subtype.coe_injective ?_
+  simp [hi]
+
+end full_rank
+
 section Ideal
 
 variable {S : Type*} [CommRing S] [IsDomain S] [Algebra R S]
+
+theorem Ideal.finrank_eq_finrank [Finite ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
+    Module.finrank R (restrictScalars R I) = Module.finrank R S := by
+  obtain ⟨_, bS, bI, _, _, _⟩ := (I.restrictScalars R).smithNormalForm b
+  cases nonempty_fintype ι
+  rw [Module.finrank_eq_card_basis bS, Module.finrank_eq_card_basis bI]
+  exact Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
@@ -564,12 +675,7 @@ This is a strengthening of `Submodule.basisOfPid`.
 -/
 noncomputable def Ideal.smithNormalForm [Fintype ι] (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
     Basis.SmithNormalForm (I.restrictScalars R) ι (Fintype.card ι) :=
-  let ⟨n, bS, bI, f, a, snf⟩ := (I.restrictScalars R).smithNormalForm b
-  have eq := Ideal.rank_eq bS hI (bI.map ((restrictScalarsEquiv R S S I).restrictScalars R))
-  let e : Fin n ≃ Fin (Fintype.card ι) := Fintype.equivOfCardEq (by rw [eq, Fintype.card_fin])
-  ⟨bS, bI.reindex e, e.symm.toEmbedding.trans f, a ∘ e.symm, fun i ↦ by
-    simp only [snf, Basis.coe_reindex, Function.Embedding.trans_apply, Equiv.toEmbedding_apply,
-      (· ∘ ·)]⟩
+  Submodule.smithNormalFormOfRankEq b (finrank_eq_finrank b I hI)
 
 variable [Finite ι]
 
@@ -585,26 +691,16 @@ The definitions `Ideal.ringBasis`, `Ideal.selfBasis`, `Ideal.smithCoeffs` are (n
 choices of values for this existential quantifier.
 -/
 theorem Ideal.exists_smith_normal_form (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) :
-    ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i := by
-  cases nonempty_fintype ι
-  let ⟨bS, bI, f, a, snf⟩ := I.smithNormalForm b hI
-  let e : Fin (Fintype.card ι) ≃ ι :=
-    Equiv.ofBijective f
-      ((Fintype.bijective_iff_injective_and_card f).mpr ⟨f.injective, Fintype.card_fin _⟩)
-  have fe : ∀ i, f (e.symm i) = i := e.apply_symm_apply
-  exact
-    ⟨bS, a ∘ e.symm, (bI.reindex e).map ((restrictScalarsEquiv R S _ _).restrictScalars R),
-      fun i ↦ by
-        simp only [snf, fe, Basis.map_apply, LinearEquiv.restrictScalars_apply R,
-          Submodule.restrictScalarsEquiv_apply, Basis.coe_reindex, (· ∘ ·)]⟩
+    ∃ (b' : Basis ι R S) (a : ι → R) (ab' : Basis ι R I), ∀ i, (ab' i : S) = a i • b' i :=
+  Submodule.exists_smith_normal_form_of_rank_eq b (finrank_eq_finrank b I hI)
 
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; this is the basis for `S`.
-See `Ideal.selfBasis` for the basis on `I`,
-see `Ideal.smithCoeffs` for the entries of the diagonal matrix
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; this is the basis for `S`. See
+* `Ideal.selfBasis` for the basis on `I`,
+* `Ideal.smithCoeffs` for the entries of the diagonal matrix
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R S :=
   (Ideal.exists_smith_normal_form b I hI).choose
@@ -612,10 +708,10 @@ noncomputable def Ideal.ringBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; this is the basis for `I`.
-See `Ideal.ringBasis` for the basis on `S`,
-see `Ideal.smithCoeffs` for the entries of the diagonal matrix
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; this is the basis for `I`. See:
+* `Ideal.ringBasis` for the basis on `S`,
+* `Ideal.smithCoeffs` for the entries of the diagonal matrix
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : Basis ι R I :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose_spec.choose
@@ -623,10 +719,10 @@ noncomputable def Ideal.selfBasis (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
 /-- If `S` a finite-dimensional ring extension of a PID `R` which is free as an `R`-module,
 then any nonzero `S`-ideal `I` is free as an `R`-submodule of `S`, and we can
 find a basis for `S` and `I` such that the inclusion map is a square diagonal
-matrix; these are the entries of the diagonal matrix.
-See `Ideal.ringBasis` for the basis on `S`,
-see `Ideal.selfBasis` for the basis on `I`,
-and `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
+matrix; these are the entries of the diagonal matrix. See :
+* `Ideal.ringBasis` for the basis on `S`,
+* `Ideal.selfBasis` for the basis on `I`,
+* `Ideal.selfBasis_def` for the proof that the inclusion map forms a square diagonal matrix.
 -/
 noncomputable def Ideal.smithCoeffs (b : Basis ι R S) (I : Ideal S) (hI : I ≠ ⊥) : ι → R :=
   (Ideal.exists_smith_normal_form b I hI).choose_spec.choose

@@ -11,7 +11,7 @@ sudo apt install -y git curl
 
 # Note that we're using `-y` here,
 # unlike the standard `curl [...] -sSf | sh` installation method.
-wget https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh
+wget https://elan.lean-lang.org/elan-init.sh
 bash elan-init.sh -y
 rm elan-init.sh
 

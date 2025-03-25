@@ -386,7 +386,7 @@ def ofSubsingleton [Subsingleton ι] (i : ι) : (M →ₗ[R] N) ≃ (M [⋀^ι]�
 variable (ι) {N}
 
 /-- The constant map is alternating when `ι` is empty. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def constOfIsEmpty [IsEmpty ι] (m : N) : M [⋀^ι]→ₗ[R] N :=
   { MultilinearMap.constOfIsEmpty R _ m with
     toFun := Function.const _ m
@@ -434,7 +434,7 @@ theorem compAlternatingMap_zero (g : N →ₗ[R] N₂) :
   AlternatingMap.ext fun _ => map_zero g
 
 @[simp]
-theorem zero_compAlternatingMap (f: M [⋀^ι]→ₗ[R] N) :
+theorem zero_compAlternatingMap (f : M [⋀^ι]→ₗ[R] N) :
     (0 : N →ₗ[R] N₂).compAlternatingMap f = 0 := rfl
 
 @[simp]
@@ -443,7 +443,7 @@ theorem compAlternatingMap_add (g : N →ₗ[R] N₂) (f₁ f₂ : M [⋀^ι]→
   AlternatingMap.ext fun _ => map_add g _ _
 
 @[simp]
-theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f: M [⋀^ι]→ₗ[R] N) :
+theorem add_compAlternatingMap (g₁ g₂ : N →ₗ[R] N₂) (f : M [⋀^ι]→ₗ[R] N) :
     (g₁ + g₂).compAlternatingMap f = g₁.compAlternatingMap f + g₂.compAlternatingMap f := rfl
 
 @[simp]
@@ -636,10 +636,9 @@ theorem map_swap [DecidableEq ι] {i j : ι} (hij : i ≠ j) : g (v ∘ Equiv.sw
 
 theorem map_perm [DecidableEq ι] [Fintype ι] (v : ι → M) (σ : Equiv.Perm ι) :
     g (v ∘ σ) = Equiv.Perm.sign σ • g v := by
-  -- Porting note: `apply` → `induction`
-  induction σ using Equiv.Perm.swap_induction_on'
-  · simp
-  · rename_i s x y hxy hI
+  induction σ using Equiv.Perm.swap_induction_on' with
+  | one => simp
+  | mul_swap s x y hxy hI =>
     -- Porting note: `← Function.comp_assoc` & `-Equiv.Perm.sign_swap'` are required.
     simpa [← Function.comp_assoc, g.map_swap (v ∘ s) hxy,
       Equiv.Perm.sign_swap hxy, -Equiv.Perm.sign_swap'] using hI

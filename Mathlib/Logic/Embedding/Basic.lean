@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Prod.PProd
 import Mathlib.Logic.Equiv.Basic
 
@@ -192,12 +193,12 @@ lemma setValue_right_apply_eq {α β} (f : α ↪ β) (a c : α) [∀ a', Decida
   simp [setValue]
 
 /-- Embedding into `Option α` using `some`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def some {α} : α ↪ Option α :=
   ⟨some, Option.some_injective α⟩
 
 /-- A version of `Option.map` for `Function.Embedding`s. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def optionMap {α β} (f : α ↪ β) : Option α ↪ Option β :=
   ⟨Option.map f, Option.map_injective f.injective⟩
 
@@ -363,7 +364,6 @@ def subtypeInjectiveEquivEmbedding (α β : Sort*) :
   left_inv _ := rfl
   right_inv _ := rfl
 
--- Porting note: in Lean 3 this had `@[congr]`
 /-- If `α₁ ≃ α₂` and `β₁ ≃ β₂`, then the type of embeddings `α₁ ↪ β₁`
 is equivalent to the type of embeddings `α₂ ↪ β₂`. -/
 @[simps apply]

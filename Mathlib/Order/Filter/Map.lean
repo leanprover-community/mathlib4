@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Control.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -59,6 +59,7 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
 
 -- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
@@ -109,9 +110,12 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
   mem_comap'
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
-lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
+lemma mem_comap_prodMk {x : α} {s : Set β} {F : Filter (α × β)} :
     s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F := by
   simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+
+@[deprecated (since := "2025-03-10")]
+alias mem_comap_prod_mk := mem_comap_prodMk
 
 @[simp]
 theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a, f a = b → p a :=

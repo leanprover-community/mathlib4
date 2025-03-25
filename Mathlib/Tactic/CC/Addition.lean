@@ -275,9 +275,9 @@ def insertEraseROccs (e lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
   match e with
   | .apps _ args =>
     insertEraseROcc args[0]! lhs inLHS isInsert
-    for i in [1:args.size] do
-      if args[i]! != args[i - 1]! then
-        insertEraseROcc args[i]! lhs inLHS isInsert
+    for h : i in [1:args.size] do
+      if args[i] != args[i - 1]! then
+        insertEraseROcc args[i] lhs inLHS isInsert
   | .ofExpr e => insertEraseROcc e lhs inLHS isInsert
 
 /-- Insert `lhs` to the occurrences of arguments of `e` on an equality in `acR`. -/

@@ -130,9 +130,9 @@ theorem sublist_of_subperm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp
   let ⟨_, h, h'⟩ := hp
   rwa [← eq_of_perm_of_sorted h (hs₂.sublist h') hs₁]
 
-@[simp 1100] -- Porting note: higher priority for linter
-theorem sorted_singleton (a : α) : Sorted r [a] :=
-  pairwise_singleton _ _
+@[simp 1100] -- Higher priority shortcut lemma.
+theorem sorted_singleton (a : α) : Sorted r [a] := by
+  simp
 
 theorem sorted_lt_range (n : ℕ) : Sorted (· < ·) (range n) := by
   rw [Sorted, pairwise_iff_get]
@@ -182,12 +182,23 @@ variable [Preorder α]
 strictly monotone. -/
 @[simp] theorem sorted_lt_ofFn_iff : (ofFn f).Sorted (· < ·) ↔ StrictMono f := sorted_ofFn_iff
 
+/-- The list `List.ofFn f` is strictly sorted with respect to `(· ≥ ·)` if and only if `f` is
+strictly antitone. -/
+@[simp] theorem sorted_gt_ofFn_iff : (ofFn f).Sorted (· > ·) ↔ StrictAnti f := sorted_ofFn_iff
+
 /-- The list `List.ofFn f` is sorted with respect to `(· ≤ ·)` if and only if `f` is monotone. -/
 @[simp] theorem sorted_le_ofFn_iff : (ofFn f).Sorted (· ≤ ·) ↔ Monotone f :=
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
 /-- The list obtained from a monotone tuple is sorted. -/
 alias ⟨_, _root_.Monotone.ofFn_sorted⟩ := sorted_le_ofFn_iff
+
+/-- The list `List.ofFn f` is sorted with respect to `(· ≥ ·)` if and only if `f` is antitone. -/
+@[simp] theorem sorted_ge_ofFn_iff : (ofFn f).Sorted (· ≥ ·) ↔ Antitone f :=
+  sorted_ofFn_iff.trans antitone_iff_forall_lt.symm
+
+/-- The list obtained from an antitone tuple is sorted. -/
+alias ⟨_, _root_.Antitone.ofFn_sorted⟩ := sorted_ge_ofFn_iff
 
 end Monotone
 
@@ -532,10 +543,7 @@ theorem Sorted.orderedInsert (a : α) : ∀ l, Sorted r l → Sorted r (orderedI
   | [], _ => sorted_singleton a
   | b :: l, h => by
     by_cases h' : a ≼ b
-    · -- Porting note: was
-      -- `simpa [orderedInsert, h', h] using fun b' bm => trans h' (rel_of_sorted_cons h _ bm)`
-      rw [List.orderedInsert, if_pos h', sorted_cons]
-      exact ⟨forall_mem_cons.2 ⟨h', fun c hc => _root_.trans h' (rel_of_sorted_cons h _ hc)⟩, h⟩
+    · simpa [orderedInsert, h', h] using fun b' bm => _root_.trans h' (rel_of_sorted_cons h _ bm)
     · suffices ∀ b' : α, b' ∈ List.orderedInsert r a l → r b b' by
         simpa [orderedInsert, h', h.of_cons.orderedInsert a l]
       intro b' bm
