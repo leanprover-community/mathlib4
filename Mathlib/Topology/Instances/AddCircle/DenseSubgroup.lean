@@ -26,7 +26,7 @@ so we don't need to add `b ≠ 0` as an assumption. -/
 theorem dense_addSubgroupClosure_pair_iff {a b : ℝ} :
     Dense (AddSubgroup.closure {a, b} : Set ℝ) ↔ Irrational (a / b) := by
   rcases eq_or_ne b 0 with rfl | hb
-  · rw [insert_eq, union_comm, ← insert_eq]
+  · rw [pair_comm]
     simpa [← AddSubgroup.zmultiples_eq_closure] using not_denseRange_zsmul
   constructor
   · rintro hd ⟨r, hr⟩
