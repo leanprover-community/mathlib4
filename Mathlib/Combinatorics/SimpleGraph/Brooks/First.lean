@@ -138,6 +138,12 @@ lemma dropUntil_dropUntil {w x : α} [DecidableEq α] (p : G.Walk u v) (hw : w �
   rw [← dropUntil_append_of_mem_right _ _ hxn hx]
   simp_rw [take_spec]
 
+lemma dropUntil_of_drop {u v x : α} {w : G.Walk u v} {n : ℕ}
+    [DecidableEq α] (hx : x ∈ (w.drop n).support) (hxn : x ∉ (w.take n).support):
+    (w.drop n).dropUntil _ hx = (w.dropUntil x ((support_drop_subset _ _) hx)) := by
+  rw [← dropUntil_append_of_mem_right (w.take n) _ hxn hx]
+  simp_rw [take_append_drop]
+
 /-- Given a walk that starts in a set S but ends in Sᶜ, there is a first vertex of the walk in the
  set. -/
 lemma exists_getVert_last {u v y : α} {S : Set α} [DecidableEq α] (w : G.Walk u v)
