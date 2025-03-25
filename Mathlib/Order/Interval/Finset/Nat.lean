@@ -27,29 +27,29 @@ variable (a b c : ℕ)
 namespace Nat
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
-  finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩
-  finsetIco a b := ⟨List.range' a (b - a), List.nodup_range' _ _⟩
-  finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩
-  finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range' _ _⟩
+  finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range'⟩
+  finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
+  finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩
+  finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩
   finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
   finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
   finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
   finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
 
-theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
+theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
 
-theorem Ico_eq_range' : Ico a b = ⟨List.range' a (b - a), List.nodup_range' _ _⟩ :=
+theorem Ico_eq_range' : Ico a b = ⟨List.range' a (b - a), List.nodup_range'⟩ :=
   rfl
 
-theorem Ioc_eq_range' : Ioc a b = ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩ :=
+theorem Ioc_eq_range' : Ioc a b = ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩ :=
   rfl
 
-theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup_range' _ _⟩ :=
+theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩ :=
   rfl
 
 theorem uIcc_eq_range' :
-    uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range' _ _⟩ := rfl
+    uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range'⟩ := rfl
 
 theorem Iio_eq_range : Iio = range := by
   ext b x
