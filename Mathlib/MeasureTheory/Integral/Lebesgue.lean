@@ -800,6 +800,14 @@ theorem lintegral_indicator_one {s : Set α} (hs : MeasurableSet s) :
     ∫⁻ a, s.indicator 1 a ∂μ = μ s :=
   (lintegral_indicator_const hs _).trans <| one_mul _
 
+theorem measure_eq_measure_iff_lintegral_eq_lintegral (ν : Measure α) :
+    μ = ν ↔ ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν := by
+  refine ⟨fun h _ _ ↦ by rw[h], ?_⟩
+  intro h
+  ext s hs
+  simp[← lintegral_indicator_one hs, h]
+  exact h (s.indicator 1) (by apply (measurable_indicator_const_iff 1).mpr hs)
+
 /-- A version of **Markov's inequality** for two functions. It doesn't follow from the standard
 Markov's inequality because we only assume measurability of `g`, not `f`. -/
 theorem lintegral_add_mul_meas_add_le_le_lintegral {f g : α → ℝ≥0∞} (hle : f ≤ᵐ[μ] g)

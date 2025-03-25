@@ -36,6 +36,13 @@ scoped[MeasureTheory] infix:80 " ∗ " => MeasureTheory.Measure.mconv
 /-- Scoped notation for the additive convolution of measures. -/
 scoped[MeasureTheory] infix:80 " ∗ " => MeasureTheory.Measure.conv
 
+@[to_additive lintegral_conv]
+theorem lintegral_mconv [MeasurableMul₂ M] {μ : Measure M} {ν : Measure M} [SFinite ν]
+    {f : M → ℝ≥0∞} (hf : Measurable f):
+    ∫⁻ z, f z ∂(μ ∗ ν) = ∫⁻ x, ∫⁻ y, f (x * y) ∂ν ∂μ := by
+  rw[mconv, lintegral_map hf measurable_mul, lintegral_prod]
+  fun_prop
+
 /-- Convolution of the dirac measure at 1 with a measure μ returns μ. -/
 @[to_additive (attr := simp)]
 theorem dirac_one_mconv [MeasurableMul₂ M] (μ : Measure M) [SFinite μ] :
@@ -55,13 +62,13 @@ theorem mconv_dirac_one [MeasurableMul₂ M]
   fun_prop
 
 /-- Convolution of the zero measure with a measure μ returns the zero measure. -/
-@[to_additive (attr := simp) conv_zero]
+@[to_additive (attr := simp) zero_conv]
 theorem mconv_zero (μ : Measure M) : (0 : Measure M) ∗ μ = (0 : Measure M) := by
   unfold mconv
   simp
 
 /-- Convolution of a measure μ with the zero measure returns the zero measure. -/
-@[to_additive (attr := simp) zero_conv]
+@[to_additive (attr := simp) conv_zero]
 theorem zero_mconv (μ : Measure M) : μ ∗ (0 : Measure M) = (0 : Measure M) := by
   unfold mconv
   simp
@@ -101,6 +108,20 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
     unfold mconv
     exact IsFiniteMeasure.measure_univ_lt_top
   exact {measure_univ_lt_top := h}
+
+/-- Convolution is associative -/
+@[to_additive conv_assoc]
+theorem mconv_assoc [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M)
+    [SFinite ν] [SFinite ρ] :
+    (μ ∗ ν) ∗ ρ = μ ∗ (ν ∗ ρ) := by
+  rw[measure_eq_measure_iff_lintegral_eq_lintegral]
+  intro f hf
+  repeat rw[lintegral_mconv (by first | fun_prop | apply Measurable.lintegral_prod_right; fun_prop)]
+  refine lintegral_congr (fun x ↦ ?_)
+  rw[lintegral_mconv (by fun_prop)]
+  repeat refine lintegral_congr (fun x ↦ ?_)
+  apply congr_arg
+  simp [mul_assoc]
 
 @[to_additive probabilitymeasure_of_probabilitymeasures_conv]
 instance probabilitymeasure_of_probabilitymeasures_mconv (μ : Measure M) (ν : Measure M)
