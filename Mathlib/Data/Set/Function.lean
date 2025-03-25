@@ -492,8 +492,8 @@ lemma SurjOn.of_comp (h : SurjOn (g ∘ f) s p) (hr : MapsTo f s t) : SurjOn g t
   obtain ⟨x, hx, rfl⟩ := h hz
   exact ⟨f x, hr hx, rfl⟩
 
-lemma SurjOn.comp_iff : SurjOn (g ∘ f) s p ↔ SurjOn g (f '' s) p :=
-  ⟨fun h ↦ of_comp h <| mapsTo_image f s, fun h ↦ comp h <| surjOn_image _ _⟩
+lemma surjOn_comp_iff : SurjOn (g ∘ f) s p ↔ SurjOn g (f '' s) p :=
+  ⟨fun h ↦ h.of_comp <| mapsTo_image f s, fun h ↦ h.comp <| surjOn_image _ _⟩
 
 lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, SurjOn f^[n] s s
   | 0 => surjOn_id _
@@ -633,7 +633,7 @@ theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :
 /-- If `f : α → β` and `g : β → γ` and if `f` is injective on `s`, then `f ∘ g` is a bijection
 on `s` iff  `g` is a bijection on `f '' s`. -/
 theorem bijOn_comp_iff (hf : InjOn f s) : BijOn (g ∘ f) s p ↔ BijOn g (f '' s) p := by
-  simp only [BijOn, InjOn.comp_iff, SurjOn.comp_iff, mapsTo_image_iff, hf]
+  simp only [BijOn, InjOn.comp_iff, surjOn_comp_iff, mapsTo_image_iff, hf]
 
 /--
 If we have a commutative square
