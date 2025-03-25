@@ -246,7 +246,7 @@ noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
   if hι : Nonempty ι then
     basisOfLinearIndependentOfCardEqFinrank hb (Module.finrank_fintype_fun_eq_card K).symm
   else
-    have : IsEmpty ι := not_nonempty_iff.mp hι
+    haveI : IsEmpty ι := not_nonempty_iff.mp hι
     Basis.empty _
 
 open Classical in
