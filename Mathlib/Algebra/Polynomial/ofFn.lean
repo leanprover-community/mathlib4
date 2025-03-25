@@ -89,10 +89,8 @@ theorem ofFn_eq_sum_monomial {n : ℕ} (v : Fin n → R) : ofFn n v =
   by_cases h : n = 0
   · subst h
     simp [ofFn]
-  · rw [as_sum_range' (ofFn n v) n <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr h) v,
-      Finset.sum_range]
-    congr
-    simp
+  · rw [as_sum_range' (ofFn n v) n <| ofFn_natDegree_lt (Nat.one_le_iff_ne_zero.mpr h) v]
+    simp [Finset.sum_range]
 
 theorem toFn_comp_ofFn_eq_id (n : ℕ) (v : Fin n → R) : toFn n (ofFn n v) = v := by
   simp [toFn, ofFn, LinearMap.pi]
@@ -108,10 +106,8 @@ theorem ofFn_comp_toFn_eq_id_of_natDegree_lt {n : ℕ} {p : R [X]} (h_deg : p.na
   ext i
   by_cases h : i < n
   · simp [h, toFn]
-  · simp only [ofFn, toFn, LinearMap.coe_mk, AddHom.coe_mk, coeff_ofFinsupp, List.toFinsupp_apply,
-    List.getD_eq_getElem?_getD, List.getElem?_ofFn, h, ↓reduceDIte, Option.getD_none]
-    apply (coeff_eq_zero_of_natDegree_lt _).symm
-    omega
+  · have : p.coeff i = 0 := coeff_eq_zero_of_natDegree_lt <| by omega
+    simp_all
 
 end ofFn
 
