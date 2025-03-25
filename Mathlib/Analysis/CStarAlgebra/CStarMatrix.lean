@@ -182,7 +182,7 @@ instance instDistribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (CStarMatrix m n A) :=
   Pi.module _ _ _
 
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 := rfl
 
 @[simp] theorem add_apply [Add A] (M N : CStarMatrix m n A) (i : m) (j : n) :

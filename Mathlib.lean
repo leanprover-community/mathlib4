@@ -354,6 +354,7 @@ import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.BigOperators
 import Mathlib.Algebra.Group.Pointwise.Finset.Density
 import Mathlib.Algebra.Group.Pointwise.Finset.Interval
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
@@ -430,6 +431,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.GroupWithZero.Indicator
@@ -941,6 +943,7 @@ import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.Algebra.Polynomial.SumIteratedDerivative
 import Mathlib.Algebra.Polynomial.Taylor
 import Mathlib.Algebra.Polynomial.UnitTrinomial
+import Mathlib.Algebra.Polynomial.ofFn
 import Mathlib.Algebra.PresentedMonoid.Basic
 import Mathlib.Algebra.Prime.Defs
 import Mathlib.Algebra.Prime.Lemmas
@@ -1188,6 +1191,7 @@ import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialObject.Split
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Boundary
+import Mathlib.AlgebraicTopology.SimplicialSet.CategoryWithFibrations
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.Degenerate
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
@@ -1924,6 +1928,7 @@ import Mathlib.CategoryTheory.Enriched.HomCongr
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalLimits
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalProducts
 import Mathlib.CategoryTheory.Enriched.Limits.HasConicalPullbacks
+import Mathlib.CategoryTheory.Enriched.Limits.HasConicalTerminal
 import Mathlib.CategoryTheory.Enriched.Opposite
 import Mathlib.CategoryTheory.Enriched.Ordinary.Basic
 import Mathlib.CategoryTheory.EpiMono
@@ -2991,6 +2996,7 @@ import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
 import Mathlib.Data.Matroid.Loop
 import Mathlib.Data.Matroid.Map
+import Mathlib.Data.Matroid.Minor.Basic
 import Mathlib.Data.Matroid.Rank.Cardinal
 import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.Data.Matroid.Restrict
@@ -3197,7 +3203,6 @@ import Mathlib.Data.Semiquot
 import Mathlib.Data.Seq.Computation
 import Mathlib.Data.Seq.Parallel
 import Mathlib.Data.Seq.Seq
-import Mathlib.Data.Seq.WSeq
 import Mathlib.Data.Set.Accumulate
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.BoolIndicator
@@ -3292,6 +3297,7 @@ import Mathlib.Data.Vector3
 import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
+import Mathlib.Data.WSeq.Basic
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Coprime
@@ -3989,6 +3995,7 @@ import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
+import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 import Mathlib.MeasureTheory.Constructions.Projective
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
@@ -4498,6 +4505,7 @@ import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Order.Filter.Germ.OrderedMonoid
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Order.Filter.Interval
+import Mathlib.Order.Filter.IsBounded
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.ListTraverse
@@ -4530,10 +4538,12 @@ import Mathlib.Order.Heyting.Hom
 import Mathlib.Order.Heyting.Regular
 import Mathlib.Order.Hom.Basic
 import Mathlib.Order.Hom.Bounded
+import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Order.Hom.CompleteLattice
 import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Ideal
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Interval.Basic
@@ -4633,8 +4643,13 @@ import Mathlib.Order.TransfiniteIteration
 import Mathlib.Order.TypeTags
 import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
+import Mathlib.Order.UpperLower.CompleteLattice
+import Mathlib.Order.UpperLower.Fibration
 import Mathlib.Order.UpperLower.Hom
 import Mathlib.Order.UpperLower.LocallyFinite
+import Mathlib.Order.UpperLower.Principal
+import Mathlib.Order.UpperLower.Prod
 import Mathlib.Order.WellFounded
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.WellQuasiOrder
@@ -4722,6 +4737,7 @@ import Mathlib.Probability.Process.Filtration
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Process.PartitionFiltration
 import Mathlib.Probability.Process.Stopping
+import Mathlib.Probability.ProductMeasure
 import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Variance
@@ -5420,7 +5436,6 @@ import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.LinearCombination'
 import Mathlib.Tactic.LinearCombination.Lemmas
 import Mathlib.Tactic.Linter
-import Mathlib.Tactic.Linter.AdmitLinter
 import Mathlib.Tactic.Linter.DeprecatedSyntaxLinter
 import Mathlib.Tactic.Linter.DocPrime
 import Mathlib.Tactic.Linter.DocString
@@ -6042,6 +6057,7 @@ import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.UniformSpace.Dini
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.HeineCantor
