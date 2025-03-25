@@ -169,6 +169,7 @@ variable {E' E'' E''' H' H'' H''' : Type*}
 variable (M I) in
 /-- If `M` is `n`-dimensional and closed, it is a singular `n`-manifold over itself. -/
 noncomputable def refl : SingularNManifold M k I where
+  M := M
   f := id
   hf := continuous_id
 
@@ -176,6 +177,7 @@ noncomputable def refl : SingularNManifold M k I where
 a continuous map `φ : M → N` induces a singular `n`-manifold structure `(M, f ∘ φ)` on `X`. -/
 noncomputable def comap (s : SingularNManifold X k I)
     {φ : M → s.M} (hφ : Continuous φ) : SingularNManifold X k I where
+  M := M
   f := s.f ∘ φ
   hf := s.hf.comp hφ
 
