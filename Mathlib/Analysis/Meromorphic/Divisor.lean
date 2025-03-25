@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Order.WithTop.Untop0
-import Mathlib.Analysis.Meromorphic.Divisor.Basic
 import Mathlib.Analysis.Meromorphic.Order
+import Mathlib.Data.LocallyFinsupp
 
 /-!
-# The Divisor of a Meromorphic Function
+# The Divisor of a meromorphic function
 
 This file defines the divisor of a meromorphic function and proves the most basic lemmas about those
 divisors.
