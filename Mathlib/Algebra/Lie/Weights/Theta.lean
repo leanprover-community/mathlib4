@@ -166,26 +166,15 @@ section ExpAdAction
 noncomputable def exp_ad_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) : L ≃ₗ⁅K⁆ L := by
   exact LieDerivation.exp ((t : K) • (LieDerivation.ad K L e)) (nilpotent_e_map H t he hα)
 
-lemma exp_ad_e_apply (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) : exp_ad_e H hα he t =
-    LieDerivation.exp ((t : K) • LieDerivation.ad K L e) (nilpotent_e_map H t he hα) := by
-  ext x
-  convert rfl
-
 noncomputable def exp_ad_f (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) : L ≃ₗ⁅K⁆ L := by
   exact LieDerivation.exp (-(t⁻¹ : K) • (LieDerivation.ad K L f)) (nilpotent_f_map H t hf hα)
 
-lemma exp_ad_f_apply (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) : exp_ad_f H hα hf t =
-    LieDerivation.exp (-(t⁻¹ : K) • LieDerivation.ad K L f) (nilpotent_f_map H t hf hα) := by
-  ext x
-  convert rfl
-
 open Finset
-
-open scoped Nat
 
 lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) :
     (exp_ad_e H hα he t) e = e := by
-  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  dsimp [exp_ad_e]
+  rw [LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_1_ad_e_e t)
     (nilpotent_e H t he hα)
   simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
@@ -194,7 +183,8 @@ lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) :
 
 lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_e H hα he t) f = f + (t : K) • h - ((t : K) ^ 2) • e := by
-  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  dsimp [exp_ad_e]
+  rw [LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht)
     (nilpotent_e H t he hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -210,7 +200,8 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
 
 lemma exp_ad_e_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_e H hα he t) h = h - (2 : ℤ) • (t : K) • e := by
-  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  dsimp [exp_ad_e]
+  rw [LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_2_ad_e_h t ht)
     (nilpotent_e H t he hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -224,7 +215,8 @@ lemma exp_ad_e_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
 
 lemma exp_ad_f_e (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_f H hα hf t) e = e + (t⁻¹ : K) • h - (t : K) ^ (-2 : ℤ) • f := by
-  rw [exp_ad_f_apply, LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
+  dsimp [exp_ad_f]
+  rw [LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_3_ad_f_e t ht)
     (nilpotent_f H t hf hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -240,7 +232,8 @@ lemma exp_ad_f_e (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) (
 
 lemma exp_ad_f_f (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) :
     (exp_ad_f H hα hf t) f = f := by
-  rw [exp_ad_f_apply, LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
+  dsimp [exp_ad_f]
+  rw [LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_1_ad_f_f t)
     (nilpotent_f H t hf hα)
   simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
@@ -249,7 +242,8 @@ lemma exp_ad_f_f (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) :
 
 lemma exp_ad_f_h (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_f H hα hf t) h = h - (2 : ℤ) • (t⁻¹ : K) • f := by
-  rw [exp_ad_f_apply, LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
+  dsimp [exp_ad_f]
+  rw [LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_2_ad_f_h t ht)
     (nilpotent_f H t hf hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -266,12 +260,6 @@ end ExpAdAction
 noncomputable def theta (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α))
     (t : Kˣ) : L ≃ₗ⁅K⁆ L := by
   exact ((exp_ad_e H hα he t).trans (exp_ad_f H hα hf t)).trans (exp_ad_e H hα he t)
-
-lemma theta_apply (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α))
-    (t : Kˣ) : theta H hα he hf t =
-      ((exp_ad_e H hα he t) ∘ (exp_ad_f H hα hf t)) ∘ (exp_ad_e H hα he t) := by
-  ext x
-  rfl
 
 theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t e = (-(t : K) ^ (-2 : ℤ) : K) • f := by
