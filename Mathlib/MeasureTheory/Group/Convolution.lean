@@ -112,7 +112,7 @@ instance finite_of_finite_mconv (μ : Measure M) (ν : Measure M) [IsFiniteMeasu
 
 /-- Convolution is associative -/
 @[to_additive conv_assoc]
-theorem mconv_assoc [MeasurableMul₂ M] (μ : Measure M) (ν : Measure M) (ρ : Measure M)
+theorem mconv_assoc [MeasurableMul₂ M] (μ ν ρ : Measure M)
     [SFinite ν] [SFinite ρ] :
     (μ ∗ ν) ∗ ρ = μ ∗ (ν ∗ ρ) := by
   rw[measure_eq_measure_iff_lintegral_eq_lintegral]
