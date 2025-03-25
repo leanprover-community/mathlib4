@@ -55,6 +55,116 @@ lemma IsPath.eq_penultimate_of_end_mem_edge (hp : p.IsPath) (hs : s(x, v) ∈ p.
   p.snd_reverse.symm ▸
     hp.reverse.eq_snd_of_start_mem_edge (p.edges_reverse ▸ (List.mem_reverse.mpr hs))
 
+/-- Given a walk that ends in a set S, there is a first vertex of the walk in the set. -/
+lemma getVert_find_spec {u v : α} {S : Set α} [DecidablePred (· ∈ S)] (w : G.Walk u v)
+    (h : v ∈ S) : ∃ n ≤ w.length, w.getVert n ∈ S ∧ ∀ m < n, w.getVert m ∉ S :=
+  have h := w.getVert_length.symm ▸ h
+  ⟨_, Nat.find_min' _ h, Nat.find_spec ⟨_, h⟩, fun _ h' ↦ Nat.find_min _ h'⟩
+
+lemma takeUntil_append_of_mem_left  [DecidableEq α] {u v w x : α} (p : G.Walk u v) (q : G.Walk v w)
+    (hx : x ∈ p.support) :
+    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
+  induction p with
+  | nil =>
+    simp only [support_nil, List.mem_cons, List.not_mem_nil, or_false] at hx; subst_vars; simp
+  | @cons u _ _ _ p ih =>
+    rw [support_cons] at hx
+    by_cases hxu : u = x
+    · subst_vars; simp
+    · have := List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx
+      simp_rw [takeUntil_cons this hxu, cons_append]
+      rw [takeUntil_cons (subset_support_append_left _ _ this) hxu]
+      simpa using ih _ this
+
+lemma takeUntil_append_of_mem_right [DecidableEq α] {u v w x : α} (p : G.Walk u v) (q : G.Walk v w)
+    (hxn : x ∉ p.support) (hx : x ∈ q.support):
+    (p.append q).takeUntil x (subset_support_append_right _ _ hx) =
+    p.append (q.takeUntil _ hx) := by
+  induction p with
+  | nil => simp
+  | @cons u _ _ _ p ih =>
+    simp_rw [cons_append]
+    rw [support_cons] at hxn
+    rw [takeUntil_cons (subset_support_append_right _ _ hx) (List.ne_of_not_mem_cons hxn).symm]
+    simpa using ih _ (List.not_mem_of_not_mem_cons hxn) hx
+
+lemma takeUntil_takeUntil' {w x : α} [DecidableEq α] (p : G.Walk u v) (hw : w ∈ p.support)
+    (hx : x ∈ (p.takeUntil w hw).support) :
+    (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
+  rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx]
+  simp_rw [take_spec]
+
+lemma takeUntil_of_take {u v x : α} {w : G.Walk u v} {n : ℕ}
+    [DecidableEq α] (hx : x ∈ (w.take n).support) :
+    (w.take n).takeUntil _ hx = (w.takeUntil x ((support_take_subset _ _) hx)) := by
+  rw [← takeUntil_append_of_mem_left _ (w.drop n) hx]
+  simp_rw [take_append_drop]
+
+lemma length_takeUntil_le_of_mem_take {u v x : α} {w : G.Walk u v} {n : ℕ}
+    [DecidableEq α] (hx : x ∈ (w.take n).support) :
+    (w.takeUntil x ((support_take_subset _ _) hx)).length ≤ n := by
+  have := length_takeUntil_le _ hx
+  rw [takeUntil_of_take hx] at this
+  exact this.trans (length_take_le w n)
+
+lemma dropUntil_append_of_mem_left  [DecidableEq α] {u v w x : α} (p : G.Walk u v) (q : G.Walk v w)
+    (hx : x ∈ p.support) :
+    (p.append q).dropUntil x (subset_support_append_left _ _ hx) = (p.dropUntil x hx).append q := by
+  induction p with
+  | nil =>
+    simp only [support_nil, List.mem_cons, List.not_mem_nil, or_false] at hx; subst_vars; simp
+  | @cons u _ _ _ p ih =>
+    rw [support_cons] at hx
+    simp_rw [cons_append, dropUntil]
+    by_cases hxu : u = x
+    · subst_vars; simp
+    · simp_rw [dif_neg hxu]
+      simpa using ih _ (List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx)
+
+
+lemma dropUntil_append_of_mem_right  [DecidableEq α] {u v w x : α} (p : G.Walk u v) (q : G.Walk v w)
+    (hxn : x ∉ p.support) (hx : x ∈ q.support) :
+    (p.append q).dropUntil x (subset_support_append_right _ _ hx) = q.dropUntil _ hx := by
+  induction p with
+  | nil => simp
+  | @cons u _ _ _ p ih =>
+    simp_rw [cons_append]
+    rw [support_cons] at hxn
+    rw [dropUntil, dif_neg (List.ne_of_not_mem_cons hxn).symm]
+    simpa using ih _ (List.not_mem_of_not_mem_cons hxn) hx
+
+/-- Given a walk that starts in a set S but ends in Sᶜ, there is a first vertex of the walk in the
+ set. -/
+lemma exists_getVert_last {u v y : α} {S : Set α} [DecidableEq α] (w : G.Walk u v)
+    (h : ∀ x, x ∈ S → x ∈ w.support) (hy : y ∈ S ∧ y ∈ w.support) :
+    ∃ n, w.getVert n ∈ S ∧ ∀ x, x ∈ S → x ∈ (w.drop n).support := by
+  classical
+  obtain ⟨n, hn1, hn2, hn3⟩ := getVert_find_spec (w.takeUntil _ hy.2) hy.1
+  simp_rw [getVert_takeUntil hy.2 hn1] at *
+  use n, hn2
+  contrapose! hn3
+  obtain ⟨x, hx1, hx2⟩ := hn3
+  have hx' :x ∈ (w.take n).support ∧ x ≠ w.getVert n := by
+    simp_rw [←take_append_drop w n, support_append, List.mem_append] at h
+    cases h x hx1 with
+    | inl h =>
+      refine ⟨h, ?_⟩
+      rintro rfl; apply hx2 <| start_mem_support (w.drop n)
+    | inr h => exact (hx2 <| List.mem_of_mem_tail h).elim
+  have := w.getVert_length_takeUntil_eq_self (h x hx1)
+  use (w.takeUntil _ (h x hx1)).length
+  have hl :(w.takeUntil x (h x hx1)).length < n := by
+    cases (length_takeUntil_le_of_mem_take hx'.1).lt_or_eq with
+    | inl h => exact h
+    | inr h =>
+      exfalso
+      apply hx'.2.symm
+      rwa [← h]
+  constructor
+  · exact hl
+  · rw [getVert_takeUntil _ (hl.le.trans hn1)]
+    rwa [← this] at hx1
+
 /-- The first vertex in a walk `p` that satisfies a predicate `P` or its end vertex if no such
  vertex exists. -/
 def find {u v : α} (p : G.Walk u v) (P : α → Prop) [DecidablePred P] : α :=

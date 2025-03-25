@@ -777,17 +777,16 @@ theorem shortcircuit_copy {u u'} (p : G.Walk u u) (hu : u = u')  :
   rfl
 
 lemma isCycle_cons_shortcircuit_iff {u v : V} (h : G.Adj u v) (p : G.Walk v u) :
-     s(u,v) ∉ p.bypass.edges ↔ (cons h p).shortcircuit.IsCycle := by
-  constructor <;> intro hs
-  · exact cons_isCycle_iff p.bypass _ |>.2 ⟨bypass_isPath p, hs⟩
-  · intro hf; apply ((cons_isCycle_iff ..).1 hs).2 hf
+    (cons h p).shortcircuit.IsCycle ↔ s(u,v) ∉ p.bypass.edges :=
+  ⟨fun hs ↦ fun hf ↦ (cons_isCycle_iff ..).1 hs|>.2 hf,
+   fun hs ↦ cons_isCycle_iff p.bypass _|>.2 ⟨p.bypass_isPath, hs⟩⟩
 
 lemma IsCircuit.isCycle_shortcircuit {u : V} {p : G.Walk u u} (hs : IsCircuit p) :
     p.shortcircuit.IsCycle :=
   match p with
   | nil => absurd rfl hs.2
   | cons .. =>
-    (isCycle_cons_shortcircuit_iff ..).1 <|
+    (isCycle_cons_shortcircuit_iff ..).2 <|
       fun hf ↦ cons_isTrail_iff ..|>.1 hs.toIsTrail|>.2 <| edges_bypass_subset _ hf
 
 lemma support_shortcircuit_subset {u : V} (p : G.Walk u u) : p.shortcircuit.support ⊆ p.support:= by
