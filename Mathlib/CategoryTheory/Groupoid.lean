@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Combinatorics.Quiver.Symmetric
+import Mathlib.CategoryTheory.Functor.ReflectsIso.FullyFaithful
 
 /-!
 # Groupoids
@@ -138,6 +139,11 @@ def Groupoid.ofHomUnique (all_unique : ∀ {X Y : C}, Unique (X ⟶ Y)) : Groupo
 
 end
 
+lemma isGroupoid_of_reflects_iso {C D : Type*} [Category C] [Category D]
+    (F : C ⥤ D) [F.ReflectsIsomorphisms] [IsGroupoid D] :
+    IsGroupoid C where
+  all_isIso _ := isIso_of_reflects_iso _ F
+
 instance InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] (F : C → D) :
     Groupoid.{v} (InducedCategory D F) :=
   { InducedCategory.category F with
@@ -147,11 +153,8 @@ instance InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] 
 
 instance InducedCategory.isGroupoid {C : Type u} (D : Type u₂)
     [Category.{v} D] [IsGroupoid D] (F : C → D) :
-    IsGroupoid (InducedCategory D F) where
-  all_isIso {x y} f := by
-    let g : (F x ⟶ F y) := (fullyFaithfulInducedFunctor F).preimage f
-    obtain ⟨i, h, k⟩ : IsIso g := by infer_instance
-    exact ⟨i, h, k⟩
+    IsGroupoid (InducedCategory D F) :=
+  isGroupoid_of_reflects_iso (inducedFunctor F)
 
 section
 
