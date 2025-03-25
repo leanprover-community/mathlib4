@@ -755,7 +755,7 @@ instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
   abv_mul' := norm_mul
 
 /-- A non-zero normed ring satisfying `NormMulClass` is a domain. Not an instance, to avoid
-loops. -/
+loops with `IsDomain.toNontrivial`. -/
 lemma NormMulClass.toIsDomain [Nontrivial α] : IsDomain α where
   mul_left_cancel_of_ne_zero {a b c} ha h := by
     rw [← sub_eq_zero] at h ⊢
