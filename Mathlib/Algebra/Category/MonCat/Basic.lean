@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.PUnit
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Group.ULift
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso.FullyFaithful
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Category instances for `Monoid`, `AddMonoid`, `CommMonoid`, and `AddCommMmonoid`.

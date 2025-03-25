@@ -6,7 +6,6 @@ Authors: Charlie Conneen
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Functor.ReflectsIso.Balanced
-import Mathlib.CategoryTheory.Functor.ReflectsIso.FullyFaithful
 
 /-!
 
