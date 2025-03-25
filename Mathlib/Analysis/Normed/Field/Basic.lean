@@ -55,6 +55,9 @@ section NormedDivisionRing
 
 variable [NormedDivisionRing α] {a b : α}
 
+instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α :=
+  ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
+
 @[simp]
 theorem norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
   map_div₀ (normHom : α →*₀ ℝ) a b

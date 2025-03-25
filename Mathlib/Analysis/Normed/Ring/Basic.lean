@@ -682,15 +682,13 @@ end SeminormedAddCommGroup
 
 section NormedRing
 
-variable [NormedRing α] [NormMulClass α]
+variable [NormedRing α] [NormOneClass α] [NormMulClass α]
 
 instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
   abv_nonneg' := norm_nonneg
   abv_eq_zero' := norm_eq_zero
   abv_add' := norm_add_le
   abv_mul' := norm_mul
-
-variable [Nontrivial α]
 
 /-- `norm` as a `MonoidWithZeroHom`. -/
 @[simps]
@@ -728,7 +726,7 @@ end NormedRing
 
 section NormedCommRing
 
-variable [NormedCommRing α] [NormMulClass α] [Nontrivial α]
+variable [NormedCommRing α] [NormMulClass α] [NormOneClass α]
 
 @[simp]
 theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=
