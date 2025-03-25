@@ -173,7 +173,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     rw [← subset_compl_iff_disjoint_right, ← compl_compl s₀, compl_subset_iff_union] at disj
     have h : x ∈ s₀ᶜ ∨ x ∈ s₁ᶜ := by
       rw [← mem_union, disj]
-      trivial
+      exact mem_univ _
     apply Or.elim h
     · intro h0
       use 0
