@@ -344,17 +344,15 @@ end LinearEquiv
 
 namespace ContinuousLinearMap
 
-variable [CompleteSpace E] [RingHomInvPair σ' σ]
+variable [CompleteSpace E] [RingHomInvPair σ' σ] {f : E →SL[σ] F}
 
 /-- An injective continuous linear map with a closed range defines a continuous linear equivalence
 between its domain and its range. -/
-noncomputable def equivRange {f : E →SL[σ] F} (hinj : Injective f) (hclo : IsClosed (range f)) :
+noncomputable def equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
     E ≃SL[σ] LinearMap.range f :=
   have : CompleteSpace (LinearMap.range f) := hclo.completeSpace_coe
   LinearEquiv.toContinuousLinearEquivOfContinuous (LinearEquiv.ofInjective f.toLinearMap hinj) <|
     (f.continuous.codRestrict fun x ↦ LinearMap.mem_range_self f x).congr fun _ ↦ rfl
-
-variable {f : E →SL[σ] F}
 
 @[simp]
 theorem coe_linearMap_equivRange (hinj : Injective f) (hclo : IsClosed (range f)) :
@@ -390,7 +388,7 @@ variable {E F : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [CompleteSpace E] [CompleteSpace F]
 
--- TODO: once mathlib has Fredholm operators, generalise the next two lemmas
+-- TODO: once mathlib has Fredholm operators, generalise the next two lemmas accordingly
 
 /-- If `f : E →L[𝕜] F` is injective with closed range (and `E` and `F` are Banach spaces),
 `f` is anti-Lipschitz. -/
