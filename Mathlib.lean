@@ -3992,6 +3992,7 @@ import Mathlib.MeasureTheory.Constructions.HaarToSphere
 import Mathlib.MeasureTheory.Constructions.Pi
 import Mathlib.MeasureTheory.Constructions.Polish.Basic
 import Mathlib.MeasureTheory.Constructions.Polish.EmbeddingReal
+import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 import Mathlib.MeasureTheory.Constructions.Projective
 import Mathlib.MeasureTheory.Constructions.ProjectiveFamilyContent
 import Mathlib.MeasureTheory.Constructions.SubmoduleQuotient
@@ -4501,6 +4502,7 @@ import Mathlib.Order.Filter.Germ.Basic
 import Mathlib.Order.Filter.Germ.OrderedMonoid
 import Mathlib.Order.Filter.IndicatorFunction
 import Mathlib.Order.Filter.Interval
+import Mathlib.Order.Filter.IsBounded
 import Mathlib.Order.Filter.Ker
 import Mathlib.Order.Filter.Lift
 import Mathlib.Order.Filter.ListTraverse
@@ -6051,6 +6053,7 @@ import Mathlib.Topology.UniformSpace.CompleteSeparated
 import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.UniformSpace.Defs
 import Mathlib.Topology.UniformSpace.Dini
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Topology.UniformSpace.Equicontinuity
 import Mathlib.Topology.UniformSpace.Equiv
 import Mathlib.Topology.UniformSpace.HeineCantor
