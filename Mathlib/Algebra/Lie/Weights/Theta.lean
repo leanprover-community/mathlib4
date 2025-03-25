@@ -293,18 +293,21 @@ theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
     (ht : IsSl2Triple h e f) : theta H hα he hf t e = (-(t : K) ^ (-2 : ℤ) : K) • f := by
   dsimp [theta]
   rw [exp_ad_e_e H hα he t, exp_ad_f_e H hα hf t ht]
-  have ttt : (exp_ad_e H hα he t) ((e + (t : K)⁻¹ • h) - ((t : K) ^ (-2 : ℤ) • f)) = (exp_ad_e H hα he t) (e + (t : K)⁻¹ • h) - (exp_ad_e H hα he t) ((t : K) ^ (-2 : ℤ) • f) := by
+  have : (exp_ad_e H hα he t) ((e + (t : K)⁻¹ • h) - ((t : K) ^ (-2 : ℤ) • f)) =
+      (exp_ad_e H hα he t) (e + (t : K)⁻¹ • h) - (exp_ad_e H hα he t) ((t : K) ^ (-2 : ℤ) • f) := by
     apply LinearMap.map_sub
-  rw [ttt]
-  have ttt2 : (exp_ad_e H hα he t) (e + (t : K)⁻¹ • h) = (exp_ad_e H hα he t) e + (exp_ad_e H hα he t) ((t : K)⁻¹ • h) := by
+  rw [this]
+  have : (exp_ad_e H hα he t) (e + (t : K)⁻¹ • h) =
+      (exp_ad_e H hα he t) e + (exp_ad_e H hα he t) ((t : K)⁻¹ • h) := by
     apply LinearMap.map_add
-  rw [ttt2]
-  have ttt3 : (exp_ad_e H hα he t) ((t : K)⁻¹ • h) = (t : K)⁻¹ • ((exp_ad_e H hα he t) h) := by
+  rw [this]
+  have : (exp_ad_e H hα he t) ((t : K)⁻¹ • h) = (t : K)⁻¹ • ((exp_ad_e H hα he t) h) := by
     apply LinearMap.map_smul
-  rw [ttt3]
-  have ttt4 : (exp_ad_e H hα he t) ((t : K) ^ (-2 : ℤ) • f) = (t : K) ^ (-2 : ℤ) • ((exp_ad_e H hα he t) f) := by
+  rw [this]
+  have : (exp_ad_e H hα he t) ((t : K) ^ (-2 : ℤ) • f) =
+      (t : K) ^ (-2 : ℤ) • ((exp_ad_e H hα he t) f) := by
     apply LinearMap.map_smul
-  rw [ttt4, exp_ad_e_e H hα he t, exp_ad_e_f H hα he t ht, exp_ad_e_h H hα he t ht, smul_sub,
+  rw [this, exp_ad_e_e H hα he t, exp_ad_e_f H hα he t ht, exp_ad_e_h H hα he t ht, smul_sub,
     two_smul, smul_add, ← add_smul, add_smul, ← mul_smul, add_sub, smul_sub, smul_add, ← mul_smul,
       ← mul_smul, zpow_neg, neg_smul, fu₁ t, fu₂ t, IsUnit.inv_mul_cancel, one_smul,
         add_sub_add_left_eq_sub, sub_sub_sub_cancel_right, sub_add_cancel_right]
