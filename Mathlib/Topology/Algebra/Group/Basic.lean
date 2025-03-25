@@ -184,34 +184,7 @@ theorem continuousAt_inv {x : G} : ContinuousAt Inv.inv x :=
 theorem tendsto_inv (a : G) : Tendsto Inv.inv (𝓝 a) (𝓝 a⁻¹) :=
   continuousAt_inv
 
-/-- If a function converges to a value in a multiplicative topological group, then its inverse
-converges to the inverse of this value. For the version in normed fields assuming additionally
-that the limit is nonzero, use `Tendsto.inv'`. -/
-@[to_additive
-  "If a function converges to a value in an additive topological group, then its
-  negation converges to the negation of this value."]
-theorem Filter.Tendsto.inv {f : α → G} {l : Filter α} {y : G} (h : Tendsto f l (𝓝 y)) :
-    Tendsto (fun x => (f x)⁻¹) l (𝓝 y⁻¹) :=
-  (continuous_inv.tendsto y).comp h
-
 variable [TopologicalSpace α] {f : α → G} {s : Set α} {x : α}
-
-@[to_additive (attr := continuity, fun_prop)]
-theorem Continuous.inv (hf : Continuous f) : Continuous fun x => (f x)⁻¹ :=
-  continuous_inv.comp hf
-
-@[to_additive (attr := fun_prop)]
-theorem ContinuousAt.inv (hf : ContinuousAt f x) : ContinuousAt (fun x => (f x)⁻¹) x :=
-  continuousAt_inv.comp hf
-
-@[to_additive (attr := fun_prop)]
-theorem ContinuousOn.inv (hf : ContinuousOn f s) : ContinuousOn (fun x => (f x)⁻¹) s :=
-  continuous_inv.comp_continuousOn hf
-
-@[to_additive]
-theorem ContinuousWithinAt.inv (hf : ContinuousWithinAt f s x) :
-    ContinuousWithinAt (fun x => (f x)⁻¹) s x :=
-  Filter.Tendsto.inv hf
 
 @[to_additive]
 instance OrderDual.instContinuousInv : ContinuousInv Gᵒᵈ := ‹ContinuousInv G›
@@ -925,11 +898,6 @@ section ContinuousDiv
 
 variable [TopologicalSpace G] [Div G] [ContinuousDiv G]
 
-@[to_additive sub]
-theorem Filter.Tendsto.div' {f g : α → G} {l : Filter α} {a b : G} (hf : Tendsto f l (𝓝 a))
-    (hg : Tendsto g l (𝓝 b)) : Tendsto (fun x => f x / g x) l (𝓝 (a / b)) :=
-  (continuous_div'.tendsto (a, b)).comp (hf.prodMk_nhds hg)
-
 @[to_additive const_sub]
 theorem Filter.Tendsto.const_div' (b : G) {c : G} {f : α → G} {l : Filter α}
     (h : Tendsto f l (𝓝 c)) : Tendsto (fun k : α => b / f k) l (𝓝 (b / c)) :=
@@ -963,29 +931,11 @@ lemma Filter.tendsto_sub_const_iff {G : Type*}
 
 variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
-@[to_additive (attr := continuity, fun_prop) sub]
-theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
-  continuous_div'.comp₂ hf hg
-
 @[to_additive (attr := continuity) continuous_sub_left]
 lemma continuous_div_left' (a : G) : Continuous (a / ·) := continuous_const.div' continuous_id
 
 @[to_additive (attr := continuity) continuous_sub_right]
 lemma continuous_div_right' (a : G) : Continuous (· / a) := continuous_id.div' continuous_const
-
-@[to_additive (attr := fun_prop) sub]
-theorem ContinuousAt.div' {f g : α → G} {x : α} (hf : ContinuousAt f x) (hg : ContinuousAt g x) :
-    ContinuousAt (fun x => f x / g x) x :=
-  Filter.Tendsto.div' hf hg
-
-@[to_additive sub]
-theorem ContinuousWithinAt.div' (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
-    ContinuousWithinAt (fun x => f x / g x) s x :=
-  Filter.Tendsto.div' hf hg
-
-@[to_additive (attr := fun_prop) sub]
-theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
-    ContinuousOn (fun x => f x / g x) s := fun x hx => (hf x hx).div' (hg x hx)
 
 end ContinuousDiv
 
