@@ -1,11 +1,23 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
+Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Constructions.SumProd
 
 /-!
+# Topological monoids - definitions
+
+In this file we define two mixin typeclasses:
+
+- `ContinuousMul M` says that the multiplication on `M` is continuous as a function on `M × M`;
+- `ContinuousAdd M` says that the addition on `M` is continuous as a function on `M × M`.
+
+These classes are `Prop`-valued mixins,
+i.e., they take data (`TopologicalSpace`, `Mul`/`Add`) as arguments
+instead of extending typeclasses with these fields.
+
+We also provide convenience dot notation lemmas like `Filter.Tendsto.mul` and `ContinuousAt.add`.
 -/
 
 open scoped Topology

@@ -7,6 +7,22 @@ import Mathlib.Topology.Algebra.Monoid.Defs
 
 /-!
 # Definitions about topological groups
+
+In this file we define mixin classes `ContinuousInv`, `IsTopologicalGroup`, and `ContinuousDiv`,
+as well as their additive versions.
+
+These classes say that the corresponding operations are continuous:
+
+- `ContinuousInv G` says that `(·⁻¹)` is continuous on `G`;
+- `IsTopologicalGroup G` says that `(· * ·)` is continuous on `G × G`
+  and `(·⁻¹)` is continuous on `G`;
+- `ContinuousDiv G` says that `(· / ·)` is continuous on `G`.
+
+For groups, `ContinuousDiv G` is equivalent to `IsTopologicalGroup G`,
+but we use the additive version `ContinuousSub` for types like `NNReal`,
+where subtraction is not given by `a - b = a + (-b)`.
+
+We also provide convenience dot notation lemmas like `ContinuousAt.neg`.
 -/
 
 open scoped Topology
