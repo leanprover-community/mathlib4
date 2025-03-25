@@ -12,20 +12,28 @@ This file defines the beginnings of unoriented bordism theory. We define singula
 the building blocks of unoriented bordism groups. Future pull requests will define bordisms
 and the bordism groups of a topological space, and prove it these are abelian groups.
 
-The basic concept of bordism theory are *singular *n*-manifolds*: a singular n-manifold on a
-topological space `X` is a closed n-dimensional smooth manifold `M` together with and a continuous
-map `M → F`. (The word *singular* does not refer to singularities, but is by analogy to singular
-n-chains in the definition of singular homology.)
+The basic notion of bordism theory is that of a bordism between smooth manifolds.
+Two compact smooth `n`-dimensional manifolds `M` and `N` are **bordant** if there exists a smooth
+**bordism** between them: this is a compact `n+1`-dimensional manifold `W` whose boundary is
+(diffeomorphic to) the disjoint union `M ⊕ N`. Being bordant is an equivalence relation
+(transitivity follows from the collar neighbourhood theorem). The set of equivalence classes has an
+abelian group structure, with the group operation given as disjoint union of manifolds,
+and is called the `n`-th (unoriented) bordism group.
 
-The next key concept is the definition of (unoriented) bordisms between singular n-manifolds:
-given two singular n-manifolds `s` and `t`, a bordism between `s` and `t` is a compact smooth
-`n+1`-dimensional manifold whose boundary is (diffeomorphic to) the disjoint union of `s` and `t`,
-together with a map which restricts to the maps on `s` and `t`.
-We call `s` and `t` bordant if there exists a bordism between them: this turns out to define an
-equivalence relation. (Transitivity is the hardest part, and uses the collar neighbourhood theorem.)
-Finally, the `n`obordism group of `X` is the set of bordism classes of singular `n`-manifolds on`X`.
+This construction can be generalised one step further, to produce an extraordinary homology theory.
+Given a topological space `X`, a **singular `n`-manifold** on `X` is a closed `n`-dimensional smooth
+manifold `M` together with and a continuous map `M → F`. (The word *singular* does not refer to
+singularities, but is by analogy to singular `n`-chains in the definition of singular homology.)
 
-XXX design decisions, model parameters etc.
+Given two singular `n`-manifolds `s` and `t`, an (oriented) bordism between `s` and `t` is a compact
+smooth `n+1`-dimensional manifold `W` whose boundary is (diffeomorphic to) the disjoint union
+of `s` and `t`, together with a map `W → X` which restricts to the maps on `s` and `t`.
+We call `s` and `t` bordant if there exists a bordism between them: again, this defines an
+equivalence relation. The `n`-th bordism group of `X` is the set of bordism classes of singular
+`n`-manifolds on`X`.
+
+These absolute bordism groups can be generalised further to relative bordism groups, for each
+topological pair `(X, A)`; in fact, these define an extra-ordinary homology theory.
 
 ## Main definitions
 
@@ -33,16 +41,16 @@ XXX design decisions, model parameters etc.
   `(M, f)` of a closed `n`-dimensional smooth manifold `M` together with a continuous map `M → X`.
   We don't assume `M` to be modelled on `ℝⁿ`, but add the model topological space `H`,
   the vector space `E` and the model with corners `I` as type parameters.
-  To define a disjoint unions of singular n-manifolds, we require their domains to be manifolds
+  To define a disjoint unions of singular `n`-manifolds, we require their domains to be manifolds
   over the same model with corners: the model must be explicit (or M be modelled over `ℝⁿ`)
 
 ## Main results
 
 - `SingularNManifold.map`: a map `X → Y` of topological spaces induces a map between the spaces
-  of singular n-manifolds. This will be used to define functoriality of bordism groups.
-- `SingularNManifold.comap`: if `(N, f)` is a singular n-manifold on `X`
+  of singular `n`-manifolds. This will be used to define functoriality of bordism groups.
+- `SingularNManifold.comap`: if `(N, f)` is a singular `n`-manifold on `X`
   and `φ: M → N` is continuous, the `comap` of `(N, f)` and `φ`
-  is the induced singular n-manifold `(M, f ∘ φ)` on `X`.
+  is the induced singular `n`-manifold `(M, f ∘ φ)` on `X`.
 - `SingularNManifold.empty`: the empty set `M`, viewed as an `n`-manifold,
   as a singular `n`-manifold over any space `X`.
 - `SingularNManifold.toPUnit`: an `n`-dimensional manifold induces a singular `n`-manifold
@@ -54,20 +62,20 @@ XXX design decisions, model parameters etc.
 
 ## Implementation notes
 
-* We choose a bundled design for singular n-manifolds (and also for bordisms): to construct a group
-  structure on the set of bordism classes, having that be a type is useful.
+* We choose a bundled design for singular `n`-manifolds (and also for bordisms): to construct the
+  group structure on the set of bordism classes, having that be a type is useful.
 * The underlying model with corners is a type parameter, as defining a disjoint union of singular
-  n-manifolds (which is one part of defining the group operation)
-  requires their domains to be manifolds over the same model with corners. Thus, either we restrict
-  to manifolds modelled over `𝓡n` (which we prefer not to), or the model must be a type parameter.
-* Having `SingularNManifold` contain the type `M` as explicit parameter is not ideal, but the best
+  `n`-manifolds requires their domains to be manifolds over the same model with corners.
+  Thus, either we restrict to manifolds modelled over `𝓡n` (which we prefer not to),
+  or the model must be a type parameter.
+* Having `SingularNManifold` contain the type `M` as explicit field is not ideal, but the best
   solution we found --- as this adds a universe parameter to the structure. We generally cannot have
   `M` live in the same universe as `X` (a common case is `X` being `PUnit`),
   determining the universe of `M` via the universes of `E` and `H` makes `SingularNManifold.map`
   painful to state (as that would require `ULift`ing `M`).
 
 ## TODO
-- define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitive)
+- define bordisms and prove basic constructions (e.g. reflexivity, symmetry, transitivity)
   and operations (e.g. disjoint union, sum with the empty set)
 - define the bordism relation and prove it is an equivalence relation
 - define the unoriented bordism group (the set of bordism classes) and prove it is an abelian group
