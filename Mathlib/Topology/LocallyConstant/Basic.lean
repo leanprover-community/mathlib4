@@ -277,6 +277,13 @@ def const (X : Type*) {Y : Type*} [TopologicalSpace X] (y : Y) : LocallyConstant
 theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
   rfl
 
+@[simps]
+def eval {ι : Type*} {X : ι → Type*}
+    [∀ i, TopologicalSpace (X i)] [∀ i, DiscreteTopology (X i)] (i : ι) :
+    LocallyConstant (Π i, X i) (X i) where
+  toFun := fun f ↦ f i
+  isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i
+
 /-- The locally constant function to `Fin 2` associated to a clopen set. -/
 def ofIsClopen {X : Type*} [TopologicalSpace X] {U : Set X} [∀ x, Decidable (x ∈ U)]
     (hU : IsClopen U) : LocallyConstant X (Fin 2) where
