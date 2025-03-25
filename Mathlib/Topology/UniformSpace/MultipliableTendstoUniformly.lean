@@ -25,16 +25,13 @@ lemma TendstoUniformlyOn.eventually_forall_lt [UniformSpace β] [AddGroup β]
   rw [tendstoUniformlyOn_iff_tendsto] at hf
   simp only [uniformity_eq_comap_neg_add_nhds_zero, tendsto_iff_eventually, eventually_comap,
     Prod.forall] at *
-  rw [Subtype.forall'] at hf
-  have hf2 := hf ⟨(fun x : β × β => -x.1 + x.2 < -T + V), by
-    rw [eventually_iff_exists_mem]
-    refine ⟨{ x : β | x < -T + V }, IsOpen.mem_nhds (isOpen_gt' (-T + V)) (by simp [htv]) ,
-      fun y hy a b hab => ?_⟩
-    simpa [hab] using hy⟩
+  conv at hf => enter [2]; rw [eventually_iff_exists_mem]
+  have hf2 := hf (fun x : β × β => -x.1 + x.2 < -T + V) ⟨{x : β | x < -T + V},
+      IsOpen.mem_nhds (isOpen_gt' (-T + V)) (by simp [htv]),
+      fun y hy a b hab => by simpa [hab] using hy⟩
   rw [eventually_prod_principal_iff, eventually_iff_exists_mem] at *
   obtain ⟨v, hv, H⟩ := hf2
-  refine ⟨v, hv, fun y hy x hx => ?_⟩
-  simpa using (add_lt_add_of_le_of_lt (hg x hx) (H y hy x hx))
+  refine ⟨v, hv, fun y hy x hx => by simpa using (add_lt_add_of_le_of_lt (hg x hx) (H y hy x hx))⟩
 
 lemma TendstoUniformlyOn.eventually_forall_le [UniformSpace β] [AddGroup β]
     [UniformAddGroup β] [LinearOrder β] [OrderTopology β] [AddLeftStrictMono β] [AddRightMono β]
@@ -71,11 +68,7 @@ lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
         intro x hx
         simpa using (Complex.cexp_tsum_eq_tprod _ (hfn x hx) (h x hx))
   apply TendstoUniformlyOn.congr (tendstoUniformlyOn_comp_cexp hf hg)
-  simp only [eventually_atTop, ge_iff_le]
-  refine ⟨⊥, fun b _ x hx => ?_⟩
-  simp only [Complex.exp_sum]
-  congr
-  exact funext fun y ↦ Complex.exp_log (hfn x hx y)
+  filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn i hi y)]
 
 /-- This is a version of `tendstoUniformlyOn_tprod_of_clog` for nat that uses range
 in the products. -/
@@ -88,7 +81,7 @@ lemma tendstoUniformlyOn_tprod_nat_of_clog {f : ℕ → α → ℂ} {K : Set α}
     (fun a => ∏' i, (f i a)) atTop K :=
   fun v hv => tendsto_finset_range.eventually (tendstoUniformlyOn_tprod_of_clog h hf hfn hg v hv)
 
-/-- This is the version for infinite products of with terms of the from `1 + f n x`. -/
+/-- This is the version for infinite products of with terms of the form `1 + f n x`. -/
 lemma tendstoUniformlyOn_tprod_nat [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ n x, x ∈ K → ‖f n x‖ ≤ u n)
     (hfn : ∀ x, x ∈ K → ∀ n : ℕ, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (fun x => f n x) K) :
@@ -98,23 +91,22 @@ lemma tendstoUniformlyOn_tprod_nat [TopologicalSpace α] {f : ℕ → α → ℂ
   · have H : ContinuousOn (fun x ↦ (∑' (n : ℕ), Complex.log (1 + f n x)).re) K := by
       apply (tendstoUniformlyOn_tsum_nat_log_one_add K hu
         (Filter.Eventually.of_forall h)).re.continuousOn
-      simp only [re_sum, eventually_atTop, ge_iff_le]
-      refine ⟨0, fun _ _ _ => ?_⟩
+      filter_upwards with n
+      simp only [re_sum, log_re]
       apply continuousOn_finset_sum
       intro c _
-      simp_rw [log_re]
       apply ContinuousOn.log
       · apply ContinuousOn.comp continuous_norm.continuousOn
           (ContinuousOn.add continuousOn_const (hcts c)) (Set.mapsTo_image (fun x ↦ 1 + f c x) K)
       · intro z hz
         simpa using hfn z hz c
-    apply IsCompact.bddAbove_image hK H
+    exact IsCompact.bddAbove_image hK H
   · intro x hx
-    apply Complex.summable_log_one_add_of_summable (summable_norm_iff.mp
+    exact Complex.summable_log_one_add_of_summable (summable_norm_iff.mp
       (Summable.of_nonneg_of_le (fun b ↦ norm_nonneg (f b ↑x)) (fun _ => h _ _ hx) hu))
-  · apply Complex.tendstoUniformlyOn_tsum_log_one_add K hu (Filter.Eventually.of_forall h)
+  · exact Complex.tendstoUniformlyOn_tsum_log_one_add K hu (Filter.Eventually.of_forall h)
 
-/-- This is the locally version for infinite products of with terms of the from `1 + f n x`. -/
+/-- This is the locally version for infinite products of with terms of the form `1 + f n x`. -/
 lemma tendstoLocallyUniformlyOn_tprod_nat' [TopologicalSpace α] [ LocallyCompactSpace α]
     {f : ℕ → α → ℂ} {K : Set α} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
     (h : ∀ n x, x ∈ K → ‖f n x‖ ≤ u n)(hfn : ∀ x, x ∈ K → ∀ n : ℕ, 1 + f n x ≠ 0)
