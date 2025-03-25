@@ -531,6 +531,16 @@ theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
 theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
   mt circleMap_eq_center_iff.1 hR
 
+lemma circleMap_mul (R₁ R₂ θ₁ θ₂ : ℝ) :
+    (circleMap 0 R₁ θ₁) * (circleMap 0 R₂ θ₂) = circleMap 0 (R₁ * R₂) (θ₁ + θ₂) := by
+  simp only [circleMap_zero, ofReal_mul, ofReal_add, add_mul, exp_add]
+  ring
+
+lemma circleMap_div (R₁ R₂ θ₁ θ₂ : ℝ) :
+    (circleMap 0 R₁ θ₁) / (circleMap 0 R₂ θ₂) = circleMap 0 (R₁ / R₂) (θ₁ - θ₂) := by
+  simp only [circleMap_zero, ofReal_div, ofReal_sub, sub_mul, exp_sub]
+  ring
+
 lemma circleMap_inv (R θ : ℝ) : (circleMap 0 R θ)⁻¹ = circleMap 0 R⁻¹ (-θ) := by
   simp [circleMap_zero, exp_neg, mul_comm]
 
