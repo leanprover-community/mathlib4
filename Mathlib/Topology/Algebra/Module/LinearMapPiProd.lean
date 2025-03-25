@@ -188,8 +188,8 @@ theorem proj_apply (i : ι) (b : ∀ i, φ i) : (proj i : (∀ i, φ i) →L[R] 
 theorem proj_pi (f : ∀ i, M₂ →L[R] φ i) (i : ι) : (proj i).comp (pi f) = f i := rfl
 
 @[simp]
-theorem coe_proj  (i : ι) :
-  (proj i).toLinearMap = (LinearMap.proj i : ((i : ι) → φ i) →ₗ[R] _) := rfl
+theorem coe_proj (i : ι) : (proj i).toLinearMap = (LinearMap.proj i : ((i : ι) → φ i) →ₗ[R] _) :=
+  rfl
 
 @[simp]
 theorem pi_proj : pi proj = .id R (∀ i, φ i) := rfl

@@ -1366,9 +1366,8 @@ theorem tendsto_nhds_limUnder {f : Filter α} {g : α → X} (h : ∃ x, Tendsto
 theorem limUnder_of_not_tendsto [hX : Nonempty X] {f : Filter α} {g : α → X}
     (h : ¬ ∃ x, Tendsto g f (𝓝 x)) :
     limUnder f g = Classical.choice hX := by
-  simp_rw [limUnder, lim, Classical.epsilon, Classical.strongIndefiniteDescription]
-  rw [dif_neg]
-  exact h
+  simp_rw [Tendsto] at h
+  simp_rw [limUnder, lim, Classical.epsilon, Classical.strongIndefiniteDescription, dif_neg h]
 
 end lim
 
