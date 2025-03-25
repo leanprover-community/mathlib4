@@ -739,8 +739,8 @@ variable [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial 
 an instance, in order to avoid loops with `NormOneClass.nontrivial`. -/
 lemma NormMulClass.toNormOneClass : NormOneClass α where
   norm_one := by
-  obtain ⟨u, hu⟩ := exists_ne (0 : α)
-  simpa [mul_eq_left₀ (norm_ne_zero_iff.mpr hu)] using (norm_mul u 1).symm
+    obtain ⟨u, hu⟩ := exists_ne (0 : α)
+    simpa [mul_eq_left₀ (norm_ne_zero_iff.mpr hu)] using (norm_mul u 1).symm
 
 end NormedAddCommGroup
 
@@ -754,17 +754,13 @@ instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
   abv_add' := norm_add_le
   abv_mul' := norm_mul
 
+instance NormMulClass.toNoZeroDivisors : NoZeroDivisors α where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} h := by
+    simpa only [← norm_eq_zero (E := α), norm_mul, mul_eq_zero] using h
+
 /-- A non-zero normed ring satisfying `NormMulClass` is a domain. Not an instance, to avoid
 loops with `IsDomain.toNontrivial`. -/
-lemma NormMulClass.toIsDomain [Nontrivial α] : IsDomain α where
-  mul_left_cancel_of_ne_zero {a b c} ha h := by
-    rw [← sub_eq_zero] at h ⊢
-    rwa [← mul_sub, ← norm_eq_zero, norm_mul, mul_eq_zero_iff_left (norm_ne_zero_iff.mpr ha),
-      norm_eq_zero] at h
-  mul_right_cancel_of_ne_zero {a b c} ha h := by
-    rw [← sub_eq_zero] at h ⊢
-    rwa [← sub_mul, ← norm_eq_zero, norm_mul, mul_eq_zero_iff_right (norm_ne_zero_iff.mpr ha),
-      norm_eq_zero] at h
+lemma NormMulClass.toIsDomain [Nontrivial α] : IsDomain α := NoZeroDivisors.to_isDomain α
 
 end NormedRing
 
