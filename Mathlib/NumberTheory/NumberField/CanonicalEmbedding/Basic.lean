@@ -117,10 +117,7 @@ noncomputable def latticeBasis [NumberField K] :
     let M := B.toMatrix (fun i => canonicalEmbedding K (integralBasis K (e i)))
     suffices M.det ≠ 0 by
       rw [← isUnit_iff_ne_zero, ← Basis.det_apply, ← is_basis_iff_det] at this
-      refine basisOfLinearIndependentOfCardEqFinrank
-        ((linearIndependent_equiv e.symm).mpr this.1) ?_
-      rw [← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank, finrank_fintype_fun_eq_card,
-        Embeddings.card]
+      exact (basisOfPiSpaceOfLinearIndependent this.1).reindex e
   -- In order to prove that the determinant is nonzero, we show that it is equal to the
   -- square of the discriminant of the integral basis and thus it is not zero
     let N := Algebra.embeddingsMatrixReindex ℚ ℂ (fun i => integralBasis K (e i))
@@ -136,7 +133,7 @@ noncomputable def latticeBasis [NumberField K] :
 @[simp]
 theorem latticeBasis_apply [NumberField K] (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     latticeBasis K i = (canonicalEmbedding K) (integralBasis K i) := by
-  simp only [latticeBasis, integralBasis_apply, coe_basisOfLinearIndependentOfCardEqFinrank,
+  simp [latticeBasis, integralBasis_apply, coe_basisOfPiSpaceOfLinearIndependent,
     Function.comp_apply, Equiv.apply_symm_apply]
 
 theorem mem_span_latticeBasis [NumberField K] {x : (K →+* ℂ) → ℂ} :
@@ -1204,6 +1201,10 @@ theorem normAtAllPlaces_mixedSpaceOfRealSpace {x : realSpace K} (hx : ∀ w, 0 �
   ext
   rw [normAtAllPlaces_apply, normAtPlace_mixedSpaceOfRealSpace (hx _)]
 
+theorem normAtAllPlaces_mixedEmbedding (x : K) (w : InfinitePlace K) :
+    normAtAllPlaces (mixedEmbedding K x) w = w x := by
+  rw [normAtAllPlaces_apply, normAtPlace_apply]
+
 theorem normAtAllPlaces_normAtAllPlaces (x : mixedSpace K) :
     normAtAllPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
   normAtAllPlaces_mixedSpaceOfRealSpace fun _ ↦ (normAtAllPlaces_nonneg _ _)
@@ -1217,7 +1218,7 @@ theorem normAtAllPlaces_norm_at_real_places (x : mixedSpace K) :
 
 theorem normAtComplexPlaces_normAtAllPlaces (x : mixedSpace K) :
     normAtComplexPlaces (mixedSpaceOfRealSpace (normAtAllPlaces x)) = normAtAllPlaces x :=
-   normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
+  normAtComplexPlaces_mixedSpaceOfRealSpace fun _ _ ↦ (normAtAllPlaces_nonneg _ _)
 
 theorem normAtAllPlaces_eq_of_normAtComplexPlaces_eq {x y : mixedSpace K}
     (h: normAtComplexPlaces x = normAtComplexPlaces y) :

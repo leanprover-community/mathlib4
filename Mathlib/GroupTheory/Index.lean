@@ -262,6 +262,13 @@ theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
     (H.map f).index = H.index * f.range.index := by
   rw [H.index_map, f.ker_eq_bot_iff.mpr hf, sup_bot_eq]
 
+@[to_additive (attr := simp)]
+theorem index_map_equiv (e : G ≃* G') :
+    (map (e : G →* G') H).index = H.index := by
+  refine index_map_eq H e.surjective ?_
+  rw [(MonoidHom.ker_eq_bot_iff _).mpr e.injective]
+  exact bot_le
+
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
     (K.map H.subtype).index = K.index * H.index := by
@@ -402,6 +409,10 @@ noncomputable def fintypeOfIndexNeZero (hH : H.index ≠ 0) : Fintype (G ⧸ H) 
 lemma index_eq_zero_iff_infinite : H.index = 0 ↔ Infinite (G ⧸ H) := by
   simp [index_eq_card, Nat.card_eq_zero]
 
+@[to_additive]
+lemma index_ne_zero_iff_finite : H.index ≠ 0 ↔ Finite (G ⧸ H) := by
+  simp [index_eq_zero_iff_infinite]
+
 @[to_additive one_lt_index_of_ne_top]
 theorem one_lt_index_of_ne_top [Finite (G ⧸ H)] (hH : H ≠ ⊤) : 1 < H.index :=
   Nat.one_lt_iff_ne_zero_and_ne_one.mpr ⟨index_ne_zero_of_finite, mt index_eq_one.mp hH⟩
@@ -521,6 +532,11 @@ class _root_.AddSubgroup.FiniteIndex {G : Type*} [AddGroup G] (H : AddSubgroup G
   /-- The additive subgroup has finite index -/
   finiteIndex : H.index ≠ 0
 
+@[to_additive]
+theorem finiteIndex_iff {G : Type*} [Group G] {H : Subgroup G} :
+    H.FiniteIndex ↔ H.index ≠ 0 :=
+  ⟨fun h ↦ h.finiteIndex, fun h ↦ ⟨h⟩⟩
+
 /-- A finite index subgroup has finite quotient. -/
 @[to_additive "A finite index subgroup has finite quotient"]
 noncomputable def fintypeQuotientOfFiniteIndex [FiniteIndex H] : Fintype (G ⧸ H) :=
@@ -613,6 +629,14 @@ variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 end MulAction
 
 namespace MonoidHom
+
+@[to_additive AddMonoidHom.surjective_of_card_ker_le_div]
+lemma surjective_of_card_ker_le_div {G M : Type*} [Group G] [Group M] [Finite G] [Finite M]
+    (f : G →* M) (h : Nat.card f.ker ≤ Nat.card G / Nat.card M) : Function.Surjective f := by
+  refine range_eq_top.1 <| SetLike.ext' <| Set.eq_of_subset_of_ncard_le (Set.subset_univ _) ?_
+  rw [Subgroup.coe_top, Set.ncard_univ, ← Set.Nat.card_coe_set_eq, SetLike.coe_sort_coe,
+    ← Nat.card_congr (QuotientGroup.quotientKerEquivRange f).toEquiv]
+  exact Nat.le_of_mul_le_mul_left (f.ker.card_mul_index ▸ Nat.mul_le_of_le_div _ _ _ h) Nat.card_pos
 
 open Finset
 

@@ -1,50 +1,81 @@
 /-
-Copyright (c) 2025 Mitchell Horner. All rights reserved.
+Copyright (c) 2023 Yaël Dillies, Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Horner
+Authors: Yaël Dillies, Mitchell Horner
 -/
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
-# Copies of Simple Graphs
+# Containment of graphs
 
 This file introduces the concept of one simple graph containing a copy of another.
 
-## Main definitions
+For two simple graph `G` and `H`, a *copy* of `G` in `H` is a (not necessarily induced) subgraph of
+`H` isomorphic to `G`.
 
-* `SimpleGraph.Copy A B` is the type of copies of `A` in `B`, implemented as the subtype of
+If there exists a copy of `G` in `H`, we say that `H` *contains* `G`. This is equivalent to saying
+that there is an injective graph homomorphism `G → H` them (this is **not** the same as a graph
+embedding, as we do not require the subgraph to be induced).
+
+If there exists an induced copy of `G` in `H`, we say that `H` *inducingly contains* `G`. This is
+equivalent to saying that there is a graph embedding `G ↪ H`.
+
+## Main declarations
+
+Containment:
+* `SimpleGraph.Copy G H` is the type of copies of `G` in `H`, implemented as the subtype of
   *injective* homomorphisms.
-
-* `SimpleGraph.IsContained A B`, `A ⊑ B` is the relation that `B` contains a copy of `A`, that
-  is, the type of copies of `A` in `B` is nonempty. This is equivalent to the existence of an
-  isomorphism from `A` to a subgraph of `B`.
-
+* `SimpleGraph.IsContained G H`, `G ⊑ H` is the relation that `H` contains a copy of `G`, that
+  is, the type of copies of `G` in `H` is nonempty. This is equivalent to the existence of an
+  isomorphism from `G` to a subgraph of `H`.
   This is similar to `SimpleGraph.IsSubgraph` except that the simple graphs here need not have the
   same underlying vertex type.
+* `SimpleGraph.Free` is the predicate that `H` is `G`-free, that is, `H` does not contain a copy of
+  `G`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
 
-* `SimpleGraph.Free` is the predicate that `B` is `A`-free, that is, `B` does not contain a copy of
-  `A`. This is the negation of `SimpleGraph.IsContained` implemented for convenience.
+Induced containment:
+* Induced copies of `G` inside `H` are already defined as `G ↪g H`.
+* `SimpleGraph.IsIndContained G H` : `G` is contained as an induced subgraph in `H`.
 
 ## Notation
 
 The following notation is declared in locale `SimpleGraph`:
-
 * `G ⊑ H` for `SimpleGraph.IsContained G H`.
+* `G ⊴ H` for `SimpleGraph.IsIndContained G H`.
+
+## TODO
+
+Relate `⊤ ⊑ H`/`⊥ ⊑ H` to there being a clique/independent set in `H`.
 -/
 
-namespace SimpleGraph
+open Finset Function
+open Fintype (card)
 
-variable {V α β γ : Type*} {G G₁ G₂ G₃ : SimpleGraph V}
+namespace SimpleGraph
+variable {V W X α β γ : Type*} {G G₁ G₂ G₃ : SimpleGraph V} {H : SimpleGraph W} {I : SimpleGraph X}
   {A : SimpleGraph α} {B : SimpleGraph β} {C : SimpleGraph γ}
+
+/-!
+### Copies
+
+#### Not necessarily induced copies
+
+A copy of a subgraph `G` inside a subgraph `H` is an embedding of the vertices of `G` into the
+vertices of `H`, such that adjacency in `G` implies adjacency in `H`.
+
+We capture this concept by injective graph homomorphisms.
+-/
 
 section Copy
 
 /-- The type of copies as a subtype of *injective* homomorphisms. -/
-abbrev Copy (A : SimpleGraph α) (B : SimpleGraph β) :=
-  { f : A →g B // Function.Injective f }
+structure Copy (A : SimpleGraph α) (B : SimpleGraph β) where
+  /-- A copy gives rise to a homomorphism. -/
+  toHom : A →g B
+  injective' : Injective toHom
 
 /-- An injective homomorphism gives rise to a copy. -/
-abbrev Hom.toCopy (f : A →g B) (h : Function.Injective f) : Copy A B := ⟨f, h⟩
+abbrev Hom.toCopy (f : A →g B) (h : Injective f) : Copy A B := .mk f h
 
 /-- An embedding gives rise to a copy. -/
 abbrev Embedding.toCopy (f : A ↪g B) : Copy A B := f.toHom.toCopy f.injective
@@ -54,18 +85,20 @@ abbrev Iso.toCopy (f : A ≃g B) : Copy A B := f.toEmbedding.toCopy
 
 namespace Copy
 
-/-- A copy gives rise to a homomorphism. -/
-abbrev toHom : Copy A B → A →g B := Subtype.val
-
-@[simp] lemma coe_toHom (f : Copy A B) : ⇑f.toHom = f := rfl
-
-lemma injective : (f : Copy A B) → (Function.Injective f.toHom) := Subtype.prop
-
 instance : FunLike (Copy A B) α β where
   coe f := DFunLike.coe f.toHom
-  coe_injective' _ _ h := Subtype.val_injective (DFunLike.coe_injective h)
+  coe_injective' f g h := by obtain ⟨⟨_, _⟩, _⟩ := f; congr!
 
-@[simp] lemma coe_toHom_apply (f : Copy A B) (a : α) : ⇑f.toHom a = f a := rfl
+lemma injective (f : Copy A B) : Injective f.toHom := f.injective'
+
+@[ext] lemma ext {f g : Copy A B} : (∀ a, f a = g a) → f = g := DFunLike.ext _ _
+
+@[simp] lemma coe_toHom (f : Copy A B) : ⇑f.toHom = f := rfl
+@[simp] lemma toHom_apply (f : Copy A B) (a : α) : ⇑f.toHom a = f a := rfl
+
+@[simp] lemma coe_mk (f : A →g B) (hf) : ⇑(.mk f hf : Copy A B) = f := rfl
+
+@[deprecated (since := "2025-03-19")] alias coe_toHom_apply := toHom_apply
 
 /-- A copy induces an embedding of edge sets. -/
 def mapEdgeSet (f : Copy A B) : A.edgeSet ↪ B.edgeSet where
@@ -118,12 +151,68 @@ def induce (G : SimpleGraph V) (s : Set V) : Copy (G.induce s) G := (Embedding.i
 /-- The copy of `⊥` in any simple graph that can embed its vertices. -/
 protected def bot (f : α ↪ β) : Copy (⊥ : SimpleGraph α) B := ⟨⟨f, False.elim⟩, f.injective⟩
 
+/-- The isomorphism from a subgraph of `A` to its map under a copy `f : Copy A B`. -/
+noncomputable def isoSubgraphMap (f : Copy A B) (A' : A.Subgraph) :
+    A'.coe ≃g (A'.map f.toHom).coe := by
+  use Equiv.Set.image f.toHom _ f.injective
+  simp_rw [Subgraph.map_verts, Equiv.Set.image_apply, Subgraph.coe_adj, Subgraph.map_adj,
+    Relation.map_apply, f.injective.eq_iff, exists_eq_right_right, exists_eq_right, forall_true_iff]
+
+/-- The subgraph of `B` corresponding to a copy of `A` inside `B`. -/
+abbrev toSubgraph (f : Copy A B) : B.Subgraph := .map f.toHom ⊤
+
+/-- The isomorphism from `A` to its copy under `f : Copy A B`. -/
+noncomputable def isoToSubgraph (f : Copy A B) : A ≃g f.toSubgraph.coe :=
+  (f.isoSubgraphMap ⊤).comp Subgraph.topIso.symm
+
+@[simp] lemma range_toSubgraph :
+    .range (toSubgraph (A := A)) = {B' : B.Subgraph | Nonempty (A ≃g B'.coe)} := by
+  ext H'
+  constructor
+  · rintro ⟨f, hf, rfl⟩
+    simpa [toSubgraph] using ⟨f.isoToSubgraph⟩
+  · rintro ⟨e⟩
+    refine ⟨⟨H'.hom.comp e.toHom, Subgraph.hom_injective.comp e.injective⟩, ?_⟩
+    simp [toSubgraph, Subgraph.map_comp]
+
+lemma toSubgraph_surjOn :
+    Set.SurjOn (toSubgraph (A := A)) .univ {B' : B.Subgraph | Nonempty (A ≃g B'.coe)} :=
+  fun H' hH' ↦ by simpa
+
+instance [Subsingleton (V → W)] : Subsingleton (G.Copy H) := DFunLike.coe_injective.subsingleton
+
+instance [Fintype {f : G →g H // Injective f}] : Fintype (G.Copy H) :=
+  .ofEquiv {f : G →g H // Injective f} {
+    toFun f := ⟨f.1, f.2⟩
+    invFun f := ⟨f.1, f.2⟩
+    left_inv _ := rfl
+    right_inv _ := rfl
+  }
+
 end Copy
 
 /-- A `Subgraph G` gives rise to a copy from the coercion to `G`. -/
-def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy Subgraph.hom.injective
+def Subgraph.coeCopy (G' : G.Subgraph) : Copy G'.coe G := G'.hom.toCopy hom_injective
 
 end Copy
+
+/-!
+#### Induced copies
+
+An induced copy of a graph `G` inside a graph `H` is an embedding from the vertices of
+`G` into the vertices of `H` which preserves the adjacency relation.
+
+This is already captured by the notion of graph embeddings, defined as `G ↪g H`.
+
+### Containment
+
+#### Not necessarily induced containment
+
+A graph `H` *contains* a graph `G` if there is some copy `f : Copy G H` of `G` inside `H`. This
+amounts to `H` having a subgraph isomorphic to `G`.
+
+We denote "`G` is contained in `H`" by `G ⊑ H` (`\squb`).
+-/
 
 section IsContained
 
@@ -177,18 +266,13 @@ protected alias IsContained.bot := bot_isContained_iff_card_le
 /-- A simple graph `G` contains all `Subgraph G` coercions. -/
 lemma Subgraph.coe_isContained (G' : G.Subgraph) : G'.coe ⊑ G := ⟨G'.coeCopy⟩
 
-/-- The isomorphism from `Subgraph A` to its map under a copy `Copy A B`. -/
-noncomputable def Subgraph.Copy.map (f : Copy A B) (A' : A.Subgraph) :
-    A'.coe ≃g (A'.map f.toHom).coe := by
-  use Equiv.Set.image f.toHom _ f.injective
-  simp_rw [map_verts, Equiv.Set.image_apply, coe_adj, map_adj, Relation.map_apply,
-    Function.Injective.eq_iff f.injective, exists_eq_right_right, exists_eq_right, forall_true_iff]
+@[deprecated (since := "2025-03-19")] alias Subgraph.Copy.map := Copy.isoSubgraphMap
 
 /-- `B` contains `A` if and only if `B` has a subgraph `B'` and `B'` is isomorphic to `A`. -/
 theorem isContained_iff_exists_iso_subgraph :
-    A ⊑ B ↔ ∃ B' : B.Subgraph, Nonempty (A ≃g B'.coe) :=
-  ⟨fun ⟨f⟩ ↦ ⟨Subgraph.map f.toHom ⊤, ⟨(Subgraph.Copy.map f ⊤).comp Subgraph.topIso.symm⟩⟩,
-    fun ⟨B', ⟨e⟩⟩ ↦ B'.coe_isContained.trans' ⟨e.toCopy⟩⟩
+    A ⊑ B ↔ ∃ B' : B.Subgraph, Nonempty (A ≃g B'.coe) where
+  mp := fun ⟨f⟩ ↦ ⟨.map f.toHom ⊤, ⟨f.isoToSubgraph⟩⟩
+  mpr := fun ⟨B', ⟨e⟩⟩ ↦ B'.coe_isContained.trans' ⟨e.toCopy⟩
 
 alias ⟨IsContained.exists_iso_subgraph, IsContained.of_exists_iso_subgraph⟩ :=
   isContained_iff_exists_iso_subgraph
@@ -213,5 +297,65 @@ lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   exact Set.not_mem_empty (h.choose.map f)
 
 end Free
+
+/-!
+#### Induced containment
+
+A graph `H` *inducingly contains* a graph `G` if there is some graph embedding `G ↪ H`. This amounts
+to `H` having an induced subgraph isomorphic to `G`.
+
+We denote "`G` is inducingly contained in `H`" by `G ⊴ H` (`\trianglelefteq`).
+-/
+
+/-- A simple graph `G` is inducingly contained in a simple graph `H` if there exists an induced
+subgraph of `H` isomorphic to `G`. This is denoted by `G ⊴ H`. -/
+def IsIndContained (G : SimpleGraph V) (H : SimpleGraph W) : Prop := Nonempty (G ↪g H)
+
+@[inherit_doc] scoped infixl:50 " ⊴ " => SimpleGraph.IsIndContained
+
+protected lemma IsIndContained.isContained : G ⊴ H → G ⊑ H := fun ⟨f⟩ ↦ ⟨f.toCopy⟩
+
+/-- If `G` is isomorphic to `H`, then `G` is inducingly contained in `H`. -/
+protected lemma Iso.isIndContained (e : G ≃g H) : G ⊴ H := ⟨e⟩
+
+/-- If `G` is isomorphic to `H`, then `H` is inducingly contained in `G`. -/
+protected lemma Iso.isIndContained' (e : G ≃g H) : H ⊴ G := e.symm.isIndContained
+
+protected lemma Subgraph.IsInduced.isIndContained {G' : G.Subgraph} (hG' : G'.IsInduced) :
+    G'.coe ⊴ G :=
+  ⟨{ toFun := (↑)
+     inj' := Subtype.coe_injective
+     map_rel_iff' := hG'.adj.symm }⟩
+
+@[refl] lemma IsIndContained.refl (G : SimpleGraph V) : G ⊴ G := ⟨Embedding.refl⟩
+lemma IsIndContained.rfl : G ⊴ G := .refl _
+@[trans] lemma IsIndContained.trans : G ⊴ H → H ⊴ I → G ⊴ I := fun ⟨f⟩ ⟨g⟩ ↦ ⟨g.comp f⟩
+
+lemma IsIndContained.of_isEmpty [IsEmpty V] : G ⊴ H :=
+  ⟨{ toFun := isEmptyElim
+     inj' := isEmptyElim
+     map_rel_iff' := fun {a} ↦ isEmptyElim a }⟩
+
+lemma isIndContained_iff_exists_iso_subgraph :
+    G ⊴ H ↔ ∃ (H' : H.Subgraph) (_e : G ≃g H'.coe), H'.IsInduced := by
+  constructor
+  · rintro ⟨f⟩
+    refine ⟨Subgraph.map f.toHom ⊤, f.toCopy.isoToSubgraph, ?_⟩
+    simp [Subgraph.IsInduced, Relation.map_apply_apply, f.injective]
+  · rintro ⟨H', e, hH'⟩
+    exact e.isIndContained.trans hH'.isIndContained
+
+alias ⟨IsIndContained.exists_iso_subgraph, IsIndContained.of_exists_iso_subgraph⟩ :=
+  isIndContained_iff_exists_iso_subgraph
+
+@[simp] lemma top_isIndContained_iff_top_isContained :
+    (⊤ : SimpleGraph V) ⊴ H ↔ (⊤ : SimpleGraph V) ⊑ H where
+  mp h := h.isContained
+  mpr := fun ⟨f⟩ ↦ ⟨f.toEmbedding, fun {v w} ↦ ⟨fun h ↦ by simpa using h.ne, f.toHom.map_adj⟩⟩
+
+@[simp] lemma compl_isIndContained_compl : Gᶜ ⊴ Hᶜ ↔ G ⊴ H :=
+  Embedding.complEquiv.symm.nonempty_congr
+
+protected alias ⟨IsIndContained.of_compl, IsIndContained.compl⟩ := compl_isIndContained_compl
 
 end SimpleGraph

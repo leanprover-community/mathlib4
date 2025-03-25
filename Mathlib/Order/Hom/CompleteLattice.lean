@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # Complete lattice homomorphisms

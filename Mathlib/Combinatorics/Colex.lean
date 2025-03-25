@@ -7,7 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
 
 /-!
 # Colexigraphic order
@@ -220,11 +220,11 @@ variable [DecidableEq α]
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
-instance instDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· ≤ ·) :=
+instance instDecidableLE [DecidableLE α] : DecidableLE (Colex α) :=
   fun s t ↦ decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· < ·) :=
+instance instDecidableLT [DecidableLE α] : DecidableLT (Colex α) :=
   decidableLTOfDecidableLE
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
