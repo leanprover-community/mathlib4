@@ -8,6 +8,22 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.OrdContinuous
 import Mathlib.Topology.Order.Basic
 
+/-!
+# Order-continuity of left and right adjoints in Galois connections
+
+This file contains the results that left/right adjoints in Galois connections are
+left/right-continuous.
+
+## Main results
+
+ * `GaloisConnection.leftOrdContinuous`: A left adjoint is left-order-continuous.
+ * `GaloisConnection.rightOrdContinuous`: A right adjoint is right-order-continuous.
+ * `LeftOrdContinuous.continuousWithinAt_Iic`: A left-order-continuous function between
+   conditionally complete linear orders is topologically left-continuous.
+ * `RightOrdContinuous.continuousWithinAt_Ici`: A right-order-continuous function between
+   conditionally complete linear orders is topologically right-continuous.
+-/
+
 open scoped CategoryTheory
 
 open CategoryTheory Set Filter
@@ -25,16 +41,15 @@ lemma CategoryTheory.Adjunction.galoisConnection {F : X ⥤ Y} {G : Y ⥤ X} (ad
 /-- A left adjoint in a Galois connection is left-continuous in the order-theoretic sense. -/
 lemma GaloisConnection.leftOrdContinuous {f : X → Y} {g : Y → X} (gc : GaloisConnection f g) :
     LeftOrdContinuous f := by
-  have f_mono : Monotone f := monotone_l gc
   have hfg (x) (y) : f x ≤ y ↔ x ≤ g y := gc x y
   intro s a a_lub_s
   rcases a_lub_s with ⟨a_ub_s, a_le_ub_s⟩
   refine ⟨?_, ?_⟩
   · intro y ⟨x, x_in_s, fx_eq_y⟩
-    simpa [← fx_eq_y] using f_mono <| a_ub_s x_in_s
+    simpa [← fx_eq_y] using monotone_l gc <| a_ub_s x_in_s
   · intro b b_ub_s
     rw [hfg]
-    apply a_le_ub_s fun z z_in_s ↦ by simpa [← hfg] using b_ub_s <| mem_image_of_mem f z_in_s
+    exact a_le_ub_s fun z z_in_s ↦ by simpa [← hfg] using b_ub_s <| mem_image_of_mem f z_in_s
 
 /-- A right adjoint in a Galois connection is right-continuous in the order-theoretic sense. -/
 lemma GaloisConnection.rightOrdContinuous {f : X → Y} {g : Y → X} (gc : GaloisConnection f g) :
@@ -44,8 +59,7 @@ lemma GaloisConnection.rightOrdContinuous {f : X → Y} {g : Y → X} (gc : Galo
 
 end Preorder
 
-
-section PartialOrder
+section ConditionallyCompleteLinearOrder
 
 variable {X : Type*} [ConditionallyCompleteLinearOrder X] [DenselyOrdered X]
 variable [TopologicalSpace X] [OrderTopology X]
@@ -106,4 +120,4 @@ lemma RightOrdContinuous.continuousWithinAt_Ici (f_roc : RightOrdContinuous f) (
     ContinuousWithinAt f (Ici x) x :=
   LeftOrdContinuous.continuousWithinAt_Iic (X := Xᵒᵈ) (Y := Yᵒᵈ) f_roc x
 
-end PartialOrder
+end ConditionallyCompleteLinearOrder
