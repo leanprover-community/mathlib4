@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 import Mathlib.Tactic.Abel
 
 /-!
@@ -360,10 +360,6 @@ instance : OrderedCancelAddCommMonoid NatOrdinal :=
 
 instance : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
-
-@[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
-theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
-  (Order.succ_eq_add_one a).symm
 
 @[simp]
 theorem toOrdinal_natCast (n : ℕ) : toOrdinal n = n := by
