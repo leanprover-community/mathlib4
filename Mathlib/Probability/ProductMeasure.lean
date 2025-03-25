@@ -13,7 +13,7 @@ This file provides a definition for the product measure of an arbitrary family o
 measures. Given `μ : (i : ι) → Measure (X i)` such that each `μ i` is a probability measure,
 `Measure.infinitePi μ` is the only probability measure `ν` over `Π i, X i` such that
 `ν (Set.pi s t) = ∏ i ∈ s, μ i (t i)`, with `s : Finset ι` and
-such that `∀ i ∈ s, MeasurableSet (t i)` (see `eq_infinitePi` and `infinitePi_boxes`).
+such that `∀ i ∈ s, MeasurableSet (t i)` (see `eq_infinitePi` and `infinitePi_pi`).
 We also provide a few results regarding integration against this measure.
 
 ## Main definition
@@ -24,7 +24,7 @@ We also provide a few results regarding integration against this measure.
 
 * `eq_infinitePi`: Any measure which gives to a finite product of sets the mass which is the
   product of their measures is the product measure.
-* `infinitePi_boxes`: the product measure gives to finite products of sets a mass which is
+* `infinitePi_pi`: the product measure gives to finite products of sets a mass which is
   the product of their masses.
 * `infinitePi_cylinder`: `infinitePi μ (cylinder s S) = Measure.pi (fun i : s ↦ μ i) S`
 
@@ -387,7 +387,7 @@ theorem eq_infinitePi {ν : Measure (Π i, X i)}
   · exact .univ_pi ht
 
 -- TODO: add a version for an infinite product
-lemma infinitePi_boxes {s : Finset ι} {t : (i : ι) → Set (X i)}
+lemma infinitePi_pi {s : Finset ι} {t : (i : ι) → Set (X i)}
     (mt : ∀ i ∈ s, MeasurableSet (t i)) :
     infinitePi μ (Set.pi s t) = ∏ i ∈ s, (μ i) (t i) := by
   have : Set.pi s t = cylinder s ((@Set.univ s).pi (fun i : s ↦ t i)) := by
@@ -404,7 +404,7 @@ theorem infinitePi_map_piCongrLeft {α : Type*} (e : α ≃ ι) :
     (infinitePi (fun i ↦ μ (e i))).map (piCongrLeft X e) = infinitePi μ := by
   refine eq_infinitePi μ fun s t ht ↦ ?_
   conv_lhs => enter [2, 1]; rw [← e.image_preimage s, ← coe_preimage _ e.injective.injOn]
-  rw [map_apply, coe_piCongrLeft, Equiv.piCongrLeft_preimage_pi, infinitePi_boxes,
+  rw [map_apply, coe_piCongrLeft, Equiv.piCongrLeft_preimage_pi, infinitePi_pi,
     prod_equiv e]
   · simp
   · simp
@@ -414,7 +414,7 @@ theorem infinitePi_map_piCongrLeft {α : Type*} (e : α ≃ ι) :
 
 theorem infinitePi_eq_pi [Fintype ι] : infinitePi μ = Measure.pi μ := by
   refine (pi_eq fun s hs ↦ ?_).symm
-  rw [← coe_univ, infinitePi_boxes]
+  rw [← coe_univ, infinitePi_pi]
   simpa
 
 lemma infinitePi_cylinder {s : Finset ι} {S : Set (Π i : s, X i)} (mS : MeasurableSet S) :
