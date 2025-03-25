@@ -806,7 +806,7 @@ theorem Measure.ext_iff_lintegral (ν : Measure α) :
   intro h
   ext s hs
   simp only [← lintegral_indicator_one hs]
-  exact h (s.indicator 1) (by apply (measurable_indicator_const_iff 1).mpr hs)
+  exact h (s.indicator 1) ((measurable_indicator_const_iff 1).mpr hs)
 
 theorem Measure.ext_of_lintegral (ν : Measure α)
     (hμν : ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν) : μ = ν :=
