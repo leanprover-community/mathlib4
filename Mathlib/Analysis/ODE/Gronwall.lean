@@ -361,3 +361,22 @@ theorem ODE_solution_unique
   have hfs : ∀ t ∈ Ico a b, f t ∈ @univ E := fun _ _ => trivial
   ODE_solution_unique_of_mem_Icc_right (fun t _ => (hv t).lipschitzOnWith) hf hf' hfs hg hg'
     (fun _ _ => trivial) ha
+
+/-- There exists only one global solution to an ODE \(\dot x=v(t, x\) with a given initial value
+provided that the RHS is Lipschitz continuous. -/
+theorem ODE_solution_unique_univ
+    (hv : ∀ t, LipschitzOnWith K (v t) (s t))
+    (hf : ∀ t, HasDerivAt f (v t (f t)) t ∧ f t ∈ s t)
+    (hg : ∀ t, HasDerivAt g (v t (g t)) t ∧ g t ∈ s t)
+    (heq : f t₀ = g t₀) : f = g := by
+  ext t
+  obtain ⟨A, B, Ht, Ht₀⟩ : ∃ A B, t ∈ Set.Ioo A B ∧ t₀ ∈ Set.Ioo A B := by
+    use (min (-|t|) (-|t₀|) - 1), (max |t| |t₀| + 1)
+    rw [Set.mem_Ioo, Set.mem_Ioo]
+    refine ⟨⟨?_, ?_⟩, ?_, ?_⟩
+    · apply lt_of_lt_of_le (sub_one_lt _) (le_trans (min_le_left _ _) (neg_abs_le t))
+    · apply lt_of_le_of_lt (le_trans (le_abs_self _) (le_max_left _ _)) (lt_add_one _)
+    · apply lt_of_lt_of_le (sub_one_lt _) (le_trans (min_le_right _ _) (neg_abs_le t₀))
+    · apply lt_of_le_of_lt (le_trans (le_abs_self _) (le_max_right _ _)) (lt_add_one _)
+  apply ODE_solution_unique_of_mem_Ioo (fun t _ => hv t) Ht₀ (fun t _ => hf t)
+    (fun t _ => hg t) heq Ht
