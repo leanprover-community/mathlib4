@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
-import Mathlib.CategoryTheory.Functor.ReflectsIso.FullyFaithful
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Monomorphisms over a fixed object
