@@ -74,7 +74,7 @@ instance (priority := 100) IsTopologicalGroup.to_continuousDiv
     {G : Type u} [TopologicalSpace G] [Group G] [IsTopologicalGroup G] : ContinuousDiv G where
   continuous_div' := by
     simp only [div_eq_mul_inv]
-    exact continuous_fst.mul <| continuous_inv.comp continuous_snd
+    exact continuous_mul.comp₂ continuous_fst <| continuous_inv.comp continuous_snd
 
 export ContinuousSub (continuous_sub)
 export ContinuousDiv (continuous_div')
