@@ -36,7 +36,7 @@ and interacts nicely with duality and linear representations.
 # Naming conventions
 
 We use the abbreviations `deleteElem` and `contractElem` in lemma names to refer to the
-deletion or contraction of a single element `e : α` from `M : Matroid α`.
+deletion `M ＼ {e}` or contraction `M ／ {e}` of a single element `e : α` from `M : Matroid α`.
 
 -/
 
@@ -55,7 +55,7 @@ Its independent sets are the `M`-independent subsets of `M.E \ D`. -/
 def delete (M : Matroid α) (D : Set α) : Matroid α := M ↾ (M.E \ D)
 
 /-- `M ＼ D` refers to the deletion of a set `D` from the matroid `M`. -/
-infixl:75 " ＼ " => Matroid.delete
+scoped infixl:75 " ＼ " => Matroid.delete
 
 lemma delete_eq_restrict (M : Matroid α) (D : Set α) : M ＼ D = M ↾ (M.E \ D) := rfl
 
@@ -123,7 +123,7 @@ lemma IsRestriction.restrict_delete_of_disjoint (h : N ≤r M) (hX : Disjoint X 
   rwa [delete_delete, union_diff_self, union_comm, ← delete_delete, eq_comm,
     delete_eq_self_iff]
 
-lemma IsRestriction.restriction_deleteElem (h : N ≤r M) (he : e ∉ N.E) : N ≤r M ＼ {e} :=
+lemma IsRestriction.isRestriction_deleteElem (h : N ≤r M) (he : e ∉ N.E) : N ≤r M ＼ {e} :=
   h.restrict_delete_of_disjoint (by simpa)
 
 @[simp]
@@ -166,7 +166,7 @@ lemma delete_isBasis'_iff : (M ＼ D).IsBasis' I X ↔ M.IsBasis' I (X \ D) := b
 lemma IsBasis.of_delete (h : (M ＼ D).IsBasis I X) : M.IsBasis I X :=
   (delete_isBasis_iff.mp h).1
 
-lemma IsBasis.to_delete (h : M.IsBasis I X) (hX : Disjoint X D) : (M ＼ D).IsBasis I X := by
+lemma IsBasis.delete (h : M.IsBasis I X) (hX : Disjoint X D) : (M ＼ D).IsBasis I X := by
   rw [delete_isBasis_iff]; exact ⟨h, hX⟩
 
 @[simp]
@@ -186,10 +186,9 @@ lemma isNonloop_iff_delete_of_not_mem (he : e ∉ D) : M.IsNonloop e ↔ (M ＼ 
 @[simp]
 lemma delete_isCircuit_iff {C : Set α} :
     (M ＼ D).IsCircuit C ↔ M.IsCircuit C ∧ Disjoint C D := by
-  simp_rw [isCircuit_iff, delete_dep_iff, and_imp]
-  rw [and_comm, ← and_assoc, and_congr_left_iff, and_comm, and_congr_right_iff]
-  exact fun hdj _↦ ⟨fun h I hId hIC ↦ h hId (disjoint_of_subset_left hIC hdj) hIC,
-    fun h I hI _ hIC ↦ h hI hIC⟩
+  rw [delete_eq_restrict, restrict_isCircuit_iff, and_congr_right_iff, subset_diff,
+    and_iff_right_iff_imp]
+  exact fun h _ ↦ h.subset_ground
 
 lemma IsCircuit.of_delete {C : Set α} (h : (M ＼ D).IsCircuit C) : M.IsCircuit C :=
   (delete_isCircuit_iff.1 h).1
@@ -215,7 +214,8 @@ lemma delete_empty (M : Matroid α) : M ＼ ∅ = M := by
   rw [delete_eq_self_iff]
   exact empty_disjoint _
 
-lemma delete_delete_diff (M : Matroid α) (D₁ D₂ : Set α) : M ＼ D₁ ＼ D₂ = M ＼ D₁ ＼ (D₂ \ D₁) :=
+lemma delete_delete_eq_delete_diff (M : Matroid α) (D₁ D₂ : Set α) :
+    M ＼ D₁ ＼ D₂ = M ＼ D₁ ＼ (D₂ \ D₁) :=
   by simp
 
 instance delete_finitary (M : Matroid α) [Finitary M] (D : Set α) : Finitary (M ＼ D) := by
@@ -261,11 +261,11 @@ infixl:75 " ／ " => Matroid.contract
 lemma dual_delete_dual (M : Matroid α) (X : Set α) : (M✶ ＼ X)✶ = M ／ X := rfl
 
 @[simp]
-lemma delete_dual (M : Matroid α) (X : Set α) : (M ＼ X)✶ = M✶ ／ X := by
+lemma dual_delete (M : Matroid α) (X : Set α) : (M ＼ X)✶ = M✶ ／ X := by
   rw [← dual_dual M, dual_delete_dual, dual_dual]
 
 @[simp]
-lemma contract_dual (M : Matroid α) (X : Set α) : (M ／ X)✶ = M✶ ＼ X := by
+lemma dual_contract (M : Matroid α) (X : Set α) : (M ／ X)✶ = M✶ ＼ X := by
   rw [← dual_delete_dual, dual_dual]
 
 lemma dual_contract_dual (M : Matroid α) (X : Set α) : (M✶ ／ X)✶ = M ＼ X := by
@@ -278,10 +278,10 @@ lemma contract_contract (M : Matroid α) (C₁ C₂ : Set α) : M ／ C₁ ／ C
 lemma contract_comm (M : Matroid α) (C₁ C₂ : Set α) : M ／ C₁ ／ C₂ = M ／ C₂ ／ C₁ := by
   simp [union_comm]
 
-lemma contract_delete_dual (M : Matroid α) (X Y : Set α) : (M ／ X ＼ Y)✶ = M✶ ＼ X ／ Y := by
+lemma dual_contract_delete (M : Matroid α) (X Y : Set α) : (M ／ X ＼ Y)✶ = M✶ ＼ X ／ Y := by
   simp
 
-lemma delete_contract_dual (M : Matroid α) (X Y : Set α) : (M ＼ X ／ Y)✶ = M✶ ／ X ＼ Y := by
+lemma dual_delete_contract (M : Matroid α) (X Y : Set α) : (M ＼ X ／ Y)✶ = M✶ ／ X ＼ Y := by
   simp
 
 end Contract
