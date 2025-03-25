@@ -302,6 +302,8 @@ instance (priority := 100) LinearOrderedSemifield.toHasContinuousInv₀ {𝕜}
 instance (priority := 100) LinearOrderedField.toIsTopologicalDivisionRing :
     IsTopologicalDivisionRing 𝕜 := ⟨⟩
 
+@[deprecated (since := "2025-03-25")] alias LinearOrderedField.toTopologicalDivisionRing := LinearOrderedField.toIsTopologicalDivisionRing
+
 -- TODO: generalize to a `GroupWithZero`
 theorem comap_mulLeft_nhdsGT_zero {x : 𝕜} (hx : 0 < x) : comap (x * ·) (𝓝[>] 0) = 𝓝[>] 0 := by
   rw [nhdsWithin, comap_inf, comap_principal, preimage_const_mul_Ioi _ hx, zero_div]
