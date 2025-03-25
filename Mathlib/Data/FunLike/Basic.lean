@@ -221,6 +221,14 @@ protected theorem congr {f g : F} {x y : α} (h₁ : f = g) (h₂ : x = y) : f x
 protected theorem congr_arg (f : F) {x y : α} (h₂ : x = y) : f x = f y :=
   congr_arg _ h₂
 
+theorem dite_apply {P : Prop} [Decidable P] (f : P → F) (g : ¬P → F) (x : α) :
+    (if h : P then f h else g h) x = if h : P then f h x else g h x := by
+  split_ifs <;> rfl
+
+theorem ite_apply {P : Prop} [Decidable P] (f g : F) (x : α) :
+    (if P then f else g) x = if P then f x else g x :=
+  dite_apply _ _ _
+
 end DFunLike
 
 end NonDependent
