@@ -235,6 +235,9 @@ theorem isOpen_image (h : X ≃ₜ Y) {s : Set X} : IsOpen (h '' s) ↔ IsOpen s
 
 protected theorem isOpenMap (h : X ≃ₜ Y) : IsOpenMap h := fun _ => h.isOpen_image.2
 
+protected theorem isOpenQuotientMap (h : X ≃ₜ Y) : IsOpenQuotientMap h :=
+  ⟨h.surjective, h.continuous, h.isOpenMap⟩
+
 @[simp]
 theorem isClosed_preimage (h : X ≃ₜ Y) {s : Set Y} : IsClosed (h ⁻¹' s) ↔ IsClosed s := by
   simp only [← isOpen_compl_iff, ← preimage_compl, isOpen_preimage]

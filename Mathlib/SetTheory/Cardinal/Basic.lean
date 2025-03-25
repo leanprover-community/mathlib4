@@ -57,8 +57,7 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
     ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
   exact Equiv.ofBijective f this
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
+-- `simp` can't figure out universe levels: normal form is `lift_mk_shrink'`.
 theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
     Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
   lift_mk_eq.2 ⟨(equivShrink α).symm⟩
@@ -393,28 +392,6 @@ theorem isStrongLimit_aleph0 : IsStrongLimit ℵ₀ := by
 
 theorem IsStrongLimit.aleph0_le {c} (H : IsStrongLimit c) : ℵ₀ ≤ c :=
   aleph0_le_of_isSuccLimit H.isSuccLimit
-
-section deprecated
-
-set_option linter.deprecated false in
-@[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
-theorem isLimit_aleph0 : IsLimit ℵ₀ :=
-  ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
-
-set_option linter.deprecated false in
-@[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
-lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
-  | 0, e => e.1 rfl
-  | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
-
-set_option linter.deprecated false in
-@[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
-theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
-  by_contra! h'
-  rcases lt_aleph0.1 h' with ⟨n, rfl⟩
-  exact not_isLimit_natCast n h
-
-end deprecated
 
 lemma exists_eq_natCast_of_iSup_eq {ι : Type u} [Nonempty ι] (f : ι → Cardinal.{v})
     (hf : BddAbove (range f)) (n : ℕ) (h : ⨆ i, f i = n) : ∃ i, f i = n :=

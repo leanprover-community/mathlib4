@@ -266,7 +266,7 @@ of complexes. -/
 theorem nullHomotopicMap'_comp (hom : ∀ i j, c.Rel j i → (C.X i ⟶ D.X j)) (g : D ⟶ E) :
     nullHomotopicMap' hom ≫ g = nullHomotopicMap' fun i j hij => hom i j hij ≫ g.f j := by
   ext n
-  erw [nullHomotopicMap_comp]
+  rw [nullHomotopicMap', nullHomotopicMap_comp]
   congr
   ext i j
   split_ifs
@@ -286,7 +286,7 @@ of complexes. -/
 theorem comp_nullHomotopicMap' (f : C ⟶ D) (hom : ∀ i j, c.Rel j i → (D.X i ⟶ E.X j)) :
     f ≫ nullHomotopicMap' hom = nullHomotopicMap' fun i j hij => f.f i ≫ hom i j hij := by
   ext n
-  erw [comp_nullHomotopicMap]
+  rw [nullHomotopicMap', comp_nullHomotopicMap]
   congr
   ext i j
   split_ifs
@@ -308,7 +308,7 @@ theorem map_nullHomotopicMap' {W : Type*} [Category W] [Preadditive W] (G : V �
     (G.mapHomologicalComplex c).map (nullHomotopicMap' hom) =
       nullHomotopicMap' fun i j hij => by exact G.map (hom i j hij) := by
   ext n
-  erw [map_nullHomotopicMap]
+  rw [nullHomotopicMap', map_nullHomotopicMap]
   congr
   ext i j
   split_ifs
@@ -539,8 +539,8 @@ def mkInductive : Homotopy e 0 where
         dsimp [xNextIso]
         rw [id_comp]
     · dsimp [toPrev]
-      erw [dif_pos, comp_id]
-      simp only [ChainComplex.prev]
+      rw [dif_pos (by simp only [ChainComplex.prev])]
+      simp [xPrevIso, comp_id]
 
 end
 
@@ -669,8 +669,8 @@ def mkCoinductive : Homotopy e 0 where
         dsimp [xPrevIso]
         rw [comp_id]
     · dsimp [fromNext]
-      erw [dif_pos, id_comp]
-      simp only [CochainComplex.next]
+      rw [dif_pos (by simp only [CochainComplex.next])]
+      simp [xNextIso, id_comp]
 
 end
 
