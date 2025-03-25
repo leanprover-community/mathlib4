@@ -29,20 +29,22 @@ open scoped Topology NNReal
 
 /-- A non-unital seminormed ring is a not-necessarily-unital ring
 endowed with a seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NonUnitalSeminormedRing (α : Type*) extends Norm α, NonUnitalRing α,
-  PseudoMetricSpace α where
-  /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+class NonUnitalSeminormedRing (α : Type*)
+    extends SeminormedAddCommGroup α, NonUnitalRing α where
   /-- The norm is submultiplicative. -/
   protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
 
+-- see Note [lower instance priority]
+attribute [instance 100] NonUnitalSeminormedRing.toNonUnitalRing
+
 /-- A seminormed ring is a ring endowed with a seminorm which satisfies the inequality
 `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class SeminormedRing (α : Type*) extends Norm α, Ring α, PseudoMetricSpace α where
-  /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
+class SeminormedRing (α : Type*) extends SeminormedAddCommGroup α, Ring α where
   /-- The norm is submultiplicative. -/
-  norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
+  protected norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
+
+-- see Note [lower instance priority]
+attribute [instance 100] SeminormedRing.toRing
 
 -- see Note [lower instance priority]
 /-- A seminormed ring is a non-unital seminormed ring. -/
@@ -52,29 +54,10 @@ instance (priority := 100) SeminormedRing.toNonUnitalSeminormedRing [β : Semino
 
 /-- A non-unital normed ring is a not-necessarily-unital ring
 endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NonUnitalNormedRing (α : Type*) extends Norm α, NonUnitalRing α, MetricSpace α where
-  /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
-  /-- The norm is submultiplicative. -/
-  norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
-
--- see Note [lower instance priority]
-/-- A non-unital normed ring is a non-unital seminormed ring. -/
-instance (priority := 100) NonUnitalNormedRing.toNonUnitalSeminormedRing
-    [β : NonUnitalNormedRing α] : NonUnitalSeminormedRing α :=
-  { β with }
+class NonUnitalNormedRing (α : Type*) extends NormedAddCommGroup α, NonUnitalSeminormedRing α where
 
 /-- A normed ring is a ring endowed with a norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NormedRing (α : Type*) extends Norm α, Ring α, MetricSpace α where
-  /-- The distance is induced by the norm. -/
-  dist_eq : ∀ x y, dist x y = norm (x - y)
-  /-- The norm is submultiplicative. -/
-  norm_mul_le : ∀ a b, norm (a * b) ≤ norm a * norm b
-
--- see Note [lower instance priority]
-/-- A normed ring is a seminormed ring. -/
-instance (priority := 100) NormedRing.toSeminormedRing [β : NormedRing α] : SeminormedRing α :=
-  { β with }
+class NormedRing (α : Type*) extends NormedAddCommGroup α, SeminormedRing α where
 
 -- see Note [lower instance priority]
 /-- A normed ring is a non-unital normed ring. -/
@@ -112,10 +95,7 @@ attribute [instance 100] SeminormedCommRing.toCommRing
 
 /-- A normed commutative ring is a commutative ring endowed with a norm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NormedCommRing (α : Type*) extends NormedRing α, CommRing α where
-
--- see Note [lower instance priority]
-attribute [instance 100] NormedCommRing.toCommRing
+class NormedCommRing (α : Type*) extends NormedRing α, SeminormedCommRing α where
 
 -- see Note [lower instance priority]
 /-- A seminormed commutative ring is a non-unital seminormed commutative ring. -/
@@ -129,11 +109,6 @@ instance (priority := 100) NormedCommRing.toNonUnitalNormedCommRing
     [β : NormedCommRing α] : NonUnitalNormedCommRing α :=
   { β with }
 
--- see Note [lower instance priority]
-/-- A normed commutative ring is a seminormed commutative ring. -/
-instance (priority := 100) NormedCommRing.toSeminormedCommRing [β : NormedCommRing α] :
-    SeminormedCommRing α :=
-  { β with }
 
 instance PUnit.normedCommRing : NormedCommRing PUnit :=
   { PUnit.normedAddCommGroup, PUnit.commRing with
@@ -163,16 +138,6 @@ theorem NormOneClass.nontrivial : Nontrivial G :=
 end SeminormedAddCommGroup
 
 end NormOneClass
-
--- see Note [lower instance priority]
-instance (priority := 100) NonUnitalNormedRing.toNormedAddCommGroup [β : NonUnitalNormedRing α] :
-    NormedAddCommGroup α :=
-  { β with }
-
--- see Note [lower instance priority]
-instance (priority := 100) NonUnitalSeminormedRing.toSeminormedAddCommGroup
-    [NonUnitalSeminormedRing α] : SeminormedAddCommGroup α :=
-  { ‹NonUnitalSeminormedRing α› with }
 
 instance ULift.normOneClass [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     NormOneClass (ULift α) :=
@@ -749,7 +714,7 @@ See note [reducible non-instances] -/
 abbrev NonUnitalSeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) : NonUnitalSeminormedRing R :=
   { SeminormedAddCommGroup.induced R S f, ‹NonUnitalRing R› with
-    norm_mul_le x y := show ‖f _‖ ≤ _ from (map_mul f x y).symm ▸ norm_mul_le (f x) (f y) }
+    norm_mul_le x y := congrArg norm (map_mul f x y) |>.trans_le <| norm_mul_le (f x) (f y) }
 
 /-- An injective non-unital ring homomorphism from a `NonUnitalRing` to a
 `NonUnitalNormedRing` induces a `NonUnitalNormedRing` structure on the domain.
@@ -857,6 +822,7 @@ namespace AbsoluteValue
 
 /-- A real absolute value on a ring determines a `NormedRing` structure. -/
 noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
+  __ : Ring R := ‹_›
   norm := v
   dist_eq _ _ := rfl
   dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
