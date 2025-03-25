@@ -7,8 +7,6 @@ import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 import Mathlib.Algebra.Order.BigOperators.Ring.List
 import Mathlib.Algebra.Order.Nonneg.Ring
 
-import Mathlib.Algebra.BigOperators.Expect
-
 /-!
 # Big operators on a multiset in ordered rings
 
