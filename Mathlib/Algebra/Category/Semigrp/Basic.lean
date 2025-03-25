@@ -6,7 +6,7 @@ Authors: Julian Kuelshammer
 import Mathlib.Algebra.PEmptyInstances
 import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.FullyFaithful
 
 /-!
 # Category instances for `Mul`, `Add`, `Semigroup` and `AddSemigroup`

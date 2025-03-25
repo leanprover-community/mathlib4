@@ -9,6 +9,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.SMulWithZero
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # Adjunctions regarding the category of monoids
