@@ -41,15 +41,13 @@ lemma CategoryTheory.Adjunction.galoisConnection {F : X ⥤ Y} {G : Y ⥤ X} (ad
 /-- A left adjoint in a Galois connection is left-continuous in the order-theoretic sense. -/
 lemma GaloisConnection.leftOrdContinuous {f : X → Y} {g : Y → X} (gc : GaloisConnection f g) :
     LeftOrdContinuous f := by
-  have hfg (x) (y) : f x ≤ y ↔ x ≤ g y := gc x y
-  intro s a a_lub_s
-  rcases a_lub_s with ⟨a_ub_s, a_le_ub_s⟩
+  intro s a ⟨a_ub_s, a_le_ub_s⟩
   refine ⟨?_, ?_⟩
   · intro y ⟨x, x_in_s, fx_eq_y⟩
     simpa [← fx_eq_y] using monotone_l gc <| a_ub_s x_in_s
   · intro b b_ub_s
-    rw [hfg]
-    exact a_le_ub_s fun z z_in_s ↦ by simpa [← hfg] using b_ub_s <| mem_image_of_mem f z_in_s
+    rw [gc]
+    exact a_le_ub_s fun z z_in_s ↦ by simpa [← gc _ _] using b_ub_s <| mem_image_of_mem f z_in_s
 
 /-- A right adjoint in a Galois connection is right-continuous in the order-theoretic sense. -/
 lemma GaloisConnection.rightOrdContinuous {f : X → Y} {g : Y → X} (gc : GaloisConnection f g) :
@@ -88,12 +86,11 @@ lemma LeftOrdContinuous.continuousWithinAt_Iic (f_loc : LeftOrdContinuous f) (x 
     have Iio_bdd_above : BddAbove (Iio x) := ⟨x, fun _ h ↦ h.le⟩
     obtain ⟨f_sup_ub, f_sup_lub⟩ := f_loc <| isLUB_csSup (s := Iio x) Iio_nonempty Iio_bdd_above
     have x_eq : x = sSup (Iio x) := by
-      apply le_antisymm
-      · apply (le_csSup_iff ⟨x, fun _ h ↦ h.le⟩ Iio_nonempty).mpr fun b hb ↦ ?_
-        by_contra con
-        obtain ⟨a, b_lt_a, a_lt_x⟩ := exists_between (not_le.mp con)
-        simpa using lt_of_lt_of_le b_lt_a (mem_upperBounds.mp hb a a_lt_x)
-      · exact csSup_le Iio_nonempty fun _ h ↦ le_of_lt h
+      apply le_antisymm _ (csSup_le Iio_nonempty fun _ h ↦ le_of_lt h)
+      apply (le_csSup_iff ⟨x, fun _ h ↦ h.le⟩ Iio_nonempty).mpr fun b hb ↦ ?_
+      by_contra con
+      obtain ⟨a, b_lt_a, a_lt_x⟩ := exists_between (not_le.mp con)
+      simpa using lt_of_lt_of_le b_lt_a (mem_upperBounds.mp hb a a_lt_x)
     rw [← x_eq] at f_sup_ub f_sup_lub
     have key : sSup (f '' Iio x) > z := by
       apply lt_of_lt_of_le x_in_V (f_sup_lub fun y hy ↦ ?_)
