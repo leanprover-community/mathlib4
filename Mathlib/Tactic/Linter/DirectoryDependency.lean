@@ -462,6 +462,7 @@ because modules in `Mathlib.Algebra.Notation` cannot import modules in `Mathlib.
 outside `Mathlib.Algebra.Notation`.
 -/
 def overrideAllowedImportDirs : NamePrefixRel := .ofArray #[
+  (`Mathlib.Algebra.Lie, `Mathlib.RepresentationTheory),
   (`Mathlib.Algebra.Notation, `Mathlib.Algebra.Notation),
   (`Mathlib.Deprecated, `Mathlib.Deprecated),
   (`Mathlib.Topology.Algebra, `Mathlib.Algebra),
