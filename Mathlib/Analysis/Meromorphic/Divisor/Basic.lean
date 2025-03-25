@@ -238,7 +238,7 @@ instance [Preorder Y] [Zero Y] : LT (locallyFinsuppWithin U Y) where
 lemma lt_def [Preorder Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
     D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·),(·)⟩
 
-instance [Lattice Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
+instance [SemilatticeSup Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
   max D₁ D₂ :=
   { toFun z := max (D₁ z) (D₂ z)
     supportWithinDomain' := by
@@ -260,10 +260,10 @@ instance [Lattice Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
       simp_all }
 
 @[simp]
-lemma max_apply [Lattice Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
+lemma max_apply [SemilatticeSup Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
     max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
 
-instance [Lattice Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
+instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
   min D₁ D₂ :=
   { toFun z := min (D₁ z) (D₂ z)
     supportWithinDomain' := by
@@ -285,7 +285,7 @@ instance [Lattice Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
       simp_all }
 
 @[simp]
-lemma min_apply [Lattice Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
+lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
     min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
 instance  [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
