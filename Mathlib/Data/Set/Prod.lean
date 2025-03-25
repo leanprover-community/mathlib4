@@ -809,9 +809,14 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
   eval_image_pi (mem_univ i) ht
 
+theorem piMap_mapsTo_pi {I : Set ι} {f : ∀ i, α i → β i} {s : ∀ i, Set (α i)} {t : ∀ i, Set (β i)}
+    (h : ∀ i ∈ I, MapsTo (f i) (s i) (t i)) :
+    MapsTo (Pi.map f) (I.pi s) (I.pi t) :=
+  fun _x hx i hi => h i hi (hx i hi)
+
 theorem piMap_image_pi_subset {f : ∀ i, α i → β i} (t : ∀ i, Set (α i)) :
     Pi.map f '' s.pi t ⊆ s.pi fun i ↦ f i '' t i :=
-  image_subset_iff.2 fun _ ha _ hi ↦ mem_image_of_mem _ (ha _ hi)
+  image_subset_iff.2 <| piMap_mapsTo_pi fun _ _ => mapsTo_image _ _
 
 theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
     Pi.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
