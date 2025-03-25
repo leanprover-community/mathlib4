@@ -820,10 +820,8 @@ theorem piMap_image_pi_subset {f : ∀ i, α i → β i} (t : ∀ i, Set (α i))
 
 theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
     Pi.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
-  refine Subset.antisymm (piMap_image_pi_subset _) ?_
-  intro b hb
-  have : ∀ i, ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
-    intro i
+  refine Subset.antisymm (piMap_image_pi_subset _) fun b hb => ?_
+  have (i : ι) : ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
     if hi : i ∈ s then
       exact (hb i hi).imp fun a ⟨hat, hab⟩ ↦ ⟨hab, fun _ ↦ hat⟩
     else
