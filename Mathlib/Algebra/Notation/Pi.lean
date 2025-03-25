@@ -133,7 +133,4 @@ theorem div_comp [Div γ] (x y : β → γ) (z : α → β) : (x / y) ∘ z = x 
 @[to_additive (attr := simp)]
 lemma _root_.Function.const_div [Div β] (a b : β) : const α a / const α b = const α (a / b) := rfl
 
-instance instofNat (n : ℕ) [∀ i, OfNat (f i) n] : OfNat ((i : I) → f i) n where
-  ofNat := fun _ ↦ OfNat.ofNat n
-
 end Pi

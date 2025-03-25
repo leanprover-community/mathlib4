@@ -183,6 +183,9 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 
 instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 
+instance instOfNat (n : ℕ) [∀ i, OfNat (π i) n] : OfNat ((i : α) → π i) n where
+  ofNat _ := OfNat.ofNat n
+
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
 
