@@ -179,12 +179,12 @@ instance Nat.uniqueRingHom {R : Type*} [NonAssocSemiring R] : Unique (ℕ →+* 
 
 namespace Pi
 
-variable {π : α → Type*} [∀ a, NatCast (π a)]
+variable {π : α → Type*}
+
+section NatCast
+variable [∀ a, NatCast (π a)]
 
 instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
-
-instance instOfNat (n : ℕ) [∀ i, OfNat (π i) n] : OfNat ((i : α) → π i) n where
-  ofNat _ := OfNat.ofNat n
 
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
@@ -193,10 +193,21 @@ theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
 theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 
-@[simp]
-theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl
+end NatCast
 
-lemma ofNat_def (n : ℕ) [n.AtLeastTwo] : (OfNat.ofNat n : ∀ a, π a) = fun _ ↦ OfNat.ofNat n := rfl
+section OfNat
+
+-- This instance is low priority, as `to_additive` only works with the one that comes from `One`
+-- and `Zero`.
+instance (priority := low) instOfNat (n : ℕ) [∀ i, OfNat (π i) n] : OfNat ((i : α) → π i) n where
+  ofNat _ := OfNat.ofNat n
+
+@[simp]
+theorem ofNat_apply (n : ℕ) [∀ i, OfNat (π i) n] (a : α) : (ofNat(n) : ∀ a, π a) a = ofNat(n) := rfl
+
+lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (ofNat(n) : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
+
+end OfNat
 
 end Pi
 
