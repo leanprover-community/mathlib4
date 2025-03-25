@@ -1777,6 +1777,16 @@ theorem coe_pow (x : ℝ) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
 theorem coe_ennreal_pow (x : ℝ≥0∞) (n : ℕ) : (↑(x ^ n) : EReal) = (x : EReal) ^ n :=
   map_pow (⟨⟨(↑), coe_ennreal_one⟩, coe_ennreal_mul⟩ : ℝ≥0∞ →* EReal) _ _
 
+lemma exists_nat_ge_mul {a : EReal} (ha : a ≠ ⊤) (n : ℕ) :
+    ∃ m : ℕ, a * n ≤ m :=
+  match a with
+  | ⊤ => ha.irrefl.rec
+  | ⊥ => ⟨0, Nat.cast_zero (R := EReal) ▸ mul_nonpos_iff.2 (.inr ⟨bot_le, n.cast_nonneg'⟩)⟩
+  | (a : ℝ) => by
+    obtain ⟨m, an_m⟩ := exists_nat_ge (a * n)
+    use m
+    rwa [← coe_coe_eq_natCast n, ← coe_coe_eq_natCast m, ← EReal.coe_mul, EReal.coe_le_coe_iff]
+
 /-! ### Min and Max -/
 
 lemma min_neg_neg (x y : EReal) : min (-x) (-y) = -max x y := by

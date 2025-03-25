@@ -921,7 +921,7 @@ theorem liminf_le_iff' [DenselyOrdered β] {x : β}
 lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x ≤ v x)
     (h₁ : f.IsBoundedUnder (· ≥ ·) u := by isBoundedDefault)
     (h₂ : f.IsBoundedUnder (· ≤ ·) v := by isBoundedDefault) :
-    f.liminf u ≤ f.limsup v := by
+    liminf u f ≤ limsup v f := by
   rcases f.eq_or_neBot with rfl | _
   · exact (frequently_bot h).rec
   have h₃ : f.IsCoboundedUnder (· ≥ ·) u := by
@@ -933,7 +933,7 @@ lemma liminf_le_limsup_of_frequently_le {v : α → β} (h : ∃ᶠ x in f, u x 
     apply IsCoboundedUnder.of_frequently_ge (a := a)
     exact (ha.and_frequently h).mono fun x ⟨u_x, v_x⟩ ↦ u_x.trans v_x
   refine (le_limsup_iff h₄ h₂).2 fun y y_v ↦ ?_
-  have := (le_liminf_iff h₃ h₁).1 (le_refl (f.liminf u)) y y_v
+  have := (le_liminf_iff h₃ h₁).1 (le_refl (liminf u f)) y y_v
   exact (h.and_eventually this).mono fun x ⟨ux_vx, y_ux⟩ ↦ y_ux.trans_le ux_vx
 
 variable [ConditionallyCompleteLinearOrder α] {f : Filter α} {b : α}
