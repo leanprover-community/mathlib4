@@ -896,7 +896,7 @@ directed union is in bijection with the good products w.r.t. `π C (ord I · < o
 
 * `GoodProducts.smaller` is the image of good products coming from a smaller ordinal.
 
-* `GoodProducts.range_equiv`: The image of the `GoodProducts` in `C` is equivalent to the union of
+* `GoodProducts.rangeEquiv`: The image of the `GoodProducts` in `C` is equivalent to the union of
   `smaller C o'` over all ordinals `o' < o`.
 
 ### Main results
@@ -921,12 +921,12 @@ def smaller (o : Ordinal) : Set (LocallyConstant C ℤ) :=
 /-- The map from the image of the `GoodProducts` in `LocallyConstant (π C (ord I · < o)) ℤ` to
 `smaller C o` -/
 noncomputable
-def range_equiv_smaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : smaller C o :=
+def rangeEquivSmaller_toFun (o : Ordinal) (x : range (π C (ord I · < o))) : smaller C o :=
   ⟨πs C o ↑x, x.val, x.property, rfl⟩
 
-theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
-    Function.Bijective (range_equiv_smaller_toFun C o) := by
-  dsimp +unfoldPartialApp [range_equiv_smaller_toFun]
+theorem rangeEquivSmaller_toFun_bijective (o : Ordinal) :
+    Function.Bijective (rangeEquivSmaller_toFun C o) := by
+  dsimp +unfoldPartialApp [rangeEquivSmaller_toFun]
   refine ⟨fun a b hab ↦ ?_, fun ⟨a, b, hb⟩ ↦ ?_⟩
   · ext1
     simpa only [Subtype.mk.injEq, (injective_πs C o).eq_iff] using hab
@@ -936,11 +936,11 @@ theorem range_equiv_smaller_toFun_bijective (o : Ordinal) :
 /-- The equivalence from the image of the `GoodProducts` in `LocallyConstant (π C (ord I · < o)) ℤ`
 to `smaller C o` -/
 noncomputable
-def range_equiv_smaller (o : Ordinal) : range (π C (ord I · < o)) ≃ smaller C o :=
-  Equiv.ofBijective (range_equiv_smaller_toFun C o) (range_equiv_smaller_toFun_bijective C o)
+def rangeEquivSmaller (o : Ordinal) : range (π C (ord I · < o)) ≃ smaller C o :=
+  Equiv.ofBijective (rangeEquivSmaller_toFun C o) (rangeEquivSmaller_toFun_bijective C o)
 
 theorem smaller_factorization (o : Ordinal) :
-    (fun (p : smaller C o) ↦ p.1) ∘ (range_equiv_smaller C o) =
+    (fun (p : smaller C o) ↦ p.1) ∘ (rangeEquivSmaller C o) =
     (πs C o) ∘ (fun (p : range (π C (ord I · < o))) ↦ p.1) := by rfl
 
 theorem linearIndependent_iff_smaller (o : Ordinal) :
@@ -1000,19 +1000,19 @@ theorem GoodProducts.union : range C = ⋃ (e : {o' // o' < o}), (smaller C e.va
 
 /-- The image of the `GoodProducts` in `C` is equivalent to the union of `smaller C o'` over all
 ordinals `o' < o`. -/
-def GoodProducts.range_equiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
+def GoodProducts.rangeEquiv : range C ≃ ⋃ (e : {o' // o' < o}), (smaller C e.val) :=
   Equiv.Set.ofEq (union C ho hsC)
 
-theorem GoodProducts.range_equiv_factorization :
-    (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) ∘ (range_equiv C ho hsC) =
+theorem GoodProducts.rangeEquiv_factorization :
+    (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) ∘ (rangeEquiv C ho hsC) =
     (fun (p : range C) ↦ (p.1 : LocallyConstant C ℤ)) := rfl
 
 include ho hsC in
 theorem GoodProducts.linearIndependent_iff_union_smaller :
     LinearIndependent ℤ (GoodProducts.eval C) ↔
       LinearIndependent ℤ (fun (p : ⋃ (e : {o' // o' < o}), (smaller C e.val)) ↦ p.1) := by
-  rw [GoodProducts.linearIndependent_iff_range, ← range_equiv_factorization C]
-  exact linearIndependent_equiv (range_equiv C ho hsC)
+  rw [linearIndependent_iff_range, ← rangeEquiv_factorization C]
+  exact linearIndependent_equiv (rangeEquiv C ho hsC)
 
 end Limit
 
@@ -1057,7 +1057,7 @@ The main definitions in the section `GoodProducts` are as follows:
 * `MaxProducts`: the set of good products that contain the ordinal `o` (since we have
   `contained C (o+1)`, these all start with `o`).
 
-* `GoodProducts.sum_equiv`: the equivalence between `GoodProducts C` and the disjoint union of
+* `GoodProducts.sumEquiv`: the equivalence between `GoodProducts C` and the disjoint union of
   `MaxProducts C` and `GoodProducts (π C (ord I · < o))`.
 
 ### Main results
@@ -1309,31 +1309,31 @@ theorem union_succ : GoodProducts C = GoodProducts (π C (ord I · < o)) ∪ Max
 
 /-- The inclusion map from the sum of `GoodProducts (π C (ord I · < o))` and
     `(MaxProducts C ho)` to `Products I`. -/
-def sum_to : (GoodProducts (π C (ord I · < o))) ⊕ (MaxProducts C ho) → Products I :=
+def sumTo : (GoodProducts (π C (ord I · < o))) ⊕ (MaxProducts C ho) → Products I :=
   Sum.elim Subtype.val Subtype.val
 
-theorem injective_sum_to : Function.Injective (sum_to C ho) := by
+theorem injective_sumTo : Function.Injective (sumTo C ho) := by
   refine Function.Injective.sumElim Subtype.val_injective Subtype.val_injective
     (fun ⟨a,ha⟩ ⟨b,hb⟩  ↦ (fun (hab : a = b) ↦ ?_))
   rw [← hab] at hb
   have ha' := Products.prop_of_isGood  C _ ha (term I ho) hb.2
   simp only [ord_term_aux, lt_self_iff_false] at ha'
 
-theorem sum_to_range :
-    Set.range (sum_to C ho) = GoodProducts (π C (ord I · < o)) ∪ MaxProducts C ho := by
-  have h : Set.range (sum_to C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
+theorem sumTo_range :
+    Set.range (sumTo C ho) = GoodProducts (π C (ord I · < o)) ∪ MaxProducts C ho := by
+  have h : Set.range (sumTo C ho) = _ ∪ _ := Set.Sum.elim_range _ _; rw [h]; congr<;> ext l
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
   · exact ⟨fun ⟨m,hm⟩ ↦ by rw [← hm]; exact m.prop, fun hl ↦ ⟨⟨l,hl⟩, rfl⟩⟩
 
 /-- The equivalence from the sum of `GoodProducts (π C (ord I · < o))` and
     `(MaxProducts C ho)` to `GoodProducts C`. -/
 noncomputable
-def sum_equiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < · : I → I → Prop)) :
+def sumEquiv (hsC : contained C (Order.succ o)) (ho : o < Ordinal.type (· < · : I → I → Prop)) :
     GoodProducts (π C (ord I · < o)) ⊕ (MaxProducts C ho) ≃ GoodProducts C :=
-  calc _ ≃ Set.range (sum_to C ho) := Equiv.ofInjective (sum_to C ho) (injective_sum_to C ho)
-       _ ≃ _ := Equiv.Set.ofEq <| by rw [sum_to_range C ho, union_succ C hsC ho]
+  calc _ ≃ Set.range (sumTo C ho) := Equiv.ofInjective (sumTo C ho) (injective_sumTo C ho)
+       _ ≃ _ := Equiv.Set.ofEq <| by rw [sumTo_range C ho, union_succ C hsC ho]
 
-theorem sum_equiv_comp_eval_eq_elim : eval C ∘ (sum_equiv C hsC ho) =
+theorem sumEquiv_comp_eval_eq_elim : eval C ∘ (sumEquiv C hsC ho) =
     (Sum.elim (fun (l : GoodProducts (π C (ord I · < o))) ↦ Products.eval C l.1)
     (fun (l : MaxProducts C ho) ↦ Products.eval C l.1)) := by
   ext ⟨_,_⟩ <;> [rfl; rfl]
@@ -1357,20 +1357,19 @@ by `succ_exact` and `succ_mono`. The left square commutes by `GoodProducts.squar
       ι → ι ⊕ ι' ← ι'
 ```
 -/
-def SumEval : GoodProducts (π C (ord I · < o)) ⊕ MaxProducts C ho →
-    LocallyConstant C ℤ :=
+def sumEval : GoodProducts (π C (ord I · < o)) ⊕ MaxProducts C ho → LocallyConstant C ℤ :=
   Sum.elim (fun l ↦ l.1.eval C) (fun l ↦ l.1.eval C)
 
 include hsC in
 theorem linearIndependent_iff_sum :
-    LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (SumEval C ho) := by
-  rw [← linearIndependent_equiv (sum_equiv C hsC ho), SumEval,
-    ← sum_equiv_comp_eval_eq_elim C hsC ho]
+    LinearIndependent ℤ (eval C) ↔ LinearIndependent ℤ (sumEval C ho) := by
+  rw [← linearIndependent_equiv (sumEquiv C hsC ho), sumEval,
+    ← sumEquiv_comp_eval_eq_elim C hsC ho]
 
-theorem square_commutes : SumEval C ho ∘ Sum.inl =
+theorem square_commutes : sumEval C ho ∘ Sum.inl =
     ModuleCat.ofHom (πs C o) ∘ eval (π C (ord I · < o)) := by
   ext l
-  dsimp [SumEval]
+  dsimp [sumEval]
   rw [← Products.eval_πs C (Products.prop_of_isGood  _ _ l.prop)]
   rfl
 
@@ -1558,29 +1557,29 @@ theorem maxTail_isGood (l : MaxProducts C ho)
 
 /-- Given `l : MaxProducts C ho`, its `Tail` is a `GoodProducts (C' C ho)`. -/
 noncomputable
-def MaxToGood
+def maxToGood
     (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     MaxProducts C ho → GoodProducts (C' C ho) :=
   fun l ↦ ⟨l.val.Tail, maxTail_isGood C hC hsC ho l h₁⟩
 
 theorem maxToGood_injective
     (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
-    (MaxToGood C hC hsC ho h₁).Injective := by
+    (maxToGood C hC hsC ho h₁).Injective := by
   intro m n h
   apply Subtype.ext ∘ Subtype.ext
   rw [Subtype.ext_iff] at h
-  dsimp [MaxToGood] at h
+  dsimp [maxToGood] at h
   rw [max_eq_o_cons_tail C hsC ho m, max_eq_o_cons_tail C hsC ho n, h]
 
 include hC in
 theorem linearIndependent_comp_of_eval
     (h₁ : ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (ord I · < o))))) :
     LinearIndependent ℤ (eval (C' C ho)) →
-    LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
-  dsimp [SumEval, ModuleCat.ofHom]
+    LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ sumEval C ho ∘ Sum.inr) := by
+  dsimp [sumEval, ModuleCat.ofHom]
   rw [max_eq_eval_unapply C hsC ho]
   intro h
-  let f := MaxToGood C hC hsC ho h₁
+  let f := maxToGood C hC hsC ho h₁
   have hf : f.Injective := maxToGood_injective C hC hsC ho h₁
   have hh : (fun l ↦ Products.eval (C' C ho) l.val.Tail) = eval (C' C ho) ∘ f := rfl
   rw [hh]
