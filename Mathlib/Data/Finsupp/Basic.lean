@@ -774,6 +774,13 @@ lemma optionElim_apply_some [Zero M] (f : α →₀ M) (y : M) (x : α) :
   simp only [optionElim, ne_eq, reduceCtorEq, not_false_eq_true, update_apply_of_ne]
   rw  [this, embDomain_apply]
 
+@[simp]
+lemma optionElim_apply [Zero M] (f : α →₀ M) (y : M) (a : Option α) :
+    f.optionElim y a = Option.elim a y f := by
+  cases a with
+  | none => exact optionElim_apply_none f y
+  | some x => simp only [optionElim_apply_some, Option.elim_some]
+
 lemma some_optionElim [Zero M] (f : α →₀ M) (y : M) : (f.optionElim y).some = f := by
   ext
   simp
