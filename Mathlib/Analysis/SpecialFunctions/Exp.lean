@@ -494,11 +494,14 @@ open Complex in
 lemma HasSum.cexp {ι : Type*} {f : ι → ℂ} {a : ℂ} (h : HasSum f a) : HasProd (cexp ∘ f) (cexp a) :=
   Filter.Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.cexp h
 
+section circleMap
+
+open Complex
+
 @[simp]
 theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
   simp [circleMap]
 
-open Complex in
 theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
   zero_add _
 
@@ -517,7 +520,6 @@ theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ closedBall c R :=
   sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
 
-open Complex in
 @[simp]
 theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
   simp [circleMap, exp_ne_zero]
@@ -528,3 +530,14 @@ theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
 
 theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
   mt circleMap_eq_center_iff.1 hR
+
+lemma circleMap_inv (R θ : ℝ) : (circleMap 0 R θ)⁻¹ = circleMap 0 R⁻¹ (-θ) := by
+  simp [circleMap_zero, exp_neg, mul_comm]
+
+lemma circleMap_pow (n : ℕ) (R θ : ℝ) : (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
+  simp [circleMap_zero, mul_pow, ← exp_nat_mul, ← mul_assoc]
+
+lemma circleMap_zpow (n : ℤ) (R θ : ℝ) : (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
+  simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+
+end circleMap
