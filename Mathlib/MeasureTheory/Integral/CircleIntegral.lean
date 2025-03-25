@@ -84,9 +84,9 @@ def circleMap (c : ℂ) (R : ℝ) : ℝ → ℂ := fun θ => c + R * exp (θ * I
 theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
   simp [circleMap, add_mul, exp_periodic _]
 
-lemma circleMap_eq_circleMap_iff_exists_int {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) :
-    circleMap c R a = circleMap c R b ↔ ∃ (n : ℤ) , a * I = b * I + n * (2 * π * I) := by
-  have : circleMap c R a = circleMap c R b  ↔ (exp (a * I)).arg = (exp (b * I)).arg := by
+lemma circleMap_eq_circleMap_iff {a b R : ℝ} (c : ℂ) (h_R : R ≠ 0) :
+    circleMap c R a = circleMap c R b ↔ ∃ (n : ℤ), a * I = b * I + n * (2 * π * I) := by
+  have : circleMap c R a = circleMap c R b ↔ (exp (a * I)).arg = (exp (b * I)).arg := by
     simp [circleMap, ext_norm_arg_iff, h_R]
   simp [this, arg_eq_arg_iff, exp_eq_exp_iff_exists_int]
 
@@ -95,7 +95,7 @@ lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - 
   rw [circleMap_eq_circleMap_iff_exists_int h_R] at h
   obtain ⟨n, hn⟩ := h
   simp only [show n * (2 * π * I) = (n * 2 * π) * I by ring, ← add_mul, mul_eq_mul_right_iff,
-    Complex.I_ne_zero, or_false] at hn
+    I_ne_zero, or_false] at hn
   norm_cast at hn
   simp only [hn, Int.cast_mul, Int.cast_ofNat, mul_assoc, add_sub_cancel_left, abs_mul,
     Nat.abs_ofNat, abs_of_pos Real.pi_pos] at h_dist
