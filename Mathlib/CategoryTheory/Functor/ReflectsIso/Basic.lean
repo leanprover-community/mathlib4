@@ -3,9 +3,8 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Balanced
-import Mathlib.CategoryTheory.Functor.EpiMono
-import Mathlib.CategoryTheory.Functor.FullyFaithful
+import Mathlib.CategoryTheory.Whiskering
+import Mathlib.CategoryTheory.Iso
 
 /-!
 # Functors which reflect isomorphisms
@@ -14,22 +13,17 @@ A functor `F` reflects isomorphisms if whenever `F.map f` is an isomorphism, `f`
 
 It is formalized as a `Prop` valued typeclass `ReflectsIsomorphisms F`.
 
-Any fully faithful functor reflects isomorphisms.
 -/
-
 
 open CategoryTheory CategoryTheory.Functor
 
 namespace CategoryTheory
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
-
-variable {C : Type u₁} [Category.{v₁} C]
+variable {C : Type*} [Category C]
+  {D : Type*} [Category D]
+  {E : Type*} [Category E]
 
 section ReflectsIso
-
-variable {D : Type u₂} [Category.{v₂} D]
-variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Define what it means for a functor `F : C ⥤ D` to reflect isomorphisms: for any
 morphism `f : A ⟶ B`, if `F.map f` is an isomorphism then `f` is as well.
@@ -48,15 +42,6 @@ lemma isIso_iff_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [F.Reflect
     IsIso (F.map f) ↔ IsIso f :=
   ⟨fun _ => isIso_of_reflects_iso f F, fun _ => inferInstance⟩
 
-lemma Functor.FullyFaithful.reflectsIsomorphisms {F : C ⥤ D} (hF : F.FullyFaithful) :
-    F.ReflectsIsomorphisms where
-  reflects _ _ := hF.isIso_of_isIso_map _
-
-instance (priority := 100) reflectsIsomorphisms_of_full_and_faithful
-    (F : C ⥤ D) [F.Full] [F.Faithful] :
-    F.ReflectsIsomorphisms :=
-  (Functor.FullyFaithful.ofFullyFaithful F).reflectsIsomorphisms
-
 instance reflectsIsomorphisms_comp (F : C ⥤ D) (G : D ⥤ E)
     [F.ReflectsIsomorphisms] [G.ReflectsIsomorphisms] :
     (F ⋙ G).ReflectsIsomorphisms :=
@@ -71,14 +56,6 @@ lemma reflectsIsomorphisms_of_comp (F : C ⥤ D) (G : D ⥤ E)
     dsimp
     infer_instance
 
-instance (priority := 100) reflectsIsomorphisms_of_reflectsMonomorphisms_of_reflectsEpimorphisms
-    [Balanced C] (F : C ⥤ D) [ReflectsMonomorphisms F] [ReflectsEpimorphisms F] :
-    F.ReflectsIsomorphisms where
-  reflects f hf := by
-    haveI : Epi f := epi_of_epi_map F inferInstance
-    haveI : Mono f := mono_of_mono_map F inferInstance
-    exact isIso_of_mono_of_epi f
-
 instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
     ((whiskeringRight C D E).obj F).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -87,13 +64,6 @@ instance (F : D ⥤ E) [F.ReflectsIsomorphisms] :
     rw [← isIso_iff_of_reflects_iso _ F]
     change IsIso ((((whiskeringRight C D E).obj F).map f).app Z)
     infer_instance
-
-lemma Functor.balanced_of_preserves (F : C ⥤ D)
-    [F.ReflectsIsomorphisms] [F.PreservesEpimorphisms] [F.PreservesMonomorphisms] [Balanced D] :
-    Balanced C where
-  isIso_of_mono_of_epi f _ _ := by
-    rw [← isIso_iff_of_reflects_iso (F := F)]
-    exact isIso_of_mono_of_epi _
 
 end ReflectsIso
 

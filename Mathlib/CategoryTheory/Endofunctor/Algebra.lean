@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta, Johan Commelin, Reid Barton, Robert Y. Lewis, Joseph Hua
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 
