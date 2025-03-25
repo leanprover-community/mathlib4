@@ -13,8 +13,8 @@ the restriction to a subset of coordinates `S : Set ι` is a closed set.
 The idea of the proof is to use `isClosedMap_snd_of_compactSpace`, which is the fact that if
 `X` is a compact topological space, then `Prod.snd : X × Y → Y` is a closed map.
 
-We remark that `s` belongs to the set `Sᶜ.restrict  ⁻¹' (Sᶜ.restrict '' s)`, and we build
-an homeomorphism `Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) ≃ₜ Sᶜ.restrict '' s × Π i : S, α i`.
+We remark that `s` is included in the set `Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s)`, and we build
+a homeomorphism `Sᶜ.restrict ⁻¹' (Sᶜ.restrict '' s) ≃ₜ Sᶜ.restrict '' s × Π i : S, α i`.
 `Sᶜ.restrict '' s` is a compact space since `s` is compact, and the lemma applies,
 with `X = Sᶜ.restrict '' s` and `Y = Π i : S, α i`.
 
@@ -28,7 +28,7 @@ namespace Homeomorph
 
 open Classical in
 /-- Given a set in a product space `s : Set (Π j, α j)` and a set of coordinates `S : Set ι`,
-`Sᶜ.restrict '' s × (Π i : S, α i)` is a set of functions that coincide with an element of `s`
+`Sᶜ.restrict '' s × (Π i : S, α i)` is the set of functions that coincide with an element of `s`
 on `Sᶜ` and are arbitrary on `S`.
 `reorderRestrictProd` sends a term of that type to `Π j, α j` by looking for the value at `j`
 in one part of the product or the other depending on whether `j` is in `S` or not. -/
