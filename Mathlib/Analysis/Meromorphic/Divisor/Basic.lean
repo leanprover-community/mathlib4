@@ -84,6 +84,11 @@ lemma coe_injective : Function.Injective (· : DivisorOn U → 𝕜 → ℤ) := 
 ## Elementary properties of the support
 -/
 
+/-- Simplifier lemma: A divisor on `U` evaluates to zero outside of `U`. -/
+@[simp]
+lemma apply_eq_zero_of_not_mem {z : 𝕜} (D : DivisorOn U) (hz : z ∉ U) :
+    D z = 0 := Function.nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+
 /-- The support of a divisor is discrete. -/
 theorem discreteSupport (D : DivisorOn U) : DiscreteTopology D.support := by
   have : Function.support D = {x | D x = 0}ᶜ ∩ U := by

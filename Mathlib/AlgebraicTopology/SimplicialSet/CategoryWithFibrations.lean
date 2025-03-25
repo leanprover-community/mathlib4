@@ -27,7 +27,7 @@ universe u
 
 namespace SSet
 
-namespace modelCategory
+namespace modelCategoryQuillen
 
 /-- The generating cofibrations: this is the family of morphisms in `SSet`
 which consists of boundary inclusions `∂Δ[n].ι : ∂Δ[n] ⟶ Δ[n]`. -/
@@ -40,7 +40,7 @@ lemma boundary_ι_mem_I (n : ℕ) :
 /-- The generating trivial cofibrations: this is the family of morphisms in `SSet`
 which consists of horn inclusions `Λ[n, i].ι : Λ[n, i] ⟶ Δ[n]` (for positive `n`). -/
 def J : MorphismProperty SSet.{u} :=
-  ⨆ n, .ofHoms (fun i ↦ Λ[n + 1, i].ι)
+  ⨆ n, .ofHoms (fun (i : Fin (n + 2)) ↦ Λ[n + 1, i].ι)
 
 lemma horn_ι_mem_J (n : ℕ) (i : Fin (n + 2)):
     J (horn.{u} (n + 1) i).ι := by
@@ -57,10 +57,15 @@ lemma J_le_monomorphisms : J.{u} ≤ monomorphisms _ := by
   obtain ⟨n, ⟨i⟩⟩ := h
   exact monomorphisms.infer_property _
 
-instance : CategoryWithCofibrations SSet.{u} where
+/-- The cofibrations for the Quillen model category structure (TODO)
+on `SSet` are monomorphisms. -/
+scoped instance : CategoryWithCofibrations SSet.{u} where
   cofibrations := .monomorphisms _
 
-instance : CategoryWithFibrations SSet.{u} where
+/-- The fibrations for the Quillen model category structure (TODO)
+on `SSet` are the morphisms which have the right lifting property
+with respect to horn inclusions. -/
+scoped instance : CategoryWithFibrations SSet.{u} where
   fibrations := J.rlp
 
 lemma cofibrations_eq : cofibrations SSet.{u} = monomorphisms _ := rfl
@@ -90,6 +95,6 @@ instance [hf : Fibration f] {n : ℕ} (i : Fin (n + 2)) :
 
 end
 
-end modelCategory
+end modelCategoryQuillen
 
 end SSet

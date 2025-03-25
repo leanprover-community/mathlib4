@@ -290,7 +290,7 @@ theorem condExp_bot' [hμ : NeZero μ] (f : α → E) :
   · have h : ¬SigmaFinite (μ.trim bot_le) := by rwa [sigmaFinite_trim_bot_iff]
     rw [not_isFiniteMeasure_iff] at hμ_finite
     rw [condExp_of_not_sigmaFinite bot_le h]
-    simp only [hμ_finite, ENNReal.top_toReal, inv_zero, zero_smul]
+    simp only [hμ_finite, ENNReal.toReal_top, inv_zero, zero_smul]
     rfl
   have h_meas : StronglyMeasurable[⊥] (μ[f|⊥]) := stronglyMeasurable_condExp
   obtain ⟨c, h_eq⟩ := stronglyMeasurable_bot_iff.mp h_meas
@@ -312,7 +312,7 @@ theorem condExp_bot_ae_eq (f : α → E) :
 @[deprecated (since := "2025-01-21")] alias condexp_bot_ae_eq := condExp_bot_ae_eq
 
 theorem condExp_bot [IsProbabilityMeasure μ] (f : α → E) : μ[f|⊥] = fun _ => ∫ x, f x ∂μ := by
-  refine (condExp_bot' f).trans ?_; rw [measure_univ, ENNReal.one_toReal, inv_one, one_smul]
+  refine (condExp_bot' f).trans ?_; rw [measure_univ, ENNReal.toReal_one, inv_one, one_smul]
 
 @[deprecated (since := "2025-01-21")] alias condexp_bot := condExp_bot
 

@@ -346,7 +346,7 @@ theorem cast_finsupp_prod [CommSemiring R] (g : α → M → ℕ) :
   Nat.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommSemiring R] (g : α → M → ℕ) :
+theorem cast_finsupp_sum [AddCommMonoidWithOne R] (g : α → M → ℕ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Nat.cast_sum _ _
 
@@ -360,7 +360,7 @@ theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
   Int.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommRing R] (g : α → M → ℤ) :
+theorem cast_finsupp_sum [AddCommGroupWithOne R] (g : α → M → ℤ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Int.cast_sum _ _
 
@@ -564,7 +564,7 @@ theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (
       map_add' := hadd }
   DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
 
-theorem sum_update_add [AddCommMonoid α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
+theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
     (hgg : ∀ (j : ι) (a₁ a₂ : α), g j (a₁ + a₂) = g j a₁ + g j a₂) :
     (f.update i a).sum g + g i (f i) = f.sum g + g i a := by
@@ -620,7 +620,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
   simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
   exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 
-theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
+theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
   simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
@@ -720,7 +720,7 @@ theorem some_zero [Zero M] : (0 : Option α →₀ M).some = 0 := by
   simp
 
 @[simp]
-theorem some_add [AddCommMonoid M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
+theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
   ext
   simp
 
@@ -737,7 +737,7 @@ theorem some_single_some [Zero M] (a : α) (m : M) :
     simp [single_apply]
 
 @[to_additive]
-theorem prod_option_index [AddCommMonoid M] [CommMonoid N] (f : Option α →₀ M)
+theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
     f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
