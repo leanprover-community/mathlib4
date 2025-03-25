@@ -234,7 +234,7 @@ private def refl_coeff : ℕ → R × R
   | n + 1 => (((refl_coeff n).1 + (refl_coeff n).2) * P.coxeterWeight i j - (refl_coeff n).1,
     -(refl_coeff n).1 - (refl_coeff n).2)
 
-omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R] [NoZeroDivisors R]
+omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R]
  [P.IsValuedIn S] in
 lemma refl_coeff_rec (n : ℕ) : ((P.reflection i) ∘ (P.reflection j))
     ((P.refl_coeff i j n).1 • P.root i + (P.refl_coeff i j n).2 • P.pairing i j • P.root j) =
@@ -248,7 +248,7 @@ lemma refl_coeff_rec (n : ℕ) : ((P.reflection i) ∘ (P.reflection j))
   abel_nf
   simp
 
-omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R] [NoZeroDivisors R]
+omit [LinearOrderedCommRing S] [Algebra S R] B [FaithfulSMul S R]
 [P.IsValuedIn S] in
 lemma refl_coeff_eq (n : ℕ) : (P.refl_coeff i j n).1 • P.root i +
     (P.refl_coeff i j n).2 • P.pairing i j • P.root j =
@@ -288,7 +288,7 @@ lemma linear_independent_of_four_lt_coxeterWeight (hc : 4 < P.coxeterWeight i j)
   sorry
 -/
 
-omit B [FaithfulSMul S R] [NoZeroDivisors R] in
+omit B [FaithfulSMul S R] [Module S M] [IsScalarTower S R M] in
 lemma root_reflection_pos_coeff_left {a b : S} (ha : 0 < a) (hab : -2 * b < a)
     (hc : 4 < P.coxeterWeightIn S i j) : a < ((a + b) * P.coxeterWeightIn S i j - a) := by
   have hapb : 2 * a < (a + b) * 4 := by linarith
@@ -302,7 +302,7 @@ lemma root_reflection_pos_coeff_left {a b : S} (ha : 0 < a) (hab : -2 * b < a)
 lemma root_reflection_pos_coeff_right {a b : R} (hab : -2 * b < a) : -(a + b) < b := by
   linarith
 -/
-omit B [FaithfulSMul S R] [NoZeroDivisors R] in
+omit B [FaithfulSMul S R] [Module S M] [IsScalarTower S R M] in
 lemma root_refl_pos_coeff_right_2 {a b : S} (ha : 0 < a) (hab : -2 * b < a)
     (hc : 4 < P.coxeterWeightIn S i j) :
     (-2 * -(a + b)) < ((a + b) * P.coxeterWeightIn S i j - a) := by
