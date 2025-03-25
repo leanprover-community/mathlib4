@@ -356,7 +356,6 @@ theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
       norm_cast
       field_simp
     _ = - h := by
-      rw [← lie_skew]
-      rw [ht.lie_e_f]
+      rw [← lie_skew, ht.lie_e_f]
 
 end Theta
