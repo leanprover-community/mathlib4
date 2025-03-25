@@ -312,8 +312,9 @@ theorem _root_.MeasureTheory.Measure.ext_of_complexMGF_eq [IsFiniteMeasure μ]
   rw [funext_iff] at h
   specialize h (Multiplicative.toAdd w * I)
   simp_rw [complexMGF, mul_assoc, mul_comm I, ← mul_assoc] at h
-  simp only [charFun, Circle.expAddChar, probChar_apply, bilinFormOfRealInner_apply_apply,
-    RCLike.inner_apply, conj_trivial, AddChar.coe_mk, Circle.coe_exp, ofReal_mul]
+  simp only [charFun, Circle.expAddChar, BoundedContinuousFunction.char_apply,
+    bilinFormOfRealInner_apply_apply, RCLike.inner_apply, conj_trivial, AddChar.coe_mk,
+    Circle.coe_exp, ofReal_mul]
   rwa [integral_map hX (AEMeasurable.aestronglyMeasurable <| by fun_prop),
     integral_map hY (AEMeasurable.aestronglyMeasurable <| by fun_prop)]
 

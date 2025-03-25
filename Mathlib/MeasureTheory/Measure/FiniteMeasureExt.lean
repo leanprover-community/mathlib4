@@ -27,7 +27,7 @@ namespace MeasureTheory
 variable [MeasurableSpace E]
 
 /-- If the integrals of all elements of a subalgebra `A` of continuous and bounded functions with
-respect to two finite measures `P, P'`coincide, then the measures coincide. In other words: If a
+respect to two finite measures `P, P'` coincide, then the measures coincide. In other words: If a
 subalgebra separates points, it separates finite measures. -/
 theorem ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
     [PseudoEMetricSpace E] [BorelSpace E] [CompleteSpace E] [SecondCountableTopology E]
