@@ -733,11 +733,10 @@ theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ 
 end SeminormedCommRing
 
 section NormedAddCommGroup
-
 variable [NormedAddCommGroup α] [MulOneClass α] [NormMulClass α] [Nontrivial α]
 
 /-- Deduce `NormOneClass` from `NormMulClass` under a suitable nontriviality hypothesis. Not
-an instance, in order to avoid loops. -/
+an instance, in order to avoid loops with `NormOneClass.nontrivial`. -/
 lemma NormMulClass.toNormOneClass : NormOneClass α := by
   constructor
   obtain ⟨u, hu⟩ := exists_ne (0 : α)
@@ -757,7 +756,7 @@ instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
 
 /-- A non-zero normed ring satisfying `NormMulClass` is a domain. Not an instance, to avoid
 loops. -/
-lemma NormMulClass.isDomain [Nontrivial α] : IsDomain α where
+lemma NormMulClass.toIsDomain [Nontrivial α] : IsDomain α where
   mul_left_cancel_of_ne_zero {a b c} ha h := by
     rw [← sub_eq_zero] at h ⊢
     rwa [← mul_sub, ← norm_eq_zero, norm_mul, mul_eq_zero_iff_left (norm_ne_zero_iff.mpr ha),
