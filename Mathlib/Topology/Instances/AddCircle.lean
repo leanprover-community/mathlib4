@@ -343,9 +343,13 @@ theorem homeomorphAddCircle_symm_apply_mk (hp : p ≠ 0) (hq : q ≠ 0) (x : �
   rfl
 end
 
-lemma div_mul_period_eq_nsmul (m n : ℕ) :
-    (↑(↑m / ↑n * p) : AddCircle p) = m • ((p / n : 𝕜) : AddCircle p) := by
+lemma natCast_div_mul_eq_nsmul (r : 𝕜) (m : ℕ) :
+    (↑(↑m / q * r) : AddCircle p) = m • (r / q : AddCircle p) := by
   rw [mul_comm_div, ← nsmul_eq_mul, coe_nsmul]
+
+lemma intCast_div_mul_eq_zsmul (r : 𝕜) (m : ℤ) :
+    (↑(↑m / q * r) : AddCircle p) = m • (r / q : AddCircle p) := by
+  rw [mul_comm_div, ← zsmul_eq_mul, coe_zsmul]
 
 variable [hp : Fact (0 < p)]
 
@@ -388,7 +392,7 @@ theorem addOrderOf_period_div {n : ℕ} (h : 0 < n) : addOrderOf ((p / n : 𝕜)
 variable (p) in
 theorem gcd_mul_addOrderOf_div_eq {n : ℕ} (m : ℕ) (hn : 0 < n) :
     m.gcd n * addOrderOf (↑(↑m / ↑n * p) : AddCircle p) = n := by
-  rw [div_mul_period_eq_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
+  rw [natCast_div_mul_eq_nsmul, IsOfFinAddOrder.addOrderOf_nsmul]
   · rw [addOrderOf_period_div hn, Nat.gcd_comm, Nat.mul_div_cancel']
     exact n.gcd_dvd_left m
   · rwa [← addOrderOf_pos_iff, addOrderOf_period_div hn]
@@ -459,7 +463,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
         refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
-        · simp_rw [Subtype.mk_eq_mk, div_mul_period_eq_nsmul] at h
+        · simp_rw [Subtype.mk_eq_mk, natCast_div_mul_eq_nsmul] at h
           refine nsmul_injOn_Iio_addOrderOf ?_ ?_ h <;> rw [addOrderOf_period_div hn]
           exacts [m₁.2.1, m₂.2.1]
         · obtain ⟨m, hmn, hg, he⟩ := (addOrderOf_eq_pos_iff hn).mp u.2
