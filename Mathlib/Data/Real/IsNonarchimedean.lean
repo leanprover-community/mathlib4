@@ -123,7 +123,7 @@ theorem multiset_image_add_of_nonempty {F α β : Type*} [AddCommGroup α] [FunL
   obtain ⟨b, hbs, hbf⟩ := multiset_image_add hna g s
   exact ⟨b, hbs hs, hbf⟩
 
-theorem isNonarchimedean_multiset_powerset_image_add {F α : Type*} [CommRing α] [FunLike F α ℝ]
+theorem multiset_powerset_image_add {F α : Type*} [CommRing α] [FunLike F α ℝ]
     [AddGroupSeminormClass F α ℝ] {f : F}
     (hf_na : IsNonarchimedean f) (s : Multiset α) (m : ℕ) :
     ∃ t : Multiset α, card t = card s - m ∧ (∀ x : α, x ∈ t → x ∈ s) ∧
