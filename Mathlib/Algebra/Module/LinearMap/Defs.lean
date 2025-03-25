@@ -472,6 +472,8 @@ This is useful when Lean is struggling to infer the `RingHomCompTriple` instance
 notation3:80 (name := compNotation) f:81 " ∘ₗ " g:80 =>
   LinearMap.comp (σ₁₂ := RingHom.id _) (σ₂₃ := RingHom.id _) (σ₁₃ := RingHom.id _) f g
 
+@[inherit_doc] infixr:90 " ∘ₛₗ " => comp
+
 theorem comp_apply (x : M₁) : f.comp g x = f (g x) :=
   rfl
 

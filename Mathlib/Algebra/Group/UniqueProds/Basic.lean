@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
 
@@ -451,7 +454,8 @@ open UniqueMul in
     exact ⟨a0, ha0.1, b0, hb0.1, of_image_filter (Pi.evalMulHom G i) ha0.2 hb0.2 hi hu⟩
 
 open ULift in
-@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
+@[to_additive] instance _root_.Prod.instUniqueProds [UniqueProds G] [UniqueProds H] :
+    UniqueProds (G × H) := by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
@@ -541,7 +545,9 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       · exact ihA _ ((A.filter_subset _).ssubset_of_ne hA)
 
 open ULift in
-@[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
+@[to_additive]
+instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
+    TwoUniqueProds (G × H) := by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)

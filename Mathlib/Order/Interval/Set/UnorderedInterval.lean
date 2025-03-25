@@ -52,9 +52,6 @@ Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ 
 `uIcc` corresponds to the bounding box of the two elements. -/
 def uIcc (a b : α) : Set α := Icc (a ⊓ b) (a ⊔ b)
 
--- Porting note: temporarily remove `scoped[uIcc]` and use `[[]]` instead of `[]` before a
--- workaround is found.
--- Porting note 2 : now `scoped[Interval]` works again.
 /-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
 scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
 
@@ -224,15 +221,12 @@ lemma monotone_or_antitone_iff_uIcc :
   · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.2.not_lt <| max_lt hfab hfcb⟩
   · exact ⟨a, c, b, Icc_subset_uIcc ⟨hab, hbc⟩, fun h => h.1.not_lt <| lt_min hfba hfbc⟩
 
--- Porting note: mathport expands the syntactic sugar `∀ a b c ∈ s` differently than Lean3
 lemma monotoneOn_or_antitoneOn_iff_uIcc :
     MonotoneOn f s ∨ AntitoneOn f s ↔
       ∀ᵉ (a ∈ s) (b ∈ s) (c ∈ s), c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
   simp [monotoneOn_iff_monotone, antitoneOn_iff_antitone, monotone_or_antitone_iff_uIcc,
     mem_uIcc]
 
--- Porting note: what should the naming scheme be here? This is a term, so should be `uIoc`,
--- but we also want to match the `Ioc` convention.
 /-- The open-closed uIcc with unordered bounds. -/
 def uIoc : α → α → Set α := fun a b => Ioc (min a b) (max a b)
 

@@ -105,7 +105,7 @@ end ENat
 theorem Filter.Tendsto.enatSub {α : Type*} {l : Filter α} {f g : α → ℕ∞} {a b : ℕ∞}
     (hf : Tendsto f l (𝓝 a)) (hg : Tendsto g l (𝓝 b)) (h : a ≠ ⊤ ∨ b ≠ ⊤) :
     Tendsto (fun x ↦ f x - g x) l (𝓝 (a - b)) :=
-  (ENat.continuousAt_sub h).tendsto.comp (hf.prod_mk_nhds hg)
+  (ENat.continuousAt_sub h).tendsto.comp (hf.prodMk_nhds hg)
 
 variable {X : Type*} [TopologicalSpace X] {f g : X → ℕ∞} {s : Set X} {x : X}
 

@@ -522,7 +522,7 @@ theorem tfae_modEq :
         ((toIocMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel b _).symm⟩).symm
   tfae_have 4 → 3
   | h => by
-    rw [← h, Ne, eq_comm, add_right_eq_self]
+    rw [← h, Ne, eq_comm, add_eq_left]
     exact hp.ne'
   tfae_have 1 → 4
   | h => by

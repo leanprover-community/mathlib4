@@ -79,6 +79,8 @@ variable {L : Type*} [Field L] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero �
 /-- The norm function determined by a rank one valuation on a field `L`. -/
 def norm : L → ℝ := fun x : L => hv.hom (Valued.v x)
 
+theorem norm_def {x : L} : Valued.norm x = hv.hom (Valued.v x) := rfl
+
 theorem norm_nonneg (x : L) : 0 ≤ norm x := by simp only [norm, NNReal.zero_le_coe]
 
 theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
@@ -87,6 +89,11 @@ theorem norm_add_le (x y : L) : norm (x + y) ≤ max (norm x) (norm y) := by
 
 theorem norm_eq_zero {x : L} (hx : norm x = 0) : x = 0 := by
   simpa [norm, NNReal.coe_eq_zero, RankOne.hom_eq_zero_iff, zero_iff] using hx
+
+theorem norm_pos_iff_valuation_pos {x : L} : 0 < Valued.norm x ↔ (0 : Γ₀) < v x := by
+  rw [norm_def, ← NNReal.coe_zero, NNReal.coe_lt_coe, ← map_zero (RankOne.hom (v (R := L))),
+    StrictMono.lt_iff_lt]
+  exact RankOne.strictMono v
 
 variable (L) (Γ₀)
 
@@ -104,7 +111,7 @@ def toNormedField : NormedField L :=
         (max_le_add_of_nonneg (norm_nonneg _) (norm_nonneg _))
     eq_of_dist_eq_zero := fun hxy => eq_of_sub_eq_zero (norm_eq_zero hxy)
     dist_eq := fun x y => rfl
-    norm_mul' := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
+    norm_mul := fun x y => by simp only [norm, ← NNReal.coe_mul, _root_.map_mul]
     toUniformSpace := Valued.toUniformSpace
     uniformity_dist := by
       haveI : Nonempty { ε : ℝ // ε > 0 } := nonempty_Ioi_subtype

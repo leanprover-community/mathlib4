@@ -268,7 +268,7 @@ variable {G : Type*}
 /-- The inner product on an inner product space of dimension 2 can be evaluated in terms
 of a complex-number representation of the space. -/
 theorem inner_map_complex [SeminormedAddCommGroup G] [InnerProductSpace ℝ G] (f : G ≃ₗᵢ[ℝ] ℂ)
-    (x y : G) : ⟪x, y⟫_ℝ = (conj (f x) * f y).re := by rw [← Complex.inner, f.inner_map_map]
+    (x y : G) : ⟪x, y⟫_ℝ = (f y * conj (f x)).re := by rw [← Complex.inner, f.inner_map_map]
 
 end RCLikeToReal
 

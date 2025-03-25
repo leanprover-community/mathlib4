@@ -200,7 +200,7 @@ theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport
   classical
   rw [← Finset.sum_sdiff hI, ρ.sum_finsupport hx₀]
   suffices ∑ i ∈ I \ ρ.finsupport x₀, (ρ i) x₀ = ∑ i ∈ I \ ρ.finsupport x₀, 0 by
-    rw [this, add_left_eq_self, Finset.sum_const_zero]
+    rw [this, add_eq_right, Finset.sum_const_zero]
   apply Finset.sum_congr rfl
   rintro x hx
   simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx

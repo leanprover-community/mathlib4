@@ -191,7 +191,7 @@ theorem cocycle (i j k : 𝒰.J) : t' 𝒰 f g i j k ≫ t' 𝒰 f g j k i ≫ t
     · simp_rw [Category.assoc, cocycle_snd_snd 𝒰 f g i j k]
 
 /-- Given `Uᵢ ×[Z] Y`, this is the glued fibered product `X ×[Z] Y`. -/
-@[simps U V f t t', simps (config := .lemmasOnly) J]
+@[simps U V f t t', simps -isSimp J]
 def gluing : Scheme.GlueData.{u} where
   J := 𝒰.J
   U i := pullback (𝒰.map i ≫ f) g

@@ -1135,9 +1135,11 @@ addition (of functions with disjoint support).
 
 It is possible to make the hypotheses in `h_add` a bit stronger, and such conditions can be added
 once we need them (for example it is only necessary to consider the case where `g` is a multiple
-of a characteristic function, and that this multiple doesn't appear in the image of `f`) -/
+of a characteristic function, and that this multiple doesn't appear in the image of `f`).
+
+To use in an induction proof, the syntax is `induction f using SimpleFunc.induction with`. -/
 @[elab_as_elim]
-protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : SimpleFunc α γ → Prop}
+protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : SimpleFunc α γ → Prop}
     (h_ind :
       ∀ (c) {s} (hs : MeasurableSet s),
         P (SimpleFunc.piecewise s hs (SimpleFunc.const _ c) (SimpleFunc.const _ 0)))
@@ -1167,13 +1169,50 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
     convert h_add _ Pg (h_ind x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
-      · simpa [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
-      · simp [g, piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
+      · simpa [g, hy]
+      · simp [g, hy]
     rw [disjoint_iff_inf_le]
     rintro y
-    by_cases hy : y ∈ f ⁻¹' {x}
-    · simp [g, piecewise_eq_of_mem _ _ _ hy, -piecewise_eq_indicator]
-    · simp [piecewise_eq_of_not_mem _ _ _ hy, -piecewise_eq_indicator]
+    by_cases hy : y ∈ f ⁻¹' {x} <;> simp [g, hy]
+
+/-- To prove something for an arbitrary simple function, it suffices to show
+that the property holds for constant functions and that it is closed under piecewise combinations
+of functions.
+
+To use in an induction proof, the syntax is `induction f with`. -/
+@[induction_eliminator]
+protected theorem induction' {α γ} [MeasurableSpace α] [Nonempty γ] {P : SimpleFunc α γ → Prop}
+    (const : ∀ (c), P (SimpleFunc.const _ c))
+    (pcw : ∀ ⦃f g : SimpleFunc α γ⦄ {s} (hs : MeasurableSet s), P f → P g →
+      P (f.piecewise s hs g))
+    (f : SimpleFunc α γ) : P f := by
+  let c : γ := Classical.ofNonempty
+  classical
+  generalize h : f.range \ {c} = s
+  rw [← Finset.coe_inj, Finset.coe_sdiff, Finset.coe_singleton, SimpleFunc.coe_range] at h
+  induction s using Finset.induction generalizing f with
+  | empty =>
+    rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
+    convert const c
+    ext x
+    simp [h]
+  | @insert x s hxs ih =>
+    have mx := f.measurableSet_preimage {x}
+    let g := SimpleFunc.piecewise (f ⁻¹' {x}) mx (SimpleFunc.const α c) f
+    have Pg : P g := by
+      apply ih
+      simp only [g, SimpleFunc.coe_piecewise, range_piecewise]
+      rw [image_compl_preimage, union_diff_distrib, diff_diff_comm, h, Finset.coe_insert,
+        insert_diff_self_of_not_mem, diff_eq_empty.mpr, Set.empty_union]
+      · rw [Set.image_subset_iff]
+        convert Set.subset_univ _
+        exact preimage_const_of_mem (mem_singleton _)
+      · rwa [Finset.mem_coe]
+    convert pcw mx.compl Pg (const x)
+    · ext1 y
+      by_cases hy : y ∈ f ⁻¹' {x}
+      · simpa [g, hy]
+      · simp [g, hy]
 
 /-- In a topological vector space, the addition of a measurable function and a simple function is
 measurable. -/
@@ -1191,10 +1230,10 @@ theorem _root_.Measurable.add_simpleFunc
       ext x
       by_cases hx : x ∈ Function.support f
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_right_inj, add_right_eq_self]
+          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_right_inj, add_eq_left]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_right_inj, add_left_eq_self] using hx
+          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_right_inj, add_eq_right] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 
@@ -1214,10 +1253,10 @@ theorem _root_.Measurable.simpleFunc_add
       ext x
       by_cases hx : x ∈ Function.support f
       · simpa only [coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_left_inj, add_right_eq_self]
+          Set.piecewise_eq_of_mem _ _ _ hx, _root_.add_left_inj, add_eq_left]
           using Set.disjoint_left.1 hff' hx
       · simpa only [SimpleFunc.coe_add, Pi.add_apply, Function.mem_support, ne_eq, not_not,
-          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_left_inj, add_left_eq_self] using hx
+          Set.piecewise_eq_of_not_mem _ _ _ hx, _root_.add_left_inj, add_eq_right] using hx
     rw [this]
     exact Measurable.piecewise f.measurableSet_support hf hf'
 

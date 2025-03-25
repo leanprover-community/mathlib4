@@ -4,10 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Equiv.Opposite
-import Mathlib.Algebra.Group.Prod
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Algebra.Notation.Prod
 
 /-!
 # (Semi)ring equivs
@@ -447,7 +448,7 @@ theorem ofBijective_apply [NonUnitalRingHomClass F R S] (f : F) (hf : Function.B
 
 /-- Product of a singleton family of (non-unital non-associative semi)rings is isomorphic
 to the only member of this family. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def piUnique {ι : Type*} (R : ι → Type*) [Unique ι] [∀ i, NonUnitalNonAssocSemiring (R i)] :
     (∀ i, R i) ≃+* R default where
   __ := Equiv.piUnique R

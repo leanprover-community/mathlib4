@@ -142,7 +142,7 @@ theorem rel_equiv : Equivalence D.Rel :=
 open CategoryTheory.Limits.WalkingParallelPair
 
 theorem eqvGen_of_π_eq
-    -- Porting note: was `{x y : ∐ D.U} (h : 𝖣.π x = 𝖣.π y)`
+    -- Porting note: was `{x y : ∐ D.U}`
     {x y : sigmaObj (β := D.toGlueData.J) (C := TopCat) D.toGlueData.U}
     (h : 𝖣.π x = 𝖣.π y) :
     Relation.EqvGen
