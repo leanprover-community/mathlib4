@@ -756,6 +756,18 @@ theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : O
     (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
   f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
 
+@[simp]
+lemma some_update_none [Zero M] (f : Option α →₀ M) (y : M) : (update f none y).some = f.some := by
+  ext
+  simp
+
+lemma some_update_some [Zero M] (f : Option α →₀ M) (x : α) (y : M) :
+    (f.update (Option.some x) y).some = (f.some.update x y) := by
+  ext a
+  by_cases h : a = x
+  · simp [h]
+  · simp [h]
+
 /--
 Extend a finitely supported function on `α` to a finitely supported function on `Option α`,
 provided a default value for `none`.
@@ -781,19 +793,12 @@ lemma optionElim_apply [Zero M] (f : α →₀ M) (y : M) (a : Option α) :
   | none => exact optionElim_apply_none f y
   | some x => simp only [optionElim_apply_some, Option.elim_some]
 
+@[simp]
 lemma some_optionElim [Zero M] (f : α →₀ M) (y : M) : (f.optionElim y).some = f := by
   ext
   simp
 
-lemma some_update_none [Zero M] (f : Option α →₀ M) (y : M) : (update f none y).some = f.some := by
-  ext
-  simp
-
-lemma some_update_some [Zero M] (f : Option α →₀ M) (x : α) (y : M) :
-    (update f (Option.some x) y).some = (f.update x y).some := by
-  ext
-  simp
-
+@[simp]
 lemma optionElim_some [Zero M] (f : Option α →₀ M) : f.some.optionElim (f none) = f := by
   ext a
   cases a
