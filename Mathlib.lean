@@ -431,6 +431,7 @@ import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Conj
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.GroupWithZero.Divisibility
+import Mathlib.Algebra.GroupWithZero.Equiv
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Idempotent
 import Mathlib.Algebra.GroupWithZero.Indicator
