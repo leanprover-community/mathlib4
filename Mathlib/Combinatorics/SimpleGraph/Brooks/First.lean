@@ -144,19 +144,21 @@ lemma dropUntil_of_drop {u v x : α} {w : G.Walk u v} {n : ℕ}
   rw [← dropUntil_append_of_mem_right (w.take n) _ hxn hx]
   simp_rw [take_append_drop]
 
-/-- Given a walk that starts in a set S but ends in Sᶜ, there is a first vertex of the walk in the
+-- We apply this to p : G.Walk v₁ vᵣ with S = {x | G.Adj vᵣ x ∧ x ≠ p.penultimate}
+-- then cons (w.getVert n) (w.drop n) is a cycle containing vᵣ  and all its neighbors.
+/-- Given a walk that contains the set S, there is a first vertex of the walk in the
  set. -/
-lemma exists_getVert_last {u v y : α} {S : Set α} [DecidableEq α] (w : G.Walk u v)
-    (h : ∀ x, x ∈ S → x ∈ w.support) (hy : y ∈ S ∧ y ∈ w.support) :
+lemma exists_getVert_last {u v y : α} {S : Set α} [DecidableEq α] (w : G.Walk u v) (hy : y ∈ S )
+    (h : ∀ x, x ∈ S → x ∈ w.support) :
     ∃ n, w.getVert n ∈ S ∧ ∀ x, x ∈ S → x ∈ (w.drop n).support := by
   classical
-  obtain ⟨n, hn1, hn2, hn3⟩ := getVert_find_spec (w.takeUntil _ hy.2) hy.1
-  simp_rw [getVert_takeUntil hy.2 hn1] at *
+  obtain ⟨n, hn1, hn2, hn3⟩ := getVert_find_spec (w.takeUntil _ (h y hy)) hy
+  simp_rw [getVert_takeUntil (h y hy) hn1] at *
   use n, hn2
   contrapose! hn3
   obtain ⟨x, hx1, hx2⟩ := hn3
-  have hx' :x ∈ (w.take n).support ∧ x ≠ w.getVert n := by
-    simp_rw [←take_append_drop w n, support_append, List.mem_append] at h
+  have hx' : x ∈ (w.take n).support ∧ x ≠ w.getVert n := by
+    simp_rw [← take_append_drop w n, support_append, List.mem_append] at h
     cases h x hx1 with
     | inl h =>
       refine ⟨h, ?_⟩
@@ -175,6 +177,9 @@ lemma exists_getVert_last {u v y : α} {S : Set α} [DecidableEq α] (w : G.Walk
   · exact hl
   · rw [getVert_takeUntil _ (hl.le.trans hn1)]
     rwa [← this] at hx1
+
+
+
 
 /-- The first vertex in a walk `p` that satisfies a predicate `P` or its end vertex if no such
  vertex exists. -/
