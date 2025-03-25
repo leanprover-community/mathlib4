@@ -295,6 +295,9 @@ lemma InjOn.of_comp (h : InjOn (g ∘ f) s) : InjOn f s :=
 lemma InjOn.image_of_comp (h : InjOn (g ∘ f) s) : InjOn g (f '' s) :=
   forall_mem_image.2 fun _x hx ↦ forall_mem_image.2 fun _y hy heq ↦ congr_arg f <| h hx hy heq
 
+lemma InjOn.comp_iff (hf : InjOn f s) : InjOn (g ∘ f) s ↔ InjOn g (f '' s) :=
+  ⟨image_of_comp, fun h ↦ InjOn.comp h hf <| mapsTo_image f s⟩
+
 lemma InjOn.iterate {f : α → α} {s : Set α} (h : InjOn f s) (hf : MapsTo f s s) :
     ∀ n, InjOn f^[n] s
   | 0 => injOn_id _
@@ -489,6 +492,9 @@ lemma SurjOn.of_comp (h : SurjOn (g ∘ f) s p) (hr : MapsTo f s t) : SurjOn g t
   obtain ⟨x, hx, rfl⟩ := h hz
   exact ⟨f x, hr hx, rfl⟩
 
+lemma SurjOn.comp_iff : SurjOn (g ∘ f) s p ↔ SurjOn g (f '' s) p :=
+  ⟨fun h ↦ of_comp h <| mapsTo_image f s, fun h ↦ comp h <| surjOn_image _ _⟩
+
 lemma SurjOn.iterate {f : α → α} {s : Set α} (h : SurjOn f s s) : ∀ n, SurjOn f^[n] s s
   | 0 => surjOn_id _
   | (n + 1) => (h.iterate n).comp h
@@ -626,33 +632,26 @@ theorem BijOn.comp (hg : BijOn g t p) (hf : BijOn f s t) : BijOn (g ∘ f) s p :
 
 /-- If `f : α → β` and `g : β → γ` and if `f` is injective on `s`, then `f ∘ g` is a bijection
 on `s` iff  `g` is a bijection on `f '' s`. -/
-theorem bijOn_comp_iff_bijOn_image {α β γ : Type*} {f : α → β} {g : β → γ} {s : Set α}
-    (hf : InjOn f s) {t : Set γ} : BijOn (g ∘ f) s t ↔ BijOn g (f '' s) t := by
-  constructor
-  · rintro ⟨h₁, h₂, h₃⟩
-    refine ⟨mapsTo_image_iff.mpr h₁, InjOn.image_of_comp h₂, fun x hx ↦ ?_⟩
-    obtain ⟨y, hy, rfl⟩ := h₃ hx
-    exact ⟨f y, ⟨y, hy, rfl⟩, rfl⟩
-  · rintro ⟨h₁, h₂, h₃⟩
-    exact ⟨mapsTo_image_iff.mp h₁, InjOn.comp h₂ hf <| mapsTo_image f s,
-      SurjOn.comp h₃ <| surjOn_image _ _⟩
+theorem bijOn_comp_iff (hf : InjOn f s) : BijOn (g ∘ f) s p ↔ BijOn g (f '' s) p := by
+  simp only [BijOn, InjOn.comp_iff, SurjOn.comp_iff, mapsTo_image_iff, hf]
 
 /--
 If we have a commutative square
 
+```
 α --f--> β
 |        |
 p₁       p₂
 |        |
 \/       \/
 γ --g--> δ
+```
 
-and `f` induces a bijection from `s : Set α` to `t : Set β` then `g`
+and `f` induces a bijection from `s : Set α` to `t : Set β`, then `g`
 induces a bijection from the image of `s` to the image of `t`, as long as `g` is
 is injective on the image of `s`.
 -/
-theorem bijOn_image_image {α β γ δ : Type*} {f : α → β} {p₁ : α → γ} {p₂ : β → δ}
-    {g : γ → δ} (comm : ∀ a, p₂ (f a) = g (p₁ a)) {s : Set α} {t : Set β}
+theorem bijOn_image_image {p₁ : α → γ} {p₂ : β → δ} {g : γ → δ} (comm : ∀ a, p₂ (f a) = g (p₁ a))
     (hbij : BijOn f s t) (hinj: InjOn g (p₁ '' s)) : BijOn g (p₁ '' s) (p₂ '' t) := by
   obtain ⟨h1, h2, h3⟩ := hbij
   refine ⟨?_, hinj, ?_⟩
