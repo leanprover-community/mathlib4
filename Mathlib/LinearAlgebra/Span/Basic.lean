@@ -650,7 +650,7 @@ section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂]
 variable [Module R M] [Module R M₂] {A B : Submodule R M}
-variable {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] (f : F)
+variable {F : Type*} [FunLike F M M₂] [LinearMapClass F R M M₂] {f : F}
 
 theorem map_lt_map_of_le_of_sup_lt_sup (hab : A ≤ B) (h : A ⊔ ker f < B ⊔ ker f) :
     Submodule.map f A < Submodule.map f B := by
