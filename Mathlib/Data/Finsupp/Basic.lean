@@ -775,11 +775,9 @@ provided a default value for `none`.
 def optionElim [Zero M] (f : α →₀ M) (y : M) : Option α →₀ M :=
   (Finsupp.embDomain Function.Embedding.some f).update none y
 
-@[simp]
 lemma optionElim_apply_none [Zero M] (f : α →₀ M) (y : M) : f.optionElim y none = y := by
   simp [optionElim]
 
-@[simp]
 lemma optionElim_apply_some [Zero M] (f : α →₀ M) (y : M) (x : α) :
     f.optionElim y (Option.some x) = f x := by
   have : Option.some x = Embedding.some x := by simp only [Embedding.some_apply]
