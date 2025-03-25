@@ -287,7 +287,7 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
       rw [rieszMeasure, show f = f.toFun by rfl, Content.measure_apply _ f.2.measurableSet]
       exact Content.outerMeasure_lt_top_of_isCompact _ f.2
     -- Define sets `V` which are open approximations to the sets `E`
-    have exists_open_approx : ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε')
+    obtain ⟨V, hV⟩ : ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε')
         ∧ μ (V n) ≤ μ (E n) + ENNReal.ofReal (ε' / N) := by
       have h (n : Fin N) : ∀ x ∈ E n, f x < y n + ε' := by
         intro x hx
@@ -303,7 +303,6 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
       let hV := Classical.choose_spec (open_approx (f : C_c(X, ℝ))
         (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hE.2.2.2 n) (h n))
       exact ⟨hV.1, hV.2.1, hV.2.2⟩
-    obtain ⟨V, hV⟩ := exists_open_approx
     -- Define a partition of unity subordinated to the sets `V`
     have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
       _ = ⋃ j, E j := hE.1
