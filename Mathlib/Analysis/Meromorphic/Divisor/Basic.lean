@@ -107,9 +107,11 @@ theorem discreteSupport [Zero Y] [T1Space X] (D : Function.locallyFinSuppWithin 
   exact D.supportLocallyFiniteWithinDomain
 
 /-- If `U` is closed, the the support of a divisor on `U` is also closed. -/
-theorem closedSupport [Zero Y] (D : Function.locallyFinSuppWithin U Y) (hU : IsClosed U) :
+theorem closedSupport [T1Space X] [Zero Y] (D : Function.locallyFinSuppWithin U Y)
+    (hU : IsClosed U) :
     IsClosed D.support := by
-  convert isClosed_sdiff_of_codiscreteWithin D.supportDiscreteWithinDomain hU
+  convert isClosed_sdiff_of_codiscreteWithin ((supportDiscreteWithin_iff_locallyFiniteWithin
+    D.supportWithinDomain).2 D.supportLocallyFiniteWithinDomain) hU
   ext x
   constructor <;> intro hx
   · simp_all [D.supportWithinDomain hx]
@@ -133,23 +135,35 @@ pointwise.
 variable (U) in
 /-- Divisors form an additive subgroup of functions X → Y -/
 protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
-  carrier := {f | f.support ⊆ U ∧ f =ᶠ[codiscreteWithin U] 0}
-  zero_mem' := by simp
+  carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
+  zero_mem' := by
+    simp only [support_subset_iff, ne_eq, mem_setOf_eq, Pi.zero_apply, not_true_eq_false,
+      IsEmpty.forall_iff, implies_true, support_zero', inter_empty, finite_empty, and_true,
+      true_and]
+    exact fun _ _ ↦ ⟨⊤, univ_mem⟩
   add_mem' {f g} hf hg := by
     constructor
     · intro x hx
       contrapose! hx
       simp [Function.nmem_support.1 fun a ↦ hx (hf.1 a),
         Function.nmem_support.1 fun a ↦ hx (hg.1 a)]
-    · filter_upwards [hf.2.add hg.2] with a ha
-      simp [ha]
+    · intro z hz
+      obtain ⟨t₁, ht₁⟩ := hf.2 z hz
+      obtain ⟨t₂, ht₂⟩ := hg.2 z hz
+      use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
+      apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
+      intro a ha
+      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq, union_self, subset_inter_iff,
+        mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
+      by_contra hCon
+      push_neg at hCon
+      simp_all
   neg_mem' {f} hf := by
-    have : -f =ᶠ[codiscreteWithin U] 0 := by simpa using hf.2.neg
     simp_all
 
 protected lemma memAddSubgroup  [AddCommGroup Y] (D : Function.locallyFinSuppWithin U Y) :
     (D : X → Y) ∈ Function.locallyFinSuppWithin.addSubgroup U :=
-  ⟨D.supportWithinDomain, D.supportDiscreteWithinDomain⟩
+  ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
 /-- Assign a divisor to a function in the subgroup -/
 @[simps]
@@ -212,10 +226,17 @@ instance [Lattice Y] [Zero Y] : Max (Function.locallyFinSuppWithin U Y) where
       intro hx
       simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
         Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-      intro _ h₁ h₂
-      simp [h₁, h₂] }
+    supportLocallyFiniteWithinDomain' := by
+      intro z hz
+      obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz
+      obtain ⟨t₂, ht₂⟩ := D₂.supportLocallyFiniteWithinDomain z hz
+      use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
+      apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
+      intro a ha
+      simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
+      by_contra hCon
+      push_neg at hCon
+      simp_all }
 
 @[simp]
 lemma max_apply [Lattice Y] [Zero Y] {D₁ D₂ : Function.locallyFinSuppWithin U Y} {x : X} :
@@ -230,10 +251,17 @@ instance [Lattice Y] [Zero Y] : Min (Function.locallyFinSuppWithin U Y) where
       intro hx
       simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
         Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-      intro _ h₁ h₂
-      simp [h₁, h₂] }
+    supportLocallyFiniteWithinDomain' := by
+      intro z hz
+      obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz
+      obtain ⟨t₂, ht₂⟩ := D₂.supportLocallyFiniteWithinDomain z hz
+      use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
+      apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
+      intro a ha
+      simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
+      by_contra hCon
+      push_neg at hCon
+      simp_all }
 
 @[simp]
 lemma min_apply [Lattice Y] [Zero Y] {D₁ D₂ : Function.locallyFinSuppWithin U Y} {x : X} :
@@ -280,11 +308,13 @@ noncomputable def restrict [Zero Y] {V : Set X} (D : Function.locallyFinSuppWith
     simp_rw [dite_eq_ite, Function.mem_support, ne_eq, ite_eq_right_iff,
       Classical.not_imp] at hx
     exact hx.1
-  supportDiscreteWithinDomain' := by
-    apply Filter.codiscreteWithin.mono h
-    filter_upwards [D.supportDiscreteWithinDomain]
-    intro x hx
-    simp [hx]
+  supportLocallyFiniteWithinDomain' := by
+    intro z hz
+    obtain ⟨t, ht⟩ := D.supportLocallyFiniteWithinDomain z (h hz)
+    use t, ht.1
+    apply Set.Finite.subset (s := t ∩ D.support) ht.2
+    intro _ _
+    simp_all
 
 open Classical in
 lemma restrict_apply [Zero Y] {V : Set X} (D : Function.locallyFinSuppWithin U Y) (h : V ⊆ U)
