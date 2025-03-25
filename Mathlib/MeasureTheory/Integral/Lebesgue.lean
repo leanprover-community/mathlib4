@@ -802,7 +802,7 @@ theorem lintegral_indicator_one {s : Set α} (hs : MeasurableSet s) :
 
 theorem Measure.ext_iff_lintegral (ν : Measure α) :
     μ = ν ↔ ∀ f : α → ℝ≥0∞, Measurable f → ∫⁻ a, f a ∂μ = ∫⁻ a, f a ∂ν := by
-  refine ⟨fun h _ _ ↦ by rw[h], ?_⟩
+  refine ⟨fun h _ _ ↦ by rw [h], ?_⟩
   intro h
   ext s hs
   simp only [← lintegral_indicator_one hs]
