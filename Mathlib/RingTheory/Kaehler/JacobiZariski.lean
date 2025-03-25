@@ -86,7 +86,7 @@ lemma Cotangent.exact :
   · intro x hx
     obtain ⟨⟨x : (Q.comp P).Ring, hx'⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
     replace hx : (Q.ofComp P).toAlgHom x ∈ Q.ker ^ 2 := by
-      simpa only [map_mk, val_mk, val_zero, Ideal.toCotangent_eq_zero] using congr(($hx).val)
+      rwa [map_mk, mk_eq_zero_iff] at hx
     rw [pow_two, ← map_ofComp_ker (P := P), ← Ideal.map_mul, Ideal.mem_map_iff_of_surjective
       _ (toAlgHom_ofComp_surjective Q P)] at hx
     obtain ⟨y, hy, e⟩ := hx
@@ -124,7 +124,7 @@ def CotangentSpace.compEquiv :
   (Q.comp P).cotangentSpaceBasis.repr.trans
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
 
-lemma CotangentSpace.compEquiv_tmul_D_X_inr (Q : Generators.{w} S T) (P : Generators.{w'} R S)
+lemma CotangentSpace.compEquiv_tmul_D_X_inr (Q : Generators.{w₁} S T) (P : Generators.{w₂} R S)
     (n : P.vars) :
     ((CotangentSpace.compEquiv Q P) (1 ⊗ₜ D R (Q.comp P).Ring (X <| Sum.inr n))).2 =
       1 ⊗ₜ[S] P.cotangentSpaceBasis n := by
@@ -132,7 +132,7 @@ lemma CotangentSpace.compEquiv_tmul_D_X_inr (Q : Generators.{w} S T) (P : Genera
     Basis.repr_self, Basis.repr_symm_apply, Finsupp.linearCombination_single, one_smul,
     Basis.prod_apply_inr_snd, Basis.baseChange_apply]
 
-lemma CotangentSpace.compEquiv_tmul_D_X_inl (Q : Generators.{w} S T) (P : Generators.{w'} R S)
+lemma CotangentSpace.compEquiv_tmul_D_X_inl (Q : Generators.{w₁} S T) (P : Generators.{w₂} R S)
     (n : Q.vars) :
     ((CotangentSpace.compEquiv Q P) (1 ⊗ₜ D R (Q.comp P).Ring (X <| Sum.inl n))).2 = 0 := by
   rw [← cotangentSpaceBasis_apply (Q.comp P) (Sum.inl n), compEquiv, LinearEquiv.trans_apply,
