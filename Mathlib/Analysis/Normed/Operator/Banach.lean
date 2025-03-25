@@ -365,7 +365,7 @@ theorem coe_equivRange (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed
   rfl
 
 @[simp]
-lemma equivRange_symm (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
+lemma equivRange_symm_toLinearEquiv (f : E →SL[σ] F) (hinj : Injective f) (hclo : IsClosed (range f)) :
     (f.equivRange hinj hclo).symm.toLinearEquiv =
       (LinearEquiv.ofInjective f.toLinearMap hinj).symm := by
   rfl
@@ -404,7 +404,7 @@ lemma antilipschitz_of_injective_of_isClosed_range (f : E →L[𝕜] F)
 
 /-- An injective bounded linear operator between Banach spaces has closed range
 iff it is anti-Lipschitz. -/
-lemma isClosed_range_if_antilipschitz_of_injective (f : E →L[𝕜] F)
+lemma isClosed_range_iff_antilipschitz_of_injective (f : E →L[𝕜] F)
     (hf : Injective f) : IsClosed (Set.range f) ↔ ∃ K, AntilipschitzWith K f := by
   refine ⟨fun h ↦ f.antilipschitz_of_injective_of_isClosed_range hf h, fun h ↦ ?_⟩
   choose K hf' using h
