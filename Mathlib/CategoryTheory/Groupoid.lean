@@ -111,7 +111,21 @@ end
 
 section
 
+/-- A Prop-valued typeclass asserting that a given category is a groupoid. -/
+class IsGroupoid (C : Type u) [Category.{v} C] : Prop where
+  all_is_iso {X Y : C} (f : X ⟶ Y) : IsIso f := by infer_instance
+
+attribute [instance] IsGroupoid.all_is_iso
+
+noncomputable instance {C : Type u} [Groupoid.{v} C] : IsGroupoid C where
+
 variable {C : Type u} [Category.{v} C]
+
+/-- Promote (noncomputably) an `IsGroupoid` to a `Groupoid` structure. -/
+noncomputable def Groupoid.ofIsGroupoid [IsGroupoid C] :
+    Groupoid.{v} C where
+  inv := fun f => CategoryTheory.inv f
+  inv_comp := fun f => Classical.choose_spec (by infer_instance: IsIso f).out|>.right
 
 /-- A category where every morphism `IsIso` is a groupoid. -/
 noncomputable def Groupoid.ofIsIso (all_is_iso : ∀ {X Y : C} (f : X ⟶ Y), IsIso f) :
@@ -132,6 +146,14 @@ instance InducedCategory.groupoid {C : Type u} (D : Type u₂) [Groupoid.{v} D] 
     inv_comp := fun f => Groupoid.inv_comp f
     comp_inv := fun f => Groupoid.comp_inv f }
 
+instance InducedCategory.isGroupoid {C : Type u} (D : Type u₂)
+    [Category.{v} D] [IsGroupoid D] (F : C → D) :
+    IsGroupoid (InducedCategory D F) where
+  all_is_iso {x y} f := by
+    let g : (F x ⟶ F y) := (fullyFaithfulInducedFunctor F).preimage f
+    obtain ⟨i, h, k⟩ : IsIso g := by infer_instance
+    exact ⟨i, h, k⟩
+
 section
 
 instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i)] :
@@ -143,6 +165,16 @@ instance groupoidPi {I : Type u} {J : I → Type u₂} [∀ i, Groupoid.{v} (J i
 instance groupoidProd {α : Type u} {β : Type v} [Groupoid.{u₂} α] [Groupoid.{v₂} β] :
     Groupoid.{max u₂ v₂} (α × β) where
   inv f := (Groupoid.inv f.1, Groupoid.inv f.2)
+
+instance isGroupoidPi {I : Type u} {J : I → Type u₂}
+    [∀ i, Category.{v} (J i)] [∀ i, IsGroupoid (J i)] :
+    IsGroupoid (∀ i : I, J i) where
+  all_is_iso f := (isIso_pi_iff f).mpr (fun _ ↦ inferInstance)
+
+instance isGroupoidProd {α : Type u} {β : Type u₂} [Category.{v} α] [Category.{v₂} β]
+    [IsGroupoid α] [IsGroupoid β] :
+    IsGroupoid (α × β) where
+  all_is_iso f := (isIso_prod_iff (f := f)).mpr ⟨inferInstance, inferInstance⟩
 
 end
 
