@@ -34,6 +34,14 @@ theorem fu₁ (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ 2 = 1 := by
   norm_cast
   field_simp
 
+theorem fu (t : Kˣ) : (t : K) ^ 2 * ((t : K) ^ (2 : ℤ))⁻¹ = 1 := by
+  norm_cast
+  field_simp
+
+theorem fuu (t : Kˣ) : (t : K) ^ 2 * (t : K)⁻¹ = (t : K) := by
+  field_simp
+  rw [pow_two (t : K)]
+
 theorem fu₂ (t : Kˣ) : ((t : K) ^ (2 : ℤ))⁻¹ * (t : K) = (t : K)⁻¹ := by
   have : (t : K) ^ (2 : ℤ) = (t : K) ^ (2 : ℕ) := by
     norm_cast
@@ -313,9 +321,61 @@ theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
         add_sub_add_left_eq_sub, sub_sub_sub_cancel_right, sub_add_cancel_right]
   exact Units.isUnit t
 
+theorem s (t : Kˣ) : -((t : K) • (2 : ℤ) • (t : K)⁻¹ • f) = -2 • f := by
+  rw [two_smul]
+  rw [smul_add]
+  rw [← mul_smul]
+  field_simp
+  simp [two_smul]
+
+theorem rr (t : Kˣ) : f + (t : K) • (h - (2 : ℤ) • (t : K)⁻¹ • f) -
+    (t : K) ^ 2 • (e + (t : K)⁻¹ • h - ((t : K) ^ (2 : ℤ))⁻¹ • f) = - (t : K) ^ 2 • e := by
+  rw [smul_sub]
+  rw [smul_sub]
+  simp
+  rw [← mul_smul]
+  rw [← mul_smul]
+  rw [fu t]
+  rw [fuu t]
+  simp
+  rw [add_sub]
+  rw [sub_sub]
+  rw [add_sub]
+  abel_nf
+  simp
+  rw [s t]
+  simp
+
+
 theorem theta_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t f = (-(t ^ (2 : ℤ)) : K) • e := by
-  sorry
+  dsimp [theta]
+  rw [exp_ad_e_f H hα he t ht]
+  have : (exp_ad_f H hα hf t) (f + (t : K) • h - (t : K) ^ 2 • e) =
+      (exp_ad_f H hα hf t) (f + (t : K) • h) - (exp_ad_f H hα hf t) ((t : K) ^ 2 • e) := by
+    apply LinearMap.map_sub
+  rw [this]
+  have : (exp_ad_f H hα hf t) (f + (t : K) • h) =
+      (exp_ad_f H hα hf t) f + (exp_ad_f H hα hf t) ((t : K) • h) := by
+    apply LinearMap.map_add
+  rw [this]
+  have : (exp_ad_f H hα hf t) ((t : K) • h) = (t : K) • (exp_ad_f H hα hf t) h := by
+    apply LinearMap.map_smul
+  rw [this]
+  have : (exp_ad_f H hα hf t) ((t : K) ^ 2 • e) = (t : K) ^ 2 • (exp_ad_f H hα hf t) e := by
+    apply LinearMap.map_smul
+  rw [this]
+  rw [exp_ad_f_e H hα hf t ht, exp_ad_f_f H hα hf t, exp_ad_f_h H hα hf t ht]
+  simp
+  rw [rr t]
+  have : (exp_ad_e H hα he t) (-(t : K) ^ 2 • e) = -(t : K) ^ 2 • (exp_ad_e H hα he t) e := by
+     apply LinearMap.map_smul
+  rw [this]
+  rw [exp_ad_e_e H hα he t]
+  simp
+  norm_cast
+
+
 
 /-
 theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
