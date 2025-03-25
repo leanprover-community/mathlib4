@@ -86,6 +86,21 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
+/-- Meromorphic functions that agree in a punctured neighborhood of `z₀` have the same order at
+`z₀`. -/
+theorem order_congr {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
+    (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
+    hf₁.order = (hf₁.congr hf₁₂).order := by
+  by_cases h₁f₁ : hf₁.order = ⊤
+  · rw [h₁f₁, eq_comm, (hf₁.congr hf₁₂).order_eq_top_iff]
+    rw [hf₁.order_eq_top_iff] at h₁f₁
+    exact EventuallyEq.rw h₁f₁ (fun x => Eq (f₂ x)) hf₁₂.symm
+  · obtain ⟨n, hn : hf₁.order = n⟩ := Option.ne_none_iff_exists'.mp h₁f₁
+    obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf₁.order_eq_int_iff n).1 hn
+    rw [hn, eq_comm, (hf₁.congr hf₁₂).order_eq_int_iff]
+    use g, h₁g, h₂g
+    exact EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) hf₁₂.symm
+
 /-- Compatibility of notions of `order` for analytic and meromorphic functions. -/
 lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     hf.meromorphicAt.order = hf.order.map (↑) := by
@@ -131,6 +146,24 @@ theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜}
 theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     (hf.mul hg).order = hf.order + hg.order :=
   hf.order_smul hg
+
+/-- The order of the inverse is the negative of the order. -/
+theorem order_inv {f : 𝕜 → 𝕜} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
+    hf.inv.order = -hf.order := by
+  by_cases h₂f : hf.order = ⊤
+  · rw [h₂f, ← LinearOrderedAddCommGroupWithTop.neg_top, neg_neg]
+    rw [MeromorphicAt.order_eq_top_iff] at *
+    filter_upwards [h₂f]
+    simp
+  lift hf.order to ℤ using h₂f with a ha
+  apply (hf.inv.order_eq_int_iff (-a)).2
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff a).1 ha.symm
+  use g⁻¹, h₁g.inv h₂g, inv_eq_zero.not.2 h₂g
+  rw [eventually_nhdsWithin_iff] at *
+  filter_upwards [h₃g]
+  intro _ h₁a h₂a
+  simp only [Pi.inv_apply, h₁a h₂a, smul_eq_mul, mul_inv_rev, zpow_neg]
+  ring
 
 end MeromorphicAt
 

@@ -45,56 +45,18 @@ instance (priority := 100) NormedDivisionRing.toNormedRing [β : NormedDivisionR
     NormedRing α :=
   { β with norm_mul_le a b := (NormedDivisionRing.norm_mul a b).le }
 
+-- see Note [lower instance priority]
+/-- The norm on a normed division ring is strictly multiplicative. -/
+instance (priority := 100) NormedDivisionRing.toNormMulClass [NormedDivisionRing α] :
+    NormMulClass α where
+  norm_mul := NormedDivisionRing.norm_mul
+
 section NormedDivisionRing
 
 variable [NormedDivisionRing α] {a b : α}
 
-@[simp]
-theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ := NormedDivisionRing.norm_mul a b
-
 instance (priority := 900) NormedDivisionRing.to_normOneClass : NormOneClass α :=
   ⟨mul_left_cancel₀ (mt norm_eq_zero.1 (one_ne_zero' α)) <| by rw [← norm_mul, mul_one, mul_one]⟩
-
-instance isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ) where
-  abv_nonneg' := norm_nonneg
-  abv_eq_zero' := norm_eq_zero
-  abv_add' := norm_add_le
-  abv_mul' := norm_mul
-
-@[simp] lemma nnnorm_mul (a b : α) : ‖a * b‖₊ = ‖a‖₊ * ‖b‖₊ := NNReal.eq <| norm_mul a b
-@[simp] lemma enorm_mul (a b : α) : ‖a * b‖ₑ = ‖a‖ₑ * ‖b‖ₑ := by simp [enorm]
-
-/-- `norm` as a `MonoidWithZeroHom`. -/
-@[simps]
-def normHom : α →*₀ ℝ where
-  toFun := (‖·‖)
-  map_zero' := norm_zero
-  map_one' := norm_one
-  map_mul' := norm_mul
-
-/-- `nnnorm` as a `MonoidWithZeroHom`. -/
-@[simps]
-def nnnormHom : α →*₀ ℝ≥0 where
-  toFun := (‖·‖₊)
-  map_zero' := nnnorm_zero
-  map_one' := nnnorm_one
-  map_mul' := nnnorm_mul
-
-@[simp]
-theorem norm_pow (a : α) : ∀ n : ℕ, ‖a ^ n‖ = ‖a‖ ^ n :=
-  (normHom.toMonoidHom : α →* ℝ).map_pow a
-
-@[simp]
-theorem nnnorm_pow (a : α) (n : ℕ) : ‖a ^ n‖₊ = ‖a‖₊ ^ n :=
-  (nnnormHom.toMonoidHom : α →* ℝ≥0).map_pow a n
-
-@[simp] lemma enorm_pow (a : α) (n : ℕ) : ‖a ^ n‖ₑ = ‖a‖ₑ ^ n := by simp [enorm]
-
-protected theorem List.norm_prod (l : List α) : ‖l.prod‖ = (l.map norm).prod :=
-  map_list_prod (normHom.toMonoidHom : α →* ℝ) _
-
-protected theorem List.nnnorm_prod (l : List α) : ‖l.prod‖₊ = (l.map nnnorm).prod :=
-  map_list_prod (nnnormHom.toMonoidHom : α →* ℝ≥0) _
 
 @[simp]
 theorem norm_div (a b : α) : ‖a / b‖ = ‖a‖ / ‖b‖ :=
@@ -226,14 +188,6 @@ instance (priority := 100) NormedField.toNormedDivisionRing : NormedDivisionRing
 instance (priority := 100) NormedField.toNormedCommRing : NormedCommRing α :=
   { ‹NormedField α› with norm_mul_le a b := (norm_mul a b).le }
 
-@[simp]
-theorem norm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖ = ∏ b ∈ s, ‖f b‖ :=
-  map_prod normHom.toMonoidHom f s
-
-@[simp]
-theorem nnnorm_prod (s : Finset β) (f : β → α) : ‖∏ b ∈ s, f b‖₊ = ∏ b ∈ s, ‖f b‖₊ :=
-  map_prod nnnormHom.toMonoidHom f s
-
 end NormedField
 
 namespace NormedField
@@ -264,7 +218,7 @@ theorem nhdsNE_neBot (x : α) : NeBot (𝓝[≠] x) := by
   rw [← mem_closure_iff_nhdsWithin_neBot, Metric.mem_closure_iff]
   rintro ε ε0
   rcases exists_norm_lt α ε0 with ⟨b, hb0, hbε⟩
-  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_right_eq_self).1 <| norm_pos_iff.1 hb0, ?_⟩
+  refine ⟨x + b, mt (Set.mem_singleton_iff.trans add_eq_left).1 <| norm_pos_iff.1 hb0, ?_⟩
   rwa [dist_comm, dist_eq_norm, add_sub_cancel_left]
 
 @[deprecated (since := "2025-03-02")]

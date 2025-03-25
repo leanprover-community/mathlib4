@@ -348,16 +348,6 @@ theorem not_bddAbove_fp_bfamily (H : ∀ i hi, IsNormal (f i hi)) :
   rw [Set.mem_iInter₂]
   exact fun i hi ↦ nfpBFamily_fp (H i hi) _
 
-set_option linter.deprecated false in
-/-- A generalization of the fixed point lemma for normal functions: any family of normal functions
-    has an unbounded set of common fixed points. -/
-@[deprecated not_bddAbove_fp_bfamily (since := "2024-09-20")]
-theorem fp_bfamily_unbounded (H : ∀ i hi, IsNormal (f i hi)) :
-    (⋂ (i) (hi), Function.fixedPoints (f i hi)).Unbounded (· < ·) := fun a =>
-  ⟨nfpBFamily.{u, v} _ f a, by
-    rw [Set.mem_iInter₂]
-    exact fun i hi => nfpBFamily_fp (H i hi) _, (le_nfpBFamily f a).not_lt⟩
-
 /-- The derivative of a family of normal functions is the sequence of their common fixed points.
 
 This is defined as `Ordinal.derivFamily` of the type-indexed family associated to `f`. -/
@@ -461,9 +451,6 @@ theorem le_nfp (f a) : a ≤ nfp f a :=
 theorem lt_nfp_iff {a b} : a < nfp f b ↔ ∃ n, a < f^[n] b := by
   rw [← iSup_iterate_eq_nfp]
   exact Ordinal.lt_iSup_iff
-
-@[deprecated lt_nfp_iff (since := "2024-02-16")]
-alias lt_nfp := lt_nfp_iff
 
 theorem nfp_le_iff {a b} : nfp f a ≤ b ↔ ∀ n, f^[n] a ≤ b := by
   rw [← iSup_iterate_eq_nfp]

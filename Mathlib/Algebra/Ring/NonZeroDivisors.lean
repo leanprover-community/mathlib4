@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.Ring.Defs
 
 /-!
@@ -23,6 +24,24 @@ lemma mul_cancel_right_mem_nonZeroDivisors (hr : r ∈ R⁰) : x * r = y * r ↔
 
 lemma mul_cancel_right_coe_nonZeroDivisors {c : R⁰} : x * c = y * c ↔ x = y :=
   mul_cancel_right_mem_nonZeroDivisors c.prop
+
+lemma isLeftRegular_iff_mem_nonZeroDivisorsRight : IsLeftRegular r ↔ r ∈ nonZeroDivisorsRight R :=
+  ⟨fun h r' eq ↦ h (by simp_rw [eq, mul_zero]),
+    fun h r₁ r₂ eq ↦ sub_eq_zero.mp <| h _ <| by simp_rw [mul_sub, eq, sub_self]⟩
+
+lemma isRightRegular_iff_mem_nonZeroDivisorsLeft : IsRightRegular r ↔ r ∈ nonZeroDivisorsLeft R :=
+  ⟨fun h r' eq ↦ h (by simp_rw [eq, zero_mul]),
+    fun h r₁ r₂ eq ↦ sub_eq_zero.mp <| h _ <| by simp_rw [sub_mul, eq, sub_self]⟩
+
+lemma le_nonZeroDivisors_iff_isRightRegular {S : Submonoid R} :
+    S ≤ R⁰ ↔ ∀ s : S, IsRightRegular (s : R) := by
+  simp_rw [SetLike.le_def, isRightRegular_iff_mem_nonZeroDivisorsLeft, Subtype.forall,
+    nonZeroDivisorsLeft_eq_nonZeroDivisors]
+
+lemma le_nonZeroDivisors_iff_isRegular {R} [CommRing R] {S : Submonoid R} :
+    S ≤ R⁰ ↔ ∀ s : S, IsRegular (s : R) := by
+  simp_rw [le_nonZeroDivisors_iff_isRightRegular,
+    Commute.isRightRegular_iff (Commute.all _), Commute.isRegular_iff (Commute.all _)]
 
 /-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
 lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] : IsUnit a ↔ a ∈ nonZeroDivisors R := by
