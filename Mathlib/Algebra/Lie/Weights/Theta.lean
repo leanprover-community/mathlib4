@@ -344,9 +344,6 @@ theorem theta_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
   rw [this, exp_ad_e_e H hα he t, neg_smul, neg_smul]
   norm_cast
 
-
-
-/-
 theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t h = -h := by
   calc
@@ -354,40 +351,19 @@ theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
       rw [ht.lie_e_f]
     _ = ⁅theta H hα he hf t e, theta H hα he hf t f⁆ := by
       apply LieHom.map_lie
-    _ = ⁅((t⁻¹) ^ 2 : K) • f, (t ^ 2 : K) • e⁆ := by
+    _ = ⁅(-(t : K) ^ (-2 : ℤ) : K) • f, (-(t ^ (2 : ℤ)) : K) • e⁆ := by
       rw [theta_e H hα he hf t ht, theta_f H hα he hf t ht]
-    _ = ((t⁻¹) ^ 2 : K) • ⁅f, (t ^ 2 : K) • e⁆ := by
+    _ = ((t : K) ^ (2 : ℤ))⁻¹ • (t : K) ^ (2 : ℤ) • ⁅f, e⁆ := by
       rw [smul_lie]
-    _ = ((t⁻¹) ^ 2 : K) • (t ^ 2 : K) • ⁅f, e⁆ := by
       rw [lie_smul]
-    _ = (((t⁻¹) ^ 2 : K) * (t ^ 2 : K)) • ⁅f, e⁆ := by
       simp
+    _ = (((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ (2 : ℤ)) • ⁅f, e⁆ := by
+      rw [mul_smul]
     _ = ⁅f, e⁆ := by
-      simp_all only [Units.val_inv_eq_inv_val, inv_pow, isUnit_iff_ne_zero, ne_eq,
-        OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Units.ne_zero,
-          IsUnit.inv_mul_cancel, one_smul]
-    _ = - ⁅e, f⁆ := by
-      rw [lie_skew]
+      norm_cast
+      field_simp
     _ = - h := by
+      rw [← lie_skew]
       rw [ht.lie_e_f]
--/
-
-
-
-
-
-
-/-
-lemma theta_apply {α : Weight K H L} {h e f : L} (hα : α.IsNonZero) (ht : IsSl2Triple h e f)
-    (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ) : theta H hα ht he hf t =
-      LieDerivation.exp (LieDerivation.instDerivation K L e)
-        (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) ∘
-      LieDerivation.exp (LieDerivation.instDerivation K L f)
-        (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H (neg_ne_zero.mpr hα) hf) ∘
-      LieDerivation.exp (LieDerivation.instDerivation K L e)
-        (LieAlgebra.isNilpotent_ad_of_mem_rootSpace H hα he) := by
-  ext x
-  dsimp [theta]
--/
 
 end Theta
