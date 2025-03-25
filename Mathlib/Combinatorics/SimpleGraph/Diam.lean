@@ -97,11 +97,11 @@ lemma ediam_eq_top_of_not_preconnected (h : ¬G.Preconnected) : G.ediam = ⊤ :=
     rw [connected_iff]
     tauto
 
-lemma preconnected_of_ediam_ne_top (h : G.ediam ≠ ⊤ ) : G.Preconnected := by
-   apply Classical.not_not.mp (mt G.ediam_eq_top_of_not_preconnected h)
+lemma preconnected_of_ediam_ne_top (h : G.ediam ≠ ⊤) : G.Preconnected :=
+  not_not.mp <| mt G.ediam_eq_top_of_not_preconnected h
 
-lemma connected_of_ediam_ne_top_and_nonempty [Nonempty α] (h : G.ediam ≠ ⊤) : G.Connected := by
-  rw [connected_iff]; exact ⟨preconnected_of_ediam_ne_top h, by assumption⟩
+lemma connected_of_ediam_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) : G.Connected :=
+  G.connected_iff.mpr ⟨preconnected_of_ediam_ne_top h, ‹_›⟩
 
 lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.edist u v = G.ediam :=
@@ -112,13 +112,13 @@ lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.edist u v = G.ediam :=
   Prod.exists'.mp <| ediam_def ▸ exists_eq_ciSup_of_finite
 
-lemma ediam_ne_top_of_preconnected [Nonempty α] [Finite α] (h : G.Preconnected) : G.ediam ≠ ⊤ := by
-  by_contra h_top
-  have ⟨u, v, _⟩ := G.exists_edist_eq_ediam_of_finite
-  simp_all only [edist_ne_top_iff_reachable.mpr (h u v)]
+lemma ediam_ne_top_of_preconnected [Nonempty α] [Finite α] (h : G.Preconnected) : G.ediam ≠ ⊤ :=
+  have ⟨u, v, huv⟩ := G.exists_edist_eq_ediam_of_finite
+  huv ▸ edist_ne_top_iff_reachable.mpr (h u v)
 
-lemma not_preconn_of_ediam_eq_top [Nonempty α] [Finite α] (h : G.ediam = ⊤) : ¬G.Preconnected :=
-  (mt G.ediam_ne_top_of_preconnected) (not_ne_iff.mpr h)
+lemma not_preconnected_of_ediam_eq_top [Nonempty α] [Finite α] (h : G.ediam = ⊤) :
+    ¬G.Preconnected :=
+  mt G.ediam_ne_top_of_preconnected <| not_ne_iff.mpr h
 
 @[gcongr]
 lemma ediam_anti (h : G ≤ G') : G'.ediam ≤ G.ediam :=
@@ -188,11 +188,9 @@ lemma exists_dist_eq_diam [Nonempty α] :
     use u, v
     rw [diam, dist, congrArg ENat.toNat huv]
 
-lemma pos_diam_of_ne_top_and_nt (h : G.ediam ≠ ⊤) [Nontrivial α] : 0 < G.diam  := by
-  obtain ⟨u, v, uv_ne⟩ := exists_pair_ne ‹_›
-  have h_conn : G.Connected := connected_of_ediam_ne_top_and_nonempty h
-  calc 0 < G.dist u v := by apply Connected.pos_dist_of_ne h_conn uv_ne
-          _ ≤ G.diam := by apply dist_le_diam h
+lemma diam_pos_of_ediam_ne_top [Nontrivial α] (h : G.ediam ≠ ⊤) : 0 < G.diam  :=
+  have ⟨_, _, hne⟩ := exists_pair_ne ‹_›
+  lt_of_lt_of_le ((connected_of_ediam_ne_top h).pos_dist_of_ne hne) <| dist_le_diam h
 
 @[gcongr]
 lemma diam_anti_of_ediam_ne_top (h : G ≤ G') (hn : G.ediam ≠ ⊤) : G'.diam ≤ G.diam :=
@@ -217,18 +215,18 @@ lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
 lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
   rw [diam, ENat.toNat_eq_iff one_ne_zero, Nat.cast_one, ediam_eq_one]
 
-lemma pos_diam_iff_ne_top_and_nt : G.diam > 0 ↔ G.ediam ≠ ⊤ ∧ Nontrivial α := by
-  rw [← not_iff_not, not_and, not_nontrivial_iff_subsingleton]
-  simp [diam_eq_zero]
+lemma pos_diam_iff_ne_top_and_nt : 0 < G.diam  ↔ G.ediam ≠ ⊤ ∧ Nontrivial α := by
+  rw [pos_iff_ne_zero, ne_eq, diam_eq_zero, ← not_nontrivial_iff_subsingleton]
   tauto
 
 lemma not_connected_of_diam_zero [Fintype α] [Nontrivial α] (h : G.diam = 0) : ¬ G.Connected := by
   rw [connected_iff]
   rw [diam_eq_zero] at h
-  simp
-  rcases h with t | s
-  · exact not_preconn_of_ediam_eq_top t
-  · absurd s; exact not_subsingleton α
+  cases h
+  · apply not_and_of_not_left
+    exact not_preconnected_of_ediam_eq_top ‹_›
+  · rw [← not_nontrivial_iff_subsingleton] at *
+    contradiction
 
 end diam
 
