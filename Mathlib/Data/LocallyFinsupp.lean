@@ -3,7 +3,10 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.DiscreteSubset
 
 /-!
 # Type of functions with locally finite support
@@ -15,7 +18,7 @@ commutative group.
 Throughout the present file, `X` denotes a topologically space and `U` a subset of `X`.
 -/
 
-open Filter Function Metric Real Set Topology
+open Filter Function Set Topology
 
 variable
   {X : Type*} [TopologicalSpace X] {U : Set X}
