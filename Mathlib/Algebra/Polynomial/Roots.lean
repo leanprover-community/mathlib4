@@ -330,12 +330,18 @@ theorem nthRootsFinset_zero (a : R) : nthRootsFinset 0 a = ∅ := by
   classical simp [nthRootsFinset_def]
 
 theorem map_mem_nthRootsFinset {S F : Type*} [CommRing S] [IsDomain S] [FunLike F R S]
-    [RingHomClass F R S] (a : R) {x : R} (hx : x ∈ nthRootsFinset n a) (f : F) :
+    [RingHomClass F R S] {a : R} {x : R} (hx : x ∈ nthRootsFinset n a) (f : F) :
     f x ∈ nthRootsFinset n (f a) := by
   by_cases hn : n = 0
   · simp [hn] at hx
   · rw [mem_nthRootsFinset <| Nat.pos_of_ne_zero hn, ← map_pow, (mem_nthRootsFinset
       (Nat.pos_of_ne_zero hn) a).1 hx]
+
+theorem map_mem_nthRootsFinset_one {S F : Type*} [CommRing S] [IsDomain S] [FunLike F R S]
+    [RingHomClass F R S] {x : R} (hx : x ∈ nthRootsFinset n 1) (f : F) :
+    f x ∈ nthRootsFinset n 1 := by
+  rw [← (map_one f)]
+  exact map_mem_nthRootsFinset hx _
 
 theorem mul_mem_nthRootsFinset
     {η₁ η₂ : R} {a₁ a₂ : R} (hη₁ : η₁ ∈ nthRootsFinset n a₁) (hη₂ : η₂ ∈ nthRootsFinset n a₂) :
