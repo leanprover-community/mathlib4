@@ -203,7 +203,9 @@ The normal subgroups correspond to the congruence relations on a group.
 "The normal subgroups correspond to the additive congruence relations on an `AddGroup`."]
 def _root_.Subgroup.orderIsoCon :
     { N : Subgroup G // N.Normal } ≃o Con G where
-  toFun := fun ⟨N, _⟩ ↦ QuotientGroup.con N
+  toFun N :=
+    have : N.val.Normal := N.prop
+    QuotientGroup.con N
   invFun c := ⟨c.subgroup, inferInstance⟩
   left_inv := fun ⟨N, _⟩ ↦ Subtype.mk_eq_mk.mpr (Con.subgroup_quotientGroupCon N)
   right_inv c := QuotientGroup.con_subgroup c
