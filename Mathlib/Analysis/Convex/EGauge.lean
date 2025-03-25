@@ -3,6 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Algebra.Module.PointwisePi
 import Mathlib.Analysis.Seminorm
 import Mathlib.GroupTheory.GroupAction.Pointwise
 
@@ -262,10 +263,11 @@ theorem egauge_pi' {I : Set ι} (hI : I.Finite)
         refine ⟨c₁, .inl hc₁, fun i hi ↦ ?_, hc₁r⟩
         simp [hc0 i hi]
   refine egauge_lt_iff.2 ⟨c₀, ?_, hc₀r⟩
-  suffices x ∈ I.pi fun i ↦ c₀ • U i by
+  have smul_pi : c₀ • I.pi U = I.pi (c₀ • U) := by
     rcases hc₀ with hc₀ | rfl
-    · simpa only [← image_smul, ← piMap_image_pi (fun _ _ ↦ MulAction.surjective₀ hc₀)] using this
-    · simpa only [← image_smul, ← piMap_image_univ_pi] using this
+    · rw [smul_pi₀ _ _ hc₀]
+    · rw [smul_univ_pi _ _]
+  rw [smul_pi]
   intro i hi
   exact (hU i hi).smul_mono (hc₀I i hi) (hc i hi)
 
