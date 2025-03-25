@@ -35,6 +35,11 @@ theorem integrableOn_exp_Iic (c : ℝ) : IntegrableOn exp (Iic c) := by
   simp_rw [norm_of_nonneg (exp_pos _).le, integral_exp, sub_le_self_iff]
   exact (exp_pos _).le
 
+theorem integrableOn_exp_neg_Ici (c : ℝ) : IntegrableOn (fun x ↦ exp (- x)) (Ici c) := by
+  simpa using
+    ((Measure.measurePreserving_neg _).integrableOn_comp_preimage measurableEmbedding_neg).mpr
+    (integrableOn_exp_Iic (- c))
+
 theorem integral_exp_Iic (c : ℝ) : ∫ x : ℝ in Iic c, exp x = exp c := by
   refine
     tendsto_nhds_unique

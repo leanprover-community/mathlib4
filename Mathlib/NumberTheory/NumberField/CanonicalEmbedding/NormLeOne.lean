@@ -641,13 +641,18 @@ theorem setLIntegral_paramSet_exp {n : ℕ} (hn : 0 < n) :
   simp_rw [Function.update_self, lmarginal, lintegral_const, Measure.pi_univ, if_neg
     (Finset.ne_of_mem_erase (Subtype.prop _)), Measure.restrict_apply_univ, Real.volume_Ico,
     sub_zero, ofReal_one, prod_const_one, mul_one]
+  suffices ∫⁻ (x : ℝ) in Set.Ici 0, ENNReal.ofReal (Real.exp (-(x * n))) = (n : ℝ≥0∞)⁻¹ by
+    rw [← (Measure.measurePreserving_neg _).setLIntegral_comp_preimage
+      measurableSet_Iic (by fun_prop), Set.neg_preimage, Set.neg_Iic, neg_zero]
+    simpa [neg_mul]
   rw [← ofReal_integral_eq_lintegral_ofReal]
-  · rw [← setIntegral_congr_set Iio_ae_eq_Iic, integral_comp_mul_right_Iio _ _
-      (Nat.cast_pos.mpr hn), zero_mul, setIntegral_congr_set Iio_ae_eq_Iic, integral_exp_Iic,
-      Real.exp_zero, smul_eq_mul, mul_one, ofReal_inv_of_pos (Nat.cast_pos.mpr hn), ofReal_natCast]
-  · rw [← IntegrableOn, integrableOn_Iic_iff_integrableOn_Iio, integrableOn_Iio_comp_mul_right_iff _
-      _ (Nat.cast_pos.mpr hn), zero_mul, ← integrableOn_Iic_iff_integrableOn_Iio]
-    exact integrableOn_exp_Iic 0
+  · rw [← setIntegral_congr_set Ioi_ae_eq_Ici, integral_comp_mul_right_Ioi (fun x ↦ Real.exp (-x))
+      _ (Nat.cast_pos.mpr hn), zero_mul, integral_exp_neg_Ioi, neg_zero, Real.exp_zero, smul_eq_mul,
+      mul_one, ofReal_inv_of_pos (Nat.cast_pos.mpr hn), ofReal_natCast]
+  · rw [← IntegrableOn, integrableOn_Ici_iff_integrableOn_Ioi, integrableOn_Ioi_comp_mul_right_iff
+      (fun x ↦ Real.exp (-x)) _ (Nat.cast_pos.mpr hn), zero_mul,
+      ← integrableOn_Ici_iff_integrableOn_Ioi]
+    exact integrableOn_exp_neg_Ici 0
   · filter_upwards with _ using Real.exp_nonneg _
 
 end paramSet
