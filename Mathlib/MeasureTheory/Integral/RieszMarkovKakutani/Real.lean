@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Yoh Tanimioto. All rights reserved.
+Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto, Oliver Butterley
 -/
@@ -95,10 +95,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply ENNReal.coe_le_iff.mpr
   intro p hp
   rw [← ENNReal.ofReal_coe_nnreal, ENNReal.ofReal_eq_ofReal_iff (hΛ f hf) NNReal.zero_le_coe] at hp
-  apply csInf_le
-  · use 0
-    rw [mem_lowerBounds]
-    simp
+  apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
   simp only [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
@@ -156,7 +153,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
   let y : Fin N → ℝ := fun n => a + ε * (n + 1)
   -- By definition `y n` and `y m` are separated by at least `ε`.
   have hy {n m : Fin N} (h : n < m) : y n + ε ≤ y m := calc
-    _ ≤ a + ε * (m) + ε := by
+    _ ≤ a + ε * m + ε := by
       exact add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
     _ = _ := by dsimp [y]; linarith
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
@@ -199,8 +196,8 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
       · exact hx
     · have (n : Fin N) : E n ⊆ tsupport f := by simp [inter_subset_right, E]
       exact iUnion_subset this
-  exact ⟨partition, disjoint, fun n x a ↦ bdd n x a, fun _ ↦ MeasurableSet.inter
-    ((ContinuousMap.measurable f.1) measurableSet_Ioc) measurableSet_closure⟩
+  exact ⟨partition, disjoint, fun n x a ↦ bdd n x a, fun _ ↦
+    (f.1.measurable measurableSet_Ioc).inter measurableSet_closure⟩
 
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
@@ -212,9 +209,8 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : 
   obtain ⟨V₁ : Opens X, hV₁⟩ := Content.outerMeasure_exists_open μ hμ hε'
   let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage f.1.2 isOpen_Iio⟩
   use V₁ ⊓ V₂
-  have h : (∀ x ∈ V₁ ⊓ V₂, f x < c) := by
-    suffices (∀ x ∈ V₂.carrier, f x < c) by
-      exact fun x h ↦ (this x h.2)
+  have h x (hx : x ∈ V₁ ⊓ V₂) : f x < c := by
+    suffices (∀ x ∈ V₂.carrier, f x < c) by exact this x (mem_of_mem_inter_right hx)
     intro _ hx
     rw [mem_preimage, mem_Iio] at hx
     exact hx
@@ -231,7 +227,7 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : 
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
-lemma RMK_le_aux (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
+private lemma RMK_le_aux (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
     a' / N * (b' + a' / N) ≤ ε := by
   have A : Tendsto (fun (N : ℝ) ↦ a' / N * (b' + a' / N)) atTop
       (𝓝 (0 * (b' + 0))) := by
