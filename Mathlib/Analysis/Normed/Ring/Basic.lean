@@ -755,12 +755,8 @@ instance NormMulClass.isAbsoluteValue_norm : IsAbsoluteValue (norm : α → ℝ)
   abv_mul' := norm_mul
 
 instance NormMulClass.toNoZeroDivisors : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {a b} h := by
+  eq_zero_or_eq_zero_of_mul_eq_zero h := by
     simpa only [← norm_eq_zero (E := α), norm_mul, mul_eq_zero] using h
-
-/-- A non-zero normed ring satisfying `NormMulClass` is a domain. Not an instance, to avoid
-loops with `IsDomain.toNontrivial`. -/
-lemma NormMulClass.toIsDomain [Nontrivial α] : IsDomain α := NoZeroDivisors.to_isDomain α
 
 end NormedRing
 
