@@ -63,7 +63,7 @@ theorem coe_star (f : α →ᵇ β) : ⇑(star f) = star (⇑f) := rfl
 theorem star_apply (f : α →ᵇ β) (x : α) : star f x = star (f x) := rfl
 
 instance instNormedStarGroup : NormedStarGroup (α →ᵇ β) where
-  norm_star f := by simp only [norm_eq, star_apply, norm_star]
+  norm_star_le f := by simp only [norm_eq, star_apply, norm_star, le_of_eq]
 
 instance instStarModule : StarModule 𝕜 (α →ᵇ β) where
   star_smul k f := ext fun x => star_smul k (f x)

@@ -3,27 +3,30 @@ Copyright (c) 2025 Etienne Marion. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Etienne Marion
 -/
-import Mathlib.MeasureTheory.Function.StronglyMeasurable.Basic
+import Mathlib.MeasureTheory.Constructions.Polish.StronglyMeasurable
 import Mathlib.Probability.Process.Filtration
 
 /-!
 # Factorization of a map from measurability
 
 Consider `f : X → Y` and `g : X → Z` and assume that `g` is measurable with respect to the pullback
-along `f`. Then `g` factors though `f`, which means that there exists `h : Y → Z` such that
-`g = h ∘ f`.
+along `f`. Then `g` factors through `f`, which means that (if `Z` is nonempty)
+there exists `h : Y → Z` such that `g = h ∘ f`.
 
-## TODO
-
-* Under certain assumptions, the factorization map `h` is measurable. This is the content of the
-  [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma).
+If `Z` is completely metrizable, the factorization map `h` can be taken to be measurable.
+This is the content of the [Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma):
+see `exists_eq_measurable_comp`.
 -/
 
 namespace MeasureTheory
 
-open Filtration Set TopologicalSpace
+open Filter Filtration Set TopologicalSpace
+
+open scoped Topology
 
 variable {X Y Z : Type*} [mY : MeasurableSpace Y] {f : X → Y} {g : X → Z}
+
+section FactorsThrough
 
 /-- If a function `g` is measurable with respect to the pullback along some function `f`,
 then to prove `g x = g y` it is enough to prove `f x = f y`. -/
@@ -31,18 +34,52 @@ theorem _root_.Measurable.factorsThrough [MeasurableSpace Z] [MeasurableSingleto
     (hg : Measurable[mY.comap f] g) : g.FactorsThrough f := by
   refine fun x₁ x₂ h ↦ eq_of_mem_singleton ?_
   obtain ⟨s, -, hs⟩ := hg (measurableSet_singleton (g x₂))
-  rw [← mem_preimage, ← hs, mem_preimage, h, ← mem_preimage, hs, mem_preimage, mem_singleton_iff]
+  rw [← mem_preimage, ← hs, mem_preimage, h, ← mem_preimage, hs]
+  rfl
 
 /-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
 then to prove `g x = g y` it is enough to prove `f x = f y`.
 
-TODO: under certain assumptions, the factorization map `h` is measurable. This is the content of the
-[Doob-Dynkin lemma](https://en.wikipedia.org/wiki/Doob–Dynkin_lemma). -/
+If `Z` is not empty there exists `h : Y → Z` such that `g = h ∘ f`.
+If `Z` is also completely metrizable, the factorization map `h` can be taken to be measurable
+(see `exists_eq_measurable_comp`). -/
 theorem StronglyMeasurable.factorsThrough [TopologicalSpace Z]
     [PseudoMetrizableSpace Z] [T1Space Z] (hg : StronglyMeasurable[mY.comap f] g) :
     g.FactorsThrough f := by
   borelize Z
   exact hg.measurable.factorsThrough
+
+/-- If a function `g` is strongly measurable with respect to the pullback along some function `f`,
+then there exists some strongly measurable function `h : Y → Z` such that `g = h ∘ f`. -/
+theorem StronglyMeasurable.exists_eq_measurable_comp [Nonempty Z] [TopologicalSpace Z]
+    [IsCompletelyMetrizableSpace Z] (hg : StronglyMeasurable[mY.comap f] g) :
+    ∃ h : Y → Z, StronglyMeasurable h ∧ g = h ∘ f := by
+  let mX : MeasurableSpace X := mY.comap f
+  induction g, hg using StronglyMeasurable.induction' with
+  | const z => exact ⟨fun _ ↦ z, stronglyMeasurable_const, rfl⟩
+  | @pcw g₁ g₂ s hg₁ hg₂ hs h₁ h₂ =>
+    obtain ⟨t, ht, rfl⟩ := hs
+    obtain ⟨h₁, mh₁, rfl⟩ := h₁
+    obtain ⟨h₂, mh₂, rfl⟩ := h₂
+    classical
+    exact ⟨t.piecewise h₁ h₂, mh₁.piecewise ht mh₂, by rw [piecewise_comp]⟩
+  | @lim g i hg hi h₁ h₂ =>
+    choose h mh hh using h₁
+    refine ⟨fun y ↦ _root_.limUnder atTop (h · y), StronglyMeasurable.limUnder mh, ?_⟩
+    ext x
+    rw [Function.comp_apply, Tendsto.limUnder_eq]
+    simp_all
+
+/-- If a function `g` is measurable with respect to the pullback along some function `f`,
+then there exists some measurable function `h : Y → Z` such that `g = h ∘ f`. -/
+theorem _root_.Measurable.exists_eq_measurable_comp [Nonempty Z] [MeasurableSpace Z]
+    [StandardBorelSpace Z] (hg : Measurable[mY.comap f] g) :
+    ∃ h : Y → Z, Measurable h ∧ g = h ∘ f := by
+  letI := upgradeStandardBorel Z
+  obtain ⟨h, mh, hh⟩ := hg.stronglyMeasurable.exists_eq_measurable_comp
+  exact ⟨h, mh.measurable, hh⟩
+
+end FactorsThrough
 
 variable {ι : Type*} {X : ι → Type*} [∀ i, MeasurableSpace (X i)] {f : (Π i, X i) → Z}
 
