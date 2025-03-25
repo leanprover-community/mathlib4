@@ -324,18 +324,15 @@ theorem div_add_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : x / y + z = (
 
 theorem div_sub_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : x / y - z = (x - y * z) / y := by
   apply eq_div_of_mul_eq_right h1
-  rw [mul_sub]
-  rw [EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_sub, EuclideanDomain.mul_div_cancel' h1 h2]
 
 theorem add_div_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : x + y / z = (z * x + y) / z := by
   apply eq_div_of_mul_eq_right h1
-  rw [mul_add]
-  rw [EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
 
 theorem sub_div_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : x - y / z = (z * x - y) / z := by
   apply eq_div_of_mul_eq_right h1
-  rw [mul_sub]
-  rw [EuclideanDomain.mul_div_cancel' h1 h2]
+  rw [mul_sub, EuclideanDomain.mul_div_cancel' h1 h2]
 
 theorem div_mul {x y z : R} (h1 : y ∣ x) (h2 : y * z ∣ x) :
     x / (y * z) = x / y / z := by
@@ -364,13 +361,13 @@ theorem div_sub_div_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0) (h3 : y �
     mul_assoc, EuclideanDomain.mul_div_cancel' h2 h4]
 
 theorem div_eq_iff_eq_mul_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) :
-    x / y = z  ↔ x = y * z := by
+    x / y = z ↔ x = y * z := by
   obtain ⟨a, ha⟩ := h2
   rw [ha, mul_div_cancel_left₀ _ h1]
   simp only [mul_eq_mul_left_iff, mul_eq_zero, h1, or_self, or_false]
 
 theorem eq_div_iff_mul_eq_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) :
-    x = y / z  ↔ z * x = y := by
+    x = y / z ↔ z * x = y := by
   rw [eq_comm,div_eq_iff_eq_mul_of_dvd _ _ _ h1 h2, eq_comm]
 
 theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t ≠ 0)
