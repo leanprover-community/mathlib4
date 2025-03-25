@@ -445,33 +445,33 @@ lemma sub_mul_div' (a b c : ℕ) : (a - b * c) / b = a / b - c := by
       rw [Nat.mul_div_cancel_left _ (zero_lt_of_ne_zero hn)] at h2
       rw [Nat.sub_eq_zero_of_le h2]
 
-lemma mul_sub_div_of_dvd (a b c : ℕ) (h1 : c ≠ 0) (h2 : c ∣ b) : (c * a - b) / c = a - b / c := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ← Nat.mul_sub_left_distrib, Nat.mul_div_right, zero_lt_of_ne_zero h1]
+lemma mul_sub_div_of_dvd (hc : c ≠ 0) (hcb : c ∣ b) (a : ℕ) : (c * a - b) / c = a - b / c := by
+  obtain ⟨_, hx⟩ := hcb
+  simp only [hx, ← Nat.mul_sub_left_distrib, Nat.mul_div_right, zero_lt_of_ne_zero hc]
 
-lemma mul_add_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (h1 : b ∣ a) (h2 : d ∣ c) :
+lemma mul_add_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (hba : b ∣ a) (hdc : d ∣ c) :
     (a * d + b * c) / (b * d) = a / b + c / d := by
-  obtain ⟨n, hn⟩ := h1
-  obtain ⟨_, hm⟩ := h2
+  obtain ⟨n, hn⟩ := hba
+  obtain ⟨_, hm⟩ := hdc
   rw [hn, hm, Nat.mul_assoc b n d, Nat.mul_comm n d, ← Nat.mul_assoc, ← Nat.mul_assoc,
     ← Nat.mul_add, Nat.mul_div_right _ (zero_lt_of_ne_zero hb),
     Nat.mul_div_right _ (zero_lt_of_ne_zero hd),
     Nat.mul_div_right _ (Nat.mul_pos (zero_lt_of_ne_zero hb) (zero_lt_of_ne_zero hd))]
 
-lemma mul_sub_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (h1 : b ∣ a) (h2 : d ∣ c) :
+lemma mul_sub_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (hba : b ∣ a) (hdc : d ∣ c) :
     (a * d - b * c) / (b * d)  = a / b - c / d:= by
-  obtain ⟨n, hn⟩ := h1
-  obtain ⟨m, hm⟩ := h2
+  obtain ⟨n, hn⟩ := hba
+  obtain ⟨m, hm⟩ := hdc
   rw [hn, hm]
   rw [Nat.mul_assoc,Nat.mul_comm n d, ← Nat.mul_assoc,← Nat.mul_assoc, ← Nat.mul_sub_left_distrib,
     Nat.mul_div_right _ (zero_lt_of_ne_zero hb), Nat.mul_div_right _ (zero_lt_of_ne_zero hd),
     Nat.mul_div_right _ (Nat.mul_pos (zero_lt_of_ne_zero hb) (zero_lt_of_ne_zero hd))]
 
-lemma div_mul_assoc (a b c : ℕ) (h : b ∣ a) : (a / b) * c = (a * c) / b := by
-  rw [Nat.mul_comm, ← Nat.mul_div_assoc _ h, Nat.mul_comm]
+lemma div_mul_assoc (hba : b ∣ a) (c : ℕ) : (a / b) * c = (a * c) / b := by
+  rw [Nat.mul_comm, ← Nat.mul_div_assoc _ hba, Nat.mul_comm]
 
-lemma eq_div_iff_mul_eq_left (a b c : ℕ) (h1 : 0 < c) (h2 : c ∣ b) : a = b / c ↔ b = a * c := by
-  rw [eq_comm, Nat.div_eq_iff_eq_mul_left h1 h2]
+lemma eq_div_iff_mul_eq_left (hc : c ≠ 0) (hcb : c ∣ b) : a = b / c ↔ b = a * c := by
+  rw [eq_comm, Nat.div_eq_iff_eq_mul_left (zero_lt_of_ne_zero hc) hcb]
 
 lemma div_mul_div_comm : b ∣ a → d ∣ c → (a / b) * (c / d) = (a * c) / (b * d) := by
   rintro ⟨x, rfl⟩ ⟨y, rfl⟩
@@ -563,17 +563,18 @@ protected lemma mul_le_of_le_div (k x y : ℕ) (h : x ≤ y / k) : x * k ≤ y :
   else
     rwa [← le_div_iff_mul_le (Nat.pos_iff_ne_zero.2 hk)]
 
-theorem div_le_iff_le_mul_of_dvd (a b c : ℕ) (h1 : 0 < b) (h2 : b ∣ a) : a / b ≤ c ↔ a ≤ c * b := by
-  obtain ⟨_, hx⟩ := h2
+theorem div_le_iff_le_mul_of_dvd (hb : b ≠ 0) (hba : b ∣ a) : a / b ≤ c ↔ a ≤ c * b := by
+  obtain ⟨_, hx⟩ := hba
   simp only [hx]
-  rw [Nat.mul_div_right _ h1, Nat.mul_comm]
-  exact ⟨mul_le_mul_right b, fun h ↦ Nat.le_of_mul_le_mul_right h h1⟩
+  rw [Nat.mul_div_right _ (zero_lt_of_ne_zero hb), Nat.mul_comm]
+  exact ⟨mul_le_mul_right b, fun h ↦ Nat.le_of_mul_le_mul_right h (zero_lt_of_ne_zero hb)⟩
 
-theorem lt_div_iff_mul_lt_of_dvd (a b c : ℕ) (h1 : 0 < c) (h2 : c ∣ b) : a < b / c ↔ a * c < b := by
-  obtain ⟨x, hx⟩ := h2
+theorem lt_div_iff_mul_lt_of_dvd (hc : c ≠ 0) (hcb : c ∣ b) : a < b / c ↔ a * c < b := by
+  obtain ⟨x, hx⟩ := hcb
   simp only [hx]
-  rw [Nat.mul_div_right _ h1, Nat.mul_comm]
-  exact ⟨fun h ↦ Nat.mul_lt_mul_of_pos_left h h1, (Nat.mul_lt_mul_left h1).mp⟩
+  rw [Nat.mul_div_right _ (zero_lt_of_ne_zero hc), Nat.mul_comm]
+  exact ⟨fun h ↦ Nat.mul_lt_mul_of_pos_left h (zero_lt_of_ne_zero hc),
+    (Nat.mul_lt_mul_left (zero_lt_of_ne_zero hc)).mp⟩
 
 /-!
 ### `pow`
