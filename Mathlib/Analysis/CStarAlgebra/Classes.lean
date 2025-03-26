@@ -123,26 +123,13 @@ variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A] [S
   [NormedStarGroup A]
 
 lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by
-  have hmain : ‖x + star x‖ ≤ 2 * ‖x‖ := calc
-    _ ≤ ‖x‖ + ‖star x‖ := norm_add_le x (star x)
-    _ = 2 * ‖x‖ := by simp [two_mul]
-  rw [realPart]
-  dsimp
-  rw [norm_smul]
-  simp only [invOf_eq_inv, norm_inv, Real.norm_ofNat]
-  calc _ ≤ 2⁻¹ * (2 * ‖x‖) := by gcongr
-    _ = ‖x‖ := by ring
+  rw [← inv_mul_cancel_left₀ two_ne_zero ‖x‖, ← AddSubgroup.norm_coe, realPart_apply_coe,
+    norm_smul, norm_inv, Real.norm_ofNat]
+  gcongr
+  exact norm_add_le _ _ |>.trans <| by simp [two_mul]
 
 lemma imaginaryPart.norm_le (x : A) : ‖imaginaryPart x‖ ≤ ‖x‖ := by
-  have hmain : ‖x - star x‖ ≤ 2 * ‖x‖ := calc
-    _ ≤ ‖x‖ + ‖star x‖ := norm_sub_le x (star x)
-    _ = 2 * ‖x‖ := by simp [two_mul]
-  rw [imaginaryPart]
-  dsimp
-  rw [norm_smul]
-  simp only [norm_neg, Complex.norm_I, invOf_eq_inv, norm_smul, norm_inv, RCLike.norm_ofNat,
-    one_mul, ge_iff_le]
-  calc _ ≤ 2⁻¹ * (2 * ‖x‖) := by gcongr
-    _ = ‖x‖ := by ring
+  calc ‖imaginaryPart x‖ = ‖realPart (Complex.I • (-x))‖ := by simp
+    _ ≤ ‖x‖ := by simpa [norm_smul] using realPart.norm_le (Complex.I • (-x))
 
 end real_imaginary_part
