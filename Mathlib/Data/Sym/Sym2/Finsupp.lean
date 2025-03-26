@@ -40,4 +40,6 @@ lemma support_sym2Mul_subset : f.sym2Mul.support ⊆ f.support.sym2 := support_o
 
 @[simp, norm_cast] lemma coe_sym2Mul (f : α →₀ M₀) : f.sym2Mul = mul ∘ map f := rfl
 
+lemma sym2Mul_apply_mk (p : α × α) : f.sym2Mul (.mk p) = f p.1 * f p.2 := rfl
+
 end Finsupp
