@@ -273,7 +273,7 @@ lemma firstReturn_pos : 0 < p.firstReturn := by
 include h in
 lemma firstReturn_lt_length : p.firstReturn < p.toList.length := by
   have lp := length_pos_of_ne_nil (toList_ne_nil.mpr h)
-  rw [← length_range p.toList.length]
+  rw [← length_range (n := p.toList.length)]
   apply findIdx_lt_length_of_exists
   simp only [mem_range, decide_eq_true_eq]
   use p.toList.length - 1
@@ -284,7 +284,7 @@ include h in
 lemma count_take_firstReturn_add_one :
     (p.toList.take (p.firstReturn + 1)).count U = (p.toList.take (p.firstReturn + 1)).count D := by
   have := findIdx_getElem
-    (w := (length_range p.toList.length).symm ▸ firstReturn_lt_length h)
+    (w := (length_range (n := p.toList.length)).symm ▸ firstReturn_lt_length h)
   simpa using this
 
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
