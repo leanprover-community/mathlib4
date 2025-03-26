@@ -13,10 +13,25 @@ In this file, we define `C^k` immersions and embeddings between `C^k` manifolds.
 The correct definition in the infinite-dimensional setting differs from the standard
 finite-dimensional definition: we cannot prove the implication yet.
 
-TODO complete this doc-string, once more details are clear.
+## Main definitions
+* `IsImmersionAt F I I' n f x` means a map `f : M → M'` between `C^n` manifolds `M` and `M'`
+  is an immersion at `x : M`: there are charts `φ` and `ψ` of `M` and `N` around `x` and `f x`,
+  respectively, such that in these charts, `f` looks like `u ↦ (u, 0)`, w.r.t. some equivalence
+  `E' ≃L[𝕜] E × F`. We do not demand that `f` be differentiable (this follows from this definition).
+* `IsImmersion F I I' n f` means `f: M → M'` is an immersion at every point `x : M`.
 
-## TODO
-- the product of two immersions
+## Main results (some in progress)
+* If f is an immersion at `x`, it is `C^n` at `x`. If f is an immersion, it is `C^n`.
+* `IsImmersionAt.prodMap`: the product of two immersions is an immersion
+* If `f` is an immersion at `x`, its differential splits, hence is injective.
+* If `f: M → M'` is a map between Banach manifolds, `mfderiv I I' f x` splitting implies `f` is an
+  immersion at `x`. (This requires the inverse function theorem.)
+* `IsImmersionAt.comp`: if `f: M → M'` and `g: M' → N` are maps between Banach manifolds such that
+  `f` is an immersion at `x : M` and `g` is an immersion at `f x`, then `g ∘ f` is an immersion
+  at `x`.
+* `IsImmersion.comp`: the composition of immersions (between Banach manifolds) is an immersion
+* If `f: M → M'` is a map between finite-dimensional manifolds, `mfderiv I I' f x` being injective
+  implies `f` is an immersion at `x`.
 
 -/
 
