@@ -643,10 +643,6 @@ theorem MonoidHom.map_finprod_mem (f : α → M) (g : M →* N) (hs : s.Finite) 
     g (∏ᶠ j ∈ s, f j) = ∏ᶠ i ∈ s, g (f i) :=
   g.map_finprod_mem' (hs.inter_of_left _)
 
-theorem smul_finsum_mem {R M : Type*} [Monoid R] [AddCommMonoid M] [DistribMulAction R M] (c : R)
-    {f : ι → M} {s : Set ι} (hs : s.Finite) : (c • ∑ᶠ i ∈ s, f i) = ∑ᶠ i ∈ s, c • f i :=
-  (DistribMulAction.toAddMonoidHom M c).map_finsum_mem _ hs
-
 @[to_additive]
 theorem MulEquiv.map_finprod_mem (g : M ≃* N) (f : α → M) {s : Set α} (hs : s.Finite) :
     g (∏ᶠ i ∈ s, f i) = ∏ᶠ i ∈ s, g (f i) :=
