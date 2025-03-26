@@ -1,33 +1,45 @@
 /-
 Copyright (c) 2022 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Peter Nelson
+Authors: Peter Nelson, Kalle Kytölä
 -/
 import Mathlib.Data.ENat.Basic
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Order.Interval.Set.WithBotTop
+import Mathlib.Topology.Order.T5
 
 /-!
-# Topology on extended natural numbers
+# Topology on the extended natural numbers
 -/
 
-open Filter Set Topology
+noncomputable section
+
+open Set Filter Function Topology
+open scoped ENat
+
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 namespace ENat
 
-/--
-Topology on `ℕ∞`.
+variable {a b c d : ℕ∞} {r p q : ℕ} {x y z : ℕ∞} {s : Set ℕ∞}
+
+open TopologicalSpace
+
+/-- Topology on `ℕ∞`.
 
 Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
-`IsOpen {∞}`, but all neighborhoods of `∞` in `ℕ∞` contain infinite intervals.
--/
+`IsOpen {∞}`, while all neighborhoods of `∞` in `ℕ∞` contain infinite intervals. -/
 instance : TopologicalSpace ℕ∞ := Preorder.topology ℕ∞
 
 instance : OrderTopology ℕ∞ := ⟨rfl⟩
 
-@[simp] theorem range_natCast : range ((↑) : ℕ → ℕ∞) = Iio ⊤ :=
-  WithTop.range_coe
+example : OrderClosedTopology ℕ∞ := by infer_instance
+
+-- short-circuit type class inference
+instance : T2Space ℕ∞ := inferInstance
+instance : T5Space ℕ∞ := inferInstance
+instance : T4Space ℕ∞ := inferInstance
 
 theorem isEmbedding_natCast : IsEmbedding ((↑) : ℕ → ℕ∞) :=
   Nat.strictMono_cast.isEmbedding_of_ordConnected <| range_natCast ▸ ordConnected_Iio
@@ -99,6 +111,84 @@ protected theorem continuousAt_sub {a b : ℕ∞} (h : a ≠ ⊤ ∨ b ≠ ⊤) 
     suffices ∀ n : ℕ, ∀ᶠ a : ℕ∞ in 𝓝 ⊤, b + n < a by
       simpa [ContinuousAt, nhds_prod_eq, (· ∘ ·), lt_tsub_iff_left, tendsto_nhds_top_iff_natCast_lt]
     exact fun n ↦ lt_mem_nhds <| WithTop.coe_lt_top (b + n)
+
+theorem isOpen_ne_top : IsOpen {a : ℕ∞ | a ≠ ⊤} := isOpen_ne
+
+theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by rw [ENat.Ico_eq_Iio]; exact isOpen_Iio
+
+theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℕ} :
+    (Continuous fun a ↦ (f a : ℕ∞)) ↔ Continuous f :=
+  isEmbedding_natCast.continuous_iff.symm
+
+theorem nhds_coe {r : ℕ} : 𝓝 (r : ℕ∞) = (𝓝 r).map (↑) :=
+  (isOpenEmbedding_natCast.map_nhds_eq r).symm
+
+theorem nhds_top : 𝓝 (⊤ : ℕ∞) = ⨅ (a) (_ : a ≠ ⊤), 𝓟 (Ioi a) :=
+  nhds_top_order.trans <| by simp [lt_top_iff_ne_top, Ioi]
+
+theorem nhds_top_hasBasis : (𝓝 (⊤ : ℕ∞)).HasBasis (fun a ↦ a < ⊤) fun a ↦ Ioi a :=
+  _root_.nhds_top_basis
+
+lemma isOpen_Ico : IsOpen (Ico a b) := by
+  by_cases a_zero : a = 0
+  · simpa [a_zero, ENat.Ico_eq_Iio] using isOpen_Iio
+  · simpa [ENat.Ico_eq_Ioo a_zero b] using isOpen_Ioo
+
+lemma isOpen_Ioc : IsOpen (Ioc a b) := by
+  by_cases b_top : b = ⊤
+  · simpa [b_top, ENat.Ioc_eq_Ioi] using isOpen_Ioi
+  · simpa [ENat.Ioc_eq_Ioo a b_top] using isOpen_Ioo
+
+lemma isOpen_Icc (h : a ≠ ⊤ ∨ b ≠ ⊤) : IsOpen (Icc a b) := by
+  by_cases b_top : b = ⊤
+  · simp only [ne_eq, b_top, not_true_eq_false, or_false, Icc_top] at h ⊢
+    by_cases a_zero : a = 0
+    · convert isOpen_univ
+      ext x
+      simp [a_zero]
+    · simpa [ENat.Ici_eq_Ioi a_zero h] using isOpen_Ioi
+  · simpa [ENat.Icc_eq_Ico _ b_top] using isOpen_Ico
+
+@[simp] lemma mem_nhds_iff_of_ne_top {n : ℕ∞} (n_ne_top : n ≠ ⊤) (s : Set ℕ∞) :
+    s ∈ 𝓝 n ↔ n ∈ s := by
+  refine ⟨fun h ↦ mem_of_mem_nhds h, fun h ↦ ?_⟩
+  apply mem_of_superset ((ENat.isOpen_singleton n_ne_top).mem_nhds rfl)
+  exact singleton_subset_iff.mpr h
+
+theorem tendsto_nhds_coe_iff {α : Type*} {l : Filter α} {x : ℕ} {f : ℕ∞ → α} :
+    Tendsto f (𝓝 ↑x) l ↔ Tendsto (f ∘ (↑) : ℕ → α) (𝓝 x) l := by
+  rw [nhds_coe, tendsto_map'_iff]
+
+theorem continuousAt_coe_iff {α : Type*} [TopologicalSpace α] {x : ℕ} {f : ℕ∞ → α} :
+    ContinuousAt f ↑x ↔ ContinuousAt (f ∘ (↑) : ℕ → α) x :=
+  tendsto_nhds_coe_iff
+
+theorem nhds_coe_coe {r p : ℕ} :
+    𝓝 ((r : ℕ∞), (p : ℕ∞)) = (𝓝 (r, p)).map fun p : ℕ × ℕ => (↑p.1, ↑p.2) :=
+  ((isOpenEmbedding_natCast.prodMap isOpenEmbedding_natCast).map_nhds_eq (r, p)).symm
+
+theorem tendsto_toNat {a : ℕ∞} (ha : a ≠ ⊤) :
+    Tendsto ENat.toNat (𝓝 a) (𝓝 a.toNat) := by
+  lift a to ℕ using ha
+  rw [nhds_coe, tendsto_map'_iff]
+  exact tendsto_id
+
+theorem eventuallyEq_of_toNat_eventuallyEq {l : Filter α} {f g : α → ℕ∞}
+    (hfi : ∀ᶠ x in l, f x ≠ ⊤) (hgi : ∀ᶠ x in l, g x ≠ ⊤)
+    (hfg : (fun x => (f x).toNat) =ᶠ[l] fun x => (g x).toNat) : f =ᶠ[l] g := by
+  filter_upwards [hfi, hgi, hfg] with _ hfx hgx _
+  rwa [← ENat.toNat_eq_toNat hfx hgx]
+
+theorem continuousOn_toNat : ContinuousOn ENat.toNat {a | a ≠ ⊤} := fun _a ha =>
+  ContinuousAt.continuousWithinAt (tendsto_toNat ha)
+
+lemma continuousAt_toNat (hx : x ≠ ⊤) : ContinuousAt ENat.toNat x :=
+  continuousOn_toNat.continuousAt (isOpen_ne_top.mem_nhds_iff.mpr hx)
+
+theorem tendsto_nhds_top_iff_nat {m : α → ℕ∞} {f : Filter α} :
+    Tendsto m f (𝓝 ⊤) ↔ ∀ n : ℕ, ∀ᶠ i in f, n < m i := by
+  simp only [nhds_top, ne_eq, tendsto_iInf, tendsto_principal, mem_Ioi]
+  exact ⟨fun h k ↦ h k (coe_ne_top k), fun h n n_ne_top ↦ (coe_toNat n_ne_top).symm ▸ h n.toNat⟩
 
 end ENat
 
