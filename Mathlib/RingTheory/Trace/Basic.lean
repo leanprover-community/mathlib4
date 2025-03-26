@@ -332,9 +332,9 @@ theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     traceMatrix A b *ᵥ b.equivFun z = fun i => trace A B (z * b i) := by
   ext i
-  rw [← col_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, col_mulVec,
+  rw [← replicateCol_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, replicateCol_mulVec,
     Matrix.mul_apply, traceMatrix]
-  simp only [col_apply, traceForm_apply]
+  simp only [replicateCol_apply, traceForm_apply]
   conv_lhs =>
     congr
     rfl

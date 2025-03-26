@@ -53,6 +53,23 @@ theorem lintegral_div_right_eq_self [IsMulRightInvariant μ] (f : G → ℝ≥0�
 
 end MeasurableMul
 
+section MeasurableInv
+
+variable [InvolutiveInv G] [MeasurableInv G]
+
+/-- The Lebesgue integral of a function with respect to an inverse invariant measure is
+invariant under the change of variables x ↦ x⁻¹. -/
+@[to_additive
+      "The Lebesgue integral of a function with respect to an inverse invariant measure is
+invariant under the change of variables x ↦ -x."]
+theorem lintegral_inv_eq_self [IsInvInvariant μ] (f : G → ℝ≥0∞) :
+   ∫⁻ x, f x⁻¹ ∂μ = ∫⁻ x, f x ∂μ := by
+ convert (lintegral_map_equiv f <| MeasurableEquiv.inv _).symm
+ nth_rewrite 1 [← map_inv_eq_self μ]
+ rfl
+
+end MeasurableInv
+
 section IsTopologicalGroup
 
 variable [TopologicalSpace G] [Group G] [IsTopologicalGroup G] [BorelSpace G] [IsMulLeftInvariant μ]
