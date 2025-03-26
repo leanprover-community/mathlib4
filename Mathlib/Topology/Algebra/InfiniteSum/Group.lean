@@ -7,6 +7,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Infinite sums and products in topological groups

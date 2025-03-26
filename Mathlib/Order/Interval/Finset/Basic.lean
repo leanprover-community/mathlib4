@@ -643,12 +643,12 @@ variable {β : Type*}
 section sectL
 
 lemma uIcc_map_sectL [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β) :
+    [DecidableLE (α × β)] (a b : α) (c : β) :
     (uIcc a b).map (.sectL _ c) = uIcc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm])
 
 variable [Preorder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β)
+  [DecidableLE (α × β)] (a b : α) (c : β)
 
 lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm])
@@ -667,12 +667,12 @@ end sectL
 section sectR
 
 lemma uIcc_map_sectR [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-    [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β) :
+    [DecidableLE (α × β)] (c : α) (a b : β) :
     (uIcc a b).map (.sectR c _) = uIcc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm])
 
 variable [PartialOrder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β)
+  [DecidableLE (α × β)] (c : α) (a b : β)
 
 lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm])

@@ -174,7 +174,7 @@ theorem sub_algebraMap {B : Type*} [CommRing B] [Algebra A B] (x : B)
     (a : A) : minpoly A (x - algebraMap A B a) = (minpoly A x).comp (X + C a) := by
   simpa [sub_eq_add_neg] using add_algebraMap x (-a)
 
-theorem neg {B : Type*} [CommRing B] [Algebra A B] (x : B) :
+theorem neg {B : Type*} [Ring B] [Algebra A B] (x : B) :
     minpoly A (- x) = (-1) ^ (natDegree (minpoly A x)) * (minpoly A x).comp (- X) := by
   by_cases hx : IsIntegral A x
   · refine (minpoly.unique _ _ ((minpoly.monic hx).neg_one_pow_natDegree_mul_comp_neg_X)

@@ -677,6 +677,9 @@ instance nontrivial (n : ℕ) [Fact (1 < n)] : Nontrivial (ZMod n) :=
 instance nontrivial' : Nontrivial (ZMod 0) := by
   delta ZMod; infer_instance
 
+lemma one_eq_zero_iff {n : ℕ} : (1 : ZMod n) = 0 ↔ n = 1 := by
+  rw [← Nat.cast_one, natCast_zmod_eq_zero_iff_dvd, Nat.dvd_one]
+
 /-- The inversion on `ZMod n`.
 It is setup in such a way that `a * a⁻¹` is equal to `gcd a.val n`.
 In particular, if `a` is coprime to `n`, and hence a unit, `a * a⁻¹ = 1`. -/

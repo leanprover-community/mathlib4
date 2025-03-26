@@ -76,7 +76,7 @@ theorem dotProduct_assoc [NonUnitalSemiring α] (u : m → α) (w : n → α) (v
 
 @[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_assoc := dotProduct_assoc
 
-theorem dotProduct_comm [AddCommMonoid α] [CommSemigroup α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
+theorem dotProduct_comm [AddCommMonoid α] [CommMagma α] (v w : m → α) : v ⬝ᵥ w = w ⬝ᵥ v := by
   simp_rw [dotProduct, mul_comm]
 
 @[deprecated (since := "2024-12-12")] protected alias Matrix.dotProduct_comm := dotProduct_comm
@@ -329,7 +329,7 @@ theorem mul_apply' [Fintype m] [Mul α] [AddCommMonoid α] {M : Matrix l m α} {
     {i k} : (M * N) i k = (fun j => M i j) ⬝ᵥ fun j => N j k :=
   rfl
 
-theorem two_mul_expl {R : Type*} [CommRing R] (A B : Matrix (Fin 2) (Fin 2) R) :
+theorem two_mul_expl {R : Type*} [NonUnitalNonAssocSemiring R] (A B : Matrix (Fin 2) (Fin 2) R) :
     (A * B) 0 0 = A 0 0 * B 0 0 + A 0 1 * B 1 0 ∧
     (A * B) 0 1 = A 0 0 * B 0 1 + A 0 1 * B 1 1 ∧
     (A * B) 1 0 = A 1 0 * B 0 0 + A 1 1 * B 1 0 ∧
@@ -961,7 +961,7 @@ section Transpose
 open Matrix
 
 @[simp]
-theorem transpose_mul [AddCommMonoid α] [CommSemigroup α] [Fintype n] (M : Matrix m n α)
+theorem transpose_mul [AddCommMonoid α] [CommMagma α] [Fintype n] (M : Matrix m n α)
     (N : Matrix n l α) : (M * N)ᵀ = Nᵀ * Mᵀ := by
   ext
   apply dotProduct_comm

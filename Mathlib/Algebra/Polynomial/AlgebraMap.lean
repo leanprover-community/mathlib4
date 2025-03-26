@@ -5,7 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Eval.Algebra

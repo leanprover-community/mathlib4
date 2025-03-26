@@ -3,9 +3,10 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Fabian Glöckle, Kyle Miller
 -/
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.Dimension.ErdosKaplansky
 import Mathlib.LinearAlgebra.Dual.Basis
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Projection

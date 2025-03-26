@@ -503,7 +503,7 @@ Data structures:
     array: 'Array'
     # buffer: 'buffer'
     difference list: 'Batteries.DList'
-    lazy list: 'LazyList'
+    lazy list: 'MLList'
     stream: 'Stream'''
     sequence: 'Stream''.Seq'
     weak sequence: 'Stream''.WSeq'

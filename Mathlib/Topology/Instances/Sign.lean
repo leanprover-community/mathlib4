@@ -25,7 +25,7 @@ variable {α : Type*} [Zero α] [TopologicalSpace α]
 
 section PartialOrder
 
-variable [PartialOrder α] [DecidableRel ((· < ·) : α → α → Prop)] [OrderTopology α]
+variable [PartialOrder α] [DecidableLT α] [OrderTopology α]
 
 theorem continuousAt_sign_of_pos {a : α} (h : 0 < a) : ContinuousAt SignType.sign a := by
   refine (continuousAt_const : ContinuousAt (fun _ => (1 : SignType)) a).congr ?_
