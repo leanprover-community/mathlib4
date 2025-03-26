@@ -596,7 +596,7 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
       (H.1.coeff R i - h.coeff R i) (fun n ↦ SModEq.zero.mpr (SModEq.sub_mem.mp (coeff_modeq' n)))
 
 lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m.IsMaximal]
-    [comp : IsAdicComplete m R] {π : R} (prin : Ideal.span {π} = m) {f : R⟦X⟧}
+    [IsAdicComplete m R] {π : R} (prin : Ideal.span {π} = m) {f : R⟦X⟧}
     (ne0 : f ≠ 0) (pi_ne0 : π ≠ 0): ∃! khg : ℕ × R⟦X⟧ˣ × R[X],
     khg.2.2.IsDistinguishedAt m ∧ f = (π ^ khg.1) • (khg.2.2 * khg.2.1) := by
   classical
@@ -604,8 +604,9 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
     by_contra! h
     absurd ne0
     ext i
-    have (n : ℕ): f.coeff R i ≡ 0 [SMOD m ^ n • (⊤ : Submodule R R)] := by simp [SModEq.zero, h n i]
-    simp [IsHausdorff.haus IsAdicComplete.toIsHausdorff (f.coeff R i) this]
+    have (n : ℕ) : f.coeff R i ≡ 0 [SMOD m ^ n • (⊤ : Submodule R R)] := by
+      simp [SModEq.zero, h n i]
+    simp [IsAdicComplete.toIsHausdorff.haus (f.coeff R i) this]
   let k := Nat.find exist_nmem - 1
   have pos : Nat.find exist_nmem > 0 := by
     by_contra h
@@ -619,7 +620,7 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
   have f'_spec : (π ^ k) • f' = f := by
     ext i
     simpa [f'] using (Classical.choose_spec (Ideal.mem_span_singleton.mp (this i))).symm
-  have ntriv : (PowerSeries.map (Ideal.Quotient.mk m)) f' ≠ 0 := by
+  have ntriv : f'.map (Ideal.Quotient.mk m) ≠ 0 := by
     by_contra h
     rcases Nat.find_spec exist_nmem with ⟨i, hi⟩
     absurd hi
@@ -658,16 +659,14 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
         by_contra h
         rw [← prin, Ideal.span_singleton_pow] at h
         rcases Ideal.mem_span_singleton.mp h with ⟨r, hr⟩
-        simp only [pow_add, pow_one, mul_assoc, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0,
-          ne_eq, false_and, or_false] at hr
         absurd nmem
         rw [← prin, Ideal.mem_span_singleton]
         use r
+        simpa [pow_add, mul_assoc, mul_eq_mul_left_iff, pow_eq_zero_iff', pi_ne0] using hr
       · simp only [not_exists, Decidable.not_not]
         intro k hk i
         apply Ideal.pow_le_pow_right (Nat.le_of_lt_succ hk)
-        simpa [← prin, Ideal.span_singleton_pow, eq']
-          using Ideal.mem_span_singleton.mpr (dvd_mul_right _ _)
+        simp [← prin, Ideal.span_singleton_pow, eq', Ideal.mem_span_singleton]
     have keq : k' = k := by simp [k, this]
     rw [keq] at eq'
     have heq : h' = h := uniq _ ⟨g', distinguish', (muleq eq'.symm).symm⟩
@@ -679,7 +678,7 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
 
 --note : the conditions needed for `R` in `weierstrass_preparation_aux` actually implies DVR
 theorem IsDiscreteValuationRing.weierstrass_preparation [IsDomain R] [IsDiscreteValuationRing R]
-    [comp : IsAdicComplete (IsLocalRing.maximalIdeal R) R](f : R⟦X⟧) (ne0 : f ≠ 0)
+    [IsAdicComplete (IsLocalRing.maximalIdeal R) R](f : R⟦X⟧) (ne0 : f ≠ 0)
     (π : R) (irr : Irreducible π) : ∃! khg : ℕ × R⟦X⟧ˣ × R[X],
     khg.2.2.IsDistinguishedAt (IsLocalRing.maximalIdeal R) ∧
     f = (π ^ khg.1) • (khg.2.2 * khg.2.1) :=
