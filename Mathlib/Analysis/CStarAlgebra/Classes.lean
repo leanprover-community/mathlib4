@@ -116,20 +116,3 @@ noncomputable instance [CStarAlgebra A] : CStarAlgebra Aᵐᵒᵖ where
 noncomputable instance [CommCStarAlgebra A] : CommCStarAlgebra Aᵐᵒᵖ where
 
 end MulOpposite
-
-section real_imaginary_part
-
-variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℂ A] [StarModule ℂ A]
-  [NormedStarGroup A]
-
-lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by
-  rw [← inv_mul_cancel_left₀ two_ne_zero ‖x‖, ← AddSubgroup.norm_coe, realPart_apply_coe,
-    norm_smul, norm_inv, Real.norm_ofNat]
-  gcongr
-  exact norm_add_le _ _ |>.trans <| by simp [two_mul]
-
-lemma imaginaryPart.norm_le (x : A) : ‖imaginaryPart x‖ ≤ ‖x‖ := by
-  calc ‖imaginaryPart x‖ = ‖realPart (Complex.I • (-x))‖ := by simp
-    _ ≤ ‖x‖ := by simpa [norm_smul] using realPart.norm_le (Complex.I • (-x))
-
-end real_imaginary_part
