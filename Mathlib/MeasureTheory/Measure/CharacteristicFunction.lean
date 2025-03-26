@@ -18,14 +18,10 @@ where `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ
 
 A typical example is `V = W = ℝ` and `L v w = v * w`.
 
-## Main definitions
+## Main definition
 
-- `char _ _ w : V →ᵇ ℂ`: The bounded continuous mapping
-  `fun v ↦ e (L v (Multiplicative.toAdd w))` from `V` to `ℂ`, `e` is a continuous additive
-  character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a bilinear map.
-- `charFun P _ : W → ℂ`: The characteristic function of a Measure `P`, evaluated at `w`, is the
-  integral of `char _ _ w` with respect to `P`, for the standard choice of
-  `e = Circle.expAddChar`.
+`charFun P hL : W → ℂ`: The characteristic function of a Measure `P`, evaluated at `w`, is the
+integral of `char he hL w` with respect to `P`, for the standard choice of `e = Circle.expAddChar`.
 
 ## Main statements
 
@@ -46,8 +42,8 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
 /--
-The characteristic function of a Measure `P` is the integral of `char` for the standard choice
-of `e = Circle.expAddChar`.
+The characteristic function of a Measure `P`, evaluated at `w` is the integral of
+`fun v ↦ e (L v w)` with respect to `P` for the standard choice of `e = Circle.exp`.
 -/
 noncomputable
 def charFun [MeasurableSpace V] (P : Measure V) (hL : Continuous fun p : V × W ↦ L p.1 p.2)

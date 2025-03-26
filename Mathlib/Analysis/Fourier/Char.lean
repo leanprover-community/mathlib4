@@ -11,30 +11,27 @@ import Mathlib.Topology.ContinuousMap.Bounded.Star
 /-!
 # Definition of BoundedContinuousFunction.char
 
-This file defines the characteristic function of a finite measure on a topological vector space
-`V`.
+Definition and basic properties of `BoundedContinuousFunction.char he hL w := fun v ↦ e (L v w)`,
+where `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a continuous bilinear
+map.
 
-The characteristic function of a finite measure `P` on `V` is the mapping
-`W → ℂ, w => ∫ v, e (-L v w) ∂P`,
-where `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a bilinear map.
-
-A typical example is `V = W = ℝ` and `L v w = v * w`.
+In the special case `e = Circle.exp`, this is used to define the characteristic function of a
+measure.
 
 ## Main definitions
 
-- `BoundedContinuousFunction.char _ _ w : V →ᵇ ℂ`: The bounded continuous mapping
-  `fun v ↦ e (L v (Multiplicative.toAdd w))` from `V` to `ℂ`, `e` is a continuous additive
-  character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a bilinear map.
-- `charFun P _ : W → ℂ`: The characteristic function of a Measure `P`, evaluated at `w`, is the
-  integral of `char _ _ w` with respect to `P`, for the standard choice of
-  `e = Circle.expAddChar`.
+- `char he hL w : V →ᵇ ℂ`: Bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`, where
+  `e` is a continuous additive character and `L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ` is a continuous bilinear map.
+- `charPoly he hL : W → ℂ`: The `StarSubalgebra ℂ (V →ᵇ ℂ)` consisting of `ℂ`-linear combinations of
+  `char he hL w`, where `w : W`.
 
 ## Main statements
 
-- `ext_of_integral_char_eq`: Assume `e` and `L` are non-trivial. If the integrals of `char`
-  with respect to two finite measures `P` and `P'` coincide, then `P = P'`.
-- `ext_of_charFun_eq`: If the characteristic functions of two finite measures `P` and `P'` are
-  equal, then `P = P'`. In other words, characteristic functions separate finite measures.
+- `char_SeparatesPoints`: If `e` and `L` are non-trivial, then `char he hL w, w : W` separates
+  points in `V`.
+- `star_mem_range_charAlgHom`: The family of `ℂ`-linear combinations of `char he hL w, w : W`, is
+  closed under `star`.
+- `separatesPoints_charPoly`: The family `charPoly he hL w, w : W` separates points in `V`.
 
 -/
 
@@ -47,11 +44,11 @@ variable {V W : Type*} [AddCommGroup V] [Module ℝ V] [TopologicalSpace V]
     {e : AddChar ℝ Circle} {L : V →ₗ[ℝ] W →ₗ[ℝ] ℝ}
     {he : Continuous e} {hL : Continuous fun p : V × W ↦ L p.1 p.2}
 
-/-- The bounded continuous mapping `fun v ↦ e (L v (Multiplicative.toAdd w))` from `V` to `ℂ`. -/
+/-- The bounded continuous mapping `fun v ↦ e (L v w)` from `V` to `ℂ`. -/
 def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (w : Multiplicative W) :
+    (w : W) :
     V →ᵇ ℂ where
-  toFun := fun v ↦ e (L v (Multiplicative.toAdd w))
+  toFun := fun v ↦ e (L v w)
   continuous_toFun :=
     continuous_induced_dom.comp (he.comp (hL.comp (Continuous.prodMk_left w)))
   map_bounded' := by
@@ -62,20 +59,21 @@ def char (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     _ = 2 := by ring
 
 @[simp]
-lemma char_apply (w : Multiplicative W) (v : V) :
-    char he hL w v = e (L v (Multiplicative.toAdd w)) := rfl
+lemma char_apply (w : W) (v : V) :
+    char he hL w v = e (L v w) := rfl
 
 @[simp]
-lemma char_one : char he hL 1 = 1 := by ext; simp
+lemma char_zero_eq_one : char he hL 0 = 1 := by ext; simp
 
-lemma char_mul (x y : Multiplicative W) :
-    char he hL (x * y) = char he hL x * char he hL y := by
+lemma char_add_eq_mul (x y : W) :
+    char he hL (x + y) = char he hL x * char he hL y := by
   ext
   simp [e.map_add_eq_mul]
 
-lemma char_inv (w : Multiplicative W) :
-    char he hL w⁻¹ = star (char he hL w) := by ext; simp
+lemma char_neg (w : W) :
+    char he hL (-w) = star (char he hL w) := by ext; simp
 
+/-- If `e` and `L` are non-trivial, then `char he hL w, w : W` separates points in `V`. -/
 theorem char_SeparatesPoints (he : Continuous e) (he' : e ≠ 1)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) {v v' : V} (hv : v ≠ v') :
     ∃ w : W, char he hL w v ≠ char he hL w v' := by
@@ -102,18 +100,18 @@ theorem char_SeparatesPoints (he : Continuous e) (he' : e ≠ 1)
     simp
   _ ≠ 1 := ha
 
-/-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v (Multiplicative.toAdd w))`. -/
+/-- Monoid homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
 def charMonoidHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     Multiplicative W →* (V →ᵇ ℂ) where
-  toFun := char he hL
-  map_one' := char_one
-  map_mul' := char_mul (he := he) (hL := hL)
+  toFun w := char he hL w
+  map_one' := char_zero_eq_one
+  map_mul' := char_add_eq_mul (he := he) (hL := hL)
 
 @[simp]
 lemma charMonoidHom_apply (w : Multiplicative W) (v : V) :
-    charMonoidHom he hL w v = e (L v (Multiplicative.toAdd w)) := by simp [charMonoidHom]
+    charMonoidHom he hL w v = e (L v w) := by simp [charMonoidHom]
 
-/-- Algebra homomorphism mapping `w` to `fun v ↦ e (L v (Multiplicative.toAdd w))`. -/
+/-- Algebra homomorphism mapping `w` to `fun v ↦ e (L v w)`. -/
 noncomputable
 def charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     AddMonoidAlgebra ℂ W →ₐ[ℂ] (V →ᵇ ℂ) :=
@@ -124,10 +122,11 @@ lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
     charAlgHom he hL w v = ∑ a ∈ w.support, w a * (e (L v a) : ℂ) := by
   simp only [charAlgHom, AddMonoidAlgebra.lift_apply]
   rw [Finsupp.sum_of_support_subset w subset_rfl]
-  · simp only [coe_sum, BoundedContinuousFunction.coe_smul, charMonoidHom_apply, toAdd_ofAdd,
-      smul_eq_mul, Finset.sum_apply]
+  · simp only [coe_sum, coe_smul, charMonoidHom_apply, smul_eq_mul, Finset.sum_apply]
+    rfl
   · simp
 
+/-- The family of `ℂ`-linear combinations of `char he hL w, w : W`, is closed under `star`. -/
 lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     {x : V →ᵇ ℂ} (hx : x ∈ (charAlgHom he hL).range) :
     star x ∈ (charAlgHom he hL).range := by
@@ -143,7 +142,7 @@ lemma star_mem_range_charAlgHom (he : Continuous e) (hL : Continuous fun p : V �
   simp_rw [← map_neg (L u)]
   rfl
 
-/-- The star-subalgebra of exponential polynomials. -/
+/-- The star-subalgebra of polynomials. -/
 noncomputable
 def charPoly (he : Continuous e) (hL : Continuous fun p : V × W ↦ L p.1 p.2) :
     StarSubalgebra ℂ (V →ᵇ ℂ) where
@@ -174,10 +173,10 @@ lemma char_mem_charPoly (w : W) : char he hL w ∈ charPoly he hL := by
   simp only [char_apply, AddMonoidAlgebra.single]
   rw [Finset.sum_eq_single w]
   · simp only [Finsupp.single_eq_same, ofReal_one, one_mul, SetLike.coe_eq_coe]
-    rfl
   · simp [Finsupp.single_apply_ne_zero]
   · simp
 
+/-- The family `charPoly he hL w, w : W` separates points in `V`. -/
 lemma separatesPoints_charPoly (he : Continuous e) (he' : e ≠ 1)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) (hL' : ∀ v ≠ 0, L v ≠ 0) :
     ((charPoly he hL).map (toContinuousMapStarₐ ℂ)).SeparatesPoints := by
