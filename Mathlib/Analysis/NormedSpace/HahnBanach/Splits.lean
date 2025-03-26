@@ -141,6 +141,10 @@ lemma disjoint_aux  {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Su
   have : y₀ = 0 := hF y₀ ((hg aux) ▸ hx₀) hy₀
   simp [hxy, ← hgy₀, this]
 
+lemma codisjoint_of_eq_top {F' F'' : Submodule 𝕜 F} (h : F' + F'' = ⊤) : Codisjoint F' F' := sorry
+
+lemma _root_.Submodule.codisjoint_add_eq_top {F' F'' : Submodule 𝕜 F} (h : Codisjoint F' F'') : F' + F'' = ⊤ := sorry
+
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
 lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
@@ -153,20 +157,35 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
     · have : IsClosed (X := G) (F'.map g) := hg.isClosedMap _ hf.complement_isClosed
       have : IsClosed (X := G) hg.complement := hg.complement_isClosed
       -- In general, the sum of closed subspaces need not be closed.
-      -- In this case, however, this is true (as F'.map G is a closed subspace of range g,
+      -- In this case, however, this is true as F'.map G is a closed subspace of range g,
       -- and range g + hg.complement = G' is closed.
       -- TODO: think about the best proof for formalising.
       sorry
     · constructor
       · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
-        --rw [LinearMap.range_comp]
-        -- rw [LinearMap.range_eq_map]
-        -- rw [Submodule.map_comp f g ⊤]
-        --rw [← LinearMap.range_eq_map f]
+        -- some lemmas which could be useful for a manual proof:
+        -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
+        -- rw [← LinearMap.range_eq_map f]
         rw [this]
         exact disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
-      · -- rw [Submodule.codisjoint_iff]
-        intro h hg hf' s _hx -- they span...
+      · have : LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement) = ⊤ := by
+          calc LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement)
+            _ = Submodule.map g (LinearMap.range f) + (Submodule.map g F' + hg.complement) := by
+              sorry -- same sorry as above; `aesop` times out now
+            _ = (Submodule.map g (LinearMap.range f) + Submodule.map g F') + hg.complement := by
+              ext x
+              -- missing lemma, sum of submodules is associative
+              sorry
+            _ = Submodule.map g (LinearMap.range f + F') + hg.complement := by
+              congr
+              -- TODO: this step is not true in general, only ≤ holds in general
+              -- #check Submodule.map_add_le
+              sorry
+            _ = Submodule.map g ⊤ + hg.complement := by
+              congr
+              exact Submodule.codisjoint_add_eq_top hf.complement_isCompl.2
+            _ = LinearMap.range g + hg.complement := by rw [LinearMap.range_eq_map]
+            _ = ⊤ := Submodule.codisjoint_add_eq_top hg.complement_isCompl.2
         sorry
 
 lemma compCLE_left [CompleteSpace F'] {f₀ : F' ≃L[𝕜] E} (hf : f.Splits) :
