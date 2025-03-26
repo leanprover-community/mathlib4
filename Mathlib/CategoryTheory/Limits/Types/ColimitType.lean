@@ -10,11 +10,20 @@ import Mathlib.CategoryTheory.Types
 # The colimit type of a functor to types
 
 Given a category `J` (with `J : Type u` and `[Category.{v} J]`) and
-a functor `F : J ⥤ Type w₀`, we introduce a type `F.ColimitType : Type (max u w)`,
+a functor `F : J ⥤ Type w₀`, we introduce a type `F.ColimitType : Type (max u w₀)`,
 which satisfies a certain universal property of the colimit: it is defined
 as a suitable quotient of `Σ j, F.obj j`. This universal property is not
 expressed in a categorical way (as in general `Type (max u w₀)`
 is not the same as `Type u`).
+
+We also introduce a notion of cocone of `F : J ⥤ Type w₀`, this is `F.CoconeTypes`,
+or more precisely `Functor.CoconeTypes.{w₁} F`, which consists of a candidate
+colimit type for `F` which is in `Type w₁` (in case `w₁ = w₀`, we shall show
+this is the same as the data of `c : Cocone F` in the categorical sense).
+Given `c : F.CoconeTypes`, we also introduce a property `c.IsColimit` which says
+that the canonical map `F.ColimitType → c.pt` is a bijection, and we shall show (TODO)
+that when `w₁ = w₀`, it is equivalent to saying that the corresponding cocone
+in a categorical sense is a colimit.
 
 ## TODO
 * refactor `DirectedSystem` and the construction of colimits in `Type`
@@ -168,7 +177,7 @@ lemma fac_apply (c' : CoconeTypes.{w₂} F) (j : J) (x : F.obj j) :
   congr_fun (hc.fac c' j) x
 
 lemma of_equiv {c' : CoconeTypes.{w₂} F} (e : c.pt ≃ c'.pt)
-    (he : ∀ j x, c'.ι j x = e (c.ι j x)): c'.IsColimit where
+    (he : ∀ j x, c'.ι j x = e (c.ι j x)) : c'.IsColimit where
   bijective := by
     convert Function.Bijective.comp e.bijective hc.bijective
     ext y
@@ -180,7 +189,7 @@ end IsColimit
 /-- Structure which expresses that `c : F.CoconeTypes`
 satisfies the universal property of the colimit of types:
 compatible families of maps `F.obj j → T` (where `T`
-is any type in a specified universe) descends in a unique
+is any type in a specified universe) descend in a unique
 way as maps `c.pt → T`. -/
 structure IsColimitCore where
   /-- any cocone descends (in a unique way) as a map -/
