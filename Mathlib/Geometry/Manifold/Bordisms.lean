@@ -215,10 +215,21 @@ def toPUnit : SingularManifold PUnit k I where
 
 variable {I' : ModelWithCorners ℝ E' H'} [FiniteDimensional ℝ E']
 
-/-- The product of a singular `I`- and a singular `J`-manifold into a one-point space
-is a singular `I.prod J`-manifold. -/
--- FUTURE: prove that this observation induces a commutative ring structure
--- on the unoriented bordism group `Ω_n^O = Ω_n^O(pt)`.
+/--
+The product of a singular `I`- and a singular `J`-manifold into a one-point space
+is a singular `I.prod J`-manifold.
+This construction is used to prove that the bordism group of `PUnit` is a graded commutative ring.
+
+NB. This definition as written makes sense more generally, for `SingularManifold X k I` whenever `X`
+is a topological (additive) group. However, this would not be the correct definition if `X` is not
+`(P)Unit`: the bordism ring can be defined for every `C^k` manifold `X`, but the product of two
+singular manifolds `(M, f)` and `(N, g)` is the fibre product of `M` and `N` w.r.t. `f` and `g`,
+with its induced map into `X`.
+(If `f` and `g` intersect transversely, this fibre product is a smooth manifold, of dimension
+`dim M + dim N - dim X`. Otherwise, the transversality theorem proves that `f` (or `g`) admits an
+arbitrarily small perturbation `f'` so `f'` and `g` are transverse. One can prove that different
+perturbations yield bordant manifolds.)
+-/
 def prod (s : SingularManifold PUnit k I) (t : SingularManifold PUnit k I') :
     SingularManifold PUnit k (I.prod I') where
   M := s.M × t.M
