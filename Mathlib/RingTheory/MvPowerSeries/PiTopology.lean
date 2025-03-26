@@ -220,6 +220,10 @@ theorem instCompleteSpace [CompleteSpace R] :
 theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
     IsUniformAddGroup (MvPowerSeries σ R) := Pi.instIsUniformAddGroup
 
+@[deprecated (since := "2025-03-26")] alias instUniformAddGroup := instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-26")] alias instUniformAddGroup := instIsUniformAddGroup
+
 end Uniformity
 
 end WithPiTopology
