@@ -18,8 +18,8 @@ The completion of a nonarchimedean ring is a nonarchimedean ring.
 open UniformSpace UniformSpace.Completion AddSubgroup OpenAddSubgroup Topology
 
 /-- The completion of a nonarchimedean additive group is a nonarchimedean additive group. -/
-instance {G : Type*} [AddGroup G] [UniformSpace G] [IsUniformAddGroup G] [NonarchimedeanAddGroup G] :
-    NonarchimedeanAddGroup (Completion G) where
+instance {G : Type*} [AddGroup G] [UniformSpace G] [IsUniformAddGroup G]
+    [NonarchimedeanAddGroup G] : NonarchimedeanAddGroup (Completion G) where
   is_nonarchimedean := by
     /- Let `U` be a neighborhood of `0` in `Completion G`. We wish to show that `U` contains an open
     additive subgroup of `Completion G`. -/
