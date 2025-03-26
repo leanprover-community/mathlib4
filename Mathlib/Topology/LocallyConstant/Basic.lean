@@ -277,6 +277,7 @@ def const (X : Type*) {Y : Type*} [TopologicalSpace X] (y : Y) : LocallyConstant
 theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
   rfl
 
+/-- Evaluation/projection as a locally constant function. -/
 @[simps]
 def eval {ι : Type*} {X : ι → Type*}
     [∀ i, TopologicalSpace (X i)] [∀ i, DiscreteTopology (X i)] (i : ι) :
