@@ -34,7 +34,7 @@ lemma TendstoUniformlyOn.eventually_forall_lt {f : ι → α → β} {p : Filter
 lemma TendstoUniformlyOn.eventually_forall_le {f : ι → α → β} {p : Filter ι} {g : α → β}
     {K : Set α} {u v : β} (huv : u < v) (hf : TendstoUniformlyOn f g p K) (hg : ∀ x ∈ K, g x ≤ u) :
     ∀ᶠ i in p, ∀ x ∈ K, f i x ≤ v := by
-    filter_upwards [hf.eventually_forall_lt huv hg] with i hi x hx using (hi x hx).le
+  filter_upwards [hf.eventually_forall_lt huv hg] with i hi x hx using (hi x hx).le
 
 lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
     {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : BddAbove <| (fun x ↦ (g x).re) '' K) :
@@ -50,7 +50,7 @@ lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
     (h : ∀ x ∈ K, Summable fun i => log (f i x))
     (hf : TendstoUniformlyOn (fun s a => ∑ i ∈ s, log (f i a))
     (fun a => ∑' i, log (f i a)) atTop K) (hfn : ∀ x ∈ K, ∀ i, f i x ≠ 0)
-    (hg : BddAbove ((fun x => (∑' n : ι, log (f n x)).re) '' K)) :
+    (hg : BddAbove <| (fun x => (∑' n : ι, log (f n x)).re) '' K) :
     TendstoUniformlyOn (fun s a => ∏ i ∈ s, f i a) (fun a => ∏' i, f i a) atTop K := by
   suffices H : TendstoUniformlyOn (fun s a => ∏ i ∈ s, f i a)
        (cexp ∘ fun a ↦ ∑' i, log (f i a)) atTop K by
