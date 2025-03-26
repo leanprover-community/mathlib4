@@ -104,6 +104,7 @@ instance (priority := 75) toSemiring {R} [Semiring R] [SetLike S R] [Subsemiring
   Subtype.coe_injective.semiring Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
+-- TODO move to Mathlib/Algebra/Group/Submonoid/Defs.lean
 @[simp, norm_cast]
 theorem coe_pow {R} [Monoid R] [SetLike S R] [SubmonoidClass S R] (x : s) (n : ℕ) :
     ((x ^ n : s) : R) = (x : R) ^ n := by
