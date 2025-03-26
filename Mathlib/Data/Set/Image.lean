@@ -825,24 +825,12 @@ theorem image_inl_inter_image_inr : inl '' u ∩ inr '' v = ∅ := by
   nomatch hx
 
 @[simp]
-theorem image_inr_inter_image_inl : inr '' u ∩ inl '' v = ∅ := by
-  rw [inter_comm, image_inl_inter_image_inr]
-
-@[simp]
 theorem range_inl_inter_image_inr : range inl ∩ inr '' v = (∅ : Set (α ⊕ β)) := by
   rw [← image_univ, image_inl_inter_image_inr]
 
 @[simp]
 theorem image_inl_inter_range_inr : inl '' u ∩ range inr = (∅ : Set (α ⊕ β)) := by
   rw [← image_univ, image_inl_inter_image_inr]
-
-@[simp]
-theorem range_inr_inter_image_inl : range inr ∩ inl '' u = (∅ : Set (α ⊕ β)) := by
-  rw [← image_univ, image_inr_inter_image_inl]
-
-@[simp]
-theorem image_inr_inter_range_inl : inr '' v ∩ range inl = (∅ : Set (α ⊕ β)) := by
-  rw [← image_univ, image_inr_inter_image_inl]
 
 end
 
