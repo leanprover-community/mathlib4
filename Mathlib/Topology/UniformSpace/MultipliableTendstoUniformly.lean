@@ -32,9 +32,9 @@ lemma TendstoUniformlyOn.eventually_forall_lt {f : ι → α → β} {p : Filter
   refine ⟨t, ht, fun y hy x hx => by simpa using (add_lt_add_of_le_of_lt (hg x hx) (H y hy x hx))⟩
 
 lemma TendstoUniformlyOn.eventually_forall_le {f : ι → α → β} {p : Filter ι} {g : α → β}
-    {K : Set α} {u v : β} (htv : u < v) (hf : TendstoUniformlyOn f g p K) (hg : ∀ x ∈ K, g x ≤ u) :
+    {K : Set α} {u v : β} (huv : u < v) (hf : TendstoUniformlyOn f g p K) (hg : ∀ x ∈ K, g x ≤ u) :
     ∀ᶠ i in p, ∀ x ∈ K, f i x ≤ v := by
-    filter_upwards [hf.eventually_forall_lt htv hg] with i hi x hx using (hi x hx).le
+    filter_upwards [hf.eventually_forall_lt huv hg] with i hi x hx using (hi x hx).le
 
 lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
     {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : BddAbove <| (fun x ↦ (g x).re) '' K) :
@@ -52,32 +52,22 @@ lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
     (fun a => ∑' i, log (f i a)) atTop K) (hfn : ∀ x ∈ K, ∀ i, f i x ≠ 0)
     (hg : BddAbove ((fun x => (∑' n : ι, log (f n x)).re) '' K)) :
     TendstoUniformlyOn (fun s a => ∏ i ∈ s, f i a) (fun a => ∏' i, f i a) atTop K := by
-  suffices HU : TendstoUniformlyOn (fun s a => ∏ i ∈ s, f i a)
-       (cexp ∘ fun a ↦ ∑' n : ι, log (f n a)) atTop K by
-        apply TendstoUniformlyOn.congr_right HU
-        intro x hx
-        simpa using (Complex.cexp_tsum_eq_tprod _ (hfn x hx) (h x hx))
+  suffices H : TendstoUniformlyOn (fun s a => ∏ i ∈ s, f i a)
+       (cexp ∘ fun a ↦ ∑' i, log (f i a)) atTop K by
+        apply TendstoUniformlyOn.congr_right H
+        exact fun x hx ↦ (cexp_tsum_eq_tprod (fun n ↦ f n x) (hfn x hx) (h x hx))
   apply TendstoUniformlyOn.congr (tendstoUniformlyOn_comp_cexp hf hg)
   filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn i hi y)]
 
-/-- This is a version of `tendstoUniformlyOn_tprod_of_clog` for nat that uses range
-in the products. -/
-lemma tendstoUniformlyOn_tprod_nat_of_clog {f : ℕ → α → ℂ} {K : Set α}
-    (h : ∀ x ∈ K, Summable fun n => log (f n x))
-    (hf : TendstoUniformlyOn (fun s a => ∑ i ∈ s, log (f i a)) (fun a => ∑' n, log (f n a))
-    atTop K) (hfn : ∀ x ∈ K, ∀ n, f n x ≠ 0)
-    (hg : BddAbove ((fun x => (∑' n, log (f n x)).re) '' K)) :
-    TendstoUniformlyOn (fun n a => ∏ i ∈ Finset.range n, f i a) (fun a => ∏' i, f i a) atTop K :=
-  fun v hv => tendsto_finset_range.eventually (tendstoUniformlyOn_tprod_of_clog h hf hfn hg v hv)
-
-/-- This is the version of `tendstoUniformlyOn_tprod_nat_of_clog`
+/-- This is the version of `tendstoUniformlyOn_tprod_of_clog`
 for infinite products of with terms of the form `1 + f n x`. -/
 lemma tendstoUniformlyOn_tprod_nat_one_add [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (fun x => f n x) K) :
     TendstoUniformlyOn (fun n a => ∏ i ∈ Finset.range n, (1 + f i a))
     (fun a => ∏' i, (1 + f i a)) atTop K := by
-  refine tendstoUniformlyOn_tprod_nat_of_clog ?_ ?_ hfn (hK.bddAbove_image ?_)
+  refine fun v hv => tendsto_finset_range.eventually
+    (tendstoUniformlyOn_tprod_of_clog ?_ ?_ hfn (hK.bddAbove_image ?_) v hv)
   · intro x hx
     apply Complex.summable_log_one_add_of_summable (Summable.of_norm_bounded_eventually _ hu ?_)
     filter_upwards [Nat.cofinite_eq_atTop ▸ h] with n hn using (hn x hx)
