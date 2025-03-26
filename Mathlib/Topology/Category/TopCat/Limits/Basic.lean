@@ -6,6 +6,7 @@ Authors: Patrick Massot, Kim Morrison, Mario Carneiro, Andrew Yang
 import Mathlib.Topology.Category.TopCat.Adjunctions
 import Mathlib.CategoryTheory.Limits.Types.Limits
 import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Adjunction.Limits
 
 /-!
