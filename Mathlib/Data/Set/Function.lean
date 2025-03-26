@@ -57,6 +57,7 @@ theorem eqOn_comm : EqOn f₁ f₂ s ↔ EqOn f₂ f₁ s :=
 
 -- This can not be tagged as `@[refl]` with the current argument order.
 -- See note below at `EqOn.trans`.
+-- TODO Set.EqOn.refl/rfl
 theorem eqOn_refl (f : α → β) (s : Set α) : EqOn f f s := fun _ _ => rfl
 
 -- Note: this was formerly tagged with `@[trans]`, and although the `trans` attribute accepted it
