@@ -33,9 +33,7 @@ invariant under the change of variables x ↦ x⁻¹. -/
 invariant under the change of variables x ↦ -x."]
 theorem lintegral_inv_eq_self [IsInvInvariant μ] (f : G → ℝ≥0∞) :
    ∫⁻ x, f x⁻¹ ∂μ = ∫⁻ x, f x ∂μ := by
- convert (lintegral_map_equiv f <| MeasurableEquiv.inv _).symm
- nth_rewrite 1 [← map_inv_eq_self μ]
- rfl
+ simpa using (lintegral_map_equiv f (μ := μ) <| MeasurableEquiv.inv G).symm
 
 end MeasurableInv
 
