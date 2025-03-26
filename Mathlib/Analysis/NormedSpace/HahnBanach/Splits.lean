@@ -103,6 +103,7 @@ This result is unseful to prove that the composition of split maps is a split ma
 lemma antilipschitz_aux (hf : f.Splits) : ∃ K, AntilipschitzWith K f :=
   ContinuousLinearMap.antilipschitz_of_injective_of_isClosed_range f hf.injective hf.isClosed_range
 
+/-- Some anti-Lipschitz constant for `f` -/
 def antilipschitzConstant (hf : f.Splits) := Classical.choose hf.antilipschitz_aux
 
 lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzConstant f :=
@@ -111,8 +112,35 @@ lemma antilipschitzWith (hf : f.Splits) : AntilipschitzWith hf.antilipschitzCons
 lemma isClosedMap (hf : f.Splits) : IsClosedMap f :=
   (hf.antilipschitzWith.isClosedEmbedding f.uniformContinuous).isClosedMap
 
--- Open question: is the following statement true? We really want the composition of immersions
--- to be an immersion, but the proof below has a serious gap, at least.
+lemma disjoint_aux  {g : F →L[𝕜] G} {F₁ F₂ : Submodule 𝕜 F} {G' : Submodule 𝕜 G}
+    (hF : Disjoint F₁ F₂) (hG' : Disjoint (LinearMap.range g) G') (hg : Injective g) :
+    Disjoint (Submodule.map g F₁) (Submodule.map g F₂ + G') := by
+  rw [Submodule.disjoint_def] at hF hG' ⊢
+  intro x h1 h2
+  -- Write x = g (f x₀)
+  choose x₀ hx₀ hgx₀ using h1
+  -- Write x = y + z, for y = g y₀ ∈ g(F') and z ∈ h.complement.
+  rw [Submodule.add_eq_sup, Submodule.mem_sup] at h2
+  choose y hy aux using h2
+  choose y₀ hy₀ hgy₀ using hy
+  choose z hz hxyz using aux
+  -- Since z in range g and hg.complement is complementary to range g, z = 0 follows.
+  -- These lines are too tedious.
+  have : z = x - y := by rw [← hxyz]; module
+  have : z ∈ range g := by
+    rw [this, ← hgx₀, ← hgy₀, ← map_sub]
+    use x₀ - y₀ -- Can or should this be a simproc?
+  have : z = 0 := hG' z this hz
+  -- g y₀ = y = x = g x₀, thus x₀ = y₀.
+  have hxy : x = y := by rw [← add_zero y, ← this, hxyz]
+  have aux := calc g y₀
+    _ = y := hgy₀
+    _ = x := hxy.symm
+    _ = g x₀ := hgx₀.symm
+  -- Now, y₀ ∈ range f and y₀ ∈ F', hence y₀ = 0.
+  have : y₀ = 0 := hF y₀ ((hg aux) ▸ hx₀) hy₀
+  simp [hxy, ← hgy₀, this]
+
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
 lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
@@ -130,39 +158,13 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
       -- TODO: think about the best proof for formalising.
       sorry
     · constructor
-      · rw [Submodule.disjoint_def]
-        intro x h1 h2
-        -- Write x = g (f x₀)
-        choose x₀ hxx₀ using h1
-        -- Write x = y + z, for y = g y₀ ∈ g(F') and z ∈ h.complement.
-        rw [Submodule.add_eq_sup, Submodule.mem_sup] at h2
-        choose y hy z hz hxyz using h2
-        choose y₀ hy₀ hyy₀ using hy
-        -- Since z in range g and hg.complement is complementary to range g, z = 0 follows.
-        -- These lines are too tedious.
-        have : z = x - y := by rw [← hxyz]; module
-        have : z ∈ range g := by
-          rw [this, ← hxx₀, ← hyy₀, coe_comp', Function.comp_apply, ← map_sub]
-          use f x₀ - y₀ -- should be a simproc now?
-        have : z = 0 := by
-          have aux := hg.complement_isCompl.1
-          rw [Submodule.disjoint_def] at aux
-          exact aux z this hz
-        -- g y₀ = y = x = g (f x₀), thus f x₀ = y₀.
-        have hxy : x = y := by rw [← add_zero y, ← this, hxyz]
-        have aux := calc g y₀
-          _ = y := hyy₀
-          _ = x := hxy.symm
-          _ = g (f x₀) := by rw [coe_comp', Function.comp_apply] at hxx₀; exact hxx₀.symm
-        replace aux := hg.injective aux
-        -- Now, y₀ ∈ range f and y₀ ∈ F', hence y₀ = 0.
-        have : y₀ = 0 := by
-          have := hf.complement_isCompl.1
-          rw [Submodule.disjoint_def] at this
-          apply this y₀
-          · use x₀; exact aux.symm
-          · exact hy₀
-        simp [hxy, ← hyy₀, this]
+      · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
+        --rw [LinearMap.range_comp]
+        -- rw [LinearMap.range_eq_map]
+        -- rw [Submodule.map_comp f g ⊤]
+        --rw [← LinearMap.range_eq_map f]
+        rw [this]
+        exact disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
       · -- rw [Submodule.codisjoint_iff]
         intro h hg hf' s _hx -- they span...
         sorry
