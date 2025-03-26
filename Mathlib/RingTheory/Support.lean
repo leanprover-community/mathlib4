@@ -231,8 +231,6 @@ theorem Module.support_quotient (I : Ideal R) :
     let e : Mₚ' ≃ₗ[Rₚ] Mₚ'' := (localizedQuotientEquiv _ _).symm ≪≫ₗ
       Submodule.quotEquivOfEq _ _ (by rw [Submodule.localized,
         Submodule.localized'_smul, Ideal.localized'_eq_map, Submodule.localized'_top])
-    have : Module.Finite Rₚ Mₚ :=
-      Module.Finite.of_isLocalizedModule p.asIdeal.primeCompl (LocalizedModule.mkLinearMap _ _)
     have : Nontrivial Mₚ'' := by
       apply Submodule.Quotient.nontrivial_of_lt_top
       rw [lt_top_iff_ne_top, ne_comm]
