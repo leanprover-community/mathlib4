@@ -780,27 +780,23 @@ theorem AdjoinDouble.isAlgebraic (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
   apply IntermediateField.isAlgebraic_adjoin
   intro z hz
   simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
-  rcases hz with hz | hz
-  · exact hz ▸ hx.isIntegral
-  · exact hz ▸ hy.isIntegral
+  rcases hz with hz | hz <;>
+  simp [hz, hx.isIntegral, hy.isIntegral]
 
 theorem AdjoinDouble.finiteDimensional (hx : IsIntegral K x) (hy : IsIntegral K y) :
     FiniteDimensional K K⟮x, y⟯ := by
-  haveI hx_fd : FiniteDimensional K K⟮x⟯ := adjoin.finiteDimensional hx
-  have hy' : IsIntegral K⟮x⟯ y := IsIntegral.tower_top hy
-  haveI hy_fd : FiniteDimensional K⟮x⟯ K⟮x⟯⟮y⟯ := adjoin.finiteDimensional hy'
-  rw [← adjoin_simple_adjoin_simple]
-  apply FiniteDimensional.trans K K⟮x⟯ K⟮x⟯⟮y⟯
+  have := adjoin.finiteDimensional hx
+  have := adjoin.finiteDimensional hy
+  rw [← Set.singleton_union, adjoin_union]
+  exact finiteDimensional_sup K⟮x⟯ K⟮y⟯
 
 variable (K x y)
 
-theorem mem_adjoinDouble_left : x ∈ K⟮x, y⟯ := by
-  rw [← adjoin_simple_adjoin_simple, adjoin_simple_comm]
-  exact subset_adjoin K⟮y⟯ {x} (Set.mem_singleton x)
+theorem mem_adjoinDouble_left : x ∈ K⟮x, y⟯ := subset_adjoin K {x, y} (Set.mem_insert x {y})
 
-theorem mem_adjoinDouble_right : y ∈ K⟮x, y⟯ := by
-  rw [← adjoin_simple_adjoin_simple]
-  exact subset_adjoin K⟮x⟯ {y} (Set.mem_singleton y)
+theorem mem_adjoinDouble_right : y ∈ K⟮x, y⟯ :=
+  subset_adjoin K {x, y} (Set.mem_insert_of_mem x (Set.mem_singleton y))
+
 
 /-- The first generator of an intermediate field of the form `K⟮x, y⟯`. -/
 def AdjoinDouble.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoinDouble_left K x y⟩
@@ -808,11 +804,9 @@ def AdjoinDouble.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoinDouble_left K x y⟩
 /-- The second generator of an intermediate field of the form `K⟮x, y⟯`. -/
 def AdjoinDouble.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoinDouble_right K x y⟩
 
-theorem AdjoinDouble.algebraMap_gen₁ :
-    (algebraMap (↥K⟮x, y⟯) L) (IntermediateField.AdjoinDouble.gen₁ K x y) = x := rfl
+theorem AdjoinDouble.algebraMap_gen₁ : (algebraMap (↥K⟮x, y⟯) L) (gen₁ K x y) = x := rfl
 
-theorem AdjoinDouble.algebraMap_gen₂ :
-    (algebraMap (↥K⟮x, y⟯) L) (IntermediateField.AdjoinDouble.gen₂ K x y) = y := rfl
+theorem AdjoinDouble.algebraMap_gen₂ : (algebraMap (↥K⟮x, y⟯) L) (gen₂ K x y) = y := rfl
 
 end AdjoinDouble
 
