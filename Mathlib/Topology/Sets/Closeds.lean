@@ -145,8 +145,6 @@ theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Closeds α) (Set α)) _ _
 
--- Porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
-
 @[simp]
 theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := mem_iInter₂
 
@@ -271,15 +269,20 @@ instance : SetLike (Clopens α) α where
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
 
+lemma isOpen (s : Clopens α) : IsOpen (s : Set α) := s.isClopen.isOpen
+
+lemma isClosed (s : Clopens α) : IsClosed (s : Set α) := s.isClopen.isClosed
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
 
 initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
 
 /-- Reinterpret a clopen as an open. -/
-@[simps]
-def toOpens (s : Clopens α) : Opens α :=
-  ⟨s, s.isClopen.isOpen⟩
+@[simps] def toOpens (s : Clopens α) : Opens α := ⟨s, s.isOpen⟩
+
+/-- Reinterpret a clopen as a closed. -/
+@[simps] def toCloseds (s : Clopens α) : Closeds α := ⟨s, s.isClosed⟩
 
 @[ext]
 protected theorem ext {s t : Clopens α} (h : (s : Set α) = t) : s = t :=
@@ -319,6 +322,14 @@ instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
 @[simp]
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
     x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
+
+@[simp]
+lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
+    (↑(s.sup U) : Set α) = ⋃ i ∈ s, U i := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _ IH => simp [IH]
 
 end Clopens
 

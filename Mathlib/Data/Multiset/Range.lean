@@ -62,4 +62,14 @@ theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).m
   rw [range_add, add_eq_union_iff_disjoint]
   apply range_disjoint_map_add
 
+section Nodup
+
+theorem nodup_range (n : ℕ) : Nodup (range n) :=
+  List.nodup_range _
+
+theorem range_le {m n : ℕ} : range m ≤ range n ↔ m ≤ n :=
+  (le_iff_subset (nodup_range _)).trans range_subset
+
+end Nodup
+
 end Multiset

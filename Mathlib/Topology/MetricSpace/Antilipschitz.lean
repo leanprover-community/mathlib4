@@ -175,7 +175,7 @@ alias closedEmbedding := isClosedEmbedding
 theorem subtype_coe (s : Set α) : AntilipschitzWith 1 ((↑) : s → α) :=
   AntilipschitzWith.id.restrict s
 
-@[nontriviality] -- Porting note: added `nontriviality`
+@[nontriviality]
 theorem of_subsingleton [Subsingleton α] {K : ℝ≥0} : AntilipschitzWith K f := fun x y => by
   simp only [Subsingleton.elim x y, edist_self, zero_le]
 

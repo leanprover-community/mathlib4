@@ -353,7 +353,7 @@ lemma expChar_pos (q : ℕ) [ExpChar R q] : 0 < q := by
 
 /-- Any power of the exponential characteristic is positive. -/
 lemma expChar_pow_pos (q : ℕ) [ExpChar R q] (n : ℕ) : 0 < q ^ n :=
-  Nat.pos_pow_of_pos n (expChar_pos R q)
+  Nat.pow_pos (expChar_pos R q)
 
 end AddMonoidWithOne
 

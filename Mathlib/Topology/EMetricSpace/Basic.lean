@@ -192,7 +192,7 @@ theorem totallyBounded_iff' {s : Set α} :
 
 section Compact
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to metrizable spaces
+-- TODO: generalize to metrizable spaces
 /-- A compact set in a pseudo emetric space is separable, i.e., it is a subset of the closure of a
 countable set. -/
 theorem subset_countable_closure_of_compact {s : Set α} (hs : IsCompact s) :
@@ -207,8 +207,7 @@ section SecondCountable
 
 open TopologicalSpace
 
-variable (α)
-
+variable (α) in
 /-- A sigma compact pseudo emetric space has second countable topology. -/
 instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α] :
     SecondCountableTopology α := by
@@ -218,8 +217,6 @@ instance (priority := 90) secondCountable_of_sigmaCompact [SigmaCompactSpace α]
   refine ⟨⟨⋃ n, T n, countable_iUnion hTc, fun x => ?_⟩⟩
   rcases iUnion_eq_univ_iff.1 (iUnion_compactCovering α) x with ⟨n, hn⟩
   exact closure_mono (subset_iUnion _ n) (hsubT _ hn)
-
-variable {α}
 
 theorem secondCountable_of_almost_dense_set
     (hs : ∀ ε > 0, ∃ t : Set α, t.Countable ∧ ⋃ x ∈ t, closedBall x ε = univ) :
@@ -253,8 +250,7 @@ theorem EMetric.isUniformEmbedding_iff' [EMetricSpace β] {f : γ → β} :
 alias EMetric.uniformEmbedding_iff' := EMetric.isUniformEmbedding_iff'
 
 /-- If a `PseudoEMetricSpace` is a T₀ space, then it is an `EMetricSpace`. -/
--- Porting note: made `reducible`;
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it an instance?
+-- TODO: make it an instance?
 abbrev EMetricSpace.ofT0PseudoEMetricSpace (α : Type*) [PseudoEMetricSpace α] [T0Space α] :
     EMetricSpace α :=
   { ‹PseudoEMetricSpace α› with

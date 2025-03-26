@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Data.Finite.Sum
-import Mathlib.Data.Finset.Fin
-import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
@@ -24,8 +22,9 @@ open Equiv Function Fintype Finset
 variable {α : Type u} {β : Type v}
 
 -- An example on how to determine the order of an element of a finite group.
-example : orderOf (-1 : ℤˣ) = 2 :=
-  orderOf_eq_prime (Int.units_sq _) (by decide)
+-- import Mathlib.Data.Int.Order.Units
+-- example : orderOf (-1 : ℤˣ) = 2 :=
+--   orderOf_eq_prime (Int.units_sq _) (by decide)
 
 namespace Equiv.Perm
 
@@ -182,13 +181,13 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
     refine isConj_of_support_equiv ?_ ?_
     · refine
-          ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1'')).trans
+          ((Equiv.setCongr hd1').trans (Equiv.Set.union hd1'')).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
-              ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2'')).symm) <;>
+              ((Equiv.setCongr hd2').trans (Equiv.Set.union hd2'')).symm) <;>
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]
     · intro x hx
-      simp only [trans_apply, symm_trans_apply, Equiv.Set.ofEq_apply, Equiv.Set.ofEq_symm_apply,
+      simp only [trans_apply, symm_trans_apply, Equiv.setCongr_apply, Equiv.setCongr_symm_apply,
         Equiv.sumCongr_apply]
       rw [hd1', Set.mem_union] at hx
       rcases hx with hxσ | hxτ

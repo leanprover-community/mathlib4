@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
@@ -311,7 +312,7 @@ lemma exists_pow_btwn_of_lt_mul {a b c : α} (h : a < b * c) (hb₀ : 0 < b) (hb
   have hn : Nat.find this ≠ 0 := by
     intro hf
     simp only [hf, pow_zero] at H
-    exact (H.trans <| Left.mul_lt_of_le_of_lt_one_of_pos hb₁ hc₁ hb₀).false
+    exact (H.trans <| (mul_lt_of_lt_one_right hb₀ hc₁).trans_le hb₁).false
   rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_right hc₀] at H
   exact Nat.find_min this (Nat.sub_one_lt hn) H
 

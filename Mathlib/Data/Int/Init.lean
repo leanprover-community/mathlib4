@@ -37,8 +37,7 @@ protected lemma le_of_eq (hab : a = b) : a ≤ b := by rw [hab]; exact Int.le_rf
 protected lemma ge_of_eq (hab : a = b) : b ≤ a := Int.le_of_eq hab.symm
 protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
-protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
-  rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [Decidable.em]
+protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by omega
 
 protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
 
@@ -405,7 +404,7 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     · rw [Int.add_comm _ (1 : ℤ), Int.mul_add, Int.mul_one]
       exact Int.add_lt_add_right (emod_lt_of_pos _ hn) _
 
-lemma natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
+lemma natAbs_ediv_of_dvd (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
   rcases Nat.eq_zero_or_pos (natAbs b) with (h | h)
   · rw [natAbs_eq_zero.1 h]
     simp [Int.ediv_zero]
@@ -415,6 +414,8 @@ lemma natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs
     _ = natAbs (a / b) * natAbs b / natAbs b := by rw [Nat.mul_div_assoc _ b.natAbs.dvd_refl]
     _ = natAbs (a / b * b) / natAbs b := by rw [natAbs_mul (a / b) b]
     _ = natAbs a / natAbs b := by rw [Int.ediv_mul_cancel H]
+
+@[deprecated (since := "2025-03-10")] alias natAbs_ediv := natAbs_ediv_of_dvd
 
 lemma dvd_of_mul_dvd_mul_left (ha : a ≠ 0) (h : a * m ∣ a * n) : m ∣ n := by
   obtain ⟨b, hb⟩ := h
@@ -487,10 +488,6 @@ lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
 @[simp] lemma toNat_pred_coe_of_pos {i : ℤ} (h : 0 < i) : ((i.toNat - 1 : ℕ) : ℤ) = i - 1 := by
   simp only [lt_toNat, Nat.cast_ofNat_Int, h, natCast_pred_of_pos, Int.le_of_lt h, toNat_of_nonneg]
 
-@[simp] lemma toNat_eq_zero : ∀ {n : ℤ}, n.toNat = 0 ↔ n ≤ 0
-  | (n : ℕ) => by simp
-  | -[n+1] => by simpa [toNat] using Int.le_of_lt (negSucc_lt_zero n)
-
 theorem toNat_sub_of_le {a b : ℤ} (h : b ≤ a) : (toNat (a - b) : ℤ) = a - b :=
   Int.toNat_of_nonneg (Int.sub_nonneg_of_le h)
 
@@ -505,7 +502,7 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 
 attribute [simp] natCast_pow
 
--- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
+/-- For use in `Mathlib.Tactic.NormNum.Pow` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
 end Int

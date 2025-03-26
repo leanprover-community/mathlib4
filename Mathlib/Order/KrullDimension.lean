@@ -7,8 +7,10 @@ Authors: Jujian Zhang, Fangming Li, Joachim Breitner
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.Int.Basic
+import Mathlib.Order.Atoms
 import Mathlib.Order.Minimal
 import Mathlib.Order.RelSeries
+import Mathlib.Order.LatticeIntervals
 import Mathlib.Tactic.FinCases
 
 /-!
@@ -542,6 +544,7 @@ variable [Preorder α] [Preorder β]
 
 lemma LTSeries.length_le_krullDim (p : LTSeries α) : p.length ≤ krullDim α := le_sSup ⟨_, rfl⟩
 
+@[simp]
 lemma krullDim_eq_bot_iff : krullDim α = ⊥ ↔ IsEmpty α := by
   rw [eq_bot_iff, krullDim, iSup_le_iff]
   simp only [le_bot_iff, WithBot.natCast_ne_bot, isEmpty_iff]
@@ -778,7 +781,40 @@ lemma coheight_bot_eq_krullDim [OrderBot α] : coheight (⊥ : α) = krullDim α
   rw [← krullDim_orderDual]
   exact height_top_eq_krullDim (α := αᵒᵈ)
 
+lemma height_eq_krullDim_Iic (x : α) : (height x : ℕ∞) = krullDim (Set.Iic x) := by
+  rw [← height_top_eq_krullDim, height, height, WithBot.coe_inj]
+  apply le_antisymm
+  · apply iSup_le; intro p; apply iSup_le; intro hp
+    let q := LTSeries.mk p.length (fun i ↦ (⟨p.toFun i, le_trans (p.monotone (Fin.le_last _)) hp⟩
+     : Set.Iic x)) (fun _ _ h ↦ p.strictMono h)
+    simp only [le_top, iSup_pos, ge_iff_le]
+    exact le_iSup (fun p ↦ (p.length : ℕ∞)) q
+  · apply iSup_le; intro p; apply iSup_le; intro _
+    have mono : StrictMono (fun (y : Set.Iic x) ↦ y.1) := fun _ _ h ↦ h
+    rw [← LTSeries.map_length p (fun x ↦ x.1) mono, ]
+    refine le_iSup₂ (f := fun p hp ↦ (p.length : ℕ∞)) (p.map (fun x ↦ x.1) mono) ?_
+    exact (p.toFun (Fin.last p.length)).2
+
+lemma coheight_eq_krullDim_Ici {α : Type*} [Preorder α] (x : α) :
+    (coheight x : ℕ∞) = krullDim (Set.Ici x) := by
+  rw [coheight, ← krullDim_orderDual, Order.krullDim_eq_of_orderIso (OrderIso.refl _)]
+  exact height_eq_krullDim_Iic _
+
 end krullDim
+
+section finiteDimensional
+
+variable {α : Type*} [Preorder α]
+
+lemma finiteDimensionalOrder_iff_krullDim_ne_bot_and_top :
+    FiniteDimensionalOrder α ↔ krullDim α ≠ ⊥ ∧ krullDim α ≠ ⊤ := by
+  by_cases h : Nonempty α
+  · simp [← not_infiniteDimensionalOrder_iff, ← krullDim_eq_top_iff]
+  · constructor
+    · exact (fun h1 ↦ False.elim (h (LTSeries.nonempty_of_finiteDimensionalOrder α)))
+    · exact (fun h1 ↦ False.elim (h1.1 (krullDim_eq_bot_iff.mpr (not_nonempty_iff.mp h))))
+
+end finiteDimensional
 
 section typeclass
 
@@ -798,6 +834,19 @@ end typeclass
 -/
 
 section calculations
+
+@[simp] lemma krullDim_of_isSimpleOrder {α : Type*} [PartialOrder α] [BoundedOrder α]
+    [IsSimpleOrder α] : krullDim α = 1 := by
+  rw [krullDim]
+  let q : LTSeries α := ⟨1, (fun n ↦ if n = 0 then ⊥ else ⊤), by simp [Fin.fin_one_eq_zero]⟩
+  refine le_antisymm (iSup_le fun p ↦ ?_) (le_iSup (fun p ↦ (p.length : WithBot ℕ∞)) q)
+  by_contra h; simp only [Nat.cast_le_one, not_le] at h
+  have h2 : 2 < p.length + 1 := add_lt_add_right h 1
+  have h0' : 0 < p.length := one_pos.trans h
+  have h1 : 1 < p.length + 1 := one_le_two.trans_lt h2
+  have : p ⟨1, h1⟩ = ⊤ := IsSimpleOrder.eq_top_of_lt (p.step ⟨0, h0'⟩)
+  have : p ⟨1, h1⟩ < p ⟨2, h2⟩ := p.step ⟨1, h⟩
+  simp_all
 
 variable {α : Type*} [Preorder α]
 

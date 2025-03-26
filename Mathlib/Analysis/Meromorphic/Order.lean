@@ -23,15 +23,6 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
 
 /-!
 ## Order at a Point: Definition and Characterization
-
-This file defines the order of a meromorphic analytic function `f` at a point `z₀`, as an element of
-`ℤ ∪ {∞}`.
-
-TODO: Uniformize API between analytic and meromorphic functions
--/
-
-/-!
-## Order at a Point: Definition and Characterization
 -/
 
 namespace MeromorphicAt
@@ -95,6 +86,21 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     exact ⟨fun h ↦ ⟨g, hg_an, hg_ne, h ▸ hg_eq⟩,
       AnalyticAt.unique_eventuallyEq_zpow_smul_nonzero ⟨g, hg_an, hg_ne, hg_eq⟩⟩
 
+/-- Meromorphic functions that agree in a punctured neighborhood of `z₀` have the same order at
+`z₀`. -/
+theorem order_congr {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
+    (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
+    hf₁.order = (hf₁.congr hf₁₂).order := by
+  by_cases h₁f₁ : hf₁.order = ⊤
+  · rw [h₁f₁, eq_comm, (hf₁.congr hf₁₂).order_eq_top_iff]
+    rw [hf₁.order_eq_top_iff] at h₁f₁
+    exact EventuallyEq.rw h₁f₁ (fun x => Eq (f₂ x)) hf₁₂.symm
+  · obtain ⟨n, hn : hf₁.order = n⟩ := Option.ne_none_iff_exists'.mp h₁f₁
+    obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf₁.order_eq_int_iff n).1 hn
+    rw [hn, eq_comm, (hf₁.congr hf₁₂).order_eq_int_iff]
+    use g, h₁g, h₂g
+    exact EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) hf₁₂.symm
+
 /-- Compatibility of notions of `order` for analytic and meromorphic functions. -/
 lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     hf.meromorphicAt.order = hf.order.map (↑) := by
@@ -141,13 +147,31 @@ theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg 
     (hf.mul hg).order = hf.order + hg.order :=
   hf.order_smul hg
 
+/-- The order of the inverse is the negative of the order. -/
+theorem order_inv {f : 𝕜 → 𝕜} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
+    hf.inv.order = -hf.order := by
+  by_cases h₂f : hf.order = ⊤
+  · rw [h₂f, ← LinearOrderedAddCommGroupWithTop.neg_top, neg_neg]
+    rw [MeromorphicAt.order_eq_top_iff] at *
+    filter_upwards [h₂f]
+    simp
+  lift hf.order to ℤ using h₂f with a ha
+  apply (hf.inv.order_eq_int_iff (-a)).2
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff a).1 ha.symm
+  use g⁻¹, h₁g.inv h₂g, inv_eq_zero.not.2 h₂g
+  rw [eventually_nhdsWithin_iff] at *
+  filter_upwards [h₃g]
+  intro _ h₁a h₂a
+  simp only [Pi.inv_apply, h₁a h₂a, smul_eq_mul, mul_inv_rev, zpow_neg]
+  ring
+
 end MeromorphicAt
 
 /-!
 ## Level Sets of the Order Function
 
-TODO: Prove that the set where an analytic function has order in [1,∞) is discrete within its domain
-of meromorphy.
+TODO: investigate whether `codiscrete_setOf_order_eq_zero_or_top` really needs a completeness
+hypothesis.
 -/
 
 namespace MeromorphicOn
@@ -228,5 +252,25 @@ theorem order_ne_top_of_isPreconnected {x y : 𝕜} (hU : IsPreconnected U) (h�
     (h₂x : (hf x h₁x).order ≠ ⊤) :
     (hf y hy).order ≠ ⊤ :=
   (hf.exists_order_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
+
+/-- If the target is a complete space, then the set where a mermorphic function has zero or infinite
+order is discrete within its domain of meromorphicity. -/
+theorem codiscrete_setOf_order_eq_zero_or_top [CompleteSpace E] :
+    {u : U | (hf u u.2).order = 0 ∨ (hf u u.2).order = ⊤} ∈ Filter.codiscrete U := by
+  rw [mem_codiscrete_subtype_iff_mem_codiscreteWithin, mem_codiscreteWithin]
+  intro x hx
+  rw [Filter.disjoint_principal_right]
+  rcases (hf x hx).eventually_eq_zero_or_eventually_ne_zero with h₁f | h₁f
+  · filter_upwards [eventually_eventually_nhdsWithin.2 h₁f] with a h₁a
+    suffices ∀ᶠ (z : 𝕜) in 𝓝[≠] a, f z = 0 by
+      simp +contextual [(hf a _).order_eq_top_iff, h₁a, this]
+    obtain rfl | hax := eq_or_ne a x
+    · exact h₁a
+    rw [eventually_nhdsWithin_iff, eventually_nhds_iff] at h₁a ⊢
+    obtain ⟨t, h₁t, h₂t, h₃t⟩ := h₁a
+    use t \ {x}, fun y h₁y _ ↦ h₁t y h₁y.1 h₁y.2
+    exact ⟨h₂t.sdiff isClosed_singleton, Set.mem_diff_of_mem h₃t hax⟩
+  · filter_upwards [(hf x hx).eventually_analyticAt, h₁f] with a h₁a
+    simp +contextual [h₁a.meromorphicAt_order, h₁a.order_eq_zero_iff.2]
 
 end MeromorphicOn

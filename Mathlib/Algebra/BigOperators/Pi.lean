@@ -3,6 +3,8 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Ring.Pi

@@ -11,7 +11,7 @@ import Mathlib.RingTheory.HahnSeries.Summable
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Topology.UniformSpace.DiscreteUniformity
 import Mathlib.Algebra.Group.Int.TypeTags
 
 
@@ -585,7 +585,7 @@ theorem valuation_single_zpow (s : ℤ) :
   rw [← single_zero_one, ← add_neg_cancel s, ← mul_one 1, ← single_mul_single, map_mul,
     mul_eq_one_iff_eq_inv₀] at this
   · rw [this]
-    cases' s with s s
+    obtain s | s := s
     · rw [Int.ofNat_eq_coe, ← HahnSeries.ofPowerSeries_X_pow] at this
       rw [Int.ofNat_eq_coe, ← this, PowerSeries.coe_pow, valuation_X_pow]
     · simp only [Int.negSucc_coe, neg_neg, ← HahnSeries.ofPowerSeries_X_pow, PowerSeries.coe_pow,
@@ -738,12 +738,12 @@ theorem uniformContinuous_coeff {uK : UniformSpace K} (d : ℤ) :
 in `K` converges to a principal filter -/
 def Cauchy.coeff {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) : ℤ → K :=
   let _ : UniformSpace K := ⊥
-  fun d ↦ UniformSpace.DiscreteUnif.cauchyConst rfl <| hℱ.map (uniformContinuous_coeff d)
+  fun d ↦ DiscreteUniformity.cauchyConst <| hℱ.map (uniformContinuous_coeff d)
 
 theorem Cauchy.coeff_tendsto {ℱ : Filter K⸨X⸩} (hℱ : Cauchy ℱ) (D : ℤ) :
     Tendsto (fun f : K⸨X⸩ ↦ f.coeff D) ℱ (𝓟 {coeff hℱ D}) :=
   let _ : UniformSpace K := ⊥
-  le_of_eq <| UniformSpace.DiscreteUnif.eq_const_of_cauchy (by rfl)
+  le_of_eq <| DiscreteUniformity.eq_pure_cauchyConst
     (hℱ.map (uniformContinuous_coeff D)) ▸ (principal_singleton _).symm
 
 /- For every Cauchy filter of Laurent series, there is a `N` such that the `n`-th coefficient
@@ -1213,10 +1213,6 @@ instance : Algebra K ((idealX K).adicCompletionIntegers (RatFunc K)) :=
   RingHom.toAlgebra <|
     ((LaurentSeriesRingEquiv K).toRingHom.comp HahnSeries.C).codRestrict _
       (algebraMap_C_mem_adicCompletionIntegers K)
-
-instance : IsScalarTower K ((idealX K).adicCompletionIntegers (RatFunc K))
-    ((idealX K).adicCompletion (RatFunc K)) :=
-  IsScalarTower.of_algebraMap_eq (fun _ ↦ by rfl)
 
 /-- The algebra isomorphism between `K⟦X⟧` and the unit ball inside the `X`-adic completion of
 `RatFunc K`. -/

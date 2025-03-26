@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.ULift
 import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Group.ULift
 import Mathlib.Topology.ContinuousMap.Defs
-import Mathlib.Algebra.Group.Submonoid.Basic
 
 /-!
 # Theory of topological monoids
@@ -90,7 +90,7 @@ theorem ContinuousMul.induced {α : Type*} {β : Type*} {F : Type*} [FunLike F �
 @[to_additive (attr := continuity, fun_prop)]
 theorem Continuous.mul {f g : X → M} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => f x * g x :=
-  continuous_mul.comp (hf.prod_mk hg :)
+  continuous_mul.comp₂ hf hg
 
 @[to_additive (attr := continuity)]
 theorem continuous_mul_left (a : M) : Continuous fun b : M => a * b :=
@@ -103,7 +103,7 @@ theorem continuous_mul_right (a : M) : Continuous fun b : M => b * a :=
 @[to_additive (attr := fun_prop)]
 theorem ContinuousOn.mul {f g : X → M} {s : Set X} (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun x => f x * g x) s :=
-  (continuous_mul.comp_continuousOn (hf.prod hg) :)
+  continuous_mul.comp_continuousOn (hf.prodMk hg)
 
 @[to_additive]
 theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 (a, b)) (𝓝 (a * b)) :=
@@ -112,7 +112,7 @@ theorem tendsto_mul {a b : M} : Tendsto (fun p : M × M => p.fst * p.snd) (𝓝 
 @[to_additive]
 theorem Filter.Tendsto.mul {f g : α → M} {x : Filter α} {a b : M} (hf : Tendsto f x (𝓝 a))
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => f x * g x) x (𝓝 (a * b)) :=
-  tendsto_mul.comp (hf.prod_mk_nhds hg)
+  tendsto_mul.comp (hf.prodMk_nhds hg)
 
 @[to_additive]
 theorem Filter.Tendsto.const_mul (b : M) {c : M} {f : α → M} {l : Filter α}
@@ -221,7 +221,7 @@ theorem ContinuousWithinAt.mul {f g : X → M} {s : Set X} {x : X} (hf : Continu
 @[to_additive]
 instance Prod.continuousMul [TopologicalSpace N] [Mul N] [ContinuousMul N] :
     ContinuousMul (M × N) :=
-  ⟨by apply Continuous.prod_mk <;> fun_prop⟩
+  ⟨by apply Continuous.prodMk <;> fun_prop⟩
 
 @[to_additive]
 instance Pi.continuousMul {C : ι → Type*} [∀ i, TopologicalSpace (C i)] [∀ i, Mul (C i)]
@@ -298,11 +298,8 @@ theorem isClosed_setOf_map_one [One M₁] [One M₂] : IsClosed { f : M₁ → M
 theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
     IsClosed { f : M₁ → M₂ | ∀ x y, f (x * y) = f x * f y } := by
   simp only [setOf_forall]
-  exact
-    isClosed_iInter fun x =>
-      isClosed_iInter fun y =>
-        isClosed_eq (continuous_apply _)
-          (by continuity)
+  exact isClosed_iInter fun x ↦ isClosed_iInter fun y ↦
+    isClosed_eq (continuous_apply _) (by fun_prop)
 
 section Semigroup
 
@@ -312,7 +309,7 @@ variable {M₁ M₂} [Mul M₁] [Mul M₂] [ContinuousMul M₂]
 /-- Construct a bundled semigroup homomorphism `M₁ →ₙ* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →ₙ* M₂` (or another type of bundled
 homomorphisms that has a `MulHomClass` instance) to `M₁ → M₂`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Construct a bundled additive semigroup homomorphism `M₁ →ₙ+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →ₙ+ M₂` (or another
 type of bundled homomorphisms that has an `AddHomClass` instance) to `M₁ → M₂`."]
@@ -322,7 +319,7 @@ def mulHomOfMemClosureRangeCoe (f : M₁ → M₂)
   map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled semigroup homomorphism from a pointwise limit of semigroup homomorphisms. -/
-@[to_additive (attr := simps! (config := .asFn))
+@[to_additive (attr := simps! -fullyApplied)
   "Construct a bundled additive semigroup homomorphism from a pointwise limit of additive
 semigroup homomorphisms"]
 def mulHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
@@ -346,7 +343,7 @@ variable {M₁ M₂} [MulOneClass M₁] [MulOneClass M₂] [ContinuousMul M₂]
 /-- Construct a bundled monoid homomorphism `M₁ →* M₂` from a function `f` and a proof that it
 belongs to the closure of the range of the coercion from `M₁ →* M₂` (or another type of bundled
 homomorphisms that has a `MonoidHomClass` instance) to `M₁ → M₂`. -/
-@[to_additive (attr := simps (config := .asFn))
+@[to_additive (attr := simps -fullyApplied)
   "Construct a bundled additive monoid homomorphism `M₁ →+ M₂` from a function `f`
 and a proof that it belongs to the closure of the range of the coercion from `M₁ →+ M₂` (or another
 type of bundled homomorphisms that has an `AddMonoidHomClass` instance) to `M₁ → M₂`."]
@@ -357,7 +354,7 @@ def monoidHomOfMemClosureRangeCoe (f : M₁ → M₂)
   map_mul' := (isClosed_setOf_map_mul M₁ M₂).closure_subset_iff.2 (range_subset_iff.2 map_mul) hf
 
 /-- Construct a bundled monoid homomorphism from a pointwise limit of monoid homomorphisms. -/
-@[to_additive (attr := simps! (config := .asFn))
+@[to_additive (attr := simps! -fullyApplied)
   "Construct a bundled additive monoid homomorphism from a pointwise limit of additive
 monoid homomorphisms"]
 def monoidHomOfTendsto (f : M₁ → M₂) (g : α → F) [l.NeBot]
@@ -480,7 +477,7 @@ and the image of `l` under `g` is disjoint from the cocompact filter on `M`, the
 theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_right {f g : α → M} {l : Filter α}
     (hf : Tendsto f l (𝓝 0)) (hg : Disjoint (map g l) (cocompact M)) :
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
-  tendsto_mul_nhds_zero_prod_of_disjoint_cocompact hg |>.comp (hf.prod_mk tendsto_map)
+  tendsto_mul_nhds_zero_prod_of_disjoint_cocompact hg |>.comp (hf.prodMk tendsto_map)
 
 /-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
 Let `f : α → M` and `g : α → M` be functions. If `g` tends to zero on a filter `l`
@@ -489,7 +486,7 @@ and the image of `l` under `f` is disjoint from the cocompact filter on `M`, the
 theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_left {f g : α → M} {l : Filter α}
     (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)):
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
-  tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prod_mk hg)
+  tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prodMk hg)
 
 /-- If `f : α → M` and `g : β → M` are continuous and both tend to zero on the cocompact filter,
 then `fun i : α × β ↦ f i.1 * g i.2` also tends to zero on the cocompact filter. -/
@@ -508,7 +505,7 @@ theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace 
     exact ⟨K, K_mem_l, K_compact⟩
   have l_le_coprod : l ≤ (𝓝 0).coprod (𝓝 0) := by
     rw [l_def, ← coprod_cocompact]
-    exact hf.prod_map_coprod hg
+    exact hf.prodMap_coprod hg
   exact tendsto_mul_nhds_zero_of_disjoint_cocompact l_compact l_le_coprod |>.comp tendsto_map
 
 /-- If `f : α → M` and `g : β → M` both tend to zero on the cofinite filter, then so does
@@ -793,7 +790,6 @@ theorem Filter.tendsto_cocompact_mul_right {a b : M} (ha : a * b = 1) :
   refine Filter.Tendsto.of_tendsto_comp ?_ (Filter.comap_cocompact_le (continuous_mul_right b))
   simp only [comp_mul_right, ha, mul_one]
   exact Filter.tendsto_id
-  -- Porting note: changed proof
 
 /-- If `R` acts on `A` via `A`, then continuous multiplication implies continuous scalar
 multiplication by constants.

@@ -6,9 +6,10 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Polynomial.GroupRingAction
 import Mathlib.Algebra.Ring.Action.Field
 import Mathlib.Algebra.Ring.Action.Invariant
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Separable
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 
 /-!
@@ -266,9 +267,9 @@ instance isSeparable : Algebra.IsSeparable (FixedPoints.subfield G F) F := by
   exact ⟨fun x => by
     cases nonempty_fintype G
     -- this was a plain rw when we were using unbundled subrings
-    erw [IsSeparable, ← minpoly_eq_minpoly,
-      ← Polynomial.separable_map (FixedPoints.subfield G F).subtype, minpoly,
-      Polynomial.map_toSubring _ (subfield G F).toSubring]
+    rw [IsSeparable, ← minpoly_eq_minpoly,
+      ← Polynomial.separable_map (FixedPoints.subfield G F).subtype, minpoly]
+    erw [Polynomial.map_toSubring _ (subfield G F).toSubring]
     exact Polynomial.separable_prod_X_sub_C_iff.2 (injective_ofQuotientStabilizer G x)⟩
 
 instance : FiniteDimensional (subfield G F) F := by

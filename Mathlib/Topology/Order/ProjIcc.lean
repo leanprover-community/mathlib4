@@ -21,7 +21,7 @@ variable {α β γ : Type*} [LinearOrder α] {a b c : α} {h : a ≤ b}
 protected theorem Filter.Tendsto.IccExtend (f : γ → Icc a b → β) {la : Filter α} {lb : Filter β}
     {lc : Filter γ} (hf : Tendsto (↿f) (lc ×ˢ la.map (projIcc a b h)) lb) :
     Tendsto (↿(IccExtend h ∘ f)) (lc ×ˢ la) lb :=
-  hf.comp <| tendsto_id.prod_map tendsto_map
+  hf.comp <| tendsto_id.prodMap tendsto_map
 
 variable [TopologicalSpace α] [OrderTopology α] [TopologicalSpace β] [TopologicalSpace γ]
 
@@ -44,7 +44,7 @@ theorem continuous_IccExtend_iff {f : Icc a b → β} : Continuous (IccExtend h 
 protected theorem Continuous.IccExtend {f : γ → Icc a b → β} {g : γ → α} (hf : Continuous ↿f)
     (hg : Continuous g) : Continuous fun a => IccExtend h (f a) (g a) :=
   show Continuous (↿f ∘ fun x => (x, projIcc a b h (g x)))
-  from hf.comp <| continuous_id.prod_mk <| continuous_projIcc.comp hg
+  from hf.comp <| continuous_id.prodMk <| continuous_projIcc.comp hg
 
 /-- A useful special case of `Continuous.IccExtend`. -/
 @[continuity]
@@ -56,4 +56,4 @@ theorem ContinuousAt.IccExtend {x : γ} (f : γ → Icc a b → β) {g : γ → 
     (hf : ContinuousAt (↿f) (x, projIcc a b h (g x))) (hg : ContinuousAt g x) :
     ContinuousAt (fun a => IccExtend h (f a) (g a)) x :=
   show ContinuousAt (↿f ∘ fun x => (x, projIcc a b h (g x))) x from
-    ContinuousAt.comp hf <| continuousAt_id.prod <| continuous_projIcc.continuousAt.comp hg
+    ContinuousAt.comp hf <| continuousAt_id.prodMk <| continuous_projIcc.continuousAt.comp hg

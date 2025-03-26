@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Floris van Doorn
 -/
 import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Data.Rat.Cast.Defs
 
 /-!
 # Real numbers from Cauchy sequences
@@ -33,9 +34,6 @@ structure Real where ofCauchy ::
 
 @[inherit_doc]
 notation "ℝ" => Real
-
--- Porting note: unknown attribute
--- attribute [pp_using_anonymous_constructor] Real
 
 namespace CauSeq.Completion
 
@@ -299,8 +297,8 @@ theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
 @[elab_as_elim]
 protected theorem ind_mk {C : Real → Prop} (x : Real) (h : ∀ y, C (mk y)) : C x := by
   obtain ⟨x⟩ := x
-  induction' x using Quot.induction_on with x
-  exact h x
+  induction x using Quot.induction_on
+  exact h _
 
 theorem add_lt_add_iff_left {a b : ℝ} (c : ℝ) : c + a < c + b ↔ a < b := by
   induction a using Real.ind_mk
@@ -313,21 +311,21 @@ instance partialOrder : PartialOrder ℝ where
   le := (· ≤ ·)
   lt := (· < ·)
   lt_iff_le_not_le a b := by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
     simpa using lt_iff_le_not_le
   le_refl a := by
-    induction' a using Real.ind_mk with a
+    induction a using Real.ind_mk
     rw [mk_le]
   le_trans a b c := by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
-    induction' c using Real.ind_mk with c
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    induction c using Real.ind_mk
     simpa using le_trans
   le_antisymm a b := by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
-    simpa [mk_eq] using @CauSeq.le_antisymm _ _ a b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    simpa [mk_eq] using CauSeq.le_antisymm
 
 instance : Preorder ℝ := by infer_instance
 
@@ -341,12 +339,6 @@ protected theorem zero_lt_one : (0 : ℝ) < 1 := by
 protected theorem fact_zero_lt_one : Fact ((0 : ℝ) < 1) :=
   ⟨Real.zero_lt_one⟩
 
-@[deprecated mul_pos (since := "2024-08-15")]
-protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
-  induction' a using Real.ind_mk with a
-  induction' b using Real.ind_mk with b
-  simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
-
 instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
   __ := Real.commRing
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
@@ -357,8 +349,8 @@ instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
     · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
   zero_le_one := le_of_lt Real.zero_lt_one
   mul_pos a b :=  by
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
     simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
 instance strictOrderedRing : StrictOrderedRing ℝ :=
@@ -424,51 +416,51 @@ instance : DistribLattice ℝ :=
     le := (· ≤ ·)
     le_sup_left := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_left
     le_sup_right := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_sup, mk_le]
       exact CauSeq.le_sup_right
     sup_le := by
       intros a b c
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
-      induction' c using Real.ind_mk with c
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
+      induction c using Real.ind_mk
       simp_rw [← mk_sup, mk_le]
       exact CauSeq.sup_le
     inf := (· ⊓ ·)
     inf_le_left := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_left
     inf_le_right := by
       intros a b
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
       dsimp only; rw [← mk_inf, mk_le]
       exact CauSeq.inf_le_right
     le_inf := by
       intros a b c
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
-      induction' c using Real.ind_mk with c
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
+      induction c using Real.ind_mk
       simp_rw [← mk_inf, mk_le]
       exact CauSeq.le_inf
     le_sup_inf := by
       intros a b c
-      induction' a using Real.ind_mk with a
-      induction' b using Real.ind_mk with b
-      induction' c using Real.ind_mk with c
+      induction a using Real.ind_mk
+      induction b using Real.ind_mk
+      induction c using Real.ind_mk
       apply Eq.le
       simp only [← mk_sup, ← mk_inf]
-      exact congr_arg mk (CauSeq.sup_inf_distrib_left _ _ _).symm }
+      exact congr_arg mk (CauSeq.sup_inf_distrib_left ..).symm }
 
 -- Extra instances to short-circuit type class resolution
 instance lattice : Lattice ℝ :=
@@ -483,9 +475,9 @@ instance : SemilatticeSup ℝ :=
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
-    induction' a using Real.ind_mk with a
-    induction' b using Real.ind_mk with b
-    simpa using le_total a b⟩
+    induction a using Real.ind_mk
+    induction b using Real.ind_mk
+    simpa using CauSeq.le_total ..⟩
 
 open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
@@ -548,7 +540,7 @@ unsafe instance : Repr ℝ where
 
 theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j) → x ≤ mk f := by
   intro h
-  induction' x using Real.ind_mk with x
+  induction x using Real.ind_mk
   apply le_of_not_lt
   rw [mk_lt]
   rintro ⟨K, K0, hK⟩
@@ -575,7 +567,7 @@ theorem mk_near_of_forall_near {f : CauSeq ℚ abs} {x : ℝ} {ε : ℝ}
         le_mk_of_forall_le <| H.imp fun _ h j ij => sub_le_comm.1 (abs_sub_le_iff.1 <| h j ij).2⟩
 
 lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 ≤ (a + 1) ^ b := by
-  rcases ha.eq_or_lt with rfl|ha'
+  rcases ha.eq_or_lt with rfl | ha'
   · simp
   clear ha
   induction b generalizing a with

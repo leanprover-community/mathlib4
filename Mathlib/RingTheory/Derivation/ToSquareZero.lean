@@ -50,7 +50,7 @@ def derivationToSquareZeroOfLift [IsScalarTower R A B]  (hI : I ^ 2 = ⊥) (f : 
       map_one_eq_zero' := ?_
       leibniz' := ?_ }
   · rw [e]; ext; rfl
-  · ext; change f 1 - algebraMap A B 1 = 0; rw [map_one, map_one, sub_self]
+  · ext; simp
   · intro x y
     let F := diffToIdealOfQuotientCompEq I f (IsScalarTower.toAlgHom R A B) (by rw [e]; ext; rfl)
     have : (f x - algebraMap A B x) * (f y - algebraMap A B y) = 0 := by
@@ -75,7 +75,7 @@ theorem derivationToSquareZeroOfLift_apply [IsScalarTower R A B] (f : A →ₐ[R
 
 /-- Given a tower of algebras `R → A → B`, and a square-zero `I : Ideal B`, each `R`-derivation
 from `A` to `I` corresponds to a lift `A →ₐ[R] B` of the canonical map `A →ₐ[R] B ⧸ I`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def liftOfDerivationToSquareZero [IsScalarTower R A B]  (hI : I ^ 2 = ⊥) (f : Derivation R A I) :
     A →ₐ[R] B :=
   { ((I.restrictScalars R).subtype.comp f.toLinearMap + (IsScalarTower.toAlgHom R A B).toLinearMap :

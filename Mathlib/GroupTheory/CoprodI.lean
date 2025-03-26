@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.Group.Action.End
+import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.Congruence.Basic
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
 import Mathlib.SetTheory.Cardinal.Basic
@@ -92,8 +92,9 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) �
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
+-- The `Monoid` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: could not de derived
 instance : Monoid (Monoid.CoprodI M) := by
   delta Monoid.CoprodI; infer_instance
 
@@ -145,13 +146,7 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
     Con.lift _ (FreeMonoid.lift fun p : Σi, M i => fi p.fst p.snd) <|
       Con.conGen_le <| by
         simp_rw [Con.ker_rel]
-        rintro _ _ (i | ⟨x, y⟩)
-        · change FreeMonoid.lift _ (FreeMonoid.of _) = FreeMonoid.lift _ 1
-          simp only [MonoidHom.map_one, FreeMonoid.lift_eval_of]
-        · change
-            FreeMonoid.lift _ (FreeMonoid.of _ * FreeMonoid.of _) =
-              FreeMonoid.lift _ (FreeMonoid.of _)
-          simp only [MonoidHom.map_mul, FreeMonoid.lift_eval_of]
+        rintro _ _ (i | ⟨x, y⟩) <;> simp
   invFun f _ := f.comp of
   left_inv := by
     intro fi
@@ -570,7 +565,7 @@ theorem equivPair_head_smul_equivPair_tail {i : ι} (w : Word M) :
   rw [← rcons_eq_smul, ← equivPair_symm, Equiv.symm_apply_apply]
 
 theorem equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
-    [∀i, DecidableEq (G i)] {i} (w : Word G) :
+    [∀ i, DecidableEq (G i)] {i} (w : Word G) :
     (equivPair i w).tail = (of (equivPair i w).head)⁻¹ • w :=
   Eq.symm <| inv_smul_eq_iff.2 (equivPair_head_smul_equivPair_tail w).symm
 
@@ -617,16 +612,13 @@ instance : DecidableEq (CoprodI M) :=
 
 end Word
 
-variable (M)
-
+variable (M) in
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
-
-variable {M}
 
 namespace NeWord
 

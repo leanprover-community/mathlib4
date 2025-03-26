@@ -10,6 +10,7 @@ import Mathlib.Data.Rat.Init
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Algebra.BigOperators.Group.Finset.Pi
 
 /-!
 # Results about big operators with values in a (semi)ring

@@ -32,6 +32,14 @@ namespace NonUnitalSubalgebraClass
 def subtype (s : S) : s →ₙₐ[R] A :=
   { NonUnitalSubsemiringClass.subtype s, SMulMemClass.subtype s with toFun := (↑) }
 
+variable {s} in
+@[simp]
+lemma subtype_apply (x : s) : subtype s x = x := rfl
+
+lemma subtype_injective :
+    Function.Injective (subtype s) :=
+  Subtype.coe_injective
+
 @[simp]
 theorem coe_subtype : (subtype s : s → A) = ((↑) : s → A) :=
   rfl
@@ -45,8 +53,8 @@ end NonUnitalSubalgebraClass
 
 /-- A non-unital subalgebra is a sub(semi)ring that is also a submodule. -/
 structure NonUnitalSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
-    [NonUnitalNonAssocSemiring A] [Module R A]
-    extends NonUnitalSubsemiring A, Submodule R A : Type v
+    [NonUnitalNonAssocSemiring A] [Module R A] : Type v
+    extends NonUnitalSubsemiring A, Submodule R A
 
 /-- Reinterpret a `NonUnitalSubalgebra` as a `NonUnitalSubsemiring`. -/
 add_decl_doc NonUnitalSubalgebra.toNonUnitalSubsemiring

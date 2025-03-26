@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad
 -/
 import Mathlib.Algebra.Group.Basic
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Control.Basic
-import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Order.Filter.Basic
 
 /-!
@@ -22,7 +21,7 @@ universe u v w x y
 
 namespace Filter
 
-variable {α β γ δ : Type*} {ι : Sort*}{F : Filter α} {G : Filter β}
+variable {α β γ δ : Type*} {ι : Sort*} {F : Filter α} {G : Filter β}
 
 /-! ### Push-forwards, pull-backs, and the monad structure -/
 
@@ -43,6 +42,12 @@ theorem frequently_map {P : β → Prop} : (∃ᶠ b in map m f, P b) ↔ ∃ᶠ
   Iff.rfl
 
 @[simp]
+theorem eventuallyEq_map {f₁ f₂ : β → γ} : f₁ =ᶠ[map m f] f₂ ↔ f₁ ∘ m =ᶠ[f] f₂ ∘ m := .rfl
+
+@[simp]
+theorem eventuallyLE_map [LE γ] {f₁ f₂ : β → γ} : f₁ ≤ᶠ[map m f] f₂ ↔ f₁ ∘ m ≤ᶠ[f] f₂ ∘ m := .rfl
+
+@[simp]
 theorem mem_map : t ∈ map m f ↔ m ⁻¹' t ∈ f :=
   Iff.rfl
 
@@ -54,6 +59,7 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
 
 -- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=
@@ -104,9 +110,12 @@ theorem mem_comap'' : s ∈ comap f l ↔ kernImage f s ∈ l :=
   mem_comap'
 
 /-- RHS form is used, e.g., in the definition of `UniformSpace`. -/
-lemma mem_comap_prod_mk {x : α} {s : Set β} {F : Filter (α × β)} :
+lemma mem_comap_prodMk {x : α} {s : Set β} {F : Filter (α × β)} :
     s ∈ comap (Prod.mk x) F ↔ {p : α × β | p.fst = x → p.snd ∈ s} ∈ F := by
   simp_rw [mem_comap', Prod.ext_iff, and_imp, @forall_swap β (_ = _), forall_eq, eq_comm]
+
+@[deprecated (since := "2025-03-10")]
+alias mem_comap_prod_mk := mem_comap_prodMk
 
 @[simp]
 theorem eventually_comap : (∀ᶠ a in comap f l, p a) ↔ ∀ᶠ b in l, ∀ a, f a = b → p a :=

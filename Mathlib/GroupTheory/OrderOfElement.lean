@@ -128,6 +128,11 @@ theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
   rw [isOfFinOrder_iff_pow_eq_one, isOfFinOrder_iff_pow_eq_one]
   norm_cast
 
+theorem IsConj.isOfFinOrder (h : IsConj x y) : IsOfFinOrder x → IsOfFinOrder y := by
+  simp_rw [isOfFinOrder_iff_pow_eq_one]
+  rintro ⟨n, n_gt_0, eq'⟩
+  exact ⟨n, n_gt_0, by rw [← isConj_one_right, ← eq']; exact h.pow n⟩
+
 /-- The image of an element of finite order has finite order. -/
 @[to_additive "The image of an element of finite additive order has finite additive order."]
 theorem MonoidHom.isOfFinOrder [Monoid H] (f : G →* H) {x : G} (h : IsOfFinOrder x) :
@@ -341,13 +346,14 @@ theorem orderOf_units {y : Gˣ} : orderOf (y : G) = orderOf y :=
   orderOf_injective (Units.coeHom G) Units.ext y
 
 /-- If the order of `x` is finite, then `x` is a unit with inverse `x ^ (orderOf x - 1)`. -/
-@[simps]
-noncomputable
-def IsOfFinOrder.unit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : Mˣ :=
-⟨x, x ^ (orderOf x - 1),
-  by rw [← _root_.pow_succ', tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one],
-  by rw [← _root_.pow_succ, tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one]⟩
+@[to_additive (attr := simps) "If the additive order of `x` is finite, then `x` is an additive
+unit with inverse `(addOrderOf x - 1) • x`. "]
+noncomputable def IsOfFinOrder.unit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : Mˣ :=
+  ⟨x, x ^ (orderOf x - 1),
+    by rw [← _root_.pow_succ', tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one],
+    by rw [← _root_.pow_succ, tsub_add_cancel_of_le (by exact hx.orderOf_pos), pow_orderOf_eq_one]⟩
 
+@[to_additive]
 lemma IsOfFinOrder.isUnit {M} [Monoid M] {x : M} (hx : IsOfFinOrder x) : IsUnit x := ⟨hx.unit, rfl⟩
 
 variable (x)
@@ -458,9 +464,13 @@ section PPrime
 variable {x n} {p : ℕ} [hp : Fact p.Prime]
 
 @[to_additive]
+theorem orderOf_eq_prime_iff : orderOf x = p ↔ x ^ p = 1 ∧ x ≠ 1 := by
+  rw [orderOf, minimalPeriod_eq_prime_iff, isPeriodicPt_mul_iff_pow_eq_one, IsFixedPt, mul_one]
+
+/-- The backward direction of `orderOf_eq_prime_iff`. -/
+@[to_additive "The backward direction of `addOrderOf_eq_prime_iff`."]
 theorem orderOf_eq_prime (hg : x ^ p = 1) (hg1 : x ≠ 1) : orderOf x = p :=
-  minimalPeriod_eq_prime ((isPeriodicPt_mul_iff_pow_eq_one _).mpr hg)
-    (by rwa [IsFixedPt, mul_one])
+  orderOf_eq_prime_iff.mpr ⟨hg, hg1⟩
 
 @[to_additive addOrderOf_eq_prime_pow]
 theorem orderOf_eq_prime_pow (hnot : ¬x ^ p ^ n = 1) (hfin : x ^ p ^ (n + 1) = 1) :
@@ -475,6 +485,39 @@ theorem exists_orderOf_eq_prime_pow_iff :
     exact ⟨k, hk⟩⟩
 
 end PPrime
+
+/-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i` -/
+@[to_additive "The equivalence between `Fin (addOrderOf a)` and
+`AddSubmonoid.multiples a`, sending `i` to `i • a`"]
+noncomputable def finEquivPowers {x : G} (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=
+  Equiv.ofBijective (fun n ↦ ⟨x ^ (n : ℕ), ⟨n, rfl⟩⟩) ⟨fun ⟨_, h₁⟩ ⟨_, h₂⟩ ij ↦
+    Fin.ext (pow_injOn_Iio_orderOf h₁ h₂ (Subtype.mk_eq_mk.1 ij)), fun ⟨_, i, rfl⟩ ↦
+      ⟨⟨i % orderOf x, mod_lt _ hx.orderOf_pos⟩, Subtype.eq <| pow_mod_orderOf _ _⟩⟩
+
+@[to_additive (attr := simp)]
+lemma finEquivPowers_apply {x : G} (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
+    finEquivPowers hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
+
+@[to_additive (attr := simp)]
+lemma finEquivPowers_symm_apply {x : G} (hx : IsOfFinOrder x) (n : ℕ) :
+    (finEquivPowers hx).symm ⟨x ^ n, _, rfl⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
+  rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
+
+variable {x n} (hx : IsOfFinOrder x)
+include hx
+
+@[to_additive]
+theorem IsOfFinOrder.pow_eq_pow_iff_modEq : x ^ n = x ^ m ↔ n ≡ m [MOD orderOf x] := by
+  wlog hmn : m ≤ n generalizing m n
+  · rw [eq_comm, ModEq.comm, this (le_of_not_le hmn)]
+  obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
+  rw [pow_add, (hx.isUnit.pow _).mul_eq_left, pow_eq_one_iff_modEq]
+  exact ⟨fun h ↦ Nat.ModEq.add_left _ h, fun h ↦ Nat.ModEq.add_left_cancel' _ h⟩
+
+@[to_additive]
+lemma IsOfFinOrder.pow_inj_mod {n m : ℕ} : x ^ n = x ^ m ↔ n % orderOf x = m % orderOf x :=
+  hx.pow_eq_pow_iff_modEq
+
 end Monoid
 
 section CancelMonoid
@@ -529,29 +572,12 @@ lemma finite_powers : (powers a : Set G).Finite ↔ IsOfFinOrder a := by
 @[to_additive (attr := simp)]
 lemma infinite_powers : (powers a : Set G).Infinite ↔ ¬ IsOfFinOrder a := finite_powers.not
 
-/-- The equivalence between `Fin (orderOf x)` and `Submonoid.powers x`, sending `i` to `x ^ i` -/
-@[to_additive "The equivalence between `Fin (addOrderOf a)` and
-`AddSubmonoid.multiples a`, sending `i` to `i • a`"]
-noncomputable def finEquivPowers (x : G) (hx : IsOfFinOrder x) : Fin (orderOf x) ≃ powers x :=
-  Equiv.ofBijective (fun n ↦ ⟨x ^ (n : ℕ), ⟨n, rfl⟩⟩) ⟨fun ⟨_, h₁⟩ ⟨_, h₂⟩ ij ↦
-    Fin.ext (pow_injOn_Iio_orderOf h₁ h₂ (Subtype.mk_eq_mk.1 ij)), fun ⟨_, i, rfl⟩ ↦
-      ⟨⟨i % orderOf x, mod_lt _ hx.orderOf_pos⟩, Subtype.eq <| pow_mod_orderOf _ _⟩⟩
-
-@[to_additive (attr := simp)]
-lemma finEquivPowers_apply (x : G) (hx) {n : Fin (orderOf x)} :
-    finEquivPowers x hx n = ⟨x ^ (n : ℕ), n, rfl⟩ := rfl
-
-@[to_additive (attr := simp)]
-lemma finEquivPowers_symm_apply (x : G) (hx) (n : ℕ) {hn : ∃ m : ℕ, x ^ m = x ^ n} :
-    (finEquivPowers x hx).symm ⟨x ^ n, hn⟩ = ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
-  rw [Equiv.symm_apply_eq, finEquivPowers_apply, Subtype.mk_eq_mk, ← pow_mod_orderOf, Fin.val_mk]
-
 /-- See also `orderOf_eq_card_powers`. -/
 @[to_additive "See also `addOrder_eq_card_multiples`."]
 lemma Nat.card_submonoidPowers : Nat.card (powers a) = orderOf a := by
   classical
   by_cases ha : IsOfFinOrder a
-  · exact (Nat.card_congr (finEquivPowers _ ha).symm).trans <| by simp
+  · exact (Nat.card_congr (finEquivPowers ha).symm).trans <| by simp
   · have := (infinite_powers.2 ha).to_subtype
     rw [orderOf_eq_zero ha, Nat.card_eq_zero_of_infinite]
 
@@ -657,19 +683,19 @@ lemma IsOfFinOrder.mem_zpowers_iff_mem_range_orderOf [DecidableEq G] (hx : IsOfF
 /-- The equivalence between `Fin (orderOf x)` and `Subgroup.zpowers x`, sending `i` to `x ^ i`. -/
 @[to_additive "The equivalence between `Fin (addOrderOf a)` and
 `Subgroup.zmultiples a`, sending `i` to `i • a`."]
-noncomputable def finEquivZPowers (x : G) (hx : IsOfFinOrder x) :
-    Fin (orderOf x) ≃ (zpowers x : Set G) :=
-  (finEquivPowers x hx).trans <| Equiv.Set.ofEq hx.powers_eq_zpowers
+noncomputable def finEquivZPowers (hx : IsOfFinOrder x) :
+    Fin (orderOf x) ≃ zpowers x :=
+  (finEquivPowers hx).trans <| Equiv.setCongr hx.powers_eq_zpowers
 
 @[to_additive]
-lemma finEquivZPowers_apply (hx) {n : Fin (orderOf x)} :
-    finEquivZPowers x hx n = ⟨x ^ (n : ℕ), n, zpow_natCast x n⟩ := rfl
+lemma finEquivZPowers_apply (hx : IsOfFinOrder x) {n : Fin (orderOf x)} :
+    finEquivZPowers hx n = ⟨x ^ (n : ℕ), n, zpow_natCast x n⟩ := rfl
 
 @[to_additive]
-lemma finEquivZPowers_symm_apply (x : G) (hx) (n : ℕ) :
-    (finEquivZPowers x hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
+lemma finEquivZPowers_symm_apply (hx : IsOfFinOrder x) (n : ℕ) :
+    (finEquivZPowers hx).symm ⟨x ^ n, ⟨n, by simp⟩⟩ =
     ⟨n % orderOf x, Nat.mod_lt _ hx.orderOf_pos⟩ := by
-  rw [finEquivZPowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply x _ n
+  rw [finEquivZPowers, Equiv.symm_trans_apply]; exact finEquivPowers_symm_apply _ n
 
 end Group
 
@@ -694,7 +720,7 @@ theorem sum_card_orderOf_eq_card_pow_eq_one [Fintype G] [DecidableEq G] (hn : n 
         (Finset.univ.filter fun x : G => orderOf x = m).card) =
       (Finset.univ.filter fun x : G => x ^ n = 1).card := by
   refine (Finset.card_biUnion ?_).symm.trans ?_
-  · simp +contextual [disjoint_iff, Finset.ext_iff]
+  · simp +contextual [Set.PairwiseDisjoint, Set.Pairwise, disjoint_iff, Finset.ext_iff]
   · congr; ext; simp [hn, orderOf_dvd_iff_pow_eq_one]
 
 @[to_additive]
@@ -745,8 +771,8 @@ theorem mem_powers_iff_mem_range_orderOf [DecidableEq G] :
   "The equivalence between `Submonoid.multiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
 noncomputable def powersEquivPowers (h : orderOf x = orderOf y) : powers x ≃ powers y :=
-  (finEquivPowers x <| isOfFinOrder_of_finite _).symm.trans <|
-    (finCongr h).trans <| finEquivPowers y <| isOfFinOrder_of_finite _
+  (finEquivPowers <| isOfFinOrder_of_finite _).symm.trans <|
+    (finCongr h).trans <| finEquivPowers <| isOfFinOrder_of_finite _
 
 @[to_additive (attr := simp)]
 theorem powersEquivPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
@@ -762,7 +788,7 @@ variable [Fintype G] {x : G}
 @[to_additive]
 lemma orderOf_eq_card_powers : orderOf x = Fintype.card (powers x : Submonoid G) :=
   (Fintype.card_fin (orderOf x)).symm.trans <|
-    Fintype.card_eq.2 ⟨finEquivPowers x <| isOfFinOrder_of_finite _⟩
+    Fintype.card_eq.2 ⟨finEquivPowers <| isOfFinOrder_of_finite _⟩
 
 end FiniteCancelMonoid
 
@@ -816,13 +842,11 @@ lemma mem_zpowers_iff_mem_range_orderOf [DecidableEq G] :
   "The equivalence between `Subgroup.zmultiples` of two elements `a, b` of the same additive order,
   mapping `i • a` to `i • b`."]
 noncomputable def zpowersEquivZPowers (h : orderOf x = orderOf y) :
-    (Subgroup.zpowers x : Set G) ≃ (Subgroup.zpowers y : Set G) :=
-  (finEquivZPowers x <| isOfFinOrder_of_finite _).symm.trans <| (finCongr h).trans <|
-    finEquivZPowers y <| isOfFinOrder_of_finite _
+    Subgroup.zpowers x ≃ Subgroup.zpowers y :=
+  (finEquivZPowers <| isOfFinOrder_of_finite _).symm.trans <| (finCongr h).trans <|
+    finEquivZPowers <| isOfFinOrder_of_finite _
 
--- Porting note: the simpNF linter complains that simp can change the LHS to something
--- that looks the same as the current LHS even with `pp.explicit`
-@[to_additive (attr := simp, nolint simpNF) zmultiples_equiv_zmultiples_apply]
+@[to_additive (attr := simp) zmultiples_equiv_zmultiples_apply]
 theorem zpowersEquivZPowers_apply (h : orderOf x = orderOf y) (n : ℕ) :
     zpowersEquivZPowers h ⟨x ^ n, n, zpow_natCast x n⟩ = ⟨y ^ n, n, zpow_natCast y n⟩ := by
   rw [zpowersEquivZPowers, Equiv.trans_apply, Equiv.trans_apply, finEquivZPowers_symm_apply, ←
@@ -837,7 +861,7 @@ variable [Fintype G] {x : G} {n : ℕ}
 @[to_additive "See also `Nat.card_subgroup`."]
 theorem Fintype.card_zpowers : Fintype.card (zpowers x) = orderOf x :=
   letI : Fintype (zpowers x) := (Subgroup.zpowers x).instFintypeSubtypeMemOfDecidablePred
-  (Fintype.card_eq.2 ⟨finEquivZPowers x <| isOfFinOrder_of_finite _⟩).symm.trans <|
+  (Fintype.card_eq.2 ⟨finEquivZPowers <| isOfFinOrder_of_finite _⟩).symm.trans <|
     Fintype.card_fin (orderOf x)
 
 @[to_additive]

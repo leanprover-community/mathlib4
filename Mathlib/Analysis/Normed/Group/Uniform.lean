@@ -24,7 +24,7 @@ section SeminormedGroup
 variable [SeminormedGroup E] [SeminormedGroup F] {s : Set E} {a b : E} {r : ℝ}
 
 @[to_additive]
-instance NormedGroup.to_isometricSMul_right : IsometricSMul Eᵐᵒᵖ E :=
+instance NormedGroup.to_isIsometricSMul_right : IsIsometricSMul Eᵐᵒᵖ E :=
   ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
 
 @[to_additive]
@@ -180,7 +180,7 @@ section SeminormedCommGroup
 variable [SeminormedCommGroup E] [SeminormedCommGroup F] {a₁ a₂ b₁ b₂ : E} {r₁ r₂ : ℝ}
 
 @[to_additive]
-instance NormedGroup.to_isometricSMul_left : IsometricSMul E E :=
+instance NormedGroup.to_isIsometricSMul_left : IsIsometricSMul E E :=
   ⟨fun a => Isometry.of_dist_eq fun b c => by simp [dist_eq_norm_div]⟩
 
 @[to_additive (attr := simp)]
@@ -280,8 +280,6 @@ lemma LipschitzOnWith.mul (hf : LipschitzOnWith Kf f s) (hg : LipschitzOnWith Kg
 lemma LipschitzWith.mul (hf : LipschitzWith Kf f) (hg : LipschitzWith Kg g) :
     LipschitzWith (Kf + Kg) fun x ↦ f x * g x := by
   simpa [← lipschitzOnWith_univ] using hf.lipschitzOnWith.mul hg.lipschitzOnWith
-
-@[deprecated (since := "2024-08-25")] alias LipschitzWith.mul' := LipschitzWith.mul
 
 @[to_additive]
 lemma LocallyLipschitzOn.mul (hf : LocallyLipschitzOn s f) (hg : LocallyLipschitzOn s g) :

@@ -104,11 +104,12 @@ lemma inter_le_left : s ∩ t ≤ s :=
   Quotient.inductionOn₂ s t fun _l₁ _l₂ => (bagInter_sublist_left _ _).subperm
 
 lemma inter_le_right : s ∩ t ≤ t := by
-  induction' s using Multiset.induction_on with a s IH generalizing t
-  · exact (zero_inter t).symm ▸ zero_le _
-  by_cases h : a ∈ t
-  · simpa [h] using cons_le_cons a (IH (t := t.erase a))
-  · simp [h, IH]
+  induction s using Multiset.induction_on generalizing t with
+  | empty => exact (zero_inter t).symm ▸ zero_le _
+  | cons a s IH =>
+    by_cases h : a ∈ t
+    · simpa [h] using cons_le_cons a (IH (t := t.erase a))
+    · simp [h, IH]
 
 lemma le_inter (h₁ : s ≤ t) (h₂ : s ≤ u) : s ≤ t ∩ u := by
   revert s u; refine @(Multiset.induction_on t ?_ fun a t IH => ?_) <;> intros s u h₁ h₂
@@ -352,5 +353,30 @@ theorem map_set_pairwise {f : α → β} {r : β → β → Prop} {m : Multiset 
   fun b₁ h₁ b₂ h₂ hn => by
     obtain ⟨⟨a₁, H₁, rfl⟩, a₂, H₂, rfl⟩ := Multiset.mem_map.1 h₁, Multiset.mem_map.1 h₂
     exact h H₁ H₂ (mt (congr_arg f) hn)
+
+section Nodup
+
+variable {s t : Multiset α} {a : α}
+
+theorem nodup_add {s t : Multiset α} : Nodup (s + t) ↔ Nodup s ∧ Nodup t ∧ Disjoint s t :=
+  Quotient.inductionOn₂ s t fun _ _ => by simp [nodup_append]
+
+theorem disjoint_of_nodup_add {s t : Multiset α} (d : Nodup (s + t)) : Disjoint s t :=
+  (nodup_add.1 d).2.2
+
+theorem Nodup.add_iff (d₁ : Nodup s) (d₂ : Nodup t) : Nodup (s + t) ↔ Disjoint s t := by
+  simp [nodup_add, d₁, d₂]
+
+lemma Nodup.inter_left [DecidableEq α] (t) : Nodup s → Nodup (s ∩ t) := nodup_of_le inter_le_left
+lemma Nodup.inter_right [DecidableEq α] (s) : Nodup t → Nodup (s ∩ t) := nodup_of_le inter_le_right
+
+@[simp]
+theorem nodup_union [DecidableEq α] {s t : Multiset α} : Nodup (s ∪ t) ↔ Nodup s ∧ Nodup t :=
+  ⟨fun h => ⟨nodup_of_le le_union_left h, nodup_of_le le_union_right h⟩, fun ⟨h₁, h₂⟩ =>
+    nodup_iff_count_le_one.2 fun a => by
+      rw [count_union]
+      exact max_le (nodup_iff_count_le_one.1 h₁ a) (nodup_iff_count_le_one.1 h₂ a)⟩
+
+end Nodup
 
 end Multiset

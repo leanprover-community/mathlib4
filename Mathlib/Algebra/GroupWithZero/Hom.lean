@@ -3,10 +3,8 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.NeZero
 
 /-!
 # Monoid with zero and group with zero homomorphisms
@@ -56,7 +54,8 @@ variable {F α β γ δ M₀ : Type*} [MulZeroOneClass α] [MulZeroOneClass β] 
 
 You should also extend this typeclass when you extend `MonoidWithZeroHom`. -/
 class MonoidWithZeroHomClass (F : Type*) (α β : outParam Type*) [MulZeroOneClass α]
-  [MulZeroOneClass β] [FunLike F α β] extends MonoidHomClass F α β, ZeroHomClass F α β : Prop
+    [MulZeroOneClass β] [FunLike F α β] : Prop
+  extends MonoidHomClass F α β, ZeroHomClass F α β
 
 /-- `α →*₀ β` is the type of functions `α → β` that preserve
 the `MonoidWithZero` structure.
@@ -217,24 +216,3 @@ def powMonoidWithZeroHom : M₀ →*₀ M₀ :=
 @[simp] lemma powMonoidWithZeroHom_apply (a : M₀) : powMonoidWithZeroHom hn a = a ^ n := rfl
 
 end CommMonoidWithZero
-
-/-! ### Equivalences -/
-
-namespace MulEquivClass
-variable {F α β : Type*} [EquivLike F α β]
-
--- See note [lower instance priority]
-instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :
-    ZeroHomClass F α β where
-  map_zero f :=
-    calc
-      f 0 = f 0 * f (EquivLike.inv f 0) := by rw [← map_mul, zero_mul]
-        _ = 0 := by simp
-
--- See note [lower instance priority]
-instance (priority := 100) toMonoidWithZeroHomClass
-    [MulZeroOneClass α] [MulZeroOneClass β] [MulEquivClass F α β] :
-    MonoidWithZeroHomClass F α β :=
-  { MulEquivClass.instMonoidHomClass F, MulEquivClass.toZeroHomClass with }
-
-end MulEquivClass

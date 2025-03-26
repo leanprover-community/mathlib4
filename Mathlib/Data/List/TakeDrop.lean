@@ -105,8 +105,7 @@ theorem takeI_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : takeI n (l
 
 end TakeI
 
-/- Porting note: in mathlib3 we just had `take` and `take'`. Now we have `take`, `takeI`, and
-  `takeD`. The following section replicates the theorems above but for `takeD`. -/
+/- The following section replicates the theorems above but for `takeD`. -/
 section TakeD
 
 @[simp]

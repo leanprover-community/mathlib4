@@ -110,7 +110,6 @@ instance (i j : 𝖣.J) :
         i j) := by
   apply GlueData.f_open
 
--- Porting note: this was not needed.
 instance (i : 𝖣.J) :
     LocallyRingedSpace.IsOpenImmersion ((D.toLocallyRingedSpaceGlueData).toGlueData.ι i) := by
   apply LocallyRingedSpace.GlueData.ι_isOpenImmersion
@@ -188,7 +187,6 @@ def vPullbackConeIsLimit (i j : D.J) : IsLimit (D.vPullbackCone i j) :=
   𝖣.vPullbackConeIsLimitOfMap forgetToLocallyRingedSpace i j
     (D.toLocallyRingedSpaceGlueData.vPullbackConeIsLimit _ _)
 
--- Porting note: new notation
 local notation "D_" => TopCat.GlueData.toGlueData <|
   D.toLocallyRingedSpaceGlueData.toSheafedSpaceGlueData.toPresheafedSpaceGlueData.toTopGlueData
 
@@ -240,7 +238,7 @@ theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι
   rfl
 
 /-- The open cover of the glued space given by the glue data. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def openCover (D : Scheme.GlueData) : OpenCover D.glued where
   J := D.J
   obj := D.U
