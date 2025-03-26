@@ -132,6 +132,9 @@ theorem LinearIndependent.injective [Nontrivial R] (hv : LinearIndependent R v) 
 theorem LinearIndepOn.injOn [Nontrivial R] (hv : LinearIndepOn R v s) : InjOn v s :=
   injOn_iff_injective.2 <| LinearIndependent.injective hv
 
+theorem LinearIndependent.smul_left_injective (hv : LinearIndependent R v) (i : ι) :
+    Injective fun r : R ↦ r • v i := by convert hv.comp (Finsupp.single_injective i); simp
+
 theorem LinearIndependent.ne_zero [Nontrivial R] (i : ι) (hv : LinearIndependent R v) :
     v i ≠ 0 := by
   intro h

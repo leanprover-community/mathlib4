@@ -59,6 +59,7 @@ theorem image_mem_map (hs : s ∈ f) : m '' s ∈ map m f :=
 
 -- The simpNF linter says that the LHS can be simplified via `Filter.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem image_mem_map_iff (hf : Injective m) : m '' s ∈ map m f ↔ s ∈ f :=

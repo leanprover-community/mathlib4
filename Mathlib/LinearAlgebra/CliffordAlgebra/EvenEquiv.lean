@@ -212,8 +212,6 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
   induction x using CliffordAlgebra.induction with
   | algebraMap r => simp only [AlgHom.commutes, Subalgebra.coe_algebraMap, reverse.commutes]
   | ι m =>
-    -- Porting note: added `letI`
-    letI : SubtractionMonoid (even (Q' Q)) := AddGroup.toSubtractionMonoid
     simp only [involute_ι, Subalgebra.coe_neg, toEven_ι, reverse.map_mul, reverse_v, reverse_e0,
       reverse_ι, neg_e0_mul_v, map_neg]
   | mul x y hx hy => simp only [map_mul, Subalgebra.coe_mul, reverse.map_mul, hx, hy]
@@ -225,9 +223,6 @@ theorem coe_toEven_reverse_involute (x : CliffordAlgebra Q) :
 def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     CliffordAlgebra.even Q →ₐ[R] CliffordAlgebra.even Q' :=
   even.lift Q <|
-    -- Porting note: added `letI`s
-    letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _
-    letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg
     { bilin := -(even.ι Q' :).bilin
       contract := fun m => by
         simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, map_neg, neg_neg]
