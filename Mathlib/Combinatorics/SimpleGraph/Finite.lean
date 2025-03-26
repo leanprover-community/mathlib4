@@ -218,10 +218,8 @@ lemma one_lt_degree_iff : 1 < G.degree v ↔ ∃ x₁ x₂, G.Adj v x₁ ∧ G.A
   simp_rw [degree, one_lt_card_iff, mem_neighborFinset]
 
 lemma exists_adj_ne_of_one_lt_degree (h : 1 < G.degree v) (w : V) : ∃ x, G.Adj v x ∧ x ≠ w := by
-  obtain ⟨x, y, hx, hy, h⟩ := (G.one_lt_degree_iff _).1  h
-  by_cases h' : x = w
-  · exact ⟨y, hy, (h' ▸ h).symm⟩
-  · exact ⟨x, hx, h'⟩
+  simp_rw [← mem_neighborFinset]
+  exact exists_ne_of_one_lt_card h _
 
 lemma two_lt_degree_iff : 2 < G.degree v ↔ ∃ x₁ x₂ x₃, G.Adj v x₁ ∧ G.Adj v x₂ ∧ G.Adj v x₃ ∧
     x₁ ≠ x₂ ∧ x₁ ≠ x₃ ∧ x₂ ≠ x₃ := by
@@ -229,9 +227,8 @@ lemma two_lt_degree_iff : 2 < G.degree v ↔ ∃ x₁ x₂ x₃, G.Adj v x₁ �
 
 lemma exists_adj_ne_of_two_lt_degree (h : 2 < G.degree v) (u w : V) :
     ∃ x, G.Adj v x ∧ x ≠ u ∧ x ≠ w := by
-  obtain ⟨a, b, c, ha, hb, hc, hab, hac, hbc⟩ := (G.two_lt_degree_iff _).1  h
-  by_cases haw : a = w <;>  by_cases hbw : b = w <;> by_cases hcw : c = w <;>
-  by_cases haw : a = u <;>  by_cases hbw : b = u <;> by_cases hcw : c = u <;> aesop
+  simp_rw [← mem_neighborFinset]
+  exact exists_ne_of_two_lt_card h _ _
 
 theorem degree_pos_iff_mem_support : 0 < G.degree v ↔ v ∈ G.support := by
   rw [G.degree_pos_iff_exists_adj v, mem_support]
