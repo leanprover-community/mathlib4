@@ -79,7 +79,7 @@ lemma Ici_union_Ici_eq (hT : ∀ p ∈ T, InfPrime p) (a b : α) :
     (T ↓∩ Ici a) ∪ (T ↓∩ Ici b) = T ↓∩ Ici (a ⊓ b) := by
   ext p
   constructor <;> intro h
-  · cases' h with h1 h3
+  · rcases h with (h1 | h3)
     · exact inf_le_of_left_le h1
     · exact inf_le_of_right_le h3
   · exact (hT p p.2).2 h
@@ -104,7 +104,7 @@ lemma upperClosureFinite_eq (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
     symm
     by_contra hf
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
-    cases' hf with x hx
+    obtain ⟨x, hx⟩ := hf
     exact (hT x (Subtype.coe_prop x)).1 (isMax_iff_eq_top.mpr hx)
   · simp only [coe_insert, mem_insert_iff, mem_coe, iUnion_iUnion_eq_or_left, Set.preimage_union,
       preimage_iUnion, inf_insert, id_eq, ← (Ici_union_Ici_eq hT), ← I4]
@@ -128,14 +128,14 @@ lemma relativeLowerIsTopologicalBasis (hT : ∀ p ∈ T, InfPrime p) :
   ext R
   simp only [preimage_compl, mem_setOf_eq, IsLower.lowerBasis, mem_image, exists_exists_and_eq_and]
   constructor <;> intro ha
-  · cases' ha with a ha'
+  · obtain ⟨a, ha'⟩ :=  ha
     use {a}
     rw [← (Function.Injective.preimage_image Subtype.val_injective R), ← ha']
     simp only [finite_singleton, upperClosure_singleton, UpperSet.coe_Ici, image_val_compl,
       Subtype.image_preimage_coe, diff_self_inter, preimage_diff, Subtype.coe_preimage_self,
       true_and]
     exact compl_eq_univ_diff (Subtype.val ⁻¹' Ici a)
-  · cases' ha with F hF
+  · obtain ⟨F, hF⟩ := ha
     lift F to Finset α using hF.1
     use Finset.inf F id
     rw [← (upperClosureFinite_eq hT), ← hF.2]
@@ -183,7 +183,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
     rw [← sUnion_Ici_Compl_eq,
       IsTopologicalBasis.open_eq_sUnion' (relativeLowerIsTopologicalBasis hT) h]
     aesop
-  · cases' h with a ha
+  · obtain ⟨a, ha⟩ := h
     use (Ici a)ᶜ
     exact ⟨isOpen_compl_iff.mpr isClosed_Ici, ha.symm⟩
 
@@ -192,7 +192,7 @@ lemma isOpen_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p
 lemma isClosed_iff [TopologicalSpace α] [IsLower α] [DecidableEq α] (hT : ∀ p ∈ T, InfPrime p)
     (S : Set T) : IsClosed S ↔ ∃ (a : α), S = T ↓∩ Ici a := by
   rw [← isOpen_compl_iff, (isOpen_iff hT)]
-  constructor <;> (intro h; cases' h with a ha; use a)
+  constructor <;> (intro h; obtain ⟨a, ha⟩ := h; use a)
   · exact compl_inj_iff.mp ha
   · exact compl_inj_iff.mpr ha
 
@@ -233,7 +233,7 @@ def gi (hG : OrderGenerate T) : GaloisInsertion (α := Set T) (β := αᵒᵈ)
     (fun a => T ↓∩ Ici (OrderDual.ofDual a)) :=
   gc.toGaloisInsertion fun a ↦ (by
     rw [OrderDual.le_toDual]
-    cases' hG a with S hS
+    obtain ⟨S, hS⟩ := hG a
     exact le_of_le_of_eq (sInf_le_sInf (image_val_mono (fun c hcS => mem_preimage.mpr (mem_Ici.mpr
       (by rw [hS]; exact CompleteSemilatticeInf.sInf_le _ _ (mem_image_of_mem Subtype.val hcS))))))
       (hS.symm))
@@ -246,7 +246,7 @@ lemma kernel_hull_eq (hG : OrderGenerate T) (a : α) : sInf (T ↓∩ Ici a : Se
 lemma gc_closureOperator_of_isClosed [TopologicalSpace α] [IsLower α] [DecidableEq α]
     (hT : ∀ p ∈ T, InfPrime p) (hG : OrderGenerate T) {C : Set T} (h : IsClosed C) :
     gc.closureOperator C = C := by
-  cases' ((isClosed_iff hT C).mp h) with a ha
+  obtain ⟨a, ha⟩ := ((isClosed_iff hT C).mp h)
   simp only [toDual_sInf, GaloisConnection.closureOperator_apply, ofDual_sSup]
   rw [← preimage_comp, ← OrderDual.toDual_symm_eq, Equiv.symm_comp_self, preimage_id_eq, id_eq, ha,
     (kernel_hull_eq hG)]
