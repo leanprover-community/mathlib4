@@ -148,7 +148,7 @@ lemma dropUntil_of_drop {u v x : α} {w : G.Walk u v} {n : ℕ}
 -- then cons (w.getVert n) (w.drop n) is a cycle containing vᵣ  and all its neighbors.
 /-- Given a walk that contains the set S, there is a first vertex of the walk in the
  set. -/
-lemma exists_getVert_last {u v y : α} {S : Set α} [DecidableEq α] (w : G.Walk u v) (hy : y ∈ S )
+lemma exists_getVert_first {u v y : α} {S : Set α} [DecidableEq α] (w : G.Walk u v) (hy : y ∈ S )
     (h : ∀ x, x ∈ S → x ∈ w.support) :
     ∃ n, w.getVert n ∈ S ∧ ∀ x, x ∈ S → x ∈ (w.drop n).support := by
   classical
@@ -271,8 +271,7 @@ lemma mem_dropUntil_find_of_mem_prop (hx : x ∈ p.support ∧ P x) :
   | inr h => exact List.mem_of_mem_tail h
 
 open Finset
-#check List.find?_isSome
-#check List.find?_eq_some_iff_append
+
 lemma IsPath.cons_takeUntil_isCycle  (hp : p.IsPath) (ha : G.Adj x u) (hx : x ∈ p.support)
     (hs : x ≠ p.snd) : ((p.takeUntil x hx).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.takeUntil _, fun hf ↦
@@ -282,6 +281,26 @@ lemma IsPath.cons_dropUntil_isCycle (hp : p.IsPath) (ha : G.Adj v x) (hx : x ∈
     (hs : x ≠ p.penultimate) : ((p.dropUntil x hx).cons ha).IsCycle :=
   cons_isCycle_iff _ ha|>.2 ⟨hp.dropUntil _, fun hf ↦ (fun hf ↦ hs
     <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_dropUntil_subset ..) (Sym2.eq_swap ▸ hf)⟩
+
+
+lemma mem_support_drop_le {m n : ℕ} (hn : m ≤ n) :
+    p.getVert n ∈ (p.drop m).support := by
+  have : (p.drop m).getVert (n - m) = p.getVert n := by
+    rw [getVert_drop]
+    congr!; omega
+  rw [← this]
+  exact getVert_mem_support _ _
+
+
+lemma penultimate_mem_support_drop_lt_length {n : ℕ} (hn : n < p.length) :
+    p.penultimate ∈ (p.drop n).support := mem_support_drop_le (by omega)
+
+
+lemma IsPath.cons_drop_isCycle {n : ℕ} (hp : p.IsPath) (ha : G.Adj v (p.getVert n))
+    (hs : p.getVert n ≠ p.penultimate) : ((p.drop n).cons ha).IsCycle :=
+  cons_isCycle_iff _ ha|>.2 ⟨hp.drop _, fun hf ↦ (fun hf ↦ hs
+    <| hp.eq_penultimate_of_end_mem_edge hf) <| (edges_drop_subset ..) (Sym2.eq_swap ▸ hf)⟩
+
 
 @[mk_iff IsMaximal.iff]
 structure IsMaximal {u v : α} (p : G.Walk u v) : Prop where

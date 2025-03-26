@@ -202,22 +202,16 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           (hbdd' _ <| hss _ <| start_mem_support ..).symm.le
         set p := (q.append v41).reverse with hpq
         have hp : p.IsPath := hq.reverse
-        let  S := {x | G.Adj vᵣ x ∧ x ≠ p.penultimate}
-        obtain ⟨y, hy⟩ : ∃ y, y ∈ S := G.exists_adj_ne_of_one_lt_degree vᵣ h1 p.penultimate
-        have hmaxp : ∀ x, G.Adj vᵣ x → x ∈ p.support := by
-          simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax
-        obtain ⟨n', hn'⟩ := exists_getVert_first p hy (fun x hx ↦ hmaxp x hx.1)
-        let c:= (p.drop n').cons (hn'.1.1)
-        have hn'lt : n' < p.length := by
-          by_contra!
-          exact G.loopless _ <| (p.getVert_of_length_le this) ▸ hn'.1.1
-        have hcym : ∀ x, G.Adj vᵣ x → x ∈ c.support := by
-          intro x hx; rw [support_cons]
-          by_cases hxpen : x = p.penultimate
-          · have := hxpen ▸ (penultimate_mem_support_drop_lt_length hn'lt)
-            exact List.mem_cons_of_mem _ this
-          · exact List.mem_cons_of_mem _ (hn'.2 _ ⟨hx, hxpen⟩)
-        have hcy : c.IsCycle := hp.cons_drop_isCycle hn'.1.1 hn'.1.2
+        have hcmp :=  IsCloseableMaxPath.mk' hp
+          (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
+        let c := ((p.dropUntil p.close find_mem_support).cons hcmp.isClosable.adj)
+        have hps : p.support = (q.append v41).support.reverse := by rw [support_reverse]
+        have ⟨hcy, hcym⟩ := IsMaxCycle.dropUntil_of_isClosableMaxPath <| IsCloseableMaxPath.mk' hp
+          (by simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax) h1
+        change c.IsCycle at hcy
+        change c.IsMaximal at hcym
+        rw [IsMaximal.iff] at hcym
+        -- the vertices of `c` are a proper subset of `s`
         have hsub : c.support.toFinset ⊂ s := by
           apply Finset.ssubset_of_subset_of_ssubset _ hssf
           intro y hy
@@ -226,7 +220,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           cases hy with
           | head as => exact start_mem_support ..
           | tail b hy =>
-            have := (support_drop_subset _ _) hy
+            have := (support_dropUntil_subset _ _) hy
             rw [support_reverse] at this
             rwa [List.mem_reverse] at this
         -- `c` has vertices`
@@ -242,7 +236,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           apply lt_of_lt_of_le _ hn
           rw [Nat.sub_lt_iff_lt_add (card_le_card hsub.1)]
           exact Nat.lt_add_of_pos_left hnemp
-        -- Two subcases either `c` has a neighbor in `s \ c` or not
+         -- Two subcases either `c` has a neighbor in `s \ c` or not
         by_cases hnbc : ∃ x, x ∈ c.support ∧ ∃ y, y ∈ s \ c.support.toFinset ∧ G.Adj x y
         · obtain ⟨x, hx, y, hy, had⟩ := hnbc
           --`x ∈ c` has a neighbor `y ∈ s \ c` (but `vᵣ ∈ c` has no neighbors in `s \ c`)
