@@ -361,8 +361,8 @@ theorem submartingale_of_setIntegral_le_succ [IsFiniteMeasure μ] {f : ℕ → �
     Submartingale f 𝒢 μ := by
   refine submartingale_of_setIntegral_le hadp hint fun i j hij s hs => ?_
   induction hij with
-  | zero => exact le_rfl
-  | succ k hk₁ => exact le_trans hk₂ (hf k s (𝒢.mono hk₁ _ hs))
+  | refl => exact le_rfl
+  | @step k hk₁ hk₂ => exact le_trans hk₂ (hf k s (𝒢.mono hk₁ _ hs))
 
 theorem supermartingale_of_setIntegral_succ_le [IsFiniteMeasure μ] {f : ℕ → Ω → ℝ}
     (hadp : Adapted 𝒢 f) (hint : ∀ i, Integrable (f i) μ)
