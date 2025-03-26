@@ -240,6 +240,7 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
 
 -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
 -- simp can't match the LHS.
+-- It seems the side condition `hg` is not applied by `simpNF`.
 @[simp, nolint simpNF]
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
