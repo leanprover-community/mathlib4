@@ -815,15 +815,14 @@ where `vᵢ` has degree `dvᵢ`.
 If `f : A` has degree `d`, then `𝒜_(f)` is generated (as a module) over `𝒜₀` by
 elements of the form `(∏ i, vᵢ ^ aᵢ) / fᵃ` such that `∑ aᵢ • dvᵢ = a • d`.
 -/
-theorem Away.span_mk_prod_pow_eq_top (f : A) (d : ι) (hf : f ∈ 𝒜 d)
-    (ι' : Type*) [Fintype ι'] (v : ι' → A)
+theorem Away.span_mk_prod_pow_eq_top {f : A} {d : ι} (hf : f ∈ 𝒜 d)
+    {ι' : Type*} [Fintype ι'] (v : ι' → A)
     (hx : Algebra.adjoin (𝒜 0) (Set.range v) = ⊤) (dv : ι' → ι) (hxd : ∀ i, v i ∈ 𝒜 (dv i)) :
     Submodule.span (𝒜 0) { Away.mk 𝒜 hf a (∏ i, v i ^ ai i)
       (hai ▸ SetLike.prod_pow_mem_graded _ _ _ _ fun i _ ↦ hxd i) |
         (a : ℕ) (ai : ι' → ℕ) (hai : ∑ i, ai i • dv i = a • d) } = ⊤ := by
   by_cases HH : Subsingleton (HomogeneousLocalization.Away 𝒜 f)
   · exact Subsingleton.elim _ _
-  classical
   rw [← top_le_iff]
   rintro x -
   obtain ⟨⟨n, ⟨a, ha⟩, ⟨b, hb'⟩, ⟨j, (rfl : _ = b)⟩⟩, rfl⟩ := mk_surjective x
@@ -870,8 +869,8 @@ theorem Away.span_mk_prod_pow_eq_top (f : A) (d : ι) (hf : f ∈ 𝒜 d)
 variable {𝒜 : ℕ → Submodule R A} [GradedAlgebra 𝒜] in
 /-- This is strictly weaker than `Away.adjoin_mk_prod_pow_eq_top`. -/
 private
-theorem Away.adjoin_mk_prod_pow_eq_top_of_pos (f : A) (d : ℕ) (hf : f ∈ 𝒜 d)
-    (ι' : Type*) [Fintype ι'] (v : ι' → A)
+theorem Away.adjoin_mk_prod_pow_eq_top_of_pos {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
+    {ι' : Type*} [Fintype ι'] (v : ι' → A)
     (hx : Algebra.adjoin (𝒜 0) (Set.range v) = ⊤) (dv : ι' → ℕ)
     (hxd : ∀ i, v i ∈ 𝒜 (dv i)) (hxd' : ∀ i, 0 < dv i) :
     Algebra.adjoin (𝒜 0) { Away.mk 𝒜 hf a (∏ i, v i ^ ai i)
@@ -879,8 +878,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top_of_pos (f : A) (d : ℕ) (hf : f ∈ 𝒜
         (a : ℕ) (ai : ι' → ℕ) (hai : ∑ i, ai i • dv i = a • d) (_ : ∀ i, ai i ≤ d) } = ⊤ := by
   rw [← top_le_iff]
   show ⊤ ≤ (Algebra.adjoin (𝒜 0) _).toSubmodule
-  rw [← HomogeneousLocalization.Away.span_mk_prod_pow_eq_top f d hf ι' v hx dv hxd,
-    Submodule.span_le]
+  rw [← HomogeneousLocalization.Away.span_mk_prod_pow_eq_top hf v hx dv hxd, Submodule.span_le]
   rintro _ ⟨a, ai, hai, rfl⟩
   have H₀ : (a - ∑ i : ι', dv i * (ai i / d)) • d = ∑ k : ι', (ai k % d) • dv k := by
     rw [smul_eq_mul, tsub_mul, ← smul_eq_mul, ← hai]
@@ -938,7 +936,7 @@ where `vᵢ` has degree `dvᵢ`.
 If `f : A` has degree `d`, then `𝒜_(f)` is generated (as an algebra) over `𝒜₀` by
 elements of the form `(∏ i, vᵢ ^ aᵢ) / fᵃ` such that `∑ aᵢ • dvᵢ = a • d` and `∀ i, aᵢ ≤ d`.
 -/
-theorem Away.adjoin_mk_prod_pow_eq_top (f : A) (d : ℕ) (hf : f ∈ 𝒜 d)
+theorem Away.adjoin_mk_prod_pow_eq_top {f : A} {d : ℕ} (hf : f ∈ 𝒜 d)
     (ι' : Type*) [Fintype ι'] (v : ι' → A)
     (hx : Algebra.adjoin (𝒜 0) (Set.range v) = ⊤) (dv : ι' → ℕ) (hxd : ∀ i, v i ∈ 𝒜 (dv i)) :
     Algebra.adjoin (𝒜 0) { Away.mk 𝒜 hf a (∏ i, v i ^ ai i)
@@ -946,7 +944,7 @@ theorem Away.adjoin_mk_prod_pow_eq_top (f : A) (d : ℕ) (hf : f ∈ 𝒜 d)
         (a : ℕ) (ai : ι' → ℕ) (hai : ∑ i, ai i • dv i = a • d) (_ : ∀ i, ai i ≤ d) } = ⊤ := by
   classical
   let s := Finset.univ.filter (0 < dv ·)
-  have := Away.adjoin_mk_prod_pow_eq_top_of_pos f d hf s (v ∘ Subtype.val) ?_
+  have := Away.adjoin_mk_prod_pow_eq_top_of_pos hf (ι' := s) (v ∘ Subtype.val) ?_
     (dv ∘ Subtype.val) (fun _ ↦ hxd _) (by simp [s])
   swap
   · rw [← top_le_iff, ← hx, Algebra.adjoin_le_iff, Set.range_subset_iff]
@@ -971,7 +969,7 @@ lemma Away.finiteType (f : A) (d : ℕ) (hf : f ∈ 𝒜 d) :
   obtain ⟨s, hs, hs'⟩ := GradedAlgebra.exists_finset_adjoin_eq_top_and_homogeneous_ne_zero 𝒜
   choose dx hdx hxd using Subtype.forall'.mp hs'
   simp_rw [Subalgebra.fg_def, ← top_le_iff,
-    ← Away.adjoin_mk_prod_pow_eq_top f d hf s Subtype.val (by simpa) dx hxd]
+    ← Away.adjoin_mk_prod_pow_eq_top hf (ι' := s) Subtype.val (by simpa) dx hxd]
   cases' d.eq_zero_or_pos with hd hd
   · let f' := Away.mk 𝒜 hf 1 1 (by simp [hd, GradedOne.one_mem])
     refine ⟨{f'}, Set.finite_singleton f', ?_⟩
