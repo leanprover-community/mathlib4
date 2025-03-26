@@ -17,7 +17,7 @@ lemma degreeOn.mono {s t : Finset α} {a : α} (h : s ⊆ t) : G.degreeOn s a �
     card_le_card fun _ hv ↦ mem_inter.2 ⟨(mem_inter.1 hv).1, h (mem_inter.1 hv).2⟩
 
 lemma degreeOn_erase (s : Finset α) (a : α) : G.degreeOn (s.erase a) a = G.degreeOn s a := by
-  apply le_antisymm (degreeOn.mono <| erase_subset _ _)
+  apply le_antisymm (degreeOn.mono <| erase_subset ..)
   apply card_le_card
   intro v hv
   rw [mem_inter, mem_neighborFinset] at *

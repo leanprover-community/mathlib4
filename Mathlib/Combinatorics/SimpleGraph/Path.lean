@@ -970,13 +970,8 @@ lemma IsCycle.mem_tail_tail_support_iff {u v} {c : G.Walk u u} (hc : c.IsCycle) 
     v ∈ c.tail.tail.support ↔ v ≠ c.snd ∧ v ∈ c.support := by
   rw [← cons_support_tail _ hc.not_nil, ← cons_support_tail _ hc.tail_not_nil]
   constructor <;> intro h
-  · exact ⟨fun hf ↦  hc.snd_not_mem_tail_tail_support (hf ▸ h), by simp [h]⟩
-  · cases h.2 with
-    | head => simp
-    | tail _ h =>
-      cases h with
-      | head _ => exact absurd rfl h.1
-      | tail _ h => exact h
+  · exact ⟨fun hf ↦ hc.snd_not_mem_tail_tail_support (hf ▸ h), by simp [h]⟩
+  · cases h.2 <;> aesop
 
 lemma Brooks_aux' [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
     (hd : d ∈ c.darts) :

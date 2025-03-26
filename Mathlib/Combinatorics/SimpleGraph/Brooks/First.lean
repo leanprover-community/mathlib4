@@ -167,7 +167,6 @@ lemma exists_getVert_first (p : G.Walk u v) (hy : y ∈ S ) (h : ∀ x, x ∈ S 
   · rw [getVert_takeUntil _ (hl.le.trans hn1)]
     rwa [← this] at hx1
 
-
 lemma mem_support_drop_le {m n : ℕ} (p : G.Walk u v) (hn : m ≤ n) :
     p.getVert n ∈ (p.drop m).support := by
   have : (p.drop m).getVert (n - m) = p.getVert n := by
