@@ -577,9 +577,7 @@ noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit 
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
     (IsLimit.whiskerEquivalence hc.op (Discrete.opposite α).symm))
     (Cones.ext (Iso.refl _) (fun ⟨a⟩ ↦ ?_))
-  dsimp
-  erw [Category.id_comp, Category.comp_id]
-  rfl
+  simp [e, Cofan.inj]
 
 /--
 The canonical isomorphism from the opposite of an abstract coproduct to the corresponding product

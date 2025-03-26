@@ -213,7 +213,7 @@
   "Mathlib.Tactic.Widget.SelectPanelUtils":
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
-  "Mathlib.Tactic.Use": ["Batteries.Logic"],
+  "Mathlib.Tactic.Use": ["Batteries.Logic", "Mathlib.Tactic.WithoutCDot"],
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TautoSet":
   ["Mathlib.Data.Set.Disjoint", "Mathlib.Data.Set.SymmDiff"],
@@ -291,6 +291,7 @@
    "Mathlib.Tactic.ProxyType"],
   "Mathlib.Tactic.ContinuousFunctionalCalculus": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Tactic.Continuity": ["Mathlib.Tactic.Continuity.Init"],
+  "Mathlib.Tactic.CongrM": ["Mathlib.Tactic.WithoutCDot"],
   "Mathlib.Tactic.CongrExclamation": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Choose": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Tactic.CategoryTheory.ToApp":

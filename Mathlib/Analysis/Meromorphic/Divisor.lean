@@ -5,7 +5,7 @@ Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Order.WithTop.Untop0
 import Mathlib.Analysis.Meromorphic.Order
-import Mathlib.Analysis.Meromorphic.Divisor.Basic
+import Mathlib.Data.LocallyFinsupp
 
 /-!
 # The Divisor of a meromorphic function
