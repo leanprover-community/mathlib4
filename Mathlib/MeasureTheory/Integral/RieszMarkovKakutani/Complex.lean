@@ -42,11 +42,23 @@ theorem uniqueness : True := sorry
 -- It is easy to see that the difference of two regular complex Borel measures on `X` is regular.
 
 
+section ComplexRMK
+
+open ZeroAtInfty
+
+variable (X : Type*) [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
+  (Φ : C₀(X, ℂ) →L[ℂ] ℂ)
+
+#check ‖Φ‖
+-- #check (norm : C(ℂ, ℝ))
+
 /-- **Theorem**
-Let `Φ` be a linear functional on `C_0(X, ℂ)`. There exists a positive linear functional
-`Λ` on `C_c(X, ℝ)` such that, `∀ f : C_c(X, ℝ)`, `|Φ f| ≤ Λ |f|` and `Λ |f| ≤ ‖f‖` (`‖⬝‖` denotes
+Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. There exists a positive linear functional
+`Λ` on `C₀(X, ℝ)` such that, `∀ f : C₀(X, ℂ)`, `|Φ f| ≤ Λ |f|` and `Λ |f| ≤ ‖f‖` (`‖⬝‖` denotes
 the supremum norm). -/
 theorem exists_pos_lin_func : True := sorry
+-- ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C₀(X, ℂ)),
+--  ‖Φ f‖ ≤ Λ (norm ∘ f) ∧ Λ (norm ∘ f) ≤ ‖f‖ := sorry
 
 -- **Proof** [Rudin 87, Theorem 6.19]
 -- If `f ∈` [class of all nonnegative real members of `C_c(X, ℝ)`],
@@ -90,8 +102,8 @@ theorem exists_pos_lin_func : True := sorry
 
 
 /-- **Theorem**
-Let `Φ` be a linear functional on `C_0(X, ℂ)`. Then (1) there exists a complex Borel measure
-`μ` such that, `∀ f : C_0(X, ℂ)`, `Φ f = ∫ x, f x ∂μ`, (2) `‖Φ‖ = |μ|(X)`. -/
+Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. Then (1) there exists a complex Borel measure
+`μ` such that, `∀ f : C₀(X, ℂ)`, `Φ f = ∫ x, f x ∂μ`, (2) `‖Φ‖ = |μ|(X)`. -/
 theorem Complex.integral_rieszMeasure : True := sorry
 
 -- **Proof** [Rudin 87, Theorem 6.19]
@@ -121,3 +133,5 @@ theorem Complex.integral_rieszMeasure : True := sorry
 -- These facts are compatible only if `λ(X) = 1` and `|g| = 1` a.e. `[λ]`.
 -- Thus `d|μ| = |g| dλ = dλ`, by *Theorem 6.13*,
 -- and `|μ|(X) = λ(X) = 1 = ‖Φ‖`,
+
+end ComplexRMK
