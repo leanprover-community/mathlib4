@@ -21,9 +21,8 @@ A C⋆-ring is a normed star group that is also a ring and that verifies the str
 condition `‖x‖^2 ≤ ‖x⋆ * x‖` for all `x` (which actually implies equality). If a C⋆-ring is also
 a star algebra, then it is a C⋆-algebra.
 
-To get a C⋆-algebra `E` over field `𝕜`, use
-`[NormedField 𝕜] [StarRing 𝕜] [NormedRing E] [StarRing E] [CStarRing E]
- [NormedAlgebra 𝕜 E] [StarModule 𝕜 E]`.
+Note that the type classes corresponding to C⋆-algebras are defined in
+`Mathlib/Analysis/CStarAlgebra/Classes`.
 
 ## TODO
 
@@ -38,17 +37,17 @@ local postfix:max "⋆" => star
 
 /-- A normed star group is a normed group with a compatible `star` which is isometric. -/
 class NormedStarGroup (E : Type*) [SeminormedAddCommGroup E] [StarAddMonoid E] : Prop where
-  norm_star : ∀ x : E, ‖x⋆‖ = ‖x‖
-
-export NormedStarGroup (norm_star)
-
-attribute [simp] norm_star
+  norm_star_le : ∀ x : E, ‖x⋆‖ ≤ ‖x‖
 
 variable {𝕜 E α : Type*}
 
 section NormedStarGroup
 
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
+
+@[simp]
+lemma norm_star (x : E) : ‖x⋆‖ = ‖x‖ :=
+  le_antisymm (NormedStarGroup.norm_star_le x) (by simpa using NormedStarGroup.norm_star_le x⋆)
 
 @[simp]
 theorem nnnorm_star (x : E) : ‖star x‖₊ = ‖x‖₊ :=
@@ -86,23 +85,27 @@ namespace CStarRing
 
 section NonUnital
 
+lemma of_le_norm_mul_star_self
+    [NonUnitalNormedRing E] [StarRing E]
+    (h : ∀ x : E, ‖x‖ * ‖x‖ ≤ ‖x * x⋆‖) : CStarRing E :=
+  have : NormedStarGroup E :=
+    { norm_star_le x := by
+        obtain (hx | hx) := eq_zero_or_norm_pos x⋆
+        · simp [hx]
+        · refine le_of_mul_le_mul_right ?_ hx
+          simpa [sq, mul_comm ‖x⋆‖] using h x⋆ |>.trans <| norm_mul_le _ _ }
+  ⟨star_involutive.surjective.forall.mpr <| by simpa⟩
+
 variable [NonUnitalNormedRing E] [StarRing E] [CStarRing E]
 
 -- see Note [lower instance priority]
 /-- In a C*-ring, star preserves the norm. -/
-instance (priority := 100) to_normedStarGroup : NormedStarGroup E :=
-  ⟨by
-    intro x
-    by_cases htriv : x = 0
-    · simp only [htriv, star_zero]
-    · have hnt : 0 < ‖x‖ := norm_pos_iff.mpr htriv
-      have h₁ : ∀ z : E, ‖z⋆ * z‖ ≤ ‖z⋆‖ * ‖z‖ := fun z => norm_mul_le z⋆ z
-      have h₂ : ∀ z : E, 0 < ‖z‖ → ‖z‖ ≤ ‖z⋆‖ := fun z hz => by
-        rw [← mul_le_mul_right hz]; exact (CStarRing.norm_mul_self_le z).trans (h₁ z)
-      have h₃ : ‖x⋆‖ ≤ ‖x‖ := by
-        conv_rhs => rw [← star_star x]
-        exact h₂ x⋆ (gt_of_ge_of_gt (h₂ x hnt) hnt)
-      exact le_antisymm h₃ (h₂ x hnt)⟩
+instance (priority := 100) to_normedStarGroup : NormedStarGroup E where
+  norm_star_le x := by
+    obtain (hx | hx) := eq_zero_or_norm_pos x⋆
+    · simp [hx]
+    · refine le_of_mul_le_mul_right ?_ hx
+      simpa using norm_mul_self_le (x := x⋆) |>.trans <| norm_mul_le _ _
 
 theorem norm_star_mul_self {x : E} : ‖x⋆ * x‖ = ‖x‖ * ‖x‖ :=
   le_antisymm ((norm_mul_le _ _).trans (by rw [norm_star])) (CStarRing.norm_mul_self_le x)
