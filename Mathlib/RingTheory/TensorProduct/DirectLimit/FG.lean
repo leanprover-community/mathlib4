@@ -83,24 +83,23 @@ section Semiring
 
 universe u v v' w
 
-variable {R : Type u} [Semiring R] {M : Type v} [AddCommMonoid M] [Module R M]
+variable {R : Type u} [Ring R] {M : Type v} [AddCommGroup M] [Module R M]
 
 open scoped CategoryTheory
 
 example : Category {P : Submodule R M // P.FG } := by
-  infer_instance
+ infer_instance
 
 variable (R M) in
 /-- The forgetful functor from the category of finitely generated submodules
-to the category of submodules -/
-def F : {P : Submodule R M // P.FG } ⥤ Submodule R M where
-  obj P := P.val
-  map h := h
+to the category of modules -/
+def F : {P : Submodule R M // P.FG } ⥤  ModuleCat R where
+  obj P := ModuleCat.of R P.val
+  map h := ModuleCat.ofHom (inclusion (leOfHom h))
 
 example (P : { P : Submodule R M // P.FG }) : P.val →ₗ[R] (⊤ : Submodule R M) :=
   inclusion le_top
 
-/-
 /-- The directed system of finitely generated submodules of `M` -/
 theorem DirectedSystem.Submodule_fg :
     DirectedSystem (ι := {P : Submodule R M // P.FG}) (F := fun P ↦ P.val)
@@ -121,8 +120,6 @@ noncomputable def Submodules_fg_equiv [DecidableEq {P : Submodule R M // P.FG}] 
           ⟨Submodule.span R {x}, Submodule.fg_span_singleton x⟩
           ⟨x, Submodule.mem_span_singleton_self x⟩,
          by simp⟩⟩
--/
-
 end Semiring
 
 section TensorProducts
@@ -136,7 +133,6 @@ variable (R : Type u) (M N : Type v)
   [AddCommMonoid M] [Module R M]
   [AddCommMonoid N] [Module R N]
 
-/-
 /-- Given a directed system of `R`-modules, tensor it on the right gives a directed system -/
 theorem DirectedSystem.rTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     [∀ i, AddCommMonoid (F i)] [∀ i, Module R (F i)] {f : ⦃i j : ι⦄ → i ≤ j → F i →ₗ[R] F j}
@@ -152,35 +148,38 @@ theorem DirectedSystem.rTensor {ι : Type*} [Preorder ι] {F : ι → Type*}
     apply DFunLike.congr_fun
     ext p n
     simp [D.map_map]
--/
+
+namespace ModuleCat
 
 open CategoryTheory LinearMap ModuleCat
+
 
 -- set_option pp.universes true
 
 variable {R : Type u} [CommRing R]
 
 /-- right tensor product with a module gives a functor -/
-noncomputable def ModuleCat.rTensor (N : ModuleCat R) :
+noncomputable def rTensor (N : ModuleCat R) :
     ModuleCat R ⥤  ModuleCat R where
   obj M := ModuleCat.of R (M ⊗[R] N)
   map {M P} h := ModuleCat.ofHom (LinearMap.rTensor N h.hom)
 
 /-- left tensor product with a module gives a functor -/
-noncomputable def ModuleCat.lTensor (N : ModuleCat R) :
+noncomputable def lTensor (N : ModuleCat R) :
     ModuleCat R ⥤  ModuleCat R where
   obj M := ModuleCat.of R (N ⊗[R] M)
   map {M P} h := ModuleCat.ofHom (LinearMap.lTensor N h.hom)
 
 /-- hom functor -/
-noncomputable def ModuleCat.lHom (N : ModuleCat R) :
+noncomputable def lHom (N : ModuleCat R) :
     ModuleCat R ⥤  ModuleCat R where
   obj P := of R (N →ₗ[R] P)
   map {P Q} h := ofHom (compRight h.hom)
 
+
 /-- the right tensor product / left hom adjunction :
   Hom (M ⊗ N, P) = Hom (M, Hom (N, P)) -/
-noncomputable def ModuleCat.rTensor_lHom_adjunction (N : ModuleCat R) :
+noncomputable def rTensor_lHom_adjunction (N : ModuleCat R) :
     N.rTensor ⊣ N.lHom where
   unit := {
     app M := ofHom (curry LinearMap.id)
@@ -191,129 +190,207 @@ noncomputable def ModuleCat.rTensor_lHom_adjunction (N : ModuleCat R) :
   left_triangle_components M := hom_ext (TensorProduct.ext (by ext; rfl))
   right_triangle_components M := hom_ext (LinearMap.ext (fun _ ↦ rfl))
 
-#check ModuleCat.rTensor_lHom_adjunction
-
 -- Universes don't match because `N.rTensor` and `N.lHom` both increase universes
 example (N : ModuleCat R) :
     Functor.IsLeftAdjoint (N.rTensor : ModuleCat R ⥤ ModuleCat R) where
   exists_rightAdjoint := ⟨N.lHom, ⟨N.rTensor_lHom_adjunction⟩⟩
 
-instance (N : ModuleCat.{v} R) :
+instance instIsLeftAdjointRTensor (N : ModuleCat.{v} R) :
     Functor.IsLeftAdjoint (N.rTensor : ModuleCat.{max v w} R ⥤ ModuleCat.{max v w} R) where
   exists_rightAdjoint := ⟨N.lHom, ⟨N.rTensor_lHom_adjunction⟩⟩
 
-example (N : ModuleCat R) :
-    Functor.IsLeftAdjoint (N.rTensor : ModuleCat.{w} R ⥤ ModuleCat.{w} R) :=
+example (N : ModuleCat.{v} R) :
+    Functor.IsLeftAdjoint (N.rTensor : ModuleCat.{v} R ⥤ ModuleCat R) :=
   inferInstance
 
--- this one is not found by the previous instance (can't apply with `w = max v' w` ?)
+/- this one is not found automatically by `inferInstance`
+  but one can apply it explicitly `w = max v' w`  -/
 example (N : ModuleCat.{v} R) : Functor.IsLeftAdjoint
-    (N.rTensor : ModuleCat.{max v v' w} R ⥤ ModuleCat.{max v v' w} R) := inferInstance
+    (N.rTensor : ModuleCat.{max v v' w} R ⥤ ModuleCat.{max v v' w} R) := by
+  -- inferInstance
+  exact instIsLeftAdjointRTensor.{u, v, max v' w} (R := R) N
 
--- but doing things explicitly works
-example (N : ModuleCat.{v} R) : Functor.IsLeftAdjoint
-    (N.rTensor : ModuleCat.{max v v' w} R ⥤ ModuleCat.{max v v' w} R) where
-  exists_rightAdjoint := by
-    use (N.lHom : ModuleCat.{max v v' w} R ⥤ ModuleCat.{max v v' w} R)
-    apply Nonempty.intro
-    exact { -- `exact N.rTensor_lHom_adjunction` does not work
-      unit := {
-        app M := ofHom (curry LinearMap.id)
-        naturality {M P} f := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-      counit := {
-        app M := ofHom (lift LinearMap.id)
-        naturality {M P} f := hom_ext (TensorProduct.ext (by ext; rfl)) }
-      left_triangle_components M := hom_ext (TensorProduct.ext (by ext; rfl))
-      right_triangle_components M := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-
--- inferIinstance doesn't work
+-- variant
 example (N : ModuleCat.{v} R) : Functor.IsLeftAdjoint
     (N.rTensor : ModuleCat.{max u v w} R ⥤ ModuleCat.{max u v w} R) :=
-  inferInstance
+  instIsLeftAdjointRTensor.{u, v, max u v w} (R := R) N
+  -- inferInstance
 
-def foo (N : ModuleCat.{v} R) : Functor.IsLeftAdjoint
-  (N.rTensor : ModuleCat.{max u v w} R ⥤ ModuleCat.{max u v w} R) where
-  exists_rightAdjoint := by
-    use (N.lHom : ModuleCat.{max u v w} R ⥤ ModuleCat.{max u v w} R)
-    apply Nonempty.intro
-    -- `exact N.rTensor_lHom_adjunction` does not work
-    exact {
-      unit := {
-        app M := ofHom (curry LinearMap.id)
-        naturality {M P} f := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-      counit := {
-        app M := ofHom (lift LinearMap.id)
-        naturality {M P} f := hom_ext (TensorProduct.ext (by ext; rfl)) }
-      left_triangle_components M := hom_ext (TensorProduct.ext (by ext; rfl))
-      right_triangle_components M := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-
-def bar (N : ModuleCat.{v} R) : Functor.IsLeftAdjoint
-  (N.rTensor : ModuleCat.{max v v' w} R ⥤ ModuleCat.{max v v' w} R) where
-  exists_rightAdjoint := by
-    use (N.lHom : ModuleCat.{max v v' w} R ⥤ ModuleCat.{max v v' w} R)
-    apply Nonempty.intro
-    -- `exact N.rTensor_lHom_adjunction` does not work
-    exact {
-      unit := {
-        app M := ofHom (curry LinearMap.id)
-        naturality {M P} f := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-      counit := {
-        app M := ofHom (lift LinearMap.id)
-        naturality {M P} f := hom_ext (TensorProduct.ext (by ext; rfl)) }
-      left_triangle_components M := hom_ext (TensorProduct.ext (by ext; rfl))
-      right_triangle_components M := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-
-example (N : ModuleCat.{v} R) : Functor.IsLeftAdjoint.{max v v' w} N.rTensor where
-  exists_rightAdjoint :=
-    ⟨N.lHom, ⟨ -- why is it impossible to add the adjunction?
-    { unit := {
-        app M := ofHom (curry LinearMap.id)
-        naturality {M P} f := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-      counit := {
-        app M := ofHom (lift LinearMap.id)
-        naturality {M P} f := hom_ext (TensorProduct.ext (by ext; rfl)) }
-      left_triangle_components M := hom_ext (TensorProduct.ext (by ext; rfl))
-      right_triangle_components M := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }⟩⟩
-
-example (N : ModuleCat.{v} R)
-    {C : Type w} [Category C] (K : C ⥤ ModuleCat.{max v w} R) :
-    PreservesColimit K N.rTensor := -- inferInstance
-  PreservesColimitsOfShape.preservesColimit.{u_1, w, max v w, max v w,
-      max (max u (v + 1)) (w + 1), max (max u (v + 1)) (w + 1)}
+example (N : ModuleCat.{v} R) {C : Type w} [Category C]
+    (K : C ⥤ ModuleCat.{max v w} R) :
+    PreservesColimit K N.rTensor := inferInstance
 
 example (N : ModuleCat.{v} R) :
     PreservesColimits (N.rTensor : ModuleCat.{max v w} R ⥤  ModuleCat.{max v w} R) :=
   inferInstance
 
-instance preservesColimit_rTensor (N : ModuleCat.{v} R)
-    {C : Type w} [Category C] (K : C ⥤ ModuleCat.{max v v' w} R) :
-    PreservesColimit K N.rTensor := by
-  have adj := N.rTensor_lHom_adjunction
-  have := adj.leftAdjoint_preservesColimits
-  have := bar N
-  apply (CategoryTheory.Functor.instPreservesColimitsOfShapeOfIsLeftAdjoint _).preservesColimit
+noncomputable def submoduleFGVal (M : ModuleCat R) :
+    {P : Submodule R M // P.FG} ⥤  Submodule R M where
+  obj P := P.val
+  map h := h
 
-example (M : Type*) [AddCommGroup M] [Module R M] (N : ModuleCat R)
-  (K : {P : Submodule R M // P.FG} ⥤ ModuleCat R) :
-      False := sorry
-/-
-  exists_rightAdjoint :=
-    ⟨N.lHom, ⟨ -- why is it impossible to add the adjunction?
-    { unit := {
-        app M := ofHom (curry LinearMap.id)
-        naturality {M P} f := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }
-      counit := {
-        app M := ofHom (lift LinearMap.id)
-        naturality {M P} f := hom_ext (TensorProduct.ext (by ext; rfl)) }
-      left_triangle_components M := hom_ext (TensorProduct.ext (by ext; rfl))
-      right_triangle_components M := hom_ext (LinearMap.ext (fun _ ↦ rfl)) }⟩⟩ -/
+noncomputable def submoduleFGVal_cocone (M : ModuleCat R) :
+    Cocone M.submoduleFGVal where
+  pt := ⊤
+  ι := {
+    app _ := LE.le.hom le_top
+    naturality {_ _} _ := rfl }
 
-example (N : ModuleCat.{v} R) :
-    CategoryTheory.Limits.PreservesColimitsOfSize.{max v v'} N.rTensor where
-  preservesColimitsOfShape {J} := {
-    preservesColimit {K} := by
-     have := preservesColimit_rTensor.{max v v'} N K
-     sorry }
+noncomputable def submoduleFGVal_colimit (M : ModuleCat R) :
+    IsColimit M.submoduleFGVal_cocone where
+  desc c := LE.le.hom (fun m _ ↦ leOfHom (c.ι.app ⟨_, fg_span_singleton m⟩)
+    ((span_singleton_le_iff_mem m _).mp fun ⦃x⦄ a ↦ a))
+
+def submodule_emb (M : ModuleCat R) :
+    Submodule R M ⥤ ModuleCat R where
+  obj P := of R P
+  map h := ofHom (inclusion (leOfHom h))
+
+def submodule_emb_cocone (M : ModuleCat R) : Cocone (submodule_emb M) where
+  pt := M
+  ι := {
+    app P := ofHom P.subtype
+    naturality {_ _} _ := rfl }
+
+theorem emb_aux {M : ModuleCat R} (c : Cocone M.submodule_emb) (m : M)
+    (P Q : Submodule R M) (hP : m ∈ P) (hQ : m ∈ Q) :
+    (c.ι.app P).hom ⟨m, hP⟩ = (c.ι.app Q).hom ⟨m, hQ⟩ := by
+  rw [← c.w (le_sup_left (a := P) (b := Q)).hom, ← c.w (le_sup_right (a := P) (b := Q)).hom]
+  rfl
+
+def submodule_emb_colimit (M : ModuleCat R) :
+    IsColimit M.submodule_emb_cocone where
+  desc c := ofHom {
+    toFun m := (c.ι.app (span R {m})).hom ⟨m, mem_span_singleton_self m⟩
+    map_add' m m' := by
+      simp only [Functor.const_obj_obj]
+      erw [emb_aux c m _ (span R {m, m'})
+        (mem_span_singleton_self m) (mem_span_pair.mpr ⟨1, 0, by simp⟩)]
+      erw [emb_aux c m' _ (span R {m, m'})
+        (mem_span_singleton_self m') (mem_span_pair.mpr ⟨0, 1, by simp⟩)]
+      erw [emb_aux c (m + m') _ (span R {m, m'})
+        (mem_span_singleton_self _) (mem_span_pair.mpr ⟨1, 1, by simp⟩)]
+      rw [← (c.ι.app _).hom.map_add]
+      congr
+    map_smul' r m := by
+      simp only [Functor.const_obj_obj, RingHom.id_apply]
+      erw [emb_aux c (r • m) _ (span R {m})
+        (mem_span_singleton_self _) (mem_span_singleton.mpr ⟨r, rfl⟩)]
+      erw [← (c.ι.app _).hom.map_smul]
+      congr }
+  fac c P := by
+    apply hom_ext
+    simp only [Functor.const_obj_obj, ModuleCat.hom_comp, hom_ofHom]
+    ext (m : P)
+    simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply]
+    have hmP : Submodule.span R {(m : M)} ≤ P := by simp
+    erw [← c.w hmP.hom, ModuleCat.comp_apply]
+  uniq c F hF := by ext; simp [← hF, ModuleCat.comp_apply]; rfl
+
+noncomputable def submoduleFGVal' (M : ModuleCat R) :
+    {P : Submodule R M // P.FG} ⥤ ModuleCat R :=
+  (submoduleFGVal M).comp M.submodule_emb
+
+noncomputable def submoduleFGValCat (M : ModuleCat R) :
+    {P : Submodule R M // P.FG} ⥤ ModuleCat R where
+  obj P := ModuleCat.of R P.val
+  map h := ModuleCat.ofHom (inclusion (leOfHom h))
+
+example (X Y : Type u) (f : X → Y) :
+      ULift.{max u v} X → ULift Y := ULift.map f
+
+
+variable {X Y Z : Type v} [AddCommGroup X] [AddCommGroup Y] [AddCommGroup Z]
+    [Module R X] [Module R Y] [Module R Z]
+
+def ULift.linearMap (f : X →ₗ[R] Y) : ULift.{max v w} X →ₗ[R] ULift.{max v w} Y :=
+  (ULift.moduleEquiv.symm.toLinearMap.comp f).comp ULift.moduleEquiv.toLinearMap
+
+def ULift.linearMap_id :
+    ULift.linearMap.{u, v, w} (LinearMap.id (R := R) (M := X)) = LinearMap.id := by
+  simp [ULift.linearMap]
+
+def ULift.linearMap_comp (f : X →ₗ[R] Y) (g : Y →ₗ[R] Z) :
+    ULift.linearMap.{u, v, w} (g ∘ₗf) = ULift.linearMap g ∘ₗ ULift.linearMap f := by
+  simp [ULift.linearMap]; rfl
+
+def ULift.linearMap_add (f : X →ₗ[R] Y) (g : X →ₗ[R] Y) :
+    ULift.linearMap.{u, v, w} (f + g) = ULift.linearMap f + ULift.linearMap g := by
+  simp [ULift.linearMap]; rfl
+
+noncomputable def submoduleFGValCat' (M : ModuleCat.{v} R) :
+    {P : Submodule R M // P.FG} ⥤ ModuleCat.{max v w} R where
+  obj P := ModuleCat.of R (ULift P.val) --
+  map h := ModuleCat.ofHom (ULift.linearMap  (inclusion (leOfHom h)))
+
+def submoduleFGValCat_cocone (M : ModuleCat R) :
+    Cocone M.submoduleFGValCat where
+  pt := M
+  ι := {
+    app P := ofHom P.val.subtype
+    naturality {_ _} _ := rfl }
+
+theorem aux {M : ModuleCat R} (c : Cocone M.submoduleFGValCat) (m : M)
+    (P Q : {P : Submodule R M // P.FG}) (hP : m ∈ P.val) (hQ : m ∈ Q.val) :
+    (c.ι.app P).hom ⟨m, hP⟩ = (c.ι.app Q).hom ⟨m, hQ⟩ := by
+  rw [← c.w (le_sup_left (a := P) (b := Q)).hom, ← c.w (le_sup_right (a := P) (b := Q)).hom]
+  rfl
+
+set_option maxHeartbeats 250000 in
+noncomputable def submoduleFGValCat_colimit (M : ModuleCat R) :
+    IsColimit M.submoduleFGValCat_cocone where
+  desc c := ofHom {
+    toFun m := (c.ι.app (⟨span R {m}, fg_span_singleton _⟩)).hom ⟨m, mem_span_singleton_self m⟩
+    map_add' m m' := by
+      have h : (span R {m, m'}).FG := fg_span (Set.toFinite {m, m'})
+      simp only [Functor.const_obj_obj]
+      erw [aux c m _ ⟨span R {m, m'}, h⟩
+        (mem_span_singleton_self m) (mem_span_pair.mpr ⟨1, 0, by simp⟩)]
+      erw [aux c m' _ ⟨span R {m, m'}, h⟩
+        (mem_span_singleton_self m') (mem_span_pair.mpr ⟨0, 1, by simp⟩)]
+      erw [aux c (m + m') _ ⟨span R {m, m'}, h⟩
+        (mem_span_singleton_self _) (mem_span_pair.mpr ⟨1, 1, by simp⟩)]
+      rw [← (c.ι.app _).hom.map_add]
+      congr
+    map_smul' r m := by
+      simp only [Functor.const_obj_obj, RingHom.id_apply]
+      erw [aux c (r • m) _ ⟨span R {m}, fg_span_singleton m⟩
+        (mem_span_singleton_self _) (mem_span_singleton.mpr ⟨r, rfl⟩)]
+      erw [← (c.ι.app _).hom.map_smul]
+      congr }
+  fac c P := by
+    apply hom_ext
+    simp only [Functor.const_obj_obj, ModuleCat.hom_comp, hom_ofHom]
+    ext (m : ↑P)
+    simp only [LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply]
+    have hmP : Submodule.span R {(m : M)} ≤ P := by simp
+    erw [← c.w hmP.hom, ModuleCat.comp_apply]
+  uniq c F hF := by
+    ext m
+    simp only [← hF, Functor.const_obj_obj, hom_ofHom, LinearMap.coe_mk, AddHom.coe_mk]
+    rfl
+
+noncomputable def submoduleFGVal_rTensor (M N : ModuleCat.{v} R) :=
+    M.submoduleFGValCat ⋙ N.rTensor
+
+noncomputable def submoduleFGVal_rTensor_cocone (M N : ModuleCat.{v} R) :
+    Cocone (M.submoduleFGVal_rTensor N) :=
+  N.rTensor.mapCocone M.submoduleFGValCat_cocone
+
+set_option pp.universes true
+
+example (M : ModuleCat.{v} R) (N : ModuleCat.{w} R) :
+    Nonempty (IsColimit (submoduleFGVal_rTensor_cocone.{max v w} M N)) :=
+  PreservesColimit.preserves M.submoduleFGValCat_colimit
+
+example (M N : ModuleCat R) :
+    Nonempty (IsColimit (submoduleFGVal_rTensor_cocone M N)) :=
+  PreservesColimit.preserves M.submoduleFGValCat_colimit
+
+
+noncomputable example (M N : ModuleCat.{v} R) :
+    IsColimit (M.submoduleFGVal_rTensor_cocone N) :=
+  isColimitOfPreserves N.rTensor M.submoduleFGValCat_colimit
 
 noncomputable example (N : ModuleCat R)
     {C : Type*} [Category C] (F : C ⥤  ModuleCat R) : C ⥤  ModuleCat R :=
@@ -325,14 +402,10 @@ noncomputable example (N : ModuleCat R) {C : Type*} [Category C]
 
 noncomputable example (N : ModuleCat R) {C : Type*} [Category C]
     (F : C ⥤  ModuleCat R) (c : Cocone F) (l : IsColimit c) :
-    IsColimit (N.rTensor.mapCocone c) := by
-  apply CategoryTheory.Limits.IsColimit.ofLeftAdjoint _ l
-  let adj := ModuleCat.rTensor_lHom_adjunction N
-  have := adj.homEquiv
-  have := (CategoryTheory.Adjunction.coconesIso adj (K := F)).hom
-  sorry
+    IsColimit (N.rTensor.mapCocone c) :=
+  isColimitOfPreserves N.rTensor l
 
-variable (M : Type u) [AddCommGroup M] [Module R M]
+-- variable (M : Type v) [AddCommGroup M] [Module R M]
 
 
 /- noncomputable example : {P : Submodule R M // P.FG} ⥤ ModuleCat.{u} R where
@@ -351,6 +424,7 @@ variable (M : Type u) [AddCommGroup M] [Module R M]
     rw [← LinearEquiv.conj_apply]
     exact LinearEquiv.conj_id _ -/
 
+/-
 variable (R) in
 noncomputable def submodulesFG : {P : Submodule R M // P.FG} ⥤ ModuleCat.{u} R where
   obj P := of R P.val
@@ -367,7 +441,7 @@ def cocone_submodulesFG : Cocone (submodulesFG R M) where
     naturality {_ _} _ := rfl }
 
 /-- A module is the colimit of its finitely generated submodules -/
-noncomputable def limit_submodulesFG : IsColimit (cocone_submodulesFG R M) where
+noncomputable def colimit_submodulesFG : IsColimit (cocone_submodulesFG R M) where
   desc c := ofHom {
     toFun m := (c.ι.app ⟨_, fg_span_singleton m⟩).hom ⟨m, mem_span_singleton_self m⟩
     map_add' m m' := by
@@ -410,6 +484,10 @@ noncomputable def limit_submodulesFG : IsColimit (cocone_submodulesFG R M) where
     rw [← c.w hmP.hom, ModuleCat.comp_apply]
     congr
   uniq c F hF := by ext; simp [← hF, ModuleCat.comp_apply]; rfl
+-/
+
+variable (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+variable (R)
 
 /-- When `P` ranges over finitely generated submodules of `M`,
   the modules of the form `P ⊗[R] N` form a directed system. -/
@@ -438,6 +516,7 @@ theorem rTensor_fgEquiv_of  [DecidableEq {P : Submodule R M // P.FG}]
     exact DFunLike.congr_fun this u
   ext p n
   simp [rTensor_fg_equiv, Submodules_fg_equiv]
+  sorry
 
 theorem rTensor_fgEquiv_of' [DecidableEq {P : Submodule R M // P.FG}]
     (P : Submodule R M) (hP : Submodule.FG P) (u : P ⊗[R] N) :
@@ -490,6 +569,7 @@ theorem lTensor_fgEquiv_of [DecidableEq {P : Submodule R N // P.FG}]
     exact DFunLike.congr_fun this u
   ext p n
   simp [lTensor_fgEquiv, Submodules_fg_equiv]
+  sorry
 
 theorem lTensor_fgEquiv_of' [DecidableEq {Q : Submodule R N // Q.FG}]
     (Q : Submodule R N) (hQ : Q.FG) (u : M ⊗[R] Q) :
