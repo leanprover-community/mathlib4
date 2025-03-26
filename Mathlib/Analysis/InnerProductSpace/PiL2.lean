@@ -387,13 +387,11 @@ lemma norm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
 
 @[simp]
 lemma nnnorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖₊ = 1 := by
-  suffices (‖b i‖₊ : ℝ) = 1 by norm_cast at this
-  simp
+    ‖b i‖₊ = 1 := b.orthonormal.nnnorm_eq_one
 
 @[simp]
 lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖ₑ = 1 := by rw [← ofReal_norm]; simp
+    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one
 
 @[simp]
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
