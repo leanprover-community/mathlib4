@@ -225,7 +225,7 @@ theorem first_vote_pos :
 
 theorem headI_mem_of_nonempty {α : Type*} [Inhabited α] : ∀ {l : List α} (_ : l ≠ []), l.headI ∈ l
   | [], h => (h rfl).elim
-  | x::l, _ => List.mem_cons_self
+  | _::_, _ => List.mem_cons_self
 
 theorem first_vote_neg (p q : ℕ) (h : 0 < p + q) :
     uniformOn (countedSequence p q) {l | l.headI = 1}ᶜ = q / (p + q) := by
