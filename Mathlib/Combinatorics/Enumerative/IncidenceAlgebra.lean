@@ -571,6 +571,7 @@ variable [Ring 𝕜] [PartialOrder α] [OrderBot α] [LocallyFiniteOrder α] [De
 O'Donnell. -/
 lemma moebius_inversion_bot (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Iic x, f y) (x : α) :
     f x = ∑ y ∈ Iic x, mu 𝕜 y x * g y := by
+  -- TODO
   convert moebius_inversion_top (α := αᵒᵈ) f g h x using 3
   rw [← mu_toDual]; rfl
 

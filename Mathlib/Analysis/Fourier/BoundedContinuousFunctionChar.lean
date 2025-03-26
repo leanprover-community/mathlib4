@@ -126,7 +126,7 @@ lemma charAlgHom_apply (w : AddMonoidAlgebra ℂ W) (v : V) :
   simp only [charAlgHom, AddMonoidAlgebra.lift_apply]
   rw [Finsupp.sum_of_support_subset w subset_rfl]
   · simp only [coe_sum, coe_smul, charMonoidHom_apply, smul_eq_mul, Finset.sum_apply]
-    rfl
+    rfl -- TODO Multiplicative confusion
   · simp
 
 /-- The family of `ℂ`-linear combinations of `char he hL w, w : W`, is closed under `star`. -/
