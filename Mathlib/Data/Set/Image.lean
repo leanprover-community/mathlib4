@@ -819,11 +819,6 @@ variable (u : Set α) (v : Set β)
 open Sum
 
 @[simp]
-lemma Disjoint.inter_eq_empty {s t : Set α} (h : Disjoint s t) : s ∩ t = ∅ := by
-  rw [disjoint_iff] at h
-  exact h
-
-@[simp]
 theorem image_inl_inter_image_inr : Disjoint (inl '' u) (inr '' v) := by
   rw [disjoint_iff, bot_eq_empty, ← subset_empty_iff]
   intro x hx

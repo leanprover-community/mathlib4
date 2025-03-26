@@ -130,6 +130,11 @@ instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSetCoe.canLift ι (fun _ => α) s
 
+@[simp]
+lemma Disjoint.inter_eq_empty {s t : Set α} (h : Disjoint s t) : s ∩ t = ∅ := by
+  rw [disjoint_iff] at h
+  exact h
+
 end Set
 
 section SetCoe
