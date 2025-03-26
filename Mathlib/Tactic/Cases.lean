@@ -129,8 +129,9 @@ elab (name := induction') "induction' " tgts:(Parser.Tactic.elimTarget,+)
           (genArg.1.getArgs[1]!).getArgs.map Syntax.prettyPrint else Array.empty
         let inductor : Format := if usingArg.1.getArgs.size > 1 then
           Syntax.prettyPrint usingArg.1.getArgs[1]! else "~"
-        logInfoAt tgts m!"{body.getAppFn.setPPExplicit true} {inductor} {gens} {names} \
-          {subgoals.toList.length}"
+        if 5 ≤ names.size then
+          logInfoAt tgts m!"{body.getAppFn.setPPExplicit true} {inductor} {gens} {names} \
+            {subgoals.toList.length}"
         setGoals <| (subgoals ++ result.others).toList ++ gs
 
 /-- The `cases'` tactic is similar to the `cases` tactic in Lean 4 core, but the syntax for giving
