@@ -2166,8 +2166,11 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Limits.Shapes.ZeroObjects
 import Mathlib.CategoryTheory.Limits.Sifted
 import Mathlib.CategoryTheory.Limits.SmallComplete
-import Mathlib.CategoryTheory.Limits.Types
-import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Types.Colimits
+import Mathlib.CategoryTheory.Limits.Types.Filtered
+import Mathlib.CategoryTheory.Limits.Types.Images
+import Mathlib.CategoryTheory.Limits.Types.Limits
+import Mathlib.CategoryTheory.Limits.Types.Yoneda
 import Mathlib.CategoryTheory.Limits.Unit
 import Mathlib.CategoryTheory.Limits.VanKampen
 import Mathlib.CategoryTheory.Limits.Yoneda
