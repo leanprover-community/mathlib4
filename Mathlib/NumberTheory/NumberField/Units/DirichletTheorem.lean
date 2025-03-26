@@ -127,6 +127,11 @@ theorem logEmbedding_ker :
   rw [AddMonoidHom.mem_ker, ← ofMul_toMul x, logEmbedding_eq_zero_iff]
   rfl
 
+theorem map_logEmbedding_sup_torsion (s : AddSubgroup (Additive (𝓞 K)ˣ)) :
+    AddSubgroup.map (logEmbedding K) (s ⊔ (torsion K).toAddSubgroup : AddSubgroup _) =
+      AddSubgroup.map (logEmbedding K) s := by
+  rw [← logEmbedding_ker, AddSubgroup.map_eq_map_iff, sup_right_idem]
+
 open scoped Classical in
 theorem logEmbedding_component_le {r : ℝ} {x : (𝓞 K)ˣ} (hr : 0 ≤ r) (h : ‖logEmbedding K x‖ ≤ r)
     (w : {w : InfinitePlace K // w ≠ w₀}) : |logEmbedding K (Additive.ofMul x) w| ≤ r := by
@@ -504,6 +509,18 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
     simp only [ζ, ← fun_eq_repr K h_tors' hf, Prod.mk.injEq, Subtype.mk.injEq, and_true]
     nth_rewrite 1 [hf]
     rw [_root_.mul_inv_cancel_right]
+
+/--
+The fundamental units and the torsion of `K` generate the full group of units of `K`.
+-/
+theorem closure_fundSystem_sup_torsion_eq_top :
+    Subgroup.closure (Set.range (fundSystem K)) ⊔ torsion K = ⊤ := by
+  rw [Subgroup.eq_top_iff', sup_comm]
+  intro x
+  obtain ⟨c, rfl, _⟩ := exist_unique_eq_mul_prod K x
+  refine Subgroup.mul_mem_sup (SetLike.coe_mem c.1) <|
+    Subgroup.prod_mem _ fun i _ ↦
+      Subgroup.zpow_mem _ (Subgroup.subset_closure (Set.mem_range_self i)) _
 
 end statements
 
