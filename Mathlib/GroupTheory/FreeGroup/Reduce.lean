@@ -116,8 +116,8 @@ only reduces to itself. -/
   a word only reduces to itself."]
 theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
   induction H with
-  | nil => rfl
-  | cons L1 L' L2 =>
+  | refl => rfl
+  | tail _ H1 H2 =>
     obtain ⟨L4, L5, x, b⟩ := H1
     exact reduce.not H2
 

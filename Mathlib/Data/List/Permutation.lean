@@ -478,7 +478,7 @@ theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations :
   rw [(permutations_perm_permutations' s).nodup_iff]
   induction hs with
   | nil => simp
-  | cons x l h =>
+  | @cons x l h h' IH =>
     rw [permutations']
     rw [nodup_flatMap]
     constructor
