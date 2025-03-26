@@ -226,10 +226,9 @@ theorem mem_filterMap (f : α → Option β) (s : Multiset α) {b : β} :
     b ∈ filterMap f s ↔ ∃ a, a ∈ s ∧ f a = some b :=
   Quot.inductionOn s fun _ => List.mem_filterMap
 
-#adaptation_note /-- Replace `(H := H)` with `H` before merging.-/
 theorem map_filterMap_of_inv (f : α → Option β) (g : β → α) (H : ∀ x : α, (f x).map g = some x)
     (s : Multiset α) : map g (filterMap f s) = s :=
-  Quot.inductionOn s fun _ => congr_arg ofList <| List.map_filterMap_of_inv (H := H)
+  Quot.inductionOn s fun _ => congr_arg ofList <| List.map_filterMap_of_inv H
 
 @[gcongr]
 theorem filterMap_le_filterMap (f : α → Option β) {s t : Multiset α} (h : s ≤ t) :

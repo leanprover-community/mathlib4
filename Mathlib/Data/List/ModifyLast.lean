@@ -5,7 +5,6 @@ Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, M
 -/
 import Batteries.Data.List.Basic
 import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.AdaptationNote
 
 /-! ### List.modifyLast -/
 
@@ -42,7 +41,6 @@ theorem modifyLast_concat (f : α → α) (a : α) (l : List α) :
 @[deprecated (since := "2025-02-07")]
 alias modifyLast_append_one := modifyLast_concat
 
-#adaptation_note /-- Change `append_cons (as := [])` back to `append_cons []` before merging -/
 theorem modifyLast_append_of_right_ne_nil (f : α → α) (l₁ l₂ : List α) (_ : l₂ ≠ []) :
     modifyLast f (l₁ ++ l₂) = l₁ ++ modifyLast f l₂ := by
   cases l₂ with
@@ -51,7 +49,7 @@ theorem modifyLast_append_of_right_ne_nil (f : α → α) (l₁ l₂ : List α) 
     cases tl with
     | nil => exact modifyLast_concat _ hd _
     | cons hd' tl' =>
-      rw [append_cons, ← nil_append (hd :: hd' :: tl'), append_cons (as := []), nil_append,
+      rw [append_cons, ← nil_append (hd :: hd' :: tl'), append_cons [], nil_append,
         modifyLast_append_of_right_ne_nil _ (l₁ ++ [hd]) (hd' :: tl') _,
         modifyLast_append_of_right_ne_nil _ [hd] (hd' :: tl') _,
         append_assoc]
