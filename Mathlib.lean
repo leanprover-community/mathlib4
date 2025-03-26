@@ -2024,6 +2024,7 @@ import Mathlib.CategoryTheory.LiftingProperties.Adjunction
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 import Mathlib.CategoryTheory.LiftingProperties.Limits
 import Mathlib.CategoryTheory.Limits.Bicones
+import Mathlib.CategoryTheory.Limits.CoconeTypes
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
