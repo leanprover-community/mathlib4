@@ -5,7 +5,8 @@ Authors: Stefan Kebekus
 -/
 import Mathlib.Algebra.Order.WithTop.Untop0
 import Mathlib.Analysis.Analytic.Order
-import Mathlib.Data.LocallyFinsupp
+--import Mathlib.Data.LocallyFinsupp
+import Mathlib.Analysis.Meromorphic.Divisor.Basic
 
 /-!
 # The Divisor of an analytic function
