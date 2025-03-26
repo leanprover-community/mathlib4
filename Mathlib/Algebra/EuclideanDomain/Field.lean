@@ -38,4 +38,12 @@ protected theorem gcd_eq [DecidableEq K] (a b : K) :
   unfold EuclideanDomain.gcd
   split_ifs <;> simp [*, Field.mod_eq]
 
+protected theorem gcd_zero_eq [DecidableEq K] (b : K) :
+    EuclideanDomain.gcd 0 b = b := by
+  rw [Field.gcd_eq, if_pos rfl]
+
+protected theorem gcd_eq_of_ne [DecidableEq K] {a : K} (ha : a ≠ 0) (b : K) :
+    EuclideanDomain.gcd a b = a := by
+  rw [Field.gcd_eq, if_neg ha]
+
 end Field
