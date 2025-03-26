@@ -232,4 +232,19 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
 
 end Monotone
 
+/-- Given `f : ι → ℝ≥0` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
+theorem iSup_pow {ι : Type*} [Nonempty ι] [Finite ι] (f : ι → ℝ≥0) (n : ℕ) :
+    (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+  by_cases hn : n = 0
+  · simp [hn]
+  · simpa [powOrderIso, StrictMono.coe_orderIsoOfSurjective] using
+      OrderIso.map_ciSup (e := NNReal.powOrderIso n hn) (Finite.bddAbove_range f)
+
 end NNReal
+
+open NNReal in
+/-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
+theorem Real.iSup_pow' {ι : Type*} [Nonempty ι] [Finite ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
+    (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
+  set g : ι → ℝ≥0 := fun i ↦ ⟨f i, hf i⟩
+  simpa [g, ← NNReal.coe_inj] using NNReal.iSup_pow g n

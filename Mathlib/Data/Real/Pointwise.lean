@@ -148,24 +148,4 @@ theorem Real.iSup_mul_le_mul_iSup_of_nonneg {ι : Type*} [Nonempty ι] [Finite �
   ciSup_le fun x ↦ mul_le_mul (le_ciSup (Finite.bddAbove_range f) x)
     (le_ciSup (Finite.bddAbove_range g) x) (hg_nn x) (Real.iSup_nonneg hf_nn)
 
-/-- Given a non-negative `f : ι → ℝ` and `n : ℕ`, we have `(iSup f) ^ n = iSup (f ^ n)`. -/
-theorem Real.iSup_pow {ι : Type*} [Nonempty ι] [Finite ι] {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i)
-    (n : ℕ) : (⨆ i : ι, f i) ^ n = ⨆ i : ι, f i ^ n := by
-  cases nonempty_fintype ι
-  induction n with
-  | zero => simp only [pow_zero, ciSup_const]
-  | succ n hn =>
-    rw [pow_succ, hn]
-    apply le_antisymm _ (Real.iSup_mul_le_mul_iSup_of_nonneg (fun x ↦ pow_nonneg (hf x) n) hf)
-    · refine Real.iSup_mul_iSup_le_of_nonneg ((fun x ↦ pow_nonneg (hf x) n)) hf ?_
-      intro i j
-      by_cases hij : f i < f j
-      · have hj : f i ^n * f j ≤ f j ^ n.succ :=
-          mul_le_mul (pow_le_pow_left₀ (hf _) (le_of_lt hij) _) (le_refl _) (hf _)
-            (pow_nonneg (hf _) _)
-        exact le_trans hj (le_ciSup_of_le (Set.finite_range _).bddAbove j (le_refl _))
-      · have hi : f i ^ n * f j ≤ f i ^ n.succ :=
-          mul_le_mul_of_nonneg_left (le_of_not_lt hij) (pow_nonneg (hf _) _)
-        exact le_trans hi (le_ciSup_of_le (Set.finite_range _).bddAbove i (le_refl _))
-
 end Mul
