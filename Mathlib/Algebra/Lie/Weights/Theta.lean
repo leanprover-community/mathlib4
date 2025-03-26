@@ -419,6 +419,66 @@ theorem theta_h_kerα {h : H} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H �
   rw [se₃, sf₃, se₃]
 
 
+theorem theta_h (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα : fα ∈ rootSpace H (- α))
+    (t : Kˣ) (ht : IsSl2Triple hα eα fα) (h : H) : theta H hnz heα hfα t h = h - (α h) • hα  := by
+  have l1 := IsKilling.isCompl_ker_weight_span_coroot α
+  --have l2 := IsKilling.root_apply_coroot hnz
+  have l3 := _root_.IsSl2Triple.h_eq_coroot hnz ht heα hfα
+  --have l4 : IsKilling.coroot α = hα := by
+  --norm_cast at l3
+  --rw [l3] at l2
+  have hef := IsKilling.lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
+  lift hα to H using by simpa only [← ht.lie_e_f, hef] using H.smul_mem _ (Submodule.coe_mem _)
+  --congr 1
+  have sss : α hα = 2 := by
+    have := IsKilling.lie_eq_smul_of_mem_rootSpace heα hα
+    rw [LieSubalgebra.coe_bracket_of_module, ht.lie_h_e_smul K] at this
+    exact smul_left_injective K ht.e_ne_zero this.symm
+  --erw [l3.symm] at l1
+  have := Submodule.existsUnique_add_of_isCompl (IsKilling.isCompl_ker_weight_span_coroot α) h
+  obtain ⟨u, ⟨⟨a, b⟩, ⟨hsum, _⟩⟩⟩ := this
+  have uker : α u = 0 := by
+    exact LinearMap.map_coe_ker α u
+  have aa : ∃ (k : K), a = k • IsKilling.coroot α := by
+    obtain ⟨k, ttt⟩ := Submodule.mem_span_singleton.mp b
+    use k
+    rw [ttt.symm]
+  obtain ⟨kjj, jjj⟩ := aa
+  simp at hsum
+  rw [jjj] at hsum
+  simp at l3
+  rw [l3.symm] at hsum
+  rw [← hsum]
+  --simp_all
+  have : (theta H hnz heα hfα t) ((u + (kjj • hα : L)) : L) = (theta H hnz heα hfα t) u + (theta H hnz heα hfα t) (kjj • hα) := by
+     apply LinearMap.map_add
+  erw [this]
+  simp
+  obtain ⟨x, xx⟩ := u
+  --simp_all
+    --apply?
+  have bbb := theta_h_kerα H hnz heα hfα t xx
+  simp
+  rw [bbb]
+  have : (theta H hnz heα hfα t) (kjj • hα) = kjj • theta H hnz heα hfα t hα := by
+     apply LinearMap.map_smul
+  rw [this]
+  have rrrrr := theta_hα H hnz heα hfα t ht
+  rw [rrrrr]
+  rw [sss]
+  simp
+  rw [mul_smul]
+  norm_cast
+  rw [two_smul]
+  rw [smul_add]
+  simp
+  --search_proof
+  --norm_cast
+  rw [← sub_eq_zero]
+  simp
+
+
+    --sorry--have :=  Submodule.mem_span_singleton (R := K) (M := L) (y := v)
 
 
 
