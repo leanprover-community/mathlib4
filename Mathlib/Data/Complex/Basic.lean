@@ -265,6 +265,7 @@ theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 
 theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 
+@[simp]
 theorem mul_I_re_ofReal (x : ℝ) : (x * I).re = 0 := by
   rw [mul_I_re, ofReal_im, neg_zero]
 
