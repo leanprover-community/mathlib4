@@ -64,12 +64,12 @@ theorem denseRange_zsmul_iff' {p : ℝ} {a : AddCircle p} (hp : p ≠ 0) :
   rw [denseRange_zsmul_coe_iff, addOrderOf_eq_zero_iff, isOfFinAddOrder_iff_nsmul_eq_zero]
   simp only [← coe_nsmul, coe_eq_zero_iff, not_exists, not_and, zsmul_eq_mul, nsmul_eq_mul]
   constructor
-  · rintro h ⟨r, hr⟩
-    refine h r.den r.den_pos r.num ?_
-    rw [mul_comm _ a, ← div_eq_div_iff, ← Rat.cast_def, hr] <;> try positivity
   · intro hi n hn m h
     rw [mul_comm _ a, ← div_eq_div_iff] at h <;> try positivity
     exact hi.ne_rat (m / n) (mod_cast h.symm)
+  · rintro h ⟨r, hr⟩
+    refine h r.den r.den_pos r.num ?_
+    rw [mul_comm _ a, ← div_eq_div_iff, ← Rat.cast_def, hr] <;> try positivity
 
 /-- The multiples of a number `a` are dense on a circle of length `0 < p`
 iff `a` has infinite additive order. -/
@@ -83,7 +83,7 @@ theorem dense_addSubgroup_iff_ne_zmultiples' {p : ℝ} (hp : p ≠ 0) {s : AddSu
     Dense (s : Set (AddCircle p)) ↔ ∀ a, addOrderOf a ≠ 0 → s ≠ .zmultiples a := by
   constructor
   · rintro hd a ha rfl
-    rw [AddSubgroup.coe_zmultiples, ← DenseRange, denseRange_zsmul_iff] at hd
+    rw [AddSubgroup.coe_zmultiples, ← DenseRange, denseRange_zsmul_iff' hp] at hd
     exact ha hd
   · intro h
     contrapose! h
