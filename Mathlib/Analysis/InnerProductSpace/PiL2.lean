@@ -381,6 +381,13 @@ protected theorem orthonormal (b : OrthonormalBasis ι 𝕜 E) : Orthonormal �
     rw [← b.repr.inner_map_map (b i) (b j), b.repr_self i, b.repr_self j,
       EuclideanSpace.inner_single_left, EuclideanSpace.single_apply, map_one, one_mul]
 
+@[simp]
+lemma norm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
+    ‖b i‖ = 1 := b.orthonormal.1 i
+
+lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
+    ⟪b i, b j⟫ = 0 := b.orthonormal.2 hij
+
 /-- The `Basis ι 𝕜 E` underlying the `OrthonormalBasis` -/
 protected def toBasis (b : OrthonormalBasis ι 𝕜 E) : Basis ι 𝕜 E :=
   Basis.ofEquivFun b.repr.toLinearEquiv
