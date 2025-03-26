@@ -563,7 +563,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 section ConditionallyCompleteLinearOrderBot
 
 @[simp]
-theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
@@ -902,7 +902,6 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
 
 open Classical in
--- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSet, instSupSet, boundedOrder, lattice with
@@ -913,7 +912,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         split_ifs with h₁ h₂
         · rw [h] at h₁
           cases h₁
-        · convert bot_le (a := a)
+        · convert bot_le
           -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg

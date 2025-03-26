@@ -359,6 +359,10 @@ def adicValued : Valued K ℤₘ₀ :=
 theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation K x :=
   rfl
 
+@[simp]
+theorem adicValued_apply' (x : WithVal (v.valuation K)) : v.adicValued.v x = v.valuation K x :=
+  rfl
+
 variable (K)
 
 /-- The completion of `K` with respect to its `v`-adic valuation. -/

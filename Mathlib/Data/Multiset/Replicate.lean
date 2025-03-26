@@ -69,7 +69,6 @@ theorem replicate_right_injective {n : ℕ} (hn : n ≠ 0) : Injective (@replica
   (replicate_right_injective h).eq_iff
 
 theorem replicate_left_injective (a : α) : Injective (replicate · a) :=
-  -- Porting note: was `fun m n h => by rw [← (eq_replicate.1 h).1, card_replicate]`
   LeftInverse.injective (card_replicate · a)
 
 theorem replicate_subset_singleton (n : ℕ) (a : α) : replicate n a ⊆ {a} :=

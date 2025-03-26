@@ -3,111 +3,141 @@ Copyright (c) 2025 Stefan Kebekus. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stefan Kebekus
 -/
-import Mathlib.Analysis.Normed.Field.Basic
-import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Order.Pi
+import Mathlib.Topology.Separation.Hausdorff
+import Mathlib.Topology.DiscreteSubset
 
 /-!
-# Divisors on subsets of normed fields
+# Type of functions with locally finite support
 
-This file defines divisors, a standard book-keeping tool in complex analysis
-used to keep track of pole/vanishing orders of meromorphic objects, typically
-functions or differential forms. It provides supporting API and establishes
-divisors as an instance of a lattice ordered commutative group.
+This file defines functions with locally finite support, provides supporting API. For suitable
+targets, it establishes functions with locally finite support as an instance of a lattice ordered
+commutative group.
 
-Throughout the present file, `𝕜` denotes a nontrivially normed field, and `U` a
-subset of `𝕜`.
-
-## TODOs
-
-- Constructions: The divisor of a meromorphic function, behavior under product
-  of meromorphic functions, behavior under addition, behavior under restriction
-- Construction: The divisor of a rational polynomial
+Throughout the present file, `X` denotes a topologically space and `U` a subset of `X`.
 -/
 
-open Filter Metric Real Set Topology
+open Filter Function Set Topology
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {U : Set 𝕜}
+variable
+  {X : Type*} [TopologicalSpace X] {U : Set X}
+  {Y : Type*}
 
 /-!
 ## Definition, coercion to functions and basic extensionality lemmas
 
-A divisor on `U` is a function `𝕜 → ℤ` whose support is discrete within `U` and
-entirely contained within `U`.  The theorem
-`supportDiscreteWithin_iff_locallyFiniteWithin` shows that this is equivalent to
-the textbook definition, which requires the support of `f` to be locally finite
-within `U`.
+A function with locally finite support within `U` is a function `X → Y` whose support is locally
+finite within `U` and entirely contained in `U`.  For T1-spaces, the theorem
+`supportDiscreteWithin_iff_locallyFiniteWithin` shows that the first condition is equivalent to the
+condition that the support `f` is discrete within `U`.
 -/
 
-/-- A divisor on `U` is a triple specified below. -/
-structure DivisorOn (U : Set 𝕜) where
-  /-- A function `𝕜 → ℤ` -/
-  toFun : 𝕜 → ℤ
+variable (U Y) in
+/-- A function with locally finite support within `U` is a triple as specified below. -/
+structure Function.locallyFinsuppWithin [Zero Y] where
+  /-- A function `X → Y` -/
+  toFun : X → Y
   /-- A proof that the support of `toFun` is contained in `U` -/
   supportWithinDomain' : toFun.support ⊆ U
-  /-- A proof the the support is discrete within `U` -/
-  supportDiscreteWithinDomain' : toFun =ᶠ[codiscreteWithin U] 0
+  /-- A proof the the support is locally finite within `U` -/
+  supportLocallyFiniteWithinDomain' : ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ toFun.support)
 
-/-- A divisor is a divisor on `⊤ : Set 𝕜`. -/
-def Divisor (𝕜 : Type*) [NontriviallyNormedField 𝕜] := DivisorOn (⊤ : Set 𝕜)
+variable (X Y) in
+/--
+A function with locally finite support is a function with locally finite support within
+`⊤ : Set X`.
+-/
+def Function.locallyFinsupp [Zero Y] := locallyFinsuppWithin (⊤ : Set X) Y
 
-/-- The condition `supportDiscreteWithinU` in a divisor is equivalent to saying
-that the support is locally finite near every point of `U`. -/
-theorem supportDiscreteWithin_iff_locallyFiniteWithin {f : 𝕜 → ℤ} (h : f.support ⊆ U) :
+/--
+For T1 spaces, the condition `supportLocallyFiniteWithinDomain'` is equivalent to saying that the
+support is codiscrete within `U`.
+-/
+theorem supportDiscreteWithin_iff_locallyFiniteWithin [T1Space X] [Zero Y] {f : X → Y}
+    (h : f.support ⊆ U) :
     f =ᶠ[codiscreteWithin U] 0 ↔ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support) := by
-  have : f.support = (U \ {x | f x = (0 : 𝕜 → ℤ) x}) := by
+  have : f.support = (U \ {x | f x = (0 : X → Y) x}) := by
     ext x
-    simp only [Function.mem_support, ne_eq, Pi.zero_apply, mem_diff, mem_setOf_eq, iff_and_self]
+    simp only [mem_support, ne_eq, Pi.zero_apply, mem_diff, mem_setOf_eq, iff_and_self]
     exact (h ·)
   rw [EventuallyEq, Filter.Eventually, codiscreteWithin_iff_locallyFiniteComplementWithin, this]
 
-namespace DivisorOn
+namespace Function.locallyFinsuppWithin
 
-/-- Divisors are `FunLike`: the coercion from divisors to functions is injective. -/
-instance : FunLike (DivisorOn U) 𝕜 ℤ where
+/--
+Functions with locally finite support within `U` are `FunLike`: the coercion to functions is
+injective.
+-/
+instance [Zero Y] : FunLike (locallyFinsuppWithin U Y) X Y where
   coe D := D.toFun
   coe_injective' := fun ⟨_, _, _⟩ ⟨_, _, _⟩ ↦ by simp
 
 /-- This allows writing `D.support` instead of `Function.support D` -/
-abbrev support (D : DivisorOn U)  := Function.support D
+abbrev support [Zero Y] (D : locallyFinsuppWithin U Y) := Function.support D
 
-lemma supportWithinDomain (D : DivisorOn U) : D.support ⊆ U := D.supportWithinDomain'
+lemma supportWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
+    D.support ⊆ U := D.supportWithinDomain'
 
-lemma supportDiscreteWithinDomain (D : DivisorOn U) : D =ᶠ[codiscreteWithin U] 0 :=
-  D.supportDiscreteWithinDomain'
+lemma supportLocallyFiniteWithinDomain [Zero Y] (D : locallyFinsuppWithin U Y) :
+    ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ D.support) := D.supportLocallyFiniteWithinDomain'
 
 @[ext]
-lemma ext {D₁ D₂ : DivisorOn U} (h : ∀ a, D₁ a = D₂ a) : D₁ = D₂ := DFunLike.ext _ _ h
+lemma ext [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} (h : ∀ a, D₁ a = D₂ a) :
+    D₁ = D₂ := DFunLike.ext _ _ h
 
-lemma coe_injective : Function.Injective (· : DivisorOn U → 𝕜 → ℤ) := DFunLike.coe_injective
+lemma coe_injective [Zero Y] :
+    Injective (· : locallyFinsuppWithin U Y → X → Y) := DFunLike.coe_injective
 
 /-!
 ## Elementary properties of the support
 -/
 
-/-- The support of a divisor is discrete. -/
-theorem discreteSupport (D : DivisorOn U) : DiscreteTopology D.support := by
-  have : Function.support D = {x | D x = 0}ᶜ ∩ U := by
+/--
+Simplifier lemma: Functions with locally finite support within `U` evaluate to zero outside of `U`.
+-/
+@[simp]
+lemma apply_eq_zero_of_not_mem [Zero Y] {z : X} (D : locallyFinsuppWithin U Y)
+    (hz : z ∉ U) :
+    D z = 0 := nmem_support.mp fun a ↦ hz (D.supportWithinDomain a)
+
+/--
+On a T1 space, the support of a functions with locally finite support within `U` is discrete.
+-/
+theorem discreteSupport [Zero Y] [T1Space X] (D : locallyFinsuppWithin U Y) :
+    DiscreteTopology D.support := by
+  have : D.support = {x | D x = 0}ᶜ ∩ U := by
     ext x
     constructor
     · exact fun hx ↦ ⟨by tauto, D.supportWithinDomain hx⟩
     · intro hx
       rw [mem_inter_iff, mem_compl_iff, mem_setOf_eq] at hx
       tauto
-  convert discreteTopology_of_codiscreteWithin (D.supportDiscreteWithinDomain)
+  rw [this]
+  apply discreteTopology_of_codiscreteWithin
+  apply (supportDiscreteWithin_iff_locallyFiniteWithin D.supportWithinDomain).2
+  exact D.supportLocallyFiniteWithinDomain
 
-/-- If `U` is closed, the the support of a divisor on `U` is also closed. -/
-theorem closedSupport (D : DivisorOn U) (hU : IsClosed U) :
+/--
+If `X` is T1 and if `U` is closed, then the support of support of a function with locally finite
+support within `U` is also closed.
+-/
+theorem closedSupport [T1Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
+    (hU : IsClosed U) :
     IsClosed D.support := by
-  convert isClosed_sdiff_of_codiscreteWithin D.supportDiscreteWithinDomain hU
+  convert isClosed_sdiff_of_codiscreteWithin ((supportDiscreteWithin_iff_locallyFiniteWithin
+    D.supportWithinDomain).2 D.supportLocallyFiniteWithinDomain) hU
   ext x
-  constructor
-  · intro hx
-    simp_all [D.supportWithinDomain hx]
-  · intro hx
-    simp_all
+  constructor <;> intro hx
+  · simp_all [D.supportWithinDomain hx]
+  · simp_all
 
-/-- If `U` is closed, the the support of a divisor on `U` is finite. -/
-theorem finiteSupport (D : DivisorOn U) (hU : IsCompact U) :
+/--
+If `X` is T2 and if `U` is compact, then the support of a function with locally finite support
+within `U` is finite.
+-/
+theorem finiteSupport [T2Space X] [Zero Y] (D : locallyFinsuppWithin U Y)
+    (hU : IsCompact U) :
     Set.Finite D.support :=
   (hU.of_isClosed_subset (D.closedSupport hU.isClosed)
     D.supportWithinDomain).finite D.discreteSupport
@@ -115,114 +145,157 @@ theorem finiteSupport (D : DivisorOn U) (hU : IsCompact U) :
 /-!
 ## Lattice ordered group structure
 
-This section equips divisors on `U` with the standard structure of a lattice
-ordered group, where addition, comparison, min and max of divisors are defined
-pointwise.
+If `X` is a suitable instance, this section equips functions with locally finite support within `U`
+with the standard structure of a lattice ordered group, where addition, comparison, min and max are
+defined pointwise.
 -/
 
 variable (U) in
-/-- Divisors form an additive subgroup of functions 𝕜 → ℤ -/
-protected def addSubgroup : AddSubgroup (𝕜 → ℤ) where
-  carrier := {f | f.support ⊆ U ∧ f =ᶠ[codiscreteWithin U] 0}
-  zero_mem' := by simp
+/--
+Functions with locally finite support within `U` form an additive subgroup of functions X → Y.
+-/
+protected def addSubgroup [AddCommGroup Y] : AddSubgroup (X → Y) where
+  carrier := {f | f.support ⊆ U ∧ ∀ z ∈ U, ∃ t ∈ 𝓝 z, Set.Finite (t ∩ f.support)}
+  zero_mem' := by
+    simp only [support_subset_iff, ne_eq, mem_setOf_eq, Pi.zero_apply, not_true_eq_false,
+      IsEmpty.forall_iff, implies_true, support_zero', inter_empty, finite_empty, and_true,
+      true_and]
+    exact fun _ _ ↦ ⟨⊤, univ_mem⟩
   add_mem' {f g} hf hg := by
-    refine ⟨?_, hf.2.add hg.2⟩
-    intro x hx
-    contrapose! hx
-    simp [Function.nmem_support.1 fun a ↦ hx (hf.1 a),
-      Function.nmem_support.1 fun a ↦ hx (hg.1 a)]
-  neg_mem' {f} hf := ⟨fun x hx ↦ hf.1 <| by simpa using hx, hf.2.neg⟩
+    constructor
+    · intro x hx
+      contrapose! hx
+      simp [nmem_support.1 fun a ↦ hx (hf.1 a), nmem_support.1 fun a ↦ hx (hg.1 a)]
+    · intro z hz
+      obtain ⟨t₁, ht₁⟩ := hf.2 z hz
+      obtain ⟨t₂, ht₂⟩ := hg.2 z hz
+      use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
+      apply Set.Finite.subset (s := (t₁ ∩ f.support) ∪ (t₂ ∩ g.support)) (ht₁.2.union ht₂.2)
+      intro a ha
+      simp_all only [support_subset_iff, ne_eq, mem_setOf_eq, union_self, subset_inter_iff,
+        mem_inter_iff, mem_support, Pi.add_apply, mem_union, true_and]
+      by_contra hCon
+      push_neg at hCon
+      simp_all
+  neg_mem' {f} hf := by
+    simp_all
 
-protected lemma memAddSubgroup (D : DivisorOn U) :
-    (D : 𝕜 → ℤ) ∈ DivisorOn.addSubgroup U :=
-  ⟨D.supportWithinDomain, D.supportDiscreteWithinDomain⟩
+protected lemma memAddSubgroup  [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+    (D : X → Y) ∈ locallyFinsuppWithin.addSubgroup U :=
+  ⟨D.supportWithinDomain, D.supportLocallyFiniteWithinDomain⟩
 
-/-- Assign a divisor to a function in the subgroup -/
+/--
+Assign a function with locally finite support within `U` to a function in the subgroup.
+-/
 @[simps]
-def mk_of_mem (f : 𝕜 → ℤ) (hf : f ∈ DivisorOn.addSubgroup U) : DivisorOn U :=
-  ⟨f, hf.1, hf.2⟩
+def mk_of_mem [AddCommGroup Y] (f : X → Y) (hf : f ∈ locallyFinsuppWithin.addSubgroup U) :
+    locallyFinsuppWithin U Y := ⟨f, hf.1, hf.2⟩
 
-instance : Zero (DivisorOn U) where
+instance [AddCommGroup Y] : Zero (locallyFinsuppWithin U Y) where
   zero := mk_of_mem 0 <| zero_mem _
 
-instance : Add (DivisorOn U) where
+instance [AddCommGroup Y]: Add (locallyFinsuppWithin U Y) where
   add D₁ D₂ := mk_of_mem (D₁ + D₂) <| add_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
-instance : Neg (DivisorOn U) where
+instance [AddCommGroup Y] : Neg (locallyFinsuppWithin U Y) where
   neg D := mk_of_mem (-D) <| neg_mem D.memAddSubgroup
 
-instance : Sub (DivisorOn U) where
+instance [AddCommGroup Y] : Sub (locallyFinsuppWithin U Y) where
   sub D₁ D₂ := mk_of_mem (D₁ - D₂) <| sub_mem D₁.memAddSubgroup D₂.memAddSubgroup
 
-instance : SMul ℕ (DivisorOn U) where
+instance [AddCommGroup Y] : SMul ℕ (locallyFinsuppWithin U Y) where
   smul n D := mk_of_mem (n • D) <| nsmul_mem D.memAddSubgroup n
 
-instance : SMul ℤ (DivisorOn U) where
+instance [AddCommGroup Y] : SMul ℤ (locallyFinsuppWithin U Y) where
   smul n D := mk_of_mem (n • D) <| zsmul_mem D.memAddSubgroup n
 
-@[simp] lemma coe_zero : ((0 : DivisorOn U) : 𝕜 → ℤ) = 0 := rfl
-@[simp] lemma coe_add (D₁ D₂ : DivisorOn U) : (↑(D₁ + D₂) : 𝕜 → ℤ) = D₁ + D₂ := rfl
-@[simp] lemma coe_neg (D : DivisorOn U) : (↑(-D) : 𝕜 → ℤ) = -(D : 𝕜 → ℤ) := rfl
-@[simp] lemma coe_sub (D₁ D₂ : DivisorOn U) : (↑(D₁ - D₂) : 𝕜 → ℤ) = D₁ - D₂ := rfl
-@[simp] lemma coe_nsmul (D : DivisorOn U) (n : ℕ) : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
-@[simp] lemma coe_zsmul (D : DivisorOn U) (n : ℤ) : (↑(n • D) : 𝕜 → ℤ) = n • (D : 𝕜 → ℤ) := rfl
+@[simp] lemma coe_zero [AddCommGroup Y] :
+    ((0 : locallyFinsuppWithin U Y) : X → Y) = 0 := rfl
+@[simp] lemma coe_add [AddCommGroup Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
+    (↑(D₁ + D₂) : X → Y) = D₁ + D₂ := rfl
+@[simp] lemma coe_neg [AddCommGroup Y] (D : locallyFinsuppWithin U Y) :
+    (↑(-D) : X → Y) = -(D : X → Y) := rfl
+@[simp] lemma coe_sub [AddCommGroup Y] (D₁ D₂ : locallyFinsuppWithin U Y) :
+    (↑(D₁ - D₂) : X → Y) = D₁ - D₂ := rfl
+@[simp] lemma coe_nsmul [AddCommGroup Y] (D : locallyFinsuppWithin U Y) (n : ℕ) :
+    (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
+@[simp] lemma coe_zsmul [AddCommGroup Y] (D : locallyFinsuppWithin U Y) (n : ℤ) :
+    (↑(n • D) : X → Y) = n • (D : X → Y) := rfl
 
-instance : AddCommGroup (DivisorOn U) :=
-  Function.Injective.addCommGroup (M₁ := DivisorOn U) (M₂ := 𝕜 → ℤ)
+instance [AddCommGroup Y] : AddCommGroup (locallyFinsuppWithin U Y) :=
+  Injective.addCommGroup (M₁ := locallyFinsuppWithin U Y) (M₂ := X → Y)
     _ coe_injective coe_zero coe_add coe_neg coe_sub coe_nsmul coe_zsmul
 
-instance : LE (DivisorOn U) where
-  le := fun D₁ D₂ ↦ (D₁ : 𝕜 → ℤ) ≤ D₂
+instance [LE Y] [Zero Y] : LE (locallyFinsuppWithin U Y) where
+  le := fun D₁ D₂ ↦ (D₁ : X → Y) ≤ D₂
 
-lemma le_def {D₁ D₂ : DivisorOn U} : D₁ ≤ D₂ ↔ (D₁ : 𝕜 → ℤ) ≤ (D₂ : 𝕜 → ℤ) := ⟨(·),(·)⟩
+lemma le_def [LE Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
+    D₁ ≤ D₂ ↔ (D₁ : X → Y) ≤ (D₂ : X → Y) := ⟨(·),(·)⟩
 
-instance : LT (DivisorOn U) where
-  lt := fun D₁ D₂ ↦ (D₁ : 𝕜 → ℤ) < D₂
+instance [Preorder Y] [Zero Y] : LT (locallyFinsuppWithin U Y) where
+  lt := fun D₁ D₂ ↦ (D₁ : X → Y) < D₂
 
-lemma lt_def {D₁ D₂ : DivisorOn U} : D₁ < D₂ ↔ (D₁ : 𝕜 → ℤ) < (D₂ : 𝕜 → ℤ) := ⟨(·),(·)⟩
+lemma lt_def [Preorder Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} :
+    D₁ < D₂ ↔ (D₁ : X → Y) < (D₂ : X → Y) := ⟨(·),(·)⟩
 
-instance : Max (DivisorOn U) where
+instance [SemilatticeSup Y] [Zero Y] : Max (locallyFinsuppWithin U Y) where
   max D₁ D₂ :=
   { toFun z := max (D₁ z) (D₂ z)
     supportWithinDomain' := by
       intro x
       contrapose
       intro hx
-      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-      intro _ h₁ h₂
-      simp [h₁, h₂] }
+      simp [nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+    supportLocallyFiniteWithinDomain' := by
+      intro z hz
+      obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz
+      obtain ⟨t₂, ht₂⟩ := D₂.supportLocallyFiniteWithinDomain z hz
+      use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
+      apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
+      intro a ha
+      simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
+      by_contra hCon
+      push_neg at hCon
+      simp_all }
 
 @[simp]
-lemma max_apply {D₁ D₂ : DivisorOn U} {x : 𝕜} : max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
+lemma max_apply [SemilatticeSup Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
+    max D₁ D₂ x = max (D₁ x) (D₂ x) := rfl
 
-instance : Min (DivisorOn U) where
+instance [SemilatticeInf Y] [Zero Y] : Min (locallyFinsuppWithin U Y) where
   min D₁ D₂ :=
   { toFun z := min (D₁ z) (D₂ z)
     supportWithinDomain' := by
       intro x
       contrapose
       intro hx
-      simp [Function.nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
-        Function.nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
-    supportDiscreteWithinDomain' := by
-      filter_upwards [D₁.supportDiscreteWithinDomain, D₂.supportDiscreteWithinDomain]
-      intro _ h₁ h₂
-      simp [h₁, h₂] }
+      simp [nmem_support.1 fun a ↦ hx (D₁.supportWithinDomain a),
+        nmem_support.1 fun a ↦ hx (D₂.supportWithinDomain a)]
+    supportLocallyFiniteWithinDomain' := by
+      intro z hz
+      obtain ⟨t₁, ht₁⟩ := D₁.supportLocallyFiniteWithinDomain z hz
+      obtain ⟨t₂, ht₂⟩ := D₂.supportLocallyFiniteWithinDomain z hz
+      use t₁ ∩ t₂, inter_mem ht₁.1 ht₂.1
+      apply Set.Finite.subset (s := (t₁ ∩ D₁.support) ∪ (t₂ ∩ D₂.support)) (ht₁.2.union ht₂.2)
+      intro a ha
+      simp_all only [mem_inter_iff, mem_support, ne_eq, mem_union, true_and]
+      by_contra hCon
+      push_neg at hCon
+      simp_all }
 
 @[simp]
-lemma min_def {D₁ D₂ : DivisorOn U} {x : 𝕜} : min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
+lemma min_apply [SemilatticeInf Y] [Zero Y] {D₁ D₂ : locallyFinsuppWithin U Y} {x : X} :
+    min D₁ D₂ x = min (D₁ x) (D₂ x) := rfl
 
-instance : Lattice (DivisorOn U) where
+instance  [Lattice Y] [Zero Y] : Lattice (locallyFinsuppWithin U Y) where
   le := (· ≤ ·)
   lt := (· < ·)
   le_refl := by simp [le_def]
   le_trans D₁ D₂ D₃ h₁₂ h₂₃ := fun x ↦ (h₁₂ x).trans (h₂₃ x)
   le_antisymm D₁ D₂ h₁₂ h₂₁ := by
     ext x
-    exact Int.le_antisymm (h₁₂ x) (h₂₁ x)
+    exact le_antisymm (h₁₂ x) (h₂₁ x)
   sup := max
   le_sup_left D₁ D₂ := fun x ↦ by simp
   le_sup_right D₁ D₂ := fun x ↦ by simp
@@ -232,50 +305,57 @@ instance : Lattice (DivisorOn U) where
   inf_le_right D₁ D₂ := fun x ↦ by simp
   le_inf D₁ D₂ D₃ h₁₃ h₂₃ := fun x ↦ by simp [h₁₃ x, h₂₃ x]
 
-/-- Divisors form an ordered commutative group -/
-instance : OrderedAddCommGroup (DivisorOn U) where
-  __ := inferInstanceAs (AddCommGroup (DivisorOn U))
-  __ := inferInstanceAs (Lattice (DivisorOn U))
+/--
+Functions with locally finite support within `U` form an ordered commutative group.
+-/
+instance  [LinearOrderedAddCommGroup Y] :
+    OrderedAddCommGroup (locallyFinsuppWithin U Y) where
+  __ := inferInstanceAs (AddCommGroup (locallyFinsuppWithin U Y))
+  __ := inferInstanceAs (Lattice (locallyFinsuppWithin U Y))
   add_le_add_left := fun _ _ _ _ ↦ by simpa [le_def]
 
 /-!
 ## Restriction
 -/
 
-/-- If `V` is a subset of `U`, then a divisor on `U` restricts to a divisor in `V` by
-setting its values to zero outside of `V`. -/
-noncomputable def restrict {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
-    DivisorOn V where
+/--
+If `V` is a subset of `U`, then functions with locally finite support within `U` restrict to
+functions with locally finite support within `V`, by setting their values to zero outside of `V`.
+-/
+noncomputable def restrict [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
+    locallyFinsuppWithin V Y where
   toFun := by
     classical
     exact fun z ↦ if hz : z ∈ V then D z else 0
   supportWithinDomain' := by
     intro x hx
-    simp_rw [dite_eq_ite, Function.mem_support, ne_eq, ite_eq_right_iff,
-      Classical.not_imp] at hx
+    simp_rw [dite_eq_ite, mem_support, ne_eq, ite_eq_right_iff, Classical.not_imp] at hx
     exact hx.1
-  supportDiscreteWithinDomain' := by
-    apply Filter.codiscreteWithin.mono h
-    filter_upwards [D.supportDiscreteWithinDomain]
-    intro x hx
-    simp [hx]
+  supportLocallyFiniteWithinDomain' := by
+    intro z hz
+    obtain ⟨t, ht⟩ := D.supportLocallyFiniteWithinDomain z (h hz)
+    use t, ht.1
+    apply Set.Finite.subset (s := t ∩ D.support) ht.2
+    intro _ _
+    simp_all
 
 open Classical in
-lemma restrict_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) (z : 𝕜) :
+lemma restrict_apply [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) (z : X) :
     (D.restrict h) z = if z ∈ V then D z else 0 := rfl
 
-lemma restrict_eqOn {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
+lemma restrict_eqOn [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) D V := by
   intro _ _
   simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff]
 
-lemma restrict_eqOn_compl {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
+lemma restrict_eqOn_compl [Zero Y] {V : Set X} (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     Set.EqOn (D.restrict h) 0 Vᶜ := by
   intro _ hx
   simp_all [restrict_apply, dite_eq_ite, ite_eq_left_iff, hx]
 
 /-- Restriction as a group morphism -/
-noncomputable def restrictMonoidHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U →+ DivisorOn V where
+noncomputable def restrictMonoidHom [AddCommGroup Y] {V : Set X} (h : V ⊆ U) :
+    locallyFinsuppWithin U Y →+ locallyFinsuppWithin V Y where
   toFun D := D.restrict h
   map_zero' := by
     ext x
@@ -286,24 +366,26 @@ noncomputable def restrictMonoidHom {V : Set 𝕜} (h : V ⊆ U) : DivisorOn U �
     <;> simp [restrict_apply, hx]
 
 @[simp]
-lemma restrictMonoidHom_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
+lemma restrictMonoidHom_apply [AddCommGroup Y] {V : Set X} (D : locallyFinsuppWithin U Y)
+    (h : V ⊆ U) :
     restrictMonoidHom h D = D.restrict h := by rfl
 
 /-- Restriction as a lattice morphism -/
-noncomputable def restrictLatticeHom {V : Set 𝕜} (h : V ⊆ U) :
-    LatticeHom (DivisorOn U) (DivisorOn V) where
+noncomputable def restrictLatticeHom [AddCommGroup Y] [Lattice Y] {V : Set X} (h : V ⊆ U) :
+    LatticeHom (locallyFinsuppWithin U Y) (locallyFinsuppWithin V Y) where
   toFun D := D.restrict h
   map_sup' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
-    <;> simp [DivisorOn.restrict_apply, hx]
+    <;> simp [locallyFinsuppWithin.restrict_apply, hx]
   map_inf' D₁ D₂ := by
     ext x
     by_cases hx : x ∈ V
-    <;> simp [DivisorOn.restrict_apply, hx]
+    <;> simp [locallyFinsuppWithin.restrict_apply, hx]
 
 @[simp]
-lemma restrictLatticeHom_apply {V : Set 𝕜} (D : DivisorOn U) (h : V ⊆ U) :
+lemma restrictLatticeHom_apply [AddCommGroup Y] [Lattice Y] {V : Set X}
+    (D : locallyFinsuppWithin U Y) (h : V ⊆ U) :
     restrictLatticeHom h D = D.restrict h := by rfl
 
-end DivisorOn
+end Function.locallyFinsuppWithin

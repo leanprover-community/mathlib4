@@ -860,8 +860,7 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
 
 @[mono]
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
-    (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v :=
-  Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
+    (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v := Guv.map (.ofLE h)
 
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
@@ -1266,12 +1265,12 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
-theorem reachable_delete_edges_iff_exists_walk {v w v' w': V} :
+theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', ¬s(v, w) ∈ p.edges := by
   constructor
   · rintro ⟨p⟩
-    use p.map (Hom.mapSpanningSubgraphs (by simp))
-    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id]
+    use p.map (.ofLE (by simp))
+    simp_rw [Walk.edges_map, List.mem_map, Hom.ofLE_apply, Sym2.map_id', id]
     rintro ⟨e, h, rfl⟩
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩

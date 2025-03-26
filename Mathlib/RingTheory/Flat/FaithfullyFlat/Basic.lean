@@ -86,7 +86,7 @@ end proper_ideal
 section faithful
 
 instance rTensor_nontrivial
-    [fl: FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
+    [fl : FaithfullyFlat R M] (N : Type*) [AddCommGroup N] [Module R N] [Nontrivial N] :
     Nontrivial (N ⊗[R] M) := by
   obtain ⟨n, hn⟩ := nontrivial_iff_exists_ne (0 : N) |>.1 inferInstance
   let I := (Submodule.span R {n}).annihilator
@@ -453,7 +453,7 @@ lemma zero_iff_rTensor_zero [h: FaithfullyFlat R M]
 /-- If `A` is a faithfully flat `R`-algebra, and `m` is a term of an `R`-module `M`,
 then `1 ⊗ₜ[R] m = 0` if and only if `m = 0`. -/
 @[simp]
-theorem one_tmul_eq_zero_iff {A : Type*} [CommRing A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
+theorem one_tmul_eq_zero_iff {A : Type*} [Ring A] [Algebra R A] [FaithfullyFlat R A] (m : M) :
     (1:A) ⊗ₜ[R] m = 0 ↔ m = 0 := by
   constructor; swap
   · rintro rfl; rw [tmul_zero]

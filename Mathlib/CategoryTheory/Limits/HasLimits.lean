@@ -437,9 +437,6 @@ instance hasLimitEquivalenceComp (e : K ≌ J) [HasLimit F] : HasLimit (e.functo
     { cone := Cone.whisker e.functor (limit.cone F)
       isLimit := IsLimit.whiskerEquivalence (limit.isLimit F) e }
 
--- Porting note: testing whether this still needed
--- attribute [local elab_without_expected_type] inv_fun_id_assoc
-
 -- not entirely sure why this is needed
 /-- If a `E ⋙ F` has a limit, and `E` is an equivalence, we can construct a limit of `F`.
 -/
@@ -989,8 +986,6 @@ section ColimFunctor
 variable [HasColimitsOfShape J C]
 
 section
-
--- attribute [local simp] colimMap -- Porting note: errors out colim.map_id and map_comp now
 
 /-- `colimit F` is functorial in `F`, when `C` has all colimits of shape `J`. -/
 @[simps]

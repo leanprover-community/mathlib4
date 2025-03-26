@@ -6,8 +6,8 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Action.Prod
 import Mathlib.Algebra.Group.Units.Equiv
+import Mathlib.Data.Set.Lattice.Image
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -35,10 +35,13 @@ namespace Set
 
 /-! ### Translation/scaling of sets -/
 
-@[to_additive]
+@[to_additive vadd_set_prod]
 lemma smul_set_prod {M α : Type*} [SMul M α] [SMul M β] (c : M) (s : Set α) (t : Set β) :
     c • (s ×ˢ t) = (c • s) ×ˢ (c • t) :=
   prodMap_image_prod (c • ·) (c • ·) s t
+
+@[deprecated (since := "2025-03-11")]
+alias vadd_set_sum := vadd_set_prod
 
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]

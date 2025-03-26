@@ -1041,6 +1041,10 @@ variable [CommSemiring R] [IsLocalRing R]
 def closedPoint : PrimeSpectrum R :=
   ⟨maximalIdeal R, (maximalIdeal.isMaximal R).isPrime⟩
 
+instance : OrderTop (PrimeSpectrum R) where
+  top := closedPoint R
+  le_top := fun _ ↦ le_maximalIdeal Ideal.IsPrime.ne_top'
+
 variable {R}
 
 theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S]

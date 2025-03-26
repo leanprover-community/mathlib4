@@ -230,8 +230,8 @@ def mkNatIso (α : F.toFunctor ≅ G.toFunctor)
   inv := {
     toNatTrans := α.inv
     isHomLift' := fun a ↦ by
-      have : 𝒴.p.IsHomLift (𝟙 (𝒳.p.obj a)) (α.app a).hom := (NatIso.app_hom α a) ▸ isHomLift' a
-      rw [← NatIso.app_inv]
+      have : 𝒴.p.IsHomLift (𝟙 (𝒳.p.obj a)) (α.app a).hom := (Iso.app_hom α a) ▸ isHomLift' a
+      rw [← Iso.app_inv]
       apply IsHomLift.lift_id_inv }
 
 lemma isIso_of_toNatTrans_isIso (α : F ⟶ G) [IsIso (X := F.toFunctor) α.toNatTrans] : IsIso α :=

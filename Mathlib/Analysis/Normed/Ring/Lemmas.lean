@@ -38,20 +38,17 @@ theorem Filter.isBoundedUnder_le_mul_tendsto_zero {f g : ι → α} {l : Filter 
   hg.op_zero_isBoundedUnder_le hf (flip (· * ·)) fun x y =>
     (norm_mul_le y x).trans_eq (mul_comm _ _)
 
+open Finset in
 /-- Non-unital seminormed ring structure on the product of finitely many non-unital seminormed
 rings, using the sup norm. -/
 instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
     [∀ i, NonUnitalSeminormedRing (π i)] : NonUnitalSeminormedRing (∀ i, π i) :=
-  { Pi.seminormedAddCommGroup, Pi.nonUnitalRing with
-    norm_mul := fun x y =>
-      NNReal.coe_mono <|
-        calc
-          (Finset.univ.sup fun i => ‖x i * y i‖₊) ≤
-              Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
-            Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
-          _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
-            Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
-           }
+  { seminormedAddCommGroup, nonUnitalRing with
+    norm_mul_le x y := NNReal.coe_mono <| calc
+      (univ.sup fun i ↦ ‖x i * y i‖₊) ≤ univ.sup ((‖x ·‖₊) * (‖y ·‖₊)) :=
+        sup_mono_fun fun _ _ ↦ nnnorm_mul_le _ _
+      _ ≤ (univ.sup (‖x ·‖₊)) * univ.sup (‖y ·‖₊) :=
+        sup_mul_le_mul_sup_of_nonneg (fun _ _ ↦ zero_le _) fun _ _ ↦ zero_le _}
 
 end NonUnitalSeminormedRing
 
@@ -172,22 +169,22 @@ namespace SeparationQuotient
 instance [NonUnitalSeminormedRing α] : NonUnitalNormedRing (SeparationQuotient α) where
   __ : NonUnitalRing (SeparationQuotient α) := inferInstance
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
+  norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [NonUnitalSeminormedCommRing α] : NonUnitalNormedCommRing (SeparationQuotient α) where
   __ : NonUnitalCommRing (SeparationQuotient α) := inferInstance
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
+  norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [SeminormedRing α] : NormedRing (SeparationQuotient α) where
   __ : Ring (SeparationQuotient α) := inferInstance
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
+  norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [SeminormedCommRing α] : NormedCommRing (SeparationQuotient α) where
   __ : CommRing (SeparationQuotient α) := inferInstance
   __ : NormedAddCommGroup (SeparationQuotient α) := inferInstance
-  norm_mul := Quotient.ind₂ norm_mul_le
+  norm_mul_le := Quotient.ind₂ norm_mul_le
 
 instance [SeminormedAddCommGroup α] [One α] [NormOneClass α] :
     NormOneClass (SeparationQuotient α) where
@@ -210,7 +207,10 @@ end NNReal
 instance Int.instNormedCommRing : NormedCommRing ℤ where
   __ := instCommRing
   __ := instNormedAddCommGroup
-  norm_mul m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
+  norm_mul_le m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
 
 instance Int.instNormOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
+
+instance Int.instNormMulClass : NormMulClass ℤ :=
+  ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
