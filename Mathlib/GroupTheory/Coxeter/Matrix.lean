@@ -108,8 +108,8 @@ def Aₙ : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-25. -/
+#adaptation_note /-- nightly-2025-03-25
+Requires more heartbeats after nightly-2025-03-25. -/
 set_option maxHeartbeats 400000 in
 /-- The Coxeter matrix of type Bₙ.
 

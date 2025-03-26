@@ -262,8 +262,8 @@ private lemma induction_structure (n : ℕ)
         Ideal.Quotient.mk_singleton_self, ne_eq, not_true_eq_false, false_or] at h_eq
       exact hi h_eq
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-25. -/
+#adaptation_note /-- nightly-2025-03-25
+Requires more heartbeats after nightly-2025-03-25. -/
 set_option maxHeartbeats 400000 in
 open IsLocalization in
 open Submodule hiding comap in
