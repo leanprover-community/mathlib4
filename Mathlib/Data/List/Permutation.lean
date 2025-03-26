@@ -467,9 +467,10 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
 
 theorem nodup_permutations (s : List α) (hs : Nodup s) : Nodup s.permutations := by
   rw [(permutations_perm_permutations' s).nodup_iff]
-  induction' hs with x l h h' IH
-  · simp
-  · rw [permutations']
+  induction hs with
+  | nil => simp
+  | @cons x l h h' IH =>
+    rw [permutations']
     rw [nodup_flatMap]
     constructor
     · intro ys hy

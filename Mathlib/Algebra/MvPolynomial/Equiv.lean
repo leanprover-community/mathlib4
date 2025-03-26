@@ -432,9 +432,10 @@ theorem finSuccEquiv_X_succ {j : Fin n} : finSuccEquiv R n (X j.succ) = Polynomi
     coefficient of `Finsupp.cons i m` in `f`. -/
 theorem finSuccEquiv_coeff_coeff (m : Fin n →₀ ℕ) (f : MvPolynomial (Fin (n + 1)) R) (i : ℕ) :
     coeff m (Polynomial.coeff (finSuccEquiv R n f) i) = coeff (m.cons i) f := by
-  induction' f using MvPolynomial.induction_on' with j r p q hp hq generalizing i m
+  induction f using MvPolynomial.induction_on' generalizing i m
   swap
-  · simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+  case add p q hp hq => simp only [map_add, Polynomial.coeff_add, coeff_add, hp, hq]
+  rename_i j r
   simp only [finSuccEquiv_apply, coe_eval₂Hom, eval₂_monomial, RingHom.coe_comp, Finsupp.prod_pow,
     Polynomial.coeff_C_mul, coeff_C_mul, coeff_monomial, Fin.prod_univ_succ, Fin.cases_zero,
     Fin.cases_succ, ← map_prod, ← RingHom.map_pow, Function.comp_apply]

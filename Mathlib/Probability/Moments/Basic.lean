@@ -294,10 +294,12 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
     (h_int : ∀ i ∈ s, AEStronglyMeasurable (fun ω => exp (t * X i ω)) μ) :
     AEStronglyMeasurable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
-  · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
+  induction s using Finset.induction_on with
+  | empty =>
+    simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
-  · have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
+  | @insert i s hi_notin_s h_rec =>
+    have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
       h_int i (mem_insert_of_mem hi)
     specialize h_rec this
     rw [sum_insert hi_notin_s]
@@ -315,10 +317,12 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     Integrable (fun ω => exp (t * (∑ i ∈ s, X i) ω)) μ := by
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
-  · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
+  induction s using Finset.induction_on with
+  | empty =>
+    simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
-  · have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
+  | @insert i s hi_notin_s h_rec =>
+    have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
       h_int i (mem_insert_of_mem hi)
     specialize h_rec this
     rw [sum_insert hi_notin_s]
@@ -332,9 +336,10 @@ theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
   have : IsProbabilityMeasure μ := h_indep.isProbabilityMeasure
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
-  · simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.toReal_one, prod_empty]
-  · have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
+  induction s using Finset.induction_on with
+  | empty => simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.toReal_one, prod_empty]
+  | @insert i s hi_notin_s h_rec =>
+    have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable
     rw [sum_insert hi_notin_s,
       IndepFun.mgf_add (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm (h_int' i)

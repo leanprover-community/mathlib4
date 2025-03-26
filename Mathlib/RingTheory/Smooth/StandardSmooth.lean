@@ -344,11 +344,13 @@ private lemma jacobiMatrix_comp_₂₂_det :
   rw [jacobiMatrix_comp_inr_inr, ← IsScalarTower.algebraMap_eq]
   simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
   generalize P.jacobiMatrix i j = p
-  induction' p using MvPolynomial.induction_on with a p q hp hq p i hp
-  · simp only [algHom_C, algebraMap_eq, eval₂_C]
+  induction p using MvPolynomial.induction_on with
+  | C a =>
+    simp only [algHom_C, algebraMap_eq, eval₂_C]
     erw [MvPolynomial.eval₂_C]
-  · simp [hp, hq]
-  · simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
+  | add p q hp hq => simp [hp, hq]
+  | mul_X p i hp =>
+    simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
     erw [Generators.comp_val]
     simp
 

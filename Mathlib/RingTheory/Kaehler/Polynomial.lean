@@ -113,11 +113,12 @@ def KaehlerDifferential.polynomialEquiv : Ω[R[X]⁄R] ≃ₗ[R[X]] R[X] where
   left_inv := by
     intro x
     obtain ⟨x, rfl⟩ := linearCombination_surjective _ _ x
-    induction' x using Finsupp.induction_linear with x y hx hy x y
-    · simp
-    · simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.flip_apply,
+    induction x using Finsupp.induction_linear with
+    | h0 => simp
+    | hadd x y hx hy =>
+      simp only [map_add, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.flip_apply,
         AlgHom.toLinearMap_apply, lsmul_coe] at *; simp only [*]
-    · simp [polynomial_D_apply _ x]
+    | hsingle x y => simp [polynomial_D_apply _ x]
   right_inv x := by simp
 
 lemma KaehlerDifferential.polynomialEquiv_comp_D :

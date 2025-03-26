@@ -823,11 +823,12 @@ theorem emultiplicity_mul {p a b : α} (hp : Prime p) :
     simpa only [FiniteMultiplicity.mul_iff hp, not_and_or] using hfin
 
 theorem Finset.emultiplicity_prod {β : Type*} {p : α} (hp : Prime p) (s : Finset β) (f : β → α) :
-    emultiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, emultiplicity p (f x) := by classical
-    induction' s using Finset.induction with a s has ih h
-    · simp only [Finset.sum_empty, Finset.prod_empty]
-      exact emultiplicity_of_one_right hp.not_unit
-    · simpa [has, ← ih] using emultiplicity_mul hp
+    emultiplicity p (∏ x ∈ s, f x) = ∑ x ∈ s, emultiplicity p (f x) := by
+  classical induction s using Finset.induction with
+  | empty =>
+    simp only [Finset.sum_empty, Finset.prod_empty]
+    exact emultiplicity_of_one_right hp.not_unit
+  | insert has ih => simpa [has, ← ih] using emultiplicity_mul hp
 
 theorem emultiplicity_pow {p a : α} (hp : Prime p) {k : ℕ} :
     emultiplicity p (a ^ k) = k * emultiplicity p a := by

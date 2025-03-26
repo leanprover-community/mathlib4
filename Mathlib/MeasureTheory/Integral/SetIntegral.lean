@@ -127,9 +127,10 @@ theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i ∈ t, ∫ x in s i, f x ∂μ := by
   classical
-  induction' t using Finset.induction_on with a t hat IH hs h's
-  · simp
-  · simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
+  induction t using Finset.induction_on with
+  | empty => simp
+  | insert hat IH =>
+    simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
       Finset.set_biUnion_insert] at hs hf h's ⊢
     rw [setIntegral_union _ _ hf.1 (integrableOn_finset_iUnion.2 hf.2)]
     · rw [Finset.sum_insert hat, IH hs.2 h's.1 hf.2]
