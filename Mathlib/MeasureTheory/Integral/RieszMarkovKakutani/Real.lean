@@ -311,11 +311,14 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
         (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hE.2.2.2 n) (h n))
       exact ⟨hV.1, hV.2.1, hV.2.2⟩
     -- Define a partition of unity subordinated to the sets `V`
-    have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
-      _ = ⋃ j, E j := hE.1
-      _ ⊆ _ := by gcongr with n; exact (hV n).1
-    obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n => (V n).2) f.2 this
-    let g (n : Fin N) := (⟨g' n, hg.2.2.2 n⟩ : C_c(X, ℝ))
+    obtain ⟨g, hg⟩ : ∃ (g : Fin N → C_c(X, ℝ)), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
+      EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
+      ∀ n, HasCompactSupport (g n) := by
+      have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
+        _ = ⋃ j, E j := hE.1
+        _ ⊆ _ := by gcongr with n; exact (hV n).1
+      obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n => (V n).2) f.2 this
+      exact ⟨fun n ↦ ⟨g' n, hg.2.2.2 n⟩, hg⟩
     -- The proof is completed by a chain of inequalities.
     calc
       _ = Λ (∑ n, g n • f) := ?_
@@ -336,7 +339,7 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
       simp only [coe_sum, coe_smulc, smul_eq_mul, Finset.sum_apply, coe_mul, Pi.mul_apply,
         ← Finset.sum_mul, ← Finset.sum_apply]
       by_cases hx : x ∈ tsupport f
-      · simp [g, hg.2.1 hx]
+      · simp [hg.2.1 hx]
       · simp [image_eq_zero_of_nmem_tsupport hx]
     · -- use that `f ≤ y n + ε'` on `V n`
       gcongr with n hn
@@ -375,7 +378,7 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
           intro x
           rw [coe_sum, Finset.sum_apply]
           exact Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
-        have h' : ∀ x ∈ K, (∑ n, g n) x = 1 := by intro _ hx; simp [g, hg.2.1 hx]
+        have h' : ∀ x ∈ K, (∑ n, g n) x = 1 := by intro _ hx; simp [hg.2.1 hx]
         apply ENNReal.toReal_le_of_le_ofReal
         · refine hΛ (∑ n, g n) (fun x ↦ h x)
         · exact rieszMeasure_le_of_eq_one hΛ h f.2 h'
