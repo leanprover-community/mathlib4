@@ -40,15 +40,4 @@ lemma support_sym2Mul_subset : f.sym2Mul.support ⊆ f.support.sym2 := support_o
 
 @[simp, norm_cast] lemma coe_sym2Mul (f : α →₀ M₀) : f.sym2Mul = mul ∘ map f := rfl
 
-variable [DecidableEq α]
-
-/-- Off-diagonal multiplication as a `Finsupp` -/
-noncomputable def sym2OffDiagMul (f : α →₀ M₀) : Sym2 α →₀ M₀ :=
-  onFinset {p ∈ f.support.sym2 | ¬ p.IsDiag}
-    (Sym2.lift ⟨fun a b ↦ if a = b then 0 else f a * f b, by simp [eq_comm, mul_comm]⟩)
-    (by simp +contextual [Sym2.forall]; aesop)
-
-lemma support_sym2OffDiagMul_subset :
-    f.sym2OffDiagMul.support ⊆ {p ∈ f.support.sym2 | ¬ p.IsDiag} := support_onFinset_subset
-
 end Finsupp
