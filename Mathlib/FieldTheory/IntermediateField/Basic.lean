@@ -94,6 +94,14 @@ theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
   rfl
 
 @[simp]
+theorem coe_type_toSubalgebra : (S.toSubalgebra : Type _) = S :=
+  rfl
+
+@[simp]
+theorem coe_type_toSubfield : (S.toSubfield : Type _) = S :=
+  rfl
+
+@[simp]
 theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
     x ∈ IntermediateField.mk (Subalgebra.mk s hK) hi ↔ x ∈ s :=
   Iff.rfl
