@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
 import Mathlib.Topology.Algebra.FilterBasis
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-!
 # Uniform properties of neighborhood bases in topological algebra
@@ -32,7 +32,7 @@ protected def uniformSpace : UniformSpace G :=
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
-protected theorem uniformAddGroup : @UniformAddGroup G B.uniformSpace _ :=
+protected theorem uniformAddGroup : @IsUniformAddGroup G B.uniformSpace _ :=
   @uniformAddGroup_of_addCommGroup G _ B.topology B.isTopologicalAddGroup
 
 theorem cauchy_iff {F : Filter G} :

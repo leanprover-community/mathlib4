@@ -333,7 +333,7 @@ instance instCommGroupContinuousMap [CommGroup β] [IsTopologicalGroup β] : Com
 instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) where
   continuous_mul := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
-    have : UniformGroup β := uniformGroup_of_commGroup
+    have : IsUniformGroup β := uniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     rintro ⟨f, g⟩
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn, nhds_prod_eq]
@@ -343,7 +343,7 @@ instance [CommGroup β] [IsTopologicalGroup β] : IsTopologicalGroup C(α, β) w
           (tendsto_iff_forall_isCompact_tendstoUniformlyOn.mp Filter.tendsto_id K hK))
   continuous_inv := by
     letI : UniformSpace β := IsTopologicalGroup.toUniformSpace β
-    have : UniformGroup β := uniformGroup_of_commGroup
+    have : IsUniformGroup β := uniformGroup_of_commGroup
     rw [continuous_iff_continuousAt]
     intro f
     rw [ContinuousAt, tendsto_iff_forall_isCompact_tendstoUniformlyOn]

@@ -435,10 +435,10 @@ end TopologicalSpace
 induced by each seminorm individually. We express this as a characterization of
 `WithSeminorms p`. -/
 theorem SeminormFamily.withSeminorms_iff_uniformSpace_eq_iInf [u : UniformSpace E]
-    [UniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
+    [IsUniformAddGroup E] (p : SeminormFamily 𝕜 E ι) :
     WithSeminorms p ↔ u = ⨅ i, (p i).toSeminormedAddCommGroup.toUniformSpace := by
   rw [p.withSeminorms_iff_nhds_eq_iInf,
-    UniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
+    IsUniformAddGroup.ext_iff inferInstance (uniformAddGroup_iInf fun i => inferInstance),
     UniformSpace.toTopologicalSpace_iInf, nhds_iInf]
   congrm _ = ⨅ i, ?_
   exact @comap_norm_nhds_zero _ (p i).toAddGroupSeminorm.toSeminormedAddGroup
@@ -605,8 +605,8 @@ In particular, if you can determine all continuous seminorms on `E`, that gives 
 characterization of equicontinuity for linear maps from `E` to `F`. For example `E` and `F` are
 both normed spaces, you get `NormedSpace.equicontinuous_TFAE`. -/
 protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
-    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
-    [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
+    [hu : IsUniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) : TFAE
     [ EquicontinuousAt ((↑) ∘ f) 0,
       Equicontinuous ((↑) ∘ f),
@@ -645,16 +645,16 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
   tfae_finish
 
 theorem _root_.WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}
-    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
-    [UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
+    [IsUniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔
     ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p :=
   (hq.equicontinuous_TFAE f).out 2 3
 
 theorem _root_.WithSeminorms.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
-    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
-    [UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [IsUniformAddGroup E] [u : UniformSpace F]
+    [IsUniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔ ∀ i,
     BddAbove (range fun k ↦ (q i).comp (f k)) ∧
@@ -908,11 +908,11 @@ theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
     FirstCountableTopology E := by
   have := hp.topologicalAddGroup
   let _ : UniformSpace E := IsTopologicalAddGroup.toUniformSpace E
-  have : UniformAddGroup E := uniformAddGroup_of_addCommGroup
+  have : IsUniformAddGroup E := uniformAddGroup_of_addCommGroup
   have : (𝓝 (0 : E)).IsCountablyGenerated := by
     rw [p.withSeminorms_iff_nhds_eq_iInf.mp hp]
     exact Filter.iInf.isCountablyGenerated _
-  have : (uniformity E).IsCountablyGenerated := UniformAddGroup.uniformity_countably_generated
+  have : (uniformity E).IsCountablyGenerated := IsUniformAddGroup.uniformity_countably_generated
   exact UniformSpace.firstCountableTopology E
 
 @[deprecated (since := "2024-11-13")] alias

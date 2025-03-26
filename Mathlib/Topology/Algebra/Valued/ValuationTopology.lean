@@ -84,9 +84,9 @@ is designed for the situation that there is a canonical valuation on the ring.
 TODO: show that there always exists an equivalent valuation taking values in a type belonging to
 the same universe as the ring.
 
-See Note [forgetful inheritance] for why we extend `UniformSpace`, `UniformAddGroup`. -/
+See Note [forgetful inheritance] for why we extend `UniformSpace`, `IsUniformAddGroup`. -/
 class Valued (R : Type u) [Ring R] (Γ₀ : outParam (Type v))
-  [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, UniformAddGroup R where
+  [LinearOrderedCommGroupWithZero Γ₀] extends UniformSpace R, IsUniformAddGroup R where
   v : Valuation R Γ₀
   is_topological_valuation : ∀ s, s ∈ 𝓝 (0 : R) ↔ ∃ γ : Γ₀ˣ, { x : R | v x < γ } ⊆ s
 
@@ -96,7 +96,7 @@ namespace Valued
 def mk' (v : Valuation R Γ₀) : Valued R Γ₀ :=
   { v
     toUniformSpace := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
-    toUniformAddGroup := @uniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
+    toIsUniformAddGroup := @uniformAddGroup_of_addCommGroup _ _ v.subgroups_basis.topology _
     is_topological_valuation := by
       letI := @IsTopologicalAddGroup.toUniformSpace R _ v.subgroups_basis.topology _
       intro s

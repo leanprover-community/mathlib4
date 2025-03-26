@@ -399,7 +399,7 @@ that the division operation `x y ↦ x * y⁻¹` (resp., subtraction) is continu
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
-you should also provide an instance of `UniformSpace` and `UniformAddGroup` using
+you should also provide an instance of `UniformSpace` and `IsUniformAddGroup` using
 `IsTopologicalAddGroup.toUniformSpace` and `uniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
@@ -411,7 +411,7 @@ class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Pro
 continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
-you should also provide an instance of `UniformSpace` and `UniformGroup` using
+you should also provide an instance of `UniformSpace` and `IsUniformGroup` using
 `IsTopologicalGroup.toUniformSpace` and `uniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
