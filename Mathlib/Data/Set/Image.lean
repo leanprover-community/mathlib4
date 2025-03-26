@@ -819,18 +819,25 @@ variable (u : Set α) (v : Set β)
 open Sum
 
 @[simp]
-theorem image_inl_inter_image_inr : inl '' u ∩ inr '' v = ∅ := by
-  rw [← subset_empty_iff]
+lemma Disjoint.inter_eq_empty {s t : Set α} (h : Disjoint s t) : s ∩ t = ∅ := by
+  rw [disjoint_iff] at h
+  exact h
+
+@[simp]
+theorem image_inl_inter_image_inr : Disjoint (inl '' u) (inr '' v) := by
+  rw [disjoint_iff, bot_eq_empty, ← subset_empty_iff]
   intro x hx
   nomatch hx
 
 @[simp]
-theorem range_inl_inter_image_inr : range inl ∩ inr '' v = (∅ : Set (α ⊕ β)) := by
-  rw [← image_univ, image_inl_inter_image_inr]
+theorem range_inl_inter_image_inr : Disjoint (α := Set (α ⊕ β)) (range inl) (inr '' v) := by
+  rw [← image_univ]
+  apply image_inl_inter_image_inr
 
 @[simp]
-theorem image_inl_inter_range_inr : inl '' u ∩ range inr = (∅ : Set (α ⊕ β)) := by
-  rw [← image_univ, image_inl_inter_image_inr]
+theorem image_inl_inter_range_inr : Disjoint (α := Set (α ⊕ β)) (inl '' u) (range inr) := by
+  rw [← image_univ]
+  apply image_inl_inter_image_inr
 
 end
 
