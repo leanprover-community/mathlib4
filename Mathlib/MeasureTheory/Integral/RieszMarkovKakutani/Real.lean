@@ -159,7 +159,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
   have hy {n m : Fin N} (h : n < m) : y n + ε ≤ y m := calc
     _ ≤ a + ε * m + ε := by
       exact add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
-    _ = _ := by dsimp [y]; linarith
+    _ = _ := by dsimp [y]; rw [mul_add, mul_one, add_assoc]
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
   let E : Fin N → Set X := fun n => (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
   use E
@@ -184,7 +184,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
         _ ≤ y m - ε := le_tsub_of_add_le_right (hy hc)
         _ < _ := hx.1
   -- The sets `E n` are a partition of the support of `f`.
-  have partition_aux: range f ⊆ ⋃ n : Fin N, Ioc (y n - ε) (y n) := by
+  have partition_aux: range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := by
     intro z hz
     simp_rw [show ∀ n, y n - ε = (a + n * ε) by simp [y, mul_add, ← add_assoc, mul_comm],
       show ∀ n, y n = a + n * ε + ε by simp [y, mul_add, ← add_assoc, mul_comm]]
@@ -358,10 +358,8 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
       · calc
           _ ≤ (μ (V n)).toReal := by
             apply (ENNReal.ofReal_le_iff_le_toReal _).mp
-            · apply le_rieszMeasure_tsupport_subset
-              · intro x
-                exact hg.2.2.1 n x
-              · exact hg.1 n
+            · refine le_rieszMeasure_tsupport_subset hΛ ?_ (hg.1 n)
+              exact fun x ↦ hg.2.2.1 n x
             · rw [← lt_top_iff_ne_top]
               apply lt_of_le_of_lt (hV n).2.2
               rw [WithTop.add_lt_top]
@@ -389,8 +387,8 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
       have (n : Fin N) : (|a| + y n + ε') * (μ (E n)).toReal =
           (|a| + 2 * ε') * (μ (E n)).toReal + (y n - ε') * (μ (E n)).toReal := by linarith
       simp_rw [this]
-      have : ∑ i : Fin N, (μ (E i)).toReal = (μ K).toReal := by
-        suffices h : μ K = ∑ i : Fin N, (μ (E i)) by
+      have : ∑ i, (μ (E i)).toReal = (μ K).toReal := by
+        suffices h : μ K = ∑ i, (μ (E i)) by
           rw [h]
           exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ LT.lt.ne_top (hE' n)
         dsimp [K]; rw [hE.1]
@@ -445,7 +443,7 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
             have : (n : ℝ) + 1 ≤ N := by norm_cast; omega
             simp_all
           _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
-        have : ∑ x : Fin N, y x ≤ ∑ x : Fin N, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
+        have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
         simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul] at this
         calc
           _ ≤ 1 / N * (N * b) := by
@@ -465,10 +463,10 @@ theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ (x : X), f x ∂(rieszMeas
   · calc
       _ = ∫ (x : X), -(-f) x ∂(rieszMeasure hΛ) := by
         simp only [coe_neg, Pi.neg_apply, neg_neg]
-      _ = - ∫ (x : X), (-f) x ∂(rieszMeasure hΛ) := by exact integral_neg' (-f)
-      _ ≤ - Λ (-f) := by exact neg_le_neg (RMK_le hΛ (-f))
-      _ = Λ (- -f) := by exact Eq.symm (LinearMap.map_neg Λ (- f))
-      _ = _ := by simp only [neg_neg]
+      _ = - ∫ (x : X), (-f) x ∂(rieszMeasure hΛ) := integral_neg' (-f)
+      _ ≤ - Λ (-f) := neg_le_neg (RMK_le hΛ (-f))
+      _ = Λ (- -f) := Eq.symm (LinearMap.map_neg Λ (- f))
+      _ = _ := by rw [neg_neg]
   -- prove the inequality for `f`
   · exact RMK_le hΛ f
 
