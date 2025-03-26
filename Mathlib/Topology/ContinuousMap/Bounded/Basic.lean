@@ -365,6 +365,10 @@ def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β
         _ ≤ max C 0 * D := by gcongr; apply hD
         ⟩⟩
 
+@[simp]
+theorem comp_apply (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β) (a : α) :
+    (f.comp G H) a = G (f a) := rfl
+
 /-- The composition operator (in the target) with a Lipschitz map is Lipschitz. -/
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
@@ -578,52 +582,101 @@ theorem one_compContinuous [TopologicalSpace γ] (f : C(γ, α)) : (1 : α →�
 
 end One
 
-section add
+section mul
 
-variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
-variable (f g : α →ᵇ β) {x : α} {C : ℝ}
+variable {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
 
-/-- The pointwise sum of two bounded continuous functions is again bounded continuous. -/
-instance instAdd : Add (α →ᵇ β) where
-  add f g :=
-    { toFun := fun x ↦ f x + g x
-      continuous_toFun := f.continuous.add g.continuous
-      map_bounded' := add_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
+@[to_additive]
+instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
+    Mul (α →ᵇ R) where
+  mul f g :=
+    { toFun := fun x ↦ f x * g x
+      continuous_toFun := f.continuous.mul g.continuous
+      map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
 
-@[simp]
-theorem coe_add : ⇑(f + g) = f + g := rfl
+@[to_additive (attr := simp)]
+theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
 
-theorem add_apply : (f + g) x = f x + g x := rfl
-
-@[simp]
-theorem mkOfCompact_add [CompactSpace α] (f g : C(α, β)) :
-    mkOfCompact (f + g) = mkOfCompact f + mkOfCompact g := rfl
-
-theorem add_compContinuous [TopologicalSpace γ] (h : C(γ, α)) :
-    (g + f).compContinuous h = g.compContinuous h + f.compContinuous h := rfl
+@[to_additive]
+theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
+    (f * g) x = f x * g x := rfl
 
 @[simp]
-theorem coe_nsmulRec : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
+theorem coe_nsmulRec [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
+    (f : α →ᵇ β) : ∀ n, ⇑(nsmulRec n f) = n • ⇑f
   | 0 => by rw [nsmulRec, zero_smul, coe_zero]
-  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec n]
+  | n + 1 => by rw [nsmulRec, succ_nsmul, coe_add, coe_nsmulRec _ n]
 
-instance instSMulNat : SMul ℕ (α →ᵇ β) where
+instance instSMulNat [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] :
+    SMul ℕ (α →ᵇ β) where
   smul n f :=
     { toContinuousMap := n • f.toContinuousMap
       map_bounded' := by simpa [coe_nsmulRec] using (nsmulRec n f).map_bounded' }
 
-@[simp]
-theorem coe_nsmul (r : ℕ) (f : α →ᵇ β) : ⇑(r • f) = r • ⇑f := rfl
+@[to_additive existing instSMulNat]
+instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
+  pow f n :=
+    { toFun := fun x ↦ (f x) ^ n
+      continuous_toFun := f.continuous.pow n
+      map_bounded' := by
+        obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
+        exact ⟨C, fun x y ↦ hC (by simp) (by simp)⟩ }
+
+@[to_additive]
+theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
+    ⇑(f ^ n) = (⇑f) ^ n := rfl
+
+@[to_additive (attr := simp)]
+theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) (x : α) :
+    (f ^ n) x = f x ^ n := rfl
+
+@[to_additive]
+instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
+    Monoid (α →ᵇ R) :=
+  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
+
+@[to_additive]
+instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
+    CommMonoid (α →ᵇ R) where
+  __ := instMonoid
+  mul_comm f g := by ext x; simp [mul_apply, mul_comm]
+
+@[to_additive]
+instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
+  DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
+
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
+`MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[to_additive (attr := simps)
+"Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
+`AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) [TopologicalSpace α]
+    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+    [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
+    (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
+    (α →ᵇ β) →* (α →ᵇ γ) where
+  toFun f := f.comp g hg
+  map_one' := ext fun _ => g.map_one
+  map_mul' _ _ := ext fun _ => g.map_mul _ _
+
+end mul
+
+section add
+
+variable [TopologicalSpace α] [PseudoMetricSpace β]
+variable {C : ℝ}
 
 @[simp]
-theorem nsmul_apply (r : ℕ) (f : α →ᵇ β) (v : α) : (r • f) v = r • f v := rfl
+theorem mkOfCompact_add [CompactSpace α] [Add β] [BoundedAdd β] [ContinuousAdd β] (f g : C(α, β)) :
+    mkOfCompact (f + g) = mkOfCompact f + mkOfCompact g := rfl
 
-instance instAddMonoid : AddMonoid (α →ᵇ β) :=
-  DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => coe_nsmul _ _
+theorem add_compContinuous [Add β] [BoundedAdd β] [ContinuousAdd β] [TopologicalSpace γ]
+    (f g : α →ᵇ β) (h : C(γ, α)) :
+    (g + f).compContinuous h = g.compContinuous h + f.compContinuous h := rfl
 
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
-def coeFnAddHom : (α →ᵇ β) →+ α → β where
+def coeFnAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ α → β where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
@@ -632,7 +685,7 @@ variable (α β)
 
 /-- The additive map forgetting that a bounded continuous function is bounded. -/
 @[simps]
-def toContinuousMapAddHom : (α →ᵇ β) →+ C(α, β) where
+def toContinuousMapAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ C(α, β) where
   toFun := toContinuousMap
   map_zero' := rfl
   map_add' := by
@@ -646,10 +699,6 @@ section comm_add
 
 variable [TopologicalSpace α]
 variable [PseudoMetricSpace β] [AddCommMonoid β] [BoundedAdd β] [ContinuousAdd β]
-
-@[to_additive]
-instance instAddCommMonoid : AddCommMonoid (α →ᵇ β) where
-  add_comm f g := by ext; simp [add_comm]
 
 @[simp]
 theorem coe_sum {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) :
@@ -726,54 +775,11 @@ theorem intCast_apply [IntCast β] (m : ℤ) (x : α) : (m : α →ᵇ β) x = m
 
 end casts
 
-section mul
-
-variable [TopologicalSpace α] {R : Type*} [PseudoMetricSpace R]
-
-instance instMul [Mul R] [BoundedMul R] [ContinuousMul R] :
-    Mul (α →ᵇ R) where
-  mul f g :=
-    { toFun := fun x ↦ f x * g x
-      continuous_toFun := f.continuous.mul g.continuous
-      map_bounded' := mul_bounded_of_bounded_of_bounded (map_bounded f) (map_bounded g) }
-
-@[simp]
-theorem coe_mul [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) : ⇑(f * g) = f * g := rfl
-
-theorem mul_apply [Mul R] [BoundedMul R] [ContinuousMul R] (f g : α →ᵇ R) (x : α) :
-    (f * g) x = f x * g x := rfl
-
-instance instPow [Monoid R] [BoundedMul R] [ContinuousMul R] : Pow (α →ᵇ R) ℕ where
-  pow f n :=
-    { toFun := fun x ↦ (f x) ^ n
-      continuous_toFun := f.continuous.pow n
-      map_bounded' := by
-        obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <| isBounded_pow (isBounded_range f) n
-        exact ⟨C, fun x y ↦ hC (by simp) (by simp)⟩ }
-
-theorem coe_pow [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) :
-    ⇑(f ^ n) = (⇑f) ^ n := rfl
-
-@[simp]
-theorem pow_apply [Monoid R] [BoundedMul R] [ContinuousMul R] (n : ℕ) (f : α →ᵇ R) (x : α) :
-    (f ^ n) x = f x ^ n := rfl
-
-instance instMonoid [Monoid R] [BoundedMul R] [ContinuousMul R] :
-    Monoid (α →ᵇ R) :=
-  Injective.monoid _ DFunLike.coe_injective' rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-
-instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
-    CommMonoid (α →ᵇ R) where
-  __ := instMonoid
-  mul_comm f g := by ext x; simp [mul_apply, mul_comm]
-
-instance instSemiring [Semiring R] [BoundedMul R] [ContinuousMul R]
-    [BoundedAdd R] [ContinuousAdd R] :
+instance instSemiring {R : Type*} [TopologicalSpace α] [PseudoMetricSpace R]
+    [Semiring R] [BoundedMul R] [ContinuousMul R] [BoundedAdd R] [ContinuousAdd R] :
     Semiring (α →ᵇ R) :=
   Injective.semiring _ DFunLike.coe_injective'
     rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl)
-
-end mul
 
 section NormedAddCommGroup
 
@@ -1085,7 +1091,7 @@ variable (𝕜)
 @[simps]
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
-  map_add' _ _ := add_apply _ _
+  map_add' _ _ := add_apply _ _ _
   map_smul' _ _ := smul_apply _ _ _
 
 variable (α β)
@@ -1231,6 +1237,15 @@ instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instRing
   __ := instNonUnitalSeminormedRing
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
+`RingHom`. Similar to `RingHom.compLeftContinuous`. -/
+@[simps!]
+protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
+    [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
+    (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
+  { g.toMonoidHom.compLeftContinuousBounded α hg,
+    g.toAddMonoidHom.compLeftContinuousBounded α hg with }
+
 end Seminormed
 
 instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
@@ -1316,13 +1331,38 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
   __ := instNormedSpace
 
+variable (𝕜)
+
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
+as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
+@[simps!]
+protected def AlgHom.compLeftContinuousBounded
+    [NormedRing β] [NormedAlgebra 𝕜 β][NormedRing γ] [NormedAlgebra 𝕜 γ]
+    (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
+  { g.toRingHom.compLeftContinuousBounded α hg with
+    commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
+
+/-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
+@[simps]
+def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
+  toFun := (↑)
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+@[simp]
+theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
+
+variable {𝕜}
+
 /-!
 ### Structure as normed module over scalar functions
 
 If `β` is a normed `𝕜`-space, then we show that the space of bounded continuous
 functions from `α` to `β` is naturally a module over the algebra of bounded continuous
 functions from `α` to `𝕜`. -/
-
 
 instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=
@@ -1477,3 +1517,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+set_option linter.style.longFile 1700

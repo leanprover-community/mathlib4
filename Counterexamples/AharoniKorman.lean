@@ -230,7 +230,7 @@ lemma level_isPWO {n : ℕ} : (level n).IsPWO := by
   rw [level_eq_range, ← Set.image_univ]
   refine Set.IsPWO.image_of_monotone ?_ (embed n).monotone
   rw [← Set.univ_prod_univ]
-  exact .prod .of_linearOrder .of_linearOrder
+  exact .prod (.of_linearOrder _) (.of_linearOrder _)
 
 /--
 If `A` is a subset of `level n` and is an antichain, then `A` is finite.

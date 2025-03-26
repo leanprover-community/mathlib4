@@ -236,8 +236,7 @@ protected theorem Perm.flatMap {l₁ l₂ : List α} {f g : α → List β} (h :
 
 theorem flatMap_append_perm (l : List α) (f g : α → List β) :
     l.flatMap f ++ l.flatMap g ~ l.flatMap fun x => f x ++ g x := by
-  induction' l with a l IH
-  · simp
+  induction l with | nil => simp | cons a l IH => ?_
   simp only [flatMap_cons, append_assoc]
   refine (Perm.trans ?_ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]

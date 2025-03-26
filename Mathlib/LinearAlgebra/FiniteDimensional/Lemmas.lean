@@ -3,9 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
 import Mathlib.LinearAlgebra.Dimension.DivisionRing
+import Mathlib.LinearAlgebra.Dimension.FreeAndStrongRankCondition
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -14,9 +14,8 @@ import Mathlib.Tactic.IntervalCases
 This file contains some further development of finite dimensional vector spaces, their dimensions,
 and linear maps on such spaces.
 
-Definitions and results that require fewer imports are in
-`Mathlib.LinearAlgebra.FiniteDimensional.Defs`.
-
+Definitions are in `Mathlib.LinearAlgebra.FiniteDimensional.Defs`
+and results that require fewer imports are in `Mathlib.LinearAlgebra.FiniteDimensional.Basic`.
 -/
 
 assert_not_exists Monoid.exponent Module.IsTorsion
@@ -238,6 +237,26 @@ theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [
     {b : ι → V} (lin_ind : LinearIndependent K b) (card_eq : Fintype.card ι = finrank K V) :
     ⇑(basisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = b :=
   Basis.coe_mk _ _
+
+/-- In a vector space `ι → K`, a linear independent family indedex by `ι` is a basis. -/
+noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
+    [Decidable (Nonempty ι)] {b : ι → (ι → K)} (hb : LinearIndependent K b) : Basis ι K (ι → K) :=
+  if hι : Nonempty ι then
+    basisOfLinearIndependentOfCardEqFinrank hb (Module.finrank_fintype_fun_eq_card K).symm
+  else
+    have : IsEmpty ι := not_nonempty_iff.mp hι
+    Basis.empty _
+
+open Classical in
+@[simp]
+theorem coe_basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
+    {b : ι → (ι → K)} (hb : LinearIndependent K b) :
+    ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
+  by_cases hι : Nonempty ι
+  · simp [hι, basisOfPiSpaceOfLinearIndependent]
+  · rw [basisOfPiSpaceOfLinearIndependent, dif_neg hι]
+    ext i
+    exact ((not_nonempty_iff.mp hι).false i).elim
 
 /-- A linear independent finset of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]

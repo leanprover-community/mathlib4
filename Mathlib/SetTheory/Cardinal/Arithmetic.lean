@@ -8,7 +8,7 @@ import Mathlib.SetTheory.Cardinal.Aleph
 /-!
 # Cardinal arithmetic
 
-Arithmetic operations on cardinals are defined in `SetTheory/Cardinal/Basic.lean`. However, proving
+Arithmetic operations on cardinals are defined in `SetTheory/Cardinal/Order.lean`. However, proving
 the important theorem `c * c = c` for infinite cardinals and its corollaries requires the use of
 ordinal numbers. This is done within this file.
 
