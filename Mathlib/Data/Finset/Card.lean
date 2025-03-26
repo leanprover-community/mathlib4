@@ -715,9 +715,10 @@ theorem two_lt_card : 2 < #s ↔ ∃ a ∈ s, ∃ b ∈ s, ∃ c ∈ s, a ≠ b 
 
 lemma exists_ne_of_two_lt_card (h : 2 < #s) (u w : α) :
     ∃ x, x ∈ s ∧ x ≠ u ∧ x ≠ w := by
-  obtain ⟨a, b, c, ha, hb, hc, hab, hac, hbc⟩ := two_lt_card_iff.1 h
-  by_cases haw : a = w <;>  by_cases hbw : b = w <;> by_cases hcw : c = w <;>
-  by_cases haw : a = u <;>  by_cases hbw : b = u <;> by_cases hcw : c = u <;> aesop
+  obtain ⟨a, b, c, _⟩ := two_lt_card_iff.1 h
+  by_cases a = w <;>  by_cases b = w <;> by_cases c = w <;>
+  by_cases a = u <;>  by_cases b = u <;> by_cases c = u <;>
+  aesop
 
 /-! ### Inductions -/
 
