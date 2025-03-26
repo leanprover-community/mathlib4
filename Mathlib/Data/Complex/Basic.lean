@@ -266,22 +266,6 @@ theorem I_mul_re (z : ℂ) : (I * z).re = -z.im := by simp
 theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 
 @[simp]
-theorem mul_I_re_ofReal (x : ℝ) : (x * I).re = 0 := by
-  rw [mul_I_re, ofReal_im, neg_zero]
-
-@[simp]
-theorem mul_I_im_ofReal (x : ℝ) : (x * I).im = x := by
-  rw [mul_I_im, ofReal_re]
-
-@[simp]
-theorem I_mul_re_ofReal (x : ℝ) : (I * x).re = 0 := by
-  rw [I_mul_re, ofReal_im, neg_zero]
-
-@[simp]
-theorem I_mul_im_ofReal (x : ℝ) : (I * x).im = x := by
-  rw [I_mul_im, ofReal_re]
-
-@[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
   ext <;> simp [Complex.equivRealProd, ofReal]
 
