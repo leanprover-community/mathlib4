@@ -1,5 +1,6 @@
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
+import Mathlib.MeasureTheory.Measure.Complex
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for complex linear functionals
@@ -44,7 +45,7 @@ theorem uniqueness : True := sorry
 
 section ComplexRMK
 
-open ZeroAtInfty
+open ZeroAtInfty MeasureTheory
 
 variable (X : Type*) [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
   (Φ : C₀(X, ℂ) →L[ℂ] ℂ)
@@ -59,6 +60,8 @@ the supremum norm). -/
 theorem exists_pos_lin_func : True := sorry
 -- ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C₀(X, ℂ)),
 --  ‖Φ f‖ ≤ Λ (norm ∘ f) ∧ Λ (norm ∘ f) ≤ ‖f‖ := sorry
+-- need to define `norm` as a `ContinuousMap`
+
 
 -- **Proof** [Rudin 87, Theorem 6.19]
 -- If `f ∈` [class of all nonnegative real members of `C_c(X, ℝ)`],
@@ -101,10 +104,17 @@ theorem exists_pos_lin_func : True := sorry
 -- Theorem 1.32, show now that our extended functional `Λ` is linear on `C_c(X)`.
 
 
+variable [MeasurableSpace X] [BorelSpace X]
+
 /-- **Theorem**
 Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. Then (1) there exists a complex Borel measure
 `μ` such that, `∀ f : C₀(X, ℂ)`, `Φ f = ∫ x, f x ∂μ`, (2) `‖Φ‖ = |μ|(X)`. -/
 theorem Complex.integral_rieszMeasure : True := sorry
+-- ∃ (μ : ComplexMeasure X), ∀ (f : C₀(X, ℂ)),
+--  Φ f = ∫ x, f x ∂μ
+--  ∧ ‖Φ‖ = ComplexMeasureMeasure.totalVariation μ X
+-- need to define `ComplexMeasureMeasure.totalVariation`
+-- need to define `ComplexMeasure.integral`, maybe in general `VectorMeasure.integral`
 
 -- **Proof** [Rudin 87, Theorem 6.19]
 -- Assume `‖Φ‖ = 1`, without loss of generality.
