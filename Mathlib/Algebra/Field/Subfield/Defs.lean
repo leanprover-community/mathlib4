@@ -201,8 +201,6 @@ theorem coe_toSubring (s : Subfield K) : (s.toSubring : Set K) = s :=
 theorem mem_toSubring (s : Subfield K) (x : K) : x ∈ s.toSubring ↔ x ∈ s :=
   Iff.rfl
 
-theorem subtype_toSubring (s : Subfield K) : s.toSubring.subtype = s.subtype := rfl
-
 end Subfield
 
 /-- A `Subring` containing inverses is a `Subfield`. -/
