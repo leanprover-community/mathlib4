@@ -221,6 +221,8 @@ end RingSeminorm
 
 namespace RingNorm
 
+section NonUnitalRing
+
 variable [NonUnitalRing R]
 
 instance funLike : FunLike (RingNorm R) R ℝ where
@@ -259,6 +261,29 @@ theorem apply_one [DecidableEq R] (x : R) : (1 : RingNorm R) x = if x = 0 then 0
 
 instance [DecidableEq R] : Inhabited (RingNorm R) :=
   ⟨1⟩
+
+end NonUnitalRing
+
+/-- The `NormedRing` stucture on a ring `R` determined by a `RingNorm`. -/
+def to_normedRing [Ring R] (f : RingNorm R) : NormedRing R where
+  norm x := f x
+  dist x y := f (x - y)
+  dist_self x := by simp only [sub_self, AddGroupSeminorm.toFun_eq_coe, _root_.map_zero]
+  dist_comm x y := by
+    simp only [dist, AddGroupSeminorm.toFun_eq_coe]
+    rw [← neg_sub x y, map_neg_eq_map]
+  dist_triangle x y z := by
+    have hxyz : x - z = x - y + (y - z) := by abel
+    simp only [AddGroupSeminorm.toFun_eq_coe, hxyz, map_add_le_add]
+  dist_eq x y := rfl
+  norm_mul_le x y := by
+    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe, map_mul_le_mul]
+  edist_dist x y := by
+    simp only [AddGroupSeminorm.toFun_eq_coe, RingSeminorm.toFun_eq_coe]
+    rw [eq_comm, ENNReal.ofReal_eq_coe_nnreal]
+  eq_of_dist_eq_zero hxy := by
+    simp only [dist, AddGroupSeminorm.toFun_eq_coe] at hxy
+    exact eq_of_sub_eq_zero (RingNorm.eq_zero_of_map_eq_zero' _ _ hxy)
 
 end RingNorm
 
