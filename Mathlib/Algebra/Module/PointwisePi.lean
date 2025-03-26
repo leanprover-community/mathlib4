@@ -3,9 +3,9 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best
 -/
-import Mathlib.Algebra.Group.Action.Pi
-import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Algebra.Group.Action.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise actions on sets in Pi types
