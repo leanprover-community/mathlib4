@@ -308,9 +308,8 @@ instance _root_.OrderDual.instIsUpperSet [Preorder α] [TopologicalSpace α] [To
   topology_eq_upperSetTopology := by ext; rw [IsLowerSet.topology_eq α]
 
 /-- If `α` is equipped with the lower set topology, then it is homeomorphic to `WithLowerSet α`. -/
-def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α := by
-  rw [topology_eq α]
-  exact Homeomorph.refl (WithLowerSet α)
+def WithLowerSetHomeomorph : WithLowerSet α ≃ₜ α :=
+  WithLowerSet.ofLowerSet.toHomeomorphOfIsInducing ⟨topology_eq α ▸ induced_id.symm⟩
 
 lemma isOpen_iff_isLowerSet : IsOpen s ↔ IsLowerSet s := by rw [topology_eq α]; rfl
 
