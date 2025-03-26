@@ -241,6 +241,7 @@ def semicolonLinter : TextbasedLinter := fun lines ↦ Id.run do
    return (errors, if errors.size > 0 then some fixedLines else none)
 
 -- add to Batteries.Data.String.Matcher
+/-- Count the number of occurrences of `pattern` in `s` -/
 def _root_.String.countSubstr (s : String) (pattern: Substring) : ℕ :=
   (s.findAllSubstr pattern).size
 
