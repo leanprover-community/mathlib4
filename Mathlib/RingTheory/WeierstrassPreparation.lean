@@ -352,12 +352,6 @@ lemma preparation_lift {n : ℕ} (npos : n > 0) [hmax : m.IsMaximal] (f : PowerS
           simp [coeff_ge (Nat.le_add_left k' i)]
         simp [← Units.eq_iff, mul_add, ← eqγ, mul_comm (H.1 - h'.1) _, ← mul_assoc, h'.val_inv]
 
-lemma map_ntriv' {n : ℕ} (npos : n > 0) {f : PowerSeries R} (ntriv : ∃ k, f.coeff R k ∉ m) :
-    ∃ (k : ℕ),
-    (f.map (Ideal.Quotient.mk (m ^ n))).coeff _ k ∉ m.map (Ideal.Quotient.mk (m ^ n)) := by
-  convert ntriv
-  simp [Ideal.pow_le_self (Nat.ne_zero_of_lt npos)]
-
 lemma map_order_eq' {n : ℕ} (npos : n > 0) {f : PowerSeries R} :
     ((f.map (Ideal.Quotient.mk (m ^ n))).map
       (Ideal.Quotient.mk (m.map (Ideal.Quotient.mk (m ^ n))))).order =
@@ -605,23 +599,11 @@ theorem CompleteLocalRing.weierstrass_preparation [hmax : m.IsMaximal] [comp : I
     exact sub_eq_zero.mp <| IsHausdorff.haus IsAdicComplete.toIsHausdorff
       (H.1.coeff R i - h.coeff R i) (fun n ↦ SModEq.zero.mpr (SModEq.sub_mem.mp (coeff_modeq' n)))
 
-open Classical in
-lemma weierstrass_preparation_strong_uniq [hmax : m.IsMaximal] [IsAdicComplete m R] (f : R⟦X⟧)
-    (ntriv : ∃ (k : ℕ), f.coeff R k ∉ m) (h : R⟦X⟧ˣ) (g : R[X]) (mon : g.Monic)
-    (distinguish : (∀ i : ℕ, i < g.degree → g.coeff i ∈ m)) (eq : f = g * h) :
-    h = Classical.choose (CompleteLocalRing.weierstrass_preparation f ntriv) := by
-  apply (Classical.choose_spec (CompleteLocalRing.weierstrass_preparation f ntriv)).2
-  use g
-  let _ : Nontrivial R := nontrivial_of_ne 0 1 (ne_of_mem_of_not_mem (Submodule.zero_mem m)
-    ((Ideal.ne_top_iff_one m).mp (Ideal.IsMaximal.ne_top hmax)))
-  exact ⟨mon, deg_eq_find Ideal.IsPrime.ne_top' f ntriv h g mon distinguish eq, distinguish, eq⟩
-
-open Classical in
 lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m.IsMaximal]
     [comp : IsAdicComplete m R] {π : R} (prin : Ideal.span {π} = m) {f : R⟦X⟧}
-    (ne0 : f ≠ 0) (pi_ne0 : π ≠ 0): ∃! khg : ℕ × R⟦X⟧ˣ × R[X], khg.2.2.Monic ∧
-    (∀ i : ℕ, i < khg.2.2.degree → (khg.2.2.coeff i) ∈ m) ∧ f =
-    (π ^ khg.1) • (khg.2.2 * khg.2.1) := by
+    (ne0 : f ≠ 0) (pi_ne0 : π ≠ 0): ∃! khg : ℕ × R⟦X⟧ˣ × R[X],
+    khg.2.2.IsDistinguishedAt m ∧ f = (π ^ khg.1) • (khg.2.2 * khg.2.1) := by
+  classical
   have exist_nmem : ∃ n : ℕ, ∃ i, f.coeff R i ∉ m ^ n := by
     by_contra! h
     absurd ne0
@@ -641,31 +623,30 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
   have f'_spec : (π ^ k) • f' = f := by
     ext i
     simpa [f'] using (Classical.choose_spec (Ideal.mem_span_singleton.mp (this i))).symm
-  have ntriv : ∃ (i : ℕ), f'.coeff R i ∉ m := by
-    rcases Nat.find_spec exist_nmem with ⟨i, hi⟩
-    use i
+  have ntriv : (PowerSeries.map (Ideal.Quotient.mk m)) f' ≠ 0 := by
     by_contra h
+    rcases Nat.find_spec exist_nmem with ⟨i, hi⟩
     absurd hi
     rw [← eqfind, pow_add, pow_one, ← f'_spec, map_smul, smul_eq_mul]
-    apply Ideal.mul_mem_mul _ h
+    apply Ideal.mul_mem_mul _ (by rw [← eq_zero_iff_mem, ← coeff_map, h, map_zero])
     simp only [← prin, Ideal.pow_mem_pow (Ideal.mem_span_singleton_self π) k]
   have muleq {g : R⟦X⟧} : (π ^ k) • g = f → g = f' := by
     intro eq
     ext i
     have : (π ^ k • g).coeff R i = (π ^ k • f').coeff R i := by rw [eq, f'_spec]
     simpa [pow_eq_zero_iff', pi_ne0, ne_eq]
-  rcases CompleteLocalRing.weierstrass_preparation f' ntriv with ⟨h, ⟨g, mon, degg, hg, eq⟩, uniq⟩
+  rcases CompleteLocalRing.weierstrass_preparation f' ntriv with ⟨h, ⟨g, distinguish, eq⟩, uniq⟩
   use (k, h, g)
   constructor
-  · exact ⟨mon, hg, by rw [← eq, f'_spec]⟩
+  · exact ⟨distinguish, by rw [← eq, f'_spec]⟩
   · intro (k', h', g') h_khg'
-    rcases h_khg' with ⟨mon', hg', eq'⟩
+    rcases h_khg' with ⟨distinguish', eq'⟩
     have mapg : g'.map (Ideal.Quotient.mk m) = Polynomial.X ^ g'.natDegree := by
       ext i
       by_cases ne : i = g'.natDegree
-      · simp [ne, mon']
+      · simp [ne, distinguish'.monic]
       · rcases lt_or_gt_of_ne ne with lt|gt
-        · simpa [ne] using eq_zero_iff_mem.mpr (hg' i (Polynomial.coe_lt_degree.mpr lt))
+        · simpa [ne] using eq_zero_iff_mem.mpr (distinguish'.else_mem lt)
         · simp [ne, Polynomial.coeff_eq_zero_of_natDegree_lt gt]
     have : Nat.find exist_nmem = k' + 1 := by
       apply (Nat.find_eq_iff exist_nmem).mpr
@@ -693,11 +674,7 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
           using Ideal.mem_span_singleton.mpr (dvd_mul_right _ _)
     have keq : k' = k := by simp [k, this]
     rw [keq] at eq'
-    have heq : h' = h := by
-      apply uniq
-      use g'
-      exact ⟨mon', deg_eq_find Ideal.IsPrime.ne_top' f' ntriv h' g' mon' hg' (muleq eq'.symm).symm,
-        hg', (muleq eq'.symm).symm⟩
+    have heq : h' = h := uniq _ ⟨g', distinguish', (muleq eq'.symm).symm⟩
     simp only [keq, heq, Prod.mk.injEq, true_and]
     apply Polynomial.coe_inj.mp
     calc
@@ -707,9 +684,7 @@ lemma IsDiscreteValuationRing.weierstrass_preparation_aux [IsDomain R] [hmax : m
 --note : the conditions needed for `R` in `weierstrass_preparation_aux` actually implies DVR
 theorem IsDiscreteValuationRing.weierstrass_preparation [IsDomain R] [IsDiscreteValuationRing R]
     [comp : IsAdicComplete (IsLocalRing.maximalIdeal R) R](f : R⟦X⟧) (ne0 : f ≠ 0)
-    (π : R) (irr : Irreducible π) : ∃! khg : ℕ × R⟦X⟧ˣ × R[X], khg.2.2.Monic ∧
-    (∀ i : ℕ, i < khg.2.2.degree → (khg.2.2.coeff i) ∈ IsLocalRing.maximalIdeal R) ∧ f =
-    (π ^ khg.1) • (khg.2.2 * khg.2.1) :=
+    (π : R) (irr : Irreducible π) : ∃! khg : ℕ × R⟦X⟧ˣ × R[X],
+    khg.2.2.IsDistinguishedAt (IsLocalRing.maximalIdeal R) ∧
+    f = (π ^ khg.1) • (khg.2.2 * khg.2.1) :=
   IsDiscreteValuationRing.weierstrass_preparation_aux irr.maximalIdeal_eq.symm ne0 irr.ne_zero
-
-end
