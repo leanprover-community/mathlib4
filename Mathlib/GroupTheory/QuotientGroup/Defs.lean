@@ -249,7 +249,7 @@ theorem lift_surjective_of_surjective (φ : G →* M) (hφ : Function.Surjective
   fun x ↦ ⟨mk (hφ x).choose, by rw [lift_mk, (hφ x).choose_spec]⟩
 
 @[to_additive]
-theorem lift_ker (φ : G →* M) (HN : N ≤ φ.ker) :
+theorem ker_lift (φ : G →* M) (HN : N ≤ φ.ker) :
     (QuotientGroup.lift N φ HN).ker = Subgroup.map (QuotientGroup.mk' N) φ.ker := by
   ext x
   obtain ⟨a, rfl⟩ := QuotientGroup.mk_surjective x
@@ -284,10 +284,10 @@ theorem map_surjective_of_surjective (M : Subgroup H) [M.Normal] (f : G →* H)
   lift_surjective_of_surjective _ _ hf _
 
 @[to_additive]
-theorem map_ker (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ Subgroup.comap f M) :
+theorem ker_map (M : Subgroup H) [M.Normal] (f : G →* H) (h : N ≤ Subgroup.comap f M) :
     (map N M f h).ker = Subgroup.map (mk' N) (M.comap f) := by
   simp_rw [← ker_mk' M, MonoidHom.comap_ker]
-  exact QuotientGroup.lift_ker _ _ _
+  exact QuotientGroup.ker_lift _ _ _
 
 @[to_additive]
 theorem map_id_apply (h : N ≤ Subgroup.comap (MonoidHom.id _) N := (Subgroup.comap_id N).le) (x) :
