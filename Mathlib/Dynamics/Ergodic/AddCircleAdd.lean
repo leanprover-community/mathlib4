@@ -25,6 +25,6 @@ theorem ergodic_add_left {a : AddCircle p} : Ergodic (a + ·) ↔ addOrderOf a =
   rw [← denseRange_zsmul_iff, ergodic_add_left_iff_denseRange_zsmul]
 
 theorem ergodic_add_right {a : AddCircle p} : Ergodic (· + a) ↔ addOrderOf a = 0 := by
-  simp only [add_comm, ← ergodic_add_left] 
+  simp only [add_comm, ← ergodic_add_left]
 
 end AddCircle
