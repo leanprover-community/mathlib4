@@ -1007,5 +1007,5 @@ def mapCoconeOp {t : Cocone F} : (mapCocone G t).op ≅ mapCone G.op t.op :=
   Cones.ext (Iso.refl _)
 
 end
-#check CategoryTheory.Limits.Cocone
+
 end CategoryTheory.Functor
