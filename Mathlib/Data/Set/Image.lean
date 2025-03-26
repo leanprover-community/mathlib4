@@ -815,22 +815,24 @@ theorem compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.i
   IsCompl.compl_eq isCompl_range_inl_range_inr.symm
 
 section
-variable (u : Set α) (v : Set β)
+
 open Sum
 
 @[simp]
-theorem image_inl_inter_image_inr : Disjoint (inl '' u) (inr '' v) := by
+theorem image_inl_inter_image_inr (u : Set α) (v : Set β) : Disjoint (inl '' u) (inr '' v) := by
   rw [disjoint_iff, bot_eq_empty, ← subset_empty_iff]
   intro x hx
   nomatch hx
 
 @[simp]
-theorem range_inl_inter_image_inr : Disjoint (α := Set (α ⊕ β)) (range inl) (inr '' v) := by
+theorem range_inl_inter_image_inr (v : Set β) :
+    Disjoint (α := Set (α ⊕ β)) (range inl) (inr '' v) := by
   rw [← image_univ]
   apply image_inl_inter_image_inr
 
 @[simp]
-theorem image_inl_inter_range_inr : Disjoint (α := Set (α ⊕ β)) (inl '' u) (range inr) := by
+theorem image_inl_inter_range_inr (u : Set α) :
+    Disjoint (α := Set (α ⊕ β)) (inl '' u) (range inr) := by
   rw [← image_univ]
   apply image_inl_inter_image_inr
 
