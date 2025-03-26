@@ -391,12 +391,8 @@ theorem theta_h_kerα {h : H} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H �
       rw [h₂, neg_zero]
     rw [← lie_skew] at this
     exact neg_eq_zero.mp this
-  have se₁ :  (((t : K) • (ad K L eα)) ^ 0) h = h := by
-    simp only [pow_zero, LinearMap.one_apply]
   have se₂ :  (((t : K) • (ad K L eα)) ^ 1) h = 0 := by
     rw [pow_one, LinearMap.smul_apply, ad_apply, se₀, smul_zero]
-  have sf₁ :  ((-(t⁻¹ : K) • (ad K L fα)) ^ 0) h = h := by
-    simp only [pow_zero, LinearMap.one_apply]
   have sf₂ :  ((-(t⁻¹ : K) • (ad K L fα)) ^ 1) h = 0 := by
     rw [pow_one, LinearMap.smul_apply, ad_apply, sf₀, smul_zero]
   have se₃ : (exp_ad_e H hnz heα t) h = h := by
