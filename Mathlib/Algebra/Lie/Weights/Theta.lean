@@ -20,15 +20,13 @@ Text here please.
 Tags here please.
 -/
 
+namespace LieAlgebra
+
 namespace Theta
 
-open LieAlgebra
-
-open LieModule
+section AdAction
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] {h e f : L}
-
-section AdAction
 
 lemma pow_0_ad_e_e (t : Kˣ) : (((t : K) • (ad K L e)) ^ 0) e = e := rfl
 
@@ -126,6 +124,11 @@ lemma pow_2_ad_f_h (t : Kˣ) (ht : IsSl2Triple h e f) : ((-(t⁻¹ : K) • (ad 
 
 end AdAction
 
+section ThetaRootSpace
+
+open LieModule
+
+variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] {h e f : L}
 variable (H : LieSubalgebra K L) [LieRing.IsNilpotent H] {α : Weight K H L} [CharZero K]
   [LieAlgebra ℚ L] [IsTriangularizable K H L] [FiniteDimensional K L]
 
@@ -358,4 +361,70 @@ theorem theta_hα (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ r
     _ = - h := by
       rw [← lie_skew, ht.lie_e_f]
 
+end ThetaRootSpace
+
+section ThetaGeneral
+
+open LieModule
+
+variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [IsKilling K L]
+variable (H : LieSubalgebra K L) [H.IsCartanSubalgebra] {α : Weight K H L} [CharZero K]
+  [LieAlgebra ℚ L] [IsTriangularizable K H L] [FiniteDimensional K L] {hα eα fα : L}
+
+-- lemma lie_eq_smul_of_mem_rootSpace {α : H → K} {x : L} (hx : x ∈ rootSpace H α) (h : H)
+
+theorem theta_h_kerα {h : H} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α)
+    (hfα : fα ∈ rootSpace H (- α)) (t : Kˣ) (h₀ : h ∈ α.ker) : theta H hnz heα hfα t h = h := by
+  have se₀ : ⁅eα, (h : L)⁆ = 0 := by
+    have h₁ : α h = 0 := h₀
+    have h₂ := IsKilling.lie_eq_smul_of_mem_rootSpace heα h
+    rw [h₁, zero_smul] at h₂
+    have : ⁅(h : L), eα⁆ = 0 := h₂
+    rw [← lie_skew] at this
+    exact neg_eq_zero.mp this
+  have sf₀ : ⁅fα, (h : L)⁆ = 0 := by
+    have h₁ : α h = 0 := h₀
+    have h₂ := IsKilling.lie_eq_smul_of_mem_rootSpace hfα h
+    simp only [LieSubalgebra.coe_bracket_of_module, Pi.neg_apply, neg_smul] at h₂
+    rw [h₁, zero_smul] at h₂
+    have : ⁅(h : L), fα⁆ = 0 := by
+      rw [h₂, neg_zero]
+    rw [← lie_skew] at this
+    exact neg_eq_zero.mp this
+  have se₁ :  (((t : K) • (ad K L eα)) ^ 0) h = h := by
+    simp only [pow_zero, LinearMap.one_apply]
+  have se₂ :  (((t : K) • (ad K L eα)) ^ 1) h = 0 := by
+    rw [pow_one, LinearMap.smul_apply, ad_apply, se₀, smul_zero]
+  have sf₁ :  ((-(t⁻¹ : K) • (ad K L fα)) ^ 0) h = h := by
+    simp only [pow_zero, LinearMap.one_apply]
+  have sf₂ :  ((-(t⁻¹ : K) • (ad K L fα)) ^ 1) h = 0 := by
+    rw [pow_one, LinearMap.smul_apply, ad_apply, sf₀, smul_zero]
+  have se₃ : (exp_ad_e H hnz heα t) h = h := by
+    rw [exp_ad_e_apply,  LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L eα))]
+    have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) se₂
+      (nilpotent_e H t heα hnz)
+    simp only [LinearMap.smul_def, smul_assoc] at this
+    simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
+    rw [this, Finset.sum_range_succ, Finset.sum_range_zero, zero_add, pow_0_ad_e_h t,
+        Nat.factorial_zero, Nat.cast_one, inv_one, one_smul]
+  have sf₃ : (exp_ad_f H hnz hfα t) h = h := by
+    rw [exp_ad_f_apply,  LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L fα))]
+    have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) sf₂
+      (nilpotent_f H t hfα hnz)
+    simp only [LinearMap.smul_def, smul_assoc] at this
+    simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
+    rw [this, Finset.sum_range_succ, Finset.sum_range_zero, zero_add, pow_0_ad_f_h t,
+        Nat.factorial_zero, Nat.cast_one, inv_one, one_smul]
+  dsimp [theta]
+  rw [se₃, sf₃, se₃]
+
+
+
+
+
+
+end ThetaGeneral
+
 end Theta
+
+end LieAlgebra
