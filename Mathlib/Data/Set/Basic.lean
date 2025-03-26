@@ -130,11 +130,6 @@ instance PiSetCoe.canLift' (ι : Type u) (α : Type v) [Nonempty α] (s : Set ι
     CanLift (s → α) (ι → α) (fun f i => f i) fun _ => True :=
   PiSetCoe.canLift ι (fun _ => α) s
 
-@[simp]
-lemma Disjoint.inter_eq_empty {s t : Set α} (h : Disjoint s t) : s ∩ t = ∅ := by
-  rw [disjoint_iff] at h
-  exact h
-
 end Set
 
 section SetCoe
@@ -740,11 +735,11 @@ theorem mem_of_mem_inter_right {x : α} {a b : Set α} (h : x ∈ a ∩ b) : x �
 theorem inter_self (a : Set α) : a ∩ a = a :=
   ext fun _ => and_self_iff
 
-@[simp, nolint simpNF]
+@[simp]
 theorem inter_empty (a : Set α) : a ∩ ∅ = ∅ :=
   ext fun _ => iff_of_eq (and_false _)
 
-@[simp, nolint simpNF]
+@[simp]
 theorem empty_inter (a : Set α) : ∅ ∩ a = ∅ :=
   ext fun _ => iff_of_eq (false_and _)
 
