@@ -534,7 +534,7 @@ section NormedStar
 variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 instance instNormedStarGroup : NormedStarGroup C₀(α, β) where
-  norm_star f := (norm_star f.toBCF :)
+  norm_star_le f := (norm_star f.toBCF :).le
 
 end NormedStar
 

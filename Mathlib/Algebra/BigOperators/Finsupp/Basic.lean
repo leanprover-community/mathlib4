@@ -97,7 +97,7 @@ theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α �
 The left hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
 -/
 @[simp]
-theorem if_mem_support [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
+theorem if_mem_support [DecidableEq α] {N : Type*} [Zero N] (f : α →₀ N) (a : α) :
     (if a ∈ f.support then f a else 0) = f a := by
   simp only [mem_support_iff, ne_eq, ite_eq_left_iff, not_not]
   exact fun h ↦ h.symm
@@ -122,7 +122,7 @@ theorem prod_pow [Fintype α] (f : α →₀ ℕ) (g : α → N) :
   f.prod_fintype _ fun _ ↦ pow_zero _
 
 @[to_additive (attr := simp)]
-theorem prod_zpow {N} [CommGroup N] [Fintype α] (f : α →₀ ℤ) (g : α → N) :
+theorem prod_zpow {N} [DivisionCommMonoid N] [Fintype α] (f : α →₀ ℤ) (g : α → N) :
     (f.prod fun a b => g a ^ b) = ∏ a, g a ^ f a :=
   f.prod_fintype _ fun _ ↦ zpow_zero _
 
@@ -202,12 +202,12 @@ theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
   map_prod h _ _
 
 @[to_additive]
-theorem MonoidHom.coe_finsupp_prod [Zero β] [Monoid N] [CommMonoid P] (f : α →₀ β)
+theorem MonoidHom.coe_finsupp_prod [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) : ⇑(f.prod g) = f.prod fun i fi => ⇑(g i fi) :=
   MonoidHom.coe_finset_prod _ _
 
 @[to_additive (attr := simp)]
-theorem MonoidHom.finsupp_prod_apply [Zero β] [Monoid N] [CommMonoid P] (f : α →₀ β)
+theorem MonoidHom.finsupp_prod_apply [Zero β] [MulOneClass N] [CommMonoid P] (f : α →₀ β)
     (g : α → β → N →* P) (x : N) : f.prod g x = f.prod fun i fi => g i fi x :=
   MonoidHom.finset_prod_apply _ _ _
 
@@ -230,7 +230,7 @@ theorem single_sum [Zero M] [AddCommMonoid N] (s : ι →₀ M) (f : ι → M �
   single_finset_sum _ _ _
 
 @[to_additive]
-theorem prod_neg_index [AddGroup G] [CommMonoid M] {g : α →₀ G} {h : α → G → M}
+theorem prod_neg_index [SubtractionMonoid G] [CommMonoid M] {g : α →₀ G} {h : α → G → M}
     (h0 : ∀ a, h a 0 = 1) : (-g).prod h = g.prod fun a b => h a (-b) :=
   prod_mapRange_index h0
 
@@ -286,7 +286,7 @@ theorem prod_inv [Zero M] [CommGroup G] {f : α →₀ M} {h : α → M → G} :
   (map_prod (MonoidHom.id G)⁻¹ _ _).symm
 
 @[simp]
-theorem sum_sub [Zero M] [AddCommGroup G] {f : α →₀ M} {h₁ h₂ : α → M → G} :
+theorem sum_sub [Zero M] [SubtractionCommMonoid G] {f : α →₀ M} {h₁ h₂ : α → M → G} :
     (f.sum fun a b => h₁ a b - h₂ a b) = f.sum h₁ - f.sum h₂ :=
   Finset.sum_sub_distrib
 
@@ -350,16 +350,16 @@ def liftAddHom [AddZeroClass M] [AddCommMonoid N] : (α → M →+ N) ≃+ ((α 
     exact sum_add
 
 @[simp]
-theorem liftAddHom_apply [AddCommMonoid M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :
+theorem liftAddHom_apply [AddZeroClass M] [AddCommMonoid N] (F : α → M →+ N) (f : α →₀ M) :
     (liftAddHom (α := α) (M := M) (N := N)) F f = f.sum fun x => F x :=
   rfl
 
 @[simp]
-theorem liftAddHom_symm_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α) :
+theorem liftAddHom_symm_apply [AddZeroClass M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α) :
     (liftAddHom (α := α) (M := M) (N := N)).symm F x = F.comp (singleAddHom x) :=
   rfl
 
-theorem liftAddHom_symm_apply_apply [AddCommMonoid M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α)
+theorem liftAddHom_symm_apply_apply [AddZeroClass M] [AddCommMonoid N] (F : (α →₀ M) →+ N) (x : α)
     (y : M) : (liftAddHom (α := α) (M := M) (N := N)).symm F x y = F (single x y) :=
   rfl
 
@@ -401,16 +401,16 @@ theorem equivFunOnFinite_symm_eq_sum [Fintype α] [AddCommMonoid M] (f : α → 
   ext
   simp
 
-theorem liftAddHom_apply_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
+theorem liftAddHom_apply_single [AddZeroClass M] [AddCommMonoid N] (f : α → M →+ N) (a : α)
     (b : M) : (liftAddHom (α := α) (M := M) (N := N)) f (single a b) = f a b :=
   sum_single_index (f a).map_zero
 
 @[simp]
-theorem liftAddHom_comp_single [AddCommMonoid M] [AddCommMonoid N] (f : α → M →+ N) (a : α) :
+theorem liftAddHom_comp_single [AddZeroClass M] [AddCommMonoid N] (f : α → M →+ N) (a : α) :
     ((liftAddHom (α := α) (M := M) (N := N)) f).comp (singleAddHom a) = f a :=
   AddMonoidHom.ext fun b => liftAddHom_apply_single f a b
 
-theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g : N →+ P)
+theorem comp_liftAddHom [AddZeroClass M] [AddCommMonoid N] [AddCommMonoid P] (g : N →+ P)
     (f : α → M →+ N) :
     g.comp ((liftAddHom (α := α) (M := M) (N := N)) f) =
       (liftAddHom (α := α) (M := M) (N := P)) fun a => g.comp (f a) :=
@@ -418,7 +418,7 @@ theorem comp_liftAddHom [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] (g
     funext fun a => by
       rw [liftAddHom_symm_apply, AddMonoidHom.comp_assoc, liftAddHom_comp_single]
 
-theorem sum_sub_index [AddCommGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : α → β → γ}
+theorem sum_sub_index [AddGroup β] [AddCommGroup γ] {f g : α →₀ β} {h : α → β → γ}
     (h_sub : ∀ a b₁ b₂, h a (b₁ - b₂) = h a b₁ - h a b₂) : (f - g).sum h = f.sum h - g.sum h :=
   ((liftAddHom (α := α) (M := β) (N := γ)) fun a =>
     AddMonoidHom.ofMapSub (h a) (h_sub a)).map_sub f g
@@ -437,7 +437,7 @@ theorem prod_finset_sum_index [AddCommMonoid M] [CommMonoid N] {s : Finset ι} {
     rw [prod_cons, ih, sum_cons, prod_add_index' h_zero h_add]
 
 @[to_additive]
-theorem prod_sum_index [AddCommMonoid M] [AddCommMonoid N] [CommMonoid P] {f : α →₀ M}
+theorem prod_sum_index [Zero M] [AddCommMonoid N] [CommMonoid P] {f : α →₀ M}
     {g : α → M → β →₀ N} {h : β → N → P} (h_zero : ∀ a, h a 0 = 1)
     (h_add : ∀ a b₁ b₂, h a (b₁ + b₂) = h a b₁ * h a b₂) :
     (f.sum g).prod h = f.prod fun a b => (g a b).prod h :=
@@ -490,7 +490,7 @@ theorem prod_add_index_of_disjoint [AddCommMonoid M] {f1 f2 : α →₀ M}
   classical simp_rw [← this hd, ← this hd.symm, add_comm (f2 _), Finsupp.prod, support_add_eq hd,
       prod_union hd, add_apply]
 
-theorem prod_dvd_prod_of_subset_of_dvd [AddCommMonoid M] [CommMonoid N] {f1 f2 : α →₀ M}
+theorem prod_dvd_prod_of_subset_of_dvd [Zero M] [CommMonoid N] {f1 f2 : α →₀ M}
     {g1 g2 : α → M → N} (h1 : f1.support ⊆ f2.support)
     (h2 : ∀ a : α, a ∈ f1.support → g1 a (f1 a) ∣ g2 a (f2 a)) : f1.prod g1 ∣ f2.prod g2 := by
   classical

@@ -464,7 +464,7 @@ theorem map_bind {γ} (f : α → Part β) (x : Part α) (g : β → γ) :
   rw [← bind_some_eq_map, bind_assoc]; simp [bind_some_eq_map]
 
 theorem map_map (g : β → γ) (f : α → β) (o : Part α) : map g (map f o) = map (g ∘ f) o := by
-  erw [← bind_some_eq_map, bind_map, bind_some_eq_map]
+  simp [map, Function.comp_assoc]
 
 instance : Monad Part where
   pure := @some
@@ -497,7 +497,8 @@ theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := b
 
 @[simp]
 theorem bind_some_right (x : Part α) : x.bind some = x := by
-  erw [bind_some_eq_map]; simp [map_id']
+  rw [bind_some_eq_map]
+  simp [map_id']
 
 @[simp]
 theorem pure_eq_some (a : α) : pure a = some a :=

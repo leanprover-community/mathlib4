@@ -369,12 +369,14 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
         refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_)
         · obtain ⟨y, hy⟩ := hx
           refine ⟨y, ?_⟩
-          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-          erw [RingHom.comp_apply, AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
+          rw [RingHom.comp_apply]
+          dsimp only [coe_type_toSubfield]
+          rw [AdjoinRoot.lift_of (aeval_gen_minpoly F α)]
           exact hy
         · refine Set.singleton_subset_iff.mpr ⟨AdjoinRoot.root (minpoly F α), ?_⟩
-          -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-          erw [RingHom.comp_apply, AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
+          rw [RingHom.comp_apply]
+          dsimp only [coe_type_toSubfield]
+          rw [AdjoinRoot.lift_root (aeval_gen_minpoly F α)]
           rfl)
 
 theorem adjoinRootEquivAdjoin_apply_root (h : IsIntegral F α) :
@@ -407,9 +409,11 @@ noncomputable def adjoin.powerBasis {x : L} (hx : IsIntegral K x) : PowerBasis K
   dim := (minpoly K x).natDegree
   basis := powerBasisAux hx
   basis_eq_pow i := by
+    rw [powerBasisAux, Basis.map_apply]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [powerBasisAux, Basis.map_apply, PowerBasis.basis_eq_pow, AlgEquiv.toLinearEquiv_apply,
-      map_pow, AdjoinRoot.powerBasis_gen, adjoinRootEquivAdjoin_apply_root]
+    erw [PowerBasis.basis_eq_pow]
+    rw [AlgEquiv.toLinearEquiv_apply, map_pow, AdjoinRoot.powerBasis_gen,
+      adjoinRootEquivAdjoin_apply_root]
 
 theorem adjoin.finiteDimensional {x : L} (hx : IsIntegral K x) : FiniteDimensional K K⟮x⟯ :=
   (adjoin.powerBasis hx).finite
@@ -448,7 +452,9 @@ theorem adjoin_minpoly_coeff_of_exists_primitive_element
     apply Subtype.mem
   have dvd_g : minpoly K' α ∣ g.toSubring K'.toSubring (subset_adjoin F _) := by
     apply minpoly.dvd
-    erw [aeval_def, eval₂_eq_eval_map, g.map_toSubring K'.toSubring, eval_map, ← aeval_def]
+    rw [aeval_def, eval₂_eq_eval_map]
+    erw [g.map_toSubring K'.toSubring]
+    rw [eval_map, ← aeval_def]
     exact minpoly.aeval K α
   have finrank_eq : ∀ K : IntermediateField F E, finrank K E = natDegree (minpoly K α) := by
     intro K

@@ -459,7 +459,7 @@ theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f :
   rfl
 
 instance [CompactSpace α] : NormedStarGroup C(α, β) where
-  norm_star f := by
+  norm_star_le f := by
     rw [← BoundedContinuousFunction.norm_mkOfCompact, BoundedContinuousFunction.mkOfCompact_star,
       norm_star, BoundedContinuousFunction.norm_mkOfCompact]
 

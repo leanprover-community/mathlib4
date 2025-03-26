@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.Basic
-import Mathlib.Order.Hom.Lattice
 import Mathlib.RingTheory.Finiteness.Nakayama
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.ReesAlgebra
 
 /-!

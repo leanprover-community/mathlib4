@@ -580,8 +580,8 @@ theorem den_mul_self_eq_num' (I : FractionalIdeal S P) :
   rw [coe_mul, ← smul_eq_mul, coe_spanSingleton, smul_eq_mul, Submodule.span_singleton_mul]
   convert I.den_mul_self_eq_num using 1
   ext
-  erw [Set.mem_smul_set, Set.mem_smul_set]
-  simp [Algebra.smul_def]
+  rw [mem_smul_pointwise_iff_exists, mem_smul_pointwise_iff_exists]
+  simp [smul_eq_mul, Algebra.smul_def, Submonoid.smul_def]
 
 variable {S}
 

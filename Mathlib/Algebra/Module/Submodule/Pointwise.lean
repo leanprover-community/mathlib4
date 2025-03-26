@@ -209,6 +209,10 @@ theorem pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Di
     (a • S).toAddSubgroup = a • S.toAddSubgroup :=
   rfl
 
+theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submodule R M) :
+    m ∈ a • S ↔ ∃ b ∈ S, a • b = m :=
+  Set.mem_smul_set
+
 theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
 

@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Lattice
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.OrderIso
-import Mathlib.Order.UpperLower.Basic
+import Mathlib.Order.UpperLower.Closure
 /-!
 # Algebraic operations on upper/lower sets
 

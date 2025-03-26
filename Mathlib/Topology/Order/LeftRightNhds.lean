@@ -365,92 +365,118 @@ end OrderTopology
 
 end LinearOrder
 
-section LinearOrderedAddCommGroup
+section LinearOrderedCommGroup
 
-variable [TopologicalSpace α] [LinearOrderedAddCommGroup α] [OrderTopology α]
+variable [TopologicalSpace α] [LinearOrderedCommGroup α] [OrderTopology α]
 variable {l : Filter β} {f g : β → α}
 
-theorem nhds_eq_iInf_abs_sub (a : α) : 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r } := by
-  simp only [nhds_eq_order, abs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
+@[to_additive]
+theorem nhds_eq_iInf_mabs_div (a : α) : 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r } := by
+  simp only [nhds_eq_order, mabs_lt, setOf_and, ← inf_principal, iInf_inf_eq]
   refine (congr_arg₂ _ ?_ ?_).trans (inf_comm ..)
-  · refine (Equiv.subLeft a).iInf_congr fun x => ?_; simp [Ioi]
-  · refine (Equiv.subRight a).iInf_congr fun x => ?_; simp [Iio]
+  · refine (Equiv.divLeft a).iInf_congr fun x => ?_; simp [Ioi]
+  · refine (Equiv.divRight a).iInf_congr fun x => ?_; simp [Iio]
 
-theorem orderTopology_of_nhds_abs {α : Type*} [TopologicalSpace α] [LinearOrderedAddCommGroup α]
-    (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 0, 𝓟 { b | |a - b| < r }) : OrderTopology α := by
+@[to_additive]
+theorem orderTopology_of_nhds_mabs {α : Type*} [TopologicalSpace α] [LinearOrderedCommGroup α]
+    (h_nhds : ∀ a : α, 𝓝 a = ⨅ r > 1, 𝓟 { b | |a / b|ₘ < r }) : OrderTopology α := by
   refine ⟨TopologicalSpace.ext_nhds fun a => ?_⟩
   rw [h_nhds]
   letI := Preorder.topology α; letI : OrderTopology α := ⟨rfl⟩
-  exact (nhds_eq_iInf_abs_sub a).symm
+  exact (nhds_eq_iInf_mabs_div a).symm
 
-theorem LinearOrderedAddCommGroup.tendsto_nhds {x : Filter β} {a : α} :
-    Tendsto f x (𝓝 a) ↔ ∀ ε > (0 : α), ∀ᶠ b in x, |f b - a| < ε := by
-  simp [nhds_eq_iInf_abs_sub, abs_sub_comm a]
+@[to_additive]
+theorem LinearOrderedCommGroup.tendsto_nhds {x : Filter β} {a : α} :
+    Tendsto f x (𝓝 a) ↔ ∀ ε > (1 : α), ∀ᶠ b in x, |f b / a|ₘ < ε := by
+  simp [nhds_eq_iInf_mabs_div, mabs_div_comm a]
 
-theorem eventually_abs_sub_lt (a : α) {ε : α} (hε : 0 < ε) : ∀ᶠ x in 𝓝 a, |x - a| < ε :=
-  (nhds_eq_iInf_abs_sub a).symm ▸
-    mem_iInf_of_mem ε (mem_iInf_of_mem hε <| by simp only [abs_sub_comm, mem_principal_self])
+@[to_additive]
+theorem eventually_mabs_div_lt (a : α) {ε : α} (hε : 1 < ε) : ∀ᶠ x in 𝓝 a, |x / a|ₘ < ε :=
+  (nhds_eq_iInf_mabs_div a).symm ▸
+    mem_iInf_of_mem ε (mem_iInf_of_mem hε <| by simp only [mabs_div_comm, mem_principal_self])
 
-/-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
-and `g` tends to `atTop` then `f + g` tends to `atTop`. -/
-theorem Filter.Tendsto.add_atTop {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
-    Tendsto (fun x => f x + g x) l atTop := by
+/-- In a linearly ordered commutative group with the order topology,
+if `f` tends to `C` and `g` tends to `atTop` then `f * g` tends to `atTop`. -/
+@[to_additive add_atTop "In a linearly ordered additive commutative group with the order topology,
+if `f` tends to `C` and `g` tends to `atTop` then `f + g` tends to `atTop`."]
+theorem Filter.Tendsto.mul_atTop' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atTop) :
+    Tendsto (fun x => f x * g x) l atTop := by
   nontriviality α
   obtain ⟨C', hC'⟩ : ∃ C', C' < C := exists_lt C
-  refine tendsto_atTop_add_left_of_le' _ C' ?_ hg
+  refine tendsto_atTop_mul_left_of_le' _ C' ?_ hg
   exact (hf.eventually (lt_mem_nhds hC')).mono fun x => le_of_lt
 
-/-- In a linearly ordered additive commutative group with the order topology, if `f` tends to `C`
-and `g` tends to `atBot` then `f + g` tends to `atBot`. -/
-theorem Filter.Tendsto.add_atBot {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
-    Tendsto (fun x => f x + g x) l atBot :=
-  Filter.Tendsto.add_atTop (α := αᵒᵈ) hf hg
+/-- In a linearly ordered commutative group with the order topology,
+if `f` tends to `C` and `g` tends to `atBot` then `f * g` tends to `atBot`. -/
+@[to_additive add_atBot "In a linearly ordered additive commutative group with the order topology,
+if `f` tends to `C` and `g` tends to `atBot` then `f + g` tends to `atBot`."]
+theorem Filter.Tendsto.mul_atBot' {C : α} (hf : Tendsto f l (𝓝 C)) (hg : Tendsto g l atBot) :
+    Tendsto (fun x => f x * g x) l atBot :=
+  Filter.Tendsto.mul_atTop' (α := αᵒᵈ) hf hg
 
-/-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
-`atTop` and `g` tends to `C` then `f + g` tends to `atTop`. -/
-theorem Filter.Tendsto.atTop_add {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
-    Tendsto (fun x => f x + g x) l atTop := by
-  conv in _ + _ => rw [add_comm]
-  exact hg.add_atTop hf
+/-- In a linearly ordered commutative group with the order topology,
+ if `f` tends to `atTop` and `g` tends to `C` then `f * g` tends to `atTop`. -/
+@[to_additive atTop_add "In a linearly ordered additive commutative group with the order topology,
+if `f` tends to `atTop` and `g` tends to `C` then `f + g` tends to `atTop`."]
+theorem Filter.Tendsto.atTop_mul' {C : α} (hf : Tendsto f l atTop) (hg : Tendsto g l (𝓝 C)) :
+    Tendsto (fun x => f x * g x) l atTop := by
+  conv in _ * _ => rw [mul_comm]
+  exact hg.mul_atTop' hf
 
-/-- In a linearly ordered additive commutative group with the order topology, if `f` tends to
-`atBot` and `g` tends to `C` then `f + g` tends to `atBot`. -/
-theorem Filter.Tendsto.atBot_add {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
-    Tendsto (fun x => f x + g x) l atBot := by
-  conv in _ + _ => rw [add_comm]
-  exact hg.add_atBot hf
+/-- In a linearly ordered commutative group with the order topology,
+if `f` tends to `atBot` and `g` tends to `C` then `f * g` tends to `atBot`. -/
+@[to_additive atBot_add "In a linearly ordered additive commutative group with the order topology,
+if `f` tends to `atBot` and `g` tends to `C` then `f + g` tends to `atBot`."]
+theorem Filter.Tendsto.atBot_mul' {C : α} (hf : Tendsto f l atBot) (hg : Tendsto g l (𝓝 C)) :
+    Tendsto (fun x => f x * g x) l atBot := by
+  conv in _ * _ => rw [mul_comm]
+  exact hg.mul_atBot' hf
 
-theorem nhds_basis_abs_sub_lt [NoMaxOrder α] (a : α) :
-    (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b - a| < ε } := by
-  simp only [nhds_eq_iInf_abs_sub, abs_sub_comm (a := a)]
+@[to_additive]
+theorem nhds_basis_mabs_div_lt [NoMaxOrder α] (a : α) :
+    (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b / a|ₘ < ε } := by
+  simp only [nhds_eq_iInf_mabs_div, mabs_div_comm (a := a)]
   refine hasBasis_biInf_principal' (fun x hx y hy => ?_) (exists_gt _)
   exact ⟨min x y, lt_min hx hy, fun _ hz => hz.trans_le (min_le_left _ _),
     fun _ hz => hz.trans_le (min_le_right _ _)⟩
 
-theorem nhds_basis_Ioo_pos [NoMaxOrder α] (a : α) :
-    (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε) fun ε => Ioo (a - ε) (a + ε) := by
-  convert nhds_basis_abs_sub_lt a
-  simp only [Ioo, abs_lt, ← sub_lt_iff_lt_add, neg_lt_sub_iff_lt_add, sub_lt_comm]
+@[to_additive]
+theorem nhds_basis_Ioo_one_lt [NoMaxOrder α] (a : α) :
+    (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε) fun ε => Ioo (a / ε) (a * ε) := by
+  convert nhds_basis_mabs_div_lt a
+  simp only [Ioo, mabs_lt, ← div_lt_iff_lt_mul, inv_lt_div_iff_lt_mul, div_lt_comm]
 
-theorem nhds_basis_Icc_pos [NoMaxOrder α] [DenselyOrdered α] (a : α) :
-    (𝓝 a).HasBasis ((0 : α) < ·) fun ε ↦ Icc (a - ε) (a + ε) :=
-  (nhds_basis_Ioo_pos a).to_hasBasis
-    (fun _ε ε₀ ↦ let ⟨δ, δ₀, δε⟩ := exists_between ε₀
-      ⟨δ, δ₀, Icc_subset_Ioo (sub_lt_sub_left δε _) (add_lt_add_left δε _)⟩)
-    (fun ε ε₀ ↦ ⟨ε, ε₀, Ioo_subset_Icc_self⟩)
+@[to_additive]
+theorem nhds_basis_Icc_one_lt [NoMaxOrder α] [DenselyOrdered α] (a : α) :
+    (𝓝 a).HasBasis ((1 : α) < ·) fun ε ↦ Icc (a / ε) (a * ε) :=
+  (nhds_basis_Ioo_one_lt a).to_hasBasis
+    (fun _ε ε₁ ↦ let ⟨δ, δ₁, δε⟩ := exists_between ε₁
+      ⟨δ, δ₁, Icc_subset_Ioo (by gcongr) (by gcongr)⟩)
+    (fun ε ε₁ ↦ ⟨ε, ε₁, Ioo_subset_Icc_self⟩)
 
 variable (α) in
-theorem nhds_basis_zero_abs_sub_lt [NoMaxOrder α] :
-    (𝓝 (0 : α)).HasBasis (fun ε : α => (0 : α) < ε) fun ε => { b | |b| < ε } := by
-  simpa using nhds_basis_abs_sub_lt (0 : α)
+@[to_additive]
+theorem nhds_basis_one_mabs_lt [NoMaxOrder α] :
+    (𝓝 (1 : α)).HasBasis (fun ε : α => (1 : α) < ε) fun ε => { b | |b|ₘ < ε } := by
+  simpa using nhds_basis_mabs_div_lt (1 : α)
 
-/-- If `a` is positive we can form a basis from only nonnegative `Set.Ioo` intervals -/
-theorem nhds_basis_Ioo_pos_of_pos [NoMaxOrder α] {a : α} (ha : 0 < a) :
-    (𝓝 a).HasBasis (fun ε : α => (0 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a - ε) (a + ε) :=
-  (nhds_basis_Ioo_pos a).restrict fun ε hε => ⟨min a ε, lt_min ha hε, min_le_left _ _,
-    Ioo_subset_Ioo (sub_le_sub_left (min_le_right _ _) _) (add_le_add_left (min_le_right _ _) _)⟩
+@[deprecated (since := "2025-03-18")]
+alias nhds_basis_zero_abs_sub_lt := nhds_basis_zero_abs_lt
 
-end LinearOrderedAddCommGroup
+/-- If `a > 1`, then open intervals `(a / ε, aε)`, `1 < ε ≤ a`,
+form a basis of neighborhoods of `a`.
+
+This upper bound for `ε` guarantees that all elements of these intervals are greater than one. -/
+@[to_additive "If `a` is positive, then the intervals `(a - ε, a + ε)`, `0 < ε ≤ a`,
+form a basis of neighborhoods of `a`.
+
+This upper bound for `ε` guarantees that all elements of these intervals are positive."]
+theorem nhds_basis_Ioo_one_lt_of_one_lt [NoMaxOrder α] {a : α} (ha : 1 < a) :
+    (𝓝 a).HasBasis (fun ε : α => (1 : α) < ε ∧ ε ≤ a) fun ε => Ioo (a / ε) (a * ε) :=
+  (nhds_basis_Ioo_one_lt a).restrict fun ε hε ↦
+    ⟨min a ε, lt_min ha hε, min_le_left _ _, by gcongr <;> apply min_le_right⟩
+
+end LinearOrderedCommGroup
 
 namespace Set.OrdConnected
 

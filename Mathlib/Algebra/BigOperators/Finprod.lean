@@ -602,9 +602,9 @@ theorem finsum_smul' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {
 
 /-- See also `smul_finsum` for a version that works even when the support of `f` is not finite,
 but with slightly stronger typeclass requirements. -/
-theorem smul_finsum' {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] (c : R) {f : ι → M}
-    (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
-  (smulAddHom R M c).map_finsum hf
+theorem smul_finsum' {R M : Type*} [Monoid R] [AddCommMonoid M] [DistribMulAction R M] (c : R)
+    {f : ι → M} (hf : (support f).Finite) : (c • ∑ᶠ i, f i) = ∑ᶠ i, c • f i :=
+  (DistribMulAction.toAddMonoidHom M c).map_finsum hf
 
 /-- A more general version of `MonoidHom.map_finprod_mem` that requires `s ∩ mulSupport f` rather
 than `s` to be finite. -/

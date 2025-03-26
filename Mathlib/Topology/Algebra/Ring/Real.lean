@@ -54,7 +54,7 @@ theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) 
 -- short-circuit type class inference
 instance : IsTopologicalAddGroup ℝ := by infer_instance
 instance : IsTopologicalRing ℝ := inferInstance
-instance : TopologicalDivisionRing ℝ := inferInstance
+instance : IsTopologicalDivisionRing ℝ := inferInstance
 
 namespace EReal
 

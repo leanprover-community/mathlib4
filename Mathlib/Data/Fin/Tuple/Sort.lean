@@ -142,6 +142,13 @@ theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm
     eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
       hfσ.ofFn_sorted hfτ.ofFn_sorted
 
+/-- If two permutations of a tuple `f` are both antitone, then they are equal. -/
+theorem unique_antitone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
+    (hfσ : Antitone (f ∘ σ)) (hfτ : Antitone (f ∘ τ)) : f ∘ σ = f ∘ τ :=
+  ofFn_injective <|
+    eq_of_perm_of_sorted ((σ.ofFn_comp_perm f).trans (τ.ofFn_comp_perm f).symm)
+      hfσ.ofFn_sorted hfτ.ofFn_sorted
+
 variable [LinearOrder α] {f : Fin n → α} {σ : Equiv.Perm (Fin n)}
 
 /-- A permutation `σ` equals `sort f` if and only if the map `i ↦ (f (σ i), σ i)` is

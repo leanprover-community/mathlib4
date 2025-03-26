@@ -166,8 +166,6 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   let bk : Basis ι k (k ⊗[R] M) := Basis.mk hli (by rw [hsp])
   haveI : Finite ι := Module.Finite.finite_basis bk
   letI : Fintype ι := Fintype.ofFinite ι
-  letI : IsNoetherian k (k ⊗[R] (ι →₀ R)) :=
-    isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (ι →₀ R))
   let i := Finsupp.linearCombination R v
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]

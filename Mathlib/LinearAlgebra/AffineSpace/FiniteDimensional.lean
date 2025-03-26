@@ -40,6 +40,11 @@ theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (vectorSpan k s) :=
   .span_of_finite k <| h.vsub h
 
+/-- The vector span of a singleton is finite-dimensional. -/
+instance finiteDimensional_vectorSpan_singleton (p : P) :
+    FiniteDimensional k (vectorSpan k {p}) :=
+  finiteDimensional_vectorSpan_of_finite _ (Set.finite_singleton p)
+
 /-- The `vectorSpan` of a family indexed by a `Fintype` is
 finite-dimensional. -/
 instance finiteDimensional_vectorSpan_range [Finite ι] (p : ι → P) :
@@ -57,6 +62,12 @@ finite-dimensional. -/
 theorem finiteDimensional_direction_affineSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (affineSpan k s).direction :=
   (direction_affineSpan k s).symm ▸ finiteDimensional_vectorSpan_of_finite k h
+
+/-- The direction of the affine span of a singleton is finite-dimensional. -/
+instance finiteDimensional_direction_affineSpan_singleton (p : P) :
+    FiniteDimensional k (affineSpan k {p}).direction := by
+  rw [direction_affineSpan]
+  infer_instance
 
 /-- The direction of the affine span of a family indexed by a
 `Fintype` is finite-dimensional. -/

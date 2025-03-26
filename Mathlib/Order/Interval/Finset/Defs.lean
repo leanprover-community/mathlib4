@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Finset.Prod
-import Mathlib.Order.Interval.Set.Image
+import Mathlib.Order.Hom.WithTopBot
 import Mathlib.Order.Interval.Set.UnorderedInterval
 
 /-!

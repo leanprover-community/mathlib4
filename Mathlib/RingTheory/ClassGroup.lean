@@ -118,7 +118,7 @@ theorem ClassGroup.mk_eq_mk_of_coe_ideal {I J : (FractionalIdeal R⁰ <| Fractio
   · rintro ⟨x, rfl⟩
     rw [Units.val_mul, hI, coe_toPrincipalIdeal, mul_comm,
       spanSingleton_mul_coeIdeal_eq_coeIdeal] at hJ
-    exact ⟨_, _, sec_fst_ne_zero (R := R) le_rfl x.ne_zero,
+    exact ⟨_, _, sec_fst_ne_zero x.ne_zero,
       sec_snd_ne_zero (R := R) le_rfl (x : FractionRing R), hJ⟩
   · rintro ⟨x, y, hx, hy, h⟩
     have : IsUnit (mk' (FractionRing R) x ⟨y, mem_nonZeroDivisors_of_ne_zero hy⟩) := by

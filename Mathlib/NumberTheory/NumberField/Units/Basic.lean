@@ -96,6 +96,9 @@ protected theorem norm [NumberField K] (x : (𝓞 K)ˣ) :
     |Algebra.norm ℚ (x : K)| = 1 := by
   rw [← RingOfIntegers.coe_norm, isUnit_iff_norm.mp x.isUnit]
 
+theorem pos_at_place (x : (𝓞 K)ˣ) (w : InfinitePlace K) :
+    0 < w x := pos_iff.mpr (coe_ne_zero x)
+
 variable {K} in
 theorem sum_mult_mul_log [NumberField K] (x : (𝓞 K)ˣ) :
     ∑ w : InfinitePlace K, w.mult * Real.log (w x) = 0 := by

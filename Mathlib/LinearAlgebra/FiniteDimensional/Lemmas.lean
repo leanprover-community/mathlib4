@@ -238,6 +238,26 @@ theorem coe_basisOfLinearIndependentOfCardEqFinrank {ι : Type*} [Nonempty ι] [
     ⇑(basisOfLinearIndependentOfCardEqFinrank lin_ind card_eq) = b :=
   Basis.coe_mk _ _
 
+/-- In a vector space `ι → K`, a linear independent family indedex by `ι` is a basis. -/
+noncomputable def basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
+    [Decidable (Nonempty ι)] {b : ι → (ι → K)} (hb : LinearIndependent K b) : Basis ι K (ι → K) :=
+  if hι : Nonempty ι then
+    basisOfLinearIndependentOfCardEqFinrank hb (Module.finrank_fintype_fun_eq_card K).symm
+  else
+    have : IsEmpty ι := not_nonempty_iff.mp hι
+    Basis.empty _
+
+open Classical in
+@[simp]
+theorem coe_basisOfPiSpaceOfLinearIndependent {ι : Type*} [Fintype ι]
+    {b : ι → (ι → K)} (hb : LinearIndependent K b) :
+    ⇑(basisOfPiSpaceOfLinearIndependent hb) = b := by
+  by_cases hι : Nonempty ι
+  · simp [hι, basisOfPiSpaceOfLinearIndependent]
+  · rw [basisOfPiSpaceOfLinearIndependent, dif_neg hι]
+    ext i
+    exact ((not_nonempty_iff.mp hι).false i).elim
+
 /-- A linear independent finset of `finrank K V` vectors forms a basis. -/
 @[simps! repr_apply]
 noncomputable def finsetBasisOfLinearIndependentOfCardEqFinrank {s : Finset V} (hs : s.Nonempty)

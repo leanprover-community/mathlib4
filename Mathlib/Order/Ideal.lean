@@ -5,10 +5,8 @@ Authors: David Wärn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
-import Mathlib.Order.Chain
 import Mathlib.Order.Cofinal
-import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.UpperLower.Principal
 
 /-!
 # Order ideals, cofinal sets, and the Rasiowa–Sikorski lemma

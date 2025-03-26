@@ -233,7 +233,7 @@ The integrand in the definition of `I` is nonnegative and takes a positive value
 so the integral is positive.
 -/
 private lemma I_pos : 0 < I n (π / 2) := by
-  refine integral_pos (by norm_num) (Continuous.continuousOn (by continuity)) ?_ ⟨0, by simp⟩
+  refine integral_pos (by norm_num) (by fun_prop) ?_ ⟨0, by simp⟩
   refine fun x hx => mul_nonneg (pow_nonneg ?_ _) ?_
   · rw [sub_nonneg, sq_le_one_iff_abs_le_one, abs_le]
     exact ⟨hx.1.le, hx.2⟩

@@ -814,29 +814,4 @@ theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopolo
     refine ⟨_, ⟨y, hys, k, rfl⟩, (hts k).subset hxy, fun z hz => ?_⟩
     exact hUV (ball_subset_of_comp_subset (hk hxy) hUU' (hk hz))
 
-section DiscreteUniformity
-
-open Filter
-
-/-- A Cauchy filter in a discrete uniform space is contained in a principal filter. -/
-theorem DiscreteUnif.cauchy_le_pure {X : Type*} {uX : UniformSpace X}
-    (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = pure x := by
-  rcases hα with ⟨α_ne_bot, α_le⟩
-  rw [hX, bot_uniformity, le_principal_iff, mem_prod_iff] at α_le
-  obtain ⟨S, ⟨hS, ⟨T, ⟨hT, H⟩⟩⟩⟩ := α_le
-  obtain ⟨x, rfl⟩ := eq_singleton_left_of_prod_subset_idRel (α_ne_bot.nonempty_of_mem hS)
-    (Filter.nonempty_of_mem hT) H
-  exact ⟨x, α_ne_bot.le_pure_iff.mp <| le_pure_iff.mpr hS⟩
-
-/-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
-noncomputable def DiscreteUnif.cauchyConst {X : Type*} {uX : UniformSpace X}
-    (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : X :=
-  (DiscreteUnif.cauchy_le_pure hX hα).choose
-
-theorem DiscreteUnif.eq_const_of_cauchy {X : Type*} {uX : UniformSpace X} (hX : uX = ⊥)
-    {α : Filter X} (hα : Cauchy α) : α = pure (DiscreteUnif.cauchyConst hX hα) :=
-  (DiscreteUnif.cauchy_le_pure hX hα).choose_spec
-
-end DiscreteUniformity
-
 end UniformSpace

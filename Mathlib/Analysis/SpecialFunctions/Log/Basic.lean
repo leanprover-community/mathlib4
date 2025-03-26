@@ -329,7 +329,7 @@ lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
 alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero
 
 theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
-  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsWithin_zero
+  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
 
 @[deprecated (since := "2025-03-18")]
 alias tendsto_log_nhdsWithin_zero := tendsto_log_nhdsNE_zero

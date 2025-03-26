@@ -628,15 +628,13 @@ noncomputable def ofSigmaCofork (c : Cofork I.fstSigmaMap I.sndSigmaMap) : Multi
         · simp [c.condition]
         · simp }
 
--- Porting note: https://github.com/leanprover-community/mathlib4/issues/10675
--- dsimp cannot prove this, once ofSigmaCofork_ι_app_right' is defined
 @[simp]
 theorem ofSigmaCofork_ι_app_left (c : Cofork I.fstSigmaMap I.sndSigmaMap) (a) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.left a) =
       (Sigma.ι I.left a :) ≫ I.fstSigmaMap ≫ c.π :=
   rfl
 
--- @[simp] -- Porting note: LHS simplifies to obtain the normal form below
+-- LHS simplifies; `(d)simp`-normal form is `ofSigmaCofork_ι_app_right'`
 theorem ofSigmaCofork_ι_app_right (c : Cofork I.fstSigmaMap I.sndSigmaMap) (b) :
     (ofSigmaCofork I c).ι.app (WalkingMultispan.right b) = (Sigma.ι I.right b :) ≫ c.π :=
   rfl

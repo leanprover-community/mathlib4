@@ -496,6 +496,5 @@ lemma curry'_comp {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y) (g : Y ⟶ Z) 
 end OrdinaryEnriched
 
 end MonoidalClosed
-attribute [nolint simpNF] CategoryTheory.MonoidalClosed.homEquiv_apply_eq
-  CategoryTheory.MonoidalClosed.homEquiv_symm_apply_eq
+
 end CategoryTheory

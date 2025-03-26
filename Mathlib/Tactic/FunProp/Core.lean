@@ -365,11 +365,10 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
 
-  match fData.args.size with
+  match h : fData.args.size with
   | 0 => throwError "fun_prop bug: invalid use of remove arg case {←ppExpr e}"
-  | _ =>
-    let n := fData.args.size
-    let arg := fData.args[n-1]!
+  | n + 1 =>
+    let arg := fData.args[n]
 
     if arg.coe.isSome then
       -- if have to apply morphisms rules if we deal with morphims

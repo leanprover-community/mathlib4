@@ -109,6 +109,12 @@ theorem _root_.Function.extend_val_apply {p : β → Prop} {g : {x // p x} → �
     {b : β} (hb : p b) : val.extend g j b = g ⟨b, hb⟩ :=
   val_injective.extend_apply g j ⟨b, hb⟩
 
+theorem _root_.Function.extend_val_apply' {p : β → Prop} {g : {x // p x} → γ} {j : β → γ}
+    {b : β} (hb : ¬ p b) : val.extend g j b = j b := by
+  refine Function.extend_apply' g j b ?_
+  rintro ⟨a, rfl⟩
+  exact hb a.2
+
 /-- Restrict a (dependent) function to a subtype -/
 def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
   f x
