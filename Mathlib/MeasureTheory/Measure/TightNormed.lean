@@ -15,8 +15,9 @@ Criteria for tightness of sets of measures in normed and inner product spaces.
 
 ## Main statements
 
-* `isTightMeasureSet_iff_tendsto_measure_norm_gt`: a set of measures `S` is tight if and only if
-  the function `r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}` tends to `0` at infinity.
+* `isTightMeasureSet_iff_tendsto_measure_norm_gt`: in a finite dimensional real normed space,
+  a set of measures `S` is tight if and only if the function `r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}`
+  tends to `0` at infinity.
 
 -/
 
@@ -71,6 +72,8 @@ lemma isTightMeasureSet_of_tendsto_measure_norm_gt
   ext
   simp
 
+/-- In a finite dimensional real normed space, a set of measures `S` is tight if and only if
+the function `r ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}` tends to `0` at infinity. -/
 lemma isTightMeasureSet_iff_tendsto_measure_norm_gt :
     IsTightMeasureSet S ↔ Tendsto (fun r : ℝ ↦ ⨆ μ ∈ S, μ {x | r < ‖x‖}) atTop (𝓝 0) :=
   ⟨tendsto_measure_norm_gt_of_isTightMeasureSet, isTightMeasureSet_of_tendsto_measure_norm_gt⟩
