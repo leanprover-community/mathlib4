@@ -101,12 +101,8 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         intro b hb; rw [mem_inter, mem_neighborFinset] at hb
         exact hb.1
       -- Since `v₃` has degree at least 3 so it has another neighbor `v₄ ≠ v₂`
-      have ⟨v₄, h24, h4⟩ : ∃ v₄, G.Adj v₃ v₄ ∧ v₄ ≠ v₂ := by
-        simp_rw [← mem_neighborFinset, Ne, ← mem_singleton, ← mem_sdiff]
-        apply card_pos.1
-        apply lt_of_lt_of_le _ (le_card_sdiff {v₂} (G.neighborFinset v₃))
-        rw [card_neighborFinset_eq_degree, card_singleton, tsub_pos_iff_lt]
-        exact (Nat.lt_of_succ_lt hk).trans_le (hbdd' v₃ (mem_inter.1 h3).2).symm.le
+      have ⟨v₄, h24, h4⟩ := G.exists_adj_ne_of_one_lt_degree v₃
+                    (Nat.lt_of_succ_lt <|hk.trans (hbdd' _ (mem_inter.1 h3).2).symm.le) v₂
       rw [mem_inter, mem_neighborFinset] at h1 h3
       rw [adj_comm] at h3
       -- We can build the path v₁v₂v₃v₄`
@@ -152,21 +148,10 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         simp only [List.toFinset_cons, List.toFinset_nil, insert_emptyc_eq] at hr
         rw [v41sup, List.tail] at hdisj2
         obtain ⟨vⱼ, hj⟩ : ∃ vⱼ, G.Adj v₂ vⱼ ∧ vⱼ ≠ v₁ ∧ vⱼ ≠ v₃ ∧ vⱼ ∈ s := by
-          have := hk.trans <| (hd _ hv₂) ▸ (degreeOn_le_degree ..)
-          rw [← card_neighborFinset_eq_degree] at this
-          have :  1 ≤ #((G.neighborFinset v₂) \ {v₁, v₃}) := by
-            rw [card_sdiff]
-            · rw [card_pair hne]
-              omega
-            · intro x hx; simp only [mem_insert, mem_singleton, mem_neighborFinset] at *
-              cases hx with
-              | inl h => exact h ▸ h1.1
-              | inr h => exact h ▸ h3.1.symm
-          obtain ⟨vⱼ, hj⟩ := card_pos.1 this
-          use vⱼ
-          simp only [mem_sdiff, mem_neighborFinset, mem_insert, mem_singleton, not_or] at hj
-          exact ⟨hj.1, hj.2.1, hj.2.2, hins _ hv₂ _ hj.1⟩
-        have :  s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
+          obtain ⟨vⱼ, hj⟩ := G.exists_adj_ne_of_two_lt_degree v₂
+            (hk.trans (hbdd' _ hv₂).symm.le) v₁ v₃
+          exact ⟨vⱼ,hj.1,hj.2.1,hj.2.2,hins _ hv₂ _ hj.1⟩
+        have : s = {v₁, v₂, v₃} ∪ q.support.toFinset := by
           rw [←hr, union_comm]
           congr! 1
           rw [insert_comm, insert_comm v₁]
