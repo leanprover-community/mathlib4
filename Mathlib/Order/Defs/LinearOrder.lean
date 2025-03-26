@@ -127,6 +127,7 @@ lemma eq_or_gt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
 @[deprecated (since := "2025-07-27")] alias eq_or_lt_of_not_gt := eq_or_gt_of_not_lt
 @[deprecated (since := "2025-05-11")] alias eq_or_lt_of_not_lt := eq_or_gt_of_not_lt
 
+-- TODO deprecate
 /-- Perform a case-split on the ordering of `x` and `y` in a decidable linear order. -/
 @[deprecated lt_trichotomy (since := "2025-04-21")]
 def ltByCases (x y : α) {P : Sort*} (h₁ : x < y → P) (h₂ : x = y → P) (h₃ : y < x → P) : P :=
