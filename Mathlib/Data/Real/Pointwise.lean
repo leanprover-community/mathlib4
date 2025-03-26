@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Real.Archimedean
-import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Pointwise operations on sets of reals
