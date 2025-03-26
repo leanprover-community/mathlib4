@@ -271,7 +271,7 @@ lemma theta_apply (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ r
   ext x
   rfl
 
-theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
+theorem theta_eα (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t e = (-(t : K) ^ (-2 : ℤ) : K) • f := by
   dsimp [theta]
   rw [exp_ad_e_e H hα he t, exp_ad_f_e H hα hf t ht]
@@ -303,7 +303,7 @@ theorem theta_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
         add_sub_add_left_eq_sub, sub_sub_sub_cancel_right, sub_add_cancel_right]
   exact Units.isUnit t
 
-theorem theta_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
+theorem theta_fα (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t f = (-(t ^ (2 : ℤ)) : K) • e := by
   dsimp [theta]
   rw [exp_ad_e_f H hα he t ht]
@@ -342,7 +342,7 @@ theorem theta_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
   rw [this, exp_ad_e_e H hα he t, neg_smul, neg_smul]
   norm_cast
 
-theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
+theorem theta_hα (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ rootSpace H (- α)) (t : Kˣ)
     (ht : IsSl2Triple h e f) : theta H hα he hf t h = -h := by
   calc
     theta H hα he hf t h = theta H hα he hf t ⁅e, f⁆ := by
@@ -350,8 +350,8 @@ theorem theta_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (hf : f ∈ roo
     _ = ⁅theta H hα he hf t e, theta H hα he hf t f⁆ := by
       apply LieHom.map_lie
     _ = (((t : K) ^ (2 : ℤ))⁻¹ * (t : K) ^ (2 : ℤ)) • ⁅f, e⁆ := by
-      rw [theta_e H hα he hf t ht, theta_f H hα he hf t ht, smul_lie, lie_smul, zpow_neg, neg_smul,
-        ← smul_neg, neg_smul, neg_neg, mul_smul]
+      rw [theta_eα H hα he hf t ht, theta_fα H hα he hf t ht, smul_lie, lie_smul, zpow_neg,
+        neg_smul, ← smul_neg, neg_smul, neg_neg, mul_smul]
     _ = ⁅f, e⁆ := by
       norm_cast
       field_simp
