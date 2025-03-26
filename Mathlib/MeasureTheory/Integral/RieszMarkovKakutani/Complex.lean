@@ -13,8 +13,14 @@ import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
 Check the availability of other theorems used in the proof:
 - 3.14: compactly supported continuous functions are dense in `L^p`
+(depends on 3.13 `MeasureTheory.Lp.simpleFunc.isDenseEmbedding`, this is written only for
+`NormalSpace α` and approximation given by bounded functions)
 - 6.12: polar decomposition of a complex measure
-- 6.13: total variation is equal to integral (short proof which depends on 6.12)
+(the Jordan decomposition `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition` is
+available for `SignedMeasure`. need to write it as a `rnDeriv`, and make it also for
+`ComplexMeasure`)
+- 6.13: total variation (`MeasureTheory.SignedMeasure.totalVariation`) is equal to integral (short
+proof which depends on 6.12)
 - 6.16: Duality of `L^1` and `L^∞` (not in Mathlib [https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Lp.20duality/near/495207025])
 -/
 
