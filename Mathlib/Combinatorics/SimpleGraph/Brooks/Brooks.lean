@@ -206,18 +206,18 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         obtain ⟨y, hy⟩ : ∃ y, y ∈ S := G.exists_adj_ne_of_one_lt_degree vᵣ h1 p.penultimate
         have hmaxp : ∀ x, G.Adj vᵣ x → x ∈ p.support := by
           simp_rw [hpq, support_reverse, List.mem_reverse]; exact hmax
-        obtain ⟨n', hn'⟩ := exists_getVert_first p hy (fun x hx ↦ hmaxp x hx.1)
-        let c:= (p.drop n').cons (hn'.1.1)
-        have hn'lt : n' < p.length := by
+        obtain ⟨m, hm⟩ := exists_getVert_first p hy (fun x hx ↦ hmaxp x hx.1)
+        let c := (p.drop m).cons (hm.1.1)
+        have hcy := hp.cons_drop_isCycle hm.1.1 hm.1.2
+        have hmlt : m < p.length := by
           by_contra!
-          exact G.loopless _ <| (p.getVert_of_length_le this) ▸ hn'.1.1
+          exact G.loopless _ <| (p.getVert_of_length_le this) ▸ hm.1.1
         have hcym : ∀ x, G.Adj vᵣ x → x ∈ c.support := by
           intro x hx; rw [support_cons]
           by_cases hxpen : x = p.penultimate
-          · have := hxpen ▸ (penultimate_mem_support_drop_lt_length hn'lt)
+          · have := hxpen ▸ (penultimate_mem_support_drop_lt_length hmlt)
             exact List.mem_cons_of_mem _ this
-          · exact List.mem_cons_of_mem _ (hn'.2 _ ⟨hx, hxpen⟩)
-        have hcy : c.IsCycle := hp.cons_drop_isCycle hn'.1.1 hn'.1.2
+          · exact List.mem_cons_of_mem _ (hm.2 _ ⟨hx, hxpen⟩)
         have hsub : c.support.toFinset ⊂ s := by
           apply Finset.ssubset_of_subset_of_ssubset _ hssf
           intro y hy
