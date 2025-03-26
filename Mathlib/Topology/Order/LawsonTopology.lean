@@ -143,7 +143,7 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
-  ofLawson.toHomeomorphOfIsInducing ⟨by erw [IsLawson.topology_eq_lawson (α := α), induced_id]; rfl⟩
+  ofLawson.toHomeomorphOfIsInducing ⟨IsLawson.topology_eq_lawson (α := α) ▸ induced_id.symm⟩
 
 theorem isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl
