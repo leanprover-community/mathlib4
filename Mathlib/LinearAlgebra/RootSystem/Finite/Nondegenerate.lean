@@ -263,4 +263,90 @@ lemma _root_.RootSystem.rootForm_anisotropic (P : RootSystem ι R M N) :
 
 end LinearOrderedCommRing
 
+section LinearOrderedCommRingAlg
+
+variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
+(S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
+[Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
+
+instance [Finite ι] : Module.Finite S (span S (range P.root)) :=
+  .span_of_finite S <| finite_range P.root
+
+instance [Finite ι] : Module.Finite S (span S (range P.coroot)) :=
+  .span_of_finite S <| finite_range P.coroot
+
+lemma finrank_range_polarization_eq_finrank_span_coroot [NoZeroSMulDivisors S N] :
+    finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (span S (range P.coroot)) := by
+  apply (Submodule.finrank_mono (P.range_polarizationIn_le_span_coroot S)).antisymm
+  have h_ne : ∏ i, ((P.posRootForm S).posForm (P.rootSpanMem S i) (P.rootSpanMem S i)) ≠ 0 := by
+    refine Finset.prod_ne_zero_iff.mpr fun i _ h ↦ ?_
+    have := (FaithfulSMul.algebraMap_eq_zero_iff S R).mpr h
+    rw [algebraMap_posRootForm_posForm] at this
+    apply (P.isAnisotropic_of_isValuedIn S).rootForm_root_ne_zero i this
+  refine LinearMap.finrank_le_of_isSMulRegular (span S (range P.coroot))
+    (LinearMap.range (M₂ := N) (P.PolarizationIn S))
+    (smul_right_injective N h_ne) ?_
+  intro _ hx
+  obtain ⟨c, hc⟩ := (mem_span_range_iff_exists_fun S).mp hx
+  rw [← hc, Finset.smul_sum]
+  simp_rw [smul_smul, mul_comm, ← smul_smul]
+  refine Submodule.sum_smul_mem (LinearMap.range (P.PolarizationIn S)) c
+    fun j _ ↦ prod_posRootForm_posForm_smul_coroot_mem_range_PolarizationIn P S j
+
+/-- An auxiliary lemma en route to `RootPairing.finrank_corootSpanIn_eq`. -/
+private lemma finrank_corootSpanIn_le [NoZeroSMulDivisors S N] :
+    finrank S (P.corootSpanIn S) ≤ finrank S (P.rootSpanIn S) := by
+  rw [← finrank_range_polarization_eq_finrank_span_coroot]
+  exact LinearMap.finrank_range_le (P.PolarizationIn S)
+
+lemma finrank_corootSpanIn_eq [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+    finrank S (P.corootSpanIn S) = finrank S (P.rootSpanIn S) :=
+  le_antisymm (P.finrank_corootSpanIn_le S) (P.flip.finrank_corootSpanIn_le S)
+
+lemma polarizationIn_Injective [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+    Function.Injective (P.PolarizationIn S) := by
+  rw [← LinearMap.ker_eq_bot, ← top_disjoint]
+  refine Submodule.disjoint_ker_of_finrank_le (L := ⊤) (P.PolarizationIn S) ?_
+  rw [finrank_top, ← finrank_corootSpanIn_eq, ← finrank_range_polarization_eq_finrank_span_coroot]
+  exact Submodule.finrank_mono <| le_of_eq <| LinearMap.range_eq_map (P.PolarizationIn S)
+
+lemma exists_coroot_ne [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] {x : span S (range P.root)}
+    (hx : x ≠ 0) : ∃ i, P.coroot'In S i x ≠ 0 := by
+  have hI := P.polarizationIn_Injective S
+  have := (map_ne_zero_iff (P.PolarizationIn S) hI).mpr hx
+  rw [PolarizationIn_apply] at this
+  by_contra h
+  rw [not_exists_not] at h
+  have bad : ∑ i : ι, (P.coroot'In S i) x • P.coroot i = 0 :=
+    Fintype.sum_eq_zero (fun a ↦ (P.coroot'In S a) x • P.coroot a) fun i ↦ by simp [h i]
+  apply this bad
+
+theorem posRootForm_posForm_pos_of_ne_zero [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N]
+    {x : span S (range P.root)} (hx : x ≠ 0) :
+    0 < ((P.posRootForm S).posForm x x) := by
+  rw [posRootForm_posForm_apply_apply]
+  have : ∃ i ∈ Finset.univ, 0 < (P.coroot'In S i) x * (P.coroot'In S i) x := by
+    obtain ⟨i, hi⟩ := P.exists_coroot_ne S hx
+    use i
+    exact ⟨Finset.mem_univ i, mul_self_pos.mpr hi⟩
+  refine Finset.sum_pos' ?_ this
+  exact fun i a ↦ mul_self_nonneg ((P.coroot'In S i) x)
+
+lemma posRootForm_posForm_anisotropic [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+    (P.posRootForm S).posForm.toQuadraticMap.Anisotropic :=
+  fun _ hx ↦ Classical.byContradiction fun h ↦
+    (ne_of_lt (posRootForm_posForm_pos_of_ne_zero P S h)).symm hx
+
+lemma posRootForm_posForm_nondegenerate [NoZeroSMulDivisors S M] [NoZeroSMulDivisors S N] :
+    (P.posRootForm S).posForm.Nondegenerate := by
+  refine LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr ?_
+  refine LinearMap.ker_eq_bot'.mpr ?_
+  intro x hx
+  contrapose! hx
+  rw [DFunLike.ne_iff]
+  use x
+  exact (ne_of_lt (posRootForm_posForm_pos_of_ne_zero P S hx)).symm
+
+end LinearOrderedCommRingAlg
+
 end RootPairing

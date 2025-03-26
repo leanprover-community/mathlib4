@@ -235,12 +235,46 @@ end Fintype
 
 section IsValuedInOrdered
 
-variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R]
-  [Module S M] [IsScalarTower S R M] [P.IsValuedIn S] {i j : ι}
+variable (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [Module S M]
+[IsScalarTower S R M] [Module S N] [IsScalarTower S R N] [P.IsValuedIn S] [Fintype ι] {i j : ι}
+
+/-- Polarization restricted to `S`-span of roots. -/
+def PolarizationIn : span S (range P.root) →ₗ[S] N :=
+  ∑ i : ι, LinearMap.toSpanSingleton S N (P.coroot i) ∘ₗ P.coroot'In S i
+
+omit [IsScalarTower S R N] in
+lemma PolarizationIn_apply (x : span S (range P.root)) :
+    P.PolarizationIn S x = ∑ i, P.coroot'In S i x • P.coroot i := by
+  simp [PolarizationIn]
+
+lemma PolarizationIn_eq (x : span S (range P.root)) :
+    P.PolarizationIn S x = P.Polarization x := by
+  simp only [PolarizationIn, LinearMap.coeFn_sum, LinearMap.coe_comp, Finset.sum_apply, comp_apply,
+    LinearMap.toSpanSingleton_apply, Polarization_apply, PerfectPairing.flip_apply_apply]
+  refine Finset.sum_congr rfl ?_
+  intro i hi
+  rw [algebra_compatible_smul R ((P.coroot'In S i) x) (P.coroot i), algebraMap_coroot'In_apply,
+    PerfectPairing.flip_apply_apply]
+
+/-- Polarization restricted to `S`-span of roots. -/
+def CoPolarizationIn : span S (range P.coroot) →ₗ[S] M :=
+  ∑ i, LinearMap.toSpanSingleton S M (P.root i) ∘ₗ P.root'In S i
+
+omit [IsScalarTower S R M] in
+lemma CoPolarizationIn_apply (x : span S (range P.coroot)) :
+    P.CoPolarizationIn S x = ∑ i, P.root'In S i x • P.root i := by
+  simp [CoPolarizationIn]
+
+lemma CoPolarizationIn_eq (x : span S (range P.coroot)) :
+    P.CoPolarizationIn S x = P.CoPolarization x := by
+  simp [CoPolarizationIn]
+  refine Finset.sum_congr rfl ?_
+  intro i hi
+  rw [algebra_compatible_smul R ((P.root'In S i) x) (P.root i), algebraMap_root'In_apply]
 
 /-- The bilinear form of a finite root pairing taking values in a linearly-ordered ring, as a
 root-positive form. -/
-def posRootForm [Fintype ι] : P.RootPositiveForm S where
+def posRootForm : P.RootPositiveForm S where
   form := P.RootForm
   symm := P.rootForm_symmetric
   isOrthogonal_reflection := P.rootForm_reflection_reflection_apply
@@ -249,7 +283,14 @@ def posRootForm [Fintype ι] : P.RootPositiveForm S where
     refine ⟨∑ k, P.pairingIn S i k ^ 2, ?_, by simp [sq, rootForm_apply_apply]⟩
     exact Finset.sum_pos' (fun j _ ↦ sq_nonneg _) ⟨i, by simp⟩
 
-theorem exists_ge_zero_eq_rootForm [Fintype ι] (x : M) (hx : x ∈ span S (range P.root)) :
+omit [Module S N] [IsScalarTower S R N] in
+lemma algebraMap_posRootForm_posForm (x y : span S (range P.root)) :
+    (algebraMap S R) ((P.posRootForm S).posForm x y) = P.RootForm x y := by
+  rw [RootPositiveForm.algebraMap_posForm]
+  exact rfl
+
+omit [Module S N] [IsScalarTower S R N] in
+theorem exists_ge_zero_eq_rootForm (x : M) (hx : x ∈ span S (range P.root)) :
     ∃ s ≥ 0, algebraMap S R s = P.RootForm x x := by
   refine ⟨(P.posRootForm S).posForm ⟨x, hx⟩ ⟨x, hx⟩, IsSumSq.nonneg ?_, by simp [posRootForm]⟩
   choose s hs using P.coroot'_apply_apply_mem_of_mem_span S hx
@@ -259,6 +300,68 @@ theorem exists_ge_zero_eq_rootForm [Fintype ι] (x : M) (hx : x ∈ span S (rang
   simp only [posRootForm, RootPositiveForm.algebraMap_posForm, map_sum, map_mul]
   simp [← Algebra.linearMap_apply, hs, rootForm_apply_apply]
 
+omit [Module S N] [IsScalarTower S R N] in
+lemma posRootForm_posForm_apply_apply (x y : P.rootSpanIn S) : (P.posRootForm S).posForm x y =
+    ∑ i, P.coroot'In S i x * P.coroot'In S i y := by
+  refine (FaithfulSMul.algebraMap_injective S R) ?_
+  simp [posRootForm, rootForm_apply_apply]
+
+omit [Module S N] [IsScalarTower S R N] in
+lemma zero_le_posForm (x : span S (range P.root)) :
+    0 ≤ (P.posRootForm S).posForm x x := by
+  obtain ⟨s, _, hs⟩ := P.exists_ge_zero_eq_rootForm S x.1 x.2
+  have : s = (P.posRootForm S).posForm x x :=
+    FaithfulSMul.algebraMap_injective S R <| (P.algebraMap_posRootForm_posForm S x x) ▸ hs
+  rwa [← this]
+
+lemma toPerfectPairing_apply_PolarizationIn (x y : span S (range P.root)) :
+    P.toPerfectPairing y (P.PolarizationIn S x) =
+      (algebraMap S R) ((P.posRootForm S).posForm x y) := by
+  rw [PolarizationIn_eq, algebraMap_posRootForm_posForm]
+  exact toPerfectPairing_apply_apply_Polarization P x y
+
+omit [IsScalarTower S R N] in
+lemma range_polarizationIn_le_span_coroot :
+    LinearMap.range (P.PolarizationIn S) ≤ span S (range P.coroot) := by
+  intro x hx
+  obtain ⟨y, hy⟩ := hx
+  rw [PolarizationIn_apply] at hy
+  exact (mem_span_range_iff_exists_fun S).mpr (Exists.intro (fun i ↦ (P.coroot'In S i) y) hy)
+
+/-- A version of SGA3 XXI Lemma 1.2.1 (10), adapted to change of rings. -/
+lemma posRootForm_posForm_self_smul_coroot (i : ι) :
+    ((P.posRootForm S).posForm (P.rootSpanMem S i)) (P.rootSpanMem S i) • P.coroot i =
+      2 • P.PolarizationIn S (P.rootSpanMem S i) := by
+  have hP : P.PolarizationIn S (P.rootSpanMem S i) =
+      ∑ j : ι, P.pairingIn S i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j) := by
+    simp_rw [PolarizationIn_apply, coroot'In_rootSpanMem_eq_pairingIn]
+    exact (Fintype.sum_equiv (P.reflection_perm i)
+          (fun j ↦ P.pairingIn S i (P.reflection_perm i j) • P.coroot (P.reflection_perm i j))
+          (fun j ↦ P.pairingIn S i j • P.coroot j) (congrFun rfl)).symm
+  rw [two_nsmul]
+  nth_rw 2 [hP]
+  rw [PolarizationIn_apply]
+  simp only [coroot'In_rootSpanMem_eq_pairingIn, pairingIn_reflection_perm,
+    pairingIn_reflection_perm_self_left, ← reflection_perm_coroot, neg_smul, Finset.sum_neg_distrib,
+    smul_sub, sub_neg_eq_add]
+  rw [Finset.sum_add_distrib, ← add_assoc, ← sub_eq_iff_eq_add]
+  simp only [posRootForm_posForm_apply_apply, coroot'In_rootSpanMem_eq_pairingIn,
+    root_coroot_eq_pairing, ← P.algebraMap_pairingIn S, Finset.sum_neg_distrib, add_neg_cancel,
+    IsScalarTower.algebraMap_smul, ← mul_smul]
+  rw [Finset.sum_smul, sub_eq_zero]
+
+lemma prod_posRootForm_posForm_smul_coroot_mem_range_PolarizationIn (i : ι) :
+    (∏ j : ι, ((P.posRootForm S).posForm (P.rootSpanMem S j)) (P.rootSpanMem S j)) • P.coroot i ∈
+      LinearMap.range (P.PolarizationIn S) := by
+  obtain ⟨c, hc⟩ := Finset.dvd_prod_of_mem
+    (fun j ↦ ((P.posRootForm S).posForm (P.rootSpanMem S j)) (P.rootSpanMem S j))
+    (Finset.mem_univ i)
+  rw [hc, mul_comm, mul_smul, posRootForm_posForm_self_smul_coroot]
+  refine LinearMap.mem_range.mpr ?_
+  use c • 2 • (P.rootSpanMem S i)
+  rw [map_smul, two_smul, two_smul, map_add]
+
+omit [Fintype ι] [Module S N] [IsScalarTower S R N] in
 lemma zero_lt_pairingIn_iff' [Finite ι] :
     0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
   let _i : Fintype ι := Fintype.ofFinite ι
