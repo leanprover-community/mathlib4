@@ -100,6 +100,9 @@ lemma pairingIn_pairingIn_mem_set_of_isCrystallographic :
   have : Fintype ι := Fintype.ofFinite ι
   simpa [← P.algebraMap_pairingIn ℤ] using (P.posRootForm ℤ).toInvariantForm.pairing_zero_iff i j
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-26. -/
+set_option maxHeartbeats 400000 in
 lemma pairingIn_pairingIn_mem_set_of_isCrystallographic_of_isReduced
     [P.IsReduced] [NoZeroSMulDivisors R M] :
     (P.pairingIn ℤ i j, P.pairingIn ℤ j i) ∈

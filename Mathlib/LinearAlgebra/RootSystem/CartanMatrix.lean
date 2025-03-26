@@ -65,6 +65,9 @@ lemma cartanMatrix_le_zero_of_ne [Finite ι] [NoZeroDivisors R]
     b.cartanMatrix i j ≤ 0 :=
   b.pairingIn_le_zero_of_ne (by rwa [ne_eq, ← Subtype.ext_iff]) i.property j.property
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-26. -/
+set_option maxHeartbeats 400000 in
 lemma cartanMatrix_mem_of_ne [Finite ι] [NoZeroDivisors R] [NoZeroSMulDivisors R M]
     [NoZeroSMulDivisors R N] {i j : b.support} (hij : i ≠ j) :
     b.cartanMatrix i j ∈ ({-3, -2, -1, 0} : Set ℤ) := by

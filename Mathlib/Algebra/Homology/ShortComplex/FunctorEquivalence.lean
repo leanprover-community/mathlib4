@@ -55,6 +55,9 @@ def unitIso : 𝟭 _ ≅ functor J C ⋙ inverse J C :=
     (NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
     (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-26. -/
+set_option maxHeartbeats 400000 in
 /-- The counit isomorphism of the equivalence
 `ShortComplex.functorEquivalence : ShortComplex (J ⥤ C) ≌ J ⥤ ShortComplex C`. -/
 @[simps!]
