@@ -26,7 +26,8 @@ open scoped Topology
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] {m m' : M}
 
 variable {G : Type*} [CommGroup G] {g g' : G}
--- don't declare [IsTopologicalAddGroup G] here as some results require [IsUniformAddGroup G] instead
+-- don't declare `[IsTopologicalAddGroup G]`, here as some results require
+-- `[IsUniformAddGroup G]` instead
 
 /-!
 ## Sums over `ℕ`

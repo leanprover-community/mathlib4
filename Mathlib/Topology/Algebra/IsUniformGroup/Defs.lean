@@ -151,7 +151,8 @@ instance (priority := 10) IsUniformGroup.to_topologicalGroup : IsTopologicalGrou
   continuous_inv := uniformContinuous_inv.continuous
 
 @[to_additive]
-instance Prod.instIsUniformGroup [UniformSpace β] [Group β] [IsUniformGroup β] : IsUniformGroup (α × β) :=
+instance Prod.instIsUniformGroup [UniformSpace β] [Group β] [IsUniformGroup β] :
+    IsUniformGroup (α × β) :=
   ⟨((uniformContinuous_fst.comp uniformContinuous_fst).div
           (uniformContinuous_fst.comp uniformContinuous_snd)).prodMk
       ((uniformContinuous_snd.comp uniformContinuous_fst).div
@@ -319,8 +320,8 @@ theorem uniformContinuous_of_continuousAt_one {hom : Type*} [UniformSpace β] [G
   uniformContinuous_of_tendsto_one (by simpa using hf.tendsto)
 
 @[to_additive]
-theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group β] [IsUniformGroup β]
-    (f : α →* β) (hf : ContinuousAt f 1) : UniformContinuous f :=
+theorem MonoidHom.uniformContinuous_of_continuousAt_one [UniformSpace β] [Group β]
+    [IsUniformGroup β] (f : α →* β) (hf : ContinuousAt f 1) : UniformContinuous f :=
   _root_.uniformContinuous_of_continuousAt_one f hf
 
 /-- A homomorphism from a uniform group to a discrete uniform group is continuous if and only if
