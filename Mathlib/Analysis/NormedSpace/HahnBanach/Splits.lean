@@ -145,6 +145,9 @@ lemma codisjoint_of_eq_top {F' F'' : Submodule 𝕜 F} (h : F' + F'' = ⊤) : Co
 
 lemma _root_.Submodule.codisjoint_add_eq_top {F' F'' : Submodule 𝕜 F} (h : Codisjoint F' F'') : F' + F'' = ⊤ := sorry
 
+-- should be easy!
+lemma _root_.Submodule.add_assoc {p q r : Submodule 𝕜 G} : (p + q) + r = p + (q + r) := sorry
+
 /-- The composition of split continuous linear maps between real or complex Banach spaces splits. -/
 lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Splits := by
   have h : IsClosed (range (g ∘ f)) := by
@@ -161,24 +164,23 @@ lemma comp {g : F →L[𝕜] G} (hf : f.Splits) (hg : g.Splits) : (g.comp f).Spl
       -- and range g + hg.complement = G' is closed.
       -- TODO: think about the best proof for formalising.
       sorry
-    · constructor
-      · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
+    · have : LinearMap.range (g.comp f) = Submodule.map g (LinearMap.range f) := by aesop
         -- some lemmas which could be useful for a manual proof:
         -- rw [LinearMap.range_comp]; rw [LinearMap.range_eq_map]; rw [Submodule.map_comp f g ⊤]
         -- rw [← LinearMap.range_eq_map f]
-        rw [this]
+      constructor
+      · rw [this]
         exact disjoint_aux hf.complement_isCompl.1 hg.complement_isCompl.1 hg.injective
       · have : LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement) = ⊤ := by
           calc LinearMap.range (g.comp f) + (Submodule.map g F' + hg.complement)
             _ = Submodule.map g (LinearMap.range f) + (Submodule.map g F' + hg.complement) := by
-              sorry -- same sorry as above; `aesop` times out now
+              rw [this]
             _ = (Submodule.map g (LinearMap.range f) + Submodule.map g F') + hg.complement := by
-              ext x
-              -- missing lemma, sum of submodules is associative
-              sorry
+              rw [Submodule.add_assoc]
             _ = Submodule.map g (LinearMap.range f + F') + hg.complement := by
               congr
               -- TODO: this step is not true in general, only ≤ holds in general
+              -- (but that should suffice here; re-order proof steps!)
               -- #check Submodule.map_add_le
               sorry
             _ = Submodule.map g ⊤ + hg.complement := by
