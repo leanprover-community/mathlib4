@@ -391,28 +391,28 @@ theorem theta_h_kerα {h : H} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H �
       rw [h₂, neg_zero]
     rw [← lie_skew] at this
     exact neg_eq_zero.mp this
-  have se₂ :  (((t : K) • (ad K L eα)) ^ 1) h = 0 := by
+  have se₁ :  (((t : K) • (ad K L eα)) ^ 1) h = 0 := by
     rw [pow_one, LinearMap.smul_apply, ad_apply, se₀, smul_zero]
-  have sf₂ :  ((-(t⁻¹ : K) • (ad K L fα)) ^ 1) h = 0 := by
+  have sf₁ :  ((-(t⁻¹ : K) • (ad K L fα)) ^ 1) h = 0 := by
     rw [pow_one, LinearMap.smul_apply, ad_apply, sf₀, smul_zero]
-  have se₃ : (exp_ad_e H hnz heα t) h = h := by
+  have se₂ : (exp_ad_e H hnz heα t) h = h := by
     rw [exp_ad_e_apply,  LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L eα))]
-    have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) se₂
+    have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) se₁
       (nilpotent_e H t heα hnz)
     simp only [LinearMap.smul_def, smul_assoc] at this
     simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
     rw [this, Finset.sum_range_succ, Finset.sum_range_zero, zero_add, pow_0_ad_e_h t,
         Nat.factorial_zero, Nat.cast_one, inv_one, one_smul]
-  have sf₃ : (exp_ad_f H hnz hfα t) h = h := by
+  have sf₂ : (exp_ad_f H hnz hfα t) h = h := by
     rw [exp_ad_f_apply,  LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L fα))]
-    have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) sf₂
+    have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) sf₁
       (nilpotent_f H t hfα hnz)
     simp only [LinearMap.smul_def, smul_assoc] at this
     simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
     rw [this, Finset.sum_range_succ, Finset.sum_range_zero, zero_add, pow_0_ad_f_h t,
         Nat.factorial_zero, Nat.cast_one, inv_one, one_smul]
   dsimp [theta]
-  rw [se₃, sf₃, se₃]
+  rw [se₂, sf₂, se₂]
 
 theorem theta_h (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα : fα ∈ rootSpace H (- α))
     (t : Kˣ) (ht : IsSl2Triple hα eα fα) (h : H) : theta H hnz heα hfα t h = h - (α h) • hα  := by
