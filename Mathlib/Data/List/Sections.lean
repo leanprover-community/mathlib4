@@ -28,9 +28,9 @@ theorem mem_sections {L : List (List α)} {f} : f ∈ sections L ↔ Forall₂ (
     simp only [*, forall₂_cons, true_and]
   · induction h with
     | nil => simp only [sections, mem_singleton]
-    | cons a l f => ?_
-    simp only [sections, bind_eq_flatMap, mem_flatMap, mem_map]
-    exact ⟨f, fs, a, al, rfl⟩
+    | @cons a l f L al fL fs =>
+      simp only [sections, bind_eq_flatMap, mem_flatMap, mem_map]
+      exact ⟨f, fs, a, al, rfl⟩
 
 theorem mem_sections_length {L : List (List α)} {f} (h : f ∈ sections L) : length f = length L :=
   (mem_sections.1 h).length_eq

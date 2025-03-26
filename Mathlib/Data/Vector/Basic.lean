@@ -680,10 +680,10 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction x with
-  | zero =>
+  | nil =>
     simp! [cast, *, functor_norm]
     rfl
-  | succ n x =>
+  | cons ih =>
     rw [Vector.traverse_def, ih]
     simp [functor_norm, Function.comp_def]
 
@@ -696,8 +696,8 @@ variable [LawfulApplicative F] (η : ApplicativeTransformation F G)
 protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
   induction x with
-  | zero => simp! [functor_norm, cast, η.preserves_pure]
-  | succ n x =>
+  | nil => simp! [functor_norm, cast, η.preserves_pure]
+  | cons ih =>
     rw [Vector.traverse_def, Vector.traverse_def, ← ih, η.preserves_seq, η.preserves_map]
     rfl
 

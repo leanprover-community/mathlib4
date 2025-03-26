@@ -188,13 +188,13 @@ def corec (f : β → α ⊕ β) (b : β) : Computation α := by
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2 n = some a'
   revert h; generalize Sum.inr b = o; revert o
-  induction n with <;> intro o
-  | zero =>
+  induction n <;> intro o
+  case zero =>
     change (Corec.f f o).1 = some a' → (Corec.f f (Corec.f f o).2).1 = some a'
     rcases o with _ | b <;> intro h
     · exact h
     unfold Corec.f at *; split <;> simp_all
-  | succ n IH =>
+  case succ n IH =>
     rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 

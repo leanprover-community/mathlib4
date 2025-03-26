@@ -240,8 +240,8 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
       generalize eq : L₁ ++ L₂ = L₁₂
       intro h
       induction h generalizing L₁ L₂ with
-      | nil => exact ⟨_, _, eq.symm, by rfl, by rfl⟩
-      | cons L' L₁₂ hLL' =>
+      | refl => exact ⟨_, _, eq.symm, by rfl, by rfl⟩
+      | tail hLL' h ih =>
         obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
         · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
@@ -346,8 +346,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
 @[to_additive]
 theorem length (h : Red L₁ L₂) : ∃ n, L₁.length = L₂.length + 2 * n := by
   induction h with
-  | nil => exact ⟨0, rfl⟩
-  | cons L₂ L₃ _h₁₂ =>
+  | refl => exact ⟨0, rfl⟩
+  | tail h₁₂ h₂₃ ih =>
     rcases ih with ⟨n, eq⟩
     exists 1 + n
     simp [Nat.mul_add, eq, (Step.length h₂₃).symm, add_assoc]

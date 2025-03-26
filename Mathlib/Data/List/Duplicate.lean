@@ -59,8 +59,8 @@ theorem not_duplicate_nil (x : α) : ¬x ∈+ [] := fun H => H.ne_nil rfl
 
 theorem Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] := by
   induction h with
-  | nil => simp [ne_nil_of_mem h]
-  | cons l' h z => simp [ne_nil_of_mem h.mem]
+  | cons_mem h => simp [ne_nil_of_mem h]
+  | cons_duplicate h => simp [ne_nil_of_mem h.mem]
 
 @[simp]
 theorem not_duplicate_singleton (x y : α) : ¬x ∈+ [y] := fun H => H.ne_singleton _ rfl

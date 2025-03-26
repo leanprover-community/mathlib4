@@ -53,7 +53,7 @@ theorem zipWith_congr (f g : α → β → γ) (la : List α) (lb : List β)
     (h : List.Forall₂ (fun a b => f a b = g a b) la lb) : zipWith f la lb = zipWith g la lb := by
   induction h with
   | nil => rfl
-  | cons a b as => exact congr_arg₂ _ hfg ih
+  | cons hfg _ ih => exact congr_arg₂ _ hfg ih
 
 theorem zipWith_zipWith_left (f : δ → γ → ε) (g : α → β → δ) :
     ∀ (la : List α) (lb : List β) (lc : List γ),
@@ -123,9 +123,9 @@ theorem revzip_swap (l : List α) : (revzip l).map Prod.swap = revzip l.reverse 
 
 theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
     (init, tail) ∈ zip l.inits l.tails ↔ init ++ tail = l := by
-  induction l generalizing init tail with <;> simp_rw [tails, inits, zip_cons_cons]
-  | nil => simp
-  | cons hd tl ih =>
+  induction l generalizing init tail <;> simp_rw [tails, inits, zip_cons_cons]
+  case nil => simp
+  case cons hd tl ih =>
     constructor <;> rw [mem_cons, zip_map_left, mem_map, Prod.exists]
     · rintro (⟨rfl, rfl⟩ | ⟨_, _, h, rfl, rfl⟩)
       · simp

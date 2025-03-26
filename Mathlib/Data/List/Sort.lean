@@ -111,7 +111,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
   induction hs₁ generalizing l₂ with
   | nil => exact hp.nil_eq
-  | cons a l₁ h₁ =>
+  | @cons a l₁ h₁ hs₁ IH =>
     have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
     rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)

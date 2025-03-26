@@ -176,9 +176,9 @@ theorem mem_of_subset' {a} : ∀ {l₁ l₂ : Lists' α true} (_ : l₁ ⊆ l₂
 theorem subset_def {l₁ l₂ : Lists' α true} : l₁ ⊆ l₂ ↔ ∀ a ∈ l₁.toList, a ∈ l₂ :=
   ⟨fun H _ => mem_of_subset' H, fun H => by
     rw [← of_toList l₁]
-    revert H; induction toList l₁ with <;> intro H
-    | nil => exact Subset.nil
-    | cons h t t_ih =>
+    revert H; induction toList l₁ <;> intro H
+    case nil => exact Subset.nil
+    case cons h t t_ih =>
       simp only [ofList, List.find?, List.mem_cons, forall_eq_or_imp] at *
       exact cons_subset.2 ⟨H.1, t_ih H.2⟩⟩
 
