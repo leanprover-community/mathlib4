@@ -50,15 +50,15 @@ def Orthonormal (v : ι → E) : Prop :=
 
 variable {𝕜}
 
-lemma Orthonormal.norm_eq_one {v : ι → E} {i : ι} (h : Orthonormal 𝕜 v) :
+lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ = 1 := h.1 i
 
-lemma Orthonormal.nnnorm_eq_one {v : ι → E} {i : ι} (h : Orthonormal 𝕜 v) :
+lemma Orthonormal.nnnorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖₊ = 1 := by
   suffices (‖v i‖₊ : ℝ) = 1 by norm_cast at this
   simp [h.norm_eq_one]
 
-lemma Orthonormal.enorm_eq_one {v : ι → E} {i : ι} (h : Orthonormal 𝕜 v) :
+lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
     ‖v i‖ₑ = 1 := by rw [← ofReal_norm]; simp [h.norm_eq_one]
 
 lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
