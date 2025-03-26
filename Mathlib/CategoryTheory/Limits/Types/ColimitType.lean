@@ -34,7 +34,7 @@ namespace Functor
 
 variable (F : J ⥤ Type w₀)
 
-/-- Given a functor `F : J ⥤ Type w`, this is a "cocone" of `F` where
+/-- Given a functor `F : J ⥤ Type w₀`, this is a "cocone" of `F` where
 we allow the point `pt` to be in a different universe than `w`. -/
 structure CoconeTypes where
   /-- the point of the cocone -/
@@ -65,14 +65,14 @@ def postcomp (c : CoconeTypes.{w₁} F) {T : Type w₂} (φ : c.pt → T) :
 
 end CoconeTypes
 
-/-- Given `F : J ⥤ Type w`, this is the relation `Σ j, F.obj j` which
+/-- Given `F : J ⥤ Type w₀`, this is the relation `Σ j, F.obj j` which
 generates an equivalence relation such that the quotient identifies
 to the colimit type of `F`. -/
 def ColimitTypeRel : (Σ j, F.obj j) → (Σ j, F.obj j) → Prop :=
   fun p p' ↦ ∃ f : p.1 ⟶ p'.1, p'.2 = F.map f p.2
 
-/-- The colimit type of a functor `F : J ⥤ Type w`. (It may not
-be in `Type w`.) -/
+/-- The colimit type of a functor `F : J ⥤ Type w₀`. (It may not
+be in `Type w₀`.) -/
 def ColimitType : Type (max u w₀) := Quot F.ColimitTypeRel
 
 /-- The canonical maps `F.obj j → F.ColimitType`. -/
@@ -112,7 +112,7 @@ namespace CoconeTypes
 
 variable {F} (c : CoconeTypes.{w₁} F)
 
-/-- Given `F : J ⥤ Type w` and `c : F.CoconeTypes`, this is the property
+/-- Given `F : J ⥤ Type w₀` and `c : F.CoconeTypes`, this is the property
 that `c` is a colimit. It is defined by saying the canonical map
 `F.descColimitType c : F.ColimiType → c.pt` is a bijection. -/
 structure IsColimit : Prop where
@@ -124,7 +124,7 @@ variable {c} (hc : c.IsColimit)
 
 include hc
 
-/-- Given `F : J ⥤ Type w`, and `c : F.CoconeTypes` a cocone that is colimit,
+/-- Given `F : J ⥤ Type w₀`, and `c : F.CoconeTypes` a cocone that is colimit,
 this is the equivalence `F.ColimitType ≃ c.pt`. -/
 @[simps! apply]
 noncomputable def equiv : F.ColimitType ≃ c.pt :=
@@ -151,7 +151,7 @@ lemma exists_desc (c' : CoconeTypes.{w₂} F) :
     ∃ (f : c.pt → c'.pt), ∀ (j : J), f.comp (c.ι j) = c'.ι j :=
   ⟨(F.descColimitType c').comp hc.equiv.symm, by aesop⟩
 
-/-- If `F : J ⥤ Type w` and `c : F.CoconeTypes` is colimit, then
+/-- If `F : J ⥤ Type w₀` and `c : F.CoconeTypes` is colimit, then
 `c` satisfies a heterogeneous universe version of the universal
 property of colimits. -/
 noncomputable def desc (c' : CoconeTypes.{w₂} F) : c.pt → c'.pt :=
