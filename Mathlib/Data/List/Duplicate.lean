@@ -58,9 +58,9 @@ theorem Duplicate.ne_nil (h : x ∈+ l) : l ≠ [] := fun H => (mem_nil_iff x).m
 theorem not_duplicate_nil (x : α) : ¬x ∈+ [] := fun H => H.ne_nil rfl
 
 theorem Duplicate.ne_singleton (h : x ∈+ l) (y : α) : l ≠ [y] := by
-  induction' h with l' h z l' h _
-  · simp [ne_nil_of_mem h]
-  · simp [ne_nil_of_mem h.mem]
+  induction h with
+  | nil => simp [ne_nil_of_mem h]
+  | cons l' h z => simp [ne_nil_of_mem h.mem]
 
 @[simp]
 theorem not_duplicate_singleton (x y : α) : ¬x ∈+ [y] := fun H => H.ne_singleton _ rfl
@@ -97,9 +97,10 @@ theorem Duplicate.mono_sublist {l' : List α} (hx : x ∈+ l) (h : l <+ l') : x 
 
 /-- The contrapositive of `List.nodup_iff_sublist`. -/
 theorem duplicate_iff_sublist : x ∈+ l ↔ [x, x] <+ l := by
-  induction' l with y l IH
-  · simp
-  · by_cases hx : x = y
+  induction l with
+  | nil => simp
+  | cons y l IH =>
+    by_cases hx : x = y
     · simp [hx, cons_sublist_cons, singleton_sublist]
     · rw [duplicate_cons_iff_of_ne hx, IH]
       refine ⟨sublist_cons_of_sublist y, fun h => ?_⟩

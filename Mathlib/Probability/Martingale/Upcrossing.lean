@@ -306,10 +306,12 @@ variable {ℱ : Filtration ℕ m0}
 theorem Adapted.isStoppingTime_crossing (hf : Adapted ℱ f) :
     IsStoppingTime ℱ (upperCrossingTime a b f N n) ∧
       IsStoppingTime ℱ (lowerCrossingTime a b f N n) := by
-  induction' n with k ih
-  · refine ⟨isStoppingTime_const _ 0, ?_⟩
+  induction n with
+  | zero =>
+    refine ⟨isStoppingTime_const _ 0, ?_⟩
     simp [hitting_isStoppingTime hf measurableSet_Iic]
-  · obtain ⟨_, ih₂⟩ := ih
+  | succ k ih =>
+    obtain ⟨_, ih₂⟩ := ih
     have : IsStoppingTime ℱ (upperCrossingTime a b f N (k + 1)) := by
       intro n
       simp_rw [upperCrossingTime_succ_eq]
@@ -447,15 +449,17 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
       lowerCrossingTime a b f M n ω = lowerCrossingTime a b f N n ω := by
   have h' : upperCrossingTime a b f N n ω < N :=
     lt_of_le_of_lt upperCrossingTime_le_lowerCrossingTime h
-  induction' n with k ih
-  · simp only [upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
+  induction n with
+  | zero =>
+    simp only [upperCrossingTime_zero, bot_eq_zero', eq_self_iff_true,
       lowerCrossingTime_zero, true_and, eq_comm]
     refine hitting_eq_hitting_of_exists hNM ?_
     rw [lowerCrossingTime, hitting_lt_iff] at h
     · obtain ⟨j, hj₁, hj₂⟩ := h
       exact ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
     · exact le_rfl
-  · specialize ih (lt_of_le_of_lt (lowerCrossingTime_mono (Nat.le_succ _)) h)
+  | succ k ih =>
+    specialize ih (lt_of_le_of_lt (lowerCrossingTime_mono (Nat.le_succ _)) h)
       (lt_of_le_of_lt (upperCrossingTime_mono (Nat.le_succ _)) h')
     have : upperCrossingTime a b f M k.succ ω = upperCrossingTime a b f N k.succ ω := by
       rw [upperCrossingTime_succ_eq, hitting_lt_iff] at h'
@@ -623,8 +627,9 @@ theorem crossing_pos_eq (hab : a < b) :
     · rw [← sub_le_sub_iff_right a] at h
       rwa [posPart_eq_self.2 (le_trans hab'.le h)]
   have hf' (ω i) : (f i ω - a)⁺ ≤ 0 ↔ f i ω ≤ a := by rw [posPart_nonpos, sub_nonpos]
-  induction' n with k ih
-  · refine ⟨rfl, ?_⟩
+  induction n with
+  | zero =>
+    refine ⟨rfl, ?_⟩
     simp (config := { unfoldPartialApp := true }) only [lowerCrossingTime_zero, hitting,
       Set.mem_Icc, Set.mem_Iic]
     ext ω
@@ -635,7 +640,8 @@ theorem crossing_pos_eq (hab : a < b) :
     · simp_rw [Set.mem_Iic, hf' _ _] at h₁
       exact False.elim (h₁ h₂)
     · rfl
-  · have : upperCrossingTime 0 (b - a) (fun n ω => (f n ω - a)⁺) N (k + 1) =
+  | succ k ih =>
+    have : upperCrossingTime 0 (b - a) (fun n ω => (f n ω - a)⁺) N (k + 1) =
         upperCrossingTime a b f N (k + 1) := by
       ext ω
       simp only [upperCrossingTime_succ_eq, ← ih.2, hitting, Set.mem_Ici, tsub_le_iff_right]

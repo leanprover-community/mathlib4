@@ -54,10 +54,12 @@ theorem HigherFacesVanish.comp_σ {Y : C} {X : SimplicialObject C} {n b q : ℕ}
 theorem σ_comp_P_eq_zero (X : SimplicialObject C) {n q : ℕ} (i : Fin (n + 1)) (hi : n + 1 ≤ i + q) :
     X.σ i ≫ (P q).f (n + 1) = 0 := by
   revert i hi
-  induction' q with q hq
-  · intro i (hi : n + 1 ≤ i)
+  induction q with
+  | zero =>
+    intro i (hi : n + 1 ≤ i)
     omega
-  · intro i (hi : n + 1 ≤ i + q + 1)
+  | succ q hq =>
+    intro i (hi : n + 1 ≤ i + q + 1)
     by_cases h : n + 1 ≤ (i : ℕ) + q
     · rw [P_succ, HomologicalComplex.comp_f, ← assoc, hq i h, zero_comp]
     · replace hi : n = i + q := by

@@ -102,10 +102,11 @@ theorem destruct_eq_pure {s : Computation α} {a : α} : destruct s = Sum.inl a 
   · contradiction
   · apply Subtype.eq
     funext n
-    induction' n with n IH
-    · injection h with h'
+    induction n with
+    | zero =>
+      injection h with h'
       rwa [h'] at f0
-    · exact s.2 IH
+    | succ n IH => exact s.2 IH
 
 theorem destruct_eq_think {s : Computation α} {s'} : destruct s = Sum.inr s' → s = think s' := by
   dsimp [destruct]
@@ -187,12 +188,14 @@ def corec (f : β → α ⊕ β) (b : β) : Computation α := by
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (Sum.inr b)).2 n = some a'
   revert h; generalize Sum.inr b = o; revert o
-  induction' n with n IH <;> intro o
-  · change (Corec.f f o).1 = some a' → (Corec.f f (Corec.f f o).2).1 = some a'
+  induction n with <;> intro o
+  | zero =>
+    change (Corec.f f o).1 = some a' → (Corec.f f (Corec.f f o).2).1 = some a'
     rcases o with _ | b <;> intro h
     · exact h
     unfold Corec.f at *; split <;> simp_all
-  · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
+  | succ n IH =>
+    rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
 /-- left map of `⊕` -/

@@ -181,7 +181,7 @@ def destruct (s : Seq α) : Option (Seq1 α) :=
 
 theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
-  induction' f0 : get? s 0 <;> intro h
+  induction f0 : get? s 0 <;> intro h
   · apply Subtype.eq
     funext n
     induction' n with n IH
@@ -291,14 +291,16 @@ theorem head_eq_none_iff {s : Seq α} : s.head = none ↔ s = nil := by
 theorem mem_rec_on {C : Seq α → Prop} {a s} (M : a ∈ s)
     (h1 : ∀ b s', a = b ∨ C s' → C (cons b s')) : C s := by
   obtain ⟨k, e⟩ := M; unfold Stream'.get at e
-  induction' k with k IH generalizing s
-  · have TH : s = cons a (tail s) := by
+  induction k generalizing s with
+  | zero =>
+    have TH : s = cons a (tail s) := by
       apply destruct_eq_cons
       unfold destruct get? Functor.map
       rw [← e]
       rfl
     rw [TH]
     apply h1 _ _ (Or.inl rfl)
+  | succ k IH => ?_
   cases s with
   | nil => injection e
   | cons b s' =>
@@ -321,8 +323,9 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
   revert h; generalize some b = o; revert o
-  induction' n with n IH <;> intro o
-  · change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
+  induction n with <;> intro o
+  | zero =>
+    change (Corec.f f o).1 = none → (Corec.f f (Corec.f f o).2).1 = none
     rcases o with - | b <;> intro h
     · rfl
     dsimp [Corec.f] at h
@@ -331,7 +334,8 @@ def corec (f : β → Option (α × β)) (b : β) : Seq α := by
     · rfl
     · obtain ⟨a, b'⟩ := s
       contradiction
-  · rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
+  | succ n IH =>
+    rw [Stream'.corec'_eq (Corec.f f) (Corec.f f o).2, Stream'.corec'_eq (Corec.f f) o]
     exact IH (Corec.f f o).2
 
 @[simp]

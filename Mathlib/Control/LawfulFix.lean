@@ -49,9 +49,11 @@ theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   | succ _ i_ih => intro; apply f.monotone; apply i_ih
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
-  induction' j with j ih
-  · cases hij
+  induction j with
+  | zero =>
+    cases hij
     exact le_rfl
+  | succ j ih => ?_
   cases hij; · exact le_rfl
   exact le_trans (ih ‹_›) (approx_mono' f)
 
