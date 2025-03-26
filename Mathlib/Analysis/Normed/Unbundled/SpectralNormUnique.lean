@@ -281,5 +281,3 @@ instance (priority := 100) completeSpace [CompleteSpace K]
   exact FiniteDimensional.complete K L
 
 end spectralNorm
-
-#min_imports
