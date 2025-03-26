@@ -1103,7 +1103,7 @@ lemma inverse_eq {f : M →L[R] M₂} {g : M₂ →L[R] M} (hf : f ∘L g = id R
     f.inverse = g := by
   have : f = ContinuousLinearEquiv.equivOfInverse' f g hf hg := rfl
   rw [this, inverse_equiv]
-  rfl
+  rfl -- TODO
 
 lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf : f.IsInvertible) :
     f.inverse y = x ↔ y = f x := by
@@ -1136,7 +1136,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   by_cases hf : f.IsInvertible
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
-    rfl
+    rfl -- TODO
   · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, zero_comp]
 
 @[simp] lemma inverse_comp_equiv {e : M₃ ≃L[R] M} {f : M →L[R] M₂} :
@@ -1144,7 +1144,7 @@ lemma IsInvertible.inverse_apply_eq {f : M →L[R] M₂} {x : M} {y : M₂} (hf 
   by_cases hf : f.IsInvertible
   · rcases hf with ⟨A, rfl⟩
     simp only [ContinuousLinearEquiv.comp_coe, inverse_equiv, ContinuousLinearEquiv.coe_inj]
-    rfl
+    rfl -- TODO
   · rw [inverse_of_not_isInvertible (by simp [hf]), inverse_of_not_isInvertible hf, comp_zero]
 
 lemma IsInvertible.inverse_comp_of_left {g : M₂ →L[R] M₃} {f : M →L[R] M₂}
@@ -1170,7 +1170,7 @@ theorem ringInverse_equiv (e : M ≃L[R] M) : Ring.inverse ↑e = inverse (e : M
   suffices Ring.inverse ((ContinuousLinearEquiv.unitsEquiv _ _).symm e : M →L[R] M) = inverse ↑e by
     convert this
   simp
-  rfl
+  rfl -- TODO
 
 @[deprecated (since := "2025-04-22")] alias ring_inverse_equiv := ringInverse_equiv
 
@@ -1181,7 +1181,7 @@ theorem inverse_eq_ringInverse (e : M ≃L[R] M₂) (f : M →L[R] M₂) :
   by_cases h₁ : f.IsInvertible
   · obtain ⟨e', he'⟩ := h₁
     rw [← he']
-    change _ = Ring.inverse (e'.trans e.symm : M →L[R] M) ∘L (e.symm : M₂ →L[R] M)
+    change _ = Ring.inverse (e'.trans e.symm : M →L[R] M) ∘L (e.symm : M₂ →L[R] M) -- TODO
     ext
     simp
   · suffices ¬IsUnit ((e.symm : M₂ →L[R] M).comp f) by simp [this, h₁]
