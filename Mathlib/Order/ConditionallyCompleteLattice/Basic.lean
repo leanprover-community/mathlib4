@@ -247,12 +247,6 @@ theorem csInf_upperBounds_eq_csSup {s : Set α} (h : BddAbove s) (hs : s.Nonempt
     sInf (upperBounds s) = sSup s :=
   (isGLB_csInf h <| hs.mono fun _ hx _ hy => hy hx).unique (isLUB_csSup hs h).isGLB
 
-@[deprecated (since := "2024-08-25")]
-alias csSup_lower_bounds_eq_csInf := csSup_lowerBounds_eq_csInf
-
-@[deprecated (since := "2024-08-25")]
-alias csInf_upper_bounds_eq_csSup := csInf_upperBounds_eq_csSup
-
 theorem csSup_lowerBounds_range [Nonempty β] {f : β → α} (hf : BddBelow (range f)) :
     sSup (lowerBounds (range f)) = ⨅ i, f i :=
   csSup_lowerBounds_eq_csInf hf <| range_nonempty _
@@ -569,7 +563,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 section ConditionallyCompleteLinearOrderBot
 
 @[simp]
-theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
@@ -908,7 +902,6 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
 
 open Classical in
--- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSet, instSupSet, boundedOrder, lattice with
@@ -919,7 +912,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         split_ifs with h₁ h₂
         · rw [h] at h₁
           cases h₁
-        · convert bot_le (a := a)
+        · convert bot_le
           -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
@@ -934,7 +927,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
       show ite _ _ _ ≤ a by
         simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
         split_ifs with h₁
-        · cases' a with a
+        · cases a
           · exact le_rfl
           cases h₁ haS
         · cases a

@@ -3,8 +3,8 @@ Copyright (c) 2024 Pim Otte. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Otte
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Big operators on a finset in the natural numbers

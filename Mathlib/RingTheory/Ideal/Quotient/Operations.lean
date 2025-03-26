@@ -396,6 +396,15 @@ theorem Quotient.mkₐ_ker (I : Ideal A) [I.IsTwoSided] :
     RingHom.ker (Quotient.mkₐ R₁ I : A →+* A ⧸ I) = I :=
   Ideal.mk_ker
 
+lemma Quotient.mk_bijective_iff_eq_bot (I : Ideal A) [I.IsTwoSided] :
+    Function.Bijective (mk I) ↔ I = ⊥ := by
+  constructor
+  · intro h
+    rw [← map_eq_bot_iff_of_injective h.1]
+    exact (map_eq_bot_iff_le_ker _).mpr <| le_of_eq mk_ker.symm
+  · exact fun h => ⟨(injective_iff_ker_eq_bot _).mpr <| by rw [mk_ker, h], mk_surjective⟩
+
+
 variable {R₁}
 
 section
@@ -688,7 +697,7 @@ theorem ker_quotLeftToQuotSup : RingHom.ker (quotLeftToQuotSup I J) =
     map_eq_iff_sup_ker_eq_of_surjective (Ideal.Quotient.mk I) Quotient.mk_surjective, ← sup_assoc]
 
 /-- The ring homomorphism `(R/I)/J' -> R/(I ⊔ J)` induced by `quotLeftToQuotSup` where `J'`
-  is the image of `J` in `R/I`-/
+  is the image of `J` in `R/I` -/
 def quotQuotToQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) →+* R ⧸ I ⊔ J :=
   Ideal.Quotient.lift (J.map (Ideal.Quotient.mk I)) (quotLeftToQuotSup I J)
     (ker_quotLeftToQuotSup I J).symm.le
@@ -709,7 +718,7 @@ def liftSupQuotQuotMk (I J : Ideal R) : R ⧸ I ⊔ J →+* (R ⧸ I) ⧸ J.map 
   Ideal.Quotient.lift (I ⊔ J) (quotQuotMk I J) (ker_quotQuotMk I J).symm.le
 
 /-- `quotQuotToQuotSup` and `liftSupQuotQuotMk` are inverse isomorphisms. In the case where
-    `I ≤ J`, this is the Third Isomorphism Theorem (see `quotQuotEquivQuotOfLe`)-/
+`I ≤ J`, this is the Third Isomorphism Theorem (see `quotQuotEquivQuotOfLe`). -/
 def quotQuotEquivQuotSup : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+* R ⧸ I ⊔ J :=
   RingEquiv.ofHomInv (quotQuotToQuotSup I J) (liftSupQuotQuotMk I J)
     (by

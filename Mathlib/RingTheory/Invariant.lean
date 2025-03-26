@@ -14,7 +14,7 @@ Given an extension of rings `B/A` and an action of `G` on `B`, we introduce a pr
 The main application is in algebraic number theory, where `G := Gal(L/K)` is the galois group
 of some finite galois extension of number fields, and `A := 𝓞K` and `B := 𝓞L` are their ring of
 integers. This main result in this file implies the existence of Frobenius elements in this setting.
-See `RingTheory/Frobenius.lean`.
+See `Mathlib/RingTheory/Frobenius.lean`.
 
 ## Main statements
 
@@ -169,7 +169,8 @@ open FaithfulSMul IsScalarTower Polynomial
 variable {A B : Type*} [CommRing A] [CommRing B] [Algebra A B]
   (G : Type*) [Group G] [Finite G] [MulSemiringAction G B] [SMulCommClass G A B]
   (P : Ideal A) (Q : Ideal B) [Q.IsPrime] [Q.LiesOver P]
-  variable (K L : Type*) [Field K] [Field L]
+
+variable (K L : Type*) [Field K] [Field L]
   [Algebra (A ⧸ P) K] [Algebra (B ⧸ Q) L]
   [Algebra (A ⧸ P) L] [IsScalarTower (A ⧸ P) (B ⧸ Q) L]
   [Algebra K L] [IsScalarTower (A ⧸ P) K L]

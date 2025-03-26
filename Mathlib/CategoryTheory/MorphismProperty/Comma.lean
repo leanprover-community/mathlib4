@@ -155,7 +155,7 @@ instance [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W} (i : X.toComma 
   constructor <;> ext : 1 <;> simp
 
 /-- Any isomorphism between objects of `P.Comma L R Q W` in `Comma L R` is also an isomorphism
-in `P.Comma L R Q W`.  -/
+in `P.Comma L R Q W`. -/
 @[simps]
 def isoFromComma [Q.RespectsIso] [W.RespectsIso] {X Y : P.Comma L R Q W}
     (i : X.toComma ≅ Y.toComma) : X ≅ Y where

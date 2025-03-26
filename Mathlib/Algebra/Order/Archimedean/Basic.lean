@@ -3,6 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Ring.Pow
 import Mathlib.Data.Int.LeastGreatest
@@ -311,7 +312,7 @@ lemma exists_pow_btwn_of_lt_mul {a b c : α} (h : a < b * c) (hb₀ : 0 < b) (hb
   have hn : Nat.find this ≠ 0 := by
     intro hf
     simp only [hf, pow_zero] at H
-    exact (H.trans <| Left.mul_lt_of_le_of_lt_one_of_pos hb₁ hc₁ hb₀).false
+    exact (H.trans <| (mul_lt_of_lt_one_right hb₀ hc₁).trans_le hb₁).false
   rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_right hc₀] at H
   exact Nat.find_min this (Nat.sub_one_lt hn) H
 
@@ -523,3 +524,25 @@ instance (priority := 100) FloorRing.archimedean (α) [LinearOrderedField α] [F
 instance Units.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
     MulArchimedean αˣ :=
   ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩
+
+instance WithBot.instArchimedean (α) [OrderedAddCommMonoid α] [Archimedean α] :
+    Archimedean (WithBot α) := by
+  constructor
+  intro x y hxy
+  induction y with
+  | bot => exact absurd hxy bot_le.not_lt
+  | coe y =>
+    induction x with
+    | bot => refine ⟨0, bot_le⟩
+    | coe x => simpa [← WithBot.coe_nsmul] using (Archimedean.arch x (by simpa using hxy))
+
+instance WithZero.instMulArchimedean (α) [OrderedCommMonoid α] [MulArchimedean α] :
+    MulArchimedean (WithZero α) := by
+  constructor
+  intro x y hxy
+  induction y with
+  | h₁ => exact absurd hxy (zero_le _).not_lt
+  | h₂ y =>
+    induction x with
+    | h₁ => refine ⟨0, zero_le _⟩
+    | h₂ x => simpa [← WithZero.coe_pow] using (MulArchimedean.arch x (by simpa using hxy))

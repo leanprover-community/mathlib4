@@ -286,7 +286,6 @@ def embedding : C ⥤ Free R C where
   map_id _ := rfl
   map_comp {X Y Z} f g := by
     -- Porting note (https://github.com/leanprover-community/mathlib4/pull/10959): simp used to be able to close this goal
-    dsimp only []
     rw [single_comp_single, one_mul]
 
 variable {C} {D : Type u} [Category.{v} D] [Preadditive D] [Linear R D]

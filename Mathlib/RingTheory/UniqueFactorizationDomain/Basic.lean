@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs

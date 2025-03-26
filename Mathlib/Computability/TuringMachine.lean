@@ -674,12 +674,10 @@ attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
   intro c₁ c₂ h
-  cases' h with l v S L hT
-  rcases l with - | l; · constructor
+  obtain @⟨- | l, v, S, L, hT⟩ := h; · constructor
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
   · exact ⟨b, c, TransGen.head' rfl r⟩
   simp only [tr]
-  -- Porting note: `refine'` failed because of implicit lambda, so `induction` is used.
   generalize M l = N
   induction N using stmtStRec generalizing v S L hT with
   | H₁ k s q IH => exact tr_respects_aux M hT s @IH

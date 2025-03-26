@@ -8,6 +8,7 @@ import Mathlib.Control.Monad.Writer
 import Mathlib.Control.Lawful
 import Batteries.Tactic.Congr
 import Batteries.Lean.Except
+import Batteries.Control.OptionT
 
 /-!
 # Continuation Monad
@@ -30,8 +31,8 @@ class MonadCont (m : Type u → Type v) where
 
 open MonadCont
 
-class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m]
-    extends LawfulMonad m : Prop where
+class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] : Prop
+    extends LawfulMonad m where
   callCC_bind_right {α ω γ} (cmd : m α) (next : Label ω m γ → α → m ω) :
     (callCC fun f => cmd >>= next f) = cmd >>= fun x => callCC fun f => next f x
   callCC_bind_left {α} (β) (x : α) (dead : Label α m β → β → m α) :
@@ -147,18 +148,23 @@ nonrec def OptionT.callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT 
     OptionT m α :=
   OptionT.mk (callCC fun x : Label _ m β => OptionT.run <| f (OptionT.mkLabel x) : m (Option α))
 
+@[simp]
+lemma run_callCC [MonadCont m] {α β : Type _} (f : Label α (OptionT m) β → OptionT m α) :
+    (OptionT.callCC f).run = (callCC fun x => OptionT.run <| f (OptionT.mkLabel x)) := rfl
+
 instance [MonadCont m] : MonadCont (OptionT m) where
   callCC := OptionT.callCC
 
 instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
-    intros; simp only [callCC, OptionT.callCC, OptionT.run_bind, callCC_bind_right]; ext
-    dsimp
-    congr with ⟨⟩ <;> simp [@callCC_dummy m _]
+    refine fun _ _ => OptionT.ext ?_
+    simp [callCC, Option.elimM, callCC_bind_right]
+    exact bind_congr fun | some _ => rfl | none => by simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros
-    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, OptionT.run_bind, OptionT.run_mk,
-      bind_assoc, pure_bind, @callCC_bind_left m _]
+    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, bind_pure_comp, OptionT.run_bind,
+      OptionT.run_mk, Option.elimM_map, Option.elim_some, Function.comp_apply,
+      @callCC_bind_left m _]
     ext; rfl
   callCC_dummy := by intros; simp only [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
 

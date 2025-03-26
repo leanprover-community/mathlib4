@@ -43,7 +43,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
         sin_eq_zero_iff_of_lt_of_lt hθ.1 hθ.2] using h'θ
   map_source' := by
     rintro ⟨x, y⟩ hxy
-    simp only [prod_mk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
+    simp only [prodMk_mem_set_prod_eq, mem_Ioi, sqrt_pos, mem_Ioo, Complex.neg_pi_lt_arg,
       true_and, Complex.arg_lt_pi_iff]
     constructor
     · rcases hxy with hxy | hxy
@@ -54,9 +54,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       · exact Or.inr hxy
   right_inv' := by
     rintro ⟨r, θ⟩ ⟨hr, hθ⟩
-    dsimp at hr hθ
-    simp only [Prod.mk.inj_iff]
-    constructor
+    ext <;> dsimp at hr hθ ⊢
     · conv_rhs => rw [← sqrt_sq (le_of_lt hr), ← one_mul (r ^ 2), ← sin_sq_add_cos_sq θ]
       congr 1
       ring
@@ -66,9 +64,9 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       ring
   left_inv' := by
     rintro ⟨x, y⟩ _
-    have A : √(x ^ 2 + y ^ 2) = Complex.abs (x + y * Complex.I) := by
-      rw [Complex.abs_apply, Complex.normSq_add_mul_I]
-    have Z := Complex.abs_mul_cos_add_sin_mul_I (x + y * Complex.I)
+    have A : √(x ^ 2 + y ^ 2) = ‖x + y * Complex.I‖ := by
+      rw [Complex.norm_def, Complex.normSq_add_mul_I]
+    have Z := Complex.norm_mul_cos_add_sin_mul_I (x + y * Complex.I)
     simp only [← Complex.ofReal_cos, ← Complex.ofReal_sin, mul_add, ← Complex.ofReal_mul, ←
       mul_assoc] at Z
     simp [A]
@@ -76,11 +74,9 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
   open_source :=
     (isOpen_lt continuous_const continuous_fst).union
       (isOpen_ne_fun continuous_snd continuous_const)
-  continuousOn_invFun :=
-    ((continuous_fst.mul (continuous_cos.comp continuous_snd)).prod_mk
-        (continuous_fst.mul (continuous_sin.comp continuous_snd))).continuousOn
+  continuousOn_invFun := by fun_prop
   continuousOn_toFun := by
-    apply ((continuous_fst.pow 2).add (continuous_snd.pow 2)).sqrt.continuousOn.prod
+    refine .prodMk (by fun_prop) ?_
     have A : MapsTo Complex.equivRealProd.symm ({q : ℝ × ℝ | 0 < q.1} ∪ {q : ℝ × ℝ | q.2 ≠ 0})
         Complex.slitPlane := by
       rintro ⟨x, y⟩ hxy; simpa only using hxy
@@ -88,6 +84,11 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       (g := Complex.arg) (fun z hz => ?_) ?_ A
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
+
+@[fun_prop]
+theorem continuous_polarCoord_symm :
+    Continuous polarCoord.symm :=
+  .prodMk (by fun_prop) (by fun_prop)
 
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fderivPolarCoordSymm (p : ℝ × ℝ) : ℝ × ℝ →L[ℝ] ℝ × ℝ :=
@@ -98,7 +99,7 @@ theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm (fderivPolarCoordSymm p) p := by
   unfold fderivPolarCoordSymm
   rw [Matrix.toLin_finTwoProd_toContinuousLinearMap]
-  convert HasFDerivAt.prod (𝕜 := ℝ)
+  convert HasFDerivAt.prodMk (𝕜 := ℝ)
     (hasFDerivAt_fst.mul ((hasDerivAt_cos p.2).comp_hasFDerivAt p hasFDerivAt_snd))
     (hasFDerivAt_fst.mul ((hasDerivAt_sin p.2).comp_hasFDerivAt p hasFDerivAt_snd)) using 2 <;>
   simp [smul_smul, add_comm, neg_mul, smul_neg, neg_smul _ (ContinuousLinearMap.snd ℝ ℝ ℝ)]
@@ -178,8 +179,8 @@ protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
 
 protected theorem polarCoord_apply (a : ℂ) :
-    Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
-  simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
+    Complex.polarCoord a = (‖a‖, Complex.arg a) := by
+  simp_rw [Complex.norm_def, Complex.normSq_apply, ← pow_two]
   rfl
 
 protected theorem polarCoord_source : Complex.polarCoord.source = slitPlane := rfl
@@ -195,8 +196,10 @@ protected theorem polarCoord_symm_apply (p : ℝ × ℝ) :
 theorem measurableEquivRealProd_symm_polarCoord_symm_apply (p : ℝ × ℝ) :
     (measurableEquivRealProd.symm (polarCoord.symm p)) = Complex.polarCoord.symm p := rfl
 
-theorem polarCoord_symm_abs (p : ℝ × ℝ) :
-    Complex.abs (Complex.polarCoord.symm p) = |p.1| := by simp
+theorem norm_polarCoord_symm (p : ℝ × ℝ) :
+    ‖Complex.polarCoord.symm p‖ = |p.1| := by simp
+
+@[deprecated (since := "2025-02-17")] alias polarCoord_symm_abs := norm_polarCoord_symm
 
 protected theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] (f : ℂ → E) :

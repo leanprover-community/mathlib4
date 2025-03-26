@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.Finset.Powerset
 
 /-!
 # The Ahlswede-Zhang identity
@@ -103,15 +104,14 @@ variable {α β : Type*}
 section SemilatticeSup
 variable [SemilatticeSup α] [SemilatticeSup β] [BoundedOrder β] {s t : Finset α} {a : α}
 
-private lemma sup_aux [DecidableRel (α := α) (· ≤ ·)] :
-    a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
+private lemma sup_aux [DecidableLE α] : a ∈ lowerClosure s → {b ∈ s | a ≤ b}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma lower_aux [DecidableEq α] :
     a ∈ lowerClosure ↑(s ∪ t) ↔ a ∈ lowerClosure s ∨ a ∈ lowerClosure t := by
   rw [coe_union, lowerClosure_union, LowerSet.mem_sup_iff]
 
-variable [DecidableRel (α := α) (· ≤ ·)] [OrderTop α]
+variable [DecidableLE α] [OrderTop α]
 
 /-- The supremum of the elements of `s` less than `a` if there are some, otherwise `⊤`. -/
 def truncatedSup (s : Finset α) (a : α) : α :=
@@ -134,7 +134,7 @@ lemma le_truncatedSup : a ≤ truncatedSup s a := by
     exact h.trans <| le_sup' id <| mem_filter.2 ⟨hb, h⟩
   · exact le_top
 
-lemma map_truncatedSup [DecidableRel (α := β) (· ≤ ·)] (e : α ≃o β) (s : Finset α) (a : α) :
+lemma map_truncatedSup [DecidableLE β] (e : α ≃o β) (s : Finset α) (a : α) :
     e (truncatedSup s a) = truncatedSup (s.map e.toEquiv.toEmbedding) (e a) := by
   have : e a ∈ lowerClosure (s.map e.toEquiv.toEmbedding : Set β) ↔ a ∈ lowerClosure s := by simp
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
@@ -172,17 +172,16 @@ end SemilatticeSup
 
 section SemilatticeInf
 variable [SemilatticeInf α] [SemilatticeInf β]
-  [BoundedOrder β] [DecidableRel (α := β) (· ≤ ·)] {s t : Finset α} {a : α}
+  [BoundedOrder β] [DecidableLE β] {s t : Finset α} {a : α}
 
-private lemma inf_aux [DecidableRel (α := α) (· ≤ ·)] :
-    a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
+private lemma inf_aux [DecidableLE α] : a ∈ upperClosure s → {b ∈ s | b ≤ a}.Nonempty :=
   fun ⟨b, hb, hab⟩ ↦ ⟨b, mem_filter.2 ⟨hb, hab⟩⟩
 
 private lemma upper_aux [DecidableEq α] :
     a ∈ upperClosure ↑(s ∪ t) ↔ a ∈ upperClosure s ∨ a ∈ upperClosure t := by
   rw [coe_union, upperClosure_union, UpperSet.mem_inf_iff]
 
-variable [DecidableRel (α := α) (· ≤ ·)] [BoundedOrder α]
+variable [DecidableLE α] [BoundedOrder α]
 
 /-- The infimum of the elements of `s` less than `a` if there are some, otherwise `⊥`. -/
 def truncatedInf (s : Finset α) (a : α) : α :=
@@ -246,8 +245,7 @@ lemma truncatedInf_union_of_not_mem (hs : a ∉ upperClosure s) (ht : a ∉ uppe
 end SemilatticeInf
 
 section DistribLattice
-variable [DistribLattice α] [DecidableEq α]
-  {s t : Finset α} {a : α}
+variable [DistribLattice α] [DecidableEq α] {s t : Finset α} {a : α}
 
 private lemma infs_aux : a ∈ lowerClosure ↑(s ⊼ t) ↔ a ∈ lowerClosure s ∧ a ∈ lowerClosure t := by
   rw [coe_infs, lowerClosure_infs, LowerSet.mem_inf_iff]
@@ -255,7 +253,7 @@ private lemma infs_aux : a ∈ lowerClosure ↑(s ⊼ t) ↔ a ∈ lowerClosure 
 private lemma sups_aux : a ∈ upperClosure ↑(s ⊻ t) ↔ a ∈ upperClosure s ∧ a ∈ upperClosure t := by
   rw [coe_sups, upperClosure_sups, UpperSet.mem_sup_iff]
 
-variable [DecidableRel (α := α) (· ≤ ·)] [BoundedOrder α]
+variable [DecidableLE α] [BoundedOrder α]
 
 lemma truncatedSup_infs (hs : a ∈ lowerClosure s) (ht : a ∈ lowerClosure t) :
     truncatedSup (s ⊼ t) a = truncatedSup s a ⊓ truncatedSup t a := by
@@ -282,7 +280,7 @@ lemma truncatedInf_sups_of_not_mem (ha : a ∉ upperClosure s ⊔ upperClosure t
 end DistribLattice
 
 section BooleanAlgebra
-variable [BooleanAlgebra α] [DecidableRel (α := α) (· ≤ ·)]
+variable [BooleanAlgebra α] [DecidableLE α]
 
 @[simp] lemma compl_truncatedSup (s : Finset α) (a : α) :
     (truncatedSup s a)ᶜ = truncatedInf sᶜˢ aᶜ := map_truncatedSup (OrderIso.compl α) _ _

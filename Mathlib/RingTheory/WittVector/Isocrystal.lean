@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.RingTheory.WittVector.FrobeniusFractionField
-import Mathlib.Algebra.Module.Rat
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 
 /-!
 
@@ -115,15 +113,13 @@ open WittVector
 
 variable (V : Type*) [AddCommGroup V] [Isocrystal p k V]
 variable (V₂ : Type*) [AddCommGroup V₂] [Isocrystal p k V₂]
-variable {V}
 
+variable {V} in
 /--
 Project the Frobenius automorphism from an isocrystal. Denoted by `Φ(p, k)` when V can be inferred.
 -/
 def Isocrystal.frobenius : V ≃ᶠˡ[p, k] V :=
   Isocrystal.frob (p := p) (k := k) (V := V)
-
-variable (V)
 
 @[inherit_doc] scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
@@ -156,8 +152,9 @@ of slope `m : ℤ`.
 @[nolint unusedArguments]
 def StandardOneDimIsocrystal (_m : ℤ) : Type _ :=
   K(p, k)
+-- The `AddCommGroup, Module K(p, k)` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note(https://github.com/leanprover-community/mathlib4/issues/5020): added
 section Deriving
 
 instance {m : ℤ} : AddCommGroup (StandardOneDimIsocrystal p k m) :=
@@ -211,8 +208,7 @@ theorem isocrystal_classification (k : Type*) [Field k] [IsAlgClosed k] [CharP k
       rw [LinearMap.span_singleton_eq_range]
   refine ⟨⟨(LinearEquiv.smulOfNeZero K(p, k) _ _ hb).trans F, fun c ↦ ?_⟩⟩
   rw [LinearEquiv.trans_apply, LinearEquiv.trans_apply, LinearEquiv.smulOfNeZero_apply,
-    LinearEquiv.smulOfNeZero_apply, Units.smul_mk0, Units.smul_mk0, LinearEquiv.map_smul,
-    LinearEquiv.map_smul]
+    LinearEquiv.smulOfNeZero_apply, LinearEquiv.map_smul, LinearEquiv.map_smul]
   -- Porting note: was
   -- simp only [hax, LinearEquiv.ofBijective_apply, LinearMap.toSpanSingleton_apply,
   --   LinearEquiv.map_smulₛₗ, StandardOneDimIsocrystal.frobenius_apply, Algebra.id.smul_eq_mul]

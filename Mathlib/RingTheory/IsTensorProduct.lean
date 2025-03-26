@@ -261,8 +261,7 @@ lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f)
 
 end
 
-variable (f)
-
+variable (f) in
 theorem IsBaseChange.of_lift_unique
     (h : ∀ (Q : Type max v₁ v₂ v₃) [AddCommMonoid Q],
       ∀ [Module R Q] [Module S Q], ∀ [IsScalarTower R S Q],
@@ -295,8 +294,6 @@ theorem IsBaseChange.of_lift_unique
     change (g <| (1 : S) • f x).down = _
     rw [one_smul, hg]
     rfl
-
-variable {f}
 
 theorem IsBaseChange.iff_lift_unique :
     IsBaseChange S f ↔
@@ -386,8 +383,7 @@ variable {R' S' : Type*} [CommSemiring R'] [CommSemiring S']
 variable [Algebra R R'] [Algebra S S'] [Algebra R' S'] [Algebra R S']
 variable [IsScalarTower R R' S'] [IsScalarTower R S S']
 
-open IsScalarTower (toAlgHom)
-open IsScalarTower (algebraMap_apply)
+open IsScalarTower (toAlgHom algebraMap_apply)
 
 variable (R S R' S')
 
@@ -401,53 +397,6 @@ is a pushout diagram (i.e. `S' = S ⊗[R] R'`)
 class Algebra.IsPushout : Prop where
   out : IsBaseChange S (toAlgHom R R' S').toLinearMap
 
-variable {R S R' S'}
-
-@[symm]
-theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
-  let _ := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
-  let e : R' ⊗[R] S ≃ₗ[R'] S' := by
-    refine { (_root_.TensorProduct.comm R R' S).trans <|
-      h.1.equiv.restrictScalars R with map_smul' := ?_ }
-    intro r x
-    change
-      h.1.equiv (TensorProduct.comm R R' S (r • x)) = r • h.1.equiv (TensorProduct.comm R R' S x)
-    refine TensorProduct.induction_on x ?_ ?_ ?_
-    · simp only [smul_zero, map_zero]
-    · intro x y
-      simp only [smul_tmul', smul_eq_mul, TensorProduct.comm_tmul, smul_def,
-        TensorProduct.algebraMap_apply, id.map_eq_id, RingHom.id_apply, TensorProduct.tmul_mul_tmul,
-        one_mul, h.1.equiv_tmul, AlgHom.toLinearMap_apply, map_mul, IsScalarTower.coe_toAlgHom']
-      ring
-    · intro x y hx hy
-      rw [map_add, map_add, smul_add, map_add, map_add, hx, hy, smul_add]
-  have :
-    (toAlgHom R S S').toLinearMap =
-      (e.toLinearMap.restrictScalars R).comp (TensorProduct.mk R R' S 1) := by
-    ext
-    simp [e, h.1.equiv_tmul, Algebra.smul_def]
-  constructor
-  rw [this]
-  exact (TensorProduct.isBaseChange R S R').comp (IsBaseChange.ofEquiv e)
-
-variable (R S R' S')
-
-theorem Algebra.IsPushout.comm : Algebra.IsPushout R S R' S' ↔ Algebra.IsPushout R R' S S' :=
-  ⟨Algebra.IsPushout.symm, Algebra.IsPushout.symm⟩
-
-variable {R S R'}
-
-attribute [local instance] Algebra.TensorProduct.rightAlgebra
-
-instance TensorProduct.isPushout {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] : Algebra.IsPushout R S T (TensorProduct R S T) :=
-  ⟨TensorProduct.isBaseChange R T S⟩
-
-instance TensorProduct.isPushout' {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
-    [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (TensorProduct R S T) :=
-  Algebra.IsPushout.symm inferInstance
-
-variable (R S R') in
 /-- The isomorphism `S' ≃ S ⊗[R] R` given `Algebra.IsPushout R S R' S'`. -/
 noncomputable
 def Algebra.IsPushout.equiv [h : Algebra.IsPushout R S R' S'] : S ⊗[R] R' ≃ₐ[S] S' where
@@ -476,10 +425,42 @@ lemma Algebra.IsPushout.equiv_symm_algebraMap_right [Algebra.IsPushout R S R' S'
     (equiv R S R' S').symm (algebraMap R' S' a) = 1 ⊗ₜ a := by
   rw [(equiv R S R' S').symm_apply_eq, equiv_tmul, map_one, one_mul]
 
+variable {R S R' S'}
+
+@[symm]
+theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' where
+  out := .of_equiv
+    { __ := (TensorProduct.comm R ..).toAddEquiv.trans (equiv R S R' S').toAddEquiv,
+      map_smul' _ x := x.induction_on (by simp) (fun _ _ ↦ by
+        simp [smul_tmul', equiv_tmul, Algebra.smul_def, mul_left_comm]) (by simp+contextual) }
+    fun _ ↦ by simp [equiv_tmul]
+
+variable (R S R' S')
+
+theorem Algebra.IsPushout.comm : Algebra.IsPushout R S R' S' ↔ Algebra.IsPushout R R' S S' :=
+  ⟨Algebra.IsPushout.symm, Algebra.IsPushout.symm⟩
+
+instance : Algebra.IsPushout R R S S where
+  out := .of_equiv (TensorProduct.lid R S) fun _ ↦ by simp
+
+instance : Algebra.IsPushout R S R S := .symm inferInstance
+
+variable {R S R'}
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra
+
+instance TensorProduct.isPushout {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+    [Algebra R S] [Algebra R T] : Algebra.IsPushout R S T (S ⊗[R] T) :=
+  ⟨TensorProduct.isBaseChange R T S⟩
+
+instance TensorProduct.isPushout' {R S T : Type*} [CommSemiring R] [CommSemiring S] [CommSemiring T]
+    [Algebra R S] [Algebra R T] : Algebra.IsPushout R T S (S ⊗[R] T) :=
+  Algebra.IsPushout.symm inferInstance
+
 /-- If `S' = S ⊗[R] R'`, then any pair of `R`-algebra homomorphisms `f : S → A` and `g : R' → A`
 such that `f x` and `g y` commutes for all `x, y` descends to a (unique) homomorphism `S' → A`.
 -/
-@[simps! (config := .lemmasOnly) apply]
+@[simps! -isSimp apply]
 noncomputable def Algebra.pushoutDesc [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (hf : ∀ x y, f x * g y = g y * f x) :
     S' →ₐ[R] A :=
@@ -523,6 +504,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
 
+variable (R S R')
 /--
 Let the following be a commutative diagram of rings
 ```
@@ -536,14 +518,14 @@ where the left-hand square is a pushout. Then the following are equivalent:
 
 Note that this is essentially the isomorphism `T ⊗[S] (S ⊗[R] R') ≃ₐ[T] T ⊗[R] R'`.
 -/
-lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommRing T'] [Algebra R T']
+lemma Algebra.IsPushout.comp_iff {T' : Type*} [CommSemiring T'] [Algebra R T']
     [Algebra S' T'] [Algebra S T'] [Algebra T T'] [Algebra R' T']
     [IsScalarTower R T T'] [IsScalarTower S T T'] [IsScalarTower S S' T']
     [IsScalarTower R R' T'] [IsScalarTower R S' T'] [IsScalarTower R' S' T']
     [Algebra.IsPushout R S R' S'] :
     Algebra.IsPushout R T R' T' ↔ Algebra.IsPushout S T S' T' := by
   let f : R' →ₗ[R] S' := (IsScalarTower.toAlgHom R R' S').toLinearMap
-  haveI : IsScalarTower R S T' := IsScalarTower.of_algebraMap_eq <| fun x ↦ by
+  haveI : IsScalarTower R S T' := .of_algebraMap_eq fun x ↦ by
     rw [algebraMap_apply R S' T', algebraMap_apply R S S', ← algebraMap_apply S S' T']
   have heq : (toAlgHom S S' T').toLinearMap.restrictScalars R ∘ₗ f =
       (toAlgHom R R' T').toLinearMap := by

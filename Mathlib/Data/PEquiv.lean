@@ -40,6 +40,7 @@ pequiv, partial equivalence
 
 -/
 
+assert_not_exists RelIso
 
 universe u v w x
 
@@ -51,7 +52,7 @@ structure PEquiv (α : Type u) (β : Type v) where
   toFun : α → Option β
   /-- The partial inverse of `toFun` -/
   invFun : β → Option α
-  /-- `invFun` is the partial inverse of `toFun`  -/
+  /-- `invFun` is the partial inverse of `toFun` -/
   inv : ∀ (a : α) (b : β), a ∈ invFun b ↔ b ∈ toFun a
 
 /-- A `PEquiv` is a partial equivalence, a representation of a bijection between a subset

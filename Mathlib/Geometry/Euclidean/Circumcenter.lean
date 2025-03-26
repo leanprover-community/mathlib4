@@ -143,7 +143,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
     -- substs hucc hucr
     cases hu
     have hcr₃val : cr₃ = √(cr * cr + t₃ * y * (t₃ * y)) := by
-      cases' hnps with p0 hp0
+      obtain ⟨p0, hp0⟩ := hnps
       have h' : ↑(⟨cc, hcc₃'⟩ : s) = cc := rfl
       rw [← dist_of_mem_subset_mk_sphere (Set.mem_insert_of_mem _ hp0) hcr₃, hcc₃'', ←
         mul_self_inj_of_nonneg dist_nonneg (Real.sqrt_nonneg _),
@@ -500,7 +500,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
     refine ⟨fun h => ?_, fun _ => mem_univ _⟩
-    cases' x with i
+    obtain i | - := x
     · exact mem_insert_of_mem (mem_map_of_mem _ (mem_univ i))
     · exact mem_insert_self _ _
   change _ = (∑ i, f (pointIndexEmbedding n i)) + _

@@ -263,7 +263,7 @@ theorem map_comp (f : M →ₗ[R] N) (g : N →ₗ[R] N') :
 
 variable (R M) in
 /-- The linear equivalence ` ⋀[R]^0 M ≃ₗ[R] R`. -/
-@[simps! (config := .lemmasOnly) symm_apply]
+@[simps! -isSimp symm_apply]
 noncomputable def zeroEquiv : ⋀[R]^0 M ≃ₗ[R] R :=
   LinearEquiv.ofLinear
     (alternatingMapLinearEquiv (AlternatingMap.constOfIsEmpty R _ _ 1))
@@ -282,7 +282,7 @@ lemma zeroEquiv_naturality (f : M →ₗ[R] N) :
 
 variable (R M) in
 /-- The linear equivalence `M ≃ₗ[R] ⋀[R]^1 M`. -/
-@[simps! (config := .lemmasOnly) symm_apply]
+@[simps! -isSimp symm_apply]
 noncomputable def oneEquiv : ⋀[R]^1 M ≃ₗ[R] M :=
   LinearEquiv.ofLinear
     (alternatingMapLinearEquiv (AlternatingMap.ofSubsingleton R M M (0 : Fin 1) .id)) (by

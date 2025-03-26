@@ -287,7 +287,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   · refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
-  all_goals cases' IHf with a ha; cases' IHg with b hb
+  all_goals obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
   -- Pairing:
   · refine
       ⟨max a b + 3, fun n =>

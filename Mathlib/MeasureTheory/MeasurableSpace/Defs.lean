@@ -35,6 +35,8 @@ contains all of them.
 measurable space, σ-algebra, measurable function
 -/
 
+assert_not_exists Covariant MonoidWithZero
+
 open Set Encodable Function Equiv
 
 variable {α β γ δ δ' : Type*} {ι : Sort*} {s t u : Set α}
@@ -58,13 +60,9 @@ instance [h : MeasurableSpace α] : MeasurableSpace αᵒᵈ := h
 def MeasurableSet [MeasurableSpace α] (s : Set α) : Prop :=
   ‹MeasurableSpace α›.MeasurableSet' s
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `scoped[MeasureTheory]` doesn't work for unknown reason
-namespace MeasureTheory
-set_option quotPrecheck false in
 /-- Notation for `MeasurableSet` with respect to a non-standard σ-algebra. -/
-scoped notation "MeasurableSet[" m "]" => @MeasurableSet _ m
+scoped[MeasureTheory] notation "MeasurableSet[" m "]" => @MeasurableSet _ m
 
-end MeasureTheory
 open MeasureTheory
 
 section
@@ -531,12 +529,6 @@ variable [MeasurableSpace α] [MeasurableSpace β] [DiscreteMeasurableSpace α] 
   DiscreteMeasurableSpace.forall_measurableSet _
 
 @[measurability, fun_prop] lemma Measurable.of_discrete : Measurable f := fun _ _ ↦ .of_discrete
-
-@[deprecated MeasurableSet.of_discrete (since := "2024-08-25")]
-lemma measurableSet_discrete (s : Set α) : MeasurableSet s := .of_discrete
-
-@[deprecated Measurable.of_discrete (since := "2024-08-25")]
-lemma measurable_discrete (f : α → β) : Measurable f := .of_discrete
 
 /-- Warning: Creates a typeclass loop with `MeasurableSingletonClass.toDiscreteMeasurableSpace`.
 To be monitored. -/

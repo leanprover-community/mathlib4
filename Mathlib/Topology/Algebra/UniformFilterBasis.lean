@@ -33,7 +33,7 @@ protected def uniformSpace : UniformSpace G :=
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
 protected theorem uniformAddGroup : @UniformAddGroup G B.uniformSpace _ :=
-  @comm_topologicalAddGroup_is_uniform G _ B.topology B.isTopologicalAddGroup
+  @uniformAddGroup_of_addCommGroup G _ B.topology B.isTopologicalAddGroup
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔

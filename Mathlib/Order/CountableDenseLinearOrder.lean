@@ -124,7 +124,7 @@ theorem exists_across [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonem
     (f : PartialIso α β) (a : α) :
     ∃ b : β, ∀ p ∈ f.val, cmp (Prod.fst p) a = cmp (Prod.snd p) b := by
   by_cases h : ∃ b, (a, b) ∈ f.val
-  · cases' h with b hb
+  · obtain ⟨b, hb⟩ := h
     exact ⟨b, fun p hp ↦ f.prop _ hp _ hb⟩
   have :
     ∀ x ∈ (f.val.filter fun p : α × β ↦ p.fst < a).image Prod.snd,

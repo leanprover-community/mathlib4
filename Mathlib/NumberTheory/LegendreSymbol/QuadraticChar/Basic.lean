@@ -113,8 +113,7 @@ theorem quadraticCharFun_mul (a b : F) :
       rcases FiniteField.pow_dichotomy hF ha with ha' | ha' <;>
         simp only [ha', h, neg_neg, if_true, if_false]
 
-variable (F)
-
+variable (F) in
 /-- The quadratic character as a multiplicative character. -/
 @[simps]
 def quadraticChar : MulChar F ℤ where
@@ -122,8 +121,6 @@ def quadraticChar : MulChar F ℤ where
   map_one' := quadraticCharFun_one
   map_mul' := quadraticCharFun_mul
   map_nonunit' a ha := by rw [of_not_not (mt Ne.isUnit ha)]; exact quadraticCharFun_zero
-
-variable {F}
 
 /-- The value of the quadratic character on `a` is zero iff `a = 0`. -/
 theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
@@ -196,16 +193,13 @@ theorem quadraticChar_eq_pow_of_char_ne_two' (hF : ringChar F ≠ 2) (a : F) :
       simp only [ha'', Int.cast_ite, Int.cast_one, Int.cast_neg, ite_eq_right_iff]
       exact Eq.symm
 
-variable (F)
-
+variable (F) in
 /-- The quadratic character is quadratic as a multiplicative character. -/
 theorem quadraticChar_isQuadratic : (quadraticChar F).IsQuadratic := by
   intro a
   by_cases ha : a = 0
   · left; rw [ha]; exact quadraticChar_zero
   · right; exact quadraticChar_dichotomy ha
-
-variable {F}
 
 /-- The quadratic character is nontrivial as a multiplicative character
 when the domain has odd characteristic. -/
@@ -237,13 +231,8 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
       exact card_pair (Ne.symm (mt (Ring.eq_self_iff_eq_zero_of_char_ne_two hF).mp h₀))
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
-      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero]
-      ext1
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
-      rw [isSquare_iff_exists_sq] at h
-      exact fun h' ↦ h ⟨_, h'.symm⟩
+      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero, eq_empty_iff_forall_not_mem]
+      simpa [s, isSquare_iff_exists_sq, eq_comm] using h
 
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=

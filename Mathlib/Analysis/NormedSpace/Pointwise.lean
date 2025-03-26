@@ -24,7 +24,7 @@ variable {𝕜 E : Type*}
 section SMulZeroClass
 
 variable [SeminormedAddCommGroup 𝕜] [SeminormedAddCommGroup E]
-variable [SMulZeroClass 𝕜 E] [BoundedSMul 𝕜 E]
+variable [SMulZeroClass 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem ediam_smul_le (c : 𝕜) (s : Set E) : EMetric.diam (c • s) ≤ ‖c‖₊ • EMetric.diam s :=
   (lipschitzWith_smul c).ediam_image_le s
@@ -34,7 +34,7 @@ end SMulZeroClass
 section DivisionRing
 
 variable [NormedDivisionRing 𝕜] [SeminormedAddCommGroup E]
-variable [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem ediam_smul₀ (c : 𝕜) (s : Set E) : EMetric.diam (c • s) = ‖c‖₊ • EMetric.diam s := by
   refine le_antisymm (ediam_smul_le c s) ?_
@@ -236,19 +236,21 @@ theorem infEdist_thickening (hδ : 0 < δ) (s : Set E) (x : E) :
   refine (tsub_le_iff_right.2 infEdist_le_infEdist_thickening_add).antisymm' ?_
   refine le_sub_of_add_le_right ofReal_ne_top ?_
   refine le_infEdist.2 fun z hz => le_of_forall_lt' fun r h => ?_
-  cases' r with r
-  · exact add_lt_top.2 ⟨lt_top_iff_ne_top.2 <| infEdist_ne_top ⟨z, self_subset_thickening hδ _ hz⟩,
+  cases r with
+  | top =>
+    exact add_lt_top.2 ⟨lt_top_iff_ne_top.2 <| infEdist_ne_top ⟨z, self_subset_thickening hδ _ hz⟩,
       ofReal_lt_top⟩
-  have hr : 0 < ↑r - δ := by
-    refine sub_pos_of_lt ?_
-    have := hs.trans_lt ((infEdist_le_edist_of_mem hz).trans_lt h)
-    rw [ofReal_eq_coe_nnreal hδ.le] at this
-    exact mod_cast this
-  rw [edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h
-  obtain ⟨y, hxy, hyz⟩ := exists_dist_lt_lt hr hδ h
-  refine (ENNReal.add_lt_add_right ofReal_ne_top <|
-    infEdist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le ?_
-  rw [← ofReal_add hr.le hδ.le, sub_add_cancel, ofReal_coe_nnreal]
+  | coe r =>
+    have hr : 0 < ↑r - δ := by
+      refine sub_pos_of_lt ?_
+      have := hs.trans_lt ((infEdist_le_edist_of_mem hz).trans_lt h)
+      rw [ofReal_eq_coe_nnreal hδ.le] at this
+      exact mod_cast this
+    rw [edist_lt_coe, ← dist_lt_coe, ← add_sub_cancel δ ↑r] at h
+    obtain ⟨y, hxy, hyz⟩ := exists_dist_lt_lt hr hδ h
+    refine (ENNReal.add_lt_add_right ofReal_ne_top <|
+      infEdist_lt_iff.2 ⟨_, mem_thickening_iff.2 ⟨_, hz, hyz⟩, edist_lt_ofReal.2 hxy⟩).trans_le ?_
+    rw [← ofReal_add hr.le hδ.le, sub_add_cancel, ofReal_coe_nnreal]
 
 @[simp]
 theorem thickening_thickening (hε : 0 < ε) (hδ : 0 < δ) (s : Set E) :

@@ -3,6 +3,7 @@ Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 import Mathlib.Combinatorics.SimpleGraph.Walk
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
@@ -79,7 +80,7 @@ structure IsTrail {u v : V} (p : G.Walk u v) : Prop where
 
 /-- A *path* is a walk with no repeating vertices.
 Use `SimpleGraph.Walk.IsPath.mk'` for a simpler constructor. -/
-structure IsPath {u v : V} (p : G.Walk u v) extends IsTrail p : Prop where
+structure IsPath {u v : V} (p : G.Walk u v) : Prop extends IsTrail p where
   support_nodup : p.support.Nodup
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
@@ -87,7 +88,7 @@ protected lemma IsPath.isTrail {p : Walk G u v} (h : IsPath p) : IsTrail p := h.
 
 /-- A *circuit* at `u : V` is a nonempty trail beginning and ending at `u`. -/
 @[mk_iff isCircuit_def]
-structure IsCircuit {u : V} (p : G.Walk u u) extends IsTrail p : Prop where
+structure IsCircuit {u : V} (p : G.Walk u u) : Prop extends IsTrail p where
   ne_nil : p ≠ nil
 
 -- Porting note: used to use `extends to_trail : is_trail p` in structure
@@ -95,7 +96,7 @@ protected lemma IsCircuit.isTrail {p : Walk G u u} (h : IsCircuit p) : IsTrail p
 
 /-- A *cycle* at `u : V` is a circuit at `u` whose only repeating vertex
 is `u` (which appears exactly twice). -/
-structure IsCycle {u : V} (p : G.Walk u u) extends IsCircuit p : Prop where
+structure IsCycle {u : V} (p : G.Walk u u) : Prop extends IsCircuit p where
   support_nodup : p.support.tail.Nodup
 
 -- Porting note: used to use `extends to_circuit : is_circuit p` in structure
@@ -267,6 +268,17 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
   mp h := by simpa using h.reverse
   mpr := .reverse
 
+lemma IsCycle.isPath_of_append_right {p : G.Walk u v} {q : G.Walk v u} (h : ¬ p.Nil)
+    (hcyc : (p.append q).IsCycle) : q.IsPath := by
+  have := hcyc.2
+  rw [tail_support_append, List.nodup_append] at this
+  rw [isPath_def, support_eq_cons, List.nodup_cons]
+  exact ⟨this.2.2 (p.end_mem_tail_support h), this.2.1⟩
+
+lemma IsCycle.isPath_of_append_left {p : G.Walk u v} {q : G.Walk v u} (h : ¬ q.Nil)
+    (hcyc : (p.append q).IsCycle) : p.IsPath :=
+  p.isPath_reverse_iff.mp ((reverse_append _ _ ▸ hcyc.reverse).isPath_of_append_right (by simpa))
+
 lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
   cases p with
   | nil => simp
@@ -303,6 +315,44 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
       have := ihp hp.of_cons (by omega : (n - 1) ≤ p.length)
         (by omega : (m - 1) ≤ p.length) hnm
       omega
+
+lemma IsPath.getVert_eq_start_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+    p.getVert i = u ↔ i = 0 := by
+  refine ⟨?_, by aesop⟩
+  intro h
+  by_cases hi : i = 0
+  · exact hi
+  · apply hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by rw [Set.mem_setOf]; omega)
+    simp [h]
+
+lemma IsPath.getVert_eq_end_iff {i : ℕ} {p : G.Walk u w} (hp : p.IsPath) (hi : i ≤ p.length) :
+    p.getVert i = w ↔ i = p.length := by
+  have := hp.reverse.getVert_eq_start_iff (by omega : p.reverse.length - i ≤ p.reverse.length)
+  simp only [length_reverse, getVert_reverse,
+    show p.length - (p.length - i) = i from by omega] at this
+  rw [this]
+  omega
+
+lemma IsPath.getVert_injOn_iff (p : G.Walk u v) : Set.InjOn p.getVert {i | i ≤ p.length} ↔
+    p.IsPath := by
+  refine ⟨?_, fun a => a.getVert_injOn⟩
+  induction p with
+  | nil => simp
+  | cons h q ih =>
+    intro hinj
+    rw [cons_isPath_iff]
+    refine ⟨ih (by
+      intro n hn m hm hnm
+      simp only [Set.mem_setOf_eq] at hn hm
+      have := hinj (by rw [length_cons]; omega : n + 1 ≤ (q.cons h).length)
+          (by rw [length_cons]; omega : m + 1 ≤ (q.cons h).length)
+          (by simpa [getVert_cons] using hnm)
+      omega), fun h' => ?_⟩
+    obtain ⟨n, ⟨hn, hnl⟩⟩ := mem_support_iff_exists_getVert.mp h'
+    have := hinj (by rw [length_cons]; omega : (n + 1) ≤ (q.cons h).length)
+      (by omega : 0 ≤ (q.cons h).length) (show (q.cons h).getVert (n + 1) = (q.cons h).getVert 0
+        from by rwa [getVert_cons _ _ (by omega : n + 1 ≠ 0), getVert_zero])
+    omega
 
 /-! ### About cycles -/
 
@@ -402,6 +452,25 @@ protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h 
   refine ⟨hc.isCircuit.rotate _, ?_⟩
   rw [List.IsRotated.nodup_iff (support_rotate _ _)]
   exact hc.support_nodup
+
+lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
+    (c.takeUntil w h).IsPath := by
+  by_cases hvw : v = w
+  · subst hvw
+    simp
+  rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
+  exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
+
+lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
+    (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
+  intro hv
+  rw [Walk.mem_support_iff_exists_getVert] at hv
+  obtain ⟨n, ⟨hn, hnl⟩⟩ := hv
+  rw [getVert_takeUntil hw hnl] at hn
+  have := p.length_takeUntil_lt hw h.symm
+  have : n = p.length := hp.getVert_injOn (by rw [Set.mem_setOf]; omega) (by simp)
+    (hn.symm ▸ p.getVert_length.symm)
+  omega
 
 end WalkDecomp
 
@@ -791,8 +860,7 @@ protected theorem Reachable.map {u v : V} {G : SimpleGraph V} {G' : SimpleGraph 
 
 @[mono]
 protected lemma Reachable.mono {u v : V} {G G' : SimpleGraph V}
-    (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v :=
-  Guv.map (SimpleGraph.Hom.mapSpanningSubgraphs h)
+    (h : G ≤ G') (Guv : G.Reachable u v) : G'.Reachable u v := Guv.map (.ofLE h)
 
 theorem Iso.reachable_iff {G : SimpleGraph V} {G' : SimpleGraph V'} {φ : G ≃g G'} {u v : V} :
     G'.Reachable (φ u) (φ v) ↔ G.Reachable u v :=
@@ -1258,12 +1326,12 @@ def IsBridge (G : SimpleGraph V) (e : Sym2 V) : Prop :=
 theorem isBridge_iff {u v : V} :
     G.IsBridge s(u, v) ↔ G.Adj u v ∧ ¬(G \ fromEdgeSet {s(u, v)}).Reachable u v := Iff.rfl
 
-theorem reachable_delete_edges_iff_exists_walk {v w v' w': V} :
+theorem reachable_delete_edges_iff_exists_walk {v w v' w' : V} :
     (G \ fromEdgeSet {s(v, w)}).Reachable v' w' ↔ ∃ p : G.Walk v' w', ¬s(v, w) ∈ p.edges := by
   constructor
   · rintro ⟨p⟩
-    use p.map (Hom.mapSpanningSubgraphs (by simp))
-    simp_rw [Walk.edges_map, List.mem_map, Hom.mapSpanningSubgraphs_apply, Sym2.map_id', id]
+    use p.map (.ofLE (by simp))
+    simp_rw [Walk.edges_map, List.mem_map, Hom.ofLE_apply, Sym2.map_id', id]
     rintro ⟨e, h, rfl⟩
     simpa using p.edges_subset_edgeSet h
   · rintro ⟨p, h⟩

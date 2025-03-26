@@ -50,7 +50,7 @@ def degree (p : R[X]) : WithBot ℕ :=
 def natDegree (p : R[X]) : ℕ :=
   (degree p).unbotD 0
 
-/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`-/
+/-- `leadingCoeff p` gives the coefficient of the highest power of `X` in `p`. -/
 def leadingCoeff (p : R[X]) : R :=
   coeff p (natDegree p)
 
