@@ -1,0 +1,181 @@
+/-
+Copyright (c) 2025 Joël Riou. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joël Riou
+-/
+import Mathlib.CategoryTheory.Functor.Basic
+import Mathlib.CategoryTheory.Types
+
+/-!
+# The colimit type of a functor to types
+
+Given a category `J` (with `J : Type u` and `[Category.{v} J]`) and
+a functor `F : J ⥤ Type w`, we introduce a type `F.ColimitType : Type (max u w)`,
+which satisfies a certain universal property of the colimit: it is defined
+as a suitable quotient of `Σ j, F.obj j`. This universal property is not
+expressed in a categorical way (as in general `Type (max u w)`
+is not the same as `Type u`).
+
+## TODO
+* refactor `DirectedSystem` and the construction of colimits in `Type w`
+by using `Functor.ColimitType`.
+
+-/
+
+universe w'' w' w v u
+
+assert_not_exists CategoryTheory.Limits.Cocone
+
+namespace CategoryTheory
+
+variable {J : Type u} [Category.{v} J]
+
+namespace Functor
+
+variable (F : J ⥤ Type w)
+
+/-- Given a functor `F : J ⥤ Type w`, this is a "cocone" of `F` where
+we allow the point `pt` to be in a different universe than `w`. -/
+structure CoconeTypes where
+  /-- the point of the cocone -/
+  pt : Type w'
+  /-- a family of maps to `pt` -/
+  ι (j : J) : F.obj j → pt
+  ι_naturality {j j' : J} (f : j ⟶ j') :
+      (ι j').comp (F.map f) = ι j := by aesop
+
+namespace CoconeTypes
+
+attribute [simp] ι_naturality
+
+variable {F}
+
+@[simp]
+lemma ι_naturality_apply (c : CoconeTypes.{w'} F) {j j' : J} (f : j ⟶ j') (x : F.obj j) :
+    c.ι j' (F.map f x) = c.ι j x :=
+  congr_fun (c.ι_naturality f) x
+
+end CoconeTypes
+
+/-- Given `F : J ⥤ Type w`, this is the relation `Σ j, F.obj j` which
+generates an equivalence relation such that the quotient identifies
+to the colimit type of `F`. -/
+def ColimitTypeRel : (Σ j, F.obj j) → (Σ j, F.obj j) → Prop :=
+  fun p p' ↦ ∃ f : p.1 ⟶ p'.1, p'.2 = F.map f p.2
+
+/-- The colimit type of a functor `F : J ⥤ Type w`. (It may not
+be in `Type w`.) -/
+def ColimitType : Type (max u w) := Quot F.ColimitTypeRel
+
+/-- The canonical maps `F.obj j → F.ColimitType`. -/
+def ιColimitType (j : J) (x : F.obj j) : F.ColimitType :=
+  Quot.mk _ ⟨j, x⟩
+
+lemma ιColimitType_jointly_surjective (t : F.ColimitType) :
+    ∃ j x, F.ιColimitType j x = t := by
+  obtain ⟨_, _⟩ := t
+  exact ⟨_, _, rfl⟩
+
+@[simp]
+lemma ιColimitType_map {j j' : J} (f : j ⟶ j') (x : F.obj j) :
+    F.ιColimitType j' (F.map f x) = F.ιColimitType j x :=
+  (Quot.sound ⟨f, rfl⟩).symm
+
+/-- The cocone corresponding to `F.ColimitType`. -/
+@[simps]
+def coconeTypes : F.CoconeTypes where
+  pt := F.ColimitType
+  ι j := F.ιColimitType j
+
+/-- An heterogeneous universe version of the universal property of the colimit is
+satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
+def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
+  Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)
+
+@[simp]
+lemma descColimitType_comp_ι (c : F.CoconeTypes) (j : J) :
+    (F.descColimitType c).comp (F.ιColimitType j) = c.ι j := rfl
+
+@[simp]
+lemma descColimitType_ιColimitType_apply (c : F.CoconeTypes) (j : J) (x : F.obj j) :
+    F.descColimitType c (F.ιColimitType j x) = c.ι j x := rfl
+
+namespace CoconeTypes
+
+variable {F} (c : CoconeTypes.{w'} F)
+
+/-- Given `F : J ⥤ Type w` and `c : F.CoconeTypes`, this is the property
+that `c` is a colimit. It is defined by saying the canonical map
+`F.descColimitType c : F.ColimiType → c.pt` is a bijection. -/
+structure IsColimit : Prop where
+  bijective : Function.Bijective (F.descColimitType c)
+
+namespace IsColimit
+
+variable {c} (hc : c.IsColimit)
+
+include hc
+
+/-- Given `F : J ⥤ Type w`, and `c : F.CoconeTypes` a cocone that is colimit,
+this is the equivalence `F.ColimitType ≃ c.pt`. -/
+@[simps! apply]
+noncomputable def equiv : F.ColimitType ≃ c.pt :=
+  Equiv.ofBijective _ hc.bijective
+
+@[simp]
+lemma equiv_symm_ι_apply (j : J) (x : F.obj j) :
+    hc.equiv.symm (c.ι j x) = F.ιColimitType j x :=
+  hc.equiv.injective (by simp)
+
+lemma ι_jointly_surjective (y : c.pt) :
+    ∃ j x, c.ι j x = y := by
+  obtain ⟨z, rfl⟩ := hc.equiv.surjective y
+  obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective z
+  exact ⟨j, x, rfl⟩
+
+lemma funext {T : Type w''} {f g : c.pt → T}
+    (h : ∀ j, f.comp (c.ι j) = g.comp (c.ι j)) : f = g := by
+  funext y
+  obtain ⟨j, x, rfl⟩ := hc.ι_jointly_surjective y
+  exact congr_fun (h j) x
+
+lemma exists_desc (c' : CoconeTypes.{w''} F) :
+    ∃ (f : c.pt → c'.pt), ∀ (j : J), f.comp (c.ι j) = c'.ι j :=
+  ⟨(F.descColimitType c').comp hc.equiv.symm, by aesop⟩
+
+/-- If `F : J ⥤ Type w` and `c : F.CoconeTypes` is colimit, then
+`c` satisfies a heterogeneous universe version of the universal
+property of colimits. -/
+noncomputable def desc (c' : CoconeTypes.{w''} F) : c.pt → c'.pt :=
+  (hc.exists_desc c').choose
+
+lemma fac (c' : CoconeTypes.{w''} F) (j : J) :
+    (hc.desc c').comp (c.ι j) = c'.ι j :=
+  (hc.exists_desc c').choose_spec j
+
+lemma fac_apply (c' : CoconeTypes.{w''} F) (j : J) (x : F.obj j) :
+    hc.desc c' (c.ι j x) = c'.ι j x :=
+  congr_fun (hc.fac c' j) x
+
+lemma of_equiv {c' : CoconeTypes.{w''} F} (e : c.pt ≃ c'.pt)
+    (he : ∀ j x, c'.ι j x = e (c.ι j x)): c'.IsColimit where
+  bijective := by
+    convert Function.Bijective.comp e.bijective hc.bijective
+    ext y
+    obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
+    aesop
+
+end IsColimit
+
+end CoconeTypes
+
+lemma isColimit_coconeTypes : F.coconeTypes.IsColimit where
+  bijective := by
+    convert Function.bijective_id
+    ext y
+    obtain ⟨j, x, rfl⟩ := F.ιColimitType_jointly_surjective y
+    rfl
+
+end Functor
+
+end CategoryTheory
