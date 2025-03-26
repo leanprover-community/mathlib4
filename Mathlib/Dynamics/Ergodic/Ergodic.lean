@@ -42,15 +42,13 @@ structure PreErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop w
 
 /-- A map `f : α → α` is said to be ergodic with respect to a measure `μ` if it is measure
 preserving and pre-ergodic. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
-structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  MeasurePreserving f μ μ, PreErgodic f μ : Prop
+structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  MeasurePreserving f μ μ, PreErgodic f μ
 
 /-- A map `f : α → α` is said to be quasi ergodic with respect to a measure `μ` if it is quasi
 measure preserving and pre-ergodic. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
-structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  QuasiMeasurePreserving f μ μ, PreErgodic f μ : Prop
+structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  QuasiMeasurePreserving f μ μ, PreErgodic f μ
 
 variable {f : α → α} {μ : Measure α}
 
@@ -76,11 +74,18 @@ theorem prob_eq_zero_or_one [IsProbabilityMeasure μ] (hf : PreErgodic f μ) (hs
 theorem of_iterate (n : ℕ) (hf : PreErgodic f^[n] μ) : PreErgodic f μ :=
   ⟨fun _ hs hs' => hf.aeconst_set hs <| IsFixedPt.preimage_iterate hs' n⟩
 
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : PreErgodic f μ) (c : R) : PreErgodic f (c • μ) where
+  aeconst_set _s hs hfs := (hf.aeconst_set hs hfs).anti <| ae_smul_measure_le _
+
+theorem zero_measure (f : α → α) : @PreErgodic α m f 0 where
+  aeconst_set _ _ _ := by simp
+
 end PreErgodic
 
 namespace MeasureTheory.MeasurePreserving
 
-variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {s' : Set β} {g : α → β}
+variable {β : Type*} {m' : MeasurableSpace β} {μ' : Measure β} {g : α → β}
 
 theorem preErgodic_of_preErgodic_conjugate (hg : MeasurePreserving g μ μ') (hf : PreErgodic f μ)
     {f' : β → β} (h_comm : Semiconj g f f') : PreErgodic f' μ' where
@@ -120,14 +125,21 @@ theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s 
     s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
   eventuallyConst_set'.mp <| hf.aeconst_set₀ hsm hs
 
-@[deprecated (since := "2024-07-21")] alias ae_empty_or_univ' := ae_empty_or_univ₀
-
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/
 theorem ae_mem_or_ae_nmem₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s μ)
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     (∀ᵐ x ∂μ, x ∈ s) ∨ ∀ᵐ x ∂μ, x ∉ s :=
   eventuallyConst_set.mp <| hf.aeconst_set₀ hsm hs
+
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : QuasiErgodic f μ) (c : R) : QuasiErgodic f (c • μ) :=
+  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+
+theorem zero_measure {f : α → α} (hf : Measurable f) : @QuasiErgodic α m f 0 where
+  measurable := hf
+  absolutelyContinuous := by simp
+  toPreErgodic := .zero_measure f
 
 end QuasiErgodic
 
@@ -166,6 +178,15 @@ theorem symm {e : α ≃ᵐ α} (he : Ergodic e μ) : Ergodic e.symm μ where
     conv_lhs => rw [← hs, ← e.image_eq_preimage, e.preimage_image]
 
 @[simp] theorem symm_iff {e : α ≃ᵐ α} : Ergodic e.symm μ ↔ Ergodic e μ := ⟨.symm, .symm⟩
+
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
+    (hf : Ergodic f μ) (c : R) : Ergodic f (c • μ) :=
+  ⟨hf.1.smul_measure _, hf.2.smul_measure _⟩
+
+theorem zero_measure {f : α → α} (hf : Measurable f) : @Ergodic α m f 0 where
+  measurable := hf
+  map_eq := by simp
+  toPreErgodic := .zero_measure f
 
 section IsFiniteMeasure
 

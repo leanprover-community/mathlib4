@@ -64,10 +64,12 @@ add_decl_doc NonUnitalStarAlgHom.toNonUnitalAlgHom
 
 /-- `NonUnitalStarAlgHomClass F R A B` asserts `F` is a type of bundled non-unital ⋆-algebra
 homomorphisms from `A` to `B`. -/
+@[deprecated StarHomClass (since := "2024-09-08")]
 class NonUnitalStarAlgHomClass (F : Type*) (R A B : outParam Type*)
   [Monoid R] [Star A] [Star B] [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B]
-  [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] [NonUnitalAlgHomClass F R A B]
-  extends StarHomClass F A B : Prop
+  [DistribMulAction R A] [DistribMulAction R B] [FunLike F A B] [NonUnitalAlgHomClass F R A B] :
+    Prop
+  extends StarHomClass F A B
 
 namespace NonUnitalStarAlgHomClass
 
@@ -76,17 +78,18 @@ variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
 variable [FunLike F A B] [NonUnitalAlgHomClass F R A B]
 
-/-- Turn an element of a type `F` satisfying `NonUnitalStarAlgHomClass F R A B` into an actual
-`NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₙₐ[R] B`. -/
+/-- Turn an element of a type `F` satisfying `NonUnitalAlgHomClass F R A B` and `StarHomClass F A B`
+into an actual `NonUnitalStarAlgHom`. This is declared as the default coercion from `F` to
+`A →⋆ₙₐ[R] B`. -/
 @[coe]
-def toNonUnitalStarAlgHom [NonUnitalStarAlgHomClass F R A B] (f : F) : A →⋆ₙₐ[R] B :=
+def toNonUnitalStarAlgHom [StarHomClass F A B] (f : F) : A →⋆ₙₐ[R] B :=
   { (f : A →ₙₐ[R] B) with
     map_star' := map_star f }
 
-instance [NonUnitalStarAlgHomClass F R A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
+instance [StarHomClass F A B] : CoeTC F (A →⋆ₙₐ[R] B) :=
   ⟨toNonUnitalStarAlgHom⟩
 
-instance [NonUnitalStarAlgHomClass F R A B] : NonUnitalStarRingHomClass F A B :=
+instance [StarHomClass F A B] : NonUnitalStarRingHomClass F A B :=
   NonUnitalStarRingHomClass.mk
 
 end NonUnitalStarAlgHomClass
@@ -111,7 +114,7 @@ instance : NonUnitalAlgHomClass (A →⋆ₙₐ[R] B) R A B where
   map_zero f := f.map_zero'
   map_mul f := f.map_mul'
 
-instance : NonUnitalStarAlgHomClass (A →⋆ₙₐ[R] B) R A B where
+instance : StarHomClass (A →⋆ₙₐ[R] B) A B where
   map_star f := f.map_star'
 
 -- Porting note: in mathlib3 we didn't need the `Simps.apply` hint.
@@ -123,7 +126,7 @@ initialize_simps_projections NonUnitalStarAlgHom
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [NonUnitalAlgHomClass F R A B]
-    [NonUnitalStarAlgHomClass F R A B] (f : F) :
+    [StarHomClass F A B] (f : F) :
     ⇑(f : A →⋆ₙₐ[R] B) = f := rfl
 
 @[simp]
@@ -176,7 +179,7 @@ variable (R A)
 protected def id : A →⋆ₙₐ[R] A :=
   { (1 : A →ₙₐ[R] A) with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(NonUnitalStarAlgHom.id R A) = id :=
   rfl
 
@@ -277,7 +280,7 @@ lemma coe_restrictScalars' (f : A →⋆ₙₐ[S] B) : (f.restrictScalars R : A 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →⋆ₙₐ[S] B) → A →⋆ₙₐ[R] B) :=
-  fun _ _ h ↦ ext (DFunLike.congr_fun h : _)
+  fun _ _ h ↦ ext (DFunLike.congr_fun h :)
 
 end RestrictScalars
 
@@ -304,34 +307,21 @@ by forgetting the interaction with the star operation. -/
 add_decl_doc StarAlgHom.toAlgHom
 
 /-- `StarAlgHomClass F R A B` states that `F` is a type of ⋆-algebra homomorphisms.
-
 You should also extend this typeclass when you extend `StarAlgHom`. -/
+@[deprecated StarHomClass (since := "2024-09-08")]
 class StarAlgHomClass (F : Type*) (R A B : outParam Type*)
     [CommSemiring R] [Semiring A] [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B]
-    [FunLike F A B] [AlgHomClass F R A B] extends StarHomClass F A B : Prop
-
--- Porting note: no longer needed
----- `R` becomes a metavariable but that's fine because it's an `outParam`
---attribute [nolint dangerousInstance] StarAlgHomClass.toStarHomClass
-
+    [FunLike F A B] [AlgHomClass F R A B] : Prop extends StarHomClass F A B
 namespace StarAlgHomClass
 
-variable (F R A B : Type*)
-
--- See note [lower instance priority]
-instance (priority := 100) toNonUnitalStarAlgHomClass [CommSemiring R] [Semiring A] [Algebra R A]
-  [Star A] [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
-  [StarAlgHomClass F R A B] :
-  NonUnitalStarAlgHomClass F R A B :=
-  { }
+variable {F R A B : Type*}
 
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Star A]
 variable [Semiring B] [Algebra R B] [Star B] [FunLike F A B] [AlgHomClass F R A B]
-variable [StarAlgHomClass F R A B]
+variable [StarHomClass F A B]
 
-variable {F R A B} in
-/-- Turn an element of a type `F` satisfying `StarAlgHomClass F R A B` into an actual
-`StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
+/-- Turn an element of a type `F` satisfying `AlgHomClass F R A B` and `StarHomClass F A B` into an
+actual `StarAlgHom`. This is declared as the default coercion from `F` to `A →⋆ₐ[R] B`. -/
 @[coe]
 def toStarAlgHom (f : F) : A →⋆ₐ[R] B :=
   { (f : A →ₐ[R] B) with
@@ -358,12 +348,12 @@ instance : AlgHomClass (A →⋆ₐ[R] B) R A B where
   map_zero f := f.map_zero'
   commutes f := f.commutes'
 
-instance : StarAlgHomClass (A →⋆ₐ[R] B) R A B where
+instance : StarHomClass (A →⋆ₐ[R] B) A B where
   map_star f := f.map_star'
 
 @[simp]
 protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B]
-    [StarAlgHomClass F R A B] (f : F) :
+    [StarHomClass F A B] (f : F) :
     ⇑(f : A →⋆ₐ[R] B) = f :=
   rfl
 
@@ -424,7 +414,7 @@ variable (R A)
 protected def id : A →⋆ₐ[R] A :=
   { AlgHom.id _ _ with map_star' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(StarAlgHom.id R A) = id :=
   rfl
 
@@ -655,31 +645,20 @@ add_decl_doc StarAlgEquiv.toRingEquiv
 Mostly an implementation detail for `StarAlgEquivClass`.
 -/
 class NonUnitalAlgEquivClass (F : Type*) (R A B : outParam Type*)
-  [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B]
-  extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B : Prop where
+  [Add A] [Mul A] [SMul R A] [Add B] [Mul B] [SMul R B] [EquivLike F A B] : Prop
+  extends RingEquivClass F A B, MulActionSemiHomClass F (@id R) A B where
 
 /-- `StarAlgEquivClass F R A B` asserts `F` is a type of bundled ⋆-algebra equivalences between
 `A` and `B`.
-
 You should also extend this typeclass when you extend `StarAlgEquiv`. -/
+@[deprecated StarHomClass (since := "2024-09-08")]
 class StarAlgEquivClass (F : Type*) (R A B : outParam Type*)
   [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
   [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] : Prop where
   /-- By definition, a ⋆-algebra equivalence preserves the `star` operation. -/
-  map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
-
--- Porting note: no longer needed
----- `R` becomes a metavariable but that's fine because it's an `outParam`
--- attribute [nolint dangerousInstance] StarAlgEquivClass.toRingEquivClass
+  protected map_star : ∀ (f : F) (a : A), f (star a) = star (f a)
 
 namespace StarAlgEquivClass
-
--- See note [lower instance priority]
-instance (priority := 50) {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
-    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
-    [hF : StarAlgEquivClass F R A B] :
-    StarHomClass F A B :=
-  { hF with }
 
 -- See note [lower instance priority]
 instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
@@ -689,40 +668,26 @@ instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiri
   { }
 
 -- See note [lower instance priority]
-instance (priority := 100) {F R A B : Type*} [Monoid R] [NonUnitalNonAssocSemiring A]
-    [DistribMulAction R A] [Star A] [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-    [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B] :
-    NonUnitalStarAlgHomClass F R A B :=
-  { }
-
--- See note [lower instance priority]
 instance (priority := 100) instAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
     [Algebra R A] [Semiring B] [Algebra R B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] :
     AlgEquivClass F R A B :=
   { commutes := fun f r => by simp only [Algebra.algebraMap_eq_smul_one, map_smul, map_one] }
 
--- See note [lower instance priority]
-instance (priority := 100) instStarAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
-    [Algebra R A] [Star A] [Semiring B] [Algebra R B] [Star B] [EquivLike F A B]
-    [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B] :
-    StarAlgHomClass F R A B :=
-  { }
-
-/-- Turn an element of a type `F` satisfying `StarAlgEquivClass F R A B` into an actual
-`StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
+/-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` and `StarHomClass F A B` into
+an actual `StarAlgEquiv`. This is declared as the default coercion from `F` to `A ≃⋆ₐ[R] B`. -/
 @[coe]
 def toStarAlgEquiv {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B] [SMul R B]
-    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarAlgEquivClass F R A B]
+    [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B]
     (f : F) : A ≃⋆ₐ[R] B :=
   { (f : A ≃+* B) with
     map_star' := map_star f
     map_smul' := map_smul f}
 
-/-- Any type satisfying `StarAlgEquivClass` can be cast into `StarAlgEquiv` via
+/-- Any type satisfying `AlgEquivClass` and `StarHomClass` can be cast into `StarAlgEquiv` via
 `StarAlgEquivClass.toStarAlgEquiv`. -/
 instance instCoeHead {F R A B : Type*} [Add A] [Mul A] [SMul R A] [Star A] [Add B] [Mul B]
-    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B]
-    [StarAlgEquivClass F R A B] : CoeHead F (A ≃⋆ₐ[R] B) :=
+    [SMul R B] [Star B] [EquivLike F A B] [NonUnitalAlgEquivClass F R A B] [StarHomClass F A B] :
+    CoeHead F (A ≃⋆ₐ[R] B) :=
   ⟨toStarAlgEquiv⟩
 
 end StarAlgEquivClass
@@ -749,7 +714,7 @@ instance : NonUnitalAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_smulₛₗ := map_smul'
 
-instance : StarAlgEquivClass (A ≃⋆ₐ[R] B) R A B where
+instance : StarHomClass (A ≃⋆ₐ[R] B) A B where
   map_star := map_star'
 
 /-- Helper instance for cases where the inference via `EquivLike` is too hard. -/
@@ -889,8 +854,8 @@ section Bijective
 variable {F G R A B : Type*} [Monoid R]
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction R B] [Star B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
-variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [NonUnitalStarAlgHomClass G R B A]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
+variable [FunLike G B A] [NonUnitalAlgHomClass G R B A] [StarHomClass G B A]
 
 /-- If a (unital or non-unital) star algebra morphism has an inverse, it is an isomorphism of
 star algebras. -/

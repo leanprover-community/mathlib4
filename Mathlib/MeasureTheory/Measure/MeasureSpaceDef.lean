@@ -52,6 +52,7 @@ This file does not import `MeasureTheory.MeasurableSpace.Basic`, but only `Measu
 measure, almost everywhere, measure space
 -/
 
+assert_not_exists Basis
 
 noncomputable section
 
@@ -72,7 +73,7 @@ structure Measure (α : Type*) [MeasurableSpace α] extends OuterMeasure α wher
   trim_le : toOuterMeasure.trim ≤ toOuterMeasure
 
 /-- Notation for `Measure` with respect to a non-standard σ-algebra in the domain. -/
-scoped notation "Measure[" mα "]" α:arg => @Measure α mα
+scoped notation "Measure[" mα "] " α:arg => @Measure α mα
 
 theorem Measure.toOuterMeasure_injective [MeasurableSpace α] :
     Injective (toOuterMeasure : Measure α → OuterMeasure α)
@@ -82,9 +83,9 @@ instance Measure.instFunLike [MeasurableSpace α] : FunLike (Measure α) (Set α
   coe μ := μ.toOuterMeasure
   coe_injective' | ⟨_, _, _⟩, ⟨_, _, _⟩, h => toOuterMeasure_injective <| DFunLike.coe_injective h
 
-set_option linter.deprecated false in -- Not immediately obvious how to use `measure_empty` here.
+
 instance Measure.instOuterMeasureClass [MeasurableSpace α] : OuterMeasureClass (Measure α) α where
-  measure_empty m := m.empty'
+  measure_empty m := measure_empty (μ := m.toOuterMeasure)
   measure_iUnion_nat_le m := m.iUnion_nat
   measure_mono m := m.mono
 
@@ -209,10 +210,6 @@ theorem measure_biUnion_lt_top {s : Set β} {f : β → Set α} (hs : s.Finite)
     rw [Finite.mem_toFinset]
   · simpa only [ENNReal.sum_lt_top, Finite.mem_toFinset]
 
-@[deprecated measure_iUnion_null_iff (since := "2024-01-14")]
-theorem measure_iUnion_null_iff' {ι : Prop} {s : ι → Set α} : μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
-  measure_iUnion_null_iff
-
 theorem measure_union_lt_top (hs : μ s < ∞) (ht : μ t < ∞) : μ (s ∪ t) < ∞ :=
   (measure_union_le s t).trans_lt (ENNReal.add_lt_top.mpr ⟨hs, ht⟩)
 
@@ -275,7 +272,8 @@ theorem _root_.MeasurableSpace.ae_induction_on_inter
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C x (f i)) → C x (⋃ i, f i)) :
     ∀ᵐ x ∂μ, ∀ ⦃t⦄, MeasurableSet t → C x t := by
   filter_upwards [h_empty, h_basic, h_compl, h_union] with x hx_empty hx_basic hx_compl hx_union
-    using MeasurableSpace.induction_on_inter h_eq h_inter hx_empty hx_basic hx_compl hx_union
+    using MeasurableSpace.induction_on_inter (C := fun t _ ↦ C x t)
+      h_eq h_inter hx_empty hx_basic hx_compl hx_union
 
 end ae
 
@@ -299,8 +297,6 @@ theorem subset_toMeasurable (μ : Measure α) (s : Set α) : s ⊆ toMeasurable 
 
 theorem ae_le_toMeasurable : s ≤ᵐ[μ] toMeasurable μ s :=
   HasSubset.Subset.eventuallyLE (subset_toMeasurable _ _)
-
-  --(subset_toMeasurable _ _).EventuallyLE
 
 @[simp]
 theorem measurableSet_toMeasurable (μ : Measure α) (s : Set α) :

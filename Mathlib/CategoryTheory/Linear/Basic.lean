@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.CategoryTheory.Preadditive.Basic
 

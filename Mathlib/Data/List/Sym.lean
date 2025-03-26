@@ -170,7 +170,7 @@ theorem dedup_sym2 [DecidableEq α] (xs : List α) : xs.sym2.dedup = xs.dedup.sy
     obtain hm | hm := Decidable.em (x ∈ xs)
     · rw [dedup_cons_of_mem hm, ← ih, dedup_cons_of_mem,
         List.Subset.dedup_append_right (map_mk_sublist_sym2 _ _ hm).subset]
-      refine mem_append_of_mem_left _ ?_
+      refine mem_append_left _ ?_
       rw [mem_map]
       exact ⟨_, hm, Sym2.eq_swap⟩
     · rw [dedup_cons_of_not_mem hm, List.sym2, map_cons, ← ih, dedup_cons_of_not_mem, cons_append,
@@ -237,7 +237,7 @@ theorem sym_one_eq : xs.sym 1 = xs.map (· ::ₛ .nil) := by
 
 theorem sym2_eq_sym_two : xs.sym2.map (Sym2.equivSym α) = xs.sym 2 := by
   induction xs with
-  | nil => simp only [List.sym, map_eq_nil, sym2_eq_nil_iff]
+  | nil => simp only [List.sym, map_eq_nil_iff, sym2_eq_nil_iff]
   | cons x xs ih =>
     rw [List.sym, ← ih, sym_one_eq, map_map, List.sym2, map_append, map_map]
     rfl

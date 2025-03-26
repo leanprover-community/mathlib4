@@ -3,10 +3,12 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.PolynomialAlgebra
 
 /-!
 # Localization of algebra maps
@@ -32,6 +34,7 @@ variable {R S P : Type*} (Q : Type*) [CommSemiring R] [CommSemiring S] [CommSemi
 open IsLocalization in
 variable (M S) in
 /-- The span of `I` in a localization of `R` at `M` is the localization of `I` at `M`. -/
+-- TODO: golf using `Ideal.localized'_eq_map`
 instance Algebra.idealMap_isLocalizedModule (I : Ideal R) :
     IsLocalizedModule M (Algebra.idealMap I (S := S)) where
   map_units x :=
@@ -56,7 +59,7 @@ variable (S) in
 /-- The canonical linear map from the kernel of `g` to the kernel of its localization. -/
 def RingHom.toKerIsLocalization (hy : M ≤ Submonoid.comap g T) :
     RingHom.ker g →ₗ[R] RingHom.ker (IsLocalization.map Q g hy : S →+* Q) where
-  toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, (RingHom.mem_ker g).mp x.property]⟩
+  toFun x := ⟨algebraMap R S x, by simp [RingHom.mem_ker, RingHom.mem_ker.mp x.property]⟩
   map_add' x y := by
     simp only [Submodule.coe_add, map_add, AddMemClass.mk_add_mk]
   map_smul' a x := by
@@ -141,3 +144,19 @@ lemma AlgHom.toKerIsLocalization_isLocalizedModule (f : A →ₐ[R] B) :
     (algebraMapSubmonoid_map_eq M f)
 
 end Algebra
+
+namespace Polynomial
+
+/-- If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
+`R[X]` at `S.map Polynomial.C`.
+
+See also `MvPolynomial.isLocalization` for the multivariate case. -/
+lemma isLocalization {R} [CommRing R] (S : Submonoid R) (A) [CommRing A] [Algebra R A]
+    [IsLocalization S A] : letI := (mapRingHom (algebraMap R A)).toAlgebra
+    IsLocalization (S.map C) A[X] :=
+  letI := (mapRingHom (algebraMap R A)).toAlgebra
+  have : IsScalarTower R R[X] A[X] := .of_algebraMap_eq fun _ ↦ (map_C _).symm
+  isLocalizedModule_iff_isLocalization.mp <| (isLocalizedModule_iff_isBaseChange S A _).mpr <|
+    .of_equiv (polyEquivTensor' R A).symm.toLinearEquiv fun _ ↦ by simp
+
+end Polynomial

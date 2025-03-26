@@ -3,8 +3,8 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Saturated subgroups
@@ -37,10 +37,12 @@ theorem saturated_iff_zpow {H : Subgroup G} :
     Saturated H ↔ ∀ (n : ℤ) (g : G), g ^ n ∈ H → n = 0 ∨ g ∈ H := by
   constructor
   · intros hH n g hgn
-    induction' n with n n
-    · simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
+    cases n with
+    | ofNat n =>
+      simp only [Int.natCast_eq_zero, Int.ofNat_eq_coe, zpow_natCast] at hgn ⊢
       exact hH hgn
-    · suffices g ^ (n + 1) ∈ H by
+    | negSucc n =>
+      suffices g ^ (n + 1) ∈ H by
         refine (hH this).imp ?_ id
         simp only [IsEmpty.forall_iff, Nat.succ_ne_zero]
       simpa only [inv_mem_iff, zpow_negSucc] using hgn

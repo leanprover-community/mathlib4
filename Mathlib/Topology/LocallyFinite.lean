@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Filter.SmallSets
+import Mathlib.Topology.ContinuousOn
 
 /-!
 ### Locally finite families of sets
@@ -191,13 +191,15 @@ theorem locallyFinite_sum {f : ι ⊕ ι' → Set X} :
   simp only [locallyFinite_iff_smallSets, ← forall_and, ← finite_preimage_inl_and_inr,
     preimage_setOf_eq, (· ∘ ·), eventually_and]
 
-theorem LocallyFinite.sum_elim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
+theorem LocallyFinite.sumElim {g : ι' → Set X} (hf : LocallyFinite f) (hg : LocallyFinite g) :
     LocallyFinite (Sum.elim f g) :=
   locallyFinite_sum.mpr ⟨hf, hg⟩
 
+@[deprecated (since := "2025-02-20")] alias LocallyFinite.sum_elim := LocallyFinite.sumElim
+
 theorem locallyFinite_option {f : Option ι → Set X} :
     LocallyFinite f ↔ LocallyFinite (f ∘ some) := by
-  rw [← (Equiv.optionEquivSumPUnit.{_, 0} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
+  rw [← (Equiv.optionEquivSumPUnit.{0, _} ι).symm.locallyFinite_comp_iff, locallyFinite_sum]
   simp only [locallyFinite_of_finite, and_true]
   rfl
 

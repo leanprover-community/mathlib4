@@ -5,7 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.NumberTheory.Cyclotomic.Discriminant
 import Mathlib.RingTheory.Polynomial.Eisenstein.IsIntegral
-import Mathlib.RingTheory.Ideal.Norm
+import Mathlib.RingTheory.Ideal.Norm.AbsNorm
 
 /-!
 # Ring of integers of `p ^ n`-th cyclotomic fields
@@ -78,14 +78,13 @@ theorem isIntegralClosure_adjoin_singleton_of_prime_pow [hcycl : IsCyclotomicExt
           (adjoin_le_integralClosure (hζ.isIntegral (p ^ k).pos))).isIntegral _)
   let B := hζ.subOnePowerBasis ℚ
   have hint : IsIntegral ℤ B.gen := (hζ.isIntegral (p ^ k).pos).sub isIntegral_one
--- Porting note: the following `haveI` was not needed because the locale `cyclotomic` set it
--- as instances.
+  -- Porting note: the following `letI` was not needed because the locale `cyclotomic` set it
+  -- as instances.
   letI := IsCyclotomicExtension.finiteDimensional {p ^ k} ℚ K
   have H := discr_mul_isIntegral_mem_adjoin ℚ hint h
   obtain ⟨u, n, hun⟩ := discr_prime_pow_eq_unit_mul_pow' hζ
   rw [hun] at H
   replace H := Subalgebra.smul_mem _ H u.inv
--- Porting note: the proof is slightly different because of coercions.
   rw [← smul_assoc, ← smul_mul_assoc, Units.inv_eq_val_inv, zsmul_eq_mul, ← Int.cast_mul,
     Units.inv_mul, Int.cast_one, one_mul, smul_def, map_pow] at H
   cases k
@@ -125,9 +124,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
     IsIntegralClosure (CyclotomicRing (p ^ k) ℤ ℚ) ℤ (CyclotomicField (p ^ k) ℚ) := by
   have hζ := zeta_spec (p ^ k) ℚ (CyclotomicField (p ^ k) ℚ)
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
--- Porting note: having `.isIntegral_iff` inside the definition of `this` causes an error.
-  · have := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
-    obtain ⟨y, rfl⟩ := this.isIntegral_iff.1 h
+  · obtain ⟨y, rfl⟩ := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ).isIntegral_iff.1 h
     refine adjoin_mono ?_ y.2
     simp only [PNat.pow_coe, Set.singleton_subset_iff, Set.mem_setOf_eq]
     exact hζ.pow_eq_one
@@ -182,20 +179,16 @@ lemma coe_toInteger {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) : hζ.toInteger.1 = 
 /-- `𝓞 K ⧸ Ideal.span {ζ - 1}` is finite. -/
 lemma finite_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
     (hζ : IsPrimitiveRoot ζ k) : Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
-  refine (finite_iff_nonempty_fintype _).2 ⟨?_⟩
-  refine Ideal.fintypeQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
+  refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
   exact hζ.ne_one hk (RingOfIntegers.ext_iff.1 h)
 
 /-- We have that `𝓞 K ⧸ Ideal.span {ζ - 1}` has cardinality equal to the norm of `ζ - 1`.
 
 See the results below to compute this norm in various cases. -/
-lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hk : 1 < k)
-    (hζ : IsPrimitiveRoot ζ k) :
+lemma card_quotient_toInteger_sub_one [NumberField K] {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
     Nat.card (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) =
       (Algebra.norm ℤ (hζ.toInteger - 1)).natAbs := by
-  have := hζ.finite_quotient_toInteger_sub_one hk
-  let _ := Fintype.ofFinite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1})
   rw [← Submodule.cardQuot_apply, ← Ideal.absNorm_apply, Ideal.absNorm_span_singleton]
 
 lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
@@ -204,7 +197,6 @@ lemma toInteger_isPrimitiveRoot {k : ℕ+} (hζ : IsPrimitiveRoot ζ k) :
 
 variable [CharZero K]
 
--- Porting note: the proof changed because `simp` unfolds too much.
 @[simp]
 theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) :
@@ -214,6 +206,11 @@ theorem integralPowerBasis_gen [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     simp only [adjoinEquivRingOfIntegers_apply, IsIntegralClosure.algebraMap_lift]
     rfl
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/5338
+We name `hcycl` so it can be used as a named argument,
+but since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
+so we need to disable the linter. -/
+set_option linter.unusedVariables false in
 @[simp]
 theorem integralPowerBasis_dim [hcycl : IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) : hζ.integralPowerBasis.dim = φ (p ^ k) := by
@@ -249,7 +246,8 @@ theorem integralPowerBasis'_gen [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ :
 @[simp]
 theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimitiveRoot ζ p) :
     hζ.integralPowerBasis'.dim = φ p := by
-  erw [integralPowerBasis_dim (hcycl := by rwa [pow_one]) (by rwa [pow_one]), pow_one]
+  rw [integralPowerBasis', integralPowerBasis_dim (hcycl := by rwa [pow_one]) (by rwa [pow_one]),
+    pow_one]
 
 
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
@@ -293,7 +291,7 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow hp.out.one_lt (by simp))
+  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow₀ hp.out.one_lt (by simp))
     rw [sub_eq_zero] at h
     simpa using congrArg (algebraMap _ K) h
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
@@ -312,7 +310,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 
     Prime (hζ.toInteger - 1) := by
   letI := IsCyclotomicExtension.numberField {(2 : ℕ+) ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
-  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by decide) (by simp))
+  · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow₀ (by decide) (by simp))
     rw [sub_eq_zero] at h
     simpa using congrArg (algebraMap _ K) h
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
@@ -453,7 +451,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
     · simp only [hk, zero_add, pow_one, pow_zero, one_mul, Nat.lt_sub_iff_add_lt,
         Nat.reduceAdd] at htwo ⊢
       exact htwo.symm.lt_of_le hp.1.two_le
-    · exact one_lt_mul_of_lt_of_le (one_lt_pow hp.1.one_lt hk)
+    · exact one_lt_mul_of_lt_of_le (one_lt_pow₀ hp.1.one_lt hk)
         (have := Nat.Prime.two_le hp.out; by omega)
   rw [sub_eq_iff_eq_add] at h
   -- We are assuming that `ζ = n + p * x` for some integer `n` and `x : 𝓞 K`. Looking at the
@@ -467,7 +465,7 @@ theorem not_exists_int_prime_dvd_sub_of_prime_pow_ne_two
   simp only [↓reduceIte, map_add, Finsupp.coe_add, Pi.add_apply] at h
   rw [show (p : 𝓞 K) * x = (p : ℤ) • x by simp, ← pB.basis.coord_apply,
     LinearMap.map_smul, ← zsmul_one, ← pB.basis.coord_apply, LinearMap.map_smul,
-    show 1 = pB.gen ^ (⟨0, by linarith⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
+    show 1 = pB.gen ^ (⟨0, by omega⟩ : Fin pB.dim).1 by simp, ← pB.basis_eq_pow,
     pB.basis.coord_apply, pB.basis.coord_apply, pB.basis.repr_self_apply] at h
   simp only [smul_eq_mul, Fin.mk.injEq, zero_ne_one, ↓reduceIte, mul_zero, add_zero] at h
   exact (Int.prime_iff_natAbs_prime.2 (by simp [hp.1])).not_dvd_one ⟨_, h⟩
@@ -496,9 +494,10 @@ theorem finite_quotient_span_sub_one [hcycl : IsCyclotomicExtension {p ^ (k + 1)
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
     Finite (𝓞 K ⧸ Ideal.span {hζ.toInteger - 1}) := by
   have : NumberField K := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
-  refine Fintype.finite <| Ideal.fintypeQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
+  refine Ideal.finiteQuotientOfFreeOfNeBot _ (fun h ↦ ?_)
   simp only [Ideal.span_singleton_eq_bot, sub_eq_zero, ← Subtype.coe_inj] at h
-  exact hζ.ne_one (one_lt_pow hp.1.one_lt (Nat.zero_ne_add_one k).symm) (RingOfIntegers.ext_iff.1 h)
+  exact hζ.ne_one (one_lt_pow₀ hp.1.one_lt (Nat.zero_ne_add_one k).symm)
+    (RingOfIntegers.ext_iff.1 h)
 
 theorem finite_quotient_span_sub_one' [hcycl : IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑p) :
@@ -514,7 +513,7 @@ lemma toInteger_sub_one_dvd_prime [hcycl : IsCyclotomicExtension {p ^ (k + 1)} �
   by_cases htwo : p ^ (k + 1) = 2
   · replace htwo : (p : ℕ) ^ (k + 1) = 2 := by exact_mod_cast htwo
     have ⟨hp2, hk⟩ := (Nat.Prime.pow_eq_iff Nat.prime_two).1 htwo
-    simp only [add_left_eq_self] at hk
+    simp only [add_eq_right] at hk
     have hζ' : ζ = -1 := by
       refine IsPrimitiveRoot.eq_neg_one_of_two_right ?_
       rwa [hk, zero_add, pow_one, hp2] at hζ

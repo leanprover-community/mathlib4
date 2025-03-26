@@ -61,20 +61,18 @@ variable {R : Type u} [CommRing R] [IsDedekindDomain R]
 @[simps!]
 def integer : Subalgebra R K :=
   {
-    (⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring).copy
-        {x : K | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation x ≤ 1} <|
+    (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring).copy
+        {x : K | ∀ (v) (_ : v ∉ S), v.valuation K x ≤ 1} <|
       Set.ext fun _ => by simp [SetLike.mem_coe, Subring.mem_iInf] with
     algebraMap_mem' := fun x v _ => v.valuation_le_one x }
 
 theorem integer_eq :
     (S.integer K).toSubring =
-      ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.toSubring :=
-  SetLike.ext' <| by
-    -- Porting note: was `simpa only [integer, Subring.copy_eq]`
-    ext; simp
+      ⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.toSubring :=
+  SetLike.ext' <| by ext; simp
 
 theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
-    v.valuation (x : K) ≤ 1 :=
+    v.valuation K x ≤ 1 :=
   x.property v hv
 
 /-! ## `S`-units -/
@@ -83,22 +81,21 @@ theorem integer_valuation_le_one (x : S.integer K) {v : HeightOneSpectrum R} (hv
 /-- The subgroup of `S`-units of `Kˣ`. -/
 @[simps!]
 def unit : Subgroup Kˣ :=
-  (⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.unitGroup).copy
-      {x : Kˣ | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation (x : K) = 1} <|
+  (⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup).copy
+      {x : Kˣ | ∀ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation K x = 1} <|
     Set.ext fun _ => by
       -- Porting note: was
       -- simpa only [SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
       simp only [mem_setOf, SetLike.mem_coe, Subgroup.mem_iInf, Valuation.mem_unitGroup_iff]
 
 theorem unit_eq :
-    S.unit K = ⨅ (v) (_ : v ∉ S), (v : HeightOneSpectrum R).valuation.valuationSubring.unitGroup :=
+    S.unit K = ⨅ (v) (_ : v ∉ S), (v.valuation K).valuationSubring.unitGroup :=
   Subgroup.copy_eq _ _ _
 
 theorem unit_valuation_eq_one (x : S.unit K) {v : HeightOneSpectrum R} (hv : v ∉ S) :
-    v.valuation ((x : Kˣ) : K) = 1 :=
+    v.valuation K (x : Kˣ) = 1 :=
   x.property v hv
 
--- Porting note: `apply_inv_coe` fails the simpNF linter
 /-- The group of `S`-units is the group of units of the ring of `S`-integers. -/
 @[simps apply_val_coe symm_apply_coe]
 def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
@@ -113,7 +110,7 @@ def unitEquivUnitsInteger : S.unit K ≃* (S.integer K)ˣ where
         Eq.ge <| by
           -- Porting note: was
           -- rw [← map_mul]; convert v.valuation.map_one; exact subtype.mk_eq_mk.mp x.val_inv⟩
-          rw [Units.val_mk0, ← map_mul, Subtype.mk_eq_mk.mp x.val_inv, v.valuation.map_one]⟩
+          rw [Units.val_mk0, ← map_mul, Subtype.mk_eq_mk.mp x.val_inv, map_one]⟩
   left_inv _ := by ext; rfl
   right_inv _ := by ext; rfl
   map_mul' _ _ := by ext; rfl

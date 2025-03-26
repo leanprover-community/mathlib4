@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Order.Hom.Basic
 
 /-!
@@ -49,7 +50,7 @@ they can be inferred from the type it is faster to use this method than to use t
 This file used to define typeclasses for order-preserving (additive) monoid homomorphisms:
 `OrderAddMonoidHomClass`, `OrderMonoidHomClass`, and `OrderMonoidWithZeroHomClass`.
 
-In #10544 we migrated from these typeclasses
+In https://github.com/leanprover-community/mathlib4/pull/10544 we migrated from these typeclasses
 to assumptions like `[FunLike F M N] [MonoidHomClass F M N] [OrderHomClass F M N]`,
 making some definitions and lemmas irrelevant.
 
@@ -89,8 +90,8 @@ structure.
 When possible, instead of parametrizing results over `(f : α ≃+o β)`,
 you should parametrize over
 `(F : Type*) [FunLike F M N] [AddEquivClass F M N] [OrderIsoClass F M N] (f : F)`. -/
-structure OrderAddMonoidIso (α β : Type*) [Preorder α] [Preorder β] [AddZeroClass α]
-  [AddZeroClass β] extends α ≃+ β where
+structure OrderAddMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Add α] [Add β]
+  extends α ≃+ β where
   /-- An `OrderAddMonoidIso` respects `≤`. -/
   map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
 
@@ -145,8 +146,8 @@ When possible, instead of parametrizing results over `(f : α ≃*o β)`,
 you should parametrize over
 `(F : Type*) [FunLike F M N] [MulEquivClass F M N] [OrderIsoClass F M N] (f : F)`. -/
 @[to_additive]
-structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [MulOneClass α]
-  [MulOneClass β] extends α ≃* β where
+structure OrderMonoidIso (α β : Type*) [Preorder α] [Preorder β] [Mul α] [Mul β]
+  extends α ≃* β where
   /-- An `OrderMonoidIso` respects `≤`. -/
   map_le_map_iff' {a b : α} : toFun a ≤ toFun b ↔ a ≤ b
 
@@ -265,7 +266,7 @@ theorem monotone_iff_map_nonpos : Monotone (f : α → β) ↔ ∀ a ≤ 0, f a 
 theorem antitone_iff_map_nonneg : Antitone (f : α → β) ↔ ∀ a ≤ 0, 0 ≤ f a :=
   monotone_comp_ofDual_iff.symm.trans <| monotone_iff_map_nonneg (α := αᵒᵈ) (iamhc := iamhc) _
 
-variable [CovariantClass β β (· + ·) (· < ·)]
+variable [AddLeftStrictMono β]
 
 theorem strictMono_iff_map_pos :
     StrictMono (f : α → β) ↔ ∀ a, 0 < a → 0 < f a := by
@@ -512,8 +513,8 @@ namespace OrderMonoidIso
 
 section Preorder
 
-variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [MulOneClass α] [MulOneClass β]
-  [MulOneClass γ] [MulOneClass δ] {f g : α ≃*o β}
+variable [Preorder α] [Preorder β] [Preorder γ] [Preorder δ] [Mul α] [Mul β]
+  [Mul γ] [Mul δ] {f g : α ≃*o β}
 
 @[to_additive]
 instance : EquivLike (α ≃*o β) α β where
@@ -747,7 +748,7 @@ variable (α)
 protected def id : α →*₀o α :=
   { MonoidWithZeroHom.id α, OrderHom.id with }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(OrderMonoidWithZeroHom.id α) = id :=
   rfl
 
@@ -841,4 +842,8 @@ end LinearOrderedCommMonoidWithZero
 
 end OrderMonoidWithZeroHom
 
-/- See module docstring for details. -/
+/-- Any ordered group is isomorphic to the units of itself adjoined with `0`. -/
+@[simps! toFun]
+def OrderMonoidIso.unitsWithZero {α : Type*} [Group α] [Preorder α] : (WithZero α)ˣ ≃*o α where
+  toMulEquiv := WithZero.unitsWithZeroEquiv
+  map_le_map_iff' {a b} := by simp [WithZero.unitsWithZeroEquiv]

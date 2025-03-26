@@ -5,7 +5,6 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Determinant
 import Mathlib.Algebra.ContinuedFractions.Computation.CorrectnessTerminating
-import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Monotonicity
@@ -94,12 +93,9 @@ theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
       ∃ ifp_n, IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0
         ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n :=
     succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
-  suffices 1 ≤ ifp_n.fr⁻¹ by rwa [IntFractPair.of, le_floor, cast_one]
-  suffices ifp_n.fr ≤ 1 by
-    have h : 0 < ifp_n.fr :=
-      lt_of_le_of_ne (nth_stream_fr_nonneg nth_stream_eq) stream_nth_fr_ne_zero.symm
-    apply one_le_inv h this
-  simp only [le_of_lt (nth_stream_fr_lt_one nth_stream_eq)]
+  rw [IntFractPair.of, le_floor, cast_one, one_le_inv₀
+    ((nth_stream_fr_nonneg nth_stream_eq).lt_of_ne' stream_nth_fr_ne_zero)]
+  exact (nth_stream_fr_lt_one nth_stream_eq).le
 
 /--
 Shows that the `n + 1`th integer part `bₙ₊₁` of the stream is smaller or equal than the inverse of
@@ -222,7 +218,7 @@ theorem fib_le_of_contsAux_b :
         -- use the recurrence of `contsAux`
         simp only [Nat.succ_eq_add_one, Nat.add_assoc, Nat.reduceAdd]
         suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
-          simpa [fib_add_two, add_comm, contsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
+          simpa [g, fib_add_two, add_comm, contsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
         -- make use of the fact that `gp.a = 1`
         suffices (fib n : K) + fib (n + 1) ≤ ppconts.b + gp.b * pconts.b by
           simpa [of_partNum_eq_one <| partNum_eq_s_a s_ppred_nth_eq]
@@ -270,7 +266,7 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
       · simp [zero_le_one]
       · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
           contsAux_stable_step_of_terminated terminated
-        simp only [this, IH]
+        simp only [g, this, IH]
     · -- non-terminating case
       calc
         (0 : K) ≤ fib (n + 1) := mod_cast (n + 1).fib.zero_le
@@ -459,7 +455,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
           haveI zero_le_ifp_n_fract : 0 ≤ ifp_n.fr :=
             IntFractPair.nth_stream_fr_nonneg stream_nth_eq
           inv_pos.2 (lt_of_le_of_ne zero_le_ifp_n_fract stream_nth_fr_ne_zero.symm)
-        -- Porting note: replaced complicated positivity proof with tactic.
         positivity
       rw [abs_of_pos this]
     rwa [this]
@@ -480,7 +475,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
 `GenContFract.abs_sub_convs_le`, but sometimes it is easier to apply and
 sufficient for one's use case.
- -/
+-/
 theorem abs_sub_convergents_le' {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) :
     |v - (of v).convs n| ≤ 1 / (b * (of v).dens n * (of v).dens n) := by

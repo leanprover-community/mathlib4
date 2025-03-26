@@ -170,13 +170,13 @@ instance (priority := 100) preservesMonomorphisms_of_isRightAdjoint (F : C ⥤ D
 
 instance (priority := 100) reflectsMonomorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
     ReflectsMonomorphisms F where
-  reflects {X} {Y} f hf :=
+  reflects {X} {Y} f _ :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_mono (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 
 instance (priority := 100) reflectsEpimorphisms_of_faithful (F : C ⥤ D) [Faithful F] :
     ReflectsEpimorphisms F where
-  reflects {X} {Y} f hf :=
+  reflects {X} {Y} f _ :=
     ⟨fun {Z} g h hgh =>
       F.map_injective ((cancel_epi (F.map f)).1 (by rw [← F.map_comp, hgh, F.map_comp]))⟩
 
@@ -253,8 +253,8 @@ namespace CategoryTheory.Adjunction
 
 variable {C D : Type*} [Category C] [Category D] {F : C ⥤ D} {F' : D ⥤ C} {A B : C}
 
-theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [h₁ : F'.PreservesMonomorphisms]
-    [h₂ : F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
+theorem strongEpi_map_of_strongEpi (adj : F ⊣ F') (f : A ⟶ B) [F'.PreservesMonomorphisms]
+    [F.PreservesEpimorphisms] [StrongEpi f] : StrongEpi (F.map f) :=
   ⟨inferInstance, fun X Y Z => by
     intro
     rw [adj.hasLiftingProperty_iff]
@@ -268,7 +268,7 @@ instance (adj : F ⊣ F') {X : C} {Y : D} (f : F.obj X ⟶ Y) [hf : Mono f] [F.R
     Mono (adj.homEquiv _ _ f) :=
   F.mono_of_mono_map <| by
     rw [← (homEquiv adj X Y).symm_apply_apply f] at hf
-    exact mono_of_mono_fac adj.homEquiv_counit.symm
+    exact mono_of_mono_fac (adj.homEquiv_counit _ _ _).symm
 
 end CategoryTheory.Adjunction
 

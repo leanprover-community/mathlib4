@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupWithZero.Action.Basic
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Group.Units.Opposite
+import Mathlib.Algebra.Module.Opposite
 
 /-!
 # Multiplication on the left/right as additive automorphisms

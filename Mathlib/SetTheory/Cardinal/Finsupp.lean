@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios, Junyan Xu
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Data.Finsupp.Basic
 import Mathlib.Data.Finsupp.Multiset
 
@@ -32,7 +32,7 @@ theorem mk_finsupp_lift_of_infinite (α : Type u) (β : Type v) [Infinite α] [Z
         rw [mk_prod, mul_eq_max_of_aleph0_le_left] <;> simp
 
   · apply max_le <;> rw [← lift_id #(α →₀ β), ← lift_umax]
-    · cases' exists_ne (0 : β) with b hb
+    · obtain ⟨b, hb⟩ := exists_ne (0 : β)
       exact lift_mk_le.{v}.2 ⟨⟨_, Finsupp.single_left_injective hb⟩⟩
     · inhabit α
       exact lift_mk_le.{u}.2 ⟨⟨_, Finsupp.single_injective default⟩⟩

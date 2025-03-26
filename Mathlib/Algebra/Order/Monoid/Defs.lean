@@ -15,7 +15,7 @@ This file provides the definitions of ordered monoids.
 
 open Function
 
-variable {α β : Type*}
+variable {α : Type*}
 
 /-- An ordered (additive) commutative monoid is a commutative monoid with a partial order such that
 addition is monotone. -/
@@ -32,12 +32,12 @@ section OrderedCommMonoid
 variable [OrderedCommMonoid α]
 
 @[to_additive]
-instance OrderedCommMonoid.toCovariantClassLeft : CovariantClass α α (· * ·) (· ≤ ·) where
+instance OrderedCommMonoid.toMulLeftMono : MulLeftMono α where
   elim := fun a _ _ bc ↦ OrderedCommMonoid.mul_le_mul_left _ _ bc a
 
 @[to_additive]
-theorem OrderedCommMonoid.toCovariantClassRight (M : Type*) [OrderedCommMonoid M] :
-    CovariantClass M M (swap (· * ·)) (· ≤ ·) :=
+theorem OrderedCommMonoid.toMulRightMono (M : Type*) [OrderedCommMonoid M] :
+    MulRightMono M :=
   inferInstance
 
 end OrderedCommMonoid
@@ -58,18 +58,18 @@ variable [OrderedCancelCommMonoid α]
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 200) OrderedCancelCommMonoid.toContravariantClassLeLeft :
-    ContravariantClass α α (· * ·) (· ≤ ·) :=
+instance (priority := 200) OrderedCancelCommMonoid.toMulLeftReflectLE :
+    MulLeftReflectLE α :=
   ⟨OrderedCancelCommMonoid.le_of_mul_le_mul_left⟩
 
 @[to_additive]
-instance OrderedCancelCommMonoid.toContravariantClassLeft :
-    ContravariantClass α α (· * ·) (· < ·) where
+instance OrderedCancelCommMonoid.toMulLeftReflectLT :
+    MulLeftReflectLT α where
   elim := contravariant_lt_of_contravariant_le α α _ ContravariantClass.elim
 
 @[to_additive]
-theorem OrderedCancelCommMonoid.toContravariantClassRight :
-    ContravariantClass α α (swap (· * ·)) (· < ·) :=
+theorem OrderedCancelCommMonoid.toMulRightReflectLT :
+    MulRightReflectLT α :=
   inferInstance
 
 -- See note [lower instance priority]
@@ -77,7 +77,7 @@ theorem OrderedCancelCommMonoid.toContravariantClassRight :
 instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α :=
   { ‹OrderedCancelCommMonoid α› with
     mul_left_cancel :=
-      fun a b c h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
+      fun _ _ _ h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
 
 end OrderedCancelCommMonoid
 
@@ -98,8 +98,6 @@ in which multiplication is cancellative and monotone. -/
 @[to_additive LinearOrderedCancelAddCommMonoid]
 class LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid α,
     LinearOrderedCommMonoid α
-
-attribute [to_additive existing] LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
 
 variable [LinearOrderedCommMonoid α] {a : α}
 

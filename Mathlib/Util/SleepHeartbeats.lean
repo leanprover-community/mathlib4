@@ -34,7 +34,6 @@ elab "sleep_heartbeats " n:num : tactic => do
      option -/
   | some m => sleepAtLeastHeartbeats (m * 1000)
 
-set_option linter.unusedTactic false in
 example : 1 = 1 := by
   sleep_heartbeats 1000
   rfl

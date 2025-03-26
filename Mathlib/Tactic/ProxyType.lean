@@ -3,7 +3,6 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Lean
 import Mathlib.Tactic.Core
 import Mathlib.Logic.Equiv.Defs
 
@@ -107,8 +106,8 @@ def defaultMkProxyType (ctors : Array (Name × Expr × Term))
     TermElabM (Expr × Array Term × TSyntax `tactic) := do
   let mut types := #[]
   let mut patts := #[]
-  for i in [0:ctors.size] do
-    let (_ctorName, ty, patt) := ctors[i]!
+  for h : i in [0:ctors.size] do
+    let (_ctorName, ty, patt) := ctors[i]
     types := types.push ty
     patts := patts.push <| ← wrapSumAccess i ctors.size patt
   let (type, pf) ← mkCType types.toList

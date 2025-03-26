@@ -45,7 +45,7 @@ theorem mkDerivationₗ_C (f : σ → A) (r : R) : mkDerivationₗ R f (C r) = 0
   (mkDerivationₗ_monomial f _ _).trans (smul_zero _)
 
 theorem mkDerivationₗ_X (f : σ → A) (i : σ) : mkDerivationₗ R f (X i) = f i :=
-  (mkDerivationₗ_monomial f _ _).trans <| by simp
+  (mkDerivationₗ_monomial f _ _).trans <| by simp [tsub_self]
 
 @[simp]
 theorem derivation_C (D : Derivation R (MvPolynomial σ R) A) (a : R) : D (C a) = 0 :=
@@ -92,10 +92,10 @@ theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
     · rw [add_mul, map_add, map_add, hp, hq, add_smul, smul_add, add_add_add_comm]
   intro p q
   induction q using MvPolynomial.induction_on with
-  | h_C c =>
+  | C c =>
     rw [mul_comm, C_mul', hC, smul_zero, zero_add, D.map_smul, C_eq_smul_one, smul_one_smul]
-  | h_add q₁ q₂ h₁ h₂ => simp only [mul_add, map_add, h₁, h₂, smul_add, add_smul]; abel
-  | h_X q i hq =>
+  | add q₁ q₂ h₁ h₂ => simp only [mul_add, map_add, h₁, h₂, smul_add, add_smul]; abel
+  | mul_X q i hq =>
     simp only [this, ← mul_assoc, hq, mul_smul, smul_add, add_assoc]
     rw [smul_comm (X i), smul_comm (X i)]
 

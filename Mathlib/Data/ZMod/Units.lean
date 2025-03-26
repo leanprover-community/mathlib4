@@ -5,13 +5,13 @@ Authors: Moritz Firsching, Ashvni Narayanan, Michael Stoll
 -/
 import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Data.Nat.PrimeFin
 import Mathlib.RingTheory.Coprime.Lemmas
 
 /-!
 # Lemmas about units in `ZMod`.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 
@@ -32,8 +32,14 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
   simp [unitsMap, castHom_self]
 
-lemma IsUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
+/-- `unitsMap_val` shows that coercing from `(ZMod m)ˣ` to `ZMod n` gives the same result
+when going via `(ZMod n)ˣ` and `ZMod m`. -/
+lemma unitsMap_val (h : n ∣ m) (a : (ZMod m)ˣ) :
+    ↑(unitsMap h a) = ((a : ZMod m).cast : ZMod n) := rfl
+
+lemma isUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
+@[deprecated (since := "2024-12-16")] alias IsUnit_cast_of_dvd := isUnit_cast_of_dvd
 
 theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     Function.Surjective (unitsMap h) := by
@@ -42,7 +48,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have ⟨k, hk⟩ := this x.val.val (val_coe_unit_coprime x)
     refine ⟨unitOfCoprime _ hk, Units.ext ?_⟩
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
-    simp [unitsMap_def]
+    simp [unitsMap_def, - castHom_apply]
   intro x hx
   let ps := m.primeFactors.filter (fun p ↦ ¬p ∣ x)
   use ps.prod id

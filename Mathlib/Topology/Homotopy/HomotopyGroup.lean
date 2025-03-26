@@ -5,7 +5,7 @@ Authors: Roberto Alvarez
 -/
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.FundamentalGroup
 import Mathlib.GroupTheory.EckmannHilton
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Algebra.Group.Ext
 
 /-!
@@ -46,6 +46,8 @@ open Homeomorph
 
 noncomputable section
 
+/-- `I^N` is notation (in the Topology namespace) for `N → I`,
+i.e. the unit cube indexed by a type `N`. -/
 scoped[Topology] notation "I^" N => N → I
 
 namespace Cube
@@ -76,11 +78,12 @@ end Cube
 
 variable (N X : Type*) [TopologicalSpace X] (x : X)
 
-/-- The space of paths with both endpoints equal to a specified point `x : X`. -/
+/-- The space of paths with both endpoints equal to a specified point `x : X`.
+Denoted as `Ω`, within the `Topology.Homotopy` namespace. -/
 abbrev LoopSpace :=
   Path x x
 
-scoped[Topology.Homotopy] notation "Ω" => LoopSpace
+@[inherit_doc] scoped[Topology.Homotopy] notation "Ω" => LoopSpace
 
 instance LoopSpace.inhabited : Inhabited (Path x x) :=
   ⟨Path.refl x⟩
@@ -110,6 +113,11 @@ theorem ext (f g : Ω^ N X x) (H : ∀ y, f y = g y) : f = g :=
 @[simp]
 theorem mk_apply (f : C(I^N, X)) (H y) : (⟨f, H⟩ : Ω^ N X x) y = f y :=
   rfl
+
+instance instContinuousEval : ContinuousEval (Ω^ N X x) (I^N) X :=
+  .of_continuous_forget continuous_subtype_val
+
+instance instContinuousEvalConst : ContinuousEvalConst (Ω^ N X x) (I^N) X := inferInstance
 
 /-- Copy of a `GenLoop` with a new map from the unit cube equal to the old one.
   Useful to fix definitional equalities. -/
@@ -175,7 +183,7 @@ variable [DecidableEq N]
 @[simps]
 def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
   toFun t :=
-    ⟨(p.val.comp (Cube.insertAt i).toContinuousMap).curry t, fun y yH =>
+    ⟨(p.val.comp (Cube.insertAt i)).curry t, fun y yH =>
       p.property (Cube.insertAt i (t, y)) (Cube.insertAt_boundary i <| Or.inr yH)⟩
   source' := by ext t; refine p.property (Cube.insertAt i (0, t)) ⟨i, Or.inl ?_⟩; simp
   target' := by ext t; refine p.property (Cube.insertAt i (1, t)) ⟨i, Or.inr ?_⟩; simp
@@ -184,10 +192,10 @@ def toLoop (i : N) (p : Ω^ N X x) : Ω (Ω^ { j // j ≠ i } X x) const where
 theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
   Path.continuous_uncurry_iff.1 <|
     Continuous.subtype_mk
-      (ContinuousMap.continuous_eval.comp <|
-        Continuous.prod_map
+      (continuous_eval.comp <|
+        Continuous.prodMap
           (ContinuousMap.continuous_curry.comp <|
-            (ContinuousMap.continuous_comp_left _).comp continuous_subtype_val)
+            (ContinuousMap.continuous_precomp _).comp continuous_subtype_val)
           continuous_id)
       _
 
@@ -195,20 +203,20 @@ theorem continuous_toLoop (i : N) : Continuous (@toLoop N X _ x _ i) :=
 @[simps]
 def fromLoop (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : Ω^ N X x :=
   ⟨(ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ p.toContinuousMap).uncurry.comp
-    (Cube.splitAt i).toContinuousMap,
+    (Cube.splitAt i),
     by
     rintro y ⟨j, Hj⟩
-    simp only [ContinuousMap.comp_apply, toContinuousMap_apply,
+    simp only [ContinuousMap.comp_apply, ContinuousMap.coe_coe,
       funSplitAt_apply, ContinuousMap.uncurry_apply, ContinuousMap.coe_mk,
       Function.uncurry_apply_pair]
     obtain rfl | Hne := eq_or_ne j i
-    · cases' Hj with Hj Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
+    · rcases Hj with Hj | Hj <;> simp only [Hj, p.coe_toContinuousMap, p.source, p.target] <;> rfl
     · exact GenLoop.boundary _ _ ⟨⟨j, Hne⟩, Hj⟩⟩
 
 theorem continuous_fromLoop (i : N) : Continuous (@fromLoop N X _ x _ i) :=
-  ((ContinuousMap.continuous_comp_left _).comp <|
+  ((ContinuousMap.continuous_precomp _).comp <|
         ContinuousMap.continuous_uncurry.comp <|
-          (ContinuousMap.continuous_comp _).comp continuous_induced_dom).subtype_mk
+          (ContinuousMap.continuous_postcomp _).comp continuous_induced_dom).subtype_mk
     _
 
 theorem to_from (i : N) (p : Ω (Ω^ { j // j ≠ i } X x) const) : toLoop i (fromLoop i p) = p := by
@@ -238,8 +246,8 @@ theorem fromLoop_apply (i : N) {p : Ω (Ω^ { j // j ≠ i } X x) const} {t : I^
 
 /-- Composition with `Cube.insertAt` as a continuous map. -/
 abbrev cCompInsert (i : N) : C(C(I^N, X), C(I × I^{ j // j ≠ i }, X)) :=
-  ⟨fun f => f.comp (Cube.insertAt i).toContinuousMap,
-    (Cube.insertAt i).toContinuousMap.continuous_comp_left⟩
+  ⟨fun f => f.comp (Cube.insertAt i),
+    (toContinuousMap <| Cube.insertAt i).continuous_precomp⟩
 
 /-- A homotopy between `n+1`-dimensional loops `p` and `q` constant on the boundary
   seen as a homotopy between two paths in the space of `n`-dimensional paths. -/
@@ -248,7 +256,7 @@ def homotopyTo (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 (Cube.boundary
   ((⟨_, ContinuousMap.continuous_curry⟩ : C(_, _)).comp <|
       (cCompInsert i).comp H.toContinuousMap.curry).uncurry
 
--- porting note (#11083): `@[simps]` no longer too slow in Lean 4 but does not generate this lemma.
+-- porting note: `@[simps]` generates this lemma but it's named `homotopyTo_apply_apply` instead
 theorem homotopyTo_apply (i : N) {p q : Ω^ N X x} (H : p.1.HomotopyRel q.1 <| Cube.boundary N)
     (t : I × I) (tₙ : I^{ j // j ≠ i }) :
     homotopyTo i H t tₙ = H (t.fst, Cube.insertAt i (t.snd, tₙ)) :=
@@ -260,7 +268,7 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
   · rintro y ⟨i, iH⟩
     rw [homotopyTo_apply, H.eq_fst, p.2]
     all_goals apply Cube.insertAt_boundary; right; exact ⟨i, iH⟩
-  · continuity
+  · fun_prop
   iterate 2 intro; ext; erw [homotopyTo_apply, toLoop_apply]; swap
   · apply H.apply_zero
   · apply H.apply_one
@@ -274,9 +282,8 @@ theorem homotopicTo (i : N) {p q : Ω^ N X x} :
 @[simps!] def homotopyFrom (i : N) {p q : Ω^ N X x} (H : (toLoop i p).Homotopy (toLoop i q)) :
     C(I × I^N, X) :=
   (ContinuousMap.comp ⟨_, ContinuousMap.continuous_uncurry⟩
-          (ContinuousMap.comp ⟨Subtype.val, by continuity⟩ H.toContinuousMap).curry).uncurry.comp <|
-    (ContinuousMap.id I).prodMap (Cube.splitAt i).toContinuousMap
--- porting note (#11083): @[simps!] no longer too slow in Lean 4.
+          (ContinuousMap.comp ⟨Subtype.val, by fun_prop⟩ H.toContinuousMap).curry).uncurry.comp <|
+    (ContinuousMap.id I).prodMap (Cube.splitAt i)
 
 theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
     (toLoop i p).Homotopic (toLoop i q) → Homotopic p q := by
@@ -285,15 +292,14 @@ theorem homotopicFrom (i : N) {p q : Ω^ N X x} :
   · rintro t y ⟨j, jH⟩
     erw [homotopyFrom_apply]
     obtain rfl | h := eq_or_ne j i
-    · simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
-        Function.uncurry_apply_pair]
+    · simp only [Prod.map_apply, id_eq, funSplitAt_apply, Function.uncurry_apply_pair]
       rw [H.eq_fst]
       exacts [congr_arg p ((Cube.splitAt j).left_inv _), jH]
     · rw [p.2 _ ⟨j, jH⟩]; apply boundary; exact ⟨⟨j, h⟩, jH⟩
   all_goals
     intro
     apply (homotopyFrom_apply _ _ _).trans
-    simp only [Prod.map_apply, id_eq, toContinuousMap_apply, funSplitAt_apply,
+    simp only [Prod.map_apply, id_eq, funSplitAt_apply,
       Function.uncurry_apply_pair, ContinuousMap.HomotopyWith.apply_zero,
       ContinuousMap.HomotopyWith.apply_one, ne_eq, Path.coe_toContinuousMap, toLoop_apply_coe,
       ContinuousMap.curry_apply, ContinuousMap.comp_apply]
@@ -311,7 +317,7 @@ def transAt (i : N) (f g : Ω^ N X x) : Ω^ N X x :=
     (by
       ext1; symm
       dsimp only [Path.trans, fromLoop, Path.coe_mk_mk, Function.comp_apply, mk_apply,
-        ContinuousMap.comp_apply, toContinuousMap_apply, funSplitAt_apply,
+        ContinuousMap.comp_apply, ContinuousMap.coe_coe, funSplitAt_apply,
         ContinuousMap.uncurry_apply, ContinuousMap.coe_mk, Function.uncurry_apply_pair]
       split_ifs
       · show f _ = _; congr 1
@@ -345,7 +351,6 @@ end GenLoop
 def HomotopyGroup (N X : Type*) [TopologicalSpace X] (x : X) : Type _ :=
   Quotient (GenLoop.Homotopic.setoid N x)
 
--- Porting note: in Lean 3 this instance was derived
 instance : Inhabited (HomotopyGroup N X x) :=
   inferInstanceAs <| Inhabited <| Quotient (GenLoop.Homotopic.setoid N x)
 
@@ -361,11 +366,11 @@ def homotopyGroupEquivFundamentalGroup (i : N) :
   apply Quotient.congr (loopHomeo i).toEquiv
   exact fun p q => ⟨homotopicTo i, homotopicFrom i⟩
 
-/-- Homotopy group of finite index. -/
+/-- Homotopy group of finite index, denoted as `π_n` within the Topology namespace. -/
 abbrev HomotopyGroup.Pi (n) (X : Type*) [TopologicalSpace X] (x : X) :=
   HomotopyGroup (Fin n) _ x
 
-scoped[Topology] notation "π_" => HomotopyGroup.Pi
+@[inherit_doc] scoped[Topology] notation "π_" => HomotopyGroup.Pi
 
 /-- The 0-dimensional generalized loops based at `x` are in bijection with `X`. -/
 def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
@@ -373,7 +378,6 @@ def genLoopHomeoOfIsEmpty (N x) [IsEmpty N] : Ω^ N X x ≃ₜ X where
   invFun y := ⟨ContinuousMap.const _ y, fun _ ⟨i, _⟩ => isEmptyElim i⟩
   left_inv f := by ext; exact congr_arg f (Subsingleton.elim _ _)
   right_inv _ := rfl
-  continuous_toFun := (ContinuousMap.continuous_eval_const (0 : N → I)).comp continuous_induced_dom
   continuous_invFun := ContinuousMap.const'.2.subtype_mk _
 
 /-- The homotopy "group" indexed by an empty type is in bijection with
@@ -430,7 +434,7 @@ def homotopyGroupEquivFundamentalGroupOfUnique (N) [Unique N] :
           prop' := fun t y iH => H.prop' _ _ ⟨default, iH⟩ }⟩
   refine
     ⟨⟨⟨⟨fun tx => H (tx.fst, tx.snd default), H.continuous.comp ?_⟩, fun y => ?_, fun y => ?_⟩, ?_⟩⟩
-  · exact continuous_fst.prod_mk ((continuous_apply _).comp continuous_snd)
+  · fun_prop
   · exact (H.apply_zero _).trans (congr_arg a₁ (eq_const_of_unique y).symm)
   · exact (H.apply_one _).trans (congr_arg a₂ (eq_const_of_unique y).symm)
   · rintro t y ⟨i, iH⟩
@@ -485,7 +489,7 @@ theorem one_def [Nonempty N] : (1 : HomotopyGroup N X x) = ⟦const⟧ :=
 
 /-- Characterization of multiplication -/
 theorem mul_spec [Nonempty N] {i} {p q : Ω^ N X x} :
-    -- Porting note (#11215): TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
+    -- TODO: introduce `HomotopyGroup.mk` and remove defeq abuse.
     ((· * ·) : _ → _ → HomotopyGroup N X x) ⟦p⟧ ⟦q⟧ = ⟦transAt i q p⟧ := by
   rw [transAt_indep (Classical.arbitrary N) q, ← fromLoop_trans_toLoop]
   apply Quotient.sound

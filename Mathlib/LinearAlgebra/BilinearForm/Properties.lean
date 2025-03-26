@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andreas Swerdlow, Kexing Ying
 -/
 import Mathlib.LinearAlgebra.BilinearForm.Hom
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # Bilinear form
@@ -40,8 +40,7 @@ universe u v w
 variable {R : Type*} {M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 variable {R₁ : Type*} {M₁ : Type*} [CommRing R₁] [AddCommGroup M₁] [Module R₁ M₁]
 variable {V : Type*} {K : Type*} [Field K] [AddCommGroup V] [Module K V]
-variable {M' M'' : Type*}
-variable [AddCommMonoid M'] [AddCommMonoid M''] [Module R M'] [Module R M'']
+variable {M' : Type*} [AddCommMonoid M'] [Module R M']
 variable {B : BilinForm R M} {B₁ : BilinForm R₁ M₁}
 
 namespace LinearMap
@@ -91,10 +90,10 @@ protected theorem eq (H : B.IsSymm) (x y : M) : B x y = B y x :=
 theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 => H x y ▸ H1
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) : _)
+    (B₁ + B₂).IsSymm := fun x y => (congr_arg₂ (· + ·) (hB₁ x y) (hB₂ x y) :)
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsSymm) (hB₂ : B₂.IsSymm) :
-    (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) : _)
+    (B₁ - B₂).IsSymm := fun x y => (congr_arg₂ Sub.sub (hB₁ x y) (hB₂ x y) :)
 
 protected theorem neg {B : BilinForm R₁ M₁} (hB : B.IsSymm) : (-B).IsSymm := fun x y =>
   congr_arg Neg.neg (hB x y)
@@ -116,7 +115,6 @@ theorem isSymm_zero : (0 : BilinForm R M).IsSymm := fun _ _ => rfl
 theorem isSymm_neg {B : BilinForm R₁ M₁} : (-B).IsSymm ↔ B.IsSymm :=
   ⟨fun h => neg_neg B ▸ h.neg, IsSymm.neg⟩
 
-variable (R₂) in
 theorem isSymm_iff_flip : B.IsSymm ↔ flipHom B = B :=
   (forall₂_congr fun _ _ => by exact eq_comm).trans BilinForm.ext_iff.symm
 
@@ -135,7 +133,7 @@ theorem eq_of_add_add_eq_zero [IsCancelAdd R] {a b c : M} (H : B.IsAlt) (hAdd : 
     B a b = B b c := LinearMap.IsAlt.eq_of_add_add_eq_zero H hAdd
 
 protected theorem add {B₁ B₂ : BilinForm R M} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) : (B₁ + B₂).IsAlt :=
-  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) : _).trans <| add_zero _
+  fun x => (congr_arg₂ (· + ·) (hB₁ x) (hB₂ x) :).trans <| add_zero _
 
 protected theorem sub {B₁ B₂ : BilinForm R₁ M₁} (hB₁ : B₁.IsAlt) (hB₂ : B₂.IsAlt) :
     (B₁ - B₂).IsAlt := fun x => (congr_arg₂ Sub.sub (hB₁ x) (hB₂ x)).trans <| sub_zero _
@@ -155,140 +153,6 @@ theorem isAlt_zero : (0 : BilinForm R M).IsAlt := fun _ => rfl
 @[simp]
 theorem isAlt_neg {B : BilinForm R₁ M₁} : (-B).IsAlt ↔ B.IsAlt :=
   ⟨fun h => neg_neg B ▸ h.neg, IsAlt.neg⟩
-
-/-! ### Linear adjoints -/
-
-
-section LinearAdjoints
-
-variable (B) (F : BilinForm R M)
-variable {M' : Type*} [AddCommMonoid M'] [Module R M']
-variable (B' : BilinForm R M') (f f' : M →ₗ[R] M') (g g' : M' →ₗ[R] M)
-
-/-- Given a pair of modules equipped with bilinear forms, this is the condition for a pair of
-maps between them to be mutually adjoint. -/
-def IsAdjointPair :=
-  ∀ ⦃x y⦄, B' (f x) y = B x (g y)
-
-variable {B B' f f' g g'}
-
-theorem IsAdjointPair.eq (h : IsAdjointPair B B' f g) : ∀ {x y}, B' (f x) y = B x (g y) :=
-  @h
-
-theorem isAdjointPair_iff_compLeft_eq_compRight (f g : Module.End R M) :
-    IsAdjointPair B F f g ↔ F.compLeft f = B.compRight g := by
-  constructor <;> intro h
-  · ext x
-    simp only [compLeft_apply, compRight_apply]
-    apply h
-  · intro x y
-    rw [← compLeft_apply, ← compRight_apply]
-    rw [h]
-
-theorem isAdjointPair_zero : IsAdjointPair B B' 0 0 := fun x y => by
-  simp only [BilinForm.zero_left, BilinForm.zero_right, LinearMap.zero_apply]
-
-theorem isAdjointPair_id : IsAdjointPair B B 1 1 := fun _ _ => rfl
-
-theorem IsAdjointPair.add (h : IsAdjointPair B B' f g) (h' : IsAdjointPair B B' f' g') :
-    IsAdjointPair B B' (f + f') (g + g') := fun x y => by
-  rw [LinearMap.add_apply, LinearMap.add_apply, add_left, add_right, h, h']
-
-variable {M₁' : Type*} [AddCommGroup M₁'] [Module R₁ M₁']
-variable {B₁' : BilinForm R₁ M₁'} {f₁ f₁' : M₁ →ₗ[R₁] M₁'} {g₁ g₁' : M₁' →ₗ[R₁] M₁}
-
-theorem IsAdjointPair.sub (h : IsAdjointPair B₁ B₁' f₁ g₁) (h' : IsAdjointPair B₁ B₁' f₁' g₁') :
-    IsAdjointPair B₁ B₁' (f₁ - f₁') (g₁ - g₁') := fun x y => by
-  rw [LinearMap.sub_apply, LinearMap.sub_apply, sub_left, sub_right, h, h']
-
-variable {B₂' : BilinForm R M'} {f₂ f₂' : M →ₗ[R] M'} {g₂ g₂' : M' →ₗ[R] M}
-
-theorem IsAdjointPair.smul (c : R) (h : IsAdjointPair B B₂' f₂ g₂) :
-    IsAdjointPair B B₂' (c • f₂) (c • g₂) := fun x y => by
-  rw [LinearMap.smul_apply, LinearMap.smul_apply, smul_left, smul_right, h]
-
-variable {M'' : Type*} [AddCommMonoid M''] [Module R M'']
-variable (B'' : BilinForm R M'')
-
-theorem IsAdjointPair.comp {f' : M' →ₗ[R] M''} {g' : M'' →ₗ[R] M'} (h : IsAdjointPair B B' f g)
-    (h' : IsAdjointPair B' B'' f' g') : IsAdjointPair B B'' (f'.comp f) (g.comp g') := fun x y => by
-  rw [LinearMap.comp_apply, LinearMap.comp_apply, h', h]
-
-theorem IsAdjointPair.mul {f g f' g' : Module.End R M} (h : IsAdjointPair B B f g)
-    (h' : IsAdjointPair B B f' g') : IsAdjointPair B B (f * f') (g' * g) := fun x y => by
-  rw [LinearMap.mul_apply, LinearMap.mul_apply, h, h']
-
-variable (B B' B₁ B₂) (F₂ : BilinForm R M)
-
-/-- The condition for an endomorphism to be "self-adjoint" with respect to a pair of bilinear forms
-on the underlying module. In the case that these two forms are identical, this is the usual concept
-of self adjointness. In the case that one of the forms is the negation of the other, this is the
-usual concept of skew adjointness. -/
-def IsPairSelfAdjoint (f : Module.End R M) :=
-  IsAdjointPair B F f f
-
-/-- The set of pair-self-adjoint endomorphisms are a submodule of the type of all endomorphisms. -/
-def isPairSelfAdjointSubmodule : Submodule R (Module.End R M) where
-  carrier := { f | IsPairSelfAdjoint B₂ F₂ f }
-  zero_mem' := isAdjointPair_zero
-  add_mem' hf hg := hf.add hg
-  smul_mem' c _ h := h.smul c
-
-@[simp]
-theorem mem_isPairSelfAdjointSubmodule (f : Module.End R M) :
-    f ∈ isPairSelfAdjointSubmodule B₂ F₂ ↔ IsPairSelfAdjoint B₂ F₂ f := Iff.rfl
-
-theorem isPairSelfAdjoint_equiv (e : M' ≃ₗ[R] M) (f : Module.End R M) :
-    IsPairSelfAdjoint B₂ F₂ f ↔
-      IsPairSelfAdjoint (B₂.comp ↑e ↑e) (F₂.comp ↑e ↑e) (e.symm.conj f) := by
-  have hₗ : (F₂.comp ↑e ↑e).compLeft (e.symm.conj f) = (F₂.compLeft f).comp ↑e ↑e := by
-    ext
-    simp [LinearEquiv.symm_conj_apply]
-  have hᵣ : (B₂.comp ↑e ↑e).compRight (e.symm.conj f) = (B₂.compRight f).comp ↑e ↑e := by
-    ext
-    simp [LinearEquiv.conj_apply]
-  have he : Function.Surjective (⇑(↑e : M' →ₗ[R] M) : M' → M) := e.surjective
-  show BilinForm.IsAdjointPair _ _ _ _ ↔ BilinForm.IsAdjointPair _ _ _ _
-  rw [isAdjointPair_iff_compLeft_eq_compRight, isAdjointPair_iff_compLeft_eq_compRight, hᵣ,
-    hₗ, comp_inj _ _ he he]
-
-/-- An endomorphism of a module is self-adjoint with respect to a bilinear form if it serves as an
-adjoint for itself. -/
-def IsSelfAdjoint (f : Module.End R M) :=
-  IsAdjointPair B B f f
-
-/-- An endomorphism of a module is skew-adjoint with respect to a bilinear form if its negation
-serves as an adjoint. -/
-def IsSkewAdjoint (f : Module.End R₁ M₁) :=
-  IsAdjointPair B₁ B₁ f (-f)
-
-theorem isSkewAdjoint_iff_neg_self_adjoint (f : Module.End R₁ M₁) :
-    B₁.IsSkewAdjoint f ↔ IsAdjointPair (-B₁) B₁ f f :=
-  show (∀ x y, B₁ (f x) y = B₁ x ((-f) y)) ↔ ∀ x y, B₁ (f x) y = (-B₁) x (f y) by
-    simp only [LinearMap.neg_apply, BilinForm.neg_apply, BilinForm.neg_right]
-
-/-- The set of self-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
-it is a Jordan subalgebra.) -/
-def selfAdjointSubmodule :=
-  isPairSelfAdjointSubmodule B B
-
-@[simp]
-theorem mem_selfAdjointSubmodule (f : Module.End R M) :
-    f ∈ B.selfAdjointSubmodule ↔ B.IsSelfAdjoint f :=
-  Iff.rfl
-
-/-- The set of skew-adjoint endomorphisms of a module with bilinear form is a submodule. (In fact
-it is a Lie subalgebra.) -/
-def skewAdjointSubmodule :=
-  isPairSelfAdjointSubmodule (-B₁) B₁
-
-@[simp]
-theorem mem_skewAdjointSubmodule (f : Module.End R₁ M₁) :
-    f ∈ B₁.skewAdjointSubmodule ↔ B₁.IsSkewAdjoint f := by
-  rw [isSkewAdjoint_iff_neg_self_adjoint]
-  exact Iff.rfl
-
-end LinearAdjoints
 
 end BilinForm
 
@@ -411,8 +275,8 @@ noncomputable def dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basi
 theorem dualBasis_repr_apply
     (B : BilinForm K V) (hB : B.Nondegenerate) (b : Basis ι K V) (x i) :
     (B.dualBasis hB b).repr x i = B x (b i) := by
-  #adaptation_note
-  /-- Before leanprover/lean4#4814, we did not need the `@` in front of `toDual_def` in the `rw`.
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4814
+  we did not need the `@` in front of `toDual_def` in the `rw`.
   I'm confused! -/
   rw [dualBasis, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
     Basis.dualBasis_repr, @toDual_def]
@@ -464,7 +328,7 @@ noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B�
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
     (b₂ : B₂.Nondegenerate) (v : V) :
     B₂ (B₁.symmCompOfNondegenerate B₂ b₂ v) = B₁ v := by
-  erw [symmCompOfNondegenerate]
+  rw [symmCompOfNondegenerate]
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, DFunLike.coe_fn_eq]
   erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
 

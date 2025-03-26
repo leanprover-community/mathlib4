@@ -80,6 +80,14 @@ theorem restrict_singleton (μ : Measure α) (a : α) : μ.restrict {a} = μ {a}
   · have : s ∩ {a} = ∅ := inter_singleton_eq_empty.2 ha
     simp [*]
 
+/-- Two measures on a countable space are equal if they agree on singletons. -/
+theorem ext_of_singleton [Countable α] {μ ν : Measure α} (h : ∀ a, μ {a} = ν {a}) : μ = ν :=
+  ext_of_sUnion_eq_univ (countable_range singleton) (by aesop) (by aesop)
+
+/-- Two measures on a countable space are equal if and only if they agree on singletons. -/
+theorem ext_iff_singleton [Countable α] {μ ν : Measure α} : μ = ν ↔ ∀ a, μ {a} = ν {a} :=
+  ⟨fun h _ ↦ h ▸ rfl, ext_of_singleton⟩
+
 /-- If `f` is a map with countable codomain, then `μ.map f` is a sum of Dirac measures. -/
 theorem map_eq_sum [Countable β] [MeasurableSingletonClass β] (μ : Measure α) (f : α → β)
     (hf : Measurable f) : μ.map f = sum fun b : β => μ (f ⁻¹' {b}) • dirac b := by
@@ -127,6 +135,11 @@ theorem ae_eq_dirac' [MeasurableSingletonClass β] {a : α} {f : α → β} (hf 
 
 theorem ae_eq_dirac [MeasurableSingletonClass α] {a : α} (f : α → δ) :
     f =ᵐ[dirac a] const α (f a) := by simp [Filter.EventuallyEq]
+
+@[fun_prop]
+lemma aemeasurable_dirac [MeasurableSingletonClass α] {a : α} {f : α → β} :
+    AEMeasurable f (Measure.dirac a) :=
+  ⟨fun _ ↦ f a, measurable_const, ae_eq_dirac f⟩
 
 instance Measure.dirac.isProbabilityMeasure {x : α} : IsProbabilityMeasure (dirac x) :=
   ⟨dirac_apply_of_mem <| mem_univ x⟩

@@ -77,10 +77,10 @@ open Valued
     [BouAC, VI.5.1 middle of Proposition 1] -/
 instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
     TopologicalDivisionRing K :=
-  { (by infer_instance : TopologicalRing K) with
+  { (by infer_instance : IsTopologicalRing K) with
     continuousAt_inv₀ := by
       intro x x_ne s s_in
-      cases' Valued.mem_nhds.mp s_in with γ hs; clear s_in
+      obtain ⟨γ, hs⟩ := Valued.mem_nhds.mp s_in; clear s_in
       rw [mem_map, Valued.mem_nhds]
       change ∃ γ : Γ₀ˣ, { y : K | (v (y - x) : Γ₀) < γ } ⊆ { x : K | x⁻¹ ∈ s }
       have vx_ne := (Valuation.ne_zero_iff <| v).mpr x_ne
@@ -95,7 +95,7 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
 /-- A valued division ring is separated. -/
 instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
   suffices T2Space K by infer_instance
-  apply TopologicalAddGroup.t2Space_of_zero_sep
+  apply IsTopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
   refine ⟨{ k | v k < v x }, ?_, fun h => lt_irrefl _ h⟩
   rw [Valued.mem_nhds]
@@ -187,14 +187,14 @@ open WithZeroTopology
 
 /-- The extension of the valuation of a valued field to the completion of the field. -/
 noncomputable def extension : hat K → Γ₀ :=
-  Completion.denseInducing_coe.extend (v : K → Γ₀)
+  Completion.isDenseInducing_coe.extend (v : K → Γ₀)
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
-  refine Completion.denseInducing_coe.continuous_extend ?_
+  refine Completion.isDenseInducing_coe.continuous_extend ?_
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine ⟨0, ?_⟩
-    erw [← Completion.denseInducing_coe.toInducing.nhds_eq_comap]
+    erw [← Completion.isDenseInducing_coe.isInducing.nhds_eq_comap]
     exact Valued.continuous_valuation.tendsto' 0 0 (map_zero v)
   · have preimage_one : v ⁻¹' {(1 : Γ₀)} ∈ 𝓝 (1 : K) := by
       have : (v (1 : K) : Γ₀) ≠ 0 := by
@@ -204,7 +204,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       ext x
       rw [Valuation.map_one, mem_preimage, mem_singleton_iff, mem_setOf_eq]
     obtain ⟨V, V_in, hV⟩ : ∃ V ∈ 𝓝 (1 : hat K), ∀ x : K, (x : hat K) ∈ V → (v x : Γ₀) = 1 := by
-      rwa [Completion.denseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
+      rwa [Completion.isDenseInducing_coe.nhds_eq_comap, mem_comap] at preimage_one
     have : ∃ V' ∈ 𝓝 (1 : hat K), (0 : hat K) ∉ V' ∧ ∀ (x) (_ : x ∈ V') (y) (_ : y ∈ V'),
       x * y⁻¹ ∈ V := by
       have : Tendsto (fun p : hat K × hat K => p.1 * p.2⁻¹) ((𝓝 1) ×ˢ (𝓝 1)) (𝓝 1) := by
@@ -216,7 +216,6 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
           rw [← one_mul (1 : hat K)]
         refine
           Tendsto.mul continuous_fst.continuousAt (Tendsto.comp ?_ continuous_snd.continuousAt)
-        -- Porting note: Added `ContinuousAt.tendsto`
         convert (continuousAt_inv₀ (zero_ne_one.symm : 1 ≠ (0 : hat K))).tendsto
         exact inv_one.symm
       rcases tendsto_prod_self_iff.mp this V V_in with ⟨U, U_in, hU⟩
@@ -265,8 +264,8 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
 
 @[simp, norm_cast]
 theorem extension_extends (x : K) : extension (x : hat K) = v x := by
-  refine Completion.denseInducing_coe.extend_eq_of_tendsto ?_
-  rw [← Completion.denseInducing_coe.nhds_eq_comap]
+  refine Completion.isDenseInducing_coe.extend_eq_of_tendsto ?_
+  rw [← Completion.isDenseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
 
 /-- the extension of a valuation on a division ring to its completion. -/
@@ -313,9 +312,9 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   suffices γ₀ ≠ 0 → (x ∈ closure ((↑) '' { x : K | v x < (γ : Γ₀) }) ↔ γ₀ < (γ : Γ₀)) by
     rcases eq_or_ne γ₀ 0 with h | h
     · simp only [h, (Valuation.zero_iff _).mp h, mem_setOf_eq, Valuation.map_zero, Units.zero_lt,
-        iff_true_iff]
+        iff_true]
       apply subset_closure
-      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and_iff]; rfl⟩
+      exact ⟨0, by simp only [mem_setOf_eq, Valuation.map_zero, Units.zero_lt, true_and]; rfl⟩
     · exact this h
   intro h
   have hγ₀ : extension ⁻¹' {γ₀} ∈ 𝓝 x :=
@@ -339,10 +338,8 @@ noncomputable instance valuedCompletion : Valued (hat K) Γ₀ where
       rw [this.mem_iff]
       exact exists_congr fun γ => by simp
     simp_rw [← closure_coe_completion_v_lt]
-    exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_denseInducing Completion.denseInducing_coe
+    exact (hasBasis_nhds_zero K Γ₀).hasBasis_of_isDenseInducing Completion.isDenseInducing_coe
 
--- Porting note: removed @[norm_cast] attribute due to error:
--- norm_cast: badly shaped lemma, rhs can't start with coe
 @[simp]
 theorem valuedCompletion_apply (x : K) : Valued.v (x : hat K) = v x :=
   extension_extends x
@@ -364,18 +361,18 @@ def integer : Subring K := (vK.v).integer
 @[inherit_doc]
 scoped notation "𝒪[" K "]" => Valued.integer K
 
-/-- An abbreviation for `LocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
+/-- An abbreviation for `IsLocalRing.maximalIdeal 𝒪[K]` of a valued field `K`, enabling the notation
 `𝓂[K]` for the maximal ideal in `𝒪[K]` of a valued field `K`. -/
 @[reducible]
-def maximalIdeal : Ideal 𝒪[K] := LocalRing.maximalIdeal 𝒪[K]
+def maximalIdeal : Ideal 𝒪[K] := IsLocalRing.maximalIdeal 𝒪[K]
 
 @[inherit_doc]
 scoped notation "𝓂[" K "]" => maximalIdeal K
 
-/-- An abbreviation for `LocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the notation
-`𝓀[K]` for the residue field of a valued field `K`. -/
+/-- An abbreviation for `IsLocalRing.ResidueField 𝒪[K]` of a `Valued` instance, enabling the
+notation `𝓀[K]` for the residue field of a valued field `K`. -/
 @[reducible]
-def ResidueField := LocalRing.ResidueField (𝒪[K])
+def ResidueField := IsLocalRing.ResidueField (𝒪[K])
 
 @[inherit_doc]
 scoped notation "𝓀[" K "]" => ResidueField K

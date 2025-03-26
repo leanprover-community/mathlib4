@@ -3,9 +3,14 @@ Copyright (c) 2024 Frédéric Marbach. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
+import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Basic
+import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
+import Mathlib.RingTheory.Nilpotent.Exp
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Lie derivations
@@ -104,7 +109,7 @@ lemma apply_lie_eq_add (D : LieDerivation R L L) (a b : L) :
 /-- Two Lie derivations equal on a set are equal on its Lie span. -/
 theorem eqOn_lieSpan {s : Set L} (h : Set.EqOn D1 D2 s) :
     Set.EqOn D1 D2 (LieSubalgebra.lieSpan R L s) :=
-    fun z hz =>
+    fun _ hz =>
       have zero : D1 0 = D2 0 := by simp only [map_zero]
       have smul : ∀ (r : R), ∀ {x : L}, D1 x = D2 x → D1 (r • x) = D2 (r • x) :=
         fun _ _ hx => by simp only [map_smul, hx]
@@ -119,6 +124,30 @@ are equal on the whole Lie algebra. -/
 theorem ext_of_lieSpan_eq_top (s : Set L) (hs : LieSubalgebra.lieSpan R L s = ⊤)
     (h : Set.EqOn D1 D2 s) : D1 = D2 :=
   ext fun _ => eqOn_lieSpan h <| hs.symm ▸ trivial
+
+section
+
+open Finset Nat
+
+/-- The general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ ij ∈ antidiagonal n, choose n ij.1 • ⁅D^[ij.1] a, D^[ij.2] b⁆ := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [sum_antidiagonal_choose_succ_nsmul (M := L) (fun i j => ⁅D^[i] a, D^[j] b⁆) n]
+    simp only [Function.iterate_succ_apply', ih, map_sum, map_nsmul, apply_lie_eq_add, smul_add,
+      sum_add_distrib, add_right_inj]
+    refine sum_congr rfl fun ⟨i, j⟩ hij ↦ ?_
+    rw [n.choose_symm_of_eq_add (mem_antidiagonal.1 hij).symm]
+
+/-- Alternate version of the general Leibniz rule for Lie derivatives. -/
+theorem iterate_apply_lie' (D : LieDerivation R L L) (n : ℕ) (a b : L) :
+    D^[n] ⁅a, b⁆ = ∑ i ∈ range (n + 1), n.choose i • ⁅D^[i] a, D^[n - i] b⁆ := by
+  rw [iterate_apply_lie D n a b]
+  exact sum_antidiagonal_eq_sum_range_succ (fun i j ↦ n.choose i • ⁅D^[i] a, D^[j] b⁆) n
+
+end
 
 instance instZero : Zero (LieDerivation R L M) where
   zero :=
@@ -239,6 +268,9 @@ def coeFnAddMonoidHom : LieDerivation R L M →+ L → M where
   map_zero' := coe_zero
   map_add' := coe_add
 
+@[simp]
+lemma coeFnAddMonoidHom_apply (D : LieDerivation R L M) : coeFnAddMonoidHom D = D := rfl
+
 instance : DistribMulAction S (LieDerivation R L M) :=
   Function.Injective.distribMulAction coeFnAddMonoidHom coe_injective coe_smul
 
@@ -267,7 +299,7 @@ instance instBracket : Bracket (LieDerivation R L L) (LieDerivation R L L) where
       LinearMap.sub_apply, LinearMap.mul_apply, map_add, sub_lie, lie_sub, ← lie_skew b]
     abel)
 
-variable (D : LieDerivation R L L) {D1 D2 : LieDerivation R L L}
+variable {D1 D2 : LieDerivation R L L}
 
 @[simp]
 lemma commutator_coe_linear_map : ↑⁅D1, D2⁆ = ⁅(D1 : Module.End R L), (D2 : Module.End R L)⁆ :=
@@ -355,5 +387,37 @@ protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
   simp [-lie_skew, ← lie_skew (D₁ x) (D₂ y), ← lie_skew (D₂ x) (D₁ y), sub_eq_neg_add]
 
 end Inner
+
+section ExpNilpotent
+
+variable {R L : Type*} [Field R] [CharZero R] [LieRing L] [LieAlgebra R L] (D : LieDerivation R L L)
+
+/-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
+automorphism. -/
+noncomputable def exp (h : IsNilpotent D.toLinearMap) :
+    L ≃ₗ⁅R⁆ L :=
+  let _i : LieAlgebra ℚ L := LieAlgebra.RestrictScalars.lieAlgebra ℚ R L
+  { toLinearMap := IsNilpotent.exp D.toLinearMap
+    map_lie' := by
+      let _i := LieRing.toNonUnitalNonAssocRing L
+      have : SMulCommClass R L L := LieAlgebra.smulCommClass R L
+      have : IsScalarTower R L L := LieAlgebra.isScalarTower R L
+      exact Module.End.exp_mul_of_derivation R L D.toLinearMap D.apply_lie_eq_add h
+    invFun x := IsNilpotent.exp (- D.toLinearMap) x
+    left_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_neg_mul_exp_self, LinearMap.one_apply]
+    right_inv x := by
+      simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
+        ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
+
+lemma exp_apply [Module ℚ L] (h : IsNilpotent D.toLinearMap) :
+    exp D h = IsNilpotent.exp D.toLinearMap := by
+  ext x
+  dsimp [exp]
+  convert rfl
+  subsingleton
+
+end ExpNilpotent
 
 end LieDerivation

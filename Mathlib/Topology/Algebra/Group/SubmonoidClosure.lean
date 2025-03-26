@@ -3,6 +3,8 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+
+import Mathlib.Order.Filter.AtTopBot.Group
 import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
@@ -26,7 +28,7 @@ theorem mapClusterPt_atTop_zpow_iff_pow [DivInvMonoid G] [TopologicalSpace G] {x
     MapClusterPt x atTop (y ^ · : ℤ → G) ↔ MapClusterPt x atTop (y ^ · : ℕ → G) := by
   simp_rw [MapClusterPt, ← Nat.map_cast_int_atTop, map_map, comp_def, zpow_natCast]
 
-variable [Group G] [TopologicalSpace G] [CompactSpace G] [TopologicalGroup G]
+variable [Group G] [TopologicalSpace G] [CompactSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem mapClusterPt_self_zpow_atTop_pow (x : G) (m : ℤ) :
@@ -59,15 +61,15 @@ theorem mapClusterPt_atTop_pow_tfae (x y : G) :
       x ∈ closure (range (y ^ · : ℕ → G)),
       x ∈ closure (range (y ^ · : ℤ → G)),
     ] := by
-  tfae_have 2 ↔ 1; exact mapClusterPt_atTop_zpow_iff_pow
-  tfae_have 3 → 4
-  · refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h
+  tfae_have 2 ↔ 1 := mapClusterPt_atTop_zpow_iff_pow
+  tfae_have 3 → 4 := by
+    refine fun h ↦ closure_mono (range_subset_iff.2 fun n ↦ ?_) h
     exact ⟨n, zpow_natCast _ _⟩
-  tfae_have 4 → 1
-  · refine fun h ↦ closure_minimal ?_ isClosed_setOf_clusterPt h
+  tfae_have 4 → 1 := by
+    refine fun h ↦ closure_minimal ?_ isClosed_setOf_clusterPt h
     exact range_subset_iff.2 (mapClusterPt_self_zpow_atTop_pow _)
-  tfae_have 1 → 3
-  · rw [mem_closure_iff_clusterPt]
+  tfae_have 1 → 3 := by
+    rw [mem_closure_iff_clusterPt]
     exact (ClusterPt.mono · (le_principal_iff.2 range_mem_map))
   tfae_finish
 

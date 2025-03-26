@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
+import Mathlib.Algebra.Notation.Lemmas
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Pi
@@ -13,13 +14,10 @@ import Mathlib.Algebra.Ring.Pi
 This file defines instances for ordered group, monoid, and related structures on Pi types.
 -/
 
-variable {ι I α β γ : Type*}
+variable {I α β γ : Type*}
 
 -- The indexing type
 variable {f : I → Type*}
-
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 
@@ -44,10 +42,9 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 @[to_additive
       "The product of a family of canonically ordered additive monoids is
 a canonically ordered additive monoid."]
-instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
-    CanonicallyOrderedCommMonoid (∀ i, Z i) where
-  __ := Pi.instOrderBot
-  __ := Pi.orderedCommMonoid
+instance {ι : Type*} {Z : ι → Type*} [∀ i, Monoid (Z i)] [∀ i, PartialOrder (Z i)]
+    [∀ i, CanonicallyOrderedMul (Z i)] :
+    CanonicallyOrderedMul (∀ i, Z i) where
   __ := Pi.existsMulOfLe
   le_self_mul _ _ := fun _ => le_self_mul
 
@@ -128,6 +125,25 @@ variable [One γ] [LE γ] {f : α → β} {g : α → γ} {e : β → γ}
 
 end extend
 end Function
+
+namespace Pi
+variable {ι : Type*} {α : ι → Type*} [DecidableEq ι] [∀ i, One (α i)] [∀ i, Preorder (α i)] {i : ι}
+  {a b : α i}
+
+@[to_additive (attr := simp)]
+lemma mulSingle_le_mulSingle : mulSingle i a ≤ mulSingle i b ↔ a ≤ b := by
+  simp [mulSingle, update_le_update_iff]
+
+@[to_additive (attr := gcongr)] alias ⟨_, GCongr.mulSingle_mono⟩ := mulSingle_le_mulSingle
+
+@[to_additive (attr := simp) single_nonneg]
+lemma one_le_mulSingle : 1 ≤ mulSingle i a ↔ 1 ≤ a := by simp [mulSingle]
+
+@[to_additive (attr := simp)]
+lemma mulSingle_le_one : mulSingle i a ≤ 1 ↔ a ≤ 1 := by simp [mulSingle]
+
+end Pi
+
 -- Porting note: Tactic code not ported yet
 -- namespace Tactic
 

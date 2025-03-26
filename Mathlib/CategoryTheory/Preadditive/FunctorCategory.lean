@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Preadditive structure on functor categories
@@ -20,7 +21,7 @@ open CategoryTheory.Limits Preadditive
 variable {C D : Type*} [Category C] [Category D] [Preadditive D]
 
 instance {F G : C ⥤ D} : Zero (F ⟶ G) where
-  zero := { app := fun X => 0 }
+  zero := { app := fun _ => 0 }
 
 instance {F G : C ⥤ D} : Add (F ⟶ G) where
   add α β := { app := fun X => α.app X + β.app X }

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Sheafification
-import Mathlib.CategoryTheory.Sites.DenseSubsite
+import Mathlib.CategoryTheory.Sites.DenseSubsite.SheafEquiv
 /-!
 
 # The constant sheaf
@@ -25,13 +25,8 @@ it is an isomorphism.
 * `Sheaf.isConstant_iff_of_equivalence` : The property of a sheaf of being constant is invariant
 under equivalence of sheaf categories.
 
-* `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
+* `Sheaf.isConstant_iff_forget` : Given a "forgetful" functor `U : D ⥤ B` a sheaf `F : Sheaf J D` is
 constant if and only if the sheaf given by postcomposition with `U` is constant.
-
-## Future work
-
-* (Dagur) Use `Sheaf.isConstant_iff_forget` to prove that a condensed module is discrete if and
-only if its underlying condensed set is discrete.
 -/
 
 namespace CategoryTheory
@@ -44,18 +39,17 @@ variable (D : Type*) [Category D]
 /-- The constant presheaf functor is left adjoint to evaluation at a terminal object. -/
 @[simps! unit_app counit_app_app]
 noncomputable def constantPresheafAdj {T : C} (hT : IsTerminal T) :
-    Functor.const Cᵒᵖ ⊣ (evaluation Cᵒᵖ D).obj (op T) :=
-  Adjunction.mkOfUnitCounit {
-    unit := (Functor.constCompEvaluationObj D (op T)).hom
-    counit := {
-      app := fun F => {
-        app := fun ⟨X⟩ => F.map (IsTerminal.from hT X).op
-        naturality := fun _ _ _ => by
-          simp only [Functor.comp_obj, Functor.const_obj_obj, Functor.id_obj, Functor.const_obj_map,
-            Category.id_comp, ← Functor.map_comp]
-          congr
-          simp }
-      naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ } }
+    Functor.const Cᵒᵖ ⊣ (evaluation Cᵒᵖ D).obj (op T) where
+  unit := (Functor.constCompEvaluationObj D (op T)).hom
+  counit := {
+    app := fun F => {
+      app := fun ⟨X⟩ => F.map (IsTerminal.from hT X).op
+      naturality := fun _ _ _ => by
+        simp only [Functor.comp_obj, Functor.const_obj_obj, Functor.id_obj, Functor.const_obj_map,
+          Category.id_comp, ← Functor.map_comp]
+        congr
+        simp }
+    naturality := by intros; ext; simp /- Note: `aesop` works but is kind of slow -/ }
 
 variable [HasWeakSheafify J D]
 
@@ -79,10 +73,10 @@ namespace Sheaf
 A sheaf is constant if it is in the essential image of the constant sheaf functor.
 -/
 class IsConstant (F : Sheaf J D) : Prop where
-  mem_essImage : F ∈ (constantSheaf J D).essImage
+  mem_essImage : (constantSheaf J D).essImage F
 
 lemma mem_essImage_of_isConstant (F : Sheaf J D) [IsConstant J F] :
-    F ∈ (constantSheaf J D).essImage :=
+    (constantSheaf J D).essImage F :=
   IsConstant.mem_essImage
 
 lemma isConstant_congr {F G : Sheaf J D} (i : F ≅ G) [IsConstant J F] : IsConstant J G where
@@ -93,7 +87,7 @@ lemma isConstant_of_iso {F : Sheaf J D} {X : D} (i : F ≅ (constantSheaf J D).o
 
 lemma isConstant_iff_mem_essImage {L : D ⥤ Sheaf J D} {T : C} (hT : IsTerminal T)
     (adj : L ⊣ (sheafSections J D).obj ⟨T⟩)
-    (F : Sheaf J D) : IsConstant J F ↔ F ∈ L.essImage := by
+    (F : Sheaf J D) : IsConstant J F ↔ L.essImage F := by
   rw [essImage_eq_of_natIso (adj.leftAdjointUniq (constantSheafAdj J D hT))]
   exact ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
@@ -178,7 +172,7 @@ variable {B : Type*} [Category B] (U : D ⥤ B) [HasWeakSheafify J B]
   [J.PreservesSheafification U] [J.HasSheafCompose U] (F : Sheaf J D)
 
 /--
-The constant sheaf functor commutes with `sheafCompose J U` up to isomorphism, provided that `U` 
+The constant sheaf functor commutes with `sheafCompose J U` up to isomorphism, provided that `U`
 preserves sheafification.
 -/
 noncomputable def constantCommuteCompose :
@@ -190,7 +184,7 @@ noncomputable def constantCommuteCompose :
 lemma constantCommuteCompose_hom_app_val (X : D) : ((constantCommuteCompose J U).hom.app X).val =
     (sheafifyComposeIso J U ((const Cᵒᵖ).obj X)).inv ≫ sheafifyMap J (constComp Cᵒᵖ X U).hom := rfl
 
-/-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
+/-- The counit of `constantSheafAdj` factors through the isomorphism `constantCommuteCompose`. -/
 lemma constantSheafAdj_counit_w {T : C} (hT : IsTerminal T) :
     ((constantCommuteCompose J U).hom.app (F.val.obj ⟨T⟩)) ≫
       ((constantSheafAdj J B hT).counit.app ((sheafCompose J U).obj F)) =

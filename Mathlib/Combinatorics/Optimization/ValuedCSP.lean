@@ -90,8 +90,7 @@ variable {m : ℕ}
 
 /-- Arity of the "output" of the fractional operation. -/
 @[simp]
-def FractionalOperation.size (ω : FractionalOperation D m) : ℕ :=
-  Multiset.card.toFun ω
+def FractionalOperation.size (ω : FractionalOperation D m) : ℕ := ω.card
 
 /-- Fractional operation is valid iff nonempty. -/
 def FractionalOperation.IsValid (ω : FractionalOperation D m) : Prop :=
@@ -134,7 +133,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
     {r : Fin 2 → D} (rin : r ∈ (ω.tt ![![a, b], ![b, a]])) :
     f ![a, b] < f r := by
   rw [FractionalOperation.tt, Multiset.mem_map] at rin
-  rw [show r = ![r 0, r 1] from List.ofFn_inj.mp rfl]
+  rw [show r = ![r 0, r 1] by simp [← List.ofFn_inj]]
   apply lt_of_le_of_ne (mcf.right (r 0) (r 1)).left
   intro equ
   have asymm : r 0 ≠ r 1 := by
@@ -146,7 +145,7 @@ lemma Function.HasMaxCutPropertyAt.rows_lt_aux
   apply asymm
   obtain ⟨o, in_omega, rfl⟩ := rin
   show o (fun j => ![![a, b], ![b, a]] j 0) = o (fun j => ![![a, b], ![b, a]] j 1)
-  convert symmega ![a, b] ![b, a] (List.Perm.swap b a []) o in_omega using 2 <;>
+  convert symmega ![a, b] ![b, a] (by simp [List.Perm.swap]) o in_omega using 2 <;>
     simp [Matrix.const_fin1_eq]
 
 lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
@@ -159,10 +158,10 @@ lemma Function.HasMaxCutProperty.forbids_commutativeFractionalPolymorphism
   rw [Fin.sum_univ_two', ← mcfab.left, ← two_nsmul] at contr
   have sharp :
     2 • ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
-    2 • ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
+    2 • ((ω.tt ![![a, b], ![b, a]]).map f).sum := by
     have half_sharp :
       ((ω.tt ![![a, b], ![b, a]]).map (fun _ => f ![a, b])).sum <
-      ((ω.tt ![![a, b], ![b, a]]).map (fun r => f r)).sum := by
+      ((ω.tt ![![a, b], ![b, a]]).map f).sum := by
       apply Multiset.sum_lt_sum
       · intro r rin
         exact le_of_lt (mcfab.rows_lt_aux hab symmega rin)

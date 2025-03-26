@@ -5,6 +5,8 @@ Authors: Kenny Lau
 -/
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Defs
 import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.RingTheory.Adjoin.Polynomial
+import Mathlib.RingTheory.Finiteness.Subalgebra
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!
@@ -99,9 +101,14 @@ theorem isIntegral_one [Algebra R B] : IsIntegral R (1 : B) :=
 variable (f : R →+* S)
 
 theorem IsIntegral.of_pow [Algebra R B] {x : B} {n : ℕ} (hn : 0 < n) (hx : IsIntegral R <| x ^ n) :
-    IsIntegral R x := by
-  rcases hx with ⟨p, hmonic, heval⟩
-  exact ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
+    IsIntegral R x :=
+  have ⟨p, hmonic, heval⟩ := hx
+  ⟨expand R n p, hmonic.expand hn, by rwa [← aeval_def, expand_aeval]⟩
+
+theorem IsIntegral.of_aeval_monic {x : A} {p : R[X]} (monic : p.Monic)
+    (deg : p.natDegree ≠ 0) (hx : IsIntegral R (aeval x p)) : IsIntegral R x :=
+  have ⟨p, hmonic, heval⟩ := hx
+  ⟨_, hmonic.comp monic deg, by rwa [eval₂_comp, ← aeval_def x]⟩
 
 end
 
@@ -131,6 +138,26 @@ theorem IsIntegral.tower_top [Algebra A B] [IsScalarTower R A B] {x : B}
   let ⟨p, hp, hpx⟩ := hx
   ⟨p.map <| algebraMap R A, hp.map _, by rw [← aeval_def, aeval_map_algebraMap, aeval_def, hpx]⟩
 
+/- If `R` and `T` are isomorphic commutative rings and `S` is an `R`-algebra and a `T`-algebra in
+a compatible way, then an element `a ∈ S` is integral over `R` if and only if it is integral
+over `T`. -/
+theorem RingEquiv.isIntegral_iff {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra T S] (φ : R ≃+* T)
+    (h : (algebraMap T S).comp φ.toRingHom = algebraMap R S) (a : S) :
+    IsIntegral R a ↔ IsIntegral T a := by
+  constructor <;> intro ha
+  · letI : Algebra R T := φ.toRingHom.toAlgebra
+    letI : IsScalarTower R T S :=
+      ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, ← h, mul_assoc]; rfl⟩
+    exact IsIntegral.tower_top ha
+  · have h' : (algebraMap T S) = (algebraMap R S).comp φ.symm.toRingHom := by
+      simp only [← h, RingHom.comp_assoc, RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm,
+        RingHomCompTriple.comp_eq]
+    letI : Algebra T R := φ.symm.toRingHom.toAlgebra
+    letI : IsScalarTower T R S :=
+      ⟨fun r t s ↦ by simp only [Algebra.smul_def, map_mul, h', mul_assoc]; rfl⟩
+    exact IsIntegral.tower_top ha
+
 theorem map_isIntegral_int {B C F : Type*} [Ring B] [Ring C] {b : B}
     [FunLike F B C] [RingHomClass F B C] (f : F)
     (hb : IsIntegral ℤ b) : IsIntegral ℤ (f b) :=
@@ -159,9 +186,10 @@ theorem isIntegral_iff_isIntegral_closure_finite {r : B} :
   rcases hr with ⟨s, _, hsr⟩
   exact hsr.of_subring _
 
+@[stacks 09GH]
 theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsIntegral R x) :
     (Algebra.adjoin R s).toSubmodule.FG :=
-  Set.Finite.induction_on hfs
+  Set.Finite.induction_on _ hfs
     (fun _ =>
       ⟨{1},
         Submodule.ext fun x => by
@@ -173,8 +201,37 @@ theorem fg_adjoin_of_finite {s : Set A} (hfs : s.Finite) (his : ∀ x ∈ s, IsI
           (his a <| Set.mem_insert a s).fg_adjoin_singleton)
     his
 
+theorem Algebra.finite_adjoin_of_finite_of_isIntegral {s : Set A} (hf : s.Finite)
+    (hi : ∀ x ∈ s, IsIntegral R x) : Module.Finite R (adjoin R s) :=
+  Module.Finite.iff_fg.mpr <| fg_adjoin_of_finite hf hi
+
+theorem Algebra.finite_adjoin_simple_of_isIntegral {x : A} (hi : IsIntegral R x) :
+    Module.Finite R (adjoin R {x}) :=
+  Module.Finite.iff_fg.mpr hi.fg_adjoin_singleton
+
 theorem isNoetherian_adjoin_finset [IsNoetherianRing R] (s : Finset A)
     (hs : ∀ x ∈ s, IsIntegral R x) : IsNoetherian R (Algebra.adjoin R (s : Set A)) :=
   isNoetherian_of_fg_of_noetherian _ (fg_adjoin_of_finite s.finite_toSet hs)
 
 end
+
+section Prod
+
+variable {R A B : Type*}
+variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
+
+/-- An element of a product algebra is integral if each component is integral. -/
+theorem IsIntegral.pair {x : A × B} (hx₁ : IsIntegral R x.1) (hx₂ : IsIntegral R x.2) :
+    IsIntegral R x := by
+  obtain ⟨p₁, ⟨hp₁Monic, hp₁Eval⟩⟩ := hx₁
+  obtain ⟨p₂, ⟨hp₂Monic, hp₂Eval⟩⟩ := hx₂
+  refine ⟨p₁ * p₂, ⟨hp₁Monic.mul hp₂Monic, ?_⟩⟩
+  rw [← aeval_def] at *
+  rw [aeval_prod_apply, aeval_mul, hp₁Eval, zero_mul, aeval_mul, hp₂Eval, mul_zero,
+    Prod.zero_eq_mk]
+
+/-- An element of a product algebra is integral iff each component is integral. -/
+theorem IsIntegral.pair_iff {x : A × B} : IsIntegral R x ↔ IsIntegral R x.1 ∧ IsIntegral R x.2 :=
+  ⟨fun h ↦ ⟨h.map (AlgHom.fst R A B), h.map (AlgHom.snd R A B)⟩, fun h ↦ h.1.pair h.2⟩
+
+end Prod

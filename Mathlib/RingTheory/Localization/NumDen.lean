@@ -5,7 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.GCDMonoid
 
 /-!
 # Numerator and denominator in a localization
@@ -19,9 +19,6 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
-
-variable {R : Type*} [CommRing R] (M : Submonoid R) {S : Type*} [CommRing S]
-variable [Algebra R S] {P : Type*} [CommRing P]
 
 namespace IsFractionRing
 
@@ -42,7 +39,7 @@ theorem exists_reduced_fraction (x : K) :
   refine ⟨a', ⟨b', b'_nonzero⟩, no_factor, ?_⟩
   refine mul_left_cancel₀ (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors b_nonzero) ?_
   simp only [Subtype.coe_mk, RingHom.map_mul, Algebra.smul_def] at *
-  erw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
+  rw [← hab, mul_assoc, mk'_spec' _ a' ⟨b', b'_nonzero⟩]
 
 /-- `f.num x` is the numerator of `x : f.codomain` as a reduced fraction. -/
 noncomputable def num (x : K) : A :=
@@ -88,9 +85,9 @@ lemma num_zero : IsFractionRing.num A (0 : K) = 0 := by
   have := mk'_num_den' A (0 : K)
   simp only [div_eq_zero_iff] at this
   rcases this with h | h
-  · exact NoZeroSMulDivisors.algebraMap_injective A K (by convert h; simp)
+  · exact FaithfulSMul.algebraMap_injective A K (by convert h; simp)
   · replace h : algebraMap A K (den A (0 : K)) = algebraMap A K 0 := by convert h; simp
-    absurd NoZeroSMulDivisors.algebraMap_injective A K h
+    absurd FaithfulSMul.algebraMap_injective A K h
     apply nonZeroDivisors.coe_ne_zero
 
 @[simp]
@@ -98,7 +95,7 @@ lemma num_eq_zero (x : K) : IsFractionRing.num A x = 0 ↔ x = 0 :=
   ⟨eq_zero_of_num_eq_zero, fun h ↦ h ▸ num_zero⟩
 
 theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A x := by
-  cases' h with d hd
+  obtain ⟨d, hd⟩ := h
   have d_ne_zero : algebraMap A K (den A x) ≠ 0 :=
     IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors (den A x).2
   use ↑d⁻¹ * num A x
@@ -108,16 +105,7 @@ theorem isInteger_of_isUnit_den {x : K} (h : IsUnit (den A x : A)) : IsInteger A
   rw [← mul_assoc, mul_inv_cancel₀ d_ne_zero, one_mul, mk'_spec']
 
 theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteger A x where
-  mp h := by
-    obtain ⟨den, hd⟩ := IsUnit.exists_right_inv h
-    use (num A x) * den
-    conv => rhs; rw [← mk'_num_den' A x]
-    rw [map_mul, div_eq_mul_inv]
-    congr 1
-    apply eq_inv_of_mul_eq_one_right
-    rw [← map_mul]
-    norm_cast
-    simp only [hd, OneMemClass.coe_one, map_one]
+  mp := isInteger_of_isUnit_den
   mpr h := by
     have ⟨v, h⟩ := h
     apply IsRelPrime.isUnit_of_dvd (num_den_reduced A x).symm
@@ -128,25 +116,21 @@ theorem isUnit_den_iff (x : K) : IsUnit (den A x : A) ↔ IsLocalization.IsInteg
       · simp only [mk'_num_den']
       intro h
       replace h : algebraMap A K (den A x : A) = algebraMap A K 0 := by convert h; simp
-      exact nonZeroDivisors.coe_ne_zero _ <| NoZeroSMulDivisors.algebraMap_injective A K h
-    exact NoZeroSMulDivisors.algebraMap_injective A K
+      exact nonZeroDivisors.coe_ne_zero _ <| FaithfulSMul.algebraMap_injective A K h
+    exact FaithfulSMul.algebraMap_injective A K
 
 theorem isUnit_den_zero : IsUnit (den A (0 : K) : A) := by
   simp [isUnit_den_iff, IsLocalization.isInteger_zero]
-
-@[deprecated isUnit_den_zero (since := "2024-07-11")]
-theorem isUnit_den_of_num_eq_zero {x : K} (h : num A x = 0) : IsUnit (den A x : A) :=
-  eq_zero_of_num_eq_zero h ▸ isUnit_den_zero
 
 lemma associated_den_num_inv (x : K) (hx : x ≠ 0) : Associated (den A x : A) (num A x⁻¹) :=
   associated_of_dvd_dvd
     (IsRelPrime.dvd_of_dvd_mul_right (IsFractionRing.num_den_reduced A x).symm <|
       dvd_of_mul_left_dvd (a := (den A x⁻¹ : A)) <| dvd_of_eq <|
-      NoZeroSMulDivisors.algebraMap_injective A K <| Eq.symm <| eq_of_div_eq_one
+      FaithfulSMul.algebraMap_injective A K <| Eq.symm <| eq_of_div_eq_one
       (by simp [mul_div_mul_comm, hx]))
     (IsRelPrime.dvd_of_dvd_mul_right (IsFractionRing.num_den_reduced A x⁻¹) <|
       dvd_of_mul_left_dvd (a := (num A x : A)) <| dvd_of_eq <|
-      NoZeroSMulDivisors.algebraMap_injective A K <| eq_of_div_eq_one
+      FaithfulSMul.algebraMap_injective A K <| eq_of_div_eq_one
       (by simp [mul_div_mul_comm, hx]))
 
 lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (den A x⁻¹) := by
@@ -156,7 +140,5 @@ lemma associated_num_den_inv (x : K) (hx : x ≠ 0) : Associated (num A x : A) (
   exact this
 
 end NumDen
-
-variable (S)
 
 end IsFractionRing

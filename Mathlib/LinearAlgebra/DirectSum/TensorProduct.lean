@@ -117,9 +117,9 @@ protected def directSum :
 def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i ⊗[R] M₂' :=
   LinearEquiv.ofLinear
     (lift <|
-      DirectSum.toModule R _ _ fun i =>
+      DirectSum.toModule R _ _ fun _ =>
         (mk R _ _).compr₂ <| DirectSum.lof R ι₁ (fun i => M₁ i ⊗[R] M₂') _)
-    (DirectSum.toModule R _ _ fun i => rTensor _ (DirectSum.lof R ι₁ _ _))
+    (DirectSum.toModule R _ _ fun _ => rTensor _ (DirectSum.lof R ι₁ _ _))
     (DirectSum.linearMap_ext R fun i =>
       TensorProduct.ext <|
         LinearMap.ext₂ fun m₁ m₂ => by
@@ -180,6 +180,11 @@ theorem directSumRight_symm_lof_tmul (x : M₁') (i : ι₂) (y : M₂ i) :
     (directSumRight R M₁' M₂).symm (DirectSum.lof R _ _ i (x ⊗ₜ[R] y)) =
       x ⊗ₜ[R] DirectSum.lof R _ _ i y := by
   rw [LinearEquiv.symm_apply_eq, directSumRight_tmul_lof]
+
+lemma directSumRight_comp_rTensor (f : M₁' →ₗ[R] M₂'):
+    (directSumRight R M₂' M₁).toLinearMap ∘ₗ f.rTensor _ =
+      (lmap fun _ ↦ f.rTensor _) ∘ₗ directSumRight R M₁' M₁ := by
+  ext; simp
 
 end TensorProduct
 

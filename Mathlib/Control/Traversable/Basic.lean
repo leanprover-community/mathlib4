@@ -6,6 +6,7 @@ Authors: Simon Hudon
 import Mathlib.Data.Option.Defs
 import Mathlib.Control.Functor
 import Batteries.Data.List.Basic
+import Mathlib.Control.Basic
 
 /-!
 # Traversable type class
@@ -60,8 +61,8 @@ universe u v w
 
 section ApplicativeTransformation
 
-variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
+variable (F : Type u → Type v) [Applicative F]
+variable (G : Type u → Type w) [Applicative G]
 
 /-- A transformation between applicative functors.  It is a natural
 transformation such that `app` preserves the `Pure.pure` and
@@ -143,7 +144,7 @@ end Preserves
 
 /-- The identity applicative transformation from an applicative functor to itself. -/
 def idTransformation : ApplicativeTransformation F F where
-  app α := id
+  app _ := id
   preserves_pure' := by simp
   preserves_seq' x y := by simp
 
@@ -157,7 +158,7 @@ variable {H : Type u → Type s} [Applicative H]
 /-- The composition of applicative transformations. -/
 def comp (η' : ApplicativeTransformation G H) (η : ApplicativeTransformation F G) :
     ApplicativeTransformation F H where
-  app α x := η' (η x)
+  app _ x := η' (η x)
   -- Porting note: something has gone wrong with `simp [functor_norm]`,
   -- which should suffice for the next two.
   preserves_pure' x := by simp only [preserves_pure]
@@ -203,8 +204,7 @@ export Traversable (traverse)
 section Functions
 
 variable {t : Type u → Type u}
-variable {m : Type u → Type v} [Applicative m]
-variable {α β : Type u}
+variable {α : Type u}
 variable {f : Type u → Type u} [Applicative f]
 
 /-- A traversable functor commutes with all applicative functors. -/
@@ -219,8 +219,7 @@ send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
-    Prop where
+class LawfulTraversable (t : Type u → Type u) [Traversable t] : Prop extends LawfulFunctor t where
   /-- `traverse` plays well with `pure` of the identity monad -/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/
@@ -248,8 +247,6 @@ instance : LawfulTraversable Id where
   naturality _ _ _ _ _ := rfl
 
 section
-
-variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
   ⟨Option.traverse⟩

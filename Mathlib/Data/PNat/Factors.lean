@@ -3,7 +3,7 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.OrderedMonoid
@@ -21,20 +21,24 @@ the multiplicity of `p` in this factors multiset being the p-adic valuation of `
 * `FactorMultiset n`: Multiset of prime factors of `n`.
 -/
 
--- Porting note: `deriving` contained Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
--- SemilatticeSup, OrderBot, Sub, OrderedSub
 /-- The type of multisets of prime numbers.  Unique factorization
  gives an equivalence between this set and ℕ+, as we will formalize
  below. -/
 def PrimeMultiset :=
-  Multiset Nat.Primes deriving Inhabited, CanonicallyOrderedAddCommMonoid, DistribLattice,
+  Multiset Nat.Primes deriving Inhabited, OrderedCancelAddCommMonoid, DistribLattice,
   SemilatticeSup, Sub
+-- The `CanonicallyOrderedAdd, OrderBot, OrderedSub` instances should be constructed by a deriving
+-- handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
-instance : OrderBot PrimeMultiset where
-  bot_le := by simp only [bot_le, forall_const]
+instance : CanonicallyOrderedAdd PrimeMultiset :=
+  inferInstanceAs (CanonicallyOrderedAdd (Multiset Nat.Primes))
 
-instance : OrderedSub PrimeMultiset where
-  tsub_le_iff_right _ _ _ := Multiset.sub_le_iff_le_add
+instance : OrderBot PrimeMultiset :=
+  inferInstanceAs (OrderBot (Multiset Nat.Primes))
+
+instance : OrderedSub PrimeMultiset :=
+  inferInstanceAs (OrderedSub (Multiset Nat.Primes))
 
 namespace PrimeMultiset
 
@@ -224,7 +228,6 @@ theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := b
   rcases v with ⟨l⟩
   --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
-  rw [Multiset.prod_coe]
   let l' := l.map (Coe.coe : Nat.Primes → ℕ)
   have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
     rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩

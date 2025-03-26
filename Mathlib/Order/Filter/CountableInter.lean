@@ -21,8 +21,8 @@ and provide instances for some basic constructions (`⊥`, `⊤`, `Filter.princi
 that deduces two axioms of a `Filter` from the countable intersection property.
 
 Note that there also exists a typeclass `CardinalInterFilter`, and thus an alternative spelling of
-`CountableInterFilter` as `CardinalInterFilter l (aleph 1)`. The former (defined here) is the
-preferred spelling; it has the advantage of not requiring the user to import the theory ordinals.
+`CountableInterFilter` as `CardinalInterFilter l ℵ₁`. The former (defined here) is the
+preferred spelling; it has the advantage of not requiring the user to import the theory of ordinals.
 
 ## Tags
 filter, countable
@@ -229,9 +229,9 @@ inductive CountableGenerateSets : Set α → Prop
 def countableGenerate : Filter α :=
   ofCountableInter (CountableGenerateSets g) (fun _ => CountableGenerateSets.sInter) fun _ _ =>
     CountableGenerateSets.superset
-  --deriving CountableInterFilter
 
--- Porting note: could not de derived
+-- The `ContableInterFilter` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : CountableInterFilter (countableGenerate g) := by
   delta countableGenerate; infer_instance
 

@@ -3,7 +3,8 @@ Copyright (c) 2022 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Field
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
@@ -61,7 +62,7 @@ variable [DecidableEq α] [Fintype α]
 /-- The downward **local LYM inequality**, with cancelled denominators. `𝒜` takes up less of `α^(r)`
 (the finsets of card `r`) than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
-    𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
+    #𝒜 * r ≤ #(∂ 𝒜) * (Fintype.card α - r + 1) := by
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine card_mul_le_card_mul' (· ⊆ ·) (fun s hs => ?_) (fun s hs => ?_)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
@@ -71,8 +72,6 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   refine le_trans ?_ tsub_tsub_le_tsub_add
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
   refine card_le_card fun t ht => ?_
-  -- Porting note: commented out the following line
-  -- infer_instance
   rw [mem_bipartiteAbove] at ht
   have : ∅ ∉ 𝒜 := by
     rw [← mem_coe, h𝒜.empty_mem_iff, coe_eq_singleton]
@@ -87,14 +86,14 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
 than `∂𝒜` takes up of `α^(r - 1)`. -/
 theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
-    (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (𝒜.card : 𝕜) / (Fintype.card α).choose r
-    ≤ (∂ 𝒜).card / (Fintype.card α).choose (r - 1) := by
+    (h𝒜 : (𝒜 : Set (Finset α)).Sized r) : (#𝒜 : 𝕜) / (Fintype.card α).choose r
+    ≤ #(∂ 𝒜) / (Fintype.card α).choose (r - 1) := by
   obtain hr' | hr' := lt_or_le (Fintype.card α) r
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := card_mul_le_card_shadow_mul h𝒜
-  rw [div_le_div_iff] <;> norm_cast
-  · cases' r with r
+  rw [div_le_div_iff₀] <;> norm_cast
+  · rcases r with - | r
     · exact (hr rfl).elim
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
     apply le_of_mul_le_mul_right _ (pos_iff_ne_zero.2 hr)
@@ -122,7 +121,7 @@ def falling : Finset (Finset α) :=
 
 variable {𝒜 k} {s : Finset α}
 
-theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ s.card = k := by
+theorem mem_falling : s ∈ falling k 𝒜 ↔ (∃ t ∈ 𝒜, s ⊆ t) ∧ #s = k := by
   simp_rw [falling, mem_sup, mem_powersetCard]
   aesop
 
@@ -169,32 +168,32 @@ theorem IsAntichain.disjoint_slice_shadow_falling {m n : ℕ}
 theorem le_card_falling_div_choose [Fintype α] (hk : k ≤ Fintype.card α)
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     (∑ r ∈ range (k + 1),
-        ((𝒜 # (Fintype.card α - r)).card : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
+        (#(𝒜 # (Fintype.card α - r)) : 𝕜) / (Fintype.card α).choose (Fintype.card α - r)) ≤
       (falling (Fintype.card α - k) 𝒜).card / (Fintype.card α).choose (Fintype.card α - k) := by
-  induction' k with k ih
-  · simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
+  induction k with
+  | zero =>
+    simp only [tsub_zero, cast_one, cast_le, sum_singleton, div_one, choose_self, range_one,
       zero_eq, zero_add, range_one, sum_singleton, nonpos_iff_eq_zero, tsub_zero,
       choose_self, cast_one, div_one, cast_le]
     exact card_le_card (slice_subset_falling _ _)
-  rw [sum_range_succ, ← slice_union_shadow_falling_succ,
-    card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜), cast_add, _root_.add_div,
-    add_comm]
-  rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
-  exact
-    add_le_add_left
-      ((ih <| le_of_succ_le hk).trans <|
-        card_div_choose_le_card_shadow_div_choose (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <|
-          sized_falling _ _) _
+  | succ k ih =>
+    rw [sum_range_succ, ← slice_union_shadow_falling_succ,
+      card_union_of_disjoint (IsAntichain.disjoint_slice_shadow_falling h𝒜),
+      cast_add, _root_.add_div, add_comm]
+    rw [← tsub_tsub, tsub_add_cancel_of_le (le_tsub_of_add_le_left hk)]
+    exact add_le_add_left ((ih <| le_of_succ_le hk).trans <|
+      card_div_choose_le_card_shadow_div_choose
+        (tsub_pos_iff_lt.2 <| Nat.succ_le_iff.1 hk).ne' <| sized_falling _ _) _
 
 end Falling
 
-variable {𝒜 : Finset (Finset α)} {s : Finset α} {k : ℕ}
+variable {𝒜 : Finset (Finset α)}
 
 /-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
 proportion of elements it takes from each layer is less than `1`. -/
 theorem sum_card_slice_div_choose_le_one [Fintype α]
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
-    (∑ r ∈ range (Fintype.card α + 1), ((𝒜 # r).card : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
+    (∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
   classical
     rw [← sum_flip]
     refine (le_card_falling_div_choose le_rfl h𝒜).trans ?_
@@ -211,12 +210,12 @@ end LYM
 
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
-theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
+theorem _root_.IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
-    𝒜.card ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
+    #𝒜 ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   classical
     suffices (∑ r ∈ Iic (Fintype.card α),
-        ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
+        (#(𝒜 # r) : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
       · simp only [cast_le] at this
         rwa [sum_card_slice] at this

@@ -51,7 +51,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
       `0` in `Completion G`. This follows from the fact that `toCompl : G → Completion G` is dense
       inducing and `W` is a neighborhood of `0` in `G`. -/
       apply isOpen_of_mem_nhds (g := 0)
-      apply (denseInducing_toCompl _).closure_image_mem_nhds
+      apply (isDenseInducing_toCompl _).closure_image_mem_nhds
       exact mem_nhds_zero W
     use ⟨_, this⟩
     /- Finally, it remains to show that `V ⊆ U`. It suffices to show that `V ⊆ C`, which
@@ -60,7 +60,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
     exact closure_minimal (Set.image_subset_iff.mpr hCW) C_closed
 
 /-- The completion of a nonarchimedean ring is a nonarchimedean ring. -/
-instance {R : Type*} [Ring R] [UniformSpace R] [TopologicalRing R] [UniformAddGroup R]
+instance {R : Type*} [Ring R] [UniformSpace R] [IsTopologicalRing R] [UniformAddGroup R]
     [NonarchimedeanRing R] :
     NonarchimedeanRing (Completion R) where
   is_nonarchimedean := NonarchimedeanAddGroup.is_nonarchimedean

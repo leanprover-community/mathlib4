@@ -13,7 +13,7 @@ This file proves properties of 2×2 block matrices `[A B; C D]` that relate to t
 `D - C*A⁻¹*B`.
 
 Some of the results here generalize to 2×2 matrices in a category, rather than just a ring. A few
-results in this direction can be found in the file `CateogryTheory.Preadditive.Biproducts`,
+results in this direction can be found in the file `Mathlib.CategoryTheory.Preadditive.Biproducts`,
 especially the declarations `CategoryTheory.Biprod.gaussian` and `CategoryTheory.Biprod.isoElim`.
 Compare with `Matrix.invertibleOfFromBlocks₁₁Invertible`.
 
@@ -53,8 +53,8 @@ theorem fromBlocks_eq_of_invertible₁₁ (A : Matrix m m α) (B : Matrix m n α
       fromBlocks 1 0 (C * ⅟ A) 1 * fromBlocks A 0 0 (D - C * ⅟ A * B) *
         fromBlocks 1 (⅟ A * B) 0 1 := by
   simp only [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, add_zero, zero_add,
-    Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_self_assoc,
-    Matrix.mul_invOf_mul_self_cancel, Matrix.mul_assoc, add_sub_cancel]
+    Matrix.one_mul, Matrix.mul_one, invOf_mul_self, Matrix.mul_invOf_cancel_left,
+    Matrix.invOf_mul_cancel_right, Matrix.mul_assoc, add_sub_cancel]
 
 /-- LDU decomposition of a block matrix with an invertible bottom-right corner, using the
 Schur complement. -/
@@ -78,7 +78,7 @@ def fromBlocksZero₂₁Invertible (A : Matrix m m α) (B : Matrix m n α) (D : 
     [Invertible A] [Invertible D] : Invertible (fromBlocks A B 0 D) :=
   invertibleOfLeftInverse _ (fromBlocks (⅟ A) (-(⅟ A * B * ⅟ D)) 0 (⅟ D)) <| by
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, add_neg_cancel,
+      Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, add_neg_cancel,
       fromBlocks_one]
 
 /-- A lower-block-triangular matrix is invertible if its diagonal is. -/
@@ -88,7 +88,7 @@ def fromBlocksZero₁₂Invertible (A : Matrix m m α) (C : Matrix n m α) (D : 
       (fromBlocks (⅟ A) 0 (-(⅟ D * C * ⅟ A))
         (⅟ D)) <| by -- a symmetry argument is more work than just copying the proof
     simp_rw [fromBlocks_multiply, Matrix.mul_zero, Matrix.zero_mul, zero_add, add_zero,
-      Matrix.neg_mul, invOf_mul_self, Matrix.mul_invOf_mul_self_cancel, neg_add_cancel,
+      Matrix.neg_mul, invOf_mul_self, Matrix.invOf_mul_cancel_right, neg_add_cancel,
       fromBlocks_one]
 
 theorem invOf_fromBlocks_zero₂₁_eq (A : Matrix m m α) (B : Matrix m n α) (D : Matrix n n α)
@@ -408,23 +408,30 @@ theorem det_one_sub_mul_comm (A : Matrix m n α) (B : Matrix n m α) :
   rw [sub_eq_add_neg, ← Matrix.neg_mul, det_one_add_mul_comm, Matrix.mul_neg, ← sub_eq_add_neg]
 
 /-- A special case of the **Matrix determinant lemma** for when `A = I`. -/
-theorem det_one_add_col_mul_row {ι : Type*} [Unique ι] (u v : m → α) :
-    det (1 + col ι u * row ι v) = 1 + v ⬝ᵥ u := by
+theorem det_one_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι] (u v : m → α) :
+    det (1 + replicateCol ι u * replicateRow ι v) = 1 + v ⬝ᵥ u := by
   rw [det_one_add_mul_comm, det_unique, Pi.add_apply, Pi.add_apply, Matrix.one_apply_eq,
-    Matrix.row_mul_col_apply]
+    Matrix.replicateRow_mul_replicateCol_apply]
+
+@[deprecated (since := "2025-03-20")] alias
+  det_one_add_col_mul_row := det_one_add_replicateCol_mul_replicateRow
+
 
 /-- The **Matrix determinant lemma**
 
 TODO: show the more general version without `hA : IsUnit A.det` as
-`(A + col u * row v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
+`(A + replicateCol u * replicateRow v).det = A.det + v ⬝ᵥ (adjugate A) *ᵥ u`.
 -/
-theorem det_add_col_mul_row {ι : Type*} [Unique ι]
+theorem det_add_replicateCol_mul_replicateRow {ι : Type*} [Unique ι]
     {A : Matrix m m α} (hA : IsUnit A.det) (u v : m → α) :
-    (A + col ι u * row ι v).det = A.det * (1 + row ι v * A⁻¹ * col ι u).det := by
+    (A + replicateCol ι u * replicateRow ι v).det =
+    A.det * (1 + replicateRow ι v * A⁻¹ * replicateCol ι u).det := by
   nth_rewrite 1 [← Matrix.mul_one A]
-  rwa [← Matrix.mul_nonsing_inv_cancel_left A (col ι u * row ι v),
-    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm,
-    ← Matrix.mul_assoc]
+  rwa [← Matrix.mul_nonsing_inv_cancel_left A (replicateCol ι u * replicateRow ι v),
+    ← Matrix.mul_add, det_mul, ← Matrix.mul_assoc, det_one_add_mul_comm, ← Matrix.mul_assoc]
+
+@[deprecated (since := "2025-03-20")] alias
+  det_add_col_mul_row := det_add_replicateCol_mul_replicateRow
 
 /-- A generalization of the **Matrix determinant lemma** -/
 theorem det_add_mul {A : Matrix m m α} (U : Matrix m n α)
@@ -445,6 +452,7 @@ section StarOrderedRing
 
 variable {𝕜 : Type*} [CommRing 𝕜] [StarRing 𝕜]
 
+/-- Notation for `Sum.elim`, scoped within the `Matrix` namespace. -/
 scoped infixl:65 " ⊕ᵥ " => Sum.elim
 
 theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : Matrix m m 𝕜}
@@ -453,7 +461,7 @@ theorem schur_complement_eq₁₁ [Fintype m] [DecidableEq m] [Fintype n] {A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star (x + (A⁻¹ * B) *ᵥ y)) ᵥ* A ⬝ᵥ (x + (A⁻¹ * B) *ᵥ y) +
         (star y) ᵥ* (D - Bᴴ * A⁻¹ * B) ⬝ᵥ y := by
-  simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
+  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hA.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel
@@ -464,7 +472,7 @@ theorem schur_complement_eq₂₂ [Fintype m] [Fintype n] [DecidableEq n] (A : M
     (star (x ⊕ᵥ y)) ᵥ* (fromBlocks A B Bᴴ D) ⬝ᵥ (x ⊕ᵥ y) =
       (star ((D⁻¹ * Bᴴ) *ᵥ x + y)) ᵥ* D ⬝ᵥ ((D⁻¹ * Bᴴ) *ᵥ x + y) +
         (star x) ᵥ* (A - B * D⁻¹ * Bᴴ) ⬝ᵥ x := by
-  simp [Function.star_sum_elim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
+  simp [Function.star_sumElim, fromBlocks_mulVec, vecMul_fromBlocks, add_vecMul,
     dotProduct_mulVec, vecMul_sub, Matrix.mul_assoc, vecMul_mulVec, hD.eq,
     conjTranspose_nonsing_inv, star_mulVec]
   abel

@@ -35,10 +35,10 @@ and outputs a set of orthogonal vectors which have the same span.
 -/
 
 
-open Finset Submodule FiniteDimensional
+open Finset Submodule Module
 
 variable (𝕜 : Type*) {E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [IsWellOrder ι (· < ·)]
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrderBot ι] [WellFoundedLT ι]
 
 attribute [local instance] IsWellOrder.toHasWellFounded
 
@@ -46,7 +46,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- The Gram-Schmidt process takes a set of vectors as input
 and outputs a set of orthogonal vectors which have the same span. -/
-noncomputable def gramSchmidt [IsWellOrder ι (· < ·)] (f : ι → E) (n : ι) : E :=
+noncomputable def gramSchmidt [WellFoundedLT ι] (f : ι → E) (n : ι) : E :=
   f n - ∑ i : Iio n, orthogonalProjection (𝕜 ∙ gramSchmidt f i) (f n)
 termination_by n
 decreasing_by exact mem_Iio.1 i.2
@@ -68,7 +68,7 @@ theorem gramSchmidt_def'' (f : ι → E) (n : ι) :
 
 @[simp]
 theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
-    [IsWellOrder ι (· < ·)] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
+    [WellFoundedLT ι] (f : ι → E) : gramSchmidt 𝕜 f ⊥ = f ⊥ := by
   rw [gramSchmidt_def, Iio_eq_Ico, Finset.Ico_self, Finset.sum_empty, sub_zero]
 
 /-- **Gram-Schmidt Orthogonalisation**:
@@ -76,7 +76,7 @@ theorem gramSchmidt_zero {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [
 theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
     ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 := by
   suffices ∀ a b : ι, a < b → ⟪gramSchmidt 𝕜 f a, gramSchmidt 𝕜 f b⟫ = 0 by
-    cases' h₀.lt_or_lt with ha hb
+    rcases h₀.lt_or_lt with ha | hb
     · exact this _ _ ha
     · rw [inner_eq_zero_symm]
       exact this _ _ hb
@@ -95,7 +95,7 @@ theorem gramSchmidt_orthogonal (f : ι → E) {a b : ι} (h₀ : a ≠ b) :
   intro i hi hia
   simp only [mul_eq_zero, div_eq_zero_iff, inner_self_eq_zero]
   right
-  cases' hia.lt_or_lt with hia₁ hia₂
+  rcases hia.lt_or_lt with hia₁ | hia₂
   · rw [inner_eq_zero_symm]
     exact ih a h₀ i hia₁
   · exact ih i (mem_Iio.1 hi) a hia₂
@@ -229,14 +229,11 @@ noncomputable def gramSchmidtBasis (b : Basis ι 𝕜 E) : Basis ι 𝕜 E :=
 theorem coe_gramSchmidtBasis (b : Basis ι 𝕜 E) : (gramSchmidtBasis b : ι → E) = gramSchmidt 𝕜 b :=
   Basis.coe_mk _ _
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- the normalized `gramSchmidt`
 (i.e each vector in `gramSchmidtNormed` has unit length.) -/
 noncomputable def gramSchmidtNormed (f : ι → E) (n : ι) : E :=
   (‖gramSchmidt 𝕜 f n‖ : 𝕜)⁻¹ • gramSchmidt 𝕜 f n
-
-variable {𝕜}
 
 theorem gramSchmidtNormed_unit_length_coe {f : ι → E} (n : ι)
     (h₀ : LinearIndependent 𝕜 (f ∘ ((↑) : Set.Iic n → ι))) : ‖gramSchmidtNormed 𝕜 f n‖ = 1 := by
@@ -353,8 +350,6 @@ theorem gramSchmidtOrthonormalBasis_inv_blockTriangular :
     ((gramSchmidtOrthonormalBasis h f).toBasis.toMatrix f).BlockTriangular id := fun _ _ =>
   gramSchmidtOrthonormalBasis_inv_triangular' h f
 
--- Porting note: added a `DecidableEq` argument to help with timeouts in
--- `Mathlib/Analysis/InnerProductSpace/Orientation.lean`
 theorem gramSchmidtOrthonormalBasis_det [DecidableEq ι] :
     (gramSchmidtOrthonormalBasis h f).toBasis.det f =
       ∏ i, ⟪gramSchmidtOrthonormalBasis h f i, f i⟫ := by

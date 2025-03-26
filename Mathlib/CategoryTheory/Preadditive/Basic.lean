@@ -3,11 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Module.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Preadditive categories
@@ -64,12 +65,11 @@ attribute [inherit_doc Preadditive] Preadditive.homGroup Preadditive.add_comp Pr
 
 attribute [instance] Preadditive.homGroup
 
--- Porting note: simp can prove reassoc version
+-- simp can already prove reassoc version
 attribute [reassoc, simp] Preadditive.add_comp
 
 attribute [reassoc] Preadditive.comp_add
 
--- (the linter doesn't like `simp` on this lemma)
 attribute [simp] Preadditive.comp_add
 
 end CategoryTheory
@@ -123,22 +123,22 @@ def compHom : (P ⟶ Q) →+ (Q ⟶ R) →+ (P ⟶ R) :=
   AddMonoidHom.mk' (fun f => leftComp _ f) fun f₁ f₂ =>
     AddMonoidHom.ext fun g => (rightComp _ g).map_add f₁ f₂
 
--- Porting note: simp can prove the reassoc version
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem sub_comp : (f - f') ≫ g = f ≫ g - f' ≫ g :=
   map_sub (rightComp P g) f f'
 
--- The redundant simp lemma linter says that simp can prove the reassoc version of this lemma.
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem comp_sub : f ≫ (g - g') = f ≫ g - f ≫ g' :=
   map_sub (leftComp R f) g g'
 
--- Porting note: simp can prove the reassoc version
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem neg_comp : (-f) ≫ g = -f ≫ g :=
   map_neg (rightComp P g) f
 
--- The redundant simp lemma linter says that simp can prove the reassoc version of this lemma.
+-- simp can prove the reassoc version
 @[reassoc, simp]
 theorem comp_neg : f ≫ (-g) = -f ≫ g :=
   map_neg (leftComp R f) g
@@ -167,6 +167,12 @@ theorem comp_sum {P Q R : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J →
 theorem sum_comp {P Q R : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : Q ⟶ R) :
     (∑ j ∈ s, f j) ≫ g = ∑ j ∈ s, f j ≫ g :=
   map_sum (rightComp P g) _ _
+
+@[reassoc]
+theorem sum_comp' {P Q R S : C} {J : Type*} (s : Finset J) (f : J → (P ⟶ Q)) (g : J → (Q ⟶ R))
+    (h : R ⟶ S) : (∑ j ∈ s, f j ≫ g j) ≫ h = ∑ j ∈ s, f j ≫ g j ≫ h := by
+  simp only [← Category.assoc]
+  apply sum_comp
 
 instance {P Q : C} {f : P ⟶ Q} [Epi f] : Epi (-f) :=
   ⟨fun g g' H => by rwa [neg_comp, neg_comp, ← comp_neg, ← comp_neg, cancel_epi, neg_inj] at H⟩

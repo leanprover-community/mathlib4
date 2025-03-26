@@ -3,9 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 import Mathlib.RingTheory.IntegralClosure.Algebra.Defs
 import Mathlib.RingTheory.IntegralClosure.IsIntegral.Basic
-import Mathlib.LinearAlgebra.Matrix.Charpoly.LinearMap
 
 /-!
 # Integral closure of a subring.
@@ -28,14 +28,26 @@ variable {R A B S : Type*}
 variable [CommRing R] [CommRing A] [Ring B] [CommRing S]
 variable [Algebra R A] [Algebra R B] (f : R →+* S)
 
+theorem Subalgebra.isIntegral_iff (S : Subalgebra R A) :
+    Algebra.IsIntegral R S ↔ ∀ x ∈ S, IsIntegral R x :=
+  Algebra.isIntegral_def.trans <| .trans
+    (forall_congr' fun _ ↦ (isIntegral_algHom_iff S.val Subtype.val_injective).symm) Subtype.forall
+
 section
 
 variable {A B : Type*} [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-variable (f : A →ₐ[R] B) (hf : Function.Injective f)
 
-theorem Algebra.IsIntegral.of_injective (hf : Function.Injective f) [Algebra.IsIntegral R B] :
-    Algebra.IsIntegral R A :=
+theorem Algebra.IsIntegral.of_injective (f : A →ₐ[R] B) (hf : Function.Injective f)
+    [Algebra.IsIntegral R B] : Algebra.IsIntegral R A :=
   ⟨fun _ ↦ (isIntegral_algHom_iff f hf).mp (isIntegral _)⟩
+
+/-- Homomorphic image of an integral algebra is an integral algebra. -/
+theorem Algebra.IsIntegral.of_surjective [Algebra.IsIntegral R A]
+    (f : A →ₐ[R] B) (hf : Function.Surjective f) : Algebra.IsIntegral R B :=
+  isIntegral_def.mpr fun b ↦ let ⟨a, ha⟩ := hf b; ha ▸ (isIntegral_def.mp ‹_› a).map f
+
+theorem AlgEquiv.isIntegral_iff (e : A ≃ₐ[R] B) : Algebra.IsIntegral R A ↔ Algebra.IsIntegral R B :=
+  ⟨fun h ↦ h.of_injective e.symm e.symm.injective, fun h ↦ h.of_injective e e.injective⟩
 
 end
 
@@ -57,8 +69,8 @@ instance Algebra.IsIntegral.of_finite [Module.Finite R B] : Algebra.IsIntegral R
 
 /-- If `S` is a sub-`R`-algebra of `A` and `S` is finitely-generated as an `R`-module,
   then all elements of `S` are integral over `R`. -/
-theorem IsIntegral.of_mem_of_fg {A} [Ring A] [Algebra R A] (S : Subalgebra R A)
-    (HS : S.toSubmodule.FG) (x : A) (hx : x ∈ S) : IsIntegral R x :=
+theorem IsIntegral.of_mem_of_fg (S : Subalgebra R B)
+    (HS : S.toSubmodule.FG) (x : B) (hx : x ∈ S) : IsIntegral R x :=
   have : Module.Finite R S := ⟨(fg_top _).mpr HS⟩
   (isIntegral_algHom_iff S.val Subtype.val_injective).mpr (.of_finite R (⟨x, hx⟩ : S))
 
@@ -148,8 +160,22 @@ variable (f : R →+* S)
 theorem RingHom.IsIntegralElem.neg {x : S} (hx : f.IsIntegralElem x) : f.IsIntegralElem (-x) :=
   hx.of_mem_closure f hx (Subring.neg_mem _ (Subring.subset_closure (Or.inl rfl)))
 
+theorem RingHom.IsIntegralElem.of_neg {x : S} (h : f.IsIntegralElem (-x)) : f.IsIntegralElem x :=
+  neg_neg x ▸ h.neg
+
+@[simp]
+theorem RingHom.IsIntegralElem.neg_iff {x : S} : f.IsIntegralElem (-x) ↔ f.IsIntegralElem x :=
+  ⟨fun h => h.of_neg, fun h => h.neg⟩
+
 theorem IsIntegral.neg {x : B} (hx : IsIntegral R x) : IsIntegral R (-x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ (Subalgebra.neg_mem _ <| Algebra.subset_adjoin rfl)
+
+theorem IsIntegral.of_neg {x : B} (hx : IsIntegral R (-x)) : IsIntegral R x :=
+  neg_neg x ▸ hx.neg
+
+@[simp]
+theorem IsIntegral.neg_iff {x : B} : IsIntegral R (-x) ↔ IsIntegral R x :=
+  ⟨IsIntegral.of_neg, IsIntegral.neg⟩
 
 theorem RingHom.IsIntegralElem.sub {x y : S} (hx : f.IsIntegralElem x) (hy : f.IsIntegralElem y) :
     f.IsIntegralElem (x - y) := by
@@ -169,7 +195,7 @@ nonrec theorem IsIntegral.mul {x y : A} (hx : IsIntegral R x) (hy : IsIntegral R
   hx.mul (algebraMap R A) hy
 
 theorem IsIntegral.smul {R} [CommSemiring R] [Algebra R B] [Algebra S B] [Algebra R S]
-    [IsScalarTower R S B] {x : B} (r : R)(hx : IsIntegral S x) : IsIntegral S (r • x) :=
+    [IsScalarTower R S B] {x : B} (r : R) (hx : IsIntegral S x) : IsIntegral S (r • x) :=
   .of_mem_of_fg _ hx.fg_adjoin_singleton _ <| by
     rw [← algebraMap_smul S]; apply Subalgebra.smul_mem; exact Algebra.subset_adjoin rfl
 
@@ -183,5 +209,16 @@ def integralClosure : Subalgebra R A where
   add_mem' := IsIntegral.add
   mul_mem' := IsIntegral.mul
   algebraMap_mem' _ := isIntegral_algebraMap
+
+theorem mem_integralClosure_iff {a : A} : a ∈ integralClosure R A ↔ IsIntegral R a :=
+  Iff.rfl
+
+variable {R} {A B : Type*} [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+
+/-- Product of two integral algebras is an integral algebra. -/
+instance Algebra.IsIntegral.prod [Algebra.IsIntegral R A] [Algebra.IsIntegral R B] :
+    Algebra.IsIntegral R (A × B) :=
+  Algebra.isIntegral_def.mpr fun x ↦
+    (Algebra.isIntegral_def.mp ‹_› x.1).pair (Algebra.isIntegral_def.mp ‹_› x.2)
 
 end

@@ -3,12 +3,12 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Defs
 import Mathlib.Algebra.Order.BigOperators.Group.List
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Multiset.Fold
-import Mathlib.Algebra.Order.Monoid.OrderDual
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -138,8 +138,8 @@ lemma prod_lt_prod_of_nonempty' (hs : s ≠ ∅) (hfg : ∀ i ∈ s, f i < g i) 
 
 end OrderedCancelCommMonoid
 
-section CanonicallyOrderedCommMonoid
-variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
+section CanonicallyOrderedMul
+variable [OrderedCommMonoid α] [CanonicallyOrderedMul α] {m : Multiset α} {a : α}
 
 @[to_additive] lemma prod_eq_one_iff : m.prod = 1 ↔ ∀ x ∈ m, x = (1 : α) :=
   Quotient.inductionOn m fun l ↦ by simpa using List.prod_eq_one_iff
@@ -149,12 +149,26 @@ variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
   rw [prod_cons]
   exact _root_.le_mul_right (le_refl a)
 
-end CanonicallyOrderedCommMonoid
+end CanonicallyOrderedMul
 
 lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multiset α)
     (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
   induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h
+
+@[to_additive]
+lemma max_prod_le [LinearOrderedCommMonoid α] {s : Multiset ι} {f g : ι → α} :
+    max (s.map f).prod (s.map g).prod ≤ (s.map fun i ↦ max (f i) (g i)).prod := by
+  obtain ⟨l⟩ := s
+  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  apply List.max_prod_le
+
+@[to_additive]
+lemma prod_min_le [LinearOrderedCommMonoid α] {s : Multiset ι} {f g : ι → α} :
+    (s.map fun i ↦ min (f i) (g i)).prod ≤ min (s.map f).prod (s.map g).prod := by
+  obtain ⟨l⟩ := s
+  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  apply List.prod_min_le
 
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=

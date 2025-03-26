@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Data.Finsupp.WellFounded
+import Mathlib.RingTheory.MvPowerSeries.LexOrder
 
 /-! # ZeroDivisors in a MvPowerSeries ring
 
@@ -15,7 +15,7 @@ is itself not a zero divisor
 
 ## TODO
 
-* A subsequent PR #14571 proves that if `R` has no zero divisors,
+* A subsequent PR https://github.com/leanprover-community/mathlib4/pull/14571 proves that if `R` has no zero divisors,
 then so does `MvPowerSeries σ R`.
 
 * Transfer/adapt these results to `HahnSeries`.
@@ -64,6 +64,15 @@ theorem mem_nonZeroDivisors_of_constantCoeff {φ : MvPowerSeries σ R}
       false_implies]
 
 end Semiring
+
+instance {σ R : Type*} [Semiring R] [NoZeroDivisors R] :
+    NoZeroDivisors (MvPowerSeries σ R) where
+  eq_zero_or_eq_zero_of_mul_eq_zero {φ ψ} h := by
+    letI : LinearOrder σ := LinearOrder.swap σ WellOrderingRel.isWellOrder.linearOrder
+    letI : WellFoundedGT σ := by
+      change IsWellFounded σ fun x y ↦ WellOrderingRel x y
+      exact IsWellOrder.toIsWellFounded
+    simpa only [← lexOrder_eq_top_iff_eq_zero, lexOrder_mul, WithTop.add_eq_top] using h
 
 end MvPowerSeries
 

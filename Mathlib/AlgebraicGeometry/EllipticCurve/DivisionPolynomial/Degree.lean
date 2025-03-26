@@ -14,29 +14,29 @@ Weierstrass curves defined in `Mathlib.AlgebraicGeometry.EllipticCurve.DivisionP
 
 ## Mathematical background
 
-Let $W$ be a Weierstrass curve over a commutative ring $R$. By strong induction,
- * $\tilde{\Psi}_n = \tfrac{n}{2}X^{\tfrac{n^2 - 4}{2}} + \dots$ if $n$ is even,
- * $\tilde{\Psi}_n = nX^{\tfrac{n^2 - 1}{2}} + \dots$ if $n$ is odd,
- * $\Psi_n^{[2]} = n^2X^{n^2 - 1} + \dots$, and
- * $\Phi_n = X^{n^2} + \dots$.
+Let `W` be a Weierstrass curve over a commutative ring `R`. By strong induction,
+ * `preΨₙ` has leading coefficient `n / 2` and degree `(n² - 4) / 2` if `n` is even,
+ * `preΨₙ` has leading coefficient `n` and degree `(n² - 1) / 2` if `n` is odd,
+ * `ΨSqₙ` has leading coefficient `n²` and degree `n² - 1`, and
+ * `Φₙ` has leading coefficient `1` and degree `n²`.
 
-In particular, when $R$ is an integral domain of characteristic different from $n$, the univariate
-polynomials $\tilde{\Psi}_n$, $\Psi_n^{[2]}$, and $\Phi_n$ all have their expected leading terms.
+In particular, when `R` is an integral domain of characteristic different from `n`, the univariate
+polynomials `preΨₙ`, `ΨSqₙ`, and `Φₙ` all have their expected leading terms.
 
 ## Main statements
 
- * `WeierstrassCurve.natDegree_preΨ_le`: the expected degree of $\tilde{\Psi}_n$.
- * `WeierstrassCurve.coeff_preΨ`: the expected leading coefficient of $\tilde{\Psi}_n$.
- * `WeierstrassCurve.natDegree_preΨ`: the degree of $\tilde{\Psi}_n$ when $n \ne 0$.
- * `WeierstrassCurve.leadingCoeff_preΨ`: the leading coefficient of $\tilde{\Psi}_n$ when $n \ne 0$.
- * `WeierstrassCurve.natDegree_ΨSq_le`: the expected degree of $\Psi_n^{[2]}$.
- * `WeierstrassCurve.coeff_ΨSq`: the expected leading coefficient of $\Psi_n^{[2]}$.
- * `WeierstrassCurve.natDegree_ΨSq`: the degree of $\Psi_n^{[2]}$ when $n \ne 0$.
- * `WeierstrassCurve.leadingCoeff_ΨSq`: the leading coefficient of $\Psi_n^{[2]}$ when $n \ne 0$.
- * `WeierstrassCurve.natDegree_Φ_le`: the expected degree of $\Phi_n$.
- * `WeierstrassCurve.coeff_Φ`: the expected leading coefficient of $\Phi_n$.
- * `WeierstrassCurve.natDegree_Φ`: the degree of $\Phi_n$ when $n \ne 0$.
- * `WeierstrassCurve.leadingCoeff_Φ`: the leading coefficient of $\Phi_n$ when $n \ne 0$.
+ * `WeierstrassCurve.natDegree_preΨ_le`: the degree bound `d` of `preΨₙ`.
+ * `WeierstrassCurve.coeff_preΨ`: the `d`-th coefficient of `preΨₙ`.
+ * `WeierstrassCurve.natDegree_preΨ`: the degree of `preΨₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.leadingCoeff_preΨ`: the leading coefficient of `preΨₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.natDegree_ΨSq_le`: the degree bound `d` of `ΨSqₙ`.
+ * `WeierstrassCurve.coeff_ΨSq`: the `d`-th coefficient of `ΨSqₙ`.
+ * `WeierstrassCurve.natDegree_ΨSq`: the degree of `ΨSqₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.leadingCoeff_ΨSq`: the leading coefficient of `ΨSqₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.natDegree_Φ_le`: the degree bound `d` of `Φₙ`.
+ * `WeierstrassCurve.coeff_Φ`: the `d`-th coefficient of `Φₙ`.
+ * `WeierstrassCurve.natDegree_Φ`: the degree of `Φₙ` when `n ≠ 0`.
+ * `WeierstrassCurve.leadingCoeff_Φ`: the leading coefficient of `Φₙ` when `n ≠ 0`.
 
 ## References
 
@@ -249,9 +249,9 @@ lemma natDegree_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :
   natDegree_eq_of_le_of_coeff_ne_zero (W.natDegree_preΨ'_le n) <| W.coeff_preΨ'_ne_zero h
 
 lemma natDegree_preΨ'_pos {n : ℕ} (hn : 2 < n) (h : (n : R) ≠ 0) : 0 < (W.preΨ' n).natDegree := by
-  rw [W.natDegree_preΨ' h, Nat.div_pos_iff two_ne_zero]
+  simp only [W.natDegree_preΨ' h, Nat.div_pos_iff, zero_lt_two, true_and]
   split_ifs <;>
-    exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_of_le_left hn 2) _
+    exact Nat.AtLeastTwo.prop.trans <| Nat.sub_le_sub_right (Nat.pow_le_pow_left hn 2) _
 
 @[simp]
 lemma leadingCoeff_preΨ' {n : ℕ} (h : (n : R) ≠ 0) :
@@ -271,16 +271,16 @@ lemma natDegree_preΨ_le (n : ℤ) : (W.preΨ n).natDegree ≤
     (n.natAbs ^ 2 - if Even n then 4 else 1) / 2 := by
   induction n using Int.negInduction with
   | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.natDegree_preΨ'_le n
-  | neg => simpa only [preΨ_neg, natDegree_neg, Int.natAbs_neg, even_neg]
+  | neg ih => simp only [preΨ_neg, natDegree_neg, Int.natAbs_neg, even_neg, ih]
 
 @[simp]
 lemma coeff_preΨ (n : ℤ) : (W.preΨ n).coeff ((n.natAbs ^ 2 - if Even n then 4 else 1) / 2) =
     if Even n then n / 2 else n := by
   induction n using Int.negInduction with
   | nat n => exact_mod_cast W.preΨ_ofNat n ▸ W.coeff_preΨ' n
-  | neg n ih =>
+  | neg ih n =>
     simp only [preΨ_neg, coeff_neg, Int.natAbs_neg, even_neg]
-    rcases n.even_or_odd' with ⟨n, rfl | rfl⟩ <;>
+    rcases ih n, n.even_or_odd' with ⟨ih, ⟨n, rfl | rfl⟩⟩ <;>
       push_cast [even_two_mul, Int.not_even_two_mul_add_one, Int.neg_ediv_of_dvd ⟨n, rfl⟩] at * <;>
       rw [ih]
 
@@ -289,8 +289,8 @@ lemma coeff_preΨ_ne_zero {n : ℤ} (h : (n : R) ≠ 0) :
   induction n using Int.negInduction with
   | nat n => simpa only [preΨ_ofNat, Int.even_coe_nat]
       using W.coeff_preΨ'_ne_zero <| by exact_mod_cast h
-  | neg n ih => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
-      using ih <| neg_ne_zero.mp <| by exact_mod_cast h
+  | neg ih n => simpa only [preΨ_neg, coeff_neg, neg_ne_zero, Int.natAbs_neg, even_neg]
+        using ih n <| neg_ne_zero.mp <| by exact_mod_cast h
 
 @[simp]
 lemma natDegree_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
@@ -301,8 +301,8 @@ lemma natDegree_preΨ_pos {n : ℤ} (hn : 2 < n.natAbs) (h : (n : R) ≠ 0) :
     0 < (W.preΨ n).natDegree := by
   induction n using Int.negInduction with
   | nat n => simpa only [preΨ_ofNat] using W.natDegree_preΨ'_pos hn <| by exact_mod_cast h
-  | neg n ih => simpa only [preΨ_neg, natDegree_neg]
-        using ih (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| by exact_mod_cast h
+  | neg ih n => simpa only [preΨ_neg, natDegree_neg]
+        using ih n (by rwa [← Int.natAbs_neg]) <| neg_ne_zero.mp <| by exact_mod_cast h
 
 @[simp]
 lemma leadingCoeff_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
@@ -312,7 +312,8 @@ lemma leadingCoeff_preΨ {n : ℤ} (h : (n : R) ≠ 0) :
 lemma preΨ_ne_zero [Nontrivial R] {n : ℤ} (h : (n : R) ≠ 0) : W.preΨ n ≠ 0 := by
   induction n using Int.negInduction with
   | nat n => simpa only [preΨ_ofNat] using W.preΨ'_ne_zero <| by exact_mod_cast h
-  | neg n ih => simpa only [preΨ_neg, neg_ne_zero] using ih <| neg_ne_zero.mp <| by exact_mod_cast h
+  | neg ih n => simpa only [preΨ_neg, neg_ne_zero]
+        using ih n <| neg_ne_zero.mp <| by exact_mod_cast h
 
 end preΨ
 
@@ -327,14 +328,14 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
   have hd : (n + 1) ^ 2 - 1 = 2 * expDegree (n + 1) + if Even (n + 1) then 3 else 0 := by
     push_cast [← @Nat.cast_inj ℤ, add_sq, expDegree_cast (by omega : n + 1 ≠ 0)]
     split_ifs <;> ring1
-  have hc : (n + 1) ^ 2 = expCoeff (n + 1) ^ 2 * if Even (n + 1) then 4 else 1 := by
+  have hc : (n + 1 : ℕ) ^ 2 = expCoeff (n + 1) ^ 2 * if Even (n + 1) then 4 else 1 := by
     push_cast [← @Int.cast_inj ℚ, expCoeff_cast]
     split_ifs <;> ring1
   rw [ΨSq_ofNat, hd]
   constructor
   · refine natDegree_mul_le_of_le (dp h.1) ?_
     split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq_le]
-  · erw [coeff_mul_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff,
+  · rw [coeff_mul_of_natDegree_le (dp h.1), coeff_pow_of_natDegree_le h.1, h.2, apply_ite₂ coeff,
       coeff_Ψ₂Sq, coeff_one_zero, hc]
     · norm_cast
     split_ifs <;> simp only [apply_ite natDegree, natDegree_one.le, W.natDegree_Ψ₂Sq_le]
@@ -342,13 +343,13 @@ private lemma natDegree_coeff_ΨSq_ofNat (n : ℕ) :
 lemma natDegree_ΨSq_le (n : ℤ) : (W.ΨSq n).natDegree ≤ n.natAbs ^ 2 - 1 := by
   induction n using Int.negInduction with
   | nat n => exact (W.natDegree_coeff_ΨSq_ofNat n).left
-  | neg => rwa [ΨSq_neg, Int.natAbs_neg]
+  | neg ih => simp only [ΨSq_neg, Int.natAbs_neg, ih]
 
 @[simp]
 lemma coeff_ΨSq (n : ℤ) : (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) = n ^ 2 := by
   induction n using Int.negInduction with
   | nat n => exact_mod_cast (W.natDegree_coeff_ΨSq_ofNat n).right
-  | neg => rwa [ΨSq_neg, Int.natAbs_neg, ← Int.cast_pow, neg_sq, Int.cast_pow]
+  | neg ih => simp_rw [ΨSq_neg, Int.natAbs_neg, ← Int.cast_pow, neg_sq, Int.cast_pow, ih]
 
 lemma coeff_ΨSq_ne_zero [NoZeroDivisors R] {n : ℤ} (h : (n : R) ≠ 0) :
     (W.ΨSq n).coeff (n.natAbs ^ 2 - 1) ≠ 0 := by
@@ -404,7 +405,7 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
       expCoeff (n + 3) * expCoeff (n + 1) * (if Even (n + 1) then 4 else 1) := by
     push_cast [← @Int.cast_inj ℚ, expCoeff_cast, Nat.even_add_one, ite_not]
     split_ifs <;> ring1
-  erw [Φ_ofNat]
+  rw [Nat.cast_add, Nat.cast_one, Φ_ofNat]
   constructor
   · nth_rw 1 [← max_self <| (_ + _) ^ 2, hd, hd']
     refine natDegree_sub_le_of_le (dm (dm natDegree_X_le (dp h.1)) ?_) (dm (dm h.1 h.1) ?_)
@@ -419,13 +420,13 @@ private lemma natDegree_coeff_Φ_ofNat (n : ℕ) :
 lemma natDegree_Φ_le (n : ℤ) : (W.Φ n).natDegree ≤ n.natAbs ^ 2 := by
   induction n using Int.negInduction with
   | nat n => exact (W.natDegree_coeff_Φ_ofNat n).left
-  | neg => rwa [Φ_neg, Int.natAbs_neg]
+  | neg ih => simp only [Φ_neg, Int.natAbs_neg, ih]
 
 @[simp]
 lemma coeff_Φ (n : ℤ) : (W.Φ n).coeff (n.natAbs ^ 2) = 1 := by
   induction n using Int.negInduction with
   | nat n => exact (W.natDegree_coeff_Φ_ofNat n).right
-  | neg => rwa [Φ_neg, Int.natAbs_neg]
+  | neg ih => simp only [Φ_neg, Int.natAbs_neg, ih]
 
 lemma coeff_Φ_ne_zero [Nontrivial R] (n : ℤ) : (W.Φ n).coeff (n.natAbs ^ 2) ≠ 0 :=
   W.coeff_Φ n ▸ one_ne_zero
