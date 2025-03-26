@@ -369,12 +369,14 @@ lemma equivRange_symm_toLinearEquiv (hinj : Injective f) (hclo : IsClosed (range
 @[simp]
 lemma equivRange_symm_apply (hinj : Injective f) (hclo : IsClosed (range f))
     (x : E) : (f.equivRange hinj hclo).symm ⟨f x, by simp⟩ = x := by
-  suffices f ((f.equivRange hinj hclo).symm ⟨f x, by simp⟩) = f x from hinj this
-  trans f ((f.equivRange hinj hclo).symm.toLinearEquiv ⟨f x, by simp⟩)
-  · rfl -- is there an API lemma for this already?
-  simp only [ContinuousLinearEquiv.toLinearEquiv_symm, equivRange_symm_toLinearEquiv]
+  -- TODO
+  generalize_proofs _ _ h
   set x' : LinearMap.range f := ⟨f x, by simp⟩
   set f' : E →ₛₗ[σ] F := ↑f
+  suffices f ((f.equivRange hinj hclo).symm x') = f x from hinj this
+  trans f ((f.equivRange hinj hclo).symm.toLinearEquiv x')
+  · rfl -- is there an API lemma for this already?
+  simp only [ContinuousLinearEquiv.toLinearEquiv_symm, equivRange_symm_toLinearEquiv]
   change f' ((LinearEquiv.ofInjective f' hinj).symm x') = _
   rw [LinearEquiv.ofInjective_symm_apply (f := f') (h := hinj) x']
 
