@@ -10,20 +10,27 @@ import Mathlib.GroupTheory.GroupAction.Defs
 # The subgroup of fixed points of an action
 -/
 
-variable (M α : Type*) [Monoid M]
+variable (M α : Type*)
+instance [Zero α] [SMulZeroClass M α] : ZeroMemClass (FixedPointsType M α) α where
+  zero_mem _ := smul_zero
+
+instance [AddMonoid α] [DistribSMul M α] : AddSubmonoidClass (FixedPointsType M α) α where
+  add_mem _ {a b} ha hb := fun m => (smul_add m a b).trans congr($(ha m) + $(hb m))
+
+instance [Monoid M] [AddMonoid α] [DistribMulAction M α] :
+    AddSubmonoidClass (FixedPointsType M α) α where
+
+instance [Monoid M] [AddGroup α] [DistribMulAction M α] :
+    AddSubgroupClass (FixedPointsType M α) α where
+  neg_mem _ {_} hx := fun m => smul_neg m _ |>.trans congr(-$(hx m))
+
+variable [Monoid M]
 
 section AddMonoid
 variable [AddMonoid α] [DistribMulAction M α]
 
 /-- The additive submonoid of elements fixed under the whole action. -/
-def FixedPoints.addSubmonoid : AddSubmonoid α where
-  carrier := MulAction.fixedPoints M α
-  zero_mem' := smul_zero
-  add_mem' ha hb _ := by rw [smul_add, ha, hb]
-
-@[simp]
-lemma FixedPoints.mem_addSubmonoid (a : α) : a ∈ addSubmonoid M α ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
+abbrev FixedPoints.addSubmonoid : AddSubmonoid α := AddSubmonoid.ofClass <| fixedPointsBundled M α
 
 end AddMonoid
 
@@ -31,19 +38,6 @@ section AddGroup
 variable [AddGroup α] [DistribMulAction M α]
 
 /-- The additive subgroup of elements fixed under the whole action. -/
-def FixedPoints.addSubgroup : AddSubgroup α where
-  __ := addSubmonoid M α
-  neg_mem' ha _ := by rw [smul_neg, ha]
-
-/-- The notation for `FixedPoints.addSubgroup`, chosen to resemble `αᴹ`. -/
-notation α "^+" M:51 => FixedPoints.addSubgroup M α
-
-@[simp]
-lemma FixedPoints.mem_addSubgroup (a : α) : a ∈ α^+M ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
-
-@[simp]
-lemma FixedPoints.addSubgroup_toAddSubmonoid : (α^+M).toAddSubmonoid = addSubmonoid M α :=
-  rfl
+abbrev FixedPoints.addSubgroup : AddSubgroup α := AddSubgroup.ofClass <| fixedPointsBundled M α
 
 end AddGroup

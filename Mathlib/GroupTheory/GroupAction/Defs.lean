@@ -167,21 +167,37 @@ end MulAction
 
 section FixedPoints
 
+/-- Auxiliary type to partake in `SetLike` resolution. -/
+structure FixedPointsType (M α : Type*)
+
+def fixedPointsBundled (M α : Type*) [SMul M α] : FixedPointsType M α := ⟨⟩
+
+/-- The notation for `fixedPointsBundled`, chosen to resemble `αᴹ`. -/
+scoped[FixedPoints] notation α "^*" M:51 => fixedPointsBundled M α
+
+instance (M α : Type*) [SMul M α] : SetLike (FixedPointsType M α) α where
+  coe _ := {a : α | ∀ m : M, m • a = a}
+  coe_injective' x y _ := by cases x; cases y; rfl
+
+@[simp]
+lemma mem_fixedPointsBundled {M α : Type*} [SMul M α] (a : α) :
+    a ∈ fixedPointsBundled M α ↔ ∀ m : M, m • a = a :=
+  Iff.rfl
+
+variable {A M}
+
 variable (M : Type u) (α : Type v) [Monoid M]
 
 section Monoid
 
 variable [Monoid α] [MulDistribMulAction M α]
 
-/-- The submonoid of elements fixed under the whole action. -/
-def FixedPoints.submonoid : Submonoid α where
-  carrier := MulAction.fixedPoints M α
-  one_mem' := smul_one
-  mul_mem' ha hb _ := by rw [smul_mul', ha, hb]
+instance : SubmonoidClass (FixedPointsType M α) α where
+  mul_mem _ {a b} ha hb := fun m => (smul_mul' m a b).trans congr($(ha m) * $(hb m))
+  one_mem _ := smul_one
 
-@[simp]
-lemma FixedPoints.mem_submonoid (a : α) : a ∈ submonoid M α ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
+/-- The submonoid of elements fixed under the whole action. -/
+abbrev FixedPoints.submonoid : Submonoid α := Submonoid.ofClass <| fixedPointsBundled M α
 
 end Monoid
 
@@ -189,21 +205,12 @@ section Group
 namespace FixedPoints
 variable [Group α] [MulDistribMulAction M α]
 
+instance : SubgroupClass (FixedPointsType M α) α where
+  inv_mem _ {_} ha _ := by rw [smul_inv', ha]
+
 /-- The subgroup of elements fixed under the whole action. -/
-def subgroup : Subgroup α where
-  __ := submonoid M α
-  inv_mem' ha _ := by rw [smul_inv', ha]
+abbrev subgroup : Subgroup α := Subgroup.ofClass <| fixedPointsBundled M α
 
-/-- The notation for `FixedPoints.subgroup`, chosen to resemble `αᴹ`. -/
-scoped notation α "^*" M:51 => FixedPoints.subgroup M α
-
-@[simp]
-lemma mem_subgroup (a : α) : a ∈ α^*M ↔ ∀ m : M, m • a = a :=
-  Iff.rfl
-
-@[simp]
-lemma subgroup_toSubmonoid : (α^*M).toSubmonoid = submonoid M α :=
-  rfl
 
 end FixedPoints
 end Group
