@@ -383,15 +383,15 @@ protected theorem orthonormal (b : OrthonormalBasis ι 𝕜 E) : Orthonormal �
 
 @[simp]
 lemma norm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖ = 1 := b.orthonormal.norm_eq_one
+    ‖b i‖ = 1 := b.orthonormal.norm_eq_one i
 
 @[simp]
 lemma nnnorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖₊ = 1 := b.orthonormal.nnnorm_eq_one
+    ‖b i‖₊ = 1 := b.orthonormal.nnnorm_eq_one i
 
 @[simp]
 lemma enorm_eq_one (b : OrthonormalBasis ι 𝕜 E) (i : ι) :
-    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one
+    ‖b i‖ₑ = 1 := b.orthonormal.enorm_eq_one i
 
 @[simp]
 lemma inner_eq_zero (b : OrthonormalBasis ι 𝕜 E) {i j : ι} (hij : i ≠ j) :
