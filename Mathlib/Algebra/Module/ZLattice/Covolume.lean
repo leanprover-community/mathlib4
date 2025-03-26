@@ -157,7 +157,7 @@ theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] [DecidableEq
     congr <;> ext <;> simp
 
 /--
-A more general version of `covolume_div_covolume_eq`;
+A more general version of `covolume_div_covolume_eq_relindex`;
 see the `Naming conventions` section in the introduction.
 -/
 theorem covolume_div_covolume_eq_relindex' {E : Type*} [NormedAddCommGroup E]
