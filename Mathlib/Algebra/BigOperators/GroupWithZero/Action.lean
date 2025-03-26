@@ -55,8 +55,8 @@ theorem Finset.smul_sum {f : γ → β} {s : Finset γ} :
   map_sum (DistribSMul.toAddMonoidHom β r) f s
 
 theorem smul_finsum_mem {f : γ → β} {s : Set γ} (hs : s.Finite) :
-    r • ∑ᶠ x ∈ s, f x = ∑ᶠ x ∈ s, r • f x := by
-  simp_rw [finsum_mem_eq_finite_toFinset_sum _ hs, Finset.smul_sum]
+    r • ∑ᶠ x ∈ s, f x = ∑ᶠ x ∈ s, r • f x :=
+  (DistribSMul.toAddMonoidHom β r).map_finsum_mem f hs
 
 end
 
