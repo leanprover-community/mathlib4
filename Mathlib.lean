@@ -5572,6 +5572,7 @@ import Mathlib.Tactic.Widget.InteractiveUnfold
 import Mathlib.Tactic.Widget.SelectInsertParamsClass
 import Mathlib.Tactic.Widget.SelectPanelUtils
 import Mathlib.Tactic.Widget.StringDiagram
+import Mathlib.Tactic.WithoutCDot
 import Mathlib.Tactic.Zify
 import Mathlib.Testing.Plausible.Functions
 import Mathlib.Testing.Plausible.Sampleable
