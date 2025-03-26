@@ -92,7 +92,7 @@ lemma surjective_piRingHom_algebraMap_comp_piEvalRingHom_of_nilradical_isMaximal
 If each `R i` has maximal nilradical then the direct product `∏ R i` surjects onto the
 localization of `∏ R i` at `M`. -/
 lemma algebraMap_pi_surjective_of_nilradical_isMaximal (h : ∀ i, (nilradical (R i)).IsMaximal)
-  [IsLocalization M S'] [Fintype ι] : Surjective (algebraMap (Π i, R i) S') := by
+    [IsLocalization M S'] [Fintype ι] : Surjective (algebraMap (Π i, R i) S') := by
   intro s
   set S := fun (i : ι) => Localization (M.map (Pi.evalRingHom R i))
   obtain ⟨r, hr⟩ := surjective_piRingHom_algebraMap_comp_piEvalRingHom_of_nilradical_isMaximal
