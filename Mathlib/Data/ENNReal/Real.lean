@@ -40,9 +40,9 @@ theorem toReal_add (ha : a ≠ ∞) (hb : b ≠ ∞) : (a + b).toReal = a.toReal
   rfl
 
 theorem toReal_add_le : (a + b).toReal ≤ a.toReal + b.toReal :=
-  if ha : a = ∞ then by simp only [ha, top_add, top_toReal, zero_add, toReal_nonneg]
+  if ha : a = ∞ then by simp only [ha, top_add, toReal_top, zero_add, toReal_nonneg]
   else
-    if hb : b = ∞ then by simp only [hb, add_top, top_toReal, add_zero, toReal_nonneg]
+    if hb : b = ∞ then by simp only [hb, add_top, toReal_top, add_zero, toReal_nonneg]
     else le_of_eq (toReal_add ha hb)
 
 theorem ofReal_add {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
@@ -299,7 +299,7 @@ def toNNRealHom : ℝ≥0∞ →*₀ ℝ≥0 where
   toFun := ENNReal.toNNReal
   map_one' := toNNReal_coe _
   map_mul' _ _ := toNNReal_mul
-  map_zero' := zero_toNNReal
+  map_zero' := toNNReal_zero
 
 @[simp]
 theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal ^ n :=
@@ -324,7 +324,7 @@ theorem toReal_ofReal_mul (c : ℝ) (a : ℝ≥0∞) (h : 0 ≤ c) :
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal h]
 
 theorem toReal_mul_top (a : ℝ≥0∞) : ENNReal.toReal (a * ∞) = 0 := by
-  rw [toReal_mul, top_toReal, mul_zero]
+  rw [toReal_mul, toReal_top, mul_zero]
 
 theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
@@ -360,7 +360,7 @@ protected theorem dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 �
 
 theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal ↔ p ≠ ∞ :=
   ⟨fun h hp =>
-    have : (0 : ℝ) ≠ 0 := top_toReal ▸ (hp ▸ h.ne : 0 ≠ ∞.toReal)
+    have : (0 : ℝ) ≠ 0 := toReal_top ▸ (hp ▸ h.ne : 0 ≠ ∞.toReal)
     this rfl,
     fun h => zero_lt_one.trans_le (p.dichotomy.resolve_left h)⟩
 
@@ -373,7 +373,7 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f i).toNNReal := by
   cases isEmpty_or_nonempty ι
-  · rw [iInf_of_empty, top_toNNReal, NNReal.iInf_empty]
+  · rw [iInf_of_empty, toNNReal_top, NNReal.iInf_empty]
   · lift f to ι → ℝ≥0 using hf
     simp_rw [← coe_iInf, toNNReal_coe]
 
@@ -387,7 +387,7 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
   simp_rw [toNNReal_coe]
   by_cases h : BddAbove (range f)
   · rw [← coe_iSup h, toNNReal_coe]
-  · rw [NNReal.iSup_of_not_bddAbove h, iSup_coe_eq_top.2 h, top_toNNReal]
+  · rw [NNReal.iSup_of_not_bddAbove h, iSup_coe_eq_top.2 h, toNNReal_top]
 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by

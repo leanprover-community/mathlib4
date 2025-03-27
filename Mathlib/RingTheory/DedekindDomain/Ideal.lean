@@ -1113,10 +1113,7 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by
-    simp
-    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-    erw [OrderIso.apply_symm_apply]
+  right_inv := fun ⟨j, hj⟩ => by simp [-Set.coe_setOf]
 
 @[simp]
 theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :

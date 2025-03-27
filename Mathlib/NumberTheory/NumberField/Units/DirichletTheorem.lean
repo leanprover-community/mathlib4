@@ -374,7 +374,7 @@ theorem unitLattice_rank :
 
 /-- The map obtained by quotienting by the kernel of `logEmbedding`. -/
 def logEmbeddingQuot :
-    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ (logSpace K) :=
+    Additive ((𝓞 K)ˣ ⧸ (torsion K)) →+ logSpace K :=
   MonoidHom.toAdditive' <|
     (QuotientGroup.kerLift (AddMonoidHom.toMultiplicative' (logEmbedding K))).comp
       (QuotientGroup.quotientMulEquivOfEq (by
