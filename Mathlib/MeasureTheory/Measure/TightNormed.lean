@@ -36,24 +36,9 @@ lemma tendsto_measure_norm_gt_of_isTightMeasureSet (hS : IsTightMeasureSet S) :
   suffices Tendsto ((⨆ μ ∈ S, μ) ∘ (fun r ↦ {x | r < ‖x‖})) atTop (𝓝 0) by
     convert this with r
     simp
-  refine hS.comp ?_
-  simp only [tendsto_smallSets_iff, mem_cocompact, eventually_atTop, ge_iff_le, forall_exists_index,
-    and_imp]
-  intro s t ht_compact hts
-  rcases Set.eq_empty_or_nonempty t with rfl | ht_nonempty
-  · simp only [Set.compl_empty, Set.univ_subset_iff] at hts
-    simp [hts]
-  obtain ⟨r, h_subset⟩ : ∃ r, t ⊆ {x | ‖x‖ ≤ r} := by
-    obtain ⟨xmax, _, hxmax⟩ : ∃ x ∈ t, IsMaxOn (fun x ↦ ‖x‖) t x :=
-      ht_compact.exists_isMaxOn (f := fun x : E ↦ ‖x‖) ht_nonempty (by fun_prop)
-    exact ⟨‖xmax‖, fun x hxK ↦ hxmax hxK⟩
-  refine ⟨r, fun u hu ↦ subset_trans ?_ hts⟩
-  simp_rw [← not_le]
-  refine Set.compl_subset_compl.mp ?_
-  simp only [compl_compl, not_le]
-  refine h_subset.trans fun x ↦ ?_
-  simp only [Set.mem_setOf_eq, Set.mem_compl_iff, not_lt]
-  exact fun hx ↦ hx.trans hu
+  refine hS.comp <| .mono_right ?_ <| monotone_smallSets Metric.cobounded_le_cocompact
+  refine HasAntitoneBasis.tendsto_smallSets ?_
+  exact ⟨Filter.atTop_basis_Ioi.cobounded_of_norm, fun _ _ hr x ↦ hr.trans_lt⟩
 
 section FiniteDimensional
 
