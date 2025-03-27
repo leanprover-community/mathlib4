@@ -71,15 +71,6 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
   · rcases h with ⟨t, hts, tfin, h⟩
     exact mem_of_superset ((sInter_mem tfin).2 fun V hV => GenerateSets.basic <| hts hV) h
 
-lemma generate_image_preimage_le_comap (U : Set (Set α)) (f : β → α) :
-    .generate ((f ⁻¹' ·) '' U) ≤ comap f (.generate U) := by
-  rintro s ⟨t, ht⟩
-  simp only [mem_generate_iff, exists_subset_image_iff, sInter_image] at ht ⊢
-  obtain ⟨⟨u, hu, huf, hut⟩, hts⟩ := ht
-  refine ⟨u, hu, huf.image _, subset_trans ?_ hts⟩
-  rw [← preimage_sInter]
-  exact preimage_mono hut
-
 theorem mem_iInf_of_iInter {ι} {s : ι → Filter α} {U : Set α} {I : Set ι} (I_fin : I.Finite)
     {V : I → Set α} (hV : ∀ (i : I), V i ∈ s i) (hU : ⋂ i, V i ⊆ U) : U ∈ ⨅ i, s i := by
   haveI := I_fin.fintype
