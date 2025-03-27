@@ -92,7 +92,7 @@ continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `UniformAddGroup` using
-`IsTopologicalAddGroup.toUniformSpace` and `uniformAddGroup_of_addCommGroup`. -/
+`IsTopologicalAddGroup.toUniformSpace` and `isUniformAddGroup_of_addCommGroup`. -/
 class IsTopologicalAddGroup (G : Type u) [TopologicalSpace G] [AddGroup G] : Prop
     extends ContinuousAdd G, ContinuousNeg G
 
@@ -104,7 +104,7 @@ continuous.
 
 When you declare an instance that does not already have a `UniformSpace` instance,
 you should also provide an instance of `UniformSpace` and `UniformGroup` using
-`IsTopologicalGroup.toUniformSpace` and `uniformGroup_of_commGroup`. -/
+`IsTopologicalGroup.toUniformSpace` and `isUniformGroup_of_commGroup`. -/
 @[to_additive]
 class IsTopologicalGroup (G : Type*) [TopologicalSpace G] [Group G] : Prop
     extends ContinuousMul G, ContinuousInv G

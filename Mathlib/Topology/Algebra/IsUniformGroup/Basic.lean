@@ -90,7 +90,7 @@ section LatticeOps
 variable [Group β]
 
 @[to_additive]
-lemma IsUniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [IsUniformGroup γ]
+lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [IsUniformGroup γ]
     [UniformSpace β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ]
     (f : F) (hf : IsUniformInducing f) :
     IsUniformGroup β where
@@ -99,19 +99,19 @@ lemma IsUniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
 
 @[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformGroup := IsUniformInducing.uniformGroup
+alias UniformInducing.isUniformGroup := IsUniformInducing.isUniformGroup
 
 @[to_additive]
 protected theorem IsUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [IsUniformGroup γ]
     {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @IsUniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f; IsUniformInducing.uniformGroup f ⟨rfl⟩
+  letI : UniformSpace β := u.comap f; IsUniformInducing.isUniformGroup f ⟨rfl⟩
 
 end LatticeOps
 
 namespace Subgroup
 
 @[to_additive]
-instance uniformGroup (S : Subgroup α) : IsUniformGroup S := .comap S.subtype
+instance isUniformGroup (S : Subgroup α) : IsUniformGroup S := .comap S.subtype
 
 end Subgroup
 

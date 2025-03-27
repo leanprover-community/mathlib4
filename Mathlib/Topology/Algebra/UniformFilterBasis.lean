@@ -32,14 +32,14 @@ protected def uniformSpace : UniformSpace G :=
 
 /-- The uniform space structure associated to an abelian group filter basis via the associated
 topological abelian group structure is compatible with its group structure. -/
-protected theorem uniformAddGroup : @IsUniformAddGroup G B.uniformSpace _ :=
-  @uniformAddGroup_of_addCommGroup G _ B.topology B.isTopologicalAddGroup
+protected theorem isUniformAddGroup : @IsUniformAddGroup G B.uniformSpace _ :=
+  @isUniformAddGroup_of_addCommGroup G _ B.topology B.isTopologicalAddGroup
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
       F.NeBot ∧ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U := by
   letI := B.uniformSpace
-  haveI := B.uniformAddGroup
+  haveI := B.isUniformAddGroup
   suffices F ×ˢ F ≤ uniformity G ↔ ∀ U ∈ B, ∃ M ∈ F, ∀ᵉ (x ∈ M) (y ∈ M), y - x ∈ U by
     constructor <;> rintro ⟨h', h⟩ <;> refine ⟨h', ?_⟩ <;> [rwa [← this]; rwa [this]]
   rw [uniformity_eq_comap_nhds_zero G, ← map_le_iff_le_comap]

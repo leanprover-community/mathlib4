@@ -1084,7 +1084,7 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [IsUni
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
   letI := IsTopologicalAddGroup.toUniformSpace E
-  haveI : IsUniformAddGroup E := uniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
 /-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
@@ -1157,7 +1157,7 @@ lemma uniformSpace_eq_of_hasBasis
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     ‹UniformSpace E› = p.toAddGroupSeminorm.toSeminormedAddGroup.toUniformSpace := by
   refine IsUniformAddGroup.ext ‹_›
-    p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_uniformAddGroup ?_
+    p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_isUniformAddGroup ?_
   apply le_antisymm
   · rw [← @comap_norm_nhds_zero E p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)

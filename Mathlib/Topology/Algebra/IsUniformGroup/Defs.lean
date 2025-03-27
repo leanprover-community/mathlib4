@@ -184,23 +184,23 @@ section LatticeOps
 variable [Group β]
 
 @[to_additive]
-theorem uniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @IsUniformGroup β u _) :
+theorem isUniformGroup_sInf {us : Set (UniformSpace β)} (h : ∀ u ∈ us, @IsUniformGroup β u _) :
     @IsUniformGroup β (sInf us) _ :=
   @IsUniformGroup.mk β (_) _ <|
     uniformContinuous_sInf_rng.mpr fun u hu =>
       uniformContinuous_sInf_dom₂ hu hu (@IsUniformGroup.uniformContinuous_div β u _ (h u hu))
 
 @[to_additive]
-theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
+theorem isUniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
     (h' : ∀ i, @IsUniformGroup β (us' i) _) : @IsUniformGroup β (⨅ i, us' i) _ := by
   rw [← sInf_range]
-  exact uniformGroup_sInf (Set.forall_mem_range.mpr h')
+  exact isUniformGroup_sInf (Set.forall_mem_range.mpr h')
 
 @[to_additive]
-theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @IsUniformGroup β u₁ _)
+theorem isUniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @IsUniformGroup β u₁ _)
     (h₂ : @IsUniformGroup β u₂ _) : @IsUniformGroup β (u₁ ⊓ u₂) _ := by
   rw [inf_eq_iInf]
-  refine uniformGroup_iInf fun b => ?_
+  refine isUniformGroup_iInf fun b => ?_
   cases b <;> assumption
 
 end LatticeOps
@@ -408,7 +408,7 @@ attribute [local instance] IsTopologicalGroup.toUniformSpace
 variable {G}
 
 @[to_additive]
-theorem uniformGroup_of_commGroup : IsUniformGroup G := by
+theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   constructor
   simp only [UniformContinuous, uniformity_prod_eq_prod, uniformity_eq_comap_nhds_one',
     tendsto_comap_iff, tendsto_map'_iff, prod_comap_comap_eq, Function.comp_def,
@@ -416,10 +416,10 @@ theorem uniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 @[deprecated (since := "2027-02-28")]
-alias comm_topologicalGroup_is_uniform := uniformGroup_of_commGroup
+alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
 
 @[deprecated (since := "2027-02-28")]
-alias comm_topologicalAddGroup_is_uniform := uniformAddGroup_of_addCommGroup
+alias comm_topologicalAddGroup_is_uniform := isUniformAddGroup_of_addCommGroup
 
 open Set
 
