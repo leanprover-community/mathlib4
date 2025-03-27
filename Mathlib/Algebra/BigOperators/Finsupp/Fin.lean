@@ -22,7 +22,7 @@ lemma sum_cons [AddCommMonoid M] (n : ℕ) (σ : Fin n →₀ M) (i : M) :
   rw [sum_fintype _ _ (fun _ => rfl), sum_fintype _ _ (fun _ => rfl)]
   exact Fin.sum_cons i σ
 
-lemma sum_cons' [AddCommMonoid M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀ M) (i : M)
+lemma sum_cons' [Zero M] [AddCommMonoid N] (n : ℕ) (σ : Fin n →₀ M) (i : M)
     (f : Fin (n+1) → M → N) (h : ∀ x, f x 0 = 0) :
     (sum (Finsupp.cons i σ) f) = f 0 i + sum σ (Fin.tail f) := by
   rw [sum_fintype _ _ (fun _ => by apply h), sum_fintype _ _ (fun _ => by apply h)]

@@ -268,6 +268,11 @@ theorem closure_iUnion {ι} (s : ι → Set M) : closure (⋃ i, s i) = ⨆ i, c
 theorem closure_singleton_le_iff_mem (m : M) (p : Submonoid M) : closure {m} ≤ p ↔ m ∈ p := by
   rw [closure_le, singleton_subset_iff, SetLike.mem_coe]
 
+@[to_additive (attr := simp)]
+theorem closure_insert_one (s : Set M) : closure (insert 1 s) = closure s := by
+  rw [insert_eq, closure_union, sup_eq_right, closure_singleton_le_iff_mem]
+  apply one_mem
+
 @[to_additive]
 theorem mem_iSup {ι : Sort*} (p : ι → Submonoid M) {m : M} :
     (m ∈ ⨆ i, p i) ↔ ∀ N, (∀ i, p i ≤ N) → m ∈ N := by
