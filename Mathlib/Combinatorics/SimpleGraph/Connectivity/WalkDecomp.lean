@@ -434,16 +434,8 @@ end withDecEq
 
 lemma mem_support_take {m n : ℕ} (p : G.Walk u v) (h : m ≤ n) :
     p.getVert m ∈ (p.take n).support := by
-  have := getVert_take p n m
-  cases h.lt_or_eq with
-  | inl h =>
-    rw [if_neg h.not_le] at this
-    rw [← this]
-    exact getVert_mem_support ..
-  | inr h =>
-    rw [if_pos h.symm.le] at this
-    simp_rw [h, ← this]
-    exact getVert_mem_support ..
+  rw [← getVert_take_of_le p h]
+  exact getVert_mem_support ..
 
 lemma mem_support_take_iff (p : G.Walk u v) (n : ℕ) :
     x ∈ (p.take n).support ↔ ∃ m ≤ n, p.getVert m = x := by
