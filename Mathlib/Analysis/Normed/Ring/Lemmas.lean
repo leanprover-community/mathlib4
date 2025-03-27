@@ -216,9 +216,8 @@ instance Int.instNormOneClass : NormOneClass ℤ :=
 instance Int.instNormMulClass : NormMulClass ℤ :=
   ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
 
-section NormMulClass
-
-variable [NormedRing α] [NormMulClass α] {a : α}
+section NonUnital
+variable [NonUnitalNormedRing α] [NormMulClass α] {a : α}
 
 lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
   AntilipschitzWith.of_le_mul_dist fun _ _ ↦ by simp [dist_eq_norm, ← _root_.mul_sub, ha]
@@ -257,8 +256,10 @@ lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 
 end Filter
 
-section NormOneClass
-variable [NormOneClass α]
+end NonUnital
+
+section NormedRing
+variable [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
 
 protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
   ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _
@@ -269,6 +270,4 @@ example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1
 @[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
     (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
 
-end NormOneClass
-
-end NormMulClass
+end NormedRing
