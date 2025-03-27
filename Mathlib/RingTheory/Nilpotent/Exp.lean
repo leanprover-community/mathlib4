@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.Module.Rat
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Nilpotent.Basic
@@ -61,6 +62,19 @@ theorem exp_eq_sum {a : A} {k : ℕ} (h : a ^ k = 0) :
     rw [h₁, this, add_zero]
   exact sum_eq_zero fun _ h₂ => by
     rw [pow_eq_zero_of_le (mem_Ico.1 h₂).1 (pow_nilpotencyClass ⟨k, h⟩), smul_zero]
+
+theorem exp_eq_sum_apply {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M] {a : A} {m : M}
+    {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
+      (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
+  rcases le_or_lt (nilpotencyClass a) k with h₀ | h₀
+  · rw [exp_eq_sum (pow_eq_zero_of_le h₀ (pow_nilpotencyClass hn)), Finset.sum_smul]
+  dsimp [exp]
+  rw [Finset.sum_smul, (sum_range_add_sum_Ico _ (Nat.le_of_succ_le h₀)).symm]
+  suffices ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m = 0 by
+    rw [this, add_zero]
+  exact sum_eq_zero fun r h₂ => by
+    rw [smul_assoc, (pow_sub_mul_pow a (mem_Ico.1 h₂).1).symm, mul_smul, h, smul_zero (a ^ (r - k)),
+      smul_zero]
 
 theorem exp_add_of_commute {a b : A} (h₁ : Commute a b) (h₂ : IsNilpotent a) (h₃ : IsNilpotent b) :
     exp (a + b) = exp a * exp b := by
