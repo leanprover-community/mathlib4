@@ -440,6 +440,17 @@ theorem theta_h (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα : fα
   rw [this, mul_smul, two_smul, smul_add, ← add_assoc, zero_smul, zero_add,
     add_sub_add_right_eq_sub, sub_eq_add_neg]
 
+lemma lie_eq_smul_of_mem_rootSpace_inv {β : H → K} {x : L} (h₁ : ∀ (h : H), ⁅h, x⁆ = β h • x) :
+    x ∈ rootSpace H β := by
+  have := (mem_genWeightSpace (L := H) (R := K) L β x).2
+  apply this
+  intro h
+  use 1
+  simp
+  have := h₁ h
+  rw [this.symm]
+  simp
+
 end ThetaGeneral
 
 end Theta
