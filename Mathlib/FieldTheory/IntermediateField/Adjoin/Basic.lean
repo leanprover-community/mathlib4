@@ -778,10 +778,7 @@ variable {K L : Type*} [Field K] [Field L] [Algebra K L] {x y : L}
 theorem AdjoinDouble.isAlgebraic (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
     Algebra.IsAlgebraic K K⟮x, y⟯ := by
   apply IntermediateField.isAlgebraic_adjoin
-  intro z hz
-  simp only [Set.mem_insert_iff, Set.mem_singleton_iff] at hz
-  rcases hz with hz | hz <;>
-  simp [hz, hx.isIntegral, hy.isIntegral]
+  simp [hx.isIntegral, hy.isIntegral]
 
 theorem AdjoinDouble.finiteDimensional (hx : IsIntegral K x) (hy : IsIntegral K y) :
     FiniteDimensional K K⟮x, y⟯ := by
