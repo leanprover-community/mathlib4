@@ -180,6 +180,12 @@ theorem isContained_congr {W₁ W₂ V₁ V₂ : Type*} {H₁ : SimpleGraph W₁
     H₁ ⊑ G₁ ↔ H₂ ⊑ G₂ :=
   ⟨.trans' ⟨eG.toCopy⟩ ∘ .trans ⟨eH.symm.toCopy⟩, .trans' ⟨eG.symm.toCopy⟩ ∘ .trans ⟨eH.toCopy⟩⟩
 
+lemma IsContained.congr_left {W₁ W₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
+  (eH : H₁ ≃g H₂) : H₁ ⊑ G ↔ H₂ ⊑ G := isContained_congr eH Iso.refl
+
+lemma IsContained.congr_right {V₁ V₂ : Type*} {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂}
+  (eG : G₁ ≃g G₂) : H ⊑ G₁ ↔ H ⊑ G₂ := isContained_congr Iso.refl eG
+
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
   ⟨⟨isEmptyElim, fun {a} ↦ isEmptyElim a⟩, isEmptyElim⟩
@@ -225,6 +231,12 @@ theorem free_congr {W₁ W₂ V₁ V₂ : Type*} {H₁ : SimpleGraph W₁} {H₂
     {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂} (eH : H₁ ≃g H₂) (eG : G₁ ≃g G₂) :
     H₁.Free G₁ ↔ H₂.Free G₂ :=
   (isContained_congr eH eG).not
+
+lemma Free.congr_left {W₁ W₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
+  (eH : H₁ ≃g H₂) : H₁.Free G ↔ H₂.Free G := free_congr eH Iso.refl
+
+lemma Free.congr_right {V₁ V₂ : Type*} {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂}
+  (eG : G₁ ≃g G₂) : H.Free G₁ ↔ H.Free G₂ := free_congr Iso.refl eG
 
 lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [← edgeSet_nonempty] at h
