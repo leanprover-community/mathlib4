@@ -68,9 +68,13 @@ partial def findEq {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
   | ~q(@Eq.{u} $γ $x $y) =>
     let .defEq _ := ← isDefEqQ q($α) q($γ) | return none
     if let .defEq _ ← isDefEqQ a x then
-      return .some (P, y, ← getLCtx, [], [])
+      if !(y.containsFVar a.fvarId!) then
+        return .some (P, y, ← getLCtx, [], [])
+      return .none
     else if let .defEq _ ← isDefEqQ a (y : Q($α)) then
-      return .some (P, x, ← getLCtx, [], [])
+      if !(x.containsFVar a.fvarId!) then
+        return .some (P, x, ← getLCtx, [], [])
+      return .none
     else
       return .none
   | ~q($L ∧ $R) =>
@@ -198,20 +202,20 @@ where
       let goto := path.head! -- TODO : why matching fails?
       let tl := path.tail
       if goto == .left then -- TODO : why matching fails?
-        let ~q($L' ∧ $R') := P | (dbg_trace "heh 2"; failure)
+        let ~q($L' ∧ $R') := P | failure
         let _ : $R =Q $R' := ⟨⟩
         let pfRight : Q($R) := q(And.right $h)
         let pfLeft : Q($L) ← go q(And.left $h) exs tl
         return q(And.intro $pfLeft $pfRight)
       else
-        let ~q($L' ∧ $R') := P | (dbg_trace "heh 3"; failure)
+        let ~q($L' ∧ $R') := P | failure
         let _ : $L =Q $L' := ⟨⟩
         let pfLeft : Q($L) := q(And.left $h)
         let pfRight : Q($R) ← go q(And.right $h) exs tl
         return q(And.intro $pfLeft $pfRight)
   | _ =>
-    if !path.isEmpty then (dbg_trace "heh 4"; failure)
-    let ~q($x = $y) := goal | (dbg_trace "heh 1"; failure)
+    if !path.isEmpty then failure
+    let ~q($x = $y) := goal | failure
     return ← mkEqRefl x
 
 /-- Recursive implementation for `withExistsElimAlongPath`. -/
@@ -327,7 +331,7 @@ where
       let goto := path.head! -- TODO : why matching fails?
       let tl := path.tail
       if goto == .left then -- TODO : why matching fails?
-        let ~q($L' ∧ $R') := goal | (dbg_trace "heh 2"; failure)
+        let ~q($L' ∧ $R') := goal | failure
         let pa : Q($α → Prop) ← mkLambdaFVars #[a] R
         let _ : $R =Q $pa $a := ⟨⟩
         let _ : $R' =Q $pa $a' := ⟨⟩
@@ -336,7 +340,7 @@ where
         let pfLeft' : Q($L') ← go q(And.left $h) exs hs tl h_eq
         return q(And.intro $pfLeft' $pfRight')
       else
-        let ~q($L' ∧ $R') := goal | (dbg_trace "heh 3"; failure)
+        let ~q($L' ∧ $R') := goal | failure
         let pa : Q($α → Prop) ← mkLambdaFVars #[a] L
         let _ : $L =Q $pa $a := ⟨⟩
         let _ : $L' =Q $pa $a' := ⟨⟩
@@ -345,8 +349,8 @@ where
         let pfRight' : Q($R') ← go q(And.right $h) exs hs tl h_eq
         return q(And.intro $pfLeft' $pfRight')
   | _ =>
-    if !path.isEmpty then (dbg_trace "heh 4"; failure)
-    let ~q($x = $y) := goal | (dbg_trace "heh 1"; failure)
+    if !path.isEmpty then failure
+    let ~q($x = $y) := goal | failure
     return ← mkEqRefl x
 
 /-- Implementation of `existsAndEqNested` simproc. -/
@@ -361,10 +365,6 @@ def existsAndEqNestedImp {u : Level} {α : Q(Sort u)} (p : Q($α → Prop)) :
       let pfBeforeAfter : Q((∃ a, $p a) → $P') ← mkBeforeToAfter a' newBody fvars path
       let pfAfterBefore : Q($P' → (∃ a, $p a)) ← mkAfterToBefore a' newBody fvars path
       let pf := q(propext (Iff.intro $pfBeforeAfter $pfAfterBefore))
-      let kek := (← pf.collectFVars.run {}).snd.fvarSet.toList
-      for fvar in kek do
-        let e := Expr.fvar fvar
-        dbg_trace f!"{e} : {← ppExpr e}"
       return .some ⟨P', pf⟩
 
 end existsAndEq
@@ -377,10 +377,7 @@ or `a' = a` subexpression. -/
 simproc existsAndEqNested (Exists (fun _ => Exists _)) := .ofQ fun u α e => do
   match u, α, e with
   | 1, ~q(Prop), ~q(@Exists $α $p) =>
-    dbg_trace f!"p {← ppExpr p}"
     let .some ⟨P', pf⟩ ← existsAndEq.existsAndEqNestedImp p | return .continue
-    dbg_trace "P'"
-    dbg_trace ← ppExpr P'
     return .visit {expr := P', proof? := pf}
   | _, _, _ => return .continue
 
