@@ -69,7 +69,7 @@ component'.
 
 This allows us to show that the functor X ⨯ - preserves connected limits. -/
 @[stacks 002S]
-class IsConnected (J : Type u₁) [Category.{v₁} J] extends IsPreconnected J : Prop where
+class IsConnected (J : Type u₁) [Category.{v₁} J] : Prop extends IsPreconnected J where
   [is_nonempty : Nonempty J]
 
 attribute [instance 100] IsConnected.is_nonempty
@@ -439,9 +439,7 @@ theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
     (α : (Functor.const J).obj X ⟶ (Functor.const J).obj Y) :
     ∀ j j' : J, α.app j = (α.app j' : X ⟶ Y) :=
   @constant_of_preserves_morphisms _ _ _ (X ⟶ Y) (fun j => α.app j) fun _ _ f => by
-    have := α.naturality f
-    erw [id_comp, comp_id] at this
-    exact this.symm
+    simpa using (α.naturality f).symm
 
 instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
   map_surjective f := ⟨f.app (Classical.arbitrary J), by

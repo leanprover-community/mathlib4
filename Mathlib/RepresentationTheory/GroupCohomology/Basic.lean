@@ -115,11 +115,10 @@ def d [Monoid G] (n : ℕ) (A : Rep k G) : ((Fin n → G) → A) →ₗ[k] (Fin 
 
 variable [Group G] (n) (A : Rep k G)
 
-/- Porting note: linter says the statement doesn't typecheck, so we add `@[nolint checkType]` -/
 /-- The theorem that our isomorphism `Fun(Gⁿ, A) ≅ Hom(k[Gⁿ⁺¹], A)` (where the righthand side is
 morphisms in `Rep k G`) commutes with the differentials in the complex of inhomogeneous cochains
 and the homogeneous `linearYonedaObjResolution`. -/
-@[nolint checkType] theorem d_eq :
+theorem d_eq :
     d n A =
       ((diagonalHomEquiv n A).toModuleIso.inv ≫
         (linearYonedaObjResolution A).d n (n + 1) ≫

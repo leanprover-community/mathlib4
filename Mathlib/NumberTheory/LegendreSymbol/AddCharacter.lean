@@ -293,7 +293,7 @@ variable (F : Type*) [Field F] [Finite F]
 private lemma ringChar_ne : ringChar ℂ ≠ ringChar F := by
   simpa only [ringChar.eq_zero] using (CharP.ringChar_ne_zero_of_finite F).symm
 
-/--  A primitive additive character on the finite field `F` with values in `ℂ`. -/
+/-- A primitive additive character on the finite field `F` with values in `ℂ`. -/
 noncomputable def FiniteField.primitiveChar_to_Complex : AddChar F ℂ := by
   refine MonoidHom.compAddChar ?_ (primitiveChar F ℂ <| ringChar_ne F).char
   exact (IsCyclotomicExtension.algEquiv ?n ℂ (CyclotomicField ?n ℂ) ℂ : CyclotomicField ?n ℂ →* ℂ)

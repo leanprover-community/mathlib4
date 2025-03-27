@@ -45,7 +45,9 @@ open Polynomial
 /-- A "linear recurrence relation" over a commutative semiring is given by its
   order `n` and `n` coefficients. -/
 structure LinearRecurrence (α : Type*) [CommSemiring α] where
+  /-- Order of the linear recurrence -/
   order : ℕ
+  /-- Coefficients of the linear recurrence -/
   coeffs : Fin order → α
 
 instance (α : Type*) [CommSemiring α] : Inhabited (LinearRecurrence α) :=

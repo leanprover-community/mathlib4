@@ -83,11 +83,11 @@ theorem hasDerivAt_iff_tendsto_slope_zero :
 
 alias ⟨HasDerivAt.tendsto_slope_zero, _⟩ := hasDerivAt_iff_tendsto_slope_zero
 
-theorem HasDerivAt.tendsto_slope_zero_right [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+theorem HasDerivAt.tendsto_slope_zero_right [Preorder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[>] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhdsGT_le_nhdsNE 0)
 
-theorem HasDerivAt.tendsto_slope_zero_left [PartialOrder 𝕜] (h : HasDerivAt f f' x) :
+theorem HasDerivAt.tendsto_slope_zero_left [Preorder 𝕜] (h : HasDerivAt f f' x) :
     Tendsto (fun t ↦ t⁻¹ • (f (x + t) - f x)) (𝓝[<] 0) (𝓝 f') :=
   h.tendsto_slope_zero.mono_left (nhdsLT_le_nhdsNE 0)
 

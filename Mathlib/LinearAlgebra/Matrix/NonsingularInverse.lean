@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Nonsingular inverses
@@ -710,6 +711,32 @@ theorem inv_reindex (e₁ e₂ : n ≃ m) (A : Matrix n n α) : (reindex e₁ e�
   inv_submatrix_equiv A e₁.symm e₂.symm
 
 end Submatrix
+
+open scoped Kronecker in
+theorem inv_kronecker [Fintype m] [DecidableEq m]
+    (A : Matrix m m α) (B : Matrix n n α) : (A ⊗ₖ B)⁻¹ = A⁻¹ ⊗ₖ B⁻¹ := by
+  -- handle the special cases where either matrix is not invertible
+  by_cases hA : IsUnit A.det
+  swap
+  · cases isEmpty_or_nonempty n
+    · subsingleton
+    have hAB : ¬IsUnit (A ⊗ₖ B).det := by
+      refine mt (fun hAB => ?_) hA
+      rw [det_kronecker] at hAB
+      exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_left hAB)
+    rw [nonsing_inv_apply_not_isUnit _ hA, zero_kronecker, nonsing_inv_apply_not_isUnit _ hAB]
+  by_cases hB : IsUnit B.det; swap
+  · cases isEmpty_or_nonempty m
+    · subsingleton
+    have hAB : ¬IsUnit (A ⊗ₖ B).det := by
+      refine mt (fun hAB => ?_) hB
+      rw [det_kronecker] at hAB
+      exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_right hAB)
+    rw [nonsing_inv_apply_not_isUnit _ hB, kronecker_zero, nonsing_inv_apply_not_isUnit _ hAB]
+  -- otherwise follows trivially from `mul_kronecker_mul`
+  · apply inv_eq_right_inv
+    rw [← mul_kronecker_mul, ← one_kronecker_one, mul_nonsing_inv _ hA, mul_nonsing_inv _ hB]
+
 
 /-! ### More results about determinants -/
 

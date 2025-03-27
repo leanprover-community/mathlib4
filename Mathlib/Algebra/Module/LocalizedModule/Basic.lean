@@ -397,8 +397,7 @@ noncomputable instance isModule' : Module R (LocalizedModule S M) :=
   { Module.compHom (LocalizedModule S M) <| algebraMap R (Localization S) with }
 
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
-  erw [mk_smul_mk r m 1 s]
-  rw [one_mul]
+  simpa only [one_mul] using mk_smul_mk r m 1 s
 
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
@@ -508,11 +507,9 @@ def divBy (s : S) : LocalizedModule S M →ₗ[R] LocalizedModule S M where
 theorem divBy_mul_by (s : S) (p : LocalizedModule S M) :
     divBy s (algebraMap R (Module.End R (LocalizedModule S M)) s p) = p :=
   p.induction_on fun m t => by
-    rw [Module.algebraMap_end_apply, divBy_apply]
-    erw [smul_def]
-    rw [LocalizedModule.liftOn_mk, mul_assoc, ← smul_def]
-    erw [smul'_mk]
-    rw [← Submonoid.smul_def, mk_cancel_common_right _ s]
+    rw [Module.algebraMap_end_apply, divBy_apply, ← algebraMap_smul (Localization S) (s : R),
+      smul_def, LocalizedModule.liftOn_mk, mul_assoc, ← smul_def, algebraMap_smul, smul'_mk,
+      ← Submonoid.smul_def, mk_cancel_common_right _ s]
 
 theorem mul_by_divBy (s : S) (p : LocalizedModule S M) :
     algebraMap R (Module.End R (LocalizedModule S M)) s (divBy s p) = p :=
@@ -555,6 +552,10 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     apply_fun f at h
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
+
+lemma IsLocalizedModule.injective_iff_isRegular [IsLocalizedModule S f] :
+    Function.Injective f ↔ ∀ c : S, IsSMulRegular M c := by
+  simp_rw [IsSMulRegular, Function.Injective, eq_iff_exists S, exists_imp, forall_comm (α := S)]
 
 instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
@@ -962,6 +963,14 @@ include f in
 theorem smul_inj (s : S) (m₁ m₂ : M') : s • m₁ = s • m₂ ↔ m₁ = m₂ :=
   (smul_injective f s).eq_iff
 
+include f in
+lemma isRegular_of_smul_left_injective {m : M'} (inj : Function.Injective fun r : R ↦ r • m)
+    (s : S) : IsRegular (s : R) :=
+  (Commute.isRegular_iff (Commute.all _)).mpr fun r r' eq ↦ by
+    have := congr_arg (· • m) eq
+    simp_rw [mul_smul, ← Submonoid.smul_def, smul_inj f] at this
+    exact inj this
+
 /-- `mk' f m s` is the fraction `m/s` with respect to the localization map `f`. -/
 noncomputable def mk' (m : M) (s : S) : M' :=
   fromLocalizedModule S f (LocalizedModule.mk m s)
@@ -978,15 +987,12 @@ theorem mk'_add_mk' (m₁ m₂ : M) (s₁ s₂ : S) :
 @[simp]
 theorem mk'_zero (s : S) : mk' f 0 s = 0 := by rw [← zero_smul R (0 : M), mk'_smul, zero_smul]
 
-variable (S)
-
+variable (S) in
 @[simp]
 theorem mk'_one (m : M) : mk' f m (1 : S) = f m := by
   delta mk'
   rw [fromLocalizedModule_mk, Module.End_algebraMap_isUnit_inv_apply_eq_iff, Submonoid.coe_one,
     one_smul]
-
-variable {S}
 
 @[simp]
 theorem mk'_cancel (m : M) (s : S) : mk' f (s • m) s = f m := by
@@ -1128,6 +1134,28 @@ instance : IsLocalizedModule S₂ (liftOfLE S₁ S₂ h f₁ f₂) where
     exact ⟨c, 1, by simpa [← smul_comm c.1]⟩
 
 end liftOfLE
+
+include S in
+lemma injective_of_map_eq {N : Type*} [AddCommMonoid N] [Module R N]
+    {g : M' →ₗ[R] N} (H : ∀ {x y}, g (f x) = g (f y) → f x = f y) :
+    Function.Injective g := by
+  intro a b hab
+  obtain ⟨⟨x, m⟩, (hxm : m • a = f x)⟩ := IsLocalizedModule.surj S f a
+  obtain ⟨⟨y, n⟩, (hym : n • b = f y)⟩ := IsLocalizedModule.surj S f b
+  suffices h : g (f (n.val • x)) = g (f (m.val • y)) by
+    apply H at h
+    rw [map_smul, map_smul] at h
+    rwa [← IsLocalizedModule.smul_inj f (n * m), mul_smul, mul_comm, mul_smul, hxm, hym]
+  simp [← hxm, ← hym, hab, ← S.smul_def, ← mul_smul, mul_comm, ← mul_smul]
+
+lemma injective_of_map_zero {M M' N : Type*} [AddCommGroup M] [AddCommGroup M']
+    [Module R M] [Module R M'] (f : M →ₗ[R] M') [IsLocalizedModule S f]
+    [AddCommGroup N] [Module R N] {g : M' →ₗ[R] N} (H : ∀ m, g (f m) = 0 → f m = 0) :
+    Function.Injective g := by
+  refine IsLocalizedModule.injective_of_map_eq S f (fun hxy ↦ ?_)
+  rw [← sub_eq_zero, ← map_sub]
+  apply H
+  simpa [sub_eq_zero]
 
 variable {N N'} [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
 variable (g : N →ₗ[R] N') [IsLocalizedModule S g]

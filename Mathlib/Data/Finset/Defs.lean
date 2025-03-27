@@ -3,7 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
-import Mathlib.Data.Multiset.Nodup
+import Aesop
+import Mathlib.Data.Multiset.Defs
+import Mathlib.Data.Set.Pairwise.Basic
+import Mathlib.Order.Hom.Basic
 
 /-!
 # Finite sets
@@ -114,7 +117,6 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -344,16 +346,6 @@ theorem coe_coeEmb : ⇑(coeEmb : Finset α ↪o Set α) = ((↑) : Finset α �
 These results can be defined using the current imports, but deserve to be given a nicer home.
 -/
 
-set_option linter.deprecated false in
-@[deprecated "Deprecated without replacement." (since := "2025-02-07")]
-theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈ s) :
-    SizeOf.sizeOf x < SizeOf.sizeOf s := by
-  cases s
-  dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
-  rw [Nat.add_comm]
-  refine lt_trans ?_ (Nat.lt_succ_self _)
-  exact Multiset.sizeOf_lt_sizeOf_of_mem hx
-
 section DecidablePiExists
 
 variable {s : Finset α}
@@ -368,10 +360,10 @@ instance instDecidableRelSubset [DecidableEq α] : DecidableRel (α := Finset α
 instance instDecidableRelSSubset [DecidableEq α] : DecidableRel (α := Finset α) (· ⊂ ·) :=
   fun _ _ ↦ instDecidableAnd
 
-instance instDecidableLE [DecidableEq α] : DecidableRel (α := Finset α) (· ≤ ·) :=
+instance instDecidableLE [DecidableEq α] : DecidableLE (Finset α) :=
   instDecidableRelSubset
 
-instance instDecidableLT [DecidableEq α] : DecidableRel (α := Finset α) (· < ·) :=
+instance instDecidableLT [DecidableEq α] : DecidableLT (Finset α) :=
   instDecidableRelSSubset
 
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
@@ -392,28 +384,17 @@ instance decidableEqPiFinset {β : α → Type*} [_h : ∀ a, DecidableEq (β a)
 
 end DecidablePiExists
 
-theorem nodup_map_iff_injOn {f : α → β} {s : Finset α} :
-    (Multiset.map f s.val).Nodup ↔ Set.InjOn f s := by
-  simp [Multiset.nodup_map_iff_inj_on s.nodup, Set.InjOn]
-
 end Finset
 
 namespace List
 
 variable [DecidableEq α] {a : α} {f : α → β} {s : Finset α} {t : Set β} {t' : Finset β}
 
-instance [DecidableEq β] : Decidable (Set.InjOn f s) :=
-  -- Use custom implementation for better performance.
-  decidable_of_iff ((Multiset.map f s.val).Nodup) Finset.nodup_map_iff_injOn
-
 instance [DecidablePred (· ∈ t)] : Decidable (Set.MapsTo f s t) :=
   inferInstanceAs (Decidable (∀ x ∈ s, f x ∈ t))
 
 instance [DecidableEq β] : Decidable (Set.SurjOn f s t') :=
   inferInstanceAs (Decidable (∀ x ∈ t', ∃ y ∈ s, f y = x))
-
-instance [DecidableEq β] : Decidable (Set.BijOn f s t') :=
-  inferInstanceAs (Decidable (_ ∧ _ ∧ _))
 
 end List
 

@@ -374,11 +374,11 @@ variable [CompleteSpace E] [RingHomInvPair σ' σ]
 to a continuous linear equivalence. -/
 noncomputable def ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : LinearMap.range f = ⊤) :
     E ≃SL[σ] F :=
-  (LinearEquiv.ofBijective ↑f
+  (LinearEquiv.ofBijective f
         ⟨LinearMap.ker_eq_bot.mp hinj,
           LinearMap.range_eq_top.mp hsurj⟩).toContinuousLinearEquivOfContinuous
-    -- Porting note: added `by convert`
-    (by convert f.continuous)
+    -- Porting note: `by exact` was not previously needed. Why is it needed now?
+    (by exact f.continuous)
 
 @[simp]
 theorem coeFn_ofBijective (f : E →SL[σ] F) (hinj : ker f = ⊥) (hsurj : LinearMap.range f = ⊤) :

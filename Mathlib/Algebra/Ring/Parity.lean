@@ -142,8 +142,7 @@ lemma Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
 lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
   obtain ⟨k, rfl⟩ := hn
-  induction' k with k ih
-  · simpa
+  induction k with | zero => simpa | succ k ih => ?_
   have : a ^ 2 = b ^ 2 := add_right_cancel <|
     calc
       a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
@@ -206,12 +205,6 @@ lemma not_odd_iff : ¬Odd n ↔ n % 2 = 0 := by rw [odd_iff, mod_two_not_eq_one]
 @[simp] lemma not_even_iff_odd : ¬Even n ↔ Odd n := by rw [not_even_iff, odd_iff]
 
 @[simp] lemma not_odd_zero : ¬Odd 0 := not_odd_iff.mpr rfl
-
-@[deprecated not_odd_iff_even (since := "2024-08-21")]
-lemma even_iff_not_odd : Even n ↔ ¬Odd n := by rw [not_odd_iff, even_iff]
-
-@[deprecated not_even_iff_odd (since := "2024-08-21")]
-lemma odd_iff_not_even : Odd n ↔ ¬Even n := by rw [not_even_iff, odd_iff]
 
 lemma _root_.Odd.not_two_dvd_nat (h : Odd n) : ¬(2 ∣ n) := by
   rwa [← even_iff_two_dvd, not_even_iff_odd]

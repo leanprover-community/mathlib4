@@ -5,8 +5,10 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
+import Mathlib.GroupTheory.Perm.Sign
 
 /-!
 # Cycles of a permutation
@@ -929,7 +931,7 @@ theorem product_self_eq_disjiUnion_perm_aux (hf : f.IsCycleOn s) :
   classical
     rintro m hm n hn hmn
     simp only [disjoint_left, Function.onFun, mem_map, Function.Embedding.coeFn_mk, exists_prop,
-      not_exists, not_and, forall_exists_index, and_imp, Prod.forall, Prod.mk.inj_iff]
+      not_exists, not_and, forall_exists_index, and_imp, Prod.forall, Prod.mk_inj]
     rintro _ _ _ - rfl rfl a ha rfl h
     rw [hf.pow_apply_eq_pow_apply ha] at h
     rw [mem_coe, mem_range] at hm hn
@@ -953,7 +955,7 @@ theorem product_self_eq_disjiUnion_perm (hf : f.IsCycleOn s) :
         (product_self_eq_disjiUnion_perm_aux hf) := by
   ext ⟨a, b⟩
   simp only [mem_product, Equiv.Perm.coe_pow, mem_disjiUnion, mem_range, mem_map,
-    Function.Embedding.coeFn_mk, Prod.mk.inj_iff, exists_prop]
+    Function.Embedding.coeFn_mk, Prod.mk_inj, exists_prop]
   refine ⟨fun hx => ?_, ?_⟩
   · obtain ⟨n, hn, rfl⟩ := hf.exists_pow_eq hx.1 hx.2
     exact ⟨n, hn, a, hx.1, rfl, by rw [f.iterate_eq_pow]⟩

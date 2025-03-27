@@ -70,7 +70,7 @@ everywhere else.
 
 lemma norm_jacobiTheta₂_term (n : ℤ) (z τ : ℂ) :
     ‖jacobiTheta₂_term n z τ‖ = rexp (-π * n ^ 2 * τ.im - 2 * π * n * z.im) := by
-  rw [jacobiTheta₂_term, Complex.norm_eq_abs, Complex.abs_exp, (by push_cast; ring :
+  rw [jacobiTheta₂_term, Complex.norm_exp, (by push_cast; ring :
     (2 * π : ℂ) * I * n * z + π * I * n ^ 2 * τ = (π * (2 * n):) * z * I + (π * n ^ 2 :) * τ * I),
     add_re, mul_I_re, im_ofReal_mul, mul_I_re, im_ofReal_mul]
   ring_nf
@@ -95,8 +95,8 @@ lemma norm_jacobiTheta₂'_term_le {S T : ℝ} (hT : 0 < T) {z τ : ℂ}
   rw [jacobiTheta₂'_term, norm_mul]
   refine mul_le_mul (le_of_eq ?_) (norm_jacobiTheta₂_term_le hT hz hτ n)
     (norm_nonneg _) (by positivity)
-  simp only [norm_mul, Complex.norm_eq_abs, Complex.abs_two, abs_I,
-    Complex.abs_of_nonneg pi_pos.le, abs_intCast, mul_one, Int.cast_abs]
+  simp only [norm_mul, Complex.norm_two, norm_I, Complex.norm_of_nonneg pi_pos.le,
+    norm_intCast, mul_one, Int.cast_abs]
 
 /-- The uniform bound we have given is summable, and remains so after multiplying by any fixed
 power of `|n|` (we shall need this for `k = 0, 1, 2`). -/
@@ -187,7 +187,7 @@ lemma norm_jacobiTheta₂_term_fderiv_ge (n : ℤ) (z τ : ℂ) :
     smul_eq_mul, mul_one, mul_comm _ ‖cexp _‖, norm_mul]
   refine mul_le_mul_of_nonneg_left (le_of_eq ?_) (norm_nonneg _)
   simp_rw [norm_real, norm_of_nonneg pi_pos.le, norm_I, mul_one,
-    Int.cast_abs, ← abs_intCast, Complex.norm_eq_abs, Complex.abs_pow]
+    Int.cast_abs, ← norm_intCast, norm_pow]
 
 lemma summable_jacobiTheta₂_term_fderiv_iff (z τ : ℂ) :
     Summable (jacobiTheta₂_term_fderiv · z τ) ↔ 0 < im τ := by
@@ -236,8 +236,8 @@ lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     rw [jacobiTheta₂'_term, norm_mul, ← mul_assoc, pow_one]
     refine mul_le_mul (le_of_eq ?_) (norm_jacobiTheta₂_term_le hτ le_rfl le_rfl n)
       (norm_nonneg _) (by positivity)
-    simp_rw [norm_mul, Complex.norm_eq_abs, Complex.abs_two, abs_I,
-      Complex.abs_of_nonneg pi_pos.le, abs_intCast, mul_one, Int.cast_abs]
+    simp_rw [norm_mul, Complex.norm_two, norm_I, Complex.norm_of_nonneg pi_pos.le,
+      norm_intCast, mul_one, Int.cast_abs]
 
 end term_bounds
 
@@ -326,12 +326,12 @@ lemma continuousAt_jacobiTheta₂ (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
 /-- Differentiability of `Θ z τ` in `z`, for fixed `τ`. -/
 lemma differentiableAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     DifferentiableAt ℂ (jacobiTheta₂ · τ) z :=
- ((hasFDerivAt_jacobiTheta₂ z hτ).comp (𝕜 := ℂ) z (hasFDerivAt_prod_mk_left z τ) :).differentiableAt
+ ((hasFDerivAt_jacobiTheta₂ z hτ).comp (𝕜 := ℂ) z (hasFDerivAt_prodMk_left z τ) :).differentiableAt
 
 /-- Differentiability of `Θ z τ` in `τ`, for fixed `z`. -/
 lemma differentiableAt_jacobiTheta₂_snd (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     DifferentiableAt ℂ (jacobiTheta₂ z) τ :=
-  ((hasFDerivAt_jacobiTheta₂ z hτ).comp τ (hasFDerivAt_prod_mk_right z τ)).differentiableAt
+  ((hasFDerivAt_jacobiTheta₂ z hτ).comp τ (hasFDerivAt_prodMk_right z τ)).differentiableAt
 
 lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
     HasDerivAt (jacobiTheta₂ · τ) (jacobiTheta₂' z τ) z := by
@@ -355,7 +355,7 @@ lemma hasDerivAt_jacobiTheta₂_fst (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
   #adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
     need `by exact` to bypass unification failure -/
   have step3 : HasDerivAt (fun x ↦ jacobiTheta₂ x τ) ((jacobiTheta₂_fderiv z τ) (1, 0)) z := by
-    exact ((hasFDerivAt_jacobiTheta₂ z hτ).comp z (hasFDerivAt_prod_mk_left z τ)).hasDerivAt
+    exact ((hasFDerivAt_jacobiTheta₂ z hτ).comp z (hasFDerivAt_prodMk_left z τ)).hasDerivAt
   rwa [← step1.tsum_eq] at step3
 
 lemma continuousAt_jacobiTheta₂' (z : ℂ) {τ : ℂ} (hτ : 0 < im τ) :
@@ -396,7 +396,7 @@ lemma jacobiTheta₂_add_left (z τ : ℂ) : jacobiTheta₂ (z + 1) τ = jacobiT
 /-- The two-variable Jacobi theta function is quasi-periodic in `z` with period `τ`. -/
 lemma jacobiTheta₂_add_left' (z τ : ℂ) :
     jacobiTheta₂ (z + τ) τ = cexp (-π * I * (τ + 2 * z)) * jacobiTheta₂ z τ := by
-  conv_rhs => erw [← tsum_mul_left, ← (Equiv.addRight 1).tsum_eq]
+  conv_rhs => rw [jacobiTheta₂, ← tsum_mul_left, ← (Equiv.addRight 1).tsum_eq]
   refine tsum_congr (fun n ↦ ?_)
   simp_rw [jacobiTheta₂_term, ← Complex.exp_add, Equiv.coe_addRight, Int.cast_add]
   ring_nf
@@ -530,6 +530,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     exact (((differentiableAt_pow 2).const_mul _).mul_const _).cexp
   _ = _ := by
     rw [hj.deriv]
-    erw [deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _)]
-    rw [mul_comm, deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
+    simp only [div_eq_mul_inv _ τ]
+    rw [deriv_cexp (((differentiableAt_pow _).const_mul _).mul_const _), mul_comm,
+      deriv_mul_const_field, deriv_const_mul_field, deriv_pow]
     ring_nf

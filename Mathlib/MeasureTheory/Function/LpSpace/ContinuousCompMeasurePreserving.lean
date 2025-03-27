@@ -76,7 +76,7 @@ theorem Filter.Tendsto.compMeasurePreservingLp {α : Type*} {l : Filter α}
   replace hg : Tendsto (fun a ↦ ⟨g a, hgm a⟩ : α → {g : C(X, Y) // MeasurePreserving g μ ν})
       l (𝓝 ⟨g₀, hgm₀⟩) :=
     tendsto_subtype_rng.2 hg
-  convert this.comp (hf.prod_mk_nhds hg)
+  convert this.comp (hf.prodMk_nhds hg)
 
 variable {Z : Type*} [TopologicalSpace Z] {f : Z → Lp E p ν} {g : Z → C(X, Y)} {s : Set Z} {z : Z}
 

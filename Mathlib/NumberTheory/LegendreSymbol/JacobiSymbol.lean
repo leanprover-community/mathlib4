@@ -87,7 +87,6 @@ def jacobiSym (a : ℤ) (b : ℕ) : ℤ :=
 @[inherit_doc]
 scoped[NumberTheorySymbols] notation "J(" a " | " b ")" => jacobiSym a b
 
--- Porting note: Without the following line, Lean expected `|` on several lines, e.g. line 102.
 open NumberTheorySymbols
 
 /-!
@@ -144,9 +143,6 @@ theorem trichotomy (a : ℤ) (b : ℕ) : J(a | b) = 0 ∨ J(a | b) = 1 ∨ J(a |
 theorem one_left (b : ℕ) : J(1 | b) = 1 :=
   List.prod_eq_one fun z hz => by
     let ⟨p, hp, he⟩ := List.mem_pmap.1 hz
-    -- Porting note: The line 150 was added because Lean does not synthesize the instance
-    -- `[Fact (Nat.Prime p)]` automatically (it is needed for `legendreSym.at_one`)
-    letI : Fact p.Prime := ⟨prime_of_mem_primeFactorsList hp⟩
     rw [← he, legendreSym.at_one]
 
 /-- The Jacobi symbol is multiplicative in its first argument. -/
@@ -215,11 +211,7 @@ theorem mod_left (a : ℤ) (b : ℕ) : J(a | b) = J(a % b | b) :=
   congr_arg List.prod <|
     List.pmap_congr_left _
       (by
-        -- Porting note: Lean does not synthesize the instance [Fact (Nat.Prime p)] automatically
-        -- (it is needed for `legendreSym.mod` on line 227). Thus, we name the hypothesis
-        -- `Nat.Prime p` explicitly on line 224 and prove `Fact (Nat.Prime p)` on line 225.
         rintro p hp _ h₂
-        letI : Fact p.Prime := ⟨h₂⟩
         conv_rhs =>
           rw [legendreSym.mod, Int.emod_emod_of_dvd _ (Int.natCast_dvd_natCast.2 <|
             dvd_of_mem_primeFactorsList hp), ← legendreSym.mod])
@@ -410,8 +402,6 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
     { toFun := fun x => qrSign x a * J(x | a)
       map_one' := by convert ← mul_one (M := ℤ) _; (on_goal 1 => symm); all_goals apply one_left
       map_mul' := fun x y => by
-        -- Porting note: `simp_rw` on line 423 replaces `rw` to allow the rewrite rules to be
-        -- applied under the binder `fun ↦ ...`
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
   refine value_at a (rhs a) (fun p pp hp => Eq.symm ?_) hb
@@ -475,9 +465,6 @@ theorem mod_right' (a : ℕ) {b : ℕ} (hb : Odd b) : J(a | b) = J(a | b % (4 * 
     · rw [mod_left ↑(b % _), mod_left b, Int.natCast_mod, Int.emod_emod_of_dvd b]
       simp only [ha₂, Nat.cast_mul, ← mul_assoc]
       apply dvd_mul_left
-  -- Porting note: In mathlib3, it was written `cases' e`. In Lean 4, this resulted in the choice
-  -- of a name other than e (for the case distinction of line 482) so we indicate the name
-  -- to use explicitly.
   rcases e with - | e; · rfl
   · rw [χ₈_nat_mod_eight, χ₈_nat_mod_eight (b % (4 * a)), mod_mod_of_dvd b]
     use 2 ^ e * a'; rw [ha₂, Nat.pow_succ]; ring

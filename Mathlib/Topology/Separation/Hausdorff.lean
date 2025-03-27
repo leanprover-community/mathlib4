@@ -161,8 +161,6 @@ theorem t2_iff_isClosed_diagonal : T2Space X ↔ IsClosed (diagonal X) := by
 theorem isClosed_diagonal [T2Space X] : IsClosed (diagonal X) :=
   t2_iff_isClosed_diagonal.mp ‹_›
 
--- Porting note: 2 lemmas moved below
-
 theorem tendsto_nhds_unique [T2Space X] {f : Y → X} {l : Filter Y} {a b : X} [NeBot l]
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto f l (𝓝 b)) : a = b :=
   (tendsto_nhds_unique_inseparable ha hb).eq
@@ -177,7 +175,7 @@ theorem tendsto_nhds_unique_of_eventuallyEq [T2Space X] {f g : Y → X} {l : Fil
 
 theorem tendsto_nhds_unique_of_frequently_eq [T2Space X] {f g : Y → X} {l : Filter Y} {a b : X}
     (ha : Tendsto f l (𝓝 a)) (hb : Tendsto g l (𝓝 b)) (hfg : ∃ᶠ x in l, f x = g x) : a = b :=
-  have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prod_mk_nhds hb).frequently hfg
+  have : ∃ᶠ z : X × X in 𝓝 (a, b), z.1 = z.2 := (ha.prodMk_nhds hb).frequently hfg
   not_not.1 fun hne => this (isClosed_diagonal.isOpen_compl.mem_nhds hne)
 
 /-- If `s` and `t` are compact sets in a T₂ space, then the set neighborhoods filter of `s ∩ t`
@@ -194,7 +192,7 @@ theorem IsCompact.nhdsSet_inter_eq [T2Space X] {s t : Set X} (hs : IsCompact s) 
   · exact (disjoint_nhds_nhds.mpr hne).eq_bot ▸ bot_le
 
 /-- In a `T2Space X`, for a compact set `t` and a point `x` outside `t`, there are open sets `U`,
-`V` that separate `t` and `x`.-/
+`V` that separate `t` and `x`. -/
 lemma IsCompact.separation_of_not_mem {X : Type u_1} [TopologicalSpace X] [T2Space X] {x : X}
     {t : Set X} (H1 : IsCompact t) (H2 : x ∉ t) :
     ∃ (U : Set X), ∃ (V : Set X), IsOpen U ∧ IsOpen V ∧ t ⊆ U ∧ x ∈ V ∧ Disjoint U V := by
@@ -448,7 +446,7 @@ lemma compatible {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Spac
 /-- The universal property of the largest T2 quotient of a topological space `X`: any continuous
 map from `X` to a T2 space `Y` uniquely factors through `t2Quotient X`. This declaration builds the
 factored map. Its continuity is `t2Quotient.continuous_lift`, the fact that it indeed factors the
-original map is `t2Quotient.lift_mk` and uniquenes is `t2Quotient.unique_lift`. -/
+original map is `t2Quotient.lift_mk` and uniqueness is `t2Quotient.unique_lift`. -/
 def lift {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [T2Space Y]
     {f : X → Y} (hf : Continuous f) : t2Quotient X → Y :=
   Quotient.lift f (t2Quotient.compatible hf)
@@ -475,13 +473,13 @@ variable {Z : Type*} [TopologicalSpace Y] [TopologicalSpace Z]
 
 theorem isClosed_eq [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsClosed { y : Y | f y = g y } :=
-  continuous_iff_isClosed.mp (hf.prod_mk hg) _ isClosed_diagonal
+  continuous_iff_isClosed.mp (hf.prodMk hg) _ isClosed_diagonal
 
 /-- If functions `f` and `g` are continuous on a closed set `s`,
 then the set of points `x ∈ s` such that `f x = g x` is a closed set. -/
 protected theorem IsClosed.isClosed_eq [T2Space Y] {f g : X → Y} {s : Set X} (hs : IsClosed s)
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) : IsClosed {x ∈ s | f x = g x} :=
-  (hf.prod hg).preimage_isClosed_of_isClosed hs isClosed_diagonal
+  (hf.prodMk hg).preimage_isClosed_of_isClosed hs isClosed_diagonal
 
 theorem isOpen_ne_fun [T2Space X] {f g : Y → X} (hf : Continuous f) (hg : Continuous g) :
     IsOpen { y : Y | f y ≠ g y } :=
@@ -541,7 +539,7 @@ theorem SeparatedNhds.of_isCompact_isCompact [T2Space X] {s t : Set X} (hs : IsC
   exact generalized_tube_lemma hs ht isClosed_diagonal.isOpen_compl hst
 
 /-- In a `T2Space X`, for disjoint closed sets `s t` such that `closure sᶜ` is compact,
-there are neighbourhoods that separate `s` and `t`.-/
+there are neighbourhoods that separate `s` and `t`. -/
 lemma SeparatedNhds.of_isClosed_isCompact_closure_compl_isClosed [T2Space X] {s : Set X}
     {t : Set X} (H1 : IsClosed s) (H2 : IsCompact (closure sᶜ)) (H3 : IsClosed t)
     (H4 : Disjoint s t) : SeparatedNhds s t := by

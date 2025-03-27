@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.Order.Fin.Basic
+import Mathlib.Util.Superscript
 
 /-! # The simplex category
 
@@ -25,6 +26,14 @@ We provide the following functions to work with these objects:
 3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
+
+## Notations
+
+* `⦋n⦌` denotes the `n`-dimensional simplex. This notation is available with
+  `open Simplicial`.
+* `⦋m⦌ₙ` denotes the `m`-dimensional simplex in the `n`-truncated simplex category.
+  The truncation proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`.
+  This notation is available with `open SimplexCategory.Truncated`.
 -/
 
 universe v
@@ -40,7 +49,7 @@ def SimplexCategory :=
 
 namespace SimplexCategory
 
--- Porting note: the definition of `SimplexCategory` is made irreducible below
+-- The definition of `SimplexCategory` is made irreducible below.
 /-- Interpret a natural number as an object of the simplex category. -/
 def mk (n : ℕ) : SimplexCategory :=
   n
@@ -166,6 +175,19 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `m ≤ n`, `⦋m⦌ₙ` is the `m`-dimensional simplex in `Truncated n`. The
+proof `p : m ≤ n` can also be provided using the syntax `⦋m, p⦌ₙ`. -/
+scoped syntax:max (name := mkNotation)
+  "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
+scoped macro_rules
+  | `(⦋$m:term⦌$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+      fail "Failed to prove truncation property. Try writing `⦋m, by ...⦌ₙ`."⟩ :
+      SimplexCategory.Truncated $n))
+  | `(⦋$m:term, $p:term⦌$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
 end Truncated
 

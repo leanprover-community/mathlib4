@@ -39,8 +39,8 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
-  [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-  [FunLike F A B] extends RingHomClass F A B : Prop where
+    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
+    extends RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
@@ -300,7 +300,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -315,6 +315,9 @@ theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
 @[simp]
 theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
+
+@[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
+   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
 
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
