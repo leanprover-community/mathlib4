@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Algebra.Module.LinearMap.PositiveLinearMap
+import Mathlib.Algebra.Order.Module.PositiveLinearMap
 import Mathlib.Analysis.CStarAlgebra.Classes
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Isometric
+import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 
 /-! # Positive linear maps in C⋆-algebras
 
@@ -36,7 +36,7 @@ variable [NonUnitalRing A₁] [Module ℂ A₁] [SMulCommClass ℝ A₁ A₁] [I
 
 variable [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂] [PartialOrder A₂] [StarOrderedRing A₂]
 
-@[aesop 90% apply (rule_sets := [CStarAlgebra])]
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
 lemma map_isSelfAdjoint (f : A₁ →P[ℂ] A₂) (a : A₁) (ha : IsSelfAdjoint a) :
     IsSelfAdjoint (f a) := by
   rw [← CFC.posPart_sub_negPart a ha]
@@ -71,13 +71,26 @@ lemma norm_apply_le_of_nonneg (f : B₁ →P[ℂ] B₂) (x : B₁) (hx : 0 ≤ x
   rw [← Algebra.algebraMap_eq_smul_one]
   exact IsSelfAdjoint.le_algebraMap_norm_self <| .of_nonneg hx
 
-open Filter in
+open Complex Filter in
 /--
-If `f` is a positive map, then it is bounded on positive operators. This is a stepping stone
-towards the strictly more general result `exists_norm_apply_le` found below.
+If `f` is a positive map, then it is bounded (and therefore continuous).
 -/
-lemma exists_norm_apply_le_of_nonneg (f : A₁ →P[ℂ] A₂) :
-    ∃ C : ℝ≥0, ∀ a, 0 ≤ a → ‖f a‖ ≤ C * ‖a‖ := by
+lemma exists_norm_apply_le (f : A₁ →P[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
+  /- It suffices to only consider for positive `a`, by decomposing `a` into positive and negative
+     parts of the real and imaginary parts. -/
+  suffices h_nonneg : ∃ C : ℝ≥0, ∀ a, 0 ≤ a → ‖f a‖ ≤ C * ‖a‖ by
+    obtain ⟨C, hmain⟩ := h_nonneg
+    refine ⟨4 * C, fun x ↦ ?_⟩
+    obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg x
+    conv_lhs => rw [hy]
+    simp only [map_sum, map_smul, NNReal.coe_add]
+    apply norm_sum_le _ _ |>.trans
+    simp only [norm_smul, norm_pow, norm_I, one_pow, one_mul]
+    apply Finset.sum_le_sum (g := fun _ ↦ C * ‖x‖) (fun i _ ↦ ?_) |>.trans <| by simp [mul_assoc]
+    apply hmain _ (hy_nonneg i) |>.trans
+    simp only
+    gcongr
+    exact hy_norm i
   -- Let's proceed by contradiction
   by_contra hcontra
   push_neg at hcontra
@@ -141,58 +154,23 @@ lemma exists_norm_apply_le_of_nonneg (f : A₁ →P[ℂ] A₂) :
     _ < 2 ^ n := hn
   linarith
 
-/--
-If `f` is a positive map, then it is bounded on self-adjoint operators. This is a stepping stone
-towards the strictly more general result `exists_norm_apply_le` found below.
--/
-lemma exists_norm_apply_le_of_isSelfAdjoint (f : A₁ →P[ℂ] A₂) :
-    ∃ C : ℝ≥0, ∀ a, IsSelfAdjoint a → ‖f a‖ ≤ C * ‖a‖ := by
-  obtain ⟨C, hmain⟩ := exists_norm_apply_le_of_nonneg f
-  refine ⟨2 * C, ?_⟩
-  intro a ha
-  nth_rewrite 1 [← CFC.posPart_sub_negPart a ha]
-  calc ‖f (a⁺ - a⁻)‖ = ‖f a⁺ - f a⁻‖ := by simp
-    _ ≤ ‖f a⁺‖ + ‖f a⁻‖ := norm_sub_le (f a⁺) (f a⁻)
-    _ ≤ C * ‖a⁺‖ + C * ‖a⁻‖ := by
-          gcongr
-          · exact hmain _ (CFC.posPart_nonneg a)
-          · exact hmain _ (CFC.negPart_nonneg a)
-    _ ≤ C * ‖a‖ + C * ‖a‖ := by
-          gcongr
-          · exact CStarAlgebra.norm_posPart_le a
-          · exact CStarAlgebra.norm_negPart_le a
-    _ = (2 * C) * ‖a‖ := by ring
-
-open Complex in
-/--
-If `f` is a positive map, then it is bounded (and therefore continuous).
--/
-lemma exists_norm_apply_le (f : A₁ →P[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
-  obtain ⟨C, hmain⟩ := exists_norm_apply_le_of_isSelfAdjoint f
-  refine ⟨2 * C, ?_⟩
-  intro a
-  let a₁ : A₁ := realPart a
-  let a₂ : A₁ := imaginaryPart a
-  nth_rewrite 1 [← realPart_add_I_smul_imaginaryPart a]
-  calc _ = ‖f a₁ + I • f a₂‖ := by simp; rfl
-    _ ≤ ‖f a₁‖ + ‖I • f a₂‖ := norm_add_le (f a₁) (I • f a₂)
-    _ ≤ ‖f a₁‖ + ‖f a₂‖ := by gcongr; simp [norm_smul]
-    _ ≤ C * ‖a₁‖ + C * ‖a₂‖ := by
-          gcongr
-          · exact hmain a₁ selfAdjoint.isSelfAdjoint
-          · exact hmain a₂ selfAdjoint.isSelfAdjoint
-    _ ≤ C * ‖a‖ + C * ‖a‖ := by
-          gcongr
-          · exact realPart.norm_le a
-          · exact imaginaryPart.norm_le a
-    _ = (2 * C) * ‖a‖ := by ring
-
-instance : ContinuousLinearMapClass (A₁ →P[ℂ] A₂) ℂ A₁ A₂ where
+instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A₂] :
+    ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
-      obtain ⟨C, h⟩ := exists_norm_apply_le f
+      obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →P[ℂ] A₂)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
+
+instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A₂] :
+    StarHomClass F A₁ A₂ where
+  map_star f a := by
+    obtain ⟨y, hy_nonneg, hy_norm, hy⟩ := CStarAlgebra.exists_sum_four_nonneg a
+    have hy' : ∀ x : Fin 4, star (y x) = y x := fun x => by
+      rw [IsSelfAdjoint.star_eq (hy_nonneg x).isSelfAdjoint]
+    have hy'' : ∀ x : Fin 4, star (f (y x)) = f (y x) := fun x => by
+      rw [IsSelfAdjoint.star_eq (map_nonneg f (hy_nonneg x)).isSelfAdjoint]
+    simp [hy, hy', hy'']
 
 end PositiveLinearMap
 

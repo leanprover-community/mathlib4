@@ -617,7 +617,6 @@ import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.LinearMap.Polynomial
-import Mathlib.Algebra.Module.LinearMap.PositiveLinearMap
 import Mathlib.Algebra.Module.LinearMap.Prod
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Algebra.Module.LinearMap.Star
@@ -810,6 +809,7 @@ import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
+import Mathlib.Algebra.Order.Module.PositiveLinearMap
 import Mathlib.Algebra.Order.Module.Rat
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Monoid.Associated

@@ -33,6 +33,21 @@ class PositiveLinearMapClass (F : Type*) (R : outParam Type*) (E₁ E₂ : Type*
     [OrderedAddCommMonoid E₁] [OrderedAddCommMonoid E₂] [Module R E₁] [Module R E₂]
     [FunLike F E₁ E₂] extends LinearMapClass F R E₁ E₂, OrderHomClass F E₁ E₂
 
+namespace PositiveLinearMapClass
+
+variable {F R E₁ E₂ : Type*} [Semiring R] [OrderedAddCommMonoid E₁] [OrderedAddCommMonoid E₂]
+  [Module R E₁] [Module R E₂] [FunLike F E₁ E₂] [PositiveLinearMapClass F R E₁ E₂]
+
+/-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
+def toPositiveLinearMap (f : F) : E₁ →P[R] E₂ :=
+  { (f : E₁ →ₗ[R] E₂), (f : E₁ →o E₂) with }
+
+/-- Reinterpret an element of a type of positive linear maps as a positive linear map. -/
+instance instCoeToLinearMap : CoeHead F (E₁ →P[R] E₂) where
+  coe f := toPositiveLinearMap f
+
+end PositiveLinearMapClass
+
 namespace PositiveLinearMap
 
 section general
@@ -53,6 +68,8 @@ instance : PositiveLinearMapClass (E₁ →P[R] E₂) R E₁ E₂ where
   map_add f := map_add f.toLinearMap
   map_smulₛₗ f := f.toLinearMap.map_smul'
   map_rel f := fun {_ _} hab => f.monotone' hab
+
+
 
 @[simp]
 lemma map_smul_of_tower {S : Type*} [SMul S E₁] [SMul S E₂]
