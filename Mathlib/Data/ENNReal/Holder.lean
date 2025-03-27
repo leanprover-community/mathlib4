@@ -122,10 +122,7 @@ end HolderTriple
 namespace HolderConjugate
 
 /- This instance causes a trivial loop, but this is exactly the kind of loop that
-Lean should be able to detect and avoid.
-
-I'm not sure we actually want this, but the hope is that it allows Lean to find this instead of
-unfolding? -/
+Lean should be able to detect and avoid. -/
 instance symm {p q : ℝ≥0∞} [hpq : HolderConjugate p q] : HolderConjugate q p :=
   inferInstance
 

@@ -471,7 +471,7 @@ namespace HolderConjugate
 
 lemma of_toReal (h : p.toReal.HolderConjugate q.toReal) : p.HolderConjugate q := by
   rw [Real.HolderConjugate] at h
-  exact HolderTriple.of_toReal (one_toReal ▸ h)
+  exact HolderTriple.of_toReal (toReal_one ▸ h)
 
 lemma toReal_iff (hp : 1 < p.toReal) :
     p.toReal.HolderConjugate q.toReal ↔ p.HolderConjugate q := by
