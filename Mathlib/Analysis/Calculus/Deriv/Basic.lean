@@ -693,6 +693,7 @@ theorem hasDerivAt_natCast [NatCast F] (n : ℕ) : HasDerivAt (n : 𝕜 → F) 0
   hasDerivAt_const _ _
 
 theorem hasDerivAt_ofNat (n : ℕ) [OfNat F n] : HasDerivAt (ofNat(n) : 𝕜 → F) 0 x :=
+  hasDerivAt_const _ _
 
 theorem deriv_const : deriv (fun _ => c) x = 0 :=
   HasDerivAt.deriv (hasDerivAt_const x c)
@@ -709,7 +710,7 @@ theorem deriv_one [One F] : deriv (1 : 𝕜 → F) = 0 := funext fun _ => deriv_
 
 theorem deriv_natCast [NatCast F] (n : ℕ) : deriv (n : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
 
-theorem deriv_ofNat (n : ℕ) [OfNat n F] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
+theorem deriv_ofNat (n : ℕ) [OfNat F n] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
   funext fun _ => deriv_const _ _
 
 @[simp]
@@ -725,7 +726,7 @@ theorem derivWithin_one [One F] : derivWithin (1 : 𝕜 → F) s = 0 := derivWit
 theorem derivWithin_natCast [NatCast F] (n : ℕ) : derivWithin (n : 𝕜 → F) s = 0 :=
   derivWithin_const _ _
 
-theorem derivWithin_natCast (n : ℕ) [OfNat n F] : derivWithin (ofNat(n) : 𝕜 → F) s = 0 :=
+theorem derivWithin_ofNat (n : ℕ) [OfNat F n] : derivWithin (ofNat(n) : 𝕜 → F) s = 0 :=
   derivWithin_const _ _
 
 end Const
