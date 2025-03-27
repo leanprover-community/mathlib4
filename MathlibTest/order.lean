@@ -101,6 +101,13 @@ example {α : Type u} (a b : α) [LinearOrder α] : a ≤ b ∨ b ≤ a := by
 example {n : Nat} (A B C : Matrix (Fin n) (Fin n) ℚ) : (A * B * C).rank ≤ A.rank ⊓ C.rank := by
   order [Matrix.rank_mul_le A B, Matrix.rank_mul_le (A * B) C]
 
+example (L : Type) [Lattice L] :
+    (∀ a b c : L, a ⊔ (b ⊓ c) = (a ⊔ b) ⊓ (a ⊔ c)) ↔
+    (∀ a b c : L, a ⊓ (b ⊔ c) = (a ⊓ b) ⊔ (a ⊓ c)) := by
+  refine ⟨fun h a b c ↦ ?_, fun h a b c ↦ ?_⟩
+  · order [h (a ⊓ b) c a, h c a b]
+  · order [h (a ⊔ b) c a, h c a b]
+
 -- worst case
 example {α : Type u} [PartialOrder α]
     (x1 y1 : α)
