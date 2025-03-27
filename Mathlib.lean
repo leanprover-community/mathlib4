@@ -5597,6 +5597,7 @@ import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Algebra.Group.Compact
 import Mathlib.Topology.Algebra.Group.CompactOpen
+import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Algebra.Group.GroupTopology
 import Mathlib.Topology.Algebra.Group.OpenMapping
 import Mathlib.Topology.Algebra.Group.Pointwise
@@ -5647,6 +5648,7 @@ import Mathlib.Topology.Algebra.Module.UniformConvergence
 import Mathlib.Topology.Algebra.Module.WeakBilin
 import Mathlib.Topology.Algebra.Module.WeakDual
 import Mathlib.Topology.Algebra.Monoid
+import Mathlib.Topology.Algebra.Monoid.Defs
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.MvPolynomial
 import Mathlib.Topology.Algebra.NonUnitalAlgebra
