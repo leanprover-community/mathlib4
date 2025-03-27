@@ -102,7 +102,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_div (hr : r ≠ 0)
   · exact Nat.choose_pos hr'
   · exact Nat.choose_pos (r.pred_le.trans hr')
 
-@[deprecated (since := "2025-03-06")]
+@[inherit_doc local_lubell_yamamoto_meshalkin_inequality_div]
 alias card_div_choose_le_card_shadow_div_choose := local_lubell_yamamoto_meshalkin_inequality_div
 
 end LocalLYM
@@ -205,7 +205,7 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
     · rw [tsub_self, choose_zero_right]
       exact zero_lt_one
 
-@[deprecated (since := "2025-03-06")]
+@[inherit_doc lubell_yamamoto_meshalkin_inequality_sum_card_div_choose]
 alias sum_card_slice_div_choose_le_one := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
 
 /-- The **Lubell-Yamamoto-Meshalkin inequality**, also known as the **LYM inequality**.
