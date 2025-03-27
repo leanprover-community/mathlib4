@@ -160,7 +160,6 @@ variable [Preorder α] [NoBotOrder α] [TopologicalSpace α] [ClosedIicTopology 
 
 theorem disjoint_nhds_atBot (a : α) : Disjoint (𝓝 a) atBot := by simp
 
-@[simp]
 theorem inf_nhds_atBot (a : α) : 𝓝 a ⊓ atBot = ⊥ := (disjoint_nhds_atBot a).eq_bot
 
 theorem not_tendsto_nhds_of_tendsto_atBot (hf : Tendsto f l atBot) (a : α) : ¬Tendsto f l (𝓝 a) :=
@@ -462,7 +461,6 @@ variable [Preorder α] [NoTopOrder α] [TopologicalSpace α] [ClosedIciTopology 
 
 theorem disjoint_nhds_atTop (a : α) : Disjoint (𝓝 a) atTop := disjoint_nhds_atBot (toDual a)
 
-@[simp]
 theorem inf_nhds_atTop (a : α) : 𝓝 a ⊓ atTop = ⊥ := (disjoint_nhds_atTop a).eq_bot
 
 theorem not_tendsto_nhds_of_tendsto_atTop (hf : Tendsto f l atTop) (a : α) : ¬Tendsto f l (𝓝 a) :=
