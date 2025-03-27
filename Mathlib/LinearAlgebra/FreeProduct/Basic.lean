@@ -55,9 +55,9 @@ theorem induction_lon {R : Type*} [Semiring R] {ι: Type*} [DecidableEq ι]
     (H_basic : ∀ i (x : M i), C (lof R ι M i x))
     (H_plus : ∀ (x y : ⨁ i, M i), C x → C y → C (x + y)) : C x := by
   induction x using DirectSum.induction_on with
-  | H_zero => exact H_zero
-  | H_basic => exact H_basic _ _
-  | H_plus x y hx hy => exact H_plus x y hx hy
+  | zero => exact H_zero
+  | basic => exact H_basic _ _
+  | plus x y hx hy => exact H_plus x y hx hy
 
 end DirectSum
 

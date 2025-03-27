@@ -265,11 +265,11 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 -/
 @[elab_as_elim]
 protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
-    (h_add : ∀ p q, M p → M q → M (p + q)) (h_C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) :
+    (add : ∀ p q, M p → M q → M (p + q)) (C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) :
     M p := by
-  refine p.induction_on (fun a => ?_) (fun {p q} => h_add p q) ?_ ?_ <;>
-      try exact fun n f _ => h_C_mul_T _ f
-  convert h_C_mul_T 0 a
+  refine p.induction_on (fun a => ?_) (fun {p q} => add p q) ?_ ?_ <;>
+      try exact fun n f _ => C_mul_T _ f
+  convert C_mul_T 0 a
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
@@ -284,9 +284,9 @@ theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
 
 theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
   induction f using LaurentPolynomial.induction_on' with
-  | h_add _ _ hp hq =>
+  | add _ _ hp hq =>
     rw [smul_add, mul_add, hp, hq]
-  | h_C_mul_T n s =>
+  | C_mul_T n s =>
     rw [← mul_assoc, ← smul_mul_assoc, mul_left_inj_of_invertible, ← map_mul, ← single_eq_C,
       Finsupp.smul_single', single_eq_C]
 
@@ -604,9 +604,9 @@ theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
 @[simp]
 theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by
   induction f using LaurentPolynomial.induction_on' with
-  | h_add p q hp hq=>
+  | add p q hp hq=>
     rw [mul_add, smeval_add, smeval_add, smul_add, hp, hq]
-  | h_C_mul_T n s =>
+  | C_mul_T n s =>
     rw [← mul_assoc, ← map_mul, smeval_C_mul_T_n, smeval_C_mul_T_n, mul_smul]
 
 variable (R) in

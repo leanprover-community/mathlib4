@@ -111,9 +111,9 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
 theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) grading.decompose := by
   intro zz
   induction zz using DirectSum.induction_on with
-  | H_zero => decide
-  | H_basic => decide +revert
-  | H_plus d1 d2 ih1 ih2 => simp only [map_add, ih1, ih2]
+  | zero => decide
+  | basic => decide +revert
+  | plus d1 d2 ih1 ih2 => simp only [map_add, ih1, ih2]
 
 instance : GradedAlgebra (grading R) where
   one_mem := grading.one_mem R
