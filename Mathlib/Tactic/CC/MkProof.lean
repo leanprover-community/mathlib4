@@ -281,7 +281,7 @@ partial def mkCongrProofCore (lhs rhs : Expr) (heqProofs : Bool) : CCM Expr := d
   guard (← isEqv lhsFn rhsFn <||> pureIsDefEq lhsFn rhsFn)
   guard (← pureIsDefEq (← inferType lhsFn) (← inferType rhsFn))
   /- Create `r`, a proof for
-        `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
+  `lhsFn lhsArgs[0] ... lhsArgs[n-1] = lhsFn rhsArgs[0] ... rhsArgs[n-1]`
      where `n := lhsArgs.size` -/
   let some specLemma ← mkCCHCongrTheorem lhsFn lhsArgs.size | failure
   let mut kindsIt := specLemma.argKinds

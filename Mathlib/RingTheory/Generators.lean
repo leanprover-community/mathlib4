@@ -395,8 +395,8 @@ def ofComp (Q : Generators S T) (P : Generators R S) : Hom (Q.comp P) Q where
 lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S) (v₁ v₂ a) :
     (Q.ofComp P).toAlgHom (monomial (Finsupp.sumElim v₁ v₂) a) =
       monomial v₁ (aeval P.val (monomial v₂ a)) := by
-  erw [Hom.toAlgHom_monomial]
-  rw [monomial_eq]
+  dsimp only [← comp_vars]
+  rw [Hom.toAlgHom_monomial, monomial_eq]
   simp only [MvPolynomial.algebraMap_apply, ofComp_val, aeval_monomial]
   rw [Finsupp.prod_sumElim]
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsupp_prod,
@@ -466,6 +466,10 @@ lemma Hom.toExtensionHom_comp [Algebra R S'] [IsScalarTower R S S']
     (f : P'.Hom P'') (g : P.Hom P') :
     toExtensionHom (f.comp g) = f.toExtensionHom.comp g.toExtensionHom := by ext; simp
 
+lemma Hom.toExtensionHom_toAlgHom_apply [Algebra R S'] [IsScalarTower R R' S']
+    [IsScalarTower R S S'] (f : P.Hom P') (x) :
+    f.toExtensionHom.toAlgHom x = f.toAlgHom x := rfl
+
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
@@ -526,7 +530,10 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
       | monomial v a =>
         rw [finsum_eq_sum_of_support_subset _ (this _), ← Finset.sum_filter]
         obtain ⟨v, rfl⟩ := e.symm.surjective v
-        erw [ofComp_toAlgHom_monomial_sumElim]
+        -- Rewrite `e` in the right hand side only.
+        conv_rhs => simp only [e, comp_vars, Finsupp.sumFinsuppAddEquivProdFinsupp,
+          Finsupp.sumFinsuppEquivProdFinsupp, AddEquiv.symm_mk, AddEquiv.coe_mk,
+          Equiv.coe_fn_symm_mk, ofComp_toAlgHom_monomial_sumElim]
         classical
         simp only [comp_vars, coeff_monomial, ← e.injective.eq_iff,
           map_zero, AddEquiv.apply_symm_apply, apply_ite]
