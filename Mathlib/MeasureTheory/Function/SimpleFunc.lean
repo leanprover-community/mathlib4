@@ -1140,10 +1140,10 @@ of a characteristic function, and that this multiple doesn't appear in the image
 To use in an induction proof, the syntax is `induction f using SimpleFunc.induction with`. -/
 @[elab_as_elim]
 protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : SimpleFunc α γ → Prop}
-    (h_ind :
+    (ind :
       ∀ (c) {s} (hs : MeasurableSet s),
         P (SimpleFunc.piecewise s hs (SimpleFunc.const _ c) (SimpleFunc.const _ 0)))
-    (h_add : ∀ ⦃f g : SimpleFunc α γ⦄, Disjoint (support f) (support g) → P f → P g → P (f + g))
+    (add : ∀ ⦃f g : SimpleFunc α γ⦄, Disjoint (support f) (support g) → P f → P g → P (f + g))
     (f : SimpleFunc α γ) : P f := by
   classical
   generalize h : f.range \ {0} = s
@@ -1151,7 +1151,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : 
   induction s using Finset.induction generalizing f with
   | empty =>
     rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
-    convert h_ind 0 MeasurableSet.univ
+    convert ind 0 MeasurableSet.univ
     ext x
     simp [h]
   | @insert x s hxs ih =>
@@ -1166,7 +1166,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddZeroClass γ] {P : 
         convert Set.subset_univ _
         exact preimage_const_of_mem (mem_singleton _)
       · rwa [Finset.mem_coe]
-    convert h_add _ Pg (h_ind x mx)
+    convert add _ Pg (ind x mx)
     · ext1 y
       by_cases hy : y ∈ f ⁻¹' {x}
       · simpa [g, hy]

@@ -616,10 +616,10 @@ that the property holds for (multiples of) characteristic functions of finite-me
 sets and is closed under addition (of functions with disjoint support). -/
 @[elab_as_elim]
 protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.simpleFunc E p μ → Prop}
-    (h_ind :
+    (ind :
       ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
         P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
-    (h_add :
+    (add :
       ∀ ⦃f g : α →ₛ E⦄,
         ∀ hf : MemLp f p μ,
           ∀ hg : MemLp g p μ,
@@ -634,14 +634,14 @@ protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.s
   apply SimpleFunc.induction
   · intro c s hs hf
     by_cases hc : c = 0
-    · convert h_ind 0 MeasurableSet.empty (by simp) using 1
+    · convert ind 0 MeasurableSet.empty (by simp) using 1
       ext1
       simp [hc]
-    exact h_ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
+    exact ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
   · intro f g hfg hf hg hfg'
     obtain ⟨hf', hg'⟩ : MemLp f p μ ∧ MemLp g p μ :=
       (memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable).mp hfg'
-    exact h_add hf' hg' hfg (hf hf') (hg hg')
+    exact add hf' hg' hfg (hf hf') (hg hg')
 
 end Induction
 
@@ -815,16 +815,16 @@ suffices to show that
 -/
 @[elab_as_elim]
 theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : Lp E p μ → Prop)
-    (h_ind : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
+    (ind : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
       P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
-    (h_add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
+    (add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
       P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
-    (h_closed : IsClosed { f : Lp E p μ | P f }) : ∀ f : Lp E p μ, P f := by
-  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed ?_
+    (closed : IsClosed { f : Lp E p μ | P f }) : ∀ f : Lp E p μ, P f := by
+  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f closed ?_
   refine Lp.simpleFunc.induction (α := α) (E := E) (lt_of_lt_of_le zero_lt_one _i.elim).ne'
     hp_ne_top ?_ ?_
-  · exact fun c s => h_ind c
-  · exact fun f g hf hg => h_add hf hg
+  · exact fun c s => ind c
+  · exact fun f g hf hg => add hf hg
 
 /-- To prove something for an arbitrary `MemLp` function in a second countable
 Borel normed group, it suffices to show that
@@ -840,31 +840,31 @@ of their images is a subset of `{0}`).
 -/
 @[elab_as_elim]
 theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
-    (h_ind : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → P (s.indicator fun _ => c))
-    (h_add : ∀ ⦃f g : α → E⦄, Disjoint (support f) (support g) → MemLp f p μ → MemLp g p μ →
+    (ind : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → P (s.indicator fun _ => c))
+    (add : ∀ ⦃f g : α → E⦄, Disjoint (support f) (support g) → MemLp f p μ → MemLp g p μ →
       P f → P g → P (f + g))
-    (h_closed : IsClosed { f : Lp E p μ | P f })
-    (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → P f → P g) :
+    (closed : IsClosed { f : Lp E p μ | P f })
+    (ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → P f → P g) :
     ∀ ⦃f : α → E⦄, MemLp f p μ → P f := by
   have : ∀ f : SimpleFunc α E, MemLp f p μ → P f := by
     apply SimpleFunc.induction
     · intro c s hs h
       by_cases hc : c = 0
-      · subst hc; convert h_ind 0 MeasurableSet.empty (by simp) using 1; ext; simp [const]
+      · subst hc; convert ind 0 MeasurableSet.empty (by simp) using 1; ext; simp [const]
       have hp_pos : p ≠ 0 := (lt_of_lt_of_le zero_lt_one _i.elim).ne'
-      exact h_ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
+      exact ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
     · intro f g hfg hf hg int_fg
       rw [SimpleFunc.coe_add,
         memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
-      exact h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
+      exact add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
   have : ∀ f : Lp.simpleFunc E p μ, P f := by
     intro f
     exact
-      h_ae (Lp.simpleFunc.toSimpleFunc_eq_toFun f) (Lp.simpleFunc.memLp f)
+      ae (Lp.simpleFunc.toSimpleFunc_eq_toFun f) (Lp.simpleFunc.memLp f)
         (this (Lp.simpleFunc.toSimpleFunc f) (Lp.simpleFunc.memLp f))
   have : ∀ f : Lp E p μ, P f := fun f =>
-    (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed this
-  exact fun f hf => h_ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
+    (Lp.simpleFunc.denseRange hp_ne_top).induction_on f closed this
+  exact fun f hf => ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
 
 /-- If a set of ae strongly measurable functions is stable under addition and approximates
 characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
