@@ -814,16 +814,15 @@ theorem compl_range_inl : (range (Sum.inl : α → α ⊕ β))ᶜ = range (Sum.i
 theorem compl_range_inr : (range (Sum.inr : β → α ⊕ β))ᶜ = range (Sum.inl : α → α ⊕ β) :=
   IsCompl.compl_eq isCompl_range_inl_range_inr.symm
 
-theorem preimage_sumElim_eq (s : Set γ) (f : α → γ) (g : β → γ) :
+theorem preimage_sumElim (s : Set γ) (f : α → γ) (g : β → γ) :
     Sum.elim f g ⁻¹' s = Sum.inl '' (f ⁻¹' s) ∪ Sum.inr '' (g ⁻¹' s) := by
-  ext x
-  cases x <;> simp
+  ext (_ | _) <;> simp
 
 theorem image_preimage_inl_union_image_preimage_inr (s : Set (α ⊕ β)) :
     Sum.inl '' (Sum.inl ⁻¹' s) ∪ Sum.inr '' (Sum.inr ⁻¹' s) = s := by
   rw [← preimage_sumElim_eq, Sum.elim_inl_inr, preimage_id]
 
-theorem image_sumElim_eq (s : Set (α ⊕ β)) (f : α → γ) (g : β → γ) :
+theorem image_sumElim (s : Set (α ⊕ β)) (f : α → γ) (g : β → γ) :
     Sum.elim f g '' s = f '' (Sum.inl ⁻¹' s) ∪ g '' (Sum.inr ⁻¹' s) := by
   rw [← image_preimage_inl_union_image_preimage_inr s]
   simp [image_union, image_image, preimage_image_preimage]
@@ -1385,9 +1384,9 @@ theorem preimage_eq_empty_iff {s : Set β} : f ⁻¹' s = ∅ ↔ Disjoint s (ra
 section
 
 @[simp]
-theorem disjoint_image_inl_image_inr (u : Set α) (v : Set β) :
+theorem disjoint_image_inl_image_inr {u : Set α} {v : Set β} :
     Disjoint (Sum.inl '' u) (Sum.inr '' v) :=
-  disjoint_image_image fun b hb c hc ↦ (by simp)
+  disjoint_image_image <| by simp
 
 @[simp]
 theorem disjoint_range_inl_image_inr (v : Set β) :
