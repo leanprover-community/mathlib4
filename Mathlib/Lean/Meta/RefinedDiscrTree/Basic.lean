@@ -200,8 +200,12 @@ structure LazyEntry where
   stack    : List StackEntry := []
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
-  /-- `MVarId`s corresponding to the `.labelledStar` labels. The index in the array is the label. -/
-  stars    : Array MVarId := #[]
+  /--
+  `MVarId`s corresponding to the `.labelledStar` labels. The index in the array is the label.
+  It is `none` if we use `.star` instead of `labelledStar`,
+  for example when encoding the lookup expression.
+  -/
+  stars?   : Option (Array MVarId)
   /--
   The `Key`s that have already been computed.
 
@@ -212,9 +216,7 @@ structure LazyEntry where
   results  : List Key := []
   /-- The cache of past computations that have multiple possible outcomes. -/
   cache    : AssocList Expr (List Key) := {}
-
-instance : Inhabited (LazyEntry) where
-  default := { mctx := {} }
+deriving Inhabited
 
 private def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
   let mut parts := #[f!"stack: {entry.stack}"]
@@ -269,12 +271,11 @@ structure RefinedDiscrTree (α : Type) where
   root : Std.HashMap Key TrieIndex := {}
   /-- Array of trie entries. Should be owned by this trie. -/
   tries : Array (Trie α) := #[]
+deriving Inhabited
 
 namespace RefinedDiscrTree
 
 variable {α : Type}
-
-instance : Inhabited (RefinedDiscrTree α) := ⟨{}⟩
 
 private partial def format [ToFormat α] (tree : RefinedDiscrTree α) : Format :=
   let lines := tree.root.fold (init := #[]) fun lines key trie =>

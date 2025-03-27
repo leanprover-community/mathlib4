@@ -344,7 +344,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys ← RefinedDiscrTree.initializeLazyEntryWithEta b'
+      let keys ← RefinedDiscrTree.initializeLazyEntryWithEta b' (labelledStars := false)
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName

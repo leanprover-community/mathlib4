@@ -160,7 +160,7 @@ private structure PartialMatch where
   score : Nat
   /-- Trie to match next -/
   trie : TrieIndex
-  /-- Metavariable assignments for `.star` patterns in the discrimination tree.
+  /-- Metavariable assignments for `.labelledStar` patterns in the discrimination tree.
     We use a `List Key`, in the reverse order. -/
   treeStars : Std.HashMap Nat (List Key) := {}
   deriving Inhabited
@@ -230,15 +230,13 @@ where
   isEq (lhs rhs : List Key) : Option (List Key × List Key) := do
     match lhs with
     | [] => panic! "too few keys"
-    | .star :: lhs
-    | .labelledStar _ :: lhs =>
+    | .star :: lhs =>
       let (_, rhs) := drop [] rhs 1
       return (lhs, rhs)
     | lHead :: lhs =>
     match rhs with
     | [] => panic! "too few keys"
-    | .star :: rhs
-    | .labelledStar _ :: rhs =>
+    | .star :: rhs =>
       let (_, lhs) := drop [] lhs 1
       return (lhs, rhs)
     | rHead :: rhs =>
@@ -268,7 +266,7 @@ private partial def getMatchLoop (todo : Array PartialMatch) (result : MatchResu
     | key :: keys =>
       let pMatch := { pMatch with keys }
       match key with
-      | .star | .labelledStar _ =>
+      | .star =>
         if unify then
           let todo ← matchQueryStar pMatch.trie pMatch todo
           getMatchLoop todo result unify
@@ -299,17 +297,17 @@ Find values that match `e` in `d`.
 -/
 def getMatch (d : RefinedDiscrTree α) (e : Expr) (unify matchRootStar : Bool) :
     MetaM (MatchResult α × RefinedDiscrTree α) := do
-  let (key, keys) ← encodeExpr e
   withReducible do runTreeM d do
+    let (key, keys) ← encodeExpr e (labelledStars := false)
     let pMatch : PartialMatch := { keys, score := 0, trie := default }
-    if key == .star || key == .labelledStar 0 then
+    if key == .star then
       if matchRootStar then
         if unify then
           matchEverything d
         else
           matchTreeRootStar d.root
       else
-        return {}
+        throwError m! "The expression {e} has pattern `*`, so we don't return any match results."
     else
       let todo := matchKey key d.root pMatch #[]
       if matchRootStar then

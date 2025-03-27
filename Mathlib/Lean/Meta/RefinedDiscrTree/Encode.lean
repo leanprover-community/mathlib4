@@ -85,13 +85,14 @@ private structure Context where
 /-- The monad used for evaluating a `LazyEntry`. -/
 private abbrev LazyM := ReaderT Context <| StateT LazyEntry MetaM
 
-variable {α : Type}
-
 private def mkLabelledStar (mvarId : MVarId) : LazyM Key :=
   modifyGet fun entry =>
-    match entry.stars.idxOf? mvarId with
-    | some idx => (.labelledStar idx, entry)
-    | none => (.labelledStar entry.stars.size, { entry with stars := entry.stars.push mvarId })
+    if let some stars := entry.stars? then
+      match stars.idxOf? mvarId with
+      | some idx => (.labelledStar idx, entry)
+      | none => (.labelledStar stars.size, { entry with stars? := stars.push mvarId })
+    else
+      (.star, entry)
 
 /--
 Sometimes, we need to not index lambda binders, in particular when the body is the application of
@@ -159,7 +160,7 @@ where
       We create a `.labelledStar` key that is identified by `mvarId`,
       so that multiple appearances of `.mvar mvarId` are indexed the same.
       -/
-      return ← mkLabelledStar mvarId
+      mkLabelledStar mvarId
   | .forallE .. =>
     setEAsPrevious
     return .forall
@@ -204,7 +205,7 @@ where
 
 /-- Repeatedly reduce while stripping lambda binders and introducing their variables -/
 @[specialize]
-private partial def lambdaTelescopeReduce {m} [Nonempty (m α)] [Monad m] [MonadLiftT MetaM m]
+private partial def lambdaTelescopeReduce {m} {α} [Nonempty (m α)] [Monad m] [MonadLiftT MetaM m]
     [MonadControlT MetaM m] (e : Expr) (lambdas : List FVarId) (noIndex : List FVarId → m α)
     (k : Expr → List FVarId → m α) : m α := do
   /- expressions marked with `no_index` should be indexed with a star -/
@@ -231,17 +232,21 @@ private def encodingStep (original : Expr) (root : Bool) : LazyM Key := do
     (fun e lambdas => encodingStepAux e lambdas root)
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-@[inline] def initializeLazyEntryWithEtaAux (e : Expr) : MetaM (List (Key × LazyEntry)) := do
-  encodingStepWithEta e true { mctx := ← getMCtx } |>.run { bvars := [] }
+@[inline] def initializeLazyEntryWithEtaAux (e : Expr) (labelledStars : Bool) :
+    MetaM (List (Key × LazyEntry)) := do
+  let stars? := if labelledStars then some #[] else none
+  encodingStepWithEta e true { mctx := ← getMCtx, stars? } |>.run { bvars := [] }
 
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-def initializeLazyEntryWithEta (e : Expr) : MetaM (List (Key × LazyEntry)) := do
-  withReducible do initializeLazyEntryWithEtaAux e
+def initializeLazyEntryWithEta (e : Expr) (labelledStars : Bool) :
+    MetaM (List (Key × LazyEntry)) := do
+  withReducible do initializeLazyEntryWithEtaAux e labelledStars
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-private def initializeLazyEntry (e : Expr) : MetaM (Key × LazyEntry) := do
-  encodingStep e true |>.run { bvars := [] } |>.run { mctx := ← getMCtx }
+private def initializeLazyEntry (e : Expr) (labelledStars : Bool) : MetaM (Key × LazyEntry) := do
+  let stars? := if labelledStars then some #[] else none
+  encodingStep e true |>.run { bvars := [] } |>.run { mctx := ← getMCtx, stars? }
 
 
 /-- If there is a loose `.bvar` returns `none`. Otherwise returns the index
@@ -409,9 +414,10 @@ private def evalLazyEntry' (entry : LazyEntry) :
 
 
 /-- Return all encodings of `e` as a `Array Key`. This is used for testing. -/
-partial def encodeExprWithEta (e : Expr) : MetaM (Array (Array Key)) :=
+partial def encodeExprWithEta (e : Expr) (labelledStars : Bool) : MetaM (Array (Array Key)) :=
   withReducible do
-    let entries ← encodingStepWithEta e true { mctx := ← getMCtx } |>.run { bvars := [] }
+    let stars? := if labelledStars then some #[] else none
+    let entries ← encodingStepWithEta e true { mctx := ← getMCtx, stars? } |>.run { bvars := [] }
     let entries := entries.map fun (key, entry) => (#[key], entry)
     go entries.toArray #[]
 where
@@ -445,8 +451,8 @@ partial def LazyEntry.toList (entry : LazyEntry) (result : List Key := []) : Met
 
 /-- Return the canonical encoding of `e` as a `Array Key`.
 This is used for looking up `e` in a `RefinedDiscrTree`. -/
-def encodeExpr (e : Expr) : MetaM (Key × List Key) := withReducible do
-  let (key, entry) ← initializeLazyEntry e
+def encodeExpr (e : Expr) (labelledStars : Bool) : MetaM (Key × List Key) := withReducible do
+  let (key, entry) ← initializeLazyEntry e labelledStars
   return (key, ← entry.toList)
 
 end Lean.Meta.RefinedDiscrTree
