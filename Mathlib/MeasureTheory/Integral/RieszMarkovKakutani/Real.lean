@@ -62,8 +62,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
   have Lfnonneg : 0 ≤ Λ f := by
     apply hΛ
     intro x
-    simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.zero_apply, coe_toContinuousMap]
-    exact (hf x).1
+    simp [(hf x).1]
   rw [rieszMeasure, ← Compacts.coe_mk K hK, Content.measure_eq_content_of_regular
     (rieszContent (toNNRealLinear Λ hΛ)) (contentRegular_rieszContent (toNNRealLinear Λ hΛ))
     ⟨K, hK⟩, rieszContent]
@@ -72,16 +71,15 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
   intro ε hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ) ⟨K, hK⟩
     (Real.toNNReal_pos.mpr hε)
-  simp only [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
+  simp_rw [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
   apply le_of_lt (lt_of_le_of_lt _ hg.2)
   apply monotone_of_nonneg hΛ
   intro x
   simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap]
   by_cases hx : x ∈ tsupport f
-  · simp only [coe_toRealLinearMap, toReal_apply]
+  · rw [coe_toRealLinearMap, toReal_apply]
     exact le_trans (hf x).2 (hg.1 x (mem_of_subset_of_mem h hx))
-  · rw [image_eq_zero_of_nmem_tsupport hx]
-    simp
+  · simp [image_eq_zero_of_nmem_tsupport hx]
 
 /-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
 `Λ f ≤ rieszMeasure V`. -/
@@ -105,13 +103,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   simp only [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
   refine ⟨(fun x hx => Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
-  simp only [toNNRealLinear_apply]
-  have : f.nnrealPart.toReal = f := by
-    ext z
-    simp only [toReal_apply, nnrealPart_apply, Real.coe_toNNReal', sup_eq_left]
-    exact hf z
-  rw [this]
-  exact hp
+  rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
 
 /-- An `Ioc` partitions into a finite union of `Ioc`s. -/
 private lemma RMK_iUnion_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) :
@@ -200,8 +192,8 @@ private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε
       · exact hx
     · have (n : Fin N) : E n ⊆ tsupport f := by simp [inter_subset_right, E]
       exact iUnion_subset this
-  exact ⟨partition, disjoint, fun n x a ↦ bdd n x a, fun _ ↦
-    (f.1.measurable measurableSet_Ioc).inter measurableSet_closure⟩
+  exact ⟨partition, disjoint, fun n x a ↦ bdd n x a,
+    fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure⟩
 
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
@@ -231,10 +223,10 @@ private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
 omit [LocallyCompactSpace X] in
-/- Define simultaneously sets `V` which are open approximations to the sets `E`. -/
-private lemma RMK_open' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X, ℝ))
-    {y : Fin N → ℝ} (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε)
-    {ν : Content X} (hν : ∀ n, ν.measure (E n) < ⊤) (hν' : ∀ n, MeasurableSet (E n)):
+/- Define simultaneously sets which are each open approximations and obtain particular estimates. -/
+private lemma RMK_open' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X, ℝ)) {y : Fin N → ℝ}
+    (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε) {ν : Content X}
+    (hν : ∀ n, ν.measure (E n) < ⊤) (hν' : ∀ n, MeasurableSet (E n)) :
     ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε)
     ∧ ν.measure (V n) ≤ ν.measure (E n) + ENNReal.ofReal (ε / N) := by
   have h (n : Fin N) (x : X) (hx : x ∈ E n) := lt_add_of_le_of_pos (hy n x hx) hε
@@ -280,9 +272,7 @@ integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
 private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
   -- The case `IsEmpty X` is elementry.
-  · have : Λ f = 0 := by
-      rw [show f = 0 by ext x; refine isEmptyElim x]
-      exact LinearMap.map_zero Λ
+  · have : Λ f = 0 := by rw [show f = 0 by ext x; refine isEmptyElim x, LinearMap.map_zero Λ]
     rw [integral_of_isEmpty, this]
   -- Now assuming `Nonempty X`
   · rw [not_isEmpty_iff] at hX
@@ -375,18 +365,15 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
             · exact lt_top_iff_ne_top.mp (hE' n)
             · exact ENNReal.ofReal_ne_top
     · -- use that `μ K ≤ Λ (∑ n, g n)`
-      have h :(μ K).toReal ≤ Λ (∑ n, g n) := by
-        have h : ∀ x, 0 ≤ (∑ n, g n) x := by
-          intro x
-          rw [coe_sum, Finset.sum_apply]
-          exact Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
-        have h' : ∀ x ∈ K, (∑ n, g n) x = 1 := by intro _ hx; simp [hg.2.1 hx]
-        apply ENNReal.toReal_le_of_le_ofReal
-        · refine hΛ (∑ n, g n) (fun x ↦ h x)
-        · exact rieszMeasure_le_of_eq_one hΛ h f.2 h'
       gcongr
       rw [Eq.symm (map_sum Λ g _)]
-      exact h
+      have h x : 0 ≤ (∑ n, g n) x := by
+        rw [coe_sum, Finset.sum_apply]
+        exact Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
+      have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
+      apply ENNReal.toReal_le_of_le_ofReal
+      · exact hΛ (∑ n, g n) (fun x ↦ h x)
+      · exact rieszMeasure_le_of_eq_one hΛ h f.2 h'
     · -- Rearrange the sums
       simp_rw [mul_add]
       have (n : Fin N) : (|a| + y n + ε') * (μ (E n)).toReal =
@@ -394,8 +381,7 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
       simp_rw [this]
       have : ∑ i, (μ (E i)).toReal = (μ K).toReal := by
         suffices h : μ K = ∑ i, (μ (E i)) by
-          rw [h]
-          exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ LT.lt.ne_top (hE' n)
+          rw [h]; exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ LT.lt.ne_top (hE' n)
         dsimp [K]; rw [hE.1]
         rw [measure_iUnion (fun m n hmn ↦ hE.2.1 trivial trivial hmn) hE.2.2.2]
         exact tsum_fintype fun b ↦ μ (E b)
@@ -409,22 +395,17 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
           _ = ∫ x in (⋃ n, E n), f x ∂μ := by
             apply Eq.symm
             apply integral_fintype_iUnion hE.2.2.2 (fun ⦃i j⦄ ↦ hE.2.1 trivial trivial)
-            have : Integrable f μ := by
-              dsimp [μ, rieszMeasure]
-              exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
-            exact fun _ ↦ Integrable.integrableOn this
+            refine fun _ ↦ Integrable.integrableOn ?_
+            dsimp [μ, rieszMeasure]
+            exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
           _ = ∫ x in tsupport f, f x ∂μ := by simp_rw [hE.1]
           _ = _ := setIntegral_tsupport
       intro n
       apply setIntegral_ge_of_const_le (hE.2.2.2 n)
-      · dsimp [μ]
-        rw [rieszMeasure]
-        rw [Content.measure_apply _ (hE.2.2.2 n)]
-        push_neg
-        rw [← lt_top_iff_ne_top]
-        have (n : Fin N): E n ⊆ tsupport f :=
-          le_of_le_of_eq (subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a) (Eq.symm hE.1)
-        apply lt_of_le_of_lt (OuterMeasure.mono _ (this n))
+      · dsimp [μ]; push_neg
+        rw [rieszMeasure, Content.measure_apply _ (hE.2.2.2 n), ← lt_top_iff_ne_top]
+        have := le_of_le_of_eq (subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a) (Eq.symm hE.1)
+        apply lt_of_le_of_lt (OuterMeasure.mono _ this)
         exact Content.outerMeasure_lt_top_of_isCompact _ f.2
       · intro x hx
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
@@ -442,22 +423,15 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
         ← add_assoc, ← add_assoc]
       gcongr
       · exact le_of_lt hε'.1
-      · have (n : Fin N) := calc
-          y n = a + ε' * (n + 1) := by exact rfl
-          _ ≤ a + ε' * N := by
-            have : (n : ℝ) + 1 ≤ N := by norm_cast; omega
-            simp_all
-          _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
-        have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
-        simp only [Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul] at this
+      · have h : ∑ n : Fin N, y n ≤ N * b := by
+          have (n : Fin N) := calc y n
+            _ ≤ a + ε' * N := by simp_all [y, show (n : ℝ) + 1 ≤ N by norm_cast; omega]
+            _ = b := by field_simp [ε', ← mul_div_assoc, mul_div_cancel_left₀]
+          have : ∑ n, y n ≤ ∑ n, b := Finset.sum_le_sum (fun n ↦ fun _ ↦ this n)
+          simp_all
         calc
-          _ ≤ 1 / N * (N * b) := by
-            refine (mul_le_mul_iff_of_pos_left ?_).mpr this
-            exact one_div_pos.mpr <| Nat.cast_pos'.mpr hN
-          _ ≤ _ := by
-            rw [mul_comm, mul_assoc, mul_comm, mul_assoc]
-            rw [div_mul_cancel₀ _ (Nat.cast_ne_zero.mpr <| Nat.not_eq_zero_of_lt hN)]
-            simp
+          _ ≤ 1 / N * (N * b) := by simp [h, hN]
+          _ ≤ _ := by simp [div_mul_cancel₀, Nat.cast_ne_zero.mpr <| Nat.not_eq_zero_of_lt hN]
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal to `Λ f`. -/
