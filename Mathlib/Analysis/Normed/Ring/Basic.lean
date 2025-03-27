@@ -84,15 +84,18 @@ instance (priority := 100) NormedRing.toNonUnitalNormedRing [β : NormedRing α]
 
 /-- A non-unital seminormed commutative ring is a non-unital commutative ring endowed with a
 seminorm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NonUnitalSeminormedCommRing (α : Type*) extends NonUnitalSeminormedRing α where
-  /-- Multiplication is commutative. -/
-  mul_comm : ∀ x y : α, x * y = y * x
+class NonUnitalSeminormedCommRing (α : Type*)
+    extends NonUnitalSeminormedRing α, NonUnitalCommRing α where
+
+-- see Note [lower instance priority]
+attribute [instance 100] NonUnitalSeminormedCommRing.toNonUnitalCommRing
 
 /-- A non-unital normed commutative ring is a non-unital commutative ring endowed with a
 norm which satisfies the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NonUnitalNormedCommRing (α : Type*) extends NonUnitalNormedRing α where
-  /-- Multiplication is commutative. -/
-  mul_comm : ∀ x y : α, x * y = y * x
+class NonUnitalNormedCommRing (α : Type*) extends NonUnitalNormedRing α, NonUnitalCommRing α where
+
+-- see Note [lower instance priority]
+attribute [instance 100] NonUnitalNormedCommRing.toNonUnitalCommRing
 
 -- see Note [lower instance priority]
 /-- A non-unital normed commutative ring is a non-unital seminormed commutative ring. -/
@@ -102,15 +105,17 @@ instance (priority := 100) NonUnitalNormedCommRing.toNonUnitalSeminormedCommRing
 
 /-- A seminormed commutative ring is a commutative ring endowed with a seminorm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class SeminormedCommRing (α : Type*) extends SeminormedRing α where
-  /-- Multiplication is commutative. -/
-  mul_comm : ∀ x y : α, x * y = y * x
+class SeminormedCommRing (α : Type*) extends SeminormedRing α, CommRing α where
+
+-- see Note [lower instance priority]
+attribute [instance 100] SeminormedCommRing.toCommRing
 
 /-- A normed commutative ring is a commutative ring endowed with a norm which satisfies
 the inequality `‖x y‖ ≤ ‖x‖ ‖y‖`. -/
-class NormedCommRing (α : Type*) extends NormedRing α where
-  /-- Multiplication is commutative. -/
-  mul_comm : ∀ x y : α, x * y = y * x
+class NormedCommRing (α : Type*) extends NormedRing α, CommRing α where
+
+-- see Note [lower instance priority]
+attribute [instance 100] NormedCommRing.toCommRing
 
 -- see Note [lower instance priority]
 /-- A seminormed commutative ring is a non-unital seminormed commutative ring. -/
@@ -158,15 +163,6 @@ theorem NormOneClass.nontrivial : Nontrivial G :=
 end SeminormedAddCommGroup
 
 end NormOneClass
-
--- see Note [lower instance priority]
-instance (priority := 100) NonUnitalSeminormedCommRing.toNonUnitalCommRing
-    [β : NonUnitalSeminormedCommRing α] : NonUnitalCommRing α :=
-  { β with }
-
--- see Note [lower instance priority]
-instance (priority := 100) SeminormedCommRing.toCommRing [β : SeminormedCommRing α] : CommRing α :=
-  { β with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) NonUnitalNormedRing.toNormedAddCommGroup [β : NonUnitalNormedRing α] :
