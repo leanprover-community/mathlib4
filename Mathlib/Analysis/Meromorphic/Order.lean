@@ -200,7 +200,7 @@ theorem order_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) 
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
     simp_all [g, ← smul_assoc, ← zpow_add', sub_ne_zero]
   have t₀ : MeromorphicAt ((·  - x) ^ n) x := by fun_prop
-  have t₁ : t₀.order = n := (t₀.order_eq_int_iff _).mpr ⟨1, analyticAt_const, by simp⟩
+  have t₁ : t₀.order = n := t₀.order_eq_int_iff.2 ⟨1, analyticAt_const, by simp⟩
   rw [(hf₁.add hf₂).order_congr this, t₀.order_smul h₁g.meromorphicAt, t₁]
   exact le_add_of_nonneg_right h₁g.meromorphicAt_order_nonneg
 
@@ -221,12 +221,10 @@ lemma order_add_of_order_lt_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromo
   obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf₁.order_eq_int_iff.1 hn₁.symm
   obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hf₂.order_eq_int_iff.1 hn₂.symm
   rw [(hf₁.add hf₂).order_eq_int_iff]
-  use g₁ + (· - x) ^ (n₂ - n₁) • g₂
-  constructor
+  refine ⟨g₁ + (· - x) ^ (n₂ - n₁) • g₂, ?_, ?_, ?_⟩
   · apply h₁g₁.add (AnalyticAt.smul _ h₁g₂)
     apply AnalyticAt.zpow_nonneg (by fun_prop)
       (sub_nonneg.2 (le_of_lt (WithTop.coe_lt_coe.1 h)))
-  constructor
   · simpa [zero_zpow _ <| sub_ne_zero.mpr (WithTop.coe_lt_coe.1 h).ne']
   · filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
     simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
