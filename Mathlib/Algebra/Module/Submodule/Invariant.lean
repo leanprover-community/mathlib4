@@ -46,11 +46,11 @@ variable {f}
 
 lemma inf_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
     p ⊓ q ∈ f.invtSubmodule :=
-  ((⟨p, hp⟩ : f.invtSubmodule) ⊓ (⟨q, hq⟩ : f.invtSubmodule)).property
+  Sublattice.inf_mem hp hq
 
 lemma sup_mem {p q : Submodule R M} (hp : p ∈ f.invtSubmodule) (hq : q ∈ f.invtSubmodule) :
     p ⊔ q ∈ f.invtSubmodule :=
-  ((⟨p, hp⟩ : f.invtSubmodule) ⊔ (⟨q, hq⟩ : f.invtSubmodule)).property
+  Sublattice.sup_mem hp hq
 
 variable (f)
 
