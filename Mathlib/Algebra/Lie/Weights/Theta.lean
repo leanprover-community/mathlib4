@@ -453,49 +453,44 @@ theorem theta_pow_2 (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα :
   rw [this, theta_h H hnz heα hfα t ht h, theta_hα H hnz heα hfα t ht, smul_neg, sub_neg_eq_add,
     sub_add_cancel]
 
-theorem theta_act {x : L} {β : Weight K H L} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α)
-    (hfα : fα ∈ rootSpace H (- α)) (t : Kˣ) (ht : IsSl2Triple hα eα fα) (hx : x ∈ rootSpace H β) :
-      (theta H hnz heα hfα t) x ∈ rootSpace H (β - β (IsKilling.coroot α) • α) := by
+theorem theta_root_space_reflect {b : L} {β : Weight K H L} (hnz : α.IsNonZero)
+    (heα : eα ∈ rootSpace H α) (hfα : fα ∈ rootSpace H (- α)) (t : Kˣ) (ht : IsSl2Triple hα eα fα)
+      (hx : b ∈ rootSpace H β) :
+        (theta H hnz heα hfα t) b ∈ rootSpace H (β - β (IsKilling.coroot α) • α) := by
   have hef := IsKilling.lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
   lift hα to H using by simpa only [← ht.lie_e_f, hef] using H.smul_mem _ (Submodule.coe_mem _)
-  have key : ∀ (h : H), ⁅h, (theta H hnz heα hfα t) x⁆ =
-      ((β - β (IsKilling.coroot α) • α : H → K) h) • ((theta H hnz heα hfα t) x) := by
+  have key : ∀ (h : H), ⁅h, (theta H hnz heα hfα t) b⁆ =
+      ((β - β (IsKilling.coroot α) • α : H → K) h) • ((theta H hnz heα hfα t) b) := by
     intro h
-    have hh := theta_pow_2 H hnz heα hfα t ht h
-    have : ⁅h, (theta H hnz heα hfα t) x⁆ = ⁅(theta H hnz heα hfα t) ((theta H hnz heα hfα t) h), (theta H hnz heα hfα t) x⁆ := by
-      rw [hh]
-      simp
+    have : ⁅h, (theta H hnz heα hfα t) b⁆ =
+        ⁅(theta H hnz heα hfα t) ((theta H hnz heα hfα t) h), (theta H hnz heα hfα t) b⁆ := by
+      rw [theta_pow_2 H hnz heα hfα t ht h, LieSubalgebra.coe_bracket_of_module]
     rw [this]
-    have : ⁅(theta H hnz heα hfα t) ((theta H hnz heα hfα t) h), (theta H hnz heα hfα t) x⁆ =
-        (theta H hnz heα hfα t) ⁅((theta H hnz heα hfα t) h), x⁆ := by
-      exact Eq.symm (LieEquiv.map_lie (theta H hnz heα hfα t) ((theta H hnz heα hfα t) ↑h) x)
-    rw [this]
-    rw [theta_h H hnz heα hfα t ht h]
+    have : ⁅(theta H hnz heα hfα t) ((theta H hnz heα hfα t) h), (theta H hnz heα hfα t) b⁆ =
+        (theta H hnz heα hfα t) ⁅((theta H hnz heα hfα t) h), b⁆ := by
+      exact Eq.symm (LieEquiv.map_lie (theta H hnz heα hfα t) ((theta H hnz heα hfα t) ↑h) b)
+    rw [this, theta_h H hnz heα hfα t ht h]
     have := IsKilling.lie_eq_smul_of_mem_rootSpace hx (h - α h • hα)
-    have zzz : (theta H hnz heα hfα t) ⁅h - α h • hα, x⁆ = (theta H hnz heα hfα t) (β (h - α h • hα) • x) := by
+    have : (theta H hnz heα hfα t) ⁅h - α h • hα, b⁆ =
+        (theta H hnz heα hfα t) (β (h - α h • hα) • b) := by
       rw [this]
-    erw [zzz]
-    have : (theta H hnz heα hfα t) (β (h - α h • hα) • x) = β (h - α h • hα) • ((theta H hnz heα hfα t) x) := by
+    erw [this]
+    have : (theta H hnz heα hfα t) (β (h - α h • hα) • b) =
+        β (h - α h • hα) • ((theta H hnz heα hfα t) b) := by
       apply LinearMap.map_smul
     rw [this]
     have cor := _root_.IsSl2Triple.h_eq_coroot hnz ht heα hfα
     rw [SetLike.coe_eq_coe] at cor
-    rw [cor.symm]
-    simp
-    have : (β h - α h * β hα) = (β h - β hα * α h) := by
-      rw [mul_comm]
-    rw [this]
-  simp at key
-  have := (mem_genWeightSpace (L := H) (R := K) L (β - β (IsKilling.coroot α) • α)
-    ((theta H hnz heα hfα t) x)).2
-  apply this
+    rw [cor.symm, map_sub, map_smul, smul_eq_mul, Pi.sub_apply, Pi.smul_apply, smul_eq_mul,
+      mul_comm]
+  simp only [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, Subtype.forall] at key
+  apply (mem_genWeightSpace (L := H) (R := K) L (β - β (IsKilling.coroot α) • α)
+    ((theta H hnz heα hfα t) b)).2
   intro h
   obtain ⟨aa, bb⟩ := h
   use 1
-  simp
-  have := key aa bb
-  rw [this.symm]
-  simp
+  rw [Pi.sub_apply, Pi.smul_apply, smul_eq_mul, pow_one, LinearMap.sub_apply,  toEnd_apply_apply,
+    LinearMap.smul_apply, LinearMap.one_apply, (key aa bb).symm, sub_self]
 
 end ThetaGeneral
 
