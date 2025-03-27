@@ -216,7 +216,7 @@ instance Int.instNormOneClass : NormOneClass ℤ :=
 instance Int.instNormMulClass : NormMulClass ℤ :=
   ⟨fun a b ↦ by simp [← Int.norm_cast_real, abs_mul]⟩
 
-section NonUnital
+section NonUnitalNormedRing
 variable [NonUnitalNormedRing α] [NormMulClass α] {a : α}
 
 lemma antilipschitzWith_mul_left {a : α} (ha : a ≠ 0) : AntilipschitzWith (‖a‖₊⁻¹) (a * ·) :=
@@ -256,7 +256,7 @@ lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 
 end Filter
 
-end NonUnital
+end NonUnitalNormedRing
 
 section NormedRing
 variable [NormedRing α] [NormMulClass α] [NormOneClass α] {a : α}
