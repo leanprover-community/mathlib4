@@ -52,6 +52,8 @@ def mkNestedExists (fvars : List FvarQ) (body : Expr) : MetaM Expr := do
     let res ← mkNestedExists tl body
     pure <| ← mkAppOptM ``Exists #[.some β, .some <| ← mkLambdaFVars #[b] res]
 
+/-- Finds path for `findEq`. It is a fast version that should quickly return `none` when the simproc
+is not applicable. -/
 partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
     MetaM <| Option Path := do
   match_expr P with
@@ -94,7 +96,9 @@ partial def findEq {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
   let .some path ← findEqPath a P | return none
   let .some (res, a', lctx, fvars) ← go a P path | failure
   return (res, a', lctx, fvars, path)
-where go {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :
+where
+  /-- Recursive part of `findEq`. -/
+  go {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :
     MetaM <| Option (Q(Prop) × Q($α) × LocalContext × List FvarQ) := do
   match P with
   | ~q(@Eq.{u} $γ $x $y) =>
