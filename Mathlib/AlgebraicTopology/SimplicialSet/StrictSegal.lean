@@ -54,6 +54,16 @@ class IsStrictSegal : Prop where
 
 namespace StrictSegal
 
+/-- Given `IsStrictSegal X`, a choice of inverse to `spine X m` for all
+`m ≤ n + 1` determines an inhabitant of `StrictSegal X`. -/
+noncomputable def ofIsStrictSegal [IsStrictSegal X] : StrictSegal X where
+  spineToSimplex m h :=
+    Equiv.ofBijective (X.spine m) (IsStrictSegal.segal m h) |>.invFun
+  spine_spineToSimplex m _ :=
+    funext <| Equiv.ofBijective (X.spine m) _ |>.right_inv
+  spineToSimplex_spine m _ :=
+    funext <| Equiv.ofBijective (X.spine m) _ |>.left_inv
+
 variable {X} (sx : StrictSegal X)
 
 section spineToSimplex
@@ -222,6 +232,16 @@ class IsStrictSegal : Prop where
   segal (n : ℕ) : Function.Bijective (spine X n)
 
 namespace StrictSegal
+
+/-- Given `IsStrictSegal X`, a choice of inverse to `spine X n` for all `n : ℕ`
+determines an inhabitant of `StrictSegal X`. -/
+noncomputable def ofIsStrictSegal [IsStrictSegal X] : StrictSegal X where
+  spineToSimplex {n} :=
+    Equiv.ofBijective (X.spine n) (IsStrictSegal.segal n) |>.invFun
+  spine_spineToSimplex n :=
+    funext <| Equiv.ofBijective (X.spine n) _ |>.right_inv
+  spineToSimplex_spine n :=
+    funext <| Equiv.ofBijective (X.spine n) _ |>.left_inv
 
 variable {X} (sx : StrictSegal X)
 

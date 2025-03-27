@@ -89,4 +89,8 @@ theorem quasicategory {X : SSet.{u}} (sx : StrictSegal X) : Quasicategory X := b
       rw [mkOfSucc_δ_eq heq]
       fin_cases z <;> rfl
 
+/-- Any simplicial set satisfying `IsStrictSegal` is a `Quasicategory`. -/
+instance quasicategory' (X : SSet.{u}) [IsStrictSegal X] : Quasicategory X :=
+  quasicategory <| ofIsStrictSegal X
+
 end SSet.StrictSegal
