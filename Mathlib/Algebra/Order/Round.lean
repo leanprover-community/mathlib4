@@ -61,8 +61,6 @@ theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
 theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
   rw [round, round, Int.fract_add_int, Int.floor_add_int, Int.ceil_add_int, ← apply_ite₂, ite_self]
 
-@[deprecated (since := "2025-03-27")] alias round_add_int := round_add_intCast
-
 @[deprecated (since := "2025-03-23")]
 alias round_add_int := round_add_intCast
 
@@ -76,8 +74,6 @@ theorem round_sub_intCast (x : α) (y : ℤ) : round (x - y) = round x - y := by
   norm_cast
   rw [round_add_intCast, sub_eq_add_neg]
 
-@[deprecated (since := "2025-03-27")] alias round_sub_int := round_sub_intCast
-
 @[deprecated (since := "2025-03-23")]
 alias round_sub_int := round_sub_intCast
 
@@ -88,8 +84,6 @@ theorem round_sub_one (a : α) : round (a - 1) = round a - 1 := by
 @[simp]
 theorem round_add_natCast (x : α) (y : ℕ) : round (x + y) = round x + y :=
   mod_cast round_add_intCast x y
-
-@[deprecated (since := "2025-03-27")] alias round_add_nat := round_add_natCast
 
 @[deprecated (since := "2025-03-23")]
 alias round_add_nat := round_add_natCast
@@ -103,8 +97,6 @@ theorem round_add_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
 theorem round_sub_natCast (x : α) (y : ℕ) : round (x - y) = round x - y :=
   mod_cast round_sub_intCast x y
 
-@[deprecated (since := "2025-03-27")] alias round_sub_nat := round_sub_natCast
-
 @[deprecated (since := "2025-03-23")]
 alias round_sub_nat := round_sub_natCast
 
@@ -117,16 +109,12 @@ theorem round_sub_ofNat (x : α) (n : ℕ) [n.AtLeastTwo] :
 theorem round_intCast_add (x : α) (y : ℤ) : round ((y : α) + x) = y + round x := by
   rw [add_comm, round_add_intCast, add_comm]
 
-@[deprecated (since := "2025-03-27")] alias round_int_add := round_intCast_add
-
 @[deprecated (since := "2025-03-23")]
 alias round_int_add := round_intCast_add
 
 @[simp]
 theorem round_natCast_add (x : α) (y : ℕ) : round ((y : α) + x) = y + round x := by
   rw [add_comm, round_add_natCast, add_comm]
-
-@[deprecated (since := "2025-03-27")] alias round_nat_add := round_natCast_add
 
 @[deprecated (since := "2025-03-23")]
 alias round_nat_add := round_natCast_add
