@@ -1,6 +1,6 @@
 {"version": "1.1.0",
  "packagesDir": ".lake/packages",
- "packages" :
+ "packages":
  [{"url": "https://github.com/leanprover-community/plausible",
    "type": "git",
    "subDir": null,
