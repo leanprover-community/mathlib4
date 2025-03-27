@@ -1,5 +1,4 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Hasse
 import Mathlib.Logic.Encodable.Basic
 
 namespace SimpleGraph
@@ -14,19 +13,18 @@ def neighborLTSet (b : α) : Set α := {a | a < b ∧ G.Adj a b}
 lemma mem_neighborLTSet  {a b : α} :
     a ∈ G.neighborLTSet b ↔ a < b ∧ G.Adj a b := Iff.rfl
 
-/-- The set of neighbors less than a vertex as a Finset -/
+/-- The set of neighbors less than a vertex as a `Finset α` -/
 def neighborLTFinset (b : α) [Fintype (G.neighborLTSet b)] : Finset α :=
     (G.neighborLTSet b).toFinset
 
 /-- The number of neighbors less than a vertex (when finite) -/
-abbrev degreeLT (b : α) [Fintype (G.neighborLTSet b)] : ℕ := (G.neighborLTFinset b).card
+abbrev degreeLT (b : α) [Fintype (G.neighborLTSet b)] : ℕ := #(G.neighborLTFinset b)
 
-lemma mem_neighborLTFinset  {a b : α} [Fintype (G.neighborLTSet b)] :
+lemma mem_neighborLTFinset {a b : α} [Fintype (G.neighborLTSet b)] :
     a ∈ G.neighborLTFinset b ↔ a < b ∧ G.Adj a b := Set.mem_toFinset
 
-/-- A graph is LocallyFiniteLT if every vertex has a finitely many neighbors less than it. -/
-abbrev LocallyFiniteLT :=
-  ∀ v : α, Fintype (G.neighborLTSet v)
+/-- A graph is `LocallyFiniteLT` if every vertex has a finitely many neighbors less than it. -/
+abbrev LocallyFiniteLT := ∀ v : α, Fintype (G.neighborLTSet v)
 
 lemma degreeLT_le_degree (a : α) [Fintype (G.neighborLTSet a)] [Fintype (G.neighborSet a)] :
     G.degreeLT a ≤ G.degree a := by
@@ -46,21 +44,21 @@ lemma unused (c : α → ℕ) (a : α) [Fintype (G.neighborLTSet a)] :
 end degreeLT
 section withN
 
-/-- Any SimpleGraph ℕ with Decidable Adj is trivially LocallyFiniteLT -/
-instance instFintypeNeighborLTN (H : SimpleGraph ℕ) [DecidableRel H.Adj] : LocallyFiniteLT H := by
+variable (H : SimpleGraph ℕ) [DecidableRel H.Adj]
+/-- Any `H : SimpleGraph ℕ` with `DecidableRel H.Adj` is trivially `LocallyFiniteLT`. -/
+instance instFintypeNeighborLTN : LocallyFiniteLT H := by
   intro n
   apply Fintype.ofFinset ((range n).filter (H.Adj n))
-  intro m; rw [mem_filter, mem_range, adj_comm]
+  intro m
+  rw [mem_filter, mem_range, adj_comm]
   rfl
 
-def greedy (H : SimpleGraph ℕ) [DecidableRel H.Adj] (n : ℕ) : ℕ :=
-  let c := fun m ↦ ite (m < n) (H.greedy m) 0
+/-- The `greedy` coloring of the vertex `n` of `H : SimpleGraph ℕ`. -/
+def greedy (n : ℕ) : ℕ :=
+  let c := fun m ↦ ite (m < n) (greedy m) 0
   min' _ (H.unused c n)
 
-variable (H : SimpleGraph ℕ) [DecidableRel H.Adj]
-
-lemma greedy_def (n : ℕ) : H.greedy n = min' _
-    (H.unused (fun m ↦ ite (m < n) (H.greedy m) 0) n) := by
+lemma greedy' (n : ℕ) : H.greedy n = min' _ (H.unused (fun m ↦ ite (m < n) (H.greedy m) 0) n) := by
   rw [greedy]
 
 lemma greedy_valid {m n : ℕ} (hadj : H.Adj m n) :
@@ -68,13 +66,13 @@ lemma greedy_valid {m n : ℕ} (hadj : H.Adj m n) :
   intro heq
   wlog h : m < n
   · exact this H hadj.symm heq.symm <| hadj.ne.symm.lt_of_le <| not_lt.1 h
-  apply H.greedy_def n ▸
+  apply H.greedy' n ▸
     (mem_sdiff.mp <| min'_mem _ (H.unused (fun k ↦ ite (k < n) (H.greedy k) 0) n)).2
   simp_rw [mem_image, neighborLTFinset, Set.mem_toFinset]
   use m, ⟨h, hadj⟩, if_pos h ▸ heq
 
 lemma greedy_le (n : ℕ) : H.greedy n ≤ H.degreeLT n  := by
-  rw [greedy_def]
+  rw [greedy']
   have h := min'_mem _ <| H.unused (fun m ↦ ite (m < n) (H.greedy m) 0) n
   rw [mem_sdiff, mem_range] at h
   exact Nat.succ_le_succ_iff.1 h.1
@@ -93,10 +91,8 @@ def GreedyColoringNBddDegree {Δ : ℕ} [DecidableRel H.Adj] [LocallyFinite H]
   H.GreedyColoringNBddDegreeLT (fun v ↦ (H.degreeLT_le_degree v).trans (h v))
 
 
-
-
 /-- If we used a color larger than `c` at vertex `n` then `n` must have an earlier neighbor that
-was already colored with `c` -/
+was already colored with `c`. -/
 lemma greedy_witness {c n : ℕ} (h : c < H.greedy n) : ∃ m < n, H.Adj m n ∧ H.greedy m = c := by
   by_contra! hc
   have h2 : c ∉ ((H.neighborLTFinset n).image (fun m ↦ ite (m < n) (H.greedy m) 0) ):= by
@@ -105,11 +101,11 @@ lemma greedy_witness {c n : ℕ} (h : c < H.greedy n) : ∃ m < n, H.Adj m n ∧
     rw [mem_neighborLTFinset, if_pos ha.1.1] at ha
     exact hc _ ha.1.1 ha.1.2 ha.2
   have := min'_le _ c <| mem_sdiff.mpr ⟨mem_range_succ_iff.2 <| h.le.trans (H.greedy_le n), h2⟩
-  exact not_lt.2 this <| H.greedy_def _ ▸ h
+  exact not_lt.2 this <| H.greedy' _ ▸ h
 
 @[simp]
 lemma neighborLTFinset_zero : H.neighborLTFinset 0 = ∅ := by
-  ext; rw [mem_neighborLTFinset]; simp
+  ext; simp [mem_neighborLTFinset]
 
 @[simp]
 lemma degreeLT_zero : H.degreeLT 0 = 0 := by
@@ -154,33 +150,6 @@ lemma label_adj' {β : Type*} [Encodable β] {H : SimpleGraph β} {π : β ≃ �
     simpa using ⟨ha,hb⟩
 
 variable {β : Type*} [Encodable β] (H : SimpleGraph β)
-
-#check H.map (encode' β)
-
-/- If H is graph on an Encodable type β with Decidable Adj and π : β ≃ β is a permutation of β
-then the graph on ℕ given by permuting β with π and then applying the encoding of β also
-has Decidable Adj -/
-instance instDecidableRelMapEncodableEquiv [DecidableRel H.Adj] :
-    DecidableRel (H.map (encode' β)).Adj := by
-  intro a b
-  set u := decode₂ β a with hu
-  set v := decode₂ β b with hv
-  match u with
-  | none =>
-    exact isFalse <| fun ⟨_, _, _, ha, _⟩ ↦ decode₂_ne_none_iff.2 ⟨_, ha⟩ hu.symm
-  | some u =>
-    match v with
-    | none =>
-      exact isFalse <| fun ⟨_,_,_,_, hb⟩ ↦ decode₂_ne_none_iff.2 ⟨_, hb⟩ hv.symm
-    | some v =>
-      exact if hadj : (H.Adj u v) then isTrue (by
-        use u, v, hadj
-        simpa [encode', ← mem_decode₂] using ⟨hu.symm, hv.symm⟩)
-      else isFalse (by
-        intro ⟨_, _, h, ha, hb⟩
-        apply hadj
-        rw [encode', Function.Embedding.coeFn_mk, ← mem_decode₂] at ha hb
-        simpa [decode₂_inj hu.symm ha, decode₂_inj hv.symm hb] using h)
 /- If H is graph on an Encodable type β with Decidable Adj and π : β ≃ β is a permutation of β
 then the graph on ℕ given by permuting β with π and then applying the encoding of β also
 has Decidable Adj -/
@@ -236,7 +205,6 @@ def GreedyColoringBddDegreeLT {Δ : ℕ} [DecidableRel H.Adj] (π : β ≃ β)
     (fun v ↦ ⟨(H.label π).greedy (encode (π v)), (H.label π).greedy_bdd_degLT h (encode (π v))⟩)
     (fun h h' ↦ (H.label π).greedy_valid (label_adj.mpr h) (by simpa using h'))
 
-
 lemma degreeLT_le_degree' [LocallyFinite H] [DecidableRel H.Adj] (π : β ≃ β) (a : β) :
     (H.label π).degreeLT (encode (π a)) ≤ H.degree a := by
   rw [degreeLT, degree]
@@ -249,7 +217,6 @@ lemma degreeLT_le_degree' [LocallyFinite H] [DecidableRel H.Adj] (π : β ≃ β
     rw [← h, ← Equiv.apply_symm_apply π y, label_adj] at hx
     exact ⟨π.symm y, hx.2.symm, by simpa using h⟩
   exact (card_le_card this).trans card_image_le
-
 
 def GreedyColoringDegree {Δ : ℕ} [LocallyFinite H] [DecidableRel H.Adj]
     (hdeg : ∀ v, H.degree v ≤ Δ) : H.Coloring (Fin (Δ + 1)) := by
