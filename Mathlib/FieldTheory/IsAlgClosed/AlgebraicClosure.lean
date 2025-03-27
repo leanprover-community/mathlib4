@@ -203,20 +203,20 @@ namespace IntermediateField
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E : IntermediateField K L)
 
-theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsAlgebraic K x) :
+theorem AdjoinSimple.normal_algebraicClosure {x : L} (hx : IsIntegral K x) :
     Normal K (AlgebraicClosure K⟮x⟯) :=
-  have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x⟯) := by
-    letI : Algebra.IsAlgebraic K K⟮x⟯ := (isAlgebraic_adjoin_simple hx.isIntegral)
-    exact Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯)
-  normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
-    IsAlgClosed.splits_codomain (minpoly K y)⟩
+  have : IsAlgClosure K (AlgebraicClosure ↥K⟮x⟯) := by
+    have : Algebra.IsAlgebraic K K⟮x⟯ := (isAlgebraic_adjoin_simple hx)
+    exact ⟨AlgebraicClosure.isAlgClosed ↥K⟮x⟯,
+      Algebra.IsAlgebraic.trans K K⟮x⟯ (AlgebraicClosure ↥K⟮x⟯)⟩
+  IsAlgClosure.normal _ _
 
-theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsAlgebraic K x)
-    (hy : IsAlgebraic K y) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
-  have h_alg' : Algebra.IsAlgebraic K (AlgebraicClosure ↥K⟮x, y⟯) := by
-    letI := AdjoinDouble.isAlgebraic hx hy
-    exact Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯)
-  normal_iff.mpr fun y ↦ ⟨(h_alg'.isAlgebraic _).isIntegral,
-    IsAlgClosed.splits_codomain (minpoly K y)⟩
+theorem AdjoinDouble.normal_algebraicClosure {x y : L} (hx : IsIntegral K x)
+    (hy : IsIntegral K y) : Normal K (AlgebraicClosure K⟮x, y⟯) :=
+  have : IsAlgClosure K (AlgebraicClosure ↥K⟮x, y⟯) := by
+    have : Algebra.IsAlgebraic K K⟮x, y⟯ := (isAlgebraic_adjoin_pair hx hy)
+    exact ⟨AlgebraicClosure.isAlgClosed ↥K⟮x, y⟯,
+      Algebra.IsAlgebraic.trans K K⟮x, y⟯ (AlgebraicClosure ↥K⟮x, y⟯)⟩
+  IsAlgClosure.normal _ _
 
 end IntermediateField

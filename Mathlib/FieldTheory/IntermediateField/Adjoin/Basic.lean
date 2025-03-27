@@ -775,10 +775,10 @@ section AdjoinDouble
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] {x y : L}
 
-theorem AdjoinDouble.isAlgebraic (hx : IsAlgebraic K x) (hy : IsAlgebraic K y) :
+theorem isAlgebraic_adjoin_pair (hx : IsIntegral K x) (hy : IsIntegral K y) :
     Algebra.IsAlgebraic K K⟮x, y⟯ := by
   apply IntermediateField.isAlgebraic_adjoin
-  simp [hx.isIntegral, hy.isIntegral]
+  simp [hx, hy]
 
 theorem AdjoinDouble.finiteDimensional (hx : IsIntegral K x) (hy : IsIntegral K y) :
     FiniteDimensional K K⟮x, y⟯ := by
