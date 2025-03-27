@@ -206,7 +206,7 @@ private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
 open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
-private lemma RMK_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
+private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
     (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
@@ -230,11 +230,29 @@ private lemma RMK_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : S
         congr; exact hμ'
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
+omit [LocallyCompactSpace X] in
+/- Define simultaneously sets `V` which are open approximations to the sets `E`. -/
+private lemma RMK_open' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X, ℝ))
+    {y : Fin N → ℝ} (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε)
+    {ν : Content X} (hν : ∀ n, ν.measure (E n) < ⊤) (hν' : ∀ n, MeasurableSet (E n)):
+    ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε)
+    ∧ ν.measure (V n) ≤ ν.measure (E n) + ENNReal.ofReal (ε / N) := by
+  have h (n : Fin N) (x : X) (hx : x ∈ E n) := lt_add_of_le_of_pos (hy n x hx) hε
+  have h' (n : Fin N) : ν.outerMeasure (E n) ≠ ⊤ := by
+    rw [← Content.measure_apply ν (hν' n)]
+    exact LT.lt.ne_top (hν n)
+  let V (n : Fin N) := Classical.choose <|
+    RMK_open f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
+  use V
+  intro n
+  let hV := Classical.choose_spec <|
+    RMK_open f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
+  exact ⟨hV.1, hV.2.1, hV.2.2⟩
+
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
 private lemma RMK_exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
     a' / N * (b' + a' / N) ≤ ε := by
-  have A : Tendsto (fun (N : ℝ) ↦ a' / N * (b' + a' / N)) atTop
-      (𝓝 (0 * (b' + 0))) := by
+  have A : Tendsto (fun (N : ℝ) ↦ a' / N * (b' + a' / N)) atTop (𝓝 (0 * (b' + 0))) := by
     apply Tendsto.mul
     · exact Tendsto.div_atTop tendsto_const_nhds tendsto_id
     · exact Tendsto.add tendsto_const_nhds (Tendsto.div_atTop tendsto_const_nhds tendsto_id)
@@ -242,6 +260,20 @@ private lemma RMK_exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : 
   simp only [add_zero, zero_mul] at B
   obtain ⟨N, hN, h'N⟩ := (((tendsto_order.1 B).2 _ hε ).and (Ici_mem_atTop 1)).exists
   exact ⟨N, h'N, hN.le⟩
+
+omit [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X] in
+/- Choose an interval `(a, b)` which contains the range of `f`. -/
+private lemma RMK_range (f : C_c(X, ℝ)) (hX : Nonempty X) :
+    ∃ a b : ℝ, a < b ∧ range f ⊆ Ioo a b := by
+  obtain ⟨⟨a', ha⟩, ⟨b', hb⟩⟩ := isBounded_iff_bddBelow_bddAbove.mp
+    (Metric.isCompact_iff_isClosed_bounded.mp (HasCompactSupport.isCompact_range f.2 f.1.2)).2
+  have hf : range f ⊆ Ioo (a' - 1) (b' + 1) := fun _ hx ↦
+    ⟨lt_of_lt_of_le (sub_one_lt a') (ha hx), lt_of_le_of_lt (hb hx) (lt_add_one b')⟩
+  have hab : a' ≤ b' := by
+    obtain ⟨c, hc⟩ := instNonemptyRange f
+    exact le_trans (mem_lowerBounds.mp ha c hc) (mem_upperBounds.mp hb c hc)
+  have hab' := lt_trans (lt_of_lt_of_le (sub_one_lt a') hab) (lt_add_one b')
+  use a' - 1, b' + 1
 
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
@@ -259,20 +291,8 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
     -- Suffices to show that `Λ f ≤ ∫ (x : X), f x ∂μ + ε` for arbitrary `ε`.
     apply le_iff_forall_pos_le_add.mpr
     intro ε hε
-    -- Choose interval `(a, b)` which contains the range of `f`.
-    obtain ⟨a, b, hab⟩ : ∃ a b : ℝ, a < b ∧ range f ⊆ Ioo a b := by
-      obtain ⟨⟨a', ha⟩, ⟨b', hb⟩⟩ := isBounded_iff_bddBelow_bddAbove.mp
-        (Metric.isCompact_iff_isClosed_bounded.mp (HasCompactSupport.isCompact_range f.2 f.1.2)).2
-      let a := a' - 1
-      let b := b' + 1
-      have hf : range f ⊆ Ioo a b := fun x hx ↦
-        ⟨lt_of_lt_of_le (sub_one_lt a') (ha hx), lt_of_le_of_lt (hb hx) (lt_add_one b')⟩
-      have hab : a' ≤ b' := by
-        obtain ⟨c, hc⟩ := instNonemptyRange f
-        exact le_trans (mem_lowerBounds.mp ha c hc) (mem_upperBounds.mp hb c hc)
-      have hab' : a < b := by
-        exact lt_trans (lt_of_lt_of_le (sub_one_lt a') hab) (lt_add_one b')
-      use a, b
+    -- Choose an interval `(a, b)` which contains the range of `f`.
+    obtain ⟨a, b, hab⟩ := RMK_range f hX
     -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
     obtain ⟨N, hN, hε'⟩ := RMK_exists_nat (b - a) (2 * (μ K).toReal + |a| + b) hε
     let ε' := (b - a) / N
@@ -285,31 +305,13 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
     let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
     -- The measure of each `E n` is finite.
     have hE' (n : Fin N) : μ (E n) < ⊤ := by
-      have h (n : Fin N) : E n ⊆ K := by
-        dsimp [K]
-        rw [hE.1]
-        exact subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a
-      apply lt_of_le_of_lt <| measure_mono (h n)
-      dsimp [μ, K]
+      have h : E n ⊆ tsupport f := by rw [hE.1]; exact subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a
+      apply lt_of_le_of_lt <| measure_mono h
+      dsimp [μ]
       rw [rieszMeasure, show f = f.toFun by rfl, Content.measure_apply _ f.2.measurableSet]
       exact Content.outerMeasure_lt_top_of_isCompact _ f.2
     -- Define sets `V` which are open approximations to the sets `E`
-    obtain ⟨V, hV⟩ : ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε')
-        ∧ μ (V n) ≤ μ (E n) + ENNReal.ofReal (ε' / N) := by
-      have h (n : Fin N) : ∀ x ∈ E n, f x < y n + ε' := by
-        intro x hx
-        dsimp [y]
-        linarith [(hE.2.2.1 n x hx).2]
-      have h' (n : Fin N) : (rieszContent (toNNRealLinear Λ hΛ)).outerMeasure (E n) ≠ ⊤ := by
-        rw [← Content.measure_apply (rieszContent (toNNRealLinear Λ hΛ)) (hE.2.2.2 n)]
-        exact LT.lt.ne_top (hE' n)
-      let V (n : Fin N) := Classical.choose (RMK_open_approx (f : C_c(X, ℝ))
-        (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hE.2.2.2 n) (h n))
-      use V
-      intro n
-      let hV := Classical.choose_spec (RMK_open_approx (f : C_c(X, ℝ))
-        (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hE.2.2.2 n) (h n))
-      exact ⟨hV.1, hV.2.1, hV.2.2⟩
+    obtain ⟨V, hV⟩ := RMK_open' hN E f (fun n x hx ↦ (hE.2.2.1 n x hx).right) hε'.1 hE' hE.2.2.2
     -- Define a partition of unity subordinated to the sets `V`
     obtain ⟨g, hg⟩ : ∃ (g : Fin N → C_c(X, ℝ)), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
       EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
