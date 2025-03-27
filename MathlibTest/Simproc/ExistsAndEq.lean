@@ -11,6 +11,14 @@ example (a : α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = a) ∧ q b := 
 example (a : α) : ∃ b : α, b = a := by
   simp only [existsAndEq]
 
+/--
+error: simp made no progress
+-/
+#guard_msgs in
+example (a : α) (f : α → α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = f b) ∧ q b := by
+  simp only [existsAndEq]
+  sorry
+
 open Lean Meta Simp
 
 set_option linter.unusedTactic false in
