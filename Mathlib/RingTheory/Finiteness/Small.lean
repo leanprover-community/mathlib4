@@ -79,17 +79,15 @@ instance small_adjoin [Small.{u} R] {s : Set S} [Small.{u} s] :
   rw [Algebra.adjoin_eq_range]
   apply small_range
 
-theorem FiniteType.small [Small.{u} R] [Algebra.FiniteType R S] :
-    Small.{u} S := by
-  obtain ⟨s : Finset S, hs⟩ := (Algebra.FiniteType.out : (⊤ : Subalgebra R S).FG)
-  have : Small.{u} (adjoin R s : Subalgebra R S) := small_adjoin
-  apply small_of_surjective (f := (adjoin R s).subtype)
-  rw [hs]
-  exact fun x ↦ ⟨⟨x, by simp⟩, by simp⟩
-
 theorem _root_.Subalgebra.FG.small [Small.{u} R] {A : Subalgebra R S} (fgS : A.FG) :
     Small.{u} A := by
-  have : FiniteType R A := (Subalgebra.fg_iff_finiteType A).mp fgS
-  exact FiniteType.small (R := R) (S := A)
+  obtain ⟨s, hs, rfl⟩ := fgS
+  exact small_adjoin
+
+theorem FiniteType.small [Small.{u} R] [Algebra.FiniteType R S] :
+    Small.{u} S := by
+  have : Small.{u} (⊤ : Subalgebra R S) :=
+    Subalgebra.FG.small Algebra.FiniteType.out
+  rwa [← small_univ_iff]
 
 end Algebra
