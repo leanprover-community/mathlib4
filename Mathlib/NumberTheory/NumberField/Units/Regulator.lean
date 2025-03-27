@@ -70,11 +70,18 @@ def basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
   exact (basisOfPiSpaceOfLinearIndependent
     ((linearIndependent_equiv (equivFinRank K).symm).mpr hu)).reindex (equivFinRank K).symm
 
+@[simp]
 theorem basisOfIsMaxRank_apply {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) (i : Fin (rank K)) :
     (basisOfIsMaxRank hu) i = logEmbedding K (Additive.ofMul (u i)) := by
   classical
   simp [basisOfIsMaxRank, Basis.coe_reindex,  Equiv.symm_symm, Function.comp_apply,
     coe_basisOfPiSpaceOfLinearIndependent]
+
+theorem span_basisOfIsMaxRank {u : Fin (rank K) → (𝓞 K)ˣ} (hu : isMaxRank u) :
+    (span ℤ (Set.range (basisOfIsMaxRank hu))).toAddSubgroup =
+      AddSubgroup.map (logEmbedding K) (Subgroup.closure (Set.range u)).toAddSubgroup := by
+  rw [Subgroup.toAddSubgroup_closure, AddMonoidHom.map_closure, ← span_int_eq_addSubgroup_closure]
+  congr; ext; simp
 
 theorem finiteIndex_iff_sup_torsion_finiteIndex (s : Subgroup (𝓞 K)ˣ) :
     s.FiniteIndex ↔ (s ⊔ torsion K).FiniteIndex := by
@@ -241,6 +248,8 @@ theorem finrank_mul_regOfFamily_eq_det (u : Fin (rank K) → (𝓞 K)ˣ) (w' : I
 
 end regOfFamily
 
+section regulator
+
 open scoped Classical in
 /-- The regulator of a number field `K`. -/
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
@@ -268,6 +277,45 @@ theorem regulator_pos : 0 < regulator K :=
 
 theorem regulator_ne_zero : regulator K ≠ 0 :=
   (regulator_pos K).ne'
+
+end regulator
+
+section index
+
+open ZLattice
+
+variable {K}
+
+theorem regOfFamily_div_regOfFamily {u v : Fin (rank K) → (𝓞 K)ˣ} (hv : isMaxRank v)
+    (h : Subgroup.closure (Set.range u) ⊔ torsion K ≤ Subgroup.closure (Set.range v) ⊔ torsion K) :
+    regOfFamily u / regOfFamily v = (Subgroup.closure (Set.range u) ⊔ (torsion K)).relindex
+      (Subgroup.closure (Set.range v) ⊔ (torsion K)) := by
+  classical
+  by_cases hu : isMaxRank u
+  · have : span ℤ (Set.range (basisOfIsMaxRank hu)) ≤ span ℤ (Set.range (basisOfIsMaxRank hv)) := by
+      rw [← toAddSubgroup_le, span_basisOfIsMaxRank hu, span_basisOfIsMaxRank hv,
+        ← map_logEmbedding_sup_torsion (Subgroup.closure (Set.range u)).toAddSubgroup,
+        ← map_logEmbedding_sup_torsion (Subgroup.closure (Set.range v)).toAddSubgroup,
+        ← SupHomClass.map_sup, ← SupHomClass.map_sup]
+      exact AddSubgroup.map_mono <| (OrderIso.le_iff_le Subgroup.toAddSubgroup).mpr h
+    rw [regOfFamily_of_isMaxRank hu, regOfFamily_of_isMaxRank hv, covolume_div_covolume_eq_relindex
+      _ _ this, span_basisOfIsMaxRank hu, span_basisOfIsMaxRank hv, AddSubgroup.relindex_map_map,
+      logEmbedding_ker, ← OrderIso.map_sup, ← OrderIso.map_sup, ← Subgroup.relindex_toAddSubgroup]
+  · rw [regOfFamily_eq_zero hu, zero_div, eq_comm, Nat.cast_eq_zero]
+    have : (Subgroup.closure (Set.range v) ⊔ torsion K).index ≠ 0 := by
+      rw [← Subgroup.finiteIndex_iff, ← finiteIndex_iff_sup_torsion_finiteIndex]
+      exact isMaxRank_iff_closure_finiteIndex.mp hv
+    rwa [← mul_eq_zero_iff_right this, Subgroup.relindex_mul_index h,
+      ← Subgroup.not_finiteIndex_iff, ← finiteIndex_iff_sup_torsion_finiteIndex,
+      ← isMaxRank_iff_closure_finiteIndex.not]
+
+theorem regOfFamily_div_regulator {u : Fin (rank K) → (𝓞 K)ˣ} :
+    regOfFamily u / regulator K = (Subgroup.closure (Set.range u) ⊔ (torsion K)).index := by
+  rw [regulator_eq_regOfFamily_fundSystem, regOfFamily_div_regOfFamily (isMaxRank_fundSystem K)
+    (by simp only [closure_fundSystem_sup_torsion_eq_top, le_top]),
+    closure_fundSystem_sup_torsion_eq_top, Subgroup.relindex_top_right]
+
+end index
 
 end Units
 
