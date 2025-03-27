@@ -130,9 +130,15 @@ alias ⟨_, IsUpperSet.ofDual⟩ := isLowerSet_preimage_toDual_iff
 
 alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_toDual_iff
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 lemma IsUpperSet.isLowerSet_preimage_coe (hs : IsUpperSet s) :
     IsLowerSet ((↑) ⁻¹' t : Set s) ↔ ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t := by aesop
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 lemma IsLowerSet.isUpperSet_preimage_coe (hs : IsLowerSet s) :
     IsUpperSet ((↑) ⁻¹' t : Set s) ↔ ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t := by aesop
 

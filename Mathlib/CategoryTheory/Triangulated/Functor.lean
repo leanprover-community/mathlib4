@@ -73,6 +73,9 @@ section Additive
 
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 /-- The functor `F.mapTriangle` commutes with the shift. -/
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=

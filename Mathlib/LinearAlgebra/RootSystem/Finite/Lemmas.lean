@@ -126,6 +126,9 @@ lemma coxeterWeightIn_eq_zero_iff :
 variable [NoZeroSMulDivisors R M] [NoZeroSMulDivisors R N]
 variable {i j}
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 lemma root_sub_root_mem_of_pairingIn_pos (h : 0 < P.pairingIn ℤ i j) (h' : i ≠ j) :
     α i - α j ∈ Φ := by
   have _i : NoZeroSMulDivisors ℤ M := NoZeroSMulDivisors.int_of_charZero R M
@@ -256,6 +259,9 @@ lemma pairingIn_le_zero_of_ne :
   by_contra! h
   exact b.sub_nmem_range_root hi hj <| P.root_sub_root_mem_of_pairingIn_pos h hij
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 /-- This is Lemma 2.5 (a) from [Geck](Geck2017). -/
 lemma root_sub_root_mem_of_mem_of_mem (hk : α k + α i - α j ∈ Φ)
     (hkj : k ≠ j) (hk' : α k + α i ∈ Φ) :

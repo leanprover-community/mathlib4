@@ -22,6 +22,9 @@ variable {C : Type*} [Category C]
 
 namespace ChainComplex
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 /-- The chain complex `X ←0- X ←𝟙- X ←0- X ←𝟙- X ⋯`.
 It is exact away from `0` and has homology `X` at `0`. -/
 @[simps]

@@ -352,6 +352,9 @@ lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
     · simp only [penultimate, ← h2, add_tsub_cancel_right]
       aesop
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : i ≠ 0) (h' : i < p.length) :
     p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by

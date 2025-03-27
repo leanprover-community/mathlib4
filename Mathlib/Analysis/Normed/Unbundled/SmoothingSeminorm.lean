@@ -283,6 +283,9 @@ private theorem mu_property (n : ℕ) : μ ((x + y) ^ (n : ℕ)) ^ (1 / (n : ℝ
     (μ (x ^ mu μ hn n) * μ (y ^ (n - mu μ hn n : ℕ))) ^ (1 / (n : ℝ)) :=
   (Classical.choose_spec (hn n)).2
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 private theorem mu_le (n : ℕ) : mu μ hn n ≤ n := by
   simpa [mu, ← Nat.lt_succ_iff] using (Classical.choose_spec (hn n)).1
 

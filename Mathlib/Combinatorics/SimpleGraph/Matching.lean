@@ -395,6 +395,9 @@ lemma Walk.IsCycle.adj_toSubgraph_iff_of_isCycles [LocallyFinite G] {u} {p : G.W
 
 open scoped symmDiff
 
+#adaptation_note
+/-- Requires more heartbeats after nightly-2025-03-27. -/
+set_option maxHeartbeats 400000 in
 lemma Subgraph.IsPerfectMatching.symmDiff_isCycles
     {M : Subgraph G} {M' : Subgraph G'} (hM : M.IsPerfectMatching)
     (hM' : M'.IsPerfectMatching) : (M.spanningCoe ∆ M'.spanningCoe).IsCycles := by
