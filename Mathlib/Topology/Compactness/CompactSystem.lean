@@ -197,18 +197,25 @@ lemma l2 [Fintype α] (p : α → ℕ → Prop) (h : ∀ a, Finite { n | p a n }
   use a
   exact ha
 
-
 theorem main (p : Set α → Prop) (hp : IsCompactSystem p) (L : ℕ → Finset (Set α))
     (hL : ∀ (n : ℕ) (d : Set α) (hd : d ∈ (L n).toSet), p d)
     (hc : ∀ (n : ℕ), ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅) :
-    ∃ (K : ℕ → Set α), (∀ n, (K n ∈ L n)) ∧
-      (∀ N k, ⋂ (i ≤ N), K i ∩ ⋂ (j ≤ k), ⋃₀ (L (N + j)) ≠ ∅) := by
+    ∃ (K : (n : ℕ) → (L n)), (∀ N k, ⋂ (j : ℕ) (hj : j ≤ N), (K j) ∩ ⋂ (j ≤ k), ⋃₀ (L (N + j + 1)).toSet ≠ ∅) := by
   -- `q K n` is true, if `K ∩ ⋂ (k ≤ n), ⋃₀ (L k) ≠ ∅`
-  let (q : (L 0) → ℕ → Prop) := fun (K : L 0) (n : ℕ) ↦ (K : Set α) ∩ ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅
+  let (q : (L 0) → ℕ → Prop) := fun (K : (L 0)) n ↦ (K : Set α) ∩ ⋂ (k ≤ n), (⋃₀ (L k).toSet) ≠ ∅
+
+  let (q' : (n : ℕ) → ((j : ℕ) → (hj : j ≤ n) → (L j)) → ℕ → Prop) := fun n K (N : ℕ) ↦ ⋂ (j : ℕ) (hj : j ≤ n), (K j hj : Set α) ∩ ⋂ (k ≤ N), (⋃₀ (L (n + k)).toSet) ≠ ∅
+
+
+  have hq (K : (L 0)) (n : ℕ) : q K n := by
+    specialize hc 0
+    simp? at hc
+    sorry
   have h'' (K : L 0) := Finite.exists_infinite_fiber (fun n ↦ q K n)
   have h''' : ∃ (K : L 0), Infinite ((fun n ↦ q K n) ⁻¹' {True}) := by
     by_contra! h
     simp only [preimage_singleton_true, coe_setOf, not_infinite_iff_finite, Subtype.forall] at h
+
 
 
     -- apply hc 0
