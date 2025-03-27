@@ -11,7 +11,6 @@ import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Util.WhatsNew
 
 /-!
 # `WithBot`, `WithTop`
@@ -264,7 +263,7 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
 @[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
 @[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := by simp [lt_def]
 
-lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, b = y ∧ x < b := by cases y <;> simp
+lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, y = b ∧ x < b := by cases y <;> simp
 
 lemma lt_coe_iff : x < b ↔ ∀ a : α, x = a → a < b := by simp [lt_def]
 
@@ -766,7 +765,7 @@ lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b
 @[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
 @[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
 
-lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, a = x ∧ a < y := by cases x <;> simp
+lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, x = a ∧ a < y := by cases x <;> simp
 
 lemma coe_lt_iff : a < y ↔ ∀ b : α, y = b → a < b := by simp [lt_def]
 
