@@ -96,7 +96,8 @@ theorem coe_pow_unitClosedBall [SeminormedRing 𝕜] [NormOneClass 𝕜] (x : cl
 
 /-- Unit sphere in a normed division ring as a bundled `Submonoid`. -/
 @[simps]
-def Submonoid.unitSphere (𝕜 : Type*) [NormedDivisionRing 𝕜] : Submonoid 𝕜 where
+def Submonoid.unitSphere (𝕜 : Type*) [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    Submonoid 𝕜 where
   carrier := sphere (0 : 𝕜) 1
   mul_mem' hx hy := by
     rw [mem_sphere_zero_iff_norm] at *
@@ -135,20 +136,24 @@ theorem coe_zpow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) 
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
-instance Metric.unitSphere.monoid [NormedDivisionRing 𝕜] : Monoid (sphere (0 : 𝕜) 1) :=
+instance Metric.unitSphere.monoid [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    Monoid (sphere (0 : 𝕜) 1) :=
   SubmonoidClass.toMonoid (Submonoid.unitSphere 𝕜)
 
 @[simp, norm_cast]
-theorem coe_one_unitSphere [NormedDivisionRing 𝕜] : ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
+theorem coe_one_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_mul_unitSphere [NormedDivisionRing 𝕜] (x y : sphere (0 : 𝕜) 1) :
+theorem coe_mul_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
+    (x y : sphere (0 : 𝕜) 1) :
     ↑(x * y) = (x * y : 𝕜) :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_pow_unitSphere [NormedDivisionRing 𝕜] (x : sphere (0 : 𝕜) 1) (n : ℕ) :
+theorem coe_pow_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜]
+    (x : sphere (0 : 𝕜) 1) (n : ℕ) :
     ↑(x ^ n) = (x : 𝕜) ^ n :=
   rfl
 
@@ -173,7 +178,8 @@ instance Metric.sphere.group [NormedDivisionRing 𝕜] : Group (sphere (0 : 𝕜
     (fun x n => Units.ext (Units.val_pow_eq_pow_val (unitSphereToUnits 𝕜 x) n).symm) fun x n =>
     Units.ext (Units.val_zpow_eq_zpow_val (unitSphereToUnits 𝕜 x) n).symm
 
-instance Metric.sphere.hasDistribNeg [NormedDivisionRing 𝕜] : HasDistribNeg (sphere (0 : 𝕜) 1) :=
+instance Metric.sphere.hasDistribNeg [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    HasDistribNeg (sphere (0 : 𝕜) 1) :=
   Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
 instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] :
