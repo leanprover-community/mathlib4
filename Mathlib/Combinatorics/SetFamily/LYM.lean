@@ -78,7 +78,7 @@ theorem local_lubell_yamamoto_meshalkin_inequality_mul (h𝒜 : (𝒜 : Set (Fin
   rcases h with ⟨a, ha, rfl⟩
   exact mem_image_of_mem _ (mem_compl.2 ha)
 
-@[deprecated (since := "2025-03-06")]
+@[inherit_doc local_lubell_yamamoto_meshalkin_inequality_mul]
 alias card_mul_le_card_shadow_mul := local_lubell_yamamoto_meshalkin_inequality_mul
 
 /-- The downward **local LYM inequality**. `𝒜` takes up less of `α^(r)` (the finsets of card `r`)
@@ -189,8 +189,10 @@ end Falling
 
 variable [Fintype α] {𝒜 : Finset (Finset α)}
 
-/-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
-proportion of elements it takes from each layer is less than `1`. -/
+/-- The **Lubell-Yamamoto-Meshalkin inequality**, also known as the **LYM inequality**.
+
+If `𝒜` is an antichain, then the sum of the proportion of elements it takes from each layer is less
+than `1`. -/
 theorem lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     ∑ r ∈ range (Fintype.card α + 1), (#(𝒜 # r) / (Fintype.card α).choose r : 𝕜) ≤ 1 := by
@@ -206,8 +208,9 @@ theorem lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
 @[deprecated (since := "2025-03-06")]
 alias sum_card_slice_div_choose_le_one := lubell_yamamoto_meshalkin_inequality_sum_card_div_choose
 
-/-- The **Lubell-Yamamoto-Meshalkin inequality**. If `𝒜` is an antichain, then the sum of the
-proportion of elements it takes from each layer is less than `1`. -/
+/-- The **Lubell-Yamamoto-Meshalkin inequality**, also known as the **LYM inequality**.
+
+If `𝒜` is an antichain, then the sum of `(#α.choose #s)⁻¹` over `s ∈ 𝒜` is less than `1`. -/
 theorem lubell_yamamoto_meshalkin_inequality_sum_inv_choose (h𝒜 : IsAntichain (· ⊆ ·) 𝒜.toSet) :
     ∑ s ∈ 𝒜, ((Fintype.card α).choose #s : 𝕜)⁻¹ ≤ 1 := by
   calc
