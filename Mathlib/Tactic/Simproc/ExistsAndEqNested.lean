@@ -361,6 +361,10 @@ def existsAndEqNestedImp {u : Level} {α : Q(Sort u)} (p : Q($α → Prop)) :
       let pfBeforeAfter : Q((∃ a, $p a) → $P') ← mkBeforeToAfter a' newBody fvars path
       let pfAfterBefore : Q($P' → (∃ a, $p a)) ← mkAfterToBefore a' newBody fvars path
       let pf := q(propext (Iff.intro $pfBeforeAfter $pfAfterBefore))
+      let kek := (← pf.collectFVars.run {}).snd.fvarSet.toList
+      for fvar in kek do
+        let e := Expr.fvar fvar
+        dbg_trace f!"{e} : {← ppExpr e}"
       return .some ⟨P', pf⟩
 
 end existsAndEq
@@ -373,6 +377,12 @@ or `a' = a` subexpression. -/
 simproc existsAndEqNested (Exists (fun _ => Exists _)) := .ofQ fun u α e => do
   match u, α, e with
   | 1, ~q(Prop), ~q(@Exists $α $p) =>
+    dbg_trace f!"p {← ppExpr p}"
     let .some ⟨P', pf⟩ ← existsAndEq.existsAndEqNestedImp p | return .continue
+    dbg_trace "P'"
+    dbg_trace ← ppExpr P'
     return .visit {expr := P', proof? := pf}
   | _, _, _ => return .continue
+
+-- example {α : Type} : ∃ a : α, ∃ (f : α → α), f a = a := by
+--   simp

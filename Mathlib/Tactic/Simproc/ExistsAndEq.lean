@@ -47,9 +47,9 @@ where
     | (``Eq, #[β, a, b]) =>
       if !(← isDefEq (← inferType x) β) then
         return none
-      if ← isDefEq x a then
+      if (← isDefEq x a) && !(b.containsFVar x.fvarId!) then
         return .some ⟨b, ← mkAppM ``Eq.symm #[h]⟩
-      if ← isDefEq x b then
+      if (← isDefEq x b) && !(a.containsFVar x.fvarId!) then
         return .some ⟨a, h⟩
       else
         return .none

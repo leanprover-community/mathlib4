@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Simproc.ExistsAndEq
 import Mathlib.Tactic.Simproc.ExistsAndEqNested
-import Mathlib.Algebra.Group.Even
+-- import Mathlib.Algebra.Group.Even
 
 universe u
 variable (α : Type u) (p q : α → Prop)
@@ -12,6 +12,10 @@ example (a : α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = a) ∧ q b := 
 
 example (a : α) : ∃ b : α, b = a := by
   simp only [existsAndEq]
+
+example (a : α) (f : α → α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = f b) ∧ q b := by
+  fail_if_success simp only [existsAndEq]
+  sorry
 
 open Lean Meta Simp
 
@@ -40,6 +44,9 @@ example {α β : Type} (f : β → α) {p : α → Prop} :
     (∃ a, p a ∧ ∃ b, a = f b) ↔ ∃ b, p (f b) := by
   simp only [existsAndEqNested, and_true]
 
-example : ∃ n : ℕ, Even n := by
-  unfold Even
+-- example : ∃ n : ℕ, Even n := by
+--   unfold Even
+  -- simp
+
+example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
   simp
