@@ -88,6 +88,13 @@ instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp only [singleFunctor, singleFunctors, SingleFunctors.postcomp]
   infer_instance
 
+-- The object level definitional equality underlying `singleFunctorsPostcompQuotientIso`.
+@[simp] theorem quotient_obj_singleFunctors_obj (n : ℤ) (X : C) :
+    (HomotopyCategory.quotient C (ComplexShape.up ℤ)).obj
+      ((CochainComplex.singleFunctor C n).obj X) =
+        (HomotopyCategory.singleFunctor C n).obj X :=
+  rfl
+
 /-- The isomorphism given by the very definition of `singleFunctors C`. -/
 noncomputable def singleFunctorsPostcompQuotientIso :
     singleFunctors C ≅
