@@ -593,7 +593,7 @@ def awayToSection (f) : CommRingCat.of (A⁰_ f) ⟶ (structureSheaf 𝒜).1.obj
         obtain ⟨s, rfl⟩ := HomogeneousLocalization.mk_surjective s
         obtain ⟨n, hn : f ^ n = s.den.1⟩ := s.den_mem
         exact ⟨_, x.2, 𝟙 _, s.1, s.2, s.3,
-          fun x hsx ↦ x.2 (Ideal.IsPrime.mem_of_pow_mem inferInstance n (hn ▸ hsx)), fun _ ↦ rfl⟩⟩
+          fun x hsx ↦ x.2 (Ideal.IsPrime.mem_of_pow_mem x.1.2 n (hn ▸ hsx)), fun _ ↦ rfl⟩⟩
     map_add' _ _ := by ext; simp only [map_add, HomogeneousLocalization.val_add, Proj.add_apply]
     map_mul' _ _ := by ext; simp only [map_mul, HomogeneousLocalization.val_mul, Proj.mul_apply]
     map_zero' := by ext; simp only [map_zero, HomogeneousLocalization.val_zero, Proj.zero_apply]
