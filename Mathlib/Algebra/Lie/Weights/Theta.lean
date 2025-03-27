@@ -453,6 +453,23 @@ theorem theta_pow_2 (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα :
   rw [this, theta_h H hnz heα hfα t ht h, theta_hα H hnz heα hfα t ht, smul_neg, sub_neg_eq_add,
     sub_add_cancel]
 
+theorem theta_act {x : L} {β : Weight K H L} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α)
+    (hfα : fα ∈ rootSpace H (- α)) (t : Kˣ) (ht : IsSl2Triple hα eα fα) (hx : x ∈ rootSpace H β) :
+      (theta H hnz heα hfα t) x ∈ rootSpace H (β - β (IsKilling.coroot α) • α) := by
+  have key : ∀ (h : H), ⁅h, (theta H hnz heα hfα t) x⁆ = ((β - β (IsKilling.coroot α) • α : H → K) h) • ((theta H hnz heα hfα t) x) := by
+    sorry
+  simp at key
+  have := (mem_genWeightSpace (L := H) (R := K) L (β - β (IsKilling.coroot α) • α) ((theta H hnz heα hfα t) x)).2
+  apply this
+  intro h
+  obtain ⟨aa, bb⟩ := h
+  use 1
+  simp
+  have := key aa bb
+  rw [this.symm]
+  simp
+
+
 
 lemma lie_eq_smul_of_mem_rootSpace_inv {β : H → K} {x : L} (h₁ : ∀ (h : H), ⁅h, x⁆ = β h • x) :
     x ∈ rootSpace H β := by
