@@ -390,7 +390,8 @@ end Inner
 
 section ExpNilpotent
 
-variable {R L : Type*} [Field R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L] (D : LieDerivation R L L)
+variable {R L : Type*} [Field R] [CharZero R] [LieRing L] [LieAlgebra R L] [LieAlgebra ℚ L]
+  (D : LieDerivation R L L)
 
 /-- In characteristic zero, the exponential of a nilpotent derivation is a Lie algebra
 automorphism. -/
@@ -410,12 +411,13 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
       simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, ← LinearMap.comp_apply,
         ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
 
+omit [CharZero R]
 lemma exp_apply (h : IsNilpotent D.toLinearMap) :
     exp D h = IsNilpotent.exp D.toLinearMap := by
   ext x
   dsimp [exp]
 
-lemma exp_apply_apply (h : IsNilpotent D.toLinearMap) (l : L) :
+lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
     exp D h l = IsNilpotent.exp D.toLinearMap l := by
   have ttt := exp_apply D h
   exact Eq.symm (DFunLike.congr (id (Eq.symm ttt)) rfl)

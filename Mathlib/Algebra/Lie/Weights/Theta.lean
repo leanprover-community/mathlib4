@@ -185,7 +185,7 @@ open Finset
 
 lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) :
     (exp_ad_e H hα he t) e = e := by
-  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  rw [exp_ad_e_apply, LieDerivation.exp_map_apply ((t : K) • (LieDerivation.ad K L e))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_1_ad_e_e t)
     (nilpotent_e H t he hα)
   simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
@@ -194,7 +194,7 @@ lemma exp_ad_e_e (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) :
 
 lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_e H hα he t) f = f + (t : K) • h - ((t : K) ^ 2) • e := by
-  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  rw [exp_ad_e_apply, LieDerivation.exp_map_apply ((t : K) • (LieDerivation.ad K L e))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_3_ad_e_f t ht)
     (nilpotent_e H t he hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -210,7 +210,7 @@ lemma exp_ad_e_f (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
 
 lemma exp_ad_e_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_e H hα he t) h = h - (2 : ℤ) • (t : K) • e := by
-  rw [exp_ad_e_apply, LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L e))]
+  rw [exp_ad_e_apply, LieDerivation.exp_map_apply ((t : K) • (LieDerivation.ad K L e))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_2_ad_e_h t ht)
     (nilpotent_e H t he hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -224,7 +224,7 @@ lemma exp_ad_e_h (hα : α.IsNonZero) (he : e ∈ rootSpace H α) (t : Kˣ) (ht 
 
 lemma exp_ad_f_e (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_f H hα hf t) e = e + (t⁻¹ : K) • h - (t : K) ^ (-2 : ℤ) • f := by
-  rw [exp_ad_f_apply, LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
+  rw [exp_ad_f_apply, LieDerivation.exp_map_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_3_ad_f_e t ht)
     (nilpotent_f H t hf hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -240,7 +240,7 @@ lemma exp_ad_f_e (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) (
 
 lemma exp_ad_f_f (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) :
     (exp_ad_f H hα hf t) f = f := by
-  rw [exp_ad_f_apply, LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
+  rw [exp_ad_f_apply, LieDerivation.exp_map_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_1_ad_f_f t)
     (nilpotent_f H t hf hα)
   simp only [LieDerivation.coe_smul_linearMap, LieDerivation.coe_ad_apply_eq_ad_apply]
@@ -249,7 +249,7 @@ lemma exp_ad_f_f (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) :
 
 lemma exp_ad_f_h (hα : α.IsNonZero) (hf : f ∈ rootSpace H (-α)) (t : Kˣ) (ht : IsSl2Triple h e f) :
     (exp_ad_f H hα hf t) h = h - (2 : ℤ) • (t⁻¹ : K) • f := by
-  rw [exp_ad_f_apply, LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
+  rw [exp_ad_f_apply, LieDerivation.exp_map_apply (-(t⁻¹ : K) • (LieDerivation.ad K L f))]
   have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) (pow_2_ad_f_h t ht)
     (nilpotent_f H t hf hα)
   simp only [LinearMap.smul_def, smul_assoc] at this
@@ -393,7 +393,7 @@ theorem theta_h_kerα {h : H} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H �
   have sf₁ :  ((-(t⁻¹ : K) • (ad K L fα)) ^ 1) h = 0 := by
     rw [pow_one, LinearMap.smul_apply, ad_apply, sf₀, smul_zero]
   have se₂ : (exp_ad_e H hnz heα t) h = h := by
-    rw [exp_ad_e_apply,  LieDerivation.exp_apply_apply ((t : K) • (LieDerivation.ad K L eα))]
+    rw [exp_ad_e_apply,  LieDerivation.exp_map_apply ((t : K) • (LieDerivation.ad K L eα))]
     have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) se₁
       (nilpotent_e H t heα hnz)
     simp only [LinearMap.smul_def, smul_assoc] at this
@@ -401,7 +401,7 @@ theorem theta_h_kerα {h : H} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H �
     rw [this, Finset.sum_range_succ, Finset.sum_range_zero, zero_add, pow_0_ad_e_h t,
         Nat.factorial_zero, Nat.cast_one, inv_one, one_smul]
   have sf₂ : (exp_ad_f H hnz hfα t) h = h := by
-    rw [exp_ad_f_apply,  LieDerivation.exp_apply_apply (-(t⁻¹ : K) • (LieDerivation.ad K L fα))]
+    rw [exp_ad_f_apply,  LieDerivation.exp_map_apply (-(t⁻¹ : K) • (LieDerivation.ad K L fα))]
     have := IsNilpotent.exp_eq_sum_apply (M := L) (A := (Module.End K L)) sf₁
       (nilpotent_f H t hfα hnz)
     simp only [LinearMap.smul_def, smul_assoc] at this
