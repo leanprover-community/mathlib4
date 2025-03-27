@@ -32,6 +32,8 @@ for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for 
 similarly for multiplication.
 -/
 
+open Function
+
 assert_not_exists Field
 
 deriving instance Zero, OrderedCommSemiring, Nontrivial,
@@ -407,17 +409,32 @@ theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f ofNat(n) = f
 lemma map_eq_top_iff {f : ℕ → α} : map f n = ⊤ ↔ n = ⊤ := WithTop.map_eq_top_iff
 
 @[simp]
-theorem map_natCast_nonneg [AddMonoidWithOne α] [PartialOrder α]
-    [AddLeftMono α] [ZeroLEOneClass α] : 0 ≤ n.map (Nat.cast : ℕ → α) := by
-  cases n <;> simp
-
-@[simp]
 theorem strictMono_map_iff {f : ℕ → α} [Preorder α] : StrictMono (ENat.map f) ↔ StrictMono f :=
   WithTop.strictMono_map_iff
 
 @[simp]
 theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) ↔ Monotone f :=
   WithTop.monotone_map_iff
+
+section AddMonoidWithOne
+variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
+
+@[simp] lemma map_natCast_nonneg : 0 ≤ n.map (Nat.cast : ℕ → α) := by cases n <;> simp
+
+variable [CharZero α]
+
+lemma map_natCast_strictMono : StrictMono (map (Nat.cast : ℕ → α)) :=
+  strictMono_map_iff.2 Nat.strictMono_cast
+
+lemma map_natCast_injective : Injective (map (Nat.cast : ℕ → α)) := map_natCast_strictMono.injective
+
+@[simp] lemma map_natCast_inj : m.map (Nat.cast : ℕ → α) = n.map Nat.cast ↔ m = n :=
+  map_natCast_injective.eq_iff
+
+@[simp] lemma map_natCast_eq_zero : n.map (Nat.cast : ℕ → α) = 0 ↔ n = 0 := by
+  simp [← map_natCast_inj (α := α)]
+
+end AddMonoidWithOne
 
 @[simp]
 protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F ℕ β]

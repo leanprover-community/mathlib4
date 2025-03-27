@@ -163,10 +163,6 @@ variable {p q : Submodule R M}
 variable {r : R} {x y : M}
 variable (p)
 
--- In Lean 3, `dsimp` would use theorems proved by `Iff.rfl`.
--- If that were still the case, this would useful as a `@[simp]` lemma,
--- despite the fact that it is provable by `simp` (by not `dsimp`).
-@[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 theorem mem_carrier : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 

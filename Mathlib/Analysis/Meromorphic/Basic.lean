@@ -263,6 +263,17 @@ lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
 section arithmetic
 
 include hf in
+/-- Meromorphic functions on `U` are analytic on `U`, outside of a discrete subset. -/
+theorem analyticAt_mem_codiscreteWithin [CompleteSpace E] :
+    { x | AnalyticAt 𝕜 f x } ∈ Filter.codiscreteWithin U := by
+  rw [mem_codiscreteWithin]
+  intro x hx
+  rw [Filter.disjoint_principal_right, ← Filter.eventually_mem_set]
+  apply (hf x hx).eventually_analyticAt.mono
+  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, not_not]
+  tauto
+
+include hf in
 lemma mono_set {V : Set 𝕜} (hv : V ⊆ U) : MeromorphicOn f V := fun x hx ↦ hf x (hv hx)
 
 include hf hg in
