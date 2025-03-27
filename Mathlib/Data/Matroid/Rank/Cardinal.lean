@@ -403,6 +403,6 @@ theorem toENat_cRank_eq (M : Matroid α) : M.cRank.toENat = M.eRank := by
 
 @[simp]
 theorem toENat_cRk_eq (M : Matroid α) (X : Set α) : (M.cRk X).toENat = M.eRk X := by
-  rw [cRk, toENat_cRank_eq]
+  rw [cRk, toENat_cRank_eq, eRk]
 
 end Matroid
