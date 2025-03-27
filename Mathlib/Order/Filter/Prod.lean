@@ -144,7 +144,7 @@ theorem Tendsto.prodMk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
 alias Tendsto.prod_mk := Tendsto.prodMk
 
 theorem tendsto_prod_swap : Tendsto (Prod.swap : α × β → β × α) (f ×ˢ g) (g ×ˢ f) :=
-  tendsto_snd.prod_mk tendsto_fst
+  tendsto_snd.prodMk tendsto_fst
 
 theorem Eventually.prod_inl {la : Filter α} {p : α → Prop} (h : ∀ᶠ x in la, p x) (lb : Filter β) :
     ∀ᶠ x in la ×ˢ lb, p (x : α × β).1 :=
@@ -318,7 +318,7 @@ theorem prod_map_map_eq.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : 
       let ⟨s₁, hs₁, s₂, hs₂, h⟩ := mem_prod_iff.mp hs
       mem_of_superset (prod_mem_prod (image_mem_map hs₁) (image_mem_map hs₂)) <|
         by rwa [prod_image_image_eq, image_subset_iff])
-    ((tendsto_map.comp tendsto_fst).prod_mk (tendsto_map.comp tendsto_snd))
+    ((tendsto_map.comp tendsto_fst).prodMk (tendsto_map.comp tendsto_snd))
 
 theorem prod_map_map_eq' {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*} (f : α₁ → α₂)
     (g : β₁ → β₂) (F : Filter α₁) (G : Filter β₁) :
@@ -336,7 +336,7 @@ theorem prod_map_right (f : β → γ) (F : Filter α) (G : Filter β) :
 theorem le_prod_map_fst_snd {f : Filter (α × β)} : f ≤ map Prod.fst f ×ˢ map Prod.snd f :=
   le_inf le_comap_map le_comap_map
 
-theorem Tendsto.prod_map {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
+theorem Tendsto.prodMap {δ : Type*} {f : α → γ} {g : β → δ} {a : Filter α} {b : Filter β}
     {c : Filter γ} {d : Filter δ} (hf : Tendsto f a c) (hg : Tendsto g b d) :
     Tendsto (Prod.map f g) (a ×ˢ b) (c ×ˢ d) := by
   rw [Tendsto, Prod.map_def, ← prod_map_map_eq]
@@ -486,8 +486,8 @@ theorem principal_coprod_principal (s : Set α) (t : Set β) :
     preimage_compl, preimage_compl, compl_compl, compl_compl]
 
 -- this inequality can be strict; see `map_const_principal_coprod_map_id_principal` and
--- `map_prod_map_const_id_principal_coprod_principal` below.
-theorem map_prod_map_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : Type w} {β₂ : Type x}
+-- `map_prodMap_const_id_principal_coprod_principal` below.
+theorem map_prodMap_coprod_le.{u, v, w, x} {α₁ : Type u} {α₂ : Type v} {β₁ : Type w} {β₂ : Type x}
     {f₁ : Filter α₁} {f₂ : Filter α₂} {m₁ : α₁ → β₁} {m₂ : α₂ → β₂} :
     map (Prod.map m₁ m₂) (f₁.coprod f₂) ≤ (map m₁ f₁).coprod (map m₂ f₂) := by
   intro s
