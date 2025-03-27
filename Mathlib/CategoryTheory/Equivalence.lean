@@ -132,9 +132,7 @@ a morphism `e ⟶ f`. -/
 def asNatTrans {e f : C ≌ D} (η : e ⟶ f) : e.functor ⟶ f.functor := η
 
 @[ext]
-lemma ext {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := by
-  apply NatTrans.ext
-  exact NatTrans.ext_iff.mp h
+lemma ext {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := h
 
 @[simp]
 lemma mk_asNatTrans {e f : C ≌ D} (η : e.functor ⟶ f.functor) :
@@ -148,9 +146,6 @@ lemma asNatTrans_mk {e f : C ≌ D} (η : e ⟶ f) :
 
 @[simp]
 lemma id_asNatTrans {e : C ≌ D} : asNatTrans (𝟙 e) = 𝟙 _ := rfl
-
-@[simp]
-lemma id_asNatTrans' {e : C ≌ D} : asNatTrans (𝟙 e.functor) = 𝟙 _ := rfl
 
 @[simp]
 lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
