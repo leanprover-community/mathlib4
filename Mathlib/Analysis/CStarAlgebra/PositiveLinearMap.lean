@@ -37,7 +37,7 @@ variable [NonUnitalRing A₁] [Module ℂ A₁] [SMulCommClass ℝ A₁ A₁] [I
 variable [NonUnitalRing A₂] [Module ℂ A₂] [StarRing A₂] [PartialOrder A₂] [StarOrderedRing A₂]
 
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-lemma map_isSelfAdjoint (f : A₁ →P[ℂ] A₂) (a : A₁) (ha : IsSelfAdjoint a) :
+lemma map_isSelfAdjoint (f : A₁ →ₚ[ℂ] A₂) (a : A₁) (ha : IsSelfAdjoint a) :
     IsSelfAdjoint (f a) := by
   rw [← CFC.posPart_sub_negPart a ha]
   cfc_tac
@@ -54,12 +54,12 @@ variable [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂] [PartialOrder
   [CStarAlgebra B₁] [CStarAlgebra B₂] [PartialOrder B₁] [PartialOrder B₂]
   [StarOrderedRing B₁] [StarOrderedRing B₂]
 
-lemma apply_le_of_isSelfAdjoint (f : B₁ →P[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :
+lemma apply_le_of_isSelfAdjoint (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : IsSelfAdjoint x) :
     f x ≤ f (algebraMap ℝ B₁ ‖x‖) := by
   gcongr
   exact IsSelfAdjoint.le_algebraMap_norm_self hx
 
-lemma norm_apply_le_of_nonneg (f : B₁ →P[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
+lemma norm_apply_le_of_nonneg (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤ x) :
     ‖f x‖ ≤ ‖f 1‖ * ‖x‖ := by
   have h : ‖‖x‖‖ = ‖x‖ := by simp
   rw [mul_comm, ← h, ← norm_smul ‖x‖ (f 1)]
@@ -75,7 +75,7 @@ open Complex Filter in
 /--
 If `f` is a positive map, then it is bounded (and therefore continuous).
 -/
-lemma exists_norm_apply_le (f : A₁ →P[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
+lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
   /- It suffices to only consider for positive `a`, by decomposing `a` into positive and negative
      parts of the real and imaginary parts. -/
   suffices h_nonneg : ∃ C : ℝ≥0, ∀ a, 0 ≤ a → ‖f a‖ ≤ C * ‖a‖ by
@@ -158,7 +158,7 @@ instance {F : Type*} [FunLike F A₁ A₂] [PositiveLinearMapClass F ℂ A₁ A�
     ContinuousLinearMapClass F ℂ A₁ A₂ where
   map_continuous f := by
     have hbound : ∃ C : ℝ, ∀ a, ‖f a‖ ≤ C * ‖a‖ := by
-      obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →P[ℂ] A₂)
+      obtain ⟨C, h⟩ := exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂)
       exact ⟨C, h⟩
     exact (LinearMap.mkContinuousOfExistsBound (f : A₁ →ₗ[ℂ] A₂) hbound).continuous
 
