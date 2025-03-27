@@ -11,8 +11,8 @@ import Mathlib.RingTheory.TwoSidedIdeal.Operations
 /-!
 # Span as a Sum
 
-In this file, we show that any element in the span of a set `s` is a finite sum of the form
-`∑ i, rᵢ * sᵢ * rᵢ'` where `rᵢ, rᵢ' ∈ R, sᵢ ∈ s` .
+In this file, we show that any element in the two-sided ideal span of a set `s` in `R` is a
+finite sum of the form `∑ i, rᵢ * sᵢ * tᵢ` where `rᵢ, tᵢ ∈ R, sᵢ ∈ s` .
 
 ## Main Results
 
