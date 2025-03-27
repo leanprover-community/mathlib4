@@ -651,10 +651,10 @@ def skewProd (e : M ≃L[R] M₂) (e' : M₃ ≃L[R] M₄) (f : M →L[R] M₄) 
     e.toLinearEquiv.skewProd e'.toLinearEquiv
       ↑f with
     continuous_toFun :=
-      (e.continuous_toFun.comp continuous_fst).prod_mk
+      (e.continuous_toFun.comp continuous_fst).prodMk
         ((e'.continuous_toFun.comp continuous_snd).add <| f.continuous.comp continuous_fst)
     continuous_invFun :=
-      (e.continuous_invFun.comp continuous_fst).prod_mk
+      (e.continuous_invFun.comp continuous_fst).prodMk
         (e'.continuous_invFun.comp <|
           continuous_snd.sub <| f.continuous.comp <| e.continuous_invFun.comp continuous_fst) }
 
@@ -866,7 +866,7 @@ variable (R M) in
 def _root_.Fin.consEquivL : (M 0 × Π i, M (Fin.succ i)) ≃L[R] (Π i, M i) where
   __ := Fin.consLinearEquiv R M
   continuous_toFun := continuous_id.fst.finCons continuous_id.snd
-  continuous_invFun := .prod_mk (continuous_apply 0) (by continuity)
+  continuous_invFun := .prodMk (continuous_apply 0) (by continuity)
 
 /-- `Fin.cons` in the codomain of continuous linear maps. -/
 abbrev _root_.ContinuousLinearMap.finCons

@@ -21,9 +21,8 @@ A C⋆-ring is a normed star group that is also a ring and that verifies the str
 condition `‖x‖^2 ≤ ‖x⋆ * x‖` for all `x` (which actually implies equality). If a C⋆-ring is also
 a star algebra, then it is a C⋆-algebra.
 
-To get a C⋆-algebra `E` over field `𝕜`, use
-`[NormedField 𝕜] [StarRing 𝕜] [NormedRing E] [StarRing E] [CStarRing E]
- [NormedAlgebra 𝕜 E] [StarModule 𝕜 E]`.
+Note that the type classes corresponding to C⋆-algebras are defined in
+`Mathlib/Analysis/CStarAlgebra/Classes`.
 
 ## TODO
 
@@ -174,6 +173,13 @@ instance _root_.Pi.cstarRing' : CStarRing (ι → R₁) :=
   Pi.cstarRing
 
 end ProdPi
+
+namespace MulOpposite
+
+instance {E : Type*} [NonUnitalNormedRing E] [StarRing E] [CStarRing E] : CStarRing Eᵐᵒᵖ where
+  norm_mul_self_le x := CStarRing.norm_self_mul_star (x := MulOpposite.unop x) |>.symm.le
+
+end MulOpposite
 
 section Unital
 

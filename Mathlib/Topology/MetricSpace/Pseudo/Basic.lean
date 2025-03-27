@@ -256,16 +256,25 @@ end SecondCountable
 end Metric
 
 section Compact
+variable {X : Type*} [PseudoMetricSpace X] {s : Set X} {ε : ℝ}
 
 /-- Any compact set in a pseudometric space can be covered by finitely many balls of a given
 positive radius -/
-theorem finite_cover_balls_of_compact {α : Type u} [PseudoMetricSpace α] {s : Set α}
-    (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
-    ∃ t, t ⊆ s ∧ Set.Finite t ∧ s ⊆ ⋃ x ∈ t, ball x e :=
+theorem finite_cover_balls_of_compact (hs : IsCompact s) {e : ℝ} (he : 0 < e) :
+    ∃ t ⊆ s, t.Finite ∧ s ⊆ ⋃ x ∈ t, ball x e :=
   let ⟨t, hts, ht⟩ := hs.elim_nhds_subcover _ (fun x _ => ball_mem_nhds x he)
   ⟨t, hts, t.finite_toSet, ht⟩
 
 alias IsCompact.finite_cover_balls := finite_cover_balls_of_compact
+
+/-- Any relatively compact set in a pseudometric space can be covered by finitely many balls of a
+given positive radius. -/
+lemma exists_finite_cover_balls_of_isCompact_closure (hs : IsCompact (closure s)) (hε : 0 < ε) :
+    ∃ t ⊆ s, t.Finite ∧ s ⊆ ⋃ x ∈ t, ball x ε := by
+  obtain ⟨t, hst⟩ := hs.elim_finite_subcover (fun x : s ↦ ball x ε) (fun _ ↦ isOpen_ball) fun x hx ↦
+    let ⟨y, hy, hxy⟩ := Metric.mem_closure_iff.1 hx _ hε; mem_iUnion.2 ⟨⟨y, hy⟩, hxy⟩
+  refine ⟨t.map ⟨Subtype.val, Subtype.val_injective⟩, by simp, Finset.finite_toSet _, ?_⟩
+  simpa using subset_closure.trans hst
 
 end Compact
 

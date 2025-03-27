@@ -54,16 +54,17 @@ section Prod
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace W]
   [TopologicalSpace ε] [TopologicalSpace ζ]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Lean 4 fails to deduce implicit args
-@[simp] theorem continuous_prod_mk {f : X → Y} {g : X → Z} :
+@[simp]
+theorem continuous_prodMk {f : X → Y} {g : X → Z} :
     (Continuous fun x => (f x, g x)) ↔ Continuous f ∧ Continuous g :=
-  (@continuous_inf_rng X (Y × Z) _ _ (TopologicalSpace.induced Prod.fst _)
-    (TopologicalSpace.induced Prod.snd _)).trans <|
-    continuous_induced_rng.and continuous_induced_rng
+  continuous_inf_rng.trans <| continuous_induced_rng.and continuous_induced_rng
+
+@[deprecated (since := "2025-03-10")]
+alias continuous_prod_mk := continuous_prodMk
 
 @[continuity]
 theorem continuous_fst : Continuous (@Prod.fst X Y) :=
-  (continuous_prod_mk.1 continuous_id).1
+  (continuous_prodMk.1 continuous_id).1
 
 /-- Postcomposing `f` with `Prod.fst` is continuous -/
 @[fun_prop]
@@ -99,7 +100,7 @@ theorem Filter.Tendsto.fst_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × 
 
 @[continuity]
 theorem continuous_snd : Continuous (@Prod.snd X Y) :=
-  (continuous_prod_mk.1 continuous_id).2
+  (continuous_prodMk.1 continuous_id).2
 
 /-- Postcomposing `f` with `Prod.snd` is continuous -/
 @[fun_prop]
@@ -134,17 +135,24 @@ theorem Filter.Tendsto.snd_nhds {X} {l : Filter X} {f : X → Y × Z} {p : Y × 
   continuousAt_snd.tendsto.comp h
 
 @[continuity, fun_prop]
-theorem Continuous.prod_mk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
+theorem Continuous.prodMk {f : Z → X} {g : Z → Y} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (f x, g x) :=
-  continuous_prod_mk.2 ⟨hf, hg⟩
+  continuous_prodMk.2 ⟨hf, hg⟩
+
+@[deprecated (since := "2025-03-10")]
+alias Continuous.prod_mk := Continuous.prodMk
 
 @[continuity]
-theorem Continuous.Prod.mk (x : X) : Continuous fun y : Y => (x, y) :=
-  continuous_const.prod_mk continuous_id
+theorem Continuous.prodMk_right (x : X) : Continuous fun y : Y => (x, y) := by fun_prop
+
+@[deprecated (since := "2025-03-10")]
+alias Continuous.Prod.mk := Continuous.prodMk_right
 
 @[continuity]
-theorem Continuous.Prod.mk_left (y : Y) : Continuous fun x : X => (x, y) :=
-  continuous_id.prod_mk continuous_const
+theorem Continuous.prodMk_left (y : Y) : Continuous fun x : X => (x, y) := by fun_prop
+
+@[deprecated (since := "2025-03-10")]
+alias Continuous.Prod.mk_left := Continuous.prodMk_left
 
 /-- If `f x y` is continuous in `x` for all `y ∈ s`,
 then the set of `x` such that `f x` maps `s` to `t` is closed. -/
@@ -154,22 +162,22 @@ lemma IsClosed.setOf_mapsTo {α : Type*} {f : X → α → Z} {s : Set α} {t : 
 
 theorem Continuous.comp₂ {g : X × Y → Z} (hg : Continuous g) {e : W → X} (he : Continuous e)
     {f : W → Y} (hf : Continuous f) : Continuous fun w => g (e w, f w) :=
-  hg.comp <| he.prod_mk hf
+  hg.comp <| he.prodMk hf
 
 theorem Continuous.comp₃ {g : X × Y × Z → ε} (hg : Continuous g) {e : W → X} (he : Continuous e)
     {f : W → Y} (hf : Continuous f) {k : W → Z} (hk : Continuous k) :
     Continuous fun w => g (e w, f w, k w) :=
-  hg.comp₂ he <| hf.prod_mk hk
+  hg.comp₂ he <| hf.prodMk hk
 
 theorem Continuous.comp₄ {g : X × Y × Z × ζ → ε} (hg : Continuous g) {e : W → X} (he : Continuous e)
     {f : W → Y} (hf : Continuous f) {k : W → Z} (hk : Continuous k) {l : W → ζ}
     (hl : Continuous l) : Continuous fun w => g (e w, f w, k w, l w) :=
-  hg.comp₃ he hf <| hk.prod_mk hl
+  hg.comp₃ he hf <| hk.prodMk hl
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.prodMap {f : Z → X} {g : W → Y} (hf : Continuous f) (hg : Continuous g) :
     Continuous (Prod.map f g) :=
-  hf.fst'.prod_mk hg.snd'
+  hf.fst'.prodMk hg.snd'
 
 @[deprecated (since := "2024-10-05")] alias Continuous.prod_map := Continuous.prodMap
 
@@ -213,12 +221,15 @@ theorem Filter.Eventually.prod_inr_nhds {p : Y → Prop} {y : Y} (h : ∀ᶠ x i
     ∀ᶠ x in 𝓝 (x, y), p (x : X × Y).2 :=
   continuousAt_snd h
 
-theorem Filter.Eventually.prod_mk_nhds {px : X → Prop} {x} (hx : ∀ᶠ x in 𝓝 x, px x) {py : Y → Prop}
+theorem Filter.Eventually.prodMk_nhds {px : X → Prop} {x} (hx : ∀ᶠ x in 𝓝 x, px x) {py : Y → Prop}
     {y} (hy : ∀ᶠ y in 𝓝 y, py y) : ∀ᶠ p in 𝓝 (x, y), px (p : X × Y).1 ∧ py p.2 :=
   (hx.prod_inl_nhds y).and (hy.prod_inr_nhds x)
 
+@[deprecated (since := "2025-03-10")]
+alias Filter.Eventually.prod_mk_nhds := Filter.Eventually.prodMk_nhds
+
 theorem continuous_swap : Continuous (Prod.swap : X × Y → Y × X) :=
-  continuous_snd.prod_mk continuous_fst
+  continuous_snd.prodMk continuous_fst
 
 lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs ↦ by
   rw [image_swap_eq_preimage_swap]
@@ -226,12 +237,11 @@ lemma isClosedMap_swap : IsClosedMap (Prod.swap : X × Y → Y × X) := fun s hs
 
 theorem Continuous.uncurry_left {f : X → Y → Z} (x : X) (h : Continuous (uncurry f)) :
     Continuous (f x) :=
-  h.comp (Continuous.Prod.mk _)
+  h.comp (.prodMk_right _)
 
 theorem Continuous.uncurry_right {f : X → Y → Z} (y : Y) (h : Continuous (uncurry f)) :
     Continuous fun a => f a y :=
-  h.comp (Continuous.Prod.mk_left _)
-
+  h.comp (.prodMk_left _)
 
 theorem continuous_curry {g : X × Y → Z} (x : X) (h : Continuous g) : Continuous (curry g x) :=
   Continuous.uncurry_left x h
@@ -310,27 +320,31 @@ theorem Filter.EventuallyEq.prodMap_nhds {α β : Type*} {f₁ f₂ : X → α} 
     {x : X} {y : Y} (hf : f₁ =ᶠ[𝓝 x] f₂) (hg : g₁ =ᶠ[𝓝 y] g₂) :
     Prod.map f₁ g₁ =ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
   rw [nhds_prod_eq]
-  exact hf.prod_map hg
+  exact hf.prodMap hg
 
 theorem Filter.EventuallyLE.prodMap_nhds {α β : Type*} [LE α] [LE β] {f₁ f₂ : X → α} {g₁ g₂ : Y → β}
     {x : X} {y : Y} (hf : f₁ ≤ᶠ[𝓝 x] f₂) (hg : g₁ ≤ᶠ[𝓝 y] g₂) :
     Prod.map f₁ g₁ ≤ᶠ[𝓝 (x, y)] Prod.map f₂ g₂ := by
   rw [nhds_prod_eq]
-  exact hf.prod_map hg
+  exact hf.prodMap hg
 
 theorem nhds_swap (x : X) (y : Y) : 𝓝 (x, y) = (𝓝 (y, x)).map Prod.swap := by
   rw [nhds_prod_eq, Filter.prod_comm, nhds_prod_eq]; rfl
 
-theorem Filter.Tendsto.prod_mk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
+theorem Filter.Tendsto.prodMk_nhds {γ} {x : X} {y : Y} {f : Filter γ} {mx : γ → X} {my : γ → Y}
     (hx : Tendsto mx f (𝓝 x)) (hy : Tendsto my f (𝓝 y)) :
     Tendsto (fun c => (mx c, my c)) f (𝓝 (x, y)) := by
-  rw [nhds_prod_eq]; exact Filter.Tendsto.prod_mk hx hy
+  rw [nhds_prod_eq]
+  exact hx.prodMk hy
+
+@[deprecated (since := "2025-03-10")]
+alias Filter.Tendsto.prod_mk_nhds := Filter.Tendsto.prodMk_nhds
 
 theorem Filter.Tendsto.prodMap_nhds {x : X} {y : Y} {z : Z} {w : W} {f : X → Y} {g : Z → W}
     (hf : Tendsto f (𝓝 x) (𝓝 y)) (hg : Tendsto g (𝓝 z) (𝓝 w)) :
     Tendsto (Prod.map f g) (𝓝 (x, z)) (𝓝 (y, w)) := by
   rw [nhds_prod_eq, nhds_prod_eq]
-  exact hf.prod_map hg
+  exact hf.prodMap hg
 
 theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
     (h : ∀ᶠ x in 𝓝 (x, y), p x) : ∀ᶠ x' in 𝓝 x, ∀ᶠ y' in 𝓝 y, p (x', y') := by
@@ -338,13 +352,16 @@ theorem Filter.Eventually.curry_nhds {p : X × Y → Prop} {x : X} {y : Y}
   exact h.curry
 
 @[fun_prop]
-theorem ContinuousAt.prod {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
+theorem ContinuousAt.prodMk {f : X → Y} {g : X → Z} {x : X} (hf : ContinuousAt f x)
     (hg : ContinuousAt g x) : ContinuousAt (fun x => (f x, g x)) x :=
-  hf.prod_mk_nhds hg
+  hf.prodMk_nhds hg
+
+@[deprecated (since := "2025-03-10")]
+alias ContinuousAt.prod := ContinuousAt.prodMk
 
 theorem ContinuousAt.prodMap {f : X → Z} {g : Y → W} {p : X × Y} (hf : ContinuousAt f p.fst)
     (hg : ContinuousAt g p.snd) : ContinuousAt (Prod.map f g) p :=
-  hf.fst''.prod hg.snd''
+  hf.fst''.prodMk hg.snd''
 
 @[deprecated (since := "2024-10-05")] alias ContinuousAt.prod_map := ContinuousAt.prodMap
 
@@ -359,7 +376,7 @@ theorem ContinuousAt.prodMap' {f : X → Z} {g : Y → W} {x : X} {y : Y} (hf : 
 theorem ContinuousAt.comp₂ {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X}
     (hf : ContinuousAt f (g x, h x)) (hg : ContinuousAt g x) (hh : ContinuousAt h x) :
     ContinuousAt (fun x ↦ f (g x, h x)) x :=
-  ContinuousAt.comp hf (hg.prod hh)
+  ContinuousAt.comp hf (hg.prodMk hh)
 
 theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z} {x : X} {y : Y × Z}
     (hf : ContinuousAt f y) (hg : ContinuousAt g x) (hh : ContinuousAt h x) (e : (g x, h x) = y) :
@@ -370,13 +387,13 @@ theorem ContinuousAt.comp₂_of_eq {f : Y × Z → W} {g : X → Y} {h : X → Z
 /-- Continuous functions on products are continuous in their first argument -/
 theorem Continuous.curry_left {f : X × Y → Z} (hf : Continuous f) {y : Y} :
     Continuous fun x ↦ f (x, y) :=
-  hf.comp (continuous_id.prod_mk continuous_const)
+  hf.comp (.prodMk_left _)
 alias Continuous.along_fst := Continuous.curry_left
 
 /-- Continuous functions on products are continuous in their second argument -/
 theorem Continuous.curry_right {f : X × Y → Z} (hf : Continuous f) {x : X} :
     Continuous fun y ↦ f (x, y) :=
-  hf.comp (continuous_const.prod_mk continuous_id)
+  hf.comp (.prodMk_right _)
 alias Continuous.along_snd := Continuous.curry_right
 
 -- todo: prove a version of `generateFrom_union` with `image2 (∩) s t` in the LHS and use it here
@@ -410,7 +427,6 @@ theorem prod_generateFrom_generateFrom_eq {X Y : Type*} {s : Set (Set X)} {t : S
               isOpen_iUnion fun u =>
                 isOpen_iUnion fun hu => GenerateOpen.basic _ ⟨_, hu, _, hv, rfl⟩))
 
--- todo: use the previous lemma?
 theorem prod_eq_generateFrom :
     instTopologicalSpaceProd =
       generateFrom { g | ∃ (s : Set X) (t : Set Y), IsOpen s ∧ IsOpen t ∧ g = s ×ˢ t } :=
@@ -421,7 +437,7 @@ theorem prod_eq_generateFrom :
       (forall_mem_image.2 fun t ht =>
         GenerateOpen.basic _ ⟨univ, t, by simpa [Set.prod_eq] using ht⟩))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: align with `mem_nhds_prod_iff'`
+-- TODO: align with `mem_nhds_prod_iff'`
 theorem isOpen_prod_iff {s : Set (X × Y)} :
     IsOpen s ↔ ∀ a b, (a, b) ∈ s →
       ∃ u v, IsOpen u ∧ IsOpen v ∧ a ∈ u ∧ b ∈ v ∧ u ×ˢ v ⊆ s :=
@@ -602,13 +618,13 @@ alias OpenEmbedding.prodMap := IsOpenEmbedding.prodMap
 @[deprecated (since := "2024-10-05")] alias IsOpenEmbedding.prod := IsOpenEmbedding.prodMap
 
 lemma isEmbedding_graph {f : X → Y} (hf : Continuous f) : IsEmbedding fun x => (x, f x) :=
-  .of_comp (continuous_id.prod_mk hf) continuous_fst .id
+  .of_comp (continuous_id.prodMk hf) continuous_fst .id
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_graph := isEmbedding_graph
 
 lemma isEmbedding_prodMk (x : X) : IsEmbedding (Prod.mk x : Y → X × Y) :=
-  .of_comp (Continuous.Prod.mk x) continuous_snd .id
+  .of_comp (.prodMk_right x) continuous_snd .id
 
 @[deprecated (since := "2024-10-26")]
 alias embedding_prod_mk := isEmbedding_prodMk
@@ -907,8 +923,8 @@ lemma sumSumSumComm_symm : (sumSumSumComm X Y W Z).symm = (sumSumSumComm X W Y Z
 
 /-- `X × Y` is homeomorphic to `Y × X`. -/
 def prodComm : X × Y ≃ₜ Y × X where
-  continuous_toFun := continuous_snd.prod_mk continuous_fst
-  continuous_invFun := continuous_snd.prod_mk continuous_fst
+  continuous_toFun := continuous_snd.prodMk continuous_fst
+  continuous_invFun := continuous_snd.prodMk continuous_fst
   toEquiv := Equiv.prodComm X Y
 
 @[simp]
@@ -921,8 +937,8 @@ theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
 
 /-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
 def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
-  continuous_toFun := continuous_fst.fst.prod_mk (continuous_fst.snd.prod_mk continuous_snd)
-  continuous_invFun := (continuous_fst.prod_mk continuous_snd.fst).prod_mk continuous_snd.snd
+  continuous_toFun := continuous_fst.fst.prodMk (continuous_fst.snd.prodMk continuous_snd)
+  continuous_invFun := (continuous_fst.prodMk continuous_snd.fst).prodMk continuous_snd.snd
   toEquiv := Equiv.prodAssoc X Y Z
 
 @[simp]
@@ -949,7 +965,7 @@ theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdCo
 def prodPUnit : X × PUnit ≃ₜ X where
   toEquiv := Equiv.prodPUnit X
   continuous_toFun := continuous_fst
-  continuous_invFun := continuous_id.prod_mk continuous_const
+  continuous_invFun := .prodMk_left _
 
 /-- `{*} × X` is homeomorphic to `X`. -/
 def punitProd : PUnit × X ≃ₜ X :=
