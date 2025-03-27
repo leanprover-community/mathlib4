@@ -1,6 +1,5 @@
 import Mathlib.Tactic.Simproc.ExistsAndEq
 import Mathlib.Tactic.Simproc.ExistsAndEqNested
-import Mathlib.Algebra.Group.Even
 
 universe u
 variable (α : Type u) (p q : α → Prop)
@@ -46,6 +45,3 @@ error: simp made no progress
 #guard_msgs in
 example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
   simp only [existsAndEqNested]
-
-example : ∃ n : ℕ, Even n := by
-  simp [Even]

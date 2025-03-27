@@ -52,6 +52,34 @@ def mkNestedExists (fvars : List FvarQ) (body : Expr) : MetaM Expr := do
     let res ← mkNestedExists tl body
     pure <| ← mkAppOptM ``Exists #[.some β, .some <| ← mkLambdaFVars #[b] res]
 
+partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
+    MetaM <| Option Path := do
+  match_expr P with
+  | Eq _ x y =>
+    if a == x then
+      if !(y.containsFVar a.fvarId!) then
+        return .some []
+      return .none
+    else if a == (y : Q($α)) then
+      if !(x.containsFVar a.fvarId!) then
+        return .some []
+      return .none
+    else
+      return .none
+  | And L R =>
+    if let .some path ← findEqPath a L then
+      return .some (.left :: path)
+    if let .some path ← findEqPath a R then
+      return .some (.right :: path)
+    return none
+  | Exists _ pb =>
+    let .lam _ _ body _ := pb | return none
+    if let .some path ← findEqPath a body then
+      pure <| .some path
+    else
+      pure .none
+  | _ => return none
+
 /-- Given `P : Prop` and `a : α` traverses the expression `P` aiming to find some subexpression of
 the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks into existential
 quantifiers. It returns tuple `(P', a', lctx, fvars, path)` where
@@ -63,30 +91,38 @@ quantifiers. It returns tuple `(P', a', lctx, fvars, path)` where
   replaced with `fvars`. -/
 partial def findEq {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
     MetaM <| Option (Q(Prop) × Q($α) × LocalContext × List FvarQ × Path) := do
+  let .some path ← findEqPath a P | return none
+  let .some (res, a', lctx, fvars) ← go a P path | failure
+  return (res, a', lctx, fvars, path)
+where go {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :
+    MetaM <| Option (Q(Prop) × Q($α) × LocalContext × List FvarQ) := do
   match P with
   | ~q(@Eq.{u} $γ $x $y) =>
     let .defEq _ := ← isDefEqQ q($α) q($γ) | return none
     if let .defEq _ ← isDefEqQ a x then
       if !(y.containsFVar a.fvarId!) then
-        return .some (P, y, ← getLCtx, [], [])
+        return .some (P, y, ← getLCtx, [])
       return .none
     else if let .defEq _ ← isDefEqQ a (y : Q($α)) then
       if !(x.containsFVar a.fvarId!) then
-        return .some (P, x, ← getLCtx, [], [])
+        return .some (P, x, ← getLCtx, [])
       return .none
     else
       return .none
   | ~q($L ∧ $R) =>
-    if let .some (res, a', lctx, fvars, path) ← findEq a q($L) then
-      return .some (q($res ∧ $R), a', lctx, fvars, .left :: path)
-    if let .some (res, a', lctx, fvars, path) ← findEq a q($R) then
-      return .some (q($L ∧ $res), a', lctx, fvars, .right :: path)
-    return none
+    let goto := path.head!
+    let tl := path.tail
+    if goto == .left then
+      let .some (res, a', lctx, fvars) ← go a q($L) tl | failure
+      return .some (q($res ∧ $R), a', lctx, fvars)
+    else
+      let .some (res, a', lctx, fvars) ← go a q($R) tl | failure
+      return .some (q($L ∧ $res), a', lctx, fvars)
   | ~q(@Exists $β $pb) =>
     lambdaBoundedTelescope pb 1 fun bs (body : Q(Prop)) => do
       let #[(b : Q($β))] := bs | failure
-      if let .some (res, a', lctx, fvars, path) ← findEq a q($body) then
-        pure <| .some (res, a', lctx, ⟨_, _, b⟩ :: fvars, path)
+      if let .some (res, a', lctx, fvars) ← go a q($body) path then
+        pure <| .some (res, a', lctx, ⟨_, _, b⟩ :: fvars)
       else
         pure .none
   | _ => return none
