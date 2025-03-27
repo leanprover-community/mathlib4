@@ -419,10 +419,10 @@ theorem isUniformGroup_of_commGroup : IsUniformGroup G := by
   exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 @[deprecated (since := "2025-03-26")]
-alias comm_topologicalGroup_is_uniform := isUniformGroup_of_commGroup
+alias uniformGroup_of_commGroup := isUniformGroup_of_commGroup
 
 @[deprecated (since := "2025-03-26")]
-alias comm_topologicalAddGroup_is_uniform := isUniformAddGroup_of_addCommGroup
+alias UniformAddGroup_of_commGroup := isUniformAddGroup_of_addCommGroup
 
 open Set
 

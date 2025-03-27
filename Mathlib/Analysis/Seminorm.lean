@@ -1072,7 +1072,7 @@ theorem continuousAt_zero [TopologicalSpace E] [ContinuousConstSMul 𝕜 E] {p :
     (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) : ContinuousAt p 0 :=
   continuousAt_zero' (Filter.mem_of_superset hp <| p.ball_subset_closedBall _ _)
 
-protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [UniformAddGroup E]
+protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [IsUniformAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : UniformContinuous p := by
   have hp : Filter.Tendsto p (𝓝 0) (𝓝 0) := map_zero p ▸ hp
   rw [UniformContinuous, uniformity_eq_comap_nhds_zero_swapped,
@@ -1084,18 +1084,18 @@ protected theorem uniformContinuous_of_continuousAt_zero [UniformSpace E] [Unifo
 protected theorem continuous_of_continuousAt_zero [TopologicalSpace E] [IsTopologicalAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ContinuousAt p 0) : Continuous p := by
   letI := IsTopologicalAddGroup.toUniformSpace E
-  haveI : UniformAddGroup E := uniformAddGroup_of_addCommGroup
+  haveI : IsUniformAddGroup E := isUniformAddGroup_of_addCommGroup
   exact (Seminorm.uniformContinuous_of_continuousAt_zero hp).continuous
 
 /-- A seminorm is uniformly continuous if `p.ball 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.uniformContinuous`. -/
-protected theorem uniformContinuous_of_forall [UniformSpace E] [UniformAddGroup E]
+protected theorem uniformContinuous_of_forall [UniformSpace E] [IsUniformAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.ball 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall hp)
 
-protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
+protected theorem uniformContinuous [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.ball 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero hp)
@@ -1103,13 +1103,14 @@ protected theorem uniformContinuous [UniformSpace E] [UniformAddGroup E] [Contin
 /-- A seminorm is uniformly continuous if `p.closedBall 0 r ∈ 𝓝 0` for *all* `r > 0`.
 Over a `NontriviallyNormedField` it is actually enough to check that this is true
 for *some* `r`, see `Seminorm.uniformContinuous'`. -/
-protected theorem uniformContinuous_of_forall' [UniformSpace E] [UniformAddGroup E]
+protected theorem uniformContinuous_of_forall' [UniformSpace E] [IsUniformAddGroup E]
     {p : Seminorm 𝕝 E} (hp : ∀ r > 0, p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero_of_forall' hp)
 
-protected theorem uniformContinuous' [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
-    {p : Seminorm 𝕜 E} {r : ℝ} (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
+protected theorem uniformContinuous' [UniformSpace E] [IsUniformAddGroup E]
+    [ContinuousConstSMul 𝕜 E] {p : Seminorm 𝕜 E} {r : ℝ}
+    (hp : p.closedBall 0 r ∈ (𝓝 0 : Filter E)) :
     UniformContinuous p :=
   Seminorm.uniformContinuous_of_continuousAt_zero (continuousAt_zero' hp)
 
@@ -1152,11 +1153,12 @@ lemma ball_mem_nhds [TopologicalSpace E] {p : Seminorm 𝕝 E} (hp : Continuous 
   by simpa only [p.ball_zero_eq] using this (Iio_mem_nhds hr)
 
 lemma uniformSpace_eq_of_hasBasis
-    {ι} [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
+    {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p' : ι → Prop} {s : ι → Set E} (p : Seminorm 𝕜 E) (hb : (𝓝 0 : Filter E).HasBasis p' s)
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     ‹UniformSpace E› = p.toAddGroupSeminorm.toSeminormedAddGroup.toUniformSpace := by
-  refine UniformAddGroup.ext ‹_› p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_uniformAddGroup ?_
+  refine IsUniformAddGroup.ext ‹_›
+    p.toAddGroupSeminorm.toSeminormedAddCommGroup.to_isUniformAddGroup ?_
   apply le_antisymm
   · rw [← @comap_norm_nhds_zero E p.toAddGroupSeminorm.toSeminormedAddGroup, ← tendsto_iff_comap]
     suffices Continuous p from this.tendsto' 0 _ (map_zero p)
@@ -1167,7 +1169,7 @@ lemma uniformSpace_eq_of_hasBasis
     simpa only [subset_def, mem_ball_zero] using h₂
 
 lemma uniformity_eq_of_hasBasis
-    {ι} [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul 𝕜 E]
+    {ι} [UniformSpace E] [IsUniformAddGroup E] [ContinuousConstSMul 𝕜 E]
     {p' : ι → Prop} {s : ι → Set E} (p : Seminorm 𝕜 E) (hb : (𝓝 0 : Filter E).HasBasis p' s)
     (h₁ : ∃ r, p.closedBall 0 r ∈ 𝓝 0) (h₂ : ∀ i, p' i → ∃ r > 0, p.ball 0 r ⊆ s i) :
     𝓤 E = ⨅ r > 0, 𝓟 {x | p (x.1 - x.2) < r} := by
