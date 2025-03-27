@@ -4,12 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Polynomial.Module.Basic
-import Mathlib.Algebra.Ring.Idempotent
-import Mathlib.Order.Basic
-import Mathlib.Order.Hom.Lattice
 import Mathlib.RingTheory.Finiteness.Nakayama
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
-import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.ReesAlgebra
 
 /-!
@@ -294,7 +290,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     obtain ⟨l, hl⟩ := (Finsupp.mem_span_iff_linearCombination _ _ _).mp (H _ ⟨x, hx, rfl⟩)
     replace hl := congr_arg (fun f : ℕ →₀ M => f (n + 1)) hl
     dsimp only at hl
-    erw [Finsupp.single_eq_same] at hl
+    rw [PolynomialModule.single_apply, if_pos rfl] at hl
     rw [← hl, Finsupp.linearCombination_apply, Finsupp.sum_apply]
     apply Submodule.sum_mem _ _
     rintro ⟨_, _, ⟨n', rfl⟩, _, ⟨hn', rfl⟩, m, hm, rfl⟩ -
