@@ -170,9 +170,9 @@ theorem of_injective (i : ι) : Function.Injective (of β i) :=
   DFinsupp.single_injective
 
 @[elab_as_elim]
-protected theorem induction_on {C : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (zero : C 0)
-    (basic : ∀ (i : ι) (x : β i), C (of β i x))
-    (plus : ∀ x y, C x → C y → C (x + y)) : C x := by
+protected theorem induction_on {motive : (⨁ i, β i) → Prop} (x : ⨁ i, β i) (zero : motive 0)
+    (of : ∀ (i : ι) (x : β i), motive (of β i x))
+    (add : ∀ x y, motive x → motive y → motive (x + y)) : motive x := by
   apply DFinsupp.induction x zero
   intro i b f h1 h2 ih
   solve_by_elim
