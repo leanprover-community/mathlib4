@@ -346,7 +346,7 @@ theorem cast_finsupp_prod [CommSemiring R] (g : α → M → ℕ) :
   Nat.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommSemiring R] (g : α → M → ℕ) :
+theorem cast_finsupp_sum [AddCommMonoidWithOne R] (g : α → M → ℕ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Nat.cast_sum _ _
 
@@ -360,7 +360,7 @@ theorem cast_finsupp_prod [CommRing R] (g : α → M → ℤ) :
   Int.cast_prod _ _
 
 @[simp, norm_cast]
-theorem cast_finsupp_sum [CommRing R] (g : α → M → ℤ) :
+theorem cast_finsupp_sum [AddCommGroupWithOne R] (g : α → M → ℤ) :
     (↑(f.sum g) : R) = f.sum fun a b => ↑(g a b) :=
   Int.cast_sum _ _
 
@@ -564,7 +564,7 @@ theorem mapDomain_mapRange [AddCommMonoid N] (f : α → β) (v : α →₀ M) (
       map_add' := hadd }
   DFunLike.congr_fun (mapDomain.addMonoidHom_comp_mapRange f g') v
 
-theorem sum_update_add [AddCommMonoid α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
+theorem sum_update_add [AddZeroClass α] [AddCommMonoid β] (f : ι →₀ α) (i : ι) (a : α)
     (g : ι → α → β) (hg : ∀ i, g i 0 = 0)
     (hgg : ∀ (j : ι) (a₁ a₂ : α), g j (a₁ + a₂) = g j a₁ + g j a₂) :
     (f.update i a).sum g + g i (f i) = f.sum g + g i a := by
@@ -620,7 +620,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
   simp only [sum, comapDomain_apply, (· ∘ ·), comapDomain]
   exact Finset.sum_preimage_of_bij f _ hf fun x => g x (l x)
 
-theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
+theorem eq_zero_of_comapDomain_eq_zero [Zero M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
   simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
@@ -720,7 +720,7 @@ theorem some_zero [Zero M] : (0 : Option α →₀ M).some = 0 := by
   simp
 
 @[simp]
-theorem some_add [AddCommMonoid M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
+theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
   ext
   simp
 
@@ -737,7 +737,7 @@ theorem some_single_some [Zero M] (a : α) (m : M) :
     simp [single_apply]
 
 @[to_additive]
-theorem prod_option_index [AddCommMonoid M] [CommMonoid N] (f : Option α →₀ M)
+theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
     (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
     (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
     f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
@@ -1071,22 +1071,30 @@ finitely supported functions from `β` to `M`,
 protected def uncurry (f : α →₀ β →₀ M) : α × β →₀ M :=
   f.sum fun a g => g.sum fun b c => single (a, b) c
 
+@[simp]
+protected theorem uncurry_apply_pair (f : α →₀ β →₀ M) (x : α) (y : β) :
+    f.uncurry (x, y) = f x y := by
+  rw [← curry_apply (f.uncurry) x y]
+  simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, single_zero, single_add,
+    forall_true_iff, sum_single_index, single_zero, ← single_sum, sum_single]
+
+@[simp]
+theorem curry_uncurry (f : α →₀ β →₀ M) : f.uncurry.curry = f := by
+  ext a b
+  rw [curry_apply, Finsupp.uncurry_apply_pair]
+
+@[simp]
+theorem uncurry_curry (f : α × β →₀ M) : f.curry.uncurry = f := by
+  ext ⟨a, b⟩
+  rw [Finsupp.uncurry_apply_pair, curry_apply]
+
 /-- `finsuppProdEquiv` defines the `Equiv` between `((α × β) →₀ M)` and `(α →₀ (β →₀ M))` given by
 currying and uncurrying. -/
 def finsuppProdEquiv : (α × β →₀ M) ≃ (α →₀ β →₀ M) where
   toFun := Finsupp.curry
   invFun := Finsupp.uncurry
-  left_inv f := by
-    rw [Finsupp.uncurry, sum_curry_index]
-    · simp_rw [Prod.mk.eta, sum_single]
-    · intros
-      apply single_zero
-    · intros
-      apply single_add
-  right_inv f := by
-    simp only [Finsupp.curry, Finsupp.uncurry, sum_sum_index, sum_zero_index, sum_add_index,
-      sum_single_index, single_zero, single_add, eq_self_iff_true, forall_true_iff,
-      forall₃_true_iff, (single_sum _ _ _).symm, sum_single]
+  left_inv := uncurry_curry
+  right_inv := curry_uncurry
 
 theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p] :
     (f.filter fun a : α × β => p a.1).curry = f.curry.filter p := by

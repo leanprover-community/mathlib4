@@ -30,7 +30,7 @@ An ad hoc multiplication is defined, for which `EReal` is a `CommMonoidWithZero`
 choice that `0 * x = x * 0 = 0` for any `x` (while the other cases are defined non-ambiguously).
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1*⊥ + (-1)*⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
 Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where either `0 ≤ x < ⊤`,
-see `Ereal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `Ereal.left_distrib_of_nonneg`
+see `EReal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `EReal.left_distrib_of_nonneg`
 (similarly for right distributivity).
 
 `EReal` is a `CompleteLinearOrder`; this is deduced by type class inference from
@@ -77,16 +77,16 @@ instance : DenselyOrdered EReal :=
 instance : CharZero EReal := inferInstanceAs (CharZero (WithBot (WithTop ℝ)))
 
 /-- The canonical inclusion from reals to ereals. Registered as a coercion. -/
-@[coe] def Real.toEReal : ℝ → EReal := some ∘ some
+@[coe] def Real.toEReal : ℝ → EReal := WithBot.some ∘ WithTop.some
 
 namespace EReal
 
 -- things unify with `WithBot.decidableLT` later if we don't provide this explicitly.
-instance decidableLT : DecidableRel ((· < ·) : EReal → EReal → Prop) :=
+instance decidableLT : DecidableLT EReal :=
   WithBot.decidableLT
 
 -- TODO: Provide explicitly, otherwise it is inferred noncomputably from `CompleteLinearOrder`
-instance : Top EReal := ⟨some ⊤⟩
+instance : Top EReal := ⟨WithBot.some ⊤⟩
 
 instance : Coe ℝ EReal := ⟨Real.toEReal⟩
 
@@ -131,11 +131,11 @@ theorem coe_one : ((1 : ℝ) : EReal) = 1 := rfl
 
 When working in term mode, note that pattern matching can be used directly. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
-protected def rec {C : EReal → Sort*} (h_bot : C ⊥) (h_real : ∀ a : ℝ, C a) (h_top : C ⊤) :
-    ∀ a : EReal, C a
-  | ⊥ => h_bot
-  | (a : ℝ) => h_real a
-  | ⊤ => h_top
+protected def rec {motive : EReal → Sort*}
+    (bot : motive ⊥) (coe : ∀ a : ℝ, motive a) (top : motive ⊤) : ∀ a : EReal, motive a
+  | ⊥ => bot
+  | (a : ℝ) => coe a
+  | ⊤ => top
 
 protected lemma «forall» {p : EReal → Prop} : (∀ r, p r) ↔ p ⊥ ∧ p ⊤ ∧ ∀ r : ℝ, p r where
   mp h := ⟨h _, h _, fun _ ↦ h _⟩
@@ -428,9 +428,9 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
 lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_between h
   induction a with
-  | h_bot => exact (not_lt_bot ha₁).elim
-  | h_real a₀ => exact ⟨a₀, ha₁, ha₂⟩
-  | h_top => exact (not_top_lt ha₂).elim
+  | bot => exact (not_lt_bot ha₁).elim
+  | coe a₀ => exact ⟨a₀, ha₁, ha₂⟩
+  | top => exact (not_top_lt ha₂).elim
 
 @[simp]
 lemma image_coe_Icc (x y : ℝ) : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
@@ -875,9 +875,9 @@ theorem top_add_iff_ne_bot {x : EReal} : ⊤ + x = ⊤ ↔ x ≠ ⊥ := by
     rw [add_bot] at h
     exact bot_ne_top h
   · cases x with
-    | h_bot => contradiction
-    | h_top => rfl
-    | h_real r => exact top_add_of_ne_bot h
+    | bot => contradiction
+    | top => rfl
+    | coe r => exact top_add_of_ne_bot h
 
 /-- For any extended real number `x` which is not `⊥`, the sum of `x` and `⊤` is equal to `⊤`. -/
 @[simp]
@@ -1220,12 +1220,12 @@ lemma sub_add_cancel_left {a : EReal} {b : Real} : b - (b + a) = -a := by
 lemma le_sub_iff_add_le {a b c : EReal} (hb : b ≠ ⊥ ∨ c ≠ ⊥) (ht : b ≠ ⊤ ∨ c ≠ ⊤) :
     a ≤ c - b ↔ a + b ≤ c := by
   induction b with
-  | h_bot =>
+  | bot =>
     simp only [ne_eq, not_true_eq_false, false_or] at hb
     simp only [sub_bot hb, le_top, add_bot, bot_le]
-  | h_real b =>
+  | coe b =>
     rw [← (addLECancellable_coe b).add_le_add_iff_right, sub_add_cancel]
-  | h_top =>
+  | top =>
     simp only [ne_eq, not_true_eq_false, false_or, sub_top, le_bot_iff] at ht ⊢
     refine ⟨fun h ↦ h ▸ (bot_add ⊤).symm ▸ bot_le, fun h ↦ ?_⟩
     by_contra ha
@@ -1242,9 +1242,9 @@ protected theorem lt_sub_iff_add_lt {a b c : EReal} (h₁ : b ≠ ⊥ ∨ c ≠ 
 
 theorem sub_le_of_le_add {a b c : EReal} (h : a ≤ b + c) : a - c ≤ b := by
   induction c with
-  | h_bot => rw [add_bot, le_bot_iff] at h; simp only [h, bot_sub, bot_le]
-  | h_real c => exact (sub_le_iff_le_add (.inl (coe_ne_bot c)) (.inl (coe_ne_top c))).2 h
-  | h_top => simp only [sub_top, bot_le]
+  | bot => rw [add_bot, le_bot_iff] at h; simp only [h, bot_sub, bot_le]
+  | coe c => exact (sub_le_iff_le_add (.inl (coe_ne_bot c)) (.inl (coe_ne_top c))).2 h
+  | top => simp only [sub_top, bot_le]
 
 /-- See also `EReal.sub_le_of_le_add`. -/
 theorem sub_le_of_le_add' {a b c : EReal} (h : a ≤ b + c) : a - b ≤ c :=
@@ -1838,8 +1838,8 @@ lemma mul_inv (a b : EReal) : (a * b)⁻¹ = a⁻¹ * b⁻¹ := by
 
 lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ := by
   induction a with
-  | h_bot | h_top => simp
-  | h_real a =>
+  | bot | top => simp
+  | coe a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, ← inv_neg, abs_def a,
         coe_ennreal_ofReal, max_eq_left (abs_nonneg a), ← coe_neg |a|, abs_of_neg a_neg, neg_neg]
@@ -1851,8 +1851,8 @@ lemma sign_mul_inv_abs (a : EReal) : (sign a) * (a.abs : EReal)⁻¹ = a⁻¹ :=
 
 lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : EReal) = a⁻¹ := by
   induction a with
-  | h_bot | h_top  => simp
-  | h_real a =>
+  | bot | top  => simp
+  | coe a =>
     rcases lt_trichotomy a 0 with (a_neg | rfl | a_pos)
     · rw [sign_coe, _root_.sign_neg a_neg, coe_neg_one, neg_one_mul, abs_def a,
         ← ofReal_inv_of_pos (abs_pos_of_neg a_neg), coe_ennreal_ofReal,
@@ -1869,37 +1869,37 @@ lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : ER
 
 lemma bot_lt_inv (x : EReal) : ⊥ < x⁻¹ := by
   cases x with
-  | h_bot => exact inv_bot ▸ bot_lt_zero
-  | h_top => exact EReal.inv_top ▸ bot_lt_zero
-  | h_real x => exact (coe_inv x).symm ▸ bot_lt_coe (x⁻¹)
+  | bot => exact inv_bot ▸ bot_lt_zero
+  | top => exact EReal.inv_top ▸ bot_lt_zero
+  | coe x => exact (coe_inv x).symm ▸ bot_lt_coe (x⁻¹)
 
 lemma inv_lt_top (x : EReal) : x⁻¹ < ⊤ := by
   cases x with
-  | h_bot => exact inv_bot ▸ zero_lt_top
-  | h_top => exact EReal.inv_top ▸ zero_lt_top
-  | h_real x => exact (coe_inv x).symm ▸ coe_lt_top (x⁻¹)
+  | bot => exact inv_bot ▸ zero_lt_top
+  | top => exact EReal.inv_top ▸ zero_lt_top
+  | coe x => exact (coe_inv x).symm ▸ coe_lt_top (x⁻¹)
 
 lemma inv_nonneg_of_nonneg {a : EReal} (h : 0 ≤ a) : 0 ≤ a⁻¹ := by
   cases a with
-  | h_bot | h_top => simp
-  | h_real a => rw [← coe_inv a, EReal.coe_nonneg, inv_nonneg]; exact EReal.coe_nonneg.1 h
+  | bot | top => simp
+  | coe a => rw [← coe_inv a, EReal.coe_nonneg, inv_nonneg]; exact EReal.coe_nonneg.1 h
 
 lemma inv_nonpos_of_nonpos {a : EReal} (h : a ≤ 0) : a⁻¹ ≤ 0 := by
   cases a with
-  | h_bot | h_top => simp
-  | h_real a => rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]; exact EReal.coe_nonpos.1 h
+  | bot | top => simp
+  | coe a => rw [← coe_inv a, EReal.coe_nonpos, inv_nonpos]; exact EReal.coe_nonpos.1 h
 
 lemma inv_pos_of_pos_ne_top {a : EReal} (h : 0 < a) (h' : a ≠ ⊤) : 0 < a⁻¹ := by
   cases a with
-  | h_bot => exact (not_lt_bot h).rec
-  | h_real a =>  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
-  | h_top => exact (h' (Eq.refl ⊤)).rec
+  | bot => exact (not_lt_bot h).rec
+  | coe a =>  rw [← coe_inv a]; norm_cast at *; exact inv_pos_of_pos h
+  | top => exact (h' (Eq.refl ⊤)).rec
 
 lemma inv_neg_of_neg_ne_bot {a : EReal} (h : a < 0) (h' : a ≠ ⊥) : a⁻¹ < 0 := by
   cases a with
-  | h_bot => exact (h' (Eq.refl ⊥)).rec
-  | h_real a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
-  | h_top => exact (not_top_lt h).rec
+  | bot => exact (h' (Eq.refl ⊥)).rec
+  | coe a => rw [← coe_inv a]; norm_cast at *; exact inv_lt_zero.2 h
+  | top => exact (not_top_lt h).rec
 
 /-! ### Division -/
 

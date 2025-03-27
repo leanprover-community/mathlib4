@@ -151,7 +151,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       rw [← PNat.coe_inj, PNat.pow_coe] at hk
       nth_rw 2 [← pow_one 2] at hk
       replace hk := Nat.pow_right_injective rfl.le hk
-      rw [add_left_eq_self] at hk
+      rw [add_eq_right] at hk
       subst hk
       rw [pow_one] at hζ hcycl
       have : natDegree (minpoly K ζ) = 1 := by

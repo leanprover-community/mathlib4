@@ -142,7 +142,7 @@ C₁
 
 ```
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
-(set-theoretic) retraction `ρ`, and `ι₃` is injective, then `K₂ -F→ K₂ -δ→ C₁` is exact.
+(set-theoretic) retraction `ρ`, and `ι₃` is injective, then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
 lemma SnakeLemma.exact_δ_right (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F)
     (h : Injective ι₃) :
@@ -181,7 +181,7 @@ C₁ -G-→ C₂
 
 ```
 such that `f₂` is surjective with a (set-theoretic) section `σ`, `g₁` is injective with a
-(set-theoretic) retraction `ρ`, and `π₁` is surjective, then `K₂ -δ→ C₁ -G→ C₂` is exact.
+(set-theoretic) retraction `ρ`, and `π₁` is surjective, then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/
 lemma SnakeLemma.exact_δ_left (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :
     Exact (δ i₁ i₂ i₃ f₁ f₂ hf g₁ g₂ hg h₁ h₂ σ hσ ρ hρ ι₃ hι₃ π₁ hπ₁) G := by
@@ -250,7 +250,7 @@ C₁
 
 ```
 such that `f₂` is surjective, `g₁` is injective, and `ι₃` is injective,
-then `K₂ -F→ K₂ -δ→ C₁` is exact.
+then `K₂ -F→ K₃ -δ→ C₁` is exact.
 -/
 lemma SnakeLemma.exact_δ'_right (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
     (F : K₂ →ₗ[R] K₃) (hF : f₂.comp ι₂ = ι₃.comp F) (h : Injective ι₃) :
@@ -277,7 +277,7 @@ C₁ -G-→ C₂
 
 ```
 such that `f₂` is surjective, `g₁` is injective, and `π₁` is surjective,
-then `K₂ -δ→ C₁ -G→ C₂` is exact.
+then `K₃ -δ→ C₁ -G→ C₂` is exact.
 -/
 lemma SnakeLemma.exact_δ'_left (hf₂ : Surjective f₂) (hg₁ : Injective g₁)
     (G : C₁ →ₗ[R] C₂) (hF : G.comp π₁ = π₂.comp g₁) (h : Surjective π₁) :

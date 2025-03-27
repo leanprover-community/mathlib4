@@ -535,7 +535,7 @@ lemma HasFPowerSeriesWithinOnBall.congr {f g : E → F} {p : FormalMultilinearSe
   refine ⟨h.r_le, h.r_pos, ?_⟩
   intro y hy h'y
   convert h.hasSum hy h'y using 1
-  simp only [mem_insert_iff, add_right_eq_self] at hy
+  simp only [mem_insert_iff, add_eq_left] at hy
   rcases hy with rfl | hy
   · simpa using h''
   · apply h'
@@ -671,7 +671,7 @@ theorem HasFPowerSeriesWithinAt.mono_of_mem_nhdsWithin
   have Z := hr.of_le (by simp [r'_pos, hr.r_pos]) (min_le_left r r')
   refine ⟨Z.r_le, Z.r_pos, fun {y} hy h'y ↦ ?_⟩
   apply Z.hasSum ?_ h'y
-  simp only [mem_insert_iff, add_right_eq_self] at hy
+  simp only [mem_insert_iff, add_eq_left] at hy
   rcases hy with rfl | hy
   · simp
   apply mem_insert_of_mem _ (hr' ?_)

@@ -196,11 +196,9 @@ theorem uncurry_curry (f : A ⊗ X ⟶ Y) : uncurry (curry f) = f :=
 theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.adj.homEquiv _ _).right_inv f
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem curry_eq_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 
--- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem eq_curry_iff (f : A ⊗ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 

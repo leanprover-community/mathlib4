@@ -413,3 +413,12 @@ instance {R M : Type*} [Ring R] [AddCommGroup M] [Module R M] :
   inferInstanceAs (Module R (M ⧸ this))
 
 end AddCommGroup
+
+section
+
+variable {M : Type*} [CommMonoid M] [HasDistribNeg M]
+
+theorem neg_one_mem_torsion : -1 ∈ CommMonoid.torsion M :=
+  ⟨2, zero_lt_two, (isPeriodicPt_mul_iff_pow_eq_one _).mpr (by simp)⟩
+
+end

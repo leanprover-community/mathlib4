@@ -3,12 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Interval.Set.Defs
 import Mathlib.Order.MinMax
-import Mathlib.Tactic.Contrapose
-import Mathlib.Tactic.Says
 
 /-!
 # Intervals
@@ -83,35 +80,91 @@ theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp [le_refl]
 theorem right_mem_Iic : a ∈ Iic a := by simp
 
 @[simp]
-theorem dual_Ici : Ici (toDual a) = ofDual ⁻¹' Iic a :=
+theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ici := Ici_toDual
+
+@[simp]
+theorem Iic_toDual : Iic (toDual a) = ofDual ⁻¹' Ici a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Iic := Iic_toDual
+
+@[simp]
+theorem Ioi_toDual : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioi := Ioi_toDual
+
+@[simp]
+theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Iio := Iio_toDual
+
+@[simp]
+theorem Icc_toDual : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Icc := Icc_toDual
+
+@[simp]
+theorem Ioc_toDual : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioc := Ioc_toDual
+
+@[simp]
+theorem Ico_toDual : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ico := Ico_toDual
+
+@[simp]
+theorem Ioo_toDual : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioo := Ioo_toDual
+
+@[simp]
+theorem Ici_ofDual {x : αᵒᵈ} : Ici (ofDual x) = toDual ⁻¹' Iic x :=
   rfl
 
 @[simp]
-theorem dual_Iic : Iic (toDual a) = ofDual ⁻¹' Ici a :=
+theorem Iic_ofDual {x : αᵒᵈ} : Iic (ofDual x) = toDual ⁻¹' Ici x :=
   rfl
 
 @[simp]
-theorem dual_Ioi : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
+theorem Ioi_ofDual {x : αᵒᵈ} : Ioi (ofDual x) = toDual ⁻¹' Iio x :=
   rfl
 
 @[simp]
-theorem dual_Iio : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
+theorem Iio_ofDual {x : αᵒᵈ} : Iio (ofDual x) = toDual ⁻¹' Ioi x :=
   rfl
 
 @[simp]
-theorem dual_Icc : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
+theorem Icc_ofDual {x y : αᵒᵈ} : Icc (ofDual y) (ofDual x) = toDual ⁻¹' Icc x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ioc : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
+theorem Ico_ofDual {x y : αᵒᵈ} : Ico (ofDual y) (ofDual x) = toDual ⁻¹' Ioc x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ico : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
+theorem Ioc_ofDual {x y : αᵒᵈ} : Ioc (ofDual y) (ofDual x) = toDual ⁻¹' Ico x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ioo : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
+theorem Ioo_ofDual {x y : αᵒᵈ} : Ioo (ofDual y) (ofDual x) = toDual ⁻¹' Ioo x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
@@ -650,7 +703,7 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Ico.2 hab)]
 
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
-  simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
+  simpa only [Ioo_toDual, Ico_toDual] using Ioo_union_left hab.dual
 
 theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
   have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
@@ -663,7 +716,7 @@ theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Icc.2 hab)]
 
 theorem Ico_union_right (hab : a ≤ b) : Ico a b ∪ {b} = Icc a b := by
-  simpa only [dual_Ioc, dual_Icc] using Ioc_union_left hab.dual
+  simpa only [Ioc_toDual, Icc_toDual] using Ioc_union_left hab.dual
 
 @[simp]
 theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
@@ -879,7 +932,7 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
     fun ⟨h₁, h₂⟩ => Ico_subset_Ico h₁ h₂⟩
 
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
-  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@dual_Ico α _ _ _).symm
+  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     Ioo a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
