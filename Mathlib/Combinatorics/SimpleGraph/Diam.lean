@@ -188,9 +188,10 @@ lemma exists_dist_eq_diam [Nonempty α] :
     use u, v
     rw [diam, dist, congrArg ENat.toNat huv]
 
-lemma diam_pos_of_ediam_ne_top [Nontrivial α] (h : G.ediam ≠ ⊤) : 0 < G.diam  :=
+lemma diam_ne_zero_of_ediam_ne_top [Nontrivial α] (h : G.ediam ≠ ⊤) : G.diam ≠ 0 :=
   have ⟨_, _, hne⟩ := exists_pair_ne ‹_›
-  lt_of_lt_of_le ((connected_of_ediam_ne_top h).pos_dist_of_ne hne) <| dist_le_diam h
+  pos_iff_ne_zero.mp
+  <| lt_of_lt_of_le ((connected_of_ediam_ne_top h).pos_dist_of_ne hne) <| dist_le_diam h
 
 @[gcongr]
 lemma diam_anti_of_ediam_ne_top (h : G ≤ G') (hn : G.ediam ≠ ⊤) : G'.diam ≤ G.diam :=
@@ -215,8 +216,8 @@ lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
 lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
   rw [diam, ENat.toNat_eq_iff one_ne_zero, Nat.cast_one, ediam_eq_one]
 
-lemma pos_diam_iff_ne_top_and_nt : 0 < G.diam  ↔ G.ediam ≠ ⊤ ∧ Nontrivial α := by
-  rw [pos_iff_ne_zero, ne_eq, diam_eq_zero, ← not_nontrivial_iff_subsingleton]
+lemma diam_ne_zero_iff_ne_top_and_nt : G.diam ≠ 0  ↔ G.ediam ≠ ⊤ ∧ Nontrivial α := by
+  rw [ne_eq, diam_eq_zero, ← not_nontrivial_iff_subsingleton]
   tauto
 
 lemma not_connected_of_diam_zero [Fintype α] [Nontrivial α] (h : G.diam = 0) : ¬ G.Connected := by
