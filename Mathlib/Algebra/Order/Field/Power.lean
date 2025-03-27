@@ -127,7 +127,7 @@ alias ⟨_, Odd.zpow_nonpos⟩ := Odd.zpow_nonpos_iff
 theorem Even.zpow_abs {p : ℤ} (hp : Even p) (a : α) : |a| ^ p = a ^ p := by
   rcases abs_choice a with h | h <;> simp only [h, hp.neg_zpow _]
 
-lemma zpow_eq_zpow_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
+lemma zpow_eq_zpow_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a = -b ∧ Even n :=
   match n with
   | Int.ofNat m => by
     simp only [Int.ofNat_eq_coe, ne_eq, Nat.cast_eq_zero, zpow_natCast, Int.even_coe_nat] at *
@@ -138,16 +138,16 @@ lemma zpow_eq_zpow_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b ∨ a
       Int.even_coe_nat] at *
     exact pow_eq_pow_iff_of_ne_zero hn
 
-lemma zpow_eq_zpow_iff_cases : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
-  rcases eq_or_ne n 0 with rfl | hn <;> simp [zpow_eq_zpow_iff_of_ne_zero, *]
+lemma zpow_eq_zpow_iff_cases₀ : a ^ n = b ^ n ↔ n = 0 ∨ a = b ∨ a = -b ∧ Even n := by
+  rcases eq_or_ne n 0 with rfl | hn <;> simp [zpow_eq_zpow_iff_of_ne_zero₀, *]
 
-lemma zpow_eq_one_iff_of_ne_zero (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 ∨ a = -1 ∧ Even n := by
-  simp [← zpow_eq_zpow_iff_of_ne_zero hn]
+lemma zpow_eq_one_iff_of_ne_zero₀ (hn : n ≠ 0) : a ^ n = 1 ↔ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← zpow_eq_zpow_iff_of_ne_zero₀ hn]
 
-lemma zpow_eq_one_iff_cases : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n := by
-  simp [← zpow_eq_zpow_iff_cases]
+lemma zpow_eq_one_iff_cases₀ : a ^ n = 1 ↔ n = 0 ∨ a = 1 ∨ a = -1 ∧ Even n := by
+  simp [← zpow_eq_zpow_iff_cases₀]
 
-lemma zpow_eq_neg_zpow_iff (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
+lemma zpow_eq_neg_zpow_iff₀ (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n :=
   match n with
   | Int.ofNat m => by
     simp [pow_eq_neg_pow_iff, hb]
@@ -155,8 +155,8 @@ lemma zpow_eq_neg_zpow_iff (hb : b ≠ 0) : a ^ n = -b ^ n ↔ a = -b ∧ Odd n 
     rw [show Int.negSucc m = -↑(m + 1) by rfl]
     simp [-Nat.cast_add, -natCast_add, neg_inv, pow_eq_neg_pow_iff, hb]
 
-lemma zpow_eq_neg_one_iff : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
-  simpa using zpow_eq_neg_zpow_iff (α := α) one_ne_zero
+lemma zpow_eq_neg_one_iff₀ : a ^ n = -1 ↔ a = -1 ∧ Odd n := by
+  simpa using zpow_eq_neg_zpow_iff₀ (α := α) one_ne_zero
 
 /-! ### Bernoulli's inequality -/
 
