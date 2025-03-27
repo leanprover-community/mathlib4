@@ -440,6 +440,20 @@ theorem theta_h (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα : fα
   rw [this, mul_smul, two_smul, smul_add, ← add_assoc, zero_smul, zero_add,
     add_sub_add_right_eq_sub, sub_eq_add_neg]
 
+theorem theta_pow_2 (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα : fα ∈ rootSpace H (- α))
+    (t : Kˣ) (ht : IsSl2Triple hα eα fα) (h : H) :
+      theta H hnz heα hfα t (theta H hnz heα hfα t h) = h := by
+  rw [theta_h H hnz heα hfα t ht h]
+  have : (theta H hnz heα hfα t) (h - α h • hα) =
+      theta H hnz heα hfα t h - theta H hnz heα hfα t (α h • hα) := by
+    apply LinearMap.map_sub
+  rw [this]
+  have : (theta H hnz heα hfα t) (α h • hα) = α h • (theta H hnz heα hfα t hα) := by
+    apply LinearMap.map_smul
+  rw [this, theta_h H hnz heα hfα t ht h, theta_hα H hnz heα hfα t ht, smul_neg, sub_neg_eq_add,
+    sub_add_cancel]
+
+
 lemma lie_eq_smul_of_mem_rootSpace_inv {β : H → K} {x : L} (h₁ : ∀ (h : H), ⁅h, x⁆ = β h • x) :
     x ∈ rootSpace H β := by
   have := (mem_genWeightSpace (L := H) (R := K) L β x).2
