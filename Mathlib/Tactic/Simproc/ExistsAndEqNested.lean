@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasilii Nesterov
 -/
 import Mathlib.Init
-import Mathlib.Data.Prod.PProd
 import Qq
 
 /-!
@@ -380,6 +379,3 @@ simproc existsAndEqNested (Exists (fun _ => Exists _)) := .ofQ fun u α e => do
     let .some ⟨P', pf⟩ ← existsAndEq.existsAndEqNestedImp p | return .continue
     return .visit {expr := P', proof? := pf}
   | _, _, _ => return .continue
-
--- example {α : Type} : ∃ a : α, ∃ (f : α → α), f a = a := by
---   simp
