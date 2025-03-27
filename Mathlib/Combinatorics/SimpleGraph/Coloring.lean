@@ -143,7 +143,7 @@ private def finColoringFintype {n m} {G : SimpleGraph (Fin n)} [DecidableRel G.A
     refine ⟨(@univ _ (@instFintypeProd _ _ finColoringFintype _)).filterMap
       (fun p : (G.comap castSucc).Coloring (Fin m) × Fin m ↦ ?_) ?_, ?_⟩
     · -- case on whether this is a valid coloring
-      by_cases h : ∀ a, G.Adj a.castSucc (Fin.last n) → p.fst a ≠ p.snd
+      refine if h : ∀ a, G.Adj a.castSucc (Fin.last n) → p.fst a ≠ p.snd then ?_ else ?_
       · -- valid, so add
         apply some
         apply Coloring.mk (snoc p.fst p.snd)
