@@ -12,7 +12,7 @@ import Mathlib.MeasureTheory.Measure.Complex
 
 ## To do
 
-Check the availability of other theorems used in the proof:
+Availability of other theorems used in the proof:
 - 3.14: compactly supported continuous functions are dense in `L^p`
 (depends on 3.13 `MeasureTheory.Lp.simpleFunc.isDenseEmbedding`, this is written only for
 `NormalSpace α` and approximation given by bounded functions)
@@ -45,63 +45,83 @@ theorem uniqueness : True := sorry
 
 section ComplexRMK
 
-open ZeroAtInfty MeasureTheory
+open NNReal
+open ZeroAtInfty MeasureTheory CompactlySupported CompactlySupportedContinuousMap
 
-variable (X : Type*) [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
+variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
   (Φ : C₀(X, ℂ) →L[ℂ] ℂ)
 
-#check ‖Φ‖
--- #check (norm : C(ℂ, ℝ))
+-- TO DO: define `norm` as a `ContinuousMap` and use `norm ∘ f` in the following instead of the
+-- `absOfFunc X f` hack.
+def absOfFunc₀ (f : C₀(X, ℂ)) : C₀(X, ℝ) := sorry
+def absOfFunc_c (f : C_c(X, ℂ)) : C_c(X, ℝ) := sorry
 
-/-- **Theorem**
-Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. There exists a positive linear functional
+-- TO DO: define in a smooth way, compactly supported functions vanish at infinity.
+namespace CompactlySupportedContinuousMap
+def toZeroAtInftyContinuousMap : C_c(X, ℂ) → C₀(X, ℂ) := sorry
+end CompactlySupportedContinuousMap
+
+-- TO DO: define the identity between compatible pairs space of continuous functions
+def identity : C_c(X, ℝ≥0) → C_c(X, ℝ) := by sorry
+def identity' : C_c(X, ℝ) → C_c(X, ℂ) := by sorry
+
+
+
+/-- Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. There exists a positive linear functional
 `Λ` on `C₀(X, ℝ)` such that, `∀ f : C₀(X, ℂ)`, `|Φ f| ≤ Λ |f|` and `Λ |f| ≤ ‖f‖` (`‖⬝‖` denotes
-the supremum norm). -/
-theorem exists_pos_lin_func : True := sorry
--- ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C₀(X, ℂ)),
---  ‖Φ f‖ ≤ Λ (norm ∘ f) ∧ Λ (norm ∘ f) ≤ ‖f‖ := sorry
--- need to define `norm` as a `ContinuousMap`
+the supremum norm). [Rudin 87, part of proof of Theorem 6.19] -/
+theorem exists_pos_lin_func : ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C₀(X, ℂ)),
+    ‖Φ f‖ ≤ Λ (absOfFunc₀ f) ∧ Λ (absOfFunc₀ f) ≤ ‖f‖ := by
 
+  -- If `f ∈` [class of all nonnegative real members of `C_c(X, ℝ)`],
+  -- define `Λ f = \sup { |Φ(h)| : h ∈ C_c(X, ℂ), |h| ≤ f }`.
+  let U (f : C_c(X, ℝ≥0)) := toZeroAtInftyContinuousMap '' {h : C_c(X, ℂ) | ∀ x : X, ‖h x‖ ≤ f x}
+  let Λ' (f : C_c(X, ℝ≥0)) := sSup (norm '' (Φ '' U f))
 
--- **Proof** [Rudin 87, Theorem 6.19]
--- If `f ∈` [class of all nonnegative real members of `C_c(X, ℝ)`],
--- define `Λ f = \sup { |Φ(h)| : h \in C_c(X, ℝ), |h| ≤ f }`.
--- Then `Λ f ≥ 0`, `Λ` satisfies the two required inequalities,
--- `0 ≤ f_1 ≤ f_2` implies `Λ f_1 ≤ Λ f_2`, and `Λ (cf) = c Λ f` if `c` is a positive constant.
--- We have to show that
--- (10) `Λ(f + g) = Λ f + Λ g` whenever `f, g ∈ C_c^+(X)`,
--- and we then have to extend `Λ` to a linear functional on `C_c(X, ℝ)`.
--- Fix `f` and `g \in C_c^+(X)`.
--- If `ε > 0`, there exist `h_1, h_2 \in C_c(X, ℝ)` such that `|h_1| ≤ f`, `|h_2| ≤ g`,
--- `Λ f ≤ |Φ(h_1)| + ε`, `Λ g ≤ |Φ(h_2)| + ε`.
--- There are complex numbers `α_i`, `|α_i| = 1`, so that `α_i Φ(h_i) = |Φ(h_i)|`, `i = 1, 2`.
--- Then
--- `Λ f + Λ g ≤ |Φ(h_1)| + |Φ(h_2)| + 2ε`
--- `_ = Φ(α_1 h_1 + α_2 h_2) + 2ε`
--- `_ ≤ Λ(|h_1| + |h_2|) + 2ε`
--- `_ ≤ Λ(f + g) + 2ε`
--- so that the inequality `≥` holds in (10).
--- Next, choose `h ∈ C_c(X)`, subject only to the condition `|h| ≤ f + g`,
--- let `V = { x : f(x) + g(x) > 0 }`, and define
--- `h_1(x) = \frac{f(x) h(x)}{f(x) + g(x)}`,
--- `h_2(x) = \frac{g(x) h(x)}{f(x) + g(x)}` when `x ∈ V`,
--- `h_1(x) = h_2(x) = 0` when `x ∉ V`.
--- It is clear that `h_1` is continuous at every point of `V`.
--- If `x_0 ∉ V`, then `h(x_0) = 0`;
--- since `h` is continuous and since `|h_1(x)| ≤ |h(x)|` for all `x ∈ X`,
--- it follows that `x_0` is a point of continuity of `h_1`.
--- Thus `h_1 \in C_c(X)`, and the same holds for `h_2`.
--- Since `h_1 + h_2 = h` and `|h_1| ≤ f`, `|h_2| ≤ g`, we have
--- `|Φ(h)| = |Φ(h_1) + Φ(h_2)| ≤ |Φ(h_1)| + |Φ(h_2)| ≤ Λ f + Λ g`.
--- Hence `Λ(f + g) ≤ Λ f + Λ g`, and we have proved (10).
--- If `f` is now a real function, `f \in C_c(X)`, then `2f^+ = |f| + f`,
--- so that `f^+ \in C_c^+(X)`;
--- likewise, `f^- \in C_c^+(X)`; and since `f = f^+ - f^-`, it is natural to define
--- `Λ f = Λ f^+ - Λ f^- ` for `f \in C_c(X)`, `f` real
--- and
--- `Λ(u + iv) = Λ u + i Λ v`.
--- Simple algebraic manipulations, just like those which occur in the proof of
--- Theorem 1.32, show now that our extended functional `Λ` is linear on `C_c(X)`.
+  -- Then `Λ f ≥ 0`, `Λ` satisfies the two required inequalities,
+  -- `0 ≤ f_1 ≤ f_2` implies `Λ f_1 ≤ Λ f_2`, and `Λ (cf) = c Λ f` if `c` is a positive constant.
+  have : ∀ f, 0 ≤ Λ' f := by
+    -- Sup of nonnegative quantities because of the norm
+    sorry
+  have (f : C_c(X, ℝ≥0)) : ‖Φ (identity' (identity f))‖ ≤ Λ' (sorry) := by
+    sorry
+
+  -- We have to show that
+  -- (10) `Λ(f + g) = Λ f + Λ g` whenever `f, g ∈ C_c^+(X)`,
+  -- and we then have to extend `Λ` to a linear functional on `C_c(X, ℝ)`.
+  -- Fix `f` and `g \in C_c^+(X)`.
+  -- If `ε > 0`, there exist `h_1, h_2 \in C_c(X, ℝ)` such that `|h_1| ≤ f`, `|h_2| ≤ g`,
+  -- `Λ f ≤ |Φ(h_1)| + ε`, `Λ g ≤ |Φ(h_2)| + ε`.
+  -- There are complex numbers `α_i`, `|α_i| = 1`, so that `α_i Φ(h_i) = |Φ(h_i)|`, `i = 1, 2`.
+  -- Then
+  -- `Λ f + Λ g ≤ |Φ(h_1)| + |Φ(h_2)| + 2ε`
+  -- `_ = Φ(α_1 h_1 + α_2 h_2) + 2ε`
+  -- `_ ≤ Λ(|h_1| + |h_2|) + 2ε`
+  -- `_ ≤ Λ(f + g) + 2ε`
+  -- so that the inequality `≥` holds in (10).
+  -- Next, choose `h ∈ C_c(X)`, subject only to the condition `|h| ≤ f + g`,
+  -- let `V = { x : f(x) + g(x) > 0 }`, and define
+  -- `h_1(x) = \frac{f(x) h(x)}{f(x) + g(x)}`,
+  -- `h_2(x) = \frac{g(x) h(x)}{f(x) + g(x)}` when `x ∈ V`,
+  -- `h_1(x) = h_2(x) = 0` when `x ∉ V`.
+  -- It is clear that `h_1` is continuous at every point of `V`.
+  -- If `x_0 ∉ V`, then `h(x_0) = 0`;
+  -- since `h` is continuous and since `|h_1(x)| ≤ |h(x)|` for all `x ∈ X`,
+  -- it follows that `x_0` is a point of continuity of `h_1`.
+  -- Thus `h_1 \in C_c(X)`, and the same holds for `h_2`.
+  -- Since `h_1 + h_2 = h` and `|h_1| ≤ f`, `|h_2| ≤ g`, we have
+  -- `|Φ(h)| = |Φ(h_1) + Φ(h_2)| ≤ |Φ(h_1)| + |Φ(h_2)| ≤ Λ f + Λ g`.
+  -- Hence `Λ(f + g) ≤ Λ f + Λ g`, and we have proved (10).
+  -- If `f` is now a real function, `f \in C_c(X)`, then `2f^+ = |f| + f`,
+  -- so that `f^+ \in C_c^+(X)`;
+  -- likewise, `f^- \in C_c^+(X)`; and since `f = f^+ - f^-`, it is natural to define
+  -- `Λ f = Λ f^+ - Λ f^- ` for `f \in C_c(X)`, `f` real
+  -- and
+  -- `Λ(u + iv) = Λ u + i Λ v`.
+  -- Simple algebraic manipulations, just like those which occur in the proof of
+  -- Theorem 1.32, show now that our extended functional `Λ` is linear on `C_c(X)`.
+
+  sorry
 
 
 variable [MeasurableSpace X] [BorelSpace X]
@@ -113,8 +133,8 @@ theorem Complex.integral_rieszMeasure : True := sorry
 -- ∃ (μ : ComplexMeasure X), ∀ (f : C₀(X, ℂ)),
 --  Φ f = ∫ x, f x ∂μ
 --  ∧ ‖Φ‖ = ComplexMeasureMeasure.totalVariation μ X
--- need to define `ComplexMeasureMeasure.totalVariation`
--- need to define `ComplexMeasure.integral`, maybe in general `VectorMeasure.integral`
+-- TO DO: define `ComplexMeasureMeasure.totalVariation`
+-- TO DO: define `ComplexMeasure.integral`, maybe in general `VectorMeasure.integral`
 
 -- **Proof** [Rudin 87, Theorem 6.19]
 -- Assume `‖Φ‖ = 1`, without loss of generality.
