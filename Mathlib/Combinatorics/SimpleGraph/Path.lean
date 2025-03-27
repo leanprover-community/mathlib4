@@ -579,7 +579,7 @@ lemma IsPath.not_end_eq_fst_of_mem_darts {u v : V} {p : G.Walk u v} {d : G.Dart}
 
 lemma IsPath.not_start_eq_snd_of_mem_darts {u v : V} {p : G.Walk u v} {d : G.Dart} (hp : p.IsPath)
     (hd : d ∈ p.darts) : u ≠ d.toProd.2 :=
-  hp.reverse.not_end_eq_fst_of_mem_darts (show d.symm ∈ p.reverse.darts by simp [hd])
+  hp.reverse.not_end_eq_fst_of_mem_darts (show d.symm ∈ p.reverse.darts by simpa using hd)
 
 lemma IsCycle.snd_eq_snd_of_start_eq_fst {u : V} {d : G.Dart} {c : G.Walk u u}
     (hc : c.IsCycle) (hd : d ∈ c.darts) (hu : u = d.toProd.1): c.snd = d.toProd.2 := by
@@ -590,6 +590,13 @@ lemma IsCycle.snd_eq_snd_of_start_eq_fst {u : V} {d : G.Dart} {c : G.Walk u u}
     cases hd with
     | inl h => rw [h]
     | inr h => exact (hc.1.not_end_eq_fst_of_mem_darts h hu).elim
+
+lemma IsCycle.snd_eq_snd_of_rotate_fst_dart [DecidableEq V] {c : G.Walk u u} {d : G.Dart}
+    (hc : c.IsCycle) (hd : d ∈ c.darts) :
+    d.toProd.2 = (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd := by
+  rw [(hc.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd_eq_snd_of_start_eq_fst
+        ((c.rotate_darts (c.dart_fst_mem_support_of_mem_darts hd)).mem_iff.2 hd)]
+  rfl
 
 @[simp]
 lemma IsPath.getVert_succ_of_mem_darts {p : G.Walk u v} {d : G.Dart} {n : ℕ} (hp : p.IsPath)
@@ -827,44 +834,6 @@ theorem darts_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v)
 theorem edges_toPath_subset {u v : V} (p : G.Walk u v) : (p.toPath : G.Walk u v).edges ⊆ p.edges :=
   edges_bypass_subset _
 
-@[simp]
-def shortcircuit {u : V} : G.Walk u u → G.Walk u u
-  | nil => nil
-  | cons ha p => cons ha p.bypass
-
-@[simp]
-theorem shortcircuit_copy {u u'} (p : G.Walk u u) (hu : u = u')  :
-    (p.copy hu hu).shortcircuit = p.shortcircuit.copy hu hu := by
-  subst_vars
-  rfl
-
-lemma isCycle_cons_shortcircuit_iff {u v : V} (h : G.Adj u v) (p : G.Walk v u) :
-    (cons h p).shortcircuit.IsCycle ↔ s(u,v) ∉ p.bypass.edges :=
-  ⟨fun hs ↦ fun hf ↦ (cons_isCycle_iff ..).1 hs|>.2 hf,
-   fun hs ↦ cons_isCycle_iff p.bypass _|>.2 ⟨p.bypass_isPath, hs⟩⟩
-
-lemma IsCircuit.isCycle_shortcircuit {u : V} {p : G.Walk u u} (hs : IsCircuit p) :
-    p.shortcircuit.IsCycle :=
-  match p with
-  | nil => absurd rfl hs.2
-  | cons .. =>
-    (isCycle_cons_shortcircuit_iff ..).2 <|
-      fun hf ↦ cons_isTrail_iff ..|>.1 hs.toIsTrail|>.2 <| edges_bypass_subset _ hf
-
-lemma support_shortcircuit_subset {u : V} (p : G.Walk u u) : p.shortcircuit.support ⊆ p.support:= by
-  cases p with
-  | nil => simp
-  | cons h p =>
-  rw [shortcircuit, support_cons, support_cons]
-  apply List.cons_subset_cons _ (support_bypass_subset _)
-
-theorem darts_shortcircuit_subset {u : V} (p : G.Walk u u) : p.shortcircuit.darts ⊆ p.darts := by
-  cases p with
-  | nil => simp
-  | cons h p =>
-    rw [shortcircuit, darts_cons, darts_cons]
-    apply List.cons_subset_cons _ (darts_bypass_subset _)
-
 end Walk
 
 /-! ### Mapping paths -/
@@ -1034,23 +1003,6 @@ lemma IsCycle.mem_tail_tail_support_iff {u v} {c : G.Walk u u} (hc : c.IsCycle) 
   constructor <;> intro h
   · exact ⟨fun hf ↦ hc.snd_not_mem_tail_tail_support (hf ▸ h), by simp [h]⟩
   · cases h.2 <;> aesop
-
-lemma Brooks_aux' [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
-    (hd : d ∈ c.darts) :
-    d.toProd.2 = (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd := by
-  have hd' := (c.rotate_darts (c.dart_fst_mem_support_of_mem_darts hd)).mem_iff.2 hd
-  symm
-  apply (hc.rotate (c.dart_fst_mem_support_of_mem_darts hd)).snd_eq_snd_of_start_eq_fst hd'
-  rfl
-
-lemma Brooks_aux [DecidableEq V] {u} {c : G.Walk u u} {d : G.Dart} (hc : c.IsCycle)
-    (hd : d ∈ c.darts) :
-    (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).tail.tail.support.toFinset =
-      c.support.toFinset.erase d.toProd.2 := by
-  have hr := (c.dart_fst_mem_support_of_mem_darts hd)
-  ext x
-  simp only [List.mem_toFinset, Finset.mem_erase]
-  rw [ Brooks_aux' hc hd, (hc.rotate hr).mem_tail_tail_support_iff, mem_support_rotate_iff]
 
 end Walk
 

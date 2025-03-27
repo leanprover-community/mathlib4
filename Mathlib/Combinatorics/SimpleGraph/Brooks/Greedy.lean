@@ -1,5 +1,6 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Logic.Encodable.Basic
+set_option linter.style.header false
 
 namespace SimpleGraph
 

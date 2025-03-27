@@ -59,6 +59,16 @@ We consider two cases:
 
 open PartialColoring Walk
 
+lemma Walk.IsCycle.support_rotate_tail_tail_eq [DecidableEq α] {u : α} {c : G.Walk u u} {d : G.Dart}
+    (hc : c.IsCycle) (hd : d ∈ c.darts) :
+    (c.rotate (c.dart_fst_mem_support_of_mem_darts hd)).tail.tail.support.toFinset =
+      c.support.toFinset.erase d.toProd.2 := by
+  have hr := (c.dart_fst_mem_support_of_mem_darts hd)
+  ext x
+  simp only [List.mem_toFinset, Finset.mem_erase]
+  rw [ hc.snd_eq_snd_of_rotate_fst_dart hd, (hc.rotate hr).mem_tail_tail_support_iff,
+      mem_support_rotate_iff]
+
 variable {k : ℕ} [Fintype α] [DecidableRel G.Adj] [DecidableEq α]
 
 theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, G.degree v ≤ k)
@@ -244,9 +254,9 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
         have hsdc := sdiff_union_of_subset hsub.1
         have heq : (insert d.toProd.2 (s \ c.support.toFinset)
                       ∪ p.reverse.support.toFinset) = s := by
-            rwa [support_reverse, List.toFinset_reverse, Brooks_aux hcy hd, insert_union,
-                ← erase_eq_of_not_mem (not_mem_sdiff_of_mem_right hd2), ← erase_union_distrib,
-                  insert_erase (hsdc.symm ▸ (hsub.1 hd2))]
+            rwa [support_reverse, List.toFinset_reverse, hcy.support_rotate_tail_tail_eq hd,
+                insert_union, ← erase_eq_of_not_mem (not_mem_sdiff_of_mem_right hd2),
+                ← erase_union_distrib, insert_erase (hsdc.symm ▸ (hsub.1 hd2))]
         have hps : p.support.toFinset ⊆ c.support.toFinset := by
           intro x hx
           rw [List.mem_toFinset] at *
@@ -257,7 +267,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
           rw [support_reverse, List.toFinset_reverse]
           apply disjoint_insert_left.2
           refine ⟨?_, disjoint_of_subset_right hps sdiff_disjoint⟩
-          rw [List.mem_toFinset, Brooks_aux' hcy hd]
+          rw [List.mem_toFinset, hcy.snd_eq_snd_of_rotate_fst_dart hd]
           exact (hcy.rotate hr).snd_not_mem_tail_tail_support
         -- We know that when extending a coloring greedily along a path whose end point
         -- already has two neighbors colored with the same color we never need to use
