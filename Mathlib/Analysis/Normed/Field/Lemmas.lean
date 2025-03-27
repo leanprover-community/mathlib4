@@ -132,8 +132,11 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
 
 -- see Note [lower instance priority]
 /-- A normed division ring is a topological division ring. -/
-instance (priority := 100) NormedDivisionRing.to_topologicalDivisionRing :
-    TopologicalDivisionRing α where
+instance (priority := 100) NormedDivisionRing.to_isTopologicalDivisionRing :
+    IsTopologicalDivisionRing α where
+
+@[deprecated (since := "2025-03-25")] alias NormedDivisionRing.to_topologicalDivisionRing :=
+  NormedDivisionRing.to_isTopologicalDivisionRing
 
 protected lemma IsOfFinOrder.norm_eq_one (ha : IsOfFinOrder a) : ‖a‖ = 1 :=
   ((normHom : α →*₀ ℝ).toMonoidHom.isOfFinOrder ha).eq_one <| norm_nonneg _

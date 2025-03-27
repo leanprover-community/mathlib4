@@ -44,6 +44,7 @@ theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃
 
 -- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `H` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :

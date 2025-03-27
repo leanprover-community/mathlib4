@@ -152,6 +152,7 @@ theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
 
 -- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :

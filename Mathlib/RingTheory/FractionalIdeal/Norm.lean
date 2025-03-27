@@ -142,10 +142,9 @@ theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
       rw [ne_eq, abs_eq_zero, Algebra.norm_eq_zero_iff, IsFractionRing.to_map_eq_zero_iff]
       exact nonZeroDivisors.coe_ne_zero _)]
   · ext
-    simp_rw [← SetLike.mem_coe, Submodule.coe_pointwise_smul, Set.mem_smul_set, SetLike.mem_coe,
-      mem_coe, mem_spanSingleton, Submodule.mem_map, Algebra.linearMap_apply, Submonoid.smul_def,
-      Ideal.mem_span_singleton', exists_exists_eq_and, _root_.map_mul, hr, ← Algebra.smul_def,
-      smul_comm (d : R)]
+    simp_rw [Submodule.mem_smul_pointwise_iff_exists, mem_coe, mem_spanSingleton, Submodule.mem_map,
+      Algebra.linearMap_apply, Submonoid.smul_def, Ideal.mem_span_singleton', exists_exists_eq_and,
+      _root_.map_mul, hr, ← Algebra.smul_def, smul_comm (d : R)]
 
 end IsLocalization
 
