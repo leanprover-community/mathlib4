@@ -6,6 +6,7 @@ Authors: Adam Topaz, Kim Morrison
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.PUnit
 import Mathlib.CategoryTheory.Limits.Shapes.IsTerminal
+import Mathlib.CategoryTheory.Functor.EpiMono
 
 /-!
 # The category of "structured arrows"

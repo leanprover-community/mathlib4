@@ -737,6 +737,7 @@ instance instDiv : Div (α →ₘ[μ] γ) :=
   ⟨comp₂ Div.div continuous_div'⟩
 
 @[to_additive (attr := simp, nolint simpNF)] -- Porting note: LHS does not simplify.
+-- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
 theorem mk_div (f g : α → γ) (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     mk (f / g) (hf.div hg) = (mk f hf : α →ₘ[μ] γ) / mk g hg :=
   rfl
