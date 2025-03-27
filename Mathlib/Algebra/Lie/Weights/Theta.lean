@@ -371,8 +371,6 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [IsKilling K L]
 variable (H : LieSubalgebra K L) [H.IsCartanSubalgebra] {α : Weight K H L} [CharZero K]
   [LieAlgebra ℚ L] [IsTriangularizable K H L] [FiniteDimensional K L] {hα eα fα : L}
 
--- lemma lie_eq_smul_of_mem_rootSpace {α : H → K} {x : L} (hx : x ∈ rootSpace H α) (h : H)
-
 theorem theta_h_kerα {h : H} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α)
     (hfα : fα ∈ rootSpace H (- α)) (t : Kˣ) (h₀ : h ∈ α.ker) : theta H hnz heα hfα t h = h := by
   have se₀ : ⁅eα, (h : L)⁆ = 0 := by
