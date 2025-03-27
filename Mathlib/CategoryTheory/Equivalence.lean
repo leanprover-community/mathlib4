@@ -112,45 +112,33 @@ abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
 
 section CategoryStructure
 
-/-- A morphism between equivalences of categories is a natural transformation between their
-functors. -/
-def Hom : (C ≌ D) → (C ≌ D) → Type (max u₁ v₂) :=
-  fun f g ↦ (f.functor ⟶ g.functor)
-
 instance : Category (C ≌ D) where
-  Hom e f := Hom e f
+  Hom e f := e.functor ⟶ f.functor
   id e := 𝟙 e.functor
   comp {a b c} f g := (f ≫ g : a.functor ⟶ _)
 
-namespace Hom
-
 /-- Promote a natural transformation `e.functor ⟶ f.functor` to a morphism in `C ≌ D`. -/
-def mk {e f : C ≌ D} (η : e.functor ⟶ f.functor) : e ⟶ f := η
+def mkHom {e f : C ≌ D} (η : e.functor ⟶ f.functor) : e ⟶ f := η
 
 /-- Recover a natural transformation between `e.functor` and `f.functor` from the data of
 a morphism `e ⟶ f`. -/
 def asNatTrans {e f : C ≌ D} (η : e ⟶ f) : e.functor ⟶ f.functor := η
 
 @[ext]
-lemma ext {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := by
-  apply NatTrans.ext
-  exact NatTrans.ext_iff.mp h
+lemma hom_ext {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := h
 
 @[simp]
-lemma mk_asNatTrans {e f : C ≌ D} (η : e.functor ⟶ f.functor) :
-    mk (asNatTrans η) = η :=
+lemma mkHom_asNatTrans {e f : C ≌ D} (η : e.functor ⟶ f.functor) :
+    mkHom (asNatTrans η) = η :=
   rfl
 
 @[simp]
-lemma asNatTrans_mk {e f : C ≌ D} (η : e ⟶ f) :
-    asNatTrans (mk η) = η :=
+lemma asNatTrans_mkHom {e f : C ≌ D} (η : e ⟶ f) :
+    asNatTrans (mkHom η) = η :=
   rfl
 
 @[simp]
 lemma id_asNatTrans {e : C ≌ D} : asNatTrans (𝟙 e) = 𝟙 _ := rfl
-
-@[simp]
-lemma id_asNatTrans' {e : C ≌ D} : asNatTrans (𝟙 e.functor) = 𝟙 _ := rfl
 
 @[simp]
 lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
@@ -158,28 +146,26 @@ lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
   rfl
 
 @[simp]
-lemma mk_id_functor {e : C ≌ D} : mk (𝟙 e.functor) = 𝟙 e := rfl
+lemma mkHom_id_functor {e : C ≌ D} : mkHom (𝟙 e.functor) = 𝟙 e := rfl
 
 @[simp]
-lemma mk_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
-    mk (α ≫ β) = (mk α) ≫ (mk β) :=
+lemma mkHom_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
+    mkHom (α ≫ β) = (mkHom α) ≫ (mkHom β) :=
   rfl
-
-end Hom
 
 /-- Construct an isomorphism in `C ≌ D` from a natural isomorphism between the functors
 of the equivalences. -/
 @[simps]
-def Iso.mk {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
-  hom := Hom.mk η.hom
-  inv := Hom.mk η.inv
+def mkIso {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
+  hom := mkHom η.hom
+  inv := mkHom η.inv
 
 variable (C D) in
 /-- The `functor` functor that sends an equivalence of categories to its functor. -/
 @[simps!]
 def functorFunctor : (C ≌ D) ⥤ (C ⥤ D) where
   obj f := f.functor
-  map α := Hom.asNatTrans α
+  map α := asNatTrans α
 
 end CategoryStructure
 
@@ -336,7 +322,7 @@ def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 
 @[simp]
-lemma Hom.mk_id_inverse {e : C ≌ D} : Hom.mk (𝟙 e.inverse) = 𝟙 e.symm := rfl
+lemma mkHom_id_inverse {e : C ≌ D} : mkHom (𝟙 e.inverse) = 𝟙 e.symm := rfl
 
 variable {E : Type u₃} [Category.{v₃} E]
 
@@ -421,7 +407,7 @@ variable (E) in
 @[simps]
 def congrRightFunctor : (C ≌ D) ⥤ ((E ⥤ C) ≌ (E ⥤ D)) where
   obj e := e.congrRight
-  map {e f} α := Hom.mk <| (whiskeringRight _ _ _).map <| Hom.asNatTrans α
+  map {e f} α := mkHom <| (whiskeringRight _ _ _).map <| asNatTrans α
 
 section CancellationLemmas
 
@@ -694,15 +680,6 @@ def ofFullSubcategory {Z Z' : C → Prop} (h : ∀ X, Z X ↔ Z' X) :
 end Equivalence
 
 namespace Iso
-
-/-- Obtain a natural isomorphism between the functors of two equivalences from
-  an isomorphism in `C ≌ D`. -/
-@[simps]
-def asNatIso {e f : C ≌ D} (η : e ≅ f) : e.functor ≅ f.functor where
-  hom := Equivalence.Hom.asNatTrans η.hom
-  inv := Equivalence.Hom.asNatTrans η.inv
-  hom_inv_id := by simp [← Equivalence.Hom.comp_asNatTrans]
-  inv_hom_id := by simp [← Equivalence.Hom.comp_asNatTrans]
 
 variable {E : Type u₃} [Category.{v₃} E] {F : C ⥤ E} {G : C ⥤ D} {H : D ⥤ E}
 
