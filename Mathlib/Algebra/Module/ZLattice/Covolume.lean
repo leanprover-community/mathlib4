@@ -176,7 +176,7 @@ theorem covolume_div_covolume_eq_relindex' {E : Type*} [NormedAddCommGroup E]
   have : f.toLinearEquiv.toLinearMap.toAddMonoidHom =
      f.toLinearEquiv.toAddEquiv.toAddMonoidHom := rfl
   rw [this, AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
-    AddSubgroup.relindex_map_of_injective _ _ f.symm.injective]
+    AddSubgroup.relindex_map_map_of_injective _ _ f.symm.injective]
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [DecidableEq ι]
     (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L)
