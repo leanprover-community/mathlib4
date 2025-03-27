@@ -72,7 +72,7 @@ theorem mem_generate_iff {s : Set <| Set α} {U : Set α} :
     exact mem_of_superset ((sInter_mem tfin).2 fun V hV => GenerateSets.basic <| hts hV) h
 
 lemma generate_image_preimage_le_comap (U : Set (Set α)) (f : β → α) :
-  .generate ((f ⁻¹' ·) '' U) ≤ comap f (.generate U) := by
+    .generate ((f ⁻¹' ·) '' U) ≤ comap f (.generate U) := by
   rintro s ⟨t, ht⟩
   simp only [mem_generate_iff, exists_subset_image_iff, sInter_image] at ht ⊢
   obtain ⟨⟨u, hu, huf, hut⟩, hts⟩ := ht
