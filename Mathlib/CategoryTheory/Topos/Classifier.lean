@@ -258,10 +258,14 @@ namespace SubobjectRepresentableBy
     given `h : SubobjectRepresentableBy Ω`. -/
 def Ω₀ : Subobject Ω := h.homEquiv (𝟙 Ω)
 
+/-- `h.homEquiv` acts like an "object comprehension" operator: it maps any characteristic map
+    `f : X ⟶ Ω` to the associated subobject of `X`, obtained by pulling back `h.Ω₀` along `f`. -/
 lemma homEquiv_eq {X : C} (f : X ⟶ Ω) :
     h.homEquiv f = (Subobject.pullback f).obj h.Ω₀ := by
   simpa using h.homEquiv_comp f (𝟙 _)
 
+/-- For any subobject `x`, the pullback of `h.Ω₀` along the characteristic map of `x`
+    given by `h.homEquiv` is `x` itself. -/
 lemma pullback_homEquiv_symm_obj_Ω₀ {X : C} (x : Subobject X) :
     (Subobject.pullback (h.homEquiv.symm x)).obj h.Ω₀ = x := by
   rw [← homEquiv_eq, Equiv.apply_symm_apply]
