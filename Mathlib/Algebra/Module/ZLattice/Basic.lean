@@ -703,6 +703,10 @@ instance instIsZLatticeComap [DiscreteTopology L] [IsZLattice K L] (e : F ≃L[K
     rw [ZLattice.coe_comap, LinearEquiv.coe_coe, e.coe_toLinearEquiv, ← e.image_symm_eq_preimage,
       ← Submodule.map_span, IsZLattice.span_top, Submodule.map_top, LinearEquivClass.range]
 
+@[simp]
+theorem ZLattice.comap_toAddSubgroup (e : F →ₗ[K] E) :
+    (ZLattice.comap K L e).toAddSubgroup = L.toAddSubgroup.comap e.toAddMonoidHom := rfl
+
 theorem ZLattice.comap_comp {G : Type*} [NormedAddCommGroup G] [NormedSpace K G]
     (e : F →ₗ[K] E) (e' : G →ₗ[K] F) :
     (ZLattice.comap K (ZLattice.comap K L e) e') = ZLattice.comap K L (e ∘ₗ e') :=
