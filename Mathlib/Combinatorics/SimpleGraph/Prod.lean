@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Combinatorics.SimpleGraph.Metric
 
 /-!
 # Graph products
@@ -211,5 +212,67 @@ theorem boxProd_degree (x : α × β)
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
+
+lemma boxProd_reach (x y : α × β) :
+    (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
+  classical
+  constructor
+  · intro ⟨w⟩
+    exact ⟨⟨w.ofBoxProdLeft⟩, ⟨w.ofBoxProdRight⟩⟩
+  · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
+    exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
+
+lemma boxProd_edist_top (x y : α × β) :
+    (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
+  repeat rw [← not_ne_iff, edist_ne_top_iff_reachable]
+  rw [boxProd_reach]
+  tauto
+
+lemma boxProd_len_eq_sum_projections {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
+    [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
+    w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
+  match w with
+  | Walk.nil => simp [Walk.length, Walk.ofBoxProdLeft, Walk.ofBoxProdRight]
+  | Walk.cons x w' => next c =>
+      unfold Walk.ofBoxProdLeft Walk.ofBoxProdRight Or.by_cases
+      rw [Walk.length_cons, boxProd_len_eq_sum_projections w']
+      have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
+      rcases disj with h₁ | h₂
+      · simp only [h₁, SimpleGraph.irrefl, false_and, and_self, ↓reduceDIte, Walk.length_cons]
+        rw [add_comm, add_comm w'.ofBoxProdLeft.length 1, add_assoc]
+        congr
+        · exact h₁.2.symm
+        · simp only [heq_eqRec_iff_heq, heq_eq_eq]
+
+      · simp only [h₂, SimpleGraph.irrefl, false_and, ↓reduceDIte, Walk.length_cons, add_assoc]
+        congr
+        · exact h₂.2.symm
+        · simp only [heq_eqRec_iff_heq, heq_eq_eq]
+
+lemma boxProd_edist (x y : α × β) :
+    (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
+  classical
+  by_cases h : (G □ H).edist x y = ⊤
+  · rw [h]; rw [boxProd_edist_top] at h
+    aesop
+  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [boxProd_edist_top] at h; tauto
+    have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
+    have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
+
+    let w_app := (wG.boxProdLeft _ _).append (wH.boxProdRight _ _)
+    have w_len : w_app.length = wG.length + wH.length := by
+      unfold w_app Walk.boxProdLeft Walk.boxProdRight
+      simp only [Walk.length_append, Walk.length_map]
+
+    have le : (G □ H).edist x y ≤ G.edist x.1 y.1 + H.edist x.2 y.2 := by
+      calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
+          _ = wG.length + wH.length := by exact_mod_cast w_len
+          _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
+
+    have ge : G.edist x.1 y.1 + H.edist x.2 y.2 ≤ (G □ H).edist x y  := by
+      have ⟨w, hw⟩ :=  exists_walk_of_edist_ne_top h
+      rw [← hw, boxProd_len_eq_sum_projections]
+      apply add_le_add (edist_le (Walk.ofBoxProdLeft w)) (edist_le (Walk.ofBoxProdRight w))
+    apply le_antisymm le ge
 
 end SimpleGraph
