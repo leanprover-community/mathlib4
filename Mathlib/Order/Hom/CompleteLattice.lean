@@ -3,8 +3,8 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Set.Lattice
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Data.Set.Lattice.Image
+import Mathlib.Order.Hom.BoundedLattice
 
 /-!
 # Complete lattice homomorphisms
@@ -42,7 +42,6 @@ open Function OrderDual Set
 
 variable {F α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
--- Porting note: mathport made this & sInfHom into "SupHomCat" and "InfHomCat".
 /-- The type of `⨆`-preserving functions from `α` to `β`. -/
 structure sSupHom (α β : Type*) [SupSet α] [SupSet β] where
   /-- The underlying function of a sSupHom. -/
@@ -73,7 +72,6 @@ structure CompleteLatticeHom (α β : Type*) [CompleteLattice α] [CompleteLatti
 
 section
 
--- Porting note: mathport made this & InfHomClass into "SupHomClassCat" and "InfHomClassCat".
 /-- `sSupHomClass F α β` states that `F` is a type of `⨆`-preserving morphisms.
 
 You should extend this class when you extend `sSupHom`. -/
@@ -91,8 +89,8 @@ class sInfHomClass (F α β : Type*) [InfSet α] [InfSet β] [FunLike F α β] :
 /-- `FrameHomClass F α β` states that `F` is a type of frame morphisms. They preserve `⊓` and `⨆`.
 
 You should extend this class when you extend `FrameHom`. -/
-class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β]
-  extends InfTopHomClass F α β : Prop where
+class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] [FunLike F α β] : Prop
+  extends InfTopHomClass F α β where
   /-- The proposition that members of `FrameHomClass` commute with arbitrary suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)
 
@@ -100,7 +98,8 @@ class FrameHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β] 
 
 You should extend this class when you extend `CompleteLatticeHom`. -/
 class CompleteLatticeHomClass (F α β : Type*) [CompleteLattice α] [CompleteLattice β]
-  [FunLike F α β] extends sInfHomClass F α β : Prop where
+    [FunLike F α β] : Prop
+  extends sInfHomClass F α β where
   /-- The proposition that members of `CompleteLatticeHomClass` commute with arbitrary
   suprema/joins. -/
   map_sSup (f : F) (s : Set α) : f (sSup s) = sSup (f '' s)

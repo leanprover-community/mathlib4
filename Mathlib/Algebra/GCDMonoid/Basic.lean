@@ -1217,7 +1217,7 @@ variable (G₀ : Type*) [CommGroupWithZero G₀] [DecidableEq G₀]
 instance (priority := 100) : NormalizedGCDMonoid G₀ where
   normUnit x := if h : x = 0 then 1 else (Units.mk0 x h)⁻¹
   normUnit_zero := dif_pos rfl
-  normUnit_mul := fun {x y} x0 y0 => Units.eq_iff.1 (by simp [x0, y0, mul_comm])
+  normUnit_mul {x y} x0 y0 := Units.eq_iff.1 (by simp [x0, y0, mul_comm])
   normUnit_coe_units u := by simp
   gcd a b := if a = 0 ∧ b = 0 then 0 else 1
   lcm a b := if a = 0 ∨ b = 0 then 0 else 1

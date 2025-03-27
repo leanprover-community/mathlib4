@@ -319,17 +319,17 @@ end CompMeasurable
 
 /-- The class of `x ↦ (f x, g x)`. -/
 def pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : α →ₘ[μ] β × γ :=
-  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prod_mk g.2))
-    fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prod_mk Hg
+  Quotient.liftOn₂' f g (fun f g => mk (fun x => (f.1 x, g.1 x)) (f.2.prodMk g.2))
+    fun _f _g _f' _g' Hf Hg => mk_eq_mk.2 <| Hf.prodMk Hg
 
 @[simp]
 theorem pair_mk_mk (f : α → β) (hf) (g : α → γ) (hg) :
-    (mk f hf : α →ₘ[μ] β).pair (mk g hg) = mk (fun x => (f x, g x)) (hf.prod_mk hg) :=
+    (mk f hf : α →ₘ[μ] β).pair (mk g hg) = mk (fun x => (f x, g x)) (hf.prodMk hg) :=
   rfl
 
 theorem pair_eq_mk (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) :
     f.pair g =
-      mk (fun x => (f x, g x)) (f.aestronglyMeasurable.prod_mk g.aestronglyMeasurable) := by
+      mk (fun x => (f x, g x)) (f.aestronglyMeasurable.prodMk g.aestronglyMeasurable) := by
   simp only [← pair_mk_mk, mk_coeFn, f.aestronglyMeasurable, g.aestronglyMeasurable]
 
 theorem coeFn_pair (f : α →ₘ[μ] β) (g : α →ₘ[μ] γ) : f.pair g =ᵐ[μ] fun x => (f x, g x) := by
@@ -348,7 +348,7 @@ def comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →�
 theorem comp₂_mk_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α → β) (f₂ : α → γ)
     (hf₁ hf₂) :
     comp₂ g hg (mk f₁ hf₁ : α →ₘ[μ] β) (mk f₂ hf₂) =
-      mk (fun a => g (f₁ a) (f₂ a)) (hg.comp_aestronglyMeasurable (hf₁.prod_mk hf₂)) :=
+      mk (fun a => g (f₁ a) (f₂ a)) (hg.comp_aestronglyMeasurable (hf₁.prodMk hf₂)) :=
   rfl
 
 theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -357,7 +357,7 @@ theorem comp₂_eq_pair (g : β → γ → δ) (hg : Continuous (uncurry g)) (f�
 
 theorem comp₂_eq_mk (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
     (f₂ : α →ₘ[μ] γ) : comp₂ g hg f₁ f₂ = mk (fun a => g (f₁ a) (f₂ a))
-      (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prod_mk f₂.aestronglyMeasurable)) := by
+      (hg.comp_aestronglyMeasurable (f₁.aestronglyMeasurable.prodMk f₂.aestronglyMeasurable)) := by
   rw [comp₂_eq_pair, pair_eq_mk, comp_mk]; rfl
 
 theorem coeFn_comp₂ (g : β → γ → δ) (hg : Continuous (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -384,7 +384,7 @@ theorem comp₂Measurable_mk_mk (g : β → γ → δ) (hg : Measurable (uncurry
     (f₂ : α → γ) (hf₁ hf₂) :
     comp₂Measurable g hg (mk f₁ hf₁ : α →ₘ[μ] β) (mk f₂ hf₂) =
       mk (fun a => g (f₁ a) (f₂ a))
-        (hg.comp_aemeasurable (hf₁.aemeasurable.prod_mk hf₂.aemeasurable)).aestronglyMeasurable :=
+        (hg.comp_aemeasurable (hf₁.aemeasurable.prodMk hf₂.aemeasurable)).aestronglyMeasurable :=
   rfl
 
 theorem comp₂Measurable_eq_pair (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -395,7 +395,7 @@ theorem comp₂Measurable_eq_mk (g : β → γ → δ) (hg : Measurable (uncurry
     (f₂ : α →ₘ[μ] γ) :
     comp₂Measurable g hg f₁ f₂ =
       mk (fun a => g (f₁ a) (f₂ a))
-        (hg.comp_aemeasurable (f₁.aemeasurable.prod_mk f₂.aemeasurable)).aestronglyMeasurable := by
+        (hg.comp_aemeasurable (f₁.aemeasurable.prodMk f₂.aemeasurable)).aestronglyMeasurable := by
   rw [comp₂Measurable_eq_pair, pair_eq_mk, compMeasurable_mk]; rfl
 
 theorem coeFn_comp₂Measurable (g : β → γ → δ) (hg : Measurable (uncurry g)) (f₁ : α →ₘ[μ] β)
@@ -708,7 +708,7 @@ instance instCommMonoid [CommMonoid γ] [ContinuousMul γ] : CommMonoid (α →�
 
 section Group
 
-variable [Group γ] [TopologicalGroup γ]
+variable [Group γ] [IsTopologicalGroup γ]
 
 section Inv
 
@@ -737,6 +737,7 @@ instance instDiv : Div (α →ₘ[μ] γ) :=
   ⟨comp₂ Div.div continuous_div'⟩
 
 @[to_additive (attr := simp, nolint simpNF)] -- Porting note: LHS does not simplify.
+-- It seems the side conditions `hf` and `hg` are not applied by `simpNF`.
 theorem mk_div (f g : α → γ) (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ) :
     mk (f / g) (hf.div hg) = (mk f hf : α →ₘ[μ] γ) / mk g hg :=
   rfl
@@ -772,19 +773,19 @@ end ZPow
 
 end Group
 
-instance instAddGroup [AddGroup γ] [TopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
+instance instAddGroup [AddGroup γ] [IsTopologicalAddGroup γ] : AddGroup (α →ₘ[μ] γ) :=
   toGerm_injective.addGroup toGerm zero_toGerm add_toGerm neg_toGerm sub_toGerm
     (fun _ _ => smul_toGerm _ _) fun _ _ => smul_toGerm _ _
 
-instance instAddCommGroup [AddCommGroup γ] [TopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
+instance instAddCommGroup [AddCommGroup γ] [IsTopologicalAddGroup γ] : AddCommGroup (α →ₘ[μ] γ) :=
   { add_comm := add_comm }
 
 @[to_additive existing]
-instance instGroup [Group γ] [TopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
+instance instGroup [Group γ] [IsTopologicalGroup γ] : Group (α →ₘ[μ] γ) :=
   toGerm_injective.group _ one_toGerm mul_toGerm inv_toGerm div_toGerm pow_toGerm zpow_toGerm
 
 @[to_additive existing]
-instance instCommGroup [CommGroup γ] [TopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
+instance instCommGroup [CommGroup γ] [IsTopologicalGroup γ] : CommGroup (α →ₘ[μ] γ) :=
   { mul_comm := mul_comm }
 
 section Module
@@ -836,7 +837,7 @@ theorem lintegral_mono {f g : α →ₘ[μ] ℝ≥0∞} : f ≤ g → lintegral 
 section Abs
 
 theorem coeFn_abs {β} [TopologicalSpace β] [Lattice β] [TopologicalLattice β] [AddGroup β]
-    [TopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
+    [IsTopologicalAddGroup β] (f : α →ₘ[μ] β) : ⇑|f| =ᵐ[μ] fun x => |f x| := by
   simp_rw [abs]
   filter_upwards [AEEqFun.coeFn_sup f (-f), AEEqFun.coeFn_neg f] with x hx_sup hx_neg
   rw [hx_sup, hx_neg, Pi.neg_apply]
@@ -893,7 +894,7 @@ def toAEEqFun (f : C(α, β)) : α →ₘ[μ] β :=
 theorem coeFn_toAEEqFun (f : C(α, β)) : f.toAEEqFun μ =ᵐ[μ] f :=
   AEEqFun.coeFn_mk f _
 
-variable [Group β] [TopologicalGroup β]
+variable [Group β] [IsTopologicalGroup β]
 
 /-- The `MulHom` from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/
@@ -907,7 +908,7 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 
 variable {𝕜 : Type*} [Semiring 𝕜]
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
-  [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
+  [IsTopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 
 /-- The linear map from the group of continuous maps from `α` to `β` to the group of equivalence
 classes of `μ`-almost-everywhere measurable functions. -/

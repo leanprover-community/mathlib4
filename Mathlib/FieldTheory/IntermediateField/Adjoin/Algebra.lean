@@ -3,6 +3,7 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 import Mathlib.FieldTheory.IntermediateField.Algebraic
 
@@ -78,8 +79,11 @@ theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     IsAlgebraic.tower_top E1 (isAlgebraic_iff.1
       (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
-  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin,
-    Algebra.restrictScalars_adjoin] at this
+  rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
+  -- TODO: rather than using `← coe_type_toSubalgera` here, perhaps we should restate another
+  -- version of `Algebra.restrictScalars_adjoin` for intermediate fields?
+  simp only [← coe_type_toSubalgebra] at this
+  rw [Algebra.restrictScalars_adjoin] at this
   exact this
 
 theorem sup_toSubalgebra_of_isAlgebraic_left [Algebra.IsAlgebraic K E1] :
@@ -120,9 +124,9 @@ theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
   let i' : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField i
   have hi : algebraMap E K = (algebraMap E' K) ∘ i' := by ext x; rfl
   apply_fun _ using Subalgebra.restrictScalars_injective F
-  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
-    Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin,
-    Algebra.restrictScalars_adjoin]
+  rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
+    Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin]
+  erw [Algebra.restrictScalars_adjoin]
   exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp
     (fun (_ : Algebra.IsAlgebraic F E) ↦ i'.isAlgebraic) id)
 
@@ -147,7 +151,7 @@ section Induction
 variable {F : Type*} [Field F] {E : Type*} [Field E] [Algebra F E]
 
 theorem fg_of_fg_toSubalgebra (S : IntermediateField F E) (h : S.toSubalgebra.FG) : S.FG := by
-  cases' h with t ht
+  obtain ⟨t, ht⟩ := h
   exact ⟨t, (eq_adjoin_of_eq_algebra_adjoin _ _ _ ht.symm).symm⟩
 
 @[deprecated (since := "2024-10-28")] alias fG_of_fG_toSubalgebra := fg_of_fg_toSubalgebra

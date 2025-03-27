@@ -34,7 +34,7 @@ variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V
   `√(s * (s - a) * (s - b) * (s - c))` where `s = (a + b + c) / 2` is the semiperimeter.
   We show this by equating this formula to `a * b * sin γ`, where `γ` is the angle opposite
   the side `c`.
- -/
+-/
 theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) (h2 : p₃ ≠ p₂) :
     let a := dist p₁ p₂
     let b := dist p₃ p₂
@@ -54,7 +54,7 @@ theorem heron {p₁ p₂ p₃ : P} (h1 : p₁ ≠ p₂) (h2 : p₃ ≠ p₂) :
   have numerator_nonneg : 0 ≤ numerator := by
     have frac_nonneg : 0 ≤ numerator / denominator :=
       (sub_nonneg.mpr (cos_sq_le_one γ)).trans_eq split_to_frac
-    cases' div_nonneg_iff.mp frac_nonneg with h h
+    rcases div_nonneg_iff.mp frac_nonneg with h | h
     · exact h.left
     · simpa [numerator, denominator, a, b, c, h1, h2] using le_antisymm h.right (sq_nonneg _)
   have ab2_nonneg : 0 ≤ 2 * a * b := by positivity

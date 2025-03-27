@@ -361,7 +361,7 @@ open Set Classical in
 /-- Let `Q` be a lift of factor of the minimal polynomial of `x`, a generator of `S` over `R`, taken
 `mod I`. Then (the reduction of) `Q` corresponds via
 `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` to
-`span (I.map (algebraMap R S) ∪ {Q.aeval x})`.  -/
+`span (I.map (algebraMap R S) ∪ {Q.aeval x})`. -/
 theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
     (hI : I.IsMaximal) {Q : R[X]}
     (hQ : Q.map (Ideal.Quotient.mk I) ∈ normalizedFactors ((minpoly R x).map (Ideal.Quotient.mk I)))

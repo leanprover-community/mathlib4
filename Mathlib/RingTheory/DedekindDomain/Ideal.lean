@@ -1113,10 +1113,7 @@ def normalizedFactorsEquivOfQuotEquiv (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
         idealFactorsEquivOfQuotEquiv_mem_normalizedFactors_of_mem_normalizedFactors f.symm hI
           j.prop⟩
   left_inv := fun ⟨j, hj⟩ => by simp
-  right_inv := fun ⟨j, hj⟩ => by
-    simp
-    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-    erw [OrderIso.apply_symm_apply]
+  right_inv := fun ⟨j, hj⟩ => by simp [-Set.coe_setOf]
 
 @[simp]
 theorem normalizedFactorsEquivOfQuotEquiv_symm (hI : I ≠ ⊥) (hJ : J ≠ ⊥) :
@@ -1180,7 +1177,7 @@ theorem Ideal.count_normalizedFactors_eq {p x : Ideal R} [hp : p.IsPrime] {n : �
     (normalize_eq _) (Ideal.dvd_iff_le.mpr hle) (mt Ideal.le_of_dvd hlt)
 
 /-- The number of times an ideal `I` occurs as normalized factor of another ideal `J` is stable
-  when regarding at these ideals as associated elements of the monoid of ideals.-/
+ when regarding these ideals as associated elements of the monoid of ideals. -/
 theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Associates (Ideal R)]
     [∀ (p : Associates <| Ideal R), Decidable (Irreducible p)]
     {I J : Ideal R} (hI : I ≠ 0) (hJ : J.IsPrime) (hJ₀ : J ≠ ⊥) :
@@ -1403,7 +1400,7 @@ noncomputable def normalizedFactorsEquivSpanNormalizedFactors {r : R} (hr : r �
 
 /-- The bijection `normalizedFactorsEquivSpanNormalizedFactors` between the set of prime
     factors of `r` and the set of prime factors of the ideal `⟨r⟩` preserves multiplicities. See
-    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`.-/
+    `count_normalizedFactorsSpan_eq_count` for the version stated in terms of multisets `count`. -/
 theorem emultiplicity_normalizedFactorsEquivSpanNormalizedFactors_eq_emultiplicity {r d : R}
     (hr : r ≠ 0) (hd : d ∈ normalizedFactors r) :
     emultiplicity d r =

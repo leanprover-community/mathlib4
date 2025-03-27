@@ -5,7 +5,6 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Real.EReal
-import Mathlib.Topology.Instances.EReal.Defs
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Semicontinuous
@@ -203,10 +202,13 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
 
 @[fun_prop]
-lemma _root_.Continous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
+lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
     (hf : Continuous f) :
     Continuous fun x => (f x).toENNReal :=
   continuous_toENNReal.comp hf
+
+@[deprecated (since := "2025-03-05")] alias _root_.Continous.ereal_toENNReal :=
+  _root_.Continuous.ereal_toENNReal
 
 @[fun_prop]
 lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}
@@ -275,21 +277,19 @@ lemma liminf_add_le (h : limsup u f ≠ ⊥ ∨ liminf v f ≠ ⊤) (h' : limsup
 @[deprecated (since := "2024-11-11")] alias limsup_add_liminf_le_limsup_add := le_limsup_add
 @[deprecated (since := "2024-11-11")] alias liminf_add_le_limsup_add_liminf := liminf_add_le
 
-variable {a b : EReal}
-
 lemma limsup_add_bot_of_ne_top (h : limsup u f = ⊥) (h' : limsup v f ≠ ⊤) :
     limsup (u + v) f = ⊥ := by
   apply le_bot_iff.1 ((limsup_add_le (.inr h') _).trans _)
   · rw [h]; exact .inl bot_ne_top
   · rw [h, bot_add]
 
-lemma limsup_add_le_of_le (ha : limsup u f < a) (hb : limsup v f ≤ b) :
+lemma limsup_add_le_of_le {a b : EReal} (ha : limsup u f < a) (hb : limsup v f ≤ b) :
     limsup (u + v) f ≤ a + b := by
   rcases eq_top_or_lt_top b with rfl | h
   · rw [add_top_of_ne_bot ha.ne_bot]; exact le_top
   · exact (limsup_add_le (.inr (hb.trans_lt h).ne) (.inl ha.ne_top)).trans (add_le_add ha.le hb)
 
-lemma liminf_add_gt_of_gt (ha : a < liminf u f) (hb : b < liminf v f) :
+lemma liminf_add_gt_of_gt {a b : EReal} (ha : a < liminf u f) (hb : b < liminf v f) :
     a + b < liminf (u + v) f :=
   (add_lt_add ha hb).trans_le le_liminf_add
 
@@ -297,6 +297,58 @@ lemma liminf_add_top_of_ne_bot (h : liminf u f = ⊤) (h' : liminf v f ≠ ⊥) 
     liminf (u + v) f = ⊤ := by
   apply top_le_iff.1 (le_trans _ le_liminf_add)
   rw [h, top_add_of_ne_bot h']
+
+lemma le_limsup_mul (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v) :
+    limsup u f * liminf v f ≤ limsup (u * v) f := by
+  rcases f.eq_or_neBot with rfl | _
+  · rw [limsup_bot, limsup_bot, liminf_bot, bot_mul_top]
+  have u0 : 0 ≤ limsup u f := le_limsup_of_frequently_le hu.frequently
+  have uv0 : 0 ≤ limsup (u * v) f :=
+    le_limsup_of_frequently_le ((hu.and hv).mono fun _ ⟨hu, hv⟩ ↦ mul_nonneg hu hv).frequently
+  refine mul_le_of_forall_lt_of_nonneg u0 uv0 fun a ha b hb ↦ (le_limsup_iff).2 fun c c_ab ↦ ?_
+  refine (((frequently_lt_of_lt_limsup) (mem_Ico.1 ha).2).and_eventually
+    <| (eventually_lt_of_lt_liminf (mem_Ico.1 hb).2).and
+    <| hu.and hv).mono fun x ⟨xa, ⟨xb, u0, _⟩⟩ ↦ ?_
+  exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ico.1 hb).1 u0)
+
+lemma limsup_mul_le (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v) (h₁ : limsup u f ≠ 0 ∨ limsup v f ≠ ⊤)
+    (h₂ : limsup u f ≠ ⊤ ∨ limsup v f ≠ 0) :
+    limsup (u * v) f ≤ limsup u f * limsup v f := by
+  rcases f.eq_or_neBot with rfl | _
+  · rw [limsup_bot]; exact bot_le
+  replace h₁ : 0 < limsup u f ∨ limsup v f ≠ ⊤ := by
+    refine h₁.imp_left fun h ↦ lt_of_le_of_ne ?_ h.symm
+    exact le_of_eq_of_le (limsup_const 0).symm (limsup_le_limsup hu)
+  replace h₂ : limsup u f ≠ ⊤ ∨ 0 < limsup v f := by
+    refine h₂.imp_right fun h ↦ lt_of_le_of_ne ?_ h.symm
+    exact le_of_eq_of_le (limsup_const 0).symm (limsup_le_limsup hv)
+  refine le_mul_of_forall_lt h₁ h₂ fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v, hu, hv]
+    with x x_a x_b u_0 v_0
+  exact (mul_le_mul x_a.le x_b.le v_0 (u_0.trans x_a.le)).trans_lt c_ab
+
+lemma le_liminf_mul (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v) :
+    liminf u f * liminf v f ≤ liminf (u * v) f := by
+  apply mul_le_of_forall_lt_of_nonneg ((le_liminf_of_le) hu)
+    <| (le_liminf_of_le) ((hu.and hv).mono fun x ⟨u0, v0⟩ ↦ mul_nonneg u0 v0)
+  refine fun a ha b hb ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_lt_liminf (mem_Ico.1 ha).2,
+    eventually_lt_of_lt_liminf (mem_Ico.1 hb).2] with x xa xb
+  exact c_ab.trans_le (mul_le_mul xa.le xb.le (mem_Ico.1 hb).1 ((mem_Ico.1 ha).1.trans xa.le))
+
+lemma liminf_mul_le [NeBot f] (hu : 0 ≤ᶠ[f] u) (hv : 0 ≤ᶠ[f] v)
+    (h₁ : limsup u f ≠ 0 ∨ liminf v f ≠ ⊤) (h₂ : limsup u f ≠ ⊤ ∨ liminf v f ≠ 0) :
+    liminf (u * v) f ≤ limsup u f * liminf v f := by
+  replace h₁ : 0 < limsup u f ∨ liminf v f ≠ ⊤ := by
+    refine h₁.imp_left fun h ↦ lt_of_le_of_ne ?_ h.symm
+    exact le_of_eq_of_le (limsup_const 0).symm (limsup_le_limsup hu)
+  replace h₂ : limsup u f ≠ ⊤ ∨ 0 < liminf v f := by
+    refine h₂.imp_right fun h ↦ lt_of_le_of_ne ?_ h.symm
+    exact le_of_eq_of_le (liminf_const 0).symm (liminf_le_liminf hv)
+  refine le_mul_of_forall_lt h₁ h₂ fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦ ?_
+  refine (((frequently_lt_of_liminf_lt) b_v).and_eventually <| (eventually_lt_of_limsup_lt a_u).and
+    <| hu.and hv).mono fun x ⟨x_v, x_u, u_0, v_0⟩ ↦ ?_
+  exact (mul_le_mul x_u.le x_v.le v_0 (u_0.trans x_u.le)).trans_lt c_ab
 
 end LimInfSup
 
@@ -436,8 +488,8 @@ private lemma continuousAt_mul_top_pos {a : ℝ} (h : 0 < a) :
     have key := mul_le_mul_of_nonneg_left (le_of_lt p2_gt) (le_of_lt p1_pos)
     replace lock := le_trans lock key
     apply lt_of_lt_of_le _ lock
-    rw [← EReal.coe_mul, EReal.coe_lt_coe_iff, div_mul_div_comm, mul_comm,
-      ← div_mul_div_comm, mul_div_right_comm]
+    rw [← EReal.coe_mul, EReal.coe_lt_coe_iff, _root_.div_mul_div_comm, mul_comm,
+      ← _root_.div_mul_div_comm, mul_div_right_comm]
     simp only [ne_eq, Ne.symm (ne_of_lt h), not_false_eq_true, _root_.div_self, OfNat.ofNat_ne_zero,
       one_mul, lt_max_iff, lt_add_iff_pos_right, zero_lt_one, true_or]
   · exact IsOpen.prod isOpen_Ioi isOpen_Ioi

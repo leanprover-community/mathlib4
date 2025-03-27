@@ -128,12 +128,8 @@ theorem iff_quotient_freeAlgebra :
   constructor
   · rintro ⟨s, hs⟩
     refine ⟨s, FreeAlgebra.lift _ (↑), ?_⟩
-    intro x
-    have hrw : (↑s : Set A) = fun x : A => x ∈ s.val := rfl
-    rw [← Set.mem_range, ← AlgHom.coe_range]
-    erw [← adjoin_eq_range_freeAlgebra_lift]
-    simp_rw [← hrw, hs]
-    exact Set.mem_univ x
+    rw [← Set.range_eq_univ, ← AlgHom.coe_range, ← adjoin_range_eq_range_freeAlgebra_lift,
+      Subtype.range_coe_subtype, Finset.setOf_mem, hs, coe_top]
   · rintro ⟨s, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.freeAlgebra R s) f hsur
 
@@ -198,8 +194,8 @@ theorem isNoetherianRing (R S : Type*) [CommRing R] [CommRing S] [Algebra R S]
   apply
     isNoetherianRing_of_surjective (MvPolynomial s R) S
       (MvPolynomial.aeval (↑) : MvPolynomial s R →ₐ[R] S).toRingHom
-  erw [← Set.range_eq_univ, ← AlgHom.coe_range, ←
-    Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
+  rw [← Set.range_eq_univ, AlgHom.toRingHom_eq_coe, RingHom.coe_coe, ← AlgHom.coe_range,
+    ← Algebra.adjoin_range_eq_range_aeval, Subtype.range_coe_subtype, Finset.setOf_mem, hs]
   rfl
 
 theorem _root_.Subalgebra.fg_iff_finiteType (S : Subalgebra R A) : S.FG ↔ Algebra.FiniteType R S :=
@@ -229,12 +225,9 @@ end Finite
 
 namespace FiniteType
 
-variable (A)
-
+variable (A) in
 theorem id : FiniteType (RingHom.id A) :=
   Algebra.FiniteType.self A
-
-variable {A}
 
 theorem comp_surjective {f : A →+* B} {g : B →+* C} (hf : f.FiniteType) (hg : Surjective g) :
     (g.comp f).FiniteType := by
@@ -314,6 +307,11 @@ end FiniteType
 
 end AlgHom
 
+theorem algebraMap_finiteType_iff_algebra_finiteType {R A : Type*} [CommRing R] [CommRing A]
+    [Algebra R A] : (algebraMap R A).FiniteType ↔ Algebra.FiniteType R A := by
+  dsimp [RingHom.FiniteType]
+  constructor <;> (intro h; convert h; apply Algebra.algebra_ext; exact congrFun rfl)
+
 section MonoidAlgebra
 
 variable {R : Type*} {M : Type*}
@@ -381,7 +379,8 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
 theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
     of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
   refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
-  erw [of', ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
+  unfold of' at h
+  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
 
@@ -554,7 +553,8 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
 theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
     of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
   refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
-  erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
+  dsimp [of] at h
+  rw [← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
 

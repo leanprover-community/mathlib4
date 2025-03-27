@@ -696,7 +696,7 @@ theorem mem_graph_iff' (f : E →ₗ.[R] F) {x : E × F} :
 theorem mem_graph_iff (f : E →ₗ.[R] F) {x : E × F} :
     x ∈ f.graph ↔ ∃ y : f.domain, (↑y : E) = x.1 ∧ f y = x.2 := by
   cases x
-  simp_rw [mem_graph_iff', Prod.mk.inj_iff]
+  simp_rw [mem_graph_iff', Prod.mk_inj]
 
 /-- The tuple `(x, f x)` is contained in the graph of `f`. -/
 theorem mem_graph (f : E →ₗ.[R] F) (x : domain f) : ((x : E), f x) ∈ f.graph := by simp
@@ -721,20 +721,20 @@ variable {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass R M F] (y 
 theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
     (z • f).graph =
       f.graph.map ((LinearMap.id : E →ₗ[R] E).prodMap (z • (LinearMap.id : F →ₗ[R] F))) := by
-  ext x; cases' x with x_fst x_snd
+  ext ⟨x_fst, x_snd⟩
   constructor <;> intro h
   · rw [mem_graph_iff] at h
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.smul_apply] at h
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
-      LinearMap.smul_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
+      LinearMap.smul_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
   simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.smul_apply,
-    Prod.mk.inj_iff] at h
+    Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y
@@ -745,20 +745,20 @@ theorem smul_graph (f : E →ₗ.[R] F) (z : M) :
 theorem neg_graph (f : E →ₗ.[R] F) :
     (-f).graph =
     f.graph.map ((LinearMap.id : E →ₗ[R] E).prodMap (-(LinearMap.id : F →ₗ[R] F))) := by
-  ext x; cases' x with x_fst x_snd
+  ext ⟨x_fst, x_snd⟩
   constructor <;> intro h
   · rw [mem_graph_iff] at h
     rcases h with ⟨y, hy, h⟩
     rw [LinearPMap.neg_apply] at h
     rw [Submodule.mem_map]
     simp only [mem_graph_iff, LinearMap.prodMap_apply, LinearMap.id_coe, id,
-      LinearMap.neg_apply, Prod.mk.inj_iff, Prod.exists, exists_exists_and_eq_and]
+      LinearMap.neg_apply, Prod.mk_inj, Prod.exists, exists_exists_and_eq_and]
     use x_fst, y, hy
   rw [Submodule.mem_map] at h
   rcases h with ⟨x', hx', h⟩
   cases x'
   simp only [LinearMap.prodMap_apply, LinearMap.id_coe, id, LinearMap.neg_apply,
-    Prod.mk.inj_iff] at h
+    Prod.mk_inj] at h
   rw [mem_graph_iff] at hx' ⊢
   rcases hx' with ⟨y, hy, hx'⟩
   use y
@@ -789,9 +789,9 @@ theorem mem_domain_iff {f : E →ₗ.[R] F} {x : E} : x ∈ f.domain ↔ ∃ y :
   constructor <;> intro h
   · use f ⟨x, h⟩
     exact f.mem_graph ⟨x, h⟩
-  cases' h with y h
+  obtain ⟨y, h⟩ := h
   rw [mem_graph_iff] at h
-  cases' h with x' h
+  obtain ⟨x', h⟩ := h
   simp only at h
   rw [← h.1]
   simp
@@ -818,9 +818,9 @@ theorem mem_range_iff {f : E →ₗ.[R] F} {y : F} : y ∈ Set.range f ↔ ∃ x
     use x
     rw [← h]
     exact f.mem_graph ⟨x, hx⟩
-  cases' h with x h
+  obtain ⟨x, h⟩ := h
   rw [mem_graph_iff] at h
-  cases' h with x h
+  obtain ⟨x, h⟩ := h
   rw [Set.mem_range]
   use x
   simp only at h
@@ -833,7 +833,7 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
   constructor
   · intro x hx
     rw [mem_domain_iff] at hx ⊢
-    cases' hx with y hx
+    obtain ⟨y, hx⟩ := hx
     use y
     exact h hx
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
@@ -847,7 +847,7 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
 theorem le_graph_of_le {f g : E →ₗ.[R] F} (h : f ≤ g) : f.graph ≤ g.graph := by
   intro x hx
   rw [mem_graph_iff] at hx ⊢
-  cases' hx with y hx
+  obtain ⟨y, hx⟩ := hx
   use ⟨y, h.1 y.2⟩
   simp only [hx, Submodule.coe_mk, eq_self_iff_true, true_and]
   convert hx.2 using 1
@@ -947,14 +947,13 @@ theorem mem_graph_toLinearPMap {g : Submodule R (E × F)}
 theorem toLinearPMap_graph_eq (g : Submodule R (E × F))
     (hg : ∀ (x : E × F) (_hx : x ∈ g) (_hx' : x.fst = 0), x.snd = 0) :
     g.toLinearPMap.graph = g := by
-  ext x
+  ext ⟨x_fst, x_snd⟩
   constructor <;> intro hx
   · rw [LinearPMap.mem_graph_iff] at hx
     rcases hx with ⟨y, hx1, hx2⟩
     convert g.mem_graph_toLinearPMap hg y using 1
     exact Prod.ext hx1.symm hx2.symm
   rw [LinearPMap.mem_graph_iff]
-  cases' x with x_fst x_snd
   have hx_fst : x_fst ∈ g.map (LinearMap.fst R E F) := by
     simp only [mem_map, LinearMap.fst_apply, Prod.exists, exists_and_right, exists_eq_right]
     exact ⟨x_snd, hx⟩

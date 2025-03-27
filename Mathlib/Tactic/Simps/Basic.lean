@@ -55,8 +55,8 @@ open Meta hiding Config
 open Elab.Term hiding mkConst
 
 /-- `updateName nm s isPrefix` adds `s` to the last component of `nm`,
-  either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
-  Used by `simps_add_projections`. -/
+either as prefix or as suffix (specified by `isPrefix`), separated by `_`.
+Used by `simps_add_projections`. -/
 def updateName (nm : Name) (s : String) (isPrefix : Bool) : Name :=
   nm.updateLast fun s' ↦ if isPrefix then s ++ "_" ++ s' else s' ++ "_" ++ s
 
@@ -315,15 +315,15 @@ Some common uses:
   This will generate `foo_apply` lemmas for each declaration `foo`.
 * If you prefer `coe_foo` lemmas that state equalities between functions, use
   `initialize_simps_projections MulHom (toFun → coe, as_prefix coe)`
-  In this case you have to use `@[simps (config := .asFn)]` whenever you call `@[simps]`.
+  In this case you have to use `@[simps -fullyApplied]` whenever you call `@[simps]`.
 * You can also initialize to use both, in which case you have to choose which one to use by default,
   by using either of the following
   ```
     initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -coe)
     initialize_simps_projections MulHom (toFun → apply, toFun → coe, as_prefix coe, -apply)
   ```
-  In the first case, you can get both lemmas using `@[simps, simps (config := .asFn) coe]` and in
-  the second case you can get both lemmas using `@[simps (config := .asFn), simps apply]`.
+  In the first case, you can get both lemmas using `@[simps, simps -fullyApplied coe]` and in
+  the second case you can get both lemmas using `@[simps -fullyApplied, simps apply]`.
 * If you declare a new homomorphism-like structure (like `RelEmbedding`),
   then `initialize_simps_projections` will automatically find any `DFunLike` coercions
   that will be used as the default projection for the `toFun` field.
@@ -423,7 +423,7 @@ instance : ToMessageData ParsedProjectionData where toMessageData
     ("," ++ Format.line) ++ "⟩"
 
 /-- The type of rules that specify how metadata for projections in changes.
-  See `initialize_simps_projections`. -/
+See `initialize_simps_projections`. -/
 inductive ProjectionRule where
   /-- A renaming rule `before→after` or
     Each name comes with the syntax used to write the rule,
@@ -528,19 +528,20 @@ partial def getCompositeOfProjectionsAux (proj : String) (e : Expr) (pos : Array
     getCompositeOfProjectionsAux projRest (mkAppN newE typeArgs) newPos (args ++ typeArgs)
 
 /-- Suppose we are given a structure `str` and a projection `proj`, that could be multiple nested
-  projections (separated by `_`), where each projection could be a projection of a parent structure.
-  This function returns an expression that is the composition of these projections and a
-  list of natural numbers, that are the projection numbers of the applied projections.
-  Note that this function is similar to elaborating dot notation, but it can do a little more.
-  Example: if we do
-  ```
-  structure gradedFun (A : ℕ → Type*) where
-    toFun := ∀ i j, A i →+ A j →+ A (i + j)
-  initialize_simps_projections (toFun_toFun_toFun → myMul)
-  ```
-  we will be able to generate the "projection"
-    `fun {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
-  which projection notation cannot do. -/
+projections (separated by `_`), where each projection could be a projection of a parent structure.
+This function returns an expression that is the composition of these projections and a
+list of natural numbers, that are the projection numbers of the applied projections.
+Note that this function is similar to elaborating dot notation, but it can do a little more.
+
+Example: if we do
+```
+structure gradedFun (A : ℕ → Type*) where
+  toFun := ∀ i j, A i →+ A j →+ A (i + j)
+initialize_simps_projections (toFun_toFun_toFun → myMul)
+```
+we will be able to generate the "projection"
+  `fun {A} (f : gradedFun A) (x : A i) (y : A j) ↦ ↑(↑(f.toFun i j) x) y`,
+which projection notation cannot do. -/
 def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr × Array Nat) := do
   let strExpr ← mkConstWithLevelParams structName
   let type ← inferType strExpr
@@ -549,9 +550,9 @@ def getCompositeOfProjections (structName : Name) (proj : String) : MetaM (Expr 
   getCompositeOfProjectionsAux (proj ++ "_") e #[] <| typeArgs.push e
 
 /-- Get the default `ParsedProjectionData` for structure `str`.
-  It first returns the direct fields of the structure in the right order, and then
-  all (non-subobject fields) of all parent structures. The subobject fields are precisely the
-  non-default fields. -/
+It first returns the direct fields of the structure in the right order, and then
+all (non-subobject fields) of all parent structures. The subobject fields are precisely the
+non-default fields. -/
 def mkParsedProjectionData (structName : Name) : CoreM (Array ParsedProjectionData) := do
   let env ← getEnv
   let projs := getStructureFields env structName
@@ -613,8 +614,8 @@ def applyProjectionRules (projs : Array ParsedProjectionData) (rules : Array Pro
   pure projs
 
 /-- Auxiliary function for `getRawProjections`.
-  Generates the default projection, and looks for a custom projection declared by the user,
-  and replaces the default projection with the custom one, if it can find it. -/
+Generates the default projection, and looks for a custom projection declared by the user,
+and replaces the default projection with the custom one, if it can find it. -/
 def findProjection (str : Name) (proj : ParsedProjectionData)
     (rawUnivs : List Level) : CoreM ParsedProjectionData := do
   let env ← getEnv
@@ -652,7 +653,7 @@ def findProjection (str : Name) (proj : ParsedProjectionData)
     pure {proj with expr? := some rawExpr, projNrs := nrs}
 
 /-- Checks if there are declarations in the current file in the namespace `{str}.Simps` that are
-  not used. -/
+not used. -/
 def checkForUnusedCustomProjs (stx : Syntax) (str : Name) (projs : Array ParsedProjectionData) :
     CoreM Unit := do
   let nrCustomProjections := projs.toList.countP (·.isCustom)
@@ -783,8 +784,10 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
     -- We always print the projections when they already exists and are called by
     -- `initialize_simps_projections`.
     withOptions (· |>.updateBool `trace.simps.verbose (traceIfExists || ·)) <| do
-      trace[simps.debug]
-        projectionsInfo data.2.toList "Already found projection information for structure" str
+      trace[simps.verbose]
+        projectionsInfo data.2.toList "The projections for this structure have already been \
+        initialized by a previous invocation of `initialize_simps_projections` or `@[simps]`.\n\
+        Generated projections for" str
     return data
   trace[simps.verbose] "generating projection information for structure {str}."
   trace[simps.debug] "Applying the rules {rules}."
@@ -807,7 +810,7 @@ def getRawProjections (stx : Syntax) (str : Name) (traceIfExists : Bool := false
   trace[simps.debug] "Generated raw projection data:{indentD <| toMessageData (rawLevels, projs)}"
   pure (rawLevels, projs)
 
-library_note "custom simps projection"/--
+library_note "custom simps projection" /--
 You can specify custom projections for the `@[simps]` attribute.
 To do this for the projection `MyStructure.originalProjection` by adding a declaration
 `MyStructure.Simps.myProjection` that is definitionally equal to
@@ -827,7 +830,7 @@ composite of multiple projections).
 -/
 
 /-- Parse a rule for `initialize_simps_projections`. It is `<name>→<name>`, `-<name>`, `+<name>`
-  or `as_prefix <name>`. -/
+or `as_prefix <name>`. -/
 def elabSimpsRule : Syntax → CommandElabM ProjectionRule
   | `(simpsRule| $id1 → $id2)   => return .rename id1.getId id1.raw id2.getId id2.raw
   | `(simpsRule| - $id)         => return .erase id.getId id.raw
@@ -874,12 +877,14 @@ structure Config where
 declare_command_config_elab elabSimpsConfig Config
 
 /-- A common configuration for `@[simps]`: generate equalities between functions instead equalities
-  between fully applied Expressions. Use this using `@[simps (config := .asFn)]`. -/
+between fully applied Expressions. Replaced by `@[simps -fullyApplied]`. -/
+@[deprecated "use `-fullyApplied` instead" (since := "2025-03-10")]
 def Config.asFn : Simps.Config where
   fullyApplied := false
 
 /-- A common configuration for `@[simps]`: don't tag the generated lemmas with `@[simp]`.
-  Use this using `@[simps (config := .lemmasOnly)]`. -/
+Replaced by `@[simps -isSimp]`. -/
+@[deprecated "use `-isSimp` instead" (since := "2025-03-10")]
 def Config.lemmasOnly : Config where
   isSimp := false
 
@@ -893,14 +898,14 @@ partial def _root_.Lean.Expr.instantiateLambdasOrApps (es : Array Expr) (e : Exp
   e.betaRev es.reverse true -- check if this is what I want
 
 /-- Get the projections of a structure used by `@[simps]` applied to the appropriate arguments.
-  Returns a list of tuples
-  ```
-  (corresponding right-hand-side, given projection name, projection Expression,
-    future projection numbers, used by default, is prefix)
-  ```
-  (where all fields except the first are packed in a `ProjectionData` structure)
-  one for each projection. The given projection name is the name for the projection used by the user
-  used to generate (and parse) projection names. For example, in the structure
+Returns a list of tuples
+```
+(corresponding right-hand-side, given projection name, projection Expression,
+  future projection numbers, used by default, is prefix)
+```
+(where all fields except the first are packed in a `ProjectionData` structure)
+one for each projection. The given projection name is the name for the projection used by the user
+used to generate (and parse) projection names. For example, in the structure
 
   Example 1: ``getProjectionExprs env `(α × β) `(⟨x, y⟩)`` will give the output
   ```
@@ -941,7 +946,7 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
 variable (ref : Syntax) (univs : List Name)
 
 /-- Add a lemma with `nm` stating that `lhs = rhs`. `type` is the type of both `lhs` and `rhs`,
-  `args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
+`args` is the list of local constants occurring, and `univs` is the list of universe variables. -/
 def addProjection (declName : Name) (type lhs rhs : Expr) (args : Array Expr)
     (cfg : Config) : MetaM Unit := do
   trace[simps.debug] "Planning to add the equality{indentD m!"{lhs} = ({rhs} : {type})"}"
@@ -1019,12 +1024,12 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   headStructureEtaReduce reduct
 
 /-- Derive lemmas specifying the projections of the declaration.
-  `nm`: name of the lemma
-  If `todo` is non-empty, it will generate exactly the names in `todo`.
-  `toApply` is non-empty after a custom projection that is a composition of multiple projections
-  was just used. In that case we need to apply these projections before we continue changing `lhs`.
-  `simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
-  -/
+`nm`: name of the lemma
+If `todo` is non-empty, it will generate exactly the names in `todo`.
+`toApply` is non-empty after a custom projection that is a composition of multiple projections
+was just used. In that case we need to apply these projections before we continue changing `lhs`.
+`simpLemmas`: names of the simp lemmas added so far.(simpLemmas : Array Name)
+-/
 partial def addProjections (nm : Name) (type lhs rhs : Expr)
   (args : Array Expr) (mustBeStr : Bool) (cfg : Config)
   (todo : List (String × Syntax)) (toApply : List Nat) : MetaM (Array Name) := do
@@ -1169,9 +1174,9 @@ end Simps
 open Simps
 
 /-- `simpsTac` derives `simp` lemmas for all (nested) non-Prop projections of the declaration.
-  If `todo` is non-empty, it will generate exactly the names in `todo`.
-  If `shortNm` is true, the generated names will only use the last projection name.
-  If `trc` is true, trace as if `trace.simps.verbose` is true. -/
+If `todo` is non-empty, it will generate exactly the names in `todo`.
+If `shortNm` is true, the generated names will only use the last projection name.
+If `trc` is true, trace as if `trace.simps.verbose` is true. -/
 def simpsTac (ref : Syntax) (nm : Name) (cfg : Config := {})
     (todo : List (String × Syntax) := []) (trc := false) : AttrM (Array Name) :=
   withOptions (· |>.updateBool `trace.simps.verbose (trc || ·)) <| do

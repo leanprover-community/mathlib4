@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
 import Mathlib.Data.List.Defs
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 import Mathlib.Tactic.Common
 
 /-!
@@ -105,8 +105,7 @@ theorem takeI_left' {l₁ l₂ : List α} {n} (h : length l₁ = n) : takeI n (l
 
 end TakeI
 
-/- Porting note: in mathlib3 we just had `take` and `take'`. Now we have `take`, `takeI`, and
-  `takeD`. The following section replicates the theorems above but for `takeD`. -/
+/- The following section replicates the theorems above but for `takeD`. -/
 section TakeD
 
 @[simp]

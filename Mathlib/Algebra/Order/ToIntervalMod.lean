@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean.Basic
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Ring.Periodic
 import Mathlib.Data.Int.SuccPred
 import Mathlib.Order.Circular
-import Mathlib.Data.List.TFAE
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Reducing to an interval modulo its length
@@ -525,7 +522,7 @@ theorem tfae_modEq :
         ((toIocMod_eq_iff hp).2 ⟨Set.Ioo_subset_Ioc_self hi, i, (sub_add_cancel b _).symm⟩).symm
   tfae_have 4 → 3
   | h => by
-    rw [← h, Ne, eq_comm, add_right_eq_self]
+    rw [← h, Ne, eq_comm, add_eq_left]
     exact hp.ne'
   tfae_have 1 → 4
   | h => by

@@ -94,6 +94,17 @@ end
 def homMk {U V : Over X} (f : U.left ⟶ V.left) (w : f ≫ V.hom = U.hom := by aesop_cat) : U ⟶ V :=
   CostructuredArrow.homMk f w
 
+@[simp]
+lemma homMk_eta {U V : Over X} (f : U ⟶ V) (h) :
+    homMk f.left h = f := by
+  rfl
+
+/-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_comp {U V W : Over X} (f : U.left ⟶ V.left) (g : V.left ⟶ W.left) (w_f w_g) :
+    homMk (f ≫ g) (by aesop) = homMk f w_f ≫ homMk g w_g := by
+  ext
+  simp
+
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
@@ -232,7 +243,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
   NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
 
 variable (T) in
-/-- The functor defined by the over categories.-/
+/-- The functor defined by the over categories -/
 @[simps] def mapFunctor : T ⥤ Cat where
   obj X := Cat.of (Over X)
   map := map
@@ -456,6 +467,17 @@ def mk {X Y : T} (f : X ⟶ Y) : Under X :=
 def homMk {U V : Under X} (f : U.right ⟶ V.right) (w : U.hom ≫ f = V.hom := by aesop_cat) : U ⟶ V :=
   StructuredArrow.homMk f w
 
+@[simp]
+lemma homMk_eta {U V : Under X} (f : U ⟶ V) (h) :
+    homMk f.right h = f := by
+  rfl
+
+/-- This is useful when `homMk (· ≫ ·)` appears under `Functor.map` or a natural equivalence. -/
+lemma homMk_comp {U V W : Under X} (f : U.right ⟶ V.right) (g : V.right ⟶ W.right) (w_f w_g) :
+    homMk (f ≫ g) (by simp only [reassoc_of% w_f, w_g])  = homMk f w_f ≫ homMk g w_g := by
+  ext
+  simp
+
 /-- Construct an isomorphism in the over category given isomorphisms of the objects whose forward
 direction gives a commutative triangle.
 -/
@@ -594,7 +616,7 @@ def mapCongr {X Y : T} (f g : X ⟶ Y) (h : f = g) :
   NatIso.ofComponents (fun A ↦ eqToIso (by rw [h]))
 
 variable (T) in
-/-- The functor defined by the under categories.-/
+/-- The functor defined by the under categories -/
 @[simps] def mapFunctor : Tᵒᵖ  ⥤ Cat where
   obj X := Cat.of (Under X.unop)
   map f := map f.unop
@@ -645,8 +667,7 @@ instance epi_right_of_epi {f g : Under X} (k : f ⟶ g) [Epi k] : Epi k.right :=
   refine ⟨fun {Y : T} l m a => ?_⟩
   let l' : g ⟶ mk (g.hom ≫ m) := homMk l (by
     dsimp; rw [← Under.w k, Category.assoc, a, Category.assoc])
-  -- Porting note: add type ascription here to `homMk m`
-  suffices l' = (homMk m : g ⟶ mk (g.hom ≫ m)) by apply congrArg CommaMorphism.right this
+  suffices l' = (homMk m) by apply congrArg CommaMorphism.right this
   rw [← cancel_epi k]; ext; apply a
 
 /-- A functor `F : T ⥤ D` induces a functor `Under X ⥤ Under (F.obj X)` in the obvious way. -/

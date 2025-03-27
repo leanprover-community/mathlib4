@@ -67,7 +67,6 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
         zipWith_comm_of_comm _ dist_comm]
       simp only [length, length_append]
   dist_triangle x y z := by
-    -- Porting note: added `unfold`
     unfold dist
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
     refine NNReal.le_iInf_add_iInf fun lxy lyz ↦ ?_
@@ -79,8 +78,6 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
         rw [← sum_append, ← zipWith_append, cons_append, ← @singleton_append _ y, append_assoc,
           append_assoc, append_assoc]
         rw [length_cons, length_append, length_singleton]
-  -- Porting note: `edist_dist` is no longer inferred
-  edist_dist _ _ := rfl
 
 theorem dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x x = 0)
     (dist_comm : ∀ x y, d x y = d y x) (x y : X) :
@@ -118,7 +115,9 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     rw [← nonpos_iff_eq_zero]
     simpa only [nonpos_iff_eq_zero, hab, hbc, dist_self c, max_self, mul_zero] using hd a b c c
   haveI : IsTrans X fun x y => d x y = 0 := ⟨hd₀_trans⟩
-  induction' hn : length l using Nat.strong_induction_on with n ihn generalizing x y l
+  suffices ∀ n, length l = n → d x y ≤ 2 * (zipWith d (x :: l) (l ++ [y])).sum by exact this _ rfl
+  intro n hn
+  induction n using Nat.strong_induction_on generalizing x y l with | h n ihn =>
   simp only at ihn
   subst n
   set L := zipWith d (x::l) (l ++ [y])
@@ -190,7 +189,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     `𝓤 X` as well. -/
   obtain ⟨U, hU_symm, hU_comp, hB⟩ :
     ∃ U : ℕ → Set (X × X),
-      (∀ n, SymmetricRel (U n)) ∧
+      (∀ n, IsSymmetricRel (U n)) ∧
         (∀ ⦃m n⦄, m < n → U n ○ (U n ○ U n) ⊆ U m) ∧ (𝓤 X).HasAntitoneBasis U := by
     rcases UniformSpace.has_seq_basis X with ⟨V, hB, hV_symm⟩
     rcases hB.subbasis_with_rel fun m =>
@@ -209,7 +208,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     · simpa only [not_exists, Classical.not_not, eq_self_iff_true, true_iff] using h
   have hd_symm : ∀ x y, d x y = d y x := by
     intro x y
-    simp only [d, @SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
+    simp only [d, @IsSymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
   letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 rfl) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
@@ -269,7 +268,7 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
   infer_instance
 
 /-- A totally bounded set is separable in countably generated uniform spaces. This can be obtained
-from the more general `EMetric.subset_countable_closure_of_almost_dense_set`.-/
+from the more general `EMetric.subset_countable_closure_of_almost_dense_set`. -/
 lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (𝓤 X)]
     {s : Set X} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s := by
   letI := (UniformSpace.pseudoMetricSpace (X := X)).toPseudoEMetricSpace

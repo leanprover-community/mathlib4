@@ -40,9 +40,9 @@ theorem toReal_add (ha : a ≠ ∞) (hb : b ≠ ∞) : (a + b).toReal = a.toReal
   rfl
 
 theorem toReal_add_le : (a + b).toReal ≤ a.toReal + b.toReal :=
-  if ha : a = ∞ then by simp only [ha, top_add, top_toReal, zero_add, toReal_nonneg]
+  if ha : a = ∞ then by simp only [ha, top_add, toReal_top, zero_add, toReal_nonneg]
   else
-    if hb : b = ∞ then by simp only [hb, add_top, top_toReal, add_zero, toReal_nonneg]
+    if hb : b = ∞ then by simp only [hb, add_top, toReal_top, add_zero, toReal_nonneg]
     else le_of_eq (toReal_add ha hb)
 
 theorem ofReal_add {p q : ℝ} (hp : 0 ≤ p) (hq : 0 ≤ q) :
@@ -288,27 +288,26 @@ theorem ofReal_nsmul {x : ℝ} {n : ℕ} : ENNReal.ofReal (n • x) = n • ENNR
 
 @[simp]
 theorem toNNReal_mul {a b : ℝ≥0∞} : (a * b).toNNReal = a.toNNReal * b.toNNReal :=
-  WithTop.untop'_zero_mul a b
+  WithTop.untopD_zero_mul a b
 
 theorem toNNReal_mul_top (a : ℝ≥0∞) : ENNReal.toNNReal (a * ∞) = 0 := by simp
 
 theorem toNNReal_top_mul (a : ℝ≥0∞) : ENNReal.toNNReal (∞ * a) = 0 := by simp
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
-def toNNRealHom : ℝ≥0∞ →* ℝ≥0 where
+def toNNRealHom : ℝ≥0∞ →*₀ ℝ≥0 where
   toFun := ENNReal.toNNReal
   map_one' := toNNReal_coe _
   map_mul' _ _ := toNNReal_mul
+  map_zero' := toNNReal_zero
 
 @[simp]
 theorem toNNReal_pow (a : ℝ≥0∞) (n : ℕ) : (a ^ n).toNNReal = a.toNNReal ^ n :=
   toNNRealHom.map_pow a n
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
-def toRealHom : ℝ≥0∞ →* ℝ :=
-  (NNReal.toRealHom : ℝ≥0 →* ℝ).comp toNNRealHom
+def toRealHom : ℝ≥0∞ →*₀ ℝ :=
+  (NNReal.toRealHom : ℝ≥0 →*₀ ℝ).comp toNNRealHom
 
 @[simp]
 theorem toReal_mul : (a * b).toReal = a.toReal * b.toReal :=
@@ -325,7 +324,7 @@ theorem toReal_ofReal_mul (c : ℝ) (a : ℝ≥0∞) (h : 0 ≤ c) :
   rw [ENNReal.toReal_mul, ENNReal.toReal_ofReal h]
 
 theorem toReal_mul_top (a : ℝ≥0∞) : ENNReal.toReal (a * ∞) = 0 := by
-  rw [toReal_mul, top_toReal, mul_zero]
+  rw [toReal_mul, toReal_top, mul_zero]
 
 theorem toReal_top_mul (a : ℝ≥0∞) : ENNReal.toReal (∞ * a) = 0 := by
   rw [mul_comm]
@@ -361,7 +360,7 @@ protected theorem dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 �
 
 theorem toReal_pos_iff_ne_top (p : ℝ≥0∞) [Fact (1 ≤ p)] : 0 < p.toReal ↔ p ≠ ∞ :=
   ⟨fun h hp =>
-    have : (0 : ℝ) ≠ 0 := top_toReal ▸ (hp ▸ h.ne : 0 ≠ ∞.toReal)
+    have : (0 : ℝ) ≠ 0 := toReal_top ▸ (hp ▸ h.ne : 0 ≠ ∞.toReal)
     this rfl,
     fun h => zero_lt_one.trans_le (p.dichotomy.resolve_left h)⟩
 
@@ -374,15 +373,13 @@ variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
 theorem toNNReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toNNReal = ⨅ i, (f i).toNNReal := by
   cases isEmpty_or_nonempty ι
-  · rw [iInf_of_empty, top_toNNReal, NNReal.iInf_empty]
+  · rw [iInf_of_empty, toNNReal_top, NNReal.iInf_empty]
   · lift f to ι → ℝ≥0 using hf
     simp_rw [← coe_iInf, toNNReal_coe]
 
 theorem toNNReal_sInf (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sInf s).toNNReal = sInf (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- Porting note: `← sInf_image'` had to be replaced by `← image_eq_range` as the lemmas are used
-  -- in a different order.
   simpa only [← sInf_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iInf hf)
 
 theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f i).toNNReal := by
@@ -390,13 +387,11 @@ theorem toNNReal_iSup (hf : ∀ i, f i ≠ ∞) : (iSup f).toNNReal = ⨆ i, (f 
   simp_rw [toNNReal_coe]
   by_cases h : BddAbove (range f)
   · rw [← coe_iSup h, toNNReal_coe]
-  · rw [NNReal.iSup_of_not_bddAbove h, iSup_coe_eq_top.2 h, top_toNNReal]
+  · rw [NNReal.iSup_of_not_bddAbove h, iSup_coe_eq_top.2 h, toNNReal_top]
 
 theorem toNNReal_sSup (s : Set ℝ≥0∞) (hs : ∀ r ∈ s, r ≠ ∞) :
     (sSup s).toNNReal = sSup (ENNReal.toNNReal '' s) := by
   have hf : ∀ i, ((↑) : s → ℝ≥0∞) i ≠ ∞ := fun ⟨r, rs⟩ => hs r rs
-  -- Porting note: `← sSup_image'` had to be replaced by `← image_eq_range` as the lemmas are used
-  -- in a different order.
   simpa only [← sSup_range, ← image_eq_range, Subtype.range_coe_subtype] using (toNNReal_iSup hf)
 
 theorem toReal_iInf (hf : ∀ i, f i ≠ ∞) : (iInf f).toReal = ⨅ i, (f i).toReal := by

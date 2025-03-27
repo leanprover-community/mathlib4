@@ -31,11 +31,11 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   · subst hI'
     apply h₁
     rw [← Ideal.zero_eq_bot, zero_pow two_ne_zero]
-  cases' n with n
+  rcases n with - | n
   · rw [pow_zero, Ideal.one_eq_top] at hI
     haveI := subsingleton_of_bot_eq_top hI.symm
     exact (hI' (Subsingleton.elim _ _)).elim
-  cases' n with n
+  rcases n with - | n
   · rw [pow_one] at hI
     exact (hI' hI).elim
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
