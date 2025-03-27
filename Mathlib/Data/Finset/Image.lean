@@ -4,7 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Finset.Attach
+import Mathlib.Data.Finset.Disjoint
+import Mathlib.Data.Finset.Erase
+import Mathlib.Data.Finset.Filter
+import Mathlib.Data.Finset.Range
 import Mathlib.Data.Finset.SymmDiff
 
 /-! # Image and map operations on finite sets
@@ -397,11 +401,6 @@ theorem filter_image {p : β → Prop} [DecidablePred p] :
     exact
       ⟨by rintro ⟨⟨x, h1, rfl⟩, h2⟩; exact ⟨x, ⟨h1, h2⟩, rfl⟩,
        by rintro ⟨x, ⟨h1, h2⟩, rfl⟩; exact ⟨⟨x, h1, rfl⟩, h2⟩⟩
-
-@[deprecated filter_mem_eq_inter (since := "2024-09-15")]
-theorem filter_mem_image_eq_image (f : α → β) (s : Finset α) (t : Finset β) (h : ∀ x ∈ s, f x ∈ t) :
-    (t.filter fun y => y ∈ s.image f) = s.image f := by
-  rwa [filter_mem_eq_inter, inter_eq_right, image_subset_iff]
 
 theorem fiber_nonempty_iff_mem_image {y : β} : (s.filter (f · = y)).Nonempty ↔ y ∈ s.image f := by
   simp [Finset.Nonempty]

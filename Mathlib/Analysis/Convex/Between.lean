@@ -507,7 +507,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     (h₁' : p ∈ line[R, t.points i₁, p₁]) (h₂' : p ∈ line[R, t.points i₂, p₂]) :
     Sbtw R (t.points i₁) p p₁ := by
   -- Should not be needed; see comments on local instances in `Data.Sign`.
-  letI : DecidableRel ((· < ·) : R → R → Prop) := LinearOrderedRing.decidableLT
+  letI : DecidableLT R := LinearOrderedRing.decidableLT
   have h₁₃ : i₁ ≠ i₃ := by
     rintro rfl
     simp at h₂

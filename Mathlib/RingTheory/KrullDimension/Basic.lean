@@ -73,11 +73,11 @@ lemma ringKrullDim_ne_top [FiniteRingKrullDim R] :
   (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top.mp ‹_›).2
 
 lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
-    ringKrullDim R < ⊤ := Ne.lt_top (ringKrullDim_ne_top)
+    ringKrullDim R < ⊤ := ringKrullDim_ne_top.lt_top
 
 lemma finiteRingKrullDim_iff_ne_bot_and_top :
     FiniteRingKrullDim R ↔ (ringKrullDim R ≠ ⊥ ∧ ringKrullDim R ≠ ⊤) :=
-  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := (PrimeSpectrum R)))
+  (Order.finiteDimensionalOrder_iff_krullDim_ne_bot_and_top (α := PrimeSpectrum R))
 
 proof_wanted Polynomial.ringKrullDim_le :
     ringKrullDim (Polynomial R) ≤ 2 * (ringKrullDim R) + 1

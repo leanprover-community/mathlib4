@@ -844,7 +844,7 @@ lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
   · exact this j i hn.symm he.symm (by omega)
   exact absurd he (s.strictMono hl).ne
 
-instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α) where
+instance [DecidableLT α] : Fintype (LTSeries α) where
   elems := Finset.univ.map (injStrictMono (Fintype.card α))
   complete s := by
     have bl := s.length_lt_card
