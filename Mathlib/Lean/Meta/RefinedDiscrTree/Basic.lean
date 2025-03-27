@@ -220,6 +220,7 @@ structure LazyEntry where
   cache    : AssocList Expr (List Key) := {}
 deriving Inhabited
 
+/-- Creates a `LazyEntry` using the current metavariable context. -/
 def mkInitLazyEntry (labelledStars : Bool) : MetaM LazyEntry :=
   return {
     mctx := ← getMCtx
