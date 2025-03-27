@@ -15,7 +15,6 @@ divisors.
 
 ## TODO
 
-- Compatibility with restriction of divisors/functions
 - Non-negativity of the divisor for an analytic function
 - Behavior under addition of functions
 - Congruence lemmas for `codiscreteWithin`
@@ -115,5 +114,17 @@ theorem divisor_inv [CompleteSpace 𝕜] {f : 𝕜 → 𝕜} :
   by_cases h : MeromorphicOn f U ∧ z ∈ U
   · simp [divisor_apply, h, (h.1 z h.2).order_inv]
   · simp [divisor_def, h]
+
+/--
+Taking the divisor of a meromorphic function commutes with restriction.
+-/
+@[simp]
+theorem divisor_restrict {f : 𝕜 → E} {V : Set 𝕜} (hf : MeromorphicOn f U) (hV : V ⊆ U) :
+    (divisor f U).restrict hV = divisor f V := by
+  ext x
+  by_cases hx : x ∈ V
+  · rw [Function.locallyFinsuppWithin.restrict_apply]
+    simp [hf, hx, hf.mono_set hV, hV hx]
+  · simp [hx]
 
 end MeromorphicOn
