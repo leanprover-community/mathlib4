@@ -20,6 +20,7 @@ open scoped Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {f f₁ f₂ : 𝕜 → E} {x : 𝕜}
 
 /-!
 ## Order at a Point: Definition and Characterization
@@ -33,12 +34,12 @@ The order is defined to be `∞` if `f` is identically 0 on a neighbourhood of `
 unique `n` such that `f` can locally be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic
 and does not vanish at `z₀`. See `MeromorphicAt.order_eq_top_iff` and
 `MeromorphicAt.order_eq_nat_iff` for these equivalences. -/
-noncomputable def order {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) : WithTop ℤ :=
+noncomputable def order (hf : MeromorphicAt f x) : WithTop ℤ :=
   (hf.choose_spec.order.map (↑· : ℕ → ℤ)) - hf.choose
 
 /-- The order of a meromorphic function `f` at a `z₀` is infinity iff `f` vanishes locally around
 `z₀`. -/
-lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
+lemma order_eq_top_iff (hf : MeromorphicAt f x) :
     hf.order = ⊤ ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
@@ -59,7 +60,7 @@ lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
 
 /-- The order of a meromorphic function `f` at `z₀` equals an integer `n` iff `f` can locally be
 written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
-lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
+lemma order_eq_int_iff (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
@@ -88,7 +89,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
 
 /-- Meromorphic functions that agree in a punctured neighborhood of `z₀` have the same order at
 `z₀`. -/
-theorem order_congr {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
+theorem order_congr (hf₁ : MeromorphicAt f₁ x)
     (hf₁₂ : f₁ =ᶠ[𝓝[≠] x] f₂) :
     hf₁.order = (hf₁.congr hf₁₂).order := by
   by_cases h₁f₁ : hf₁.order = ⊤
@@ -102,7 +103,7 @@ theorem order_congr {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f
     exact EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) hf₁₂.symm
 
 /-- Compatibility of notions of `order` for analytic and meromorphic functions. -/
-lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
+lemma _root_.AnalyticAt.meromorphicAt_order (hf : AnalyticAt 𝕜 f x) :
     hf.meromorphicAt.order = hf.order.map (↑) := by
   rcases eq_or_ne hf.order ⊤ with ho | ho
   · rw [ho, ENat.map_top, order_eq_top_iff]
@@ -115,7 +116,7 @@ lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : An
 /--
 When seen as meromorphic functions, analytic functions have nonnegative order.
 -/
-theorem _root_.AnalyticAt.meromorphicAt_order_nonneg {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
+theorem _root_.AnalyticAt.meromorphicAt_order_nonneg (hf : AnalyticAt 𝕜 f x) :
     0 ≤ hf.meromorphicAt.order := by
   simp [hf.meromorphicAt_order, (by rfl : (0 : WithTop ℤ) = (0 : ℕ∞).map _)]
 
@@ -123,13 +124,10 @@ theorem _root_.AnalyticAt.meromorphicAt_order_nonneg {f : 𝕜 → E} {x : 𝕜}
 ## Order at a Point: Behaviour under Ring Operations
 
 We establish additivity of the order under multiplication and taking powers.
-
-TODO: Behaviour under Addition/Subtraction. API unification with analytic functions
 -/
 
 /-- The order is additive when multiplying scalar-valued and vector-valued meromorphic functions. -/
-theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜}
-    (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     (hf.smul hg).order = hf.order + hg.order := by
   -- Trivial cases: one of the functions vanishes around z₀
   cases h₂f : hf.order with
@@ -150,12 +148,12 @@ theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜}
       simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
 
 /-- The order is additive when multiplying meromorphic functions. -/
-theorem order_mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
+theorem order_mul {f g : 𝕜 → 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     (hf.mul hg).order = hf.order + hg.order :=
   hf.order_smul hg
 
 /-- The order of the inverse is the negative of the order. -/
-theorem order_inv {f : 𝕜 → 𝕜} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) :
+theorem order_inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) :
     hf.inv.order = -hf.order := by
   by_cases h₂f : hf.order = ⊤
   · rw [h₂f, ← LinearOrderedAddCommGroupWithTop.neg_top, neg_neg]
@@ -175,7 +173,7 @@ theorem order_inv {f : 𝕜 → 𝕜} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) 
 /--
 The order of a sum at least the minimum of the orders of the summands.
 -/
-theorem order_add {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
+theorem order_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
     min hf₁.order hf₂.order ≤ (hf₁.add hf₂).order := by
   -- Handle the trivial cases where one of the orders equals ⊤
   by_cases h₂f₁: hf₁.order = ⊤
@@ -212,8 +210,8 @@ theorem order_add {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f�
 /--
 Helper lemma for MeromorphicAt.order_add_of_unequal_order.
 -/
-lemma order_add_of_order_lt_order {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
-    (hf₂ : MeromorphicAt f₂ x) (h : hf₁.order < hf₂.order) :
+lemma order_add_of_order_lt_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h : hf₁.order < hf₂.order) :
     (hf₁.add hf₂).order = hf₁.order := by
   -- Trivial case: f₂ vanishes identically around z₀
   by_cases h₁f₂ : hf₂.order = ⊤
@@ -240,8 +238,8 @@ lemma order_add_of_order_lt_order {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : M
 If two meromorphic functions have unequal orders, then the order of their sum is
 exactly the minimum of the orders of the summands.
 -/
-theorem order_add_of_unequal_order {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
-    (hf₂ : MeromorphicAt f₂ x) (h : hf₁.order ≠ hf₂.order) :
+theorem order_add_of_unequal_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x)
+    (h : hf₁.order ≠ hf₂.order) :
     (hf₁.add hf₂).order = min hf₁.order hf₂.order := by
   rcases lt_or_lt_iff_ne.mpr h with h | h
   · simpa [h.le] using hf₁.order_add_of_order_lt_order hf₂ h
@@ -251,14 +249,11 @@ end MeromorphicAt
 
 /-!
 ## Level Sets of the Order Function
-
-TODO: investigate whether `codiscrete_setOf_order_eq_zero_or_top` really needs a completeness
-hypothesis.
 -/
 
 namespace MeromorphicOn
 
-variable {f : 𝕜 → E} {U : Set 𝕜} (hf : MeromorphicOn f U)
+variable {U : Set 𝕜} (hf : MeromorphicOn f U)
 
 /-- The set where a meromorphic function has infinite order is clopen in its domain of meromorphy.
 -/
@@ -330,7 +325,7 @@ theorem exists_order_ne_top_iff_forall (hU : IsConnected U) :
 
 /-- On a preconnected set, a meromorphic function has finite order at one point if it has finite
 order at another point. -/
-theorem order_ne_top_of_isPreconnected {x y : 𝕜} (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U)
+theorem order_ne_top_of_isPreconnected {y : 𝕜} (hU : IsPreconnected U) (h₁x : x ∈ U) (hy : y ∈ U)
     (h₂x : (hf x h₁x).order ≠ ⊤) :
     (hf y hy).order ≠ ⊤ :=
   (hf.exists_order_ne_top_iff_forall ⟨nonempty_of_mem h₁x, hU⟩).1 (by use ⟨x, h₁x⟩) ⟨y, hy⟩
