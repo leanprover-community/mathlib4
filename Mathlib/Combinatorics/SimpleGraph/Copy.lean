@@ -173,9 +173,12 @@ lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A
 
 alias IsContained.trans_le' := IsContained.mono_left
 
-/-- If `A ≃g H` and `B ≃g G` then `A` is contained in `B` if and only if `H` is contained in `G`. -/
-theorem isContained_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A ⊑ B ↔ H ⊑ G :=
-  ⟨.trans' ⟨e₂.toCopy⟩ ∘ .trans ⟨e₁.symm.toCopy⟩, .trans' ⟨e₂.symm.toCopy⟩ ∘ .trans ⟨e₁.toCopy⟩⟩
+/-- If `H₁ ≃g H₂` and `G₁ ≃g G₂` then `H₁` is contained in `G₁` if and only if `H₂` is contained
+in `G₂`. -/
+theorem isContained_congr {W₁ W₂ V₁ V₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
+    {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂} (eH : H₁ ≃g H₂) (eG : G₁ ≃g G₂) :
+    H₁ ⊑ G₁ ↔ H₂ ⊑ G₂ :=
+  ⟨.trans' ⟨eG.toCopy⟩ ∘ .trans ⟨eH.symm.toCopy⟩, .trans' ⟨eG.symm.toCopy⟩ ∘ .trans ⟨eH.toCopy⟩⟩
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
@@ -217,9 +220,11 @@ abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A ⊑ B
 
 lemma not_free : ¬A.Free B ↔ A ⊑ B := not_not
 
-/-- If `A ≃g H` and `B ≃g G` then `B` is `A`-free if and only if `G` is `H`-free. -/
-theorem free_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A.Free B ↔ H.Free G :=
-  (isContained_congr e₁ e₂).not
+/-- If `A ≃g C` and `B ≃g D` then `B` is `A`-free if and only if `D` is `C`-free. -/
+theorem free_congr {W₁ W₂ V₁ V₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
+    {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂} (eH : H₁ ≃g H₂) (eG : G₁ ≃g G₂) :
+    H₁.Free G₁ ↔ H₂.Free G₂ :=
+  (isContained_congr eH eG).not
 
 lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [← edgeSet_nonempty] at h
