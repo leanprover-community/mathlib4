@@ -1002,46 +1002,43 @@ lemma getVert_eq_support_get {u v : V} {p : G.Walk u v} {n : ℕ} (hn : n ≤ p.
 p.getVert n = p.support.get ⟨n, p.length_support ▸ (Nat.lt_add_one_of_le hn)⟩ :=
   (List.get_eq_getElem ..) ▸ (List.getElem_eq_iff.mpr (getVert_eq_support_get? p hn).symm).symm
 
+lemma getVert_take_of_ge {u v : V} {m n : ℕ} (p : G.Walk u v) (h : m ≤ n)  :
+   (p.take m).getVert n = p.getVert m := by
+  rw [getVert_of_length_le _ ((p.length_take_le m).trans h)]
+
+lemma getVert_take_of_le {u v : V} {m n : ℕ} (p : G.Walk u v) (h : n ≤ m)  :
+    (p.take m).getVert n = p.getVert n := by
+  induction m generalizing n u with
+  | zero => simp_all
+  | succ m ih =>
+    cases p with
+    | nil => simp
+    | cons h p =>
+      cases n with
+      | zero => simp
+      | succ n =>
+        simp_rw [Nat.add_le_add_iff_right, take_cons_succ, getVert_cons_succ] at *
+        exact ih p h
+
 lemma getVert_take {u v : V} (p : G.Walk u v) (m n : ℕ) :
    (p.take m).getVert n = if (m ≤ n) then p.getVert m else p.getVert n := by
-  by_cases h : m < p.length
-  · split_ifs with h1
-    · exact getVert_of_length_le _ <| (p.length_take_le m).trans h1
-    · push_neg at h1
-      induction m generalizing n u v with
-      | zero => exact (Nat.not_lt_zero _ h1).elim
-      | succ m ih =>
-        cases p with
-        | nil => simp
-        | cons h p =>
-          cases n with
-          | zero => simp
-          | succ n =>
-            simp_rw [length_cons, Nat.add_lt_add_iff_right] at *
-            exact ih _ _ h h1
-  · push_neg at h
-    rw [take_length_le p h, getVert_copy]
-    split_ifs with h1
-    · rw [getVert_of_length_le p h, getVert_of_length_le p (h.trans h1)]
-    · rfl
+  split_ifs with h
+  · exact getVert_take_of_ge p h
+  · exact getVert_take_of_le p (Nat.le_of_not_le h)
 
 lemma getVert_drop {u v : V} (p : G.Walk u v) (m n : ℕ) :
    (p.drop m).getVert n = p.getVert (m + n) := by
-  by_cases h : p.length ≤ m
-  · rw [drop_length_le _ h, p.getVert_of_length_le (Nat.le_add_right_of_le h)]
-    simp
-  · push_neg at h
-    induction m generalizing n u v with
-    | zero => simp
-    | succ m ih =>
-      cases p with
-      | nil => simp
-      | cons h p =>
-        cases n with
-        | zero => simp
-        | succ n =>
-          simp_rw [ Nat.succ_add, getVert_cons_succ, length_cons, Nat.add_lt_add_iff_right] at *
-          exact ih _ _ h
+  induction m generalizing n u with
+  | zero => simp
+  | succ m ih =>
+    cases p with
+    | nil => simp
+    | cons h p =>
+      cases n with
+      | zero => simp
+      | succ n =>
+        simp_rw [Nat.succ_add, getVert_cons_succ, drop_cons_succ] at *
+        exact ih _ _
 
 /-- The walk obtained by rotating `n` darts around a closed walk. -/
 def rotate' {u : V} (p : G.Walk u u) (n : ℕ) : G.Walk (p.getVert n) (p.getVert n) :=
