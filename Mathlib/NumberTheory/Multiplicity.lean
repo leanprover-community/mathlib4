@@ -129,7 +129,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
     _ = mk (span {s}) (↑p * a ^ (p - 1)) := by
       have : Finset.sum (range p) (fun (x : ℕ) ↦ (x : R)) =
           ((Finset.sum (range p) (fun (x : ℕ) ↦ (x : ℕ)))) := by simp only [Nat.cast_sum]
-      simp only [add_left_eq_self, ← Finset.mul_sum, this]
+      simp only [add_eq_right, ← Finset.mul_sum, this]
       norm_cast
       simp only [Finset.sum_range_id]
       norm_cast

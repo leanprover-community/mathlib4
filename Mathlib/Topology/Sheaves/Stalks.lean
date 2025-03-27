@@ -366,6 +366,7 @@ theorem stalkSpecializes_stalkFunctor_map {F G : X.Presheaf C} (f : F ⟶ G) {x 
   ext; delta stalkFunctor; simpa [stalkSpecializes] using by rfl
 
 -- See https://github.com/leanprover-community/batteries/issues/365 for the simpNF issue.
+-- It seems the side condition `h` is not applied by `simpNF`.
 @[reassoc, elementwise, simp, nolint simpNF]
 theorem stalkSpecializes_stalkPushforward (f : X ⟶ Y) (F : X.Presheaf C) {x y : X} (h : x ⤳ y) :
     (f _* F).stalkSpecializes (f.hom.map_specializes h) ≫ F.stalkPushforward _ f x =
@@ -573,7 +574,7 @@ theorem app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶
     app_surjective_of_stalkFunctor_map_bijective f U h⟩
 
 include instCC in
-theorem app_isIso_of_stalkFunctor_map_iso  {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
+theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     [∀ x : U, IsIso ((stalkFunctor C x.val).map f.1)] : IsIso (f.1.app (op U)) := by
   -- Since the forgetful functor of `C` reflects isomorphisms, it suffices to see that the
   -- underlying map between types is an isomorphism, i.e. bijective.

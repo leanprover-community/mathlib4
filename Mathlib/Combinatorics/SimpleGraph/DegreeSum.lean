@@ -87,7 +87,7 @@ theorem dart_card_eq_twice_card_edges : Fintype.card G.Dart = 2 * #G.edgeFinset 
   classical
   rw [← card_univ]
   rw [@card_eq_sum_card_fiberwise _ _ _ Dart.edge _ G.edgeFinset fun d _h =>
-      by rw [mem_edgeFinset]; apply Dart.edge_mem]
+      by rw [mem_coe, mem_edgeFinset]; apply Dart.edge_mem]
   rw [← mul_comm, sum_const_nat]
   intro e h
   apply G.dart_edge_fiber_card e
@@ -111,7 +111,7 @@ See `SimpleGraph.sum_degrees_eq_twice_card_edges` for the general version. -/
 theorem sum_degrees_support_eq_twice_card_edges :
     ∑ v ∈ G.support, G.degree v = 2 * #G.edgeFinset := by
   simp_rw [← sum_degrees_eq_twice_card_edges,
-    ← sum_add_sum_compl G.support.toFinset, self_eq_add_right]
+    ← sum_add_sum_compl G.support.toFinset, left_eq_add]
   apply Finset.sum_eq_zero
   intro v hv
   rw [degree_eq_zero_iff_not_mem_support]

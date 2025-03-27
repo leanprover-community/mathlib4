@@ -27,7 +27,6 @@ noncomputable section
 
 open Set Fin Topology
 
--- Porting note: added explicit universes to fix compile
 universe u u' v w x
 variable {𝕜 : Type u} {𝕜' : Type u'} {E : Type v} {F : Type w} {G : Type x}
 
@@ -65,9 +64,7 @@ end Module
 
 namespace FormalMultilinearSeries
 
-#adaptation_note /-- https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`. -/
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := rfl
 
 @[simp]

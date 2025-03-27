@@ -396,8 +396,9 @@ theorem IsInternal.collectedBasis_coe (h : IsInternal A) {α : ι → Type*}
   -- convert DFinsupp.sumAddHom_single (fun i ↦ (A i).subtype.toAddMonoidHom) a.1 (v a.1 a.2)
   simp only [IsInternal.collectedBasis, coeLinearMap, Basis.coe_ofRepr, LinearEquiv.trans_symm,
     LinearEquiv.symm_symm, LinearEquiv.trans_apply, sigmaFinsuppLequivDFinsupp_apply,
-    sigmaFinsuppEquivDFinsupp_single, LinearEquiv.ofBijective_apply,
-    sigmaFinsuppAddEquivDFinsupp_apply]
+    AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe,
+    sigmaFinsuppAddEquivDFinsupp_apply, sigmaFinsuppEquivDFinsupp_single,
+    LinearEquiv.ofBijective_apply]
   rw [DFinsupp.mapRange.linearEquiv_symm]
   -- `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), ↥(A i))`
   -- appears in the goal, but the lemma is expecting

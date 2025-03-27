@@ -86,9 +86,6 @@ variable {E F}
 
 namespace SchwartzMap
 
--- Porting note: removed
--- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
-
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
   coe_injective' f g h := by cases f; cases g; congr
