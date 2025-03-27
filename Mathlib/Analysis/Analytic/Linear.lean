@@ -57,8 +57,11 @@ protected theorem cpolynomialAt (f : E →L[𝕜] F) (x : E) : CPolynomialAt �
 protected theorem analyticAt (f : E →L[𝕜] F) (x : E) : AnalyticAt 𝕜 f x :=
   (f.hasFPowerSeriesAt x).analyticAt
 
-protected theorem colynomialOn (f : E →L[𝕜] F) (s : Set E) : CPolynomialOn 𝕜 f s :=
+protected theorem cpolynomialOn (f : E →L[𝕜] F) (s : Set E) : CPolynomialOn 𝕜 f s :=
   fun x _ ↦ f.cpolynomialAt x
+
+@[deprecated (since := "2025-03-22")]
+protected alias colynomialOn := ContinuousLinearMap.cpolynomialOn
 
 protected theorem analyticOnNhd (f : E →L[𝕜] F) (s : Set E) : AnalyticOnNhd 𝕜 f s :=
   fun x _ ↦ f.analyticAt x

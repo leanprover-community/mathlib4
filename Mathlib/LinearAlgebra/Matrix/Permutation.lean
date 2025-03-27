@@ -41,7 +41,7 @@ lemma transpose_permMatrix [Zero R] [One R] : (σ.permMatrix R).transpose = (σ�
   rw [← PEquiv.toMatrix_symm, ← Equiv.toPEquiv_symm, ← Equiv.Perm.inv_def]
 
 @[simp]
-lemma conjTranspose_permMatrix [Semiring R] [StarRing R] :
+lemma conjTranspose_permMatrix [NonAssocSemiring R] [StarRing R] :
     (σ.permMatrix R).conjTranspose = (σ⁻¹).permMatrix R := by
   simp only [conjTranspose, transpose_permMatrix, map]
   aesop
