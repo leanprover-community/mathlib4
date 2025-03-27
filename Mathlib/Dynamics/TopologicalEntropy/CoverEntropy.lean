@@ -258,12 +258,6 @@ lemma coverMincard_empty {T : X → X} {U : Set (X × X)} {n : ℕ} : coverMinca
 lemma coverMincard_eq_zero_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     coverMincard T F U n = 0 ↔ F = ∅ := by
   simp [coverMincard, ENat.iInf_eq_zero]
-  rw [ENat.iInf_eq_zero]
-  refine Iff.intro (fun h ↦ subset_empty_iff.1 ?_) (fun F_empt ↦ by rw [F_empt, coverMincard_empty])
-  simpa [h] using coverMincard_finite_iff T F U n
-  simp only [IsDynCoverOf, Finset.mem_coe, Nat.cast_eq_zero, Finset.card_eq_zero, exists_eq_right,
-    Finset.not_mem_empty, iUnion_of_empty, iUnion_empty] at this
-  exact this
 
 lemma one_le_coverMincard_iff (T : X → X) (F : Set X) (U : Set (X × X)) (n : ℕ) :
     1 ≤ coverMincard T F U n ↔ F.Nonempty := by
