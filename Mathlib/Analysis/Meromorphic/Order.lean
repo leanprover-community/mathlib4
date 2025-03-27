@@ -171,7 +171,7 @@ theorem order_inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) :
   ring
 
 /--
-The order of a sum at least the minimum of the orders of the summands.
+The order of a sum is at least the minimum of the orders of the summands.
 -/
 theorem order_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
     min hf₁.order hf₂.order ≤ (hf₁.add hf₂).order := by
