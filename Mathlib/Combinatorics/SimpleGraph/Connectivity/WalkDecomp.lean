@@ -38,8 +38,7 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
         · exact (hx rfl).elim
         · assumption)
 
-@[simp]
-theorem takeUntil_nil {u : V} {h} : takeUntil (nil : G.Walk u u) u h = nil := rfl
+@[simp] theorem takeUntil_nil {u : V} {h} : takeUntil (nil : G.Walk u u) u h = nil := rfl
 
 lemma takeUntil_cons {v' : V} {p : G.Walk v' v} (hwp : w ∈ p.support) (h : u ≠ w)
     (hadj : G.Adj u v') :
@@ -157,13 +156,6 @@ theorem count_edges_takeUntil_le_one {u v w : V} (p : G.Walk v w) (h : u ∈ p.s
           · cases p' <;> simp!
         · apply ih
 
-
-@[simp]
-theorem takeUntil_of_eq {u v x y} (p : G.Walk u v) (hx : x ∈ p.support) (hy : y ∈ p.support)
-    (h : y = x) : (p.takeUntil y hy).copy rfl h = p.takeUntil x hx := by
-  subst_vars
-  rfl
-
 @[simp]
 theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
@@ -175,12 +167,6 @@ theorem takeUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w'
 theorem dropUntil_copy {u v w v' w'} (p : G.Walk v w) (hv : v = v') (hw : w = w')
     (h : u ∈ (p.copy hv hw).support) :
     (p.copy hv hw).dropUntil u h = (p.dropUntil u (by subst_vars; exact h)).copy rfl hw := by
-  subst_vars
-  rfl
-
-@[simp]
-theorem dropUntil_of_eq {u v x y} (p : G.Walk u v) (hx : x ∈ p.support) (hy : y ∈ p.support)
-    (h : y = x) : (p.dropUntil y hy).copy h rfl  = p.dropUntil x hx := by
   subst_vars
   rfl
 
@@ -244,20 +230,24 @@ lemma getVert_takeUntil {u v : V} {n : ℕ} {p : G.Walk u v} (hw : w ∈ p.suppo
     rw [getVert_append, if_pos h]
   | inr h => simp [h]
 
-lemma snd_takeUntil (hsu : w ≠ u) (p : G.Walk u v) (h : w ∈ p.support) :
+lemma snd_takeUntil (p : G.Walk u v) (h : w ∈ p.support) (hn : w ≠ u):
     (p.takeUntil w h).snd = p.snd := by
   apply p.getVert_takeUntil h
   by_contra! hc
   simp only [Nat.lt_one_iff, ← nil_iff_length_eq, nil_takeUntil] at hc
-  exact hsu hc.symm
+  exact hn hc.symm
 
-lemma penultimate_dropUntil (hsu : w ≠ v) (p : G.Walk u v) (hw : w ∈ p.support) :
+@[simp]
+lemma length_takeUntil_add_dropUntil {p : G.Walk u v} (h : w ∈ p.support) :
+    (p.takeUntil w h).length + (p.dropUntil w h).length = p.length := by
+  rw [← length_append, take_spec]
+
+lemma penultimate_dropUntil (p : G.Walk u v) (hw : w ∈ p.support) (hn : w ≠ v) :
     (p.dropUntil w hw).penultimate = p.penultimate := by
-  simp_rw [penultimate, getVert_dropUntil ((p.dropUntil w hw).length - 1) hw]
+  rw [penultimate, getVert_dropUntil]
   congr
-  nth_rw 3 [← take_spec p hw]
-  rw [length_append, add_comm, Nat.add_sub_assoc]
-  exact not_nil_iff_lt_length.1 <| p.not_nil_dropUntil hw hsu
+  rw [← length_takeUntil_add_dropUntil hw, add_comm, Nat.add_sub_assoc]
+  exact not_nil_iff_lt_length.1 <| p.not_nil_dropUntil hw hn
 
 lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (huw : u ≠ w) :
     (p.takeUntil u h).length < p.length := by
@@ -265,32 +255,70 @@ lemma length_takeUntil_lt {u v w : V} {p : G.Walk v w} (h : u ∈ p.support) (hu
   exact fun hl ↦ huw (by simpa using (hl ▸ getVert_takeUntil h (by rfl) :
     (p.takeUntil u h).getVert (p.takeUntil u h).length = p.getVert p.length))
 
-lemma takeUntil_takeUntil {w x : V} (p : G.Walk u v) (hw : w ∈ p.support)
+variable {x : V}
+lemma takeUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
+    (p.append q).takeUntil x (subset_support_append_left _ _ hx) = p.takeUntil _ hx  := by
+  induction p with
+  | nil =>
+    simp_rw [support_nil, List.mem_cons, List.not_mem_nil, or_false] at hx
+    subst_vars
+    simp
+  | @cons u _ _ _ p ih =>
+    rw [support_cons] at hx
+    by_cases hxu : u = x
+    · subst_vars; simp
+    · have := List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx
+      simp_rw [takeUntil_cons this hxu, cons_append]
+      rw [takeUntil_cons (subset_support_append_left _ _ this) hxu]
+      simpa using ih _ this
+
+lemma takeUntil_append_of_mem_right (p : G.Walk u v) (q : G.Walk v w) (hxn : x ∉ p.support)
+    (hx : x ∈ q.support) :
+    (p.append q).takeUntil x (subset_support_append_right _ _ hx) =
+    p.append (q.takeUntil _ hx) := by
+  induction p with
+  | nil => simp
+  | @cons u _ _ _ p ih =>
+    simp_rw [cons_append]
+    rw [support_cons] at hxn
+    rw [takeUntil_cons (subset_support_append_right _ _ hx) (List.ne_of_not_mem_cons hxn).symm]
+    simpa using ih _ (List.not_mem_of_not_mem_cons hxn) hx
+
+lemma takeUntil_takeUntil (p : G.Walk u v) (hw : w ∈ p.support)
     (hx : x ∈ (p.takeUntil w hw).support) :
     (p.takeUntil w hw).takeUntil x hx = p.takeUntil x (p.support_takeUntil_subset hw hx) := by
-  induction p, w, hw using takeUntil.induct with
-  | case1 u v h =>
-    #adaptation_note
-    /-- Prior to `nightly-2025-02-24` this was just `aesop`. -/
-    simp at h
-    subst h
-    simp
-  | case2 _ _ q _ hadj hu' =>
-    simp only [takeUntil_start, support_nil, List.mem_singleton] at hx
-    subst hx
-    simp
-  | case3 a w' v' hadj q u' hu' hau' ih =>
-    rw [← Ne.eq_def] at hau'
-    simp only [support_cons, List.mem_cons, hau'.symm, false_or] at hu'
-    simp only [takeUntil_cons hu' hau' hadj, support_cons, List.mem_cons] at hx
-    by_cases hx' : x = a
-    · aesop
-    · replace hx : x ∈ (q.takeUntil u' hu').support := by simpa [hx'] using hx
-      push_neg at hx'
-      conv_lhs =>
-        enter [1]
-        rw [takeUntil_cons hu' hau' hadj]
-      rw [takeUntil_cons hx hx'.symm hadj, ih _, takeUntil_cons _ hx'.symm]
+  rw [← takeUntil_append_of_mem_left _ (p.dropUntil w hw) hx]
+  simp_rw [take_spec]
+
+lemma dropUntil_append_of_mem_left (p : G.Walk u v) (q : G.Walk v w) (hx : x ∈ p.support) :
+    (p.append q).dropUntil x (subset_support_append_left _ _ hx) = (p.dropUntil x hx).append q := by
+  induction p with
+  | nil =>
+    simp only [support_nil, List.mem_cons, List.not_mem_nil, or_false] at hx; subst_vars; simp
+  | @cons u _ _ _ p ih =>
+    rw [support_cons] at hx
+    simp_rw [cons_append, dropUntil]
+    by_cases hxu : u = x
+    · subst_vars; simp
+    · simp_rw [dif_neg hxu]
+      simpa using ih _ (List.mem_of_ne_of_mem (fun hf ↦ hxu hf.symm) hx)
+
+lemma dropUntil_append_of_mem_right  (p : G.Walk u v) (q : G.Walk v w) (hxn : x ∉ p.support)
+    (hx : x ∈ q.support) :
+    (p.append q).dropUntil x (subset_support_append_right _ _ hx) = q.dropUntil _ hx := by
+  induction p with
+  | nil => simp
+  | @cons u _ _ _ p ih =>
+    simp_rw [cons_append]
+    rw [support_cons] at hxn
+    rw [dropUntil, dif_neg (List.ne_of_not_mem_cons hxn).symm]
+    simpa using ih _ (List.not_mem_of_not_mem_cons hxn) hx
+
+lemma dropUntil_dropUntil (p : G.Walk u v) (hw : w ∈ p.support)
+    (hx : x ∈ (p.dropUntil w hw).support) (hxn : x ∉ (p.takeUntil w hw).support) :
+    (p.dropUntil w hw).dropUntil x hx = p.dropUntil x (p.support_dropUntil_subset hw hx) := by
+  rw [← dropUntil_append_of_mem_right _ _ hxn hx]
+  simp_rw [take_spec]
 
 lemma not_mem_support_takeUntil_takeUntil {p : G.Walk u v} {w x : V} (h : x ≠ w)
     (hw : w ∈ p.support) (hx : x ∈ (p.takeUntil w hw).support) :
@@ -343,11 +371,6 @@ theorem rotate_edges {u v : V} (c : G.Walk v v) (h : u ∈ c.support) :
   (rotate_darts c h).map _
 
 @[simp]
-lemma length_takeUntil_add_dropUntil {p : G.Walk u v} (h : w ∈ p.support) :
-    (p.takeUntil w h).length + (p.dropUntil w h).length = p.length := by
-  rw [← length_append, take_spec]
-
-@[simp]
 lemma length_rotate {v : V} {c : G.Walk u u} (h : v ∈ c.support) :
     (c.rotate h).length = c.length := by
   rw [rotate, length_append, add_comm, length_takeUntil_add_dropUntil]
@@ -373,7 +396,29 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
   · intro ⟨_, h⟩
     exact h.1 ▸ (getVert_mem_support _ _)
 
-lemma mem_support_rotate_iff [DecidableEq V] {u v x} {c : G.Walk u u} (h : v ∈ c.support) :
+variable {x : V} {p : G.Walk u v} {n : ℕ}
+
+section withDecEq
+
+variable [DecidableEq V]
+
+lemma takeUntil_of_take (hx : x ∈ (p.take n).support) :
+    (p.take n).takeUntil _ hx = (p.takeUntil x ((support_take_subset _ _) hx)) := by
+  rw [← takeUntil_append_of_mem_left _ (p.drop n) hx]
+  simp_rw [take_append_drop]
+
+lemma length_takeUntil_le_of_mem_take (hx : x ∈ (p.take n).support) :
+    (p.takeUntil x ((support_take_subset _ _) hx)).length ≤ n := by
+  have := length_takeUntil_le _ hx
+  rw [takeUntil_of_take hx] at this
+  exact this.trans (length_take_le _ _)
+
+lemma dropUntil_of_drop (hx : x ∈ (p.drop n).support) (hxn : x ∉ (p.take n).support) :
+    (p.drop n).dropUntil _ hx = (p.dropUntil x ((support_drop_subset _ _) hx)) := by
+  rw [← dropUntil_append_of_mem_right (p.take n) _ hxn hx]
+  simp_rw [take_append_drop]
+
+lemma mem_support_rotate_iff  {u v x} {c : G.Walk u u} (h : v ∈ c.support) :
     x ∈ (c.rotate h).support ↔ x ∈ c.support := by
   constructor <;> intro h' <;> rw [support_eq_cons] at h'
   · cases h' with
@@ -385,7 +430,73 @@ lemma mem_support_rotate_iff [DecidableEq V] {u v x} {c : G.Walk u u} (h : v ∈
       exact List.mem_append_left _ <| end_mem_support ..
     | tail _ hb => exact List.mem_of_mem_tail <| (support_rotate c h).mem_iff.2 hb
 
+end withDecEq
+
+lemma mem_support_take {m n : ℕ} (p : G.Walk u v) (h : m ≤ n) :
+    p.getVert m ∈ (p.take n).support := by
+  have := getVert_take p n m
+  cases h.lt_or_eq with
+  | inl h =>
+    rw [if_neg h.not_le] at this
+    rw [← this]
+    exact getVert_mem_support ..
+  | inr h =>
+    rw [if_pos h.symm.le] at this
+    simp_rw [h, ← this]
+    exact getVert_mem_support ..
+
+lemma mem_support_take_iff (p : G.Walk u v) (n : ℕ) :
+    x ∈ (p.take n).support ↔ ∃ m ≤ n, p.getVert m = x := by
+  classical
+  constructor <;> intro h
+  · exact ⟨_, length_takeUntil_le_of_mem_take h,
+      getVert_length_takeUntil_eq_self p (support_take_subset p n h)⟩
+  · obtain ⟨m, hm , hx⟩ := h
+    exact hx.symm ▸ mem_support_take  _ hm
+
+lemma mem_support_drop {m n : ℕ} (p : G.Walk u v) (hn : m ≤ n) :
+    p.getVert n ∈ (p.drop m).support := by
+  have : (p.drop m).getVert (n - m) = p.getVert n := by
+    rw [getVert_drop, Nat.add_sub_of_le hn]
+  exact this.symm ▸ getVert_mem_support ..
+
+lemma mem_support_drop_iff (p : G.Walk u v) (n : ℕ) :
+    x ∈ (p.drop n).support ↔ ∃ m, n ≤ m ∧ p.getVert m = x := by
+  classical
+  constructor <;> intro h
+  · rw [← getVert_length_takeUntil_eq_self _ h, getVert_drop]
+    exact ⟨_, Nat.le_add_right .., rfl⟩
+  · obtain ⟨m, hm , hx⟩ := h
+    exact hx.symm ▸ mem_support_drop  _ hm
+
+/-- Given a walk that ends in a set S, there is a first vertex of the walk in the set. -/
+lemma getVert_find_first {S : Set V} [DecidablePred (· ∈ S)] (w : G.Walk u v) (h : v ∈ S) :
+    ∃ n ≤ w.length, w.getVert n ∈ S ∧ ∀ m < n, w.getVert m ∉ S :=
+  have h := w.getVert_length.symm ▸ h
+  ⟨_, Nat.find_min' _ h, Nat.find_spec ⟨_, h⟩, fun _ h' ↦ Nat.find_min _ h'⟩
 
 
+/-- Given a walk that contains the nonempty set S, there is a walk containing the set that starts
+from a vertex in the set. -/
+lemma exists_getVert_first {S : Set V} (p : G.Walk u v) (hw : w ∈ S )
+    (h : ∀ x, x ∈ S → x ∈ p.support) :
+    ∃ n, p.getVert n ∈ S ∧ ∀ x, x ∈ S → x ∈ (p.drop n).support := by
+  classical
+  obtain ⟨n, hn1, hn2, hn3⟩ := getVert_find_first (p.takeUntil _ (h w hw)) hw
+  simp_rw [getVert_takeUntil (h w hw) hn1] at *
+  use n, hn2
+  conv at hn3 =>
+    enter [2]; intro h'
+    rw [getVert_takeUntil (h w hw) (h'.le.trans hn1)]
+  intro x hx
+  have := h x hx
+  rw [← take_append_drop p n, mem_support_append_iff] at this
+  cases this with
+  | inl h =>
+    obtain ⟨m, h, h1⟩ := (mem_support_take_iff p n).1 h
+    cases h.lt_or_eq with
+    | inl h => exact ((h1 ▸ hn3 _ h) hx).elim
+    | inr h => exact (h ▸ h1).symm ▸ (start_mem_support (p.drop n))
+  | inr h => exact h
 
 end SimpleGraph.Walk

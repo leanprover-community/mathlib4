@@ -1,5 +1,5 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
-import Mathlib.Combinatorics.SimpleGraph.Brooks.First
+import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Brooks.DegreeOn
 set_option linter.style.header false
 namespace SimpleGraph
