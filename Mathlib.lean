@@ -5289,7 +5289,9 @@ import Mathlib.SetTheory.Surreal.Basic
 import Mathlib.SetTheory.Surreal.Dyadic
 import Mathlib.SetTheory.Surreal.Multiplication
 import Mathlib.SetTheory.ZFC.Basic
+import Mathlib.SetTheory.ZFC.Class
 import Mathlib.SetTheory.ZFC.Ordinal
+import Mathlib.SetTheory.ZFC.PSet
 import Mathlib.SetTheory.ZFC.Rank
 import Mathlib.Std.Data.HashMap
 import Mathlib.Tactic
