@@ -4,7 +4,6 @@ import Mathlib.LinearAlgebra.RootSystem.Reduced
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.Field.Basic
-import LeanCopilot
 
 /-!
 # Theta maps of Lie algebras
