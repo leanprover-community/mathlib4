@@ -459,6 +459,13 @@ theorem invRev_invRev : invRev (invRev L₁) = L₁ := by
 theorem invRev_empty : invRev ([] : List (α × Bool)) = [] :=
   rfl
 
+@[to_additive (attr := simp)]
+theorem invRev_append : invRev (L₁ ++ L₂) = invRev L₂ ++ invRev L₁ := by simp [invRev]
+
+@[to_additive]
+theorem invRev_cons {a : (α × Bool)} : invRev (a :: L) = invRev L ++ invRev [a] := by
+  simp [invRev]
+
 @[to_additive]
 theorem invRev_involutive : Function.Involutive (@invRev α) := fun _ => invRev_invRev
 
