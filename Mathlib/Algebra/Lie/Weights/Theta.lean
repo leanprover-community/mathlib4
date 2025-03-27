@@ -456,29 +456,44 @@ theorem theta_pow_2 (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α) (hfα :
 theorem theta_act {x : L} {β : Weight K H L} (hnz : α.IsNonZero) (heα : eα ∈ rootSpace H α)
     (hfα : fα ∈ rootSpace H (- α)) (t : Kˣ) (ht : IsSl2Triple hα eα fα) (hx : x ∈ rootSpace H β) :
       (theta H hnz heα hfα t) x ∈ rootSpace H (β - β (IsKilling.coroot α) • α) := by
-  have key : ∀ (h : H), ⁅h, (theta H hnz heα hfα t) x⁆ = ((β - β (IsKilling.coroot α) • α : H → K) h) • ((theta H hnz heα hfα t) x) := by
-    sorry
+  have hef := IsKilling.lie_eq_killingForm_smul_of_mem_rootSpace_of_mem_rootSpace_neg heα hfα
+  lift hα to H using by simpa only [← ht.lie_e_f, hef] using H.smul_mem _ (Submodule.coe_mem _)
+  have key : ∀ (h : H), ⁅h, (theta H hnz heα hfα t) x⁆ =
+      ((β - β (IsKilling.coroot α) • α : H → K) h) • ((theta H hnz heα hfα t) x) := by
+    intro h
+    have hh := theta_pow_2 H hnz heα hfα t ht h
+    have : ⁅h, (theta H hnz heα hfα t) x⁆ = ⁅(theta H hnz heα hfα t) ((theta H hnz heα hfα t) h), (theta H hnz heα hfα t) x⁆ := by
+      rw [hh]
+      simp
+    rw [this]
+    have : ⁅(theta H hnz heα hfα t) ((theta H hnz heα hfα t) h), (theta H hnz heα hfα t) x⁆ =
+        (theta H hnz heα hfα t) ⁅((theta H hnz heα hfα t) h), x⁆ := by
+      exact Eq.symm (LieEquiv.map_lie (theta H hnz heα hfα t) ((theta H hnz heα hfα t) ↑h) x)
+    rw [this]
+    rw [theta_h H hnz heα hfα t ht h]
+    have := IsKilling.lie_eq_smul_of_mem_rootSpace hx (h - α h • hα)
+    have zzz : (theta H hnz heα hfα t) ⁅h - α h • hα, x⁆ = (theta H hnz heα hfα t) (β (h - α h • hα) • x) := by
+      rw [this]
+    erw [zzz]
+    have : (theta H hnz heα hfα t) (β (h - α h • hα) • x) = β (h - α h • hα) • ((theta H hnz heα hfα t) x) := by
+      apply LinearMap.map_smul
+    rw [this]
+    have cor := _root_.IsSl2Triple.h_eq_coroot hnz ht heα hfα
+    rw [SetLike.coe_eq_coe] at cor
+    rw [cor.symm]
+    simp
+    have : (β h - α h * β hα) = (β h - β hα * α h) := by
+      rw [mul_comm]
+    rw [this]
   simp at key
-  have := (mem_genWeightSpace (L := H) (R := K) L (β - β (IsKilling.coroot α) • α) ((theta H hnz heα hfα t) x)).2
+  have := (mem_genWeightSpace (L := H) (R := K) L (β - β (IsKilling.coroot α) • α)
+    ((theta H hnz heα hfα t) x)).2
   apply this
   intro h
   obtain ⟨aa, bb⟩ := h
   use 1
   simp
   have := key aa bb
-  rw [this.symm]
-  simp
-
-
-
-lemma lie_eq_smul_of_mem_rootSpace_inv {β : H → K} {x : L} (h₁ : ∀ (h : H), ⁅h, x⁆ = β h • x) :
-    x ∈ rootSpace H β := by
-  have := (mem_genWeightSpace (L := H) (R := K) L β x).2
-  apply this
-  intro h
-  use 1
-  simp
-  have := h₁ h
   rw [this.symm]
   simp
 
