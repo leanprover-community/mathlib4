@@ -58,6 +58,7 @@ def absOfFunc_c (f : C_c(X, ℂ)) : C_c(X, ℝ) := sorry
 
 -- TO DO: figure out using this coercial directly in the argument.
 def toZeroAtInftyContinuousMap : C_c(X, ℂ) → C₀(X, ℂ) := fun f ↦ (f : C₀(X, ℂ))
+def toZeroAtInftyContinuousMap' : C_c(X, ℝ) → C₀(X, ℝ) := fun f ↦ (f : C₀(X, ℝ))
 
 noncomputable def identity : C_c(X, ℝ≥0) → C_c(X, ℝ) := CompactlySupportedContinuousMap.toReal
 
@@ -78,12 +79,15 @@ theorem exists_pos_lin_func : ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C�
   let Λ' (f : C_c(X, ℝ≥0)) := sSup (norm '' (Φ '' U f))
 
   -- Then `Λ f ≥ 0`, `Λ` satisfies the two required inequalities,
-  -- `0 ≤ f_1 ≤ f_2` implies `Λ f_1 ≤ Λ f_2`, and `Λ (cf) = c Λ f` if `c` is a positive constant.
-  have : ∀ f, 0 ≤ Λ' f := by
+  have (f : C_c(X, ℝ≥0)) : 0 ≤ Λ' f := by
     -- because it is the sup of nonnegative quantities
     sorry
-  have (f : C_c(X, ℝ≥0)) : ‖Φ (toComplex (f.toReal))‖ ≤ Λ' (sorry) := by
+  have (f : C_c(X, ℝ≥0)) : ‖Φ (toComplex (f.toReal))‖ ≤ Λ' f := by
     sorry
+  have (f : C_c(X, ℝ≥0)) : Λ' f ≤ ‖toZeroAtInftyContinuousMap' f.toReal‖ := by
+    sorry
+
+  -- `0 ≤ f_1 ≤ f_2` implies `Λ f_1 ≤ Λ f_2`, and `Λ (cf) = c Λ f` if `c` is a positive constant.
 
   -- We have to show that
   -- (10) `Λ(f + g) = Λ f + Λ g` whenever `f, g ∈ C_c^+(X)`,
