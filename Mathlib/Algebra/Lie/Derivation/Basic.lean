@@ -419,8 +419,7 @@ lemma exp_apply (h : IsNilpotent D.toLinearMap) :
 
 lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
     exp D h l = IsNilpotent.exp D.toLinearMap l := by
-  have ttt := exp_apply D h
-  exact Eq.symm (DFunLike.congr (id (Eq.symm ttt)) rfl)
+  exact Eq.symm (DFunLike.congr (id (Eq.symm (exp_apply D h))) rfl)
 
 end ExpNilpotent
 
