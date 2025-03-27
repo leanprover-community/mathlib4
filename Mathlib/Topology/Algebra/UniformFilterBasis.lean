@@ -35,8 +35,7 @@ topological abelian group structure is compatible with its group structure. -/
 protected theorem isUniformAddGroup : @IsUniformAddGroup G B.uniformSpace _ :=
   @isUniformAddGroup_of_addCommGroup G _ B.topology B.isTopologicalAddGroup
 
-@[deprecated (since := "2025-03-27")] alias
-  AddGroupFilterBasis.uniformAddGroup := AddGroupFilterBasis.isUniformAddGroup
+@[deprecated (since := "2025-03-27")] alias AddGroupFilterBasis.uniformAddGroup := isUniformAddGroup
 
 theorem cauchy_iff {F : Filter G} :
     @Cauchy G B.uniformSpace F ↔
