@@ -49,22 +49,21 @@ open NNReal
 open ZeroAtInfty MeasureTheory CompactlySupported CompactlySupportedContinuousMap
 
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X]
-  (Φ : C₀(X, ℂ) →L[ℂ] ℂ)
+variable (Φ : C₀(X, ℂ) →L[ℂ] ℂ)
 
 -- TO DO: define `norm` as a `ContinuousMap` and use `norm ∘ f` in the following instead of the
 -- `absOfFunc X f` hack.
 def absOfFunc₀ (f : C₀(X, ℂ)) : C₀(X, ℝ) := sorry
 def absOfFunc_c (f : C_c(X, ℂ)) : C_c(X, ℝ) := sorry
 
--- TO DO: define in a smooth way, compactly supported functions vanish at infinity.
-namespace CompactlySupportedContinuousMap
-def toZeroAtInftyContinuousMap : C_c(X, ℂ) → C₀(X, ℂ) := sorry
-end CompactlySupportedContinuousMap
+-- TO DO: figure out using this coercial directly in the argument.
+def toZeroAtInftyContinuousMap : C_c(X, ℂ) → C₀(X, ℂ) := fun f ↦ (f : C₀(X, ℂ))
 
--- TO DO: define the identity between compatible pairs space of continuous functions
-def identity : C_c(X, ℝ≥0) → C_c(X, ℝ) := by sorry
-def identity' : C_c(X, ℝ) → C_c(X, ℂ) := by sorry
+noncomputable def identity : C_c(X, ℝ≥0) → C_c(X, ℝ) := CompactlySupportedContinuousMap.toReal
 
+-- TO DO: define the identity between the ℝ and ℂ spaces of continuous functions,
+-- similar to `CompactlySupportedContinuousMap.toReal`.
+def toComplex : C_c(X, ℝ) → C_c(X, ℂ) := by sorry
 
 
 /-- Let `Φ` be a bounded linear functional on `C₀(X, ℂ)`. There exists a positive linear functional
@@ -81,9 +80,9 @@ theorem exists_pos_lin_func : ∃ (Λ : C₀(X, ℝ) →L[ℝ] ℝ), ∀ (f : C�
   -- Then `Λ f ≥ 0`, `Λ` satisfies the two required inequalities,
   -- `0 ≤ f_1 ≤ f_2` implies `Λ f_1 ≤ Λ f_2`, and `Λ (cf) = c Λ f` if `c` is a positive constant.
   have : ∀ f, 0 ≤ Λ' f := by
-    -- Sup of nonnegative quantities because of the norm
+    -- because it is the sup of nonnegative quantities
     sorry
-  have (f : C_c(X, ℝ≥0)) : ‖Φ (identity' (identity f))‖ ≤ Λ' (sorry) := by
+  have (f : C_c(X, ℝ≥0)) : ‖Φ (toComplex (f.toReal))‖ ≤ Λ' (sorry) := by
     sorry
 
   -- We have to show that
