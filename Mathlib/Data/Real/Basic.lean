@@ -584,11 +584,6 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
 
 end Real
 
-/-- A function `f : R → ℝ≥0` is nonarchimedean if it satisfies the strong triangle inequality
-  `f (r + s) ≤ max (f r) (f s)` for all `r s : R`. -/
-def IsNonarchimedean {A : Type*} [Add A] (f : A → ℝ) : Prop :=
-  ∀ r s, f (r + s) ≤ max (f r) (f s)
-
 /-- A function `f : R → ℝ` is power-multiplicative if for all `r ∈ R` and all positive `n ∈ ℕ`,
 `f (r ^ n) = (f r) ^ n`. -/
 def IsPowMul {R : Type*} [Pow R ℕ] (f : R → ℝ) :=
