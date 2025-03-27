@@ -60,7 +60,7 @@ lemma order_eq_top_iff (hf : MeromorphicAt f x) :
 
 /-- The order of a meromorphic function `f` at `z₀` equals an integer `n` iff `f` can locally be
 written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
-lemma order_eq_int_iff (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
+lemma order_eq_int_iff {n : ℤ} (hf : MeromorphicAt f x) : hf.order = n ↔
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
@@ -77,7 +77,7 @@ lemma order_eq_int_iff (hf : MeromorphicAt f x) (n : ℤ) : hf.order = n ↔
     exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
   · obtain ⟨m, h⟩ := ENat.ne_top_iff_exists.mp h
     rw [← h, ENat.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
-    obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _ _).mp h.symm
+    obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _).mp h.symm
     replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
       rw [eventually_nhdsWithin_iff]
       filter_upwards [hg_eq] with z hg_eq hz
@@ -97,7 +97,7 @@ theorem order_congr (hf₁ : MeromorphicAt f₁ x)
     rw [hf₁.order_eq_top_iff] at h₁f₁
     exact EventuallyEq.rw h₁f₁ (fun x => Eq (f₂ x)) hf₁₂.symm
   · obtain ⟨n, hn : hf₁.order = n⟩ := Option.ne_none_iff_exists'.mp h₁f₁
-    obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf₁.order_eq_int_iff n).1 hn
+    obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf₁.order_eq_int_iff.1 hn
     rw [hn, eq_comm, (hf₁.congr hf₁₂).order_eq_int_iff]
     use g, h₁g, h₂g
     exact EventuallyEq.rw h₃g (fun x => Eq (f₂ x)) hf₁₂.symm
@@ -110,7 +110,7 @@ lemma _root_.AnalyticAt.meromorphicAt_order (hf : AnalyticAt 𝕜 f x) :
     exact (hf.order_eq_top_iff.mp ho).filter_mono nhdsWithin_le_nhds
   · obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp ho
     simp_rw [← hn, ENat.map_coe, order_eq_int_iff, zpow_natCast]
-    rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
+    rcases hf.order_eq_nat_iff.mp hn.symm with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
 
 /--
@@ -141,8 +141,8 @@ theorem order_smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} (hf : MeromorphicAt f x)
       filter_upwards [h₂g] with z hz using by simp [hz]
     | coe n => -- Non-trivial case: both functions do not vanish around z₀
       rw [← WithTop.coe_add, order_eq_int_iff]
-      obtain ⟨F, h₁F, h₂F, h₃F⟩ := (hf.order_eq_int_iff _).1 h₂f
-      obtain ⟨G, h₁G, h₂G, h₃G⟩ := (hg.order_eq_int_iff _).1 h₂g
+      obtain ⟨F, h₁F, h₂F, h₃F⟩ := hf.order_eq_int_iff.1 h₂f
+      obtain ⟨G, h₁G, h₂G, h₃G⟩ := hg.order_eq_int_iff.1 h₂g
       use F • G, h₁F.smul h₁G, by simp [h₂F, h₂G]
       filter_upwards [self_mem_nhdsWithin, h₃F, h₃G] with a ha hfa hga
       simp [hfa, hga, smul_comm (F a), zpow_add₀ (sub_ne_zero.mpr ha), mul_smul]
@@ -161,8 +161,8 @@ theorem order_inv {f : 𝕜 → 𝕜} (hf : MeromorphicAt f x) :
     filter_upwards [h₂f]
     simp
   lift hf.order to ℤ using h₂f with a ha
-  apply (hf.inv.order_eq_int_iff (-a)).2
-  obtain ⟨g, h₁g, h₂g, h₃g⟩ := (hf.order_eq_int_iff a).1 ha.symm
+  apply hf.inv.order_eq_int_iff.2
+  obtain ⟨g, h₁g, h₂g, h₃g⟩ := hf.order_eq_int_iff.1 ha.symm
   use g⁻¹, h₁g.inv h₂g, inv_eq_zero.not.2 h₂g
   rw [eventually_nhdsWithin_iff] at *
   filter_upwards [h₃g]
@@ -188,14 +188,14 @@ theorem order_add (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) 
   -- General case
   lift hf₁.order to ℤ using h₂f₁ with n₁ hn₁
   lift hf₂.order to ℤ using h₂f₂ with n₂ hn₂
-  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (hf₁.order_eq_int_iff n₁).1 hn₁.symm
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (hf₂.order_eq_int_iff n₂).1 hn₂.symm
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf₁.order_eq_int_iff.1 hn₁.symm
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hf₂.order_eq_int_iff.1 hn₂.symm
   let n := min n₁ n₂
   let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ +  (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
   have h₁g : AnalyticAt 𝕜 g x := by
     apply AnalyticAt.add
-    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (Int.min_le_left n₁ n₂))).smul h₁g₁
-    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (Int.min_le_right n₁ n₂))).smul h₁g₂
+    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_left n₁ n₂))).smul h₁g₁
+    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (min_le_right n₁ n₂))).smul h₁g₂
   have : f₁ + f₂ =ᶠ[𝓝[≠] x] ((· - x) ^ n) • g := by
     filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
     simp_all [g, ← smul_assoc, ← zpow_add', sub_ne_zero]
@@ -221,17 +221,17 @@ lemma order_add_of_order_lt_order (hf₁ : MeromorphicAt f₁ x) (hf₂ : Meromo
   -- General case
   lift hf₂.order to ℤ using h₁f₂ with n₂ hn₂
   lift hf₁.order to ℤ using h.ne_top with n₁ hn₁
-  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (hf₁.order_eq_int_iff n₁).1 hn₁.symm
-  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (hf₂.order_eq_int_iff n₂).1 hn₂.symm
-  rw [(hf₁.add hf₂).order_eq_int_iff n₁]
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := hf₁.order_eq_int_iff.1 hn₁.symm
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := hf₂.order_eq_int_iff.1 hn₂.symm
+  rw [(hf₁.add hf₂).order_eq_int_iff]
   use g₁ + (· - x) ^ (n₂ - n₁) • g₂
   constructor
   · apply h₁g₁.add (AnalyticAt.smul _ h₁g₂)
     apply AnalyticAt.zpow_nonneg (by fun_prop)
-      (sub_nonneg.2 (Int.le_of_lt (WithTop.coe_lt_coe.1 h)))
+      (sub_nonneg.2 (le_of_lt (WithTop.coe_lt_coe.1 h)))
   constructor
   · simpa [zero_zpow _ <| sub_ne_zero.mpr (WithTop.coe_lt_coe.1 h).ne']
-  · filter_upwards [h₃g₁, h₃g₂, (self_mem_nhdsWithin : {x}ᶜ ∈ 𝓝[≠] x)]
+  · filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
     simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
 
 /--
