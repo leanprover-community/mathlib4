@@ -361,7 +361,8 @@ instance continuousSMul [RingHomSurjective σ] [RingHomIsometric σ] [Topologica
 instance uniformSpace [UniformSpace F] [IsUniformAddGroup F] : UniformSpace (E →SL[σ] F) :=
   UniformConvergenceCLM.instUniformSpace σ F { S | IsVonNBounded 𝕜₁ S }
 
-instance isUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] : IsUniformAddGroup (E →SL[σ] F) :=
+instance isUniformAddGroup [UniformSpace F] [IsUniformAddGroup F] :
+    IsUniformAddGroup (E →SL[σ] F) :=
   UniformConvergenceCLM.instIsUniformAddGroup σ F _
 
 instance instContinuousEvalConst [TopologicalSpace F] [IsTopologicalAddGroup F]
