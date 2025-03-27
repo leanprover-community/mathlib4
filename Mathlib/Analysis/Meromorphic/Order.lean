@@ -112,6 +112,14 @@ lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : An
     rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
 
+/--
+When seen as meromorphic functions, analytic functions have nonnegative order.
+-/
+theorem _root_.AnalyticAt.meromorphicAt_order_nonneg {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
+    0 ≤ hf.meromorphicAt.order := by
+  rw [hf.meromorphicAt_order, (by rfl : (0 : WithTop ℤ) = WithTop.map Nat.cast (0 : ℕ∞))]
+  simp
+
 /-!
 ## Order at a Point: Behaviour under Ring Operations
 
@@ -164,6 +172,90 @@ theorem order_inv {f : 𝕜 → 𝕜} {z₀ : 𝕜} (hf : MeromorphicAt f z₀) 
   intro _ h₁a h₂a
   simp only [Pi.inv_apply, h₁a h₂a, smul_eq_mul, mul_inv_rev, zpow_neg]
   ring
+
+/--
+The order of a sum at least the minimum of the orders of the summands.
+-/
+theorem order_add {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x) (hf₂ : MeromorphicAt f₂ x) :
+    min hf₁.order hf₂.order ≤ (hf₁.add hf₂).order := by
+  -- Handle the trivial cases where one of the orders equals ⊤
+  by_cases h₂f₁: hf₁.order = ⊤
+  · simp only [h₂f₁, le_top, inf_of_le_right]
+    rw [(hf₁.add hf₂).order_congr]
+    filter_upwards [hf₁.order_eq_top_iff.1 h₂f₁]
+    simp
+  by_cases h₂f₂: hf₂.order = ⊤
+  · simp only [h₂f₂, le_top, inf_of_le_left]
+    rw [(hf₁.add hf₂).order_congr]
+    filter_upwards [hf₂.order_eq_top_iff.1 h₂f₂]
+    simp
+  -- General case
+  lift hf₁.order to ℤ using h₂f₁ with n₁ hn₁
+  lift hf₂.order to ℤ using h₂f₂ with n₂ hn₂
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (hf₁.order_eq_int_iff n₁).1 hn₁.symm
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (hf₂.order_eq_int_iff n₂).1 hn₂.symm
+  let n := min n₁ n₂
+  let g := (fun z ↦ (z - x) ^ (n₁ - n)) • g₁ +  (fun z ↦ (z - x) ^ (n₂ - n)) • g₂
+  have h₁g : AnalyticAt 𝕜 g x := by
+    apply AnalyticAt.add
+    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (Int.min_le_left n₁ n₂))).smul h₁g₁
+    apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (Int.min_le_right n₁ n₂))).smul h₁g₂
+  have : f₁ + f₂ =ᶠ[𝓝[≠] x] ((· - x) ^ n) • g := by
+    filter_upwards [h₃g₁, h₃g₂, (self_mem_nhdsWithin : {x}ᶜ ∈ 𝓝[≠] x)]
+    unfold g
+    simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
+  have t₀ : MeromorphicAt ((·  - x) ^ n) x := by fun_prop
+  have t₁ : t₀.order = n := by
+    rw [t₀.order_eq_int_iff]
+    use 1, analyticAt_const
+    simp
+  rw [(hf₁.add hf₂).order_congr this, t₀.order_smul h₁g.meromorphicAt, t₁]
+  exact le_add_of_nonneg_right h₁g.meromorphicAt_order_nonneg
+
+/--
+Helper lemma for MeromorphicAt.order_add_of_unequal_order.
+-/
+lemma order_add_of_order_lt_order {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
+    (hf₂ : MeromorphicAt f₂ x) (h : hf₁.order < hf₂.order) :
+    (hf₁.add hf₂).order = hf₁.order := by
+  -- Trivial case: f₂ vanishes identically around z₀
+  by_cases h₁f₂ : hf₂.order = ⊤
+  · rw [(hf₁.add hf₂).order_congr]
+    filter_upwards [hf₂.order_eq_top_iff.1 h₁f₂]
+    simp
+  -- General case
+  lift hf₂.order to ℤ using h₁f₂ with n₂ hn₂
+  lift hf₁.order to ℤ using h.ne_top with n₁ hn₁
+  obtain ⟨g₁, h₁g₁, h₂g₁, h₃g₁⟩ := (hf₁.order_eq_int_iff n₁).1 hn₁.symm
+  obtain ⟨g₂, h₁g₂, h₂g₂, h₃g₂⟩ := (hf₂.order_eq_int_iff n₂).1 hn₂.symm
+  rw [(hf₁.add hf₂).order_eq_int_iff n₁]
+  use g₁ + (· - x) ^ (n₂ - n₁) • g₂
+  constructor
+  · apply h₁g₁.add (AnalyticAt.smul _ h₁g₂)
+    apply AnalyticAt.zpow_nonneg (by fun_prop)
+      (sub_nonneg.2 (Int.le_of_lt (WithTop.coe_lt_coe.1 h)))
+  constructor
+  · have : (0 : 𝕜) ^ (n₂ - n₁) = (0 : 𝕜) := by
+      rw [zpow_eq_zero_iff]
+      rw [ne_eq, sub_eq_zero, eq_comm, ← ne_eq]
+      exact ne_of_lt (WithTop.coe_lt_coe.1 h)
+    simpa [this]
+  · filter_upwards [h₃g₁, h₃g₂, (self_mem_nhdsWithin : {x}ᶜ ∈ 𝓝[≠] x)]
+    simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
+
+/--
+If two meromorphic functions have unequal orders, then the order of their sum is
+exactly the minimum of the orders of the summands.
+-/
+theorem order_add_of_unequal_order {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
+    (hf₂ : MeromorphicAt f₂ x) (h : hf₁.order ≠ hf₂.order) :
+    (hf₁.add hf₂).order = min hf₁.order hf₂.order := by
+  by_cases h₁ : hf₁.order < hf₂.order
+  · rw [min_eq_left (le_of_lt h₁)]
+    exact hf₁.order_add_of_order_lt_order hf₂ h₁
+  · rw [min_eq_right (le_of_not_lt h₁)]
+    simp_rw [AddCommMagma.add_comm f₁ f₂]
+    exact hf₂.order_add_of_order_lt_order hf₁ (lt_of_le_of_ne (le_of_not_lt h₁) h.symm)
 
 end MeromorphicAt
 
