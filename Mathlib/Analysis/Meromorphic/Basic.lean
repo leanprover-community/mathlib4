@@ -143,7 +143,7 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
 
 /--
-If two functions agree in a punctured neighborhood, then one is meromorphic iff so is the other.
+If two functions agree on a punctured neighborhood, then one is meromorphic iff the other is so.
 -/
 lemma meromorphicAt_congr {f g : 𝕜 → E} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x] g) :
     MeromorphicAt f x ↔ MeromorphicAt g x :=

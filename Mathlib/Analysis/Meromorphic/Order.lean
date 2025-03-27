@@ -117,8 +117,7 @@ When seen as meromorphic functions, analytic functions have nonnegative order.
 -/
 theorem _root_.AnalyticAt.meromorphicAt_order_nonneg {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     0 ≤ hf.meromorphicAt.order := by
-  rw [hf.meromorphicAt_order, (by rfl : (0 : WithTop ℤ) = WithTop.map Nat.cast (0 : ℕ∞))]
-  simp
+  simp [hf.meromorphicAt_order, (by rfl : (0 : WithTop ℤ) = (0 : ℕ∞).map _)]
 
 /-!
 ## Order at a Point: Behaviour under Ring Operations
@@ -180,8 +179,7 @@ theorem order_add {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f�
     min hf₁.order hf₂.order ≤ (hf₁.add hf₂).order := by
   -- Handle the trivial cases where one of the orders equals ⊤
   by_cases h₂f₁: hf₁.order = ⊤
-  · simp only [h₂f₁, le_top, inf_of_le_right]
-    rw [(hf₁.add hf₂).order_congr]
+  · rw [h₂f₁, min_top_left, (hf₁.add hf₂).order_congr]
     filter_upwards [hf₁.order_eq_top_iff.1 h₂f₁]
     simp
   by_cases h₂f₂: hf₂.order = ⊤
@@ -201,9 +199,8 @@ theorem order_add {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f�
     apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (Int.min_le_left n₁ n₂))).smul h₁g₁
     apply (AnalyticAt.zpow_nonneg (by fun_prop) (sub_nonneg.2 (Int.min_le_right n₁ n₂))).smul h₁g₂
   have : f₁ + f₂ =ᶠ[𝓝[≠] x] ((· - x) ^ n) • g := by
-    filter_upwards [h₃g₁, h₃g₂, (self_mem_nhdsWithin : {x}ᶜ ∈ 𝓝[≠] x)]
-    unfold g
-    simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
+    filter_upwards [h₃g₁, h₃g₂, self_mem_nhdsWithin]
+    simp_all [g, ← smul_assoc, ← zpow_add', sub_ne_zero]
   have t₀ : MeromorphicAt ((·  - x) ^ n) x := by fun_prop
   have t₁ : t₀.order = n := by
     rw [t₀.order_eq_int_iff]
@@ -235,11 +232,7 @@ lemma order_add_of_order_lt_order {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : M
     apply AnalyticAt.zpow_nonneg (by fun_prop)
       (sub_nonneg.2 (Int.le_of_lt (WithTop.coe_lt_coe.1 h)))
   constructor
-  · have : (0 : 𝕜) ^ (n₂ - n₁) = (0 : 𝕜) := by
-      rw [zpow_eq_zero_iff]
-      rw [ne_eq, sub_eq_zero, eq_comm, ← ne_eq]
-      exact ne_of_lt (WithTop.coe_lt_coe.1 h)
-    simpa [this]
+  · simpa [zero_zpow _ <| sub_ne_zero.mpr (WithTop.coe_lt_coe.1 h).ne']
   · filter_upwards [h₃g₁, h₃g₂, (self_mem_nhdsWithin : {x}ᶜ ∈ 𝓝[≠] x)]
     simp_all [smul_add, ← smul_assoc, ← zpow_add', sub_ne_zero]
 
@@ -250,12 +243,9 @@ exactly the minimum of the orders of the summands.
 theorem order_add_of_unequal_order {f₁ f₂ : 𝕜 → E} {x : 𝕜} (hf₁ : MeromorphicAt f₁ x)
     (hf₂ : MeromorphicAt f₂ x) (h : hf₁.order ≠ hf₂.order) :
     (hf₁.add hf₂).order = min hf₁.order hf₂.order := by
-  by_cases h₁ : hf₁.order < hf₂.order
-  · rw [min_eq_left (le_of_lt h₁)]
-    exact hf₁.order_add_of_order_lt_order hf₂ h₁
-  · rw [min_eq_right (le_of_not_lt h₁)]
-    simp_rw [AddCommMagma.add_comm f₁ f₂]
-    exact hf₂.order_add_of_order_lt_order hf₁ (lt_of_le_of_ne (le_of_not_lt h₁) h.symm)
+  rcases lt_or_lt_iff_ne.mpr h with h | h
+  · simpa [h.le] using hf₁.order_add_of_order_lt_order hf₂ h
+  · simpa [h.le, add_comm] using hf₂.order_add_of_order_lt_order hf₁ h
 
 end MeromorphicAt
 
