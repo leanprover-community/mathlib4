@@ -14,9 +14,9 @@ If the 'cardinality' of `s : Set α` is taken to mean the `ℕ∞`-valued term `
 then all bases of any `M : Matroid α` have the same cardinality,
 and for each `X : Set α` with `X ⊆ M.E`, all `M`-bases for `X` have the same cardinality.
 The 'rank' of a matroid is the cardinality of all its bases,
-and the 'rank' of a set `X` in a matroid `M` is the size of each `M`-basis of `X`.
-This file defines a term `Matroid.eRank M : ℕ∞` and a function `Matroid.eRk M : Set α → ℕ∞`
-to encode these concepts.
+and the 'rank' of a set `X` in a matroid `M` is the cardinality of each `M`-basis of `X`.
+This file defines these two concepts as a term `Matroid.eRank M : ℕ∞`
+and a function `Matroid.eRk M : Set α → ℕ∞` respectively.
 
 The rank function `Matroid.eRk` satisfies three properties, often known as (R1), (R2), (R3):
 * `M.eRk X ≤ Set.encard X`,
