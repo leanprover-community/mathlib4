@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Topology.Algebra.Group.Defs
 import Mathlib.Topology.Order.LeftRightNhds
