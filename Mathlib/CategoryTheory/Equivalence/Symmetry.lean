@@ -35,27 +35,23 @@ variable (C : Type*) [Category C] (D : Type*) [Category D]
 @[simps]
 def symmEquivFunctor : (C ≌ D) ⥤ (D ≌ C)ᵒᵖ where
   obj e := Opposite.op e.symm
-  map {e f} α := (Hom.mk <| conjugateEquiv f.toAdjunction e.toAdjunction <| Hom.asNatTrans α).op
+  map {e f} α := (mkHom <| conjugateEquiv f.toAdjunction e.toAdjunction <| asNatTrans α).op
   map_comp {e f g} α β := by
-    simp only [Equiv.toFun_as_coe, Hom.comp_asNatTrans, ← op_comp]
+    simp only [Equiv.toFun_as_coe, comp_asNatTrans, ← op_comp]
     congr 1
-    apply Hom.ext
-    simp
+    aesop_cat
 
 /-- The inverse functor of the equivalence `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
 @[simps!]
 def symmEquivInverse : (D ≌ C)ᵒᵖ ⥤ (C ≌ D) :=
   Functor.leftOp
     { obj e := Opposite.op e.symm
-      map {e f} α := Quiver.Hom.op <| Hom.mk <|
-        conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| Hom.asNatTrans α
+      map {e f} α := Quiver.Hom.op <| mkHom <|
+        conjugateEquiv e.symm.toAdjunction f.symm.toAdjunction |>.invFun <| asNatTrans α
       map_comp {e f g} α β := by
-        simp only [Equiv.toFun_as_coe, Hom.asNatTrans, ← op_comp]
+        simp only [Equiv.toFun_as_coe, ← op_comp]
         congr 1
-        apply Hom.ext
-        simp only [symm_functor, symm_inverse, Equiv.invFun_as_coe, Hom.asNatTrans_mk,
-          Hom.comp_asNatTrans, conjugateEquiv_symm_comp, EmbeddingLike.apply_eq_iff_eq]
-        rfl }
+        aesop_cat }
 
 /-- Taking the symmetric of an equivalence induces an equivalence of categories
 `(C ≌ D) ≌ (D ≌ C)ᵒᵖ`. -/
@@ -95,9 +91,8 @@ an isomorphism `e ≌ f` via `inverseFunctor` with the way we get obtain one one
 `Iso.isoInverseOfIsoFunctor`. -/
 lemma inverseFunctorM_mapIso_symm_eq_isoInverseOfIsoFunctor {e f: C ≌ D} (α : e ≅ f) :
     Iso.unop ((inverseFunctor C D).mapIso α.symm) =
-    Iso.isoInverseOfIsoFunctor (Iso.asNatIso α) := by
-  ext x
-  simp
+    Iso.isoInverseOfIsoFunctor ((functorFunctor _ _).mapIso α) := by
+  aesop_cat
 
 /-- An "unopped" version of the equivalence `inverseFunctorObj'. -/
 @[simps!]
@@ -111,8 +106,8 @@ variable (C D) in
 def congrLeftFunctor (E : Type*) [Category E] : (C ≌ D) ⥤ ((C ⥤ E) ≌ (D ⥤ E))ᵒᵖ :=
   Functor.rightOp
     { obj f := f.unop.congrLeft
-      map {e f} α := Hom.mk <| (whiskeringLeft _ _ _).map <|
-        conjugateEquiv e.unop.toAdjunction f.unop.toAdjunction <| Hom.asNatTrans <|
+      map {e f} α := mkHom <| (whiskeringLeft _ _ _).map <|
+        conjugateEquiv e.unop.toAdjunction f.unop.toAdjunction <| asNatTrans <|
           Quiver.Hom.unop α
       map_comp _ _ := by
         ext
