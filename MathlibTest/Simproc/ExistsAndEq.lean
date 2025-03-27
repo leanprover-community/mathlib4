@@ -1,4 +1,6 @@
 import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Simproc.ExistsAndEqNested
+import Mathlib.Algebra.Group.Even
 
 universe u
 variable (α : Type u) (p q : α → Prop)
@@ -24,3 +26,20 @@ example (a : α) (hp : p a) (hq : q a) : (∃ b : α, p b ∧ (∃ c : α, b = a
   simp only [existsAndEq]
   guard_target = p a ∧ True ∧ ∃ x, q x
   exact ⟨hp, trivial, a, hq⟩
+
+example {α β : Type} (f : β → α) {p q : β → Prop} :
+    (∃ y b, p b ∧ f b = y ∧ q b) ↔ ∃ b, p b ∧ q b := by
+  simp only [existsAndEqNested, true_and]
+
+example {α β : Type} (f : β → α) {p q : β → Prop} :
+    (∃ x b, p b ∧ (∃ c, f c = x) ∧ (∃ d, q d ∧ f d = x) ∧ q b) =
+    ∃ b c, p b ∧ f c = f c ∧ (∃ d, q d ∧ f d = f c) ∧ q b := by
+  simp only [existsAndEqNested]
+
+example {α β : Type} (f : β → α) {p : α → Prop} :
+    (∃ a, p a ∧ ∃ b, a = f b) ↔ ∃ b, p (f b) := by
+  simp only [existsAndEqNested, and_true]
+
+example : ∃ n : ℕ, Even n := by
+  unfold Even
+  simp
