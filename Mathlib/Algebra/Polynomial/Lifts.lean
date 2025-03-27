@@ -228,4 +228,25 @@ theorem smul_mem_lifts {p : S[X]} (r : R) (hp : p ∈ lifts (algebraMap R S)) :
 
 end Algebra
 
+section IsSimpleRing
+
+variable {R S : Type*} [CommRing R] [IsSimpleRing R] [CommRing S] [Nontrivial S] [Algebra R S]
+
+theorem monic_of_eq_finprod (p : R[X]) {n : ℕ} (b : Fin n → S)
+    (hp : mapAlg R S p = finprod fun k : Fin n ↦ X - C (b k)) : p.Monic := by
+  have hprod : (finprod fun k : Fin n ↦ X - C (b k)).Monic := by
+    rw [finprod_eq_prod_of_fintype]
+    exact monic_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C (b m)
+  rw [← hp, mapAlg_eq_map] at hprod
+  exact monic_of_injective (algebraMap R S).injective hprod
+
+theorem monic_of_eq_multiset_prod (p : R[X]) (s : Multiset S)
+    (hp : mapAlg R S p = (Multiset.map (fun a : S ↦ X - C a) s).prod) : p.Monic := by
+  have hprod : (Multiset.map (fun a : S ↦ X - C a) s).prod.Monic :=
+    monic_multiset_prod_of_monic _ _ fun m _ ↦ monic_X_sub_C m
+  rw [← hp, mapAlg_eq_map] at hprod
+  exact monic_of_injective (algebraMap R S).injective hprod
+
+end IsSimpleRing
+
 end Polynomial
