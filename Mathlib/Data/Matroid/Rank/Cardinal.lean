@@ -31,7 +31,7 @@ both for itself and all its minors.
 
 # Notes
 
-It is not the case that all matroids are `InvariantCardinalRank`,
+It is not (provably) the case that all matroids are `InvariantCardinalRank`,
 since the equicardinality of bases in general matroids is independent of ZFC
 (see the module docstring of `Mathlib.Data.Matroid.Basic`).
 Lemmas like `Matroid.Base.cardinalMk_diff_comm` become true for all matroids
