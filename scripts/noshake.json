@@ -322,7 +322,9 @@
    "Mathlib.Analysis.Analytic.Basic",
    "Mathlib.Tactic.Bound.Init"],
   "Mathlib.Tactic.Basic":
-  ["Mathlib.Tactic.Linter.OldObtain", "Mathlib.Tactic.Simproc.ExistsAndEq"],
+  ["Mathlib.Tactic.Linter.OldObtain",
+   "Mathlib.Tactic.Simproc.ExistsAndEq",
+   "Mathlib.Tactic.Simproc.ExistsAndEqNested"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
   "Mathlib.Tactic.Algebraize": ["Mathlib.Algebra.Algebra.Tower"],
