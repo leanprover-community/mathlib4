@@ -4,10 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amir Livne Bar-on, Bernhard Reinke
 -/
 import Mathlib.Data.List.Chain
-import Mathlib.Data.List.Lemmas
 import Mathlib.GroupTheory.FreeGroup.Reduce
-import Mathlib.GroupTheory.OrderOfElement
-import Mathlib.Tactic.Linarith
 
 /-!
 This file defines some extra lemmas for free groups, in particular about (cyclically) reduced words.
@@ -29,7 +26,7 @@ variable {L L₁ L₂ : List (α × Bool)}
 namespace Red
 
 /-- Predicate asserting that the word `L` admits no reduction steps, i.e., no two neighboring
-  elements of the word cancel. -/
+elements of the word cancel. -/
 @[to_additive "Predicate asserting the word `L` admits no reduction steps, i.e., no two neighboring
 elements of the word cancel."]
 def reduced (L : List (α × Bool)) : Prop := List.Chain' (fun a b => ¬(a.1 = b.1 ∧ (!a.2) = b.2)) L
