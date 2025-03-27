@@ -187,7 +187,7 @@ scoped syntax:max (name := mkNotation)
   "⦋" term ("," term)? "⦌" noWs subscriptTerm : term
 scoped macro_rules
   | `(⦋$m:term⦌$n:subscript) =>
-    `((⟨SimplexCategory.mk $m, by first | get_elem_tactic |
+    `((⟨SimplexCategory.mk $m, by first | trunc |
       fail "Failed to prove truncation property. Try writing `⦋m, by ...⦌ₙ`."⟩ :
       SimplexCategory.Truncated $n))
   | `(⦋$m:term, $p:term⦌$n:subscript) =>

@@ -26,16 +26,16 @@ open CategoryTheory Opposite Simplicial SimplexCategory
 namespace SSet
 namespace Truncated
 
-open SimplexCategory.Truncated Hom
+open SimplexCategory.Truncated Truncated.Hom SimplicialObject.Truncated
 
 /-- A path of length `n` in a 1-truncated simplicial set `X` is a directed path
 of `n` edges. -/
 @[ext]
 structure Path₁ (X : SSet.Truncated.{u} 1) (n : ℕ) where
   /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
-  vertex : Fin (n + 1) → X.obj (op ⟨.mk 0, by decide⟩)
+  vertex : Fin (n + 1) → X _⦋0⦌₁
   /-- A path includes the data of `n` 1-simplices in `X`. -/
-  arrow : Fin n → X.obj (op ⟨.mk 1, by decide⟩)
+  arrow : Fin n → X _⦋1⦌₁
   /-- The source of a 1-simplex in a path is identified with the source vertex. -/
   arrow_src (i : Fin n) : X.map (tr (δ 1)).op (arrow i) = vertex i.castSucc
   /-- The target of a 1-simplex in a path is identified with the target vertex. -/
@@ -51,11 +51,11 @@ namespace Path
 variable {n : ℕ} {X : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
 /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
-abbrev vertex (f : Path X m) (i : Fin (m + 1)) : X.obj (op ⟨.mk 0, by simp⟩) :=
+abbrev vertex (f : Path X m) (i : Fin (m + 1)) : X _⦋0⦌ₙ₊₁ :=
   Path₁.vertex f i
 
 /-- A path includes the data of `n` 1-simplices in `X`. -/
-abbrev arrow (f : Path X m) (i : Fin m) : X.obj (op ⟨.mk 1, by simp⟩) :=
+abbrev arrow (f : Path X m) (i : Fin m) : X _⦋1⦌ₙ₊₁ :=
   Path₁.arrow f i
 
 /-- The source of a 1-simplex in a path is identified with the source vertex. -/
@@ -95,8 +95,8 @@ variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
 
 /-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
 def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
-  vertex i := σ.app (op ⟨.mk 0, by trunc⟩) (f.vertex i)
-  arrow i := σ.app (op ⟨.mk 1, by trunc⟩) (f.arrow i)
+  vertex i := σ.app (op ⦋0⦌ₙ₊₁) (f.vertex i)
+  arrow i := σ.app (op ⦋1⦌ₙ₊₁) (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
     exact congr (σ.naturality (tr (δ 1)).op) rfl |>.symm
@@ -107,13 +107,13 @@ def map (f : Path X m) (σ : X ⟶ Y) : Path Y m where
 /- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]
 lemma map_vertex (f : Path X m) (σ : X ⟶ Y) (i : Fin (m + 1)) :
-    (f.map σ).vertex i = σ.app (op ⟨.mk 0, by trunc⟩) (f.vertex i) :=
+    (f.map σ).vertex i = σ.app (op ⦋0⦌ₙ₊₁) (f.vertex i) :=
   rfl
 
 /- We write this lemma manually to ensure it refers to `Path.arrow`. -/
 @[simp]
 lemma map_arrow (f : Path X m) (σ : X ⟶ Y) (i : Fin m) :
-    (f.map σ).arrow i = σ.app (op ⟨.mk 1, by trunc⟩) (f.arrow i) :=
+    (f.map σ).arrow i = σ.app (op ⦋1⦌ₙ₊₁) (f.arrow i) :=
   rfl
 
 
@@ -127,8 +127,7 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
 /-- The spine of an `m`-simplex in `X` is the path of edges of length `m`
 formed by traversing in order through its vertices. -/
-def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X.obj (op ⟨.mk m, h⟩)) :
-    Path X m where
+def spine (m : ℕ) (h : m ≤ n + 1 := by omega) (Δ : X _⦋m⦌ₙ₊₁) : Path X m where
   vertex i := X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op Δ
   arrow i := X.map (tr (mkOfSucc i)).op Δ
   arrow_src i := by
@@ -152,28 +151,26 @@ variable (m : ℕ) (hₘ : m ≤ n + 1)
 
 /- We write this lemma manually to ensure it refers to `Path.vertex`. -/
 @[simp]
-lemma spine_vertex (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (i : Fin (m + 1)) :
+lemma spine_vertex (Δ : X _⦋m⦌ₙ₊₁) (i : Fin (m + 1)) :
     (X.spine m hₘ Δ).vertex i =
       X.map (tr (SimplexCategory.const ⦋0⦌ ⦋m⦌ i)).op Δ :=
   rfl
 
 /- We write this lemma manually to ensure it refers to `Path.arrow`. -/
 @[simp]
-lemma spine_arrow (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (i : Fin m) :
+lemma spine_arrow (Δ : X _⦋m⦌ₙ₊₁) (i : Fin m) :
     (X.spine m hₘ Δ).arrow i = X.map (tr (mkOfSucc i)).op Δ :=
   rfl
 
-lemma spine_map_vertex (Δ : X.obj (op ⟨.mk m, hₘ⟩)) (a : ℕ) (hₐ : a ≤ n + 1)
-    (φ : (⟨.mk a, hₐ⟩ : SimplexCategory.Truncated (n + 1)) ⟶ ⟨.mk m, hₘ⟩)
-    (i : Fin (a + 1)) :
+lemma spine_map_vertex (Δ : X _⦋m⦌ₙ₊₁) (a : ℕ) (hₐ : a ≤ n + 1)
+    (φ : ⦋a⦌ₙ₊₁ ⟶ ⦋m⦌ₙ₊₁) (i : Fin (a + 1)) :
     (X.spine a hₐ (X.map φ.op Δ)).vertex i =
       (X.spine m hₘ Δ).vertex (φ.toOrderHom i) := by
   dsimp only [spine_vertex]
   rw [← FunctorToTypes.map_comp_apply, ← op_comp, ← tr_comp,
     SimplexCategory.const_comp]
 
-lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m)
-    (Δ : X.obj (op ⟨.mk m, hₘ⟩)) :
+lemma spine_map_subinterval (j l : ℕ) (h : j + l ≤ m) (Δ : X _⦋m⦌ₙ₊₁) :
     X.spine l (by omega) (X.map (tr (subinterval j l h)).op Δ) =
       (X.spine m hₘ Δ).interval j l h := by
   ext i
@@ -195,11 +192,11 @@ namespace Path
 variable {X : SSet.{u}} {n : ℕ}
 
 /-- A path includes the data of `n + 1` 0-simplices in `X`. -/
-abbrev vertex (f : Path X n) (i : Fin (n + 1)) : X.obj (op ⦋0⦌) :=
+abbrev vertex (f : Path X n) (i : Fin (n + 1)) : X _⦋0⦌ :=
   Truncated.Path.vertex f i
 
 /-- A path includes the data of `n` 1-simplices in `X`. -/
-abbrev arrow (f : Path X n) (i : Fin n) : X.obj (op ⦋1⦌) :=
+abbrev arrow (f : Path X n) (i : Fin n) : X _⦋1⦌ :=
   Truncated.Path.arrow f i
 
 /-- The source of a 1-simplex in a path is identified with the source vertex. -/

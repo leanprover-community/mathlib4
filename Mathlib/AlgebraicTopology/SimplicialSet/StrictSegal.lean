@@ -30,7 +30,7 @@ open CategoryTheory Simplicial SimplexCategory
 namespace SSet
 namespace Truncated
 
-open Opposite SimplexCategory.Truncated SimplexCategory.Truncated.Hom
+open Opposite SimplexCategory.Truncated Truncated.Hom SimplicialObject.Truncated
 
 variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 
@@ -38,8 +38,7 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 its `m`-simplices are uniquely determined by their spine for all `m ≤ n + 1`. -/
 structure StrictSegal where
   /-- The inverse to `spine X m`. -/
-  spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by omega) :
-    Path X m → X.obj (op ⟨.mk m, h⟩)
+  spineToSimplex (m : ℕ) (h : m ≤ n + 1 := by omega) : Path X m → X _⦋m⦌ₙ₊₁
   /-- `spineToSimplex` is a right inverse to `spine X m`. -/
   spine_spineToSimplex (m : ℕ) (h : m ≤ n + 1) :
     spine X m ∘ spineToSimplex m = id
@@ -74,8 +73,7 @@ lemma spine_spineToSimplex_apply (m : ℕ) (h : m ≤ n + 1) (f : Path X m) :
   congr_fun (sx.spine_spineToSimplex m h) f
 
 @[simp]
-lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1)
-    (Δ : X.obj (op ⟨.mk m, h⟩)) :
+lemma spineToSimplex_spine_apply (m : ℕ) (h : m ≤ n + 1) (Δ : X _⦋m⦌ₙ₊₁) :
     sx.spineToSimplex m h (X.spine m h Δ) = Δ :=
   congr_fun (sx.spineToSimplex_spine m h) Δ
 
@@ -85,7 +83,7 @@ variable (m : ℕ) (h : m ≤ n + 1 := by omega)
 
 /-- The fields of `StrictSegal` define an equivalence between `X _⦋m⦌ₙ₊₁`
 and `Path X m`. -/
-def spineEquiv : X.obj (op ⟨.mk m, h⟩) ≃ Path X m where
+def spineEquiv : X _⦋m⦌ₙ₊₁ ≃ Path X m where
   toFun := X.spine m
   invFun := sx.spineToSimplex m h
   left_inv := sx.spineToSimplex_spine_apply m h
@@ -96,7 +94,7 @@ theorem spineInjective : Function.Injective (sx.spineEquiv m h) :=
 
 /-- In the presence of the strict Segal condition, a path of length `m` can be
 "composed" by taking the diagonal edge of the resulting `m`-simplex. -/
-def spineToDiagonal : Path X m → X.obj (op ⟨.mk 1, by trunc⟩) :=
+def spineToDiagonal : Path X m → X _⦋1⦌ₙ₊₁ :=
   X.map (tr (diag m)).op ∘ sx.spineToSimplex m h
 
 end autoParam
@@ -143,7 +141,7 @@ end spineToSimplex
 lemma spineToSimplex_map {X Y : SSet.Truncated.{u} (n + 1)} (sx : StrictSegal X)
     (sy : StrictSegal Y) (m : ℕ) (h : m ≤ n) (f : Path X (m + 1)) (σ : X ⟶ Y) :
     sy.spineToSimplex (m + 1) _ (f.map σ) =
-      σ.app (op ⟨.mk (m + 1), by trunc⟩) (sx.spineToSimplex (m + 1) _ f) := by
+      σ.app (op ⦋m + 1⦌ₙ₊₁) (sx.spineToSimplex (m + 1) _ f) := by
   apply sy.spineInjective (m + 1)
   ext k
   dsimp only [spineEquiv, Equiv.coe_fn_mk, spine_arrow]
