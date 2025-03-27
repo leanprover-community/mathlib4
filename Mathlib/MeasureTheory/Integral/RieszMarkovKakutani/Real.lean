@@ -59,14 +59,9 @@ noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
     (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) :
     ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ K := by
-  have Lfnonneg : 0 ≤ Λ f := by
-    apply hΛ
-    intro x
-    simp [(hf x).1]
   rw [rieszMeasure, ← Compacts.coe_mk K hK, Content.measure_eq_content_of_regular
     (rieszContent (toNNRealLinear Λ hΛ)) (contentRegular_rieszContent (toNNRealLinear Λ hΛ))
-    ⟨K, hK⟩, rieszContent]
-  simp only [ENNReal.ofReal_eq_coe_nnreal Lfnonneg, ENNReal.coe_le_coe]
+    ⟨K, hK⟩, rieszContent, ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
   obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ) ⟨K, hK⟩
@@ -75,7 +70,6 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
   apply le_of_lt (lt_of_le_of_lt _ hg.2)
   apply monotone_of_nonneg hΛ
   intro x
-  simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap]
   by_cases hx : x ∈ tsupport f
   · rw [coe_toRealLinearMap, toReal_apply]
     exact le_trans (hf x).2 (hg.1 x (mem_of_subset_of_mem h hx))
@@ -100,7 +94,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply csInf_le'
   rw [Set.mem_image]
   use f.nnrealPart
-  simp only [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
+  simp_rw [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
   refine ⟨(fun x hx => Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
@@ -110,16 +104,13 @@ private lemma RMK_iUnion_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 
     ⋃ n : Fin N, Ioc (c + n * δ) (c + n * δ + δ) = Ioc (c) (c + N * δ) := by
   ext x
   constructor
-  · simp only [mem_iUnion, mem_Ioc, forall_exists_index, and_imp]
+  · simp_rw [mem_iUnion, mem_Ioc, forall_exists_index, and_imp]
     intro n ha hb
     constructor
+    · exact lt_of_le_of_lt
+        ((le_add_iff_nonneg_right c).mpr <| Left.mul_nonneg (Nat.cast_nonneg' n) (le_of_lt hδ)) (ha)
     · calc
-        _ ≤ c + n * δ := (le_add_iff_nonneg_right c).mpr <|
-          Left.mul_nonneg (Nat.cast_nonneg' n) (le_of_lt hδ)
-        _ < _ := ha
-    · calc
-        _ ≤ c + n * δ + δ := hb
-        _ ≤ c + (n + 1) * δ := by ring_nf; rfl
+        _ ≤ c + (n + 1) * δ := by linarith
         _ ≤ _ := by field_simp [show (n : ℝ) + 1 ≤ N by norm_cast; omega]
   · obtain ⟨k, hk⟩ := Nat.exists_eq_add_one.mpr hN
     rw [hk]; clear hk
@@ -164,17 +155,15 @@ private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε
   have disjoint : PairwiseDisjoint univ E := by
     intro m _ n _ hmn
     apply Disjoint.preimage
-    simp only [mem_preimage, mem_Ioc, disjoint_left]
+    simp_rw [mem_preimage, mem_Ioc, disjoint_left]
     intro x hx
     rw [mem_setOf_eq, and_assoc] at hx
-    simp only [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
+    simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
     rcases (by omega : m < n ∨ n < m) with hc | hc
-    · left; calc
-        _ ≤ y m := hx.2.1
-        _ ≤ _ := le_tsub_of_add_le_right (hy hc)
-    · right; left; calc
-        _ ≤ y m - ε := le_tsub_of_add_le_right (hy hc)
-        _ < _ := hx.1
+    · left;
+      exact le_trans  hx.2.1 (le_tsub_of_add_le_right (hy hc))
+    · right; left;
+      exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
   -- The sets `E n` are a partition of the support of `f`.
   have partition_aux: range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := by
     intro z hz
@@ -185,13 +174,12 @@ private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε
   have partition : tsupport f = ⋃ j, E j := by
     apply subset_antisymm
     · intro x hx
-      simp only [E, mem_iUnion, mem_inter_iff, mem_preimage, exists_and_right]
+      simp_rw [E, mem_iUnion, mem_inter_iff, mem_preimage, exists_and_right]
       obtain ⟨j, hj⟩ := mem_iUnion.mp <| mem_of_subset_of_mem partition_aux (mem_range_self x)
       constructor
       · use j
       · exact hx
-    · have (n : Fin N) : E n ⊆ tsupport f := by simp [inter_subset_right, E]
-      exact iUnion_subset this
+    · exact iUnion_subset (show ∀ n, E n ⊆ tsupport f by simp [inter_subset_right, E])
   exact ⟨partition, disjoint, fun n x a ↦ bdd n x a,
     fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure⟩
 
@@ -212,27 +200,22 @@ private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {
     exact hx
   have h' : μ.measure ↑(V₁ ⊓ V₂) ≤ μ.measure E + ENNReal.ofReal ε := calc
       _ ≤ μ.measure V₁ := by apply measure_mono; simp
-      _ = μ.outerMeasure V₁ := by
-        rw [Content.measure_apply μ ?_]
-        exact V₁.2.measurableSet
-      _ ≤ μ.outerMeasure E + ε.toNNReal := by
-        exact hV₁.2
-      _ = _ := by
-        rw [Content.measure_apply μ ?_]
-        congr; exact hμ'
+      _ = μ.outerMeasure V₁ := by rw [Content.measure_apply μ ?_]; exact V₁.2.measurableSet
+      _ ≤ μ.outerMeasure E + ε.toNNReal := by exact hV₁.2
+      _ = _ := by rw [Content.measure_apply μ ?_]; congr; exact hμ'
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
 omit [LocallyCompactSpace X] in
 /- Define simultaneously sets which are each open approximations and obtain particular estimates. -/
 private lemma RMK_open' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X, ℝ)) {y : Fin N → ℝ}
     (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε) {ν : Content X}
-    (hν : ∀ n, ν.measure (E n) < ⊤) (hν' : ∀ n, MeasurableSet (E n)) :
+    (hν : ∀ n, ν.measure (E n) ≠ ⊤) (hν' : ∀ n, MeasurableSet (E n)) :
     ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε)
     ∧ ν.measure (V n) ≤ ν.measure (E n) + ENNReal.ofReal (ε / N) := by
   have h (n : Fin N) (x : X) (hx : x ∈ E n) := lt_add_of_le_of_pos (hy n x hx) hε
   have h' (n : Fin N) : ν.outerMeasure (E n) ≠ ⊤ := by
     rw [← Content.measure_apply ν (hν' n)]
-    exact LT.lt.ne_top (hν n)
+    exact hν n
   let V (n : Fin N) := Classical.choose <|
     RMK_open f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
   use V
@@ -294,8 +277,9 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
     -- Introduce notation for the partition of the range.
     let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
     -- The measure of each `E n` is finite.
-    have hE' (n : Fin N) : μ (E n) < ⊤ := by
+    have hE' (n : Fin N) : μ (E n) ≠ ⊤ := by
       have h : E n ⊆ tsupport f := by rw [hE.1]; exact subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a
+      refine lt_top_iff_ne_top.mp ?_
       apply lt_of_le_of_lt <| measure_mono h
       dsimp [μ]
       rw [rieszMeasure, show f = f.toFun by rfl, Content.measure_apply _ f.2.measurableSet]
@@ -358,11 +342,11 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
             · rw [← lt_top_iff_ne_top]
               apply lt_of_le_of_lt (hV n).2.2
               rw [WithTop.add_lt_top]
-              exact ⟨hE' n, ENNReal.ofReal_lt_top⟩
+              exact ⟨WithTop.lt_top_iff_ne_top.mpr (hE' n), ENNReal.ofReal_lt_top⟩
           _ ≤ _ := by
             rw [← ENNReal.toReal_ofReal (div_nonneg (le_of_lt hε'.1) (Nat.cast_nonneg _))]
             apply ENNReal.toReal_le_add (hV n).2.2
-            · exact lt_top_iff_ne_top.mp (hE' n)
+            · exact hE' n
             · exact ENNReal.ofReal_ne_top
     · -- use that `μ K ≤ Λ (∑ n, g n)`
       gcongr
@@ -381,7 +365,7 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
       simp_rw [this]
       have : ∑ i, (μ (E i)).toReal = (μ K).toReal := by
         suffices h : μ K = ∑ i, (μ (E i)) by
-          rw [h]; exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ LT.lt.ne_top (hE' n)
+          rw [h]; exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ hE' n
         dsimp [K]; rw [hE.1]
         rw [measure_iUnion (fun m n hmn ↦ hE.2.1 trivial trivial hmn) hE.2.2.2]
         exact tsum_fintype fun b ↦ μ (E b)
