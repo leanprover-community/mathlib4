@@ -224,6 +224,7 @@ theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp 
 
 -- The simpNF linter says that the LHS can be simplified via `Submonoid.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x : M} :

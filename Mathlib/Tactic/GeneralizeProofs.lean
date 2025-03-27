@@ -19,6 +19,7 @@ It is also useful to eliminate proof terms to handle issues with dependent types
 
 For example:
 ```lean
+def List.nthLe {α} (l : List α) (n : ℕ) (_h : n < l.length) : α := sorry
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 ⋯ = 2
   generalize_proofs h
@@ -494,6 +495,7 @@ with `generalize_proofs (config := { maxDepth := 0 })` turning this feature off.
 
 For example:
 ```lean
+def List.nthLe {α} (l : List α) (n : ℕ) (_h : n < l.length) : α := sorry
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 ⋯ = 2
   generalize_proofs h

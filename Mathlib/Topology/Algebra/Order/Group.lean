@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Order.LeftRightNhds
-import Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Algebra.Order.Group.Basic
+import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
 # Topology on a linear ordered commutative group
