@@ -30,8 +30,8 @@ linear positive functional.
 The measure is defined through `rieszContent` which is for `NNReal` using the `toNNRealLinear`
 version of `Λ`.
 
-The Riesz–Markov–Kakutani representation theorem is first proved for `Real`-linear `Λ` because in a
-standard proof one has to prove the inequalities by considering `Λ f` and `Λ (-f)` for all functions
+The Riesz–Markov–Kakutani representation theorem is first proved for `Real`-linear `Λ` because
+equality is proven using two inequalities by considering `Λ f` and `Λ (-f)` for all functions
 `f`, yet on `C_c(X, ℝ≥0)` there is no negation.
 
 ## References
@@ -114,7 +114,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   exact hp
 
 /-- An `Ioc` partitions into a finite union of `Ioc`s. -/
-lemma iUnion_Fin_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) :
+private lemma RMK_iUnion_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) :
     ⋃ n : Fin N, Ioc (c + n * δ) (c + n * δ + δ) = Ioc (c) (c + N * δ) := by
   ext x
   constructor
@@ -149,7 +149,7 @@ lemma iUnion_Fin_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) 
 omit [T2Space X] [LocallyCompactSpace X] in
 /-- Given `f : C_c(X, ℝ)` such that `range f ⊆ [a, b]` we obtain a partition of the support of `f`
 determined by partitioning `[a, b]` into `N` pieces. -/
-lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) {N : ℕ}
+private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) {N : ℕ}
     (hN : 0 < N) (hf : range f ⊆ Ioo a (a + N * ε)) : ∃ (E : Fin N → Set X), tsupport f = ⋃ j, E j ∧
     univ.PairwiseDisjoint E ∧ (∀ n : Fin N, ∀ x ∈ E n, a + ε * n < f x ∧ f x ≤ a + ε * (n + 1)) ∧
     ∀ n : Fin N, MeasurableSet (E n) := by
@@ -188,7 +188,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     intro z hz
     simp_rw [show ∀ n, y n - ε = (a + n * ε) by simp [y, mul_add, ← add_assoc, mul_comm],
       show ∀ n, y n = a + n * ε + ε by simp [y, mul_add, ← add_assoc, mul_comm]]
-    rw [iUnion_Fin_Ioc hN a hε, mem_Ioc]
+    rw [RMK_iUnion_Ioc hN a hε, mem_Ioc]
     exact ⟨(hf hz).1, le_of_lt (hf hz).2⟩
   have partition : tsupport f = ⋃ j, E j := by
     apply subset_antisymm
@@ -206,7 +206,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
 open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
-lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
+private lemma RMK_open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
     (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
@@ -231,7 +231,7 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : 
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
-private lemma RMK_le_aux (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
+private lemma RMK_exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
     a' / N * (b' + a' / N) ≤ ε := by
   have A : Tendsto (fun (N : ℝ) ↦ a' / N * (b' + a' / N)) atTop
       (𝓝 (0 * (b' + 0))) := by
@@ -245,7 +245,7 @@ private lemma RMK_le_aux (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ)
 
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
-theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
+private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
   -- The case `IsEmpty X` is elementry.
   · have : Λ f = 0 := by
@@ -274,12 +274,12 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
         exact lt_trans (lt_of_lt_of_le (sub_one_lt a') hab) (lt_add_one b')
       use a, b
     -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
-    obtain ⟨N, hN, hε'⟩ := RMK_le_aux (b - a) (2 * (μ K).toReal + |a| + b) hε
+    obtain ⟨N, hN, hε'⟩ := RMK_exists_nat (b - a) (2 * (μ K).toReal + |a| + b) hε
     let ε' := (b - a) / N
     replace hε' : 0 < ε' ∧  ε' * (2 * (μ K).toReal + |a| + b + ε') ≤ ε :=
       ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
     -- Take a partition of the support of `f` into sets `E` by partitioning the range.
-    obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 hN (by field_simp [ε', ← mul_div_assoc,
+    obtain ⟨E, hE⟩ := RMK_range_cut f a hε'.1 hN (by field_simp [ε', ← mul_div_assoc,
       mul_div_cancel_left₀, hab.2])
     -- Introduce notation for the partition of the range.
     let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
@@ -303,11 +303,11 @@ theorem RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure h�
       have h' (n : Fin N) : (rieszContent (toNNRealLinear Λ hΛ)).outerMeasure (E n) ≠ ⊤ := by
         rw [← Content.measure_apply (rieszContent (toNNRealLinear Λ hΛ)) (hE.2.2.2 n)]
         exact LT.lt.ne_top (hE' n)
-      let V (n : Fin N) := Classical.choose (open_approx (f : C_c(X, ℝ))
+      let V (n : Fin N) := Classical.choose (RMK_open_approx (f : C_c(X, ℝ))
         (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hE.2.2.2 n) (h n))
       use V
       intro n
-      let hV := Classical.choose_spec (open_approx (f : C_c(X, ℝ))
+      let hV := Classical.choose_spec (RMK_open_approx (f : C_c(X, ℝ))
         (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hE.2.2.2 n) (h n))
       exact ⟨hV.1, hV.2.1, hV.2.2⟩
     -- Define a partition of unity subordinated to the sets `V`
