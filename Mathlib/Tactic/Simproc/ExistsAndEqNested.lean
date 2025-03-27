@@ -413,7 +413,7 @@ for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
 It looks through nested quantifiers and conjuctions searching for a `a = a'`
 or `a' = a` subexpression. -/
-simproc existsAndEqNested (Exists (fun _ => Exists _)) := .ofQ fun u α e => do
+simproc existsAndEqNested (Exists _) := .ofQ fun u α e => do
   match u, α, e with
   | 1, ~q(Prop), ~q(@Exists $α $p) =>
     let .some ⟨P', pf⟩ ← existsAndEq.existsAndEqNestedImp p | return .continue
