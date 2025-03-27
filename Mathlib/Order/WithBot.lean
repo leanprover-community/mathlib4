@@ -436,10 +436,13 @@ instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFound
     | ⊥ => .intro _ fun | (b : α), _ => acc_some b
 
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) where
-  dense
-  | ⊥, (b : α), _ => let ⟨a, ha⟩ := exists_lt b; ⟨a, by simpa⟩
-  | (a : α), (b : α), hab =>
-    let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab); ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
+  dense := fun
+    | ⊥, (b : α), _ =>
+      let ⟨a, ha⟩ := exists_lt b
+      ⟨a, by simpa⟩
+    | (a : α), (b : α), hab =>
+      let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab)
+      ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α] {a b : WithBot α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
@@ -710,9 +713,9 @@ lemma le_def : x ≤ y ↔ ∀ b : α, y = ↑b → ∃ a : α, x = ↑a ∧ a �
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by simp [le_def]
 
-lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := nofun
+lemma not_top_le_coe (a : α) : ¬ ⊤ ≤ (a : WithTop α) := by simp [le_def]
 
-instance orderTop : OrderTop (WithTop α) where le_top := by rintro (_ | _) <;> trivial
+instance orderTop : OrderTop (WithTop α) where le_top := by simp [le_def]
 
 instance orderBot [OrderBot α] : OrderBot (WithTop α) where bot_le x := by cases x <;> simp [le_def]
 
@@ -843,6 +846,14 @@ lemma eq_top_iff_forall_gt : y = ⊤ ↔ ∀ a : α, a < y := by
 lemma eq_top_iff_forall_ge [NoMaxOrder α] : y = ⊤ ↔ ∀ a : α, a ≤ y :=
   WithBot.eq_bot_iff_forall_le (α := αᵒᵈ)
 
+@[deprecated (since := "2025-03-19")] alias forall_lt_iff_eq_top := eq_top_iff_forall_gt
+@[deprecated (since := "2025-03-19")] alias forall_le_iff_eq_top := eq_top_iff_forall_ge
+
+lemma forall_coe_le_iff_le [NoMaxOrder α] {x y : WithTop α} : (∀ a : α, a ≤ x → a ≤ y) ↔ x ≤ y := by
+  obtain _ | x := x
+  · simp [WithTop.none_eq_top, eq_top_iff_forall_ge]
+  · exact ⟨fun h ↦ h _ le_rfl, fun hmn a ham ↦ ham.trans hmn⟩
+
 end Preorder
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) where
@@ -910,24 +921,13 @@ lemma ge_of_forall_gt_iff_ge : (∀ a : α, a < x → a ≤ y) ↔ x ≤ y := by
 
 end LinearOrder
 
-instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) where
-  wf :=
-  have acc_some (a : α) : Acc ((· < ·) : WithTop α → WithTop α → Prop) a :=
-    (wellFounded_lt.1 a).rec fun _ _ ih =>
-      .intro _ fun
-        | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
-  .intro fun
-    | (a : α) => acc_some a
-    | ⊤ => .intro _ fun | (b : α), _ => acc_some b
+instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithTop α) :=
+  inferInstanceAs <| WellFoundedLT (WithBot αᵒᵈ)ᵒᵈ
 
 open OrderDual
 
-instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) where
-  wf := .intro fun
-  | ⊤ => ⟨_, by simp⟩
-  | (a : α) => (wellFounded_gt.1 a).rec fun _ _ ih ↦ .intro _ fun
-    | ⊤, _ => ⟨_, by simp⟩
-    | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
+instance instWellFoundedGT [LT α] [WellFoundedGT α] : WellFoundedGT (WithTop α) :=
+  inferInstanceAs <| WellFoundedGT (WithBot αᵒᵈ)ᵒᵈ
 
 instance trichotomous.lt [Preorder α] [IsTrichotomous α (· < ·)] :
     IsTrichotomous (WithTop α) (· < ·) where
@@ -956,11 +956,8 @@ instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > �
     IsWellOrder (WithBot α) (· > ·) where
   trichotomous x y := by cases x <;> cases y <;> simp; simpa using trichotomous_of (· > ·) ..
 
-instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) where
-  dense
-  | (a : α), ⊤, _ => let ⟨b, hb⟩ := exists_gt a; ⟨b, by simpa⟩
-  | (a : α), (b : α), hab =>
-    let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab); ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
+instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) :=
+  OrderDual.denselyOrdered (WithBot αᵒᵈ)
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
