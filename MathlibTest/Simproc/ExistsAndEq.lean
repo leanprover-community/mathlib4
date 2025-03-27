@@ -15,7 +15,7 @@ example (a : α) : ∃ b : α, b = a := by
 error: simp made no progress
 -/
 #guard_msgs in
-example (a : α) (f : α → α) (hp : p a) (hq : q a) : ∃ b : α, (p b ∧ b = f b) ∧ q b := by
+example (f : α → α) : ∃ a : α, a = f a := by
   simp only [existsAndEq]
   sorry
 
