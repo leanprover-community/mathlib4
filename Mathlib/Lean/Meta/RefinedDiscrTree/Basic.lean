@@ -155,6 +155,21 @@ structure ExprInfo where
   lctx : LocalContext
   /-- The local instances, which may contain the introduced bound variables. -/
   localInsts : LocalInstances
+  /-- The `Meta.Config` used by this entry. -/
+  cfg : Config
+  /-- The current transparency level. Recall that unification uses the `default`
+  transparency level when unifying implicit arguments. So we index implicit arguments-/
+  transparency : TransparencyMode
+
+/-- Creates an `ExprInfo` using the current context. -/
+def mkExprInfo (expr : Expr) (bvars : List FVarId) : MetaM ExprInfo :=
+  return {
+    expr, bvars,
+    lctx := ← getLCtx
+    localInsts := ← getLocalInstances
+    cfg := ← getConfig
+    transparency := ← getTransparency
+  }
 
 /-- The possible values that can appear in the stack -/
 inductive StackEntry where
@@ -200,8 +215,6 @@ structure LazyEntry where
   stack    : List StackEntry := []
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
-  /-- The `Meta.Config` used by this entry. -/
-  cfg      : Config
   /--
   `MVarId`s corresponding to the `.labelledStar` labels. The index in the array is the label.
   It is `none` if we use `.star` instead of `labelledStar`,
@@ -224,7 +237,6 @@ deriving Inhabited
 def mkInitLazyEntry (labelledStars : Bool) : MetaM LazyEntry :=
   return {
     mctx := ← getMCtx
-    cfg := ← getConfig
     stars? := if labelledStars then some #[] else none
   }
 

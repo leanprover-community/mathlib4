@@ -121,11 +121,7 @@ where
   `processPrevious` adds the required entries to the stack.
   -/
   let setEAsPrevious : LazyM Unit := do
-    let info := {
-      expr       := e
-      bvars      := lambdas ++ (← read).bvars
-      lctx       := ← getLCtx
-      localInsts := ← getLocalInstances }
+    let info ← mkExprInfo e (lambdas ++ (← read).bvars)
     modify fun s => { s with previous := some info }
 
   match e.getAppFn with
@@ -238,7 +234,7 @@ private def encodingStep (original : Expr) (root : Bool) : LazyM Key := do
 
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
-def initializeLazyEntryWithEta (e : Expr) (labelledStars : Bool) :
+def initializeLazyEntryWithEta (e : Expr) (labelledStars : Bool := true) :
     MetaM (List (Key × LazyEntry)) := do
   withReducible do initializeLazyEntryWithEtaAux e labelledStars
 
@@ -283,9 +279,10 @@ private partial def evalLazyEntryWithEtaAux (entry : LazyEntry) :
       evalLazyEntryWithEtaAux entry
     | .star =>
       return some [(.star, entry)]
-    | .expr info =>
-      withLCtx info.lctx info.localInsts do
-      return some (← encodingStepWithEta info.expr false entry |>.run { bvars := info.bvars })
+    | .expr { expr, bvars, lctx, localInsts, cfg, transparency } =>
+      withLCtx lctx localInsts do
+      withConfig (fun _ => cfg) do withTransparency transparency do
+      return some (← encodingStepWithEta expr false entry |>.run { bvars := bvars })
 
 /-- Auxiliary function for `evalLazyEntry` -/
 private partial def evalLazyEntryAux (entry : LazyEntry) :
@@ -302,18 +299,19 @@ private partial def evalLazyEntryAux (entry : LazyEntry) :
       evalLazyEntryAux entry
     | .star =>
       return some (.star, entry)
-    | .expr info =>
-      withLCtx info.lctx info.localInsts do
-      return some (← encodingStep info.expr false |>.run { bvars := info.bvars } |>.run entry)
+    | .expr { expr, bvars, lctx, localInsts, cfg, transparency } =>
+      withLCtx lctx localInsts do
+      withConfig (fun _ => cfg) do withTransparency transparency do
+      return some (← encodingStep expr false |>.run { bvars := bvars } |>.run entry)
 
 /-- Determine for each argument whether it should be ignored,
 and return a list consisting of one `StackEntry` for each argument. -/
-private partial def getEntries (fn : Expr) (args : Array Expr) (bvars : List FVarId)
-    (lctx : LocalContext) (localInsts : LocalInstances) : MetaM (List StackEntry) := do
+private partial def getStackEntries (fn : Expr) (args : Array Expr) (bvars : List FVarId) :
+    MetaM (List StackEntry) := do
   let mut fnType ← inferType fn
   loop fnType 0 0 []
 where
-  /-- The main loop of `getEntries` -/
+  /-- The main loop of `getStackEntries` -/
   loop (fnType : Expr) (i j : Nat) (entries : List StackEntry) : MetaM (List StackEntry) := do
     if h : i < args.size then
       let arg := args[i]
@@ -321,7 +319,10 @@ where
         if ← isIgnoredArg arg d bi then
           loop b (i+1) j (.star :: entries)
         else
-          loop b (i+1) j (( .expr { expr := arg, bvars, lctx, localInsts }) :: entries)
+          -- Recall that `isDefEq` switches the transparency on implicit arguments.
+          (if bi.isExplicit then id else withInferTypeConfig) do
+          let info ← mkExprInfo arg bvars
+          loop b (i+1) j (.expr info :: entries)
       let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with
         | .forallE _ d b bi => cont i d b bi
@@ -346,33 +347,28 @@ where
 If `entry.previous.isSome`, then replace it with `none`, and add the required entries
 to entry.stack`.
 -/
-private def processPrevious (entry : LazyEntry) : MetaM (LazyEntry) := do
-  let some { expr, bvars, lctx, localInsts } := entry.previous | return entry
+private def processPrevious (entry : LazyEntry) : MetaM LazyEntry := do
+  let some { expr, bvars, lctx, localInsts, cfg, transparency } := entry.previous | return entry
   let entry := { entry with previous := none }
-  withLCtx lctx localInsts do
+  withLCtx lctx localInsts do withConfig (fun _ => cfg) do withTransparency transparency do
   expr.withApp fun fn args => do
 
-  let stackArgs (entry : LazyEntry) : MetaM (LazyEntry) := do
-    let entries ← getEntries fn args bvars lctx localInsts
+  let stackArgs (entry : LazyEntry) : MetaM LazyEntry := do
+    let entries ← getStackEntries fn args bvars
     return { entry with stack := entries.reverseAux entry.stack }
 
   match fn with
   | .forallE n d b bi =>
-    let d' := .expr { expr := d, bvars, lctx, localInsts }
+    let d' := .expr (← mkExprInfo d bvars)
     let b' ← withLocalDecl n bi d fun fvar =>
-      return .expr {
-        expr       := b.instantiate1 fvar
-        bvars      := fvar.fvarId! :: bvars
-        lctx       := ← getLCtx
-        localInsts := ← getLocalInstances }
+      return .expr (← mkExprInfo (b.instantiate1 fvar) (fvar.fvarId! :: bvars))
     return { entry with stack := d' :: b' :: entry.stack }
   | .proj n _ a =>
+    let entry ← stackArgs entry
     if isClass (← getEnv) n then
-      let entry ← stackArgs entry
-      return { entry with stack := .star :: entry.stack}
+      return { entry with stack := .star :: entry.stack }
     else
-      let entry ← stackArgs entry
-      return { entry with stack := .expr { expr := a, bvars, lctx, localInsts } :: entry.stack}
+      return { entry with stack := .expr (← mkExprInfo a bvars) :: entry.stack }
   | _ => stackArgs entry
 
 /--
@@ -391,7 +387,7 @@ def evalLazyEntryWithEta (entry : LazyEntry) :
   if let key :: results := entry.results then
     -- If there is already a result available, use it.
     return some [(key, { entry with results, stack := updateCaches entry.stack key })]
-  else withMCtx entry.mctx do withConfig (fun _ => entry.cfg) do
+  else withMCtx entry.mctx do
     let entry ← processPrevious entry
     let result ← evalLazyEntryWithEtaAux entry
     return result.map <| List.map fun (key, entry) =>
@@ -404,7 +400,7 @@ private def evalLazyEntry (entry : LazyEntry) :
   if let key :: results := entry.results then
     -- If there is already a result available, use it.
     return some (key, { entry with results, stack := updateCaches entry.stack key })
-  else withMCtx entry.mctx do withConfig (fun _ => entry.cfg) do
+  else withMCtx entry.mctx do
     let entry ← processPrevious entry
     let result ← evalLazyEntryAux entry
     return result.map fun (key, entry) =>
