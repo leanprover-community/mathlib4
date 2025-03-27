@@ -29,20 +29,22 @@ noncomputable section
 
 open Uniformity Topology Filter Pointwise
 
-section UniformGroup
+section IsUniformGroup
 
 open Filter Set
 
 variable {α : Type*} {β : Type*}
 
-variable [UniformSpace α] [Group α] [UniformGroup α]
+variable [UniformSpace α] [Group α] [IsUniformGroup α]
 
 @[to_additive]
-instance Pi.instUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
-    [∀ i, Group (G i)] [∀ i, UniformGroup (G i)] : UniformGroup (∀ i, G i) where
+instance Pi.instIsUniformGroup {ι : Type*} {G : ι → Type*} [∀ i, UniformSpace (G i)]
+    [∀ i, Group (G i)] [∀ i, IsUniformGroup (G i)] : IsUniformGroup (∀ i, G i) where
   uniformContinuous_div := uniformContinuous_pi.mpr fun i ↦
     (uniformContinuous_proj G i).comp uniformContinuous_fst |>.div <|
       (uniformContinuous_proj G i).comp uniformContinuous_snd
+
+@[deprecated (since := "2025-03-26")] alias Pi.instUniformGroup := Pi.instIsUniformGroup
 
 @[to_additive]
 theorem isUniformEmbedding_translate_mul (a : α) : IsUniformEmbedding fun x : α => x * a :=
@@ -57,9 +59,9 @@ alias uniformEmbedding_translate_mul := isUniformEmbedding_translate_mul
 
 section Cauchy
 
-namespace UniformGroup
+namespace IsUniformGroup
 
-variable {ι G : Type*} [Group G] [UniformSpace G] [UniformGroup G]
+variable {ι G : Type*} [Group G] [UniformSpace G] [IsUniformGroup G]
 
 @[to_additive]
 lemma cauchy_iff_tendsto (𝓕 : Filter G) :
@@ -81,7 +83,7 @@ lemma cauchy_map_iff_tendsto_swapped (𝓕 : Filter ι) (f : ι → G) :
     Cauchy (map f 𝓕) ↔ NeBot 𝓕 ∧ Tendsto (fun p ↦ f p.2 / f p.1) (𝓕 ×ˢ 𝓕) (𝓝 1) := by
   simp [cauchy_map_iff, uniformity_eq_comap_nhds_one, Function.comp_def]
 
-end UniformGroup
+end IsUniformGroup
 
 end Cauchy
 
@@ -90,28 +92,34 @@ section LatticeOps
 variable [Group β]
 
 @[to_additive]
-lemma IsUniformInducing.uniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [UniformGroup γ]
+lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ] [IsUniformGroup γ]
     [UniformSpace β] {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ]
     (f : F) (hf : IsUniformInducing f) :
-    UniformGroup β where
+    IsUniformGroup β where
   uniformContinuous_div := by
     simp_rw [hf.uniformContinuous_iff, Function.comp_def, map_div]
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
 
-@[deprecated (since := "2024-10-05")]
-alias UniformInducing.uniformGroup := IsUniformInducing.uniformGroup
+@[deprecated (since := "2025-03-26")]
+alias UniformInducing.UniformGroup := IsUniformInducing.isUniformGroup
 
 @[to_additive]
-protected theorem UniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [UniformGroup γ]
-    {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @UniformGroup β (u.comap f) _ :=
-  letI : UniformSpace β := u.comap f; IsUniformInducing.uniformGroup f ⟨rfl⟩
+protected theorem IsUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [IsUniformGroup γ]
+    {F : Type*} [FunLike F β γ] [MonoidHomClass F β γ] (f : F) : @IsUniformGroup β (u.comap f) _ :=
+  letI : UniformSpace β := u.comap f; IsUniformInducing.isUniformGroup f ⟨rfl⟩
+
+@[deprecated (since := "2025-03-26")] alias UniformGroup.comap := IsUniformGroup.comap
 
 end LatticeOps
 
 namespace Subgroup
 
 @[to_additive]
-instance uniformGroup (S : Subgroup α) : UniformGroup S := .comap S.subtype
+instance isUniformGroup (S : Subgroup α) : IsUniformGroup S := .comap S.subtype
+
+@[deprecated (since := "2025-03-26")] alias UniformGroup := isUniformGroup
+@[deprecated (since := "2025-03-26")] alias AddSubgroup.UniformAddGroup :=
+    AddSubgroup.isUniformAddGroup
 
 end Subgroup
 
@@ -194,7 +202,7 @@ theorem UniformCauchySeqOn.div (hf : UniformCauchySeqOn f l s) (hf' : UniformCau
 
 end UniformConvergence
 
-end UniformGroup
+end IsUniformGroup
 
 section IsTopologicalGroup
 
@@ -205,7 +213,7 @@ variable (G : Type*) [Group G] [TopologicalSpace G] [IsTopologicalGroup G]
 attribute [local instance] IsTopologicalGroup.toUniformSpace
 
 @[to_additive]
-theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : UniformGroup G :=
+theorem topologicalGroup_is_uniform_of_compactSpace [CompactSpace G] : IsUniformGroup G :=
   ⟨by
     apply CompactSpace.uniformContinuous_of_continuous
     exact continuous_div'⟩
@@ -317,7 +325,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   simp_rw [forall_mem_comm]
   exact lim W' W'_nhd
 
-variable [UniformAddGroup G]
+variable [IsUniformAddGroup G]
 
 include df W'_nhd in
 private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (𝓝 x₀), ∃ V ∈ comap f (𝓝 y₀),
@@ -531,10 +539,10 @@ uniform structure, so it is still provided manually via `IsTopologicalAddGroup.t
 In the most common use case ─ quotients of normed additive commutative groups by subgroups ─
 significant care was taken so that the uniform structure inherent in that setting coincides
 (definitionally) with the uniform structure provided here."]
-instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [UniformGroup G]
+instance QuotientGroup.completeSpace (G : Type u) [Group G] [us : UniformSpace G] [IsUniformGroup G]
     [FirstCountableTopology G] (N : Subgroup G) [N.Normal] [hG : CompleteSpace G] :
     @CompleteSpace (G ⧸ N) (IsTopologicalGroup.toUniformSpace (G ⧸ N)) := by
-  rw [← @UniformGroup.toUniformSpace_eq _ us _ _] at hG
+  rw [← @IsUniformGroup.toUniformSpace_eq _ us _ _] at hG
   infer_instance
 
 end CompleteQuotient

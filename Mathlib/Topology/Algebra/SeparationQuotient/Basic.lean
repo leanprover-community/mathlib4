@@ -205,8 +205,8 @@ end Group
 section UniformGroup
 
 @[to_additive]
-instance instUniformGroup {G : Type*} [Group G] [UniformSpace G] [UniformGroup G] :
-    UniformGroup (SeparationQuotient G) where
+instance instUniformGroup {G : Type*} [Group G] [UniformSpace G] [IsUniformGroup G] :
+    IsUniformGroup (SeparationQuotient G) where
   uniformContinuous_div := by
     rw [uniformContinuous_dom₂]
     exact uniformContinuous_mk.comp uniformContinuous_div
