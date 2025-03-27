@@ -200,6 +200,8 @@ structure LazyEntry where
   stack    : List StackEntry := []
   /-- The metavariable context, which may contain variables appearing in this entry. -/
   mctx     : MetavarContext
+  /-- The `Meta.Config` used by this entry. -/
+  cfg      : Config
   /--
   `MVarId`s corresponding to the `.labelledStar` labels. The index in the array is the label.
   It is `none` if we use `.star` instead of `labelledStar`,
@@ -217,6 +219,13 @@ structure LazyEntry where
   /-- The cache of past computations that have multiple possible outcomes. -/
   cache    : AssocList Expr (List Key) := {}
 deriving Inhabited
+
+def mkInitLazyEntry (labelledStars : Bool) : MetaM LazyEntry :=
+  return {
+    mctx := ← getMCtx
+    cfg := ← getConfig
+    stars? := if labelledStars then some #[] else none
+  }
 
 private def LazyEntry.format (entry : LazyEntry) : Format := Id.run do
   let mut parts := #[f!"stack: {entry.stack}"]

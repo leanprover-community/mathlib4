@@ -234,8 +234,7 @@ private def encodingStep (original : Expr) (root : Bool) : LazyM Key := do
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 @[inline] def initializeLazyEntryWithEtaAux (e : Expr) (labelledStars : Bool) :
     MetaM (List (Key × LazyEntry)) := do
-  let stars? := if labelledStars then some #[] else none
-  encodingStepWithEta e true { mctx := ← getMCtx, stars? } |>.run { bvars := [] }
+  (encodingStepWithEta e true (← mkInitLazyEntry labelledStars)).run { bvars := [] }
 
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
@@ -245,8 +244,7 @@ def initializeLazyEntryWithEta (e : Expr) (labelledStars : Bool) :
 
 /-- Encode `e` as a sequence of keys, computing only the first `Key`. -/
 private def initializeLazyEntry (e : Expr) (labelledStars : Bool) : MetaM (Key × LazyEntry) := do
-  let stars? := if labelledStars then some #[] else none
-  encodingStep e true |>.run { bvars := [] } |>.run { mctx := ← getMCtx, stars? }
+  ((encodingStep e true).run { bvars := [] }).run (← mkInitLazyEntry labelledStars)
 
 
 /-- If there is a loose `.bvar` returns `none`. Otherwise returns the index
@@ -270,7 +268,7 @@ where
 private def hasLooseBVars (keys : List Key) : Bool :=
   hasLooseBVarsAux 0 keys |>.isNone
 
-/-- Auxiliary function for `evalLazyEntry` -/
+/-- Auxiliary function for `evalLazyEntryWithEta` -/
 private partial def evalLazyEntryWithEtaAux (entry : LazyEntry) :
     MetaM (Option (List (Key × LazyEntry))) := do
   match entry.stack with
@@ -289,7 +287,7 @@ private partial def evalLazyEntryWithEtaAux (entry : LazyEntry) :
       withLCtx info.lctx info.localInsts do
       return some (← encodingStepWithEta info.expr false entry |>.run { bvars := info.bvars })
 
-/-- Auxiliary function for `evalLazyEntry'` -/
+/-- Auxiliary function for `evalLazyEntry` -/
 private partial def evalLazyEntryAux (entry : LazyEntry) :
     MetaM (Option (Key × LazyEntry)) := do
   match entry.stack with
@@ -393,7 +391,7 @@ def evalLazyEntryWithEta (entry : LazyEntry) :
   if let key :: results := entry.results then
     -- If there is already a result available, use it.
     return some [(key, { entry with results, stack := updateCaches entry.stack key })]
-  else withMCtx entry.mctx do
+  else withMCtx entry.mctx do withConfig (fun _ => entry.cfg) do
     let entry ← processPrevious entry
     let result ← evalLazyEntryWithEtaAux entry
     return result.map <| List.map fun (key, entry) =>
@@ -401,12 +399,12 @@ def evalLazyEntryWithEta (entry : LazyEntry) :
 
 
 /-- A single step in evaluating a `LazyEntry`. Don't allow multiple different outcomes. -/
-private def evalLazyEntry' (entry : LazyEntry) :
+private def evalLazyEntry (entry : LazyEntry) :
     MetaM (Option (Key × LazyEntry)) := do
   if let key :: results := entry.results then
     -- If there is already a result available, use it.
     return some (key, { entry with results, stack := updateCaches entry.stack key })
-  else withMCtx entry.mctx do
+  else withMCtx entry.mctx do withConfig (fun _ => entry.cfg) do
     let entry ← processPrevious entry
     let result ← evalLazyEntryAux entry
     return result.map fun (key, entry) =>
@@ -416,8 +414,7 @@ private def evalLazyEntry' (entry : LazyEntry) :
 /-- Return all encodings of `e` as a `Array Key`. This is used for testing. -/
 partial def encodeExprWithEta (e : Expr) (labelledStars : Bool) : MetaM (Array (Array Key)) :=
   withReducible do
-    let stars? := if labelledStars then some #[] else none
-    let entries ← encodingStepWithEta e true { mctx := ← getMCtx, stars? } |>.run { bvars := [] }
+    let entries ← (encodingStepWithEta e true (← mkInitLazyEntry labelledStars)).run { bvars := [] }
     let entries := entries.map fun (key, entry) => (#[key], entry)
     go entries.toArray #[]
 where
@@ -445,7 +442,7 @@ where
 
 /-- Completely evaluate a `LazyEntry`. -/
 partial def LazyEntry.toList (entry : LazyEntry) (result : List Key := []) : MetaM (List Key) := do
-  match ← evalLazyEntry' entry with
+  match ← evalLazyEntry entry with
   | some (key, entry') => entry'.toList (key :: result)
   | none => return result.reverse
 
