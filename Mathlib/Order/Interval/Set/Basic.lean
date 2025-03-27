@@ -83,8 +83,6 @@ theorem right_mem_Iic : a ∈ Iic a := by simp
 theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
   rfl
 
-@[deprecated (since := "2025-03-27")] alias dual_Ici := Ici_toDual
-
 @[deprecated (since := "2025-03-20")]
 alias dual_Ici := Ici_toDual
 
@@ -145,43 +143,29 @@ theorem Ici_ofDual {x : αᵒᵈ} : Ici (ofDual x) = toDual ⁻¹' Iic x :=
 theorem Iic_ofDual {x : αᵒᵈ} : Iic (ofDual x) = toDual ⁻¹' Ici x :=
   rfl
 
-@[deprecated (since := "2025-03-27")] alias dual_Iic := Iic_ofDual
-
 @[simp]
 theorem Ioi_ofDual {x : αᵒᵈ} : Ioi (ofDual x) = toDual ⁻¹' Iio x :=
   rfl
-
-@[deprecated (since := "2025-03-27")] alias dual_Ioi := Ioi_ofDual
 
 @[simp]
 theorem Iio_ofDual {x : αᵒᵈ} : Iio (ofDual x) = toDual ⁻¹' Ioi x :=
   rfl
 
-@[deprecated (since := "2025-03-27")] alias dual_Iio := Iio_ofDual
-
 @[simp]
 theorem Icc_ofDual {x y : αᵒᵈ} : Icc (ofDual y) (ofDual x) = toDual ⁻¹' Icc x y :=
   Set.ext fun _ => and_comm
-
-@[deprecated (since := "2025-03-27")] alias dual_Icc := Icc_ofDual
 
 @[simp]
 theorem Ico_ofDual {x y : αᵒᵈ} : Ico (ofDual y) (ofDual x) = toDual ⁻¹' Ioc x y :=
   Set.ext fun _ => and_comm
 
-@[deprecated (since := "2025-03-27")] alias dual_Ioc := Ico_ofDual
-
 @[simp]
 theorem Ioc_ofDual {x y : αᵒᵈ} : Ioc (ofDual y) (ofDual x) = toDual ⁻¹' Ico x y :=
   Set.ext fun _ => and_comm
 
-@[deprecated (since := "2025-03-27")] alias dual_Ico := Ioc_ofDual
-
 @[simp]
 theorem Ioo_ofDual {x y : αᵒᵈ} : Ioo (ofDual y) (ofDual x) = toDual ⁻¹' Ioo x y :=
   Set.ext fun _ => and_comm
-
-@[deprecated (since := "2025-03-27")] alias dual_Ioo := Ioo_ofDual
 
 @[simp]
 theorem nonempty_Icc : (Icc a b).Nonempty ↔ a ≤ b :=

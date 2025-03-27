@@ -139,8 +139,6 @@ theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
 
 @[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
-@[deprecated (since := "2025-03-26")] alias instUniformAddGroup := instIsUniformAddGroup
-
 end WithPiTopology
 
 end Uniform
