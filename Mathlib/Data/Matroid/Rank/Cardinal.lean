@@ -3,8 +3,9 @@ Copyright (c) 2025 Peter Nelson and Junyan Xu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Junyan Xu
 -/
-import Mathlib.Data.Matroid.Rank.ENat
 import Mathlib.Data.Matroid.Map
+import Mathlib.Data.Matroid.Rank.ENat
+import Mathlib.Data.Matroid.Rank.Finite
 import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
