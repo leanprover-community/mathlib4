@@ -690,7 +690,7 @@ instance instStarAddMonoid : StarAddMonoid (lp E p) where
   star_add _f _g := ext <| star_add (R := ∀ i, E i) _ _
 
 instance [hp : Fact (1 ≤ p)] : NormedStarGroup (lp E p) where
-  norm_star f := by
+  norm_star_le f := le_of_eq <| by
     rcases p.trichotomy with (rfl | rfl | h)
     · exfalso
       have := ENNReal.toReal_mono ENNReal.zero_ne_top hp.elim
