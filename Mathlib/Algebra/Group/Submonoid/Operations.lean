@@ -302,6 +302,14 @@ theorem map_bot (f : F) : (⊥ : Submonoid M).map f = ⊥ :=
   (gc_map_comap f).l_bot
 
 @[to_additive (attr := simp)]
+theorem map_top_of_surjective (f : M →* N) (h : Function.Surjective f) :
+    Submonoid.map f ⊤ = ⊤ := by
+  rw [eq_top_iff]
+  intro x _
+  obtain ⟨y, hy⟩ := h x
+  exact ⟨y, trivial, hy⟩
+
+@[to_additive (attr := simp)]
 theorem comap_top (f : F) : (⊤ : Submonoid N).comap f = ⊤ :=
   (gc_map_comap f).u_top
 
