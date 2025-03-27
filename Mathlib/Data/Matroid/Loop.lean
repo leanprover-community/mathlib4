@@ -24,9 +24,12 @@ as well as predicates `Matroid.IsLoop M : α → Prop` and `Matroid.IsNonloop M 
 and provides API for interacting with them.
 
 # Coloops
-The dual notion of a loop is a 'coloop'. These elements are 'maximally free' in the same way
-that loops are minimaly free, and also have many equivalent definitions;
-in fact, a coloop is an element of `M.E` satisfying any of the following conditions:
+The dual notion of a loop is a 'coloop'. Geometrically, these can be thought of elements that are
+skew to the remainder of the matroid. Coloops in graphic matroids are 'bridge' edges of the graph,
+and coloops in linearly representable matroids are vectors not spanned by the other vectors
+in the elements of the matroid.
+Coloops also have many equivalent definitions in abstract matroid language;
+a coloop is an element of `M.E` if any of the following equivalent conditions holds :
 * `e` is a loop of `M✶`;
 * `{e}` is a cocircuit of `M`;
 * `e` is in no circuit of `M`;
