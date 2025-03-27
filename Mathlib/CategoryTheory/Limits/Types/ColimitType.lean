@@ -106,15 +106,15 @@ def coconeTypes : F.CoconeTypes where
 
 /-- An heterogeneous universe version of the universal property of the colimit is
 satisfied by `F.ColimitType` together the maps `F.ιColimitType j`. -/
-def descColimitType (c : F.CoconeTypes) : F.ColimitType → c.pt :=
+def descColimitType (c : CoconeTypes.{w₁} F) : F.ColimitType → c.pt :=
   Quot.lift (fun ⟨j, x⟩ ↦ c.ι j x) (by rintro _ _ ⟨_, _⟩; aesop)
 
 @[simp]
-lemma descColimitType_comp_ι (c : F.CoconeTypes) (j : J) :
+lemma descColimitType_comp_ι (c : CoconeTypes.{w₁} F) (j : J) :
     (F.descColimitType c).comp (F.ιColimitType j) = c.ι j := rfl
 
 @[simp]
-lemma descColimitType_ιColimitType_apply (c : F.CoconeTypes) (j : J) (x : F.obj j) :
+lemma descColimitType_ιColimitType_apply (c : CoconeTypes.{w₁} F) (j : J) (x : F.obj j) :
     F.descColimitType c (F.ιColimitType j x) = c.ι j x := rfl
 
 namespace CoconeTypes
