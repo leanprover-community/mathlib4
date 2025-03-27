@@ -220,6 +220,11 @@ theorem isCoskeletal (sx : StrictSegal X) :
     SimplicialObject.IsCoskeletal X 2 where
   isRightKanExtension := sx.isRightKanExtension
 
+/-- When `X` satisfies `IsStrictSegal`, `X` is 2-coskeletal. -/
+instance isCoskeletal' [IsStrictSegal X] :
+    SimplicialObject.IsCoskeletal X 2 where
+  isRightKanExtension := isRightKanExtension <| ofIsStrictSegal X
+
 end StrictSegal
 
 end
@@ -233,7 +238,7 @@ namespace Nerve
 open SSet
 
 instance (C : Type u) [Category.{v} C] :
-    SimplicialObject.IsCoskeletal (nerve C) 2 := strictSegal C |>.isCoskeletal
+    SimplicialObject.IsCoskeletal (nerve C) 2 := inferInstance
 
 /-- The essential data of the nerve functor is contained in the 2-truncation, which is
 recorded by the composite functor `nerveFunctor₂`. -/
