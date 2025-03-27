@@ -137,6 +137,8 @@ theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
     IsUniformAddGroup (PowerSeries R) :=
   MvPowerSeries.WithPiTopology.instIsUniformAddGroup
 
+@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
+
 @[deprecated (since := "2025-03-26")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end WithPiTopology

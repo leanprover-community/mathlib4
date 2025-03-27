@@ -58,6 +58,8 @@ theorem smul_finsum_mem {f : γ → β} {s : Set γ} (hs : s.Finite) :
     r • ∑ᶠ x ∈ s, f x = ∑ᶠ x ∈ s, r • f x :=
   (DistribSMul.toAddMonoidHom β r).map_finsum_mem f hs
 
+@[deprecated (since := "2025-03-27")] alias Finset.smul_sum := smul_finsum_mem
+
 end
 
 section

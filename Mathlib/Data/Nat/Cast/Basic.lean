@@ -207,6 +207,8 @@ theorem ofNat_apply (n : ℕ) [∀ i, OfNat (π i) n] (a : α) : (ofNat(n) : ∀
 
 lemma ofNat_def (n : ℕ) [∀ i, OfNat (π i) n] : (ofNat(n) : ∀ a, π a) = fun _ ↦ ofNat(n) := rfl
 
+@[deprecated (since := "2025-03-27")] alias ofNat_apply := ofNat_def
+
 end OfNat
 
 end Pi
