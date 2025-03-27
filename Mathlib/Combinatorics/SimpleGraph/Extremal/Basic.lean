@@ -134,37 +134,43 @@ end ExtremalNumber
 
 section IsExtremal
 
-variable {n : ℕ} {V W : Type*} {G : SimpleGraph V} {H : SimpleGraph W}
+variable {V W : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
 
 /-- `G` is an extremal graph satisfying `p` if `G` has the maximum number of edges of any simple
 graph satisfying `p`. -/
-def IsExtremal [Fintype V] (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → Prop) :=
+def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → Prop) :=
   p G ∧ ∀ (H : SimpleGraph V) [DecidableRel H.Adj], p H → #H.edgeFinset ≤ #G.edgeFinset
+
+lemma IsExtremal.prop {p : SimpleGraph V → Prop} (h : G.IsExtremal p) : p G := h.1
 
 open Classical in
 /-- If one simple graph satisfies `p`, then there exists an extremal graph satisfying `p`. -/
-theorem exists_isExtremal_iff_exists
-    [Fintype V] (p : SimpleGraph V → Prop) [DecidablePred p] :
-    (∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal p) ↔ ∃ G', p G' := by
-  refine ⟨fun ⟨_, _, h⟩ ↦ ⟨_, h.1⟩, fun ⟨G', hp'⟩ ↦ ?_⟩
-  obtain ⟨G, hp, h⟩ := by
+theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
+    (∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal p) ↔ ∃ G, p G := by
+  refine ⟨fun ⟨_, _, h⟩ ↦ ⟨_, h.1⟩, fun ⟨G, hp⟩ ↦ ?_⟩
+  obtain ⟨G', hp', h⟩ := by
     apply exists_max_image { G | p G } (#·.edgeFinset)
-    use G', by simpa using hp'
-  use G, inferInstanceAs (DecidableRel G.Adj)
-  exact ⟨by simpa using hp, fun _ _ hp' ↦ by convert h _ (by simpa using hp')⟩
+    use G, by simpa using hp
+  use G', inferInstanceAs (DecidableRel G'.Adj)
+  exact ⟨by simpa using hp', fun _ _ hp ↦ by convert h _ (by simpa using hp)⟩
+
+variable {H : SimpleGraph W}
 
 open Classical in
 /-- If `H` has one edge, then exist an `H.Free` extremal graph. -/
-theorem exists_isExtremal_free [Fintype V] (h : H ≠ ⊥) :
+theorem exists_isExtremal_free (h : H ≠ ⊥) :
     ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
   (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
 
 /-- `H`-free extremal graphs are `H`-free simple graphs having `extremalNumber (card V) H` many
 edges. -/
-theorem isExtremal_free_iff [Fintype V] [DecidableRel G.Adj] :
+theorem isExtremal_free_iff :
     G.IsExtremal H.Free ↔ (H.Free G) ∧ #G.edgeFinset = extremalNumber (card V) H := by
   rw [IsExtremal, and_congr_right_iff, ← extremalNumber_le_iff]
   exact fun h ↦ ⟨eq_of_le_of_le (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
+
+lemma card_edgeFinset_of_isExtremal_free (h : G.IsExtremal H.Free) :
+    #G.edgeFinset = extremalNumber (card V) H := (isExtremal_free_iff.mp h).2
 
 end IsExtremal
 
