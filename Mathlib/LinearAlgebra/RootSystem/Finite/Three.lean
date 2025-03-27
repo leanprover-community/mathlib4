@@ -5,8 +5,8 @@ Authors: Scott Carnahan
 -/
 import Mathlib.LinearAlgebra.RootSystem.CartanMatrix
 import Mathlib.LinearAlgebra.RootSystem.Finite.Nondegenerate
-import Mathlib.LinearAlgebra.RootSystem.Irreducible
-import Mathlib.LinearAlgebra.RootSystem.WeylGroup
+--import Mathlib.LinearAlgebra.RootSystem.Irreducible
+--import Mathlib.LinearAlgebra.RootSystem.WeylGroup
 
 
 /-!
@@ -51,10 +51,43 @@ lemma pairingIn_neg_one_of_neg_three [Finite ι] [NoZeroDivisors R] (i j : b.sup
   omega
 
 lemma pairingIn_neg_one_of_neg_three' [Finite ι] [NoZeroDivisors R] (i j : b.support)
-    (h3 : P.pairingIn ℤ i j = -3) :
+    (h3 : b.cartanMatrixIn ℤ i j = -3) :
     P.pairingIn ℤ j i = -1 := by
+  rw [cartanMatrixIn] at h3
   have h₁ := P.pairingIn_pairingIn_mem_set_of_isCrystallographic i j
   aesop
+
+lemma three_mul_posRootForm_posForm_apply_self [Fintype ι] [NoZeroDivisors R] (i j : b.support)
+    (h3 : b.cartanMatrixIn ℤ i j = -3) :
+    3 * (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ j) (P.rootSpanMem ℤ j) =
+      -2 * (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ j) := by
+  have h3' : 3 = - P.pairingIn ℤ i j := by rwa [Int.eq_neg_comm] at h3
+  rw [h3', Int.neg_mul, ← RootPositiveForm.two_mul_posForm_apply_root_root, Int.neg_mul_eq_neg_mul]
+
+lemma three_mul_posRootForm_posForm [Fintype ι] [NoZeroDivisors R] (i j : b.support)
+    (h3 : b.cartanMatrixIn ℤ i j = -3) :
+    3 * (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ j) (P.rootSpanMem ℤ j) =
+      (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i) (P.rootSpanMem ℤ i) := by
+  rw [three_mul_posRootForm_posForm_apply_self b i j h3, Int.neg_mul,
+    ← (RootPositiveForm.isSymm_posForm (P.posRootForm ℤ)).eq (P.rootSpanMem ℤ j), RingHom.id_apply,
+    RootPositiveForm.two_mul_posForm_apply_root_root, pairingIn_neg_one_of_neg_three' b i j h3]
+  simp
+
+lemma CartanWeights [Fintype ι] [NoZeroDivisors R] (f : b.support → ℤ) :
+    letI : Fintype b.support := Fintype.ofFinite b.support
+    (P.posRootForm ℤ).posForm (∑ i : b.support, f i • P.rootSpanMem ℤ i)
+      (∑ i : b.support, f i • P.rootSpanMem ℤ i) =
+    ∑ i : b.support × b.support, (f i.1 * f i.2) *
+      (P.posRootForm ℤ).posForm (P.rootSpanMem ℤ i.2) (P.rootSpanMem ℤ i.1) := by
+  letI : Fintype b.support := Fintype.ofFinite b.support
+  rw [map_sum, map_sum]
+  simp_rw [map_smul, LinearMap.sum_apply, LinearMap.smul_apply, Finset.smul_sum]
+  rw [@Fintype.sum_prod_type]
+  refine Finset.sum_congr rfl ?_
+  intro j hj
+  refine Finset.sum_congr rfl ?_
+  intro k hk
+  simp only [smul_eq_mul, mul_assoc]
 
 /-!
 lemma pairingIn_left_zero_of_pairingIn_neg_three [Finite ι] [NoZeroDivisors R]
@@ -93,7 +126,7 @@ lemma pairingIn_left_zero_of_pairingIn_neg_three [Finite ι] [NoZeroDivisors R]
     intro a _
     exact Submodule.subset_span (mem_range_self (f := P.root) a)
   have := P.posRootForm_posForm_pos_of_ne_zero ℤ (x := ⟨v, hsp⟩) (Subtype.coe_ne_coe.mp hne)
-  suffices ((P.posRootForm ℤ).posForm ⟨v, hsp⟩) ⟨v, hsp⟩ ≤ 0 by linarith
+  suffices (P.posRootForm ℤ).posForm ⟨v, hsp⟩ ⟨v, hsp⟩ ≤ 0 by linarith
   rw [posRootForm_posForm_apply_apply]
 
   sorry

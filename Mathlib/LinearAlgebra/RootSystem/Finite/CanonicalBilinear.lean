@@ -7,18 +7,16 @@ import Mathlib.Algebra.Ring.SumsOfSquares
 import Mathlib.LinearAlgebra.RootSystem.RootPositive
 
 /-!
-# The polarization of a finite root pairing
+# The canonical bilinear form on a finite root pairing
 
 Given a finite root pairing, we define a canonical map from weight space to coweight space, and the
-corresponding bilinear form.  This form is symmetric and Weyl-invariant, and if the base ring is
-linearly ordered, the form is root-positive, positive-semidefinite on the weight space, and
+corresponding bilinear form. This form is symmetric and Weyl-invariant, and if the base ring is
+linearly ordered, then the form is root-positive, positive-semidefinite on the weight space, and
 positive-definite on the span of roots.
 
 From these facts, it is easy to show that Coxeter weights in a finite root pairing are bounded
-above by 4.  Thus, the pairings of roots and coroots in a root pairing are restricted to the
-interval `[-4, 4]`.  Furthermore, a linearly independent pair of roots cannot have Coxeter weight 4.
-For the case of crystallographic root pairings, we are thus reduced to a finite set of possible
-options for each pair.
+above by 4. Thus, the pairings of roots and coroots in a crystallographic root pairing are
+restricted to a small finite set of possibilities.
 
 Another application is to the faithfulness of the Weyl group action on roots, and finiteness of the
 Weyl group.

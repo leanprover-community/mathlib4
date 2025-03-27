@@ -109,7 +109,6 @@ lemma finrank_rootSpan_map_polarization_eq_finrank_corootSpan :
   rw [← LinearMap.range_domRestrict]
   apply (Submodule.finrank_mono P.range_polarization_domRestrict_le_span_coroot).antisymm
   have : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
-  have : NoZeroSMulDivisors R N := by exact instNoZeroSMulDivisorsOfIsDomain R N
   have h_ne : ∏ i, P.RootForm (P.root i) (P.root i) ≠ 0 :=
     Finset.prod_ne_zero_iff.mpr fun i _ ↦ IsAnisotropic.rootForm_root_ne_zero i
   refine LinearMap.finrank_le_of_isSMulRegular P.corootSpan

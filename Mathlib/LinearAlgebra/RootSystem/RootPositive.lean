@@ -185,19 +185,20 @@ lemma isSymm_posForm :
   apply FaithfulSMul.algebraMap_injective S R
   simpa using B.symm.eq x y
 
-@[simp]
-lemma zero_lt_apply_root_root_iff
-    (hi : P.root i ∈ span S (range P.root) := subset_span (mem_range_self i))
-    (hj : P.root j ∈ span S (range P.root) := subset_span (mem_range_self j)) :
-    0 < B.posForm ⟨P.root i, hi⟩ ⟨P.root j, hj⟩ ↔ 0 < P.pairingIn S i j := by
-  let ri : span S (range P.root) := ⟨P.root i, hi⟩
-  let rj : span S (range P.root) := ⟨P.root j, hj⟩
-  have : 2 * B.posForm ri rj = P.pairingIn S i j * B.posForm rj rj := by
+lemma two_mul_posForm_apply_root_root :
+    2 * B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) =
+      P.pairingIn S i j * B.posForm (P.rootSpanMem S j) (P.rootSpanMem S j) := by
     apply FaithfulSMul.algebraMap_injective S R
     simpa [map_ofNat] using B.toInvariantForm.two_mul_apply_root_root i j
-  calc  0 < B.posForm ri rj
-      ↔ 0 < 2 * B.posForm ri rj := by rw [mul_pos_iff_of_pos_left zero_lt_two]
-    _ ↔ 0 < P.pairingIn S i j * B.posForm rj rj := by rw [this]
+
+@[simp]
+lemma zero_lt_apply_root_root_iff :
+    0 < B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) ↔ 0 < P.pairingIn S i j := by
+  calc  0 < B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j)
+      ↔ 0 < 2 * B.posForm (P.rootSpanMem S i) (P.rootSpanMem S j) := by
+          rw [mul_pos_iff_of_pos_left zero_lt_two]
+    _ ↔ 0 < P.pairingIn S i j * B.posForm (P.rootSpanMem S j) (P.rootSpanMem S j) := by
+          rw [two_mul_posForm_apply_root_root]
     _ ↔ 0 < P.pairingIn S i j := by rw [mul_pos_iff_of_pos_right (B.zero_lt_posForm_apply_root j)]
 
 end RootPositiveForm
