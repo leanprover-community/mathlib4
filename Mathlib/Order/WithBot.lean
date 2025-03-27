@@ -11,7 +11,6 @@ import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
 import Mathlib.Order.Lattice
 import Mathlib.Order.BoundedOrder.Basic
-import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Util.WhatsNew
 
 /-!
@@ -213,9 +212,9 @@ lemma le_def : x ≤ y ↔ ∀ a : α, x = ↑a → ∃ b : α, y = ↑b ∧ a �
 
 @[simp, norm_cast] lemma coe_le_coe : (a : WithBot α) ≤ b ↔ a ≤ b := by simp [le_def]
 
-lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := nofun
+lemma not_coe_le_bot (a : α) : ¬(a : WithBot α) ≤ ⊥ := by simp [le_def]
 
-instance orderBot : OrderBot (WithBot α) where bot_le := by rintro (_ | _) <;> trivial
+instance orderBot : OrderBot (WithBot α) where bot_le := by simp [le_def]
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where le_top x := by cases x <;> simp [le_def]
 
@@ -262,8 +261,8 @@ lemma lt_def : x < y ↔ ∃ b : α, y = ↑b ∧ ∀ a : α, x = ↑a → a < b
   cases x <;> cases y <;> simp [LT.lt]
 
 @[simp, norm_cast] lemma coe_lt_coe : (a : WithBot α) < b ↔ a < b := by simp [lt_def]
-@[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := trivial
-@[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := by cases a <;> exact not_false
+@[simp] lemma bot_lt_coe (a : α) : ⊥ < (a : WithBot α) := by simp [lt_def]
+@[simp] protected lemma not_lt_bot (a : WithBot α) : ¬a < ⊥ := by simp [lt_def]
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ b : α, b = y ∧ x < b := by cases y <;> simp
 
@@ -437,13 +436,10 @@ instance _root_.WithBot.instWellFoundedGT [LT α] [WellFoundedGT α] : WellFound
     | ⊥ => .intro _ fun | (b : α), _ => acc_some b
 
 instance denselyOrdered [LT α] [DenselyOrdered α] [NoMinOrder α] : DenselyOrdered (WithBot α) where
-  dense := fun
-    | ⊥, (b : α), _ =>
-      let ⟨a, ha⟩ := exists_lt b
-      ⟨a, by simpa⟩
-    | (a : α), (b : α), hab =>
-      let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab)
-      ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
+  dense
+  | ⊥, (b : α), _ => let ⟨a, ha⟩ := exists_lt b; ⟨a, by simpa⟩
+  | (a : α), (b : α), hab =>
+    let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab); ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMinOrder α] {a b : WithBot α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
@@ -763,9 +759,9 @@ instance (priority := 10) instLT : LT (WithTop α) where
 lemma lt_def : x < y ↔ ∃ a : α, x = ↑a ∧ ∀ b : α, y = ↑b → a < b := by
   cases x <;> cases y <;> simp [LT.lt]
 
-@[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [LT.lt]
-@[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := trivial
-@[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by cases a <;> exact not_false
+@[simp, norm_cast] lemma coe_lt_coe : (a : WithTop α) < b ↔ a < b := by simp [lt_def]
+@[simp] lemma coe_lt_top (a : α) : (a : WithTop α) < ⊤ := by simp [lt_def]
+@[simp] protected lemma not_top_lt (a : WithTop α) : ¬⊤ < a := by simp [lt_def]
 
 lemma lt_iff_exists_coe : x < y ↔ ∃ a : α, a = x ∧ a < y := by cases x <;> simp
 
@@ -961,13 +957,10 @@ instance _root_.WithBot.isWellOrder.gt [Preorder α] [h : IsWellOrder α (· > �
   trichotomous x y := by cases x <;> cases y <;> simp; simpa using trichotomous_of (· > ·) ..
 
 instance [LT α] [DenselyOrdered α] [NoMaxOrder α] : DenselyOrdered (WithTop α) where
-  dense := fun
-    | (a : α), ⊤, _ =>
-      let ⟨b, hb⟩ := exists_gt a
-      ⟨b, by simpa⟩
-    | (a : α), (b : α), hab =>
-      let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab)
-      ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
+  dense
+  | (a : α), ⊤, _ => let ⟨b, hb⟩ := exists_gt a; ⟨b, by simpa⟩
+  | (a : α), (b : α), hab =>
+    let ⟨c, hac, hcb⟩ := exists_between (coe_lt_coe.1 hab); ⟨c, coe_lt_coe.2 hac, coe_lt_coe.2 hcb⟩
 
 theorem lt_iff_exists_coe_btwn [Preorder α] [DenselyOrdered α] [NoMaxOrder α] {a b : WithTop α} :
     a < b ↔ ∃ x : α, a < ↑x ∧ ↑x < b :=
