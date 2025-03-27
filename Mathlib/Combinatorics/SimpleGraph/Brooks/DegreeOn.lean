@@ -1,18 +1,22 @@
 import Mathlib.Combinatorics.SimpleGraph.Finite
 set_option linter.style.header false
 namespace SimpleGraph
-variable {α : Type*} {G : SimpleGraph α}
+variable {α : Type*} (G : SimpleGraph α)
 open Finset
 
 section degreeOn
-
-variable  [DecidableRel G.Adj] [Fintype α]
 open Finset
 
-variable [DecidableEq α]
-variable (G) in
+variable [DecidableEq α] [LocallyFinite G]
+
+section withDecRel
+variable [DecidableRel G.Adj]
+/-- `G.degreeOn s a` is the number of neighbors of `a` in `s` -/
 abbrev degreeOn (s : Finset α) (a : α) : ℕ := #(G.neighborFinset a ∩ s)
 
+end withDecRel
+
+variable {G}
 lemma degreeOn.mono {s t : Finset α} {a : α} (h : s ⊆ t) : G.degreeOn s a ≤ G.degreeOn t a :=
     card_le_card fun _ hv ↦ mem_inter.2 ⟨(mem_inter.1 hv).1, h (mem_inter.1 hv).2⟩
 
@@ -23,8 +27,7 @@ lemma degreeOn_erase (s : Finset α) (a : α) : G.degreeOn (s.erase a) a = G.deg
   rw [mem_inter, mem_neighborFinset] at *
   use hv.1, mem_erase_of_ne_of_mem (fun hf ↦ G.loopless _ (hf ▸ hv.1)) hv.2
 
-lemma degreeOn_le_degree (s : Finset α) (a : α) :
-    G.degreeOn s a ≤ G.degree a := by
+lemma degreeOn_le_degree (s : Finset α) (a : α) : G.degreeOn s a ≤ G.degree a := by
   rw [degreeOn, degree]
   apply card_le_card
   intro m hm

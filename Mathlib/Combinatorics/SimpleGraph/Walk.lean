@@ -1002,13 +1002,17 @@ theorem length_take {u v : V} {n : ℕ} (p : G.Walk u v) (hn : n ≤ p.length) :
       simp_rw [take_cons_succ, length_cons, add_left_inj] at *
       exact ih _ (Nat.le_of_lt_succ hn)
 
+theorem length_take_eq_iff {u v : V} {n : ℕ} (p : G.Walk u v) :
+    (p.take n).length = n ↔ n ≤ p.length :=
+  ⟨fun h ↦ h.symm ▸ length_take_le_length .., fun h ↦ length_take p h⟩
+
 theorem length_drop {u v : V} {n : ℕ} (p : G.Walk u v) (hn : n ≤ p.length) :
     (p.drop n).length = p.length - n := by
   have := congr_arg Walk.length (take_append_drop p n)
   rw [length_append, length_take _ hn] at this
   omega
 
-lemma getVert_take {u v : V} {m n : ℕ} {p : G.Walk u v} :
+lemma getVert_take {u v : V} (p : G.Walk u v) (m n : ℕ) :
    (p.take m).getVert n = if (m ≤ n) then p.getVert m else p.getVert n := by
   by_cases h : m < p.length
   · split_ifs with h1
@@ -1024,14 +1028,14 @@ lemma getVert_take {u v : V} {m n : ℕ} {p : G.Walk u v} :
           | zero => simp
           | succ n =>
             simp_rw [length_cons, Nat.add_lt_add_iff_right] at *
-            exact ih h h1
+            exact ih _ _ h h1
   · push_neg at h
     rw [take_length_le p h, getVert_copy]
     split_ifs with h1
     · rw [getVert_of_length_le p h, getVert_of_length_le p (h.trans h1)]
     · rfl
 
-lemma getVert_drop {u v : V} {m n : ℕ} {p : G.Walk u v} :
+lemma getVert_drop {u v : V} (p : G.Walk u v) (m n : ℕ) :
    (p.drop m).getVert n = p.getVert (m + n) := by
   by_cases h : p.length ≤ m
   · rw [drop_length_le _ h, p.getVert_of_length_le (Nat.le_add_right_of_le h)]
@@ -1047,7 +1051,7 @@ lemma getVert_drop {u v : V} {m n : ℕ} {p : G.Walk u v} :
         | zero => simp
         | succ n =>
           simp_rw [ Nat.succ_add, getVert_cons_succ, length_cons, Nat.add_lt_add_iff_right] at *
-          exact ih h
+          exact ih _ _ h
 
 /-- The walk obtained by rotating `n` darts around a closed walk. -/
 def rotate' {u : V} (p : G.Walk u u) (n : ℕ) : G.Walk (p.getVert n) (p.getVert n) :=

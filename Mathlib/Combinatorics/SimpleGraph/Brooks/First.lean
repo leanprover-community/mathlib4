@@ -3,10 +3,13 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkDecomp
 set_option linter.style.header false
 namespace SimpleGraph
 namespace Walk
-open Finset
+open Finset List
+
 variable  {α : Type*} {G : SimpleGraph α} {u v w x y a b : α} {p q : G.Walk u v} {n : ℕ}
 section LFDEq
 variable [DecidableEq α]
+/-- If a path `q : G.Walk u v` is contained in a Finset `s` then we can extend it to a path `p ++ q`
+contained in `s` such that `p : G.Walk x u` and `x` has no neighbors in `s` but not in `p ++ q`. -/
 lemma exists_maximal_path_subset (s : Finset α) (hq : q.IsPath) (hs : ∀ y , y ∈ q.support → y ∈ s) :
     ∃ x, ∃ p : G.Walk x u, (p.append q).IsPath ∧ (∀ y, y ∈ (p.append q).support → y ∈ s) ∧
     ∀ y, G.Adj x y → y ∈ s → y ∈ (p.append q).support := by
@@ -15,17 +18,17 @@ lemma exists_maximal_path_subset (s : Finset α) (hq : q.IsPath) (hs : ∀ y , y
     n ≤ (p.append q).length := by
     intro n
     induction n with
-    | zero => exact ⟨u, Walk.nil, by simpa using ⟨hq, hs⟩⟩
+    | zero => exact ⟨u, .nil, by simpa using ⟨hq, hs⟩⟩
     | succ n ih =>
       obtain ⟨x, p, hp, hs, hc⟩ := ih
       obtain ⟨y, hy⟩ := hf x p hp hs
       exact ⟨y, p.cons hy.1.symm, by aesop⟩
-  obtain ⟨_, _, hp, hc⟩ := this #s
-  simp_rw [← List.mem_toFinset] at hc
-  have := length_support _ ▸ ((List.toFinset_card_of_nodup hp.2) ▸ (card_le_card hc.1))
-  exact Nat.not_succ_le_self _ (this.trans hc.2)
+  obtain ⟨_, _, hp, hc1, hc2⟩ := this #s
+  simp_rw [← mem_toFinset] at hc1
+  have := length_support _ ▸ ((toFinset_card_of_nodup hp.2) ▸ (card_le_card hc1))
+  exact hc2.not_lt this
 
-open List
+
 lemma IsPath.support_takeUntil_disjoint_dropUntil_tail (hp : p.IsPath) (hx : x ∈ p.support) :
     Disjoint (p.takeUntil x hx).support (p.dropUntil x hx).support.tail := by
   rw [← p.take_spec hx, append_isPath_iff] at hp
@@ -135,6 +138,43 @@ lemma dropUntil_of_drop (hx : x ∈ (p.drop n).support) (hxn : x ∉ (p.take n).
 
 end withDecEq
 
+lemma mem_support_take {m n : ℕ} (p : G.Walk u v) (h : m ≤ n) :
+    p.getVert m ∈ (p.take n).support := by
+  have := getVert_take p n m
+  cases h.lt_or_eq with
+  | inl h =>
+    rw [if_neg h.not_le] at this
+    rw [← this]
+    exact getVert_mem_support ..
+  | inr h =>
+    rw [if_pos h.symm.le] at this
+    simp_rw [h, ← this]
+    exact getVert_mem_support ..
+
+lemma mem_support_take_iff (p : G.Walk u v) (n : ℕ) :
+    x ∈ (p.take n).support ↔ ∃ m ≤ n, p.getVert m = x := by
+  classical
+  constructor <;> intro h
+  · exact ⟨_, length_takeUntil_le_of_mem_take h,
+      getVert_length_takeUntil_eq_self p (support_take_subset p n h)⟩
+  · obtain ⟨m, hm , hx⟩ := h
+    exact hx.symm ▸ mem_support_take  _ hm
+
+lemma mem_support_drop {m n : ℕ} (p : G.Walk u v) (hn : m ≤ n) :
+    p.getVert n ∈ (p.drop m).support := by
+  have : (p.drop m).getVert (n - m) = p.getVert n := by
+    rw [getVert_drop, Nat.add_sub_of_le hn]
+  exact this.symm ▸ getVert_mem_support ..
+
+lemma mem_support_drop_iff (p : G.Walk u v) (n : ℕ) :
+    x ∈ (p.drop n).support ↔ ∃ m, n ≤ m ∧ p.getVert m = x := by
+  classical
+  constructor <;> intro h
+  · rw [← getVert_length_takeUntil_eq_self _ h, getVert_drop]
+    exact ⟨_, Nat.le_add_right .., rfl⟩
+  · obtain ⟨m, hm , hx⟩ := h
+    exact hx.symm ▸ mem_support_drop  _ hm
+
 variable {S : Set α}
 /-- Given a walk that contains the set S, there is a first vertex of the walk in the
  set. -/
@@ -144,36 +184,19 @@ lemma exists_getVert_first (p : G.Walk u v) (hy : y ∈ S ) (h : ∀ x, x ∈ S 
   obtain ⟨n, hn1, hn2, hn3⟩ := getVert_find_first (p.takeUntil _ (h y hy)) hy
   simp_rw [getVert_takeUntil (h y hy) hn1] at *
   use n, hn2
-  contrapose! hn3
-  obtain ⟨x, hx1, hx2⟩ := hn3
-  have hx' : x ∈ (p.take n).support ∧ x ≠ p.getVert n := by
-    simp_rw [← take_append_drop p n, support_append, List.mem_append] at h
-    cases h x hx1 with
-    | inl h =>
-      refine ⟨h, ?_⟩
-      rintro rfl; apply hx2 <| start_mem_support (p.drop n)
-    | inr h => exact (hx2 <| List.mem_of_mem_tail h).elim
-  have := p.getVert_length_takeUntil_eq_self (h x hx1)
-  use (p.takeUntil _ (h x hx1)).length
-  have hl :(p.takeUntil x (h x hx1)).length < n := by
-    cases (length_takeUntil_le_of_mem_take hx'.1).lt_or_eq with
-    | inl h => exact h
-    | inr h =>
-      exfalso
-      apply hx'.2.symm
-      rwa [← h]
-  constructor
-  · exact hl
-  · rw [getVert_takeUntil _ (hl.le.trans hn1)]
-    rwa [← this] at hx1
-
-lemma mem_support_drop_le {m n : ℕ} (p : G.Walk u v) (hn : m ≤ n) :
-    p.getVert n ∈ (p.drop m).support := by
-  have : (p.drop m).getVert (n - m) = p.getVert n := by
-    rw [getVert_drop]
-    congr!; omega
-  rw [← this]
-  exact getVert_mem_support _ _
+  conv at hn3 =>
+    enter [2]; intro h'
+    rw [getVert_takeUntil (h y hy) (h'.le.trans hn1)]
+  intro x hx
+  have := h x hx
+  rw [← take_append_drop p n, mem_support_append_iff] at this
+  cases this with
+  | inl h =>
+    obtain ⟨m, h, h1⟩ := (mem_support_take_iff p n).1 h
+    cases h.lt_or_eq with
+    | inl h => exact ((h1 ▸ hn3 _ h) hx).elim
+    | inr h => exact (h ▸ h1).symm ▸ (start_mem_support (p.drop n))
+  | inr h => exact h
 
 lemma IsPath.cons_drop_isCycle {n : ℕ} (hp : p.IsPath) (ha : G.Adj v (p.getVert n))
     (hs : p.getVert n ≠ p.penultimate) : ((p.drop n).cons ha).IsCycle :=

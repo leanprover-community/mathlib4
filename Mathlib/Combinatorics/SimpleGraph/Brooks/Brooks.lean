@@ -189,7 +189,7 @@ theorem BrooksPartial (hk : 3 ≤ k) (hc : G.CliqueFree (k + 1)) (hbdd : ∀ v, 
       have hcym : ∀ x, G.Adj vᵣ x → x ∈ c.support := by
         intro x hx; rw [support_cons]
         by_cases hxpen : x = p.penultimate
-        · exact hxpen ▸ List.mem_cons_of_mem _ (mem_support_drop_le _ (by omega))
+        · exact hxpen ▸ List.mem_cons_of_mem _ (mem_support_drop _ (by omega))
         · exact List.mem_cons_of_mem _ (hm.2 _ ⟨hx, hxpen⟩)
       have hsub : c.support.toFinset ⊂ s := by
         apply Finset.ssubset_of_subset_of_ssubset _ hssf

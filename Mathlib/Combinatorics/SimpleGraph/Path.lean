@@ -495,10 +495,9 @@ protected theorem IsCycle.rotate {u v : V} {c : G.Walk v v} (hc : c.IsCycle) (h 
   rw [List.IsRotated.nodup_iff (support_rotate _ _)]
   exact hc.support_nodup
 
-lemma IsCycle.isPath_dropUntil {u x : V} {p : G.Walk u u}  (hc : p.IsCycle)
-    (hx : x ∈ p.support) (hn : u ≠ x ) : (p.dropUntil _ hx).IsPath :=
+lemma IsCycle.isPath_dropUntil {u x : V} {p : G.Walk u u} (hc : p.IsCycle)
+    (hx : x ∈ p.support) (hn : u ≠ x) : (p.dropUntil _ hx).IsPath :=
   isPath_of_append_right (not_nil_of_ne hn) <| (take_spec p hx) ▸ hc
-
 
 lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.support) :
     (c.takeUntil w h).IsPath := by
