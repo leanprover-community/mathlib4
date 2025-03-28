@@ -40,7 +40,9 @@ def StructuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ 
 instance [IsConnected C] : (inclLeft C D).Initial where
   out x := match x with
     |.left c => by
-      let t : CostructuredArrow (inclLeft C D) (left c) := .mk (𝟙 (left c))
+      have I : Limits.IsTerminal (.mk (𝟙 (left c)) : CostructuredArrow (inclLeft C D) (left c)) := CostructuredArrow.mkIdTerminal
+      letI : Limits.HasTerminal (CostructuredArrow (inclLeft C D) (left c)) :=
+        Limits.hasTerminal_of_unique (.mk (𝟙 (left c)))
       sorry
       -- letI : Nonempty (CostructuredArrow (inclLeft C D) (left c)) := ⟨t⟩
       -- apply isConnected_of_zigzag
