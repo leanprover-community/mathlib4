@@ -34,14 +34,16 @@ variable [NormedDivisionRing α] {a : α}
 /-- Multiplication by a nonzero element `a` on the left
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
-def DilationEquiv.mulLeft (ha : a ≠ 0) : α ≃ᵈ α :=
-  { Dilation.mulLeft ha with toEquiv := Equiv.mulLeft₀ a ha }
+def DilationEquiv.mulLeft (ha : a ≠ 0) : α ≃ᵈ α where
+  __ := Dilation.mulLeft ha
+  toEquiv := Equiv.mulLeft₀ a ha
 
 /-- Multiplication by a nonzero element `a` on the right
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
-def DilationEquiv.mulRight (ha : a ≠ 0) : α ≃ᵈ α :=
-  { Dilation.mulRight ha with toEquiv := Equiv.mulRight₀ a ha }
+def DilationEquiv.mulRight (ha : a ≠ 0) : α ≃ᵈ α where
+  __ := Dilation.mulRight ha
+  toEquiv := Equiv.mulRight₀ a ha
 
 namespace Filter
 
