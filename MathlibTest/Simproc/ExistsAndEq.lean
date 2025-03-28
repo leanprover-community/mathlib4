@@ -1,6 +1,5 @@
--- import Mathlib.Tactic.Simproc.ExistsAndEq
--- import Mathlib.Tactic.Simproc.ExistsAndEqNested
-import Mathlib
+import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Simproc.ExistsAndEqNested
 
 universe u
 variable (α : Type u) (p q : α → Prop)
@@ -55,29 +54,17 @@ error: simp made no progress
 example {α : Type} : ∃ a : α, ∃ (b : α → α), b a = a := by
   simp only [existsAndEqNested]
 
--- set_option trace.Meta.Tactic.simp true
-
--- example {α β : Type} (f : β → α) {p q : β → Prop} :
---     (∃ x b, p b ∧ (∃ c, f c = x) ∧ (∃ d, q d ∧ f d = x) ∧ q b) =
---     ∃ b c, p b ∧ f c = f c ∧ (∃ d, q d ∧ f d = f c) ∧ q b := by
---   simp
-
--- -- #check exists_eq
--- attribute [-simp] exists_eq
--- -- #check exists_eq_left
--- attribute [-simp] exists_eq_left
--- -- #check exists_eq_left'
--- attribute [-simp] exists_eq_left'
--- -- #check exists_eq_right
--- attribute [-simp] exists_eq_right
--- -- #check exists_eq_right'
--- attribute [-simp] exists_eq_right'
--- -- #check exists_eq_right_right
--- attribute [-simp] exists_eq_right_right
--- -- #check exists_eq_right_right'
--- attribute [-simp] exists_eq_right_right'
-
--- -- removed simp attribute
--- -- #check exists_exists_and_eq_and
--- -- #check exists_exists_eq_and
--- -- #check exists_exists_exists_and_eq
+-- TODO: Currently lemmas like `Subtype.exists` and `Prod.exists` prevent `existsAndEq` from working
+/--
+error: unsolved goals
+α : Type u
+p q : α → Prop
+X Y : Type
+P Q : X × Y → Prop
+a : X × Y
+⊢ (∃ a_1 b, (P (a_1, b) ∧ (a_1, b) = a) ∧ Q (a_1, b)) ↔ P a ∧ Q a
+-/
+#guard_msgs in
+example {X Y : Type} (P Q : X × Y → Prop) (a : X × Y) :
+    (∃ b : (X × Y), (P b ∧ b = a) ∧ Q b) ↔ P a ∧ Q a := by
+  simp
