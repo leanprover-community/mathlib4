@@ -88,10 +88,10 @@ macro_rules
   | (rw [EuclideanDomain.div_div] $[at $location]?) -- x / y / z = x / (y * z)
   | (rw [EuclideanDomain.div_add_div_of_dvd] $[at $location]?) -- x/y + z/t = (t*x + y*z)/(t*y)
   | (rw [EuclideanDomain.div_sub_div_of_dvd] $[at $location]?) -- x/y - z/t = (t*x - y*z)/(t*y)
-  | (rw [EuclideanDomain.div_add_of_dvd] $[at $location]?) -- x / y + z = (x + y * z) / y
-  | (rw [EuclideanDomain.div_sub_of_dvd] $[at $location]?) -- x / y - z = (x - y * z) / y
-  | (rw [EuclideanDomain.add_div_of_dvd] $[at $location]?) -- x + y / z = (z * x + y) / z
-  | (rw [EuclideanDomain.sub_div_of_dvd] $[at $location]?) ) -- x - y / z = (z * x - y) / z
+  | (rw [←EuclideanDomain.add_mul_div_left] $[at $location]?) -- x / y + z = (x + y * z) / y
+  | (rw [←EuclideanDomain.sub_mul_div_left] $[at $location]?) -- x / y - z = (x - y * z) / y
+  | (rw [←EuclideanDomain.mul_add_div_left] $[at $location]?) -- x + y / z = (z * x + y) / z
+  | (rw [←EuclideanDomain.mul_sub_div_left] $[at $location]?) ) -- x - y / z = (z * x - y) / z
   try (any_goals assumption) ))
 
 /--
