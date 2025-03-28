@@ -29,20 +29,20 @@ open scoped Topology NNReal Pointwise
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] {a : α}
+variable [NormedDivisionRing α] (a : α)
 
 /-- Multiplication by a nonzero element `a` on the left
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulLeft (ha : a ≠ 0) : α ≃ᵈ α where
-  __ := Dilation.mulLeft ha
+  __ := Dilation.mulLeft a ha
   toEquiv := Equiv.mulLeft₀ a ha
 
 /-- Multiplication by a nonzero element `a` on the right
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
 def DilationEquiv.mulRight (ha : a ≠ 0) : α ≃ᵈ α where
-  __ := Dilation.mulRight ha
+  __ := Dilation.mulRight a ha
   toEquiv := Equiv.mulRight₀ a ha
 
 namespace Filter
@@ -50,12 +50,12 @@ namespace Filter
 @[simp]
 lemma map_mul_left_cobounded {a : α} (ha : a ≠ 0) :
     map (a * ·) (cobounded α) = cobounded α :=
-  DilationEquiv.map_cobounded (DilationEquiv.mulLeft ha)
+  DilationEquiv.map_cobounded (DilationEquiv.mulLeft a ha)
 
 @[simp]
 lemma map_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     map (· * a) (cobounded α) = cobounded α :=
-  DilationEquiv.map_cobounded (DilationEquiv.mulRight ha)
+  DilationEquiv.map_cobounded (DilationEquiv.mulRight a ha)
 
 /-- Multiplication on the left by a nonzero element of a normed division ring tends to infinity at
 infinity. -/

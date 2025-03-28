@@ -228,7 +228,7 @@ lemma antilipschitzWith_mul_right {a : α} (ha : a ≠ 0) : AntilipschitzWith (�
 /-- Multiplication by a nonzero element `a` on the left, as a `Dilation` of a ring with a strictly
 multiplicative norm. -/
 @[simps!]
-def Dilation.mulLeft {a : α} (ha : a ≠ 0) : α →ᵈ α where
+def Dilation.mulLeft (a : α) (ha : a ≠ 0) : α →ᵈ α where
   toFun b := a * b
   edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
     simp [edist_nndist, nndist_eq_nnnorm, ← mul_sub]⟩
@@ -236,7 +236,7 @@ def Dilation.mulLeft {a : α} (ha : a ≠ 0) : α →ᵈ α where
 /-- Multiplication by a nonzero element `a` on the right, as a `Dilation` of a ring with a strictly
 multiplicative norm. -/
 @[simps!]
-def Dilation.mulRight {a : α} (ha : a ≠ 0) : α →ᵈ α where
+def Dilation.mulRight (a : α) (ha : a ≠ 0) : α →ᵈ α where
   toFun b := b * a
   edist_eq' := ⟨‖a‖₊, nnnorm_ne_zero_iff.2 ha, fun x y ↦ by
     simp [edist_nndist, nndist_eq_nnnorm, ← sub_mul, ← mul_comm (‖a‖₊)]⟩
@@ -246,12 +246,12 @@ namespace Filter
 @[simp]
 lemma comap_mul_left_cobounded {a : α} (ha : a ≠ 0) :
     comap (a * ·) (cobounded α) = cobounded α :=
-  Dilation.comap_cobounded (Dilation.mulLeft ha)
+  Dilation.comap_cobounded (Dilation.mulLeft a ha)
 
 @[simp]
 lemma comap_mul_right_cobounded {a : α} (ha : a ≠ 0) :
     comap (· * a) (cobounded α) = cobounded α :=
-  Dilation.comap_cobounded (Dilation.mulRight ha)
+  Dilation.comap_cobounded (Dilation.mulRight a ha)
 
 end Filter
 
