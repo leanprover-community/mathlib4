@@ -213,7 +213,7 @@ theorem boxProd_degree (x : α × β)
   rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 
-lemma boxProd_reach (x y : α × β) :
+lemma boxProd_reachable (x y : α × β) :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
   classical
   constructor
@@ -222,10 +222,10 @@ lemma boxProd_reach (x y : α × β) :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
-lemma boxProd_edist_top (x y : α × β) :
+lemma boxProd_edist_eq_top (x y : α × β) :
     (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
   repeat rw [← not_ne_iff, edist_ne_top_iff_reachable]
-  rw [boxProd_reach]
+  rw [boxProd_reachable]
   tauto
 
 lemma boxProd_len_eq_sum_projections {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
@@ -243,19 +243,19 @@ lemma boxProd_len_eq_sum_projections {a₁ a₂ : α} {b₁ b₂ : β} [Decidabl
         congr
         · exact h₁.2.symm
         · simp only [heq_eqRec_iff_heq, heq_eq_eq]
-
       · simp only [h₂, SimpleGraph.irrefl, false_and, ↓reduceDIte, Walk.length_cons, add_assoc]
         congr
         · exact h₂.2.symm
         · simp only [heq_eqRec_iff_heq, heq_eq_eq]
 
+@[simp]
 lemma boxProd_edist (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
   classical
   by_cases h : (G □ H).edist x y = ⊤
-  · rw [h]; rw [boxProd_edist_top] at h
+  · rw [h]; rw [boxProd_edist_eq_top] at h
     aesop
-  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [boxProd_edist_top] at h; tauto
+  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [boxProd_edist_eq_top] at h; tauto
     have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
     have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
 
