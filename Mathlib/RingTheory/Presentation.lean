@@ -199,8 +199,8 @@ lemma _root_.Algebra.Generators.ker_localizationAway :
       AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Ideal.Quotient.mkₐ_eq_mk,
       Function.comp_apply]
     rw [IsLocalization.Away.mvPolynomialQuotientEquiv_apply, aeval_X]
-  rw [Generators.ker_eq_ker_aeval_val, this]
-  erw [← RingHom.comap_ker]
+  rw [Generators.ker_eq_ker_aeval_val, this, AlgEquiv.toAlgHom_eq_coe, ← RingHom.ker_coe_toRingHom,
+    AlgHom.comp_toRingHom, ← RingHom.comap_ker]
   simp only [Generators.localizationAway_vars, AlgEquiv.toAlgHom_eq_coe, AlgHom.toRingHom_eq_coe,
     AlgEquiv.toAlgHom_toRingHom]
   show Ideal.comap _ (RingHom.ker (mvPolynomialQuotientEquiv S r)) = Ideal.span {C r * X () - 1}
@@ -246,9 +246,10 @@ private lemma span_range_relation_eq_ker_baseChange :
     rw [map_zero] at Z
     simp only [SetLike.mem_coe, RingHom.mem_ker, ← Z, ← hy, algebraMap_apply,
       TensorProduct.includeRight_apply]
-    erw [aeval_map_algebraMap]
-    show _ = TensorProduct.includeRight _
-    erw [map_aeval, TensorProduct.includeRight.comp_algebraMap]
+    erw [aeval_map_algebraMap T P.baseChange.val (P.relation y)]
+    show _ = TensorProduct.includeRight.toRingHom _
+    rw [map_aeval, AlgHom.toRingHom_eq_coe, RingHom.coe_coe,
+      TensorProduct.includeRight.comp_algebraMap]
     rfl
   · intro x hx
     rw [RingHom.mem_ker] at hx
@@ -277,12 +278,13 @@ private lemma span_range_relation_eq_ker_baseChange :
         rw [Generators.baseChange_val]
     rw [H] at H'
     replace H' : e.symm x ∈ Ideal.map TensorProduct.includeRight P.ker := H'
-    erw [← P.span_range_relation_eq_ker, ← Ideal.mem_comap, Ideal.comap_symm,
-      Ideal.map_map, Ideal.map_span, ← Set.range_comp] at H'
+    rw [← P.span_range_relation_eq_ker, ← Ideal.mem_comap, ← Ideal.comap_coe,
+      ← AlgEquiv.toRingEquiv_toRingHom, Ideal.comap_coe, AlgEquiv.symm_toRingEquiv,
+      Ideal.comap_symm, ← Ideal.map_coe, ← Ideal.map_coe _ (Ideal.span _), Ideal.map_map,
+      Ideal.map_span, ← Set.range_comp, AlgEquiv.toRingEquiv_toRingHom, RingHom.coe_comp,
+      RingHom.coe_coe] at H'
     convert H'
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply,
-      TensorProduct.includeRight_apply, TensorProduct.lift_tmul, map_one, mapAlgHom_apply, one_mul]
-    rfl
+    simp [e]
 
 /-- If `P` is a presentation of `S` over `R` and `T` is an `R`-algebra, we
 obtain a natural presentation of `T ⊗[R] S` over `T`. -/
