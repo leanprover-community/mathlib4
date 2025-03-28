@@ -3,7 +3,6 @@ Copyright (c) 2025 Robin Carlier. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robin Carlier
 -/
-
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Products.Basic
 
@@ -16,16 +15,21 @@ morphisms between object of `D` are morphisms in `D`, and finally, given `c : C`
 there is a unique morphism `c ⟶ d` in `C ⋆ D`.
 
 ## Main constructions
-- `Join.edge c d`: the unique map from `c` to `d`.
-- `Join.inclLeft : C ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
+
+* `Join.edge c d`: the unique map from `c` to `d`.
+* `Join.inclLeft : C ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
 to constructs maps in `C ⋆ D` between objects coming from `C`.
-- `Join.inclRight : D ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
+* `Join.inclRight : D ⥤ C ⋆ D`, the left inclusion. Its action on morphism is the main entry point
 to constructs maps in `C ⋆ D` between object coming from `D`.
-- `Join.mkFunctor`, A constructor for functors out of a join of categories.
-- `Join.mkNatTrans`, A constructor for natural transformations between functors out of a join
+* `Join.mkFunctor`, A constructor for functors out of a join of categories.
+* `Join.mkNatTrans`, A constructor for natural transformations between functors out of a join
   of categories.
-- `Join.mkNatIso`, A constructor for natural isomorphisms between functors out of a join
+* `Join.mkNatIso`, A constructor for natural isomorphisms between functors out of a join
   of categories.
+
+## References
+
+* [Kerodon: section 1.4.3.2](https://kerodon.net/tag/0160)
 
 -/
 
@@ -40,7 +44,7 @@ inductive Join (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v�
   | left : C → Join C D
   | right : D → Join C D
 
-attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Join
+attribute [aesop safe cases (rule_sets := [CategoryTheory])] Join
 
 @[inherit_doc] infixr:30 " ⋆ " => Join
 
@@ -54,7 +58,6 @@ variable {C D}
 
 /-- Morphisms in `C ⋆ D` are those of `C` and `D`, plus an unique
 morphism `(left c ⟶ right d)` for every `c : C` and `d : D`. -/
-@[aesop norm unfold (rule_sets := [CategoryTheory])]
 def Hom : C ⋆ D → C ⋆ D → Type (max v₁ v₂)
   | .left x, .left y => ULift (x ⟶ y)
   | .right x, .right y => ULift (x ⟶ y)
