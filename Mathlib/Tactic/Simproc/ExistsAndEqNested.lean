@@ -419,3 +419,19 @@ simproc existsAndEqNested (Exists _) := .ofQ fun u α e => do
     let .some ⟨P', pf⟩ ← existsAndEq.existsAndEqNestedImp p | return .continue
     return .visit {expr := P', proof? := pf}
   | _, _, _ => return .continue
+
+
+-- #check exists_eq
+attribute [-simp] exists_eq
+-- #check exists_eq_left
+attribute [-simp] exists_eq_left
+-- #check exists_eq_left'
+attribute [-simp] exists_eq_left'
+-- #check exists_eq_right
+attribute [-simp] exists_eq_right
+-- #check exists_eq_right'
+attribute [-simp] exists_eq_right'
+-- #check exists_eq_right_right
+attribute [-simp] exists_eq_right_right
+-- #check exists_eq_right_right'
+attribute [-simp] exists_eq_right_right'

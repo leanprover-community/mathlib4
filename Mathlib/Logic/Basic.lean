@@ -565,13 +565,13 @@ This is sometimes useful in `simp` to discharge side conditions.
 -/
 theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩
 
-@[simp] theorem exists_exists_and_eq_and {f : α → β} {p : α → Prop} {q : β → Prop} :
-    (∃ b, (∃ a, p a ∧ f a = b) ∧ q b) ↔ ∃ a, p a ∧ q (f a) :=
-  ⟨fun ⟨_, ⟨a, ha, hab⟩, hb⟩ ↦ ⟨a, ha, hab.symm ▸ hb⟩, fun ⟨a, hp, hq⟩ ↦ ⟨f a, ⟨a, hp, rfl⟩, hq⟩⟩
+theorem exists_exists_and_eq_and {f : α → β} {p : α → Prop} {q : β → Prop} :
+    (∃ b, (∃ a, p a ∧ f a = b) ∧ q b) ↔ ∃ a, p a ∧ q (f a) := by
+  simp
 
-@[simp] theorem exists_exists_eq_and {f : α → β} {p : β → Prop} :
-    (∃ b, (∃ a, f a = b) ∧ p b) ↔ ∃ a, p (f a) :=
-  ⟨fun ⟨_, ⟨a, ha⟩, hb⟩ ↦ ⟨a, ha.symm ▸ hb⟩, fun ⟨a, ha⟩ ↦ ⟨f a, ⟨a, rfl⟩, ha⟩⟩
+theorem exists_exists_eq_and {f : α → β} {p : β → Prop} :
+    (∃ b, (∃ a, f a = b) ∧ p b) ↔ ∃ a, p (f a) := by
+  simp
 
 @[simp] theorem exists_exists_and_exists_and_eq_and {α β γ : Type*}
     {f : α → β → γ} {p : α → Prop} {q : β → Prop} {r : γ → Prop} :
@@ -579,11 +579,10 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
   ⟨fun ⟨_, ⟨a, ha, b, hb, hab⟩, hc⟩ ↦ ⟨a, ha, b, hb, hab.symm ▸ hc⟩,
     fun ⟨a, ha, b, hb, hab⟩ ↦ ⟨f a b, ⟨a, ha, b, hb, rfl⟩, hab⟩⟩
 
-@[simp] theorem exists_exists_exists_and_eq {α β γ : Type*}
+theorem exists_exists_exists_and_eq {α β γ : Type*}
     {f : α → β → γ} {p : γ → Prop} :
-    (∃ c, (∃ a, ∃ b, f a b = c) ∧ p c) ↔ ∃ a, ∃ b, p (f a b) :=
-  ⟨fun ⟨_, ⟨a, b, hab⟩, hc⟩ ↦ ⟨a, b, hab.symm ▸ hc⟩,
-    fun ⟨a, b, hab⟩ ↦ ⟨f a b, ⟨a, b, rfl⟩, hab⟩⟩
+    (∃ c, (∃ a, ∃ b, f a b = c) ∧ p c) ↔ ∃ a, ∃ b, p (f a b) := by
+  simp
 
 theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, f a = b → p b) ↔ ∀ a, p (f a) := by simp
