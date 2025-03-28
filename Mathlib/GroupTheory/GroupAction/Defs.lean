@@ -261,7 +261,6 @@ lemma mem_subgroup_orbit_iff {H : Subgroup G} {x : α} {a b : orbit G x} :
     exact MulAction.mem_orbit _ g
   · rcases h with ⟨g, h⟩
     dsimp at h
-    have := orbit.coe_smul (a := x) (m := (g : G)) (a' := b)
     rw [subgroup_smul_def, ← orbit.coe_smul, ← Subtype.ext_iff] at h
     subst h
     exact MulAction.mem_orbit _ g
