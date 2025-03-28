@@ -818,7 +818,7 @@ theorem strong_law_ae (X : ℕ → Ω → E) (hint : Integrable (X 0) μ)
   have C : ∀ᵐ ω ∂μ,
       Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, Y i ω)) atTop (𝓝 μ[Y 0]) := by
     apply strong_law_ae_of_measurable Y Yint ((A 0).1.stronglyMeasurable_mk)
-      (fun i j hij ↦ IndepFun.ae_eq (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
+      (fun i j hij ↦ IndepFun.congr (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
       (fun i ↦ ((A i).1.identDistrib_mk.symm.trans (hident i)).trans (A 0).1.identDistrib_mk)
   filter_upwards [B, C] with ω h₁ h₂
   have : μ[X 0] = μ[Y 0] := integral_congr_ae (AEStronglyMeasurable.ae_eq_mk (A 0).1)
