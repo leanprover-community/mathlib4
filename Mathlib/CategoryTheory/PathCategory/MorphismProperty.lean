@@ -62,6 +62,13 @@ def liftNatTrans {C} [Category C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F
             intro _ _ _ _ q hyp
             rw [α_nat q, ← Category.assoc, hyp, Category.assoc]
 
+@[simp]
+theorem liftNatTrans_app {C} [Category C] {F G : Paths V ⥤ C}
+    (α_app : (v : V) → (F.obj v ⟶ G.obj v))
+    (α_nat : {X Y : V} → (f : X ⟶ Y) →
+      F.map (Quiver.Hom.toPath f) ≫ α_app Y = α_app X ≫ G.map (Quiver.Hom.toPath f)) (x : V) :
+    (liftNatTrans α_app α_nat).app x = α_app x := rfl
+
 /-- A natural isomorphism between `F G : Paths V ⥤ C` is defined by its components and
 its unary naturality squares. -/
 def liftNatIso {C} [Category C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ≅ G.obj v))
