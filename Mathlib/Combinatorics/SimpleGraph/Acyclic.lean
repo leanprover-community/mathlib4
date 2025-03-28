@@ -202,7 +202,8 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
 /-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
-  exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt (by simpa [← edgeSet_ssubset_edgeSet])
+  exact fun _ _ _↦ by_contra fun hbr ↦ h.not_prop_of_lt
+    (by simpa [deleteEdges, ← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr
 
 /-- Every connected graph has a spanning tree. -/
@@ -232,6 +233,6 @@ lemma isTree_iff_connected_and_card [Finite V] :
     (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_lt ?_
   rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
     ← edgeFinset_card, add_lt_add_iff_right]
-  exact Finset.card_lt_card <| by simpa
+  exact Finset.card_lt_card <| by simpa [deleteEdges]
 
 end SimpleGraph
