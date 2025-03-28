@@ -50,7 +50,7 @@ theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
   use G', inferInstanceAs (DecidableRel G'.Adj)
   exact ⟨by simpa using hp', fun _ _ hp ↦ by convert h _ (by simpa using hp)⟩
 
-/-- If `H` has one edge, then exist an `H.Free` extremal graph. -/
+/-- If `H` has at least one edge, then there exists an extremal `H.Free` graph. -/
 theorem exists_isExtremal_free {W : Type*} {H : SimpleGraph W} (h : H ≠ ⊥) :
     ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
   (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
