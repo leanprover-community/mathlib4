@@ -14,19 +14,48 @@ This file introduces basic definitions for extremal graph theory, including extr
 
 ## Main definitions
 
+* `SimpleGraph.IsExtremal` is the predicate that `G` satisfies `p` and any `H` satisfying `p` has
+  at most as many edges as `G`.
+
 * `SimpleGraph.extremalNumber` is the maximum number of edges in a `H`-free simple graph on `n`
   vertices.
 
   If `H` is contained in all simple graphs on `n` vertices, then this is `0`.
-
-* `SimpleGraph.IsExtremal` is the predicate that `G` satisfies `p` and any `H` satisfying `p` has
-  at most as many edges as `G`.
 -/
 
 
 open Finset Fintype
 
 namespace SimpleGraph
+
+section IsExtremal
+
+variable {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+
+/-- `G` is an extremal graph satisfying `p` if `G` has the maximum number of edges of any simple
+graph satisfying `p`. -/
+def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → Prop) :=
+  p G ∧ ∀ (G' : SimpleGraph V) [DecidableRel G'.Adj], p G' → #G'.edgeFinset ≤ #G.edgeFinset
+
+lemma IsExtremal.prop {p : SimpleGraph V → Prop} (h : G.IsExtremal p) : p G := h.1
+
+open Classical in
+/-- If one simple graph satisfies `p`, then there exists an extremal graph satisfying `p`. -/
+theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
+    (∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal p) ↔ ∃ G, p G := by
+  refine ⟨fun ⟨_, _, h⟩ ↦ ⟨_, h.1⟩, fun ⟨G, hp⟩ ↦ ?_⟩
+  obtain ⟨G', hp', h⟩ := by
+    apply exists_max_image { G | p G } (#·.edgeFinset)
+    use G, by simpa using hp
+  use G', inferInstanceAs (DecidableRel G'.Adj)
+  exact ⟨by simpa using hp', fun _ _ hp ↦ by convert h _ (by simpa using hp)⟩
+
+/-- If `H` has one edge, then exist an `H.Free` extremal graph. -/
+theorem exists_isExtremal_free {W : Type*} {H : SimpleGraph W} (h : H ≠ ⊥) :
+    ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
+  (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
+
+end IsExtremal
 
 section ExtremalNumber
 
@@ -134,47 +163,16 @@ theorem extremalNumber_congr {n₁ n₂ : ℕ} {W₁ W₂ : Type*} {H₁ : Simpl
 theorem extremalNumber_congr_right {W₁ W₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
   (e : H₁ ≃g H₂) : extremalNumber n H₁ = extremalNumber n H₂ := extremalNumber_congr rfl e
 
-end ExtremalNumber
-
-section IsExtremal
-
-variable {V : Type*} [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
-
-/-- `G` is an extremal graph satisfying `p` if `G` has the maximum number of edges of any simple
-graph satisfying `p`. -/
-def IsExtremal (G : SimpleGraph V) [DecidableRel G.Adj] (p : SimpleGraph V → Prop) :=
-  p G ∧ ∀ (G' : SimpleGraph V) [DecidableRel G'.Adj], p G' → #G'.edgeFinset ≤ #G.edgeFinset
-
-lemma IsExtremal.prop {p : SimpleGraph V → Prop} (h : G.IsExtremal p) : p G := h.1
-
-open Classical in
-/-- If one simple graph satisfies `p`, then there exists an extremal graph satisfying `p`. -/
-theorem exists_isExtremal_iff_exists (p : SimpleGraph V → Prop) :
-    (∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal p) ↔ ∃ G, p G := by
-  refine ⟨fun ⟨_, _, h⟩ ↦ ⟨_, h.1⟩, fun ⟨G, hp⟩ ↦ ?_⟩
-  obtain ⟨G', hp', h⟩ := by
-    apply exists_max_image { G | p G } (#·.edgeFinset)
-    use G, by simpa using hp
-  use G', inferInstanceAs (DecidableRel G'.Adj)
-  exact ⟨by simpa using hp', fun _ _ hp ↦ by convert h _ (by simpa using hp)⟩
-
-variable {W : Type*} {H : SimpleGraph W}
-
-/-- If `H` has one edge, then exist an `H.Free` extremal graph. -/
-theorem exists_isExtremal_free (h : H ≠ ⊥) :
-    ∃ G : SimpleGraph V, ∃ _ : DecidableRel G.Adj, G.IsExtremal H.Free :=
-  (exists_isExtremal_iff_exists H.Free).mpr ⟨⊥, free_bot h⟩
-
 /-- `H`-free extremal graphs are `H`-free simple graphs having `extremalNumber (card V) H` many
 edges. -/
 theorem isExtremal_free_iff :
-    G.IsExtremal H.Free ↔ (H.Free G) ∧ #G.edgeFinset = extremalNumber (card V) H := by
+    G.IsExtremal H.Free ↔ H.Free G ∧ #G.edgeFinset = extremalNumber (card V) H := by
   rw [IsExtremal, and_congr_right_iff, ← extremalNumber_le_iff]
   exact fun h ↦ ⟨eq_of_le_of_le (card_edgeFinset_le_extremalNumber h), ge_of_eq⟩
 
 lemma card_edgeFinset_of_isExtremal_free (h : G.IsExtremal H.Free) :
     #G.edgeFinset = extremalNumber (card V) H := (isExtremal_free_iff.mp h).2
 
-end IsExtremal
+end ExtremalNumber
 
 end SimpleGraph
