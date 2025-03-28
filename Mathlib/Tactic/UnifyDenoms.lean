@@ -69,7 +69,7 @@ macro_rules
   | (rw [Nat.mul_div_left] $[at $location]?) -- n * m / m = n
   | (rw [Nat.mul_div_right] $[at $location]?) -- m * n / m = n
   | (rw [←Nat.mul_div_assoc] $[at $location]?) -- m * (n / k) = m * n / k
-  | (rw [Nat.div_mul_assoc] $[at $location]?) -- n / k * m = n * m / k
+  | (rw [Nat.div_mul_right_comm] $[at $location]?) -- n / k * m = n * m / k
   | (rw [Nat.div_mul_div_comm] $[at $location]?)-- m / n * (k / l) = m * k / (n * l)
   | (rw [←Nat.mul_add_mul_div_of_dvd] $[at $location]?) -- m / n + k / l = (m * l + n * k) / (n * l)
   | (rw [←Nat.mul_sub_mul_div_of_dvd] $[at $location]?) -- m / n - k / l = (m * l - n * k) / (n * l)
@@ -127,7 +127,7 @@ macro_rules
   | (rw [Nat.mul_div_left] $[at $location]?) -- n * m / m = n
   | (rw [Nat.mul_div_right] $[at $location]?) -- m * n / m = n
   | (rw [←Nat.mul_div_assoc] $[at $location]?) -- m * (n / k) = m * n / k
-  | (rw [Nat.div_mul_assoc] $[at $location]?) -- n / k * m = n * m / k
+  | (rw [Nat.div_mul_right_comm] $[at $location]?) -- n / k * m = n * m / k
   | (rw [Nat.div_mul_div_comm] $[at $location]?)-- m / n * (k / l) = m * k / (n * l)
   | (rw [Nat.div_add_div_of_dvd] $[at $location]?) -- m / n + k / l = (m * l + n * k) / (n * l)
   | (rw [Nat.div_sub_div_of_dvd] $[at $location]?) -- m / n - k / l = (m * l - n * k) / (n * l)
