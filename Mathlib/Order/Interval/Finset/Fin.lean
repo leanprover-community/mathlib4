@@ -23,8 +23,9 @@ variable (n : ℕ)
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
   OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
 
-instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
-  OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
+instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
+  | 0 => IsEmpty.toLocallyFiniteOrderBot
+  | _ + 1 => inferInstance
 
 instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
