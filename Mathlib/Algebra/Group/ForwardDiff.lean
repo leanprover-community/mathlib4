@@ -135,7 +135,7 @@ Express the `n`-th forward difference of `f` at `y` in terms of the values `f (y
 `0 ≤ k ≤ n`.
 -/
 theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
-    Δ_[h]^[n] f y = ∑ k in range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • f (y + k • h) := by
+    Δ_[h]^[n] f y = ∑ k ∈ range (n + 1), ((-1 : ℤ) ^ (n - k) * n.choose k) • f (y + k • h) := by
   -- rewrite in terms of `(shiftₗ - 1) ^ n`
   have : fwdDiffₗ M G h = shiftₗ M G h - 1 := by simp only [shiftₗ, add_sub_cancel_right]
   rw [← coe_fwdDiffₗ, this, ← LinearMap.pow_apply]
@@ -155,7 +155,7 @@ theorem fwdDiff_iter_eq_sum_shift (f : M → G) (n : ℕ) (y : M) :
 of `f` at `y`.
 -/
 theorem shift_eq_sum_fwdDiff_iter (f : M → G) (n : ℕ) (y : M) :
-    f (y + n • h) = ∑ k in range (n + 1), n.choose k • Δ_[h]^[k] f y := by
+    f (y + n • h) = ∑ k ∈ range (n + 1), n.choose k • Δ_[h]^[k] f y := by
   convert congr_fun (LinearMap.congr_fun
       ((Commute.one_right (fwdDiffₗ M G h)).add_pow n) f) y using 1
   · rw [← shiftₗ_pow_apply h f, shiftₗ]

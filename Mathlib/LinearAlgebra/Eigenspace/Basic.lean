@@ -5,11 +5,11 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 import Mathlib.LinearAlgebra.GeneralLinearGroup
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.Tactic.Peel
 
 /-!
@@ -263,10 +263,9 @@ noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
 
 /-- For an endomorphism of a Noetherian module, the maximal eigenspace is always of the form kernel
 `(f - μ • id) ^ k` for some `k`. -/
-lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [h : IsNoetherian R M] (f : End R M) (μ : R) :
+lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [IsNoetherian R M] (f : End R M) (μ : R) :
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
-  rw [isNoetherian_iff] at h
-  have := WellFounded.iSup_eq_monotonicSequenceLimit h <|
+  have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
   convert this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
@@ -290,7 +289,7 @@ theorem genEigenspace_eq_genEigenspace_maxUnifEigenspaceIndex_of_le [IsNoetheria
     ((f.genEigenspace μ).monotone <| by simpa using hk)
 
 /-- A generalized eigenvalue for some exponent `k` is also
-    a generalized eigenvalue for exponents larger than `k`. -/
+a generalized eigenvalue for exponents larger than `k`. -/
 lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : k ≤ m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
@@ -300,7 +299,7 @@ lemma HasUnifEigenvalue.le {f : End R M} {μ : R} {k m : ℕ∞}
   exact (f.genEigenspace _).monotone hm
 
 /-- A generalized eigenvalue for some exponent `k` is also
-    a generalized eigenvalue for positive exponents. -/
+a generalized eigenvalue for positive exponents. -/
 lemma HasUnifEigenvalue.lt {f : End R M} {μ : R} {k m : ℕ∞}
     (hm : 0 < m) (hk : f.HasUnifEigenvalue μ k) :
     f.HasUnifEigenvalue μ m := by
@@ -332,7 +331,7 @@ lemma maxUnifEigenspaceIndex_le_finrank [FiniteDimensional K V] (f : End K V) (�
     apply ker_pow_le_ker_pow_finrank
 
 /-- Every generalized eigenvector is a generalized eigenvector for exponent `finrank K V`.
-    (Lemma 8.11 of [axler2015]) -/
+(Lemma 8.11 of [axler2015]) -/
 lemma genEigenspace_le_genEigenspace_finrank [FiniteDimensional K V] (f : End K V)
     (μ : K) (k : ℕ∞) : f.genEigenspace μ k ≤ f.genEigenspace μ (finrank K V) := by
   calc f.genEigenspace μ k
@@ -385,7 +384,7 @@ lemma isNilpotent_restrict_genEigenspace_top [IsNoetherian R M] (f : End R M) (�
   rw [genEigenspace_top_eq_maxUnifEigenspaceIndex]
 
 /-- The submodule `eigenspace f μ` for a linear map `f` and a scalar `μ` consists of all vectors `x`
-    such that `f x = μ • x`. (Def 5.36 of [axler2015])-/
+such that `f x = μ • x`. (Def 5.36 of [axler2015]). -/
 abbrev eigenspace (f : End R M) (μ : R) : Submodule R M :=
   f.genEigenspace μ 1
 
@@ -405,7 +404,7 @@ lemma hasEigenvector_iff {f : End R M} {μ : R} {x : M} :
     f.HasEigenvector μ x ↔ x ∈ f.eigenspace μ ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is an eigenvalue for a linear map `f` if there are nonzero vectors `x`
-    such that `f x = μ • x`. (Def 5.5 of [axler2015]) -/
+such that `f x = μ • x`. (Def 5.5 of [axler2015]). -/
 abbrev HasEigenvalue (f : End R M) (a : R) : Prop :=
   HasUnifEigenvalue f a 1
 
@@ -475,7 +474,7 @@ lemma genEigenspace_def (f : End R M) (μ : R) (k : ℕ) :
   genEigenspace_nat
 
 /-- A nonzero element of a generalized eigenspace is a generalized eigenvector.
-    (Def 8.9 of [axler2015])-/
+(Def 8.9 of [axler2015]) -/
 abbrev HasGenEigenvector (f : End R M) (μ : R) (k : ℕ) (x : M) : Prop :=
   HasUnifEigenvector f μ k x
 
@@ -483,7 +482,7 @@ lemma hasGenEigenvector_iff {f : End R M} {μ : R} {k : ℕ} {x : M} :
     f.HasGenEigenvector μ k x ↔ x ∈ f.genEigenspace μ k ∧ x ≠ 0 := Iff.rfl
 
 /-- A scalar `μ` is a generalized eigenvalue for a linear map `f` and an exponent `k ∈ ℕ` if there
-    are generalized eigenvectors for `f`, `k`, and `μ`. -/
+are generalized eigenvectors for `f`, `k`, and `μ`. -/
 abbrev HasGenEigenvalue (f : End R M) (μ : R) (k : ℕ) : Prop :=
   HasUnifEigenvalue f μ k
 
@@ -639,7 +638,7 @@ lemma disjoint_genEigenspace [NoZeroSMulDivisors R M]
     apply mapsTo_genEigenspace_of_comm (Algebra.mul_sub_algebraMap_commutes f _)
     apply isNilpotent_restrict_genEigenspace_nat
   have hf₁₂ : f₂ - f₁ = algebraMap R (End R p) (μ₁ - μ₂) := by ext; simp [f₁, f₂, sub_smul]
-  rw [hf₁₂, IsNilpotent.map_iff (NoZeroSMulDivisors.algebraMap_injective R (End R p)),
+  rw [hf₁₂, IsNilpotent.map_iff (FaithfulSMul.algebraMap_injective R (End R p)),
     isNilpotent_iff_eq_zero, sub_eq_zero] at this
   contradiction
 
@@ -675,8 +674,9 @@ theorem independent_genEigenspace [NoZeroSMulDivisors R M] (f : End R M) (k : �
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
   intro μ₁ s
-  induction' s using Finset.induction_on with μ₂ s _ ih
-  · simp
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert μ₂ s _ ih =>
   intro hμ₁₂
   obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
   specialize ih hμ₁
@@ -755,10 +755,12 @@ theorem genEigenspace_restrict (f : End R M) (p : Submodule R M) (k : ℕ∞) (�
       Submodule.mem_comap, mem_genEigenspace (k := k), mem_genEigenspace_nat]
   intro l
   simp only [genEigenspace_nat, OrderHom.coe_mk, ← LinearMap.ker_comp]
-  induction' l with l ih
-  · rw [pow_zero, pow_zero, LinearMap.one_eq_id]
+  induction l with
+  | zero =>
+    rw [pow_zero, pow_zero, LinearMap.one_eq_id]
     apply (Submodule.ker_subtype _).symm
-  · erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
+  | succ l ih =>
+    erw [pow_succ, pow_succ, LinearMap.ker_comp, LinearMap.ker_comp, ih, ← LinearMap.ker_comp,
       LinearMap.comp_assoc]
 
 lemma _root_.Submodule.inf_genEigenspace (f : End R M) (p : Submodule R M) {k : ℕ∞} {μ : R}

@@ -183,7 +183,7 @@ theorem IsPrincipalIdealRing.of_finite_primes [IsDedekindDomain R]
 
 variable [IsDedekindDomain R]
 variable (S : Type*) [CommRing S]
-variable [Algebra R S] [Module.Free R S] [Module.Finite R S]
+variable [Algebra R S] [NoZeroSMulDivisors R S] [Module.Finite R S]
 variable (p : Ideal R) (hp0 : p ≠ ⊥) [IsPrime p]
 variable {Sₚ : Type*} [CommRing Sₚ] [Algebra S Sₚ]
 variable [IsLocalization (Algebra.algebraMapSubmonoid S p.primeCompl) Sₚ]
@@ -200,12 +200,11 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     {P : Ideal Sₚ} (hP : IsPrime P) (hP0 : P ≠ ⊥) :
     P ∈ normalizedFactors (Ideal.map (algebraMap R Sₚ) p) := by
   have non_zero_div : Algebra.algebraMapSubmonoid S p.primeCompl ≤ S⁰ :=
-    map_le_nonZeroDivisors_of_injective _ (NoZeroSMulDivisors.algebraMap_injective _ _)
+    map_le_nonZeroDivisors_of_injective _ (FaithfulSMul.algebraMap_injective _ _)
       p.primeCompl_le_nonZeroDivisors
   letI : Algebra (Localization.AtPrime p) Sₚ := localizationAlgebra p.primeCompl S
   haveI : IsScalarTower R (Localization.AtPrime p) Sₚ :=
     IsScalarTower.of_algebraMap_eq fun x => by
-      -- Porting note: replaced `erw` with a `rw` followed by `exact` to help infer implicits
       rw [IsScalarTower.algebraMap_apply R S]
       exact (IsLocalization.map_eq (T := Algebra.algebraMapSubmonoid S (primeCompl p))
         (Submonoid.le_comap_map _) x).symm
@@ -233,7 +232,7 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
     · assumption
     rw [IsScalarTower.algebraMap_eq R S Sₚ]
     exact
-      (IsLocalization.injective Sₚ non_zero_div).comp (NoZeroSMulDivisors.algebraMap_injective _ _)
+      (IsLocalization.injective Sₚ non_zero_div).comp (FaithfulSMul.algebraMap_injective _ _)
 
 /-- Let `p` be a prime in the Dedekind domain `R` and `S` be an integral extension of `R`,
 then the localization `Sₚ` of `S` at `p` is a PID. -/

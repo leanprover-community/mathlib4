@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Order.Interval.Multiset
 
 /-!
@@ -13,7 +14,7 @@ intervals as finsets and fintypes.
 
 ## TODO
 
-Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMonoid` or `SuccOrder`
+Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
@@ -64,6 +65,9 @@ lemma range_eq_Icc_zero_sub_one (n : ℕ) (hn : n ≠ 0) : range n = Icc 0 (n - 
 
 theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
   Ico_zero_eq_range.symm
+
+theorem range_succ_eq_Icc_zero (n : ℕ) : range (n + 1) = Icc 0 n := by
+  rw [range_eq_Icc_zero_sub_one _ (Nat.add_one_ne_zero _), Nat.add_sub_cancel_right]
 
 @[simp] lemma card_Icc : #(Icc a b) = b + 1 - a := List.length_range' ..
 @[simp] lemma card_Ico : #(Ico a b) = b - a := List.length_range' ..
@@ -129,6 +133,11 @@ theorem Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
 theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_left, Icc_self]
 
 variable {a b c}
+
+lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
+
+lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
+  Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]

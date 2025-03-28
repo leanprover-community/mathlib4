@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.Group.NatPowAssoc
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Ring.Opposite
@@ -118,7 +118,7 @@ theorem neg_one_geom_sum [Ring α] {n : ℕ} :
     · rw [h.neg_one_pow, add_zero]
     · rw [(Nat.not_even_iff_odd.1 h).neg_one_pow, neg_add_cancel]
 
-theorem geom_sum₂_self {α : Type*} [CommRing α] (x : α) (n : ℕ) :
+theorem geom_sum₂_self {α : Type*} [Semiring α] (x : α) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * x ^ (n - 1 - i) = n * x ^ (n - 1) :=
   calc
     ∑ i ∈ Finset.range n, x ^ i * x ^ (n - 1 - i) =
@@ -269,12 +269,14 @@ theorem geom₂_sum [Field α] {x y : α} (h : x ≠ y) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = (x ^ n - y ^ n) / (x - y) :=
   (Commute.all x y).geom_sum₂ h n
 
-theorem geom₂_sum_of_gt {α : Type*} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
+theorem geom₂_sum_of_gt {α : Type*} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α]
     {x y : α} (h : y < x) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = (x ^ n - y ^ n) / (x - y) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum₂_mul_of_ge h.le n)
 
-theorem geom₂_sum_of_lt {α : Type*} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
+theorem geom₂_sum_of_lt {α : Type*} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α]
     {x y : α} (h : x < y) (n : ℕ) :
     ∑ i ∈ range n, x ^ i * y ^ (n - 1 - i) = (y ^ n - x ^ n) / (y - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum₂_mul_of_le h.le n)
@@ -284,19 +286,22 @@ theorem geom_sum_eq [DivisionRing α] {x : α} (h : x ≠ 1) (n : ℕ) :
   have : x - 1 ≠ 0 := by simp_all [sub_eq_iff_eq_add]
   rw [← geom_sum_mul, mul_div_cancel_right₀ _ this]
 
-lemma geom_sum_of_one_lt {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
+lemma geom_sum_of_one_lt {x : α} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α]
     (h : 1 < x) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (x ^ n - 1) / (x - 1) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_one_le h.le n)
 
-lemma geom_sum_of_lt_one {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
+lemma geom_sum_of_lt_one {x : α} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α]
     (h : x < 1) (n : ℕ) :
     ∑ i ∈ Finset.range n, x ^ i = (1 - x ^ n) / (1 - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_le_one h.le n)
 
-theorem geom_sum_lt {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
+theorem geom_sum_lt {x : α} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α]
     (h0 : x ≠ 0) (h1 : x < 1) (n : ℕ) : ∑ i ∈ range n, x ^ i < (1 - x)⁻¹ := by
-  rw [← zero_lt_iff] at h0
+  rw [← pos_iff_ne_zero] at h0
   rw [geom_sum_of_lt_one h1, div_lt_iff₀, inv_mul_cancel₀, tsub_lt_self_iff]
   · exact ⟨h0.trans h1, pow_pos h0 n⟩
   · rwa [ne_eq, tsub_eq_zero_iff_le, not_le]
@@ -482,7 +487,7 @@ theorem geom_sum_alternating_of_le_neg_one [StrictOrderedRing α] (hx : x + 1 �
     if Even n then (∑ i ∈ range n, x ^ i) ≤ 0 else 1 ≤ ∑ i ∈ range n, x ^ i := by
   have hx0 : x ≤ 0 := (le_add_of_nonneg_right zero_le_one).trans hx
   induction n with
-  | zero => simp only [range_zero, sum_empty, le_refl, ite_true, even_zero]
+  | zero => simp only [range_zero, sum_empty, le_refl, ite_true, Even.zero]
   | succ n ih =>
     simp only [Nat.even_add_one, geom_sum_succ]
     split_ifs at ih with h

@@ -120,13 +120,13 @@ theorem truncation_eq_of_nonneg {f : α → ℝ} {A : ℝ} (h : ∀ x, 0 ≤ f x
 theorem truncation_nonneg {f : α → ℝ} (A : ℝ) {x : α} (h : 0 ≤ f x) : 0 ≤ truncation f A x :=
   Set.indicator_apply_nonneg fun _ => h
 
-theorem _root_.MeasureTheory.AEStronglyMeasurable.memℒp_truncation [IsFiniteMeasure μ]
-    (hf : AEStronglyMeasurable f μ) {A : ℝ} {p : ℝ≥0∞} : Memℒp (truncation f A) p μ :=
-  Memℒp.of_bound hf.truncation |A| (Eventually.of_forall fun _ => abs_truncation_le_bound _ _ _)
+theorem _root_.MeasureTheory.AEStronglyMeasurable.memLp_truncation [IsFiniteMeasure μ]
+    (hf : AEStronglyMeasurable f μ) {A : ℝ} {p : ℝ≥0∞} : MemLp (truncation f A) p μ :=
+  MemLp.of_bound hf.truncation |A| (Eventually.of_forall fun _ => abs_truncation_le_bound _ _ _)
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integrable_truncation [IsFiniteMeasure μ]
     (hf : AEStronglyMeasurable f μ) {A : ℝ} : Integrable (truncation f A) μ := by
-  rw [← memℒp_one_iff_integrable]; exact hf.memℒp_truncation
+  rw [← memLp_one_iff_integrable]; exact hf.memLp_truncation
 
 theorem moment_truncation_eq_intervalIntegral (hf : AEStronglyMeasurable f μ) {A : ℝ} (hA : 0 ≤ A)
     {n : ℕ} (hn : n ≠ 0) : ∫ x, truncation f A x ^ n ∂μ = ∫ y in -A..A, y ^ n ∂Measure.map f μ := by
@@ -264,7 +264,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         rw [intervalIntegral.integral_of_le (Nat.cast_nonneg _)]
         simp only [integral_const, Measure.restrict_apply', measurableSet_Ioc, Set.univ_inter,
           Algebra.id.smul_eq_mul, mul_one]
-        rw [← ENNReal.one_toReal]
+        rw [← ENNReal.toReal_one]
         exact ENNReal.toReal_mono ENNReal.one_ne_top prob_le_one
   have B : ∀ a b, ℙ {ω | X ω ∈ Set.Ioc a b} = ENNReal.ofReal (∫ _ in Set.Ioc a b, (1 : ℝ) ∂ρ) := by
     intro a b
@@ -419,7 +419,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         congr 1
         rw [hS, IndepFun.variance_sum]
         · intro j _
-          exact (hident j).aestronglyMeasurable_fst.memℒp_truncation
+          exact (hident j).aestronglyMeasurable_fst.memLp_truncation
         · intro k _ l _ hkl
           exact (hindep hkl).comp (A k).measurable (A l).measurable
       _ = ∑ j ∈ range (u (N - 1)), (∑ i ∈ range N with j < u i, ((u i : ℝ) ^ 2)⁻¹) * Var[Y j] := by
@@ -431,7 +431,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
         all_goals simp
       _ ≤ ∑ j ∈ range (u (N - 1)), c ^ 5 * (c - 1)⁻¹ ^ 3 / ↑j ^ 2 * Var[Y j] := by
         apply sum_le_sum fun j hj => ?_
-        rcases @eq_zero_or_pos _ _ j with (rfl | hj)
+        rcases eq_zero_or_pos j with (rfl | hj)
         · simp only [Nat.cast_zero, zero_pow, Ne, Nat.one_ne_zero,
             not_false_iff, div_zero, zero_mul]
           simp only [Y, Nat.cast_zero, truncation_zero, variance_zero, mul_zero, le_rfl]
@@ -453,7 +453,7 @@ theorem strong_law_aux1 {c : ℝ} (c_one : 1 < c) {ε : ℝ} (εpos : 0 < ε) : 
           ∑ i ∈ range N, ENNReal.ofReal (Var[S (u i)] / (u i * ε) ^ 2) := by
         refine sum_le_sum fun i _ => ?_
         apply meas_ge_le_variance_div_sq
-        · exact memℒp_finset_sum' _ fun j _ => (hident j).aestronglyMeasurable_fst.memℒp_truncation
+        · exact memLp_finset_sum' _ fun j _ => (hident j).aestronglyMeasurable_fst.memLp_truncation
         · apply mul_pos (Nat.cast_pos.2 _) εpos
           refine zero_lt_one.trans_le ?_
           apply Nat.le_floor
@@ -818,7 +818,7 @@ theorem strong_law_ae (X : ℕ → Ω → E) (hint : Integrable (X 0) μ)
   have C : ∀ᵐ ω ∂μ,
       Tendsto (fun n : ℕ ↦ (n : ℝ) ⁻¹ • (∑ i ∈ range n, Y i ω)) atTop (𝓝 μ[Y 0]) := by
     apply strong_law_ae_of_measurable Y Yint ((A 0).1.stronglyMeasurable_mk)
-      (fun i j hij ↦ IndepFun.ae_eq (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
+      (fun i j hij ↦ IndepFun.congr (hindep hij) (A i).1.ae_eq_mk (A j).1.ae_eq_mk)
       (fun i ↦ ((A i).1.identDistrib_mk.symm.trans (hident i)).trans (A 0).1.identDistrib_mk)
   filter_upwards [B, C] with ω h₁ h₂
   have : μ[X 0] = μ[Y 0] := integral_congr_ae (AEStronglyMeasurable.ae_eq_mk (A 0).1)
@@ -839,7 +839,7 @@ variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω}
 identically distributed random variables in Lᵖ, then `n⁻¹ • ∑ i ∈ range n, X i`
 converges in `Lᵖ` to `𝔼[X 0]`. -/
 theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ → Ω → E)
-    (hℒp : Memℒp (X 0) p μ) (hindep : Pairwise ((IndepFun · · μ) on X))
+    (hℒp : MemLp (X 0) p μ) (hindep : Pairwise ((IndepFun · · μ) on X))
     (hident : ∀ i, IdentDistrib (X i) (X 0) μ μ) :
     Tendsto (fun (n : ℕ) => eLpNorm (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω) - μ[X 0]) p μ)
       atTop (𝓝 0) := by
@@ -856,7 +856,7 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
       simp [hω]
     simp [A]
   -- Then use ae convergence and uniform integrability
-  have : IsProbabilityMeasure μ := Memℒp.isProbabilityMeasure_of_indepFun
+  have : IsProbabilityMeasure μ := MemLp.isProbabilityMeasure_of_indepFun
     (X 0) (X 1) (zero_lt_one.trans_le hp).ne' hp' hℒp h (hindep zero_ne_one)
   have hmeas : ∀ i, AEStronglyMeasurable (X i) μ := fun i =>
     (hident i).aestronglyMeasurable_iff.2 hℒp.1
@@ -864,13 +864,13 @@ theorem strong_law_Lp {p : ℝ≥0∞} (hp : 1 ≤ p) (hp' : p ≠ ∞) (X : ℕ
   have havg (n : ℕ) :
       AEStronglyMeasurable (fun ω => (n : ℝ) ⁻¹ • (∑ i ∈ range n, X i ω)) μ :=
     AEStronglyMeasurable.const_smul (aestronglyMeasurable_sum _ fun i _ => hmeas i) _
-  refine tendsto_Lp_finite_of_tendstoInMeasure hp hp' havg (memℒp_const _) ?_
+  refine tendsto_Lp_finite_of_tendstoInMeasure hp hp' havg (memLp_const _) ?_
     (tendstoInMeasure_of_tendsto_ae havg (strong_law_ae _ hint hindep hident))
   rw [(_ : (fun (n : ℕ) ω => (n : ℝ)⁻¹ • (∑ i ∈ range n, X i ω))
             = fun (n : ℕ) => (n : ℝ)⁻¹ • (∑ i ∈ range n, X i))]
   · apply UniformIntegrable.unifIntegrable
     apply uniformIntegrable_average hp
-    exact Memℒp.uniformIntegrable_of_identDistrib hp hp' hℒp hident
+    exact MemLp.uniformIntegrable_of_identDistrib hp hp' hℒp hident
   · ext n ω
     simp only [Pi.smul_apply, sum_apply]
 

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 import Mathlib.MeasureTheory.MeasurableSpace.Prod
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
@@ -430,6 +431,20 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 
+@[measurability]
+theorem measurable_ereal_toENNReal : Measurable EReal.toENNReal :=
+  EReal.measurable_of_measurable_real (by simpa using ENNReal.measurable_ofReal)
+
+@[measurability, fun_prop]
+theorem Measurable.ereal_toENNReal {f : α → EReal} (hf : Measurable f) :
+    Measurable fun x => (f x).toENNReal :=
+  measurable_ereal_toENNReal.comp hf
+
+@[measurability, fun_prop]
+theorem AEMeasurable.ereal_toENNReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x => (f x).toENNReal) μ :=
+  measurable_ereal_toENNReal.comp_aemeasurable hf
+
 namespace NNReal
 
 instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
@@ -465,7 +480,7 @@ variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β
 lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
     (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) : Measurable f :=
-  .of_union₃_range_cover (measurableEmbedding_prod_mk_left _) (measurableEmbedding_prod_mk_left _)
+  .of_union₃_range_cover (measurableEmbedding_prodMk_left _) (measurableEmbedding_prodMk_left _)
     (measurableEmbedding_coe.prodMap .id) (by simp [-univ_subset_iff, subset_def, EReal.forall])
     h_bot h_top h_real
 
@@ -496,9 +511,9 @@ private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ 
     refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
     exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
   induction c with
-  | h_bot => rwa [h1]
-  | h_real c => exact (measurable_id.const_mul _).coe_real_ereal
-  | h_top =>
+  | bot => rwa [h1]
+  | coe c => exact (measurable_id.const_mul _).coe_real_ereal
+  | top =>
     simp_rw [← neg_bot, neg_mul]
     apply Measurable.neg
     rwa [h1]

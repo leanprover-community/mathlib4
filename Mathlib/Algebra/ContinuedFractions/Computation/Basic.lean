@@ -99,7 +99,6 @@ section coe
 -- Fix another type `β` which we will convert to.
 variable {β : Type*} [Coe K β]
 
--- Porting note: added so we can add the `@[coe]` attribute
 /-- The coercion between integer-fraction pairs happens componentwise. -/
 @[coe]
 def coeFn : IntFractPair K → IntFractPair β := mapFr (↑)

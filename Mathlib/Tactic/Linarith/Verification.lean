@@ -64,12 +64,12 @@ def mulExpr (n : ℕ) (e : Expr) : MetaM Expr := do
 def addExprs' {u : Level} {α : Q(Type $u)} (_inst : Q(AddMonoid $α)) : List Q($α) → Q($α)
   | []   => q(0)
   | h::t => go h t
-    where
-    /-- Inner loop for `addExprs'`. -/
-    go (p : Q($α)) : List Q($α) → Q($α)
-    | [] => p
-    | [q] => q($p + $q)
-    | q::t => go q($p + $q) t
+where
+  /-- Inner loop for `addExprs'`. -/
+  go (p : Q($α)) : List Q($α) → Q($α)
+  | [] => p
+  | [q] => q($p + $q)
+  | q::t => go q($p + $q) t
 
 /-- `addExprs L` creates an `Expr` representing the sum of the elements of `L`, associated left. -/
 def addExprs : List Expr → MetaM Expr
@@ -110,16 +110,16 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
       let (iq, h') ← mkSingleCompZeroOf c h
       let (_, t) ← t.foldlM (fun pr ce ↦ step pr.1 pr.2 ce.1 ce.2) (iq, h')
       return t
-  where
-    /--
-    `step c pf npf coeff` assumes that `pf` is a proof of `t1 R1 0` and `npf` is a proof
-    of `t2 R2 0`. It uses `mkSingleCompZeroOf` to prove `t1 + coeff*t2 R 0`, and returns `R`
-    along with this proof.
-    -/
-    step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
-      let (iq, h') ← mkSingleCompZeroOf coeff npf
-      let (nm, niq) := addIneq c iq
-      return (niq, ← mkAppM nm #[pf, h'])
+where
+  /--
+  `step c pf npf coeff` assumes that `pf` is a proof of `t1 R1 0` and `npf` is a proof
+  of `t2 R2 0`. It uses `mkSingleCompZeroOf` to prove `t1 + coeff*t2 R 0`, and returns `R`
+  along with this proof.
+  -/
+  step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
+    let (iq, h') ← mkSingleCompZeroOf coeff npf
+    let (nm, niq) := addIneq c iq
+    return (niq, ← mkAppM nm #[pf, h'])
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
@@ -214,10 +214,10 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
           return certificate
       let (sm, zip) ←
         withTraceNode `linarith (return m!"{exceptEmoji ·} Building final expression") do
-          let enum_inputs := inputs.enum
+          let enum_inputs := inputs.zipIdx
           -- construct a list pairing nonzero coeffs with the proof of their corresponding
           -- comparison
-          let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
+          let zip := enum_inputs.filterMap fun ⟨e, n⟩ => (certificate[n]?).map (e, ·)
           let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
           -- `sm` is the sum of input terms, scaled to cancel out all variables.
           let sm ← addExprs mls

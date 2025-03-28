@@ -165,12 +165,13 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
-instance : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
-  { Submodule.pointwiseAddCommMonoid,
-    Submodule.completeLattice with
-    add_le_add_left := fun _a _b => sup_le_sup_left
-    exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
-    le_self_add := fun _a _b => le_sup_left }
+instance : OrderedAddCommMonoid (Submodule R M) :=
+  { Submodule.pointwiseAddCommMonoid with
+    add_le_add_left := fun _a _b => sup_le_sup_left }
+
+instance : CanonicallyOrderedAdd (Submodule R M) where
+  exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+  le_self_add := fun _a _b => le_sup_left
 
 section
 
@@ -207,6 +208,10 @@ theorem pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Di
     [Module R M] [SMulCommClass α R M] (a : α) (S : Submodule R M) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup :=
   rfl
+
+theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submodule R M) :
+    m ∈ a • S ↔ ∃ b ∈ S, a • b = m :=
+  Set.mem_smul_set
 
 theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))

@@ -29,7 +29,7 @@ theorem mem_accumulate [LE α] {x : α} {z : β} : z ∈ Accumulate s x ↔ ∃ 
 
 theorem subset_accumulate [Preorder α] {x : α} : s x ⊆ Accumulate s x := fun _ => mem_biUnion le_rfl
 
-theorem accumulate_subset_iUnion [Preorder α] (x : α) : Accumulate s x ⊆ ⋃ i, s i :=
+theorem accumulate_subset_iUnion [LE α] (x : α) : Accumulate s x ⊆ ⋃ i, s i :=
   (biUnion_subset_biUnion_left (subset_univ _)).trans_eq (biUnion_univ _)
 
 theorem monotone_accumulate [Preorder α] : Monotone (Accumulate s) := fun _ _ hxy =>
@@ -51,5 +51,21 @@ theorem iUnion_accumulate [Preorder α] : ⋃ x, Accumulate s x = ⋃ x, s x := 
     intro z x x' ⟨_, hz⟩
     exact ⟨x', hz⟩
   · exact iUnion_mono fun i => subset_accumulate
+
+@[simp]
+lemma accumulate_bot [PartialOrder α] [OrderBot α] (s : α → Set β) : Accumulate s ⊥ = s ⊥ := by
+  simp [Set.accumulate_def]
+
+@[simp]
+lemma accumulate_zero_nat (s : ℕ → Set β) : Accumulate s 0 = s 0 := by
+  simp [accumulate_def]
+
+open Function in
+theorem disjoint_accumulate [Preorder α] (hs : Pairwise (Disjoint on s)) {i j : α} (hij : i < j) :
+    Disjoint (Accumulate s i) (s j) := by
+  apply disjoint_left.2 (fun x hx ↦ ?_)
+  simp only [Accumulate, mem_iUnion, exists_prop] at hx
+  rcases hx with ⟨k, hk, hx⟩
+  exact disjoint_left.1 (hs (hk.trans_lt hij).ne) hx
 
 end Set

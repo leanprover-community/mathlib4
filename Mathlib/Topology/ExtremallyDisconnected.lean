@@ -3,7 +3,7 @@ Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Topology.Homeomorph
+import Mathlib.Topology.Homeomorph.Lemmas
 import Mathlib.Topology.StoneCech
 
 /-!
@@ -120,8 +120,7 @@ protected theorem CompactT2.Projective.extremallyDisconnected [CompactSpace X] [
   refine (closure_minimal ?_ <| hZ₂.preimage hφ).antisymm fun x hx => ?_
   · intro x hx
     have : φ x ∈ Z₁ ∪ Z₂ := (g x).2
-    -- Porting note: Originally `simpa [hx, hφ₁] using this`
-    cases' this with hφ hφ
+    rcases this with hφ | hφ
     · exact ((hφ₁ x ▸ hφ.1) hx).elim
     · exact hφ
   · rw [← hφ₁ x]
@@ -279,10 +278,6 @@ protected theorem CompactT2.projective_iff_extremallyDisconnected [CompactSpace 
     Projective A ↔ ExtremallyDisconnected A :=
   ⟨Projective.extremallyDisconnected, fun _ => ExtremallyDisconnected.projective⟩
 
-@[deprecated (since := "2024-05-26")]
-alias CompactT2.projective_iff_extremallyDisconnnected :=
-  CompactT2.projective_iff_extremallyDisconnected
-
 end
 
 -- Note: It might be possible to use Gleason for this instead
@@ -305,6 +300,6 @@ instance instExtremallyDisconnected {ι : Type*} {π : ι → Type*} [∀ i, Top
     · rwa [← ij, sigma_mk_preimage_image_eq_self]
     · rw [sigma_mk_preimage_image' ij]
       exact isOpen_empty
-  · continuity
+  · fun_prop
 
 end

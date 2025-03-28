@@ -42,9 +42,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -176,7 +174,7 @@ def ofLeftInverse {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) :
     right_inv := by
       rintro ⟨x, y, rfl⟩
       apply Subtype.ext
-      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coeSubtype, Subtype.coe_mk, h] }
+      rw [coe_rangeRestrict, Function.comp_apply, Subgroup.coe_subtype, Subtype.coe_mk, h] }
 
 @[to_additive (attr := simp)]
 theorem ofLeftInverse_apply {f : G →* N} {g : N →* G} (h : Function.LeftInverse g f) (x : G) :
@@ -300,10 +298,13 @@ theorem _root_.Subgroup.ker_subtype (H : Subgroup G) : H.subtype.ker = ⊥ :=
 theorem _root_.Subgroup.ker_inclusion {H K : Subgroup G} (h : H ≤ K) : (inclusion h).ker = ⊥ :=
   (inclusion h).ker_eq_bot_iff.mpr (Set.inclusion_injective h)
 
-@[to_additive]
+@[to_additive ker_prod]
 theorem ker_prod {M N : Type*} [MulOneClass M] [MulOneClass N] (f : G →* M) (g : G →* N) :
     (f.prod g).ker = f.ker ⊓ g.ker :=
   SetLike.ext fun _ => Prod.mk_eq_one
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddMonoidHom.ker_sum := AddMonoidHom.ker_prod
 
 @[to_additive]
 theorem range_le_ker_iff (f : G →* G') (g : G' →* G'') : f.range ≤ g.ker ↔ g.comp f = 1 :=
@@ -492,7 +493,7 @@ theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹
   apply map_injective (closure s).subtype_injective
   rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, range_subtype,
     Set.image_preimage_eq_of_subset]
-  rw [coeSubtype, Subtype.range_coe_subtype]
+  rw [coe_subtype, Subtype.range_coe_subtype]
   exact subset_closure
 
 @[to_additive]

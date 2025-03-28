@@ -102,8 +102,6 @@ theorem WithTop.coe_sSup' [SupSet α] {s : Set α} (hs : BddAbove s) :
 theorem WithBot.sSup_empty [SupSet α] : sSup (∅ : Set (WithBot α)) = ⊥ :=
   WithTop.sInf_empty (α := αᵒᵈ)
 
-@[deprecated (since := "2024-06-10")] alias WithBot.csSup_empty := WithBot.sSup_empty
-
 @[norm_cast]
 theorem WithBot.coe_sSup' [SupSet α] {s : Set α} (hs : s.Nonempty) (h's : BddAbove s) :
     ↑(sSup s) = (sSup ((fun (a : α) ↦ ↑a) '' s) : WithBot α) :=
@@ -249,12 +247,6 @@ theorem csInf_upperBounds_eq_csSup {s : Set α} (h : BddAbove s) (hs : s.Nonempt
     sInf (upperBounds s) = sSup s :=
   (isGLB_csInf h <| hs.mono fun _ hx _ hy => hy hx).unique (isLUB_csSup hs h).isGLB
 
-@[deprecated (since := "2024-08-25")]
-alias csSup_lower_bounds_eq_csInf := csSup_lowerBounds_eq_csInf
-
-@[deprecated (since := "2024-08-25")]
-alias csInf_upper_bounds_eq_csSup := csInf_upperBounds_eq_csSup
-
 theorem csSup_lowerBounds_range [Nonempty β] {f : β → α} (hf : BddBelow (range f)) :
     sSup (lowerBounds (range f)) = ⨅ i, f i :=
   csSup_lowerBounds_eq_csInf hf <| range_nonempty _
@@ -317,11 +309,9 @@ theorem csSup_singleton (a : α) : sSup {a} = a :=
 theorem csInf_singleton (a : α) : sInf {a} = a :=
   isLeast_singleton.csInf_eq
 
-@[simp]
 theorem csSup_pair (a b : α) : sSup {a, b} = a ⊔ b :=
   (@isLUB_pair _ _ a b).csSup_eq (insert_nonempty _ _)
 
-@[simp]
 theorem csInf_pair (a b : α) : sInf {a, b} = a ⊓ b :=
   (@isGLB_pair _ _ a b).csInf_eq (insert_nonempty _ _)
 
@@ -356,11 +346,13 @@ theorem le_csInf_inter :
 
 /-- The supremum of `insert a s` is the maximum of `a` and the supremum of `s`, if `s` is
 nonempty and bounded above. -/
+@[simp]
 theorem csSup_insert (hs : BddAbove s) (sne : s.Nonempty) : sSup (insert a s) = a ⊔ sSup s :=
   ((isLUB_csSup sne hs).insert a).csSup_eq (insert_nonempty a s)
 
 /-- The infimum of `insert a s` is the minimum of `a` and the infimum of `s`, if `s` is
 nonempty and bounded below. -/
+@[simp]
 theorem csInf_insert (hs : BddBelow s) (sne : s.Nonempty) : sInf (insert a s) = a ⊓ sInf s :=
   csSup_insert (α := αᵒᵈ) hs sne
 
@@ -538,12 +530,12 @@ open Function
 
 variable [WellFoundedLT α]
 
-theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id wellFounded_lt s hs :=
-  IsLeast.csInf_eq ⟨argminOn_mem _ _ _ _, fun _ ha => argminOn_le id _ _ ha⟩
+theorem sInf_eq_argmin_on (hs : s.Nonempty) : sInf s = argminOn id s hs :=
+  IsLeast.csInf_eq ⟨argminOn_mem _ _ _, fun _ ha => argminOn_le id _ ha⟩
 
 theorem isLeast_csInf (hs : s.Nonempty) : IsLeast s (sInf s) := by
   rw [sInf_eq_argmin_on hs]
-  exact ⟨argminOn_mem _ _ _ _, fun a ha => argminOn_le id _ _ ha⟩
+  exact ⟨argminOn_mem _ _ _, fun a ha => argminOn_le id _ ha⟩
 
 theorem le_csInf_iff' (hs : s.Nonempty) : b ≤ sInf s ↔ b ∈ lowerBounds s :=
   le_isGLB_iff (isLeast_csInf hs).isGLB
@@ -571,7 +563,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 section ConditionallyCompleteLinearOrderBot
 
 @[simp]
-theorem csInf_univ [ConditionallyCompleteLinearOrder α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
+theorem csInf_univ [ConditionallyCompleteLattice α] [OrderBot α] : sInf (univ : Set α) = ⊥ :=
   isLeast_univ.csInf_eq
 
 variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {a : α}
@@ -789,6 +781,28 @@ theorem le_csInf_image {s : Set α} (hs : s.Nonempty) {B : α} (hB : B ∈ lower
 
 end Monotone
 
+lemma MonotoneOn.csInf_eq_of_subset_of_forall_exists_le
+    [Preorder α] [ConditionallyCompleteLattice β] {f : α → β}
+    {s t : Set α} (ht : BddBelow (f '' t)) (hf : MonotoneOn f t)
+    (hst : s ⊆ t) (h : ∀ y ∈ t, ∃ x ∈ s, x ≤ y) :
+    sInf (f '' s) = sInf (f '' t) := by
+  obtain rfl | hs := Set.eq_empty_or_nonempty s
+  · obtain rfl : t = ∅ := by simpa [Set.eq_empty_iff_forall_not_mem] using h
+    rfl
+  apply le_antisymm _ (csInf_le_csInf ht (hs.image _) (image_subset _ hst))
+  refine le_csInf ((hs.mono hst).image f) ?_
+  simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  intro a ha
+  obtain ⟨x, hxs, hxa⟩ := h a ha
+  exact csInf_le_of_le (ht.mono (image_subset _ hst)) ⟨x, hxs, rfl⟩ (hf (hst hxs) ha hxa)
+
+lemma MonotoneOn.csSup_eq_of_subset_of_forall_exists_le
+    [Preorder α] [ConditionallyCompleteLattice β] {f : α → β}
+    {s t : Set α} (ht : BddAbove (f '' t)) (hf : MonotoneOn f t)
+    (hst : s ⊆ t) (h : ∀ y ∈ t, ∃ x ∈ s, y ≤ x) :
+    sSup (f '' s) = sSup (f '' t) :=
+  MonotoneOn.csInf_eq_of_subset_of_forall_exists_le (α := αᵒᵈ) (β := βᵒᵈ) ht hf.dual hst h
+
 /-!
 ### Supremum/infimum of `Set.image2`
 
@@ -888,7 +902,6 @@ noncomputable instance WithBot.conditionallyCompleteLattice {α : Type*}
     le_csInf := (WithTop.conditionallyCompleteLattice (α := αᵒᵈ)).csSup_le }
 
 open Classical in
--- Porting note: `convert @bot_le (WithTop (WithBot α)) _ _ a` was `convert bot_le`
 noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
     [ConditionallyCompleteLattice α] : CompleteLattice (WithTop (WithBot α)) :=
   { instInfSet, instSupSet, boundedOrder, lattice with
@@ -899,7 +912,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         split_ifs with h₁ h₂
         · rw [h] at h₁
           cases h₁
-        · convert bot_le (a := a)
+        · convert bot_le
           -- Porting note: previous proof relied on convert unfolding
           -- the definition of ⊥
           apply congr_arg
@@ -914,7 +927,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
       show ite _ _ _ ≤ a by
         simp only [OrderBot.bddBelow, not_true_eq_false, or_false]
         split_ifs with h₁
-        · cases' a with a
+        · cases a
           · exact le_rfl
           cases h₁ haS
         · cases a

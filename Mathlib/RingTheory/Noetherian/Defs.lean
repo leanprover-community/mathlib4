@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro, Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
+import Mathlib.Order.Filter.AtTopBot.Basic
 import Mathlib.RingTheory.Finiteness.Basic
-import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Noetherian rings and modules
@@ -39,7 +39,7 @@ is proved in `RingTheory.Polynomial`.
 ## References
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [samuel1967]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 
@@ -47,9 +47,7 @@ Noetherian, noetherian, Noetherian ring, Noetherian module, noetherian ring, noe
 
 -/
 
-assert_not_exists Finsupp.linearCombination
-assert_not_exists Matrix
-assert_not_exists Pi.basis
+assert_not_exists Finsupp.linearCombination Matrix Pi.basis
 
 open Set Pointwise
 
@@ -162,7 +160,7 @@ theorem set_has_maximal_iff_noetherian :
 /-- A module is Noetherian iff every increasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
-  rw [isNoetherian_iff, WellFounded.monotone_chain_condition]
+  rw [isNoetherian_iff', wellFoundedGT_iff_monotone_chain_condition]
 
 variable [IsNoetherian R M]
 

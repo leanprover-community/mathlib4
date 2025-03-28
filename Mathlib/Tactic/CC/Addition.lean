@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Mathlib.Data.Option.Defs
-import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.CC.MkProof
 
 /-!
@@ -101,7 +100,7 @@ def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
 
 /-- Auxiliary function for comparing `lhs₁ ~ rhs₁` and `lhs₂ ~ rhs₂`,
     when `~` is symmetric/commutative.
-    It returns `true` (equal) for `a ~ b` `b ~ a`-/
+It returns `true` (equal) for `a ~ b` `b ~ a`. -/
 def compareSymmAux (lhs₁ rhs₁ lhs₂ rhs₂ : Expr) : CCM Bool := do
   let lhs₁ ← getRoot lhs₁
   let rhs₁ ← getRoot rhs₁
@@ -199,12 +198,11 @@ def pushSubsingletonEq (a b : Expr) : CCM Unit := do
   let B ← normalize (← inferType b)
   -- TODO(Leo): check if the following test is a performance bottleneck
   if ← pureIsDefEq A B then
-    -- TODO(Leo): to improve performance we can create the following proof lazily
-    let proof ← mkAppM ``Subsingleton.elim #[a, b]
+    let proof ← mkAppM ``FastSubsingleton.elim #[a, b]
     pushEq a b proof
   else
     let some AEqB ← getEqProof A B | failure
-    let proof ← mkAppM ``Subsingleton.helim #[AEqB, a, b]
+    let proof ← mkAppM ``FastSubsingleton.helim #[AEqB, a, b]
     pushHEq a b proof
 
 /-- Given the equivalent expressions `oldRoot` and `newRoot` the root of `oldRoot` is
@@ -277,9 +275,9 @@ def insertEraseROccs (e lhs : ACApps) (inLHS isInsert : Bool) : CCM Unit := do
   match e with
   | .apps _ args =>
     insertEraseROcc args[0]! lhs inLHS isInsert
-    for i in [1:args.size] do
-      if args[i]! != args[i - 1]! then
-        insertEraseROcc args[i]! lhs inLHS isInsert
+    for h : i in [1:args.size] do
+      if args[i] != args[i - 1]! then
+        insertEraseROcc args[i] lhs inLHS isInsert
   | .ofExpr e => insertEraseROcc e lhs inLHS isInsert
 
 /-- Insert `lhs` to the occurrences of arguments of `e` on an equality in `acR`. -/
@@ -940,9 +938,7 @@ partial def applySimpleEqvs (e : Expr) : CCM Unit := do
 to the todo list or register `e` as the canonical form of itself. -/
 partial def processSubsingletonElem (e : Expr) : CCM Unit := do
   let type ← inferType e
-  -- TODO: this is likely to become a bottleneck. See e.g.
-  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/convert.20is.20often.20slow/near/433830798
-  let ss ← synthInstance? (← mkAppM ``Subsingleton #[type])
+  let ss ← synthInstance? (← mkAppM ``FastSubsingleton #[type])
   if ss.isNone then return -- type is not a subsingleton
   let type ← normalize type
   -- Make sure type has been internalized

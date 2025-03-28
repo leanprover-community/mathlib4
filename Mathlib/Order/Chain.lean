@@ -93,10 +93,18 @@ theorem IsChain.image (r : α → α → Prop) (s : β → β → Prop) (f : α 
   fun _ ⟨_, ha₁, ha₂⟩ _ ⟨_, hb₁, hb₂⟩ =>
   ha₂ ▸ hb₂ ▸ fun hxy => (hrc ha₁ hb₁ <| ne_of_apply_ne f hxy).imp (h _ _) (h _ _)
 
+lemma isChain_union {s t : Set α} :
+    IsChain r (s ∪ t) ↔ IsChain r s ∧ IsChain r t ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∨ r b a := by
+  rw [IsChain, IsChain, IsChain, pairwise_union_of_symmetric fun _ _ ↦ Or.symm]
+
+lemma Monotone.isChain_image [Preorder α] [Preorder β] {s : Set α} {f : α → β}
+    (hf : Monotone f) (hs : IsChain (· ≤ ·) s) : IsChain (· ≤ ·) (f '' s) :=
+  hs.image _ _ _ (fun _ _ a ↦ hf a)
+
 theorem Monotone.isChain_range [LinearOrder α] [Preorder β] {f : α → β} (hf : Monotone f) :
     IsChain (· ≤ ·) (range f) := by
   rw [← image_univ]
-  exact (isChain_of_trichotomous _).image (· ≤ ·) _ _ hf
+  exact hf.isChain_image (isChain_of_trichotomous _)
 
 theorem IsChain.lt_of_le [PartialOrder α] {s : Set α} (h : IsChain (· ≤ ·) s) :
     IsChain (· < ·) s := fun _a ha _b hb hne ↦
@@ -128,6 +136,24 @@ theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a 
   exact ⟨z', mem5, _root_.trans H1 H3, _root_.trans H2 H3, H4⟩
 
 end Total
+
+lemma IsChain.le_of_not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
+    {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
+  cases hs.total hx hy with
+  | inr h' => exact h'
+  | inl h' => simpa [lt_iff_le_not_le, h'] using h
+
+lemma IsChain.not_lt [Preorder α] (hs : IsChain (· ≤ ·) s)
+    {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x < y ↔ y ≤ x :=
+  ⟨(hs.le_of_not_lt hx hy ·), fun h h' ↦ h'.not_le h⟩
+
+lemma IsChain.lt_of_not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
+    {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x ≤ y) : y < x :=
+  (hs.total hx hy).elim (h · |>.elim) (lt_of_le_not_le · h)
+
+lemma IsChain.not_le [Preorder α] (hs : IsChain (· ≤ ·) s)
+    {x y : α} (hx : x ∈ s) (hy : y ∈ s) : ¬ x ≤ y ↔ y < x :=
+  ⟨(hs.lt_of_not_le hx hy ·), fun h h' ↦ h'.not_lt h⟩
 
 theorem IsMaxChain.isChain (h : IsMaxChain r s) : IsChain r s :=
   h.1
@@ -202,7 +228,7 @@ private theorem chainClosure_succ_total_aux (hc₁ : ChainClosure r c₁)
     SuccChain r c₂ ⊆ c₁ ∨ c₁ ⊆ c₂ := by
   induction hc₁ with
   | @succ c₃ hc₃ ih =>
-    cases' ih with ih ih
+    obtain ih | ih := ih
     · exact Or.inl (ih.trans subset_succChain)
     · exact (h hc₃ ih).imp_left fun (h : c₂ = c₃) => h ▸ Subset.rfl
   | union _ ih =>
@@ -346,8 +372,7 @@ lemma mem_iff_forall_le_or_ge : a ∈ s ↔ ∀ ⦃b⦄, b ∈ s → a ≤ b ∨
         s.maxChain.2 (s.chain_le.insert fun c hc _ => hb hc) <| Set.subset_insert _ _⟩
 
 /-- Flags are preserved under order isomorphisms. -/
-def map (e : α ≃o β) : Flag α ≃ Flag β
-    where
+def map (e : α ≃o β) : Flag α ≃ Flag β where
   toFun s := ofIsMaxChain _ (s.maxChain.image e)
   invFun s := ofIsMaxChain _ (s.maxChain.image e.symm)
   left_inv s := ext <| e.symm_image_image s
@@ -365,8 +390,7 @@ variable [PartialOrder α]
 
 theorem chain_lt (s : Flag α) : IsChain (· < ·) (s : Set α) := s.chain_le.lt_of_le
 
-instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)] (s : Flag α) :
-    LinearOrder s :=
+instance [DecidableLE α] [DecidableLT α] (s : Flag α) : LinearOrder s :=
   { Subtype.partialOrder _ with
     le_total := fun a b => s.le_or_le a.2 b.2
     decidableLE := Subtype.decidableLE

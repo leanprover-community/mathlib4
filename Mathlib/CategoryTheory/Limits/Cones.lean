@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Cones and cocones
@@ -168,8 +168,6 @@ theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
   apply comp_id
-
-attribute [simp 1001] Cocone.w_assoc
 
 end
 
@@ -999,13 +997,11 @@ section
 variable (G : C ⥤ D)
 
 /-- The opposite cocone of the image of a cone is the image of the opposite cocone. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
   Cocones.ext (Iso.refl _)
 
 /-- The opposite cone of the image of a cocone is the image of the opposite cone. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def mapCoconeOp {t : Cocone F} : (mapCocone G t).op ≅ mapCone G.op t.op :=
   Cones.ext (Iso.refl _)

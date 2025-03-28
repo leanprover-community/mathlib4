@@ -250,7 +250,7 @@ this is the canonical pre-submersive presentation of `T` as an `R`-algebra. -/
 noncomputable def comp : PreSubmersivePresentation R T where
   __ := Q.toPresentation.comp P.toPresentation
   map := Sum.elim (fun rq ↦ Sum.inl <| Q.map rq) (fun rp ↦ Sum.inr <| P.map rp)
-  map_inj := Function.Injective.sum_elim ((Sum.inl_injective).comp (Q.map_inj))
+  map_inj := Function.Injective.sumElim ((Sum.inl_injective).comp (Q.map_inj))
     ((Sum.inr_injective).comp (P.map_inj)) <| by simp
   relations_finite := inferInstanceAs <| Finite (Q.rels ⊕ P.rels)
 
@@ -306,7 +306,7 @@ private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
       ((Q.comp P).jacobiMatrix (Sum.inl j) (Sum.inl i)) = Q.jacobiMatrix j i := by
   rw [jacobiMatrix_apply, jacobiMatrix_apply, comp_map, Sum.elim_inl,
     ← Q.comp_aeval_relation_inl P.toPresentation]
-  apply aeval_sum_elim_pderiv_inl
+  apply aeval_sumElim_pderiv_inl
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_₁₁_det :
@@ -316,7 +316,7 @@ private lemma jacobiMatrix_comp_₁₁_det :
   ext i j : 1
   simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P,
     Q.algebraMap_apply]
-  apply aeval_sum_elim
+  apply aeval_sumElim
 
 end Q
 

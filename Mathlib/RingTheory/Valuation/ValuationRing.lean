@@ -55,7 +55,7 @@ lemma PreValuationRing.cond {A : Type u} [Mul A] [PreValuationRing A] (a b : A) 
 
 /-- An integral domain is called a `ValuationRing` provided that for any pair
 of elements `a b : A`, either `a` divides `b` or vice versa. -/
-class ValuationRing (A : Type u) [CommRing A] [IsDomain A] extends PreValuationRing A : Prop
+class ValuationRing (A : Type u) [CommRing A] [IsDomain A] : Prop extends PreValuationRing A
 
 -- Porting note: this lemma is needed since infer kinds are unsupported in Lean 4
 lemma ValuationRing.cond {A : Type u} [CommRing A] [IsDomain A] [ValuationRing A] (a b : A) :
@@ -155,34 +155,36 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   decidableLE := by classical infer_instance
 
 noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .. with
-    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
-    one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
-    mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
-    mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
-    mul_le_mul_left := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-      use c; simp only [Algebra.smul_def]; ring
-    zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
-    mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
-    exists_pair_ne := by
-      use 0, 1
-      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
-      apply_fun fun t => d⁻¹ • t at hd
-      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
-    inv_zero := by apply Quotient.sound'; rw [inv_zero]
-    mul_inv_cancel := by
-      rintro ⟨a⟩ ha
-      apply Quotient.sound'
-      use 1
-      simp only [one_smul, ne_eq]
-      apply (mul_inv_cancel₀ _).symm
-      contrapose ha
-      simp only [Classical.not_not] at ha ⊢
-      rw [ha]
-      rfl }
+    LinearOrderedCommGroupWithZero (ValueGroup A K) where
+  __ := linearOrder ..
+  mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
+  one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
+  mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
+  mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
+  mul_le_mul_left := by
+    rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
+    use c; simp only [Algebra.smul_def]; ring
+  zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
+  mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
+  zero_le_one := ⟨0, by rw [zero_smul]⟩
+  exists_pair_ne := by
+    use 0, 1
+    intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
+    apply_fun fun t => d⁻¹ • t at hd
+    simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd
+  inv_zero := by apply Quotient.sound'; rw [inv_zero]
+  mul_inv_cancel := by
+    rintro ⟨a⟩ ha
+    apply Quotient.sound'
+    use 1
+    simp only [one_smul, ne_eq]
+    apply (mul_inv_cancel₀ _).symm
+    contrapose ha
+    simp only [Classical.not_not] at ha ⊢
+    rw [ha]
+    rfl
+  bot := 0
+  bot_le := by rintro ⟨a⟩; exact ⟨0, zero_smul ..⟩
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where
@@ -276,7 +278,7 @@ instance le_total_ideal : IsTotal (Ideal A) LE.le := by
   · exfalso; apply h₂; rw [← h]
     apply Ideal.mul_mem_right _ _ hb
 
-instance [DecidableRel ((· ≤ ·) : Ideal A → Ideal A → Prop)] : LinearOrder (Ideal A) :=
+instance [DecidableLE (Ideal A)] : LinearOrder (Ideal A) :=
   have := decidableEqOfDecidableLE (α := Ideal A)
   have := decidableLTOfDecidableLE (α := Ideal A)
   Lattice.toLinearOrder (Ideal A)
@@ -386,7 +388,7 @@ instance (priority := 100) [IsLocalRing R] [IsBezout R] : ValuationRing R := by
   · simp [h]
   have : x * a + y * b = 1 := by
     apply mul_left_injective₀ h; convert e' using 1 <;> ring
-  cases' IsLocalRing.isUnit_or_isUnit_of_add_one this with h' h' <;> [left; right]
+  rcases IsLocalRing.isUnit_or_isUnit_of_add_one this with h' | h' <;> [left; right]
   all_goals exact mul_dvd_mul_right (isUnit_iff_forall_dvd.mp (isUnit_of_mul_isUnit_right h') _) _
 
 theorem iff_local_bezout_domain : ValuationRing R ↔ IsLocalRing R ∧ IsBezout R :=

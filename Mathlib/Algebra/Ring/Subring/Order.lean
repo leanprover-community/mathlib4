@@ -26,7 +26,7 @@ variable {R S : Type*} [SetLike S R] (s : S)
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedRing` is an `OrderedRing`. -/
 instance (priority := 75) toOrderedRing [OrderedRing R] [SubringClass S R] :
-    OrderedRing s :=
+    OrderedRing s := fast_instance%
   Subtype.coe_injective.orderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) fun _ => rfl
@@ -34,7 +34,7 @@ instance (priority := 75) toOrderedRing [OrderedRing R] [SubringClass S R] :
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
 instance (priority := 75) toOrderedCommRing [OrderedCommRing R] [SubringClass S R] :
-    OrderedCommRing s :=
+    OrderedCommRing s := fast_instance%
   Subtype.coe_injective.orderedCommRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) fun _ => rfl
@@ -42,7 +42,7 @@ instance (priority := 75) toOrderedCommRing [OrderedCommRing R] [SubringClass S 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
 instance (priority := 75) toLinearOrderedRing [LinearOrderedRing R] [SubringClass S R] :
-    LinearOrderedRing s :=
+    LinearOrderedRing s := fast_instance%
   Subtype.coe_injective.linearOrderedRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -50,7 +50,7 @@ instance (priority := 75) toLinearOrderedRing [LinearOrderedRing R] [SubringClas
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
 instance (priority := 75) toLinearOrderedCommRing [LinearOrderedCommRing R] [SubringClass S R] :
-    LinearOrderedCommRing s :=
+    LinearOrderedCommRing s := fast_instance%
   Subtype.coe_injective.linearOrderedCommRing Subtype.val rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
     (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl

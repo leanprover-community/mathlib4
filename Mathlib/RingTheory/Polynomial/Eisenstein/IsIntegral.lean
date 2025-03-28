@@ -207,7 +207,7 @@ theorem dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt {B : Pow
       Finset.add_sum_erase (range (Q.natDegree + 1)) fun i => Q.coeff i • B.gen ^ i]
     simp
 
-theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [CommRing B]
+theorem mem_adjoin_of_dvd_coeff_of_dvd_aeval {A B : Type*} [CommSemiring A] [Ring B]
     [Algebra A B] [NoZeroSMulDivisors A B] {Q : A[X]} {p : A} {x z : B} (hp : p ≠ 0)
     (hQ : ∀ i ∈ range (Q.natDegree + 1), p ∣ Q.coeff i) (hz : aeval x Q = p • z) :
     z ∈ adjoin A ({x} : Set B) := by
@@ -238,7 +238,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
   have := B.finite
   set P := minpoly R B.gen with hP
   obtain ⟨n, hn⟩ := Nat.exists_eq_succ_of_ne_zero B.dim_pos.ne'
-  haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans R K L
+  haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.trans_faithfulSMul R K L
   let _ := P.map (algebraMap R L)
   -- There is a polynomial `Q` such that `p • z = aeval B.gen Q`. We can assume that
   -- `Q.degree < P.degree` and `Q ≠ 0`.
@@ -250,7 +250,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     simpa using hQ
   by_cases hQzero : Q = 0
   · simp only [hQzero, Algebra.smul_def, zero_eq_mul, aeval_zero] at hQ
-    cases' hQ with H H₁
+    rcases hQ with H | H₁
     · have : Function.Injective (algebraMap R L) := by
         rw [algebraMap_eq R K L]
         exact (algebraMap K L).injective.comp (IsFractionRing.injective R K)

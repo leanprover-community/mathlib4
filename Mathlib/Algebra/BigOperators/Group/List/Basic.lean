@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Order.RelClasses
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Algebra.Group.Basic
@@ -58,6 +58,7 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
 @[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
 @[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
 
+open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
     (Forall₂ R ⇒ R) prod prod :=
@@ -137,13 +138,16 @@ theorem prod_set :
 
 /-- We'd like to state this as `L.headI * L.tail.prod = L.prod`, but because `L.headI` relies on an
 inhabited instance to return a garbage value on the empty list, this is not possible.
-Instead, we write the statement in terms of `(L.get? 0).getD 1`.
+Instead, we write the statement in terms of `L[0]?.getD 1`.
 -/
 @[to_additive "We'd like to state this as `L.headI + L.tail.sum = L.sum`, but because `L.headI`
   relies on an inhabited instance to return a garbage value on the empty list, this is not possible.
-  Instead, we write the statement in terms of `(L.get? 0).getD 0`."]
-theorem get?_zero_mul_tail_prod (l : List M) : (l.get? 0).getD 1 * l.tail.prod = l.prod := by
+  Instead, we write the statement in terms of `L[0]?.getD 0`."]
+theorem getElem?_zero_mul_tail_prod (l : List M) : l[0]?.getD 1 * l.tail.prod = l.prod := by
   cases l <;> simp
+
+@[deprecated (since := "2025-02-15")] alias get?_zero_mul_tail_prod := getElem?_zero_mul_tail_prod
+@[deprecated (since := "2025-02-15")] alias get?_zero_add_tail_sum := getElem?_zero_add_tail_sum
 
 /-- Same as `get?_zero_mul_tail_prod`, but avoiding the `List.headI` garbage complication by
   requiring the list to be nonempty. -/
@@ -240,7 +244,8 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-@[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+@[to_additive (attr := simp)]
+lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :
@@ -472,8 +477,6 @@ namespace MonoidHom
 @[to_additive]
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
-
-attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_list_sum
 
 end MonoidHom
 

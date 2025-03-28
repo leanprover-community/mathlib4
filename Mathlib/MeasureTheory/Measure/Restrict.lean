@@ -648,8 +648,8 @@ theorem ae_restrict_eq (hs : MeasurableSet s) : ae (μ.restrict s) = ae μ ⊓ �
     Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
   rfl
 
-lemma ae_restrict_le (hs : MeasurableSet s) : ae (μ.restrict s) ≤ ae μ :=
-  ae_restrict_eq hs ▸ inf_le_left
+lemma ae_restrict_le : ae (μ.restrict s) ≤ ae μ :=
+  ae_mono restrict_le_self
 
 theorem ae_restrict_eq_bot {s} : ae (μ.restrict s) = ⊥ ↔ μ s = 0 :=
   ae_eq_bot.trans restrict_eq_zero

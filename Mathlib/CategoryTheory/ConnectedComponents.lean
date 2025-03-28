@@ -82,7 +82,6 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
 instance {j : ConnectedComponents J} : Category (Component j) :=
   FullSubcategory.category _
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The inclusion functor from a connected component to the whole category. -/
 @[simps!]
 def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
@@ -124,7 +123,9 @@ instance (j : ConnectedComponents J) : IsConnected (Component j) := by
   refine ⟨l.pmap f hf, ?_, ?_⟩
   · refine @List.chain_pmap_of_chain _ _ _ _ _ f (fun x y _ _ h => ?_) _ _ hl₁ h₁₂ _
     exact zag_of_zag_obj (Component.ι _) h
-  · erw [List.getLast_pmap f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)]
+  · have := List.getLast_pmap f (j₁ :: l) (by simpa [h₁₂] using hf) (List.cons_ne_nil _ _)
+    simp only [List.pmap_cons] at this
+    rw [this]
     exact FullSubcategory.ext hl₂
 
 /-- The disjoint union of `J`s connected components, written explicitly as a sigma-type with the
@@ -142,7 +143,6 @@ this abbreviation helps guide typeclass search to get the right category instanc
 abbrev inclusion (j : ConnectedComponents J) : Component j ⥤ Decomposed J :=
   Sigma.incl _
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The forward direction of the equivalence between the decomposed category and the original. -/
 @[simps!]
 def decomposedTo (J : Type u₁) [Category.{v₁} J] : Decomposed J ⥤ J :=
@@ -172,7 +172,6 @@ instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, 
 
 instance : (decomposedTo J).IsEquivalence where
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
 def decomposedEquiv : Decomposed J ≌ J :=
