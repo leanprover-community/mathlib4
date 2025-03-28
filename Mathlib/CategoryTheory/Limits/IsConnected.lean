@@ -160,7 +160,7 @@ instance isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C := by
   exact ⟨Zag.of_hom <| Limits.terminal.from _, Zag.symm <| Zag.of_hom <| Limits.terminal.from _⟩
 
 /-- Prove that a category is connected by supplying an explicit initial object. -/
-lemma isConnected_of_isInitial (x : C) (h : Limits.IsInitial x) : IsConnected C := by
+lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
   letI : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
@@ -170,7 +170,7 @@ lemma isConnected_of_isInitial (x : C) (h : Limits.IsInitial x) : IsConnected C 
   exact ⟨Zag.symm <| Zag.of_hom <| h.to _, Zag.of_hom <| h.to _⟩
 
 /-- Prove that a category is connected by supplying an explicit terminal object. -/
-lemma isConnected_of_isTerminal (x : C) (h : Limits.IsTerminal x) : IsConnected C := by
+lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected C := by
   letI : Nonempty C := ⟨x⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
