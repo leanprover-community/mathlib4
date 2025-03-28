@@ -121,9 +121,6 @@ def bifunctorComp₂₃ (F : C₁ ⥤ C₂₃ ⥤ C₄) (G₂₃ : C₂ ⥤ C₃
     { app := fun X₂ =>
         { app := fun X₃ => (F.map φ).app ((G₂₃.obj X₂).obj X₃) } }
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 /-- Auxiliary definition for `bifunctorComp₂₃Functor`. -/
 @[simps]
 def bifunctorComp₂₃FunctorObj (F : C₁ ⥤ C₂₃ ⥤ C₄) :

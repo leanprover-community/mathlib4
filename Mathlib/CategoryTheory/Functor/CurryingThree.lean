@@ -88,9 +88,6 @@ def bifunctorComp₁₂Iso (F₁₂ : C₁ ⥤ C₂ ⥤ C₁₂) (G : C₁₂ �
     bifunctorComp₁₂ F₁₂ G ≅ curry.obj (uncurry.obj F₁₂ ⋙ G) :=
   NatIso.ofComponents (fun _ => NatIso.ofComponents (fun _ => Iso.refl _))
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 /-- `bifunctorComp₂₃` can be described in terms of the curryfication of functors. -/
 @[simps!]
 def bifunctorComp₂₃Iso (F : C₁ ⥤ C₂₃ ⥤ E) (G₂₃ : C₂ ⥤ C₃ ⥤ C₂₃) :

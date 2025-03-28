@@ -136,9 +136,6 @@ theorem integrable_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
   simp_rw [← neg_mul]
   apply integrable_exp_neg_mul_sq hb
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 theorem integral_cexp_neg_mul_sq_add_real_mul_I (hb : 0 < b.re) (c : ℝ) :
     ∫ x : ℝ, cexp (-b * (x + c * I) ^ 2) = (π / b) ^ (1 / 2 : ℂ) := by
   refine

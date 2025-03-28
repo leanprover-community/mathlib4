@@ -91,13 +91,6 @@ instance : HasForget₂ CommRingCat CommMonCat where
   forget₂ := { obj M := .of M, map f := CommMonCat.ofHom f.hom }
   forget_comp := rfl
 
-#adaptation_note
-/--
-`simp` is taking longer after nightly-2025-03-25,
-and then even longer after nightly-2025-03-26,
-and then *even* longer after nightly-2025-03-27.
--/
-set_option maxHeartbeats 1000000 in
 /-- The adjunction `G ↦ R[G]` and `S ↦ S` between `CommGrp` and `R-Alg`. -/
 def monoidAlgebraAdj (R : CommRingCat.{u}) :
     monoidAlgebra R ⊣ Under.forget R ⋙ forget₂ _ _ where

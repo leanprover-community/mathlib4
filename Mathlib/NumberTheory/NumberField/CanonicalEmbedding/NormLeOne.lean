@@ -184,9 +184,6 @@ The derivative of `expMap_single`, see `hasDerivAt_expMap_single`.
 abbrev deriv_expMap_single (w : InfinitePlace K) (x : ℝ) : ℝ :=
   (expMap_single w x) * (w.mult : ℝ)⁻¹
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 theorem hasDerivAt_expMap_single (w : InfinitePlace K) (x : ℝ) :
     HasDerivAt (expMap_single w) (deriv_expMap_single w x) x := by
   simpa [expMap_single, mul_comm] using

@@ -125,9 +125,6 @@ theorem pairwise_eq_iff_exists_eq [Nonempty ι] (s : Set α) (f : α → ι) :
     (s.Pairwise fun x y => f x = f y) ↔ ∃ z, ∀ x ∈ s, f x = z :=
   pairwise_iff_exists_forall s f
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 theorem pairwise_union :
     (s ∪ t).Pairwise r ↔
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by

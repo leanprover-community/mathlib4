@@ -132,9 +132,6 @@ end
 
 attribute [local simp] mapBifunctorMapMap
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 /-- Given a bifunctor `F : C₁ ⥤ C₂ ⥤ C₃` and a map `p : I × J → K`, this is the
 functor `GradedObject I C₁ ⥤ GradedObject J C₂ ⥤ GradedObject K C₃` sending
 `X : GradedObject I C₁` and `Y : GradedObject J C₂` to the `K`-graded object sending

@@ -206,9 +206,6 @@ instance ofFinitary_finitary (E : Set α) (Indep : Set α → Prop)
       E Indep indep_empty indep_subset indep_aug indep_compact subset_ground).matroid :=
   ⟨by simpa⟩
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 /-- An independence predicate satisfying the finite matroid axioms determines a matroid,
 provided independence is determined by its behaviour on finite sets. -/
 @[simps! E] protected def ofFinitaryCardAugment (E : Set α) (Indep : Set α → Prop)

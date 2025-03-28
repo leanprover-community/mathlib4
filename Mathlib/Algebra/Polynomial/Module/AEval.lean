@@ -125,9 +125,6 @@ section Submodule
 
 variable (R M)
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-27. -/
-set_option maxHeartbeats 400000 in
 /-- The natural order isomorphism between the two ways to represent invariant submodules. -/
 def mapSubmodule :
     (Algebra.lsmul R R M a).invtSubmodule ≃o Submodule R[X] (AEval R M a) where

@@ -264,9 +264,6 @@ theorem write_eq_implies_stateEq {t : Register} {v : Word} {ζ₁ ζ₂ : State}
   specialize h r (lt_trans hr (Register.lt_succ_self _))
   rwa [if_neg (ne_of_lt hr)] at h
 
-#adaptation_note
-/-- Requires more heartbeats after nightly-2025-03-26. -/
-set_option maxHeartbeats 400000 in
 /-- The main **compiler correctness theorem**.
 
 Unlike Theorem 1 in the paper, both `map` and the assumption on `t` are explicit.

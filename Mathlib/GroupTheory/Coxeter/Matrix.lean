@@ -108,12 +108,6 @@ def Aₙ : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-#adaptation_note
-/--
-Requires more heartbeats after nightly-2025-03-25,
-and then even more after nightly-2025-03-27.
--/
-set_option maxHeartbeats 600000 in
 /-- The Coxeter matrix of type Bₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
@@ -131,12 +125,6 @@ def Bₙ : CoxeterMatrix (Fin n) where
   diagonal := by simp
   off_diagonal := by aesop
 
-#adaptation_note
-/--
-Requires more heartbeats after nightly-2025-03-26,
-and then even more after nightly-2025-03-27.
--/
-set_option maxHeartbeats 600000 in
 /-- The Coxeter matrix of type Dₙ.
 
 The corresponding Coxeter-Dynkin diagram is:
