@@ -113,7 +113,7 @@ theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
 @[simp]
 theorem reverse.map_mul (a b : CliffordAlgebra Q) :
     reverse (a * b) = reverse b * reverse a :=
-  op_injective (_root_.map_mul reverseOp a b)
+  op_injective (map_mul reverseOp a b)
 
 @[simp]
 theorem reverse_involutive : Function.Involutive (reverse (Q := Q)) :=

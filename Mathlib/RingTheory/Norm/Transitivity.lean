@@ -120,7 +120,7 @@ theorem comp_det_mul_pow :
     ((M.map f).comp m m n n R).det * (f (M k k)).det ^ (Fintype.card m - 1) =
       (f (M k k)).det * (((mulAuxMatBlock).map f).comp _ _ n n R).det := by
   trans (((M * auxMat M k).map f).comp m m n n R).det
-  · simp_rw [← f.mapMatrix_apply, ← compRingEquiv_apply, _root_.map_mul, det_mul, f.mapMatrix_apply,
+  · simp_rw [← f.mapMatrix_apply, ← compRingEquiv_apply, map_mul, det_mul, f.mapMatrix_apply,
       compRingEquiv_apply, ((auxMat_blockTriangular M k).map f).comp.det_fintype, Fintype.prod_Prop,
       comp_toSquareBlock (b := (· ≠ k)), det_reindex_self, map_toSquareBlock,
       auxMat_toSquareBlock_eq, auxMat_toSquareBlock_ne, smul_one_eq_diagonal, ← diagonal_one,
@@ -137,8 +137,8 @@ lemma det_det_aux
     (ih : ∀ M, (f (det M)).det = ((M.map f).comp {a // (a = k) = False} _ n n R).det) :
     ((f M.det).det - ((M.map f).comp m m n n R).det) *
       (f (M k k)).det ^ (Fintype.card m - 1) = 0 := by
-  rw [sub_mul, comp_det_mul_pow, ← det_pow, ← map_pow, ← det_mul, ← _root_.map_mul,
-    det_mul_corner_pow, _root_.map_mul, det_mul, ih, sub_self]
+  rw [sub_mul, comp_det_mul_pow, ← det_pow, ← map_pow, ← det_mul, ← map_mul,
+    det_mul_corner_pow, map_mul, det_mul, ih, sub_self]
 
 end Algebra.Norm.Transitivity
 

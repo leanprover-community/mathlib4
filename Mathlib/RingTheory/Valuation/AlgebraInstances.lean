@@ -64,7 +64,7 @@ instance algebra :
       map_add' := fun x y =>
         Subtype.ext <| by simp only [_root_.map_add, Subalgebra.coe_add, Subtype.coe_mk]
       map_mul' := fun x y =>
-        Subtype.ext <| by simp only [Subalgebra.coe_mul, _root_.map_mul, Subtype.coe_mk] }
+        Subtype.ext <| by simp only [Subalgebra.coe_mul, map_mul, Subtype.coe_mk] }
 
 /-- A ring equivalence between the integral closure of the valuation subring of `K` in `L`
   and a ring `R` satisfying `isIntegralClosure R v.valuationSubring L`. -/

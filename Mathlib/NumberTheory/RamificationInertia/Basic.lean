@@ -503,11 +503,11 @@ noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem
   Quotient.map' (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩)
     fun x y h => by
     rw [Submodule.quotientRel_def] at h ⊢
-    simp only [_root_.map_mul, LinearMap.mem_range]
+    simp only [map_mul, LinearMap.mem_range]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, ?_⟩
     ext
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
-      Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
+      Subtype.coe_mk, map_mul, map_sub, mul_sub]
 
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux p P a_mem (Submodule.Quotient.mk x) =
@@ -534,7 +534,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
     ext
-    simp only [mul_assoc, _root_.map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
+    simp only [mul_assoc, map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 

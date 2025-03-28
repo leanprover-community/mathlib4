@@ -146,7 +146,7 @@ theorem map_zero : v 0 = 0 :=
 theorem map_one : v 1 = 1 :=
   v.map_one'
 
-theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
+protected theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 
 -- Porting note: LHS side simplified so created map_add'

@@ -361,7 +361,7 @@ private lemma aux_X (i : Q.vars ⊕ P.vars) : (Q.aux P) (X i) = Sum.elim X (C �
 private lemma comp_relation_aux_map (r : Q.rels) :
     (Q.aux P) (Q.comp_relation_aux P r) = Q.relation r := by
   simp only [aux, comp_relation_aux, Generators.comp_vars, Sum.elim_inl, map_finsupp_sum]
-  simp only [_root_.map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
+  simp only [map_mul, aeval_rename, aeval_monomial, Sum.elim_comp_inr]
   conv_rhs => rw [← Finsupp.sum_single (Q.relation r)]
   congr
   ext u s m

@@ -181,7 +181,7 @@ noncomputable def rTensorAlgEquiv :
     exact finsuppLeft_symm_apply_single (R := R) (0 : σ →₀ ℕ) (1 : S) (1 : N)
   · intro x y
     erw [← rTensorAlgHom_apply_eq (S := S)]
-    simp only [_root_.map_mul, rTensorAlgHom_apply_eq]
+    simp only [map_mul, rTensorAlgHom_apply_eq]
     rfl
 
 @[simp]
@@ -232,7 +232,7 @@ lemma algebraTensorAlgEquiv_symm_monomial (m : σ →₀ ℕ) (a : A) :
   · simp [algebraTensorAlgEquiv]
   · intro i n f _ _ hfa
     simp only [algebraTensorAlgEquiv, AlgEquiv.ofAlgHom_symm_apply] at hfa ⊢
-    simp only [add_comm, monomial_add_single, _root_.map_mul, map_pow, aeval_X,
+    simp only [add_comm, monomial_add_single, map_mul, map_pow, aeval_X,
       Algebra.TensorProduct.tmul_pow, one_pow, hfa]
     nth_rw 2 [← mul_one a]
     rw [Algebra.TensorProduct.tmul_mul_tmul]

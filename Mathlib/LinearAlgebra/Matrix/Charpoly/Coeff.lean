@@ -179,7 +179,7 @@ theorem det_eq_sign_charpoly_coeff (M : Matrix n n R) :
 
 lemma eval_det_add_X_smul (A : Matrix n n R[X]) (M : Matrix n n R) :
     (det (A + (X : R[X]) • M.map C)).eval 0 = (det A).eval 0 := by
-  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, _root_.map_mul]
+  simp only [eval_det, map_zero, map_add, eval_add, Algebra.smul_def, map_mul]
   simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
     mul_zero, add_zero]
 
@@ -323,11 +323,11 @@ lemma reverse_charpoly (M : Matrix n n R) :
   suffices t_inv ^ Fintype.card n * p = invert q by
     apply toLaurent_injective
     rwa [toLaurent_reverse, ← coe_toLaurentAlg, hp, hq, ← involutive_invert.injective.eq_iff,
-      _root_.map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
+      map_mul, involutive_invert p, charpoly_natDegree_eq_dim,
       ← mul_one (Fintype.card n : ℤ), ← T_pow, map_pow, invert_T, mul_comm]
   rw [← det_smul, smul_sub, scalar_apply, ← diagonal_smul, Pi.smul_def, smul_eq_mul, ht,
     diagonal_one, invert.map_det]
-  simp [t_inv, map_sub, _root_.map_one, _root_.map_mul, t, map_smul', smul_eq_diagonal_mul]
+  simp [t_inv, map_sub, _root_.map_one, map_mul, t, map_smul', smul_eq_diagonal_mul]
 
 
 @[simp] lemma eval_charpolyRev :

@@ -494,7 +494,7 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
   rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
   apply Finset.sum_congr rfl
   intro σ _
-  simp only [_root_.map_mul, map_div₀, map_pow]
+  simp only [map_mul, map_div₀, map_pow]
   ring
 
 end DetNeZero

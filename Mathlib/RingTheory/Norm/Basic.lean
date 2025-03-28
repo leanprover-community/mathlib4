@@ -279,7 +279,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     simp [e']
   intros c x
   apply e₂.symm.injective
-  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, _root_.map_mul,
+  simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, map_mul,
     RingEquiv.symm_apply_apply, commutes]
 
 end EqProdEmbeddings

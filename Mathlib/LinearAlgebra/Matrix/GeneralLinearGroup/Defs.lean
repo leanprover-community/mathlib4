@@ -160,7 +160,7 @@ protected lemma map_one : map f (1 : GL n R) = 1 := by
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
   ext
-  simp only [_root_.map_mul, Units.val_mul]
+  simp only [map_mul, Units.val_mul]
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
   ext

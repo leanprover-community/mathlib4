@@ -209,7 +209,7 @@ theorem _root_.Polynomial.toLaurent_one : (Polynomial.toLaurent : R[X] → R[T;T
 @[simp]
 theorem _root_.Polynomial.toLaurent_C_mul_eq (r : R) (f : R[X]) :
     toLaurent (Polynomial.C r * f) = C r * toLaurent f := by
-  simp only [_root_.map_mul, Polynomial.toLaurent_C]
+  simp only [map_mul, Polynomial.toLaurent_C]
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) = T n := by
@@ -217,7 +217,7 @@ theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) =
 
 theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
     toLaurent (Polynomial.C r * X ^ n) = C r * T n := by
-  simp only [_root_.map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
+  simp only [map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
 
 instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   invOf := T (-n)

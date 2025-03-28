@@ -528,7 +528,7 @@ theorem map_id : map (fun i ↦ (LinearMap.id : s i →ₗ[R] s i)) = .id := by
 theorem map_one : map (fun (i : ι) ↦ (1 : s i →ₗ[R] s i)) = 1 :=
   map_id
 
-theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
+protected theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
     map (fun i ↦ f₁ i * f₂ i) = map f₁ * map f₂ :=
   map_comp f₁ f₂
 
@@ -537,7 +537,7 @@ theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
 def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
   toFun := map
   map_one' := map_one
-  map_mul' := map_mul
+  map_mul' := PiTensorProduct.map_mul
 
 @[simp]
 protected theorem map_pow (f : Π i, s i →ₗ[R] s i) (n : ℕ) :
