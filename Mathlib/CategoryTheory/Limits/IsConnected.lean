@@ -137,4 +137,28 @@ theorem isConnected_iff_of_initial (F : C ⥤ D) [F.Initial] : IsConnected C ↔
 
 end Functor
 
+section
+
+variable (C : Type*) [Category C]
+
+instance isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C := by
+  letI : Nonempty C := ⟨⊥_ C⟩
+  apply isConnected_of_zigzag
+  intro j₁ j₂
+  use [⊥_ C, j₂]
+  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
+    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  exact ⟨Zag.symm <| Zag.of_hom <| Limits.initial.to _, Zag.of_hom <| Limits.initial.to _⟩
+
+instance isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C := by
+  letI : Nonempty C := ⟨⊤_ C⟩
+  apply isConnected_of_zigzag
+  intro j₁ j₂
+  use [⊤_ C, j₂]
+  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
+    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
+  exact ⟨Zag.of_hom <| Limits.terminal.from _, Zag.symm <| Zag.of_hom <| Limits.terminal.from _⟩
+
+end
+
 end CategoryTheory
