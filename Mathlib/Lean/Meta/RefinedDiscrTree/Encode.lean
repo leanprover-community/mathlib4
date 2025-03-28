@@ -320,8 +320,7 @@ where
           loop b (i+1) j (.star :: entries)
         else
           -- Recall that `isDefEq` switches the transparency on implicit arguments.
-          (if bi.isExplicit then id else withInferTypeConfig) do
-          let info ← mkExprInfo arg bvars
+          let info ← (if bi.isExplicit then id else withInferTypeConfig) do mkExprInfo arg bvars
           loop b (i+1) j (.expr info :: entries)
       let rec reduce := do
         match ← whnfD (fnType.instantiateRevRange j i args) with
