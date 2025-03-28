@@ -190,6 +190,10 @@ theorem sq_eq_sq {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a =
 theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b :=
   lt_of_mul_self_lt_mul_self₀ hb
 
+/-- A function `f : α → R` is nonarchimedean if it satisfies the ultrametric inequality
+  `f (a + b) ≤ max (f a) (f b)` for all `a b : α`. -/
+def IsNonarchimedean {α : Type*} [Add α] (f : α → R) : Prop := ∀ a b : α, f (a + b) ≤ f a ⊔ f b
+
 /-!
 ### Lemmas for canonically linear ordered semirings or linear ordered rings
 

@@ -1354,6 +1354,13 @@ theorem tendsto_nhds_limUnder {f : Filter α} {g : α → X} (h : ∃ x, Tendsto
     Tendsto g f (𝓝 (@limUnder _ _ _ (nonempty_of_exists h) f g)) :=
   le_nhds_lim h
 
+theorem limUnder_of_not_tendsto [hX : Nonempty X] {f : Filter α} {g : α → X}
+    (h : ¬ ∃ x, Tendsto g f (𝓝 x)) :
+    limUnder f g = Classical.choice hX := by
+  simp_rw [limUnder, lim, Classical.epsilon, Classical.strongIndefiniteDescription]
+  rw [dif_neg]
+  exact h
+
 end lim
 
 end TopologicalSpace
