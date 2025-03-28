@@ -8,9 +8,10 @@ import Mathlib.Init
 /-!
 # simproc for `∃ a', ... ∧ a' = a ∧ ...`
 
-This module implements the `existsAndEq` simproc that checks whether `P a'` has
-the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` for the goal `∃ a', P a'`.
-If so, it rewrites the latter as `P a`.
+This module implements the `existsAndEq` simproc that triggers on goals of the form `∃ a, body` and
+checks whether `body` has the form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that
+is independent of `a`. If so, it replaces all occurancies of `a` with `a'` and removes the
+quantifier.
 -/
 
 open Lean Meta
@@ -63,8 +64,9 @@ where
 
 end existsAndEq
 
-/-- Checks whether `P a'` has the form `... ∧ a' = a ∧ ...` or `... ∧ a = a' ∧ ...` in
-the goal `∃ a', P a'`. If so, rewrites the goal as `P a`. -/
+/-- Triggers on goals of the form `∃ a, body` and checks whether `body` has the
+form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that is independent of `a`.
+If so, it replaces all occurancies of `a` with `a'` and removes the quantifier. -/
 simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
   match e.getAppFnArgs with
   | (``Exists, #[_, p]) =>
