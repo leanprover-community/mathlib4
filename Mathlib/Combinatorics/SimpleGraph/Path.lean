@@ -957,7 +957,10 @@ lemma adj_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp
         exact ⟨u, ⟨(Walk.cons h p).start_mem_support, G.adj_symm h⟩⟩
       | inr hnotnil =>
         obtain ⟨y, hy⟩ := ih hnotnil hxp
-        exact ⟨y, ⟨(Walk.mem_support_iff' h p).mpr (Or.inr hy.left), hy.right⟩⟩
+        refine ⟨y, ⟨?_, hy.right⟩⟩
+        rw [Walk.mem_support_iff]
+        simp only [Walk.support_cons, List.tail_cons]
+        exact Or.inr hy.left
 
 lemma mem_support_of_mem_walk_support {G : SimpleGraph V} {u v : V} (p : G.Walk u v) (hp : ¬p.Nil)
     {w : V} (hw : w ∈ p.support) : w ∈ G.support := by

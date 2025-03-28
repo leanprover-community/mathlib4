@@ -524,9 +524,6 @@ theorem support_nonempty {u v : V} (p : G.Walk u v) : { w | w ∈ p.support }.No
 theorem mem_support_iff {u v w : V} (p : G.Walk u v) :
     w ∈ p.support ↔ w = u ∨ w ∈ p.support.tail := by cases p <;> simp
 
-lemma mem_support_iff' {G : SimpleGraph V} {u v w x : V} (huv : G.Adj u v) (p : G.Walk v w) :
-    x ∈ (Walk.cons huv p).support ↔ x = u ∨ x ∈ p.support := by cases p <;> simp
-
 @[simp]
 theorem getVert_mem_support {u v : V} (p : G.Walk u v) (i : ℕ) : p.getVert i ∈ p.support := by
   induction p generalizing i with
