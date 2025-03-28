@@ -140,6 +140,10 @@ instance Metric.unitSphere.monoid [SeminormedRing 𝕜] [NormMulClass 𝕜] [Nor
     Monoid (sphere (0 : 𝕜) 1) :=
   SubmonoidClass.toMonoid (Submonoid.unitSphere 𝕜)
 
+instance Metric.unitSphere.commMonoid [SeminormedCommRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    CommMonoid (sphere (0 : 𝕜) 1) :=
+  SubmonoidClass.toCommMonoid (Submonoid.unitSphere 𝕜)
+
 @[simp, norm_cast]
 theorem coe_one_unitSphere [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
     ((1 : sphere (0 : 𝕜) 1) : 𝕜) = 1 :=
@@ -182,9 +186,12 @@ instance Metric.sphere.hasDistribNeg [SeminormedRing 𝕜] [NormMulClass 𝕜] [
     HasDistribNeg (sphere (0 : 𝕜) 1) :=
   Subtype.coe_injective.hasDistribNeg ((↑) : sphere (0 : 𝕜) 1 → 𝕜) (fun _ => rfl) fun _ _ => rfl
 
+instance Metric.sphere.continuousMul [SeminormedRing 𝕜] [NormMulClass 𝕜] [NormOneClass 𝕜] :
+    ContinuousMul (sphere (0 : 𝕜) 1) :=
+  (Submonoid.unitSphere 𝕜).continuousMul
+
 instance Metric.sphere.topologicalGroup [NormedDivisionRing 𝕜] :
     IsTopologicalGroup (sphere (0 : 𝕜) 1) where
-  toContinuousMul := (Submonoid.unitSphere 𝕜).continuousMul
   continuous_inv := (continuous_subtype_val.inv₀ ne_zero_of_mem_unit_sphere).subtype_mk _
 
 instance Metric.sphere.commGroup [NormedField 𝕜] : CommGroup (sphere (0 : 𝕜) 1) :=
