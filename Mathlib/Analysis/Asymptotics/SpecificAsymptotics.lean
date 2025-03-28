@@ -149,7 +149,7 @@ section ArithmeticFunction
 
 open ArithmeticFunction
 
-theorem sigma_asymptotic (k : ℕ) :
+theorem ArithmeticFunction.sigma_asymptotic (k : ℕ) :
     (fun n ↦ (σ k n : ℝ)) =O[atTop] (fun n ↦ (n ^ (k + 1) : ℝ)) := by
   rw [isBigO_iff]
   use 1
