@@ -28,10 +28,6 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [Algebra R S]
   [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 variable (g : S) [IsLocalization.Away g T] (P : Generators R S)
 
--- Allow seeing through the `vars` field of `Generators`. For details, see
--- the TODO in `Mathlib.RingTheory.Generators`.
-set_option allowUnsafeReducibility true in
-attribute [local reducible] Generators.localizationAway in
 lemma comp_localizationAway_ker (P : Generators R S) (f : P.Ring) (h : algebraMap P.Ring S f = g) :
     ((Generators.localizationAway g).comp P).ker =
       Ideal.map ((Generators.localizationAway (S := T) g).toComp P).toAlgHom P.ker ⊔
@@ -136,9 +132,9 @@ lemma liftBaseChange_injective_of_isLocalizationAway :
     simpa using hm
   rw [← compLocalizationAwayAlgHom_toAlgHom_toComp (T := T)]
   apply sq_ker_comp_le_ker_compLocalizationAwayAlgHom
-  simpa only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply,
-    mk_apply, lift.tmul, LinearMap.coe_restrictScalars, LinearMap.coe_smulRight,
-    LinearMap.one_apply, LinearMap.smul_apply, one_smul, Algebra.Extension.Cotangent.map_mk,
-    Extension.Cotangent.mk_eq_zero_iff] using hx
+  simp only [LinearEquiv.coe_coe, LinearMap.ringLmapEquivSelf_symm_apply, mk_apply, lift.tmul,
+    LinearMap.coe_restrictScalars, LinearMap.coe_smulRight, LinearMap.one_apply, one_smul, f] at hx
+  rw [Algebra.Extension.Cotangent.map_mk, Extension.Cotangent.mk_eq_zero_iff] at hx
+  simpa only [f] using hx
 
 end Algebra.Generators
