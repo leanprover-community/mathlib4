@@ -29,19 +29,19 @@ open scoped Topology NNReal Pointwise
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] (a : α)
+variable [NormedDivisionRing α]
 
 /-- Multiplication by a nonzero element `a` on the left
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
-def DilationEquiv.mulLeft (ha : a ≠ 0) : α ≃ᵈ α where
+def DilationEquiv.mulLeft (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
   __ := Dilation.mulLeft a ha
   toEquiv := Equiv.mulLeft₀ a ha
 
 /-- Multiplication by a nonzero element `a` on the right
 as a `DilationEquiv` of a normed division ring. -/
 @[simps!]
-def DilationEquiv.mulRight (ha : a ≠ 0) : α ≃ᵈ α where
+def DilationEquiv.mulRight (a : α) (ha : a ≠ 0) : α ≃ᵈ α where
   __ := Dilation.mulRight a ha
   toEquiv := Equiv.mulRight₀ a ha
 
