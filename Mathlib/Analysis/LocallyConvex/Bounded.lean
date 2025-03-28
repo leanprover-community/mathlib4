@@ -367,7 +367,7 @@ end Bornology
 section UniformAddGroup
 
 variable (𝕜) [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
-variable [UniformSpace E] [UniformAddGroup E] [ContinuousSMul 𝕜 E]
+variable [UniformSpace E] [IsUniformAddGroup E] [ContinuousSMul 𝕜 E]
 
 theorem TotallyBounded.isVonNBounded {s : Set E} (hs : TotallyBounded s) :
     Bornology.IsVonNBounded 𝕜 s := by
@@ -399,7 +399,7 @@ theorem Filter.Tendsto.isVonNBounded_range [NormedField 𝕜] [AddCommGroup E] [
     [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f : ℕ → E} {x : E} (hf : Tendsto f atTop (𝓝 x)) : Bornology.IsVonNBounded 𝕜 (range f) :=
   letI := IsTopologicalAddGroup.toUniformSpace E
-  haveI := uniformAddGroup_of_addCommGroup (G := E)
+  haveI := isUniformAddGroup_of_addCommGroup (G := E)
   hf.cauchySeq.totallyBounded_range.isVonNBounded 𝕜
 
 variable (𝕜) in

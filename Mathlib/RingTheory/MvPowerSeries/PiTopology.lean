@@ -217,8 +217,8 @@ theorem instCompleteSpace [CompleteSpace R] :
 
 /-- The `UniformAddGroup` structure on `MvPowerSeries` of a `UniformAddGroup` -/
 @[scoped instance]
-theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
-    UniformAddGroup (MvPowerSeries σ R) := Pi.instUniformAddGroup
+theorem instUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
+    IsUniformAddGroup (MvPowerSeries σ R) := Pi.instIsUniformAddGroup
 
 end Uniformity
 
