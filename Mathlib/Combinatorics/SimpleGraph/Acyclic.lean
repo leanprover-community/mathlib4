@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Data.Fintype.Order
+import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -198,33 +199,39 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
 
-/-- A minimally connected graph is a tree. TODO : Iff version. -/
+/-- A minimally connected graph is a tree. -/
 lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
   exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt (by simpa [← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr
 
-/-- Every connected graph has a spanning tree. TODO : remove the `Fintype V` hypothesis. -/
-lemma Connected.exists_isTree_le [Fintype V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
+/-- Every connected graph has a spanning tree. -/
+lemma Connected.exists_isTree_le [Finite V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
   obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_minimal_le h
   exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
 
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
-lemma Connected.card_vert_le_card_edgeSet_add_one [Fintype V] [Fintype G.edgeSet]
-    (h : G.Connected) : Fintype.card V ≤ Fintype.card G.edgeSet + 1 := by
+lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
+    Nat.card V ≤ Nat.card G.edgeSet + 1 := by
+  obtain hV | hV := (finite_or_infinite V).symm
+  · simp
+  have := Fintype.ofFinite V
   classical
   obtain ⟨T, hle, hT⟩ := h.exists_isTree_le
-  rw [← hT.card_edgeFinset, add_le_add_iff_right, ← edgeFinset_card]
+  rw [Nat.card_eq_fintype_card, ← hT.card_edgeFinset, add_le_add_iff_right,
+    Nat.card_eq_fintype_card, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
-lemma isTree_iff_connected_and_card [Fintype V] [Fintype G.edgeSet] :
-    G.IsTree ↔ G.Connected ∧ Fintype.card G.edgeSet + 1 = Fintype.card V := by
+lemma isTree_iff_connected_and_card [Finite V] :
+    G.IsTree ↔ G.Connected ∧ Nat.card G.edgeSet + 1 = Nat.card V := by
+  have := Fintype.ofFinite V
   classical
   refine ⟨fun h ↦ ⟨h.isConnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
   simp_rw [isAcyclic_iff_forall_adj_isBridge]
   refine fun x y h ↦ by_contra fun hbr ↦
     (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_lt ?_
-  rw [← edgeFinset_card, ← h₂, ← edgeFinset_card, add_lt_add_iff_right]
+  rw [Nat.card_eq_fintype_card, ← edgeFinset_card, ← h₂, Nat.card_eq_fintype_card,
+    ← edgeFinset_card, add_lt_add_iff_right]
   exact Finset.card_lt_card <| by simpa
 
 end SimpleGraph
