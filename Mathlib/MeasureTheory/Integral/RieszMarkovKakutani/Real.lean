@@ -236,20 +236,6 @@ private lemma RMK_exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : 
   obtain ⟨N, hN, h'N⟩ := (((tendsto_order.1 B).2 _ hε ).and (Ici_mem_atTop 1)).exists
   exact ⟨N, h'N, hN.le⟩
 
-omit [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X] in
-/- Choose an interval `(a, b)` which contains the range of `f`. -/
-private lemma RMK_range (f : C_c(X, ℝ)) (hX : Nonempty X) :
-    ∃ a b : ℝ, a < b ∧ range f ⊆ Ioo a b := by
-  obtain ⟨⟨a', ha⟩, ⟨b', hb⟩⟩ := isBounded_iff_bddBelow_bddAbove.mp
-    (Metric.isCompact_iff_isClosed_bounded.mp (HasCompactSupport.isCompact_range f.2 f.1.2)).2
-  have hf : range f ⊆ Ioo (a' - 1) (b' + 1) := fun _ hx ↦
-    ⟨lt_of_lt_of_le (sub_one_lt a') (ha hx), lt_of_le_of_lt (hb hx) (lt_add_one b')⟩
-  have hab : a' ≤ b' := by
-    obtain ⟨c, hc⟩ := instNonemptyRange f
-    exact le_trans (mem_lowerBounds.mp ha c hc) (mem_upperBounds.mp hb c hc)
-  have hab' := lt_trans (lt_of_lt_of_le (sub_one_lt a') hab) (lt_add_one b')
-  use a' - 1, b' + 1
-
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
 private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
@@ -265,7 +251,10 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
     apply le_iff_forall_pos_le_add.mpr
     intro ε hε
     -- Choose an interval `(a, b)` which contains the range of `f`.
-    obtain ⟨a, b, hab⟩ := RMK_range f hX
+    obtain ⟨a, b, hab⟩ : ∃ a b : ℝ, a < b ∧ range f ⊆ Ioo a b := by
+      obtain ⟨r, hr⟩ := (Metric.isCompact_iff_isClosed_bounded.mp
+        (HasCompactSupport.isCompact_range f.2 f.1.2)).2.subset_ball_lt 0 0
+      exact ⟨-r, r, by linarith, hr.2.trans_eq (by simp [Real.ball_eq_Ioo])⟩
     -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
     obtain ⟨N, hN, hε'⟩ := RMK_exists_nat (b - a) (2 * (μ K).toReal + |a| + b) hε
     let ε' := (b - a) / N
