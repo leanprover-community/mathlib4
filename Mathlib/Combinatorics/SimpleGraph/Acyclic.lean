@@ -216,8 +216,7 @@ lemma Connected.card_vert_le_card_edgeSet_add_one (h : G.Connected) :
     Nat.card V ≤ Nat.card G.edgeSet + 1 := by
   obtain hV | hV := (finite_or_infinite V).symm
   · simp
-  have := Fintype.ofFinite V
-  classical
+  have := Fintype.ofFinite
   obtain ⟨T, hle, hT⟩ := h.exists_isTree_le
   rw [Nat.card_eq_fintype_card, ← hT.card_edgeFinset, add_le_add_iff_right,
     Nat.card_eq_fintype_card, ← edgeFinset_card]
