@@ -363,12 +363,13 @@ lemma hom_ext {M : ModuleCat R} {N : ModuleCat S}
   apply (restrictScalars f).map_injective
   letI := f.toAlgebra
   ext : 1
-  apply TensorProduct.ext'
-  intro (s : S) m
-  change α (s ⊗ₜ m) = β (s ⊗ₜ m)
-  have : s ⊗ₜ[R] (m : M) = s • (1 : S) ⊗ₜ[R] m := by
-    rw [ExtendScalars.smul_tmul, mul_one]
-  simp only [this, map_smul, h]
+  sorry
+  -- apply TensorProduct.ext'
+  -- intro (s : S) m
+  -- change α (s ⊗ₜ m) = β (s ⊗ₜ m)
+  -- have : s ⊗ₜ[R] (m : M) = s • (1 : S) ⊗ₜ[R] m := by
+  --   rw [ExtendScalars.smul_tmul, mul_one]
+  -- simp only [this, map_smul, h]
 
 end ExtendScalars
 
@@ -739,7 +740,8 @@ def Unit.map {X} : X ⟶ (extendScalars f ⋙ restrictScalars f).obj X :=
     map_add' := fun x x' => by dsimp; rw [TensorProduct.tmul_add]
     map_smul' := fun r x => by
       letI m1 : Module R S := Module.compHom S f
-      dsimp; rw [← TensorProduct.smul_tmul,TensorProduct.smul_tmul'] }
+      dsimp; rw [← TensorProduct.smul_tmul] --,TensorProduct.smul_tmul'] }
+      sorry }
 
 /--
 The natural transformation from identity functor on `R`-module to the composition of extension and

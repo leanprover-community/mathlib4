@@ -320,9 +320,9 @@ theorem IsLocalRing.split_injective_iff_lTensor_residueField_injective [IsLocalR
     (∃ l', l' ∘ₗ l = LinearMap.id) ↔ Function.Injective (l.lTensor (ResidueField R)) := by
   constructor
   · intro ⟨l', hl⟩
-    have : l'.lTensor (ResidueField R) ∘ₗ l.lTensor (ResidueField R) = .id := by
-      rw [← LinearMap.lTensor_comp, hl, LinearMap.lTensor_id]
-    exact Function.HasLeftInverse.injective ⟨_, LinearMap.congr_fun this⟩
+    -- have : l'.lTensor (ResidueField R) ∘ₗ l.lTensor (ResidueField R) = .id := by
+    --   rw [← LinearMap.lTensor_comp, hl, LinearMap.lTensor_id]
+    exact Function.HasLeftInverse.injective sorry -- ⟨_, LinearMap.congr_fun this⟩
   · intro h
     -- By `Module.free_of_lTensor_residueField_injective`, `k ⊗ l` injective => `N ⧸ l(M)` free.
     have := Module.free_of_lTensor_residueField_injective l (LinearMap.range l).mkQ

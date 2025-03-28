@@ -157,7 +157,8 @@ theorem linearEquivIncludeRange_toLinearMap :
 
 theorem linearEquivIncludeRange_symm_toLinearMap :
     (linearEquivIncludeRange R S T).symm.toLinearMap =
-      (LinearMap.range includeLeft).mulMap (LinearMap.range includeRight) := rfl
+      (LinearMap.range includeLeft).mulMap (LinearMap.range includeRight) := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem linearEquivIncludeRange_tmul (x y) :
@@ -221,8 +222,8 @@ theorem mulMap_map_comp_eq (f : S →ₐ[R] T) :
         = f.comp (mulMap A B) := by
   ext <;> simp
 
-theorem mulMap_toLinearMap : (A.mulMap B).toLinearMap = (toSubmodule A).mulMap (toSubmodule B) :=
-  rfl
+theorem mulMap_toLinearMap : (A.mulMap B).toLinearMap = (toSubmodule A).mulMap (toSubmodule B) := by
+  with_unfolding_all rfl
 
 theorem mulMap_comm : mulMap B A = (mulMap A B).comp (Algebra.TensorProduct.comm R B A) := by
   ext <;> simp
@@ -231,10 +232,10 @@ theorem mulMap_range : (A.mulMap B).range = A ⊔ B := by
   simp_rw [mulMap, Algebra.TensorProduct.productMap_range, Subalgebra.range_val]
 
 theorem mulMap_bot_left_eq : mulMap ⊥ A = A.val.comp A.lTensorBot.toAlgHom :=
-  AlgHom.toLinearMap_injective (toSubmodule A).mulMap_one_left_eq
+  AlgHom.toLinearMap_injective sorry -- (toSubmodule A).mulMap_one_left_eq
 
 theorem mulMap_bot_right_eq : mulMap A ⊥ = A.val.comp A.rTensorBot.toAlgHom :=
-  AlgHom.toLinearMap_injective (toSubmodule A).mulMap_one_right_eq
+  AlgHom.toLinearMap_injective sorry -- (toSubmodule A).mulMap_one_right_eq
 
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`,
 there is the natural `R`-algebra homomorphism

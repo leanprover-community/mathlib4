@@ -93,7 +93,8 @@ theorem map_tmul (f : M →ₗc[R] N) (g : P →ₗc[R] Q) (x : M) (y : P) :
 
 @[simp]
 theorem map_toLinearMap (f : M →ₗc[R] N) (g : P →ₗc[R] Q) :
-    map f g = _root_.TensorProduct.map (f : M →ₗ[R] N) (g : P →ₗ[R] Q) := rfl
+    map f g = _root_.TensorProduct.map (f : M →ₗ[R] N) (g : P →ₗ[R] Q) := by
+  with_unfolding_all rfl
 
 variable (R M N P)
 
@@ -126,7 +127,8 @@ theorem assoc_symm_tmul (x : M) (y : N) (z : P) :
 
 @[simp]
 theorem assoc_toLinearEquiv :
-    Coalgebra.TensorProduct.assoc R M N P = _root_.TensorProduct.assoc R M N P := rfl
+    Coalgebra.TensorProduct.assoc R M N P = _root_.TensorProduct.assoc R M N P := by
+  with_unfolding_all rfl
 
 variable (R M)
 
@@ -145,7 +147,8 @@ variable {R M}
 
 @[simp]
 theorem lid_toLinearEquiv :
-    (Coalgebra.TensorProduct.lid R M) = _root_.TensorProduct.lid R M := rfl
+    (Coalgebra.TensorProduct.lid R M) = _root_.TensorProduct.lid R M := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem lid_tmul (r : R) (a : M) : Coalgebra.TensorProduct.lid R M (r ⊗ₜ a) = r • a := rfl

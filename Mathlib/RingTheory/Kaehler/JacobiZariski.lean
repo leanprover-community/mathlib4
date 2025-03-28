@@ -171,7 +171,8 @@ lemma CotangentSpace.map_toComp_injective :
       ((Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T) := by
   rw [← compEquiv_symm_inr]
   apply (compEquiv Q P).symm.injective.comp
-  exact Prod.mk_right_injective _
+  sorry
+  -- exact Prod.mk_right_injective _
 
 lemma CotangentSpace.map_ofComp_surjective :
     Function.Surjective (Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom) := by

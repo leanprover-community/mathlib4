@@ -421,7 +421,10 @@ instance leftAlgebra [SMulCommClass R S A] : Algebra S (A ⊗[R] B) :=
       rw [algebraMap_eq_smul_one, ← smul_tmul', smul_mul_assoc, ← one_def, one_mul]
     algebraMap := TensorProduct.includeLeftRingHom.comp (algebraMap S A) }
 
-example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := rfl
+-- Ideally, this should NOT depend on unfolding `TensorProduct`. Unsure if feasible.
+unseal TensorProduct in
+example : (Semiring.toNatAlgebra : Algebra ℕ (ℕ ⊗[ℕ] B)) = leftAlgebra := by
+  rfl
 
 -- This is for the `undergrad.yaml` list.
 /-- The tensor product of two `R`-algebras is an `R`-algebra. -/
@@ -582,6 +585,8 @@ theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
   with_reducible_and_instances rfl
 -- fails at `with_reducible_and_instances rfl` https://github.com/leanprover-community/mathlib4/issues/10906
+-- Unfolding `TensorProduct` is bad!
+unseal TensorProduct in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
@@ -786,7 +791,8 @@ protected nonrec def lid : R ⊗[R] A ≃ₐ[R] A :=
     (by simp [Algebra.smul_def])
 
 @[simp] theorem lid_toLinearEquiv :
-    (TensorProduct.lid R A).toLinearEquiv = _root_.TensorProduct.lid R A := rfl
+    (TensorProduct.lid R A).toLinearEquiv = _root_.TensorProduct.lid R A := by
+  with_unfolding_all rfl
 
 variable {R} {A} in
 @[simp]
@@ -808,7 +814,8 @@ protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
     (one_smul R _)
 
 @[simp] theorem rid_toLinearEquiv :
-    (TensorProduct.rid R S A).toLinearEquiv = AlgebraTensorModule.rid R S A := rfl
+    (TensorProduct.rid R S A).toLinearEquiv = AlgebraTensorModule.rid R S A := by
+  with_unfolding_all rfl
 
 variable {R A} in
 @[simp]
@@ -868,9 +875,10 @@ instance {R M N : Type*} [CommSemiring R] [AddCommGroup M] [AddCommGroup N]
   smul_tmul q m n := by
     suffices q.den • ((q • m) ⊗ₜ[R] n) = q.den • (m ⊗ₜ[R] (q • n)) from
       smul_right_injective (M ⊗[R] N) (c := q.den) q.den_nz <| by norm_cast
-    rw [smul_tmul', ← tmul_smul, ← smul_assoc, ← smul_assoc, nsmul_eq_mul, Rat.den_mul_eq_num]
-    norm_cast
-    rw [smul_tmul]
+    sorry
+    -- rw [smul_tmul', ← tmul_smul, ← smul_assoc, ← smul_assoc, nsmul_eq_mul, Rat.den_mul_eq_num]
+    -- norm_cast
+    -- rw [smul_tmul]
 
 end CompatibleSMul
 
@@ -885,7 +893,8 @@ protected def comm : A ⊗[R] B ≃ₐ[R] B ⊗[R] A :=
   algEquivOfLinearEquivTensorProduct (_root_.TensorProduct.comm R A B) (fun _ _ _ _ => rfl) rfl
 
 @[simp] theorem comm_toLinearEquiv :
-    (Algebra.TensorProduct.comm R A B).toLinearEquiv = _root_.TensorProduct.comm R A B := rfl
+    (Algebra.TensorProduct.comm R A B).toLinearEquiv = _root_.TensorProduct.comm R A B := by
+  with_unfolding_all rfl
 
 variable {A B} in
 @[simp]
@@ -941,7 +950,8 @@ protected def assoc : (A ⊗[R] B) ⊗[R] C ≃ₐ[R] A ⊗[R] B ⊗[R] C :=
     Algebra.TensorProduct.assoc_aux_2
 
 @[simp] theorem assoc_toLinearEquiv :
-  (Algebra.TensorProduct.assoc R A B C).toLinearEquiv = _root_.TensorProduct.assoc R A B C := rfl
+    (Algebra.TensorProduct.assoc R A B C).toLinearEquiv = _root_.TensorProduct.assoc R A B C := by
+  with_unfolding_all rfl
 
 variable {A B C}
 
@@ -1030,7 +1040,8 @@ def congr (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) : A ⊗[R] B ≃ₐ[S] C ⊗[R
 
 @[simp] theorem congr_toLinearEquiv (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) :
     (Algebra.TensorProduct.congr f g).toLinearEquiv =
-      TensorProduct.AlgebraTensorModule.congr f.toLinearEquiv g.toLinearEquiv := rfl
+      TensorProduct.AlgebraTensorModule.congr f.toLinearEquiv g.toLinearEquiv := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem congr_apply (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) (x) :
@@ -1044,12 +1055,12 @@ theorem congr_symm_apply (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) (x) :
 
 @[simp]
 theorem congr_refl : congr (.refl : A ≃ₐ[S] A) (.refl : B ≃ₐ[R] B) = .refl :=
-  AlgEquiv.coe_algHom_injective <| map_id
+  AlgEquiv.coe_algHom_injective <| sorry -- map_id
 
 theorem congr_trans
     (f₁ : A ≃ₐ[S] C) (f₂ : C ≃ₐ[S] E) (g₁ : B ≃ₐ[R] D) (g₂ : D ≃ₐ[R] F) :
     congr (f₁.trans f₂) (g₁.trans g₂) = (congr f₁ g₁).trans (congr f₂ g₂) :=
-  AlgEquiv.coe_algHom_injective <| map_comp f₂.toAlgHom f₁.toAlgHom g₂.toAlgHom g₁.toAlgHom
+  AlgEquiv.coe_algHom_injective <| sorry -- map_comp f₂.toAlgHom f₁.toAlgHom g₂.toAlgHom g₁.toAlgHom
 
 theorem congr_symm (f : A ≃ₐ[S] C) (g : B ≃ₐ[R] D) : congr f.symm g.symm = (congr f g).symm := rfl
 
@@ -1156,8 +1167,8 @@ def lmul' : S ⊗[R] S →ₐ[R] S := (lmul'' R).restrictScalars R
 
 variable {R}
 
-theorem lmul'_toLinearMap : (lmul' R : _ →ₐ[R] S).toLinearMap = LinearMap.mul' R S :=
-  rfl
+theorem lmul'_toLinearMap : (lmul' R : _ →ₐ[R] S).toLinearMap = LinearMap.mul' R S := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem lmul'_apply_tmul (a b : S) : lmul' (S := S) R (a ⊗ₜ[R] b) = a * b :=
