@@ -264,9 +264,9 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 * it holds for monomials.
 -/
 @[elab_as_elim]
-protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
-    (add : ∀ p q, M p → M q → M (p + q)) (C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) :
-    M p := by
+protected theorem induction_on' {motive : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
+    (add : ∀ p q, motive p → motive q → motive (p + q))
+    (C_mul_T : ∀ (n : ℤ) (a : R), motive (C a * T n)) : motive p := by
   refine p.induction_on (fun a => ?_) (fun {p q} => add p q) ?_ ?_ <;>
       try exact fun n f _ => C_mul_T _ f
   convert C_mul_T 0 a

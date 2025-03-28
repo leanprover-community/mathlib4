@@ -526,13 +526,14 @@ If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of
 preserved under addition and multiplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim, induction_eliminator]
-theorem induction {C : FreeAlgebra R X → Prop}
-    (grade0 : ∀ r, C (algebraMap R (FreeAlgebra R X) r)) (grade1 : ∀ x, C (ι R x))
-    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
-    (a : FreeAlgebra R X) : C a := by
+theorem induction {motive : FreeAlgebra R X → Prop}
+    (grade0 : ∀ r, motive (algebraMap R (FreeAlgebra R X) r)) (grade1 : ∀ x, motive (ι R x))
+    (mul : ∀ a b, motive a → motive b → motive (a * b))
+    (add : ∀ a b, motive a → motive b → motive (a + b))
+    (a : FreeAlgebra R X) : motive a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from X
   let s : Subalgebra R (FreeAlgebra R X) :=
-    { carrier := C
+    { carrier := motive
       mul_mem' := mul _ _
       add_mem' := add _ _
       algebraMap_mem' := grade0 }

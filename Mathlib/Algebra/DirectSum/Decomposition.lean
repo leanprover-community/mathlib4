@@ -97,9 +97,9 @@ omit [AddSubmonoidClass σ M] in
 def SetLike.IsHomogeneous {P : Type*} [SetLike P M] (p : P) : Prop :=
   ∀ (i : ι) ⦃m : M⦄, m ∈ p → (DirectSum.decompose ℳ m i : M) ∈ p
 
-protected theorem Decomposition.inductionOn {p : M → Prop} (zero : p 0)
-    (homogeneous : ∀ {i} (m : ℳ i), p (m : M)) (add : ∀ m m' : M, p m → p m' → p (m + m')) :
-    ∀ m, p m := by
+protected theorem Decomposition.inductionOn {motive : M → Prop} (zero : motive 0)
+    (homogeneous : ∀ {i} (m : ℳ i), motive (m : M))
+    (add : ∀ m m' : M, motive m → motive m' → motive (m + m')) : ∀ m, motive m := by
   let ℳ' : ι → AddSubmonoid M := fun i ↦
     (⟨⟨ℳ i, fun x y ↦ AddMemClass.add_mem x y⟩, (ZeroMemClass.zero_mem _)⟩ : AddSubmonoid M)
   haveI t : DirectSum.Decomposition ℳ' :=

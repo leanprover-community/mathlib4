@@ -202,8 +202,8 @@ theorem mclosure_iUnion_range_of :
   simp [Submonoid.closure_iUnion]
 
 @[elab_as_elim]
-theorem induction_left {C : CoprodI M → Prop} (m : CoprodI M) (one : C 1)
-    (mul : ∀ {i} (m : M i) x, C x → C (of m * x)) : C m := by
+theorem induction_left {motive : CoprodI M → Prop} (m : CoprodI M) (one : motive 1)
+    (mul : ∀ {i} (m : M i) x, motive x → motive (of m * x)) : motive m := by
   induction m using Submonoid.induction_of_closure_eq_top_left mclosure_iUnion_range_of with
   | one => exact one
   | mul x hx y ihy =>
@@ -211,8 +211,9 @@ theorem induction_left {C : CoprodI M → Prop} (m : CoprodI M) (one : C 1)
     exact mul m y ihy
 
 @[elab_as_elim]
-theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (one : C 1)
-    (of : ∀ (i) (m : M i), C (of m)) (mul : ∀ x y, C x → C y → C (x * y)) : C m := by
+theorem induction_on {motive : CoprodI M → Prop} (m : CoprodI M) (one : motive 1)
+    (of : ∀ (i) (m : M i), motive (of m))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive m := by
   induction m using CoprodI.induction_left with
   | one => exact one
   | mul m x hx => exact mul _ _ (of _ _) hx
@@ -569,8 +570,8 @@ theorem equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
     (equivPair i w).tail = (of (equivPair i w).head)⁻¹ • w :=
   Eq.symm <| inv_smul_eq_iff.2 (equivPair_head_smul_equivPair_tail w).symm
 
-theorem smul_induction {C : Word M → Prop} (empty : C empty)
-    (smul : ∀ (i) (m : M i) (w), C w → C (of m • w)) (w : Word M) : C w := by
+theorem smul_induction {motive : Word M → Prop} (empty : motive empty)
+    (smul : ∀ (i) (m : M i) (w), motive w → motive (of m • w)) (w : Word M) : motive w := by
   induction w using consRecOn with
   | empty => exact empty
   | cons _ _ _ _ _ ih =>

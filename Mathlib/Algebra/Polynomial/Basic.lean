@@ -906,16 +906,16 @@ theorem sum_C_mul_X_pow_eq (p : R[X]) : (p.sum fun n a => C a * X ^ n) = p := by
   simp_rw [C_mul_X_pow_eq_monomial, sum_monomial_eq]
 
 @[elab_as_elim]
-protected theorem induction_on {M : R[X] → Prop} (p : R[X]) (C : ∀ a, M (C a))
-    (add : ∀ p q, M p → M q → M (p + q))
+protected theorem induction_on {motive : R[X] → Prop} (p : R[X]) (C : ∀ a, motive (C a))
+    (add : ∀ p q, motive p → motive q → motive (p + q))
     (monomial : ∀ (n : ℕ) (a : R),
-      M (Polynomial.C a * X ^ n) → M (Polynomial.C a * X ^ (n + 1))) : M p := by
-  have A : ∀ {n : ℕ} {a}, M (Polynomial.C a * X ^ n) := by
+      motive (Polynomial.C a * X ^ n) → motive (Polynomial.C a * X ^ (n + 1))) : motive p := by
+  have A : ∀ {n : ℕ} {a}, motive (Polynomial.C a * X ^ n) := by
     intro n a
     induction n with
     | zero => rw [pow_zero, mul_one]; exact C a
     | succ n ih => exact monomial _ _ ih
-  have B : ∀ s : Finset ℕ, M (s.sum fun n : ℕ => Polynomial.C (p.coeff n) * X ^ n) := by
+  have B : ∀ s : Finset ℕ, motive (s.sum fun n : ℕ => Polynomial.C (p.coeff n) * X ^ n) := by
     apply Finset.induction
     · convert C 0
       exact C_0.symm
@@ -930,8 +930,9 @@ it suffices to show the condition is closed under taking sums,
 and it holds for monomials.
 -/
 @[elab_as_elim]
-protected theorem induction_on' {M : R[X] → Prop} (p : R[X]) (add : ∀ p q, M p → M q → M (p + q))
-    (monomial : ∀ (n : ℕ) (a : R), M (monomial n a)) : M p :=
+protected theorem induction_on' {motive : R[X] → Prop} (p : R[X])
+    (add : ∀ p q, motive p → motive q → motive (p + q))
+    (monomial : ∀ (n : ℕ) (a : R), motive (monomial n a)) : motive p :=
   Polynomial.induction_on p (monomial 0) add fun n a _h =>
     by rw [C_mul_X_pow_eq_monomial]; exact monomial _ _
 

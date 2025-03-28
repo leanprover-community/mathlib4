@@ -616,7 +616,7 @@ that the property holds for (multiples of) characteristic functions of finite-me
 sets and is closed under addition (of functions with disjoint support). -/
 @[elab_as_elim]
 protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.simpleFunc E p μ → Prop}
-    (ind :
+    (indicatorConst :
       ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
         P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
     (add :
@@ -634,10 +634,11 @@ protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.s
   apply SimpleFunc.induction
   · intro c s hs hf
     by_cases hc : c = 0
-    · convert ind 0 MeasurableSet.empty (by simp) using 1
+    · convert indicatorConst 0 MeasurableSet.empty (by simp) using 1
       ext1
       simp [hc]
-    exact ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
+    exact indicatorConst c hs
+      (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
   · intro f g hfg hf hg hfg'
     obtain ⟨hf', hg'⟩ : MemLp f p μ ∧ MemLp g p μ :=
       (memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable).mp hfg'
@@ -814,16 +815,16 @@ suffices to show that
 * the set of functions in `Lp` for which the property holds is closed.
 -/
 @[elab_as_elim]
-theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : Lp E p μ → Prop)
-    (ind : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
-      P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
+theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : Lp E p μ → Prop)
+    (indicatorConst : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
+      motive (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
     (add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
-      P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
-    (closed : IsClosed { f : Lp E p μ | P f }) : ∀ f : Lp E p μ, P f := by
-  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f closed ?_
+      motive (hf.toLp f) → motive (hg.toLp g) → motive (hf.toLp f + hg.toLp g))
+    (isClosed : IsClosed { f : Lp E p μ | motive f }) : ∀ f : Lp E p μ, motive f := by
+  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f isClosed ?_
   refine Lp.simpleFunc.induction (α := α) (E := E) (lt_of_lt_of_le zero_lt_one _i.elim).ne'
     hp_ne_top ?_ ?_
-  · exact fun c s => ind c
+  · exact fun c s => indicatorConst c
   · exact fun f g hf hg => add hf hg
 
 /-- To prove something for an arbitrary `MemLp` function in a second countable
@@ -839,14 +840,14 @@ a simple function with a multiple of a characteristic function and that the inte
 of their images is a subset of `{0}`).
 -/
 @[elab_as_elim]
-theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
-    (ind : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → P (s.indicator fun _ => c))
+theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : (α → E) → Prop)
+    (ind : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (s.indicator fun _ => c))
     (add : ∀ ⦃f g : α → E⦄, Disjoint (support f) (support g) → MemLp f p μ → MemLp g p μ →
-      P f → P g → P (f + g))
-    (closed : IsClosed { f : Lp E p μ | P f })
-    (ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → P f → P g) :
-    ∀ ⦃f : α → E⦄, MemLp f p μ → P f := by
-  have : ∀ f : SimpleFunc α E, MemLp f p μ → P f := by
+      motive f → motive g → motive (f + g))
+    (closed : IsClosed { f : Lp E p μ | motive f })
+    (ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → motive f → motive g) :
+    ∀ ⦃f : α → E⦄, MemLp f p μ → motive f := by
+  have : ∀ f : SimpleFunc α E, MemLp f p μ → motive f := by
     apply SimpleFunc.induction
     · intro c s hs h
       by_cases hc : c = 0
@@ -857,12 +858,12 @@ theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α �
       rw [SimpleFunc.coe_add,
         memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
       exact add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
-  have : ∀ f : Lp.simpleFunc E p μ, P f := by
+  have : ∀ f : Lp.simpleFunc E p μ, motive f := by
     intro f
     exact
       ae (Lp.simpleFunc.toSimpleFunc_eq_toFun f) (Lp.simpleFunc.memLp f)
         (this (Lp.simpleFunc.toSimpleFunc f) (Lp.simpleFunc.memLp f))
-  have : ∀ f : Lp E p μ, P f := fun f =>
+  have : ∀ f : Lp E p μ, motive f := fun f =>
     (Lp.simpleFunc.denseRange hp_ne_top).induction_on f closed this
   exact fun f hf => ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
 
@@ -952,7 +953,7 @@ theorem Integrable.induction (P : (α → E) → Prop)
     (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → Integrable f μ → P f → P g) :
     ∀ ⦃f : α → E⦄, Integrable f μ → P f := by
   simp only [← memLp_one_iff_integrable] at *
-  exact MemLp.induction one_ne_top (P := P) h_ind h_add h_closed h_ae
+  exact MemLp.induction one_ne_top (motive := P) h_ind h_add h_closed h_ae
 
 end Integrable
 
