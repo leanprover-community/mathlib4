@@ -157,7 +157,7 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
                   apply List.Nodup.of_map $(mkIdent toCtorIdxName)
                   have h : List.map $(mkIdent toCtorIdxName) $(mkIdent enumListName)
                             = List.range $n := rfl
-                  exact h ▸ List.nodup_range $n)) goal
+                  exact h ▸ List.nodup_range)) goal
       Term.synthesizeSyntheticMVarsNoPostponing
       addAndCompile <| Declaration.thmDecl
         { name := enumListNodupName
