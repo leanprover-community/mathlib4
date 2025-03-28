@@ -5,10 +5,7 @@ Authors: Robin Carlier
 -/
 
 import Mathlib.CategoryTheory.Functor.Category
-import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.CategoryTheory.Comma.Basic
-import Mathlib.CategoryTheory.Whiskering
-import Mathlib.CategoryTheory.Bicategory.Functor.Pseudofunctor
+import Mathlib.CategoryTheory.Products.Basic
 
 /-!
 # Joins of category
@@ -30,8 +27,6 @@ to constructs maps in `C ⋆ D` between object coming from `D`.
 - `Join.mkNatIso`, A constructor for natural isomorphisms between functors out of a join
   of categories.
 
-# TODOs
-- Cofinality of the right inclusion, finality of the left inclusion.
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
@@ -166,17 +161,23 @@ lemma homInduction_edge {P : {x y : C ⋆ D} → (x ⟶ y) → Sort*}
 
 variable (C D)
 
-instance inclLeftFull: (inclLeft C D).Full where
-  map_surjective f := by aesop_cat
+/-- The left inclusion is fully faithful. This definition is the intended way to
+deconstruct a morphism `left x ⟶ left y` in `C ⋆ D` to a morphism in `C` if needed. -/
+def inclLeftFullyFaithful: (inclLeft C D).FullyFaithful where
+  preimage f := f.down
 
-instance inclRightFull: (inclRight C D).Full where
-  map_surjective f := by aesop_cat
+/-- The right inclusion is fully faithful. This definition is the intended way to
+deconstruct a morphism `right x ⟶ right y` in `C ⋆ D` to a morphism in `D` if needed. -/
+def inclRightFullyFaithful: (inclRight C D).FullyFaithful where
+  preimage f := f.down
 
-instance inclLeftFaithFull: (inclLeft C D).Faithful where
-  map_injective {_ _} _ _ h := by injection h
+instance inclLeftFull: (inclLeft C D).Full := inclLeftFullyFaithful C D |>.full
 
-instance inclRightFaithfull: (inclRight C D).Faithful where
-  map_injective {_ _} _ _ h := by injection h
+instance inclRightFull: (inclRight C D).Full := inclRightFullyFaithful C D |>.full
+
+instance inclLeftFaithFull: (inclLeft C D).Faithful := inclLeftFullyFaithful C D |>.faithful
+
+instance inclRightFaithfull: (inclRight C D).Faithful := inclRightFullyFaithful C D |>.faithful
 
 variable {C} in
 /-- A situational lemma to help putting identities in the form `(inclLeft _ _).map _` when using
@@ -395,6 +396,7 @@ def mapPairLeft : inclLeft _ _ ⋙ (mapPair Fₗ Fᵣ) ≅ (Fₗ ⋙ inclLeft _ 
 def mapPairRight : inclRight _ _ ⋙ (mapPair Fₗ Fᵣ) ≅ (Fᵣ ⋙ inclRight _ _) := mkFunctorRight _ _ _
 
 end mapPair
+
 /-- Any functor out of a join is naturally isomorphic to a functor of the form `mkFunctor F G α`. -/
 @[simps!]
 def isoMkFunctor (F : C ⋆ D ⥤ E) :
@@ -506,7 +508,7 @@ lemma mapWhisker_exchange (Fₗ : C ⥤ E) (Gₗ : C ⥤ E) (Fᵣ : D ⥤ E') (G
 
 /-- A natural isomorphism `Fᵣ ≅ Gᵣ` induces a natural isomorphism
   `mapPair H Fᵣ ≅ mapPair H Gᵣ` for every `H : C ⥤ E`. -/
-@[simps!?]
+@[simps!]
 def mapIsoWhiskerLeft (H : C ⥤ E) {Fᵣ : D ⥤ E'} {Gᵣ : D ⥤ E'} (α : Fᵣ ≅ Gᵣ) :
     mapPair H Fᵣ ≅ mapPair H Gᵣ :=
   mkNatIso
