@@ -536,7 +536,7 @@ protected theorem map_mul (f₁ f₂ : Π i, s i →ₗ[R] s i) :
 @[simps]
 def mapMonoidHom : (Π i, s i →ₗ[R] s i) →* ((⨂[R] i, s i) →ₗ[R] ⨂[R] i, s i) where
   toFun := map
-  map_one' := map_one
+  map_one' := PiTensorProduct.map_one
   map_mul' := PiTensorProduct.map_mul
 
 @[simp]
