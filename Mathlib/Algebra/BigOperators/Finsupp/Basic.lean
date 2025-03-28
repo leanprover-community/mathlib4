@@ -543,9 +543,14 @@ theorem Finset.sum_apply' : (∑ k ∈ s, f k) i = ∑ k ∈ s, f k i :=
 theorem Finsupp.sum_apply' : g.sum k x = g.sum fun i b => k i b x :=
   Finset.sum_apply _ _ _
 
+/-- Version of `Finsupp.apply'` that applies in large generality to linear combinations
+of functions in any `FunLike` type on which addition is defined pointwise.
+
+At the time of writing Mathlib does not have a typeclass to express the condition
+that addition on a `FunLike` type is pointwise; hence this is asserted via explicit hypotheses. -/
 theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [FunLike F γ B]
     (g : ι →₀ A) (k : ι → A → F) (x : γ)
-    (hg0 : ∀ (a : ι), k a 0 = 0) (hgadd : ∀ (a : ι) (b₁ b₂ : A), k a (b₁ + b₂) = k a b₁ + k a b₂)
+    (hg0 : ∀ (i : ι), k i 0 = 0) (hgadd : ∀ (i : ι) (a₁ a₂ : A), k i (a₁ + a₂) = k i a₁ + k i a₂)
     (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
     g.sum k x = g.sum (fun i a ↦ k i a x) := by
   induction g using Finsupp.induction with
