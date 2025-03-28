@@ -232,6 +232,9 @@ variable {α : Type u}
 instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α := ⟨0⟩
 instance (priority := 20) One.instNonempty [One α] : Nonempty α := ⟨1⟩
 
+@[simp]
+lemma One.eq_ofNat1 {α} [One α] : (One.one : α) = 1 := by rfl
+
 @[to_additive]
 theorem Subsingleton.eq_one [One α] [Subsingleton α] (a : α) : a = 1 :=
   Subsingleton.elim _ _
