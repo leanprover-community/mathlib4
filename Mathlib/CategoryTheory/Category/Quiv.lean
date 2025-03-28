@@ -66,9 +66,9 @@ def toQuivHom {C D : Type u} [Quiver.{v + 1} C] [Quiver.{v + 1} D] (F : C ⥤q D
 /-- Arrows in `Quiv` define prefunctors. -/
 def ofQuivHom {C D : Quiv} (F : C ⟶ D) : C ⥤q D := F
 
-@[simp] theorem of_toQuivHom {C D : Quiv} (F : C ⟶ D) : toQuivHom (ofQuivHom F) = F := rfl
+@[simp] theorem to_ofQuivHom {C D : Quiv} (F : C ⟶ D) : toQuivHom (ofQuivHom F) = F := rfl
 
-@[simp] theorem to_ofQuivHom {C D : Type} [Quiver C] [Quiver D] (F : C ⥤q D) :
+@[simp] theorem of_toQuivHom {C D : Type} [Quiver C] [Quiver D] (F : C ⥤q D) :
     ofQuivHom (toQuivHom F) = F := rfl
 
 end Prefunctor

@@ -66,13 +66,12 @@ def ιPaths (X : C) : Paths (LocQuiver W) :=
 
 /-- The morphism in the path category associated to a morphism in the original category. -/
 @[simp]
-def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y :=
-  (Paths.of (LocQuiver W)).map (Sum.inl f)
+def ψ₁ {X Y : C} (f : X ⟶ Y) : ιPaths W X ⟶ ιPaths W Y := (Paths.of _).map (Sum.inl f)
 
 /-- The morphism in the path category corresponding to a formal inverse. -/
 @[simp]
 def ψ₂ {X Y : C} (w : X ⟶ Y) (hw : W w) : ιPaths W Y ⟶ ιPaths W X :=
-  (Paths.of (LocQuiver W)).map (Sum.inr ⟨w, hw⟩)
+  (Paths.of _).map (Sum.inr ⟨w, hw⟩)
 
 /-- The relations by which we take the quotient in order to get the localized category. -/
 inductive relations : HomRel (Paths (LocQuiver W))
@@ -100,7 +99,7 @@ instance : Category (Localization W) := by
 
 /-- The obvious functor `C ⥤ W.Localization` -/
 def Q : C ⥤ W.Localization where
-  obj X := (Quotient.functor _).obj ((Paths.of (LocQuiver W)).obj ⟨X⟩)
+  obj X := (Quotient.functor _).obj ((Paths.of _).obj ⟨X⟩)
   map f := (Quotient.functor _).map (ψ₁ W f)
   map_id X := Quotient.sound _ (relations.id X)
   map_comp f g := Quotient.sound _ (relations.comp f g)
@@ -115,7 +114,7 @@ variable {W}
 /-- The isomorphism in `W.Localization` associated to a morphism `w` in W -/
 def wIso {X Y : C} (w : X ⟶ Y) (hw : W w) : Iso (W.Q.obj X) (W.Q.obj Y) where
   hom := W.Q.map w
-  inv := (Quotient.functor _).map (by dsimp; exact (Paths.of (LocQuiver W)).map (Sum.inr ⟨w, hw⟩))
+  inv := (Quotient.functor _).map (by dsimp; exact (Paths.of _).map (Sum.inr ⟨w, hw⟩))
   hom_inv_id := Quotient.sound _ (relations.Winv₁ w hw)
   inv_hom_id := Quotient.sound _ (relations.Winv₂ w hw)
 
