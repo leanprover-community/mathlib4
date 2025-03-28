@@ -6,6 +6,7 @@ Authors: Anatole Dedecker
 import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.NumberTheory.ArithmeticFunction
 
 /-!
 # A collection of specific asymptotic results
@@ -143,3 +144,30 @@ theorem Filter.Tendsto.cesaro {u : ℕ → ℝ} {l : ℝ} (h : Tendsto u atTop (
   h.cesaro_smul
 
 end Real
+
+section ArithmeticFunction
+
+open ArithmeticFunction
+
+theorem sigma_asymptotic (k : ℕ) :
+    (fun n ↦ (σ k n : ℝ)) =O[atTop] (fun n ↦ (n ^ (k + 1) : ℝ)) := by
+  rw [isBigO_iff]
+  use 1
+  simp
+  use 1
+  intro n hn
+  rw [sigma_apply]
+  norm_cast
+  calc ∑ d ∈ n.divisors, d ^ k
+  _ ≤ ∑ d ∈ n.divisors, n ^ k := by
+      apply Finset.sum_le_sum
+      intro d hd
+      refine pow_le_pow ?_ hn le_rfl
+      exact Nat.divisor_le hd
+  _ ≤ n * n ^ k := by
+      rw [Finset.sum_const, smul_eq_mul]
+      gcongr
+      exact Nat.card_divisors_le_self n
+  _ = n ^ (k + 1) := by ring
+
+end ArithmeticFunction

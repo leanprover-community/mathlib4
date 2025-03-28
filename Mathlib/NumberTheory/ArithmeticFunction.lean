@@ -10,8 +10,6 @@ import Mathlib.Data.Nat.Squarefree
 import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Factorization.Induction
 import Mathlib.Tactic.ArithMult
-import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Arithmetic Functions and Dirichlet Convolution
@@ -898,29 +896,6 @@ theorem isMultiplicative_pow {k : ℕ} : IsMultiplicative (pow k) :=
 theorem isMultiplicative_sigma {k : ℕ} : IsMultiplicative (σ k) := by
   rw [← zeta_mul_pow_eq_sigma]
   apply isMultiplicative_zeta.mul isMultiplicative_pow
-
-open Filter Asymptotics
-
-theorem sigma_asymptotic (k : ℕ) :
-    (fun n ↦ (σ k n : ℝ)) =O[atTop] (fun n ↦ (n ^ (k + 1) : ℝ)) := by
-  rw [isBigO_iff]
-  use 1
-  simp
-  use 1
-  intro n hn
-  rw [sigma_apply]
-  norm_cast
-  calc ∑ d ∈ n.divisors, d ^ k
-  _ ≤ ∑ d ∈ n.divisors, n ^ k := by
-      apply Finset.sum_le_sum
-      intro d hd
-      refine pow_le_pow ?_ hn le_rfl
-      exact Nat.divisor_le hd
-  _ ≤ n * n ^ k := by
-      rw [Finset.sum_const, smul_eq_mul]
-      gcongr
-      exact Nat.card_divisors_le_self n
-  _ = n ^ (k + 1) := by ring
 
 /-- `Ω n` is the number of prime factors of `n`. -/
 def cardFactors : ArithmeticFunction ℕ :=
