@@ -1132,7 +1132,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly {s : Set β} {F : ι → α �
   lift F to ι → α → s using hF with F' hF'
   lift f to α → s using hf with f' hf'
   rw [tendstoUniformly_iff_tendsto] at h
-  have : Tendsto (fun q : ι × α ↦ (f' q.2, (F' q.1 q.2))) (p ×ˢ ⊤) (𝓤 s) :=
+  have : Tendsto (fun q ↦ (f' q.2, (F' q.1 q.2))) (p ×ˢ ⊤) (𝓤 s) :=
     h.of_tendsto_comp isUniformEmbedding_subtype_val.comap_uniformity.le
   apply UniformContinuous.comp_tendstoUniformly hg ?_
   rwa [← tendstoUniformly_iff_tendsto] at this
@@ -1144,7 +1144,7 @@ theorem UniformContinuousOn.comp_tendstoUniformly_eventually {s : Set β} {F : �
   classical
   rw [eventually_iff_exists_mem] at hF
   obtain ⟨s', hs', hs⟩ := hF
-  let F' : ι → α → β := fun (i : ι) x => if i ∈ s' then F i x else f x
+  let F' : ι → α → β := fun i x => if i ∈ s' then F i x else f x
   have hF : F =ᶠ[p] F' :=  by
     rw [eventuallyEq_iff_exists_mem]
     refine ⟨s', hs', fun y hy => by aesop⟩

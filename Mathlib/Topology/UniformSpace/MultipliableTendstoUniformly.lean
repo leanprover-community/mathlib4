@@ -35,7 +35,7 @@ lemma TendstoUniformlyOn.eventually_forall_le {f : ι → α → β} {p : Filter
     ∀ᶠ i in p, ∀ x ∈ K, f i x ≤ v := by
   filter_upwards [hf.eventually_forall_lt huv hg] with i hi x hx using (hi x hx).le
 
-lemma tendstoUniformlyOn_comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
+lemma TendstoUniformlyOn.comp_cexp {p : Filter ι} {f : ι → α → ℂ} {g : α → ℂ}
     {K : Set α} (hf : TendstoUniformlyOn f g p K) (hg : BddAbove <| (fun x ↦ (g x).re) '' K) :
     TendstoUniformlyOn (cexp ∘ f ·) (cexp ∘ g) p K := by
   obtain ⟨v, hv⟩ : ∃ v, ∀ x ∈ K, (g x).re ≤ v := hg.imp fun _ h ↦ by simpa [mem_upperBounds] using h
@@ -53,11 +53,11 @@ lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
        (cexp ∘ fun a ↦ ∑' i, log (f i a)) atTop K by
         apply TendstoUniformlyOn.congr_right H
         exact fun x hx ↦ (cexp_tsum_eq_tprod (fun n ↦ f n x) (hfn x hx) (h x hx))
-  apply TendstoUniformlyOn.congr (tendstoUniformlyOn_comp_cexp hf hg)
+  apply TendstoUniformlyOn.congr (hf.comp_cexp hg)
   filter_upwards with s i hi using by simp [exp_sum, fun y ↦ exp_log (hfn i hi y)]
 
-/-- This is the version of `tendstoUniformlyOn_tprod_of_clog`
-for infinite products of with terms of the form `1 + f n x`. -/
+/-- This is the version of `tendstoUniformlyOn_tprod_of_clog` for infinite products of with terms
+of the form `1 + f n x`. -/
 lemma tendstoUniformlyOn_tprod_nat_one_add [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
     (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (fun x => f n x) K) :
@@ -77,10 +77,10 @@ lemma tendstoUniformlyOn_tprod_nat_one_add [TopologicalSpace α] {f : ℕ → α
 
 /-- This is the locally version of `tendstoUniformlyOn_tprod_nat_one_add`
 for infinite products of with terms of the form `1 + f n x`. -/
-lemma tendstoLocallyUniformlyOn_tprod_nat_one_add [TopologicalSpace α] [ LocallyCompactSpace α]
+lemma tendstoLocallyUniformlyOn_tprod_nat_one_add [TopologicalSpace α] [LocallyCompactSpace α]
     {f : ℕ → α → ℂ} {K : Set α} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
-    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hfn : ∀ x, x ∈ K → ∀ n, 1 + f n x ≠ 0)
-    (hcts : ∀ n, ContinuousOn (fun x => (f n x)) K) :
+    (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0)
+    (hcts : ∀ n, ContinuousOn (fun x => f n x) K) :
     TendstoLocallyUniformlyOn (fun n a => ∏ i ∈ range n, (1 + (f i a)))
     (fun a => ∏' i, (1 + (f i a))) atTop K := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hK]
