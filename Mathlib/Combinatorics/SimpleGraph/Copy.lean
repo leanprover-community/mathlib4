@@ -173,18 +173,18 @@ lemma IsContained.mono_left {A' : SimpleGraph α} (h_sub : A ≤ A') (h_isub : A
 
 alias IsContained.trans_le' := IsContained.mono_left
 
-/-- If `H₁ ≃g H₂` and `G₁ ≃g G₂` then `H₁` is contained in `G₁` if and only if `H₂` is contained
-in `G₂`. -/
-theorem isContained_congr {W₁ W₂ V₁ V₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
-    {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂} (eH : H₁ ≃g H₂) (eG : G₁ ≃g G₂) :
-    H₁ ⊑ G₁ ↔ H₂ ⊑ G₂ :=
-  ⟨.trans' ⟨eG.toCopy⟩ ∘ .trans ⟨eH.symm.toCopy⟩, .trans' ⟨eG.symm.toCopy⟩ ∘ .trans ⟨eH.toCopy⟩⟩
+/-- If `A ≃g H` and `B ≃g G` then `A` is contained in `B` if and only if `H` is contained
+in `G`. -/
+theorem isContained_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A ⊑ B ↔ H ⊑ G :=
+  ⟨.trans' ⟨e₂.toCopy⟩ ∘ .trans ⟨e₁.symm.toCopy⟩, .trans' ⟨e₂.symm.toCopy⟩ ∘ .trans ⟨e₁.toCopy⟩⟩
 
-lemma IsContained.congr_left {W₁ W₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
-  (eH : H₁ ≃g H₂) : H₁ ⊑ G ↔ H₂ ⊑ G := isContained_congr eH Iso.refl
+lemma isContained_congr_left (e₁ : A ≃g B) : A ⊑ C ↔ B ⊑ C := isContained_congr e₁ Iso.refl
 
-lemma IsContained.congr_right {V₁ V₂ : Type*} {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂}
-  (eG : G₁ ≃g G₂) : H ⊑ G₁ ↔ H ⊑ G₂ := isContained_congr Iso.refl eG
+alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
+
+lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr Iso.refl e₂
+
+alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
 
 /-- A simple graph having no vertices is contained in any simple graph. -/
 lemma IsContained.of_isEmpty [IsEmpty α] : A ⊑ B :=
@@ -226,17 +226,17 @@ abbrev Free (A : SimpleGraph α) (B : SimpleGraph β) := ¬A ⊑ B
 
 lemma not_free : ¬A.Free B ↔ A ⊑ B := not_not
 
-/-- If `A ≃g C` and `B ≃g D` then `B` is `A`-free if and only if `D` is `C`-free. -/
-theorem free_congr {W₁ W₂ V₁ V₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
-    {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂} (eH : H₁ ≃g H₂) (eG : G₁ ≃g G₂) :
-    H₁.Free G₁ ↔ H₂.Free G₂ :=
-  (isContained_congr eH eG).not
+/-- If `A ≃g H` and `B ≃g G` then `B` is `A`-free if and only if `G` is `H`-free. -/
+theorem free_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A.Free B ↔ H.Free G :=
+  (isContained_congr e₁ e₂).not
 
-lemma Free.congr_left {W₁ W₂ : Type*} {H₁ : SimpleGraph W₁} {H₂ : SimpleGraph W₂}
-  (eH : H₁ ≃g H₂) : H₁.Free G ↔ H₂.Free G := free_congr eH Iso.refl
+lemma free_congr_left (e₁ : A ≃g B) : A.Free C ↔ B.Free C := free_congr e₁ Iso.refl
 
-lemma Free.congr_right {V₁ V₂ : Type*} {G₁ : SimpleGraph V₁} {G₂ : SimpleGraph V₂}
-  (eG : G₁ ≃g G₂) : H.Free G₁ ↔ H.Free G₂ := free_congr Iso.refl eG
+alias ⟨_, Free.congr_left⟩ := free_congr_left
+
+lemma free_congr_right (e₂ : B ≃g C) : A.Free B ↔ A.Free C := free_congr Iso.refl e₂
+
+alias ⟨_, Free.congr_right⟩ := free_congr_right
 
 lemma free_bot (h : A ≠ ⊥) : A.Free (⊥ : SimpleGraph β) := by
   rw [← edgeSet_nonempty] at h
