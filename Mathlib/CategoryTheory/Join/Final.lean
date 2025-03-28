@@ -5,13 +5,13 @@ Authors: Robin Carlier
 -/
 import Mathlib.CategoryTheory.Join.Basic
 import Mathlib.CategoryTheory.Limits.Final
+import Mathlib.CategoryTheory.Limits.IsConnected
 
 /-!
 # (Co)Finality of the inclusions in joins of category
 
 This file records the fact that `inclLeft C D : C ⥤ C ⋆ D` is `Initial` if `C` is connected.
 Dually, `inclRight : C ⥤ C ⋆ D` is `Final` if `D` is connected.
-
 
 -/
 
@@ -39,26 +39,13 @@ def StructuredArrowEquiv (c : C) : StructuredArrow (left c) (inclRight C D) ≌ 
 
 instance [IsConnected C] : (inclLeft C D).Initial where
   out x := match x with
-    |.left c => by
-      have I : Limits.IsTerminal (.mk (𝟙 (left c)) : CostructuredArrow (inclLeft C D) (left c)) := CostructuredArrow.mkIdTerminal
-      letI : Limits.HasTerminal (CostructuredArrow (inclLeft C D) (left c)) :=
-        Limits.hasTerminal_of_unique (.mk (𝟙 (left c)))
-      sorry
-      -- letI : Nonempty (CostructuredArrow (inclLeft C D) (left c)) := ⟨t⟩
-      -- apply isConnected_of_zigzag
-      -- intro j₁ j₂
-      -- let f₁ : j₁ ⟶ t := CostructuredArrow.homMk _
-      -- let f₂ : j₂ ⟶ t := CostructuredArrow.homMk _
-      -- use [t, j₂]
-      -- constructor
-      -- · simp only [List.chain_cons, List.Chain.nil, and_true]
-      --   exact ⟨Zag.of_hom f₁, Zag.symm (Zag.of_hom f₂)⟩
-      -- · rfl
-    |.right d => by
-      exact isConnected_of_equivalent (CostructuredArrowEquiv C D d).symm
-      sorry
+    |.left _ => isConnected_of_isTerminal _ CostructuredArrow.mkIdTerminal
+    |.right d => isConnected_of_equivalent (CostructuredArrowEquiv C D d).symm
 
-
-
+instance [IsConnected D] : (inclRight C D).Final where
+  out x := match x with
+    |.left c => isConnected_of_equivalent (StructuredArrowEquiv C D c).symm
+    |.right d => isConnected_of_isInitial (StructuredArrow (right d) (inclRight C D))
+      (@StructuredArrow.mkIdInitial D _ (C ⋆ D) _ d (inclRight C D) _ _)
 
 end CategoryTheory.Join
