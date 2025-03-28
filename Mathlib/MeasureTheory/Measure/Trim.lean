@@ -53,6 +53,10 @@ theorem le_trim (hm : m ≤ m0) : μ s ≤ μ.trim hm s := by
   simp_rw [Measure.trim]
   exact @le_toMeasure_apply _ m _ _ _
 
+lemma trim_eq_map (hm : m ≤ m0) : μ.trim hm = @Measure.map _ _ _ m id μ := by
+  refine @Measure.ext α m _ _ (fun s hs ↦ ?_)
+  rw [Measure.map_apply (measurable_id'' hm) hs, trim_measurableSet_eq hm hs, Set.preimage_id]
+
 lemma trim_add {ν : Measure α} (hm : m ≤ m0) : (μ + ν).trim hm = μ.trim hm + ν.trim hm :=
   @Measure.ext _ m _ _ (fun s hs ↦ by simp [trim_measurableSet_eq hm hs])
 
@@ -104,7 +108,7 @@ theorem sigmaFiniteTrim_mono {m m₂ m0 : MeasurableSpace α} {μ : Measure α} 
   calc
     (μ.trim hm) (spanningSets (μ.trim (hm₂.trans hm)) i) =
         ((μ.trim hm).trim hm₂) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
-      rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurable_spanningSets _ _)]
+      rw [@trim_measurableSet_eq α m₂ m (μ.trim hm) _ hm₂ (measurableSet_spanningSets _ _)]
     _ = (μ.trim (hm₂.trans hm)) (spanningSets (μ.trim (hm₂.trans hm)) i) := by
       rw [@trim_trim _ _ μ _ _ hm₂ hm]
     _ < ∞ := measure_spanningSets_lt_top _ _

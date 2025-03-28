@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Reid Barton, Scott Morrison, David Wärn
+Authors: Reid Barton, Kim Morrison, David Wärn
 -/
 import Mathlib.CategoryTheory.FullSubcategory
 import Mathlib.CategoryTheory.Products.Basic
@@ -36,7 +36,7 @@ universe v v₂ u u₂
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- A `Groupoid` is a category such that all morphisms are isomorphisms. -/
-class Groupoid (obj : Type u) extends Category.{v} obj : Type max u (v + 1) where
+class Groupoid (obj : Type u) : Type max u (v + 1) extends Category.{v} obj where
   /-- The inverse morphism -/
   inv : ∀ {X Y : obj}, (X ⟶ Y) → (Y ⟶ X)
   /-- `inv f` composed `f` is the identity -/
@@ -95,9 +95,9 @@ variable (X Y)
 /-- In a groupoid, isomorphisms are equivalent to morphisms. -/
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
-  invFun f := ⟨f, Groupoid.inv f, (by aesop_cat), (by aesop_cat)⟩
-  left_inv i := Iso.ext rfl
-  right_inv f := rfl
+  invFun f := ⟨f, Groupoid.inv f, (by simp), (by simp)⟩
+  left_inv _ := Iso.ext rfl
+  right_inv _ := rfl
 
 variable (C)
 
@@ -105,7 +105,7 @@ variable (C)
 @[simps]
 noncomputable def Groupoid.invFunctor : C ⥤ Cᵒᵖ where
   obj := Opposite.op
-  map {X Y} f := (inv f).op
+  map {_ _} f := (inv f).op
 
 end
 

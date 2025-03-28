@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.ColimitLimit
 import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
@@ -27,8 +27,7 @@ colimit (over `K`) of the limits (over `J`) with the limit of the colimits is an
 -/
 
 -- Various pieces of algebra that have previously been spuriously imported here:
-assert_not_exists map_ne_zero
-assert_not_exists Field
+assert_not_exists map_ne_zero Field
  -- TODO: We should morally be able to strengthen this to `assert_not_exists GroupWithZero`, but
  -- finiteness currently relies on more algebra than it needs.
 
@@ -112,7 +111,7 @@ theorem colimitLimitToLimitColimit_injective :
       Finset.mem_union.mpr
         (Or.inl
           (by
-            simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
+            simp only [true_and, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
             refine ⟨j, ?_⟩
             simp only [heq_iff_eq] ))
@@ -122,7 +121,7 @@ theorem colimitLimitToLimitColimit_injective :
       Finset.mem_union.mpr
         (Or.inr
           (by
-            simp only [true_and_iff, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
+            simp only [true_and, Finset.mem_univ, eq_self_iff_true, exists_prop_of_true,
               Finset.mem_image, heq_iff_eq]
             refine ⟨j, ?_⟩
             simp only [heq_iff_eq]))
@@ -135,7 +134,7 @@ theorem colimitLimitToLimitColimit_injective :
     -- Now it's just a calculation using `W` and `w`.
     simp only [Functor.comp_map, Limit.map_π_apply, curry_obj_map_app, swap_map]
     rw [← W _ _ (fH j), ← W _ _ (gH j)]
-    -- Porting note(#10745): had to add `Limit.map_π_apply`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): had to add `Limit.map_π_apply`
     -- (which was un-tagged simp since "simp can prove it")
     simp [Limit.map_π_apply, w]
 
@@ -219,9 +218,7 @@ theorem colimitLimitToLimitColimit_surjective :
         ((curry.obj F).obj j').map (gf f) (F.map ((𝟙 j', g j') : (j', k j') ⟶ (j', k')) (y j')) =
           ((curry.obj F).obj j').map (hf f) (F.map ((f, g j) : (j, k j) ⟶ (j', k')) (y j)) :=
         (w f).choose_spec.choose_spec.choose_spec
-      rw [curry_obj_obj_map, curry_obj_obj_map] at q
-      -- Porting note: Lean 4 `dsimp` unfolds `gf` and `hf` in `q` :-(
-      -- See discussion at https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/.60dsimp.60.20unfolding.20local.20lets
+      dsimp only [curry_obj_obj_map, curry_obj_obj_map] at q
       simp_rw [← FunctorToTypes.map_comp_apply, CategoryStruct.comp] at q
       convert q <;> simp only [comp_id]
     clear_value kf gf hf
@@ -253,7 +250,6 @@ theorem colimitLimitToLimitColimit_surjective :
     have s : ∀ {j₁ j₂ j₃ j₄} (f : j₁ ⟶ j₂) (f' : j₃ ⟶ j₄), gf f ≫ i f = hf f' ≫ i f' := by
       intros j₁ j₂ j₃ j₄ f f'
       rw [s', s']
-      -- Porting note: the three goals here in Lean 3 were in a different order
       · exact k'O
       · exact Finset.mem_biUnion.mpr ⟨j₃, Finset.mem_univ _,
           Finset.mem_biUnion.mpr ⟨j₄, Finset.mem_univ _,
@@ -338,17 +334,17 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     infer_instance
   apply Cones.cone_iso_of_hom_iso
 
-noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
+noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
-  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v₂}
+  apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v₂}
   intro J _ _
-  refine ⟨fun {F} => ⟨fun {c} hc => IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩
+  refine ⟨fun {F} => ⟨fun {c} hc => ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩
   symm
   trans colim.mapCone (limit.cone F)
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
   · exact asIso (colimitLimitToLimitColimitCone F)
 
-variable {C : Type u} [Category.{v} C] [ConcreteCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [HasForget.{v} C]
 
 section
 
@@ -356,28 +352,32 @@ variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
 variable [PreservesLimitsOfShape J (forget C)]
 
-noncomputable instance filteredColimPreservesFiniteLimits :
+noncomputable instance filtered_colim_preservesFiniteLimits :
     PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _) :=
   haveI : PreservesLimitsOfShape J ((colim : (K ⥤ C) ⥤ _) ⋙ forget C) :=
-    preservesLimitsOfShapeOfNatIso (preservesColimitNatIso _).symm
-  preservesLimitsOfShapeOfReflectsOfPreserves _ (forget C)
+    preservesLimitsOfShape_of_natIso (preservesColimitNatIso _).symm
+  preservesLimitsOfShape_of_reflects_of_preserves _ (forget C)
 
 end
 
-attribute [local instance] reflectsLimitsOfShapeOfReflectsIsomorphisms
+attribute [local instance] reflectsLimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfShape K (forget C)]
     [HasFiniteLimits C] [HasColimitsOfShape K C] [(forget C).ReflectsIsomorphisms] :
     PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
-  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
+  apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v}
   intro J _ _
   infer_instance
 
+end
+
 section
 
+variable {C : Type u} [Category.{v} C]
+variable {J : Type u₁} [Category.{v₁} J]
+variable {K : Type u₂} [Category.{v₂} K]
 variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
-variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
-variable [PreservesLimitsOfShape J (forget C)]
+variable [PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _)]
 
 /-- A curried version of the fact that filtered colimits commute with finite limits. -/
 noncomputable def colimitLimitIso (F : J ⥤ K ⥤ C) : colimit (limit F) ≅ limit (colimit F.flip) :=
@@ -399,8 +399,6 @@ theorem ι_colimitLimitIso_limit_π (F : J ⥤ K ⥤ C) (a) (b) :
     Limits.HasColimit.isoOfNatIso_ι_hom, NatIso.ofComponents_hom_app]
   dsimp
   simp
-
-end
 
 end
 

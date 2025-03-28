@@ -45,7 +45,7 @@ instance : SetLike (Compacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Compacts α) : Set α := s
 
-initialize_simps_projections Compacts (carrier → coe)
+initialize_simps_projections Compacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : Compacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -67,10 +67,10 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 theorem carrier_eq_coe (s : Compacts α) : s.carrier = s :=
   rfl
 
-instance : Sup (Compacts α) :=
+instance : Max (Compacts α) :=
   ⟨fun s t => ⟨s ∪ t, s.isCompact.union t.isCompact⟩⟩
 
-instance [T2Space α] : Inf (Compacts α) :=
+instance [T2Space α] : Min (Compacts α) :=
   ⟨fun s t => ⟨s ∩ t, s.isCompact.inter t.isCompact⟩⟩
 
 instance [CompactSpace α] : Top (Compacts α) :=
@@ -152,7 +152,6 @@ theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
 @[simp]
 theorem equiv_trans (f : α ≃ₜ β) (g : β ≃ₜ γ) :
     Compacts.equiv (f.trans g) = (Compacts.equiv f).trans (Compacts.equiv g) :=
-  -- Porting note: can no longer write `map_comp _ _ _ _` and unify
   Equiv.ext <| map_comp g f g.continuous f.continuous
 
 @[simp]
@@ -197,7 +196,7 @@ instance : SetLike (NonemptyCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : NonemptyCompacts α) : Set α := s
 
-initialize_simps_projections NonemptyCompacts (carrier → coe)
+initialize_simps_projections NonemptyCompacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : NonemptyCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -217,14 +216,13 @@ protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to `coe_toCompacts`
 theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 
 @[simp]
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
-instance : Sup (NonemptyCompacts α) :=
+instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
@@ -288,7 +286,7 @@ instance : SetLike (PositiveCompacts α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : PositiveCompacts α) : Set α := s
 
-initialize_simps_projections PositiveCompacts (carrier → coe)
+initialize_simps_projections PositiveCompacts (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : PositiveCompacts α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -311,7 +309,6 @@ protected theorem ext {s t : PositiveCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to a new lemma
 theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
   rfl
 
@@ -319,7 +316,7 @@ theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : PositiveCompacts α) : (s.toCompacts : Set α) = s :=
   rfl
 
-instance : Sup (PositiveCompacts α) :=
+instance : Max (PositiveCompacts α) :=
   ⟨fun s t =>
     ⟨s.toCompacts ⊔ t.toCompacts,
       s.interior_nonempty.mono <| interior_mono subset_union_left⟩⟩
@@ -417,7 +414,7 @@ instance : SetLike (CompactOpens α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : CompactOpens α) : Set α := s
 
-initialize_simps_projections CompactOpens (carrier → coe)
+initialize_simps_projections CompactOpens (carrier → coe, as_prefix coe)
 
 protected theorem isCompact (s : CompactOpens α) : IsCompact (s : Set α) :=
   s.isCompact'
@@ -442,7 +439,7 @@ protected theorem ext {s t : CompactOpens α} (h : (s : Set α) = t) : s = t :=
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
-instance : Sup (CompactOpens α) :=
+instance : Max (CompactOpens α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.isOpen.union t.isOpen⟩⟩
 
 instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
@@ -459,8 +456,8 @@ instance : Inhabited (CompactOpens α) :=
 section Inf
 variable [QuasiSeparatedSpace α]
 
-instance instInf : Inf (CompactOpens α) where
-  inf U V :=
+instance instInf : Min (CompactOpens α) where
+  min U V :=
     ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩, U.2.inter V.2⟩
 
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl

@@ -10,9 +10,9 @@ import Mathlib.Topology.Category.Profinite.Extend
 
 # Extending cones in `LightProfinite`
 
-Let `(Sₙ)_{n : ℕᵒᵖ}` be a sequential inverse system of finite sets and let `S` be
-its limit in `Profinite`. Let `G` be a functor from `LightProfinite` to a category `C` and suppose
-that `G` preserves the limit described above. Suppose further that the projection maps `S ⟶ Sₙ` are
+Let `(Sₙ)_{n : ℕᵒᵖ}` be a sequential inverse system of finite sets and let `S` be
+its limit in `Profinite`. Let `G` be a functor from `LightProfinite` to a category `C` and suppose
+that `G` preserves the limit described above. Suppose further that the projection maps `S ⟶ Sₙ` are
 epimorphic for all `n`. Then `G.obj S` is isomorphic to a limit indexed by
 `StructuredArrow S toLightProfinite` (see `LightProfinite.Extend.isLimitCone`).
 
@@ -21,14 +21,14 @@ We also provide the dual result for a functor of the form `G : LightProfiniteᵒ
 We apply this to define `LightProfinite.diagram'`, `LightProfinite.asLimitCone'`, and
 `LightProfinite.asLimit'`, analogues to their unprimed versions in
 `Mathlib.Topology.Category.LightProfinite.AsLimit`, in which the
-indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
+indexing category is `StructuredArrow S toLightProfinite` instead of `ℕᵒᵖ`.
 -/
 
 universe u
 
 open CategoryTheory Limits FintypeCat Functor
 
-attribute [local instance] FintypeCat.discreteTopology ConcreteCategory.instFunLike
+attribute [local instance] FintypeCat.discreteTopology
 
 namespace LightProfinite
 
@@ -37,7 +37,7 @@ variable {F : ℕᵒᵖ ⥤ FintypeCat.{u}} (c : Cone <| F ⋙ toLightProfinite)
 namespace Extend
 
 /--
-Given a sequential cone in `LightProfinite` consisting of finite sets,
+Given a sequential cone in `LightProfinite` consisting of finite sets,
 we obtain a functor from the indexing category to `StructuredArrow c.pt toLightProfinite`.
 -/
 @[simps]
@@ -49,7 +49,7 @@ def functor : ℕᵒᵖ ⥤ StructuredArrow c.pt toLightProfinite where
 example : functor c ⋙ StructuredArrow.proj c.pt toLightProfinite ≅ F := Iso.refl _
 
 /--
-Given a sequential cone in `LightProfinite` consisting of finite sets,
+Given a sequential cone in `LightProfinite` consisting of finite sets,
 we obtain a functor from the opposite of the indexing category to
 `CostructuredArrow toProfinite.op ⟨c.pt⟩`.
 -/
@@ -113,12 +113,12 @@ def cone (S : LightProfinite) :
 example : G.mapCone c = (cone G c.pt).whisker (functor c) := rfl
 
 /--
-If `c` and `G.mapCone c` are limit cones and the projection maps in `c` are epimorphic,
+If `c` and `G.mapCone c` are limit cones and the projection maps in `c` are epimorphic,
 then `cone G c.pt` is a limit cone.
 -/
 noncomputable
 def isLimitCone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsLimit <| G.mapCone c) :
-    IsLimit (cone G c.pt) := (functor_initial c hc).isLimitWhiskerEquiv _ hc'
+    IsLimit (cone G c.pt) := (functor_initial c hc).isLimitWhiskerEquiv _ _ hc'
 
 end Limit
 
@@ -158,7 +158,7 @@ noncomputable
 def isColimitCocone (hc : IsLimit c) [∀ i, Epi (c.π.app i)] (hc' : IsColimit <| G.mapCocone c.op) :
     IsColimit (cocone G c.pt) :=
   haveI := functorOp_final c hc
-  (Functor.final_comp (opOpEquivalence ℕ).functor (functorOp c)).isColimitWhiskerEquiv _ hc'
+  (Functor.final_comp (opOpEquivalence ℕ).functor (functorOp c)).isColimitWhiskerEquiv _ _ hc'
 
 end Colimit
 
@@ -171,7 +171,7 @@ section LightProfiniteAsLimit
 variable (S : LightProfinite.{u})
 
 /--
-A functor `StructuredArrow S toLightProfinite ⥤ FintypeCat` whose limit in `LightProfinite` is
+A functor `StructuredArrow S toLightProfinite ⥤ FintypeCat` whose limit in `LightProfinite` is
 isomorphic to `S`.
 -/
 abbrev fintypeDiagram' : StructuredArrow S toLightProfinite ⥤ FintypeCat :=

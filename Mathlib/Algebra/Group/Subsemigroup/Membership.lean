@@ -29,7 +29,7 @@ subsemigroup
 
 assert_not_exists MonoidWithZero
 
-variable {ι : Sort*} {M A B : Type*}
+variable {ι : Sort*} {M : Type*}
 
 section NonAssoc
 
@@ -47,8 +47,8 @@ theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
   refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
-  refine fun hx ↦ closure_induction hx (fun y hy ↦ mem_iUnion.mp hy) ?_
-  rintro x y ⟨i, hi⟩ ⟨j, hj⟩
+  refine fun hx ↦ closure_induction (fun y hy ↦ mem_iUnion.mp hy) ?_ hx
+  rintro x y - - ⟨i, hi⟩ ⟨j, hj⟩
   rcases hS i j with ⟨k, hki, hkj⟩
   exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
 
@@ -103,7 +103,7 @@ the supremum of `S`."]
 theorem iSup_induction (S : ι → Subsemigroup M) {C : M → Prop} {x₁ : M} (hx₁ : x₁ ∈ ⨆ i, S i)
     (mem : ∀ i, ∀ x₂ ∈ S i, C x₂) (mul : ∀ x y, C x → C y → C (x * y)) : C x₁ := by
   rw [iSup_eq_closure] at hx₁
-  refine closure_induction hx₁ (fun x₂ hx₂ => ?_) mul
+  refine closure_induction (fun x₂ hx₂ => ?_) (fun x y _ _ ↦ mul x y) hx₁
   obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx₂
   exact mem _ _ hi
 

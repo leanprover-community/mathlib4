@@ -3,7 +3,6 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Lean
 import Qq
 
 import Mathlib.Tactic.FunProp.Mor
@@ -88,7 +87,7 @@ def getFunctionData (f : Expr) : MetaM FunctionData := do
         args := p.getAppArgs.map (fun a => {expr:=a}) ++ args
 
       let mainArgs := args
-        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i.1 else none)
+        |>.mapIdx (fun i ⟨arg,_⟩ => if arg.containsFVar xId then some i else none)
         |>.filterMap id
 
       return {
@@ -118,12 +117,13 @@ def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
 
 /-- Get `FunctionData` for `f`. -/
 def getFunctionData? (f : Expr)
-    (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
+    (unfoldPred : Name → Bool := fun _ => false) :
     MetaM MaybeFunctionData := do
+  withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
 
-  let unfold := fun e : Expr =>
+  let unfold := fun e : Expr => do
     if let .some n := e.getAppFn'.constName? then
-      pure (unfoldPred n)
+      pure ((unfoldPred n) || (← isReducible n))
     else
       pure false
 
@@ -131,7 +131,7 @@ def getFunctionData? (f : Expr)
     | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
                     type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
-    let fx' ← Mor.whnfPred (f.beta #[x]).eta unfold cfg
+    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold) |> headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'
@@ -144,7 +144,7 @@ def FunctionData.unfoldHeadFVar? (fData : FunctionData) : MetaM (Option Expr) :=
   let .fvar id := fData.fn | return none
   let .some val ← id.getValue? | return none
   let f ← withLCtx fData.lctx fData.insts do
-    mkLambdaFVars #[fData.mainVar] (Mor.mkAppN val fData.args)
+    mkLambdaFVars #[fData.mainVar] (headBetaThroughLet (Mor.mkAppN val fData.args))
   return f
 
 /-- Type of morphism application. -/
@@ -164,16 +164,15 @@ def FunctionData.isMorApplication (f : FunctionData) : MetaM MorApplication := d
   if let .some name := f.fn.constName? then
     if ← Mor.isCoeFunName name then
       let info ← getConstInfo name
-      let arity := info.type.forallArity
+      let arity := info.type.getNumHeadForalls
       match compare arity f.args.size with
       | .eq => return .exact
       | .lt => return .overApplied
       | .gt => return .underApplied
-  match f.args.size with
+  match h : f.args.size with
   | 0 => return .none
-  | _ =>
-    let n := f.args.size
-    if f.args[n-1]!.coe.isSome then
+  | n + 1 =>
+    if f.args[n].coe.isSome then
       return .exact
     else if f.args.any (fun a => a.coe.isSome) then
       return .overApplied

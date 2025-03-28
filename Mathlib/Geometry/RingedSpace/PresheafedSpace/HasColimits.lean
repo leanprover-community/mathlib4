@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Geometry.RingedSpace.PresheafedSpace
 import Mathlib.Topology.Category.TopCat.Limits.Basic
@@ -224,7 +224,7 @@ theorem desc_fac (F : J ⥤ PresheafedSpace.{_, _, v} C) (s : Cocone F) (j : J) 
     (colimitCocone F).ι.app j ≫ desc F s = s.ι.app j := by
   ext U
   · simp [desc]
-  · -- Porting note: the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
+  · -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): the original proof is just `ext; dsimp [desc, descCApp]; simpa`,
     -- but this has to be expanded a bit
     rw [NatTrans.comp_app, PresheafedSpace.comp_c_app, whiskerRight_app]
     dsimp [desc, descCApp]
@@ -248,7 +248,9 @@ def colimitCoconeIsColimit (F : J ⥤ PresheafedSpace.{_, _, v} C) :
       m.base =
         colimit.desc (F ⋙ PresheafedSpace.forget C) ((PresheafedSpace.forget C).mapCocone s) := by
       dsimp
-      ext j
+      -- `colimit.hom_ext` used to be automatically applied by `ext` before https://github.com/leanprover-community/mathlib4/pull/21302
+      apply colimit.hom_ext fun j => ?_
+      ext
       rw [colimit.ι_desc, mapCocone_ι_app, ← w j]
       simp
     ext : 1
@@ -263,7 +265,7 @@ instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
   has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
-  ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F) <| by
+  ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocones.ext
     · rfl
@@ -278,15 +280,12 @@ instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} 
 /-- The underlying topological space of a colimit of presheaved spaces is
 the colimit of the underlying topological spaces.
 -/
-instance forgetPreservesColimits [HasLimits C] : PreservesColimits (PresheafedSpace.forget C) where
+instance forget_preservesColimits [HasLimits C] :
+    PreservesColimits (PresheafedSpace.forget.{_, _, v} C) where
   preservesColimitsOfShape {J 𝒥} :=
-    { preservesColimit := fun {F} =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
-          (by apply IsColimit.ofIsoColimit (colimit.isColimit _)
-              fapply Cocones.ext
-              · rfl
-              · intro j
-                simp) }
+    { preservesColimit := fun {F} => preservesColimit_of_preserves_colimit_cocone
+          (colimitCoconeIsColimit F)
+          (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _))) }
 
 /-- The components of the colimit of a diagram of `PresheafedSpace C` is obtained
 via taking componentwise limits.
@@ -307,7 +306,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
     refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)
     erw [← TopCat.comp_app]
     congr
-    exact ι_preservesColimitsIso_inv (forget C) F (unop X)
+    exact ι_preservesColimitIso_inv (forget C) F (unop X)
   · intro X Y f
     change ((F.map f.unop).c.app _ ≫ _ ≫ _) ≫ (F.obj (unop Y)).presheaf.map _ = _ ≫ _
     rw [TopCat.Presheaf.Pushforward.comp_inv_app]
@@ -326,9 +325,9 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
   rw [Iso.trans_inv, Iso.trans_inv, Iso.app_inv, sheafIsoOfIso_inv, pushforwardToOfIso_app,
     congr_app (Iso.symm_inv _)]
   dsimp
-  rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality]
-  erw [← comp_c_app_assoc]
-  rw [congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
+  rw [map_id, comp_id, assoc, assoc, assoc, NatTrans.naturality,
+      ← comp_c_app_assoc,
+      congr_app (colimit.isoColimitCocone_ι_hom _ _), assoc]
   erw [limitObjIsoLimitCompEvaluation_inv_π_app_assoc, limMap_π_assoc]
   -- Porting note: `convert` doesn't work due to meta variable, so change to a `suffices` block
   set f := _
@@ -336,8 +335,7 @@ theorem colimitPresheafObjIsoComponentwiseLimit_inv_ι_app (F : J ⥤ Presheafed
   suffices f_eq : f = 𝟙 _ by rw [f_eq, comp_id]
   erw [← (F.obj j).presheaf.map_id]
   change (F.obj j).presheaf.map _ ≫ _ = _
-  erw [← (F.obj j).presheaf.map_comp, ← (F.obj j).presheaf.map_comp]
-  congr 1
+  simp
 
 @[simp]
 theorem colimitPresheafObjIsoComponentwiseLimit_hom_π (F : J ⥤ PresheafedSpace.{_, _, v} C)

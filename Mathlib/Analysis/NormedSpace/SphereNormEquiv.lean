@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Normed.Module.Basic
+import Mathlib.LinearAlgebra.Basis.VectorSpace
 
 /-!
 # Homeomorphism between a normed space and sphere times `(0, +∞)`
@@ -38,7 +39,7 @@ noncomputable def homeomorphUnitSphereProd :
     rw [mem_Ioi] at hr
     ext <;> simp [hx, norm_smul, hr.le, abs_of_pos hr, hr.ne']
   continuous_toFun := by
-    refine .prod_mk (.codRestrict (.smul (.inv₀ ?_ ?_) ?_) _) ?_
+    refine .prodMk (.codRestrict (.smul (.inv₀ ?_ ?_) ?_) _) ?_
     · fun_prop
     · simp
     · fun_prop

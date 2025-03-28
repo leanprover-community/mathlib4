@@ -95,8 +95,7 @@ structure Context where
   /-- current transition depth -/
   transitionDepth := 0
 
-/-- General theorem about function property
-  used for transition and morphism theorems -/
+/-- General theorem about a function property used for transition and morphism theorems -/
 structure GeneralTheorem where
   /-- function property name -/
   funPropName   : Name
@@ -108,17 +107,19 @@ structure GeneralTheorem where
   priority    : Nat  := eval_prio default
   deriving Inhabited
 
-/-- -/
+/-- Structure holding transition or morphism theorems for `fun_prop` tactic. -/
 structure GeneralTheorems where
-  /-- -/
+  /-- Discrimination tree indexing theorems. -/
   theorems     : RefinedDiscrTree GeneralTheorem := {}
   deriving Inhabited
 
 /-- `fun_prop` state -/
 structure State where
   /-- Simp's cache is used as the `fun_prop` tactic is designed to be used inside of simp and
-  utilize its cache -/
+  utilize its cache. It holds successful goals. -/
   cache : Simp.Cache := {}
+  /-- Cache storing failed goals such that they are not tried again. -/
+  failureCache : ExprSet := {}
   /-- Count the number of steps and stop when maxSteps is reached. -/
   numSteps := 0
   /-- Log progress and failures messages that should be displayed to the user at the end. -/

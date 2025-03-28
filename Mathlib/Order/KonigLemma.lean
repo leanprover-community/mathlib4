@@ -3,8 +3,10 @@ Copyright (c) 2024 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Order.Atoms.Finite
 import Mathlib.Order.Grade
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Kőnig's infinity lemma
@@ -51,7 +53,7 @@ Formulate the lemma as a statement about graphs.
 open Set
 section Sequence
 
-variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {a b : α}
+variable {α : Type*} [PartialOrder α] [IsStronglyAtomic α] {b : α}
 
 /-- **Kőnig's infinity lemma** : if each element in a strongly atomic order
 is covered by only finitely many others, and `b` is an element with infinitely many things above it,
@@ -81,7 +83,7 @@ theorem GradeMinOrder.exists_nat_orderEmbedding_of_forall_covby_finite
   refine ⟨f, h0, hf, fun i ↦ ?_⟩
   induction' i with i ih
   · simp [h0]
-  · simpa [Nat.covBy_iff_succ_eq, ih, eq_comm] using CovBy.grade ℕ <| hf i
+  · simpa [Order.covBy_iff_add_one_eq, ih, eq_comm] using CovBy.grade ℕ <| hf i
 
 end Sequence
 
@@ -119,7 +121,7 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
       rw [show a = b by rwa [π_refl] at hba] }
 
   have hcovby : ∀ {a b : αs}, a ⋖ b ↔ a ≤ b ∧ a.1 + 1 = b.1 := by
-    simp only [covBy_iff_lt_and_eq_or_eq, lt_iff_le_and_ne, ne_eq, Sigma.forall, and_assoc,
+    simp only [αs, covBy_iff_lt_and_eq_or_eq, lt_iff_le_and_ne, ne_eq, Sigma.forall, and_assoc,
       and_congr_right_iff, or_iff_not_imp_left]
     rintro i a j b ⟨h : i ≤ j, rfl : π h b = a⟩
     refine ⟨fun ⟨hne, h'⟩ ↦ ?_, ?_⟩
@@ -142,12 +144,12 @@ theorem exists_seq_forall_proj_of_forall_finite {α : ℕ → Type*} [Finite (α
   obtain ⟨a₀, ha₀, ha₀inf⟩ : ∃ a₀ : αs, a₀.1 = 0 ∧ (Ici a₀).Infinite := by
     obtain ⟨a₀, ha₀⟩ := Finite.exists_infinite_fiber (fun (a : αs) ↦ π (zero_le a.1) a.2)
     refine ⟨⟨0, a₀⟩, rfl, (infinite_coe_iff.1 ha₀).mono ?_⟩
-    simp only [subset_def, mem_preimage, mem_singleton_iff, mem_Ici, Sigma.forall]
+    simp only [αs, subset_def, mem_preimage, mem_singleton_iff, mem_Ici, Sigma.forall]
     exact fun i x h ↦ ⟨zero_le i, h⟩
 
   have hfin : ∀ (a : αs), {x | a ⋖ x}.Finite := by
     refine fun ⟨i,a⟩ ↦ ((hfin i a).image (fun b ↦ ⟨_,b⟩)).subset ?_
-    simp only [hcovby, subset_def, mem_setOf_eq, mem_image, and_imp, Sigma.forall]
+    simp only [αs, hcovby, subset_def, mem_setOf_eq, mem_image, and_imp, Sigma.forall]
     exact fun j b ⟨_, _⟩ hj ↦ ⟨π hj.le b, by rwa [π_trans], by cases hj; rw [π_refl]⟩
 
   obtain ⟨f, hf0, hf⟩ := exists_orderEmbedding_covby_of_forall_covby_finite hfin ha₀inf

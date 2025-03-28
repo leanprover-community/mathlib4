@@ -3,7 +3,6 @@ Copyright (c) 2024 Jeremy Tan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Tan
 -/
-import Batteries.Data.List.Count
 import Mathlib.Combinatorics.Enumerative.Catalan
 import Mathlib.Tactic.Positivity
 
@@ -98,7 +97,7 @@ lemma toList_ne_nil : p.toList ≠ [] ↔ p ≠ 0 := toList_eq_nil.ne
 instance : Unique (AddUnits DyckWord) where
   uniq p := by
     obtain ⟨a, b, h, -⟩ := p
-    obtain ⟨ha, hb⟩ := append_eq_nil.mp (toList_eq_nil.mpr h)
+    obtain ⟨ha, hb⟩ := append_eq_nil_iff.mp (toList_eq_nil.mpr h)
     congr
     · exact toList_eq_nil.mp ha
     · exact toList_eq_nil.mp hb
@@ -205,9 +204,8 @@ def denest (hn : p.IsNested) : DyckWord where
       · tauto
     rw [← drop_one, take_drop, dropLast_eq_take, take_take]
     have ub : min (1 + i) (p.toList.length - 1) < p.toList.length :=
-      (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos.mpr h).ne'))
-    have lb : 0 < min (1 + i) (p.toList.length - 1) := by
-      rw [l3, add_comm, min_add_add_right]; omega
+      (min_le_right _ p.toList.length.pred).trans_lt (Nat.pred_lt ((length_pos_iff.mpr h).ne'))
+    have lb : 0 < min (1 + i) (p.toList.length - 1) := by omega
     have eq := hn.2 lb ub
     set j := min (1 + i) (p.toList.length - 1)
     rw [← (p.toList.take j).take_append_drop 1, count_append, count_append, take_take,
@@ -265,7 +263,7 @@ lemma firstReturn_pos : 0 < p.firstReturn := by
   What's going on?
   -/
   swap
-  · rw [length_range, length_pos]
+  · rw [length_range, length_pos_iff]
     exact toList_ne_nil.mpr h
   · rw [getElem_range] at f
     simp at f
@@ -291,7 +289,7 @@ lemma count_take_firstReturn_add_one :
 lemma count_D_lt_count_U_of_lt_firstReturn {i : ℕ} (hi : i < p.firstReturn) :
     (p.toList.take (i + 1)).count D < (p.toList.take (i + 1)).count U := by
   have ne := not_of_lt_findIdx hi
-  rw [decide_eq_true_eq, ← ne_eq, getElem_range] at ne
+  rw [decide_eq_false_iff_not, ← ne_eq, getElem_range] at ne
   exact lt_of_le_of_ne (p.count_D_le_count_U (i + 1)) ne.symm
 
 @[simp]
@@ -307,7 +305,7 @@ lemma firstReturn_add : (p + q).firstReturn = if p = 0 then q.firstReturn else p
     · intro j hj
       rw [take_append_eq_append_take, show j + 1 - p.toList.length = 0 by omega,
         take_zero, append_nil]
-      exact (count_D_lt_count_U_of_lt_firstReturn hj).ne'
+      simpa using (count_D_lt_count_U_of_lt_firstReturn hj).ne'
   · rw [length_range, u, length_append]
     exact Nat.lt_add_right _ (firstReturn_lt_length h)
 
@@ -323,6 +321,7 @@ lemma firstReturn_nest : p.nest.firstReturn = p.toList.length + 1 := by
         beq_iff_eq, reduceCtorEq, ite_false, take_append_eq_append_take,
         show j - p.toList.length = 0 by omega, take_zero, append_nil]
       have := p.count_D_le_count_U j
+      simp only [add_zero, decide_eq_false_iff_not, ne_eq]
       omega
   · simp_rw [length_range, u, length_append, length_cons]
     exact Nat.lt_add_one _
@@ -405,8 +404,8 @@ section Order
 
 instance : Preorder DyckWord where
   le := Relation.ReflTransGen (fun p q ↦ p = q.insidePart ∨ p = q.outsidePart)
-  le_refl p := Relation.ReflTransGen.refl
-  le_trans p q r := Relation.ReflTransGen.trans
+  le_refl _ := Relation.ReflTransGen.refl
+  le_trans _ _ _ := Relation.ReflTransGen.trans
 
 lemma le_add_self (p q : DyckWord) : q ≤ p + q := by
   by_cases h : p = 0

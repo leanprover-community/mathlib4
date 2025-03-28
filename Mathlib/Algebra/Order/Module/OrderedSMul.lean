@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.Prod
 import Mathlib.Algebra.Order.Module.Defs
 import Mathlib.Algebra.Order.Monoid.Prod
 import Mathlib.Algebra.Order.Pi
-import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.GCongr.CoreAttrs
 
 /-!
 # Ordered scalar product
@@ -19,7 +19,7 @@ In this file we define
 * `OrderedSMul R M` : an ordered additive commutative monoid `M` is an `OrderedSMul`
   over an `OrderedSemiring` `R` if the scalar product respects the order relation on the
   monoid and on the ring. There is a correspondence between this structure and convex cones,
-  which is proven in `Analysis/Convex/Cone.lean`.
+  which is proven in `Mathlib/Analysis/Convex/Cone.lean`.
 
 ## Implementation notes
 * We choose to define `OrderedSMul` as a `Prop`-valued mixin, so that it can be
@@ -53,11 +53,10 @@ class OrderedSMul (R M : Type*) [OrderedSemiring R] [OrderedAddCommMonoid M] [SM
   /-- If `c • a < c • b` for some positive `c`, then `a < b`. -/
   protected lt_of_smul_lt_smul_of_pos : ∀ {a b : M}, ∀ {c : R}, c • a < c • b → 0 < c → a < b
 
-variable {ι α β γ 𝕜 R M N : Type*}
+variable {ι 𝕜 R M N : Type*}
 
 section OrderedSMul
 variable [OrderedSemiring R] [OrderedAddCommMonoid M] [SMulWithZero R M] [OrderedSMul R M]
-  {s : Set M} {a b : M} {c : R}
 
 instance OrderedSMul.toPosSMulStrictMono : PosSMulStrictMono R M where
   elim _a ha _b₁ _b₂ hb := OrderedSMul.smul_lt_smul_of_pos hb ha
@@ -95,8 +94,7 @@ instance Int.orderedSMul [LinearOrderedAddCommGroup M] : OrderedSMul ℤ M :=
     · cases (Int.negSucc_not_pos _).1 hn
 
 section LinearOrderedSemiring
-variable [LinearOrderedSemiring R] [LinearOrderedAddCommMonoid M] [SMulWithZero R M]
-  [OrderedSMul R M] {a : R}
+variable [LinearOrderedSemiring R]
 
 -- TODO: `LinearOrderedField M → OrderedSMul ℚ M`
 instance LinearOrderedSemiring.toOrderedSMul : OrderedSMul R R :=
@@ -136,7 +134,7 @@ end LinearOrderedSemifield
 section Invertible
 variable (α : Type*) {β : Type*}
 variable [Semiring α] [Invertible (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+  [AddLeftMono β]
 
 lemma inf_eq_half_smul_add_sub_abs_sub (x y : β) : x ⊓ y = (⅟2 : α) • (x + y - |y - x|) := by
   rw [← two_nsmul_inf_eq_add_sub_abs_sub x y, two_smul, ← two_smul α,
@@ -151,7 +149,7 @@ end Invertible
 section DivisionSemiring
 variable (α : Type*) {β : Type*}
 variable [DivisionSemiring α] [NeZero (2 : α)] [Lattice β] [AddCommGroup β] [Module α β]
-  [CovariantClass β β (· + ·) (· ≤ ·)]
+  [AddLeftMono β]
 
 lemma inf_eq_half_smul_add_sub_abs_sub' (x y : β) : x ⊓ y = (2⁻¹ : α) • (x + y - |y - x|) := by
   letI := invertibleOfNonzero (two_ne_zero' α)

@@ -59,7 +59,7 @@ separable degree, degree, separable closure
 
 -/
 
-open FiniteDimensional Polynomial IntermediateField Field
+open Module Polynomial IntermediateField Field
 
 noncomputable section
 
@@ -73,6 +73,7 @@ section separableClosure
 /-- The (relative) separable closure of `F` in `E`, or called maximal separable subextension
 of `E / F`, is defined to be the intermediate field of `E / F` consisting of all separable
 elements. The previous results prove that these elements are closed under field operations. -/
+@[stacks 09HC]
 def separableClosure : IntermediateField F E where
   carrier := {x | IsSeparable F x}
   mul_mem' := isSeparable_mul
@@ -115,7 +116,7 @@ theorem separableClosure.map_eq_of_separableClosure_eq_bot [Algebra E K] [IsScal
     (separableClosure F E).map (IsScalarTower.toAlgHom F E K) = separableClosure F K := by
   refine le_antisymm (map_le_of_algHom _) (fun x hx ↦ ?_)
   obtain ⟨y, rfl⟩ := mem_bot.1 <| h ▸ mem_separableClosure_iff.2
-    (IsSeparable.of_isScalarTower E <| mem_separableClosure_iff.1 hx)
+    (IsSeparable.tower_top E <| mem_separableClosure_iff.1 hx)
   exact ⟨y, (map_mem_separableClosure_iff <| IsScalarTower.toAlgHom F E K).mp hx, rfl⟩
 
 /-- If `i` is an `F`-algebra isomorphism of `E` and `K`, then the image of `separableClosure F E`
@@ -140,6 +141,7 @@ instance separableClosure.isAlgebraic : Algebra.IsAlgebraic F (separableClosure 
   ⟨fun x ↦ isAlgebraic_iff.2 (IsSeparable.isIntegral x.2).isAlgebraic⟩
 
 /-- The separable closure of `F` in `E` is separable over `F`. -/
+@[stacks 030K "$E_{sep}/F$ is separable"]
 instance separableClosure.isSeparable : Algebra.IsSeparable F (separableClosure F E) :=
   ⟨fun x ↦ by simpa only [IsSeparable, minpoly_eq] using x.2⟩
 
@@ -170,11 +172,13 @@ theorem separableClosure.separableClosure_eq_bot :
 theorem separableClosure.normalClosure_eq_self :
     normalClosure F (separableClosure F E) E = separableClosure F E :=
   le_antisymm (normalClosure_le_iff.2 fun i ↦
-    haveI : Algebra.IsSeparable F i.fieldRange := (AlgEquiv.ofInjectiveField i).isSeparable
+    have : Algebra.IsSeparable F i.fieldRange :=
+      (AlgEquiv.Algebra.isSeparable (AlgEquiv.ofInjectiveField i))
     le_separableClosure F E _) (le_normalClosure _)
 
 /-- If `E` is normal over `F`, then the separable closure of `F` in `E` is Galois (i.e.
 normal and separable) over `F`. -/
+@[stacks 0EXK]
 instance separableClosure.isGalois [Normal F E] : IsGalois F (separableClosure F E) where
   to_isSeparable := separableClosure.isSeparable F E
   to_normal := by
@@ -219,7 +223,7 @@ theorem separableClosure.eq_top_iff : separableClosure F E = ⊤ ↔ Algebra.IsS
 `separableClosure E K`. -/
 theorem separableClosure.le_restrictScalars [Algebra E K] [IsScalarTower F E K] :
     separableClosure F K ≤ (separableClosure E K).restrictScalars F :=
-  fun _ h ↦ IsSeparable.of_isScalarTower E h
+  fun _ ↦ IsSeparable.tower_top E
 
 /-- If `K / E / F` is a field extension tower, such that `E / F` is separable, then
 `separableClosure F K` is equal to `separableClosure E K`. -/
@@ -254,10 +258,12 @@ namespace Field
 
 /-- The (infinite) separable degree for a general field extension `E / F` is defined
 to be the degree of `separableClosure F E / F`. -/
+@[stacks 030L "Part 1"]
 def sepDegree := Module.rank F (separableClosure F E)
 
 /-- The (infinite) inseparable degree for a general field extension `E / F` is defined
 to be the degree of `E / separableClosure F E`. -/
+@[stacks 030L "Part 2"]
 def insepDegree := Module.rank (separableClosure F E) E
 
 /-- The finite inseparable degree for a general field extension `E / F` is defined

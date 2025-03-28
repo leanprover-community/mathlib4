@@ -4,24 +4,37 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
+import Mathlib.Init
 
 /-!
-# The `stacks` attribute
+# The `stacks` and `kerodon` attributes
 
-This allows tagging of mathlib lemmas with the corresponding
-[Tags](https://stacks.math.columbia.edu/tags) from the Stacks Project.
+This allows tagging of mathlib results with the corresponding
+tags from the [Stacks Project](https://stacks.math.columbia.edu/tags) and
+[Kerodon](https://kerodon.net/tag/).
+
+While the Stacks Project is the main focus, because the tag format at Kerodon is
+compatible, the attribute can be used to tag results with Kerodon tags as well.
 -/
 
 open Lean Elab
 
-namespace Mathlib.Stacks
+namespace Mathlib.StacksTag
 
-/-- `Tag` is the structure that carries the data of a Stacks Projects tag and a corresponding
+/-- Web database users of projects tags -/
+inductive Database where
+  | kerodon
+  | stacks
+  deriving BEq, Hashable
+
+/-- `Tag` is the structure that carries the data of a project tag and a corresponding
 Mathlib declaration. -/
 structure Tag where
   /-- The name of the declaration with the given tag. -/
   declName : Name
-  /-- The Stacks Project tag. -/
+  /-- The online database where the tag is found. -/
+  database : Database
+  /-- The database tag. -/
   tag : String
   /-- The (optional) comment that comes with the given tag. -/
   comment : String
@@ -40,8 +53,10 @@ initialize tagExt : SimplePersistentEnvExtension Tag (Std.HashSet Tag) ←
 the `String`s `tag` and `comment` of the `stacks` attribute.
 It extends the `Tag` environment extension with the data `declName, tag, comment`.
 -/
-def addTagEntry {m : Type → Type} [MonadEnv m] (declName : Name) (tag comment : String) : m Unit :=
-  modifyEnv (tagExt.addEntry · { declName := declName, tag := tag, comment := comment })
+def addTagEntry {m : Type → Type} [MonadEnv m]
+    (declName : Name) (db : Database) (tag comment : String) : m Unit :=
+  modifyEnv (tagExt.addEntry ·
+    { declName := declName, database := db, tag := tag, comment := comment })
 
 open Parser
 
@@ -75,12 +90,12 @@ def stacksTagNoAntiquot : Parser := {
 }
 
 @[inherit_doc stacksTagFn]
-def stacksTag : Parser :=
+def stacksTagParser : Parser :=
   withAntiquot (mkAntiquot "stacksTag" stacksTagKind) stacksTagNoAntiquot
 
-end Mathlib.Stacks
+end Mathlib.StacksTag
 
-open Mathlib.Stacks
+open Mathlib.StacksTag
 
 /-- Extract the underlying tag as a string from a `stacksTag` node. -/
 def Lean.TSyntax.getStacksTag (stx : TSyntax stacksTagKind) : CoreM String := do
@@ -104,41 +119,91 @@ namespace Parenthesizer
 
 end Lean.PrettyPrinter.Parenthesizer
 
-namespace Mathlib.Stacks
+namespace Mathlib.StacksTag
 
-/-- The `stacks` attribute.
-Use it as `@[stacks TAG "Optional comment"]`.
+/-- The syntax category for the database name. -/
+declare_syntax_cat stacksTagDB
+
+/-- The syntax for a "kerodon" database identifier in a `@[kerodon]` attribute. -/
+syntax "kerodon" : stacksTagDB
+/-- The syntax for a "stacks" database identifier in a `@[stacks]` attribute. -/
+syntax "stacks" : stacksTagDB
+
+/-- The `stacksTag` attribute.
+Use it as `@[kerodon TAG "Optional comment"]` or `@[stacks TAG "Optional comment"]`
+depending on the database you are referencing.
+
 The `TAG` is mandatory and should be a sequence of 4 digits or uppercase letters.
 
-See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project for more details.
+See the [Tags page](https://stacks.math.columbia.edu/tags) in the Stacks project or
+[Tags page](https://kerodon.net/tag/) in the Kerodon project for more details.
 -/
-syntax (name := stacks) "stacks " stacksTag (ppSpace str)? : attr
+syntax (name := stacksTag) stacksTagDB stacksTagParser (ppSpace str)? : attr
 
 initialize Lean.registerBuiltinAttribute {
-  name := `stacks
-  descr := "Apply a Stacks project tag to a theorem."
-  add := fun decl stx _attrKind => match stx with
-    | `(attr| stacks $tag $[$comment]?) => do
-      addTagEntry decl (← tag.getStacksTag) <| (comment.map (·.getString)).getD ""
-    | _ => throwUnsupportedSyntax
+  name := `stacksTag
+  descr := "Apply a Stacks or Kerodon project tag to a theorem."
+  add := fun decl stx _attrKind => do
+    let oldDoc := (← findDocString? (← getEnv) decl).getD ""
+    let (SorK, database, url, tag, comment) := ← match stx with
+      | `(attr| stacks $tag $[$comment]?) =>
+        return ("Stacks", Database.stacks, "https://stacks.math.columbia.edu/tag", tag, comment)
+      | `(attr| kerodon $tag $[$comment]?) =>
+        return ("Kerodon", Database.kerodon, "https://kerodon.net/tag", tag, comment)
+      | _ => throwUnsupportedSyntax
+    let tagStr ← tag.getStacksTag
+    let comment := (comment.map (·.getString)).getD ""
+    let commentInDoc := if comment = "" then "" else s!" ({comment})"
+    let newDoc := [oldDoc, s!"[{SorK} Tag {tagStr}]({url}/{tagStr}){commentInDoc}"]
+    addDocString decl <| "\n\n".intercalate (newDoc.filter (· != ""))
+    addTagEntry decl database tagStr <| comment
 }
 
-end Mathlib.Stacks
+end Mathlib.StacksTag
 
 /--
 `getSortedStackProjectTags env` returns the array of `Tags`, sorted by alphabetical order of tag.
 -/
-def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
+private def Lean.Environment.getSortedStackProjectTags (env : Environment) : Array Tag :=
   tagExt.getState env |>.toArray.qsort (·.tag < ·.tag)
 
 /--
 `getSortedStackProjectDeclNames env tag` returns the array of declaration names of results
 with Stacks Project tag equal to `tag`.
 -/
-def Lean.Environment.getSortedStackProjectDeclNames (env : Environment) (tag : String) :
+private def Lean.Environment.getSortedStackProjectDeclNames (env : Environment) (tag : String) :
     Array Name :=
   let tags := env.getSortedStackProjectTags
   tags.filterMap fun d => if d.tag == tag then some d.declName else none
+
+namespace Mathlib.StacksTag
+
+private def databaseURL (db : Database) : String :=
+  match db with
+  | .kerodon => "https://kerodon.net/tag/"
+  | .stacks => "https://stacks.math.columbia.edu/tag/"
+
+/--
+`traceStacksTags db verbose` prints the tags of the database `db` to the user and
+inlines the theorem statements if `verbose` is `true`.
+-/
+def traceStacksTags (db : Database) (verbose : Bool := false) :
+    Command.CommandElabM Unit := do
+  let env ← getEnv
+  let entries := env.getSortedStackProjectTags |>.filter (·.database == db)
+  if entries.isEmpty then logInfo "No tags found." else
+  let mut msgs := #[m!""]
+  for d in entries do
+    let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
+    let cmt := parL ++ d.comment ++ parR
+    msgs := msgs.push
+      m!"[Stacks Tag {d.tag}]({databaseURL db ++ d.tag}) \
+        corresponds to declaration '{.ofConstName d.declName}'.{cmt}"
+    if verbose then
+      let dType := ((env.find? d.declName).getD default).type
+      msgs := (msgs.push m!"{dType}").push ""
+  let msg := MessageData.joinSep msgs.toList "\n"
+  logInfo msg
 
 /--
 `#stacks_tags` retrieves all declarations that have the `stacks` attribute.
@@ -149,20 +214,18 @@ For each found declaration, it prints a line
 ```
 The variant `#stacks_tags!` also adds the theorem statement after each summary line.
 -/
-elab (name := Mathlib.Stacks.stacksTags) "#stacks_tags" tk:("!")?: command => do
-  let env ← getEnv
-  let entries := env.getSortedStackProjectTags
-  if entries.isEmpty then logInfo "No tags found." else
-  let mut msgs := #[m!""]
-  for d in entries do
-    let dname ← Command.liftCoreM do realizeGlobalConstNoOverloadWithInfo (mkIdent d.declName)
-    let (parL, parR) := if d.comment.isEmpty then ("", "") else (" (", ")")
-    let cmt := parL ++ d.comment ++ parR
-    msgs := msgs.push
-      m!"[Stacks Tag {d.tag}](https://stacks.math.columbia.edu/tag/{d.tag}) \
-        corresponds to declaration '{dname}'.{cmt}"
-    if tk.isSome then
-      let dType := ((env.find? dname).getD default).type
-      msgs := (msgs.push m!"{dType}").push ""
-  let msg := MessageData.joinSep msgs.toList "\n"
-  logInfo msg
+elab (name := stacksTags) "#stacks_tags" tk:("!")?: command =>
+  traceStacksTags .stacks (tk.isSome)
+
+/-- The `#kerodon_tags` command retrieves all declarations that have the `kerodon` attribute.
+
+For each found declaration, it prints a line
+```
+'declaration_name' corresponds to tag 'declaration_tag'.
+```
+The variant `#kerodon_tags!` also adds the theorem statement after each summary line.
+-/
+elab (name := kerodonTags) "#kerodon_tags" tk:("!")?: command =>
+  traceStacksTags .kerodon (tk.isSome)
+
+end Mathlib.StacksTag

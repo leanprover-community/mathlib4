@@ -65,7 +65,7 @@ instance instModuleFree [Module.Free R M] : Module.Free R (TensorAlgebra R M) :=
 no zero-divisors. -/
 instance instNoZeroDivisors [NoZeroDivisors R] [Module.Free R M] :
     NoZeroDivisors (TensorAlgebra R M) :=
-  have ⟨⟨κ, b⟩⟩ := ‹Module.Free R M›
+  have ⟨⟨_, b⟩⟩ := ‹Module.Free R M›
   (equivFreeAlgebra b).toMulEquiv.noZeroDivisors
 
 end CommSemiring

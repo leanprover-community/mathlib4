@@ -60,16 +60,6 @@ variable {L L'}
 
 namespace LHom
 
-/-- Defines a map between languages defined with `Language.mk₂`. -/
-protected def mk₂ {c f₁ f₂ : Type u} {r₁ r₂ : Type v} (φ₀ : c → L'.Constants)
-    (φ₁ : f₁ → L'.Functions 1) (φ₂ : f₂ → L'.Functions 2) (φ₁' : r₁ → L'.Relations 1)
-    (φ₂' : r₂ → L'.Relations 2) : Language.mk₂ c f₁ f₂ r₁ r₂ →ᴸ L' :=
-  ⟨fun n =>
-    Nat.casesOn n φ₀ fun n => Nat.casesOn n φ₁ fun n => Nat.casesOn n φ₂ fun _ => PEmpty.elim,
-    fun n =>
-    Nat.casesOn n PEmpty.elim fun n =>
-      Nat.casesOn n φ₁' fun n => Nat.casesOn n φ₂' fun _ => PEmpty.elim⟩
-
 variable (ϕ : L →ᴸ L')
 
 /-- Pulls a structure back along a language map. -/
@@ -106,37 +96,20 @@ variable {L L'} {L'' : Language}
 @[ext]
 protected theorem funext {F G : L →ᴸ L'} (h_fun : F.onFunction = G.onFunction)
     (h_rel : F.onRelation = G.onRelation) : F = G := by
-  cases' F with Ff Fr
-  cases' G with Gf Gr
+  obtain ⟨Ff, Fr⟩ := F
+  obtain ⟨Gf, Gr⟩ := G
   simp only [mk.injEq]
   exact And.intro h_fun h_rel
 
 instance [L.IsAlgebraic] [L.IsRelational] : Unique (L →ᴸ L') :=
   ⟨⟨LHom.ofIsEmpty L L'⟩, fun _ => LHom.funext (Subsingleton.elim _ _) (Subsingleton.elim _ _)⟩
 
-theorem mk₂_funext {c f₁ f₂ : Type u} {r₁ r₂ : Type v} {F G : Language.mk₂ c f₁ f₂ r₁ r₂ →ᴸ L'}
-    (h0 : ∀ c : (Language.mk₂ c f₁ f₂ r₁ r₂).Constants, F.onFunction c = G.onFunction c)
-    (h1 : ∀ f : (Language.mk₂ c f₁ f₂ r₁ r₂).Functions 1, F.onFunction f = G.onFunction f)
-    (h2 : ∀ f : (Language.mk₂ c f₁ f₂ r₁ r₂).Functions 2, F.onFunction f = G.onFunction f)
-    (h1' : ∀ r : (Language.mk₂ c f₁ f₂ r₁ r₂).Relations 1, F.onRelation r = G.onRelation r)
-    (h2' : ∀ r : (Language.mk₂ c f₁ f₂ r₁ r₂).Relations 2, F.onRelation r = G.onRelation r) :
-    F = G :=
-  LHom.funext
-    (funext fun n =>
-      Nat.casesOn n (funext h0) fun n =>
-        Nat.casesOn n (funext h1) fun n =>
-          Nat.casesOn n (funext h2) fun _n => funext fun f => PEmpty.elim f)
-    (funext fun n =>
-      Nat.casesOn n (funext fun r => PEmpty.elim r) fun n =>
-        Nat.casesOn n (funext h1') fun n =>
-          Nat.casesOn n (funext h2') fun _n => funext fun r => PEmpty.elim r)
-
 /-- The composition of two language homomorphisms. -/
 @[simps]
 def comp (g : L' →ᴸ L'') (f : L →ᴸ L') : L →ᴸ L'' :=
   ⟨fun _n F => g.1 (f.1 F), fun _ R => g.2 (f.2 R)⟩
 
--- Porting note: added ᴸ to avoid clash with function composition
+-- added ᴸ to avoid clash with function composition
 @[inherit_doc]
 local infixl:60 " ∘ᴸ " => LHom.comp
 
@@ -305,19 +278,16 @@ structure LEquiv (L L' : Language) where
   left_inv : invLHom.comp toLHom = LHom.id L
   right_inv : toLHom.comp invLHom = LHom.id L'
 
-infixl:10 " ≃ᴸ " => LEquiv
+@[inherit_doc] infixl:10 " ≃ᴸ " => LEquiv
 
 -- \^L
 namespace LEquiv
 
-variable (L)
-
+variable (L) in
 /-- The identity equivalence from a first-order language to itself. -/
 @[simps]
 protected def refl : L ≃ᴸ L :=
   ⟨LHom.id L, LHom.id L, LHom.comp_id _, LHom.comp_id _⟩
-
-variable {L}
 
 instance : Inhabited (L ≃ᴸ L) :=
   ⟨LEquiv.refl L⟩
@@ -342,38 +312,47 @@ section ConstantsOn
 
 variable (α : Type u')
 
-/-- A language with constants indexed by a type. -/
+/-- The type of functions for a language consisting only of constant symbols. -/
 @[simp]
-def constantsOn : Language.{u', 0} :=
-  Language.mk₂ α PEmpty PEmpty PEmpty PEmpty
+def constantsOnFunc : ℕ → Type u'
+  | 0 => α
+  | (_ + 1) => PEmpty
+
+/-- A language with constants indexed by a type. -/
+@[simps]
+def constantsOn : Language.{u', 0} := ⟨constantsOnFunc α, fun _ => Empty⟩
 
 variable {α}
 
 theorem constantsOn_constants : (constantsOn α).Constants = α :=
   rfl
 
-instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) :=
-  Language.isAlgebraic_mk₂
-
-instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
-  Language.isRelational_mk₂
+instance isAlgebraic_constantsOn : IsAlgebraic (constantsOn α) := by
+  unfold constantsOn
+  infer_instance
 
 instance isEmpty_functions_constantsOn_succ {n : ℕ} : IsEmpty ((constantsOn α).Functions (n + 1)) :=
-  Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty))
-    fun n => Nat.casesOn n (inferInstanceAs (IsEmpty PEmpty))
-    fun _ => (inferInstanceAs (IsEmpty PEmpty))
+  inferInstanceAs (IsEmpty PEmpty)
 
-theorem card_constantsOn : (constantsOn α).card = #α := by simp
+instance isRelational_constantsOn [_ie : IsEmpty α] : IsRelational (constantsOn α) :=
+  fun n => Nat.casesOn n _ie inferInstance
+
+theorem card_constantsOn : (constantsOn α).card = #α := by
+  simp [card_eq_card_functions_add_card_relations, sum_nat_eq_add_sum_succ]
 
 /-- Gives a `constantsOn α` structure to a type by assigning each constant a value. -/
-def constantsOn.structure (f : α → M) : (constantsOn α).Structure M :=
-  Structure.mk₂ f PEmpty.elim PEmpty.elim PEmpty.elim PEmpty.elim
+def constantsOn.structure (f : α → M) : (constantsOn α).Structure M where
+  funMap := fun {n} c _ =>
+    match n, c with
+    | 0, c => f c
 
 variable {β : Type v'}
 
 /-- A map between index types induces a map between constant languages. -/
-def LHom.constantsOnMap (f : α → β) : constantsOn α →ᴸ constantsOn β :=
-  LHom.mk₂ f PEmpty.elim PEmpty.elim PEmpty.elim PEmpty.elim
+def LHom.constantsOnMap (f : α → β) : constantsOn α →ᴸ constantsOn β where
+  onFunction := fun {n} c =>
+    match n, c with
+    | 0, c => f c
 
 theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β → M} (h : fβ ∘ f = fα) :
     @LHom.IsExpansionOn _ _ (LHom.constantsOnMap f) M (constantsOn.structure fα)
@@ -381,7 +360,7 @@ theorem constantsOnMap_isExpansionOn {f : α → β} {fα : α → M} {fβ : β 
   letI := constantsOn.structure fα
   letI := constantsOn.structure fβ
   exact
-    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F : _)) fun n F => isEmptyElim F, fun R =>
+    ⟨fun {n} => Nat.casesOn n (fun F _x => (congr_fun h F :)) fun n F => isEmptyElim F, fun R =>
       isEmptyElim R⟩
 
 end ConstantsOn
@@ -407,7 +386,7 @@ theorem card_withConstants :
   rw [withConstants, card_sum, card_constantsOn]
 
 /-- The language map adding constants. -/
-@[simps!] -- Porting note: add `!` to `simps`
+@[simps!]
 def lhomWithConstants : L →ᴸ L[[α]] :=
   LHom.sumInl
 
@@ -444,14 +423,19 @@ def LEquiv.addEmptyConstants [ie : IsEmpty α] : L ≃ᴸ L[[α]] where
 variable {α} {β : Type*}
 
 @[simp]
-theorem withConstants_funMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+theorem withConstants_funMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {f : L.Functions n} {x : Fin n → M} : @funMap (L[[α]]) M _ n (Sum.inl f) x = funMap f x :=
   (lhomWithConstants L α).map_onFunction f x
 
 @[simp]
-theorem withConstants_relMap_sum_inl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
+theorem withConstants_relMap_sumInl [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {R : L.Relations n} {x : Fin n → M} : @RelMap (L[[α]]) M _ n (Sum.inl R) x = RelMap R x :=
   (lhomWithConstants L α).map_onRelation R x
+
+@[deprecated (since := "2025-02-21")] alias
+withConstants_funMap_sum_inl := withConstants_funMap_sumInl
+@[deprecated (since := "2025-02-21")] alias
+withConstants_relMap_sum_inl := withConstants_relMap_sumInl
 
 /-- The language map extending the constant set. -/
 def lhomWithConstantsMap (f : α → β) : L[[α]] →ᴸ L[[β]] :=
@@ -495,10 +479,13 @@ instance addConstants_expansion {L' : Language} [L'.Structure M] (φ : L →ᴸ 
   LHom.sumMap_isExpansionOn _ _ M
 
 @[simp]
-theorem withConstants_funMap_sum_inr {a : α} {x : Fin 0 → M} :
+theorem withConstants_funMap_sumInr {a : α} {x : Fin 0 → M} :
     @funMap (L[[α]]) M _ 0 (Sum.inr a : L[[α]].Functions 0) x = L.con a := by
   rw [Unique.eq_default x]
   exact (LHom.sumInr : constantsOn α →ᴸ L.sum _).map_onFunction _ _
+
+@[deprecated (since := "2025-02-21")] alias
+withConstants_funMap_sum_inr := withConstants_funMap_sumInr
 
 variable {α} (A : Set M)
 

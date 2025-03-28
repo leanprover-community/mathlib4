@@ -117,7 +117,7 @@ theorem measure_mul_laverage [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
     μ univ * ⨍⁻ x, f x ∂μ = ∫⁻ x, f x ∂μ := by
   rcases eq_or_ne μ 0 with hμ | hμ
   · rw [hμ, lintegral_zero_measure, laverage_zero_measure, mul_zero]
-  · rw [laverage_eq, ENNReal.mul_div_cancel' (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
+  · rw [laverage_eq, ENNReal.mul_div_cancel (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
 
 theorem setLaverage_eq (f : α → ℝ≥0∞) (s : Set α) :
     ⨍⁻ x in s, f x ∂μ = (∫⁻ x in s, f x ∂μ) / μ s := by rw [laverage_eq, restrict_apply_univ]
@@ -213,14 +213,16 @@ theorem laverage_one [IsFiniteMeasure μ] [NeZero μ] : ⨍⁻ _x, (1 : ℝ≥0�
 theorem setLaverage_one (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) : ⨍⁻ _x in s, (1 : ℝ≥0∞) ∂μ = 1 :=
   setLaverage_const hs₀ hs _
 
--- Porting note: Dropped `simp` because of `simp` seeing through `1 : α → ℝ≥0∞` and applying
--- `lintegral_const`. This is suboptimal.
-theorem lintegral_laverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
-    ∫⁻ _x, ⨍⁻ a, f a ∂μ ∂μ = ∫⁻ x, f x ∂μ := by
+@[simp]
+theorem laverage_mul_measure_univ (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
+    (⨍⁻ (a : α), f a ∂μ) * μ univ = ∫⁻ x, f x ∂μ := by
   obtain rfl | hμ := eq_or_ne μ 0
   · simp
-  · rw [lintegral_const, laverage_eq,
-      ENNReal.div_mul_cancel (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
+  · rw [laverage_eq, ENNReal.div_mul_cancel (measure_univ_ne_zero.2 hμ) (measure_ne_top _ _)]
+
+theorem lintegral_laverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) :
+    ∫⁻ _x, ⨍⁻ a, f a ∂μ ∂μ = ∫⁻ x, f x ∂μ := by
+  simp
 
 theorem setLintegral_setLaverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → ℝ≥0∞) (s : Set α) :
     ∫⁻ _x in s, ⨍⁻ a in s, f a ∂μ ∂μ = ∫⁻ x in s, f x ∂μ :=
@@ -321,7 +323,7 @@ theorem average_congr {f g : α → E} (h : f =ᵐ[μ] g) : ⨍ x, f x ∂μ = �
   simp only [average_eq, integral_congr_ae h]
 
 theorem setAverage_congr (h : s =ᵐ[μ] t) : ⨍ x in s, f x ∂μ = ⨍ x in t, f x ∂μ := by
-  simp only [setAverage_eq, setIntegral_congr_set_ae h, measure_congr h]
+  simp only [setAverage_eq, setIntegral_congr_set h, measure_congr h]
 
 theorem setAverage_congr_fun (hs : MeasurableSet s) (h : ∀ᵐ x ∂μ, x ∈ s → f x = g x) :
     ⨍ x in s, f x ∂μ = ⨍ x in s, g x ∂μ := by simp only [average_eq, setIntegral_congr_ae hs h]
@@ -390,13 +392,12 @@ variable [CompleteSpace E]
 @[simp]
 theorem average_const (μ : Measure α) [IsFiniteMeasure μ] [h : NeZero μ] (c : E) :
     ⨍ _x, c ∂μ = c := by
-  rw [average, integral_const, measure_univ, ENNReal.one_toReal, one_smul]
+  rw [average, integral_const, measure_univ, ENNReal.toReal_one, one_smul]
 
 theorem setAverage_const {s : Set α} (hs₀ : μ s ≠ 0) (hs : μ s ≠ ∞) (c : E) :
     ⨍ _ in s, c ∂μ = c :=
   have := NeZero.mk hs₀; have := Fact.mk hs.lt_top; average_const _ _
 
--- Porting note (#10618): was `@[simp]` but `simp` can prove it
 theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
     ∫ _, ⨍ a, f a ∂μ ∂μ = ∫ x, f x ∂μ := by simp
 
@@ -751,7 +752,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
         exact Function.support_smul_subset_left _ _
       rw [← integrableOn_iff_integrable_of_support_subset A]
       apply Integrable.smul_of_top_right hif
-      exact memℒp_top_of_bound hig.aestronglyMeasurable.restrict
+      exact memLp_top_of_bound hig.aestronglyMeasurable.restrict
         (K / (μ (a i)).toReal) (Eventually.of_forall hibound)
     · exact hig.smul_const _
   have L0 : Tendsto (fun i ↦ ∫ y, g i y • (f y - c) ∂μ) l (𝓝 0) := by
@@ -763,7 +764,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
     have mu_ai : μ (a i) < ∞ := by
       rw [lt_top_iff_ne_top]
       intro h
-      simp only [h, ENNReal.top_toReal, _root_.div_zero, abs_nonpos_iff] at h'i
+      simp only [h, ENNReal.toReal_top, _root_.div_zero, abs_nonpos_iff] at h'i
       have : ∫ (y : α), g i y ∂μ = ∫ (y : α), 0 ∂μ := by congr; ext y; exact h'i y
       simp [this] at hi_int
     apply (norm_integral_le_integral_norm _).trans

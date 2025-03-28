@@ -63,6 +63,9 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 protected def closure (s : Set α) : Closeds α :=
   ⟨closure s, isClosed_closure⟩
 
+@[simp]
+theorem mem_closure {s : Set α} {x : α} : x ∈ Closeds.closure s ↔ x ∈ closure s := .rfl
+
 theorem gc : GaloisConnection Closeds.closure ((↑) : Closeds α → Set α) := fun _ U =>
   ⟨subset_closure.trans, fun h => closure_minimal h U.closed⟩
 
@@ -73,7 +76,7 @@ def gi : GaloisInsertion (@Closeds.closure α _) (↑) where
   le_l_u _ := subset_closure
   choice_eq _s hs := SetLike.coe_injective <| subset_closure.antisymm hs
 
-instance completeLattice : CompleteLattice (Closeds α) :=
+instance instCompleteLattice : CompleteLattice (Closeds α) :=
   CompleteLattice.copy
     (GaloisInsertion.liftCompleteLattice gi)
     -- le
@@ -141,8 +144,6 @@ theorem coe_finset_sup (f : ι → Closeds α) (s : Finset ι) :
 theorem coe_finset_inf (f : ι → Closeds α) (s : Finset ι) :
     (↑(s.inf f) : Set α) = s.inf ((↑) ∘ f) :=
   map_finset_inf (⟨⟨(↑), coe_inf⟩, coe_top⟩ : InfTopHom (Closeds α) (Set α)) _ _
-
--- Porting note: Lean 3 proofs didn't work as expected, so I reordered lemmas to fix&golf the proofs
 
 @[simp]
 theorem mem_sInf {S : Set (Closeds α)} {x : α} : x ∈ sInf S ↔ ∀ s ∈ S, x ∈ s := mem_iInter₂
@@ -268,15 +269,20 @@ instance : SetLike (Clopens α) α where
 theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
   s.isClopen'
 
+lemma isOpen (s : Clopens α) : IsOpen (s : Set α) := s.isClopen.isOpen
+
+lemma isClosed (s : Clopens α) : IsClosed (s : Set α) := s.isClopen.isClosed
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
 
-initialize_simps_projections Clopens (carrier → coe)
+initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
 
 /-- Reinterpret a clopen as an open. -/
-@[simps]
-def toOpens (s : Clopens α) : Opens α :=
-  ⟨s, s.isClopen.isOpen⟩
+@[simps] def toOpens (s : Clopens α) : Opens α := ⟨s, s.isOpen⟩
+
+/-- Reinterpret a clopen as a closed. -/
+@[simps] def toCloseds (s : Clopens α) : Closeds α := ⟨s, s.isClosed⟩
 
 @[ext]
 protected theorem ext {s t : Clopens α} (h : (s : Set α) = t) : s = t :=
@@ -288,8 +294,8 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 
 @[simp] lemma mem_mk {s : Set α} {x h} : x ∈ mk s h ↔ x ∈ s := .rfl
 
-instance : Sup (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
-instance : Inf (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
+instance : Max (Clopens α) := ⟨fun s t => ⟨s ∪ t, s.isClopen.union t.isClopen⟩⟩
+instance : Min (Clopens α) := ⟨fun s t => ⟨s ∩ t, s.isClopen.inter t.isClopen⟩⟩
 instance : Top (Clopens α) := ⟨⟨⊤, isClopen_univ⟩⟩
 instance : Bot (Clopens α) := ⟨⟨⊥, isClopen_empty⟩⟩
 instance : SDiff (Clopens α) := ⟨fun s t => ⟨s \ t, s.isClopen.diff t.isClopen⟩⟩
@@ -316,6 +322,14 @@ instance : SProd (Clopens α) (Clopens β) (Clopens (α × β)) where
 @[simp]
 protected lemma mem_prod {s : Clopens α} {t : Clopens β} {x : α × β} :
     x ∈ s ×ˢ t ↔ x.1 ∈ s ∧ x.2 ∈ t := .rfl
+
+@[simp]
+lemma coe_finset_sup (s : Finset ι) (U : ι → Clopens α) :
+    (↑(s.sup U) : Set α) = ⋃ i ∈ s, U i := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert _ IH => simp [IH]
 
 end Clopens
 
@@ -383,13 +397,13 @@ def equivSubtype' : IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsI
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsIrreducible x ∧ IsClosed x }` is an
-order isomorphism.-/
+order isomorphism. -/
 def orderIsoSubtype : IrreducibleCloseds α ≃o { x : Set α // IsIrreducible x ∧ IsClosed x } :=
   equivSubtype.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 
 variable (α) in
 /-- The equivalence `IrreducibleCloseds α ≃ { x : Set α // IsClosed x ∧ IsIrreducible x }` is an
-order isomorphism.-/
+order isomorphism. -/
 def orderIsoSubtype' : IrreducibleCloseds α ≃o { x : Set α // IsClosed x ∧ IsIrreducible x } :=
   equivSubtype'.toOrderIso (fun _ _ h ↦ h) (fun _ _ h ↦ h)
 

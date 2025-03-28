@@ -61,7 +61,7 @@ macro_rules
 | `(tactic| qify $[[$simpArgs,*]]? $[at $location]?) =>
   let args := simpArgs.map (·.getElems) |>.getD #[]
   `(tactic|
-    simp (config := {decide := false}) only [zify_simps, qify_simps, push_cast, $args,*]
+    simp -decide only [zify_simps, qify_simps, push_cast, $args,*]
       $[at $location]?)
 
 @[qify_simps] lemma intCast_eq (a b : ℤ) : a = b ↔ (a : ℚ) = (b : ℚ) := by simp only [Int.cast_inj]
@@ -69,9 +69,6 @@ macro_rules
 @[qify_simps] lemma intCast_lt (a b : ℤ) : a < b ↔ (a : ℚ) < (b : ℚ) := Int.cast_lt.symm
 @[qify_simps] lemma intCast_ne (a b : ℤ) : a ≠ b ↔ (a : ℚ) ≠ (b : ℚ) := by
   simp only [ne_eq, Int.cast_inj]
-
-@[deprecated (since := "2024-04-17")]
-alias int_cast_ne := intCast_ne
 
 end Qify
 

@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
 
 /-!
@@ -20,6 +19,8 @@ generally for sums going from `0` to `n`.
 This refines files `Data.List.NatAntidiagonal` and `Data.Multiset.NatAntidiagonal`, providing an
 instance enabling `Finset.antidiagonal` on `Nat`.
 -/
+
+assert_not_exists Field
 
 open Function
 
@@ -146,15 +147,15 @@ theorem antidiagonal.snd_lt {n : ℕ} {kl : ℕ × ℕ} (hlk : kl ∈ antidiagon
   ext ⟨i, j⟩
   simpa using aux₂ i j
 
-/-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. --/
+/-- The set `antidiagonal n` is equivalent to `Fin (n+1)`, via the first projection. -/
 @[simps]
 def antidiagonalEquivFin (n : ℕ) : antidiagonal n ≃ Fin (n + 1) where
-  toFun := fun ⟨⟨i, j⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩
+  toFun := fun ⟨⟨i, _⟩, h⟩ ↦ ⟨i, antidiagonal.fst_lt h⟩
   invFun := fun ⟨i, h⟩ ↦ ⟨⟨i, n - i⟩, by
     rw [mem_antidiagonal, add_comm, Nat.sub_add_cancel]
     exact Nat.le_of_lt_succ h⟩
   left_inv := by rintro ⟨⟨i, j⟩, h⟩; ext; rfl
-  right_inv x := rfl
+  right_inv _ := rfl
 
 end Nat
 

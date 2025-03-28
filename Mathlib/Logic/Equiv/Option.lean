@@ -130,7 +130,7 @@ theorem some_removeNone_iff {x : α} : some (removeNone e x) = e none ↔ e.symm
   · rw [removeNone_some _ ⟨a, h⟩]
     have h1 := congr_arg e.symm h
     rw [symm_apply_apply] at h1
-    simp only [false_iff_iff, apply_eq_iff_eq, reduceCtorEq]
+    simp only [apply_eq_iff_eq, reduceCtorEq]
     simp [h1, apply_eq_iff_eq]
 
 @[simp]
@@ -177,10 +177,7 @@ def optionSubtype [DecidableEq β] (x : β) :
     ext a
     cases a
     · simpa using e.property.symm
-    -- Porting note: this cases had been by `simpa`,
-    -- but `simp` here is mysteriously slow, even after squeezing.
-    -- `rfl` closes the goal quickly, so we use that.
-    · rfl
+    · simp
   right_inv e := by
     ext a
     rfl
@@ -246,5 +243,41 @@ lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = 
 
 @[simp] lemma optionSubtypeNe_none (a : α) : optionSubtypeNe a none = a := rfl
 @[simp] lemma optionSubtypeNe_some (a : α) (b) : optionSubtypeNe a (some b) = b := rfl
+
+open Sum
+
+/-- `Option α` is equivalent to `α ⊕ PUnit` -/
+def optionEquivSumPUnit.{v, w} (α : Type w) : Option α ≃ α ⊕ PUnit.{v+1} :=
+  ⟨fun o => o.elim (inr PUnit.unit) inl, fun s => s.elim some fun _ => none,
+    fun o => by cases o <;> rfl,
+    fun s => by rcases s with (_ | ⟨⟨⟩⟩) <;> rfl⟩
+
+@[simp]
+theorem optionEquivSumPUnit_none {α} : optionEquivSumPUnit α none = Sum.inr PUnit.unit :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_some {α} (a) : optionEquivSumPUnit α (some a) = Sum.inl a :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_coe {α} (a : α) : optionEquivSumPUnit α a = Sum.inl a :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_symm_inl {α} (a) : (optionEquivSumPUnit α).symm (Sum.inl a) = a :=
+  rfl
+
+@[simp]
+theorem optionEquivSumPUnit_symm_inr {α} (a) : (optionEquivSumPUnit α).symm (Sum.inr a) = none :=
+  rfl
+
+/-- The set of `x : Option α` such that `isSome x` is equivalent to `α`. -/
+@[simps]
+def optionIsSomeEquiv (α) : { x : Option α // x.isSome } ≃ α where
+  toFun o := Option.get _ o.2
+  invFun x := ⟨some x, rfl⟩
+  left_inv _ := Subtype.eq <| Option.some_get _
+  right_inv _ := Option.get_some _ _
 
 end Equiv

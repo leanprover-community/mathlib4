@@ -1,15 +1,16 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -63,8 +64,6 @@ open CategoryTheory.Functor
 
 open CategoryTheory.Preadditive
 
-open scoped Classical
-
 universe v v' u u'
 
 noncomputable section
@@ -96,6 +95,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
           erw [← Category.assoc, eq_whisker (h ⟨j⟩)]
         rw [reassoced]
       fac := fun s j => by
+        classical
         cases j
         simp only [sum_comp, Category.assoc, Bicone.toCone_π_app, b.ι_π, comp_dite]
         -- See note [dsimp, simp].
@@ -109,6 +109,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
         intro j _
         erw [Category.assoc, h ⟨j⟩]
       fac := fun s j => by
+        classical
         cases j
         simp only [comp_sum, ← Category.assoc, Bicone.toCocone_ι_app, b.ι_π, dite_comp]
         dsimp; simp }
@@ -116,6 +117,7 @@ def isBilimitOfTotal {f : J → C} (b : Bicone f) (total : ∑ j : J, b.π j ≫
 theorem IsBilimit.total {f : J → C} {b : Bicone f} (i : b.IsBilimit) :
     ∑ j : J, b.π j ≫ b.ι j = 𝟙 b.pt :=
   i.isLimit.hom_ext fun j => by
+    classical
     cases j
     simp [sum_comp, b.ι_π, comp_dite]
 
@@ -135,19 +137,21 @@ theorem hasBiproduct_of_total {f : J → C} (b : Bicone f)
 def isBilimitOfIsLimit {f : J → C} (t : Bicone f) (ht : IsLimit t.toCone) : t.IsBilimit :=
   isBilimitOfTotal _ <|
     ht.hom_ext fun j => by
+      classical
       cases j
       simp [sum_comp, t.ι_π, dite_comp, comp_dite]
 
 /-- We can turn any limit cone over a pair into a bilimit bicone. -/
 def biconeIsBilimitOfLimitConeOfIsLimit {f : J → C} {t : Cone (Discrete.functor f)}
     (ht : IsLimit t) : (Bicone.ofLimitCone ht).IsBilimit :=
-  isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cones.ext (Iso.refl _) (by aesop_cat)
+  isBilimitOfIsLimit _ <| IsLimit.ofIsoLimit ht <| Cones.ext (Iso.refl _) (by simp)
 
 /-- In a preadditive category, any finite bicone which is a colimit cocone is in fact a bilimit
     bicone. -/
 def isBilimitOfIsColimit {f : J → C} (t : Bicone f) (ht : IsColimit t.toCocone) : t.IsBilimit :=
   isBilimitOfTotal _ <|
     ht.hom_ext fun j => by
+      classical
       cases j
       simp_rw [Bicone.toCocone_ι_app, comp_sum, ← Category.assoc, t.ι_π, dite_comp]
       simp
@@ -204,23 +208,27 @@ theorem biproduct.total : ∑ j : J, biproduct.π f j ≫ biproduct.ι f j = �
 
 theorem biproduct.lift_eq {T : C} {g : ∀ j, T ⟶ f j} :
     biproduct.lift g = ∑ j, g j ≫ biproduct.ι f j := by
+  classical
   ext j
   simp only [sum_comp, biproduct.ι_π, comp_dite, biproduct.lift_π, Category.assoc, comp_zero,
     Finset.sum_dite_eq', Finset.mem_univ, eqToHom_refl, Category.comp_id, if_true]
 
 theorem biproduct.desc_eq {T : C} {g : ∀ j, f j ⟶ T} :
     biproduct.desc g = ∑ j, biproduct.π f j ≫ g j := by
+  classical
   ext j
   simp [comp_sum, biproduct.ι_π_assoc, dite_comp]
 
 @[reassoc]
 theorem biproduct.lift_desc {T U : C} {g : ∀ j, T ⟶ f j} {h : ∀ j, f j ⟶ U} :
     biproduct.lift g ≫ biproduct.desc h = ∑ j : J, g j ≫ h j := by
+  classical
   simp [biproduct.lift_eq, biproduct.desc_eq, comp_sum, sum_comp, biproduct.ι_π_assoc, comp_dite,
     dite_comp]
 
 theorem biproduct.map_eq [HasFiniteBiproducts C] {f g : J → C} {h : ∀ j, f j ⟶ g j} :
     biproduct.map h = ∑ j : J, biproduct.π f j ≫ h j ≫ biproduct.ι g j := by
+  classical
   ext
   simp [biproduct.ι_π, biproduct.ι_π_assoc, comp_sum, sum_comp, comp_dite, dite_comp]
 
@@ -275,6 +283,7 @@ def biproduct.reindex {β γ : Type} [Finite β] (ε : β ≃ γ)
     · have : ε b' ≠ ε b := by simp [h]
       simp [biproduct.ι_π_ne _ h, biproduct.ι_π_ne _ this]
   inv_hom_id := by
+    classical
     cases nonempty_fintype β
     ext g g'
     by_cases h : g' = g <;>
@@ -435,6 +444,28 @@ theorem biprod.lift_desc {T U : C} {f : T ⟶ X} {g : T ⟶ Y} {h : X ⟶ U} {i 
 theorem biprod.map_eq [HasBinaryBiproducts C] {W X Y Z : C} {f : W ⟶ Y} {g : X ⟶ Z} :
     biprod.map f g = biprod.fst ≫ f ≫ biprod.inl + biprod.snd ≫ g ≫ biprod.inr := by
   ext <;> simp
+
+section
+
+variable {Z : C}
+
+lemma biprod.decomp_hom_to (f : Z ⟶ X ⊞ Y) :
+    ∃ f₁ f₂, f = f₁ ≫ biprod.inl + f₂ ≫ biprod.inr :=
+  ⟨f ≫ biprod.fst, f ≫ biprod.snd, by aesop⟩
+
+lemma biprod.ext_to_iff {f g : Z ⟶ X ⊞ Y} :
+    f = g ↔ f ≫ biprod.fst = g ≫ biprod.fst ∧ f ≫ biprod.snd = g ≫ biprod.snd := by
+  aesop
+
+lemma biprod.decomp_hom_from (f : X ⊞ Y ⟶ Z) :
+    ∃ f₁ f₂, f = biprod.fst ≫ f₁ + biprod.snd ≫ f₂ :=
+  ⟨biprod.inl ≫ f, biprod.inr ≫ f, by aesop⟩
+
+lemma biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
+    f = g ↔ biprod.inl ≫ f = biprod.inl ≫ g ∧ biprod.inr ≫ f = biprod.inr ≫ g := by
+  aesop
+
+end
 
 /-- Every split mono `f` with a cokernel induces a binary bicone with `f` as its `inl` and
 the cokernel map as its `snd`.
@@ -825,40 +856,40 @@ variable {J : Type} [Fintype J]
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite products. -/
-def preservesProductOfPreservesBiproduct {f : J → C} [PreservesBiproduct f F] :
+lemma preservesProduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
     PreservesLimit (Discrete.functor f) F where
   preserves hc :=
-    IsLimit.ofIsoLimit
+    ⟨IsLimit.ofIsoLimit
         ((IsLimit.postcomposeInvEquiv (Discrete.compNatIsoDiscrete _ _) _).symm
           (isBilimitOfPreserves F (biconeIsBilimitOfLimitConeOfIsLimit hc)).isLimit) <|
-      Cones.ext (Iso.refl _) (by rintro ⟨⟩; simp)
+      Cones.ext (Iso.refl _) (by rintro ⟨⟩; simp)⟩
 
 section
 
-attribute [local instance] preservesProductOfPreservesBiproduct
+attribute [local instance] preservesProduct_of_preservesBiproduct
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite products. -/
-def preservesProductsOfShapeOfPreservesBiproductsOfShape [PreservesBiproductsOfShape J F] :
+lemma preservesProductsOfShape_of_preservesBiproductsOfShape [PreservesBiproductsOfShape J F] :
     PreservesLimitsOfShape (Discrete J) F where
-  preservesLimit {_} := preservesLimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  preservesLimit {_} := preservesLimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
 
 end
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite products
     preserves finite biproducts. -/
-def preservesBiproductOfPreservesProduct {f : J → C} [PreservesLimit (Discrete.functor f) F] :
+lemma preservesBiproduct_of_preservesProduct {f : J → C} [PreservesLimit (Discrete.functor f) F] :
     PreservesBiproduct f F where
   preserves {b} hb :=
-    isBilimitOfIsLimit _ <|
+    ⟨isBilimitOfIsLimit _ <|
       IsLimit.ofIsoLimit
           ((IsLimit.postcomposeHomEquiv (Discrete.compNatIsoDiscrete _ _) (F.mapCone b.toCone)).symm
             (isLimitOfPreserves F hb.isLimit)) <|
-        Cones.ext (Iso.refl _) (by rintro ⟨⟩; simp)
+        Cones.ext (Iso.refl _) (by rintro ⟨⟩; simp)⟩
 
 /-- If the (product-like) biproduct comparison for `F` and `f` is a monomorphism, then `F`
     preserves the biproduct of `f`. For the converse, see `mapBiproduct`. -/
-def preservesBiproductOfMonoBiproductComparison {f : J → C} [HasBiproduct f]
+lemma preservesBiproduct_of_mono_biproductComparison {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Mono (biproductComparison F f)] : PreservesBiproduct f F := by
   haveI : HasProduct fun b => F.obj (f b) := by
     change HasProduct (F.obj ∘ f)
@@ -872,101 +903,104 @@ def preservesBiproductOfMonoBiproductComparison {f : J → C} [HasBiproduct f]
   haveI : IsIso (piComparison F f) := by
     rw [that]
     infer_instance
-  haveI := PreservesProduct.ofIsoComparison F f
-  apply preservesBiproductOfPreservesProduct
+  haveI := PreservesProduct.of_iso_comparison F f
+  apply preservesBiproduct_of_preservesProduct
 
 /-- If the (coproduct-like) biproduct comparison for `F` and `f` is an epimorphism, then `F`
     preserves the biproduct of `F` and `f`. For the converse, see `mapBiproduct`. -/
-def preservesBiproductOfEpiBiproductComparison' {f : J → C} [HasBiproduct f]
+lemma preservesBiproduct_of_epi_biproductComparison' {f : J → C} [HasBiproduct f]
     [HasBiproduct (F.obj ∘ f)] [Epi (biproductComparison' F f)] : PreservesBiproduct f F := by
   haveI : Epi (splitEpiBiproductComparison F f).section_ := by simpa
   haveI : IsIso (biproductComparison F f) :=
     IsIso.of_epi_section' (splitEpiBiproductComparison F f)
-  apply preservesBiproductOfMonoBiproductComparison
+  apply preservesBiproduct_of_mono_biproductComparison
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite products
     preserves finite biproducts. -/
-def preservesBiproductsOfShapeOfPreservesProductsOfShape [PreservesLimitsOfShape (Discrete J) F] :
+lemma preservesBiproductsOfShape_of_preservesProductsOfShape
+    [PreservesLimitsOfShape (Discrete J) F] :
     PreservesBiproductsOfShape J F where
-  preserves {_} := preservesBiproductOfPreservesProduct F
+  preserves {_} := preservesBiproduct_of_preservesProduct F
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite coproducts. -/
-def preservesCoproductOfPreservesBiproduct {f : J → C} [PreservesBiproduct f F] :
+lemma preservesCoproduct_of_preservesBiproduct {f : J → C} [PreservesBiproduct f F] :
     PreservesColimit (Discrete.functor f) F where
   preserves {c} hc :=
-    IsColimit.ofIsoColimit
+    ⟨IsColimit.ofIsoColimit
         ((IsColimit.precomposeHomEquiv (Discrete.compNatIsoDiscrete _ _) _).symm
           (isBilimitOfPreserves F (biconeIsBilimitOfColimitCoconeOfIsColimit hc)).isColimit) <|
-      Cocones.ext (Iso.refl _) (by rintro ⟨⟩; simp)
+      Cocones.ext (Iso.refl _) (by rintro ⟨⟩; simp)⟩
 
 section
 
-attribute [local instance] preservesCoproductOfPreservesBiproduct
+attribute [local instance] preservesCoproduct_of_preservesBiproduct
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite biproducts
     preserves finite coproducts. -/
-def preservesCoproductsOfShapeOfPreservesBiproductsOfShape [PreservesBiproductsOfShape J F] :
+lemma preservesCoproductsOfShape_of_preservesBiproductsOfShape [PreservesBiproductsOfShape J F] :
     PreservesColimitsOfShape (Discrete J) F where
-  preservesColimit {_} := preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  preservesColimit {_} := preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
 
 end
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite coproducts
     preserves finite biproducts. -/
-def preservesBiproductOfPreservesCoproduct {f : J → C} [PreservesColimit (Discrete.functor f) F] :
+lemma preservesBiproduct_of_preservesCoproduct {f : J → C}
+    [PreservesColimit (Discrete.functor f) F] :
     PreservesBiproduct f F where
   preserves {b} hb :=
-    isBilimitOfIsColimit _ <|
+    ⟨isBilimitOfIsColimit _ <|
       IsColimit.ofIsoColimit
           ((IsColimit.precomposeInvEquiv (Discrete.compNatIsoDiscrete _ _)
                 (F.mapCocone b.toCocone)).symm
             (isColimitOfPreserves F hb.isColimit)) <|
-        Cocones.ext (Iso.refl _) (by rintro ⟨⟩; simp)
+        Cocones.ext (Iso.refl _) (by rintro ⟨⟩; simp)⟩
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) finite coproducts
     preserves finite biproducts. -/
-def preservesBiproductsOfShapeOfPreservesCoproductsOfShape
+lemma preservesBiproductsOfShape_of_preservesCoproductsOfShape
     [PreservesColimitsOfShape (Discrete J) F] : PreservesBiproductsOfShape J F where
-  preserves {_} := preservesBiproductOfPreservesCoproduct F
+  preserves {_} := preservesBiproduct_of_preservesCoproduct F
 
 end Fintype
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
     preserves binary products. -/
-def preservesBinaryProductOfPreservesBinaryBiproduct {X Y : C} [PreservesBinaryBiproduct X Y F] :
+lemma preservesBinaryProduct_of_preservesBinaryBiproduct {X Y : C}
+    [PreservesBinaryBiproduct X Y F] :
     PreservesLimit (pair X Y) F where
-  preserves {c} hc := IsLimit.ofIsoLimit
+  preserves {c} hc := ⟨IsLimit.ofIsoLimit
         ((IsLimit.postcomposeInvEquiv (diagramIsoPair _) _).symm
           (isBinaryBilimitOfPreserves F (binaryBiconeIsBilimitOfLimitConeOfIsLimit hc)).isLimit) <|
       Cones.ext (by dsimp; rfl) fun j => by
-        rcases j with ⟨⟨⟩⟩ <;> simp
+        rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 section
 
-attribute [local instance] preservesBinaryProductOfPreservesBinaryBiproduct
+attribute [local instance] preservesBinaryProduct_of_preservesBinaryBiproduct
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
     preserves binary products. -/
-def preservesBinaryProductsOfPreservesBinaryBiproducts [PreservesBinaryBiproducts F] :
+lemma preservesBinaryProducts_of_preservesBinaryBiproducts [PreservesBinaryBiproducts F] :
     PreservesLimitsOfShape (Discrete WalkingPair) F where
-  preservesLimit {_} := preservesLimitOfIsoDiagram _ (diagramIsoPair _).symm
+  preservesLimit {_} := preservesLimit_of_iso_diagram _ (diagramIsoPair _).symm
 
 end
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary products
     preserves binary biproducts. -/
-def preservesBinaryBiproductOfPreservesBinaryProduct {X Y : C} [PreservesLimit (pair X Y) F] :
+lemma preservesBinaryBiproduct_of_preservesBinaryProduct {X Y : C} [PreservesLimit (pair X Y) F] :
     PreservesBinaryBiproduct X Y F where
-  preserves {b} hb := isBinaryBilimitOfIsLimit _ <| IsLimit.ofIsoLimit
+  preserves {b} hb := ⟨isBinaryBilimitOfIsLimit _ <| IsLimit.ofIsoLimit
           ((IsLimit.postcomposeHomEquiv (diagramIsoPair _) (F.mapCone b.toCone)).symm
             (isLimitOfPreserves F hb.isLimit)) <|
         Cones.ext (by dsimp; rfl) fun j => by
-          rcases j with ⟨⟨⟩⟩ <;> simp
+          rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 /-- If the (product-like) biproduct comparison for `F`, `X` and `Y` is a monomorphism, then
     `F` preserves the biproduct of `X` and `Y`. For the converse, see `map_biprod`. -/
-def preservesBinaryBiproductOfMonoBiprodComparison {X Y : C} [HasBinaryBiproduct X Y]
+lemma preservesBinaryBiproduct_of_mono_biprodComparison {X Y : C} [HasBinaryBiproduct X Y]
     [HasBinaryBiproduct (F.obj X) (F.obj Y)] [Mono (biprodComparison F X Y)] :
     PreservesBinaryBiproduct X Y F := by
   have that :
@@ -977,66 +1011,68 @@ def preservesBinaryBiproductOfMonoBiprodComparison {X Y : C} [HasBinaryBiproduct
   haveI : IsIso (prodComparison F X Y) := by
     rw [that]
     infer_instance
-  haveI := PreservesLimitPair.ofIsoProdComparison F X Y
-  apply preservesBinaryBiproductOfPreservesBinaryProduct
+  haveI := PreservesLimitPair.of_iso_prod_comparison F X Y
+  apply preservesBinaryBiproduct_of_preservesBinaryProduct
 
 /-- If the (coproduct-like) biproduct comparison for `F`, `X` and `Y` is an epimorphism, then
     `F` preserves the biproduct of `X` and `Y`. For the converse, see `mapBiprod`. -/
-def preservesBinaryBiproductOfEpiBiprodComparison' {X Y : C} [HasBinaryBiproduct X Y]
+lemma preservesBinaryBiproduct_of_epi_biprodComparison' {X Y : C} [HasBinaryBiproduct X Y]
     [HasBinaryBiproduct (F.obj X) (F.obj Y)] [Epi (biprodComparison' F X Y)] :
     PreservesBinaryBiproduct X Y F := by
   haveI : Epi (splitEpiBiprodComparison F X Y).section_ := by simpa
   haveI : IsIso (biprodComparison F X Y) :=
     IsIso.of_epi_section' (splitEpiBiprodComparison F X Y)
-  apply preservesBinaryBiproductOfMonoBiprodComparison
+  apply preservesBinaryBiproduct_of_mono_biprodComparison
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary products
     preserves binary biproducts. -/
-def preservesBinaryBiproductsOfPreservesBinaryProducts
+lemma preservesBinaryBiproducts_of_preservesBinaryProducts
     [PreservesLimitsOfShape (Discrete WalkingPair) F] : PreservesBinaryBiproducts F where
-  preserves {_} {_} := preservesBinaryBiproductOfPreservesBinaryProduct F
+  preserves {_} {_} := preservesBinaryBiproduct_of_preservesBinaryProduct F
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
     preserves binary coproducts. -/
-def preservesBinaryCoproductOfPreservesBinaryBiproduct {X Y : C} [PreservesBinaryBiproduct X Y F] :
+lemma preservesBinaryCoproduct_of_preservesBinaryBiproduct {X Y : C}
+    [PreservesBinaryBiproduct X Y F] :
     PreservesColimit (pair X Y) F where
   preserves {c} hc :=
-    IsColimit.ofIsoColimit
+    ⟨IsColimit.ofIsoColimit
         ((IsColimit.precomposeHomEquiv (diagramIsoPair _) _).symm
           (isBinaryBilimitOfPreserves F
               (binaryBiconeIsBilimitOfColimitCoconeOfIsColimit hc)).isColimit) <|
       Cocones.ext (by dsimp; rfl) fun j => by
-        rcases j with ⟨⟨⟩⟩ <;> simp
+        rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 section
 
-attribute [local instance] preservesBinaryCoproductOfPreservesBinaryBiproduct
+attribute [local instance] preservesBinaryCoproduct_of_preservesBinaryBiproduct
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary biproducts
     preserves binary coproducts. -/
-def preservesBinaryCoproductsOfPreservesBinaryBiproducts [PreservesBinaryBiproducts F] :
+lemma preservesBinaryCoproducts_of_preservesBinaryBiproducts [PreservesBinaryBiproducts F] :
     PreservesColimitsOfShape (Discrete WalkingPair) F where
-  preservesColimit {_} := preservesColimitOfIsoDiagram _ (diagramIsoPair _).symm
+  preservesColimit {_} := preservesColimit_of_iso_diagram _ (diagramIsoPair _).symm
 
 end
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary coproducts
     preserves binary biproducts. -/
-def preservesBinaryBiproductOfPreservesBinaryCoproduct {X Y : C} [PreservesColimit (pair X Y) F] :
+lemma preservesBinaryBiproduct_of_preservesBinaryCoproduct {X Y : C}
+    [PreservesColimit (pair X Y) F] :
     PreservesBinaryBiproduct X Y F where
   preserves {b} hb :=
-    isBinaryBilimitOfIsColimit _ <|
+    ⟨isBinaryBilimitOfIsColimit _ <|
       IsColimit.ofIsoColimit
           ((IsColimit.precomposeInvEquiv (diagramIsoPair _) (F.mapCocone b.toCocone)).symm
             (isColimitOfPreserves F hb.isColimit)) <|
         Cocones.ext (Iso.refl _) fun j => by
-          rcases j with ⟨⟨⟩⟩ <;> simp
+          rcases j with ⟨⟨⟩⟩ <;> simp⟩
 
 /-- A functor between preadditive categories that preserves (zero morphisms and) binary coproducts
     preserves binary biproducts. -/
-def preservesBinaryBiproductsOfPreservesBinaryCoproducts
+lemma preservesBinaryBiproducts_of_preservesBinaryCoproducts
     [PreservesColimitsOfShape (Discrete WalkingPair) F] : PreservesBinaryBiproducts F where
-  preserves {_} {_} := preservesBinaryBiproductOfPreservesBinaryCoproduct F
+  preserves {_} {_} := preservesBinaryBiproduct_of_preservesBinaryCoproduct F
 
 end Limits
 

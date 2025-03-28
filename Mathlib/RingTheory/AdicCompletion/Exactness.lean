@@ -47,8 +47,8 @@ private noncomputable def mapPreimageDelta (hf : Function.Surjective f) (x : Adi
     {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
     {d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } :=
   have h : f (yₙ - y) ∈ Submodule.map f (I ^ n • ⊤ : Submodule R M) := by
-    rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hf, map_sub,
-      hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
+    rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.2 hf,
+      map_sub, hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub, ← SModEq.sub_mem]
     exact AdicCauchySequence.mk_eq_mk (Nat.le_succ n) x
   ⟨⟨h.choose, h.choose_spec.1⟩, h.choose_spec.2⟩
 
@@ -151,21 +151,21 @@ include hfg in
 private noncomputable def mapExactAux :
     (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
   | .zero =>
-      let d := (h2 0).choose
-      let y := (h2 0).choose_spec.choose
-      have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
-      have hdmem := (h2 0).choose_spec.choose_spec.left
-      ⟨y, by simpa [hdy]⟩
+    let d := (h2 0).choose
+    let y := (h2 0).choose_spec.choose
+    have hdy : f y = x (k + 0) - d := (h2 0).choose_spec.choose_spec.right
+    have hdmem := (h2 0).choose_spec.choose_spec.left
+    ⟨y, by simpa [hdy]⟩
   | .succ n =>
-      let d := (h2 <| n + 1).choose
-      let y := (h2 <| n + 1).choose_spec.choose
-      have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
-      have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
-      let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
-        mapExactAux n
-      let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
-      ⟨yₙ + d, hd⟩
- where
+    let d := (h2 <| n + 1).choose
+    let y := (h2 <| n + 1).choose_spec.choose
+    have hdy : f y = x (k + (n + 1)) - d := (h2 <| n + 1).choose_spec.choose_spec.right
+    have hdmem := (h2 <| n + 1).choose_spec.choose_spec.left
+    let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
+      mapExactAux n
+    let ⟨d, hd⟩ := mapExactAuxDelta hf hkn x hdmem hdy hyₙ
+    ⟨yₙ + d, hd⟩
+where
   h1 (n : ℕ) : g (x (k + n)) ∈ Submodule.map g (I ^ (k + n) • ⊤ : Submodule R N) := by
     rw [map_smul'', Submodule.map_top, range_eq_top.mpr hg]
     exact hker (k + n)

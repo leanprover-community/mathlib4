@@ -5,6 +5,7 @@ Authors: Oliver Nash
 -/
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.LinearAlgebra.AffineSpace.Pointwise
+import Mathlib.LinearAlgebra.Basis.SMul
 
 /-!
 # Affine bases and barycentric coordinates
@@ -311,7 +312,7 @@ instance [SMul G G'] [IsScalarTower G G' V] : IsScalarTower G G' (AffineBasis ι
 
 @[simp] lemma coord_smul (a : G) (b : AffineBasis ι k V) (i : ι) :
     (a • b).coord i = (b.coord i).comp (DistribMulAction.toLinearEquiv _ _ a).symm.toAffineMap := by
-  ext v; simp [coord]
+  ext v; simp [map_sub, coord]
 
 /-- TODO: generalize to include `SMul (P ≃ᵃ[k] P) (AffineBasis ι k P)`, which acts on `P` with a
 `VAdd` version of a `DistribMulAction`. -/

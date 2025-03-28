@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Order.Interval.Multiset
 
 /-!
@@ -13,7 +14,7 @@ intervals as finsets and fintypes.
 
 ## TODO
 
-Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedCommMonoid` or `SuccOrder`
+Some lemmas can be generalized using `OrderedGroup`, `CanonicallyOrderedMul` or `SuccOrder`
 and subsequently be moved upstream to `Order.Interval.Finset`.
 -/
 
@@ -65,59 +66,39 @@ lemma range_eq_Icc_zero_sub_one (n : ℕ) (hn : n ≠ 0) : range n = Icc 0 (n - 
 theorem _root_.Finset.range_eq_Ico : range = Ico 0 :=
   Ico_zero_eq_range.symm
 
-@[simp]
-theorem card_Icc : (Icc a b).card = b + 1 - a :=
-  List.length_range' _ _ _
+theorem range_succ_eq_Icc_zero (n : ℕ) : range (n + 1) = Icc 0 n := by
+  rw [range_eq_Icc_zero_sub_one _ (Nat.add_one_ne_zero _), Nat.add_sub_cancel_right]
+
+@[simp] lemma card_Icc : #(Icc a b) = b + 1 - a := List.length_range' ..
+@[simp] lemma card_Ico : #(Ico a b) = b - a := List.length_range' ..
+@[simp] lemma card_Ioc : #(Ioc a b) = b - a := List.length_range' ..
+@[simp] lemma card_Ioo : #(Ioo a b) = b - a - 1 := List.length_range' ..
 
 @[simp]
-theorem card_Ico : (Ico a b).card = b - a :=
-  List.length_range' _ _ _
+theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 :=
+  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, Int.ofNat_sub] <;> omega
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = b - a :=
-  List.length_range' _ _ _
+lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = b - a - 1 :=
-  List.length_range' _ _ _
+theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-@[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 :=
-  (card_Icc _ _).trans <| by rw [← Int.natCast_inj, sup_eq_max, inf_eq_min, Int.ofNat_sub] <;> omega
-
-@[simp]
-lemma card_Iic : (Iic b).card = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zero, Nat.sub_zero]
-
-@[simp]
-theorem card_Iio : (Iio b).card = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
-
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [Fintype.card_ofFinset, card_Icc]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ico]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [Fintype.card_ofFinset, card_Ioc]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [Fintype.card_ofFinset, card_Ioo]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
   rw [Fintype.card_ofFinset, card_Iic]
 
--- Porting note (#10618): simp can prove this
--- @[simp]
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
 
 -- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
@@ -153,6 +134,11 @@ theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_
 
 variable {a b c}
 
+lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
+
+lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
+  Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
+
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]
 
@@ -187,8 +173,8 @@ theorem Ico_image_const_sub_eq_Ico (hac : a ≤ c) :
 
 theorem Ico_succ_left_eq_erase_Ico : Ico a.succ b = erase (Ico a b) a := by
   ext x
-  rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm, @and_comm (a ≠ x),
-    lt_iff_le_and_ne]
+  rw [Ico_succ_left, mem_erase, mem_Ico, mem_Ioo, ← and_assoc, ne_comm,
+    and_comm (a := a ≠ x), lt_iff_le_and_ne]
 
 theorem mod_injOn_Ico (n a : ℕ) : Set.InjOn (· % a) (Finset.Ico n (n + a)) := by
   induction' n with n ih

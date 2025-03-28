@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Logic.Small.Defs
 
@@ -11,10 +11,13 @@ import Mathlib.Logic.Small.Defs
 A proposition expressing a universe inequality. `UnivLE.{u, v}` expresses that `u ≤ v`,
 in the form `∀ α : Type u, Small.{v} α`.
 
+This API indirectly provides an instance for `Small.{u, max u v}`, which could not be declared
+directly due to https://github.com/leanprover/lean4/issues/2297.
+
 See the doc-string for the comparison with an alternative stronger definition.
 -/
 
-set_option autoImplicit true
+universe u v w
 
 noncomputable section
 
@@ -35,7 +38,7 @@ See also `Mathlib.CategoryTheory.UnivLE` for the statement that the stronger def
 equivalent to `EssSurj (uliftFunctor : Type v ⥤ Type max u v)`.
 -/
 @[pp_with_univ]
-abbrev UnivLE.{u, v} : Prop := ∀ α : Type u, Small.{v} α
+abbrev UnivLE : Prop := ∀ α : Type u, Small.{v} α
 
 example : UnivLE.{u, u} := inferInstance
 example : UnivLE.{u, u+1} := inferInstance
@@ -43,7 +46,7 @@ example : UnivLE.{0, u} := inferInstance
 /- This is useless as an instance due to https://github.com/leanprover/lean4/issues/2297 -/
 theorem univLE_max : UnivLE.{u, max u v} := fun α ↦ small_max.{v} α
 
-theorem Small.trans_univLE.{u, v} (α : Type w) [hα : Small.{u} α] [h : UnivLE.{u, v}] :
+theorem Small.trans_univLE (α : Type w) [hα : Small.{u} α] [h : UnivLE.{u, v}] :
     Small.{v} α :=
   let ⟨β, ⟨f⟩⟩ := hα.equiv_small
   let ⟨_, ⟨g⟩⟩ := (h β).equiv_small
@@ -53,7 +56,7 @@ theorem UnivLE.trans [UnivLE.{u, v}] [UnivLE.{v, w}] : UnivLE.{u, w} :=
   fun α ↦ Small.trans_univLE α
 
 /- This is the crucial instance that subsumes `univLE_max`. -/
-instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max.{v,u} ‹_›
+instance univLE_of_max [UnivLE.{max u v, v}] : UnivLE.{u, v} := @UnivLE.trans univLE_max ‹_›
 
 /- When `small_Pi` from `Mathlib.Logic.Small.Basic` is imported, we have : -/
 -- example (α : Type u) (β : Type v) [UnivLE.{u, v}] : Small.{v} (α → β) := inferInstance

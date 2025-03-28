@@ -3,7 +3,8 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.TakeDrop
+import Mathlib.Data.List.Induction
 
 /-!
 # Prefixes, suffixes, infixes
@@ -29,27 +30,59 @@ variable {α β : Type*}
 
 namespace List
 
-variable {l l₁ l₂ l₃ : List α} {a b : α} {m n : ℕ}
+variable {l l₁ l₂ l₃ : List α} {a b : α}
 
 /-! ### prefix, suffix, infix -/
 
 section Fix
 
-@[deprecated IsSuffix.reverse (since := "2024-08-12")] alias isSuffix.reverse := IsSuffix.reverse
-@[deprecated IsPrefix.reverse (since := "2024-08-12")] alias isPrefix.reverse := IsPrefix.reverse
-@[deprecated IsInfix.reverse (since := "2024-08-12")] alias isInfix.reverse := IsInfix.reverse
+@[gcongr] lemma IsPrefix.take (h : l₁ <+: l₂) (n : ℕ) : l₁.take n <+: l₂.take n := by
+  simpa [prefix_take_iff, Nat.min_le_left] using (take_prefix n l₁).trans h
 
-@[deprecated IsInfix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_infix_of_length_eq (h : l₁ <:+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
+@[gcongr] lemma IsPrefix.drop (h : l₁ <+: l₂) (n : ℕ) : l₁.drop n <+: l₂.drop n := by
+  rw [prefix_iff_eq_take.mp h, drop_take]; apply take_prefix
 
-@[deprecated IsPrefix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_prefix_of_length_eq (h : l₁ <+: l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
+attribute [gcongr] take_prefix_take_left
 
-@[deprecated IsSuffix.eq_of_length (since := "2024-08-12")]
-theorem eq_of_suffix_of_length_eq (h : l₁ <:+ l₂) : l₁.length = l₂.length → l₁ = l₂ :=
-  h.eq_of_length
+lemma isPrefix_append_of_length (h : l₁.length ≤ l₂.length) : l₁ <+: l₂ ++ l₃ ↔ l₁ <+: l₂ :=
+  ⟨fun h ↦ by rw [prefix_iff_eq_take] at *; nth_rw 1 [h, take_eq_left_iff]; tauto,
+   fun h ↦ h.trans <| l₂.prefix_append l₃⟩
+
+@[simp] lemma take_isPrefix_take {m n : ℕ} : l.take m <+: l.take n ↔ m ≤ n ∨ l.length ≤ n := by
+  simp [prefix_take_iff, take_prefix]; omega
+
+@[gcongr]
+protected theorem IsPrefix.flatten {l₁ l₂ : List (List α)} (h : l₁ <+: l₂) :
+    l₁.flatten <+: l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsPrefix.flatMap (h : l₁ <+: l₂) (f : α → List β) :
+    l₁.flatMap f <+: l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
+protected theorem IsSuffix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+ l₂) :
+    l₁.flatten <:+ l₂.flatten := by
+  rcases h with ⟨l, rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsSuffix.flatMap (h : l₁ <:+ l₂) (f : α → List β) :
+    l₁.flatMap f <:+ l₂.flatMap f :=
+  (h.map _).flatten
+
+@[gcongr]
+protected theorem IsInfix.flatten {l₁ l₂ : List (List α)} (h : l₁ <:+: l₂) :
+    l₁.flatten <:+: l₂.flatten := by
+  rcases h with ⟨l, l', rfl⟩
+  simp
+
+@[gcongr]
+protected theorem IsInfix.flatMap (h : l₁ <:+: l₂) (f : α → List β) :
+    l₁.flatMap f <:+: l₂.flatMap f :=
+  (h.map _).flatten
 
 lemma dropSlice_sublist (n m : ℕ) (l : List α) : l.dropSlice n m <+ l :=
   calc
@@ -63,18 +96,14 @@ lemma dropSlice_subset (n m : ℕ) (l : List α) : l.dropSlice n m ⊆ l :=
 lemma mem_of_mem_dropSlice {n m : ℕ} {l : List α} {a : α} (h : a ∈ l.dropSlice n m) : a ∈ l :=
   dropSlice_subset n m l h
 
-attribute [gcongr] drop_sublist_drop_left
-
 theorem tail_subset (l : List α) : tail l ⊆ l :=
   (tail_sublist l).subset
 
 theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
   dropLast_subset l h
 
-theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
-  tail_subset l h
-
 attribute [gcongr] Sublist.drop
+attribute [refl] prefix_refl suffix_refl infix_refl
 
 theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
     x ++ [y.get ⟨x.length, hl⟩] <+: y := by
@@ -83,11 +112,13 @@ theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.lengt
   convert List.take_append_drop (x.length + 1) y using 2
   rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
-@[deprecated cons_prefix_cons (since := "2024-08-14")]
-theorem cons_prefix_iff : a :: l₁ <+: b :: l₂ ↔ a = b ∧ l₁ <+: l₂ := by
-  simp
-
-@[deprecated (since := "2024-03-26")] alias IsPrefix.filter_map := IsPrefix.filterMap
+instance decidableInfix [DecidableEq α] : ∀ l₁ l₂ : List α, Decidable (l₁ <:+: l₂)
+  | [], l₂ => isTrue ⟨[], l₂, rfl⟩
+  | a :: l₁, [] => isFalse fun ⟨s, t, te⟩ => by simp at te
+  | l₁, b :: l₂ =>
+    letI := l₁.decidableInfix l₂
+    @decidable_of_decidable_of_iff (l₁ <+: b :: l₂ ∨ l₁ <:+: l₂) _ _
+      infix_cons_iff.symm
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
@@ -227,6 +258,15 @@ theorem getElem_inits (l : List α) (n : Nat) (h : n < length (inits l)) :
 theorem get_inits (l : List α) (n : Fin (length (inits l))) : (inits l).get n = l.take n := by
   simp
 
+lemma map_inits {β : Type*} (g : α → β) : (l.map g).inits = l.inits.map (map g) := by
+  induction' l using reverseRecOn <;> simp [*]
+
+lemma map_tails {β : Type*} (g : α → β) : (l.map g).tails = l.tails.map (map g) := by
+  induction' l using reverseRecOn <;> simp [*]
+
+lemma take_inits {n} : (l.take n).inits = l.inits.take (n + 1) := by
+  apply ext_getElem <;> (simp [take_take]; omega)
+
 end InitsTails
 
 /-! ### insert -/
@@ -256,14 +296,5 @@ theorem subset_insert (a : α) (l : List α) : l ⊆ l.insert a :=
   (sublist_insert a l).subset
 
 end Insert
-
-@[deprecated (since := "2024-08-15")] alias mem_of_mem_suffix := IsSuffix.mem
-
-@[deprecated IsPrefix.getElem (since := "2024-08-15")]
-theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
-    x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
-  simp only [get_eq_getElem, IsPrefix.getElem h hn]
-
-@[deprecated (since := "2024-08-15")] alias IsPrefix.head_eq := IsPrefix.head
 
 end List

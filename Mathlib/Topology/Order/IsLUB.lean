@@ -14,12 +14,11 @@ open Set Filter TopologicalSpace Topology Function
 
 open OrderDual (toDual ofDual)
 
-variable {α β γ : Type*}
+variable {α γ : Type*}
 
 section OrderTopology
 
-variable [TopologicalSpace α] [TopologicalSpace β] [LinearOrder α] [LinearOrder β] [OrderTopology α]
-  [OrderTopology β]
+variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α]
 
 theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty) :
     ∃ᶠ x in 𝓝[≤] a, x ∈ s := by
@@ -27,7 +26,7 @@ theorem IsLUB.frequently_mem {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.None
   intro h
   rcases (ha.1 ha').eq_or_lt with (rfl | ha'a)
   · exact h.self_of_nhdsWithin le_rfl ha'
-  · rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
+  · rcases (mem_nhdsLE_iff_exists_Ioc_subset' ha'a).1 h with ⟨b, hba, hb⟩
     rcases ha.exists_between hba with ⟨b', hb's, hb'⟩
     exact hb hb' hb's
 
@@ -53,8 +52,9 @@ theorem IsLUB.nhdsWithin_neBot {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.No
     NeBot (𝓝[s] a) :=
   mem_closure_iff_nhdsWithin_neBot.1 (ha.mem_closure hs)
 
-theorem IsGLB.nhdsWithin_neBot : ∀ {a : α} {s : Set α}, IsGLB s a → s.Nonempty → NeBot (𝓝[s] a) :=
-  IsLUB.nhdsWithin_neBot (α := αᵒᵈ)
+theorem IsGLB.nhdsWithin_neBot {a : α} {s : Set α} (ha : IsGLB s a) (hs : s.Nonempty) :
+    NeBot (𝓝[s] a) :=
+  IsLUB.nhdsWithin_neBot (α := αᵒᵈ) ha hs
 
 theorem isLUB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ upperBounds s) (hsf : s ∈ f)
     [NeBot (f ⊓ 𝓝 a)] : IsLUB s a :=
@@ -70,9 +70,10 @@ theorem isLUB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ upperBounds s) (
   rw [mem_closure_iff_clusterPt, ClusterPt, inf_comm] at hsf
   exact isLUB_of_mem_nhds hsa (mem_principal_self s)
 
-theorem isGLB_of_mem_nhds :
-    ∀ {s : Set α} {a : α} {f : Filter α}, a ∈ lowerBounds s → s ∈ f → NeBot (f ⊓ 𝓝 a) → IsGLB s a :=
-  isLUB_of_mem_nhds (α := αᵒᵈ)
+theorem isGLB_of_mem_nhds {s : Set α} {a : α} {f : Filter α} (hsa : a ∈ lowerBounds s) (hsf : s ∈ f)
+    [NeBot (f ⊓ 𝓝 a)] :
+    IsGLB s a :=
+  isLUB_of_mem_nhds (α := αᵒᵈ) hsa hsf
 
 theorem isGLB_of_mem_closure {s : Set α} {a : α} (hsa : a ∈ lowerBounds s) (hsf : a ∈ closure s) :
     IsGLB s a :=
@@ -114,20 +115,20 @@ theorem IsLUB.mem_lowerBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [Or
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ lowerBounds (f '' s) :=
   IsLUB.mem_upperBounds_of_tendsto (γ := γᵒᵈ) hf ha hb
 
-theorem IsLUB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
-    ∀ {f : α → γ} {s : Set α} {a : α} {b : γ},
-      AntitoneOn f s → IsLUB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsGLB (f '' s) b :=
-  IsLUB.isLUB_of_tendsto (γ := γᵒᵈ)
+theorem IsLUB.isGLB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
+    {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsLUB s a) (hs : s.Nonempty)
+    (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsGLB (f '' s) b :=
+  IsLUB.isLUB_of_tendsto (γ := γᵒᵈ) hf ha hs hb
 
 theorem IsGLB.mem_upperBounds_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ]
     {f : α → γ} {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsGLB s a)
     (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : b ∈ upperBounds (f '' s) :=
   IsGLB.mem_lowerBounds_of_tendsto (γ := γᵒᵈ) hf ha hb
 
-theorem IsGLB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] :
-    ∀ {f : α → γ} {s : Set α} {a : α} {b : γ},
-      AntitoneOn f s → IsGLB s a → s.Nonempty → Tendsto f (𝓝[s] a) (𝓝 b) → IsLUB (f '' s) b :=
-  IsGLB.isGLB_of_tendsto (γ := γᵒᵈ)
+theorem IsGLB.isLUB_of_tendsto [Preorder γ] [TopologicalSpace γ] [OrderClosedTopology γ] {f : α → γ}
+    {s : Set α} {a : α} {b : γ} (hf : AntitoneOn f s) (ha : IsGLB s a) (hs : s.Nonempty)
+    (hb : Tendsto f (𝓝[s] a) (𝓝 b)) : IsLUB (f '' s) b :=
+  IsGLB.isGLB_of_tendsto (γ := γᵒᵈ) hf ha hs hb
 
 theorem IsLUB.mem_of_isClosed {a : α} {s : Set α} (ha : IsLUB s a) (hs : s.Nonempty)
     (sc : IsClosed s) : a ∈ s :=
@@ -204,8 +205,7 @@ theorem IsGLB.exists_seq_antitone_tendsto {t : Set α} {x : α} [IsCountablyGene
 
 theorem exists_seq_strictAnti_tendsto' [DenselyOrdered α] [FirstCountableTopology α] {x y : α}
     (hy : x < y) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, u n ∈ Ioo x y) ∧ Tendsto u atTop (𝓝 x) := by
-  simpa only [dual_Ioo]
-    using exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
+  simpa using exists_seq_strictMono_tendsto' (α := αᵒᵈ) (OrderDual.toDual_lt_toDual.2 hy)
 
 theorem exists_seq_strictAnti_tendsto [DenselyOrdered α] [NoMaxOrder α] [FirstCountableTopology α]
     (x : α) : ∃ u : ℕ → α, StrictAnti u ∧ (∀ n, x < u n) ∧ Tendsto u atTop (𝓝 x) :=

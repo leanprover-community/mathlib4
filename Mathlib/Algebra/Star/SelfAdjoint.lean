@@ -3,7 +3,7 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Star.Pi
 import Mathlib.Algebra.Star.Rat
@@ -91,24 +91,27 @@ lemma commute_iff {R : Type*} [Mul R] [StarMul R] {x y : R}
   · simpa only [star_mul, hx.star_eq, hy.star_eq] using h.symm
 
 /-- Functions in a `StarHomClass` preserve self-adjoint elements. -/
-theorem starHom_apply {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
+@[aesop 10% apply]
+theorem map {F R S : Type*} [Star R] [Star S] [FunLike F R S] [StarHomClass F R S]
     {x : R} (hx : IsSelfAdjoint x) (f : F) : IsSelfAdjoint (f x) :=
   show star (f x) = f x from map_star f x ▸ congr_arg f hx
 
+@[deprecated (since := "2024-09-07")] alias starHom_apply := map
+
 /- note: this lemma is *not* marked as `simp` so that Lean doesn't look for a `[TrivialStar R]`
 instance every time it sees `⊢ IsSelfAdjoint (f x)`, which will likely occur relatively often. -/
-theorem _root_.isSelfAdjoint_starHom_apply {F R S : Type*} [Star R] [Star S] [FunLike F R S]
+theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R S]
     [StarHomClass F R S] [TrivialStar R] (f : F) (x : R) : IsSelfAdjoint (f x) :=
-  (IsSelfAdjoint.all x).starHom_apply f
+  (IsSelfAdjoint.all x).map f
+
+@[deprecated (since := "2024-09-07")] alias _root_.isSelfAdjoint_starHom_apply := isSelfAdjoint_map
 
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
-variable (R)
 
+variable (R) in
 @[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
-
-variable {R}
 
 @[aesop 90% apply]
 theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x + y) := by
@@ -194,10 +197,8 @@ variable [Semiring R] [StarRing R]
 protected theorem natCast (n : ℕ) : IsSelfAdjoint (n : R) :=
   star_natCast _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-protected theorem ofNat (n : ℕ) [n.AtLeastTwo] :
-    IsSelfAdjoint (no_index (OfNat.ofNat n : R)) :=
+protected theorem ofNat (n : ℕ) [n.AtLeastTwo] : IsSelfAdjoint (ofNat(n) : R) :=
   .natCast n
 
 end Semiring
@@ -230,22 +231,38 @@ protected theorem intCast (z : ℤ) : IsSelfAdjoint (z : R) :=
 
 end Ring
 
-section DivisionSemiring
+section Group
 
-variable [DivisionSemiring R] [StarRing R]
+variable [Group R] [StarMul R]
 
 @[aesop safe apply]
 theorem inv {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
-  simp only [isSelfAdjoint_iff, star_inv', hx.star_eq]
+  simp only [isSelfAdjoint_iff, star_inv, hx.star_eq]
 
 @[aesop safe apply]
 theorem zpow {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
+  simp only [isSelfAdjoint_iff, star_zpow, hx.star_eq]
+
+end Group
+
+section GroupWithZero
+
+variable [GroupWithZero R] [StarMul R]
+
+@[aesop safe apply]
+theorem inv₀ {x : R} (hx : IsSelfAdjoint x) : IsSelfAdjoint x⁻¹ := by
+  simp only [isSelfAdjoint_iff, star_inv₀, hx.star_eq]
+
+@[aesop safe apply]
+theorem zpow₀ {x : R} (hx : IsSelfAdjoint x) (n : ℤ) : IsSelfAdjoint (x ^ n) := by
   simp only [isSelfAdjoint_iff, star_zpow₀, hx.star_eq]
 
-@[simp]
-protected lemma nnratCast (q : ℚ≥0) : IsSelfAdjoint (q : R) := star_nnratCast _
+end GroupWithZero
 
-end DivisionSemiring
+@[simp]
+protected lemma nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) :
+    IsSelfAdjoint (q : R) :=
+  star_nnratCast _
 
 section DivisionRing
 
@@ -262,17 +279,26 @@ section Semifield
 variable [Semifield R] [StarRing R]
 
 theorem div {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x / y) := by
-  simp only [isSelfAdjoint_iff, star_div', hx.star_eq, hy.star_eq]
+  simp only [isSelfAdjoint_iff, star_div₀, hx.star_eq, hy.star_eq]
 
 end Semifield
 
 section SMul
 
-variable [Star R] [AddMonoid A] [StarAddMonoid A] [SMul R A] [StarModule R A]
-
 @[aesop safe apply]
-theorem smul {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
-    IsSelfAdjoint (r • x) := by simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
+theorem smul [Star R] [AddMonoid A] [StarAddMonoid A] [SMul R A] [StarModule R A]
+    {r : R} (hr : IsSelfAdjoint r) {x : A} (hx : IsSelfAdjoint x) :
+    IsSelfAdjoint (r • x) := by
+  simp only [isSelfAdjoint_iff, star_smul, hr.star_eq, hx.star_eq]
+
+theorem smul_iff [Monoid R] [StarMul R] [AddMonoid A] [StarAddMonoid A]
+    [MulAction R A] [StarModule R A] {r : R} (hr : IsSelfAdjoint r) (hu : IsUnit r) {x : A} :
+    IsSelfAdjoint (r • x) ↔ IsSelfAdjoint x := by
+  refine ⟨fun hrx ↦ ?_, .smul hr⟩
+  lift r to Rˣ using hu
+  rw [← inv_smul_smul r x]
+  replace hr : IsSelfAdjoint r := Units.ext hr.star_eq
+  exact hr.inv.smul hrx
 
 end SMul
 
@@ -379,7 +405,7 @@ section Field
 variable [Field R] [StarRing R]
 
 instance : Inv (selfAdjoint R) where
-  inv x := ⟨x.val⁻¹, x.prop.inv⟩
+  inv x := ⟨x.val⁻¹, x.prop.inv₀⟩
 
 @[simp, norm_cast]
 theorem val_inv (x : selfAdjoint R) : ↑x⁻¹ = (x : R)⁻¹ :=
@@ -393,7 +419,7 @@ theorem val_div (x y : selfAdjoint R) : ↑(x / y) = (x / y : R) :=
   rfl
 
 instance : Pow (selfAdjoint R) ℤ where
-  pow x z := ⟨(x : R) ^ z, x.prop.zpow z⟩
+  pow x z := ⟨(x : R) ^ z, x.prop.zpow₀ z⟩
 
 @[simp, norm_cast]
 theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
@@ -437,7 +463,7 @@ theorem val_smul [SMul R A] [StarModule R A] (r : R) (x : selfAdjoint A) : ↑(r
   rfl
 
 instance [Monoid R] [MulAction R A] [StarModule R A] : MulAction R (selfAdjoint A) :=
-  Function.Injective.mulAction (↑) Subtype.coe_injective val_smul
+  Function.Injective.mulAction Subtype.val Subtype.coe_injective val_smul
 
 instance [Monoid R] [DistribMulAction R A] [StarModule R A] : DistribMulAction R (selfAdjoint A) :=
   Function.Injective.distribMulAction (selfAdjoint A).subtype Subtype.coe_injective val_smul
@@ -535,10 +561,10 @@ theorem isSelfAdjoint_smul_of_mem_skewAdjoint [Ring R] [AddCommGroup A] [Module 
     (ha : a ∈ skewAdjoint A) : IsSelfAdjoint (r • a) :=
   (star_smul _ _).trans <| (congr_arg₂ _ hr ha).trans <| neg_smul_neg _ _
 
-instance isStarNormal_zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
+protected instance IsStarNormal.zero [Semiring R] [StarRing R] : IsStarNormal (0 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_zero]⟩
 
-instance isStarNormal_one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
+protected instance IsStarNormal.one [MulOneClass R] [StarMul R] : IsStarNormal (1 : R) :=
   ⟨by simp only [Commute.refl, star_comm_self, star_one]⟩
 
 protected instance IsStarNormal.star [Mul R] [StarMul R] {x : R} [IsStarNormal x] :
@@ -549,10 +575,19 @@ protected instance IsStarNormal.neg [Ring R] [StarAddMonoid R] {x : R} [IsStarNo
     IsStarNormal (-x) :=
   ⟨show star (-x) * -x = -x * star (-x) by simp_rw [star_neg, neg_mul_neg, star_comm_self']⟩
 
+protected instance IsStarNormal.val_inv [Monoid R] [StarMul R] {x : Rˣ} [IsStarNormal (x : R)] :
+    IsStarNormal (↑x⁻¹ : R) where
+  star_comm_self := by simpa [← Units.coe_star_inv, -Commute.units_val_iff] using star_comm_self
+
 protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [Star S]
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
   star_comm_self := by simpa [map_star] using congr(f $(hr.star_comm_self))
+
+protected instance IsStarNormal.smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
+    [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]
+    (r : R) (a : A) [ha : IsStarNormal a] : IsStarNormal (r • a) where
+  star_comm_self := star_smul r a ▸ ha.star_comm_self.smul_left (star r) |>.smul_right r
 
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]

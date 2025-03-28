@@ -31,8 +31,7 @@ lemma deriv_Gamma_nat (n : ℕ) :
   /- This follows from two properties of the function `f n = log (Gamma n)`:
   firstly, the elementary computation that `deriv f (n + 1) = deriv f n + 1 / n`, so that
   `deriv f n = deriv f 1 + harmonic n`; secondly, the convexity of `f` (the Bohr-Mollerup theorem),
-  which shows that `deriv f n` is `log n + o(1)` as `n → ∞`.
-  `-/
+  which shows that `deriv f n` is `log n + o(1)` as `n → ∞`. -/
   let f := log ∘ Gamma
   -- First reduce to computing derivative of `log ∘ Gamma`.
   suffices deriv (log ∘ Gamma) (n + 1) = -γ + harmonic n by
@@ -52,9 +51,10 @@ lemma deriv_Gamma_nat (n : ℕ) :
     apply EventuallyEq.deriv_eq
     filter_upwards [eventually_gt_nhds hx] using h_rec
   have hder_nat (n : ℕ) : deriv f (n + 1) = deriv f 1 + harmonic n := by
-    induction' n with n hn
-    · simp
-    · rw [cast_succ, hder_rec (n + 1) (by positivity), hn, harmonic_succ]
+    induction n with
+    | zero => simp
+    | succ n hn =>
+      rw [cast_succ, hder_rec (n + 1) (by positivity), hn, harmonic_succ]
       push_cast
       ring
   suffices -deriv f 1 = γ by rw [hder_nat n, ← this, neg_neg]
@@ -128,7 +128,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 3
     change deriv (Gamma ∘ fun s ↦ 2 * s) _ = _
-    rw [deriv.comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
+    rw [deriv_comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
     dsimp only
     · rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
     · fun_prop

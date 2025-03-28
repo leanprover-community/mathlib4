@@ -65,13 +65,10 @@ variable {n R}
 
 namespace TruncatedWittVector
 
-variable (p)
-
+variable (p) in
 /-- Create a `TruncatedWittVector` from a vector `x`. -/
 def mk (x : Fin n → R) : TruncatedWittVector p n R :=
   x
-
-variable {p}
 
 /-- `x.coeff i` is the `i`th entry of `x`. -/
 def coeff (i : Fin n) (x : TruncatedWittVector p n R) : R :=
@@ -254,13 +251,7 @@ theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncat
 
 theorem truncateFun_natCast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias truncateFun_nat_cast := truncateFun_natCast
-
 theorem truncateFun_intCast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias truncateFun_int_cast := truncateFun_intCast
 
 end WittVector
 
@@ -382,7 +373,7 @@ end
 section Fintype
 
 instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
-  Pi.fintype
+  Pi.instFintype
 
 variable (p n R)
 
@@ -424,8 +415,7 @@ defining the `k`th entry to be the final entry of `fₖ s`.
 def liftFun (s : S) : 𝕎 R :=
   @WittVector.mk' p _ fun k => TruncatedWittVector.coeff (Fin.last k) (f (k + 1) s)
 
-variable {f}
-
+variable {f} in
 include f_compat in
 @[simp]
 theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s := by
@@ -433,8 +423,6 @@ theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s :
   simp only [liftFun, TruncatedWittVector.coeff_mk, WittVector.truncate_mk']
   rw [← f_compat (i + 1) n i.is_lt, RingHom.comp_apply, TruncatedWittVector.coeff_truncate]
   congr 1 with _
-
-variable (f)
 
 /--
 Given compatible ring homs from `S` into `TruncatedWittVector n` for each `n`, we can lift these
@@ -482,7 +470,7 @@ def liftEquiv : { f : ∀ k, S →+* TruncatedWittVector p k R // ∀ (k₁ k₂
       intro _ _ h
       simp only [← RingHom.comp_assoc, truncate_comp_wittVector_truncate]⟩
   left_inv := by rintro ⟨f, hf⟩; simp only [truncate_comp_lift]
-  right_inv g := lift_unique _ _ fun _ => rfl
+  right_inv _ := lift_unique _ _ fun _ => rfl
 
 theorem hom_ext (g₁ g₂ : S →+* 𝕎 R) (h : ∀ k, (truncate k).comp g₁ = (truncate k).comp g₂) :
     g₁ = g₂ :=

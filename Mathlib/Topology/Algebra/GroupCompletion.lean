@@ -3,9 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.UniformSpace.Completion
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Completion of topological groups:
@@ -136,8 +136,8 @@ instance : SubNegMonoid (Completion α) :=
     zsmul_succ' := fun n a ↦
       Completion.induction_on a
         (isClosed_eq continuous_map <| continuous_map₂ continuous_map continuous_id) fun a ↦
-          show Int.ofNat n.succ • (a : Completion α) = _ by
-            rw [← coe_smul, show Int.ofNat n.succ • a = Int.ofNat n • a + a from
+          show (n.succ : ℤ) • (a : Completion α) = _ by
+            rw [← coe_smul, show (n.succ : ℤ) • a = (n : ℤ) • a + a from
               SubNegMonoid.zsmul_succ' n a, coe_add, coe_smul]
     zsmul_neg' := fun n a ↦
       Completion.induction_on a
@@ -179,12 +179,9 @@ def toCompl : α →+ Completion α where
 theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
   continuous_coe α
 
-variable (α)
-
-theorem denseInducing_toCompl : DenseInducing (toCompl : α → Completion α) :=
-  denseInducing_coe
-
-variable {α}
+variable (α) in
+theorem isDenseInducing_toCompl : IsDenseInducing (toCompl : α → Completion α) :=
+  isDenseInducing_coe
 
 end UniformAddGroup
 

@@ -1,9 +1,10 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Defs
+import Batteries.Data.List.Basic
 
 /-!
 # Levenshtein distances
@@ -99,7 +100,7 @@ def impl
     (xs : List α) (y : β) (d : {r : List δ // 0 < r.length}) : {r : List δ // 0 < r.length} :=
   let ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
-    (init := ⟨[C.insert y + ds.getLast (List.length_pos.mp w)], by simp⟩)
+    (init := ⟨[C.insert y + ds.getLast (List.length_pos_iff.mp w)], by simp⟩)
     (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ =>
       ⟨min (C.delete x + r[0]) (min (C.insert y + d₀) (C.substitute x y + d₁)) :: r, by simp⟩)
 
@@ -266,9 +267,9 @@ theorem suffixLevenshtein_eq_tails_map (xs ys) :
     (suffixLevenshtein C xs ys).1 = xs.tails.map fun xs' => levenshtein C xs' ys := by
   induction xs with
   | nil =>
-    simp only [List.map, suffixLevenshtein_nil']
+    simp only [suffixLevenshtein_nil', List.tails, List.map_cons, List.map]
   | cons x xs ih =>
-    simp only [List.map, suffixLevenshtein_cons₁, ih]
+    simp only [suffixLevenshtein_cons₁, ih, List.tails, List.map_cons]
 
 @[simp]
 theorem levenshtein_nil_nil : levenshtein C [] [] = 0 := by

@@ -5,6 +5,7 @@ Authors: Alexander Bentkamp
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
 import Mathlib.LinearAlgebra.Matrix.ZPow
+import Mathlib.Data.Matrix.ConjTranspose
 
 /-! # Hermitian matrices
 
@@ -47,7 +48,7 @@ theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 protected theorem IsHermitian.isSelfAdjoint {A : Matrix n n α} (h : A.IsHermitian) :
     IsSelfAdjoint A := h
 
--- @[ext] -- Porting note (#11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
+-- @[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): incorrect `ext`, not a structure or a lemma proving `x = y`.
 theorem IsHermitian.ext {A : Matrix n n α} : (∀ i j, star (A j i) = A i j) → A.IsHermitian := by
   intro h; ext i j; exact h i j
 
@@ -114,7 +115,7 @@ end InvolutiveStar
 
 section AddMonoid
 
-variable [AddMonoid α] [StarAddMonoid α] [AddMonoid β] [StarAddMonoid β]
+variable [AddMonoid α] [StarAddMonoid α]
 
 /-- A diagonal matrix is hermitian if the entries are self-adjoint (as a vector) -/
 theorem isHermitian_diagonal_of_self_adjoint [DecidableEq n] (v : n → α) (h : IsSelfAdjoint v) :
@@ -174,7 +175,7 @@ end AddGroup
 
 section NonUnitalSemiring
 
-variable [NonUnitalSemiring α] [StarRing α] [NonUnitalSemiring β] [StarRing β]
+variable [NonUnitalSemiring α] [StarRing α]
 
 /-- Note this is more general than `IsSelfAdjoint.mul_star_self` as `B` can be rectangular. -/
 theorem isHermitian_mul_conjTranspose_self [Fintype n] (A : Matrix m n α) :
@@ -202,7 +203,7 @@ end NonUnitalSemiring
 
 section Semiring
 
-variable [Semiring α] [StarRing α] [Semiring β] [StarRing β]
+variable [Semiring α] [StarRing α]
 
 /-- Note this is more general for matrices than `isSelfAdjoint_one` as it does not
 require `Fintype n`, which is necessary for `Monoid (Matrix n n R)`. -/
@@ -255,7 +256,7 @@ section RCLike
 
 open RCLike
 
-variable [RCLike α] [RCLike β]
+variable [RCLike α]
 
 /-- The diagonal elements of a complex hermitian matrix are real. -/
 theorem IsHermitian.coe_re_apply_self {A : Matrix n n α} (h : A.IsHermitian) (i : n) :
@@ -270,15 +271,14 @@ theorem IsHermitian.coe_re_diag {A : Matrix n n α} (h : A.IsHermitian) :
 theorem isHermitian_iff_isSymmetric [Fintype n] [DecidableEq n] {A : Matrix n n α} :
     IsHermitian A ↔ A.toEuclideanLin.IsSymmetric := by
   rw [LinearMap.IsSymmetric, (WithLp.equiv 2 (n → α)).symm.surjective.forall₂]
-  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_piLp_equiv_symm, toLin'_apply,
-    star_mulVec, dotProduct_mulVec]
+  simp only [toEuclideanLin_piLp_equiv_symm, EuclideanSpace.inner_eq_star_dotProduct, toLin'_apply,
+    Equiv.apply_symm_apply, star_mulVec]
   constructor
   · rintro (h : Aᴴ = A) x y
-    rw [h]
+    rw [dotProduct_comm, ← dotProduct_mulVec, h, dotProduct_comm]
   · intro h
     ext i j
-    simpa only [(Pi.single_star i 1).symm, ← star_mulVec, mul_one, dotProduct_single,
-      single_vecMul, star_one, one_mul] using h (Pi.single i 1) (Pi.single j 1)
+    simpa [(Pi.single_star i 1).symm] using h (Pi.single i 1) (Pi.single j 1)
 
 end RCLike
 

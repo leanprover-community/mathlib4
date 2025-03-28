@@ -21,9 +21,6 @@ open List
 
 variable (F : PFunctor.{u})
 
--- Porting note: the ♯ tactic is never used
--- local prefix:0 "♯" => cast (by first |simp [*]|cc|solve_by_elim)
-
 namespace PFunctor
 
 namespace Approx
@@ -73,11 +70,13 @@ def AllAgree (x : ∀ n, CofixA F n) :=
   ∀ n, Agree (x n) (x (succ n))
 
 @[simp]
-theorem agree_trival {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constructor
+theorem agree_trivial {x : CofixA F 0} {y : CofixA F 1} : Agree x y := by constructor
+
+@[deprecated (since := "2024-12-25")] alias agree_trival := agree_trivial
 
 theorem agree_children {n : ℕ} (x : CofixA F (succ n)) (y : CofixA F (succ n + 1)) {i j}
     (h₀ : HEq i j) (h₁ : Agree x y) : Agree (children' x i) (children' y j) := by
-  cases' h₁ with _ _ _ _ _ _ hagree; cases h₀
+  obtain - | ⟨_, _, hagree⟩ := h₁; cases h₀
   apply hagree
 
 /-- `truncate a` turns `a` into a more limited approximation -/
@@ -91,8 +90,8 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · rfl
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
-    simp only [truncate, Function.comp_def, true_and_iff, eq_self_iff_true, heq_iff_eq]
-    -- Porting note: used to be `ext y`
+    simp only [truncate, Function.comp_def, eq_self_iff_true, heq_iff_eq]
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
       by simp [this]
@@ -113,7 +112,7 @@ def sCorec : X → ∀ n, CofixA F n
 theorem P_corec (i : X) (n : ℕ) : Agree (sCorec f i n) (sCorec f i (succ n)) := by
   induction' n with n n_ih generalizing i
   constructor
-  cases' f i with y g
+  obtain ⟨y, g⟩ := f i
   constructor
   introv
   apply n_ih
@@ -135,19 +134,19 @@ theorem head_succ' (n m : ℕ) (x : ∀ n, CofixA F n) (Hconsistent : AllAgree x
   suffices ∀ n, head' (x (succ n)) = head' (x 1) by simp [this]
   clear m n
   intro n
-  cases' h₀ : x (succ n) with _ i₀ f₀
-  cases' h₁ : x 1 with _ i₁ f₁
+  rcases h₀ : x (succ n) with - | ⟨_, f₀⟩
+  cases h₁ : x 1
   dsimp only [head']
   induction' n with n n_ih
   · rw [h₁] at h₀
     cases h₀
     trivial
   · have H := Hconsistent (succ n)
-    cases' h₂ : x (succ n) with _ i₂ f₂
+    cases h₂ : x (succ n)
     rw [h₀, h₂] at H
     apply n_ih (truncate ∘ f₀)
     rw [h₂]
-    cases' H with _ _ _ _ _ _ hagree
+    obtain - | ⟨_, _, hagree⟩ := H
     congr
     funext j
     dsimp only [comp_apply]
@@ -159,7 +158,7 @@ end Approx
 open Approx
 
 /-- Internal definition for `M`. It is needed to avoid name clashes
-between `M.mk` and `M.cases_on` and the declarations generated for
+between `M.mk` and `M.casesOn` and the declarations generated for
 the structure -/
 structure MIntl where
   /-- An `n`-th level approximation, for each depth `n` -/
@@ -278,7 +277,7 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   induction' n with n
   · apply @Subsingleton.elim _ CofixA.instSubsingleton
   dsimp only [Approx.sMk, dest, head]
-  cases' h : x.approx (succ n) with _ hd ch
+  rcases h : x.approx (succ n) with - | ⟨hd, ch⟩
   have h' : hd = head' (x.approx 1) := by
     rw [← head_succ' n, h, head']
     apply x.consistent
@@ -333,14 +332,14 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
     · induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
-      cases' h with _ _ _ _ _ _ hagree
+      obtain - | ⟨_, _, hagree⟩ := h
       constructor <;> try rfl
       intro i
       apply n_ih
       apply hagree
   · induction' n with _ n_ih generalizing x y
     · constructor
-    · cases' h with _ _ _ a x' y'
+    · obtain - | @⟨_, a, x', y'⟩ := h
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f
       simp only [approx_mk]
@@ -376,8 +375,7 @@ theorem casesOn_mk' {r : M F → Sort*} {a} (x : F.B a → M F)
 /-- `IsPath p x` tells us if `p` is a valid path through `x` -/
 inductive IsPath : Path F → M F → Prop
   | nil (x : M F) : IsPath [] x
-  |
-  cons (xs : Path F) {a} (x : M F) (f : F.B a → M F) (i : F.B a) :
+  | cons (xs : Path F) {a} (x : M F) (f : F.B a → M F) (i : F.B a) :
     x = M.mk ⟨a, f⟩ → IsPath xs (f i) → IsPath (⟨a, i⟩ :: xs) x
 
 theorem isPath_cons {xs : Path F} {a a'} {f : F.B a → M F} {i : F.B a'} :
@@ -418,7 +416,7 @@ theorem iselect_eq_default [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) (x 
   · exfalso
     apply h
     constructor
-  · cases' ps_hd with a i
+  · obtain ⟨a, i⟩ := ps_hd
     induction' x using PFunctor.M.casesOn' with x_a x_f
     simp only [iselect, isubtree] at ps_ih ⊢
     by_cases h'' : a = x_a
@@ -463,7 +461,7 @@ theorem iselect_cons [DecidableEq F.A] [Inhabited (M F)] (ps : Path F) {a} (f : 
 theorem corec_def {X} (f : X → F X) (x₀ : X) : M.corec f x₀ = M.mk (F.map (M.corec f) (f x₀)) := by
   dsimp only [M.corec, M.mk]
   congr with n
-  cases' n with n
+  rcases n with - | n
   · dsimp only [sCorec, Approx.sMk]
   · dsimp only [sCorec, Approx.sMk]
     cases f x₀
@@ -479,8 +477,8 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     induction y using PFunctor.M.casesOn'
     simp only [iselect_nil] at hrec
     subst hrec
-    simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
-                heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
+    simp only [approx_mk, eq_self_iff_true, heq_iff_eq, zero_eq, CofixA.intro.injEq,
+      heq_eq_eq, eq_iff_true_of_subsingleton, and_self]
   · cases hx
     cases hy
     induction x using PFunctor.M.casesOn'
@@ -488,7 +486,7 @@ theorem ext_aux [Inhabited (M F)] [DecidableEq F.A] {n : ℕ} (x y z : M F) (hx 
     subst z
     iterate 3 (have := mk_inj ‹_›; cases this)
     rename_i n_ih a f₃ f₂ hAgree₂ _ _ h₂ _ _ f₁ h₁ hAgree₁ clr
-    simp only [approx_mk, true_and_iff, eq_self_iff_true, heq_iff_eq]
+    simp only [approx_mk, eq_self_iff_true, heq_iff_eq]
 
     have := mk_inj h₁
     cases this; clear h₁
@@ -554,7 +552,7 @@ theorem nth_of_bisim [Inhabited (M F)] (bisim : IsBisimulation R) (s₁ s₂) (p
   induction' ps with i ps ps_ih generalizing a f f'
   · exists rfl, a, f, f', rfl, rfl
     apply bisim.tail h₀
-  cases' i with a' i
+  obtain ⟨a', i⟩ := i
   obtain rfl : a = a' := by rcases hh with hh|hh <;> cases isPath_cons hh <;> rfl
   dsimp only [iselect] at ps_ih ⊢
   have h₁ := bisim.tail h₀ i
@@ -575,7 +573,7 @@ theorem eq_of_bisim [Nonempty (M F)] (bisim : IsBisimulation R) : ∀ s₁ s₂,
   · have H := nth_of_bisim R bisim _ _ ps Hr h
     exact H.left
   · rw [not_or] at h
-    cases' h with h₀ h₁
+    obtain ⟨h₀, h₁⟩ := h
     simp only [iselect_eq_default, *, not_false_iff]
 
 end Bisim
@@ -611,8 +609,7 @@ theorem bisim' {α : Type*} (Q : α → Prop) (u v : α → M P)
     (h : ∀ x, Q x → ∃ a f f',
           M.dest (u x) = ⟨a, f⟩
           ∧ M.dest (v x) = ⟨a, f'⟩
-          ∧ ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x'
-      ) :
+          ∧ ∀ i, ∃ x', Q x' ∧ f i = u x' ∧ f' i = v x') :
     ∀ x, Q x → u x = v x := fun x Qx =>
   let R := fun w z : M P => ∃ x', Q x' ∧ w = u x' ∧ z = v x'
   @M.bisim P R
@@ -638,7 +635,7 @@ theorem corec_unique (g : α → P α) (f : α → M P) (hyp : ∀ x, M.dest (f 
   apply bisim' (fun _ => True) _ _ _ _ trivial
   clear x
   intro x _
-  cases' gxeq : g x with a f'
+  rcases gxeq : g x with ⟨a, f'⟩
   have h₀ : M.dest (f x) = ⟨a, f ∘ f'⟩ := by rw [hyp, gxeq, PFunctor.map_eq]
   have h₁ : M.dest (M.corec g x) = ⟨a, M.corec g ∘ f'⟩ := by rw [dest_corec, gxeq, PFunctor.map_eq]
   refine ⟨_, _, _, h₀, h₁, ?_⟩

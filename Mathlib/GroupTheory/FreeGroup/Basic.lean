@@ -3,10 +3,8 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.List.Sublists
-import Mathlib.Data.List.InsertNth
+import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Free groups
@@ -49,6 +47,7 @@ free group, Newman's diamond lemma, Church-Rosser theorem
 -/
 
 open Relation
+open scoped List
 
 universe u v w
 
@@ -93,7 +92,7 @@ theorem Red.trans : Red L₁ L₂ → Red L₂ L₃ → Red L₁ L₃ :=
 namespace Red
 
 /-- Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there are words
-`w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄`  -/
+`w₃ w₄` and letter `x` such that `w₁ = w₃xx⁻¹w₄` and `w₂ = w₃w₄` -/
 @[to_additive "Predicate asserting that the word `w₁` can be reduced to `w₂` in one step, i.e. there
   are words `w₃ w₄` and letter `x` such that `w₁ = w₃ + x + (-x) + w₄` and `w₂ = w₃w₄`"]
 theorem Step.length : ∀ {L₁ L₂ : List (α × Bool)}, Step L₁ L₂ → L₂.length + 2 = L₁.length
@@ -127,8 +126,8 @@ theorem Step.append_right : ∀ {L₁ L₂ L₃ : List (α × Bool)}, Step L₁ 
 theorem not_step_nil : ¬Step [] L := by
   generalize h' : [] = L'
   intro h
-  cases' h with L₁ L₂
-  simp [List.nil_eq_append] at h'
+  rcases h with - | ⟨L₁, L₂⟩
+  simp [List.nil_eq_append_iff] at h'
 
 @[to_additive]
 theorem Step.cons_left_iff {a : α} {b : Bool} :
@@ -152,7 +151,7 @@ theorem not_step_singleton : ∀ {p : α × Bool}, ¬Step [p] L
 
 @[to_additive]
 theorem Step.cons_cons_iff : ∀ {p : α × Bool}, Step (p :: L₁) (p :: L₂) ↔ Step L₁ L₂ := by
-  simp (config := { contextual := true }) [Step.cons_left_iff, iff_def, or_imp]
+  simp +contextual [Step.cons_left_iff, iff_def, or_imp]
 
 @[to_additive]
 theorem Step.append_left_iff : ∀ L, Step (L ++ L₁) (L ++ L₂) ↔ Step L₁ L₂
@@ -195,10 +194,10 @@ respectively. This is also known as Newman's diamond lemma. -/
   to `w2` and `w3` respectively, then there is a word `w4` such that `w2` and `w3` reduce to `w4`
   respectively. This is also known as Newman's diamond lemma."]
 theorem church_rosser : Red L₁ L₂ → Red L₁ L₃ → Join Red L₂ L₃ :=
-  Relation.church_rosser fun a b c hab hac =>
+  Relation.church_rosser fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | b, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, hcd.to_red⟩
 
 @[to_additive]
 theorem cons_cons {p} : Red L₁ L₂ → Red (p :: L₁) (p :: L₂) :=
@@ -218,7 +217,7 @@ theorem cons_cons_iff (p) : Red (p :: L₁) (p :: L₂) ↔ Red L₁ L₂ :=
         cases eq₂
         constructor
       · subst_vars
-        cases' p with a b
+        obtain ⟨a, b⟩ := p
         rw [Step.cons_left_iff] at h₁₂
         rcases h₁₂ with (⟨L, h₁₂, rfl⟩ | rfl)
         · exact (ih rfl rfl).head h₁₂
@@ -242,7 +241,7 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
       intro h
       induction' h with L' L₁₂ hLL' h ih generalizing L₁ L₂
       · exact ⟨_, _, eq.symm, by rfl, by rfl⟩
-      · cases' h with s e a b
+      · obtain @⟨s, e, a, b⟩ := h
         rcases List.append_eq_append_iff.1 eq with (⟨s', rfl, rfl⟩ | ⟨e', rfl, rfl⟩)
         · have : L₁ ++ (s' ++ (a, b) :: (a, not b) :: e) = L₁ ++ s' ++ (a, b) :: (a, not b) :: e :=
             by simp
@@ -252,7 +251,7 @@ theorem to_append_iff : Red L (L₁ ++ L₂) ↔ ∃ L₃ L₄, L = L₃ ++ L₄
             by simp
           rcases ih this with ⟨w₁, w₂, rfl, h₁, h₂⟩
           exact ⟨w₁, w₂, rfl, h₁.tail Step.not, h₂⟩)
-    fun ⟨L₃, L₄, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
+    fun ⟨_, _, Eq, h₃, h₄⟩ => Eq.symm ▸ append_append h₃ h₄
 
 /-- The empty word `[]` only reduces to itself. -/
 @[to_additive "The empty word `[]` only reduces to itself."]
@@ -287,7 +286,8 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append, List.nil_eq_append] at eq
+  simp only [List.cons_eq_append_iff, List.cons.injEq, Prod.mk.injEq, and_false,
+    List.nil_eq_append_iff, exists_const, or_self, or_false, List.cons_ne_nil] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 
@@ -336,18 +336,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
   | _, _, @Step.not _ L1 L2 x b => by
     induction L1 with
     | nil =>
-      -- dsimp [sizeOf]
       dsimp
-      simp only [Bool.sizeOf_eq_one]
-
-      have H :
-        1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
-        ac_rfl
-      rw [H]
-      apply Nat.lt_add_of_pos_right
-      apply Nat.lt_add_right
-      apply Nat.zero_lt_one
+      omega
     | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _
@@ -368,10 +358,10 @@ end Red
 
 @[to_additive FreeAddGroup.equivalence_join_red]
 theorem equivalence_join_red : Equivalence (Join (@Red α)) :=
-  equivalence_join_reflTransGen fun a b c hab hac =>
+  equivalence_join_reflTransGen fun _ b c hab hac =>
     match b, c, Red.Step.diamond hab hac rfl with
     | b, _, Or.inl rfl => ⟨b, by rfl, by rfl⟩
-    | b, c, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
+    | _, _, Or.inr ⟨d, hbd, hcd⟩ => ⟨d, ReflGen.single hbd, ReflTransGen.single hcd⟩
 
 @[to_additive FreeAddGroup.join_red_of_step]
 theorem join_red_of_step (h : Red.Step L₁ L₂) : Join Red L₁ L₂ :=
@@ -418,6 +408,7 @@ theorem quot_liftOn_mk (β : Type v) (f : List (α × Bool) → β)
     (H : ∀ L₁ L₂, Red.Step L₁ L₂ → f L₁ = f L₂) : Quot.liftOn (mk L) f H = f L :=
   rfl
 
+open scoped Relator in
 @[to_additive (attr := simp)]
 theorem quot_map_mk (β : Type v) (f : List (α × Bool) → List (β × Bool))
     (H : (Red.Step ⇒ Red.Step) f f) : Quot.map f H (mk L) = mk (f L) :=
@@ -498,7 +489,7 @@ theorem inv_mk : (mk L)⁻¹ = mk (invRev L) :=
 @[to_additive]
 theorem Red.Step.invRev {L₁ L₂ : List (α × Bool)} (h : Red.Step L₁ L₂) :
     Red.Step (FreeGroup.invRev L₁) (FreeGroup.invRev L₂) := by
-  cases' h with a b x y
+  obtain ⟨a, b, x, y⟩ := h
   simp [FreeGroup.invRev]
 
 @[to_additive]
@@ -527,6 +518,12 @@ instance : Group (FreeGroup α) where
     exact
       List.recOn L rfl fun ⟨x, b⟩ tl ih =>
           Eq.trans (Quot.sound <| by simp [invRev, one_eq_mk]) ih
+
+@[to_additive (attr := simp)]
+theorem pow_mk (n : ℕ) : mk L ^ n = mk (List.flatten <| List.replicate n L) :=
+  match n with
+  | 0 => rfl
+  | n + 1 => by rw [pow_succ', pow_mk, mul_mk, List.replicate_succ, List.flatten_cons]
 
 /-- `of` is the canonical injection from the type to the free group over that type by sending each
 element to the equivalence class of the letter that is the element. -/
@@ -559,7 +556,7 @@ def Lift.aux : List (α × Bool) → β := fun L =>
 
 @[to_additive]
 theorem Red.Step.lift {f : α → β} (H : Red.Step L₁ L₂) : Lift.aux f L₁ = Lift.aux f L₂ := by
-  cases' H with _ _ _ b; cases b <;> simp [Lift.aux]
+  obtain @⟨_, _, _, b⟩ := H; cases b <;> simp [Lift.aux]
 
 /-- If `β` is a group, then any function from `α` to `β` extends uniquely to a group homomorphism
 from the free group over `α` to `β` -/
@@ -568,10 +565,10 @@ from the free group over `α` to `β` -/
   additive group homomorphism from the free additive group over `α` to `β`"]
 def lift : (α → β) ≃ (FreeGroup α →* β) where
   toFun f :=
-    MonoidHom.mk' (Quot.lift (Lift.aux f) fun L₁ L₂ => Red.Step.lift) <| by
+    MonoidHom.mk' (Quot.lift (Lift.aux f) fun _ _ => Red.Step.lift) <| by
       rintro ⟨L₁⟩ ⟨L₂⟩; simp [Lift.aux]
   invFun g := g ∘ of
-  left_inv f := one_mul _
+  left_inv f := List.prod_singleton
   right_inv g :=
     MonoidHom.ext <| by
       rintro ⟨L⟩
@@ -592,7 +589,7 @@ theorem lift.mk : lift f (mk L) = List.prod (L.map fun x => cond x.2 (f x.1) (f 
 
 @[to_additive (attr := simp)]
 theorem lift.of {x} : lift f (of x) = f x :=
-  one_mul _
+  List.prod_singleton
 
 @[to_additive]
 theorem lift.unique (g : FreeGroup α →* β) (hg : ∀ x, g (FreeGroup.of x) = f x) {x} :
@@ -636,7 +633,7 @@ set of generators equals `⊤`. -/
 theorem closure_range_of (α) :
     Subgroup.closure (Set.range (FreeGroup.of : α → FreeGroup α)) = ⊤ := by
   rw [← lift.range_eq_closure, lift_of_eq_id]
-  exact MonoidHom.range_top_of_surjective _ Function.surjective_id
+  exact MonoidHom.range_eq_top.2 Function.surjective_id
 
 end lift
 
@@ -696,7 +693,7 @@ theorem map_eq_lift : map f x = lift (of ∘ f) x :=
 
 The converse can be found in `GroupTheory.FreeAbelianGroupFinsupp`,
 as `Equiv.of_freeGroupEquiv`
- -/
+-/
 @[to_additive (attr := simps apply)
   "Equivalent types give rise to additively equivalent additive free groups."]
 def freeGroupCongr {α β} (e : α ≃ β) : FreeGroup α ≃* FreeGroup β where
@@ -802,8 +799,7 @@ def freeGroupEmptyEquivUnit : FreeGroup Empty ≃ Unit where
 def freeGroupUnitEquivInt : FreeGroup Unit ≃ ℤ where
   toFun x := sum (by
     revert x
-    change (FreeGroup Unit →* FreeGroup ℤ)
-    apply map fun _ => (1 : ℤ))
+    exact ↑(map fun _ => (1 : ℤ)))
   invFun x := of () ^ x
   left_inv := by
     rintro ⟨L⟩
@@ -838,7 +834,6 @@ protected theorem induction_on {C : FreeGroup α → Prop} (z : FreeGroup α) (C
   Quot.inductionOn z fun L =>
     List.recOn L C1 fun ⟨x, b⟩ _tl ih => Bool.recOn b (Cm _ _ (Ci _ <| Cp x) ih) (Cm _ _ (Cp x) ih)
 
--- porting note (#10618): simp can prove this: by simp only [@map_pure]
 @[to_additive]
 theorem map_pure (f : α → β) (x : α) : f <$> (pure x : FreeGroup α) = pure (f x) :=
   map.of
@@ -855,7 +850,6 @@ theorem map_mul (f : α → β) (x y : FreeGroup α) : f <$> (x * y) = f <$> x *
 theorem map_inv (f : α → β) (x : FreeGroup α) : f <$> x⁻¹ = (f <$> x)⁻¹ :=
   (map f).map_inv x
 
--- porting note (#10618): simp can prove this: by simp only [@pure_bind]
 @[to_additive]
 theorem pure_bind (f : α → FreeGroup β) (x) : pure x >>= f = f x :=
   lift.of
@@ -890,273 +884,5 @@ instance : LawfulMonad FreeGroup.{u} := LawfulMonad.mk'
       rw [mul_bind, map_mul, ihx, ihy])
 
 end Category
-
-section Reduce
-
-variable [DecidableEq α]
-
-/-- The maximal reduction of a word. It is computable
-iff `α` has decidable equality. -/
-@[to_additive "The maximal reduction of a word. It is computable iff `α` has decidable equality."]
-def reduce : (L : List (α × Bool)) -> List (α × Bool) :=
-  List.rec [] fun hd1 _tl1 ih =>
-    List.casesOn ih [hd1] fun hd2 tl2 =>
-      if hd1.1 = hd2.1 ∧ hd1.2 = not hd2.2 then tl2 else hd1 :: hd2 :: tl2
-
-@[to_additive (attr := simp)]
-theorem reduce.cons (x) :
-    reduce (x :: L) =
-      List.casesOn (reduce L) [x] fun hd tl =>
-        if x.1 = hd.1 ∧ x.2 = not hd.2 then tl else x :: hd :: tl :=
-  rfl
-
-/-- The first theorem that characterises the function `reduce`: a word reduces to its maximal
-  reduction. -/
-@[to_additive "The first theorem that characterises the function `reduce`: a word reduces to its
-  maximal reduction."]
-theorem reduce.red : Red L (reduce L) := by
-  induction L with
-  | nil => constructor
-  | cons hd1 tl1 ih =>
-    dsimp
-    revert ih
-    generalize htl : reduce tl1 = TL
-    intro ih
-    cases TL with
-    | nil => exact Red.cons_cons ih
-    | cons hd2 tl2 =>
-      dsimp only
-      split_ifs with h
-      · cases hd1
-        cases hd2
-        cases h
-        dsimp at *
-        subst_vars
-        apply Red.trans (Red.cons_cons ih)
-        exact Red.Step.cons_not_rev.to_red
-      · exact Red.cons_cons ih
-
-@[to_additive]
-theorem reduce.not {p : Prop} :
-    ∀ {L₁ L₂ L₃ : List (α × Bool)} {x b}, reduce L₁ = L₂ ++ (x, b) :: (x, !b) :: L₃ → p
-  | [], L2, L3, _, _ => fun h => by cases L2 <;> injections
-  | (x, b) :: L1, L2, L3, x', b' => by
-    dsimp
-    cases r : reduce L1 with
-    | nil =>
-      dsimp; intro h
-      exfalso
-      have := congr_arg List.length h
-      simp? [List.length] at this says
-        simp only [List.length, zero_add, List.length_append] at this
-      rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
-      omega
-    | cons hd tail =>
-      cases' hd with y c
-      dsimp only
-      split_ifs with h <;> intro H
-      · rw [H] at r
-        exact @reduce.not _ L1 ((y, c) :: L2) L3 x' b' r
-      rcases L2 with (_ | ⟨a, L2⟩)
-      · injections; subst_vars
-        simp at h
-      · refine @reduce.not _ L1 L2 L3 x' b' ?_
-        injection H with _ H
-        rw [r, H]; rfl
-
-/-- The second theorem that characterises the function `reduce`: the maximal reduction of a word
-only reduces to itself. -/
-@[to_additive "The second theorem that characterises the function `reduce`: the maximal reduction of
-  a word only reduces to itself."]
-theorem reduce.min (H : Red (reduce L₁) L₂) : reduce L₁ = L₂ := by
-  induction' H with L1 L' L2 H1 H2 ih
-  · rfl
-  · cases' H1 with L4 L5 x b
-    exact reduce.not H2
-
-/-- `reduce` is idempotent, i.e. the maximal reduction of the maximal reduction of a word is the
-  maximal reduction of the word. -/
-@[to_additive (attr := simp) "`reduce` is idempotent, i.e. the maximal reduction of the maximal
-  reduction of a word is the maximal reduction of the word."]
-theorem reduce.idem : reduce (reduce L) = reduce L :=
-  Eq.symm <| reduce.min reduce.red
-
-@[to_additive]
-theorem reduce.Step.eq (H : Red.Step L₁ L₂) : reduce L₁ = reduce L₂ :=
-  let ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (reduce.red.head H)
-  (reduce.min HR13).trans (reduce.min HR23).symm
-
-/-- If a word reduces to another word, then they have a common maximal reduction. -/
-@[to_additive "If a word reduces to another word, then they have a common maximal reduction."]
-theorem reduce.eq_of_red (H : Red L₁ L₂) : reduce L₁ = reduce L₂ :=
-  let ⟨_L₃, HR13, HR23⟩ := Red.church_rosser reduce.red (Red.trans H reduce.red)
-  (reduce.min HR13).trans (reduce.min HR23).symm
-
-alias red.reduce_eq := reduce.eq_of_red
-
-alias freeAddGroup.red.reduce_eq := FreeAddGroup.reduce.eq_of_red
-
-@[to_additive]
-theorem Red.reduce_right (h : Red L₁ L₂) : Red L₁ (reduce L₂) :=
-  reduce.eq_of_red h ▸ reduce.red
-
-@[to_additive]
-theorem Red.reduce_left (h : Red L₁ L₂) : Red L₂ (reduce L₁) :=
-  (reduce.eq_of_red h).symm ▸ reduce.red
-
-/-- If two words correspond to the same element in the free group, then they
-have a common maximal reduction. This is the proof that the function that sends
-an element of the free group to its maximal reduction is well-defined. -/
-@[to_additive "If two words correspond to the same element in the additive free group, then they
-  have a common maximal reduction. This is the proof that the function that sends an element of the
-  free group to its maximal reduction is well-defined."]
-theorem reduce.sound (H : mk L₁ = mk L₂) : reduce L₁ = reduce L₂ :=
-  let ⟨_L₃, H13, H23⟩ := Red.exact.1 H
-  (reduce.eq_of_red H13).trans (reduce.eq_of_red H23).symm
-
-/-- If two words have a common maximal reduction, then they correspond to the same element in the
-  free group. -/
-@[to_additive "If two words have a common maximal reduction, then they correspond to the same
-  element in the additive free group."]
-theorem reduce.exact (H : reduce L₁ = reduce L₂) : mk L₁ = mk L₂ :=
-  Red.exact.2 ⟨reduce L₂, H ▸ reduce.red, reduce.red⟩
-
-/-- A word and its maximal reduction correspond to the same element of the free group. -/
-@[to_additive "A word and its maximal reduction correspond to the same element of the additive free
-  group."]
-theorem reduce.self : mk (reduce L) = mk L :=
-  reduce.exact reduce.idem
-
-/-- If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal reduction
-  of `w₁`. -/
-@[to_additive "If words `w₁ w₂` are such that `w₁` reduces to `w₂`, then `w₂` reduces to the maximal
-  reduction of `w₁`."]
-theorem reduce.rev (H : Red L₁ L₂) : Red L₂ (reduce L₁) :=
-  (reduce.eq_of_red H).symm ▸ reduce.red
-
-/-- The function that sends an element of the free group to its maximal reduction. -/
-@[to_additive "The function that sends an element of the additive free group to its maximal
-  reduction."]
-def toWord : FreeGroup α → List (α × Bool) :=
-  Quot.lift reduce fun _L₁ _L₂ H => reduce.Step.eq H
-
-@[to_additive]
-theorem mk_toWord : ∀ {x : FreeGroup α}, mk (toWord x) = x := by rintro ⟨L⟩; exact reduce.self
-
-@[to_additive]
-theorem toWord_injective : Function.Injective (toWord : FreeGroup α → List (α × Bool)) := by
-  rintro ⟨L₁⟩ ⟨L₂⟩; exact reduce.exact
-
-@[to_additive (attr := simp)]
-theorem toWord_inj {x y : FreeGroup α} : toWord x = toWord y ↔ x = y :=
-  toWord_injective.eq_iff
-
-@[to_additive (attr := simp)]
-theorem toWord_mk : (mk L₁).toWord = reduce L₁ :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem reduce_toWord : ∀ x : FreeGroup α, reduce (toWord x) = toWord x := by
-  rintro ⟨L⟩
-  exact reduce.idem
-
-@[to_additive (attr := simp)]
-theorem toWord_one : (1 : FreeGroup α).toWord = [] :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem toWord_eq_nil_iff {x : FreeGroup α} : x.toWord = [] ↔ x = 1 :=
-  toWord_injective.eq_iff' toWord_one
-
-@[to_additive]
-theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (reduce w) := by
-  apply reduce.min
-  rw [← red_invRev_iff, invRev_invRev]
-  apply Red.reduce_left
-  have : Red (invRev (invRev w)) (invRev (reduce (invRev w))) := reduce.red.invRev
-  rwa [invRev_invRev] at this
-
-@[to_additive]
-theorem toWord_inv {x : FreeGroup α} : x⁻¹.toWord = invRev x.toWord := by
-  rcases x with ⟨L⟩
-  rw [quot_mk_eq_mk, inv_mk, toWord_mk, toWord_mk, reduce_invRev]
-
-/-- **Constructive Church-Rosser theorem** (compare `church_rosser`). -/
-@[to_additive "**Constructive Church-Rosser theorem** (compare `church_rosser`)."]
-def reduce.churchRosser (H12 : Red L₁ L₂) (H13 : Red L₁ L₃) : { L₄ // Red L₂ L₄ ∧ Red L₃ L₄ } :=
-  ⟨reduce L₁, reduce.rev H12, reduce.rev H13⟩
-
-@[to_additive]
-instance : DecidableEq (FreeGroup α) :=
-  toWord_injective.decidableEq
-
--- TODO @[to_additive] doesn't succeed, possibly due to a bug
-instance Red.decidableRel : DecidableRel (@Red α)
-  | [], [] => isTrue Red.refl
-  | [], _hd2 :: _tl2 => isFalse fun H => List.noConfusion (Red.nil_iff.1 H)
-  | (x, b) :: tl, [] =>
-    match Red.decidableRel tl [(x, not b)] with
-    | isTrue H => isTrue <| Red.trans (Red.cons_cons H) <| (@Red.Step.not _ [] [] _ _).to_red
-    | isFalse H => isFalse fun H2 => H <| Red.cons_nil_iff_singleton.1 H2
-  | (x1, b1) :: tl1, (x2, b2) :: tl2 =>
-    if h : (x1, b1) = (x2, b2) then
-      match Red.decidableRel tl1 tl2 with
-      | isTrue H => isTrue <| h ▸ Red.cons_cons H
-      | isFalse H => isFalse fun H2 => H <| (Red.cons_cons_iff _).1 <| h.symm ▸ H2
-    else
-      match Red.decidableRel tl1 ((x1, ! b1) :: (x2, b2) :: tl2) with
-      | isTrue H => isTrue <| (Red.cons_cons H).tail Red.Step.cons_not
-      | isFalse H => isFalse fun H2 => H <| Red.inv_of_red_of_ne h H2
-
-/-- A list containing every word that `w₁` reduces to. -/
-def Red.enum (L₁ : List (α × Bool)) : List (List (α × Bool)) :=
-  List.filter (Red L₁) (List.sublists L₁)
-
-theorem Red.enum.sound (H : L₂ ∈ List.filter (Red L₁) (List.sublists L₁)) : Red L₁ L₂ :=
-  of_decide_eq_true (@List.of_mem_filter _ _ L₂ _ H)
-
-theorem Red.enum.complete (H : Red L₁ L₂) : L₂ ∈ Red.enum L₁ :=
-  List.mem_filter_of_mem (List.mem_sublists.2 <| Red.sublist H) (decide_eq_true H)
-
-instance : Fintype { L₂ // Red L₁ L₂ } :=
-  Fintype.subtype (List.toFinset <| Red.enum L₁) fun _L₂ =>
-    ⟨fun H => Red.enum.sound <| List.mem_toFinset.1 H, fun H =>
-      List.mem_toFinset.2 <| Red.enum.complete H⟩
-
-end Reduce
-
-section Metric
-
-variable [DecidableEq α]
-
-/-- The length of reduced words provides a norm on a free group. -/
-@[to_additive "The length of reduced words provides a norm on an additive free group."]
-def norm (x : FreeGroup α) : ℕ :=
-  x.toWord.length
-
-@[to_additive (attr := simp)]
-theorem norm_inv_eq {x : FreeGroup α} : norm x⁻¹ = norm x := by
-  simp only [norm, toWord_inv, invRev_length]
-
-@[to_additive (attr := simp)]
-theorem norm_eq_zero {x : FreeGroup α} : norm x = 0 ↔ x = 1 := by
-  simp only [norm, List.length_eq_zero, toWord_eq_nil_iff]
-
-@[to_additive (attr := simp)]
-theorem norm_one : norm (1 : FreeGroup α) = 0 :=
-  rfl
-
-@[to_additive]
-theorem norm_mk_le : norm (mk L₁) ≤ L₁.length :=
-  reduce.red.length_le
-
-@[to_additive]
-theorem norm_mul_le (x y : FreeGroup α) : norm (x * y) ≤ norm x + norm y :=
-  calc
-    norm (x * y) = norm (mk (x.toWord ++ y.toWord)) := by rw [← mul_mk, mk_toWord, mk_toWord]
-    _ ≤ (x.toWord ++ y.toWord).length := norm_mk_le
-    _ = norm x + norm y := List.length_append _ _
-
-end Metric
 
 end FreeGroup

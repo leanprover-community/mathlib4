@@ -3,8 +3,9 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Finset.Pointwise.Basic
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.Algebra.Group.Action.Pointwise.Finset
+import Mathlib.GroupTheory.QuotientGroup.Defs
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # Stabilizer of a set under a pointwise action
@@ -16,11 +17,13 @@ open Function MulOpposite Set
 open scoped Pointwise
 
 namespace MulAction
-variable {G H α : Type*} [Group G] [Group H] [MulAction G α] {a : G}
+variable {G H α : Type*}
 
 /-! ### Stabilizer of a set -/
 
 section Set
+section Group
+variable [Group G] [Group H] [MulAction G α] {a : G} {s t : Set α}
 
 @[to_additive (attr := simp)]
 lemma stabilizer_empty : stabilizer G (∅ : Set α) = ⊤ :=
@@ -57,7 +60,76 @@ lemma stabilizer_mul_self (s : Set G) : (stabilizer G s : Set G) * s = s := by
   rw [← mem_stabilizer_iff.1 ha]
   exact smul_mem_smul_set hb
 
+@[to_additive]
+lemma stabilizer_inf_stabilizer_le_stabilizer_apply₂ {f : Set α → Set α → Set α}
+    (hf : ∀ a : G, a • f s t = f (a • s) (a • t)) :
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (f s t) := by aesop (add simp [SetLike.le_def])
+
+@[to_additive]
+lemma stabilizer_inf_stabilizer_le_stabilizer_union :
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s ∪ t) :=
+  stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_union
+
+@[to_additive]
+lemma stabilizer_inf_stabilizer_le_stabilizer_inter :
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s ∩ t) :=
+  stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_inter
+
+@[to_additive]
+lemma stabilizer_inf_stabilizer_le_stabilizer_sdiff :
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (s \ t) :=
+  stabilizer_inf_stabilizer_le_stabilizer_apply₂ fun _ ↦ smul_set_sdiff
+
+@[to_additive]
+lemma stabilizer_union_eq_left (hdisj : Disjoint s t) (hstab : stabilizer G s ≤ stabilizer G t)
+    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G t) :
+    stabilizer G (s ∪ t) = stabilizer G s := by
+  refine le_antisymm ?_ ?_
+  · calc
+      stabilizer G (s ∪ t)
+        ≤ stabilizer G (s ∪ t) ⊓ stabilizer G t := by simpa
+      _ ≤ stabilizer G ((s ∪ t) \ t) := stabilizer_inf_stabilizer_le_stabilizer_sdiff
+      _ = stabilizer G s := by rw [union_diff_cancel_right]; simpa [← disjoint_iff_inter_eq_empty]
+  · calc
+      stabilizer G s
+        ≤ stabilizer G s ⊓ stabilizer G t := by simpa
+      _ ≤ stabilizer G (s ∪ t) := stabilizer_inf_stabilizer_le_stabilizer_union
+
+@[to_additive]
+lemma stabilizer_union_eq_right (hdisj : Disjoint s t) (hstab : stabilizer G t ≤ stabilizer G s)
+    (hstab_union : stabilizer G (s ∪ t) ≤ stabilizer G s)  :
+    stabilizer G (s ∪ t) = stabilizer G t := by
+  rw [union_comm, stabilizer_union_eq_left hdisj.symm hstab (union_comm .. ▸ hstab_union)]
+
+variable {s : Set G}
+
+open scoped RightActions in
+@[to_additive]
+lemma op_smul_set_stabilizer_subset (ha : a ∈ s) : (stabilizer G s : Set G) <• a ⊆ s :=
+  smul_set_subset_iff.2 fun b hb ↦ by rw [← hb]; exact smul_mem_smul_set ha
+
+@[to_additive]
+lemma stabilizer_subset_div_right (ha : a ∈ s) : ↑(stabilizer G s) ⊆ s / {a} := fun b hb ↦
+  ⟨_, by rwa [← smul_eq_mul, mem_stabilizer_set.1 hb], _, mem_singleton _, mul_div_cancel_right _ _⟩
+
+@[to_additive]
+lemma stabilizer_finite (hs₀ : s.Nonempty) (hs : s.Finite) : (stabilizer G s : Set G).Finite := by
+  obtain ⟨a, ha⟩ := hs₀
+  exact (hs.div <| finite_singleton _).subset <| stabilizer_subset_div_right ha
+
+end Group
+
+section CommGroup
+variable [CommGroup G] {s t : Set G} {a : G}
+
+@[to_additive]
+lemma smul_set_stabilizer_subset (ha : a ∈ s) : a • (stabilizer G s : Set G) ⊆ s := by
+  simpa using op_smul_set_stabilizer_subset ha
+
+end CommGroup
 end Set
+
+variable [Group G] [Group H] [MulAction G α] {a : G}
 
 /-! ### Stabilizer of a subgroup -/
 
@@ -74,7 +146,7 @@ lemma stabilizer_subgroup (s : Subgroup G) : stabilizer G (s : Set G) = s := by
 @[to_additive (attr := simp)]
 lemma stabilizer_op_subgroup (s : Subgroup G) : stabilizer Gᵐᵒᵖ (s : Set G) = s.op := by
   simp_rw [SetLike.ext_iff, mem_stabilizer_set]
-  simp? says simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op]
+  simp only [smul_eq_mul_unop, SetLike.mem_coe, Subgroup.mem_op, «forall», unop_op]
   refine fun a ↦ ⟨fun h ↦ ?_, fun ha b ↦ s.mul_mem_cancel_right ha⟩
   simpa only [op_smul_eq_mul, SetLike.mem_coe, one_mul] using (h 1).2 s.one_mem
 
@@ -92,7 +164,7 @@ end Subgroup
 section Finset
 variable [DecidableEq α]
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 lemma stabilizer_coe_finset (s : Finset α) : stabilizer G (s : Set α) = stabilizer G s := by
   ext; simp [← Finset.coe_inj]
 
@@ -132,6 +204,8 @@ end Finset
 
 /-! ### Stabilizer of a finite set -/
 
+variable {s : Set α}
+
 @[to_additive]
 lemma mem_stabilizer_set_iff_subset_smul_set {s : Set α} (hs : s.Finite) :
     a ∈ stabilizer G s ↔ s ⊆ a • s := by
@@ -147,6 +221,12 @@ lemma mem_stabilizer_set_iff_smul_set_subset {s : Set α} (hs : s.Finite) :
   classical
   rw [stabilizer_coe_finset, mem_stabilizer_finset_iff_smul_finset_subset, ← Finset.coe_smul_finset,
     Finset.coe_subset]
+
+@[deprecated (since := "2024-11-25")]
+alias mem_stabilizer_of_finite_iff_smul_le := mem_stabilizer_set_iff_subset_smul_set
+
+@[deprecated (since := "2024-11-25")]
+alias mem_stabilizer_of_finite_iff_le_smul := mem_stabilizer_set_iff_smul_set_subset
 
 @[to_additive]
 lemma mem_stabilizer_set' {s : Set α} (hs : s.Finite) :

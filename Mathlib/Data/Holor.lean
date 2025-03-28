@@ -3,8 +3,9 @@ Copyright (c) 2018 Alexander Bentkamp. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alexander Bentkamp
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Data.Nat.Find
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Basic properties of holors
@@ -44,18 +45,22 @@ namespace HolorIndex
 
 variable {ds₁ ds₂ ds₃ : List ℕ}
 
+/-- Take the first elements of a `HolorIndex`. -/
 def take : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₁
   | ds, is => ⟨List.take (length ds) is.1, forall₂_take_append is.1 ds ds₂ is.2⟩
 
+/-- Drop the first elements of a `HolorIndex`. -/
 def drop : ∀ {ds₁ : List ℕ}, HolorIndex (ds₁ ++ ds₂) → HolorIndex ds₂
   | ds, is => ⟨List.drop (length ds) is.1, forall₂_drop_append is.1 ds ds₂ is.2⟩
 
 theorem cast_type (is : List ℕ) (eq : ds₁ = ds₂) (h : Forall₂ (· < ·) is ds₁) :
     (cast (congr_arg HolorIndex eq) ⟨is, h⟩).val = is := by subst eq; rfl
 
+/-- Right associator for `HolorIndex` -/
 def assocRight : HolorIndex (ds₁ ++ ds₂ ++ ds₃) → HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) :=
   cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃))
 
+/-- Left associator for `HolorIndex` -/
 def assocLeft : HolorIndex (ds₁ ++ (ds₂ ++ ds₃)) → HolorIndex (ds₁ ++ ds₂ ++ ds₃) :=
   cast (congr_arg HolorIndex (append_assoc ds₁ ds₂ ds₃).symm)
 
@@ -120,9 +125,11 @@ theorem cast_type (eq : ds₁ = ds₂) (a : Holor α ds₁) :
     cast (congr_arg (Holor α) eq) a = fun t => a (cast (congr_arg HolorIndex eq.symm) t) := by
   subst eq; rfl
 
+/-- Right associator for `Holor` -/
 def assocRight : Holor α (ds₁ ++ ds₂ ++ ds₃) → Holor α (ds₁ ++ (ds₂ ++ ds₃)) :=
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃))
 
+/-- Left associator for `Holor` -/
 def assocLeft : Holor α (ds₁ ++ (ds₂ ++ ds₃)) → Holor α (ds₁ ++ ds₂ ++ ds₃) :=
   cast (congr_arg (Holor α) (append_assoc ds₁ ds₂ ds₃).symm)
 
@@ -181,9 +188,9 @@ theorem slice_eq (x : Holor α (d :: ds)) (y : Holor α (d :: ds)) (h : slice x 
       have hid : i < d := (forall₂_cons.1 hiisdds).1
       have hisds : Forall₂ (· < ·) is ds := (forall₂_cons.1 hiisdds).2
       calc
-        x ⟨i :: is, _⟩ = slice x i hid ⟨is, hisds⟩ := congr_arg (fun t => x t) (Subtype.eq rfl)
+        x ⟨i :: is, _⟩ = slice x i hid ⟨is, hisds⟩ := congr_arg x (Subtype.eq rfl)
         _ = slice y i hid ⟨is, hisds⟩ := by rw [h]
-        _ = y ⟨i :: is, _⟩ := congr_arg (fun t => y t) (Subtype.eq rfl)
+        _ = y ⟨i :: is, _⟩ := congr_arg y (Subtype.eq rfl)
 
 theorem slice_unitVec_mul [Ring α] {i : ℕ} {j : ℕ} (hid : i < d) (x : Holor α ds) :
     slice (unitVec d j ⊗ x) i hid = if i = j then x else 0 :=
@@ -256,12 +263,11 @@ theorem cprankMax_add [Monoid α] [AddMonoid α] :
     match hx with
     | CPRankMax.zero => simp only [zero_add, hy]
   | m + 1, n, _, y, CPRankMax.succ _ x₁ x₂ hx₁ hx₂, hy => by
-    simp only [add_comm, add_assoc]
+    suffices CPRankMax (m + n + 1) (x₁ + (x₂ + y)) by
+      simpa only [add_comm, add_assoc, add_left_comm] using this
     apply CPRankMax.succ
     · assumption
-    · -- Porting note: Single line is added.
-      simp only [Nat.add_eq, add_zero, add_comm n m]
-      exact cprankMax_add hx₂ hy
+    · exact cprankMax_add hx₂ hy
 
 theorem cprankMax_mul [Ring α] :
     ∀ (n : ℕ) (x : Holor α [d]) (y : Holor α ds), CPRankMax n y → CPRankMax n (x ⊗ y)

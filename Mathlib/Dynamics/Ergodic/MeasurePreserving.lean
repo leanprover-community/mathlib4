@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Measure.AEMeasurable
+import Mathlib.Order.Filter.EventuallyConst
 
 /-!
 # Measure preserving maps
@@ -25,13 +26,13 @@ Isabelle formalization.
 measure preserving map, measure
 -/
 
+open MeasureTheory.Measure Function Set
+open scoped ENNReal
 
 variable {α β γ δ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
   [MeasurableSpace δ]
 
 namespace MeasureTheory
-
-open Measure Function Set
 
 variable {μa : Measure α} {μb : Measure β} {μc : Measure γ} {μd : Measure δ}
 
@@ -101,13 +102,13 @@ protected theorem comp_left_iff {g : α → β} {e : β ≃ᵐ γ} (h : MeasureP
     MeasurePreserving (e ∘ g) μa μc ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => h.comp hg⟩
   convert (MeasurePreserving.symm e h).comp hg
-  simp [← Function.comp.assoc e.symm e g]
+  simp [← Function.comp_assoc e.symm e g]
 
 protected theorem comp_right_iff {g : α → β} {e : γ ≃ᵐ α} (h : MeasurePreserving e μc μa) :
     MeasurePreserving (g ∘ e) μc μb ↔ MeasurePreserving g μa μb := by
   refine ⟨fun hg => ?_, fun hg => hg.comp h⟩
   convert hg.comp (MeasurePreserving.symm e h)
-  simp [Function.comp.assoc g e e.symm]
+  simp [Function.comp_assoc g e e.symm]
 
 protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb) [SigmaFinite μb] :
     SigmaFinite μa :=
@@ -126,12 +127,34 @@ theorem measure_preimage_equiv {f : α ≃ᵐ β} (hf : MeasurePreserving f μa 
     μa (f ⁻¹' s) = μb s :=
   measure_preimage_emb hf f.measurableEmbedding s
 
-protected theorem iterate {f : α → α} (hf : MeasurePreserving f μa μa) :
-    ∀ n, MeasurePreserving f^[n] μa μa
-  | 0 => MeasurePreserving.id μa
-  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
+theorem aeconst_comp [MeasurableSingletonClass γ] {f : α → β} (hf : MeasurePreserving f μa μb)
+    {g : β → γ} (hg : NullMeasurable g μb) :
+    Filter.EventuallyConst (g ∘ f) (ae μa) ↔ Filter.EventuallyConst g (ae μb) :=
+  exists_congr fun s ↦ and_congr_left fun hs ↦ by
+    simp only [Filter.mem_map, mem_ae_iff, ← hf.measure_preimage (hg hs.measurableSet).compl,
+      preimage_comp, preimage_compl]
+
+theorem aeconst_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
+    (hs : NullMeasurableSet s μb) :
+    Filter.EventuallyConst (f ⁻¹' s) (ae μa) ↔ Filter.EventuallyConst s (ae μb) :=
+  aeconst_comp hf hs.mem
+
+theorem add_measure {f μa' μb'} (hf : MeasurePreserving f μa μb)
+    (hf' : MeasurePreserving f μa' μb') : MeasurePreserving f (μa + μa') (μb + μb') where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_add _ _ hf.measurable, hf.map_eq, hf'.map_eq]
+
+theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] {f : α → β}
+    (hf : MeasurePreserving f μa μb) (c : R) : MeasurePreserving f (c • μa) (c • μb) where
+  measurable := hf.measurable
+  map_eq := by rw [Measure.map_smul, hf.map_eq]
 
 variable {μ : Measure α} {f : α → α} {s : Set α}
+
+protected theorem iterate (hf : MeasurePreserving f μ μ) :
+    ∀ n, MeasurePreserving f^[n] μ μ
+  | 0 => .id μ
+  | n + 1 => (MeasurePreserving.iterate hf n).comp hf
 
 open scoped symmDiff in
 lemma measure_symmDiff_preimage_iterate_le
@@ -160,10 +183,6 @@ theorem exists_mem_iterate_mem_of_measure_univ_lt_mul_measure (hf : MeasurePrese
   · exact this j hj i hi hij.symm hxj hxi (hij.lt_or_lt.resolve_left hlt)
   refine ⟨f^[i] x, hxi, j - i, ⟨tsub_pos_of_lt hlt, lt_of_le_of_lt (j.sub_le i) hj⟩, ?_⟩
   rwa [← iterate_add_apply, tsub_add_cancel_of_le hlt.le]
-
-@[deprecated (since := "2024-08-12")]
-alias exists_mem_iterate_mem_of_volume_lt_mul_volume :=
-  exists_mem_iterate_mem_of_measure_univ_lt_mul_measure
 
 /-- A self-map preserving a finite measure is conservative: if `μ s ≠ 0`, then at least one point
 `x ∈ s` comes back to `s` under iterations of `f`. Actually, a.e. point of `s` comes back to `s`

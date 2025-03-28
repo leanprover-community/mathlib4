@@ -7,7 +7,7 @@ import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
 import Mathlib.Lean.Meta.RefinedDiscrTree.Initialize
-import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
+import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 import Batteries.Data.RBMap.Alter
 
 /-!
@@ -20,7 +20,7 @@ open Lean Meta
 namespace Meta.FunProp
 
 /-- Tag for one of the 5 basic lambda theorems, that also hold extra data for composition theorem
- -/
+-/
 inductive LambdaTheoremArgs
   /-- Identity theorem e.g. `Continuous fun x => x` -/
   | id
@@ -139,14 +139,14 @@ compositional
 ```
 theorem Continuous_add (hf : Continuous f) (hg : Continuous g) : Continuous (fun x => (f x) + (g x))
 ```
- -/
+-/
 inductive TheoremForm where
   | uncurried | comp
   deriving Inhabited, BEq, Repr
 
 /-- TheoremForm to string -/
 instance : ToString TheoremForm :=
-  ⟨fun x => match x with | .uncurried => "uncurried" | .comp => "compositional"⟩
+  ⟨fun x => match x with | .uncurried => "simple" | .comp => "compositional"⟩
 
 /-- theorem about specific function (either declared constant or free variable) -/
 structure FunctionTheorem where
@@ -158,9 +158,9 @@ structure FunctionTheorem where
   funOrigin   : Origin
   /-- array of argument indices about which this theorem is about -/
   mainArgs    : Array Nat
-  /-- total number of arguments applied to the function  -/
+  /-- total number of arguments applied to the function -/
   appliedArgs : Nat
-  /-- priority  -/
+  /-- priority -/
   priority    : Nat  := eval_prio default
   /-- form of the theorem, see documentation of TheoremForm -/
   form : TheoremForm
@@ -168,6 +168,7 @@ structure FunctionTheorem where
 
 private local instance : Ord Name := ⟨Name.quickCmp⟩
 
+set_option linter.style.docString false in
 /-- -/
 structure FunctionTheorems where
   /-- map: function name → function property → function theorem -/
@@ -182,7 +183,7 @@ def FunctionTheorem.getProof (thm : FunctionTheorem) : MetaM Expr := do
   | .decl name => mkConstWithFreshMVarLevels name
   | .fvar id => return .fvar id
 
-
+set_option linter.style.docString false in
 /-- -/
 abbrev FunctionTheoremsExt := SimpleScopedEnvExtension FunctionTheorem FunctionTheorems
 
@@ -201,6 +202,7 @@ initialize functionTheoremsExt : FunctionTheoremsExt ←
               thms.push e}
   }
 
+set_option linter.style.docString false in
 /-- -/
 def getTheoremsForFunction (funName : Name) (funPropName : Name) :
     CoreM (Array FunctionTheorem) := do
@@ -214,10 +216,10 @@ def getTheoremsForFunction (funName : Name) (funPropName : Name) :
 def GeneralTheorem.getProof (thm : GeneralTheorem) : MetaM Expr := do
   mkConstWithFreshMVarLevels thm.thmName
 
-/-- -/
+/-- Extendions for transition or morphism theorems -/
 abbrev GeneralTheoremsExt := SimpleScopedEnvExtension GeneralTheorem GeneralTheorems
 
-/-- -/
+/-- Environment extension for transition theorems. -/
 initialize transitionTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -227,7 +229,18 @@ initialize transitionTheoremsExt : GeneralTheoremsExt ←
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
-/-- -/
+/-- Get transition theorems applicable to `e`.
+
+For example calling on `e` equal to `Continuous f` might return theorems implying continuity
+from linearity over finite dimensional spaces or differentiability. -/
+def getTransitionTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
+  let thms := (← get).transitionTheorems.theorems
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    thms.getMatch e false true
+  modify ({ · with transitionTheorems := ⟨thms⟩ })
+  return candidates.toArray
+
+/-- Environment extension for morphism theorems. -/
 initialize morTheoremsExt : GeneralTheoremsExt ←
   registerSimpleScopedEnvExtension {
     name     := by exact decl_name%
@@ -237,6 +250,17 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
         RefinedDiscrTree.insert thms key (entry, e)) d.theorems}
   }
 
+
+/-- Get morphism theorems applicable to `e`.
+
+For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
+inferring continuity from the bundled morphism. -/
+def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
+  let thms := (← get).morTheorems.theorems
+  let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
+    thms.getMatch e false true
+  modify ({ · with morTheorems := ⟨thms⟩ })
+  return candidates.toArray
 
 
 --------------------------------------------------------------------------------
@@ -285,13 +309,11 @@ type of theorem it is. -/
 def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : MetaM Theorem := do
   let info ← getConstInfo declName
   forallTelescope info.type fun xs b => do
-
     let .some (decl,f) ← getFunProp? b
       | throwError "unrecognized function property `{← ppExpr b}`"
     let funPropName := decl.funPropName
-
-    let fData? ← getFunctionData? f defaultUnfoldPred {zeta := false}
-
+    let fData? ←
+      withConfig (fun cfg => { cfg with zeta := false}) <| getFunctionData? f defaultUnfoldPred
     if let .some thmArgs ← detectLambdaTheoremArgs (← fData?.get) xs then
       return .lam {
         funPropName := funPropName
@@ -322,7 +344,7 @@ def getTheoremFromConst (declName : Name) (prio : Nat := eval_prio default) : Me
       }
     | .fvar .. =>
       let (_,_,b') ← forallMetaTelescope info.type
-      let keys ← RefinedDiscrTree.initializeLazyEntry b' {}
+      let keys ← RefinedDiscrTree.initializeLazyEntryWithEta b'
       let thm : GeneralTheorem := {
         funPropName := funPropName
         thmName := declName

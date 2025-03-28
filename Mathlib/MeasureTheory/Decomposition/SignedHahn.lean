@@ -3,7 +3,7 @@ Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.MeasureTheory.Measure.VectorMeasure
+import Mathlib.MeasureTheory.VectorMeasure.Basic
 import Mathlib.Order.SymmDiff
 
 /-!
@@ -37,7 +37,7 @@ Hahn decomposition theorem
 
 noncomputable section
 
-open scoped Classical NNReal ENNReal MeasureTheory
+open scoped NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [OrderedAddCommMonoid M]
@@ -99,6 +99,7 @@ private theorem existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
   let ⟨n, hn⟩ := exists_nat_one_div_lt hj
   ⟨n, k, hj₂, hj₁, hn⟩
 
+open scoped Classical in
 /-- Given the set `i`, if `i` is not negative, `findExistsOneDivLT s i` is the
 least natural number `n` such that `ExistsOneDivLT s i n`, otherwise, it returns 0. -/
 private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
@@ -111,9 +112,11 @@ private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
 
 private theorem findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
     (hm : m < findExistsOneDivLT s i) : ¬ExistsOneDivLT s i m := by
+  classical
   rw [findExistsOneDivLT, dif_pos hi] at hm
   exact Nat.find_min _ hm
 
+open scoped Classical in
 /-- Given the set `i`, if `i` is not negative, `someExistsOneDivLT` chooses the set
 `k` from `ExistsOneDivLT s i (findExistsOneDivLT s i)`, otherwise, it returns the
 empty set. -/
@@ -211,6 +214,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
       (someExistsOneDivLT_subset hx₂).2
         (Set.mem_iUnion.2 ⟨n, Set.mem_iUnion.2 ⟨Nat.lt_succ_iff.mp h, hx₁⟩⟩)
 
+open scoped Function in -- required for scoped `on` notation
 private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonposSeq s i) := by
   intro n m h
   rw [Function.onFun, Set.disjoint_iff_inter_eq_empty]
@@ -221,6 +225,7 @@ private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonpo
 private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ : s i < 0)
     (hn : ¬∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
+  classical
   by_cases h : s ≤[i] 0
   · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
   push_neg at hn
@@ -229,7 +234,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
   have hmeas : MeasurableSet (⋃ (l : ℕ) (_ : l < k), restrictNonposSeq s i l) :=
     MeasurableSet.iUnion fun _ => MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   refine ⟨i \ ⋃ l < k, restrictNonposSeq s i l, hi₁.diff hmeas, Set.diff_subset, hk₂, ?_⟩
-  rw [of_diff hmeas hi₁, s.of_disjoint_iUnion_nat]
+  rw [of_diff hmeas hi₁, s.of_disjoint_iUnion]
   · have h₁ : ∀ l < k, 0 ≤ s (restrictNonposSeq s i l) := by
       intro l hl
       refine le_of_lt (measure_of_restrictNonposSeq h _ ?_)
@@ -247,7 +252,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
       rw [Set.mem_iUnion, exists_prop, and_iff_right_iff_imp]
       exact fun _ => h
     · convert le_of_eq s.empty.symm
-      ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false_iff]
+      ext; simp only [exists_prop, Set.mem_empty_iff_false, Set.mem_iUnion, not_and, iff_false]
       exact fun h' => False.elim (h h')
   · intro; exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
   · intro a b hab
@@ -276,7 +281,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
         simp only [exists_prop, Set.mem_iUnion, and_congr_left_iff]
         exact fun _ => Nat.lt_succ_iff.symm
   have h₁ : s i = s A + ∑' l, s (restrictNonposSeq s i l) := by
-    rw [hA, ← s.of_disjoint_iUnion_nat, add_comm, of_add_of_diff]
+    rw [hA, ← s.of_disjoint_iUnion, add_comm, of_add_of_diff]
     · exact MeasurableSet.iUnion fun _ => restrictNonposSeq_measurableSet _
     exacts [hi₁, Set.iUnion_subset fun _ => restrictNonposSeq_subset _, fun _ =>
       restrictNonposSeq_measurableSet _, restrictNonposSeq_disjoint]
@@ -312,7 +317,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
     · have : 1 / s E < bdd k := by
         linarith only [le_of_max_le_left (hk k le_rfl)]
       rw [one_div] at this ⊢
-      rwa [inv_lt (lt_trans (inv_pos.2 hE₃) this) hE₃]
+      exact inv_lt_of_inv_lt₀ hE₃ this
   obtain ⟨k, hk₁, hk₂⟩ := this
   have hA' : A ⊆ i \ ⋃ l ≤ k, restrictNonposSeq s i l := by
     apply Set.diff_subset_diff_right

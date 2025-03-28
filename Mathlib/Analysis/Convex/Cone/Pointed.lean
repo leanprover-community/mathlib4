@@ -65,7 +65,7 @@ def _root_.ConvexCone.toPointedCone {S : ConvexCone 𝕜 E} (hS : S.Pointed) : P
   zero_mem' := hS
   smul_mem' := fun ⟨c, hc⟩ x hx => by
     simp_rw [SetLike.mem_coe]
-    cases' eq_or_lt_of_le hc with hzero hpos
+    rcases eq_or_lt_of_le hc with hzero | hpos
     · unfold ConvexCone.Pointed at hS
       convert hS
       simp [← hzero]
@@ -186,6 +186,7 @@ def dual (S : PointedCone ℝ E) : PointedCone ℝ E :=
 theorem toConvexCone_dual (S : PointedCone ℝ E) : ↑(dual S) = (S : Set E).innerDualCone :=
   rfl
 
+open scoped InnerProductSpace in
 @[simp]
 theorem mem_dual {S : PointedCone ℝ E} {y : E} : y ∈ dual S ↔ ∀ ⦃x⦄, x ∈ S → 0 ≤ ⟪x, y⟫_ℝ := by
   rfl

@@ -41,8 +41,8 @@ notation:50 A " ≃ₗc[" R "] " B => CoalgEquiv R A B
 from `A` to `B`. -/
 class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [AddCommMonoid A] [AddCommMonoid B] [Module R A] [Module R B]
-    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B]
-    extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B : Prop
+    [CoalgebraStruct R A] [CoalgebraStruct R B] [EquivLike F A B] : Prop
+    extends CoalgHomClass F R A B, SemilinearEquivClass F (RingHom.id R) A B
 
 namespace CoalgEquivClass
 
@@ -118,14 +118,6 @@ variable [AddCommMonoid A] [AddCommMonoid B] [AddCommMonoid C] [Module R A] [Mod
 
 variable (e e' : A ≃ₗc[R] B)
 
-/-- See Note [custom simps projection] -/
-def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
-    [AddCommMonoid α] [AddCommMonoid β] [Module R α]
-    [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
-    (f : α ≃ₗc[R] β) : α → β := f
-
-initialize_simps_projections CoalgEquiv (toFun → apply)
-
 @[simp, norm_cast]
 theorem coe_coe : ⇑(e : A →ₗc[R] B) = e :=
   rfl
@@ -165,24 +157,6 @@ protected theorem congr_fun (h : e = e') (x : A) : e x = e' x :=
 
 end
 
-section
-
-variable (A R)
-
-/-- The identity map is a coalgebra equivalence. -/
-@[refl, simps!]
-def refl : A ≃ₗc[R] A :=
-  { CoalgHom.id R A, LinearEquiv.refl R A with }
-
-end
-
-@[simp]
-theorem refl_toLinearEquiv : refl R A = LinearEquiv.refl R A := rfl
-
-@[simp]
-theorem refl_toCoalgHom : refl R A = CoalgHom.id R A :=
-  rfl
-
 /-- Coalgebra equivalences are symmetric. -/
 @[symm]
 def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
@@ -196,13 +170,11 @@ def symm (e : A ≃ₗc[R] B) : B ≃ₗc[R] A :=
         LinearEquiv.ofLinear_toLinearMap, ← LinearMap.comp_assoc, CoalgHomClass.map_comp_comul,
         LinearEquiv.eq_comp_toLinearMap_symm] }
 
-@[simp]
-theorem symm_toLinearEquiv (e : A ≃ₗc[R] B) :
-    e.symm = (e : A ≃ₗ[R] B).symm := rfl
-
-@[simp]
-theorem symm_toCoalgHom (e : A ≃ₗc[R] B) :
-    ((e.symm : B →ₗc[R] A) : B →ₗ[R] A) = (e : A ≃ₗ[R] B).symm := rfl
+/-- See Note [custom simps projection] -/
+def Simps.apply {R : Type*} [CommSemiring R] {α β : Type*}
+    [AddCommMonoid α] [AddCommMonoid β] [Module R α]
+    [Module R β] [CoalgebraStruct R α] [CoalgebraStruct R β]
+    (f : α ≃ₗc[R] β) : α → β := f
 
 /-- See Note [custom simps projection] -/
 def Simps.symm_apply {R : Type*} [CommSemiring R]
@@ -211,7 +183,41 @@ def Simps.symm_apply {R : Type*} [CommSemiring R]
     (e : A ≃ₗc[R] B) : B → A :=
   e.symm
 
-initialize_simps_projections CoalgEquiv (invFun → symm_apply)
+initialize_simps_projections CoalgEquiv (toFun → apply, invFun → symm_apply)
+
+variable (A R) in
+/-- The identity map is a coalgebra equivalence. -/
+@[refl, simps!]
+def refl : A ≃ₗc[R] A :=
+  { CoalgHom.id R A, LinearEquiv.refl R A with }
+
+@[simp]
+theorem refl_toLinearEquiv : refl R A = LinearEquiv.refl R A := rfl
+
+@[simp]
+theorem refl_toCoalgHom : refl R A = CoalgHom.id R A :=
+  rfl
+
+@[simp]
+theorem symm_toLinearEquiv (e : A ≃ₗc[R] B) :
+    e.symm = (e : A ≃ₗ[R] B).symm := rfl
+
+theorem coe_symm_toLinearEquiv (e : A ≃ₗc[R] B) :
+    ⇑(e : A ≃ₗ[R] B).symm = e.symm := rfl
+
+@[simp]
+theorem symm_toCoalgHom (e : A ≃ₗc[R] B) :
+    ((e.symm : B →ₗc[R] A) : B →ₗ[R] A) = (e : A ≃ₗ[R] B).symm := rfl
+
+@[simp]
+theorem symm_apply_apply (e : A ≃ₗc[R] B) (x) :
+    e.symm (e x) = x :=
+  LinearEquiv.symm_apply_apply (e : A ≃ₗ[R] B) x
+
+@[simp]
+theorem apply_symm_apply (e : A ≃ₗc[R] B) (x) :
+    e (e.symm x) = x :=
+  LinearEquiv.apply_symm_apply (e : A ≃ₗ[R] B) x
 
 @[simp]
 theorem invFun_eq_symm : e.invFun = e.symm :=
@@ -240,4 +246,35 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
   rfl
 
 end
+variable [CommSemiring R] [AddCommMonoid A] [Module R A] [Coalgebra R A]
+  [AddCommMonoid B] [Module R B] [CoalgebraStruct R B]
+
+/-- Let `A` be an `R`-coalgebra and let `B` be an `R`-module with a `CoalgebraStruct`.
+A linear equivalence `A ≃ₗ[R] B` that respects the `CoalgebraStruct`s defines an `R`-coalgebra
+structure on `B`. -/
+@[reducible] def toCoalgebra (f : A ≃ₗc[R] B) :
+    Coalgebra R B where
+  coassoc := by
+    simp only [← ((f : A ≃ₗ[R] B).comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul,
+      ← LinearMap.comp_assoc]
+    congr 1
+    ext x
+    simpa only [toCoalgHom_eq_coe, CoalgHom.toLinearMap_eq_coe, LinearMap.coe_comp,
+      LinearEquiv.coe_coe, Function.comp_apply, ← (ℛ R _).eq, map_sum, TensorProduct.map_tmul,
+      LinearMap.coe_coe, CoalgHom.coe_coe, LinearMap.rTensor_tmul, coe_symm_toLinearEquiv,
+      symm_apply_apply, LinearMap.lTensor_comp_map, TensorProduct.sum_tmul,
+      TensorProduct.assoc_tmul, TensorProduct.tmul_sum] using (sum_map_tmul_tmul_eq f f f x).symm
+  rTensor_counit_comp_comul := by
+    simp_rw [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
+      ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
+      f.toLinearEquiv.comp_toLinearMap_symm_eq]
+    ext x
+    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
+  lTensor_counit_comp_comul := by
+    simp_rw [(f.toLinearEquiv.eq_comp_toLinearMap_symm _ _).2 f.counit_comp,
+      ← (f.toLinearEquiv.comp_toLinearMap_symm_eq _ _).2 f.map_comp_comul, ← LinearMap.comp_assoc,
+      f.toLinearEquiv.comp_toLinearMap_symm_eq]
+    ext x
+    simp [← (ℛ R _).eq, coe_symm_toLinearEquiv]
+
 end CoalgEquiv

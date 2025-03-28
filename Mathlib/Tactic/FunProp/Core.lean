@@ -3,12 +3,10 @@ Copyright (c) 2024 Tomáš Skřivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomáš Skřivan
 -/
-import Lean
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Lean.Expr.Basic
-import Mathlib.Lean.Meta.RefinedDiscrTree.Lookup
 import Batteries.Tactic.Exact
 
 /-!
@@ -132,7 +130,7 @@ def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
         for (id,v) in hint do
           xs[id]!.mvarId!.assignIfDefeq v
       catch _ =>
-        trace[Meta.Tactic.fun_trans]
+        trace[Debug.Meta.Tactic.fun_prop]
           "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
 
     tryTheoremCore xs thmProof type e thmOrigin funProp
@@ -326,10 +324,7 @@ def applyMorRules (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     applyCompRule funPropDecl e f g funProp
   | .exact =>
 
-    let thms := (← get).morTheorems.theorems
-    let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
-    modify ({ · with morTheorems := ⟨thms⟩ })
-    let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
+    let candidates ← getMorphismTheorems e
 
     trace[Meta.Tactic.fun_prop]
       "candidate morphism theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -346,10 +341,7 @@ def applyTransitionRules (e : Expr) (funProp : Expr → FunPropM (Option Result)
     FunPropM (Option Result) := do
   withIncreasedTransitionDepth do
 
-  let thms := (← get).transitionTheorems.theorems
-  let (candidates, thms) ← thms.getMatch e { iota := false, zeta := false } false true
-  modify ({ · with transitionTheorems := ⟨thms⟩ })
-  let candidates := candidates.elts.foldl (init := #[]) fun r a => a.foldl (init := r) (· ++ ·)
+  let candidates ← getTransitionTheorems e
 
   trace[Meta.Tactic.fun_prop]
     "candidate transition theorems: {← candidates.mapM fun c => ppOrigin (.decl c.thmName)}"
@@ -368,16 +360,15 @@ For example
   - `e = q(Continuous fun x => foo (bar x) y)`
   - `fData` contains info on `fun x => foo (bar x) y`
   This tries to prove `Continuous fun x => foo (bar x) y` from `Continuous fun x => foo (bar x)`
- -/
+-/
 def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) :
     FunPropM (Option Result) := do
 
-  match fData.args.size with
+  match h : fData.args.size with
   | 0 => throwError "fun_prop bug: invalid use of remove arg case {←ppExpr e}"
-  | _ =>
-    let n := fData.args.size
-    let arg := fData.args[n-1]!
+  | n + 1 =>
+    let arg := fData.args[n]
 
     if arg.coe.isSome then
       -- if have to apply morphisms rules if we deal with morphims
@@ -437,7 +428,8 @@ def getLocalTheorems (funPropDecl : FunPropDecl) (funOrigin : Origin)
       let .some (decl,f) ← getFunProp? b | return none
       unless decl.funPropName = funPropDecl.funPropName do return none
 
-      let .data fData ← getFunctionData? f (← unfoldNamePred) {zeta := false} | return none
+      let .data fData ← getFunctionData? f (← unfoldNamePred)
+        | return none
       unless (fData.getFnOrigin == funOrigin) do return none
 
       unless isOrderedSubsetOf mainArgs fData.mainArgs do return none
@@ -510,20 +502,18 @@ def tryTheorems (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
             if let .some r ← tryTheorem? e thm.thmOrigin funProp then
               return r
           | .some (.some (f,g)) =>
-            trace[Debug.Meta.Tactic.fun_prop]
-              s!"decomposing to later use {←ppOrigin' thm.thmOrigin}"
-            trace[Debug.Meta.Tactic.fun_prop]
-              s!"decomposition: {← ppExpr f} ∘ {← ppExpr g}"
+            trace[Meta.Tactic.fun_prop]
+              s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
+                   ({← ppExpr f}) ∘ ({← ppExpr g})"
             if let .some r ← applyCompRule funPropDecl e f g funProp then
               return r
           | _ => continue
         else
-          trace[Debug.Meta.Tactic.fun_prop]
-            s!"decomposing in args {thm.mainArgs} to later use {←ppOrigin' thm.thmOrigin}"
           let .some (f,g) ← fData.decompositionOverArgs thm.mainArgs
             | continue
-          trace[Debug.Meta.Tactic.fun_prop]
-            s!"decomposition: {← ppExpr f} ∘ {← ppExpr g}"
+          trace[Meta.Tactic.fun_prop]
+            s!"decomposing to later use {←ppOrigin' thm.thmOrigin} as:
+                 ({← ppExpr f}) ∘ ({← ppExpr g})"
           if let .some r ← applyCompRule funPropDecl e f g funProp then
             return r
       -- todo: decompose if uncurried and arguments do not match exactly
@@ -597,9 +587,17 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       return r
 
   if let .some (f,g) ← fData.nontrivialDecomposition then
+    trace[Meta.Tactic.fun_prop]
+      s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
+         trying again after decomposing function as: `({← ppExpr f}) ∘ ({← ppExpr g})`"
+
     if let .some r ← applyCompRule funPropDecl e f g funProp then
       return r
   else
+    trace[Meta.Tactic.fun_prop]
+      s!"failed applying `{funPropDecl.funPropName}` theorems for `{funName}`
+         now trying to prove `{funPropDecl.funPropName}` from another function property"
+
     if let .some r ← applyTransitionRules e funProp then
       return r
 
@@ -612,15 +610,27 @@ def cacheResult (e : Expr) (r : Result) : FunPropM Result := do -- return proof?
   modify (fun s => { s with cache := s.cache.insert e { expr := q(True), proof? := r.proof} })
   return r
 
+/-- Cache for failed goals such that `fun_prop` can fail fast next time. -/
+def cacheFailure (e : Expr) : FunPropM Unit := do -- return proof?
+  modify (fun s => { s with failureCache := s.failureCache.insert e })
+
+
 mutual
   /-- Main `funProp` function. Returns proof of `e`. -/
   partial def funProp (e : Expr) : FunPropM (Option Result) := do
 
     let e ← instantiateMVars e
-    -- check cache
+
+    withTraceNode `Meta.Tactic.fun_prop
+      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
+
+    -- check cache for successful goals
     if let .some { expr := _, proof? := .some proof } := (← get).cache.find? e then
-      trace[Debug.Meta.Tactic.fun_prop] "cached result for {e}"
+      trace[Meta.Tactic.fun_prop] "reusing previously found proof for {e}"
       return .some { proof := proof }
+    else if (← get).failureCache.contains e then
+      trace[Meta.Tactic.fun_prop] "skipping proof search, proving {e} was tried already and failed"
+      return .none
     else
       -- take care of forall and let binders and run main
       match e with
@@ -636,9 +646,12 @@ mutual
           cacheResult e {proof := ← mkLambdaFVars xs r.proof }
       | .mdata _ e' => funProp e'
       | _ =>
-        let .some r ← main e
-          | return none
-        cacheResult e r
+        if let .some r ← main e then
+          cacheResult e r
+        else
+          cacheFailure e
+          return none
+
 
   /-- Main `funProp` function. Returns proof of `e`. -/
   private partial def main (e : Expr) : FunPropM (Option Result) := do
@@ -648,16 +661,13 @@ mutual
 
     increaseSteps
 
-    withTraceNode `Meta.Tactic.fun_prop
-      (fun r => do pure s!"[{ExceptToEmoji.toEmoji r}] {← ppExpr e}") do
-
     -- if function starts with let bindings move them the top of `e` and try again
     if f.isLet then
       return ← letTelescope f fun xs b => do
         let e' := e.setArg funPropDecl.funArgId b
         funProp (← mkLambdaFVars xs e')
 
-    match ← getFunctionData? f (← unfoldNamePred) {zeta := false} with
+    match ← getFunctionData? f (← unfoldNamePred) with
     | .letE f =>
       trace[Debug.Meta.Tactic.fun_prop] "let case on {← ppExpr f}"
       let e := e.setArg funPropDecl.funArgId f -- update e with reduced f

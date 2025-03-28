@@ -69,7 +69,7 @@ end
 
 instance [MvQPF F] [∀ i, MvQPF <| G i] : MvQPF (Comp F G) where
   P := MvPFunctor.comp (P F) fun i ↦ P <| G i
-  abs := Comp.mk ∘ (map fun i ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
+  abs := Comp.mk ∘ (map fun _ ↦ abs) ∘ abs ∘ MvPFunctor.comp.get
   repr {α} := MvPFunctor.comp.mk ∘ repr ∘
               (map fun i ↦ (repr : G i α → (fun i : Fin2 n ↦ Obj (P (G i)) α) i)) ∘ Comp.get
   abs_repr := by

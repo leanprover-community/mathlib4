@@ -50,7 +50,6 @@ free commutative ring, free ring
 
 noncomputable section
 
-open scoped Classical
 open Polynomial
 
 universe u v
@@ -60,8 +59,9 @@ variable (α : Type u)
 /-- `FreeCommRing α` is the free commutative ring on the type `α`. -/
 def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
+-- The `CommRing, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: two instances below couldn't be derived
 instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
   delta FreeCommRing; infer_instance
 
@@ -80,7 +80,21 @@ theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
   FreeAbelianGroup.of_injective.comp fun _ _ =>
     (Multiset.coe_eq_coe.trans List.singleton_perm_singleton).mp
 
--- Porting note: added to ease a proof in `Algebra.DirectLimit`
+@[simp]
+theorem of_ne_zero (x : α) : of x ≠ 0 := FreeAbelianGroup.of_ne_zero _
+
+@[simp]
+theorem zero_ne_of (x : α) : 0 ≠ of x := FreeAbelianGroup.zero_ne_of _
+
+@[simp]
+theorem of_ne_one (x : α) : of x ≠ 1 :=
+  FreeAbelianGroup.of_injective.ne <| Multiset.singleton_ne_zero _
+
+@[simp]
+theorem one_ne_of (x : α) : 1 ≠ of x :=
+  FreeAbelianGroup.of_injective.ne <| Multiset.zero_ne_singleton _
+
+-- Porting note: added to ease a proof in `Mathlib.Algebra.Colimit.Ring`
 lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
     @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
@@ -98,7 +112,7 @@ protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing 
     (fun m => Multiset.induction_on m h1 fun a m ih => by
       convert hm (of a) _ (hb a) ih
       apply of_cons)
-    (fun m ih => hn _ ih) ha
+    (fun _ ih => hn _ ih) ha
 
 section lift
 
@@ -120,9 +134,10 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
   left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
   right_inv F := MonoidHom.ext fun x =>
     let F' := MonoidHom.toAdditive'' F
-    let x' := Multiplicative.toAdd x
+    let x' := x.toAdd
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
-      erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
+      rw [← Function.comp_def (fun x => F' x) (fun x => {x}), ← Multiset.map_map,
+        ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
@@ -210,6 +225,7 @@ end Restriction
 theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   suffices IsSupported (of p) s → p ∈ s from ⟨this, fun hps => Subring.subset_closure ⟨p, hps, rfl⟩⟩
   fun hps : IsSupported (of p) s => by
+  classical
   haveI := Classical.decPred s
   have : ∀ x, IsSupported x s →
         ∃ n : ℤ, lift (fun a => if a ∈ s then (0 : ℤ[X]) else Polynomial.X) x = n := by
@@ -337,12 +353,11 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
     @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
-  erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,
-    FreeAbelianGroup.liftMonoid_coe (FreeMonoid.lift FreeCommRing.of)]
-  dsimp [Functor.map]
+  dsimp [castFreeCommRing, toFreeCommRing, FreeRing.lift, FreeRing, FreeAbelianGroup.liftMonoid_coe,
+    Functor.map]
   rw [← AddMonoidHom.coe_coe]
   apply FreeAbelianGroup.lift.unique; intro L
-  erw [FreeAbelianGroup.lift.of, Function.comp]
+  simp only [AddMonoidHom.coe_coe, comp_apply, FreeAbelianGroup.lift.of]
   exact
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]

@@ -3,28 +3,32 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
-import Mathlib.Order.MinMax
 import Mathlib.Data.Set.Subsingleton
-import Mathlib.Tactic.Says
+import Mathlib.Order.Interval.Set.Defs
+import Mathlib.Order.MinMax
 
 /-!
 # Intervals
 
-In any preorder `α`, we define intervals (which on each side can be either infinite, open, or
-closed) using the following naming conventions:
+In any preorder `α`, we define intervals
+(which on each side can be either infinite, open, or closed) using the following naming conventions:
+
 - `i`: infinite
 - `o`: open
 - `c`: closed
 
-Each interval has the name `I` + letter for left side + letter for right side. For instance,
-`Ioc a b` denotes the interval `(a, b]`.
+Each interval has the name `I` + letter for left side + letter for right side.
+For instance, `Ioc a b` denotes the interval `(a, b]`.
+The definitions can be found in `Order/Interval/Set/Defs`.
 
-This file contains these definitions, and basic facts on inclusion, intersection, difference of
-intervals (where the precise statements may depend on the properties of the order, in particular
-for some statements it should be `LinearOrder` or `DenselyOrdered`).
+This file contains basic facts on inclusion, intersection, difference of intervals
+(where the precise statements may depend on the properties of the order,
+in particular for some statements it should be `LinearOrder` or `DenselyOrdered`).
 
 TODO: This is just the beginning; a lot of rules are missing
 -/
+
+assert_not_exists RelIso
 
 open Function
 
@@ -38,93 +42,6 @@ section Preorder
 
 variable [Preorder α] {a a₁ a₂ b b₁ b₂ c x : α}
 
-/-- Left-open right-open interval -/
-def Ioo (a b : α) :=
-  { x | a < x ∧ x < b }
-
-/-- Left-closed right-open interval -/
-def Ico (a b : α) :=
-  { x | a ≤ x ∧ x < b }
-
-/-- Left-infinite right-open interval -/
-def Iio (a : α) :=
-  { x | x < a }
-
-/-- Left-closed right-closed interval -/
-def Icc (a b : α) :=
-  { x | a ≤ x ∧ x ≤ b }
-
-/-- Left-infinite right-closed interval -/
-def Iic (b : α) :=
-  { x | x ≤ b }
-
-/-- Left-open right-closed interval -/
-def Ioc (a b : α) :=
-  { x | a < x ∧ x ≤ b }
-
-/-- Left-closed right-infinite interval -/
-def Ici (a : α) :=
-  { x | a ≤ x }
-
-/-- Left-open right-infinite interval -/
-def Ioi (a : α) :=
-  { x | a < x }
-
-theorem Ioo_def (a b : α) : { x | a < x ∧ x < b } = Ioo a b :=
-  rfl
-
-theorem Ico_def (a b : α) : { x | a ≤ x ∧ x < b } = Ico a b :=
-  rfl
-
-theorem Iio_def (a : α) : { x | x < a } = Iio a :=
-  rfl
-
-theorem Icc_def (a b : α) : { x | a ≤ x ∧ x ≤ b } = Icc a b :=
-  rfl
-
-theorem Iic_def (b : α) : { x | x ≤ b } = Iic b :=
-  rfl
-
-theorem Ioc_def (a b : α) : { x | a < x ∧ x ≤ b } = Ioc a b :=
-  rfl
-
-theorem Ici_def (a : α) : { x | a ≤ x } = Ici a :=
-  rfl
-
-theorem Ioi_def (a : α) : { x | a < x } = Ioi a :=
-  rfl
-
-@[simp]
-theorem mem_Ioo : x ∈ Ioo a b ↔ a < x ∧ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ico : x ∈ Ico a b ↔ a ≤ x ∧ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Iio : x ∈ Iio b ↔ x < b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Icc : x ∈ Icc a b ↔ a ≤ x ∧ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Iic : x ∈ Iic b ↔ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ioc : x ∈ Ioc a b ↔ a < x ∧ x ≤ b :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ici : x ∈ Ici a ↔ a ≤ x :=
-  Iff.rfl
-
-@[simp]
-theorem mem_Ioi : x ∈ Ioi a ↔ a < x :=
-  Iff.rfl
 
 instance decidableMemIoo [Decidable (a < x ∧ x < b)] : Decidable (x ∈ Ioo a b) := by assumption
 
@@ -142,72 +59,112 @@ instance decidableMemIci [Decidable (a ≤ x)] : Decidable (x ∈ Ici a) := by a
 
 instance decidableMemIoi [Decidable (a < x)] : Decidable (x ∈ Ioi a) := by assumption
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ioo : a ∈ Ioo a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ico : a ∈ Ico a b ↔ a < b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Icc : a ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem left_mem_Ioc : a ∈ Ioc a b ↔ False := by simp [lt_irrefl]
 
 theorem left_mem_Ici : a ∈ Ici a := by simp
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ioo : b ∈ Ioo a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ico : b ∈ Ico a b ↔ False := by simp [lt_irrefl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Icc : b ∈ Icc a b ↔ a ≤ b := by simp [le_refl]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem right_mem_Ioc : b ∈ Ioc a b ↔ a < b := by simp [le_refl]
 
 theorem right_mem_Iic : a ∈ Iic a := by simp
 
 @[simp]
-theorem dual_Ici : Ici (toDual a) = ofDual ⁻¹' Iic a :=
+theorem Ici_toDual : Ici (toDual a) = ofDual ⁻¹' Iic a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ici := Ici_toDual
+
+@[simp]
+theorem Iic_toDual : Iic (toDual a) = ofDual ⁻¹' Ici a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Iic := Iic_toDual
+
+@[simp]
+theorem Ioi_toDual : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioi := Ioi_toDual
+
+@[simp]
+theorem Iio_toDual : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
+  rfl
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Iio := Iio_toDual
+
+@[simp]
+theorem Icc_toDual : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Icc := Icc_toDual
+
+@[simp]
+theorem Ioc_toDual : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioc := Ioc_toDual
+
+@[simp]
+theorem Ico_toDual : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ico := Ico_toDual
+
+@[simp]
+theorem Ioo_toDual : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
+  Set.ext fun _ => and_comm
+
+@[deprecated (since := "2025-03-20")]
+alias dual_Ioo := Ioo_toDual
+
+@[simp]
+theorem Ici_ofDual {x : αᵒᵈ} : Ici (ofDual x) = toDual ⁻¹' Iic x :=
   rfl
 
 @[simp]
-theorem dual_Iic : Iic (toDual a) = ofDual ⁻¹' Ici a :=
+theorem Iic_ofDual {x : αᵒᵈ} : Iic (ofDual x) = toDual ⁻¹' Ici x :=
   rfl
 
 @[simp]
-theorem dual_Ioi : Ioi (toDual a) = ofDual ⁻¹' Iio a :=
+theorem Ioi_ofDual {x : αᵒᵈ} : Ioi (ofDual x) = toDual ⁻¹' Iio x :=
   rfl
 
 @[simp]
-theorem dual_Iio : Iio (toDual a) = ofDual ⁻¹' Ioi a :=
+theorem Iio_ofDual {x : αᵒᵈ} : Iio (ofDual x) = toDual ⁻¹' Ioi x :=
   rfl
 
 @[simp]
-theorem dual_Icc : Icc (toDual a) (toDual b) = ofDual ⁻¹' Icc b a :=
+theorem Icc_ofDual {x y : αᵒᵈ} : Icc (ofDual y) (ofDual x) = toDual ⁻¹' Icc x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ioc : Ioc (toDual a) (toDual b) = ofDual ⁻¹' Ico b a :=
+theorem Ico_ofDual {x y : αᵒᵈ} : Ico (ofDual y) (ofDual x) = toDual ⁻¹' Ioc x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ico : Ico (toDual a) (toDual b) = ofDual ⁻¹' Ioc b a :=
+theorem Ioc_ofDual {x y : αᵒᵈ} : Ioc (ofDual y) (ofDual x) = toDual ⁻¹' Ico x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
-theorem dual_Ioo : Ioo (toDual a) (toDual b) = ofDual ⁻¹' Ioo b a :=
+theorem Ioo_ofDual {x y : αᵒᵈ} : Ioo (ofDual y) (ofDual x) = toDual ⁻¹' Ioo x y :=
   Set.ext fun _ => and_comm
 
 @[simp]
@@ -318,34 +275,32 @@ theorem Ioc_eq_empty_of_le (h : b ≤ a) : Ioc a b = ∅ :=
 theorem Ioo_eq_empty_of_le (h : b ≤ a) : Ioo a b = ∅ :=
   Ioo_eq_empty h.not_lt
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ico_self (a : α) : Ico a a = ∅ :=
   Ico_eq_empty <| lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioc_self (a : α) : Ioc a a = ∅ :=
   Ioc_eq_empty <| lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioo_self (a : α) : Ioo a a = ∅ :=
   Ioo_eq_empty <| lt_irrefl _
 
+@[simp]
 theorem Ici_subset_Ici : Ici a ⊆ Ici b ↔ b ≤ a :=
   ⟨fun h => h <| left_mem_Ici, fun h _ hx => h.trans hx⟩
 
 @[gcongr] alias ⟨_, _root_.GCongr.Ici_subset_Ici_of_le⟩ := Ici_subset_Ici
 
+@[simp]
 theorem Iic_subset_Iic : Iic a ⊆ Iic b ↔ a ≤ b :=
   @Ici_subset_Ici αᵒᵈ _ _ _
 
 @[gcongr] alias ⟨_, _root_.GCongr.Iic_subset_Iic_of_le⟩ := Iic_subset_Iic
 
+@[simp]
 theorem Ici_subset_Ioi : Ici a ⊆ Ioi b ↔ b < a :=
   ⟨fun h => h left_mem_Ici, fun h _ hx => h.trans_le hx⟩
 
+@[simp]
 theorem Iic_subset_Iio : Iic a ⊆ Iio b ↔ a < b :=
   ⟨fun h => h right_mem_Iic, fun h _ hx => lt_of_le_of_lt hx h⟩
 
@@ -585,12 +540,8 @@ theorem not_mem_Ico_of_lt (ha : c < a) : c ∉ Ico a b := fun h => ha.not_le h.1
 
 theorem not_mem_Ioc_of_gt (hb : b < c) : c ∉ Ioc a b := fun h => hb.not_le h.2
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem not_mem_Ioi_self : a ∉ Ioi a := lt_irrefl _
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem not_mem_Iio_self : b ∉ Iio b := lt_irrefl _
 
 theorem not_mem_Ioc_of_le (ha : c ≤ a) : c ∉ Ioc a b := fun h => lt_irrefl _ <| h.1.trans_le ha
@@ -600,6 +551,54 @@ theorem not_mem_Ico_of_ge (hb : b ≤ c) : c ∉ Ico a b := fun h => lt_irrefl _
 theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.1.trans_le ha
 
 theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
+
+section matched_intervals
+
+@[simp] theorem Icc_eq_Ioc_same_iff : Icc a b = Ioc a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Icc_eq_empty h, Ioc_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ico_same_iff : Icc a b = Ico a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ico_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ioo_same_iff : Icc a b = Ioo a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ioo_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Ioc_eq_Ico_same_iff : Ioc a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioc_eq_empty h, Ico_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ioc_same_iff : Ioo a b = Ioc a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Ioo_eq_empty h, Ioc_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ico_same_iff : Ioo a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioo_eq_empty h, Ico_eq_empty h]
+
+-- Mirrored versions of the above for `simp`.
+
+@[simp] theorem Ioc_eq_Icc_same_iff : Ioc a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Icc_same_iff : Ico a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ico_same_iff
+
+@[simp] theorem Ioo_eq_Icc_same_iff : Ioo a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioo_same_iff
+
+@[simp] theorem Ico_eq_Ioc_same_iff : Ico a b = Ioc a b ↔ ¬a < b :=
+  eq_comm.trans Ioc_eq_Ico_same_iff
+
+@[simp] theorem Ioc_eq_Ioo_same_iff : Ioc a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Ioo_same_iff : Ico a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ico_same_iff
+
+end matched_intervals
 
 end Preorder
 
@@ -693,13 +692,9 @@ theorem Ici_diff_Ioi_same : Ici a \ Ioi a = {a} := by
 theorem Iic_diff_Iio_same : Iic a \ Iio a = {a} := by
   rw [← Iic_diff_right, diff_diff_cancel_left (singleton_subset_iff.2 right_mem_Iic)]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Ioi_union_left : Ioi a ∪ {a} = Ici a :=
   ext fun x => by simp [eq_comm, le_iff_eq_or_lt]
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
 theorem Iio_union_right : Iio a ∪ {a} = Iic a :=
   ext fun _ => le_iff_lt_or_eq.symm
 
@@ -708,7 +703,7 @@ theorem Ioo_union_left (hab : a < b) : Ioo a b ∪ {a} = Ico a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Ico.2 hab)]
 
 theorem Ioo_union_right (hab : a < b) : Ioo a b ∪ {b} = Ioc a b := by
-  simpa only [dual_Ioo, dual_Ico] using Ioo_union_left hab.dual
+  simpa only [Ioo_toDual, Ico_toDual] using Ioo_union_left hab.dual
 
 theorem Ioo_union_both (h : a ≤ b) : Ioo a b ∪ {a, b} = Icc a b := by
   have : (Icc a b \ {a, b}) ∪ {a, b} = Icc a b := diff_union_of_subset fun
@@ -721,7 +716,7 @@ theorem Ioc_union_left (hab : a ≤ b) : Ioc a b ∪ {a} = Icc a b := by
     union_eq_self_of_subset_right (singleton_subset_iff.2 <| left_mem_Icc.2 hab)]
 
 theorem Ico_union_right (hab : a ≤ b) : Ico a b ∪ {b} = Icc a b := by
-  simpa only [dual_Ioc, dual_Icc] using Ioc_union_left hab.dual
+  simpa only [Ioc_toDual, Icc_toDual] using Ioc_union_left hab.dual
 
 @[simp]
 theorem Ico_insert_right (h : a ≤ b) : insert b (Ico a b) = Icc a b := by
@@ -753,7 +748,7 @@ theorem mem_Ici_Ioi_of_subset_of_subset {s : Set α} (ho : Ioi a ⊆ s) (hc : s 
     (fun h : a ∈ s =>
       Or.inl <| Subset.antisymm hc <| by rw [← Ioi_union_left, union_subset_iff]; simp [*])
     fun h =>
-    Or.inr <| Subset.antisymm (fun x hx => lt_of_le_of_ne (hc hx) fun heq => h <| heq.symm ▸ hx) ho
+    Or.inr <| Subset.antisymm (fun _ hx => lt_of_le_of_ne (hc hx) fun heq => h <| heq.symm ▸ hx) ho
 
 theorem mem_Iic_Iio_of_subset_of_subset {s : Set α} (ho : Iio a ⊆ s) (hc : s ⊆ Iic a) :
     s ∈ ({Iic a, Iio a} : Set (Set α)) :=
@@ -856,7 +851,7 @@ theorem Ico_bot : Ico ⊥ a = Iio a := by simp [← Ici_inter_Iio]
 
 end OrderBot
 
-theorem Icc_bot_top [PartialOrder α] [BoundedOrder α] : Icc (⊥ : α) ⊤ = univ := by simp
+theorem Icc_bot_top [Preorder α] [BoundedOrder α] : Icc (⊥ : α) ⊤ = univ := by simp
 
 section LinearOrder
 
@@ -937,7 +932,7 @@ theorem Ico_subset_Ico_iff (h₁ : a₁ < b₁) : Ico a₁ b₁ ⊆ Ico a₂ b�
     fun ⟨h₁, h₂⟩ => Ico_subset_Ico h₁ h₂⟩
 
 theorem Ioc_subset_Ioc_iff (h₁ : a₁ < b₁) : Ioc a₁ b₁ ⊆ Ioc a₂ b₂ ↔ b₁ ≤ b₂ ∧ a₂ ≤ a₁ := by
-  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@dual_Ico α _ _ _).symm
+  convert @Ico_subset_Ico_iff αᵒᵈ _ b₁ b₂ a₁ a₂ h₁ using 2 <;> exact (@Ico_toDual α _ _ _).symm
 
 theorem Ioo_subset_Ioo_iff [DenselyOrdered α] (h₁ : a₁ < b₁) :
     Ioo a₁ b₁ ⊆ Ioo a₂ b₂ ↔ a₂ ≤ a₁ ∧ b₁ ≤ b₂ :=
@@ -957,9 +952,8 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       rcases h with h | h <;>
       simp only [gt_iff_lt, not_lt, Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
-      -- Porting note: restore `tauto`
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
-      [ exact ⟨⟨hab.left, h₁⟩, ⟨h₂, hab.right⟩⟩; exact ⟨⟨h₁, hab.left⟩, ⟨hab.right, h₂⟩⟩ ],
+      tauto,
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 
 lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
@@ -1033,9 +1027,9 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ioo, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
-  · simp only [hc, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hxb : x < b := (le_of_not_gt hc).trans_lt h₁
-    simp only [hxb, and_true] -- Porting note: restore `tauto`
+    tauto
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   rcases le_total a b with hab | hab <;> simp [hab] at h
@@ -1061,9 +1055,9 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Ico, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    simp only [hxb, and_true] -- Porting note: restore `tauto`
+    tauto
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
   rcases le_total a b with hab | hab <;> simp [hab] at h
@@ -1081,9 +1075,9 @@ theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Ioc, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
-  · simp only [hc, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
-    simp only [hxb, and_true] -- Porting note: restore `tauto`
+    tauto
 
 theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
   rcases le_total a b with hab | hab <;> simp [hab] at h
@@ -1116,9 +1110,9 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Icc, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    simp only [hxb, and_true] -- Porting note: restore `tauto`
+    tauto
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   rcases le_or_lt a b with hab | hab <;> simp [hab] at h
@@ -1151,9 +1145,9 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
   ext1 x
   simp_rw [mem_union, mem_Iio, mem_Ico, lt_max_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, true_and] -- Porting note: restore `tauto`
+  · tauto
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    simp only [hxb, true_or] -- Porting note: restore `tauto`
+    tauto
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
   rcases le_total c d with hcd | hcd <;> simp [hcd] at h
@@ -1172,9 +1166,9 @@ theorem Iic_union_Ioc' (h₁ : c < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Ioc, le_max_iff]
   by_cases hc : c < x
-  · simp only [hc, true_and] -- Porting note: restore `tauto`
+  · tauto
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁.le
-    simp only [hxb, true_or] -- Porting note: restore `tauto`
+    tauto
 
 theorem Iic_union_Ioc (h : min c d < b) : Iic b ∪ Ioc c d = Iic (max b d) := by
   rcases le_total c d with hcd | hcd <;> simp [hcd] at h
@@ -1216,9 +1210,9 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Icc, le_max_iff]
   by_cases hc : c ≤ x
-  · simp only [hc, true_and] -- Porting note: restore `tauto`
+  · tauto
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    simp only [hxb, true_or] -- Porting note: restore `tauto`
+    tauto
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   rcases le_or_lt c d with hcd | hcd <;> simp [hcd] at h
@@ -1237,7 +1231,6 @@ theorem Iic_union_Ico_eq_Iio (h : a < b) : Iic a ∪ Ico a b = Iio b :=
     Iio_subset_Iic_union_Ico
 
 /-! #### Two finite intervals, `I?o` and `Ic?` -/
-
 
 theorem Ioo_subset_Ioo_union_Ico : Ioo a c ⊆ Ioo a b ∪ Ico b c := fun x hx =>
   (lt_or_le x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
@@ -1261,12 +1254,12 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
   ext1 x
   simp_rw [mem_union, mem_Ico, min_le_iff, lt_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x < d
-  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hax : a ≤ x := h₂.trans (le_of_not_gt hd)
-    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
+    tauto
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
+    tauto
+  · tauto
 
 theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
@@ -1293,7 +1286,6 @@ theorem Ioo_union_Icc_eq_Ioc (h₁ : a < b) (h₂ : b ≤ c) : Ioo a b ∪ Icc b
     Ioc_subset_Ioo_union_Icc
 
 /-! #### Two finite intervals, `I?c` and `Io?` -/
-
 
 theorem Ioo_subset_Ioc_union_Ioo : Ioo a c ⊆ Ioc a b ∪ Ioo b c := fun x hx =>
   (le_or_lt x b).elim (fun hxb => Or.inl ⟨hx.1, hxb⟩) fun hxb => Or.inr ⟨hxb, hx.2⟩
@@ -1335,12 +1327,12 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
   ext1 x
   simp_rw [mem_union, mem_Ioc, min_lt_iff, le_max_iff]
   by_cases hc : c < x <;> by_cases hd : x ≤ d
-  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hax : a < x := h₂.trans_lt (lt_of_not_ge hd)
-    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
+    tauto
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
+    tauto
+  · tauto
 
 theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
@@ -1349,7 +1341,6 @@ theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) 
   all_goals simp [*]
 
 /-! #### Two finite intervals with a common point -/
-
 
 theorem Ioo_subset_Ioc_union_Ico : Ioo a c ⊆ Ioc a b ∪ Ico b c :=
   Subset.trans Ioo_subset_Ioc_union_Ioo (union_subset_union_right _ Ioo_subset_Ico_self)
@@ -1383,12 +1374,12 @@ theorem Icc_union_Icc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Icc a b ∪ Icc c d =
   ext1 x
   simp_rw [mem_union, mem_Icc, min_le_iff, le_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x ≤ d
-  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hax : a ≤ x := h₂.trans (le_of_not_ge hd)
-    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
+    tauto
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
+    tauto
+  · tauto
 
 /-- We cannot replace `<` by `≤` in the hypotheses.
 Otherwise for `b < a = d < c` the l.h.s. is `∅` and the r.h.s. is `{a}`.
@@ -1414,12 +1405,12 @@ theorem Ioo_union_Ioo' (h₁ : c < b) (h₂ : a < d) : Ioo a b ∪ Ioo c d = Ioo
   ext1 x
   simp_rw [mem_union, mem_Ioo, min_lt_iff, lt_max_iff]
   by_cases hc : c < x <;> by_cases hd : x < d
-  · simp only [hc, hd, and_self, or_true] -- Porting note: restore `tauto`
+  · tauto
   · have hax : a < x := h₂.trans_le (le_of_not_lt hd)
-    simp only [hax, true_and, hc, or_self] -- Porting note: restore `tauto`
+    tauto
   · have hxb : x < b := (le_of_not_lt hc).trans_lt h₁
-    simp only [hxb, and_true, hc, false_and, or_false, true_or] -- Porting note: restore `tauto`
-  · simp only [hc, hd, and_self, or_false] -- Porting note: restore `tauto`
+    tauto
+  · tauto
 
 theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Ioo a b ∪ Ioo c d = Ioo (min a c) (max b d) := by
@@ -1429,6 +1420,11 @@ theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
   all_goals
     simp [*, min_eq_left_of_lt, min_eq_right_of_lt, max_eq_left_of_lt, max_eq_right_of_lt,
       le_of_lt h₂, le_of_lt h₁]
+
+theorem Ioo_subset_Ioo_union_Ioo (h₁ : a ≤ a₁) (h₂ : c < b) (h₃ : b₁ ≤ d) :
+    Ioo a₁ b₁ ⊆ Ioo a b ∪ Ioo c d := fun x hx =>
+  (lt_or_le x b).elim (fun hxb => Or.inl ⟨lt_of_le_of_lt h₁ hx.1, hxb⟩)
+    fun hxb => Or.inr ⟨lt_of_lt_of_le h₂ hxb, lt_of_lt_of_le hx.2 h₃⟩
 
 end LinearOrder
 
@@ -1481,7 +1477,7 @@ end Lattice
 
 section LinearOrder
 
-variable [LinearOrder α] [LinearOrder β] {f : α → β} {a a₁ a₂ b b₁ b₂ c d : α}
+variable [LinearOrder α] {a a₁ a₂ b b₁ b₂ c : α}
 
 @[simp]
 theorem Ioi_inter_Ioi : Ioi a ∩ Ioi b = Ioi (a ⊔ b) :=
@@ -1531,11 +1527,11 @@ theorem Ioo_inter_Ioc_of_right_lt (h : b₂ < b₁) : Ioo a₁ b₁ ∩ Ioc a₂
 
 @[simp]
 theorem Ico_diff_Iio : Ico a b \ Iio c = Ico (max a c) b := by
-  rw [diff_eq, compl_Iio, Ico_inter_Ici, sup_eq_max]
+  rw [diff_eq, compl_Iio, Ico_inter_Ici]
 
 @[simp]
 theorem Ioc_diff_Ioi : Ioc a b \ Ioi c = Ioc a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
@@ -1544,11 +1540,22 @@ theorem Ioc_inter_Ioi : Ioc a b ∩ Ioi c = Ioc (a ⊔ c) b := by
 
 @[simp]
 theorem Ico_inter_Iio : Ico a b ∩ Iio c = Ico a (min b c) :=
-  ext <| by simp (config := { contextual := true }) [iff_def]
+  ext <| by simp +contextual [iff_def]
 
 @[simp]
 theorem Ioc_diff_Iic : Ioc a b \ Iic c = Ioc (max a c) b := by
-  rw [diff_eq, compl_Iic, Ioc_inter_Ioi, sup_eq_max]
+  rw [diff_eq, compl_Iic, Ioc_inter_Ioi]
+
+theorem compl_Ioc : (Ioc a b)ᶜ = Iic a ∪ Ioi b := by
+  ext i
+  rw [mem_compl_iff, mem_Ioc, mem_union, mem_Iic, mem_Ioi, not_and_or, not_lt, not_le]
+
+theorem Iic_diff_Ioc : Iic b \ Ioc a b = Iic (a ⊓ b) := by
+  rw [diff_eq, compl_Ioc, inter_union_distrib_left, Iic_inter_Iic, ← compl_Iic, inter_compl_self,
+    union_empty, min_comm]
+
+theorem Iic_diff_Ioc_self_of_le (hab : a ≤ b) : Iic b \ Ioc a b = Iic a := by
+  rw [Iic_diff_Ioc, min_eq_left hab]
 
 @[simp]
 theorem Ioc_union_Ioc_right : Ioc a b ∪ Ioc a c = Ioc a (max b c) := by
@@ -1566,15 +1573,11 @@ theorem Ioc_union_Ioc_symm : Ioc a b ∪ Ioc b a = Ioc (min a b) (max a b) := by
 @[simp]
 theorem Ioc_union_Ioc_union_Ioc_cycle :
     Ioc a b ∪ Ioc b c ∪ Ioc c a = Ioc (min a (min b c)) (max a (max b c)) := by
-  rw [Ioc_union_Ioc, Ioc_union_Ioc] <;>
-  -- Porting note: mathlib3 proof finished from here as follows:
-  -- (It can probably be restored after https://github.com/leanprover-community/mathlib4/pull/856)
-  -- ac_rfl
-  -- all_goals
-  --   solve_by_elim (config := { max_depth := 5 }) [min_le_of_left_le, min_le_of_right_le,
-  --     le_max_of_le_left, le_max_of_le_right, le_refl]
-  simp [min_le_of_left_le, min_le_of_right_le, le_max_of_le_left, le_max_of_le_right, le_refl,
-    min_assoc, max_comm]
+  rw [Ioc_union_Ioc, Ioc_union_Ioc]
+  · ac_rfl
+  all_goals
+  solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
+       le_max_of_le_left, le_max_of_le_right, le_refl]
 
 end LinearOrder
 
@@ -1651,4 +1654,21 @@ instance : NoMaxOrder (Set.Iio x) :=
 
 end Dense
 
-set_option linter.style.longFile 1800
+/-!
+### Intervals in `Prop`
+-/
+
+namespace Set
+
+@[simp] lemma Iic_False : Iic False = {False} := by aesop
+@[simp] lemma Iic_True : Iic True = univ := by aesop
+@[simp] lemma Ici_False : Ici False = univ := by aesop
+@[simp] lemma Ici_True : Ici True = {True} := by aesop
+@[simp] lemma Iio_False : Iio False = ∅ := by aesop
+@[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
+@[simp] lemma Ioi_True : Ioi True = ∅ := by aesop
+
+end Set
+
+set_option linter.style.longFile 1700

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Rat
+import Mathlib.Data.Nat.Prime.Int
 import Mathlib.Data.Rat.Sqrt
 import Mathlib.Data.Real.Sqrt
-import Mathlib.RingTheory.Algebraic
-import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -25,7 +25,7 @@ but this only works if you `unseal Nat.sqrt.iter in` before the theorem where yo
 -/
 
 
-open Rat Real multiplicity
+open Rat Real
 
 /-- A real number is irrational if it is not equal to any rational number. -/
 def Irrational (x : ℝ) :=
@@ -68,24 +68,23 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
 is irrational. -/
 theorem irrational_nrt_of_n_not_dvd_multiplicity {x : ℝ} (n : ℕ) {m : ℤ} (hm : m ≠ 0) (p : ℕ)
     [hp : Fact p.Prime] (hxr : x ^ n = m)
-    (hv : (multiplicity (p : ℤ) m).get (finite_int_iff.2 ⟨hp.1.ne_one, hm⟩) % n ≠ 0) :
+    (hv : multiplicity (p : ℤ) m % n ≠ 0) :
     Irrational x := by
   rcases Nat.eq_zero_or_pos n with (rfl | hnpos)
   · rw [eq_comm, pow_zero, ← Int.cast_one, Int.cast_inj] at hxr
-    simp [hxr, multiplicity.one_right (mt isUnit_iff_dvd_one.1
+    simp [hxr, multiplicity_of_one_right (mt isUnit_iff_dvd_one.1
       (mt Int.natCast_dvd_natCast.1 hp.1.not_dvd_one)), Nat.zero_mod] at hv
   refine irrational_nrt_of_notint_nrt _ _ hxr ?_ hnpos
   rintro ⟨y, rfl⟩
   rw [← Int.cast_pow, Int.cast_inj] at hxr
   subst m
   have : y ≠ 0 := by rintro rfl; rw [zero_pow hnpos.ne'] at hm; exact hm rfl
-  erw [multiplicity.pow' (Nat.prime_iff_prime_int.1 hp.1) (finite_int_iff.2 ⟨hp.1.ne_one, this⟩),
-    Nat.mul_mod_right] at hv
+  rw [(Int.finiteMultiplicity_iff.2 ⟨by simp [hp.1.ne_one], this⟩).multiplicity_pow
+    (Nat.prime_iff_prime_int.1 hp.1), Nat.mul_mod_right] at hv
   exact hv rfl
 
 theorem irrational_sqrt_of_multiplicity_odd (m : ℤ) (hm : 0 < m) (p : ℕ) [hp : Fact p.Prime]
-    (Hpv :
-      (multiplicity (p : ℤ) m).get (finite_int_iff.2 ⟨hp.1.ne_one, (ne_of_lt hm).symm⟩) % 2 = 1) :
+    (Hpv : multiplicity (p : ℤ) m % 2 = 1) :
     Irrational (√m) :=
   @irrational_nrt_of_n_not_dvd_multiplicity _ 2 _ (Ne.symm (ne_of_lt hm)) p hp
     (sq_sqrt (Int.cast_nonneg.2 <| le_of_lt hm)) (by rw [Hpv]; exact one_ne_zero)
@@ -123,9 +122,8 @@ theorem irrational_sqrt_natCast_iff {n : ℕ} : Irrational (√n) ↔ ¬IsSquare
   rw [← Rat.isSquare_natCast_iff, ← irrational_sqrt_ratCast_iff_of_nonneg n.cast_nonneg,
     Rat.cast_natCast]
 
--- See note [no_index around OfNat.ofNat]
 theorem irrational_sqrt_ofNat_iff {n : ℕ} [n.AtLeastTwo] :
-    Irrational (√(no_index (OfNat.ofNat n))) ↔ ¬IsSquare (OfNat.ofNat n) :=
+    Irrational √(ofNat(n)) ↔ ¬IsSquare ofNat(n) :=
   irrational_sqrt_natCast_iff
 
 theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (√p) :=
@@ -135,12 +133,6 @@ theorem Nat.Prime.irrational_sqrt {p : ℕ} (hp : Nat.Prime p) : Irrational (√
 theorem irrational_sqrt_two : Irrational (√2) := by
   simpa using Nat.prime_two.irrational_sqrt
 
-@[deprecated irrational_sqrt_ratCast_iff (since := "2024-06-16")]
-theorem irrational_sqrt_rat_iff (q : ℚ) :
-    Irrational (√q) ↔ Rat.sqrt q * Rat.sqrt q ≠ q ∧ 0 ≤ q := by
-  rw [irrational_sqrt_ratCast_iff, ne_eq, ← Rat.exists_mul_self]
-  simp only [eq_comm, IsSquare]
-
 /--
 This can be used as
 ```lean
@@ -148,7 +140,7 @@ unseal Nat.sqrt.iter in
 example : Irrational √24 := by decide
 ```
 -/
-instance {n : ℕ} [n.AtLeastTwo] : Decidable (Irrational (√(no_index (OfNat.ofNat n)))) :=
+instance {n : ℕ} [n.AtLeastTwo] : Decidable (Irrational √(ofNat(n))) :=
   decidable_of_iff' _ irrational_sqrt_ofNat_iff
 
 instance (n : ℕ) : Decidable (Irrational (√n)) :=
@@ -189,8 +181,7 @@ theorem ne_zero (h : Irrational x) : x ≠ 0 := mod_cast h.ne_nat 0
 
 theorem ne_one (h : Irrational x) : x ≠ 1 := by simpa only [Nat.cast_one] using h.ne_nat 1
 
--- See note [no_index around OfNat.ofNat]
-@[simp] theorem ne_ofNat (h : Irrational x) (n : ℕ) [n.AtLeastTwo] : x ≠ no_index (OfNat.ofNat n) :=
+@[simp] theorem ne_ofNat (h : Irrational x) (n : ℕ) [n.AtLeastTwo] : x ≠ ofNat(n) :=
   h.ne_nat n
 
 end Irrational
@@ -204,9 +195,7 @@ theorem Int.not_irrational (m : ℤ) : ¬Irrational m := fun h => h.ne_int m rfl
 @[simp]
 theorem Nat.not_irrational (m : ℕ) : ¬Irrational m := fun h => h.ne_nat m rfl
 
--- See note [no_index around OfNat.ofNat]
-@[simp] theorem not_irrational_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ¬Irrational (no_index (OfNat.ofNat n)) :=
+@[simp] theorem not_irrational_ofNat (n : ℕ) [n.AtLeastTwo] : ¬Irrational ofNat(n) :=
   n.not_irrational
 namespace Irrational
 
@@ -450,8 +439,6 @@ theorem of_zpow : ∀ m : ℤ, Irrational (x ^ m) → Irrational x
 end Irrational
 
 section Polynomial
-
-open Polynomial
 
 open Polynomial
 

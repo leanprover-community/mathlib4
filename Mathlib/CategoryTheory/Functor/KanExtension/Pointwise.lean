@@ -98,6 +98,30 @@ lemma IsPointwiseLeftKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_ι_app_of_isTerminal _ CostructuredArrow.mkIdTerminal
 
+namespace IsPointwiseLeftKanExtensionAt
+
+variable {E} {Y : D} (h : E.IsPointwiseLeftKanExtensionAt Y)
+  [HasColimit (CostructuredArrow.proj L Y ⋙ F)]
+
+/-- A pointwise left Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
+`colimit (CostructuredArrow.proj L Y ⋙ F)`. -/
+noncomputable def isoColimit :
+    E.right.obj Y ≅ colimit (CostructuredArrow.proj L Y ⋙ F) :=
+  h.coconePointUniqueUpToIso (colimit.isColimit _)
+
+@[reassoc (attr := simp)]
+lemma ι_isoColimit_inv (g : CostructuredArrow L Y) :
+    colimit.ι _ g ≫ h.isoColimit.inv = E.hom.app g.left ≫ E.right.map g.hom :=
+  IsColimit.comp_coconePointUniqueUpToIso_inv _ _ _
+
+@[reassoc (attr := simp)]
+lemma ι_isoColimit_hom (g : CostructuredArrow L Y) :
+    E.hom.app g.left ≫ E.right.map g.hom ≫ h.isoColimit.hom =
+      colimit.ι (CostructuredArrow.proj L Y ⋙ F) g := by
+  simpa using h.comp_coconePointUniqueUpToIso_hom (colimit.isColimit _) g
+
+end IsPointwiseLeftKanExtensionAt
+
 /-- A left extension `E : LeftExtension L F` is a pointwise left Kan extension when
 it is a pointwise left Kan extension at any object. -/
 abbrev IsPointwiseLeftKanExtension := ∀ (Y : D), E.IsPointwiseLeftKanExtensionAt Y
@@ -116,8 +140,8 @@ def isPointwiseLeftKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseLeftKanExtension ≃ E'.IsPointwiseLeftKanExtension where
   toFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseLeftKanExtensionAtEquivOfIso e Y).symm (h Y)
-  left_inv h := by aesop
-  right_inv h := by aesop
+  left_inv h := by simp
+  right_inv h := by simp
 
 variable (h : E.IsPointwiseLeftKanExtension)
 include h
@@ -211,6 +235,30 @@ lemma IsPointwiseRightKanExtensionAt.isIso_hom_app
     IsIso (E.hom.app X) := by
   simpa using h.isIso_π_app_of_isInitial _ StructuredArrow.mkIdInitial
 
+namespace IsPointwiseRightKanExtensionAt
+
+variable {E} {Y : D} (h : E.IsPointwiseRightKanExtensionAt Y)
+  [HasLimit (StructuredArrow.proj Y L ⋙ F)]
+
+/-- A pointwise right Kan extension of `F` along `L` applied to an object `Y` is isomorphic to
+`limit (StructuredArrow.proj Y L ⋙ F)`. -/
+noncomputable def isoLimit :
+    E.left.obj Y ≅ limit (StructuredArrow.proj Y L ⋙ F) :=
+  h.conePointUniqueUpToIso (limit.isLimit _)
+
+@[reassoc (attr := simp)]
+lemma isoLimit_hom_π (g : StructuredArrow Y L) :
+    h.isoLimit.hom ≫ limit.π _ g = E.left.map g.hom ≫ E.hom.app g.right :=
+  IsLimit.conePointUniqueUpToIso_hom_comp _ _ _
+
+@[reassoc (attr := simp)]
+lemma isoLimit_inv_π (g : StructuredArrow Y L) :
+    h.isoLimit.inv ≫ E.left.map g.hom ≫ E.hom.app g.right =
+      limit.π (StructuredArrow.proj Y L ⋙ F) g := by
+  simpa using h.conePointUniqueUpToIso_inv_comp (limit.isLimit _) g
+
+end IsPointwiseRightKanExtensionAt
+
 /-- A right extension `E : RightExtension L F` is a pointwise right Kan extension when
 it is a pointwise right Kan extension at any object. -/
 abbrev IsPointwiseRightKanExtension := ∀ (Y : D), E.IsPointwiseRightKanExtensionAt Y
@@ -229,8 +277,8 @@ def isPointwiseRightKanExtensionEquivOfIso (e : E ≅ E') :
     E.IsPointwiseRightKanExtension ≃ E'.IsPointwiseRightKanExtension where
   toFun h := fun Y => (isPointwiseRightKanExtensionAtEquivOfIso e Y) (h Y)
   invFun h := fun Y => (isPointwiseRightKanExtensionAtEquivOfIso e Y).symm (h Y)
-  left_inv h := by aesop
-  right_inv h := by aesop
+  left_inv h := by simp
+  right_inv h := by simp
 
 variable (h : E.IsPointwiseRightKanExtension)
 include h
@@ -343,6 +391,27 @@ instance : (pointwiseLeftKanExtension L F).IsLeftKanExtension
 instance : HasLeftKanExtension L F :=
   HasLeftKanExtension.mk _ (pointwiseLeftKanExtensionUnit L F)
 
+/-- An auxiliary cocone used in the lemma `pointwiseLeftKanExtension_desc_app` -/
+@[simps]
+def costructuredArrowMapCocone (G : D ⥤ H) (α : F ⟶ L ⋙ G) (Y : D) :
+    Cocone (CostructuredArrow.proj L Y ⋙ F) where
+  pt := G.obj Y
+  ι := {
+    app := fun f ↦ α.app f.left ≫ G.map f.hom
+    naturality := by simp [← G.map_comp] }
+
+@[simp]
+lemma pointwiseLeftKanExtension_desc_app (G : D ⥤ H) (α :  F ⟶ L ⋙ G) (Y : D) :
+    ((pointwiseLeftKanExtension L F).descOfIsLeftKanExtension (pointwiseLeftKanExtensionUnit L F)
+      G α |>.app Y) = colimit.desc _ (costructuredArrowMapCocone L F G α Y) := by
+  let β : L.pointwiseLeftKanExtension F ⟶ G :=
+    { app := fun Y ↦ colimit.desc _ (costructuredArrowMapCocone L F G α Y) }
+  have h : (pointwiseLeftKanExtension L F).descOfIsLeftKanExtension
+      (pointwiseLeftKanExtensionUnit L F) G α = β := by
+    apply hom_ext_of_isLeftKanExtension (α := pointwiseLeftKanExtensionUnit L F)
+    aesop
+  exact NatTrans.congr_app h Y
+
 variable {F L}
 
 /-- If `F` admits a pointwise left Kan extension along `L`, then any left Kan extension of `F`
@@ -420,6 +489,28 @@ instance : (pointwiseRightKanExtension L F).IsRightKanExtension
 
 instance : HasRightKanExtension L F :=
   HasRightKanExtension.mk _ (pointwiseRightKanExtensionCounit L F)
+
+/-- An auxiliary cocone used in the lemma `pointwiseRightKanExtension_lift_app` -/
+@[simps]
+def structuredArrowMapCone (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
+    Cone (StructuredArrow.proj Y L ⋙ F) where
+  pt := G.obj Y
+  π := {
+    app := fun f ↦ G.map f.hom ≫ α.app f.right
+    naturality := by simp [← α.naturality, ← G.map_comp_assoc] }
+
+@[simp]
+lemma pointwiseRightKanExtension_lift_app (G : D ⥤ H) (α : L ⋙ G ⟶ F) (Y : D) :
+    ((pointwiseRightKanExtension L F).liftOfIsRightKanExtension
+      (pointwiseRightKanExtensionCounit L F) G α |>.app Y) =
+        limit.lift _ (structuredArrowMapCone L F G α Y) := by
+  let β : G ⟶ L.pointwiseRightKanExtension F :=
+    { app := fun Y ↦ limit.lift _ (structuredArrowMapCone L F G α Y) }
+  have h : (pointwiseRightKanExtension L F).liftOfIsRightKanExtension
+      (pointwiseRightKanExtensionCounit L F) G α = β := by
+    apply hom_ext_of_isRightKanExtension (α := pointwiseRightKanExtensionCounit L F)
+    aesop
+  exact NatTrans.congr_app h Y
 
 variable {F L}
 

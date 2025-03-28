@@ -3,9 +3,7 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
 -/
-import Mathlib.CategoryTheory.Comma.Over
-import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 
 /-!
 # Products in the over category
@@ -58,7 +56,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
   map f :=
     { hom := f.hom.left
       w := fun j => by
-        cases' j with j
+        obtain - | j := j
         · simp
         · dsimp
           rw [← f.w ⟨j⟩]
@@ -76,7 +74,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     { pt := Over.mk (c.π.app none)
       π :=
         { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
-          -- Porting note (#10888): added proof for `naturality`
+          -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `naturality`
           naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
   map f := { hom := Over.homMk f.hom }
 
@@ -86,7 +84,7 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 -- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
-@[simp]
+@[simps!]
 def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
     𝟭 (Cone (widePullbackDiagramOfDiagramOver B F)) ≅
       conesEquivFunctor B F ⋙ conesEquivInverse B F :=
@@ -98,7 +96,7 @@ def conesEquivUnitIso (B : C) (F : Discrete J ⥤ Over B) :
 -- TODO: Can we add `:= by aesop` to the second arguments of `NatIso.ofComponents` and
 --       `Cones.ext`?
 /-- (Impl) A preliminary definition to avoid timeouts. -/
-@[simp]
+@[simps!]
 def conesEquivCounitIso (B : C) (F : Discrete J ⥤ Over B) :
     conesEquivInverse B F ⋙ conesEquivFunctor B F ≅ 𝟭 (Cone F) :=
   NatIso.ofComponents fun _ => Cones.ext
@@ -165,5 +163,47 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
             have := m.w
             dsimp at this
             rwa [Category.comp_id, Category.comp_id] at this } }
+
+section BinaryProduct
+
+variable {X : C} {Y Z : Over X}
+
+open Limits
+
+lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
+    IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
+  ⟨by simp, ⟨((IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).symm
+    ((IsLimit.ofConeEquiv (ConstructProducts.conesEquiv X _).symm).symm hc)).ofIsoLimit
+    (PullbackCone.isoMk _)⟩⟩
+
+variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
+
+/-- The product of `Y` and `Z` in `Over X` is isomorpic to `Y ×ₓ Z`. -/
+noncomputable
+def prodLeftIsoPullback :
+    (Y ⨯ Z).left ≅ pullback Y.hom Z.hom :=
+  (Over.isPullback_of_binaryFan_isLimit _ (prodIsProd Y Z)).isoPullback
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_fst :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.fst _ _ = (prod.fst (X := Y)).left :=
+  IsPullback.isoPullback_hom_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_hom_snd :
+    (prodLeftIsoPullback Y Z).hom ≫ pullback.snd _ _ = (prod.snd (X := Y)).left :=
+  IsPullback.isoPullback_hom_snd _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_fst :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.fst (X := Y)).left = pullback.fst _ _ :=
+  IsPullback.isoPullback_inv_fst _
+
+@[reassoc (attr := simp)]
+lemma prodLeftIsoPullback_inv_snd :
+    (prodLeftIsoPullback Y Z).inv ≫ (prod.snd (X := Y)).left = pullback.snd _ _ :=
+  IsPullback.isoPullback_inv_snd _
+
+end BinaryProduct
 
 end CategoryTheory.Over

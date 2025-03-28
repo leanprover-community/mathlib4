@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Scott Morrison. All rights reserved.
+Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison, Gabriel Ebner, Floris van Doorn
+Authors: Kim Morrison, Gabriel Ebner, Floris van Doorn
 -/
 import Mathlib.Init
 import Lean.Elab.Tactic.Simp
@@ -72,10 +72,10 @@ def simpTheoremsOfNames (lemmas : List Name := []) (simpOnly : Bool := false) :
 
 /-- Construct a `Simp.Context` from a list of names. -/
 def Simp.Context.ofNames (lemmas : List Name := []) (simpOnly : Bool := false)
-    (config : Simp.Config := {}) : MetaM Simp.Context := do pure <|
-  { simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly],
-    congrTheorems := ← Lean.Meta.getSimpCongrTheorems,
-    config := config }
+    (config : Simp.Config := {}) : MetaM Simp.Context := do
+  Simp.mkContext config
+    (simpTheorems := #[← simpTheoremsOfNames lemmas simpOnly])
+    (congrTheorems := ← Lean.Meta.getSimpCongrTheorems)
 
 /-- Simplify an expression using only a list of lemmas specified by name. -/
 def simpOnlyNames (lemmas : List Name) (e : Expr) (config : Simp.Config := {}) :
@@ -126,7 +126,7 @@ def isInSimpSet (simpAttr decl : Name) : CoreM Bool := do
   return (← simpDecl.getTheorems).contains decl
 
 /-- Returns all declarations with the `simp`-attribute `simpAttr`.
-  Note: this also returns many auxiliary declarations. -/
+Note: this also returns many auxiliary declarations. -/
 def getAllSimpDecls (simpAttr : Name) : CoreM (List Name) := do
   let .some simpDecl ← getSimpExtension? simpAttr | return []
   let thms ← simpDecl.getTheorems

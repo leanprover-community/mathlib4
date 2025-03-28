@@ -41,15 +41,15 @@ variable [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)]
 variable [∀ i, LieRingModule L (M i)] [∀ i, LieModule R L (M i)]
 
 instance : LieRingModule L (⨁ i, M i) where
-  bracket x m := m.mapRange (fun i m' => ⁅x, m'⁆) fun i => lie_zero x
+  bracket x m := m.mapRange (fun _ m' => ⁅x, m'⁆) fun _ => lie_zero x
   add_lie x y m := by
-    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+    ext
     simp only [mapRange_apply, add_apply, add_lie]
   lie_add x m n := by
-    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+    ext
     simp only [mapRange_apply, add_apply, lie_add]
   leibniz_lie x y m := by
-    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+    ext
     simp only [mapRange_apply, lie_lie, add_apply, sub_add_cancel]
 
 @[simp]
@@ -58,10 +58,10 @@ theorem lie_module_bracket_apply (x : L) (m : ⨁ i, M i) (i : ι) : ⁅x, m⁆ 
 
 instance : LieModule R L (⨁ i, M i) where
   smul_lie t x m := by
-    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext i`
+    ext
     simp only [smul_lie, lie_module_bracket_apply, smul_apply]
   lie_smul t x m := by
-    refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext i`
+    ext
     simp only [lie_smul, lie_module_bracket_apply, smul_apply]
 
 variable (R ι L M)
@@ -70,12 +70,14 @@ variable (R ι L M)
 def lieModuleOf [DecidableEq ι] (j : ι) : M j →ₗ⁅R,L⁆ ⨁ i, M i :=
   { lof R ι M j with
     map_lie' := fun {x m} => by
-      refine DFinsupp.ext fun i => ?_ -- Porting note: Originally `ext i`
+      ext i
       by_cases h : j = i
       · rw [← h]; simp
-      · -- This used to be the end of the proof before leanprover/lean4#2644
+      · -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
         -- old proof `simp [lof, lsingle, h]`
         simp only [lof, lsingle, AddHom.toFun_eq_coe, lie_module_bracket_apply]
+        -- The coercion in the goal is `DFunLike.coe (β := fun x ↦ Π₀ (i : ι), M i)`
+        -- but the lemma is expecting `DFunLike.coe (β := fun x ↦ ⨁ (i : ι), M i)`
         erw [AddHom.coe_mk]
         simp [h] }
 
@@ -96,18 +98,18 @@ variable [∀ i, LieRing (L i)] [∀ i, LieAlgebra R (L i)]
 
 instance lieRing : LieRing (⨁ i, L i) :=
   { (inferInstance : AddCommGroup _) with
-    bracket := zipWith (fun i => fun x y => ⁅x, y⁆) fun i => lie_zero 0
+    bracket := zipWith (fun _ => fun x y => ⁅x, y⁆) fun _ => lie_zero 0
     add_lie := fun x y z => by
-      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+      ext
       simp only [zipWith_apply, add_apply, add_lie]
     lie_add := fun x y z => by
-      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+      ext
       simp only [zipWith_apply, add_apply, lie_add]
     lie_self := fun x => by
-      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+      ext
       simp only [zipWith_apply, add_apply, lie_self, zero_apply]
     leibniz_lie := fun x y z => by
-      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+      ext
       simp only [sub_apply, zipWith_apply, add_apply, zero_apply]
       apply leibniz_lie }
 
@@ -121,7 +123,7 @@ theorem lie_of_same [DecidableEq ι] {i : ι} (x y : L i) :
 
 theorem lie_of_of_ne [DecidableEq ι] {i j : ι} (hij : i ≠ j) (x : L i) (y : L j) :
     ⁅of L i x, of L j y⁆ = 0 := by
-  refine DFinsupp.ext fun k => ?_
+  ext k
   rw [bracket_apply]
   obtain rfl | hik := Decidable.eq_or_ne i k
   · rw [of_eq_of_ne _ _ _ hij.symm, lie_zero, zero_apply]
@@ -137,7 +139,7 @@ theorem lie_of [DecidableEq ι] {i j : ι} (x : L i) (y : L j) :
 instance lieAlgebra : LieAlgebra R (⨁ i, L i) :=
   { (inferInstance : Module R _) with
     lie_smul := fun c x y => by
-      refine DFinsupp.ext fun _ => ?_ -- Porting note: Originally `ext`
+      ext
       simp only [zipWith_apply, smul_apply, bracket_apply, lie_smul] }
 
 variable (R ι)
@@ -147,24 +149,7 @@ variable (R ι)
 def lieAlgebraOf [DecidableEq ι] (j : ι) : L j →ₗ⁅R⁆ ⨁ i, L i :=
   { lof R ι L j with
     toFun := of L j
-    map_lie' := fun {x y} => by
-      refine DFinsupp.ext fun i => ?_ -- Porting note: Originally `ext i`
-      by_cases h : j = i
-      · rw [← h]
-        -- This used to be the end of the proof before leanprover/lean4#2644
-        -- with `simp [of, singleAddHom]`
-        simp only [of, singleAddHom, bracket_apply]
-        erw [AddHom.coe_mk, single_apply, single_apply]
-        · simp? [h] says simp only [h, ↓reduceDIte, single_apply]
-        · intros
-          erw [single_add]
-      · -- This used to be the end of the proof before leanprover/lean4#2644
-        -- with `simp [of, singleAddHom]`
-        simp only [of, singleAddHom, bracket_apply]
-        erw [AddHom.coe_mk, single_apply, single_apply]
-        · simp only [h, dite_false, single_apply, lie_self]
-        · intros
-          erw [single_add] }
+    map_lie' := fun {x y} => (lie_of_same L x y).symm }
 
 /-- The projection map onto one component, as a morphism of Lie algebras. -/
 @[simps]
@@ -229,20 +214,10 @@ variable {L : Type w} [LieRing L] [LieAlgebra R L] (I : ι → LieIdeal R L)
 [this Zulip thread](https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/
 Typeclass.20resolution.20under.20binders/near/245151099). -/
 instance lieRingOfIdeals : LieRing (⨁ i, I i) :=
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieRing fun i => ↥(I i)
 
 /-- See `DirectSum.lieRingOfIdeals` comment. -/
 instance lieAlgebraOfIdeals : LieAlgebra R (⨁ i, I i) :=
-  #adaptation_note /-- After lean4#5020, many instances for Lie algebras and manifolds are no
-  longer found. -/
-  letI : (i : ι) → LieAlgebra R (I i) := fun _ => LieIdeal.lieAlgebra ..
-  letI : (i : ι) → LieRing (I i) := fun _ => LieIdeal.lieRing ..
   DirectSum.lieAlgebra fun i => ↥(I i)
 
 end Ideals

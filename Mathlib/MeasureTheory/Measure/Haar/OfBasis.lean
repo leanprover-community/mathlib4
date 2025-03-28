@@ -26,7 +26,7 @@ of the basis).
 -/
 
 
-open Set TopologicalSpace MeasureTheory MeasureTheory.Measure FiniteDimensional
+open Set TopologicalSpace MeasureTheory MeasureTheory.Measure Module
 
 open scoped Pointwise
 
@@ -105,18 +105,18 @@ theorem parallelepiped_orthonormalBasis_one_dim (b : OrthonormalBasis ι ℝ ℝ
     · intro x hx
       refine ⟨x 0, ⟨hx.1 0, hx.2 0⟩, ?_⟩
       ext j
-      simp only [Subsingleton.elim j 0]
+      simp only [F, Subsingleton.elim j 0]
     · rintro x ⟨y, hy, rfl⟩
       exact ⟨fun _j => hy.1, fun _j => hy.2⟩
   rcases orthonormalBasis_one_dim (b.reindex e) with (H | H)
   · left
     simp_rw [parallelepiped, H, A, Algebra.id.smul_eq_mul, mul_one]
-    simp only [Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton, ← image_comp,
-      Function.comp_apply, image_id']
+    simp only [F, Finset.univ_unique, Fin.default_eq_zero, Finset.sum_singleton,
+      ← image_comp, Function.comp_apply, image_id']
   · right
     simp_rw [H, parallelepiped, Algebra.id.smul_eq_mul, A]
     simp only [F, Finset.univ_unique, Fin.default_eq_zero, mul_neg, mul_one, Finset.sum_neg_distrib,
-      Finset.sum_singleton, ← image_comp, Function.comp, image_neg, preimage_neg_Icc, neg_zero]
+      Finset.sum_singleton, ← image_comp, Function.comp, image_neg_eq_neg, neg_Icc, neg_zero]
 
 theorem parallelepiped_eq_sum_segment (v : ι → E) : parallelepiped v = ∑ i, segment ℝ 0 (v i) := by
   ext
@@ -162,7 +162,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h
         exact ⟨div_nonneg_of_nonpos h.2 hai, div_le_one_of_ge h.1 hai⟩
       · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai] at h
-        exact ⟨div_nonneg h.1 hai, div_le_one_of_le h.2 hai⟩
+        exact ⟨div_nonneg h.1 hai, div_le_one_of_le₀ h.2 hai⟩
     · specialize h i
       simp only [smul_eq_mul, Pi.mul_apply]
       rcases eq_or_ne (a i) 0 with hai | hai
@@ -205,16 +205,12 @@ theorem Basis.parallelepiped_reindex (b : Basis ι ℝ E) (e : ι ≃ ι') :
 
 theorem Basis.parallelepiped_map (b : Basis ι ℝ E) (e : E ≃ₗ[ℝ] F) :
     (b.map e).parallelepiped = b.parallelepiped.map e
-    (have := FiniteDimensional.of_fintype_basis b
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis b
     LinearMap.continuous_of_finiteDimensional e.toLinearMap)
-    (have := FiniteDimensional.of_fintype_basis (b.map e)
-    -- Porting note: Lean cannot infer the instance above
+    (haveI := FiniteDimensional.of_fintype_basis (b.map e)
     LinearMap.isOpenMap_of_finiteDimensional _ e.surjective) :=
   PositiveCompacts.ext (image_parallelepiped e.toLinearMap _).symm
 
--- removing this option makes elaboration approximately 1 second slower
-set_option tactic.skipAssignedInstances false in
 theorem Basis.prod_parallelepiped (v : Basis ι ℝ E) (w : Basis ι' ℝ F) :
     (v.prod w).parallelepiped = v.parallelepiped.prod w.parallelepiped := by
   ext x
@@ -290,7 +286,18 @@ end Fintype
 /-- A finite dimensional inner product space has a canonical measure, the Lebesgue measure giving
 volume `1` to the parallelepiped spanned by any orthonormal basis. We define the measure using
 some arbitrary choice of orthonormal basis. The fact that it works with any orthonormal basis
-is proved in `orthonormalBasis.volume_parallelepiped`. -/
+is proved in `orthonormalBasis.volume_parallelepiped`.
+
+This instance creates:
+
+- a potential non-defeq diamond with the natural instance for `MeasureSpace (ULift E)`,
+  which does not exist in Mathlib at the moment;
+
+- a diamond with the existing instance `MeasureTheory.Measure.instMeasureSpacePUnit`.
+
+However, we've decided not to refactor until one of these diamonds starts creating issues, see
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Hausdorff.20measure.20normalisation
+-/
 instance (priority := 100) measureSpaceOfInnerProductSpace [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E] :
     MeasureSpace E where volume := (stdOrthonormalBasis ℝ E).toBasis.addHaar

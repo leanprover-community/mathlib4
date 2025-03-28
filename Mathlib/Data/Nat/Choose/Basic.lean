@@ -4,13 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Bhavik Mehta, Stuart Presnell
 -/
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Order.Monotone.Basic
+import Mathlib.Order.Monotone.Defs
 
 /-!
 # Binomial coefficients
 
 This file defines binomial coefficients and proves simple lemmas (i.e. those not
 requiring more imports).
+For the lemma that `n.choose k` counts the `k`-element-subsets of an `n`-element set,
+see `Fintype.card_powersetCard` in `Mathlib.Data.Finset.Powerset`.
 
 ## Main definition and results
 
@@ -41,7 +43,8 @@ open Nat
 namespace Nat
 
 /-- `choose n k` is the number of `k`-element subsets in an `n`-element set. Also known as binomial
-coefficients. -/
+coefficients. For the fact that this is the number of `k`-element-subsets of an `n`-element
+set, see `Fintype.card_powersetCard`. -/
 def choose : ℕ → ℕ → ℕ
   | _, 0 => 1
   | 0, _ + 1 => 0
@@ -60,9 +63,24 @@ theorem choose_succ_succ (n k : ℕ) : choose (succ n) (succ k) = choose n k + c
 theorem choose_succ_succ' (n k : ℕ) : choose (n + 1) (k + 1) = choose n k + choose n (k + 1) :=
   rfl
 
+theorem choose_succ_left (n k : ℕ) (hk : 0 < k) :
+    choose (n + 1) k = choose n (k - 1) + choose n k := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rfl
+
+theorem choose_succ_right (n k : ℕ) (hn : 0 < n) :
+    choose n (k + 1) = choose (n - 1) k + choose (n - 1) (k + 1) := by
+  obtain ⟨l, rfl⟩ : ∃ l, n = l + 1 := Nat.exists_eq_add_of_le' hn
+  rfl
+
+theorem choose_eq_choose_pred_add {n k : ℕ} (hn : 0 < n) (hk : 0 < k) :
+    choose n k = choose (n - 1) (k - 1) + choose (n - 1) k := by
+  obtain ⟨l, rfl⟩ : ∃ l, k = l + 1 := Nat.exists_eq_add_of_le' hk
+  rw [choose_succ_right _ _ hn, Nat.add_one_sub_one]
+
 theorem choose_eq_zero_of_lt : ∀ {n k}, n < k → choose n k = 0
   | _, 0, hk => absurd hk (Nat.not_lt_zero _)
-  | 0, k + 1, _ => choose_zero_succ _
+  | 0, _ + 1, _ => choose_zero_succ _
   | n + 1, k + 1, hk => by
     have hnk : n < k := lt_of_succ_lt_succ hk
     have hnk1 : n < k + 1 := lt_of_succ_lt hk
@@ -94,7 +112,7 @@ theorem choose_two_right (n : ℕ) : choose n 2 = n * (n - 1) / 2 := by
 theorem choose_pos : ∀ {n k}, k ≤ n → 0 < choose n k
   | 0, _, hk => by rw [Nat.eq_zero_of_le_zero hk]; decide
   | n + 1, 0, _ => by simp
-  | n + 1, k + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
+  | _ + 1, _ + 1, hk => Nat.add_pos_left (choose_pos (le_of_succ_le_succ hk)) _
 
 theorem choose_eq_zero_iff {n k : ℕ} : n.choose k = 0 ↔ n < k :=
   ⟨fun h => lt_of_not_ge (mt Nat.choose_pos h.symm.not_lt), Nat.choose_eq_zero_of_lt⟩
@@ -275,13 +293,13 @@ private theorem choose_le_middle_of_le_half_left {n r : ℕ} (hr : r ≤ n / 2) 
 
 /-- `choose n r` is maximised when `r` is `n/2`. -/
 theorem choose_le_middle (r n : ℕ) : choose n r ≤ choose n (n / 2) := by
-  cases' le_or_gt r n with b b
+  rcases le_or_gt r n with b | b
   · rcases le_or_lt r (n / 2) with a | h
     · apply choose_le_middle_of_le_half_left a
     · rw [← choose_symm b]
       apply choose_le_middle_of_le_half_left
-      rw [div_lt_iff_lt_mul' Nat.zero_lt_two] at h
-      rw [le_div_iff_mul_le' Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
+      rw [div_lt_iff_lt_mul Nat.zero_lt_two] at h
+      rw [le_div_iff_mul_le Nat.zero_lt_two, Nat.mul_sub_right_distrib, Nat.sub_le_iff_le_add,
         ← Nat.sub_le_iff_le_add', Nat.mul_two, Nat.add_sub_cancel]
       exact le_of_lt h
   · rw [choose_eq_zero_of_lt b]
@@ -362,7 +380,7 @@ theorem multichoose_eq : ∀ n k : ℕ, multichoose n k = (n + k - 1).choose k
   | n + 1, k + 1 => by
     have : n + (k + 1) < (n + 1) + (k + 1) := Nat.add_lt_add_right (Nat.lt_succ_self _) _
     have : (n + 1) + k < (n + 1) + (k + 1) := Nat.add_lt_add_left (Nat.lt_succ_self _) _
-    erw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
+    rw [multichoose_succ_succ, Nat.add_comm, Nat.succ_add_sub_one, ← Nat.add_assoc,
       Nat.choose_succ_succ]
     simp [multichoose_eq n (k+1), multichoose_eq (n+1) k]
 

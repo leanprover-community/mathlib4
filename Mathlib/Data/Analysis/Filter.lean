@@ -20,7 +20,7 @@ This file provides infrastructure to compute with filters.
 
 open Set Filter
 
--- Porting note (#11215): TODO write doc strings
+-- TODO write doc strings
 /-- A `CFilter α σ` is a realization of a filter (base) on `α`,
   represented by a type `σ` together with operations for the top element and
   the binary `inf` operation. -/
@@ -46,13 +46,13 @@ section
 
 variable [PartialOrder α] (F : CFilter α σ)
 
+/-
+A DFunLike instance would not be mathematically meaningful here, since the coercion to f cannot b
+injective.
+-/
 instance : CoeFun (CFilter α σ) fun _ ↦ σ → α :=
   ⟨CFilter.f⟩
 
-/- Porting note: Due to the CoeFun instance, the lhs of this lemma has a variable (f) as its head
-symbol (simpnf linter problem). Replacing it with a DFunLike instance would not be mathematically
-meaningful here, since the coercion to f cannot be injective, hence need to remove @[simp]. -/
--- @[simp]
 theorem coe_mk (f pt inf h₁ h₂ a) : (@CFilter.mk α σ _ f pt inf h₁ h₂) a = f a :=
   rfl
 
@@ -86,7 +86,7 @@ theorem mem_toFilter_sets (F : CFilter (Set α) σ) {a : Set α} : a ∈ F.toFil
 
 end CFilter
 
--- Porting note (#11215): TODO write doc strings
+-- TODO write doc strings
 /-- A realizer for filter `f` is a cfilter which generates `f`. -/
 structure Filter.Realizer (f : Filter α) where
   σ : Type*
@@ -113,8 +113,8 @@ def ofFilter (f : Filter α) : f.Realizer :=
     { f := Subtype.val
       pt := ⟨univ, univ_mem⟩
       inf := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ ⟨_, inter_mem h₁ h₂⟩
-      inf_le_left := fun ⟨x, _⟩ ⟨y, _⟩ ↦ inter_subset_left
-      inf_le_right := fun ⟨x, _⟩ ⟨y, _⟩ ↦ inter_subset_right },
+      inf_le_left := fun ⟨_, _⟩ ⟨_, _⟩ ↦ inter_subset_left
+      inf_le_right := fun ⟨_, _⟩ ⟨_, _⟩ ↦ inter_subset_right },
     filter_eq <| Set.ext fun _ ↦ by simp [exists_mem_subset_iff]⟩
 
 /-- Transfer a filter realizer to another realizer on a different base type. -/
@@ -267,7 +267,7 @@ protected def bind {f : Filter α} {m : α → Filter β} (F : f.Realizer) (G : 
         simp only [mem_iUnion, forall_exists_index]
         exact fun i h₁ h₂ ↦ ⟨i, F.F.inf_le_right _ _ h₁, (G i).F.inf_le_right _ _ h₂⟩ },
     filter_eq <| Set.ext fun _ ↦ by
-      cases' F with _ F _; subst f
+      obtain ⟨_, F, _⟩ := F; subst f
       simp only [CFilter.toFilter, iUnion_subset_iff, Sigma.exists, Filter.mem_sets, mem_bind]
       exact
         ⟨fun ⟨s, f, h⟩ ↦
@@ -286,7 +286,7 @@ protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, 
       ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Construct a realizer for the product of filters -/
-protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f.prod g).Realizer :=
+protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ×ˢ g).Realizer :=
   (F.comap _).inf (G.comap _)
 
 theorem le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :
