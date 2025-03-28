@@ -288,7 +288,7 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
       _ = ∑ n, Λ (g n • f) := by simp
       _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
       _ ≤ ∑ n, (y n + ε') * Λ (g n) := by simp
-      -- That `y n + ε'` can be negative is bad the inequalities, so we artifically include `|a|`.
+      -- That `y n + ε'` can be negative is bad in the inequalities so we artifically include `|a|`.
       _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) :=
         by simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
       _ ≤ ∑ n, (|a| + y n + ε') * ((μ (E n)).toReal + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
