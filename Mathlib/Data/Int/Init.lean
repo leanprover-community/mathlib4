@@ -457,13 +457,6 @@ lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign
 @[simp]
 lemma lt_toNat {m : ℕ} : m < toNat n ↔ (m : ℤ) < n := by rw [← Int.not_le, ← Nat.not_le, toNat_le]
 
-lemma toNat_le_toNat {a b : ℤ} (h : a ≤ b) : toNat a ≤ toNat b := by
-  rw [toNat_le]; exact Int.le_trans h (self_le_toNat b)
-
-lemma toNat_lt_toNat {a b : ℤ} (hb : 0 < b) : toNat a < toNat b ↔ a < b where
-  mp h := by cases a; exacts [lt_toNat.1 h, Int.lt_trans (neg_of_sign_eq_neg_one rfl) hb]
-  mpr h := by rw [lt_toNat]; cases a; exacts [h, hb]
-
 lemma lt_of_toNat_lt {a b : ℤ} (h : toNat a < toNat b) : a < b :=
   (toNat_lt_toNat <| lt_toNat.1 <| Nat.lt_of_le_of_lt (Nat.zero_le _) h).1 h
 
