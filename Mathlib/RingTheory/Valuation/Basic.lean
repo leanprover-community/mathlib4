@@ -140,7 +140,7 @@ variable (v : Valuation R Γ₀)
 @[simp, norm_cast]
 theorem coe_coe : ⇑(v : R →*₀ Γ₀) = v := rfl
 
-protected theorem map_zero : v 0 = 0 :=
+theorem map_zero : v 0 = 0 :=
   v.map_zero'
 
 protected theorem map_one : v 1 = 1 :=
@@ -150,14 +150,14 @@ protected theorem map_mul : ∀ x y, v (x * y) = v x * v y :=
   v.map_mul'
 
 -- Porting note: LHS side simplified so created map_add'
-protected theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
+theorem map_add : ∀ x y, v (x + y) ≤ max (v x) (v y) :=
   v.map_add_le_max'
 
 @[simp]
 theorem map_add' : ∀ x y, v (x + y) ≤ v x ∨ v (x + y) ≤ v y := by
   intro x y
   rw [← le_max_iff, ← ge_iff_le]
-  apply v.map_add
+  apply map_add
 
 theorem map_add_le {x y g} (hx : v x ≤ g) (hy : v y ≤ g) : v (x + y) ≤ g :=
   le_trans (v.map_add x y) <| max_le hx hy
@@ -220,7 +220,7 @@ theorem ne_zero_of_isUnit [Nontrivial Γ₀] (v : Valuation K Γ₀) (x : K) (hx
 def comap {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) : Valuation S Γ₀ :=
   { v.toMonoidWithZeroHom.comp f.toMonoidWithZeroHom with
     toFun := v ∘ f
-    map_add_le_max' := fun x y => by simp only [comp_apply, v.map_add, map_add] }
+    map_add_le_max' := fun x y => by simp only [comp_apply, map_add, f.map_add] }
 
 @[simp]
 theorem comap_apply {S : Type*} [Ring S] (f : S →+* R) (v : Valuation R Γ₀) (s : S) :

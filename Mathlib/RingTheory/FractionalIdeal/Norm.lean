@@ -62,7 +62,8 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   map_one' := by
     dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm 1 ⊤ (by simp [Submodule.one_eq_range]),
-      Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one,  abs_one, Int.cast_one,
+      Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one, abs_one,
+      Int.cast_one,
       one_div_one]
   map_mul' I J := by
     dsimp only

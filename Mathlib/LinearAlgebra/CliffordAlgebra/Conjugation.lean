@@ -107,7 +107,7 @@ theorem reverse.commutes (r : R) :
   op_injective <| reverseOp.commutes r
 
 @[simp]
-theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
+protected theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
   op_injective (map_one reverseOp)
 
 @[simp]
