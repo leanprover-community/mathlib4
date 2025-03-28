@@ -824,7 +824,7 @@ theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R �
   rcases eq_prime_pow_mul_coprime hf0 P with ⟨I, hcp, heq⟩
   have hcp : ⊤ = map g P ⊔ map g I := by rw [← map_sup, hcp, map_top g]
   have hntq : ¬ ⊤ ≤ Q := fun ht ↦ IsPrime.ne_top hqm (Iff.mpr (eq_top_iff_one Q) (ht trivial))
-  nth_rw 1 [heq, map_mul, Ideal.map_pow, normalizedFactors_mul (pow_ne_zero _ hg0) <| by
+  nth_rw 1 [heq, Ideal.map_mul, Ideal.map_pow, normalizedFactors_mul (pow_ne_zero _ hg0) <| by
     by_contra h
     simp only [h, Submodule.zero_eq_bot, bot_le, sup_of_le_left] at hcp
     exact hntq (hcp.trans_le hg), Multiset.count_add, normalizedFactors_pow, Multiset.count_nsmul]
