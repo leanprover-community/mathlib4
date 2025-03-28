@@ -44,7 +44,7 @@ open scoped Topology
 
 section Ring
 
-variable {R : Type _} [CommRing R] (c : R) (f : RingSeminorm R)
+variable {R : Type*} [CommRing R] (c : R) (f : RingSeminorm R)
 
 /-- For a ring seminorm `f` on `R` and `c ∈ R`, the sequence given by `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n ↦ f (x * c ^ n) / f c ^ n
@@ -261,7 +261,7 @@ end Ring
 
 section Field
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K]
 
 /-- If `K` is a field, the function `seminormFromConst` is a `RingNorm` on `K`. -/
 def normFromConst {k : K} {g : RingSeminorm K} (hg1 : g 1 ≤ 1) (hg_k : g k ≠ 0)
