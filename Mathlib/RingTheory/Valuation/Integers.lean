@@ -161,7 +161,7 @@ theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
   refine ⟨⟨d, rfl⟩, ?_⟩
   rw [hv.isUnit_iff_valuation_eq_one, ← ne_eq, ne_iff_lt_iff_le.mpr (hv.map_le_one d)] at hdu
   rw [dvd_iff_le hv]
-  simp only [_root_.map_mul, not_le]
+  simp only [map_mul, not_le]
   contrapose! hdu
   refine one_le_of_le_mul_left₀ ?_ hdu
   simp [hv.valuation_pos_iff_ne_zero, hx0]
@@ -224,7 +224,7 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
     zero_mem' := by simp
     smul_mem' := by
       intro c x
-      simp only [mem_preimage, Function.comp_apply, mem_Iio, smul_eq_mul, _root_.map_mul]
+      simp only [mem_preimage, Function.comp_apply, mem_Iio, smul_eq_mul, map_mul]
       intro hx
       exact Right.mul_lt_one_of_le_of_lt (hv.map_le_one c) hx
   }

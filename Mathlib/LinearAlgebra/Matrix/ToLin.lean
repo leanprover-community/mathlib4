@@ -821,7 +821,7 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
     rw [map_add, LinearEquiv.map_add]
   map_mul' x y := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_mul, LinearMap.toMatrix_mul]
+    rw [map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
     dsimp only  -- porting node: needed due to new-style structures
     ext
