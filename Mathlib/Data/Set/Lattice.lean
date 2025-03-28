@@ -1164,6 +1164,17 @@ end Directed
 
 end Set
 
+namespace DirectedOn
+
+theorem pairwise_iUnion₂ {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
+    (r : α → α → Prop) (h : ∀ s ∈ S, s.Pairwise r) : (⋃ s ∈ S, s).Pairwise r := by
+  simp only [Set.Pairwise, Set.mem_iUnion, exists_prop, forall_exists_index, and_imp]
+  intro x S hS hx y T hT hy hne
+  obtain ⟨U, hU, hSU, hTU⟩ := hd S hS T hT
+  exact h U hU (hSU hx) (hTU hy) hne
+
+end DirectedOn
+
 namespace Function
 
 namespace Surjective
