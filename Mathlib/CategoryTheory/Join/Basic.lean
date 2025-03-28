@@ -46,9 +46,9 @@ inductive Join (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v�
 
 attribute [aesop safe cases (rule_sets := [CategoryTheory])] Join
 
-@[inherit_doc] infixr:30 " ⋆ " => Join
-
 namespace Join
+
+@[inherit_doc] scoped infixr:30 " ⋆ " => Join
 
 variable (C : Type u₁) [Category.{v₁} C] (D : Type u₂) [Category.{v₂} D]
 
