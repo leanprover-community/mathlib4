@@ -1363,7 +1363,7 @@ lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : 
   obtain heP | heP := em' <| s(x,y) ∈ P.1.edges
   · exact ⟨(P.1.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
   have hyP := P.1.snd_mem_support_of_mem_edges heP
-  set P₁ := P.1.takeUntil y hyP with hP₁
+  let P₁ := P.1.takeUntil y hyP
   have hxP₁ := Walk.endpoint_not_mem_support_takeUntil P.2 hyP hxy.ne
   have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
   refine (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
