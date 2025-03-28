@@ -194,7 +194,7 @@ private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {
   let V₂ : Opens X := ⟨(f ⁻¹' Iio c), IsOpen.preimage f.1.2 isOpen_Iio⟩
   use V₁ ⊓ V₂
   have h x (hx : x ∈ V₁ ⊓ V₂) : f x < c := by
-    suffices (∀ x ∈ V₂.carrier, f x < c) by exact this x (mem_of_mem_inter_right hx)
+    suffices ∀ x ∈ V₂.carrier, f x < c from this x (mem_of_mem_inter_right hx)
     intro _ hx
     rw [mem_preimage, mem_Iio] at hx
     exact hx
@@ -296,7 +296,7 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
       obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n => (V n).2) f.2 this
       exact ⟨fun n ↦ ⟨g' n, hg.2.2.2 n⟩, hg⟩
     -- The proof is completed by a chain of inequalities.
-    calc
+    calc Λ f
       _ = Λ (∑ n, g n • f) := ?_
       _ = ∑ n, Λ (g n • f) := by simp
       _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
