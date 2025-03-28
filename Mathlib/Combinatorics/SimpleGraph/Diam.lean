@@ -217,7 +217,7 @@ lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
 lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
   rw [diam, ENat.toNat_eq_iff one_ne_zero, Nat.cast_one, ediam_eq_one]
 
-lemma diam_zero_iff_ediam_top [Nontrivial α] : G.diam = 0 ↔ G.ediam = ⊤ := by
+lemma diam_eq_zero_iff_ediam_top [Nontrivial α] : G.diam = 0 ↔ G.ediam = ⊤ := by
   rw [← not_iff_not]
   exact ⟨ediam_ne_top_of_diam_ne_zero, diam_ne_zero_of_ediam_ne_top⟩
 
