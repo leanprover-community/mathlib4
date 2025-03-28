@@ -280,7 +280,7 @@ theorem coe_const (y : Y) : (const X y : X → Y) = Function.const X y :=
 /-- Evaluation/projection as a locally constant function. -/
 @[simps]
 def eval {ι : Type*} {X : ι → Type*}
-    [∀ i, TopologicalSpace (X i)] [∀ i, DiscreteTopology (X i)] (i : ι) :
+    [∀ i, TopologicalSpace (X i)] (i : ι) [DiscreteTopology (X i)] :
     LocallyConstant (Π i, X i) (X i) where
   toFun := fun f ↦ f i
   isLocallyConstant := (IsLocallyConstant.iff_continuous _).mpr <| continuous_apply i
