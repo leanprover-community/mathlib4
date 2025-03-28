@@ -103,13 +103,13 @@ def addRewriteEntry (name : Name) (cinfo : ConstantInfo) :
       if badMatch rhs then
         return []
       else
-        return [({ name, symm := true }, ← initializeLazyEntryAux rhs {})]
+        return [({ name, symm := true }, ← initializeLazyEntryWithEta rhs)]
     else
-      let result := ({ name, symm := false }, ← initializeLazyEntryAux lhs {})
+      let result := ({ name, symm := false }, ← initializeLazyEntryWithEta lhs)
       if badMatch rhs || isMVarSwap lhs rhs then
         return [result]
       else
-        return [result, ({ name, symm := true }, ← initializeLazyEntryAux rhs {})]
+        return [result, ({ name, symm := true }, ← initializeLazyEntryWithEta rhs)]
   match eqn.eq? with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with
@@ -122,8 +122,8 @@ def addLocalRewriteEntry (decl : LocalDecl) :
   withReducible do
   let (_,_,eqn) ← forallMetaTelescope decl.type
   let cont lhs rhs := do
-    let result := ((decl.fvarId, false), ← initializeLazyEntryAux lhs {})
-    return [result, ((decl.fvarId, true), ← initializeLazyEntryAux rhs {})]
+    let result := ((decl.fvarId, false), ← initializeLazyEntryWithEta lhs)
+    return [result, ((decl.fvarId, true), ← initializeLazyEntryWithEta rhs)]
   match ← matchEq? eqn with
   | some (_, lhs, rhs) => cont lhs rhs
   | none => match eqn.iff? with
@@ -174,7 +174,7 @@ def getImportCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
     which is the largest capacity it gets to reach.
     -/
     (constantsPerTask := 5000) (capacityPerTask := 256) e
-  let candidates := matchResult.elts.reverse.concatMap id
+  let candidates := matchResult.elts.reverse.flatMap id
   let excludedModules := getLibrarySearchExcludedModules (← getOptions)
   let env ← getEnv
   return candidates.map <|
@@ -188,7 +188,7 @@ in the `librarySearch.excludedModules` option. -/
 def getModuleCandidates (e : Expr) : MetaM (Array (Array RewriteLemma)) := do
   let moduleTreeRef ← createModuleTreeRef addRewriteEntry
   let matchResult ← findModuleMatches moduleTreeRef e
-  return matchResult.elts.reverse.concatMap id
+  return matchResult.elts.reverse.flatMap id
 
 
 /-- A rewrite lemma that has been applied to an expression. -/
@@ -290,7 +290,7 @@ def getHypothesisRewrites (e : Expr) (except : Option FVarId) :
     MetaM (Array (Array (Rewrite × FVarId))) := do
   let (results, _) ← (← getHypotheses except).getMatch e (unify := false) (matchRootStar := true)
   let results := results.elts
-  results.concatMapM <| Array.mapM <|
+  results.flatMapM <| Array.mapM <|
     Array.filterMapM fun (fvarId, symm) =>
       tryCatchRuntimeEx do
         Option.map (·, fvarId) <$> checkRewrite (.fvar fvarId) e symm
@@ -323,7 +323,7 @@ partial def isExplicitEq (t s : Expr) : MetaM Bool := do
   let tArgs := t.getAppArgs
   let sArgs := s.getAppArgs
   let bis ← getBinderInfos t.getAppFn tArgs
-  t.getAppNumArgs.allM fun i =>
+  t.getAppNumArgs.allM fun i _ =>
     if bis[i]!.isExplicit then
       isExplicitEq tArgs[i]! sArgs[i]!
     else
@@ -529,7 +529,7 @@ where
               (.ofReplaceRange doc.meta range rw.tactic)
               #[.text rw.replacementString] }
           </span>
-        let extraGoals := rw.extraGoals.concatMap fun extraGoal =>
+        let extraGoals := rw.extraGoals.flatMap fun extraGoal =>
           #[<br/>, <strong className="goal-vdash">⊢ </strong>, <InteractiveCode fmt={extraGoal}/>]
         #[button] ++ extraGoals ++
           if showNames then #[<br/>, <InteractiveCode fmt={rw.prettyLemma}/>] else #[] }
