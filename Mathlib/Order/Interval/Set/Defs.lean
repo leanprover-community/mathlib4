@@ -5,7 +5,6 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Data.Set.Defs
 import Mathlib.Order.Defs.PartialOrder
-import Mathlib.Tactic.ScopedNS
 
 /-!
 # Intervals
@@ -76,16 +75,8 @@ def Ioi (a : α) := { x | a < x }
 @[simp] theorem mem_Ioi : x ∈ Ioi a ↔ a < x := Iff.rfl
 theorem Ioi_def (a : α) : { x | a < x } = Ioi a := rfl
 
-/-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
-Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
-`uIcc` corresponds to the bounding box of the two elements. -/
-def uIcc [Min α] [Max α] (a b : α) : Set α := Icc (min a b) (max a b)
-
-/-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
-scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
-
 /-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
-interval `[x, y]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
+interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
 the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
 `LinearOrderedField`, then this condition is also equivalent to `Convex α s`. -/
 class OrdConnected (s : Set α) : Prop where
