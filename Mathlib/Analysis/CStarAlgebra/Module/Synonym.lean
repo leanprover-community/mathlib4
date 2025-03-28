@@ -206,8 +206,8 @@ instance [UniformSpace E] [CompleteSpace E] : CompleteSpace (C⋆ᵐᵒᵈ E) :=
 instance [AddCommGroup E] [UniformSpace E] [ContinuousAdd E] : ContinuousAdd (C⋆ᵐᵒᵈ E) :=
   ContinuousAdd.induced (addEquiv E)
 
-instance [AddCommGroup E] [UniformSpace E] [UniformAddGroup E] : UniformAddGroup (C⋆ᵐᵒᵈ E) :=
-  UniformAddGroup.comap (addEquiv E)
+instance [AddCommGroup E] [UniformSpace E] [IsUniformAddGroup E] : IsUniformAddGroup (C⋆ᵐᵒᵈ E) :=
+  IsUniformAddGroup.comap (addEquiv E)
 
 instance [Semiring R] [TopologicalSpace R] [AddCommGroup E] [UniformSpace E] [Module R E]
     [ContinuousSMul R E] : ContinuousSMul R (C⋆ᵐᵒᵈ E) :=

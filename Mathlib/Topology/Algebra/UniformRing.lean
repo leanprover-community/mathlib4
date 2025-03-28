@@ -63,7 +63,7 @@ theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
   ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
       ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 
-variable [UniformAddGroup α]
+variable [IsUniformAddGroup α]
 
 instance : ContinuousMul (Completion α) where
   continuous_mul := by
@@ -139,7 +139,7 @@ def coeRingHom : α →+* Completion α where
 theorem continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :=
   continuous_coe α
 
-variable {β : Type u} [UniformSpace β] [Ring β] [UniformAddGroup β] [IsTopologicalRing β]
+variable {β : Type u} [UniformSpace β] [Ring β] [IsUniformAddGroup β] [IsTopologicalRing β]
   (f : α →+* β) (hf : Continuous f)
 
 /-- The completion extension as a ring morphism. -/
@@ -180,8 +180,8 @@ def mapRingHom (hf : Continuous f) : Completion α →+* Completion β :=
 
 section Algebra
 
-variable (A : Type*) [Ring A] [UniformSpace A] [UniformAddGroup A] [IsTopologicalRing A] (R : Type*)
-  [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
+variable (A : Type*) [Ring A] [UniformSpace A] [IsUniformAddGroup A] [IsTopologicalRing A]
+  (R : Type*) [CommSemiring R] [Algebra R A] [UniformContinuousConstSMul R A]
 
 @[simp]
 theorem map_smul_eq_mul_coe (r : R) :
@@ -207,7 +207,7 @@ end Algebra
 
 section CommRing
 
-variable (R : Type*) [CommRing R] [UniformSpace R] [UniformAddGroup R] [IsTopologicalRing R]
+variable (R : Type*) [CommRing R] [UniformSpace R] [IsUniformAddGroup R] [IsTopologicalRing R]
 
 instance commRing : CommRing (Completion R) :=
   { Completion.ring with
