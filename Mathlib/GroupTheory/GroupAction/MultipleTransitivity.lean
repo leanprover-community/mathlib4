@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
 
 import Mathlib.GroupTheory.GroupAction.Transitive
+import Mathlib.GroupTheory.GroupAction.Primitive
 import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.GroupAction.Embedding
 
@@ -26,6 +27,9 @@ An action is 1-pretransitive iff it is pretransitive
 * `MulAction.is_two_pretransitive_iff` :
 An action is 2-pretransitive if for any `a`, `b`, `c`, `d`, such that
 `a ≠ b` and `c ≠ d`, there exist `g : G` such that `g • a = b` and `g • c = d`.
+
+* `MulAction.isPreprimitive_of_is_two_pretransitive` :
+A 2-transitive action is preprimitive
 
 * `MulAction.isMultiplyPretransitive_of_le` :
 If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`.
@@ -227,6 +231,37 @@ theorem is_two_pretransitive_iff :
         use g
         ext i
         rcases i.eq_zero_or_one with hi | hi <;> simp only [hi, smul_apply, h, h'] }
+
+/-- A 2-pretransitive action is pretransitive -/
+theorem isPretransitive_of_is_two_pretransitive
+    [h2 : IsMultiplyPretransitive G α 2] : IsPretransitive G α where
+  exists_smul_eq a b := by
+    by_cases h : a = b
+    · exact ⟨1, by simp [h]⟩
+    · rw [is_two_pretransitive_iff] at h2
+      obtain ⟨g, h, _⟩ := h2 h (Ne.symm h)
+      exact ⟨g, h⟩
+
+/-- A 2-transitive action is primitive -/
+theorem isPreprimitive_of_is_two_pretransitive
+    (h2 : IsMultiplyPretransitive G α 2) : IsPreprimitive G α := by
+  have : IsPretransitive G α := isPretransitive_of_is_two_pretransitive
+  apply IsPreprimitive.mk
+  intro B hB
+  rcases B.subsingleton_or_nontrivial with h | h
+  · left
+    exact h
+  · right
+    obtain ⟨a, ha, b, hb, h⟩ := h
+    rw [← top_eq_univ, eq_top_iff]
+    intro c _
+    by_cases h' : a = c
+    · rw [← h']; exact ha
+    · rw [is_two_pretransitive_iff] at h2
+      obtain ⟨g, hga, hgb⟩ := h2 h h'
+      rw [MulAction.isBlock_iff_smul_eq_of_mem] at hB
+      rw [← hB (g := g) ha (by rw [hga]; exact ha), ← hgb]
+      exact smul_mem_smul_set hb
 
 end Two
 
