@@ -62,7 +62,7 @@ noncomputable def absNorm : FractionalIdeal R⁰ K →*₀ ℚ where
   map_one' := by
     dsimp only
     rw [absNorm_div_norm_eq_absNorm_div_norm 1 ⊤ (by simp [Submodule.one_eq_range]),
-      Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, _root_.map_one,  abs_one, Int.cast_one,
+      Ideal.absNorm_top, Nat.cast_one, OneMemClass.coe_one, map_one,  abs_one, Int.cast_one,
       one_div_one]
   map_mul' I J := by
     dsimp only
@@ -97,7 +97,7 @@ theorem absNorm_eq_zero_iff [NoZeroDivisors K] {I : FractionalIdeal R⁰ K} :
 
 theorem coeIdeal_absNorm (I₀ : Ideal R) :
     absNorm (I₀ : FractionalIdeal R⁰ K) = Ideal.absNorm I₀ := by
-  rw [absNorm_eq' 1 I₀ (by rw [one_smul]; rfl), OneMemClass.coe_one, _root_.map_one, abs_one,
+  rw [absNorm_eq' 1 I₀ (by rw [one_smul]; rfl), OneMemClass.coe_one, map_one, abs_one,
     Int.cast_one, _root_.div_one]
 
 section IsLocalization

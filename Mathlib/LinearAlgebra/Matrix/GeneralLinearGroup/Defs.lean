@@ -156,7 +156,7 @@ variable (f : R →+* S)
 @[simp]
 protected lemma map_one : map f (1 : GL n R) = 1 := by
   ext
-  simp only [_root_.map_one, Units.val_one]
+  simp only [map_one, Units.val_one]
 
 protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
   ext
@@ -164,7 +164,7 @@ protected lemma map_mul (g h : GL n R) : map f (g * h) = map f g * map f h := by
 
 protected lemma map_inv (g : GL n R) : map f g⁻¹ = (map f g)⁻¹ := by
   ext
-  simp only [_root_.map_inv, coe_units_inv]
+  simp only [map_inv, coe_units_inv]
 
 protected lemma map_det (g : GL n R) : Matrix.GeneralLinearGroup.det (map f g) =
     Units.map f (Matrix.GeneralLinearGroup.det g) := by
@@ -182,12 +182,12 @@ lemma map_inv_mul_map (g : GL n R) : map f g⁻¹ * map f g = 1 := by
 @[simp]
 lemma coe_map_mul_map_inv (g : GL n R) : g.val.map f * g.val⁻¹.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, mul_nonsing_inv, map_zero, map_one, Matrix.map_one]
 
 @[simp]
 lemma coe_map_inv_mul_map (g : GL n R) : g.val⁻¹.map f * g.val.map f = 1 := by
   rw [← Matrix.map_mul]
-  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, _root_.map_one, Matrix.map_one]
+  simp only [isUnits_det_units, nonsing_inv_mul, map_zero, map_one, Matrix.map_one]
 
 end GeneralLinearGroup
 

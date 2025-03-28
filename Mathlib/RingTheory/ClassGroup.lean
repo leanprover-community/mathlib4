@@ -319,7 +319,7 @@ theorem ClassGroup.mk_eq_one_iff {I : (FractionalIdeal R⁰ K)ˣ} :
     ClassGroup.mk I = 1 ↔ (I : Submodule R K).IsPrincipal := by
   rw [← (ClassGroup.equiv K).injective.eq_iff]
   simp only [equiv_mk, canonicalEquiv_self, RingEquiv.coe_mulEquiv_refl, QuotientGroup.mk'_apply,
-    _root_.map_one, QuotientGroup.eq_one_iff, MonoidHom.mem_range, Units.ext_iff,
+    map_one, QuotientGroup.eq_one_iff, MonoidHom.mem_range, Units.ext_iff,
     coe_toPrincipalIdeal, coe_mapEquiv, MulEquiv.refl_apply]
   refine ⟨fun ⟨x, hx⟩ => ⟨⟨x, by rw [← hx, coe_spanSingleton]⟩⟩, ?_⟩
   intro hI

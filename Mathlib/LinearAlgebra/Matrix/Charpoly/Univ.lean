@@ -75,7 +75,7 @@ lemma univ_natDegree [Nontrivial R] : (univ R n).natDegree = Fintype.card n :=
 @[simp]
 lemma univ_coeff_card : (univ R n).coeff (Fintype.card n) = 1 := by
   suffices Polynomial.coeff (univ ℤ n) (Fintype.card n) = 1 by
-    rw [← univ_map_map n (Int.castRingHom R), Polynomial.coeff_map, this, _root_.map_one]
+    rw [← univ_map_map n (Int.castRingHom R), Polynomial.coeff_map, this, map_one]
   rw [← univ_natDegree ℤ n]
   exact (univ_monic ℤ n).leadingCoeff
 

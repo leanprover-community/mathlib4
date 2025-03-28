@@ -106,7 +106,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
-  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_one]
+  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_one]
   ext
   rfl
 

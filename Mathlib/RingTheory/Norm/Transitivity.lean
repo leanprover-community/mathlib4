@@ -154,7 +154,7 @@ theorem Matrix.det_det [Fintype m] [Fintype n] (f : S →+* Matrix n n R) :
   clear_value l; revert R S m
   induction' l with l ih <;> intro R S m _ _ M _ _ f card
   · rw [eq_comm, Fintype.card_eq_zero_iff] at card
-    simp_rw [Matrix.det_isEmpty, _root_.map_one, det_one]
+    simp_rw [Matrix.det_isEmpty, map_one, det_one]
   have ⟨k⟩ := Fintype.card_pos_iff.mp (l.succ_pos.trans_eq card)
   let f' := f.polyToMatrix
   let M' := cornerAddX M k
@@ -172,7 +172,7 @@ theorem LinearMap.det_restrictScalars [AddCommGroup A] [Module R A] [Module S A]
     (f.restrictScalars R).det = Algebra.norm R f.det := by
   nontriviality R
   cases subsingleton_or_nontrivial A
-  · simp_rw [det_eq_one_of_subsingleton, _root_.map_one]
+  · simp_rw [det_eq_one_of_subsingleton, map_one]
   have := Module.nontrivial S A
   let ⟨ιS, bS⟩ := Module.Free.exists_basis (R := R) (M := S)
   let ⟨ιA, bA⟩ := Module.Free.exists_basis (R := S) (M := A)
@@ -182,7 +182,7 @@ theorem LinearMap.det_restrictScalars [AddCommGroup A] [Module R A] [Module S A]
   · rw [Algebra.norm_eq_one_of_not_module_finite (Module.not_finite_of_infinite_basis bS),
       det_eq_one_of_not_module_finite (Module.not_finite_of_infinite_basis (bS.smulTower bA))]
   cases fintypeOrInfinite ιA; swap
-  · rw [det_eq_one_of_not_module_finite (Module.not_finite_of_infinite_basis bA), _root_.map_one,
+  · rw [det_eq_one_of_not_module_finite (Module.not_finite_of_infinite_basis bA), map_one,
       det_eq_one_of_not_module_finite (Module.not_finite_of_infinite_basis (bS.smulTower bA))]
   classical
   rw [Algebra.norm_eq_matrix_det bS, ← AlgHom.coe_toRingHom, ← det_toMatrix bA, det_det,

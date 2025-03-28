@@ -108,7 +108,7 @@ theorem reverse.commutes (r : R) :
 
 @[simp]
 theorem reverse.map_one : reverse (1 : CliffordAlgebra Q) = 1 :=
-  op_injective (_root_.map_one reverseOp)
+  op_injective (map_one reverseOp)
 
 @[simp]
 protected theorem reverse.map_mul (a b : CliffordAlgebra Q) :
