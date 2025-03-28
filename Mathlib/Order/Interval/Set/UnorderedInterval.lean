@@ -47,14 +47,6 @@ section Lattice
 
 variable [Lattice α] [Lattice β] {a a₁ a₂ b b₁ b₂ x : α}
 
-/-- `uIcc a b` is the set of elements lying between `a` and `b`, with `a` and `b` included.
-Note that we define it more generally in a lattice as `Set.Icc (a ⊓ b) (a ⊔ b)`. In a product type,
-`uIcc` corresponds to the bounding box of the two elements. -/
-def uIcc (a b : α) : Set α := Icc (a ⊓ b) (a ⊔ b)
-
-/-- `[[a, b]]` denotes the set of elements lying between `a` and `b`, inclusive. -/
-scoped[Interval] notation "[[" a ", " b "]]" => Set.uIcc a b
-
 open Interval
 
 @[simp]

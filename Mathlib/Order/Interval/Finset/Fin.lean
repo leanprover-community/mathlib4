@@ -25,30 +25,44 @@ variable (n : ℕ)
 ### Locally finite order etc instances
 -/
 
-instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
-  OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
+instance instLocallyFiniteOrder (n : ℕ) : LocallyFiniteOrder (Fin n) where
+  finsetIcc a b := finOfImageEq (Finset.Icc (a : ℕ) b) (Set.Icc a b) (by simp)
+  finset_mem_Icc a b := by simp
+  finsetIco a b := finOfImageEq (Finset.Ico (a : ℕ) b) (Set.Ico a b) (by simp)
+  finset_mem_Ico a b := by simp
+  finsetIoc a b := finOfImageEq (Finset.Ioc (a : ℕ) b) (Set.Ioc a b) (by simp)
+  finset_mem_Ioc a b := by simp
+  finsetIoo a b := finOfImageEq (Finset.Ioo (a : ℕ) b) (Set.Ioo a b) (by simp)
+  finset_mem_Ioo a b := by simp
 
-instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
-  OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
+instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
+  | 0 => IsEmpty.toLocallyFiniteOrderBot
+  | _ + 1 => inferInstance
 
 instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
   | _ + 1 => inferInstance
 
-end Fin
+variable {n}
+variable (a b : Fin n)
 
-namespace Finset
+section deprecated
 
-variable {n} (a b : Fin n)
+set_option linter.deprecated false
 
-@[simp]
-theorem fin_Icc_val_val : (Icc (a : ℕ) b).fin n = Icc a b := rfl
+theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := by ext; simp
+theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := by ext; simp
+theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := by ext; simp
+theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := by ext; simp
+theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := by ext; simp
+theorem Ici_eq_finset_subtype : Ici a = (Ico (a : ℕ) n).fin n := by ext; simp
+theorem Ioi_eq_finset_subtype : Ioi a = (Ioo (a : ℕ) n).fin n := by ext; simp
+theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by ext; simp
+theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by ext; simp
 
-theorem Icc_eq_finset_subtype : Icc a b = (Icc (a : ℕ) b).fin n := rfl
-theorem Ico_eq_finset_subtype : Ico a b = (Ico (a : ℕ) b).fin n := rfl
-theorem Ioc_eq_finset_subtype : Ioc a b = (Ioc (a : ℕ) b).fin n := rfl
-theorem Ioo_eq_finset_subtype : Ioo a b = (Ioo (a : ℕ) b).fin n := rfl
-theorem uIcc_eq_finset_subtype : uIcc a b = (uIcc (a : ℕ) b).fin n := rfl
+end deprecated
+
+section val
 
 @[simp]
 theorem finsetImage_val_Icc : (Icc a b).image val = Icc (a : ℕ) b := by simp [← coe_inj]
@@ -75,35 +89,44 @@ theorem finsetImage_val_Ioo : (Ioo a b).image val = Ioo (a : ℕ) b := by simp [
 theorem map_valEmbedding_Ioo : (Ioo a b).map valEmbedding = Ioo ↑a ↑b := by simp [map_eq_image]
 
 @[simp]
-theorem map_subtype_embedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b :=
-  map_valEmbedding_Icc _ _
+theorem finsetImage_val_uIcc : (uIcc a b).image val = uIcc ↑a ↑b := finsetImage_val_Icc ..
 
-theorem Ici_eq_finset_subtype : Ici a = (Icc (a : ℕ) n).fin n := by
-  ext
-  simp
+@[simp]
+theorem map_valEmbedding_uIcc : (uIcc a b).map valEmbedding = uIcc ↑a ↑b := map_valEmbedding_Icc ..
 
-theorem Ioi_eq_finset_subtype : Ioi a = (Ioc (a : ℕ) n).fin n := by
-  ext
-  simp
-
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n :=
-  rfl
-
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n :=
-  rfl
+@[simp]
+theorem finsetImage_val_Ici : (Ici a).image val = Ico ↑a n := by simp [← coe_inj]
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map valEmbedding = Ico ↑a n := by simp [← coe_inj]
 
 @[simp]
+theorem finsetImage_val_Ioi : (Ioi a).image val = Ioo ↑a n := by simp [← coe_inj]
+
+@[simp]
 theorem map_valEmbedding_Ioi : (Ioi a).map valEmbedding = Ioo ↑a n := by simp [← coe_inj]
+
+@[simp]
+theorem finsetImage_val_Iic : (Iic a).image val = Iic ↑a := by simp [← coe_inj]
 
 @[simp]
 theorem map_valEmbedding_Iic : (Iic b).map valEmbedding = Iic ↑b := by simp [← coe_inj]
 
 @[simp]
-theorem map_valEmbedding_Iio : (Iio b).map valEmbedding = Iio ↑b := by
-  simp [Iio_eq_finset_subtype, Finset.fin, Finset.map_map]
+theorem finsetImage_val_Iio : (Iio b).image val = Iio ↑b := by simp [← coe_inj]
+
+@[simp]
+theorem map_valEmbedding_Iio : (Iio b).map valEmbedding = Iio ↑b := by simp [← coe_inj]
+
+end val
+
+section castLE
+
+#check Set.Icc
+
+end castLE
+
+section card
 
 @[simp]
 theorem card_Ici : #(Ici a) = n - a := by rw [← card_map, map_valEmbedding_Ici, Nat.card_Ico]
@@ -117,7 +140,6 @@ theorem card_Iic : #(Iic b) = b + 1 := by rw [← Nat.card_Iic b, ← map_valEmb
 
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [← Nat.card_Iio b, ← map_valEmbedding_Iio, card_map]
-
 
 @[simp]
 lemma card_Icc : #(Icc a b) = b + 1 - a := by rw [← Nat.card_Icc, ← map_valEmbedding_Icc, card_map]
@@ -133,23 +155,34 @@ lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valE
 
 @[simp]
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
-  rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
+  rw [← Nat.card_uIcc, ← map_valEmbedding_uIcc, card_map]
 
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
+theorem fintypeCard_Icc : Fintype.card (Set.Icc a b) = b + 1 - a := by
   rw [← card_Icc, Fintype.card_ofFinset]
 
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
+@[deprecated (since := "2025-03-28")]
+alias card_fintypeIcc := fintypeCard_Icc
+
+theorem fintypeCard_Ico : Fintype.card (Set.Ico a b) = b - a := by
   rw [← card_Ico, Fintype.card_ofFinset]
 
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
+@[deprecated (since := "2025-03-28")]
+alias card_fintypeIco := fintypeCard_Ico
+
+theorem fintypeCard_Ioc : Fintype.card (Set.Ioc a b) = b - a := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
+@[deprecated (since := "2025-03-28")]
+alias card_fintypeIoc := fintypeCard_Ioc
+
+theorem fintypeCard_Ioo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
   rw [← card_Ioo, Fintype.card_ofFinset]
+
+@[deprecated (since := "2025-03-28")]
+alias card_fintypeIoo := fintypeCard_Ioo
 
 theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← card_uIcc, Fintype.card_ofFinset]
-
 
 theorem fintypeCard_Ici : Fintype.card (Set.Ici a) = n - a := by simp
 
@@ -170,5 +203,7 @@ theorem fintypeCard_Iio : Fintype.card (Set.Iio b) = b := by simp
 
 @[deprecated (since := "2025-03-12")]
 alias card_fintypeIio := fintypeCard_Iio
+
+end card
 
 end Fin
