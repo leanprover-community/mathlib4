@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Path
+import Mathlib.Data.Fintype.Order
 import Mathlib.Tactic.Linarith
 
 /-!
@@ -196,5 +197,29 @@ lemma IsTree.card_edgeFinset [Fintype V] [Fintype G.edgeSet] (hG : G.IsTree) :
         simp [this, hf' _ _ ((hf _).dropUntil hy)] at h'
       refine (hG.existsUnique_path _ _).unique ((hf _).takeUntil _) ?_
       simp [h.ne]
+
+/-- A minimally connected graph is a tree. TODO : Iff version. -/
+lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
+  rw [isTree_iff, and_iff_right h.prop, isAcyclic_iff_forall_adj_isBridge]
+  exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt (by simpa [← edgeSet_ssubset_edgeSet])
+    <| h.prop.connected_delete_edge_of_not_isBridge hbr
+
+/-- Every connected graph on `n` vertices has at least `n-1` edges. -/
+lemma Connected.card_vert_le_card_edgeSet_add_one [Fintype V] [Fintype G.edgeSet]
+    (hG : G.Connected) : Fintype.card V ≤ Fintype.card G.edgeSet + 1 := by
+  classical
+  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_minimal_le hG
+  rw [← (isTree_of_minimal_connected hmin).card_edgeFinset, add_le_add_iff_right, ← edgeFinset_card]
+  exact Finset.card_mono <| by simpa
+
+lemma isTree_iff_connected_and_card [Fintype V] [Fintype G.edgeSet] :
+    G.IsTree ↔ G.Connected ∧ Fintype.card G.edgeSet + 1 = Fintype.card V := by
+  classical
+  refine ⟨fun h ↦ ⟨h.isConnected, by simpa using h.card_edgeFinset⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, ?_⟩⟩
+  simp_rw [isAcyclic_iff_forall_adj_isBridge]
+  refine fun x y h ↦ by_contra fun hbr ↦
+    (h₁.connected_delete_edge_of_not_isBridge hbr).card_vert_le_card_edgeSet_add_one.not_lt ?_
+  rw [← edgeFinset_card, ← h₂, ← edgeFinset_card, add_lt_add_iff_right]
+  exact Finset.card_lt_card <| by simpa
 
 end SimpleGraph

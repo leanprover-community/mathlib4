@@ -461,6 +461,8 @@ lemma IsCycle.isPath_takeUntil {c : G.Walk v v} (hc : c.IsCycle) (h : w ∈ c.su
   rw [← isCycle_reverse, ← take_spec c h, reverse_append] at hc
   exact (c.takeUntil w h).isPath_reverse_iff.mp (hc.isPath_of_append_right (not_nil_of_ne hvw))
 
+/-- Taking a strict initial segment of a path removes the end vertex from the support.
+TODO : a `dropUntil` version. -/
 lemma endpoint_not_mem_support_takeUntil {p : G.Walk u v} (hp : p.IsPath) (hw : w ∈ p.support)
     (h : v ≠ w) : v ∉ (p.takeUntil w hw).support := by
   intro hv
@@ -1346,6 +1348,25 @@ theorem isBridge_iff_adj_and_forall_cycle_not_mem {v w : V} : G.IsBridge s(v, w)
 theorem isBridge_iff_mem_and_forall_cycle_not_mem {e : Sym2 V} :
     G.IsBridge e ↔ e ∈ G.edgeSet ∧ ∀ ⦃u : V⦄ (p : G.Walk u u), p.IsCycle → e ∉ p.edges :=
   Sym2.ind (fun _ _ => isBridge_iff_adj_and_forall_cycle_not_mem) e
+
+/-- Deleting a non-bridge edge from a connected graph preserves connectedness.
+TODO : Iff version. -/
+lemma Connected.connected_delete_edge_of_not_isBridge (hG : G.Connected) {x y : V}
+    (h : ¬ G.IsBridge s(x, y)) : (G \ fromEdgeSet {s(x, y)}).Connected := by
+  classical
+  simp only [isBridge_iff, not_and, not_not] at h
+  obtain hxy | hxy := em' <| G.Adj x y
+  · rwa [Disjoint.sdiff_eq_left (by simpa)]
+  refine (connected_iff_exists_forall_reachable _).2 ⟨x, fun w ↦ ?_⟩
+  obtain ⟨W⟩ := (hG.preconnected w x)
+  let P := W.toPath
+  obtain heP | heP := em' <| s(x,y) ∈ P.1.edges
+  · exact ⟨(P.1.toDeleteEdges {s(x,y)} (by aesop)).reverse⟩
+  have hyP := P.1.snd_mem_support_of_mem_edges heP
+  set P₁ := P.1.takeUntil y hyP with hP₁
+  have hxP₁ := Walk.endpoint_not_mem_support_takeUntil P.2 hyP hxy.ne
+  have heP₁ : s(x,y) ∉ P₁.edges := fun h ↦ hxP₁ <| P₁.fst_mem_support_of_mem_edges h
+  refine (h hxy).trans (Reachable.symm ⟨P₁.toDeleteEdges {s(x,y)} (by aesop)⟩)
 
 end BridgeEdges
 
