@@ -20,9 +20,8 @@ variable {α β ι : Type*} [UniformSpace β] [AddGroup β] [UniformAddGroup β]
 lemma TendstoUniformlyOn.eventually_forall_lt {f : ι → α → β} {p : Filter ι} {g : α → β}
     {K : Set α} {u v : β} (huv : u < v) (hf : TendstoUniformlyOn f g p K) (hg : ∀ x ∈ K, g x ≤ u) :
     ∀ᶠ i in p, ∀ x ∈ K, f i x < v := by
-  rw [tendstoUniformlyOn_iff_tendsto] at hf
-  simp only [uniformity_eq_comap_neg_add_nhds_zero, tendsto_iff_eventually, eventually_comap,
-    Prod.forall] at *
+  simp only [tendstoUniformlyOn_iff_tendsto, uniformity_eq_comap_neg_add_nhds_zero,
+    tendsto_iff_eventually, eventually_comap, Prod.forall] at *
   conv at hf => enter [2]; rw [eventually_iff_exists_mem]
   have hf2 := hf (fun x ↦ -x.1 + x.2 < -u + v) ⟨_, (isOpen_gt' (-u + v)).mem_nhds (by simp [huv]),
     fun y hy a b hab => (hab.symm ▸ hy :)⟩
