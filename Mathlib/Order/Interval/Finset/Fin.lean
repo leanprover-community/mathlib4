@@ -106,11 +106,14 @@ theorem Ioi_eq_finset_subtype : Ioi a = (Ioc (a : ℕ) n).fin n := by
   ext
   simp
 
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n :=
-  rfl
+theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by
+  ext
+  simp
 
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n :=
-  rfl
+
+theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by
+  ext
+  simp
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by
