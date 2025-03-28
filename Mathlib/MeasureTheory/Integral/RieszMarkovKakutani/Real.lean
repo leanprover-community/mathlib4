@@ -195,9 +195,7 @@ private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {
   use V₁ ⊓ V₂
   have h x (hx : x ∈ V₁ ⊓ V₂) : f x < c := by
     suffices ∀ x ∈ V₂.carrier, f x < c from this x (mem_of_mem_inter_right hx)
-    intro _ hx
-    rw [mem_preimage, mem_Iio] at hx
-    exact hx
+    exact fun  _ hx ↦ hx
   have h' : μ.measure ↑(V₁ ⊓ V₂) ≤ μ.measure E + ENNReal.ofReal ε := calc
       _ ≤ μ.measure V₁ := by apply measure_mono; simp
       _ = μ.outerMeasure V₁ := by rw [Content.measure_apply μ ?_]; exact V₁.2.measurableSet
@@ -290,6 +288,7 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
       _ = ∑ n, Λ (g n • f) := by simp
       _ ≤ ∑ n, Λ ((y n + ε') • g n) := ?_
       _ ≤ ∑ n, (y n + ε') * Λ (g n) := by simp
+      -- That `y n + ε'` can be negative is bad the inequalities, so we artifically include `|a|`.
       _ = ∑ n, (|a| + y n + ε') * Λ (g n) - |a| * ∑ n, Λ (g n) :=
         by simp [add_assoc, add_mul |a|, Finset.sum_add_distrib, Finset.mul_sum]
       _ ≤ ∑ n, (|a| + y n + ε') * ((μ (E n)).toReal + ε' / N) - |a| * ∑ n, Λ (g n) := ?_
