@@ -101,9 +101,6 @@ instance {X : C} {Y : D} : Unique (left X ⟶ right Y) := inferInstanceAs (Uniqu
 /-- Join.edge c d is the unique morphism from c to d. -/
 def edge (c : C) (d : D) : left c ⟶ right d := default
 
-@[simp]
-lemma eq_edge {c : C} {d : D} (f : left c ⟶ right d) : f = edge c d := rfl
-
 end CategoryStructure
 
 section Inclusions
@@ -333,7 +330,6 @@ lemma eq_mkNatTrans {F F' : C ⋆ D ⥤ E} (α : F ⟶ F') :
 section
 
 /-- `mkNatTrans` respects vertical composition. -/
-@[simp]
 lemma mkNatTransComp
     {F F' F'' : C ⋆ D ⥤ E}
     (αₗ : inclLeft C D ⋙ F ⟶ inclLeft C D ⋙ F')
