@@ -5889,6 +5889,7 @@ import Mathlib.Topology.Instances.TrivSqZeroExt
 import Mathlib.Topology.Instances.ZMod
 import Mathlib.Topology.Instances.ZMultiples
 import Mathlib.Topology.Irreducible
+import Mathlib.Topology.IsClosedRestrict
 import Mathlib.Topology.IsLocalHomeomorph
 import Mathlib.Topology.JacobsonSpace
 import Mathlib.Topology.KrullDimension
