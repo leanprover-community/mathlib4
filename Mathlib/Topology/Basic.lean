@@ -229,3 +229,4 @@ theorem limUnder_of_not_tendsto [hX : Nonempty X] {f : Filter α} {g : α → X}
 end lim
 
 end TopologicalSpace
+
