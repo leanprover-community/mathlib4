@@ -59,7 +59,7 @@ lemma tendstoUniformlyOn_tprod_of_clog {f : ι → α → ℂ} {K : Set α}
 of the form `1 + f n x`. -/
 lemma tendstoUniformlyOn_tprod_nat_one_add [TopologicalSpace α] {f : ℕ → α → ℂ} {K : Set α}
     (hK : IsCompact K) {u : ℕ → ℝ} (hu : Summable u) (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n)
-    (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (fun x => f n x) K) :
+    (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0) (hcts : ∀ n, ContinuousOn (f n) K) :
     TendstoUniformlyOn (fun n a => ∏ i ∈ range n, (1 + f i a))
     (fun a => ∏' i, (1 + f i a)) atTop K := by
   refine fun v hv => tendsto_finset_range.eventually
@@ -79,7 +79,7 @@ for infinite products of with terms of the form `1 + f n x`. -/
 lemma tendstoLocallyUniformlyOn_tprod_nat_one_add [TopologicalSpace α] [LocallyCompactSpace α]
     {f : ℕ → α → ℂ} {K : Set α} (hK : IsOpen K) {u : ℕ → ℝ} (hu : Summable u)
     (h : ∀ᶠ n in atTop, ∀ x ∈ K, ‖f n x‖ ≤ u n) (hfn : ∀ x ∈ K, ∀ n, 1 + f n x ≠ 0)
-    (hcts : ∀ n, ContinuousOn (fun x => f n x) K) :
+    (hcts : ∀ n, ContinuousOn (f n) K) :
     TendstoLocallyUniformlyOn (fun n a => ∏ i ∈ range n, (1 + (f i a)))
     (fun a => ∏' i, (1 + (f i a))) atTop K := by
   rw [tendstoLocallyUniformlyOn_iff_forall_isCompact hK]
