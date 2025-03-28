@@ -141,7 +141,8 @@ section
 
 variable (C : Type*) [Category C]
 
-instance isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C := by
+-- note : it seems making the following two as instances breaks things, so these are lemmas.
+lemma isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C := by
   letI : Nonempty C := ⟨⊥_ C⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
@@ -150,7 +151,7 @@ instance isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C := by
     List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
   exact ⟨Zag.symm <| Zag.of_hom <| Limits.initial.to _, Zag.of_hom <| Limits.initial.to _⟩
 
-instance isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C := by
+lemma isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C := by
   letI : Nonempty C := ⟨⊤_ C⟩
   apply isConnected_of_zigzag
   intro j₁ j₂
