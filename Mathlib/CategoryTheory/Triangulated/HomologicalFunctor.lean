@@ -277,6 +277,162 @@ lemma homologySequenceComposableArrows₅_exact :
       (exact_of_δ₀ (F.homologySequence_exact₁ T hT n₀ n₁ h).exact_toComposableArrows
         (F.homologySequence_exact₂ T hT n₁).exact_toComposableArrows))
 
+variable {T T'}
+
+@[simp] noncomputable def homologySequenceComposableArrows₅_map_of_triangle_map :
+    F.homologySequenceComposableArrows₅ T n₀ n₁ h ⟶
+    F.homologySequenceComposableArrows₅ T' n₀ n₁ h := by
+  refine homMk₅ ((F.shift n₀).map φ.hom₁) ((F.shift n₀).map φ.hom₂) ((F.shift n₀).map φ.hom₃)
+    ((F.shift n₁).map φ.hom₁) ((F.shift n₁).map φ.hom₂) ((F.shift n₁).map φ.hom₃) ?_ ?_ ?_ ?_ ?_
+  · change (F.shift n₀).map T.mor₁ ≫ (F.shift n₀).map φ.hom₂ =
+      (F.shift n₀).map φ.hom₁ ≫ (F.shift n₀).map T'.mor₁
+    rw [← map_comp, φ.comm₁, map_comp]
+  · change (F.shift n₀).map T.mor₂ ≫ (F.shift n₀).map φ.hom₃ =
+      (F.shift n₀).map φ.hom₂ ≫ (F.shift n₀).map T'.mor₂
+    rw [← map_comp, φ.comm₂, map_comp]
+  · change F.homologySequenceδ T n₀ n₁ h ≫ (F.shift n₁).map φ.hom₁ =
+      (F.shift n₀).map φ.hom₃ ≫ F.homologySequenceδ T' n₀ n₁ h
+    simp only [homologySequenceδ]
+    rw [← Functor.shiftMap_comp, φ.comm₃, ← Functor.shiftMap_comp']
+  · change (F.shift n₁).map T.mor₁ ≫ (F.shift n₁).map φ.hom₂ =
+      (F.shift n₁).map φ.hom₁ ≫ (F.shift n₁).map T'.mor₁
+    rw [← map_comp, φ.comm₁, map_comp]
+  · change (F.shift n₁).map T.mor₂ ≫ (F.shift n₁).map φ.hom₃ =
+      (F.shift n₁).map φ.hom₂ ≫ (F.shift n₁).map T'.mor₂
+    rw [← map_comp, φ.comm₂, map_comp]
+
+variable (T) (G : C ⥤ A) [G.ShiftSequence ℤ]
+
+@[simp] noncomputable def homologySequenceComposableArrows₅_hom_of_natTrans
+    (α : ShiftSequenceHom F ℤ G) : F.homologySequenceComposableArrows₅ T n₀ n₁ h ⟶
+    G.homologySequenceComposableArrows₅ T n₀ n₁ h := by
+  refine homMk₅ ((α.app n₀).app T.obj₁) ((α.app n₀).app T.obj₂) ((α.app n₀).app T.obj₃)
+    ((α.app n₁).app T.obj₁) (((α.app n₁).app T.obj₂)) (((α.app n₁).app T.obj₃))
+    ((α.app n₀).naturality _ ) ((α.app n₀).naturality _ ) ?_ ((α.app n₁).naturality _ )
+    ((α.app n₁).naturality _ )
+  change (F.homologySequenceδ T n₀ n₁ h) ≫ (α.app n₁).app T.obj₁ = (α.app n₀).app T.obj₃ ≫
+    (G.homologySequenceδ T n₀ n₁ h)
+  simp [homologySequenceδ, shiftMap]
+  have := α.compatibility 1 n₀ n₁ (by rw [← h, add_comm])
+  apply_fun (fun h ↦ h.app T.obj₁) at this
+  simp only [comp_obj, NatTrans.comp_app, whiskerLeft_app] at this
+  rw [← this]
+  simp
+
+@[simp] noncomputable def homologySequenceComposableArrows₅_iso_of_natIso
+    (α : ShiftSequenceIso F ℤ G) :
+    F.homologySequenceComposableArrows₅ T n₀ n₁ h ≅
+    G.homologySequenceComposableArrows₅ T n₀ n₁ h := by
+  refine isoMk₅ ((α.app n₀).app T.obj₁) ((α.app n₀).app T.obj₂) ((α.app n₀).app T.obj₃)
+    ((α.app n₁).app T.obj₁) (((α.app n₁).app T.obj₂)) (((α.app n₁).app T.obj₃))
+    ((α.app n₀).hom.naturality _ ) ((α.app n₀).hom.naturality _ ) ?_ ((α.app n₁).hom.naturality _ )
+    ((α.app n₁).hom.naturality _ )
+  change (F.homologySequenceδ T n₀ n₁ h) ≫ (α.app n₁).hom.app T.obj₁ = (α.app n₀).hom.app T.obj₃ ≫
+    (G.homologySequenceδ T n₀ n₁ h)
+  simp [homologySequenceδ, shiftMap]
+  have := α.compatibility 1 n₀ n₁ (by rw [← h, add_comm])
+  apply_fun (fun h ↦ h.app T.obj₁) at this
+  simp only [comp_obj, NatTrans.comp_app, whiskerLeft_app] at this
+  rw [← this]
+  simp
+
+
+variable {A' B : Type*} [Category A'] [Category B] (G' : C ⥤ A') [G'.ShiftSequence ℤ]
+  (I : A ⥤ B) (J : A' ⥤ B)
+
+variable (H : D ⥤ C) [H.CommShift ℤ] [(H ⋙ F).ShiftSequence ℤ] (T'' : Triangle D)
+
+set_option maxHeartbeats 500000 in
+noncomputable def homologySequenceComposableArrows₅_mapTriangle_iso :
+    F.homologySequenceComposableArrows₅ (H.mapTriangle.obj T'') n₀ n₁ h ≅
+    @Functor.homologySequenceComposableArrows₅ _ _ _ _ _ (H ⋙ F) (ShiftSequence.comp_left F ℤ H)
+    T'' n₀ n₁ h := by
+  refine isoMk₅ (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    ?_ ?_ ?_ ?_ ?_
+  · simp only [Nat.reduceAdd, mapTriangle_obj, homologySequenceComposableArrows₅, Triangle.mk_obj₁,
+    Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₁, Triangle.mk_mor₂, mk₅.eq_1, mk₄.eq_1,
+    mk₃.eq_1, mk₂.eq_1, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceSub,
+    Int.reduceAdd, Fin.zero_eta, Fin.isValue, precomp_obj, Precomp.obj_zero, Fin.mk_one,
+    Precomp.obj_one, map', homOfLE_leOfHom, precomp_map, Precomp.map_zero_one, Iso.refl_hom,
+    comp_id, id_comp]
+    rfl
+  · simp only [Nat.reduceAdd, mapTriangle_obj, homologySequenceComposableArrows₅, Triangle.mk_obj₁,
+    Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₁, Triangle.mk_mor₂, mk₅.eq_1, mk₄.eq_1,
+    mk₃.eq_1, mk₂.eq_1, id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.Nat.cast_ofNat_Int, Int.reduceSub,
+    Int.reduceAdd, Fin.mk_one, Fin.isValue, precomp_obj, Precomp.obj_one, Fin.zero_eta,
+    Precomp.obj_zero, Fin.reduceFinMk, map', homOfLE_leOfHom, precomp_map, Iso.refl_hom, comp_id,
+    id_comp]
+    rfl
+  · change F.homologySequenceδ (H.mapTriangle.obj T'') n₀ n₁ h ≫ 𝟙 _ =
+      𝟙 _ ≫ @Functor.homologySequenceδ _ _ _ _ _ (H ⋙ F) (ShiftSequence.comp_left F ℤ H)
+      T'' n₀ n₁ h
+    simp only [mapTriangle_obj, Triangle.mk_obj₃, Triangle.mk_obj₁, homologySequenceδ, shiftMap,
+      Triangle.mk_mor₃, map_comp, assoc, comp_id, id_comp]
+    have : @Functor.shiftIso _ _ _ _ (H ⋙ F) _ _ _ (ShiftSequence.comp_left F ℤ H)
+      1 n₀ n₁ (by rw [← h, add_comm]) =
+      (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (CommShift.iso 1) (F.shift n₀) ≪≫
+      Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (F.shiftIso 1 n₀ n₁ (by rw [← h, add_comm]))
+      := rfl
+    rw [this]
+    simp only [Iso.trans_hom, Iso.symm_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom,
+      NatTrans.comp_app, comp_obj, associator_inv_app, whiskerRight_app, associator_hom_app,
+      whiskerLeft_app, id_comp]
+    erw [id_comp]
+    rfl
+  · simp only [Nat.reduceAdd, mapTriangle_obj, homologySequenceComposableArrows₅, Triangle.mk_obj₁,
+    Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₁, Triangle.mk_mor₂, mk₅.eq_1, mk₄.eq_1,
+    mk₃.eq_1, mk₂.eq_1, id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.reduceSub, Int.reduceAdd,
+    Int.Nat.cast_ofNat_Int, Fin.reduceFinMk, precomp_obj, Fin.isValue, map', homOfLE_leOfHom,
+    precomp_map, Iso.refl_hom, comp_id, id_comp]
+    rfl
+  · simp only [Nat.reduceAdd, mapTriangle_obj, homologySequenceComposableArrows₅, Triangle.mk_obj₁,
+    Triangle.mk_obj₂, Triangle.mk_obj₃, Triangle.mk_mor₁, Triangle.mk_mor₂, mk₅.eq_1, mk₄.eq_1,
+    mk₃.eq_1, mk₂.eq_1, id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.reduceSub, Int.reduceAdd,
+    Int.Nat.cast_ofNat_Int, Fin.reduceFinMk, precomp_obj, Fin.isValue, map', homOfLE_leOfHom,
+    precomp_map, Iso.refl_hom, comp_id, id_comp]
+    rfl
+
+variable {B : Type*} [Category B] (I : A ⥤ B)
+
+noncomputable def homologySequenceComposableArrows₅_comp_iso :
+    F.homologySequenceComposableArrows₅ T n₀ n₁ h ⋙ I ≅
+    @Functor.homologySequenceComposableArrows₅ _ _ _ _ _ (F ⋙ I) (ShiftSequence.comp_right F ℤ I)
+    T n₀ n₁ h := by
+  refine isoMk₅ (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _) (Iso.refl _)
+    ?_ ?_ ?_ ?_ ?_
+  · simp only [Nat.reduceAdd, homologySequenceComposableArrows₅, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1,
+    mk₂.eq_1, id_eq, Int.reduceNeg, Int.Nat.cast_ofNat_Int, Nat.cast_ofNat, Int.reduceSub,
+    Int.reduceAdd, Fin.zero_eta, Fin.isValue, comp_obj, precomp_obj, Precomp.obj_zero, Fin.mk_one,
+    Precomp.obj_one, map', homOfLE_leOfHom, comp_map, precomp_map, Precomp.map_zero_one,
+    Iso.refl_hom, comp_id, id_comp]
+    rfl
+  · simp only [Nat.reduceAdd, homologySequenceComposableArrows₅, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1,
+    mk₂.eq_1, id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.Nat.cast_ofNat_Int, Int.reduceSub,
+    Int.reduceAdd, Fin.mk_one, Fin.isValue, comp_obj, precomp_obj, Precomp.obj_one, Fin.zero_eta,
+    Precomp.obj_zero, Fin.reduceFinMk, map', homOfLE_leOfHom, comp_map, precomp_map, Iso.refl_hom,
+    comp_id, id_comp]
+    rfl
+  · change I.map (F.homologySequenceδ T n₀ n₁ h) ≫ 𝟙 _ = 𝟙 _ ≫ @Functor.homologySequenceδ _ _ _ _ _
+      (F ⋙ I) (ShiftSequence.comp_right F ℤ I) T n₀ n₁ h
+    simp only [homologySequenceδ, shiftMap, map_comp, comp_id, id_comp]
+    have : @Functor.shiftIso _ _ _ _  (F ⋙ I) _ _ _ (ShiftSequence.comp_right F ℤ I) 1 n₀ n₁
+      (by rw [← h, add_comm]) = (Functor.associator _ _ _).symm ≪≫
+      isoWhiskerRight (F.shiftIso 1 n₀ n₁ (by rw [← h, add_comm])) _  := rfl
+    rw [this]
+    simp only [Iso.trans_hom, Iso.symm_hom, isoWhiskerRight_hom, NatTrans.comp_app, comp_obj,
+      associator_inv_app, whiskerRight_app]
+    erw [id_comp]; rfl
+  · simp only [Nat.reduceAdd, homologySequenceComposableArrows₅, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1,
+    mk₂.eq_1, id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.reduceSub, Int.reduceAdd,
+    Int.Nat.cast_ofNat_Int, Fin.reduceFinMk, comp_obj, Fin.isValue, precomp_obj, map',
+    homOfLE_leOfHom, comp_map, precomp_map, Iso.refl_hom, comp_id, id_comp]
+    rfl
+  · simp only [Nat.reduceAdd, homologySequenceComposableArrows₅, mk₅.eq_1, mk₄.eq_1, mk₃.eq_1,
+    mk₂.eq_1, id_eq, Int.reduceNeg, Nat.cast_ofNat, Int.reduceSub, Int.reduceAdd,
+    Int.Nat.cast_ofNat_Int, Fin.reduceFinMk, comp_obj, Fin.isValue, precomp_obj, map',
+    homOfLE_leOfHom, comp_map, precomp_map, Iso.refl_hom, comp_id, id_comp]
+    rfl
+
 end
 
 end Functor

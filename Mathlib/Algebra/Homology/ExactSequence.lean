@@ -127,6 +127,15 @@ structure Exact : Prop extends S.IsComplex where
 
 variable {S}
 
+lemma Exact.exact_truncation (hex : S.Exact) (i : ℕ) (h : i ≤ n) :
+    Exact (Monotone.functor (f := Fin.castLE (n := i + 1) (m := n + 1) (by simp [h]))
+    (fun ⦃a b⦄ h ↦ h) ⋙ S) :=
+  Exact.mk (IsComplex.mk (fun i hi => hex.toIsComplex.zero i)) (fun i hi => hex.exact i)
+
+variable (S)
+
+variable {S}
+
 lemma Exact.exact' (hS : S.Exact) (i j k : ℕ) (hij : i + 1 = j := by omega)
     (hjk : j + 1 = k := by omega) (hk : k ≤ n := by omega) :
     (S.sc' hS.toIsComplex i j k).Exact := by
@@ -307,6 +316,55 @@ lemma exact_of_δlast {n : ℕ} (S : ComposableArrows C (n + 2))
     S.Exact := by
   rw [exact_iff_δlast]
   constructor <;> assumption
+
+
+
+universe u v
+
+variable {D : Type u} [Category.{v,u} D] [HasZeroMorphisms D] (F : C ⥤ D)
+  [F.PreservesZeroMorphisms]
+
+/-- The image of a complex by a functor preserving zero morphisms is a complex.-/
+def IsComplex.comp_complex (S : ComposableArrows C n) (hS : S.IsComplex) :
+    ComposableArrows.IsComplex (S ⋙ F) := by
+  refine IsComplex.mk (fun i hi ↦ ?_)
+  change F.map _ ≫ F.map _ = 0
+  rw [← F.map_comp, hS.zero i hi, F.map_zero]
+
+/-- For every `S : ComposableArrows C n`, every functor `F : C ⥤ F` and every `i` such that
+`i + 2 ≤ n`, the image of the shoft complex `S.sc i` by `F` is isomorphic to `(S ⋙ F).sc i`.-/
+def IsComplex.map_sc_iso_sc_comp (S : ComposableArrows C n) (hS : S.IsComplex) (i : ℕ)
+    (hi : i + 2 ≤ n := by omega) :
+    (S.sc hS i hi).map F ≅ ComposableArrows.sc (S ⋙ F) (hS.comp_complex F) i hi :=
+  ShortComplex.isoMk (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
+
+/-- The image of an exact sequence by an exact functor is exact.-/
+def Exact.comp_exact [F.PreservesHomology]
+    (S : ComposableArrows C n) (hex : S.Exact) : ComposableArrows.Exact (S ⋙ F) := by
+  refine Exact.mk (hex.toIsComplex.comp_complex F) (fun i hi ↦ ?_)
+  rw [← ShortComplex.exact_iff_of_iso (hex.toIsComplex.map_sc_iso_sc_comp F S i hi)]
+  exact (hex.exact i hi).map F
+
+/-- If `S : ComposableArrows C n` and `F : C ⥤ D` is a faithful functor (preserving
+zero morphisms) such that `S ⋙ F` is a complex, then `S` is a complex.-/
+def isComplex_of_comp_complex [F.Faithful] (S : ComposableArrows C n)
+    (hS : ComposableArrows.IsComplex (S ⋙ F)) : S.IsComplex := by
+  refine IsComplex.mk (fun i hi ↦ ?_)
+  apply F.map_injective
+  rw [F.map_zero, F.map_comp]
+  exact hS.zero i hi
+
+/-- If `S : ComposableArrows C n` and `F : C ⥤ D` is an exact faithful functor
+such that `S ⋙ F` is exact, then `S` is exact. This also assume that `S` has homology
+in every degree.-/
+def Exact.exact_of_comp_exact [F.Faithful] [F.PreservesHomology]
+    (S : ComposableArrows C n) (hex : ComposableArrows.Exact (S ⋙ F))
+    [∀ i (hi : i + 2 ≤ n := by omega),
+    (S.sc (isComplex_of_comp_complex F _ hex.toIsComplex) i hi).HasHomology] : S.Exact := by
+  refine Exact.mk (isComplex_of_comp_complex F _ hex.toIsComplex) (fun i hi ↦ ?_)
+  rw [← ShortComplex.exact_map_iff_of_faithful _ F, ShortComplex.exact_iff_of_iso
+    (((isComplex_of_comp_complex F _ hex.toIsComplex)).map_sc_iso_sc_comp F S i hi)]
+  exact hex.exact i hi
 
 end ComposableArrows
 

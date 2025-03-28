@@ -192,6 +192,7 @@ theorem mateEquiv_hcomp (α : TwoSquare G L₁ L₂ H) (β : TwoSquare H L₃ L�
     rw [← R₂.map_comp, ← R₄.map_comp, ← Functor.comp_map _ L₄ , β.naturality]
   simp only [comp_obj, Functor.comp_map, map_comp, assoc]
 
+
 end mateEquivHComp
 
 section mateEquivSquareComp
