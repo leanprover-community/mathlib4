@@ -112,11 +112,10 @@ lemma exists_edist_eq_ediam_of_finite [Nonempty α] [Finite α] :
     ∃ u v, G.edist u v = G.ediam :=
   Prod.exists'.mp <| ediam_def ▸ exists_eq_ciSup_of_finite
 
-/- In a finite graph with nontrivial vertex set, the graph is connected
+/-- In a finite graph with nontrivial vertex set, the graph is connected
 if and only if the extended diameter is not `⊤`.
 See `connected_of_ediam_ne_top` for one of the implications without
-the finiteness assumptions
--/
+the finiteness assumptions -/
 lemma connected_iff_ediam_ne_top [Nonempty α] [Finite α] : G.Connected ↔ G.ediam ≠ ⊤ :=
   have ⟨u, v, huv⟩ := G.exists_edist_eq_ediam_of_finite
   ⟨fun h ↦ huv ▸ edist_ne_top_iff_reachable.mpr (h u v),
@@ -218,17 +217,13 @@ lemma diam_eq_zero : G.diam = 0 ↔ G.ediam = ⊤ ∨ Subsingleton α := by
 lemma diam_eq_one [Nontrivial α] : G.diam = 1 ↔ G = ⊤ := by
   rw [diam, ENat.toNat_eq_iff one_ne_zero, Nat.cast_one, ediam_eq_one]
 
-@[simp]
 lemma diam_zero_iff_ediam_top [Nontrivial α] : G.diam = 0 ↔ G.ediam = ⊤ := by
   rw [← not_iff_not]
   exact ⟨ediam_ne_top_of_diam_ne_zero, diam_ne_zero_of_ediam_ne_top⟩
 
-/-
-A finite and nontrivial graph is connected if and only if its diameter is not zero.
-See also `connected_iff_ediam_ne_top` for the extended diameter version.
--/
-lemma connected_iff_diam_ne_zero [Fintype α] [Nontrivial α] :
-  G.Connected ↔ G.diam ≠ 0 := by
+/-- A finite and nontrivial graph is connected if and only if its diameter is not zero.
+See also `connected_iff_ediam_ne_top` for the extended diameter version. -/
+lemma connected_iff_diam_ne_zero [Fintype α] [Nontrivial α] : G.Connected ↔ G.diam ≠ 0 := by
   rw [connected_iff_ediam_ne_top, not_iff_not, diam_zero_iff_ediam_top]
 
 end diam
