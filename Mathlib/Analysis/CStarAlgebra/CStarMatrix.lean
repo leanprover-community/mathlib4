@@ -182,7 +182,7 @@ instance instDistribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (CStarMatrix m n A) :=
   Pi.module _ _ _
 
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 := rfl
 
 @[simp] theorem add_apply [Add A] (M N : CStarMatrix m n A) (i : m) (j : n) :
@@ -433,7 +433,6 @@ lemma norm_def {M : CStarMatrix m n A} : ‖M‖ = ‖toCLM M‖ := rfl
 
 lemma norm_def' {M : CStarMatrix n n A} : ‖M‖ = ‖toCLMNonUnitalAlgHom (A := A) M‖ := rfl
 
-set_option maxSynthPendingDepth 2 in
 lemma normedSpaceCore: NormedSpace.Core ℂ (CStarMatrix m n A) where
   norm_nonneg M := (toCLM M).opNorm_nonneg
   norm_smul c M := by rw [norm_def, norm_def, map_smul, norm_smul _ (toCLM M)]
@@ -447,8 +446,7 @@ lemma norm_entry_le_norm {M : CStarMatrix m n A} {i : m} {j : n} :
   classical
   suffices ‖M i j‖ * ‖M i j‖ ≤ ‖M‖ * ‖M i j‖ by
     obtain (h | h) := eq_zero_or_norm_pos (M i j)
-    · set_option maxSynthPendingDepth 2 in
-      simp [h, norm_def]
+    · simp [h, norm_def]
     · exact le_of_mul_le_mul_right this h
   rw [← CStarRing.norm_self_mul_star, ← toCLM_apply_single_apply]
   apply norm_apply_le_norm _ _ |>.trans
@@ -598,10 +596,9 @@ instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
 
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
-  dist_eq _ _ := rfl
-  norm_mul _ _ := by
-    set_option maxSynthPendingDepth 2 in
-    simpa only [norm_def', map_mul] using norm_mul_le _ _
+  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
+  __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
+  norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in
 /-- Matrices with entries in a C⋆-algebra form a C⋆-algebra. -/
@@ -653,7 +650,7 @@ variable {n : Type*} [Fintype n] [DecidableEq n]
 
 noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
   dist_eq _ _ := rfl
-  norm_mul := norm_mul_le
+  norm_mul_le := norm_mul_le
 
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r

@@ -39,7 +39,7 @@ namespace AlgebraicGeometry
 /-- A morphism of schemes `X ⟶ Y` is a closed immersion if the underlying
 topological map is a closed embedding and the induced stalk maps are surjective. -/
 @[mk_iff]
-class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) extends SurjectiveOnStalks f : Prop where
+class IsClosedImmersion {X Y : Scheme} (f : X ⟶ Y) : Prop extends SurjectiveOnStalks f where
   base_closed : IsClosedEmbedding f.base
 
 lemma Scheme.Hom.isClosedEmbedding {X Y : Scheme} (f : X.Hom Y)

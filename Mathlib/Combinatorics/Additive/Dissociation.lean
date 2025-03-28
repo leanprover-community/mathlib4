@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Data.Fintype.Pi
+import Mathlib.Data.Finset.Powerset
 import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!

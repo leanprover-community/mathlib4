@@ -182,11 +182,8 @@ theorem mvPolynomial_of_finitePresentation [FinitePresentation.{w₁, w₂} R A]
     ⟨ι ⊕ ι', by infer_instance, g,
       (MvPolynomial.map_surjective f.toRingHom hf_surj).comp (AlgEquiv.surjective _),
       Ideal.fg_ker_comp _ _ ?_ ?_ (AlgEquiv.surjective _)⟩
-  · erw [RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv]
+  · rw [AlgEquiv.toAlgHom_eq_coe, AlgEquiv.toAlgHom_toRingHom, AlgHom.ker_coe_equiv]
     exact Submodule.fg_bot
-    -- Porting note: was
-    -- convert Submodule.fg_bot
-    -- exact RingHom.ker_coe_equiv (MvPolynomial.sumAlgEquiv R ι ι').toRingEquiv
   · rw [AlgHom.toRingHom_eq_coe, MvPolynomial.mapAlgHom_coe_ringHom, MvPolynomial.ker_map]
     exact hf_ker.map MvPolynomial.C
 
@@ -240,7 +237,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)) := by
       rw [Ideal.span_le]
       rintro _ (⟨x, hx, rfl⟩ | ⟨⟨x, hx⟩, rfl⟩) <;>
-      erw [RingHom.mem_ker]
+      rw [SetLike.mem_coe, RingHom.mem_ker]
       · rw [MvPolynomial.aeval_map_algebraMap (R := R) (A := A), ← aeval_unique]
         have := Ideal.subset_span hx
         rwa [hs] at this

@@ -95,10 +95,11 @@ theorem asAlgebraHom_def : asAlgebraHom ρ = (lift k G _) ρ :=
   rfl
 
 @[simp]
-theorem asAlgebraHom_single (g : G) (r : k) : asAlgebraHom ρ (Finsupp.single g r) = r • ρ g := by
+theorem asAlgebraHom_single (g : G) (r : k) :
+    asAlgebraHom ρ (MonoidAlgebra.single g r) = r • ρ g := by
   simp only [asAlgebraHom_def, MonoidAlgebra.lift_single]
 
-theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (Finsupp.single g 1) = ρ g := by simp
+theorem asAlgebraHom_single_one (g : G) : asAlgebraHom ρ (MonoidAlgebra.single g 1) = ρ g := by simp
 
 theorem asAlgebraHom_of (g : G) : asAlgebraHom ρ (of k G g) = ρ g := by
   simp only [MonoidAlgebra.of_apply, asAlgebraHom_single, one_smul]
@@ -112,7 +113,8 @@ You should use `asModuleEquiv : ρ.asModule ≃+ V` to translate terms.
 def asModule (_ : Representation k G V) :=
   V
 
--- Porting note: no derive handler
+-- The `AddCommMonoid` and `Module` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : AddCommMonoid (ρ.asModule) := inferInstanceAs <| AddCommMonoid V
 
 instance : Inhabited ρ.asModule where
@@ -121,10 +123,9 @@ instance : Inhabited ρ.asModule where
 /-- A `k`-linear representation of `G` on `V` can be thought of as
 a module over `MonoidAlgebra k G`.
 -/
-noncomputable instance asModuleModule : Module (MonoidAlgebra k G) ρ.asModule :=
+noncomputable instance instModuleAsModule : Module (MonoidAlgebra k G) ρ.asModule :=
   Module.compHom V (asAlgebraHom ρ).toRingHom
 
--- Porting note: ρ.asModule doesn't unfold now
 instance : Module k ρ.asModule := inferInstanceAs <| Module k V
 
 /-- The additive equivalence from the `Module (MonoidAlgebra k G)` to the original vector space
@@ -132,24 +133,23 @@ of the representative.
 
 This is just the identity, but it is helpful for typechecking and keeping track of instances.
 -/
-def asModuleEquiv : ρ.asModule ≃+ V :=
-  AddEquiv.refl _
+def asModuleEquiv : ρ.asModule ≃ₗ[k] V :=
+  LinearEquiv.refl _ _
 
 @[simp]
 theorem asModuleEquiv_map_smul (r : MonoidAlgebra k G) (x : ρ.asModule) :
     ρ.asModuleEquiv (r • x) = ρ.asAlgebraHom r (ρ.asModuleEquiv x) :=
   rfl
 
-@[simp]
 theorem asModuleEquiv_symm_map_smul (r : k) (x : V) :
     ρ.asModuleEquiv.symm (r • x) = algebraMap k (MonoidAlgebra k G) r • ρ.asModuleEquiv.symm x := by
-  apply_fun ρ.asModuleEquiv
+  rw [LinearEquiv.symm_apply_eq]
   simp
 
 @[simp]
 theorem asModuleEquiv_symm_map_rho (g : G) (x : V) :
     ρ.asModuleEquiv.symm (ρ g x) = MonoidAlgebra.of k G g • ρ.asModuleEquiv.symm x := by
-  apply_fun ρ.asModuleEquiv
+  rw [LinearEquiv.symm_apply_eq]
   simp
 
 /-- Build a `Representation k G M` from a `[Module (MonoidAlgebra k G) M]`.
@@ -230,6 +230,23 @@ theorem smul_ofModule_asModule (r : MonoidAlgebra k G) (m : (ofModule M).asModul
   simp only [AddEquiv.apply_symm_apply, ofModule_asAlgebraHom_apply_apply]
 
 end
+
+@[simp]
+lemma single_smul (t : k) (g : G) (v : ρ.asModule) :
+    MonoidAlgebra.single (g : G) t • v = t • ρ g (ρ.asModuleEquiv v) := by
+  rw [← LinearMap.smul_apply, ← asAlgebraHom_single, ← asModuleEquiv_map_smul]
+  rfl
+
+instance : IsScalarTower k (MonoidAlgebra k G) ρ.asModule where
+  smul_assoc t x v := by
+    revert t
+    apply x.induction_on
+    · simp
+    · intro y z hy hz
+      simp [add_smul, hy, hz]
+    · intro s y hy t
+      rw [← smul_assoc, smul_eq_mul, hy (t * s), ← smul_eq_mul, smul_assoc]
+      aesop
 
 end MonoidAlgebra
 
@@ -346,7 +363,7 @@ theorem ofMulAction_self_smul_eq_mul (x : MonoidAlgebra k G) (y : (ofMulAction k
 @[simps]
 noncomputable def ofMulActionSelfAsModuleEquiv :
     (ofMulAction k G G).asModule ≃ₗ[MonoidAlgebra k G] MonoidAlgebra k G :=
-  { asModuleEquiv _ with map_smul' := ofMulAction_self_smul_eq_mul }
+  { (asModuleEquiv _).toAddEquiv with map_smul' := ofMulAction_self_smul_eq_mul }
 
 /-- When `G` is a group, a `k`-linear representation of `G` on `V` can be thought of as
 a group homomorphism from `G` into the invertible `k`-linear endomorphisms of `V`.

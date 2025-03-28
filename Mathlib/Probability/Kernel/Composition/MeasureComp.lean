@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Lorenzo Luccioli
 -/
 import Mathlib.Probability.Kernel.Composition.CompNotation
 import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+import Mathlib.Probability.Kernel.Composition.Prod
 
 /-!
 # Lemmas about the composition of a measure and a kernel
@@ -29,6 +30,12 @@ lemma comp_assoc {η : Kernel β γ} : η ∘ₘ (κ ∘ₘ μ) = (η ∘ₖ κ)
 of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
 lemma comp_eq_comp_const_apply : κ ∘ₘ μ = (κ ∘ₖ (Kernel.const Unit μ)) () := by
   rw [Kernel.comp_apply, Kernel.const_apply]
+
+lemma comp_eq_sum_of_countable [Countable α] [MeasurableSingletonClass α] :
+    κ ∘ₘ μ = Measure.sum (fun ω ↦ μ {ω} • κ ω) := by
+  ext s hs
+  rw [Measure.sum_apply _ hs, Measure.bind_apply hs (by fun_prop)]
+  simp [lintegral_countable', mul_comm]
 
 @[simp]
 lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
@@ -87,30 +94,13 @@ lemma comp_compProd_comm {η : Kernel (α × β) γ} [SFinite μ] [IsSFiniteKern
   · rfl
   · exact measurable_snd hs
 
+@[simp]
+lemma prodMkLeft_comp_compProd {η : Kernel β γ} [SFinite μ] [IsSFiniteKernel κ] :
+    (η.prodMkLeft α) ∘ₘ μ ⊗ₘ κ = η ∘ₘ κ ∘ₘ μ := by
+  rw [← snd_compProd μ κ, Kernel.prodMkLeft, snd, ← deterministic_comp_eq_map measurable_snd,
+    comp_assoc, Kernel.comp_deterministic_eq_comap]
+
 end CompProd
-
-section Integrable
-
-variable {E : Type*} [NormedAddCommGroup E] {f : β → E}
-
-lemma integrable_compProd_snd_iff [SFinite μ] [IsSFiniteKernel κ]
-    (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
-    Integrable (fun p ↦ f p.2) (μ ⊗ₘ κ) ↔ Integrable f (κ ∘ₘ μ) := by
-  rw [← snd_compProd, Measure.snd, integrable_map_measure _ measurable_snd.aemeasurable]
-  · rfl
-  · rwa [← Measure.snd, snd_compProd]
-
-lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    ∀ᵐ x ∂μ, Integrable f (κ x) := by
-  rw [comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
-  exact h_int.1
-
-lemma integrable_integral_norm_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
-  rw [comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
-  exact h_int.2
-
-end Integrable
 
 section AddSMul
 
@@ -152,6 +142,11 @@ lemma AbsolutelyContinuous.comp_left (μ : Measure α) (hκη : ∀ᵐ a ∂μ, 
 lemma AbsolutelyContinuous.comp (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     κ ∘ₘ μ ≪ η ∘ₘ ν :=
   (AbsolutelyContinuous.comp_left μ hκη).trans (hμν.comp_right η)
+
+lemma absolutelyContinuous_comp_of_countable [Countable α] [MeasurableSingletonClass α] :
+    ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
+  rw [Measure.comp_eq_sum_of_countable, ae_iff_of_countable]
+  exact fun ω hμω ↦ Measure.absolutelyContinuous_sum_right ω (Measure.absolutelyContinuous_smul hμω)
 
 end AbsolutelyContinuous
 
