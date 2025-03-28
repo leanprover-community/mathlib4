@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.PathCategory.Basic
 The category of (bundled) quivers, and the free/forgetful adjunction between `Cat` and `Quiv`.
 -/
 
-universe v u v₁ v₂ v₃ u₁ u₂ u₃
+universe v u v₁ v₂ v₃ u₁ u₂ u₃ w
 
 namespace CategoryTheory
 
@@ -213,11 +213,6 @@ def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{max u v + 1} V] :
   | cons _ _ h => simp [h]; rfl
 
 lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{max u v + 1} V] :
-    Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Cat.of (Paths V)) = 𝟭 (Paths V) :=
-  Functor.ext_of_iso (freeMapPathsOfCompPathCompositionIso V) (fun _ ↦ rfl)
-    (fun _ ↦ rfl)
-
-lemma freeMap_pathsOf_pathComposition' (V : Type u) [Quiver.{max u v + 1} V] :
     Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Cat.of (Paths V)) = 𝟭 (Paths V) :=
   Paths.ext_functor rfl (by simp)
 
