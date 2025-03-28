@@ -204,12 +204,17 @@ lemma isTree_of_minimal_connected (h : Minimal Connected G) : IsTree G := by
   exact fun _ _ _ ↦ by_contra fun hbr ↦ h.not_prop_of_lt (by simpa [← edgeSet_ssubset_edgeSet])
     <| h.prop.connected_delete_edge_of_not_isBridge hbr
 
+/-- Every connected graph has a spanning tree. TODO : remove the `Fintype V` hypothesis. -/
+lemma Connected.exists_isTree_le [Fintype V] (h : G.Connected) : ∃ T ≤ G, IsTree T := by
+  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_minimal_le h
+  exact ⟨T, hTG, isTree_of_minimal_connected hmin⟩
+
 /-- Every connected graph on `n` vertices has at least `n-1` edges. -/
 lemma Connected.card_vert_le_card_edgeSet_add_one [Fintype V] [Fintype G.edgeSet]
-    (hG : G.Connected) : Fintype.card V ≤ Fintype.card G.edgeSet + 1 := by
+    (h : G.Connected) : Fintype.card V ≤ Fintype.card G.edgeSet + 1 := by
   classical
-  obtain ⟨T, hTG, hmin⟩ := {H : SimpleGraph V | H.Connected}.toFinite.exists_minimal_le hG
-  rw [← (isTree_of_minimal_connected hmin).card_edgeFinset, add_le_add_iff_right, ← edgeFinset_card]
+  obtain ⟨T, hle, hT⟩ := h.exists_isTree_le
+  rw [← hT.card_edgeFinset, add_le_add_iff_right, ← edgeFinset_card]
   exact Finset.card_mono <| by simpa
 
 lemma isTree_iff_connected_and_card [Fintype V] [Fintype G.edgeSet] :
