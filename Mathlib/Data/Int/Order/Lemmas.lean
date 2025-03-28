@@ -31,23 +31,23 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
 
-theorem div_le_iff_of_dvd_of_pos (a b c : ℤ) (h1 :0 < b) (h2 : b ∣ a) : a / b ≤ c ↔ a ≤  b * c := by
-  obtain  ⟨_, hx⟩ := h2
+theorem div_le_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < b) (h2 : b ∣ a) : a / b ≤ c ↔ a ≤  b * c := by
+  obtain ⟨_, hx⟩ := h2
   simp only [hx, ne_eq, Int.ne_of_gt, gt_iff_lt, h1, _root_.mul_le_mul_left, ne_eq,
     not_false_eq_true, Int.mul_ediv_cancel_left]
 
-theorem div_lt_iff_of_dvd_of_pos (a b c : ℤ) (h1 :0 < b) (h2 : b ∣ a) : a / b < c ↔ a <  b * c := by
-  obtain  ⟨_, hx⟩ := h2
+theorem div_lt_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < b) (h2 : b ∣ a) : a / b < c ↔ a <  b * c := by
+  obtain ⟨_, hx⟩ := h2
   simp only [hx ,ne_eq, _root_.ne_of_gt, gt_iff_lt, h1, mul_lt_mul_left, ne_eq, not_false_eq_true,
       Int.mul_ediv_cancel_left]
 
-theorem le_div_iff_of_dvd_of_pos (a b c : ℤ) (h1 :0 < c) (h2 : c ∣ b) : a ≤ b / c ↔ c * a ≤  b := by
-  obtain  ⟨_, hx⟩ := h2
+theorem le_div_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < c) (h2 : c ∣ b) : a ≤ b / c ↔ c * a ≤  b := by
+  obtain ⟨_, hx⟩ := h2
   simp only [hx, ne_eq, _root_.ne_of_gt, gt_iff_lt, h1, _root_.mul_le_mul_left,
     ne_eq,not_false_eq_true, Int.mul_ediv_cancel_left]
 
-theorem lt_div_iff_of_dvd_of_pos (a b c : ℤ) (h1 :0 < c) (h2 : c ∣ b) : a < b / c ↔ c * a <  b := by
-  obtain  ⟨_, hx⟩ := h2
+theorem lt_div_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < c) (h2 : c ∣ b) : a < b / c ↔ c * a <  b := by
+  obtain ⟨_, hx⟩ := h2
   simp only [hx, ne_eq, _root_.ne_of_gt,gt_iff_lt, h1, mul_lt_mul_left, ne_eq, not_false_eq_true,
     Int.mul_ediv_cancel_left]
 
