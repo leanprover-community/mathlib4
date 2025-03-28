@@ -106,7 +106,7 @@ theorem map_add : (I + J).map g = I.map g + J.map g :=
   coeToSubmodule_injective (Submodule.map_sup _ _ _)
 
 @[simp]
-theorem map_mul : (I * J).map g = I.map g * J.map g := by
+protected theorem map_mul : (I * J).map g = I.map g * J.map g := by
   simp only [mul_def]
   exact coeToSubmodule_injective (Submodule.map_mul _ _ _)
 
@@ -132,7 +132,7 @@ def mapEquiv (g : P ≃ₐ[R] P') : FractionalIdeal S P ≃+* FractionalIdeal S 
   toFun := map g
   invFun := map g.symm
   map_add' I J := map_add I J _
-  map_mul' I J := map_mul I J _
+  map_mul' I J := FractionalIdeal.map_mul I J _
   left_inv I := by rw [← map_comp, AlgEquiv.symm_comp, map_id]
   right_inv I := by rw [← map_comp, AlgEquiv.comp_symm, map_id]
 
