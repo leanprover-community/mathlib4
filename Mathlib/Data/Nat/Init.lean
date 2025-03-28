@@ -454,9 +454,10 @@ lemma mul_add_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (hba : b ∣ a) (hdc 
   obtain ⟨n, hn⟩ := hba
   obtain ⟨_, hm⟩ := hdc
   rw [hn, hm, Nat.mul_assoc b n d, Nat.mul_comm n d, ← Nat.mul_assoc, ← Nat.mul_assoc,
-    ← Nat.mul_add, Nat.mul_div_right _ (zero_lt_of_ne_zero hb),
+    ← Nat.mul_add,
+    Nat.mul_div_right _ (zero_lt_of_ne_zero hb),
     Nat.mul_div_right _ (zero_lt_of_ne_zero hd),
-    Nat.mul_div_right _ (Nat.mul_pos (zero_lt_of_ne_zero hb) (zero_lt_of_ne_zero hd))]
+    Nat.mul_div_right _ (zero_lt_of_ne_zero <| Nat.mul_ne_zero hb hd)]
 
 lemma mul_sub_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (hba : b ∣ a) (hdc : d ∣ c) :
     (a * d - b * c) / (b * d)  = a / b - c / d:= by
@@ -465,10 +466,13 @@ lemma mul_sub_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (hba : b ∣ a) (hdc 
   rw [hn, hm]
   rw [Nat.mul_assoc,Nat.mul_comm n d, ← Nat.mul_assoc,← Nat.mul_assoc, ← Nat.mul_sub_left_distrib,
     Nat.mul_div_right _ (zero_lt_of_ne_zero hb), Nat.mul_div_right _ (zero_lt_of_ne_zero hd),
-    Nat.mul_div_right _ (Nat.mul_pos (zero_lt_of_ne_zero hb) (zero_lt_of_ne_zero hd))]
+    Nat.mul_div_right _ (zero_lt_of_ne_zero <| Nat.mul_ne_zero hb hd)]
 
-lemma div_mul_assoc (hba : b ∣ a) (c : ℕ) : (a / b) * c = (a * c) / b := by
+protected lemma div_mul_right_comm (hba : b ∣ a) (c : ℕ) : a / b * c = a * c / b := by
   rw [Nat.mul_comm, ← Nat.mul_div_assoc _ hba, Nat.mul_comm]
+
+protected lemma mul_div_right_comm (hba : b ∣ a) (c : ℕ) : a * c / b = a / b * c :=
+  (Nat.div_mul_right_comm hba _).symm
 
 lemma eq_div_iff_mul_eq_left (hc : c ≠ 0) (hcb : c ∣ b) : a = b / c ↔ b = a * c := by
   rw [eq_comm, Nat.div_eq_iff_eq_mul_left (zero_lt_of_ne_zero hc) hcb]
