@@ -47,7 +47,8 @@ variable {σ : G → H} {f : α →ₑ[σ] β} {ι : Type*}
 
 /-- An injective equivariant map `α →ₑ[σ] β` induces
 an equivariant map on embedding types (ι ↪ α) → (ι ↪ β) -/
-@[to_additive]
+@[to_additive "An injective equivariant map `α →ₑ[σ] β` induces
+an equivariant map on embedding types (ι ↪ α) → (ι ↪ β)"]
 def Function.Injective.mulActionHom_embedding (hf : Function.Injective f) :
     (ι ↪ α) →ₑ[σ] (ι ↪ β) where
   toFun x := ⟨f.toFun ∘ x.toFun, hf.comp x.inj'⟩
@@ -145,6 +146,7 @@ end Zero
 
 section One
 
+/-- The equivalence `one ↪ α` with `α`, for `Unique one`. -/
 def _root_.Function.Embedding.oneEmbeddingEquiv {one : Type*} [Unique one] : (one ↪ α) ≃ α where
   toFun f := f default
   invFun a := {
@@ -153,8 +155,8 @@ def _root_.Function.Embedding.oneEmbeddingEquiv {one : Type*} [Unique one] : (on
   left_inv f := by ext; simp [Unique.uniq]
   right_inv a := rfl
 
-/-- When `Unique one`, the equivariant map from `one ↪ α` to `α` -/
-@[to_additive]
+/-- For `Unique one`, the equivariant map from `one ↪ α` to `α` -/
+@[to_additive "For `Unique one`, the equivariant map from `one ↪ α` to `α`"]
 def _root_.MulActionHom.oneEmbeddingMap {one : Type*} [Unique one] :
     (one ↪ α) →[G] α := {
   oneEmbeddingEquiv with
@@ -263,7 +265,8 @@ section Higher
 
 /-- The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding
 `e : m ↪ n`. -/
-@[to_additive]
+@[to_additive
+"The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding `e : m ↪ n`."]
 def embMap {m n : Type*} (e : m ↪ n) : (n ↪ α) →[G]  (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
