@@ -331,7 +331,7 @@ theorem not_cliqueFree_card_of_top_embedding [Fintype α] (f : (⊤ : SimpleGrap
   rw [not_cliqueFree_iff]
   exact ⟨(Iso.completeGraph (Fintype.equivFin α)).symm.toEmbedding.trans f⟩
 
-lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
+@[simp] lemma not_cliqueFree_zero : ¬ G.CliqueFree 0 :=
   fun h ↦ h ∅ <| isNClique_empty.mpr rfl
 
 @[simp]
@@ -382,29 +382,30 @@ namespace completeMultipartiteGraph
 variable {ι : Type*} (V : ι → Type*)
 
 /-- Embedding of the complete graph on `ι` into `completeMultipartiteGraph` on `ι` nonempty parts.-/
+@[simps]
 def topEmbedding (f : ∀ (i : ι), V i) :
     (⊤ : SimpleGraph ι) ↪g completeMultipartiteGraph V where
   toFun := fun i ↦ ⟨i, f i⟩
   inj' := fun _ _ h ↦ (Sigma.mk.inj_iff.1 h).1
   map_rel_iff' := by simp
 
-theorem notCliqueFree_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ Fintype.card ι) :
+theorem not_cliqueFree_of_le_card [Fintype ι] (f : ∀ (i : ι), V i) (hc : n ≤ Fintype.card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
   fun hf ↦ (cliqueFree_iff.1 <| hf.mono hc).elim' <|
     (topEmbedding V f).comp (Iso.completeGraph (Fintype.equivFin ι).symm).toEmbedding
 
-theorem notCliqueFree_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
+theorem not_cliqueFree_of_infinite [Infinite ι] (f : ∀ (i : ι), V i) :
     ¬ (completeMultipartiteGraph V).CliqueFree n :=
   fun hf ↦ not_cliqueFree_of_top_embedding (topEmbedding V f |>.comp
             <| Embedding.completeGraph <| Fin.valEmbedding.trans <| Infinite.natEmbedding ι) hf
 
-theorem notCliqueFree_le_encard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
+theorem not_cliqueFree_of_le_eNatCard (f : ∀ (i : ι), V i) (hc : n ≤ ENat.card ι) :
     ¬ (completeMultipartiteGraph V).CliqueFree n := by
   by_cases h : Infinite ι
-  · exact notCliqueFree_infinite V f
+  · exact not_cliqueFree_of_infinite V f
   · have : Fintype ι := fintypeOfNotInfinite h
     rw [ENat.card_eq_coe_fintype_card, Nat.cast_le] at hc
-    exact notCliqueFree_le_card V f hc
+    exact not_cliqueFree_of_le_card V f hc
 
 end completeMultipartiteGraph
 

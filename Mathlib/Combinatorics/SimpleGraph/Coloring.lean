@@ -468,7 +468,7 @@ theorem chromaticNumber [Fintype ι] (f : ∀ (i : ι), V i) :
     (completeMultipartiteGraph V).chromaticNumber = Fintype.card ι := by
   apply le_antisymm (colorable V).chromaticNumber_le
   by_contra! h
-  exact notCliqueFree_le_card V f le_rfl <| cliqueFree_of_chromaticNumber_lt h
+  exact not_cliqueFree_of_le_card V f le_rfl <| cliqueFree_of_chromaticNumber_lt h
 
 theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
     (hc : (completeMultipartiteGraph V).CliqueFree n) :
@@ -477,9 +477,9 @@ theorem colorable_of_cliqueFree (f : ∀ (i : ι), V i)
   | zero => exact absurd hc not_cliqueFree_zero
   | succ n =>
   have : Fintype ι := fintypeOfNotInfinite
-    fun hinf ↦ notCliqueFree_infinite V f hc
+    fun hinf ↦ not_cliqueFree_of_infinite V f hc
   apply (coloring V).colorable.mono
-  have := notCliqueFree_le_card V f le_rfl
+  have := not_cliqueFree_of_le_card V f le_rfl
   contrapose! this
   exact hc.mono this
 
