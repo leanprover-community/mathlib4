@@ -302,7 +302,7 @@ lemma HasFPowerSeriesWithinOnBall.prod {e : E} {f : E → F} {g : E → G} {r s 
   hasSum := by
     intro y h'y hy
     simp_rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.prod_apply]
-    refine (hf.hasSum h'y ?_).prod_mk (hg.hasSum h'y ?_)
+    refine (hf.hasSum h'y ?_).prodMk (hg.hasSum h'y ?_)
     · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_left _ _))
     · exact EMetric.mem_ball.mpr (lt_of_lt_of_le hy (min_le_right _ _))
 

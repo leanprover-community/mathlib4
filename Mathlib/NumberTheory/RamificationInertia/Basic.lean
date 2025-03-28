@@ -127,7 +127,7 @@ theorem le_comap_pow_ramificationIdx : p ≤ comap f (P ^ ramificationIdx f p P)
 theorem le_comap_of_ramificationIdx_ne_zero (h : ramificationIdx f p P ≠ 0) : p ≤ comap f P :=
   Ideal.map_le_iff_le_comap.mp <| le_pow_ramificationIdx.trans <| Ideal.pow_le_self <| h
 
-variable {S₁: Type*} [CommRing S₁] [Algebra R S₁]
+variable {S₁ : Type*} [CommRing S₁] [Algebra R S₁]
 
 variable (p) in
 lemma ramificationIdx_comap_eq [Algebra R S] (e : S ≃ₐ[R] S₁) (P : Ideal S₁) :
@@ -828,7 +828,7 @@ theorem ramificationIdx_tower [IsDedekindDomain S] [IsDedekindDomain T] {f : R �
     by_contra h
     simp only [h, Submodule.zero_eq_bot, bot_le, sup_of_le_left] at hcp
     exact hntq (hcp.trans_le hg), Multiset.count_add, normalizedFactors_pow, Multiset.count_nsmul]
-  exact add_right_eq_self.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
+  exact add_eq_left.mpr <| Decidable.byContradiction fun h ↦ hntq <| hcp.trans_le <|
     sup_le hg <| le_of_dvd <| dvd_of_mem_normalizedFactors <| Multiset.count_ne_zero.mp h
 
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]

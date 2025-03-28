@@ -32,9 +32,7 @@ theorem biInter_finset_mem {β : Type v} {s : β → Set α} (is : Finset β) :
     (⋂ i ∈ is, s i) ∈ f ↔ ∀ i ∈ is, s i ∈ f :=
   biInter_mem is.finite_toSet
 
-alias _root_.Finset.iInter_mem_sets := biInter_finset_mem
-
--- attribute [protected] Finset.iInter_mem_sets porting note: doesn't work
+protected alias _root_.Finset.iInter_mem_sets := biInter_finset_mem
 
 @[simp]
 theorem sInter_mem {s : Set (Set α)} (hfin : s.Finite) : ⋂₀ s ∈ f ↔ ∀ U ∈ s, U ∈ f := by

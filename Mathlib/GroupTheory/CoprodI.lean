@@ -92,8 +92,9 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) �
 
 /-- The free product (categorical coproduct) of an indexed family of monoids. -/
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
+-- The `Monoid` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: could not de derived
 instance : Monoid (Monoid.CoprodI M) := by
   delta Monoid.CoprodI; infer_instance
 
@@ -564,7 +565,7 @@ theorem equivPair_head_smul_equivPair_tail {i : ι} (w : Word M) :
   rw [← rcons_eq_smul, ← equivPair_symm, Equiv.symm_apply_apply]
 
 theorem equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
-    [∀i, DecidableEq (G i)] {i} (w : Word G) :
+    [∀ i, DecidableEq (G i)] {i} (w : Word G) :
     (equivPair i w).tail = (of (equivPair i w).head)⁻¹ • w :=
   Eq.symm <| inv_smul_eq_iff.2 (equivPair_head_smul_equivPair_tail w).symm
 

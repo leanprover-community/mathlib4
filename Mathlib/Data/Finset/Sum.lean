@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Data.Finset.Card
-import Mathlib.Data.Finset.Union
+import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Multiset.Sum
 
 /-!
@@ -25,7 +25,7 @@ open Function Multiset Sum
 
 namespace Finset
 
-variable {α β : Type*} (s : Finset α) (t : Finset β)
+variable {α β γ : Type*} (s : Finset α) (t : Finset β)
 
 /-- Disjoint sum of finsets. -/
 def disjSum : Finset (α ⊕ β) :=
@@ -111,8 +111,7 @@ forms a quasi-inverse to `disjSum`, in that it recovers its left input.
 See also `List.partitionMap`.
 -/
 def toLeft (s : Finset (α ⊕ β)) : Finset α :=
-  s.disjiUnion (Sum.elim singleton (fun _ => ∅)) <| by
-    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+  s.filterMap (Sum.elim some fun _ => none) (by clear x; aesop)
 
 /--
 Given a finset of elements `α ⊕ β`, extract all the elements of the form `β`. This
@@ -121,8 +120,7 @@ forms a quasi-inverse to `disjSum`, in that it recovers its right input.
 See also `List.partitionMap`.
 -/
 def toRight (s : Finset (α ⊕ β)) : Finset β :=
-  s.disjiUnion (Sum.elim (fun _ => ∅) singleton) <| by
-    simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, eq_comm]
+  s.filterMap (Sum.elim (fun _ => none) some) (by clear x; aesop)
 
 variable {u v : Finset (α ⊕ β)}
 
@@ -180,6 +178,7 @@ lemma eq_disjSum_iff : u = s.disjSum t ↔ u.toLeft = s ∧ u.toRight = t :=
 @[simp] lemma toRight_cons_inr (hb) :
     (cons (inr b) u hb).toRight = cons b u.toRight (by simpa) := by ext y; simp
 
+section
 variable [DecidableEq α] [DecidableEq β]
 
 lemma toLeft_image_swap : (u.image Sum.swap).toLeft = u.toRight := by
@@ -202,6 +201,8 @@ lemma toRight_union : (u ∪ v).toRight = u.toRight ∪ v.toRight := by ext x; s
 lemma toLeft_sdiff : (u \ v).toLeft = u.toLeft \ v.toLeft := by ext x; simp
 lemma toRight_sdiff : (u \ v).toRight = u.toRight \ v.toRight := by ext x; simp
 
+end
+
 /-- Finsets on sum types are equivalent to pairs of finsets on each summand. -/
 @[simps apply_fst apply_snd]
 def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β where
@@ -214,5 +215,19 @@ def sumEquiv {α β : Type*} : Finset (α ⊕ β) ≃o Finset α × Finset β wh
 @[simp]
 lemma sumEquiv_symm_apply {α β : Type*} (s : Finset α × Finset β) :
     sumEquiv.symm s = disjSum s.1 s.2 := rfl
+
+theorem map_disjSum (f : α ⊕ β ↪ γ) :
+    (s.disjSum t).map f =
+      (s.map (.trans .inl f)).disjUnion (t.map (.trans .inr f)) (by
+        as_aux_lemma =>
+          simpa only [← map_map]
+            using (Finset.disjoint_map f).2 (disjoint_map_inl_map_inr _ _)) :=
+  val_injective <| Multiset.map_disjSum _
+
+lemma fold_disjSum (s : Finset α) (t : Finset β) (f : α ⊕ β → γ) (b₁ b₂ : γ) (op : γ → γ → γ)
+    [Std.Commutative op] [Std.Associative op] :
+    (s.disjSum t).fold op (op b₁ b₂) f =
+      op (s.fold op b₁ (f <| .inl ·)) (t.fold op b₂ (f <| .inr ·)) := by
+  simp_rw [fold, disjSum, Multiset.map_disjSum, fold_add]
 
 end Finset

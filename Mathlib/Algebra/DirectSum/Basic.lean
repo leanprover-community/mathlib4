@@ -32,16 +32,14 @@ variable (ι : Type v) (β : ι → Type w)
 
 Note: `open DirectSum` will enable the notation `⨁ i, β i` for `DirectSum ι β`. -/
 def DirectSum [∀ i, AddCommMonoid (β i)] : Type _ :=
-  -- Porting note: Failed to synthesize
-  -- Π₀ i, β i deriving AddCommMonoid, Inhabited
-  -- See https://github.com/leanprover-community/mathlib4/issues/5020
   Π₀ i, β i
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added inhabited instance manually
+-- The `AddCommMonoid, Inhabited` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
+
 instance [∀ i, AddCommMonoid (β i)] : Inhabited (DirectSum ι β) :=
   inferInstanceAs (Inhabited (Π₀ i, β i))
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): Added addCommMonoid instance manually
 instance [∀ i, AddCommMonoid (β i)] : AddCommMonoid (DirectSum ι β) :=
   inferInstanceAs (AddCommMonoid (Π₀ i, β i))
 
@@ -397,10 +395,10 @@ theorem finite_support (A : ι → S) (x : DirectSum ι fun i => A i) :
 section map
 
 variable {ι : Type*} {α : ι → Type*} {β : ι → Type*} [∀ i, AddCommMonoid (α i)]
-variable [∀ i, AddCommMonoid (β i)] (f : ∀(i : ι), α i →+ β i)
+variable [∀ i, AddCommMonoid (β i)] (f : ∀ (i : ι), α i →+ β i)
 
 /-- create a homomorphism from `⨁ i, α i` to `⨁ i, β i` by giving the component-wise map `f`. -/
-def map : (⨁ i, α i) →+ ⨁ i, β i :=  DFinsupp.mapRange.addMonoidHom f
+def map : (⨁ i, α i) →+ ⨁ i, β i := DFinsupp.mapRange.addMonoidHom f
 
 @[simp] lemma map_of [DecidableEq ι] (i : ι) (x : α i) : map f (of α i x) = of β i (f i x) :=
   DFinsupp.mapRange_single (hf := fun _ => map_zero _)

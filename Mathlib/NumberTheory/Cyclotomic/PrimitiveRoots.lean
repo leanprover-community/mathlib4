@@ -520,7 +520,7 @@ theorem norm_pow_sub_one_eq_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveR
       rw [hp, ← PNat.coe_inj, PNat.pow_coe] at htwo
       nth_rw 2 [← pow_one 2] at htwo
       replace htwo := Nat.pow_right_injective rfl.le htwo
-      rw [add_left_eq_self, Nat.sub_eq_zero_iff_le] at htwo
+      rw [add_eq_right, Nat.sub_eq_zero_iff_le] at htwo
       exact le_antisymm hs htwo
     simp only [hs, hp, one_coe, cast_one, pow_coe, show ((2 : ℕ+) : ℕ) = 2 from rfl]
       at hζ hirr hcycl ⊢

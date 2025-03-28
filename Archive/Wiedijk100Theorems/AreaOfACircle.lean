@@ -82,7 +82,7 @@ theorem measurableSet_disc : MeasurableSet (disc r) := by
 theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
   let f x := sqrt (r ^ 2 - x ^ 2)
   let F x := (r : ℝ) ^ 2 * arcsin (r⁻¹ * x) + x * sqrt (r ^ 2 - x ^ 2)
-  have hf : Continuous f := by continuity
+  have hf : Continuous f := by fun_prop
   suffices ∫ x in -r..r, 2 * f x = NNReal.pi * r ^ 2 by
     have h : IntegrableOn f (Ioc (-r) r) := hf.integrableOn_Icc.mono_set Ioc_subset_Icc_self
     calc
@@ -120,10 +120,9 @@ theorem area_disc : volume (disc r) = NNReal.pi * r ^ 2 := by
         (r : ℝ)⁻¹ * x < (r : ℝ)⁻¹ * r := by nlinarith [inv_pos.mpr hlt]
         _ = 1 := inv_mul_cancel₀ hlt.ne'
     · nlinarith
-  have hcont : ContinuousOn F (Icc (-r) r) := (by continuity : Continuous F).continuousOn
   calc
     ∫ x in -r..r, 2 * f x = F r - F (-r) :=
-      integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) hcont hderiv
+      integral_eq_sub_of_hasDerivAt_of_le (neg_le_self r.2) (by fun_prop) hderiv
         (continuous_const.mul hf).continuousOn.intervalIntegrable
     _ = NNReal.pi * (r : ℝ) ^ 2 := by
       norm_num [F, inv_mul_cancel₀ hlt.ne', ← mul_div_assoc, mul_comm π]

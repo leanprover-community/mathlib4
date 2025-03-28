@@ -39,7 +39,8 @@ def PolynomialModule (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] :=
 
 variable (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M] (I : Ideal R)
 
--- Porting note: stated instead of deriving
+-- The `Inhabited, AddCommGroup` instances should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 noncomputable instance : Inhabited (PolynomialModule R M) := Finsupp.instInhabited
 noncomputable instance : AddCommGroup (PolynomialModule R M) := Finsupp.instAddCommGroup
 
