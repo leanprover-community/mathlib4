@@ -28,7 +28,7 @@ info: Pattern n + 1
   Finset.Nat.card_antidiagonal
 · (List.Nat.antidiagonal n).length
   List.Nat.length_antidiagonal
-· Multiset.card (Multiset.Nat.antidiagonal n)
+· (Multiset.Nat.antidiagonal n).card
   Multiset.Nat.card_antidiagonal
 
 Pattern n + m
@@ -36,8 +36,16 @@ Pattern n + m
   Nat.add_comm
 · n.add 1
   Nat.add_eq
+· (n + 1) ⊔ 1
+  Nat.add_left_max
+· 1 ⊔ (n + 1)
+  Nat.max_add_left
 · Nat.succ^[1] n
   Nat.succ_iterate
+· (n + 1) ⊔ n
+  Nat.add_right_max
+· n ⊔ (n + 1)
+  Nat.max_add_right
 · n + Nat.succ 1 - 1
   Nat.add_succ_sub_one
 · n.succ + 1 - 1
@@ -50,13 +58,17 @@ Pattern x + 1
   ChainComplex.prev
 · (ComplexShape.up ℕ).next n
   CochainComplex.next
+· Order.succ n
+  Order.succ_eq_add_one
+· SuccOrder.succ n
+  SuccAddOrder.succ_eq_add_one
 
 Pattern a + b
 · 1 + n
   add_comm
-· max n 1 + min n 1
+· n ⊔ 1 + n ⊓ 1
   max_add_min
-· min n 1 + max n 1
+· n ⊓ 1 + n ⊔ 1
   min_add_max
 · n +ᵥ 1
   vadd_eq_add
@@ -68,6 +80,8 @@ Pattern a + b
   addLeftEmbedding_apply
 · (addRightEmbedding 1) n
   addRightEmbedding_apply
+· (n ::ₘ {1}).esymm 1
+  Multiset.esymm_pair_one
 · (OrderEmbedding.addLeft n) 1
   OrderEmbedding.addLeft_apply
 · (OrderEmbedding.addRight 1) n
@@ -87,6 +101,8 @@ Pattern a = b
   Nat.le_antisymm_iff
 · Nat.beq 5 2 = true
   Nat.beq_eq
+· ↑5 = ↑2
+  ENat.coe_inj
 · Nat.succ 5 = Nat.succ 2
   Nat.succ_inj
 · ↑5 = ↑2
@@ -128,11 +144,13 @@ Pattern a = b
 · ∀ (a : ℕ), 5 ∣ a ↔ 2 ∣ a
   Nat.dvd_right_iff_eq
 · ↑5 = ↑2
-  Ordinal.nat_cast_inj
-· ↑5 = ↑2
   PartENat.natCast_inj
+· Int.subNatNat 5 2 = 0
+  Int.subNat_eq_zero_iff
 · Batteries.UnionFind.empty.Equiv 5 2
   Batteries.UnionFind.equiv_empty
+· -↑5 = Int.negSucc 2 + 1
+  Int.neg_ofNat_eq_negSucc_add_one_iff
 · Nat.factorial 5 = Nat.factorial 2
   ⊢ 1 < 5
   Nat.factorial_inj
@@ -152,6 +170,46 @@ Pattern a = b
   ⊢ Nat.Prime 5
   ⊢ 2 ≠ 1
   Nat.Prime.dvd_iff_eq
+
+Pattern a = b
+· ofLex 5 = ofLex 2
+  ofLex_inj
+· ofDegLex 5 = ofDegLex 2
+  ofDegLex_inj
+· ofBoolAlg 5 = ofBoolAlg 2
+  ofBoolAlg_inj
+· ofBoolRing 5 = ofBoolRing 2
+  ofBoolRing_inj
+· SymAlg.unsym 5 = SymAlg.unsym 2
+  SymAlg.unsym_inj
+· OrderDual.ofDual 5 = OrderDual.ofDual 2
+  OrderDual.ofDual_inj
+· Specialization.ofEquiv 5 = Specialization.ofEquiv 2
+  Specialization.ofEquiv_inj
+· Topology.WithLower.ofLower 5 = Topology.WithLower.ofLower 2
+  Topology.WithLower.ofLower_inj
+· Topology.WithScott.ofScott 5 = Topology.WithScott.ofScott 2
+  Topology.WithScott.ofScott_inj
+· Topology.WithUpper.ofUpper 5 = Topology.WithUpper.ofUpper 2
+  Topology.WithUpper.ofUpper_inj
+· Topology.WithLawson.ofLawson 5 = Topology.WithLawson.ofLawson 2
+  Topology.WithLawson.ofLawson_inj
+· Topology.WithLowerSet.ofLowerSet 5 = Topology.WithLowerSet.ofLowerSet 2
+  Topology.WithLowerSet.ofLowerSet_inj
+· Topology.WithUpperSet.ofUpperSet 5 = Topology.WithUpperSet.ofUpperSet 2
+  Topology.WithUpperSet.ofUpperSet_inj
+
+Pattern m = OfNat.ofNat n
+· ↑5 = 2
+  WithBot.coe_eq_ofNat
+· ↑5 = 2
+  WithTop.coe_eq_ofNat
+
+Pattern OfNat.ofNat n = m
+· 5 = ↑2
+  WithBot.ofNat_eq_coe
+· 5 = ↑2
+  WithTop.ofNat_eq_coe
 -/
 #guard_msgs in
 #rw?? 5=2
@@ -160,20 +218,26 @@ Pattern a = b
 info: Pattern n / 2
 · n.div2
   Nat.div2_val
+· n >>> 1
+  Nat.shiftRight_one
 
 Pattern x / y
 · if 0 < 2 ∧ 2 ≤ n then (n - 2) / 2 + 1 else 0
   Nat.div_eq
 · (n - n % 2) / 2
   Nat.div_eq_sub_mod_div
-· (Finset.filter (fun e => 2 ∣ e + 1) (Finset.range n)).card
+· {e ∈ Finset.range n | 2 ∣ e + 1}.card
   Nat.card_multiples
-· (Finset.filter (fun k => k ≠ 0 ∧ 2 ∣ k) (Finset.range n.succ)).card
+· {k ∈ Finset.range n.succ | k ≠ 0 ∧ 2 ∣ k}.card
   Nat.card_multiples'
 · n ⌊/⌋ 2
   Nat.floorDiv_eq_div
-· (Finset.filter (fun x => 2 ∣ x) (Finset.Ioc 0 n)).card
+· {x ∈ Finset.Ioc 0 n | 2 ∣ x}.card
   Nat.Ioc_filter_dvd_card_eq_div
+· ⌊↑n / ↑2⌋₊
+  NNRat.floor_natCast_div_natCast
+· ⌊↑n / ↑2⌋₊
+  Rat.natFloor_natCast_div_natCast
 · 0
   ⊢ n < 2
   Nat.div_eq_of_lt
@@ -193,26 +257,35 @@ Pattern x / y
 info: Pattern n / 2
 · n.div2
   Nat.div2_val
+· n >>> 1
+  Nat.shiftRight_one
 
 Pattern x / y
 · if 0 < 2 ∧ 2 ≤ n then (n - 2) / 2 + 1 else 0
   Nat.div_eq
 · (n - n % 2) / 2
   Nat.div_eq_sub_mod_div
-· (Finset.filter (fun e => 2 ∣ e + 1) (Finset.range n)).card
+· {e ∈ Finset.range n | 2 ∣ e + 1}.card
   Nat.card_multiples
-· (Finset.filter (fun k => k ≠ 0 ∧ 2 ∣ k) (Finset.range n.succ)).card
+· {k ∈ Finset.range n.succ | k ≠ 0 ∧ 2 ∣ k}.card
   Nat.card_multiples'
 · n ⌊/⌋ 2
   Nat.floorDiv_eq_div
-· (Finset.filter (fun x => 2 ∣ x) (Finset.Ioc 0 n)).card
+· {x ∈ Finset.Ioc 0 n | 2 ∣ x}.card
   Nat.Ioc_filter_dvd_card_eq_div
+· ⌊↑n / ↑2⌋₊
+  NNRat.floor_natCast_div_natCast
+· ⌊↑n / ↑2⌋₊
+  Rat.natFloor_natCast_div_natCast
 · 0
   ⊢ n < 2
   Nat.div_eq_of_lt
 · (n + 1) / 2
   ⊢ ¬2 ∣ n + 1
   Nat.succ_div_of_not_dvd
+· (n + 1) / 2
+  ⊢ (n + 1) % 2 ≠ 0
+  Nat.succ_div_of_mod_ne_zero
 · (n - 2) / 2 + 1
   ⊢ 0 < 2
   ⊢ 2 ≤ n
@@ -227,7 +300,7 @@ Pattern x / y
   ⊢ ?k * 2 ≤ n
   ⊢ n < (?k + 1) * 2
   Nat.div_eq_of_lt_le
-· (Finset.filter (fun x => x * 2 ≤ n) (Finset.Ico 1 ?c.succ)).card
+· {x ∈ Finset.Ico 1 (Nat.succ ?c) | x * 2 ≤ n}.card
   ⊢ 0 < 2
   ⊢ n / 2 ≤ ?c
   ZMod.div_eq_filter_card
@@ -258,17 +331,31 @@ Pattern x / y
 open BigOperators
 
 /--
-info: Pattern ∑ x ∈ s, (f x + g x)
-· ∑ x ∈ Finset.range n, x + ∑ x ∈ Finset.range n, 1
-  Finset.sum_add_distrib
+info: Pattern ∑ a ∈ s, (f a + b)
 · ∑ a ∈ Finset.range n, a + (Finset.range n).card • 1
   Finset.sum_add_card_nsmul
 
+Pattern ∑ x ∈ s, (f x + g x)
+· ∑ x ∈ Finset.range n, x + ∑ x ∈ Finset.range n, 1
+  Finset.sum_add_distrib
+
 Pattern ∑ i ∈ Finset.range n, f i
-· ∑ i : Fin n, (↑i + 1)
+· ∑ i, (↑i + 1)
   Finset.sum_range
 · ∑ j ∈ Finset.range n, (n - 1 - j + 1)
   Finset.sum_range_reflect
+· 0 + 1 + ∑ x ∈ Finset.Ico 1 n, (x + 1)
+  ⊢ 0 < n
+  Finset.sum_range_eq_add_Ico
+
+Pattern ∑ x ∈ s, h x (f x)
+· (Finsupp.indicator (Finset.range n) fun x x => 1).sum HAdd.hAdd
+  ⊢ ∀ a ∈ Finset.range n, a + 0 = 0
+  Finsupp.sum_indicator_index
+
+Pattern ∑ c ∈ s, g c a
+· (∑ c ∈ Finset.range n, HAdd.hAdd c) 1
+  Finset.sum_apply
 
 Pattern ∑ x ∈ s, f x
 · Finset.fold (fun x1 x2 => x1 + x2) 0 (fun x => x + 1) (Finset.range n)
@@ -277,13 +364,11 @@ Pattern ∑ x ∈ s, f x
   sum_eq_tsum_indicator
 · (Multiset.map (fun x => x + 1) (Finset.range n).val).sum
   Finset.sum_eq_multiset_sum
-· (∑ c ∈ Finset.range n, HAdd.hAdd c) 1
-  Finset.sum_apply
 · ∑ x ∈ (Finset.range n).attach, (↑x + 1)
   Finset.sum_attach
 · (List.map (fun n => n + 1) (Finset.range n).toList).sum
   Finset.sum_to_list
-· ∑ i : { x // x ∈ Finset.range n }, (↑i + 1)
+· ∑ i, (↑i + 1)
   Finset.sum_coe_sort
 · ∑' (x : { x // x ∈ Finset.range n }), (↑x + 1)
   Finset.tsum_subtype
@@ -291,7 +376,7 @@ Pattern ∑ x ∈ s, f x
   Finset.tsum_subtype'
 · ∑ᶠ (i : ℕ) (_ : i ∈ ↑(Finset.range n)), (i + 1)
   finsum_mem_coe_finset
-· ∑ i : ↑↑(Finset.range n), (↑i + 1)
+· ∑ i, (↑i + 1)
   Finset.sum_finset_coe
 · ∑ᶠ (i : ℕ) (_ : i ∈ Finset.range n), (i + 1)
   finsum_mem_finset_eq_sum
@@ -299,7 +384,7 @@ Pattern ∑ x ∈ s, f x
   Finset.noncommSum_eq_sum
 · ∑ i ∈ Finset.range n, if i ∈ Finset.range n then i + 1 else 0
   Finset.sum_extend_by_zero
-· ∑ x ∈ Finset.filter (fun x => x + 1 ≠ 0) (Finset.range n), (x + 1)
+· ∑ x ∈ {x ∈ Finset.range n | x + 1 ≠ 0}, (x + 1)
   Finset.sum_filter_ne_zero
 · 0
   ⊢ ∀ x ∈ Finset.range n, x + 1 = 0
@@ -307,9 +392,6 @@ Pattern ∑ x ∈ s, f x
 · ∑' (b : ℕ), (b + 1)
   ⊢ ∀ b ∉ Finset.range n, b + 1 = 0
   tsum_eq_sum
-· (Finsupp.indicator (Finset.range n) fun x x => 1).sum HAdd.hAdd
-  ⊢ ∀ a ∈ Finset.range n, a + 0 = 0
-  Finsupp.sum_indicator_index
 · ∑ᶠ (i : ℕ), (i + 1)
   ⊢ (Function.support fun i => i + 1) ⊆ ↑(Finset.range n)
   finsum_eq_sum_of_support_subset
