@@ -77,10 +77,10 @@ lemma find?_eq_head?_dropWhile_not :
     set ph := p head with phh
     rcases ph with rfl | rfl
     · have phh' : ¬(p head = true) := by simp [phh.symm]
-      rw [find?_cons_of_neg _ phh', dropWhile_cons_of_pos]
+      rw [find?_cons_of_neg phh', dropWhile_cons_of_pos]
       · exact hi
       · simpa using phh
-    · rw [find?_cons_of_pos _ phh.symm, dropWhile_cons_of_neg]
+    · rw [find?_cons_of_pos phh.symm, dropWhile_cons_of_neg]
       · simp
       · simpa using phh
 

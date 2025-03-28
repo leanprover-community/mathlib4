@@ -50,7 +50,7 @@ theorem keys_cons {s} {l : List (Sigma β)} : (s :: l).keys = s.1 :: l.keys :=
   rfl
 
 theorem mem_keys_of_mem {s : Sigma β} {l : List (Sigma β)} : s ∈ l → s.1 ∈ l.keys :=
-  mem_map_of_mem Sigma.fst
+  mem_map_of_mem
 
 theorem exists_of_mem_keys {a} {l : List (Sigma β)} (h : a ∈ l.keys) :
     ∃ b : β a, Sigma.mk a b ∈ l :=
@@ -389,7 +389,7 @@ theorem kerase_of_not_mem_keys {a} {l : List (Sigma β)} (h : a ∉ l.keys) : ke
   | cons _ _ ih => simp [not_or] at h; simp [h.1, ih h.2]
 
 theorem kerase_sublist (a : α) (l : List (Sigma β)) : kerase a l <+ l :=
-  eraseP_sublist _
+  eraseP_sublist
 
 theorem kerase_keys_subset (a) (l : List (Sigma β)) : (kerase a l).keys ⊆ l.keys :=
   ((kerase_sublist a l).map _).subset

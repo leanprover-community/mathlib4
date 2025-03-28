@@ -353,7 +353,7 @@ protected theorem Nodup.set :
   | _ :: _, _ + 1, _, hl, ha =>
     nodup_cons.2
       ⟨fun h =>
-        (mem_or_eq_of_mem_set h).elim (nodup_cons.1 hl).1 fun hba => ha (hba ▸ mem_cons_self _ _),
+        (mem_or_eq_of_mem_set h).elim (nodup_cons.1 hl).1 fun hba => ha (hba ▸ mem_cons_self),
         hl.of_cons.set (mt (mem_cons_of_mem _) ha)⟩
 
 theorem Nodup.map_update [DecidableEq α] {l : List α} (hl : l.Nodup) (f : α → β) (x : α) (y : β) :

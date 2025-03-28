@@ -105,7 +105,7 @@ theorem coeff_list_prod_of_natDegree_le (l : List S[X]) (n : ℕ) (hl : ∀ p �
       rw [← tl.length_map natDegree, mul_comm]
       refine List.sum_le_card_nsmul _ _ ?_
       simpa using hl'
-    have hdn : natDegree hd ≤ n := hl _ (List.mem_cons_self _ _)
+    have hdn : natDegree hd ≤ n := hl _ List.mem_cons_self
     rcases hdn.eq_or_lt with (rfl | hdn')
     · rcases h.eq_or_lt with h' | h'
       · rw [← h', coeff_mul_degree_add_degree, leadingCoeff, leadingCoeff]

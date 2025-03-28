@@ -77,7 +77,7 @@ protected def elim : ∀ {l : List ι} (_ : TProd α l) {i : ι} (_ : i ∈ l), 
     else TProd.elim v.2 ((List.mem_cons.mp hj).resolve_left hji)
 
 @[simp]
-theorem elim_self (v : TProd α (i :: l)) : v.elim (l.mem_cons_self i) = v.1 := by simp [TProd.elim]
+theorem elim_self (v : TProd α (i :: l)) : v.elim mem_cons_self = v.1 := by simp [TProd.elim]
 
 @[simp]
 theorem elim_of_ne (hj : j ∈ i :: l) (hji : j ≠ i) (v : TProd α (i :: l)) :

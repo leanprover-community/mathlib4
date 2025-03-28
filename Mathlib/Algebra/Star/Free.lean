@@ -24,7 +24,7 @@ variable {α : Type*}
 instance : StarMul (FreeMonoid α) where
   star := List.reverse
   star_involutive := List.reverse_reverse
-  star_mul := List.reverse_append
+  star_mul := fun _ _ => List.reverse_append
 
 @[simp]
 theorem star_of (x : α) : star (of x) = of x :=

@@ -81,7 +81,7 @@ theorem dedup_eq_self {l : List α} : dedup l = l ↔ Nodup l :=
 theorem dedup_eq_cons (l : List α) (a : α) (l' : List α) :
     l.dedup = a :: l' ↔ a ∈ l ∧ a ∉ l' ∧ l.dedup.tail = l' := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · refine ⟨mem_dedup.1 (h.symm ▸ mem_cons_self _ _), fun ha => ?_, by rw [h, tail_cons]⟩
+  · refine ⟨mem_dedup.1 (h.symm ▸ mem_cons_self), fun ha => ?_, by rw [h, tail_cons]⟩
     have := count_pos_iff.2 ha
     have : count a l.dedup ≤ 1 := nodup_iff_count_le_one.1 (nodup_dedup l) a
     rw [h, count_cons_self] at this
@@ -123,7 +123,7 @@ theorem dedup_map_of_injective [DecidableEq β] {f : α → β} (hf : Function.I
   | cons x xs ih =>
     rw [map_cons]
     by_cases h : x ∈ xs
-    · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem f h), ih]
+    · rw [dedup_cons_of_mem h, dedup_cons_of_mem (mem_map_of_mem h), ih]
     · rw [dedup_cons_of_not_mem h, dedup_cons_of_not_mem <| (mem_map_of_injective hf).not.mpr h, ih,
         map_cons]
 

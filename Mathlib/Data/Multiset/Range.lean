@@ -32,7 +32,7 @@ theorem range_succ (n : ℕ) : range (succ n) = n ::ₘ range n := by
 
 @[simp]
 theorem card_range (n : ℕ) : card (range n) = n :=
-  length_range _
+  length_range
 
 theorem range_subset {m n : ℕ} : range m ⊆ range n ↔ m ≤ n :=
   List.range_subset
@@ -45,10 +45,10 @@ theorem not_mem_range_self {n : ℕ} : n ∉ range n :=
   List.not_mem_range_self
 
 theorem self_mem_range_succ (n : ℕ) : n ∈ range (n + 1) :=
-  List.self_mem_range_succ n
+  List.self_mem_range_succ
 
 theorem range_add (a b : ℕ) : range (a + b) = range a + (range b).map (a + ·) :=
-  congr_arg ((↑) : List ℕ → Multiset ℕ) (List.range_add _ _)
+  congr_arg ((↑) : List ℕ → Multiset ℕ) List.range_add
 
 theorem range_disjoint_map_add (a : ℕ) (m : Multiset ℕ) :
     Disjoint (range a) (m.map (a + ·)) := by
@@ -65,7 +65,7 @@ theorem range_add_eq_union (a b : ℕ) : range (a + b) = range a ∪ (range b).m
 section Nodup
 
 theorem nodup_range (n : ℕ) : Nodup (range n) :=
-  List.nodup_range _
+  List.nodup_range
 
 theorem range_le {m n : ℕ} : range m ≤ range n ↔ m ≤ n :=
   (le_iff_subset (nodup_range _)).trans range_subset

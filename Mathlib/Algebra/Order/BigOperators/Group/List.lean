@@ -117,7 +117,7 @@ lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
   induction' l with hd tl ih
   · rfl
   rw [prod_cons]
-  exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
+  exact one_le_mul (hl₁ hd mem_cons_self) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
 
 @[to_additive]
 lemma max_prod_le (l : List α) (f g : α → M) [LinearOrder M]

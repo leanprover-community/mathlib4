@@ -495,7 +495,7 @@ theorem mem_append_stream_right : ∀ {a : α} (l : List α) {s : Stream' α}, a
     mem_cons_of_mem _ ih
 
 theorem mem_append_stream_left : ∀ {a : α} {l : List α} (s : Stream' α), a ∈ l → a ∈ l ++ₛ s
-  | _, [], _, h => absurd h (List.not_mem_nil _)
+  | _, [], _, h => absurd h List.not_mem_nil
   | a, List.cons b l, s, h =>
     Or.elim (List.eq_or_mem_of_mem_cons h) (fun aeqb : a = b => Exists.intro 0 aeqb)
       fun ainl : a ∈ l => mem_cons_of_mem b (mem_append_stream_left s ainl)

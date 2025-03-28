@@ -99,26 +99,6 @@ lemma size_positive' [Nonempty (Fin n)] : 0 < n :=
 protected theorem prop (a : Fin n) : a.val < n :=
   a.2
 
-section Order
-variable {a b c : Fin n}
-
-protected lemma lt_of_le_of_lt : a ≤ b → b < c → a < c := Nat.lt_of_le_of_lt
-protected lemma lt_of_lt_of_le : a < b → b ≤ c → a < c := Nat.lt_of_lt_of_le
-protected lemma le_rfl : a ≤ a := Nat.le_refl _
-protected lemma lt_iff_le_and_ne : a < b ↔ a ≤ b ∧ a ≠ b := by
-  rw [← val_ne_iff]; exact Nat.lt_iff_le_and_ne
-protected lemma lt_or_lt_of_ne (h : a ≠ b) : a < b ∨ b < a := Nat.lt_or_lt_of_ne <| val_ne_iff.2 h
-protected lemma lt_or_le (a b : Fin n) : a < b ∨ b ≤ a := Nat.lt_or_ge _ _
-protected lemma le_or_lt (a b : Fin n) : a ≤ b ∨ b < a := (b.lt_or_le a).symm
-protected lemma le_of_eq (hab : a = b) : a ≤ b := Nat.le_of_eq <| congr_arg val hab
-protected lemma ge_of_eq (hab : a = b) : b ≤ a := Fin.le_of_eq hab.symm
-protected lemma eq_or_lt_of_le : a ≤ b → a = b ∨ a < b := by
-  rw [Fin.ext_iff]; exact Nat.eq_or_lt_of_le
-protected lemma lt_or_eq_of_le : a ≤ b → a < b ∨ a = b := by
-  rw [Fin.ext_iff]; exact Nat.lt_or_eq_of_le
-
-end Order
-
 lemma lt_last_iff_ne_last {a : Fin (n + 1)} : a < last n ↔ a ≠ last n := by
   simp [Fin.lt_iff_le_and_ne, le_last]
 

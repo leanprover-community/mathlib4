@@ -652,7 +652,7 @@ theorem tendsto_list_prod {f : ι → α → M} {x : Filter α} {a : ι → M} :
   | f::l, h => by
     simp only [List.map_cons, List.prod_cons]
     exact
-      (h f (List.mem_cons_self _ _)).mul
+      (h f List.mem_cons_self).mul
         (tendsto_list_prod l fun c hc => h c (List.mem_cons_of_mem _ hc))
 
 @[to_additive (attr := continuity)]

@@ -141,7 +141,7 @@ def map (f : α → β) : Language α →+* Language β where
   map_zero' := image_empty _
   map_one' := image_singleton
   map_add' := image_union _
-  map_mul' _ _ := image_image2_distrib <| map_append _
+  map_mul' _ _ := image_image2_distrib <| fun _ _ => map_append
 
 @[simp]
 theorem map_id (l : Language α) : map id l = l := by simp [map]

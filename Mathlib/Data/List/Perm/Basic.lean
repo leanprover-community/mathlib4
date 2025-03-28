@@ -66,9 +66,9 @@ theorem perm_insertIdx_iff {l₁ l₂ : List α} {n : ℕ} {a : α} :
   · rw [perm_comm, this (le_of_not_le hle), perm_comm]
   cases Nat.lt_or_ge (length l₁) n with
   | inl hn₁ =>
-    rw [insertIdx_of_length_lt _ _ _ hn₁]
+    rw [insertIdx_of_length_lt hn₁]
     cases Nat.lt_or_ge (length l₂) n with
-    | inl hn₂ => rw [insertIdx_of_length_lt _ _ _ hn₂]
+    | inl hn₂ => rw [insertIdx_of_length_lt hn₂]
     | inr hn₂ =>
       apply iff_of_false
       · intro h

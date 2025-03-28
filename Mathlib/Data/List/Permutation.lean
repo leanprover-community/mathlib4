@@ -194,7 +194,7 @@ theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List
   induction' L with l L ih
   · simp
   have sum_map : (map length L).sum = n * length L := ih fun l m => H l (mem_cons_of_mem _ m)
-  have length_l : length l = n := H _ (mem_cons_self _ _)
+  have length_l : length l = n := H _ mem_cons_self
   simp [sum_map, length_l, Nat.mul_add, Nat.add_comm, mul_succ]
 
 @[simp]
@@ -293,7 +293,7 @@ theorem mem_permutationsAux_of_perm :
   rcases IH1 _ (p.trans perm_middle) with (⟨is', p', e⟩ | m)
   · clear p
     subst e
-    rcases append_of_mem (p'.symm.subset (mem_cons_self _ _)) with ⟨l₁, l₂, e⟩
+    rcases append_of_mem (p'.symm.subset mem_cons_self) with ⟨l₁, l₂, e⟩
     subst is'
     have p := (perm_middle.symm.trans p').cons_inv
     rcases l₂ with - | ⟨a, l₂'⟩

@@ -426,7 +426,7 @@ theorem self_mem_periodicOrbit (hx : x ∈ periodicPts f) : x ∈ periodicOrbit 
   iterate_mem_periodicOrbit hx 0
 
 theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
-  rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on (List.nodup_range _)]
+  rw [periodicOrbit, Cycle.nodup_coe_iff, List.nodup_map_iff_inj_on List.nodup_range]
   intro m hm n hn hmn
   rw [List.mem_range] at hm hn
   rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn

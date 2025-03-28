@@ -476,7 +476,7 @@ section Fin
 
 @[simp]
 theorem Fintype.card_fin (n : ℕ) : Fintype.card (Fin n) = n :=
-  List.length_finRange n
+  List.length_finRange
 
 theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
     Fintype.card {i : Fin n // i < m} = m := by

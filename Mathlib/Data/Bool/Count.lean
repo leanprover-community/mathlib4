@@ -20,7 +20,7 @@ namespace List
 
 @[simp]
 theorem count_not_add_count (l : List Bool) (b : Bool) : count (!b) l + count b l = length l := by
-  have := length_eq_countP_add_countP (· == !b)
+  have := length_eq_countP_add_countP (l := l) (· == !b)
   aesop (add simp this)
 
 @[simp]

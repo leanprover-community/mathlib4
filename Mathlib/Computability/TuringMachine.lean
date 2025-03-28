@@ -662,7 +662,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   obtain ⟨T', hT', hrun⟩ := tr_respects_aux₂ (Λ := Λ) hT o
   have := hgo.tail' rfl
   rw [tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd,
-    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq (List.length_reverse _)),
+    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq List.length_reverse),
     Option.isNone, cond, hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
   refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).to_reflTransGen⟩

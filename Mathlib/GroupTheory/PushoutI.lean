@@ -504,20 +504,20 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
     | h_empty => exact h_empty
     | h_cons i g w h1 hg1 ih =>
       convert h_cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
-        h1 (h3 _ _ (List.mem_cons_self _ _)) ?_ rfl
+        h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
       · ext
         simp only [Word.cons, Option.mem_def, cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
         simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
           map_one, mul_one, mul_inv_cancel, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
       · rwa [← SetLike.mem_coe,
           ← coe_equiv_snd_eq_one_iff_mem (d.compl i) (d.one_mem _),
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
-          (h3 _ _ (List.mem_cons_self _ _))]
+          (h3 _ _ List.mem_cons_self)]
 
 
 theorem cons_eq_smul {i : ι} (g : G i)
@@ -627,7 +627,7 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
       ⟨w', hw'prod, hw'map⟩
     refine ⟨cons g w' ?_ ?_, ?_⟩
     · rwa [Word.fstIdx, ← List.head?_map, hw'map, List.head?_map]
-    · exact hw _ (List.mem_cons_self _ _)
+    · exact hw _ List.mem_cons_self
     · simp [hw'prod, hw'map]
 
 /-- For any word `w` in the coproduct,

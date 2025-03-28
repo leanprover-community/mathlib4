@@ -116,7 +116,7 @@ theorem disjoint_prod_right (l : List (Perm α)) (h : ∀ g ∈ l, Disjoint f g)
   induction' l with g l ih
   · exact disjoint_one_right _
   · rw [List.prod_cons]
-    exact (h _ (List.mem_cons_self _ _)).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
+    exact (h _ List.mem_cons_self).mul_right (ih fun g hg => h g (List.mem_cons_of_mem _ hg))
 
 theorem disjoint_noncommProd_right {ι : Type*} {k : ι → Perm α} {s : Finset ι}
     (hs : Set.Pairwise s fun i j ↦ Commute (k i) (k j))
