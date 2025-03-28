@@ -5,7 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.Algebra.Opposite
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.Group.Pointwise.Set.BigOperators
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Ring.NonZeroDivisors

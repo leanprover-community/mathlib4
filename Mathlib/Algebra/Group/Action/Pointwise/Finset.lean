@@ -5,7 +5,7 @@ Authors: Floris van Doorn, Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Action.Pointwise.Set.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 
 /-!
 # Pointwise actions of finsets

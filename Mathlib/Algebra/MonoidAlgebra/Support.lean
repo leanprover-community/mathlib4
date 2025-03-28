@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Embedding
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.LinearAlgebra.Finsupp.Supported
 

@@ -6,19 +6,14 @@ Authors: Johan Commelin, Floris van Doorn, Yaël Dillies
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
-# Pointwise operations of sets
+# Pointwise scalar operations of sets
 
-This file defines pointwise algebraic operations on sets.
+This file defines pointwise scalar-flavored algebraic operations on sets.
 
 ## Main declarations
 
 For sets `s` and `t` and scalar `a`:
-* `s * t`: Multiplication, set of all `x * y` where `x ∈ s` and `y ∈ t`.
-* `s + t`: Addition, set of all `x + y` where `x ∈ s` and `y ∈ t`.
-* `s⁻¹`: Inversion, set of all `x⁻¹` where `x ∈ s`.
-* `-s`: Negation, set of all `-x` where `x ∈ s`.
-* `s / t`: Division, set of all `x / y` where `x ∈ s` and `y ∈ t`.
-* `s - t`: Subtraction, set of all `x - y` where `x ∈ s` and `y ∈ t`.
+
 * `s • t`: Scalar multiplication, set of all `x • y` where `x ∈ s` and `y ∈ t`.
 * `s +ᵥ t`: Scalar addition, set of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
 * `s -ᵥ t`: Scalar subtraction, set of all `x -ᵥ y` where `x ∈ s` and `y ∈ t`.

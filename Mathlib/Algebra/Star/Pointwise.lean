@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Finite.Basic
 import Mathlib.Data.Set.Lattice.Image

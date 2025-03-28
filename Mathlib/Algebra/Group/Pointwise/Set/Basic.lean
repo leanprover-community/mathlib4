@@ -22,11 +22,6 @@ For sets `s` and `t` and scalar `a`:
 * `-s`: Negation, set of all `-x` where `x ∈ s`.
 * `s / t`: Division, set of all `x / y` where `x ∈ s` and `y ∈ t`.
 * `s - t`: Subtraction, set of all `x - y` where `x ∈ s` and `y ∈ t`.
-* `s • t`: Scalar multiplication, set of all `x • y` where `x ∈ s` and `y ∈ t`.
-* `s +ᵥ t`: Scalar addition, set of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `s -ᵥ t`: Scalar subtraction, set of all `x -ᵥ y` where `x ∈ s` and `y ∈ t`.
-* `a • s`: Scaling, set of all `a • x` where `x ∈ s`.
-* `a +ᵥ s`: Translation, set of all `a +ᵥ x` where `x ∈ s`.
 
 For `α` a semigroup/monoid, `Set α` is a semigroup/monoid.
 As an unfortunate side effect, this means that `n • s`, where `n : ℕ`, is ambiguous between

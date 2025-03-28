@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
