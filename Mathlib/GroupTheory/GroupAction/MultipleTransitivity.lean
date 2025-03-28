@@ -4,14 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.Algebra.Group.Defs
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.GroupTheory.GroupAction.Hom
-
-import Mathlib.GroupTheory.GroupAction.Transitive
-import Mathlib.GroupTheory.GroupAction.Primitive
-import Mathlib.GroupTheory.Index
 import Mathlib.GroupTheory.GroupAction.Embedding
+import Mathlib.GroupTheory.GroupAction.Primitive
+import Mathlib.GroupTheory.GroupAction.Transitive
 
 /-! # Multiple transitivity
 
@@ -32,8 +27,8 @@ An action is 2-pretransitive if for any `a`, `b`, `c`, `d`, such that
 A 2-transitive action is preprimitive
 
 * `MulAction.isMultiplyPretransitive_of_le` :
-If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`.
-
+If an action is `n`-pretransitive, then it is `m`-pretransitive for all `m ≤ n`,
+provided `α` has at least `n` elements.
 
 ## Remarks on implementation
 
@@ -165,16 +160,19 @@ def _root_.MulActionHom.oneEmbeddingMap {one : Type*} [Unique one] :
   oneEmbeddingEquiv with
   map_smul' _ _ := rfl }
 
-theorem oneEmbeddingMap_bijective {one : Type*} [Unique one] :
+@[to_additive]
+theorem _root_.MulActionHom.oneEmbeddingMap_bijective {one : Type*} [Unique one] :
     Function.Bijective (oneEmbeddingMap (one := one) (G := G) (α := α)) :=
   oneEmbeddingEquiv.bijective
 
 /-- An action is 1-pretransitive iff it is pretransitive -/
+@[to_additive]
 theorem oneEmbedding_isPretransitive_iff {one : Type*} [Unique one] :
     IsPretransitive G (one ↪ α) ↔ IsPretransitive G α :=
   isPretransitive_congr Function.surjective_id oneEmbeddingMap_bijective
 
 /-- An action is 1-pretransitive iff it is pretransitive -/
+@[to_additive]
 theorem is_one_pretransitive_iff :
     IsMultiplyPretransitive G α 1 ↔ IsPretransitive G α :=
   oneEmbedding_isPretransitive_iff
@@ -187,7 +185,7 @@ section Two
 lemma _root_.Fin.eq_zero_or_one : ∀ (i : Fin 2), i = 0 ∨ i = 1 := by decide
 
 /-- Two distinct elements of `α` give an embedding `Fin 2 ↪ α` -/
-def embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α where
+def _root_.Function.Embedding.embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α where
   toFun
     | 0 => a
     | 1 => b
@@ -200,20 +198,14 @@ def embFinTwo {a b: α} (h : a ≠ b) : Fin 2 ↪ α where
       · simp [hi, hj] at hij; exact False.elim (h hij.symm)
       · rw [hi, hj]
 
-theorem embFinTwo_apply_zero {a b : α} (h : a ≠ b) : embFinTwo h 0 = a := rfl
+theorem _root_.Function.Embedding.embFinTwo_apply_zero
+    {a b : α} (h : a ≠ b) : embFinTwo h 0 = a := rfl
 
-theorem embFinTwo_apply_one {a b : α} (h : a ≠ b) : embFinTwo h 1 = b := rfl
-
-def embFinTwoEquiv : (Σ' a b : α, (a ≠ b)) ≃ (Fin 2 ↪ α) where
-  toFun t := embFinTwo t.2.2
-  invFun j := ⟨j 0, j 1, j.injective.ne_iff.mpr Fin.zero_ne_one⟩
-  left_inv t := rfl
-  right_inv j := by
-    ext i
-    simp [embFinTwo]
-    rcases i.eq_zero_or_one with hi | hi <;> rw [hi]
+theorem _root_.Function.Embedding.embFinTwo_apply_one
+    {a b : α} (h : a ≠ b) : embFinTwo h 1 = b := rfl
 
 /-- An action is 2-pretransitive iff it is two_pretransitive… -/
+@[to_additive]
 theorem is_two_pretransitive_iff :
     IsMultiplyPretransitive G α 2 ↔
       ∀ {a b c d : α} (_ : a ≠ b) (_ : c ≠ d), ∃ g : G, g • a = c ∧ g • b = d := by
@@ -233,6 +225,7 @@ theorem is_two_pretransitive_iff :
         rcases i.eq_zero_or_one with hi | hi <;> simp only [hi, smul_apply, h, h'] }
 
 /-- A 2-pretransitive action is pretransitive -/
+@[to_additive]
 theorem isPretransitive_of_is_two_pretransitive
     [h2 : IsMultiplyPretransitive G α 2] : IsPretransitive G α where
   exists_smul_eq a b := by
@@ -243,6 +236,7 @@ theorem isPretransitive_of_is_two_pretransitive
       exact ⟨g, h⟩
 
 /-- A 2-transitive action is primitive -/
+@[to_additive]
 theorem isPreprimitive_of_is_two_pretransitive
     (h2 : IsMultiplyPretransitive G α 2) : IsPreprimitive G α := by
   have : IsPretransitive G α := isPretransitive_of_is_two_pretransitive
@@ -267,23 +261,29 @@ end Two
 
 section Higher
 
+/-- The natural equivariant map from `n ↪ α` to `m ↪ α` given by an embedding
+`e : m ↪ n`. -/
+@[to_additive]
 def embMap {m n : Type*} (e : m ↪ n) : (n ↪ α) →[G]  (m ↪ α) where
   toFun i := e.trans i
   map_smul' _ _ := rfl
 
-/- This theorem is true for infinite α if one uses `ENat.card` -/
-theorem giveMeAName {m n : ℕ} [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card α) :
+theorem _root_.Function.Embedding.giveMeAName'
+    {m n : ℕ} (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
     Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) := by
   intro x
   classical
-  have : Fintype α := Fintype.ofFinite α
   have : Nonempty (Fin (n - m) ↪ ((Set.range x)ᶜ : Set α)) := by
-    classical
-    apply Function.Embedding.nonempty_of_card_le
-    rw [Fintype.card_fin, ← card_eq_fintype_card, Set.Nat.card_coe_set_eq, ← add_le_add_iff_left,
-      ncard_add_ncard_compl, ← Set.Nat.card_coe_set_eq, Nat.card_range_of_injective x.injective,
-      card_eq_fintype_card, Fintype.card_fin, Nat.add_sub_of_le hmn]
-    exact hn
+    rcases finite_or_infinite α with hα | hα
+    · have : Fintype α := Fintype.ofFinite α
+      classical
+      apply Function.Embedding.nonempty_of_card_le
+      rw [Fintype.card_fin, ← card_eq_fintype_card, Set.Nat.card_coe_set_eq,
+        ← add_le_add_iff_left, ncard_add_ncard_compl, ← Set.Nat.card_coe_set_eq,
+        Nat.card_range_of_injective x.injective, card_eq_fintype_card,
+        Fintype.card_fin, Nat.add_sub_of_le hmn, ← ENat.coe_le_coe]
+      exact le_trans hn (by simp)
+    · exact ⟨valEmbedding.trans (finite_range x).infinite_compl.to_subtype.natEmbedding⟩
   obtain ⟨y⟩ := this
   let z (i : Fin n) : α := if hi : i < m then x ⟨i, hi⟩ else y ⟨i -m, by
     simp only [not_lt] at hi
@@ -311,8 +311,31 @@ theorem giveMeAName {m n : ℕ} [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card
   ext i
   simp [z, dif_pos i.prop]
 
+theorem _root_.Function.Embedding.giveMeAName
+    {m n : ℕ} [Finite α] (hmn : m ≤ n) (hn : n ≤ Nat.card α) :
+    Function.Surjective (fun x : Fin n ↪ α ↦ (Fin.castLEEmb hmn).trans x) :=
+  giveMeAName' hmn (by rwa [← ENat.coe_le_coe, ← ENat.card_eq_coe_natCard α] at hn)
+
+/-- If `α` has at least n elements, then any n-pretransitive action on `α`
+is m-pretransitive for any m ≤ n.
+
+This version authorizes `α` to be infinite and uses `ENat.card`.
+For `Finite α`, use `MulAction.isMultiplyPretransitive_of_le` -/
+@[to_additive
+"If `α` has at least n elements, then any n-pretransitive action on `α`
+is m-pretransitive for any m ≤ n.
+
+This version authorizes `α` to be infinite and uses `ENat.card`.
+For `Finite α`, use `AddAction.isMultiplyPretransitive_of_le`."]
+theorem isMultiplyPretransitive_of_le' {m n : ℕ} [IsMultiplyPretransitive G α n]
+    (hmn : m ≤ n) (hα : n ≤ ENat.card α) :
+    IsMultiplyPretransitive G α m :=
+  IsPretransitive.of_surjective_map (f := embMap (castLEEmb hmn))
+    (giveMeAName' hmn hα) inferInstance
+
 /-- An n-pretransitive action is m-pretransitive for any m ≤ n -/
-theorem isMultiplyPretransitive_of_higher {m n : ℕ} [IsMultiplyPretransitive G α n]
+@[to_additive]
+theorem isMultiplyPretransitive_of_le {m n : ℕ} [IsMultiplyPretransitive G α n]
     (hmn : m ≤ n) (hα : n ≤ Nat.card α) [Finite α] :
     IsMultiplyPretransitive G α m :=
   IsPretransitive.of_surjective_map (f := embMap (castLEEmb hmn)) (giveMeAName hmn hα) inferInstance
