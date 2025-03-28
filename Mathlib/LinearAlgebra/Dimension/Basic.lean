@@ -94,7 +94,7 @@ theorem cardinal_le_rank' {s : Set M}
 
 theorem _root_.LinearIndepOn.encard_le_toENat_rank {ι : Type*} {v : ι → M} {s : Set ι}
     (hs : LinearIndepOn R v s) : s.encard ≤ (Module.rank R M).toENat := by
-  simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat <| hs.linearIndependent.cardinal_lift_le_rank
+  simpa using OrderHom.mono (β := ℕ∞) Cardinal.toENat hs.linearIndependent.cardinal_lift_le_rank
 
 end LinearIndependent
 
