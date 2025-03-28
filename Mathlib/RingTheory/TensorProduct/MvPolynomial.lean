@@ -163,7 +163,7 @@ lemma rTensorAlgHom_toLinearMap :
     LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
   rw [coeff_rTensorAlgHom_tmul]
   simp only [coeff]
-  erw [finsuppLeft_apply_tmul_apply]
+  exact (finsuppLeft_apply_tmul_apply _ _ _).symm
 
 lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
     rTensorAlgHom (S := S) p = rTensor p := by
