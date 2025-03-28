@@ -318,21 +318,41 @@ theorem mul_div_mul_comm_of_dvd_dvd {a b c d : R} (hac : c ∣ a) (hbd : d ∣ b
   rw [mul_div_cancel_left₀ _ hc0, mul_div_cancel_left₀ _ hd0, mul_mul_mul_comm,
     mul_div_cancel_left₀ _ (mul_ne_zero hc0 hd0)]
 
-theorem div_add_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : x / y + z = (x + y * z) / y := by
+theorem add_mul_div_left (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x + y * z) / y = x / y + z := by
+  rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
   rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
 
-theorem div_sub_of_dvd (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : x / y - z = (x - y * z) / y := by
+theorem add_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x + z * y) / y = x / y + z := by
+  rw [mul_comm z y]
+  exact add_mul_div_left _ _ _ h1 h2
+
+theorem sub_mul_div_left (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x - y * z) / y = x / y - z := by
+  rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
   rw [mul_sub, EuclideanDomain.mul_div_cancel' h1 h2]
 
-theorem add_div_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : x + y / z = (z * x + y) / z := by
+theorem sub_mul_div_right (x y z : R) (h1 : y ≠ 0) (h2 : y ∣ x) : (x - z * y) / y = x / y - z := by
+  rw [mul_comm z y]
+  exact sub_mul_div_left _ _ _ h1 h2
+
+theorem mul_add_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x + y) / z = x + y / z  := by
+  rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
   rw [mul_add, EuclideanDomain.mul_div_cancel' h1 h2]
 
-theorem sub_div_of_dvd (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : x - y / z = (z * x - y) / z := by
+theorem mul_add_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z + y) / z = x + y / z := by
+  rw [mul_comm x z]
+  exact mul_add_div_left _  _  _  h1 h2
+
+theorem mul_sub_div_left (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (z * x - y) / z = x - y / z := by
+  rw [eq_comm]
   apply eq_div_of_mul_eq_right h1
   rw [mul_sub, EuclideanDomain.mul_div_cancel' h1 h2]
+
+theorem mul_sub_div_right (x y z : R) (h1 : z ≠ 0) (h2 : z ∣ y) : (x * z - y) / z = x - y / z := by
+  rw [mul_comm x z]
+  exact mul_sub_div_left _ _ _ h1 h2
 
 theorem div_mul {x y z : R} (h1 : y ∣ x) (h2 : y * z ∣ x) :
     x / (y * z) = x / y / z := by
@@ -374,9 +394,9 @@ theorem div_eq_div_iff_mul_eq_mul_of_dvd {x y z t : R} (h1 : y ≠ 0) (h2 : t �
     (h3 : y ∣ x) (h4 : t ∣ z) : x / y = z / t ↔ t * x = y * z := by
   rw [div_eq_iff_eq_mul_of_dvd _  _ _ h1 h3, ← mul_div_assoc _ h4,
     eq_div_iff_mul_eq_of_dvd _ _ _ h2]
-  · obtain ⟨a, ha⟩ := h4
-    use y * a
-    rw [ha, mul_comm, mul_assoc, mul_comm y a]
+  obtain ⟨a, ha⟩ := h4
+  use y * a
+  rw [ha, mul_comm, mul_assoc, mul_comm y a]
 
 end Div
 
