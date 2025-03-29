@@ -601,3 +601,22 @@ lemma _root_.IsCompact.reProdIm {s t : Set ℝ} (hs : IsCompact s) (ht : IsCompa
   equivRealProdCLM.toHomeomorph.isCompact_preimage.2 (hs.prod ht)
 
 end Complex
+
+section realPart_imaginaryPart
+
+variable {A : Type*} [SeminormedAddCommGroup A] [StarAddMonoid A] [NormedSpace ℂ A] [StarModule ℂ A]
+  [NormedStarGroup A]
+
+lemma realPart.norm_le (x : A) : ‖realPart x‖ ≤ ‖x‖ := by
+  rw [← inv_mul_cancel_left₀ two_ne_zero ‖x‖, ← AddSubgroup.norm_coe, realPart_apply_coe,
+    norm_smul, norm_inv, Real.norm_ofNat]
+  gcongr
+  exact norm_add_le _ _ |>.trans <| by simp [two_mul]
+
+lemma imaginaryPart.norm_le (x : A) : ‖imaginaryPart x‖ ≤ ‖x‖ := by
+  calc ‖imaginaryPart x‖ = ‖realPart (Complex.I • (-x))‖ := by simp
+    _ ≤ ‖x‖ := by simpa only [smul_neg, map_neg, realPart_I_smul, neg_neg,
+        AddSubgroupClass.coe_norm, norm_neg, norm_smul, Complex.norm_I, one_mul] using
+        realPart.norm_le (Complex.I • (-x))
+
+end realPart_imaginaryPart
