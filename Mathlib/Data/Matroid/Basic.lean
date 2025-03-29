@@ -472,10 +472,21 @@ theorem not_rankFinite (M : Matroid α) [RankInfinite M] : ¬ RankFinite M := by
 theorem not_rankInfinite (M : Matroid α) [RankFinite M] : ¬ RankInfinite M := by
   intro h; obtain ⟨B,hB⟩ := M.exists_isBase; exact hB.infinite hB.finite
 
-theorem finite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
+theorem rankFinite_or_rankInfinite (M : Matroid α) : RankFinite M ∨ RankInfinite M :=
   let ⟨B, hB⟩ := M.exists_isBase
   B.finite_or_infinite.elim
   (Or.inl ∘ hB.rankFinite_of_finite) (Or.inr ∘ hB.rankInfinite_of_infinite)
+
+@[deprecated (since := "2025-03-27")] alias finite_or_rankInfinite := rankFinite_or_rankInfinite
+
+@[simp]
+theorem not_rankFinite_iff (M : Matroid α) : ¬ RankFinite M ↔ RankInfinite M :=
+  M.rankFinite_or_rankInfinite.elim (fun h ↦ iff_of_false (by simpa) M.not_rankInfinite)
+    fun h ↦ iff_of_true M.not_rankFinite h
+
+@[simp]
+theorem not_rankInfinite_iff (M : Matroid α) : ¬ RankInfinite M ↔ RankFinite M := by
+  rw [← not_rankFinite_iff, not_not]
 
 theorem IsBase.diff_finite_comm (hB₁ : M.IsBase B₁) (hB₂ : M.IsBase B₂) :
     (B₁ \ B₂).Finite ↔ (B₂ \ B₁).Finite :=
