@@ -254,10 +254,10 @@ lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f)
   let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
     (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
   refine IsBaseChange.of_equiv e (fun x ↦ ?_)
-  induction' x with m p _ _ h1 h2
-  · simp
-  · simp [e, IsBaseChange.equiv_tmul]
-  · simp [tmul_add, h1, h2]
+  induction x with
+  | zero => simp
+  | tmul => simp [e, IsBaseChange.equiv_tmul]
+  | add _ _ h1 h2 => simp [tmul_add, h1, h2]
 
 end
 

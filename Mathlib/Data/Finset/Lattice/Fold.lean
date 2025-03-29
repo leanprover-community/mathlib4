@@ -192,10 +192,12 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
     (hs : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s) (t : Finset α) :
     (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
-    induction' t using Finset.induction_on with a r _ ih h
-    · simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
+    induction t using Finset.induction_on with
+    | empty =>
+      simpa only [forall_prop_of_true, and_true, forall_prop_of_false, bot_le, not_false_iff,
         sup_empty, forall_true_iff, not_mem_empty]
-    · intro h
+    | @insert a r _ ih =>
+      intro h
       have incs : (r : Set α) ⊆ ↑(insert a r) := by
         rw [Finset.coe_subset]
         apply Finset.subset_insert

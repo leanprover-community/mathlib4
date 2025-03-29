@@ -66,9 +66,10 @@ theorem εClosure_univ : M.εClosure univ = univ :=
 
 theorem mem_εClosure_iff_exists : s ∈ M.εClosure S ↔ ∃ t ∈ S, s ∈ M.εClosure {t} where
   mp h := by
-    induction' h with s _ _ _ _ _ ih
-    · tauto
-    · obtain ⟨s, _, _⟩ := ih
+    induction h with
+    | base => tauto
+    | step _ _ _ _ ih =>
+      obtain ⟨s, _, _⟩ := ih
       use s
       solve_by_elim [εClosure.step]
   mpr := by
@@ -183,11 +184,13 @@ theorem isPath_append {x y : List (Option α)} :
 theorem mem_εClosure_iff_exists_path {s₁ s₂ : σ} :
     s₂ ∈ M.εClosure {s₁} ↔ ∃ n, M.IsPath s₁ s₂ (.replicate n none) where
   mp h := by
-    induction' h with t _ _ _ _ _ ih
-    · use 0
+    induction h with
+    | base t =>
+      use 0
       subst t
       apply IsPath.nil
-    · obtain ⟨n, _⟩ := ih
+    | step _ _ _ _ ih =>
+      obtain ⟨n, _⟩ := ih
       use n + 1
       rw [List.replicate_add, isPath_append]
       tauto

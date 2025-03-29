@@ -247,11 +247,13 @@ instance : Group (CoprodI G) :=
 theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by
   rintro _ ⟨x, rfl⟩
-  induction' x using CoprodI.induction_on with i x x y hx hy
-  · exact s.one_mem
-  · simp only [lift_of, SetLike.mem_coe]
+  induction x using CoprodI.induction_on with
+  | one => exact s.one_mem
+  | of i x =>
+    simp only [lift_of, SetLike.mem_coe]
     exact h i (Set.mem_range_self x)
-  · simp only [map_mul, SetLike.mem_coe]
+  | mul x y hx hy =>
+    simp only [map_mul, SetLike.mem_coe]
     exact s.mul_mem hx hy
 
 theorem range_eq_iSup {N} [Group N] (f : ∀ i, G i →* N) : (lift f).range = ⨆ i, (f i).range := by
@@ -824,9 +826,10 @@ include hpp
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
     lift f w.prod • X k ⊆ X i := by
-  induction' w with i x hne_one i j k l w₁ hne w₂ hIw₁ hIw₂ generalizing k
-  · simpa using hpp hk _ hne_one
-  · calc
+  induction w generalizing k with
+  | singleton x hne_one => simpa using hpp hk _ hne_one
+  | @append i j k l w₁ hne w₂ hIw₁ hIw₂ =>
+    calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
         simp [MulAction.mul_smul]
       _ ⊆ lift f w₁.prod • X _ := smul_set_subset_smul_set_iff.mpr (hIw₂ hk)

@@ -202,9 +202,9 @@ def constantsVarsEquiv : L[[γ]].Term α ≃ L.Term (γ ⊕ α) :=
         · simp [constantsToVars, varsToConstants, ih]
         · exact isEmptyElim f, by
     intro t
-    induction' t with x n f _ ih
-    · cases x <;> rfl
-    · cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
+    induction t with
+    | var x => cases x <;> rfl
+    | @func n f _ ih => cases n <;> · simp [varsToConstants, constantsToVars, ih]⟩
 
 /-- A bijection between terms with constants and terms with extra variables. -/
 def constantsVarsEquivLeft : L[[γ]].Term (α ⊕ β) ≃ L.Term ((γ ⊕ α) ⊕ β) :=
