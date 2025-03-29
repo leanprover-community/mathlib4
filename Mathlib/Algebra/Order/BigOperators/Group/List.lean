@@ -24,9 +24,9 @@ variable [Monoid M]
 lemma Forall₂.prod_le_prod' [Preorder M] [MulRightMono M]
     [MulLeftMono M] {l₁ l₂ : List M} (h : Forall₂ (· ≤ ·) l₁ l₂) :
     l₁.prod ≤ l₂.prod := by
-  induction' h with a b la lb hab ih ih'
-  · rfl
-  · simpa only [prod_cons] using mul_le_mul' hab ih'
+  induction h with
+  | nil => rfl
+  | cons hab ih ih' => simpa only [prod_cons] using mul_le_mul' hab ih'
 
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are greater than or equal to one, then
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
@@ -66,13 +66,14 @@ lemma prod_lt_prod' [Preorder M] [MulLeftStrictMono M]
     [MulLeftMono M] [MulRightStrictMono M]
     [MulRightMono M] {l : List ι} (f g : ι → M)
     (h₁ : ∀ i ∈ l, f i ≤ g i) (h₂ : ∃ i ∈ l, f i < g i) : (l.map f).prod < (l.map g).prod := by
-  induction' l with i l ihl
-  · rcases h₂ with ⟨_, ⟨⟩, _⟩
-  simp only [forall_mem_cons, map_cons, prod_cons] at h₁ ⊢
-  simp only [mem_cons, exists_eq_or_imp] at h₂
-  cases h₂
-  · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod' h₁.2)
-  · exact mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 ‹_›
+  induction l with
+  | nil => simp_all
+  | cons i l ihl =>
+    simp only [forall_mem_cons, map_cons, prod_cons] at h₁ ⊢
+    simp only [mem_cons, exists_eq_or_imp] at h₂
+    cases h₂
+    · exact mul_lt_mul_of_lt_of_le ‹_› (prod_le_prod' h₁.2)
+    · exact mul_lt_mul_of_le_of_lt h₁.1 <| ihl h₁.2 ‹_›
 
 @[to_additive]
 lemma prod_lt_prod_of_ne_nil [Preorder M] [MulLeftStrictMono M]
@@ -114,8 +115,9 @@ lemma one_le_prod_of_one_le [Preorder M] [MulLeftMono M] {l : List M}
     (hl₁ : ∀ x ∈ l, (1 : M) ≤ x) : 1 ≤ l.prod := by
   -- We don't use `pow_card_le_prod` to avoid assumption
   -- [covariant_class M M (function.swap (*)) (≤)]
-  induction' l with hd tl ih
-  · rfl
+  induction l with
+  | nil => rfl
+  | cons hd tl ih => ?_
   rw [prod_cons]
   exact one_le_mul (hl₁ hd (mem_cons_self hd tl)) (ih fun x h => hl₁ x (mem_cons_of_mem hd h))
 
@@ -142,8 +144,9 @@ end Monoid
 -- TODO: develop theory of tropical rings
 lemma sum_le_foldr_max [AddMonoid M] [AddMonoid N] [LinearOrder N] (f : M → N) (h0 : f 0 ≤ 0)
     (hadd : ∀ x y, f (x + y) ≤ max (f x) (f y)) (l : List M) : f l.sum ≤ (l.map f).foldr max 0 := by
-  induction' l with hd tl IH
-  · simpa using h0
+  induction l with
+  | nil => simpa using h0
+  | cons hd tl IH => ?_
   simp only [List.sum_cons, List.foldr_map, List.foldr] at IH ⊢
   exact (hadd _ _).trans (max_le_max le_rfl IH)
 

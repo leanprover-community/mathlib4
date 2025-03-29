@@ -154,10 +154,12 @@ protected theorem Nodup.pi {s : Multiset α} {t : ∀ a, Multiset (β a)} :
 theorem mem_pi (m : Multiset α) (t : ∀ a, Multiset (β a)) :
     ∀ f : ∀ a ∈ m, β a, f ∈ pi m t ↔ ∀ (a) (h : a ∈ m), f a h ∈ t a := by
   intro f
-  induction' m using Multiset.induction_on with a m ih
-  · have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
+  induction m using Multiset.induction_on with
+  | empty =>
+    have : f = Pi.empty β := funext (fun _ => funext fun h => (not_mem_zero _ h).elim)
     simp only [this, pi_zero, mem_singleton, true_iff]
     intro _ h; exact (not_mem_zero _ h).elim
+  | cons a m ih => ?_
   simp_rw [pi_cons, mem_bind, mem_map, ih]
   constructor
   · rintro ⟨b, hb, f', hf', rfl⟩ a' ha'

@@ -44,9 +44,10 @@ theorem mem_product {l₁ : List α} {l₂ : List β} {a : α} {b : β} :
 
 theorem length_product (l₁ : List α) (l₂ : List β) :
     length (l₁ ×ˢ l₂) = length l₁ * length l₂ := by
-  induction' l₁ with x l₁ IH
-  · exact (Nat.zero_mul _).symm
-  · simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
+  induction l₁ with
+  | nil => exact (Nat.zero_mul _).symm
+  | cons x l₁ IH =>
+    simp only [length, product_cons, length_append, IH, Nat.add_mul, Nat.one_mul, length_map,
       Nat.add_comm]
 
 /-! ### sigma -/
@@ -79,18 +80,19 @@ set_option linter.deprecated false in
 @[deprecated "Use `List.length_sigma`." (since := "2024-10-17")]
 theorem length_sigma' (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
     length (l₁.sigma l₂) = Nat.sum (l₁.map fun a ↦ length (l₂ a)) := by
-  induction' l₁ with x l₁ IH
-  · rfl
-  · simp only [map, sigma_cons, length_append, length_map, IH, Nat.sum_cons]
+  induction l₁ with
+  | nil => rfl
+  | cons x l₁ IH => simp only [map, sigma_cons, length_append, length_map, IH, Nat.sum_cons]
 
 /-! ### Miscellaneous lemmas -/
 
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
-  induction' xs with x xs xs_ih
-  · simp only [not_mem_nil, map_nil]
-  · obtain ⟨a, b⟩ := x
+  induction xs with
+  | nil => simp only [not_mem_nil, map_nil]
+  | cons x xs xs_ih =>
+    obtain ⟨a, b⟩ := x
     simp only [mem_cons, Prod.mk_inj, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 end List

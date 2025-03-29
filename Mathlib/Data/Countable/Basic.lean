@@ -142,9 +142,10 @@ instance [Countable α] [∀ a, Countable (π a)] : Countable (PSigma π) :=
 instance [Finite α] [∀ a, Countable (π a)] : Countable (∀ a, π a) := by
   have : ∀ n, Countable (Fin n → ℕ) := by
     intro n
-    induction' n with n ihn
-    · change Countable (Fin 0 → ℕ); infer_instance
-    · haveI := ihn
+    induction n with
+    | zero => change Countable (Fin 0 → ℕ); infer_instance
+    | succ n ihn =>
+      haveI := ihn
       exact Countable.of_equiv (ℕ × (Fin n → ℕ)) (Fin.consEquiv fun _ ↦ ℕ)
   rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
   have f := fun a => (nonempty_embedding_nat (π a)).some

@@ -573,15 +573,17 @@ theorem prod_pow_prime_padicValNat (n : Nat) (hn : n ≠ 0) (m : Nat) (pr : n < 
 /-- Exactly `n / p` naturals in `[1, n]` are multiples of `p`.
 See `Nat.card_multiples'` for an alternative spelling of the statement. -/
 theorem card_multiples (n p : ℕ) : #{e ∈ range n | p ∣ e + 1} = n / p := by
-  induction' n with n hn
-  · simp
+  induction n with
+  | zero => simp
+  | succ n hn => ?_
   simp [Nat.succ_div, add_ite, add_zero, Finset.range_succ, filter_insert, apply_ite card,
     card_insert_of_not_mem, hn]
 
 /-- Exactly `n / p` naturals in `(0, n]` are multiples of `p`. -/
 theorem Ioc_filter_dvd_card_eq_div (n p : ℕ) : #{x ∈ Ioc 0 n | p ∣ x} = n / p := by
-  induction' n with n IH
-  · simp
+  induction n with
+  | zero => simp
+  | succ n IH => ?_
   -- TODO: Golf away `h1` after Yaël PRs a lemma asserting this
   have h1 : Ioc 0 n.succ = insert n.succ (Ioc 0 n) := by
     rcases n.eq_zero_or_pos with (rfl | hn)

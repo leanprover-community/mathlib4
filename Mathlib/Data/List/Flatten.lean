@@ -118,8 +118,9 @@ theorem drop_sum_flatten' (L : List (List α)) (i : ℕ) :
 left with a list of length `1` made of the `i`-th element of the original list. -/
 theorem drop_take_succ_eq_cons_getElem (L : List α) (i : Nat) (h : i < L.length) :
     (L.take (i + 1)).drop i = [L[i]] := by
-  induction' L with head tail ih generalizing i
-  · exact (Nat.not_succ_le_zero i h).elim
+  induction L generalizing i with
+  | nil => exact (Nat.not_succ_le_zero i h).elim
+  | cons head tail ih => ?_
   rcases i with _ | i
   · simp
   · simpa using ih _ (by simpa using h)

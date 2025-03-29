@@ -424,9 +424,9 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
   -- check that at the `n`-th step we deal with cylinders of length `n`
   have pn_fst : ∀ n, (p n).1.1 = n := by
     intro n
-    induction' n with n IH
-    · rfl
-    · simp only [prec, hFn, IH]
+    induction n with
+    | zero => rfl
+    | succ n IH => simp only [prec, hFn, IH]
   -- check that the cylinders we construct are indeed decreasing, by checking that the coordinates
   -- are stationary.
   have Ix : ∀ m n, m + 1 ≤ n → (p n).1.2.1 m = (p (m + 1)).1.2.1 m := by

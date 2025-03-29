@@ -64,8 +64,9 @@ theorem bitIndices_bit_false (n : ℕ) :
 
 @[simp] theorem bitIndices_two_pow_mul (k n : ℕ) :
     bitIndices (2^k * n) = (bitIndices n).map (· + k) := by
-  induction' k with k ih
-  · simp
+  induction k with
+  | zero => simp
+  | succ k ih => ?_
   rw [add_comm, pow_add, pow_one, mul_assoc, bitIndices_two_mul, ih, List.map_map, comp_add_right]
   simp [add_comm (a := 1)]
 
