@@ -398,7 +398,7 @@ theorem mem_submoduleImage_of_le {M' : Type*} [AddCommMonoid M'] [Module R M'] {
   · rintro ⟨y, yN, h⟩
     exact ⟨y, hNO yN, yN, h⟩
 
-theorem submoduleImage_apply_of_le {M' : Type*} [AddCommGroup M'] [Module R M']
+theorem submoduleImage_apply_of_le {M' : Type*} [AddCommMonoid M'] [Module R M']
     {O : Submodule R M} (ϕ : O →ₗ[R] M') (N : Submodule R M) (hNO : N ≤ O) :
     ϕ.submoduleImage N = range (ϕ.comp (Submodule.inclusion hNO)) := by
   rw [submoduleImage, range_comp, Submodule.range_inclusion]
