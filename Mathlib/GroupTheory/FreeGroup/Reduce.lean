@@ -214,6 +214,17 @@ theorem reduce_toWord : ∀ x : FreeGroup α, reduce (toWord x) = toWord x := by
 theorem toWord_one : (1 : FreeGroup α).toWord = [] :=
   rfl
 
+@[to_additive]
+theorem toWord_mul (x y : FreeGroup α) : toWord (x * y) = reduce (toWord x ++ toWord y) := by
+  rw [← mk_toWord (x := x), ← mk_toWord (x:= y), mul_mk]
+  simp
+
+@[to_additive]
+theorem toWord_pow (x : FreeGroup α) (n : ℕ) :
+    toWord (x^n) = reduce (List.replicate n x.toWord).flatten := by
+  rw [← mk_toWord (x := x), pow_mk]
+  simp
+
 @[to_additive (attr := simp)]
 theorem toWord_of_pow (a : α) (n : ℕ) : (of a ^ n).toWord = List.replicate n (a, true) := by
   rw [of, pow_mk, List.flatten_replicate_singleton, toWord]
@@ -235,6 +246,19 @@ theorem reduce_invRev {w : List (α × Bool)} : reduce (invRev w) = invRev (redu
 theorem toWord_inv (x : FreeGroup α) : x⁻¹.toWord = invRev x.toWord := by
   rcases x with ⟨L⟩
   rw [quot_mk_eq_mk, inv_mk, toWord_mk, toWord_mk, reduce_invRev]
+
+@[to_additive]
+theorem reduce_append : (reduce (L₁ ++ L₂)) = reduce (reduce L₁ ++ reduce L₂) := by
+  rw [← toWord_mk, ← mul_mk, toWord_mul, toWord_mk, toWord_mk]
+
+@[to_additive]
+theorem reduce_cons (a : α × Bool) (w : List (α × Bool)) :
+    FreeGroup.reduce (a :: w) = FreeGroup.reduce (a :: FreeGroup.reduce w) := by
+  simp only [FreeGroup.reduce.cons, FreeGroup.reduce.idem]
+
+@[to_additive]
+theorem reduce_invRev_left_cancel (L : List (α × Bool)) : reduce (invRev L ++ L) = [] := by
+  simp [←toWord_mk, ←mul_mk, ←inv_mk]
 
 open List -- for <+ notation
 
