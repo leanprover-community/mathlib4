@@ -393,12 +393,9 @@ theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
 /--
 A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
 -/
-theorem meromorphicNFAt_iff_meromorphicNFAt_inv {f : 𝕜 → 𝕜} :
-    MeromorphicNFAt f x ↔ MeromorphicNFAt f⁻¹ x := by
-  constructor
-  · exact MeromorphicNFAt.inv
-  · nth_rw 2 [← inv_inv f]
-    exact MeromorphicNFAt.inv
+theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
+  mp := .inv
+  mpr hf := by simpa using hf.inv
 
 /-!
 # Normal form of meromorphic functions on a given set
@@ -410,7 +407,7 @@ theorem meromorphicNFAt_iff_meromorphicNFAt_inv {f : 𝕜 → 𝕜} :
 A function is 'meromorphic in normal form' on `U` if has normal form at every
 point of `U`.
 -/
-def MeromorphicNFOn (f : 𝕜 → E) (U : Set 𝕜) := ∀ z ∈ U, MeromorphicNFAt f z
+def MeromorphicNFOn (f : 𝕜 → E) (U : Set 𝕜) := ∀ ⦃z⦄, z ∈ U → MeromorphicNFAt f z
 
 /-!
 ## Relation to other properties of functions
@@ -427,7 +424,7 @@ theorem MeromorphicNFOn.meromorphicOn (hf : MeromorphicNFOn f U) :
 If a function is meromorphic in normal form on `U`, then its divisor is
 non-negative iff it is analytic.
 -/
-theorem MeromorphicNFOn.nonneg_divisor_iff_analyticOnNhd [CompleteSpace E]
+theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd [CompleteSpace E]
     (h₁f : MeromorphicNFOn f U) :
     0 ≤ MeromorphicOn.divisor f U ↔ AnalyticOnNhd 𝕜 f U := by
   constructor <;> intro h x
@@ -457,7 +454,7 @@ then its zero set equals the support of the associated divisor.
 -/
 theorem MeromorphicNFOn.zero_set_eq_divisor_support [CompleteSpace E] (h₁f : MeromorphicNFOn f U)
     (h₂f : ∀ u : U, (h₁f u u.2).meromorphicAt.order ≠ ⊤) :
-    U ∩ f⁻¹' {0} = (Function.support (MeromorphicOn.divisor f U)) := by
+    U ∩ f⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
   ext u
   constructor <;> intro hu
   · simp_all only [ne_eq, Subtype.forall, Set.mem_inter_iff, Set.mem_preimage,
@@ -483,7 +480,7 @@ meromorphic in normal form on `U` iff `g • f` is meromorphic in normal form on
 `U`.
 -/
 theorem meromorphicNFOn_smul_iff_right_of_analyticOnNhd {g : 𝕜 → 𝕜} (h₁g : AnalyticOnNhd 𝕜 g U)
-    (h₂g : ∀ u : U, g u ≠ 0) :
+    (h₂g : ∀ u ∈ U, g u ≠ 0) :
     MeromorphicNFOn (g • f) U ↔ MeromorphicNFOn f U := by
   constructor <;> intro h z hz
   · rw [← meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g z hz) (h₂g ⟨z, hz⟩)]
