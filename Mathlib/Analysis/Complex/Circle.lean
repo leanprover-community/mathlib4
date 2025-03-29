@@ -129,6 +129,27 @@ def expHom : ℝ →+ Additive Circle where
 @[simp] lemma exp_sub (x y : ℝ) : exp (x - y) = exp x / exp y := expHom.map_sub x y
 @[simp] lemma exp_neg (x : ℝ) : exp (-x) = (exp x)⁻¹ := expHom.map_neg x
 
+/-- Exponential map onto the circle, defined as additive character -/
+noncomputable
+def expAddChar : AddChar ℝ Circle where
+  toFun := Circle.exp
+  map_zero_eq_one' := Circle.exp_zero
+  map_add_eq_mul' := Circle.exp_add
+
+lemma continuous_expAddChar : Continuous expAddChar := ContinuousMap.continuous exp
+
+variable {e : AddChar ℝ Circle}
+
+@[simp]
+lemma star_addChar (x : ℝ) : star ((e x) : ℂ) = e (-x) := by
+  have h := Circle.coe_inv_eq_conj ⟨e x, ?_⟩
+  · simp only [Circle.coe_inv] at h
+    simp [← h, e.map_neg_eq_inv]
+  · simp only [Submonoid.unitSphere, SetLike.coe_mem]
+
+@[simp]
+lemma starRingEnd_addChar (x : ℝ) : starRingEnd ℂ (e x) = e (-x) := star_addChar x
+
 variable {α β M : Type*}
 
 instance instSMul [SMul ℂ α] : SMul Circle α := Submonoid.smul _
