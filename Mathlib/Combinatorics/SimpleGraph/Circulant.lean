@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison, Bhavik Mehta
 -/
 import Mathlib.Algebra.Group.Fin.Basic
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Definition of circulant graphs

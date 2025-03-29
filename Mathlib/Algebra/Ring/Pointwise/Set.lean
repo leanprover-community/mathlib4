@@ -3,8 +3,8 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Floris van Doorn
 -/
-import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Pointwise operations of sets in a ring

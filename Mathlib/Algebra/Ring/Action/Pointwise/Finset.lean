@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Pointwise actions on sets in a ring

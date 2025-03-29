@@ -7,10 +7,10 @@ import Mathlib.Algebra.Algebra.Rat
 import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring.Finset
-import Mathlib.Algebra.Group.Pointwise.Finset.Scalar
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Data.Finset.Density
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Average over a finset
