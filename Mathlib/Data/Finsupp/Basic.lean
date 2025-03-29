@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp.Basic
 import Mathlib.Algebra.BigOperators.Group.Finset.Preimage
-import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.Rat.BigOperators
 
 /-!
@@ -30,9 +29,6 @@ import Mathlib.Data.Rat.BigOperators
 This file is a `noncomputable theory` and uses classical logic throughout.
 
 ## TODO
-
-* This file is currently ~1600 lines long and is quite a miscellany of definitions and lemmas,
-  so it should be divided into smaller pieces.
 
 * Expand the list of definitions and important lemmas to the module docstring.
 
@@ -700,63 +696,6 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
 end FInjective
 
 end ComapDomain
-
-/-! ### Declarations about finitely supported functions whose support is an `Option` type -/
-
-
-section Option
-
-/-- Restrict a finitely supported function on `Option α` to a finitely supported function on `α`. -/
-def some [Zero M] (f : Option α →₀ M) : α →₀ M :=
-  f.comapDomain Option.some fun _ => by simp
-
-@[simp]
-theorem some_apply [Zero M] (f : Option α →₀ M) (a : α) : f.some a = f (Option.some a) :=
-  rfl
-
-@[simp]
-theorem some_zero [Zero M] : (0 : Option α →₀ M).some = 0 := by
-  ext
-  simp
-
-@[simp]
-theorem some_add [AddZeroClass M] (f g : Option α →₀ M) : (f + g).some = f.some + g.some := by
-  ext
-  simp
-
-@[simp]
-theorem some_single_none [Zero M] (m : M) : (single none m : Option α →₀ M).some = 0 := by
-  ext
-  simp
-
-@[simp]
-theorem some_single_some [Zero M] (a : α) (m : M) :
-    (single (Option.some a) m : Option α →₀ M).some = single a m := by
-  classical
-    ext b
-    simp [single_apply]
-
-@[to_additive]
-theorem prod_option_index [AddZeroClass M] [CommMonoid N] (f : Option α →₀ M)
-    (b : Option α → M → N) (h_zero : ∀ o, b o 0 = 1)
-    (h_add : ∀ o m₁ m₂, b o (m₁ + m₂) = b o m₁ * b o m₂) :
-    f.prod b = b none (f none) * f.some.prod fun a => b (Option.some a) := by
-  classical
-    apply induction_linear f
-    · simp [some_zero, h_zero]
-    · intro f₁ f₂ h₁ h₂
-      rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
-      · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
-        rw [mul_mul_mul_comm]
-      all_goals simp [h_zero, h_add]
-    · rintro (_ | a) m <;> simp [h_zero, h_add]
-
-theorem sum_option_index_smul [Semiring R] [AddCommMonoid M] [Module R M] (f : Option α →₀ R)
-    (b : Option α → M) :
-    (f.sum fun o r => r • b o) = f none • b none + f.some.sum fun a r => r • b (Option.some a) :=
-  f.sum_option_index _ (fun _ => zero_smul _ _) fun _ _ _ => add_smul _ _ _
-
-end Option
 
 /-! ### Declarations about `Finsupp.filter` -/
 
