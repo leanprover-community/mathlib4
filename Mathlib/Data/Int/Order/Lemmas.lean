@@ -31,49 +31,49 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
 
-theorem div_le_iff_of_dvd_of_pos (a b c : ℤ) (hb : 0 < b) (hba : b ∣ a) :
+theorem div_le_iff_of_dvd_of_pos {a b : ℤ} (hb : 0 < b) (hba : b ∣ a) (c : ℤ) :
     a / b ≤ c ↔ a ≤ b * c := by
   obtain ⟨_, hx⟩ := hba
   simp only [hx, ne_eq, hb, Int.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
     _root_.mul_le_mul_left]
 
-theorem div_le_iff_of_dvd_of_neg (a b c : ℤ) (hb : b < 0) (hba : b ∣ a) :
+theorem div_le_iff_of_dvd_of_neg {a b : ℤ} (hb : b < 0) (hba : b ∣ a) (c : ℤ) :
     a / b ≤ c ↔ b * c ≤ a := by
   obtain ⟨_, hx⟩ := hba
   simp only [hx, ne_eq, hb, Int.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
     mul_le_mul_left_of_neg]
 
-theorem div_lt_iff_of_dvd_of_pos (a b c : ℤ) (hb : 0 < b) (hba : b ∣ a) :
+theorem div_lt_iff_of_dvd_of_pos {a b : ℤ} (hb : 0 < b) (hba : b ∣ a) (c : ℤ) :
     a / b < c ↔ a < b * c := by
   obtain ⟨_, hx⟩ := hba
   simp only [hx, ne_eq, hb, _root_.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
     mul_lt_mul_left]
 
-theorem div_lt_iff_of_dvd_of_neg (a b c : ℤ) (hb : b < 0) (hba : b ∣ a) :
+theorem div_lt_iff_of_dvd_of_neg {a b : ℤ} (hb : b < 0) (hba : b ∣ a) (c : ℤ) :
     a / b < c ↔ b * c < a := by
   obtain ⟨_, hx⟩ := hba
   simp only [hx, ne_eq, hb, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
     mul_lt_mul_left_of_neg hb]
 
-theorem le_div_iff_of_dvd_of_pos (a b c : ℤ) (hc : 0 < c) (hcb : c ∣ b) :
+theorem le_div_iff_of_dvd_of_pos {b c : ℤ} (hc : 0 < c) (hcb : c ∣ b) (a : ℤ):
     a ≤ b / c ↔ c * a ≤ b := by
   obtain ⟨_, hx⟩ := hcb
   simp only [hx, ne_eq, hc, _root_.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
     _root_.mul_le_mul_left]
 
-theorem le_div_iff_of_dvd_of_neg (a b c : ℤ) (hc : c < 0) (hcb : c ∣ b) :
+theorem le_div_iff_of_dvd_of_neg {b c : ℤ} (hc : c < 0) (hcb : c ∣ b) (a : ℤ):
     a ≤ b / c ↔ b ≤ c * a := by
   obtain ⟨_, hx⟩ := hcb
   simp only [hx, ne_eq, hc, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
     mul_le_mul_left_of_neg hc]
 
-theorem lt_div_iff_of_dvd_of_pos (a b c : ℤ) (hc : 0 < c) (hcb : c ∣ b) :
+theorem lt_div_iff_of_dvd_of_pos {b c : ℤ} (hc : 0 < c) (hcb : c ∣ b) (a : ℤ):
     a < b / c ↔ c * a < b := by
   obtain ⟨_, hx⟩ := hcb
   simp only [hx, ne_eq, hc, _root_.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
     mul_lt_mul_left]
 
-theorem lt_div_iff_of_dvd_of_neg (a b c : ℤ) (hc : c < 0) (hcb : c ∣ b) :
+theorem lt_div_iff_of_dvd_of_neg {b c : ℤ} (hc : c < 0) (hcb : c ∣ b) (a : ℤ) :
     a < b / c ↔ b < c * a := by
   obtain ⟨_, hx⟩ := hcb
   simp only [hx, ne_eq, hc, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
