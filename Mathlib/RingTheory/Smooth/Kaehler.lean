@@ -131,6 +131,8 @@ lemma retractionOfSectionOfKerSqZero_tmul_D (s : S) (t : P) :
   haveI := isScalarTower_of_section_of_ker_sqZero g hf' hg
   simp only [retractionOfSectionOfKerSqZero, AlgHom.toRingHom_eq_coe, LinearMap.coe_restrictScalars,
     LinearMap.liftBaseChange_tmul, SetLike.val_smul_of_tower]
+  -- The issue is a mismatch between `RingHom.ker (algebraMap P S)` and
+  -- `RingHom.ker (IsScalarTower.toAlgHom R P S)`, but `rw` and `simp` can't rewrite it away...
   erw [Derivation.liftKaehlerDifferential_comp_D]
   exact mul_sub (g s) t (g (algebraMap P S t))
 
