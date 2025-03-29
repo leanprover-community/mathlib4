@@ -250,7 +250,7 @@ theorem LinearIndependent.disjoint_span_image (hv : LinearIndependent R v) {s t 
     (hs : Disjoint s t) : Disjoint (Submodule.span R <| v '' s) (Submodule.span R <| v '' t) := by
   simp only [disjoint_def, Finsupp.mem_span_image_iff_linearCombination]
   rintro _ ⟨l₁, hl₁, rfl⟩ ⟨l₂, hl₂, H⟩
-  rw [hv.injective_linearCombination.eq_iff] at H; subst l₂
+  rw [hv.finsuppLinearCombination_injective.eq_iff] at H; subst l₂
   have : l₁ = 0 := Submodule.disjoint_def.mp (Finsupp.disjoint_supported_supported hs) _ hl₁ hl₂
   simp [this]
 
