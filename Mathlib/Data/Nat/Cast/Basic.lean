@@ -186,10 +186,10 @@ variable [∀ a, NatCast (π a)]
 
 instance instNatCast : NatCast (∀ a, π a) where natCast n _ := n
 
+@[simp]
 theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
 
-@[simp]
 theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
 
