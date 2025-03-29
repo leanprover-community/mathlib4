@@ -387,7 +387,7 @@ variable [LocallyFiniteOrderBot α]
 @[simp]
 theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
 
-@[simp] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty
+@[simp] alias ⟨_, _root_.IsMin.finsetIio_eq⟩ := Iio_eq_empty
 
 @[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
 
