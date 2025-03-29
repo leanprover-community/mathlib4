@@ -147,9 +147,10 @@ lemma join_eq (C₁ : G.PartialColoring s β) (C₂ : G.PartialColoring t β)
 /-- A PartialColoring of `univ` is a Coloring -/
 def toColoring (C : G.PartialColoring univ β) : G.Coloring β :=
     ⟨C, fun hab ↦ C.valid (mem_univ _) (mem_univ _) hab⟩
-
+end PartialColoring
+namespace Coloring
 variable [DecidableEq β]
-lemma unused' (C : G.Coloring β) {a : α} [Fintype (G.neighborSet a)] (h : G.degree a < ENat.card β) :
+lemma unused (C : G.Coloring β) {a : α} [Fintype (G.neighborSet a)] (h : G.degree a < ENat.card β) :
      ∃ c, c ∉ (G.neighborFinset a).image C := by
   by_cases h' : Infinite β
   · exact Infinite.exists_not_mem_finset (Finset.image (⇑C) (G.neighborFinset a))
@@ -171,28 +172,13 @@ lemma unused' (C : G.Coloring β) {a : α} [Fintype (G.neighborSet a)] (h : G.de
     intro b hb
     exact hf b
 
---   -- rw [Fintype.card_eq_nat_card ]
---   -- rw [degree]
---   -- apply Nat.card_image_le
---   -- exact Finset.card_le_of_subset (image_subset_range _ _)
---  -- apply Finset.card_pos.1 --<| (Nat.sub_pos_of_lt _).trans_le -- <| le_card_sdiff _ _
---   apply Finset.card_image_le.trans_lt
---   rw [card_range, degreeOn]
---   apply Nat.lt_succ_of_le le_rfl
+noncomputable def extend (C : G.Coloring β) {a : α} [Fintype (G.neighborSet a)]
+    (h : G.degree a < ENat.card β) : β := Exists.choose (C.unused h)
 
-/-- Should say: given a PartialColoring s β and a vertex `a` whose degree is < β.card
-there is an unused color. This should really be a result about Colorings  -/
-lemma unused (C : G.PartialColoring s β) (a : α) :
-    (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).Nonempty := by
-  apply card_pos.1 <| (Nat.sub_pos_of_lt _).trans_le <| le_card_sdiff _ _
-  apply card_image_le.trans_lt
-  rw [card_range, degreeOn]
-  apply Nat.lt_succ_of_le le_rfl
+lemma extend_def (C : G.Coloring β) (a : α) [Fintype (G.neighborSet a)]
+    (h : G.degree a < ENat.card β) : (C.extend h) ∉ (G.neighborFinset a).image C :=
+  Exists.choose_spec (C.unused h)
 
-def extend (C : G.PartialColoring s) (a : α) : ℕ := min' _ <| C.unused a
-
-lemma extend_def (C : G.PartialColoring s) (a : α) : C.extend a =
-    (range (G.degreeOn s a + 1) \ (((G.neighborFinset a) ∩ s).image C)).min' (C.unused a) := rfl
 
 @[simp]
 lemma copy_extend (C : G.PartialColoring s) {t : Finset α} (a : α) (h : s = t) :
