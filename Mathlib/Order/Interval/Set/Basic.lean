@@ -814,7 +814,6 @@ theorem Ici_top [PartialOrder α] [OrderTop α] : Ici (⊤ : α) = {⊤} :=
 
 variable [Preorder α] [OrderTop α] {a : α}
 
-@[simp]
 theorem Ioi_top : Ioi (⊤ : α) = ∅ :=
   isMax_top.Ioi_eq
 
@@ -838,7 +837,6 @@ theorem Iic_bot [PartialOrder α] [OrderBot α] : Iic (⊥ : α) = {⊥} :=
 
 variable [Preorder α] [OrderBot α] {a : α}
 
-@[simp]
 theorem Iio_bot : Iio (⊥ : α) = ∅ :=
   isMin_bot.Iio_eq
 
@@ -1667,10 +1665,10 @@ namespace Set
 @[simp] lemma Iic_True : Iic True = univ := by aesop
 @[simp] lemma Ici_False : Ici False = univ := by aesop
 @[simp] lemma Ici_True : Ici True = {True} := by aesop
-@[simp] lemma Iio_False : Iio False = ∅ := by aesop
+lemma Iio_False : Iio False = ∅ := by aesop
 @[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
 @[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
-@[simp] lemma Ioi_True : Ioi True = ∅ := by aesop
+lemma Ioi_True : Ioi True = ∅ := by aesop
 
 end Set
 
