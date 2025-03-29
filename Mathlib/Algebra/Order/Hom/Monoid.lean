@@ -129,7 +129,7 @@ into an actual `OrderMonoidHom`. This is declared as the default coercion from `
   This is declared as the default coercion from `F` to `α →+o β`."]
 def OrderMonoidHomClass.toOrderMonoidHom [OrderHomClass F α β] [MonoidHomClass F α β] (f : F) :
     α →*o β :=
-  { (f : α →* β) with monotone' := OrderHomClass.monotone f }
+  { (.ofClass f : α →* β) with monotone' := OrderHomClass.monotone f }
 
 /-- Any type satisfying `OrderMonoidHomClass` can be cast into `OrderMonoidHom` via
   `OrderMonoidHomClass.toOrderMonoidHom`. -/
@@ -311,6 +311,8 @@ instance : MonoidHomClass (α →*o β) α β where
   map_mul f := f.map_mul'
   map_one f := f.map_one'
 
+@[to_additive] instance : Coe (α →*o β) (α →* β) := ⟨toMonoidHom⟩
+
 -- Other lemmas should be accessed through the `FunLike` API
 @[to_additive (attr := ext)]
 theorem ext (h : ∀ a, f a = g a) : f = g :=
@@ -485,10 +487,6 @@ section OrderedCommMonoid
 variable {hα : OrderedCommMonoid α} {hβ : OrderedCommMonoid β}
 
 @[to_additive (attr := simp)]
-theorem toMonoidHom_eq_coe (f : α →*o β) : f.toMonoidHom = f :=
-  rfl
-
-@[to_additive (attr := simp)]
 theorem toOrderHom_eq_coe (f : α →*o β) : f.toOrderHom = f :=
   rfl
 
@@ -551,6 +549,8 @@ theorem coe_mk (f : α ≃* β) (h) : (OrderMonoidIso.mk f h : α → β) = f :=
 @[to_additive (attr := simp)]
 theorem mk_coe (f : α ≃*o β) (h) : OrderMonoidIso.mk (f : α ≃* β) h = f := rfl
 
+@[to_additive (attr := simp)] lemma coe_toMulEquiv (f : α ≃*o β) : ⇑f.toMulEquiv = f := rfl
+
 /-- Reinterpret an ordered monoid isomorphism as an order isomorphism. -/
 @[to_additive "Reinterpret an ordered additive monoid isomomorphism as an order isomomorphism."]
 def toOrderIso (f : α ≃*o β) : α ≃o β :=
@@ -590,6 +590,32 @@ instance : Inhabited (α ≃*o α) :=
 
 variable {α}
 
+/-- Symmetry of multiplication-preserving order isomorphisms -/
+@[to_additive (attr := symm) "Symmetry of addition-preserving order isomorphisms"]
+def symm (f : α ≃*o β) : β ≃*o α where
+  toMulEquiv := f.toMulEquiv.symm
+  map_le_map_iff' {a b} := by simp [← f.map_le_map_iff']
+
+@[to_additive (attr := simp)]
+lemma apply_symm_apply (f : α ≃*o β) (b : β) : f (f.symm b) = b := f.right_inv _
+
+@[to_additive (attr := simp)]
+lemma symm_apply_apply (f : α ≃*o β) (a : α) : f.symm (f a) = a := f.left_inv _
+
+@[to_additive (attr := simp)]
+lemma toMonoidHom_comp_toMonoidHom_symm {α β : Type*} [MulOneClass α] [MulOneClass β] [Preorder α]
+    [Preorder β] (f : α ≃*o β) : f.toMonoidHom.comp f.symm.toMonoidHom = .id _ := by ext; simp
+
+@[to_additive (attr := simp)]
+lemma toMonoidHom_comp_symm {α β : Type*} [MulOneClass α] [MulOneClass β] [Preorder α] [Preorder β]
+    (f : α ≃*o β) : f.toMonoidHom.comp f.symm.toMonoidHom = .id _ := by ext; simp
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_symm_mulEquiv (f : α ≃*o β) : (f.symm : β ≃* α) = (f : α ≃* β).symm := rfl
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_symm_orderIso (f : α ≃*o β) : (f.symm : β ≃o α) = (f : α ≃o β).symm := rfl
+
 /-- Transitivity of multiplication-preserving order isomorphisms -/
 @[to_additive (attr := trans) "Transitivity of addition-preserving order isomorphisms"]
 def trans (f : α ≃*o β) (g : β ≃*o γ) : α ≃*o γ :=
@@ -603,12 +629,12 @@ theorem coe_trans (f : α ≃*o β) (g : β ≃*o γ) : (f.trans g : α → γ) 
 theorem trans_apply (f : α ≃*o β) (g : β ≃*o γ) (a : α) : (f.trans g) a = g (f a) :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_trans_mulEquiv (f : α ≃*o β) (g : β ≃*o γ) :
     (f.trans g : α ≃* γ) = (f : α ≃* β).trans g :=
   rfl
 
-@[to_additive]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_trans_orderIso (f : α ≃*o β) (g : β ≃*o γ) :
     (f.trans g : α ≃o γ) = (f : α ≃o β).trans g :=
   rfl
