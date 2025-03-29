@@ -73,10 +73,10 @@ protected lemma add_comm (s t : Multiset α) : s + t = t + s :=
 protected lemma add_assoc (s t u : Multiset α) : s + t + u = s + (t + u) :=
   Quotient.inductionOn₃ s t u fun _ _ _ ↦ congr_arg _ <| append_assoc ..
 
-@[simp, nolint simpNF] -- We want to use this lemma earlier than `zero_add`
+@[simp high]
 protected lemma zero_add (s : Multiset α) : 0 + s = s := Quotient.inductionOn s fun _ ↦ rfl
 
-@[simp, nolint simpNF] -- We want to use this lemma earlier than `add_zero`
+@[simp high]
 protected lemma add_zero (s : Multiset α) : s + 0 = s :=
   Quotient.inductionOn s fun l ↦ congr_arg _ <| append_nil l
 
@@ -283,7 +283,7 @@ lemma coe_sub (s t : List α) : (s - t : Multiset α) = s.diff t :=
 
 /-- This is a special case of `tsub_zero`, which should be used instead of this.
 This is needed to prove `OrderedSub (Multiset α)`. -/
-@[simp, nolint simpNF] -- We want to use this lemma earlier than the lemma simp can prove it with
+@[simp high]
 protected lemma sub_zero (s : Multiset α) : s - 0 = s :=
   Quot.inductionOn s fun _l => rfl
 
