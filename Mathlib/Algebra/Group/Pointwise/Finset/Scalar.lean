@@ -13,14 +13,7 @@ This file defines pointwise algebraic operations on finsets.
 ## Main declarations
 
 For finsets `s` and `t`:
-* `0` (`Finset.zero`): The singleton `{0}`.
-* `1` (`Finset.one`): The singleton `{1}`.
-* `-s` (`Finset.neg`): Negation, finset of all `-x` where `x ∈ s`.
-* `s⁻¹` (`Finset.inv`): Inversion, finset of all `x⁻¹` where `x ∈ s`.
-* `s + t` (`Finset.add`): Addition, finset of all `x + y` where `x ∈ s` and `y ∈ t`.
-* `s * t` (`Finset.mul`): Multiplication, finset of all `x * y` where `x ∈ s` and `y ∈ t`.
-* `s - t` (`Finset.sub`): Subtraction, finset of all `x - y` where `x ∈ s` and `y ∈ t`.
-* `s / t` (`Finset.div`): Division, finset of all `x / y` where `x ∈ s` and `y ∈ t`.
+
 * `s +ᵥ t` (`Finset.vadd`): Scalar addition, finset of all `x +ᵥ y` where `x ∈ s` and `y ∈ t`.
 * `s • t` (`Finset.smul`): Scalar multiplication, finset of all `x • y` where `x ∈ s` and
   `y ∈ t`.
