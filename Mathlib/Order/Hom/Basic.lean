@@ -67,7 +67,7 @@ monotone map, bundled morphism
 -/
 
 -- Developments relating order homs and sets belong in `Order.Hom.Set` or later.
-assert_not_exists Set.range
+assert_not_imported Mathlib.Data.Set.Basic
 
 open OrderDual
 
