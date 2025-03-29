@@ -98,7 +98,6 @@ theorem prod_snoc [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
     (∏ i : Fin n.succ, (snoc f x : Fin n.succ → β) i) = (∏ i : Fin n, f i) * x := by
   simp [prod_univ_castSucc]
 
-
 namespace ProdUnivMany
 
 open Lean Meta Qq
