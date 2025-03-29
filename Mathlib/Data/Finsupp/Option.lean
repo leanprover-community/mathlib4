@@ -5,6 +5,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison, Bolton Bailey
 -/
 import Mathlib.Data.Finsupp.Basic
+import Mathlib.Algebra.Module.Defs
 
 /-!
 # Operations on `Finsupp`s with an `Option` domain
