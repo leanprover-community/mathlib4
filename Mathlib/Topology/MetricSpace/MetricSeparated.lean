@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Topology.EMetricSpace.Defs
+import Mathlib.Topology.UniformSpace.Separated
 
 /-!
 # Metric separation
@@ -36,6 +37,10 @@ In this section we define the predicate `Metric.IsSeparated` for `ε`-separated 
 /-- A set `s` is `ε`-separated if its elements are pairwise at distance at least `ε` from each
 other. -/
 def IsSeparated (ε : ℝ≥0∞) (s : Set X) : Prop := s.Pairwise (ε < edist · ·)
+
+lemma isSeparated_iff_uniformSpaceIsSeparated :
+    IsSeparated ε s ↔ UniformSpace.IsSeparated {(x, y) | edist x y ≤ ε} s := by
+  simp [IsSeparated, UniformSpace.IsSeparated]
 
 protected lemma IsSeparated.empty : IsSeparated ε (∅ : Set X) := pairwise_empty _
 protected lemma IsSeparated.singleton : IsSeparated ε {x} := pairwise_singleton ..
