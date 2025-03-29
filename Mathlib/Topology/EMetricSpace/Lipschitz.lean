@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rohan Mitta, Kevin Buzzard, Alistair Tucker, Johannes Hölzl, Yury Kudryashov, Winston Yin
 -/
 import Mathlib.Algebra.Group.End
+import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.EMetricSpace.Diam
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.MetricSpace.Pseudo.Defs
 
 /-!
 # Lipschitz continuous functions
@@ -312,6 +315,10 @@ theorem edist_lt_of_edist_lt_div (hf : LipschitzOnWith K f s) {x y : α} (hx : x
    hf.to_restrict.edist_lt_of_edist_lt_div <|
     show edist (⟨x, hx⟩ : s) ⟨y, hy⟩ < d / K from hd
 
+protected theorem weaken (hf : LipschitzOnWith K f s) {K' : ℝ≥0} (h : K ≤ K') :
+    LipschitzOnWith K' f s :=
+  fun _ hx _ hy => le_trans (hf hx hy) <| mul_right_mono (ENNReal.coe_le_coe.2 h)
+
 protected theorem comp {g : β → γ} {t : Set β} {Kg : ℝ≥0} (hg : LipschitzOnWith Kg g t)
     (hf : LipschitzOnWith K f s) (hmaps : MapsTo f s t) : LipschitzOnWith (Kg * K) (g ∘ f) s :=
   lipschitzOnWith_iff_restrict.mpr <| hg.to_restrict.comp (hf.to_restrict_mapsTo hmaps)
@@ -420,6 +427,49 @@ protected lemma continuousOn (hf : LocallyLipschitzOn s f) : ContinuousOn f s :=
   continuousOn_iff_continuous_restrict.2 hf.restrict.continuous
 
 end LocallyLipschitzOn
+
+/-- If `f : α → β` is locally Lipschitz on a compact set `s`, where `β` is a pseudometric space,
+  then `f` is Lipschitz on `s`. -/
+theorem LocallyLipschitzOn.lipshitzOnWith_of_isCompact [PseudoEMetricSpace α] [PseudoMetricSpace β]
+    {f : α → β} {s : Set α} (hs : IsCompact s) (hf : LocallyLipschitzOn s f) :
+    ∃ K, LipschitzOnWith K f s := by
+  have f_continuousOn := hf.continuousOn
+  choose! K U hU hK using hf
+  choose! V V_isOpen hV hVs using fun (x : α) (hx : x ∈ s) => mem_nhdsWithin.1 (hU hx)
+  rcases hs.elim_nhds_subcover V (fun x hx => (V_isOpen x hx).mem_nhds (hV x hx))
+    with ⟨t, t_sub_s, ht⟩
+  choose! i hit hiU using fun (x : α) (hx : x ∈ s) => mem_iUnion₂.1 (ht hx)
+  have his : ∀ x ∈ s, i x ∈ s := fun x hx => t_sub_s (i x) (hit x hx)
+  have V_nhds : ∀ x ∈ s, V (i x) ∈ 𝓝 x :=
+    fun x hx => (V_isOpen (i x) (his x hx)).mem_nhds (hiU x hx)
+  rcases lebesgue_number_lemma_of_emetric_nhds' hs V_nhds with ⟨δ, δ_pos, hδ⟩
+  wlog δ_ne_top : δ ≠ ⊤ generalizing δ
+  · refine this 1 one_pos (fun x hx => ?_) one_ne_top
+    rw [of_not_not δ_ne_top] at hδ
+    rcases hδ x hx with ⟨y, hy⟩
+    refine ⟨y, subset_trans (EMetric.ball_subset_ball le_top) hy⟩
+  by_cases t_empty : t = ∅
+  · simp only [t_empty, Finset.not_mem_empty, iUnion_of_empty, iUnion_empty,
+      subset_empty_iff] at ht
+    simp [ht]
+  let K₁ := (t.image (fun x => @K x)).max' ((Finset.nonempty_iff_ne_empty.2 t_empty).image _)
+  have hK₁ : ∀ x ∈ s, LipschitzOnWith K₁ f (EMetric.ball x δ ∩ s) := by
+    intro x hx
+    rcases hδ x hx with ⟨⟨y, hy⟩, hxy⟩
+    exact (((hK (his y hy)).weaken (Finset.le_max' _ _ (Finset.mem_image_of_mem _ (hit y hy)))).mono
+      (hVs _ (his y hy))).mono (inter_subset_inter_left _ hxy)
+  let K₂ := (EMetric.diam (f '' s)) / δ
+  have ediam_ne_top : EMetric.diam (f '' s) ≠ ⊤ :=
+    Metric.isBounded_iff_ediam_ne_top.1 (hs.image_of_continuousOn f_continuousOn).isBounded
+  have K₂_ne_top : K₂ ≠ ⊤ := ENNReal.div_eq_top.not.2 (by simp [δ_pos.ne.symm, ediam_ne_top])
+  have hK₂ : EMetric.diam (f '' s) ≤ K₂ * δ := by
+    rw [ENNReal.div_mul_cancel δ_pos.ne.symm δ_ne_top]
+  refine ⟨max K₂.toNNReal K₁, fun x hx y hy => ?_⟩
+  by_cases hxy : edist x y < δ
+  · refine (hK₁ x hx ⟨EMetric.mem_ball_self δ_pos, hx⟩ ⟨EMetric.mem_ball'.2 hxy, hy⟩).trans ?_
+    simp [mul_le_mul_of_nonneg_right]
+  · exact (EMetric.edist_le_diam_of_mem (mem_image_of_mem f hx) (mem_image_of_mem f hy)).trans
+      (hK₂.trans (mul_le_mul (by simp [K₂_ne_top]) (le_of_not_lt hxy) (zero_le _) (zero_le _)))
 
 /-- Consider a function `f : α × β → γ`. Suppose that it is continuous on each “vertical fiber”
 `{a} × t`, `a ∈ s`, and is Lipschitz continuous on each “horizontal fiber” `s × {b}`, `b ∈ t`
