@@ -423,17 +423,30 @@ theorem preimage_frontier_eq_frontier_preimage (hf : IsOpenMap f) (hfc : Continu
 
 theorem of_isEmpty [h : IsEmpty X] (f : X → Y) : IsOpenMap f := of_nhds_le h.elim
 
+theorem clusterPt_comap (hf : IsOpenMap f) {x : X} {l : Filter Y} (h : ClusterPt (f x) l) :
+    ClusterPt x (comap f l) := by
+  rw [ClusterPt, ← map_neBot_iff, Filter.push_pull]
+  exact h.neBot.mono <| inf_le_inf_right _ <| hf.nhds_le _
+
 end IsOpenMap
 
 theorem isOpenMap_iff_nhds_le : IsOpenMap f ↔ ∀ x : X, 𝓝 (f x) ≤ (𝓝 x).map f :=
   ⟨fun hf => hf.nhds_le, IsOpenMap.of_nhds_le⟩
 
+theorem isOpenMap_iff_image_mem_nhds : IsOpenMap f ↔ ∀ x, ∀ s ∈ 𝓝 x, f '' s ∈ 𝓝 (f x) := by
+  simp only [isOpenMap_iff_nhds_le, le_map_iff]
+
+theorem isOpenMap_iff_clusterPt_comap :
+    IsOpenMap f ↔ ∀ x l, ClusterPt (f x) l → ClusterPt x (comap f l) := by
+  refine ⟨fun hf _ _ ↦ hf.clusterPt_comap, fun h ↦ isOpenMap_iff_image_mem_nhds.mpr fun x s hs ↦ ?_⟩
+  contrapose! hs
+  rw [← mem_interior_iff_mem_nhds, ← mem_compl_iff, ← closure_compl,
+    mem_closure_iff_clusterPt] at hs ⊢
+  exact (h _ _ hs).mono <| by simp [subset_preimage_image]
+
 theorem isOpenMap_iff_interior : IsOpenMap f ↔ ∀ s, f '' interior s ⊆ interior (f '' s) :=
   ⟨IsOpenMap.image_interior_subset, fun hs u hu =>
-    subset_interior_iff_isOpen.mp <|
-      calc
-        f '' u = f '' interior u := by rw [hu.interior_eq]
-        _ ⊆ interior (f '' u) := hs u⟩
+    subset_interior_iff_isOpen.mp <| by simpa only [hu.interior_eq] using hs u⟩
 
 /-- An inducing map with an open range is an open map. -/
 protected lemma Topology.IsInducing.isOpenMap (hi : IsInducing f) (ho : IsOpen (range f)) :
