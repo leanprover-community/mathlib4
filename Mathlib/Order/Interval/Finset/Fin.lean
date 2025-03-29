@@ -793,52 +793,32 @@ lemma card_Ioo : #(Ioo a b) = b - a - 1 := by rw [← Nat.card_Ioo, ← map_valE
 theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_valEmbedding_uIcc, card_map]
 
-theorem fintypeCard_Icc : Fintype.card (Set.Icc a b) = b + 1 - a := by
-  rw [← card_Icc, Fintype.card_ofFinset]
+@[deprecated Fintype.card_Icc (since := "2025-03-28")]
+theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
 
-@[deprecated (since := "2025-03-28")]
-alias card_fintypeIcc := fintypeCard_Icc
+@[deprecated Fintype.card_Ico (since := "2025-03-28")]
+theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
 
-theorem fintypeCard_Ico : Fintype.card (Set.Ico a b) = b - a := by
-  rw [← card_Ico, Fintype.card_ofFinset]
+@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
+theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
 
-@[deprecated (since := "2025-03-28")]
-alias card_fintypeIco := fintypeCard_Ico
+@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
+theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
 
-theorem fintypeCard_Ioc : Fintype.card (Set.Ioc a b) = b - a := by
-  rw [← card_Ioc, Fintype.card_ofFinset]
+@[deprecated Fintype.card_uIcc (since := "2025-03-28")]
+theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by simp
 
-@[deprecated (since := "2025-03-28")]
-alias card_fintypeIoc := fintypeCard_Ioc
+@[deprecated Fintype.card_Ici (since := "2025-03-28")]
+theorem card_fintypeIci : Fintype.card (Set.Ici a) = n - a := by simp
 
-theorem fintypeCard_Ioo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
-  rw [← card_Ioo, Fintype.card_ofFinset]
+@[deprecated Fintype.card_Ioi (since := "2025-03-28")]
+theorem card_fintypeIoi : Fintype.card (Set.Ioi a) = n - 1 - a := by simp
 
-@[deprecated (since := "2025-03-28")]
-alias card_fintypeIoo := fintypeCard_Ioo
+@[deprecated Fintype.card_Iic (since := "2025-03-28")]
+theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
 
-theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs + 1 := by
-  rw [← card_uIcc, Fintype.card_ofFinset]
-
-theorem fintypeCard_Ici : Fintype.card (Set.Ici a) = n - a := by simp
-
-@[deprecated (since := "2025-03-12")]
-alias card_fintypeIci := fintypeCard_Ici
-
-theorem fintypeCard_Ioi : Fintype.card (Set.Ioi a) = n - 1 - a := by simp
-
-@[deprecated (since := "2025-03-12")]
-alias card_fintypeIoi := fintypeCard_Ioi
-
-theorem fintypeCard_Iic : Fintype.card (Set.Iic b) = b + 1 := by simp
-
-@[deprecated (since := "2025-03-12")]
-alias card_fintypeIic := fintypeCard_Iic
-
-theorem fintypeCard_Iio : Fintype.card (Set.Iio b) = b := by simp
-
-@[deprecated (since := "2025-03-12")]
-alias card_fintypeIio := fintypeCard_Iio
+@[deprecated Fintype.card_Iio (since := "2025-03-28")]
+theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
 
 end card
 
