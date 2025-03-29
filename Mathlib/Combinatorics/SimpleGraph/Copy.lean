@@ -178,11 +178,11 @@ in `G`. -/
 theorem isContained_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A ⊑ B ↔ H ⊑ G :=
   ⟨.trans' ⟨e₂.toCopy⟩ ∘ .trans ⟨e₁.symm.toCopy⟩, .trans' ⟨e₂.symm.toCopy⟩ ∘ .trans ⟨e₁.toCopy⟩⟩
 
-lemma isContained_congr_left (e₁ : A ≃g B) : A ⊑ C ↔ B ⊑ C := isContained_congr e₁ Iso.refl
+lemma isContained_congr_left (e₁ : A ≃g B) : A ⊑ C ↔ B ⊑ C := isContained_congr e₁ .refl
 
 alias ⟨_, IsContained.congr_left⟩ := isContained_congr_left
 
-lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr Iso.refl e₂
+lemma isContained_congr_right (e₂ : B ≃g C) : A ⊑ B ↔ A ⊑ C := isContained_congr .refl e₂
 
 alias ⟨_, IsContained.congr_right⟩ := isContained_congr_right
 
@@ -230,11 +230,11 @@ lemma not_free : ¬A.Free B ↔ A ⊑ B := not_not
 theorem free_congr (e₁ : A ≃g H) (e₂ : B ≃g G) : A.Free B ↔ H.Free G :=
   (isContained_congr e₁ e₂).not
 
-lemma free_congr_left (e₁ : A ≃g B) : A.Free C ↔ B.Free C := free_congr e₁ Iso.refl
+lemma free_congr_left (e₁ : A ≃g B) : A.Free C ↔ B.Free C := free_congr e₁ .refl
 
 alias ⟨_, Free.congr_left⟩ := free_congr_left
 
-lemma free_congr_right (e₂ : B ≃g C) : A.Free B ↔ A.Free C := free_congr Iso.refl e₂
+lemma free_congr_right (e₂ : B ≃g C) : A.Free B ↔ A.Free C := free_congr .refl e₂
 
 alias ⟨_, Free.congr_right⟩ := free_congr_right
 
