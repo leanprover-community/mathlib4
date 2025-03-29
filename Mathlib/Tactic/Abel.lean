@@ -564,3 +564,9 @@ macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
 
 end Mathlib.Tactic.Abel
+
+/-!
+We register `abel` with the `hint` tactic.
+-/
+
+register_hint abel

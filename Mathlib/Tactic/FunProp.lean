@@ -14,6 +14,7 @@ import Mathlib.Tactic.FunProp.StateList
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToBatteries
 import Mathlib.Tactic.FunProp.Types
+import Mathlib.Tactic.Hint
 
 /-!
 # Tactic `fun_prop` for proving function properties like `Continuous f`, `Differentiable ℝ f`, ...
@@ -344,3 +345,9 @@ There are four types of theorems that are used a bit differently.
     is used together with `aesop` to discharge the `2 ≤ ∞` subgoal.
 
 -/
+
+/-!
+We register `fun_prop` with the `hint` tactic.
+-/
+
+register_hint fun_prop

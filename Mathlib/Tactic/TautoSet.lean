@@ -6,6 +6,7 @@ Authors: Lenny Taelman
 
 import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.Disjoint
+import Mathlib.Tactic.Hint
 
 /-!
 # The `tauto_set` tactic
@@ -53,3 +54,13 @@ macro "tauto_set" : tactic => `(tactic|
 
 
 end Mathlib.Tactic.TautoSet
+
+/-!
+We register `tauto_set` and `tauto` with the `hint` tactic.
+
+Since tactics run in the reverse order of their registration, we register
+`tauto_set` before `tauto` to ensure that `tauto` is tried first.
+-/
+
+register_hint tauto_set
+register_hint tauto
