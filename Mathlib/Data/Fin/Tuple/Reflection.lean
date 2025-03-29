@@ -165,3 +165,52 @@ example [AddCommMonoid α] (a : Fin 3 → α) : ∑ i, a i = a 0 + a 1 + a 2 :=
   (sum_eq _).symm
 
 end FinVec
+
+namespace Fin
+
+namespace ProdUnivMany
+
+open Lean Meta Qq
+
+/-- Implementation of the `prod_univ_many` simproc. -/
+def prodEquivManyImp {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n : ℕ)
+    (f : Q(Fin $n → $α)) :
+    MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
+  match n with
+  | 0 =>
+    return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
+  | m + 1 =>
+    let nezero : Q(NeZero ($m + 1)) := q(⟨Nat.succ_ne_zero _⟩)
+    let val ← makeRHS (m + 1) f nezero (m + 1)
+    let _ : $val =Q FinVec.prod $f := ⟨⟩
+    let pf := q(FinVec.prod_eq $f |>.symm)
+    return ⟨val, pf⟩
+where
+  /-- Creates the expression `f 0 * f 1 * ... * f (n - 1)`. -/
+  makeRHS (n : ℕ) (f : Q(Fin $n → $α)) (nezero : Q(NeZero $n))
+    (k : ℕ) : MetaM Q($α) := do
+  match k with
+  | 0 => failure
+  | 1 =>
+    pure q($f 0)
+  | m + 1 =>
+    let pre ← makeRHS n f nezero m
+    pure q($pre * $f (@OfNat.ofNat (Fin $n) $m _))
+
+/-- Rewrites `∏ (i : Fin n), f i` as `f 0 * f 1 * ... * f (n - 1)`. -/
+simproc_decl prod_univ_many (Finset.prod (α := Fin _) Finset.univ _) := .ofQ fun u _ e => do
+  match u, e with
+  | .succ _, ~q(@Finset.prod (Fin $n) _ $inst Finset.univ $f) => do
+    match (generalizing := false) n.nat? with
+    | .none =>
+      return .continue
+    | .some nVal =>
+      let ⟨res, pf⟩ ← ProdUnivMany.prodEquivManyImp inst nVal f
+      return .visit {expr := res, proof? := pf}
+  | _, _ => return .continue
+
+end ProdUnivMany
+
+export ProdUnivMany (prod_univ_many)
+
+end Fin
