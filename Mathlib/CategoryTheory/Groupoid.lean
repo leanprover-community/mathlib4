@@ -93,6 +93,7 @@ instance functorMapReverse {D : Type*} [Groupoid D] (F : C ⥤ D) : F.toPrefunct
 variable (X Y)
 
 /-- In a groupoid, isomorphisms are equivalent to morphisms. -/
+@[simps!]
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
   invFun f := ⟨f, Groupoid.inv f, (by simp), (by simp)⟩
