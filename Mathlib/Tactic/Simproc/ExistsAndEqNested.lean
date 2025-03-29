@@ -46,12 +46,14 @@ instance : Inhabited HypQ where
   default := ⟨default, default⟩
 
 /-- Makes `∃ f₁ f₂ ... fₙ, body` where `[f₁, ..., fₙ] = fvars`. -/
-def mkNestedExists (fvars : List VarQ) (body : Expr) : MetaM Expr := do
+def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
   match fvars with
   | [] => pure body
   | ⟨_, β, b⟩ :: tl =>
     let res ← mkNestedExists tl body
-    pure <| ← mkAppOptM ``Exists #[.some β, .some <| ← mkLambdaFVars #[b] res]
+    let name := (← getLCtx).findFVar? b |>.get!.userName
+    let p : Q($β → Prop) ← Impl.mkLambdaQ name b res
+    pure q(Exists $p)
 
 /-- Finds path for `findEq`. It is a fast version that should quickly return `none` when the simproc
 is not applicable. -/
