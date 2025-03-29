@@ -51,7 +51,7 @@ $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
 @[stacks 09G9]
-theorem rank_mul_rank (A : Type v) [AddCommGroup A]
+theorem rank_mul_rank (A : Type v) [AddCommMonoid A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
   convert lift_rank_mul_lift_rank F K A <;> rw [lift_id]
@@ -186,7 +186,7 @@ theorem finite_of_finrank_pos (h : 0 < finrank R M) : Module.Finite R M := by
 theorem finite_of_finrank_eq_succ {n : ℕ} (hn : finrank R M = n.succ) : Module.Finite R M :=
   finite_of_finrank_pos <| by rw [hn]; exact n.succ_pos
 
-theorem finite_iff_of_rank_eq_nsmul {W} [AddCommGroup W] [Module R W] [Module.Free R W] {n : ℕ}
+theorem finite_iff_of_rank_eq_nsmul {W} [AddCommMonoid W] [Module R W] [Module.Free R W] {n : ℕ}
     (hn : n ≠ 0) (hVW : Module.rank R M = n • Module.rank R W) :
     Module.Finite R M ↔ Module.Finite R W := by
   simp only [← rank_lt_aleph0_iff, hVW, nsmul_lt_aleph0_iff_of_ne_zero hn]
