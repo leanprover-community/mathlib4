@@ -1011,7 +1011,7 @@ end id
 
 section Const
 
-/-! ### Derivative of a constant function
+/-! ### Derivative of constant functions
 
 This include the constant functions `0`, `1`, `Nat.cast n`, `Int.cast z`, and other numerals.
 -/

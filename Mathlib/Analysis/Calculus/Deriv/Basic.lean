@@ -631,7 +631,10 @@ end id
 
 section Const
 
-/-! ### Derivative of constant functions -/
+/-! ### Derivative of constant functions
+
+This include the constant functions `0`, `1`, `Nat.cast n`, `Int.cast z`, and other numerals.
+-/
 
 variable (c : F) (s x L)
 
@@ -720,8 +723,10 @@ theorem deriv_zero : deriv (0 : 𝕜 → F) = 0 := funext fun _ => deriv_const _
 @[simp]
 theorem deriv_one [One F] : deriv (1 : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
 
+@[simp]
 theorem deriv_natCast [NatCast F] (n : ℕ) : deriv (n : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
 
+@[simp]
 theorem deriv_intCast [IntCast F] (z : ℤ) : deriv (z : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
 
 @[simp low]
@@ -738,9 +743,11 @@ theorem derivWithin_zero : derivWithin (0 : 𝕜 → F) s = 0 := derivWithin_con
 @[simp]
 theorem derivWithin_one [One F] : derivWithin (1 : 𝕜 → F) s = 0 := derivWithin_const _ _
 
+@[simp]
 theorem derivWithin_natCast [NatCast F] (n : ℕ) : derivWithin (n : 𝕜 → F) s = 0 :=
   derivWithin_const _ _
 
+@[simp]
 theorem derivWithin_intCast [IntCast F] (z : ℤ) : derivWithin (z : 𝕜 → F) s = 0 :=
   derivWithin_const _ _
 
