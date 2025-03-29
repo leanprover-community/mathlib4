@@ -211,10 +211,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff₀]
-  -- Porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
-  · convert Nat.cast_le (α := ℚ)
-    · aesop
-    · norm_cast
+  on_goal 1 => convert Nat.cast_le (α := ℚ)
   all_goals simp [ha, hb]
 
 end
@@ -237,6 +234,6 @@ theorem imo1998_q2 [Fintype J] [Fintype C] (a b k : ℕ) (hC : Fintype.card C = 
     simp only [mul_comm, add_mul, one_mul, nonpos_iff_eq_zero, add_tsub_cancel_right]; ring
   have hr : 2 * z * z * a = 2 * z * a * z := by ring
   rw [hl, hr] at h
-  cases' z with z
+  rcases z with - | z
   · simp
   · exact le_of_mul_le_mul_right h z.succ_pos

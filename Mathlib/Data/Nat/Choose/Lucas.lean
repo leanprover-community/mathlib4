@@ -50,7 +50,7 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     · simp only [mem_product, mem_range] at hx
       have h' : x₁ < p := lt_of_lt_of_le hx.left <| mod_lt _ Fin.pos'
       rw [h, add_mul_mod_self_left, add_mul_div_left _ _ Fin.pos', eq_comm (b := x₂)]
-      exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
+      exact ⟨mod_eq_of_lt h', right_eq_add.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
   simp only [finset_sum_coeff, coeff_mul_natCast, coeff_X_pow, ite_mul, zero_mul, ← cast_mul]
   rw [← sum_product', sum_congr rfl (fun a ha ↦ if_congr (h_iff a ha) rfl rfl), sum_ite_eq]
@@ -77,8 +77,7 @@ theorem choose_modEq_choose_mul_prod_range_choose (a : ℕ) :
     rw [prod_range_succ, cast_mul, ← mul_assoc, mul_right_comm]
     gcongr
     apply choose_modEq_choose_mod_mul_choose_div.trans
-    simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm]
-    rfl
+    simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm, Int.ModEq.refl]
 
 /-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
 `choose (⌊n / p ^ i⌋ % p) (⌊k / p ^ i⌋ % p)` over `i` modulo `p`. -/

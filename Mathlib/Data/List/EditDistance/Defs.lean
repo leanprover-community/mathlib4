@@ -100,7 +100,7 @@ def impl
     (xs : List α) (y : β) (d : {r : List δ // 0 < r.length}) : {r : List δ // 0 < r.length} :=
   let ⟨ds, w⟩ := d
   xs.zip (ds.zip ds.tail) |>.foldr
-    (init := ⟨[C.insert y + ds.getLast (List.length_pos.mp w)], by simp⟩)
+    (init := ⟨[C.insert y + ds.getLast (List.length_pos_iff.mp w)], by simp⟩)
     (fun ⟨x, d₀, d₁⟩ ⟨r, w⟩ =>
       ⟨min (C.delete x + r[0]) (min (C.insert y + d₀) (C.substitute x y + d₁)) :: r, by simp⟩)
 

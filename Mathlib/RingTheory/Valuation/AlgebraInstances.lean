@@ -35,7 +35,7 @@ namespace ValuationSubring
 instance : Algebra v.valuationSubring L := Algebra.ofSubring v.valuationSubring.toSubring
 
 theorem algebraMap_injective : Injective (algebraMap v.valuationSubring L) :=
-  (NoZeroSMulDivisors.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
+  (FaithfulSMul.algebraMap_injective K L).comp (IsFractionRing.injective _ _)
 
 theorem isIntegral_of_mem_ringOfIntegers {x : L} (hx : x ∈ integralClosure v.valuationSubring L) :
     IsIntegral v.valuationSubring (⟨x, hx⟩ : integralClosure v.valuationSubring L) := by

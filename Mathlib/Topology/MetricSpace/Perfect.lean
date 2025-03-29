@@ -7,6 +7,7 @@ Authors: Felix Weilacher
 import Mathlib.Topology.Perfect
 import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.MetricSpace.CantorScheme
+import Mathlib.Topology.Metrizable.Real
 
 /-!
 # Perfect Sets
@@ -26,8 +27,7 @@ including a version of the Cantor-Bendixson Theorem.
 ## Tags
 
 accumulation point, perfect set, cantor-bendixson.
-
---/
+-/
 
 open Set Filter
 
@@ -59,8 +59,8 @@ theorem Perfect.small_diam_splitting (hC : Perfect C) (hnonempty : C.Nonempty) (
     ∃ C₀ C₁ : Set α, (Perfect C₀ ∧ C₀.Nonempty ∧ C₀ ⊆ C ∧ EMetric.diam C₀ ≤ ε) ∧
     (Perfect C₁ ∧ C₁.Nonempty ∧ C₁ ⊆ C ∧ EMetric.diam C₁ ≤ ε) ∧ Disjoint C₀ C₁ := by
   rcases hC.splitting hnonempty with ⟨D₀, D₁, ⟨perf0, non0, sub0⟩, ⟨perf1, non1, sub1⟩, hdisj⟩
-  cases' non0 with x₀ hx₀
-  cases' non1 with x₁ hx₁
+  obtain ⟨x₀, hx₀⟩ := non0
+  obtain ⟨x₁, hx₁⟩ := non1
   rcases perf0.small_diam_aux ε_pos hx₀ with ⟨perf0', non0', sub0', diam0⟩
   rcases perf1.small_diam_aux ε_pos hx₁ with ⟨perf1', non1', sub1', diam1⟩
   refine
@@ -82,12 +82,14 @@ theorem Perfect.exists_nat_bool_injection
     fun {C : Set α} (hC : Perfect C) (hnonempty : C.Nonempty) {ε : ℝ≥0∞} (hε : 0 < ε) =>
     hC.small_diam_splitting hnonempty hε
   let DP : List Bool → P := fun l => by
-    induction' l with a l ih; · exact ⟨C, ⟨hC, hnonempty⟩⟩
-    cases a
-    · use C0 ih.property.1 ih.property.2 (upos (l.length + 1))
-      exact ⟨(h0 _ _ _).1, (h0 _ _ _).2.1⟩
-    use C1 ih.property.1 ih.property.2 (upos (l.length + 1))
-    exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
+    induction l with
+    | nil => exact ⟨C, ⟨hC, hnonempty⟩⟩
+    | cons a l ih =>
+      cases a
+      · use C0 ih.property.1 ih.property.2 (upos (l.length + 1))
+        exact ⟨(h0 _ _ _).1, (h0 _ _ _).2.1⟩
+      use C1 ih.property.1 ih.property.2 (upos (l.length + 1))
+      exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
   let D : List Bool → Set α := fun l => (DP l).val
   have hanti : ClosureAntitone D := by
     refine Antitone.closureAntitone ?_ fun l => (DP l).property.1.closed
@@ -120,7 +122,7 @@ theorem Perfect.exists_nat_bool_injection
   · rintro y ⟨x, rfl⟩
     exact map_mem ⟨_, hdom⟩ 0
   · apply hdiam.map_continuous.comp
-    continuity
+    fun_prop
   intro x y hxy
   simpa only [← Subtype.val_inj] using hdisj'.map_injective hxy
 
@@ -131,7 +133,7 @@ from the Cantor space `ℕ → Bool`. -/
 theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by
-  letI := upgradePolishSpace α
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable α
   obtain ⟨D, hD, Dnonempty, hDC⟩ := exists_perfect_nonempty_of_isClosed_of_not_countable hC hunc
   obtain ⟨f, hfD, hf⟩ := hD.exists_nat_bool_injection Dnonempty
   exact ⟨f, hfD.trans hDC, hf⟩

@@ -189,7 +189,8 @@ theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bo
     exact Bornology.IsVonNBounded.image hs₁ ((b.ofZLatticeBasis ℝ).equivFunL : E →L[ℝ] ι → ℝ)
   · exact (b.ofZLatticeBasis ℝ).equivFunL.toHomeomorph.toMeasurableEquiv.measurableSet_image.mpr hs₂
 
-private theorem tendsto_card_le_div''_aux {X : Set E} (hX : ∀ ⦃x⦄ ⦃r:ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
+private theorem tendsto_card_le_div''_aux
+    {X : Set E} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
     {F : E → ℝ} (hF₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r → F (r • x) = r ^ card ι * (F x)) {c : ℝ} (hc : 0 < c) :
     c • {x ∈ X | F x ≤ 1} = {x ∈ X | F x ≤ c ^ card ι} := by
   ext x
@@ -246,7 +247,7 @@ section Pi
 open Filter Fintype Pointwise Topology Bornology
 
 private theorem frontier_equivFun {E : Type*} [AddCommGroup E] [Module ℝ E] {ι : Type*} [Fintype ι]
-    [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
+    [TopologicalSpace E] [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [T2Space E]
     (b : Basis ι ℝ E) (s : Set E) :
     frontier (b.equivFun '' s) = b.equivFun '' (frontier s) := by
   rw [LinearEquiv.image_eq_preimage, LinearEquiv.image_eq_preimage]

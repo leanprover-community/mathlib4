@@ -47,7 +47,7 @@ instance (priority := 900) quasiCompact_of_isIso {X Y : Scheme} (f : X ⟶ Y) [I
     QuasiCompact f := by
   constructor
   intro U _ hU'
-  convert hU'.image (inv f.base).continuous_toFun using 1
+  convert hU'.image (inv f.base).hom.continuous_toFun using 1
   rw [Set.image_eq_preimage_of_inverse]
   · delta Function.LeftInverse
     exact IsIso.inv_hom_id_apply f.base
@@ -253,7 +253,7 @@ theorem exists_pow_mul_eq_zero_of_res_basicOpen_eq_zero_of_isAffineOpen (X : Sch
   `(hU.isLocalization_basicOpen f).exists_of_eq H`
   This is no longer possible;
   likely changing the signature of `IsLocalization.Away.exists_of_eq` is in order.
-  -/
+-/
   obtain ⟨n, e⟩ :=
     @IsLocalization.Away.exists_of_eq _ _ _ _ _ _ (hU.isLocalization_basicOpen f) _ _ H
   exact ⟨n, by simpa [mul_comm x] using e⟩

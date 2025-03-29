@@ -263,7 +263,7 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
 
 theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L] :
     algebraMap K L (Algebra.trace K L x) = ∑ σ : L ≃ₐ[K] L, σ x := by
-  apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
+  apply FaithfulSMul.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← trace_eq_sum_embeddings (AlgebraicClosure L) (x := x)]
@@ -332,9 +332,9 @@ theorem traceMatrix_of_basis [Fintype κ] [DecidableEq κ] (b : Basis κ A B) :
 theorem traceMatrix_of_basis_mulVec (b : Basis ι A B) (z : B) :
     traceMatrix A b *ᵥ b.equivFun z = fun i => trace A B (z * b i) := by
   ext i
-  rw [← col_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, col_mulVec,
+  rw [← replicateCol_apply (ι := Fin 1) (traceMatrix A b *ᵥ b.equivFun z) i 0, replicateCol_mulVec,
     Matrix.mul_apply, traceMatrix]
-  simp only [col_apply, traceForm_apply]
+  simp only [replicateCol_apply, traceForm_apply]
   conv_lhs =>
     congr
     rfl
@@ -490,7 +490,7 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
     map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
   rw [PowerBasis.coe_basis]
-  simp only [RingHom.map_ite_one_zero, traceForm_apply]
+  simp only [MonoidWithZeroHom.map_ite_one_zero, traceForm_apply]
   rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
   apply Finset.sum_congr rfl
   intro σ _

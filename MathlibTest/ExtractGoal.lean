@@ -1,6 +1,6 @@
 import Mathlib.Tactic.ExtractGoal
 import Mathlib.Order.Basic
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Basic
 
 set_option linter.style.setOption false
 set_option pp.unicode.fun true

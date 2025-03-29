@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.BigOperators.Ring.Finset
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Group.Submonoid.Defs
@@ -60,7 +60,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homs.
 -/
 
-assert_not_exists Ideal TwoSidedIdeal
+assert_not_exists Field Ideal TwoSidedIdeal
 
 open Multiset Set
 open scoped Pointwise
@@ -346,8 +346,8 @@ section Prod
 variable {α₁ α₂ β₁ β₂ : Type*} [CommMonoid α₁] [CommMonoid α₂] [CommMonoid β₁] [CommMonoid β₂]
   {A₁ : Set α₁} {A₂ : Set α₂} {B₁ : Set β₁} {B₂ : Set β₂} {f₁ : α₁ → β₁} {f₂ : α₂ → β₂} {n : ℕ}
 
-@[to_additive]
-lemma IsMulFreimanHom.prod (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsMulFreimanHom n A₂ B₂ f₂) :
+@[to_additive prodMap]
+lemma IsMulFreimanHom.prodMap (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsMulFreimanHom n A₂ B₂ f₂) :
     IsMulFreimanHom n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
   mapsTo := h₁.mapsTo.prodMap h₂.mapsTo
   map_prod_eq_map_prod s t hsA htA hs ht h := by
@@ -359,8 +359,14 @@ lemma IsMulFreimanHom.prod (h₁ : IsMulFreimanHom n A₁ B₁ f₁) (h₂ : IsM
       (by simpa) h.1, h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
       (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa) h.2⟩
 
-@[to_additive]
-lemma IsMulFreimanIso.prod (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
+@[deprecated (since := "2025-03-11")]
+alias IsAddFreimanHom.sum := IsAddFreimanHom.prodMap
+
+@[to_additive existing, deprecated (since := "2025-03-11")]
+alias IsMulFreimanHom.prod := IsMulFreimanHom.prodMap
+
+@[to_additive prodMap]
+lemma IsMulFreimanIso.prodMap (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsMulFreimanIso n A₂ B₂ f₂) :
     IsMulFreimanIso n (A₁ ×ˢ A₂) (B₁ ×ˢ B₂) (Prod.map f₁ f₂) where
   bijOn := h₁.bijOn.prodMap h₂.bijOn
   map_prod_eq_map_prod s t hsA htA hs ht := by
@@ -370,7 +376,13 @@ lemma IsMulFreimanIso.prod (h₁ : IsMulFreimanIso n A₁ B₁ f₁) (h₂ : IsM
     rw [← Function.comp_def, ← map_map, ← map_map, ← Function.comp_def f₂, ← map_map, ← map_map,
       h₁.map_prod_eq_map_prod (by simpa using hsA.1) (by simpa using htA.1) (by simpa) (by simpa),
       h₂.map_prod_eq_map_prod (by simpa [@forall_swap α₁] using hsA.2)
-      (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
+        (by simpa [@forall_swap α₁] using htA.2) (by simpa) (by simpa)]
+
+@[deprecated (since := "2025-03-11")]
+alias IsAddFreimanIso.sum := IsAddFreimanIso.prodMap
+
+@[to_additive existing, deprecated (since := "2025-03-11")]
+alias IsMulFreimanIso.prod := IsMulFreimanIso.prodMap
 
 end Prod
 

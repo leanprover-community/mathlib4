@@ -40,8 +40,8 @@ namespace Polynomial
 section Semiring
 
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
-variable (R)
 
+variable (R) in
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
 
 The informal notation `p(a)` stand for `Polynomial.aeval a p`.
@@ -50,8 +50,6 @@ Again informally, the annihilating ideal of `a` is
 The formal definition uses the kernel of the aeval map. -/
 noncomputable def annIdeal (a : A) : Ideal R[X] :=
   RingHom.ker ((aeval a).toRingHom : R[X] →+* A)
-
-variable {R}
 
 /-- It is useful to refer to ideal membership sometimes
  and the annihilation condition other times. -/

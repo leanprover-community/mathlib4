@@ -120,34 +120,26 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' (h_meas_f : AEMeas
     lintegral_congr_ae fg_ae]
   apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun h_meas_f.measurable_mk
       h_meas_g.measurable_mk
-  exact h_indep_fun.ae_eq h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
+  exact h_indep_fun.congr h_meas_f.ae_eq_mk h_meas_g.ae_eq_mk
 
 theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMeasurable f μ)
     (h_meas_g : AEMeasurable g μ) (h_indep_fun : IndepFun f g μ) :
     ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
 
-theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq ι]
-    (s : Finset ι) (X : ι → Ω → ℝ≥0∞)
-    (hX : iIndepFun (fun _ ↦ ENNReal.measurableSpace) X μ)
+theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*}
+    (s : Finset ι) (X : ι → Ω → ℝ≥0∞) (hX : iIndepFun X μ)
     (x_mea : ∀ i, Measurable (X i)) :
     ∫⁻ ω, ∏ i ∈ s, (X i ω) ∂μ = ∏ i ∈ s, ∫⁻ ω, X i ω ∂μ := by
   have : IsProbabilityMeasure μ := hX.isProbabilityMeasure
-  induction s using Finset.induction
-  case empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
-  case insert _ j s hj v =>
-    calc  ∫⁻ (ω : Ω), ∏ i ∈ insert j s, X i ω ∂μ
-      _ = ∫⁻ (ω : Ω), (∏ i ∈ insert j s, X i) ω ∂μ := by simp only [Finset.prod_apply]
-      _ =  ∫⁻ (ω : Ω), (X j * ∏ i ∈ s, X i) ω ∂μ :=
-        lintegral_congr fun ω ↦ congrFun (Finset.prod_insert hj) ω
-      _ = (∫⁻ ω, X j ω ∂μ) * ∫⁻ ω, (∏ i ∈ s, X i) ω ∂μ := by
-        apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
-        · exact (x_mea j).aemeasurable
-        · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
-        · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX (fun i ↦ x_mea i) hj).symm
-      _ = ∏ i' ∈ insert j s, ∫⁻ ω, X i' ω ∂μ := by
-        simp only [Finset.prod_apply]
-        rw [v, Finset.prod_insert hj]
+  induction s using Finset.cons_induction with
+  | empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
+  | cons j s hj ihs =>
+    simp only [← Finset.prod_apply, Finset.prod_cons, ← ihs]
+    apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
+    · exact (x_mea j).aemeasurable
+    · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
+    · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX x_mea hj).symm
 
 /-- The product of two independent, integrable, real-valued random variables is integrable. -/
 theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → β}
@@ -295,7 +287,7 @@ theorem IndepFun.integral_mul (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable
       rintro ⟨HX, HY⟩
       exact h (hXY.integrable_mul HX HY)
     rw [not_and_or] at I
-    cases' I with I I <;> simp [integral_undef I]
+    rcases I with I | I <;> simp [integral_undef I]
 
 theorem IndepFun.integral_mul' (hXY : IndepFun X Y μ) (hX : AEStronglyMeasurable X μ)
     (hY : AEStronglyMeasurable Y μ) :

@@ -122,7 +122,7 @@ theorem encodePosNum_nonempty (n : PosNum) : encodePosNum n ≠ [] :=
 
 @[simp] theorem decode_encodeNum : ∀ n, decodeNum (encodeNum n) = n := by
   intro n
-  cases' n with n <;> unfold encodeNum decodeNum
+  obtain - | n := n <;> unfold encodeNum decodeNum
   · rfl
   rw [decode_encodePosNum n]
   rw [PosNum.cast_to_num]

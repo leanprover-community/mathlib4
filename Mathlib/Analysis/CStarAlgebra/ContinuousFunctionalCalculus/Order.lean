@@ -7,8 +7,8 @@ Authors: Frédéric Dupuis
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-import Mathlib.Topology.ContinuousMap.StarOrdered
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
+import Mathlib.Topology.ContinuousMap.ContinuousSqrt
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -41,8 +41,8 @@ open scoped NNReal CStarAlgebra
 local notation "σₙ" => quasispectrum
 
 theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
-    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [T2Space A]
-    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [T2Space A]
+    [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
     (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
@@ -59,8 +59,8 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
       ContinuousOn.comp ‹_› continuous_real_toNNReal.continuousOn <| ha'.image ▸ Set.mapsTo_image ..
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
-    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
-    [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
+    [IsTopologicalRing A] [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
     (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
@@ -112,8 +112,8 @@ end Unitization
 /-- `cfc_le_iff` only applies to a scalar ring where `R` is an actual `Ring`, and not a `Semiring`.
 However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
 lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
-    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
-    [T2Space A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [StarOrderedRing A] [Algebra ℝ A] [IsTopologicalRing A] [NonnegSpectrumClass ℝ A]
+    [T2Space A] [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
     (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
@@ -130,7 +130,7 @@ open ContinuousFunctionalCalculus in
 than some `algebraMap ℝ A r` if and only if every element of the `ℝ`-spectrum is nonnegative. -/
 lemma CFC.exists_pos_algebraMap_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A]
     [PartialOrder A] [StarOrderedRing A] [Algebra ℝ A] [NonnegSpectrumClass ℝ A] [Nontrivial A]
-    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [ContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
     {a : A} (ha : IsSelfAdjoint a := by cfc_tac) :
     (∃ r > 0, algebraMap ℝ A r ≤ a) ↔ (∀ x ∈ spectrum ℝ a, 0 < x) := by
   have h_cpct : IsCompact (spectrum ℝ a) := isCompact_iff_compactSpace.mpr inferInstance
@@ -282,7 +282,7 @@ lemma CStarAlgebra.isUnit_of_le {a b : A} (h₀ : IsUnit a) (ha : 0 ≤ a := by 
   nontriviality A
   have hb := (show 0 ≤ a from ha).trans hab
   rw [zero_not_mem_iff, SpectrumRestricts.nnreal_lt_iff (.nnreal_of_nonneg ‹_›),
-    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff] at h₀ ⊢
+    NNReal.coe_zero, ← CFC.exists_pos_algebraMap_le_iff (.of_nonneg ‹_›)] at h₀ ⊢
   peel h₀ with r hr _
   exact this.trans hab
 
@@ -399,14 +399,15 @@ lemma norm_le_norm_of_nonneg_of_le {a b : A} (ha : 0 ≤ a := by cfc_tac) (hab :
     simpa only [ge_iff_le, Unitization.norm_inr] using
       this a b (by simpa) (by rwa [Unitization.inr_le_iff a b])
   intro a b ha hab
-  have hb_nonneg : 0 ≤ b := ha.trans hab
-  have : 0 ≤ a := by cfc_tac
+  have hb : 0 ≤ b := ha.trans hab
+  -- these two `have`s are just for performance
+  have := IsSelfAdjoint.of_nonneg ha; have := IsSelfAdjoint.of_nonneg hb
   have h₂ : cfc (id : ℝ → ℝ) a ≤ cfc (fun _ => ‖b‖) a := by
     calc _ = a := by rw [cfc_id ℝ a]
       _ ≤ cfc id b := (cfc_id ℝ b) ▸ hab
       _ ≤ cfc (fun _ => ‖b‖) b := by
           refine cfc_mono fun x hx => ?_
-          calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb_nonneg hx)).symm
+          calc x = ‖x‖ := (Real.norm_of_nonneg (spectrum_nonneg_of_nonneg hb hx)).symm
             _ ≤ ‖b‖ := spectrum.norm_le_norm_of_mem hx
       _ = _ := by rw [cfc_const _ _, cfc_const _ _]
   rw [cfc_le_iff id (fun _ => ‖b‖) a] at h₂

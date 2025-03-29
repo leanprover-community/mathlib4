@@ -51,7 +51,7 @@ theorem entry_norm_bound_of_unitary {U : Matrix n n 𝕜} (hU : U ∈ Matrix.uni
     apply Multiset.single_le_sum
     · intro x h_x
       rw [Multiset.mem_map] at h_x
-      cases' h_x with a h_a
+      obtain ⟨a, h_a⟩ := h_x
       rw [← h_a.2]
       apply sq_nonneg
     · rw [Multiset.mem_map]
@@ -225,7 +225,7 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedSpace
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
   dist_eq := l2OpNormedRingAux.dist_eq
-  norm_mul := l2OpNormedRingAux.norm_mul
+  norm_mul_le := l2OpNormedRingAux.norm_mul_le
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 

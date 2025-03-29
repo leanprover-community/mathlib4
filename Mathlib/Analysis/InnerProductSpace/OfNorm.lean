@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Algebra
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Convex
 import Mathlib.Algebra.Module.LinearMap.Rat
 import Mathlib.Tactic.Module
 
@@ -92,7 +92,7 @@ namespace InnerProductSpaceable
 
 variable {𝕜} (E)
 
--- Porting note: prime added to avoid clashing with public `innerProp`
+-- This has a prime added to avoid clashing with public `innerProp`
 /-- Auxiliary definition for the `add_left` property. -/
 private def innerProp' (r : 𝕜) : Prop :=
   ∀ x y : E, inner_ 𝕜 (r • x) y = conj r * inner_ 𝕜 x y

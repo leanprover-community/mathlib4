@@ -511,7 +511,7 @@ theorem lintegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ 
     (hf : AEMeasurable f ν) : ∫⁻ x, μ.rnDeriv ν x * f x ∂ν = ∫⁻ x, f x ∂μ := by
   nth_rw 2 [← withDensity_rnDeriv_eq μ ν hμν]
   rw [lintegral_withDensity_eq_lintegral_mul₀ (measurable_rnDeriv μ ν).aemeasurable hf]
-  rfl
+  simp only [Pi.mul_apply]
 
 lemma setLIntegral_rnDeriv_mul [HaveLebesgueDecomposition μ ν] (hμν : μ ≪ ν) {f : α → ℝ≥0∞}
     (hf : AEMeasurable f ν) {s : Set α} (hs : MeasurableSet s) :

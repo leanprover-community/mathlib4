@@ -3,11 +3,12 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Antoine Chambert-Loir
 -/
-import Mathlib.Algebra.CharZero.Lemmas
+import Mathlib.Algebra.Ring.CharZero
 import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -65,7 +66,6 @@ variable (α : Type*) [Fintype α] [DecidableEq α]
 def alternatingGroup : Subgroup (Perm α) :=
   sign.ker
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): manually added instance
 instance alternatingGroup.instFintype : Fintype (alternatingGroup α) :=
   @Subtype.fintype _ _ sign.decidableMemKer _
 
@@ -102,10 +102,10 @@ end Equiv.Perm
 theorem alternatingGroup.index_eq_two [Nontrivial α] :
     (alternatingGroup α).index = 2 := by
   rw [alternatingGroup, index_ker, MonoidHom.range_eq_top.mpr (sign_surjective α)]
-  simp_rw [mem_top, Nat.card_eq_fintype_card]; rfl
+  simp_rw [mem_top, Nat.card_eq_fintype_card, card_subtype_true, card_units_int]
 
 @[nontriviality]
-theorem index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
+theorem alternatingGroup.index_eq_one [Subsingleton α] : (alternatingGroup α).index = 1 := by
   rw [Subgroup.index_eq_one]; apply Subsingleton.elim
 
 theorem two_mul_card_alternatingGroup [Nontrivial α] :
@@ -125,7 +125,7 @@ theorem isConj_of {σ τ : alternatingGroup α} (hc : IsConj (σ : Perm α) (τ 
   obtain ⟨τ, hτ⟩ := τ
   obtain ⟨π, hπ⟩ := isConj_iff.1 hc
   rw [Subtype.coe_mk, Subtype.coe_mk] at hπ
-  cases' Int.units_eq_one_or (Perm.sign π) with h h
+  rcases Int.units_eq_one_or (Perm.sign π) with h | h
   · rw [isConj_iff]
     refine ⟨⟨π, mem_alternatingGroup.mp h⟩, Subtype.val_injective ?_⟩
     simpa only [Subtype.val, Subgroup.coe_mul, coe_inv, coe_mk] using hπ
@@ -167,7 +167,7 @@ theorem closure_three_cycles_eq_alternating :
       exact hind n l hl hn
     intro n
     induction' n with n ih <;> intro l hl hn
-    · simp [List.length_eq_zero.1 hn, one_mem]
+    · simp [List.length_eq_zero_iff.1 hn, one_mem]
     rw [Nat.mul_succ] at hn
     obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.length_cons, Nat.succ_inj'] at hn
@@ -258,13 +258,13 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
           normalClosure _ :=
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
+      -- Porting note: added `:` to help the elaborator
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
-        -- Porting note: added `: _`
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
-  used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
-  -/
+used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
+-/
 theorem normalClosure_swap_mul_swap_five :
     normalClosure
         ({⟨swap 0 4 * swap 1 3, mem_alternatingGroup.2 (by decide)⟩} :
@@ -307,7 +307,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
     have h13 : (1 : Fin 5) ≠ 3 := by decide
     rw [Disjoint.cycleType, (isCycle_swap h04).cycleType, (isCycle_swap h13).cycleType,
       card_support_swap h04, card_support_swap h13]
-    · rfl
+    · simp
     · rw [disjoint_iff_disjoint_support, support_swap h04, support_swap h13]
       decide
   · contradiction
@@ -368,7 +368,7 @@ namespace Equiv.Perm
 
 open Subgroup Group
 
-/-- The alternating group is the only subgroup of index 2 of the permutation group -/
+/-- The alternating group is the only subgroup of index 2 of the permutation group. -/
 theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG : G.index = 2) :
     G = alternatingGroup α := by
   nontriviality α
@@ -384,19 +384,19 @@ theorem eq_alternatingGroup_of_index_eq_two {G : Subgroup (Equiv.Perm α)} (hG :
   rw [← (isConj_iff.mp <| isConj_swap hxy hab).choose_spec]
   exact (normal_of_index_eq_two hG).conj_mem _ habG _
 
-/-- A subgroup of the permutation group of index ≤ 2 contains the alternating group -/
+/-- A subgroup of the permutation group of index ≤ 2 contains the alternating group. -/
 theorem alternatingGroup_le_of_index_le_two
     {G : Subgroup (Equiv.Perm α)} (hG : G.index ≤ 2) :
     alternatingGroup α ≤ G := by
-  cases' G.index.eq_zero_or_pos with h h
+  rcases G.index.eq_zero_or_pos with h | h
   · exact (index_ne_zero_of_finite h).elim
-  cases' (Nat.succ_le_iff.mpr h).eq_or_gt with h h
+  rcases (Nat.succ_le_iff.mpr h).eq_or_gt with h | h
   · exact index_eq_one.mp h ▸ le_top
   rw [eq_alternatingGroup_of_index_eq_two (hG.antisymm h)]
 
 end Equiv.Perm
 
-/-- The alternating group is a characteristic subgroup of the permutation group -/
+/-- The alternating group is a characteristic subgroup of the permutation group. -/
 instance : (alternatingGroup α).Characteristic where
   fixed φ := by
     nontriviality α

@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Adam Topaz, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.Algebra.Tower
-import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 
 /-!
 # Free Algebras
@@ -96,9 +95,7 @@ attribute [local instance] Pre.hasCoeGenerator Pre.hasCoeSemiring Pre.hasMul Pre
   Pre.hasZero Pre.hasOne Pre.hasSMul
 
 /-- Given a function from `X` to an `R`-algebra `A`, `lift_fun` provides a lift of `f` to a function
-from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`.
--/
--- Porting note: recOn was replaced to preserve computability, see https://github.com/leanprover/lean4/issues/2049
+from `Pre R X` to `A`. This is mainly used in the construction of `FreeAlgebra.lift`. -/
 def liftFun {A : Type*} [Semiring A] [Algebra R A] (f : X → A) :
     Pre R X → A
   | .of t => f t
@@ -343,8 +340,7 @@ private def liftAux (f : X → A) : FreeAlgebra R X →ₐ[R] A where
   commutes' := by tauto
 
 /-- Given a function `f : X → A` where `A` is an `R`-algebra, `lift R f` is the unique lift
-of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`.
--/
+of `f` to a morphism of `R`-algebras `FreeAlgebra R X → A`. -/
 @[irreducible]
 def lift : (X → A) ≃ (FreeAlgebra R X →ₐ[R] A) :=
   { toFun := liftAux R
@@ -530,17 +526,18 @@ If `C` holds for the `algebraMap` of `r : R` into `FreeAlgebra R X`, the `ι` of
 preserved under addition and multiplication, then it holds for all of `FreeAlgebra R X`.
 -/
 @[elab_as_elim, induction_eliminator]
-theorem induction {C : FreeAlgebra R X → Prop}
-    (h_grade0 : ∀ r, C (algebraMap R (FreeAlgebra R X) r)) (h_grade1 : ∀ x, C (ι R x))
-    (h_mul : ∀ a b, C a → C b → C (a * b)) (h_add : ∀ a b, C a → C b → C (a + b))
-    (a : FreeAlgebra R X) : C a := by
+theorem induction {motive : FreeAlgebra R X → Prop}
+    (grade0 : ∀ r, motive (algebraMap R (FreeAlgebra R X) r)) (grade1 : ∀ x, motive (ι R x))
+    (mul : ∀ a b, motive a → motive b → motive (a * b))
+    (add : ∀ a b, motive a → motive b → motive (a + b))
+    (a : FreeAlgebra R X) : motive a := by
   -- the arguments are enough to construct a subalgebra, and a mapping into it from X
   let s : Subalgebra R (FreeAlgebra R X) :=
-    { carrier := C
-      mul_mem' := h_mul _ _
-      add_mem' := h_add _ _
-      algebraMap_mem' := h_grade0 }
-  let of : X → s := Subtype.coind (ι R) h_grade1
+    { carrier := motive
+      mul_mem' := mul _ _
+      add_mem' := add _ _
+      algebraMap_mem' := grade0 }
+  let of : X → s := Subtype.coind (ι R) grade1
   -- the mapping through the subalgebra is the identity
   have of_id : AlgHom.id R (FreeAlgebra R X) = s.val.comp (lift R of) := by
     ext
@@ -557,10 +554,10 @@ theorem adjoin_range_ι : Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra 
   set S := Algebra.adjoin R (Set.range (ι R : X → FreeAlgebra R X))
   refine top_unique fun x hx => ?_; clear hx
   induction x with
-  | h_grade0 => exact S.algebraMap_mem _
-  | h_add x y hx hy => exact S.add_mem hx hy
-  | h_mul x y hx hy => exact S.mul_mem hx hy
-  | h_grade1 x => exact Algebra.subset_adjoin (Set.mem_range_self _)
+  | grade0 => exact S.algebraMap_mem _
+  | add x y hx hy => exact S.add_mem hx hy
+  | mul x y hx hy => exact S.mul_mem hx hy
+  | grade1 x => exact Algebra.subset_adjoin (Set.mem_range_self _)
 
 variable {A : Type*} [Semiring A] [Algebra R A]
 

@@ -32,14 +32,19 @@ namespace Limits
 variable {J : Type u} [Category.{v} J] {C : Type u'} [Category.{v'} C]
   (F : Jᵒᵖ ⥤ J ⥤ C)
 
+variable (J) in
+/-- The shape of multiequalizer diagrams involved in the definition of ends. -/
+@[simps]
+def multicospanShapeEnd : MulticospanShape where
+  L := J
+  R := Arrow J
+  fst f := f.left
+  snd f := f.right
+
 /-- Given `F : Jᵒᵖ ⥤ J ⥤ C`, this is the multicospan index which shall be used
 to define the end of `F`. -/
 @[simps]
-def multicospanIndexEnd : MulticospanIndex C where
-  L := J
-  R := Arrow J
-  fstTo f := f.left
-  sndTo f := f.right
+def multicospanIndexEnd : MulticospanIndex (multicospanShapeEnd J) C where
   left j := (F.obj (op j)).obj j
   right f := (F.obj (op f.left)).obj f.right
   fst f := (F.obj (op f.left)).map f.hom

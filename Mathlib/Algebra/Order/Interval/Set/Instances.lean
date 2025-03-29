@@ -35,6 +35,7 @@ The strongest typeclass provided on each interval is:
   some arbitrary ordered semiring
 -/
 
+assert_not_exists RelIso
 
 open Set
 

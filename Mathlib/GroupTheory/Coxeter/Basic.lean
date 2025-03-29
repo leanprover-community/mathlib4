@@ -412,7 +412,7 @@ theorem length_alternatingWord (i i' : B) (m : ℕ) :
   · simpa [alternatingWord] using ih i' i
 
 lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
-    (alternatingWord i j p)[k]'(by simp; exact hk) =  (if Even (p + k) then i else j) := by
+    (alternatingWord i j p)[k]'(by simp [hk]) = (if Even (p + k) then i else j) := by
   revert k
   induction p with
   | zero =>
@@ -425,9 +425,9 @@ lemma getElem_alternatingWord (i j : B) (p k : ℕ) (hk : k < p) :
     | 0 =>
       by_cases h2 : Even n
       · simp only [h2, ↓reduceIte, getElem_cons_zero, add_zero,
-        (by simp [Even.add_one, h2] : ¬Even (n + 1))]
+          (by simp [Even.add_one, h2] : ¬Even (n + 1))]
       · simp only [h2, ↓reduceIte, getElem_cons_zero, add_zero,
-        Odd.add_one (Nat.not_even_iff_odd.mp h2)]
+          Odd.add_one (Nat.not_even_iff_odd.mp h2)]
     | k + 1 =>
       simp only [add_lt_add_iff_right] at hk h
       simp only [getElem_cons_succ, h k hk]
@@ -465,16 +465,16 @@ lemma listTake_alternatingWord (i j : B) (p k : ℕ) (h : k < 2 * p) :
       by_cases h_even : Even k
       · simp only [h_even, ↓reduceIte] at hk
         simp only [Nat.not_even_iff_odd.mpr (Even.add_one h_even), ↓reduceIte]
-        rw [← List.take_concat_get _ _ (by simp[h]; omega), alternatingWord_succ, ← hk]
+        rw [← List.take_concat_get _ _ (by simp [h]; omega), alternatingWord_succ, ← hk]
         apply congr_arg
         rw [getElem_alternatingWord i j (2*p) k (by omega)]
-        simp [(by apply Nat.even_add.mpr; simp[h_even]: Even (2 * p + k))]
+        simp [(by apply Nat.even_add.mpr; simp [h_even] : Even (2 * p + k))]
       · simp only [h_even, ↓reduceIte] at hk
         simp only [(by simp at h_even; exact Odd.add_one h_even : Even (k + 1)), ↓reduceIte]
-        rw [← List.take_concat_get _ _ (by simp[h]; omega), alternatingWord_succ, hk]
+        rw [← List.take_concat_get _ _ (by simp [h]; omega), alternatingWord_succ, hk]
         apply congr_arg
         rw [getElem_alternatingWord i j (2*p) k (by omega)]
-        simp [(by apply Nat.odd_add.mpr; simp[h_even]: Odd (2 * p + k))]
+        simp [(by apply Nat.odd_add.mpr; simp [h_even] : Odd (2 * p + k))]
 
 lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2 * p) :
     List.take (k + 1) (alternatingWord i j (2 * p)) =
@@ -483,8 +483,8 @@ lemma listTake_succ_alternatingWord (i j : B) (p : ℕ) (k : ℕ) (h : k + 1 < 2
 
   by_cases h_even : Even k
   · simp [h_even, Nat.not_even_iff_odd.mpr (Even.add_one h_even), alternatingWord_succ', h_even]
-  · simp [h_even, (by simp at h_even; exact Odd.add_one h_even: Even (k + 1)),
-    alternatingWord_succ', h_even]
+  · simp [h_even, (by rw [Nat.not_even_iff_odd] at h_even; exact Odd.add_one h_even : Even (k + 1)),
+      alternatingWord_succ', h_even]
 
 theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
