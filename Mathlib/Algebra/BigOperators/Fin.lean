@@ -121,7 +121,7 @@ def prodEquivManyImp {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n 
     let newPf : Q(∏ i, $f i = $val * $f $m) := q(prod_step $pf)
     return ⟨q($val * $f $m), newPf⟩
 
-/-- Rewrites `∏ (i : Fin n), f i` with `f 0 * f 1 * ... * f (n - 1)`. -/
+/-- Rewrites `∏ (i : Fin n), f i` as `f 0 * f 1 * ... * f (n - 1)`. -/
 simproc_decl prod_univ_many (Finset.prod (α := Fin _) Finset.univ _) := .ofQ fun u _ e => do
   match u, e with
   | .succ _, ~q(@Finset.prod (Fin $n) _ $inst Finset.univ $f) => do
