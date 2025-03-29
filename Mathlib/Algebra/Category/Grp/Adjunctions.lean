@@ -5,7 +5,7 @@ Authors: Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.GroupTheory.FreeAbelianGroup
-import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Types.Shapes
 
 /-!
 # Adjunctions regarding the category of (abelian) groups
