@@ -460,7 +460,7 @@ lemma mul_add_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (hba : b ∣ a) (hdc 
     Nat.mul_div_right _ (zero_lt_of_ne_zero <| Nat.mul_ne_zero hb hd)]
 
 lemma mul_sub_mul_div_of_dvd (hb : b ≠ 0) (hd : d ≠ 0) (hba : b ∣ a) (hdc : d ∣ c) :
-    (a * d - b * c) / (b * d)  = a / b - c / d:= by
+    (a * d - b * c) / (b * d)  = a / b - c / d := by
   obtain ⟨n, hn⟩ := hba
   obtain ⟨m, hm⟩ := hdc
   rw [hn, hm]
