@@ -34,12 +34,13 @@ open scoped NNReal
 
 open Multiplicative WithZero
 
--- TODO: Find home for this
+-- TODO: Why does this error in WithOne/Defs.lean?
 @[simp high]
-theorem WithZero.unzero_one_multiplicative {Z} [Zero Z]
-    (hx : (1 : WithZero (Multiplicative Z)) ≠ 0) :
+theorem WithZero.unzero_one {Z} [One Z]
+    (hx : (1 : WithZero (Z)) ≠ 0) :
     unzero hx = 1 :=
   rfl
+
 namespace WithZeroMulInt
 
 /-- Given a nonzero `e : ℝ≥0`, this is the map `ℤₘ₀ → ℝ≥0` sending `0 ↦ 0` and
