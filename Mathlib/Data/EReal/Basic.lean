@@ -6,42 +6,16 @@ Authors: Kevin Buzzard
 import Mathlib.Data.ENNReal.Order
 
 /-!
-# The extended reals [-∞, ∞].
+# The extended real numbers
 
-This file defines `EReal`, the real numbers together with a top and bottom element,
-referred to as ⊤ and ⊥. It is implemented as `WithBot (WithTop ℝ)`
+This file defines `EReal`, `ℝ` with a top element `⊤` and a bottom element `⊥`, implemented as
+`WithBot (WithTop ℝ)`.
 
-Addition and multiplication are problematic in the presence of ±∞, but negation has a natural
-definition and satisfies the usual properties, in particular it is an order reversing isomorphism
+`EReal` is a `CompleteLinearOrder`, deduced by typeclass inference from the fact that
+`WithBot (WithTop L)` completes a conditionally complete linear order `L`.
 
-An ad hoc addition is defined, for which `EReal` is an `AddCommMonoid`, and even an ordered one
-(if `a ≤ a'` and `b ≤ b'` then `a + b ≤ a' + b'`).
-Note however that addition is badly behaved at `(⊥, ⊤)` and `(⊤, ⊥)` so this can not be upgraded
-to a group structure. Our choice is that `⊥ + ⊤ = ⊤ + ⊥ = ⊥`, to make sure that the exponential
-and the logarithm between `EReal` and `ℝ≥0∞` respect the operations (notice that the
-convention `0 * ∞ = 0` on `ℝ≥0∞` is enforced by measure theory).
-
-An ad hoc subtraction is then defined by `x - y = x + (-y)`. It does not have nice properties,
-but it is sometimes convenient to have.
-
-An ad hoc multiplication is defined, for which `EReal` is a `CommMonoidWithZero`. We make the
-choice that `0 * x = x * 0 = 0` for any `x` (while the other cases are defined non-ambiguously).
-This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1*⊥ + (-1)*⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
-Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where either `0 ≤ x < ⊤`,
-see `EReal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `EReal.left_distrib_of_nonneg`
-(similarly for right distributivity).
-
-`EReal` is a `CompleteLinearOrder`; this is deduced by type class inference from
-the fact that `WithBot (WithTop L)` is a complete linear order if `L` is
-a conditionally complete linear order.
-
-Coercions from `ℝ` and from `ℝ≥0∞` are registered, and their basic properties are proved. The main
-one is the real coercion, and is usually referred to just as `coe` (lemmas such as
-`EReal.coe_add` deal with this coercion). The one from `ENNReal` is usually called `coe_ennreal`
-in the `EReal` namespace.
-
-We define an absolute value `EReal.abs` from `EReal` to `ℝ≥0∞`. Two elements of `EReal` coincide
-if and only if they have the same absolute value and the same sign.
+Coercions from `ℝ` (called `coe` in lemmas) and from `ℝ≥0∞` (`coe_ennreal`) are registered
+and their basic properties proved. The latter takes up most of the rest of this file.
 
 ## Tags
 
@@ -200,13 +174,6 @@ theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x 
   @induction₂ P top_top top_pos top_zero top_neg top_bot (fun _ h => symm <| top_pos _ h)
     pos_bot (symm top_zero) coe_coe zero_bot (fun _ h => symm <| top_neg _ h) neg_bot (symm top_bot)
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
-
-/-! `EReal` with its multiplication is a `CommMonoidWithZero`. However, the proof of
-associativity by hand is extremely painful (with 125 cases...). Instead, we will deduce it later
-on from the facts that the absolute value and the sign are multiplicative functions taking value
-in associative objects, and that they characterize an extended real number. For now, we only
-record more basic properties of multiplication.
--/
 
 protected theorem mul_comm (x y : EReal) : x * y = y * x := by
   induction x <;> induction y  <;>
@@ -792,6 +759,42 @@ theorem natCast_lt_iff {m n : ℕ} : (m : EReal) < (n : EReal) ↔ m < n := by
 theorem natCast_mul (m n : ℕ) :
     (m * n : ℕ) = (m : EReal) * (n : EReal) := by
   rw [← coe_coe_eq_natCast, ← coe_coe_eq_natCast, ← coe_coe_eq_natCast, Nat.cast_mul, EReal.coe_mul]
+
+/-! ### Miscellaneous lemmas -/
+
+theorem exists_rat_btwn_of_lt :
+    ∀ {a b : EReal}, a < b → ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b
+  | ⊤, _, h => (not_top_lt h).elim
+  | (a : ℝ), ⊥, h => (lt_irrefl _ ((bot_lt_coe a).trans h)).elim
+  | (a : ℝ), (b : ℝ), h => by simp [exists_rat_btwn (EReal.coe_lt_coe_iff.1 h)]
+  | (a : ℝ), ⊤, _ =>
+    let ⟨b, hab⟩ := exists_rat_gt a
+    ⟨b, by simpa using hab, coe_lt_top _⟩
+  | ⊥, ⊥, h => (lt_irrefl _ h).elim
+  | ⊥, (a : ℝ), _ =>
+    let ⟨b, hab⟩ := exists_rat_lt a
+    ⟨b, bot_lt_coe _, by simpa using hab⟩
+  | ⊥, ⊤, _ => ⟨0, bot_lt_coe _, coe_lt_top _⟩
+
+theorem lt_iff_exists_rat_btwn {a b : EReal} :
+    a < b ↔ ∃ x : ℚ, a < (x : ℝ) ∧ ((x : ℝ) : EReal) < b :=
+  ⟨fun hab => exists_rat_btwn_of_lt hab, fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+
+theorem lt_iff_exists_real_btwn {a b : EReal} : a < b ↔ ∃ x : ℝ, a < x ∧ (x : EReal) < b :=
+  ⟨fun hab =>
+    let ⟨x, ax, xb⟩ := exists_rat_btwn_of_lt hab
+    ⟨(x : ℝ), ax, xb⟩,
+    fun ⟨_x, ax, xb⟩ => ax.trans xb⟩
+
+/-- The set of numbers in `EReal` that are not equal to `±∞` is equivalent to `ℝ`. -/
+def neTopBotEquivReal : ({⊥, ⊤}ᶜ : Set EReal) ≃ ℝ where
+  toFun x := EReal.toReal x
+  invFun x := ⟨x, by simp⟩
+  left_inv := fun ⟨x, hx⟩ => by
+    lift x to ℝ
+    · simpa [not_or, and_comm] using hx
+    · simp
+  right_inv x := by simp
 
 end EReal
 
