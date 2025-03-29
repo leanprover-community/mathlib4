@@ -31,100 +31,108 @@ theorem natAbs_le_iff_mul_self_le {a b : ℤ} : a.natAbs ≤ b.natAbs ↔ a * a 
   rw [← abs_le_iff_mul_self_le, abs_eq_natAbs, abs_eq_natAbs]
   exact Int.ofNat_le.symm
 
-theorem div_le_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < b) (h2 : b ∣ a) : a / b ≤ c ↔ a ≤ b * c := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ne_eq, Int.ne_of_gt, gt_iff_lt, h1, _root_.mul_le_mul_left, ne_eq,
-    not_false_eq_true, Int.mul_ediv_cancel_left]
+theorem div_le_iff_of_dvd_of_pos (a b c : ℤ) (hb : 0 < b) (hba : b ∣ a) :
+    a / b ≤ c ↔ a ≤ b * c := by
+  obtain ⟨_, hx⟩ := hba
+  simp only [hx, ne_eq, hb, Int.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
+    _root_.mul_le_mul_left]
 
-theorem div_le_iff_of_dvd_of_neg (a b c : ℤ) (h1 : b < 0) (h2 : b ∣ a) : a / b ≤ c ↔ b * c ≤ a := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ne_eq, h1, Int.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
+theorem div_le_iff_of_dvd_of_neg (a b c : ℤ) (hb : b < 0) (hba : b ∣ a) :
+    a / b ≤ c ↔ b * c ≤ a := by
+  obtain ⟨_, hx⟩ := hba
+  simp only [hx, ne_eq, hb, Int.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
     mul_le_mul_left_of_neg]
 
-theorem div_lt_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < b) (h2 : b ∣ a) : a / b < c ↔ a < b * c := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx ,ne_eq, _root_.ne_of_gt, gt_iff_lt, h1, mul_lt_mul_left, ne_eq, not_false_eq_true,
-      Int.mul_ediv_cancel_left]
+theorem div_lt_iff_of_dvd_of_pos (a b c : ℤ) (hb : 0 < b) (hba : b ∣ a) :
+    a / b < c ↔ a < b * c := by
+  obtain ⟨_, hx⟩ := hba
+  simp only [hx, ne_eq, hb, _root_.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
+    mul_lt_mul_left]
 
-theorem div_lt_iff_of_dvd_of_neg (a b c : ℤ) (h1 : b < 0) (h2 : b ∣ a) : a / b < c ↔ b * c < a := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ne_eq, h1, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
-    mul_lt_mul_left_of_neg h1]
+theorem div_lt_iff_of_dvd_of_neg (a b c : ℤ) (hb : b < 0) (hba : b ∣ a) :
+    a / b < c ↔ b * c < a := by
+  obtain ⟨_, hx⟩ := hba
+  simp only [hx, ne_eq, hb, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
+    mul_lt_mul_left_of_neg hb]
 
-theorem le_div_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < c) (h2 : c ∣ b) : a ≤ b / c ↔ c * a ≤ b := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ne_eq, _root_.ne_of_gt, gt_iff_lt, h1, _root_.mul_le_mul_left,
-    ne_eq,not_false_eq_true, Int.mul_ediv_cancel_left]
+theorem le_div_iff_of_dvd_of_pos (a b c : ℤ) (hc : 0 < c) (hcb : c ∣ b) :
+    a ≤ b / c ↔ c * a ≤ b := by
+  obtain ⟨_, hx⟩ := hcb
+  simp only [hx, ne_eq, hc, _root_.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
+    _root_.mul_le_mul_left]
 
-theorem le_div_iff_of_dvd_of_neg (a b c : ℤ) (h1 : c < 0) (h2 : c ∣ b) : a ≤ b / c ↔ b ≤ c * a := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ne_eq, h1, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
-    mul_le_mul_left_of_neg h1]
+theorem le_div_iff_of_dvd_of_neg (a b c : ℤ) (hc : c < 0) (hcb : c ∣ b) :
+    a ≤ b / c ↔ b ≤ c * a := by
+  obtain ⟨_, hx⟩ := hcb
+  simp only [hx, ne_eq, hc, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
+    mul_le_mul_left_of_neg hc]
 
-theorem lt_div_iff_of_dvd_of_pos (a b c : ℤ) (h1 : 0 < c) (h2 : c ∣ b) : a < b / c ↔ c * a < b := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ne_eq, _root_.ne_of_gt,gt_iff_lt, h1, mul_lt_mul_left, ne_eq, not_false_eq_true,
-    Int.mul_ediv_cancel_left]
+theorem lt_div_iff_of_dvd_of_pos (a b c : ℤ) (hc : 0 < c) (hcb : c ∣ b) :
+    a < b / c ↔ c * a < b := by
+  obtain ⟨_, hx⟩ := hcb
+  simp only [hx, ne_eq, hc, _root_.ne_of_gt, not_false_eq_true, mul_div_cancel_left₀,
+    mul_lt_mul_left]
 
-theorem lt_div_iff_of_dvd_of_neg (a b c : ℤ) (h1 : c < 0) (h2 : c ∣ b) : a < b / c ↔ b < c * a := by
-  obtain ⟨_, hx⟩ := h2
-  simp only [hx, ne_eq, h1, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
-    mul_lt_mul_left_of_neg h1]
+theorem lt_div_iff_of_dvd_of_neg (a b c : ℤ) (hc : c < 0) (hcb : c ∣ b) :
+    a < b / c ↔ b < c * a := by
+  obtain ⟨_, hx⟩ := hcb
+  simp only [hx, ne_eq, hc, _root_.ne_of_lt, not_false_eq_true, mul_div_cancel_left₀,
+    mul_lt_mul_left_of_neg hc]
 
-lemma div_le_div_iff_of_dvd_of_pos_of_pos {a b c d : ℤ} (h1 : 0 < b) (h2 : 0 < d) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b ≤  c / d ↔ d * a ≤ c * b := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_gt h2), mul_ediv_cancel_left _ (Int.ne_of_gt h1),
-    mul_assoc,mul_comm y b,_root_.mul_le_mul_left h2,_root_.mul_le_mul_left h1]
+lemma div_le_div_iff_of_dvd_of_pos_of_pos {a b c d : ℤ} (hb : 0 < b) (hd : 0 < d) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b ≤  c / d ↔ d * a ≤ c * b := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_gt hd), mul_ediv_cancel_left _ (Int.ne_of_gt hb),
+    mul_assoc,mul_comm y b,_root_.mul_le_mul_left hd,_root_.mul_le_mul_left hb]
 
-lemma div_le_div_iff_of_dvd_of_pos_of_neg {a b c d : ℤ} (h1 : 0 < b) (h2 : d < 0) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b ≤  c / d ↔ c * b ≤ d * a := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt h2), mul_ediv_cancel_left _ (Int.ne_of_gt h1),
-    mul_assoc,mul_comm y b,mul_le_mul_left_of_neg h2,mul_le_mul_iff_of_pos_left h1]
+lemma div_le_div_iff_of_dvd_of_pos_of_neg {a b c d : ℤ} (hb : 0 < b) (hd : d < 0) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b ≤  c / d ↔ c * b ≤ d * a := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt hd), mul_ediv_cancel_left _ (Int.ne_of_gt hb),
+    mul_assoc,mul_comm y b,mul_le_mul_left_of_neg hd,mul_le_mul_iff_of_pos_left hb]
 
-lemma div_le_div_iff_of_dvd_of_neg_of_pos {a b c d : ℤ} (h1 : b < 0) (h2 : 0 < d) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b ≤  c / d ↔ c * b ≤ d * a := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt h1), mul_ediv_cancel_left _ (Int.ne_of_gt h2),
-    mul_assoc, mul_le_mul_iff_of_pos_left h2, mul_comm y b,mul_le_mul_left_of_neg h1]
+lemma div_le_div_iff_of_dvd_of_neg_of_pos {a b c d : ℤ} (hb : b < 0) (hd : 0 < d) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b ≤  c / d ↔ c * b ≤ d * a := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt hb), mul_ediv_cancel_left _ (Int.ne_of_gt hd),
+    mul_assoc, mul_le_mul_iff_of_pos_left hd, mul_comm y b,mul_le_mul_left_of_neg hb]
 
-lemma div_le_div_iff_of_dvd_of_neg_of_neg {a b c d : ℤ} (h1 : b < 0) (h2 : d < 0) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b ≤  c / d ↔ d * a ≤ c * b := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt h2), mul_ediv_cancel_left _ (Int.ne_of_lt h1),
-    mul_assoc,mul_comm y b,mul_le_mul_left_of_neg h2,mul_le_mul_left_of_neg h1]
+lemma div_le_div_iff_of_dvd_of_neg_of_neg {a b c d : ℤ} (hb : b < 0) (hd : d < 0) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b ≤  c / d ↔ d * a ≤ c * b := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt hd), mul_ediv_cancel_left _ (Int.ne_of_lt hb),
+    mul_assoc,mul_comm y b,mul_le_mul_left_of_neg hd,mul_le_mul_left_of_neg hb]
 
-lemma div_lt_div_iff_of_dvd_of_pos {a b c d : ℤ} (h1 : 0 < b) (h2 : 0 < d) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b <  c / d ↔ d * a < c * b := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_gt h2), mul_ediv_cancel_left _ (Int.ne_of_gt h1),
-    mul_assoc, mul_comm y b, _root_.mul_lt_mul_left h2, _root_.mul_lt_mul_left h1]
+lemma div_lt_div_iff_of_dvd_of_pos {a b c d : ℤ} (hb : 0 < b) (hd : 0 < d) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b <  c / d ↔ d * a < c * b := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_gt hd), mul_ediv_cancel_left _ (Int.ne_of_gt hb),
+    mul_assoc, mul_comm y b, _root_.mul_lt_mul_left hd, _root_.mul_lt_mul_left hb]
 
-lemma div_lt_div_iff_of_dvd_of_pos_of_neg {a b c d : ℤ} (h1 : 0 < b) (h2 : d < 0) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b < c / d ↔ c * b < d * a := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt h2), mul_ediv_cancel_left _ (Int.ne_of_gt h1),
-    mul_assoc,mul_comm y b,mul_lt_mul_left_of_neg h2,mul_lt_mul_iff_of_pos_left h1]
+lemma div_lt_div_iff_of_dvd_of_pos_of_neg {a b c d : ℤ} (hb : 0 < b) (hd : d < 0) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b < c / d ↔ c * b < d * a := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt hd), mul_ediv_cancel_left _ (Int.ne_of_gt hb),
+    mul_assoc,mul_comm y b,mul_lt_mul_left_of_neg hd,mul_lt_mul_iff_of_pos_left hb]
 
-lemma div_lt_div_iff_of_dvd_of_neg_of_pos {a b c d : ℤ} (h1 : b < 0) (h2 : 0 < d) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b < c / d ↔ c * b < d * a := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt h1), mul_ediv_cancel_left _ (Int.ne_of_gt h2),
-    mul_assoc, mul_lt_mul_iff_of_pos_left h2, mul_comm y b,mul_lt_mul_left_of_neg h1]
+lemma div_lt_div_iff_of_dvd_of_neg_of_pos {a b c d : ℤ} (hb : b < 0) (hd : 0 < d) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b < c / d ↔ c * b < d * a := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt hb), mul_ediv_cancel_left _ (Int.ne_of_gt hd),
+    mul_assoc, mul_lt_mul_iff_of_pos_left hd, mul_comm y b,mul_lt_mul_left_of_neg hb]
 
-lemma div_lt_div_iff_of_dvd_of_neg_of_neg {a b c d : ℤ} (h1 : b < 0) (h2 : d < 0) (h3 : b ∣ a)
-    (h4 : d ∣ c) : a / b <  c / d ↔ d * a < c * b := by
-  obtain ⟨_, hx⟩ := h3
-  obtain ⟨y, hy⟩ := h4
-  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt h2), mul_ediv_cancel_left _ (Int.ne_of_lt h1),
-    mul_assoc,mul_comm y b,mul_lt_mul_left_of_neg h2,mul_lt_mul_left_of_neg h1]
+lemma div_lt_div_iff_of_dvd_of_neg_of_neg {a b c d : ℤ} (hb : b < 0) (hd : d < 0) (hba : b ∣ a)
+    (hdc : d ∣ c) : a / b <  c / d ↔ d * a < c * b := by
+  obtain ⟨_, hx⟩ := hba
+  obtain ⟨y, hy⟩ := hdc
+  rw [hx, hy, mul_ediv_cancel_left _ (Int.ne_of_lt hd), mul_ediv_cancel_left _ (Int.ne_of_lt hb),
+    mul_assoc,mul_comm y b,mul_lt_mul_left_of_neg hd,mul_lt_mul_left_of_neg hb]
 
 end Int
