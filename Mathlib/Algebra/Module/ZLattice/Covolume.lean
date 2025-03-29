@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.BoxIntegral.UnitPartition
+import Mathlib.LinearAlgebra.FreeModule.Finite.CardQuotient
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 /-!
@@ -23,6 +24,9 @@ choice of the fundamental domain of `L`.
 
 * `ZLattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
 value of the determinant of any `ℤ`-basis of `L`.
+
+* `ZLattice. covolume_div_covolume_eq_relindex`: Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the
+index of `L₁` inside `L₂` is equal to `covolume L₁ / covolume L₂`.
 
 * `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
 the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
@@ -125,6 +129,55 @@ theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Subm
     IsUnit.unit_spec, ← Basis.det_basis, LinearEquiv.coe_det]
   rfl
 
+/--
+Let `L₁` be a sub-`ℤ`-lattice of `L₂`. Then the index of `L₁` inside `L₂` is equal to
+`covolume L₁ / covolume L₂`.
+-/
+theorem covolume_div_covolume_eq_relindex {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (L₁ L₂ : Submodule ℤ (ι → ℝ)) [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂]
+    [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
+    covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relindex L₂.toAddSubgroup := by
+  let b₁ : Basis ι ℤ L₁ := (Free.chooseBasis ℤ L₁).reindex (Fintype.equivOfCardEq
+    (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
+  let b₂ : Basis ι ℤ L₂ := (Free.chooseBasis ℤ L₂).reindex (Fintype.equivOfCardEq
+    (by rw [← finrank_eq_card_chooseBasisIndex, ZLattice.rank ℝ, finrank_fintype_fun_eq_card]))
+  rw [AddSubgroup.relindex_eq_natAbs_det L₁.toAddSubgroup L₂.toAddSubgroup h b₁ b₂,
+    Nat.cast_natAbs, Int.cast_abs]
+  convert_to _ = |(b₂.ofZLatticeBasis ℝ).det (b₁.ofZLatticeBasis ℝ)|
+  · change |Int.castRingHom ℝ _| = _
+    rw [Basis.det_apply, Basis.det_apply, RingHom.map_det, RingHom.mapMatrix_apply,
+      Int.coe_castRingHom]
+    congr
+    ext i j
+    rw [Matrix.map_apply, Basis.toMatrix_apply, Basis.toMatrix_apply, Basis.ofZLatticeBasis_apply]
+    exact (b₂.ofZLatticeBasis_repr_apply ℝ L₂ ⟨b₁ j, h (coe_mem _)⟩ i).symm
+  · rw [← Basis.det_mul _ (Pi.basisFun ℝ ι) _, abs_mul, Pi.basisFun_det_apply,
+      ← Basis.det_inv, Units.val_inv_eq_inv_val, IsUnit.unit_spec, Pi.basisFun_det_apply,
+      covolume_eq_det _ b₁, covolume_eq_det _ b₂, mul_comm, abs_inv]
+    congr <;> ext <;> simp
+
+/--
+A more general version of `covolume_div_covolume_eq_relindex`;
+see the `Naming conventions` section in the introduction.
+-/
+theorem covolume_div_covolume_eq_relindex' {E : Type*} [NormedAddCommGroup E]
+    [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
+    (L₁ L₂ : Submodule ℤ E) [DiscreteTopology L₁] [IsZLattice ℝ L₁] [DiscreteTopology L₂]
+    [IsZLattice ℝ L₂] (h : L₁ ≤ L₂) :
+    covolume L₁ / covolume L₂ = L₁.toAddSubgroup.relindex L₂.toAddSubgroup := by
+  classical
+  let f := (EuclideanSpace.equiv _ ℝ).symm.trans
+    (stdOrthonormalBasis ℝ E).repr.toContinuousLinearEquiv.symm
+  have hf : MeasurePreserving f := (stdOrthonormalBasis ℝ E).measurePreserving_repr_symm.comp
+    (EuclideanSpace.volume_preserving_measurableEquiv _).symm
+  rw [← covolume_comap L₁ volume volume hf, ← covolume_comap L₂ volume volume hf,
+    covolume_div_covolume_eq_relindex _ _ (fun _ h' ↦ h h'), ZLattice.comap_toAddSubgroup,
+    ZLattice.comap_toAddSubgroup, Nat.cast_inj]
+  have : f.toLinearEquiv.toLinearMap.toAddMonoidHom =
+     f.toLinearEquiv.toAddEquiv.toAddMonoidHom := rfl
+  rw [this, AddSubgroup.comap_equiv_eq_map_symm', AddSubgroup.comap_equiv_eq_map_symm',
+    AddSubgroup.relindex_map_map_of_injective _ _ f.symm.injective]
+
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [DecidableEq ι]
     (L : Submodule ℤ (ι → ℝ)) [DiscreteTopology L] [IsZLattice ℝ L] (b : Basis ι ℤ L)
     {s : Set (ι → ℝ)} :
@@ -208,7 +261,6 @@ theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bor
     Tendsto (fun c : ℝ ↦
       Nat.card ({x ∈ X | F x ≤ c} ∩ L : Set E) / (c : ℝ))
         atTop (𝓝 (volume ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1})).toReal) := by
-
   refine Tendsto.congr' ?_ <| (tendsto_card_div_pow_atTop_volume'
       ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1}) ?_ ?_ h₄ fun x y hx hy ↦ ?_).comp
         (tendsto_rpow_atTop <| inv_pos.mpr
