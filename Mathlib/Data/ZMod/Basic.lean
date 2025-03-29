@@ -907,6 +907,7 @@ theorem ne_neg_self {n : ℕ} (hn : Odd n) {a : ZMod n} (ha : a ≠ 0) : a ≠ -
 theorem neg_one_ne_one {n : ℕ} [Fact (2 < n)] : (-1 : ZMod n) ≠ 1 :=
   CharP.neg_one_ne_one (ZMod n) n
 
+@[simp]
 theorem neg_eq_self_mod_two (a : ZMod 2) : -a = a := by
   fin_cases a <;> apply Fin.ext <;> simp [Fin.coe_neg, Int.natMod]; rfl
 
