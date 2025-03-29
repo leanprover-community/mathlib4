@@ -333,7 +333,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
 @[simp] theorem toMeromorphicNFAt_eq_self :
     toMeromorphicNFAt f x = f ↔ MeromorphicNFAt f x where
   mp hf := by
-    rw [hf]
+    rw [hf.symm]
     exact meromorphicNFAt_toMeromorphicNFAt
   mpr hf := by
     funext z
@@ -343,7 +343,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
       have h₀f := hf
       rcases hf with h₁f | h₁f
       · simpa [(h₀f.meromorphicAt.order_eq_top_iff).2 (h₁f.filter_mono nhdsWithin_le_nhds)]
-          using h₁f.eq_of_nhds
+          using h₁f.eq_of_nhds.symm
       · obtain ⟨n, g, h₁g, h₂g, h₃g⟩ := h₁f
         rw [Filter.EventuallyEq.eq_of_nhds h₃g]
         have : h₀f.meromorphicAt.order = n := by
@@ -365,15 +365,16 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
             simp only [zpow_zero, one_smul, ne_eq] at h₃g h₂
             exact (h₃g.filter_mono nhdsWithin_le_nhds).symm.trans h₂
           simp only [Function.update_self]
-          exact Filter.EventuallyEq.eq_of_nhds this
-        · simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte, smul_eq_zero,
+          exact Filter.EventuallyEq.eq_of_nhds this.symm
+        · rw [eq_comm]
+          simp only [Pi.smul_apply', Pi.pow_apply, sub_self, h₃f, ↓reduceDIte, smul_eq_zero,
             Function.update_self, smul_eq_zero]
           left
           apply zero_zpow n
           by_contra hn
           rw [hn] at this
           tauto
-    · exact hf.meromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt hz
+    · exact (hf.meromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt hz).symm
 
 /--
 If `f` is meromorphic in normal form, then so is its inverse.
@@ -517,8 +518,8 @@ A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
 -/
 theorem meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn f⁻¹ U ↔ MeromorphicNFOn f U where
-  mp h x hx := meromorphicNFAt_inv.1 (h hx)
-  mpr h x hx := meromorphicNFAt_inv.2 (h hx)
+  mp h _ hx := meromorphicNFAt_inv.1 (h hx)
+  mpr h _ hx := meromorphicNFAt_inv.2 (h hx)
 
 /-!
 ## Continuous extension and conversion to normal form
@@ -563,7 +564,7 @@ theorem toMeromorphicNFOn_eqOn_codiscrete [CompleteSpace E] (hf : MeromorphicOn 
   have : U ∈ Filter.codiscreteWithin U := by
     simp [mem_codiscreteWithin.2]
   filter_upwards [hf.analyticAt_mem_codiscreteWithin, this] with a h₁a h₂a
-  simp [toMeromorphicNFOn, hf, ← toMeromorphicNFAt_eq_self.2 h₁a.meromorphicNFAt]
+  simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 h₁a.meromorphicNFAt).symm]
 
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then `f` and its conversion to normal
@@ -573,7 +574,7 @@ theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdNE [CompleteSpace E]
     (hf : MeromorphicOn f U) (hx : x ∈ U) :
     toMeromorphicNFOn f U =ᶠ[𝓝[≠] x] f := by
   filter_upwards [(hf x hx).eventually_analyticAt] with a ha
-  simp [toMeromorphicNFOn, hf, ← toMeromorphicNFAt_eq_self.2 ha.meromorphicNFAt]
+  simp [toMeromorphicNFOn, hf, ← (toMeromorphicNFAt_eq_self.2 ha.meromorphicNFAt).symm]
 
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
@@ -621,7 +622,7 @@ If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
   · ext x
     by_cases hx : x ∈ U
     · simp only [toMeromorphicNFOn, h.meromorphicOn, ↓reduceDIte, hx]
-      rw [← toMeromorphicNFAt_eq_self.2 (h hx)]
+      rw [toMeromorphicNFAt_eq_self.2 (h hx)]
     · simp [toMeromorphicNFOn, h.meromorphicOn, hx]
 
 /--
