@@ -328,6 +328,10 @@ variable [LocallyFiniteOrderTop α]
 theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
   rw [← coe_eq_empty, coe_Ioi, Set.Ioi_eq_empty_iff]
 
+@[simp] alias ⟨_, _root_.IsMax.finsetIoi_eq⟩ := Ioi_eq_empty
+
+@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [nonempty_iff_ne_empty]
+
 @[simp]
 theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
 
@@ -382,6 +386,10 @@ variable [LocallyFiniteOrderBot α]
 
 @[simp]
 theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
+
+@[simp] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty
+
+@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
 
 @[simp]
 theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_bot
