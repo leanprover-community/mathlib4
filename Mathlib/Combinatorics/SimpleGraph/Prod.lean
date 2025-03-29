@@ -44,21 +44,21 @@ and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 infixl:70 " □ " => boxProd
 
 @[simp]
-theorem boxProd_adj {x y : α × β} :
+theorem adj_boxProd {x y : α × β} :
     (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
   Iff.rfl
 
-theorem boxProd_adj_left {a₁ : α} {b : β} {a₂ : α} :
+theorem adj_boxProd_left {a₁ : α} {b : β} {a₂ : α} :
     (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
-  simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
+  simp only [adj_boxProd, and_true, SimpleGraph.irrefl, false_and, or_false]
 
-theorem boxProd_adj_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
-  simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
+theorem adj_boxProd_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
+  simp only [adj_boxProd, SimpleGraph.irrefl, false_and, and_true, false_or]
 
-theorem boxProd_neighborSet (x : α × β) :
+theorem neighborSet_boxProd (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
-  simp only [mem_neighborSet, Set.mem_union, boxProd_adj, Set.mem_prod, Set.mem_singleton_iff]
+  simp only [mem_neighborSet, Set.mem_union, adj_boxProd, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm]
 
 variable (G H)
@@ -71,7 +71,7 @@ def boxProdComm : G □ H ≃g H □ G := ⟨Equiv.prodComm _ _, or_comm⟩
 @[simps!]
 def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
   ⟨Equiv.prodAssoc _ _ _, fun {x y} => by
-    simp only [boxProd_adj, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
+    simp only [adj_boxProd, Equiv.prodAssoc_apply, or_and_right, or_assoc, Prod.ext_iff,
       and_assoc, @and_comm (x.fst.fst = _)]⟩
 
 /-- The embedding of `G` into `G □ H` given by `b`. -/
@@ -79,14 +79,14 @@ def boxProdAssoc (I : SimpleGraph γ) : G □ H □ I ≃g G □ (H □ I) :=
 def boxProdLeft (b : β) : G ↪g G □ H where
   toFun a := (a, b)
   inj' _ _ := congr_arg Prod.fst
-  map_rel_iff' {_ _} := boxProd_adj_left
+  map_rel_iff' {_ _} := adj_boxProd_left
 
 /-- The embedding of `H` into `G □ H` given by `a`. -/
 @[simps]
 def boxProdRight (a : α) : H ↪g G □ H where
   toFun := Prod.mk a
   inj' _ _ := congr_arg Prod.snd
-  map_rel_iff' {_ _} := boxProd_adj_right
+  map_rel_iff' {_ _} := adj_boxProd_right
 
 namespace Walk
 
@@ -182,7 +182,7 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
   exact ⟨h.preconnected.ofBoxProdRight⟩
 
 @[simp]
-theorem boxProd_connected : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
+theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 
 instance boxProdFintypeNeighborSet (x : α × β)
@@ -193,10 +193,10 @@ instance boxProdFintypeNeighborSet (x : α × β)
         Finset.disjoint_product.mpr <| Or.inl <| neighborFinset_disjoint_singleton _ _)
     ((Equiv.refl _).subtypeEquiv fun y => by
       simp_rw [Finset.mem_disjUnion, Finset.mem_product, Finset.mem_singleton, mem_neighborFinset,
-        mem_neighborSet, Equiv.refl_apply, boxProd_adj]
+        mem_neighborSet, Equiv.refl_apply, adj_boxProd]
       simp only [eq_comm, and_comm])
 
-theorem boxProd_neighborFinset (x : α × β)
+theorem neighborFinset_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).neighborFinset x =
       (G.neighborFinset x.1 ×ˢ {x.2}).disjUnion ({x.1} ×ˢ H.neighborFinset x.2)
@@ -206,10 +206,10 @@ theorem boxProd_neighborFinset (x : α × β)
   convert_to (G □ H).neighborFinset x = _ using 2
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
-theorem boxProd_degree (x : α × β)
+theorem degree_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
-  rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
+  rw [degree, degree, degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 
 end SimpleGraph
