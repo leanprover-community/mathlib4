@@ -708,9 +708,9 @@ theorem deriv_zero : deriv (0 : 𝕜 → F) = 0 := funext fun _ => deriv_const _
 @[simp]
 theorem deriv_one [One F] : deriv (1 : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
 
-@[simp]
 theorem deriv_natCast [NatCast F] (n : ℕ) : deriv (n : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
 
+@[simp]
 theorem deriv_ofNat (n : ℕ) [OfNat F n] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
   funext fun _ => deriv_const _ _
 
