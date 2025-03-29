@@ -160,6 +160,19 @@ lemma coreAssociator {E : Type u₃} [Category.{v₃} E] {E' : Type u₄} [Categ
 
 end Iso
 
+namespace Functor
+
+variable {D : Type u₂} [Category.{v₂} D]
+
+/-- Taking the core of a functor is functorial if we discard non-invertible natural
+transformations. -/
+@[simps!]
+def coreFunctor : Core (C ⥤ D) ⥤ Core C ⥤ Core D where
+  obj F := F.core
+  map η := η.core.hom
+
+end Functor
+
 end
 
 /-- `ofEquivFunctor m` lifts a type-level `EquivFunctor`
