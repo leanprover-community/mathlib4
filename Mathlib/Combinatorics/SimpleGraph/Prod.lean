@@ -49,18 +49,26 @@ theorem adj_boxProd {x y : α × β} :
     (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
   Iff.rfl
 
+@[deprecated (since := "2025-03-29")] alias boxProd_adj := adj_boxProd
+
 theorem adj_boxProd_left {a₁ : α} {b : β} {a₂ : α} :
     (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [adj_boxProd, and_true, SimpleGraph.irrefl, false_and, or_false]
 
+@[deprecated (since := "2025-03-29")] alias boxProd_adj_left := adj_boxProd_left
+
 theorem adj_boxProd_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [adj_boxProd, SimpleGraph.irrefl, false_and, and_true, false_or]
+
+@[deprecated (since := "2025-03-29")] alias boxProd_adj_right := adj_boxProd_right
 
 theorem neighborSet_boxProd (x : α × β) :
     (G □ H).neighborSet x = G.neighborSet x.1 ×ˢ {x.2} ∪ {x.1} ×ˢ H.neighborSet x.2 := by
   ext ⟨a', b'⟩
   simp only [mem_neighborSet, Set.mem_union, adj_boxProd, Set.mem_prod, Set.mem_singleton_iff]
   simp only [eq_comm, and_comm]
+
+@[deprecated (since := "2025-03-29")] alias boxProd_neighborSet := neighborSet_boxProd
 
 variable (G H)
 
@@ -139,8 +147,11 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
   | cons' x y z h w => by
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
-    · simp [ofBoxProdLeft_boxProdRight]
+    · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
+
+@[deprecated (since := "2025-03-30")]
+alias ofBoxProdLeft_boxProdRight := ofBoxProdRight_boxProdRight
 
 lemma length_boxProd {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
@@ -202,6 +213,8 @@ protected theorem Connected.ofBoxProdRight (h : (G □ H).Connected) : H.Connect
 theorem connected_boxProd : (G □ H).Connected ↔ G.Connected ∧ H.Connected :=
   ⟨fun h => ⟨h.ofBoxProdLeft, h.ofBoxProdRight⟩, fun h => h.1.boxProd h.2⟩
 
+@[deprecated (since := "2025-03-29")] alias boxProd_connected := connected_boxProd
+
 instance boxProdFintypeNeighborSet (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] :
     Fintype ((G □ H).neighborSet x) :=
@@ -223,11 +236,15 @@ theorem neighborFinset_boxProd (x : α × β)
   convert_to (G □ H).neighborFinset x = _ using 2
   exact Eq.trans (Finset.map_map _ _ _) Finset.attach_map_val
 
+@[deprecated (since := "2025-03-29")] alias boxProd_neighborFinset := neighborFinset_boxProd
+
 theorem degree_boxProd (x : α × β)
     [Fintype (G.neighborSet x.1)] [Fintype (H.neighborSet x.2)] [Fintype ((G □ H).neighborSet x)] :
     (G □ H).degree x = G.degree x.1 + H.degree x.2 := by
   rw [degree, degree, degree, neighborFinset_boxProd, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
+
+@[deprecated (since := "2025-03-29")] alias boxProd_degree := degree_boxProd
 
 lemma boxProd_reachable {x y : α × β} :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
