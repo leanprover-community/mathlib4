@@ -549,8 +549,7 @@ section Preorder
 
 variable [Preorder α] [LocallyFiniteOrder α] (a b : α)
 
-instance instFintypeIcc : Fintype (Icc a b) := Fintype.ofFinset (Finset.Icc a b) fun _ =>
-  Finset.mem_Icc
+instance instFintypeIcc : Fintype (Icc a b) := .ofFinset (Finset.Icc a b) fun _ => Finset.mem_Icc
 
 instance instFintypeIco : Fintype (Ico a b) := Fintype.ofFinset (Finset.Ico a b) fun _ =>
   Finset.mem_Ico
