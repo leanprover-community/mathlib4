@@ -551,7 +551,7 @@ to `0`.
 Conversion to normal form on `U` does not change values outside of `U`.
 -/
 @[simp] lemma toMeromorphicNFOn_eq_self_on_compl (hf : MeromorphicOn f U) :
-    Set.EqOn f (toMeromorphicNFOn f U) Uᶜ := by
+    Set.EqOn (toMeromorphicNFOn f U) f Uᶜ := by
   intro x hx
   simp_all [toMeromorphicNFOn]
 
