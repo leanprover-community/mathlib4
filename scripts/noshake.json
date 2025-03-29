@@ -501,6 +501,10 @@
   "Mathlib.Algebra.GroupWithZero.Units.Basic": ["Mathlib.Data.Int.Basic"],
   "Mathlib.Algebra.Group.Units.Basic": ["Mathlib.Tactic.Subsingleton"],
   "Mathlib.Algebra.Group.Units": ["Mathlib.Tactic.Subsingleton"],
+  "Mathlib.Algebra.Group.Pointwise.Set.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Set.Basic"],
+  "Mathlib.Algebra.Group.Pointwise.Finset.Scalar":
+  ["Mathlib.Algebra.Group.Pointwise.Finset.Basic"],
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Idempotent": ["Mathlib.Data.Subtype"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Tactic.OfNat"],
