@@ -170,9 +170,10 @@ instance (priority := 100) [LocallyFiniteOrder ι] [SuccOrder ι] : IsSuccArchim
     by_contra! h
     have h_lt : ∀ n, succ^[n] i < j := by
       intro n
-      induction' n with n hn
-      · simpa only [Function.iterate_zero, id] using hij
-      · refine lt_of_le_of_ne ?_ (h _)
+      induction n with
+      | zero => simpa only [Function.iterate_zero, id] using hij
+      | succ n hn =>
+        refine lt_of_le_of_ne ?_ (h _)
         rw [Function.iterate_succ', Function.comp_apply]
         exact succ_le_of_lt hn
     have h_mem : ∀ n, succ^[n] i ∈ Finset.Icc i j :=

@@ -257,8 +257,9 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
           k.1.1.multinomial *
             (k.1.1.map <| x).noncommProd
               (Multiset.map_set_pairwise <| hc.mono <| mem_sym_iff.1 k.2) := by
-  induction' s using Finset.induction with a s ha ih
-  · rw [sum_empty]
+  induction s using Finset.induction with
+  | empty =>
+    rw [sum_empty]
     rintro (_ | n)
     · rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
@@ -269,6 +270,7 @@ theorem sum_pow_of_commute (x : α → R) (s : Finset α)
     · rw [_root_.pow_succ, mul_zero]
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
+  | @insert a s ha ih => ?_
   intro n; specialize ih (hc.mono <| s.subset_insert a)
   rw [sum_insert ha, (Commute.sum_right s _ _ _).add_pow, sum_range]; swap
   · exact fun _ hb => hc (mem_insert_self a s) (mem_insert_of_mem hb)

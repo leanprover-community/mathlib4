@@ -311,9 +311,9 @@ theorem nfpFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : �
   · rw [lift_max]
     apply max_lt _ hc'
     rwa [Cardinal.lift_aleph0]
-  · induction' l with i l H
-    · exact ha
-    · exact hf _ _ H
+  · induction l with
+    | nil => exact ha
+    | cons i l H => exact hf _ _ H
 
 theorem nfpFamily_lt_ord {ι} {f : ι → Ordinal → Ordinal} {c} (hc : ℵ₀ < cof c) (hc' : #ι < cof c)
     (hf : ∀ (i), ∀ b < c, f i b < c) {a} : a < c → nfpFamily.{u, u} f a < c :=

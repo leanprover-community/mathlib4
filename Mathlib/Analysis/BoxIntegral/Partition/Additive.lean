@@ -118,8 +118,9 @@ def ofMapSplitAdd [Finite ι] (f : Box ι → M) (I₀ : WithTop (Box ι))
   refine ⟨f, ?_⟩
   replace hf : ∀ I : Box ι, ↑I ≤ I₀ → ∀ s, (∑ J ∈ (splitMany I s).boxes, f J) = f I := by
     intro I hI s
-    induction' s using Finset.induction_on with a s _ ihs
-    · simp
+    induction s using Finset.induction_on with
+    | empty => simp
+    | @insert a s _ ihs => ?_
     rw [splitMany_insert, inf_split, ← ihs, biUnion_boxes, sum_biUnion_boxes]
     refine Finset.sum_congr rfl fun J' hJ' => ?_
     by_cases h : a.2 ∈ Ioo (J'.lower a.1) (J'.upper a.1)
