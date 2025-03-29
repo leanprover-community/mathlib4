@@ -147,6 +147,56 @@ def algHomOfRightFDRepComp (η : Aut (forget k G)) : (G → k) →ₐ[k] (G → 
   apply_fun (fun x ↦ (x.hom.app rightFDRep).hom (1 : G → k)) at this
   exact this
 
+variable [DecidableEq G]
+
+/-- Auxiliary map for the proof of `toRightFDRepComp_inj`. -/
+@[simps]
+def auxLinearMap {X : FDRep k G} (v : X) : (G → k) →ₗ[k] X where
+  toFun f := ∑ s : G, (f s) • (X.ρ s⁻¹ v)
+  map_add' _ _ := by
+    simp only [add_apply, add_smul]
+    exact sum_add_distrib
+  map_smul' _ _ := by
+    simp only [smul_apply, smul_eq_mul, RingHom.id_apply, smul_sum, smul_smul]
+
+@[simp]
+lemma auxLinearMap_single_id {X : FDRep k G} (v : X) :
+    ∑ s : G, (single 1 1 : G → k) s • (X.ρ s⁻¹) v = v := by
+  calc
+    _ = ∑ s ∈ {1}ᶜ, single 1 1 s • (X.ρ s⁻¹) v + single 1 1 1 • (X.ρ 1⁻¹) v :=
+      Fintype.sum_eq_sum_compl_add 1 _
+    _ = (single 1 1 : G → k) 1 • (X.ρ 1⁻¹) v := by
+      apply add_eq_right.mpr
+      apply sum_eq_zero
+      simp_all
+    _ = _ := by
+      simp
+
+/-- Auxiliary representation morphism for the proof of `toRightFDRepComp_inj`. -/
+@[simps]
+def auxFDRepHom (X : FDRep k G) (v : X) : rightFDRep ⟶ X where
+  hom := ofHom (auxLinearMap v)
+  comm := by
+    intro t
+    ext f
+    set φ_term := fun (X : FDRep k G) (f : G → k) v s ↦ (f s) • (X.ρ s⁻¹ v)
+    have := sum_map univ (mulRightEmbedding t⁻¹) (φ_term X (rightRegular t f) v)
+    simp [φ_term] at this
+    simp
+    rw [← this]
+    apply sum_congr rfl
+    exact fun _ _ ↦ rfl
+
+lemma toRightFDRepComp_inj (η₁ η₂ : Aut (forget k G))
+    (h : η₁.hom.hom.app rightFDRep = η₂.hom.hom.app rightFDRep) : η₁ = η₂ := by
+  ext X v
+  have h1 := η₁.hom.hom.naturality (auxFDRepHom X v)
+  have h2 := η₂.hom.hom.naturality (auxFDRepHom X v)
+  rw [h, ← h2] at h1
+  apply_fun (Hom.hom · (single 1 1)) at h1
+  simp at h1
+  exact h1
+
 end FiniteGroup
 
 end TannakaDuality
