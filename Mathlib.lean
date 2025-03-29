@@ -2728,6 +2728,8 @@ import Mathlib.Data.ENat.BigOperators
 import Mathlib.Data.ENat.Defs
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.EReal.Basic
+import Mathlib.Data.EReal.Inv
+import Mathlib.Data.EReal.Order
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
