@@ -570,6 +570,7 @@ theorem equivPair_tail_eq_inv_smul {G : ι → Type*} [∀ i, Group (G i)]
     (equivPair i w).tail = (of (equivPair i w).head)⁻¹ • w :=
   Eq.symm <| inv_smul_eq_iff.2 (equivPair_head_smul_equivPair_tail w).symm
 
+@[elab_as_elim]
 theorem smul_induction {motive : Word M → Prop} (empty : motive empty)
     (smul : ∀ (i) (m : M i) (w), motive w → motive (of m • w)) (w : Word M) : motive w := by
   induction w using consRecOn with
