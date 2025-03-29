@@ -57,7 +57,7 @@ lemma continuous_comp_right [TopologicalSpace T] (f : R ⟶ S) :
 
 /-- If `R ≅ S`, then `Hom(R, T)` is homeomorphc to `Hom(S, T)`. -/
 @[simps]
-def compRightEquiv [TopologicalSpace T] (f : R ≅ S) :
+def compRightHomeo [TopologicalSpace T] (f : R ≅ S) :
     (S ⟶ T) ≃ₜ (R ⟶ T) where
   continuous_toFun := continuous_comp_right f.hom
   continuous_invFun := continuous_comp_right f.inv
@@ -66,7 +66,7 @@ def compRightEquiv [TopologicalSpace T] (f : R ≅ S) :
 
 lemma isHomeomorph_comp_right [TopologicalSpace T] (f : R ⟶ S) [IsIso f] :
     IsHomeomorph ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) :=
-  (compRightEquiv (asIso f)).isHomeomorph
+  (compRightHomeo (asIso f)).isHomeomorph
 
 /-- `Hom(R/I, T)` has the subspace topology of `Hom(R, T)`. -/
 lemma isEmbedding_comp_right_of_surjective
