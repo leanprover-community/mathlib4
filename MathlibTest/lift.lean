@@ -219,3 +219,19 @@ example (n : ℤ) (hn : 0 < n) : True := by
   guard_hyp n : ℕ+
   guard_hyp hn : 0 < (n : ℤ)
   trivial
+
+-- https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Bug.20in.20.60lift.60.20tactic.3F/near/508521400
+/--
+error: tactic 'fail' failed
+case intro
+x : WithTop ℕ
+P : WithTop ℕ → Prop
+u : ℕ
+hu : ↑u = x
+h : P ↑u
+⊢ False
+-/
+#guard_msgs in
+example {x : WithTop ℕ} (hx : x ≠ ⊤) (P : WithTop ℕ → Prop) (h : P x) : False := by
+  lift x to ℕ using hx with u hu
+  fail
