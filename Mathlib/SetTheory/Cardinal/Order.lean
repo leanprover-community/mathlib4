@@ -193,8 +193,7 @@ theorem lift_min {a b : Cardinal} : lift.{u, v} (min a b) = min (lift.{u, v} a) 
 theorem lift_max {a b : Cardinal} : lift.{u, v} (max a b) = max (lift.{u, v} a) (lift.{u, v} b) :=
   lift_monotone.map_max
 
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
+-- This cannot be a `@[simp]` lemma because `simp` can't figure out the universes.
 theorem lift_umax_eq {a : Cardinal.{u}} {b : Cardinal.{v}} :
     lift.{max v w} a = lift.{max u w} b ↔ lift.{v} a = lift.{u} b := by
   rw [← lift_lift.{v, w, u}, ← lift_lift.{u, w, v}, lift_inj]
