@@ -67,9 +67,9 @@ theorem exp_eq_sum_apply {M : Type*} [AddCommGroup M] [Module A M] [Module ℚ M
     {k : ℕ} (h : (a ^ k) • m = 0) (hn : IsNilpotent a) :
       (exp a) • m = ∑ i ∈ range k, ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m := by
   rcases le_or_lt (nilpotencyClass a) k with h₀ | h₀
-  · rw [exp_eq_sum (pow_eq_zero_of_le h₀ (pow_nilpotencyClass hn)), Finset.sum_smul]
+  · rw [exp_eq_sum (pow_eq_zero_of_le h₀ (pow_nilpotencyClass hn)), sum_smul]
   dsimp [exp]
-  rw [Finset.sum_smul, (sum_range_add_sum_Ico _ (Nat.le_of_succ_le h₀)).symm]
+  rw [sum_smul, (sum_range_add_sum_Ico _ (Nat.le_of_succ_le h₀)).symm]
   suffices ∑ i ∈ Ico k (nilpotencyClass a), ((i.factorial : ℚ)⁻¹ • (a ^ i)) • m = 0 by
     rw [this, add_zero]
   exact sum_eq_zero fun r h₂ => by

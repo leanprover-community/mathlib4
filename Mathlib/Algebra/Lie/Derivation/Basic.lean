@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Marbach
 -/
 import Mathlib.Algebra.Algebra.Rat
-import Mathlib.Algebra.Lie.BaseChange
-import Mathlib.Algebra.Lie.Basic
 import Mathlib.Algebra.Lie.NonUnitalNonAssocAlgebra
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Lie.Subalgebra
