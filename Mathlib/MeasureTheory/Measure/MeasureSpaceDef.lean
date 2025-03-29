@@ -419,4 +419,21 @@ theorem Measurable.comp_aemeasurable' [MeasurableSpace δ] {f : α → δ} {g : 
     (hg : Measurable g) (hf : AEMeasurable f μ) : AEMeasurable (fun x ↦ g (f x)) μ :=
   Measurable.comp_aemeasurable hg hf
 
+variable {δ : Type*} [Countable δ] {X : δ → Type*} [∀ a, MeasurableSpace (X a)]
+
+theorem aemeasurable_pi_iff {g : α → ∀ a, X a} :
+    AEMeasurable g μ ↔ ∀ a, AEMeasurable (fun x => g x a) μ := by
+  constructor
+  · intro hg a
+    use fun x ↦ hg.mk g x a, hg.measurable_mk.eval
+    exact hg.ae_eq_mk.mono fun _ h ↦ congrFun h _
+  · intro h
+    use fun x a ↦ (h a).mk _ x, measurable_pi_lambda _ fun a ↦ (h a).measurable_mk
+    exact (eventually_countable_forall.mpr fun a ↦ (h a).ae_eq_mk).mono fun _ h ↦ funext h
+
+@[fun_prop, aesop safe 100 apply (rule_sets := [Measurable])]
+theorem aemeasurable_pi_lambda (f : α → ∀ a, X a) (hf : ∀ a, AEMeasurable (fun c => f c a) μ) :
+    AEMeasurable f μ :=
+  aemeasurable_pi_iff.mpr hf
+
 end
