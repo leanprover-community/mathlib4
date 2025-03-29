@@ -419,7 +419,7 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
   suffices hy : algebraMap S L (a * y) ∈ Submodule.span K ((algebraMap S L) '' b) by
     rw [mk_yz_eq, IsFractionRing.mk'_eq_div, ← IsScalarTower.algebraMap_apply,
       IsScalarTower.algebraMap_apply R K L, div_eq_mul_inv, ← mul_assoc, mul_comm, ← map_inv₀, ←
-      Algebra.smul_def, ← _root_.map_mul]
+      Algebra.smul_def, ← map_mul]
     exact (Submodule.span K _).smul_mem _ hy
   refine Submodule.span_subset_span R K _ ?_
   rw [Submodule.span_algebraMap_image_of_tower]

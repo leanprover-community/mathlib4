@@ -69,7 +69,7 @@ lemma absNorm_ne_zero : (absNorm v.asIdeal : NNReal) ≠ 0 :=
 valuation -/
 noncomputable def adicAbv : AbsoluteValue K ℝ where
   toFun x := toNNReal (absNorm_ne_zero v) (v.valuation K x)
-  map_mul' _ _ := by simp only [_root_.map_mul, NNReal.coe_mul]
+  map_mul' _ _ := by simp only [map_mul, NNReal.coe_mul]
   nonneg' _ := NNReal.zero_le_coe
   eq_zero' _ := by simp only [NNReal.coe_eq_zero, map_eq_zero]
   add_le' x y := by

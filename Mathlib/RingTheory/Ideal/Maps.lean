@@ -546,18 +546,19 @@ variable [FunLike F R S] [rc : RingHomClass F R S]
 variable (f : F)
 variable (I J : Ideal R) (K L : Ideal S)
 
-theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S] (f : F) (I J : Ideal R) :
+protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
+    (f : F) (I J : Ideal R) :
     map f (I * J) = map f I * map f J :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       mul_le.2 fun r hri s hsj =>
         show (f (r * s)) ∈ map f I * map f J by
-          rw [_root_.map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
+          rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
     (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
       Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
         Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
           Set.singleton_subset_iff.2 <|
-            hfri ▸ hfsj ▸ by rw [← _root_.map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
+            hfri ▸ hfsj ▸ by rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
@@ -588,7 +589,7 @@ theorem map_radical_le : map f (radical I) ≤ radical (map f I) :=
 
 theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
   map_le_iff_le_comap.1 <|
-    (map_mul f (comap f K) (comap f L)).symm ▸
+    (Ideal.map_mul f (comap f K) (comap f L)).symm ▸
       mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
@@ -949,7 +950,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
   · refine fun hxy => (hf x).recOn fun a ha => (hf y).recOn fun b hb => ?_
-    rw [← ha, ← hb, ← _root_.map_mul f, mem_map_iff_of_surjective _ hf] at hxy
+    rw [← ha, ← hb, ← map_mul f, mem_map_iff_of_surjective _ hf] at hxy
     rcases hxy with ⟨c, hc, hc'⟩
     rw [← sub_eq_zero, ← map_sub] at hc'
     have : a * b ∈ I := by

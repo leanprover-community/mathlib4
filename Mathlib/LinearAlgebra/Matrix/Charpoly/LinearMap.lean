@@ -98,7 +98,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
 theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h : A.Represents b f)
     (h' : Matrix.Represents b A' f') : (A * A').Represents b (f * f') := by
   delta Matrix.Represents PiToModule.fromMatrix
-  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_mul]
+  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_mul]
   ext
   dsimp [PiToModule.fromEnd]
   rw [← h'.congr_fun, ← h.congr_fun]
@@ -106,7 +106,7 @@ theorem Matrix.Represents.mul {A A' : Matrix ι ι R} {f f' : Module.End R M} (h
 
 theorem Matrix.Represents.one : (1 : Matrix ι ι R).Represents b 1 := by
   delta Matrix.Represents PiToModule.fromMatrix
-  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, _root_.map_one]
+  rw [LinearMap.comp_apply, AlgEquiv.toLinearMap_apply, map_one]
   ext
   rfl
 

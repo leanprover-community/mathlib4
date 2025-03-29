@@ -159,7 +159,7 @@ theorem integer_isOpen : IsOpen (_i.v.integer : Set R) := by
   intro x hx
   rw [mem_nhds]
   exact ⟨1,
-    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (map_add _ _ _) (max_le (le_of_lt hy) hx)⟩
+    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
 /-- The valuation subring of a valued field is open. -/
 theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :

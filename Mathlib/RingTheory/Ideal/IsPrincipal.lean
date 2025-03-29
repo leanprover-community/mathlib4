@@ -134,7 +134,7 @@ theorem associatesNonZeroDivisorsEquivIsPrincipal_mul (x y : Associates R⁰) :
     (associatesNonZeroDivisorsEquivIsPrincipal R (x * y) : Ideal R) =
       (associatesNonZeroDivisorsEquivIsPrincipal R x) *
         (associatesNonZeroDivisorsEquivIsPrincipal R y) := by
-  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, _root_.map_mul, Submonoid.coe_mul,
+  simp_rw [associatesNonZeroDivisorsEquivIsPrincipal_coe, map_mul, Submonoid.coe_mul,
     associatesEquivIsPrincipal_mul]
 
 @[simp]

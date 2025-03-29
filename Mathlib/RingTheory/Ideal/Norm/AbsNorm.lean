@@ -233,7 +233,7 @@ theorem irreducible_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Idea
       by
       rintro a b rfl
       simpa only [Ideal.isUnit_iff, Nat.isUnit_iff, absNorm_eq_one_iff] using
-        hI.isUnit_or_isUnit (_root_.map_mul absNorm a b)⟩
+        hI.isUnit_or_isUnit (map_mul absNorm a b)⟩
 
 theorem isPrime_of_irreducible_absNorm {I : Ideal S} (hI : Irreducible (Ideal.absNorm I)) :
     I.IsPrime :=

@@ -63,7 +63,7 @@ def Matrix.toLinearMap₂'Aux (f : Matrix n m N₂) : (n → R₁) →ₛₗ[σ�
         MulAction.mul_smul])
     (fun _ _ _ => by simp only [Pi.add_apply, map_add, add_smul, smul_add, sum_add_distrib])
     (fun _ v w => by
-      simp only [Pi.smul_apply, smul_eq_mul, _root_.map_mul, MulAction.mul_smul, smul_sum])
+      simp only [Pi.smul_apply, smul_eq_mul, map_mul, MulAction.mul_smul, smul_sum])
 
 variable [DecidableEq n] [DecidableEq m]
 

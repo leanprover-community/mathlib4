@@ -577,7 +577,7 @@ lemma ofComp_kerCompPreimage (Q : Generators S T) (P : Generators R S) (x : Q.ke
   conv_rhs => rw [← x.1.support_sum_monomial_coeff]
   rw [kerCompPreimage, map_finsupp_sum, Finsupp.sum]
   refine Finset.sum_congr rfl fun j _ ↦ ?_
-  simp only [AlgHom.toLinearMap_apply, _root_.map_mul, Hom.toAlgHom_monomial]
+  simp only [AlgHom.toLinearMap_apply, map_mul, Hom.toAlgHom_monomial]
   rw [one_smul, Finsupp.prod_mapDomain_index_inj Sum.inl_injective]
   rw [rename, ← AlgHom.comp_apply, comp_aeval]
   simp only [ofComp_val, Sum.elim_inr, Function.comp_apply, self_val, id_eq,
