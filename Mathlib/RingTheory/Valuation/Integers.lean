@@ -153,6 +153,11 @@ lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
   refine not_congr ?_
   simp [map_eq_zero_iff _ hv.hom_inj]
 
+theorem not_isUnit_iff_valuation_lt_one {x : v.integer} : ¬IsUnit x ↔ v x < 1 := by
+  rw [← not_le, not_iff_not, isUnit_iff_valuation_eq_one (F := F) (Γ₀ := Γ₀),
+    le_antisymm_iff]
+  exacts [and_iff_right x.2, integer.integers v]
+
 theorem dvdNotUnit_iff_lt (hv : Integers v O) {x y : O} :
     DvdNotUnit x y ↔ v (algebraMap O F y) < v (algebraMap O F x) := by
   rw [lt_iff_le_not_le, hv.le_iff_dvd, hv.le_iff_dvd]
