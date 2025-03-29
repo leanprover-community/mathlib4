@@ -105,8 +105,8 @@ def tensorComm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
   rfl
 
 @[simp] lemma tensorComm_symm (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) :
-    (tensorComm Q₁ Q₂).symm = tensorComm Q₂ Q₁ :=
-  rfl
+    (tensorComm Q₁ Q₂).symm = tensorComm Q₂ Q₁ := by
+  with_unfolding_all rfl
 
 end tensorComm
 

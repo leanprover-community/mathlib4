@@ -53,6 +53,7 @@ noncomputable instance TensorProduct.instBialgebra
     [Bialgebra R A] [Bialgebra R B] : Bialgebra R (A ⊗[R] B) := by
   have hcounit := congr(DFunLike.coe $(Bialgebra.TensorProduct.counit_eq_algHom_toLinearMap R A B))
   have hcomul := congr(DFunLike.coe $(Bialgebra.TensorProduct.comul_eq_algHom_toLinearMap R A B))
+  -- This seems bad
   refine Bialgebra.mk' R (A ⊗[R] B) ?_ (fun {x y} => ?_) ?_ (fun {x y} => ?_) <;>
   simp_all only [AlgHom.toLinearMap_apply] <;>
   simp only [_root_.map_one, _root_.map_mul]
@@ -75,7 +76,8 @@ theorem map_tmul (f : A →ₐc[R] B) (g : C →ₐc[R] D) (x : A) (y : C) :
 
 @[simp]
 theorem map_toCoalgHom (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
-    map f g = Coalgebra.TensorProduct.map (f : A →ₗc[R] B) (g : C →ₗc[R] D) := rfl
+    map f g = Coalgebra.TensorProduct.map (f : A →ₗc[R] B) (g : C →ₗc[R] D) := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem map_toAlgHom (f : A →ₐc[R] B) (g : C →ₐc[R] D) :
@@ -102,12 +104,14 @@ theorem assoc_symm_tmul (x : A) (y : B) (z : C) :
 @[simp]
 theorem assoc_toCoalgEquiv :
     (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₗc[R] _) =
-    Coalgebra.TensorProduct.assoc R A B C := rfl
+    Coalgebra.TensorProduct.assoc R A B C := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem assoc_toAlgEquiv :
     (Bialgebra.TensorProduct.assoc R A B C : _ ≃ₐ[R] _) =
-    Algebra.TensorProduct.assoc R A B C := rfl
+    Algebra.TensorProduct.assoc R A B C := by
+  with_unfolding_all rfl
 
 variable (R A) in
 /-- The base ring is a left identity for the tensor product of bialgebras, up to
@@ -117,7 +121,8 @@ protected noncomputable def lid : R ⊗[R] A ≃ₐc[R] A :=
 
 @[simp]
 theorem lid_toCoalgEquiv :
-    (Bialgebra.TensorProduct.lid R A : R ⊗[R] A ≃ₗc[R] A) = Coalgebra.TensorProduct.lid R A := rfl
+    (Bialgebra.TensorProduct.lid R A : R ⊗[R] A ≃ₗc[R] A) = Coalgebra.TensorProduct.lid R A := by
+  with_unfolding_all rfl
 
 @[simp]
 theorem lid_toAlgEquiv :

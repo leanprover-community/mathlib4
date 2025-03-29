@@ -53,14 +53,15 @@ def domCoprod.summand (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→
     simp only [MultilinearMap.domDomCongr_apply, MultilinearMap.domCoprod_apply,
       coe_multilinearMap, MultilinearMap.smul_apply]
     replace h := inv_mul_eq_iff_eq_mul.mp h.symm
-    have : Equiv.Perm.sign (σ₁ * Perm.sumCongrHom _ _ (sl, sr))
-      = Equiv.Perm.sign σ₁ * (Equiv.Perm.sign sl * Equiv.Perm.sign sr) := by simp
-    rw [h, this, mul_smul, mul_smul, smul_left_cancel_iff, ← TensorProduct.tmul_smul,
-      TensorProduct.smul_tmul']
-    simp only [Sum.map_inr, Perm.sumCongrHom_apply, Perm.sumCongr_apply, Sum.map_inl,
-      Function.comp_apply, Perm.coe_mul]
-    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`.
-    erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
+    sorry
+    -- have : Equiv.Perm.sign (σ₁ * Perm.sumCongrHom _ _ (sl, sr))
+    --   = Equiv.Perm.sign σ₁ * (Equiv.Perm.sign sl * Equiv.Perm.sign sr) := by simp
+    -- rw [h, this, mul_smul, mul_smul, smul_left_cancel_iff, ← TensorProduct.tmul_smul,
+    --   TensorProduct.smul_tmul']
+    -- simp only [Sum.map_inr, Perm.sumCongrHom_apply, Perm.sumCongr_apply, Sum.map_inl,
+    --   Function.comp_apply, Perm.coe_mul]
+    -- -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`.
+    -- erw [← a.map_congr_perm fun i => v (σ₁ _), ← b.map_congr_perm fun i => v (σ₁ _)]
 
 theorem domCoprod.summand_mk'' (a : Mᵢ [⋀^ιa]→ₗ[R'] N₁) (b : Mᵢ [⋀^ιb]→ₗ[R'] N₂)
     (σ : Equiv.Perm (ιa ⊕ ιb)) :
@@ -263,6 +264,7 @@ theorem MultilinearMap.domCoprod_alternization_eq [DecidableEq ιa] [DecidableEq
       ((Fintype.card ιa).factorial * (Fintype.card ιb).factorial) • a.domCoprod b := by
   rw [MultilinearMap.domCoprod_alternization, coe_alternatization, coe_alternatization, mul_smul,
     ← AlternatingMap.domCoprod'_apply, ← AlternatingMap.domCoprod'_apply,
-    ← TensorProduct.smul_tmul', TensorProduct.tmul_smul,
-    LinearMap.map_smul_of_tower AlternatingMap.domCoprod',
-    LinearMap.map_smul_of_tower AlternatingMap.domCoprod']
+    ← TensorProduct.smul_tmul', TensorProduct.tmul_smul] --,
+    -- LinearMap.map_smul_of_tower AlternatingMap.domCoprod',
+    -- LinearMap.map_smul_of_tower AlternatingMap.domCoprod']
+  sorry

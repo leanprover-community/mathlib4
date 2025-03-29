@@ -51,7 +51,7 @@ variable (P : Extension.{w} R S)
 The cotangent space on `P = R[X]`.
 This is isomorphic to `Sⁿ` with `n` being the number of variables of `P`.
 -/
-abbrev CotangentSpace : Type _ := S ⊗[P.Ring] Ω[P.Ring⁄R]
+abbrev CotangentSpace : Type max v w := S ⊗[P.Ring] Ω[P.Ring⁄R]
 
 /-- The cotangent complex given by a presentation `R[X] → S` (i.e. a closed embedding `S ↪ Aⁿ`). -/
 noncomputable
