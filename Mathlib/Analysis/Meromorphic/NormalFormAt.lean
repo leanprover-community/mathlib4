@@ -331,8 +331,11 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 @[simp] theorem toMeromorphicNFAt_eq_self :
-    MeromorphicNFAt f x ↔ f = toMeromorphicNFAt f x where
+    f = toMeromorphicNFAt f x ↔ MeromorphicNFAt f x where
   mp hf := by
+    rw [hf]
+    exact meromorphicNFAt_toMeromorphicNFAt
+  mpr hf := by
     funext z
     by_cases hz : z = x
     · rw [hz]
@@ -371,9 +374,6 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
           rw [hn] at this
           tauto
     · exact hf.meromorphicAt.eqOn_compl_singleton_toMermomorphicNFAt hz
-  mpr hf := by
-    rw [hf]
-    exact meromorphicNFAt_toMeromorphicNFAt
 
 /--
 If `f` is meromorphic in normal form, then so is its inverse.
@@ -564,7 +564,7 @@ theorem toMeromorphicNFOn_eqOn_codiscrete [CompleteSpace E] (hf : MeromorphicOn 
   have : U ∈ Filter.codiscreteWithin U := by
     simp [mem_codiscreteWithin.2]
   filter_upwards [hf.analyticAt_mem_codiscreteWithin, this] with a h₁a h₂a
-  simp [toMeromorphicNFOn, hf, ← toMeromorphicNFAt_eq_self.1 h₁a.meromorphicNFAt]
+  simp [toMeromorphicNFOn, hf, ← toMeromorphicNFAt_eq_self.2 h₁a.meromorphicNFAt]
 
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then `f` and its conversion to normal
@@ -574,7 +574,7 @@ theorem MeromorphicOn.toMeromorphicNFOn_eq_self_on_nhdNE [CompleteSpace E]
     (hf : MeromorphicOn f U) (hx : x ∈ U) :
     toMeromorphicNFOn f U =ᶠ[𝓝[≠] x] f := by
   filter_upwards [(hf x hx).eventually_analyticAt] with a ha
-  simp [toMeromorphicNFOn, hf, ← toMeromorphicNFAt_eq_self.1 ha.meromorphicNFAt]
+  simp [toMeromorphicNFOn, hf, ← toMeromorphicNFAt_eq_self.2 ha.meromorphicNFAt]
 
 /--
 If `f` is meromorphic on `U` and `x ∈ U`, then conversion to normal form at `x`
@@ -620,7 +620,7 @@ If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
   · ext x
     by_cases hx : x ∈ U
     · simp only [toMeromorphicNFOn, h.meromorphicOn, ↓reduceDIte, hx]
-      rw [← toMeromorphicNFAt_eq_self.1 (h hx)]
+      rw [← toMeromorphicNFAt_eq_self.2 (h hx)]
     · simp [toMeromorphicNFOn, h.meromorphicOn, hx]
   · rw [h]
     apply meromorphicNFOn_toMeromorphicNFOn
