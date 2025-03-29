@@ -18,13 +18,15 @@ universe v₁ u₁
 
 namespace CategoryTheory.Paths
 
+section
 variable (V : Type u₁) [Quiver.{v₁ + 1} V]
 
 /-- A reformulation of `CategoryTheory.Paths.induction` in terms of `MorphismProperty`. -/
 lemma morphismProperty_eq_top
     (P : MorphismProperty (Paths V))
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : of.obj u ⟶ of.obj v) (q : v ⟶ w), P p → P (p ≫ of.map q)) :
+    (id : ∀ {v : V}, P (𝟙 ((of V).obj v)))
+    (comp : ∀ {u v w : V}
+      (p : (of V).obj u ⟶ (of V).obj v) (q : v ⟶ w), P p → P (p ≫ (of V).map q)) :
     P = ⊤ := by
   ext; constructor
   · simp
@@ -33,11 +35,48 @@ lemma morphismProperty_eq_top
 /-- A reformulation of `CategoryTheory.Paths.induction'` in terms of `MorphismProperty`. -/
 lemma morphismProperty_eq_top'
     (P : MorphismProperty (Paths V))
-    (id : ∀ {v : V}, P (𝟙 (of.obj v)))
-    (comp : ∀ {u v w : V} (p : u ⟶ v) (q : of.obj v ⟶ of.obj w), P q → P (of.map p ≫ q)) :
+    (id : ∀ {v : V}, P (𝟙 ((of V).obj v)))
+    (comp : ∀ {u v w : V}
+      (p : u ⟶ v) (q : (of V).obj v ⟶ (of V).obj w), P q → P ((of V).map p ≫ q)) :
     P = ⊤ := by
   ext; constructor
   · simp
   · exact fun _ ↦ induction' (fun f ↦ P f) id comp _
+
+end
+section
+
+variable {V : Type u₁} [Quiver.{v₁ + 1} V]
+
+/-- A natural transformation between `F G : Paths V ⥤ C` is defined by its components and
+its unary naturality squares. -/
+def liftNatTrans {C} [Category C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ⟶ G.obj v))
+    (α_nat : {X Y : V} → (f : X ⟶ Y) →
+      F.map (Quiver.Hom.toPath f) ≫ α_app Y = α_app X ≫ G.map (Quiver.Hom.toPath f)) : F ⟶ G where
+        app := α_app
+        naturality := by
+          apply MorphismProperty.of_eq_top
+          apply morphismProperty_eq_top
+          · simp only [Functor.map_id, Category.id_comp, Category.comp_id, implies_true]
+          · simp only [of_obj, of_map, Functor.map_comp, Category.assoc]
+            intro _ _ _ _ q hyp
+            rw [α_nat q, ← Category.assoc, hyp, Category.assoc]
+
+@[simp]
+theorem liftNatTrans_app {C} [Category C] {F G : Paths V ⥤ C}
+    (α_app : (v : V) → (F.obj v ⟶ G.obj v))
+    (α_nat : {X Y : V} → (f : X ⟶ Y) →
+      F.map (Quiver.Hom.toPath f) ≫ α_app Y = α_app X ≫ G.map (Quiver.Hom.toPath f)) (x : V) :
+    (liftNatTrans α_app α_nat).app x = α_app x := rfl
+
+/-- A natural isomorphism between `F G : Paths V ⥤ C` is defined by its components and
+its unary naturality squares. -/
+def liftNatIso {C} [Category C] {F G : Paths V ⥤ C} (α_app : (v : V) → (F.obj v ≅ G.obj v))
+    (α_nat : {X Y : V} → (f : X ⟶ Y) →
+      F.map (Quiver.Hom.toPath f) ≫ (α_app Y).hom = (α_app X).hom ≫ G.map (Quiver.Hom.toPath f)) :
+    F ≅ G :=
+  NatIso.ofComponents α_app (fun f ↦ (liftNatTrans (fun v ↦ (α_app v).hom) α_nat).naturality f)
+
+end
 
 end CategoryTheory.Paths
