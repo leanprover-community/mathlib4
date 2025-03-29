@@ -323,7 +323,7 @@ theorem coe_Ioo (a b : α) : (Ioo a b : Set α) = Set.Ioo a b :=
 
 @[simp]
 theorem _root_.Fintype.card_Icc (a b : α) [Fintype (Set.Icc a b)] :
-    Fintype.card (Set.Icc a b) = (Icc a b).card :=
+    Fintype.card (Set.Icc a b) = #(Icc a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 @[simp]
