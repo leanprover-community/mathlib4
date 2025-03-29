@@ -7,6 +7,7 @@ import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.RingTheory.Localization.Away.Basic
 
 /-!
 # Localized Module
@@ -131,10 +132,15 @@ variable (T B : Type*) [CommSemiring T] [CommSemiring B]
   [Algebra R T] [Algebra T B] [Algebra R B] [Algebra A B] [IsScalarTower R T B]
   [IsScalarTower R A B]
 
+variable {T B} in
+lemma Algebra.isLocalization_iff_isPushout :
+    IsLocalization (Algebra.algebraMapSubmonoid T S) B ↔ IsPushout R T A B := by
+  rw [Algebra.IsPushout.comm, Algebra.isPushout_iff, ← isLocalizedModule_iff_isLocalization]
+  rw [← isLocalizedModule_iff_isBaseChange (S := S)]
+
 lemma Algebra.isPushout_of_isLocalization [IsLocalization (Algebra.algebraMapSubmonoid T S) B] :
-    Algebra.IsPushout R T A B := by
-  rw [Algebra.IsPushout.comm, Algebra.isPushout_iff]
-  apply IsLocalizedModule.isBaseChange S
+    Algebra.IsPushout R T A B :=
+  (Algebra.isLocalization_iff_isPushout S _).mp inferInstance
 
 open TensorProduct in
 instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
@@ -190,3 +196,41 @@ lemma IsLocalizedModule.map_lTensor (g : M →ₗ[A] M') [h : IsLocalizedModule 
   simp
 
 end
+
+namespace IsLocalization.Away
+
+variable {R S : Type*} [CommRing R] [CommRing S] [Algebra R S]
+    (r : R) (A : Type*) [CommRing A] [Algebra R A]
+
+instance tensor [IsLocalization.Away r A] :
+    IsLocalization.Away (algebraMap R S r) (S ⊗[R] A) := by
+  let _ : Algebra A (S ⊗[R] A) := Algebra.TensorProduct.rightAlgebra
+  simp only [IsLocalization.Away]
+  have : Submonoid.powers (algebraMap R S r) = Algebra.algebraMapSubmonoid S (.powers r) := by
+    simp [Algebra.algebraMapSubmonoid]
+  rw [this, Algebra.isLocalization_iff_isPushout _ A]
+  infer_instance
+
+variable (S) in
+/-- The `S`-isomorphism `S ⊗[R] Rᵣ ≃ₐ Sᵣ`. -/
+noncomputable def tensorEquiv [IsLocalization.Away r A] :
+    S ⊗[R] A ≃ₐ[S] Localization.Away (algebraMap R S r) :=
+  IsLocalization.algEquiv (Submonoid.powers <| algebraMap R S r) _ _
+
+attribute [local instance] Algebra.TensorProduct.rightAlgebra
+
+instance tensorRight [IsLocalization.Away r A] :
+    IsLocalization.Away (algebraMap R S r) (A ⊗[R] S) := by
+  simp only [IsLocalization.Away]
+  have : Submonoid.powers (algebraMap R S r) = Algebra.algebraMapSubmonoid S (.powers r) := by
+    simp [Algebra.algebraMapSubmonoid]
+  rw [this, Algebra.isLocalization_iff_isPushout _ A]
+  infer_instance
+
+variable (S) in
+/-- The `S`-isomorphism `S ⊗[R] Rᵣ ≃ₐ Sᵣ`. -/
+noncomputable def tensorRightEquiv [IsLocalization.Away r A] :
+    A ⊗[R] S ≃ₐ[S] Localization.Away (algebraMap R S r) :=
+  IsLocalization.algEquiv (Submonoid.powers <| algebraMap R S r) _ _
+
+end IsLocalization.Away
