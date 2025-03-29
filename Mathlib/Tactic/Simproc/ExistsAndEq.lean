@@ -67,7 +67,7 @@ end existsAndEq
 /-- Triggers on goals of the form `∃ a, body` and checks whether `body` has the
 form `... ∧ a = a' ∧ ...` or `... ∧ a' = a ∧ ...` for some `a'` that is independent of `a`.
 If so, it replaces all occurancies of `a` with `a'` and removes the quantifier. -/
-simproc existsAndEq (Exists (fun _ => And _ _)) := fun e => do
+simproc_decl existsAndEq (Exists (fun _ => And _ _)) := fun e => do
   match e.getAppFnArgs with
   | (``Exists, #[_, p]) =>
     let .some ⟨res, pf⟩ ← existsAndEq.findImpEqProof p | return .continue
