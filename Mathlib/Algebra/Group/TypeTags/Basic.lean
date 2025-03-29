@@ -243,10 +243,6 @@ theorem toAdd_one [Zero α] : (1 : Multiplicative α).toAdd = 0 :=
   rfl
 
 @[simp]
-lemma toAdd_one' [Zero α] : (One.one : Multiplicative α).toAdd = 0 :=
-  rfl
-
-@[simp]
 lemma toAdd_eq_zero {α : Type*} [Zero α] {x : Multiplicative α} :
     x.toAdd = 0 ↔ x = 1 :=
   Iff.rfl
