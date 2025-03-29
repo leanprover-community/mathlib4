@@ -282,9 +282,19 @@ lemma TotallyBounded.isSeparable [UniformSpace X] [i : IsCountablyGenerated (�
   obtain ⟨t, _, htc, hts⟩ := EMetric.subset_countable_closure_of_almost_dense_set s h'
   exact ⟨t, htc, hts⟩
 
-open TopologicalSpace in
+variable {α : Type*}
+open TopologicalSpace
+
 instance (priority := 100) DiscreteTopology.metrizableSpace
-    {α} [TopologicalSpace α] [DiscreteTopology α] :
+    [TopologicalSpace α] [DiscreteTopology α] :
     MetrizableSpace α := by
   obtain rfl := DiscreteTopology.eq_bot (α := α)
   exact @UniformSpace.metrizableSpace α ⊥ (isCountablyGenerated_principal _) _
+
+instance (priority := 100) PseudoEMetricSpace.pseudoMetrizableSpace
+    [PseudoEMetricSpace α] : PseudoMetrizableSpace α :=
+  inferInstance
+
+instance (priority := 100) EMetricSpace.metrizableSpace
+    [EMetricSpace α] : MetrizableSpace α :=
+  inferInstance
