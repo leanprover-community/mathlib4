@@ -668,7 +668,7 @@ theorem det_fromBlocks_zero₂₁ (A : Matrix m m R) (B : Matrix m n R) (D : Mat
         · exact h2.left x
         · exact h2.right x
       · intro σ hσ
-        erw [Set.mem_toFinset, MonoidHom.mem_range] at hσ
+        rw [mem_coe, Set.mem_toFinset] at hσ
         obtain ⟨σ₁₂, hσ₁₂⟩ := hσ
         use σ₁₂
         rw [← hσ₁₂]

@@ -281,6 +281,8 @@ theorem mk_pos {f : CauSeq ℚ abs} : 0 < mk f ↔ Pos f := by
   rw [← mk_zero, mk_lt]
   exact iff_of_eq (congr_arg Pos (sub_zero f))
 
+lemma mk_const {x : ℚ} : mk (const abs x) = x := rfl
+
 private irreducible_def le (x y : ℝ) : Prop :=
   x < y ∨ x = y
 
@@ -330,7 +332,7 @@ instance partialOrder : PartialOrder ℝ where
 instance : Preorder ℝ := by infer_instance
 
 theorem ratCast_lt {x y : ℚ} : (x : ℝ) < (y : ℝ) ↔ x < y := by
-  erw [mk_lt]
+  rw [← mk_const, ← mk_const, mk_lt]
   exact const_lt
 
 protected theorem zero_lt_one : (0 : ℝ) < 1 := by
@@ -546,7 +548,7 @@ theorem le_mk_of_forall_le {f : CauSeq ℚ abs} : (∃ i, ∀ j ≥ i, x ≤ f j
   rintro ⟨K, K0, hK⟩
   obtain ⟨i, H⟩ := exists_forall_ge_and h (exists_forall_ge_and hK (f.cauchy₃ <| half_pos K0))
   apply not_lt_of_le (H _ le_rfl).1
-  erw [mk_lt]
+  rw [← mk_const, mk_lt]
   refine ⟨_, half_pos K0, i, fun j ij => ?_⟩
   have := add_le_add (H _ ij).2.1 (le_of_lt (abs_lt.1 <| (H _ le_rfl).2.2 _ ij).1)
   rwa [← sub_eq_add_neg, sub_self_div_two, sub_apply, sub_add_sub_cancel] at this
