@@ -114,7 +114,7 @@ theorem Nonempty.subset_one_iff (h : s.Nonempty) : s ⊆ 1 ↔ s = 1 :=
   h.subset_singleton_iff
 
 @[to_additive (attr := simp)]
-theorem card_one : (1 : Finset α).card = 1 :=
+theorem card_one : #(1 : Finset α) = 1 :=
   card_singleton _
 
 /-- The singleton operation as a `OneHom`. -/
@@ -201,7 +201,7 @@ theorem inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
   mem_image_of_mem _ ha
 
 @[to_additive]
-theorem card_inv_le : s⁻¹.card ≤ s.card :=
+theorem card_inv_le : #s⁻¹ ≤ #s :=
   card_image_le
 
 @[to_additive (attr := simp)]
@@ -272,7 +272,7 @@ lemma mem_inv' : a ∈ s⁻¹ ↔ a⁻¹ ∈ s := by simp [mem_inv, inv_eq_iff_e
 theorem coe_inv (s : Finset α) : ↑s⁻¹ = (s : Set α)⁻¹ := coe_image.trans Set.image_inv_eq_inv
 
 @[to_additive (attr := simp)]
-theorem card_inv (s : Finset α) : s⁻¹.card = s.card := card_image_of_injective _ inv_injective
+theorem card_inv (s : Finset α) : #s⁻¹ = #s := card_image_of_injective _ inv_injective
 
 @[to_additive (attr := simp)]
 theorem preimage_inv (s : Finset α) : s.preimage (·⁻¹) inv_injective.injOn = s⁻¹ :=
@@ -330,12 +330,12 @@ theorem mul_mem_mul : a ∈ s → b ∈ t → a * b ∈ s * t :=
   mem_image₂_of_mem
 
 @[to_additive]
-theorem card_mul_le : (s * t).card ≤ s.card * t.card :=
+theorem card_mul_le : #(s * t) ≤ #s * #t :=
   card_image₂_le _ _ _
 
 @[to_additive]
 theorem card_mul_iff :
-    (s * t).card = s.card * t.card ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
+    #(s * t) = #s * #t ↔ (s ×ˢ t : Set (α × α)).InjOn fun p => p.1 * p.2 :=
   card_image₂_iff
 
 @[to_additive (attr := simp)]
@@ -528,7 +528,7 @@ theorem div_mem_div : a ∈ s → b ∈ t → a / b ∈ s / t :=
   mem_image₂_of_mem
 
 @[to_additive]
-theorem div_card_le : (s / t).card ≤ s.card * t.card :=
+theorem div_card_le : #(s / t) ≤ #s * #t :=
   card_image₂_le _ _ _
 
 @[to_additive (attr := simp)]
@@ -869,7 +869,7 @@ theorem mem_pow {a : α} {n : ℕ} :
   simp [← mem_coe, coe_pow, Set.mem_pow]
 
 @[to_additive]
-lemma card_pow_le : ∀ {n}, (s ^ n).card ≤ s.card ^ n
+lemma card_pow_le : ∀ {n}, #(s ^ n) ≤ #s ^ n
   | 0 => by simp
   | n + 1 => by rw [pow_succ, pow_succ]; refine card_mul_le.trans (by gcongr; exact card_pow_le)
 
@@ -1135,7 +1135,7 @@ lemma Nontrivial.mul (hs : s.Nontrivial) (ht : t.Nontrivial) : (s * t).Nontrivia
   ht.mul_left hs.nonempty
 
 @[to_additive (attr := simp)]
-theorem card_singleton_mul (a : α) (t : Finset α) : ({a} * t).card = t.card :=
+theorem card_singleton_mul (a : α) (t : Finset α) : #({a} * t) = #t :=
   card_image₂_singleton_left _ <| mul_right_injective _
 
 @[to_additive]
@@ -1143,7 +1143,7 @@ theorem singleton_mul_inter (a : α) (s t : Finset α) : {a} * (s ∩ t) = {a} *
   image₂_singleton_inter _ _ <| mul_right_injective _
 
 @[to_additive]
-theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : t.card ≤ (s * t).card :=
+theorem card_le_card_mul_left {s : Finset α} (hs : s.Nonempty) : #t ≤ #(s * t) :=
   card_le_card_image₂_left _ hs mul_right_injective
 
 /--
@@ -1154,7 +1154,7 @@ See `card_le_card_mul_self'` for the version with right-cancellative multiplicat
 "The size of `s + s` is at least the size of `s`, version with left-cancellative addition.
 See `card_le_card_add_self'` for the version with right-cancellative addition."
 ]
-theorem card_le_card_mul_self {s : Finset α} : s.card ≤ (s * s).card := by
+theorem card_le_card_mul_self {s : Finset α} : #s ≤ #(s * s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_left, *]
 
 end IsLeftCancelMul
@@ -1169,7 +1169,7 @@ lemma Nontrivial.mul_right : s.Nontrivial → t.Nonempty → (s * t).Nontrivial 
   exact ⟨a * c, mul_mem_mul ha hc, b * c, mul_mem_mul hb hc, by simpa⟩
 
 @[to_additive (attr := simp)]
-theorem card_mul_singleton (s : Finset α) (a : α) : (s * {a}).card = s.card :=
+theorem card_mul_singleton (s : Finset α) (a : α) : #(s * {a}) = #s :=
   card_image₂_singleton_right _ <| mul_left_injective _
 
 @[to_additive]
@@ -1177,7 +1177,7 @@ theorem inter_mul_singleton (s t : Finset α) (a : α) : s ∩ t * {a} = s * {a}
   image₂_inter_singleton _ _ <| mul_left_injective _
 
 @[to_additive]
-theorem card_le_card_mul_right (ht : t.Nonempty) : s.card ≤ (s * t).card :=
+theorem card_le_card_mul_right (ht : t.Nonempty) : #s ≤ #(s * t) :=
   card_le_card_image₂_right _ ht mul_left_injective
 
 /--
@@ -1188,7 +1188,7 @@ See `card_le_card_mul_self` for the version with left-cancellative multiplicatio
 "The size of `s + s` is at least the size of `s`, version with right-cancellative addition.
 See `card_le_card_add_self` for the version with left-cancellative addition."
 ]
-theorem card_le_card_mul_self' : s.card ≤ (s * s).card := by
+theorem card_le_card_mul_self' : #s ≤ #(s * s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_mul_right, *]
 
 end IsRightCancelMul
@@ -1203,18 +1203,18 @@ lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivi
 
 /-- See `Finset.card_pow_mono` for a version that works for the empty set. -/
 @[to_additive "See `Finset.card_nsmul_mono` for a version that works for the empty set."]
-protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ ↦ (s ^ n).card :=
+protected lemma Nonempty.card_pow_mono (hs : s.Nonempty) : Monotone fun n : ℕ ↦ #(s ^ n) :=
   monotone_nat_of_le_succ fun n ↦ by rw [pow_succ]; exact card_le_card_mul_right hs
 
 /-- See `Finset.Nonempty.card_pow_mono` for a version that works for zero powers. -/
 @[to_additive "See `Finset.Nonempty.card_nsmul_mono` for a version that works for zero scalars."]
-lemma card_pow_mono (hm : m ≠ 0) (hmn : m ≤ n) : (s ^ m).card ≤ (s ^ n).card := by
+lemma card_pow_mono (hm : m ≠ 0) (hmn : m ≤ n) : #(s ^ m) ≤ #(s ^ n) := by
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp [hm]
   · exact hs.card_pow_mono hmn
 
 @[to_additive]
-lemma card_le_card_pow (hn : n ≠ 0) : s.card ≤ (s ^ n).card := by
+lemma card_le_card_pow (hn : n ≠ 0) : #s ≤ #(s ^ n) := by
   simpa using card_pow_mono (s := s) one_ne_zero (Nat.one_le_iff_ne_zero.2 hn)
 
 end CancelMonoid
@@ -1222,13 +1222,13 @@ end CancelMonoid
 section Group
 variable [Group α] [DecidableEq α] {s t : Finset α}
 
-@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : t.card ≤ (s / t).card :=
+@[to_additive] lemma card_le_card_div_left (hs : s.Nonempty) : #t ≤ #(s / t) :=
   card_le_card_image₂_left _ hs fun _ ↦ div_right_injective
 
-@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : s.card ≤ (s / t).card :=
+@[to_additive] lemma card_le_card_div_right (ht : t.Nonempty) : #s ≤ #(s / t) :=
   card_le_card_image₂_right _ ht fun _ ↦ div_left_injective
 
-@[to_additive] lemma card_le_card_div_self : s.card ≤ (s / s).card := by
+@[to_additive] lemma card_le_card_div_self : #s ≤ #(s / s) := by
   cases s.eq_empty_or_nonempty <;> simp [card_le_card_div_left, *]
 
 end Group
