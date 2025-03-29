@@ -141,25 +141,6 @@ section
 
 variable (C : Type*) [Category C]
 
--- note : it seems making the following two as instances breaks things, so these are lemmas.
-lemma isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C := by
-  letI : Nonempty C := ⟨⊥_ C⟩
-  apply isConnected_of_zigzag
-  intro j₁ j₂
-  use [⊥_ C, j₂]
-  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
-    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
-  exact ⟨Zag.symm <| Zag.of_hom <| Limits.initial.to _, Zag.of_hom <| Limits.initial.to _⟩
-
-lemma isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C := by
-  letI : Nonempty C := ⟨⊤_ C⟩
-  apply isConnected_of_zigzag
-  intro j₁ j₂
-  use [⊤_ C, j₂]
-  simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
-    List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
-  exact ⟨Zag.of_hom <| Limits.terminal.from _, Zag.symm <| Zag.of_hom <| Limits.terminal.from _⟩
-
 /-- Prove that a category is connected by supplying an explicit initial object. -/
 lemma isConnected_of_isInitial {x : C} (h : Limits.IsInitial x) : IsConnected C := by
   letI : Nonempty C := ⟨x⟩
@@ -179,6 +160,13 @@ lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected 
   simp only [List.chain_cons, List.Chain.nil, and_true, ne_eq, reduceCtorEq, not_false_eq_true,
     List.getLast_cons, List.cons_ne_self, List.getLast_singleton]
   exact ⟨Zag.of_hom <| h.from _, Zag.symm <| Zag.of_hom <| h.from _⟩
+
+-- note : it seems making the following two as instances breaks things, so these are lemmas.
+lemma isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C :=
+  isConnected_of_isInitial C (Limits.initialIsInitial)
+
+lemma isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C :=
+  isConnected_of_isTerminal C (Limits.terminalIsTerminal)
 
 end
 
