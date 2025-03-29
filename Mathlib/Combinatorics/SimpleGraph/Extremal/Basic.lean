@@ -82,9 +82,9 @@ theorem extremalNumber_of_fintypeCard_eq [Fintype V] (hc : card V = n) :
   intro G h
   let G' := G.map e.toEmbedding
   replace h' : G' ∈ univ.filter (H.Free ·) := by
-    rw [mem_filter, ← free_congr Iso.refl (Iso.map e G)]
+    rw [mem_filter, ← free_congr .refl (.map e G)]
     simpa using h
-  rw [Iso.card_edgeFinset_eq (Iso.map e G)]
+  rw [Iso.card_edgeFinset_eq (.map e G)]
   convert @le_sup _ _ _ _ { G | H.Free G } (#·.edgeFinset) G' h'
 
 variable [Fintype V] [DecidableRel G.Adj]
