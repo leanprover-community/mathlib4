@@ -43,7 +43,6 @@ def mkDecideProofQ (p : Q(Prop)) : MetaM Q($p) := mkDecideProof p
 /-- Join a list of elements of type `α` into a container `m α`.
 
 Usually `m` is `q(Multiset)` or `q(Finset)` or `q(Set0`. -/
-
 def mkSetLiteralQ {u v : Level} {α : Q(Type u)} (m : Q(Type u → Type v))
     (elems : List Q($α))
     (_ : Q(EmptyCollection ($m $α)) := by exact q(inferInstance))
