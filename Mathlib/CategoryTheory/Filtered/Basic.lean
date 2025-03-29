@@ -80,6 +80,7 @@ class IsFilteredOrEmpty : Prop where
 @[stacks 002V "They also define a diagram being filtered."]
 class IsFiltered : Prop extends IsFilteredOrEmpty C where
   /-- a filtered category must be non empty -/
+  -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 
 instance (priority := 100) isFilteredOrEmpty_of_semilatticeSup (α : Type u) [SemilatticeSup α] :
@@ -497,6 +498,7 @@ class IsCofilteredOrEmpty : Prop where
 @[stacks 04AZ]
 class IsCofiltered : Prop extends IsCofilteredOrEmpty C where
   /-- a cofiltered category must be non empty -/
+  -- This should be an instance but it causes significant slowdown
   [nonempty : Nonempty C]
 
 instance (priority := 100) isCofilteredOrEmpty_of_semilatticeInf (α : Type u) [SemilatticeInf α] :
