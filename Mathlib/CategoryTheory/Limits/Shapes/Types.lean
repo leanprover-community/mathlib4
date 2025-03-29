@@ -887,6 +887,11 @@ lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
   · rintro ⟨s, rfl, rfl⟩
     apply Rel'.inl_inr
 
+instance mono_inr [Mono f] : Mono (inr f g) := by
+  rw [mono_iff_injective]
+  intro x₂ y₂ h
+  simpa using (Pushout.quot_mk_eq_iff f g (Sum.inr x₂) (Sum.inr y₂)).1 h
+
 end Pushout
 
 variable {f g}
@@ -913,6 +918,16 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
+
+lemma pushoutCocone_injective_inr_of_isColimit {c : PushoutCocone f g} (hc : IsColimit c)
+    (h₁ : Function.Injective f) : Function.Injective c.inr := by
+  rw [← mono_iff_injective] at h₁
+  rintro x₂ y₂ hxy
+  apply (mono_iff_injective (Pushout.cocone f g).inr).1
+    (by dsimp [Pushout.cocone]; infer_instance)
+  exact ((Cocones.forget _).mapIso
+    (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc
+      (Pushout.isColimitCocone f g)) (by simp))).toEquiv.symm.injective hxy
 
 end Pushout
 

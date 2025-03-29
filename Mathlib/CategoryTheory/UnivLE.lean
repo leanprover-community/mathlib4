@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Logic.UnivLE
 import Mathlib.CategoryTheory.EssentialImage
-import Mathlib.CategoryTheory.Types
+import Mathlib.CategoryTheory.Types.Basic
 
 /-!
 # Universe inequalities and essential surjectivity of `uliftFunctor`.
