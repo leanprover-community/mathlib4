@@ -211,65 +211,13 @@ section prod
 
 variable (X Y W Z)
 
-/-- `X × Y` is homeomorphic to `Y × X`. -/
-def prodComm : X × Y ≃ₜ Y × X where
-  continuous_toFun := continuous_snd.prod_mk continuous_fst
-  continuous_invFun := continuous_snd.prod_mk continuous_fst
-  toEquiv := Equiv.prodComm X Y
-
-@[simp]
-theorem prodComm_symm : (prodComm X Y).symm = prodComm Y X :=
-  rfl
-
-@[simp]
-theorem coe_prodComm : ⇑(prodComm X Y) = Prod.swap :=
-  rfl
-
-/-- `(X × Y) × Z` is homeomorphic to `X × (Y × Z)`. -/
-def prodAssoc : (X × Y) × Z ≃ₜ X × Y × Z where
-  continuous_toFun := continuous_fst.fst.prod_mk (continuous_fst.snd.prod_mk continuous_snd)
-  continuous_invFun := (continuous_fst.prod_mk continuous_snd.fst).prod_mk continuous_snd.snd
-  toEquiv := Equiv.prodAssoc X Y Z
-
-@[simp]
-lemma prodAssoc_toEquiv : (prodAssoc X Y Z).toEquiv = Equiv.prodAssoc X Y Z := rfl
-
-/-- Four-way commutativity of `prod`. The name matches `mul_mul_mul_comm`. -/
-def prodProdProdComm : (X × Y) × W × Z ≃ₜ (X × W) × Y × Z where
-  toEquiv := Equiv.prodProdProdComm X Y W Z
-  continuous_toFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-  continuous_invFun := by
-    unfold Equiv.prodProdProdComm
-    dsimp only
-    fun_prop
-
-@[simp]
-theorem prodProdProdComm_symm : (prodProdProdComm X Y W Z).symm = prodProdProdComm X W Y Z :=
-  rfl
-
-/-- `X × {*}` is homeomorphic to `X`. -/
-@[simps! (config := .asFn) apply]
-def prodPUnit : X × PUnit ≃ₜ X where
-  toEquiv := Equiv.prodPUnit X
-  continuous_toFun := continuous_fst
-  continuous_invFun := continuous_id.prod_mk continuous_const
-
-/-- `{*} × X` is homeomorphic to `X`. -/
-def punitProd : PUnit × X ≃ₜ X :=
-  (prodComm _ _).trans (prodPUnit _)
-
-@[simp] theorem coe_punitProd : ⇑(punitProd X) = Prod.snd := rfl
-
 /-- `X × {*}` is homeomorphic to `X`. -/
 @[simps! symm_apply_snd]
 def prodUnique [Unique Y] :
     X × Y ≃ₜ X where
   toEquiv := Equiv.prodUnique X Y
   continuous_toFun := continuous_fst
-  continuous_invFun := continuous_id.prod_mk continuous_const
+  continuous_invFun := continuous_id.prodMk continuous_const
 
 @[simp] theorem coe_prodUnique [Unique Y] : ⇑(prodUnique X Y) = Prod.fst := rfl
 
@@ -280,13 +228,6 @@ def uniqueProd (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] [Unique X
   (prodComm _ _).trans (prodUnique Y X)
 
 @[simp] theorem coe_uniqueProd [Unique X] : ⇑(uniqueProd X Y) = Prod.snd := rfl
-
-/-- If both `X` and `Y` have a unique element, then `X ≃ₜ Y`. -/
-@[simps!]
-def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
-  { Equiv.ofUnique X Y with
-    continuous_toFun := continuous_const
-    continuous_invFun := continuous_const }
 
 /-- The product over `S ⊕ T` of a family of topological spaces
 is homeomorphic to the product of (the product over `S`) and (the product over `T`).
