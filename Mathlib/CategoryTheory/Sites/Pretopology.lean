@@ -57,6 +57,7 @@ Section 2, Definition 2. -/
 @[ext, stacks 00VH "Note that Stacks calls a category together with a pretopology a site,
 and [MM92] calls this a basis for a topology."]
 structure Pretopology where
+  /-- For all `X : C`, the coverings of `X` (sets of families of morphisms with target `X`) -/
   coverings : ∀ X : C, Set (Presieve X)
   has_isos : ∀ ⦃X Y⦄ (f : Y ⟶ X) [IsIso f], Presieve.singleton f ∈ coverings X
   pullbacks : ∀ ⦃X Y⦄ (f : Y ⟶ X) (S), S ∈ coverings X → pullbackArrows f S ∈ coverings Y

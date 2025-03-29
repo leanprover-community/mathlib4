@@ -37,7 +37,9 @@ As an example, when `V = ModuleCat R`, this is an `R`-linear representation of `
 while when `V = Type` this is a `G`-action.
 -/
 structure Action (G : Type u) [Monoid G] where
+  /-- The object this action acts on -/
   V : V
+  /-- The underlying monoid homomorphism of this action -/
   ρ : G →* End V
 
 namespace Action
@@ -81,6 +83,7 @@ commuting with the action of `G`.
 -/
 @[ext]
 structure Hom (M N : Action V G) where
+  /-- The morphism between the underlying objects of this action -/
   hom : M.V ⟶ N.V
   comm : ∀ g : G, M.ρ g ≫ hom = hom ≫ N.ρ g := by aesop_cat
 
