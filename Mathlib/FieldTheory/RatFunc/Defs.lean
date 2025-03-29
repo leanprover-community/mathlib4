@@ -101,7 +101,7 @@ we construct a value of `P` for such elements of `RatFunc K` by setting
 When `[IsDomain K]`, one can use `RatFunc.liftOn'`, which has the stronger requirement
 of `∀ {p q a : K[X]} (hq : q ≠ 0) (ha : a ≠ 0), f (a * p) (a * q) = f p q)`.
 -/
-protected irreducible_def liftOn {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
+@[irreducible] protected def liftOn {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
     (H : ∀ {p q p' q'} (_hq : q ∈ K[X]⁰) (_hq' : q' ∈ K[X]⁰), q' * p = q * p' → f p q = f p' q') :
     P :=
   Localization.liftOn (toFractionRing x) (fun p q => f p q) fun {_ _ q q'} h =>
@@ -133,7 +133,7 @@ If `q = 0`, then `mk` returns 0.
 This is an auxiliary definition used to define an `Algebra` structure on `RatFunc`;
 the `simp` normal form of `mk p q` is `algebraMap _ _ p / algebraMap _ _ q`.
 -/
-protected irreducible_def mk (p q : K[X]) : RatFunc K :=
+@[irreducible]protected def mk (p q : K[X]) : RatFunc K :=
   ofFractionRing (algebraMap _ _ p / algebraMap _ _ q)
 
 theorem mk_eq_div' (p q : K[X]) :
@@ -189,7 +189,7 @@ for all elements of `RatFunc K` by setting `lift_on' (p / q) f _ = f p q`.
 The value of `f p 0` for any `p` is never used and in principle this may be anything,
 although many usages of `lift_on'` assume `f p 0 = f 0 1`.
 -/
-protected irreducible_def liftOn' {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
+@[irreducible]protected def liftOn' {P : Sort v} (x : RatFunc K) (f : K[X] → K[X] → P)
   (H : ∀ {p q a} (_hq : q ≠ 0) (_ha : a ≠ 0), f (a * p) (a * q) = f p q) : P :=
   x.liftOn f fun {_p _q _p' _q'} hq hq' =>
     liftOn_condition_of_liftOn'_condition (@H) (nonZeroDivisors.ne_zero hq)

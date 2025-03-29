@@ -59,94 +59,94 @@ section Field
 variable [CommRing K]
 
 /-- The zero rational function. -/
-protected irreducible_def zero : RatFunc K :=
+@[irreducible] protected def zero : RatFunc K :=
   ⟨0⟩
 
 instance : Zero (RatFunc K) :=
   ⟨RatFunc.zero⟩
 
-theorem ofFractionRing_zero : (ofFractionRing 0 : RatFunc K) = 0 :=
-  zero_def.symm
+unseal RatFunc.zero in
+theorem ofFractionRing_zero : (ofFractionRing 0 : RatFunc K) = 0 := rfl
 
 /-- Addition of rational functions. -/
-protected irreducible_def add : RatFunc K → RatFunc K → RatFunc K
+@[irreducible] protected def add : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p + q⟩
 
 instance : Add (RatFunc K) :=
   ⟨RatFunc.add⟩
 
+unseal RatFunc.add in
 theorem ofFractionRing_add (p q : FractionRing K[X]) :
-    ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q :=
-  (add_def _ _).symm
+    ofFractionRing (p + q) = ofFractionRing p + ofFractionRing q := rfl
 
 /-- Subtraction of rational functions. -/
-protected irreducible_def sub : RatFunc K → RatFunc K → RatFunc K
+@[irreducible] protected def sub : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p - q⟩
 
 instance : Sub (RatFunc K) :=
   ⟨RatFunc.sub⟩
 
+unseal RatFunc.sub in
 theorem ofFractionRing_sub (p q : FractionRing K[X]) :
-    ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q :=
-  (sub_def _ _).symm
+    ofFractionRing (p - q) = ofFractionRing p - ofFractionRing q := rfl
 
 /-- Additive inverse of a rational function. -/
-protected irreducible_def neg : RatFunc K → RatFunc K
+@[irreducible] protected def neg : RatFunc K → RatFunc K
   | ⟨p⟩ => ⟨-p⟩
 
 instance : Neg (RatFunc K) :=
   ⟨RatFunc.neg⟩
 
+unseal RatFunc.neg in
 theorem ofFractionRing_neg (p : FractionRing K[X]) :
-    ofFractionRing (-p) = -ofFractionRing p :=
-  (neg_def _).symm
+    ofFractionRing (-p) = -ofFractionRing p := rfl
 
 /-- The multiplicative unit of rational functions. -/
-protected irreducible_def one : RatFunc K :=
+@[irreducible] protected def one : RatFunc K :=
   ⟨1⟩
 
 instance : One (RatFunc K) :=
   ⟨RatFunc.one⟩
 
-theorem ofFractionRing_one : (ofFractionRing 1 : RatFunc K) = 1 :=
-  one_def.symm
+unseal RatFunc.one in
+theorem ofFractionRing_one : (ofFractionRing 1 : RatFunc K) = 1 := rfl
 
 /-- Multiplication of rational functions. -/
-protected irreducible_def mul : RatFunc K → RatFunc K → RatFunc K
+@[irreducible] protected def mul : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p * q⟩
 
 instance : Mul (RatFunc K) :=
   ⟨RatFunc.mul⟩
 
+unseal RatFunc.mul in
 theorem ofFractionRing_mul (p q : FractionRing K[X]) :
-    ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q :=
-  (mul_def _ _).symm
+    ofFractionRing (p * q) = ofFractionRing p * ofFractionRing q := rfl
 
 section IsDomain
 
 variable [IsDomain K]
 
 /-- Division of rational functions. -/
-protected irreducible_def div : RatFunc K → RatFunc K → RatFunc K
+@[irreducible] protected def div : RatFunc K → RatFunc K → RatFunc K
   | ⟨p⟩, ⟨q⟩ => ⟨p / q⟩
 
 instance : Div (RatFunc K) :=
   ⟨RatFunc.div⟩
 
+unseal RatFunc.div in
 theorem ofFractionRing_div (p q : FractionRing K[X]) :
-    ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q :=
-  (div_def _ _).symm
+    ofFractionRing (p / q) = ofFractionRing p / ofFractionRing q := rfl
 
 /-- Multiplicative inverse of a rational function. -/
-protected irreducible_def inv : RatFunc K → RatFunc K
+@[irreducible] protected def inv : RatFunc K → RatFunc K
   | ⟨p⟩ => ⟨p⁻¹⟩
 
 instance : Inv (RatFunc K) :=
   ⟨RatFunc.inv⟩
 
+unseal RatFunc.inv in
 theorem ofFractionRing_inv (p : FractionRing K[X]) :
-    ofFractionRing p⁻¹ = (ofFractionRing p)⁻¹ :=
-  (inv_def _).symm
+    ofFractionRing p⁻¹ = (ofFractionRing p)⁻¹ := rfl
 
 -- Auxiliary lemma for the `Field` instance
 theorem mul_inv_cancel : ∀ {p : RatFunc K}, p ≠ 0 → p * p⁻¹ = 1
@@ -163,15 +163,15 @@ section SMul
 variable {R : Type*}
 
 /-- Scalar multiplication of rational functions. -/
-protected irreducible_def smul [SMul R (FractionRing K[X])] : R → RatFunc K → RatFunc K
+@[irreducible] protected def smul [SMul R (FractionRing K[X])] : R → RatFunc K → RatFunc K
   | r, ⟨p⟩ => ⟨r • p⟩
 
 instance [SMul R (FractionRing K[X])] : SMul R (RatFunc K) :=
   ⟨RatFunc.smul⟩
 
+unseal RatFunc.smul in
 theorem ofFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : FractionRing K[X]) :
-    ofFractionRing (c • p) = c • ofFractionRing p :=
-  (smul_def _ _).symm
+    ofFractionRing (c • p) = c • ofFractionRing p := rfl
 
 theorem toFractionRing_smul [SMul R (FractionRing K[X])] (c : R) (p : RatFunc K) :
     toFractionRing (c • p) = c • toFractionRing p := by

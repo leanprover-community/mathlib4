@@ -244,7 +244,7 @@ end InfEdist
 
 /-- The Hausdorff edistance between two sets is the smallest `r` such that each set
 is contained in the `r`-neighborhood of the other one -/
-irreducible_def hausdorffEdist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
+@[irreducible] def hausdorffEdist {α : Type u} [PseudoEMetricSpace α] (s t : Set α) : ℝ≥0∞ :=
   (⨆ x ∈ s, infEdist x t) ⊔ ⨆ y ∈ t, infEdist y s
 
 section HausdorffEdist
@@ -254,18 +254,18 @@ variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] {x : α} {s t u : Set �
 /-- The Hausdorff edistance of a set to itself vanishes. -/
 @[simp]
 theorem hausdorffEdist_self : hausdorffEdist s s = 0 := by
-  simp only [hausdorffEdist_def, sup_idem, ENNReal.iSup_eq_zero]
+  simp only [hausdorffEdist, sup_idem, ENNReal.iSup_eq_zero]
   exact fun x hx => infEdist_zero_of_mem hx
 
 /-- The Haudorff edistances of `s` to `t` and of `t` to `s` coincide. -/
 theorem hausdorffEdist_comm : hausdorffEdist s t = hausdorffEdist t s := by
-  simp only [hausdorffEdist_def]; apply sup_comm
+  simp only [hausdorffEdist]; apply sup_comm
 
 /-- Bounding the Hausdorff edistance by bounding the edistance of any point
 in each set to the other set -/
 theorem hausdorffEdist_le_of_infEdist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, infEdist x t ≤ r)
     (H2 : ∀ x ∈ t, infEdist x s ≤ r) : hausdorffEdist s t ≤ r := by
-  simp only [hausdorffEdist_def, sup_le_iff, iSup_le_iff]
+  simp only [hausdorffEdist, sup_le_iff, iSup_le_iff]
   exact ⟨H1, H2⟩
 
 /-- Bounding the Hausdorff edistance by exhibiting, for any point in each set,
@@ -280,7 +280,7 @@ theorem hausdorffEdist_le_of_mem_edist {r : ℝ≥0∞} (H1 : ∀ x ∈ s, ∃ y
 
 /-- The distance to a set is controlled by the Hausdorff distance. -/
 theorem infEdist_le_hausdorffEdist_of_mem (h : x ∈ s) : infEdist x t ≤ hausdorffEdist s t := by
-  rw [hausdorffEdist_def]
+  rw [hausdorffEdist]
   refine le_trans ?_ le_sup_left
   exact le_iSup₂ (α := ℝ≥0∞) x h
 
@@ -316,7 +316,7 @@ theorem infEdist_le_infEdist_add_hausdorffEdist :
 /-- The Hausdorff edistance is invariant under isometries. -/
 theorem hausdorffEdist_image (h : Isometry Φ) :
     hausdorffEdist (Φ '' s) (Φ '' t) = hausdorffEdist s t := by
-  simp only [hausdorffEdist_def, iSup_image, infEdist_image h]
+  simp only [hausdorffEdist, iSup_image, infEdist_image h]
 
 /-- The Hausdorff distance is controlled by the diameter of the union. -/
 theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
@@ -331,7 +331,7 @@ theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
 
 /-- The Hausdorff distance satisfies the triangle inequality. -/
 theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + hausdorffEdist t u := by
-  rw [hausdorffEdist_def]
+  rw [hausdorffEdist]
   simp only [sup_le_iff, iSup_le_iff]
   constructor
   · show ∀ x ∈ s, infEdist x u ≤ hausdorffEdist s t + hausdorffEdist t u
@@ -353,7 +353,7 @@ theorem hausdorffEdist_triangle : hausdorffEdist s u ≤ hausdorffEdist s t + ha
 /-- Two sets are at zero Hausdorff edistance if and only if they have the same closure. -/
 theorem hausdorffEdist_zero_iff_closure_eq_closure :
     hausdorffEdist s t = 0 ↔ closure s = closure t := by
-  simp only [hausdorffEdist_def, ENNReal.sup_eq_zero, ENNReal.iSup_eq_zero, ← subset_def,
+  simp only [hausdorffEdist, ENNReal.sup_eq_zero, ENNReal.iSup_eq_zero, ← subset_def,
     ← mem_closure_iff_infEdist_zero, subset_antisymm_iff, isClosed_closure.closure_subset_iff]
 
 /-- The Hausdorff edistance between a set and its closure vanishes. -/

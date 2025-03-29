@@ -121,7 +121,7 @@ there is no good way to generalize over universe parameters, so we can't fully s
 type that it does not depend on the choice of basis. Instead you can use the `detAux_def''` lemma,
 or avoid mentioning a basis at all using `LinearMap.det`.
 -/
-irreducible_def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
+@[irreducible] def detAux : Trunc (Basis ι A M) → (M →ₗ[A] M) →* A :=
   Trunc.lift
     (fun b : Basis ι A M => detMonoidHom.comp (toMatrixAlgEquiv b : (M →ₗ[A] M) →* Matrix ι ι A))
     fun b c => MonoidHom.ext <| det_toMatrix_eq_det_toMatrix b c
@@ -159,7 +159,7 @@ open scoped Classical in
 
 If there is no finite basis on `M`, the result is `1` instead.
 -/
-protected irreducible_def det : (M →ₗ[A] M) →* A :=
+@[irreducible] protected def det : (M →ₗ[A] M) →* A :=
   if H : ∃ s : Finset M, Nonempty (Basis s A M) then LinearMap.detAux (Trunc.mk H.choose_spec.some)
   else 1
 
@@ -170,7 +170,7 @@ theorem coe_det [DecidableEq M] :
         LinearMap.detAux (Trunc.mk H.choose_spec.some)
       else 1 := by
   ext
-  rw [LinearMap.det_def]
+  rw [LinearMap.det]
   split_ifs
   · congr -- use the correct `DecidableEq` instance
   rfl
@@ -212,7 +212,7 @@ theorem det_toLin' (f : Matrix ι ι R) : LinearMap.det (Matrix.toLin' f) = Matr
 theorem det_cases [DecidableEq M] {P : A → Prop} (f : M →ₗ[A] M)
     (hb : ∀ (s : Finset M) (b : Basis s A M), P (Matrix.det (toMatrix b b f))) (h1 : P 1) :
     P (LinearMap.det f) := by
-  rw [LinearMap.det_def]
+  rw [LinearMap.det]
   split_ifs with h
   · convert hb _ h.choose_spec.some
     -- Porting note: was `apply det_aux_def'`

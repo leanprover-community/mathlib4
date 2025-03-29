@@ -306,7 +306,7 @@ not continuous on the spectrum of `a`, then `cfc f a` returns the junk value `0`
 This is the primary declaration intended for widespread use of the continuous functional calculus,
 and all the API applies to this declaration. For more information, see the module documentation
 for `Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unital`. -/
-noncomputable irreducible_def cfc (f : R → R) (a : A) : A :=
+@[irreducible] noncomputable def cfc (f : R → R) (a : A) : A :=
   if h : p a ∧ ContinuousOn f (spectrum R a)
     then cfcHom h.1 ⟨_, h.2.restrict⟩
     else 0
@@ -316,7 +316,7 @@ variable (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
 variable (hg : ContinuousOn g (spectrum R a) := by cfc_cont_tac)
 
 lemma cfc_apply : cfc f a = cfcHom (a := a) ha ⟨_, hf.restrict⟩ := by
-  rw [cfc_def, dif_pos ⟨ha, hf⟩]
+  rw [cfc, dif_pos ⟨ha, hf⟩]
 
 lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc_tac)
     (hf : ∀ i, ContinuousOn (f i) (spectrum R a) := by cfc_cont_tac) :
@@ -326,15 +326,15 @@ lemma cfc_apply_pi {ι : Type*} (f : ι → R → R) (a : A) (ha : p a := by cfc
 
 lemma cfc_apply_of_not_and {f : R → R} (a : A) (ha : ¬ (p a ∧ ContinuousOn f (spectrum R a))) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg ha]
+  rw [cfc, dif_neg ha]
 
 lemma cfc_apply_of_not_predicate {f : R → R} (a : A) (ha : ¬ p a) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg (not_and_of_not_left _ ha)]
+  rw [cfc, dif_neg (not_and_of_not_left _ ha)]
 
 lemma cfc_apply_of_not_continuousOn {f : R → R} (a : A) (hf : ¬ ContinuousOn f (spectrum R a)) :
     cfc f a = 0 := by
-  rw [cfc_def, dif_neg (not_and_of_not_right _ hf)]
+  rw [cfc, dif_neg (not_and_of_not_right _ hf)]
 
 lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a, R)) :
     cfcHom ha f = cfc (Function.extend Subtype.val f g) a := by
@@ -347,7 +347,7 @@ lemma cfcHom_eq_cfc_extend {a : A} (g : R → R) (ha : p a) (f : C(spectrum R a,
 
 lemma cfc_eq_cfcL {a : A} {f : R → R} (ha : p a) (hf : ContinuousOn f (spectrum R a)) :
     cfc f a = cfcL ha ⟨_, hf.restrict⟩ := by
-  rw [cfc_def, dif_pos ⟨ha, hf⟩, cfcL_apply]
+  rw [cfc, dif_pos ⟨ha, hf⟩, cfcL_apply]
 
 lemma cfc_cases (P : A → Prop) (a : A) (f : R → R) (h₀ : P 0)
     (haf : (hf : ContinuousOn f (spectrum R a)) → (ha : p a) → P (cfcHom ha ⟨_, hf.restrict⟩)) :

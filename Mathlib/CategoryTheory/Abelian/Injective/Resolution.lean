@@ -316,7 +316,7 @@ instance (n : ℕ) : Injective ((ofCocomplex Z).X n) := by
 /-- In any abelian category with enough injectives,
 `InjectiveResolution.of Z` constructs an injective resolution of the object `Z`.
 -/
-irreducible_def of : InjectiveResolution Z where
+@[irreducible] def of : InjectiveResolution Z where
   cocomplex := ofCocomplex Z
   ι := (CochainComplex.fromSingle₀Equiv _ _).symm ⟨Injective.ι Z,
     by rw [ofCocomplex_d_0_1, cokernel.condition_assoc, zero_comp]⟩

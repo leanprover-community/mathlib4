@@ -95,9 +95,9 @@ def Multipliable (f : β → α) : Prop :=
 open scoped Classical in
 /-- `∏' i, f i` is the product of `f` if it exists and is unconditionally convergent,
 or 1 otherwise. -/
-@[to_additive "`∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent,
-or 0 otherwise."]
-noncomputable irreducible_def tprod {β} (f : β → α) :=
+@[to_additive (attr := irreducible)
+  "`∑' i, f i` is the sum of `f` if it exists and is unconditionally convergent, or 0 otherwise."]
+noncomputable def tprod {β} (f : β → α) :=
   if h : Multipliable f then
   /- Note that the product might not be uniquely defined if the topology is not separated.
   When the multiplicative support of `f` is finite, we make the most reasonable choice to use the
@@ -121,7 +121,7 @@ theorem HasProd.multipliable (h : HasProd f a) : Multipliable f :=
 
 @[to_additive]
 theorem tprod_eq_one_of_not_multipliable (h : ¬Multipliable f) : ∏' b, f b = 1 := by
-  simp [tprod_def, h]
+  simp [tprod, h]
 
 @[to_additive]
 theorem Function.Injective.hasProd_iff {g : γ → β} (hg : Injective g)
@@ -156,7 +156,7 @@ theorem multipliable_of_ne_finset_one (hf : ∀ b ∉ s, f b = 1) : Multipliable
 
 @[to_additive]
 theorem Multipliable.hasProd (ha : Multipliable f) : HasProd f (∏' b, f b) := by
-  simp only [tprod_def, ha, dite_true]
+  simp only [tprod, ha, dite_true]
   by_cases H : (mulSupport f).Finite
   · simp [H, hasProd_prod_of_ne_finset_one, finprod_eq_prod]
   · simpa [H] using ha.choose_spec

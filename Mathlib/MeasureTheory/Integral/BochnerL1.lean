@@ -491,7 +491,7 @@ def integralCLM : (α →₁[μ] E) →L[ℝ] E :=
   integralCLM' ℝ
 
 /-- The Bochner integral in L1 space -/
-irreducible_def integral : (α →₁[μ] E) → E :=
+@[irreducible] def integral : (α →₁[μ] E) → E :=
   integralCLM
 
 theorem integral_eq (f : α →₁[μ] E) : integral f = integralCLM f := by

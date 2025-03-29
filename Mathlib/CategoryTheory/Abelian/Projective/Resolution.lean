@@ -309,7 +309,7 @@ instance (n : ℕ) : Projective ((ofComplex Z).X n) := by
 /-- In any abelian category with enough projectives,
 `ProjectiveResolution.of Z` constructs an projective resolution of the object `Z`.
 -/
-irreducible_def of : ProjectiveResolution Z where
+@[irreducible] def of : ProjectiveResolution Z where
   complex := ofComplex Z
   π := (ChainComplex.toSingle₀Equiv _ _).symm ⟨Projective.π Z, by
           rw [ofComplex_d_1_0, assoc, kernel.condition, comp_zero]⟩

@@ -264,7 +264,7 @@ alias surjective_comp_algebraMap_of_isAlgebraic := surjective_restrictDomain_of_
 variable [Algebra.IsAlgebraic K L] (K L M)
 
 /-- Less general version of `lift`. -/
-private noncomputable irreducible_def lift_aux : L →ₐ[K] M :=
+@[irreducible] private noncomputable def lift_aux : L →ₐ[K] M :=
   Classical.choice <| IntermediateField.nonempty_algHom_of_adjoin_splits
     (fun x _ ↦ ⟨Algebra.IsIntegral.isIntegral x, splits_codomain (minpoly K x)⟩)
     (IntermediateField.adjoin_univ K L)
@@ -290,8 +290,8 @@ private instance FractionRing.isAlgebraic :
 
 /-- A (random) homomorphism from an algebraic extension of R into an algebraically
   closed extension of R. -/
-@[stacks 09GU]
-noncomputable irreducible_def lift : S →ₐ[R] M := by
+@[stacks 09GU, irreducible]
+noncomputable def lift : S →ₐ[R] M := by
   letI : IsDomain R := (FaithfulSMul.algebraMap_injective R S).isDomain _
   letI := FractionRing.liftAlgebra R M
   letI := FractionRing.liftAlgebra R (FractionRing S)

@@ -53,7 +53,7 @@ open SimpleFunc
 variable {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 /-- The **lower Lebesgue integral** of a function `f` with respect to a measure `μ`. -/
-irreducible_def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
+@[irreducible] def lintegral {_ : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : ℝ≥0∞ :=
   ⨆ (g : α →ₛ ℝ≥0∞) (_ : ⇑g ≤ f), g.lintegral μ
 
 /-! In the notation for integrals, an expression like `∫⁻ x, g ‖x‖ ∂μ` will not be parsed correctly,
@@ -1347,7 +1347,7 @@ theorem setLintegral_compl {f : α → ℝ≥0∞} {s : Set α} (hsm : Measurabl
 theorem setLIntegral_iUnion_of_directed {ι : Type*} [Countable ι]
     (f : α → ℝ≥0∞) {s : ι → Set α} (hd : Directed (· ⊆ ·) s) :
     ∫⁻ x in ⋃ i, s i, f x ∂μ = ⨆ i, ∫⁻ x in s i, f x ∂μ := by
-  simp only [lintegral_def, iSup_comm (ι := ι),
+  simp only [lintegral, iSup_comm (ι := ι),
     SimpleFunc.lintegral_restrict_iUnion_of_directed _ hd]
 
 theorem lintegral_max {f g : α → ℝ≥0∞} (hf : Measurable f) (hg : Measurable g) :
@@ -1484,7 +1484,7 @@ theorem exists_setLintegral_compl_lt {f : α → ℝ≥0∞} (hf : ∫⁻ a, f a
   obtain ⟨g, hgf, hg_meas, hgsupp, hgε⟩ :
       ∃ g ≤ f, Measurable g ∧ μ (support g) < ∞ ∧ ∫⁻ a, f a ∂μ - ε < ∫⁻ a, g a ∂μ := by
     obtain ⟨g, hgf, hgε⟩ : ∃ (g : α →ₛ ℝ≥0∞) (_ : g ≤ f), ∫⁻ a, f a ∂μ - ε < g.lintegral μ := by
-      simpa only [← lt_iSup_iff, ← lintegral_def] using ENNReal.sub_lt_self hf hf₀ hε
+      simpa only [← lt_iSup_iff, lintegral] using ENNReal.sub_lt_self hf hf₀ hε
     refine ⟨g, hgf, g.measurable, ?_, by rwa [g.lintegral_eq_lintegral]⟩
     exact SimpleFunc.FinMeasSupp.of_lintegral_ne_top <| ne_top_of_le_ne_top hf <|
       g.lintegral_eq_lintegral μ ▸ lintegral_mono hgf

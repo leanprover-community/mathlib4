@@ -123,7 +123,7 @@ theorem toDualContinuousMultilinearMap_le_projectiveSeminorm (x : ⨂[𝕜] i, E
 normed vector spaces `F`. In fact, we only take in the same universe as `⨂[𝕜] i, Eᵢ`, and then
 prove in `PiTensorProduct.norm_eval_le_injectiveSeminorm` that this gives the same result.
 -/
-noncomputable irreducible_def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
+@[irreducible] noncomputable def injectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) :=
   sSup {p | ∃ (G : Type (max uι u𝕜 uE)) (_ : SeminormedAddCommGroup G)
   (_ : NormedSpace 𝕜 G), p = Seminorm.comp (normSeminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G →L[𝕜] G))
   (toDualContinuousMultilinearMap G (𝕜 := 𝕜) (E := E))}
