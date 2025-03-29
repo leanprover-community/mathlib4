@@ -149,6 +149,30 @@ theorem finset_image_add {F α β : Type*} [AddCommMonoid α] [FunLike F α R]
   rw [h1]
   exact multiset_image_add hna g t.val
 
+open Multiset in
+theorem multiset_powerset_image_add {F α : Type*} [CommRing α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] {f : F} (hf_na : IsNonarchimedean f) (s : Multiset α) (m : ℕ) :
+    ∃ t : Multiset α, card t = card s - m ∧ (∀ x : α, x ∈ t → x ∈ s) ∧
+      f (map prod (powersetCard (card s - m) s)).sum ≤ f t.prod := by
+  set g := fun t : Multiset α ↦ t.prod
+  obtain ⟨b, hb_in, hb_le⟩ := hf_na.multiset_image_add g (powersetCard (card s - m) s)
+  have hb : b ≤ s ∧ card b = card s - m := by
+    rw [← mem_powersetCard]
+    exact hb_in (card_pos.mp
+      (card_powersetCard (s.card - m) s ▸ Nat.choose_pos ((card s).sub_le m)))
+  exact ⟨b, hb.2, fun x hx ↦ mem_of_le hb.left hx, hb_le⟩
+
+open Finset in
+theorem finset_powerset_image_add {F α β : Type*} [CommRing α] [FunLike F α R]
+    [AddGroupSeminormClass F α R] {f : F} (hf_na : IsNonarchimedean f) (s : Finset β)
+    (b : β → α) (m : ℕ) :
+    ∃ u : powersetCard (s.card - m) s,
+      f ((powersetCard (s.card - m) s).sum fun t : Finset β ↦
+        t.prod fun i : β ↦ -b i) ≤ f (u.val.prod fun i : β  ↦ -b i)  := by
+  set g := fun t : Finset β ↦ t.prod fun i : β ↦ - b i
+  obtain ⟨b, hb_in, hb⟩ := hf_na.finset_image_add g (powersetCard (s.card - m) s)
+  exact ⟨⟨b, hb_in (powersetCard_nonempty.mpr (Nat.sub_le s.card m))⟩, hb⟩
+
 open Finset in
 /-- Ultrametric inequality with `Finset.Sum`. -/
 lemma apply_sum_le_sup_of_isNonarchimedean {α β : Type*} [AddCommMonoid α] {f : α → R}
