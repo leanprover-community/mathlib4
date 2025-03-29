@@ -521,13 +521,16 @@ theorem _root_.IsTop.Iic_eq (h : IsTop a) : Iic a = univ :=
 theorem _root_.IsBot.Ici_eq (h : IsBot a) : Ici a = univ :=
   eq_univ_of_forall h
 
-theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
+@[simp] theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
   simp only [isMax_iff_forall_not_lt, eq_empty_iff_forall_not_mem, mem_Ioi]
 
-theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
+@[simp] theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
 
-alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
-alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
+@[simp] lemma Iio_nonempty : (Iio a).Nonempty ↔ ¬ IsMin a := by simp [nonempty_iff_ne_empty]
+@[simp] lemma Ioi_nonempty : (Ioi a).Nonempty ↔ ¬ IsMax a := by simp [nonempty_iff_ne_empty]
+
+@[simp] alias ⟨_, _root_.IsMax.Ioi_eq⟩ := Ioi_eq_empty_iff
+@[simp] alias ⟨_, _root_.IsMin.Iio_eq⟩ := Iio_eq_empty_iff
 
 theorem Iic_inter_Ioc_of_le (h : a ≤ c) : Iic a ∩ Ioc b c = Ioc b a :=
   ext fun _ => ⟨fun H => ⟨H.2.1, H.1⟩, fun H => ⟨H.2, H.1, H.2.trans h⟩⟩
