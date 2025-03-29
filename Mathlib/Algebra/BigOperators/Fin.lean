@@ -98,44 +98,6 @@ theorem prod_snoc [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
     (∏ i : Fin n.succ, (snoc f x : Fin n.succ → β) i) = (∏ i : Fin n, f i) * x := by
   simp [prod_univ_castSucc]
 
-namespace ProdUnivMany
-
-open Lean Meta Qq
-
-@[to_additive]
-private lemma prod_step [ints : CommMonoid β] {m : ℕ} {f : Fin (m + 1) → β} {val : β}
-    (h : ∏ i : Fin m, f i.castSucc = val) :
-    ∏ i, f i = val * f m := by
-  rw [prod_univ_castSucc, h, natCast_eq_last m]
-
-/-- Implementation of the `prod_univ_many` simproc. -/
-def prodEquivManyImp {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n : ℕ)
-    (f : Q(Fin $n → $α)) :
-    MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
-  match n with
-  | 0 =>
-    return ⟨q((1 : $α)), q(Fin.prod_univ_zero $f)⟩
-  | m + 1 =>
-    let ⟨val, pf⟩ ← prodEquivManyImp inst m q(fun (i : Fin $m) ↦ $f i.castSucc)
-    let newPf : Q(∏ i, $f i = $val * $f $m) := q(prod_step $pf)
-    return ⟨q($val * $f $m), newPf⟩
-
-/-- Rewrites `∏ (i : Fin n), f i` as `f 0 * f 1 * ... * f (n - 1)`. -/
-simproc_decl prod_univ_many (Finset.prod (α := Fin _) Finset.univ _) := .ofQ fun u _ e => do
-  match u, e with
-  | .succ _, ~q(@Finset.prod (Fin $n) _ $inst Finset.univ $f) => do
-    match (generalizing := false) n.nat? with
-    | .none =>
-      return .continue
-    | .some nVal =>
-      let ⟨res, pf⟩ ← ProdUnivMany.prodEquivManyImp inst nVal f
-      return .visit {expr := res, proof? := pf}
-  | _, _ => return .continue
-
-end ProdUnivMany
-
-export ProdUnivMany (prod_univ_many)
-
 @[to_additive sum_univ_one]
 theorem prod_univ_one [CommMonoid β] (f : Fin 1 → β) : ∏ i, f i = f 0 := by simp
 
@@ -150,31 +112,37 @@ theorem prod_univ_two' [CommMonoid β] (f : α → β) (a b : α) :
 
 @[to_additive]
 theorem prod_univ_three [CommMonoid β] (f : Fin 3 → β) : ∏ i, f i = f 0 * f 1 * f 2 := by
-  simp [prod_univ_many]
+  rw [prod_univ_castSucc, prod_univ_two]
+  rfl
 
 @[to_additive]
 theorem prod_univ_four [CommMonoid β] (f : Fin 4 → β) : ∏ i, f i = f 0 * f 1 * f 2 * f 3 := by
-  simp [prod_univ_many]
+  rw [prod_univ_castSucc, prod_univ_three]
+  rfl
 
 @[to_additive]
 theorem prod_univ_five [CommMonoid β] (f : Fin 5 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 := by
-  simp [prod_univ_many]
+  rw [prod_univ_castSucc, prod_univ_four]
+  rfl
 
 @[to_additive]
 theorem prod_univ_six [CommMonoid β] (f : Fin 6 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 := by
-  simp [prod_univ_many]
+  rw [prod_univ_castSucc, prod_univ_five]
+  rfl
 
 @[to_additive]
 theorem prod_univ_seven [CommMonoid β] (f : Fin 7 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 * f 6 := by
-  simp [prod_univ_many]
+  rw [prod_univ_castSucc, prod_univ_six]
+  rfl
 
 @[to_additive]
 theorem prod_univ_eight [CommMonoid β] (f : Fin 8 → β) :
     ∏ i, f i = f 0 * f 1 * f 2 * f 3 * f 4 * f 5 * f 6 * f 7 := by
-  simp [prod_univ_many]
+  rw [prod_univ_castSucc, prod_univ_seven]
+  rfl
 
 theorem sum_pow_mul_eq_add_pow {n : ℕ} {R : Type*} [CommSemiring R] (a b : R) :
     (∑ s : Finset (Fin n), a ^ s.card * b ^ (n - s.card)) = (a + b) ^ n := by
