@@ -36,11 +36,7 @@ instance one : One (WithZero α) where
 @[simp, norm_cast] lemma coe_one : ((1 : α) : WithZero α) = 1 := rfl
 
 -- We give this higher priority so that unzero_coe doesn't trigger.
-@[simp high]
-theorem unzero_one
-    (hx : (1 : WithZero α) ≠ 0) :
-    unzero hx = 1 :=
-  rfl
+@[simp high] lemma unzero_one (hx : (1 : WithZero α) ≠ 0) : unzero hx = 1 := rfl
 
 end One
 
