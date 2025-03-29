@@ -710,7 +710,7 @@ theorem deriv_one [One F] : deriv (1 : 𝕜 → F) = 0 := funext fun _ => deriv_
 
 theorem deriv_natCast [NatCast F] (n : ℕ) : deriv (n : 𝕜 → F) = 0 := funext fun _ => deriv_const _ _
 
-@[simp]
+@[simp low]
 theorem deriv_ofNat (n : ℕ) [OfNat F n] : deriv (ofNat(n) : 𝕜 → F) = 0 :=
   funext fun _ => deriv_const _ _
 
@@ -727,7 +727,7 @@ theorem derivWithin_one [One F] : derivWithin (1 : 𝕜 → F) s = 0 := derivWit
 theorem derivWithin_natCast [NatCast F] (n : ℕ) : derivWithin (n : 𝕜 → F) s = 0 :=
   derivWithin_const _ _
 
-@[simp]
+@[simp low]
 theorem derivWithin_ofNat (n : ℕ) [OfNat F n] : derivWithin (ofNat(n) : 𝕜 → F) s = 0 :=
   derivWithin_const _ _
 
