@@ -9,6 +9,7 @@ import Mathlib.Topology.Inseparable
 import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
+import Mathlib.Topology.Bases
 
 /-!
 # Separation properties of topological spaces
