@@ -1667,6 +1667,7 @@ import Mathlib.Analysis.RCLike.BoundedContinuous
 import Mathlib.Analysis.RCLike.Inner
 import Mathlib.Analysis.RCLike.Lemmas
 import Mathlib.Analysis.Seminorm
+import Mathlib.Analysis.ShiftedLegendrePoly
 import Mathlib.Analysis.SpecialFunctions.Arsinh
 import Mathlib.Analysis.SpecialFunctions.Bernstein
 import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
