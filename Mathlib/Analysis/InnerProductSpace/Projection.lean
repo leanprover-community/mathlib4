@@ -1251,8 +1251,8 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     [CompleteSpace (V i)] :
     orthogonalProjection (V i) (DirectSum.coeAddMonoidHom V x) = x i := by
   induction x using DirectSum.induction_on with
-  | H_zero => simp
-  | H_basic j x =>
+  | zero => simp
+  | of j x =>
     simp_rw [DirectSum.coeAddMonoidHom_of, DirectSum.of]
     -- Porting note: was in the previous `simp_rw`, no longer works
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
@@ -1262,7 +1262,7 @@ theorem OrthogonalFamily.projection_directSum_coeAddHom [DecidableEq ι] {V : ι
     · rw [orthogonalProjection_mem_subspace_orthogonalComplement_eq_zero,
         DFinsupp.single_eq_of_ne hij.symm]
       exact hV.isOrtho hij.symm x.prop
-  | H_plus x y hx hy =>
+  | add x y hx hy =>
     simp_rw [map_add]
     exact congr_arg₂ (· + ·) hx hy
 

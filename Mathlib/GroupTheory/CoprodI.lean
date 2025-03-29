@@ -249,11 +249,11 @@ theorem lift_range_le {N} [Group N] (f : ∀ i, G i →* N) {s : Subgroup N}
     (h : ∀ i, (f i).range ≤ s) : (lift f).range ≤ s := by
   rintro _ ⟨x, rfl⟩
   induction x using CoprodI.induction_on with
-  | h_one => exact s.one_mem
-  | h_of i x =>
+  | one => exact s.one_mem
+  | of i x =>
     simp only [lift_of, SetLike.mem_coe]
     exact h i (Set.mem_range_self x)
-  | h_mul x y hx hy =>
+  | mul x y hx hy =>
     simp only [map_mul, SetLike.mem_coe]
     exact s.mul_mem hx hy
 

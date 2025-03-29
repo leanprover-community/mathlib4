@@ -1223,12 +1223,12 @@ theorem _root_.Measurable.add_simpleFunc
     Measurable (g + (f : α → E)) := by
   classical
   induction f using SimpleFunc.induction with
-  | @h_ind c s hs =>
+  | @const c s hs =>
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.add_const _) (hg.add_const _)
-  | @h_add f f' hff' hf hf' =>
+  | @add f f' hff' hf hf' =>
     have : (g + ↑(f + f')) = (Function.support f).piecewise (g + (f : α → E)) (g + f') := by
       ext x
       by_cases hx : x ∈ Function.support f
@@ -1248,12 +1248,12 @@ theorem _root_.Measurable.simpleFunc_add
     Measurable ((f : α → E) + g) := by
   classical
   induction f using SimpleFunc.induction with
-  | @h_ind c s hs =>
+  | @const c s hs =>
     simp only [SimpleFunc.const_zero, SimpleFunc.coe_piecewise, SimpleFunc.coe_const,
       SimpleFunc.coe_zero]
     rw [← s.piecewise_same g, ← piecewise_add]
     exact Measurable.piecewise hs (hg.const_add _) (hg.const_add _)
-  | @h_add f f' hff' hf hf' =>
+  | @add f f' hff' hf hf' =>
     have : (↑(f + f') + g) = (Function.support f).piecewise ((f : α → E) + g) (f' + g) := by
       ext x
       by_cases hx : x ∈ Function.support f
