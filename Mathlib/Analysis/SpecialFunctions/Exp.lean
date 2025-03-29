@@ -493,3 +493,44 @@ open Complex in
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.cexp {ι : Type*} {f : ι → ℂ} {a : ℂ} (h : HasSum f a) : HasProd (cexp ∘ f) (cexp a) :=
   Filter.Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.cexp h
+
+@[simp]
+theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
+  simp [circleMap]
+
+open Complex in
+theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
+  zero_add _
+
+@[simp]
+theorem norm_circleMap_zero (R : ℝ) (θ : ℝ) : ‖circleMap 0 R θ‖= |R| := by simp [circleMap]
+
+@[deprecated (since := "2025-02-17")] alias abs_circleMap_zero := norm_circleMap_zero
+
+theorem circleMap_mem_sphere' (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ ∈ sphere c |R| := by simp
+
+theorem circleMap_mem_sphere (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
+    circleMap c R θ ∈ sphere c R := by
+  simpa only [abs_of_nonneg hR] using circleMap_mem_sphere' c R θ
+
+theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
+    circleMap c R θ ∈ closedBall c R :=
+  sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
+
+open Complex in
+@[simp]
+theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
+  simp [circleMap, exp_ne_zero]
+
+@[simp]
+theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
+  funext fun _ => circleMap_eq_center_iff.2 rfl
+
+theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
+  mt circleMap_eq_center_iff.1 hR
+
+open Complex in
+lemma circleMap_zero_int_mul (R θ : ℝ) (n : ℤ) :
+    circleMap 0 (R^n) (n * θ) = (circleMap 0 R θ)^n := by
+  rw [circleMap_zero, circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc, ofReal_zpow, ofReal_mul,
+    ofReal_intCast]

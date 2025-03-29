@@ -203,8 +203,9 @@ theorem chain'_iff_forall_rel_of_append_cons_cons {l : List α} :
     match tail with
     | nil => exact fun _ ↦ chain'_singleton head
     | cons head' tail =>
-      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih @(fun a b l₁ l₂ eq => ?_)⟩
-      simpa [eq] using @h (l₁ := head :: l₁) (l₂ := l₂)
+      refine fun h ↦ chain'_cons.mpr ⟨h (nil_append _).symm, ih fun ⦃a b l₁ l₂⦄ eq => ?_⟩
+      apply h
+      rw [eq, cons_append]
 
 theorem chain'_map (f : β → α) {l : List β} :
     Chain' R (map f l) ↔ Chain' (fun a b : β => R (f a) (f b)) l := by

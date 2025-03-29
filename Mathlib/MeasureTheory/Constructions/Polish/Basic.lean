@@ -665,7 +665,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     the image `f '' (s i)` would be included in `v` by continuity of `f`, so its closure would be
     contained in the closure of `v`, and therefore it would be disjoint from `w`. This is a
     contradiction since `x` belongs both to this closure and to `w`. -/
-  letI := upgradePolishSpace γ
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
   obtain ⟨b, b_count, b_nonempty, hb⟩ :
     ∃ b : Set (Set γ), b.Countable ∧ ∅ ∉ b ∧ IsTopologicalBasis b := exists_countable_basis γ
   haveI : Encodable b := b_count.toEncodable
@@ -930,7 +930,7 @@ theorem measurableSet_exists_tendsto [TopologicalSpace γ] [PolishSpace γ] [Mea
     MeasurableSet { x | ∃ c, Tendsto (fun n => f n x) l (𝓝 c) } := by
   rcases l.eq_or_neBot with rfl | hl
   · simp
-  letI := upgradePolishSpace γ
+  letI := TopologicalSpace.upgradeIsCompletelyMetrizable γ
   rcases l.exists_antitone_basis with ⟨u, hu⟩
   simp_rw [← cauchy_map_iff_exists_tendsto]
   change MeasurableSet { x | _ ∧ _ }

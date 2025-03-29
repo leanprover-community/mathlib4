@@ -3,7 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
-import Mathlib.SetTheory.Ordinal.Arithmetic
+import Mathlib.SetTheory.Ordinal.Family
 import Mathlib.Tactic.Abel
 
 /-!
@@ -94,25 +94,13 @@ instance : WellFoundedLT NatOrdinal :=
 instance : ConditionallyCompleteLinearOrderBot NatOrdinal :=
   WellFoundedLT.conditionallyCompleteLinearOrderBot _
 
-@[simp]
-theorem bot_eq_zero : ⊥ = 0 :=
-  rfl
+@[simp] theorem bot_eq_zero : (⊥ : NatOrdinal) = 0 := rfl
 
-@[simp]
-theorem toOrdinal_zero : toOrdinal 0 = 0 :=
-  rfl
+@[simp] theorem toOrdinal_zero : toOrdinal 0 = 0 := rfl
+@[simp] theorem toOrdinal_one : toOrdinal 1 = 1 := rfl
 
-@[simp]
-theorem toOrdinal_one : toOrdinal 1 = 1 :=
-  rfl
-
-@[simp]
-theorem toOrdinal_eq_zero {a} : toOrdinal a = 0 ↔ a = 0 :=
-  Iff.rfl
-
-@[simp]
-theorem toOrdinal_eq_one {a} : toOrdinal a = 1 ↔ a = 1 :=
-  Iff.rfl
+@[simp] theorem toOrdinal_eq_zero {a} : toOrdinal a = 0 ↔ a = 0 := Iff.rfl
+@[simp] theorem toOrdinal_eq_one {a} : toOrdinal a = 1 ↔ a = 1 := Iff.rfl
 
 @[simp]
 theorem toOrdinal_max (a b : NatOrdinal) : toOrdinal (max a b) = max (toOrdinal a) (toOrdinal b) :=
@@ -125,6 +113,17 @@ theorem toOrdinal_min (a b : NatOrdinal) : toOrdinal (min a b) = min (toOrdinal 
 theorem succ_def (a : NatOrdinal) : succ a = toNatOrdinal (toOrdinal a + 1) :=
   rfl
 
+@[simp]
+theorem zero_le (o : NatOrdinal) : 0 ≤ o :=
+  Ordinal.zero_le o
+
+theorem not_lt_zero (o : NatOrdinal) : ¬ o < 0 :=
+  Ordinal.not_lt_zero o
+
+@[simp]
+theorem lt_one_iff_zero {o : NatOrdinal} : o < 1 ↔ o = 0 :=
+  Ordinal.lt_one_iff_zero
+
 /-- A recursor for `NatOrdinal`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]
 protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) : ∀ a, β a := fun a =>
@@ -134,35 +133,28 @@ protected def rec {β : NatOrdinal → Sort*} (h : ∀ a, β (toNatOrdinal a)) :
 theorem induction {p : NatOrdinal → Prop} : ∀ (i) (_ : ∀ j, (∀ k, k < j → p k) → p j), p i :=
   Ordinal.induction
 
+instance small_Iio (a : NatOrdinal.{u}) : Small.{u} (Set.Iio a) := Ordinal.small_Iio a
+instance small_Iic (a : NatOrdinal.{u}) : Small.{u} (Set.Iic a) := Ordinal.small_Iic a
+instance small_Ico (a b : NatOrdinal.{u}) : Small.{u} (Set.Ico a b) := Ordinal.small_Ico a b
+instance small_Icc (a b : NatOrdinal.{u}) : Small.{u} (Set.Icc a b) := Ordinal.small_Icc a b
+instance small_Ioo (a b : NatOrdinal.{u}) : Small.{u} (Set.Ioo a b) := Ordinal.small_Ioo a b
+instance small_Ioc (a b : NatOrdinal.{u}) : Small.{u} (Set.Ioc a b) := Ordinal.small_Ioc a b
+
 end NatOrdinal
 
 namespace Ordinal
 
 variable {a b c : Ordinal.{u}}
 
-@[simp]
-theorem toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal :=
-  rfl
+@[simp] theorem toNatOrdinal_symm_eq : toNatOrdinal.symm = NatOrdinal.toOrdinal := rfl
 
-@[simp]
-theorem toNatOrdinal_toOrdinal (a : Ordinal) : a.toNatOrdinal.toOrdinal = a :=
-  rfl
+@[simp] theorem toNatOrdinal_toOrdinal (a : Ordinal) : a.toNatOrdinal.toOrdinal = a := rfl
 
-@[simp]
-theorem toNatOrdinal_zero : toNatOrdinal 0 = 0 :=
-  rfl
+@[simp] theorem toNatOrdinal_zero : toNatOrdinal 0 = 0 := rfl
+@[simp] theorem toNatOrdinal_one : toNatOrdinal 1 = 1 := rfl
 
-@[simp]
-theorem toNatOrdinal_one : toNatOrdinal 1 = 1 :=
-  rfl
-
-@[simp]
-theorem toNatOrdinal_eq_zero (a) : toNatOrdinal a = 0 ↔ a = 0 :=
-  Iff.rfl
-
-@[simp]
-theorem toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 :=
-  Iff.rfl
+@[simp] theorem toNatOrdinal_eq_zero (a) : toNatOrdinal a = 0 ↔ a = 0 := Iff.rfl
+@[simp] theorem toNatOrdinal_eq_one (a) : toNatOrdinal a = 1 ↔ a = 1 := Iff.rfl
 
 @[simp]
 theorem toNatOrdinal_max (a b : Ordinal) :
@@ -335,6 +327,14 @@ open Ordinal NaturalOps
 instance : Add NatOrdinal := ⟨nadd⟩
 instance : SuccAddOrder NatOrdinal := ⟨fun x => (nadd_one x).symm⟩
 
+theorem lt_add_iff {a b c : NatOrdinal} :
+    a < b + c ↔ (∃ b' < b, a ≤ b' + c) ∨ ∃ c' < c, a ≤ b + c' :=
+  Ordinal.lt_nadd_iff
+
+theorem add_le_iff {a b c : NatOrdinal} :
+     b + c ≤ a ↔ (∀ b' < b, b' + c < a) ∧ ∀ c' < c, b + c' < a :=
+  Ordinal.nadd_le_iff
+
 instance : AddLeftStrictMono NatOrdinal.{u} :=
   ⟨fun a _ _ h => nadd_lt_nadd_left h a⟩
 
@@ -361,16 +361,17 @@ instance : OrderedCancelAddCommMonoid NatOrdinal :=
 instance : AddMonoidWithOne NatOrdinal :=
   AddMonoidWithOne.unary
 
-@[deprecated Order.succ_eq_add_one (since := "2024-09-04")]
-theorem add_one_eq_succ (a : NatOrdinal) : a + 1 = succ a :=
-  (Order.succ_eq_add_one a).symm
-
 @[simp]
-theorem toOrdinal_cast_nat (n : ℕ) : toOrdinal n = n := by
+theorem toOrdinal_natCast (n : ℕ) : toOrdinal n = n := by
   induction' n with n hn
   · rfl
   · change (toOrdinal n) ♯ 1 = n + 1
     rw [hn]; exact nadd_one n
+
+instance : CharZero NatOrdinal where
+  cast_injective m n h := by
+    apply_fun toOrdinal at h
+    simpa using h
 
 end NatOrdinal
 
@@ -384,8 +385,8 @@ theorem nadd_eq_add (a b : Ordinal) : a ♯ b = toOrdinal (toNatOrdinal a + toNa
   rfl
 
 @[simp]
-theorem toNatOrdinal_cast_nat (n : ℕ) : toNatOrdinal n = n := by
-  rw [← toOrdinal_cast_nat n]
+theorem toNatOrdinal_natCast (n : ℕ) : toNatOrdinal n = n := by
+  rw [← toOrdinal_natCast n]
   rfl
 
 theorem lt_of_nadd_lt_nadd_left : ∀ {a b c}, a ♯ b < a ♯ c → b < c :=
@@ -660,10 +661,28 @@ termination_by (a, b, c)
 
 end Ordinal
 
+namespace NatOrdinal
+
 open Ordinal
 
 instance : Mul NatOrdinal :=
   ⟨nmul⟩
+
+theorem lt_mul_iff {a b c : NatOrdinal} :
+    c < a * b ↔ ∃ a' < a, ∃ b' < b, c + a' * b' ≤ a' * b + a * b' :=
+  Ordinal.lt_nmul_iff
+
+theorem mul_le_iff {a b c : NatOrdinal} :
+    a * b ≤ c ↔ ∀ a' < a, ∀ b' < b, a' * b + a * b' < c + a' * b' :=
+  Ordinal.nmul_le_iff
+
+theorem mul_add_lt {a b a' b' : NatOrdinal} (ha : a' < a) (hb : b' < b) :
+    a' * b + a * b' < a * b + a' * b' :=
+  Ordinal.nmul_nadd_lt ha hb
+
+theorem nmul_nadd_le {a b a' b' : NatOrdinal} (ha : a' ≤ a) (hb : b' ≤ b) :
+    a' * b + a * b' ≤ a * b + a' * b' :=
+  Ordinal.nmul_nadd_le ha hb
 
 -- Porting note: had to add universe annotations to ensure that the
 -- two sources lived in the same universe.
@@ -683,6 +702,8 @@ instance : OrderedCommSemiring NatOrdinal.{u} :=
     zero_le_one := @zero_le_one Ordinal _ _ _ _
     mul_le_mul_of_nonneg_left := fun _ _ c h _ => nmul_le_nmul_left h c
     mul_le_mul_of_nonneg_right := fun _ _ c h _ => nmul_le_nmul_right h c }
+
+end NatOrdinal
 
 namespace Ordinal
 

@@ -178,14 +178,15 @@ def mkFintypeEnum (declName : Name) : CommandElabM Unit := do
   elabCommand cmd
 
 def mkFintypeInstanceHandler (declNames : Array Name) : CommandElabM Bool := do
-  if declNames.size != 1 then
+  if h : declNames.size ≠ 1 then
     return false -- mutually inductive types are not supported
-  let declName := declNames[0]!
-  if ← isEnumType declName then
-    mkFintypeEnum declName
-    return true
   else
-    mkFintype declName
+    let declName := declNames[0]
+    if ← isEnumType declName then
+      mkFintypeEnum declName
+      return true
+    else
+      mkFintype declName
 
 initialize
   registerDerivingHandler ``Fintype mkFintypeInstanceHandler

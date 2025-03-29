@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Lattice.Prod
 import Mathlib.Data.Finite.Prod
+import Mathlib.Data.Set.Lattice.Image
 
 /-!
 # N-ary images of finsets

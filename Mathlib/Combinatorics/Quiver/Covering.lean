@@ -6,7 +6,8 @@ Authors: Antoine Labelle, Rémi Bottinelli
 import Mathlib.Combinatorics.Quiver.Cast
 import Mathlib.Combinatorics.Quiver.Symmetric
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Logic.Equiv.Basic
+import Mathlib.Data.Sum.Basic
+import Mathlib.Logic.Equiv.Sum
 import Mathlib.Tactic.Common
 
 /-!

@@ -142,6 +142,13 @@ lemma congr {f g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (hfg : f =ᶠ
   · simp
   · rw [hz (Set.mem_compl_singleton_iff.mp hn), pow_succ', mul_smul]
 
+/--
+If two functions agree on a punctured neighborhood, then one is meromorphic iff the other is so.
+-/
+lemma meromorphicAt_congr {f g : 𝕜 → E} {x : 𝕜} (h : f =ᶠ[𝓝[≠] x] g) :
+    MeromorphicAt f x ↔ MeromorphicAt g x :=
+  ⟨fun hf ↦ hf.congr h, fun hg ↦ hg.congr h.symm⟩
+
 @[fun_prop]
 lemma inv {f : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) : MeromorphicAt f⁻¹ x := by
   rcases hf with ⟨m, hf⟩
@@ -261,6 +268,17 @@ lemma const (e : E) {U : Set 𝕜} : MeromorphicOn (fun _ ↦ e) U :=
   fun x _ ↦ .const e x
 
 section arithmetic
+
+include hf in
+/-- Meromorphic functions on `U` are analytic on `U`, outside of a discrete subset. -/
+theorem analyticAt_mem_codiscreteWithin [CompleteSpace E] :
+    { x | AnalyticAt 𝕜 f x } ∈ Filter.codiscreteWithin U := by
+  rw [mem_codiscreteWithin]
+  intro x hx
+  rw [Filter.disjoint_principal_right, ← Filter.eventually_mem_set]
+  apply (hf x hx).eventually_analyticAt.mono
+  simp only [Set.mem_compl_iff, Set.mem_diff, Set.mem_setOf_eq, not_and, not_not]
+  tauto
 
 include hf in
 lemma mono_set {V : Set 𝕜} (hv : V ⊆ U) : MeromorphicOn f V := fun x hx ↦ hf x (hv hx)

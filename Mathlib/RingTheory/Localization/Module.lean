@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu, Anne Baanen
 -/
 import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
+import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Localization.Integer
-import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
 # Modules / vector spaces over localizations / fraction fields
@@ -67,11 +67,35 @@ theorem LinearIndependent.of_isLocalizedModule {ι : Type*} {v : ι → M}
   simpa only [map_mul, (IsLocalization.map_units Rₛ s).mul_right_inj, hfg.1 ⟨i, hi⟩, hfg.2 ⟨i, hi⟩,
     Algebra.smul_def, (IsLocalization.map_units Rₛ a).mul_right_inj] using this
 
+theorem LinearIndependent.of_isLocalizedModule_of_isRegular {ι : Type*} {v : ι → M}
+    (hv : LinearIndependent R v) (h : ∀ s : S, IsRegular (s : R)) : LinearIndependent R (f ∘ v) :=
+  hv.map_injOn _ <| by
+    rw [← Finsupp.range_linearCombination]
+    rintro _ ⟨_, r, rfl⟩ _ ⟨_, r', rfl⟩ eq
+    congr; ext i
+    have ⟨s, eq⟩ := IsLocalizedModule.exists_of_eq (S := S) eq
+    simp_rw [Submonoid.smul_def, ← map_smul] at eq
+    exact (h s).1 (DFunLike.congr_fun (hv eq) i)
+
 theorem LinearIndependent.localization [Module Rₛ M] [IsScalarTower R Rₛ M]
     {ι : Type*} {b : ι → M} (hli : LinearIndependent R b) :
     LinearIndependent Rₛ b := by
   have := isLocalizedModule_id S M Rₛ
   exact hli.of_isLocalizedModule Rₛ S .id
+
+include f in
+lemma IsLocalizedModule.linearIndependent_lift {ι} {v : ι → Mₛ} (hf : LinearIndependent R v) :
+    ∃ w : ι → M, LinearIndependent R w := by
+  cases isEmpty_or_nonempty ι
+  · exact ⟨isEmptyElim, linearIndependent_empty_type⟩
+  have inj := hf.smul_left_injective (Classical.arbitrary ι)
+  choose sec hsec using surj S f
+  use fun i ↦ (sec (v i)).1
+  rw [linearIndependent_iff'ₛ] at hf ⊢
+  intro t g g' eq i hit
+  refine (isRegular_of_smul_left_injective f inj (sec (v i)).2).2 <|
+    hf t (fun i ↦ _ * (sec (v i)).2) (fun i ↦ _ * (sec (v i)).2) ?_ i hit
+  simp_rw [mul_smul, ← Submonoid.smul_def, hsec, ← map_smul, ← map_sum, eq]
 
 section Basis
 
@@ -123,7 +147,7 @@ open Submodule
 include S
 
 theorem LinearIndependent.localization_localization {ι : Type*} {v : ι → A}
-    (hv : LinearIndependent R v) : LinearIndependent Rₛ ((algebraMap A Aₛ) ∘ v) :=
+    (hv : LinearIndependent R v) : LinearIndependent Rₛ (algebraMap A Aₛ ∘ v) :=
   hv.of_isLocalizedModule Rₛ S (IsScalarTower.toAlgHom R A Aₛ).toLinearMap
 
 theorem span_eq_top_localization_localization {v : Set A} (hv : span R v = ⊤) :
@@ -156,13 +180,13 @@ end LocalizationLocalization
 
 section FractionRing
 
-variable (R K : Type*) [CommRing R] [Field K] [Algebra R K] [IsFractionRing R K]
+variable (R K : Type*) [CommRing R] [CommRing K] [Algebra R K] [IsFractionRing R K]
 variable {V : Type*} [AddCommGroup V] [Module R V] [Module K V] [IsScalarTower R K V]
 
 theorem LinearIndependent.iff_fractionRing {ι : Type*} {b : ι → V} :
     LinearIndependent R b ↔ LinearIndependent K b :=
-  ⟨LinearIndependent.localization K R⁰,
-    LinearIndependent.restrict_scalars (smul_left_injective R one_ne_zero)⟩
+  ⟨.localization K R⁰,
+    .restrict_scalars <| (faithfulSMul_iff_injective_smul_one ..).mp inferInstance⟩
 
 end FractionRing
 

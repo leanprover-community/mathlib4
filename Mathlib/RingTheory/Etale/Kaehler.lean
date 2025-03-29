@@ -215,9 +215,7 @@ def tensorCotangent [alg : Algebra P.Ring Q.Ring] (halg : algebraMap P.Ring Q.Ri
       | add x y _ _ => simp only [map_add, *]
       | tmul a b =>
         simp only [LinearMap.liftBaseChange_tmul, map_smul]
-        erw [tensorCotangentInvFun_smul_mk]
-        simp
-        rfl }
+        simp [Hom.mapKer, tensorCotangentInvFun_smul_mk] }
 
 set_option synthInstance.maxHeartbeats 100000 in
 /-- If `J ≃ Q ⊗ₚ I`, `S → T` is flat and `P → Q` is formally etale, then `T ⊗ H¹(L_P) ≃ H¹(L_Q)`. -/

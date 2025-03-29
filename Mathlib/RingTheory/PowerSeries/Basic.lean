@@ -9,6 +9,7 @@ import Mathlib.Algebra.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.Tactic.MoveAdd
+import Mathlib.Algebra.MvPolynomial.Equiv
 
 /-!
 # Formal power series (in one variable)
@@ -869,6 +870,24 @@ theorem coe_eq_zero_iff : (φ : PowerSeries R) = 0 ↔ φ = 0 := by rw [← coe_
 theorem coe_eq_one_iff : (φ : PowerSeries R) = 1 ↔ φ = 1 := by rw [← coe_one, coe_inj]
 
 variable (φ ψ)
+
+theorem _root_.MvPolynomial.toMvPowerSeries_pUnitAlgEquiv {f : MvPolynomial PUnit R} :
+    (f.toMvPowerSeries : PowerSeries R) = (f.pUnitAlgEquiv R).toPowerSeries := by
+  induction f using MvPolynomial.induction_on' with
+  | monomial d r =>
+    --Note: this `have` should be a generic `simp` lemma for a `Unique` type with `()` replaced
+    --by any element.
+    have : single () (d ()) = d := by ext; simp
+    simp only [MvPolynomial.coe_monomial, MvPolynomial.pUnitAlgEquiv_monomial,
+      Polynomial.coe_monomial, PowerSeries.monomial, this]
+  | add f g hf hg => simp [hf, hg]
+
+theorem pUnitAlgEquiv_symm_toPowerSeries {f : Polynomial R} :
+    ((f.toPowerSeries) : MvPowerSeries PUnit R)
+      = ((MvPolynomial.pUnitAlgEquiv R).symm f).toMvPowerSeries := by
+  set g := (MvPolynomial.pUnitAlgEquiv R).symm f
+  have : f = MvPolynomial.pUnitAlgEquiv R g := by simp only [g, AlgEquiv.apply_symm_apply]
+  rw [this, MvPolynomial.toMvPowerSeries_pUnitAlgEquiv]
 
 /-- The coercion from polynomials to power series
 as a ring homomorphism.

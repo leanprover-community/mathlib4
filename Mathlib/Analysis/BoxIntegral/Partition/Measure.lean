@@ -75,8 +75,10 @@ end Box
 theorem Prepartition.measure_iUnion_toReal [Finite ι] {I : Box ι} (π : Prepartition I)
     (μ : Measure (ι → ℝ)) [IsLocallyFiniteMeasure μ] :
     (μ π.iUnion).toReal = ∑ J ∈ π.boxes, (μ J).toReal := by
-  erw [← ENNReal.toReal_sum, π.iUnion_def, measure_biUnion_finset π.pairwiseDisjoint]
-  exacts [fun J _ => J.measurableSet_coe, fun J _ => (J.measure_coe_lt_top μ).ne]
+  rw [← ENNReal.toReal_sum (fun J _ => (J.measure_coe_lt_top μ).ne), π.iUnion_def]
+  simp only [← mem_boxes]
+  rw [measure_biUnion_finset π.pairwiseDisjoint]
+  exact fun J _ => J.measurableSet_coe
 
 end BoxIntegral
 

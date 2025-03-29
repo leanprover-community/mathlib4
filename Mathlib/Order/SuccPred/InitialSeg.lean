@@ -5,7 +5,6 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.Limit
-import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Initial segments and successors

@@ -266,18 +266,27 @@ def mapDart (d : G.Dart) : G'.Dart :=
 theorem mapDart_apply (d : G.Dart) : f.mapDart d = ⟨d.1.map f f, f.map_adj d.2⟩ :=
   rfl
 
+/-- The graph homomorphism from a smaller graph to a bigger one. -/
+def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
+
+@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
+
+lemma ofLE_apply (h : G₁ ≤ G₂) (v : V) : ofLE h v = v := rfl
+
 /-- The induced map for spanning subgraphs, which is the identity on vertices. -/
-@[simps]
+@[deprecated ofLE (since := "2025-03-17")]
 def mapSpanningSubgraphs {G G' : SimpleGraph V} (h : G ≤ G') : G →g G' where
   toFun x := x
   map_rel' ha := h ha
 
+@[deprecated "This is true by simp" (since := "2025-03-17")]
 lemma mapSpanningSubgraphs_inj {G G' : SimpleGraph V} {v w : V} (h : G ≤ G') :
-    mapSpanningSubgraphs h v = mapSpanningSubgraphs h w ↔ v = w := by simp
+    ofLE h v = ofLE h w ↔ v = w := by simp
 
+@[deprecated "This is true by simp" (since := "2025-03-17")]
 lemma mapSpanningSubgraphs_injective {G G' : SimpleGraph V} (h : G ≤ G') :
-    Injective (mapSpanningSubgraphs h) :=
-  fun v w hvw ↦ by simpa [mapSpanningSubgraphs_apply] using hvw
+    Injective (ofLE h) :=
+  fun v w hvw ↦ by simpa using hvw
 
 theorem mapEdgeSet.injective (hinj : Function.Injective f) : Function.Injective f.mapEdgeSet := by
   rintro ⟨e₁, h₁⟩ ⟨e₂, h₂⟩
@@ -307,11 +316,6 @@ abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' :=
 @[simp]
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
-
-/-- The graph homomorphism from a smaller graph to a bigger one. -/
-def ofLE (h : G₁ ≤ G₂) : G₁ →g G₂ := ⟨id, @h⟩
-
-@[simp, norm_cast] lemma coe_ofLE (h : G₁ ≤ G₂) : ⇑(ofLE h) = id := rfl
 
 end Hom
 
@@ -401,6 +405,16 @@ abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' :=
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : ⇑(f'.comp f) = f' ∘ f :=
   rfl
+
+/-- Graph embeddings from `G` to `H` are the same thing as graph embeddings from `Gᶜ` to `Hᶜ`. -/
+def complEquiv : G ↪g H ≃ Gᶜ ↪g Hᶜ where
+  toFun f := ⟨f.toEmbedding, by simp⟩
+  invFun f := ⟨f.toEmbedding, fun {v w} ↦ by
+    obtain rfl | hvw := eq_or_ne v w
+    · simp
+    · simpa [hvw, not_iff_not] using f.map_adj_iff (v := v) (w := w)⟩
+  left_inv f := rfl
+  right_inv f := rfl
 
 end Embedding
 

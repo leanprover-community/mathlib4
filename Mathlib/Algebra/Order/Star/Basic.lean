@@ -5,8 +5,8 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Order.Group.Defs
 import Mathlib.Algebra.Order.Group.Nat
+import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.Algebra.Star.StarRingHom
 import Mathlib.Tactic.ContinuousFunctionalCalculus
@@ -303,6 +303,20 @@ protected theorem IsSelfAdjoint.sq_nonneg {a : R} (ha : IsSelfAdjoint a) : 0 ≤
   simp [sq, ha.mul_self_nonneg]
 
 end Semiring
+
+namespace MulOpposite
+
+instance [NonUnitalSemiring R] [StarRing R] [PartialOrder R] [StarOrderedRing R] :
+    StarOrderedRing Rᵐᵒᵖ where
+  le_iff x y := by
+    rw [← unop_le_unop, StarOrderedRing.le_iff, op_surjective.exists,
+      ← (AddSubmonoid.closure _).comap_map_eq_of_injective opAddEquiv.injective]
+    congr! with p
+    · simp [AddMonoidHom.map_mclosure, ← range_comp', Function.comp_def,
+        ← (star_involutive.surjective.comp op_surjective).range_comp]
+    · simp [← op_inj (α := R)]
+
+end MulOpposite
 
 section StarModule
 

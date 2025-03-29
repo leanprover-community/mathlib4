@@ -190,7 +190,9 @@ lemma Irreducible.degree_le_two {p : ℝ[X]} (hp : Irreducible p) : degree p ≤
   cases eq_or_ne z.im 0 with
   | inl hz0 =>
     lift z to ℝ using hz0
-    erw [aeval_ofReal, RCLike.ofReal_eq_zero] at hz
+    -- I can't work out why `erw` is needed here. It looks like exactly the LHS of `aeval_ofReal`.
+    erw [aeval_ofReal] at hz
+    rw [RCLike.ofReal_eq_zero] at hz
     exact (degree_eq_one_of_irreducible_of_root hp hz).trans_le one_le_two
   | inr hz0 =>
     obtain ⟨q, rfl⟩ := p.quadratic_dvd_of_aeval_eq_zero_im_ne_zero hz hz0

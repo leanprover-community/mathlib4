@@ -66,7 +66,6 @@ abbrev toOrderBot [SemilatticeInf α] : OrderBot α where
 /-- Constructs the `⊤` of a finite nonempty `SemilatticeSup` -/
 abbrev toOrderTop [SemilatticeSup α] : OrderTop α where
   top := univ.sup' univ_nonempty id
-  -- Porting note: needed to make `id` explicit
   le_top a := le_sup' id <| mem_univ a
 
 -- See note [reducible non-instances]

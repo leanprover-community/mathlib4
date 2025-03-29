@@ -445,6 +445,13 @@ theorem direction_sup {s₁ s₂ : AffineSubspace k P} {p₁ p₂ : P} (hp₁ : 
               (mem_spanPoints k p₁ _ (Set.mem_union_left _ hp₁))))
           hp
 
+/-- The direction of the sup of two affine subspaces with a common point is the sup of the two
+directions. -/
+lemma direction_sup_eq_sup_direction {s₁ s₂ : AffineSubspace k P} {p : P} (hp₁ : p ∈ s₁)
+    (hp₂ : p ∈ s₂) : (s₁ ⊔ s₂).direction = s₁.direction ⊔ s₂.direction := by
+  rw [direction_sup hp₁ hp₂]
+  simp
+
 /-- The direction of the span of the result of adding a point to a nonempty affine subspace is the
 sup of the direction of that subspace and of any one difference between that point and a point in
 the subspace. -/
@@ -476,6 +483,13 @@ theorem mem_affineSpan_insert_iff {s : AffineSubspace k P} {p₁ : P} (hp₁ : p
     use r • (p₂ -ᵥ p₁), Submodule.mem_span_singleton.2 ⟨r, rfl⟩, p₃ -ᵥ p₁,
       vsub_mem_direction hp₃ hp₁
     rw [vadd_vsub_assoc]
+
+variable (k) in
+/-- The vector span of a union of sets with a common point is the sup of their vector spans. -/
+lemma vectorSpan_union_of_mem_of_mem {s₁ s₂ : Set P} {p : P} (hp₁ : p ∈ s₁) (hp₂ : p ∈ s₂) :
+    vectorSpan k (s₁ ∪ s₂) = vectorSpan k s₁ ⊔ vectorSpan k s₂ := by
+  simp_rw [← direction_affineSpan, span_union,
+    direction_sup_eq_sup_direction (mem_affineSpan k hp₁) (mem_affineSpan k hp₂)]
 
 end AffineSubspace
 
@@ -523,6 +537,7 @@ theorem mem_map_of_mem {x : P₁} {s : AffineSubspace k P₁} (h : x ∈ s) : f 
 
 -- The simpNF linter says that the LHS can be simplified via `AffineSubspace.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[simp 1100, nolint simpNF]
 theorem mem_map_iff_mem_of_injective {f : P₁ →ᵃ[k] P₂} {x : P₁} {s : AffineSubspace k P₁}
@@ -614,7 +629,7 @@ attribute [local instance] AffineSubspace.toAddTorsor
 This is the affine version of `LinearEquiv.ofEq`. -/
 @[simps linear]
 def ofEq (h : S₁ = S₂) : S₁ ≃ᵃ[k] S₂ where
-  toEquiv := Equiv.Set.ofEq <| congr_arg _ h
+  toEquiv := Equiv.setCongr <| congr_arg _ h
   linear := .ofEq _ _ <| congr_arg _ h
   map_vadd' := fun ⟨_,_⟩ ⟨_,_⟩ => rfl
 

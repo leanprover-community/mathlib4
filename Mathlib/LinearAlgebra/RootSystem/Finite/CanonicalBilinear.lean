@@ -36,9 +36,6 @@ Weyl group.
  * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
  * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
-## TODO (possibly in other files)
- * Weyl-invariance
- * Faithfulness of Weyl group action, and finiteness of Weyl group, for finite root systems.
 -/
 
 open Set Function
@@ -266,13 +263,6 @@ lemma zero_lt_pairingIn_iff' [Finite ι] :
     0 < P.pairingIn S i j ↔ 0 < P.pairingIn S j i :=
   let _i : Fintype ι := Fintype.ofFinite ι
   zero_lt_pairingIn_iff (P.posRootForm S) i j
-
-omit [Module S M] [IsScalarTower S R M] in
-lemma pairingIn_zero_iff [Finite ι] [NoZeroDivisors R] :
-    P.pairingIn S i j = 0 ↔ P.pairingIn S j i = 0 := by
-  let _i : Fintype ι := Fintype.ofFinite ι
-  simp only [← FaithfulSMul.algebraMap_eq_zero_iff S R, algebraMap_pairingIn]
-  exact pairing_zero_iff (P.posRootForm S) i j
 
 end IsValuedInOrdered
 

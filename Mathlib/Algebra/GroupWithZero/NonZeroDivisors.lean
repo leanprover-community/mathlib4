@@ -114,6 +114,12 @@ open nonZeroDivisors
 section MonoidWithZero
 variable {F M₀ M₀' : Type*} [MonoidWithZero M₀] [MonoidWithZero M₀'] {r x y : M₀}
 
+-- this lemma reflects symmetry-breaking in the definition of `nonZeroDivisors`
+lemma nonZeroDivisorsLeft_eq_nonZeroDivisors : nonZeroDivisorsLeft M₀ = nonZeroDivisors M₀ := rfl
+
+lemma nonZeroDivisorsRight_eq_nonZeroSMulDivisors :
+    nonZeroDivisorsRight M₀ = nonZeroSMulDivisors M₀ M₀ := rfl
+
 theorem mem_nonZeroDivisors_iff : r ∈ M₀⁰ ↔ ∀ x, x * r = 0 → x = 0 := Iff.rfl
 
 lemma nmem_nonZeroDivisors_iff : r ∉ M₀⁰ ↔ {s | s * r = 0 ∧ s ≠ 0}.Nonempty := by
@@ -138,6 +144,18 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
 
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
+
+instance [IsLeftCancelMulZero M₀] :
+    LeftCancelMonoid M₀⁰ where
+  mul_left_cancel _ _ _ h :=  Subtype.ext <|
+    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+      simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
+
+instance [IsRightCancelMulZero M₀] :
+    RightCancelMonoid M₀⁰ where
+  mul_right_cancel _ _ _ h := Subtype.ext <|
+    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+      simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
 
 end Nontrivial
 

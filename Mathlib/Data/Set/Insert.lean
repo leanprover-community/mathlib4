@@ -92,6 +92,9 @@ theorem ssubset_iff_insert {s t : Set α} : s ⊂ t ↔ ∃ a ∉ s, insert a s 
   simp only [insert_subset_iff, exists_and_right, ssubset_def, not_subset]
   aesop
 
+theorem _root_.HasSubset.Subset.ssubset_of_mem_not_mem (hst : s ⊆ t) (hat : a ∈ t) (has : a ∉ s) :
+    s ⊂ t := hst.ssubset_of_not_subset fun a ↦ has (a hat)
+
 theorem ssubset_insert {s : Set α} {a : α} (h : a ∉ s) : s ⊂ insert a s :=
   ssubset_iff_insert.2 ⟨a, h, Subset.rfl⟩
 
@@ -261,6 +264,21 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
   eq_singleton_iff_unique_mem.trans <|
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 
+theorem setOf_mem_list_eq_replicate {l : List α} {a : α} :
+    { x | x ∈ l } = {a} ↔ ∃ n > 0, l = List.replicate n a := by
+  simpa +contextual [Set.ext_iff, iff_iff_implies_and_implies, forall_and, List.eq_replicate_iff,
+    List.length_pos_iff_exists_mem] using ⟨fun _ _ ↦ ⟨_, ‹_›⟩, fun x hx h ↦ h _ hx ▸ hx⟩
+
+theorem setOf_mem_list_eq_singleton_of_nodup {l : List α} (H : l.Nodup) {a : α} :
+    { x | x ∈ l } = {a} ↔ l = [a] := by
+  constructor
+  · rw [setOf_mem_list_eq_replicate]
+    rintro ⟨n, hn, rfl⟩
+    simp only [List.nodup_replicate] at H
+    simp [show n = 1 by omega]
+  · rintro rfl
+    simp
+
 -- while `simp` is capable of proving this, it is not capable of turning the LHS into the RHS.
 @[simp]
 theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl⟩ :=
@@ -412,9 +430,10 @@ theorem insert_inter_of_not_mem (h : a ∉ t) : insert a s ∩ t = s ∩ t :=
 theorem diff_singleton_eq_self {a : α} {s : Set α} (h : a ∉ s) : s \ {a} = s :=
   sdiff_eq_self_iff_disjoint.2 <| by simp [h]
 
-@[simp]
-theorem diff_singleton_sSubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s :=
-  sdiff_le.lt_iff_ne.trans <| sdiff_eq_left.not.trans <| by simp
+theorem diff_singleton_ssubset {s : Set α} {a : α} : s \ {a} ⊂ s ↔ a ∈ s := by
+  simp
+
+@[deprecated (since := "2025-03-20")] alias diff_singleton_sSubset := diff_singleton_ssubset
 
 @[simp]
 theorem insert_diff_singleton {a : α} {s : Set α} : insert a (s \ {a}) = insert a s := by
@@ -424,6 +443,10 @@ theorem insert_diff_singleton_comm (hab : a ≠ b) (s : Set α) :
     insert a (s \ {b}) = insert a s \ {b} := by
   simp_rw [← union_singleton, union_diff_distrib,
     diff_singleton_eq_self (mem_singleton_iff.not.2 hab.symm)]
+
+@[simp]
+theorem insert_diff_insert : insert a (s \ insert a t) = insert a (s \ t) := by
+  rw [← union_singleton (s := t), ← diff_diff, insert_diff_singleton]
 
 theorem mem_diff_singleton {x y : α} {s : Set α} : x ∈ s \ {y} ↔ x ∈ s ∧ x ≠ y :=
   Iff.rfl

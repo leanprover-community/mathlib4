@@ -112,7 +112,7 @@ theorem ext : Function.Injective (val : αˣ → α)
 
 @[to_additive (attr := norm_cast)]
 theorem eq_iff {a b : αˣ} : (a : α) = b ↔ a = b :=
-  ⟨fun h => ext h, congr_arg _⟩
+  ext.eq_iff
 
 /-- Units have decidable equality if the base `Monoid` has decidable equality. -/
 @[to_additive "Additive units have decidable equality
@@ -357,10 +357,9 @@ variable {M : Type*} {N : Type*}
 /-- An element `a : M` of a `Monoid` is a unit if it has a two-sided inverse.
 The actual definition says that `a` is equal to some `u : Mˣ`, where
 `Mˣ` is a bundled version of `IsUnit`. -/
-@[to_additive
-      "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive inverse.
-      The actual definition says that `a` is equal to some `u : AddUnits M`,
-      where `AddUnits M` is a bundled version of `IsAddUnit`."]
+@[to_additive "An element `a : M` of an `AddMonoid` is an `AddUnit` if it has a two-sided additive
+inverse. The actual definition says that `a` is equal to some `u : AddUnits M`,
+where `AddUnits M` is a bundled version of `IsAddUnit`."]
 def IsUnit [Monoid M] (a : M) : Prop :=
   ∃ u : Mˣ, (u : M) = a
 

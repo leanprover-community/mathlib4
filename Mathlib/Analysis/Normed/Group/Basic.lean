@@ -908,7 +908,7 @@ lemma ContinuousWithinAt.enorm {s : Set X} {a : X} (h : ContinuousWithinAt f s a
 
 @[fun_prop]
 lemma ContinuousOn.enorm (h : ContinuousOn f s) : ContinuousOn (‖f ·‖ₑ) s :=
-  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h fun _ _ ↦ trivial
+  (ContinuousENorm.continuous_enorm.continuousOn).comp (t := Set.univ) h <| Set.mapsTo_univ _ _
 
 end ContinuousENorm
 
@@ -920,16 +920,16 @@ variable {E : Type*} [TopologicalSpace E] [ENormedMonoid E]
 lemma enorm_mul_le' (a b : E) : ‖a * b‖ₑ ≤ ‖a‖ₑ + ‖b‖ₑ := ENormedMonoid.enorm_mul_le a b
 
 @[to_additive (attr := simp) enorm_eq_zero]
-lemma enorm_eq_zero' {a : E} :
-  ‖a‖ₑ = 0 ↔ a = 1 := by simp [enorm, ENormedMonoid.enorm_eq_zero]
+lemma enorm_eq_zero' {a : E} : ‖a‖ₑ = 0 ↔ a = 1 := by
+  simp [enorm, ENormedMonoid.enorm_eq_zero]
 
 @[to_additive enorm_ne_zero]
-lemma enorm_ne_zero' {a : E} :
-    ‖a‖ₑ ≠ 0 ↔ a ≠ 1 := enorm_eq_zero'.ne
+lemma enorm_ne_zero' {a : E} : ‖a‖ₑ ≠ 0 ↔ a ≠ 1 :=
+  enorm_eq_zero'.ne
 
 @[to_additive (attr := simp) enorm_pos]
-lemma enorm_pos' {a : E} :
-    0 < ‖a‖ₑ ↔ a ≠ 1 := pos_iff_ne_zero.trans enorm_ne_zero'
+lemma enorm_pos' {a : E} : 0 < ‖a‖ₑ ↔ a ≠ 1 :=
+  pos_iff_ne_zero.trans enorm_ne_zero'
 
 end ENormedMonoid
 

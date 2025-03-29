@@ -340,4 +340,8 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   rw [← natCast_lt_toENat_iff]
   simp only [ENat.card, Nat.cast_one]
 
+@[simp]
+theorem card_prod (α β : Type*) : ENat.card (α × β) = .card α * .card β := by
+  simp [ENat.card]
+
 end ENat

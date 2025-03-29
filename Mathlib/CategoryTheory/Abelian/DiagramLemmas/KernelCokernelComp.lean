@@ -123,15 +123,15 @@ noncomputable def isLimit : IsLimit (KernelFork.ofι _ (ι_φ f g)) :=
 then the cokernel of `φ f g : X ⊞ Y ⟶ Y ⊞ Z` identifies
 to `cokernel (f ≫ g)`. -/
 noncomputable def isColimit : IsColimit (CokernelCofork.ofπ _ (φ_π f g)) :=
-    CokernelCofork.IsColimit.ofπ' _ _ (fun {A} k hk ↦ by
-      refine ⟨cokernel.desc _ (biprod.inr ≫ k) ?_, ?_⟩
-      all_goals
-        obtain ⟨k₁, k₂, rfl⟩ := biprod.decomp_hom_from k
-        simp only [comp_add, φ_snd_assoc, biprod.ext_from_iff, inl_φ_assoc,
-          BinaryBicone.inl_fst_assoc, BinaryBicone.inl_snd_assoc, zero_comp, add_zero, comp_zero,
-          inr_φ_fst_assoc, neg_comp, id_comp, BinaryBicone.inr_snd_assoc, neg_add_eq_zero] at hk
-        obtain ⟨hk, rfl⟩ := hk
-        aesop)
+  CokernelCofork.IsColimit.ofπ' _ _ (fun {A} k hk ↦ by
+    refine ⟨cokernel.desc _ (biprod.inr ≫ k) ?_, ?_⟩
+    all_goals
+      obtain ⟨k₁, k₂, rfl⟩ := biprod.decomp_hom_from k
+      simp only [comp_add, φ_snd_assoc, biprod.ext_from_iff, inl_φ_assoc,
+        BinaryBicone.inl_fst_assoc, BinaryBicone.inl_snd_assoc, zero_comp, add_zero, comp_zero,
+        inr_φ_fst_assoc, neg_comp, id_comp, BinaryBicone.inr_snd_assoc, neg_add_eq_zero] at hk
+      obtain ⟨hk, rfl⟩ := hk
+      aesop)
 
 /-- The "snake input" which gives the exact sequence
 `0 ⟶ ker f ⟶ ker (f ≫ g) ⟶ ker g ⟶ coker f ⟶ coker (f ≫ g) ⟶ coker g ⟶ 0`,

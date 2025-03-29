@@ -84,7 +84,7 @@ theorem spanNorm_singleton {r : S} :
 theorem spanNorm_top : spanNorm R (⊤ : Ideal S) = ⊤ := by
   simp [← Ideal.span_singleton_one]
 
-theorem map_spanIntNorm (I : Ideal S) {T : Type*} [CommRing T] (f : R →+* T) :
+theorem map_spanIntNorm (I : Ideal S) {T : Type*} [Semiring T] (f : R →+* T) :
     map f (spanNorm R I) = span (f ∘ Algebra.intNorm R S '' (I : Set S)) := by
   rw [spanNorm]
   nth_rw 2 [map]
@@ -225,8 +225,6 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
       AlgEquiv.commutes, IsScalarTower.algebraMap_apply R S L,
       IsScalarTower.algebraMap_apply S Sₚ L, AlgEquiv.coe_ringEquiv, AlgEquiv.commutes]
     simp only [← IsScalarTower.algebraMap_apply]
-    rw [IsScalarTower.algebraMap_apply R Rₚ (FractionRing Rₚ),
-      ← IsScalarTower.algebraMap_apply Rₚ, ← IsScalarTower.algebraMap_apply]
   simp only [Ideal.map_mul, ← spanIntNorm_localization (R := R) (S := S)
     (Rₘ := Localization.AtPrime P) (Sₘ := Localization P') _ _ P.primeCompl_le_nonZeroDivisors]
   rw [← (I.map _).span_singleton_generator, ← (J.map _).span_singleton_generator,

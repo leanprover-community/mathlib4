@@ -31,6 +31,12 @@ of two kernels, which allows to transfer properties of `∘ₖ` to `∘ₘ`. -/
 lemma comp_eq_comp_const_apply : κ ∘ₘ μ = (κ ∘ₖ (Kernel.const Unit μ)) () := by
   rw [Kernel.comp_apply, Kernel.const_apply]
 
+lemma comp_eq_sum_of_countable [Countable α] [MeasurableSingletonClass α] :
+    κ ∘ₘ μ = Measure.sum (fun ω ↦ μ {ω} • κ ω) := by
+  ext s hs
+  rw [Measure.sum_apply _ hs, Measure.bind_apply hs (by fun_prop)]
+  simp [lintegral_countable', mul_comm]
+
 @[simp]
 lemma snd_compProd (μ : Measure α) [SFinite μ] (κ : Kernel α β) [IsSFiniteKernel κ] :
     (μ ⊗ₘ κ).snd = κ ∘ₘ μ := by
@@ -96,29 +102,6 @@ lemma prodMkLeft_comp_compProd {η : Kernel β γ} [SFinite μ] [IsSFiniteKernel
 
 end CompProd
 
-section Integrable
-
-variable {E : Type*} [NormedAddCommGroup E] {f : β → E}
-
-lemma integrable_compProd_snd_iff [SFinite μ] [IsSFiniteKernel κ]
-    (hf : AEStronglyMeasurable f (κ ∘ₘ μ)) :
-    Integrable (fun p ↦ f p.2) (μ ⊗ₘ κ) ↔ Integrable f (κ ∘ₘ μ) := by
-  rw [← snd_compProd, Measure.snd, integrable_map_measure _ measurable_snd.aemeasurable,
-    Function.comp_def]
-  rwa [← Measure.snd, snd_compProd]
-
-lemma ae_integrable_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    ∀ᵐ x ∂μ, Integrable f (κ x) := by
-  rw [comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
-  exact h_int.1
-
-lemma integrable_integral_norm_of_integrable_comp (h_int : Integrable f (κ ∘ₘ μ)) :
-    Integrable (fun x ↦ ∫ y, ‖f y‖ ∂κ x) μ := by
-  rw [comp_eq_comp_const_apply, integrable_comp_iff h_int.1] at h_int
-  exact h_int.2
-
-end Integrable
-
 section AddSMul
 
 @[simp]
@@ -159,6 +142,11 @@ lemma AbsolutelyContinuous.comp_left (μ : Measure α) (hκη : ∀ᵐ a ∂μ, 
 lemma AbsolutelyContinuous.comp (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     κ ∘ₘ μ ≪ η ∘ₘ ν :=
   (AbsolutelyContinuous.comp_left μ hκη).trans (hμν.comp_right η)
+
+lemma absolutelyContinuous_comp_of_countable [Countable α] [MeasurableSingletonClass α] :
+    ∀ᵐ ω ∂μ, κ ω ≪ κ ∘ₘ μ := by
+  rw [Measure.comp_eq_sum_of_countable, ae_iff_of_countable]
+  exact fun ω hμω ↦ Measure.absolutelyContinuous_sum_right ω (Measure.absolutelyContinuous_smul hμω)
 
 end AbsolutelyContinuous
 

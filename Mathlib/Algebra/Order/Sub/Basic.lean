@@ -40,6 +40,7 @@ theorem tsub_self (a : α) : a - a = 0 :=
 theorem tsub_le_self : a - b ≤ a :=
   tsub_le_iff_left.mpr <| le_add_left le_rfl
 
+@[simp]
 theorem zero_tsub (a : α) : 0 - a = 0 :=
   tsub_eq_zero_of_le <| zero_le a
 

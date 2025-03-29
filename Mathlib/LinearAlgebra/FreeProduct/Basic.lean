@@ -50,14 +50,14 @@ open scoped DirectSum
 /-- A variant of `DirectSum.induction_on` that uses `DirectSum.lof` instead of `.of` -/
 theorem induction_lon {R : Type*} [Semiring R] {ι: Type*} [DecidableEq ι]
     {M : ι → Type*} [(i: ι) → AddCommMonoid <| M i] [(i : ι) → Module R (M i)]
-    {C: (⨁ i, M i) → Prop} (x : ⨁ i, M i)
-    (H_zero : C 0)
-    (H_basic : ∀ i (x : M i), C (lof R ι M i x))
-    (H_plus : ∀ (x y : ⨁ i, M i), C x → C y → C (x + y)) : C x := by
+    {motive : (⨁ i, M i) → Prop} (x : ⨁ i, M i)
+    (zero : motive 0)
+    (lof : ∀ i (x : M i), motive (lof R ι M i x))
+    (add : ∀ (x y : ⨁ i, M i), motive x → motive y → motive (x + y)) : motive x := by
   induction x using DirectSum.induction_on with
-  | H_zero => exact H_zero
-  | H_basic => exact H_basic _ _
-  | H_plus x y hx hy => exact H_plus x y hx hy
+  | zero => exact zero
+  | of => exact lof _ _
+  | add x y hx hy => exact add x y hx hy
 
 end DirectSum
 

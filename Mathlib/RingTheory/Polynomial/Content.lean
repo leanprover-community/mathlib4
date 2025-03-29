@@ -151,7 +151,7 @@ theorem normUnit_content {p : R[X]} : normUnit (content p) = 1 := by
   · simp [hp0]
   · ext
     apply mul_left_cancel₀ hp0
-    erw [← normalize_apply, normalize_content, mul_one]
+    rw [← normalize_apply, normalize_content, Units.val_one, mul_one]
 
 theorem content_eq_gcd_range_of_lt (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
     p.content = (Finset.range n).gcd p.coeff := by

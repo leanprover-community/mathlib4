@@ -98,7 +98,7 @@ theorem contLinear_eq_zero_iff_exists_const (f : P →ᴬ[R] Q) :
     intro q
     refine ⟨fun h => ?_, fun h => ?_⟩ <;> ext
     · rw [h]; rfl
-    · rw [← coe_toAffineMap, h]; rfl
+    · rw [← coe_toAffineMap, h, AffineMap.const_apply, coe_const, Function.const_apply]
   simp_rw [h₁, h₂]
   exact (f : P →ᵃ[R] Q).linear_eq_zero_iff_exists_const
 

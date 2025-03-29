@@ -16,7 +16,7 @@ form a field.
 
 It's possible to show the existence of the nimber inverse implicitly via the simplicity theorem.
 Instead, we employ the explicit formula given in [On Numbers And Games][conway2001] (p. 56), which
-uses mutual induction and mimicks the definition for the surreal inverse. This definition `invAux`
+uses mutual induction and mimics the definition for the surreal inverse. This definition `invAux`
 "accidentally" gives the inverse of `0` as `1`, which the real inverse corrects.
 
 ## Todo

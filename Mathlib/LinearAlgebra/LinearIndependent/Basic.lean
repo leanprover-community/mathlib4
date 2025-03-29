@@ -62,7 +62,7 @@ variable {R v}
 /-- A set of linearly independent vectors in a module `M` over a semiring `K` is also linearly
 independent over a subring `R` of `K`.
 
-See also `LinearIndependent.restrict_scalars'` for a verison with more convenient typeclass
+See also `LinearIndependent.restrict_scalars'` for a version with more convenient typeclass
 assumptions.
 
 TODO : `LinearIndepOn` version. -/

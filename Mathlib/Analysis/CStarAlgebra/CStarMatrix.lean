@@ -182,7 +182,7 @@ instance instDistribMulAction [Monoid R] [AddMonoid A] [DistribMulAction R A] :
 instance instModule [Semiring R] [AddCommMonoid A] [Module R A] : Module R (CStarMatrix m n A) :=
   Pi.module _ _ _
 
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 := rfl
 
 @[simp] theorem add_apply [Add A] (M N : CStarMatrix m n A) (i : m) (j : n) :
@@ -596,8 +596,9 @@ instance instNormedSpace : NormedSpace ℂ (CStarMatrix m n A) :=
 
 noncomputable instance instNonUnitalNormedRing :
     NonUnitalNormedRing (CStarMatrix n n A) where
-  dist_eq _ _ := rfl
-  norm_mul _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
+  __ : NormedAddCommGroup (CStarMatrix n n A) := inferInstance
+  __ : NonUnitalRing (CStarMatrix n n A) := inferInstance
+  norm_mul_le _ _ := by simpa only [norm_def', map_mul] using norm_mul_le _ _
 
 open ContinuousLinearMap CStarModule in
 /-- Matrices with entries in a C⋆-algebra form a C⋆-algebra. -/
@@ -649,7 +650,7 @@ variable {n : Type*} [Fintype n] [DecidableEq n]
 
 noncomputable instance instNormedRing : NormedRing (CStarMatrix n n A) where
   dist_eq _ _ := rfl
-  norm_mul := norm_mul_le
+  norm_mul_le := norm_mul_le
 
 noncomputable instance instNormedAlgebra : NormedAlgebra ℂ (CStarMatrix n n A) where
   norm_smul_le r M := by simpa only [norm_def, map_smul] using (toCLM M).opNorm_smul_le r

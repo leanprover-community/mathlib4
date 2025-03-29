@@ -44,11 +44,13 @@ variable (K)
 
 /-- A topological division ring is a division ring with a topology where all operations are
     continuous, including inversion. -/
-class TopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
+class IsTopologicalDivisionRing : Prop extends IsTopologicalRing K, HasContinuousInv₀ K
+
+@[deprecated (since := "2025-03-25")] alias TopologicalDivisionRing := IsTopologicalDivisionRing
 
 section Subfield
 
-variable {α : Type*} [Field α] [TopologicalSpace α] [TopologicalDivisionRing α]
+variable {α : Type*} [Field α] [TopologicalSpace α] [IsTopologicalDivisionRing α]
 
 /-- The (topological-space) closure of a subfield of a topological field is
 itself a subfield. -/

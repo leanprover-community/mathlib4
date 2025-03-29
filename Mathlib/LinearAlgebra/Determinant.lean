@@ -339,7 +339,7 @@ lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
 theorem det_prodMap [Module.Free R M] [Module.Free R M'] [Module.Finite R M] [Module.Finite R M']
     (f : Module.End R M) (f' : Module.End R M') :
     (prodMap f f').det = f.det * f'.det := by
-  let b  := Module.Free.chooseBasis R M
+  let b := Module.Free.chooseBasis R M
   let b' := Module.Free.chooseBasis R M'
   rw [← det_toMatrix (b.prod b'), ← det_toMatrix b, ← det_toMatrix b', toMatrix_prodMap,
     det_fromBlocks_zero₂₁, det_toMatrix]

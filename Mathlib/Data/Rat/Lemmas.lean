@@ -183,15 +183,15 @@ protected theorem inv_neg (q : ℚ) : (-q)⁻¹ = -q⁻¹ := by
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     (a / b : ℚ).num = a := by
-  -- Porting note: was `lift b to ℕ using le_of_lt hb0`
-  rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
-    ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
+  lift b to ℕ using hb0.le
+  simp only [Int.natAbs_ofNat, Int.ofNat_pos] at h hb0
+  rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
 
 theorem den_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :
     ((a / b : ℚ).den : ℤ) = b := by
-  -- Porting note: was `lift b to ℕ using le_of_lt hb0`
-  rw [← Int.natAbs_of_nonneg hb0.le, ← Rat.divInt_eq_div,
-    ← mk_eq_divInt _ _ (Int.natAbs_ne_zero.mpr hb0.ne') h]
+  lift b to ℕ using hb0.le
+  simp only [Int.natAbs_ofNat, Int.ofNat_pos] at h hb0
+  rw [← Rat.divInt_eq_div, ← mk_eq_divInt _ _ hb0.ne' h]
 
 theorem div_int_inj {a b c d : ℤ} (hb0 : 0 < b) (hd0 : 0 < d) (h1 : Nat.Coprime a.natAbs b.natAbs)
     (h2 : Nat.Coprime c.natAbs d.natAbs) (h : (a : ℚ) / b = (c : ℚ) / d) : a = c ∧ b = d := by

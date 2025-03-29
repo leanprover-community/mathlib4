@@ -50,7 +50,7 @@ open ComplexConjugate Topology Filter
 
 instance : NormedField ℂ where
   dist_eq _ _ := rfl
-  norm_mul' := Complex.norm_mul
+  norm_mul := Complex.norm_mul
 
 instance : DenselyNormedField ℂ where
   lt_norm_lt r₁ r₂ h₀ hr :=

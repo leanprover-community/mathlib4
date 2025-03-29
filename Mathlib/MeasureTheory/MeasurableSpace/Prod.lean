@@ -106,7 +106,7 @@ lemma MeasurableEmbedding.prodMk_left {β γ : Type*} [MeasurableSingletonClass 
     intro s hs
     convert (MeasurableSet.singleton x).prod (hf.measurableSet_image.mpr hs)
     ext x
-    simp
+    simp [Prod.ext_iff, eq_comm, ← exists_and_left, and_left_comm]
 
 @[deprecated (since := "2025-03-05")]
 alias MeasurableEmbedding.prod_mk_left := MeasurableEmbedding.prodMk_left
