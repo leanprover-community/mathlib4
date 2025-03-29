@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
 import Mathlib.Order.Filter.Interval
 import Mathlib.Order.Interval.Set.Pi
+import Mathlib.Order.OrdContinuous
 import Mathlib.Tactic.TFAE
 import Mathlib.Tactic.NormNum
 import Mathlib.Topology.Order.LeftRight
@@ -72,8 +73,6 @@ instance as many ordered sets are already endowed with the same topology, most o
 way though. Register as a local instance when necessary. -/
 def Preorder.topology (α : Type*) [Preorder α] : TopologicalSpace α :=
   generateFrom { s : Set α | ∃ a : α, s = { b : α | a < b } ∨ s = { b : α | b < a } }
-
-section OrderTopology
 
 section Preorder
 
@@ -742,4 +741,29 @@ end OrderTopology
 
 end LinearOrder
 
-end OrderTopology
+section ConditionallyCompleteLinearOrder
+variable {X : Type*} [ConditionallyCompleteLinearOrder X] [TopologicalSpace X] [OrderTopology X]
+variable {Y : Type*} [ConditionallyCompleteLinearOrder Y] [TopologicalSpace Y] [OrderTopology Y]
+variable [DenselyOrdered X] {f : X → Y} {x : X}
+
+/-- An order-theoretically left-continuous function is topologically left-continuous, assuming
+the function is between conditionally complete linear orders with order topologies, and the domain
+is densely ordered. -/
+lemma LeftOrdContinuous.continuousWithinAt_Iic (hf : LeftOrdContinuous f) :
+    ContinuousWithinAt f (Iic x) x := by
+  rw [ContinuousWithinAt, OrderTopology.topology_eq_generate_intervals (α := Y)]
+  simp_rw [TopologicalSpace.tendsto_nhds_generateFrom_iff, mem_nhdsWithin]
+  rintro V ⟨z, rfl | rfl⟩ hxz
+  -- The case `V = Ioi z`.
+  · obtain ⟨_, ⟨a, hax, rfl⟩, hza⟩ := (lt_isLUB_iff <| hf isLUB_Iio).mp hxz
+    exact ⟨Ioi a, isOpen_Ioi, hax, fun b hab ↦ hza.trans_le <| hf.mono hab.1.le⟩
+  -- The case `V = Iio z`.
+  · exact ⟨univ, isOpen_univ, trivial, fun a ha ↦ (hf.mono ha.2).trans_lt hxz⟩
+
+/-- An order-theoretically right-continuous function is topologically right-continuous, assuming
+the function is between conditionally complete linear orders with order topologies, and the domain
+is densely ordered. -/
+lemma RightOrdContinuous.continuousWithinAt_Ici (hf : RightOrdContinuous f) :
+    ContinuousWithinAt f (Ici x) x := hf.orderDual.continuousWithinAt_Iic
+
+end ConditionallyCompleteLinearOrder
