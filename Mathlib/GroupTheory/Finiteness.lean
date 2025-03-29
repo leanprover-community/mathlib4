@@ -5,6 +5,7 @@ Authors: Riccardo Brasca
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Finite
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.GroupTheory.FreeGroup.Basic
 import Mathlib.GroupTheory.QuotientGroup.Defs
 import Mathlib.SetTheory.Cardinal.Finite
 
@@ -96,6 +97,20 @@ theorem AddMonoid.fg_def : AddMonoid.FG N ↔ (⊤ : AddSubmonoid N).FG :=
 theorem Monoid.fg_iff :
     Monoid.FG M ↔ ∃ S : Set M, Submonoid.closure S = (⊤ : Submonoid M) ∧ S.Finite :=
   ⟨fun h => (Submonoid.fg_iff ⊤).1 h.out, fun h => ⟨(Submonoid.fg_iff ⊤).2 h⟩⟩
+
+/-- A monoid is finitely generated iff there exists a surjective homomorphism from a `FreeMonoid`
+on finite generators. -/
+@[to_additive]
+theorem Monoid.fg_iff_freeMonoid_hom_surjective {M} [Monoid M] :
+    Monoid.FG M ↔ ∃ (S : Set M) (_ : Finite S) (φ : FreeMonoid S →* M), Function.Surjective φ := by
+  constructor
+  · intro hfg
+    obtain ⟨S, hclosure, hfin⟩ := fg_iff.mp hfg
+    refine ⟨S, hfin, FreeMonoid.lift (·), ?_⟩
+    simp [← MonoidHom.mrange_eq_top, ← hclosure, ← Submonoid.closure_eq_mrange]
+  · rintro ⟨S, hfin, φ, hφ⟩
+    refine fg_iff.mpr ⟨φ '' Set.range FreeMonoid.of, ?_, Set.toFinite _⟩
+    simp [← MonoidHom.map_mclosure, hφ, FreeMonoid.closure_range_of, ← MonoidHom.mrange_eq_map]
 
 theorem Monoid.fg_iff_add_fg : Monoid.FG M ↔ AddMonoid.FG (Additive M) :=
   ⟨fun h => ⟨(Submonoid.fg_iff_add_fg ⊤).1 h.out⟩, fun h => ⟨(Submonoid.fg_iff_add_fg ⊤).2 h.out⟩⟩
@@ -263,6 +278,20 @@ if it is finitely generated as an additive monoid."]
 theorem Group.fg_iff_monoid_fg : Group.FG G ↔ Monoid.FG G :=
   ⟨fun h => Monoid.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).1 (Group.fg_def.1 h), fun h =>
     Group.fg_def.2 <| (Subgroup.fg_iff_submonoid_fg ⊤).2 (Monoid.fg_def.1 h)⟩
+
+/-- A group is finitely generated iff there exists a surjective homomorphism from a `FreeGroup`
+on finite generators. -/
+@[to_additive]
+theorem Group.fg_iff_freeGroup_hom_surjective {G} [Group G] :
+    Group.FG G ↔ ∃ (S : Set G) (_ : Finite S) (φ : FreeGroup S →* G), Function.Surjective φ := by
+  constructor
+  · intro hfg
+    obtain ⟨S, hclosure, hfin⟩ := fg_iff.mp hfg
+    refine ⟨S, hfin, FreeGroup.lift (·), ?_⟩
+    simp [← MonoidHom.range_eq_top, ← hclosure, FreeGroup.lift.range_eq_closure]
+  · rintro ⟨S, hfin, φ, hφ⟩
+    refine fg_iff.mpr ⟨φ '' Set.range FreeGroup.of, ?_, Set.toFinite _⟩
+    simp [← MonoidHom.map_closure, hφ]
 
 @[to_additive (attr := simp)]
 theorem Group.fg_iff_subgroup_fg (H : Subgroup G) : Group.FG H ↔ H.FG :=
