@@ -5,6 +5,7 @@ Authors: Michael Rothgang, Damiano Testa
 -/
 import Lean.Elab.Command
 import Lean.Elab.ParseImportsFast
+import Mathlib.Tactic.Linter.DirectoryDependency
 
 /-!
 #  The "header" linter
@@ -256,8 +257,7 @@ register_option linter.style.header : Bool := {
 namespace Style.header
 
 /-- Check the `Syntax` `imports` for broad imports:
-`Mathlib.Tactic`, any import starting with `Lake`, `Mathlib.Tactic.{Have,Replace}`
-or anything in the `Deprecated` folder. -/
+`Mathlib.Tactic`, any import starting with `Lake`, or `Mathlib.Tactic.{Have,Replace}`. -/
 def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElabM Unit := do
   for i in imports do
     match i.getId with
@@ -279,11 +279,6 @@ def broadImportsCheck (imports : Array Syntax) (mainModule : Name) : CommandElab
         "In the past, importing 'Lake' in mathlib has led to dramatic slow-downs of the linter \
         (see e.g. https://github.com/leanprover-community/mathlib4/pull/13779). Please consider carefully if this import is useful and \
         make sure to benchmark it. If this is fine, feel free to silence this linter."
-      else if (`Mathlib.Deprecated).isPrefixOf modName &&
-          !(`Mathlib.Deprecated).isPrefixOf mainModule then
-        -- We do not complain about files in the `Deprecated` directory importing one another.
-        Linter.logLint linter.style.header i
-          "Files in the `Deprecated` directory are not supposed to be imported."
 
 /-- Check the syntax `imports` for syntactically duplicate imports.
 The output is an array of `Syntax` atoms whose ranges are the import statements,
@@ -337,6 +332,8 @@ def headerLinter : Linter where run := withSetOptionIn fun stx ↦ do
   -- Report on broad or duplicate imports.
   broadImportsCheck importIds mainModule
   duplicateImportsCheck importIds
+  if let some msg ← directoryDependencyCheck mainModule then
+    Linter.logLint linter.directoryDependency stx msg
 
   let afterImports := firstNonImport? upToStx
   if afterImports.isNone then return
