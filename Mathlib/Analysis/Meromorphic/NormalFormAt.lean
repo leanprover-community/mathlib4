@@ -394,7 +394,9 @@ theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
 A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
 -/
 theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
-  mp := .inv
+  mp := by
+    nth_rw 2 [← inv_inv f]
+    exact .inv
   mpr hf := by simpa using hf.inv
 
 /-!
@@ -418,7 +420,7 @@ If a function is meromorphic in normal form on `U`, then it is meromorphic on
 `U`.
 -/
 theorem MeromorphicNFOn.meromorphicOn (hf : MeromorphicNFOn f U) :
-    MeromorphicOn f U := fun z hz ↦ (hf z hz).meromorphicAt
+    MeromorphicOn f U := fun _ hz ↦ (hf hz).meromorphicAt
 
 /--
 If a function is meromorphic in normal form on `U`, then its divisor is
@@ -429,7 +431,7 @@ theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd [CompleteSpace E]
     0 ≤ MeromorphicOn.divisor f U ↔ AnalyticOnNhd 𝕜 f U := by
   constructor <;> intro h x
   · intro hx
-    rw [← (h₁f x hx).order_nonneg_iff_analyticAt]
+    rw [← (h₁f hx).order_nonneg_iff_analyticAt]
     have := h x
     simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, h₁f.meromorphicOn, hx,
       MeromorphicOn.divisor_apply, untop0_nonneg] at this
@@ -437,7 +439,7 @@ theorem MeromorphicNFOn.divisor_nonneg_iff_analyticOnNhd [CompleteSpace E]
   · by_cases hx : x ∈ U
     · simp only [Function.locallyFinsuppWithin.coe_zero, Pi.zero_apply, h₁f.meromorphicOn, hx,
         MeromorphicOn.divisor_apply, untop0_nonneg]
-      exact (h₁f x hx).order_nonneg_iff_analyticAt.2 (h x hx)
+      exact (h₁f hx).order_nonneg_iff_analyticAt.2 (h x hx)
     · simp [h₁f.meromorphicOn, hx]
 
 /-- Analytic functions are meromorphic in normal form. -/
@@ -453,19 +455,19 @@ If `f` is meromorphic in normal form on `U` and nowhere locally constant zero,
 then its zero set equals the support of the associated divisor.
 -/
 theorem MeromorphicNFOn.zero_set_eq_divisor_support [CompleteSpace E] (h₁f : MeromorphicNFOn f U)
-    (h₂f : ∀ u : U, (h₁f u u.2).meromorphicAt.order ≠ ⊤) :
+    (h₂f : ∀ u : U, (h₁f u.2).meromorphicAt.order ≠ ⊤) :
     U ∩ f⁻¹' {0} = Function.support (MeromorphicOn.divisor f U) := by
   ext u
   constructor <;> intro hu
   · simp_all only [ne_eq, Subtype.forall, Set.mem_inter_iff, Set.mem_preimage,
       Set.mem_singleton_iff, Function.mem_support, h₁f.meromorphicOn, MeromorphicOn.divisor_apply,
-      WithTop.untop₀_eq_zero, (h₁f u hu.1).order_eq_zero_iff, not_true_eq_false, or_self,
+      WithTop.untop₀_eq_zero, (h₁f hu.1).order_eq_zero_iff, not_true_eq_false, or_self,
       not_false_eq_true]
   · simp only [Function.mem_support, ne_eq] at hu
     constructor
     · exact (MeromorphicOn.divisor f U).supportWithinDomain hu
     · rw [Set.mem_preimage, Set.mem_singleton_iff]
-      have := (h₁f u ((MeromorphicOn.divisor f U).supportWithinDomain hu)).order_eq_zero_iff.not
+      have := (h₁f ((MeromorphicOn.divisor f U).supportWithinDomain hu)).order_eq_zero_iff.not
       simp only [h₁f.meromorphicOn, (MeromorphicOn.divisor f U).supportWithinDomain hu,
         MeromorphicOn.divisor_apply, WithTop.untop₀_eq_zero, not_or] at hu
       simp_all [this, hu.1]
@@ -483,10 +485,10 @@ theorem meromorphicNFOn_smul_iff_right_of_analyticOnNhd {g : 𝕜 → 𝕜} (h�
     (h₂g : ∀ u ∈ U, g u ≠ 0) :
     MeromorphicNFOn (g • f) U ↔ MeromorphicNFOn f U := by
   constructor <;> intro h z hz
-  · rw [← meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g z hz) (h₂g ⟨z, hz⟩)]
-    exact h z hz
-  · apply (h z hz).smul_analytic (h₁g z hz)
-    exact h₂g ⟨z, hz⟩
+  · rw [← meromorphicNFAt_smul_iff_right_of_analyticAt (h₁g z hz) (h₂g z hz)]
+    exact h hz
+  · apply (h hz).smul_analytic (h₁g z hz)
+    exact h₂g z hz
 
 /--
 If `f` is any function and `g` is analytic without zero in `U`, then `f` is
@@ -494,7 +496,7 @@ meromorphic in normal form on `U` iff `g * f` is meromorphic in normal form on
 `U`.
 -/
 theorem meromorphicNFOn_mul_iff_right_of_analyticOnNhd {f g : 𝕜 → 𝕜} (h₁g : AnalyticOnNhd 𝕜 g U)
-    (h₂g : ∀ u : U, g u ≠ 0) :
+    (h₂g : ∀ u ∈ U, g u ≠ 0) :
     MeromorphicNFOn (g * f) U ↔ MeromorphicNFOn f U := by
   rw [← smul_eq_mul]
   exact meromorphicNFOn_smul_iff_right_of_analyticOnNhd h₁g h₂g
@@ -505,7 +507,7 @@ meromorphic in normal form on `U` iff `f * g` is meromorphic in normal form on
 `U`.
 -/
 theorem meromorphicNFOn_mul_iff_left_of_analyticOnNhd {f g : 𝕜 → 𝕜} (h₁g : AnalyticOnNhd 𝕜 g U)
-    (h₂g : ∀ u : U, g u ≠ 0) :
+    (h₂g : ∀ u ∈ U, g u ≠ 0) :
     MeromorphicNFOn (f * g) U ↔ MeromorphicNFOn f U := by
   rw [mul_comm, ← smul_eq_mul]
   exact meromorphicNFOn_mul_iff_right_of_analyticOnNhd h₁g h₂g
@@ -516,8 +518,8 @@ A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
 theorem meromorphicNFOn_iff_meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
     MeromorphicNFOn f U ↔ MeromorphicNFOn f⁻¹ U := by
   constructor
-  · exact fun h x hx ↦ meromorphicNFAt_iff_meromorphicNFAt_inv.1 (h x hx)
-  · exact fun h x hx ↦ meromorphicNFAt_iff_meromorphicNFAt_inv.2 (h x hx)
+  · exact fun h x hx ↦ meromorphicNFAt_inv.2 (h hx)
+  · exact fun h x hx ↦ meromorphicNFAt_inv.1 (h hx)
 
 /-!
 ## Continuous extension and conversion to normal form
@@ -618,7 +620,7 @@ If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
   · ext x
     by_cases hx : x ∈ U
     · simp only [toMeromorphicNFOn, h.meromorphicOn, ↓reduceDIte, hx]
-      rw [← toMeromorphicNFAt_eq_self.1 (h x hx)]
+      rw [← toMeromorphicNFAt_eq_self.1 (h hx)]
     · simp [toMeromorphicNFOn, h.meromorphicOn, hx]
   · rw [h]
     apply meromorphicNFOn_toMeromorphicNFOn
@@ -627,7 +629,7 @@ If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
 Conversion of normal form does not affect orders.
 -/
 @[simp] theorem toMeromorphicNFOn_order [CompleteSpace E] (hf : MeromorphicOn f U) (hx : x ∈ U) :
-    ((meromorphicNFOn_toMeromorphicNFOn f U) x hx).meromorphicAt.order = (hf x hx).order := by
+    ((meromorphicNFOn_toMeromorphicNFOn f U) hx).meromorphicAt.order = (hf x hx).order := by
   apply MeromorphicAt.order_congr
   exact hf.toMeromorphicNFOn_eq_self_on_nhdNE hx
 
