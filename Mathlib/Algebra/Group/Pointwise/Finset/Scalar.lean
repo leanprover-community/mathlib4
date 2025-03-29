@@ -170,7 +170,7 @@ lemma coe_smul_finset (a : α) (s : Finset β) : ↑(a • s) = a • (↑s : Se
 
 @[to_additive] lemma smul_mem_smul_finset : b ∈ s → a • b ∈ a • s := mem_image_of_mem _
 
-@[to_additive] lemma smul_finset_card_le : (a • s).card ≤ s.card := card_image_le
+@[to_additive] lemma smul_finset_card_le : #(a • s) ≤ #s := card_image_le
 
 @[to_additive (attr := simp)]
 lemma smul_finset_empty (a : α) : a • (∅ : Finset β) = ∅ := image_empty _
@@ -248,7 +248,7 @@ theorem coe_vsub (s t : Finset β) : (↑(s -ᵥ t) : Set α) = (s : Set β) -�
 theorem vsub_mem_vsub : b ∈ s → c ∈ t → b -ᵥ c ∈ s -ᵥ t :=
   mem_image₂_of_mem
 
-theorem vsub_card_le : (s -ᵥ t : Finset α).card ≤ s.card * t.card :=
+theorem vsub_card_le : #(s -ᵥ t : Finset α) ≤ #s * #t :=
   card_image₂_le _ _ _
 
 @[simp]
