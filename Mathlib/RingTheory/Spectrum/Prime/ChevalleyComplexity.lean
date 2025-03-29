@@ -356,8 +356,10 @@ private lemma induction_aux (R : Type*) [CommRing R] [Algebra R₀ R]
         simp_rw [← Finset.mem_coe, S₁, Finset.coe_image, Set.biUnion_image]
         congr! with x hxT₁
         apply Set.injOn_preimage subset_rfl (f := comap q₁.toRingHom)
-        · erw [localization_away_comap_range (S := Localization.Away c) (r := c)]
-          rw [BasicConstructibleSetData.toSet, sdiff_eq, ← basicOpen_eq_zeroLocus_compl,
+        · dsimp only [q₁, AlgHom.toRingHom_eq_coe]
+          rw [IsScalarTower.coe_toAlgHom,
+            localization_away_comap_range (S := Localization.Away c) (r := c),
+            BasicConstructibleSetData.toSet, sdiff_eq, ← basicOpen_eq_zeroLocus_compl,
             basicOpen_mul]
           exact Set.inter_subset_right.trans Set.inter_subset_left
         · exact Set.image_subset_range ..

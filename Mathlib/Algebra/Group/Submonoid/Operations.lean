@@ -208,6 +208,15 @@ theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
   rfl
 
 @[to_additive (attr := simp)]
+theorem map_coe_toMonoidHom (f : F) (S : Submonoid M) : S.map (f : M →* N) = S.map f :=
+  rfl
+
+@[to_additive (attr := simp)]
+theorem map_coe_toMulEquiv {F} [EquivLike F M N] [MulEquivClass F M N] (f : F) (S : Submonoid M) :
+    S.map (f : M ≃* N) = S.map f :=
+  rfl
+
+@[to_additive (attr := simp)]
 theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
 
 @[to_additive]
@@ -522,7 +531,7 @@ theorem mem_map_equiv {f : M ≃* N} {K : Submonoid M} {x : N} :
 
 @[to_additive]
 theorem map_equiv_eq_comap_symm (f : M ≃* N) (K : Submonoid M) :
-    K.map f.toMonoidHom = K.comap f.symm.toMonoidHom :=
+    K.map f = K.comap f.symm :=
   SetLike.coe_injective (f.toEquiv.image_eq_preimage K)
 
 @[to_additive]
