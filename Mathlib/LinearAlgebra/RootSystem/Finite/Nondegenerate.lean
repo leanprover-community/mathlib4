@@ -269,12 +269,6 @@ variable [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
 (S : Type*) [LinearOrderedCommRing S] [Algebra S R] [FaithfulSMul S R] [P.IsValuedIn S]
 [Module S M] [IsScalarTower S R M] [Module S N] [IsScalarTower S R N]
 
-instance [Finite ι] : Module.Finite S (span S (range P.root)) :=
-  .span_of_finite S <| finite_range P.root
-
-instance [Finite ι] : Module.Finite S (span S (range P.coroot)) :=
-  .span_of_finite S <| finite_range P.coroot
-
 lemma finrank_range_polarization_eq_finrank_span_coroot [NoZeroSMulDivisors S N] :
     finrank S (LinearMap.range (P.PolarizationIn S)) = finrank S (span S (range P.coroot)) := by
   apply (Submodule.finrank_mono (P.range_polarizationIn_le_span_coroot S)).antisymm
