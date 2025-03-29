@@ -400,7 +400,7 @@ theorem map_coe (f : ℕ → α) (a : ℕ) : map f a = f a := rfl
 theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
 
 @[simp]
-theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
+protected theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
 
 @[simp]
 theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f ofNat(n) = f n := rfl
