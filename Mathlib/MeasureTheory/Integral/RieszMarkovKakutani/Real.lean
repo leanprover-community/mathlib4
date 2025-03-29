@@ -5,6 +5,7 @@ Authors: Yoh Tanimoto, Oliver Butterley
 -/
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Basic
 import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.iUnion_Ixx_Ixx
 
 /-!
 # Riesz–Markov–Kakutani representation theorem for real-linear functionals
@@ -16,14 +17,11 @@ There are many closely related variations of the theorem. This file contains tha
 version where the space is a locally compact T2 space, the linear functionals are real and the
 continuous functions have compact support.
 
-## Main definitions
+## Main definitions & statements
 
 * `RealRMK.rieszMeasure`: the measure induced by a real linear positive functional.
-
-## Main statements
-
 * `RealRMK.integral_rieszMeasure`: the Riesz–Markov–Kakutani representation theorem for a real
-linear positive functional.
+  linear positive functional.
 
 ## Implementation notes
 
@@ -54,34 +52,27 @@ and the `NNReal`-version of `rieszContent`. This is under the namespace `RealRMK
 `rieszMeasure` without namespace is for `NNReal`-linear `Λ`. -/
 noncomputable def rieszMeasure := (rieszContent (toNNRealLinear Λ hΛ)).measure
 
-/-- If `f` assumes values between `0` and `1` and the support is contained in `K`, then
-`Λ f ≤ rieszMeasure K`. -/
-lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ)}
-    (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1) {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) :
-    ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ K := by
-  rw [rieszMeasure, ← Compacts.coe_mk K hK, Content.measure_eq_content_of_regular
-    (rieszContent (toNNRealLinear Λ hΛ)) (contentRegular_rieszContent (toNNRealLinear Λ hΛ))
-    ⟨K, hK⟩, rieszContent, ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), ENNReal.coe_le_coe]
+/-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
+`Λ f ≤ rieszMeasure V`. -/
+lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
+    {V : Set X} (hV : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ V := by
+  apply le_trans _ (measure_mono hV)
+  have h := Content.measure_eq_content_of_regular (rieszContent (toNNRealLinear Λ hΛ))
+    (contentRegular_rieszContent (toNNRealLinear Λ hΛ)) (⟨tsupport f, f.hasCompactSupport⟩)
+  rw [← Compacts.coe_mk (tsupport f) f.hasCompactSupport, rieszMeasure, h, rieszContent,
+    ENNReal.ofReal_eq_coe_nnreal (hΛ f fun x ↦ (hf x).1), ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
-  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ) ⟨K, hK⟩
-    (Real.toNNReal_pos.mpr hε)
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos (toNNRealLinear Λ hΛ)
+    ⟨tsupport f, f.hasCompactSupport⟩ (Real.toNNReal_pos.mpr hε)
   simp_rw [NNReal.val_eq_coe, Real.toNNReal_coe] at hg
   apply le_of_lt (lt_of_le_of_lt _ hg.2)
   apply monotone_of_nonneg hΛ
   intro x
   by_cases hx : x ∈ tsupport f
   · rw [coe_toRealLinearMap, toReal_apply]
-    exact le_trans (hf x).2 (hg.1 x (mem_of_subset_of_mem h hx))
+    refine le_trans (hf x).2 (hg.1 x (mem_of_subset_of_mem (fun ⦃a⦄ a ↦ a) hx))
   · simp [image_eq_zero_of_nmem_tsupport hx]
-
-/-- If `f` assumes values between `0` and `1` and the support is contained in `V`, then
-`Λ f ≤ rieszMeasure V`. -/
-lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤ f x ∧ f x ≤ 1)
-    {V : Set X} (h : tsupport f ⊆ V) : ENNReal.ofReal (Λ f) ≤ rieszMeasure hΛ V := by
-  apply le_trans _ (measure_mono h)
-  rw [← Compacts.coe_mk (tsupport f) f.2]
-  exact le_rieszMeasure_of_isCompact_tsupport_subset hΛ hf f.hasCompactSupport subset_rfl
 
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`.-/
 lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : Set X}
@@ -99,41 +90,11 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
 
-/-- An `Ioc` partitions into a finite union of `Ioc`s. -/
-private lemma RMK_iUnion_Ioc {N : ℕ} (hN : 0 < N) (c : ℝ) {δ : ℝ} (hδ : 0 < δ) :
-    ⋃ n : Fin N, Ioc (c + n * δ) (c + n * δ + δ) = Ioc (c) (c + N * δ) := by
-  ext x
-  constructor
-  · simp_rw [mem_iUnion, mem_Ioc, forall_exists_index, and_imp]
-    intro n ha hb
-    constructor
-    · exact lt_of_le_of_lt
-        ((le_add_iff_nonneg_right c).mpr <| Left.mul_nonneg (Nat.cast_nonneg' n) (le_of_lt hδ)) (ha)
-    · calc
-        _ ≤ c + (n + 1) * δ := by linarith
-        _ ≤ _ := by field_simp [show (n : ℝ) + 1 ≤ N by norm_cast; omega]
-  · obtain ⟨k, hk⟩ := Nat.exists_eq_add_one.mpr hN
-    rw [hk]; clear hk
-    induction' k with k hk
-    · simp
-    · rw [Nat.cast_add, Nat.cast_one]; rw [Nat.cast_add, Nat.cast_one] at hk
-      rcases (le_or_lt x (c + (k + 1) * δ)) with hc | hc
-      · rw [Nat.cast_add, Nat.cast_one, mem_Ioc, mem_iUnion, and_imp]
-        intro hx hx'
-        rw [mem_Ioc, mem_iUnion, and_imp] at hk
-        obtain ⟨i, hi⟩ := hk hx hc
-        use i; norm_cast
-      · rw [Nat.cast_add, Nat.cast_one, mem_Ioc, mem_iUnion, and_imp]
-        intro hx hx'
-        use ⟨k + 1, by omega⟩
-        push_cast
-        exact ⟨hc, by linarith [hx']⟩
-
 omit [T2Space X] [LocallyCompactSpace X] in
 /-- Given `f : C_c(X, ℝ)` such that `range f ⊆ [a, b]` we obtain a partition of the support of `f`
 determined by partitioning `[a, b]` into `N` pieces. -/
-private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) {N : ℕ}
-    (hN : 0 < N) (hf : range f ⊆ Ioo a (a + N * ε)) : ∃ (E : Fin N → Set X), tsupport f = ⋃ j, E j ∧
+lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) (N : ℕ)
+    (hf : range f ⊆ Ioo a (a + N * ε)) : ∃ (E : Fin N → Set X), tsupport f = ⋃ j, E j ∧
     univ.PairwiseDisjoint E ∧ (∀ n : Fin N, ∀ x ∈ E n, a + ε * n < f x ∧ f x ≤ a + ε * (n + 1)) ∧
     ∀ n : Fin N, MeasurableSet (E n) := by
   let b := a + N * ε
@@ -169,7 +130,7 @@ private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε
     intro z hz
     simp_rw [show ∀ n, y n - ε = (a + n * ε) by simp [y, mul_add, ← add_assoc, mul_comm],
       show ∀ n, y n = a + n * ε + ε by simp [y, mul_add, ← add_assoc, mul_comm]]
-    rw [RMK_iUnion_Ioc hN a hε, mem_Ioc]
+    rw [RMK_iUnion_Ioc a hε, mem_Ioc]
     exact ⟨(hf hz).1, le_of_lt (hf hz).2⟩
   have partition : tsupport f = ⋃ j, E j := by
     apply subset_antisymm
@@ -186,7 +147,7 @@ private lemma RMK_range_cut (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε
 omit [LocallyCompactSpace X] in
 /-- Given a set `E`, a function `f : C_c(X, ℝ)` and `0 < ε` and `∀ x ∈ E, f x < c`, there exists an
 open set `V` such that `E ⊆ V` and the sets are similar in measure and `∀ x ∈ V, f x < c`. -/
-private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
+lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : Content X}
     (hμ : μ.outerMeasure E ≠ ⊤) (hμ' : MeasurableSet E) {c : ℝ} (hfE : ∀ x ∈ E, f x < c):
     ∃ (V : Opens X), E ⊆ V ∧ (∀ x ∈ V, f x < c) ∧ μ.measure V ≤ μ.measure E + ENNReal.ofReal ε := by
   have hε' := ne_of_gt <| Real.toNNReal_pos.mpr hε
@@ -195,7 +156,7 @@ private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {
   use V₁ ⊓ V₂
   have h x (hx : x ∈ V₁ ⊓ V₂) : f x < c := by
     suffices ∀ x ∈ V₂.carrier, f x < c from this x (mem_of_mem_inter_right hx)
-    exact fun  _ hx ↦ hx
+    exact fun _ hx ↦ hx
   have h' : μ.measure ↑(V₁ ⊓ V₂) ≤ μ.measure E + ENNReal.ofReal ε := calc
       _ ≤ μ.measure V₁ := by apply measure_mono; simp
       _ = μ.outerMeasure V₁ := by rw [Content.measure_apply μ ?_]; exact V₁.2.measurableSet
@@ -203,9 +164,10 @@ private lemma RMK_open (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {
       _ = _ := by rw [Content.measure_apply μ ?_]; congr; exact hμ'
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
+-- TO DO: remove hN, introduce additional ε' = ε/N
 omit [LocallyCompactSpace X] in
 /- Define simultaneously sets which are each open approximations and obtain particular estimates. -/
-private lemma RMK_open' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X, ℝ)) {y : Fin N → ℝ}
+private lemma open_approx' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X, ℝ)) {y : Fin N → ℝ}
     (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε) {ν : Content X}
     (hν : ∀ n, ν.measure (E n) ≠ ⊤) (hν' : ∀ n, MeasurableSet (E n)) :
     ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε)
@@ -215,15 +177,15 @@ private lemma RMK_open' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X,
     rw [← Content.measure_apply ν (hν' n)]
     exact hν n
   let V (n : Fin N) := Classical.choose <|
-    RMK_open f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
+    open_approx f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
   use V
   intro n
   let hV := Classical.choose_spec <|
-    RMK_open f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
+    open_approx f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
   exact ⟨hV.1, hV.2.1, hV.2.2⟩
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
-private lemma RMK_exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
+private lemma exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
     a' / N * (b' + a' / N) ≤ ε := by
   have A : Tendsto (fun (N : ℝ) ↦ a' / N * (b' + a' / N)) atTop (𝓝 (0 * (b' + 0))) := by
     apply Tendsto.mul
@@ -236,7 +198,7 @@ private lemma RMK_exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : 
 
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
 integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
-private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
+private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
   -- The case `IsEmpty X` is elementry.
   · have : Λ f = 0 := by rw [show f = 0 by ext x; refine isEmptyElim x, LinearMap.map_zero Λ]
@@ -254,12 +216,12 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
         (HasCompactSupport.isCompact_range f.2 f.1.2)).2.subset_ball_lt 0 0
       exact ⟨-r, r, by linarith, hr.2.trans_eq (by simp [Real.ball_eq_Ioo])⟩
     -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
-    obtain ⟨N, hN, hε'⟩ := RMK_exists_nat (b - a) (2 * (μ K).toReal + |a| + b) hε
+    obtain ⟨N, hN, hε'⟩ := exists_nat (b - a) (2 * (μ K).toReal + |a| + b) hε
     let ε' := (b - a) / N
     replace hε' : 0 < ε' ∧  ε' * (2 * (μ K).toReal + |a| + b + ε') ≤ ε :=
       ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
     -- Take a partition of the support of `f` into sets `E` by partitioning the range.
-    obtain ⟨E, hE⟩ := RMK_range_cut f a hε'.1 hN (by field_simp [ε', ← mul_div_assoc,
+    obtain ⟨E, hE⟩ := range_cut_partition f a hε'.1 N (by field_simp [ε', ← mul_div_assoc,
       mul_div_cancel_left₀, hab.2])
     -- Introduce notation for the partition of the range.
     let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
@@ -272,7 +234,7 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
       rw [rieszMeasure, show f = f.toFun by rfl, Content.measure_apply _ f.2.measurableSet]
       exact Content.outerMeasure_lt_top_of_isCompact _ f.2
     -- Define sets `V` which are open approximations to the sets `E`
-    obtain ⟨V, hV⟩ := RMK_open' hN E f (fun n x hx ↦ (hE.2.2.1 n x hx).right) hε'.1 hE' hE.2.2.2
+    obtain ⟨V, hV⟩ := open_approx' hN E f (fun n x hx ↦ (hE.2.2.1 n x hx).right) hε'.1 hE' hE.2.2.2
     -- Define a partition of unity subordinated to the sets `V`
     obtain ⟨g, hg⟩ : ∃ (g : Fin N → C_c(X, ℝ)), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
       EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
@@ -408,17 +370,17 @@ private lemma RMK_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeas
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal to `Λ f`. -/
 theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ (x : X), f x ∂(rieszMeasure hΛ) = Λ f := by
-  -- `RMK_le` tells that `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)`, we apply this to `f` and `-f`.
+  -- We apply the result `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)` to `f` and `-f`.
   apply le_antisymm
   -- prove the inequality for `- f`
   · calc
       _ = ∫ (x : X), -(-f) x ∂(rieszMeasure hΛ) := by
         simp only [coe_neg, Pi.neg_apply, neg_neg]
       _ = - ∫ (x : X), (-f) x ∂(rieszMeasure hΛ) := integral_neg' (-f)
-      _ ≤ - Λ (-f) := neg_le_neg (RMK_le hΛ (-f))
+      _ ≤ - Λ (-f) := neg_le_neg (integral_riesz_le hΛ (-f))
       _ = Λ (- -f) := Eq.symm (LinearMap.map_neg Λ (- f))
       _ = _ := by rw [neg_neg]
   -- prove the inequality for `f`
-  · exact RMK_le hΛ f
+  · exact integral_riesz_le hΛ f
 
 end RealRMK
