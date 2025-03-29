@@ -490,7 +490,7 @@ theorem ContinuousMap.induction_on_of_compact {𝕜 : Type*} [RCLike 𝕜] {s : 
 /-- Continuous algebra homomorphisms from `C(s, ℝ)` into an `ℝ`-algebra `A` which agree
 at `X : 𝕜[X]` (interpreted as a continuous map) are, in fact, equal. -/
 @[ext (iff := false)]
-theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Ring A]
+theorem ContinuousMap.algHom_ext_map_X {A : Type*} [Semiring A]
     [Algebra ℝ A] [TopologicalSpace A] [T2Space A] {s : Set ℝ} [CompactSpace s]
     {φ ψ : C(s, ℝ) →ₐ[ℝ] A} (hφ : Continuous φ) (hψ : Continuous ψ)
     (h : φ (toContinuousMapOnAlgHom s X) = ψ (toContinuousMapOnAlgHom s X)) : φ = ψ := by
@@ -660,8 +660,8 @@ theorem ContinuousMapZero.induction_on_of_compact {s : Set 𝕜} [Zero s] (h0 : 
   exact mem_closure_iff_frequently.mp this |>.mp <| .of_forall h
 
 lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
-    [T2Space A] [Module 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
+    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [ContinuousMul A]
+    [T2Space A] [DistribMulAction 𝕜 A] [IsScalarTower 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : φ (.id h0) * a = 0)
     (hmul_star_id : φ (star (.id h0)) * a = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
     φ f * a = 0 := by
@@ -675,8 +675,8 @@ lemma ContinuousMapZero.nonUnitalStarAlgHom_apply_mul_eq_zero {𝕜 A : Type*}
   | frequently f h => exact h.mem_of_closed <| isClosed_eq (by fun_prop) continuous_zero
 
 lemma ContinuousMapZero.mul_nonUnitalStarAlgHom_apply_eq_zero {𝕜 A : Type*}
-    [RCLike 𝕜] [NonUnitalRing A] [StarRing A] [TopologicalSpace A] [IsTopologicalSemiring A]
-    [T2Space A] [Module 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
+    [RCLike 𝕜] [NonUnitalSemiring A] [Star A] [TopologicalSpace A] [ContinuousMul A]
+    [T2Space A] [DistribMulAction 𝕜 A] [SMulCommClass 𝕜 A A] {s : Set 𝕜} [Zero s] [CompactSpace s]
     (h0 : (0 : s) = (0 : 𝕜)) (φ : C(s, 𝕜)₀ →⋆ₙₐ[𝕜] A) (a : A) (hmul_id : a * φ (.id h0) = 0)
     (hmul_star_id : a * φ (star (.id h0)) = 0) (hφ : Continuous φ) (f : C(s, 𝕜)₀) :
     a * φ f = 0 := by
