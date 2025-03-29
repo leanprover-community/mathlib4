@@ -385,7 +385,7 @@ theorem exists_SL2_smul_eq_of_apply_zero_one_ne_zero (g : SL(2, ℝ)) (hc : g 1 
       (g • · : ℍ → ℍ) =
         (w +ᵥ ·) ∘ (ModularGroup.S • · : ℍ → ℍ) ∘ (v +ᵥ · : ℍ → ℍ) ∘ (u • · : ℍ → ℍ) := by
   have h_denom := denom_ne_zero g
-  induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h
+  induction g using Matrix.SpecialLinearGroup.fin_two_induction with | h a b c d h => ?_
   replace hc : c ≠ 0 := by simpa using hc
   refine ⟨⟨_, mul_self_pos.mpr hc⟩, c * d, a / c, ?_⟩
   ext1 ⟨z, hz⟩; ext1

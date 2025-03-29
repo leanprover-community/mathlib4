@@ -24,9 +24,9 @@ variable [Monoid M]
 lemma Forall₂.prod_le_prod' [Preorder M] [MulRightMono M]
     [MulLeftMono M] {l₁ l₂ : List M} (h : Forall₂ (· ≤ ·) l₁ l₂) :
     l₁.prod ≤ l₂.prod := by
-  induction' h with a b la lb hab ih ih'
-  · rfl
-  · simpa only [prod_cons] using mul_le_mul' hab ih'
+  induction h with
+  | nil => rfl
+  | cons hab ih ih' => simpa only [prod_cons] using mul_le_mul' hab ih'
 
 /-- If `l₁` is a sublist of `l₂` and all elements of `l₂` are greater than or equal to one, then
 `l₁.prod ≤ l₂.prod`. One can prove a stronger version assuming `∀ a ∈ l₂.diff l₁, 1 ≤ a` instead
