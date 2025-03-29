@@ -2614,6 +2614,7 @@ import Mathlib.Computability.PostTuringMachine
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
+import Mathlib.Computability.RegularExpressionsToEpsilonNFA
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMConfig
 import Mathlib.Computability.TMToPartrec
