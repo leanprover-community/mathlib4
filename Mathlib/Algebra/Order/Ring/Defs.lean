@@ -289,10 +289,15 @@ instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemi
       mul_le_mul_of_nonneg_right }
 
 -- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedSemiring.toCharZero [StrictOrderedSemiring α] :
-    CharZero α where
+instance (priority := 100) AddMonoidWithOne.toCharZero {α}
+    [AddMonoidWithOne α] [PartialOrder α] [ZeroLEOneClass α]
+    [NeZero (1 : α)] [AddLeftStrictMono α] : CharZero α where
   cast_injective :=
     (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
+
+-- see Note [lower instance priority]
+-- to speed up typeclass inference
+instance (priority := 100) StrictOrderedSemiring.toCharZero : CharZero α := inferInstance
 
 -- see Note [lower instance priority]
 instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
