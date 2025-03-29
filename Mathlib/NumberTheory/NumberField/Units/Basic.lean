@@ -136,9 +136,7 @@ instance : Nonempty (torsion K) := One.instNonempty
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
 
 /-- The order of the torsion subgroup. -/
-def torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
-
-instance [NumberField K] : NeZero (torsionOrder K) := Fintype.instNeZeroNatCardOfNonempty
+abbrev torsionOrder [NumberField K] : ℕ := Fintype.card (torsion K)
 
 theorem torsionOrder_pos [NumberField K] :
     0 < torsionOrder K := Nat.pos_of_neZero (torsionOrder K)
