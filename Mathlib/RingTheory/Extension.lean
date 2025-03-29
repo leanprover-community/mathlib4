@@ -268,7 +268,7 @@ section Cotangent
 /-- The cotangent space of an extension.
 This is a type synonym so that `P.Ring` can act on it through the action of `S` without creating
 a diamond. -/
-def Cotangent : Type _ := P.ker.Cotangent
+def Cotangent : Type w := P.ker.Cotangent
 
 noncomputable
 instance : AddCommGroup P.Cotangent := inferInstanceAs (AddCommGroup P.ker.Cotangent)

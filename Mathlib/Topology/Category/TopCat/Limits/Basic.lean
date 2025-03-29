@@ -72,7 +72,7 @@ variable {F : J ⥤ TopCat.{u}} (c : Cone (F ⋙ forget))
 /-- Given a functor `F : J ⥤ TopCat` and a cone `c : Cone (F ⋙ forget)`
 of the underlying functor to types, this is the type `c.pt`
 with the infimum of the induced topologies by the maps `c.π.app j`. -/
-def conePtOfConeForget : Type _ := c.pt
+def conePtOfConeForget : Type u := c.pt
 
 instance topologicalSpaceConePtOfConeForget :
     TopologicalSpace (conePtOfConeForget c) :=
@@ -171,7 +171,7 @@ variable (c : Cocone (F ⋙ forget))
 /-- Given a functor `F : J ⥤ TopCat` and a cocone `c : Cocone (F ⋙ forget)`
 of the underlying cocone of types, this is the type `c.pt`
 with the supremum of the topologies that are coinduced by the maps `c.ι.app j`. -/
-def coconePtOfCoconeForget : Type _ := c.pt
+def coconePtOfCoconeForget : Type u := c.pt
 
 instance topologicalSpaceCoconePtOfCoconeForget :
     TopologicalSpace (coconePtOfCoconeForget c) :=
