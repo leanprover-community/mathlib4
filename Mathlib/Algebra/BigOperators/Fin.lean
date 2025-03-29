@@ -157,10 +157,10 @@ theorem prod_Ioi_zero {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin n.succ → M
     ∏ i ∈ Ioi 0, v i = ∏ j : Fin n, v j.succ := by
   rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmb]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem prod_Ioi_succ {M : Type*} [CommMonoid M] {n : ℕ} (i : Fin n) (v : Fin n.succ → M) :
     ∏ j ∈ Ioi i.succ, v j = ∏ j ∈ Ioi i, v j.succ := by
-  rw [Ioi_succ, Finset.prod_map, val_succEmb]
+  rw [← map_succEmb_Ioi, Finset.prod_map, val_succEmb]
 
 @[to_additive]
 theorem prod_congr' {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :
