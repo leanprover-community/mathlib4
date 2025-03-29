@@ -615,9 +615,9 @@ theorem meromorphicNFOn_toMeromorphicNFOn [CompleteSpace E] :
 If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
 -/
 @[simp] theorem toMeromorphicNFOn_eq_self [CompleteSpace E] :
-    f = toMeromorphicNFOn f U ↔ MeromorphicNFOn f U := by
+    toMeromorphicNFOn f U = f ↔ MeromorphicNFOn f U := by
   constructor <;> intro h
-  · rw [h]
+  · rw [h.symm]
     apply meromorphicNFOn_toMeromorphicNFOn
   · ext x
     by_cases hx : x ∈ U
