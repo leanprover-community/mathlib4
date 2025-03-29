@@ -145,6 +145,18 @@ theorem nonZeroDivisors.ne_zero (hx : x ∈ M₀⁰) : x ≠ 0 :=
 @[simp]
 theorem nonZeroDivisors.coe_ne_zero (x : M₀⁰) : (x : M₀) ≠ 0 := nonZeroDivisors.ne_zero x.2
 
+instance [IsLeftCancelMulZero M₀] :
+    LeftCancelMonoid M₀⁰ where
+  mul_left_cancel _ _ _ h :=  Subtype.ext <|
+    mul_left_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+      simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
+
+instance [IsRightCancelMulZero M₀] :
+    RightCancelMonoid M₀⁰ where
+  mul_right_cancel _ _ _ h := Subtype.ext <|
+    mul_right_cancel₀ (nonZeroDivisors.coe_ne_zero _) (by
+      simpa only [Subtype.ext_iff, Submonoid.coe_mul] using h)
+
 end Nontrivial
 
 section NoZeroDivisors
