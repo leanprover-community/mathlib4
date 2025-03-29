@@ -89,7 +89,7 @@ def toUnits : Circle →* Units ℂ := unitSphereToUnits ℂ
 instance : CompactSpace Circle := Metric.sphere.compactSpace _ _
 instance : IsTopologicalGroup Circle := Metric.sphere.topologicalGroup
 instance instUniformSpace : UniformSpace Circle := instUniformSpaceSubtype
-instance : UniformGroup Circle := by
+instance : IsUniformGroup Circle := by
   convert topologicalGroup_is_uniform_of_compactSpace Circle
   exact unique_uniformity_of_compact rfl rfl
 

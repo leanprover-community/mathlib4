@@ -186,7 +186,7 @@ end ContinuousMul
 
 section CompleteSpace
 
-variable [CommGroup α] [UniformSpace α] [UniformGroup α]
+variable [CommGroup α] [UniformSpace α] [IsUniformGroup α]
 
 @[to_additive]
 theorem HasProd.of_sigma {γ : β → Type*} {f : (Σ b : β, γ b) → α} {g : β → α} {a : α}

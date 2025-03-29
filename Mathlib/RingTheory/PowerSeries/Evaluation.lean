@@ -15,7 +15,7 @@ for the `Unit` type of indeterminates.
 This file provides a simpler syntax.
 
 Let `R`, `S` be types, with `CommRing R`, `CommRing S`.
-One assumes that `IsTopologicalRing R` and `UniformAddGroup R`,
+One assumes that `IsTopologicalRing R` and `IsUniformAddGroup R`,
 and that `S` is a complete and separated topological `R`-algebra,
 with `IsLinearTopology S S`, which means there is a basis of neighborhoods of 0
 consisting of ideals.
@@ -94,8 +94,8 @@ theorem eval₂_X :
 
 variable {φ a}
 
-variable [UniformAddGroup R] [IsTopologicalSemiring R]
-    [UniformAddGroup S] [T2Space S] [CompleteSpace S]
+variable [IsUniformAddGroup R] [IsTopologicalSemiring R]
+    [IsUniformAddGroup S] [T2Space S] [CompleteSpace S]
     [IsTopologicalRing S] [IsLinearTopology S S]
 
 /-- The evaluation homomorphism at `a` on `PowerSeries`, as a `RingHom`. -/
@@ -142,7 +142,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : IsTopologicallyNilpotent a)
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : IsTopologicallyNilpotent a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
-    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [UniformAddGroup T]
+    [CommRing T] [IsTopologicalRing T] [IsLinearTopology T T] [IsUniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε a) := by
   apply eval₂_unique _ (ha.map hε)
@@ -187,7 +187,7 @@ theorem aeval_eq_sum (ha : IsTopologicallyNilpotent a) (f : PowerSeries R) :
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : IsTopologicallyNilpotent a)
-    {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
+    {T : Type*} [CommRing T] [UniformSpace T] [IsUniformAddGroup T]
     [IsTopologicalRing T] [IsLinearTopology T T]
     [T2Space T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :

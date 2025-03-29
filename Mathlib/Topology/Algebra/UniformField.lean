@@ -116,7 +116,7 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
     · exact hatInv_extends h
     · exact fun H => h (isDenseEmbedding_coe.injective H)
 
-variable [UniformAddGroup K]
+variable [IsUniformAddGroup K]
 
 theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   haveI : T1Space (hat K) := T2Space.t1Space

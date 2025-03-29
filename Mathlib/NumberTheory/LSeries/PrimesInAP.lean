@@ -75,7 +75,7 @@ as an iterated product or sum over primes and natural numbers.
 
 section auxiliary
 
-variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [UniformGroup α] [CompleteSpace α]
+variable {α β γ : Type*} [CommGroup α] [UniformSpace α] [IsUniformGroup α] [CompleteSpace α]
   [T0Space α]
 
 open Nat.Primes in

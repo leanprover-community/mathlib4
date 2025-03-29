@@ -136,7 +136,7 @@ def compRight {B : Type*} [CommGroup B] [TopologicalSpace B] [IsTopologicalGroup
 section LocallyCompact
 
 variable {X Y : Type*} [TopologicalSpace X] [Group X] [IsTopologicalGroup X]
-  [UniformSpace Y] [CommGroup Y] [UniformGroup Y] [T0Space Y] [CompactSpace Y]
+  [UniformSpace Y] [CommGroup Y] [IsUniformGroup Y] [T0Space Y] [CompactSpace Y]
 
 @[to_additive]
 theorem locallyCompactSpace_of_equicontinuousAt (U : Set X) (V : Set Y)

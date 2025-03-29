@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Antoine Chambert-Loir, María Inés de Frutos Fernández
 -/
 import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.IsUniformGroup.Defs
 
 /-! # Discrete uniformity
 
@@ -64,9 +64,9 @@ theorem uniformContinuous {Y : Type*} [UniformSpace Y] (f : X → Y) :
     UniformContinuous f := by
   simp only [uniformContinuous_iff, DiscreteUniformity.eq_bot, bot_le]
 
-/-- The discrete uniformity makes a group a `UniformGroup. -/
-@[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`."]
-instance [Group X] : UniformGroup X where
+/-- The discrete uniformity makes a group a `IsUniformGroup. -/
+@[to_additive "The discrete uniformity makes an additive group a `IsUniformAddGroup`."]
+instance [Group X] : IsUniformGroup X where
   uniformContinuous_div := uniformContinuous (X × X) fun p ↦ p.1 / p.2
 
 variable {X} in

@@ -44,7 +44,7 @@ infinity
 
 ## Main statements
 
-* `SchwartzMap.instUniformAddGroup` and `SchwartzMap.instLocallyConvexSpace`: The Schwartz space
+* `SchwartzMap.instIsUniformAddGroup` and `SchwartzMap.instLocallyConvexSpace`: The Schwartz space
 is a locally convex topological vector space.
 * `SchwartzMap.one_add_le_sup_seminorm_apply`: For a Schwartz function `f` there is a uniform bound
 on `(1 + ‖x‖) ^ k * ‖iteratedFDeriv ℝ n f x‖`.
@@ -503,8 +503,8 @@ instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformSpace
 
-instance instUniformAddGroup : UniformAddGroup 𝓢(E, F) :=
-  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.uniformAddGroup
+instance instIsUniformAddGroup : IsUniformAddGroup 𝓢(E, F) :=
+  (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isUniformAddGroup
 
 instance instLocallyConvexSpace : LocallyConvexSpace ℝ 𝓢(E, F) :=
   (schwartz_withSeminorms ℝ E F).toLocallyConvexSpace
