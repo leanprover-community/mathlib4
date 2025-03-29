@@ -1668,7 +1668,7 @@ namespace Set
 lemma Iio_False : Iio False = ∅ := by aesop
 @[simp] lemma Iio_True : Iio True = {False} := by aesop (add simp [Ioi, lt_iff_le_not_le])
 @[simp] lemma Ioi_False : Ioi False = {True} := by aesop (add simp [Ioi, lt_iff_le_not_le])
-.IsMin.Iio_eq⟩ := Iio_eq_empty_ifflemma Ioi_True : Ioi True = ∅ := by aesop
+lemma Ioi_True : Ioi True = ∅ := by aesop
 
 end Set
 
