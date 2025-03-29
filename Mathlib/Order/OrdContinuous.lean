@@ -226,20 +226,25 @@ end ConditionallyCompleteLattice
 
 end RightOrdContinuous
 
+namespace GaloisConnection
+variable [Preorder α] [Preorder β] {f : α → β} {g : β → α}
+
+/-- A left adjoint in a Galois connection is left-continuous in the order-theoretic sense. -/
+lemma leftOrdContinuous (gc : GaloisConnection f g) : LeftOrdContinuous f :=
+  fun _ _ ↦ gc.isLUB_l_image
+
+/-- A right adjoint in a Galois connection is right-continuous in the order-theoretic sense. -/
+lemma rightOrdContinuous (gc : GaloisConnection f g) : RightOrdContinuous g :=
+  fun _ _ ↦ gc.isGLB_u_image
+
+end GaloisConnection
+
 namespace OrderIso
-
-section Preorder
-
 variable [Preorder α] [Preorder β] (e : α ≃o β)
 
-protected theorem leftOrdContinuous : LeftOrdContinuous e := fun _ _ hx =>
-  ⟨Monotone.mem_upperBounds_image (fun _ _ => e.map_rel_iff.2) hx.1, fun _ hy =>
-    e.rel_symm_apply.1 <|
-      (isLUB_le_iff hx).2 fun _ hx' => e.rel_symm_apply.2 <| hy <| mem_image_of_mem _ hx'⟩
+protected lemma leftOrdContinuous : LeftOrdContinuous e := e.to_galoisConnection.leftOrdContinuous
 
-protected theorem rightOrdContinuous : RightOrdContinuous e :=
-  OrderIso.leftOrdContinuous e.dual
-
-end Preorder
+protected lemma rightOrdContinuous : RightOrdContinuous e :=
+  e.symm.to_galoisConnection.rightOrdContinuous
 
 end OrderIso
