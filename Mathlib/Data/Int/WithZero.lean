@@ -34,6 +34,7 @@ open scoped NNReal
 
 open Multiplicative WithZero
 
+-- TODO: Find home for this
 @[simp high]
 theorem WithZero.unzero_one_multiplicative {Z} [Zero Z]
     (hx : (1 : WithZero (Multiplicative Z)) ≠ 0) :
