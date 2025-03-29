@@ -8,7 +8,6 @@ import Mathlib.Data.Set.Image
 import Mathlib.Data.Set.List
 import Mathlib.Data.Rat.Defs
 import Mathlib.Data.PNat.Defs
-import Mathlib.Order.WithBot
 
 /-! Some tests of the `lift` tactic. -/
 
@@ -233,6 +232,6 @@ h : P ↑u
 ⊢ False
 -/
 #guard_msgs in
-lemma k {x : WithTop ℕ} (hx : x ≠ ⊤) (P : WithTop ℕ → Prop) (h : P x) : False := by
+example {x : WithTop ℕ} (hx : x ≠ ⊤) (P : WithTop ℕ → Prop) (h : P x) : False := by
   lift x to ℕ using hx with u hu
   fail
