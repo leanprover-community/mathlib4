@@ -331,7 +331,7 @@ theorem meromorphicNFAt_toMeromorphicNFAt :
 
 /-- If `f` has normal form at `x`, then `f` equals `f.toNF`. -/
 @[simp] theorem toMeromorphicNFAt_eq_self :
-    f = toMeromorphicNFAt f x ↔ MeromorphicNFAt f x where
+    toMeromorphicNFAt f x = f ↔ MeromorphicNFAt f x where
   mp hf := by
     rw [hf]
     exact meromorphicNFAt_toMeromorphicNFAt
@@ -515,11 +515,10 @@ theorem meromorphicNFOn_mul_iff_left_of_analyticOnNhd {f g : 𝕜 → 𝕜} (h�
 /--
 A function to 𝕜 is meromorphic in normal form on `U` iff its inverse is.
 -/
-theorem meromorphicNFOn_iff_meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
-    MeromorphicNFOn f U ↔ MeromorphicNFOn f⁻¹ U := by
-  constructor
-  · exact fun h x hx ↦ meromorphicNFAt_inv.2 (h hx)
-  · exact fun h x hx ↦ meromorphicNFAt_inv.1 (h hx)
+theorem meromorphicNFOn_inv {f : 𝕜 → 𝕜} :
+    MeromorphicNFOn f⁻¹ U ↔ MeromorphicNFOn f U where
+  mp h x hx := meromorphicNFAt_inv.1 (h hx)
+  mpr h x hx := meromorphicNFAt_inv.2 (h hx)
 
 /-!
 ## Continuous extension and conversion to normal form
@@ -628,7 +627,7 @@ If `f` has normal form on `U`, then `f` equals `toMeromorphicNFOn f U`.
 /--
 Conversion of normal form does not affect orders.
 -/
-@[simp] theorem toMeromorphicNFOn_order [CompleteSpace E] (hf : MeromorphicOn f U) (hx : x ∈ U) :
+@[simp] theorem order_toMeromorphicNFOn [CompleteSpace E] (hf : MeromorphicOn f U) (hx : x ∈ U) :
     ((meromorphicNFOn_toMeromorphicNFOn f U) hx).meromorphicAt.order = (hf x hx).order := by
   apply MeromorphicAt.order_congr
   exact hf.toMeromorphicNFOn_eq_self_on_nhdNE hx
