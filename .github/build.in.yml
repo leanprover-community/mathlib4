@@ -330,7 +330,7 @@ jobs:
           scripts/lean-pr-testing-comments.sh lean
           scripts/lean-pr-testing-comments.sh batteries
 
-      - name: build lean4checker, but don't run it
+      - name: build lean4checker, but only run it on itself
         if: ${{ (always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure') && contains(github.event.pull_request.changed_files, 'lean-toolchain') }}
         run: |
           git clone https://github.com/leanprover/lean4checker
@@ -346,6 +346,7 @@ jobs:
           # Build lean4checker using the same toolchain
           cp ../lean-toolchain .
           lake build
+          lake -q exe lean4checker Lean4Checker
 
   final:
     name: Post-CI jobJOB_NAME
