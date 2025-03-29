@@ -494,11 +494,14 @@ open Complex in
 lemma HasSum.cexp {ι : Type*} {f : ι → ℂ} {a : ℂ} (h : HasSum f a) : HasProd (cexp ∘ f) (cexp a) :=
   Filter.Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.cexp h
 
+section circleMap
+
+open Complex
+
 @[simp]
 theorem circleMap_sub_center (c : ℂ) (R : ℝ) (θ : ℝ) : circleMap c R θ - c = circleMap 0 R θ := by
   simp [circleMap]
 
-open Complex in
 theorem circleMap_zero (R θ : ℝ) : circleMap 0 R θ = R * exp (θ * I) :=
   zero_add _
 
@@ -517,7 +520,6 @@ theorem circleMap_mem_closedBall (c : ℂ) {R : ℝ} (hR : 0 ≤ R) (θ : ℝ) :
     circleMap c R θ ∈ closedBall c R :=
   sphere_subset_closedBall (circleMap_mem_sphere c hR θ)
 
-open Complex in
 @[simp]
 theorem circleMap_eq_center_iff {c : ℂ} {R : ℝ} {θ : ℝ} : circleMap c R θ = c ↔ R = 0 := by
   simp [circleMap, exp_ne_zero]
@@ -529,8 +531,23 @@ theorem circleMap_zero_radius (c : ℂ) : circleMap c 0 = const ℝ c :=
 theorem circleMap_ne_center {c : ℂ} {R : ℝ} (hR : R ≠ 0) {θ : ℝ} : circleMap c R θ ≠ c :=
   mt circleMap_eq_center_iff.1 hR
 
-open Complex in
-lemma circleMap_zero_int_mul (R θ : ℝ) (n : ℤ) :
-    circleMap 0 (R^n) (n * θ) = (circleMap 0 R θ)^n := by
-  rw [circleMap_zero, circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc, ofReal_zpow, ofReal_mul,
-    ofReal_intCast]
+lemma circleMap_mul (R₁ R₂ θ₁ θ₂ : ℝ) :
+    (circleMap 0 R₁ θ₁) * (circleMap 0 R₂ θ₂) = circleMap 0 (R₁ * R₂) (θ₁ + θ₂) := by
+  simp only [circleMap_zero, ofReal_mul, ofReal_add, add_mul, exp_add]
+  ring
+
+lemma circleMap_div (R₁ R₂ θ₁ θ₂ : ℝ) :
+    (circleMap 0 R₁ θ₁) / (circleMap 0 R₂ θ₂) = circleMap 0 (R₁ / R₂) (θ₁ - θ₂) := by
+  simp only [circleMap_zero, ofReal_div, ofReal_sub, sub_mul, exp_sub]
+  ring
+
+lemma circleMap_inv (R θ : ℝ) : (circleMap 0 R θ)⁻¹ = circleMap 0 R⁻¹ (-θ) := by
+  simp [circleMap_zero, exp_neg, mul_comm]
+
+lemma circleMap_pow (n : ℕ) (R θ : ℝ) : (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
+  simp [circleMap_zero, mul_pow, ← exp_nat_mul, ← mul_assoc]
+
+lemma circleMap_zpow (n : ℤ) (R θ : ℝ) : (circleMap 0 R θ) ^ n = circleMap 0 (R ^ n) (n * θ) := by
+  simp [circleMap_zero, mul_zpow, ← exp_int_mul, ← mul_assoc]
+
+end circleMap
