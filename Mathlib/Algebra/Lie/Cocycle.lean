@@ -169,9 +169,10 @@ theorem succAbove_succ_eq_succAbove_castSucc {n : ℕ} {i j : Fin n} (h : i ≠ 
 theorem insertNth_succ {n : ℕ} {α : Sort*} (p : Fin n) (a : α) (x : Fin n → α) :
     p.succ.insertNth a x = p.castSucc.insertNth a x ∘ Equiv.swap p.castSucc p.succ := by
   ext j
-  cases' j using p.succ.succAboveCases with j
+  cases j using p.succ.succAboveCases
   · simp
-  · rw [insertNth_apply_succAbove, Function.comp_apply]
+  · rename_i j
+    rw [insertNth_apply_succAbove, Function.comp_apply]
     rcases eq_or_ne j p with rfl | hne
     · rw [succAbove_succ_self, Equiv.swap_apply_left, ← succAbove_castSucc_self,
         insertNth_apply_succAbove]

@@ -3,7 +3,7 @@ Copyright (c) 2024 Scott Carnahan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
-import Mathlib.RingTheory.PowerSeries.Eval
+import Mathlib.RingTheory.PowerSeries.Evaluation
 import Mathlib.RingTheory.PowerSeries.WellKnown
 import Mathlib.RingTheory.Binomial
 
@@ -33,8 +33,6 @@ Use RingTheory.PowerSeries.Eval
 -/
 
 open Finset Function
-
-open scoped Classical
 open BigOperators Pointwise
 
 suppress_compilation
@@ -101,13 +99,11 @@ lemma rescale_neg_one_invOneSubPow [CommRing A] (d : ℕ) :
 /-!
 lemma binomialSeries_mul (r : R) : -- need mvPowerSeries
     (1 + (X 1)) ^ r * (1 + (X 2)) ^ r = (1 + (X 1) + (X 2) + (X 1) * (X 2)) ^ r := by
--/
 
 /-- The power series given by `(1 + X * f X) ^ r`. -/
 def BinomialEval (f : PowerSeries R) (r : R) : PowerSeries R :=
   eval f (binomialSeries R r)
 
-/-!
 /-- `(1 + X) ^ (r * s) = ((1 + X) ^ r) ^ s` -/
 lemma binomial_mul (r s : R) :
     BinomialSeries (r * s) = BinomialEval (mk fun n => Ring.choose r (n + 1)) s := by

@@ -13,13 +13,13 @@ into a positive order element.
 ## Main Definitions
   * `PowerSeries.eval` is the linear map from `R[[X]]` to itself given by sending `X` to `X * f(X)`,
     where `f(X)` is a power series.
-  * `PowerSeries.aeval` is the `R`-algebra map from `R[[X]]` to itself given by sending `X` to
-  `X * f(X)`, where `f(X)` is a power series.
 
 ## Main results
 
 
 ## To do
+
+This may need to be deleted, since we now have Evaluation.lean.
 
 -/
 
@@ -95,6 +95,7 @@ lemma eval_monomial [Semiring R] (f : PowerSeries R) (r : R) (n : ℕ) :
   · rw [h, coeff_X_pow_self, coeff_monomial_same, mul_one]
   · simp [h, coeff_X_pow ij.1 n, coeff_monomial ij.1 n]
 
+/-!
 /-- Given a power series `f(X)`, an algebra map taking `g(X)` to `g(X * f(X))`. -/
 @[simps]
 def aeval [CommSemiring R] (f : PowerSeries R) : PowerSeries R →ₐ[R] PowerSeries R where
@@ -107,5 +108,5 @@ def aeval [CommSemiring R] (f : PowerSeries R) : PowerSeries R →ₐ[R] PowerSe
     ext n
     simp only [algebraMap_eq, ← monomial_zero_eq_C_apply, eval_monomial, coeff_monomial, pow_zero,
       mul_one, map_smul, coeff_one, smul_eq_mul, mul_ite, mul_zero]
-
+-/
 end PowerSeries
