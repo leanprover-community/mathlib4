@@ -110,6 +110,65 @@ abbrev unitInv (e : C ≌ D) : e.functor ⋙ e.inverse ⟶ 𝟭 C :=
 abbrev counitInv (e : C ≌ D) : 𝟭 D ⟶ e.inverse ⋙ e.functor :=
   e.counitIso.inv
 
+section CategoryStructure
+
+instance : Category (C ≌ D) where
+  Hom e f := e.functor ⟶ f.functor
+  id e := 𝟙 e.functor
+  comp {a b c} f g := (f ≫ g : a.functor ⟶ _)
+
+/-- Promote a natural transformation `e.functor ⟶ f.functor` to a morphism in `C ≌ D`. -/
+def mkHom {e f : C ≌ D} (η : e.functor ⟶ f.functor) : e ⟶ f := η
+
+/-- Recover a natural transformation between `e.functor` and `f.functor` from the data of
+a morphism `e ⟶ f`. -/
+def asNatTrans {e f : C ≌ D} (η : e ⟶ f) : e.functor ⟶ f.functor := η
+
+@[ext]
+lemma hom_ext {e f : C ≌ D} {α β : e ⟶ f} (h : asNatTrans α = asNatTrans β) : α = β := h
+
+@[simp]
+lemma mkHom_asNatTrans {e f : C ≌ D} (η : e.functor ⟶ f.functor) :
+    mkHom (asNatTrans η) = η :=
+  rfl
+
+@[simp]
+lemma asNatTrans_mkHom {e f : C ≌ D} (η : e ⟶ f) :
+    asNatTrans (mkHom η) = η :=
+  rfl
+
+@[simp]
+lemma id_asNatTrans {e : C ≌ D} : asNatTrans (𝟙 e) = 𝟙 _ := rfl
+
+@[simp]
+lemma comp_asNatTrans {e f g: C ≌ D} (α : e ⟶ f) (β : f ⟶ g) :
+    asNatTrans (α ≫ β) = asNatTrans α ≫ asNatTrans β :=
+  rfl
+
+@[simp]
+lemma mkHom_id_functor {e : C ≌ D} : mkHom (𝟙 e.functor) = 𝟙 e := rfl
+
+@[simp]
+lemma mkHom_comp {e f g: C ≌ D} (α : e.functor ⟶ f.functor) (β : f.functor ⟶ g.functor) :
+    mkHom (α ≫ β) = (mkHom α) ≫ (mkHom β) :=
+  rfl
+
+/-- Construct an isomorphism in `C ≌ D` from a natural isomorphism between the functors
+of the equivalences. -/
+@[simps]
+def mkIso {e f : C ≌ D} (η : e.functor ≅ f.functor) : e ≅ f where
+  hom := mkHom η.hom
+  inv := mkHom η.inv
+
+variable (C D) in
+/-- The `functor` functor that sends an equivalence of categories to its functor. -/
+@[simps!]
+def functorFunctor : (C ≌ D) ⥤ (C ⥤ D) where
+  obj f := f.functor
+  map α := asNatTrans α
+
+end CategoryStructure
+
 /- While these abbreviations are convenient, they also cause some trouble,
 preventing structure projections from unfolding. -/
 @[simp]
@@ -262,6 +321,9 @@ instance : Inhabited (C ≌ C) :=
 def symm (e : C ≌ D) : D ≌ C :=
   ⟨e.inverse, e.functor, e.counitIso.symm, e.unitIso.symm, e.inverse_counitInv_comp⟩
 
+@[simp]
+lemma mkHom_id_inverse {e : C ≌ D} : mkHom (𝟙 e.inverse) = 𝟙 e.symm := rfl
+
 variable {E : Type u₃} [Category.{v₃} E]
 
 /-- Equivalence of categories is transitive. -/
@@ -339,6 +401,13 @@ def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
       fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _
   counitIso := NatIso.ofComponents
       fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor
+
+variable (E) in
+/-- Promoting `Equivalence.congrRight` to a functor. -/
+@[simps]
+def congrRightFunctor : (C ≌ D) ⥤ ((E ⥤ C) ≌ (E ⥤ D)) where
+  obj e := e.congrRight
+  map {e f} α := mkHom <| (whiskeringRight _ _ _).map <| asNatTrans α
 
 section CancellationLemmas
 
