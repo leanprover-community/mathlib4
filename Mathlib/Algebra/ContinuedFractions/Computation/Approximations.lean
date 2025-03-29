@@ -455,7 +455,6 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
           haveI zero_le_ifp_n_fract : 0 ≤ ifp_n.fr :=
             IntFractPair.nth_stream_fr_nonneg stream_nth_eq
           inv_pos.2 (lt_of_le_of_ne zero_le_ifp_n_fract stream_nth_fr_ne_zero.symm)
-        -- Porting note: replaced complicated positivity proof with tactic.
         positivity
       rw [abs_of_pos this]
     rwa [this]
@@ -476,7 +475,7 @@ theorem abs_sub_convs_le (not_terminatedAt_n : ¬(of v).TerminatedAt n) :
 /-- Shows that `|v - Aₙ / Bₙ| ≤ 1 / (bₙ * Bₙ * Bₙ)`. This bound is worse than the one shown in
 `GenContFract.abs_sub_convs_le`, but sometimes it is easier to apply and
 sufficient for one's use case.
- -/
+-/
 theorem abs_sub_convergents_le' {b : K}
     (nth_partDen_eq : (of v).partDens.get? n = some b) :
     |v - (of v).convs n| ≤ 1 / (b * (of v).dens n * (of v).dens n) := by

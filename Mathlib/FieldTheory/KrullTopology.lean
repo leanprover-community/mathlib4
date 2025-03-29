@@ -104,7 +104,7 @@ theorem finiteDimensional_sup {K L : Type*} [Field K] [Field L] [Algebra K L]
     FiniteDimensional K (↥(E1 ⊔ E2)) :=
   IntermediateField.finiteDimensional_sup E1 E2
 
-/-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`-/
+/-- An element of `L ≃ₐ[K] L` is in `Gal(L/E)` if and only if it fixes every element of `E`. -/
 theorem IntermediateField.mem_fixingSubgroup_iff {K L : Type*} [Field K] [Field L] [Algebra K L]
     (E : IntermediateField K L) (σ : L ≃ₐ[K] L) : σ ∈ E.fixingSubgroup ↔ ∀ x : L, x ∈ E → σ x = x :=
   ⟨fun hσ x hx => hσ ⟨x, hx⟩, fun h ⟨x, hx⟩ => h x hx⟩
@@ -130,7 +130,7 @@ def galBasis (K L : Type*) [Field K] [Field L] [Algebra K L] : FilterBasis (L �
         IntermediateField.fixingSubgroup.antimono le_sup_right⟩
 
 /-- A subset of `L ≃ₐ[K] L` is a member of `galBasis K L` if and only if it is the underlying set
-of `Gal(L/E)` for some finite subextension `E/K`-/
+of `Gal(L/E)` for some finite subextension `E/K`. -/
 theorem mem_galBasis_iff (K L : Type*) [Field K] [Field L] [Algebra K L] (U : Set (L ≃ₐ[K] L)) :
     U ∈ galBasis K L ↔ U ∈ (fun g => g.carrier) '' fixedByFinite K L :=
   Iff.rfl
@@ -175,11 +175,11 @@ instance krullTopology (K L : Type*) [Field K] [Field L] [Algebra K L] :
   GroupFilterBasis.topology (galGroupBasis K L)
 
 /-- For a field extension `L/K`, the Krull topology on `L ≃ₐ[K] L` makes it a topological group. -/
-instance (K L : Type*) [Field K] [Field L] [Algebra K L] : TopologicalGroup (L ≃ₐ[K] L) :=
+instance (K L : Type*) [Field K] [Field L] [Algebra K L] : IsTopologicalGroup (L ≃ₐ[K] L) :=
   GroupFilterBasis.isTopologicalGroup (galGroupBasis K L)
 
 open scoped Topology in
-lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
+lemma krullTopology_mem_nhds_one_iff (K L : Type*) [Field K] [Field L] [Algebra K L]
     (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
     FiniteDimensional K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
   rw [GroupFilterBasis.nhds_one_eq]
@@ -188,6 +188,16 @@ lemma krullTopology_mem_nhds_one (K L : Type*) [Field K] [Field L] [Algebra K L]
     exact ⟨E, fin, hE⟩
   · rintro ⟨E, fin, hE⟩
     exact ⟨E.fixingSubgroup, ⟨E.fixingSubgroup, ⟨E, fin, rfl⟩, rfl⟩, hE⟩
+
+open scoped Topology in
+lemma krullTopology_mem_nhds_one_iff_of_normal (K L : Type*) [Field K] [Field L] [Algebra K L]
+    [Normal K L] (s : Set (L ≃ₐ[K] L)) : s ∈ 𝓝 1 ↔ ∃ E : IntermediateField K L,
+    FiniteDimensional K E ∧ Normal K E ∧ (E.fixingSubgroup : Set (L ≃ₐ[K] L)) ⊆ s := by
+  rw [krullTopology_mem_nhds_one_iff]
+  refine ⟨fun ⟨E, _, hE⟩ ↦ ?_, fun ⟨E, hE⟩ ↦ ⟨E, hE.1, hE.2.2⟩⟩
+  use (IntermediateField.normalClosure K E L)
+  simp only [normalClosure.is_finiteDimensional K E L, normalClosure.normal K E L, true_and]
+  exact le_trans (E.fixingSubgroup_anti E.le_normalClosure) hE
 
 section KrullT2
 
@@ -215,7 +225,7 @@ theorem krullTopology_t2 {K L : Type*} [Field K] [Field L] [Algebra K L]
     [Algebra.IsIntegral K L] : T2Space (L ≃ₐ[K] L) :=
   { t2 := fun f g hfg => by
       let φ := f⁻¹ * g
-      cases' DFunLike.exists_ne hfg with x hx
+      obtain ⟨x, hx⟩ := DFunLike.exists_ne hfg
       have hφx : φ x ≠ x := by
         apply ne_of_apply_ne f
         change f (f.symm (g x)) ≠ f x
@@ -266,6 +276,10 @@ theorem krullTopology_totallyDisconnected {K L : Type*} [Field K] [Field L] [Alg
   simp only [mem_leftCoset_iff, SetLike.mem_coe, IntermediateField.mem_fixingSubgroup_iff,
     not_forall]
   exact ⟨x, IntermediateField.mem_adjoin_simple_self K x, hx⟩
+
+instance {K L : Type*} [Field K] [Field L] [Algebra K L] [Algebra.IsIntegral K L] :
+    TotallyDisconnectedSpace (L ≃ₐ[K] L) where
+  isTotallyDisconnected_univ := krullTopology_totallyDisconnected
 
 end TotallyDisconnected
 

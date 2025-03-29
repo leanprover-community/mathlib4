@@ -86,7 +86,7 @@ theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
 
   If `A * x = b` has a unique solution in `x`, `cramer A` sends the vector `b` to `A.det • x`.
   Otherwise, the outcome of `cramer` is well-defined but not necessarily useful.
- -/
+-/
 def cramer (A : Matrix n n α) : (n → α) →ₗ[α] (n → α) :=
   IsLinearMap.mk' (cramerMap A) (cramer_is_linear A)
 
@@ -469,9 +469,9 @@ theorem adjugate_mul_distrib (A B : Matrix n n α) : adjugate (A * B) = adjugate
 
 @[simp]
 theorem adjugate_pow (A : Matrix n n α) (k : ℕ) : adjugate (A ^ k) = adjugate A ^ k := by
-  induction' k with k IH
-  · simp
-  · rw [pow_succ', adjugate_mul_distrib, IH, pow_succ]
+  induction k with
+  | zero => simp
+  | succ k IH => rw [pow_succ', adjugate_mul_distrib, IH, pow_succ]
 
 theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
     det A • adjugate (adjugate A) = det A ^ (Fintype.card n - 1) • A := by
@@ -485,7 +485,7 @@ theorem det_smul_adjugate_adjugate (A : Matrix n n α) :
 theorem adjugate_adjugate (A : Matrix n n α) (h : Fintype.card n ≠ 1) :
     adjugate (adjugate A) = det A ^ (Fintype.card n - 2) • A := by
   -- get rid of the `- 2`
-  cases' h_card : Fintype.card n with n'
+  rcases h_card : Fintype.card n with _ | n'
   · subsingleton [Fintype.card_eq_zero_iff.mp h_card]
   cases n'
   · exact (h h_card).elim

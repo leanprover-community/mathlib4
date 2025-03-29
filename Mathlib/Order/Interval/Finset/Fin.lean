@@ -14,25 +14,7 @@ intervals as Finsets and Fintypes.
 
 assert_not_exists MonoidWithZero
 
-namespace Fin
-
-variable {n : ℕ} (a b : Fin n)
-
-@[simp, norm_cast]
-theorem coe_sup : ↑(a ⊔ b) = (a ⊔ b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_inf : ↑(a ⊓ b) = (a ⊓ b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_max : ↑(max a b) = (max a b : ℕ) := rfl
-
-@[simp, norm_cast]
-theorem coe_min : ↑(min a b) = (min a b : ℕ) := rfl
-
-end Fin
-
-open Finset Fin Function
+open Finset Function
 
 namespace Fin
 
@@ -41,8 +23,9 @@ variable (n : ℕ)
 instance instLocallyFiniteOrder : LocallyFiniteOrder (Fin n) :=
   OrderIso.locallyFiniteOrder Fin.orderIsoSubtype
 
-instance instLocallyFiniteOrderBot : LocallyFiniteOrderBot (Fin n) :=
-  OrderIso.locallyFiniteOrderBot Fin.orderIsoSubtype
+instance instLocallyFiniteOrderBot : ∀ n, LocallyFiniteOrderBot (Fin n)
+  | 0 => IsEmpty.toLocallyFiniteOrderBot
+  | _ + 1 => inferInstance
 
 instance instLocallyFiniteOrderTop : ∀ n, LocallyFiniteOrderTop (Fin n)
   | 0 => IsEmpty.toLocallyFiniteOrderTop
@@ -123,11 +106,14 @@ theorem Ioi_eq_finset_subtype : Ioi a = (Ioc (a : ℕ) n).fin n := by
   ext
   simp
 
-theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n :=
-  rfl
+theorem Iic_eq_finset_subtype : Iic b = (Iic (b : ℕ)).fin n := by
+  ext
+  simp
 
-theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n :=
-  rfl
+
+theorem Iio_eq_finset_subtype : Iio b = (Iio (b : ℕ)).fin n := by
+  ext
+  simp
 
 @[simp]
 theorem map_valEmbedding_Ici : (Ici a).map Fin.valEmbedding = Icc ↑a (n - 1) := by

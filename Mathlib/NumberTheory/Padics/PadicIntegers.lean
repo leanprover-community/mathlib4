@@ -189,17 +189,13 @@ instance completeSpace : CompleteSpace ℤ_[p] :=
 
 instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
-variable {p}
-
+variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
-variable (p)
-
-instance : NormedCommRing ℤ_[p] :=
-  { PadicInt.instCommRing with
-    dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
-    norm_mul := by simp [norm_def]
-    norm := norm }
+instance : NormedCommRing ℤ_[p] where
+  __ := instCommRing
+  dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
+  norm_mul_le := by simp [norm_def]
 
 instance : NormOneClass ℤ_[p] :=
   ⟨norm_def.trans norm_one⟩
@@ -342,9 +338,6 @@ theorem valuation_p_pow_mul (n : ℕ) (c : ℤ_[p]) (hc : c ≠ 0) :
 section Units
 
 /-! ### Units of `ℤ_[p]` -/
-
--- Porting note: `reducible` cannot be local and making it global breaks a lot of things
--- attribute [local reducible] PadicInt
 
 theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
   | ⟨k, _⟩, h => by
