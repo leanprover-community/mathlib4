@@ -615,6 +615,32 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
   · intro h s t hs ht
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
+theorem iIndepFun_iff_pi_map_eq_map [Fintype ι] {β : ι → Type*}
+    {m : (i : ι) → MeasurableSpace (β i)} {f : (i : ι) → Ω → β i} [IsProbabilityMeasure μ]
+    (hf : ∀ i, AEMeasurable (f i) μ) :
+    iIndepFun f μ ↔ Measure.pi (fun i ↦ μ.map (f i)) = μ.map (fun ω i ↦ f i ω) := by
+  classical
+  rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
+  have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
+      ∏ i : ι, μ (f i ⁻¹' s i) = ∏ i : ι, μ.map (f i) (s i) ∧
+      μ (⋂ i : ι, (f i ⁻¹' s i)) = μ.map (fun ω i ↦ f i ω) (univ.pi s) := by
+    constructor
+    · congr with x
+      rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
+    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
+        (.univ_pi hm)]
+      congr with x
+      simp
+  constructor
+  · refine fun hS ↦ Measure.pi_eq fun h hm ↦ ?_
+    rw [← (h₀ hm).1, ← (h₀ hm).2]
+    simpa [hm] using hS Finset.univ (sets := h)
+  · intro h S s hs
+    specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
+      fun i ↦ by beta_reduce; split_ifs with hiS <;> simp [hiS, hs]
+    simp [← h, apply_ite, Finset.prod_ite, iInter_ite] at h₀
+    rw [h₀.2, ← h₀.1]
+
 @[symm]
 nonrec theorem IndepFun.symm {_ : MeasurableSpace β} {_ : MeasurableSpace β'}
     (hfg : IndepFun f g μ) : IndepFun g f μ := hfg.symm
@@ -730,31 +756,6 @@ lemma iIndepFun_precomp_of_bijective {g : ι' → ι} (hg : g.Bijective) :
     iIndepFun (m := fun i ↦ m (g i)) (fun i ↦ f (g i)) μ ↔ iIndepFun f μ where
   mp := .of_precomp hg.surjective
   mpr := .precomp hg.injective
-
-theorem iIndepFun_iff_pi_map_eq_map [Fintype ι] [IsProbabilityMeasure μ]
-    (hf : ∀ (x : ι), AEMeasurable (f x) μ) :
-    iIndepFun f μ ↔ Measure.pi (fun i ↦ μ.map (f i)) = μ.map (fun ω i ↦ f i ω) := by
-  classical
-  rw [iIndepFun_iff_measure_inter_preimage_eq_mul]
-  have h₀ {s : ∀ i, Set (β i)} (hm : ∀ (i : ι), MeasurableSet (s i)) :
-      ∏ i : ι, μ (f i ⁻¹' s i) = ∏ i : ι, μ.map (f i) (s i) ∧
-      μ (⋂ i : ι, (f i ⁻¹' s i)) = μ.map (fun ω i ↦ f i ω) (univ.pi s) := by
-    constructor
-    · congr with x
-      rw [Measure.map_apply_of_aemeasurable (hf x) (hm x)]
-    · rw [Measure.map_apply_of_aemeasurable (aemeasurable_pi_lambda _ fun x ↦ hf x)
-        (.univ_pi hm)]
-      congr with x
-      simp
-  constructor
-  · refine fun hS ↦ Measure.pi_eq fun h hm ↦ ?_
-    rw [← (h₀ hm).1, ← (h₀ hm).2]
-    simpa [hm] using hS Finset.univ (sets := h)
-  · intro h S s hs
-    specialize h₀ (s := fun i ↦ if i ∈ S then s i else univ)
-      fun i ↦ by beta_reduce; split_ifs with hiS <;> simp [hiS, hs]
-    simp [← h, apply_ite, Finset.prod_ite, iInter_ite] at h₀
-    rw [h₀.2, ← h₀.1]
 
 end iIndepFun
 
