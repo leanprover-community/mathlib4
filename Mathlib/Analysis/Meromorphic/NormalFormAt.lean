@@ -393,7 +393,7 @@ theorem MeromorphicNFAt.inv {f : 𝕜 → 𝕜} (hf : MeromorphicNFAt f x) :
 /--
 A function to 𝕜 is meromorphic in normal form at a point iff its inverse is.
 -/
-theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
+@[simp] theorem meromorphicNFAt_inv {f : 𝕜 → 𝕜} : MeromorphicNFAt f⁻¹ x ↔ MeromorphicNFAt f x where
   mp := by
     nth_rw 2 [← inv_inv f]
     exact .inv
