@@ -3,7 +3,7 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
-import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.MeasureTheory.Measure.RegularityCompacts
 
 /-!
 # Tight sets of measures
@@ -32,8 +32,9 @@ open scoped ENNReal NNReal Topology
 
 namespace MeasureTheory
 
-variable {α : Type*} [TopologicalSpace α] {mα : MeasurableSpace α} {μ ν : Measure α}
-  {S T : Set (Measure α)}
+variable {α β : Type*} [TopologicalSpace α] {mα : MeasurableSpace α}
+  [TopologicalSpace β] {mβ : MeasurableSpace β}
+  {μ ν : Measure α} {S T : Set (Measure α)}
 
 /-- A set of measures `S` is tight if for all `0 < ε`, there exists a compact set `K` such that
 for all `μ ∈ S`, `μ Kᶜ ≤ ε`.
@@ -83,6 +84,14 @@ lemma isTightMeasureSet_singleton_of_innerRegular [T2Space α] [OpensMeasurableS
   obtain ⟨K, hKs, hK_compact, hμK⟩ := h.innerRegular hs r hr
   exact ⟨K, hKs, ⟨hK_compact, hK_compact.isClosed⟩, hμK⟩
 
+/-- In a complete second-countable pseudo-metric space, finite measures are tight. -/
+theorem isTightMeasureSet_singleton {α : Type*} {mα : MeasurableSpace α}
+    [PseudoEMetricSpace α] [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
+    {μ : Measure α} [IsFiniteMeasure μ] :
+    IsTightMeasureSet {μ} :=
+  isTightMeasureSet_singleton_of_innerRegularWRT
+    (innerRegular_isCompact_isClosed_measurableSet_of_finite _)
+
 namespace IsTightMeasureSet
 
 /-- In a compact space, every set of measures is tight. -/
@@ -105,6 +114,21 @@ protected lemma union (hS : IsTightMeasureSet S) (hT : IsTightMeasureSet T) :
 protected lemma inter (hS : IsTightMeasureSet S) (T : Set (Measure α)) :
     IsTightMeasureSet (S ∩ T) :=
   hS.subset inter_subset_left
+
+lemma map [OpensMeasurableSpace α] [OpensMeasurableSpace β] [T2Space β]
+    (hS : IsTightMeasureSet S) (f : α → β) (hf : Continuous f) :
+    IsTightMeasureSet (Measure.map f '' S) := by
+  rw [IsTightMeasureSet_iff_exists_isCompact_measure_compl_le] at hS ⊢
+  simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+  intro ε hε
+  obtain ⟨K, hK_compact, hKS⟩ := hS ε hε
+  refine ⟨f '' K, hK_compact.image hf, fun μ hμS ↦ ?_⟩
+  by_cases hf_meas : AEMeasurable f μ
+  swap; · simp [Measure.map_of_not_aemeasurable hf_meas]
+  rw [Measure.map_apply_of_aemeasurable hf_meas (hK_compact.image hf).measurableSet.compl]
+  refine (measure_mono ?_).trans (hKS μ hμS)
+  simp only [preimage_compl, compl_subset_compl]
+  exact subset_preimage_image f K
 
 end IsTightMeasureSet
 
