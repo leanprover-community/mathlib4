@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Group.Support
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Topology.Piecewise
 import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Compactness.LocallyCompact
 
@@ -160,7 +161,7 @@ theorem minimal_nonempty_closed_subsingleton [T0Space X] {s : Set X} (hs : IsClo
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · refine this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
-  cases' h with hxU hyU
+  obtain ⟨hxU, hyU⟩ := h
   have : s \ U = s := hmin (s \ U) diff_subset ⟨y, hy, hyU⟩ (hs.sdiff hUo)
   exact (this.symm.subset hx).2 hxU
 
@@ -183,7 +184,7 @@ theorem minimal_nonempty_open_subsingleton [T0Space X] {s : Set X} (hs : IsOpen 
   rcases exists_isOpen_xor'_mem hxy with ⟨U, hUo, hU⟩
   wlog h : x ∈ U ∧ y ∉ U
   · exact this hs hmin y hy x hx (Ne.symm hxy) U hUo hU.symm (hU.resolve_left h)
-  cases' h with hxU hyU
+  obtain ⟨hxU, hyU⟩ := h
   have : s ∩ U = s := hmin (s ∩ U) inter_subset_left ⟨x, hx, hxU⟩ (hs.inter hUo)
   exact hyU (this.symm.subset hy).2
 
@@ -195,7 +196,8 @@ theorem minimal_nonempty_open_eq_singleton [T0Space X] {s : Set X} (hs : IsOpen 
 theorem exists_isOpen_singleton_of_isOpen_finite [T0Space X] {s : Set X} (hfin : s.Finite)
     (hne : s.Nonempty) (ho : IsOpen s) : ∃ x ∈ s, IsOpen ({x} : Set X) := by
   lift s to Finset X using hfin
-  induction' s using Finset.strongInductionOn with s ihs
+  induction s using Finset.strongInductionOn
+  rename_i s ihs
   rcases em (∃ t, t ⊂ s ∧ t.Nonempty ∧ IsOpen (t : Set X)) with (⟨t, hts, htne, hto⟩ | ht)
   · rcases ihs t hts htne hto with ⟨x, hxt, hxo⟩
     exact ⟨x, hts.1 hxt, hxo⟩
@@ -311,16 +313,13 @@ theorem Filter.coclosedCompact_le_cofinite : coclosedCompact X ≤ cofinite :=
   le_cofinite_iff_compl_singleton_mem.2 fun _ ↦
     compl_mem_coclosedCompact.2 isCompact_closure_singleton
 
-variable (X)
-
+variable (X) in
 /-- In an R₀ space, relatively compact sets form a bornology.
 Its cobounded filter is `Filter.coclosedCompact`.
 See also `Bornology.inCompact` the bornology of sets contained in a compact set. -/
 def Bornology.relativelyCompact : Bornology X where
   cobounded' := Filter.coclosedCompact X
   le_cofinite' := Filter.coclosedCompact_le_cofinite
-
-variable {X}
 
 theorem Bornology.relativelyCompact.isBounded_iff {s : Set X} :
     @Bornology.IsBounded _ (Bornology.relativelyCompact X) s ↔ IsCompact (closure s) :=
@@ -551,7 +550,6 @@ theorem compl_singleton_mem_nhds [T1Space X] {x y : X} (h : y ≠ x) : {x}ᶜ �
 theorem closure_singleton [T1Space X] {x : X} : closure ({x} : Set X) = {x} :=
   isClosed_singleton.closure_eq
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: the proof was `hs.induction_on (by simp) fun x => by simp`
 theorem Set.Subsingleton.closure [T1Space X] {s : Set X} (hs : s.Subsingleton) :
     (closure s).Subsingleton := by
   rcases hs.eq_empty_or_singleton with (rfl | ⟨x, rfl⟩) <;> simp
@@ -563,6 +561,14 @@ theorem subsingleton_closure [T1Space X] {s : Set X} : (closure s).Subsingleton 
 theorem isClosedMap_const {X Y} [TopologicalSpace X] [TopologicalSpace Y] [T1Space Y] {y : Y} :
     IsClosedMap (Function.const X y) :=
   IsClosedMap.of_nonempty fun s _ h2s => by simp_rw [const, h2s.image_const, isClosed_singleton]
+
+lemma isClosedMap_prodMk_left [TopologicalSpace Y] [T1Space X] (x : X) :
+    IsClosedMap (fun y : Y ↦ Prod.mk x y) :=
+  fun _K hK ↦ Set.singleton_prod ▸ isClosed_singleton.prod hK
+
+lemma isClosedMap_prodMk_right [TopologicalSpace Y] [T1Space Y] (y : Y) :
+    IsClosedMap (fun x : X ↦ Prod.mk x y) :=
+  fun _K hK ↦ Set.prod_singleton ▸ hK.prod isClosed_singleton
 
 theorem nhdsWithin_insert_of_ne [T1Space X] {x y : X} {s : Set X} (hxy : x ≠ y) :
     𝓝[insert y s] x = 𝓝[s] x := by
@@ -763,10 +769,14 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
   constructor
   · intro h x y xspecy
     rw [← IsInducing.specializes_iff isInducing_mk, h xspecy] at *
-  · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+  · -- TODO is there are better way to do this,
+    -- so the case split produces `SeparationQuotient.mk` directly, rather than `Quot.mk`?
+    -- Currently we need the `change` statement to recover this.
+    rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+    change mk _ = mk _
     have xspecy : x ⤳ y := isInducing_mk.specializes_iff.mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
-    erw [mk_eq_mk, inseparable_iff_specializes_and]
+    rw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨xspecy, yspecx⟩
 
 lemma Set.Subsingleton.isClosed [T1Space X] {A : Set X} (h : A.Subsingleton) : IsClosed A := by
@@ -964,25 +974,28 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
     (t : Finset ι) (U : ι → Set X) (hU : ∀ i ∈ t, IsOpen (U i)) (hsC : s ⊆ ⋃ i ∈ t, U i) :
     ∃ K : ι → Set X, (∀ i, IsCompact (K i)) ∧ (∀ i, K i ⊆ U i) ∧ s = ⋃ i ∈ t, K i := by
   classical
-  induction' t using Finset.induction with x t hx ih generalizing U s
-  · refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
+  induction t using Finset.induction generalizing U s with
+  | empty =>
+    refine ⟨fun _ => ∅, fun _ => isCompact_empty, fun i => empty_subset _, ?_⟩
     simpa only [subset_empty_iff, Finset.not_mem_empty, iUnion_false, iUnion_empty] using hsC
-  simp only [Finset.set_biUnion_insert] at hsC
-  simp only [Finset.forall_mem_insert] at hU
-  have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
-  rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
-    ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
-  rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
-  refine ⟨update K x K₁, ?_, ?_, ?_⟩
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_self, h1K₁]
-    · simp only [update_of_ne hi, h1K]
-  · intro i
-    rcases eq_or_ne i x with rfl | hi
-    · simp only [update_self, h2K₁]
-    · simp only [update_of_ne hi, h2K]
-  · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
+  | insert hx ih =>
+    rename_i x t
+    simp only [Finset.set_biUnion_insert] at hsC
+    simp only [Finset.forall_mem_insert] at hU
+    have hU' : ∀ i ∈ t, IsOpen (U i) := fun i hi => hU.2 i hi
+    rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
+      ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
+    rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
+    refine ⟨update K x K₁, ?_, ?_, ?_⟩
+    · intro i
+      rcases eq_or_ne i x with rfl | hi
+      · simp only [update_self, h1K₁]
+      · simp only [update_of_ne hi, h1K]
+    · intro i
+      rcases eq_or_ne i x with rfl | hi
+      · simp only [update_self, h2K₁]
+      · simp only [update_of_ne hi, h2K]
+    · simp only [Finset.set_biUnion_insert_update _ hx, hK, h3K]
 
 theorem R1Space.of_continuous_specializes_imp [TopologicalSpace Y] {f : Y → X} (hc : Continuous f)
     (hspec : ∀ x y, f x ⤳ f y → x ⤳ y) : R1Space Y where

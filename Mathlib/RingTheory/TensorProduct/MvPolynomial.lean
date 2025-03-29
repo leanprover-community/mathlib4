@@ -5,9 +5,11 @@ Authors: Antoine Chambert-Loir
 -/
 
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.RingTheory.IsTensorProduct
+
 /-!
 
 # Tensor Product of (multivariate) polynomial rings
@@ -161,7 +163,7 @@ lemma rTensorAlgHom_toLinearMap :
     LinearMap.coe_restrictScalars, AlgHom.toLinearMap_apply]
   rw [coeff_rTensorAlgHom_tmul]
   simp only [coeff]
-  erw [finsuppLeft_apply_tmul_apply]
+  exact (finsuppLeft_apply_tmul_apply _ _ _).symm
 
 lemma rTensorAlgHom_apply_eq (p : MvPolynomial σ S ⊗[R] N) :
     rTensorAlgHom (S := S) p = rTensor p := by
@@ -243,6 +245,17 @@ lemma aeval_one_tmul (f : σ → S) (p : MvPolynomial σ R) :
     rw [← mul_one ((algebraMap R N) a), ← Algebra.smul_def, smul_tmul, Algebra.smul_def, mul_one]
   · simp [hp, hq, tmul_add]
   · simp [h]
+
+section Pushout
+
+attribute [local instance] algebraMvPolynomial
+
+instance : Algebra.IsPushout R S (MvPolynomial σ R) (MvPolynomial σ S) where
+  out := .of_equiv (algebraTensorAlgEquiv R S).toLinearEquiv fun _ ↦ by simp
+
+instance : Algebra.IsPushout R (MvPolynomial σ R) S (MvPolynomial σ S) := .symm inferInstance
+
+end Pushout
 
 end Algebra
 

@@ -32,12 +32,12 @@ theorem map_coe_nnreal : ENat.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ �
   rfl
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
   Nat.castOrderEmbedding.withTopMap
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
-@[simps! (config := .asFn)]
+@[simps! -fullyApplied]
 def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
   .ENatMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
 
@@ -59,6 +59,9 @@ theorem toENNReal_inj : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
 
 @[deprecated (since := "2024-12-29")] alias toENNReal_coe_eq_iff := toENNReal_inj
 
+@[simp, norm_cast] lemma toENNReal_eq_top : (n : ℝ≥0∞) = ∞ ↔ n = ⊤ := by simp [← toENNReal_inj]
+@[norm_cast] lemma toENNReal_ne_top : (n : ℝ≥0∞) ≠ ∞ ↔ n ≠ ⊤ := by simp
+
 @[simp, norm_cast]
 theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
   toENNRealOrderEmbedding.le_iff_le
@@ -66,6 +69,9 @@ theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=
 @[simp, norm_cast]
 theorem toENNReal_lt : (m : ℝ≥0∞) < n ↔ m < n :=
   toENNRealOrderEmbedding.lt_iff_lt
+
+@[simp, norm_cast]
+lemma toENNReal_lt_top : (n : ℝ≥0∞) < ∞ ↔ n < ⊤ := by simp [← toENNReal_lt]
 
 @[mono]
 theorem toENNReal_mono : Monotone ((↑) : ℕ∞ → ℝ≥0∞) :=

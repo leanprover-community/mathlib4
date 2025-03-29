@@ -13,8 +13,7 @@ This file contains the additive and multiplicative monoid instances on the natur
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 namespace Nat
 
@@ -60,6 +59,7 @@ instance instCommSemigroup    : CommSemigroup ℕ    := by infer_instance
 instance instSemigroup        : Semigroup ℕ        := by infer_instance
 instance instAddCommSemigroup : AddCommSemigroup ℕ := by infer_instance
 instance instAddSemigroup     : AddSemigroup ℕ     := by infer_instance
+instance instOne : One ℕ := inferInstance
 
 /-! ### Miscellaneous lemmas -/
 

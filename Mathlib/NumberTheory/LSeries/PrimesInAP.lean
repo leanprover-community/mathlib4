@@ -470,7 +470,7 @@ open ArithmeticFunction vonMangoldt
 variable {q : ℕ} [NeZero q] {a : ZMod q}
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
-integer and `a : ZMod q` is a unit, then there are infintely many prime numbers `p`
+integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
 theorem setOf_prime_and_eq_mod_infinite (ha : IsUnit a) :
     {p : ℕ | p.Prime ∧ (p : ZMod q) = a}.Infinite := by
@@ -480,7 +480,7 @@ theorem setOf_prime_and_eq_mod_infinite (ha : IsUnit a) :
     summable_of_finite_support <| support_residueClass_prime_div a ▸ H
 
 /-- **Dirichlet's Theorem** on primes in arithmetic progression: if `q` is a positive
-integer and `a : ZMod q` is a unit, then there are infintely many prime numbers `p`
+integer and `a : ZMod q` is a unit, then there are infinitely many prime numbers `p`
 such that `(p : ZMod q) = a`. -/
 theorem forall_exists_prime_gt_and_eq_mod (ha : IsUnit a) (n : ℕ) :
     ∃ p > n, p.Prime ∧ (p : ZMod q) = a := by

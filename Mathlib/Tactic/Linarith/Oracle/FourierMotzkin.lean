@@ -47,7 +47,7 @@ they are not shared with other components of `linarith`.
 The atomic source of a comparison is an assumption, indexed by a natural number.
 Two comparisons can be added to produce a new comparison,
 and one comparison can be scaled by a natural number to produce a new comparison.
- -/
+-/
 inductive CompSource : Type
   | assump : Nat → CompSource
   | add : CompSource → CompSource → CompSource
@@ -61,7 +61,7 @@ to the number of copies of that assumption that appear in the history of `cs`.
 For example, suppose `cs` is produced by scaling assumption 2 by 5,
 and adding to that the sum of assumptions 1 and 2.
 `cs.flatten` maps `1 ↦ 1, 2 ↦ 6`.
- -/
+-/
 def CompSource.flatten : CompSource → Std.HashMap Nat Nat
   | (CompSource.assump n) => Std.HashMap.empty.insert n 1
   | (CompSource.add c1 c2) =>
@@ -327,7 +327,7 @@ def elimAllVarsM : LinarithM Unit := do
 those hypotheses. It produces an initial state for the elimination monad.
 -/
 def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
-  ⟨maxVar, .ofList (hyps.enum.map fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
+  ⟨maxVar, .ofList (hyps.mapIdx fun n cmp => PComp.assump cmp n) _⟩
 
 /-- An oracle that uses Fourier-Motzkin elimination. -/
 def CertificateOracle.fourierMotzkin : CertificateOracle where

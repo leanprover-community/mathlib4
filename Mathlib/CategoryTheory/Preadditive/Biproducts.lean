@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Group.Ext
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Limits.Shapes.BinaryBiproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Biproducts
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Preadditive.Basic
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Basic facts about biproducts in preadditive categories.
@@ -443,6 +444,28 @@ theorem biprod.lift_desc {T U : C} {f : T ⟶ X} {g : T ⟶ Y} {h : X ⟶ U} {i 
 theorem biprod.map_eq [HasBinaryBiproducts C] {W X Y Z : C} {f : W ⟶ Y} {g : X ⟶ Z} :
     biprod.map f g = biprod.fst ≫ f ≫ biprod.inl + biprod.snd ≫ g ≫ biprod.inr := by
   ext <;> simp
+
+section
+
+variable {Z : C}
+
+lemma biprod.decomp_hom_to (f : Z ⟶ X ⊞ Y) :
+    ∃ f₁ f₂, f = f₁ ≫ biprod.inl + f₂ ≫ biprod.inr :=
+  ⟨f ≫ biprod.fst, f ≫ biprod.snd, by aesop⟩
+
+lemma biprod.ext_to_iff {f g : Z ⟶ X ⊞ Y} :
+    f = g ↔ f ≫ biprod.fst = g ≫ biprod.fst ∧ f ≫ biprod.snd = g ≫ biprod.snd := by
+  aesop
+
+lemma biprod.decomp_hom_from (f : X ⊞ Y ⟶ Z) :
+    ∃ f₁ f₂, f = biprod.fst ≫ f₁ + biprod.snd ≫ f₂ :=
+  ⟨biprod.inl ≫ f, biprod.inr ≫ f, by aesop⟩
+
+lemma biprod.ext_from_iff {f g : X ⊞ Y ⟶ Z} :
+    f = g ↔ biprod.inl ≫ f = biprod.inl ≫ g ∧ biprod.inr ≫ f = biprod.inr ≫ g := by
+  aesop
+
+end
 
 /-- Every split mono `f` with a cokernel induces a binary bicone with `f` as its `inl` and
 the cokernel map as its `snd`.

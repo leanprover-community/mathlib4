@@ -1,22 +1,34 @@
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Joël Riou, Sophie Morel
 -/
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Additive
+import Mathlib.CategoryTheory.Adjunction.Opposites
+import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 
 /-!
 # The adjoint functor is triangulated
 
 If a functor `F : C ⥤ D` between pretriangulated categories is triangulated, and if we
-have an adjunction `F ⊣ G`, then `G` is also a triangulated functor.
+have an adjunction `F ⊣ G`, then `G` is also a triangulated functor. We deduce the
+symmetric statement (if `G` is a triangulated functor, then so is `F`) using opposite
+categories.
 
-We deduce that, if `E : C ≌ D` is an equivalence of pretriangulated categories, then
+We then introduce a class `IsTriangulated` for adjunctions: an adjunction `F ⊣ G`
+is called triangulated if both `F` and `G` are triangulated, and if the adjunction
+is compatible with the shifts by `ℤ` on `F` and `G` (in the sense of `Adjunction.CommShift`);
+we prove that this is compatible with composition and that the identity adjunction is
+triangulated.
+Thanks to the results above, an adjunction carrying an `Adjunction.CommShift` instance
+is triangulated as soon as one of the adjoint functors is triangulated.
+
+We finally specialize these structures to equivalences of categories, and prove that,
+if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 `E.functor` is triangulated if and only if `E.inverse` is triangulated.
 
-TODO: The case of left adjoints.
 -/
 
 assert_not_exists TwoSidedIdeal
@@ -113,6 +125,15 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         Functor.commShiftIso_hom_naturality, ← adj.shift_unit_app_assoc,
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
 
+include adj in
+open Pretriangulated.Opposite Functor in
+/--
+The left adjoint of a triangulated functor is triangulated.
+-/
+lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
+  have := isTriangulated_rightAdjoint adj.op
+  exact F.isTriangulated_of_op
+
 /--
 We say that an adjunction `F ⊣ G` is triangulated if it is compatible with the `CommShift`
 structures on `F` and `G` (in the sense of `Adjunction.CommShift`) and if both `F` and `G`
@@ -131,6 +152,11 @@ attribute [instance] commShift leftAdjoint_isTriangulated rightAdjoint_isTriangu
 -/
 lemma mk' [F.IsTriangulated] : adj.IsTriangulated where
   rightAdjoint_isTriangulated := adj.isTriangulated_rightAdjoint
+
+/-- Constructor for `Adjunction.IsTriangulated`.
+-/
+lemma mk'' [G.IsTriangulated] : adj.IsTriangulated where
+  leftAdjoint_isTriangulated := adj.isTriangulated_leftAdjoint
 
 /-- The identity adjunction is triangulated.
 -/

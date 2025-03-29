@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.Const
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.Yoneda
-import Mathlib.CategoryTheory.Functor.ReflectsIso
+import Mathlib.CategoryTheory.Functor.ReflectsIso.Basic
 
 /-!
 # Cones and cocones
@@ -35,7 +35,7 @@ For more results about the category of cones, see `cone_category.lean`.
 
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₅ u₁ u₂ u₃ u₄ u₅
 
 open CategoryTheory
 
@@ -43,6 +43,7 @@ variable {J : Type u₁} [Category.{v₁} J]
 variable {K : Type u₂} [Category.{v₂} K]
 variable {C : Type u₃} [Category.{v₃} C]
 variable {D : Type u₄} [Category.{v₄} D]
+variable {E : Type u₅} [Category.{v₅} E]
 
 open CategoryTheory
 
@@ -167,8 +168,6 @@ theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
   apply comp_id
-
-attribute [simp 1001] Cocone.w_assoc
 
 end
 
@@ -413,6 +412,11 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
     { hom := G.map f.hom
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
 
+/-- Functoriality is functorial. -/
+def functorialityCompFunctoriality (H : D ⥤ E) :
+    functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
+
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
     ⟨{ hom := G.preimage t.hom
@@ -611,6 +615,11 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
     { hom := G.map f.hom
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
 
+/-- Functoriality is functorial. -/
+def functorialityCompFunctoriality (H : D ⥤ E) :
+    functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
+  NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
+
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
     ⟨{ hom := G.preimage t.hom
@@ -661,10 +670,20 @@ open CategoryTheory.Limits
 def mapCone (c : Cone F) : Cone (F ⋙ H) :=
   (Cones.functoriality F H).obj c
 
+/-- The construction `mapCone` respects functor composition. -/
+@[simps!]
+noncomputable def mapConeMapCone {F : J ⥤ C} {H : C ⥤ D} {H' : D ⥤ E} (c : Cone F) :
+    H'.mapCone (H.mapCone c) ≅ (H ⋙ H').mapCone c := Cones.ext (Iso.refl _)
+
 /-- The image of a cocone in C under a functor G : C ⥤ D is a cocone in D. -/
 @[simps!]
 def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
   (Cocones.functoriality F H).obj c
+
+/-- The construction `mapCocone` respects functor composition. -/
+@[simps!]
+noncomputable def mapCoconeMapCocone {F : J ⥤ C} {H : C ⥤ D} {H' : D ⥤ E} (c : Cocone F) :
+    H'.mapCocone (H.mapCocone c) ≅ (H ⋙ H').mapCocone c := Cocones.ext (Iso.refl _)
 
 /-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially. -/
 def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : H.mapCone c ⟶ H.mapCone c' :=
@@ -978,13 +997,11 @@ section
 variable (G : C ⥤ D)
 
 /-- The opposite cocone of the image of a cone is the image of the opposite cocone. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def mapConeOp (t : Cone F) : (mapCone G t).op ≅ mapCocone G.op t.op :=
   Cocones.ext (Iso.refl _)
 
 /-- The opposite cone of the image of a cocone is the image of the opposite cone. -/
--- Porting note: removed @[simps (config := { rhsMd := semireducible })] and replaced with
 @[simps!]
 def mapCoconeOp {t : Cocone F} : (mapCocone G t).op ≅ mapCone G.op t.op :=
   Cones.ext (Iso.refl _)

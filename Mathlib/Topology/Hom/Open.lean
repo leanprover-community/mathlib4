@@ -40,7 +40,7 @@ section
 
 You should extend this class when you extend `ContinuousOpenMap`. -/
 class ContinuousOpenMapClass (F : Type*) (α β : outParam Type*) [TopologicalSpace α]
-  [TopologicalSpace β] [FunLike F α β] extends ContinuousMapClass F α β : Prop where
+  [TopologicalSpace β] [FunLike F α β] : Prop extends ContinuousMapClass F α β where
   map_open (f : F) : IsOpenMap f
 
 end
@@ -73,7 +73,8 @@ instance : ContinuousOpenMapClass (α →CO β) α β where
 theorem toFun_eq_coe {f : α →CO β} : f.toFun = (f : α → β) :=
   rfl
 
-@[simp] -- Porting note: new, simpNF of `toFun_eq_coe`
+/-- `simp`-normal form of `toFun_eq_coe`. -/
+@[simp]
 theorem coe_toContinuousMap (f : α →CO β) : (f.toContinuousMap : α → β) = f := rfl
 
 @[ext]

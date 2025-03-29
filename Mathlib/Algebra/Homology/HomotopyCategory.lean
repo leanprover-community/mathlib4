@@ -121,7 +121,6 @@ def homotopyOutMap {C D : HomologicalComplex V c} (f : C ⟶ D) :
   apply homotopyOfEq
   simp
 
-@[simp 1100]
 theorem quotient_map_out_comp_out {C D E : HomotopyCategory V c} (f : C ⟶ D) (g : D ⟶ E) :
     (quotient V c).map (Quot.out f ≫ Quot.out g) = f ≫ g := by simp
 

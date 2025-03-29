@@ -6,7 +6,7 @@ Tomáš Jakl, Lorenzo Zanichelli, Alina Yan, Emilie Uthaiwat, Jana Göken,
 Filippo A. E. Nuccio
 -/
 import Mathlib.Topology.Algebra.GroupWithZero
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Ternary Cantor Set

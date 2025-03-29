@@ -191,7 +191,7 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
   · apply M.dest_corec'
-  cases' g x with a f; dsimp
+  obtain ⟨a, f⟩ := g x; dsimp
   rw [MvPFunctor.map_eq]; congr
   conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
   rfl
@@ -216,8 +216,8 @@ theorem M.bisim {α : TypeVec n} (R : P.M α → P.M α → Prop)
             M.dest P x = ⟨a, splitFun f f₁⟩ ∧
               M.dest P y = ⟨a, splitFun f f₂⟩ ∧ ∀ i, R (f₁ i) (f₂ i))
     (x y) (r : R x y) : x = y := by
-  cases' x with a₁ f₁
-  cases' y with a₂ f₂
+  obtain ⟨a₁, f₁⟩ := x
+  obtain ⟨a₂, f₂⟩ := y
   dsimp [mp] at *
   have : a₁ = a₂ := by
     refine
@@ -288,7 +288,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
 
 theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
     M.dest P (g <$$> x) = (appendFun g fun x => g <$$> x) <$$> M.dest P x := by
-  cases' x with a f
+  obtain ⟨a, f⟩ := x
   rw [map_eq]
   conv =>
     rhs

@@ -45,9 +45,7 @@ membership of a subgroup's underlying set.
 subgroup, subgroups
 -/
 
-assert_not_exists OrderedAddCommMonoid
-assert_not_exists Multiset
-assert_not_exists Ring
+assert_not_exists OrderedAddCommMonoid Multiset Ring
 
 open Function
 open scoped Int
@@ -149,11 +147,12 @@ theorem map_one_eq_bot : K.map (1 : G →* N) = ⊥ :=
 
 @[to_additive]
 theorem mem_map_equiv {f : G ≃* N} {K : Subgroup G} {x : N} :
-    x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K := by
-  erw [@Set.mem_image_equiv _ _ (↑K) f.toEquiv x]; rfl
+    x ∈ K.map f.toMonoidHom ↔ f.symm x ∈ K :=
+  Set.mem_image_equiv
 
 -- The simpNF linter says that the LHS can be simplified via `Subgroup.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : G →* N} (hf : Function.Injective f) {K : Subgroup G} {x : G} :
@@ -378,7 +377,11 @@ defined by sending subgroups to their inverse images.
 
 See also `MulEquiv.mapSubgroup` which maps subgroups to their forward images.
 -/
-@[simps]
+@[to_additive (attr := simps)
+"An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their inverse images.
+
+See also `AddEquiv.mapAddSubgroup` which maps subgroups to their forward images."]
 def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
   toFun := Subgroup.comap f
   invFun := Subgroup.comap f.symm
@@ -388,13 +391,23 @@ def comapSubgroup (f : G ≃* H) : Subgroup H ≃o Subgroup G where
     ⟨fun h => by simpa [Subgroup.comap_comap] using
       Subgroup.comap_mono (f := (f.symm : H →* G)) h, Subgroup.comap_mono⟩
 
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_comapSubgroup (e : G ≃* H) : comapSubgroup e = Subgroup.comap e.toMonoidHom := rfl
+
+@[to_additive (attr := simp)]
+lemma symm_comapSubgroup (e : G ≃* H) : (comapSubgroup e).symm = comapSubgroup e.symm := rfl
+
 /--
 An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
 defined by sending subgroups to their forward images.
 
 See also `MulEquiv.comapSubgroup` which maps subgroups to their inverse images.
 -/
-@[simps]
+@[to_additive (attr := simps)
+"An isomorphism of groups gives an order isomorphism between the lattices of subgroups,
+defined by sending subgroups to their forward images.
+
+See also `AddEquiv.comapAddSubgroup` which maps subgroups to their inverse images."]
 def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup H where
   toFun := Subgroup.map f
   invFun := Subgroup.map f.symm
@@ -404,6 +417,12 @@ def mapSubgroup {H : Type*} [Group H] (f : G ≃* H) : Subgroup G ≃o Subgroup 
     ⟨fun h => by simpa [Subgroup.map_map] using
       Subgroup.map_mono (f := (f.symm : H →* G)) h, Subgroup.map_mono⟩
 
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mapSubgroup (e : G ≃* H) : mapSubgroup e = Subgroup.map e.toMonoidHom := rfl
+
+@[to_additive (attr := simp)]
+lemma symm_mapSubgroup (e : G ≃* H) : (mapSubgroup e).symm = mapSubgroup e.symm := rfl
+
 end MulEquiv
 
 namespace Subgroup
@@ -411,6 +430,10 @@ namespace Subgroup
 open MonoidHom
 
 variable {N : Type*} [Group N] (f : G →* N)
+
+@[to_additive (attr := simp, norm_cast)]
+lemma comap_toSubmonoid (e : G ≃* N) (s : Subgroup N) :
+    (s.comap e).toSubmonoid = s.toSubmonoid.comap e.toMonoidHom := rfl
 
 @[to_additive]
 theorem map_comap_le (H : Subgroup N) : map f (comap f H) ≤ H :=

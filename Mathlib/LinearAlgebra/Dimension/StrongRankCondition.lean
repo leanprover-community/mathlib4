@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
@@ -41,7 +42,7 @@ noncomputable section
 
 universe u v w w'
 
-variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
+variable {R : Type u} {M : Type v} [Semiring R] [AddCommMonoid M] [Module R M]
 variable {ι : Type w} {ι' : Type w'}
 
 open Cardinal Basis Submodule Function Set
@@ -181,8 +182,7 @@ theorem linearIndependent_le_span_aux' {ι : Type*} [Fintype ι] (v : ι → M)
     apply_fun linearCombination R ((↑) : w → M) at h
     simp only [linearCombination_linearCombination, Submodule.coe_mk,
                Span.finsupp_linearCombination_repr] at h
-    rw [← sub_eq_zero, ← LinearMap.map_sub] at h
-    exact sub_eq_zero.mp (linearIndependent_iff.mp i _ h)
+    exact i h
 
 /-- If `R` satisfies the strong rank condition,
 then any linearly independent family `v : ι → M`
@@ -263,6 +263,31 @@ theorem linearIndependent_le_basis {ι : Type w} (b : Basis ι R M) {κ : Type w
   · -- and otherwise we have `linearIndependent_le_infinite_basis`.
     exact linearIndependent_le_infinite_basis b v i
 
+/-- `StrongRankCondition` implies that if there is an injective linear map `(α →₀ R) →ₗ[R] β →₀ R`,
+then the cardinal of `α` is smaller than or equal to the cardinal of `β`.
+-/
+theorem card_le_of_injective'' {α : Type v} {β : Type v} (f : (α →₀ R) →ₗ[R] β →₀ R)
+    (i : Injective f) : #α ≤ #β := by
+  let b : Basis β R (β →₀ R) := ⟨1⟩
+  apply linearIndependent_le_basis b (fun (i : α) ↦ f (Finsupp.single i 1))
+  rw [LinearIndependent]
+  have : (linearCombination R fun i ↦ f (Finsupp.single i 1)) = f := by ext a b; simp
+  exact this.symm ▸ i
+
+/-- If `R` satisfies the strong rank condition, then for any linearly independent family `v : ι → M`
+and spanning set `w : Set M`, the cardinality of `ι` is bounded by the cardinality of `w`.
+-/
+theorem linearIndependent_le_span'' {ι : Type v} {v : ι → M} (i : LinearIndependent R v) (w : Set M)
+    (s : span R w = ⊤) : #ι ≤ #w := by
+  fapply card_le_of_injective'' (R := R)
+  · apply Finsupp.linearCombination
+    exact fun i ↦ Span.repr R w ⟨v i, s ▸ trivial⟩
+  · intro f g h
+    apply_fun linearCombination R ((↑) : w → M) at h
+    simp only [linearCombination_linearCombination, Submodule.coe_mk,
+               Span.finsupp_linearCombination_repr] at h
+    exact i h
+
 /-- Let `R` satisfy the strong rank condition. If `m` elements of a free rank `n` `R`-module are
 linearly independent, then `m ≤ n`. -/
 theorem Basis.card_le_card_of_linearIndependent_aux {R : Type*} [Ring R] [StrongRankCondition R]
@@ -293,8 +318,8 @@ theorem Basis.mk_eq_rank'' {ι : Type v} (v : Basis ι R M) : #ι = Module.rank 
     · apply le_ciSup (Cardinal.bddAbove_range _)
       exact
         ⟨Set.range v, by
+          rw [LinearIndepOn]
           convert v.reindexRange.linearIndependent
-          ext
           simp⟩
     · exact (Cardinal.mk_range_eq v v.injective).ge
   · apply ciSup_le'
@@ -320,12 +345,13 @@ theorem Basis.card_le_card_of_linearIndependent {ι : Type*} [Fintype ι] (b : B
 
 theorem Basis.card_le_card_of_submodule (N : Submodule R M) [Fintype ι] (b : Basis ι R M)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
-  b.card_le_card_of_linearIndependent (b'.linearIndependent.map' N.subtype N.ker_subtype)
+  b.card_le_card_of_linearIndependent
+    (b'.linearIndependent.map_injOn N.subtype N.injective_subtype.injOn)
 
 theorem Basis.card_le_card_of_le {N O : Submodule R M} (hNO : N ≤ O) [Fintype ι] (b : Basis ι R O)
     [Fintype ι'] (b' : Basis ι' R N) : Fintype.card ι' ≤ Fintype.card ι :=
   b.card_le_card_of_linearIndependent
-    (b'.linearIndependent.map' (Submodule.inclusion hNO) (N.ker_inclusion O _))
+    (b'.linearIndependent.map_injOn (inclusion hNO) (N.inclusion_injective _).injOn)
 
 theorem Basis.mk_eq_rank (v : Basis ι R M) :
     Cardinal.lift.{v} #ι = Cardinal.lift.{w} (Module.rank R M) := by
@@ -342,18 +368,23 @@ theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
   rw [← Cardinal.lift_inj, ← (Basis.span hv).mk_eq_rank,
     Cardinal.mk_range_eq_of_injective (@LinearIndependent.injective ι R M v _ _ _ _ hv)]
 
-theorem rank_span_set {s : Set M} (hs : LinearIndependent R (fun x => x : s → M)) :
-    Module.rank R ↑(span R s) = #s := by
+theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R ↑(span R s) = #s := by
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
+
+theorem toENat_rank_span_set {v : ι → M} {s : Set ι} (hs : LinearIndepOn R v s) :
+    (Module.rank R <| span R <| v '' s).toENat = s.encard := by
+  rw [image_eq_range, ← hs.injOn.encard_image, ← toENat_cardinalMk, image_eq_range,
+    ← rank_span hs.linearIndependent]
 
 /-- An induction (and recursion) principle for proving results about all submodules of a fixed
 finite free module `M`. A property is true for all submodules of `M` if it satisfies the following
 "inductive step": the property is true for a submodule `N` if it's true for all submodules `N'`
 of `N` with the property that there exists `0 ≠ x ∈ N` such that the sum `N' + Rx` is direct. -/
-def Submodule.inductionOnRank [IsDomain R] [Finite ι] (b : Basis ι R M)
-    (P : Submodule R M → Sort*) (ih : ∀ N : Submodule R M,
-    (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
+def Submodule.inductionOnRank {R M} [Ring R] [StrongRankCondition R] [AddCommGroup M] [Module R M]
+    [IsDomain R] [Finite ι] (b : Basis ι R M) (P : Submodule R M → Sort*)
+    (ih : ∀ N : Submodule R M,
+      (∀ N' ≤ N, ∀ x ∈ N, (∀ (c : R), ∀ y ∈ N', c • x + y = (0 : M) → c = 0) → P N') → P N)
     (N : Submodule R M) : P N :=
   letI := Fintype.ofFinite ι
   Submodule.inductionOnRankAux b P ih (Fintype.card ι) N fun hs hli => by
@@ -433,10 +464,10 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
 
 noncomputable instance {R M : Type*} [DivisionRing R] [AddCommGroup M] [Module R M]
     {s t : Set M} [Module.Finite R (span R t)]
-    (hs : LinearIndependent R ((↑) : s → M)) (hst : s ⊆ t) :
+    (hs : LinearIndepOn R id s) (hst : s ⊆ t) :
     Fintype (hs.extend hst) := by
   refine Classical.choice (Cardinal.lt_aleph0_iff_fintype.1 ?_)
-  rw [← rank_span_set (hs.linearIndependent_extend hst), hs.span_extend_eq_span]
+  rw [← rank_span_set (hs.linearIndepOn_extend hst), hs.span_extend_eq_span]
   exact Module.rank_lt_aleph0 ..
 
 /-- If `M` is finite, `finrank M = rank M`. -/
@@ -455,7 +486,7 @@ end Module
 
 open Module
 
-variable {M'} [AddCommGroup M'] [Module R M']
+variable {M'} [AddCommMonoid M'] [Module R M']
 
 theorem LinearMap.finrank_le_finrank_of_injective [Module.Finite R M'] {f : M →ₗ[R] M'}
     (hf : Function.Injective f) : finrank R M ≤ finrank R M' :=

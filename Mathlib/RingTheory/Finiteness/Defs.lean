@@ -25,10 +25,7 @@ In this file we define a notion of finiteness that is common in commutative alge
 
 -/
 
-assert_not_exists Basis
-assert_not_exists Ideal.radical
-assert_not_exists Matrix
-assert_not_exists Subalgebra
+assert_not_exists Basis Ideal.radical Matrix Subalgebra
 
 open Function (Surjective)
 open Finsupp
@@ -136,6 +133,14 @@ lemma exists_fin [Module.Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodul
 end Finite
 
 end Module
+
+instance AddMonoid.FG.to_moduleFinite_nat {M : Type*} [AddCommMonoid M] [FG M] :
+    Module.Finite ℕ M :=
+  Module.Finite.iff_addMonoid_fg.mpr ‹_›
+
+instance AddMonoid.FG.to_moduleFinite_int {G : Type*} [AddCommGroup G] [FG G] :
+    Module.Finite ℤ G :=
+  Module.Finite.iff_addGroup_fg.mpr <| AddGroup.fg_iff_addMonoid_fg.mpr ‹_›
 
 end ModuleAndAlgebra
 

@@ -22,7 +22,7 @@ This file also contains Doob's maximal inequality: given a non-negative submarti
   respect to a stopping time is a submartingale.
 * `MeasureTheory.maximal_ineq`: Doob's maximal inequality.
 
- -/
+-/
 
 
 open scoped NNReal ENNReal MeasureTheory ProbabilityTheory
