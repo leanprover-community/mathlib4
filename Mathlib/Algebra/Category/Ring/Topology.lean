@@ -17,7 +17,7 @@ Alternatively, given a presentation `R = ℤ[x₁,...,xₙ]/I`,
 this is the subspace topology `Hom(R, S) ↪ Hom(ℤ[x₁,...,xₙ], S) = Sⁿ`.
 
 ## Main results
-- `CommRingCat.HomTopology.isClosedEmbedding_comp_right_of_surjective`:
+- `CommRingCat.HomTopology.isClosedEmbedding_precomp_of_surjective`:
   `Hom(R/I, T)` is a closed subspace of `Hom(R, T)` if `T` is Hausdorff.
 - `CommRingCat.HomTopology.mvPolynomialHomeo`:
   `Hom(S[Xᵢ], R)` is homeomorphic to `Hom(S, R) × Rⁱ`.
@@ -51,37 +51,37 @@ nonrec lemma continuous_apply [TopologicalSpace S] (x : R) :
   (continuous_apply x).comp continuous_induced_dom
 
 @[fun_prop]
-lemma continuous_comp_right [TopologicalSpace T] (f : R ⟶ S) :
+lemma continuous_precomp [TopologicalSpace T] (f : R ⟶ S) :
     Continuous ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) :=
   continuous_induced_rng.mpr ((Pi.continuous_precomp f.hom).comp continuous_induced_dom)
 
 /-- If `R ≅ S`, then `Hom(R, T)` is homeomorphc to `Hom(S, T)`. -/
 @[simps]
-def compRightHomeo [TopologicalSpace T] (f : R ≅ S) :
+def precompHomeo [TopologicalSpace T] (f : R ≅ S) :
     (S ⟶ T) ≃ₜ (R ⟶ T) where
-  continuous_toFun := continuous_comp_right f.hom
-  continuous_invFun := continuous_comp_right f.inv
+  continuous_toFun := continuous_precomp f.hom
+  continuous_invFun := continuous_precomp f.inv
   left_inv _ := by simp
   right_inv _ := by simp
 
-lemma isHomeomorph_comp_right [TopologicalSpace T] (f : R ⟶ S) [IsIso f] :
+lemma isHomeomorph_precomp [TopologicalSpace T] (f : R ⟶ S) [IsIso f] :
     IsHomeomorph ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) :=
-  (compRightHomeo (asIso f)).isHomeomorph
+  (precompHomeo (asIso f)).isHomeomorph
 
 /-- `Hom(R/I, T)` has the subspace topology of `Hom(R, T)`. -/
-lemma isEmbedding_comp_right_of_surjective
+lemma isEmbedding_precomp_of_surjective
     [TopologicalSpace T] (f : R ⟶ S) (hf : Function.Surjective f) :
     Topology.IsEmbedding ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) := by
-  refine IsEmbedding.of_comp (continuous_comp_right _) (IsInducing.induced _).continuous ?_
+  refine IsEmbedding.of_comp (continuous_precomp _) (IsInducing.induced _).continuous ?_
   suffices IsEmbedding ((· ∘ f.hom) : (S → T) → (R → T)) from
     this.comp (.induced (fun f g e ↦ by ext a; exact congr($e a)))
   exact Function.Surjective.isEmbedding_comp _ hf
 
 /-- `Hom(R/I, T)` is a closed subspace of `Hom(R, T)` if `T` is T1. -/
-lemma isClosedEmbedding_comp_right_of_surjective
+lemma isClosedEmbedding_precomp_of_surjective
     [TopologicalSpace T] [T1Space T] (f : R ⟶ S) (hf : Function.Surjective f) :
     Topology.IsClosedEmbedding ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) := by
-  refine ⟨isEmbedding_comp_right_of_surjective f hf, ?_⟩
+  refine ⟨isEmbedding_precomp_of_surjective f hf, ?_⟩
   have : IsClosed (⋂ i : RingHom.ker f.hom, { f : R ⟶ T | f i = 0 }) :=
     isClosed_iInter fun x ↦ (isClosed_singleton (x := 0)).preimage (continuous_apply (S := T) x.1)
   convert this
@@ -126,7 +126,7 @@ lemma isClosedEmbedding_hom
   have : Function.Surjective f := Function.LeftInverse.surjective (g := .X) fun x ↦ by simp [f]
   convert ((mvPolynomialHomeo R S (.of _)).trans
     (.uniqueProd (⊥_ CommRingCat ⟶ S) _)).isClosedEmbedding.comp
-    (isClosedEmbedding_comp_right_of_surjective f this) using 2 with g
+    (isClosedEmbedding_precomp_of_surjective f this) using 2 with g
   ext x
   simp [f]
 
@@ -149,8 +149,8 @@ lemma isEmbedding_pushout [TopologicalSpace R] [TopologicalRing R]
   have hfA : Function.Surjective fA.hom := fun x ↦ ⟨.X x, by simp [PA, fA]⟩
   let fB : PB ⟶ B := CommRingCat.ofHom (MvPolynomial.eval₂Hom ψ.hom id)
   have hfB : Function.Surjective fB.hom := fun x ↦ ⟨.X x, by simp [PB, fB]⟩
-  have := (isEmbedding_comp_right_of_surjective (T := R) fA hfA).prodMap
-    (isEmbedding_comp_right_of_surjective (T := R) fB hfB)
+  have := (isEmbedding_precomp_of_surjective (T := R) fA hfA).prodMap
+    (isEmbedding_precomp_of_surjective (T := R) fB hfB)
   rw [← IsEmbedding.of_comp_iff this]
   let PAB := CommRingCat.of (MvPolynomial (A ⊕ B) S)
   let fAB : PAB ⟶ pushout φ ψ :=
@@ -168,7 +168,7 @@ lemma isEmbedding_pushout [TopologicalSpace R] [TopologicalRing R]
   have H := (mvPolynomialHomeo A R S).symm.isEmbedding.prodMap
     (mvPolynomialHomeo B R S).symm.isEmbedding
   convert ((H.comp hF).comp (mvPolynomialHomeo _ R S).isEmbedding).comp
-    (isEmbedding_comp_right_of_surjective (T := R) fAB hfAB)
+    (isEmbedding_precomp_of_surjective (T := R) fAB hfAB)
   have (s) : (pushout.inr φ ψ).hom (ψ.hom s) = (pushout.inl φ ψ).hom (φ.hom s) :=
     congr($(pushout.condition (f := φ)).hom s).symm
   ext f s <;> simp [fA, fB, fAB, PA, PB, PAB, F, this]
