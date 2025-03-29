@@ -109,7 +109,6 @@ variable {Y : Opens X}
     category of opens contained in some `U i`. -/
 @[simps]
 def generateEquivalenceOpensLe_functor' :
-def generateEquivalenceOpensLe_functor' :
     (FullSubcategory fun f : Over Y => (Sieve.generate (presieveOfCoveringAux U Y)).arrows f.hom) ⥤
     OpensLeCover U :=
 { obj := fun f =>

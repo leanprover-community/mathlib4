@@ -114,7 +114,7 @@ doing the more expensive `aesop` tactic.
 Note on `refine id ?_`.
 In some cases it is important that the type of the proof matches the expected type exactly.
 e.g. if the goal is `2 = 1 + 1`, the `rfl` tactic will give a proof of type `2 = 2`.
-starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
+Starting a proof with `refine id ?_` is a trick to make sure that the proof has exactly
 the expected type, in this case `2 = 1 + 1`.
 -/
 macro (name := rfl_cat) "rfl_cat" : tactic => do `(tactic| (refine id ?_; intros; rfl))
