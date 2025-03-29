@@ -616,7 +616,7 @@ theorem indepFun_iff_map_prod_eq_prod_map_map {mβ : MeasurableSpace β} {mβ' :
     rw [(h₀ hs ht).1, (h₀ hs ht).2, h, Measure.prod_prod]
 
 theorem iIndepFun_iff_pi_map_eq_map [Fintype ι] {β : ι → Type*}
-    {m : (i : ι) → MeasurableSpace (β i)} {f : (i : ι) → Ω → β i} [IsProbabilityMeasure μ]
+    {m : ∀ i, MeasurableSpace (β i)} {f : Π i, Ω → β i} [IsProbabilityMeasure μ]
     (hf : ∀ i, AEMeasurable (f i) μ) :
     iIndepFun f μ ↔ Measure.pi (fun i ↦ μ.map (f i)) = μ.map (fun ω i ↦ f i ω) := by
   classical
