@@ -42,6 +42,7 @@ We define it using an `Equiv` for the map and a `LinearEquiv` for the linear par
 to allow affine equivalences with good definitional equalities. -/
 structure AffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring k] [AddCommGroup V₁] [Module k V₁]
   [AddTorsor V₁ P₁] [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] extends P₁ ≃ P₂ where
+  /-- The linear part of this affine equivalence -/
   linear : V₁ ≃ₗ[k] V₂
   map_vadd' : ∀ (p : P₁) (v : V₁), toEquiv (v +ᵥ p) = linear v +ᵥ toEquiv p
 
