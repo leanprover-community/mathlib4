@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Multiset.MapFold
+import Mathlib.Data.Set.Function
 import Mathlib.Order.Hom.Basic
 
 /-!

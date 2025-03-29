@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.Multiset.Filter
 import Mathlib.Order.MinMax
+import Mathlib.Logic.Pairwise
 
 /-!
 # Distributive lattice structure on multisets
