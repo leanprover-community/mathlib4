@@ -36,7 +36,7 @@ If `a` and `b` agree at `S ⟶ colimit F`,
 then there exists `k` such that `a` and `b` are equal at `S ⟶ F_k`.
 In other words, the map `colimᵢ Hom_R(S, Fᵢ) ⟶ Hom_R(S, colim F)` is injective.
 -/
-lemma exists_comp_map_eq_of_isColimit (hf : f.hom.EssFiniteType)
+lemma RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit (hf : f.hom.EssFiniteType)
     {i : J} (a : S ⟶ F.obj i) (ha : f ≫ a = α.app i)
     {j : J} (b : S ⟶ F.obj j) (hb : f ≫ b = α.app j)
     (hab : a ≫ c.ι.app i = b ≫ c.ι.app j) :
@@ -74,7 +74,7 @@ and a ring hom `g : S ⟶ colimit F` over `R`.
 then there exists `i` such that `g` factors through `Fᵢ`.
 In other words, the map `colimᵢ Hom_R(S, Fᵢ) ⟶ Hom_R(S, colim F)` is surjective.
 -/
-lemma exists_eq_comp_ι_app_of_isColimit (hf : f.hom.FinitePresentation)
+lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.FinitePresentation)
     (g : S ⟶ c.pt) (hg : ∀ i, f ≫ g = α.app i ≫ c.ι.app i) :
     ∃ (i : J) (g' : S ⟶ F.obj i), f ≫ g' = α.app i ∧ g = g' ≫ c.ι.app i := by
   classical
@@ -143,14 +143,14 @@ lemma preservesColimit_coyoneda_of_finitePresentation
   intro c hc
   refine ⟨Types.FilteredColimit.isColimitOf _ _ ?_ ?_⟩
   · intro f
-    obtain ⟨i, g, h₁, h₂⟩ := exists_eq_comp_ι_app_of_isColimit R (F ⋙ Under.forget R)
-      { app i := (F.obj i).hom } S.hom ((Under.forget R).mapCocone c)
+    obtain ⟨i, g, h₁, h₂⟩ := RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit
+       R (F ⋙ Under.forget R) { app i := (F.obj i).hom } S.hom ((Under.forget R).mapCocone c)
       (PreservesColimit.preserves hc).some hS f.right (by simp)
     exact ⟨i, Under.homMk g h₁, Under.UnderMorphism.ext h₂⟩
   · intro i j f₁ f₂ e
     dsimp at *
-    obtain ⟨k, hik, hjk, e⟩ := exists_comp_map_eq_of_isColimit R (F ⋙ Under.forget R)
-      { app i := (F.obj i).hom } S.hom ((Under.forget R).mapCocone c)
+    obtain ⟨k, hik, hjk, e⟩ := RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit
+      R (F ⋙ Under.forget R) { app i := (F.obj i).hom } S.hom ((Under.forget R).mapCocone c)
       (PreservesColimit.preserves hc).some
       (RingHom.FiniteType.of_finitePresentation hS).essFiniteType
       f₁.right (Under.w f₁) f₂.right (Under.w f₂) congr($(e).right)
