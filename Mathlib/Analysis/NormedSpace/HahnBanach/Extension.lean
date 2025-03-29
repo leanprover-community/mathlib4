@@ -83,8 +83,12 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   -- It is an extension of `f`.
   have h : ∀ x : p, g.extendTo𝕜 x = f x := by
     intro x
+    rw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul]
     -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [ContinuousLinearMap.extendTo𝕜_apply, ← Submodule.coe_smul, hextends, hextends]
+    -- The goal has a coercion from `RestrictScalars ℝ 𝕜 E →L[ℝ] ℝ`, but
+    -- `hextends` involves a coercion from `E →L[ℝ] ℝ`.
+    erw [hextends]
+    erw [hextends]
     have :
         (fr x : 𝕜) - I * ↑(fr ((I : 𝕜) • x)) = (re (f x) : 𝕜) - (I : 𝕜) * re (f ((I : 𝕜) • x)) := by
       rfl

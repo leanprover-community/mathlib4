@@ -78,6 +78,10 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
 
 @[simp] theorem toENat_cardinalMk (s : Set α) : (Cardinal.mk s).toENat = s.encard := rfl
 
+theorem toENat_cardinalMk_subtype (P : α → Prop) :
+    (Cardinal.mk {x // P x}).toENat = {x | P x}.encard :=
+  rfl
+
 @[simp] theorem coe_fintypeCard (s : Set α) [Fintype s] : Fintype.card s = s.encard := by
   simp [encard_eq_coe_toFinset_card]
 
@@ -85,7 +89,7 @@ theorem encard_eq_coe_toFinset_card (s : Set α) [Fintype s] : encard s = s.toFi
     encard (s : Set α) = s.card := by
   rw [Finite.encard_eq_coe_toFinset_card (Finset.finite_toSet s)]; simp
 
-theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
+@[simp] theorem Infinite.encard_eq {s : Set α} (h : s.Infinite) : s.encard = ⊤ := by
   have := h.to_subtype
   rw [encard, ENat.card_eq_top_of_infinite]
 
@@ -117,10 +121,11 @@ theorem encard_insert_of_not_mem {a : α} (has : a ∉ s) : (insert a s).encard 
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
-  refine h.induction_on _ (by simp) ?_
-  rintro a t hat _ ht'
-  rw [encard_insert_of_not_mem hat]
-  exact lt_tsub_iff_right.1 ht'
+  induction s, h using Set.Finite.induction_on with
+  | empty => simp
+  | insert hat _ ht' =>
+    rw [encard_insert_of_not_mem hat]
+    exact lt_tsub_iff_right.1 ht'
 
 theorem Finite.encard_eq_coe (h : s.Finite) : s.encard = ENat.toNat s.encard :=
   (ENat.coe_toNat h.encard_lt_top.ne).symm

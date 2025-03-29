@@ -5,7 +5,6 @@ Authors: Fox Thomson, Martin Dvorak
 -/
 import Mathlib.Algebra.Order.Kleene
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Data.List.Flatten
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.DeriveFintype
 
@@ -270,20 +269,20 @@ theorem self_eq_mul_add_iff {l m n : Language α} (hm : [] ∉ m) : l = m * l + 
       induction' hlen : x.length using Nat.strong_induction_on with _ ih generalizing x
       subst hlen
       rw [h] at hx
-      obtain hx | _ := hx
+      obtain hx | hx := hx
       · obtain ⟨a, ha, b, hb, rfl⟩ := mem_mul.mp hx
         rw [length_append] at ih
-        have hal : a.length > 0 := by cases a <;> [contradiction; simp]
+        have hal : 0 < a.length := length_pos_iff.mpr <| ne_of_mem_of_not_mem ha hm
         specialize ih b.length (Nat.lt_add_left_iff_pos.mpr hal) hb rfl
         rw [← one_add_self_mul_kstar_eq_kstar, one_add_mul, mul_assoc]
         right
         exact ⟨_, ha, _, ih, rfl⟩
-      · exact ⟨[], nil_mem_kstar _, _, by trivial⟩
+      · exact ⟨[], nil_mem_kstar _, _, ⟨hx, nil_append _⟩⟩
     · rw [kstar_eq_iSup_pow, iSup_mul, iSup_le_iff]
       intro i
       induction' i with _ ih <;> rw [h]
       · rw [pow_zero, one_mul, add_comm]
-        exact le_add_right (by rfl)
+        exact le_self_add
       · rw [add_comm, pow_add, pow_one, mul_assoc]
         exact le_add_right (mul_le_mul_left' ih _)
   mpr h := by rw [h, add_comm, ← mul_assoc, ← one_add_mul, one_add_self_mul_kstar_eq_kstar]

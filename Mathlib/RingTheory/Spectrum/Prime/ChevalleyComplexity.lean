@@ -742,7 +742,7 @@ lemma chevalley_mvPolynomialC
     intro t ht
     show _ ≤ 1 + (d.map Fin.val).count (Fin.mk t ht).val
     rw [Multiset.count_map_eq_count' _ _ Fin.val_injective]
-    cases' t with t
+    obtain - | t := t
     · exact le_rfl
     · simp only [add_lt_add_iff_right] at ht
       show 1 + (B.map Fin.val).count (Fin.mk t ht).val ≤ _
