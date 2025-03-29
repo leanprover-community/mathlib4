@@ -58,6 +58,15 @@ def divisorsAntidiagonal : Finset (ℕ × ℕ) :=
   (Icc 1 n).filterMap (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
     fun x₁ x₂ (x, y) hx₁ hx₂ ↦ by aesop
 
+/-- Pairs of divisors of a natural number as a list.
+
+`n.divisorsAntidiagonalList` is the list of pairs `(a, b) : ℕ × ℕ` such that `a * b = n`, ordered
+by increasing `a`. By convention, we set `Nat.divisorsAntidiagonalList 0 = []`.
+-/
+def divisorsAntidiagonalList (n : ℕ) : List (ℕ × ℕ) :=
+  (List.range' 1 n).filterMap
+    (fun x ↦ let y := n / x; if x * y = n then some (x, y) else none)
+
 variable {n}
 
 @[simp]
@@ -117,6 +126,57 @@ theorem mem_divisorsAntidiagonal {x : ℕ × ℕ} :
   · rintro ⟨rfl, hab⟩
     rw [mul_ne_zero_iff] at hab
     simpa [hab.1, hab.2] using Nat.le_mul_of_pos_right _ hab.2.bot_lt
+
+@[simp]
+lemma divisorsAntidiagonalList_coe {n : ℕ} :
+    n.divisorsAntidiagonalList.toFinset = n.divisorsAntidiagonal := by
+  rw [divisorsAntidiagonalList, divisorsAntidiagonal, List.toFinset_filterMap (f_inj := by aesop),
+    List.toFinset_range'_1_1]
+
+lemma List.Sorted.filterMap {α β : Type*} [DecidableEq α] [DecidableEq β]
+    (p : α → Option β) (l : List α)
+    (r : α → α → Prop) (r' : β → β → Prop) (hl : l.Sorted r)
+    (hp : ∀ (a b : α) (c d : β), p a = some c → p b = some d → r a b → r' c d) :
+    (l.filterMap p).Sorted r' := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    simp [List.filterMap_cons]
+    obtain H | ⟨b, hb⟩ := Option.eq_none_or_eq_some (p a)
+    · exact H ▸ ih (List.sorted_cons.mp hl).right
+    · rw [hb, List.sorted_cons]
+      refine ⟨fun x hx ↦ ?_, ih (List.sorted_cons.mp hl).right⟩
+      rw [List.mem_filterMap] at hx
+      obtain ⟨u, hu, hu'⟩ := hx
+      apply hp a u b x hb hu'
+      apply (List.sorted_cons.mp hl).left u hu
+
+lemma List.left_le_of_mem_range' {a b s x : ℕ}
+    (hx : x ∈ List.range' a b s) : a ≤ x := by
+  sorry
+
+lemma List.sorted_lt_range' {a b s} (hs : s ≠ 0) :
+    List.Sorted (· < ·) (List.range' a b s) := by
+  induction b generalizing a with
+  | zero => simp
+  | succ n ih =>
+    rw [List.range'_succ]
+    refine List.sorted_cons.mpr ⟨fun b hb ↦ ?_, @ih (a + s)⟩
+    apply lt_of_lt_of_le (Nat.lt_add_of_pos_right (Nat.zero_lt_of_ne_zero hs))
+      (List.left_le_of_mem_range' hb)
+
+lemma divisorsAntidiagonalList_sorted {n : ℕ} :
+    n.divisorsAntidiagonalList.Sorted (Prod.Lex (· < ·) (· < ·)) := by
+  apply List.Sorted.filterMap _ _ _ _ (List.sorted_lt_range' (Nat.one_ne_zero))
+  intro a b c d h h' ha
+  simp at h h'
+  apply Prod.Lex.left
+  simpa [←h.right, ←h'.right]
+
+@[simp]
+lemma mem_divisorsAntidiagonalList_of_pos {n : ℕ} (a : ℕ × ℕ) :
+    a ∈ n.divisorsAntidiagonalList ↔ a.1 * a.2 = n ∧ n ≠ 0 := by
+  rw [←List.mem_toFinset, divisorsAntidiagonalList_coe, mem_divisorsAntidiagonal]
 
 lemma ne_zero_of_mem_divisorsAntidiagonal {p : ℕ × ℕ} (hp : p ∈ n.divisorsAntidiagonal) :
     p.1 ≠ 0 ∧ p.2 ≠ 0 := by
@@ -245,6 +305,12 @@ theorem divisorsAntidiagonal_zero : divisorsAntidiagonal 0 = ∅ := by
 theorem divisorsAntidiagonal_one : divisorsAntidiagonal 1 = {(1, 1)} := by
   ext
   simp [mul_eq_one, Prod.ext_iff]
+
+@[simp]
+lemma divisorsAntidiagonalList_zero : divisorsAntidiagonalList 0 = [] := rfl
+
+@[simp]
+lemma divisorsAntidiagonalList_one : divisorsAntidiagonalList 1 = [(1, 1)] := rfl
 
 @[simp high]
 theorem swap_mem_divisorsAntidiagonal {x : ℕ × ℕ} :
