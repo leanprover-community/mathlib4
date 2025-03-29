@@ -1060,6 +1060,9 @@ theorem fderivWithin_one [One F] : fderivWithin 𝕜 (1 : E → F) s = 0 := fder
 theorem fderivWithin_natCast [NatCast F] (n : ℕ) : fderivWithin 𝕜 (n : E → F) s = 0 :=
   fderivWithin_const _
 
+theorem fderivWithin_intCast [IntCast F] (z : ℤ) : fderivWithin 𝕜 (n : E → F) s = 0 :=
+  fderivWithin_const _
+
 @[simp low]
 theorem fderivWithin_ofNat (n : ℕ) [OfNat F n] : fderivWithin 𝕜 (ofNat(n) : E → F) s = 0 :=
   fderivWithin_const _
@@ -1078,6 +1081,8 @@ theorem fderiv_zero : fderiv 𝕜 (0 : E → F) = 0 := fderiv_const _
 theorem fderiv_one [One F] : fderiv 𝕜 (1 : E → F) = 0 := fderiv_const _
 
 theorem fderiv_natCast [NatCast F] (n : ℕ) : fderiv 𝕜 (n : E → F) = 0 := fderiv_const _
+
+theorem fderiv_intCast [IntCast F] (z : ℤ) : fderiv 𝕜 (z : E → F) = 0 := fderiv_const _
 
 @[simp low]
 theorem fderiv_ofNat (n : ℕ) [OfNat F n] : fderiv 𝕜 (ofNat(n) : E → F) = 0 := fderiv_const _
