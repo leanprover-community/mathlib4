@@ -231,10 +231,11 @@ variable [CancelCommMonoidWithZero R] [UniqueFactorizationMonoid R]
 
 lemma _root_.exists_squarefree_dvd_pow_of_ne_zero {x : R} (hx : x ≠ 0) :
     ∃ (y : R) (n : ℕ), Squarefree y ∧ y ∣ x ∧ x ∣ y ^ n := by
-  induction' x using WfDvdMonoid.induction_on_irreducible with u hu z p hz hp ih
-  · contradiction
-  · exact ⟨1, 0, squarefree_one, one_dvd u, hu.dvd⟩
-  · obtain ⟨y, n, hy, hyx, hy'⟩ := ih hz
+  induction x using WfDvdMonoid.induction_on_irreducible with
+  | zero => contradiction
+  | unit u hu => exact ⟨1, 0, squarefree_one, one_dvd u, hu.dvd⟩
+  | mul z p hz hp ih =>
+    obtain ⟨y, n, hy, hyx, hy'⟩ := ih hz
     rcases n.eq_zero_or_pos with rfl | hn
     · exact ⟨p, 1, hp.squarefree, dvd_mul_right p z, by simp [isUnit_of_dvd_one (pow_zero y ▸ hy')]⟩
     by_cases hp' : p ∣ y
