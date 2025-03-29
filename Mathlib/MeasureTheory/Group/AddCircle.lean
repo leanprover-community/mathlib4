@@ -24,7 +24,7 @@ The file is a place to collect measure-theoretic results about the additive circ
 
 open Set Function Filter MeasureTheory MeasureTheory.Measure Metric
 
-open scoped MeasureTheory Pointwise Topology ENNReal
+open scoped Finset MeasureTheory Pointwise Topology ENNReal
 
 namespace AddCircle
 
