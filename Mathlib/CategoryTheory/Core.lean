@@ -89,7 +89,7 @@ namespace Functor
 
 variable {D : Type u₂} [Category.{v₂} D]
 
-/-- A functor `C ⥤ D` induces a functor `Core C ⥤ Core D` -/
+/-- A functor `C ⥤ D` induces a functor `Core C ⥤ Core D`. -/
 @[simps!]
 def core (F : C ⥤ D) : Core C ⥤ Core D := Core.functorToCore (Core.inclusion _ ⋙ F)
 
