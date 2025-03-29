@@ -43,15 +43,15 @@ variable [CommSemiring R] {S : Type*} [CommSemiring S] (f : R →* S) (g : R →
 variable (S)
 
 /-- The frobenius map of an algebra as a frobenius-semilinear map. -/
-nonrec def LinearMap.frobenius [Algebra R S] : S →ₛₗ[frobenius R p] S where
-  __ := frobenius S p
-  map_smul' r s := show frobenius S p _ = _ by
+def LinearMap.frobenius [Algebra R S] : S →ₛₗ[frobenius R p] S where
+  __ := _root_.frobenius S p
+  map_smul' r s := show _root_.frobenius S p _ = _ by
     simp_rw [Algebra.smul_def, map_mul, ← (algebraMap R S).map_frobenius]; rfl
 
 /-- The iterated frobenius map of an algebra as a iterated-frobenius-semilinear map. -/
-nonrec def LinearMap.iterateFrobenius [Algebra R S] : S →ₛₗ[iterateFrobenius R p n] S where
-  __ := iterateFrobenius S p n
-  map_smul' f s := show iterateFrobenius S p n _ = _ by
+def LinearMap.iterateFrobenius [Algebra R S] : S →ₛₗ[iterateFrobenius R p n] S where
+  __ := _root_.iterateFrobenius S p n
+  map_smul' f s := show _root_.iterateFrobenius S p n _ = _ by
     simp_rw [iterateFrobenius_def, Algebra.smul_def, mul_pow, ← map_pow]; rfl
 
 theorem LinearMap.frobenius_def [Algebra R S] (x : S) : frobenius R S p x = x ^ p := rfl
