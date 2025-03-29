@@ -328,17 +328,17 @@ theorem _root_.Fintype.card_Icc (a b : α) [Fintype (Set.Icc a b)] :
 
 @[simp]
 theorem _root_.Fintype.card_Ico (a b : α) [Fintype (Set.Ico a b)] :
-    Fintype.card (Set.Ico a b) = (Ico a b).card :=
+    Fintype.card (Set.Ico a b) = #(Ico a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 @[simp]
 theorem _root_.Fintype.card_Ioc (a b : α) [Fintype (Set.Ioc a b)] :
-    Fintype.card (Set.Ioc a b) = (Ioc a b).card :=
+    Fintype.card (Set.Ioc a b) = #(Ioc a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 @[simp]
 theorem _root_.Fintype.card_Ioo (a b : α) [Fintype (Set.Ioo a b)] :
-    Fintype.card (Set.Ioo a b) = (Ioo a b).card :=
+    Fintype.card (Set.Ioo a b) = #(Ioo a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 end LocallyFiniteOrder
@@ -373,12 +373,12 @@ theorem coe_Ioi (a : α) : (Ioi a : Set α) = Set.Ioi a :=
 
 @[simp]
 theorem _root_.Fintype.card_Ici (a : α) [Fintype (Set.Ici a)] :
-    Fintype.card (Set.Ici a) = (Ici a).card :=
+    Fintype.card (Set.Ici a) = #(Ici a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 @[simp]
 theorem _root_.Fintype.card_Ioi (a : α) [Fintype (Set.Ioi a)] :
-    Fintype.card (Set.Ioi a) = (Ioi a).card :=
+    Fintype.card (Set.Ioi a) = #(Ioi a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 end LocallyFiniteOrderTop
@@ -413,12 +413,12 @@ theorem coe_Iio (a : α) : (Iio a : Set α) = Set.Iio a :=
 
 @[simp]
 theorem _root_.Fintype.card_Iic (a : α) [Fintype (Set.Iic a)] :
-    Fintype.card (Set.Iic a) = (Iic a).card :=
+    Fintype.card (Set.Iic a) = #(Iic a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 @[simp]
 theorem _root_.Fintype.card_Iio (a : α) [Fintype (Set.Iio a)] :
-    Fintype.card (Set.Iio a) = (Iio a).card :=
+    Fintype.card (Set.Iio a) = #(Iio a) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp
 
 end LocallyFiniteOrderBot
@@ -488,7 +488,7 @@ theorem coe_uIcc (a b : α) : (Finset.uIcc a b : Set α) = Set.uIcc a b :=
 
 @[simp]
 theorem _root_.Fintype.card_uIcc (a b : α) [Fintype (Set.uIcc a b)] :
-    Fintype.card (Set.uIcc a b) = (uIcc a b).card :=
+    Fintype.card (Set.uIcc a b) = #(uIcc a b) :=
   Fintype.card_of_finset' _ fun _ ↦ by simp [Set.uIcc]
 
 end Lattice
@@ -550,15 +550,9 @@ section Preorder
 variable [Preorder α] [LocallyFiniteOrder α] (a b : α)
 
 instance instFintypeIcc : Fintype (Icc a b) := .ofFinset (Finset.Icc a b) fun _ => Finset.mem_Icc
-
-instance instFintypeIco : Fintype (Ico a b) := Fintype.ofFinset (Finset.Ico a b) fun _ =>
-  Finset.mem_Ico
-
-instance instFintypeIoc : Fintype (Ioc a b) := Fintype.ofFinset (Finset.Ioc a b) fun _ =>
-  Finset.mem_Ioc
-
-instance instFintypeIoo : Fintype (Ioo a b) := Fintype.ofFinset (Finset.Ioo a b) fun _ =>
-  Finset.mem_Ioo
+instance instFintypeIco : Fintype (Ico a b) := .ofFinset (Finset.Ico a b) fun _ => Finset.mem_Ico
+instance instFintypeIoc : Fintype (Ioc a b) := .ofFinset (Finset.Ioc a b) fun _ => Finset.mem_Ioc
+instance instFintypeIoo : Fintype (Ioo a b) := .ofFinset (Finset.Ioo a b) fun _ => Finset.mem_Ioo
 
 theorem finite_Icc : (Icc a b).Finite :=
   (Icc a b).toFinite
@@ -578,9 +572,9 @@ section OrderTop
 
 variable [Preorder α] [LocallyFiniteOrderTop α] (a : α)
 
-instance instFintypeIci : Fintype (Ici a) := Fintype.ofFinset (Finset.Ici a) fun _ => Finset.mem_Ici
+instance instFintypeIci : Fintype (Ici a) := .ofFinset (Finset.Ici a) fun _ => Finset.mem_Ici
 
-instance instFintypeIoi : Fintype (Ioi a) := Fintype.ofFinset (Finset.Ioi a) fun _ => Finset.mem_Ioi
+instance instFintypeIoi : Fintype (Ioi a) := .ofFinset (Finset.Ioi a) fun _ => Finset.mem_Ioi
 
 theorem finite_Ici : (Ici a).Finite :=
   (Ici a).toFinite
@@ -594,9 +588,9 @@ section OrderBot
 
 variable [Preorder α] [LocallyFiniteOrderBot α] (b : α)
 
-instance instFintypeIic : Fintype (Iic b) := Fintype.ofFinset (Finset.Iic b) fun _ => Finset.mem_Iic
+instance instFintypeIic : Fintype (Iic b) := .ofFinset (Finset.Iic b) fun _ => Finset.mem_Iic
 
-instance instFintypeIio : Fintype (Iio b) := Fintype.ofFinset (Finset.Iio b) fun _ => Finset.mem_Iio
+instance instFintypeIio : Fintype (Iio b) := .ofFinset (Finset.Iio b) fun _ => Finset.mem_Iio
 
 theorem finite_Iic : (Iic b).Finite :=
   (Iic b).toFinite
