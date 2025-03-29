@@ -31,7 +31,6 @@ We introduce binomial expansions using `embDomain`.
 
 open Finset Function
 
-open scoped Classical
 open BigOperators Pointwise
 
 suppress_compilation
@@ -58,6 +57,7 @@ theorem single_sub_single_eq_zero_iff [Nontrivial R] (g g' : Γ) :
   by_contra hgg'
   rw [single_sub_single, sub_eq_zero, MonoidAlgebra.ext_iff] at h
   specialize h g
+  classical
   rw [single_apply, single_apply] at h
   simp [Ne.symm hgg'] at h
 
@@ -438,19 +438,7 @@ theorem support_one_sub_single_npow_zero {g : Γ} {r : R} {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {0, g} :=
   (support_pow_subset_closure (1 - (single g) r) n).trans
     (AddSubmonoid.closure_mono (supp_one_sub_single r))
--/
-theorem _root_.AddSubmonoid.closure_insert_zero {Γ} [AddZeroClass Γ] {g : Γ} :
-    AddSubmonoid.closure ({0, g} : Set Γ) ≤ AddSubmonoid.closure ({g} : Set Γ) :=
-  AddSubmonoid.closure_le.mpr <| Set.insert_subset_iff.mpr
-    { left := AddSubmonoid.zero_mem _, right := AddSubmonoid.subset_closure }
---#find_home! AddSubmonoid.closure_insert_zero --[Mathlib.LinearAlgebra.Span]
 
-theorem _root_.AddSubmonoid.closure_insert_zero_eq {Γ} [AddZeroClass Γ] {g : Γ} :
-    AddSubmonoid.closure ({0, g} : Set Γ) = AddSubmonoid.closure ({g} : Set Γ) :=
-  le_antisymm AddSubmonoid.closure_insert_zero (AddSubmonoid.closure_mono (Set.subset_insert 0 {g}))
---#find_home! AddSubmonoid.closure_insert_zero_eq
-
-/-!
 theorem support_one_sub_single_npow (g : Γ) (r : R) {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {g} :=
   support_one_sub_single_npow_zero.trans AddSubmonoid.closure_insert_zero
