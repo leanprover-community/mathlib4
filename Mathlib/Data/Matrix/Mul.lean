@@ -709,13 +709,13 @@ theorem add_vecMul [Fintype m] (A : Matrix m n α) (x y : m → α) :
   ext
   apply add_dotProduct
 
-theorem vecMul_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [DistribMulAction R S]
+theorem vecMul_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
     [IsScalarTower R S S] (M : Matrix n m S) (b : R) (v : n → S) :
     (b • v) ᵥ* M = b • v ᵥ* M := by
   ext i
   simp only [vecMul, dotProduct, Finset.smul_sum, Pi.smul_apply, smul_mul_assoc]
 
-theorem mulVec_smul [Fintype n] [Monoid R] [NonUnitalNonAssocSemiring S] [DistribMulAction R S]
+theorem mulVec_smul [Fintype n] [NonUnitalNonAssocSemiring S] [DistribSMul R S]
     [SMulCommClass R S S] (M : Matrix m n S) (b : R) (v : n → S) :
     M *ᵥ (b • v) = b • M *ᵥ v := by
   ext i
