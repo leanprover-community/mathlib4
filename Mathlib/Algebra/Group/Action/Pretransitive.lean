@@ -57,6 +57,13 @@ class MulAction.IsPretransitive (M α : Type*) [SMul M α] : Prop where
   /-- There is `g` such that `g • x = y`. -/
   exists_smul_eq : ∀ x y : α, ∃ g : M, g • x = y
 
+@[to_additive]
+instance MulAction.instIsPretransitiveOfSubsingleton
+    {M α : Type*} [Monoid M] [MulAction M α] [Subsingleton α] :
+    MulAction.IsPretransitive M α where
+  exists_smul_eq x y := ⟨1, by
+    simp only [one_smul, Subsingleton.elim x y] ⟩
+
 namespace MulAction
 variable (M) [SMul M α] [IsPretransitive M α]
 
