@@ -249,11 +249,11 @@ theorem eq_C_of_derivative_eq_zero [NoZeroSMulDivisors ℕ R] {f : R[X]} (h : de
 @[simp]
 theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g := by
   induction f using Polynomial.induction_on' with
-  | h_add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
-  | h_monomial m a =>
+  | add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
+  | monomial m a => ?_
   induction g using Polynomial.induction_on' with
-  | h_add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
-  | h_monomial n b =>
+  | add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
+  | monomial n b => ?_
   simp only [monomial_mul_monomial, derivative_monomial]
   simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
   cases m with
