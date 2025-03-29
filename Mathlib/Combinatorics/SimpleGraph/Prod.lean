@@ -213,7 +213,7 @@ theorem boxProd_degree (x : α × β)
   rw [degree, degree, degree, boxProd_neighborFinset, Finset.card_disjUnion]
   simp_rw [Finset.card_product, Finset.card_singleton, mul_one, one_mul]
 
-lemma boxProd_reachable (x y : α × β) :
+lemma boxProd_reachable {x y : α × β} :
     (G □ H).Reachable x y ↔ G.Reachable x.1 y.1 ∧ H.Reachable x.2 y.2 := by
   classical
   constructor
@@ -222,7 +222,7 @@ lemma boxProd_reachable (x y : α × β) :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
-lemma boxProd_edist_eq_top (x y : α × β) :
+lemma edist_boxProd_eq_top {x y : α × β}:
     (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
   repeat rw [← not_ne_iff, edist_ne_top_iff_reachable]
   rw [boxProd_reachable]
@@ -232,8 +232,8 @@ lemma boxProd_len_eq_sum_projections {a₁ a₂ : α} {b₁ b₂ : β} [Decidabl
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
     w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
   match w with
-  | Walk.nil => simp [Walk.length, Walk.ofBoxProdLeft, Walk.ofBoxProdRight]
-  | Walk.cons x w' => next c =>
+  | .nil => simp [Walk.length, Walk.ofBoxProdLeft, Walk.ofBoxProdRight]
+  | .cons x w' => next c =>
       unfold Walk.ofBoxProdLeft Walk.ofBoxProdRight Or.by_cases
       rw [Walk.length_cons, boxProd_len_eq_sum_projections w']
       have disj : (G.Adj a₁ c.1 ∧ b₁ = c.2) ∨ (H.Adj b₁ c.2 ∧ a₁ = c.1) := by aesop
@@ -253,9 +253,9 @@ lemma boxProd_edist (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
   classical
   by_cases h : (G □ H).edist x y = ⊤
-  · rw [h]; rw [boxProd_edist_eq_top] at h
+  · rw [h]; rw [edist_boxProd_eq_top] at h
     aesop
-  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [boxProd_edist_eq_top] at h; tauto
+  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [edist_boxProd_eq_top] at h; tauto
     have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
     have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
 
@@ -264,15 +264,12 @@ lemma boxProd_edist (x y : α × β) :
       unfold w_app Walk.boxProdLeft Walk.boxProdRight
       simp only [Walk.length_append, Walk.length_map]
 
-    have le : (G □ H).edist x y ≤ G.edist x.1 y.1 + H.edist x.2 y.2 := by
-      calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
+    refine le_antisymm ?_ ?_
+    ·  calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := by exact_mod_cast w_len
           _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
-
-    have ge : G.edist x.1 y.1 + H.edist x.2 y.2 ≤ (G □ H).edist x y  := by
-      have ⟨w, hw⟩ :=  exists_walk_of_edist_ne_top h
+    · have ⟨w, hw⟩ :=  exists_walk_of_edist_ne_top h
       rw [← hw, boxProd_len_eq_sum_projections]
-      apply add_le_add (edist_le (Walk.ofBoxProdLeft w)) (edist_le (Walk.ofBoxProdRight w))
-    apply le_antisymm le ge
+      exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
 
 end SimpleGraph
