@@ -149,7 +149,7 @@ partial def M.run
     let ctx := ctx.setSimpTheorems #[thms]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx (methods := Lean.Meta.Simp.mkDefaultMethodsCore {})).1
-  let ctx ← Simp.mkContext { singlePass := true }
+  let ctx ← Simp.mkContext { zetaDelta := cfg.zetaDelta, singlePass := true }
     (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
     (congrTheorems := ← getSimpCongrTheorems)
   let nctx := { ctx, simp }
