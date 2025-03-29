@@ -174,11 +174,11 @@ theorem induction_on {motive : PushoutI φ → Prop}
     induction x using Coprod.induction_on with
     | inl g =>
       induction g using CoprodI.induction_on with
-      | h_of i g => exact of i g
-      | h_mul x y ihx ihy =>
+      | of i g => exact of i g
+      | mul x y ihx ihy =>
         rw [map_mul]
         exact mul _ _ ihx ihy
-      | h_one => simpa using base 1
+      | one => simpa using base 1
     | inr h => exact base h
     | mul x y ihx ihy => exact mul _ _ ihx ihy
 
@@ -491,14 +491,14 @@ theorem base_smul_eq_smul (h : H) (w : NormalWord d) :
 the underlying list. -/
 @[elab_as_elim]
 noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d)
-    (h_empty : motive empty)
-    (h_cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
+    (empty : motive empty)
+    (cons : ∀ (i : ι) (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
       (_hgn : g ∈ d.set i) (hgr : g ∉ (φ i).range) (_hw1 : w.head = 1),
       motive w →  motive (cons g w hmw hgr))
-    (h_base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
+    (base : ∀ (h : H) (w : NormalWord d), w.head = 1 → motive w → motive
       (base φ h • w)) : motive w := by
   rcases w with ⟨w, head, h3⟩
-  convert h_base head ⟨w, 1, h3⟩ rfl ?_
+  convert base head ⟨w, 1, h3⟩ rfl ?_
   · simp [base_smul_def]
   · induction w using Word.consRecOn with
     | h_empty => exact h_empty
@@ -507,11 +507,11 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
         h1 (h3 _ _ List.mem_cons_self) ?_ rfl
         (ih ?_)
       · ext
-        simp only [Word.cons, Option.mem_def, cons, map_one, mul_one,
+        simp only [Word.cons, Option.mem_def, NormalWord.cons, map_one, mul_one,
           (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
       · apply d.injective i
-        simp only [cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
+        simp only [NormalWord.cons, equiv_fst_eq_mul_inv, MonoidHom.apply_ofInjective_symm,
           map_one, mul_one, mul_inv_cancel, (equiv_snd_eq_self_iff_mem (d.compl i) (one_mem _)).2
           (h3 _ _ List.mem_cons_self)]
       · rwa [← SetLike.mem_coe,
@@ -548,10 +548,10 @@ theorem prod_smul (g : PushoutI φ) (w : NormalWord d) :
 
 theorem prod_smul_empty (w : NormalWord d) : w.prod • empty = w := by
   induction w using consRecOn with
-  | h_empty => simp
-  | h_cons i g w _ _ _ _ ih =>
+  | empty => simp
+  | cons i g w _ _ _ _ ih =>
     rw [prod_cons, mul_smul, ih, cons_eq_smul]
-  | h_base h w _ ih =>
+  | base h w _ ih =>
     rw [prod_smul, mul_smul, ih]
 
 /-- The equivalence between normal forms and elements of the pushout -/
@@ -621,8 +621,8 @@ theorem Reduced.exists_normalWord_prod_eq (d : Transversal φ) {w : Word G} (hw 
       w'.toList.map Sigma.fst = w.toList.map Sigma.fst := by
   classical
   induction w using Word.consRecOn with
-  | h_empty => exact ⟨empty, by simp, rfl⟩
-  | h_cons i g w hIdx hg1 ih =>
+  | empty => exact ⟨empty, by simp, rfl⟩
+  | cons i g w hIdx hg1 ih =>
     rcases ih (fun _ hg => hw _ (List.mem_cons_of_mem _ hg)) with
       ⟨w', hw'prod, hw'map⟩
     refine ⟨cons g w' ?_ ?_, ?_⟩
