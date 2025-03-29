@@ -118,7 +118,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
     simp only [mul_left_comm (m.choose I : ℂ), mul_assoc, mul_left_comm (m.choose I : ℂ)⁻¹,
       mul_comm (m.choose I : ℂ)]
     rw [inv_mul_cancel₀ h₁]
-    simp [div_eq_mul_inv, mul_comm, mul_assoc, mul_left_comm]
+    simp only [mul_one, div_eq_mul_inv, mul_left_comm, mul_assoc]
   simp_rw [exp, exp', lim_mul_lim]
   apply (lim_eq_lim_of_equiv _).symm
   simp only [hj]
@@ -576,7 +576,9 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
-  · field_simp [mul_comm]
+  · -- was: `field_simp [mul_comm]`; replaced for performance
+    simp (disch := field_simp_discharge) only [mul_div_assoc', div_mul_eq_mul_div, div_div,
+      mul_comm, Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one]
   · omega
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
@@ -589,7 +591,7 @@ theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a�
       (le_sub_iff_add_le'.1 e) ?_ using 1
   · simp [mul_add, pow_succ', div_eq_mul_inv, abs_mul, abs_inv, ← pow_abs, mul_inv, Nat.factorial]
     ac_rfl
-  · simp [div_nonneg, abs_nonneg]
+  · simp only [abs_nonneg, pow_nonneg, Nat.cast_nonneg, div_nonneg]
 
 theorem exp_approx_end' {n} {x a b : ℝ} (m : ℕ) (e₁ : n + 1 = m) (rm : ℝ) (er : ↑m = rm)
     (h : |x| ≤ 1) (e : |1 - a| ≤ b - |x| / rm * ((rm + 1) / rm)) :
@@ -621,7 +623,7 @@ theorem exp_bound_div_one_sub_of_interval' {x : ℝ} (h1 : 0 < x) (h2 : x < 1) :
       rw [show 3 = 1 + 1 + 1 from rfl]
       repeat rw [Finset.sum_range_succ]
       norm_num [Nat.factorial]
-      nlinarith
+      nlinarith only [h2]
     _ < 1 / (1 - x) := by rw [lt_div_iff₀] <;> nlinarith
 
 theorem exp_bound_div_one_sub_of_interval {x : ℝ} (h1 : 0 ≤ x) (h2 : x < 1) :
