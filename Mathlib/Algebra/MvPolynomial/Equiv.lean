@@ -156,8 +156,8 @@ theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit
       f.eval₂ φ (a ()) := by
   simp only [MvPolynomial.pUnitAlgEquiv_symm_apply]
   induction f using Polynomial.induction_on' with
-  | h_add f g hf hg => simp [hf, hg]
-  | h_monomial n r => simp
+  | add f g hf hg => simp [hf, hg]
+  | monomial n r => simp
 
 theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
     ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a)  =

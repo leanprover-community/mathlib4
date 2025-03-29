@@ -243,8 +243,8 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
   induction p using Polynomial.induction_on' with
-  | h_add _ _ e₁ e₂ => rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
-  | h_monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
+  | add _ _ e₁ e₂ => rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
+  | monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
       monomial_smul_single, f.map_smul, algebraMap_smul]
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
@@ -276,8 +276,8 @@ theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
   induction p using Polynomial.induction_on' with
-  | h_add _ _ e₁ e₂ => rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
-  | h_monomial => simp only [monomial_smul_single, Polynomial.eval_monomial, eval_single]; module
+  | add _ _ e₁ e₂ => rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
+  | monomial => simp only [monomial_smul_single, Polynomial.eval_monomial, eval_single]; module
 
 @[simp]
 theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
