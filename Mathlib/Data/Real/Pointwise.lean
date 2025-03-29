@@ -6,6 +6,7 @@ Authors: Yaël Dillies, Eric Wieser
 import Mathlib.Algebra.GroupWithZero.Action.Pointwise.Set
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Algebra.Order.Module.Pointwise
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Real.Archimedean
 
 /-!
@@ -22,7 +23,7 @@ This is true more generally for conditionally complete linear order whose defaul
 don't have those yet.
 -/
 
-assert_not_exists Finset
+--assert_not_exists Finset
 
 open Set
 
@@ -128,5 +129,22 @@ theorem Real.iInf_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨅ i, f i) *
 
 theorem Real.iSup_mul_of_nonpos (ha : r ≤ 0) (f : ι → ℝ) : (⨆ i, f i) * r = ⨅ i, f i * r := by
   simp only [Real.mul_iSup_of_nonpos ha, mul_comm]
+
+/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative and `∀ i j, f i * g j ≤ r`, then
+ `iSup f * iSup g ≤ r`. -/
+theorem Real.iSup_mul_iSup_le_of_nonneg [Nonempty ι] {f g : ι → ℝ}
+    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) (H : ∀ i j, f i * g j ≤ r) :
+    iSup f * iSup g ≤ r := by
+  rw [Real.iSup_mul_of_nonneg (Real.iSup_nonneg hg_nn)]
+  apply ciSup_le
+  intro i
+  rw [Real.mul_iSup_of_nonneg (hf_nn i)]
+  exact ciSup_le fun j ↦ H i j
+
+/-- If `f : ι → ℝ` and `g : ι → ℝ` are non-negative, then `iSup (f * g) ≤ iSup f * iSup g`. -/
+theorem Real.iSup_mul_le_mul_iSup_of_nonneg {ι : Type*} [Nonempty ι] [Finite ι] {f g : ι → ℝ}
+    (hf_nn : ∀ i, 0 ≤ f i) (hg_nn : ∀ i, 0 ≤ g i) : (⨆ i : ι, f i * g i) ≤ iSup f * iSup g :=
+  ciSup_le fun x ↦ mul_le_mul (le_ciSup (Finite.bddAbove_range f) x)
+    (le_ciSup (Finite.bddAbove_range g) x) (hg_nn x) (Real.iSup_nonneg hf_nn)
 
 end Mul
