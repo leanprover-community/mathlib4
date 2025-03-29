@@ -351,7 +351,7 @@ instance (priority := 100) SeminormedCommGroup.to_lipschitzMul : LipschitzMul E 
 continuous. -/
 @[to_additive "A seminormed group is a uniform additive group, i.e., addition and subtraction are
 uniformly continuous."]
-instance (priority := 100) SeminormedCommGroup.to_uniformGroup : UniformGroup E :=
+instance (priority := 100) SeminormedCommGroup.to_isUniformGroup : IsUniformGroup E :=
   ⟨(LipschitzWith.prod_fst.div LipschitzWith.prod_snd).uniformContinuous⟩
 
 -- short-circuit type class inference

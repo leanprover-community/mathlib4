@@ -66,7 +66,7 @@ theorem uniformContinuous {Y : Type*} [UniformSpace Y] (f : X → Y) :
 
 /-- The discrete uniformity makes a group a `UniformGroup. -/
 @[to_additive "The discrete uniformity makes an additive group a `UniformAddGroup`."]
-instance [Group X] : UniformGroup X where
+instance [Group X] : IsUniformGroup X where
   uniformContinuous_div := uniformContinuous (X × X) fun p ↦ p.1 / p.2
 
 variable {X} in
