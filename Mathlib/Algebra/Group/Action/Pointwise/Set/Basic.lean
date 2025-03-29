@@ -45,12 +45,12 @@ alias vadd_set_sum := vadd_set_prod
 
 @[to_additive]
 lemma smul_set_pi {G ι : Type*} {α : ι → Type*} [Group G] [∀ i, MulAction G (α i)]
-    (c : G) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi fun i ↦ c • s i :=
+    (c : G) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) :=
   smul_set_pi_of_surjective c I s fun _ _ ↦ (MulAction.bijective c).surjective
 
 @[to_additive]
 lemma smul_set_pi_of_isUnit {M ι : Type*} {α : ι → Type*} [Monoid M] [∀ i, MulAction M (α i)]
-    {c : M} (hc : IsUnit c) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s ·) := by
+    {c : M} (hc : IsUnit c) (I : Set ι) (s : ∀ i, Set (α i)) : c • I.pi s = I.pi (c • s) := by
   lift c to Mˣ using hc
   exact smul_set_pi c I s
 
