@@ -1239,5 +1239,5 @@ theorem ContDiff.continuous_fderiv_apply (h : ContDiff 𝕜 n f) (hn : 1 ≤ n) 
     Continuous fun p : E × E => (fderiv 𝕜 f p.1 : E → F) p.2 :=
   have A : Continuous fun q : (E →L[𝕜] F) × E => q.1 q.2 := isBoundedBilinearMap_apply.continuous
   have B : Continuous fun p : E × E => (fderiv 𝕜 f p.1, p.2) :=
-    ((h.continuous_fderiv hn).comp continuous_fst).prod_mk continuous_snd
+    ((h.continuous_fderiv hn).comp continuous_fst).prodMk continuous_snd
   A.comp B

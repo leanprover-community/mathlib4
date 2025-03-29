@@ -221,6 +221,39 @@ def coneOfConeUncurryIsLimit {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j
     rw [← w j]
     simp
 
+/-- If `coneOfConeUncurry Q c` is a limit cone then `c` is in fact a limit cone.
+-/
+def IsLimit.ofConeOfConeUncurry {D : DiagramOfCones F} (Q : ∀ j, IsLimit (D.obj j))
+    {c : Cone (uncurry.obj F)} (P : IsLimit (coneOfConeUncurry Q c)) : IsLimit c :=
+  -- These constructions are used in various fields of the proof so we abstract them here.
+  letI E (j : J) : Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  letI S (s : Cone (uncurry.obj F)) : Cone D.conePoints :=
+    { pt := s.pt
+      π :=
+        { app j := (Q j).lift <|
+            (Cones.postcompose (E j).hom).obj <| s.whisker (Prod.sectR j K)
+          naturality {j' j} f := (Q j).hom_ext <|
+            fun k ↦ by simpa [E] using s.π.naturality ((Prod.sectL J k).map f) } }
+  { lift s := P.lift (S s)
+    fac s p := by
+      have h1 := (Q p.1).fac ((Cones.postcompose (E p.1).hom).obj <|
+        s.whisker (Prod.sectR p.1 K)) p.2
+      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
+        Cones.postcompose_obj_pt, Cone.whisker_pt, Cones.postcompose_obj_π,
+        Cone.whisker_π, NatTrans.comp_app, Functor.const_obj_obj, whiskerLeft_app,
+        NatIso.ofComponents_hom_app, Iso.refl_hom, Category.comp_id, E] at h1
+      have h2 := (P.fac (S s) p.1)
+      dsimp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
+        Functor.const_obj_obj, DiagramOfCones.conePoints_obj, DiagramOfCones.conePoints_map,
+        Functor.const_obj_map, id_eq, Cones.postcompose_obj_pt, Cone.whisker_pt,
+        Cones.postcompose_obj_π, Cone.whisker_π, NatTrans.comp_app, whiskerLeft_app,
+        NatIso.ofComponents_hom_app, Iso.refl_hom, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
+        eq_mpr_eq_cast, coneOfConeUncurry_pt, coneOfConeUncurry_π_app, S, E] at h2 ⊢
+      simp [← h1, ← h2]
+    uniq s f hf := P.uniq (s := S s) _ <|
+      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
+
 /-- `coconeOfCoconeUncurry Q c` is a colimit cocone when `c` is a colimit cocone.
 -/
 def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimit (D.obj j))
@@ -258,6 +291,40 @@ def coconeOfCoconeUncurryIsColimit {D : DiagramOfCocones F} (Q : ∀ j, IsColimi
     dsimp
     rw [← w j]
     simp
+
+/-- If `coconeOfCoconeUncurry Q c` is a colimit cocone then `c` is in fact a colimit
+cocone. -/
+def IsColimit.ofCoconeUncurry {D : DiagramOfCocones F}
+    (Q : ∀ j, IsColimit (D.obj j)) {c : Cocone (uncurry.obj F)}
+    (P : IsColimit (coconeOfCoconeUncurry Q c)) : IsColimit c :=
+  -- These constructions are used in various fields of the proof so we abstract them here.
+  letI E (j : J) : (Prod.sectR j K ⋙ uncurry.obj F ≅ F.obj j) :=
+    NatIso.ofComponents (fun _ ↦ Iso.refl _)
+  letI S (s : Cocone (uncurry.obj F)) : Cocone D.coconePoints :=
+    { pt := s.pt
+      ι :=
+        { app j := (Q j).desc <|
+            (Cocones.precompose (E j).inv).obj <| s.whisker (Prod.sectR j K)
+          naturality {j j'} f := (Q j).hom_ext <|
+            fun k ↦ by simpa [E] using s.ι.naturality ((Prod.sectL J k).map f) } }
+  { desc s := P.desc (S s)
+    fac s p := by
+      have h1 := (Q p.1).fac ((Cocones.precompose (E p.1).inv).obj <|
+        s.whisker (Prod.sectR p.1 K)) p.2
+      simp only [Functor.comp_obj, Prod.sectR_obj, uncurry_obj_obj, NatTrans.id_app,
+        Cocones.precompose_obj_pt, Cocone.whisker_pt, Functor.const_obj_obj,
+        Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
+        Iso.refl_inv, whiskerLeft_app, Category.id_comp, E] at h1
+      have h2 := (P.fac (S s) p.1)
+      dsimp only [DiagramOfCocones.coconePoints_obj, Functor.comp_obj, Prod.sectR_obj,
+        uncurry_obj_obj, NatTrans.id_app, Functor.const_obj_obj, DiagramOfCocones.coconePoints_map,
+        Functor.const_obj_map, id_eq, Cocones.precompose_obj_pt, Cocone.whisker_pt,
+        Cocones.precompose_obj_ι, Cocone.whisker_ι, NatTrans.comp_app, NatIso.ofComponents_inv_app,
+        Iso.refl_inv, whiskerLeft_app, Prod.sectL_obj, Prod.sectL_map, eq_mp_eq_cast,
+        eq_mpr_eq_cast, coconeOfCoconeUncurry_pt, coconeOfCoconeUncurry_ι_app, S, E] at h2 ⊢
+      simp [← h1, ← h2]
+    uniq s f hf := P.uniq (s := S s) _ <|
+      fun j ↦ (Q j).hom_ext <| fun k ↦ by simpa [S, E] using hf (j, k) }
 
 section
 

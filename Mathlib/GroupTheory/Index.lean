@@ -609,6 +609,14 @@ end MulAction
 
 namespace MonoidHom
 
+@[to_additive AddMonoidHom.surjective_of_card_ker_le_div]
+lemma surjective_of_card_ker_le_div {G M : Type*} [Group G] [Group M] [Finite G] [Finite M]
+    (f : G →* M) (h : Nat.card f.ker ≤ Nat.card G / Nat.card M) : Function.Surjective f := by
+  refine range_eq_top.1 <| SetLike.ext' <| Set.eq_of_subset_of_ncard_le (Set.subset_univ _) ?_
+  rw [Subgroup.coe_top, Set.ncard_univ, ← Set.Nat.card_coe_set_eq, SetLike.coe_sort_coe,
+    ← Nat.card_congr (QuotientGroup.quotientKerEquivRange f).toEquiv]
+  exact Nat.le_of_mul_le_mul_left (f.ker.card_mul_index ▸ Nat.mul_le_of_le_div _ _ _ h) Nat.card_pos
+
 open Finset
 
 variable {G M F : Type*} [Group G] [Fintype G] [Monoid M] [DecidableEq M]
