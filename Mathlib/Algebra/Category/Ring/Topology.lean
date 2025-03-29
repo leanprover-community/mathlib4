@@ -14,7 +14,7 @@ import Mathlib.Topology.Algebra.Ring.Basic
 In this file, we define topology on `Hom(R, S)` for a topological ring `S`,
 given by the coarsest topology that makes `f ↦ f x` continuous for all `x : R`.
 Alternatively, given a presentation `R = ℤ[x₁,...,xₙ]/I`,
-This is the subspace topology `Hom(R, S) ↪ Hom(ℤ[x₁,...,xₙ], S) = Sⁿ`.
+this is the subspace topology `Hom(R, S) ↪ Hom(ℤ[x₁,...,xₙ], S) = Sⁿ`.
 
 ## Main results
 - `CommRingCat.HomTopology.isClosedEmbedding_comp_right_of_surjective`:
@@ -55,7 +55,7 @@ lemma continuous_comp_right [TopologicalSpace T] (f : R ⟶ S) :
     Continuous ((f ≫ ·) : (S ⟶ T) → (R ⟶ T)) :=
   continuous_induced_rng.mpr ((Pi.continuous_precomp f.hom).comp continuous_induced_dom)
 
-/-- If `R ≃ S`, then `Hom(R, T)` is homeomorphc to `Hom(S, T)`. -/
+/-- If `R ≅ S`, then `Hom(R, T)` is homeomorphc to `Hom(S, T)`. -/
 @[simps]
 def compRightEquiv [TopologicalSpace T] (f : R ≅ S) :
     (S ⟶ T) ≃ₜ (R ⟶ T) where
