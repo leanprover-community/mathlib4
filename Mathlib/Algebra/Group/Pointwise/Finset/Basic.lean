@@ -208,7 +208,7 @@ theorem inv_mem_inv (ha : a ∈ s) : a⁻¹ ∈ s⁻¹ :=
   mem_image_of_mem _ ha
 
 @[to_additive]
-theorem card_inv_le : #s⁻¹ ≤ s.card :=
+theorem card_inv_le : #s⁻¹ ≤ #s :=
   card_image_le
 
 @[to_additive (attr := simp)]
