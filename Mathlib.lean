@@ -4524,7 +4524,6 @@ import Mathlib.Order.Fin.Tuple
 import Mathlib.Order.FixedPoints
 import Mathlib.Order.GaloisConnection.Basic
 import Mathlib.Order.GaloisConnection.Defs
-import Mathlib.Order.GaloisConnection.OrdContinuous
 import Mathlib.Order.GameAdd
 import Mathlib.Order.Grade
 import Mathlib.Order.Height
