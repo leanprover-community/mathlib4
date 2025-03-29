@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Nailin Guan
 -/
 import Mathlib.Algebra.Group.Equiv.Basic
+import Mathlib.Algebra.Group.Prod
 import Mathlib.Topology.Algebra.Group.Defs
 
 /-!
