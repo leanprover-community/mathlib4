@@ -97,7 +97,7 @@ lemma isClosedEmbedding_precomp_of_surjective
 @[simps! apply_fst apply_snd symm_apply_hom]
 noncomputable
 def mvPolynomialHomeo (σ : Type v) (R S : CommRingCat.{max u v})
-    [TopologicalSpace R] [TopologicalRing R] :
+    [TopologicalSpace R] [IsTopologicalRing R] :
     (CommRingCat.of (MvPolynomial σ S) ⟶ R) ≃ₜ ((S ⟶ R) × (σ → R)) where
   toFun f := ⟨CommRingCat.ofHom MvPolynomial.C ≫ f, fun i ↦ f (.X i)⟩
   invFun fx := CommRingCat.ofHom (MvPolynomial.eval₂Hom fx.1.hom fx.2)
@@ -119,7 +119,7 @@ open Limits
 
 variable (R S) in
 lemma isClosedEmbedding_hom
-    [TopologicalSpace S] [TopologicalRing S] [T1Space S] :
+    [TopologicalSpace S] [IsTopologicalRing S] [T1Space S] :
     IsClosedEmbedding (fun f : R ⟶ S ↦ (f.hom : R → S)) := by
   let f : CommRingCat.of (MvPolynomial R (⊥_ CommRingCat)) ⟶ R :=
     CommRingCat.ofHom (MvPolynomial.eval₂Hom (initial.to R).hom id)
@@ -133,14 +133,14 @@ lemma isClosedEmbedding_hom
 instance [TopologicalSpace S] [T2Space S] : T2Space (R ⟶ S) :=
   (isEmbedding_hom R S).t2Space
 
-instance [TopologicalSpace S] [TopologicalRing S] [T1Space S] [CompactSpace S] :
+instance [TopologicalSpace S] [IsTopologicalRing S] [T1Space S] [CompactSpace S] :
     CompactSpace (R ⟶ S) :=
   (isClosedEmbedding_hom R S).compactSpace
 
 open Limits
 
 /-- `Hom(A ⊗[S] B, R)` has the subspace topology from `Hom(A, R) × Hom(B, R)`. -/
-lemma isEmbedding_pushout [TopologicalSpace R] [TopologicalRing R]
+lemma isEmbedding_pushout [TopologicalSpace R] [IsTopologicalRing R]
     (φ : S ⟶ A) (ψ : S ⟶ B) :
     IsEmbedding fun f : pushout φ ψ ⟶ R ↦ (pushout.inl φ ψ ≫ f, pushout.inr φ ψ ≫ f) := by
   let PA := CommRingCat.of (MvPolynomial A S)
