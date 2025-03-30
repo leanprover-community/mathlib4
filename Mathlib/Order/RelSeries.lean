@@ -779,8 +779,8 @@ def range (n : ℕ) : LTSeries ℕ where
 
 @[simp] lemma last_range (n : ℕ) : (range n).last = n := rfl
 
-/-- Any `LTSeries` can be refined to a `CovBy`-`RelSeries` in a bidirectionally well-founded 
-order. -/
+/-- Any `LTSeries` can be refined to a `CovBy`-`RelSeries`
+in a bidirectionally well-founded order. -/
 theorem exists_relSeries_covBy
     {α} [PartialOrder α] [WellFoundedLT α] [WellFoundedGT α] (s : LTSeries α) :
     ∃ (t : RelSeries (α := α) (· ⋖ ·)) (i : Fin (s.length + 1) ↪ Fin (t.length + 1)),
