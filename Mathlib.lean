@@ -193,9 +193,7 @@ import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.CharZero.Infinite
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.CharZero.Quotient
-import Mathlib.Algebra.Clone.Basic
 import Mathlib.Algebra.Clone.Defs
-import Mathlib.Algebra.Clone.Instances
 import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Algebra.Colimit.Finiteness
 import Mathlib.Algebra.Colimit.Module
