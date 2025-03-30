@@ -6,7 +6,10 @@ Authors: Alex Meiburg
 import Mathlib.Data.One.Defs
 import Mathlib.Tactic.TypeStar
 
-/-! This file defines the notation typeclasse `Superposable` used for working with `Clone`.
+/-!
+# Clones
+
+This file defines the notation typeclasse `Superposable` used for working with `Clone`.
   There is a version with bare types `{n m : ℕ} : A n → (T n → A m) → A m`, and a version
   for Sigma types `(x : Sigma A) (y : T x.fst → A m) : Sigma A`. In both of these,
   `A : ι → Type*` is the carrier. A prototypical could have `ι := ℕ`, `T := Fin`, and `A i`
