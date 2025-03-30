@@ -65,6 +65,7 @@ theorem coeffList_eq_cons_leadingCoeff (h : P ≠ 0) :
     ∃ ls, P.coeffList = P.leadingCoeff :: ls := by
   simp [coeffList, List.range_succ, withBotSucc_degree_eq_natDegree_add_one h]
 
+@[simp]
 theorem head?_coeffList (h : P ≠ 0) :
     P.coeffList.head? = P.leadingCoeff :=
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ ↦ (Eq.symm · ▸ rfl)
@@ -75,11 +76,11 @@ theorem head?_coeffList (h : P ≠ 0) :
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ _ ↦
     Option.some.injEq _ _ ▸ List.head?_eq_head _ ▸ head?_coeffList h
 
-theorem length_coeffList_withBotSucc (P : R[X]) : P.coeffList.length = P.degree.succ := by
+theorem length_coeffList_eq_withBotSucc_degree (P : R[X]) : P.coeffList.length = P.degree.succ := by
   simp [coeffList]
 
 @[simp]
-theorem length_coeffList_ite [DecidableEq R] (P : R[X]) :
+theorem length_coeffList_eq_ite [DecidableEq R] (P : R[X]) :
     P.coeffList.length = if P = 0 then 0 else P.natDegree + 1 := by
   by_cases h : P = 0 <;> simp [h, coeffList, withBotSucc_degree_eq_natDegree_add_one]
 
@@ -104,11 +105,12 @@ theorem coeffList_monomial {x : R} (hx : x ≠ 0) (n : ℕ) :
     simpa [coeffList, withBotSucc_degree_eq_natDegree_add_one h]
       using Polynomial.coeff_monomial_of_ne _ (by omega)
 
-/- Coefficients of P are always the leading coefficient, some number of zeros, and then
-  `coeffList P.eraseLead`. -/
-theorem coeffList_eraseLead (h : P ≠ 0) : P.coeffList =
-    P.leadingCoeff :: (.replicate (P.natDegree - P.eraseLead.degree.succ) 0
-     ++ P.eraseLead.coeffList) := by
+/- Coefficients of a polynomial `P` are always the leading coefficient, some number of zeros, and
+then `coeffList P.eraseLead`. -/
+theorem coeffList_eraseLead (h : P ≠ 0) :
+    P.coeffList =
+      P.leadingCoeff :: (.replicate (P.natDegree - P.eraseLead.degree.succ) 0
+        ++ P.eraseLead.coeffList) := by
   by_cases hdp : P.natDegree = 0
   · rw [eq_C_of_natDegree_eq_zero hdp] at h ⊢
     simp [coeffList_C (C_ne_zero.mp h)]

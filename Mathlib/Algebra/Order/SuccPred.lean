@@ -187,7 +187,7 @@ theorem IsSuccLimit.natCast_lt [AddMonoidWithOne α] [SuccAddOrder α] [Canonica
 theorem not_isSuccLimit_natCast [AddMonoidWithOne α] [SuccAddOrder α] [CanonicallyOrderedAdd α]
     (n : ℕ) : ¬ IsSuccLimit (n : α) :=
   fun h ↦ (h.natCast_lt n).false
-  
+
 @[simp]
 theorem succ_eq_zero [AddZeroClass α] [CanonicallyOrderedAdd α] [One α] [NoMaxOrder α]
     [SuccAddOrder α] {a : WithBot α} : WithBot.succ a = 0 ↔ a = ⊥ := by
