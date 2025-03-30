@@ -329,8 +329,6 @@
   "Mathlib.RingTheory.SimpleModule.Basic": ["Mathlib.Data.Matrix.Mul"],
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
-  "Mathlib.RingTheory.PolynomialLaw.Basic":
-  ["Mathlib.Algebra.MvPolynomial.Basic"],
   "Mathlib.RingTheory.MvPowerSeries.Basic":
   ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
