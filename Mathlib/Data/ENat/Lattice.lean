@@ -144,7 +144,7 @@ lemma mul_iSup (a : ℕ∞) (f : ι → ℕ∞) : a * ⨆ i, f i = ⨆ i, a * f 
   · simp
   obtain hι | hι := isEmpty_or_nonempty ι
   · simp
-  induction d using ENat.recTopCoe with
+  cases d with
   | top => simp
   | coe d =>
   obtain htop | hlt := (le_top (a := ⨆ i, f i)).eq_or_lt
