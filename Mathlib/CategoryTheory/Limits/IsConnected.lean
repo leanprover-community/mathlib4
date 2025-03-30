@@ -163,10 +163,10 @@ lemma isConnected_of_isTerminal {x : C} (h : Limits.IsTerminal x) : IsConnected 
 
 -- note : it seems making the following two as instances breaks things, so these are lemmas.
 lemma isConnected_of_hasInitial [Limits.HasInitial C] : IsConnected C :=
-  isConnected_of_isInitial C (Limits.initialIsInitial)
+  isConnected_of_isInitial C Limits.initialIsInitial
 
 lemma isConnected_of_hasTerminal [Limits.HasTerminal C] : IsConnected C :=
-  isConnected_of_isTerminal C (Limits.terminalIsTerminal)
+  isConnected_of_isTerminal C Limits.terminalIsTerminal
 
 end
 
