@@ -32,7 +32,7 @@ This file defines what it means for a set over a first-order structure to be def
   dimensions.
 - `Set.Definable_trans` shows that `Set.Definable` is transitive, in the sense that if `S` can be
   defined in `L` and all of `L`'s functions and relations can be defined in `L'`, then `S` is
-  also definanble in `L'`.
+  also definable in `L'`.
 
 -/
 
@@ -534,5 +534,18 @@ theorem TermDefinable₁_comp_TermDefinable {f : M → M} {g : (α → M) → M}
   use fφ.subst (fun (_:Unit) ↦ gφ)
   funext m
   simp [Function.const_def]
+
+/-- A kary `TermDefinable` function composed with k `TermDefinable` functions is `TermDefinable`. -/
+theorem TermDefinable_comp_TermDefinable {f : (α → M) → M} {g : α → (β → M) → M}
+    (hf : A.TermDefinable L f) (hg : ∀ a, A.TermDefinable L (g a)) :
+    A.TermDefinable L (fun b ↦ f (g · b)) := by
+  obtain ⟨fφ,rfl⟩ := hf
+  -- obtain ⟨gφ,rfl⟩ := hg
+  use fφ.subst (fun a ↦ (hg a).choose)
+  funext m
+  conv =>
+    enter [1, 1, a]
+    rw [(hg a).choose_spec]
+  simp
 
 end Set
