@@ -30,8 +30,11 @@ inductive GoTo
 | left | right
 deriving BEq, Inhabited
 
-/-- Type for storing the path in the body expression leading to `a = a'`. We store only the chosen
-directions at each `And` node because there is no branching at `Exists` nodes. -/
+/--
+Type for storing the path in the body expression leading to `a = a'`. We store only the chosen
+directions at each `And` node because there is no branching at `Exists` nodes, and `Exists` nodes
+will be removed from the body.
+-/
 abbrev Path := List GoTo
 
 /-- Qq-fied version of `Expr`. Here, we use it to store free variables introduced when unpacking
@@ -57,42 +60,38 @@ def mkNestedExists (fvars : List VarQ) (body : Q(Prop)) : MetaM Q(Prop) := do
     let p : Q($β → Prop) ← Impl.mkLambdaQ name b res
     pure q(Exists $p)
 
-/-- Finds a path for `findEq`. This is a fast version that quickly returns `none` when the simproc
-is not applicable. -/
+/--
+Finds a `Path` for `findEq`. It leads to a subexpression `a = a'` or `a' = a`, where
+`a'` doesn't contain the free variable `a`.
+This is a fast version that quickly returns `none` when the simproc
+is not applicable.
+-/
 partial def findEqPath {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
     MetaM <| Option Path := do
   match_expr P with
   | Eq _ x y =>
-    if a == x then
-      if !(y.containsFVar a.fvarId!) then
-        return some []
-      return none
-    else if a == (y : Q($α)) then
-      if !(x.containsFVar a.fvarId!) then
-        return some []
-      return none
-    else
-      return none
+    if a == x && !(y.containsFVar a.fvarId!) then
+      return some []
+    if a == y && !(x.containsFVar a.fvarId!) then
+      return some []
+    return none
   | And L R =>
-    if let .some path ← findEqPath a L then
+    if let some path ← findEqPath a L then
       return some (.left :: path)
-    if let .some path ← findEqPath a R then
+    if let some path ← findEqPath a R then
       return some (.right :: path)
     return none
   | Exists _ pb =>
     let .lam _ _ body _ := pb | return none
-    if let .some path ← findEqPath a body then
-      return some path
-    else
-      return none
+    findEqPath a body
   | _ => return none
 
-/-- Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
+/--
+Given `P : Prop` and `a : α`, traverses the expression `P` to find a subexpression of
 the form `a = a'` or `a' = a` for some `a'`. It branches at each `And` and walks into
 existential quantifiers.
 
-Returns a tuple `(path, fvars, lctx, P', a')`, where:
-* `path` is a `Path` leading to the found subexpression.
+Returns a tuple `(fvars, lctx, P', a')`, where:
 * `fvars` is a list of all variables bound by existential quantifiers along the path.
 * `lctx` is the local context containing all these free variables.
 * `P'` is `P` with all existential quantifiers along the path removed, and corresponding bound
@@ -100,47 +99,38 @@ Returns a tuple `(path, fvars, lctx, P', a')`, where:
 * `a'` is the expression found that must be equal to `a`.
   It may contain free variables from `fvars`.
 -/
-partial def findEq {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) :
-    MetaM <| Option (Path × List VarQ × LocalContext × Q(Prop) × Q($α)) := do
-  let .some path ← findEqPath a P | return none
-  let .some (fvars, lctx, P', a') ← go a P path | failure
-  return (path, fvars, lctx, P', a')
+partial def findEq {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :
+    MetaM (List VarQ × LocalContext × Q(Prop) × Q($α)) := do
+   go a P path
 where
   /-- Recursive part of `findEq`. -/
   go {u : Level} {α : Q(Sort u)} (a : Q($α)) (P : Q(Prop)) (path : Path) :
-    MetaM <| Option (List VarQ × LocalContext × Q(Prop) × Q($α)) := do
+    MetaM (List VarQ × LocalContext × Q(Prop) × Q($α)) := do
   match P with
   | ~q(@Eq.{u} $γ $x $y) =>
-    let .defEq _ := ← isDefEqQ q($α) q($γ) | return none
-    if let .defEq _ ← isDefEqQ a x then
-      if !(y.containsFVar a.fvarId!) then
-        return some ([], ← getLCtx, P, y)
-      return none
-    else if let .defEq _ ← isDefEqQ a (y : Q($α)) then
-      if !(x.containsFVar a.fvarId!) then
-        return some ([], ← getLCtx, P, x)
-      return none
-    else
-      return none
+    if a == x && !(y.containsFVar a.fvarId!) then
+      return ([], ← getLCtx, P, y)
+    if a == y && !(x.containsFVar a.fvarId!) then
+      return ([], ← getLCtx, P, x)
+    failure
   | ~q($L ∧ $R) =>
     match (generalizing := false) path with
     | [] => failure
     | .left :: tl =>
-      let .some (fvars, lctx, P', a') ← go a q($L) tl | failure
-      return some (fvars, lctx, q($P' ∧ $R), a')
+      let (fvars, lctx, P', a') ← go a q($L) tl
+      return (fvars, lctx, q($P' ∧ $R), a')
     | .right :: tl =>
-      let .some (fvars, lctx, P', a') ← go a q($R) tl | failure
-      return some (fvars, lctx, q($L ∧ $P'), a')
+      let (fvars, lctx, P', a') ← go a q($R) tl
+      return (fvars, lctx, q($L ∧ $P'), a')
   | ~q(@Exists $β $pb) =>
     lambdaBoundedTelescope pb 1 fun bs (body : Q(Prop)) => do
       let #[(b : Q($β))] := bs | failure
-      if let .some (fvars, lctx, P', a') ← go a q($body) path then
-        return some (⟨_, _, b⟩ :: fvars, lctx, P', a')
-      else
-        return none
-  | _ => return none
+      let (fvars, lctx, P', a') ← go a q($body) path
+      return (⟨_, _, b⟩ :: fvars, lctx, P', a')
+  | _ => failure
 
-/-- When `P = ∃ f₁ ... fₙ, body`, where `exs = [f₁, ..., fₙ]`, this function takes
+/--
+When `P = ∃ f₁ ... fₙ, body`, where `exs = [f₁, ..., fₙ]`, this function takes
 `act : body → goal` and proves `P → goal` using `Exists.elim`.
 
 Example:
@@ -162,17 +152,17 @@ def withNestedExistsElim {P body goal : Q(Prop)} (exs : List VarQ) (h : Q($P))
   match exs with
   | [] =>
     let _ : $P =Q $body := ⟨⟩
-    return ← act q($h)
+    act q($h)
   | ⟨u, β, b⟩ :: tl =>
     let ~q(@Exists.{u} $γ $p) := P | failure
     let _ : $β =Q $γ := ⟨⟩
     withLocalDeclQ .anonymous .default q($p $b) fun hb => do
       let pf1 ← withNestedExistsElim tl hb act
       let pf2 : Q(∀ b, $p b → $goal) ← mkLambdaFVars #[b, hb] pf1
-      let pf3 := q(Exists.elim $h $pf2)
-      return pf3
+      return q(Exists.elim $h $pf2)
 
-/-- When `P = ∃ f₁ ... fₙ, body`, where `exs = [f₁, ..., fₙ]`, this function takes
+/--
+When `P = ∃ f₁ ... fₙ, body`, where `exs = [f₁, ..., fₙ]`, this function takes
 `act : body` and proves `P` using `Exists.intro`.
 
 Example:
@@ -192,14 +182,15 @@ def withNestedExistsIntro {P body : Q(Prop)} (exs : List VarQ)
   match exs with
   | [] =>
     let _ : $P =Q $body := ⟨⟩
-    return ← act
+    act
   | ⟨u, β, b⟩ :: tl =>
     let ~q(@Exists.{u} $γ $p) := P | failure
     let _ : $β =Q $γ := ⟨⟩
     let pf ← withNestedExistsIntro tl act
     return q(Exists.intro $b $pf)
 
-/-- Generates a proof of `P' → ∃ a, p a`. We assume that `fvars = [f₁, ..., fₙ]` are free variables
+/--
+Generates a proof of `P' → ∃ a, p a`. We assume that `fvars = [f₁, ..., fₙ]` are free variables
 and `P' = ∃ f₁ ... fₙ, newBody`, and `path` leads to `a = a'` in `∃ a, p a`.
 
 The proof follows the following structure:
@@ -230,9 +221,8 @@ partial def mkAfterToBefore {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
   withLocalDeclQ .anonymous .default P' fun (h : Q($P')) => do
     let pf : Q(∃ a, $p a) ← withNestedExistsElim fvars h fun (h : Q($newBody)) => do
       let pf1 : Q($p $a') ← go h fvars path
-      let pf2 : Q(∃ a, $p a) := q(Exists.intro $a' $pf1)
-      return pf2
-    return ← mkLambdaFVars #[h] pf
+      return q(Exists.intro $a' $pf1)
+    mkLambdaFVars #[h] pf
 where
   /-- Traverses `P` and `goal` simultaneously, proving `goal`. -/
   go {goal P : Q(Prop)} (h : Q($P)) (exs : List VarQ) (path : Path) :
@@ -264,7 +254,8 @@ where
   | _ =>
     if !path.isEmpty then failure
     let ~q($x = $y) := goal | failure
-    return ← mkEqRefl x
+    let _ : $x =Q $y := ⟨⟩
+    return q(rfl)
 
 /-- Recursive implementation for `withExistsElimAlongPath`. -/
 partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
@@ -289,23 +280,24 @@ partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
       match (generalizing := false) path with
       | [] => failure
       | .left :: tl =>
-        return ← withExistsElimAlongPathImp q(And.left $h) exs tl hs act
+        withExistsElimAlongPathImp q(And.left $h) exs tl hs act
       | .right :: tl =>
-        return ← withExistsElimAlongPathImp q(And.right $h) exs tl hs act
+        withExistsElimAlongPathImp q(And.right $h) exs tl hs act
   | ~q(@Eq.{u} $γ $x $y) =>
     let _ : $γ =Q $α := ⟨⟩
     if !path.isEmpty then failure
     if let .defEq _ ← isDefEqQ a x then
       let _ : $a' =Q $y := ⟨⟩
-      return ← act q($h) hs
+      act q($h) hs
     else if let .defEq _ ← isDefEqQ a y then
       let _ : $a' =Q $x := ⟨⟩
-      return ← act q(Eq.symm $h) hs
+      act q(Eq.symm $h) hs
     else
       failure
   | _ => failure
 
-/-- Given `act : (a = a') → hb₁ → hb₂ → ... → hbₙ → goal` where `hb₁, ..., hbₙ` are hypotheses
+/--
+Given `act : (a = a') → hb₁ → hb₂ → ... → hbₙ → goal` where `hb₁, ..., hbₙ` are hypotheses
 obtained when unpacking existential quantifiers with variables from `exs`, it proves `goal` using
 `Exists.elim`. We use this to prove implication in the forward direction. -/
 def withExistsElimAlongPath {u : Level} {α : Q(Sort u)}
@@ -353,15 +345,14 @@ partial def mkBeforeToAfter {u : Level} {α : Q(Sort u)} {p : Q($α → Prop)}
   withLocalDeclQ .anonymous .default q(∃ a, $p a) fun h => do
   withLocalDeclQ .anonymous .default q($α) fun a => do
   withLocalDeclQ .anonymous .default q($p $a) fun ha => do
-    let pf1 ← withExistsElimAlongPath ha fvars path fun (h_eq : Q($a = $a')) hs =>
-    do
+    let pf1 ← withExistsElimAlongPath ha fvars path fun (h_eq : Q($a = $a')) hs => do
       let pf1 : Q($P') ← withNestedExistsIntro fvars (body := newBody) do
         let pf ← go ha fvars hs path h_eq
         pure pf
       pure pf1
     let pf2 : Q(∀ a : $α, $p a → $P') ← mkLambdaFVars #[a, ha] pf1
     let pf3 : Q($P') := q(Exists.elim $h $pf2)
-    return ← mkLambdaFVars #[h] pf3
+    mkLambdaFVars #[h] pf3
 where
   /-- Traverses `P` and `goal` simultaneously, proving `goal`. -/
   go {goal P : Q(Prop)} (h : Q($P)) (exs : List VarQ) (hs : List HypQ) (path : Path)
@@ -404,32 +395,36 @@ where
   | _ =>
     if !path.isEmpty then failure
     let ~q($x = $y) := goal | failure
-    return ← mkEqRefl x
+    let _ : $x =Q $y := ⟨⟩
+    return q(rfl)
 
 /-- Implementation of the `existsAndEqNested` simproc. -/
 def existsAndEqNestedImp {u : Level} {α : Q(Sort u)} (p : Q($α → Prop)) :
-    MetaM <| Option <| (P' : Q(Prop)) × Q((∃ a, $p a) = $P') := do
+    MetaM <| Option <| Simp.ResultQ q(Prop) := do
   lambdaBoundedTelescope p 1 fun xs (body : Q(Prop)) => withNewMCtxDepth do
     let #[(a : Q($α))] := xs | return none
-    let .some (path, fvars, lctx, newBody, a') ← findEq a body | return none
+    let some path ← findEqPath a body | return none
+    let (fvars, lctx, newBody, a') ← findEq a body path
     withLCtx' lctx do
       let newBody := newBody.replaceFVar a a'
-      let (P' : Q(Prop)) ← mkNestedExists fvars newBody
+      let P' : Q(Prop) ← mkNestedExists fvars newBody
       let pfBeforeAfter : Q((∃ a, $p a) → $P') ← mkBeforeToAfter a' newBody fvars path
       let pfAfterBefore : Q($P' → (∃ a, $p a)) ← mkAfterToBefore a' newBody fvars path
       let pf := q(propext (Iff.intro $pfBeforeAfter $pfAfterBefore))
-      return some ⟨P', pf⟩
+      return some { expr := P', proof? := pf}
 
 end existsAndEq
 
-/-- Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
+/--
+Triggers at goals of the form `∃ a, body` and checks if `body` allows a single value `a'`
 for `a`. If so, replaces `a` with `a'` and removes quantifier.
 
 It looks through nested quantifiers and conjuctions searching for a `a = a'`
-or `a' = a` subexpression. -/
+or `a' = a` subexpression.
+-/
 simproc existsAndEqNested (Exists _) := .ofQ fun u α e => do
   match u, α, e with
   | 1, ~q(Prop), ~q(@Exists $α $p) =>
-    let .some ⟨P', pf⟩ ← existsAndEq.existsAndEqNestedImp p | return .continue
-    return .visit {expr := P', proof? := pf}
+    let some result ← existsAndEq.existsAndEqNestedImp p | return .continue
+    return .visit result
   | _, _, _ => return .continue
