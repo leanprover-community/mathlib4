@@ -113,6 +113,14 @@ theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=
   Iff.rfl
 
+theorem mem_extremePoints' : x ∈ A.extremePoints 𝕜 ↔
+    x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x := by
+  refine ⟨fun h ↦ ⟨h.1, fun x₁ hx₁ x₂ hx₂ hx ↦ (h.2 hx₁ hx₂ hx).1⟩, ?_⟩
+  rintro ⟨hxA, Hx⟩
+  use hxA
+  refine fun x₁ hx₁ x₂ hx₂ hx ↦ ⟨Hx x₁ hx₁ x₂ hx₂ hx, Hx x₂ hx₂ x₁ hx₁ ?_⟩
+  rwa [openSegment_symm]
+
 /-- x is an extreme point to A iff {x} is an extreme set of A. -/
 @[simp] lemma isExtreme_singleton : IsExtreme 𝕜 A {x} ↔ x ∈ A.extremePoints 𝕜 := by
   refine ⟨fun hx ↦ ⟨singleton_subset_iff.1 hx.1, fun x₁ hx₁ x₂ hx₂ ↦ hx.2 hx₁ hx₂ rfl⟩, ?_⟩
