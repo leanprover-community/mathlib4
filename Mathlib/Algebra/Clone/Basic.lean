@@ -7,7 +7,10 @@ import Mathlib.Algebra.Clone.Defs
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fin.Basic
 
-/-! This file defines `Clone`s, which represent functions (or generally, some sort of composable
+/-!
+# Properties of Clones
+
+This file defines `Clone`s, which represent functions (or generally, some sort of composable
   objects) of different arities that can be "superposed": if the type is indiced as `A : ℕ → Type*`,
   the superposition has signature `A n → (Fin n → A m) → A m`. This is captured in the typeclass
   `Superposable A`.
