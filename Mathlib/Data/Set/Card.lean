@@ -121,10 +121,11 @@ theorem encard_insert_of_not_mem {a : α} (has : a ∉ s) : (insert a s).encard 
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
-  refine h.induction_on _ (by simp) ?_
-  rintro a t hat _ ht'
-  rw [encard_insert_of_not_mem hat]
-  exact lt_tsub_iff_right.1 ht'
+  induction s, h using Set.Finite.induction_on with
+  | empty => simp
+  | insert hat _ ht' =>
+    rw [encard_insert_of_not_mem hat]
+    exact lt_tsub_iff_right.1 ht'
 
 theorem Finite.encard_eq_coe (h : s.Finite) : s.encard = ENat.toNat s.encard :=
   (ENat.coe_toNat h.encard_lt_top.ne).symm

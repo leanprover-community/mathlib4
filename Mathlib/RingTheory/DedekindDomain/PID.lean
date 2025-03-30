@@ -146,7 +146,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   · refine hm M hM ?_
     obtain ⟨c, hc : algebraMap R A c = a M * b M⟩ := this _ (ha M hM) _ (hb M hM)
     rw [← hc] at hmem ⊢
-    rw [Algebra.smul_def, ← _root_.map_mul] at hmem
+    rw [Algebra.smul_def, ← map_mul] at hmem
     obtain ⟨d, hdM, he⟩ := hmem
     rw [IsLocalization.injective _ hS he] at hdM
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f`
@@ -155,7 +155,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   · refine Submodule.sum_mem _ fun M' hM' => ?_
     rw [Finset.mem_erase] at hM'
     obtain ⟨c, hc⟩ := this _ (ha M hM) _ (hb M' hM'.2)
-    rw [← hc, Algebra.smul_def, ← _root_.map_mul]
+    rw [← hc, Algebra.smul_def, ← map_mul]
     specialize hu M' hM'.2
     simp_rw [Ideal.mem_iInf, Finset.mem_erase] at hu
     -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify the value of `f`
@@ -243,8 +243,7 @@ theorem IsDedekindDomain.isPrincipalIdealRing_localization_over_prime [IsDomain 
   refine
     IsPrincipalIdealRing.of_finite_primes
       (Set.Finite.ofFinset
-        (Finset.filter (fun P => P.IsPrime)
-          ({⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset))
+        {P ∈ {⊥} ∪ (normalizedFactors (Ideal.map (algebraMap R Sₚ) p)).toFinset | P.IsPrime}
         fun P => ?_)
   rw [Finset.mem_filter, Finset.mem_union, Finset.mem_singleton, Set.mem_setOf,
     Multiset.mem_toFinset]
