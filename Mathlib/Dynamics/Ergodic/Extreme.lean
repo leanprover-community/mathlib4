@@ -7,6 +7,7 @@ import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Dynamics.Ergodic.Function
 import Mathlib.Probability.ConditionalProbability
 import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.Topology.Order.CountableSeparating
 
 /-!
 TODO
@@ -14,41 +15,6 @@ TODO
 
 open Filter Set Function MeasureTheory Measure ProbabilityTheory
 open scoped NNReal ENNReal Topology
-
-instance HasCountableSeparatingOn.range_Iio {X : Type*} [TopologicalSpace X] [LinearOrder X]
-    [OrderTopology X] [SecondCountableTopology X] {s : Set X} :
-    HasCountableSeparatingOn X (· ∈ range Iio) s := by
-  constructor
-  rcases TopologicalSpace.exists_countable_dense X with ⟨s, hsc, hsd⟩
-  set t := s ∪ {x | ∃ y, y ⋖ x}
-  refine ⟨Iio '' t, .image ?_ _, ?_, ?_⟩
-  · exact hsc.union countable_setOf_covBy_left
-  · exact image_subset_range _ _
-  · rintro x - y - h
-    by_contra! hne
-    wlog hlt : x < y generalizing x y
-    · refine this y x ?_ hne.symm (hne.lt_or_lt.resolve_left hlt)
-      simpa only [iff_comm] using h
-    cases (Ioo x y).eq_empty_or_nonempty with
-    | inl he =>
-      specialize h (Iio y) (mem_image_of_mem _ (.inr ⟨x, hlt, by simpa using Set.ext_iff.mp he⟩))
-      simp [hlt.not_le] at h
-    | inr hne =>
-      rcases hsd.inter_open_nonempty _ isOpen_Ioo hne with ⟨z, ⟨hxz, hzy⟩, hzs⟩
-      simpa [hxz, hzy.not_lt] using h (Iio z) (mem_image_of_mem _ (.inl hzs))
-
-instance HasCountableSeparatingOn.range_Ioi {X : Type*} [TopologicalSpace X] [LinearOrder X]
-    [OrderTopology X] [SecondCountableTopology X] {s : Set X} :
-    HasCountableSeparatingOn X (· ∈ range Ioi) s :=
-  HasCountableSeparatingOn.range_Iio (X := Xᵒᵈ)
-
-theorem Filter.EventuallyEq.of_forall_eventually_lt_iff {α X : Type*} [TopologicalSpace X]
-    [LinearOrder X] [OrderTopology X] [SecondCountableTopology X]
-    {l : Filter α} [CountableInterFilter l] {f g : α → X} (h : ∀ x, ∀ᶠ a in l, f a < x ↔ g a < x) :
-    f =ᶠ[l] g :=
-  -- TODO: why is this required?
-  have : HasCountableSeparatingOn X (· ∈ range Iio) univ := inferInstance
-  .of_forall_separating_preimage (· ∈ range Iio) <| forall_mem_range.2 <| fun x ↦ .set_eq (h x)
 
 variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {f : α → α}
 
@@ -148,7 +114,7 @@ theorem eq_of_absolutelyContinuous [IsProbabilityMeasure μ] [IsProbabilityMeasu
 
 theorem mem_extremePoints_meas_univ_eq [IsFiniteMeasure μ] (hμ : Ergodic f μ) :
     μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = μ univ} := by
-  rw [mem_extremePoints']
+  rw [mem_extremePoints_iff_left]
   refine ⟨⟨hμ.toMeasurePreserving, rfl⟩, ?_⟩
   rintro ν₁ ⟨hfν₁, hν₁μ⟩ ν₂ ⟨hfν₂, hν₂μ⟩ ⟨a, b, ha, hb, hab, rfl⟩
   have : IsFiniteMeasure ν₁ := ⟨by rw [hν₁μ]; apply measure_lt_top⟩
