@@ -140,7 +140,7 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
       hJ.dpow_add (hf (mem_map_of_mem f hx.1)) (hf (mem_map_of_mem f hy.1))]
     apply congr_arg
     ext k
-    rw [_root_.map_mul, hx.2, hy.2]
+    rw [map_mul, hx.2, hy.2]
   zero_mem' := by
     simp only [mem_setOf_eq, Submodule.zero_mem, map_zero, true_and]
     intro n
@@ -150,7 +150,7 @@ def _root_.DividedPowers.ideal_from_ringHom {f : A →+* B} (hf : I.map f ≤ J)
   smul_mem' := fun r x hx ↦ by
     simp only [mem_sep_iff, mem_coe] at hx ⊢
     refine ⟨I.smul_mem r hx.1, (fun n ↦ ?_)⟩
-    rw [smul_eq_mul, hI.dpow_mul hx.1, _root_.map_mul, _root_.map_mul, map_pow,
+    rw [smul_eq_mul, hI.dpow_mul hx.1, map_mul, map_mul, map_pow,
       hJ.dpow_mul (hf (mem_map_of_mem f hx.1)), hx.2 n]
 
 /-- The `DPMorphism` induced by a ring morphism, given that divided powers are compatible on a
