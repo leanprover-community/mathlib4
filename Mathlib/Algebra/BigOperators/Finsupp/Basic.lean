@@ -554,8 +554,8 @@ theorem Finsupp.sum_apply'' {A F : Type*} [AddZeroClass A] [AddCommMonoid F] [Fu
     (h0 : (0 : F) x = 0) (hadd : ∀ (f g : F), (f + g : F) x = f x + g x) :
     g.sum k x = g.sum (fun i a ↦ k i a x) := by
   induction g using Finsupp.induction with
-  | h0 => simp [h0]
-  | ha i a f hf ha ih =>
+  | zero => simp [h0]
+  | single_add i a f hf ha ih =>
     rw [Finsupp.sum_add_index' hg0 hgadd, Finsupp.sum_add_index', hadd, ih]
     · congr 1
       rw [Finsupp.sum_single_index (hg0 i), Finsupp.sum_single_index]
