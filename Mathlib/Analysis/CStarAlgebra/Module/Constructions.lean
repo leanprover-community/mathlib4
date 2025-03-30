@@ -331,7 +331,6 @@ instance instCStarModuleComplex : CStarModule ℂ E where
   inner x y := ⟪x, y⟫_ℂ
   inner_add_right := _root_.inner_add_right ..
   inner_self_nonneg {x} := by
-    simp only
     rw [← inner_self_ofReal_re, RCLike.ofReal_nonneg]
     exact inner_self_nonneg
   inner_self := inner_self_eq_zero
