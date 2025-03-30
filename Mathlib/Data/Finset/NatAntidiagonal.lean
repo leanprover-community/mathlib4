@@ -5,7 +5,6 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Order.Antidiag.Prod
 import Mathlib.Algebra.Order.Group.Nat
-import Mathlib.Data.Finset.Card
 import Mathlib.Data.Multiset.NatAntidiagonal
 
 /-!

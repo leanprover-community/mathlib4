@@ -90,13 +90,13 @@ def valuationOfNeZeroToFun (x : Kˣ) : Multiplicative ℤ :=
 
 @[simp]
 theorem valuationOfNeZeroToFun_eq (x : Kˣ) :
-    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation (x : K) := by
+    (v.valuationOfNeZeroToFun x : ℤₘ₀) = v.valuation K x := by
   classical
-  rw [show v.valuation (x : K) = _ * _ by rfl]
+  rw [show v.valuation K x = _ * _ by rfl]
   rw [Units.val_inv_eq_inv_val]
   change _ = ite _ _ _ * (ite _ _ _)⁻¹
   simp_rw [IsLocalization.toLocalizationMap_sec, SubmonoidClass.coe_subtype,
-    if_neg <| IsLocalization.sec_fst_ne_zero le_rfl x.ne_zero,
+    if_neg <| IsLocalization.sec_fst_ne_zero x.ne_zero,
     if_neg (nonZeroDivisors.coe_ne_zero _),
     valuationOfNeZeroToFun, ofAdd_sub, ofAdd_neg, div_inv_eq_mul, WithZero.coe_mul,
     WithZero.coe_inv, inv_inv]
@@ -110,7 +110,7 @@ def valuationOfNeZero : Kˣ →* Multiplicative ℤ where
     simp only [valuationOfNeZeroToFun_eq]; exact map_mul _ _ _
 
 @[simp]
-theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation (x : K) :=
+theorem valuationOfNeZero_eq (x : Kˣ) : (v.valuationOfNeZero x : ℤₘ₀) = v.valuation K x :=
   valuationOfNeZeroToFun_eq v x
 
 @[simp]
@@ -120,10 +120,10 @@ theorem valuation_of_unit_eq (x : Rˣ) :
   constructor
   · exact v.valuation_le_one x
   · obtain ⟨x, _, hx, _⟩ := x
-    change ¬v.valuation (algebraMap R K x) < 1
+    change ¬v.valuation K (algebraMap R K x) < 1
     apply_fun v.intValuation at hx
     rw [map_one, map_mul] at hx
-    rw [not_lt, ← hx, ← mul_one <| v.valuation _, valuation_of_algebraMap,
+    rw [not_lt, ← hx, ← mul_one <| v.valuation _ _, valuation_of_algebraMap,
       mul_le_mul_left <| zero_lt_iff.2 <| left_ne_zero_of_mul_eq_one hx]
     exact v.intValuation_le_one _
 
@@ -132,6 +132,8 @@ theorem valuation_of_unit_eq (x : Rˣ) :
 
 /-- The multiplicative `v`-adic valuation on `Kˣ` modulo `n`-th powers. -/
 def valuationOfNeZeroMod (n : ℕ) : (K/n) →* Multiplicative (ZMod n) :=
+  -- TODO: this definition does a lot of defeq abuse between `Multiplicative` and `Additive`,
+  -- so we need `erw` below.
   (Int.quotientZMultiplesNatEquivZMod n).toMultiplicative.toMonoidHom.comp <|
     QuotientGroup.map (powMonoidHom n : Kˣ →* Kˣ).range
       (AddSubgroup.toSubgroup (AddSubgroup.zmultiples (n : ℤ)))

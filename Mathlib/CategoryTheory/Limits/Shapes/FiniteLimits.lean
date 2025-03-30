@@ -88,8 +88,8 @@ class HasFiniteColimits : Prop where
   and which has `Fintype` objects and morphisms -/
   out (J : Type) [𝒥 : SmallCategory J] [@FinCategory J 𝒥] : @HasColimitsOfShape J 𝒥 C _
 
-instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits (J : Type w) [SmallCategory J]
-    [FinCategory J] [HasFiniteColimits C] : HasColimitsOfShape J C := by
+instance (priority := 100) hasColimitsOfShape_of_hasFiniteColimits [HasFiniteColimits C]
+    (J : Type w) [SmallCategory J] [FinCategory J] : HasColimitsOfShape J C := by
   refine @hasColimitsOfShape_of_equivalence _ _ _ _ _ _ (FinCategory.equivAsType J) ?_
   apply HasFiniteColimits.out
 
@@ -167,8 +167,8 @@ instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
   elems := by
-    cases' j' with j'
-    · cases' j with j
+    obtain - | j' := j'
+    · obtain - | j := j
       · exact {Hom.id none}
       · exact {Hom.term j}
     · by_cases h : some j' = j
@@ -189,8 +189,8 @@ instance fintypeObj [Fintype J] : Fintype (WidePushoutShape J) := by
 
 instance fintypeHom (j j' : WidePushoutShape J) : Fintype (j ⟶ j') where
   elems := by
-    cases' j with j
-    · cases' j' with j'
+    obtain - | j := j
+    · obtain - | j' := j'
       · exact {Hom.id none}
       · exact {Hom.init j'}
     · by_cases h : some j = j'

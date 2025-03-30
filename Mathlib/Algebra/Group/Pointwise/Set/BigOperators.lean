@@ -3,8 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
+import Mathlib.Data.Fintype.Card
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # Results about pointwise operations on sets and big operators.
@@ -103,7 +104,7 @@ theorem list_prod_subset_list_prod (t : List ι) (f₁ f₂ : ι → Set α) (hf
       (ih fun i hi ↦ hf i <| List.mem_cons_of_mem _ hi)
 
 @[to_additive]
-theorem list_prod_singleton {M : Type*} [CommMonoid M] (s : List M) :
+theorem list_prod_singleton {M : Type*} [Monoid M] (s : List M) :
     (s.map fun i ↦ ({i} : Set M)).prod = {s.prod} :=
   (map_list_prod (singletonMonoidHom : M →* Set M) _).symm
 

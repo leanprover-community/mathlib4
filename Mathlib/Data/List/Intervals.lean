@@ -32,7 +32,7 @@ namespace List
 See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
 as sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
 for sets, multisets and finite sets respectively.
- -/
+-/
 def Ico (n m : ℕ) : List ℕ :=
   range' n (m - n)
 

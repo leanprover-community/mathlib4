@@ -28,7 +28,8 @@ This file defines a bundled type of absolute values `AbsoluteValue R S`.
 variable {ι α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
-the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/
+the maps that preserve `*`, are nonnegative, positive definite and satisfy
+the triangle inequality. -/
 structure AbsoluteValue (R S : Type*) [Semiring R] [OrderedSemiring S] extends R →ₙ* S where
   /-- The absolute value is nonnegative -/
   nonneg' : ∀ x, 0 ≤ toFun x
@@ -105,16 +106,12 @@ protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
 
 protected theorem ne_zero_iff {x : R} : abv x ≠ 0 ↔ x ≠ 0 :=
   abv.eq_zero.not
-
-protected theorem pos {x : R} (hx : x ≠ 0) : 0 < abv x :=
-  lt_of_le_of_ne (abv.nonneg x) (Ne.symm <| mt abv.eq_zero.mp hx)
+protected alias ⟨_, ne_zero⟩ := AbsoluteValue.ne_zero_iff
 
 @[simp]
 protected theorem pos_iff {x : R} : 0 < abv x ↔ x ≠ 0 :=
-  ⟨fun h₁ => mt abv.eq_zero.mpr h₁.ne', abv.pos⟩
-
-protected theorem ne_zero {x : R} (hx : x ≠ 0) : abv x ≠ 0 :=
-  (abv.pos hx).ne'
+  (abv.nonneg x).gt_iff_ne.trans abv.ne_zero_iff
+protected alias ⟨_, pos⟩ := AbsoluteValue.pos_iff
 
 theorem map_one_of_isLeftRegular (h : IsLeftRegular (abv 1)) : abv 1 = 1 :=
   h <| by simp [← abv.map_mul]
@@ -138,17 +135,13 @@ theorem map_sub_eq_zero_iff (a b : R) : abv (a - b) = 0 ↔ a = b :=
 
 end Ring
 
-end OrderedSemiring
-
-section OrderedRing
-
 section Semiring
 
 section IsDomain
 
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
 -- `IsDomain`/`CancelMonoidWithZero` API
-variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
 @[simp]
@@ -197,6 +190,10 @@ lemma apply_nat_le_self (n : ℕ) : abv n ≤ n := by
 end IsDomain
 
 end Semiring
+
+end OrderedSemiring
+
+section OrderedRing
 
 section Ring
 
@@ -288,7 +285,7 @@ variable {S : Type*} [OrderedSemiring S] [Nontrivial S]
 
 /-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
 protected
-def trivial: AbsoluteValue R S where
+def trivial : AbsoluteValue R S where
   toFun x := if x = 0 then 0 else 1
   map_mul' x y := by
     rcases eq_or_ne x 0 with rfl | hx
@@ -313,6 +310,8 @@ lemma trivial_apply {x : R} (hx : x ≠ 0) : AbsoluteValue.trivial (S := S) x = 
 end trivial
 
 section nontrivial
+
+section OrderedSemiring
 
 variable {R : Type*} [Semiring R] {S : Type*} [OrderedSemiring S]
 
@@ -346,9 +345,13 @@ lemma not_isNontrivial_apply {v : AbsoluteValue R S} (hv : ¬ v.IsNontrivial) {x
     v x = 1 :=
   v.not_isNontrivial_iff.mp hv _ hx
 
-lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedField S]
-    {v : AbsoluteValue F S} (h : v.IsNontrivial) :
-    ∃ x, 1 < v x := by
+end OrderedSemiring
+
+section LinearOrderedSemifield
+
+variable [Field R] [LinearOrderedSemifield S] [ExistsAddOfLE S] {v : AbsoluteValue R S}
+
+lemma IsNontrivial.exists_abv_gt_one (h : v.IsNontrivial) : ∃ x, 1 < v x := by
   obtain ⟨x, hx₀, hx₁⟩ := h
   rcases hx₁.lt_or_lt with h | h
   · refine ⟨x⁻¹, ?_⟩
@@ -356,9 +359,7 @@ lemma IsNontrivial.exists_abv_gt_one {F S : Type*} [Field F] [LinearOrderedField
     exact (one_lt_inv₀ <| v.pos hx₀).mpr h
   · exact ⟨x, h⟩
 
-lemma IsNontrivial.exists_abv_lt_one {F S : Type*} [Field F] [LinearOrderedField S]
-    {v : AbsoluteValue F S} (h : v.IsNontrivial) :
-    ∃ x ≠ 0, v x < 1 := by
+lemma IsNontrivial.exists_abv_lt_one (h : v.IsNontrivial) : ∃ x ≠ 0, v x < 1 := by
   obtain ⟨y, hy⟩ := h.exists_abv_gt_one
   have hy₀ := v.ne_zero_iff.mp <| (zero_lt_one.trans hy).ne'
   refine ⟨y⁻¹, inv_ne_zero hy₀, ?_⟩
@@ -425,6 +426,8 @@ theorem one_sub_pow_le {R S : Type*} [OrderedCommRing S] [Ring R] [NoZeroDivisor
     [Nontrivial R] (a : R) (n : ℕ) (v : AbsoluteValue R S) :
     1 - v a ^ n ≤ v (1 + a ^ n) :=
   le_trans (by rw [map_one, map_pow]) (v.le_add 1 (a ^ n))
+
+end LinearOrderedSemifield
 
 end nontrivial
 
@@ -563,9 +566,9 @@ end Ring
 
 end LinearOrderedCommRing
 
-section LinearOrderedField
+section IsCancelMulZero
 
-variable {S : Type*} [LinearOrderedSemifield S]
+variable {S : Type*} [OrderedSemiring S] [IsCancelMulZero S]
 
 section Semiring
 
@@ -581,6 +584,12 @@ def abvHom' : R →*₀ S where
 
 end Semiring
 
+end IsCancelMulZero
+
+section LinearOrderedSemifield
+
+variable {S : Type*} [LinearOrderedSemifield S]
+
 section DivisionSemiring
 
 variable {R : Type*} [DivisionSemiring R] (abv : R → S) [IsAbsoluteValue abv]
@@ -593,6 +602,6 @@ theorem abv_div (a b : R) : abv (a / b) = abv a / abv b :=
 
 end DivisionSemiring
 
-end LinearOrderedField
+end LinearOrderedSemifield
 
 end IsAbsoluteValue

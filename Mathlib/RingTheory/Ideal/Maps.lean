@@ -219,7 +219,7 @@ theorem comap_sInf (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ s, (I : Id
 theorem comap_sInf' (s : Set (Ideal S)) : (sInf s).comap f = ⨅ I ∈ comap f '' s, I :=
   _root_.trans (comap_sInf f s) (by rw [iInf_image])
 
-/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit.  -/
+/-- Variant of `Ideal.IsPrime.comap` where ideal is explicit rather than implicit. -/
 theorem comap_isPrime [H : IsPrime K] : IsPrime (comap f K) :=
   H.comap f
 
@@ -267,7 +267,9 @@ theorem restrictScalars_mul {R S : Type*} [Semiring R] [Semiring S] [Module R S]
 
 section Surjective
 
-section variable (hf : Function.Surjective f)
+section
+
+variable (hf : Function.Surjective f)
 include hf
 
 open Function
@@ -544,18 +546,19 @@ variable [FunLike F R S] [rc : RingHomClass F R S]
 variable (f : F)
 variable (I J : Ideal R) (K L : Ideal S)
 
-theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S] (f : F) (I J : Ideal R) :
+protected theorem map_mul {R} [Semiring R] [FunLike F R S] [RingHomClass F R S]
+    (f : F) (I J : Ideal R) :
     map f (I * J) = map f I * map f J :=
   le_antisymm
     (map_le_iff_le_comap.2 <|
       mul_le.2 fun r hri s hsj =>
         show (f (r * s)) ∈ map f I * map f J by
-          rw [_root_.map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
+          rw [map_mul]; exact mul_mem_mul (mem_map_of_mem f hri) (mem_map_of_mem f hsj))
     (span_mul_span (↑f '' ↑I) (↑f '' ↑J) ▸ (span_le.2 <|
       Set.iUnion₂_subset fun _ ⟨r, hri, hfri⟩ =>
         Set.iUnion₂_subset fun _ ⟨s, hsj, hfsj⟩ =>
           Set.singleton_subset_iff.2 <|
-            hfri ▸ hfsj ▸ by rw [← _root_.map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
+            hfri ▸ hfsj ▸ by rw [← map_mul]; exact mem_map_of_mem f (mul_mem_mul hri hsj)))
 
 /-- The pushforward `Ideal.map` as a (semi)ring homomorphism. -/
 @[simps]
@@ -586,7 +589,7 @@ theorem map_radical_le : map f (radical I) ≤ radical (map f I) :=
 
 theorem le_comap_mul : comap f K * comap f L ≤ comap f (K * L) :=
   map_le_iff_le_comap.1 <|
-    (map_mul f (comap f K) (comap f L)).symm ▸
+    (Ideal.map_mul f (comap f K) (comap f L)).symm ▸
       mul_mono (map_le_iff_le_comap.2 <| le_rfl) (map_le_iff_le_comap.2 <| le_rfl)
 
 theorem le_comap_pow (n : ℕ) : K.comap f ^ n ≤ (K ^ n).comap f := by
@@ -671,6 +674,8 @@ theorem ker_rangeSRestrict (f : R →+* S) : ker f.rangeSRestrict = ker f :=
 theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
   ext; simp
 
+theorem ker_coe_toRingHom : ker (f : R →+* S) = ker f := rfl
+
 @[simp]
 theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F') :
     ker f = ⊥ := by
@@ -696,6 +701,12 @@ theorem ker_eq_bot_iff_eq_zero : ker f = ⊥ ↔ ∀ x, f x = 0 → x = 0 := by
 lemma ker_comp_of_injective [Semiring T] (g : T →+* R) {f : R →+* S} (hf : Function.Injective f) :
     ker (f.comp g) = RingHom.ker g := by
   rw [← RingHom.comap_ker, (injective_iff_ker_eq_bot f).mp hf, RingHom.ker]
+
+/-- Synonym for `RingHom.ker_coe_equiv`, but given an algebra equivalence. -/
+@[simp] theorem _root_.AlgHom.ker_coe_equiv {R A B : Type*} [CommSemiring R] [Ring A] [Ring B]
+    [Algebra R A] [Algebra R B] (e : A ≃ₐ[R] B) :
+    RingHom.ker (e : A →+* B) = ⊥ :=
+  RingHom.ker_coe_equiv (e.toRingEquiv)
 
 end Ring
 
@@ -939,7 +950,7 @@ theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Idea
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk
   · refine fun hxy => (hf x).recOn fun a ha => (hf y).recOn fun b hb => ?_
-    rw [← ha, ← hb, ← _root_.map_mul f, mem_map_iff_of_surjective _ hf] at hxy
+    rw [← ha, ← hb, ← map_mul f, mem_map_iff_of_surjective _ hf] at hxy
     rcases hxy with ⟨c, hc, hc'⟩
     rw [← sub_eq_zero, ← map_sub] at hc'
     have : a * b ∈ I := by
@@ -1069,7 +1080,9 @@ namespace AlgHom
 variable {R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A →ₐ[R] B)
 
-lemma coe_ker : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+lemma ker_coe : RingHom.ker f = RingHom.ker (f : A →+* B) := rfl
+
+@[deprecated (since := "2025-02-24")] alias coe_ker := ker_coe
 
 lemma coe_ideal_map (I : Ideal A) :
     Ideal.map f I = Ideal.map (f : A →+* B) I := rfl

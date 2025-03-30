@@ -82,6 +82,14 @@ theorem cutExpand_add_left {t u} (s) : CutExpand r (s + t) (s + u) ↔ CutExpand
 lemma cutExpand_add_right {s' s} (t) : CutExpand r (s' + t) (s + t) ↔ CutExpand r s' s := by
   convert cutExpand_add_left t using 2 <;> apply add_comm
 
+theorem cutExpand_add_single {a' a : α} (s : Multiset α) (h : r a' a) :
+    CutExpand r (s + {a'}) (s + {a}) :=
+  (cutExpand_add_left s).2 <| cutExpand_singleton_singleton h
+
+theorem cutExpand_single_add {a' a : α} (h : r a' a) (s : Multiset α) :
+    CutExpand r ({a'} + s) ({a} + s) :=
+  (cutExpand_add_right s).2 <| cutExpand_singleton_singleton h
+
 theorem cutExpand_iff [DecidableEq α] [IsIrrefl α r] {s' s : Multiset α} :
     CutExpand r s' s ↔
       ∃ (t : Multiset α) (a : α), (∀ a' ∈ t, r a' a) ∧ a ∈ s ∧ s' = s.erase a + t := by
@@ -167,5 +175,8 @@ theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (Cu
 /-- `CutExpand r` is well-founded when `r` is. -/
 theorem _root_.WellFounded.cutExpand (hr : WellFounded r) : WellFounded (CutExpand r) :=
   ⟨have := hr.isIrrefl; fun _ ↦ acc_of_singleton fun a _ ↦ (hr.apply a).cutExpand⟩
+
+instance [h : IsWellFounded α r] : IsWellFounded _ (CutExpand r) :=
+  ⟨h.wf.cutExpand⟩
 
 end Relation

@@ -87,7 +87,7 @@ def StyleError.errorCode (err : StyleError) : String := match err with
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
 structure ErrorContext where
-  /-- The underlying `StyleError`-/
+  /-- The underlying `StyleError` -/
   error : StyleError
   /-- The line number of the error (1-based) -/
   lineNumber : ℕ
@@ -208,13 +208,13 @@ def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
 /-- Lint a collection of input strings if one of them contains trailing whitespace. -/
 def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
-  let mut fixedLines := lines
+  let mut fixedLines : Vector String lines.size := lines.toVector
   for h : idx in [:lines.size] do
     let line := lines[idx]
     if line.back == ' ' then
       errors := errors.push (StyleError.trailingWhitespace, idx + 1)
-      fixedLines := fixedLines.set! idx line.trimRight
-  return (errors, if errors.size > 0 then some fixedLines else none)
+      fixedLines := fixedLines.set idx line.trimRight
+  return (errors, if errors.size > 0 then some fixedLines.toArray else none)
 
 
 /-- Lint a collection of input strings for a semicolon preceded by a space. -/

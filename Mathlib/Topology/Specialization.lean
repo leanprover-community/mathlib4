@@ -44,7 +44,7 @@ lemma toEquiv_inj {a b : α} : toEquiv a = toEquiv b ↔ a = b := Iff.rfl
 -- despite the fact that it is provable by `simp` (by not `dsimp`).
 @[simp, nolint simpNF] -- See https://github.com/leanprover-community/mathlib4/issues/10675
 lemma ofEquiv_inj {a b : Specialization α} : ofEquiv a = ofEquiv b ↔ a = b :=
-Iff.rfl
+  Iff.rfl
 
 /-- A recursor for `Specialization`. Use as `induction x`. -/
 @[elab_as_elim, cases_eliminator, induction_eliminator]

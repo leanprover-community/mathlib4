@@ -64,12 +64,6 @@ open CategoryTheory
 
 namespace Grp
 
-
--- Porting note: already have Group G but Lean can't use that
-@[to_additive]
-instance (G : Grp) : Group G.carrier :=
-  G.str
-
 variable {A B : Grp.{u}} (f : A ⟶ B)
 
 @[to_additive]
@@ -109,7 +103,6 @@ instance : SMul B X' where
     match x with
     | fromCoset y => fromCoset ⟨b • y, by
           rw [← y.2.choose_spec, leftCoset_assoc]
-          -- Porting note: should we make `Bundled.α` reducible?
           let b' : B := y.2.choose
           use b * b'⟩
     | ∞ => ∞
@@ -198,7 +191,6 @@ local notation "g" => g f
 /-- Define `h : B ⟶ S(X')` to be `τ g τ⁻¹`
 -/
 def h : B →* SX' where
-  -- Porting note: mathport removed () from (τ) which are needed
   toFun β := ((τ).symm.trans (g β)).trans τ
   map_one' := by
     ext
@@ -233,8 +225,8 @@ theorem h_apply_infinity (x : B) (hx : x ∈ f.hom.range) : (h x) ∞ = ∞ := b
 theorem h_apply_fromCoset (x : B) :
     (h x) (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) =
       fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
-    change ((τ).symm.trans (g x)).trans τ _ = _
-    simp [-MonoidHom.coe_range, τ_symm_apply_fromCoset, g_apply_infinity, τ_apply_infinity]
+  change ((τ).symm.trans (g x)).trans τ _ = _
+  simp [-MonoidHom.coe_range, τ_symm_apply_fromCoset, g_apply_infinity, τ_apply_infinity]
 
 theorem h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.hom.range) :
     h x (fromCoset ⟨b • f.hom.range, b, rfl⟩) = fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ :=
@@ -285,14 +277,10 @@ theorem comp_eq : (f ≫ ofHom g) = f ≫ ofHom h := by
 
 theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
   intro r
+  apply fromCoset_ne_of_nin_range _ hx
   replace r :=
     DFunLike.congr_fun (DFunLike.congr_fun r x) (fromCoset ⟨f.hom.range, ⟨1, one_leftCoset _⟩⟩)
-  change _ = ((τ).symm.trans (g x)).trans τ _ at r
-  rw [g_apply_fromCoset] at r
-  simp only [MonoidHom.coe_range, Subtype.coe_mk, Equiv.symm_swap, Equiv.toFun_as_coe,
-    Equiv.coe_trans, Function.comp_apply] at r
-  erw [Equiv.swap_apply_left, g_apply_infinity, Equiv.swap_apply_right] at r
-  exact fromCoset_ne_of_nin_range _ hx r
+  simpa [g_apply_fromCoset, «h», tau, g_apply_infinity] using r
 
 end SurjectiveOfEpiAuxs
 
@@ -349,10 +337,6 @@ namespace CommGrp
 
 
 variable {A B : CommGrp.{u}} (f : A ⟶ B)
-
--- Porting note: again to help with non-transparency
-private instance (A : CommGrp) : CommGroup A.carrier := A.str
-private instance (A : CommGrp) : Group A.carrier := A.str.toGroup
 
 @[to_additive]
 theorem ker_eq_bot_of_mono [Mono f] : f.hom.ker = ⊥ :=

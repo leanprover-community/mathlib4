@@ -305,6 +305,16 @@ protected theorem mul_right_cancel (h : IsUnit b) : a * b = c * b → a = c :=
   h.mul_left_inj.1
 
 @[to_additive]
+theorem mul_eq_right (h : IsUnit b) : a * b = b ↔ a = 1 := calc
+  a * b = b ↔ a * b = 1 * b := by rw [one_mul]
+    _ ↔ a = 1 := by rw [h.mul_left_inj]
+
+@[to_additive]
+theorem mul_eq_left (h : IsUnit a) : a * b = a ↔ b = 1 := calc
+  a * b = a ↔ a * b = a * 1 := by rw [mul_one]
+    _ ↔ b = 1 := by rw [h.mul_right_inj]
+
+@[to_additive]
 protected theorem mul_right_injective (h : IsUnit a) : Injective (a * ·) :=
   fun _ _ => h.mul_left_cancel
 

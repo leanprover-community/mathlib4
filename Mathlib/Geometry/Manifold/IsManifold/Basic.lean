@@ -3,9 +3,8 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Analysis.Convex.Normed
-import Mathlib.Analysis.Normed.Module.FiniteDimension
-import Mathlib.Analysis.Calculus.ContDiff.Basic
+import Mathlib.Analysis.Calculus.ContDiff.Operations
+import Mathlib.Analysis.Normed.Module.Convex
 import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
 
@@ -194,7 +193,7 @@ protected def symm : PartialEquiv E H :=
   I.toPartialEquiv.symm
 
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
-  because it is a composition of multiple projections. -/
+because it is a composition of multiple projections. -/
 def Simps.apply (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*) [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) : H → E :=
   I
@@ -403,7 +402,7 @@ corners `I.prod I'` on `(E × E', ModelProd H H')`. This appears in particular f
 structure on the tangent bundle to a manifold modelled on `(E, H)`: it will be modelled on
 `(E × E, H × E)`. See note [Manifold type tags] for explanation about `ModelProd H H'`
 vs `H × H'`. -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def ModelWithCorners.prod {𝕜 : Type u} [NontriviallyNormedField 𝕜] {E : Type v}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type w} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) {E' : Type v'} [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
@@ -480,8 +479,8 @@ end ModelWithCornersProd
 section Boundaryless
 
 /-- Property ensuring that the model with corners `I` defines manifolds without boundary. This
-  differs from the more general `BoundarylessManifold`, which requires every point on the manifold
-  to be an interior point. -/
+differs from the more general `BoundarylessManifold`, which requires every point on the manifold
+to be an interior point. -/
 class ModelWithCorners.Boundaryless {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) : Prop where
@@ -569,7 +568,7 @@ def contDiffPregroupoid : Pregroupoid H where
 
 variable (n I) in
 /-- Given a model with corners `(E, H)`, we define the groupoid of invertible `C^n` transformations
-  of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
+of `H` as the invertible maps that are `C^n` when read in `E` through `I`. -/
 def contDiffGroupoid : StructureGroupoid H :=
   Pregroupoid.groupoid (contDiffPregroupoid n I)
 
@@ -644,11 +643,11 @@ theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCor
   obtain ⟨he', he'_symm⟩ := he'
   constructor <;> simp only [PartialEquiv.prod_source, PartialHomeomorph.prod_toPartialEquiv,
     contDiffPregroupoid]
-  · have h3 := ContDiffOn.prod_map he he'
+  · have h3 := ContDiffOn.prodMap he he'
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
-  · have h3 := ContDiffOn.prod_map he_symm he'_symm
+  · have h3 := ContDiffOn.prodMap he_symm he'_symm
     rw [← I.image_eq, ← I'.image_eq, prod_image_image_eq] at h3
     rw [← (I.prod I').image_eq]
     exact h3
@@ -676,8 +675,8 @@ smooth manifold and `n = ω` means analytic manifold). -/
 class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
     (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
-    [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid n I) : Prop
+    [TopologicalSpace M] [ChartedSpace H M] : Prop
+    extends HasGroupoid M (contDiffGroupoid n I)
 
 @[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners := IsManifold
 
@@ -782,6 +781,7 @@ lemma maximalAtlas_subset_of_le {m n : WithTop ℕ∞} (h : m ≤ n) :
     maximalAtlas I n M ⊆ maximalAtlas I m M :=
   StructureGroupoid.maximalAtlas_mono (contDiffGroupoid_le h)
 
+variable (n) in
 /-- The empty set is a `C^n` manifold w.r.t. any charted space and model. -/
 instance empty [IsEmpty M] : IsManifold I n M := by
   apply isManifold_of_contDiffOn
@@ -799,6 +799,16 @@ instance empty [IsEmpty M] : IsManifold I n M := by
     _ = ∅ ∩ range I := by rw [this, preimage_empty]
     _ = ∅ := empty_inter (range I)
   apply (this ▸ hx).elim
+
+attribute [local instance] ChartedSpace.of_discreteTopology in
+variable (n) in
+/-- A discrete space `M` is a smooth manifold over the trivial model on a trivial normed space. -/
+theorem of_discreteTopology [DiscreteTopology M] [Unique E] :
+    IsManifold (modelWithCornersSelf 𝕜 E) n M := by
+  apply isManifold_of_contDiffOn _ _ _ (fun _ _ _ _ ↦ contDiff_of_subsingleton.contDiffOn)
+
+attribute [local instance] ChartedSpace.of_discreteTopology in
+example [Unique E] : IsManifold (𝓘(𝕜, E)) n (Fin 2) := of_discreteTopology _
 
 /-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
@@ -906,7 +916,9 @@ def TangentSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
     {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H)
     {M : Type*} [TopologicalSpace M] [ChartedSpace H M] (_x : M) : Type u := E
--- Porting note: was deriving TopologicalSpace, AddCommGroup, IsTopologicalAddGroup
+-- The `TopologicalSpace, AddCommGroup, IsTopologicalAddGroup` instances should be constructed by a
+-- deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
 /- In general, the definition of `TangentSpace` is not reducible, so that type class inference
 does not pick wrong instances. We record the right instances for them. -/

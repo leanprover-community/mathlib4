@@ -172,7 +172,7 @@ theorem covering_iff_covers_id (S : Sieve X) : S ∈ J X ↔ J.Covers S (𝟙 X)
 
 /-- The maximality axiom in 'arrow' form: Any arrow `f` in `S` is covered by `S`. -/
 theorem arrow_max (f : Y ⟶ X) (S : Sieve X) (hf : S f) : J.Covers S f := by
-  rw [Covers, (Sieve.pullback_eq_top_iff_mem f).1 hf]
+  rw [Covers, (Sieve.mem_iff_pullback_eq_top f).1 hf]
   apply J.top_mem
 
 /-- The stability axiom in 'arrow' form: If `S` covers `f` then `S` covers `g ≫ f` for any `g`. -/
@@ -307,7 +307,7 @@ theorem top_covering : S ∈ (⊤ : GrothendieckTopology C) X :=
   ⟨⟩
 
 theorem bot_covers (S : Sieve X) (f : Y ⟶ X) : (⊥ : GrothendieckTopology C).Covers S f ↔ S f := by
-  rw [covers_iff, bot_covering, ← Sieve.pullback_eq_top_iff_mem]
+  rw [covers_iff, bot_covering, ← Sieve.mem_iff_pullback_eq_top]
 
 @[simp]
 theorem top_covers (S : Sieve X) (f : Y ⟶ X) : (⊤ : GrothendieckTopology C).Covers S f := by
@@ -367,9 +367,10 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C where
 Grothendieck topology `J`. -/
 -- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
 def Cover (X : C) : Type max u v :=
-  { S : Sieve X // S ∈ J X } -- deriving Preorder
+  { S : Sieve X // S ∈ J X }
+-- The `Preorder` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 
--- Porting note: `deriving` didn't work above, so we add the preorder instance manually.
 instance (X : C) : Preorder (J.Cover X) :=
   show Preorder {S : Sieve X // S ∈ J X} from inferInstance
 

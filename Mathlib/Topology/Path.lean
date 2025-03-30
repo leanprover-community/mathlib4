@@ -63,8 +63,6 @@ instance Path.funLike : FunLike (Path x y) I X where
     simp only [DFunLike.coe_fn_eq] at h
     cases γ₁; cases γ₂; congr
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added this instance so that we can use `FunLike.coe` for `CoeFun`
--- this also fixed very strange `simp` timeout issues
 instance Path.continuousMapClass : ContinuousMapClass (Path x y) I X where
   map_continuous γ := show Continuous γ.toContinuousMap by fun_prop
 
@@ -79,7 +77,6 @@ namespace Path
 theorem coe_mk_mk (f : I → X) (h₁) (h₂ : f 0 = x) (h₃ : f 1 = y) :
     ⇑(mk ⟨f, h₁⟩ h₂ h₃ : Path x y) = f :=
   rfl
--- Porting note: the name `Path.coe_mk` better refers to a new lemma below
 
 variable (γ : Path x y)
 
@@ -106,7 +103,6 @@ initialize_simps_projections Path (toFun → simps.apply, -toContinuousMap)
 theorem coe_toContinuousMap : ⇑γ.toContinuousMap = γ :=
   rfl
 
--- Porting note: this is needed because of the `Path.continuousMapClass` instance
 @[simp]
 theorem coe_mk : ⇑(γ : C(I, X)) = γ :=
   rfl
@@ -163,12 +159,6 @@ theorem symm_range {a b : X} (γ : Path a b) : range γ.symm = range γ := by
 
 open ContinuousMap
 
-/- porting note: because of the `DFunLike` instance, we already have a coercion to `C(I, X)`
-so we avoid adding another.
---instance : Coe (Path x y) C(I, X) :=
-  --⟨fun γ => γ.1⟩
--/
-
 /-- The following instance defines the topology on the path space to be induced from the
 compact-open topology on the space `C(I,X)` of continuous maps from `I` to `X`.
 -/
@@ -182,7 +172,7 @@ instance : ContinuousEval (Path x y) I X := .of_continuous_forget continuous_ind
 @[deprecated Continuous.eval (since := "2024-10-04")]
 theorem _root_.Continuous.path_eval {Y} [TopologicalSpace Y] {f : Y → Path x y} {g : Y → I}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun y => f y (g y) := by
-  continuity
+  fun_prop
 
 theorem continuous_uncurry_iff {Y} [TopologicalSpace Y] {g : Y → Path x y} :
     Continuous ↿g ↔ Continuous g :=
@@ -404,7 +394,7 @@ theorem symm_continuous_family {ι : Type*} [TopologicalSpace ι]
 
 @[continuity]
 theorem continuous_symm : Continuous (symm : Path x y → Path y x) :=
-  continuous_uncurry_iff.mp <| symm_continuous_family _ (continuous_fst.eval continuous_snd)
+  continuous_uncurry_iff.mp <| symm_continuous_family _ (by fun_prop)
 
 @[continuity]
 theorem continuous_uncurry_extend_of_continuous_family {ι : Type*} [TopologicalSpace ι]
@@ -434,20 +424,19 @@ theorem trans_continuous_family {ι : Type*} [TopologicalSpace ι]
   · rintro st hst
     simp [hst, mul_inv_cancel₀ (two_ne_zero' ℝ)]
 
-@[continuity]
+@[continuity, fun_prop]
 theorem _root_.Continuous.path_trans {f : Y → Path x y} {g : Y → Path y z} :
     Continuous f → Continuous g → Continuous fun t => (f t).trans (g t) := by
   intro hf hg
   apply continuous_uncurry_iff.mp
   exact trans_continuous_family _ (continuous_uncurry_iff.mpr hf) _ (continuous_uncurry_iff.mpr hg)
 
-@[continuity]
-theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 :=
-  continuous_fst.path_trans continuous_snd
+@[continuity, fun_prop]
+theorem continuous_trans {x y z : X} : Continuous fun ρ : Path x y × Path y z => ρ.1.trans ρ.2 := by
+  fun_prop
+
 
 /-! #### Product of paths -/
-
-
 section Prod
 
 variable {a₁ a₂ a₃ : X} {b₁ b₂ b₃ : Y}
@@ -518,8 +507,8 @@ protected theorem mul_apply [Mul X] [ContinuousMul X] {a₁ b₁ a₂ b₂ : X} 
 /-! #### Truncating a path -/
 
 
-/-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the
-  time interval `[t₀, t₁]` and stays still otherwise. -/
+/-- `γ.truncate t₀ t₁` is the path which follows the path `γ` on the time interval `[t₀, t₁]`
+and stays still otherwise. -/
 def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t₁ : ℝ) :
     Path (γ.extend <| min t₀ t₁) (γ.extend t₁) where
   toFun s := γ.extend (min (max s t₀) t₁)
@@ -544,7 +533,7 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
     · rfl
 
 /-- `γ.truncateOfLE t₀ t₁ h`, where `h : t₀ ≤ t₁` is `γ.truncate t₀ t₁`
-  casted as a path from `γ.extend t₀` to `γ.extend t₁`. -/
+casted as a path from `γ.extend t₀` to `γ.extend t₁`. -/
 def truncateOfLE {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) {t₀ t₁ : ℝ}
     (h : t₀ ≤ t₁) : Path (γ.extend t₀) (γ.extend t₁) :=
   (γ.truncate t₀ t₁).cast (by rw [min_eq_left h]) rfl
@@ -556,8 +545,8 @@ theorem truncate_range {a b : X} (γ : Path a b) {t₀ t₁ : ℝ} :
   intro x _hx
   simp only [DFunLike.coe, Path.truncate, mem_range_self]
 
-/-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we
-  mean the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s` is continuous. -/
+/-- For a path `γ`, `γ.truncate` gives a "continuous family of paths", by which we mean
+the uncurried function which maps `(t₀, t₁, s)` to `γ.truncate t₀ t₁ s` is continuous. -/
 @[continuity]
 theorem truncate_continuous_family {a b : X} (γ : Path a b) :
     Continuous (fun x => γ.truncate x.1 x.2.1 x.2.2 : ℝ × ℝ × I → X) :=
@@ -579,12 +568,10 @@ theorem truncate_self {a b : X} (γ : Path a b) (t : ℝ) :
   simp only [truncate, DFunLike.coe, refl, min_def, max_def]
   split_ifs with h₁ h₂ <;> congr
 
-@[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_zero_zero {a b : X} (γ : Path a b) :
     γ.truncate 0 0 = (Path.refl a).cast (by rw [min_self, γ.extend_zero]) γ.extend_zero := by
   convert γ.truncate_self 0
 
-@[simp 1001] -- Porting note: increase `simp` priority so left-hand side doesn't simplify
 theorem truncate_one_one {a b : X} (γ : Path a b) :
     γ.truncate 1 1 = (Path.refl b).cast (by rw [min_self, γ.extend_one]) γ.extend_one := by
   convert γ.truncate_self 1
@@ -614,7 +601,6 @@ def reparam (γ : Path x y) (f : I → I) (hfcont : Continuous f) (hf₀ : f 0 =
 theorem coe_reparam (γ : Path x y) {f : I → I} (hfcont : Continuous f) (hf₀ : f 0 = 0)
     (hf₁ : f 1 = 1) : ⇑(γ.reparam f hfcont hf₀ hf₁) = γ ∘ f :=
   rfl
--- Porting note: this seems like it was poorly named (was: `coe_to_fun`)
 
 @[simp]
 theorem reparam_id (γ : Path x y) : γ.reparam id continuous_id rfl rfl = γ := by

@@ -201,9 +201,9 @@ The `[HasForget C]` argument will be omitted if it is possible to synthesize an 
 
 The name of the produced lemma can be specified with `@[elementwise other_lemma_name]`.
 If `simp` is added first, the generated lemma will also have the `simp` attribute.
- -/
+-/
 syntax (name := elementwise) "elementwise"
-  " nosimp"? (" (" &"attr" ":=" Parser.Term.attrInstance,* ")")? : attr
+  " nosimp"? (" (" &"attr" " := " Parser.Term.attrInstance,* ")")? : attr
 
 initialize registerBuiltinAttribute {
   name := `elementwise

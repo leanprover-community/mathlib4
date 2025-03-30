@@ -35,7 +35,7 @@ variable {X Y Z : Scheme.{u}} (f : X ⟶ Y) (g : Y ⟶ Z)
 
 /-- A morphism is proper if it is separated, universally closed and locally of finite type. -/
 @[mk_iff]
-class IsProper extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f : Prop where
+class IsProper : Prop extends IsSeparated f, UniversallyClosed f, LocallyOfFiniteType f where
 
 lemma isProper_eq : @IsProper =
     (@IsSeparated ⊓ @UniversallyClosed : MorphismProperty Scheme) ⊓ @LocallyOfFiniteType := by
