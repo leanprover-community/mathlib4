@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Lu-Ming Zhang
 -/
 import Mathlib.Data.Matrix.Invertible
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+import Mathlib.Data.Matrix.Kronecker
+import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 import Mathlib.LinearAlgebra.Matrix.Adjugate
 import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.Matrix.Trace
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
 # Nonsingular inverses
@@ -109,7 +110,7 @@ def invertibleEquivDetInvertible : Invertible A ≃ Invertible A.det where
   left_inv _ := Subsingleton.elim _ _
   right_inv _ := Subsingleton.elim _ _
 
-/-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(Matrix n n α)ˣ`-/
+/-- Given a proof that `A.det` has a constructive inverse, lift `A` to `(Matrix n n α)ˣ` -/
 def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
   @unitOfInvertible _ _ A (invertibleOfDetInvertible A)
 
@@ -121,7 +122,7 @@ theorem isUnit_iff_isUnit_det : IsUnit A ↔ IsUnit A.det := by
 theorem isUnits_det_units (A : (Matrix n n α)ˣ) : IsUnit (A : Matrix n n α).det :=
   isUnit_iff_isUnit_det _ |>.mp A.isUnit
 
-/-! #### Variants of the statements above with `IsUnit`-/
+/-! #### Variants of the statements above with `IsUnit` -/
 
 
 theorem isUnit_det_of_invertible [Invertible A] : IsUnit A.det :=
@@ -483,7 +484,7 @@ variable (A)
 
 @[simp]
 theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
-  cases' subsingleton_or_nontrivial α with ht ht
+  rcases subsingleton_or_nontrivial α with ht | ht
   · simp [eq_iff_true_of_subsingleton]
   rcases (Fintype.card n).zero_le.eq_or_lt with hc | hc
   · rw [eq_comm, Fintype.card_eq_zero_iff] at hc
@@ -710,6 +711,32 @@ theorem inv_reindex (e₁ e₂ : n ≃ m) (A : Matrix n n α) : (reindex e₁ e�
   inv_submatrix_equiv A e₁.symm e₂.symm
 
 end Submatrix
+
+open scoped Kronecker in
+theorem inv_kronecker [Fintype m] [DecidableEq m]
+    (A : Matrix m m α) (B : Matrix n n α) : (A ⊗ₖ B)⁻¹ = A⁻¹ ⊗ₖ B⁻¹ := by
+  -- handle the special cases where either matrix is not invertible
+  by_cases hA : IsUnit A.det
+  swap
+  · cases isEmpty_or_nonempty n
+    · subsingleton
+    have hAB : ¬IsUnit (A ⊗ₖ B).det := by
+      refine mt (fun hAB => ?_) hA
+      rw [det_kronecker] at hAB
+      exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_left hAB)
+    rw [nonsing_inv_apply_not_isUnit _ hA, zero_kronecker, nonsing_inv_apply_not_isUnit _ hAB]
+  by_cases hB : IsUnit B.det; swap
+  · cases isEmpty_or_nonempty m
+    · subsingleton
+    have hAB : ¬IsUnit (A ⊗ₖ B).det := by
+      refine mt (fun hAB => ?_) hB
+      rw [det_kronecker] at hAB
+      exact (isUnit_pow_iff Fintype.card_ne_zero).mp (isUnit_of_mul_isUnit_right hAB)
+    rw [nonsing_inv_apply_not_isUnit _ hB, kronecker_zero, nonsing_inv_apply_not_isUnit _ hAB]
+  -- otherwise follows trivially from `mul_kronecker_mul`
+  · apply inv_eq_right_inv
+    rw [← mul_kronecker_mul, ← one_kronecker_one, mul_nonsing_inv _ hA, mul_nonsing_inv _ hB]
+
 
 /-! ### More results about determinants -/
 

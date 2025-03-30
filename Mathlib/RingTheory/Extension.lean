@@ -93,7 +93,7 @@ lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_
 section Construction
 
 /-- Construct `Extension` from a surjective algebra homomorphism. -/
-@[simps (config := .lemmasOnly) Ring σ]
+@[simps -isSimp Ring σ]
 noncomputable
 def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
     (h : Function.Surjective f) : Extension.{w} R S where
@@ -105,7 +105,7 @@ def ofSurjective {P : Type w} [CommRing P] [Algebra R P] (f : P →ₐ[R] S)
 
 variable (R S) in
 /-- The trivial extension of `S`. -/
-@[simps (config := .lemmasOnly) Ring σ]
+@[simps -isSimp Ring σ]
 noncomputable
 def self : Extension R S where
   Ring := S

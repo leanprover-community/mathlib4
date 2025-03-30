@@ -46,6 +46,7 @@ Monoid.mk : {M : Type u} →
 ```
 -/
 
+assert_not_exists MonoidWithZero
 
 universe v u
 

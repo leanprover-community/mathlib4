@@ -115,7 +115,7 @@ theorem iterateFrobeniusEquiv_one_apply (x : R) : iterateFrobeniusEquiv R p 1 x 
   rw [iterateFrobeniusEquiv_def, pow_one]
 
 @[simp]
-theorem iterateFrobeniusEquiv_zero  : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
+theorem iterateFrobeniusEquiv_zero : iterateFrobeniusEquiv R p 0 = RingEquiv.refl R :=
   RingEquiv.ext (iterateFrobeniusEquiv_zero_apply R p)
 
 @[simp]
@@ -211,7 +211,7 @@ instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
   apply mt (X_pow_sub_C_irreducible_of_prime hp)
   apply mt separable_of_irreducible
   simp [separable_def, isCoprime_zero_right, isUnit_iff_degree_eq_zero,
-    degree_X_pow_sub_C hp.pos, hp.ne_zero]
+    derivative_X_pow, degree_X_pow_sub_C hp.pos, hp.ne_zero]
 
 theorem separable_iff_squarefree {g : K[X]} : g.Separable ↔ Squarefree g := by
   refine ⟨Separable.squarefree, fun sqf ↦ isCoprime_of_irreducible_dvd (sqf.ne_zero ·.1) ?_⟩
@@ -357,7 +357,7 @@ variable [PerfectRing R p]
 a bijection from the set of roots of `Polynomial.expand R p f` to the set of roots of `f`.
 It's given by `x ↦ x ^ p`, see `rootsExpandEquivRoots_apply`. -/
 noncomputable def rootsExpandEquivRoots : (expand R p f).roots.toFinset ≃ f.roots.toFinset :=
-  ((frobeniusEquiv R p).image _).trans <| .Set.ofEq <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
+  ((frobeniusEquiv R p).image _).trans <| .setCongr <| show _ '' setOf (· ∈ _) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_frobenius (p := p) (f := f), Finset.mem_val,
       Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe, EquivLike.coe_coe,
       frobeniusEquiv_apply]
@@ -371,7 +371,7 @@ It's given by `x ↦ x ^ (p ^ n)`, see `rootsExpandPowEquivRoots_apply`. -/
 noncomputable def rootsExpandPowEquivRoots (n : ℕ) :
     (expand R (p ^ n) f).roots.toFinset ≃ f.roots.toFinset :=
   ((iterateFrobeniusEquiv R p n).image _).trans <|
-    .Set.ofEq <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
+    .setCongr <| show _ '' (setOf (· ∈ _)) = setOf (· ∈ _) by
     classical simp_rw [← roots_expand_image_iterateFrobenius (p := p) (f := f) (n := n),
       Finset.mem_val, Finset.setOf_mem, Finset.coe_image, RingEquiv.toEquiv_eq_coe,
       EquivLike.coe_coe, iterateFrobeniusEquiv_apply]

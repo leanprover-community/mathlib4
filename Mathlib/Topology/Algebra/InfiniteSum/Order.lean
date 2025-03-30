@@ -101,6 +101,16 @@ theorem le_hasProd (hf : HasProd f a) (i : ι) (hb : ∀ j, j ≠ i → 1 ≤ f 
     _ ≤ a := prod_le_hasProd _ (by simpa) hf
 
 @[to_additive]
+theorem lt_hasProd [MulRightStrictMono α] (hf : HasProd f a) (i : ι)
+    (hi : ∀ (j : ι), j ≠ i → 1 ≤ f j) (j : ι) (hij : j ≠ i) (hj : 1 < f j) :
+    f i < a := by
+  classical
+  calc
+    f i < f j * f i := lt_mul_of_one_lt_left' (f i) hj
+    _ = ∏ k ∈ {j, i}, f k := by rw [Finset.prod_pair hij]
+    _ ≤ a := prod_le_hasProd _ (fun k hk ↦ hi k (hk ∘ mem_insert_of_mem ∘ mem_singleton.mpr)) hf
+
+@[to_additive]
 theorem prod_le_tprod {f : ι → α} (s : Finset ι) (hs : ∀ i, i ∉ s → 1 ≤ f i) (hf : Multipliable f) :
     ∏ i ∈ s, f i ≤ ∏' i, f i :=
   prod_le_hasProd s hs hf.hasProd
@@ -150,7 +160,6 @@ theorem tprod_le_one (h : ∀ i, f i ≤ 1) : ∏' i, f i ≤ 1 := by
   · exact hf.hasProd.le_one h
   · rw [tprod_eq_one_of_not_multipliable hf]
 
--- Porting note: generalized from `OrderedAddCommGroup` to `OrderedAddCommMonoid`
 @[to_additive]
 theorem hasProd_one_iff_of_one_le (hf : ∀ i, 1 ≤ f i) : HasProd f 1 ↔ f = 1 := by
   refine ⟨fun hf' ↦ ?_, ?_⟩
@@ -163,7 +172,7 @@ end OrderedCommMonoid
 
 section OrderedCommGroup
 
-variable [OrderedCommGroup α] [TopologicalSpace α] [TopologicalGroup α]
+variable [OrderedCommGroup α] [TopologicalSpace α] [IsTopologicalGroup α]
   [OrderClosedTopology α] {f g : ι → α} {a₁ a₂ : α} {i : ι}
 
 @[to_additive]
@@ -305,3 +314,29 @@ theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace 
   inv_inv f ▸ Filter.Tendsto.inv_tendsto_nhdsGT_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
       Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)
+
+namespace Mathlib.Meta.Positivity
+
+open Qq Lean Meta Finset
+
+attribute [local instance] monadLiftOptionMetaM in
+/-- Positivity extension for infinite sums.
+
+This extension only proves non-negativity, strict positivity is more delicate for infinite sums and
+requires more assumptions. -/
+@[positivity tsum _]
+def evalTsum : PositivityExt where eval {u α} zα pα e := do
+  match e with
+  | ~q(@tsum _ $instCommMonoid $instTopSpace $ι $f) =>
+    lambdaBoundedTelescope f 1 fun args (body : Q($α)) => do
+      let #[(i : Q($ι))] := args | failure
+      let rbody ← core zα pα body
+      let pbody ← rbody.toNonneg
+      let pr : Q(∀ i, 0 ≤ $f i) ← mkLambdaFVars #[i] pbody
+      let pα' ← synthInstanceQ q(OrderedAddCommMonoid $α)
+      let instOrderClosed ← synthInstanceQ q(OrderClosedTopology $α)
+      assertInstancesCommute
+      return .nonnegative q(@tsum_nonneg $ι $α $pα' $instTopSpace $instOrderClosed $f $pr)
+  | _ => throwError "not tsum"
+
+end Mathlib.Meta.Positivity

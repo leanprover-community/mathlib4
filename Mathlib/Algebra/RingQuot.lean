@@ -173,14 +173,8 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
           induction n with
           | zero => rw [pow_zero, pow_zero]
           | succ n ih =>
-            rw [pow_succ, pow_succ]
-            -- Porting note:
-            -- `simpa [mul_def] using congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih`
-            -- mysteriously doesn't work
-            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) ih (Quot.sound h)
-            dsimp only at this
-            simp? [mul_def] at this says simp only [mul_def, Quot.map₂_mk, mk.injEq] at this
-            exact this)
+            simpa only [pow_succ, mul_def, Quot.map₂_mk, mk.injEq] using
+              congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) ih (Quot.sound h))
         a⟩
 
 -- note: this cannot be irreducible, as otherwise diamonds don't commute.

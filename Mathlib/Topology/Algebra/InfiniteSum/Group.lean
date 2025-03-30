@@ -7,6 +7,7 @@ import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Algebra.Group.Pointwise
 
 /-!
 # Infinite sums and products in topological groups
@@ -22,9 +23,9 @@ open scoped Topology
 
 variable {α β γ : Type*}
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [CommGroup α] [TopologicalSpace α] [TopologicalGroup α]
+variable [CommGroup α] [TopologicalSpace α] [IsTopologicalGroup α]
 variable {f g : β → α} {a a₁ a₂ : α}
 
 -- `by simpa using` speeds up elaboration. Why?
@@ -184,7 +185,7 @@ theorem tprod_eq_mul_tprod_ite [DecidableEq β] (hf : Multipliable f) (b : β) :
 
 end tprod
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 section UniformGroup
 
@@ -312,24 +313,24 @@ theorem prod_mul_tprod_subtype_compl [T2Space α] {f : β → α} (hf : Multipli
 
 end UniformGroup
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable {G : Type*} [TopologicalSpace G] [CommGroup G] [TopologicalGroup G] {f : α → G}
+variable {G : Type*} [TopologicalSpace G] [CommGroup G] [IsTopologicalGroup G] {f : α → G}
 
 @[to_additive]
 theorem Multipliable.vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 (1 : G)) :
     ∃ s : Finset α, ∀ t, Disjoint t s → (∏ k ∈ t, f k) ∈ e := by
   classical
-  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
-  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  have : UniformGroup G := uniformGroup_of_commGroup
   exact cauchySeq_finset_iff_prod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
 theorem Multipliable.tprod_vanishing (hf : Multipliable f) ⦃e : Set G⦄ (he : e ∈ 𝓝 1) :
     ∃ s : Finset α, ∀ t : Set α, Disjoint t s → (∏' b : t, f b) ∈ e := by
   classical
-  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
-  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  have : UniformGroup G := uniformGroup_of_commGroup
   exact cauchySeq_finset_iff_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 /-- The product over the complement of a finset tends to `1` when the finset grows to cover the
@@ -388,4 +389,4 @@ theorem tprod_const [T2Space G] (a : G) : ∏' _ : β, a = a ^ (Nat.card β) := 
     · apply tprod_eq_one_of_not_multipliable
       simpa [multipliable_const_iff] using ha
 
-end TopologicalGroup
+end IsTopologicalGroup

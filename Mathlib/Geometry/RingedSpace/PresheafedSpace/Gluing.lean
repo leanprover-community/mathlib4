@@ -303,7 +303,7 @@ theorem opensImagePreimageMap_app_assoc (i j k : D.J) (U : Opens (D.U i).carrier
 the image `ι '' U` in the glued space is the limit of this diagram. -/
 abbrev diagramOverOpen {i : D.J} (U : Opens (D.U i).carrier) :
     -- Porting note : ↓ these need to be explicit
-    (WalkingMultispan D.diagram.fstFrom D.diagram.sndFrom)ᵒᵖ ⥤ C :=
+    (WalkingMultispan (.prod D.J))ᵒᵖ ⥤ C :=
   componentwiseDiagram 𝖣.diagram.multispan ((D.ι_isOpenEmbedding i).isOpenMap.functor.obj U)
 
 /-- (Implementation)
@@ -393,7 +393,7 @@ theorem ιInvApp_π {i : D.J} (U : Opens (D.U i).carrier) :
   fconstructor
   -- Porting note: I don't know what the magic was in Lean3 proof, it just skipped the proof of `eq`
   · congr; ext1; change _ = _ ⁻¹' (_ '' _); ext1 x
-    simp only [SetLike.mem_coe, diagram_l, diagram_r, unop_op, Set.mem_preimage, Set.mem_image]
+    simp only [SetLike.mem_coe, unop_op, Set.mem_preimage, Set.mem_image]
     refine ⟨fun h => ⟨_, h, rfl⟩, ?_⟩
     rintro ⟨y, h1, h2⟩
     convert h1 using 1
@@ -650,7 +650,7 @@ instance (i j k : D.J) : PreservesLimit (cospan (𝖣.f i j) (𝖣.f i k)) forge
 
 theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : D.J) (y : D.U i), (𝖣.ι i).base y = x :=
   𝖣.ι_jointly_surjective
-    ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCatMax.{u, u}) ⋙
+    ((LocallyRingedSpace.forgetToSheafedSpace.{u} ⋙ SheafedSpace.forget CommRingCat.{u}) ⋙
       forget TopCat.{u}) x
 
 /-- The following diagram is a pullback, i.e. `Vᵢⱼ` is the intersection of `Uᵢ` and `Uⱼ` in `X`.

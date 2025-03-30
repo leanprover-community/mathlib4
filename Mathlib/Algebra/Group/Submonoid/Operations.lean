@@ -106,7 +106,7 @@ theorem Submonoid.toAddSubmonoid_closure (S : Set M) :
 
 theorem AddSubmonoid.toSubmonoid'_closure (S : Set (Additive M)) :
     AddSubmonoid.toSubmonoid' (AddSubmonoid.closure S)
-      = Submonoid.closure (Multiplicative.ofAdd ⁻¹' S) :=
+      = Submonoid.closure (Additive.ofMul ⁻¹' S) :=
   le_antisymm
     (AddSubmonoid.toSubmonoid'.le_symm_apply.1 <|
       AddSubmonoid.closure_le.2 (Submonoid.subset_closure (M := M)))
@@ -148,7 +148,7 @@ theorem AddSubmonoid.toSubmonoid_closure (S : Set A) :
 
 theorem Submonoid.toAddSubmonoid'_closure (S : Set (Multiplicative A)) :
     Submonoid.toAddSubmonoid' (Submonoid.closure S)
-      = AddSubmonoid.closure (Additive.ofMul ⁻¹' S) :=
+      = AddSubmonoid.closure (Multiplicative.ofAdd ⁻¹' S) :=
   le_antisymm
     (Submonoid.toAddSubmonoid'.to_galoisConnection.l_le <|
       Submonoid.closure_le.2 <| AddSubmonoid.subset_closure (M := A))
@@ -224,6 +224,7 @@ theorem map_map (g : N →* P) (f : M →* N) : (S.map f).map g = S.map (g.comp 
 
 -- The simpNF linter says that the LHS can be simplified via `Submonoid.mem_map`.
 -- However this is a higher priority lemma.
+-- It seems the side condition `hf` is not applied by `simpNF`.
 -- https://github.com/leanprover/std4/issues/207
 @[to_additive (attr := simp 1100, nolint simpNF)]
 theorem mem_map_iff_mem {f : F} (hf : Function.Injective f) {S : Submonoid M} {x : M} :
@@ -314,7 +315,7 @@ section GaloisCoinsertion
 variable {ι : Type*} {f : F}
 
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
-@[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
+@[to_additive "`map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective."]
 def gciMapComap (hf : Function.Injective f) : GaloisCoinsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisCoinsertion fun S x => by simp [mem_comap, mem_map, hf.eq_iff]
 
@@ -364,7 +365,7 @@ section GaloisInsertion
 variable {ι : Type*} {f : F}
 
 /-- `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. -/
-@[to_additive " `map f` and `comap f` form a `GaloisInsertion` when `f` is surjective. "]
+@[to_additive "`map f` and `comap f` form a `GaloisInsertion` when `f` is surjective."]
 def giMapComap (hf : Function.Surjective f) : GaloisInsertion (map f) (comap f) :=
   (gc_map_comap f).toGaloisInsertion fun S x h =>
     let ⟨y, hy⟩ := hf x
@@ -484,7 +485,6 @@ theorem top_prod_top : (⊤ : Submonoid M).prod (⊤ : Submonoid N) = ⊤ :=
 @[to_additive bot_prod_bot]
 theorem bot_prod_bot : (⊥ : Submonoid M).prod (⊥ : Submonoid N) = ⊥ :=
   SetLike.coe_injective <| by simp [coe_prod]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 /-- The product of submonoids is isomorphic to their product as monoids. -/
 @[to_additive prodEquiv
@@ -630,7 +630,7 @@ theorem mem_mrange {f : F} {y : N} : y ∈ mrange f ↔ ∃ x, f x = y :=
   Iff.rfl
 
 @[to_additive]
-lemma mrange_comp {O : Type*} [Monoid O] (f : N →* O) (g : M →* N) :
+lemma mrange_comp {O : Type*} [MulOneClass O] (f : N →* O) (g : M →* N) :
     mrange (f.comp g) = (mrange g).map f := SetLike.coe_injective <| Set.range_comp f _
 
 @[to_additive]
@@ -769,13 +769,11 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneC
     (f : M →* N) (g : M' →* N') (S : Submonoid N) (S' : Submonoid N') :
     (S.prod S').comap (prodMap f g) = (S.comap f).prod (S'.comap g) :=
   SetLike.coe_injective <| Set.preimage_prod_map_prod f g _ _
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive mker_prod_map]
 theorem mker_prod_map {M' : Type*} {N' : Type*} [MulOneClass M'] [MulOneClass N'] (f : M →* N)
     (g : M' →* N') : mker (prodMap f g) = f.mker.prod (mker g) := by
   rw [← comap_bot', ← comap_bot', ← comap_bot', ← prod_map_comap_prod', bot_prod_bot]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive (attr := simp)]
 theorem mker_inl : mker (inl M N) = ⊥ := by
@@ -849,13 +847,11 @@ theorem mrange_snd : mrange (snd M N) = ⊤ :=
 @[to_additive prod_eq_bot_iff]
 theorem prod_eq_bot_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊥ ↔ s = ⊥ ∧ t = ⊥ := by
   simp only [eq_bot_iff, prod_le_iff, (gc_map_comap _).le_iff_le, comap_bot', mker_inl, mker_inr]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive prod_eq_top_iff]
 theorem prod_eq_top_iff {s : Submonoid M} {t : Submonoid N} : s.prod t = ⊤ ↔ s = ⊤ ∧ t = ⊤ := by
   simp only [eq_top_iff, le_prod_iff, ← (gc_map_comap _).le_iff_le, ← mrange_eq_map, mrange_fst,
     mrange_snd]
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
 @[to_additive (attr := simp)]
 theorem mrange_inl_sup_mrange_inr : mrange (inl M N) ⊔ mrange (inr M N) = ⊤ := by
@@ -974,6 +970,7 @@ theorem Submonoid.equivMapOfInjective_coe_mulEquiv (e : M ≃* N) :
   ext
   rfl
 
+@[to_additive]
 instance Submonoid.faithfulSMul {M' α : Type*} [MulOneClass M'] [SMul M' α] {S : Submonoid M'}
     [FaithfulSMul M' α] : FaithfulSMul S α :=
   ⟨fun h => Subtype.ext <| eq_of_smul_eq_smul h⟩

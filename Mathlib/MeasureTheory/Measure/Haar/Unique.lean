@@ -101,7 +101,7 @@ compactly supported continuous function on a topological group `G`, and `μ` is 
 sets. -/
 @[to_additive]
 lemma continuous_integral_apply_inv_mul
-    {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [TopologicalGroup G]
+    {G : Type*} [TopologicalSpace G] [LocallyCompactSpace G] [Group G] [IsTopologicalGroup G]
     [MeasurableSpace G] [BorelSpace G]
     {μ : Measure G} [IsFiniteMeasureOnCompacts μ] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] {g : G → E}
@@ -126,7 +126,7 @@ namespace Measure
 
 section Group
 
-variable {G : Type*} [TopologicalSpace G] [Group G] [TopologicalGroup G]
+variable {G : Type*} [TopologicalSpace G] [Group G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G]
 
 /-!
@@ -484,7 +484,7 @@ lemma measure_preimage_isMulLeftInvariant_eq_smul_of_hasCompactSupport
     apply h'f.comp_left
     simp only [v, thickenedIndicator_apply, NNReal.coe_eq_zero]
     rw [thickenedIndicatorAux_zero (u_mem n).1]
-    · simp only [ENNReal.zero_toNNReal]
+    · simp only [ENNReal.toNNReal_zero]
     · simpa using (u_mem n).2.le
   have I1 := I μ' (by infer_instance)
   simp_rw [M] at I1
@@ -905,7 +905,7 @@ have the same total mass.
 is measure preserving, provided that the Haar measures on the domain and on the codomain
 have the same total mass."]
 theorem _root_.MonoidHom.measurePreserving
-    {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H] [CompactSpace H]
+    {H : Type*} [Group H] [TopologicalSpace H] [IsTopologicalGroup H] [CompactSpace H]
     [MeasurableSpace H] [BorelSpace H]
     {μ : Measure G} [IsHaarMeasure μ] {ν : Measure H} [IsHaarMeasure ν]
     {f : G →* H} (hcont : Continuous f) (hsurj : Surjective f) (huniv : μ univ = ν univ) :
@@ -926,7 +926,7 @@ end Group
 
 section CommGroup
 
-variable {G : Type*} [CommGroup G] [TopologicalSpace G] [TopologicalGroup G]
+variable {G : Type*} [CommGroup G] [TopologicalSpace G] [IsTopologicalGroup G]
   [MeasurableSpace G] [BorelSpace G] (μ : Measure G) [IsHaarMeasure μ]
 
 /-- Any regular Haar measure is invariant under inversion in an abelian group. -/

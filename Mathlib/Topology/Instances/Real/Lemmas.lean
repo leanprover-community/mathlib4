@@ -3,9 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Periodic
+import Mathlib.Algebra.Field.Periodic
+import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Topology.Algebra.Order.Archimedean
-import Mathlib.Topology.Instances.Real.Defs
+import Mathlib.Topology.Algebra.Ring.Real
 
 /-!
 # Topological properties of ℝ
@@ -69,9 +70,6 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
     ⟨δ, δ0, fun {a b} h =>
       let ⟨h₁, h₂⟩ := max_lt_iff.1 h
       Hδ (H _ a.2).1 (H _ b.2).2 h₁ h₂⟩
-
--- Porting note: moved `TopologicalRing` instance up
-
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo

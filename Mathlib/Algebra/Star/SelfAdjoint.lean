@@ -109,11 +109,9 @@ theorem _root_.isSelfAdjoint_map {F R S : Type*} [Star R] [Star S] [FunLike F R 
 section AddMonoid
 
 variable [AddMonoid R] [StarAddMonoid R]
-variable (R)
 
+variable (R) in
 @[simp] protected theorem zero : IsSelfAdjoint (0 : R) := star_zero R
-
-variable {R}
 
 @[aesop 90% apply]
 theorem add {x y : R} (hx : IsSelfAdjoint x) (hy : IsSelfAdjoint y) : IsSelfAdjoint (x + y) := by
@@ -341,6 +339,9 @@ theorem star_val_eq {x : selfAdjoint R} : star (x : R) = x :=
 
 instance : Inhabited (selfAdjoint R) :=
   ⟨0⟩
+
+@[simp]
+lemma isSelfAdjoint {x : selfAdjoint R} : IsSelfAdjoint (x : R) := by simp [isSelfAdjoint_iff]
 
 end AddGroup
 
@@ -585,6 +586,11 @@ protected instance IsStarNormal.map {F R S : Type*} [Mul R] [Star R] [Mul S] [St
     [FunLike F R S] [MulHomClass F R S] [StarHomClass F R S] (f : F) (r : R) [hr : IsStarNormal r] :
     IsStarNormal (f r) where
   star_comm_self := by simpa [map_star] using congr(f $(hr.star_comm_self))
+
+protected instance IsStarNormal.smul {R A : Type*} [SMul R A] [Star R] [Star A] [Mul A]
+    [StarModule R A] [SMulCommClass R A A] [IsScalarTower R A A]
+    (r : R) (a : A) [ha : IsStarNormal a] : IsStarNormal (r • a) where
+  star_comm_self := star_smul r a ▸ ha.star_comm_self.smul_left (star r) |>.smul_right r
 
 -- see Note [lower instance priority]
 instance (priority := 100) TrivialStar.isStarNormal [Mul R] [StarMul R] [TrivialStar R]

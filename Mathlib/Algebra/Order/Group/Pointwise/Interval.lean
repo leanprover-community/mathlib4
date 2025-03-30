@@ -3,6 +3,7 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Patrick Massot
 -/
+import Mathlib.Algebra.Group.Action.Defs
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
@@ -519,12 +520,12 @@ theorem abs_sub_le_of_uIcc_subset_uIcc (h : [[c, d]] ⊆ [[a, b]]) : |d - c| ≤
   exact sub_le_sub h.2 h.1
 
 /-- If `c ∈ [a, b]`, then the distance between `a` and `c` is less than or equal to
-that of `a` and `b`  -/
+that of `a` and `b` -/
 theorem abs_sub_left_of_mem_uIcc (h : c ∈ [[a, b]]) : |c - a| ≤ |b - a| :=
   abs_sub_le_of_uIcc_subset_uIcc <| uIcc_subset_uIcc_left h
 
 /-- If `x ∈ [a, b]`, then the distance between `c` and `b` is less than or equal to
-that of `a` and `b`  -/
+that of `a` and `b` -/
 theorem abs_sub_right_of_mem_uIcc (h : c ∈ [[a, b]]) : |b - c| ≤ |b - a| :=
   abs_sub_le_of_uIcc_subset_uIcc <| uIcc_subset_uIcc_right h
 
