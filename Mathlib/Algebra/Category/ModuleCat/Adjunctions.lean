@@ -300,9 +300,9 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
   map {_ _} f := f.sum fun f' r => r • F.map f'
   map_id := by dsimp [CategoryTheory.categoryFree]; simp
   map_comp {X Y Z} f g := by
-    apply Finsupp.induction_linear f
-    · simp
-    · intro f₁ f₂ w₁ w₂
+    induction f using Finsupp.induction_linear with
+    | zero => simp
+    | add f₁ f₂ w₁ w₂ =>
       rw [add_comp]
       dsimp at *
       rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
@@ -311,10 +311,10 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
       · intros; simp only [add_smul]
       · intros; rw [zero_smul]
       · intros; simp only [add_smul]
-    · intro f' r
-      apply Finsupp.induction_linear g
-      · simp
-      · intro f₁ f₂ w₁ w₂
+    | single f' r =>
+      induction g using Finsupp.induction_linear with
+      | zero => simp
+      | add f₁ f₂ w₁ w₂ =>
         rw [comp_add]
         dsimp at *
         rw [Finsupp.sum_add_index', Finsupp.sum_add_index']
@@ -323,7 +323,7 @@ def lift (F : C ⥤ D) : Free R C ⥤ D where
         · intros; simp only [add_smul]
         · intros; rw [zero_smul]
         · intros; simp only [add_smul]
-      · intro g' s
+      | single g' s =>
         rw [single_comp_single _ _ f' g' r s]
         simp [mul_comm r s, mul_smul]
 
@@ -354,12 +354,12 @@ def ext {F G : Free R C ⥤ D} [F.Additive] [F.Linear R] [G.Additive] [G.Linear 
   NatIso.ofComponents (fun X => α.app X)
     (by
       intro X Y f
-      apply Finsupp.induction_linear f
-      · simp
-      · intro f₁ f₂ w₁ w₂
+      induction f using Finsupp.induction_linear with
+      | zero => simp
+      | add f₁ f₂ w₁ w₂ =>
         -- Porting note: Using rw instead of simp
         rw [Functor.map_add, add_comp, w₁, w₂, Functor.map_add, comp_add]
-      · intro f' r
+      | single f' r =>
         rw [Iso.app_hom, Iso.app_hom, ← smul_single_one, F.map_smul, G.map_smul, smul_comp,
           comp_smul]
         change r • (embedding R C ⋙ F).map f' ≫ _ = r • _ ≫ (embedding R C ⋙ G).map f'
