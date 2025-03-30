@@ -43,7 +43,7 @@ lemma RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit (hf : f.hom.EssFinit
     ∃ (k : J) (hik : i ⟶ k) (hjk : j ⟶ k),
       a ≫ F.map hik = b ≫ F.map hjk := by
   classical
-  obtain ⟨hc'⟩ := PreservesColimit.preserves (F := forget _) hc
+  have hc' := isColimitOfPreserves (forget _) hc
   choose k f₁ f₂ h using fun x : S ↦
     (Types.FilteredColimit.isColimit_eq_iff _ hc').mp congr(($hab).hom x)
   let J' : MulticospanShape := ⟨Unit ⊕ Unit, hf.finset, fun _ ↦ .inl .unit, fun _ ↦ .inr .unit⟩
@@ -74,7 +74,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
     (g : S ⟶ c.pt) (hg : ∀ i, f ≫ g = α.app i ≫ c.ι.app i) :
     ∃ (i : J) (g' : S ⟶ F.obj i), f ≫ g' = α.app i ∧ g = g' ≫ c.ι.app i := by
   classical
-  obtain ⟨hc'⟩ := PreservesColimit.preserves (F := forget _) hc
+  have hc' := isColimitOfPreserves (forget _) hc
   letI := f.hom.toAlgebra
   obtain ⟨n, hn⟩ := hf
   let P := CommRingCat.of (MvPolynomial (Fin n) R)
@@ -133,7 +133,7 @@ lemma RingHom.EssFiniteType.exists_eq_comp_ι_app_of_isColimit (hf : f.hom.Finit
 /-- If `S` is finitely presented `R`-algebra, then `Hom_R(S, -)` preserves filtered colimits. -/
 lemma preservesColimit_coyoneda_of_finitePresentation
     (S : Under R) (hS : S.hom.hom.FinitePresentation) (F : J ⥤ Under R)
-  [PreservesColimit (F ⋙ Under.forget R) (forget CommRingCat)] :
+    [PreservesColimit (F ⋙ Under.forget R) (forget CommRingCat)] :
     PreservesColimit F (coyoneda.obj (.op S)) := by
   constructor
   intro c hc
