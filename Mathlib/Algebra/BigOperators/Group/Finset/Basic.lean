@@ -318,61 +318,6 @@ lemma prod_mul_prod_comm (f g h i : α → β) :
     (∏ a ∈ s, f a * g a) * ∏ a ∈ s, h a * i a = (∏ a ∈ s, f a * h a) * ∏ a ∈ s, g a * i a := by
   simp_rw [prod_mul_distrib, mul_mul_mul_comm]
 
-/-- The product over a product set equals the product of the fiberwise products. For rewriting
-in the reverse direction, use `Finset.prod_product'`. -/
-@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
-in the reverse direction, use `Finset.sum_product'`"]
-theorem prod_product (s : Finset γ) (t : Finset α) (f : γ × α → β) :
-    ∏ x ∈ s ×ˢ t, f x = ∏ x ∈ s, ∏ y ∈ t, f (x, y) :=
-  prod_finset_product (s ×ˢ t) s (fun _a => t) fun _p => mem_product
-
-/-- The product over a product set equals the product of the fiberwise products. For rewriting
-in the reverse direction, use `Finset.prod_product`. -/
-@[to_additive "The sum over a product set equals the sum of the fiberwise sums. For rewriting
-in the reverse direction, use `Finset.sum_product`"]
-theorem prod_product' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
-    ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ x ∈ s, ∏ y ∈ t, f x y :=
-  prod_product ..
-
-@[to_additive]
-theorem prod_product_right (s : Finset γ) (t : Finset α) (f : γ × α → β) :
-    ∏ x ∈ s ×ˢ t, f x = ∏ y ∈ t, ∏ x ∈ s, f (x, y) :=
-  prod_finset_product_right (s ×ˢ t) t (fun _a => s) fun _p => mem_product.trans and_comm
-
-/-- An uncurried version of `Finset.prod_product_right`. -/
-@[to_additive "An uncurried version of `Finset.sum_product_right`"]
-theorem prod_product_right' (s : Finset γ) (t : Finset α) (f : γ → α → β) :
-    ∏ x ∈ s ×ˢ t, f x.1 x.2 = ∏ y ∈ t, ∏ x ∈ s, f x y :=
-  prod_product_right ..
-
-/-- Generalization of `Finset.prod_comm` to the case when the inner `Finset`s depend on the outer
-variable. -/
-@[to_additive "Generalization of `Finset.sum_comm` to the case when the inner `Finset`s depend on
-the outer variable."]
-theorem prod_comm' {s : Finset γ} {t : γ → Finset α} {t' : Finset α} {s' : α → Finset γ}
-    (h : ∀ x y, x ∈ s ∧ y ∈ t x ↔ x ∈ s' y ∧ y ∈ t') {f : γ → α → β} :
-    (∏ x ∈ s, ∏ y ∈ t x, f x y) = ∏ y ∈ t', ∏ x ∈ s' y, f x y := by
-  classical
-    have : ∀ z : γ × α, (z ∈ s.biUnion fun x => (t x).map <| Function.Embedding.sectR x _) ↔
-      z.1 ∈ s ∧ z.2 ∈ t z.1 := by
-      rintro ⟨x, y⟩
-      simp only [mem_biUnion, mem_map, Function.Embedding.sectR_apply, Prod.mk.injEq,
-        exists_eq_right, ← and_assoc]
-    exact
-      (prod_finset_product' _ _ _ this).symm.trans
-        ((prod_finset_product_right' _ _ _) fun ⟨x, y⟩ => (this _).trans ((h x y).trans and_comm))
-
-@[to_additive]
-theorem prod_comm {s : Finset γ} {t : Finset α} {f : γ → α → β} :
-    (∏ x ∈ s, ∏ y ∈ t, f x y) = ∏ y ∈ t, ∏ x ∈ s, f x y :=
-  prod_comm' fun _ _ => Iff.rfl
-
-/-- Cyclically permute 3 nested instances of `Finset.prod`. -/
-@[to_additive]
-theorem prod_comm_3 {s : Finset γ} {t : Finset α} {u : Finset κ} {f : γ → α → κ → β} :
-    (∏ x ∈ s, ∏ y ∈ t, ∏ z ∈ u, f x y z) = ∏ z ∈ u, ∏ x ∈ s, ∏ y ∈ t, f x y z := by
-  simp_rw [prod_comm (s := t), prod_comm (s := s)]
-
 @[to_additive]
 theorem prod_filter_of_ne {p : α → Prop} [DecidablePred p] (hp : ∀ x ∈ s, f x ≠ 1 → p x) :
     ∏ x ∈ s with p x, f x = ∏ x ∈ s, f x :=
