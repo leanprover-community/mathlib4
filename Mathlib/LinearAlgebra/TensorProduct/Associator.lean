@@ -51,8 +51,8 @@ theorem lid_symm_apply (m : M) : (TensorProduct.lid R M).symm m = 1 ⊗ₜ m :=
   rfl
 
 lemma includeRight_lid {S : Type*} [Semiring S] [Algebra R S] (m : R ⊗[R] M) :
-    (1 : S) ⊗ₜ[R] (TensorProduct.lid R M) m
-      = (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap) m := by
+    (1 : S) ⊗ₜ[R] (TensorProduct.lid R M) m =
+      (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap) m := by
   suffices ∀ m, (LinearMap.rTensor M (Algebra.algHom R R S).toLinearMap).comp
     (TensorProduct.lid R M).symm.toLinearMap m = 1 ⊗ₜ[R] m by
     simp [← this]

@@ -11,16 +11,14 @@ import Mathlib.Algebra.MvPolynomial.Basic
 
 Let `M` and `N` be a modules over a commutative ring `R`.
 A polynomial law `f : PolynomialLaw R M N`, with notation `f : M →ₚ[R] N`,
-is a “law” that assigns, to every `R`-algebra `S`,
-* a map `PolynomialLaw.toFun' f S : S ⊗[R] M → S ⊗[R] N`,
-* compatibly with morphisms of `R`-algebras, as expressed by `PolynomialLaw.isCompat' f`
+is a “law” that assigns a natural map `PolynomialLaw.toFun' f S : S ⊗[R] M → S ⊗[R] N`
+for every `R`-algebra `S`.
 
 For type theoretic reasons, if `R : Type u`, then the definition of the polynomial map `f`
 is restricted to `R`-algebras `S` such that `S : Type u`.
 Using the fact that a module is the direct limit of its finitely generated submodules, that a
 finitely generated subalgebra is a quotient of a polynomial ring in the universe `u`, plus
-commutation of tensor products with direct limits, we will extend the functor to all `R`-algebras
-(to be done in a future PR).
+the commutation of tensor products with direct limits, we will extend the functor to all `R`-algebras (TODO).
 
 ## Main definitions/lemmas
 
@@ -32,7 +30,9 @@ commutation of tensor products with direct limits, we will extend the functor to
 In further works, we construct the coefficients of a polynomial law and show the relation with
 polynomials (when the module `M` is free and finite).
 
-Reference : [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
+## References
+
+ * [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
 Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
 
 ## Remark: Extension to commutative semirings
@@ -213,7 +213,7 @@ theorem ground_apply (m : M) : f.ground m = TensorProduct.lid R N (f.toFun' R (1
 instance : CoeFun (M →ₚ[R] N) (fun _ ↦ M → N) where
   coe := ground
 
-theorem isCompat_apply'_ground {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
+theorem one_tmul_ground_apply' {S : Type u} [CommSemiring S] [Algebra R S] (x : M) :
     1 ⊗ₜ (f.ground x) = (f.toFun' S) (1 ⊗ₜ x) := by
   rw [ground_apply]
   convert f.isCompat_apply' (Algebra.algHom R R S) (1 ⊗ₜ[R] x)
