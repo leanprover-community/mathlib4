@@ -103,7 +103,7 @@ lemma lift_ι_apply (a : L) : (lift f) ((ι R L) a) = f a := by
   simp [lift, ι, algHom]
 
 @[simp]
-lemma lift_comp : (lift f) ∘ₗ (ι R L) = f := LinearMap.ext fun x ↦ lift_apply f x
+lemma lift_comp_ι : (lift f) ∘ₗ (ι R L) = f := LinearMap.ext fun x ↦ lift_ι_apply f x
 
 theorem algHom_ext {F G : (SymmetricAlgebra R L) →ₐ[R] A}
     (h : F ∘ₗ (ι R L) = (G ∘ₗ (ι R L) : L →ₗ[R] A)) : F = G := by
