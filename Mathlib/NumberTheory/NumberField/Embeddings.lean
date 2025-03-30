@@ -218,6 +218,10 @@ lemma IsConj.ext {σ₁ σ₂ : K ≃ₐ[k] K} (h₁ : IsConj φ σ₁) (h₂ : 
 lemma IsConj.ext_iff {σ₁ σ₂ : K ≃ₐ[k] K} (h₁ : IsConj φ σ₁) : σ₁ = σ₂ ↔ IsConj φ σ₂ :=
   ⟨fun e ↦ e ▸ h₁, h₁.ext⟩
 
+lemma IsConj_iff {φ : K →+* ℂ} {σ : K ≃ₐ[k] K} :
+    IsConj φ σ ↔ ∀ x, φ (σ x) = star (φ x) := by
+  simp [ComplexEmbedding.IsConj, conjugate, eq_comm, RingHom.ext_iff]
+
 lemma IsConj.isReal_comp (h : IsConj φ σ) : IsReal (φ.comp (algebraMap k K)) := by
   ext1 x
   simp only [conjugate_coe_eq, RingHom.coe_comp, Function.comp_apply, ← h.eq,
@@ -232,6 +236,14 @@ lemma IsConj.symm (hσ : IsConj φ σ) :
 
 lemma isConj_symm : IsConj φ σ.symm ↔ IsConj φ σ :=
   ⟨IsConj.symm, IsConj.symm⟩
+
+theorem isReal_embedding_comp_algebraMap_iff_isConj_mem {σ : K ≃ₐ[k] K} {φ : K →+* ℂ}
+    (hσ : IsConj φ σ) (E : IntermediateField k K) :
+    IsReal (φ.comp (algebraMap E K)) ↔ σ ∈ IntermediateField.fixingSubgroup E := by
+  rw [isReal_iff, IntermediateField.mem_fixingSubgroup_iff, RingHom.ext_iff]
+  simp_rw [conjugate_coe_eq, RingHom.coe_comp, Function.comp_apply,
+    IntermediateField.algebraMap_apply, Subtype.forall, starRingEnd_apply, ← IsConj_iff.mp hσ,
+    φ.injective.eq_iff]
 
 end NumberField.ComplexEmbedding
 
@@ -914,6 +926,15 @@ lemma not_isUnramified_iff_card_stabilizer_eq_two [IsGalois k K] :
   rw [isUnramified_iff_card_stabilizer_eq_one]
   obtain (e|e) := nat_card_stabilizer_eq_one_or_two k w <;> rw [e] <;> decide
 
+lemma exists_isConj_of_not_isUnramified [IsGalois k K] {φ : K →+* ℂ} (h : ¬IsUnramified k (mk φ)) :
+    ∃ σ : K ≃ₐ[k] K, ComplexEmbedding.IsConj φ σ := by
+  rw [not_isUnramified_iff_card_stabilizer_eq_two, Nat.card_eq_two_iff] at h
+  obtain ⟨⟨x, hx⟩, ⟨y, hy⟩, h₁, -⟩ := h
+  rw [mem_stabilizer_mk_iff ] at hx hy
+  by_cases h : x = 1
+  · exact ⟨y, hy.resolve_left (by rwa [ne_eq, Subtype.mk_eq_mk.not, h, eq_comm] at h₁)⟩
+  · exact ⟨x, hx.resolve_left h⟩
+
 open scoped Classical in
 lemma card_stabilizer [IsGalois k K] :
     Nat.card (Stab w) = if IsUnramified k w then 1 else 2 := by
@@ -1148,23 +1169,73 @@ lemma isReal_infinitePlace : InfinitePlace.IsReal (infinitePlace) :=
 
 end Rat
 
+namespace NumberField
+
+open InfinitePlace Module
+
+section TotallyRealField
+
 /-
 
 ## Totally real number fields
 
 -/
 
-namespace NumberField
-
 /-- A number field `K` is totally real if all of its infinite places
 are real. In other words, the image of every ring homomorphism `K → ℂ`
 is a subset of `ℝ`. -/
-class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
+@[mk_iff] class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
+
+variable {K : Type*} [Field K] [NumberField K]
+
+theorem nrComplexPlaces_eq_zero_iff :
+    nrComplexPlaces K = 0 ↔ IsTotallyReal K := by
+  classical
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyReal_iff]
+
+variable (K)
+
+protected theorem IsTotallyReal.finrank [h : IsTotallyReal K] :
+    finrank ℚ K = nrRealPlaces K := by
+  rw [← card_add_two_mul_card_eq_rank, nrComplexPlaces_eq_zero_iff.mpr h, mul_zero, add_zero]
 
 instance : IsTotallyReal ℚ where
   isReal v := by
     rw [Subsingleton.elim v Rat.infinitePlace]
     exact Rat.isReal_infinitePlace
+
+end TotallyRealField
+
+section TotallyComplexField
+
+/-
+
+## Totally complex number fields
+
+-/
+
+open InfinitePlace
+
+/--
+A number field `K` is totally complex if all of its infinite places are complex.
+-/
+@[mk_iff] class IsTotallyComplex (K : Type*) [Field K] [NumberField K] where
+  isComplex : ∀ v : InfinitePlace K, v.IsComplex
+
+variable {K : Type*} [Field K] [NumberField K]
+
+theorem nrRealPlaces_eq_zero_iff :
+    nrRealPlaces K = 0 ↔ IsTotallyComplex K := by
+  classical
+  simp [Fintype.card_eq_zero_iff, isEmpty_subtype, isTotallyComplex_iff]
+
+variable (K)
+
+protected theorem IsTotallyComplex.finrank [h : IsTotallyComplex K] :
+    finrank ℚ K = 2 * nrComplexPlaces K := by
+  rw [← card_add_two_mul_card_eq_rank, nrRealPlaces_eq_zero_iff.mpr h, zero_add]
+
+end TotallyComplexField
 
 end NumberField
