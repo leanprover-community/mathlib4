@@ -598,7 +598,7 @@ in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bo
 `log p n`. -/
 theorem padicValNat_choose {n k b : ℕ} [hp : Fact p.Prime] (hkn : k ≤ n) (hnb : log p n < b) :
     padicValNat p (choose n k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + (n - k) % p ^ i).card := by
+    {i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + (n - k) % p ^ i}.card := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos hkn) ▸
     Prime.emultiplicity_choose hp.out hkn hnb
 
@@ -609,7 +609,7 @@ in base `p`. This sum is expressed over the finset `Ico 1 b` where `b` is any bo
 `log p (n + k)`. -/
 theorem padicValNat_choose' {n k b : ℕ} [hp : Fact p.Prime] (hnb : log p (n + k) < b) :
     padicValNat p (choose (n + k) k) =
-    ((Finset.Ico 1 b).filter fun i => p ^ i ≤ k % p ^ i + n % p ^ i).card := by
+    {i ∈ Finset.Ico 1 b | p ^ i ≤ k % p ^ i + n % p ^ i}.card := by
   exact_mod_cast (padicValNat_eq_emultiplicity (p := p) <| choose_pos <|
     Nat.le_add_left k n)▸ Prime.emultiplicity_choose' hp.out hnb
 

@@ -254,7 +254,7 @@ variable (t : Set α)
 open scoped Classical in
 @[simp]
 theorem toOuterMeasure_uniformOfFinset_apply :
-    (uniformOfFinset s hs).toOuterMeasure t = (s.filter (· ∈ t)).card / s.card :=
+    (uniformOfFinset s hs).toOuterMeasure t = {x ∈ s | x ∈ t}.card / s.card :=
   calc
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
       toOuterMeasure_apply (uniformOfFinset s hs) t
