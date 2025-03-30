@@ -812,7 +812,7 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
   toFun x := LinearMap.toMatrix b b (Algebra.lmul R S x)
   map_zero' := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_zero, LinearEquiv.map_zero]
+    rw [map_zero, LinearEquiv.map_zero]
   map_one' := by
     dsimp only  -- porting node: needed due to new-style structures
     rw [map_one, LinearMap.toMatrix_one]

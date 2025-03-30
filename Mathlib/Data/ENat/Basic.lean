@@ -397,7 +397,7 @@ theorem map_top (f : ℕ → α) : map f ⊤ = ⊤ := rfl
 theorem map_coe (f : ℕ → α) (a : ℕ) : map f a = f a := rfl
 
 @[simp]
-theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
+protected theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
 
 @[simp]
 protected theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
@@ -485,7 +485,7 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
       induction' x with x
       · simp [hy, this]
       induction' y with y
-      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (_root_.map_zero f)] using hx
+      · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, WithTop.mul_top this]
       · simp [← Nat.cast_mul, ← coe_mul] }
 
