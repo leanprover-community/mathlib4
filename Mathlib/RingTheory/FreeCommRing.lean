@@ -136,7 +136,8 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
     let F' := MonoidHom.toAdditive'' F
     let x' := x.toAdd
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
-      erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
+      rw [← Function.comp_def (fun x => F' x) (fun x => {x}), ← Multiset.map_map,
+        ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')
 
 /-- Lift a map `α → R` to an additive group homomorphism `FreeCommRing α → R`. -/
@@ -352,12 +353,11 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
     @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
-  erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,
-    FreeAbelianGroup.liftMonoid_coe (FreeMonoid.lift FreeCommRing.of)]
-  dsimp [Functor.map]
+  dsimp [castFreeCommRing, toFreeCommRing, FreeRing.lift, FreeRing, FreeAbelianGroup.liftMonoid_coe,
+    Functor.map]
   rw [← AddMonoidHom.coe_coe]
   apply FreeAbelianGroup.lift.unique; intro L
-  erw [FreeAbelianGroup.lift.of, Function.comp]
+  simp only [AddMonoidHom.coe_coe, comp_apply, FreeAbelianGroup.lift.of]
   exact
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]
