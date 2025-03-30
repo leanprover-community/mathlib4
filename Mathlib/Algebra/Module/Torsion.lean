@@ -804,7 +804,7 @@ theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
     Quotient.inductionOn' z fun x ⟨a, hax⟩ => by
       have : a • (torsion R M).mkQ x = (torsion R M).mkQ (a • x) := by
         exact rfl
-      rw [mk''_eq_mkQ, ← map_smul, mkQ_eq_zero] at hax
+      rw [mk''_eq_mkQ, ← mkQ_smul, mkQ_eq_zero] at hax
       rw [mem_bot, mk''_eq_mkQ, mkQ_eq_zero]
       obtain ⟨b, h⟩ := hax
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩

@@ -135,9 +135,8 @@ theorem exists_smodEq (pb : PowerBasis A B) (b : B) :
   refine ⟨pb.basis.repr b ⟨0, pb.dim_pos⟩, ?_⟩
   have H := pb.basis.sum_repr b
   rw [← insert_erase (mem_univ ⟨0, pb.dim_pos⟩), sum_insert (not_mem_erase _ _)] at H
-  rw [SModEq, ← add_zero (algebraMap _ _ _), mkQ_add]
-  nth_rewrite 1 [← H]
-  rw [mkQ_add]
+  rw [SModEq, ← add_zero (algebraMap _ _ _), map_add]
+  nth_rw 1 [← H, map_add]
   congr 1
   · simp [Algebra.algebraMap_eq_smul_one ((pb.basis.repr b) _)]
   · rw [mkQ_zero, mkQ_eq_zero, coe_basis]
