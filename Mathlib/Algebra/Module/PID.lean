@@ -154,14 +154,14 @@ theorem exists_smul_eq_zero_and_mk_eq {z : M} (hz : Module.IsTorsionBy R M (p ^ 
     ∃ x : M, p ^ k • x = 0 ∧ Submodule.mkQ (span R {z}) x = f 1 := by
   have f1 := mkQ_surjective (R ∙ z) (f 1)
   have : p ^ k • f1.choose ∈ R ∙ z := by
-    rw [← mkQ_eq_zero, mkQ_smul, f1.choose_spec, ← f.map_smul]
+    rw [← mkQ_eq_zero, map_smul, f1.choose_spec, ← f.map_smul]
     convert f.map_zero
     show _ • Submodule.mkQ _ _ = _
-    rw [← mkQ_smul, mkQ_eq_zero, Algebra.id.smul_eq_mul, mul_one]
+    rw [← map_smul, mkQ_eq_zero, Algebra.id.smul_eq_mul, mul_one]
     exact Submodule.mem_span_singleton_self _
   obtain ⟨a, ha⟩ := p_pow_smul_lift hp hM hz this
   refine ⟨f1.choose - a • z, by rw [smul_sub, sub_eq_zero, ha], ?_⟩
-  rw [mkQ_sub, mkQ_smul, (mkQ_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
+  rw [map_sub, map_smul, (mkQ_eq_zero _).mpr <| Submodule.mem_span_singleton_self _,
     smul_zero, sub_zero, f1.choose_spec]
 
 open Finset Multiset
