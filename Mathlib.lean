@@ -3328,6 +3328,7 @@ import Mathlib.Dynamics.Ergodic.Conservative
 import Mathlib.Dynamics.Ergodic.Ergodic
 import Mathlib.Dynamics.Ergodic.Function
 import Mathlib.Dynamics.Ergodic.MeasurePreserving
+import Mathlib.Dynamics.Ergodic.RadonNikodym
 import Mathlib.Dynamics.FixedPoints.Basic
 import Mathlib.Dynamics.FixedPoints.Prufer
 import Mathlib.Dynamics.FixedPoints.Topology
