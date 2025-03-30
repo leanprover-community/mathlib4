@@ -8,11 +8,12 @@ import Mathlib.LinearAlgebra.FreeModule.Basic
 /-!
 # Skew Monoid Algebras
 
-Given a monoid `G` and a ring `k`, the skew monoid algebra of `G` over `k` is the set of finitely
-supported functions `f : G → k` for which addition is defined pointwise and multiplication of two
-elements `f` and `g` is given by the finitely supported function whose value at `a` is the sum of
-`f x * (x • g y)` over all pairs `x, y` such that `x * y = a`, where `•` denotes the action of `G`
-on `k`. When this action is trivial, this product is the usual convolution product.
+Given a monoid `G` acting on a ring `k`, the skew monoid algebra of `G` over `k` is the set
+of finitely supported functions `f : G → k` for which addition is defined pointwise and
+multiplication of two elements `f` and `g` is given by the finitely supported function whose
+value at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `x * y = a`,
+where `•` denotes the action of `G` on `k`. When this action is trivial, this product is
+the usual convolution product.
 
 In fact the construction of the skew monoid algebra makes sense when  `G` is not even a monoid, but
 merely a magma, i.e., when `G` carries a multiplication which is not required to satisfy any
@@ -59,11 +60,11 @@ private def smul {S : Type*} [SMulZeroClass S k] :
     S → SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | s, ⟨b⟩ => ⟨s • b⟩
 
-instance instZero : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
+instance : Zero (SkewMonoidAlgebra k G) := ⟨⟨0⟩⟩
 
-instance instAdd : Add (SkewMonoidAlgebra k G) := ⟨add⟩
+instance : Add (SkewMonoidAlgebra k G) := ⟨add⟩
 
-instance instSMulZeroClass {S : Type*} [SMulZeroClass S k] :
+instance {S : Type*} [SMulZeroClass S k] :
     SMulZeroClass S (SkewMonoidAlgebra k G) where
   smul s f := smul s f
   smul_zero a := by simp only [smul]; exact congr_arg ofFinsupp (smul_zero a)
@@ -123,12 +124,12 @@ theorem toFinsupp_eq_zero {a : SkewMonoidAlgebra k G} : a.toFinsupp = 0 ↔ a = 
 theorem ofFinsupp_eq_zero {a} : (⟨a⟩ : SkewMonoidAlgebra k G) = 0 ↔ a = 0 := by
   rw [← ofFinsupp_zero, ofFinsupp_inj]
 
-instance instInhabited : Inhabited (SkewMonoidAlgebra k G) := ⟨0⟩
+instance : Inhabited (SkewMonoidAlgebra k G) := ⟨0⟩
 
-instance instNontrivial [Nontrivial k] [Nonempty G] :
+instance [Nontrivial k] [Nonempty G] :
     Nontrivial (SkewMonoidAlgebra k G) := Function.Injective.nontrivial ofFinsupp_injective
 
-instance instAddCommMonoid : AddCommMonoid (SkewMonoidAlgebra k G) where
+instance : AddCommMonoid (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addCommMonoid _ toFinsupp_zero toFinsupp_add
     (fun _ _ ↦ toFinsupp_smul _ _)
   toAdd  := SkewMonoidAlgebra.instAdd
@@ -283,7 +284,7 @@ variable [One G] [One k]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function that is `1` at `1` and
   zero elsewhere. -/
-instance instOne : One (SkewMonoidAlgebra k G) := ⟨single 1 1⟩
+instance : One (SkewMonoidAlgebra k G) := ⟨single 1 1⟩
 
 theorem ofFinsupp_one : (⟨Finsupp.single 1 1⟩ : SkewMonoidAlgebra k G) = 1 := rfl
 
@@ -506,10 +507,10 @@ variable [AddCommGroup k]
 private irreducible_def neg : SkewMonoidAlgebra k G → SkewMonoidAlgebra k G
   | ⟨a⟩ => ⟨-a⟩
 
-instance instNeg' : Neg (SkewMonoidAlgebra k G) :=
+instance : Neg (SkewMonoidAlgebra k G) :=
   ⟨neg⟩
 
-instance instSub : Sub (SkewMonoidAlgebra k G) :=
+instance : Sub (SkewMonoidAlgebra k G) :=
   ⟨fun a b ↦ a + -b⟩
 
 @[simp]
@@ -563,7 +564,7 @@ variable [SMul G k] [NonAssocSemiring k]
 /-- The product of `f g : SkewMonoidAlgebra k G` is the finitely supported function whose value
   at `a` is the sum of `f x * (x • g y)` over all pairs `x, y` such that `x * y = a`.
   (Think of a skew group ring.)-/
-instance instMul : Mul (SkewMonoidAlgebra k G) :=
+instance : Mul (SkewMonoidAlgebra k G) :=
   ⟨fun f g ↦ f.sum fun a₁ b₁ ↦ g.sum fun a₂ b₂ ↦ single (a₁ * a₂) (b₁ * (a₁ • b₂))⟩
 
 theorem mul_def {f g : SkewMonoidAlgebra k G} :
@@ -614,7 +615,7 @@ variable [Semiring k] [Monoid G] [MulSemiringAction G k]
 
 open MulSemiringAction
 
-instance instNonUnitalSemiring : NonUnitalSemiring (SkewMonoidAlgebra k G) where
+instance : NonUnitalSemiring (SkewMonoidAlgebra k G) where
   mul_assoc f g h := by
     simp only [mul_def]
     rw [sum_sum_index (fun _ ↦ by simp [single_zero])
@@ -632,7 +633,7 @@ instance instNonUnitalSemiring : NonUnitalSemiring (SkewMonoidAlgebra k G) where
     rw [sum_single_index (by simp [single_zero]), mul_assoc, mul_assoc,
       mul_smul, smul_mul]
 
-instance instNonAssocSemiring : NonAssocSemiring (SkewMonoidAlgebra k G) where
+instance : NonAssocSemiring (SkewMonoidAlgebra k G) where
   natCast n := single 1 n
   natCast_zero := by simp only [Nat.cast_zero, single_zero]
   natCast_succ _ := by simp only [Nat.cast_add, Nat.cast_one, single_add]; rfl
@@ -648,7 +649,7 @@ instance instNonAssocSemiring : NonAssocSemiring (SkewMonoidAlgebra k G) where
 
 theorem natCast_def (n : ℕ) : (n : SkewMonoidAlgebra k G) = single (1 : G) (n : k) := rfl
 
-instance instSemiring : Semiring (SkewMonoidAlgebra k G) where
+instance : Semiring (SkewMonoidAlgebra k G) where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
 
@@ -670,7 +671,7 @@ section DerivedInstances
 instance instUnique [AddCommMonoid k] [Subsingleton k] : Unique (SkewMonoidAlgebra k G) :=
   Function.Injective.unique toFinsupp_injective
 
-instance instAddCommGroup [AddCommGroup k] : AddCommGroup (SkewMonoidAlgebra k G) where
+instance [AddCommGroup k] : AddCommGroup (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.addCommGroup _ (toFinsupp_zero (k := k))
     toFinsupp_add toFinsupp_neg toFinsupp_sub (fun _ _ ↦ toFinsupp_smul _ _)
     (fun _ _ ↦ toFinsupp_smul _ _)
@@ -708,19 +709,19 @@ instance instRing [Ring k] [Monoid G] [MulSemiringAction G k]: Ring (SkewMonoidA
 
 variable {S : Type*}
 
-instance instDistribSMul {S} [AddCommMonoid k] [DistribSMul S k] :
+instance {S} [AddCommMonoid k] [DistribSMul S k] :
     DistribSMul S (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.distribSMul ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩
     toFinsupp_smul
   toSMulZeroClass := instSMulZeroClass
 
-instance instDistribMulAction {S} [Monoid S] [AddCommMonoid k]  [DistribMulAction S k] :
+instance {S} [Monoid S] [AddCommMonoid k]  [DistribMulAction S k] :
     DistribMulAction S (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.distribMulAction ⟨⟨toFinsupp, toFinsupp_zero (k := k)⟩, toFinsupp_add⟩
       toFinsupp_smul
   toSMul := instSMulZeroClass.toSMul
 
-instance instModule {S} [Semiring S] [AddCommMonoid k] [Module S k] :
+instance {S} [Semiring S] [AddCommMonoid k] [Module S k] :
     Module S (SkewMonoidAlgebra k G) where
   __ := toFinsupp_injective.module _ ⟨⟨toFinsupp, toFinsupp_zero⟩, toFinsupp_add⟩ toFinsupp_smul
   toDistribMulAction := instDistribMulAction
@@ -732,15 +733,15 @@ instance instFaithfulSMul {S} [AddCommMonoid k] [SMulZeroClass S k] [FaithfulSMu
     intro a
     simp_rw [ofFinsupp_smul, h]
 
-instance instIsScalarTower {S₁ S₂} [AddCommMonoid k] [SMul S₁ S₂] [SMulZeroClass S₁ k]
+instance {S₁ S₂} [AddCommMonoid k] [SMul S₁ S₂] [SMulZeroClass S₁ k]
     [SMulZeroClass S₂ k] [IsScalarTower S₁ S₂ k] : IsScalarTower S₁ S₂ (SkewMonoidAlgebra k G) :=
   ⟨fun _ _ ⟨_⟩ ↦ by simp_rw [← ofFinsupp_smul, smul_assoc]⟩
 
-instance instSmulCommClass {S₁ S₂} [AddCommMonoid k] [SMulZeroClass S₁ k] [SMulZeroClass S₂ k]
+instance {S₁ S₂} [AddCommMonoid k] [SMulZeroClass S₁ k] [SMulZeroClass S₂ k]
     [SMulCommClass S₁ S₂ k] : SMulCommClass S₁ S₂ (SkewMonoidAlgebra k G) :=
   ⟨fun _ _ ⟨_⟩ ↦ by simp_rw [← ofFinsupp_smul, smul_comm _ _ _]⟩
 
-instance instIsCentralScalar {S} [AddCommMonoid k] [SMulZeroClass S k] [SMulZeroClass Sᵐᵒᵖ k]
+instance {S} [AddCommMonoid k] [SMulZeroClass S k] [SMulZeroClass Sᵐᵒᵖ k]
     [IsCentralScalar S k] : IsCentralScalar S (SkewMonoidAlgebra k G) :=
   ⟨fun _ ⟨_⟩ ↦ by simp_rw [← ofFinsupp_smul, op_smul_eq_smul]⟩
 
@@ -759,7 +760,7 @@ def toFinsuppLinearEquiv [AddCommMonoid k] [Module S k] : SkewMonoidAlgebra k G 
 def basisSingleOne [Semiring k] : Basis G k (SkewMonoidAlgebra k G) where
   repr := toFinsuppLinearEquiv
 
-instance instModule.free [Semiring k] : Module.Free k (SkewMonoidAlgebra k G) :=
+instance [Semiring k] : Module.Free k (SkewMonoidAlgebra k G) :=
   Module.Free.of_basis basisSingleOne
 
 end Module.Free
