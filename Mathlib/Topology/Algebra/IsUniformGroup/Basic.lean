@@ -99,7 +99,13 @@ lemma IsUniformInducing.isUniformGroup {γ : Type*} [Group γ] [UniformSpace γ]
     exact uniformContinuous_div.comp (hf.uniformContinuous.prodMap hf.uniformContinuous)
 
 @[deprecated (since := "2024-10-05")]
-alias UniformInducing.isUniformGroup := IsUniformInducing.isUniformGroup
+alias UniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
+@[to_additive existing, deprecated (since := "2024-10-05")]
+alias UniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
+@[deprecated (since := "2025-03-30")]
+alias IsUniformInducing.uniformAddGroup := IsUniformInducing.isUniformAddGroup
+@[to_additive existing, deprecated (since := "2025-03-30")]
+alias IsUniformInducing.uniformGroup := IsUniformInducing.isUniformGroup
 
 @[to_additive]
 protected theorem IsUniformGroup.comap {γ : Type*} [Group γ] {u : UniformSpace γ} [IsUniformGroup γ]
