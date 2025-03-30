@@ -99,7 +99,7 @@ def lift : (SymmetricAlgebra R L) →ₐ[R] A :=
     induction r with | mul_comm x y => simp [mul_comm]⟩
 
 @[simp]
-lemma lift_apply (a : L) : (lift f) ((ι R L) a) = f a := by
+lemma lift_ι_apply (a : L) : (lift f) ((ι R L) a) = f a := by
   simp [lift, ι, algHom]
 
 @[simp]
