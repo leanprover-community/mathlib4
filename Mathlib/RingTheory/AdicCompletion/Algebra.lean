@@ -205,9 +205,8 @@ theorem smul_mkQ {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
     (x : AdicCauchySequence I M) :
     r.val n • Submodule.mkQ (I ^ m • ⊤ : Submodule R M) (x.val n) =
       r.val m • Submodule.mkQ (I ^ m • ⊤ : Submodule R M) (x.val m) := by
-  rw [← Submodule.mkQ_smul, ← Module.Quotient.mkQ_smul_mkQ,
-    AdicCauchySequence.mkQ_eq_mkQ hmn, Ideal.mk_eq_mk I hmn, Module.Quotient.mkQ_smul_mkQ,
-    Submodule.mkQ_smul]
+  rw [← map_smul, ← Module.Quotient.mkQ_smul_mkQ,
+    AdicCauchySequence.mkQ_eq_mkQ hmn, Ideal.mk_eq_mk I hmn, Module.Quotient.mkQ_smul_mkQ, map_smul]
 
 /-- Scalar multiplication of `R ⧸ (I • ⊤)` on `M ⧸ (I • ⊤)`. This is used in order to have
 good definitional behaviour for the module instance on adic completions -/

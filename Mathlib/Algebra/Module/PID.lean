@@ -137,7 +137,7 @@ theorem p_pow_smul_lift {x y : M} {k : ℕ} (hM' : Module.IsTorsionBy R M (p ^ p
             @hM' x]
         · exact mem_nonZeroDivisors_of_ne_zero (pow_ne_zero _ hp.ne_zero)
       rw [Submodule.mem_span_singleton] at this; obtain ⟨a, ha⟩ := this; use a
-      rw [f.eq_symm_apply, ← Ideal.Quotient.mkQ_eq_mk, ← mkQ_smul] at ha
+      rw [f.eq_symm_apply, ← Ideal.Quotient.mkQ_eq_mk, ← map_smul] at ha
       dsimp only [smul_eq_mul, LinearEquiv.trans_apply, Submodule.quotEquivOfEq_mkQ,
         quotTorsionOfEquivSpanSingleton_apply_mk] at ha
       rw [smul_smul, mul_comm]; exact congr_arg ((↑) : _ → M) ha.symm
