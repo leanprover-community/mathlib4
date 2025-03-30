@@ -501,8 +501,7 @@ lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
     rw [← Finset.sum_fiberwise_of_maps_to (fun i ↦ Finset.mem_image_of_mem Prod.fst)]
     refine sum_mem fun i hi ↦ ?_
     convert_to monomial (e.symm (i, 0)) 1 * (Q.toComp P).toAlgHom.toRingHom
-      (∑ j ∈ ((support x).map e.toEmbedding).filter (fun x ↦ x.1 = i),
-        monomial j.2 (coeff (e.symm j) x)) ∈ _
+      (∑ j ∈ (support x).map e.toEmbedding with j.1 = i, monomial j.2 (coeff (e.symm j) x)) ∈ _
     · rw [map_sum, Finset.mul_sum]
       refine Finset.sum_congr rfl fun j hj ↦ ?_
       obtain rfl := (Finset.mem_filter.mp hj).2
