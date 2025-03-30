@@ -255,7 +255,7 @@ def hurwitzEvenFEPair (a : UnitAddCircle) : WeakFEPair ℂ where
     measurableSet_Ioi
   hg_int := (continuous_ofReal.comp_continuousOn (continuousOn_cosKernel a)).locallyIntegrableOn
     measurableSet_Ioi
-  k := 1 /2
+  k := 1 / 2
   hk := one_half_pos
   ε := 1
   hε := one_ne_zero
