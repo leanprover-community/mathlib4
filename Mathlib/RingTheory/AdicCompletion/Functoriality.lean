@@ -305,8 +305,8 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
   simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum_apply, mk_apply_coe,
     AdicCauchySequence.map_apply_coe]
-  simp only [← map_sum]
-  erw [DirectSum.sum_univ_of]
+  simp only [← Submodule.mkQ_apply, ← map_sum, ← apply_eq_component, lof_eq_of,
+    DirectSum.sum_univ_of]
 
 /-- If `ι` is finite, `sum` has `sumInv` as inverse. -/
 def sumEquivOfFintype :

@@ -34,7 +34,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 2. the range of the map is locally closed
 3. the induced morphisms of stalks are all surjective. -/
 @[mk_iff]
-class IsImmersion (f : X ⟶ Y) extends IsPreimmersion f : Prop where
+class IsImmersion (f : X ⟶ Y) : Prop extends IsPreimmersion f where
   isLocallyClosed_range : IsLocallyClosed (Set.range f.base)
 
 lemma Scheme.Hom.isLocallyClosed_range (f : X.Hom Y) [IsImmersion f] :
@@ -91,19 +91,19 @@ instance : IsLocalAtTarget @IsImmersion := by
   apply (config := { allowSynthFailures := true }) topologically_isLocalAtTarget'
   · refine { precomp := ?_, postcomp := ?_ }
     · intro X Y Z i hi f hf
-      replace hi : IsIso i := hi
+      change IsIso i at hi
       show IsLocallyClosed _
       simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp,
         Set.range_eq_univ.mpr i.surjective, Set.image_univ]
     · intro X Y Z i hi f hf
-      replace hi : IsIso i := hi
+      change IsIso i at hi
       show IsLocallyClosed _
       simp only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp]
       refine hf.image i.homeomorph.isInducing ?_
       rw [Set.range_eq_univ.mpr i.surjective]
       exact isOpen_univ.isLocallyClosed
   · simp_rw [Set.range_restrictPreimage]
-    exact fun _ _ _ e _ ↦ isLocallyClosed_iff_coe_preimage_of_iSup_eq_top e _
+    exact fun _ _ _ hU _ ↦ hU.isLocallyClosed_iff_coe_preimage
 
 instance (priority := 900) {X Y : Scheme} (f : X ⟶ Y) [IsOpenImmersion f] : IsImmersion f where
   isLocallyClosed_range := f.isOpenEmbedding.2.isLocallyClosed

@@ -58,6 +58,7 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
 @[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
 @[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
 
+open scoped Relator in
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
     (Forall₂ R ⇒ R) prod prod :=
@@ -243,7 +244,8 @@ lemma prod_map_erase [DecidableEq α] (f : α → M) {a} :
 
 @[to_additive] lemma Perm.prod_eq (h : Perm l₁ l₂) : prod l₁ = prod l₂ := h.foldr_op_eq
 
-@[to_additive] lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
+@[to_additive (attr := simp)]
+lemma prod_reverse (l : List M) : prod l.reverse = prod l := (reverse_perm l).prod_eq
 
 @[to_additive]
 lemma prod_mul_prod_eq_prod_zipWith_mul_prod_drop :

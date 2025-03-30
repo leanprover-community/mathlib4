@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Antoine Labelle
 import Mathlib.Algebra.Module.Defs
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.FreeModule.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Basis
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 /-!
@@ -211,7 +212,6 @@ theorem Projective.iff_split : Module.Projective R P ↔
   ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
 
-set_option maxSynthPendingDepth 2 in
 open TensorProduct in
 instance Projective.tensorProduct [hM : Module.Projective R M] [hN : Module.Projective R₀ N] :
     Module.Projective R (M ⊗[R₀] N) := by

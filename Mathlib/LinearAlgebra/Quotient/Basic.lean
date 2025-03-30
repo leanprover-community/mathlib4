@@ -263,7 +263,7 @@ variable {p p' p''}
 This is the `Submodule.Quotient` version of `Quot.Factor`
 
 When the two submodules are of the form `I ^ m • ⊤` and `I ^ n • ⊤` and `n ≤ m`,
-please refer to the dedicated version `Submodule.factorPow`-/
+please refer to the dedicated version `Submodule.factorPow`. -/
 abbrev factor (H : p ≤ p') : M ⧸ p →ₗ[R] M ⧸ p' :=
   mapQ _ _ LinearMap.id H
 
@@ -344,7 +344,7 @@ def Quotient.equiv {N : Type*} [AddCommGroup N] [Module R N] (P : Submodule R M)
     right_inv := fun x => Submodule.Quotient.induction_on' _ x (by simp) }
 
 @[simp]
-theorem Quotient.equiv_symm {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M]
+theorem Quotient.equiv_symm {R M N : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [AddCommGroup N] [Module R N] (P : Submodule R M) (Q : Submodule R N) (f : M ≃ₗ[R] N)
     (hf : P.map f = Q) :
     (Quotient.equiv P Q f hf).symm =

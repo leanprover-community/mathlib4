@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.LinearAlgebra.Isomorphisms
+import Mathlib.Logic.Equiv.Fin.Rotate
 
 /-!
 
@@ -93,18 +94,18 @@ theorem exists_linearIndepOn_of_lt_rank [StrongRankCondition R]
     ∃ t, s ⊆ t ∧ #t = Module.rank R M ∧ LinearIndepOn R id t := by
   obtain ⟨t, ht, ht'⟩ := exists_set_linearIndependent R (M ⧸ Submodule.span R s)
   choose sec hsec using Submodule.mkQ_surjective (Submodule.span R s)
-  have hsec' : Submodule.mkQ _ ∘ sec = _root_.id := funext hsec
+  have hsec' : (Submodule.mkQ _) ∘ sec = _root_.id := funext hsec
   have hst : Disjoint s (sec '' t) := by
     rw [Set.disjoint_iff]
     rintro _ ⟨hxs, ⟨x, hxt, rfl⟩⟩
     apply ht'.ne_zero ⟨x, hxt⟩
-    rw [Subtype.coe_mk, ← hsec x, Submodule.mkQ_eq_zero]
+    rw [Subtype.coe_mk, ← hsec x,mkQ_apply, Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
   refine ⟨s ∪ sec '' t, subset_union_left, ?_, ?_⟩
   · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
       ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
-    exact HasLeftInverse.injective ⟨Submodule.mkQ _, hsec⟩
-  · apply LinearIndepOn.union_of_quotient Submodule.subset_span hs
+    exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
+  · apply LinearIndepOn.union_id_of_quotient Submodule.subset_span hs
     rwa [linearIndepOn_iff_image (hsec'.symm ▸ injective_id).injOn.image_of_comp,
       ← image_comp, hsec', image_id]
 

@@ -68,14 +68,14 @@ theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 theorem cast_one : ((1 : ℤ) : R) = 1 := by
-  erw [cast_natCast, Nat.cast_one]
+  rw [← natCast_one, cast_natCast, Nat.cast_one]
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
   | (0 : ℕ) => by simp
-  | (n + 1 : ℕ) => by erw [cast_natCast, cast_negSucc]
-  | -[n+1] => by erw [cast_natCast, cast_negSucc, neg_neg]
+  | (n + 1 : ℕ) => by rw [cast_natCast, neg_ofNat_succ]; simp
+  | -[n+1] => by rw [Int.neg_negSucc, cast_natCast]; simp
 -- type had `HasLiftT`
 
 @[simp, norm_cast]
@@ -113,12 +113,6 @@ theorem cast_two : ((2 : ℤ) : R) = 2 := cast_ofNat _
 theorem cast_three : ((3 : ℤ) : R) = 3 := cast_ofNat _
 
 theorem cast_four : ((4 : ℤ) : R) = 4 := cast_ofNat _
-
-/-! ### `toNat` -/
-
-theorem toNat_of_nonpos : ∀ {z : ℤ}, z ≤ 0 → z.toNat = 0
-  | 0, _ => rfl
-  | -[_+1], _ => rfl
 
 end Int
 

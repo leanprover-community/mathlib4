@@ -9,7 +9,8 @@ import Lean.Elab.ParseImportsFast
 
 namespace Cache.Hashing
 
-open System IO
+open Lean IO
+open System hiding SearchPath
 
 /--
 The `HashMemo` contains all information `Cache` needs about the modules:
@@ -60,14 +61,22 @@ def HashMemo.filterByFilePaths (hashMemo : HashMemo) (filePaths : List FilePath)
 /-- We cache the hash of each file and their dependencies for later lookup -/
 abbrev HashM := StateT HashMemo CacheM
 
-/-- Gets the file paths to Mathlib files imported on a Lean source -/
-def getFileImports (source : String) (pkgDirs : PackageDirs) : Array FilePath :=
-  let s := Lean.ParseImports.main source (Lean.ParseImports.whitespace source {})
-  let imps := s.imports.map (·.module.components |> .map toString)
-    |>.filter fun parts => match parts.head? with
-      | some head => pkgDirs.contains head
-      | none => false
-  imps.map (mkFilePath · |>.withExtension "lean")
+/--
+Read the imports from the raw file `content` and return an array of tuples
+`(module name, source file)`, one per import.
+
+Note: `fileName` is a string which is purely used for displaying an error message if
+parsing imports from `content` should fail. It is intended to be the file's name.
+-/
+def getFileImports (content : String) (fileName : String := "") :
+    CacheM <| Array (Name × FilePath) := do
+  let sp := (← read).srcSearchPath
+  let fileImports : Array Import ← Lean.parseImports' content fileName
+  fileImports
+    |>.filter (isPartOfMathlibCache ·.module)
+    |>.mapM fun imp => do
+      let impSourceFile ← Lean.findLean sp imp.module
+      pure (imp.module, impSourceFile)
 
 /-- Computes a canonical hash of a file's contents. -/
 def hashFileContents (contents : String) : UInt64 :=
@@ -118,7 +127,13 @@ partial def getHash (filePath : FilePath) (visited : Std.HashSet FilePath := ∅
       modify fun stt => { stt with cache := stt.cache.insert filePath none }
       return none
     let content ← IO.FS.readFile fixedPath
-    let fileImports := getFileImports content (← getPackageDirs)
+    let fileImports' ← getFileImports content filePath.toString
+    -- TODO: This line should eventually be removed: most code of cache still works
+    -- with keys of the form `Mathlib/Init.lean`, `Aesop/Build.lean` instead of module
+    -- names: `Mathlib.Init`, `Aesop.Build`, but `getFileImports` has been changed
+    -- to return the latter, in preparation for the switch
+    let fileImports := fileImports'.map fun (key, _) =>
+      mkFilePath (key.components.map toString) |>.withExtension "lean"
     let mut importHashes := #[]
     for importHash? in ← fileImports.mapM (getHash (visited := visitedNew)) do
       match importHash? with

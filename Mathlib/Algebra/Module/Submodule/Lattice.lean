@@ -10,6 +10,7 @@ import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.PUnit
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!

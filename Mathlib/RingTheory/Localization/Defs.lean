@@ -120,7 +120,7 @@ variable (M) {S}
 theorem surj : ∀ z : S, ∃ x : R × M, z * algebraMap R S x.2 = algebraMap R S x.1 :=
   IsLocalization.surj'
 
-variable (S)
+variable (S) in
 @[inherit_doc IsLocalization.exists_of_eq]
 theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M, ↑c * x = ↑c * y :=
   Iff.intro IsLocalization.exists_of_eq fun ⟨c, h⟩ ↦ by
@@ -128,7 +128,10 @@ theorem eq_iff_exists {x y} : algebraMap R S x = algebraMap R S y ↔ ∃ c : M,
     rw [map_mul, map_mul] at h
     exact (IsLocalization.map_units S c).mul_right_inj.mp h
 
-variable {S}
+theorem injective_iff_isRegular : Injective (algebraMap R S) ↔ ∀ c : M, IsRegular (c : R) := by
+  simp_rw [Commute.isRegular_iff (Commute.all _), IsLeftRegular,
+    Injective, eq_iff_exists M, exists_imp, forall_comm (α := M)]
+
 theorem of_le (N : Submonoid R) (h₁ : M ≤ N) (h₂ : ∀ r ∈ N, IsUnit (algebraMap R S r)) :
     IsLocalization N S where
   map_units' r := h₂ r r.2
@@ -324,6 +327,23 @@ theorem mk'_zero (s : M) : IsLocalization.mk' S 0 s = 0 := by
 theorem ne_zero_of_mk'_ne_zero {x : R} {y : M} (hxy : IsLocalization.mk' S x y ≠ 0) : x ≠ 0 := by
   rintro rfl
   exact hxy (IsLocalization.mk'_zero _)
+
+include M in
+variable (M) in
+/-- Any localization of a commutative semiring without zero-divisors also has no zero-divisors. -/
+theorem noZeroDivisors [NoZeroDivisors R] : NoZeroDivisors S where
+  eq_zero_or_eq_zero_of_mul_eq_zero {x y} eq := by
+    nontriviality S
+    obtain ⟨x, s, rfl⟩ := mk'_surjective M x
+    obtain ⟨y, t, rfl⟩ := mk'_surjective M y
+    rw [← mk'_mul, mk'_eq_zero_iff] at eq
+    have ⟨m, eq⟩ := eq
+    obtain eq | eq := eq_zero_or_eq_zero_of_mul_eq_zero eq
+    · exact absurd (subsingleton (eq ▸ m.2)) (not_subsingleton S)
+    obtain rfl | rfl := eq_zero_or_eq_zero_of_mul_eq_zero eq <;> simp
+
+theorem sec_fst_ne_zero {x : S} (hx : x ≠ 0) : (sec M x).fst ≠ 0 :=
+  mt (fun h ↦ by rw [← mk'_sec (M := M) S x, h, mk'_zero]) hx
 
 section Ext
 
@@ -537,7 +557,7 @@ theorem lift_injective_iff :
 
 variable (M) in
 include M in
-lemma injective_iff_map_algebraMap_eq {T} [CommRing T] (f : S →+* T) :
+lemma injective_iff_map_algebraMap_eq {T} [CommSemiring T] (f : S →+* T) :
     Function.Injective f ↔ ∀ x y,
       algebraMap R S x = algebraMap R S y ↔ f (algebraMap R S x) = f (algebraMap R S y) := by
   rw [← IsLocalization.lift_of_comp (M := M) f, IsLocalization.lift_injective_iff]
@@ -712,10 +732,7 @@ theorem isLocalization_of_base_ringEquiv [IsLocalization M S] (h : R ≃+* P) :
   · intro x y
     rw [RingHom.algebraMap_toAlgebra, RingHom.comp_apply, RingHom.comp_apply,
       IsLocalization.eq_iff_exists M S]
-    simp_rw [← h.toEquiv.apply_eq_iff_eq]
-    change (∃ c : M, h (c * h.symm x) = h (c * h.symm y)) → _
-    simp only [RingEquiv.apply_symm_apply, RingEquiv.map_mul]
-    exact fun ⟨c, e⟩ ↦ ⟨⟨_, _, c.prop, rfl⟩, e⟩
+    simp [← h.toEquiv.apply_eq_iff_eq]
 
 theorem isLocalization_iff_of_base_ringEquiv (h : R ≃+* P) :
     IsLocalization M S ↔
@@ -801,6 +818,8 @@ instance isLocalization : IsLocalization M (Localization M) where
   map_units' := (Localization.monoidOf M).map_units
   surj' := (Localization.monoidOf M).surj
   exists_of_eq := (Localization.monoidOf M).eq_iff_exists.mp
+
+instance [NoZeroDivisors R] : NoZeroDivisors (Localization M) := IsLocalization.noZeroDivisors M
 
 end
 
@@ -891,32 +910,10 @@ theorem sec_snd_ne_zero [Nontrivial R] (hM : M ≤ nonZeroDivisors R) (x : S) :
     ((sec M x).snd : R) ≠ 0 :=
   nonZeroDivisors.coe_ne_zero ⟨(sec M x).snd.val, hM (sec M x).snd.property⟩
 
-theorem sec_fst_ne_zero [Nontrivial R] [NoZeroDivisors S] (hM : M ≤ nonZeroDivisors R) {x : S}
-    (hx : x ≠ 0) : (sec M x).fst ≠ 0 := by
-  have hsec := sec_spec M x
-  intro hfst
-  rw [hfst, map_zero, mul_eq_zero, _root_.map_eq_zero_iff] at hsec
-  · exact Or.elim hsec hx (sec_snd_ne_zero hM x)
-  · exact IsLocalization.injective S hM
-
 variable {Q : Type*} [CommRing Q] {g : R →+* P} [Algebra P Q]
 variable (A : Type*) [CommRing A] [IsDomain A]
 
-/-- A `CommRing` `S` which is the localization of a ring `R` without zero divisors at a subset of
-non-zero elements does not have zero divisors. -/
-theorem noZeroDivisors_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocalization M S]
-    (hM : M ≤ nonZeroDivisors A) : NoZeroDivisors S :=
-  { eq_zero_or_eq_zero_of_mul_eq_zero := by
-      intro z w h
-      obtain ⟨x, hx⟩ := surj M z
-      obtain ⟨y, hy⟩ := surj M w
-      have :
-        z * w * algebraMap A S y.2 * algebraMap A S x.2 = algebraMap A S x.1 * algebraMap A S y.1 :=
-        by rw [mul_assoc z, hy, ← hx]; ring
-      rw [h, zero_mul, zero_mul, ← (algebraMap A S).map_mul] at this
-      rcases eq_zero_or_eq_zero_of_mul_eq_zero ((to_map_eq_zero_iff S hM).mp this.symm) with H | H
-      · exact Or.inl (eq_zero_of_fst_eq_zero hx H)
-      · exact Or.inr (eq_zero_of_fst_eq_zero hy H) }
+@[deprecated (since := "2025-03-18")] alias noZeroDivisors_of_le_nonZeroDivisors := noZeroDivisors
 
 /-- A `CommRing` `S` which is the localization of an integral domain `R` at a subset of
 non-zero elements is an integral domain. -/
@@ -926,7 +923,7 @@ theorem isDomain_of_le_nonZeroDivisors [Algebra A S] {M : Submonoid A} [IsLocali
   · exact
       ⟨⟨(algebraMap A S) 0, (algebraMap A S) 1, fun h =>
           zero_ne_one (IsLocalization.injective S hM h)⟩⟩
-  · exact noZeroDivisors_of_le_nonZeroDivisors _ hM
+  · exact noZeroDivisors M
 
 variable {A}
 
