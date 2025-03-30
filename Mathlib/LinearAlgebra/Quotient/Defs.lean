@@ -226,6 +226,11 @@ theorem mkQ_zero : mkQ p 0 = 0 :=
 @[simp]
 theorem mkQ_eq_zero : mkQ p x = 0 ↔ x ∈ p := by simpa using (Quotient.eq' p : mkQ p x = 0 ↔ _)
 
+@[simp]
+theorem mkQ_smul {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] (r : S) (x : M) :
+    mkQ p (r • x) = r • mkQ p x :=
+  rfl
+
 protected theorem mkQ_eq' {x y : M} : mkQ p x = mkQ p y ↔ -x + y ∈ p :=
   QuotientAddGroup.eq
 
