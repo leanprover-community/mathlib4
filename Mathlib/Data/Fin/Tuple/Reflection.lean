@@ -195,7 +195,9 @@ where
     pure q($f 0)
   | m + 1 =>
     let pre ← makeRHS n f nezero m
-    pure q($pre * $f (@OfNat.ofNat (Fin $n) $m _))
+    let mRaw : Q(ℕ) := mkRawNatLit m
+    -- without explicit OfNat.ofNat we get `f ↑(2 : ℕ)` instead of `f (2 : Fin n)`
+    pure q($pre * $f (@OfNat.ofNat (Fin $n) $mRaw _))
 
 /-- Rewrites `∏ (i : Fin n), f i` as `f 0 * f 1 * ... * f (n - 1)`. -/
 simproc_decl prod_univ_many (Finset.prod (α := Fin _) Finset.univ _) := .ofQ fun u _ e => do
