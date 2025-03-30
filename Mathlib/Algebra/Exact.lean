@@ -66,6 +66,25 @@ lemma of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
     Exact f g :=
   fun y ↦ ⟨hr y, fun ⟨x, hx⟩ ↦ hx ▸ congrFun hc x⟩
 
+/-- Two maps `f : M → N` and `g : N → P` are exact if and only if the induced maps
+`Set.range f → N → Set.range g` are exact. NOTE: To use this result a manual instance
+needs to be added: `let _ : Zero (Set.range g) := ⟨⟨0, hg⟩⟩`. -/
+lemma iff_rangeFactorization [Zero P] (hg : 0 ∈ Set.range g) :
+    letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
+    Exact f g ↔ Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) := by
+  rw [Exact, Exact, Subtype.range_coe]
+  congr! 2
+  rw [Set.rangeFactorization]
+  exact ⟨fun _ ↦ by rwa [Subtype.ext_iff], fun h ↦ by rwa [Subtype.ext_iff] at h⟩
+
+/-- If two maps `f : M → N` and `g : N → P` are exact, then the induced maps
+`Set.range f → N → Set.range g` are exact. NOTE: To use this result a manual instance
+needs to be added: `let _ : Zero (Set.range g) := ⟨⟨0, hg⟩⟩`. -/
+lemma rangeFactorization [Zero P] (h : Exact f g) (hg : 0 ∈ Set.range g) :
+    letI : Zero (Set.range g) := ⟨⟨0, hg⟩⟩
+    Exact ((↑) : Set.range f → N) (Set.rangeFactorization g) :=
+  (iff_rangeFactorization hg).1 h
+
 end Exact
 
 end Function
@@ -163,6 +182,14 @@ lemma of_ladder_addEquiv_of_exact' (comm₁₂ : g₁₂.comp e₁ = AddMonoidHo
 
 end
 
+/-- Two maps `f : M →+ N` and `g : N →+ P` are exact if and only if the induced maps
+`AddMonoidHom.range f → N → AddMonoidHom.range g` are exact. -/
+lemma iff_addMonoidHom_rangeRestrict :
+    Exact f g ↔ Exact f.range.subtype g.rangeRestrict :=
+  iff_rangeFactorization (zero_mem g.range)
+
+alias ⟨addMonoidHom_rangeRestrict, _⟩ := iff_addMonoidHom_rangeRestrict
+
 end Function.Exact
 
 end AddMonoidHom
@@ -251,21 +278,33 @@ lemma Injective.comp_exact_iff_exact {i : P →ₗ[R] P'} (h : Injective i) :
     Exact f (i ∘ₗ g) ↔ Exact f g :=
   forall_congr' fun _ => iff_congr (LinearMap.map_eq_zero_iff _ h) Iff.rfl
 
+namespace Exact
+
 variable
     {f₁₂ : M →ₗ[R] N} {f₂₃ : N →ₗ[R] P} {g₁₂ : M' →ₗ[R] N'}
     {g₂₃ : N' →ₗ[R] P'} {e₁ : M ≃ₗ[R] M'} {e₂ : N ≃ₗ[R] N'} {e₃ : P ≃ₗ[R] P'}
 
-lemma Exact.iff_of_ladder_linearEquiv
+lemma iff_of_ladder_linearEquiv
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃) :
     Exact g₁₂ g₂₃ ↔ Exact f₁₂ f₂₃ :=
   iff_of_ladder_addEquiv e₁.toAddEquiv e₂.toAddEquiv e₃.toAddEquiv
     (f₁₂ := f₁₂) (f₂₃ := f₂₃) (g₁₂ := g₁₂) (g₂₃ := g₂₃)
     (congr_arg LinearMap.toAddMonoidHom h₁₂) (congr_arg LinearMap.toAddMonoidHom h₂₃)
 
-lemma Exact.of_ladder_linearEquiv_of_exact
+lemma of_ladder_linearEquiv_of_exact
     (h₁₂ : g₁₂ ∘ₗ e₁ = e₂ ∘ₗ f₁₂) (h₂₃ : g₂₃ ∘ₗ e₂ = e₃ ∘ₗ f₂₃)
     (H : Exact f₁₂ f₂₃) : Exact g₁₂ g₂₃ := by
   rwa [iff_of_ladder_linearEquiv h₁₂ h₂₃]
+
+/-- Two maps `f : M →ₗ[R] N` and `g : N →ₗ[R] P` are exact if and only if the induced maps
+`LinearMap.range f → N → LinearMap.range g` are exact. -/
+lemma iff_linearMap_rangeRestrict :
+    Exact f g ↔ Exact f.range.subtype g.rangeRestrict :=
+  iff_rangeFactorization (zero_mem (LinearMap.range g))
+
+alias ⟨linearMap_rangeRestrict, _⟩ := iff_linearMap_rangeRestrict
+
+end Exact
 
 end Function
 
