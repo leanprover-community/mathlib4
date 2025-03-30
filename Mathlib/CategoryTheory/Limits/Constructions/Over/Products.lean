@@ -166,15 +166,49 @@ theorem over_hasTerminal (B : C) : HasTerminal (Over B) where
 
 section BinaryProduct
 
-variable {X : C} {Y Z : Over X}
+variable {X : C} (Y Z : Over X)
+
+/--
+Binary fans in the over category is equivalent to pullback cones.
+Also see `CategoryTheory.Over.ConstructProducts.conesEquivFunctor` for the wide pullback version.
+-/
+def pushoutCoconeEquivBinaryCofan : PullbackCone Y.hom Z.hom ≌ BinaryFan Y Z where
+  functor :=
+  { obj c := BinaryFan.mk (Over.homMk (U := Over.mk (c.fst ≫ Y.hom)) (V := Y) c.fst rfl)
+      (Over.homMk (V := Z) c.snd c.condition.symm)
+    map {c1 c2} a := { hom := Over.homMk a.hom, w := by rintro (_|_) <;> aesop_cat } }
+  inverse :=
+  { obj c := PullbackCone.mk c.fst.left c.snd.left (c.fst.w.trans c.snd.w.symm)
+    map {c1 c2} a := { hom := a.hom.left, w := by rintro (_|_|_) <;> simp [← Over.comp_left] } }
+  unitIso := NatIso.ofComponents (fun c ↦ c.eta) (by intros; ext; dsimp; simp)
+  counitIso := NatIso.ofComponents (fun X ↦ Limits.BinaryFan.ext (Over.isoMk (Iso.refl _)
+    (by dsimp; simp)) (by ext; dsimp; simp) (by ext; dsimp; simp))
+    (by intros; ext; dsimp; simp [BinaryFan.ext])
+  functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
+
+/-- Binary products in the over category are given by pullbacks. -/
+-- `IsLimit.ofConeEquiv` isn't used here because it gives worse defeqs.
+def isLimitPushoutCoconeEquivBinaryCofanFunctorObj
+    (c : PullbackCone Y.hom Z.hom) (hc : IsLimit c) :
+    IsLimit ((pushoutCoconeEquivBinaryCofan Y Z).functor.obj c) :=
+  BinaryFan.isLimitMk
+    (fun s ↦ Over.homMk
+        (hc.lift (PullbackCone.mk s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm)))
+      ((hc.fac_assoc _ _ _).trans (s.fst.w.trans (Category.comp_id _))))
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _))
+    (fun s ↦ Over.OverMorphism.ext (hc.fac _ _)) fun s m e₁ e₂ ↦ by
+    ext1
+    apply Limits.PullbackCone.IsLimit.hom_ext hc
+    · simpa using congr(($e₁).left)
+    · simpa using congr(($e₂).left)
 
 open Limits
 
+variable {Y Z}
+
 lemma isPullback_of_binaryFan_isLimit (c : BinaryFan Y Z) (hc : IsLimit c) :
     IsPullback c.fst.left c.snd.left Y.hom Z.hom :=
-  ⟨by simp, ⟨((IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).symm
-    ((IsLimit.ofConeEquiv (ConstructProducts.conesEquiv X _).symm).symm hc)).ofIsoLimit
-    (PullbackCone.isoMk _)⟩⟩
+  ⟨by simp, ⟨(IsLimit.ofConeEquiv (pushoutCoconeEquivBinaryCofan Y Z).symm).symm hc⟩⟩
 
 variable (Y Z) [HasPullback Y.hom Z.hom] [HasBinaryProduct Y Z]
 

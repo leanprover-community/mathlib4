@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.ChosenFiniteProducts
+import Mathlib.CategoryTheory.Limits.Constructions.Over.Products
 
 /-!
 
@@ -24,18 +25,8 @@ variable {C : Type*} [Category C] [HasPullbacks C]
 @[reducible]
 noncomputable
 def chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) where
-  product Y Z := ⟨BinaryFan.mk (P := Over.mk (pullback.snd Y.hom Z.hom ≫ Z.hom))
-      (Over.homMk (pullback.fst Y.hom Z.hom) pullback.condition)
-      (Over.homMk (pullback.snd Y.hom Z.hom) rfl),
-    BinaryFan.isLimitMk
-      (fun s ↦ Over.homMk (pullback.lift s.fst.left s.snd.left (s.fst.w.trans s.snd.w.symm))
-        ((pullback.lift_snd_assoc _ _ _ _).trans (s.snd.w.trans (Category.comp_id _))))
-      (fun s ↦ Over.OverMorphism.ext (pullback.lift_fst _ _ _))
-      (fun s ↦ Over.OverMorphism.ext (pullback.lift_snd _ _ _)) fun s m e₁ e₂ ↦ by
-      ext1
-      apply pullback.hom_ext
-      · simpa using congr(($e₁).left)
-      · simpa using congr(($e₂).left)⟩
+  product Y Z := ⟨(pushoutCoconeEquivBinaryCofan Y Z).functor.obj (pullback.cone Y.hom Z.hom),
+    isLimitPushoutCoconeEquivBinaryCofanFunctorObj Y Z _ (pullback.isLimit _ _)⟩
   terminal := ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
     fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
 
@@ -52,10 +43,10 @@ lemma tensorObj_ext {R : C} {S T : Over X} (f₁ f₂ : R ⟶ (S ⊗ T).left)
   pullback.hom_ext e₁ e₂
 
 @[simp]
-lemma tensorObj_left (R S : Over X) : (R ⊗ S).left = Limits.pullback R.hom S.hom := rfl
+lemma tensorObj_left (R S : Over X) : (R ⊗ S).left = pullback R.hom S.hom := rfl
 
 @[simp]
-lemma tensorObj_hom (R S : Over X) : (R ⊗ S).hom = pullback.snd R.hom S.hom ≫ S.hom := rfl
+lemma tensorObj_hom (R S : Over X) : (R ⊗ S).hom = pullback.fst R.hom S.hom ≫ R.hom := rfl
 
 @[simp]
 lemma tensorUnit_left : (𝟙_ (Over X)).left = X := rfl
@@ -63,40 +54,44 @@ lemma tensorUnit_left : (𝟙_ (Over X)).left = X := rfl
 @[simp]
 lemma tensorUnit_hom : (𝟙_ (Over X)).hom = 𝟙 X := rfl
 
+@[simp]
+lemma lift_left {R S T : Over X} (f : R ⟶ S) (g : R ⟶ T) :
+    (ChosenFiniteProducts.lift f g).left =
+      pullback.lift f.left g.left (f.w.trans g.w.symm) := rfl
+
+@[simp]
+lemma toUnit_left {R : Over X} : (ChosenFiniteProducts.toUnit R).left = R.hom := rfl
+
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ pullback.fst R.hom (pullback.snd _ _ ≫ T.hom) =
-      pullback.fst _ _ ≫ pullback.fst _ _ :=
+    (α_ R S T).hom.left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ pullback.fst _ _ :=
   pullback.lift_fst _ _ _
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ pullback.snd _ (pullback.snd _ _ ≫ T.hom) ≫ pullback.fst _ _ =
+    (α_ R S T).hom.left ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ :=
   (pullback.lift_snd_assoc _ _ _ _).trans (pullback.lift_fst _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_snd (R S T : Over X) :
-    (α_ R S T).hom.left ≫ pullback.snd _ (pullback.snd _ _ ≫ T.hom) ≫ pullback.snd _ _ =
-      pullback.snd _ _ :=
+    (α_ R S T).hom.left ≫ pullback.snd _ _ ≫ pullback.snd _ _ = pullback.snd _ _ :=
   (pullback.lift_snd_assoc _ _ _ _).trans (pullback.lift_snd _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst (R S T : Over X) :
-    (α_ R S T).inv.left ≫ pullback.fst (pullback.snd _ _ ≫ _) _ ≫ pullback.fst _ _ =
-    pullback.fst _ _ :=
+    (α_ R S T).inv.left ≫ pullback.fst _ _ ≫ pullback.fst _ _ = pullback.fst _ _ :=
   (pullback.lift_fst_assoc _ _ _ _).trans (pullback.lift_fst _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ pullback.fst (pullback.snd _ _ ≫ _) _ ≫ pullback.snd _ _ =
+    (α_ R S T).inv.left ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.fst _ _ :=
   (pullback.lift_fst_assoc _ _ _ _).trans (pullback.lift_snd _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ pullback.snd (pullback.snd _ _ ≫ _) _ =
-    pullback.snd _ _ ≫ pullback.snd _ _ :=
+    (α_ R S T).inv.left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ :=
   pullback.lift_snd _ _ _
 
 @[simp]
