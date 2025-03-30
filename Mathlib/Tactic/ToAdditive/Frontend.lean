@@ -14,6 +14,7 @@ import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Match.MatcherInfo
+import Batteries.Data.List.ArrayMap
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Batteries.Tactic.Trans
@@ -1152,7 +1153,7 @@ def proceedFields (src tgt : Name) : CoreM Unit := do
   -- add translations for the constructors of an inductive type
   aux fun declName ↦ do match (← getEnv).find? declName with
     | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
-        return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
+        return ctors.toArrayMap (.mkSimple ·.lastComponentAsString)
     | _ => pure #[]
 
 /-- Elaboration of the configuration options for `to_additive`. -/

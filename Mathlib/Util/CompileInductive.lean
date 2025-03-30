@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
 import Mathlib.Init
+import Batteries.Data.List.ArrayMap
 import Lean.Elab.Command
 import Lean.Compiler.CSimpAttr
 import Lean.Util.FoldConsts
@@ -161,7 +162,7 @@ def compileInductiveOnly (iv : InductiveVal) (warn := true) : MetaM Unit := do
             let val := mkAppN val args[:rv'.numParams]
             let val := .app val <| ← mkLambdaFVars xs[rv.getFirstIndexIdx:] body
             let val := mkAppN val xs[rv.getFirstIndexIdx:]
-            let val := mkAppN val <| rv.rules.toArray.map fun rule =>
+            let val := mkAppN val <| rv.rules.toArrayMap fun rule ↦
               .beta (replaceConst repl rule.rhs) xs[:rv.getFirstIndexIdx]
             mkLambdaFVars xs val
       hints := .opaque

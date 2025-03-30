@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Damiano Testa
 -/
 import Lean.Elab.Command
+import Batteries.Data.List.ArrayMap
 
 /-!
 # Automatic labelling of PRs
@@ -292,7 +293,7 @@ unsafe def main (args : List String): IO UInt32 := do
   let gitDiff ← IO.Process.run {
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
-  let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
+  let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArrayMap (⟨·⟩)
 
   -- find labels covering the modified files
   let labels := getMatchingLabels modifiedFiles
