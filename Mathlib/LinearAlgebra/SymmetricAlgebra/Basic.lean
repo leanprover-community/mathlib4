@@ -117,7 +117,7 @@ def IsSymmetricAlgebra (f : L →ₗ[R] A) : Prop :=
   Function.Bijective (SymmetricAlgebra.lift f)
 
 theorem SymmetricAlgebra.isSymmetricAlgebra : IsSymmetricAlgebra (ι R L) := by
-  rw [IsSymmetricAlgebra, lift_iota]
+  rw [IsSymmetricAlgebra, lift_ι]
   exact Function.Involutive.bijective (congrFun rfl)
 
 namespace IsSymmetricAlgebra
