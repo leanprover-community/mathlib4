@@ -103,16 +103,17 @@ lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.
     of, FreeAbelianGroup.of_mul_of]
 
 @[elab_as_elim, induction_eliminator]
-protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing α) (hn1 : C (-1))
-    (hb : ∀ b, C (of b)) (ha : ∀ x y, C x → C y → C (x + y)) (hm : ∀ x y, C x → C y → C (x * y)) :
-    C z :=
-  have hn : ∀ x, C x → C (-x) := fun x ih => neg_one_mul x ▸ hm _ _ hn1 ih
-  have h1 : C 1 := neg_neg (1 : FreeCommRing α) ▸ hn _ hn1
-  FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ ha _ _ hn1 h1)
-    (fun m => Multiset.induction_on m h1 fun a m ih => by
-      convert hm (of a) _ (hb a) ih
+protected theorem induction_on {motive : FreeCommRing α → Prop} (z : FreeCommRing α)
+    (neg_one : motive (-1)) (of : ∀ b, motive (of b))
+    (add : ∀ x y, motive x → motive y → motive (x + y))
+    (mul : ∀ x y, motive x → motive y → motive (x * y)) : motive z :=
+  have neg : ∀ x, motive x → motive (-x) := fun x ih => neg_one_mul x ▸ mul _ _ neg_one ih
+  have one : motive 1 := neg_neg (1 : FreeCommRing α) ▸ neg _ neg_one
+  FreeAbelianGroup.induction_on z (neg_add_cancel (1 : FreeCommRing α) ▸ add _ _ neg_one one)
+    (fun m => Multiset.induction_on m one fun a m ih => by
+      convert mul (FreeCommRing.of a) _ (of a) ih
       apply of_cons)
-    (fun _ ih => hn _ ih) ha
+    (fun _ ih => neg _ ih) add
 
 section lift
 

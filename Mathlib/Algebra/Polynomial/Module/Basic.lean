@@ -86,9 +86,11 @@ theorem single_smul (i : ℕ) (r : R) (m : M) : single R i (r • m) = r • sin
 
 variable {R}
 
-theorem induction_linear {P : PolynomialModule R M → Prop} (f : PolynomialModule R M) (h0 : P 0)
-    (hadd : ∀ f g, P f → P g → P (f + g)) (hsingle : ∀ a b, P (single R a b)) : P f :=
-  Finsupp.induction_linear f h0 hadd hsingle
+@[elab_as_elim]
+theorem induction_linear {motive : PolynomialModule R M → Prop} (f : PolynomialModule R M)
+    (zero : motive 0) (add : ∀ f g, motive f → motive g → motive (f + g))
+    (single : ∀ a b, motive (single R a b)) : motive f :=
+  Finsupp.induction_linear f zero add single
 
 noncomputable instance polynomialModule : Module R[X] (PolynomialModule R M) :=
   inferInstanceAs (Module R[X] (Module.AEval' (Finsupp.lmapDomain M R Nat.succ)))
