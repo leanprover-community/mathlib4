@@ -339,15 +339,12 @@ variable (α)
 
 protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommRing α) := fun x => by
   induction x with
-  | hn1 =>
-    use -1
-    rfl
-  | hb b =>
-    exact ⟨FreeRing.of b, rfl⟩
-  | ha _ _ hx hy =>
+  | neg_one => use -1; rfl
+  | of b => exact ⟨FreeRing.of b, rfl⟩
+  | add _ _ hx hy =>
     rcases hx with ⟨x, rfl⟩; rcases hy with ⟨y, rfl⟩
     exact ⟨x + y, (FreeRing.lift _).map_add _ _⟩
-  | hm _ _ hx hy =>
+  | mul _ _ hx hy =>
     rcases hx with ⟨x, rfl⟩; rcases hy with ⟨y, rfl⟩
     exact ⟨x * y, (FreeRing.lift _).map_mul _ _⟩
 
