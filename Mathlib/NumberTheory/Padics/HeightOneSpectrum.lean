@@ -51,7 +51,7 @@ noncomputable
 def Nat.toHeightOneSpectrum (p : ℕ) [Fact p.Prime] : HeightOneSpectrum ℤ :=
   Int.heightOneSpectrumEquiv.symm ⟨p, Fact.out⟩
 
-lemma Nat.toHeightOneSpectrum_intValuation (p : ℕ) [Fact p.Prime] (n : ℤ) (hn : n ≠ 0) :
+lemma Nat.intValuation_toHeightOneSpectrum (p : ℕ) [Fact p.Prime] {n : ℤ} (hn : n ≠ 0) :
     p.toHeightOneSpectrum.intValuation n = Multiplicative.ofAdd (-padicValInt p n : ℤ) := by
   classical
   rw [intValuation_apply, intValuationDef_if_neg _ hn,
@@ -66,16 +66,25 @@ lemma Nat.toHeightOneSpectrum_intValuation (p : ℕ) [Fact p.Prime] (n : ℤ) (h
   · exact padicValRat.finite_int_prime_iff.mpr hn
   · rw [UniqueFactorizationMonoid.irreducible_iff_prime, ← Nat.prime_iff_prime_int]; exact Fact.out
 
-lemma Nat.toHeightOneSpectrum_valuation (p : ℕ) [Fact p.Prime] (r : ℚ) (hr : r ≠ 0) :
-    p.toHeightOneSpectrum.valuation r = Multiplicative.ofAdd (-padicValRat p r) := by
-  trans p.toHeightOneSpectrum.valuation (algebraMap ℤ ℚ r.num / algebraMap ℤ ℚ r.den)
+lemma Nat.valuation_toHeightOneSpectrum (p : ℕ) [Fact p.Prime] {r : ℚ} (hr : r ≠ 0) :
+    p.toHeightOneSpectrum.valuation ℚ r = Multiplicative.ofAdd (-padicValRat p r) := by
+  trans p.toHeightOneSpectrum.valuation ℚ (algebraMap ℤ ℚ r.num / algebraMap ℤ ℚ r.den)
   · simp [Rat.num_div_den]
   rw [map_div₀, valuation_of_algebraMap, valuation_of_algebraMap,
-    toHeightOneSpectrum_intValuation, toHeightOneSpectrum_intValuation, ← WithZero.coe_div,
+    intValuation_toHeightOneSpectrum, intValuation_toHeightOneSpectrum, ← WithZero.coe_div,
     ← ofAdd_sub, padicValRat_def, padicValInt, padicValInt, Int.natAbs_cast]
   · ring_nf
   · simp
   · simpa
+
+@[simp]
+lemma WithZero.coe_unitsWithZeroEquiv_symm {α : Type*} [Group α] (γ : α) :
+    (WithZero.unitsWithZeroEquiv.symm γ : WithZero α) = (γ : WithZero α) := rfl
+
+@[simp]
+lemma WithVal.v_equiv {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
+    (v : Valuation R Γ₀) (x : R) :
+    Valued.v ((WithVal.equiv v).symm x) = v x := rfl
 
 /-- The canonical map from the abstract completion of `ℚ` at `p` to `ℚ_[p]`.
 This is a homeomorphism, see `Padic.isHomeomorph_ofAdicCompletion`. -/
@@ -89,18 +98,19 @@ def Padic.ofAdicCompletion (p : ℕ) [Fact p.Prime] :
   intro ε hε
   obtain ⟨k, hk⟩ := PadicInt.exists_pow_neg_lt p hε
   refine ⟨WithZero.unitsWithZeroEquiv.symm (Multiplicative.ofAdd (-k)), trivial, ?_⟩
-  rintro x (hx : p.toHeightOneSpectrum.valuation x < (Multiplicative.ofAdd (-k : ℤ)))
-  simp only [eq_ratCast, Metric.mem_ball, dist_zero_right, padicNormE.eq_padicNorm]
+  intro x hx
+  obtain ⟨x, rfl⟩ := (WithVal.equiv _).symm.surjective x
+  simp only [eq_ratCast, Metric.mem_ball, dist_zero_right, map_ratCast, padicNormE.eq_padicNorm]
   refine lt_of_le_of_lt ?_ hk
   rw [padicNorm]
   split_ifs with h
   · simp
+  rw [Set.mem_setOf, WithVal.v_equiv, WithZero.coe_unitsWithZeroEquiv_symm,
+    Nat.valuation_toHeightOneSpectrum _ h, WithZero.coe_lt_coe,
+      Multiplicative.ofAdd_lt, neg_lt_neg_iff] at hx
   simp only [Rat.cast_inv, Rat.cast_zpow, Rat.cast_natCast, zpow_natCast]
   gcongr
-  · exact_mod_cast ‹Fact p.Prime›.1.one_le
-  · rw [Nat.toHeightOneSpectrum_valuation _ _ h, WithZero.coe_lt_coe,
-      Multiplicative.ofAdd_lt, neg_lt_neg_iff] at hx
-    exact hx.le
+  exact_mod_cast ‹Fact p.Prime›.1.one_le
 
 @[fun_prop]
 lemma Padic.continuous_ofAdicCompletion (p : ℕ) [Fact p.Prime] :
@@ -122,9 +132,9 @@ lemma Padic.valuation_ofAdicCompletionofAdicCompletion (p : ℕ) [Fact p.Prime] 
   · rintro _ ⟨x, rfl⟩
     simp only [map_ratCast, padicNormE.eq_padicNorm, valuedAdicCompletion_def]
     rw [← eq_ratCast UniformSpace.Completion.coeRingHom x]
-    simp only [WithZeroMulInt.toNNReal, UniformSpace.Completion.coeRingHom, RingHom.coe_mk,
-      MonoidHom.coe_mk, OneHom.coe_mk, Valued.extension_extends, MonoidWithZeroHom.coe_mk,
-      ZeroHom.coe_mk, map_eq_zero, padicNorm]
+    simp only [padicNorm, WithZeroMulInt.toNNReal, WithVal, UniformSpace.Completion.coeRingHom,
+      RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, Valued.extension_extends, adicValued_apply,
+      MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, map_eq_zero]
     split_ifs with h
     · simp
     · simp only [Rat.cast_zpow, Rat.cast_natCast, NNReal.coe_zpow, NNReal.coe_natCast]
@@ -132,7 +142,7 @@ lemma Padic.valuation_ofAdicCompletionofAdicCompletion (p : ℕ) [Fact p.Prime] 
       apply Multiplicative.ofAdd.injective
       apply WithZero.coe_inj.mp
       simp only [WithZero.coe_inv, ofAdd_toAdd, WithZero.coe_unzero,
-        ← Nat.toHeightOneSpectrum_valuation _ _ h, adicValued_apply]
+        ← Nat.valuation_toHeightOneSpectrum _ h, adicValued_apply]
   · apply isClosed_eq
     · fun_prop
     · refine continuous_subtype_val.comp ?_
@@ -152,8 +162,8 @@ lemma Padic.isHomeomorph_ofAdicCompletion (p : ℕ) [Fact p.Prime] :
       simp only [UniformSpace.Completion.coeRingHom,
         RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk, valuedAdicCompletion_def,
         Valued.extension_extends]
-      show p.toHeightOneSpectrum.valuation (p : ℚ) ≠ 1
-      rw [p.toHeightOneSpectrum_valuation _ (by exact_mod_cast ‹Fact p.Prime›.1.ne_zero)]
+      show p.toHeightOneSpectrum.valuation ℚ (p : ℚ) ≠ 1
+      rw [p.valuation_toHeightOneSpectrum (by exact_mod_cast ‹Fact p.Prime›.1.ne_zero)]
       simp only [padicValRat.of_nat, padicValNat_self, Nat.cast_one, Int.reduceNeg, ←
         WithZero.coe_one, ne_eq, WithZero.coe_inj]
       rw [← Multiplicative.toAdd.injective.eq_iff]
