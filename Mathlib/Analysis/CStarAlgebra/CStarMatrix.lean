@@ -188,13 +188,13 @@ theorem zero_apply [Zero A] (i : m) (j : n) : (0 : CStarMatrix m n A) i j = 0 :=
 @[simp] theorem add_apply [Add A] (M N : CStarMatrix m n A) (i : m) (j : n) :
     (M + N) i j = (M i j) + (N i j) := rfl
 
-@[simp] theorem smul_apply [SMul B A] (r : B) (M : Matrix m n A) (i : m) (j : n) :
+@[simp] theorem smul_apply [SMul B A] (r : B) (M : CStarMatrix m n A) (i : m) (j : n) :
     (r • M) i j = r • (M i j) := rfl
 
-@[simp] theorem sub_apply [Sub A] (M N : Matrix m n A) (i : m) (j : n) :
+@[simp] theorem sub_apply [Sub A] (M N : CStarMatrix m n A) (i : m) (j : n) :
     (M - N) i j = (M i j) - (N i j) := rfl
 
-@[simp] theorem neg_apply [Neg A] (M : Matrix m n A) (i : m) (j : n) :
+@[simp] theorem neg_apply [Neg A] (M : CStarMatrix m n A) (i : m) (j : n) :
     (-M) i j = -(M i j) := rfl
 
 /-! simp-normal form pulls `of` to the outside, to match the `Matrix` API. -/
@@ -223,6 +223,14 @@ instance instStarModule [Star R] [Star A] [SMul R A] [StarModule R A] :
 /-- The equivalence to matrices, bundled as a linear equivalence. -/
 def ofMatrixₗ [AddCommMonoid A] [Semiring R] [Module R A] :
     (Matrix m n A) ≃ₗ[R] CStarMatrix m n A := LinearEquiv.refl _ _
+
+/-- The semilinear map constructed by applying a semilinear map to all the entries of the matrix. -/
+@[simps]
+def mapₗ [Semiring R] [Semiring S] {σ : R →+* S} [AddCommMonoid A] [AddCommMonoid B]
+    [Module R A] [Module S B] (f : A →ₛₗ[σ] B) : CStarMatrix m n A →ₛₗ[σ] CStarMatrix m n B where
+  toFun := fun M => M.map f
+  map_add' M N := by ext; simp
+  map_smul' r M := by ext; simp
 
 section zero_one
 
@@ -278,7 +286,7 @@ theorem smul_mul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [D
     (a • M) * N = a • (M * N) := Matrix.smul_mul a M N
 
 theorem mul_smul {l : Type*} [Fintype n] [Monoid R] [AddCommMonoid A] [Mul A] [DistribMulAction R A]
-    [SMulCommClass R A A] (M : Matrix m n A) (a : R) (N : Matrix n l A) :
+    [SMulCommClass R A A] (M : CStarMatrix m n A) (a : R) (N : CStarMatrix n l A) :
     M * (a • N) = a • (M * N) := Matrix.mul_smul M a N
 
 instance instNonUnitalNonAssocSemiring [Fintype n] [NonUnitalNonAssocSemiring A] :
