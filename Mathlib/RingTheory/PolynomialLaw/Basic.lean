@@ -5,7 +5,6 @@ Authors: Antoine Chambert-Loir & María-Inés de Frutos-Fernández
 -/
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.TensorProduct.Associator
-import Mathlib.Algebra.MvPolynomial.Basic
 
 /-! # Polynomial laws on modules
 
@@ -49,7 +48,7 @@ noncomputable section PolynomialLaw
 
 open scoped TensorProduct
 
-open MvPolynomial LinearMap TensorProduct AlgHom
+open LinearMap TensorProduct AlgHom
 
 /-- A polynomial map `M →ₚ[R] N` between `R`-modules is a functorial family of maps
    `S ⊗[R] M → S ⊗[R] N`, for all `R`-algebras `S`.
