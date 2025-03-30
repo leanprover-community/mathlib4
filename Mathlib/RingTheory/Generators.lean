@@ -340,7 +340,6 @@ noncomputable def Hom.comp [IsScalarTower R' R'' S''] [IsScalarTower R' S' S'']
     [IsScalarTower S S' S''] (f : Hom P' P'') (g : Hom P P') : Hom P P'' where
   val x := aeval f.val (g.val x)
   aeval_val x := by
-    simp only
     rw [IsScalarTower.algebraMap_apply S S' S'', ← g.aeval_val]
     induction g.val x using MvPolynomial.induction_on with
     | C r => simp [← IsScalarTower.algebraMap_apply]
