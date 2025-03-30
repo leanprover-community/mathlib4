@@ -14,11 +14,11 @@ theorem lineMap_le_lineMap_iff_of_lt' (h : a < b) : lineMap a b r ≤ lineMap a 
   simp only [lineMap_apply_module']
   rw [add_le_add_iff_right, smul_le_smul_iff_of_pos_right (sub_pos.mpr h)]
 
-theorem left_le_lineMap_iff_le' (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r :=
-  Iff.trans (by rw [lineMap_apply_zero]) (lineMap_le_lineMap_iff_of_lt' h)
+-- theorem left_le_lineMap_iff_le' (h : a < b) : a ≤ lineMap a b r ↔ 0 ≤ r :=
+--   Iff.trans (by rw [lineMap_apply_zero]) (lineMap_le_lineMap_iff_of_lt' h)
 
-theorem lineMap_le_right_iff_le' (h : a < b) : lineMap a b r ≤ b ↔ r ≤ 1 :=
-  Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt' h)
+-- theorem lineMap_le_right_iff_le' (h : a < b) : lineMap a b r ≤ b ↔ r ≤ 1 :=
+--   Iff.trans (by rw [lineMap_apply_one]) (lineMap_le_lineMap_iff_of_lt' h)
 
 end lineMap
 
@@ -27,9 +27,8 @@ open Finset
 theorem exists_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → ℝ) (n : Nat)
     (a b : ℝ) (hab : a < b) (hS : #{p ∈ S | f p ∈ Set.Ioo a b} < n) :
     ∃ x ∈ Set.Ioo a b, ∀ p ∈ S, (b - a) / (2 * n) ≤ |x - f p| := by
-  have : n > 0 := by omega
   -- make `n` defEq to `_ + 1`
-  cases' n with n; · contradiction
+  cases n with | zero => contradiction | succ n => _
   set n := n+1
   -- separate the interval `(0,1)` into `n` equally spaced intervals
   let interval (i : Fin n) : Set ℝ :=
@@ -115,15 +114,12 @@ variable [NormedAddTorsor V P] (dim : Nat) [Fact (finrank ℝ V = dim+1)]
 /-- Computes "how far along" the segment from `a` to `b` the point `p` lies. -/
 noncomputable def project (a b p : P) : ℝ := innerSL ℝ (a -ᵥ b) (a -ᵥ p) / ‖a -ᵥ b‖
 
-@[simp] theorem project_self_left  (a b : P) : project a b a = 0 := by simp [project]
-@[simp] theorem project_self_right (a b : P) (h : a ≠ b := by positivity) :
-    project a b b = ‖a -ᵥ b‖ := by
+@[simp] theorem project_self_left  {a b : P} : project a b a = 0 := by simp [project]
+@[simp] theorem project_self_right {a b : P} (h : a ≠ b) : project a b b = ‖a -ᵥ b‖ := by
   simp [project]
   rw [real_inner_self_eq_norm_sq, div_eq_iff, pow_two]
   · rwa [norm_ne_zero_iff, vsub_ne_zero]
 
-
-open scoped Classical
 
 theorem exists_affine_between_and_separated {ι : Type*} (S : Finset ι) (f : ι → P) (n : ℝ)
     (a b : P) (i j : ℝ) (hi : 0 ≤ i) (hij : i < j) (hj : j ≤ dist a b)
@@ -218,7 +214,7 @@ then we can bound the number of points.
 -/
 theorem card_le_of_separated_in_strip (eqv : P ≃ᵃⁱ[ℝ] EuclideanSpace ℝ (Fin 2)) (S : Finset P)
     (h_sep : (S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2)) : Set P).Pairwise fun x y => 1 ≤ dist x y)
-    (N : ℝ) (hN : 1 ≤ N) (h_bound : ∀ x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2)), |eqv x 1| ≤ N) :
+    {N : ℝ} (hN : 1 ≤ N) (h_bound : ∀ x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2)), |eqv x 1| ≤ N) :
     #(S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) ≤ N*6-1 := by
   suffices h : #(S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) ≤ ⌊(N - (-N)) / (1/2) + 1⌋ by
     rw [Int.le_floor, Int.cast_natCast] at h
@@ -303,9 +299,10 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ} (hn : 1 < n) {S : Finset P
     simp [h_ne.symm]
 
   have : FiniteDimensional ℝ V := .of_fact_finrank_eq_succ 1
-  obtain ⟨basis, hbasis₀⟩ := by
-    refine Orthonormal.exists_orthonormalBasis_extension_of_card_eq
-      (𝕜 := ℝ) (ι := Fin 2) (by simp [‹Fact (finrank ℝ V = 2)›.1]) (v := fun _ => ‖b -ᵥ a‖⁻¹ • (b -ᵥ a)) (s := {i | i = 0}) ?_
+  obtain ⟨basis, hbasis₀⟩: ∃ basis : OrthonormalBasis (Fin 2) ℝ V,
+      ∀ i ∈ {i | i = 0}, basis i = ‖b -ᵥ a‖⁻¹ • (b -ᵥ a) := by
+    refine Orthonormal.exists_orthonormalBasis_extension_of_card_eq ?_ ?_
+    · simp [‹Fact (finrank ℝ V = 2)›.1]
     simp [Set.restrict_def]
     rw [orthonormal_iff_ite]
     simp
@@ -332,10 +329,11 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ} (hn : 1 < n) {S : Finset P
     rw [← neg_vsub_eq_vsub_rev b, ← neg_vsub_eq_vsub_rev p, inner_neg_neg, norm_neg]
     ring
   -- Compute a bount for the points lying in a strip on the edge
-  have strip_bound (x) (h : x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) : |eqv x 1| ≤ √(dist a b) := by
+  have strip_bound (x) (hx : x ∈ S.filter (eqv · 0 ∈ Set.Ioo 0 (1/2))) :
+      |eqv x 1| ≤ √(dist a b) := by
     apply Real.abs_le_sqrt
-    rw [mem_filter] at h
-    obtain ⟨hx, h₁, h₂⟩ := h
+    rw [mem_filter] at hx
+    obtain ⟨hx, h₁, h₂⟩ := hx
     specialize h_max x hx b hb
     have := EuclideanSpace.dist_eq (eqv x) (eqv b)
     simp at this; simp [h_iso_b] at this
@@ -343,12 +341,15 @@ theorem result : ∃ c : ℝ, 0 < c ∧ ∀ {n : ℕ} (hn : 1 < n) {S : Finset P
     have : 1 ≤ dist a b := one_le_dist ha hb h_ne
     rw [abs_eq_neg_self.mpr (by linarith only [this, h₂]), ← sub_nonneg] at h_max
     have : dist a b * eqv x 0 * 2 < dist a b := by
-      rwa [mul_assoc, ← lt_div_iff₀' (by positivity), div_self (by positivity), ← lt_div_iff₀ (by norm_num)]
+      rwa [mul_assoc, ← lt_div_iff₀', div_self, ← lt_div_iff₀] <;> positivity
     linarith only [this, h_max, sq_nonneg (eqv x 0)]
 
   have bound := by
-    refine card_le_of_separated_in_strip eqv S ?_ _ (Real.one_le_sqrt.mpr (one_le_dist ha hb h_ne)) strip_bound
-    · intro x hx y hy; rw [coe_filter] at hx hy; exact one_le_dist hx.1 hy.1
+    refine card_le_of_separated_in_strip eqv S ?_
+      (Real.one_le_sqrt.mpr (one_le_dist ha hb h_ne)) strip_bound
+    intro x hx y hy
+    rw [coe_filter] at hx hy
+    exact one_le_dist hx.1 hy.1
   simp_rw [← project_eq_eqv] at bound
   obtain ⟨l, rank, _sOpp, h⟩ := exists_affine_between_and_separated 1 S (·) _ a b 0 (1/2) le_rfl
     (by norm_num) (by linarith only [one_le_dist ha hb h_ne]) bound h_ne
