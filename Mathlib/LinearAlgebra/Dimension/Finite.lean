@@ -201,24 +201,24 @@ theorem setFinite [Module.Finite R M] {b : Set M}
 end LinearIndependent
 
 lemma exists_set_linearIndependent_of_lt_rank {n : Cardinal} (hn : n < Module.rank R M) :
-    ∃ s : Set M, #s = n ∧ LinearIndependent R ((↑) : s → M) := by
+    ∃ s : Set M, #s = n ∧ LinearIndepOn R id s := by
   obtain ⟨⟨s, hs⟩, hs'⟩ := exists_lt_of_lt_ciSup' (hn.trans_eq (Module.rank_def R M))
   obtain ⟨t, ht, ht'⟩ := le_mk_iff_exists_subset.mp hs'.le
-  exact ⟨t, ht', .mono ht hs⟩
+  exact ⟨t, ht', hs.mono ht⟩
 
 lemma exists_finset_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
-    ∃ s : Finset M, s.card = n ∧ LinearIndependent R ((↑) : s → M) := by
+    ∃ s : Finset M, s.card = n ∧ LinearIndepOn R id (s : Set M) := by
   have := nonempty_linearIndependent_set
-  cases' hn.eq_or_lt with h h
+  rcases hn.eq_or_lt with h | h
   · obtain ⟨⟨s, hs⟩, hs'⟩ := Cardinal.exists_eq_natCast_of_iSup_eq _
       (Cardinal.bddAbove_range _) _ (h.trans (Module.rank_def R M)).symm
     have : Finite s := lt_aleph0_iff_finite.mp (hs' ▸ nat_lt_aleph0 n)
     cases nonempty_fintype s
-    exact ⟨s.toFinset, by simpa using hs', by convert hs using 3 <;> exact Set.mem_toFinset⟩
+    refine ⟨s.toFinset, by simpa using hs', by simpa⟩
   · obtain ⟨s, hs, hs'⟩ := exists_set_linearIndependent_of_lt_rank h
     have : Finite s := lt_aleph0_iff_finite.mp (hs ▸ nat_lt_aleph0 n)
     cases nonempty_fintype s
-    exact ⟨s.toFinset, by simpa using hs, by convert hs' using 3 <;> exact Set.mem_toFinset⟩
+    exact ⟨s.toFinset, by simpa using hs, by simpa⟩
 
 lemma exists_linearIndependent_of_le_rank {n : ℕ} (hn : n ≤ Module.rank R M) :
     ∃ f : Fin n → M, LinearIndependent R f :=

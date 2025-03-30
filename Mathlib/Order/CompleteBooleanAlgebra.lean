@@ -3,9 +3,9 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
-import Mathlib.Order.CompleteLattice
-import Mathlib.Order.Directed
 import Mathlib.Logic.Equiv.Set
+import Mathlib.Order.CompleteLattice.Lemmas
+import Mathlib.Order.Directed
 import Mathlib.Order.GaloisConnection.Basic
 
 /-!
@@ -85,7 +85,7 @@ class Order.Coframe (α : Type*) extends CompleteLattice α, CoheytingAlgebra α
 
 /-- `⊔` distributes over `⨅`. -/
 theorem sup_sInf_eq {α : Type*} [Order.Coframe α] {s : Set α} {a : α} :
-    a ⊔ sInf s  = ⨅ b ∈ s, a ⊔ b:=
+    a ⊔ sInf s = ⨅ b ∈ s, a ⊔ b :=
   gc_sdiff_sup.u_sInf
 
 open Order
@@ -97,11 +97,13 @@ distributive lattice. Do NOT use, except for implementing `CompleteDistribLattic
 This structure omits the `himp`, `compl`, `sdiff`, `hnot` fields, which can be recovered using
 `CompleteDistribLattice.ofMinimalAxioms`. -/
 structure CompleteDistribLattice.MinimalAxioms (α : Type u)
-    extends CompleteLattice α, Frame.MinimalAxioms α, Coframe.MinimalAxioms α where
+    extends CompleteLattice α,
+      toFrameMinimalAxioms : Frame.MinimalAxioms α,
+      toCoframeMinimalAxioms : Coframe.MinimalAxioms α where
 
 -- We give those projections better name further down
-attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toMinimalAxioms
-  CompleteDistribLattice.MinimalAxioms.toMinimalAxioms_1
+attribute [nolint docBlame] CompleteDistribLattice.MinimalAxioms.toFrameMinimalAxioms
+  CompleteDistribLattice.MinimalAxioms.toCoframeMinimalAxioms
 
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
@@ -218,7 +220,7 @@ def of [CompleteDistribLattice α] : MinimalAxioms α where
   iInf_sup_le_sup_sInf a s:= sup_sInf_eq.ge
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Frame`. -/
-abbrev toFrame : Frame.MinimalAxioms α := minAx.toMinimalAxioms
+abbrev toFrame : Frame.MinimalAxioms α := minAx.toFrameMinimalAxioms
 
 /-- Turn minimal axioms for `CompleteDistribLattice` into minimal axioms for `Order.Coframe`. -/
 abbrev toCoframe : Coframe.MinimalAxioms α where __ := minAx
@@ -354,7 +356,7 @@ instance (priority := 100) CompleteLinearOrder.toCompletelyDistribLattice [Compl
 
 section Frame
 
-variable [Frame α] {s t : Set α} {a b : α}
+variable [Frame α] {s t : Set α} {a b c d : α}
 
 instance OrderDual.instCoframe : Coframe αᵒᵈ where
   __ := instCompleteLattice
@@ -427,6 +429,8 @@ theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
 theorem compl_eq_sSup_disjoint : aᶜ = sSup {w | Disjoint w a} :=
   (isGreatest_compl a).isLUB.sSup_eq.symm
 
+lemma himp_le_iff : a ⇨ b ≤ c ↔ ∀ d, d ⊓ a ≤ b → d ≤ c := by simp [himp_eq_sSup]
+
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
@@ -444,7 +448,7 @@ end Frame
 
 section Coframe
 
-variable [Coframe α] {s t : Set α} {a b : α}
+variable [Coframe α] {s t : Set α} {a b c d : α}
 
 instance OrderDual.instFrame : Frame αᵒᵈ where
   __ := instCompleteLattice
@@ -489,6 +493,8 @@ theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
 
 theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} :=
   (isLeast_hnot a).isGLB.sInf_eq.symm
+
+lemma le_sdiff_iff : a ≤ b \ c ↔ ∀ d, b ≤ c ⊔ d → a ≤ d := by simp [sdiff_eq_sInf]
 
 -- see Note [lower instance priority]
 instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where

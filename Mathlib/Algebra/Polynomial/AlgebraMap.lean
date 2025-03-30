@@ -5,7 +5,7 @@ Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Prod
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.Polynomial.Eval.Algebra
@@ -91,8 +91,7 @@ theorem algHom_ext' {f g : A[X] →ₐ[R] B}
     (hX : f X = g X) : f = g :=
   AlgHom.coe_ringHom_injective (ringHom_ext' (congr_arg AlgHom.toRingHom hC) hX)
 
-variable (R)
-
+variable (R) in
 open AddMonoidAlgebra in
 /-- Algebra isomorphism between `R[X]` and `R[ℕ]`. This is just an
 implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
@@ -101,8 +100,6 @@ def toFinsuppIsoAlg : R[X] ≃ₐ[R] R[ℕ] :=
   { toFinsuppIso R with
     commutes' := fun r => by
       dsimp }
-
-variable {R}
 
 instance subalgebraNontrivial [Nontrivial A] : Nontrivial (Subalgebra R A[X]) :=
   ⟨⟨⊥, ⊤, by
@@ -618,7 +615,7 @@ lemma aeval_apply_smul_mem_of_le_comap'
     [Semiring A] [Algebra R A] [Module A M] [IsScalarTower R A M] (hm : m ∈ q) (p : R[X]) (a : A)
     (hq : q ≤ q.comap (Algebra.lsmul R R M a)) :
     aeval a p • m ∈ q := by
-  refine p.induction_on (M := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
+  refine p.induction_on (motive := fun f ↦ aeval a f • m ∈ q) (by simpa) (fun f₁ f₂ h₁ h₂ ↦ ?_)
     (fun n t hmq ↦ ?_)
   · simp_rw [map_add, add_smul]
     exact Submodule.add_mem q h₁ h₂
@@ -638,9 +635,8 @@ section CommSemiring
 
 variable [CommSemiring R] {a p : R[X]}
 
-theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) :
-    ∀ (Q : R[X]), P * Q = 0 → Q = 0 := by
-  intro Q hQ
+theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 → r = 0) (Q : R[X])
+    (hQ : P * Q = 0) : Q = 0 := by
   suffices ∀ i, P.coeff i • Q = 0 by
     rw [← leadingCoeff_eq_zero]
     apply h
@@ -666,7 +662,7 @@ theorem eq_zero_of_mul_eq_zero_of_smul (P : R[X]) (h : ∀ r : R, r • P = 0 �
     rw [coeff_eq_zero_of_natDegree_lt hj, mul_zero]
   · omega
   · rw [← coeff_C_mul, ← smul_eq_C_mul, IH _ hi, coeff_zero]
-termination_by Q => Q.natDegree
+termination_by Q.natDegree
 
 open nonZeroDivisors in
 /-- *McCoy theorem*: a polynomial `P : R[X]` is a zerodivisor if and only if there is `a : R`

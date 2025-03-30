@@ -6,7 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
+import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
@@ -723,14 +723,11 @@ theorem centroidWeights_apply (i : ι) : s.centroidWeights k i = (#s : k)⁻¹ :
 theorem centroidWeights_eq_const : s.centroidWeights k = Function.const ι (#s : k)⁻¹ :=
   rfl
 
-variable {k}
-
+variable {k} in
 /-- The weights in the centroid sum to 1, if the number of points,
 converted to `k`, is not zero. -/
 theorem sum_centroidWeights_eq_one_of_cast_card_ne_zero (h : (#s : k) ≠ 0) :
     ∑ i ∈ s, s.centroidWeights k i = 1 := by simp [h]
-
-variable (k)
 
 /-- In the characteristic zero case, the weights in the centroid sum
 to 1 if the number of points is not zero. -/
@@ -924,7 +921,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
   classical
     have hnz : ∑ i ∈ s, w i ≠ 0 := h.symm ▸ one_ne_zero
     have hn : s.Nonempty := Finset.nonempty_of_sum_ne_zero hnz
-    cases' hn with i1 hi1
+    obtain ⟨i1, hi1⟩ := hn
     let w1 : ι → k := Function.update (Function.const ι 0) i1 1
     have hw1 : ∑ i ∈ s, w1 i = 1 := by
       simp only [w1, Function.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
@@ -939,8 +936,7 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
     rw [← vsub_vadd (s.affineCombination k p w) (p i1)]
     exact AffineSubspace.vadd_mem_of_mem_direction hv (mem_affineSpan k (Set.mem_range_self _))
 
-variable (k)
-
+variable (k) in
 /-- A vector is in the `vectorSpan` of an indexed family if and only
 if it is a `weightedVSub` with sum of weights 0. -/
 theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
@@ -983,8 +979,6 @@ theorem mem_vectorSpan_iff_eq_weightedVSub {v : V} {p : ι → P} :
     · rintro ⟨s, w, hw, rfl⟩
       exact weightedVSub_mem_vectorSpan hw p
 
-variable {k}
-
 /-- A point in the `affineSpan` of an indexed family is an
 `affineCombination` with sum of weights 1. See also
 `eq_affineCombination_of_mem_affineSpan_of_fintype`. -/
@@ -994,7 +988,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
   classical
     have hn : (affineSpan k (Set.range p) : Set P).Nonempty := ⟨p1, h⟩
     rw [affineSpan_nonempty, Set.range_nonempty_iff_nonempty] at hn
-    cases' hn with i0
+    obtain ⟨i0⟩ := hn
     have h0 : p i0 ∈ affineSpan k (Set.range p) := mem_affineSpan k (Set.mem_range_self i0)
     have hd : p1 -ᵥ p i0 ∈ (affineSpan k (Set.range p)).direction :=
       AffineSubspace.vsub_mem_direction h h0

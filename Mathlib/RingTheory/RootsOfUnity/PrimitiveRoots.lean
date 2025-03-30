@@ -3,6 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Group.TypeTags.Finite
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
@@ -68,7 +69,7 @@ open scoped Classical in
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
 def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
-  (nthRoots k (1 : R)).toFinset.filter fun ζ => IsPrimitiveRoot ζ k
+  {ζ ∈ (nthRoots k (1 : R)).toFinset | IsPrimitiveRoot ζ k}
 
 variable [CommRing R] [IsDomain R]
 
@@ -246,6 +247,15 @@ lemma injOn_pow {n : ℕ} {ζ : M} (hζ : IsPrimitiveRoot ζ n) :
   intros i hi j hj e
   rw [Finset.coe_range, Set.mem_Iio] at hi hj
   exact hζ.pow_inj hi hj e
+
+lemma exists_pos {k : ℕ} (hζ : ζ ^ k = 1) (hk : k ≠ 0) :
+    ∃ k' > 0, IsPrimitiveRoot ζ k' :=
+  ⟨orderOf ζ, by
+    rw [gt_iff_lt, orderOf_pos_iff, isOfFinOrder_iff_pow_eq_one]
+    exact ⟨k, Nat.pos_iff_ne_zero.mpr hk, hζ⟩, .orderOf _⟩
+
+lemma existsUnique : ∃! k, IsPrimitiveRoot ζ k :=
+  ⟨_, .orderOf _, fun _ hl ↦ unique hl (.orderOf _)⟩
 
 section Maps
 
@@ -491,7 +501,7 @@ lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHo
 /-- If `R` contains an `n`-th primitive root, and `S/R` is a ring extension,
 then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
-@[simps! (config := .lemmasOnly) apply_coe_val apply_coe_inv_val]
+@[simps! -isSimp apply_coe_val apply_coe_inv_val]
 noncomputable
 def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
     [FunLike F R S] [MonoidHomClass F R S]
@@ -654,44 +664,29 @@ theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (prim
     h <|
       (isPrimitiveRoot_of_mem_primitiveRoots hk).unique <| isPrimitiveRoot_of_mem_primitiveRoots hl
 
-open scoped Classical in
-/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
-if there is a primitive `n`th root of unity in `R`. -/
+/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`. -/
 private -- marking as `private` since `nthRoots_one_eq_biUnion_primitiveRoots` can be used instead
-theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ} [NeZero n]
-    (h : IsPrimitiveRoot ζ n) :
+theorem nthRoots_one_eq_biUnion_primitiveRoots' [DecidableEq R] {n : ℕ} [NeZero n] :
     nthRootsFinset n R = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
-  symm
-  apply Finset.eq_of_subset_of_card_le
-  · intro x
-    simp only [mem_biUnion, Nat.mem_divisors, Ne, nthRootsFinset,
-      ← Multiset.toFinset_eq (nthRoots_one_nodup h), mem_mk, forall_exists_index, and_imp]
-    rintro a ⟨d, hd⟩ hn ha
-    have hazero : 0 < a :=
-      Nat.pos_of_ne_zero fun ha₀ ↦ hn <| by rwa [ha₀, zero_mul] at hd
+  ext x
+  suffices x ^ n = 1 ↔ ∃ a, a ∣ n ∧ x ∈ primitiveRoots a R by
+    simpa [Polynomial.mem_nthRootsFinset (NeZero.pos n), (NeZero.ne n)]
+  constructor
+  · intro H
+    obtain ⟨k, hk, hx⟩ := exists_pos H (NeZero.ne n)
+    exact ⟨k, hx.2 _ H, (mem_primitiveRoots hk).mpr hx⟩
+  · rintro ⟨a, ⟨d, hd⟩, ha⟩
+    have hazero : 0 < a := Nat.pos_of_ne_zero fun ha₀ ↦ by simp_all
     rw [mem_primitiveRoots hazero] at ha
-    rw [mem_nthRoots <| NeZero.pos n, hd, pow_mul, ha.pow_eq_one, one_pow]
-  · apply le_of_eq
-    rw [h.card_nthRootsFinset, Finset.card_biUnion]
-    · nth_rw 1 [← Nat.sum_totient n]
-      refine sum_congr rfl ?_
-      simp only [Nat.mem_divisors]
-      rintro k ⟨⟨d, hd⟩, -⟩
-      rw [mul_comm] at hd
-      rw [(h.pow (NeZero.pos n) hd).card_primitiveRoots]
-    · intro i _ j _ hdiff
-      exact disjoint hdiff
+    rw [hd, pow_mul, ha.pow_eq_one, one_pow]
 
-open scoped Classical in
-/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
-if there is a primitive `n`th root of unity in `R`. -/
-theorem nthRoots_one_eq_biUnion_primitiveRoots {ζ : R} {n : ℕ}
-    (h : IsPrimitiveRoot ζ n) :
+/-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`. -/
+theorem nthRoots_one_eq_biUnion_primitiveRoots [DecidableEq R] {n : ℕ} :
     nthRootsFinset n R = (Nat.divisors n).biUnion fun i ↦ primitiveRoots i R := by
   by_cases hn : n = 0
   · simp only [hn, nthRootsFinset_zero, Nat.divisors_zero, biUnion_empty]
   have : NeZero n := ⟨hn⟩
-  exact nthRoots_one_eq_biUnion_primitiveRoots' h
+  exact nthRoots_one_eq_biUnion_primitiveRoots'
 
 end IsDomain
 

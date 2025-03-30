@@ -91,9 +91,7 @@ noncomputable def index (K V : Set G) : ℕ :=
   sInf <| Finset.card '' { t : Finset G | K ⊆ ⋃ g ∈ t, (fun h => g * h) ⁻¹' V }
 
 @[to_additive addIndex_empty]
-theorem index_empty {V : Set G} : index ∅ V = 0 := by
-  simp only [index, Nat.sInf_eq_zero]; left; use ∅
-  simp only [Finset.card_empty, empty_subset, mem_setOf_eq, eq_self_iff_true, and_self_iff]
+theorem index_empty {V : Set G} : index ∅ V = 0 := by simp [index]
 
 variable [TopologicalSpace G]
 
@@ -134,7 +132,7 @@ theorem mem_prehaar_empty {K₀ : Set G} {f : Compacts G → ℝ} :
 def clPrehaar (K₀ : Set G) (V : OpenNhdsOf (1 : G)) : Set (Compacts G → ℝ) :=
   closure <| prehaar K₀ '' { U : Set G | U ⊆ V.1 ∧ IsOpen U ∧ (1 : G) ∈ U }
 
-variable [TopologicalGroup G]
+variable [IsTopologicalGroup G]
 
 /-!
 ### Lemmas about `index`
@@ -217,7 +215,7 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
     simp only [mem_preimage] at h2g₀
     simp only [mem_iUnion]; use g₀; constructor; swap
     · simp only [Finset.mem_filter, h1g₀, true_and]; use g
-      simp only [hg, h2g₀, mem_inter_iff, mem_preimage, and_self_iff]
+      simp [hg, h2g₀]
     exact h2g₀
   refine
     le_trans
@@ -509,7 +507,7 @@ open haar
 ### The Haar measure
 -/
 
-variable [TopologicalSpace G] [TopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
+variable [TopologicalSpace G] [IsTopologicalGroup G] [MeasurableSpace G] [BorelSpace G]
 
 /-- The Haar measure on the locally compact group `G`, scaled so that `haarMeasure K₀ K₀ = 1`. -/
 @[to_additive

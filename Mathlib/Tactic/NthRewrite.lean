@@ -33,7 +33,8 @@ h: a = 1
 ⊢ a + 1 + 1 + a + a = 5
 -/
 ```
-Notice that the second occurrence of `a` from the left has been rewritten by `nth_rewrite`.
+Notice that the second and third occurrences of `a` from the left have been rewritten by
+`nth_rewrite`.
 
 To understand the importance of order of precedence, consider the example below
 ```lean
@@ -99,7 +100,8 @@ h: a = 1
 ⊢ a + 1 + 1 + a + a = 5
 -/
 ```
-Notice that the second occurrence of `a` from the left has been rewritten by `nth_rewrite`.
+Notice that the second and third occurrences of `a` from the left have been rewritten by
+`nth_rw`.
 
 To understand the importance of order of precedence, consider the example below
 ```lean

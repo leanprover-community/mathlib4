@@ -7,6 +7,7 @@ import Mathlib.Data.SetLike.Fintype
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient.Operations
+import Mathlib.RingTheory.Jacobson.Semiprimary
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Defs
 import Mathlib.RingTheory.Spectrum.Maximal.Basic
@@ -39,11 +40,16 @@ Let `R` be a ring and let `M` and `P` be `R`-modules. Let `N` be an `R`-submodul
   product of fields (and therefore is a semisimple ring and a decomposition monoid; moreover
   `R[X]` is also a decomposition monoid).
 
+* `IsArtinian.isSemisimpleModule_iff_jacobson`: an Artinian module is semisimple
+  iff its Jacobson radical is zero.
+
+* `instIsSemiprimaryRingOfIsArtinianRing`: an Artinian ring `R` is semiprimary, in particular
+  the Jacobson radical of `R` is a nilpotent ideal (`IsArtinianRing.isNilpotent_jacobson_bot`).
 
 ## References
 
 * [M. F. Atiyah and I. G. Macdonald, *Introduction to commutative algebra*][atiyah-macdonald]
-* [samuel]
+* [P. Samuel, *Algebraic Theory of Numbers*][samuel1967]
 
 ## Tags
 
@@ -68,6 +74,12 @@ variable {R M P N : Type*}
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P] [AddCommMonoid N]
 variable [Module R M] [Module R P] [Module R N]
 
+theorem LinearMap.isArtinian_iff_of_bijective {S P} [Semiring S] [AddCommMonoid P] [Module S P]
+    {σ : R →+* S} [RingHomSurjective σ] (l : M →ₛₗ[σ] P) (hl : Function.Bijective l) :
+    IsArtinian R M ↔ IsArtinian S P :=
+  let e := Submodule.orderIsoMapComapOfBijective l hl
+  ⟨fun _ ↦ e.symm.strictMono.wellFoundedLT, fun _ ↦ e.strictMono.wellFoundedLT⟩
+
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
     IsArtinian R M :=
   ⟨Subrelation.wf
@@ -80,16 +92,13 @@ instance isArtinian_submodule' [IsArtinian R M] (N : Submodule R M) : IsArtinian
 theorem isArtinian_of_le {s t : Submodule R M} [IsArtinian R t] (h : s ≤ t) : IsArtinian R s :=
   isArtinian_of_injective (Submodule.inclusion h) (Submodule.inclusion_injective h)
 
-variable (M)
-
+variable (M) in
 theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f) [IsArtinian R M] :
     IsArtinian R P :=
   ⟨Subrelation.wf
     (fun {A B} hAB =>
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
     (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
-
-variable {M}
 
 instance isArtinian_range (f : M →ₗ[R] P) [IsArtinian R M] : IsArtinian R (LinearMap.range f) :=
   isArtinian_of_surjective _ _ f.surjective_rangeRestrict
@@ -140,9 +149,8 @@ theorem IsArtinian.set_has_minimal [IsArtinian R M] (a : Set <| Submodule R M) (
 
 /-- A module is Artinian iff every decreasing chain of submodules stabilizes. -/
 theorem monotone_stabilizes_iff_artinian :
-    (∀ f : ℕ →o (Submodule R M)ᵒᵈ, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsArtinian R M := by
-  rw [isArtinian_iff]
-  exact WellFounded.monotone_chain_condition.symm
+    (∀ f : ℕ →o (Submodule R M)ᵒᵈ, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsArtinian R M :=
+  wellFoundedGT_iff_monotone_chain_condition.symm
 
 namespace IsArtinian
 
@@ -274,6 +282,18 @@ instance isArtinian_iSup :
   · intros; rw [iSup_of_empty]; infer_instance
   · intro _ _ ih _ _; rw [iSup_option]; infer_instance
 
+variable (R M) in
+theorem IsArtinian.isSemisimpleModule_iff_jacobson [IsArtinian R M] :
+    IsSemisimpleModule R M ↔ Module.jacobson R M = ⊥ :=
+  ⟨fun _ ↦ IsSemisimpleModule.jacobson_eq_bot R M, fun h ↦
+    have ⟨s, hs⟩ := Finset.exists_inf_le (Subtype.val (p := fun m : Submodule R M ↦ IsCoatom m))
+    have _ (m : s) : IsSimpleModule R (M ⧸ m.1.1) := isSimpleModule_iff_isCoatom.mpr m.1.2
+    let f : M →ₗ[R] ∀ m : s, M ⧸ m.1.1 := LinearMap.pi fun m ↦ m.1.1.mkQ
+    .of_injective f <| LinearMap.ker_eq_bot.mp <| le_bot_iff.mp fun x hx ↦ by
+      rw [← h, Module.jacobson, Submodule.mem_sInf]
+      exact fun m hm ↦ hs ⟨m, hm⟩ <| Submodule.mem_finset_inf.mpr fun i hi ↦
+        (Submodule.Quotient.mk_eq_zero i.1).mp <| congr_fun hx ⟨i, hi⟩⟩
+
 open Submodule Function
 
 namespace LinearMap
@@ -381,34 +401,21 @@ theorem Ring.isArtinian_of_zero_eq_one {R} [Semiring R] (h01 : (0 : R) = 1) : Is
   have := subsingleton_of_zero_eq_one h01
   inferInstance
 
-instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
+instance (R) [Ring R] [IsArtinianRing R] (I : Ideal R) [I.IsTwoSided] : IsArtinianRing (R ⧸ I) :=
   isArtinian_of_tower R inferInstance
 
 open Submodule Function
 
-theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
-    (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
-  let ⟨s, hs⟩ := hN
-  haveI := Classical.decEq M
-  haveI := Classical.decEq R
-  have : ∀ x ∈ s, x ∈ N := fun x hx => hs ▸ Submodule.subset_span hx
-  refine @isArtinian_of_surjective _ ((↑s : Set M) →₀ R) N _ _ _ _ _ ?_ ?_ isArtinian_finsupp
-  · exact Finsupp.linearCombination R (fun i => ⟨i, hs ▸ subset_span i.2⟩)
-  · rw [← LinearMap.range_eq_top, eq_top_iff,
-       ← map_le_map_iff_of_injective (show Injective (Submodule.subtype N)
-         from Subtype.val_injective), Submodule.map_top, range_subtype,
-         ← Submodule.map_top, ← Submodule.map_comp, Submodule.map_top]
-    subst N
-    refine span_le.2 (fun i hi => ?_)
-    use Finsupp.single ⟨i, hi⟩ 1
-    simp
-
 instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
     [IsArtinianRing R] [Module.Finite R M] : IsArtinian R M :=
-  have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ Module.Finite.fg_top
-  isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
+  have ⟨_, _, h⟩ := Module.Finite.exists_fin' R M
+  isArtinian_of_surjective _ _ h
 
-theorem IsArtinianRing.of_finite (R S) [CommRing R] [Ring S] [Algebra R S]
+theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
+    (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
+  rw [← Module.Finite.iff_fg] at hN; infer_instance
+
+theorem IsArtinianRing.of_finite (R S) [Ring R] [Ring S] [Module R S] [IsScalarTower R S S]
     [IsArtinianRing R] [Module.Finite R S] : IsArtinianRing S :=
   isArtinian_of_tower R isArtinian_of_fg_of_artinian'
 
@@ -455,13 +462,9 @@ variable (R : Type*) [CommSemiring R] [IsArtinianRing R]
 
 @[stacks 00J7]
 lemma setOf_isMaximal_finite : {I : Ideal R | I.IsMaximal}.Finite := by
-  set Spec := {I : Ideal R | I.IsMaximal}
-  obtain ⟨_, ⟨s, rfl⟩, H⟩ := IsArtinian.set_has_minimal
-    (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
+  have ⟨s, H⟩ := Finset.exists_inf_le (Subtype.val (p := fun I : Ideal R ↦ I.IsMaximal))
   refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
-  classical
-  obtain ⟨q, hq1, hq2⟩ := p.2.isPrime.inf_le'.mp <| inf_eq_right.mp <|
-    inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
+  have ⟨q, hq1, hq2⟩ := p.2.isPrime.inf_le'.mp (H p)
   rwa [← Subtype.ext <| q.2.eq_of_le p.2.ne_top hq2]
 
 instance : Finite (MaximalSpectrum R) :=
@@ -469,6 +472,8 @@ instance : Finite (MaximalSpectrum R) :=
   .of_equiv _ (MaximalSpectrum.equivSubtype _).symm
 
 end CommSemiring
+
+section CommRing
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
@@ -546,5 +551,48 @@ namely the quotients by the maximal ideals. -/
 noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : MaximalSpectrum R, R ⧸ I.asIdeal :=
   .trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
+
+theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
+  (equivPi R).symm.isSemisimpleRing
+
+end CommRing
+
+section Ring
+
+variable {R : Type*} [Ring R] [IsArtinianRing R]
+
+theorem isSemisimpleRing_iff_jacobson : IsSemisimpleRing R ↔ Ring.jacobson R = ⊥ :=
+  IsArtinian.isSemisimpleModule_iff_jacobson R R
+
+instance : IsSemiprimaryRing R where
+  isSemisimpleRing :=
+    IsArtinianRing.isSemisimpleRing_iff_jacobson.mpr (Ring.jacobson_quotient_jacobson R)
+  isNilpotent := by
+    let Jac := Ring.jacobson R
+    have ⟨n, hn⟩ := IsArtinian.monotone_stabilizes ⟨(Jac ^ ·), @Ideal.pow_le_pow_right _ _ _⟩
+    have hn : Jac * Jac ^ n = Jac ^ n := by
+      rw [← Ideal.IsTwoSided.pow_succ]; exact (hn _ n.le_succ).symm
+    use n; by_contra ne
+    have ⟨N, ⟨eq, ne⟩, min⟩ := wellFounded_lt.has_min {N | Jac * N = N ∧ N ≠ ⊥} ⟨_, hn, ne⟩
+    have : Jac ^ n * N = N := n.rec (by rw [Jac.pow_zero, N.one_mul])
+      fun n hn ↦ by rwa [Jac.pow_succ, mul_assoc, eq]
+    let I x := Submodule.map (LinearMap.toSpanSingleton R R x) (Jac ^ n)
+    have hI x : I x ≤ Ideal.span {x} := by
+      rw [Ideal.span, LinearMap.span_singleton_eq_range]; exact LinearMap.map_le_range
+    have ⟨x, hx⟩ : ∃ x ∈ N, I x ≠ ⊥ := by
+      contrapose! ne
+      rw [← this, ← le_bot_iff, Ideal.mul_le]
+      refine fun ri hi rn hn ↦ ?_
+      rw [← ne rn hn]
+      exact ⟨ri, hi, rfl⟩
+    rw [← Ideal.span_singleton_le_iff_mem] at hx
+    have : I x = N := by
+      refine ((hI x).trans hx.1).eq_of_not_lt (min _ ⟨?_, hx.2⟩)
+      rw [← smul_eq_mul, ← Submodule.map_smul'', smul_eq_mul, hn]
+    have : Ideal.span {x} = N := le_antisymm hx.1 (this.symm.trans_le <| hI x)
+    refine (this ▸ ne) ((Submodule.fg_span <| Set.finite_singleton x).eq_bot_of_le_jacobson_smul ?_)
+    rw [← Ideal.span, this, smul_eq_mul, eq]
+
+end Ring
 
 end IsArtinianRing

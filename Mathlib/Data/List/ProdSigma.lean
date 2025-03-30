@@ -90,7 +90,7 @@ theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
     (y, x) ∈ map Prod.swap xs ↔ (x, y) ∈ xs := by
   induction' xs with x xs xs_ih
   · simp only [not_mem_nil, map_nil]
-  · cases' x with a b
-    simp only [mem_cons, Prod.mk.inj_iff, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
+  · obtain ⟨a, b⟩ := x
+    simp only [mem_cons, Prod.mk_inj, map, Prod.swap_prod_mk, Prod.exists, xs_ih, and_comm]
 
 end List

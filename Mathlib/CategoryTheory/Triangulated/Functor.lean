@@ -92,12 +92,19 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
-set_option maxHeartbeats 400000 in
+-- Split out from the following instance for faster elaboration.
+private theorem mapTriangleCommShiftIso_add
+    [∀ (n : ℤ), (shiftFunctor C n).Additive]
+    [∀ (n : ℤ), (shiftFunctor D n).Additive] (n m : ℤ) :
+    F.mapTriangleCommShiftIso (n + m) =
+      CommShift.isoAdd (a := n) (b := m)
+        (F.mapTriangleCommShiftIso n) (F.mapTriangleCommShiftIso m) := by
+  ext <;> simp
+
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
-  zero := by ext <;> simp -- the `aesop_cat` autoparam solves this but it's slower
-  add _ _ := by ext <;> simp -- the `aesop_cat` autoparam solves this but it's slower
+  add _ _ := mapTriangleCommShiftIso_add ..
 
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]

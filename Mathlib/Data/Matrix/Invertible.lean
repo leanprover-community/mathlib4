@@ -117,7 +117,7 @@ section Woodbury
 
 variable [Fintype m] [DecidableEq m] [Ring α]
     (A : Matrix n n α) (U : Matrix n m α) (C : Matrix m m α) (V : Matrix m n α)
-    [Invertible A] [Invertible C] [Invertible (⅟C + V * ⅟A * U)]
+    [Invertible A] [Invertible C] [Invertible (⅟ C + V * ⅟ A * U)]
 
 -- No spaces around multiplication signs for better clarity
 lemma add_mul_mul_invOf_mul_eq_one :
@@ -159,7 +159,7 @@ lemma add_mul_mul_invOf_mul_eq_one' :
       rw [Matrix.invOf_mul_cancel_right]
       abel
 
-/-- If matrices `A`, `C`, and `C⁻¹ + V * A⁻¹ * U` are invertible, then so is `A + U * C * V`-/
+/-- If matrices `A`, `C`, and `C⁻¹ + V * A⁻¹ * U` are invertible, then so is `A + U * C * V`. -/
 def invertibleAddMulMul : Invertible (A + U*C*V) where
   invOf := ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A
   invOf_mul_self := add_mul_mul_invOf_mul_eq_one' _ _ _ _
