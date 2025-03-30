@@ -538,7 +538,7 @@ lemma iSup_induction {ι} (N : ι → LieSubmodule R L M) {motive : M → Prop} 
     (hx : x ∈ ⨆ i, N i) (mem : ∀ i, ∀ y ∈ N i, motive y) (zero : motive 0)
     (add : ∀ y z, motive y → motive z → motive (y + z)) : motive x := by
   rw [← LieSubmodule.mem_toSubmodule, LieSubmodule.iSup_toSubmodule] at hx
-  exact Submodule.iSup_induction (C := motive) (fun i ↦ (N i : Submodule R M)) hx mem zero add
+  exact Submodule.iSup_induction (motive := motive) (fun i ↦ (N i : Submodule R M)) hx mem zero add
 
 @[elab_as_elim]
 theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {motive : (x : M) → (x ∈ ⨆ i, N i) → Prop}
