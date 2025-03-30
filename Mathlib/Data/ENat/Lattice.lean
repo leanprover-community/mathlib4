@@ -93,8 +93,7 @@ lemma exists_eq_iInf [Nonempty ι] (f : ι → ℕ∞) : ∃ a, f a = ⨅ x, f x
   intro f'
   obtain htop | hlt := eq_top_or_lt_top (⨅ x, f' x)
   · rw [htop]
-    simp only [iInf_eq_top] at htop
-    exact ⟨Classical.arbitrary _, htop _⟩
+    exact ⟨Classical.arbitrary _, iInf_eq_top.1 htop _⟩
   apply exists_eq_iInf_of_not_isPredPrelimit
   simp only [Order.IsPredPrelimit, not_forall, not_not]
   refine ⟨Order.succ (⨅ x, f' x), Order.covBy_succ_of_not_isMax fun hmax ↦ ?_⟩
@@ -176,7 +175,7 @@ lemma iInf_mul [Nonempty ι] : (⨅ i, f i) * a = ⨅ i, f i * a := by
 /-- A version of `mul_iInf` with a slightly more general hypothesis. -/
 lemma mul_iInf' (h₀ : a = 0 → Nonempty ι) : a * ⨅ i, f i = ⨅ i, a * f i := by
   obtain hι | hι := isEmpty_or_nonempty ι
-  · suffices a ≠ 0 by simpa [iInf_of_empty, ite_eq_right_iff, mul_top_eq_ite]
+  · suffices a ≠ 0 by simpa [iInf_of_empty, ite_eq_right_iff, mul_top']
     aesop
   rw [mul_iInf]
 
