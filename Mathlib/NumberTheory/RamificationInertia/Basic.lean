@@ -534,7 +534,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
     ext
-    simp only [mul_assoc, map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
+    simp only [mul_assoc, map_mul, Quotient.mkQ_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
     ring
 
