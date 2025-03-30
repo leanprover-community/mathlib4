@@ -578,13 +578,13 @@ section DistribSMul
 instance instNonUnitalNonAssocSemiring [NonAssocSemiring k] [DistribSMul G k] :
     NonUnitalNonAssocSemiring (SkewMonoidAlgebra k G) where
   left_distrib f g h := by
-    haveI := Classical.decEq G
+    classical
     simp only [mul_def]
     refine Eq.trans (congr_arg (sum f) (funext₂ fun _ _ ↦ sum_add_index ?_ ?_)) ?_ <;>
       simp only [smul_zero, smul_add, mul_add, mul_zero, single_zero, single_add,
         forall_true_iff, sum_add]
   right_distrib f g h := by
-    haveI := Classical.decEq G
+    classical
     simp only [mul_def]
     refine Eq.trans (sum_add_index ?_ ?_) ?_ <;>
       simp only [add_mul, zero_mul, single_zero, single_add, forall_true_iff, sum_zero, sum_add]
