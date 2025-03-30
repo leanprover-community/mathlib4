@@ -5,12 +5,15 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Dynamics.Ergodic.Function
+import Mathlib.Dynamics.Ergodic.RadonNikodym
 import Mathlib.Probability.ConditionalProbability
-import Mathlib.MeasureTheory.Decomposition.RadonNikodym
-import Mathlib.Topology.Order.CountableSeparating
 
 /-!
-TODO
+# Ergodic measures as extreme points
+
+In this file we prove that a finite measure `μ` is an ergodic measure for a self-map `f`
+iff it is an extreme point of the set of invariant measures of `f` with the same total volume.
+We also specialize this result to probability measures.
 -/
 
 open Filter Set Function MeasureTheory Measure ProbabilityTheory
@@ -18,40 +21,11 @@ open scoped NNReal ENNReal Topology
 
 variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {f : α → α}
 
--- TODO: do we need `μ ≪ ν` here, or the absolutely continuous part is automatically invariant?
-theorem MeasureTheory.MeasurePreserving.rnDeriv_comp_aeEq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
-    (hfμ : MeasurePreserving f μ μ) (hfν : MeasurePreserving f ν ν) (hμν : μ ≪ ν) :
-    μ.rnDeriv ν ∘ f =ᵐ[ν] μ.rnDeriv ν := by
-  refine .of_forall_eventually_lt_iff fun c ↦ ?_
-  set s := {a | μ.rnDeriv ν a < c}
-  have hsm : MeasurableSet s := measurable_rnDeriv _ _ measurableSet_Iio
-  have hμ_diff : μ (f ⁻¹' s \ s) = μ (s \ f ⁻¹' s) :=
-    measure_diff_symm (hfμ.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
-      (hfμ.measure_preimage hsm.nullMeasurableSet) (measure_ne_top _ _)
-  have hν_diff : ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) :=
-    measure_diff_symm (hfν.measurable hsm).nullMeasurableSet hsm.nullMeasurableSet
-      (hfν.measure_preimage hsm.nullMeasurableSet) (measure_ne_top _ _)
-  suffices f ⁻¹' s =ᵐ[ν] s from this.mem_iff
-  suffices ν (f ⁻¹' s \ s) = 0 from (ae_le_set.mpr this).antisymm (ae_le_set.mpr <| hν_diff ▸ this)
-  contrapose! hμ_diff with h₀
-  apply ne_of_gt
-  calc
-    μ (s \ f ⁻¹' s) = ∫⁻ a in s \ f ⁻¹' s, μ.rnDeriv ν a ∂ν := (setLIntegral_rnDeriv hμν _).symm
-    _ < ∫⁻ _ in s \ f ⁻¹' s, c ∂ν := by
-      apply setLIntegral_strict_mono (hsm.diff (hfμ.measurable hsm)) (hν_diff ▸ h₀) measurable_const
-      · rw [setLIntegral_rnDeriv hμν]
-        apply measure_ne_top
-      · exact .of_forall fun x hx ↦ hx.1
-    _ = ∫⁻ _ in f ⁻¹' s \ s, c ∂ν := by simp [hν_diff]
-    _ ≤ ∫⁻ a in f ⁻¹' s \ s, μ.rnDeriv ν a ∂ν :=
-      setLIntegral_mono (by fun_prop) (fun x hx ↦ not_lt.mp hx.2)
-    _ = μ (f ⁻¹' s \ s) := setLIntegral_rnDeriv hμν _
-
 namespace Ergodic
 
 /-- Given a constant `c ≠ ∞`, an extreme point of the set of measures that are invariant under `f`
 and have total mass `c` is an ergodic measure. -/
-theorem of_mem_extremePoints_meas_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
+theorem of_mem_extremePoints_measure_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
     (h : μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = c}) : Ergodic f μ := by
   have hf : MeasurePreserving f μ μ := h.1.1
   rcases eq_or_ne c 0 with rfl | hc₀
@@ -85,13 +59,13 @@ theorem of_mem_extremePoints_meas_univ_eq {c : ℝ≥0∞} (hc : c ≠ ∞)
 theorem of_mem_extremePoints
     (h : μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ IsProbabilityMeasure ν}) :
     Ergodic f μ :=
-  .of_mem_extremePoints_meas_univ_eq ENNReal.one_ne_top <| by
+  .of_mem_extremePoints_measure_univ_eq ENNReal.one_ne_top <| by
     simpa only [isProbabilityMeasure_iff] using h
 
 -- TODO: do we need `IsFiniteMeasure ν` here?
 theorem eq_smul_of_absolutelyContinuous [IsFiniteMeasure μ] [IsFiniteMeasure ν] (hμ : Ergodic f μ)
     (hfν : MeasurePreserving f ν ν) (hνμ : ν ≪ μ) : ∃ c : ℝ≥0∞, ν = c • μ := by
-  have := hfν.rnDeriv_comp_aeEq hμ.toMeasurePreserving hνμ
+  have := hfν.rnDeriv_comp_aeEq hμ.toMeasurePreserving
   obtain ⟨c, hc⟩ := hμ.ae_eq_const_of_ae_eq_comp₀ (measurable_rnDeriv _ _).nullMeasurable this
   use c
   ext s hs
@@ -100,7 +74,7 @@ theorem eq_smul_of_absolutelyContinuous [IsFiniteMeasure μ] [IsFiniteMeasure ν
     _ = ∫⁻ _ in s, c ∂μ := lintegral_congr_ae <| hc.filter_mono <| ae_mono restrict_le_self
     _ = (c • μ) s := by simp
 
-theorem eq_of_absolutelyContinuous_meas_univ_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
+theorem eq_of_absolutelyContinuous_measure_univ_eq [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (hμ : Ergodic f μ) (hfν : MeasurePreserving f ν ν) (hνμ : ν ≪ μ) (huniv : ν univ = μ univ) :
     ν = μ := by
   rcases hμ.eq_smul_of_absolutelyContinuous hfν hνμ with ⟨c, rfl⟩
@@ -110,19 +84,27 @@ theorem eq_of_absolutelyContinuous_meas_univ_eq [IsFiniteMeasure μ] [IsFiniteMe
 
 theorem eq_of_absolutelyContinuous [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμ : Ergodic f μ) (hfν : MeasurePreserving f ν ν) (hνμ : ν ≪ μ) : ν = μ :=
-  eq_of_absolutelyContinuous_meas_univ_eq hμ hfν hνμ <| by simp
+  eq_of_absolutelyContinuous_measure_univ_eq hμ hfν hνμ <| by simp
 
-theorem mem_extremePoints_meas_univ_eq [IsFiniteMeasure μ] (hμ : Ergodic f μ) :
+theorem mem_extremePoints_measure_univ_eq [IsFiniteMeasure μ] (hμ : Ergodic f μ) :
     μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = μ univ} := by
   rw [mem_extremePoints_iff_left]
   refine ⟨⟨hμ.toMeasurePreserving, rfl⟩, ?_⟩
   rintro ν₁ ⟨hfν₁, hν₁μ⟩ ν₂ ⟨hfν₂, hν₂μ⟩ ⟨a, b, ha, hb, hab, rfl⟩
   have : IsFiniteMeasure ν₁ := ⟨by rw [hν₁μ]; apply measure_lt_top⟩
-  apply hμ.eq_of_absolutelyContinuous_meas_univ_eq hfν₁ (.add_right _ _) hν₁μ
+  apply hμ.eq_of_absolutelyContinuous_measure_univ_eq hfν₁ (.add_right _ _) hν₁μ
   apply absolutelyContinuous_smul ha.ne'
 
 theorem mem_extremePoints [IsProbabilityMeasure μ] (hμ : Ergodic f μ) :
     μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ IsProbabilityMeasure ν} := by
-  simpa only [isProbabilityMeasure_iff, measure_univ] using hμ.mem_extremePoints_meas_univ_eq
+  simpa only [isProbabilityMeasure_iff, measure_univ] using hμ.mem_extremePoints_measure_univ_eq
+
+theorem iff_mem_extremePoints_measure_univ_eq [IsFiniteMeasure μ] :
+    Ergodic f μ ↔ μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = μ univ} :=
+  ⟨mem_extremePoints_measure_univ_eq, of_mem_extremePoints_measure_univ_eq (measure_ne_top _ _)⟩
+
+theorem iff_mem_extremePoints [IsProbabilityMeasure μ] :
+    Ergodic f μ ↔ μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ IsProbabilityMeasure ν} :=
+  ⟨mem_extremePoints, of_mem_extremePoints⟩
 
 end Ergodic
