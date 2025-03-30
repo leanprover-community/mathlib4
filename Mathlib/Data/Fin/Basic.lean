@@ -857,8 +857,8 @@ theorem castPred_zero (h := Fin.ext_iff.not.2 last_pos.ne)  :
 
 @[simp]
 theorem castPred_eq_zero [NeZero n] {i : Fin (n + 1)} (h : i ≠ last n) :
-    Fin.castPred i h = 0 ↔ i = 0 :=
-  ⟨fun h => by rwa [← castPred_zero', castPred_inj] at h, fun h => h ▸ castPred_zero'⟩
+    Fin.castPred i h = 0 ↔ i = 0 := by
+  rw [← castPred_zero', castPred_inj]
 
 @[simp]
 theorem castPred_one [NeZero n] (h := Fin.ext_iff.not.2 one_lt_last.ne) :
