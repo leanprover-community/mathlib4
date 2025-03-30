@@ -517,7 +517,7 @@ theorem smul_subset_smul : (↑M : Set R) • (↑N : Set A) ⊆ (↑(M • N) :
 
 theorem addSubmonoid_smul_sup : M • (N ⊔ P) = M • N ⊔ M • P :=
   le_antisymm (smul_le.mpr fun m hm np hnp ↦ by
-    refine closure_induction (p := (fun _ ↦ _ • · ∈ _)) ?_ ?_ ?_ (sup_eq_closure N P ▸ hnp)
+    refine closure_induction (motive := (fun _ ↦ _ • · ∈ _)) ?_ ?_ ?_ (sup_eq_closure N P ▸ hnp)
     · rintro x (hx | hx)
       exacts [le_sup_left (a := M • N) (smul_mem_smul hm hx),
         le_sup_right (a := M • N) (smul_mem_smul hm hx)]

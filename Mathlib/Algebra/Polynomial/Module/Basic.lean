@@ -179,9 +179,9 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
       dsimp
       rw [← RingEquiv.coe_toEquiv_symm, RingEquiv.coe_toEquiv]
       induction x using induction_linear with
-      | h0 => rw [smul_zero, map_zero, mul_zero]
-      | hadd _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]
-      | hsingle n a =>
+      | zero => rw [smul_zero, map_zero, mul_zero]
+      | add _ _ hp hq => rw [smul_add, map_add, map_add, mul_add, hp, hq]
+      | single n a =>
         ext i
         simp only [coeff_ofFinsupp, smul_single_apply, toFinsuppIso_symm_apply, coeff_ofFinsupp,
         single_apply, smul_eq_mul, Polynomial.coeff_mul, mul_ite, mul_zero]
@@ -237,15 +237,14 @@ variable [Algebra R R'] [IsScalarTower R R' M']
 
 theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
     map R' f (p • q) = p.map (algebraMap R R') • map R' f q := by
-  apply induction_linear q
-  · rw [smul_zero, map_zero, smul_zero]
-  · intro f g e₁ e₂
-    rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
-  intro i m
-  induction p using Polynomial.induction_on' with
-  | add _ _ e₁ e₂ => rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
-  | monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
-      monomial_smul_single, f.map_smul, algebraMap_smul]
+  induction q using induction_linear with
+  | zero => rw [smul_zero, map_zero, smul_zero]
+  | add f g e₁ e₂ => rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
+  | single i m =>
+    induction p using Polynomial.induction_on' with
+    | add _ _ e₁ e₂ => rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
+    | monomial => rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single,
+        monomial_smul_single, f.map_smul, algebraMap_smul]
 
 /-- Evaluate a polynomial `p : PolynomialModule R M` at `r : R`. -/
 @[simps! -isSimp]
@@ -270,25 +269,21 @@ theorem eval_lsingle (r : R) (i : ℕ) (m : M) : eval r (lsingle R i m) = r ^ i 
 
 theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
     eval r (p • q) = p.eval r • eval r q := by
-  apply induction_linear q
-  · rw [smul_zero, map_zero, smul_zero]
-  · intro f g e₁ e₂
-    rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
-  intro i m
-  induction p using Polynomial.induction_on' with
-  | add _ _ e₁ e₂ => rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
-  | monomial => simp only [monomial_smul_single, Polynomial.eval_monomial, eval_single]; module
+  induction q using induction_linear with
+  | zero => rw [smul_zero, map_zero, smul_zero]
+  | add f g e₁ e₂ => rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
+  | single i m =>
+    induction p using Polynomial.induction_on' with
+    | add _ _ e₁ e₂ => rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
+    | monomial => simp only [monomial_smul_single, Polynomial.eval_monomial, eval_single]; module
 
 @[simp]
 theorem eval_map (f : M →ₗ[R] M') (q : PolynomialModule R M) (r : R) :
     eval (algebraMap R R' r) (map R' f q) = f (eval r q) := by
-  apply induction_linear q
-  · simp_rw [map_zero]
-  · intro f g e₁ e₂
-    simp_rw [map_add, e₁, e₂]
-  · intro i m
-    simp only [map_single, eval_single, f.map_smul]
-    module
+  induction q using induction_linear with
+  | zero => simp_rw [map_zero]
+  | add f g e₁ e₂ => simp_rw [map_add, e₁, e₂]
+  | single i m => simp only [map_single, eval_single, f.map_smul]; module
 
 @[simp]
 theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
@@ -299,12 +294,10 @@ theorem eval_map' (f : M →ₗ[R] M) (q : PolynomialModule R M) (r : R) :
 lemma aeval_equivPolynomial {S : Type*} [CommRing S] [Algebra S R]
     (f : PolynomialModule S S) (x : R) :
     aeval x (equivPolynomial f) = eval x (map R (Algebra.linearMap S R) f) := by
-  apply induction_linear f
-  · simp
-  · intro f g e₁ e₂
-    simp_rw [map_add, e₁, e₂]
-  · intro i m
-    rw [equivPolynomial_single, aeval_monomial, mul_comm, map_single,
+  induction f using induction_linear with
+  | zero => simp
+  | add f g e₁ e₂ => simp_rw [map_add, e₁, e₂]
+  | single i m => rw [equivPolynomial_single, aeval_monomial, mul_comm, map_single,
       Algebra.linearMap_apply, eval_single, smul_eq_mul]
 
 /-- `comp p q` is the composition of `p : R[X]` and `q : M[X]` as `q(p(x))`. -/
@@ -319,11 +312,10 @@ theorem comp_single (p : R[X]) (i : ℕ) (m : M) : comp p (single R i m) = p ^ i
 theorem comp_eval (p : R[X]) (q : PolynomialModule R M) (r : R) :
     eval r (comp p q) = eval (p.eval r) q := by
   rw [← LinearMap.comp_apply]
-  apply induction_linear q
-  · simp_rw [map_zero]
-  · intro _ _ e₁ e₂
-    simp_rw [map_add, e₁, e₂]
-  · intro i m
+  induction q using induction_linear with
+  | zero => simp_rw [map_zero]
+  | add _ _ e₁ e₂ => simp_rw [map_add, e₁, e₂]
+  | single i m =>
     rw [LinearMap.comp_apply, comp_single, eval_single, eval_smul, eval_single, eval_pow]
     module
 
