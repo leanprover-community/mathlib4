@@ -171,21 +171,17 @@ lemma lift_eq (a : L) : (h.lift g) (f a) = g a := by simp [lift]
 @[simp]
 lemma lift_comp_linearMap : (h.lift g) ∘ₗ f = g := LinearMap.ext fun x ↦ lift_eq h g x
 
-variable {g} in
-lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = (h.lift g) := by
-  suffices h' : F.comp h.equiv = (h.lift g).comp h.equiv.toAlgHom by
-    ext x
-    have : (F <| h.equiv.toFun <| h.equiv.invFun <| x) =
-      ((h.lift g) <| h.equiv.toFun <| h.equiv.invFun <| x) := congr($h' (h.equiv.symm x))
-    simpa [h.equiv.right_inv] using this
-  refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x ↦ ?_)
-  unfold equiv lift
-  simpa using congr($hF x)
-
 lemma algHom_ext (h : IsSymmetricAlgebra f) {F G : A →ₐ[R] A'}
     (hFG : (F ∘ₗ f) = (G ∘ₗ f : L →ₗ[R] A')) : F = G := by
-  rw [((h.lift_unique hFG) : F = (h.lift (G ∘ₗ f))), eq_comm]
-  exact h.lift_unique rfl
+  suffices F.comp h.equiv.toAlgHom = G.comp h.equiv.toAlgHom by
+    rw [DFunLike.ext'_iff] at this ⊢
+    exact h.equiv.surjective.injective_comp_right this
+  refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x ↦ ?_)
+  simpa using congr($hFG x)
+
+variable {g} in
+lemma lift_unique {F : A →ₐ[R] A'} (hF : F ∘ₗ f = g) : F = (h.lift g) :=
+  h.algHom_ext (by simpa)
 
 end UniversalProperty
 
