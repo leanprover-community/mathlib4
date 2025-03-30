@@ -533,24 +533,25 @@ theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h
     b ∈ ⨆ i, N i :=
   (le_iSup N i) h
 
-lemma iSup_induction {ι} (N : ι → LieSubmodule R L M) {C : M → Prop} {x : M}
-    (hx : x ∈ ⨆ i, N i) (hN : ∀ i, ∀ y ∈ N i, C y) (h0 : C 0)
-    (hadd : ∀ y z, C y → C z → C (y + z)) : C x := by
+@[elab_as_elim]
+lemma iSup_induction {ι} (N : ι → LieSubmodule R L M) {motive : M → Prop} {x : M}
+    (hx : x ∈ ⨆ i, N i) (mem : ∀ i, ∀ y ∈ N i, motive y) (zero : motive 0)
+    (add : ∀ y z, motive y → motive z → motive (y + z)) : motive x := by
   rw [← LieSubmodule.mem_toSubmodule, LieSubmodule.iSup_toSubmodule] at hx
-  exact Submodule.iSup_induction (C := C) (fun i ↦ (N i : Submodule R M)) hx hN h0 hadd
+  exact Submodule.iSup_induction (C := motive) (fun i ↦ (N i : Submodule R M)) hx mem zero add
 
 @[elab_as_elim]
-theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x ∈ ⨆ i, N i) → Prop}
-    (hN : ∀ (i) (x) (hx : x ∈ N i), C x (mem_iSup_of_mem i hx)) (h0 : C 0 (zero_mem _))
-    (hadd : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
-    (hx : x ∈ ⨆ i, N i) : C x hx := by
-  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, N i) (hc : C x hx) => hc
-  refine iSup_induction N (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), C x hx) hx
+theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {motive : (x : M) → (x ∈ ⨆ i, N i) → Prop}
+    (mem : ∀ (i) (x) (hx : x ∈ N i), motive x (mem_iSup_of_mem i hx)) (zero : motive 0 (zero_mem _))
+    (add : ∀ x y hx hy, motive x hx → motive y hy → motive (x + y) (add_mem ‹_› ‹_›)) {x : M}
+    (hx : x ∈ ⨆ i, N i) : motive x hx := by
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, N i) (hc : motive x hx) => hc
+  refine iSup_induction N (motive := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, N i), motive x hx) hx
     (fun i x hx => ?_) ?_ fun x y => ?_
-  · exact ⟨_, hN _ _ hx⟩
-  · exact ⟨_, h0⟩
+  · exact ⟨_, mem _ _ hx⟩
+  · exact ⟨_, zero⟩
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
-    exact ⟨_, hadd _ _ _ _ Cx Cy⟩
+    exact ⟨_, add _ _ _ _ Cx Cy⟩
 
 -- TODO(Yaël): turn around
 theorem disjoint_iff_toSubmodule :
