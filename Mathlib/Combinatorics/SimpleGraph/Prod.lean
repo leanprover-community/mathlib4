@@ -146,8 +146,11 @@ theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b�
   | cons' x y z h w => by
     rw [Walk.boxProdRight, map_cons, ofBoxProdRight, Or.by_cases, dif_pos, ←
       Walk.boxProdRight]
-    · simp [ofBoxProdLeft_boxProdRight]
+    · simp [ofBoxProdRight_boxProdRight]
     · exact ⟨h, rfl⟩
+
+@[deprecated (since := "2025-03-30")]
+alias ofBoxProdLeft_boxProdRight := ofBoxProdRight_boxProdRight
 
 end Walk
 
