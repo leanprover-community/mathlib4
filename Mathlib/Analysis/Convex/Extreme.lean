@@ -53,7 +53,10 @@ def IsExtreme (A B : Set E) : Prop :=
   B ⊆ A ∧ ∀ ⦃x₁⦄, x₁ ∈ A → ∀ ⦃x₂⦄, x₂ ∈ A → ∀ ⦃x⦄, x ∈ B → x ∈ openSegment 𝕜 x₁ x₂ → x₁ ∈ B ∧ x₂ ∈ B
 
 /-- A point `x` is an extreme point of a set `A` if `x` belongs to no open segment with ends in
-`A`, except for the obvious `openSegment x x`. -/
+`A`, except for the obvious `openSegment x x`.
+
+In order to prove that `x` is an extreme point of `A`,
+it is convenient to use `mem_extremePoints_iff_left` to avoid repeating arguments twice. -/
 def Set.extremePoints (A : Set E) : Set E :=
   { x ∈ A | ∀ ⦃x₁⦄, x₁ ∈ A → ∀ ⦃x₂⦄, x₂ ∈ A → x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x }
 
@@ -113,7 +116,12 @@ theorem mem_extremePoints : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ᵉ (x₁ ∈ A) (x₂ ∈ A), x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x ∧ x₂ = x :=
   Iff.rfl
 
-theorem mem_extremePoints' : x ∈ A.extremePoints 𝕜 ↔
+/-- In order to prove that a point `x` is an extreme point of a set `A`,
+it suffices to show that `x ∈ A`
+and for any `x₁`, `x₂` such that `x` belongs to the open segment `(x₁, x₂)`, we have `x₁ = x`.
+
+The definition of `extremePoints` also requires `x₂ = x`, but this condition is redundant. -/
+theorem mem_extremePoints_iff_left : x ∈ A.extremePoints 𝕜 ↔
     x ∈ A ∧ ∀ x₁ ∈ A, ∀ x₂ ∈ A, x ∈ openSegment 𝕜 x₁ x₂ → x₁ = x := by
   refine ⟨fun h ↦ ⟨h.1, fun x₁ hx₁ x₂ hx₂ hx ↦ (h.2 hx₁ hx₂ hx).1⟩, ?_⟩
   rintro ⟨hxA, Hx⟩
