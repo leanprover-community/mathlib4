@@ -208,7 +208,7 @@ lemma quotTensorEquivQuotSMul_mk_tmul (I : Ideal R) (r : R) (x : M) :
     Eq.trans (congrArg (· ⊗ₜ[R] x) <|
         Eq.trans (congrArg (Ideal.Quotient.mk I)
                     (Eq.trans (smul_eq_mul ..) (mul_one r))).symm <|
-          Submodule.mkQ_smul I r 1) <|
+          (by rfl)) <|
       smul_tmul r _ x
 
 lemma quotTensorEquivQuotSMul_comp_mkQ_rTensor (I : Ideal R) :

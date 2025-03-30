@@ -317,7 +317,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
     rw [Submodule.restrictScalars_mem] at hx
     obtain ⟨x', rfl⟩ := Submodule.mem_span_singleton.mp hx
     rw [smul_eq_mul, mul_comm, ← Algebra.smul_def] at hx ⊢
-    rw [← Submodule.mkQ_eq_zero, Submodule.mkQ_smul]
+    rw [← Submodule.mkQ_eq_zero, map_smul]
     obtain ⟨a', _, quot_x_eq⟩ := exists_sum (Submodule.mkQ _ x')
     rw [← quot_x_eq, Finset.smul_sum]
     conv =>
@@ -525,7 +525,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc
   toFun := quotientToQuotientRangePowQuotSuccAux p P a_mem
   map_add' := by
     intro x y; refine Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => ?_
-    simp only [Submodule.mk''_eq_mkQ, ← Submodule.mkQ_add,
+    simp only [Submodule.mk''_eq_mkQ, ← map_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add]
     exact congr_arg Submodule.Quotient.mk rfl
   map_smul' := by

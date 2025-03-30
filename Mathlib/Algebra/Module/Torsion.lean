@@ -802,7 +802,9 @@ variable [CommRing R] [AddCommGroup M] [Module R M]
 theorem torsion_eq_bot : torsion R (M ⧸ torsion R M) = ⊥ :=
   eq_bot_iff.mpr fun z =>
     Quotient.inductionOn' z fun x ⟨a, hax⟩ => by
-      rw [mk''_eq_mkQ, ← mkQ_smul, mkQ_eq_zero] at hax
+      have : a • (torsion R M).mkQ x = (torsion R M).mkQ (a • x) := by
+        exact rfl
+      rw [mk''_eq_mkQ, ← map_smul, mkQ_eq_zero] at hax
       rw [mem_bot, mk''_eq_mkQ, mkQ_eq_zero]
       obtain ⟨b, h⟩ := hax
       exact ⟨b * a, (mul_smul _ _ _).trans h⟩
@@ -876,14 +878,14 @@ theorem torsionBy_eq_span_singleton {R : Type w} [CommRing R] (a b : R) (ha : a 
     torsionBy R (R ⧸ R ∙ a * b) a = R ∙ mk (R ∙ a * b) b := by
   ext x; rw [mem_torsionBy_iff, Submodule.mem_span_singleton]
   obtain ⟨x, rfl⟩ := mk_surjective x; constructor <;> intro h
-  · rw [← mkQ_eq_mk, ← mkQ_smul, mkQ_eq_zero, Submodule.mem_span_singleton] at h
+  · rw [← mkQ_eq_mk, ← map_smul, mkQ_eq_zero, Submodule.mem_span_singleton] at h
     obtain ⟨c, h⟩ := h
     rw [smul_eq_mul, smul_eq_mul, mul_comm, mul_assoc, mul_cancel_left_mem_nonZeroDivisors ha,
       mul_comm] at h
     use c
-    rw [← h, ← mkQ_eq_mk, ← mkQ_smul, smul_eq_mul, mkQ_eq_mk]
+    rw [← h, ← mkQ_eq_mk, ← map_smul, smul_eq_mul, mkQ_eq_mk]
   · obtain ⟨c, h⟩ := h
-    rw [← h, smul_comm, ← mkQ_eq_mk, ← mkQ_smul,
+    rw [← h, smul_comm, ← mkQ_eq_mk, ← map_smul,
       (mkQ_eq_zero _).mpr (mem_span_singleton_self _), smul_zero]
 
 end Ideal.Quotient

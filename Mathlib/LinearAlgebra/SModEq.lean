@@ -77,11 +77,11 @@ instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
 
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
-  simp_rw [mkQ_add, hxy₁, hxy₂]
+  simp_rw [map_add, hxy₁, hxy₂]
 
 theorem smul (hxy : x ≡ y [SMOD U]) (c : R) : c • x ≡ c • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
-  simp_rw [mkQ_smul, hxy]
+  simp_rw [map_smul, hxy]
 
 lemma nsmul (hxy : x ≡ y [SMOD U]) (n : ℕ) : n • x ≡ n • y [SMOD U] := by
   rw [SModEq.def] at hxy ⊢
@@ -102,11 +102,11 @@ lemma pow {I : Ideal A} {x y : A} (n : ℕ) (hxy : x ≡ y [SMOD I]) :
   rw [hxy]
 
 lemma neg (hxy : x ≡ y [SMOD U]) : - x ≡ - y [SMOD U] := by
-  simpa only [SModEq.def, mkQ_neg, neg_inj]
+  simpa only [SModEq.def, map_neg, neg_inj]
 
 lemma sub (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ - x₂ ≡ y₁ - y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
-  simp_rw [mkQ_sub, hxy₁, hxy₂]
+  simp_rw [map_sub, hxy₁, hxy₂]
 
 theorem zero : x ≡ 0 [SMOD U] ↔ x ∈ U := by rw [SModEq.def, Submodule.mkQ_eq, sub_zero]
 
