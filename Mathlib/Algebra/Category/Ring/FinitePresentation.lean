@@ -63,10 +63,6 @@ lemma RingHom.EssFiniteType.exists_comp_map_eq_of_isColimit (hf : f.hom.EssFinit
     have (x) : F.map (f₁ x) (a x) = F.map (f₂ x) (b x) := h x
     simp [D, this]
 
-example {α : Type*} {β : α → Type*} : Nonempty (Π i, β i) ↔ ∀ i, Nonempty (β i) := by
-  simp_rw [← exists_true_iff_nonempty, Classical.skolem, implies_true]
-
-
 include hc in
 /--
 Given a filtered diagram `F` of rings over `R`, `S` a finitely presented `R`-algebra,
