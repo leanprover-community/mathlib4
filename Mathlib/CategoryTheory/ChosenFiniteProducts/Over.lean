@@ -64,34 +64,38 @@ lemma toUnit_left {R : Over X} : (ChosenFiniteProducts.toUnit R).left = R.hom :=
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ pullback.fst _ _ = pullback.fst _ _ ≫ pullback.fst _ _ :=
+    (α_ R S T).hom.left ≫ pullback.fst _ (pullback.fst _ _ ≫ _) =
+      pullback.fst _ _ ≫ pullback.fst _ _ :=
   pullback.lift_fst _ _ _
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_fst (R S T : Over X) :
-    (α_ R S T).hom.left ≫ pullback.snd _ _ ≫ pullback.fst _ _ =
+    (α_ R S T).hom.left ≫ pullback.snd _ (pullback.fst _ _ ≫ _) ≫ pullback.fst _ _ =
       pullback.fst _ _ ≫ pullback.snd _ _ :=
   (pullback.lift_snd_assoc _ _ _ _).trans (pullback.lift_fst _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_hom_left_snd_snd (R S T : Over X) :
-    (α_ R S T).hom.left ≫ pullback.snd _ _ ≫ pullback.snd _ _ = pullback.snd _ _ :=
+    (α_ R S T).hom.left ≫ pullback.snd _ (pullback.fst _ _ ≫ _) ≫ pullback.snd _ _ =
+      pullback.snd _ _ :=
   (pullback.lift_snd_assoc _ _ _ _).trans (pullback.lift_snd _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst (R S T : Over X) :
-    (α_ R S T).inv.left ≫ pullback.fst _ _ ≫ pullback.fst _ _ = pullback.fst _ _ :=
+    (α_ R S T).inv.left ≫ pullback.fst (pullback.fst _ _ ≫ _) _ ≫ pullback.fst _ _ =
+      pullback.fst _ _ :=
   (pullback.lift_fst_assoc _ _ _ _).trans (pullback.lift_fst _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_fst_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ pullback.fst _ _ ≫ pullback.snd _ _ =
+    (α_ R S T).inv.left ≫ pullback.fst (pullback.fst _ _ ≫ _) _ ≫ pullback.snd _ _ =
       pullback.snd _ _ ≫ pullback.fst _ _ :=
   (pullback.lift_fst_assoc _ _ _ _).trans (pullback.lift_snd _ _ _)
 
 @[reassoc (attr := simp)]
 lemma associator_inv_left_snd (R S T : Over X) :
-    (α_ R S T).inv.left ≫ pullback.snd _ _ = pullback.snd _ _ ≫ pullback.snd _ _ :=
+    (α_ R S T).inv.left ≫ pullback.snd (pullback.fst _ _ ≫ _) _ =
+      pullback.snd _ _ ≫ pullback.snd _ _ :=
   pullback.lift_snd _ _ _
 
 @[simp]
