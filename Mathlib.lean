@@ -5986,6 +5986,7 @@ import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Order.Category.AlexDisc
 import Mathlib.Topology.Order.Category.FrameAdjunction
 import Mathlib.Topology.Order.Compact
+import Mathlib.Topology.Order.CountableSeparating
 import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.ExtendFrom
 import Mathlib.Topology.Order.ExtrClosure
