@@ -173,12 +173,14 @@ lemma mul_iInf [Nonempty ι] : a * ⨅ i, f i = ⨅ i, a * f i := by
 lemma iInf_mul [Nonempty ι] : (⨅ i, f i) * a = ⨅ i, f i * a := by
   simp_rw [mul_comm, mul_iInf]
 
+/-- A version of `mul_iInf` with a slightly more general hypothesis. -/
 lemma mul_iInf' (h₀ : a = 0 → Nonempty ι) : a * ⨅ i, f i = ⨅ i, a * f i := by
   obtain hι | hι := isEmpty_or_nonempty ι
   · suffices a ≠ 0 by simpa [iInf_of_empty, ite_eq_right_iff, mul_top_eq_ite]
     aesop
   rw [mul_iInf]
 
+/-- A version of `iInf_mul` with a slightly more general hypothesis. -/
 lemma iInf_mul' (h₀ : a = 0 → Nonempty ι) : (⨅ i, f i) * a = ⨅ i, f i * a := by
   simp_rw [mul_comm, mul_iInf' h₀]
 
