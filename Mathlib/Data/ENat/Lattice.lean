@@ -87,16 +87,12 @@ lemma sSup_eq_zero' : sSup s = 0 ↔ s = ∅ ∨ s = {0} :=
 @[simp] lemma iSup_zero : ⨆ _ : ι, (0 : ℕ∞) = 0 := by simp
 
 lemma exists_eq_iInf [Nonempty ι] (f : ι → ℕ∞) : ∃ a, f a = ⨅ x, f x := by
-  suffices aux : ∀ f' : PLift ι → ℕ∞, ∃ a, f' a = ⨅ x, f' x by
-    obtain ⟨a, ha⟩ := aux (fun i ↦ f i.down)
-    exact ⟨a.down, by rw [ha, iInf_plift_down]⟩
-  intro f'
-  obtain htop | hlt := eq_top_or_lt_top (⨅ x, f' x)
+  obtain htop | hlt := eq_top_or_lt_top (⨅ x, f x)
   · rw [htop]
     exact ⟨Classical.arbitrary _, iInf_eq_top.1 htop _⟩
   apply exists_eq_iInf_of_not_isPredPrelimit
   simp only [Order.IsPredPrelimit, not_forall, not_not]
-  refine ⟨Order.succ (⨅ x, f' x), Order.covBy_succ_of_not_isMax fun hmax ↦ ?_⟩
+  refine ⟨Order.succ (⨅ x, f x), Order.covBy_succ_of_not_isMax fun hmax ↦ ?_⟩
   simp only [isMax_iff_eq_top, iInf_eq_top] at hmax
   simp [hmax] at hlt
 

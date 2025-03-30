@@ -373,11 +373,18 @@ lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * �
 lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) := by
   simpa [show (· * a) = (a * ·) by simp [mul_comm]] using mul_left_strictMono ha h_top
 
+@[simp]
 lemma mul_le_mul_left_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : a * x ≤ a * y ↔ x ≤ y :=
   (ENat.mul_left_strictMono ha h_top).le_iff_le
 
+@[simp]
 lemma mul_le_mul_right_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : x * a ≤ y * a ↔ x ≤ y :=
   (ENat.mul_right_strictMono ha h_top).le_iff_le
+
+@[gcongr]
+lemma mul_le_mul_of_le_right {x y : ℕ∞} (hxy : x ≤ y) (ha : a ≠ 0) (h_top : a ≠ ⊤) :
+    x * a ≤ y * a := by
+  simpa [ha, h_top]
 
 lemma self_le_mul_right (a : ℕ∞) (hc : c ≠ 0) : a ≤ a * c := by
   obtain rfl | hne := eq_or_ne a ⊤
