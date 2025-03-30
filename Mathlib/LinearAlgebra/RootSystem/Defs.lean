@@ -462,65 +462,6 @@ variable {P} in
   ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,
     fun h ↦ (P.smul_coroot_eq_of_root_eq_smul i j t h).symm⟩
 
-/-- The linear span of roots. -/
-abbrev rootSpan := span R (range P.root)
-
-/-- The linear span of coroots. -/
-abbrev corootSpan := span R (range P.coroot)
-
-instance [Finite ι] : Module.Finite R P.rootSpan := Finite.span_of_finite R <| finite_range _
-
-instance [Finite ι] : Module.Finite R P.corootSpan := Finite.span_of_finite R <| finite_range _
-
-lemma rootSpan_ne_bot [Nonempty ι] [NeZero (2 : R)] : P.rootSpan ≠ ⊥ := by
-  simpa [rootSpan] using P.exists_ne_zero
-
-lemma corootSpan_ne_bot [Nonempty ι] [NeZero (2 : R)] : P.corootSpan ≠ ⊥ :=
-  P.flip.rootSpan_ne_bot
-
-lemma rootSpan_mem_invtSubmodule_reflection (i : ι) :
-    P.rootSpan ∈ Module.End.invtSubmodule (P.reflection i) := by
-  rw [Module.End.mem_invtSubmodule, rootSpan]
-  intro x hx
-  induction hx using Submodule.span_induction with
-  | mem y hy =>
-    obtain ⟨j, rfl⟩ := hy
-    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply_root]
-    apply Submodule.sub_mem
-    · exact Submodule.subset_span <| mem_range_self j
-    · exact Submodule.smul_mem _ _ <| Submodule.subset_span <| mem_range_self i
-  | zero => simp
-  | add y z hy hz hy' hz' => simpa using Submodule.add_mem _ hy' hz'
-  | smul y t hy hy' => simpa using Submodule.smul_mem _ _ hy'
-
-lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
-    P.corootSpan ∈ Module.End.invtSubmodule (P.coreflection i) :=
-  P.flip.rootSpan_mem_invtSubmodule_reflection i
-
-lemma coe_rootSpan_dualAnnihilator_map :
-    P.rootSpan.dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
-  ext x
-  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
-  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
-  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
-  simp [Set.range_subset_iff]
-
-lemma coe_corootSpan_dualAnnihilator_map :
-    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
-  P.flip.coe_rootSpan_dualAnnihilator_map
-
-lemma rootSpan_dualAnnihilator_map_eq :
-    P.rootSpan.dualAnnihilator.map P.toDualRight.symm =
-      (span R (range P.root')).dualCoannihilator := by
-  apply SetLike.coe_injective
-  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
-  simp
-
-lemma corootSpan_dualAnnihilator_map_eq :
-    P.corootSpan.dualAnnihilator.map P.toDualLeft.symm =
-      (span R (range P.coroot')).dualCoannihilator :=
-  P.flip.rootSpan_dualAnnihilator_map_eq
-
 lemma mem_range_root_of_mem_range_reflection_of_mem_range_root
     {r : M ≃ₗ[R] M} {α : M} (hr : r ∈ range P.reflection) (hα : α ∈ range P.root) :
     r • α ∈ range P.root := by

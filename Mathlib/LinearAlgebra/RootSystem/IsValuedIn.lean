@@ -121,30 +121,30 @@ lemma root'_apply_apply_mem_of_mem_span [Module S N] [IsScalarTower S R N] [P.Is
   P.flip.coroot'_apply_apply_mem_of_mem_span S hx i
 
 /-- The `S`-span of roots. -/
-abbrev rootSpanIn [Module S M] := span S (range P.root)
+abbrev rootSpan [Module S M] := span S (range P.root)
 
 /-- The `S`-span of coroots. -/
-abbrev corootSpanIn [Module S N] := span S (range P.coroot)
+abbrev corootSpan [Module S N] := span S (range P.coroot)
 
 instance [Module S M] [Finite ι] :
-    Module.Finite S <| P.rootSpanIn S :=
+    Module.Finite S <| P.rootSpan S :=
   Finite.span_of_finite S <| finite_range _
 
 instance [Module S N] [Finite ι] :
-    Module.Finite S <| P.corootSpanIn S :=
+    Module.Finite S <| P.corootSpan S :=
   Finite.span_of_finite S <| finite_range _
 
 /-- A root, seen as an element of the span of roots. -/
-abbrev rootSpanMem [Module S M] (i : ι) : span S (range P.root) :=
+abbrev rootSpanMem [Module S M] (i : ι) : P.rootSpan S :=
   ⟨P.root i, Submodule.subset_span (mem_range_self i)⟩
 
 /-- A coroot, seen as an element of the span of coroots. -/
-abbrev corootSpanMem [Module S N] (i : ι) : span S (range P.coroot) :=
+abbrev corootSpanMem [Module S N] (i : ι) : P.corootSpan S :=
   ⟨P.coroot i, Submodule.subset_span (mem_range_self i)⟩
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
 def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
-    Dual S (P.corootSpanIn S) where
+    Dual S (P.corootSpan S) where
   toFun x := (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose
   map_add' x y := by
     simp only
@@ -167,7 +167,7 @@ def root'In [Module S N] [IsScalarTower S R N] [FaithfulSMul S R] [P.IsValuedIn 
 
 @[simp]
 lemma algebraMap_root'In_apply [Module S N] [IsScalarTower S R N] [FaithfulSMul S R]
-    [P.IsValuedIn S] (i : ι) (x : P.corootSpanIn S) :
+    [P.IsValuedIn S] (i : ι) (x : P.corootSpan S) :
     algebraMap S R (P.root'In S i x) = P.root' i x := by
   simp only [root'In, Algebra.linearMap_apply, LinearMap.coe_mk, AddHom.coe_mk]
   exact (P.root'_apply_apply_mem_of_mem_span S x.2 i).choose_spec
@@ -180,12 +180,12 @@ lemma root'In_corootSpanMem_eq_pairingIn [Module S N] [IsScalarTower S R N] [Fai
 
 /-- The `S`-linear map on the span of coroots given by evaluating at a root. -/
 def coroot'In [Module S M] [IsScalarTower S R M] [FaithfulSMul S R] [P.IsValuedIn S] (i : ι) :
-    Dual S (P.rootSpanIn S) :=
+    Dual S (P.rootSpan S) :=
   P.flip.root'In S i
 
 @[simp]
 lemma algebraMap_coroot'In_apply [Module S M] [IsScalarTower S R M] [FaithfulSMul S R]
-    [P.IsValuedIn S] (i : ι) (x : P.rootSpanIn S) :
+    [P.IsValuedIn S] (i : ι) (x : P.rootSpan S) :
     algebraMap S R (P.coroot'In S i x) = P.coroot' i x :=
   P.flip.algebraMap_root'In_apply S i x
 
@@ -195,6 +195,56 @@ lemma coroot'In_rootSpanMem_eq_pairingIn [Module S M] [IsScalarTower S R M] [Fai
     P.coroot'In S i (P.rootSpanMem S j) = P.pairingIn S j i :=
   rfl
 
+omit [Algebra S R] in
+lemma rootSpan_ne_bot [Module S M] [Nonempty ι] [NeZero (2 : R)] : P.rootSpan S ≠ ⊥ := by
+  simpa [rootSpan] using P.exists_ne_zero
+
+omit [Algebra S R] in
+lemma corootSpan_ne_bot [Module S N] [Nonempty ι] [NeZero (2 : R)] : P.corootSpan S ≠ ⊥ :=
+  P.flip.rootSpan_ne_bot S
+
+lemma rootSpan_mem_invtSubmodule_reflection (i : ι) :
+    P.rootSpan R ∈ Module.End.invtSubmodule (P.reflection i) := by
+  rw [Module.End.mem_invtSubmodule, rootSpan]
+  intro x hx
+  induction hx using Submodule.span_induction with
+  | mem y hy =>
+    obtain ⟨j, rfl⟩ := hy
+    rw [Submodule.mem_comap, LinearEquiv.coe_coe, reflection_apply_root]
+    apply Submodule.sub_mem
+    · exact Submodule.subset_span <| mem_range_self j
+    · exact Submodule.smul_mem _ _ <| Submodule.subset_span <| mem_range_self i
+  | zero => simp
+  | add y z hy hz hy' hz' => simpa using Submodule.add_mem _ hy' hz'
+  | smul y t hy hy' => simpa using Submodule.smul_mem _ _ hy'
+
+lemma corootSpan_mem_invtSubmodule_coreflection (i : ι) :
+    P.corootSpan R ∈ Module.End.invtSubmodule (P.coreflection i) :=
+  P.flip.rootSpan_mem_invtSubmodule_reflection i
+
+lemma coe_rootSpan_dualAnnihilator_map :
+    (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm = {x | ∀ i, P.root' i x = 0} := by
+  ext x
+  rw [rootSpan, Submodule.map_coe, Submodule.coe_dualAnnihilator_span]
+  change x ∈ P.toDualRight.toEquiv.symm '' _ ↔ _
+  rw [← Equiv.setOf_apply_symm_eq_image_setOf, Equiv.symm_symm]
+  simp [Set.range_subset_iff]
+
+lemma coe_corootSpan_dualAnnihilator_map :
+    (P.corootSpan R).dualAnnihilator.map P.toDualLeft.symm = {x | ∀ i, P.coroot' i x = 0} :=
+  P.flip.coe_rootSpan_dualAnnihilator_map
+
+lemma rootSpan_dualAnnihilator_map_eq :
+    (P.rootSpan R).dualAnnihilator.map P.toDualRight.symm =
+      (span R (range P.root')).dualCoannihilator := by
+  apply SetLike.coe_injective
+  rw [Submodule.coe_dualCoannihilator_span, coe_rootSpan_dualAnnihilator_map]
+  simp
+
+lemma corootSpan_dualAnnihilator_map_eq :
+    (P.corootSpan R).dualAnnihilator.map P.toDualLeft.symm =
+      (span R (range P.coroot')).dualCoannihilator :=
+  P.flip.rootSpan_dualAnnihilator_map_eq
 
 /-- A variant of `RootPairing.coxeterWeight` for root pairings which are valued in a smaller set of
 coefficients.

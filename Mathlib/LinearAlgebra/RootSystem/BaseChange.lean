@@ -39,7 +39,7 @@ complementary.
 All root systems are balanced and all finite root pairings over a field are balanced. -/
 class IsBalanced {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N) : Prop where
-  isPerfectCompl : P.toPerfectPairing.IsPerfectCompl P.rootSpan P.corootSpan
+  isPerfectCompl : P.toPerfectPairing.IsPerfectCompl (P.rootSpan R) (P.corootSpan R)
 
 instance {ι R M N : Type*} [AddCommGroup M] [AddCommGroup N]
     [CommRing R] [Module R M] [Module R N] (P : RootSystem ι R M N) :
