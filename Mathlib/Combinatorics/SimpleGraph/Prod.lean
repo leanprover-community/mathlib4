@@ -140,7 +140,7 @@ theorem ofBoxProdLeft_boxProdLeft [DecidableEq β] [DecidableRel G.Adj] {a₁ a�
     · exact ⟨h, rfl⟩
 
 @[simp]
-theorem ofBoxProdLeft_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
+theorem ofBoxProdRight_boxProdRight [DecidableEq α] [DecidableRel G.Adj] {a b₁ b₂ : α} :
     ∀ (w : G.Walk b₁ b₂), (w.boxProdRight G a).ofBoxProdRight = w
   | nil => rfl
   | cons' x y z h w => by
