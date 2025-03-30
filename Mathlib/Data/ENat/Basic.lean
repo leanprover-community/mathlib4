@@ -373,9 +373,7 @@ lemma mul_left_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (a * �
   exact Nat.mul_lt_mul_of_pos_left hxy (Nat.pos_of_ne_zero (by simpa using ha))
 
 lemma mul_right_strictMono (ha : a ≠ 0) (h_top : a ≠ ⊤) : StrictMono (· * a) := by
-  intro x y hxy
-  simp only [mul_comm _ a]
-  exact ENat.mul_left_strictMono ha h_top hxy
+  simpa [show (· * a) = (a * ·) by simp [mul_comm]] using mul_left_strictMono ha h_top
 
 lemma mul_le_mul_left_iff {x y : ℕ∞} (ha : a ≠ 0) (h_top : a ≠ ⊤) : a * x ≤ a * y ↔ x ≤ y :=
   (ENat.mul_left_strictMono ha h_top).le_iff_le
