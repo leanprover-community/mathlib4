@@ -136,6 +136,7 @@
   "Mathlib.Tactic.NormNum.Eq",
   "Mathlib.Tactic.NormNum.Ineq",
   "Mathlib.Tactic.NthRewrite",
+  "Mathlib.Tactic.Order",
   "Mathlib.Tactic.PPWithUniv",
   "Mathlib.Tactic.Peel",
   "Mathlib.Tactic.Polyrith",
