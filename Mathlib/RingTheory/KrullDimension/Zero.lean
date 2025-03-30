@@ -23,10 +23,6 @@ variable {I} in
 lemma Ideal.IsPrime.isMaximal' (hI : I.IsPrime) : I.IsMaximal :=
   I.isMaximal_of_isPrime
 
-variable {I} in
-lemma Ideal.isMaximal_iff_isPrime : I.IsMaximal ↔ I.IsPrime :=
-  ⟨fun h ↦ h.isPrime, fun h ↦ h.isMaximal'⟩
-
 lemma Ring.KrullDimLE.mem_minimalPrimes_iff {I J : Ideal R} :
     I ∈ J.minimalPrimes ↔ I.IsPrime ∧ J ≤ I :=
   ⟨fun H ↦ H.1, fun H ↦ ⟨H, fun _ h e ↦ (h.1.isMaximal'.eq_of_le H.1.ne_top e).ge⟩⟩
@@ -113,7 +109,7 @@ theorem Ring.KrullDimLE.unique_isPrime [IsLocalRing R] (J : Ideal R) [J.IsPrime]
 theorem Ring.KrullDimLE.isNilpotent_iff_mem_maximalIdeal [IsLocalRing R] {x} :
     IsNilpotent x ↔ x ∈ IsLocalRing.maximalIdeal R :=
   (Ring.krullDimLE_zero_and_isLocalRing_tfae R _
-    (List.mem_of_get? (n := 0) rfl) _ (List.mem_of_get? (n := 2) rfl)).mp
+    (List.mem_of_getElem? (i := 0) rfl) _ (List.mem_of_getElem? (i := 2) rfl)).mp
       ⟨inferInstance, inferInstance⟩ x
 
 theorem Ring.KrullDimLE.isNilpotent_iff_mem_nonunits [IsLocalRing R] {x} :
@@ -131,7 +127,7 @@ variable (R) in
 theorem IsLocalRing.of_isMaximal_nilradical [(nilradical R).IsMaximal] :
     IsLocalRing R :=
   ((Ring.krullDimLE_zero_and_isLocalRing_tfae R _
-    (List.mem_of_get? (n := 3) rfl) _ (List.mem_of_get? (n := 0) rfl)).mp
+    (List.mem_of_getElem? (i := 3) rfl) _ (List.mem_of_getElem? (i := 0) rfl)).mp
     inferInstance).2
 
 omit [Ring.KrullDimLE 0 R] in
@@ -139,7 +135,7 @@ variable (R) in
 theorem Ring.KrullDimLE.of_isMaximal_nilradical [(nilradical R).IsMaximal] :
     Ring.KrullDimLE 0 R :=
   ((Ring.krullDimLE_zero_and_isLocalRing_tfae R _
-    (List.mem_of_get? (n := 3) rfl) _ (List.mem_of_get? (n := 0) rfl)).mp
+    (List.mem_of_getElem? (i := 3) rfl) _ (List.mem_of_getElem? (i := 0) rfl)).mp
     inferInstance).1
 
 omit [Ring.KrullDimLE 0 R] in
