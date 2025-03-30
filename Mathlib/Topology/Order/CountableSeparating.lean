@@ -11,7 +11,7 @@ import Mathlib.Order.Filter.CountableSeparatingOn
 
 In this file we prove that in a linear order with second countable order topology,
 the points can be separated by countably many infinite intervals.
-We prove 4 versions of this statement (one for each of the inifinite intervals),
+We prove 4 versions of this statement (one for each of the infinite intervals),
 as well as provide convenience corollaries about `Filter.EventuallyEq`.
 -/
 

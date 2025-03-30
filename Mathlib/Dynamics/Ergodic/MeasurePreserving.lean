@@ -114,6 +114,11 @@ protected theorem sigmaFinite {f : α → β} (hf : MeasurePreserving f μa μb)
     SigmaFinite μa :=
   SigmaFinite.of_map μa hf.aemeasurable (by rwa [hf.map_eq])
 
+protected theorem sfinite {f : α → β} (hf : MeasurePreserving f μa μb) [SFinite μa] :
+    SFinite μb := by
+  rw [← hf.map_eq]
+  infer_instance
+
 theorem measure_preimage {f : α → β} (hf : MeasurePreserving f μa μb) {s : Set β}
     (hs : NullMeasurableSet s μb) : μa (f ⁻¹' s) = μb s := by
   rw [← hf.map_eq] at hs ⊢

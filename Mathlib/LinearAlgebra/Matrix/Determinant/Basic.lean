@@ -248,6 +248,16 @@ For the `simp` version of this lemma, see `det_submatrix_equiv_self`; this one i
 theorem det_reindex_self (e : m ≃ n) (A : Matrix m m R) : det (reindex e e A) = det A :=
   det_submatrix_equiv_self e.symm A
 
+/-- Reindexing both indices along equivalences preserves the absolute of the determinant.
+
+For the `simp` version of this lemma, see `abs_det_submatrix_equiv_equiv`;
+this one is unsuitable because `Matrix.reindex_apply` unfolds `reindex` first.
+-/
+theorem abs_det_reindex {R : Type*} [LinearOrderedCommRing R]
+    (e₁ e₂ : m ≃ n) (A : Matrix m m R) :
+    |det (reindex e₁ e₂ A)| = |det A| :=
+  abs_det_submatrix_equiv_equiv e₁.symm e₂.symm A
+
 theorem det_smul (A : Matrix n n R) (c : R) : det (c • A) = c ^ Fintype.card n * det A :=
   calc
     det (c • A) = det ((diagonal fun _ => c) * A) := by rw [smul_eq_diagonal_mul]
