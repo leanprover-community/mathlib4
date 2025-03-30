@@ -347,7 +347,6 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
   { primeSpectrumEquiv A with
     map_rel_iff' :=
       ⟨fun h => by
-        dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
         iterate 2 erw [idealOfLE_ofPrime] at this
         · exact this
@@ -363,6 +362,7 @@ open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
   max_def a b := congr_fun₂ sup_eq_maxDefault a b
+  decidableLE := _
 
 end Order
 
