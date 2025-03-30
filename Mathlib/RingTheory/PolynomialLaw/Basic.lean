@@ -18,7 +18,8 @@ For type theoretic reasons, if `R : Type u`, then the definition of the polynomi
 is restricted to `R`-algebras `S` such that `S : Type u`.
 Using the fact that a module is the direct limit of its finitely generated submodules, that a
 finitely generated subalgebra is a quotient of a polynomial ring in the universe `u`, plus
-the commutation of tensor products with direct limits, we will extend the functor to all `R`-algebras (TODO).
+the commutation of tensor products with direct limits, we will extend the functor
+to all `R`-algebras (TODO).
 
 ## Main definitions/lemmas
 
@@ -30,15 +31,15 @@ the commutation of tensor products with direct limits, we will extend the functo
 In further works, we construct the coefficients of a polynomial law and show the relation with
 polynomials (when the module `M` is free and finite).
 
+## Implementation notes
+
+In the literature, the theory is writen for commutative rings, but this implementation
+only assume `R` is a commutative semiring.
+
 ## References
 
  * [Roby, Norbert. 1963. « Lois polynomes et lois formelles en théorie des modules ».
 Annales scientifiques de l’École Normale Supérieure 80 (3): 213‑348](Roby-1963)
-
-## Remark: Extension to commutative semirings
-
-In the literature, the theory is writen for commutative rings, but what is done here
-works as well for commutative semirings.
 
 -/
 
