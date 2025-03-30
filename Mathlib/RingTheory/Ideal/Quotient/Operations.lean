@@ -438,7 +438,7 @@ theorem Quotient.liftₐ_comp (I : Ideal A) [I.IsTwoSided]
 theorem KerLift.map_smul (f : A →ₐ[R₁] B) (r : R₁) (x : A ⧸ (RingHom.ker f)) :
     f.kerLift (r • x) = r • f.kerLift x := by
   obtain ⟨a, rfl⟩ := Quotient.mkₐ_surjective R₁ _ x
-  exact _root_.map_smul f _ _
+  exact map_smul f _ _
 
 /-- The induced algebras morphism from the quotient by the kernel to the codomain.
 

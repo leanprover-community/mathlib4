@@ -950,7 +950,7 @@ def mkContinuousLinear (f : G →ₗ[𝕜] MultilinearMap 𝕜 E G') (C : ℝ)
         rfl
       map_smul' := fun c x => by
         ext1
-        simp only [_root_.map_smul]
+        simp only [map_smul]
         rfl }
     (max C 0) fun x => by
       simpa using ((f x).mkContinuous_norm_le' _).trans_eq <| by

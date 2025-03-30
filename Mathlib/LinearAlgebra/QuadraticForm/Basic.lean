@@ -591,7 +591,7 @@ def _root_.LinearEquiv.congrQuadraticMap (e : N ≃ₗ[R] P) :
   left_inv _ := ext fun _ => e.symm_apply_apply _
   right_inv _ := ext fun _ => e.apply_symm_apply _
   map_add' _ _ := ext fun _ => map_add e _ _
-  map_smul' _ _ := ext fun _ => _root_.map_smul e _ _
+  map_smul' _ _ := ext fun _ => map_smul e _ _
 
 @[simp]
 theorem _root_.LinearEquiv.congrQuadraticMap_refl :
@@ -688,7 +688,7 @@ variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 /-- A bilinear map gives a quadratic map by applying the argument twice. -/
 def toQuadraticMap (B : BilinMap R M N) : QuadraticMap R M N where
   toFun x := B x x
-  toFun_smul a x := by simp only [_root_.map_smul, LinearMap.smul_apply, smul_smul]
+  toFun_smul a x := by simp only [map_smul, LinearMap.smul_apply, smul_smul]
   exists_companion' := ⟨B + LinearMap.flip B, fun x y => by simp [add_add_add_comm, add_comm]⟩
 
 @[simp]
