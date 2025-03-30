@@ -471,7 +471,6 @@ theorem Preorder.toLE_injective : Function.Injective (@Preorder.toLE α) :=
     cases h
     have : A_lt = B_lt := by
       funext a b
-      show (LT.mk A_lt).lt a b = (LT.mk B_lt).lt a b
       rw [A_iff, B_iff]
     cases this
     congr

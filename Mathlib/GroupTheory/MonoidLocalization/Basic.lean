@@ -690,7 +690,6 @@ noncomputable def lift : N →* P where
   toFun z := g (f.sec z).1 * (IsUnit.liftRight (g.restrict S) hg (f.sec z).2)⁻¹
   map_one' := by rw [mul_inv_left, mul_one]; exact f.eq_of_eq hg (by rw [← sec_spec, one_mul])
   map_mul' x y := by
-    dsimp only
     rw [mul_inv_left hg, ← mul_assoc, ← mul_assoc, mul_inv_right hg, mul_comm _ (g (f.sec y).1), ←
       mul_assoc, ← mul_assoc, mul_inv_right hg]
     repeat rw [← g.map_mul]
@@ -1211,11 +1210,11 @@ def monoidOf : Submonoid.LocalizationMap S (Localization S) :=
         S with
     toFun := fun x ↦ mk x 1
     map_one' := mk_one
-    map_mul' := fun x y ↦ by dsimp only; rw [mk_mul, mul_one]
+    map_mul' := fun x y ↦ by rw [mk_mul, mul_one]
     map_units' := fun y ↦
-      isUnit_iff_exists_inv.2 ⟨mk 1 y, by dsimp only; rw [mk_mul, mul_one, one_mul, mk_self]⟩
+      isUnit_iff_exists_inv.2 ⟨mk 1 y, by rw [mk_mul, mul_one, one_mul, mk_self]⟩
     surj' := fun z ↦ induction_on z fun x ↦
-      ⟨x, by dsimp only; rw [mk_mul, mul_comm x.fst, ← mk_mul, mk_self, one_mul]⟩
+      ⟨x, by rw [mk_mul, mul_comm x.fst, ← mk_mul, mk_self, one_mul]⟩
     exists_of_eq := fun x y ↦ Iff.mp <|
       mk_eq_mk_iff.trans <|
         r_iff_exists.trans <|

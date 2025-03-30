@@ -267,7 +267,7 @@ instance : Inhabited (NormalWord d) := ⟨NormalWord.empty⟩
 
 instance (i : ι) : Inhabited (Pair d i) :=
   ⟨{ (empty : NormalWord d) with
-      head := 1,
+      head := 1, tail := _,
       fstIdx_ne := fun h => by cases h }⟩
 
 @[ext]

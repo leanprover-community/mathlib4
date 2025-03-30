@@ -443,10 +443,11 @@ def GlueData.ofGlueData' (D : GlueData' C) : GlueData C where
   t' := D.t''
   t_fac i j k := by
     delta GlueData'.t''
-    split_ifs
+    obtain rfl | _ := eq_or_ne i j
+    · simp
+    obtain rfl | _ := eq_or_ne i k
     · simp [*]
-    · cases ‹i ≠ j› (‹i = k›.trans ‹j = k›.symm)
-    · simp [‹j ≠ k›.symm, *]
+    obtain rfl | _ := eq_or_ne j k
     · simp [*]
     · simp [*, reassoc_of% D.t_fac]
   cocycle i j k := by

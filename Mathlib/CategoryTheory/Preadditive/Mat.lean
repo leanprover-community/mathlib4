@@ -153,7 +153,9 @@ instance (M N : Mat_ C) : AddCommGroup (M ⟶ N) := by
 theorem add_apply {M N : Mat_ C} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl
 
+#adaptation_note /-- 2025-03-29 Needed to add `homGroup` field for #7717 -/
 instance : Preadditive (Mat_ C) where
+  homGroup M N := inferInstance
   add_comp M N K f f' g := by ext; simp [Finset.sum_add_distrib]
   comp_add M N K f g g' := by ext; simp [Finset.sum_add_distrib]
 
@@ -402,7 +404,6 @@ def lift (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ D where
   obj X := ⨁ fun i => F.obj (X.X i)
   map f := biproduct.matrix fun i j => F.map (f i j)
   map_id X := by
-    dsimp
     ext i j
     by_cases h : j = i
     · subst h; simp
