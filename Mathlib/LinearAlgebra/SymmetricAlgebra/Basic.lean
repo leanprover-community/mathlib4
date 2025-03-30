@@ -23,11 +23,6 @@ This is the free commutative `R`-algebra generated (`R`-linearly) by the module 
    `ι : L →ₗ[R] A` with `p : IsSymmetricAlgebra ι`, `IsSymmetricAlgebra.lift p f`
    is the lift of `f` to an `R`-algebra morphism `A →ₐ[R] A'`.
 
-## Theorems
-
-1. `SymmetricAlgebra.isSymmetricAlgebra R L` states that the concrete construction of the symmetric
-   algebra satisfies the univeral property codified in `IsSymmetricAlgebra`.
-
 -/
 
 open RingQuot
@@ -108,7 +103,7 @@ theorem algHom_ext {F G : (SymmetricAlgebra R L) →ₐ[R] A}
 @[simp]
 lemma lift_iota : (lift (ι R L)) = AlgHom.id R (SymmetricAlgebra R L) := by
   apply algHom_ext
-  rw [lift_comp]
+  rw [lift_comp_ι]
   rfl
 
 end SymmetricAlgebra
