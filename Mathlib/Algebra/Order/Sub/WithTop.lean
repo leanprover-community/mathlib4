@@ -56,7 +56,8 @@ theorem sub_top {a : WithTop α} : a - ⊤ = (⊥ : α) := by cases a <;> rfl
 
 lemma sub_ne_top_iff {a b : WithTop α} : a - b ≠ ⊤ ↔ a ≠ ⊤ ∨ b = ⊤ := by simp [or_iff_not_imp_left]
 
-theorem map_sub [Sub β] [Bot β] {f : α → β} (h : ∀ x y, f (x - y) = f x - f y) (h₀ : f ⊥ = ⊥) :
+protected theorem map_sub [Sub β] [Bot β] {f : α → β}
+    (h : ∀ x y, f (x - y) = f x - f y) (h₀ : f ⊥ = ⊥) :
     ∀ x y : WithTop α, (x - y).map f = x.map f - y.map f
   | _, ⊤ => by simp only [sub_top, map_coe, h₀, map_top]
   | ⊤, (x : α) => rfl
