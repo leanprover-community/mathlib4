@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.RingTheory.Ideal.MinimalPrime.Basic
 import Mathlib.RingTheory.Localization.AtPrime
+import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 
