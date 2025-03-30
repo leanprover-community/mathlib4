@@ -1,7 +1,7 @@
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Combinatorics.SimpleGraph.Brooks.DegreeOn
+import Mathlib.Combinatorics.SimpleGraph.Brooks.DegreeOnInduce
 set_option linter.style.header false
 namespace SimpleGraph
 section partialcol
@@ -10,9 +10,6 @@ variable {α β: Type*} {G : SimpleGraph α} {s t : Set α}
 open Set
 abbrev PartialColoring (G : SimpleGraph α) (s : Set α) (β : Type*) :=
    (G.induce s).spanningCoe.Coloring β
-
-lemma induce_spanningCoe_adj (G : SimpleGraph α) (s : Set α) {u v : α} :
-    (G.induce s).spanningCoe.Adj u v ↔ G.Adj u v ∧ u ∈ s ∧ v ∈ s := by simp
 
 variable {v w : α} {s : Set α} {C : G.PartialColoring s β}
 theorem PartialColoring.valid  (hv : v ∈ s) (hw : w ∈ s) (h : G.Adj v w) : C v ≠ C w :=
@@ -181,7 +178,7 @@ lemma extend_def (C : G.Coloring β) (a : α) [Fintype (G.neighborSet a)]
 
 
 @[simp]
-lemma copy_extend (C : G.PartialColoring s) {t : Finset α} (a : α) (h : s = t) :
+lemma copy_extend (C : G.PartialColoring s β) {t : Finset α} (a : α) (h : s = t) :
      (C.copy h).extend a = C.extend a := by
   simp_rw [extend_def]
   congr <;> exact h.symm
