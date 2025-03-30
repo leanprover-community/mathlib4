@@ -245,10 +245,10 @@ variable [CommRing R] [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N] (Q : QuadraticMap R M N)
 
 @[simp]
-theorem map_neg (x : M) : Q (-x) = Q x := by
+protected theorem map_neg (x : M) : Q (-x) = Q x := by
   rw [← @neg_one_smul R _ _ _ _ x, map_smul, neg_one_mul, neg_neg, one_smul]
 
-theorem map_sub (x y : M) : Q (x - y) = Q (y - x) := by rw [← neg_sub, map_neg]
+protected theorem map_sub (x y : M) : Q (x - y) = Q (y - x) := by rw [← neg_sub, Q.map_neg]
 
 @[simp]
 theorem polar_zero_left (y : M) : polar Q 0 y = 0 := by
