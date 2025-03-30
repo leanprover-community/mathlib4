@@ -77,15 +77,6 @@ lemma Nat.valuation_toHeightOneSpectrum (p : ℕ) [Fact p.Prime] {r : ℚ} (hr :
   · simp
   · simpa
 
-@[simp]
-lemma WithZero.coe_unitsWithZeroEquiv_symm {α : Type*} [Group α] (γ : α) :
-    (WithZero.unitsWithZeroEquiv.symm γ : WithZero α) = (γ : WithZero α) := rfl
-
-@[simp]
-lemma WithVal.v_equiv {R Γ₀ : Type*} [Ring R] [LinearOrderedCommGroupWithZero Γ₀]
-    (v : Valuation R Γ₀) (x : R) :
-    Valued.v ((WithVal.equiv v).symm x) = v x := rfl
-
 /-- The canonical map from the abstract completion of `ℚ` at `p` to `ℚ_[p]`.
 This is a homeomorphism, see `Padic.isHomeomorph_ofAdicCompletion`. -/
 noncomputable
@@ -105,7 +96,7 @@ def Padic.ofAdicCompletion (p : ℕ) [Fact p.Prime] :
   rw [padicNorm]
   split_ifs with h
   · simp
-  rw [Set.mem_setOf, WithVal.v_equiv, WithZero.coe_unitsWithZeroEquiv_symm,
+  rw [Set.mem_setOf, WithVal.apply_equiv, WithZero.coe_unitsWithZeroEquiv_symm,
     Nat.valuation_toHeightOneSpectrum _ h, WithZero.coe_lt_coe,
       Multiplicative.ofAdd_lt, neg_lt_neg_iff] at hx
   simp only [Rat.cast_inv, Rat.cast_zpow, Rat.cast_natCast, zpow_natCast]

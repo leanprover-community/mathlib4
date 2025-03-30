@@ -270,6 +270,10 @@ theorem coe_unitsWithZeroEquiv_eq_units_val (γ : (WithZero α)ˣ) :
     ↑(unitsWithZeroEquiv γ) = γ.val := by
   simp only [WithZero.unitsWithZeroEquiv, MulEquiv.coe_mk, Equiv.coe_fn_mk, WithZero.coe_unzero]
 
+@[simp]
+lemma coe_unitsWithZeroEquiv_symm (γ : α) :
+    (unitsWithZeroEquiv.symm γ : WithZero α) = (γ : WithZero α) := rfl
+
 /-- Any group with zero is isomorphic to adjoining `0` to the units of itself. -/
 def withZeroUnitsEquiv {G : Type*} [GroupWithZero G]
     [DecidablePred (fun a : G ↦ a = 0)] :
