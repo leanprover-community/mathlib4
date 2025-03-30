@@ -48,47 +48,42 @@ abbrev SymmetricAlgebra := RingQuot (SymRel R L)
 
 namespace SymmetricAlgebra
 
-open TensorAlgebra in
-instance : CommSemiring (SymmetricAlgebra R L) where
-  mul_comm a b := match a, b with
-    | ⟨a⟩, ⟨b⟩ => by
-      apply Quot.ind _ a; apply Quot.ind _ b; intro a b;
-      rw [mul_quot, mul_quot]
-      suffices h : ∀ (x : TensorAlgebra R L),
-      (⟨Quot.mk (RingQuot.Rel (SymRel R L)) (x * a)⟩ : (RingQuot (SymRel R L))) =
-       ⟨Quot.mk (RingQuot.Rel (SymRel R L)) (a * x)⟩ by
-        exact (h b)
-      let P : TensorAlgebra R L → TensorAlgebra R L → Prop :=
-       fun x y ↦ (⟨Quot.mk (RingQuot.Rel (SymRel R L)) (x * y)⟩ : (RingQuot (SymRel R L))) =
-        ⟨Quot.mk (RingQuot.Rel (SymRel R L)) (y * x)⟩
-      have P_smul (r : R) (x : TensorAlgebra R L) : P x (algebraMap R (TensorAlgebra R L) r) := by
-        unfold P; rw [Algebra.commutes]
-      have P_mul (x y z : TensorAlgebra R L) (h1 : P z x) (h2 : P z y) : P z (x * y) := by
-        unfold P at h1 h2 ⊢
-        rw [← mul_quot, ← mul_quot, ← mul_quot, ← mul_quot,
-            ← mul_assoc, mul_quot, h1, ← mul_quot, mul_assoc, mul_quot, h2, ← mul_quot, mul_assoc]
-      have P_add (x y z : TensorAlgebra R L) (h1 : P z x) (h2 : P z y) : P z (x + y) := by
-        unfold P at h1 h2 ⊢
-        rw [mul_add, add_mul, ← add_quot, ← add_quot, h1, h2]
-      have P_symm {x y : TensorAlgebra R L} (h : P x y) : P y x := h.symm
-      have P_base (x y : L) : P (ι R x) (ι R y) := by
-        unfold P
-        rw [Quot.sound (Rel.of (SymRel.mul_comm x y))]
-      apply TensorAlgebra.induction (C := fun y ↦ ∀ (x : TensorAlgebra R L), P x y) _ _ _ _ a
-      · intro r; exact P_smul r
-      · intro x; apply TensorAlgebra.induction
-        · intro r; exact P_symm (P_smul r (ι R x))
-        · intro y; exact P_base y x
-        · intro a1 a2 h1 h2; exact P_symm (P_mul a1 a2 (ι R x) (P_symm h1) (P_symm h2))
-        · intro a1 a2 h1 h2; exact P_symm (P_add a1 a2 (ι R x) (P_symm h1) (P_symm h2))
-      · intro a1 a2 h1 h2 x; exact P_mul a1 a2 x (h1 x) (h2 x)
-      · intro a1 a2 h1 h2 x; exact P_add a1 a2 x (h1 x) (h2 x)
-
 /-- Algebra homomorphism from the tensor algebra over L to the symmetric algebra over L. -/
 abbrev algHom : TensorAlgebra R L →ₐ[R] SymmetricAlgebra R L := RingQuot.mkAlgHom R (SymRel R L)
 
+lemma algHom_surjective : Function.Surjective (algHom R L) :=
+  RingQuot.mkAlgHom_surjective _ _
+
 /-- Canonical inclusion of `L` into the symmetric algebra `𝔖 R L`. -/
 def ι : L →ₗ[R] SymmetricAlgebra R L := (algHom R L).toLinearMap.comp (TensorAlgebra.ι R (M := L))
+
+@[elab_as_elim]
+theorem induction {C : SymmetricAlgebra R L → Prop}
+    (algebraMap : ∀ r, C (algebraMap R (SymmetricAlgebra R L) r)) (ι : ∀ x, C (ι R L x))
+    (mul : ∀ a b, C a → C b → C (a * b)) (add : ∀ a b, C a → C b → C (a + b))
+    (a : SymmetricAlgebra R L) : C a := by
+  rcases algHom_surjective _ _ a with ⟨a, rfl⟩
+  induction a using TensorAlgebra.induction with
+  | algebraMap r => rw [AlgHom.map_algebraMap]; exact algebraMap r
+  | ι x => exact ι x
+  | mul x y hx hy => rw [map_mul]; exact mul _ _ hx hy
+  | add x y hx hy => rw [map_add]; exact add _ _ hx hy
+
+open TensorAlgebra in
+instance : CommSemiring (SymmetricAlgebra R L) where
+  mul_comm a b := by
+    have ι_commute (x y : L) : Commute (ι R L x) (ι R L y) := by
+      simp [commute_iff_eq, ι, ← map_mul, mkAlgHom_rel _ (SymRel.mul_comm x y)]
+    change Commute a b
+    induction b using SymmetricAlgebra.induction with
+    | algebraMap r => exact Algebra.commute_algebraMap_right _ _
+    | ι x => induction a using SymmetricAlgebra.induction with
+      | algebraMap r => exact Algebra.commute_algebraMap_left _ _
+      | ι y => exact ι_commute _ _
+      | mul a b ha hb => exact ha.mul_left hb
+      | add a b ha hb => exact ha.add_left hb
+    | mul b c hb hc => exact hb.mul_right hc
+    | add b c hb hc => exact hb.add_right hc
 
 variable {R L} {A : Type*} [CommSemiring A] [Algebra R A] (f : L →ₗ[R] A)
 
