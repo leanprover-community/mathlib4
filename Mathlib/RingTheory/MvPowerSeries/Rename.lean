@@ -125,7 +125,6 @@ theorem rename_id : rename tendsto_id = AlgHom.id R (MvPowerSeries σ R) := by
   ext1 F
   apply continuous_algHom_ext (by fun_prop) (by simp only [AlgHom.coe_id]; fun_prop) (by simp)
 
-omit hf in
 lemma rename_id_apply (F : MvPowerSeries σ R) : rename tendsto_id F = F := by
   simp
 
