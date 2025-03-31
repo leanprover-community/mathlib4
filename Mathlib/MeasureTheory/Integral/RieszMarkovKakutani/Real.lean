@@ -124,12 +124,16 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     · right; left
       exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
   -- The sets `E n` are a partition of the support of `f`.
-  have partition_aux: range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := by
-    intro z hz
-    simp_rw [show ∀ n, y n - ε = (a + n * ε) by simp [y, mul_add, ← add_assoc, mul_comm],
-      show ∀ n, y n = a + n * ε + ε by simp [y, mul_add, ← add_assoc, mul_comm]]
-    rw [RMK_iUnion_Ioc a hε, mem_Ioc]
-    exact ⟨(hf hz).1, le_of_lt (hf hz).2⟩
+  have partition_aux: range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := calc
+    _ ⊆ Ioc a (a + N * ε) := fun _ hz ↦ Ioo_subset_Ioc_self (hf hz)
+    _ = ⋃ n ∈ Finset.range N, Ioc (a + n * ε) (a + n * ε + ε) :=
+      Eq.symm <| iUnion_Ioc_Ioc N a (le_of_lt hε)
+    _ ⊆ ⋃ n : Fin N, Ioc (a + n * ε) (a + n * ε + ε) := by
+      intro _
+      simp only [mem_iUnion, Finset.mem_range, exists_prop]
+      rintro ⟨i, hi⟩
+      exact ⟨⟨i, hi.1⟩ , hi.2⟩
+    _ = ⋃ n, Ioc (y n - ε) (y n) := by simp [y, mul_add, ← add_assoc, mul_comm]
   have partition : tsupport f = ⋃ j, E j := by
     simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
     exact fun x hx ↦ partition_aux (mem_range_self x)
@@ -166,8 +170,7 @@ private lemma open_approx' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c
     ∧ ν.measure (V n) ≤ ν.measure (E n) + ENNReal.ofReal (ε / N) := by
   have h (n : Fin N) (x : X) (hx : x ∈ E n) := lt_add_of_le_of_pos (hy n x hx) hε
   have h' (n : Fin N) : ν.outerMeasure (E n) ≠ ⊤ := by
-    rw [← Content.measure_apply ν (hν' n)]
-    exact hν n
+    simpa [← Content.measure_apply ν (hν' n)] using hν n
   use fun n ↦ Classical.choose <|
     open_approx f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
   intro n
@@ -187,8 +190,8 @@ private lemma exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ)
   exact ⟨N, h'N, hN.le⟩
 
 /-- The main estimate in the proof of the Riesz-Markov-Kakutani: `Λ f` is bounded above by the
-integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
-private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
+integral of `f` with respect to the `rieszMeasure` associated to `Λ`. -/
+private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
   -- The case `IsEmpty X` is elementary.
   · have : Λ f = 0 := by rw [show f = 0 by ext x; refine isEmptyElim x, LinearMap.map_zero Λ]
@@ -197,7 +200,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x �
   · rw [not_isEmpty_iff] at hX
     let μ := rieszMeasure hΛ
     let K := tsupport f
-    -- Suffices to show that `Λ f ≤ ∫ (x : X), f x ∂μ + ε` for arbitrary `ε`.
+    -- Suffices to show that `Λ f ≤ ∫ x, f x ∂μ + ε` for arbitrary `ε`.
     apply le_iff_forall_pos_le_add.mpr
     intro ε hε
     -- Choose an interval `(a, b)` which contains the range of `f`.
@@ -291,18 +294,15 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x �
     · -- use that `μ K ≤ Λ (∑ n, g n)`
       gcongr
       rw [Eq.symm (map_sum Λ g _)]
-      have h x : 0 ≤ (∑ n, g n) x := by
-        rw [coe_sum, Finset.sum_apply]
-        exact Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
+      have h x : 0 ≤ (∑ n, g n) x := by simpa using Fintype.sum_nonneg fun n ↦ (hg.2.2.1 n x).1
       have h' x (hx : x ∈ K) : (∑ n, g n) x = 1 := by simp [hg.2.1 hx]
       apply ENNReal.toReal_le_of_le_ofReal
       · exact hΛ (∑ n, g n) (fun x ↦ h x)
       · exact rieszMeasure_le_of_eq_one hΛ h f.2 h'
     · -- Rearrange the sums
-      simp_rw [mul_add]
       have (n : Fin N) : (|a| + y n + ε') * (μ (E n)).toReal =
           (|a| + 2 * ε') * (μ (E n)).toReal + (y n - ε') * (μ (E n)).toReal := by linarith
-      simp_rw [this]
+      simp_rw [mul_add, this]
       have : ∑ i, (μ (E i)).toReal = (μ K).toReal := by
         suffices h : μ K = ∑ i, (μ (E i)) by
           rw [h]; exact Eq.symm <| ENNReal.toReal_sum <| fun n _ ↦ hE' n
@@ -359,14 +359,12 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x �
 
 /-- The **Riesz-Markov-Kakutani representation theorem**: given a positive linear functional `Λ`,
 the integral of `f` with respect to the `rieszMeasure` associated to `Λ` is equal to `Λ f`. -/
-theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ (x : X), f x ∂(rieszMeasure hΛ) = Λ f := by
-  -- We apply the result `Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ)` to `f` and `-f`.
+theorem integral_rieszMeasure (f : C_c(X, ℝ)) : ∫ x, f x ∂(rieszMeasure hΛ) = Λ f := by
+  -- We apply the result `Λ f ≤ ∫ x, f x ∂(rieszMeasure hΛ)` to `f` and `-f`.
   apply le_antisymm
   -- prove the inequality for `- f`
   · calc
-      _ = ∫ (x : X), -(-f) x ∂(rieszMeasure hΛ) := by
-        simp only [coe_neg, Pi.neg_apply, neg_neg]
-      _ = - ∫ (x : X), (-f) x ∂(rieszMeasure hΛ) := integral_neg' (-f)
+      _ = - ∫ x, (-f) x ∂(rieszMeasure hΛ) := by simpa using integral_neg' (-f)
       _ ≤ - Λ (-f) := neg_le_neg (integral_riesz_le hΛ (-f))
       _ = Λ (- -f) := Eq.symm (LinearMap.map_neg Λ (- f))
       _ = _ := by rw [neg_neg]
