@@ -123,6 +123,30 @@ lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
   rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
   exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
 
+/-- An induction principle for span membership. If `J` holds for 0 and all elements of `s`, and is
+preserved under addition and left and right multiplication, then `p` holds for all elements of
+the span of `s`. -/
+@[elab_as_elim]
+theorem span_induction {s : Set R}
+    {p : (x : R) → x ∈ TwoSidedIdeal.span s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
+    (zero : p 0 (zero_mem _))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem _ hx hy))
+    (neg : ∀ x hx, p x hx → p (-x) (neg_mem _ hx))
+    (left_absorb : ∀ a x hx, p x hx → p (a * x) (mul_mem_left _ _ _ hx))
+    (right_absorb : ∀ b x hx, p x hx → p (x * b) (mul_mem_right _ _ _ hx))
+    {x : R} (hx : x ∈ span s) : p x hx :=
+  let J : TwoSidedIdeal R := .mk'
+    {x | ∃ hx, p x hx}
+    ⟨zero_mem _, zero⟩
+    (fun ⟨hx1, hx2⟩ ⟨hy1, hy2⟩ ↦ ⟨add_mem _ hx1 hy1, add _ _ hx1 hy1 hx2 hy2⟩)
+    (fun ⟨hx1, hx2⟩ ↦ ⟨neg_mem _ hx1, neg _ hx1 hx2⟩)
+    (fun {x' y'} ⟨hy1, hy2⟩ ↦ ⟨mul_mem_left _ _ _ hy1, left_absorb _ _ _ hy2⟩)
+    (fun {x' y'} ⟨hx1, hx2⟩ ↦ ⟨mul_mem_right _ _ _ hx1, right_absorb _ _ _ hx2⟩)
+  span_le (s := s) (I := J) |>.2
+    (fun x hx ↦ ⟨by simpa using (mem_span_iff.2 fun I a ↦ a hx), by simp_all⟩) hx
+      |>.elim fun _ ↦ by simp
+
 end NonUnitalNonAssocRing
 
 section NonAssocRing
@@ -208,29 +232,6 @@ lemma mem_span_iff_mem_addSubgroup_closure_nonunital {s : Set R} {z : R} :
       · exact .inr <| ⟨r * y, ⟨r, mem_univ _, y, hy, rfl⟩, x, mem_univ _, rfl⟩
       · refine .inr <| ⟨r' * y, ⟨r', mem_univ _, y, hy, rfl⟩, r * x, mem_univ _, ?_⟩
         simp [mul_assoc]
-
-/-- An induction principle for span membership. If `J` holds for 0 and all elements of `s`, and is
-preserved under addition and left and right multiplication, then `p` holds for all elements of
-the span of `s`. -/
-@[elab_as_elim]
-theorem span_induction {s : Set R}
-    {p : (x : R) → x ∈ TwoSidedIdeal.span s → Prop}
-    (mem : ∀ (x) (h : x ∈ s), p x (subset_span h))
-    (zero : p 0 (TwoSidedIdeal.zero_mem _))
-    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (TwoSidedIdeal.add_mem _ hx hy))
-    (neg : ∀ x hx, p x hx → p (-x) (TwoSidedIdeal.neg_mem _ hx))
-    (left_absorb : ∀ (a : R) (x hx), p x hx → p (a * x) (TwoSidedIdeal.mul_mem_left _ _ _ hx))
-    (right_absorb : ∀ (b : R) (x : R) (hx), p x hx → p (x * b)
-      (TwoSidedIdeal.mul_mem_right _ _ _ hx)){x} (hx : x ∈ span s) : p x hx := by
-  let J : TwoSidedIdeal R := .mk' {x | ∃ hx, p x hx} ⟨TwoSidedIdeal.zero_mem _, zero⟩
-    (fun ⟨hx1, hx2⟩ ⟨hy1, hy2⟩ ↦ ⟨TwoSidedIdeal.add_mem _ hx1 hy1, add _ _ hx1 hy1 hx2 hy2⟩)
-    (fun ⟨hx1, hx2⟩ ↦ ⟨TwoSidedIdeal.neg_mem _ hx1, neg _ hx1 hx2⟩)
-    (fun {x' y'} ⟨hy1, hy2⟩ ↦ ⟨TwoSidedIdeal.mul_mem_left _ _ _ hy1,
-      by simpa [mul_one] using (left_absorb _ _ _ hy2)⟩)
-    (fun {x' y'} ⟨hx1, hx2⟩ ↦ ⟨TwoSidedIdeal.mul_mem_right _ _ _ hx1,
-      by simpa [mul_assoc, one_mul] using right_absorb _ _ _ hx2⟩)
-  exact span_le (s := s) (I := J)|>.2 (fun x hx ↦
-    ⟨by simpa using (mem_span_iff.2 fun I a ↦ a hx), by simp_all⟩) hx|>.elim fun _ ↦ (by simp)
 
 end NonUnitalRing
 
