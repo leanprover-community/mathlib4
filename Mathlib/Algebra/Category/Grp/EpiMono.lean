@@ -225,8 +225,8 @@ theorem h_apply_infinity (x : B) (hx : x ∈ f.hom.range) : (h x) ∞ = ∞ := b
 theorem h_apply_fromCoset (x : B) :
     (h x) (fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩) =
       fromCoset ⟨f.hom.range, 1, one_leftCoset _⟩ := by
-    change ((τ).symm.trans (g x)).trans τ _ = _
-    simp [-MonoidHom.coe_range, τ_symm_apply_fromCoset, g_apply_infinity, τ_apply_infinity]
+  change ((τ).symm.trans (g x)).trans τ _ = _
+  simp [-MonoidHom.coe_range, τ_symm_apply_fromCoset, g_apply_infinity, τ_apply_infinity]
 
 theorem h_apply_fromCoset' (x : B) (b : B) (hb : b ∈ f.hom.range) :
     h x (fromCoset ⟨b • f.hom.range, b, rfl⟩) = fromCoset ⟨b • ↑f.hom.range, b, rfl⟩ :=
@@ -277,14 +277,10 @@ theorem comp_eq : (f ≫ ofHom g) = f ≫ ofHom h := by
 
 theorem g_ne_h (x : B) (hx : x ∉ f.hom.range) : g ≠ h := by
   intro r
+  apply fromCoset_ne_of_nin_range _ hx
   replace r :=
     DFunLike.congr_fun (DFunLike.congr_fun r x) (fromCoset ⟨f.hom.range, ⟨1, one_leftCoset _⟩⟩)
-  change _ = ((τ).symm.trans (g x)).trans τ _ at r
-  rw [g_apply_fromCoset] at r
-  simp only [MonoidHom.coe_range, Subtype.coe_mk, Equiv.symm_swap, Equiv.toFun_as_coe,
-    Equiv.coe_trans, Function.comp_apply] at r
-  erw [Equiv.swap_apply_left, g_apply_infinity, Equiv.swap_apply_right] at r
-  exact fromCoset_ne_of_nin_range _ hx r
+  simpa [g_apply_fromCoset, «h», tau, g_apply_infinity] using r
 
 end SurjectiveOfEpiAuxs
 

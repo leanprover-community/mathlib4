@@ -524,10 +524,10 @@ open Lean in
 private partial def mkInsertTerm {m : Type → Type} [Monad m] [MonadQuotation m]
     (xs : TSyntaxArray `term) : m Term := run 0 where
   run (i : Nat) : m Term := do
-    if i + 1 == xs.size then
-      ``(singleton $(xs[i]!))
-    else if i < xs.size then
-      ``(insert $(xs[i]!) $(← run (i + 1)))
+    if h : i + 1 = xs.size then
+      ``(singleton $(xs[i]))
+    else if h : i < xs.size then
+      ``(insert $(xs[i]) $(← run (i + 1)))
     else
       ``(EmptyCollection.emptyCollection)
 

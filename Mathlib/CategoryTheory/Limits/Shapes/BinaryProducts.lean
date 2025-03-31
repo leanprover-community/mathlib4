@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.DiscreteCategory
+import Mathlib.CategoryTheory.Discrete.Basic
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
@@ -569,15 +569,11 @@ theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W �
     prod.lift f g ≫ prod.snd = g :=
   limit.lift_π _ _
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: it can also prove the og version
 @[reassoc]
 theorem coprod.inl_desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
     coprod.inl ≫ coprod.desc f g = f :=
   colimit.ι_desc _ _
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: it can also prove the og version
 @[reassoc]
 theorem coprod.inr_desc {W X Y : C} [HasBinaryCoproduct X Y] (f : X ⟶ W) (g : Y ⟶ W) :
     coprod.inr ≫ coprod.desc f g = g :=
@@ -813,21 +809,15 @@ instance coprod.map_epi {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g 
     · rw [← cancel_epi g]
       simpa using congr_arg (fun f => coprod.inr ≫ f) h⟩
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: and the og version too
 @[reassoc]
 theorem coprod.map_codiag {X Y : C} (f : X ⟶ Y) [HasBinaryCoproduct X X] [HasBinaryCoproduct Y Y] :
     coprod.map f f ≫ codiag Y = codiag X ≫ f := by simp
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: and the og version too
 @[reassoc]
 theorem coprod.map_inl_inr_codiag {X Y : C} [HasBinaryCoproduct X Y]
     [HasBinaryCoproduct (X ⨿ Y) (X ⨿ Y)] :
     coprod.map coprod.inl coprod.inr ≫ codiag (X ⨿ Y) = 𝟙 (X ⨿ Y) := by simp
 
--- The simp linter says simp can prove the reassoc version of this lemma.
--- Porting note: and the og version too
 @[reassoc]
 theorem coprod.map_comp_inl_inr_codiag [HasColimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
@@ -1013,7 +1003,6 @@ end
 
 noncomputable section ProdFunctor
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1120,7 +1109,6 @@ theorem prodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (prodCom
 /-- The natural isomorphism `F(A ⨯ -) ≅ FA ⨯ F-`, provided each `prodComparison F A B` is an
 isomorphism (as `B` changes).
 -/
--- @[simps (config := { rhsMd := semireducible })] -- Porting note: no config for semireducible
 @[simps]
 def prodComparisonNatIso [HasBinaryProducts C] [HasBinaryProducts D] (A : C)
     [∀ B, IsIso (prodComparison F A B)] :
@@ -1198,13 +1186,11 @@ theorem coprodComparison_inv_natural (f : A ⟶ A') (g : B ⟶ B') [IsIso (copro
 /-- The natural isomorphism `FA ⨿ F- ≅ F(A ⨿ -)`, provided each `coprodComparison F A B` is an
 isomorphism (as `B` changes).
 -/
--- @[simps (config := { rhsMd := semireducible })] -- Porting note: no config for semireducible
 @[simps]
 def coprodComparisonNatIso [HasBinaryCoproducts C] [HasBinaryCoproducts D] (A : C)
     [∀ B, IsIso (coprodComparison F A B)] :
-    F ⋙ coprod.functor.obj (F.obj A) ≅ coprod.functor.obj A ⋙ F := by
-  refine { @asIso _ _ _ _ _ (?_) with hom := coprodComparisonNatTrans F A }
-  apply NatIso.isIso_of_isIso_app -- Porting note: this did not work inside { }
+    F ⋙ coprod.functor.obj (F.obj A) ≅ coprod.functor.obj A ⋙ F :=
+  { @asIso _ _ _ _ _ (NatIso.isIso_of_isIso_app ..) with hom := coprodComparisonNatTrans F A }
 
 end CoprodComparison
 

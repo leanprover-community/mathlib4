@@ -37,7 +37,7 @@ section Semiring
 variable {M : ∀ i, κ i → Type uM} {N : Type uN}
 
 variable [Finite ι] [Semiring R]
-variable [∀ i k, AddCommMonoid (M i k)] [ AddCommMonoid N]
+variable [∀ i k, AddCommMonoid (M i k)] [AddCommMonoid N]
 variable [∀ i k, Module R (M i k)] [Module R N]
 
 /-- Two multilinear maps from finitely supported functions are equal if they agree on the

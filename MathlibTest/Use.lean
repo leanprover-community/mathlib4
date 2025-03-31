@@ -231,4 +231,18 @@ example : let P : Nat → Prop := fun _x => ∃ _n : Nat, True; P 1 := by
   intro P
   use 1
 
+/--
+error: invalid occurrence of `·` notation, it must be surrounded by parentheses (e.g. `(· + 1)`)
+---
+error: unsolved goals
+case h
+⊢ sorry 1 = 1
+-/
+#guard_msgs in
+example : ∃ f : Nat → Nat, f 1 = 1 := by
+  use ·
+
+example : ∃ f : Nat → Nat, f 1 = 1 := by
+  use (·)
+
 end UseTests

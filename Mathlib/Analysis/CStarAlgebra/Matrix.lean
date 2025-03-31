@@ -225,7 +225,7 @@ scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedSpace
 identification with (continuous) linear endmorphisms of `EuclideanSpace 𝕜 n`. -/
 def instL2OpNormedRing : NormedRing (Matrix n n 𝕜) where
   dist_eq := l2OpNormedRingAux.dist_eq
-  norm_mul := l2OpNormedRingAux.norm_mul
+  norm_mul_le := l2OpNormedRingAux.norm_mul_le
 
 scoped[Matrix.L2OpNorm] attribute [instance] Matrix.instL2OpNormedRing
 
