@@ -70,10 +70,11 @@ lemma exists_sum_four_nonneg {A : Type*} [NonUnitalCStarAlgebra A] [PartialOrder
     · exact CStarAlgebra.norm_negPart_le _ |>.trans <| realPart.norm_le a
     · exact CStarAlgebra.norm_negPart_le _ |>.trans <| imaginaryPart.norm_le a
   · nth_rw 1 [← CStarAlgebra.linear_combination_nonneg a]
-    simp [Fin.sum_univ_four, sub_eq_add_neg]
+    simp only [sub_eq_add_neg, Fin.sum_univ_four, Fin.isValue, Fin.val_zero, pow_zero,
+      Matrix.cons_val_zero, one_smul, Fin.val_one, pow_one, Matrix.cons_val_one, Matrix.head_cons,
+      Fin.val_two, I_sq, Matrix.cons_val_two, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.tail_cons,
+      neg_smul, Matrix.cons_val_three]
     rw [add_add_add_comm]
-    have : ((3 : Fin 4) : ℕ) = 3 := rfl -- ugh, seriously, why can't `norm_num` do this?
-    match_scalars
-    all_goals simp [this, I_pow_three]
+    match_scalars <;> norm_num [Fin.coe_ofNat_eq_mod] -- TODO check if a better lemma landed
 
 end CStarAlgebra
