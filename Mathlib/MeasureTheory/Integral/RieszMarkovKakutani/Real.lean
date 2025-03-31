@@ -322,11 +322,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
           _ = _ := setIntegral_tsupport
       intro n
       apply setIntegral_ge_of_const_le (hE.2.2.2 n)
-      · dsimp [μ]; push_neg
-        rw [rieszMeasure, Content.measure_apply _ (hE.2.2.2 n), ← lt_top_iff_ne_top]
-        have := le_of_le_of_eq (subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a) (Eq.symm hE.1)
-        apply lt_of_le_of_lt (OuterMeasure.mono _ this)
-        exact Content.outerMeasure_lt_top_of_isCompact _ f.2
+      · exact hE' n
       · intro x hx
         dsimp [y]; linarith [(hE.2.2.1 n x hx).1]
       · apply Integrable.integrableOn
