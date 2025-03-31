@@ -771,7 +771,7 @@ theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
     #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
   simpa using lift_cardinalMk_adjoin_le F s
 
-section AdjoinDouble
+section AdjoinPair
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] {x y : L}
 
@@ -780,7 +780,7 @@ theorem isAlgebraic_adjoin_pair (hx : IsIntegral K x) (hy : IsIntegral K y) :
   apply IntermediateField.isAlgebraic_adjoin
   simp [hx, hy]
 
-theorem AdjoinDouble.finiteDimensional (hx : IsIntegral K x) (hy : IsIntegral K y) :
+theorem finiteDimensional_adjoin_pair (hx : IsIntegral K x) (hy : IsIntegral K y) :
     FiniteDimensional K K⟮x, y⟯ := by
   have := adjoin.finiteDimensional hx
   have := adjoin.finiteDimensional hy
@@ -789,22 +789,21 @@ theorem AdjoinDouble.finiteDimensional (hx : IsIntegral K x) (hy : IsIntegral K 
 
 variable (K x y)
 
-theorem mem_adjoinDouble_left : x ∈ K⟮x, y⟯ := subset_adjoin K {x, y} (Set.mem_insert x {y})
+theorem mem_adjoinPair_left : x ∈ K⟮x, y⟯ := subset_adjoin K {x, y} (Set.mem_insert x {y})
 
-theorem mem_adjoinDouble_right : y ∈ K⟮x, y⟯ :=
+theorem mem_adjoinPair_right : y ∈ K⟮x, y⟯ :=
   subset_adjoin K {x, y} (Set.mem_insert_of_mem x (Set.mem_singleton y))
 
-
 /-- The first generator of an intermediate field of the form `K⟮x, y⟯`. -/
-def AdjoinDouble.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoinDouble_left K x y⟩
+def AdjoinPair.gen₁ : K⟮x, y⟯ := ⟨x, mem_adjoinPair_left K x y⟩
 
 /-- The second generator of an intermediate field of the form `K⟮x, y⟯`. -/
-def AdjoinDouble.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoinDouble_right K x y⟩
+def AdjoinPair.gen₂ : K⟮x, y⟯ := ⟨y, mem_adjoinPair_right K x y⟩
 
-theorem AdjoinDouble.algebraMap_gen₁ : (algebraMap (↥K⟮x, y⟯) L) (gen₁ K x y) = x := rfl
+theorem AdjoinPair.algebraMap_gen₁ : (algebraMap (↥K⟮x, y⟯) L) (gen₁ K x y) = x := rfl
 
-theorem AdjoinDouble.algebraMap_gen₂ : (algebraMap (↥K⟮x, y⟯) L) (gen₂ K x y) = y := rfl
+theorem AdjoinPair.algebraMap_gen₂ : (algebraMap (↥K⟮x, y⟯) L) (gen₂ K x y) = y := rfl
 
-end AdjoinDouble
+end AdjoinPair
 
 end IntermediateField
