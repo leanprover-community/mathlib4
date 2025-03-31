@@ -340,6 +340,9 @@ theorem star_val_eq {x : selfAdjoint R} : star (x : R) = x :=
 instance : Inhabited (selfAdjoint R) :=
   ⟨0⟩
 
+@[simp]
+lemma isSelfAdjoint {x : selfAdjoint R} : IsSelfAdjoint (x : R) := by simp [isSelfAdjoint_iff]
+
 end AddGroup
 
 instance isStarNormal [NonUnitalRing R] [StarRing R] (x : selfAdjoint R) :

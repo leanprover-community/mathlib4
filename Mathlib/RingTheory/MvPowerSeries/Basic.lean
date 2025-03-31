@@ -501,8 +501,8 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         classical
         rw [coeff_one, coeff_one]
         split_ifs with h
-        · simp only [RingHom.map_ite_one_zero, ite_true, map_one, h]
-        · simp only [RingHom.map_ite_one_zero, ite_false, map_zero, h]
+        · simp only [ite_true, map_one, h]
+        · simp only [ite_false, map_zero, h]
   map_add' φ ψ :=
     ext fun n => show f ((coeff R n) (φ + ψ)) = f ((coeff R n) φ) + f ((coeff R n) ψ) by simp
   map_mul' φ ψ :=

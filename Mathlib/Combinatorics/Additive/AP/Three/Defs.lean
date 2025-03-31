@@ -7,6 +7,7 @@ import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Interval.Finset.Basic
 import Mathlib.Combinatorics.Additive.FreimanHom
 import Mathlib.Order.Interval.Finset.Fin
+import Mathlib.Algebra.Group.Pointwise.Set.Scalar
 
 /-!
 # Sets without arithmetic progressions of length three and Roth numbers
