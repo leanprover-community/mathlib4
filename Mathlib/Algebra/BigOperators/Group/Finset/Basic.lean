@@ -1498,3 +1498,5 @@ theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
   | cons i s his IH =>
     simp only [Finset.sum_cons, not_false_iff]
     exact (Int.natAbs_add_le _ _).trans (Nat.add_le_add_left IH _)
+
+set_option linter.style.longFile 1600
