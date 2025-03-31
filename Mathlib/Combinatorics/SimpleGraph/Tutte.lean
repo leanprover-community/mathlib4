@@ -22,13 +22,15 @@ namespace SimpleGraph
 universe u
 variable {V : Type u} {G G' : SimpleGraph V} {u x v' w : V} [Fintype V]
 
-/-- A set certifying non-existance of a perfect matching -/
+/-- A set certifying non-existence of a perfect matching. -/
 def IsTutteViolator (G : SimpleGraph V) (u : Set V) : Prop :=
   u.ncard < ((⊤ : G.Subgraph).deleteVerts u).coe.oddComponents.ncard
 
-/-- This lemma states that a graph in which the universal vertices do not violate the
+/-- A graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, there exists a matching that covers
-everything except some universal vertices. It is marked private, because
+everything except some universal vertices.
+
+This lemma is marked private, because
 it is strictly weaker than `IsPerfectMatching.exists_of_isClique_supp` -/
 private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     (h : ¬IsTutteViolator G G.universalVerts)
@@ -77,7 +79,7 @@ private lemma Subgraph.IsMatching.exists_verts_compl_subset_universalVerts
     aesop
   exact ⟨M1 ⊔ M2, hM1.2.sup hM2 disjointM12, this⟩
 
-/-- This lemma states that a graph in which the universal vertices do not violate the
+/-- A graph in which the universal vertices do not violate the
 Tutte-condition, if the graph decomposes into cliques, it has a perfect matching. -/
 theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (hveven : Even (Fintype.card V)) (h : ¬G.IsTutteViolator G.universalVerts)

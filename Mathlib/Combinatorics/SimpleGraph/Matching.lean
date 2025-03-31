@@ -263,7 +263,7 @@ lemma IsPerfectMatching.toSubgraph_iff (h : M.spanningCoe ≤ G') :
 end Subgraph
 
 lemma IsClique.even_iff_exists_isMatching {u : Set V} (hc : G.IsClique u)
-    (hu : Set.Finite u) : Even u.ncard ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
+    (hu : u.Finite) : Even u.ncard ↔ ∃ (M : Subgraph G), M.verts = u ∧ M.IsMatching := by
   refine ⟨fun h ↦ ?_, by
     rintro ⟨M, rfl, hMr⟩
     simpa [Set.ncard_eq_toFinset_card _ hu, Set.toFinite_toFinset,
