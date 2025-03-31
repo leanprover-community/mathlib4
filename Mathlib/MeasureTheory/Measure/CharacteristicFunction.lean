@@ -3,7 +3,7 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.Fourier.Char
+import Mathlib.Analysis.Fourier.BoundedContinuousFunctionChar
 import Mathlib.MeasureTheory.Measure.FiniteMeasureExt
 
 /-!
@@ -21,7 +21,7 @@ A typical example is `V = W = ℝ` and `L v w = v * w`.
 ## Main definition
 
 `charFun P hL : W → ℂ`: The characteristic function of a Measure `P`, evaluated at `w`, is the
-integral of `char he hL w` with respect to `P`, for the standard choice of `e = Circle.expAddChar`.
+integral of `char he hL w` with respect to `P`, for the standard choice of `e = Real.probChar`.
 
 ## Main statements
 
@@ -32,7 +32,7 @@ integral of `char he hL w` with respect to `P`, for the standard choice of `e = 
 
 -/
 
-open Filter BoundedContinuousFunction Complex
+open Filter BoundedContinuousFunction Complex Real
 
 namespace MeasureTheory
 
@@ -48,7 +48,7 @@ The characteristic function of a Measure `P`, evaluated at `w` is the integral o
 noncomputable
 def charFun [MeasurableSpace V] (P : Measure V) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
     (w : W) : ℂ :=
-  ∫ v, char Circle.continuous_expAddChar hL w v ∂P
+  ∫ v, char continuous_probChar hL w v ∂P
 
 section ext
 
@@ -62,7 +62,7 @@ If the integrals of `char` with respect to two finite measures `P` and `P'` coin
 -/
 theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
     (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (P P' : Measure V) [IsFiniteMeasure P] [IsFiniteMeasure P']
+    {P P' : Measure V} [IsFiniteMeasure P] [IsFiniteMeasure P']
     (h : ∀ w, ∫ v, char he hL w v ∂P = ∫ v, char he hL w v ∂P') :
     P = P' := by
   apply ext_of_forall_mem_subalgebra_integral_eq_of_pseudoEMetric_complete_countable
@@ -80,25 +80,15 @@ theorem ext_of_integral_char_eq (he : Continuous e) (he' : e ≠ 1)
   simp only [smul_eq_mul, MeasureTheory.integral_mul_left, mul_eq_mul_left_iff]
   exact Or.inl (h i)
 
-lemma expAddChar_ne_one : Circle.expAddChar ≠ 1 := by
-  rw [DFunLike.ne_iff]
-  use Real.pi
-  simp only [Circle.expAddChar, AddChar.coe_mk, AddChar.one_apply]
-  intro h
-  have heq := congrArg Subtype.val h
-  rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
-  norm_num at heq
-
 /--
 If the characteristic functions of two finite measures `P` and `P'` are equal, then `P = P'`. In
 other words, characteristic functions separate finite measures.
 -/
 theorem ext_of_charFun_eq
     (hL' : ∀ v ≠ 0, L v ≠ 0) (hL : Continuous fun p : V × W ↦ L p.1 p.2)
-    (P P' : Measure V) [IsFiniteMeasure P] [IsFiniteMeasure P'] (h : charFun P hL = charFun P' hL) :
+    {P P' : Measure V} [IsFiniteMeasure P] [IsFiniteMeasure P'] (h : charFun P hL = charFun P' hL) :
     P = P' :=
-  ext_of_integral_char_eq Circle.continuous_expAddChar expAddChar_ne_one hL' hL P P'
-    (fun w => congrFun h w)
+  ext_of_integral_char_eq continuous_probChar probChar_ne_one hL' hL (fun w => congrFun h w)
 
 end ext
 

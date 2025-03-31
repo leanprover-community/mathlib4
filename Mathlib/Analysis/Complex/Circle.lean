@@ -3,8 +3,7 @@ Copyright (c) 2021 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Analysis.SpecialFunctions.Exp
-import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 import Mathlib.Analysis.Normed.Field.UnitBall
 
 /-!
@@ -17,8 +16,15 @@ radius `1`.  We equip it with the following structure:
 * a group
 * a topological group
 
-We furthermore define `expMapCircle` to be the natural map `fun t ↦ exp (t * I)` from `ℝ` to
+We furthermore define `Circle.exp` to be the natural map `fun t ↦ exp (t * I)` from `ℝ` to
 `circle`, and show that this map is a group homomorphism.
+
+We define two additive characters onto the circle:
+* `Real.fourierChar`: The character `fun x ↦ exp ((2 * π * x) * I)` (for which we introduce the
+  notation `𝐞` in the locale `FourierTransform`). This uses the analyst convention that there is a
+  `2 * π` in the exponent.
+* `Real.probChar`: The character `fun x ↦ exp (x * I)`, which uses the probabilist convention that
+  there is no `2 * π` in the exponent.
 
 ## Implementation notes
 
@@ -129,15 +135,6 @@ def expHom : ℝ →+ Additive Circle where
 @[simp] lemma exp_sub (x y : ℝ) : exp (x - y) = exp x / exp y := expHom.map_sub x y
 @[simp] lemma exp_neg (x : ℝ) : exp (-x) = (exp x)⁻¹ := expHom.map_neg x
 
-/-- Exponential map onto the circle, defined as additive character -/
-noncomputable
-def expAddChar : AddChar ℝ Circle where
-  toFun := Circle.exp
-  map_zero_eq_one' := Circle.exp_zero
-  map_add_eq_mul' := Circle.exp_add
-
-lemma continuous_expAddChar : Continuous expAddChar := ContinuousMap.continuous exp
-
 variable {e : AddChar ℝ Circle}
 
 @[simp]
@@ -180,3 +177,49 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
   rw [Submonoid.smul_def, norm_smul, norm_eq_of_mem_sphere, one_mul]
 
 end Circle
+
+open scoped Real
+
+namespace Real
+
+/-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * π * x * I)`.
+Denoted as `𝐞` within the `Real.FourierTransform` namespace. This uses the analyst convention that
+there is a `2 * π` in the exponent. -/
+def fourierChar : AddChar ℝ Circle where
+  toFun z := .exp (2 * π * z)
+  map_zero_eq_one' := by simp only; rw [mul_zero, Circle.exp_zero]
+  map_add_eq_mul' x y := by simp only; rw [mul_add, Circle.exp_add]
+
+@[inherit_doc] scoped[FourierTransform] notation "𝐞" => Real.fourierChar
+
+open FourierTransform
+
+theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Complex.I) :=
+  rfl
+
+@[continuity]
+theorem continuous_fourierChar : Continuous 𝐞 := Circle.exp.continuous.comp (continuous_mul_left _)
+
+/-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * I)`. This uses the
+probabilist convention that there is no `2 * π` in the exponent. -/
+def probChar : AddChar ℝ Circle where
+  toFun := Circle.exp
+  map_zero_eq_one' := Circle.exp_zero
+  map_add_eq_mul' := Circle.exp_add
+
+theorem probChar_apply (x : ℝ) : probChar x = Complex.exp (x * Complex.I) :=
+  rfl
+
+@[continuity]
+theorem continuous_probChar : Continuous probChar := Circle.exp.continuous
+
+theorem probChar_ne_one : probChar ≠ 1 := by
+  rw [DFunLike.ne_iff]
+  use Real.pi
+  simp only [probChar, AddChar.coe_mk, AddChar.one_apply]
+  intro h
+  have heq := congrArg Subtype.val h
+  rw [Circle.coe_exp Real.pi, Complex.exp_pi_mul_I] at heq
+  norm_num at heq
+
+end Real
