@@ -173,20 +173,3 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Additive.ofMul]
       convert MonoidAlgebra.mapDomain_mul (β := k) (MulHom.id G) x y }
-
-
-namespace MonoidAlgebra
-variable {R M N : Type*} [Semiring R] {f : M → N}
-
-lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (k := R) f) :=
-  Finsupp.mapDomain_injective hf
-
-end MonoidAlgebra
-
-namespace AddMonoidAlgebra
-variable {R M N : Type*} [Semiring R] {f : M → N}
-
-lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (k := R) f) :=
-  Finsupp.mapDomain_injective hf
-
-end AddMonoidAlgebra
