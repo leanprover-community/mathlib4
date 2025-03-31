@@ -274,8 +274,7 @@ partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
       let newHs := hs ++ [⟨_, hb⟩]
       let pf1 ← withExistsElimAlongPathImp (P := q($pb $b)) hb exsTail path newHs act
       let pf2 : Q(∀ b, $pb b → $goal) ← mkLambdaFVars #[b, hb] pf1
-      let pf3 : Q($goal) := q(Exists.elim $h $pf2)
-      return pf3
+      return q(Exists.elim $h $pf2)
   | ~q(And $L' $R') =>
       match (generalizing := false) path with
       | [] => failure
@@ -286,10 +285,12 @@ partial def withExistsElimAlongPathImp {u : Level} {α : Q(Sort u)}
   | ~q(@Eq.{u} $γ $x $y) =>
     let _ : $γ =Q $α := ⟨⟩
     if !path.isEmpty then failure
-    if let .defEq _ ← isDefEqQ a x then
+    if a == x then
+      let _ : $a =Q $x := ⟨⟩
       let _ : $a' =Q $y := ⟨⟩
       act q($h) hs
-    else if let .defEq _ ← isDefEqQ a y then
+    else if a == y then
+      let _ : $a =Q $y := ⟨⟩
       let _ : $a' =Q $x := ⟨⟩
       act q(Eq.symm $h) hs
     else
