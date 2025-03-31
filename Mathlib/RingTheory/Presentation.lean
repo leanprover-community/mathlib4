@@ -462,6 +462,34 @@ instance comp_isFinite [P.IsFinite] [Q.IsFinite] : (Q.comp P).IsFinite where
 
 end Composition
 
+/-- Given a presentation `P` and equivalences `ι ≃ P.vars` and
+`κ ≃ P.rels`, this is the induced presentation with variables indexed
+by `ι` and relations indexed by `κ -/
+@[simps toGenerators, simps -isSimp relation rels]
+noncomputable def reindex (P : Presentation.{w, t} R S)
+    {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
+    Presentation R S where
+  __ := P.toGenerators.reindex e
+  rels := κ
+  relation := rename e.symm ∘ P.relation ∘ f
+  span_range_relation_eq_ker := by
+    rw [Generators.ker_eq_ker_aeval_val, Generators.reindex_val, ← aeval_comp_rename,
+      ← AlgHom.comap_ker, ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker,
+      Set.range_comp, Set.range_comp, Equiv.range_eq_univ, Set.image_univ,
+      ← Ideal.map_span (rename ⇑e.symm)]
+    have hf : Function.Bijective (MvPolynomial.rename e.symm) := (renameEquiv R e.symm).bijective
+    apply Ideal.comap_injective_of_surjective _ hf.2
+    simp_rw [Ideal.comap_comapₐ, rename_comp_rename, Generators.reindex_vars, Equiv.self_comp_symm]
+    simp [Ideal.comap_map_of_bijective _ hf, rename_id]
+
+@[simp]
+lemma isFinite_reindex_iff {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
+    (P.reindex e f).IsFinite ↔ P.IsFinite :=
+  ⟨fun h ↦ ⟨e.finite_iff.mp h.1, f.finite_iff.mp h.2⟩,
+    fun h ↦ ⟨e.finite_iff.mpr h.1, f.finite_iff.mpr h.2⟩⟩
+
+alias ⟨_, IsFinite.reindex⟩ := isFinite_reindex_iff
+
 end Construction
 
 end Presentation
