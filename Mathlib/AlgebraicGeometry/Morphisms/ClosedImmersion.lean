@@ -383,7 +383,6 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme} [Subsingleton Y]
   rw [← Spec.map_comp, ← Spec.map_id, Spec.map_injective.eq_iff] at hg
   apply IsClosedImmersion.spec_of_surjective
   apply Function.LeftInverse.surjective (g := φ)
-  have := congr($hg ≫ $hg)
   exact fun x ↦ congr($hg.1 x)
 
 instance (priority := low) {X Y : Scheme} [Subsingleton Y] [X.Over Y] (f : Y ⟶ X) [f.IsOver Y] :
