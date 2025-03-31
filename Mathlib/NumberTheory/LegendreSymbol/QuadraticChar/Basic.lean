@@ -231,13 +231,8 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       rw [h₁, List.toFinset_cons, List.toFinset_cons, List.toFinset_nil]
       exact card_pair (Ne.symm (mt (Ring.eq_self_iff_eq_zero_of_char_ne_two hF).mp h₀))
     · rw [quadraticChar_neg_one_iff_not_isSquare.mpr h]
-      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero]
-      ext1
-      -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
-      -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
-      rw [isSquare_iff_exists_sq] at h
-      exact fun h' ↦ h ⟨_, h'.symm⟩
+      simp only [neg_add_cancel, Int.natCast_eq_zero, card_eq_zero, eq_empty_iff_forall_not_mem]
+      simpa [s, isSquare_iff_exists_sq, eq_comm] using h
 
 /-- The sum over the values of the quadratic character is zero when the characteristic is odd. -/
 theorem quadraticChar_sum_zero (hF : ringChar F ≠ 2) : ∑ a : F, quadraticChar F a = 0 :=

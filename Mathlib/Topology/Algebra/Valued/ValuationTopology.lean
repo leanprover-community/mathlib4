@@ -110,8 +110,8 @@ theorem hasBasis_nhds_zero :
     (𝓝 (0 : R)).HasBasis (fun _ => True) fun γ : Γ₀ˣ => { x | v x < (γ : Γ₀) } := by
   simp [Filter.hasBasis_iff, is_topological_valuation]
 
--- Porting note: Replaced `𝓤 R` with `uniformity R`
-theorem hasBasis_uniformity : (uniformity R).HasBasis (fun _ => True)
+open Uniformity in
+theorem hasBasis_uniformity : (𝓤 R).HasBasis (fun _ => True)
     fun γ : Γ₀ˣ => { p : R × R | v (p.2 - p.1) < (γ : Γ₀) } := by
   rw [uniformity_eq_comap_nhds_zero]
   exact (hasBasis_nhds_zero R Γ₀).comap _
@@ -159,7 +159,7 @@ theorem integer_isOpen : IsOpen (_i.v.integer : Set R) := by
   intro x hx
   rw [mem_nhds]
   exact ⟨1,
-    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (map_add _ _ _) (max_le (le_of_lt hy) hx)⟩
+    fun y hy => (sub_add_cancel y x).symm ▸ le_trans (v.map_add _ _) (max_le (le_of_lt hy) hx)⟩
 
 /-- The valuation subring of a valued field is open. -/
 theorem valuationSubring_isOpen (K : Type u) [Field K] [hv : Valued K Γ₀] :
