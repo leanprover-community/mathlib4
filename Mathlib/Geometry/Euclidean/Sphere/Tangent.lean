@@ -310,7 +310,14 @@ lemma isIntTangentAt_center_iff {s₁ s₂ : Sphere P} :
 def IsExtTangent (s₁ s₂ : Sphere P) : Prop :=
   ∃ p, s₁.IsExtTangentAt s₂ p
 
-/-- The spheres `s₁` and `s₂` are internally tangent at some point. -/
+lemma IsExtTangent.symm {s₁ s₂ : Sphere P} (h : s₁.IsExtTangent s₂) : s₂.IsExtTangent s₁ := by
+  rcases h with ⟨p, hp⟩
+  exact ⟨p, hp.symm⟩
+
+lemma isExtTangent_comm {s₁ s₂ : Sphere P} : s₁.IsExtTangent s₂ ↔ s₂.IsExtTangent s₁ :=
+  ⟨IsExtTangent.symm, IsExtTangent.symm⟩
+
+/-- The sphere `s₁` is internally tangent to the sphere `s₂` at some point. -/
 def IsIntTangent (s₁ s₂ : Sphere P) : Prop :=
   ∃ p, s₁.IsIntTangentAt s₂ p
 
