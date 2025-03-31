@@ -20,13 +20,6 @@ set_option grind.warning false
 
 namespace IfExpr
 
-/-!
-We add some local simp lemmas so we can unfold the definitions of the normalization condition.
--/
-attribute [local simp] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
-  List.disjoint
-
-attribute [local simp] apply_ite ite_eq_iff'
 
 attribute [grind] Subtype
 grind_pattern Subtype.property => self.val
@@ -36,11 +29,7 @@ attribute [grind] List.mem_cons List.not_mem_nil List.mem_append Option.elim_non
 
 attribute [grind] List.disjoint
 
-theorem AList.lookup_insert' {α} [DecidableEq α] {a a' : α} {β} {b : β a} (s : AList β) :
-    (s.insert a b).lookup a' = if h : a = a' then some (h ▸ b) else s.lookup a' := by
-  sorry
-
-attribute [grind] AList.lookup_insert'
+attribute [grind] AList.lookup_insert
 attribute [grind] List.cons_append List.nil_append
 
 attribute [local grind] normalized hasNestedIf hasConstantIf hasRedundantIf disjoint vars
@@ -89,7 +78,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
       ⟨if t' = e' then t' else .ite (var v) t' e', by
         refine ⟨fun f => ?_, ?_, fun w b => ?_⟩
         · -- eval = eval
-          simp only [apply_ite, eval_ite_var, ite_eq_iff']
+          simp only [apply_ite, eval_ite_var]
           cases hfv : f v
           · simp_all
             congr
@@ -105,7 +94,7 @@ def normalize (l : AList (fun _ : ℕ => Bool)) :
         · -- lookup = none
           ◾⟩
     | some b =>
-      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, by ◾⟩
+      have i' := normalize l (.ite (lit b) t e); ⟨i'.1, ◾⟩
   termination_by e => e.normSize
 
 /-
