@@ -202,15 +202,9 @@ theorem pathComposition_naturality {C D: Type u} [Category.{max u v} C] [Categor
   rw [Category.comp_id, Category.id_comp, composePath_toPath, composePath_toPath]
 
 /-- The left triangle identity of `Cat.free ⊣ Quiv.forget` as a natural isomorphism -/
-def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{max u v + 1} V] :
-    Cat.freeMap (Paths.of V) ⋙ pathComposition (Cat.of (Paths V)) ≅ 𝟭 (Paths V) := by
-  refine NatIso.ofComponents (fun _ ↦ Iso.refl _) ?_
-  intro _ _ p
-  dsimp
-  rw [Category.comp_id, Category.id_comp]
-  induction p with
-  | nil => rfl
-  | cons _ _ h => simp [h]; rfl
+def freeMapPathsOfCompPathCompositionIso (V : Type u) [Quiver.{v + 1} V] :
+    Cat.freeMap (Paths.of V) ⋙ pathComposition (Cat.of (Paths V)) ≅ 𝟭 (Paths V) :=
+  Paths.liftNatIso (fun v ↦ Iso.refl _) (by simp)
 
 lemma freeMap_pathsOf_pathComposition (V : Type u) [Quiver.{max u v + 1} V] :
     Cat.freeMap (Paths.of (V := V)) ⋙ pathComposition (Cat.of (Paths V)) = 𝟭 (Paths V) :=
