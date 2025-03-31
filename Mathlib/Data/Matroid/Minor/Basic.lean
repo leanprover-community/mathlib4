@@ -326,8 +326,7 @@ lemma contract_eq_contract_iff : M ／ C₁ = M ／ C₂ ↔ C₁ ∩ M.E = C₂
   rw [← dual_delete_dual, ← dual_delete_dual, dual_inj, delete_eq_delete_iff, dual_ground]
 
 @[simp] lemma contract_inter_ground_eq (M : Matroid α) (C : Set α) : M ／ (C ∩ M.E) = M ／ C := by
-  rw [← dual_delete_dual, (show M.E = M✶.E from rfl), delete_inter_ground_eq]
-  rfl
+  rw [← dual_delete_dual, ← dual_ground, delete_inter_ground_eq, dual_delete_dual]
 
 @[aesop unsafe 10% (rule_sets := [Matroid])]
 lemma contract_ground_subset_ground (M : Matroid α) (C : Set α) : (M ／ C).E ⊆ M.E :=

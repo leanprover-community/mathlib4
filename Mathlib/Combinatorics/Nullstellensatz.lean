@@ -111,7 +111,6 @@ theorem eq_zero_of_eval_zero_at_prod_finset {σ : Type*} [Finite σ] [IsDomain R
         ext m
         simp only [coeff_zero, optionEquivLeft_coeff_coeff]
         set n := (embDomain Function.Embedding.some m).update none d with hn
-        -- set n := embDomain Function.Embedding.some m + Finsupp.single none d with hn
         rw [eq_option_embedding_update_none_iff] at hn
         rw [← hn.1, ← hn.2, optionEquivLeft_coeff_coeff]
         by_contra hm
@@ -251,7 +250,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
     (f : MvPolynomial σ R)
     (t : σ →₀ ℕ) (ht : f.coeff t ≠ 0) (ht' : f.totalDegree = t.degree)
     (S : σ → Finset R) (htS : ∀ i, t i < #(S i)) :
-    ∃ (s : σ → R) (_ : ∀ i, s i ∈ S i), eval s f ≠ 0 := by
+    ∃ s : σ → R, (∀ i, s i ∈ S i) ∧ eval s f ≠ 0 := by
   let _ : LinearOrder σ := WellOrderingRel.isWellOrder.linearOrder
   classical
   by_contra Heval
@@ -282,7 +281,7 @@ theorem combinatorial_nullstellensatz_exists_eval_nonzero [IsDomain R]
   intro hq
   obtain ⟨e, hq', hq⟩ := Alon.of_mem_P_support _ _ _ hq
   apply coeff_eq_zero_of_totalDegree_lt
-  change (h i).totalDegree < p.degree
+  rw [← Finsupp.degree]
   apply lt_of_add_lt_add_right (lt_of_le_of_lt this _)
   rw [← hpq, degree_add, add_lt_add_iff_left, hq, degree_single]
   apply lt_of_le_of_lt _ (htS i)
