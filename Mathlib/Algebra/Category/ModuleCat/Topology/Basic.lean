@@ -456,4 +456,3 @@ instance : (free.{max v u} R).IsLeftAdjoint := ⟨_, ⟨freeAdj R⟩⟩
 end Adjunction
 
 end TopModuleCat
-#lint
