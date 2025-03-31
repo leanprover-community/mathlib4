@@ -459,12 +459,11 @@ variable
     {R : Type*} [CommSemiring R]
     {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
-lemma Algebra.TensorProduct.includeRight_surjective {S : Type*} [CommSemiring S] [Algebra R S]
-    [Algebra S A] [SMulCommClass R S A] (h : Function.Surjective (algebraMap R A)) :
+lemma Algebra.TensorProduct.includeRight_surjective (h : Function.Surjective (algebraMap R A)) :
     Function.Surjective (includeRight : B →ₐ[R] A ⊗[R] B) :=
   TensorProduct.mk_surjective _ _ _ h
 
-lemma Algebra.TensorProduct.includeLeft_surjective {S : Type*} [CommSemiring S] [Algebra R S]
+lemma Algebra.TensorProduct.includeLeft_surjective {S : Type*} [CommSemiring S]
     [Algebra S A] [SMulCommClass R S A] (h : Function.Surjective (algebraMap R B)) :
     Function.Surjective (includeLeft : A →ₐ[S] A ⊗[R] B) :=
   TensorProduct.flip_mk_surjective _ h
