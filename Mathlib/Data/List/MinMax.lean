@@ -90,7 +90,7 @@ end ArgAux
 
 section Preorder
 
-variable [Preorder β] [DecidableRel (α := β) (· < ·)] {f : α → β} {l : List α} {a m : α}
+variable [Preorder β] [DecidableLT β] {f : α → β} {l : List α} {a m : α}
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
@@ -244,15 +244,15 @@ section MaximumMinimum
 
 section Preorder
 
-variable [Preorder α] [DecidableRel (α := α) (· < ·)] {l : List α} {a m : α}
+variable [Preorder α] [DecidableLT α] {l : List α} {a m : α}
 
 /-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
-`[]`  -/
+`[]` -/
 def maximum (l : List α) : WithBot α :=
   argmax id l
 
 /-- `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
-`[]`  -/
+`[]` -/
 def minimum (l : List α) : WithTop α :=
   argmin id l
 
@@ -337,6 +337,14 @@ theorem maximum_cons (a : α) (l : List α) : maximum (a :: l) = max ↑a (maxim
 
 theorem minimum_cons (a : α) (l : List α) : minimum (a :: l) = min ↑a (minimum l) :=
   @maximum_cons αᵒᵈ _ _ _
+
+lemma maximum_append (l₁ l₂ : List α) : (l₁ ++ l₂).maximum = max l₁.maximum l₂.maximum := by
+  induction l₁ with
+  | nil => simp
+  | cons _ _ ih => rw [maximum_cons, cons_append, maximum_cons, ih, ← max_assoc]
+
+lemma minimum_append (l₁ l₂ : List α) : (l₁ ++ l₂).minimum = min l₁.minimum l₂.minimum :=
+  @maximum_append αᵒᵈ _ _ _
 
 theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.maximum ≤ b := by
   induction l with

@@ -318,7 +318,7 @@ theorem prev_getElem (l : List α) (h : Nodup l) (i : Nat) (hi : i < l.length) :
           rw [nodup_iff_injective_get] at h
           apply h; rw [← H]; simp
 
-@[deprecated (since := "2025-02-21")] alias prev_get := prev_getElem
+@[deprecated (since := "2025-02-15")] alias prev_get := prev_getElem
 
 theorem pmap_next_eq_rotate_one (h : Nodup l) : (l.pmap l.next fun _ h => h) = l.rotate 1 := by
   apply List.ext_getElem
@@ -403,7 +403,6 @@ namespace Cycle
 
 variable {α : Type*}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The coercion from `List α` to `Cycle α` -/
 @[coe] def ofList : List α → Cycle α :=
   Quot.mk _
@@ -532,7 +531,7 @@ theorem Subsingleton.congr {s : Cycle α} (h : Subsingleton s) :
     ∀ ⦃x⦄ (_hx : x ∈ s) ⦃y⦄ (_hy : y ∈ s), x = y := by
   induction' s using Quot.inductionOn with l
   simp only [length_subsingleton_iff, length_coe, mk_eq_coe, le_iff_lt_or_eq, Nat.lt_add_one_iff,
-    length_eq_zero, length_eq_one, Nat.not_lt_zero, false_or] at h
+    length_eq_zero_iff, length_eq_one_iff, Nat.not_lt_zero, false_or] at h
   rcases h with (rfl | ⟨z, rfl⟩) <;> simp
 
 /-- A `s : Cycle α` that is made up of at least two unique elements. -/
@@ -585,7 +584,7 @@ theorem Subsingleton.nodup {s : Cycle α} (h : Subsingleton s) : Nodup s := by
   induction' s using Quot.inductionOn with l
   obtain - | ⟨hd, tl⟩ := l
   · simp
-  · have : tl = [] := by simpa [Subsingleton, length_eq_zero, Nat.succ_le_succ_iff] using h
+  · have : tl = [] := by simpa [Subsingleton, length_eq_zero_iff, Nat.succ_le_succ_iff] using h
     simp [this]
 
 theorem Nodup.nontrivial_iff {s : Cycle α} (h : Nodup s) : Nontrivial s ↔ ¬Subsingleton s := by
@@ -652,8 +651,8 @@ theorem mem_lists_iff_coe_eq {s : Cycle α} {l : List α} : l ∈ s.lists ↔ (l
     simp
 
 @[simp]
-theorem lists_nil : lists (@nil α) = [([] : List α)] := by
-  rw [nil, lists_coe, cyclicPermutations_nil]
+theorem lists_nil : lists (@nil α) = {([] : List α)} := by
+  rw [nil, lists_coe, cyclicPermutations_nil, Multiset.coe_singleton]
 
 section Decidable
 
@@ -729,7 +728,7 @@ nonrec def prev : ∀ (s : Cycle α) (_hs : Nodup s) (x : α) (_hx : x ∈ s), �
   fun hm hm' he' => heq_of_eq
     (by rw [heq_iff_eq] at hxy; subst x; simpa using isRotated_prev_eq h h₁ _)
 
--- Porting note: removed `simp` and added `prev_reverse_eq_next'` with `simp` attribute
+-- `simp` cannot infer the proofs: see `prev_reverse_eq_next'` for `@[simp]` lemma.
 nonrec theorem prev_reverse_eq_next (s : Cycle α) : ∀ (hs : Nodup s) (x : α) (hx : x ∈ s),
     s.reverse.prev (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.next hs x hx :=
   Quotient.inductionOn' s prev_reverse_eq_next
@@ -740,7 +739,7 @@ nonrec theorem prev_reverse_eq_next' (s : Cycle α) (hs : Nodup s.reverse) (x : 
     s.reverse.prev hs x hx = s.next (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx) :=
   prev_reverse_eq_next s (nodup_reverse_iff.mp hs) x (mem_reverse_iff.mp hx)
 
--- Porting note: removed `simp` and added `next_reverse_eq_prev'` with `simp` attribute
+-- `simp` cannot infer the proofs: see `next_reverse_eq_prev'` for `@[simp]` lemma.
 theorem next_reverse_eq_prev (s : Cycle α) (hs : Nodup s) (x : α) (hx : x ∈ s) :
     s.reverse.next (nodup_reverse_iff.mpr hs) x (mem_reverse_iff.mpr hx) = s.prev hs x hx := by
   simp [← prev_reverse_eq_next]

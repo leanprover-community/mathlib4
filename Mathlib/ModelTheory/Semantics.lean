@@ -167,7 +167,7 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
         rw [withConstants_funMap_sumInl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
-    · cases' f with _ f
+    · obtain - | f := f
       · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sumInl]
@@ -445,7 +445,7 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
   erw [← (lhomWithConstants L α).map_onRelation
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr
-  cases' R with R R
+  obtain - | R := R
   · simp
   · exact isEmptyElim R
 
@@ -675,7 +675,7 @@ infixl:51 " ⊨ " => Theory.Model
 
 variable {M} (T : L.Theory)
 
-@[simp default-10]
+@[simp default - 10]
 theorem Theory.model_iff : M ⊨ T ↔ ∀ φ ∈ T, M ⊨ φ :=
   ⟨fun h => h.realize_of_mem, fun h => ⟨h⟩⟩
 

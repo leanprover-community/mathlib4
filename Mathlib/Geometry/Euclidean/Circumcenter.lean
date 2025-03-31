@@ -204,7 +204,7 @@ theorem _root_.AffineIndependent.existsUnique_dist_eq {ι : Type*} [hne : Nonemp
       let ι2 := { x // x ≠ i }
       classical
       have hc : Fintype.card ι2 = m + 1 := by
-        rw [Fintype.card_of_subtype (Finset.univ.filter fun x => x ≠ i)]
+        rw [Fintype.card_of_subtype {x | x ≠ i}]
         · rw [Finset.filter_not]
           -- Porting note: removed `simp_rw [eq_comm]` and used `filter_eq'` instead of `filter_eq`
           rw [Finset.filter_eq' _ i, if_pos (Finset.mem_univ _),
@@ -500,7 +500,7 @@ theorem sum_pointsWithCircumcenter {α : Type*} [AddCommMonoid α] {n : ℕ}
   have h : univ = insert circumcenterIndex (univ.map (pointIndexEmbedding n)) := by
     ext x
     refine ⟨fun h => ?_, fun _ => mem_univ _⟩
-    cases' x with i
+    obtain i | - := x
     · exact mem_insert_of_mem (mem_map_of_mem _ (mem_univ i))
     · exact mem_insert_self _ _
   change _ = (∑ i, f (pointIndexEmbedding n i)) + _

@@ -87,6 +87,11 @@ lemma retracts_le_iff {P Q : MorphismProperty C} [Q.IsStableUnderRetracts] :
   · intro h
     exact le_trans (retracts_monotone h) Q.retracts_le
 
+instance {P : MorphismProperty C} [P.IsStableUnderRetracts] :
+    P.RespectsIso :=
+  RespectsIso.of_respects_arrow_iso _
+    (fun _ _ e ↦ of_retract (Retract.ofIso e.symm))
+
 end MorphismProperty
 
 end CategoryTheory

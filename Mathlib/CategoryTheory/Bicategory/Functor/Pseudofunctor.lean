@@ -40,18 +40,6 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
--- Porting note: this auxiliary def was introduced in Lean 3 and only used once, in this file,
--- to avoid a timeout. In Lean 4 the timeout isn't present and the definition causes other
--- things to break (simp proofs) so I removed it.
--- def Pseudofunctor.Map₂AssociatorAux (obj : B → C) (map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y))
---     (map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g))
---    (map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) ≅ map f ≫ map g) {a b c d : B}
---     (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : Prop :=
---   map₂ (α_ f g h).hom =
---     (map_comp (f ≫ g) h).hom ≫
---       (map_comp f g).hom ▷ map h ≫
---        (α_ (map f) (map g) (map h)).hom ≫ map f ◁ (map_comp g h).inv ≫ (map_comp f (g ≫ h)).inv
-
 /-- A pseudofunctor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 

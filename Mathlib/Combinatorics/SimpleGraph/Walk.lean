@@ -815,15 +815,24 @@ lemma not_nil_iff {p : G.Walk v w} :
     ¬ p.Nil ↔ ∃ (u : V) (h : G.Adj v u) (q : G.Walk u w), p = cons h q := by
   cases p <;> simp [*]
 
+@[simp]
+lemma nil_append_iff {p : G.Walk u v} {q : G.Walk v w} : (p.append q).Nil ↔ p.Nil ∧ q.Nil := by
+  cases p <;> cases q <;> simp
+
+lemma Nil.append {p : G.Walk u v} {q : G.Walk v w} (hp : p.Nil) (hq : q.Nil) : (p.append q).Nil :=
+  by simp [hp, hq]
+
+@[simp]
+lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by
+  cases p <;> simp
+
 /-- A walk with its endpoints defeq is `Nil` if and only if it is equal to `nil`. -/
 lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
-@[simp]
-lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by simp [nil_iff_length_eq]
-
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
+/-- The recursion principle for nonempty walks -/
 @[elab_as_elim]
 def notNilRec {motive : {u w : V} → (p : G.Walk u w) → (h : ¬ p.Nil) → Sort*}
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) → motive (cons h q) not_nil_cons)
@@ -837,6 +846,9 @@ lemma notNilRec_cons {motive : {u w : V} → (p : G.Walk u w) → ¬ p.Nil → S
     (cons : {u v w : V} → (h : G.Adj u v) → (q : G.Walk v w) →
     motive (q.cons h) Walk.not_nil_cons) (h' : G.Adj u v) (q' : G.Walk v w) :
     @Walk.notNilRec _ _ _ _ _ cons _ _ = cons h' q' := by rfl
+
+theorem end_mem_tail_support {u v : V} {p : G.Walk u v} (h : ¬ p.Nil) : v ∈ p.support.tail :=
+  p.notNilRec (by simp) h
 
 /-- The walk obtained by removing the first `n` darts of a walk. -/
 def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
@@ -1038,7 +1050,6 @@ theorem exists_boundary_dart {u v : V} (p : G.Walk u v) (S : Set V) (uS : u ∈ 
   | .cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, getVert_cons]
     exact getVert_copy q n (getVert_zero q).symm rfl
-
 end Walk
 
 /-! ### Mapping walks -/
@@ -1131,7 +1142,7 @@ theorem map_injective_of_injective {f : G →g G'} (hinj : Function.Injective f)
 
 /-- The specialization of `SimpleGraph.Walk.map` for mapping walks to supergraphs. -/
 abbrev mapLe {G G' : SimpleGraph V} (h : G ≤ G') {u v : V} (p : G.Walk u v) : G'.Walk u v :=
-  p.map (Hom.mapSpanningSubgraphs h)
+  p.map (.ofLE h)
 
 /-! ### Transferring between graphs -/
 
@@ -1151,9 +1162,10 @@ theorem transfer_self : p.transfer G p.edges_subset_edgeSet = p := by
 
 variable {H : SimpleGraph V}
 
-theorem transfer_eq_map_of_le (hp) (GH : G ≤ H) :
-    p.transfer H hp = p.map (SimpleGraph.Hom.mapSpanningSubgraphs GH) := by
+theorem transfer_eq_map_ofLE (hp) (GH : G ≤ H) : p.transfer H hp = p.map (.ofLE GH) := by
   induction p <;> simp [*]
+
+@[deprecated (since := "2025-03-17")] alias transfer_eq_map_of_le := transfer_eq_map_ofLE
 
 @[simp]
 theorem edges_transfer (hp) : (p.transfer H hp).edges = p.edges := by
@@ -1230,8 +1242,8 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 
 @[simp]
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
-    Walk.map (Hom.mapSpanningSubgraphs (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
-  rw [← transfer_eq_map_of_le, transfer_transfer, transfer_self]
+    Walk.map (.ofLE (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
+  rw [← transfer_eq_map_ofLE, transfer_transfer, transfer_self]
   intros e
   rw [edges_transfer]
   apply edges_subset_edgeSet p

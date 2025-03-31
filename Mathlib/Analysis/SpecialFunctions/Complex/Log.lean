@@ -25,9 +25,9 @@ open scoped Real Topology ComplexConjugate
   `log 0 = 0` -/
 @[pp_nodot]
 noncomputable def log (x : ℂ) : ℂ :=
-  x.abs.log + arg x * I
+  Real.log ‖x‖ + arg x * I
 
-theorem log_re (x : ℂ) : x.log.re = x.abs.log := by simp [log]
+theorem log_re (x : ℂ) : x.log.re = Real.log ‖x‖ := by simp [log]
 
 theorem log_im (x : ℂ) : x.log.im = x.arg := by simp [log]
 
@@ -37,9 +37,9 @@ theorem log_im_le_pi (x : ℂ) : (log x).im ≤ π := by simp only [log_im, arg_
 
 theorem exp_log {x : ℂ} (hx : x ≠ 0) : exp (log x) = x := by
   rw [log, exp_add_mul_I, ← ofReal_sin, sin_arg, ← ofReal_cos, cos_arg hx, ← ofReal_exp,
-    Real.exp_log (abs.pos hx), mul_add, ofReal_div, ofReal_div,
-    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), ← mul_assoc,
-    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| abs.ne_zero hx), re_add_im]
+    Real.exp_log (norm_pos_iff.mpr hx), mul_add, ofReal_div, ofReal_div,
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| norm_ne_zero_iff.mpr hx), ← mul_assoc,
+    mul_div_cancel₀ _ (ofReal_ne_zero.2 <| norm_ne_zero_iff.mpr hx), re_add_im]
 
 @[simp]
 theorem range_exp : Set.range exp = {0}ᶜ :=
@@ -49,7 +49,7 @@ theorem range_exp : Set.range exp = {0}ᶜ :=
       exact exp_ne_zero x, fun hx => ⟨log x, exp_log hx⟩⟩
 
 theorem log_exp {x : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) : log (exp x) = x := by
-  rw [log, abs_exp, Real.log_exp, exp_eq_exp_re_mul_sin_add_cos, ← ofReal_exp,
+  rw [log, norm_exp, Real.log_exp, exp_eq_exp_re_mul_sin_add_cos, ← ofReal_exp,
     arg_mul_cos_add_sin_mul_I (Real.exp_pos _) ⟨hx₁, hx₂⟩, re_add_im]
 
 theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : x.im ≤ π) (hy₁ : -π < y.im)
@@ -57,7 +57,7 @@ theorem exp_inj_of_neg_pi_lt_of_le_pi {x y : ℂ} (hx₁ : -π < x.im) (hx₂ : 
   rw [← log_exp hx₁ hx₂, ← log_exp hy₁ hy₂, hxy]
 
 theorem ofReal_log {x : ℝ} (hx : 0 ≤ x) : (x.log : ℂ) = log x :=
-  Complex.ext (by rw [log_re, ofReal_re, Complex.abs_of_nonneg hx])
+  Complex.ext (by rw [log_re, ofReal_re, Complex.norm_of_nonneg hx])
     (by rw [ofReal_im, log_im, arg_ofReal_of_nonneg hx])
 
 @[simp, norm_cast]
@@ -72,9 +72,9 @@ theorem log_ofReal_re (x : ℝ) : (log (x : ℂ)).re = Real.log x := by simp [lo
 
 theorem log_ofReal_mul {r : ℝ} (hr : 0 < r) {x : ℂ} (hx : x ≠ 0) :
     log (r * x) = Real.log r + log x := by
-  replace hx := Complex.abs.ne_zero_iff.mpr hx
-  simp_rw [log, map_mul, abs_ofReal, arg_real_mul _ hr, abs_of_pos hr, Real.log_mul hr.ne' hx,
-    ofReal_add, add_assoc]
+  replace hx := norm_ne_zero_iff.mpr hx
+  simp_rw [log, norm_mul, norm_real, arg_real_mul _ hr, Real.norm_of_nonneg hr.le,
+    Real.log_mul hr.ne' hx, ofReal_add, add_assoc]
 
 theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
     log (x * r) = Real.log r + log x := by rw [mul_comm, log_ofReal_mul hr hx]
@@ -82,8 +82,8 @@ theorem log_mul_ofReal (r : ℝ) (hr : 0 < r) (x : ℂ) (hx : x ≠ 0) :
 lemma log_mul_eq_add_log_iff {x y : ℂ} (hx₀ : x ≠ 0) (hy₀ : y ≠ 0) :
     log (x * y) = log x + log y ↔ arg x + arg y ∈ Set.Ioc (-π) π := by
   refine Complex.ext_iff.trans <| Iff.trans ?_ <| arg_mul_eq_add_arg_iff hx₀ hy₀
-  simp_rw [add_re, add_im, log_re, log_im, AbsoluteValue.map_mul,
-    Real.log_mul (abs.ne_zero hx₀) (abs.ne_zero hy₀), true_and]
+  simp_rw [add_re, add_im, log_re, log_im, norm_mul,
+    Real.log_mul (norm_ne_zero_iff.mpr hx₀) (norm_ne_zero_iff.mpr hy₀), true_and]
 
 alias ⟨_, log_mul⟩ := log_mul_eq_add_log_iff
 
@@ -103,7 +103,7 @@ theorem log_I : log I = π / 2 * I := by simp [log]
 theorem log_neg_I : log (-I) = -(π / 2) * I := by simp [log]
 
 theorem log_conj_eq_ite (x : ℂ) : log (conj x) = if x.arg = π then log x else conj (log x) := by
-  simp_rw [log, abs_conj, arg_conj, map_add, map_mul, conj_ofReal]
+  simp_rw [log, norm_conj, arg_conj, map_add, map_mul, conj_ofReal]
   split_ifs with hx
   · rw [hx]
   simp_rw [ofReal_neg, conj_I, mul_neg, neg_mul]
@@ -115,7 +115,7 @@ theorem log_inv_eq_ite (x : ℂ) : log x⁻¹ = if x.arg = π then -conj (log x)
   by_cases hx : x = 0
   · simp [hx]
   rw [inv_def, log_mul_ofReal, Real.log_inv, ofReal_neg, ← sub_eq_neg_add, log_conj_eq_ite]
-  · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_abs, Real.log_pow,
+  · simp_rw [log, map_add, map_mul, conj_ofReal, conj_I, normSq_eq_norm_sq, Real.log_pow,
       Nat.cast_two, ofReal_mul, neg_add, mul_neg, neg_neg]
     norm_num; rw [two_mul] -- Porting note: added to simplify `↑2`
     split_ifs
@@ -168,10 +168,10 @@ theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Co
 alias ⟨_, _root_.Set.Countable.preimage_cexp⟩ := countable_preimage_exp
 
 theorem tendsto_log_nhdsWithin_im_neg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
-    (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log (abs z) - π * I) := by
+    (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | z.im < 0 }] z) (𝓝 <| Real.log ‖z‖ - π * I) := by
   convert
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_abs.continuousWithinAt.log _)).tendsto.add
+            (continuous_norm.continuousWithinAt.log _)).tendsto.add
       (((continuous_ofReal.tendsto _).comp <|
             tendsto_arg_nhdsWithin_im_neg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
@@ -183,7 +183,7 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
     ContinuousWithinAt log { z : ℂ | 0 ≤ z.im } z := by
   convert
     (continuous_ofReal.continuousAt.comp_continuousWithinAt
-            (continuous_abs.continuousWithinAt.log _)).tendsto.add
+            (continuous_norm.continuousWithinAt.log _)).tendsto.add
       ((continuous_ofReal.continuousAt.comp_continuousWithinAt <|
             continuousWithinAt_arg_of_re_neg_of_im_zero hre him).mul
         tendsto_const_nhds) using 1
@@ -191,7 +191,7 @@ theorem continuousWithinAt_log_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
   simpa using hre.ne
 
 theorem tendsto_log_nhdsWithin_im_nonneg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0)
-    (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log (abs z) + π * I) := by
+    (him : z.im = 0) : Tendsto log (𝓝[{ z : ℂ | 0 ≤ z.im }] z) (𝓝 <| Real.log ‖z‖ + π * I) := by
   simpa only [log, arg_eq_pi_iff.2 ⟨hre, him⟩] using
     (continuousWithinAt_log_of_re_neg_of_im_zero hre him).tendsto
 
@@ -217,8 +217,8 @@ variable {α : Type*}
 theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
   refine ContinuousAt.add ?_ ?_
   · refine continuous_ofReal.continuousAt.comp ?_
-    refine (Real.continuousAt_log ?_).comp Complex.continuous_abs.continuousAt
-    exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
+    refine (Real.continuousAt_log ?_).comp continuous_norm.continuousAt
+    exact norm_ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
     refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
@@ -254,7 +254,7 @@ end LogDeriv
 
 section tsum_tprod
 
-variable {α ι: Type*}
+variable {α ι : Type*}
 
 open Real
 
@@ -289,3 +289,12 @@ lemma Complex.cexp_tsum_eq_tprod (f : ι →  ℂ) (hfn : ∀ n, f n ≠ 0)
   (Complex.hasProd_of_hasSum_log _ hfn hf.hasSum).tprod_eq.symm
 
 end tsum_tprod
+
+open Complex in
+theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
+    (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
+  show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
+      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
+    (((hs.preimage (add_right_injective _)).preimage <|
+      mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
+        mul_left_injective₀ I_ne_zero).preimage ofReal_injective

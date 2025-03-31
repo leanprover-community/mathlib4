@@ -254,32 +254,6 @@ theorem not_finite [Nontrivial R] : ¬ Module.Finite R R[X] := by
   rw [mem_degreeLE, degree_X_pow, Nat.cast_le, add_le_iff_nonpos_right, nonpos_iff_eq_zero] at this
   exact one_ne_zero this
 
-/-- The finset of nonzero coefficients of a polynomial. -/
-def coeffs (p : R[X]) : Finset R :=
-  letI := Classical.decEq R
-  Finset.image (fun n => p.coeff n) p.support
-
-@[simp]
-theorem coeffs_zero : coeffs (0 : R[X]) = ∅ :=
-  rfl
-
-theorem mem_coeffs_iff {p : R[X]} {c : R} : c ∈ p.coeffs ↔ ∃ n ∈ p.support, c = p.coeff n := by
-  simp [coeffs, eq_comm, (Finset.mem_image)]
-
-theorem coeffs_one : coeffs (1 : R[X]) ⊆ {1} := by
-  classical
-    simp_rw [coeffs, Finset.image_subset_iff]
-    simp_all [coeff_one]
-
-theorem coeff_mem_coeffs (p : R[X]) (n : ℕ) (h : p.coeff n ≠ 0) : p.coeff n ∈ p.coeffs := by
-  classical
-  simp only [coeffs, exists_prop, mem_support_iff, Finset.mem_image, Ne]
-  exact ⟨n, h, rfl⟩
-
-theorem coeffs_monomial (n : ℕ) {c : R} (hc : c ≠ 0) : (monomial n c).coeffs = {c} := by
-  rw [coeffs, support_monomial n hc]
-  simp
-
 theorem geom_sum_X_comp_X_add_one_eq_sum (n : ℕ) :
     (∑ i ∈ range n, (X : R[X]) ^ i).comp (X + 1) =
       (Finset.range n).sum fun i : ℕ => (n.choose (i + 1) : R[X]) * X ^ i := by
@@ -709,7 +683,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
         apply P.sum_mem
         rintro ⟨i, j⟩ hij
         rw [Finset.mem_erase, Finset.mem_antidiagonal] at hij
-        simp only [Ne, Prod.mk.inj_iff, not_and_or] at hij
+        simp only [Ne, Prod.mk_inj, not_and_or] at hij
         obtain hi | hj : i < m ∨ j < n := by
           omega
         · rw [mul_comm]
