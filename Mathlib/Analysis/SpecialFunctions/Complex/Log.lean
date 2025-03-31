@@ -12,7 +12,6 @@ import Mathlib.Analysis.SpecialFunctions.Log.Basic
 Basic properties, relationship with `exp`.
 -/
 
-
 noncomputable section
 
 namespace Complex
@@ -289,44 +288,3 @@ lemma Complex.cexp_tsum_eq_tprod (f : ι →  ℂ) (hfn : ∀ n, f n ≠ 0)
   (Complex.hasProd_of_hasSum_log _ hfn hf.hasSum).tprod_eq.symm
 
 end tsum_tprod
-
-section circleMap
-
-open Complex Real
-
-theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
-    (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=
-  show (((↑) : ℝ → ℂ) ⁻¹' ((· * I) ⁻¹'
-      (exp ⁻¹' ((R * ·) ⁻¹' ((c + ·) ⁻¹' s))))).Countable from
-    (((hs.preimage (add_right_injective _)).preimage <|
-      mul_right_injective₀ <| ofReal_ne_zero.2 hR).preimage_cexp.preimage <|
-        mul_left_injective₀ I_ne_zero).preimage ofReal_injective
-
-lemma circleMap_eq_circleMap_iff {a b R : ℝ} (c : ℂ) (h_R : R ≠ 0) :
-    circleMap c R a = circleMap c R b ↔ ∃ (n : ℤ), a * I = b * I + n * (2 * π * I) := by
-  have : circleMap c R a = circleMap c R b ↔ (exp (a * I)).arg = (exp (b * I)).arg := by
-    simp [circleMap, ext_norm_arg_iff, h_R]
-  simp [this, arg_eq_arg_iff, exp_eq_exp_iff_exists_int]
-
-lemma eq_of_circleMap_eq {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (h_dist : |a - b| < 2 * π)
-    (h : circleMap c R a = circleMap c R b) : a = b := by
-  rw [circleMap_eq_circleMap_iff c h_R] at h
-  obtain ⟨n, hn⟩ := h
-  simp only [show n * (2 * π * I) = (n * 2 * π) * I by ring, ← add_mul, mul_eq_mul_right_iff,
-    I_ne_zero, or_false] at hn
-  norm_cast at hn
-  simp only [hn, Int.cast_mul, Int.cast_ofNat, mul_assoc, add_sub_cancel_left, abs_mul,
-    Nat.abs_ofNat, abs_of_pos Real.pi_pos] at h_dist
-  field_simp at h_dist
-  norm_cast at h_dist
-  simp [hn, Int.abs_lt_one_iff.mp h_dist]
-
-/-- `circleMap` is injective on `Ι a b` if the distance between `a` and `b` is at most `2π`. -/
-theorem injOn_circleMap_of_abs_sub_le {a b R : ℝ} {c : ℂ} (h_R : R ≠ 0) (_ : |a - b| ≤ 2 * π) :
-    (Ι a b).InjOn (circleMap c R) := by
-  rintro _ ⟨_, _⟩ _ ⟨_, _⟩ h
-  apply eq_of_circleMap_eq h_R _ h
-  rw [abs_lt]
-  constructor <;> linarith [max_sub_min_eq_abs' a b]
-
-end circleMap
