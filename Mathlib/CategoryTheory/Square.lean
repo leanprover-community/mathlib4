@@ -146,7 +146,12 @@ def isoMk {sq₁ sq₂ : Square C} (e₁ : sq₁.X₁ ≅ sq₂.X₁) (e₂ : sq
 
 /-- Flipping a square by switching the top-right and the bottom-left objects. -/
 @[simps]
-def flip (sq : Square C) : Square C := { fac := sq.fac.symm, .. }
+def flip (sq : Square C) : Square C where
+  f₁₂ := sq.f₁₃
+  f₁₃ := sq.f₁₂
+  f₂₄ := sq.f₃₄
+  f₃₄ := sq.f₂₄
+  fac := sq.fac.symm
 
 /-- The functor which flips commutative squares. -/
 @[simps]
