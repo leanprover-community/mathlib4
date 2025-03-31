@@ -13,11 +13,11 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 /-!
 # circleMap
 
-This file defines the circle map
+This file defines the circle map $θ ↦ c + R e^{θi}$,  a parametrization of a circle.
 
 ## Main definitions
 
-* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$;
+* `circleMap c R`: the exponential map $θ ↦ c + R e^{θi}$.
 
 ## Tags
 
