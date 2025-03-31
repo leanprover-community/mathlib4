@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Topology.Algebra.Module.ModuleTopology
 import Mathlib.Topology.Category.TopCat.Limits.Basic
 
-/-
+/-!
 # The category `TopModuleCat R` of topological modules
 
 We define `TopModuleCat R`, the category of topological modules, and show that
