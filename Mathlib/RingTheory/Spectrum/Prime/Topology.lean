@@ -131,6 +131,21 @@ theorem vanishingIdeal_strict_anti_mono_iff {s t : Set (PrimeSpectrum R)} (hs : 
   rw [Set.ssubset_def, vanishingIdeal_anti_mono_iff hs, vanishingIdeal_anti_mono_iff ht,
     lt_iff_le_not_le]
 
+@[simp]
+lemma zeroLocus_nilradical : PrimeSpectrum.zeroLocus (nilradical R : Set R) = Set.univ := by
+  rw [Set.eq_univ_iff_forall]
+  intro x
+  simpa using nilradical_le_prime x.asIdeal
+
+lemma zeroLocus_eq_univ_iff (s : Set R) :
+    PrimeSpectrum.zeroLocus s = Set.univ ↔ s ⊆ nilradical R := by
+  refine ⟨fun hs ↦ ?_, fun hs ↦ ?_⟩
+  · simp_rw [nilradical_eq_sInf, Submodule.sInf_coe, Set.mem_setOf_eq, Set.subset_iInter_iff]
+    intro I hI
+    exact (Set.eq_univ_iff_forall.mp hs) ⟨I, hI⟩
+  · rw [← Set.univ_subset_iff, ← PrimeSpectrum.zeroLocus_nilradical]
+    exact PrimeSpectrum.zeroLocus_anti_mono hs
+
 /-- The antitone order embedding of closed subsets of `Spec R` into ideals of `R`. -/
 def closedsEmbedding (R : Type*) [CommSemiring R] :
     (TopologicalSpace.Closeds <| PrimeSpectrum R)ᵒᵈ ↪o Ideal R :=
@@ -394,6 +409,11 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
 theorem range_comap_of_surjective (hf : Surjective f) :
     Set.range (comap f) = zeroLocus (ker f) :=
   range_specComap_of_surjective _ f hf
+
+lemma comap_quotientMk_surjective_of_le_nilradical (I : Ideal R) (hle : I ≤ nilradical R) :
+    Function.Surjective (PrimeSpectrum.comap <| Ideal.Quotient.mk I) := by
+  simpa [← Set.range_eq_univ, range_comap_of_surjective _ _ Ideal.Quotient.mk_surjective,
+    zeroLocus_eq_univ_iff]
 
 theorem isClosed_range_comap_of_surjective (hf : Surjective f) :
     IsClosed (Set.range (comap f)) := by
