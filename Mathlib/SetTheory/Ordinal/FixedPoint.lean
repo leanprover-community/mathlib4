@@ -434,7 +434,7 @@ theorem iSup_iterate_eq_nfp (f : Ordinal.{u} → Ordinal.{u}) (a : Ordinal.{u}) 
   apply le_antisymm
   · rw [Ordinal.iSup_le_iff]
     intro n
-    rw [← List.length_replicate n Unit.unit, ← List.foldr_const f a]
+    rw [← List.length_replicate (n := n) (a := Unit.unit), ← List.foldr_const f a]
     exact Ordinal.le_iSup _ _
   · apply Ordinal.iSup_le
     intro l

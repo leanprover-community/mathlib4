@@ -77,7 +77,7 @@ theorem sorted_cons_cons {r : α → α → Prop} [IsTrans α r] {l : List α} {
     Sorted r (b :: a :: l) ↔ r b a ∧ Sorted r (a :: l) := by
   constructor
   · intro h
-    exact ⟨rel_of_sorted_cons h _ (mem_cons_self a _), h.of_cons⟩
+    exact ⟨rel_of_sorted_cons h _ mem_cons_self, h.of_cons⟩
   · rintro ⟨h, ha⟩
     exact ha.cons h
 
@@ -105,13 +105,13 @@ protected theorem Sorted.nodup {r : α → α → Prop} [IsIrrefl α r] {l : Lis
 
 protected theorem Sorted.filter {l : List α} (f : α → Bool) (h : Sorted r l) :
     Sorted r (filter f l) :=
-  h.sublist (filter_sublist l)
+  h.sublist filter_sublist
 
 theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ ~ l₂) (hs₁ : Sorted r l₁)
     (hs₂ : Sorted r l₂) : l₁ = l₂ := by
   induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
   · exact hp.nil_eq
-  · have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
+  · have : a ∈ l₂ := hp.subset mem_cons_self
     rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)
     obtain rfl := IH hp' (hs₂.sublist <| by simp)
@@ -119,7 +119,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
     rw [← append_assoc]
     congr
     have : ∀ x ∈ u₂, x = a := fun x m =>
-      antisymm ((pairwise_append.1 hs₂).2.2 _ m a (mem_cons_self _ _)) (h₁ _ (by simp [m]))
+      antisymm ((pairwise_append.1 hs₂).2.2 _ m a mem_cons_self) (h₁ _ (by simp [m]))
     rw [(@eq_replicate_iff _ a (length u₂ + 1) (a :: u₂)).2,
         (@eq_replicate_iff _ a (length u₂ + 1) (u₂ ++ [a])).2] <;>
         constructor <;>
@@ -435,7 +435,7 @@ theorem insertionSort_cons {a : α} {l : List α} (h : ∀ b ∈ l, r a b) :
     rw [orderedInsert_of_le]
     apply h b <| (mem_insertionSort r).1 _
     rw [hi]
-    exact mem_cons_self b m
+    exact mem_cons_self
 
 theorem map_insertionSort (f : α → β) (l : List α) (hl : ∀ a ∈ l, ∀ b ∈ l, a ≼ b ↔ f a ≼ f b) :
     (l.insertionSort r).map f = (l.map f).insertionSort s := by
@@ -457,7 +457,7 @@ theorem Sorted.insertionSort_eq : ∀ {l : List α}, Sorted r l → insertionSor
   | [_], _ => rfl
   | a :: b :: l, h => by
     rw [insertionSort, Sorted.insertionSort_eq, orderedInsert, if_pos]
-    exacts [rel_of_sorted_cons h _ (mem_cons_self _ _), h.tail]
+    exacts [rel_of_sorted_cons h _ mem_cons_self, h.tail]
 
 /-- For a reflexive relation, insert then erasing is the identity. -/
 theorem erase_orderedInsert [DecidableEq α] [IsRefl α r] (x : α) (xs : List α) :
