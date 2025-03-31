@@ -643,6 +643,22 @@ variable [Semiring B] [Algebra R B]
 variable [Semiring C] [Algebra S C]
 variable [Semiring D] [Algebra R D]
 
+/-- To check a linear map preserves multiplication, it suffices to check it on pure tensors. See
+`algHomOfLinearMapTensorProduct` for a bundled version. -/
+lemma _root_.LinearMap.map_mul_of_map_mul_tmul {f : A ⊗[R] B →ₗ[S] C}
+    (hf : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
+    (x y : A ⊗[R] B) : f (x * y) = f x * f y :=
+  #adaptation_note /-- https://github.com/leanprover/lean4/pull/4119
+  we either need to specify the `(R := S) (A := A ⊗[R] B)` arguments,
+  or use `set_option maxSynthPendingDepth 2 in`. -/
+  (f.map_mul_iff (R := S) (A := A ⊗[R] B)).2 (by
+    -- these instances are needed by the statement of `ext`, but not by the current definition.
+    letI : Algebra R C := RestrictScalars.algebra R S C
+    letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
+    ext
+    dsimp
+    exact hf _ _ _ _) x y
+
 /-- Build an algebra morphism from a linear map out of a tensor product, and evidence that on pure
 tensors, it preserves multiplication and the identity.
 
@@ -652,13 +668,7 @@ tensors can be directly applied by the caller (without needing `TensorProduct.on
 def algHomOfLinearMapTensorProduct (f : A ⊗[R] B →ₗ[S] C)
     (h_mul : ∀ (a₁ a₂ : A) (b₁ b₂ : B), f ((a₁ * a₂) ⊗ₜ (b₁ * b₂)) = f (a₁ ⊗ₜ b₁) * f (a₂ ⊗ₜ b₂))
     (h_one : f (1 ⊗ₜ[R] 1) = 1) : A ⊗[R] B →ₐ[S] C :=
-  AlgHom.ofLinearMap f h_one <| (f.map_mul_iff (R := S) (A := A ⊗[R] B)).2 <| by
-    -- these instances are needed by the statement of `ext`, but not by the current definition.
-    letI : Algebra R C := RestrictScalars.algebra R S C
-    letI : IsScalarTower R S C := RestrictScalars.isScalarTower R S C
-    ext
-    dsimp
-    exact h_mul _ _ _ _
+  AlgHom.ofLinearMap f h_one (f.map_mul_of_map_mul_tmul h_mul)
 
 @[simp]
 theorem algHomOfLinearMapTensorProduct_apply (f h_mul h_one x) :
@@ -957,6 +967,31 @@ theorem assoc_symm_tmul (a : A) (b : B) (c : C) :
 
 end
 
+section
+
+variable (T A B : Type*) [CommSemiring T] [CommSemiring A] [CommSemiring B]
+  [Algebra R T] [Algebra R A] [Algebra R B] [Algebra T A] [IsScalarTower R T A] [Algebra S A]
+  [IsScalarTower R S A] [Algebra S T] [IsScalarTower S T A]
+
+/-- The natural isomorphism `A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B`. -/
+noncomputable def cancelBaseChange : A ⊗[S] (S ⊗[R] B) ≃ₐ[T] A ⊗[R] B :=
+  AlgEquiv.symm <| AlgEquiv.ofLinearEquiv
+    (TensorProduct.AlgebraTensorModule.cancelBaseChange R S T A B).symm
+    (by simp [Algebra.TensorProduct.one_def]) <|
+      LinearMap.map_mul_of_map_mul_tmul (fun _ _ _ _ ↦ by simp)
+
+@[simp]
+lemma cancelBaseChange_tmul (a : A) (s : S) (b : B) :
+    Algebra.TensorProduct.cancelBaseChange R S T A B (a ⊗ₜ (s ⊗ₜ b)) = (s • a) ⊗ₜ b :=
+  TensorProduct.AlgebraTensorModule.cancelBaseChange_tmul R S T a b s
+
+@[simp]
+lemma cancelBaseChange_symm_tmul (a : A) (b : B) :
+    (Algebra.TensorProduct.cancelBaseChange R S T A B).symm (a ⊗ₜ b) = a ⊗ₜ (1 ⊗ₜ b) :=
+  TensorProduct.AlgebraTensorModule.cancelBaseChange_symm_tmul R S T a b
+
+end
+
 variable {R S A}
 
 /-- The tensor product of a pair of algebra morphisms. -/
@@ -1128,6 +1163,9 @@ homomorphism.
 This is just a special case of `Algebra.TensorProduct.lift` for when `C` is commutative. -/
 abbrev productLeftAlgHom (f : A →ₐ[S] C) (g : B →ₐ[R] C) : A ⊗[R] B →ₐ[S] C :=
   lift f g (fun _ _ => Commute.all _ _)
+
+lemma tmul_comm (r : R) : algebraMap R A r ⊗ₜ[R] 1 = 1 ⊗ₜ algebraMap R B r := by
+  rw [Algebra.algebraMap_eq_smul_one, Algebra.algebraMap_eq_smul_one, smul_tmul]
 
 end
 

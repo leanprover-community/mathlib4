@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 -/
 import Mathlib.RingTheory.Spectrum.Prime.Basic
+import Mathlib.RingTheory.Ideal.GoingUp
 
 /-!
 # Functoriality of the prime spectrum
@@ -183,5 +184,14 @@ lemma PrimeSpectrum.mem_range_comap_iff {p : PrimeSpectrum R} :
   rw [Ideal.comap_map_eq_self_iff_of_isPrime]
   rintro ⟨q, _, hq⟩
   exact ⟨⟨q, inferInstance⟩, PrimeSpectrum.ext hq⟩
+
+lemma RingHom.IsIntegral.specComap_surjective {R S : Type*} [CommRing R] [CommRing S]
+    {f : R →+* S} (hf : f.IsIntegral) (hinj : Function.Injective f) :
+    Function.Surjective f.specComap := by
+  algebraize [f]
+  intro ⟨p, hp⟩
+  obtain ⟨Q, _, hQ, rfl⟩ := Ideal.exists_ideal_over_prime_of_isIntegral p (⊥ : Ideal S)
+    (by simp [Ideal.comap_bot_of_injective (algebraMap R S) hinj])
+  exact ⟨⟨Q, hQ⟩, rfl⟩
 
 end SpecOfSurjective
