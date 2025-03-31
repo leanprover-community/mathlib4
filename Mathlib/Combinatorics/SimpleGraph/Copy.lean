@@ -421,7 +421,7 @@ lemma copyCount_eq_card_image_copyToSubgraph [Fintype {f : H →g G // Injective
   simp [copyCount, -nonempty_subtype, isContained_iff_exists_iso_subgraph, card_pos,
     filter_nonempty_iff]
 
-/-- There's more labelled copies of `H` in `G` than unlabelled ones. -/
+/-- There's at least as many labelled copies of `H` in `G` than unlabelled ones. -/
 lemma copyCount_le_labelledCopyCount [Fintype W] : G.copyCount H ≤ G.labelledCopyCount H := by
   classical rw [copyCount_eq_card_image_copyToSubgraph]; exact card_image_le
 
