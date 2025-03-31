@@ -7,6 +7,7 @@ import Batteries.Data.List.Perm
 import Mathlib.Data.List.Pairwise
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Lookmap
+import Mathlib.Data.Sigma.Basic
 
 /-!
 # Utilities for lists of sigmas
