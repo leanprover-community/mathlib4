@@ -3308,6 +3308,9 @@ import Mathlib.Data.W.Basic
 import Mathlib.Data.W.Cardinal
 import Mathlib.Data.W.Constructions
 import Mathlib.Data.WSeq.Basic
+import Mathlib.Data.WSeq.Defs
+import Mathlib.Data.WSeq.Productive
+import Mathlib.Data.WSeq.Relation
 import Mathlib.Data.ZMod.Aut
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Data.ZMod.Coprime
