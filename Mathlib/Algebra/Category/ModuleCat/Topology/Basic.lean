@@ -46,6 +46,7 @@ instance (M : TopModuleCat R) : TopologicalSpace M := M.2
 instance (M : TopModuleCat R) : IsTopologicalAddGroup M := M.3
 instance (M : TopModuleCat R) : ContinuousSMul R M := M.4
 
+/-- Make an object in `TopModuleCat R` from an unbundled topological module. -/
 def of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [ContinuousAdd M]
     [ContinuousSMul R M] : TopModuleCat R :=
   have : ContinuousNeg M := ⟨by convert continuous_const_smul (-1 : R) (T := M); ext; simp⟩
@@ -59,7 +60,10 @@ lemma coe_of (M : Type v) [AddCommGroup M] [Module R M] [TopologicalSpace M] [Co
 variable {R} in
 /-- Homs in `TopModuleCat` as one field structures over `ContinuousLinearMap`. -/
 structure Hom (X Y : TopModuleCat.{v} R) where
-  ofHom' :: hom' : X →L[R] Y
+  -- use `ofHom` instead
+  private ofHom' ::
+  -- ues `hom` instead
+  private hom' : X →L[R] Y
 
 instance : Category (TopModuleCat R) where
   Hom := Hom
