@@ -183,7 +183,7 @@ namespace Measure
 protected irreducible_def prod (μ : Measure α) (ν : Measure β) : Measure (α × β) :=
   bind μ fun x : α => map (Prod.mk x) ν
 
-instance prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
+instance Prod.measureSpace {α β} [MeasureSpace α] [MeasureSpace β] : MeasureSpace (α × β) where
   volume := volume.prod volume
 
 theorem volume_eq_prod (α β) [MeasureSpace α] [MeasureSpace β] :
