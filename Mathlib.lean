@@ -5109,6 +5109,7 @@ import Mathlib.RingTheory.Polynomial.UniqueFactorization
 import Mathlib.RingTheory.Polynomial.Vieta
 import Mathlib.RingTheory.Polynomial.Wronskian
 import Mathlib.RingTheory.PolynomialAlgebra
+import Mathlib.RingTheory.PolynomialLaw.Basic
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Binomial
