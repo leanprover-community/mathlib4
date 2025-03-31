@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Rel
 import Mathlib.ModelTheory.Semantics
 import Mathlib.Tactic.FunProp
 
