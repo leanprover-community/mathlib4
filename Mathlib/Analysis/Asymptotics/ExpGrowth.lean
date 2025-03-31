@@ -22,6 +22,7 @@ asymptotics, exponential
 namespace ExpGrowth
 
 open ENNReal EReal Filter Function Set
+open scoped Topology
 
 /-! ### Definition -/
 
@@ -567,7 +568,7 @@ lemma _root_.Monotone.le_expGrowthSup_comp (h : Monotone u)
     exact (exp_monotone (mul_le_mul_of_nonneg_left k_an b_0.le)).trans <| bn_un.trans (h n_vk)
 
 lemma _root_.Monotone.expGrowthInf_comp {a : EReal} (h : Monotone u)
-    (hv : Tendsto (fun n ↦ (v n : EReal) / n) atTop (nhds a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
+    (hv : Tendsto (fun n ↦ (v n : EReal) / n) atTop (𝓝 a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
     expGrowthInf (u ∘ v) = a * expGrowthInf u := by
   have hv₁ : 0 < liminf (fun n ↦ (v n : EReal) / n) atTop := by
     rw [← hv.liminf_eq] at ha
@@ -596,7 +597,7 @@ lemma _root_.Monotone.expGrowthInf_comp {a : EReal} (h : Monotone u)
       exact le_expGrowthInf_comp h' v_top
 
 lemma _root_.Monotone.expGrowthSup_comp {a : EReal} (hu : Monotone u)
-    (hv : Tendsto (fun n ↦ (v n : EReal) / n) atTop (nhds a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
+    (hv : Tendsto (fun n ↦ (v n : EReal) / n) atTop (𝓝 a)) (ha : a ≠ 0) (ha' : a ≠ ⊤) :
     expGrowthSup (u ∘ v) = a * expGrowthSup u := by
   have hv₁ : 0 < liminf (fun n ↦ (v n : EReal) / n) atTop := by
     rw [← hv.liminf_eq] at ha
@@ -624,7 +625,7 @@ lemma _root_.Monotone.expGrowthSup_comp {a : EReal} (hu : Monotone u)
 
 lemma _root_.Monotone.expGrowthInf_comp_mul {m : ℕ} (hu : Monotone u) (hm : m ≠ 0) :
     expGrowthInf (fun n ↦ u (m * n)) = m * expGrowthInf u := by
-  have h : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (nhds m) := by
+  have h : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (𝓝 m) := by
     refine tendsto_nhds_of_eventually_eq ((eventually_gt_atTop 0).mono fun x hx ↦ ?_)
     rw [mul_comm, natCast_mul x m, ← mul_div]
     exact mul_div_cancel (natCast_ne_bot x) (natCast_ne_top x) (Nat.cast_ne_zero.2 hx.ne.symm)
@@ -632,7 +633,7 @@ lemma _root_.Monotone.expGrowthInf_comp_mul {m : ℕ} (hu : Monotone u) (hm : m 
 
 lemma _root_.Monotone.expGrowthSup_comp_mul {m : ℕ} (hu : Monotone u) (hm : m ≠ 0) :
     expGrowthSup (fun n ↦ u (m * n)) = m * expGrowthSup u := by
-  have h : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (nhds m) := by
+  have h : Tendsto (fun n : ℕ ↦ ((m * n : ℕ) : EReal) / n) atTop (𝓝 m) := by
     refine tendsto_nhds_of_eventually_eq ((eventually_gt_atTop 0).mono fun x hx ↦ ?_)
     rw [mul_comm, natCast_mul x m, ← mul_div]
     exact mul_div_cancel (natCast_ne_bot x) (natCast_ne_top x) (Nat.cast_ne_zero.2 hx.ne.symm)
