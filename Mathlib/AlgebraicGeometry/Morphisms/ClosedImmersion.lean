@@ -75,7 +75,7 @@ instance {X Y : Scheme} (f : X ⟶ Y) [IsIso f] : IsClosedImmersion f where
   base_closed := Homeomorph.isClosedEmbedding <| TopCat.homeoOfIso (asIso f.base)
   surj_on_stalks := fun _ ↦ (ConcreteCategory.bijective_of_isIso _).2
 
-instance (priority := low) {X Y : Scheme} [IsEmpty X] (f : X ⟶ Y) : IsClosedImmersion f :=
+instance (priority := low) {X Y : Scheme.{u}} [IsEmpty X] (f : X ⟶ Y) : IsClosedImmersion f :=
   .of_isPreimmersion _ (by rw [Set.range_eq_empty]; exact isClosed_empty)
 
 instance : MorphismProperty.IsMultiplicative @IsClosedImmersion where
@@ -351,7 +351,7 @@ lemma isIso_of_isClosedImmersion_of_surjective {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 section Section
 
-nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme} [Subsingleton Y]
+nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme.{u}} [Subsingleton Y]
     (f : X ⟶ Y) (g : Y ⟶ X) (hg : g ≫ f = 𝟙 Y) :
     IsClosedImmersion g := by
   wlog hX : ∃ R, X = Spec R
@@ -385,11 +385,10 @@ nonrec theorem isClosedImmersion_of_comp_eq_id {X Y : Scheme} [Subsingleton Y]
   apply Function.LeftInverse.surjective (g := φ)
   exact fun x ↦ congr($hg.1 x)
 
-instance (priority := low) {X Y : Scheme} [Subsingleton Y] [X.Over Y] (f : Y ⟶ X) [f.IsOver Y] :
+instance (priority := low) {X Y : Scheme.{u}} [Subsingleton Y] [X.Over Y] (f : Y ⟶ X) [f.IsOver Y] :
     IsClosedImmersion f :=
   isClosedImmersion_of_comp_eq_id (X ↘ Y) f (by simp)
 
 end Section
-
 
 end AlgebraicGeometry
