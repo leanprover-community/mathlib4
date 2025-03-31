@@ -222,12 +222,6 @@ lemma boxProd_reachable {x y : α × β} :
   · intro ⟨⟨w₁⟩, ⟨w₂⟩⟩
     exact ⟨(w₁.boxProdLeft _ _).append (w₂.boxProdRight _ _)⟩
 
-lemma edist_boxProd_eq_top {x y : α × β}:
-    (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
-  repeat rw [← not_ne_iff, edist_ne_top_iff_reachable]
-  rw [boxProd_reachable]
-  tauto
-
 lemma boxProd_len_eq_sum_projections {a₁ a₂ : α} {b₁ b₂ : β} [DecidableEq α] [DecidableEq β]
     [DecidableRel G.Adj] [DecidableRel H.Adj] (w : (G □ H).Walk (a₁, b₁) (a₂, b₂)) :
     w.length = w.ofBoxProdLeft.length + w.ofBoxProdRight.length := by
@@ -252,10 +246,13 @@ lemma boxProd_len_eq_sum_projections {a₁ a₂ : α} {b₁ b₂ : β} [Decidabl
 lemma boxProd_edist (x y : α × β) :
     (G □ H).edist x y = G.edist x.1 y.1 + H.edist x.2 y.2 := by
   classical
+  have top_case : (G □ H).edist x y = ⊤ ↔ G.edist x.1 y.1 = ⊤ ∨ H.edist x.2 y.2 = ⊤ := by
+    simp_rw [← not_ne_iff, edist_ne_top_iff_reachable, boxProd_reachable, not_and_or]
+
   by_cases h : (G □ H).edist x y = ⊤
-  · rw [h]; rw [edist_boxProd_eq_top] at h
+  · rw [top_case] at h
     aesop
-  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [edist_boxProd_eq_top] at h; tauto
+  · have rGH : G.edist x.1 y.1 ≠ ⊤ ∧ H.edist x.2 y.2 ≠ ⊤ := by rw [top_case] at h; aesop
     have ⟨wG, hwG⟩ := exists_walk_of_edist_ne_top rGH.1
     have ⟨wH, hwH⟩ := exists_walk_of_edist_ne_top rGH.2
 
@@ -268,7 +265,7 @@ lemma boxProd_edist (x y : α × β) :
     ·  calc (G □ H).edist x y ≤ w_app.length := by exact edist_le _
           _ = wG.length + wH.length := by exact_mod_cast w_len
           _ = G.edist x.1 y.1 + H.edist x.2 y.2 := by simp only [hwG, hwH]
-    · have ⟨w, hw⟩ :=  exists_walk_of_edist_ne_top h
+    · have ⟨w, hw⟩ := exists_walk_of_edist_ne_top h
       rw [← hw, boxProd_len_eq_sum_projections]
       exact add_le_add (edist_le w.ofBoxProdLeft) (edist_le w.ofBoxProdRight)
 
