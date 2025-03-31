@@ -148,7 +148,7 @@ since the changes that have made `nsmul` definitional, this would be possible,
 but for now we just construct the ring isomorphisms using `RingEquiv.refl _`.
 -/
 
-
+variable (k G) in
 /-- The equivalence between `AddMonoidAlgebra` and `MonoidAlgebra` in terms of
 `Multiplicative` -/
 protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
@@ -163,6 +163,7 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
       exact MonoidAlgebra.mapDomain_mul (α := Multiplicative G) (β := k)
         (MulHom.id (Multiplicative G)) x y }
 
+variable (k G) in
 /-- The equivalence between `MonoidAlgebra` and `AddMonoidAlgebra` in terms of `Additive` -/
 protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
     MonoidAlgebra k G ≃+* AddMonoidAlgebra k (Additive G) :=
