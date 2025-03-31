@@ -59,7 +59,7 @@ theorem Polynomial.lift_of_splits {F K L : Type*} [Field F] [Field K] [Field L] 
       exact ⟨(Algebra.ofId F L).comp (Algebra.botEquiv F K)⟩
     rw [forall_mem_insert] at H
     rcases H with ⟨⟨H1, H2⟩, H3⟩
-    cases' ih H3 with f
+    obtain ⟨f⟩ := ih H3
     choose H3 _ using H3
     rw [coe_insert, Set.insert_eq, Set.union_comm, Algebra.adjoin_union_eq_adjoin_adjoin]
     set Ks := Algebra.adjoin F (s : Set K)
@@ -86,7 +86,7 @@ section
 variable [Algebra R L]
 
 theorem IsIntegral.mem_range_algHom_of_minpoly_splits
-    (int : IsIntegral R x) (h : Splits (algebraMap R K) (minpoly R x))(f : K →ₐ[R] L) :
+    (int : IsIntegral R x) (h : Splits (algebraMap R K) (minpoly R x)) (f : K →ₐ[R] L) :
     x ∈ f.range :=
   show x ∈ Set.range f from Set.image_subset_range _ ((minpoly R x).rootSet K) <| by
     rw [image_rootSet h f, mem_rootSet']
@@ -128,7 +128,7 @@ end
 
 variable [Algebra K M] [IsScalarTower R K M] {x : M}
 
-/-- The `RingHom` version of `IsIntegral.minpoly_splits_tower_top`.  -/
+/-- The `RingHom` version of `IsIntegral.minpoly_splits_tower_top`. -/
 theorem IsIntegral.minpoly_splits_tower_top' (int : IsIntegral R x) {f : K →+* L}
     (h : Splits (f.comp <| algebraMap R K) (minpoly R x)) :
     Splits f (minpoly K x) :=

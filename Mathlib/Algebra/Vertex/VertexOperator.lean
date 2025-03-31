@@ -58,11 +58,11 @@ theorem coeff_eq_ncoeff (A : VertexOperator R V)
 
 @[simp]
 theorem ncoeff_add (A B : VertexOperator R V) (n : ℤ) : (A + B) [[n]] = A [[n]] + B [[n]] := by
-  rw [ncoeff, ncoeff, ncoeff, add_coeff, Pi.add_apply]
+  rw [ncoeff, ncoeff, ncoeff, coeff_add, Pi.add_apply]
 
 @[simp]
 theorem ncoeff_smul (A : VertexOperator R V) (r : R) (n : ℤ) : (r • A) [[n]] = r • A [[n]] := by
-  rw [ncoeff, ncoeff, smul_coeff, Pi.smul_apply]
+  rw [ncoeff, ncoeff, coeff_smul, Pi.smul_apply]
 
 theorem ncoeff_eq_zero_of_lt_order (A : VertexOperator R V) (n : ℤ) (x : V)
     (h : -n - 1 < HahnSeries.order ((HahnModule.of R).symm (A x))) : (A [[n]]) x = 0 := by
@@ -91,7 +91,7 @@ theorem of_coeff_apply_coeff (f : ℤ → Module.End R V)
 
 @[simp]
 theorem ncoeff_of_coeff (f : ℤ → Module.End R V)
-    (hf : ∀(x : V), ∃(n : ℤ), ∀(m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
+    (hf : ∀ (x : V), ∃ (n : ℤ), ∀ (m : ℤ), m < n → (f m) x = 0) (n : ℤ) :
     (of_coeff f hf) [[n]] = f (-n - 1) := by
   ext v
   rw [ncoeff, coeff_apply, of_coeff_apply_coeff]

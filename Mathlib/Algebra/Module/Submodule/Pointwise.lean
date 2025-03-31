@@ -165,12 +165,13 @@ theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 
-instance : CanonicallyOrderedAddCommMonoid (Submodule R M) :=
-  { Submodule.pointwiseAddCommMonoid,
-    Submodule.completeLattice with
-    add_le_add_left := fun _a _b => sup_le_sup_left
-    exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
-    le_self_add := fun _a _b => le_sup_left }
+instance : OrderedAddCommMonoid (Submodule R M) :=
+  { Submodule.pointwiseAddCommMonoid with
+    add_le_add_left := fun _a _b => sup_le_sup_left }
+
+instance : CanonicallyOrderedAdd (Submodule R M) where
+  exists_add_of_le := @fun _a b h => ⟨b, (sup_eq_right.2 h).symm⟩
+  le_self_add := fun _a _b => le_sup_left
 
 section
 
@@ -207,6 +208,10 @@ theorem pointwise_smul_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Di
     [Module R M] [SMulCommClass α R M] (a : α) (S : Submodule R M) :
     (a • S).toAddSubgroup = a • S.toAddSubgroup :=
   rfl
+
+theorem mem_smul_pointwise_iff_exists (m : M) (a : α) (S : Submodule R M) :
+    m ∈ a • S ↔ ∃ b ∈ S, a • b = m :=
+  Set.mem_smul_set
 
 theorem smul_mem_pointwise_smul (m : M) (a : α) (S : Submodule R M) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set M))
@@ -347,11 +352,6 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 
-@[deprecated smul_mono_right (since := "2024-03-31")]
-theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
-    s • p ≤ s • q :=
-  smul_mono_right s le
-
 lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
     s • N ≤ t • N :=
   set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := le hr)
@@ -475,8 +475,8 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
       exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
     · rcases h₁ with ⟨m₁, h₁, rfl⟩
       rcases h₂ with ⟨m₂, h₂, rfl⟩
-      exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
-    · exact ⟨0, Submodule.zero_mem _, by aesop⟩
+      exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by simp⟩
+    · exact ⟨0, Submodule.zero_mem _, by simp⟩
   · aesop
 
 lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → x ∈ a • N → Prop}

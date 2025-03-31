@@ -159,8 +159,8 @@ theorem Monics.map_eq_prod {f : Monics k} :
     f.1.map (algebraMap k (AlgebraicClosure k)) =
       ∏ i, map (Ideal.Quotient.mk <| maxIdeal k) (X - C (MvPolynomial.X ⟨f, i⟩)) := by
   ext
-  -- erw due to `AlgebraicClosure k` not being reducibly defeq to the quotient by `maxIdeal k`
-  erw [← Ideal.Quotient.mk_comp_algebraMap, ← map_map, ← Polynomial.map_prod, ← sub_eq_zero,
+  dsimp [AlgebraicClosure]
+  rw [← Ideal.Quotient.mk_comp_algebraMap, ← map_map, ← Polynomial.map_prod, ← sub_eq_zero,
     ← coeff_sub, ← Polynomial.map_sub, ← subProdXSubC, coeff_map, Ideal.Quotient.eq_zero_iff_mem]
   refine le_maxIdeal _ (Ideal.subset_span ⟨⟨f, _⟩, rfl⟩)
 
@@ -170,14 +170,17 @@ instance isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=
       let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
       rw [← hp]
       induction p using MvPolynomial.induction_on generalizing z with
-        | h_C => exact isIntegral_algebraMap
-        | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
-        | h_X p fi ih =>
+        | C => exact isIntegral_algebraMap
+        | add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
+        | mul_X p fi ih =>
           rw [map_mul]
           refine (ih _ rfl).mul ⟨_, fi.1.2, ?_⟩
           simp_rw [← eval_map, Monics.map_eq_prod, eval_prod, Polynomial.map_sub, eval_sub]
           apply Finset.prod_eq_zero (Finset.mem_univ fi.2)
-          erw [map_C, eval_C]
+          rw [map_C]
+          -- The `erw` is needed here because the `R` in `eval` is `AlgebraicClosure k`,
+          -- but this has been unfolded in the arguments of `eval`.
+          erw [eval_C]
           simp⟩
 
 instance : IsAlgClosure k (AlgebraicClosure k) := .of_splits fun f hf _ ↦ by
@@ -194,7 +197,7 @@ instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
 
 instance {L : Type*} [Field k] [Field L] [Algebra k L] [Algebra.IsAlgebraic k L] :
     IsAlgClosure k (AlgebraicClosure L) where
-  isAlgebraic := .trans (L := L)
+  isAlgebraic := .trans k L _
   isAlgClosed := inferInstance
 
 end AlgebraicClosure

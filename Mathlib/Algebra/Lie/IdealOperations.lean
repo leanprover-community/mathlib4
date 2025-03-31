@@ -69,19 +69,18 @@ variable [LieAlgebra R L] [LieModule R L M₂] (I J : LieIdeal R L)
 /-- Given a Lie module `M` over a Lie algebra `L`, the set of Lie ideals of `L` acts on the set
 of submodules of `M`. -/
 instance hasBracket : Bracket (LieIdeal R L) (LieSubmodule R L M) :=
-  ⟨fun I N => lieSpan R L { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m }⟩
+  ⟨fun I N => lieSpan R L { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) }⟩
 
 theorem lieIdeal_oper_eq_span :
-    ⁅I, N⁆ = lieSpan R L { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } :=
+    ⁅I, N⁆ = lieSpan R L { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) } :=
   rfl
 
 /-- See also `LieSubmodule.lieIdeal_oper_eq_linear_span'` and
 `LieSubmodule.lieIdeal_oper_eq_tensor_map_range`. -/
 theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
-    (↑⁅I, N⁆ : Submodule R M) =
-      Submodule.span R { m | ∃ (x : I) (n : N), ⁅(x : L), (n : M)⁆ = m } := by
+    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) } := by
   apply le_antisymm
-  · let s := { m : M | ∃ (x : ↥I) (n : ↥N), ⁅(x : L), (n : M)⁆ = m }
+  · let s := { ⁅(x : L), (n : M)⁆ | (x : I) (n : N) }
     have aux : ∀ (y : L), ∀ m' ∈ Submodule.span R s, ⁅y, m'⁆ ∈ Submodule.span R s := by
       intro y m' hm'
       refine Submodule.span_induction (R := R) (M := M) (s := s)
@@ -99,7 +98,7 @@ theorem lieIdeal_oper_eq_linear_span [LieModule R L M] :
   · rw [lieIdeal_oper_eq_span]; apply submodule_span_le_lieSpan
 
 theorem lieIdeal_oper_eq_linear_span' [LieModule R L M] :
-    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { m | ∃ x ∈ I, ∃ n ∈ N, ⁅x, n⁆ = m } := by
+    (↑⁅I, N⁆ : Submodule R M) = Submodule.span R { ⁅x, n⁆ | (x ∈ I) (n ∈ N) } := by
   rw [lieIdeal_oper_eq_linear_span]
   congr
   ext m
@@ -174,8 +173,11 @@ theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ := by
     rw [sup_le_iff]; constructor <;>
     apply mono_lie_right <;> [exact le_sup_left; exact le_sup_right]
   suffices ⁅I, N ⊔ N'⁆ ≤ ⁅I, N⁆ ⊔ ⁅I, N'⁆ by exact le_antisymm this h
-  rw [lieIdeal_oper_eq_span, lieSpan_le]; rintro m ⟨x, ⟨n, hn⟩, h⟩; erw [LieSubmodule.mem_sup]
-  rw [LieSubmodule.mem_sup] at hn; rcases hn with ⟨n₁, hn₁, n₂, hn₂, hn'⟩
+  rw [lieIdeal_oper_eq_span, lieSpan_le]
+  rintro m ⟨x, ⟨n, hn⟩, h⟩
+  simp only [SetLike.mem_coe]
+  rw [LieSubmodule.mem_sup] at hn ⊢
+  rcases hn with ⟨n₁, hn₁, n₂, hn₂, hn'⟩
   use ⁅(x : L), (⟨n₁, hn₁⟩ : N)⁆; constructor; · apply lie_coe_mem_lie
   use ⁅(x : L), (⟨n₂, hn₂⟩ : N')⁆; constructor; · apply lie_coe_mem_lie
   simp [← h, ← hn']
@@ -186,8 +188,11 @@ theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
     rw [sup_le_iff]; constructor <;>
     apply mono_lie_left <;> [exact le_sup_left; exact le_sup_right]
   suffices ⁅I ⊔ J, N⁆ ≤ ⁅I, N⁆ ⊔ ⁅J, N⁆ by exact le_antisymm this h
-  rw [lieIdeal_oper_eq_span, lieSpan_le]; rintro m ⟨⟨x, hx⟩, n, h⟩; erw [LieSubmodule.mem_sup]
-  rw [LieSubmodule.mem_sup] at hx; rcases hx with ⟨x₁, hx₁, x₂, hx₂, hx'⟩
+  rw [lieIdeal_oper_eq_span, lieSpan_le]
+  rintro m ⟨⟨x, hx⟩, n, h⟩
+  simp only [SetLike.mem_coe]
+  rw [LieSubmodule.mem_sup] at hx ⊢
+  rcases hx with ⟨x₁, hx₁, x₂, hx₂, hx'⟩
   use ⁅((⟨x₁, hx₁⟩ : I) : L), (n : N)⁆; constructor; · apply lie_coe_mem_lie
   use ⁅((⟨x₂, hx₂⟩ : J) : L), (n : N)⁆; constructor; · apply lie_coe_mem_lie
   simp [← h, ← hx']
@@ -233,8 +238,10 @@ variable (f : L →ₗ⁅R⁆ L') (I : LieIdeal R L) (J : LieIdeal R L')
 /-- Note that the inequality can be strict; e.g., the inclusion of an Abelian subalgebra of a
 simple algebra. -/
 theorem map_bracket_le {I₁ I₂ : LieIdeal R L} : map f ⁅I₁, I₂⁆ ≤ ⁅map f I₁, map f I₂⁆ := by
-  rw [map_le_iff_le_comap]; erw [LieSubmodule.lieSpan_le]
-  intro x hx; obtain ⟨⟨y₁, hy₁⟩, ⟨y₂, hy₂⟩, hx⟩ := hx; rw [← hx]
+  rw [map_le_iff_le_comap, LieSubmodule.lieIdeal_oper_eq_span, LieSubmodule.lieSpan_le]
+  intro x hx
+  obtain ⟨⟨y₁, hy₁⟩, ⟨y₂, hy₂⟩, hx⟩ := hx
+  rw [← hx]
   let fy₁ : ↥(map f I₁) := ⟨f y₁, mem_map hy₁⟩
   let fy₂ : ↥(map f I₂) := ⟨f y₂, mem_map hy₂⟩
   change _ ∈ comap f ⁅map f I₁, map f I₂⁆

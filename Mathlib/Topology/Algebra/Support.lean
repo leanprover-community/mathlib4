@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Patrick Massot
 -/
 import Mathlib.Algebra.GroupWithZero.Indicator
-import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Topology.Homeomorph.Defs
 import Mathlib.Topology.Separation.Hausdorff
 
 /-!
@@ -21,12 +22,11 @@ Furthermore, we say that `f` has compact support if the topological support of `
 * `mulTSupport` & `tsupport`
 * `HasCompactMulSupport` & `HasCompactSupport`
 
-## Implementation Notes
+## TODO
 
-* We write all lemmas for multiplicative functions, and use `@[to_additive]` to get the more common
-  additive versions.
-* We do not put the definitions in the `Function` namespace, following many other topological
-  definitions that are in the root namespace (compare `Embedding` vs `Function.Embedding`).
+The definitions have been put in the root namespace following many other topological definitions,
+like `Embedding`. Since then, `Embedding` was renamed to `Topology.IsEmbedding`, so it might be
+worth reconsidering namespacing the definitions here.
 -/
 
 
@@ -39,9 +39,9 @@ section One
 variable [One α] [TopologicalSpace X]
 
 /-- The topological support of a function is the closure of its support, i.e. the closure of the
-  set of all elements where the function is not equal to 1. -/
-@[to_additive " The topological support of a function is the closure of its support. i.e. the
-closure of the set of all elements where the function is nonzero. "]
+set of all elements where the function is not equal to 1. -/
+@[to_additive "The topological support of a function is the closure of its support. i.e. the
+closure of the set of all elements where the function is nonzero."]
 def mulTSupport (f : X → α) : Set X := closure (mulSupport f)
 
 @[to_additive]
@@ -124,9 +124,9 @@ variable {g : β → γ} {f : α → β} {f₂ : α → γ} {m : β → γ → �
 /-- A function `f` *has compact multiplicative support* or is *compactly supported* if the closure
 of the multiplicative support of `f` is compact. In a T₂ space this is equivalent to `f` being equal
 to `1` outside a compact set. -/
-@[to_additive " A function `f` *has compact support* or is *compactly supported* if the closure of
+@[to_additive "A function `f` *has compact support* or is *compactly supported* if the closure of
 the support of `f` is compact. In a T₂ space this is equivalent to `f` being equal to `0` outside a
-compact set. "]
+compact set."]
 def HasCompactMulSupport (f : α → β) : Prop :=
   IsCompact (mulTSupport f)
 
@@ -172,7 +172,7 @@ theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
 theorem _root_.isCompact_range_of_mulSupport_subset_isCompact [TopologicalSpace β]
     (hf : Continuous f) {k : Set α} (hk : IsCompact k) (h'f : mulSupport f ⊆ k) :
     IsCompact (range f) := by
-  cases' range_eq_image_or_of_mulSupport_subset h'f with h2 h2 <;> rw [h2]
+  rcases range_eq_image_or_of_mulSupport_subset h'f with h2 | h2 <;> rw [h2]
   exacts [hk.image hf, (hk.image hf).insert 1]
 
 @[to_additive]
@@ -340,9 +340,6 @@ theorem HasCompactSupport.smul_right (hf : HasCompactSupport f) : HasCompactSupp
   rw [hasCompactSupport_iff_eventuallyEq] at hf ⊢
   exact hf.mono fun x hx => by simp_rw [Pi.smul_apply', hx, Pi.zero_apply, zero_smul]
 
-@[deprecated (since := "2024-06-05")]
-alias HasCompactSupport.smul_left' := HasCompactSupport.smul_left
-
 end SMulWithZero
 
 section MulZeroClass
@@ -376,13 +373,13 @@ section LocallyFinite
 
 variable {ι : Type*} [TopologicalSpace X]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: reformulate for any locally finite family of sets
+-- TODO: reformulate for any locally finite family of sets
 /-- If a family of functions `f` has locally-finite multiplicative support, subordinate to a family
 of open sets, then for any point we can find a neighbourhood on which only finitely-many members of
 `f` are not equal to 1. -/
-@[to_additive " If a family of functions `f` has locally-finite support, subordinate to a family of
+@[to_additive "If a family of functions `f` has locally-finite support, subordinate to a family of
 open sets, then for any point we can find a neighbourhood on which only finitely-many members of `f`
-are non-zero. "]
+are non-zero."]
 theorem LocallyFinite.exists_finset_nhd_mulSupport_subset {U : ι → Set X} [One R] {f : ι → X → R}
     (hlf : LocallyFinite fun i => mulSupport (f i)) (hso : ∀ i, mulTSupport (f i) ⊆ U i)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
@@ -429,3 +426,14 @@ theorem LocallyFinite.smul_right [Zero M] [SMulZeroClass R M]
   h.subset fun i x ↦ mt <| fun h ↦ by rw [Pi.smul_apply', h, smul_zero]
 
 end LocallyFinite
+
+section Homeomorph
+
+variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+
+@[to_additive]
+theorem HasCompactMulSupport.comp_homeomorph {M} [One M] {f : Y → M}
+    (hf : HasCompactMulSupport f) (φ : X ≃ₜ Y) : HasCompactMulSupport (f ∘ φ) :=
+  hf.comp_isClosedEmbedding φ.isClosedEmbedding
+
+end Homeomorph

@@ -77,13 +77,14 @@ instance (priority := high) coeSort : CoeSort (LieSubmodule R L M) (Type w) wher
 instance (priority := mid) coeSubmodule : CoeOut (LieSubmodule R L M) (Submodule R M) :=
   ⟨toSubmodule⟩
 
+instance : CanLift (Submodule R M) (LieSubmodule R L M) (·)
+    (fun N ↦ ∀ {x : L} {m : M}, m ∈ N → ⁅x, m⁆ ∈ N) where
+  prf N hN := ⟨⟨N, hN⟩, rfl⟩
+
 @[norm_cast]
 theorem coe_toSubmodule : ((N : Submodule R M) : Set M) = N :=
   rfl
 
--- `simp` can prove this after `mem_toSubmodule` is added to the simp set,
--- but `dsimp` can't.
-@[simp, nolint simpNF]
 theorem mem_carrier {x : M} : x ∈ N.carrier ↔ x ∈ (N : Set M) :=
   Iff.rfl
 
@@ -145,8 +146,7 @@ theorem toSubmodule_inj : (N : Submodule R M) = (N' : Submodule R M) ↔ N = N' 
 equalities. -/
 protected def copy (s : Set M) (hs : s = ↑N) : LieSubmodule R L M where
   carrier := s
-  -- Porting note: all the proofs below were in term mode
-  zero_mem' := by exact hs.symm ▸ N.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' x y := by rw [hs] at x y ⊢; exact N.add_mem' x y
   smul_mem' := by exact hs.symm ▸ N.smul_mem'
   lie_mem := by exact hs.symm ▸ N.lie_mem
@@ -725,11 +725,12 @@ def lieSpan : LieSubmodule R L M :=
 variable {R L s}
 
 theorem mem_lieSpan {x : M} : x ∈ lieSpan R L s ↔ ∀ N : LieSubmodule R L M, s ⊆ N → x ∈ N := by
-  change x ∈ (lieSpan R L s : Set M) ↔ _; erw [sInf_coe]; exact mem_iInter₂
+  rw [← SetLike.mem_coe, lieSpan, sInf_coe]
+  exact mem_iInter₂
 
 theorem subset_lieSpan : s ⊆ lieSpan R L s := by
   intro m hm
-  erw [mem_lieSpan]
+  rw [SetLike.mem_coe, mem_lieSpan]
   intro N hN
   exact hN hm
 
@@ -747,7 +748,7 @@ theorem lieSpan_mono {t : Set M} (h : s ⊆ t) : lieSpan R L s ≤ lieSpan R L t
   rw [lieSpan_le]
   exact Subset.trans h subset_lieSpan
 
-theorem lieSpan_eq : lieSpan R L (N : Set M) = N :=
+theorem lieSpan_eq (N : LieSubmodule R L M) : lieSpan R L (N : Set M) = N :=
   le_antisymm (lieSpan_le.mpr rfl.subset) subset_lieSpan
 
 theorem coe_lieSpan_submodule_eq_iff {p : Submodule R M} :
@@ -864,11 +865,8 @@ variable {f N N₂ N'}
 theorem map_le_iff_le_comap : map f N ≤ N' ↔ N ≤ comap f N' :=
   Set.image_subset_iff
 
-variable (f)
-
+variable (f) in
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
-
-variable {f}
 
 theorem map_inf_le : (N ⊓ N₂).map f ≤ N.map f ⊓ N₂.map f :=
   Set.image_inter_subset f N N₂
@@ -1030,11 +1028,8 @@ theorem map_le_iff_le_comap : map f I ≤ J ↔ I ≤ comap f J := by
   rw [map_le]
   exact Set.image_subset_iff
 
-variable (f)
-
+variable (f) in
 theorem gc_map_comap : GaloisConnection (map f) (comap f) := fun _ _ ↦ map_le_iff_le_comap
-
-variable {f}
 
 @[simp]
 theorem map_sup : (I ⊔ I₂).map f = I.map f ⊔ I₂.map f :=
@@ -1058,7 +1053,16 @@ theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
 
 theorem map_of_image (h : f '' I = J) : I.map f = J := by
   apply le_antisymm
-  · erw [LieSubmodule.lieSpan_le, Submodule.map_coe, h]
+  · rw [map, LieSubmodule.lieSpan_le, Submodule.map_coe]
+    /- I'm uncertain how to best resolve this `erw`.
+    ```
+    have : (↑(toLieSubalgebra R L I).toSubmodule : Set L) = I := rfl
+    rw [this]
+    simp [h]
+    ```
+    works, but still feels awkward. There are missing `simp` lemmas here.`
+    -/
+    erw [h]
   · rw [← SetLike.coe_subset_coe, ← h]; exact LieSubmodule.subset_lieSpan
 
 /-- Note that this is not a special case of `LieSubmodule.subsingleton_of_bot`. Indeed, given
@@ -1204,8 +1208,8 @@ theorem coe_map_of_surjective (h : Function.Surjective f) :
           LieSubmodule.mem_toSubmodule, Submodule.mem_carrier, Submodule.map_coe]
         use ⁅z₁, z₂⁆
         exact ⟨I.lie_mem hz₂, f.map_lie z₁ z₂⟩ }
-  erw [LieSubmodule.coe_lieSpan_submodule_eq_iff]
-  use J
+  rw [map, toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff]
+  exact ⟨J, rfl⟩
 
 theorem mem_map_of_surjective {y : L'} (h₁ : Function.Surjective f) (h₂ : y ∈ I.map f) :
     ∃ x : I, f x = y := by
@@ -1238,7 +1242,6 @@ theorem inclusion_injective {I₁ I₂ : LieIdeal R L} (h : I₁ ≤ I₂) :
   fun x y ↦ by
   simp only [inclusion_apply, imp_self, Subtype.mk_eq_mk, SetLike.coe_eq_coe]
 
--- Porting note: LHS simplifies, so moved @[simp] to new theorem `map_sup_ker_eq_map'`
 theorem map_sup_ker_eq_map : LieIdeal.map f (I ⊔ f.ker) = LieIdeal.map f I := by
   suffices LieIdeal.map f (I ⊔ f.ker) ≤ LieIdeal.map f I by
     exact le_antisymm this (LieIdeal.map_mono le_sup_left)
@@ -1450,8 +1453,7 @@ def LieModuleEquiv.ofTop : (⊤ : LieSubmodule R L M) ≃ₗ⁅R,L⁆ M :=
 
 variable {R L}
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF] lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
+lemma LieModuleEquiv.ofTop_apply (x : (⊤ : LieSubmodule R L M)) :
     LieModuleEquiv.ofTop R L M x = x :=
   rfl
 
@@ -1482,8 +1484,6 @@ This is the Lie ideal version of `Submodule.topEquiv`. -/
 def LieIdeal.topEquiv : (⊤ : LieIdeal R L) ≃ₗ⁅R⁆ L :=
   LieSubalgebra.topEquiv
 
--- This lemma has always been bad, but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-@[simp, nolint simpNF]
 theorem LieIdeal.topEquiv_apply (x : (⊤ : LieIdeal R L)) : LieIdeal.topEquiv x = x :=
   rfl
 

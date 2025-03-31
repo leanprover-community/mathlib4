@@ -3,11 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Meta.CongrTheorems
-import Lean.Meta.Tactic.Rfl
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
-import Std.Data.HashMap.Basic
+import Mathlib.Lean.Meta.CongrTheorems
+import Mathlib.Data.Ordering.Basic
 
 /-!
 # Datatypes for `cc`
@@ -154,9 +153,10 @@ scoped instance : Ord ACApps where
     | .ofExpr _, .apps _ _ => .lt
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
-      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-        for i in [:args₁.size] do
-          let o := compare args₁[i]! args₂[i]!
+      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
+        have hs := Batteries.BEqCmp.cmp_iff_eq.mp hs
+        for hi : i in [:args₁.size] do
+          have hi := hi.right; let o := compare args₁[i] (args₂[i]'(hs ▸ hi.1))
           if o != .eq then return o
         return .eq
 
@@ -173,11 +173,11 @@ def ACApps.isSubset : (e₁ e₂ : ACApps) → Bool
       if args₁.size ≤ args₂.size then Id.run do
         let mut i₁ := 0
         let mut i₂ := 0
-        while i₁ < args₁.size ∧ i₂ < args₂.size do
-          if args₁[i₁]! == args₂[i₂]! then
+        while h : i₁ < args₁.size ∧ i₂ < args₂.size do
+          if args₁[i₁] == args₂[i₂] then
             i₁ := i₁ + 1
             i₂ := i₂ + 1
-          else if Expr.lt args₂[i₂]! args₁[i₁]! then
+          else if Expr.lt args₂[i₂] args₁[i₁] then
             i₂ := i₂ + 1
           else return false
         return i₁ == args₁.size
@@ -197,20 +197,20 @@ def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Expr :=
     | .apps op₂ args₂ =>
       if op₁ == op₂ then
         let mut i₂ := 0
-        for i₁ in [:args₁.size] do
+        for h : i₁ in [:args₁.size] do
           if i₂ == args₂.size then
-            r := r.push args₁[i₁]!
-          else if args₁[i₁]! == args₂[i₂]! then
+            r := r.push args₁[i₁]
+          else if args₁[i₁] == args₂[i₂]! then
             i₂ := i₂ + 1
           else
-            r := r.push args₁[i₁]!
+            r := r.push args₁[i₁]
     | .ofExpr e₂ =>
       let mut found := false
-      for i in [:args₁.size] do
-        if !found && args₁[i]! == e₂ then
+      for h : i in [:args₁.size] do
+        if !found && args₁[i] == e₂ then
           found := true
         else
-          r := r.push args₁[i]!
+          r := r.push args₁[i]
     return r
   | .ofExpr e => if e₂ == e then r else r.push e
 
@@ -229,12 +229,12 @@ def ACApps.intersection (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Exp
     let mut r := r
     let mut i₁ := 0
     let mut i₂ := 0
-    while i₁ < args₁.size ∧ i₂ < args₂.size do
-      if args₁[i₁]! == args₂[i₂]! then
-        r := r.push args₁[i₁]!
+    while h : i₁ < args₁.size ∧ i₂ < args₂.size do
+      if args₁[i₁] == args₂[i₂] then
+        r := r.push args₁[i₁]
         i₁ := i₁ + 1
         i₂ := i₂ + 1
-      else if Expr.lt args₂[i₂]! args₁[i₁]! then
+      else if Expr.lt args₂[i₂] args₁[i₁] then
         i₂ := i₂ + 1
       else
         i₁ := i₁ + 1
@@ -428,7 +428,8 @@ Note that this only works for two-argument relations: `ModEq n` and `ModEq m` ar
 same. -/
 abbrev SymmCongruences := Std.HashMap SymmCongruencesKey (List (Expr × Name))
 
-/-- Stores the root representatives of subsingletons. -/
+/-- Stores the root representatives of subsingletons, this uses `FastSingleton` instead of
+`Subsingleton`. -/
 abbrev SubsingletonReprs := RBExprMap Expr
 
 /-- Stores the root representatives of `.instImplicit` arguments. -/
@@ -469,7 +470,7 @@ structure CCState extends CCConfig where
   /-- Records equality between `ACApps`. -/
   acR : RBACAppsMap (ACApps × DelayedExpr) := ∅
   /-- Returns true if the `CCState` is inconsistent. For example if it had both `a = b` and `a ≠ b`
-      in it.-/
+      in it. -/
   inconsistent : Bool := false
   /-- "Global Modification Time". gmt is a number stored on the `CCState`,
       it is compared with the modification time of a cc_entry in e-matching. See `CCState.mt`. -/
@@ -591,9 +592,11 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
     return r
   | .ofExpr e => e
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the LHS. -/
 def getVarWithLeastLHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e true
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the RHS. -/
 def getVarWithLeastRHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e false
 

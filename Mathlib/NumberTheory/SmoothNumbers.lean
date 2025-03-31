@@ -223,10 +223,10 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
     simp (config := { etaStruct := .all }) only
       [Set.coe_setOf, Set.mem_setOf_eq, Prod.mk.injEq, Subtype.mk.injEq]
     constructor
-    · rw [factorization_mul (pos_iff_ne_zero.mp <| pos_pow_of_pos e hp.pos) hm₀]
+    · rw [factorization_mul (pos_iff_ne_zero.mp <| Nat.pow_pos hp.pos) hm₀]
       simp only [factorization_pow, Finsupp.coe_add, Finsupp.coe_smul, nsmul_eq_mul,
         Pi.natCast_def, cast_id, Pi.add_apply, Pi.mul_apply, hp.factorization_self,
-        mul_one, add_right_eq_self]
+        mul_one, add_eq_left]
       rw [← primeFactorsList_count_eq, count_eq_zero]
       exact fun H ↦ hs (hm p H)
     · nth_rewrite 2 [← prod_primeFactorsList hm₀]
@@ -247,7 +247,7 @@ def equivProdNatFactoredNumbers {s : Finset ℕ} {p : ℕ} (hp : p.Prime) (hs : 
       · simp only [h, hs, decide_false, Bool.not_false, decide_true]
       · simp only [h, decide_true, Bool.not_true, false_eq_decide_iff]
         exact fun H ↦ hs <| H ▸ h
-    refine prod_eq <| (filter_eq m.primeFactorsList p).symm ▸ this ▸ perm_append_comm.trans ?_
+    refine prod_eq <| (filter_eq p).symm ▸ this ▸ perm_append_comm.trans ?_
     simp only [decide_not]
     exact filter_append_perm (· ∈ s) (primeFactorsList m)
 
@@ -357,7 +357,7 @@ lemma smoothNumbers_succ {N : ℕ} (hN : ¬ N.Prime) : N.succ.smoothNumbers = N.
 
 /-- All `m`, `0 < m < n` are `n`-smooth numbers -/
 lemma mem_smoothNumbers_of_lt {m n : ℕ} (hm : 0 < m) (hmn : m < n) : m ∈ n.smoothNumbers :=
-  smoothNumbers_eq_factoredNumbers _ ▸ ⟨not_eq_zero_of_lt hm,
+  smoothNumbers_eq_factoredNumbers _ ▸ ⟨ne_zero_of_lt hm,
   fun _ h => Finset.mem_range.mpr <| lt_of_le_of_lt (le_of_mem_primeFactorsList h) hmn⟩
 
 /-- The non-zero non-`N`-smooth numbers are `≥ N`. -/

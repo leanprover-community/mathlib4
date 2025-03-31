@@ -5,6 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.Order.Filter.Finite
+import Mathlib.Order.Filter.Map
 
 /-!
 # Cardinality of a set with a countable cover

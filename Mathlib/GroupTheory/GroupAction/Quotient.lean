@@ -6,7 +6,7 @@ Authors: Chris Hughes, Thomas Browning
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
-import Mathlib.Dynamics.PeriodicPts
+import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.Commutator.Basic
 import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
@@ -95,10 +95,9 @@ theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
 theorem Quotient.mk_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) :
     QuotientGroup.mk (b • q.out) = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
 
--- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
-theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q :=
-  Quotient.mk_smul_out H b q
+theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q := by
+  simp
 
 theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
     q.out⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out ∈ H := by
@@ -114,7 +113,6 @@ attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_
 attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
 AddAction.Quotient.mk_vadd_out'
 
--- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
 alias Quotient.coe_smul_out' := Quotient.coe_smul_out
 
@@ -233,7 +231,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
     β ≃ Σω : Ω, orbitRel.Quotient.orbit ω := selfEquivSigmaOrbits' α β
     _ ≃ Σω : Ω, α ⧸ stabilizer α (φ ω) :=
       Equiv.sigmaCongrRight fun ω =>
-        (Equiv.Set.ofEq <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
+        (Equiv.setCongr <| orbitRel.Quotient.orbit_eq_orbit_out _ hφ).trans <|
           orbitEquivQuotientStabilizer α (φ ω)
 
 /-- **Class formula** for a finite group acting on a finite type. See
@@ -335,8 +333,7 @@ instance finite_quotient_of_pretransitive_of_finite_quotient [IsPretransitive α
     exact Finite.of_surjective f ((Quotient.surjective_liftOn' _).2
       (Quotient.mk''_surjective.comp (MulAction.surjective_smul _ _)))
 
-variable {β}
-
+variable {β} in
 /-- A bijection between the quotient of the action of a subgroup `H` on an orbit, and a
 corresponding quotient expressed in terms of `Setoid.comap Subtype.val`. -/
 @[to_additive "A bijection between the quotient of the action of an additive subgroup `H` on an
@@ -369,8 +366,6 @@ noncomputable def equivSubgroupOrbitsSetoidComap (H : Subgroup α) (ω : Ω) :
     intro q
     induction q using Quotient.inductionOn'
     rfl
-
-variable (β)
 
 /-- A bijection between the orbits under the action of a subgroup `H` on `β`, and the orbits
 under the action of `H` on each orbit under the action of `G`. -/
@@ -435,7 +430,7 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
 /-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
 See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
-@[to_additive "If `α` acts freely on `β`, `β` is equivalent
+@[to_additive selfEquivOrbitsQuotientProd' "If `α` acts freely on `β`, `β` is equivalent
 to the product of the quotient of `β` by `α` and `α`.
 See `AddAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`."]
 noncomputable def selfEquivOrbitsQuotientProd'
@@ -447,13 +442,20 @@ noncomputable def selfEquivOrbitsQuotientProd'
       (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf α)).trans <|
     Equiv.sigmaEquivProd _ _
 
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum' := AddAction.selfEquivOrbitsQuotientProd'
+
 /-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
 `α`. -/
-@[to_additive "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
+@[to_additive selfEquivOrbitsQuotientProd
+  "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
 `α` and `α`."]
 noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
     β ≃ Quotient (MulAction.orbitRel α β) × α :=
   MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
+
+@[deprecated (since := "2025-03-11")]
+alias _root_.AddAction.selfEquivOrbitsQuotientSum := AddAction.selfEquivOrbitsQuotientProd
 
 end MulAction
 

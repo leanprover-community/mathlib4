@@ -152,7 +152,6 @@ theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
 @[simp]
 theorem equiv_trans (f : α ≃ₜ β) (g : β ≃ₜ γ) :
     Compacts.equiv (f.trans g) = (Compacts.equiv f).trans (Compacts.equiv g) :=
-  -- Porting note: can no longer write `map_comp _ _ _ _` and unify
   Equiv.ext <| map_comp g f g.continuous f.continuous
 
 @[simp]
@@ -217,7 +216,6 @@ protected theorem ext {s t : NonemptyCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to `coe_toCompacts`
 theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 
@@ -311,7 +309,6 @@ protected theorem ext {s t : PositiveCompacts α} (h : (s : Set α) = t) : s = t
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
--- Porting note: `@[simp]` moved to a new lemma
 theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
   rfl
 

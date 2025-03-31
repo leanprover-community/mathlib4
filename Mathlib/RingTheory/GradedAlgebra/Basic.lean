@@ -142,6 +142,16 @@ theorem decompose_mul_add_right [AddRightCancelMonoid ι] [GradedRing 𝒜] {a :
       @GradedMonoid.GMul.mul ι (fun i => 𝒜 i) _ _ _ _ (decompose 𝒜 a i) b :=
   Subtype.ext <| coe_decompose_mul_add_of_right_mem 𝒜 b.2
 
+theorem coe_decompose_mul_of_left_mem_zero [AddMonoid ι] [GradedRing 𝒜] {a b : A}
+    (a_mem : a ∈ 𝒜 0) : (decompose 𝒜 (a * b) j : A) = a * decompose 𝒜 b j := by
+  lift a to 𝒜 0 using a_mem
+  rw [decompose_mul, decompose_coe, coe_of_mul_apply_of_mem_zero]
+
+theorem coe_decompose_mul_of_right_mem_zero [AddMonoid ι] [GradedRing 𝒜] {a b : A}
+    (b_mem : b ∈ 𝒜 0) : (decompose 𝒜 (a * b) i : A) = decompose 𝒜 a i * b := by
+  lift b to 𝒜 0 using b_mem
+  rw [decompose_mul, decompose_coe, coe_mul_of_apply_of_mem_zero]
+
 end DirectSum
 
 end AddCancelMonoid
@@ -231,7 +241,7 @@ section CanonicalOrder
 open SetLike.GradedMonoid DirectSum
 
 variable [Semiring A] [DecidableEq ι]
-variable [CanonicallyOrderedAddCommMonoid ι]
+variable [AddCommMonoid ι] [PartialOrder ι] [CanonicallyOrderedAdd ι]
 variable [SetLike σ A] [AddSubmonoidClass σ A] (𝒜 : ι → σ) [GradedRing 𝒜]
 
 /-- If `A` is graded by a canonically ordered add monoid, then the projection map `x ↦ x₀` is a ring
@@ -265,7 +275,7 @@ def GradedRing.projZeroRingHom : A →+* A where
             decompose_of_mem_same 𝒜 (show c ∈ 𝒜 0 from (add_eq_zero.mp h).1 ▸ hc),
             decompose_of_mem_same 𝒜 (show c' ∈ 𝒜 0 from (add_eq_zero.mp h).2 ▸ hc')]
         · rw [decompose_of_mem_ne 𝒜 (SetLike.GradedMul.mul_mem hc hc') h]
-          cases' show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero, not_and_or] at h with h' h'
+          rcases show i ≠ 0 ∨ j ≠ 0 by rwa [add_eq_zero, not_and_or] at h with h' | h'
           · simp only [decompose_of_mem_ne 𝒜 hc h', zero_mul]
           · simp only [decompose_of_mem_ne 𝒜 hc' h', mul_zero]
       · intro _ _ hd he

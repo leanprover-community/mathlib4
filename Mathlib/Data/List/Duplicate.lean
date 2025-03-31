@@ -40,11 +40,11 @@ theorem Duplicate.duplicate_cons (h : x ∈+ l) (y : α) : x ∈+ y :: l :=
 
 theorem Duplicate.mem (h : x ∈+ l) : x ∈ l := by
   induction h with
-  | cons_mem => exact mem_cons_self _ _
+  | cons_mem => exact mem_cons_self
   | cons_duplicate _ hm => exact mem_cons_of_mem _ hm
 
 theorem Duplicate.mem_cons_self (h : x ∈+ x :: l) : x ∈ l := by
-  cases' h with _ h _ _ h
+  obtain h | h := h
   · exact h
   · exact h.mem
 
@@ -73,7 +73,7 @@ theorem Duplicate.elim_singleton {y : α} (h : x ∈+ [y]) : False :=
 
 theorem duplicate_cons_iff {y : α} : x ∈+ y :: l ↔ y = x ∧ x ∈ l ∨ x ∈+ l := by
   refine ⟨fun h => ?_, fun h => ?_⟩
-  · cases' h with _ hm _ _ hm
+  · obtain hm | hm := h
     · exact Or.inl ⟨rfl, hm⟩
     · exact Or.inr hm
   · rcases h with (⟨rfl | h⟩ | h)

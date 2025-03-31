@@ -1,12 +1,14 @@
 /-
 Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Jakob von Raumer
 -/
+import Mathlib.CategoryTheory.Category.Cat.AsSmall
 import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Limits.Shapes.Grothendieck
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
@@ -42,6 +44,9 @@ From 3., we prove 1. directly in `final_of_colimit_comp_coyoneda_iso_pUnit`.
 Dually, we prove that if a functor `F : C ⥤ D` is initial, then any functor `G : D ⥤ E` has a
 limit if and only if `F ⋙ G` does, and these limits are isomorphic via `limit.pre G F`.
 
+In the end of the file, we characterize the finality of some important induced functors on the
+(co)structured arrow category (`StructuredArrow.pre` and `CostructuredArrow.pre`) and on the
+Grothendieck construction (`Grothendieck.pre` and `Grothendieck.map`).
 
 ## Naming
 There is some discrepancy in the literature about naming; some say 'cofinal' instead of 'final'.
@@ -82,10 +87,8 @@ variable {D : Type u₂} [Category.{v₂} D]
 
 /--
 A functor `F : C ⥤ D` is final if for every `d : D`, the comma category of morphisms `d ⟶ F.obj c`
-is connected.
-
-See <https://stacks.math.columbia.edu/tag/04E6>
--/
+is connected. -/
+@[stacks 04E6]
 class Final (F : C ⥤ D) : Prop where
   out (d : D) : IsConnected (StructuredArrow d F)
 
@@ -257,7 +260,7 @@ theorem colimit_cocone_comp_aux (s : Cocone (F ⋙ G)) (j : C) :
     G.map (homToLift F (F.obj j)) ≫ s.ι.app (lift F (F.obj j)) = s.ι.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
-  apply induction F fun X k => G.map k ≫ s.ι.app X = (s.ι.app j : _)
+  apply induction F fun X k => G.map k ≫ s.ι.app X = (s.ι.app j :)
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← w]
     rw [← s.w f] at h
@@ -337,11 +340,8 @@ section
 variable (G)
 
 /-- When `F : C ⥤ D` is final, and `G : D ⥤ E` has a colimit, then `F ⋙ G` has a colimit also and
-`colimit (F ⋙ G) ≅ colimit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-@[simps! (config := .lemmasOnly)]
+`colimit (F ⋙ G) ≅ colimit G`. -/
+@[simps! -isSimp, stacks 04E7]
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
 
@@ -437,7 +437,7 @@ variable {C : Type v} [Category.{v} C] {D : Type u₁} [Category.{v} D] (F : C �
 
 namespace Final
 
-theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ F.obj X}
+theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : Σ X, d ⟶ F.obj X}
     (t : Relation.EqvGen (Types.Quot.Rel.{v, v} (F ⋙ coyoneda.obj (op d))) f₁ f₂) :
     Zigzag (StructuredArrow.mk f₁.2) (StructuredArrow.mk f₂.2) := by
   induction t with
@@ -607,7 +607,7 @@ theorem limit_cone_comp_aux (s : Cone (F ⋙ G)) (j : C) :
     s.π.app (lift F (F.obj j)) ≫ G.map (homToLift F (F.obj j)) = s.π.app j := by
   -- This point is that this would be true if we took `lift (F.obj j)` to just be `j`
   -- and `homToLift (F.obj j)` to be `𝟙 (F.obj j)`.
-  apply induction F fun X k => s.π.app X ≫ G.map k = (s.π.app j : _)
+  apply induction F fun X k => s.π.app X ≫ G.map k = (s.π.app j :)
   · intro j₁ j₂ k₁ k₂ f w h
     rw [← s.w f]
     rw [← w] at h
@@ -686,11 +686,8 @@ section
 variable (G)
 
 /-- When `F : C ⥤ D` is initial, and `G : D ⥤ E` has a limit, then `F ⋙ G` has a limit also and
-`limit (F ⋙ G) ≅ limit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-@[simps! (config := .lemmasOnly)]
+`limit (F ⋙ G) ≅ limit G`. -/
+@[simps! -isSimp, stacks 04E7]
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
 
@@ -1025,6 +1022,74 @@ instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final :=
   exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
     (isPreconnected_zigzag (.mk gbi) (.mk gbj))
 
+open Limits
+
+/-- A natural transformation `α : F ⟶ G` between functors `F G : C ⥤ Cat` which is is final on each
+fiber `(α.app X)` induces an equivalence of fiberwise colimits of `map α ⋙ H` and `H` for each
+functor `H : Grothendieck G ⥤ Type`. -/
+def Grothendieck.fiberwiseColimitMapCompEquivalence {C : Type u₁} [Category.{v₁} C]
+    {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [∀ X, Final (α.app X)] (H : Grothendieck G ⥤ Type u₂) :
+    fiberwiseColimit (map α ⋙ H) ≅ fiberwiseColimit H :=
+  NatIso.ofComponents
+    (fun X =>
+      HasColimit.isoOfNatIso ((Functor.associator _ _ _).symm ≪≫
+        isoWhiskerRight (ιCompMap α X) H ≪≫  Functor.associator _ _ _) ≪≫
+      Final.colimitIso (α.app X) (ι G X ⋙ H))
+    (fun f => colimit.hom_ext <| fun d => by
+      simp only [map, Cat.comp_obj, comp_obj, ι_obj, fiberwiseColimit_obj, fiberwiseColimit_map,
+        ιNatTrans, ιCompMap, Iso.trans_hom, Category.assoc, ι_colimMap_assoc, NatTrans.comp_app,
+        whiskerRight_app, Functor.comp_map, Cat.eqToHom_app, map_id, Category.comp_id,
+        associator_hom_app, colimit.ι_pre_assoc, HasColimit.isoOfNatIso_ι_hom_assoc, Iso.symm_hom,
+        isoWhiskerRight_hom, associator_inv_app, NatIso.ofComponents_hom_app, Iso.refl_hom,
+        Final.ι_colimitIso_hom, Category.id_comp, Final.ι_colimitIso_hom_assoc, colimit.ι_pre]
+      have := Functor.congr_obj (α.naturality f) d
+      dsimp at this
+      congr
+      apply eqToHom_heq_id_dom)
+
+/-- This is the small version of the more general lemma `Grothendieck.final_map` below. -/
+private lemma Grothendieck.final_map_small {C : Type u₁} [SmallCategory C] {F G : C ⥤ Cat.{u₁, u₁}}
+    (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] : Final (map α) := by
+  rw [final_iff_isIso_colimit_pre]
+  intro H
+  let i := (colimitFiberwiseColimitIso _).symm ≪≫
+    HasColimit.isoOfNatIso (fiberwiseColimitMapCompEquivalence α H) ≪≫ colimitFiberwiseColimitIso _
+  convert Iso.isIso_hom i
+  apply colimit.hom_ext
+  intro X
+  simp [i, fiberwiseColimitMapCompEquivalence]
+
+/-- The functor `Grothendieck.map α` for a natural transformation `α : F ⟶ G`, with
+`F G : C ⥤ Cat`, is final if for each `X : C`, the functor `α.app X` is final. -/
+lemma Grothendieck.final_map {F G : C ⥤ Cat.{v₂, u₂}} (α : F ⟶ G) [hα : ∀ X, Final (α.app X)] :
+    Final (map α) := by
+  let sC : C ≌ AsSmall.{max u₁ u₂ v₁ v₂} C := AsSmall.equiv
+  let F' : AsSmall C ⥤ Cat := sC.inverse ⋙ F ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
+  let G' : AsSmall C ⥤ Cat := sC.inverse ⋙ G ⋙ Cat.asSmallFunctor.{max v₁ u₁ v₂ u₂}
+  let α' : F' ⟶ G' := whiskerLeft _ (whiskerRight α _)
+  have : ∀ X, Final (α'.app X) := fun X =>
+    inferInstanceAs (AsSmall.equiv.inverse ⋙ _ ⋙ AsSmall.equiv.functor).Final
+  have hα' : (map α').Final := final_map_small _
+  dsimp only [α', ← Equivalence.symm_functor] at hα'
+  have i := mapWhiskerLeftIsoConjPreMap sC.symm (whiskerRight α Cat.asSmallFunctor)
+    ≪≫ isoWhiskerLeft _ (isoWhiskerRight (mapWhiskerRightAsSmallFunctor α) _)
+  have := final_of_natIso i
+  rwa [← final_iff_equivalence_comp, ← final_iff_comp_equivalence,
+    ← final_iff_equivalence_comp, ← final_iff_comp_equivalence] at this
+
 end Grothendieck
+
+section Prod
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable {C' : Type u₃} [Category.{v₃} C']
+variable {D' : Type u₄} [Category.{v₄} D']
+variable (F : C ⥤ D) (G : C' ⥤ D')
+
+instance [F.Final] [G.Final] : (F.prod G).Final where
+  out := fun ⟨d, d'⟩ => isConnected_of_equivalent (StructuredArrow.prodEquivalence d d' F G).symm
+
+end Prod
 
 end CategoryTheory

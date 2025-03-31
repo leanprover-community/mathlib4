@@ -3,7 +3,6 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Types.Symmetric
 import Mathlib.CategoryTheory.Monoidal.Types.Coyoneda
 import Mathlib.CategoryTheory.Monoidal.Center
 import Mathlib.Tactic.ApplyFun
@@ -96,7 +95,6 @@ section
 
 variable {V} {W : Type v'} [Category.{w'} W] [MonoidalCategory W]
 
--- Porting note: removed `@[nolint hasNonemptyInstance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the `W`-enriched category structure
 obtained by applying the functor `F : LaxMonoidalFunctor V W` to each hom object.
@@ -143,7 +141,7 @@ def categoryOfEnrichedCategoryType (C : Type u₁) [𝒞 : EnrichedCategory (Typ
   comp f g := eComp (Type v) _ _ _ ⟨f, g⟩
   id_comp f := congr_fun (e_id_comp (Type v) _ _) f
   comp_id f := congr_fun (e_comp_id (Type v) _ _) f
-  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ : _)
+  assoc f g h := (congr_fun (e_assoc (Type v) _ _ _ _) ⟨f, g, h⟩ :)
 
 /-- Construct a `Type v`-enriched category from an honest category.
 -/
@@ -169,7 +167,6 @@ section
 
 variable {W : Type v} [Category.{w} W] [MonoidalCategory W] [EnrichedCategory W C]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- A type synonym for `C`, which should come equipped with a `V`-enriched category structure.
 In a moment we will equip this with the (honest) category structure
 so that `X ⟶ Y` is `(𝟙_ W) ⟶ (X ⟶[W] Y)`.
@@ -380,7 +377,6 @@ coming from the ambient braiding on `V`.)
 -/
 
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 /-- The type of `A`-graded natural transformations between `V`-functors `F` and `G`.
 This is the type of morphisms in `V` from `A` to the `V`-object of natural transformations.
 -/

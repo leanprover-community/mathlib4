@@ -4,12 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.Algebra.Module.FinitePresentation
-import Mathlib.LinearAlgebra.Dual
+import Mathlib.Algebra.Module.Torsion
+import Mathlib.LinearAlgebra.Dual.Lemmas
 import Mathlib.RingTheory.FiniteType
-import Mathlib.RingTheory.Flat.Basic
+import Mathlib.RingTheory.Flat.EquationalCriterion
 import Mathlib.RingTheory.LocalRing.ResidueField.Basic
 import Mathlib.RingTheory.Nakayama
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Finite modules over local rings
@@ -61,7 +61,7 @@ theorem map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h' : N₂.FG
 
 theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (Submodule.mkQ (𝔪 • ⊤)) = ⊤ ↔ N = ⊤ := by
-  rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.out, Submodule.map_top, Submodule.range_mkQ]
+  rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.fg_top, Submodule.map_top, Submodule.range_mkQ]
 
 theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
@@ -166,8 +166,6 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
   let bk : Basis ι k (k ⊗[R] M) := Basis.mk hli (by rw [hsp])
   haveI : Finite ι := Module.Finite.finite_basis bk
   letI : Fintype ι := Fintype.ofFinite ι
-  letI : IsNoetherian k (k ⊗[R] (ι →₀ R)) :=
-    isNoetherian_of_isNoetherianRing_of_finite k (k ⊗[R] (ι →₀ R))
   let i := Finsupp.linearCombination R v
   have hi : Surjective i := by
     rw [← LinearMap.range_eq_top, Finsupp.range_linearCombination]
@@ -203,8 +201,6 @@ lemma exists_basis_of_basis_baseChange [Module.FinitePresentation R M]
       (g₁ := (LinearMap.ker i).subtype) (g₂ := i) (LinearMap.exact_subtype_mkQ 𝔪)
       (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H ?_ ?_
     · apply Module.Flat.lTensor_preserves_injective_linearMap
-        (N := LinearMap.ker i) (N' := ι →₀ R)
-        (L := (LinearMap.ker i).subtype)
       exact Subtype.val_injective
     · apply hi'.injective
       rw [LinearMap.baseChange_eq_ltensor]
@@ -250,11 +246,48 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
   obtain ⟨_, _, b, _⟩ := exists_basis_of_span_of_maximalIdeal_rTensor_injective H id (by simp)
   exact Free.of_basis b
 
--- TODO: Generalise this to finite free modules.
-theorem free_of_flat_of_isLocalRing [Module.FinitePresentation R P] [Module.Flat R P] :
-    Module.Free R P :=
-  free_of_maximalIdeal_rTensor_injective
-    (Module.Flat.rTensor_preserves_injective_linearMap _ Subtype.val_injective)
+theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι → M)
+    (h : LinearIndependent k (TensorProduct.mk R k M 1 ∘ v)) : LinearIndependent R v := by
+  rw [linearIndependent_iff']; intro s f hfv
+  classical
+  induction' s using Finset.induction with n s hn ih generalizing v <;> intro i hi
+  · exact (Finset.not_mem_empty _ hi).elim
+  rw [← Finset.sum_coe_sort] at hfv
+  have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfv
+  have : v n ∉ 𝔪 • (⊤ : Submodule R M) := by
+    simpa only [← LinearMap.ker_tensorProductMk] using h.ne_zero n
+  set n : ↥(insert n s) := ⟨n, Finset.mem_insert_self ..⟩ with n_def
+  obtain ⟨j, hj⟩ : ∃ j, IsUnit (a n j) := by
+    contrapose! this
+    rw [show v n = _ from hay n]
+    exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
+  let a' (i : ι) : R := if hi : _ then a ⟨i, hi⟩ j else 0
+  have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
+  have hfn : f n = -(∑ i ∈ s, f i * a' i) * hj.unit⁻¹ := by
+    rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
+    convert hfa j
+    simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn, n_def]
+  let c (i : ι) : R := -(if i = n then 0 else a' i) * hj.unit⁻¹
+  specialize ih (v + (c · • v n)) ?_ ?_
+  · convert (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr h
+    · ext; simp [tmul_add]; rfl
+    simp_rw [Function.comp_def, c, if_pos, neg_zero, zero_mul, map_zero]
+  · rw [Finset.sum_coe_sort _ (fun i ↦ f i • v i), s.sum_insert hn, add_comm, hfn] at hfv
+    simp_rw [Pi.add_apply, smul_add, s.sum_add_distrib, c, smul_smul, ← s.sum_smul, ← mul_assoc,
+      ← s.sum_mul, mul_neg, s.sum_neg_distrib, ← hfv]
+    congr 4
+    exact s.sum_congr rfl fun i hi ↦ by rw [if_neg (ne_of_mem_of_not_mem hi hn)]
+  obtain hi | hi := Finset.mem_insert.mp hi
+  · rw [hi, hfn, Finset.sum_eq_zero, neg_zero, zero_mul]
+    intro i hi; rw [ih i hi, zero_mul]
+  · exact ih i hi
+
+@[stacks 00NZ]
+theorem free_of_flat_of_isLocalRing [Module.Finite R P] [Flat R P] : Free R P :=
+  let w := Free.chooseBasis k (k ⊗[R] P)
+  have ⟨v, eq⟩ := (TensorProduct.mk_surjective R P k Quotient.mk_surjective).comp_left w
+  .of_basis <| .mk (IsLocalRing.linearIndependent_of_flat _ (eq ▸ w.linearIndependent)) <| by
+    exact (span_eq_top_of_tmul_eq_basis _ w <| congr_fun eq).ge
 
 @[deprecated (since := "2024-11-12")] alias free_of_flat_of_localRing := free_of_flat_of_isLocalRing
 
@@ -267,7 +300,7 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
     (hf : Function.Injective (f.lTensor k)) :
     Module.Free R P := by
   have := Module.finitePresentation_of_free_of_surjective g hg
-    (by rw [h.linearMap_ker_eq, LinearMap.range_eq_map]; exact (Module.Finite.out).map f)
+    (by rw [h.linearMap_ker_eq, LinearMap.range_eq_map]; exact (Module.Finite.fg_top).map f)
   apply free_of_maximalIdeal_rTensor_injective
   rw [← LinearMap.lTensor_inj_iff_rTensor_inj]
   apply lTensor_injective_of_exact_of_exact_of_rTensor_injective

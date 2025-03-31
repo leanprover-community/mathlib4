@@ -72,10 +72,9 @@ theorem coe_neg (x : ℝ) : ↑(-x) = (-x : ℝ*) :=
 theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℝ)) : ℝ*) = OfNat.ofNat n :=
+    ((ofNat(n) : ℝ) : ℝ*) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
@@ -216,7 +215,6 @@ theorem isSt_iff_tendsto {x : ℝ*} {r : ℝ} : IsSt x r ↔ x.Tendsto (𝓝 r) 
 theorem isSt_of_tendsto {f : ℕ → ℝ} {r : ℝ} (hf : Tendsto f atTop (𝓝 r)) : IsSt (ofSeq f) r :=
   isSt_ofSeq_iff_tendsto.2 <| hf.mono_left Nat.hyperfilter_le_atTop
 
--- Porting note: moved up, renamed
 protected theorem IsSt.lt {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) (hrs : r < s) :
     x < y := by
   rcases ofSeq_surjective x with ⟨f, rfl⟩
@@ -328,7 +326,7 @@ theorem IsSt.map₂ {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) {
   rcases ofSeq_surjective x with ⟨x, rfl⟩
   rcases ofSeq_surjective y with ⟨y, rfl⟩
   rw [isSt_ofSeq_iff_tendsto] at hxr hys
-  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prod_mk_nhds hys)
+  exact isSt_ofSeq_iff_tendsto.2 <| hf.tendsto.comp (hxr.prodMk_nhds hys)
 
 theorem IsSt.add {x y : ℝ*} {r s : ℝ} (hxr : IsSt x r) (hys : IsSt y s) :
     IsSt (x + y) (r + s) := hxr.map₂ hys continuous_add.continuousAt
@@ -377,15 +375,12 @@ theorem InfinitePos.neg {x : ℝ*} : InfinitePos x → InfiniteNeg (-x) := fun h
 theorem InfiniteNeg.neg {x : ℝ*} : InfiniteNeg x → InfinitePos (-x) := fun hp r =>
   lt_neg.mp (hp (-r))
 
--- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infiniteNeg_neg {x : ℝ*} : InfiniteNeg (-x) ↔ InfinitePos x :=
   ⟨fun hin => neg_neg x ▸ hin.neg, InfinitePos.neg⟩
 
--- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infinitePos_neg {x : ℝ*} : InfinitePos (-x) ↔ InfiniteNeg x :=
   ⟨fun hin => neg_neg x ▸ hin.neg, InfiniteNeg.neg⟩
 
--- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infinite_neg {x : ℝ*} : Infinite (-x) ↔ Infinite x :=
   or_comm.trans <| infiniteNeg_neg.or infinitePos_neg
 
@@ -421,12 +416,9 @@ theorem infiniteNeg_iff_infinite_of_neg {x : ℝ*} (hn : x < 0) : InfiniteNeg x 
 theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infinite |x| :=
   infinitePos_iff_infinite_of_nonneg (abs_nonneg _)
 
--- Porting note: swapped LHS with RHS; added @[simp]
 @[simp] theorem infinite_abs_iff {x : ℝ*} : Infinite |x| ↔ Infinite x := by
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 
--- Porting note: swapped LHS with RHS;
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp` lemma
 @[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos |x| ↔ Infinite x :=
   infinitePos_abs_iff_infinite_abs.trans infinite_abs_iff
 
@@ -437,7 +429,7 @@ theorem infinite_iff_abs_lt_abs {x : ℝ*} : Infinite x ↔ ∀ r : ℝ, (|r| : 
 theorem infinitePos_add_not_infiniteNeg {x y : ℝ*} :
     InfinitePos x → ¬InfiniteNeg y → InfinitePos (x + y) := by
   intro hip hnin r
-  cases' not_forall.mp hnin with r₂ hr₂
+  obtain ⟨r₂, hr₂⟩ := not_forall.mp hnin
   convert add_lt_add_of_lt_of_le (hip (r + -r₂)) (not_lt.mp hr₂) using 1
   simp
 
@@ -561,7 +553,6 @@ theorem infinitesimal_zero : Infinitesimal 0 := isSt_refl_real 0
 
 theorem Infinitesimal.eq_zero {r : ℝ} : Infinitesimal r → r = 0 := eq_of_isSt_real
 
--- Porting note: swapped LHS with RHS; added `@[simp]`
 @[simp] theorem infinitesimal_real_iff {r : ℝ} : Infinitesimal r ↔ r = 0 :=
   isSt_real_iff_eq
 
@@ -571,7 +562,6 @@ nonrec theorem Infinitesimal.add {x y : ℝ*} (hx : Infinitesimal x) (hy : Infin
 nonrec theorem Infinitesimal.neg {x : ℝ*} (hx : Infinitesimal x) : Infinitesimal (-x) := by
   simpa only [neg_zero] using hx.neg
 
--- Porting note: swapped LHS and RHS, added `@[simp]`
 @[simp] theorem infinitesimal_neg {x : ℝ*} : Infinitesimal (-x) ↔ Infinitesimal x :=
   ⟨fun h => neg_neg x ▸ h.neg, Infinitesimal.neg⟩
 
@@ -618,7 +608,7 @@ theorem infinitesimal_inv_of_infinite {x : ℝ*} : Infinite x → Infinitesimal 
 
 theorem infinite_of_infinitesimal_inv {x : ℝ*} (h0 : x ≠ 0) (hi : Infinitesimal x⁻¹) :
     Infinite x := by
-  cases' lt_or_gt_of_ne h0 with hn hp
+  rcases lt_or_gt_of_ne h0 with hn | hp
   · exact Or.inr (infiniteNeg_iff_infinitesimal_inv_neg.mpr ⟨hi, inv_lt_zero.mpr hn⟩)
   · exact Or.inl (infinitePos_iff_infinitesimal_inv_pos.mpr ⟨hi, inv_pos.mpr hp⟩)
 

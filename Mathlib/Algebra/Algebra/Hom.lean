@@ -22,8 +22,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 
 universe u v w u₁ v₁
 
-/-- Defining the homomorphism in the category R-Alg. -/
--- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
+/-- Defining the homomorphism in the category R-Alg, denoted `A →ₐ[R] B`. -/
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -40,8 +39,8 @@ notation:25 A " →ₐ[" R "] " B => AlgHom R A B
 /-- `AlgHomClass F R A B` asserts `F` is a type of bundled algebra homomorphisms
 from `A` to `B`. -/
 class AlgHomClass (F : Type*) (R A B : outParam Type*)
-  [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-  [FunLike F A B] extends RingHomClass F A B : Prop where
+    [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B] [FunLike F A B] : Prop
+    extends RingHomClass F A B where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
 -- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
@@ -60,7 +59,6 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
@@ -90,7 +88,6 @@ instance funLike : FunLike (A →ₐ[R] B) A B where
     rcases g with ⟨⟨⟨⟨_, _⟩, _⟩, _, _⟩, _⟩
     congr
 
--- Porting note: This instance is moved.
 instance algHomClass : AlgHomClass (A →ₐ[R] B) R A B where
   map_add f := f.map_add'
   map_zero f := f.map_zero'
@@ -113,22 +110,18 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f :
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
 instance coeOutAddMonoidHom : CoeOut (A →ₐ[R] B) (A →+ B) :=
   ⟨AlgHom.toAddMonoidHom'⟩
 
--- Porting note: Lean 3: `@[simp, norm_cast] coe_mk`
---               Lean 4: `@[simp] coe_mk` & `@[norm_cast] coe_mks`
 @[simp]
 theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = f :=
   rfl
@@ -137,7 +130,6 @@ theorem coe_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A → B) = 
 theorem coe_mks {f : A → B} (h₁ h₂ h₃ h₄ h₅) : ⇑(⟨⟨⟨⟨f, h₁⟩, h₂⟩, h₃, h₄⟩, h₅⟩ : A →ₐ[R] B) = f :=
   rfl
 
--- Porting note: This theorem is new.
 @[simp, norm_cast]
 theorem coe_ringHom_mk {f : A →+* B} (h) : ((⟨f, h⟩ : A →ₐ[R] B) : A →+* B) = f :=
   rfl
@@ -157,6 +149,14 @@ theorem coe_toMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →* B) = f :=
 
 @[simp, norm_cast]
 theorem coe_toAddMonoidHom (f : A →ₐ[R] B) : ⇑(f : A →+ B) = f :=
+  rfl
+
+@[simp]
+theorem toRingHom_toMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →* B) = f :=
+  rfl
+
+@[simp]
+theorem toRingHom_toAddMonoidHom (f : A →ₐ[R] B) : ((f : A →+* B) : A →+ B) = f :=
   rfl
 
 variable (φ : A →ₐ[R] B)
@@ -197,35 +197,6 @@ theorem commutes (r : R) : φ (algebraMap R A r) = algebraMap R B r :=
 theorem comp_algebraMap : (φ : A →+* B).comp (algebraMap R A) = algebraMap R B :=
   RingHom.ext <| φ.commutes
 
-@[deprecated map_add (since := "2024-06-26")]
-protected theorem map_add (r s : A) : φ (r + s) = φ r + φ s :=
-  map_add _ _ _
-
-@[deprecated map_zero (since := "2024-06-26")]
-protected theorem map_zero : φ 0 = 0 :=
-  map_zero _
-
-@[deprecated map_mul (since := "2024-06-26")]
-protected theorem map_mul (x y) : φ (x * y) = φ x * φ y :=
-  map_mul _ _ _
-
-@[deprecated map_one (since := "2024-06-26")]
-protected theorem map_one : φ 1 = 1 :=
-  map_one _
-
-@[deprecated map_pow (since := "2024-06-26")]
-protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
-  map_pow _ _ _
-
-@[deprecated map_smul (since := "2024-06-26")]
-protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
-  map_smul _ _ _
-
-@[deprecated map_sum (since := "2024-06-26")]
-protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
-    φ (∑ x ∈ s, f x) = ∑ x ∈ s, φ (f x) :=
-  map_sum _ _ _
-
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
@@ -244,7 +215,7 @@ variable (R A)
 protected def id : A →ₐ[R] A :=
   { RingHom.id A with commutes' := fun _ => rfl }
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(AlgHom.id R A) = id :=
   rfl
 
@@ -337,11 +308,7 @@ theorem map_smul_of_tower {R'} [SMul R' A] [SMul R' B] [LinearMap.CompatibleSMul
     (x : A) : φ (r • x) = r • φ x :=
   φ.toLinearMap.map_smul_of_tower r x
 
-@[deprecated map_list_prod (since := "2024-06-26")]
-protected theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
-  map_list_prod φ s
-
-@[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
+@[simps -isSimp toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
   mul_assoc _ _ _ := rfl
@@ -357,27 +324,14 @@ theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
 theorem mul_apply (φ ψ : A →ₐ[R] A) (x : A) : (φ * ψ) x = φ (ψ x) :=
   rfl
 
+@[simp] theorem coe_pow (φ : A →ₐ[R] A) (n : ℕ) : ⇑(φ ^ n) = φ^[n] :=
+   n.rec (by ext; simp) fun _ ih ↦ by ext; simp [pow_succ, ih]
+
 theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap R A y = x) :
     algebraMap R B y = f x :=
   h ▸ (f.commutes _).symm
 
 end Semiring
-
-section Ring
-
-variable [CommSemiring R] [Ring A] [Ring B]
-variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
-
-@[deprecated map_neg (since := "2024-06-26")]
-protected theorem map_neg (x) : φ (-x) = -φ x :=
-  map_neg _ _
-
-@[deprecated map_sub (since := "2024-06-26")]
-protected theorem map_sub (x y) : φ (x - y) = φ x - φ y :=
-  map_sub _ _ _
-
-end Ring
-
 end AlgHom
 
 namespace RingHom
@@ -416,8 +370,8 @@ end RingHom
 
 namespace Algebra
 
-variable (R : Type u) (A : Type v)
-variable [CommSemiring R] [Semiring A] [Algebra R A]
+variable (R : Type u) (A : Type v) (B : Type w)
+variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- `AlgebraMap` as an `AlgHom`. -/
 def ofId : R →ₐ[R] A :=
@@ -435,6 +389,9 @@ instance subsingleton_id : Subsingleton (R →ₐ[R] A) :=
 /-- This ext lemma closes trivial subgoals create when chaining heterobasic ext lemmas. -/
 @[ext high]
 theorem ext_id (f g : R →ₐ[R] A) : f = g := Subsingleton.elim _ _
+
+@[simp]
+theorem comp_ofId (φ : A →ₐ[R] B) : φ.comp (Algebra.ofId R A) = Algebra.ofId R B := by ext
 
 section MulDistribMulAction
 

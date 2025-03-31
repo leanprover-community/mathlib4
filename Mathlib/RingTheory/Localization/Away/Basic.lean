@@ -195,7 +195,6 @@ noncomputable def mapₐ (f : A →ₐ[R] B) (a : A) [Away a Aₚ] [Away (f a) B
   ⟨map Aₚ Bₚ f.toRingHom a, fun r ↦ by
     dsimp only [AlgHom.toRingHom_eq_coe, map, RingHom.coe_coe, OneHom.toFun_eq_coe]
     rw [IsScalarTower.algebraMap_apply R A Aₚ, IsScalarTower.algebraMap_eq R B Bₚ]
-    erw [IsLocalization.map_eq]
     simp⟩
 
 @[simp]
@@ -371,10 +370,8 @@ lemma awayLift_mk {A : Type*} [CommRing A] (f : R →+* A) (r : R)
     (a : R) (v : A) (hv : f r * v = 1) (j : ℕ) :
     Localization.awayLift f r (isUnit_iff_exists_inv.mpr ⟨v, hv⟩)
       (Localization.mk a ⟨r ^ j, j, rfl⟩) = f a * v ^ j := by
-  rw [Localization.mk_eq_mk']
-  erw [IsLocalization.lift_mk']
-  rw [Units.mul_inv_eq_iff_eq_mul]
-  simp [IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
+  simp [Localization.mk_eq_mk', awayLift, Away.lift, IsLocalization.lift_mk',
+    Units.mul_inv_eq_iff_eq_mul, IsUnit.liftRight, mul_assoc, ← mul_pow, (mul_comm _ _).trans hv]
 
 /-- Given a map `f : R →+* S` and an element `r : R`, we may construct a map `Rᵣ →+* Sᵣ`. -/
 noncomputable abbrev awayMap (f : R →+* P) (r : R) :
@@ -503,10 +500,6 @@ theorem selfZPow_sub_natCast {n m : ℕ} :
       IsLocalization.mk'_eq_iff_eq]
     simp [Submonoid.pow_apply, ← pow_add, Nat.sub_add_cancel (le_of_not_le h)]
 
-@[deprecated (since := "2024-04-05")] alias selfZPow_coe_nat := selfZPow_natCast
-@[deprecated (since := "2024-04-05")] alias selfZPow_neg_coe_nat := selfZPow_neg_natCast
-@[deprecated (since := "2024-04-05")] alias selfZPow_sub_cast_nat := selfZPow_sub_natCast
-
 @[simp]
 theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZPow x B m := by
   rcases le_or_lt 0 n with hn | hn <;> rcases le_or_lt 0 m with hm | hm
@@ -528,13 +521,12 @@ theorem selfZPow_add {n m : ℤ} : selfZPow x B (n + m) = selfZPow x B n * selfZ
 
 theorem selfZPow_mul_neg (d : ℤ) : selfZPow x B d * selfZPow x B (-d) = 1 := by
   by_cases hd : d ≤ 0
-  · erw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
-      IsLocalization.mk'_spec, map_one]
+  · rw [selfZPow_of_nonpos x B hd, selfZPow_of_nonneg, ← map_pow, Int.natAbs_neg,
+      Submonoid.pow_apply, IsLocalization.mk'_spec, map_one]
     apply nonneg_of_neg_nonpos
     rwa [neg_neg]
-  · erw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
-      @IsLocalization.mk'_spec' R _ (Submonoid.powers x) B _ _ _ 1 (Submonoid.pow x d.natAbs),
-      map_one]
+  · rw [selfZPow_of_nonneg x B (le_of_not_le hd), selfZPow_of_nonpos, ← map_pow, Int.natAbs_neg,
+      Submonoid.pow_apply, IsLocalization.mk'_spec'_mk, map_one]
     refine nonpos_of_neg_nonneg (le_of_lt ?_)
     rwa [neg_neg, ← not_le]
 

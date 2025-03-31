@@ -599,9 +599,9 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if the head should not be replaced. -/
           let relevantArgId := relevantArg nm
           let gfAdditive :=
-            if relevantArgId < gAllArgs.size && gf.isConst then
+            if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
               if let some fxd :=
-                additiveTest env gAllArgs[relevantArgId]! then
+                additiveTest env gAllArgs[relevantArgId] then
                 Id.run <| do
                   if trace then
                     dbg_trace s!"The application of {nm} contains the fixed type \
@@ -833,6 +833,8 @@ partial def transformDeclAux
     once https://github.com/leanprover/lean4/pull/5068 is in
     -/
     modifyEnv fun env => Match.Extension.addMatcherInfo env tgt matcherInfo
+  -- necessary so that e.g. match equations can be generated for `tgt`
+  enableRealizationsForConst tgt
 
 /-- Copy the instance attribute in a `to_additive`
 
@@ -1070,6 +1072,8 @@ def fixAbbreviation : List String → List String
   | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
   | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s
   | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
+  | "modular" :: "Character" :: s => "addModularCharacter" :: fixAbbreviation s
+  | "Modular" :: "Character" :: s => "AddModularCharacter" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 
@@ -1103,7 +1107,11 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   let res := if cfg.tgt == .anonymous then pre.str tgt_auto else pre1 ++ cfg.tgt
   -- we allow translating to itself if `tgt == src`, which is occasionally useful for `additiveTest`
   if res == src && cfg.tgt != src then
-    throwError "to_additive: can't transport {src} to itself."
+    throwError "to_additive: the generated additivised name equals the original name '{src}', \
+    meaning that no part of the name was additivised.\n\
+    Check that your declaration name is correct \
+    (if your declaration is an instance, try naming it)\n\
+    or provide an additivised name using the '@[to_additive my_add_name]' syntax."
   if cfg.tgt != .anonymous then
     trace[to_additive_detail] "The automatically generated name would be {pre.str tgt_auto}"
   return res
@@ -1190,8 +1198,8 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
       -- Note: we're not bothering to print the correct attribute arguments.
       Linter.logLintIf linter.existingAttributeWarning stx m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
-        calling @[{thisAttr}]. The preferred method is to use something like \
-        `@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both \
+        calling @[{thisAttr}].\nThe preferred method is to use something like \
+        `@[{thisAttr} (attr := {appliedAttrs})]`\nto apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
       (fun b n => (b.tree.values.any fun t => t.declName = n)) thisAttr `ext src tgt
@@ -1313,7 +1321,7 @@ partial def addToAdditiveAttr (src : Name) (cfg : Config) (kind := AttributeKind
     elaborator := .anonymous, lctx := {}, expectedType? := none, isBinder := !alreadyExists,
     stx := cfg.ref, expr := ← mkConstWithLevelParams tgt }
   if let some doc := cfg.doc then
-    addDocString tgt doc
+    addDocStringCore tgt doc
   return nestedNames.push tgt
 
 end

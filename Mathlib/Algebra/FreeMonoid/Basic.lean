@@ -3,9 +3,10 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Basic
+import Mathlib.Algebra.Group.Equiv.Defs
 
 /-!
 # Free monoid over a given alphabet
@@ -76,6 +77,16 @@ theorem toList_one : toList (1 : FreeMonoid α) = [] := rfl
 @[to_additive (attr := simp)]
 theorem ofList_nil : ofList ([] : List α) = 1 := rfl
 
+-- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
+-- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
+@[to_additive (attr := simp)]
+theorem toList_nil : toList ([] : FreeMonoid α) = [] := rfl
+
+-- TODO: this statement uses defeq abuse, but so does much of the downstream use of `FreeMonoid`.
+-- This should be removed from the simp set and deprecated once those defeq abuses are cleaned up.
+@[to_additive (attr := simp)]
+theorem toList_cons (x : α) (xs : FreeMonoid α) : toList (x :: xs) = x :: toList xs := rfl
+
 @[to_additive (attr := simp)]
 theorem toList_mul (xs ys : FreeMonoid α) : toList (xs * ys) = toList xs ++ toList ys := rfl
 
@@ -121,20 +132,20 @@ variable {a : FreeMonoid α}
 /-- The length of a free monoid element: 1.length = 0 and (a * b).length = a.length + b.length -/
 @[to_additive "The length of an additive free monoid element: 1.length = 0 and (a + b).length =
   a.length + b.length"]
-def length (a : FreeMonoid α) : ℕ := List.length a
+def length (a : FreeMonoid α) : ℕ := a.toList.length
 
 @[to_additive (attr := simp)]
 theorem length_one : length (1 : FreeMonoid α) = 0 := rfl
 
 @[to_additive (attr := simp)]
-theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero
+theorem length_eq_zero : length a = 0 ↔ a = 1 := List.length_eq_zero_iff
 
 @[to_additive (attr := simp)]
 theorem length_of (m : α) : length (of m) = 1 := rfl
 
 @[to_additive existing]
 theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
-  List.length_eq_one
+  List.length_eq_one_iff
 
 @[to_additive]
 theorem length_eq_two {v : FreeMonoid α} :
@@ -146,7 +157,7 @@ theorem length_eq_three {v : FreeMonoid α} : v.length = 3 ↔ ∃ (a b c : α),
 
 @[to_additive (attr := simp)]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
-  List.length_append _ _
+  List.length_append
 
 @[to_additive (attr := simp)]
 theorem of_ne_one (a : α) : of a ≠ 1 := by
@@ -170,7 +181,7 @@ def mem (a : FreeMonoid α) (m : α) := m ∈ toList a
 instance : Membership α (FreeMonoid α) := ⟨mem⟩
 
 @[to_additive]
-theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil _
+theorem not_mem_one : ¬ m ∈ (1 : FreeMonoid α) := List.not_mem_nil
 
 @[to_additive (attr := simp)]
 theorem mem_of {n : α} : m ∈ of n ↔ m = n := List.mem_singleton
@@ -301,7 +312,7 @@ theorem hom_map_lift (g : M →* N) (f : α → M) (x : FreeMonoid α) : g (lift
 def mkMulAction (f : α → β → β) : MulAction (FreeMonoid α) β where
   smul l b := l.toList.foldr f b
   one_smul _ := rfl
-  mul_smul _ _ _ := List.foldr_append _ _ _ _
+  mul_smul _ _ _ := List.foldr_append
 
 @[to_additive]
 theorem smul_def (f : α → β → β) (l : FreeMonoid α) (b : β) :
@@ -329,7 +340,7 @@ that sends each `of x` to `of (f x)`."]
 def map (f : α → β) : FreeMonoid α →* FreeMonoid β where
   toFun l := ofList <| l.toList.map f
   map_one' := rfl
-  map_mul' _ _ := List.map_append _ _ _
+  map_mul' _ _ := List.map_append
 
 @[to_additive (attr := simp)]
 theorem map_of (f : α → β) (x : α) : map f (of x) = of (f x) := rfl
@@ -343,7 +354,7 @@ theorem map_map {α₁ : Type*} {g : α₁ → α} {x : FreeMonoid α₁} :
   unfold map
   simp only [MonoidHom.coe_mk, OneHom.coe_mk, toList_ofList, List.map_map]
 
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem toList_map (f : α → β) (xs : FreeMonoid α) : toList (map f xs) = xs.toList.map f := rfl
 
 @[to_additive]
@@ -358,12 +369,20 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 @[to_additive (attr := simp)]
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
+@[to_additive (attr := simp)]
+theorem map_symm_apply_map_eq {x : FreeMonoid α} (e : α ≃ β) :
+    (map ⇑e.symm) ((map ⇑e) x) = x := by simp [map_map]
+
+@[to_additive (attr := simp)]
+theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
+    (map ⇑e) ((map ⇑e.symm) x) = x := by simp [map_map]
+
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
   uniq u := Units.ext <| toList.injective <|
     have : toList u.val ++ toList u.inv = [] := DFunLike.congr_arg toList u.val_inv
-    (List.append_eq_nil.mp this).1
+    (List.append_eq_nil_iff.mp this).1
 
 @[to_additive (attr := simp)]
 theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Function.Surjective f := by
@@ -376,7 +395,7 @@ theorem map_surjective {f : α → β} : Function.Surjective (map f) ↔ Functio
     simp only [map_mul, map_of] at hb
     use head
     have H := congr_arg length hb
-    simp only [length_mul, length_of, add_right_eq_self, length_eq_zero] at H
+    simp only [length_mul, length_of, add_eq_left, length_eq_zero] at H
     rw [H, mul_one] at hb
     exact FreeMonoid.of_injective hb
   intro fs d
@@ -403,7 +422,7 @@ theorem reverse_of (a : α) : reverse (of a) = of a := rfl
 
 @[to_additive]
 theorem reverse_mul {a b : FreeMonoid α} : reverse (a * b) = reverse b * reverse a :=
-  List.reverse_append _ _
+  List.reverse_append
 
 @[to_additive (attr := simp)]
 theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
@@ -411,8 +430,31 @@ theorem reverse_reverse {a : FreeMonoid α} : reverse (reverse a) = a := by
 
 @[to_additive (attr := simp)]
 theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
-  List.length_reverse _
+  List.length_reverse
 
 end Reverse
+
+section IsomorphicTypes
+
+variable {α β : Type*}
+
+/-- free monoids over isomorphic types are isomorphic -/
+@[to_additive "if two types are isomorphic, the additive free monoids over those types are
+isomorphic"]
+def freeMonoidCongr (e : α ≃ β) :  FreeMonoid α ≃* FreeMonoid β where
+  toFun := FreeMonoid.map ⇑e
+  invFun := FreeMonoid.map ⇑e.symm
+  left_inv _ := map_symm_apply_map_eq e
+  right_inv _ := map_apply_map_symm_eq e
+  map_mul' := by simp [map_mul]
+
+@[to_additive (attr := simp)]
+theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) = of (e a) := rfl
+
+@[to_additive (attr := simp)]
+theorem freeMonoidCongr_symm_of (e : α ≃ β) (b : β) :
+    freeMonoidCongr e.symm (of b) = of (e.symm b) := rfl
+
+end IsomorphicTypes
 
 end FreeMonoid

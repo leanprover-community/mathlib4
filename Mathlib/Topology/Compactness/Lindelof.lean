@@ -435,7 +435,7 @@ theorem Tendsto.isLindelof_insert_range_of_coLindelof {f : X → Y} {y}
   intro l hne _ hle
   by_cases hy : ClusterPt y l
   · exact ⟨y, Or.inl rfl, hy⟩
-  simp only [clusterPt_iff, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy
+  simp only [clusterPt_iff_nonempty, not_forall, ← not_disjoint_iff_nonempty_inter, not_not] at hy
   rcases hy with ⟨s, hsy, t, htl, hd⟩
   rcases mem_coLindelof.1 (hf hsy) with ⟨K, hKc, hKs⟩
   have : f '' K ∈ l := by
@@ -597,7 +597,7 @@ theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) :
     IsLindelof (range f) := by rw [← image_univ]; exact isLindelof_univ.image hf
 
 theorem isLindelof_diagonal [LindelofSpace X] : IsLindelof (diagonal X) :=
-  @range_diag X ▸ isLindelof_range (continuous_id.prod_mk continuous_id)
+  @range_diag X ▸ isLindelof_range (continuous_id.prodMk continuous_id)
 
 /-- If `f : X → Y` is an inducing map, the image `f '' s` of a set `s` is Lindelöf
   if and only if `s` is compact. -/
@@ -610,8 +610,8 @@ theorem Topology.IsInducing.isLindelof_iff {f : X → Y} (hf : IsInducing f) :
 
 @[deprecated (since := "2024-10-28")] alias Inducing.isLindelof_iff := IsInducing.isLindelof_iff
 
-/-- If `f : X → Y` is an `Embedding`, the image `f '' s` of a set `s` is Lindelöf
-  if and only if `s` is Lindelöf. -/
+/-- If `f : X → Y` is an embedding, the image `f '' s` of a set `s` is Lindelöf
+if and only if `s` is Lindelöf. -/
 theorem Topology.IsEmbedding.isLindelof_iff {f : X → Y} (hf : IsEmbedding f) :
     IsLindelof s ↔ IsLindelof (f '' s) := hf.isInducing.isLindelof_iff
 

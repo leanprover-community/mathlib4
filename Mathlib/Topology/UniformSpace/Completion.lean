@@ -175,7 +175,7 @@ theorem denseRange_pureCauchy : DenseRange (pureCauchy : α → CauchyFilter α)
       mem_prod_iff.mpr
         ⟨t, ht, { y : α | (x, y) ∈ t' }, h <| mk_mem_prod hx hx,
           fun ⟨a, b⟩ ⟨(h₁ : a ∈ t), (h₂ : (x, b) ∈ t')⟩ =>
-          ht'₂ <| prod_mk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
+          ht'₂ <| prodMk_mem_compRel (@h (a, x) ⟨h₁, hx⟩) h₂⟩
     ⟨x, ht''₂ <| by dsimp [gen]; exact this⟩
   simp only [closure_eq_cluster_pts, ClusterPt, nhds_eq_uniformity, lift'_inf_principal_eq,
     Set.inter_comm _ (range pureCauchy), mem_setOf_eq]
@@ -310,12 +310,13 @@ instance completeSpace : CompleteSpace (Completion α) :=
 
 instance t0Space : T0Space (Completion α) := SeparationQuotient.instT0Space
 
+variable {α} in
 /-- The map from a uniform space to its completion. -/
 @[coe] def coe' : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
 instance : Coe α (Completion α) :=
-  ⟨coe' α⟩
+  ⟨coe'⟩
 
 -- note [use has_coe_t]
 protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl
@@ -330,13 +331,10 @@ theorem comap_coe_eq_uniformity :
     ((𝓤 _).comap fun p : α × α => ((p.1 : Completion α), (p.2 : Completion α))) = 𝓤 α :=
   (isUniformInducing_coe _).1
 
-variable {α}
-
+variable {α} in
 theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
-
-variable (α)
 
 /-- The Haudorff completion as an abstract completion. -/
 def cPkg {α : Type*} [UniformSpace α] : AbstractCompletion α where

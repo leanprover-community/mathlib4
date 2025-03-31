@@ -3,8 +3,9 @@ Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.FieldTheory.Finiteness
 import Mathlib.LinearAlgebra.AffineSpace.Basis
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
 # Finite-dimensional subspaces of affine spaces.
@@ -39,6 +40,11 @@ theorem finiteDimensional_vectorSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (vectorSpan k s) :=
   .span_of_finite k <| h.vsub h
 
+/-- The vector span of a singleton is finite-dimensional. -/
+instance finiteDimensional_vectorSpan_singleton (p : P) :
+    FiniteDimensional k (vectorSpan k {p}) :=
+  finiteDimensional_vectorSpan_of_finite _ (Set.finite_singleton p)
+
 /-- The `vectorSpan` of a family indexed by a `Fintype` is
 finite-dimensional. -/
 instance finiteDimensional_vectorSpan_range [Finite ι] (p : ι → P) :
@@ -56,6 +62,12 @@ finite-dimensional. -/
 theorem finiteDimensional_direction_affineSpan_of_finite {s : Set P} (h : Set.Finite s) :
     FiniteDimensional k (affineSpan k s).direction :=
   (direction_affineSpan k s).symm ▸ finiteDimensional_vectorSpan_of_finite k h
+
+/-- The direction of the affine span of a singleton is finite-dimensional. -/
+instance finiteDimensional_direction_affineSpan_singleton (p : P) :
+    FiniteDimensional k (affineSpan k {p}).direction := by
+  rw [direction_affineSpan]
+  infer_instance
 
 /-- The direction of the affine span of a family indexed by a
 `Fintype` is finite-dimensional. -/
@@ -167,7 +179,7 @@ theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) 
     AffineIndependent k p ↔ finrank k (vectorSpan k (Set.range p)) = n := by
   classical
   have hn : Nonempty ι := by simp [← Fintype.card_pos_iff, hc]
-  cases' hn with i₁
+  obtain ⟨i₁⟩ := hn
   rw [affineIndependent_iff_linearIndependent_vsub _ _ i₁,
     linearIndependent_iff_card_eq_finrank_span, eq_comm,
     vectorSpan_range_eq_span_range_vsub_right_ne k p i₁, Set.finrank]
@@ -448,21 +460,18 @@ theorem collinear_iff_exists_forall_eq_smul_vadd (s : Set P) :
       use r - r₁
       simp [vadd_vadd, ← add_smul]
 
-variable (k)
-
+variable (k) in
 /-- Two points are collinear. -/
 theorem collinear_pair (p₁ p₂ : P) : Collinear k ({p₁, p₂} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]
   use p₁, p₂ -ᵥ p₁
   intro p hp
   rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
-  cases' hp with hp hp
+  rcases hp with hp | hp
   · use 0
     simp [hp]
   · use 1
     simp [hp]
-
-variable {k}
 
 /-- Three points are affinely independent if and only if they are not
 collinear. -/
@@ -482,7 +491,7 @@ theorem collinear_iff_not_affineIndependent {p : Fin 3 → P} :
 theorem affineIndependent_iff_not_collinear_set {p₁ p₂ p₃ : P} :
     AffineIndependent k ![p₁, p₂, p₃] ↔ ¬Collinear k ({p₁, p₂, p₃} : Set P) := by
   rw [affineIndependent_iff_not_collinear]
-  simp_rw [Matrix.range_cons, Matrix.range_empty, Set.singleton_union, insert_emptyc_eq]
+  simp_rw [Matrix.range_cons, Matrix.range_empty, Set.singleton_union, insert_empty_eq]
 
 /-- Three points are collinear if and only if they are not affinely independent. -/
 theorem collinear_iff_not_affineIndependent_set {p₁ p₂ p₃ : P} :
@@ -603,13 +612,10 @@ theorem collinear_triple_of_mem_affineSpan_pair {p₁ p₂ p₃ p₄ p₅ : P} (
   refine (collinear_insert_insert_insert_left_of_mem_affineSpan_pair h₁ h₂ h₃).subset ?_
   simp [Set.insert_subset_insert]
 
-variable (k)
-
+variable (k) in
 /-- A set of points is coplanar if their `vectorSpan` has dimension at most `2`. -/
 def Coplanar (s : Set P) : Prop :=
   Module.rank k (vectorSpan k s) ≤ 2
-
-variable {k}
 
 /-- The `vectorSpan` of coplanar points is finite-dimensional. -/
 theorem Coplanar.finiteDimensional_vectorSpan {s : Set P} (h : Coplanar k s) :
@@ -704,8 +710,7 @@ theorem finrank_vectorSpan_insert_le (s : AffineSubspace k P) (p : P) :
     ext
     exact hc
 
-variable (k)
-
+variable (k) in
 /-- Adding a point to a set with a finite-dimensional span increases the dimension by at most
 one. -/
 theorem finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :
@@ -713,8 +718,6 @@ theorem finrank_vectorSpan_insert_le_set (s : Set P) (p : P) :
   rw [← direction_affineSpan, ← affineSpan_insert_affineSpan, direction_affineSpan]
   refine (finrank_vectorSpan_insert_le _ _).trans (add_le_add_right ?_ _)
   rw [direction_affineSpan]
-
-variable {k}
 
 /-- Adding a point to a collinear set produces a coplanar set. -/
 theorem Collinear.coplanar_insert {s : Set P} (h : Collinear k s) (p : P) :

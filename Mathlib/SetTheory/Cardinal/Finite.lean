@@ -21,6 +21,8 @@ import Mathlib.SetTheory.Cardinal.ENat
   (using the legacy definition `PartENat := Part ℕ`). If `α` is infinite, `PartENat.card α = ⊤`.
 -/
 
+assert_not_exists Field
+
 open Cardinal Function
 
 noncomputable section
@@ -41,7 +43,7 @@ theorem card_eq_fintype_card [Fintype α] : Nat.card α = Fintype.card α :=
   mk_toNat_eq_card
 
 /-- Because this theorem takes `Fintype α` as a non-instance argument, it can be used in particular
-when `Fintype.card` ends up with different instance than the one found by inference  -/
+when `Fintype.card` ends up with different instance than the one found by inference -/
 theorem _root_.Fintype.card_eq_nat_card {_ : Fintype α} : Fintype.card α = Nat.card α :=
   mk_toNat_eq_card.symm
 
@@ -198,6 +200,10 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
   toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 
 @[simp]
+theorem card_subtype_true : Nat.card {_a : α // True} = Nat.card α :=
+  card_congr <| Equiv.subtypeUnivEquiv fun _ => trivial
+
+@[simp]
 theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
   have := Fintype.ofFinite α
   have := Fintype.ofFinite β
@@ -214,6 +220,11 @@ theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
 @[simp]
 theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
   card_congr Equiv.plift
+
+theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
+    Nat.card (Sigma β) = ∑ a, Nat.card (β a) := by
+  letI _ (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
+  simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
 
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, map_prod]
@@ -234,10 +245,10 @@ namespace Set
 variable {s : Set α}
 
 lemma card_singleton_prod (a : α) (t : Set β) : Nat.card ({a} ×ˢ t) = Nat.card t := by
-  rw [singleton_prod, Nat.card_image_of_injective (Prod.mk.inj_left a)]
+  rw [singleton_prod, Nat.card_image_of_injective (Prod.mk_right_injective a)]
 
 lemma card_prod_singleton (s : Set α) (b : β) : Nat.card (s ×ˢ {b}) = Nat.card s := by
-  rw [prod_singleton, Nat.card_image_of_injective (Prod.mk.inj_right b)]
+  rw [prod_singleton, Nat.card_image_of_injective (Prod.mk_left_injective b)]
 
 theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
   simp [pos_iff_ne_zero, Nat.card_eq_zero, hs.to_subtype, nonempty_iff_ne_empty]
@@ -261,9 +272,13 @@ def card (α : Type*) : ℕ∞ :=
 theorem card_eq_coe_fintype_card [Fintype α] : card α = Fintype.card α := by
   simp [card]
 
-@[simp]
+@[simp high]
 theorem card_eq_top_of_infinite [Infinite α] : card α = ⊤ := by
-  simp [card]
+  simp only [card, toENat_eq_top, aleph0_le_mk]
+
+@[simp] lemma card_eq_top : card α = ⊤ ↔ Infinite α := by simp [card, aleph0_le_mk_iff]
+
+@[simp] theorem card_lt_top_of_finite [Finite α] : card α < ⊤ := by simp [card]
 
 @[simp]
 theorem card_sum (α β : Type*) :
@@ -324,5 +339,9 @@ theorem one_lt_card_iff_nontrivial (α : Type*) : 1 < card α ↔ Nontrivial α 
   conv_rhs => rw [← Nat.cast_one]
   rw [← natCast_lt_toENat_iff]
   simp only [ENat.card, Nat.cast_one]
+
+@[simp]
+theorem card_prod (α β : Type*) : ENat.card (α × β) = .card α * .card β := by
+  simp [ENat.card]
 
 end ENat

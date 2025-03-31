@@ -135,6 +135,17 @@ noncomputable def differential : (P.rels → P.Ring) →ₗ[P.Ring] (P.rels → 
   Basis.constr P.basis P.Ring
     (fun j i : P.rels ↦ MvPolynomial.pderiv (P.map i) (P.relation j))
 
+/-- `PreSubmersivePresentation.differential` pushed forward to `S` via `aeval P.val`. -/
+noncomputable def aevalDifferential : (P.rels → S) →ₗ[S] (P.rels → S) :=
+  (Pi.basisFun S P.rels).constr S
+    (fun j i : P.rels ↦ aeval P.val <| pderiv (P.map i) (P.relation j))
+
+@[simp]
+lemma aevalDifferential_single [DecidableEq P.rels] (i j : P.rels) :
+    P.aevalDifferential (Pi.single i 1) j = aeval P.val (pderiv (P.map j) (P.relation i)) := by
+  dsimp only [aevalDifferential]
+  rw [← Pi.basisFun_apply, Basis.constr_basis]
+
 /-- The jacobian of a `P : PreSubmersivePresentation` is the determinant
 of `P.differential` viewed as element of `S`. -/
 noncomputable def jacobian : S :=
@@ -157,6 +168,13 @@ lemma jacobian_eq_jacobiMatrix_det : P.jacobian = algebraMap P.Ring S P.jacobiMa
 lemma jacobiMatrix_apply (i j : P.rels) :
     P.jacobiMatrix i j = MvPolynomial.pderiv (P.map i) (P.relation j) := by
   simp [jacobiMatrix, LinearMap.toMatrix, differential, basis]
+
+lemma aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix :
+    P.aevalDifferential.toMatrix' = (aeval P.val).mapMatrix P.jacobiMatrix := by
+  ext i j : 1
+  rw [← LinearMap.toMatrix_eq_toMatrix']
+  rw [LinearMap.toMatrix_apply]
+  simp [jacobiMatrix_apply]
 
 end Matrix
 
@@ -232,16 +250,21 @@ this is the canonical pre-submersive presentation of `T` as an `R`-algebra. -/
 noncomputable def comp : PreSubmersivePresentation R T where
   __ := Q.toPresentation.comp P.toPresentation
   map := Sum.elim (fun rq ↦ Sum.inl <| Q.map rq) (fun rp ↦ Sum.inr <| P.map rp)
-  map_inj := Function.Injective.sum_elim ((Sum.inl_injective).comp (Q.map_inj))
+  map_inj := Function.Injective.sumElim ((Sum.inl_injective).comp (Q.map_inj))
     ((Sum.inr_injective).comp (P.map_inj)) <| by simp
   relations_finite := inferInstanceAs <| Finite (Q.rels ⊕ P.rels)
+
+lemma toPresentation_comp : (Q.comp P).toPresentation = Q.toPresentation.comp P.toPresentation :=
+  rfl
+
+lemma toGenerators_comp : (Q.comp P).toGenerators = Q.toGenerators.comp P.toGenerators := rfl
 
 /-- The dimension of the composition of two finite submersive presentations is
 the sum of the dimensions. -/
 lemma dimension_comp_eq_dimension_add_dimension [Q.IsFinite] [P.IsFinite] :
     (Q.comp P).dimension = Q.dimension + P.dimension := by
-  simp only [Presentation.dimension]
-  erw [Presentation.comp_rels, Generators.comp_vars]
+  simp only [Presentation.dimension, toPresentation_comp, Presentation.comp_rels,
+    Presentation.toGenerators_comp, Generators.comp_vars]
   have : Nat.card P.rels ≤ Nat.card P.vars :=
     card_relations_le_card_vars_of_isFinite P
   have : Nat.card Q.rels ≤ Nat.card Q.vars :=
@@ -262,11 +285,12 @@ the lower-right block has determinant jacobian of `P`.
 
 -/
 
-variable [Fintype (Q.comp P).rels]
+variable [DecidableEq (Q.comp P).rels] [Fintype (Q.comp P).rels]
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inr (i : Q.rels) (j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inl i) (Sum.inr j) = 0 := by
+  classical
   rw [jacobiMatrix_apply]
   refine MvPolynomial.pderiv_eq_zero_of_not_mem_vars (fun hmem ↦ ?_)
   apply MvPolynomial.vars_rename at hmem
@@ -279,7 +303,7 @@ private lemma jacobiMatrix_comp_₁₂ : (Q.comp P).jacobiMatrix.toBlocks₁₂ 
 
 section Q
 
-variable [Fintype Q.rels]
+variable [DecidableEq Q.rels] [Fintype Q.rels]
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
@@ -287,7 +311,7 @@ private lemma jacobiMatrix_comp_inl_inl (i j : Q.rels) :
       ((Q.comp P).jacobiMatrix (Sum.inl j) (Sum.inl i)) = Q.jacobiMatrix j i := by
   rw [jacobiMatrix_apply, jacobiMatrix_apply, comp_map, Sum.elim_inl,
     ← Q.comp_aeval_relation_inl P.toPresentation]
-  apply aeval_sum_elim_pderiv_inl
+  apply aeval_sumElim_pderiv_inl
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_₁₁_det :
@@ -295,14 +319,15 @@ private lemma jacobiMatrix_comp_₁₁_det :
   rw [jacobian_eq_jacobiMatrix_det, AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det]
   congr
   ext i j : 1
-  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P]
-  apply aeval_sum_elim
+  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P,
+    Q.algebraMap_apply]
+  apply aeval_sumElim
 
 end Q
 
 section P
 
-variable [Fintype P.rels]
+variable [Fintype P.rels] [DecidableEq P.rels]
 
 open scoped Classical in
 private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
@@ -325,12 +350,11 @@ private lemma jacobiMatrix_comp_₂₂_det :
   simp only [aeval, AlgHom.coe_mk, coe_eval₂Hom]
   generalize P.jacobiMatrix i j = p
   induction' p using MvPolynomial.induction_on with a p q hp hq p i hp
-  · simp only [algHom_C, algebraMap_eq, eval₂_C]
-    erw [MvPolynomial.eval₂_C]
+  · simp only [algHom_C, algebraMap_eq, eval₂_C, ← Generators.comp_vars,
+      ← Presentation.toGenerators_comp, ← toPresentation_comp]
   · simp [hp, hq]
-  · simp only [map_mul, rename_X, eval₂_mul, hp, eval₂_X]
-    erw [Generators.comp_val]
-    simp
+  · simp only [map_mul, eval₂_mul, hp]
+    simp [Presentation.toGenerators_comp, toPresentation_comp]
 
 end P
 
@@ -368,6 +392,12 @@ noncomputable def baseChange : PreSubmersivePresentation T (T ⊗[R] S) where
   map_inj := P.map_inj
   relations_finite := P.relations_finite
 
+lemma baseChange_toPresentation :
+    (P.baseChange R).toPresentation = P.toPresentation.baseChange R :=
+  rfl
+
+lemma baseChange_ring : (P.baseChange R).Ring = P.Ring := rfl
+
 @[simp]
 lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := by
   classical
@@ -378,11 +408,11 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
       (MvPolynomial.map (algebraMap R T)).mapMatrix P.jacobiMatrix := by
     ext i j : 1
     simp only [baseChange, jacobiMatrix_apply, Presentation.baseChange_relation,
-      RingHom.mapMatrix_apply, Matrix.map_apply]
-    erw [MvPolynomial.pderiv_map]
-    rfl
+      RingHom.mapMatrix_apply, Matrix.map_apply, Generators.baseChange_vars,
+      Presentation.baseChange_toGenerators, baseChange_toPresentation, MvPolynomial.pderiv_map]
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
+  rw [P.algebraMap_apply]
   apply aeval_one_tmul
 
 end BaseChange
@@ -468,6 +498,44 @@ noncomputable def baseChange : SubmersivePresentation T (T ⊗[R] S) where
 end BaseChange
 
 end Constructions
+
+variable {R S}
+
+open Classical in
+/-- If `P` is submersive, `PreSubmersivePresentation.aevalDifferential` is an isomorphism. -/
+noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S) :
+    (P.rels → S) ≃ₗ[S] (P.rels → S) :=
+  haveI : Fintype P.rels := Fintype.ofFinite P.rels
+  have : IsUnit (LinearMap.toMatrix (Pi.basisFun S P.rels) (Pi.basisFun S P.rels)
+        P.aevalDifferential).det := by
+    convert P.jacobian_isUnit
+    rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
+      aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
+    simp [RingHom.map_det]
+  LinearEquiv.ofIsUnitDet this
+
+variable (P : SubmersivePresentation R S)
+
+@[simp]
+lemma aevalDifferentialEquiv_apply (x : P.rels → S) :
+    P.aevalDifferentialEquiv x = P.aevalDifferential x :=
+  rfl
+
+/-- If `P` is a submersive presentation, the partial derivatives of `P.relation i` by
+`P.map j` form a basis of `P.rels → S`. -/
+noncomputable def basisDeriv (P : SubmersivePresentation R S) : Basis P.rels S (P.rels → S) :=
+  Basis.map (Pi.basisFun S P.rels) P.aevalDifferentialEquiv
+
+@[simp]
+lemma basisDeriv_apply (i j : P.rels) :
+    P.basisDeriv i j = (aeval P.val) (pderiv (P.map j) (P.relation i)) := by
+  classical
+  simp [basisDeriv]
+
+lemma linearIndependent_aeval_val_pderiv_relation :
+    LinearIndependent S (fun i j ↦ (aeval P.val) (pderiv (P.map j) (P.relation i))) := by
+  simp_rw [← SubmersivePresentation.basisDeriv_apply]
+  exact P.basisDeriv.linearIndependent
 
 end SubmersivePresentation
 

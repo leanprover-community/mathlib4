@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.EquivFin
 import Mathlib.Data.List.ProdSigma
 import Mathlib.Data.List.Pi
 
@@ -46,8 +46,8 @@ def ofNodupList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) (h' :
     FinEnum α where
   card := xs.length
   equiv :=
-    ⟨fun x => ⟨xs.indexOf x, by rw [List.indexOf_lt_length]; apply h⟩, xs.get, fun x => by simp,
-      fun i => by ext; simp [List.indexOf_getElem h']⟩
+    ⟨fun x => ⟨xs.idxOf x, by rw [List.idxOf_lt_length_iff]; apply h⟩, xs.get, fun x => by simp,
+      fun i => by ext; simp [List.idxOf_getElem h']⟩
 
 /-- create a `FinEnum` instance from an exhaustive list; duplicates are removed -/
 def ofList [DecidableEq α] (xs : List α) (h : ∀ x : α, x ∈ xs) : FinEnum α :=
