@@ -100,9 +100,6 @@ def n := q^2/(2*m K)
 
 variable (u : Fin (m  K) × Fin (n K q))
 
-def η : (Fin q × Fin q) → (Fin (m  K) × Fin (n K q)) → K := fun (a,b) (l,k) =>
-  ((a+1) + (b+1) * β')^(k : ℤ) * α' ^((a+1) * (l+1 : ℤ)) * γ' ^((b+1) * (l+1 : ℤ))
-
 variable (hq : 2 * m K ∣ q ^ 2)
 
 def c'_both (α : K) : {c : ℤ | c ≠ 0 ∧ IsIntegral ℤ (c • α)} :=
@@ -112,30 +109,21 @@ def c' (α : K) : ℤ := c'_both K α
 
 lemma c'_IsIntegral (α : K) : IsIntegral ℤ (c' K α • α) := (c'_both K α).2.2
 
-abbrev ca := (c' K α') --^ ((t.1 + 1) * (u.1 + 1 : ℕ))
-abbrev cb := (c' K β') --^ (u.2 : ℕ)
-abbrev cγ := (c' K γ')--^ ((t.2 + 1) * (u.1 + 1 : ℕ))
-
 def c₁ := (c' K α') * (c' K β') * (c' K γ')
 
-
-
---IsIntegral ℤ (c' K α' • α' ^ ((↑t.1 + 1) * (↑u.1 + 1)))
-
 lemma IsIntegral_mul_Int_pow (x : ℤ) (n : ℕ) (α : K) (hs: IsIntegral ℤ (x • α)) :
-  (IsIntegral ℤ (x^n • α^n)) := by {
+  (IsIntegral ℤ (x^n • α^n)) := by
     rw [Eq.symm (smul_pow x α n)]
-    apply IsIntegral.pow
-    exact hs}
+    apply IsIntegral.pow hs
 
 lemma IsIntegral_assoc {x y : ℤ} (z : ℤ) (α : K) (ha : IsIntegral ℤ (z • α)) :
-  IsIntegral ℤ ((x * y * z : ℤ) • α) := by {
-    have : ((x * y * z : ℤ) • α) = (x * y) • (z • α) := by {
+  IsIntegral ℤ ((x * y * z : ℤ) • α) := by
+    have : ((x * y * z : ℤ) • α) = (x * y) • (z • α) := by
       simp only [Int.cast_mul, zsmul_eq_mul]
-      exact mul_assoc (↑x * ↑y : K) z α}
+      exact mul_assoc (↑x * ↑y : K) z α
     conv => enter [2]; rw [this]
     apply IsIntegral.smul
-    exact ha}
+    exact ha
 
 lemma c₁_α : IsIntegral ℤ (c₁ K α' β' γ' • α') := by
   have h := IsIntegral_assoc (x := c' K γ') (y := c' K β') K (c' K α') α' (c'_IsIntegral K α')
@@ -148,7 +136,7 @@ lemma c₁_β : IsIntegral ℤ (c₁ K α' β' γ' • β') := by
 lemma c₁_γ : IsIntegral ℤ (c₁ K α' β' γ' • γ') :=
   IsIntegral_assoc (x := c' K α') (y := c' K β') K (c' K γ') γ' (c'_IsIntegral K γ')
 
-lemma IsIntegral.Int (a : ℤ) : IsIntegral ℤ (a : K) := by {
+lemma IsIntegral.Cast (a : ℤ) : IsIntegral ℤ (a : K) := by {
   apply map_isIntegral_int (algebraMap ℤ K)
   apply Algebra.IsIntegral.isIntegral}
 
@@ -156,10 +144,10 @@ lemma IsIntegral.Nat (a : ℕ) : IsIntegral ℤ (a : K) := by {
   have : (a : K) = ((a : ℤ) : K) := by {
     simp only [Int.cast_natCast]}
   rw [this]
-  apply IsIntegral.Int}
+  apply IsIntegral.Cast}
 
 lemma c₁b  (n : ℕ) : 1 ≤ n → k ≤ n - 1 → 1 ≤ (a : ℕ) → 1 ≤ (b : ℕ) →
-  IsIntegral ℤ ((c₁ K α' β' γ')^(n - 1) • (a + b • β') ^ k) := by stop {
+  IsIntegral ℤ ((c₁ K α' β' γ')^(n - 1) • (a + b • β') ^ k) := by  {
   intros hn hkn ha hb
   have : (c₁ K α' β' γ')^(n - 1) = (c₁ K α' β' γ')^(n - 1 - k)*(c₁ K α' β' γ')^k := by {
     rw [← pow_add]
@@ -170,13 +158,13 @@ lemma c₁b  (n : ℕ) : 1 ≤ n → k ≤ n - 1 → 1 ≤ (a : ℕ) → 1 ≤ (
   rw [mul_assoc]
   apply IsIntegral.mul
   apply IsIntegral.pow
-  apply IsIntegral.Int
+  apply IsIntegral.Cast
   rw [← mul_pow]
   apply IsIntegral.pow
   rw [mul_add]
   apply IsIntegral.add
   apply IsIntegral.mul
-  apply IsIntegral.Int
+  apply IsIntegral.Cast
   apply IsIntegral.Nat
   rw [mul_comm]
   rw [mul_assoc]
@@ -187,7 +175,7 @@ lemma c₁b  (n : ℕ) : 1 ≤ n → k ≤ n - 1 → 1 ≤ (a : ℕ) → 1 ≤ (
   exact c₁_β K α' β' γ'}
 
 lemma c₁ac (u : K) (n k a l : ℕ) (hnk : a*l ≤ n*k) (H : IsIntegral ℤ (↑(c₁ K α' β' γ') * u)) :
-  IsIntegral ℤ ((c₁ K α' β' γ')^(n*k) • u ^ (a*l)) := by {
+  IsIntegral ℤ ((c₁ K α' β' γ')^(n*k) • u ^ (a*l)) := by
     have : (c₁ K α' β' γ')^(n*k) = (c₁ K α' β' γ')^(n*k - a*l)*(c₁ K α' β' γ')^(a*l) := by {
       rw [← pow_add]
       simp_all only [Nat.sub_add_cancel]}
@@ -197,11 +185,9 @@ lemma c₁ac (u : K) (n k a l : ℕ) (hnk : a*l ≤ n*k) (H : IsIntegral ℤ (�
     rw [mul_assoc]
     apply IsIntegral.mul
     apply IsIntegral.pow
-    apply IsIntegral.Int
+    apply IsIntegral.Cast
     rw [← mul_pow]
-    apply IsIntegral.pow
-    exact H
-  }
+    apply IsIntegral.pow H
 
 lemma c1a : IsIntegral ℤ ((c₁ K α' β' γ')^(m K*q) • (α'^( (t.1 + 1) * (u.1 + 1) : ℕ)) ) := by
   apply c₁ac K α' β' γ' α' (m K) q (t.1 + 1) (u.1 + 1) ?_ ?_
@@ -214,30 +200,46 @@ lemma c1c : IsIntegral ℤ ((c₁ K α' β' γ')^(m K*q)•(γ'^(  (t.2 + 1) * (
   · sorry
   · rw [← zsmul_eq_mul]
     exact c₁_γ K α' β' γ'
+--(y*x)*z
 
-lemma IsIntegral_triple_comm (a b c : ℤ) (y x z : K)  :
-  IsIntegral ℤ ((a*b)*c • (y*x)*z) =
-  IsIntegral ℤ ((b•y) * (a•x) * (c•z)) := by
-    simp only [smul_eq_mul, eq_iff_iff]
-    ring_nf
+lemma triple_comm (a b c : ℤ) (x y z : K)  :
+    ((a*b)*c) • ((x*y)*z) = a•x * b•y * c•z
+     := by
     simp only [zsmul_eq_mul, Int.cast_mul]
-    ring_nf
+    ring
 
+def η : (Fin q × Fin q) → (Fin (m  K) × Fin (n K q)) → K := fun (a,b) (l,k) =>
+  ((a+1 : ℕ) + (b+1 : ℕ) • β')^(k : ℕ) * α' ^((a+1) * (l+1 : ℕ)) * γ' ^((b+1) * (l+1 : ℕ))
+
+include hq0 hq in
+lemma one_le_n : 1 ≤ n K q := by {
+  simp only [n]
+  rw [Nat.one_le_div_iff]
+  · apply Nat.le_of_dvd (Nat.pow_pos hq0) hq
+  · exact Nat.zero_lt_succ (Nat.mul 2 (2 * h K + 1) + 1)}
+
+include hq0 hq in
 theorem c₁IsInt :
   IsIntegral ℤ ((((c₁ K α' β' γ')^(n K q - 1)*(c₁ K α' β' γ')^(m K * q) *
     ((c₁ K α' β' γ')^(m K * q)))) • η K α' β' γ' q t u) := by {
   simp only [η]
-  have := IsIntegral_triple_comm K
-    ((c₁ K α' β' γ')^(n K q - 1))
-    ((c₁ K α' β' γ')^(m K * q))
-    ((c₁ K α' β' γ')^(m K * q))
-    (((t.1 + 1 : ℕ) + (t.2 + 1) * β')^(u.2 : ℕ))
-    (α' ^ ((t.1 + 1 : ℕ) * (u.1 + 1)))
-    (γ' ^ ((t.2 + 1 : ℕ) * (u.1 + 1)))
-  --rw [this]
-  sorry
-
-  }
+  rw [triple_comm K
+    ((c₁ K α' β' γ')^(n K q - 1) : ℤ)
+    ((c₁ K α' β' γ')^(m K * q) : ℤ)
+    ((c₁ K α' β' γ')^(m K * q) : ℤ)
+    (((t.1 + 1 :ℕ) + (t.2 + 1 : ℕ ) • β')^(u.2 : ℕ))
+    (α' ^ (((t.1 : ℕ) + 1) * (u.1 + 1)))
+    (γ' ^ (((t.2 : ℕ) + 1) * (u.1 + 1)))]
+  rw [mul_assoc]
+  apply IsIntegral.mul
+  · have h1 : (u.2 : ℕ) ≤ n K q - 1 := sorry
+    have h2 : (1 : ℕ) ≤ t.1 + 1 := Nat.le_add_left 1 ↑t.1
+    have h3 : (1 : ℕ) ≤ t.2 + 1 := Nat.le_add_left 1 ↑t.2
+    have hn : 1 ≤ n K q := one_le_n K q hq0 hq
+    apply c₁b K α' β' γ' (n K q) hn h1 h2 h3
+  · apply IsIntegral.mul
+    · exact c1a K α' β' γ' q t u
+    · exact c1c K α' β' γ' q t u}
 
 theorem c₁neq0 : c₁ K α' β' γ' ≠ 0 := by {
   unfold c₁
@@ -246,7 +248,7 @@ theorem c₁neq0 : c₁ K α' β' γ' ≠ 0 := by {
   have hcγ := (c'_both K γ').2.1
   unfold c'
   simp_all only [ne_eq, mem_setOf_eq, mul_eq_zero, or_self, not_false_eq_true]}
-#exit
+
 variable (k : ℤ) (hkneq0 : k ≠ 0) (hint : IsIntegral ℤ (k • η K α' β' γ' q t u))
 
 def M : Matrix (Fin (m K) × Fin (n K q)) (Fin q × Fin q) (𝓞 K) :=
@@ -271,43 +273,42 @@ lemma eta_ne_zero : η K α' β' γ' q t u ≠ 0 := by {
     apply this
     norm_cast at H
     exact pow_eq_zero H}
-  have h2: (↑↑t.1 + 1 + (↑↑t.2 + 1) * β') ^ ↑↑u.2 ≠ 0 := by {
+  have h2: (↑↑t.1 + 1 + (↑↑t.2 + 1) • β') ^ ↑↑u.2 ≠ 0 := by {
     have hb := (hneq0'' α β hirr htriv K σ α' β' γ' habc).2.1
     apply pow_ne_zero
     have h1: ↑↑t.1 + (1 : K) ≠ 0 := Nat.cast_add_one_ne_zero ↑t.1
     have h2: (↑↑t.2 + (1 : K)) ≠ 0 := Nat.cast_add_one_ne_zero ↑t.2
-    have :(↑t.2 + 1) * β' ≠ 0 := mul_ne_zero (Nat.cast_add_one_ne_zero ↑t.2) hb
-    sorry
-    }
+    have :(↑t.2 + 1 : ℕ) • β' ≠ 0 := by {
+      simp only [nsmul_eq_mul, Nat.cast_add, Nat.cast_one]
+      exact mul_ne_zero (Nat.cast_add_one_ne_zero t.2) hb}
+    sorry }
   rw [mul_assoc]
   apply mul_ne_zero
   · exact mod_cast h2
   apply mul_ne_zero
   · exact mod_cast h1
-  exact mod_cast h3
-}
+  exact mod_cast h3}
 
 include α β σ hq0 hq hdec hirr htriv K σ α' β' γ' habc hkneq0 in
-lemma hM_neq0 : M K α' β' γ' q t u k hint ≠ 0 := by {
-    simp (config := { unfoldPartialApp := true }) only [M]
-    rw [Ne, funext_iff]
-    simp only [ne_eq] at hkneq0
-    intros H
-    specialize H u
-    simp only [zpow_natCast, zsmul_eq_mul] at H
-    simp only [RingOfIntegers.restrict,
-      zpow_natCast, zsmul_eq_mul, RingOfIntegers.map_mk] at H
-    rw [funext_iff] at H
-    specialize H t
-    --simp only [zero_apply] at H
-    injection H with H
-    have : ↑k * η K α' β' γ' q t u ≠ 0 := by {
-      apply mul_ne_zero_iff.2
-      constructor
-      simp only [ne_eq, Int.cast_eq_zero]
-      exact hkneq0
-      exact eta_ne_zero α β hirr htriv K σ α' β' γ' habc q t u}
-    apply this H}
+lemma hM_neq0 : M K α' β' γ' q t u k hint ≠ 0 := by
+  simp (config := { unfoldPartialApp := true }) only [M]
+  rw [Ne, funext_iff]
+  simp only [ne_eq] at hkneq0
+  intros H
+  specialize H u
+  simp only [zpow_natCast, zsmul_eq_mul] at H
+  simp only [RingOfIntegers.restrict,
+    zpow_natCast, zsmul_eq_mul, RingOfIntegers.map_mk] at H
+  rw [funext_iff] at H
+  specialize H t
+  injection H with H
+  have : ↑k * η K α' β' γ' q t u ≠ 0 := by
+    apply mul_ne_zero_iff.2
+    constructor
+    simp only [ne_eq, Int.cast_eq_zero]
+    exact hkneq0
+    exact eta_ne_zero α β hirr htriv K σ α' β' γ' habc q t u
+  apply this H
 
 def c₂ : ℝ := (c₁ K α' β' γ') ^(1 + 2*(m K) * Nat.sqrt (2*(m K)))
 
@@ -321,15 +322,6 @@ def c₃ := max 1 (|↑(c₁ K α' β' γ')| * house (( α' ^ (1 + (t.1 : ℕ)
 
 #check house_mul_le
 #check house_intCast
-
-include hq0 hq in
-lemma one_le_n : 1 ≤ n K q := by {
-  simp only [n]
-  rw [Nat.one_le_div_iff]
-  · apply Nat.le_of_dvd
-    · exact Nat.pow_pos hq0
-    · exact hq
-  · exact Nat.zero_lt_succ (Nat.mul 2 (2 * h K + 1) + 1)}
 
 include hq0 hq in
 theorem hMkl : ∀ (k_1 : Fin (m K) × Fin (n K q)) (l : Fin q × Fin q),
