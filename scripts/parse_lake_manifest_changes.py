@@ -112,18 +112,15 @@ def format_changes(changes):
 def main():
     old_manifest = get_json_at_rev('HEAD~1', 'lake-manifest.json')
     if not old_manifest:
-        print("Failed to read old lake-manifest.json at HEAD~1")
-        return 1
+        raise SystemExit("Failed to read old lake-manifest.json at HEAD~1")
 
     new_manifest = get_json_at_rev('HEAD', 'lake-manifest.json')
     if not new_manifest:
-        print("Failed to read new lake-manifest.json at HEAD")
-        return 1
+        raise SystemExit("Failed to read new lake-manifest.json at HEAD")
 
     changes = find_package_changes(old_manifest, new_manifest)
     message = format_changes(changes)
     print(message)
-    return 0
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()
