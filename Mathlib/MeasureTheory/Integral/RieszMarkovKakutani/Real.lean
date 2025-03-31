@@ -70,8 +70,7 @@ lemma le_rieszMeasure_tsupport_subset {f : C_c(X, ℝ)} (hf : ∀ (x : X), 0 ≤
   apply monotone_of_nonneg hΛ
   intro x
   by_cases hx : x ∈ tsupport f
-  · rw [coe_toRealLinearMap, toReal_apply]
-    refine le_trans (hf x).2 (hg.1 x (mem_of_subset_of_mem (fun ⦃a⦄ a ↦ a) hx))
+  · simpa using le_trans (hf x).2 (hg.1 x hx)
   · simp [image_eq_zero_of_nmem_tsupport hx]
 
 /-- If `f` assumes the value `1` on a compact set `K` then `rieszMeasure K ≤ Λ f`.-/
@@ -86,7 +85,7 @@ lemma rieszMeasure_le_of_eq_one {f : C_c(X, ℝ)} (hf : ∀ x, 0 ≤ f x) {K : S
   rw [Set.mem_image]
   use f.nnrealPart
   simp_rw [Set.mem_setOf_eq, nnrealPart_apply, Real.one_le_toNNReal]
-  refine ⟨(fun x hx => Eq.ge (hfK x hx)), ?_⟩
+  refine ⟨(fun x hx ↦ Eq.ge (hfK x hx)), ?_⟩
   apply NNReal.eq
   rw [toNNRealLinear_apply, show f.nnrealPart.toReal = f by ext z; simp [hf z], hp]
 
@@ -98,18 +97,17 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     univ.PairwiseDisjoint E ∧ (∀ n : Fin N, ∀ x ∈ E n, a + ε * n < f x ∧ f x ≤ a + ε * (n + 1)) ∧
     ∀ n : Fin N, MeasurableSet (E n) := by
   let b := a + N * ε
-  let y : Fin N → ℝ := fun n => a + ε * (n + 1)
+  let y : Fin N → ℝ := fun n ↦ a + ε * (n + 1)
   -- By definition `y n` and `y m` are separated by at least `ε`.
   have hy {n m : Fin N} (h : n < m) : y n + ε ≤ y m := calc
     _ ≤ a + ε * m + ε := by
       exact add_le_add_three (by rfl) ((mul_le_mul_iff_of_pos_left hε).mpr (by norm_cast)) (by rfl)
     _ = _ := by dsimp [y]; rw [mul_add, mul_one, add_assoc]
   -- Define `E n` as the inverse image of the interval `(y n - ε, y n]`.
-  let E : Fin N → Set X := fun n => (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
+  let E : Fin N → Set X := fun n ↦ (f ⁻¹' Ioc (y n - ε) (y n)) ∩ (tsupport f)
   use E
   -- Upper and lower bound on `f x` follow from the definition of `E n` .
-  have bdd (n : Fin N) : ∀ x ∈ E n, a + ε * n < f x ∧ f x ≤ a + ε * (n + 1) := by
-    intro x hx
+  have bdd (n : Fin N) x (hx : x ∈ E n) : a + ε * n < f x ∧ f x ≤ a + ε * (n + 1) := by
     simp only [mem_inter_iff, mem_preimage, mem_Ioc, E, y] at hx
     constructor <;> linarith
   -- The sets `E n` are pairwise disjoint.
@@ -121,9 +119,9 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     rw [mem_setOf_eq, and_assoc] at hx
     simp_rw [mem_setOf_eq, not_and_or, not_lt, not_le, or_assoc]
     rcases (by omega : m < n ∨ n < m) with hc | hc
-    · left;
-      exact le_trans  hx.2.1 (le_tsub_of_add_le_right (hy hc))
-    · right; left;
+    · left
+      exact le_trans hx.2.1 (le_tsub_of_add_le_right (hy hc))
+    · right; left
       exact lt_of_le_of_lt (le_tsub_of_add_le_right (hy hc)) hx.1
   -- The sets `E n` are a partition of the support of `f`.
   have partition_aux: range f ⊆ ⋃ n, Ioc (y n - ε) (y n) := by
@@ -133,14 +131,8 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     rw [RMK_iUnion_Ioc a hε, mem_Ioc]
     exact ⟨(hf hz).1, le_of_lt (hf hz).2⟩
   have partition : tsupport f = ⋃ j, E j := by
-    apply subset_antisymm
-    · intro x hx
-      simp_rw [E, mem_iUnion, mem_inter_iff, mem_preimage, exists_and_right]
-      obtain ⟨j, hj⟩ := mem_iUnion.mp <| mem_of_subset_of_mem partition_aux (mem_range_self x)
-      constructor
-      · use j
-      · exact hx
-    · exact iUnion_subset (show ∀ n, E n ⊆ tsupport f by simp [inter_subset_right, E])
+    simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
+    exact fun x hx ↦ partition_aux (mem_range_self x)
   exact ⟨partition, disjoint, fun n x a ↦ bdd n x a,
     fun _ ↦ (f.1.measurable measurableSet_Ioc).inter measurableSet_closure⟩
 
@@ -176,13 +168,11 @@ private lemma open_approx' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c
   have h' (n : Fin N) : ν.outerMeasure (E n) ≠ ⊤ := by
     rw [← Content.measure_apply ν (hν' n)]
     exact hν n
-  let V (n : Fin N) := Classical.choose <|
+  use fun n ↦ Classical.choose <|
     open_approx f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
-  use V
   intro n
-  let hV := Classical.choose_spec <|
+  exact Classical.choose_spec <|
     open_approx f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
-  exact ⟨hV.1, hV.2.1, hV.2.2⟩
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
 private lemma exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
@@ -200,7 +190,7 @@ private lemma exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ)
 integral of `f` with respect to the `rieszMeasure` associated to `L`. -/
 private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x ∂(rieszMeasure hΛ) := by
   by_cases hX : IsEmpty X
-  -- The case `IsEmpty X` is elementry.
+  -- The case `IsEmpty X` is elementary.
   · have : Λ f = 0 := by rw [show f = 0 by ext x; refine isEmptyElim x, LinearMap.map_zero Λ]
     rw [integral_of_isEmpty, this]
   -- Now assuming `Nonempty X`
@@ -227,7 +217,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x �
     let y : Fin N → ℝ := fun n ↦ a + ε' * (n + 1)
     -- The measure of each `E n` is finite.
     have hE' (n : Fin N) : μ (E n) ≠ ⊤ := by
-      have h : E n ⊆ tsupport f := by rw [hE.1]; exact subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a
+      have h : E n ⊆ tsupport f := by rw [hE.1]; exact subset_iUnion _ _
       refine lt_top_iff_ne_top.mp ?_
       apply lt_of_le_of_lt <| measure_mono h
       dsimp [μ]
@@ -242,7 +232,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x �
       have : tsupport f ⊆ ⋃ n, (V n).carrier := calc
         _ = ⋃ j, E j := hE.1
         _ ⊆ _ := by gcongr with n; exact (hV n).1
-      obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n => (V n).2) f.2 this
+      obtain ⟨g', hg⟩ := exists_continuous_sum_one_of_isOpen_isCompact (fun n ↦ (V n).2) f.2 this
       exact ⟨fun n ↦ ⟨g' n, hg.2.2.2 n⟩, hg⟩
     -- The proof is completed by a chain of inequalities.
     calc Λ f
@@ -328,7 +318,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ (x : X), f x �
           _ ≤ ∑ n, ∫ (x : X) in E n, f x ∂μ := Finset.sum_le_sum fun i a ↦ h i
           _ = ∫ x in (⋃ n, E n), f x ∂μ := by
             apply Eq.symm
-            apply integral_fintype_iUnion hE.2.2.2 (fun ⦃i j⦄ ↦ hE.2.1 trivial trivial)
+            apply integral_fintype_iUnion hE.2.2.2 (fun i j ↦ hE.2.1 trivial trivial)
             refine fun _ ↦ Integrable.integrableOn ?_
             dsimp [μ, rieszMeasure]
             exact Continuous.integrable_of_hasCompactSupport f.1.2 f.2
