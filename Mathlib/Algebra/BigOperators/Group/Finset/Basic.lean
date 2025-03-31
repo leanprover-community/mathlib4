@@ -470,7 +470,7 @@ theorem prod_subtype {p : α → Prop} {F : Fintype (Subtype p)} (s : Finset α)
 
 @[to_additive]
 theorem prod_set_coe (s : Set α) [Fintype s] : (∏ i : s, f i) = ∏ i ∈ s.toFinset, f i :=
-(Finset.prod_subtype s.toFinset (fun _ ↦ Set.mem_toFinset) f).symm
+  (Finset.prod_subtype s.toFinset (fun _ ↦ Set.mem_toFinset) f).symm
 
 /-- The product of a function `g` defined only on a set `s` is equal to
 the product of a function `f` defined everywhere,

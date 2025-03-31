@@ -65,8 +65,7 @@ lemma norm_apply_le_of_nonneg (f : B₁ →ₚ[ℂ] B₂) (x : B₁) (hx : 0 ≤
   rw [mul_comm, ← h, ← norm_smul ‖x‖ (f 1)]
   clear h
   refine CStarAlgebra.norm_le_norm_of_nonneg_of_le (f.map_nonneg hx) ?_
-  change f x ≤ (‖x‖ : ℂ) • f 1
-  rw [← LinearMapClass.map_smul f]
+  rw [← Complex.coe_smul, ← LinearMapClass.map_smul f]
   gcongr
   rw [← Algebra.algebraMap_eq_smul_one]
   exact IsSelfAdjoint.le_algebraMap_norm_self <| .of_nonneg hx
@@ -112,7 +111,7 @@ lemma exists_norm_apply_le (f : A₁ →ₚ[ℂ] A₂) : ∃ C : ℝ≥0, ∀ a,
     simp [norm_smul, hx_norm, ← inv_pow, this]
   -- There is some `n` such that `‖f (∑' m, 2 ^ (-m) • x m)‖ < 2 ^ n`
   obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖f (∑' (n : ℕ), (2 : ℝ) ^ (-(n : ℤ)) • x n)‖ < (2 : ℝ) ^ n :=
-    tendsto_pow_atTop_atTop_of_one_lt (show (1 : ℝ) < 2 by norm_num) |>.eventually_gt_atTop _
+    tendsto_pow_atTop_atTop_of_one_lt one_lt_two |>.eventually_gt_atTop _
       |>.exists
   -- But `2 ^ n ≤ ‖f (2 ^ (-n) • x n)‖ ≤ ‖f (∑' m, 2 ^ (-m) • x m)‖`, which is a contradiction.
   apply hn.not_le

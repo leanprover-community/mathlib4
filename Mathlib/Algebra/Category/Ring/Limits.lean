@@ -96,7 +96,7 @@ def limitConeIsLimit : IsLimit (limitCone F) := by
     rfl
   · intro x y
     simp only [Functor.comp_obj, Equiv.toFun_as_coe, Functor.mapCone_pt, Functor.mapCone_π_app,
-          forget_map, map_mul]
+      forget_map, map_mul]
     rw [← equivShrink_mul]
     rfl
   · simp only [Functor.mapCone_π_app, forget_map, map_zero]

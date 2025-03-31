@@ -9,7 +9,7 @@ import Mathlib.Algebra.Exact
 
 # The snake lemma in terms of modules
 
-The snake lemma is proven in `Algebra/Homology/ShortComplex/SnakeLemma.lean` for all abelian
+The snake lemma is proven in `Mathlib/Algebra/Homology/ShortComplex/SnakeLemma.lean` for all abelian
 categories, but for definitional equality and universe issues we reprove them here for modules.
 
 ## Main results

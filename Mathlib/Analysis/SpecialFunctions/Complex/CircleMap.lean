@@ -96,8 +96,8 @@ lemma circleMap_neg_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (-π / 2) = c
     sub_eq_add_neg]
 
 /-- `circleMap` is `2π`-periodic. -/
-theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ =>
-  by simp [circleMap, add_mul, exp_periodic _]
+theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
+  simp [circleMap, add_mul, exp_periodic _]
 
 theorem Set.Countable.preimage_circleMap {s : Set ℂ} (hs : s.Countable) (c : ℂ) {R : ℝ}
     (hR : R ≠ 0) : (circleMap c R ⁻¹' s).Countable :=

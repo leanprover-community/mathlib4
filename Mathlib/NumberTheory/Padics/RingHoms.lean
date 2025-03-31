@@ -189,8 +189,8 @@ theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal 
 
 @[deprecated (since := "2024-12-17")] alias exists_unique_mem_range := existsUnique_mem_range
 
-/-- `zmod_repr x` is the unique natural number smaller than `p`
-satisfying `‖(x - zmod_repr x : ℤ_[p])‖ < 1`.
+/-- `zmodRepr x` is the unique natural number smaller than `p`
+satisfying `‖(x - zmodRepr x : ℤ_[p])‖ < 1`.
 -/
 def zmodRepr : ℕ :=
   Classical.choose (existsUnique_mem_range x).exists

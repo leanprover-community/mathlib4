@@ -492,12 +492,12 @@ multilinear map. -/
 nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
   toFun v := det (e.toMatrix v)
   map_update_add' := by
-    rename_i hι _
+    let hι := ‹DecidableEq ι›
     intro inst v i x y
     cases Subsingleton.elim inst hι
     simp only [e.toMatrix_update, LinearEquiv.map_add, Finsupp.coe_add, det_updateCol_add]
   map_update_smul' := by
-    rename_i hι _
+    let hι := ‹DecidableEq ι›
     intro inst u i c x
     cases Subsingleton.elim inst hι
     simp only [e.toMatrix_update, Algebra.id.smul_eq_mul, LinearEquiv.map_smul]
