@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Andrew Yang
 -/
 import Mathlib.RingTheory.IntegralClosure.IntegralRestrict
-import Mathlib.Topology.Algebra.ClopenNhdofOne
-import Mathlib.Topology.Algebra.Category.ProfiniteGrp.Limits
-import Mathlib.CategoryTheory.CofilteredSystem
 
 /-!
 # Invariant Extensions of Rings
@@ -407,7 +404,8 @@ include G in
 For any domain `k` containing `B ⧸ Q`,
 any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`.
 
-This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the galois setting. -/
+This is basically the fact that `L/K` normal implies `κ(Q)/κ(P)` normal in the galois setting.
+-/
 lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
     (σ : k →ₐ[A ⧸ P] k) :
     ∃ τ : (B ⧸ Q) →ₐ[A ⧸ P] B ⧸ Q, ∀ x : B ⧸ Q,
@@ -444,7 +442,8 @@ lemma Ideal.Quotient.exists_algHom_fixedPoint_quotient_under
 include G in
 /--
 For any domain `k` containing `B ⧸ Q`,
-any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`. -/
+any endomorphism of `k` can be restricted to an endomorphism of `B ⧸ Q`.
+-/
 lemma Ideal.Quotient.exists_algEquiv_fixedPoint_quotient_under
     (σ : k ≃ₐ[A ⧸ P] k) :
     ∃ τ : (B ⧸ Q) ≃ₐ[A ⧸ P] B ⧸ Q, ∀ x : B ⧸ Q,
