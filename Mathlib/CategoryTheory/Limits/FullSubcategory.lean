@@ -18,7 +18,7 @@ More precisely, the inclusion creates such limits.
 
 noncomputable section
 
-universe w' w v u
+universe w' w v v₁ v₂ u u₁ u₂
 
 open CategoryTheory
 
@@ -54,11 +54,11 @@ theorem closedUnderColimitsOfShape_of_colimit [P.IsClosedUnderIsomorphisms]
   have : HasColimit F := ⟨_, hc⟩
   exact P.prop_of_iso ((colimit.isColimit _).coconePointUniqueUpToIso hc) (h hF)
 
-theorem ClosedUnderLimitsOfShape.limit (h : ClosedUnderLimitsOfShape J P) {F : J ⥤ C} [HasLimit F] :
-    (∀ j, P (F.obj j)) → P (limit F) :=
+protected lemma ClosedUnderLimitsOfShape.limit (h : ClosedUnderLimitsOfShape J P) {F : J ⥤ C}
+    [HasLimit F] : (∀ j, P (F.obj j)) → P (limit F) :=
   h (limit.isLimit _)
 
-theorem ClosedUnderColimitsOfShape.colimit (h : ClosedUnderColimitsOfShape J P) {F : J ⥤ C}
+protected lemma ClosedUnderColimitsOfShape.colimit (h : ClosedUnderColimitsOfShape J P) {F : J ⥤ C}
     [HasColimit F] : (∀ j, P (F.obj j)) → P (colimit F) :=
   h (colimit.isColimit _)
 
@@ -140,5 +140,43 @@ theorem hasColimitsOfShape_of_closedUnderColimits (h : ClosedUnderColimitsOfShap
   { has_colimit := fun F => hasColimit_of_closedUnderColimits h F }
 
 end
+
+variable {J : Type w} [Category.{w'} J]
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable (F : C ⥤ D)
+
+/-- The essential image of a functor is closed under the limits it preserves. -/
+protected lemma ClosedUnderLimitsOfShape.essImage [HasLimitsOfShape J C]
+    [PreservesLimitsOfShape J F] [F.Full] [F.Faithful] : ClosedUnderLimitsOfShape J F.essImage := by
+  rintro G c hc hG
+  choose Hobj e using hG
+  replace e i := (e i).some
+  have hF : F.FullyFaithful := .ofFullyFaithful _
+  let H : J ⥤ C := {
+    obj := Hobj
+    map {i j} f := hF.preimage <| (e i).hom ≫ G.map f ≫ (e j).inv
+    map_id i := F.map_injective <| by simp
+    map_comp {i j k} f g := F.map_injective <| by simp
+  }
+  exact ⟨Limits.limit H, ⟨IsLimit.conePointsIsoOfNatIso (s := F.mapCone <| limit.cone H)
+    (isLimitOfPreserves _ (limit.isLimit H)) hc <| NatIso.ofComponents e⟩⟩
+
+/-- The essential image of a functor is closed under the colimits it preserves. -/
+protected lemma ClosedUnderColimitsOfShape.essImage [HasColimitsOfShape J C]
+    [PreservesColimitsOfShape J F] [F.Full] [F.Faithful] :
+    ClosedUnderColimitsOfShape J F.essImage := by
+  rintro G c hc hG
+  choose Hobj e using hG
+  replace e i := (e i).some
+  have hF : F.FullyFaithful := .ofFullyFaithful _
+  let H : J ⥤ C := {
+    obj := Hobj
+    map {i j} f := hF.preimage <| (e i).hom ≫ G.map f ≫ (e j).inv
+    map_id i := F.map_injective <| by simp
+    map_comp {i j k} f g := F.map_injective <| by simp
+  }
+  exact ⟨Limits.colimit H, ⟨IsColimit.coconePointsIsoOfNatIso (s := F.mapCocone <| colimit.cocone H)
+    (isColimitOfPreserves _ (colimit.isColimit H)) hc <| NatIso.ofComponents e⟩⟩
 
 end CategoryTheory.Limits
