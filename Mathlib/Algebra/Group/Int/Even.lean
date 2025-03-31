@@ -22,13 +22,13 @@ namespace Int
 variable {m n : ℤ}
 
 @[simp] lemma emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
-  cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
+  rcases emod_two_eq_zero_or_one n with h | h <;> simp [h]
 
 @[simp] lemma one_emod_two : (1 : Int) % 2 = 1 := rfl
 
 -- `EuclideanDomain.mod_eq_zero` uses (2 ∣ n) as normal form
 @[local simp] lemma emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
-  cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
+  rcases emod_two_eq_zero_or_one n with h | h <;> simp [h]
 
 lemma even_iff : Even n ↔ n % 2 = 0 where
   mp := fun ⟨m, hm⟩ ↦ by simp [← Int.two_mul, hm]
@@ -49,8 +49,8 @@ instance : DecidablePred (IsSquare : ℤ → Prop) :=
 @[simp] lemma not_even_one : ¬Even (1 : ℤ) := by simp [even_iff]
 
 @[parity_simps] lemma even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
-  cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
-  cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
+  rcases emod_two_eq_zero_or_one m with h₁ | h₁ <;>
+  rcases emod_two_eq_zero_or_one n with h₂ | h₂ <;>
   simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
 
 lemma two_not_dvd_two_mul_add_one (n : ℤ) : ¬2 ∣ 2 * n + 1 := by simp [add_emod]
@@ -63,8 +63,8 @@ lemma even_sub : Even (m - n) ↔ (Even m ↔ Even n) := by simp [sub_eq_add_neg
 @[parity_simps] lemma even_sub_one : Even (n - 1) ↔ ¬Even n := by simp [even_sub]
 
 @[parity_simps] lemma even_mul : Even (m * n) ↔ Even m ∨ Even n := by
-  cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
-  cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
+  rcases emod_two_eq_zero_or_one m with h₁ | h₁ <;>
+  rcases emod_two_eq_zero_or_one n with h₂ | h₂ <;>
   simp [even_iff, h₁, h₂, Int.mul_emod]
 
 @[parity_simps] lemma even_pow {n : ℕ} : Even (m ^ n) ↔ Even m ∧ n ≠ 0 := by

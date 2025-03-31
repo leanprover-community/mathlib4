@@ -137,14 +137,8 @@ instance instCommRing : CommRing ℤ_[p] := (by infer_instance : CommRing (subri
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : ℤ_[p]) : ℚ_[p]) = n := rfl
 
-@[deprecated (since := "2024-04-17")]
-alias coe_nat_cast := coe_natCast
-
 @[simp, norm_cast]
 theorem coe_intCast (z : ℤ) : ((z : ℤ_[p]) : ℚ_[p]) = z := rfl
-
-@[deprecated (since := "2024-04-17")]
-alias coe_int_cast := coe_intCast
 
 /-- The coercion from `ℤ_[p]` to `ℚ_[p]` as a ring homomorphism. -/
 def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
@@ -165,8 +159,6 @@ instance : CharZero ℤ_[p] where
 
 @[norm_cast]
 theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by simp
-
-@[deprecated (since := "2024-04-05")] alias coe_int_eq := intCast_eq
 
 /-- A sequence of integers that is Cauchy with respect to the `p`-adic norm converges to a `p`-adic
 integer. -/
@@ -197,17 +189,13 @@ instance completeSpace : CompleteSpace ℤ_[p] :=
 
 instance : Norm ℤ_[p] := ⟨fun z => ‖(z : ℚ_[p])‖⟩
 
-variable {p}
-
+variable {p} in
 theorem norm_def {z : ℤ_[p]} : ‖z‖ = ‖(z : ℚ_[p])‖ := rfl
 
-variable (p)
-
-instance : NormedCommRing ℤ_[p] :=
-  { PadicInt.instCommRing with
-    dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ => rfl
-    norm_mul := by simp [norm_def]
-    norm := norm }
+instance : NormedCommRing ℤ_[p] where
+  __ := instCommRing
+  dist_eq := fun ⟨_, _⟩ ⟨_, _⟩ ↦ rfl
+  norm_mul_le := by simp [norm_def]
 
 instance : NormOneClass ℤ_[p] :=
   ⟨norm_def.trans norm_one⟩
@@ -254,9 +242,6 @@ theorem norm_eq_of_norm_add_lt_left {z1 z2 : ℤ_[p]} (h : ‖z1 + z2‖ < ‖z1
 theorem padic_norm_e_of_padicInt (z : ℤ_[p]) : ‖(z : ℚ_[p])‖ = ‖z‖ := by simp [norm_def]
 
 theorem norm_intCast_eq_padic_norm (z : ℤ) : ‖(z : ℤ_[p])‖ = ‖(z : ℚ_[p])‖ := by simp [norm_def]
-
-@[deprecated (since := "2024-04-17")]
-alias norm_int_cast_eq_padic_norm := norm_intCast_eq_padic_norm
 
 @[simp]
 theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ ⟨q, hq⟩ = ‖q‖ := rfl
@@ -353,9 +338,6 @@ theorem valuation_p_pow_mul (n : ℕ) (c : ℤ_[p]) (hc : c ≠ 0) :
 section Units
 
 /-! ### Units of `ℤ_[p]` -/
-
--- Porting note: `reducible` cannot be local and making it global breaks a lot of things
--- attribute [local reducible] PadicInt
 
 theorem mul_inv : ∀ {z : ℤ_[p]}, ‖z‖ = 1 → z * z.inv = 1
   | ⟨k, _⟩, h => by

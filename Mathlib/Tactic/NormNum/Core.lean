@@ -148,10 +148,10 @@ def NormNums.eraseCore (d : NormNums) (declName : Name) : NormNums :=
  { d with erased := d.erased.insert declName }
 
 /--
-  Erase a name marked as a `norm_num` attribute.
+Erase a name marked as a `norm_num` attribute.
 
-  Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
-  found somewhere in the state's tree, and is not erased.
+Check that it does in fact have the `norm_num` attribute by making sure it names a `NormNumExt`
+found somewhere in the state's tree, and is not erased.
 -/
 def NormNums.erase {m : Type → Type} [Monad m] [MonadError m] (d : NormNums) (declName : Name) :
     m NormNums := do
@@ -240,7 +240,7 @@ def normNumAt (g : MVarId) (ctx : Simp.Context) (fvarIdsToSimp : Array FVarId)
     let r ← deriveSimp ctx useSimp type
     match r.proof? with
     | some _ =>
-      let some (value, type) ← applySimpResultToProp g (mkFVar fvarId) type r
+      let some (value, type) ← applySimpResult g (mkFVar fvarId) type r
         | return none
       toAssert := toAssert.push { userName := localDecl.userName, type, value }
     | none =>

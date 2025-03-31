@@ -77,7 +77,6 @@ instance : SubfieldClass (IntermediateField K L) L where
   one_mem {s} := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
---@[simp] Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): simp can prove it
 theorem mem_carrier {s : IntermediateField K L} {x : L} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
@@ -92,6 +91,14 @@ theorem coe_toSubalgebra : (S.toSubalgebra : Set L) = S :=
 
 @[simp]
 theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
+  rfl
+
+@[simp]
+theorem coe_type_toSubalgebra : (S.toSubalgebra : Type _) = S :=
+  rfl
+
+@[simp]
+theorem coe_type_toSubfield : (S.toSubfield : Type _) = S :=
   rfl
 
 @[simp]
@@ -230,8 +237,8 @@ end InheritedLemmas
 
 theorem natCast_mem (n : ℕ) : (n : L) ∈ S := by simpa using intCast_mem S n
 
-@[deprecated _root_.natCast_mem (since := "2024-04-05")] alias coe_nat_mem := natCast_mem
-@[deprecated _root_.intCast_mem (since := "2024-04-05")] alias coe_int_mem := intCast_mem
+instance instSMulMemClass : SMulMemClass (IntermediateField K L) K L where
+  smul_mem := fun _ _ hx ↦ IntermediateField.smul_mem _ hx
 
 end IntermediateField
 
@@ -460,16 +467,10 @@ between `E` and `E.map e` -/
 def intermediateFieldMap (e : L ≃ₐ[K] L') (E : IntermediateField K L) : E ≃ₐ[K] E.map e.toAlgHom :=
   e.subalgebraMap E.toSubalgebra
 
-/- We manually add these two simp lemmas because `@[simps]` before `intermediate_field_map`
-  led to a timeout. -/
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem intermediateFieldMap_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L) (a : E) :
     ↑(intermediateFieldMap e E a) = e a :=
   rfl
 
--- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
-@[simp, nolint simpNF]
 theorem intermediateFieldMap_symm_apply_coe (e : L ≃ₐ[K] L') (E : IntermediateField K L)
     (a : E.map e.toAlgHom) : ↑((intermediateFieldMap e E).symm a) = e.symm a :=
   rfl
@@ -606,8 +607,7 @@ section Tower
 def lift {F : IntermediateField K L} (E : IntermediateField K F) : IntermediateField K L :=
   E.map (val F)
 
--- Porting note: change from `HasLiftT` to `CoeOut`
-instance hasLift {F : IntermediateField K L} :
+instance {F : IntermediateField K L} :
     CoeOut (IntermediateField K F) (IntermediateField K L) :=
   ⟨lift⟩
 
@@ -622,7 +622,7 @@ theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F)
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
 
-/--The algEquiv between an intermediate field and its lift-/
+/-- The algEquiv between an intermediate field and its lift -/
 def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
   toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
   invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩

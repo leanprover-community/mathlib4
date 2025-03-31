@@ -296,8 +296,7 @@ theorem update_self : f.update a (f a) = f := by
 theorem zero_update : update 0 a b = single a b := by
   classical
     ext
-    rw [single_eq_update]
-    rfl
+    rw [single_eq_update, coe_update, coe_zero]
 
 theorem support_update [DecidableEq α] [DecidableEq M] :
     support (f.update a b) = if b = 0 then f.support.erase a else insert a f.support := by
@@ -387,8 +386,7 @@ theorem erase_apply [DecidableEq α] {a a' : α} {f : α →₀ M} :
 @[simp]
 theorem erase_single {a : α} {b : M} : erase a (single a b) = 0 := by
   ext s; by_cases hs : s = a
-  · rw [hs, erase_same]
-    rfl
+  · rw [hs, erase_same, coe_zero, Pi.zero_apply]
   · rw [erase_ne hs]
     exact single_eq_of_ne (Ne.symm hs)
 
@@ -403,9 +401,8 @@ theorem erase_of_not_mem_support {f : α →₀ M} {a} (haf : a ∉ f.support) :
   · rwa [hab, erase_same, eq_comm, ← not_mem_support_iff]
   · rw [erase_ne hab]
 
-@[simp, nolint simpNF] -- Porting note: simpNF linter claims simp can prove this, it can not
 theorem erase_zero (a : α) : erase a (0 : α →₀ M) = 0 := by
-  classical rw [← support_eq_empty, support_erase, support_zero, erase_empty]
+  simp
 
 theorem erase_eq_update_zero (f : α →₀ M) (a : α) : f.erase a = update f a 0 :=
   letI := Classical.decEq α

@@ -68,7 +68,6 @@ variable {L : GrothendieckTopology E}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.
 -/
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 class Functor.IsCocontinuous : Prop where
   cover_lift : ∀ {U : C} {S : Sieve (G.obj U)} (_ : S ∈ K (G.obj U)), S.functorPullback G ∈ J U
 
@@ -199,8 +198,7 @@ lemma hom_ext {W : A} {f g : W ⟶ R.obj (op X)}
 
 variable (S)
 
-/-- Auxiliary definition for `ran_isSheaf_of_isCocontinuous`: if `G : C ⥤ D` is a
-cocontinuous functor,   -/
+/-- Auxiliary definition for `ran_isSheaf_of_isCocontinuous` -/
 def isLimitMultifork : IsLimit (S.multifork R) :=
   Multifork.IsLimit.mk _ (lift hF hR) (fac hF hR)
     (fun s _ hm ↦ hom_ext K hF hR (fun i ↦ (hm i).trans (fac hF hR s i).symm))
@@ -212,11 +210,9 @@ variable [∀ (F : Cᵒᵖ ⥤ A), G.op.HasPointwiseRightKanExtension F]
 
 /-- If `G` is cocontinuous, then `G.op.ran` pushes sheaves to sheaves.
 
-This is SGA 4 III 2.2. An alternative reference is
-https://stacks.math.columbia.edu/tag/00XK (where results
-are obtained under the additional assumption that
-`C` and `D` have pullbacks).
--/
+This is SGA 4 III 2.2. -/
+@[stacks 00XK "Alternative reference. There, results are obtained under the additional assumption
+that `C` and `D` have pullbacks."]
 theorem ran_isSheaf_of_isCocontinuous (ℱ : Sheaf J A) :
     Presheaf.IsSheaf K (G.op.ran.obj ℱ.val) := by
   rw [Presheaf.isSheaf_iff_multifork]

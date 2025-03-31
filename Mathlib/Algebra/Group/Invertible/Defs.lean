@@ -90,7 +90,7 @@ class Invertible [Mul α] [One α] (a : α) : Type u where
 
 /-- The inverse of an `Invertible` element -/
 -- This notation has the same precedence as `Inv.inv`.
-prefix:max "⅟" => Invertible.invOf
+prefix:max "⅟ " => Invertible.invOf
 
 @[simp]
 theorem invOf_mul_self' [Mul α] [One α] (a : α) {_ : Invertible a} : ⅟ a * a = 1 :=

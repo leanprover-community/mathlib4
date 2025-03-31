@@ -32,7 +32,7 @@ namespace List
 See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
 as sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
 for sets, multisets and finite sets respectively.
- -/
+-/
 def Ico (n m : ℕ) : List ℕ :=
   range' n (m - n)
 
@@ -56,12 +56,7 @@ theorem nodup (n m : ℕ) : Nodup (Ico n m) := by
 @[simp]
 theorem mem {n m l : ℕ} : l ∈ Ico n m ↔ n ≤ l ∧ l < m := by
   suffices n ≤ l ∧ l < n + (m - n) ↔ n ≤ l ∧ l < m by simp [Ico, this]
-  rcases le_total n m with hnm | hmn
-  · rw [Nat.add_sub_cancel' hnm]
-  · rw [Nat.sub_eq_zero_iff_le.mpr hmn, Nat.add_zero]
-    exact
-      and_congr_right fun hnl =>
-        Iff.intro (fun hln => (not_le_of_gt hln hnl).elim) fun hlm => lt_of_lt_of_le hlm hmn
+  omega
 
 theorem eq_nil_of_le {n m : ℕ} (h : m ≤ n) : Ico n m = [] := by
   simp [Ico, Nat.sub_eq_zero_iff_le.mpr h]
@@ -71,7 +66,7 @@ theorem map_add (n m k : ℕ) : (Ico n m).map (k + ·) = Ico (n + k) (m + k) := 
 
 theorem map_sub (n m k : ℕ) (h₁ : k ≤ n) :
     ((Ico n m).map fun x => x - k) = Ico (n - k) (m - k) := by
-  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' _ _ _ h₁]
+  rw [Ico, Ico, Nat.sub_sub_sub_cancel_right h₁, map_sub_range' h₁]
 
 @[simp]
 theorem self_empty {n : ℕ} : Ico n n = [] :=
@@ -84,9 +79,9 @@ theorem eq_empty_iff {n m : ℕ} : Ico n m = [] ↔ m ≤ n :=
 theorem append_consecutive {n m l : ℕ} (hnm : n ≤ m) (hml : m ≤ l) :
     Ico n m ++ Ico m l = Ico n l := by
   dsimp only [Ico]
-  convert range'_append n (m-n) (l-m) 1 using 2
+  convert range'_append using 2
   · rw [Nat.one_mul, Nat.add_sub_cancel' hnm]
-  · rw [Nat.sub_add_sub_cancel hml hnm]
+  · omega
 
 @[simp]
 theorem inter_consecutive (n m l : ℕ) : Ico n m ∩ Ico m l = [] := by

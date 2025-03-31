@@ -134,12 +134,10 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
     dsimp
   mul_assoc := by
     ext : 1
-    set_option tactic.skipAssignedInstances false in
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
     dsimp only [compr₂_apply, TensorProduct.mk_apply]
-    rw [compr₂_apply, compr₂_apply]
     rw [hom_comp, LinearMap.comp_apply, hom_comp, LinearMap.comp_apply, hom_comp,
         LinearMap.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
@@ -161,7 +159,6 @@ end MonModuleEquivalenceAlgebra
 
 open MonModuleEquivalenceAlgebra
 
-set_option maxHeartbeats 400000 in
 /-- The category of internal monoid objects in `ModuleCat R`
 is equivalent to the category of "native" bundled `R`-algebras.
 -/

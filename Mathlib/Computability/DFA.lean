@@ -5,8 +5,7 @@ Authors: Fox Thomson, Chris Wong
 -/
 import Mathlib.Computability.Language
 import Mathlib.Data.Countable.Small
-import Mathlib.Data.Fintype.Card
-import Mathlib.Data.List.Indexes
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Tactic.NormNum
 
 /-!
@@ -85,7 +84,7 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 
 theorem evalFrom_of_append (start : σ) (x y : List α) :
     M.evalFrom start (x ++ y) = M.evalFrom (M.evalFrom start x) y :=
-  x.foldl_append _ _ y
+  List.foldl_append
 
 /--
 `M.acceptsFrom s` is the language of `x` such that `M.evalFrom s x` is an accept state.
@@ -141,7 +140,7 @@ theorem evalFrom_of_pow {x y : List α} {s : σ} (hx : M.evalFrom s x = s)
   rcases hy with ⟨S, rfl, hS⟩
   induction' S with a S ih
   · rfl
-  · have ha := hS a (List.mem_cons_self _ _)
+  · have ha := hS a List.mem_cons_self
     rw [Set.mem_singleton_iff] at ha
     rw [List.flatten, evalFrom_of_append, ha, hx]
     apply ih
@@ -185,9 +184,9 @@ theorem comap_id : M.comap id = M := rfl
 @[simp]
 theorem evalFrom_comap (f : α' → α) (s : σ) (x : List α') :
     (M.comap f).evalFrom s x = M.evalFrom s (x.map f) := by
-  induction x using List.list_reverse_induction with
-  | base => simp
-  | ind x a ih => simp [ih]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih]
 
 @[simp]
 theorem eval_comap (f : α' → α) (x : List α') : (M.comap f).eval x = M.eval (x.map f) := by
@@ -226,9 +225,9 @@ theorem symm_reindex (g : σ ≃ σ') : (reindex (α := α) g).symm = reindex g.
 @[simp]
 theorem evalFrom_reindex (g : σ ≃ σ') (s : σ') (x : List α) :
     (reindex g M).evalFrom s x = g (M.evalFrom (g.symm s) x) := by
-  induction x using List.list_reverse_induction with
-  | base => simp
-  | ind x a ih => simp [ih]
+  induction x using List.reverseRecOn with
+  | nil => simp
+  | append_singleton x a ih => simp [ih]
 
 @[simp]
 theorem eval_reindex (g : σ ≃ σ') (x : List α) : (reindex g M).eval x = g (M.eval x) := by

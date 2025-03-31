@@ -3,10 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Additive energy
@@ -58,7 +58,7 @@ def mulEnergy (s t : Finset α) : ℕ :=
 scoped[Combinatorics.Additive] notation3:max "Eₘ[" s ", " t "]" => Finset.mulEnergy s t
 
 /-- The additive energy of two finsets `s` and `t` in a group is the number of quadruples
-`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.-/
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`. -/
 scoped[Combinatorics.Additive] notation3:max "E[" s ", " t "]" => Finset.addEnergy s t
 
 /-- The multiplicative energy of a finset `s` in a group is the number of quadruples
@@ -84,11 +84,8 @@ lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁
 @[to_additive] lemma le_mulEnergy : s.card * t.card ≤ Eₘ[s, t] := by
   rw [← card_product]
   refine
-    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by
-    -- Porting note: changed this from a `simp` proof without `only` because of a timeout
-      simp only [← and_imp, mem_product, Prod.forall, mem_filter, and_self, and_true, imp_self,
-        implies_true]) fun a _ b _ => ?_
-  simp only [Prod.mk.inj_iff, and_self_iff, and_imp]
+    card_le_card_of_injOn (@fun x => ((x.1, x.1), x.2, x.2)) (by simp) fun a _ b _ => ?_
+  simp only [Prod.mk_inj, and_self_iff, and_imp]
   exact Prod.ext
 
 @[to_additive] lemma mulEnergy_pos (hs : s.Nonempty) (ht : t.Nonempty) : 0 < Eₘ[s, t] :=

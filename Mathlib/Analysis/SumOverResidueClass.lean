@@ -3,7 +3,7 @@ Copyright (c) 2024 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.Topology.Instances.ENNReal.Lemmas
 
@@ -28,7 +28,7 @@ open Set in
 /-- A sequence `f` with values in an additive topological group `R` is summable on the
 residue class of `k` mod `m` if and only if `f (m*n + k)` is summable. -/
 lemma summable_indicator_mod_iff_summable {R : Type*} [AddCommGroup R] [TopologicalSpace R]
-    [TopologicalAddGroup R] (m : ℕ) [hm : NeZero m] (k : ℕ) (f : ℕ → R) :
+    [IsTopologicalAddGroup R] (m : ℕ) [hm : NeZero m] (k : ℕ) (f : ℕ → R) :
     Summable ({n : ℕ | (n : ZMod m) = k}.indicator f) ↔ Summable fun n ↦ f (m * n + k) := by
   trans Summable ({n : ℕ | (n : ZMod m) = k ∧ k ≤ n}.indicator f)
   · rw [← (finite_lt_nat k).summable_compl_iff (f := {n : ℕ | (n : ZMod m) = k}.indicator f)]

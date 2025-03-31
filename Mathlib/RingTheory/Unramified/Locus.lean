@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.RingTheory.Spectrum.Prime.Topology
 import Mathlib.RingTheory.Etale.Kaehler
 import Mathlib.RingTheory.Support
 
@@ -26,10 +26,20 @@ variable (R A : Type u) [CommRing R] [CommRing A] [Algebra R A]
 
 namespace Algebra
 
-/-- `Algebra.unramifiedLocus R A` is the set of primes `p` of `A`
-such that `Aₚ` is formally unramified over `R`. -/
+variable {A} in
+/-- We say that an `R`-algebra `A` is unramified at a prime `q` of `A`
+if `A_q` is formally unramified over `R`.
+
+If `A` is of finite type over `R` and `q` is lying over `p`, then this is equivalent to
+`κ(q)/κ(p)` being separable and `pA_q = qA_q`.
+See `Algebra.isUnramifiedAt_iff_map_eq` in `RingTheory.Unramified.LocalRing` -/
+abbrev IsUnramifiedAt (R : Type*) {A : Type*} [CommRing R] [CommRing A] [Algebra R A]
+    (q : Ideal A) [q.IsPrime] : Prop :=
+  FormallyUnramified R (Localization.AtPrime q)
+
+/-- `Algebra.unramifiedLocus R A` is the set of primes `p` of `A` that are unramified. -/
 def unramifiedLocus : Set (PrimeSpectrum A) :=
-  { p | Algebra.FormallyUnramified R (Localization.AtPrime p.asIdeal) }
+  { p | IsUnramifiedAt R p.asIdeal }
 
 variable {R A}
 

@@ -246,14 +246,15 @@ theorem card_parts [DecidableEq V] : #h.finpartition.parts = min (Fintype.card V
   by_contra! l
   rw [lt_min_iff] at l
   obtain ⟨x, -, y, -, hn, he⟩ :=
-    exists_ne_map_eq_of_card_lt_of_maps_to l.1 fun a _ ↦ fp.part_mem (mem_univ a)
+    exists_ne_map_eq_of_card_lt_of_maps_to l.1 fun a _ ↦ fp.part_mem.2 (mem_univ a)
   apply absurd h
   rw [IsTuranMaximal]; push_neg; rintro -
   have cf : G.CliqueFree r := by
     simp_rw [← cliqueFinset_eq_empty_iff, cliqueFinset, filter_eq_empty_iff, mem_univ,
       forall_true_left, isNClique_iff, and_comm, not_and, isClique_iff, Set.Pairwise]
     intro z zc; push_neg; simp_rw [h.not_adj_iff_part_eq]
-    exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦ fp.part_mem (mem_univ a)
+    exact exists_ne_map_eq_of_card_lt_of_maps_to (zc.symm ▸ l.2) fun a _ ↦
+      fp.part_mem.2 (mem_univ a)
   use G ⊔ edge x y, inferInstance, cf.sup_edge x y
   convert Nat.lt.base #G.edgeFinset
   convert G.card_edgeFinset_sup_edge _ hn

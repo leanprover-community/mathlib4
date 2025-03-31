@@ -141,13 +141,13 @@ variable [One R]
 
 lemma mulSupport_one_add [AddLeftCancelMonoid R] (f : ι → R) :
     mulSupport (fun x ↦ 1 + f x) = support f :=
-  Set.ext fun _ ↦ not_congr add_right_eq_self
+  Set.ext fun _ ↦ not_congr add_eq_left
 
 lemma mulSupport_one_add' [AddLeftCancelMonoid R] (f : ι → R) : mulSupport (1 + f) = support f :=
   mulSupport_one_add f
 
 lemma mulSupport_add_one [AddRightCancelMonoid R] (f : ι → R) :
-    mulSupport (fun x ↦ f x + 1) = support f := Set.ext fun _ ↦ not_congr add_left_eq_self
+    mulSupport (fun x ↦ f x + 1) = support f := Set.ext fun _ ↦ not_congr add_eq_right
 
 lemma mulSupport_add_one' [AddRightCancelMonoid R] (f : ι → R) : mulSupport (f + 1) = support f :=
   mulSupport_add_one f
