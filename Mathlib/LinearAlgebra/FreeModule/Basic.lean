@@ -158,22 +158,6 @@ instance (priority := 100) of_subsingleton' [Subsingleton R] : Module.Free R N :
 
 end Semiring
 
-section CommSemiring
-
-variable {S} [CommSemiring R] [Semiring S] [Algebra R S] [AddCommMonoid M] [Module R M]
-  [Module S M] [IsScalarTower R S M] [Module.Free S M]
-  [AddCommMonoid N] [Module R N] [Module.Free R N]
-
-variable (S) in
-lemma trans [Module.Free R S] : Module.Free R M :=
-  let e : (ChooseBasisIndex S M →₀ S) ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
-    Finsupp.mapRange.linearEquiv (Module.Free.chooseBasis R S).repr
-  let e : M ≃ₗ[R] ChooseBasisIndex S M →₀ (ChooseBasisIndex R S →₀ R) :=
-    (Module.Free.chooseBasis S M).repr.restrictScalars R ≪≫ₗ e
-  .of_equiv e.symm
-
-end CommSemiring
-
 end Module.Free
 
 namespace Basis
