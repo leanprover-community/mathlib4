@@ -289,35 +289,37 @@ section Frobenius
 variable (R : Type*) [CommSemiring R]
 variable (p n : ℕ) [ExpChar R p]
 
-/-- Additive part of the Frobenius map. -/
-def frobeniusAdd : R →+ R where
+/-- The Frobenius map `x ↦ x ^ p`. -/
+def frobenius : R →+* R where
+  __ := powMonoidHom p
   map_zero' := zero_pow (expChar_pos R p).ne'
   map_add' _ _ := add_pow_expChar ..
 
-/-- Additive part of the iterated Frobenius map. -/
-def iterateFrobeniusAdd : R →+ R where
+/-- The iterated Frobenius map `x ↦ x ^ p ^ n`. -/
+def iterateFrobenius : R →+* R where
+  __ := powMonoidHom (p ^ n)
   map_zero' := zero_pow (expChar_pow_pos R p n).ne'
   map_add' _ _ := add_pow_expChar_pow ..
 
 variable {R}
 
 lemma list_sum_pow_char (l : List R) : l.sum ^ p = (l.map (· ^ p : R → R)).sum :=
-  map_list_sum (frobeniusAdd R p) _
+  map_list_sum (frobenius R p) _
 
 lemma multiset_sum_pow_char (s : Multiset R) : s.sum ^ p = (s.map (· ^ p : R → R)).sum :=
-  map_multiset_sum (frobeniusAdd R p) _
+  map_multiset_sum (frobenius R p) _
 
 lemma sum_pow_char {ι : Type*} (s : Finset ι) (f : ι → R) : (∑ i ∈ s, f i) ^ p = ∑ i ∈ s, f i ^ p :=
-  map_sum (frobeniusAdd R p) _ _
+  map_sum (frobenius R p) _ _
 
 lemma list_sum_pow_char_pow (l : List R) : l.sum ^ p ^ n = (l.map (· ^ p ^ n : R → R)).sum :=
-  map_list_sum (iterateFrobeniusAdd R p n) _
+  map_list_sum (iterateFrobenius R p n) _
 
 lemma multiset_sum_pow_char_pow (s : Multiset R) :
     s.sum ^ p ^ n = (s.map (· ^ p ^ n : R → R)).sum :=
-  map_multiset_sum (iterateFrobeniusAdd R p n) _
+  map_multiset_sum (iterateFrobenius R p n) _
 
 lemma sum_pow_char_pow {ι : Type*} (s : Finset ι) (f : ι → R) :
-    (∑ i ∈ s, f i) ^ p ^ n = ∑ i ∈ s, f i ^ p ^ n := map_sum (iterateFrobeniusAdd R p n) _ _
+    (∑ i ∈ s, f i) ^ p ^ n = ∑ i ∈ s, f i ^ p ^ n := map_sum (iterateFrobenius R p n) _ _
 
 end Frobenius

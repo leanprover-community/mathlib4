@@ -6,24 +6,24 @@ Authors: Jakob Scholbach
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.CharP.Lemmas
 
-/-! ### The Frobenius automorphism -/
+/-!
+### The Frobenius endomorphism
+
+## Tags
+
+Frobenius endomorphism
+
+## Implementation notes
+
+The definitions of `frobenius` and `iterateFrobenius` ring homomorphisms are in
+`Mathlib.Algebra.CharP.Lemmas` as they are needed for some results that in turn are used in files
+forbidding to import algebra-related definitions (see `Mathlib.Algebra.CharP.Two.lean`).
+-/
 
 section CommSemiring
 
-variable (R : Type*) [CommSemiring R] {S : Type*} [CommSemiring S]
+variable {R : Type*} [CommSemiring R] {S : Type*} [CommSemiring S]
 variable (f : R →* S) (g : R →+* S) (p m n : ℕ) [ExpChar R p] [ExpChar S p] (x y : R)
-
-/-- The Frobenius map `x ↦ x ^ p`. -/
-def frobenius : R →+* R where
-  __ := powMonoidHom p
-  __ := frobeniusAdd R p
-
-/-- The iterated Frobenius map `x ↦ x ^ p ^ n`. -/
-def iterateFrobenius : R →+* R where
-  __ := powMonoidHom (p ^ n)
-  __ := iterateFrobeniusAdd R p n
-
-variable {R}
 
 lemma frobenius_def : frobenius R p x = x ^ p := rfl
 
