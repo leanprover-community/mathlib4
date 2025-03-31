@@ -414,8 +414,8 @@ lemma exp_apply (h : IsNilpotent D.toLinearMap) :
   dsimp [exp]
 
 lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
-    exp D h l = IsNilpotent.exp D.toLinearMap l := by
-  exact (DFunLike.congr (id ((exp_apply D h))) rfl)
+    exp D h l = IsNilpotent.exp D.toLinearMap l :=
+  DFunLike.congr_fun (exp_apply D h) l
 
 end ExpNilpotent
 
