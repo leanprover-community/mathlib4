@@ -99,7 +99,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
     (bound : ∀ x ∈ Ico a b, f x = B x → f' x < B' x) : ∀ ⦃x⦄, x ∈ Icc a b → f x ≤ B x := by
   change Icc a b ⊆ { x | f x ≤ B x }
   set s := { x | f x ≤ B x } ∩ Icc a b
-  have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prod hB
+  have A : ContinuousOn (fun x => (f x, B x)) (Icc a b) := hf.prodMk hB
   have : IsClosed s := by
     simp only [s, inter_comm]
     exact A.preimage_isClosed_of_isClosed isClosed_Icc OrderClosedTopology.isClosed_le'
@@ -654,7 +654,7 @@ theorem _root_.IsOpen.eqOn_of_fderiv_eq (hs : IsOpen s) (hs' : IsPreconnected s)
     (hf' : ∀ x ∈ s, fderiv 𝕜 f x = fderiv 𝕜 g x) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := by
   obtain ⟨a, ha⟩ := hs.exists_eq_add_of_fderiv_eq hs' hf hg hf'
-  obtain rfl := self_eq_add_right.mp (hfgx.symm.trans (ha hx))
+  obtain rfl := left_eq_add.mp (hfgx.symm.trans (ha hx))
   simpa using ha
 
 theorem _root_.eq_of_fderiv_eq

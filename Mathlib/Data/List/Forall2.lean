@@ -159,10 +159,12 @@ theorem forall₂_iff_zip {l₁ l₂} :
     Forall₂ R l₁ l₂ ↔ length l₁ = length l₂ ∧ ∀ {a b}, (a, b) ∈ zip l₁ l₂ → R a b :=
   ⟨fun h => ⟨Forall₂.length_eq h, @forall₂_zip _ _ _ _ _ h⟩, fun h => by
     obtain ⟨h₁, h₂⟩ := h
-    induction' l₁ with a l₁ IH generalizing l₂
-    · cases length_eq_zero_iff.1 h₁.symm
+    induction l₁ generalizing l₂ with
+    | nil =>
+      cases length_eq_zero_iff.1 h₁.symm
       constructor
-    · rcases l₂ with - | ⟨b, l₂⟩
+    | cons a l₁ IH =>
+      rcases l₂ with - | ⟨b, l₂⟩
       · simp at h₁
       · simp only [length_cons, succ.injEq] at h₁
         exact Forall₂.cons (h₂ <| by simp [zip])

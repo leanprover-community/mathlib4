@@ -3,9 +3,10 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
+import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.LinearAlgebra.Finsupp.Span
-import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.FreeModule.Basic
 
 /-!
 # Linear structures on function with finite support `ι →₀ M`
@@ -112,7 +113,11 @@ theorem coe_basis {φ : ι → Type*} (b : ∀ i, Basis (φ i) R M) :
         -- Porting note: previously `this` not needed
         simp only [basis_repr, single_apply, h, this, if_false, LinearEquiv.map_zero, zero_apply]
 
-/-- The basis on `ι →₀ M` with basis vectors `fun i ↦ single i 1`. -/
+variable (ι R M) in
+instance _root_.Module.Free.finsupp [Module.Free R M] : Module.Free R (ι →₀ M) :=
+  .of_basis (Finsupp.basis fun _ => Module.Free.chooseBasis R M)
+
+/-- The basis on `ι →₀ R` with basis vectors `fun i ↦ single i 1`. -/
 @[simps]
 protected def basisSingleOne : Basis ι R (ι →₀ R) :=
   Basis.ofRepr (LinearEquiv.refl _ _)
@@ -137,6 +142,10 @@ noncomputable def basis {η : ι → Type*} (b : ∀ i, Basis (η i) R (M i)) :
   .ofRepr
     ((mapRange.linearEquiv fun i => (b i).repr).trans (sigmaFinsuppLequivDFinsupp R).symm)
 
+variable (R M) in
+instance _root_.Module.Free.dfinsupp [∀ i : ι, Module.Free R (M i)] : Module.Free R (Π₀ i, M i) :=
+  .of_basis <| DFinsupp.basis fun i => Module.Free.chooseBasis R (M i)
+
 end DFinsupp
 
 /-! TODO: move this section to an earlier file. -/
@@ -160,3 +169,15 @@ theorem equivFun_symm_single [Finite n] (b : Basis n R M) (i : n) :
   simp [Pi.single_apply]
 
 end Basis
+
+section Algebra
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S] {ι : Type*} (B : Basis ι R S)
+
+/-- For any `r : R`, `s : S`, we have
+  `B.repr ((algebra_map R S r) * s) i = r * (B.repr s i) `. -/
+theorem Basis.repr_smul'  (i : ι) (r : R) (s : S) :
+    B.repr (algebraMap R S r * s) i = r * B.repr s i := by
+  rw [← smul_eq_mul, ← smul_eq_mul, algebraMap_smul, map_smul, Finsupp.smul_apply]
+
+end Algebra

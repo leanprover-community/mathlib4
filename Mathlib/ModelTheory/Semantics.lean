@@ -694,7 +694,7 @@ infixl:51 " ⊨ " => Theory.Model
 
 variable {M} (T : L.Theory)
 
-@[simp default-10]
+@[simp default - 10]
 theorem Theory.model_iff : M ⊨ T ↔ ∀ φ ∈ T, M ⊨ φ :=
   ⟨fun h => h.realize_of_mem, fun h => ⟨h⟩⟩
 

@@ -340,7 +340,7 @@ Note that much of this is copied from [`LinearAlgebra/Prod`](../../LinearAlgebra
 section Prod
 
 variable (R A B)
-variable  [DistribMulAction R B]
+variable [DistribMulAction R B]
 
 /-- The first projection of a product is a non-unital alg_hom. -/
 @[simps]

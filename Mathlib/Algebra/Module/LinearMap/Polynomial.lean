@@ -7,7 +7,7 @@ import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
-import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Finite
 import Mathlib.RingTheory.TensorProduct.Free
 
 /-!
@@ -104,7 +104,7 @@ lemma toMvPolynomial_totalDegree_le (M : Matrix m n R) (i : m) :
 @[simp]
 lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
     constantCoeff (M.toMvPolynomial i) = 0 := by
-  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, _root_.map_mul, constantCoeff_X,
+  simp only [toMvPolynomial, ← C_mul_X_eq_monomial, map_sum, map_mul, constantCoeff_X,
     mul_zero, Finset.sum_const_zero]
 
 @[simp]

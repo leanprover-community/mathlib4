@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Limits.ConcreteCategory.Basic
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.CategoryTheory.Elementwise
+import Mathlib.Topology.Homeomorph.Lemmas
 
 /-!
 # Products and coproducts in the category of topological spaces
@@ -109,28 +110,15 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCat.{max v u}) (i 
   rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
     Category.comp_id]
 
-theorem induced_of_isLimit {F : J ⥤ TopCat.{max v u}} (C : Cone F) (hC : IsLimit C) :
-    C.pt.str = ⨅ j, (F.obj j).str.induced (C.π.app j) := by
-  let homeo := homeoOfIso (hC.conePointUniqueUpToIso (limitConeInfiIsLimit F))
-  refine homeo.isInducing.eq_induced.trans ?_
-  change induced homeo (⨅ j : J, _) = _
-  simp [induced_iInf, induced_compose]
-  rfl
-
-theorem limit_topology (F : J ⥤ TopCat.{max v u}) :
-    (limit F).str = ⨅ j, (F.obj j).str.induced (limit.π F j) :=
-  induced_of_isLimit _ (limit.isLimit F)
-
 section Prod
 
--- Porting note: why is autoParam not firing?
 /-- The first projection from the product. -/
 abbrev prodFst {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ X :=
-  ofHom ⟨Prod.fst, by continuity⟩
+  ofHom { toFun := Prod.fst }
 
 /-- The second projection from the product. -/
 abbrev prodSnd {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ Y :=
-  ofHom ⟨Prod.snd, by continuity⟩
+  ofHom { toFun := Prod.snd }
 
 /-- The explicit binary cofan of `X, Y` given by `X × Y`. -/
 def prodBinaryFan (X Y : TopCat.{u}) : BinaryFan X Y :=
@@ -215,11 +203,11 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     rintro ⟨⟨⟩⟩
     · rw [← ConcreteCategory.comp_apply]
       erw [Limits.prod.map_fst]
-      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_fst_assoc, TopCat.comp_app]
+      rw [ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_fst_apply]
       exact hx₁
     · rw [← ConcreteCategory.comp_apply]
       erw [Limits.prod.map_snd]
-      rw [← ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_snd_assoc, TopCat.comp_app]
+      rw [ConcreteCategory.comp_apply, TopCat.prodIsoProd_inv_snd_apply]
       exact hx₂
 
 theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : IsInducing f)
@@ -277,8 +265,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.isOpenEmbedding.comp .inr, ?_⟩
-      erw [Set.range_comp, ← eq_compl_iff_isCompl, Set.range_comp _ Sum.inr,
-        ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
+      rw [Set.range_comp, ← eq_compl_iff_isCompl]
+      conv_rhs => rw [Set.range_comp]
+      erw [← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
     · rintro ⟨h₁, h₂, h₃⟩
       have : ∀ x, x ∈ Set.range c.inl ∨ x ∈ Set.range c.inr := by
