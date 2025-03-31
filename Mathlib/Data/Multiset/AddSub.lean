@@ -126,7 +126,7 @@ protected lemma add_right_inj : s + t = s + u ↔ t = u := by classical simp [Mu
 
 @[simp]
 theorem card_add (s t : Multiset α) : card (s + t) = card s + card t :=
-  Quotient.inductionOn₂ s t fun _ _ =>length_append
+  Quotient.inductionOn₂ s t fun _ _ => length_append
 
 end add
 

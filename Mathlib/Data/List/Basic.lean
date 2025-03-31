@@ -1199,8 +1199,7 @@ theorem erase_diff_erase_sublist_of_sublist {a : α} :
     else by
       simp only [erase_cons_head, erase_cons_tail (not_beq_of_ne heq),
         diff_cons ((List.erase l₂ a)) (List.erase l₁ a) b, diff_cons l₂ l₁ b,
-        -- FIXME remove use of named argument before merging
-        erase_comm (a := a)]
+        erase_comm a]
       have h' := h.erase b
       rw [erase_cons_head] at h'
       exact @erase_diff_erase_sublist_of_sublist _ l₁ (l₂.erase b) h'
