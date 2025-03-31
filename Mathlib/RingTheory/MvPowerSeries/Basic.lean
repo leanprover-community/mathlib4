@@ -355,6 +355,11 @@ theorem monomial_zero_eq_C : ⇑(monomial R (0 : σ →₀ ℕ)) = C σ R :=
 theorem monomial_zero_eq_C_apply (a : R) : monomial R (0 : σ →₀ ℕ) a = C σ R a :=
   rfl
 
+@[simp]
+lemma C_mul_monomial {R σ : Type*} [Semiring R] (n : σ →₀ ℕ) (r : R) :
+    C σ R r * monomial R n 1  = monomial R n r := by
+  rw [← monomial_zero_eq_C_apply, monomial_mul_monomial, zero_add, mul_one]
+
 theorem coeff_C [DecidableEq σ] (n : σ →₀ ℕ) (a : R) :
     coeff R n (C σ R a) = if n = 0 then a else 0 :=
   coeff_monomial _ _ _
