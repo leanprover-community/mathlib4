@@ -86,7 +86,7 @@ theorem Subgraph.IsPerfectMatching.exists_of_isClique_supp
     (h' : ∀ (K : G.deleteUniversalVerts.coe.ConnectedComponent),
     G.deleteUniversalVerts.coe.IsClique K.supp) : ∃ (M : Subgraph G), M.IsPerfectMatching := by
   classical
-  obtain ⟨M, hM, hsub⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
+  obtain ⟨M, ⟨hM, hsub⟩⟩ := IsMatching.exists_verts_compl_subset_universalVerts h h'
   obtain ⟨M', hM'⟩ := ((G.isClique_universalVerts.subset hsub).even_iff_exists_isMatching
     (Set.toFinite _)).mp (by simpa [Set.even_ncard_compl_iff hveven, -Set.toFinset_card,
       ← Set.ncard_eq_toFinset_card'] using hM.even_card)
@@ -116,7 +116,7 @@ lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfec
     intro x y hxy
     obtain ⟨v, hv⟩ := (ConnectedComponent.odd_matches_node_outside hM x).choose_spec.2
     obtain ⟨w, hw⟩ := (ConnectedComponent.odd_matches_node_outside hM y).choose_spec.2
-    obtain ⟨v', hv'⟩ := Iff.mp M.isPerfectMatching_iff hM _
+    obtain ⟨v', hv'⟩ := Iff.mp (M.isPerfectMatching_iff) hM _
     rw [Subtype.mk_eq_mk.mp hxy,
       (Subtype.val_injective (hv'.2 _ hw.1.symm ▸ hv'.2 _ hv.1.symm) : v = w)] at hv
     exact Subtype.mk_eq_mk.mpr <| ConnectedComponent.eq_of_common_vertex hv.2 hw.2)
