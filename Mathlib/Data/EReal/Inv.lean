@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard
 -/
 import Mathlib.Data.ENNReal.Inv
-import Mathlib.Data.EReal.Order
+import Mathlib.Data.EReal.Operations
 import Mathlib.Data.Sign
 
 /-!

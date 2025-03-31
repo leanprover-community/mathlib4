@@ -2722,11 +2722,11 @@ import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Action
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.ENNReal.BigOperators
 import Mathlib.Data.ENNReal.Holder
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Data.ENNReal.Operations
-import Mathlib.Data.ENNReal.Order
 import Mathlib.Data.ENNReal.Real
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.ENat.BigOperators
@@ -2734,7 +2734,7 @@ import Mathlib.Data.ENat.Defs
 import Mathlib.Data.ENat.Lattice
 import Mathlib.Data.EReal.Basic
 import Mathlib.Data.EReal.Inv
-import Mathlib.Data.EReal.Order
+import Mathlib.Data.EReal.Operations
 import Mathlib.Data.Erased
 import Mathlib.Data.FP.Basic
 import Mathlib.Data.Fin.Basic
