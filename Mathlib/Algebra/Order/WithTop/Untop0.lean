@@ -76,7 +76,7 @@ lemma untop₀_mul [DecidableEq α] [MulZeroClass α] (a b : WithTop α) :
 Elements of ordered additive commutative groups are nonnegative iff their untop₀ is nonnegative.
 -/
 @[simp]
-lemma untop0_nonneg [OrderedAddCommGroup α] {a : WithTop α} :
+lemma untop₀_nonneg [OrderedAddCommGroup α] {a : WithTop α} :
     0 ≤ a.untop₀ ↔ 0 ≤ a := by
   by_cases ha : a = ⊤
   · rw [ha]
