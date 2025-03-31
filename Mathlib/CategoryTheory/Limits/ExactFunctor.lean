@@ -48,6 +48,10 @@ instance : (LeftExactFunctor.forget C D).Full :=
 instance : (LeftExactFunctor.forget C D).Faithful :=
   FullSubcategory.faithful _
 
+/-- The inclusion of left exact functors into functors is fully faithful. -/
+abbrev LeftExactFunctor.fullyFaithful : (LeftExactFunctor.forget C D).FullyFaithful :=
+  fullyFaithfulFullSubcategoryInclusion _
+
 /-- Bundled right-exact functors. -/
 def RightExactFunctor :=
   FullSubcategory fun F : C ⥤ D => PreservesFiniteColimits F
