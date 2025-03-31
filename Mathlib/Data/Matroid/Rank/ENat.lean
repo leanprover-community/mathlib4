@@ -41,7 +41,7 @@ It is natural to ask if equicardinality of bases holds if 'cardinality' refers t
 a term in `Cardinal` instead of `ℕ∞`, but the answer is that it doesn't.
 The cardinal-valued rank functions `Matroid.cRank` and `Matroid.cRk`
 are defined in `Data.Matroid.Rank.Cardinal`, but have less desirable properties in general.
-See the module docstring of this file for a discussion.
+See the module docstring of that file for a discussion.
 
 # Implementation Details
 
