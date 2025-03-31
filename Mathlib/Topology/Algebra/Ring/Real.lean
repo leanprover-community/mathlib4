@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.NNReal.Defs
+import Mathlib.Data.EReal.Operations
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Topology.Algebra.UniformGroup.Defs
 import Mathlib.Topology.Bornology.Real
@@ -54,7 +54,7 @@ theorem Real.uniformContinuous_const_mul {x : ℝ} : UniformContinuous (x * ·) 
 -- short-circuit type class inference
 instance : IsTopologicalAddGroup ℝ := by infer_instance
 instance : IsTopologicalRing ℝ := inferInstance
-instance : TopologicalDivisionRing ℝ := inferInstance
+instance : IsTopologicalDivisionRing ℝ := inferInstance
 
 namespace EReal
 

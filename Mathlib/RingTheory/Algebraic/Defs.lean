@@ -55,8 +55,7 @@ theorem transcendental_iff {x : A} :
   congr! 1; tauto
 
 /-- A subalgebra is algebraic if all its elements are algebraic. -/
-nonrec
-def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
+protected def Subalgebra.IsAlgebraic (S : Subalgebra R A) : Prop :=
   ∀ x ∈ S, IsAlgebraic R x
 
 variable (R A)

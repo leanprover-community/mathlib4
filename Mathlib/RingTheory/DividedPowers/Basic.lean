@@ -232,7 +232,7 @@ Proposition 1.2.7 of [Berthelot-1974], part (i). -/
 theorem nilpotent_of_mem_dpIdeal {n : ℕ} (hn : n ≠ 0) (hnI : ∀ {y}, y ∈ I → n • y = 0)
     (hI : DividedPowers I) (ha : a ∈ I) : a ^ n = 0 := by
   have h_fac : (n ! : A) * hI.dpow n a = n • ((n - 1)! : A) * hI.dpow n a := by
-    rw [nsmul_eq_mul, ← cast_mul, mul_factorial_pred (Nat.pos_of_ne_zero hn)]
+    rw [nsmul_eq_mul, ← cast_mul, mul_factorial_pred hn]
   rw [← hI.factorial_mul_dpow_eq_pow ha, h_fac, smul_mul_assoc]
   exact hnI (I.mul_mem_left ((n - 1)! : A) (hI.dpow_mem hn ha))
 
@@ -361,21 +361,21 @@ def ofRingEquiv (hI : DividedPowers I) : DividedPowers J where
     simp only [map_add]
     rw [hI.dpow_add (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))
         (symm_apply_mem_of_equiv_iff.mpr (h ▸ hy))]
-    simp only [map_sum, _root_.map_mul]
+    simp only [map_sum, map_mul]
   dpow_mul hx := by
-    simp only [_root_.map_mul]
+    simp only [map_mul]
     rw [hI.dpow_mul (symm_apply_mem_of_equiv_iff.mpr (h ▸ hx))]
-    rw [_root_.map_mul, map_pow]
+    rw [map_mul, map_pow]
     simp only [RingEquiv.apply_symm_apply]
   mul_dpow hx := by
     simp only
-    rw [← _root_.map_mul, hI.mul_dpow, _root_.map_mul]
+    rw [← map_mul, hI.mul_dpow, map_mul]
     · simp only [map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
   dpow_comp hn hx := by
     simp only [RingEquiv.symm_apply_apply]
     rw [hI.dpow_comp hn]
-    · simp only [_root_.map_mul, map_natCast]
+    · simp only [map_mul, map_natCast]
     · rwa [symm_apply_mem_of_equiv_iff, h]
 
 @[simp]

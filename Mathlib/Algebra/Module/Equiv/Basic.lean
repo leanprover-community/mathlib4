@@ -724,6 +724,7 @@ namespace LinearEquiv
 
 This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
 -/
+@[simps -fullyApplied +simpRhs]
 def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
     (Π (st : S ⊕ T), A st) ≃ₗ[R] (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
