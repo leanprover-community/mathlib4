@@ -85,7 +85,7 @@ def main (args : List String) : IO Unit := do
     let mod := `Mathlib
     let sp := (← read).srcSearchPath
     let sourceFile ← Lean.findLean sp mod
-    roots := Std.HashMap.empty.insert mod sourceFile
+    roots := roots.insert mod sourceFile
 
   -- We pass any following arguments to `getHashMemo`,
   -- so we can use the cache on `Archive` or `Counterexamples`.
