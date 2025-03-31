@@ -80,7 +80,8 @@ variable [hT : Fact (0 < T)]
 def haarAddCircle : Measure (AddCircle T) :=
   addHaarMeasure ⊤
 
--- Porting note: was `deriving IsAddHaarMeasure` on `haarAddCircle`
+-- The `IsAddHaarMeasure` instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : IsAddHaarMeasure (@haarAddCircle T _) :=
   Measure.isAddHaarMeasure_addHaarMeasure ⊤
 
@@ -255,12 +256,11 @@ theorem orthonormal_fourier : Orthonormal ℂ (@fourierLp T _ 2 _) := by
   rw [ContinuousMap.inner_toLp (@haarAddCircle T hT) (fourier i) (fourier j)]
   simp_rw [← fourier_neg, ← fourier_add]
   split_ifs with h
-  · simp_rw [h, neg_add_cancel]
+  · simp_rw [h, add_neg_cancel]
     have : ⇑(@fourier T 0) = (fun _ => 1 : AddCircle T → ℂ) := by ext1; exact fourier_zero
-    rw [this, integral_const, measure_univ, ENNReal.one_toReal, Complex.real_smul,
+    rw [this, integral_const, measure_univ, ENNReal.toReal_one, Complex.real_smul,
       Complex.ofReal_one, mul_one]
-  have hij : -i + j ≠ 0 := by
-    rw [add_comm]
+  have hij : j + -i ≠ 0 := by
     exact sub_ne_zero.mpr (Ne.symm h)
   convert integral_eq_zero_of_add_right_eq_neg (μ := haarAddCircle)
     (fourier_add_half_inv_index hij hT.elim)
@@ -369,7 +369,7 @@ theorem fourierBasis_repr (f : Lp ℂ 2 <| @haarAddCircle T hT) (i : ℤ) :
     fourierBasis.repr f i = fourierCoeff f i := by
   trans ∫ t : AddCircle T, conj ((@fourierLp T hT 2 _ i : AddCircle T → ℂ) t) * f t ∂haarAddCircle
   · rw [fourierBasis.repr_apply_apply f i, MeasureTheory.L2.inner_def, coe_fourierBasis]
-    simp only [RCLike.inner_apply]
+    simp only [RCLike.inner_apply']
   · apply integral_congr_ae
     filter_upwards [coeFn_fourierLp 2 i] with _ ht
     rw [ht, ← fourier_neg, smul_eq_mul]

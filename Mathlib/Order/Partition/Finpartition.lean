@@ -32,6 +32,8 @@ We provide many ways to build finpartitions:
 * `Finpartition.discrete`: The discrete finpartition of `s : Finset α` made of singletons.
 * `Finpartition.bind`: Puts together the finpartitions of the parts of a finpartition into a new
   finpartition.
+* `Finpartition.ofExistsUnique`: Builds a finpartition from a collection of parts such that each
+  element is in exactly one part.
 * `Finpartition.ofSetoid`: With `Fintype α`, constructs the finpartition of `univ : Finset α`
   induced by the equivalence classes of `s : Setoid α`.
 * `Finpartition.atomise`: Makes a finpartition of `s : Finset α` by breaking `s` along all finsets
@@ -53,6 +55,8 @@ not because the parts of `P` and the parts of `Q` have the same elements that `P
 
 The order is the wrong way around to make `Finpartition a` a graded order. Is it bad to depart from
 the literature and turn the order around?
+
+The specialisation to `Finset α` could be generalised to atomistic orders.
 -/
 
 
@@ -64,7 +68,6 @@ variable {α : Type*}
 `a`. We forbid `⊥` as a part. -/
 @[ext]
 structure Finpartition [Lattice α] [OrderBot α] (a : α) where
-  -- Porting note: Docstrings added
   /-- The elements of the finite partition of `a` -/
   parts : Finset α
   /-- The partition is supremum-independent -/
@@ -394,7 +397,7 @@ theorem card_bind (Q : ∀ i ∈ P.parts, Finpartition i) :
     #(P.bind Q).parts = ∑ A ∈ P.parts.attach, #(Q _ A.2).parts := by
   apply card_biUnion
   rintro ⟨b, hb⟩ - ⟨c, hc⟩ - hbc
-  rw [Finset.disjoint_left]
+  rw [Function.onFun, Finset.disjoint_left]
   rintro d hdb hdc
   rw [Ne, Subtype.mk_eq_mk] at hbc
   exact
@@ -452,6 +455,8 @@ namespace Finpartition
 
 variable [DecidableEq α] {s t u : Finset α} (P : Finpartition s) {a : α}
 
+lemma subset {a : Finset α} (ha : a ∈ P.parts) : a ⊆ s := P.le ha
+
 theorem nonempty_of_mem_parts {a : Finset α} (ha : a ∈ P.parts) : a.Nonempty :=
   nonempty_iff_ne_empty.2 <| P.ne_bot ha
 
@@ -475,6 +480,32 @@ theorem existsUnique_mem (ha : a ∈ s) : ∃! t, t ∈ P.parts ∧ a ∈ t := b
   refine ⟨t, ⟨ht, ht'⟩, ?_⟩
   rintro u ⟨hu, hu'⟩
   exact P.eq_of_mem_parts hu ht hu' ht'
+
+/--
+Construct a `Finpartition s` from a finset of finsets `parts` such that each element of `s` is in
+exactly one member of `parts`. This provides a converse to `Finpartition.subset`,
+`Finpartition.not_empty_mem_parts` and `Finpartition.existsUnique_mem`.
+-/
+@[simps]
+def ofExistsUnique (parts : Finset (Finset α)) (h : ∀ p ∈ parts, p ⊆ s)
+    (h' : ∀ a ∈ s, ∃! t ∈ parts, a ∈ t) (h'' : ∅ ∉ parts) :
+    Finpartition s where
+  parts := parts
+  supIndep := by
+    simp only [supIndep_iff_pairwiseDisjoint]
+    intro a ha b hb hab
+    rw [Function.onFun, Finset.disjoint_left]
+    intro x hx hx'
+    exact hab ((h' x (h _ ha hx)).unique ⟨ha, hx⟩ ⟨hb, hx'⟩)
+  sup_parts := by
+    ext i
+    simp only [mem_sup, id_eq]
+    constructor
+    · rintro ⟨j, hj, hj'⟩
+      exact h j hj hj'
+    · rintro hi
+      exact (h' i hi).exists
+  not_bot_mem := h''
 
 /-- The part of the finpartition that `a` lies in. -/
 def part (a : α) : Finset α := if ha : a ∈ s then choose (hp := P.existsUnique_mem ha) else ∅

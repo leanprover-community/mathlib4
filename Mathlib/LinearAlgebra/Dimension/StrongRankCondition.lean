@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.LinearAlgebra.Basis.Basic
+import Mathlib.LinearAlgebra.Basis.Submodule
 import Mathlib.LinearAlgebra.Dimension.Finrank
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
@@ -370,6 +371,11 @@ theorem rank_span {v : ι → M} (hv : LinearIndependent R v) :
 theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R ↑(span R s) = #s := by
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
+
+theorem toENat_rank_span_set {v : ι → M} {s : Set ι} (hs : LinearIndepOn R v s) :
+    (Module.rank R <| span R <| v '' s).toENat = s.encard := by
+  rw [image_eq_range, ← hs.injOn.encard_image, ← toENat_cardinalMk, image_eq_range,
+    ← rank_span hs.linearIndependent]
 
 /-- An induction (and recursion) principle for proving results about all submodules of a fixed
 finite free module `M`. A property is true for all submodules of `M` if it satisfies the following

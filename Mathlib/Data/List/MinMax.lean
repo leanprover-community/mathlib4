@@ -90,7 +90,7 @@ end ArgAux
 
 section Preorder
 
-variable [Preorder β] [DecidableRel (α := β) (· < ·)] {f : α → β} {l : List α} {a m : α}
+variable [Preorder β] [DecidableLT β] {f : α → β} {l : List α} {a m : α}
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
@@ -244,7 +244,7 @@ section MaximumMinimum
 
 section Preorder
 
-variable [Preorder α] [DecidableRel (α := α) (· < ·)] {l : List α} {a m : α}
+variable [Preorder α] [DecidableLT α] {l : List α} {a m : α}
 
 /-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]` -/
@@ -529,6 +529,20 @@ theorem min_le_of_le (l : List α) (a : α) {x : α} (hx : x ∈ l) (h : x ≤ a
   @le_max_of_le αᵒᵈ _ _ _ _ _ hx h
 
 end OrderTop
+
+/-- If `a ≤ x` for some `x` in the list `l`, and `b : α`, then `a ≤ l.foldr max b`. -/
+theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a ≤ x) :
+    a ≤ l.foldr max b := by
+  induction l with
+  | nil => exact absurd hx (List.not_mem_nil _)
+  | cons y l IH =>
+    simp only [List.foldr, List.foldr_cons]
+    obtain rfl | hl := mem_cons.mp hx
+    · exact le_max_of_le_left h
+    · exact le_max_of_le_right (IH hl)
+
+theorem min_le_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : x ≤ a) : l.foldr min b ≤ a :=
+  @le_max_of_le' αᵒᵈ _ _ _ _ _ hx h
 
 end Fold
 

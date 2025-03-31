@@ -38,7 +38,7 @@ noncomputable section
 
 namespace RootPairing
 
-variable  [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
   (P : RootPairing ι R M N) (i : ι)
 
 /-- The `Weyl group` of a root pairing is the group of automorphisms of the root pairing generated
@@ -174,5 +174,9 @@ def weylGroupRootRep : Representation R P.weylGroup M :=
 /-- The natural representation of the Weyl group on the coroot space. -/
 def weylGroupCorootRep : Representation R P.weylGroup.op N :=
   Representation.ofDistribMulAction R P.weylGroup.op N
+
+lemma weylGroup_apply_root (g : P.weylGroup) (i : ι) :
+    g • P.root i = P.root (P.weylGroupToPerm g i) :=
+  Hom.root_weightMap_apply _ _ _ _
 
 end RootPairing
