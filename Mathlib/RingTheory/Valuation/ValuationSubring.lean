@@ -334,7 +334,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
       apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
 
 /-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
-@[simps]
+@[simps apply]
 def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
   invFun S := ⟨idealOfLE _ S S.2, inferInstance⟩
@@ -344,13 +344,13 @@ def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
 /-- An ordered variant of `primeSpectrumEquiv`. -/
 @[simps!]
 def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
-  { primeSpectrumEquiv A with
-    map_rel_iff' :=
-      ⟨fun h => by
+  { OrderDual.ofDual.trans (primeSpectrumEquiv A) with
+    map_rel_iff' {a b} :=
+      ⟨a.rec <| fun a => b.rec <| fun b => fun h => by
+        simp only [OrderDual.toDual_le_toDual]
         dsimp at h
         have := idealOfLE_le_of_le A _ _ ?_ ?_ h
-        iterate 2 erw [idealOfLE_ofPrime] at this
-        · exact this
+        · rwa [idealOfLE_ofPrime, idealOfLE_ofPrime] at this
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
