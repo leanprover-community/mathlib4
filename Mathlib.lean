@@ -3252,6 +3252,7 @@ import Mathlib.Data.Set.Opposite
 import Mathlib.Data.Set.Order
 import Mathlib.Data.Set.Pairwise.Basic
 import Mathlib.Data.Set.Pairwise.Lattice
+import Mathlib.Data.Set.Pairwise.List
 import Mathlib.Data.Set.Piecewise
 import Mathlib.Data.Set.Pointwise.Support
 import Mathlib.Data.Set.Prod
