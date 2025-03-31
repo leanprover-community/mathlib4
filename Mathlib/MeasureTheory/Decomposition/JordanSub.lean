@@ -239,7 +239,8 @@ theorem sub_toSignedMeasure_eq_toSignedMeasure_sub :
   noncomm_ring
 
 
- def jordanDecomposition_of_toSignedMeasure_sub
+/-- The Jordan decomposition associated to the pair of mutually singular measures μ-ν and ν-μ . -/
+def jordanDecomposition_of_toSignedMeasure_sub
     (μ ν : Measure α) [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     JordanDecomposition α where
   posPart := μ - ν
