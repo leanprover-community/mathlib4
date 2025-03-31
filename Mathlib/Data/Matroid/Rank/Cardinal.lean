@@ -375,13 +375,13 @@ theorem isRkFinite_iff_cRk_lt_aleph0 : M.IsRkFinite X ↔ M.cRk X < ℵ₀ := by
 
 theorem Indep.isBase_of_cRank_le [M.RankFinite] (ind : M.Indep I) (le : M.cRank ≤ #I) :
     M.IsBase I :=
-  ind.isBase_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le' hIJ <|
+  ind.isBase_of_maximal fun _J ind_J hIJ ↦ ind.finite.eq_of_subset_of_encard_le hIJ <|
     toENat.monotone' <| ind_J.cardinalMk_le_cRank.trans le
 
 theorem Spanning.isBase_of_le_cRank [M.RankFinite] (h : M.Spanning X) (le : #X ≤ M.cRank) :
     M.IsBase X := by
   have ⟨B, hB, hBX⟩ := h.exists_isBase_subset
-  rwa [← hB.finite.eq_of_subset_of_encard_le' hBX
+  rwa [← hB.finite.eq_of_subset_of_encard_le hBX
     (toENat.monotone' <| le.trans hB.cardinalMk_eq_cRank.ge)]
 
 theorem Indep.isBase_of_cRank_le_of_finite (ind : M.Indep I)
