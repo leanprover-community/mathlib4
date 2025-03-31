@@ -5,8 +5,6 @@ Authors: Joseph Myers, Manuel Candales
 -/
 import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
-import Mathlib.Data.Real.StarOrdered
-import Mathlib.LinearAlgebra.Matrix.PosDef
 
 /-!
 # Angles between vectors
@@ -16,20 +14,14 @@ This file defines unoriented angles in real inner product spaces.
 ## Main definitions
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
-
-## TODO
-
-Prove the triangle inequality for the angle.
 -/
 
 
-assert_not_exists ConformalAt
+assert_not_exists HasFDerivAt ConformalAt
 
 noncomputable section
 
 open Real Set
-
-open Real
 
 open RealInnerProductSpace
 
@@ -100,51 +92,6 @@ theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
 /-- The angle between the negation of a vector and another vector. -/
 theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
-
-/-- **Triangle inequality** for spherical angles. -/
-theorem angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z := by
-  rcases le_or_gt (angle x y + angle y z) π with h|h
-  · have h₁ := angle_nonneg x y
-    have h₂ := angle_nonneg y z
-    rw [← (Real.strictAntiOn_cos).le_iff_le ⟨by positivity, h⟩ ⟨angle_nonneg x z, angle_le_pi x z⟩]
-    rw [cos_add, tsub_le_iff_right, add_comm, ← tsub_le_iff_right]
-    apply le_of_sq_le_sq ?_  <| Left.mul_nonneg (sin_angle_nonneg x y) (sin_angle_nonneg y z)
-    rw [mul_pow, Real.sin_sq, Real.sin_sq]
-    ring_nf
-    by_cases h : (‖x‖ = 0 ∨ ‖y‖ = 0 ∨ ‖z‖ = 0)
-    · rcases h with h|h|h
-      all_goals simpa [angle, h] using Real.abs_cos_le_one _
-    push_neg at h
-    have hx : 0 < ‖x‖ := lt_of_le_of_ne' (norm_nonneg x) h.1
-    have hy : 0 < ‖y‖ := lt_of_le_of_ne' (norm_nonneg y) h.2.1
-    have hz : 0 < ‖z‖ := lt_of_le_of_ne' (norm_nonneg z) h.2.2
-    set θxy := cos (angle x y)
-    set θxz := cos (angle x z)
-    set θyz := cos (angle y z)
-    let A : Matrix (Fin 3) (Fin 3) ℝ := !![1, θxy, θxz; θxy, 1, θyz; θxz, θyz, 1]
-    have hA : A.PosSemidef := by
-      --Gram matrices are positive semidefinite
-      constructor
-      · unfold A
-        ext i j
-        fin_cases i <;> fin_cases j <;> rfl
-      · intro v
-        convert real_inner_self_nonneg (x := (v 0 / ‖x‖) • x + (v 1 / ‖y‖) • y + (v 2 / ‖z‖) • z)
-        simp [star, Matrix.mulVec, A, Matrix.vecHead, Matrix.vecTail, inner_add_left,
-          inner_add_right, real_inner_smul_left, inner_smul_right, θxy, θxz, θyz, cos_angle,
-          ← sub_eq_zero, real_inner_self_eq_norm_mul_norm, real_inner_comm y x, real_inner_comm z]
-        field_simp
-        ring_nf
-    have hAd : 0 ≤ A.det := by
-      --Could be own lemma: PosSemidef → 0 ≤ A.det
-      rw [hA.isHermitian.det_eq_prod_eigenvalues]
-      apply Finset.prod_nonneg
-      intro i _
-      simpa using hA.eigenvalues_nonneg i
-    rw [Matrix.det_fin_three] at hAd
-    simp [A] at hAd
-    linarith
-  · exact le_trans (angle_le_pi x z) h.le
 
 /-- The angle between the zero vector and a vector. -/
 @[simp]

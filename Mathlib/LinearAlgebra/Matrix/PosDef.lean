@@ -160,6 +160,11 @@ lemma eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosSemidef A) (i : n) : 0 ≤ hA.1.eigenvalues i :=
   (hA.re_dotProduct_nonneg _).trans_eq (hA.1.eigenvalues_eq _).symm
 
+theorem det_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (hM : M.PosSemidef) :
+    0 ≤ M.det := by
+  rw [hM.isHermitian.det_eq_prod_eigenvalues]
+  exact Finset.prod_nonneg (fun i _ ↦ by simpa using hM.eigenvalues_nonneg i)
+
 section sqrt
 
 variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
