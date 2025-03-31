@@ -101,11 +101,6 @@ instance (X : Stonean.{u}) : ExtremallyDisconnected X := X.prop
 abbrev toProfinite : Stonean.{u} ⥤ Profinite.{u} :=
   CompHausLike.toCompHausLike (fun _ ↦ inferInstance)
 
-instance (X : Stonean.{u}) : ExtremallyDisconnected ((forget _).obj X) := X.prop
-
-instance (X : Stonean.{u}) : TotallyDisconnectedSpace ((forget _).obj X) :=
-  show TotallyDisconnectedSpace X from inferInstance
-
 /--
 A finite discrete space as a Stonean space.
 -/

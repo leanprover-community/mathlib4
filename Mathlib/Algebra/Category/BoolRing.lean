@@ -96,26 +96,25 @@ end BoolRing
 
 /-! ### Equivalence between `BoolAlg` and `BoolRing` -/
 
--- Porting note: Added. somehow it does not find this instance.
+-- We have to add this instance since Lean doesn't see through `X.toBddDistLat`.
 instance {X : BoolAlg} :
     BooleanAlgebra ↑(BddDistLat.toBddLat (X.toBddDistLat)).toLat :=
-  BoolAlg.instBooleanAlgebra _
+  BoolAlg.str _
 
+-- We have to add this instance since Lean doesn't see through `R.toBddDistLat`.
 instance {R : Type u} [BooleanRing R] :
     BooleanRing (BoolAlg.of (AsBoolAlg ↑R)).toBddDistLat.toBddLat.toLat :=
   inferInstanceAs <| BooleanRing R
 
 @[simps]
 instance BoolRing.hasForgetToBoolAlg : HasForget₂ BoolRing BoolAlg where
-  forget₂ :=
-    { obj := fun X ↦ BoolAlg.of (AsBoolAlg X)
-      map := fun {R S} f ↦ RingHom.asBoolAlg f.hom }
+  forget₂.obj X := .of (AsBoolAlg X)
+  forget₂.map f := BoolAlg.ofHom f.hom.asBoolAlg
 
 @[simps]
 instance BoolAlg.hasForgetToBoolRing : HasForget₂ BoolAlg BoolRing where
-  forget₂ :=
-    { obj := fun X => BoolRing.of (AsBoolRing X)
-      map := fun {_ _} f => BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f }
+  forget₂.obj X := .of (AsBoolRing X)
+  forget₂.map f := BoolRing.ofHom <| BoundedLatticeHom.asBoolRing f.hom
 
 /-- The equivalence between Boolean rings and Boolean algebras. This is actually an isomorphism. -/
 @[simps functor inverse]

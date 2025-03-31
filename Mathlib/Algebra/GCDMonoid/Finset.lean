@@ -186,8 +186,6 @@ theorem gcd_eq_zero_iff : s.gcd f = 0 ↔ ∀ x : β, x ∈ s → f x = 0 := by
     rcases as with ⟨b, ⟨bs, rfl⟩⟩
     apply h b (mem_def.1 bs)
 
-/- Porting note: The change from `p : α → Prop` to `p : α → Bool` made this slightly less nice with
-all the `decide`s around. -/
 theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
     s.gcd f = (s.filter fun x ↦ f x ≠ 0).gcd f := by
   classical

@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Lex
+import Mathlib.Data.List.Induction
 
 /-! # sublists
 
@@ -14,10 +15,7 @@ import Mathlib.Data.List.Lex
 
 This file contains basic results on this function.
 -/
-/-
-Porting note: various auxiliary definitions such as `sublists'_aux` were left out of the port
-because they were only used to prove properties of `sublists`, and these proofs have changed.
--/
+
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
@@ -36,7 +34,6 @@ theorem sublists'_nil : sublists' (@nil α) = [[]] :=
 theorem sublists'_singleton (a : α) : sublists' [a] = [[], [a]] :=
   rfl
 
--- Porting note: Not the same as `sublists'_aux` from Lean3
 /-- Auxiliary helper definition for `sublists'` -/
 def sublists'Aux (a : α) (r₁ r₂ : List (List α)) : List (List α) :=
   r₁.foldl (init := r₂) fun r l => r ++ [a :: l]
@@ -62,7 +59,6 @@ theorem sublists'Aux_eq_map (a : α) (r₁ : List (List α)) : ∀ (r₂ : List 
     rw [map_append, map_singleton, ← append_assoc, ← ih, sublists'Aux, foldl_append, foldl]
     simp [sublists'Aux]
 
--- Porting note: simp can prove `sublists'_singleton`
 @[simp 900]
 theorem sublists'_cons (a : α) (l : List α) :
     sublists' (a :: l) = sublists' l ++ map (cons a) (sublists' l) := by
@@ -78,15 +74,15 @@ theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   · rcases h with (h | ⟨s, h, rfl⟩)
     · exact sublist_cons_of_sublist _ h
     · exact h.cons_cons _
-  · cases' h with _ _ _ h s _ _ h
+  · obtain - | ⟨-, h⟩ | ⟨-, h⟩ := h
     · exact Or.inl h
-    · exact Or.inr ⟨s, h, rfl⟩
+    · exact Or.inr ⟨_, h, rfl⟩
 
 @[simp]
 theorem length_sublists' : ∀ l : List α, length (sublists' l) = 2 ^ length l
   | [] => rfl
   | a :: l => by
-    simp_arith only [sublists'_cons, length_append, length_sublists' l,
+    simp +arith only [sublists'_cons, length_append, length_sublists' l,
       length_map, length, Nat.pow_succ']
 
 @[simp]
@@ -97,7 +93,6 @@ theorem sublists_nil : sublists (@nil α) = [[]] :=
 theorem sublists_singleton (a : α) : sublists [a] = [[], [a]] :=
   rfl
 
--- Porting note: Not the same as `sublists_aux` from Lean3
 /-- Auxiliary helper function for `sublists` -/
 def sublistsAux (a : α) (r : List (List α)) : List (List α) :=
   r.foldl (init := []) fun r l => r ++ [l, a :: l]
@@ -274,7 +269,7 @@ theorem mem_sublistsLen_self {l l' : List α} (h : l' <+ l) :
     l' ∈ sublistsLen (length l') l := by
   induction' h with l₁ l₂ a s IH l₁ l₂ a s IH
   · simp
-  · cases' l₁ with b l₁
+  · rcases l₁ with - | ⟨b, l₁⟩
     · simp
     · rw [length, sublistsLen_succ_cons]
       exact mem_append_left _ IH
@@ -309,7 +304,7 @@ theorem Pairwise.sublists' {R} :
       and_imp]
     refine ⟨H₂.sublists', H₂.sublists'.imp fun l₁ => Lex.cons l₁, ?_⟩
     rintro l₁ sl₁ x l₂ _ rfl
-    cases' l₁ with b l₁; · constructor
+    rcases l₁ with - | ⟨b, l₁⟩; · constructor
     exact Lex.rel (H₁ _ <| sl₁.subset <| mem_cons_self _ _)
 
 theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
@@ -348,7 +343,6 @@ theorem sublists'_map (f : α → β) : ∀ (l : List α),
   | [] => by simp
   | a::l => by simp [map_cons, sublists'_cons, sublists'_map f l, Function.comp]
 
--- Porting note: moved because it is now used to prove `sublists_cons_perm_append`
 theorem sublists_perm_sublists' (l : List α) : sublists l ~ sublists' l := by
   rw [← finRange_map_get l, sublists_map, sublists'_map]
   apply Perm.map
@@ -367,14 +361,14 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
   rw [revzip]
   induction' l using List.reverseRecOn with l' a ih
   · intro l₁ l₂ h
-    simp?  at h says
+    simp? at h says
       simp only [sublists_nil, reverse_cons, reverse_nil, nil_append, zip_cons_cons, zip_nil_right,
         mem_cons, Prod.mk.injEq, not_mem_nil, or_false] at h
     simp [h]
   · intro l₁ l₂ h
     rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
       zip_map_left] at *
-    simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_apply, Prod.exists] at h
+    simp only [Prod.mk_inj, mem_map, mem_append, Prod.map_apply, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]
       exact (ih _ _ h).append_right _

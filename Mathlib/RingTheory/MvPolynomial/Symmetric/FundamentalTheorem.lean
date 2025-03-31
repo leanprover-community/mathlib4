@@ -106,7 +106,7 @@ lemma accumulate_invAccumulate {n m} (hmn : m ≤ n) {s : Fin m → ℕ} (hs : A
     rw [accumulate_rec (him.trans_le hmn) hi, ih hi, invAccumulate, dif_pos him, dif_pos hi]
     simp only
     exact Nat.sub_add_cancel (hs i.le_succ)
-  · have := (Nat.sub_one_add_one <| Nat.not_eq_zero_of_lt hm).symm
+  · have := (Nat.sub_one_add_one <| Nat.ne_zero_of_lt hm).symm
     rw [accumulate_last (hm.trans_le hmn) this, invAccumulate, dif_pos hm, dif_neg this.not_gt,
       Nat.sub_zero]
     intro j hj
@@ -316,9 +316,9 @@ lemma esymmAlgHom_fin_surjective (h : m ≤ n) :
   obtain ⟨q, rfl⟩ := (esymmAlgHom_fin_bijective R m).2 p
   rw [← AlgHom.mem_range]
   induction q using MvPolynomial.induction_on with
-  | h_C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
-  | h_add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
-  | h_X p i hp =>
+  | C r => rw [← algebraMap_eq, AlgHom.commutes]; apply Subalgebra.algebraMap_mem
+  | add p q hp hq => rw [map_add]; exact Subalgebra.add_mem _ hp hq
+  | mul_X p i hp =>
     rw [map_mul]
     apply Subalgebra.mul_mem _ hp
     rw [AlgHom.mem_range]

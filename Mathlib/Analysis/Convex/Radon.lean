@@ -189,7 +189,7 @@ theorem helly_theorem_compact' [TopologicalSpace E] [T2Space E] {F : ι → Set 
     (⋂ i, F i).Nonempty := by
   classical
   /- If `ι` is empty the statement is trivial. -/
-  cases' isEmpty_or_nonempty ι with _ h_nonempty
+  rcases isEmpty_or_nonempty ι with _ | h_nonempty
   · simp only [iInter_of_empty, Set.univ_nonempty]
   /- By the finite version of theorem, every finite subfamily has an intersection. -/
   have h_fin (I : Finset ι) : (⋂ i ∈ I, F i).Nonempty := by

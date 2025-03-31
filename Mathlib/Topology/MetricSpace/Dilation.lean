@@ -111,7 +111,7 @@ theorem mk_coe (f : α →ᵈ β) (h) : Dilation.mk f h = f :=
 
 /-- Copy of a `Dilation` with a new `toFun` equal to the old one. Useful to fix definitional
 equalities. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 protected def copy (f : α →ᵈ β) (f' : α → β) (h : f' = ⇑f) : α →ᵈ β where
   toFun := f'
   edist_eq' := h.symm ▸ f.edist_eq'
@@ -149,7 +149,7 @@ theorem edist_eq [DilationClass F α β] (f : F) (x y : α) :
   rw [ratio]; split_ifs with key
   · rcases DilationClass.edist_eq' f with ⟨r, hne, hr⟩
     replace hr := hr x y
-    cases' key x y with h h
+    rcases key x y with h | h
     · simp only [hr, h, mul_zero]
     · simp [hr, h, hne]
   exact (DilationClass.edist_eq' f).choose_spec.2 x y
@@ -400,8 +400,7 @@ theorem mapsTo_emetric_ball (x : α) (r : ℝ≥0∞) :
 /-- A dilation maps closed balls to closed balls and scales the radius by `ratio f`. -/
 theorem mapsTo_emetric_closedBall (x : α) (r' : ℝ≥0∞) :
     MapsTo (f : α → β) (EMetric.closedBall x r') (EMetric.closedBall (f x) (ratio f * r')) :=
-  -- Porting note: Added `by exact`
-  fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' (by exact hy) _
+  fun y hy => (edist_eq f y x).trans_le <| mul_le_mul_left' hy _
 
 theorem comp_continuousOn_iff {γ} [TopologicalSpace γ] {g : γ → α} {s : Set γ} :
     ContinuousOn ((f : α → β) ∘ g) s ↔ ContinuousOn g s :=

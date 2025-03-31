@@ -38,17 +38,17 @@ variable (X : SSet.{u})
 /-- A simplicial set `X` satisfies the strict Segal condition if its simplices are uniquely
 determined by their spine. -/
 class StrictSegal where
-  /-- The inverse to `X.spine n`.-/
+  /-- The inverse to `X.spine n`. -/
   spineToSimplex {n : ℕ} : Path X n → X _⦋n⦌
-  /-- `spineToSimplex` is a right inverse to `X.spine n`.-/
+  /-- `spineToSimplex` is a right inverse to `X.spine n`. -/
   spine_spineToSimplex {n : ℕ} (f : Path X n) : X.spine n (spineToSimplex f) = f
-  /-- `spineToSimplex` is a left inverse to `X.spine n`.-/
+  /-- `spineToSimplex` is a left inverse to `X.spine n`. -/
   spineToSimplex_spine {n : ℕ} (Δ : X _⦋n⦌) : spineToSimplex (X.spine n Δ) = Δ
 
 namespace StrictSegal
 variable {X : SSet.{u}} [StrictSegal X] {n : ℕ}
 
-/-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌` and `Path X n`.-/
+/-- The fields of `StrictSegal` define an equivalence between `X _⦋n⦌` and `Path X n`. -/
 def spineEquiv (n : ℕ) : X _⦋n⦌ ≃ Path X n where
   toFun := spine X n
   invFun := spineToSimplex
@@ -59,7 +59,7 @@ theorem spineInjective {n : ℕ} : Function.Injective (spineEquiv (X := X) n) :=
 
 @[simp]
 theorem spineToSimplex_vertex (i : Fin (n + 1)) (f : Path X n) :
-    X.map (const ⦋0⦌ ⦋n⦌ i).op (spineToSimplex f) = f.vertex i := by
+    X.map (SimplexCategory.const ⦋0⦌ ⦋n⦌ i).op (spineToSimplex f) = f.vertex i := by
   rw [← spine_vertex, spine_spineToSimplex]
 
 @[simp]
@@ -72,7 +72,7 @@ the diagonal edge of the resulting `n`-simplex. -/
 def spineToDiagonal (f : Path X n) : X _⦋1⦌ := diagonal X (spineToSimplex f)
 
 @[simp]
-theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n)  :
+theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
     X.map (subinterval j l hjl).op (spineToSimplex f) =
       spineToSimplex (Path.interval f j l hjl) := by
   apply spineInjective
@@ -108,7 +108,8 @@ lemma spine_δ_vertex_lt (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)
     (h : i.castSucc < j) :
     (X.spine n (X.δ j (spineToSimplex f))).vertex i = f.vertex i.castSucc := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+    spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_castSucc_lt j i h]
@@ -120,7 +121,8 @@ lemma spine_δ_vertex_ge (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)
     (h : j ≤ i.castSucc) :
     (X.spine n (X.δ j (spineToSimplex f))).vertex i = f.vertex i.succ := by
   simp only [SimplicialObject.δ, spine_vertex]
-  rw [← FunctorToTypes.map_comp_apply, ← op_comp, const_comp, spineToSimplex_vertex]
+  rw [← FunctorToTypes.map_comp_apply, ← op_comp, SimplexCategory.const_comp,
+    spineToSimplex_vertex]
   simp only [SimplexCategory.δ, Hom.toOrderHom, len_mk, mkHom, Hom.mk,
     OrderEmbedding.toOrderHom_coe, Fin.succAboveOrderEmb_apply]
   rw [Fin.succAbove_of_le_castSucc j i h]
@@ -165,7 +167,7 @@ namespace CategoryTheory.Nerve
 open SSet
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
-property describes the essential image of the nerve functor.-/
+property describes the essential image of the nerve functor. -/
 noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (nerve C) where
   spineToSimplex {n} F :=
     ComposableArrows.mkOfObjOfMapSucc (fun i ↦ (F.vertex i).obj 0)

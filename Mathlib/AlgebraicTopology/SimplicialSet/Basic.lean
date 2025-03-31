@@ -53,6 +53,26 @@ lemma hom_ext {X Y : SSet} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = 
 lemma comp_app {X Y Z : SSet} (f : X ⟶ Y) (g : Y ⟶ Z) (n : SimplexCategoryᵒᵖ) :
     (f ≫ g).app n = f.app n ≫ g.app n := NatTrans.comp_app _ _ _
 
+/-- The constant map of simplicial sets `X ⟶ Y` induced by a simplex `y : Y _[0]`. -/
+@[simps]
+def const {X Y : SSet.{u}} (y : Y _⦋0⦌) : X ⟶ Y where
+  app n _ := Y.map (n.unop.const _ 0).op y
+  naturality _ _ _ := by
+    ext
+    dsimp
+    rw [← FunctorToTypes.map_comp_apply]
+    rfl
+
+@[simp]
+lemma comp_const {X Y Z : SSet.{u}} (f : X ⟶ Y) (z : Z _⦋0⦌) :
+    f ≫ const z = const z := rfl
+
+@[simp]
+lemma const_comp {X Y Z : SSet.{u}} (y : Y _⦋0⦌) (g : Y ⟶ Z) :
+    const (X := X) y ≫ g = const (g.app _ y) := by
+  ext m x
+  simp [FunctorToTypes.naturality]
+
 /-- The ulift functor `SSet.{u} ⥤ SSet.{max u v}` on simplicial sets. -/
 def uliftFunctor : SSet.{u} ⥤ SSet.{max u v} :=
   (SimplicialObject.whiskering _ _).obj CategoryTheory.uliftFunctor.{v, u}
@@ -108,11 +128,11 @@ end
 
 section adjunctions
 
-/-- The adjunction between the n-skeleton and n-truncation.-/
+/-- The adjunction between the n-skeleton and n-truncation. -/
 noncomputable def skAdj (n : ℕ) : Truncated.sk n ⊣ truncation.{u} n :=
   SimplicialObject.skAdj n
 
-/-- The adjunction between n-truncation and the n-coskeleton.-/
+/-- The adjunction between n-truncation and the n-coskeleton. -/
 noncomputable def coskAdj (n : ℕ) : truncation.{u} n ⊣ Truncated.cosk n :=
   SimplicialObject.coskAdj n
 
@@ -124,7 +144,7 @@ instance cosk_reflective (n) : IsIso (coskAdj n).counit :=
 instance sk_coreflective (n) : IsIso (skAdj n).unit :=
   SimplicialObject.Truncated.sk_coreflective n
 
-/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is right Kan extension along it. -/
 noncomputable def cosk.fullyFaithful (n) :
     (Truncated.cosk n).FullyFaithful :=
   SimplicialObject.Truncated.cosk.fullyFaithful n
@@ -138,7 +158,7 @@ instance cosk.faithful (n) : (Truncated.cosk n).Faithful :=
 noncomputable instance coskAdj.reflective (n) : Reflective (Truncated.cosk n) :=
   SimplicialObject.Truncated.coskAdj.reflective n
 
-/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it.-/
+/-- Since `Truncated.inclusion` is fully faithful, so is left Kan extension along it. -/
 noncomputable def sk.fullyFaithful (n) :
     (Truncated.sk n).FullyFaithful := SimplicialObject.Truncated.sk.fullyFaithful n
 
