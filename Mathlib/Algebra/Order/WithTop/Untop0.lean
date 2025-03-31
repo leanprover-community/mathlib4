@@ -77,7 +77,7 @@ lemma untop₀_neg [LinearOrderedAddCommGroup α] (a : WithTop α) :
   by_cases ha : a = ⊤
   · simp [ha]
   · lift a to α using ha
-    rw [(by rfl : -a = (↑(-a) : WithTop α)), untop₀_coe]
+    rw [← LinearOrderedAddCommGroup.coe_neg, untop₀_coe]
     simp
 
 end WithTop

@@ -156,8 +156,8 @@ theorem eval₂_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : Unit
       f.eval₂ φ (a ()) := by
   simp only [MvPolynomial.pUnitAlgEquiv_symm_apply]
   induction f using Polynomial.induction_on' with
-  | h_add f g hf hg => simp [hf, hg]
-  | h_monomial n r => simp
+  | add f g hf hg => simp [hf, hg]
+  | monomial n r => simp
 
 theorem eval₂_const_pUnitAlgEquiv_symm {f : Polynomial R} {φ : R →+* S} {a : S} :
     ((MvPolynomial.pUnitAlgEquiv R).symm f : MvPolynomial Unit R).eval₂ φ (fun _ ↦ a)  =
@@ -619,3 +619,65 @@ theorem rename_polynomial_aeval_X {σ τ : Type*} (f : σ → τ) (i : σ) (p : 
 end Equiv
 
 end MvPolynomial
+
+section toMvPolynomial
+
+variable {R S σ τ : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
+
+/-- The embedding of `R[X]` into `R[Xᵢ]` as an `R`-algebra homomorphism. -/
+noncomputable def Polynomial.toMvPolynomial (i : σ) : R[X] →ₐ[R] MvPolynomial σ R :=
+  aeval (MvPolynomial.X i)
+
+@[simp]
+lemma Polynomial.toMvPolynomial_C (i : σ) (r : R) : (C r).toMvPolynomial i = MvPolynomial.C r := by
+  simp [toMvPolynomial]
+
+@[simp]
+lemma Polynomial.toMvPolynomial_X (i : σ) : X.toMvPolynomial i = MvPolynomial.X (R := R) i := by
+  simp [toMvPolynomial]
+
+lemma Polynomial.toMvPolynomial_eq_rename_comp (i : σ) :
+    toMvPolynomial (R := R) i =
+      (MvPolynomial.rename (fun _ : Unit ↦ i)).comp (MvPolynomial.pUnitAlgEquiv R).symm := by
+  ext
+  simp
+
+lemma Polynomial.toMvPolynomial_injective (i : σ) :
+    Function.Injective (toMvPolynomial (R := R) i) := by
+  simp only [toMvPolynomial_eq_rename_comp, AlgHom.coe_comp, AlgHom.coe_coe,
+    EquivLike.injective_comp]
+  exact MvPolynomial.rename_injective (fun x ↦ i) fun _ _ _ ↦ rfl
+
+@[simp]
+lemma MvPolynomial.eval_comp_toMvPolynomial (f : σ → R) (i : σ) :
+    (eval f).comp (toMvPolynomial (R := R) i) = Polynomial.evalRingHom (f i) := by
+  ext <;> simp
+
+@[simp]
+lemma MvPolynomial.eval_toMvPolynomial (f : σ → R) (i : σ) (p : R[X]) :
+    eval f (p.toMvPolynomial i) = Polynomial.eval (f i) p :=
+  DFunLike.congr_fun (eval_comp_toMvPolynomial ..) p
+
+@[simp]
+lemma MvPolynomial.aeval_comp_toMvPolynomial (f : σ → S) (i : σ) :
+    (aeval (R := R) f).comp (toMvPolynomial i) = Polynomial.aeval (f i) := by
+  ext
+  simp
+
+@[simp]
+lemma MvPolynomial.aeval_toMvPolynomial (f : σ → S) (i : σ) (p : R[X]) :
+    aeval f (p.toMvPolynomial i) = Polynomial.aeval (f i) p :=
+  DFunLike.congr_fun (aeval_comp_toMvPolynomial ..) p
+
+@[simp]
+lemma MvPolynomial.rename_comp_toMvPolynomial (f : σ → τ) (a : σ) :
+    (rename (R := R) f).comp (Polynomial.toMvPolynomial a) = Polynomial.toMvPolynomial (f a) := by
+  ext
+  simp
+
+@[simp]
+lemma MvPolynomial.rename_toMvPolynomial (f : σ → τ) (a : σ) (p : R[X]) :
+    (rename (R := R) f) (p.toMvPolynomial a) = p.toMvPolynomial (f a) :=
+  DFunLike.congr_fun (rename_comp_toMvPolynomial ..) p
+
+end toMvPolynomial

@@ -204,16 +204,10 @@ theorem isLimit_iff {o} : IsLimit o ↔ o ≠ 0 ∧ IsSuccPrelimit o := by
 theorem IsLimit.isSuccPrelimit {o} (h : IsLimit o) : IsSuccPrelimit o :=
   IsSuccLimit.isSuccPrelimit h
 
-@[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
-alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
-
 theorem IsLimit.succ_lt {o a : Ordinal} (h : IsLimit o) : a < o → succ a < o :=
   IsSuccLimit.succ_lt h
 
 theorem isSuccPrelimit_zero : IsSuccPrelimit (0 : Ordinal) := isSuccPrelimit_bot
-
-@[deprecated isSuccPrelimit_zero (since := "2024-09-05")]
-alias isSuccLimit_zero := isSuccPrelimit_zero
 
 theorem not_zero_isLimit : ¬IsLimit 0 :=
   not_isSuccLimit_bot
@@ -360,11 +354,6 @@ theorem mk_Iio_ordinal (o : Ordinal.{u}) :
   rw [lift_card, ← typein_ordinal]
   rfl
 
-@[deprecated mk_Iio_ordinal (since := "2024-09-19")]
-theorem mk_initialSeg (o : Ordinal.{u}) :
-    #{ o' : Ordinal | o' < o } = Cardinal.lift.{u + 1} o.card := mk_Iio_ordinal o
-
-
 /-! ### Normal ordinal functions -/
 
 
@@ -412,17 +401,12 @@ theorem IsNormal.id_le {f} (H : IsNormal f) : id ≤ f :=
 theorem IsNormal.le_apply {f} (H : IsNormal f) {a} : a ≤ f a :=
   H.strictMono.le_apply
 
-@[deprecated IsNormal.le_apply (since := "2024-09-11")]
-theorem IsNormal.self_le {f} (H : IsNormal f) (a) : a ≤ f a :=
-  H.strictMono.le_apply
-
 theorem IsNormal.le_iff_eq {f} (H : IsNormal f) {a} : f a ≤ a ↔ f a = a :=
   H.le_apply.le_iff_eq
 
 theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempty) (b)
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
   ⟨fun h _ pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
-    -- Porting note: `refine'` didn't work well so `induction` is used
     induction b using limitRecOn with
     | H₁ =>
       obtain ⟨x, px⟩ := p0
