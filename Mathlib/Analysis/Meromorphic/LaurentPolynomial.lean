@@ -114,7 +114,6 @@ theorem order_LaurentPolynomial {z : 𝕜} (d : 𝕜 → ℤ) (h₁d : Set.Finit
       simp [eq_comm, mulsupport_LaurentPolynomial d]
     rw [finprod_eq_prod _ t₀, t₁, eq_comm]
     simp only [Finset.prod_apply, smul_eq_mul]
-    have : z ∉ h₁d.toFinset.erase z := Finset.not_mem_erase z h₁d.toFinset
     by_cases hz : z ∈ h₁d.toFinset
     · rw [t₁] at hz
       simp_rw [← Finset.mul_prod_erase t₀.toFinset _ hz]
