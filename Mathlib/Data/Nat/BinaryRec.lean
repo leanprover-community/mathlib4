@@ -78,15 +78,15 @@ def binaryRec' {motive : Nat → Sort u} (z : motive 0)
 
 /-- The same as `binaryRec`, but special casing both 0 and 1 as base cases -/
 @[elab_as_elim, specialize]
-def binaryRecFromOne {motive : Nat → Sort u} (z₀ : motive 0) (z₁ : motive 1)
-    (f : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
+def binaryRecFromOne {motive : Nat → Sort u} (zero : motive 0) (one : motive 1)
+    (bit : ∀ b n, n ≠ 0 → motive n → motive (bit b n)) :
     ∀ n, motive n :=
-  binaryRec' z₀ fun b n h ih =>
+  binaryRec' zero fun b n h ih =>
     if h' : n = 0 then
-      have : bit b n = bit true 0 := by
+      have : Nat.bit b n = Nat.bit true 0 := by
         rw [h', h h']
-      congrArg motive this ▸ z₁
-    else f b n h' ih
+      congrArg motive this ▸ one
+    else bit b n h' ih
 
 theorem bit_val (b n) : bit b n = 2 * n + b.toNat := by
   cases b <;> rfl

@@ -145,14 +145,14 @@ theorem div_zero (a : R) : a / 0 = 0 :=
 section
 
 @[elab_as_elim]
-theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
-    (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) : P a b := by
+theorem GCD.induction {motive : R → R → Prop} (a b : R) (zero : ∀ x, motive 0 x)
+    (step : ∀ a b, a ≠ 0 → motive (b % a) a → motive a b) : motive a b := by
   classical
   exact if a0 : a = 0 then
-    a0.symm ▸ H0 b
+    a0.symm ▸ zero b
   else
     have _ := mod_lt b a0
-    H1 _ _ a0 (GCD.induction (b % a) a H0 H1)
+    step _ _ a0 (GCD.induction (b % a) a zero step)
 termination_by a
 
 end

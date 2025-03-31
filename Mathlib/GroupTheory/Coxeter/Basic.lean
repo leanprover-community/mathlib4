@@ -248,8 +248,8 @@ theorem submonoid_closure_range_simple : Submonoid.closure (range cs.simple) = �
 
 /-- If `p : W → Prop` holds for all simple reflections, it holds for the identity, and it is
 preserved under multiplication, then it holds for all elements of `W`. -/
-theorem simple_induction {p : W → Prop} (w : W) (simple : ∀ i : B, p (s i)) (one : p 1)
-    (mul : ∀ w w' : W, p w → p w' → p (w * w')) : p w := by
+theorem simple_induction {motive : W → Prop} (w : W) (simple : ∀ i : B, motive (s i)) (one : motive 1)
+    (mul : ∀ w w' : W, motive w → motive w' → motive (w * w')) : motive w := by
   have := cs.submonoid_closure_range_simple.symm ▸ Submonoid.mem_top w
   exact Submonoid.closure_induction (fun x ⟨i, hi⟩ ↦ hi ▸ simple i) one (fun _ _ _ _ ↦ mul _ _)
     this
