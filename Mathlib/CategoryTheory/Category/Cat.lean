@@ -149,7 +149,7 @@ namespace Functor
 
 /-- Functors between categories of the same size define arrows in `Cat`. -/
 def toCatHom {C D : Type u} [Category.{v} C] [Category.{v} D] (F : C ⥤ D) :
-    (Cat.of C) ⟶ (Cat.of D) := F
+    Cat.of C ⟶ Cat.of D := F
 
 /-- Arrows in `Cat` define functors. -/
 def ofCatHom {C D : Type} [Category C] [Category D] (F : (Cat.of C) ⟶ (Cat.of D)) : C ⥤ D := F
