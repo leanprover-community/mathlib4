@@ -10,8 +10,14 @@ variable {α β ι : Type*}
 
 section HasProdUniformlyOn
 
-variable [CommMonoid α] [ UniformSpace α]
-  (f : ι → β → α) (g : β → α) (s : Set β)
+variable [CommMonoid α] (f : ι → β → α) (g : β → α) (s : Set β)
+
+@[simp]
+lemma ofFun_prod (i : Finset ι) :
+    ∏ b ∈ i, (UniformOnFun.ofFun {s}) (f b) = (UniformOnFun.ofFun {s}) (∏ b ∈ i, f b) := rfl
+
+variable [ UniformSpace α]
+
 
 @[to_additive]
 def HasProdUniformlyOn : Prop :=
@@ -60,21 +66,19 @@ theorem tprod_eq_one_of_not_multipliable2 (h : ¬MultipliableUniformlyOn f s) :
     ∏ᵘ[s] b, f b = 1 := by
   simp [tprodUniformlyOn_def, h]
 
---is this a reasonable defn?
-lemma HasProdUniformlyOn.mk {f : ι → β → α} {g : β → α} {s : Set β}
-    (h : TendstoUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s) :
-    HasProdUniformlyOn f g s := by
+--check this a reasonable defn
+lemma HasProdUniformlyOn_iff_TendstoUniformlyOn {f : ι → β → α} {g : β → α} {s : Set β} :
+    HasProdUniformlyOn f g s ↔
+    TendstoUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s := by
   rw [HasProdUniformlyOn, HasProd] at *
   have := UniformOnFun.tendsto_iff_tendstoUniformlyOn
     (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun {s}) (f b)))
     (f:= (UniformOnFun.ofFun {s} g)) (p := atTop)
-  rw [this]
+  simp only [Set.mem_singleton_iff, UniformOnFun.toFun_ofFun, forall_eq] at this
+  convert this
+  next i hi =>
   simp
-  apply h.congr
-  filter_upwards with i x hx
-  have : (∏ b ∈ i, (UniformOnFun.ofFun {s}) (f b)) = (UniformOnFun.ofFun {s}) (∏ b ∈ i,  (f b)):= by
-    rfl
-  simp [this]
+
 
 
 
