@@ -72,6 +72,9 @@ theorem ext {e₁ e₂ : ENormedSpace 𝕜 V} (h : ∀ x, e₁ x = e₂ x) : e�
 theorem coe_inj {e₁ e₂ : ENormedSpace 𝕜 V} : (e₁ : V → ℝ≥0∞) = e₂ ↔ e₁ = e₂ :=
   coeFn_injective.eq_iff
 
+
+attribute [ext] Mul
+set_option pp.coercions false
 @[simp]
 theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   apply le_antisymm (e.map_smul_le' c x)
@@ -80,11 +83,26 @@ theorem map_smul (c : 𝕜) (x : V) : e (c • x) = ‖c‖₊ * e x := by
   calc
     (‖c‖₊ : ℝ≥0∞) * e x = ‖c‖₊ * e (c⁻¹ • c • x) := by rw [inv_smul_smul₀ hc]
     _ ≤ ‖c‖₊ * (‖c⁻¹‖₊ * e (c • x)) := mul_le_mul_left' (e.map_smul_le' _ _) _
-    _ = e (c • x) := by
-      rw [← mul_assoc, nnnorm_inv, ENNReal.coe_inv, ENNReal.mul_inv_cancel _ ENNReal.coe_ne_top,
-        one_mul]
-        <;> simp [hc]
+    _ = e (c • x) := ?_
+  have := ENNReal.mul_inv_cancel (a := ‖c‖₊) ?_ ENNReal.coe_ne_top
+  rw [← mul_assoc, nnnorm_inv, ENNReal.coe_inv]
+  convert one_mul _
+  convert this
+  unfold WithTop.instNonUnitalNonAssocSemiring
+    WithTop.instSemigroupWithZero
+    WithTop.instMulZeroClass
+    NNReal.instConditionallyCompleteLinearOrderBot
+    Nonneg.conditionallyCompleteLinearOrderBot
+    Nonneg.conditionallyCompleteLinearOrder
+  simp only
+  ext x y
+  dsimp [Mul.mul]
+  congr
+  ext a
+  rfl
 
+
+#exit
 @[simp]
 theorem map_zero : e 0 = 0 := by
   rw [← zero_smul 𝕜 (0 : V), e.map_smul]
