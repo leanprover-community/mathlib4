@@ -501,7 +501,7 @@ noncomputable def consRecOn {motive : NormalWord d → Sort _} (w : NormalWord d
   convert base head ⟨w, 1, h3⟩ rfl ?_
   · simp [base_smul_def]
   · induction w using Word.consRecOn with
-    | empty => exact h_empty
+    | empty => exact empty
     | cons i g w h1 hg1 ih =>
       convert cons i g ⟨w, 1, fun _ _ h => h3 _ _ (List.mem_cons_of_mem _ h)⟩
         h1 (h3 _ _ List.mem_cons_self) ?_ rfl
