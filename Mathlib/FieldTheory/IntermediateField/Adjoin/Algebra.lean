@@ -79,8 +79,11 @@ theorem sup_toSubalgebra_of_isAlgebraic_right [Algebra.IsAlgebraic K E2] :
     IsAlgebraic.tower_top E1 (isAlgebraic_iff.1
       (Algebra.IsAlgebraic.isAlgebraic (⟨x, h⟩ : E2)))
   apply_fun Subalgebra.restrictScalars K at this
-  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin,
-    Algebra.restrictScalars_adjoin] at this
+  rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin] at this
+  -- TODO: rather than using `← coe_type_toSubalgera` here, perhaps we should restate another
+  -- version of `Algebra.restrictScalars_adjoin` for intermediate fields?
+  simp only [← coe_type_toSubalgebra] at this
+  rw [Algebra.restrictScalars_adjoin] at this
   exact this
 
 theorem sup_toSubalgebra_of_isAlgebraic_left [Algebra.IsAlgebraic K E1] :
@@ -121,9 +124,10 @@ theorem adjoin_toSubalgebra_of_isAlgebraic (L : IntermediateField F K)
   let i' : E ≃ₐ[F] E' := AlgEquiv.ofInjectiveField i
   have hi : algebraMap E K = (algebraMap E' K) ∘ i' := by ext x; rfl
   apply_fun _ using Subalgebra.restrictScalars_injective F
-  erw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
-    Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin,
-    Algebra.restrictScalars_adjoin]
+  rw [← restrictScalars_toSubalgebra, restrictScalars_adjoin_of_algEquiv i' hi,
+    Algebra.restrictScalars_adjoin_of_algEquiv i' hi, restrictScalars_adjoin]
+  dsimp only [← E'.coe_type_toSubalgebra]
+  rw [Algebra.restrictScalars_adjoin F E'.toSubalgebra]
   exact E'.sup_toSubalgebra_of_isAlgebraic L (halg.imp
     (fun (_ : Algebra.IsAlgebraic F E) ↦ i'.isAlgebraic) id)
 
