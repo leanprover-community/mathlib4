@@ -99,7 +99,7 @@ theorem mem_of_mem_toEnumFinset {p : α × ℕ} (h : p ∈ m.toEnumFinset) : p.1
   have := (m.mem_toEnumFinset p).mp h; Multiset.count_pos.mp (by omega)
 
 @[simp] lemma toEnumFinset_filter_eq (m : Multiset α) (a : α) :
-    m.toEnumFinset.filter (·.1 = a) = {a} ×ˢ Finset.range (m.count a) := by aesop
+    {x ∈ m.toEnumFinset | x.1 = a} = {a} ×ˢ Finset.range (m.count a) := by aesop
 
 @[simp] lemma map_toEnumFinset_fst (m : Multiset α) : m.toEnumFinset.val.map Prod.fst = m := by
   ext a; simp [count_map, ← Finset.filter_val, eq_comm (a := a)]
