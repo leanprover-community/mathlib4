@@ -238,7 +238,7 @@ theorem c₁IsInt :
   sorry
 
   }
-#exit
+
 theorem c₁neq0 : c₁ K α' β' γ' ≠ 0 := by {
   unfold c₁
   have hcα := (c'_both K α').2.1
@@ -246,7 +246,7 @@ theorem c₁neq0 : c₁ K α' β' γ' ≠ 0 := by {
   have hcγ := (c'_both K γ').2.1
   unfold c'
   simp_all only [ne_eq, mem_setOf_eq, mul_eq_zero, or_self, not_false_eq_true]}
-
+#exit
 variable (k : ℤ) (hkneq0 : k ≠ 0) (hint : IsIntegral ℤ (k • η K α' β' γ' q t u))
 
 def M : Matrix (Fin (m K) × Fin (n K q)) (Fin q × Fin q) (𝓞 K) :=
