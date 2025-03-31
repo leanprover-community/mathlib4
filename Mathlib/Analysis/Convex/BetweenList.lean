@@ -94,7 +94,7 @@ lemma Sbtw.pairwise_ne {l : List P} (h : l.Sbtw R) : l.Pairwise (· ≠ ·) :=
   h.2
 
 lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
-    l.Sbtw R ↔ l.Triplewise (Sbtw R) ∧ ¬ ∃ a, l = [a, a] := by
+    l.Sbtw R ↔ l.Triplewise (Sbtw R) ∧ ∀ a, l ≠ [a, a] := by
   rw [List.Sbtw]
   induction l with
   | nil => simp
@@ -119,15 +119,14 @@ lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
             simp [ha]
       · rw [pairwise_cons] at hpne
         exact (ih.1 ⟨ht, hpne.2⟩).1
-      · rw [not_exists]
-        intro x hx
+      · intro x hx
         simp only [cons.injEq] at hx
         rcases hx with ⟨hxh, hxt⟩
         subst hxh hxt
         simp at hpne
     · have ht' : tail.Wbtw R := ht.imp _root_.Sbtw.wbtw
       simp only [ht', hp, true_and, ht] at ih
-      rw [pairwise_cons, ih, not_exists]
+      rw [pairwise_cons, ih]
       refine ⟨fun a ha' ↦ ?_, fun a ↦ ?_⟩
       · rintro rfl
         cases tail with
@@ -144,10 +143,10 @@ lemma sbtw_iff_triplewise_and_ne_pair {l : List P} :
 
 lemma sbtw_cons {p : P} {l : List P} :
     (p :: l).Sbtw R ↔ l.Pairwise (Sbtw R p) ∧ l.Sbtw R ∧ l ≠ [p] := by
-  rw [sbtw_iff_triplewise_and_ne_pair, triplewise_cons]
+  rw [sbtw_iff_triplewise_and_ne_pair, ← not_exists, triplewise_cons]
   simp only [cons.injEq, exists_eq_left', and_assoc, and_congr_right_iff, ne_eq, and_congr_left_iff]
   intro hp hne
-  rw [sbtw_iff_triplewise_and_ne_pair, iff_self_and]
+  rw [sbtw_iff_triplewise_and_ne_pair, iff_self_and, ← not_exists]
   rintro hl ⟨a, rfl⟩
   simp at hp
 
