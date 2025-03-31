@@ -606,8 +606,8 @@ theorem exists_affineIndependent (s : Set P) :
       rw [Set.image_insert_eq, ← Set.image_comp]
       simp
     · use p
-      simp only [Equiv.coe_vaddConst, Set.singleton_union, Set.mem_inter_iff, coe_affineSpan]
-      exact ⟨mem_spanPoints k _ _ (Set.mem_insert p _), mem_spanPoints k _ _ hp⟩
+      simp only [Equiv.coe_vaddConst, Set.singleton_union, Set.mem_inter_iff]
+      exact ⟨mem_affineSpan k (Set.mem_insert p _), mem_affineSpan k hp⟩
 
 variable {V}
 
@@ -841,6 +841,25 @@ theorem range_face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1
     (h : #fs = m + 1) : Set.range (s.face h).points = s.points '' ↑fs := by
   rw [face_points', Set.range_comp, Finset.range_orderEmbOfFin]
 
+/-- The face of a simplex with all but one point. -/
+def faceOpposite {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) : Simplex k P (n - 1) :=
+  s.face (fs := {j | j ≠ i}) (by simp [filter_ne', NeZero.one_le])
+
+@[simp] lemma range_faceOpposite_points {n : ℕ} [NeZero n] (s : Simplex k P n) (i : Fin (n + 1)) :
+    Set.range (s.faceOpposite i).points = s.points '' {j | j ≠ i} := by
+  simp [faceOpposite]
+
+lemma mem_affineSpan_range_face_points_iff [Nontrivial k] {n : ℕ} (s : Simplex k P n)
+    {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) {i : Fin (n + 1)} :
+    s.points i ∈ affineSpan k (Set.range (s.face h).points) ↔ i ∈ fs := by
+  rw [range_face_points, s.independent.mem_affineSpan_iff, mem_coe]
+
+lemma mem_affineSpan_range_faceOpposite_points_iff [Nontrivial k] {n : ℕ} [NeZero n]
+    (s : Simplex k P n) {i j : Fin (n + 1)} :
+    s.points i ∈ affineSpan k (Set.range (s.faceOpposite j).points) ↔ i ≠ j := by
+  rw [faceOpposite, mem_affineSpan_range_face_points_iff]
+  simp
+
 /-- Remap a simplex along an `Equiv` of index types. -/
 @[simps]
 def reindex {m n : ℕ} (s : Simplex k P m) (e : Fin (m + 1) ≃ Fin (n + 1)) : Simplex k P n :=
@@ -965,7 +984,7 @@ lemma affineCombination_mem_interior_iff {n : ℕ} {s : Simplex k P n} {w : Fin 
     s.independent w' w hw' hw hww']
   exact hw'01
 
-/-- `s.closedInterior is the set of points that can be expressed as an affine combination
+/-- `s.closedInterior` is the set of points that can be expressed as an affine combination
 of the vertices with weights between 0 and 1 inclusive. This is equivalent to the convex hull of
 the vertices or the closure of the interior. -/
 protected def closedInterior {n : ℕ} (s : Simplex k P n) : Set P :=

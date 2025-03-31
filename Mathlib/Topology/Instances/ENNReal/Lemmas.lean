@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.BigOperators
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Instances.NNReal.Lemmas
@@ -905,7 +905,7 @@ theorem tsum_eq_toNNReal_tsum {f : β → ℝ≥0} : ∑' b, f b = (∑' b, (f b
   · rw [← ENNReal.coe_tsum h, ENNReal.toNNReal_coe]
   · have A := tsum_eq_zero_of_not_summable h
     simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Classical.not_not] at h
-    simp only [h, ENNReal.top_toNNReal, A]
+    simp only [h, ENNReal.toNNReal_top, A]
 
 /-- Comparison test of convergence of `ℝ≥0`-valued series. -/
 theorem exists_le_hasSum_of_le {f g : β → ℝ≥0} {r : ℝ≥0} (hgf : ∀ b, g b ≤ f b) (hfr : HasSum f r) :
