@@ -271,6 +271,7 @@ import Mathlib.Algebra.FreeAlgebra.Cardinality
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.FreeMonoid.Count
 import Mathlib.Algebra.FreeMonoid.Symbols
+import Mathlib.Algebra.FreeMonoid.UniqueProds
 import Mathlib.Algebra.FreeNonUnitalNonAssocAlgebra
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.Algebra.GCDMonoid.Finset
