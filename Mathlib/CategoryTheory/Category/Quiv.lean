@@ -5,7 +5,7 @@ Authors: Kim Morrison, Emily Riehl, Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Category.Cat
-import Mathlib.CategoryTheory.PathCategory.Basic
+import Mathlib.CategoryTheory.PathCategory.MorphismProperty
 
 /-!
 # The category of quivers
@@ -61,7 +61,7 @@ namespace Prefunctor
 
 /-- Prefunctors between quivers define arrows in `Quiv`. -/
 def toQuivHom {C D : Type u} [Quiver.{v + 1} C] [Quiver.{v + 1} D] (F : C ⥤q D) :
-    (Quiv.of C) ⟶ (Quiv.of D) := F
+    Quiv.of C ⟶ Quiv.of D := F
 
 /-- Arrows in `Quiv` define prefunctors. -/
 def ofQuivHom {C D : Quiv} (F : C ⟶ D) : C ⥤q D := F
@@ -187,14 +187,15 @@ end
 
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
 @[simps]
-def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefunctor V C) :
-    Paths V ⥤ C where
+def lift {V : Type u} [Quiver.{v + 1} V] {C : Type u₁} [Category.{max u₁ v₁} C]
+    (F : Prefunctor V C) : Paths V ⥤ C where
   obj X := F.obj X
   map f := composePath (F.mapPath f)
 
 /-- Naturality of `pathComposition`, which defines a natural transformation
 `Quiv.forget ⋙ Cat.free ⟶ 𝟭 _`. -/
-theorem pathComposition_naturality {C D: Type u} [Category.{max u v} C] [Category.{max u v} D]
+theorem pathComposition_naturality {C : Type u} {D : Type u₁}
+    [Category.{max u v} C] [Category.{max u₁ v₁} D]
     (F : C ⥤ D) : Cat.freeMap (F.toPrefunctor) ⋙ pathComposition D = pathComposition C ⋙ F := by
   refine Paths.ext_functor rfl ?_
   intro _ _ _
@@ -237,8 +238,8 @@ def adj : Cat.free ⊣ Quiv.forget :=
   }
 
 /-- The `homEquiv` arising from `adj : Cat.free ⊣ Quiv.forget`. -/
-def pathsEquiv {V C : Type} [Quiver V] [Category C] : (Paths V ⥤ C) ≃ (V ⥤q C) :=
-  adj.homEquiv (Quiv.of V) (Cat.of C)
+def pathsEquiv {V C : Type u} [Quiver.{max u v + 1} V] [Category.{max u v} C] :
+    (Paths V ⥤ C) ≃ (V ⥤q C) := adj.homEquiv (Quiv.of V) (Cat.of C)
 
 end Quiv
 
