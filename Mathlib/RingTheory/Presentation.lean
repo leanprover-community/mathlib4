@@ -465,7 +465,7 @@ end Composition
 /-- Given a presentation `P` and equivalences `ι ≃ P.vars` and
 `κ ≃ P.rels`, this is the induced presentation with variables indexed
 by `ι` and relations indexed by `κ -/
-@[simps toGenerators, simps (config := .lemmasOnly) relation rels]
+@[simps toGenerators, simps -isSimp relation rels]
 noncomputable def reindex (P : Presentation.{w, t} R S)
     {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
     Presentation R S where
@@ -487,6 +487,8 @@ lemma isFinite_reindex_iff {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rel
     (P.reindex e f).IsFinite ↔ P.IsFinite :=
   ⟨fun h ↦ ⟨e.finite_iff.mp h.1, f.finite_iff.mp h.2⟩,
     fun h ↦ ⟨e.finite_iff.mpr h.1, f.finite_iff.mpr h.2⟩⟩
+
+alias ⟨_, IsFinite.reindex⟩ := isFinite_reindex_iff
 
 end Construction
 

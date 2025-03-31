@@ -420,7 +420,7 @@ end BaseChange
 /-- Given a pre-submersive presentation `P` and equivalences `ι ≃ P.vars` and
 `κ ≃ P.rels`, this is the induced pre-sumbersive presentation with variables indexed
 by `ι` and relations indexed by `κ -/
-@[simps toPresentation, simps (config := .lemmasOnly) map]
+@[simps toPresentation, simps -isSimp map]
 noncomputable def reindex (P : PreSubmersivePresentation.{w, t} R S)
     {ι κ : Type*} (e : ι ≃ P.vars) (f : κ ≃ P.rels) :
     PreSubmersivePresentation R S where

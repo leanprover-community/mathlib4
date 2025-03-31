@@ -249,7 +249,7 @@ def baseChange {T} [CommRing T] [Algebra R T] (P : Generators R S) : Generators 
 
 /-- Given generators `P` and an equivalence `ι ≃ P.vars`, these
 are the induced generators indexed by `ι`. -/
-@[simps (config := .lemmasOnly) vars]
+@[simps -isSimp vars]
 noncomputable def reindex (P : Generators.{w} R S) {ι : Type*} (e : ι ≃ P.vars) :
     Generators R S where
   vars := ι
