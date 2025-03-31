@@ -3,9 +3,10 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Data.Bool.Basic
 import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
-import Mathlib.Data.Bool.Basic
+import Mathlib.Data.Subtype
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Simps.Basic
@@ -858,3 +859,24 @@ def finTwoEquiv : Fin 2 ≃ Bool where
     | 0 => by simp
     | 1 => by simp
   right_inv b := by cases b <;> simp
+
+namespace Equiv
+variable {α β : Type*}
+
+/-- The left summand of `α ⊕ β` is equivalent to `α`. -/
+@[simps]
+def sumIsLeft : {x : α ⊕ β // x.isLeft} ≃ α where
+  toFun x := x.1.getLeft x.2
+  invFun a := ⟨.inl a, Sum.isLeft_inl⟩
+  left_inv | ⟨.inl _a, _⟩ => rfl
+  right_inv _a := rfl
+
+/-- The right summand of `α ⊕ β` is equivalent to `β`. -/
+@[simps]
+def sumIsRight : {x : α ⊕ β // x.isRight} ≃ β where
+  toFun x := x.1.getRight x.2
+  invFun b := ⟨.inr b, Sum.isRight_inr⟩
+  left_inv | ⟨.inr _b, _⟩ => rfl
+  right_inv _b := rfl
+
+end Equiv

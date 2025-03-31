@@ -112,7 +112,7 @@ theorem Matrix.vecMul_injective_iff {R : Type*} [Ring R] {M : Matrix m n R} :
     ext j
     simp [vecMul, dotProduct]
 
-lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [CommRing R] {A : Matrix m m R}
+lemma Matrix.linearIndependent_rows_of_isUnit {R : Type*} [Ring R] {A : Matrix m m R}
     [DecidableEq m] (ha : IsUnit A) : LinearIndependent R (fun i ↦ A i) := by
   rw [← Matrix.vecMul_injective_iff]
   exact Matrix.vecMul_injective_of_isUnit ha
@@ -815,13 +815,13 @@ noncomputable def leftMulMatrix : S →ₐ[R] Matrix m m R where
     rw [_root_.map_zero, LinearEquiv.map_zero]
   map_one' := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_one, LinearMap.toMatrix_one]
+    rw [map_one, LinearMap.toMatrix_one]
   map_add' x y := by
     dsimp only  -- porting node: needed due to new-style structures
     rw [map_add, LinearEquiv.map_add]
   map_mul' x y := by
     dsimp only  -- porting node: needed due to new-style structures
-    rw [_root_.map_mul, LinearMap.toMatrix_mul]
+    rw [map_mul, LinearMap.toMatrix_mul]
   commutes' r := by
     dsimp only  -- porting node: needed due to new-style structures
     ext

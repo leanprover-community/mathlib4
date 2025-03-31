@@ -365,6 +365,10 @@ def comp (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β
         _ ≤ max C 0 * D := by gcongr; apply hD
         ⟩⟩
 
+@[simp]
+theorem comp_apply (G : β → γ) {C : ℝ≥0} (H : LipschitzWith C G) (f : α →ᵇ β) (a : α) :
+    (f.comp G H) a = G (f a) := rfl
+
 /-- The composition operator (in the target) with a Lipschitz map is Lipschitz. -/
 theorem lipschitz_comp {G : β → γ} {C : ℝ≥0} (H : LipschitzWith C G) :
     LipschitzWith C (comp G H : (α →ᵇ β) → α →ᵇ γ) :=
@@ -637,23 +641,42 @@ instance instCommMonoid [CommMonoid R] [BoundedMul R] [ContinuousMul R] :
   __ := instMonoid
   mul_comm f g := by ext x; simp [mul_apply, mul_comm]
 
+@[to_additive]
+instance instMulOneClass [MulOneClass R] [BoundedMul R] [ContinuousMul R] : MulOneClass (α →ᵇ R) :=
+  DFunLike.coe_injective.mulOneClass _ coe_one coe_mul
+
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological monoids, as a
+`MonoidHom`. Similar to `MonoidHom.compLeftContinuous`. -/
+@[to_additive (attr := simps)
+"Composition on the left by a (lipschitz-continuous) homomorphism of topological `AddMonoid`s, as a
+`AddMonoidHom`. Similar to `AddMonoidHom.compLeftContinuous`."]
+protected def _root_.MonoidHom.compLeftContinuousBounded (α : Type*) [TopologicalSpace α]
+    [PseudoMetricSpace β] [Monoid β] [BoundedMul β] [ContinuousMul β]
+    [PseudoMetricSpace γ] [Monoid γ] [BoundedMul γ] [ContinuousMul γ]
+    (g : β →* γ) {C : NNReal} (hg : LipschitzWith C g) :
+    (α →ᵇ β) →* (α →ᵇ γ) where
+  toFun f := f.comp g hg
+  map_one' := ext fun _ => g.map_one
+  map_mul' _ _ := ext fun _ => g.map_mul _ _
+
 end mul
 
 section add
 
-variable [TopologicalSpace α] [PseudoMetricSpace β] [AddMonoid β] [BoundedAdd β] [ContinuousAdd β]
-variable (f g : α →ᵇ β) {x : α} {C : ℝ}
+variable [TopologicalSpace α] [PseudoMetricSpace β]
+variable {C : ℝ}
 
 @[simp]
-theorem mkOfCompact_add [CompactSpace α] (f g : C(α, β)) :
+theorem mkOfCompact_add [CompactSpace α] [Add β] [BoundedAdd β] [ContinuousAdd β] (f g : C(α, β)) :
     mkOfCompact (f + g) = mkOfCompact f + mkOfCompact g := rfl
 
-theorem add_compContinuous [TopologicalSpace γ] (h : C(γ, α)) :
+theorem add_compContinuous [Add β] [BoundedAdd β] [ContinuousAdd β] [TopologicalSpace γ]
+    (f g : α →ᵇ β) (h : C(γ, α)) :
     (g + f).compContinuous h = g.compContinuous h + f.compContinuous h := rfl
 
 /-- Coercion of a `NormedAddGroupHom` is an `AddMonoidHom`. Similar to `AddMonoidHom.coeFn`. -/
 @[simps]
-def coeFnAddHom : (α →ᵇ β) →+ α → β where
+def coeFnAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ α → β where
   toFun := (⇑)
   map_zero' := coe_zero
   map_add' := coe_add
@@ -662,7 +685,7 @@ variable (α β)
 
 /-- The additive map forgetting that a bounded continuous function is bounded. -/
 @[simps]
-def toContinuousMapAddHom : (α →ᵇ β) →+ C(α, β) where
+def toContinuousMapAddHom [AddMonoid β] [BoundedAdd β] [ContinuousAdd β] : (α →ᵇ β) →+ C(α, β) where
   toFun := toContinuousMap
   map_zero' := rfl
   map_add' := by
@@ -1214,6 +1237,15 @@ instance instSeminormedRing : SeminormedRing (α →ᵇ R) where
   __ := instRing
   __ := instNonUnitalSeminormedRing
 
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological semirings, as a
+`RingHom`. Similar to `RingHom.compLeftContinuous`. -/
+@[simps!]
+protected def _root_.RingHom.compLeftContinuousBounded (α : Type*)
+    [TopologicalSpace α] [SeminormedRing β] [SeminormedRing γ]
+    (g : β →+* γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →+* (α →ᵇ γ) :=
+  { g.toMonoidHom.compLeftContinuousBounded α hg,
+    g.toAddMonoidHom.compLeftContinuousBounded α hg with }
+
 end Seminormed
 
 instance instNormedRing [NormedRing R] : NormedRing (α →ᵇ R) where
@@ -1299,13 +1331,38 @@ instance instNormedAlgebra : NormedAlgebra 𝕜 (α →ᵇ γ) where
   __ := instAlgebra
   __ := instNormedSpace
 
+variable (𝕜)
+
+/-- Composition on the left by a (lipschitz-continuous) homomorphism of topological `R`-algebras,
+as an `AlgHom`. Similar to `AlgHom.compLeftContinuous`. -/
+@[simps!]
+protected def AlgHom.compLeftContinuousBounded
+    [NormedRing β] [NormedAlgebra 𝕜 β][NormedRing γ] [NormedAlgebra 𝕜 γ]
+    (g : β →ₐ[𝕜] γ) {C : NNReal} (hg : LipschitzWith C g) : (α →ᵇ β) →ₐ[𝕜] (α →ᵇ γ) :=
+  { g.toRingHom.compLeftContinuousBounded α hg with
+    commutes' := fun _ => DFunLike.ext _ _ fun _ => g.commutes' _ }
+
+/-- The algebra-homomorphism forgetting that a bounded continuous function is bounded. -/
+@[simps]
+def toContinuousMapₐ : (α →ᵇ γ) →ₐ[𝕜] C(α, γ) where
+  toFun := (↑)
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' _ := rfl
+
+@[simp]
+theorem coe_toContinuousMapₐ (f : α →ᵇ γ) : (f.toContinuousMapₐ 𝕜 : α → γ) = f := rfl
+
+variable {𝕜}
+
 /-!
 ### Structure as normed module over scalar functions
 
 If `β` is a normed `𝕜`-space, then we show that the space of bounded continuous
 functions from `α` to `β` is naturally a module over the algebra of bounded continuous
 functions from `α` to `𝕜`. -/
-
 
 instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
   smul f g :=
@@ -1352,7 +1409,7 @@ instance instSup : Max (α →ᵇ β) where
         obtain ⟨C₁, hf⟩ := f.bounded
         obtain ⟨C₂, hg⟩ := g.bounded
         refine ⟨C₁ + C₂, fun x y ↦ ?_⟩
-        simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
+        simp_rw [dist_eq_norm_sub] at hf hg ⊢
         exact (norm_sup_sub_sup_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
 
 instance instInf : Min (α →ᵇ β) where
@@ -1363,7 +1420,7 @@ instance instInf : Min (α →ᵇ β) where
         obtain ⟨C₁, hf⟩ := f.bounded
         obtain ⟨C₂, hg⟩ := g.bounded
         refine ⟨C₁ + C₂, fun x y ↦ ?_⟩
-        simp_rw [NormedAddCommGroup.dist_eq] at hf hg ⊢
+        simp_rw [dist_eq_norm_sub] at hf hg ⊢
         exact (norm_inf_sub_inf_le_add_norm _ _ _ _).trans (add_le_add (hf _ _) (hg _ _)) }
 
 @[simp, norm_cast] lemma coe_sup (f g : α →ᵇ β) : ⇑(f ⊔ g) = ⇑f ⊔ ⇑g := rfl
@@ -1460,3 +1517,5 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
 end
 
 end BoundedContinuousFunction
+
+set_option linter.style.longFile 1700

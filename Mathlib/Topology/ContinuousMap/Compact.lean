@@ -428,14 +428,12 @@ theorem summable_of_locally_summable_norm {ι : Type*} {F : ι → C(X, E)}
   classical
   refine (ContinuousMap.exists_tendsto_compactOpen_iff_forall _).2 fun K hK => ?_
   lift K to Compacts X using hK
-  have A : ∀ s : Finset ι, restrict (↑K) (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
+  have A : ∀ s : Finset ι, restrict K (∑ i ∈ s, F i) = ∑ i ∈ s, restrict K (F i) := by
     intro s
     ext1 x
-    simp
-    -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
-    erw [restrict_apply, restrict_apply, restrict_apply, restrict_apply]
-    simp? says simp only [coe_sum, Finset.sum_apply]
-    congr!
+    -- TODO: there is a non-confluence problem in the lemmas here,
+    -- and `SetLike.coe_sort_coe` prevents `restrict_apply` from being used.
+    simp [-SetLike.coe_sort_coe]
   simpa only [HasSum, A] using (hF K).of_norm
 
 end LocalNormalConvergence
@@ -459,7 +457,7 @@ theorem _root_.BoundedContinuousFunction.mkOfCompact_star [CompactSpace α] (f :
   rfl
 
 instance [CompactSpace α] : NormedStarGroup C(α, β) where
-  norm_star f := by
+  norm_star_le f := by
     rw [← BoundedContinuousFunction.norm_mkOfCompact, BoundedContinuousFunction.mkOfCompact_star,
       norm_star, BoundedContinuousFunction.norm_mkOfCompact]
 
