@@ -352,6 +352,29 @@ theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
 
 @[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
 
+/-- Copies a morphism with a different underlying map -/
+def Hom.copyBase {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) : X ⟶ Y where
+  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
+  c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
+  prop x := by
+    subst h
+    convert f.prop x using 4
+    convert Category.comp_id f.c
+    ext
+    simp
+    rfl
+
+lemma Hom.copyBase_eq {X Y : Scheme} (f : X.Hom Y) (g : X → Y) (h : f.base = g) :
+    f.copyBase g h = f := by
+  subst h
+  obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
+  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
+  congr
+  convert Category.comp_id _
+  ext
+  simp
+  rfl
+
 end Scheme
 
 /-- The spectrum of a commutative ring, as a scheme.

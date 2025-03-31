@@ -1027,31 +1027,6 @@ def subscheme : Scheme :=
     (f := TopCat.ofHom (toContinuousMap I.gluedHomeo.symm))
     I.gluedHomeo.symm.isOpenEmbedding
 
-def _root_.AlgebraicGeometry.Scheme.Hom.copyBase
-    {X Y : Scheme} (f : X.Hom Y) (g : X → Y)
-    (h : f.base = g) : X ⟶ Y where
-  base := TopCat.ofHom ⟨g, h ▸ f.base.1.2⟩
-  c := f.c ≫ (TopCat.Presheaf.pushforwardEq (by subst h; rfl) _).hom
-  prop x := by
-    subst h
-    convert f.prop x using 4
-    convert Category.comp_id f.c
-    ext
-    simp
-    rfl
-
-lemma _root_.AlgebraicGeometry.Scheme.Hom.copyBase_eq
-    {X Y : Scheme} (f : X.Hom Y) (g : X → Y)
-    (h : f.base = g) : f.copyBase g h = f := by
-  subst h
-  obtain ⟨⟨⟨f₁, f₂⟩, f₃⟩, f₄⟩ := f
-  simp only [Hom.copyBase, LocallyRingedSpace.Hom.toShHom_mk]
-  congr
-  convert Category.comp_id _
-  ext
-  simp
-  rfl
-
 /-- (Implementation) The isomorphism between the subscheme and the glued scheme. -/
 private noncomputable
 def subschemeIso : I.subscheme ≅ I.glueData.glued :=
@@ -1152,9 +1127,11 @@ lemma ker_subschemeι_app (U : X.affineOpens) :
     (Ideal.Quotient.mk (I.ideal U))) = _
   rw [RingHom.ker_equiv_comp, Ideal.mk_ker]
 
+@[simp]
 lemma ker_subschemeι : I.subschemeι.ker = I := by
   ext; simp [ker_subschemeι_app]
 
+/-- Given `I ≤ J`, this is the map `Spec(Γ(X, U)/J(U)) ⟶ Spec(Γ(X, U)/I(U))`. -/
 noncomputable
 def glueDataObjHom {I J : IdealSheafData X} (h : I ≤ J) (U) :
     J.glueDataObj U ⟶ I.glueDataObj U :=
@@ -1209,16 +1186,6 @@ lemma inclusion_id (I : IdealSheafData X) :
 lemma inclusion_comp {I J K : IdealSheafData X} (h₁ : I ≤ J) (h₂ : J ≤ K) :
     inclusion h₂ ≫ inclusion h₁ = inclusion (h₁.trans h₂) :=
   K.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
-
-@[simps]
-def kerFunctor (Y : Scheme.{u}) : (Over Y)ᵒᵖ ⥤ IdealSheafData Y where
-  obj f := f.unop.hom.ker
-  map {f g} hfg := homOfLE <| by
-      simp only [Functor.id_obj, Functor.const_obj_obj, OrderDual.toDual_le_toDual]
-      rw [← Over.w hfg.unop]
-      exact f.unop.hom.le_ker_comp _
-  map_id _ := Subsingleton.elim _ _
-  map_comp _ _ := Subsingleton.elim _ _
 
 end IdealSheafData
 
