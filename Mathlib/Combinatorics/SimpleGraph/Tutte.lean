@@ -108,7 +108,8 @@ theorem IsTutteViolator.empty (hodd : Odd (Fintype.card V)) : G.IsTutteViolator 
   use c
 
 /-- Proves the necessity part of Tutte's theorem -/
-lemma not_isTutteViolator {M : Subgraph G} (hM : M.IsPerfectMatching) (u : Set V) :
+lemma not_isTutteViolator_of_isPerfectMatching {M : Subgraph G} (hM : M.IsPerfectMatching)
+    (u : Set V) :
     ¬G.IsTutteViolator u := by
   simpa [IsTutteViolator, Set.Nat.card_coe_set_eq] using Finite.card_le_of_injective
       (fun c => ⟨(ConnectedComponent.odd_matches_node_outside hM c).choose,
