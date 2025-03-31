@@ -118,7 +118,7 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
-instance instIsDomainOfUniqueSums  [AddMonoid A] [UniqueSums A] : IsDomain R[A] :=
+instance instIsDomainOfUniqueSums [AddMonoid A] [UniqueSums A] : IsDomain R[A] :=
   NoZeroDivisors.to_isDomain _
 
 end AddMonoidAlgebra
