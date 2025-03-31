@@ -599,9 +599,9 @@ where /-- Implementation of `applyReplacementFun`. -/
           /- Test if the head should not be replaced. -/
           let relevantArgId := relevantArg nm
           let gfAdditive :=
-            if relevantArgId < gAllArgs.size && gf.isConst then
+            if h : relevantArgId < gAllArgs.size ∧ gf.isConst then
               if let some fxd :=
-                additiveTest env gAllArgs[relevantArgId]! then
+                additiveTest env gAllArgs[relevantArgId] then
                 Id.run <| do
                   if trace then
                     dbg_trace s!"The application of {nm} contains the fixed type \
@@ -1070,6 +1070,8 @@ def fixAbbreviation : List String → List String
   | "division" :: "Add" :: "Monoid" :: s => "subtractionMonoid" :: fixAbbreviation s
   | "Sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "SubNegZeroMonoid" :: fixAbbreviation s
   | "sub" :: "Neg" :: "Zero" :: "Add" :: "Monoid" :: s => "subNegZeroMonoid" :: fixAbbreviation s
+  | "modular" :: "Character" :: s => "addModularCharacter" :: fixAbbreviation s
+  | "Modular" :: "Character" :: s => "AddModularCharacter" :: fixAbbreviation s
   | x :: s                            => x :: fixAbbreviation s
   | []                                => []
 

@@ -209,7 +209,7 @@ theorem _root_.Polynomial.toLaurent_one : (Polynomial.toLaurent : R[X] → R[T;T
 @[simp]
 theorem _root_.Polynomial.toLaurent_C_mul_eq (r : R) (f : R[X]) :
     toLaurent (Polynomial.C r * f) = C r * toLaurent f := by
-  simp only [_root_.map_mul, Polynomial.toLaurent_C]
+  simp only [map_mul, Polynomial.toLaurent_C]
 
 @[simp]
 theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) = T n := by
@@ -217,7 +217,7 @@ theorem _root_.Polynomial.toLaurent_X_pow (n : ℕ) : toLaurent (X ^ n : R[X]) =
 
 theorem _root_.Polynomial.toLaurent_C_mul_X_pow (n : ℕ) (r : R) :
     toLaurent (Polynomial.C r * X ^ n) = C r * T n := by
-  simp only [_root_.map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
+  simp only [map_mul, Polynomial.toLaurent_C, Polynomial.toLaurent_X_pow]
 
 instance invertibleT (n : ℤ) : Invertible (T n : R[T;T⁻¹]) where
   invOf := T (-n)
@@ -264,12 +264,12 @@ protected theorem induction_on {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹]) (h_C
 * it holds for monomials.
 -/
 @[elab_as_elim]
-protected theorem induction_on' {M : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
-    (h_add : ∀ p q, M p → M q → M (p + q)) (h_C_mul_T : ∀ (n : ℤ) (a : R), M (C a * T n)) :
-    M p := by
-  refine p.induction_on (fun a => ?_) (fun {p q} => h_add p q) ?_ ?_ <;>
-      try exact fun n f _ => h_C_mul_T _ f
-  convert h_C_mul_T 0 a
+protected theorem induction_on' {motive : R[T;T⁻¹] → Prop} (p : R[T;T⁻¹])
+    (add : ∀ p q, motive p → motive q → motive (p + q))
+    (C_mul_T : ∀ (n : ℤ) (a : R), motive (C a * T n)) : motive p := by
+  refine p.induction_on (fun a => ?_) (fun {p q} => add p q) ?_ ?_ <;>
+      try exact fun n f _ => C_mul_T _ f
+  convert C_mul_T 0 a
   exact (mul_one _).symm
 
 theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
@@ -284,9 +284,9 @@ theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
 
 theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
   induction f using LaurentPolynomial.induction_on' with
-  | h_add _ _ hp hq =>
+  | add _ _ hp hq =>
     rw [smul_add, mul_add, hp, hq]
-  | h_C_mul_T n s =>
+  | C_mul_T n s =>
     rw [← mul_assoc, ← smul_mul_assoc, mul_left_inj_of_invertible, ← map_mul, ← single_eq_C,
       Finsupp.smul_single', single_eq_C]
 
@@ -424,10 +424,11 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
-  rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
-  simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h
-  exact not_not.mp (h n)
+  simp only [coe_zero, Pi.zero_apply]
+  simp_rw [degree, Finset.max_eq_sup_withBot, Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne,
+    WithBot.coe_ne_bot, imp_false, not_not] at h
+  exact h n
 
 section ExactDegrees
 
@@ -603,9 +604,9 @@ theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
 @[simp]
 theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by
   induction f using LaurentPolynomial.induction_on' with
-  | h_add p q hp hq=>
+  | add p q hp hq=>
     rw [mul_add, smeval_add, smeval_add, smul_add, hp, hq]
-  | h_C_mul_T n s =>
+  | C_mul_T n s =>
     rw [← mul_assoc, ← map_mul, smeval_C_mul_T_n, smeval_C_mul_T_n, mul_smul]
 
 variable (R) in

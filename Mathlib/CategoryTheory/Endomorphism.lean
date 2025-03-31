@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Kim Morrison, Simon Hudon
 -/
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Group.Equiv.Defs
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.CategoryTheory.Groupoid
@@ -49,9 +50,7 @@ def of (f : X ⟶ X) : End X := f
 `X ⟶ X`. -/
 def asHom (f : End X) : X ⟶ X := f
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
+@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 
 @[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?

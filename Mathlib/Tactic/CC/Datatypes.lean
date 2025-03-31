@@ -173,11 +173,11 @@ def ACApps.isSubset : (e₁ e₂ : ACApps) → Bool
       if args₁.size ≤ args₂.size then Id.run do
         let mut i₁ := 0
         let mut i₂ := 0
-        while i₁ < args₁.size ∧ i₂ < args₂.size do
-          if args₁[i₁]! == args₂[i₂]! then
+        while h : i₁ < args₁.size ∧ i₂ < args₂.size do
+          if args₁[i₁] == args₂[i₂] then
             i₁ := i₁ + 1
             i₂ := i₂ + 1
-          else if Expr.lt args₂[i₂]! args₁[i₁]! then
+          else if Expr.lt args₂[i₂] args₁[i₁] then
             i₂ := i₂ + 1
           else return false
         return i₁ == args₁.size
@@ -197,20 +197,20 @@ def ACApps.diff (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Expr :=
     | .apps op₂ args₂ =>
       if op₁ == op₂ then
         let mut i₂ := 0
-        for i₁ in [:args₁.size] do
+        for h : i₁ in [:args₁.size] do
           if i₂ == args₂.size then
-            r := r.push args₁[i₁]!
-          else if args₁[i₁]! == args₂[i₂]! then
+            r := r.push args₁[i₁]
+          else if args₁[i₁] == args₂[i₂]! then
             i₂ := i₂ + 1
           else
-            r := r.push args₁[i₁]!
+            r := r.push args₁[i₁]
     | .ofExpr e₂ =>
       let mut found := false
-      for i in [:args₁.size] do
-        if !found && args₁[i]! == e₂ then
+      for h : i in [:args₁.size] do
+        if !found && args₁[i] == e₂ then
           found := true
         else
-          r := r.push args₁[i]!
+          r := r.push args₁[i]
     return r
   | .ofExpr e => if e₂ == e then r else r.push e
 
@@ -229,12 +229,12 @@ def ACApps.intersection (e₁ e₂ : ACApps) (r : Array Expr := #[]) : Array Exp
     let mut r := r
     let mut i₁ := 0
     let mut i₂ := 0
-    while i₁ < args₁.size ∧ i₂ < args₂.size do
-      if args₁[i₁]! == args₂[i₂]! then
-        r := r.push args₁[i₁]!
+    while h : i₁ < args₁.size ∧ i₂ < args₂.size do
+      if args₁[i₁] == args₂[i₂] then
+        r := r.push args₁[i₁]
         i₁ := i₁ + 1
         i₂ := i₂ + 1
-      else if Expr.lt args₂[i₂]! args₁[i₁]! then
+      else if Expr.lt args₂[i₂] args₁[i₁] then
         i₂ := i₂ + 1
       else
         i₁ := i₁ + 1
@@ -592,9 +592,11 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
     return r
   | .ofExpr e => e
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the LHS. -/
 def getVarWithLeastLHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e true
 
+/-- Search for the AC-variable (`Entry.acVar`) with the fewest occurrences in the RHS. -/
 def getVarWithLeastRHSOccs (ccs : CCState) (e : ACApps) : Option Expr :=
   ccs.getVarWithLeastOccs e false
 

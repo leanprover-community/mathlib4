@@ -8,6 +8,7 @@ import Mathlib.Data.Fintype.Units
 import Mathlib.GroupTheory.IndexNormal
 import Mathlib.GroupTheory.Perm.Fin
 import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.Logic.Equiv.Fin.Rotate
 import Mathlib.Tactic.IntervalCases
 
 /-!
@@ -166,7 +167,7 @@ theorem closure_three_cycles_eq_alternating :
       exact hind n l hl hn
     intro n
     induction' n with n ih <;> intro l hl hn
-    · simp [List.length_eq_zero.1 hn, one_mem]
+    · simp [List.length_eq_zero_iff.1 hn, one_mem]
     rw [Nat.mul_succ] at hn
     obtain ⟨a, l, rfl⟩ := l.exists_of_length_succ hn
     rw [List.length_cons, Nat.succ_inj'] at hn
@@ -262,8 +263,8 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
-  used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
-  -/
+used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
+-/
 theorem normalClosure_swap_mul_swap_five :
     normalClosure
         ({⟨swap 0 4 * swap 1 3, mem_alternatingGroup.2 (by decide)⟩} :

@@ -3,9 +3,12 @@ Copyright (c) 2021 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
+import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.Order.Module.Algebra
-import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.LinearAlgebra.LinearIndependent.Defs
+import Mathlib.Tactic.LinearCombination
+import Mathlib.Tactic.Module
 import Mathlib.Tactic.Positivity.Basic
 
 /-!

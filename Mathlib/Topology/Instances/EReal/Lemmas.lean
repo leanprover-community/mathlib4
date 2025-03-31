@@ -3,11 +3,7 @@ Copyright (c) 2021 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Data.Rat.Encodable
-import Mathlib.Data.Real.EReal
-import Mathlib.Topology.Instances.EReal.Defs
-import Mathlib.Topology.Instances.ENNReal.Lemmas
-import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Data.EReal.Inv
 import Mathlib.Topology.Semicontinuous
 
 /-!
@@ -203,10 +199,13 @@ lemma continuous_toENNReal : Continuous EReal.toENNReal := by
   simp_all only [mem_compl_iff, mem_singleton_iff, mem_insert_iff, or_self, not_false_eq_true]
 
 @[fun_prop]
-lemma _root_.Continous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
+lemma _root_.Continuous.ereal_toENNReal {α : Type*} [TopologicalSpace α] {f : α → EReal}
     (hf : Continuous f) :
     Continuous fun x => (f x).toENNReal :=
   continuous_toENNReal.comp hf
+
+@[deprecated (since := "2025-03-05")] alias _root_.Continous.ereal_toENNReal :=
+  _root_.Continuous.ereal_toENNReal
 
 @[fun_prop]
 lemma _root_.ContinuousOn.ereal_toENNReal {α : Type*} [TopologicalSpace α] {s : Set α}

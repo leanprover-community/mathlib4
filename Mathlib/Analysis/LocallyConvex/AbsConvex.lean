@@ -150,15 +150,12 @@ theorem absConvex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex �
     AbsConvex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
   ⟨AbsConvex.sInter (fun s hs => (h s hs).1), isClosed_sInter fun _ hs => (h _ hs).2⟩
 
-variable (𝕜)
-
+variable (𝕜) in
 /-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
 includes `s`. -/
 @[simps! isClosed]
 def closedAbsConvexHull : ClosureOperator (Set E) :=
   .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
-
-variable {𝕜}
 
 theorem absConvex_convexClosedHull {s : Set E} :
     AbsConvex 𝕜 (closedAbsConvexHull 𝕜 s) := ((closedAbsConvexHull 𝕜).isClosed_closure s).1
@@ -192,7 +189,7 @@ end AbsolutelyConvex
 section NormedField
 
 variable [NormedField 𝕜]
-  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]  [TopologicalSpace E]
+  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E] [TopologicalSpace E]
   [IsTopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
 
 theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
@@ -293,7 +290,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
 
 variable (E 𝕜) {s : Set E}
 variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
-variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
+variable [UniformSpace E] [IsUniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
 theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
