@@ -43,9 +43,13 @@ lemma mem_span_iff_exists_fin (s : Set R) (x : R) :
     | neg x hx hx1 =>
       obtain ⟨ι, _, xL, xR, y, eq⟩ := hx1
       exact ⟨ι, inferInstance, fun i ↦ - (xL i), xR, y, by simp [eq]⟩
-    | mulLeftRight a b x hx hx1 =>
+    | left_absorb a y hx hx1 =>
       obtain ⟨ι, _, xL, xR, y, eq⟩ := hx1
-      exact ⟨ι, inferInstance, fun i ↦ a * xL i, fun i ↦ xR i * b, y, by
+      exact ⟨ι, inferInstance, fun i ↦ a * xL i, xR, y, by
+        simp [eq, Finset.mul_sum, Finset.sum_mul, ← mul_assoc]⟩
+    | right_absorb b y hx hx1 =>
+      obtain ⟨ι, _, xL, xR, y, eq⟩ := hx1
+      exact ⟨ι, inferInstance, xL, fun i ↦ xR i * b, y, by
         simp [eq, Finset.mul_sum, Finset.sum_mul, ← mul_assoc]⟩
   · rintro ⟨_, _, _, _, _, rfl⟩
     exact finsetSum_mem _ _ _ <| fun _ _ ↦ mul_mem_right _ _ _ <| mul_mem_left _ _ _ <|
