@@ -541,7 +541,7 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
 @[deprecated (since := "2024-10-21")] alias eraseNth_val := eraseIdx_val
 theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertIdx a i v) = v :=
-  Subtype.eq List.eraseIdx_insertIdx
+  Subtype.eq (List.eraseIdx_insertIdx ..)
 
 /-- Erasing an element after inserting an element, at different indices. -/
 theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :

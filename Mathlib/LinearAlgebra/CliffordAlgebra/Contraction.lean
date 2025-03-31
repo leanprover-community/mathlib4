@@ -79,7 +79,6 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
   toFun d := foldr' Q (contractLeftAux Q d) (contractLeftAux_contractLeftAux Q d) 0
   map_add' d₁ d₂ :=
     LinearMap.ext fun x => by
-      dsimp only
       rw [LinearMap.add_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero, zero_add]
@@ -90,7 +89,6 @@ def contractLeft : Module.Dual R M →ₗ[R] CliffordAlgebra Q →ₗ[R] Cliffor
         rw [sub_add_sub_comm, mul_add, LinearMap.add_apply, add_smul]
   map_smul' c d :=
     LinearMap.ext fun x => by
-      dsimp only
       rw [LinearMap.smul_apply, RingHom.id_apply]
       induction x using CliffordAlgebra.left_induction with
       | algebraMap => simp_rw [foldr'_algebraMap, smul_zero]
@@ -339,11 +337,9 @@ def changeFormEquiv : CliffordAlgebra Q ≃ₗ[R] CliffordAlgebra Q' :=
     toFun := changeForm h
     invFun := changeForm (changeForm.neg_proof h)
     left_inv := fun x => by
-      dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(add_neg_cancel B), changeForm_self_apply]
     right_inv := fun x => by
-      dsimp only
       exact (changeForm_changeForm _ _ x).trans <|
         by simp_rw [(neg_add_cancel B), changeForm_self_apply] }
 

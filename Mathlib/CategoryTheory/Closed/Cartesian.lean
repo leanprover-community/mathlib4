@@ -56,6 +56,7 @@ abbrev Exponentiable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X :
 abbrev Exponentiable.mk {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] (X : C)
     (exp : C ⥤ C) (adj : MonoidalCategory.tensorLeft X ⊣ exp) :
     Exponentiable X where
+  rightAdj := exp
   adj := adj
 
 /-- If `X` and `Y` are exponentiable then `X ⨯ Y` is.

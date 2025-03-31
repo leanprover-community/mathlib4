@@ -506,8 +506,6 @@ nonrec def Basis.det : M [⋀^ι]→ₗ[R] R where
     convert det_updateCol_smul (e.toMatrix u) i c (e.repr x)
   map_eq_zero_of_eq' := by
     intro v i j h hij
-    -- Porting note: added
-    simp only
     rw [← Function.update_eq_self i v, h, ← det_transpose, e.toMatrix_update, ← updateRow_transpose,
       ← e.toMatrix_transpose_apply]
     apply det_zero_of_row_eq hij
