@@ -178,8 +178,6 @@ protected lemma norm_smul {E : Type*} [SeminormedAddCommGroup E] [NormedSpace �
 
 end Circle
 
-open scoped Real
-
 namespace Real
 
 /-- The additive character from `ℝ` onto the circle, given by `fun x ↦ exp (2 * π * x * I)`.
