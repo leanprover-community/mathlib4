@@ -5,6 +5,7 @@ Authors: Andrew Yang, Antoine Chambert-Loir
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.algebra.Ring.Action.Submonoid
 
 /-!
 # More operations on subalgebras
