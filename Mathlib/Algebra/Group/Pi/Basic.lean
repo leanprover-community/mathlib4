@@ -170,7 +170,7 @@ theorem mulSingle_one (i : I) : mulSingle i (1 : f i) = 1 :=
 @[to_additive (attr := simp)]
 theorem mulSingle_eq_one_iff (i : I) (x : f i) : mulSingle i x = 1 ↔ x = 1 := by
   refine ⟨fun h => ?_, fun h => h.symm ▸ mulSingle_one i⟩
-  rw [←mulSingle_eq_same i x, h, one_apply]
+  rw [← mulSingle_eq_same i x, h, one_apply]
 
 @[to_additive]
 theorem mulSingle_ne_one_iff (i : I) (x : f i) : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
