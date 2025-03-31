@@ -322,7 +322,7 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
     · simp
     · simp only [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
   -- Then prove it for all integers
-  cases' n with n n
+  rcases n with n | n
   · simp [← this n]
   · conv_rhs => rw [negSucc_zsmul]
     have h₀ : Int.negSucc n • T + (n + 1) • T = 0 := by simp; linarith

@@ -227,10 +227,6 @@ instance isIso_whiskerRight {G H : C ⥤ D} (α : G ⟶ H) (F : D ⥤ E) [IsIso 
 
 variable {B : Type u₄} [Category.{v₄} B]
 
--- Porting note: it was `attribute [local elab_without_expected_type]`,
--- but now `elab_without_expected-type` must be global
-attribute [elab_without_expected_type] whiskerLeft whiskerRight
-
 @[simp]
 theorem whiskerLeft_twice (F : B ⥤ C) (G : C ⥤ D) {H K : D ⥤ E} (α : H ⟶ K) :
     whiskerLeft F (whiskerLeft G α) = whiskerLeft (F ⋙ G) α :=
@@ -305,7 +301,6 @@ end Functor
 variable {C₁ C₂ C₃ D₁ D₂ D₃ : Type*} [Category C₁] [Category C₂] [Category C₃]
   [Category D₁] [Category D₂] [Category D₃] (E : Type*) [Category E]
 
-
 /-- The obvious functor `(C₁ ⥤ D₁) ⥤ (C₂ ⥤ D₂) ⥤ (D₁ ⥤ D₂ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ E)`. -/
 @[simps!]
 def whiskeringLeft₂ :
@@ -370,7 +365,15 @@ def whiskeringLeft₃ :
   obj F₁ := whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁
   map τ₁ := whiskeringLeft₃Map C₂ C₃ D₂ D₃ E τ₁
 
-variable {E} in
+variable {E}
+
+/-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
+`(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E'`. -/
+@[simps!]
+def Functor.postcompose₂ {E' : Type*} [Category E'] :
+    (E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ E' :=
+  whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
+
 /-- The "postcomposition" with a functor `E ⥤ E'` gives a functor
 `(E ⥤ E') ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E'`. -/
 @[simps!]
@@ -379,4 +382,3 @@ def Functor.postcompose₃ {E' : Type*} [Category E'] :
   whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
 
 end CategoryTheory
-

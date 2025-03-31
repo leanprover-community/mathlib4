@@ -42,13 +42,13 @@ structure PreErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop w
 
 /-- A map `f : α → α` is said to be ergodic with respect to a measure `μ` if it is measure
 preserving and pre-ergodic. -/
-structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  MeasurePreserving f μ μ, PreErgodic f μ : Prop
+structure Ergodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  MeasurePreserving f μ μ, PreErgodic f μ
 
 /-- A map `f : α → α` is said to be quasi ergodic with respect to a measure `μ` if it is quasi
 measure preserving and pre-ergodic. -/
-structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) extends
-  QuasiMeasurePreserving f μ μ, PreErgodic f μ : Prop
+structure QuasiErgodic (f : α → α) (μ : Measure α := by volume_tac) : Prop extends
+  QuasiMeasurePreserving f μ μ, PreErgodic f μ
 
 variable {f : α → α} {μ : Measure α}
 
@@ -124,8 +124,6 @@ theorem ae_empty_or_univ₀ (hf : QuasiErgodic f μ) (hsm : NullMeasurableSet s 
     (hs : f ⁻¹' s =ᵐ[μ] s) :
     s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ :=
   eventuallyConst_set'.mp <| hf.aeconst_set₀ hsm hs
-
-@[deprecated (since := "2024-07-21")] alias ae_empty_or_univ' := ae_empty_or_univ₀
 
 /-- For a quasi ergodic map, sets that are almost invariant (rather than strictly invariant) are
 still either almost empty or full. -/

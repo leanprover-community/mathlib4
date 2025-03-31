@@ -105,7 +105,7 @@ theorem iteratedDerivWithin_zero : iteratedDerivWithin 0 f s = f := by
 theorem iteratedDerivWithin_one {x : 𝕜} :
     iteratedDerivWithin 1 f s x = derivWithin f s x := by
   rcases uniqueDiffWithinAt_or_nhdsWithin_eq_bot s x with hxs | hxs
-  · simp only [iteratedDerivWithin, iteratedFDerivWithin_one_apply hxs]; rfl
+  · simp only [iteratedDerivWithin, iteratedFDerivWithin_one_apply hxs, derivWithin]
   · simp [derivWithin_zero_of_isolated hxs, iteratedDerivWithin, iteratedFDerivWithin,
       fderivWithin_zero_of_isolated hxs]
 

@@ -193,8 +193,6 @@ theorem Prod.snd_toSigma {α β} (x : α × β) : (Prod.toSigma x).snd = x.snd :
 theorem Prod.toSigma_mk {α β} (x : α) (y : β) : (x, y).toSigma = ⟨x, y⟩ :=
   rfl
 
--- Porting note: the meta instance `has_reflect (Σa, β a)` was removed here.
-
 end Sigma
 
 namespace PSigma
@@ -208,8 +206,6 @@ def elim {γ} (f : ∀ a, β a → γ) (a : PSigma β) : γ :=
 @[simp]
 theorem elim_val {γ} (f : ∀ a, β a → γ) (a b) : PSigma.elim f ⟨a, b⟩ = f a b :=
   rfl
-
-@[deprecated (since := "2024-07-27")] alias ex_of_psig := ex_of_PSigma
 
 instance [Inhabited α] [Inhabited (β default)] : Inhabited (PSigma β) :=
   ⟨⟨default, default⟩⟩
@@ -228,11 +224,6 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ : β a₁} {b₂ : β a₂} :
   (Iff.intro PSigma.mk.inj) fun ⟨h₁, h₂⟩ ↦
     match a₁, a₂, b₁, b₂, h₁, h₂ with
     | _, _, _, _, Eq.refl _, HEq.refl _ => rfl
-
-@[deprecated PSigma.ext_iff (since := "2024-07-27")]
-protected theorem eq {α : Sort*} {β : α → Sort*} : ∀ {p₁ p₂ : Σ' a, β a} (h₁ : p₁.1 = p₂.1),
-    (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
-  | ⟨_, _⟩, _, rfl, rfl => rfl
 
 -- This should not be a simp lemma, since its discrimination tree key would just be `→`.
 theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=

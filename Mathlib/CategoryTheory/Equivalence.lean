@@ -147,7 +147,8 @@ theorem counitInv_functor_comp (e : C ≌ D) (X : C) :
 theorem counitInv_app_functor (e : C ≌ D) (X : C) :
     e.counitInv.app (e.functor.obj X) = e.functor.map (e.unit.app X) := by
   symm
-  erw [← Iso.comp_hom_eq_id (e.counitIso.app _), functor_unit_comp]
+  simp only [id_obj, comp_obj, counitInv]
+  rw [← Iso.app_inv, ← Iso.comp_hom_eq_id (e.counitIso.app _), Iso.app_hom, functor_unit_comp]
   rfl
 
 theorem counit_app_functor (e : C ≌ D) (X : C) :
@@ -162,13 +163,15 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
     e.unit.app (e.inverse.obj Y) ≫ e.inverse.map (e.counit.app Y) = 𝟙 (e.inverse.obj Y) := by
   rw [← id_comp (e.inverse.map _), ← map_id e.inverse, ← counitInv_functor_comp, map_comp]
   dsimp
-  rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), app_hom, app_inv]
+  rw [← Iso.hom_inv_id_assoc (e.unitIso.app _) (e.inverse.map (e.functor.map _)), Iso.app_hom,
+    Iso.app_inv]
   slice_lhs 2 3 => erw [e.unit.naturality]
   slice_lhs 1 2 => erw [e.unit.naturality]
   slice_lhs 4 4 =>
     rw [← Iso.hom_inv_id_assoc (e.inverse.mapIso (e.counitIso.app _)) (e.unitInv.app _)]
   slice_lhs 3 4 =>
-    erw [← map_comp e.inverse, e.counit.naturality]
+    erw [← map_comp e.inverse]
+    erw [e.counit.naturality]
     erw [(e.counitIso.app _).hom_inv_id, map_id]
   erw [id_comp]
   slice_lhs 2 3 => erw [← map_comp e.inverse, e.counitIso.inv.naturality, map_comp]
@@ -595,6 +598,16 @@ noncomputable instance inducedFunctorOfEquiv {C' : Type*} (e : C' ≃ D) :
 noncomputable instance fullyFaithfulToEssImage (F : C ⥤ D) [F.Full] [F.Faithful] :
     IsEquivalence F.toEssImage where
 
+/-- A biimplication of properties on the objects of a category `C` induces an equivalence of the
+respective induced full subcategories of `C`. -/
+@[simps]
+def ofFullSubcategory {Z Z' : C → Prop} (h : ∀ X, Z X ↔ Z' X) :
+    FullSubcategory Z ≌ FullSubcategory Z' where
+  functor := FullSubcategory.map (fun _ => (h _).mp)
+  inverse := FullSubcategory.map (fun _ => (h _).mpr)
+  unitIso := NatIso.ofComponents (fun X => Iso.refl _)
+  counitIso := NatIso.ofComponents (fun X => Iso.refl _)
+
 end Equivalence
 
 namespace Iso
@@ -625,21 +638,30 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
   H.leftUnitor.symm ≪≫ isoWhiskerRight G.counitIso.symm H ≪≫ associator _ _ _
     ≪≫ isoWhiskerLeft G.inverse i
 
-end Iso
+/-- As a special case, given two equivalences `G` and `G'` between the same categories,
+ construct an isomorphism `G.inverse ≅ G.inverse` from an isomorphism `G.functor ≅ G.functor`. -/
+@[simps!]
+def isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) : G.inverse ≅ G'.inverse :=
+  isoCompInverse ((isoWhiskerLeft G.inverse i).symm ≪≫ G.counitIso) ≪≫ leftUnitor G'.inverse
 
-@[deprecated (since := "2024-04-06")] alias IsEquivalence := Functor.IsEquivalence
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.fun_inv_map := Functor.fun_inv_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.inv_fun_map := Functor.inv_fun_map
-@[deprecated (since := "2024-04-06")] alias IsEquivalence.ofIso := Equivalence.changeFunctor
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_trans := Equivalence.changeFunctor_trans
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.ofIso_refl := Equivalence.changeFunctor_refl
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.equivOfIso := Functor.isEquivalence_iff_of_iso
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompRight := Functor.isEquivalence_of_comp_right
-@[deprecated (since := "2024-04-06")]
-alias IsEquivalence.cancelCompLeft := Functor.isEquivalence_of_comp_left
+/-- As a special case, given two equivalences `G` and `G'` between the same categories,
+ construct an isomorphism `G.functor ≅ G.functor` from an isomorphism `G.inverse ≅ G.inverse`. -/
+@[simps!]
+def isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) : G.functor ≅ G'.functor :=
+  isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
+
+/-- Sanity check: `isoFunctorOfIsoInverse (isoInverseOfIsoFunctor i)` is just `i`. -/
+@[simp]
+lemma isoFunctorOfIsoInverse_isoInverseOfIsoFunctor {G G' : C ≌ D} (i : G.functor ≅ G'.functor) :
+    isoFunctorOfIsoInverse (isoInverseOfIsoFunctor i) = i := by
+  ext X
+  simp [← NatTrans.naturality]
+
+@[simp]
+lemma isoInverseOfIsoFunctor_isoFunctorOfIsoInverse {G G' : C ≌ D} (i : G.inverse ≅ G'.inverse) :
+    isoInverseOfIsoFunctor (isoFunctorOfIsoInverse i) = i :=
+  isoFunctorOfIsoInverse_isoInverseOfIsoFunctor (G := G.symm) (G' := G'.symm) i
+
+end Iso
 
 end CategoryTheory

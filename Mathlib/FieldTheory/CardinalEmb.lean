@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.PurelyInseparable
+import Mathlib.FieldTheory.PurelyInseparable.Basic
 import Mathlib.LinearAlgebra.FreeAlgebra
 import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.DirectedInverseSystem

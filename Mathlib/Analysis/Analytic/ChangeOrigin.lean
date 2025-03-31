@@ -285,7 +285,7 @@ theorem changeOrigin_eval (h : (‖x‖₊ + ‖y‖₊ : ℝ≥0∞) < p.radius
   refine hf.unique (changeOriginIndexEquiv.symm.hasSum_iff.1 ?_)
   refine HasSum.sigma_of_hasSum
     (p.hasSum x_add_y_mem_ball) (fun n => ?_) (changeOriginIndexEquiv.symm.summable_iff.2 hsf)
-  erw [(p n).map_add_univ (fun _ => x) fun _ => y]
+  rw [← Pi.add_def, (p n).map_add_univ (fun _ => x) fun _ => y]
   simp_rw [← changeOriginSeriesTerm_changeOriginIndexEquiv_symm]
   exact hasSum_fintype (fun c => f (changeOriginIndexEquiv.symm ⟨n, c⟩))
 

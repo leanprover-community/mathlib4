@@ -26,9 +26,9 @@ open Module.Free Module canonicalEmbedding Matrix Finset
 
 /-- An equivalence between the set of embeddings of `K` into `ℂ` and the
   index set of the chosen basis of the ring of integers of `K`. -/
-abbrev equivReindex : (K →+* ℂ) ≃ (ChooseBasisIndex ℤ (𝓞 K)) :=
-    Fintype.equivOfCardEq <|
-  by rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
+abbrev equivReindex : (K →+* ℂ) ≃ ChooseBasisIndex ℤ (𝓞 K) :=
+  Fintype.equivOfCardEq <| by
+    rw [Embeddings.card, ← finrank_eq_card_chooseBasisIndex, RingOfIntegers.rank]
 
 /-- The basis matrix for the embeddings of `K` into `ℂ`. This matrix is formed by
   taking the lattice basis vectors of `K` and reindexing them according to the

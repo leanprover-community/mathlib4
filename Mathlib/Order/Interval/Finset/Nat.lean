@@ -3,6 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
+import Mathlib.Algebra.Group.Embedding
 import Mathlib.Order.Interval.Multiset
 
 /-!
@@ -26,29 +27,29 @@ variable (a b c : ℕ)
 namespace Nat
 
 instance instLocallyFiniteOrder : LocallyFiniteOrder ℕ where
-  finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩
-  finsetIco a b := ⟨List.range' a (b - a), List.nodup_range' _ _⟩
-  finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩
-  finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range' _ _⟩
+  finsetIcc a b := ⟨List.range' a (b + 1 - a), List.nodup_range'⟩
+  finsetIco a b := ⟨List.range' a (b - a), List.nodup_range'⟩
+  finsetIoc a b := ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩
+  finsetIoo a b := ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩
   finset_mem_Icc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
   finset_mem_Ico a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
   finset_mem_Ioc a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
   finset_mem_Ioo a b x := by rw [Finset.mem_mk, Multiset.mem_coe, List.mem_range'_1]; omega
 
-theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range' _ _⟩ :=
+theorem Icc_eq_range' : Icc a b = ⟨List.range' a (b + 1 - a), List.nodup_range'⟩ :=
   rfl
 
-theorem Ico_eq_range' : Ico a b = ⟨List.range' a (b - a), List.nodup_range' _ _⟩ :=
+theorem Ico_eq_range' : Ico a b = ⟨List.range' a (b - a), List.nodup_range'⟩ :=
   rfl
 
-theorem Ioc_eq_range' : Ioc a b = ⟨List.range' (a + 1) (b - a), List.nodup_range' _ _⟩ :=
+theorem Ioc_eq_range' : Ioc a b = ⟨List.range' (a + 1) (b - a), List.nodup_range'⟩ :=
   rfl
 
-theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup_range' _ _⟩ :=
+theorem Ioo_eq_range' : Ioo a b = ⟨List.range' (a + 1) (b - a - 1), List.nodup_range'⟩ :=
   rfl
 
 theorem uIcc_eq_range' :
-    uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range' _ _⟩ := rfl
+    uIcc a b = ⟨List.range' (min a b) (max a b + 1 - min a b), List.nodup_range'⟩ := rfl
 
 theorem Iio_eq_range : Iio = range := by
   ext b x
@@ -83,22 +84,23 @@ lemma card_Iic : #(Iic b) = b + 1 := by rw [Iic_eq_Icc, card_Icc, Nat.bot_eq_zer
 @[simp]
 theorem card_Iio : #(Iio b) = b := by rw [Iio_eq_Ico, card_Ico, Nat.bot_eq_zero, Nat.sub_zero]
 
-theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by
-  rw [Fintype.card_ofFinset, card_Icc]
+@[deprecated Fintype.card_Icc (since := "2025-03-28")]
+theorem card_fintypeIcc : Fintype.card (Set.Icc a b) = b + 1 - a := by simp
 
-theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by
-  rw [Fintype.card_ofFinset, card_Ico]
+@[deprecated Fintype.card_Ico (since := "2025-03-28")]
+theorem card_fintypeIco : Fintype.card (Set.Ico a b) = b - a := by simp
 
-theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by
-  rw [Fintype.card_ofFinset, card_Ioc]
+@[deprecated Fintype.card_Ioc (since := "2025-03-28")]
+theorem card_fintypeIoc : Fintype.card (Set.Ioc a b) = b - a := by simp
 
-theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by
-  rw [Fintype.card_ofFinset, card_Ioo]
+@[deprecated Fintype.card_Ioo (since := "2025-03-28")]
+theorem card_fintypeIoo : Fintype.card (Set.Ioo a b) = b - a - 1 := by simp
 
-theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
-  rw [Fintype.card_ofFinset, card_Iic]
+@[deprecated Fintype.card_Iic (since := "2025-03-28")]
+theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by simp
 
-theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by rw [Fintype.card_ofFinset, card_Iio]
+@[deprecated Fintype.card_Iio (since := "2025-03-28")]
+theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by simp
 
 -- TODO@Yaël: Generalize all the following lemmas to `SuccOrder`
 theorem Icc_succ_left : Icc a.succ b = Ioc a b := by
@@ -132,6 +134,11 @@ theorem Ico_pred_singleton {a : ℕ} (h : 0 < a) : Ico (a - 1) a = {a - 1} := by
 theorem Ioc_succ_singleton : Ioc b (b + 1) = {b + 1} := by rw [← Nat.Icc_succ_left, Icc_self]
 
 variable {a b c}
+
+lemma mem_Ioc_succ : a ∈ Ioc b (b + 1) ↔ a = b + 1 := by simp
+
+lemma mem_Ioc_succ' (a : Ioc b (b + 1)) : a = ⟨b + 1, mem_Ioc.2 (by omega)⟩ :=
+  Subtype.val_inj.1 (mem_Ioc_succ.1 a.2)
 
 theorem Ico_succ_right_eq_insert_Ico (h : a ≤ b) : Ico a (b + 1) = insert b (Ico a b) := by
   rw [Ico_succ_right, ← Ico_insert_right h]

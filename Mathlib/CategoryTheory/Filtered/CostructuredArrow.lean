@@ -12,7 +12,7 @@ import Mathlib.CategoryTheory.Limits.Final
 /-!
 # Inferring Filteredness from Filteredness of Costructured Arrow Categories
 
-# References
+## References
 
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Proposition 3.1.8
 
@@ -30,8 +30,8 @@ variable {A : Type u₁} [SmallCategory A] {B : Type u₁} [SmallCategory B]
 variable {T : Type u₁} [SmallCategory T]
 
 private lemma isFiltered_of_isFiltered_costructuredArrow_small (L : A ⥤ T) (R : B ⥤ T)
-    [IsFiltered B] [Final R] [∀ b, IsFiltered (CostructuredArrow L (R.obj b))] : IsFiltered A :=
-  isFiltered_of_nonempty_limit_colimit_to_colimit_limit fun J {_ _} F => ⟨by
+    [IsFiltered B] [Final R] [∀ b, IsFiltered (CostructuredArrow L (R.obj b))] : IsFiltered A := by
+  refine isFiltered_of_nonempty_limit_colimit_to_colimit_limit fun J {_ _} F => ⟨?_⟩
   let R' := Grothendieck.pre (CostructuredArrow.functor L) R
   haveI : ∀ b, PreservesLimitsOfShape J
       (colim (J := (R ⋙ CostructuredArrow.functor L).obj b) (C := Type u₁)) := fun b => by
@@ -43,7 +43,7 @@ private lemma isFiltered_of_isFiltered_costructuredArrow_small (L : A ⥤ T) (R 
     colim.map ?_ ≫
     colimit.pre _ R' ≫
     (colimitIsoColimitGrothendieck L (limit F)).inv
-  exact (limitCompWhiskeringLeftIsoCompLimit F (R' ⋙ CostructuredArrow.grothendieckProj L)).hom⟩
+  exact (limitCompWhiskeringLeftIsoCompLimit F (R' ⋙ CostructuredArrow.grothendieckProj L)).hom
 
 end Small
 

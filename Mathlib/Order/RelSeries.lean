@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Pigeonhole
 import Mathlib.Data.Fintype.Pi
 import Mathlib.Data.Fintype.Sigma
 import Mathlib.Data.Rel
@@ -91,7 +91,7 @@ def toList (x : RelSeries r) : List α := List.ofFn x
 
 @[simp]
 lemma length_toList (x : RelSeries r) : x.toList.length = x.length + 1 :=
-  List.length_ofFn _
+  List.length_ofFn
 
 lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   rw [List.chain'_iff_get]
@@ -99,13 +99,13 @@ lemma toList_chain' (x : RelSeries r) : x.toList.Chain' r := by
   convert x.step ⟨i, by simpa [toList] using h⟩ <;> apply List.get_ofFn
 
 lemma toList_ne_nil (x : RelSeries r) : x.toList ≠ [] := fun m =>
-  List.eq_nil_iff_forall_not_mem.mp m (x 0) <| (List.mem_ofFn _ _).mpr ⟨_, rfl⟩
+  List.eq_nil_iff_forall_not_mem.mp m (x 0) <| List.mem_ofFn.mpr ⟨_, rfl⟩
 
 /-- Every nonempty list satisfying the chain condition gives a relation series -/
 @[simps]
 def fromListChain' (x : List α) (x_ne_nil : x ≠ []) (hx : x.Chain' r) : RelSeries r where
   length := x.length - 1
-  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x_ne_nil) i]
+  toFun i := x[Fin.cast (Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x_ne_nil) i]
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
@@ -116,7 +116,7 @@ protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} wh
   left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
     refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
-    have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
+    have := Nat.succ_pred_eq_of_pos <| List.length_pos_iff.mpr x.2.1
     simp_all [toList]
 
 lemma toList_injective : Function.Injective (RelSeries.toList (r := r)) :=
@@ -170,6 +170,10 @@ variable {r} {s : RelSeries r} {x : α}
 /-- If a relation on `α` is infinite dimensional, then `α` is nonempty. -/
 lemma nonempty_of_infiniteDimensional [r.InfiniteDimensional] : Nonempty α :=
   ⟨RelSeries.withLength r 0 0⟩
+
+lemma nonempty_of_finiteDimensional [r.FiniteDimensional] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff r).mp ‹_›
+  exact ⟨p 0⟩
 
 instance membership : Membership α (RelSeries r) :=
   ⟨Function.swap (· ∈ Set.range ·)⟩
@@ -689,8 +693,15 @@ protected noncomputable def withLength [InfiniteDimensionalOrder α] (n : ℕ) :
   RelSeries.length_withLength _ _
 
 /-- if `α` is infinite dimensional, then `α` is nonempty. -/
-lemma nonempty_of_infiniteDimensionalType [InfiniteDimensionalOrder α] : Nonempty α :=
+lemma nonempty_of_infiniteDimensionalOrder [InfiniteDimensionalOrder α] : Nonempty α :=
   ⟨LTSeries.withLength α 0 0⟩
+
+@[deprecated (since := "2025-03-01")]
+alias nonempty_of_infiniteDimensionalType := nonempty_of_infiniteDimensionalOrder
+
+lemma nonempty_of_finiteDimensionalOrder [FiniteDimensionalOrder α] : Nonempty α := by
+  obtain ⟨p, _⟩ := (Rel.finiteDimensional_iff _).mp ‹_›
+  exact ⟨p 0⟩
 
 variable {α}
 
@@ -781,7 +792,7 @@ def range (n : ℕ) : LTSeries ℕ where
 /--
 In ℕ, two entries in an `LTSeries` differ by at least the difference of their indices.
 (Expressed in a way that avoids subtraction).
- -/
+-/
 lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.length + 1))
     (hij : i ≤ j) : p i + j ≤ p j + i := by
   have ⟨i, hi⟩ := i
@@ -833,7 +844,7 @@ lemma length_lt_card (s : LTSeries α) : s.length < Fintype.card α := by
   · exact this j i hn.symm he.symm (by omega)
   exact absurd he (s.strictMono hl).ne
 
-instance [DecidableRel ((· < ·) : α → α → Prop)] : Fintype (LTSeries α) where
+instance [DecidableLT α] : Fintype (LTSeries α) where
   elems := Finset.univ.map (injStrictMono (Fintype.card α))
   complete s := by
     have bl := s.length_lt_card

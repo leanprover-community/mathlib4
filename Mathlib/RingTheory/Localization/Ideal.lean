@@ -6,6 +6,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 import Mathlib.GroupTheory.MonoidLocalization.Away
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Localization.Defs
+import Mathlib.Algebra.Algebra.Tower
 
 /-!
 # Ideals in localizations of commutative rings
@@ -166,6 +167,23 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S I hp hd]
   exact ⟨hp, hd⟩
 
+theorem disjoint_comap_iff (S : Submonoid R) {A : Type*} [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
+    Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
+  rw [← iff_not_comm]
+  constructor
+  · rintro rfl
+    rw [Ideal.comap_top, Submodule.top_coe, Set.disjoint_univ, ← ne_eq, ← Set.nonempty_iff_ne_empty]
+    exact ⟨_, S.one_mem⟩
+  · rw [Disjoint, Set.bot_eq_empty]
+    intro h
+    simp only [Set.le_eq_subset, Ideal.coe_comap, Set.subset_empty_iff, not_forall,
+      Classical.not_imp] at h
+    obtain ⟨x, hx, hx', hx''⟩ := h
+    rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at hx''
+    obtain ⟨u, hu⟩ := hx''
+    exact J.eq_top_of_isUnit_mem (hx' hu) (IsLocalization.map_units A ⟨u, hx hu⟩)
+
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M` -/
 def orderIsoOfPrime :
@@ -180,6 +198,17 @@ def orderIsoOfPrime :
     · exact (fun h => show I.val ≤ I'.val from map_comap M S I.val ▸
         map_comap M S I'.val ▸ Ideal.map_mono h)
     exact fun h x hx => h hx
+
+include M in
+lemma map_radical (I : Ideal R) :
+    I.radical.map (algebraMap R S) = (I.map (algebraMap R S)).radical := by
+  refine (I.map_radical_le (algebraMap R S)).antisymm ?_
+  rintro x ⟨n, hn⟩
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  simp only [← IsLocalization.mk'_pow, IsLocalization.mk'_mem_map_algebraMap_iff M,
+    Submonoid.mem_powers_iff, exists_exists_eq_and] at hn ⊢
+  obtain ⟨s, hs, h⟩ := hn
+  refine ⟨s, hs, n + 1, by convert I.mul_mem_left (s ^ n * x) h; ring⟩
 
 end CommSemiring
 
@@ -252,6 +281,54 @@ theorem ideal_eq_iInf_comap_map_away {S : Finset R} (hS : Ideal.span (α := R) S
     dsimp at e ⊢
     rw [pow_add, mul_assoc, ← mul_comm x, e]
     exact I.mul_mem_left _ y.2
+
+variable (R) in
+lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing Rₚ] [CommRing Sₚ]
+    [Algebra R Rₚ] [Algebra R Sₚ] [Algebra S Sₚ] [Algebra Rₚ Sₚ] [IsScalarTower R S Sₚ]
+    [IsScalarTower R Rₚ Sₚ] {M : Submonoid R} (hM : M ≤ R⁰) [IsLocalization M Rₚ]
+    [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₚ] [NoZeroSMulDivisors R S] [IsDomain S] :
+    NoZeroSMulDivisors Rₚ Sₚ := by
+  have e : Algebra.algebraMapSubmonoid S M ≤ S⁰ :=
+    Submonoid.map_le_of_le_comap _ <| hM.trans
+      (nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _
+        (FaithfulSMul.algebraMap_injective _ _))
+  have : IsDomain Sₚ := IsLocalization.isDomain_of_le_nonZeroDivisors S e
+  have : algebraMap Rₚ Sₚ = IsLocalization.map (T := Algebra.algebraMapSubmonoid S M) Sₚ
+    (algebraMap R S) (Submonoid.le_comap_map M) := by
+    apply IsLocalization.ringHom_ext M
+    simp only [IsLocalization.map_comp, ← IsScalarTower.algebraMap_eq]
+  rw [NoZeroSMulDivisors.iff_algebraMap_injective, RingHom.injective_iff_ker_eq_bot,
+    RingHom.ker_eq_bot_iff_eq_zero]
+  intro x hx
+  obtain ⟨x, s, rfl⟩ := IsLocalization.mk'_surjective M x
+  simp only [RingHom.algebraMap_toAlgebra, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
+    Subtype.exists, exists_prop, this] at hx ⊢
+  obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
+  simp only [← map_mul,
+    (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
+  exact ⟨a, ha, H⟩
+
+lemma of_surjective {R' S' : Type*} [CommRing R'] [CommRing S'] [Algebra R' S']
+    (f : R →+* R') (hf : Function.Surjective f) (g : S →+* S') (hg : Function.Surjective g)
+    (H : g.comp (algebraMap R S) = (algebraMap _ _).comp f)
+    (H' : RingHom.ker g ≤ (RingHom.ker f).map (algebraMap R S)) : IsLocalization (M.map f) S' where
+  map_units' := by
+    rintro ⟨_, y, hy, rfl⟩
+    simpa only [← RingHom.comp_apply, H] using (IsLocalization.map_units S ⟨y, hy⟩).map g
+  surj' := by
+    intro z
+    obtain ⟨z, rfl⟩ := hg z
+    obtain ⟨⟨r, s⟩, e⟩ := IsLocalization.surj M z
+    refine ⟨⟨f r, _, s.1, s.2, rfl⟩, ?_⟩
+    simpa only [map_mul, ← RingHom.comp_apply, H] using DFunLike.congr_arg g e
+  exists_of_eq := by
+    intro x y e
+    obtain ⟨x, rfl⟩ := hf x
+    obtain ⟨y, rfl⟩ := hf y
+    rw [← sub_eq_zero, ← map_sub, ← map_sub, ← RingHom.comp_apply, ← H, RingHom.comp_apply,
+      ← IsLocalization.mk'_one (M := M)] at e
+    obtain ⟨r, hr, hr'⟩ := (IsLocalization.mk'_mem_map_algebraMap_iff M _ _ _ _).mp (H' e)
+    exact ⟨⟨_, r, hr, rfl⟩, by simpa [sub_eq_zero, mul_sub] using hr'⟩
 
 end CommRing
 

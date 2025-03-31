@@ -31,6 +31,4 @@ structure PrimeSpectrum (R : Type*) [CommSemiring R] where
   asIdeal : Ideal R
   isPrime : asIdeal.IsPrime
 
-@[deprecated (since := "2024-06-22")] alias PrimeSpectrum.IsPrime := PrimeSpectrum.isPrime
-
 attribute [instance] PrimeSpectrum.isPrime

@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 
-import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Logic.Encodable.Lattice
+import Mathlib.Order.Filter.AtTopBot.Finset
+import Mathlib.Topology.Algebra.InfiniteSum.Group
 
 /-!
 # Infinite sums and products over `ℕ` and `ℤ`
@@ -25,7 +26,7 @@ open scoped Topology
 variable {M : Type*} [CommMonoid M] [TopologicalSpace M] {m m' : M}
 
 variable {G : Type*} [CommGroup G] {g g' : G}
--- don't declare [TopologicalAddGroup G] here as some results require [UniformAddGroup G] instead
+-- don't declare [IsTopologicalAddGroup G] here as some results require [UniformAddGroup G] instead
 
 /-!
 ## Sums over `ℕ`
@@ -35,13 +36,11 @@ section Nat
 
 section Monoid
 
-namespace HasProd
-
 /-- If `f : ℕ → M` has product `m`, then the partial products `∏ i ∈ range n, f i` converge
 to `m`. -/
 @[to_additive "If `f : ℕ → M` has sum `m`, then the partial sums `∑ i ∈ range n, f i` converge
 to `m`."]
-theorem tendsto_prod_nat {f : ℕ → M} (h : HasProd f m) :
+theorem HasProd.tendsto_prod_nat {f : ℕ → M} (h : HasProd f m) :
     Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 m) :=
   h.comp tendsto_finset_range
 
@@ -51,7 +50,15 @@ to `∏' i, f i`. -/
 to `∑' i, f i`."]
 theorem Multipliable.tendsto_prod_tprod_nat {f : ℕ → M} (h : Multipliable f) :
     Tendsto (fun n ↦ ∏ i ∈ range n, f i) atTop (𝓝 (∏' i, f i)) :=
-  tendsto_prod_nat h.hasProd
+  h.hasProd.tendsto_prod_nat
+
+@[deprecated (since := "2025-02-02")]
+alias HasProd.Multipliable.tendsto_prod_tprod_nat := Multipliable.tendsto_prod_tprod_nat
+
+@[deprecated (since := "2025-02-02")]
+alias HasSum.Multipliable.tendsto_sum_tsum_nat := Summable.tendsto_sum_tsum_nat
+
+namespace HasProd
 
 section ContinuousMul
 
@@ -201,9 +208,9 @@ end tprod
 
 end Monoid
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [TopologicalSpace G] [TopologicalGroup G]
+variable [TopologicalSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem hasProd_nat_add_iff {f : ℕ → G} (k : ℕ) :
@@ -248,7 +255,7 @@ theorem tendsto_prod_nat_add [T2Space G] (f : ℕ → G) :
   · refine tendsto_const_nhds.congr fun n ↦ (tprod_eq_one_of_not_multipliable ?_).symm
     rwa [multipliable_nat_add_iff n]
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 section UniformGroup
 
@@ -278,15 +285,15 @@ theorem multipliable_iff_nat_tprod_vanishing {f : ℕ → G} : Multipliable f �
 
 end UniformGroup
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [TopologicalSpace G] [TopologicalGroup G]
+variable [TopologicalSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 theorem Multipliable.nat_tprod_vanishing {f : ℕ → G} (hf : Multipliable f) ⦃e : Set G⦄
     (he : e ∈ 𝓝 1) : ∃ N : ℕ, ∀ t ⊆ {n | N ≤ n}, (∏' n : t, f n) ∈ e :=
-  letI : UniformSpace G := TopologicalGroup.toUniformSpace G
-  have : UniformGroup G := comm_topologicalGroup_is_uniform
+  letI : UniformSpace G := IsTopologicalGroup.toUniformSpace G
+  have : UniformGroup G := uniformGroup_of_commGroup
   cauchySeq_finset_iff_nat_tprod_vanishing.1 hf.hasProd.cauchySeq e he
 
 @[to_additive]
@@ -295,7 +302,7 @@ theorem Multipliable.tendsto_atTop_one {f : ℕ → G} (hf : Multipliable f) :
   rw [← Nat.cofinite_eq_atTop]
   exact hf.tendsto_cofinite_one
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 end Nat
 
@@ -464,9 +471,9 @@ end ContinuousMul
 
 end Monoid
 
-section TopologicalGroup
+section IsTopologicalGroup
 
-variable [TopologicalSpace G] [TopologicalGroup G]
+variable [TopologicalSpace G] [IsTopologicalGroup G]
 
 @[to_additive]
 lemma HasProd.of_nat_of_neg {f : ℤ → G} (hf₁ : HasProd (fun n : ℕ ↦ f n) g)
@@ -485,7 +492,7 @@ lemma tprod_of_nat_of_neg [T2Space G] {f : ℤ → G}
     ∏' n : ℤ, f n = (∏' n : ℕ, f n) * (∏' n : ℕ, f (-n)) / f 0 :=
   (hf₁.hasProd.of_nat_of_neg hf₂.hasProd).tprod_eq
 
-end TopologicalGroup
+end IsTopologicalGroup
 
 section UniformGroup -- results which depend on completeness
 

@@ -33,6 +33,9 @@ Schwartz space into a locally convex topological vector space.
 * `SchwartzMap`: The Schwartz space is the space of smooth functions such that all derivatives
 decay faster than any power of `‖x‖`.
 * `SchwartzMap.seminorm`: The family of seminorms as described above
+* `SchwartzMap.compCLM`: Composition with a function on the right as a continuous linear map
+`𝓢(E, F) →L[𝕜] 𝓢(D, F)`, provided that the function is temperate and grows polynomially near
+infinity
 * `SchwartzMap.fderivCLM`: The differential as a continuous linear map
 `𝓢(E, F) →L[𝕜] 𝓢(E, E →L[ℝ] F)`
 * `SchwartzMap.derivCLM`: The one-dimensional derivative as a continuous linear map
@@ -82,9 +85,6 @@ scoped[SchwartzMap] notation "𝓢(" E ", " F ")" => SchwartzMap E F
 variable {E F}
 
 namespace SchwartzMap
-
--- Porting note: removed
--- instance : Coe 𝓢(E, F) (E → F) := ⟨toFun⟩
 
 instance instFunLike : FunLike 𝓢(E, F) E F where
   coe f := f.toFun
@@ -173,7 +173,7 @@ theorem decay_add_le_aux (k n : ℕ) (f g : 𝓢(E, F)) (x : E) :
       ‖x‖ ^ k * ‖iteratedFDeriv ℝ n f x‖ + ‖x‖ ^ k * ‖iteratedFDeriv ℝ n g x‖ := by
   rw [← mul_add]
   refine mul_le_mul_of_nonneg_left ?_ (by positivity)
-  rw [iteratedFDeriv_add_apply (f.smooth _) (g.smooth _)]
+  rw [iteratedFDeriv_add_apply (f.smooth _).contDiffAt (g.smooth _).contDiffAt]
   exact norm_add_le _ _
 
 theorem decay_neg_aux (k n : ℕ) (f : 𝓢(E, F)) (x : E) :
@@ -497,7 +497,7 @@ instance instContinuousSMul : ContinuousSMul 𝕜 𝓢(E, F) := by
   rw [(schwartz_withSeminorms 𝕜 E F).withSeminorms_eq]
   exact (schwartzSeminormFamily 𝕜 E F).moduleFilterBasis.continuousSMul
 
-instance instTopologicalAddGroup : TopologicalAddGroup 𝓢(E, F) :=
+instance instIsTopologicalAddGroup : IsTopologicalAddGroup 𝓢(E, F) :=
   (schwartzSeminormFamily ℝ E F).addGroupFilterBasis.isTopologicalAddGroup
 
 instance instUniformSpace : UniformSpace 𝓢(E, F) :=
@@ -682,7 +682,7 @@ theorem _root_.MeasureTheory.Measure.HasTemperateGrowth.exists_eLpNorm_lt_top (p
       use k
       suffices HasFiniteIntegral (fun x ↦ ((1 + ‖x‖) ^ (-(k * p) : ℝ))) μ by
         rw [hasFiniteIntegral_iff_enorm] at this
-        rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top hp ENNReal.coe_ne_top]
+        rw [eLpNorm_lt_top_iff_lintegral_rpow_enorm_lt_top hp ENNReal.coe_ne_top]
         simp only [ENNReal.coe_toReal]
         refine Eq.subst (motive := (∫⁻ x, · x ∂μ < ⊤)) (funext fun x ↦ ?_) this
         rw [← neg_mul, Real.rpow_mul (h_one_add x).le]
@@ -805,7 +805,7 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
       simp only [smul_apply, map_smul, ContinuousLinearMap.coe_smul', Pi.smul_apply,
         RingHom.id_apply])
     (fun f => (B.bilinearRestrictScalars ℝ).isBoundedBilinearMap.contDiff.comp
-      (f.smooth'.prod hg.1)) ?_
+      (f.smooth'.prodMk hg.1)) ?_
   rintro ⟨k, n⟩
   rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
   use
@@ -1298,22 +1298,28 @@ theorem eLpNorm_lt_top (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by v
 variable [SecondCountableTopologyEither E F]
 
 /-- Schwartz functions are in `L^∞`; does not require `hμ.HasTemperateGrowth`. -/
-theorem memℒp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : Memℒp f ⊤ μ := by
+theorem memLp_top (f : 𝓢(E, F)) (μ : Measure E := by volume_tac) : MemLp f ⊤ μ := by
   rcases f.decay 0 0 with ⟨C, _, hC⟩
-  refine memℒp_top_of_bound f.continuous.aestronglyMeasurable C (ae_of_all μ fun x ↦ ?_)
+  refine memLp_top_of_bound f.continuous.aestronglyMeasurable C (ae_of_all μ fun x ↦ ?_)
   simpa using hC x
 
+@[deprecated (since := "2025-02-21")]
+alias memℒp_top := memLp_top
+
 /-- Schwartz functions are in `L^p` for any `p`. -/
-theorem memℒp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] : Memℒp f p μ :=
+theorem memLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
+    [hμ : μ.HasTemperateGrowth] : MemLp f p μ :=
   ⟨f.continuous.aestronglyMeasurable, f.eLpNorm_lt_top p μ⟩
+
+@[deprecated (since := "2025-02-21")]
+alias memℒp := memLp
 
 /-- Map a Schwartz function to an `Lp` function for any `p`. -/
 def toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac) [hμ : μ.HasTemperateGrowth] :
-    Lp F p μ := (f.memℒp p μ).toLp
+    Lp F p μ := (f.memLp p μ).toLp
 
 theorem coeFn_toLp (f : 𝓢(E, F)) (p : ℝ≥0∞) (μ : Measure E := by volume_tac)
-    [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (f.memℒp p μ).coeFn_toLp
+    [hμ : μ.HasTemperateGrowth] : f.toLp p μ =ᵐ[μ] f := (f.memLp p μ).coeFn_toLp
 
 theorem norm_toLp {f : 𝓢(E, F)} {p : ℝ≥0∞} {μ : Measure E} [hμ : μ.HasTemperateGrowth] :
     ‖f.toLp p μ‖ = ENNReal.toReal (eLpNorm f p μ) := by

@@ -24,7 +24,7 @@ variable {α : Type*}
 instance : StarMul (FreeMonoid α) where
   star := List.reverse
   star_involutive := List.reverse_reverse
-  star_mul := List.reverse_append
+  star_mul := fun _ _ => List.reverse_append
 
 @[simp]
 theorem star_of (x : α) : star (of x) = of x :=
@@ -48,7 +48,7 @@ instance : StarRing (FreeAlgebra R X) where
     unfold Star.star
     simp only [Function.comp_apply]
     let y := lift R (X := X) (MulOpposite.op ∘ ι R)
-    refine induction (C := fun x ↦ (y (y x).unop).unop = x) _ _ ?_ ?_ ?_ ?_ x
+    refine induction (motive := fun x ↦ (y (y x).unop).unop = x) _ _ ?_ ?_ ?_ ?_ x
     · intros
       simp only [AlgHom.commutes, MulOpposite.algebraMap_apply, MulOpposite.unop_op]
     · intros

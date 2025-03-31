@@ -5,6 +5,8 @@ Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.InnerProductSpace.LinearMap
+import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Orthonormal sets
@@ -48,6 +50,20 @@ def Orthonormal (v : ι → E) : Prop :=
 
 variable {𝕜}
 
+lemma Orthonormal.norm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+    ‖v i‖ = 1 := h.1 i
+
+lemma Orthonormal.nnnorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+    ‖v i‖₊ = 1 := by
+  suffices (‖v i‖₊ : ℝ) = 1 by norm_cast at this
+  simp [h.norm_eq_one]
+
+lemma Orthonormal.enorm_eq_one {v : ι → E} (h : Orthonormal 𝕜 v) (i : ι) :
+    ‖v i‖ₑ = 1 := by rw [← ofReal_norm]; simp [h.norm_eq_one]
+
+lemma Orthonormal.inner_eq_zero {v : ι → E} {i j : ι} (h : Orthonormal 𝕜 v) (hij : i ≠ j) :
+    ⟪v i, v j⟫ = 0 := h.2 hij
+
 /-- `if ... then ... else` characterization of an indexed set of vectors being orthonormal.  (Inner
 product equals Kronecker delta.) -/
 theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
@@ -55,8 +71,8 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
   constructor
   · intro hv i j
     split_ifs with h
-    · simp [h, inner_self_eq_norm_sq_to_K, hv.1]
-    · exact hv.2 h
+    · simp [h, inner_self_eq_norm_sq_to_K, hv.norm_eq_one]
+    · exact hv.inner_eq_zero h
   · intro h
     constructor
     · intro i
@@ -198,7 +214,7 @@ theorem Orthonormal.orthonormal_of_forall_eq_or_eq_neg {v w : ι → E} (hv : Or
   classical
   rw [orthonormal_iff_ite] at *
   intro i j
-  cases' hw i with hi hi <;> cases' hw j with hj hj <;>
+  rcases hw i with hi | hi <;> rcases hw j with hj | hj <;>
     replace hv := hv i j <;> split_ifs at hv ⊢ with h <;>
     simpa only [hi, hj, h, inner_neg_right, inner_neg_left, neg_neg, eq_self_iff_true,
       neg_eq_zero] using hv

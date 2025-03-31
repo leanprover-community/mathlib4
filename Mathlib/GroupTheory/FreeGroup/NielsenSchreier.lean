@@ -182,7 +182,7 @@ def loopOfHom {a b : G} (p : a ⟶ b) : End (root' T) :=
 theorem loopOfHom_eq_id {a b : Generators G} (e) (H : e ∈ wideSubquiverSymmetrify T a b) :
     loopOfHom T (of e) = 𝟙 (root' T) := by
   rw [loopOfHom, ← Category.assoc, IsIso.comp_inv_eq, Category.id_comp]
-  cases' H with H H
+  rcases H with H | H
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inl e, H⟩), homOfPath]
     rfl
   · rw [treeHom_eq T (Path.cons default ⟨Sum.inr e, H⟩), homOfPath]
@@ -219,7 +219,9 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
       refine ⟨F'.mapEnd _, ?_, ?_⟩
       · suffices ∀ {x y} (q : x ⟶ y), F'.map (loopOfHom T q) = (F'.map q : X) by
           rintro ⟨⟨a, b, e⟩, h⟩
-          erw [Functor.mapEnd_apply, this, hF']
+          -- Work around the defeq `X = End (F'.obj (IsFreeGroupoid.SpanningTree.root' T))`
+          erw [Functor.mapEnd_apply]
+          rw [this, hF']
           exact dif_neg h
         intros x y q
         suffices ∀ {a} (p : Path (root T) a), F'.map (homOfPath T p) = 1 by

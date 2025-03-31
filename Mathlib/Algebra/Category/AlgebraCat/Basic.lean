@@ -30,12 +30,6 @@ structure AlgebraCat where
   [isRing : Ring carrier]
   [isAlgebra : Algebra R carrier]
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `AlgebraCat.{max u₁ u₂}`, to deal around unification issues.
-Since the universe the ring lives in can be inferred, we put that last. -/
-@[nolint checkUnivs]
-abbrev AlgebraCatMax.{v₁, v₂, u₁} (R : Type u₁) [CommRing R] := AlgebraCat.{max v₁ v₂} R
-
 attribute [instance] AlgebraCat.isRing AlgebraCat.isAlgebra
 
 initialize_simps_projections AlgebraCat (-isRing, -isAlgebra)
@@ -133,12 +127,10 @@ lemma ofHom_comp {X Y Z : Type v} [Ring X] [Ring Y] [Ring Z] [Algebra R X] [Alge
 lemma ofHom_apply {R : Type u} [CommRing R] {X Y : Type v} [Ring X] [Algebra R X] [Ring Y]
     [Algebra R Y] (f : X →ₐ[R] Y) (x : X) : ofHom f x = f x := rfl
 
-@[simp]
 lemma inv_hom_apply {A B : AlgebraCat.{v} R} (e : A ≅ B) (x : A) : e.inv (e.hom x) = x := by
   rw [← comp_apply]
   simp
 
-@[simp]
 lemma hom_inv_apply {A B : AlgebraCat.{v} R} (e : A ≅ B) (x : B) : e.hom (e.inv x) = x := by
   rw [← comp_apply]
   simp
