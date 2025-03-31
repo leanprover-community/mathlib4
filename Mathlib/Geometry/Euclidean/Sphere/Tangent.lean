@@ -243,7 +243,7 @@ lemma mem_commonExtTangents_iff {as : AffineSubspace ℝ P} {s₁ s₂ : Sphere 
       as ∈ s₁.commonTangents s₂ ∧ ∀ p ∈ as, ¬Sbtw ℝ s₁.center p s₂.center :=
   Iff.rfl
 
-@[simp] lemma union_commonIntTangents_commonExtTangents (s₁ s₂ : Sphere P) :
+@[simp] lemma commonIntTangents_union_commonExtTangents (s₁ s₂ : Sphere P) :
     s₁.commonIntTangents s₂ ∪ s₁.commonExtTangents s₂ = s₁.commonTangents s₂ := by
   ext as
   rw [Set.mem_union, mem_commonIntTangents_iff, mem_commonExtTangents_iff, ← and_or_left,
