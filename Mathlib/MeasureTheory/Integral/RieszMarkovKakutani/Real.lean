@@ -131,8 +131,7 @@ lemma range_cut_partition (f : C_c(X, ℝ)) (a : ℝ) {ε : ℝ} (hε : 0 < ε) 
     _ ⊆ ⋃ n : Fin N, Ioc (a + n * ε) (a + n * ε + ε) := by
       intro _
       simp only [mem_iUnion, Finset.mem_range, exists_prop]
-      rintro ⟨i, hi⟩
-      exact ⟨⟨i, hi.1⟩ , hi.2⟩
+      exact fun ⟨i, hi⟩ ↦ ⟨⟨i, hi.1⟩ , hi.2⟩
     _ = ⋃ n, Ioc (y n - ε) (y n) := by simp [y, mul_add, ← add_assoc, mul_comm]
   have partition : tsupport f = ⋃ j, E j := by
     simp only [E, ← iUnion_inter, ← preimage_iUnion, eq_comm (a := tsupport _), inter_eq_right]
