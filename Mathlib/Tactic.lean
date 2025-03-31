@@ -181,7 +181,6 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.Eq
-import Mathlib.Tactic.NormNum.Factors
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
@@ -243,6 +242,7 @@ import Mathlib.Tactic.SetLike
 import Mathlib.Tactic.SimpIntro
 import Mathlib.Tactic.SimpRw
 import Mathlib.Tactic.Simproc.ExistsAndEq
+import Mathlib.Tactic.Simproc.Factors
 import Mathlib.Tactic.Simps.Basic
 import Mathlib.Tactic.Simps.NotationClass
 import Mathlib.Tactic.SplitIfs

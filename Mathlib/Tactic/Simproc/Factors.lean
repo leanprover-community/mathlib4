@@ -14,7 +14,8 @@ Note that since `norm_num` can only produce numerals, we can't use it here.
 
 open Nat
 
-namespace Mathlib.Meta.NormNum
+namespace Mathlib.Meta.Simproc
+open Mathlib.Meta.NormNum
 
 /-- A partial proof of `primeFactorsList`.
 Asserts that `l` is a sorted list of primes multiplying to `n` and lower bounded by a prime `p`. -/
@@ -87,7 +88,7 @@ private partial def evalPrimeFactorsListAux
     if hm_ba_eq : b = a then
       -- if the factor is our minimum `a`, then recurse without changing the minimum
       have h : Q($eal * $em = $en) :=
-        have : a * m = n := by simp [m, ← hm_ba_eq, Nat.mul_div_cancel' (minFac_dvd _)]
+        have : a * m = n := by simp [m, b, ← hm_ba_eq, Nat.mul_div_cancel' (minFac_dvd _)]
         (q(Eq.refl $en) : Expr)
       let hp₁ := q(isNat_mul rfl $ha $hm $h)
       let ⟨el, hp₂⟩ ← evalPrimeFactorsListAux hm ha
@@ -144,13 +145,16 @@ def evalPrimeFactorsList
     let ⟨l, p⟩ ← evalPrimeFactorsListAux hn h2
     return ⟨l, q(($p).primeFactorsList_eq)⟩
 
-end Mathlib.Meta.NormNum
+end Mathlib.Meta.Simproc
 
-open Qq Mathlib.Meta.NormNum
+open Qq Mathlib.Meta.Simproc Mathlib.Meta.NormNum
 
 /-- A simproc for terms of the form `Nat.primeFactorsList (OfNat.ofNat n)`. -/
-simproc Nat.primeFactorsList_ofNat (Nat.primeFactorsList _) := fun e => do
-  let ⟨1, ~q(List ℕ), ~q(Nat.primeFactorsList (OfNat.ofNat $e))⟩ ← inferTypeQ e | return .continue
-  let hn : Q(IsNat (OfNat.ofNat $e) $e) := q(⟨rfl⟩)
-  let ⟨l, p⟩ ← evalPrimeFactorsList hn
-  return .done { expr := l, proof? := p }
+simproc Nat.primeFactorsList_ofNat (Nat.primeFactorsList _) := .ofQ fun u α e => do
+  match u, α, e with
+  | 1, ~q(List ℕ), ~q(Nat.primeFactorsList (OfNat.ofNat $n)) =>
+    let hn : Q(IsNat (OfNat.ofNat $n) $n) := q(⟨rfl⟩)
+    let ⟨l, p⟩ ← evalPrimeFactorsList hn
+    return .done <| .mk q($l) <| some q($p)
+  | _ =>
+    return .continue

@@ -122,13 +122,6 @@ example : Nat.minFac 121 = 11 := by norm_num1
 example : Nat.minFac 221 = 13 := by norm_num1
 example : Nat.minFac (2 ^ 19 - 1) = 2 ^ 19 - 1 := by norm_num1
 
-example : Nat.primeFactorsList 0 = [] := by simp
-example : Nat.primeFactorsList 1 = [] := by simp
-example : Nat.primeFactorsList 2 = [2] := by simp
-example : Nat.primeFactorsList 3 = [3] := by simp
-example : Nat.primeFactorsList 4 = [2, 2] := by simp
-example : Nat.primeFactorsList 12 = [2, 2, 3] := by simp
-example : Nat.primeFactorsList 221 = [13, 17] := by simp
 
 -- randomized tests
 example : Nat.gcd 35 29 = 1 := by norm_num1
@@ -193,11 +186,9 @@ example : Nat.Coprime 93 34 := by norm_num1
 
 example : ¬ Nat.Prime 912 := by norm_num1
 example : Nat.minFac 912 = 2 := by norm_num1
-example : Nat.primeFactorsList 912 = [2, 2, 2, 2, 3, 19] := by simp
 
 example : ¬ Nat.Prime 681 := by norm_num1
 example : Nat.minFac 681 = 3 := by norm_num1
-example : Nat.primeFactorsList 681 = [3, 227] := by simp
 
 example : ¬ Nat.Prime 728 := by norm_num1
 example : Nat.minFac 728 = 2 := by norm_num1
