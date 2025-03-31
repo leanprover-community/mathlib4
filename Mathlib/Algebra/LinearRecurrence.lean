@@ -157,11 +157,9 @@ def tupleSucc : (Fin E.order → α) →ₗ[α] Fin E.order → α where
   toFun X i := if h : (i : ℕ) + 1 < E.order then X ⟨i + 1, h⟩ else ∑ i, E.coeffs i * X i
   map_add' x y := by
     ext i
-    simp only
     split_ifs with h <;> simp [h, mul_add, sum_add_distrib]
   map_smul' x y := by
     ext i
-    simp only
     split_ifs with h <;> simp [h, mul_sum]
     exact sum_congr rfl fun x _ ↦ by ac_rfl
 

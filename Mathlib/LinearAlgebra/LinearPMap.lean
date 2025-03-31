@@ -123,17 +123,14 @@ noncomputable def mkSpanSingleton' (x : E) (y : F) (H : ∀ c : R, c • x = 0 �
       rw [← sub_eq_zero, ← sub_smul] at h ⊢
       exact H _ h
     { toFun := fun z => Classical.choose (mem_span_singleton.1 z.prop) • y
-      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       -- Porting note: Were `Classical.choose_spec (mem_span_singleton.1 _)`.
       map_add' := fun y z => by
-        beta_reduce
         rw [← add_smul]
         apply H
         simp only [add_smul, sub_smul,
           fun w : R ∙ x => Classical.choose_spec (mem_span_singleton.1 w.prop)]
         apply coe_add
       map_smul' := fun c z => by
-        beta_reduce
         rw [smul_smul]
         apply H
         simp only [mul_smul,
