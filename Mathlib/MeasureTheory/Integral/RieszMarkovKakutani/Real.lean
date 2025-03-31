@@ -160,25 +160,21 @@ lemma open_approx (f : C_c(X, ℝ)) {ε : ℝ} (hε : 0 < ε) (E : Set X) {μ : 
       _ = _ := by rw [Content.measure_apply μ ?_]; congr; exact hμ'
   exact ⟨subset_inter hV₁.1 hfE, h, h'⟩
 
--- TO DO: remove hN, introduce additional ε' = ε/N
 omit [LocallyCompactSpace X] in
 /- Define simultaneously sets which are each open approximations and obtain particular estimates. -/
-private lemma open_approx' {N : ℕ} (hN : 0 < N) (E : Fin N → Set X) (f : C_c(X, ℝ)) {y : Fin N → ℝ}
-    (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε) {ν : Content X}
+lemma open_approx' {N : ℕ} (E : Fin N → Set X) (f : C_c(X, ℝ)) {y : Fin N → ℝ}
+    (hy : ∀ n, ∀ x ∈ E n, f x ≤ y n) {ε : ℝ} (hε : 0 < ε) {ε' : ℝ} (hε' : 0 < ε') {ν : Content X}
     (hν : ∀ n, ν.measure (E n) ≠ ⊤) (hν' : ∀ n, MeasurableSet (E n)) :
-    ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε)
-    ∧ ν.measure (V n) ≤ ν.measure (E n) + ENNReal.ofReal (ε / N) := by
-  have h (n : Fin N) (x : X) (hx : x ∈ E n) := lt_add_of_le_of_pos (hy n x hx) hε
-  have h' (n : Fin N) : ν.outerMeasure (E n) ≠ ⊤ := by
-    simpa [← Content.measure_apply ν (hν' n)] using hν n
-  use fun n ↦ Classical.choose <|
-    open_approx f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
+    ∃ V : Fin N → Opens X, ∀ n, E n ⊆ (V n) ∧ (∀ x ∈ V n, f x < y n + ε) ∧
+    ν.measure (V n) ≤ ν.measure (E n) + ENNReal.ofReal ε' := by
+  have h n x (hx : x ∈ E n) := lt_add_of_le_of_pos (hy n x hx) hε
+  have h' n : ν.outerMeasure (E n) ≠ ⊤ := by simpa [Content.measure_apply ν (hν' n)] using hν n
+  use fun n ↦ Classical.choose <| open_approx f hε' (E n) (h' n) (hν' n) (h n)
   intro n
-  exact Classical.choose_spec <|
-    open_approx f (div_pos hε (Nat.cast_pos'.mpr hN)) (E n) (h' n) (hν' n) (h n)
+  exact Classical.choose_spec <| open_approx f hε' (E n) (h' n) (hν' n) (h n)
 
 /-- Choose `N` sufficiently large such that a particular quantity is small. -/
-private lemma exists_nat (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
+private lemma exists_nat_large (a' b' : ℝ) {ε : ℝ} (hε : 0 < ε) : ∃ (N : ℕ), 0 < N ∧
     a' / N * (b' + a' / N) ≤ ε := by
   have A : Tendsto (fun (N : ℝ) ↦ a' / N * (b' + a' / N)) atTop (𝓝 (0 * (b' + 0))) := by
     apply Tendsto.mul
@@ -209,7 +205,7 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
         (HasCompactSupport.isCompact_range f.2 f.1.2)).2.subset_ball_lt 0 0
       exact ⟨-r, r, by linarith, hr.2.trans_eq (by simp [Real.ball_eq_Ioo])⟩
     -- Choose `N` positive and sufficiently large such that `ε'` is sufficiently small
-    obtain ⟨N, hN, hε'⟩ := exists_nat (b - a) (2 * (μ K).toReal + |a| + b) hε
+    obtain ⟨N, hN, hε'⟩ := exists_nat_large (b - a) (2 * (μ K).toReal + |a| + b) hε
     let ε' := (b - a) / N
     replace hε' : 0 < ε' ∧  ε' * (2 * (μ K).toReal + |a| + b + ε') ≤ ε :=
       ⟨div_pos (sub_pos.mpr hab.1) (Nat.cast_pos'.mpr hN), hε'⟩
@@ -227,7 +223,8 @@ private lemma integral_riesz_le (f : C_c(X, ℝ)) : Λ f ≤ ∫ x, f x ∂(ries
       rw [rieszMeasure, show f = f.toFun by rfl, Content.measure_apply _ f.2.measurableSet]
       exact Content.outerMeasure_lt_top_of_isCompact _ f.2
     -- Define sets `V` which are open approximations to the sets `E`
-    obtain ⟨V, hV⟩ := open_approx' hN E f (fun n x hx ↦ (hE.2.2.1 n x hx).right) hε'.1 hE' hE.2.2.2
+    obtain ⟨V, hV⟩ := open_approx' E f (fun n x hx ↦ (hE.2.2.1 n x hx).right) hε'.1
+      (div_pos hε'.1 (Nat.cast_pos'.mpr hN)) hE' hE.2.2.2
     -- Define a partition of unity subordinated to the sets `V`
     obtain ⟨g, hg⟩ : ∃ (g : Fin N → C_c(X, ℝ)), (∀ n, tsupport (g n) ⊆ (V n).carrier) ∧
       EqOn (∑ n : Fin N, (g n)) 1 (tsupport f.toFun) ∧ (∀ n x, (g n) x ∈ Icc 0 1) ∧
