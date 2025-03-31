@@ -173,7 +173,7 @@ namespace ProdUnivMany
 open Lean Meta Qq
 
 /-- Implementation of the `prod_univ_many` simproc. -/
-def prodEquivManyImp {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n : ℕ)
+def prodUnivManyImp {u : Level} {α : Q(Type u)} (inst : Q(CommMonoid $α)) (n : ℕ)
     (f : Q(Fin $n → $α)) :
     MetaM <| (val : Q($α)) × Q(∏ i, $f i = $val) := do
   match n with
@@ -197,7 +197,7 @@ where
     let pre ← makeRHS n f nezero m
     let mRaw : Q(ℕ) := mkRawNatLit m
     -- without explicit OfNat.ofNat we get `f ↑(2 : ℕ)` instead of `f (2 : Fin n)`
-    pure q($pre * $f (@OfNat.ofNat (Fin $n) $mRaw _))
+    pure q($pre * $f (OfNat.ofNat $mRaw))
 
 /-- Rewrites `∏ (i : Fin n), f i` as `f 0 * f 1 * ... * f (n - 1)`. -/
 simproc_decl prod_univ_many (Finset.prod (α := Fin _) Finset.univ _) := .ofQ fun u _ e => do
@@ -207,7 +207,7 @@ simproc_decl prod_univ_many (Finset.prod (α := Fin _) Finset.univ _) := .ofQ fu
     | .none =>
       return .continue
     | .some nVal =>
-      let ⟨res, pf⟩ ← ProdUnivMany.prodEquivManyImp inst nVal f
+      let ⟨res, pf⟩ ← ProdUnivMany.prodUnivManyImp inst nVal f
       return .visit {expr := res, proof? := pf}
   | _, _ => return .continue
 
