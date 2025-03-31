@@ -589,8 +589,11 @@ instance instT3Space : T3Space (CStarMatrix m n A) := _root_.instT3Space
 instance instIsTopologicalAddGroup : IsTopologicalAddGroup (CStarMatrix m n A) :=
   Pi.topologicalAddGroup
 
-instance instUniformAddGroup : UniformAddGroup (CStarMatrix m n A) :=
-  Pi.instUniformAddGroup
+instance instIsUniformAddGroup : IsUniformAddGroup (CStarMatrix m n A) :=
+  Pi.instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-31")] alias instUniformAddGroup :=
+  CStarMatrix.instIsUniformAddGroup
 
 instance instContinuousSMul {R : Type*} [SMul R A] [TopologicalSpace R] [ContinuousSMul R A] :
     ContinuousSMul R (CStarMatrix m n A) := instContinuousSMulForall
