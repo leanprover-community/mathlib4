@@ -214,7 +214,7 @@ theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.
     rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
     refine hmn.mul_dvd_of_dvd_of_dvd ?_ ?_ <;>
       rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
-      tauto,
+      grind,
     fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 
 theorem gcd_a_modEq (a b : ℕ) : (a : ℤ) * Nat.gcdA a b ≡ Nat.gcd a b [ZMOD b] := by

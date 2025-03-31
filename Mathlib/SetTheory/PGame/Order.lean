@@ -574,7 +574,7 @@ instance : IsIrrefl _ (· ‖ ·) :=
 
 theorem lf_iff_lt_or_fuzzy {x y : PGame} : x ⧏ y ↔ x < y ∨ x ‖ y := by
   simp only [lt_iff_le_and_lf, Fuzzy, ← PGame.not_le]
-  tauto
+  grind
 
 theorem lf_of_fuzzy {x y : PGame} (h : x ‖ y) : x ⧏ y :=
   lf_iff_lt_or_fuzzy.2 (Or.inr h)

@@ -173,14 +173,14 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
         (fun t _ a _ => a ∈ t)
         (by simp)
         (by simp [Classical.em])
-        (by simp_rw [mem_filter, funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
+        (by simp_rw [mem_filter, funext_iff, eq_iff_iff, mem_pi, mem_insert]; grind)
         (by simp_rw [Finset.ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
         (fun a _ ↦ by
           simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
             Subtype.map_coe, id_eq, prod_attach, filter_congr_decidable]
           congr 2 with x
           simp only [mem_filter, mem_sdiff, not_and, not_exists, and_congr_right_iff]
-          tauto)
+          grind)
 
 end DecidableEq
 

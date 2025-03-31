@@ -954,7 +954,7 @@ theorem Ico_eq_Ico_iff (h : a₁ < b₁ ∨ a₂ < b₂) : Ico a₁ b₁ = Ico a
       simp only [gt_iff_lt, not_lt, Ico_subset_Ico_iff h] at e <;>
       [ rcases e with ⟨⟨h₁, h₂⟩, e'⟩; rcases e with ⟨e', ⟨h₁, h₂⟩⟩ ] <;>
       have hab := (Ico_subset_Ico_iff <| h₁.trans_lt <| h.trans_le h₂).1 e' <;>
-      tauto,
+      grind,
     fun ⟨h₁, h₂⟩ => by rw [h₁, h₂]⟩
 
 lemma Ici_eq_singleton_iff_isTop {x : α} : (Ici x = {x}) ↔ IsTop x := by
@@ -1028,9 +1028,9 @@ theorem Ioo_union_Ioi' (h₁ : c < b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   ext1 x
   simp_rw [mem_union, mem_Ioo, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
-  · tauto
+  · grind
   · have hxb : x < b := (le_of_not_gt hc).trans_lt h₁
-    tauto
+    grind
 
 theorem Ioo_union_Ioi (h : c < max a b) : Ioo a b ∪ Ioi c = Ioi (min a c) := by
   rcases le_total a b with hab | hab <;> simp [hab] at h
@@ -1056,9 +1056,9 @@ theorem Ico_union_Ici' (h₁ : c ≤ b) : Ico a b ∪ Ici c = Ici (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Ico, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
-  · tauto
+  · grind
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    tauto
+    grind
 
 theorem Ico_union_Ici (h : c ≤ max a b) : Ico a b ∪ Ici c = Ici (min a c) := by
   rcases le_total a b with hab | hab <;> simp [hab] at h
@@ -1076,9 +1076,9 @@ theorem Ioc_union_Ioi' (h₁ : c ≤ b) : Ioc a b ∪ Ioi c = Ioi (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Ioc, mem_Ioi, min_lt_iff]
   by_cases hc : c < x
-  · tauto
+  · grind
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
-    tauto
+    grind
 
 theorem Ioc_union_Ioi (h : c ≤ max a b) : Ioc a b ∪ Ioi c = Ioi (min a c) := by
   rcases le_total a b with hab | hab <;> simp [hab] at h
@@ -1111,9 +1111,9 @@ theorem Icc_union_Ici' (h₁ : c ≤ b) : Icc a b ∪ Ici c = Ici (min a c) := b
   ext1 x
   simp_rw [mem_union, mem_Icc, mem_Ici, min_le_iff]
   by_cases hc : c ≤ x
-  · tauto
+  · grind
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    tauto
+    grind
 
 theorem Icc_union_Ici (h : c ≤ max a b) : Icc a b ∪ Ici c = Ici (min a c) := by
   rcases le_or_lt a b with hab | hab <;> simp [hab] at h
@@ -1146,9 +1146,9 @@ theorem Iio_union_Ico' (h₁ : c ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := b
   ext1 x
   simp_rw [mem_union, mem_Iio, mem_Ico, lt_max_iff]
   by_cases hc : c ≤ x
-  · tauto
+  · grind
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    tauto
+    grind
 
 theorem Iio_union_Ico (h : min c d ≤ b) : Iio b ∪ Ico c d = Iio (max b d) := by
   rcases le_total c d with hcd | hcd <;> simp [hcd] at h
@@ -1211,9 +1211,9 @@ theorem Iic_union_Icc' (h₁ : c ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := b
   ext1 x
   simp_rw [mem_union, mem_Iic, mem_Icc, le_max_iff]
   by_cases hc : c ≤ x
-  · tauto
+  · grind
   · have hxb : x ≤ b := (le_of_not_ge hc).trans h₁
-    tauto
+    grind
 
 theorem Iic_union_Icc (h : min c d ≤ b) : Iic b ∪ Icc c d = Iic (max b d) := by
   rcases le_or_lt c d with hcd | hcd <;> simp [hcd] at h
@@ -1255,12 +1255,12 @@ theorem Ico_union_Ico' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ico a b ∪ Ico c d =
   ext1 x
   simp_rw [mem_union, mem_Ico, min_le_iff, lt_max_iff]
   by_cases hc : c ≤ x <;> by_cases hd : x < d
-  · tauto
+  · grind
   · have hax : a ≤ x := h₂.trans (le_of_not_gt hd)
-    tauto
+    grind
   · have hxb : x < b := (lt_of_not_ge hc).trans_le h₁
-    tauto
-  · tauto
+    grind
+  · grind
 
 theorem Ico_union_Ico (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ico a b ∪ Ico c d = Ico (min a c) (max b d) := by
@@ -1328,12 +1328,12 @@ theorem Ioc_union_Ioc' (h₁ : c ≤ b) (h₂ : a ≤ d) : Ioc a b ∪ Ioc c d =
   ext1 x
   simp_rw [mem_union, mem_Ioc, min_lt_iff, le_max_iff]
   by_cases hc : c < x <;> by_cases hd : x ≤ d
-  · tauto
+  · grind
   · have hax : a < x := h₂.trans_lt (lt_of_not_ge hd)
-    tauto
+    grind
   · have hxb : x ≤ b := (le_of_not_gt hc).trans h₁
-    tauto
-  · tauto
+    grind
+  · grind
 
 theorem Ioc_union_Ioc (h₁ : min a b ≤ max c d) (h₂ : min c d ≤ max a b) :
     Ioc a b ∪ Ioc c d = Ioc (min a c) (max b d) := by
@@ -1406,12 +1406,12 @@ theorem Ioo_union_Ioo' (h₁ : c < b) (h₂ : a < d) : Ioo a b ∪ Ioo c d = Ioo
   ext1 x
   simp_rw [mem_union, mem_Ioo, min_lt_iff, lt_max_iff]
   by_cases hc : c < x <;> by_cases hd : x < d
-  · tauto
+  · grind
   · have hax : a < x := h₂.trans_le (le_of_not_lt hd)
-    tauto
+    grind
   · have hxb : x < b := (le_of_not_lt hc).trans_lt h₁
-    tauto
-  · tauto
+    grind
+  · grind
 
 theorem Ioo_union_Ioo (h₁ : min a b < max c d) (h₂ : min c d < max a b) :
     Ioo a b ∪ Ioo c d = Ioo (min a c) (max b d) := by

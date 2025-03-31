@@ -249,7 +249,7 @@ theorem LT.lt.not_incompRel (h : a < b) : ¬ IncompRel (· ≤ ·) a b := fun h'
 
 theorem not_le_iff_lt_or_incompRel : ¬ b ≤ a ↔ a < b ∨ IncompRel (· ≤ ·) a b := by
   rw [lt_iff_le_not_le, IncompRel]
-  tauto
+  grind
 
 /-- Exactly one of the following is true. -/
 theorem lt_or_antisymmRel_or_gt_or_incompRel (a b : α) :

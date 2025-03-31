@@ -83,7 +83,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
       simp_all [Set.mem_diff_singleton]
   | succ k ih =>
     rw [show k + 1 + m = (k + m) + 1 by omega] at h₂
-    cases h : sel s <;> simp_all [enumerate] ; tauto
+    cases h : sel s <;> simp_all [enumerate] ; grind
 
 end Enumerate
 

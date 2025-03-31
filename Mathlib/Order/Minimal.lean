@@ -73,7 +73,7 @@ alias ⟨Maximal.of_dual, Maximal.dual⟩ := maximal_toDual
     Minimal (fun x ↦ P x.1) x ↔ Minimal (P ⊓ Q) x := by
   obtain ⟨x, hx⟩ := x
   simp only [Minimal, Subtype.forall, Subtype.mk_le_mk, Pi.inf_apply, inf_Prop_eq]
-  tauto
+  grind
 
 @[simp] theorem maximal_subtype {x : Subtype Q} :
     Maximal (fun x ↦ P x.1) x ↔ Maximal (P ⊓ Q) x :=

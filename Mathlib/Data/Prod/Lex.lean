@@ -117,13 +117,13 @@ variable [PartialOrder α] [Preorder β] {x y : α × β}
 /-- Variant of `Prod.Lex.toLex_le_toLex` for partial orders. -/
 lemma toLex_le_toLex' : toLex x ≤ toLex y ↔ x.1 ≤ y.1 ∧ (x.1 = y.1 → x.2 ≤ y.2) := by
   simp only [toLex_le_toLex, lt_iff_le_not_le, le_antisymm_iff]
-  tauto
+  grind
 
 /-- Variant of `Prod.Lex.toLex_lt_toLex` for partial orders. -/
 lemma toLex_lt_toLex' : toLex x < toLex y ↔ x.1 ≤ y.1 ∧ (x.1 = y.1 → x.2 < y.2) := by
   rw [toLex_lt_toLex]
   simp only [lt_iff_le_not_le, le_antisymm_iff]
-  tauto
+  grind
 
 /-- Variant of `Prod.Lex.le_iff` for partial orders. -/
 lemma le_iff' {x y : α ×ₗ β} :

@@ -84,7 +84,7 @@ syntax (name := peel)
   "peel" (num)? (ppSpace colGt term)?
   (" with" (ppSpace colGt (ident <|> hole))+)? (usingArg)? : tactic
 
-private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by tauto
+private lemma and_imp_left_of_imp_imp {p q r : Prop} (h : r → p → q) : r ∧ p → r ∧ q := by grind
 
 private theorem eventually_imp {α : Type*} {p q : α → Prop} {f : Filter α}
     (hq : ∀ (x : α), p x → q x) (hp : ∀ᶠ (x : α) in f, p x) : ∀ᶠ (x : α) in f, q x :=

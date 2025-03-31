@@ -606,7 +606,7 @@ private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
       simp only [← Multiset.coe_eq_coe, ← Multiset.cons_coe, Multiset.coe_nil, Multiset.cons_zero,
         Multiset.cons_eq_cons, Multiset.singleton_inj, ne_eq, Multiset.singleton_eq_cons_iff,
         exists_eq_right_right, and_true]
-      tauto
+      grind
     mpr := fun
         | .inl ⟨h₁, h₂⟩ | .inr ⟨h₁, h₂⟩ => by
           rw [h₁, h₂]

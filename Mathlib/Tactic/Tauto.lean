@@ -218,6 +218,7 @@ syntax (name := tauto) "tauto" optConfig : tactic
 
 elab_rules : tactic | `(tactic| tauto $cfg:optConfig) => do
   let _cfg ← elabConfig cfg
+  logWarning "tauto"
   tautology
 
 end Mathlib.Tactic.Tauto

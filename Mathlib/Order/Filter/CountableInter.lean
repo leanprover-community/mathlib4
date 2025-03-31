@@ -245,7 +245,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
   · induction h with
     | @basic s hs => exact ⟨{s}, by simp [hs, subset_refl]⟩
     | univ => exact ⟨∅, by simp⟩
-    | superset _ _ ih => refine Exists.imp (fun S => ?_) ih; tauto -- grind times out!
+    | superset _ _ ih => refine Exists.imp (fun S => ?_) ih; tauto
     | @sInter S Sct _ ih =>
       choose T Tg Tct hT using ih
       refine ⟨⋃ (s) (H : s ∈ S), T s H, by simpa, Sct.biUnion Tct, ?_⟩

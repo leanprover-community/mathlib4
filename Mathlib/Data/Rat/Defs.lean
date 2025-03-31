@@ -89,7 +89,7 @@ lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
 @[simp] lemma den_ne_zero (q : ℚ) : q.den ≠ 0 := q.den_pos.ne'
 
 @[simp] lemma num_nonneg : 0 ≤ q.num ↔ 0 ≤ q := by
-  simp [Int.le_iff_lt_or_eq, instLE, Rat.blt, Int.not_lt]; tauto
+  simp [Int.le_iff_lt_or_eq, instLE, Rat.blt, Int.not_lt]; grind
 
 @[simp]
 theorem divInt_eq_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b = 0 ↔ a = 0 := by
@@ -385,7 +385,7 @@ theorem divInt_ne_zero_of_ne_zero {n d : ℤ} (h : n ≠ 0) (hd : d ≠ 0) : n /
 
 protected lemma nonneg_antisymm : 0 ≤ q → 0 ≤ -q → q = 0 := by
   simp_rw [← num_eq_zero, Int.le_antisymm_iff, ← num_nonneg, num_neg_eq_neg_num, Int.neg_nonneg]
-  tauto
+  grind
 
 protected lemma nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
   simp_rw [← num_nonneg, num_neg_eq_neg_num, Int.neg_nonneg]; exact Int.le_total _ _

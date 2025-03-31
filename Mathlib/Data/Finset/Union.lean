@@ -86,7 +86,7 @@ lemma sUnion_disjiUnion {f : α → Finset (Set β)} (I : Finset α)
     ⋃₀ (I.disjiUnion f hf : Set (Set β)) = ⋃ a ∈ I, ⋃₀ ↑(f a) := by
   ext
   simp only [coe_disjiUnion, Set.mem_sUnion, Set.mem_iUnion, mem_coe, exists_prop]
-  tauto
+  grind
 
 section DecidableEq
 
@@ -171,7 +171,7 @@ lemma biUnion_inter (s : Finset α) (f : α → Finset β) (t : Finset β) :
     s.biUnion f ∩ t = s.biUnion fun x ↦ f x ∩ t := by
   ext x
   simp only [mem_biUnion, mem_inter]
-  tauto
+  grind
 
 lemma inter_biUnion (t : Finset β) (s : Finset α) (f : α → Finset β) :
     t ∩ s.biUnion f = s.biUnion fun x ↦ t ∩ f x := by
@@ -231,7 +231,7 @@ lemma erase_biUnion (f : α → Finset β) (s : Finset α) (b : β) :
     (s.biUnion f).erase b = s.biUnion fun x ↦ (f x).erase b := by
   ext a
   simp only [mem_biUnion, not_exists, not_and, mem_erase, ne_eq]
-  tauto
+  grind
 
 @[simp]
 lemma biUnion_nonempty : (s.biUnion t).Nonempty ↔ ∃ x ∈ s, (t x).Nonempty := by

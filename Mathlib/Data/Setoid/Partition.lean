@@ -214,7 +214,7 @@ theorem IsPartition.sUnion_eq_univ {c : Set (Set α)} (hc : IsPartition c) : ⋃
       let ⟨t, ht⟩ := hc.2 x
       ⟨t, by
         simp only [existsUnique_iff_exists] at ht
-        tauto⟩
+        grind⟩
 
 /-- All elements of a partition of α are the equivalence class of some y ∈ α. -/
 theorem exists_of_mem_partition {c : Set (Set α)} (hc : IsPartition c) {s} (hs : s ∈ c) :

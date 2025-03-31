@@ -33,7 +33,7 @@ where go (k p n : ℕ) : ℕ :=
   else
     k
   termination_by n
-  decreasing_by apply Nat.div_lt_self <;> tauto
+  decreasing_by apply Nat.div_lt_self <;> grind
 
 attribute [inherit_doc maxPowDiv] maxPowDiv.go
 
