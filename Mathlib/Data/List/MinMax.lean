@@ -534,7 +534,7 @@ end OrderTop
 theorem le_max_of_le' {l : List α} {a x : α} (b : α) (hx : x ∈ l) (h : a ≤ x) :
     a ≤ l.foldr max b := by
   induction l with
-  | nil => exact absurd hx (List.not_mem_nil _)
+  | nil => exact absurd hx List.not_mem_nil
   | cons y l IH =>
     simp only [List.foldr, List.foldr_cons]
     obtain rfl | hl := mem_cons.mp hx
