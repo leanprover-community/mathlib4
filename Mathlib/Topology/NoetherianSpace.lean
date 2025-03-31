@@ -3,7 +3,8 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Topology.Homeomorph.Lemmas
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.Topology.Homeomorph.Constructions
 import Mathlib.Topology.Sets.Closeds
 
 /-!
