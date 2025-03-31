@@ -1177,7 +1177,7 @@ lemma inclusion_subschemeι {I J : IdealSheafData X} (h : I ≤ J) :
     inclusion h ≫ I.subschemeι = J.subschemeι :=
   J.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
 
-@[reassoc (attr := simp)]
+@[simp, reassoc]
 lemma inclusion_id (I : IdealSheafData X) :
     inclusion le_rfl = 𝟙 I.subscheme :=
   I.subschemeCover.openCover.hom_ext _ _ fun _ ↦ by simp
