@@ -3,7 +3,6 @@ Copyright (c) 2025 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
-import Mathlib.Data.Real.StarOrdered
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Affine
 import Mathlib.LinearAlgebra.Matrix.PosDef
 
