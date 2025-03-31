@@ -668,6 +668,7 @@ instance Rel.FiniteDimensional.swap [FiniteDimensional r] : FiniteDimensional (F
   ⟨.reverse (.longestOf r), fun s ↦ s.reverse.length_le_length_longestOf⟩
 
 variable {r} in
+@[simp]
 lemma Rel.finiteDimensional_swap_iff :
     FiniteDimensional (Function.swap r) ↔ FiniteDimensional r :=
   ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩
@@ -677,6 +678,7 @@ instance Rel.InfiniteDimensional.swap [InfiniteDimensional r] :
   ⟨fun n ↦ ⟨.reverse (.withLength r n), RelSeries.length_withLength r n⟩⟩
 
 variable {r} in
+@[simp]
 lemma Rel.infiniteDimensional_swap_iff :
     InfiniteDimensional (Function.swap r) ↔ InfiniteDimensional r :=
   ⟨fun _ ↦ .swap _, fun _ ↦ .swap _⟩

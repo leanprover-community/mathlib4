@@ -608,27 +608,33 @@ lemma krullDim_eq_zero [Nonempty α] [Subsingleton α] :
 lemma krullDim_eq_zero_of_unique [Unique α] : krullDim α = 0 :=
   le_antisymm krullDim_nonpos_of_subsingleton krullDim_nonneg
 
-lemma krullDim_eq_zero_iff_of_orderBot {α : Type*} [PartialOrder α] [OrderBot α] :
+section PartialOrder
+
+variable {α : Type*} [PartialOrder α]
+
+lemma krullDim_eq_zero_iff_of_orderBot [OrderBot α] :
     krullDim α = 0 ↔ Subsingleton α :=
   ⟨fun H ↦ subsingleton_of_forall_eq ⊥ fun _ ↦ le_bot_iff.mp
     (krullDim_nonpos_iff_forall_isMax.mp H.le ⊥ bot_le), fun _ ↦ Order.krullDim_eq_zero⟩
 
-lemma krullDim_pos_iff_of_orderBot {α : Type*} [PartialOrder α] [OrderBot α] :
+lemma krullDim_pos_iff_of_orderBot [OrderBot α] :
     0 < krullDim α ↔ Nontrivial α := by
   rw [← not_subsingleton_iff_nontrivial, ← Order.krullDim_eq_zero_iff_of_orderBot,
     ← ne_eq, ← lt_or_lt_iff_ne, or_iff_right]
   simp [Order.krullDim_nonneg]
 
-lemma krullDim_eq_zero_iff_of_orderTop {α : Type*} [PartialOrder α] [OrderTop α] :
+lemma krullDim_eq_zero_iff_of_orderTop [OrderTop α] :
     krullDim α = 0 ↔ Subsingleton α :=
   ⟨fun H ↦ subsingleton_of_forall_eq ⊤ fun _ ↦ top_le_iff.mp
     (krullDim_nonpos_iff_forall_isMin.mp H.le ⊤ le_top), fun _ ↦ Order.krullDim_eq_zero⟩
 
-lemma krullDim_pos_iff_of_orderTop {α : Type*} [PartialOrder α] [OrderTop α] :
+lemma krullDim_pos_iff_of_orderTop [OrderTop α] :
     0 < krullDim α ↔ Nontrivial α := by
   rw [← not_subsingleton_iff_nontrivial, ← Order.krullDim_eq_zero_iff_of_orderTop,
     ← ne_eq, ← lt_or_lt_iff_ne, or_iff_right]
   simp [Order.krullDim_nonneg]
+
+end PartialOrder
 
 lemma krullDim_eq_length_of_finiteDimensionalOrder [FiniteDimensionalOrder α] :
     krullDim α = (LTSeries.longestOf α).length :=
