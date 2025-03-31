@@ -45,11 +45,10 @@ lemma Ring.KrullDimLE.minimalPrimes_eq_setOf_isMaximal :
 instance (priority := 100) [Subsingleton R] : Ring.KrullDimLE 0 R :=
   ⟨show ringKrullDim R ≤ 0 by rw [ringKrullDim_eq_bot_of_subsingleton]; exact bot_le⟩
 
-attribute [local instance] Ideal.bot_prime in
 lemma Ring.KrullDimLE.isField_of_isDomain [IsDomain R] : IsField R := by
   by_contra h
   obtain ⟨p, hp, h⟩ := Ring.not_isField_iff_exists_prime.mp h
-  exact hp.symm ((inferInstanceAs ((⊥ : Ideal R).IsMaximal)).eq_of_le h.ne_top bot_le)
+  exact hp.symm (Ideal.bot_prime.isMaximal'.eq_of_le h.ne_top bot_le)
 
 section IsLocalRing
 
@@ -121,7 +120,6 @@ theorem Ring.KrullDimLE.nilradical_eq_maximalIdeal [IsLocalRing R] :
     nilradical R = IsLocalRing.maximalIdeal R :=
   Ideal.ext fun _ ↦ isNilpotent_iff_mem_maximalIdeal
 
-
 omit [Ring.KrullDimLE 0 R] in
 variable (R) in
 theorem IsLocalRing.of_isMaximal_nilradical [(nilradical R).IsMaximal] :
@@ -156,7 +154,7 @@ lemma Ring.KrullDimLE.isField_of_isReduced [IsReduced R] [IsLocalRing R] : IsFie
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, ← nilradical_eq_maximalIdeal,
     nilradical_eq_zero, Ideal.zero_eq_bot]
 
-instance PrimeSpectrum.unique_of_ringKrullDimZero [IsLocalRing R] : Unique (PrimeSpectrum R) :=
+instance PrimeSpectrum.unique_of_ringKrullDimLE_zero [IsLocalRing R] : Unique (PrimeSpectrum R) :=
   ⟨⟨IsLocalRing.closedPoint _⟩, fun _ ↦ PrimeSpectrum.ext (Ring.KrullDimLE.unique_isPrime _)⟩
 
 end IsLocalRing
@@ -165,15 +163,14 @@ end CommSemiring
 
 section CommRing
 
-variable {R : Type*} [CommRing R] [Ring.KrullDimLE 0 R] (I : Ideal R)
+variable {R : Type*} [CommRing R] (I : Ideal R)
 
-lemma Ideal.jacobson_eq_radical : I.jacobson = I.radical := by
+lemma Ideal.jacobson_eq_radical [Ring.KrullDimLE 0 R] : I.jacobson = I.radical := by
   simp [jacobson, radical_eq_sInf, Ideal.isMaximal_iff_isPrime]
 
 instance (priority := 100) [Ring.KrullDimLE 0 R] : IsJacobsonRing R :=
   ⟨fun I hI ↦ by rw [I.jacobson_eq_radical, hI.radical]⟩
 
-omit [Ring.KrullDimLE 0 R] in
 lemma ringKrullDimZero_iff_ringKrullDim_eq_zero [Nontrivial R] :
     Ring.KrullDimLE 0 R ↔ ringKrullDim R = 0 := by
   rw [Ring.KrullDimLE, Order.krullDimLE_iff, le_antisymm_iff, ← ringKrullDim, Nat.cast_zero,
@@ -207,7 +204,7 @@ alias nilpotent_iff_not_unit_of_minimal := Ring.KrullDimLE.isNilpotent_iff_mem_n
 
 end Localization.AtPrime
 
-@[deprecated (since := "2024-12-20")]
+@[deprecated "Use `PrimeSpectrum.unique_of_ringKrullDimZero` with `Ring.KrullDimLE.of_isLocalization`" (since := "2024-12-20")]
 alias PrimeSpectrum.primeSpectrum_unique_of_localization_at_minimal :=
   PrimeSpectrum.unique_of_ringKrullDimZero
 
