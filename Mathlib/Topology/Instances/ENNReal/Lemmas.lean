@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Data.ENNReal.Operations
+import Mathlib.Data.ENNReal.BigOperators
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Instances.NNReal.Lemmas
