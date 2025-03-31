@@ -19,7 +19,7 @@ variable {C}
 
 /-- A module object for a monoid object, all internal to some monoidal category. -/
 structure Mod_ (A : Mon_ C) where
-  /-- The ambient monoidal category -/
+  /-- The underlying object in the ambient monoidal category -/
   X : C
   /-- The action morphism of the module object -/
   act : A.X ⊗ X ⟶ X

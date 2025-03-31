@@ -90,7 +90,7 @@ variable (C)
 When the monoidal category is preadditive, this is also sometimes called an "algebra object".
 -/
 structure Mon_ where
-  /-- The ambient monoidal category -/
+  /-- The underlying object in the ambient monoidal category -/
   X : C
   /-- The unit morphism of the monoid object -/
   one : 𝟙_ C ⟶ X
