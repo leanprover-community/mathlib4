@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Order.CompletePartialOrder
 import Mathlib.RingTheory.TwoSidedIdeal.BigOperators
 import Mathlib.RingTheory.TwoSidedIdeal.Operations
 
@@ -33,16 +32,21 @@ lemma mem_span_iff_exists_fin (s : Set R) (x : R) :
     x = ∑ i : ι, xL i * (y i : R) * xR i := by
   constructor
   · intro hx
-    refine span_induction
-      (fun y hy ↦ ⟨PUnit, inferInstance, fun _ ↦ 1, fun _ ↦ 1, fun _ ↦ ⟨y, hy⟩, by simp⟩)
-      ⟨Empty, Fintype.instEmpty, Empty.elim, Empty.elim, Empty.elim, by simp⟩
-      (fun x y hx hy ⟨ι1, _, xL1, xR1, y1, eq1⟩ ⟨ι2, _, xL2, xR2, y2, eq2⟩ ↦ ?_)
-      (fun x hx ⟨ι, _, xL, xR, y, _⟩ ↦ ?_) (fun a b x hx ⟨ι, _, xL, xR, y, _⟩ ↦ ?_) hx
-    · exact ⟨(ι1 ⊕ ι2), inferInstance, Sum.elim xL1 xL2, Sum.elim xR1 xR2, Sum.elim y1 y2,
-        by simp [eq1, eq2]⟩
-    · exact ⟨ι, inferInstance, (fun i ↦ - (xL i)), xR, y, by simp [*]⟩
-    · exact ⟨ι, inferInstance, (fun i ↦ a * xL i), (fun i ↦ xR i * b), y, by
-        simp [*, Finset.mul_sum, Finset.sum_mul, ← mul_assoc]⟩
+    induction hx using span_induction with
+    | mem x h => exact ⟨PUnit, inferInstance, fun _ ↦ 1, fun _ ↦ 1, fun _ ↦ ⟨x, h⟩, by simp⟩
+    | zero => exact ⟨Empty, inferInstance, fun _ ↦ 1, fun _ ↦ 1, Empty.elim, by simp⟩
+    | add x y hx hy hx1 hy1 =>
+      obtain ⟨ι1, _, xL1, xR1, y1, eq1⟩ := hx1
+      obtain ⟨ι2, _, xL2, xR2, y2, eq2⟩ := hy1
+      exact ⟨(ι1 ⊕ ι2), inferInstance, Sum.elim xL1 xL2, Sum.elim xR1 xR2,
+        Sum.elim y1 y2, by simp [eq1, eq2]⟩
+    | neg x hx hx1 =>
+      obtain ⟨ι, _, xL, xR, y, eq⟩ := hx1
+      exact ⟨ι, inferInstance, fun i ↦ - (xL i), xR, y, by simp [eq]⟩
+    | mulLeftRight a b x hx hx1 =>
+      obtain ⟨ι, _, xL, xR, y, eq⟩ := hx1
+      exact ⟨ι, inferInstance, fun i ↦ a * xL i, fun i ↦ xR i * b, y, by
+        simp [eq, Finset.mul_sum, Finset.sum_mul, ← mul_assoc]⟩
   · rintro ⟨_, _, _, _, _, rfl⟩
     exact finsetSum_mem _ _ _ <| fun _ _ ↦ mul_mem_right _ _ _ <| mul_mem_left _ _ _ <|
       subset_span <| Subtype.coe_prop _
