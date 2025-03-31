@@ -1293,7 +1293,7 @@ variable {R A M M' : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A] (S :
 
 /-- If `M'` is the localization of `M` at `S` and `A = S⁻¹R`, then
 `M' is an `A`-module. -/
-noncomputable def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
+noncomputable @[reducible] def module (f : M →ₗ[R] M') [IsLocalizedModule S f] : Module A M' :=
   (IsLocalizedModule.iso S f).symm.toAddEquiv.module A
 
 lemma isScalarTower_module (f : M →ₗ[R] M') [IsLocalizedModule S f] :
