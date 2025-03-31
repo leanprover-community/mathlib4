@@ -99,13 +99,13 @@ attribute [to_additive] OrderedCommGroup.lt_of_mul_lt_mul_left
 /-- A linearly ordered additive commutative group is an
 additive commutative group with a linear order in which
 addition is monotone. -/
-class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
+class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrderedLattice α
 
 /-- A linearly ordered commutative group is a
 commutative group with a linear order in which
 multiplication is monotone. -/
 @[to_additive]
-class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
+class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrderedLattice α
 
 section LinearOrderedCommGroup
 

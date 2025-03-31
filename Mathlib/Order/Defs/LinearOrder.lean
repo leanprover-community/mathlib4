@@ -48,9 +48,13 @@ macro "compareOfLessAndEq_rfl" : tactic =>
     (simp only [compare, compareOfLessAndEq]; split_ifs <;> rfl) |
     (induction a <;> induction b <;> simp +decide only)))
 
-/-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
-We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
-class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α where
+/-- Auxiliary typeclass to avoid diamonds.
+
+This is mathematically equivalent to `LinearOrder`, but without the `min` and `max` fields which
+cause trouble with duplicate `inf` and `sup` fields in later files.
+It should not be used except as a base class.
+-/
+class LinearOrderBase (α : Type*) extends PartialOrder α, Ord α where
   /-- A linear order is total. -/
   le_total (a b : α) : a ≤ b ∨ b ≤ a
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
@@ -59,22 +63,26 @@ class LinearOrder (α : Type*) extends PartialOrder α, Min α, Max α, Ord α w
   decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
   /-- In a linearly ordered type, we assume the order relations are all decidable. -/
   decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
+  compare a b := compareOfLessAndEq a b
+  /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
+  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
+    compareOfLessAndEq_rfl
+
+/-- A linear order is reflexive, transitive, antisymmetric and total relation `≤`.
+We assume that every linear ordered type has decidable `(≤)`, `(<)`, and `(=)`. -/
+class LinearOrder (α : Type*) extends LinearOrderBase α, Min α, Max α where
   min := fun a b => if a ≤ b then a else b
   max := fun a b => if a ≤ b then b else a
   /-- The minimum function is equivalent to the one you get from `minOfLe`. -/
   min_def : ∀ a b, min a b = if a ≤ b then a else b := by intros; rfl
   /-- The minimum function is equivalent to the one you get from `maxOfLe`. -/
   max_def : ∀ a b, max a b = if a ≤ b then b else a := by intros; rfl
-  compare a b := compareOfLessAndEq a b
-  /-- Comparison via `compare` is equal to the canonical comparison given decidable `<` and `=`. -/
-  compare_eq_compareOfLessAndEq : ∀ a b, compare a b = compareOfLessAndEq a b := by
-    compareOfLessAndEq_rfl
 
 variable [LinearOrder α] {a b c : α}
 
-attribute [local instance] LinearOrder.decidableLE
+attribute [local instance] LinearOrderBase.decidableLE
 
-lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrder.le_total
+lemma le_total : ∀ a b : α, a ≤ b ∨ b ≤ a := LinearOrderBase.le_total
 
 lemma le_of_not_ge : ¬a ≥ b → a ≤ b := (le_total b a).resolve_left
 lemma le_of_not_le : ¬a ≤ b → b ≤ a := (le_total a b).resolve_left
@@ -113,9 +121,9 @@ lemma lt_iff_not_ge (x y : α) : x < y ↔ ¬x ≥ y := ⟨not_le_of_gt, lt_of_n
 @[simp] lemma not_lt : ¬a < b ↔ b ≤ a := ⟨le_of_not_gt, not_lt_of_ge⟩
 @[simp] lemma not_le : ¬a ≤ b ↔ b < a := (lt_iff_not_ge _ _).symm
 
-instance (priority := 900) (a b : α) : Decidable (a < b) := LinearOrder.decidableLT a b
-instance (priority := 900) (a b : α) : Decidable (a ≤ b) := LinearOrder.decidableLE a b
-instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrder.decidableEq a b
+instance (priority := 900) (a b : α) : Decidable (a < b) := LinearOrderBase.decidableLT a b
+instance (priority := 900) (a b : α) : Decidable (a ≤ b) := LinearOrderBase.decidableLE a b
+instance (priority := 900) (a b : α) : Decidable (a = b) := LinearOrderBase.decidableEq a b
 
 lemma eq_or_lt_of_not_lt (h : ¬a < b) : a = b ∨ b < a :=
   if h₁ : a = b then Or.inl h₁ else Or.inr (lt_of_not_ge fun hge => h (lt_of_le_of_ne hge h₁))
@@ -231,18 +239,18 @@ lemma max_lt (h₁ : a < c) (h₂ : b < c) : max a b < c := by
 section Ord
 
 lemma compare_lt_iff_lt : compare a b = .lt ↔ a < b := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  rw [LinearOrderBase.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl, reduceCtorEq]
 
 lemma compare_gt_iff_gt : compare a b = .gt ↔ a > b := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  rw [LinearOrderBase.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> simp only [*, lt_irrefl, not_lt_of_gt, reduceCtorEq]
   case _ h₁ h₂ =>
     have h : b < a := lt_trichotomy a b |>.resolve_left h₁ |>.resolve_left h₂
     rwa [true_iff]
 
 lemma compare_eq_iff_eq : compare a b = .eq ↔ a = b := by
-  rw [LinearOrder.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
+  rw [LinearOrderBase.compare_eq_compareOfLessAndEq, compareOfLessAndEq]
   split_ifs <;> try simp only [reduceCtorEq]
   case _ h   => rw [false_iff]; exact ne_iff_lt_or_gt.2 <| .inl h
   case _ _ h => rwa [true_iff]
@@ -274,7 +282,7 @@ theorem cmp_eq_compare (a b : α) : cmp a b = compare a b := by
   · exact le_antisymm (not_lt.1 h2) (not_lt.1 h1)
 
 theorem cmp_eq_compareOfLessAndEq (a b : α) : cmp a b = compareOfLessAndEq a b :=
-  (cmp_eq_compare ..).trans (LinearOrder.compare_eq_compareOfLessAndEq ..)
+  (cmp_eq_compare ..).trans (LinearOrderBase.compare_eq_compareOfLessAndEq ..)
 
 instance : Batteries.LawfulCmp (compare (α := α)) where
   symm a b := by

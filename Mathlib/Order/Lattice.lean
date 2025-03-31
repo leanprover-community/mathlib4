@@ -642,12 +642,34 @@ abbrev DistribLattice.ofInfSupLe
 ### Lattices derived from linear orders
 -/
 
-
--- see Note [lower instance priority]
-instance (priority := 100) LinearOrder.toLattice {α : Type u} [o : LinearOrder α] : Lattice α where
-  __ := o
+instance (priority := 100) LinearOrder.toLattice {α : Type u} [LinearOrder α] :
+    Lattice α where
+  __ : LinearOrder α := ‹_›
   le_sup_left := le_max_left; le_sup_right := le_max_right; sup_le _ _ _ := max_le
   inf_le_left := min_le_left; inf_le_right := min_le_right; le_inf _ _ _ := le_min
+
+/--
+A copy of `LinearOrder` which works better as a base class for lattice-theoretic typeclasses.
+
+An internal class to resolve instance diamonds with `LinearOrder` when building deeper lattice
+subclasses.
+The alternative would be to make `LinearOrder` extend `Lattice`, but then we would have to use
+the undesirable `min` and `max` names within the `Lattice` fields.
+
+This should be avoided in lemma statements, and specialized instances of it should not be defined;
+it exists only to be used in `extends`. -/
+class LinearOrderedLattice (α : Type*) extends Lattice α, LinearOrderBase α where
+
+instance (priority := 100) LinearOrderedLattice.toLinearOrder {α : Type u}
+    [LinearOrderedLattice α] : LinearOrder α where
+  min_def a b := by
+    split_ifs with h
+    · simp [h]
+    · simp [(le_total a b).resolve_left h]
+  max_def a b := by
+    split_ifs with h
+    · simp [h]
+    · simp [(le_total a b).resolve_left h]
 
 section LinearOrder
 
