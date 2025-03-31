@@ -48,7 +48,8 @@ lemma order_eq_top_iff (hf : AnalyticAt 𝕜 f z₀) : hf.order = ⊤ ↔ ∀ᶠ
 
 /-- The order of an analytic function `f` at `z₀` equals a natural number `n` iff `f` can locally
 be written as `f z = (z - z₀) ^ n • g z`, where `g` is analytic and does not vanish at `z₀`. -/
-lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n ↔
+lemma order_eq_nat_iff {n : ℕ} (hf : AnalyticAt 𝕜 f z₀) :
+    hf.order = ↑n ↔
     ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0 ∧ ∀ᶠ z in 𝓝 z₀, f z = (z - z₀) ^ n • g z := by
   unfold order
   split_ifs with h
@@ -60,8 +61,12 @@ lemma order_eq_nat_iff (hf : AnalyticAt 𝕜 f z₀) (n : ℕ) : hf.order = ↑n
     refine ⟨fun hn ↦ (WithTop.coe_inj.mp hn : h.choose = n) ▸ h.choose_spec, fun h' ↦ ?_⟩
     rw [unique_eventuallyEq_pow_smul_nonzero h.choose_spec h']
 
-/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as
-`f z = (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`. -/
+/-- The order of an analytic function `f` at `z₀` is finite iff `f` can locally be written as `f z =
+  (z - z₀) ^ order • g z`, where `g` is analytic and does not vanish at `z₀`.
+
+See `MeromorphicNFAt.order_eq_zero_iff` for an analogous statement about meromorphic functions in
+normal form.
+-/
 lemma order_ne_top_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order ≠ ⊤ ↔ ∃ (g : 𝕜 → E), AnalyticAt 𝕜 g z₀ ∧ g z₀ ≠ 0
       ∧ f =ᶠ[𝓝 z₀] fun z ↦ (z - z₀) ^ (hf.order.toNat) • g z := by
@@ -73,7 +78,7 @@ alias order_neq_top_iff := order_ne_top_iff
 /-- The order of an analytic function `f` at `z₀` is zero iff `f` does not vanish at `z₀`. -/
 lemma order_eq_zero_iff (hf : AnalyticAt 𝕜 f z₀) :
     hf.order = 0 ↔ f z₀ ≠ 0 := by
-  rw [← ENat.coe_zero, order_eq_nat_iff hf 0]
+  rw [← ENat.coe_zero, hf.order_eq_nat_iff]
   constructor
   · intro ⟨g, _, _, hg⟩
     simpa [hg.self_of_nhds]

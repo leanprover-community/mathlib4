@@ -372,6 +372,11 @@ theorem rank_span_set {s : Set M} (hs : LinearIndepOn R id s) : Module.rank R �
   rw [← @setOf_mem_eq _ s, ← Subtype.range_coe_subtype]
   exact rank_span hs
 
+theorem toENat_rank_span_set {v : ι → M} {s : Set ι} (hs : LinearIndepOn R v s) :
+    (Module.rank R <| span R <| v '' s).toENat = s.encard := by
+  rw [image_eq_range, ← hs.injOn.encard_image, ← toENat_cardinalMk, image_eq_range,
+    ← rank_span hs.linearIndependent]
+
 /-- An induction (and recursion) principle for proving results about all submodules of a fixed
 finite free module `M`. A property is true for all submodules of `M` if it satisfies the following
 "inductive step": the property is true for a submodule `N` if it's true for all submodules `N'`

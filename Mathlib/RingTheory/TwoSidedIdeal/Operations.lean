@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Jujian Zhang, Jireh Loreaux
+Authors: Jujian Zhang, Jireh Loreaux, Yunzhou Xie
 -/
 import Mathlib.Algebra.Group.Subgroup.Map
 import Mathlib.Algebra.Module.Opposite
@@ -9,6 +9,7 @@ import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Congruence.Opposite
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Operations on two-sided ideals
@@ -210,6 +211,10 @@ end NonUnitalRing
 section Ring
 
 variable {R : Type*} [Ring R]
+
+lemma span_le {s : Set R} {I : TwoSidedIdeal R} : span s ≤ I ↔ s ⊆ I := by
+  rw [TwoSidedIdeal.ringCon_le_iff, RingCon.gi _ |>.gc]
+  exact ⟨fun h x hx ↦ by aesop, fun h x y hxy ↦ (rel_iff I x y).mpr (h hxy)⟩
 
 open Pointwise Set in
 lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
