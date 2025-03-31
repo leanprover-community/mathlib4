@@ -143,6 +143,7 @@ def forbiddenImportDirs : NamePrefixRel := .ofArray #[
   -- (`Mathlib.Topology, `Mathlib.Algebra),
 
   -- The following are a list of existing non-dependent top-level directory pairs.
+  (`Mathlib.Topology, `Mathlib.Algebra),
   (`Mathlib.Algebra, `Mathlib.AlgebraicGeometry),
   (`Mathlib.Algebra, `Mathlib.Computability),
   (`Mathlib.Algebra, `Mathlib.Condensed),
