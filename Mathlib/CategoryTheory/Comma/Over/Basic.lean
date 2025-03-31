@@ -49,6 +49,7 @@ namespace Over
 variable {X : T}
 
 /-- The structure map of a object of `Over X`. -/
+-- `Comma.hom` gives `Y.left ⟶ (𝟭 T).obj X` instead so we redefine it here.
 abbrev hom {X : T} (Y : Over X) : Y.left ⟶ X := Comma.hom Y
 
 @[ext]

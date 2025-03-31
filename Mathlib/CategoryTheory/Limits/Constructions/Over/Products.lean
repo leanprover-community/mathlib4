@@ -170,8 +170,10 @@ variable {X : C} (Y Z : Over X)
 
 /--
 Binary fans in the over category is equivalent to pullback cones.
-Also see `CategoryTheory.Over.ConstructProducts.conesEquivFunctor` for the wide pullback version.
+Also see `CategoryTheory.Over.ConstructProducts.conesEquiv` for the wide pullback version.
 -/
+-- One could have used the following but it gives worse defeqs.
+-- `(Cones.postcomposeEquivalence (diagramIsoCospan _).symm).trans (conesEquiv _ (pair Y Z))`
 def pushoutCoconeEquivBinaryCofan : PullbackCone Y.hom Z.hom ≌ BinaryFan Y Z where
   functor :=
   { obj c := BinaryFan.mk (Over.homMk (U := Over.mk (c.fst ≫ Y.hom)) (V := Y) c.fst rfl)
@@ -187,8 +189,8 @@ def pushoutCoconeEquivBinaryCofan : PullbackCone Y.hom Z.hom ≌ BinaryFan Y Z w
   functor_unitIso_comp c := by ext; dsimp; simp [BinaryFan.ext]
 
 /-- Binary products in the over category are given by pullbacks. -/
--- `IsLimit.ofConeEquiv` isn't used here because it gives worse defeqs.
-def isLimitPushoutCoconeEquivBinaryCofanFunctorObj
+-- `IsLimit.ofConeEquiv` isn't used here because the lift it defines is `𝟙 _ ≫ pullback.lift`.
+def isLimitPullbackConeEquivBinaryFanFunctorObj
     (c : PullbackCone Y.hom Z.hom) (hc : IsLimit c) :
     IsLimit ((pushoutCoconeEquivBinaryCofan Y Z).functor.obj c) :=
   BinaryFan.isLimitMk
