@@ -695,9 +695,7 @@ variable (R S) in
 def AlgEquiv.quotientBot [CommSemiring R] [CommRing S] [Algebra R S] :
     (S ⧸ (⊥ : Ideal S)) ≃ₐ[R] S where
   __ := RingEquiv.quotientBot S
-  commutes' x := by
-    rw [← Ideal.Quotient.mk_algebraMap]
-    simp [-Ideal.Quotient.mk_algebraMap]
+  commutes' x := by simp [← Ideal.Quotient.mk_algebraMap]
 
 @[simp]
 lemma AlgEquiv.quotientBot_mk [CommSemiring R] [CommRing S] [Algebra R S] (s : S) :
