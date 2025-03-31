@@ -263,26 +263,8 @@ def completeLatticeOfCompleteSemilatticeSup (α : Type*) [CompleteSemilatticeSup
 /-- A complete linear order is a linear order whose lattice structure is complete. -/
 -- Note that we do not use `extends LinearOrder α`,
 -- and instead construct the forgetful instance manually.
-class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlgebra α where
-  /-- A linear order is total. -/
-  le_total (a b : α) : a ≤ b ∨ b ≤ a
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLE : DecidableLE α
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
-  /-- In a linearly ordered type, we assume the order relations are all decidable. -/
-  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
-
-instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
-  __ := i
-  min_def a b := by
-    split_ifs with h
-    · simp [h]
-    · simp [(CompleteLinearOrder.le_total a b).resolve_left h]
-  max_def a b := by
-    split_ifs with h
-    · simp [h]
-    · simp [(CompleteLinearOrder.le_total a b).resolve_left h]
+class CompleteLinearOrder (α : Type*)
+  extends CompleteLattice α, BiheytingAlgebra α, LinearOrder α where
 
 namespace OrderDual
 

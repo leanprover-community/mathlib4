@@ -58,15 +58,8 @@ To differentiate the statements from the corresponding statements in (unconditio
 complete linear orders, we prefix `sInf` and `sSup` by a `c` everywhere. The same statements should
 hold in both worlds, sometimes with additional assumptions of nonemptiness or
 boundedness. -/
-class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyCompleteLattice α where
-  /-- A `ConditionallyCompleteLinearOrder` is total. -/
-  le_total (a b : α) : a ≤ b ∨ b ≤ a
-  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidableLE : DecidableLE α
-  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidableEq : DecidableEq α := @decidableEqOfDecidableLE _ _ decidableLE
-  /-- In a `ConditionallyCompleteLinearOrder`, we assume the order relations are all decidable. -/
-  decidableLT : DecidableLT α := @decidableLTOfDecidableLE _ _ decidableLE
+class ConditionallyCompleteLinearOrder (α : Type*) extends
+    ConditionallyCompleteLattice α, LinearOrder α where
   /-- If a set is not bounded above, its supremum is by convention `sSup ∅`. -/
   csSup_of_not_bddAbove : ∀ s, ¬BddAbove s → sSup s = sSup (∅ : Set α)
   /-- If a set is not bounded below, its infimum is by convention `sInf ∅`. -/

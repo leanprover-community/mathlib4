@@ -114,22 +114,6 @@ theorem WithBot.coe_sInf' [InfSet α] {s : Set α} (hs : BddBelow s) :
 
 end
 
-instance ConditionallyCompleteLinearOrder.toLinearOrder [ConditionallyCompleteLinearOrder α] :
-    LinearOrder α :=
-  { ‹ConditionallyCompleteLinearOrder α› with
-    min_def := fun a b ↦ by
-      by_cases hab : a = b
-      · simp [hab]
-      · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
-        · simp [h₁]
-        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂]
-    max_def := fun a b ↦ by
-      by_cases hab : a = b
-      · simp [hab]
-      · rcases ConditionallyCompleteLinearOrder.le_total a b with (h₁ | h₂)
-        · simp [h₁]
-        · simp [show ¬(a ≤ b) from fun h => hab (le_antisymm h h₂), h₂] }
-
 -- see Note [lower instance priority]
 attribute [instance 100] ConditionallyCompleteLinearOrderBot.toOrderBot
 
