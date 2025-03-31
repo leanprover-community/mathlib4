@@ -962,6 +962,11 @@ theorem Infinite.exists_superset_ncard_eq {s t : Set α} (ht : t.Infinite) (hst 
   rwa [ncard_union_eq (disjoint_of_subset_right hs₁ disjoint_sdiff_right) hs hs₁fin, hs₁card,
     add_tsub_cancel_of_le]
 
+theorem Infinite.exists_finite_subset_encard_gt (hs : s.Infinite) (b : ℕ) :
+    ∃ t ⊆ s, b < t.encard ∧ t.Finite := by
+  obtain ⟨t, hts, hcard⟩ := hs.exists_subset_card_eq (b + 1)
+  exact ⟨t, by simpa, by simp [encard_coe_eq_coe_finsetCard, hcard, Nat.cast_lt, - Nat.cast_add]⟩
+
 theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s ∪ t).ncard) :
     ∃ r : Set α, n < r.ncard ∧ (r ⊆ s ∨ r ⊆ t) := by
   classical

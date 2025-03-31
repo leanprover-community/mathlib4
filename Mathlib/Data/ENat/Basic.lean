@@ -94,6 +94,14 @@ theorem top_mul' : ⊤ * m = if m = 0 then 0 else ⊤ := WithTop.top_mul' m
 
 theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow n_pos
 
+-- this won't fire as `simp` without an explicit `ENat` version.
+@[simp]
+theorem add_eq_top {x y : ℕ∞} : x + y = ⊤ ↔ x = ⊤ ∨ y = ⊤ :=
+  WithTop.add_eq_top
+
+theorem add_ne_top {x y : ℕ∞} : x + y ≠ ⊤ ↔ x ≠ ⊤ ∧ y ≠ ⊤ :=
+  by simp
+
 /-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
 def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
 
