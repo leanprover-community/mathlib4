@@ -26,7 +26,7 @@ variable {C : Type*} [Category C] [HasPullbacks C]
 noncomputable
 def chosenFiniteProducts (X : C) : ChosenFiniteProducts (Over X) where
   product Y Z := ⟨(pushoutCoconeEquivBinaryCofan Y Z).functor.obj (pullback.cone Y.hom Z.hom),
-    isLimitPushoutCoconeEquivBinaryCofanFunctorObj Y Z _ (pullback.isLimit _ _)⟩
+    isLimitPullbackConeEquivBinaryFanFunctorObj Y Z _ (pullback.isLimit _ _)⟩
   terminal := ⟨asEmptyCone (Over.mk (𝟙 X)), IsTerminal.ofUniqueHom (fun Y ↦ Over.homMk Y.hom)
     fun Y m ↦ Over.OverMorphism.ext (by simpa using m.w)⟩
 
