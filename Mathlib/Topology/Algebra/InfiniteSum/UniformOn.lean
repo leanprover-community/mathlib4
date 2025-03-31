@@ -10,7 +10,7 @@ variable {α β ι : Type*}
 
 section HasProdUniformlyOn
 
-variable [CommMonoid α] [TopologicalSpace α] [ UniformSpace α]
+variable [CommMonoid α] [ UniformSpace α]
   (f : ι → β → α) (g : β → α) (s : Set β)
 
 @[to_additive]
@@ -56,23 +56,26 @@ theorem HasProdUniformlyOn.multipliableUniformlyOn (h : HasProdUniformlyOn f g s
   ⟨g, h⟩
 
 @[to_additive]
-theorem tprod_eq_one_of_not_multipliable2 (h : ¬MultipliableUniformlyOn f s) : ∏ᵘ[s] b, f b = 1 := by
+theorem tprod_eq_one_of_not_multipliable2 (h : ¬MultipliableUniformlyOn f s) :
+    ∏ᵘ[s] b, f b = 1 := by
   simp [tprodUniformlyOn_def, h]
 
-lemma HasProdUniformlyOn.mk {f : ι → β → α} {g : β → α} {s : Set β} {p : Filter (Finset ι)}
-    (h : TendstoUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s) (hp : HasProd f g) :
+--is this a reasonable defn?
+lemma HasProdUniformlyOn.mk {f : ι → β → α} {g : β → α} {s : Set β}
+    (h : TendstoUniformlyOn (fun (s : Finset ι) b ↦ ∏ i ∈ s, f i b) g atTop s) :
     HasProdUniformlyOn f g s := by
   rw [HasProdUniformlyOn, HasProd] at *
-  --rw [← UniformFun.toFun_ofFun g, ← UniformFun.toFun_ofFun (fun s ↦ ∏ b ∈ s, f b)] at hp
-  have := UniformOnFun.tendsto_iff_tendstoUniformlyOn (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun {s}) (f b)))
+  have := UniformOnFun.tendsto_iff_tendstoUniformlyOn
+    (F := (fun s_1 ↦ ∏ b ∈ s_1, (UniformOnFun.ofFun {s}) (f b)))
     (f:= (UniformOnFun.ofFun {s} g)) (p := atTop)
   rw [this]
   simp
   apply h.congr
   filter_upwards with i x hx
-  simp
+  have : (∏ b ∈ i, (UniformOnFun.ofFun {s}) (f b)) = (UniformOnFun.ofFun {s}) (∏ b ∈ i,  (f b)):= by
+    rfl
+  simp [this]
 
 
-  sorry
 
 end HasProdUniformlyOn
