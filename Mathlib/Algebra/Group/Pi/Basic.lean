@@ -173,7 +173,7 @@ theorem mulSingle_eq_one_iff {i : I} {x : f i} : mulSingle i x = 1 ↔ x = 1 := 
   rw [← mulSingle_eq_same i x, h, one_apply]
 
 @[to_additive]
-theorem mulSingle_ne_one_iff (i : I) (x : f i) : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
+theorem mulSingle_ne_one_iff {i : I} {x : f i} : mulSingle i x ≠ 1 ↔ x ≠ 1 :=
   (mulSingle_eq_one_iff i x).ne
 
 -- Porting note:
