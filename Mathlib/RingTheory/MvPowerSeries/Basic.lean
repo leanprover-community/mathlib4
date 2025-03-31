@@ -5,7 +5,6 @@ Authors: Johan Commelin, Kenny Lau
 -/
 
 import Mathlib.Algebra.Order.Antidiag.Finsupp
-import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.Tactic.Linarith
 import Mathlib.LinearAlgebra.Pi
@@ -157,10 +156,8 @@ theorem monomial_def [DecidableEq σ] (n : σ →₀ ℕ) :
 
 theorem coeff_monomial [DecidableEq σ] (m n : σ →₀ ℕ) (a : R) :
     coeff R m (monomial R n a) = if m = n then a else 0 := by
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [coeff, monomial_def, LinearMap.proj_apply (i := m)]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [LinearMap.single_apply, Pi.single_apply]
+  dsimp only [coeff, MvPowerSeries]
+  rw [monomial_def, LinearMap.proj_apply (i := m), LinearMap.single_apply, Pi.single_apply]
 
 @[simp]
 theorem coeff_monomial_same (n : σ →₀ ℕ) (a : R) : coeff R n (monomial R n a) = a := by
@@ -504,8 +501,8 @@ def map : MvPowerSeries σ R →+* MvPowerSeries σ S where
         classical
         rw [coeff_one, coeff_one]
         split_ifs with h
-        · simp only [RingHom.map_ite_one_zero, ite_true, map_one, h]
-        · simp only [RingHom.map_ite_one_zero, ite_false, map_zero, h]
+        · simp only [ite_true, map_one, h]
+        · simp only [ite_false, map_zero, h]
   map_add' φ ψ :=
     ext fun n => show f ((coeff R n) (φ + ψ)) = f ((coeff R n) φ) + f ((coeff R n) ψ) by simp
   map_mul' φ ψ :=

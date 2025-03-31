@@ -56,24 +56,23 @@ lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zer
 
 protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 
--- We want to use these lemmas earlier than the lemmas simp can prove them with
-@[simp, nolint simpNF]
+@[simp high]
 protected lemma neg_pos : 0 < -a ↔ a < 0 := ⟨Int.neg_of_neg_pos, Int.neg_pos_of_neg⟩
 
-@[simp, nolint simpNF]
+@[simp high]
 protected lemma neg_nonneg : 0 ≤ -a ↔ a ≤ 0 := ⟨Int.nonpos_of_neg_nonneg, Int.neg_nonneg_of_nonpos⟩
 
-@[simp, nolint simpNF]
+@[simp high]
 protected lemma neg_neg_iff_pos : -a < 0 ↔ 0 < a := ⟨Int.pos_of_neg_neg, Int.neg_neg_of_pos⟩
 
-@[simp, nolint simpNF]
+@[simp high]
 protected lemma neg_nonpos_iff_nonneg : -a ≤ 0 ↔ 0 ≤ a :=
   ⟨Int.nonneg_of_neg_nonpos, Int.neg_nonpos_of_nonneg⟩
 
-@[simp, nolint simpNF]
+@[simp high]
 protected lemma sub_pos : 0 < a - b ↔ b < a := ⟨Int.lt_of_sub_pos, Int.sub_pos_of_lt⟩
 
-@[simp, nolint simpNF]
+@[simp high]
 protected lemma sub_nonneg : 0 ≤ a - b ↔ b ≤ a := ⟨Int.le_of_sub_nonneg, Int.sub_nonneg_of_le⟩
 
 protected theorem ofNat_add_out (m n : ℕ) : ↑m + ↑n = (↑(m + n) : ℤ) := rfl
@@ -91,20 +90,17 @@ protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) :
 @[norm_cast]
 protected lemma natCast_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 := by omega
+@[simp high] lemma natCast_eq_zero {n : ℕ} : (n : ℤ) = 0 ↔ n = 0 := by omega
 
 lemma natCast_ne_zero {n : ℕ} : (n : ℤ) ≠ 0 ↔ n ≠ 0 := by omega
 
 lemma natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n := by omega
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n := by omega
+@[simp high] lemma natCast_pos {n : ℕ} : (0 : ℤ) < n ↔ 0 < n := by omega
 
 lemma natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) := natCast_pos.2 n.succ_pos
 
--- We want to use this lemma earlier than the lemmas simp can prove it with
-@[simp, nolint simpNF] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
+@[simp high] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
 
 lemma natCast_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 
@@ -404,7 +400,7 @@ lemma exists_lt_and_lt_iff_not_dvd (m : ℤ) (hn : 0 < n) :
     · rw [Int.add_comm _ (1 : ℤ), Int.mul_add, Int.mul_one]
       exact Int.add_lt_add_right (emod_lt_of_pos _ hn) _
 
-lemma natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
+lemma natAbs_ediv_of_dvd (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs b := by
   rcases Nat.eq_zero_or_pos (natAbs b) with (h | h)
   · rw [natAbs_eq_zero.1 h]
     simp [Int.ediv_zero]
@@ -414,6 +410,8 @@ lemma natAbs_ediv (a b : ℤ) (H : b ∣ a) : natAbs (a / b) = natAbs a / natAbs
     _ = natAbs (a / b) * natAbs b / natAbs b := by rw [Nat.mul_div_assoc _ b.natAbs.dvd_refl]
     _ = natAbs (a / b * b) / natAbs b := by rw [natAbs_mul (a / b) b]
     _ = natAbs a / natAbs b := by rw [Int.ediv_mul_cancel H]
+
+@[deprecated (since := "2025-03-10")] alias natAbs_ediv := natAbs_ediv_of_dvd
 
 lemma dvd_of_mul_dvd_mul_left (ha : a ≠ 0) (h : a * m ∣ a * n) : m ∣ n := by
   obtain ⟨b, hb⟩ := h
@@ -500,7 +498,7 @@ lemma natMod_lt {n : ℕ} (hn : n ≠ 0) : m.natMod n < n :=
 
 attribute [simp] natCast_pow
 
--- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
+/-- For use in `Mathlib.Tactic.NormNum.Pow` -/
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
 
 end Int

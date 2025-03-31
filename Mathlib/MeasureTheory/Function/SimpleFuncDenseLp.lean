@@ -415,7 +415,7 @@ which does not permit this (but has the advantage of working when `E` itself is 
 i.e. has no scalar action). -/
 
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a `SMul`. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
@@ -449,10 +449,12 @@ attribute [local instance] simpleFunc.module
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
-protected theorem boundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
-  BoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
+protected theorem isBoundedSMul [Fact (1 ≤ p)] : IsBoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
+  IsBoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
 
-attribute [local instance] simpleFunc.boundedSMul
+@[deprecated (since := "2025-03-10")] protected alias boundedSMul := simpleFunc.isBoundedSMul
+
+attribute [local instance] simpleFunc.isBoundedSMul
 
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
@@ -462,7 +464,7 @@ protected def normedSpace {𝕜} [NormedField 𝕜] [NormedSpace 𝕜 E] [Fact (
 
 end Instances
 
-attribute [local instance] simpleFunc.module simpleFunc.normedSpace simpleFunc.boundedSMul
+attribute [local instance] simpleFunc.module simpleFunc.normedSpace simpleFunc.isBoundedSMul
 
 section ToLp
 
@@ -491,7 +493,7 @@ theorem toLp_sub (f g : α →ₛ E) (hf : MemLp f p μ) (hg : MemLp g p μ) :
     toLp (f - g) (hf.sub hg) = toLp f hf - toLp g hg := by
   simp only [sub_eq_add_neg, ← toLp_neg, ← toLp_add]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem toLp_smul (f : α →ₛ E) (hf : MemLp f p μ) (c : 𝕜) :
     toLp (c • f) (hf.const_smul c) = c • toLp f hf :=
@@ -574,7 +576,7 @@ theorem sub_toSimpleFunc (f g : Lp.simpleFunc E p μ) :
   simp only [AddSubgroup.coe_sub, Pi.sub_apply]
   repeat' intro h; rw [h]
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 
 theorem smul_toSimpleFunc (k : 𝕜) (f : Lp.simpleFunc E p μ) :
     toSimpleFunc (k • f) =ᵐ[μ] k • ⇑(toSimpleFunc f) := by
@@ -614,10 +616,10 @@ that the property holds for (multiples of) characteristic functions of finite-me
 sets and is closed under addition (of functions with disjoint support). -/
 @[elab_as_elim]
 protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.simpleFunc E p μ → Prop}
-    (h_ind :
+    (indicatorConst :
       ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
         P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
-    (h_add :
+    (add :
       ∀ ⦃f g : α →ₛ E⦄,
         ∀ hf : MemLp f p μ,
           ∀ hg : MemLp g p μ,
@@ -632,14 +634,15 @@ protected theorem induction (hp_pos : p ≠ 0) (hp_ne_top : p ≠ ∞) {P : Lp.s
   apply SimpleFunc.induction
   · intro c s hs hf
     by_cases hc : c = 0
-    · convert h_ind 0 MeasurableSet.empty (by simp) using 1
+    · convert indicatorConst 0 MeasurableSet.empty (by simp) using 1
       ext1
       simp [hc]
-    exact h_ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
+    exact indicatorConst c hs
+      (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs hf)
   · intro f g hfg hf hg hfg'
     obtain ⟨hf', hg'⟩ : MemLp f p μ ∧ MemLp g p μ :=
       (memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable).mp hfg'
-    exact h_add hf' hg' hfg (hf hf') (hg hg')
+    exact add hf' hg' hfg (hf hf') (hg hg')
 
 end Induction
 
@@ -693,7 +696,7 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
 protected theorem dense (hp_ne_top : p ≠ ∞) : Dense (Lp.simpleFunc E p μ : Set (Lp E p μ)) := by
   simpa only [denseRange_subtype_val] using simpleFunc.denseRange (E := E) (μ := μ) hp_ne_top
 
-variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable [NormedRing 𝕜] [Module 𝕜 E] [IsBoundedSMul 𝕜 E]
 variable (α E 𝕜)
 
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/
@@ -812,17 +815,17 @@ suffices to show that
 * the set of functions in `Lp` for which the property holds is closed.
 -/
 @[elab_as_elim]
-theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : Lp E p μ → Prop)
-    (h_ind : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
-      P (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
-    (h_add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
-      P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
-    (h_closed : IsClosed { f : Lp E p μ | P f }) : ∀ f : Lp E p μ, P f := by
-  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed ?_
+theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : Lp E p μ → Prop)
+    (indicatorConst : ∀ (c : E) {s : Set α} (hs : MeasurableSet s) (hμs : μ s < ∞),
+      motive (Lp.simpleFunc.indicatorConst p hs hμs.ne c))
+    (add : ∀ ⦃f g⦄, ∀ hf : MemLp f p μ, ∀ hg : MemLp g p μ, Disjoint (support f) (support g) →
+      motive (hf.toLp f) → motive (hg.toLp g) → motive (hf.toLp f + hg.toLp g))
+    (isClosed : IsClosed { f : Lp E p μ | motive f }) : ∀ f : Lp E p μ, motive f := by
+  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f isClosed ?_
   refine Lp.simpleFunc.induction (α := α) (E := E) (lt_of_lt_of_le zero_lt_one _i.elim).ne'
     hp_ne_top ?_ ?_
-  · exact fun c s => h_ind c
-  · exact fun f g hf hg => h_add hf hg
+  · exact fun c s => indicatorConst c
+  · exact fun f g hf hg => add hf hg
 
 /-- To prove something for an arbitrary `MemLp` function in a second countable
 Borel normed group, it suffices to show that
@@ -837,32 +840,32 @@ a simple function with a multiple of a characteristic function and that the inte
 of their images is a subset of `{0}`).
 -/
 @[elab_as_elim]
-theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop)
-    (h_ind : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → P (s.indicator fun _ => c))
-    (h_add : ∀ ⦃f g : α → E⦄, Disjoint (support f) (support g) → MemLp f p μ → MemLp g p μ →
-      P f → P g → P (f + g))
-    (h_closed : IsClosed { f : Lp E p μ | P f })
-    (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → P f → P g) :
-    ∀ ⦃f : α → E⦄, MemLp f p μ → P f := by
-  have : ∀ f : SimpleFunc α E, MemLp f p μ → P f := by
+theorem MemLp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (motive : (α → E) → Prop)
+    (indicator : ∀ (c : E) ⦃s⦄, MeasurableSet s → μ s < ∞ → motive (s.indicator fun _ => c))
+    (add : ∀ ⦃f g : α → E⦄, Disjoint (support f) (support g) → MemLp f p μ → MemLp g p μ →
+      motive f → motive g → motive (f + g))
+    (closed : IsClosed { f : Lp E p μ | motive f })
+    (ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → MemLp f p μ → motive f → motive g) :
+    ∀ ⦃f : α → E⦄, MemLp f p μ → motive f := by
+  have : ∀ f : SimpleFunc α E, MemLp f p μ → motive f := by
     apply SimpleFunc.induction
     · intro c s hs h
       by_cases hc : c = 0
-      · subst hc; convert h_ind 0 MeasurableSet.empty (by simp) using 1; ext; simp [const]
+      · subst hc; convert indicator 0 MeasurableSet.empty (by simp) using 1; ext; simp [const]
       have hp_pos : p ≠ 0 := (lt_of_lt_of_le zero_lt_one _i.elim).ne'
-      exact h_ind c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
+      exact indicator c hs (SimpleFunc.measure_lt_top_of_memLp_indicator hp_pos hp_ne_top hc hs h)
     · intro f g hfg hf hg int_fg
       rw [SimpleFunc.coe_add,
         memLp_add_of_disjoint hfg f.stronglyMeasurable g.stronglyMeasurable] at int_fg
-      exact h_add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
-  have : ∀ f : Lp.simpleFunc E p μ, P f := by
+      exact add hfg int_fg.1 int_fg.2 (hf int_fg.1) (hg int_fg.2)
+  have : ∀ f : Lp.simpleFunc E p μ, motive f := by
     intro f
     exact
-      h_ae (Lp.simpleFunc.toSimpleFunc_eq_toFun f) (Lp.simpleFunc.memLp f)
+      ae (Lp.simpleFunc.toSimpleFunc_eq_toFun f) (Lp.simpleFunc.memLp f)
         (this (Lp.simpleFunc.toSimpleFunc f) (Lp.simpleFunc.memLp f))
-  have : ∀ f : Lp E p μ, P f := fun f =>
-    (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed this
-  exact fun f hf => h_ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
+  have : ∀ f : Lp E p μ, motive f := fun f =>
+    (Lp.simpleFunc.denseRange hp_ne_top).induction_on f closed this
+  exact fun f hf => ae hf.coeFn_toLp (Lp.memLp _) (this (hf.toLp f))
 
 /-- If a set of ae strongly measurable functions is stable under addition and approximates
 characteristic functions in `ℒp`, then it is dense in `ℒp`. -/
@@ -950,7 +953,7 @@ theorem Integrable.induction (P : (α → E) → Prop)
     (h_ae : ∀ ⦃f g⦄, f =ᵐ[μ] g → Integrable f μ → P f → P g) :
     ∀ ⦃f : α → E⦄, Integrable f μ → P f := by
   simp only [← memLp_one_iff_integrable] at *
-  exact MemLp.induction one_ne_top (P := P) h_ind h_add h_closed h_ae
+  exact MemLp.induction one_ne_top (motive := P) h_ind h_add h_closed h_ae
 
 end Integrable
 

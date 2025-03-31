@@ -53,9 +53,9 @@ private theorem comp_tendsto_lim {p : ℕ} [Fact p.Prime] {F : Polynomial ℤ_[p
 
 section
 
--- Porting note: replaced `parameter` with `variable`
 variable {p : ℕ} [Fact p.Prime] {ncs : CauSeq ℤ_[p] norm} {F : Polynomial ℤ_[p]}
   {a : ℤ_[p]} (ncs_der_val : ∀ n, ‖F.derivative.eval (ncs n)‖ = ‖F.derivative.eval a‖)
+
 private theorem ncs_tendsto_lim :
     Tendsto (fun i => ‖F.derivative.eval (ncs i)‖) atTop (𝓝 ‖F.derivative.eval ncs.lim‖) :=
   Tendsto.comp (continuous_iff_continuousAt.1 continuous_norm _) (comp_tendsto_lim _)
@@ -73,7 +73,7 @@ end
 
 section
 
--- Porting note: replaced `parameter` with `variable`
+
 variable {p : ℕ} [Fact p.Prime] {ncs : CauSeq ℤ_[p] norm} {F : Polynomial ℤ_[p]}
   (hnorm : Tendsto (fun i => ‖F.eval (ncs i)‖) atTop (𝓝 0))
 include hnorm
@@ -90,10 +90,8 @@ section Hensel
 
 open Nat
 
--- Porting note: replaced `parameter` with `variable`
 variable (p : ℕ) [Fact p.Prime] (F : Polynomial ℤ_[p]) (a : ℤ_[p])
 
--- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 /-- `T` is an auxiliary value that is used to control the behavior of the polynomial `F`. -/
 private def T_gen : ℝ := ‖F.eval a / ((F.derivative.eval a ^ 2 : ℤ_[p]) : ℚ_[p])‖
 
@@ -135,7 +133,6 @@ private theorem T_pow {n : ℕ} (hn : n ≠ 0) : T ^ n < 1 := pow_lt_one₀ T_no
 
 private theorem T_pow' (n : ℕ) : T ^ 2 ^ n < 1 := T_pow hnorm (pow_ne_zero _ two_ne_zero)
 
--- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 /-- We will construct a sequence of elements of ℤ_p satisfying successive values of `ih`. -/
 private def ih_gen (n : ℕ) (z : ℤ_[p]) : Prop :=
   ‖F.derivative.eval z‖ = ‖F.derivative.eval a‖ ∧ ‖F.eval z‖ ≤ ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ n
@@ -211,9 +208,6 @@ private def calc_eval_z'_norm {z z' z1 : ℤ_[p]} {n} (hz : ih n z) {q} (heq : F
     _ = ‖F.derivative.eval a‖ ^ 2 * T ^ 2 ^ (n + 1) := by rw [← pow_mul, pow_succ 2]
 
 
--- Porting note: unsupported option eqn_compiler.zeta
--- set_option eqn_compiler.zeta true
-
 /-- Given `z : ℤ_[p]` satisfying `ih n z`, construct `z' : ℤ_[p]` satisfying `ih (n+1) z'`. We need
 the hypothesis `ih n z`, since otherwise `z'` is not necessarily an integer. -/
 private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n + 1) z' } :=
@@ -232,14 +226,10 @@ private def ih_n {n : ℕ} {z : ℤ_[p]} (hz : ih n z) : { z' : ℤ_[p] // ih (n
       calc_eval_z'_norm hz heq h1 rfl
     ⟨hfeq, hnle⟩⟩
 
--- Porting note: unsupported option eqn_compiler.zeta
--- set_option eqn_compiler.zeta false
-
 private def newton_seq_aux : ∀ n : ℕ, { z : ℤ_[p] // ih n z }
   | 0 => ⟨a, ih_0 hnorm⟩
   | k + 1 => ih_n hnorm (newton_seq_aux k).2
 
--- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 private def newton_seq_gen (n : ℕ) : ℤ_[p] :=
   (newton_seq_aux hnorm n).1
 
@@ -323,7 +313,6 @@ private theorem newton_seq_is_cauchy : IsCauSeq norm newton_seq := fun _ε hε �
 
 private def newton_cau_seq : CauSeq ℤ_[p] norm := ⟨_, newton_seq_is_cauchy hnorm⟩
 
--- Porting note: renamed this `def` and used a local notation to provide arguments automatically
 private def soln_gen : ℤ_[p] := (newton_cau_seq hnorm).lim
 
 local notation "soln" => soln_gen hnorm

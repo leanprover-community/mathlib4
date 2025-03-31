@@ -6,8 +6,8 @@ Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 import Mathlib.Algebra.Order.Group.DenselyOrdered
 import Mathlib.Data.Real.Archimedean
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.Order.Monotone
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Lemmas about liminf and limsup in an order topology.

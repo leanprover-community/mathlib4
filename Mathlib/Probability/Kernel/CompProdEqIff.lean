@@ -38,7 +38,7 @@ lemma compProd_withDensity [SFinite μ] [IsSFiniteKernel κ] [IsSFiniteKernel (�
   rw [compProd_apply hs, withDensity_apply _ hs, ← lintegral_indicator hs,
     lintegral_compProd]
   · congr with a
-    rw [Kernel.withDensity_apply' _ hf, ← lintegral_indicator (measurable_prod_mk_left hs)]
+    rw [Kernel.withDensity_apply' _ hf, ← lintegral_indicator (measurable_prodMk_left hs)]
     rfl
   · exact hf.indicator hs
 

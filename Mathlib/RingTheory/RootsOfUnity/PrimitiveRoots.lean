@@ -69,7 +69,7 @@ open scoped Classical in
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
 def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
-  (nthRoots k (1 : R)).toFinset.filter fun ζ => IsPrimitiveRoot ζ k
+  {ζ ∈ (nthRoots k (1 : R)).toFinset | IsPrimitiveRoot ζ k}
 
 variable [CommRing R] [IsDomain R]
 
@@ -501,7 +501,7 @@ lemma map_rootsOfUnity {S F} [CommRing S] [IsDomain S] [FunLike F R S] [MonoidHo
 /-- If `R` contains an `n`-th primitive root, and `S/R` is a ring extension,
 then the `n`-th roots of unity in `R` and `S` are isomorphic.
 Also see `IsPrimitiveRoot.map_rootsOfUnity` for the equality as `Subgroup Sˣ`. -/
-@[simps! (config := .lemmasOnly) apply_coe_val apply_coe_inv_val]
+@[simps! -isSimp apply_coe_val apply_coe_inv_val]
 noncomputable
 def _root_.rootsOfUnityEquivOfPrimitiveRoots {S F} [CommRing S] [IsDomain S]
     [FunLike F R S] [MonoidHomClass F R S]

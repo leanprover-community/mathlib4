@@ -72,7 +72,7 @@ the diagonal edge of the resulting `n`-simplex. -/
 def spineToDiagonal (f : Path X n) : X _⦋1⦌ := diagonal X (spineToSimplex f)
 
 @[simp]
-theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n)  :
+theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
     X.map (subinterval j l hjl).op (spineToSimplex f) =
       spineToSimplex (Path.interval f j l hjl) := by
   apply spineInjective

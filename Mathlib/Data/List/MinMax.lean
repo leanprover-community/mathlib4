@@ -90,7 +90,7 @@ end ArgAux
 
 section Preorder
 
-variable [Preorder β] [DecidableRel (α := β) (· < ·)] {f : α → β} {l : List α} {a m : α}
+variable [Preorder β] [DecidableLT β] {f : α → β} {l : List α} {a m : α}
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
@@ -244,7 +244,7 @@ section MaximumMinimum
 
 section Preorder
 
-variable [Preorder α] [DecidableRel (α := α) (· < ·)] {l : List α} {a m : α}
+variable [Preorder α] [DecidableLT α] {l : List α} {a m : α}
 
 /-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]` -/

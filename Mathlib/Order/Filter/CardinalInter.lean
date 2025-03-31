@@ -6,7 +6,7 @@ Authors: Josha Dekker
 import Mathlib.Order.Filter.Tendsto
 import Mathlib.Order.Filter.Finite
 import Mathlib.Order.Filter.CountableInter
-import Mathlib.SetTheory.Cardinal.Cofinality
+import Mathlib.SetTheory.Cardinal.Regular
 import Mathlib.Tactic.Linarith
 
 /-!

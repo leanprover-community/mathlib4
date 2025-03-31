@@ -3,8 +3,8 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Uniform structure on topological groups
@@ -53,7 +53,7 @@ theorem UniformGroup.mk' {α} [UniformSpace α] [Group α]
     (h₁ : UniformContinuous fun p : α × α => p.1 * p.2) (h₂ : UniformContinuous fun p : α => p⁻¹) :
     UniformGroup α :=
   ⟨by simpa only [div_eq_mul_inv] using
-    h₁.comp (uniformContinuous_fst.prod_mk (h₂.comp uniformContinuous_snd))⟩
+    h₁.comp (uniformContinuous_fst.prodMk (h₂.comp uniformContinuous_snd))⟩
 
 variable [UniformSpace α] [Group α] [UniformGroup α]
 
@@ -64,7 +64,7 @@ theorem uniformContinuous_div : UniformContinuous fun p : α × α => p.1 / p.2 
 @[to_additive]
 theorem UniformContinuous.div [UniformSpace β] {f : β → α} {g : β → α} (hf : UniformContinuous f)
     (hg : UniformContinuous g) : UniformContinuous fun x => f x / g x :=
-  uniformContinuous_div.comp (hf.prod_mk hg)
+  uniformContinuous_div.comp (hf.prodMk hg)
 
 @[to_additive]
 theorem UniformContinuous.inv [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
@@ -147,9 +147,9 @@ instance (priority := 10) UniformGroup.to_topologicalGroup : IsTopologicalGroup 
   continuous_inv := uniformContinuous_inv.continuous
 
 @[to_additive]
-instance [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) :=
+instance Prod.instUniformGroup [UniformSpace β] [Group β] [UniformGroup β] : UniformGroup (α × β) :=
   ⟨((uniformContinuous_fst.comp uniformContinuous_fst).div
-          (uniformContinuous_fst.comp uniformContinuous_snd)).prod_mk
+          (uniformContinuous_fst.comp uniformContinuous_snd)).prodMk
       ((uniformContinuous_snd.comp uniformContinuous_fst).div
         (uniformContinuous_snd.comp uniformContinuous_snd))⟩
 
@@ -479,7 +479,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
   let ee := fun u : β × β => (e u.1, e u.2)
   have lim1 : Tendsto (fun a : β × β => (a.2 - a.1, y₁))
       (comap e Nx ×ˢ comap e Nx) (𝓝 (0, y₁)) := by
-    have := Tendsto.prod_mk (tendsto_sub_comap_self de x₀)
+    have := (tendsto_sub_comap_self de x₀).prodMk
       (tendsto_const_nhds : Tendsto (fun _ : β × β => y₁) (comap ee <| 𝓝 (x₀, x₀)) (𝓝 y₁))
     rw [nhds_prod_eq, prod_comap_comap_eq, ← nhds_prod_eq]
     exact (this :)

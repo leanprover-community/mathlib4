@@ -70,7 +70,7 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
   refine hsc.mem_of_tendsto this (Eventually.of_forall fun n => hs.sum_mem ?_ ?_ ?_)
   · exact fun _ _ => ENNReal.toReal_nonneg
   · rw [← ENNReal.toReal_sum, (G n).sum_range_measure_preimage_singleton, measure_univ,
-      ENNReal.one_toReal]
+      ENNReal.toReal_one]
     exact fun _ _ => measure_ne_top _ _
   · simp only [SimpleFunc.mem_range, forall_mem_range]
     intro x
@@ -108,7 +108,7 @@ theorem ConvexOn.average_mem_epigraph [IsFiniteMeasure μ] [NeZero μ] (hg : Con
   have ht_mem : ∀ᵐ x ∂μ, (f x, g (f x)) ∈ {p : E × ℝ | p.1 ∈ s ∧ g p.1 ≤ p.2} :=
     hfs.mono fun x hx => ⟨hx, le_rfl⟩
   exact average_pair hfi hgi ▸
-    hg.convex_epigraph.average_mem (hsc.epigraph hgc) ht_mem (hfi.prod_mk hgi)
+    hg.convex_epigraph.average_mem (hsc.epigraph hgc) ht_mem (hfi.prodMk hgi)
 
 theorem ConcaveOn.average_mem_hypograph [IsFiniteMeasure μ] [NeZero μ] (hg : ConcaveOn ℝ s g)
     (hgc : ContinuousOn g s) (hsc : IsClosed s) (hfs : ∀ᵐ x ∂μ, f x ∈ s)
@@ -220,7 +220,7 @@ theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integ
   refine hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' => ?_; clear ht'
   simp only [const_apply, setIntegral_const]
   by_cases h₀ : μ t = 0
-  · rw [restrict_eq_zero.2 h₀, integral_zero_measure, h₀, ENNReal.zero_toReal, zero_smul]
+  · rw [restrict_eq_zero.2 h₀, integral_zero_measure, h₀, ENNReal.toReal_zero, zero_smul]
   by_cases h₀' : μ tᶜ = 0
   · rw [← ae_eq_univ] at h₀'
     rw [restrict_congr_set h₀', restrict_univ, measure_congr h₀', measure_smul_average]
@@ -272,7 +272,7 @@ theorem StrictConvexOn.ae_eq_const_or_map_average_lt [IsFiniteMeasure μ] (hg : 
       hfi.integrableOn hgi.integrableOn
   refine (ae_eq_const_or_exists_average_ne_compl hfi).imp_right ?_
   rintro ⟨t, hm, h₀, h₀', hne⟩
-  rcases average_mem_openSegment_compl_self hm.nullMeasurableSet h₀ h₀' (hfi.prod_mk hgi) with
+  rcases average_mem_openSegment_compl_self hm.nullMeasurableSet h₀ h₀' (hfi.prodMk hgi) with
     ⟨a, b, ha, hb, hab, h_avg⟩
   rw [average_pair hfi hgi, average_pair hfi.integrableOn hgi.integrableOn,
     average_pair hfi.integrableOn hgi.integrableOn, Prod.smul_mk,
