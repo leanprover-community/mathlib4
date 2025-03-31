@@ -409,9 +409,8 @@ noncomputable def exp (h : IsNilpotent D.toLinearMap) :
         ← LinearMap.mul_eq_comp, h.exp_mul_exp_neg_self, LinearMap.one_apply] }
 
 lemma exp_apply (h : IsNilpotent D.toLinearMap) :
-    exp D h = IsNilpotent.exp D.toLinearMap := by
-  ext x
-  dsimp [exp]
+    exp D h = IsNilpotent.exp D.toLinearMap :=
+  rfl
 
 lemma exp_map_apply (h : IsNilpotent D.toLinearMap) (l : L) :
     exp D h l = IsNilpotent.exp D.toLinearMap l :=
