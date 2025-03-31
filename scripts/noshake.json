@@ -371,6 +371,7 @@
   "Mathlib.MeasureTheory.MeasurableSpace.Defs": ["Mathlib.Tactic.FunProp.Attr"],
   "Mathlib.MeasureTheory.Function.LpSeminorm.CompareExp":
   ["Mathlib.Tactic.Finiteness"],
+  "Mathlib.ModelTheory.Definability": ["Mathlib.Tactic.FunProp"],
   "Mathlib.Logic.Nontrivial.Defs": ["Mathlib.Init.Logic"],
   "Mathlib.Logic.Function.Defs": ["Mathlib.Tactic.AdaptationNote"],
   "Mathlib.Logic.Function.Basic": ["Batteries.Tactic.Init"],

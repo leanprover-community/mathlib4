@@ -456,7 +456,7 @@ variable (L)
 
 /-- A function from a structure to itself is term-definable over a set `A` when the
   value of the function is given by a term with constants `A`. Like `TermDefinable`
-  but specialized for unary functions in order to write `M → M` instead of `(Unit → M) → M`.-/
+  but specialized for unary functions in order to write `M → M` instead of `(Unit → M) → M`. -/
 @[fun_prop]
 def TermDefinable₁ (f : M → M) : Prop :=
   ∃ φ : L[[A]].Term Unit, f = φ.realize ∘ Function.const _
