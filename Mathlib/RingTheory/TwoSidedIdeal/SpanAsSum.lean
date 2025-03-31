@@ -87,4 +87,18 @@ lemma mem_span_ideal_iff_exists_fin (s : Ideal R) (x : R) :
   exact ⟨fun ⟨n, fin, xL, xR, y, _⟩ ↦ ⟨n, fin, xR, fun i ↦ ⟨xL i * y i, s.mul_mem_left _ (y i).2⟩,
     by simp_all⟩, fun ⟨n, fin, xR, y, hy⟩ ↦ ⟨n, fin, 1, xR, y, by simp_all⟩⟩
 
+lemma mem_span_range_iff_exists_multisetSum (ι : Type*) (v : ι → R) (x : R) :
+    x ∈ span (Set.range v) ↔ ∃ l : Multiset (R × ι × R),
+    (l.map fun | (l, i, r) => l * v i * r).sum = x := by
+  constructor
+  · rw [mem_span_iff_exists_fin]
+    rintro ⟨κ, _, xL, xR, y, rfl⟩
+    choose e he using fun k ↦ (y k).2
+    exact ⟨Multiset.map (fun i ↦ (xL i, e i, xR i)) (Finset.univ.val : Multiset κ), by simp [he]⟩
+  · rintro ⟨l, rfl⟩
+    refine multiset_sum_mem _ ?_
+    simp only [Multiset.mem_map, Prod.exists, forall_exists_index, and_imp]
+    rintro xL xR i r hi rfl
+    exact mul_mem_right _ _ _ <| mul_mem_left _ _ _ <| subset_span <| Set.mem_range_self _
+
 end TwoSidedIdeal
