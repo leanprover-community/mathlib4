@@ -7,7 +7,9 @@ import Mathlib.Data.Matroid.Circuit
 import Mathlib.Tactic.TFAE
 
 /-!
-# Loops
+# Matroid loops and coloops
+
+## Loops
 A 'loop' of a matroid `M` is an element `e` satisfying one of the following equivalent conditions:
 * `e ∈ M.closure ∅`;
 * `{e}` is dependent in `M`;
@@ -23,7 +25,7 @@ For `M : Matroid α`, this file defines a set `Matroid.loops M : Set α`,
 as well as predicates `Matroid.IsLoop M : α → Prop` and `Matroid.IsNonloop M : α → Prop`,
 and provides API for interacting with them.
 
-# Coloops
+## Coloops
 The dual notion of a loop is a 'coloop'. Geometrically, these can be thought of elements that are
 skew to the remainder of the matroid. Coloops in graphic matroids are 'bridge' edges of the graph,
 and coloops in linearly representable matroids are vectors not spanned by the other vectors
@@ -37,7 +39,7 @@ a coloop is an element of `M.E` if any of the following equivalent conditions ho
 * for all `X ⊆ M.E`, `e ∈ X ↔ e ∈ M.closure X`,
 * `M.E \ {e}` is nonspanning.
 
-# Main Declarations
+## Main Declarations
 For `M` : Matroid `α`:
 * `M.loops` is the set `M.closure ∅`.
 * `M.IsLoop e` means that `e : α` is a loop of `M`, defined as the statement `e ∈ M.loops`.
@@ -46,7 +48,6 @@ For `M` : Matroid `α`:
 * `M.IsColoop e ` means that `e` is a loop of `M✶`.
 * `M.coloops` is the set of coloops of `M✶`.
 * `M.isColoop_tfae` gives a number of properties that are equivalent to `IsColoop`.
-
 -/
 
 variable {α β : Type*} {M N : Matroid α} {e f : α} {F X C I : Set α}
@@ -503,11 +504,11 @@ lemma isColoop_tfae (M : Matroid α) (e : α) : List.TFAE [
     · obtain ⟨C, -, hC, heC⟩ := (mem_closure_iff_exists_isCircuit heX').1 heX
       exact h hC heC
     simpa [hC.mem_closure_diff_singleton_of_mem heC] using h (C \ {e})
-  tfae_have 4 <-> 7 := by
-    refine ⟨fun h hsp ↦ ?_, fun h B hB ↦ by_contra fun heB ↦ h ?_⟩
-    · obtain ⟨B, hB⟩ := M.exists_isBasis (M.E \ {e}) diff_subset
-      exact (hB.subset <| h (hB.isBase_of_spanning hsp)).2 rfl
-    exact hB.spanning_of_superset (subset_diff_singleton hB.subset_ground heB) diff_subset
+  tfae_have 1 <-> 7 := by
+    wlog he : e ∈ M.E
+    · exact iff_of_false (fun h ↦ he h.mem_ground) <| by simp [he, M.ground_spanning]
+    rw [spanning_iff_compl_coindep diff_subset, ← dual_isLoop_iff_isColoop, ← singleton_dep,
+      diff_diff_cancel_left (by simpa), ← not_indep_iff (by simpa)]
   tfae_finish
 
 lemma isColoop_iff_forall_mem_isBase : M.IsColoop e ↔ ∀ ⦃B⦄, M.IsBase B → e ∈ B :=
