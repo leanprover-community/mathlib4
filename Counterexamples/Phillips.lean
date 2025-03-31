@@ -200,7 +200,7 @@ theorem le_bound (f : BoundedAdditiveMeasure α) (s : Set α) : f s ≤ f.C :=
 theorem empty (f : BoundedAdditiveMeasure α) : f ∅ = 0 := by
   have : (∅ : Set α) = ∅ ∪ ∅ := by simp only [empty_union]
   apply_fun f at this
-  rwa [f.additive _ _ (empty_disjoint _), self_eq_add_left] at this
+  rwa [f.additive _ _ (empty_disjoint _), right_eq_add] at this
 
 instance : Neg (BoundedAdditiveMeasure α) :=
   ⟨fun f =>
@@ -369,7 +369,7 @@ theorem continuousPart_apply_eq_zero_of_countable (f : BoundedAdditiveMeasure α
 theorem continuousPart_apply_diff (f : BoundedAdditiveMeasure α) (s t : Set α) (hs : s.Countable) :
     f.continuousPart (t \ s) = f.continuousPart t := by
   conv_rhs => rw [← diff_union_inter t s]
-  rw [additive, self_eq_add_right]
+  rw [additive, left_eq_add]
   · exact continuousPart_apply_eq_zero_of_countable _ _ (hs.mono inter_subset_right)
   · exact Disjoint.mono_right inter_subset_right disjoint_sdiff_self_left
 

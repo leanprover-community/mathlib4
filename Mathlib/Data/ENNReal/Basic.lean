@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.NNReal.Defs
+import Mathlib.Order.Interval.Set.WithBotTop
 
 /-!
 # Extended non-negative reals
@@ -134,19 +135,14 @@ instance : OrderedSub ℝ≥0∞ := inferInstanceAs (OrderedSub (WithTop ℝ≥0
 noncomputable instance : LinearOrderedAddCommMonoidWithTop ℝ≥0∞ :=
   inferInstanceAs (LinearOrderedAddCommMonoidWithTop (WithTop ℝ≥0))
 
--- Porting note: rfc: redefine using pattern matching?
+-- RFC: redefine using pattern matching?
 noncomputable instance : Inv ℝ≥0∞ := ⟨fun a => sInf { b | 1 ≤ a * b }⟩
 
 noncomputable instance : DivInvMonoid ℝ≥0∞ where
 
 variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0}
 
--- Porting note: are these 2 instances still required in Lean 4?
-instance mulLeftMono : MulLeftMono ℝ≥0∞ := inferInstance
-
-instance addLeftMono : AddLeftMono ℝ≥0∞ := inferInstance
-
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a `WithTop` instance and use it here
+-- TODO: add a `WithTop` instance and use it here
 noncomputable instance : LinearOrderedCommMonoidWithZero ℝ≥0∞ :=
   { inferInstanceAs (LinearOrderedAddCommMonoidWithTop ℝ≥0∞),
       inferInstanceAs (CommSemiring ℝ≥0∞) with
@@ -250,19 +246,31 @@ theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.o
 @[simp] theorem toNNReal_toReal_eq (z : ℝ≥0∞) : z.toReal.toNNReal = z.toNNReal := by
   ext; simp [coe_toNNReal_eq_toReal]
 
-@[simp] theorem top_toNNReal : ∞.toNNReal = 0 := rfl
+@[simp] theorem toNNReal_top : ∞.toNNReal = 0 := rfl
 
-@[simp] theorem top_toReal : ∞.toReal = 0 := rfl
+@[deprecated (since := "2025-03-20")] alias top_toNNReal := toNNReal_top
 
-@[simp] theorem one_toReal : (1 : ℝ≥0∞).toReal = 1 := rfl
+@[simp] theorem toReal_top : ∞.toReal = 0 := rfl
 
-@[simp] theorem one_toNNReal : (1 : ℝ≥0∞).toNNReal = 1 := rfl
+@[deprecated (since := "2025-03-20")] alias top_toReal := toReal_top
+
+@[simp] theorem toReal_one : (1 : ℝ≥0∞).toReal = 1 := rfl
+
+@[deprecated (since := "2025-03-20")] alias one_toReal := toReal_one
+
+@[simp] theorem toNNReal_one : (1 : ℝ≥0∞).toNNReal = 1 := rfl
+
+@[deprecated (since := "2025-03-20")] alias one_toNNReal := toNNReal_one
 
 @[simp] theorem coe_toReal (r : ℝ≥0) : (r : ℝ≥0∞).toReal = r := rfl
 
-@[simp] theorem zero_toNNReal : (0 : ℝ≥0∞).toNNReal = 0 := rfl
+@[simp] theorem toNNReal_zero : (0 : ℝ≥0∞).toNNReal = 0 := rfl
 
-@[simp] theorem zero_toReal : (0 : ℝ≥0∞).toReal = 0 := rfl
+@[deprecated (since := "2025-03-20")] alias zero_toNNReal := toNNReal_zero
+
+@[simp] theorem toReal_zero : (0 : ℝ≥0∞).toReal = 0 := rfl
+
+@[deprecated (since := "2025-03-20")] alias zero_toReal := toReal_zero
 
 @[simp] theorem ofReal_zero : ENNReal.ofReal (0 : ℝ) = 0 := by simp [ENNReal.ofReal]
 
@@ -381,7 +389,7 @@ lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ≥0∞) = ofNat(n) := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
+-- TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
 theorem coe_two : ((2 : ℝ≥0) : ℝ≥0∞) = 2 := rfl
 
@@ -543,8 +551,6 @@ theorem max_zero_left : max 0 a = a :=
 theorem max_zero_right : max a 0 = a :=
   max_eq_left (zero_le a)
 
--- Porting note: moved `le_of_forall_pos_le_add` down
-
 theorem lt_iff_exists_rat_btwn :
     a < b ↔ ∃ q : ℚ, 0 ≤ q ∧ a < Real.toNNReal q ∧ (Real.toNNReal q : ℝ≥0∞) < b :=
   ⟨fun h => by
@@ -671,7 +677,6 @@ end CompleteLattice
 
 section Bit
 
--- Porting note: removed lemmas about `bit0` and `bit1`
 -- TODO: add lemmas about `OfNat.ofNat`
 
 end Bit
@@ -689,7 +694,7 @@ variable {s : Set ℝ} {t : Set ℝ≥0} {u : Set ℝ≥0∞}
 theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set ℝ≥0).OrdConnected :=
   h.preimage_mono ENNReal.coe_mono
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `WithTop`
+-- TODO: generalize to `WithTop`
 theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
   refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩

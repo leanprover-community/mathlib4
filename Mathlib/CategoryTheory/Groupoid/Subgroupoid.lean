@@ -126,7 +126,7 @@ def asWideQuiver : Quiver C :=
   ⟨fun c d => Subtype <| S.arrows c d⟩
 
 /-- The coercion of a subgroupoid as a groupoid -/
-@[simps comp_coe, simps (config := .lemmasOnly) inv_coe]
+@[simps comp_coe, simps -isSimp inv_coe]
 instance coe : Groupoid S.objs where
   Hom a b := S.arrows a.val b.val
   id a := ⟨𝟙 a.val, id_mem_of_nonempty_isotropy S a.val a.prop⟩

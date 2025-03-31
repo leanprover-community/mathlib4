@@ -129,7 +129,7 @@ instance fromInducedMonoidal [MonoidalCategoryStruct D] (F : D ⥤ C) [F.Faithfu
 
 /-- Transport a monoidal structure along an equivalence of (plain) categories.
 -/
-@[simps (config := .lemmasOnly)]
+@[simps -isSimp]
 def transportStruct (e : C ≌ D) : MonoidalCategoryStruct.{v₂} D where
   tensorObj X Y := e.functor.obj (e.inverse.obj X ⊗ e.inverse.obj Y)
   whiskerLeft X _ _ f := e.functor.map (e.inverse.obj X ◁ e.inverse.map f)

@@ -74,7 +74,6 @@ theorem high_scores [LinearOrder β] [NoMaxOrder β] {u : ℕ → β} (hu : Tend
 /-- If `u` is a sequence which is unbounded below,
 then after any point, it reaches a value strictly smaller than all previous values.
 -/
--- @[nolint ge_or_gt] Porting note: restore attribute
 theorem low_scores [LinearOrder β] [NoMinOrder β] {u : ℕ → β} (hu : Tendsto u atTop atBot) :
     ∀ N, ∃ n ≥ N, ∀ k < n, u n < u k :=
   @high_scores βᵒᵈ _ _ _ hu

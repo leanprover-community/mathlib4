@@ -51,7 +51,7 @@ namespace Complex
 @[continuity, fun_prop]
 theorem continuous_sin : Continuous sin := by
   change Continuous fun z => (exp (-z * I) - exp (z * I)) * I / 2
-  continuity
+  fun_prop
 
 @[fun_prop]
 theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
@@ -60,7 +60,7 @@ theorem continuousOn_sin {s : Set ℂ} : ContinuousOn sin s :=
 @[continuity, fun_prop]
 theorem continuous_cos : Continuous cos := by
   change Continuous fun z => (exp (z * I) + exp (-z * I)) / 2
-  continuity
+  fun_prop
 
 @[fun_prop]
 theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
@@ -69,12 +69,12 @@ theorem continuousOn_cos {s : Set ℂ} : ContinuousOn cos s :=
 @[continuity, fun_prop]
 theorem continuous_sinh : Continuous sinh := by
   change Continuous fun z => (exp z - exp (-z)) / 2
-  continuity
+  fun_prop
 
 @[continuity, fun_prop]
 theorem continuous_cosh : Continuous cosh := by
   change Continuous fun z => (exp z + exp (-z)) / 2
-  continuity
+  fun_prop
 
 end Complex
 
@@ -958,7 +958,7 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
     exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul zero_lt_one
+  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_pos zero_lt_one
     tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
@@ -1190,6 +1190,22 @@ theorem exp_two_pi_mul_I : exp (2 * π * I) = 1 :=
   exp_periodic.eq.trans exp_zero
 
 @[simp]
+lemma exp_pi_div_two_mul_I : exp (π / 2 * I) = I := by
+  rw [← cos_add_sin_I, cos_pi_div_two, sin_pi_div_two, one_mul, zero_add]
+
+lemma circleMap_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (π / 2) = c + R * I := by
+  simp only [circleMap, ofReal_div, ofReal_ofNat, exp_pi_div_two_mul_I]
+
+@[simp]
+lemma exp_neg_pi_div_two_mul_I : exp (-π / 2 * I) = -I := by
+  rw [← cos_add_sin_I, neg_div, cos_neg, cos_pi_div_two, sin_neg, sin_pi_div_two, zero_add, neg_mul,
+    one_mul]
+
+lemma circleMap_neg_pi_div_two (c : ℂ) (R : ℝ) : circleMap c R (-π / 2) = c - R * I := by
+  simp only [circleMap, ofReal_div, ofReal_neg, ofReal_ofNat, exp_neg_pi_div_two_mul_I, mul_neg]
+  rfl
+
+@[simp]
 theorem exp_nat_mul_two_pi_mul_I (n : ℕ) : exp (n * (2 * π * I)) = 1 :=
   (exp_periodic.nat_mul_eq n).trans exp_zero
 
@@ -1227,3 +1243,13 @@ theorem norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le {a b : ℝ} (ha : a ≤ 0) 
   norm_exp_mul_exp_add_exp_neg_le_of_abs_im_le
 
 end Complex
+
+section circleMap
+
+open Function Complex Real
+
+/-- `circleMap` is `2π`-periodic. -/
+theorem periodic_circleMap (c : ℂ) (R : ℝ) : Periodic (circleMap c R) (2 * π) := fun θ => by
+  simp [circleMap, add_mul, exp_periodic _]
+
+end circleMap

@@ -167,6 +167,23 @@ theorem isPrime_of_isPrime_disjoint (I : Ideal R) (hp : I.IsPrime) (hd : Disjoin
   rw [isPrime_iff_isPrime_disjoint M S, comap_map_of_isPrime_disjoint M S I hp hd]
   exact ⟨hp, hd⟩
 
+theorem disjoint_comap_iff (S : Submonoid R) {A : Type*} [CommRing A]
+    [Algebra R A] [IsLocalization S A] (J : Ideal A) :
+    Disjoint (S : Set R) (J.comap (algebraMap R A)) ↔ J ≠ ⊤ := by
+  rw [← iff_not_comm]
+  constructor
+  · rintro rfl
+    rw [Ideal.comap_top, Submodule.top_coe, Set.disjoint_univ, ← ne_eq, ← Set.nonempty_iff_ne_empty]
+    exact ⟨_, S.one_mem⟩
+  · rw [Disjoint, Set.bot_eq_empty]
+    intro h
+    simp only [Set.le_eq_subset, Ideal.coe_comap, Set.subset_empty_iff, not_forall,
+      Classical.not_imp] at h
+    obtain ⟨x, hx, hx', hx''⟩ := h
+    rw [← ne_eq, ← Set.nonempty_iff_ne_empty] at hx''
+    obtain ⟨u, hu⟩ := hx''
+    exact J.eq_top_of_isUnit_mem (hx' hu) (IsLocalization.map_units A ⟨u, hx hu⟩)
+
 /-- If `R` is a ring, then prime ideals in the localization at `M`
 correspond to prime ideals in the original ring `R` that are disjoint from `M` -/
 def orderIsoOfPrime :
@@ -287,7 +304,7 @@ lemma _root_.NoZeroSMulDivisors_of_isLocalization (Rₚ Sₚ : Type*) [CommRing 
   simp only [RingHom.algebraMap_toAlgebra, IsLocalization.map_mk', IsLocalization.mk'_eq_zero_iff,
     Subtype.exists, exists_prop, this] at hx ⊢
   obtain ⟨_, ⟨a, ha, rfl⟩, H⟩ := hx
-  simp only [← _root_.map_mul,
+  simp only [← map_mul,
     (injective_iff_map_eq_zero' _).mp (FaithfulSMul.algebraMap_injective R S)] at H
   exact ⟨a, ha, H⟩
 

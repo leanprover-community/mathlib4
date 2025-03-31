@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.Module.Submodule.Defs
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
+import Mathlib.Algebra.Group.Pointwise.Set.Basic
 
 /-!
 # Submodules of a module

@@ -27,13 +27,13 @@ open Function
 namespace AddHom
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def mulLeft [Distrib R] (r : R) : AddHom R R where
   toFun := (r * ·)
   map_add' := mul_add r
 
 /-- Left multiplication by an element of a type with distributive multiplication is an `AddHom`. -/
-@[simps (config := .asFn)]
+@[simps -fullyApplied]
 def mulRight [Distrib R] (r : R) : AddHom R R where
   toFun a := a * r
   map_add' _ _ := add_mul _ _ r
@@ -124,12 +124,12 @@ section NoZeroDivisors
 
 variable (α)
 
-lemma IsLeftCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocSemiring α]
+lemma IsLeftCancelMulZero.to_noZeroDivisors [MulZeroClass α]
     [IsLeftCancelMulZero α] : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero {x _} h :=
     or_iff_not_imp_left.mpr fun ne ↦ mul_left_cancel₀ ne ((mul_zero x).symm ▸ h)
 
-lemma IsRightCancelMulZero.to_noZeroDivisors [NonUnitalNonAssocSemiring α]
+lemma IsRightCancelMulZero.to_noZeroDivisors [MulZeroClass α]
     [IsRightCancelMulZero α] : NoZeroDivisors α where
   eq_zero_or_eq_zero_of_mul_eq_zero {_ y} h :=
     or_iff_not_imp_right.mpr fun ne ↦ mul_right_cancel₀ ne ((zero_mul y).symm ▸ h)
