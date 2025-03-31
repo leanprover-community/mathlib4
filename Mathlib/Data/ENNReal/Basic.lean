@@ -94,8 +94,7 @@ variable {α : Type*}
 
 /-- The extended nonnegative real numbers. This is usually denoted [0, ∞],
   and is relevant as the codomain of a measure. -/
-def ENNReal := WithTop ℝ≥0
-  deriving Zero, Top, AddCommMonoidWithOne, SemilatticeSup, DistribLattice, Nontrivial
+abbrev ENNReal := WithTop ℝ≥0
 
 @[inherit_doc]
 scoped[ENNReal] notation "ℝ≥0∞" => ENNReal
@@ -158,7 +157,7 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 /-- Coercion from `ℝ≥0` to `ℝ≥0∞`. -/
 @[coe, match_pattern] def ofNNReal : ℝ≥0 → ℝ≥0∞ := WithTop.some
 
-instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
+instance (priority := high) : CoeTC ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
 @[elab_as_elim, induction_eliminator, cases_eliminator]
