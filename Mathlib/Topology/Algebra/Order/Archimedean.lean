@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.GroupTheory.Archimedean
 import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Basic
 import Mathlib.Topology.Order.Basic
 
 /-!

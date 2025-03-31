@@ -7,7 +7,7 @@ import Mathlib.Data.Finset.Fold
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Multiset.Lattice
 import Mathlib.Data.Set.BooleanAlgebra
-import Mathlib.Order.Hom.Lattice
+import Mathlib.Order.Hom.BoundedLattice
 import Mathlib.Order.Nat
 
 /-!
