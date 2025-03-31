@@ -46,8 +46,11 @@ instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCompleteLinearOrder α]
-    {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } :=
-  { @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _ with }
+    {a : α} : ConditionallyCompleteLinearOrder { x : α // a ≤ x } where
+  __ := @ordConnectedSubsetConditionallyCompleteLinearOrder α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩ _
+  decidableEq := inferInstance
+  decidableLE := inferInstance
+  decidableLT := inferInstance
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrderBot`.
 
