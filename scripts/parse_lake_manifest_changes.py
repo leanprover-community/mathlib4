@@ -111,10 +111,13 @@ def format_changes(changes):
 
 def main():
     old_manifest = get_json_at_rev('HEAD~1', 'lake-manifest.json')
-    new_manifest = get_json_at_rev('HEAD', 'lake-manifest.json')
+    if not old_manifest:
+        print("Failed to read old lake-manifest.json at HEAD~1")
+        return 1
 
-    if not old_manifest or not new_manifest:
-        print("Failed to read lake-manifest.json versions")
+    new_manifest = get_json_at_rev('HEAD', 'lake-manifest.json')
+    if not new_manifest:
+        print("Failed to read new lake-manifest.json at HEAD")
         return 1
 
     changes = find_package_changes(old_manifest, new_manifest)
