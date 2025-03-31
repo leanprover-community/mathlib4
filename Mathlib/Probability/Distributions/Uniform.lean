@@ -259,14 +259,14 @@ theorem toOuterMeasure_uniformOfFinset_apply :
     (uniformOfFinset s hs).toOuterMeasure t = ∑' x, if x ∈ t then uniformOfFinset s hs x else 0 :=
       toOuterMeasure_apply (uniformOfFinset s hs) t
     _ = ∑' x, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-      (tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm])
-    _ = ∑ x ∈ s.filter (· ∈ t), if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
-      (tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h))
-    _ = ∑ _x ∈ s.filter (· ∈ t), (s.card : ℝ≥0∞)⁻¹ :=
-      (Finset.sum_congr rfl fun x hx => by
-        let this : x ∈ s ∧ x ∈ t := by simpa using hx
-        simp only [this, and_self_iff, if_true])
-    _ = (s.filter (· ∈ t)).card / s.card := by
+      tsum_congr fun x => by simp_rw [uniformOfFinset_apply, ← ite_and, and_comm]
+    _ = ∑ x ∈ s with x ∈ t, if x ∈ s ∧ x ∈ t then (s.card : ℝ≥0∞)⁻¹ else 0 :=
+      tsum_eq_sum fun _ hx => if_neg fun h => hx (Finset.mem_filter.2 h)
+    _ = ∑ x ∈ s with x ∈ t, (s.card : ℝ≥0∞)⁻¹ :=
+      Finset.sum_congr rfl fun x hx => by
+        have this : x ∈ s ∧ x ∈ t := by simpa using hx
+        simp only [this, and_self_iff, if_true]
+    _ = {x ∈ s | x ∈ t}.card / s.card := by
         simp only [div_eq_mul_inv, Finset.sum_const, nsmul_eq_mul]
 
 open scoped Classical in
