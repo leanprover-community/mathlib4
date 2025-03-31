@@ -117,13 +117,13 @@ theorem perm_comp_forall₂ {l u v} (hlu : Perm l u) (huv : Forall₂ r u v) :
   induction hlu generalizing v with
   | nil => cases huv; exact ⟨[], Forall₂.nil, Perm.nil⟩
   | cons u _hlu ih =>
-    cases' huv with _ b _ v hab huv'
+    obtain - | ⟨hab, huv'⟩ := huv
     rcases ih huv' with ⟨l₂, h₁₂, h₂₃⟩
-    exact ⟨b :: l₂, Forall₂.cons hab h₁₂, h₂₃.cons _⟩
+    exact ⟨_ :: l₂, Forall₂.cons hab h₁₂, h₂₃.cons _⟩
   | swap a₁ a₂ h₂₃ =>
-    cases' huv with _ b₁ _ l₂ h₁ hr₂₃
-    cases' hr₂₃ with _ b₂ _ l₂ h₂ h₁₂
-    exact ⟨b₂ :: b₁ :: l₂, Forall₂.cons h₂ (Forall₂.cons h₁ h₁₂), Perm.swap _ _ _⟩
+    obtain - | ⟨h₁, hr₂₃⟩ := huv
+    obtain - | ⟨h₂, h₁₂⟩ := hr₂₃
+    exact ⟨_, Forall₂.cons h₂ (Forall₂.cons h₁ h₁₂), Perm.swap _ _ _⟩
   | trans _ _ ih₁ ih₂ =>
     rcases ih₂ huv with ⟨lb₂, hab₂, h₂₃⟩
     rcases ih₁ hab₂ with ⟨lb₁, hab₁, h₁₂⟩
@@ -138,6 +138,10 @@ theorem forall₂_comp_perm_eq_perm_comp_forall₂ : Forall₂ r ∘r Perm = Per
     rcases perm_comp_forall₂ h₂₃.symm this with ⟨l', h₁, h₂⟩
     exact ⟨l', h₂.symm, h₁.flip⟩
   · exact fun ⟨l₂, h₁₂, h₂₃⟩ => perm_comp_forall₂ h₁₂ h₂₃
+
+theorem eq_map_comp_perm (f : α → β) : (· = map f ·) ∘r (· ~ ·) = (· ~ map f ·) := by
+  conv_rhs => rw [← Relation.comp_eq_fun (map f)]
+  simp only [← forall₂_eq_eq_eq, forall₂_map_right_iff, forall₂_comp_perm_eq_perm_comp_forall₂]
 
 theorem rel_perm_imp (hr : RightUnique r) : (Forall₂ r ⇒ Forall₂ r ⇒ (· → ·)) Perm Perm :=
   fun a b h₁ c d h₂ h =>
@@ -193,7 +197,7 @@ end
 
 theorem perm_option_toList {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
   refine ⟨fun p => ?_, fun e => e ▸ Perm.refl _⟩
-  cases' o₁ with a <;> cases' o₂ with b; · rfl
+  rcases o₁ with - | a <;> rcases o₂ with - | b; · rfl
   · cases p.length_eq
   · cases p.length_eq
   · exact Option.mem_toList.1 (p.symm.subset <| by simp)
@@ -210,6 +214,12 @@ theorem perm_replicate_append_replicate
   · simp [subset_def, or_comm]
   · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 
+theorem map_perm_map_iff {l' : List α} {f : α → β} (hf : f.Injective) :
+    map f l ~ map f l' ↔ l ~ l' := calc
+  map f l ~ map f l' ↔ Relation.Comp (· = map f ·) (· ~ ·) (map f l) l' := by rw [eq_map_comp_perm]
+  _ ↔ l ~ l' := by simp [Relation.Comp, map_inj_right hf]
+
+@[gcongr]
 theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l, f a ~ g a) :
     l.flatMap f ~ l.flatMap g :=
   Perm.flatten_congr <| by
@@ -217,10 +227,16 @@ theorem Perm.flatMap_left (l : List α) {f g : α → List β} (h : ∀ a ∈ l,
 
 @[deprecated (since := "2024-10-16")] alias Perm.bind_left := Perm.flatMap_left
 
+attribute [gcongr] Perm.flatMap_right
+
+@[gcongr]
+protected theorem Perm.flatMap {l₁ l₂ : List α} {f g : α → List β} (h : l₁ ~ l₂)
+    (hfg : ∀ a ∈ l₁, f a ~ g a) : l₁.flatMap f ~ l₂.flatMap g :=
+  .trans (.flatMap_left _ hfg) (h.flatMap_right _)
+
 theorem flatMap_append_perm (l : List α) (f g : α → List β) :
     l.flatMap f ++ l.flatMap g ~ l.flatMap fun x => f x ++ g x := by
-  induction' l with a l IH
-  · simp
+  induction l with | nil => simp | cons a l IH => ?_
   simp only [flatMap_cons, append_assoc]
   refine (Perm.trans ?_ (IH.append_left _)).append_left _
   rw [← append_assoc, ← append_assoc]
@@ -234,14 +250,17 @@ theorem map_append_flatMap_perm (l : List α) (f : α → β) (g : α → List �
 
 @[deprecated (since := "2024-10-16")] alias map_append_bind_perm := map_append_flatMap_perm
 
+@[gcongr]
 theorem Perm.product_right {l₁ l₂ : List α} (t₁ : List β) (p : l₁ ~ l₂) :
     product l₁ t₁ ~ product l₂ t₁ :=
   p.flatMap_right _
 
+@[gcongr]
 theorem Perm.product_left (l : List α) {t₁ t₂ : List β} (p : t₁ ~ t₂) :
     product l t₁ ~ product l t₂ :=
   (Perm.flatMap_left _) fun _ _ => p.map _
 
+@[gcongr]
 theorem Perm.product {l₁ l₂ : List α} {t₁ t₂ : List β} (p₁ : l₁ ~ l₂) (p₂ : t₁ ~ t₂) :
     product l₁ t₁ ~ product l₂ t₂ :=
   (p₁.product_right t₁).trans (p₂.product_left l₂)

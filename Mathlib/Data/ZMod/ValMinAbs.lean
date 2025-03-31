@@ -46,7 +46,7 @@ lemma valMinAbs_nonneg_iff [NeZero n] (x : ZMod n) : 0 ≤ x.valMinAbs ↔ x.val
   · exact iff_of_false (sub_lt_zero.2 <| Int.ofNat_lt.2 x.val_lt).not_le h
 
 lemma valMinAbs_mul_two_eq_iff (a : ZMod n) : a.valMinAbs * 2 = n ↔ 2 * a.val = n := by
-  cases' n with n
+  rcases n with - | n
   · simp
   by_cases h : a.val ≤ n.succ / 2
   · dsimp [valMinAbs]
@@ -94,7 +94,7 @@ lemma valMinAbs_zero : ∀ n, (0 : ZMod n).valMinAbs = 0
 
 @[simp]
 lemma valMinAbs_eq_zero (x : ZMod n) : x.valMinAbs = 0 ↔ x = 0 := by
-  cases' n with n
+  rcases n with - | n
   · simp
   rw [← valMinAbs_zero n.succ]
   apply injective_valMinAbs.eq_iff
@@ -164,7 +164,7 @@ lemma valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a �
 
 lemma natAbs_valMinAbs_add_le (a b : ZMod n) :
     (a + b).valMinAbs.natAbs ≤ (a.valMinAbs + b.valMinAbs).natAbs := by
-  cases' n with n
+  rcases n with - | n
   · rfl
   apply natAbs_min_of_le_div_two n.succ
   · simp_rw [Int.cast_add, coe_valMinAbs]

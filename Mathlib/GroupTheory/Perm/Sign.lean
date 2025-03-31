@@ -13,8 +13,10 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.Perm.Support
-import Mathlib.Logic.Equiv.Fin
+import Mathlib.Logic.Equiv.Fin.Basic
+import Mathlib.Logic.Equiv.Fintype
 import Mathlib.Tactic.NormNum.Ineq
+import Mathlib.Data.Finset.Sigma
 
 /-!
 # Sign of a permutation
@@ -93,18 +95,17 @@ def truncSwapFactors [Fintype α] (f : Perm α) :
 /-- An induction principle for permutations. If `P` holds for the identity permutation, and
 is preserved under composition with a non-trivial swap, then `P` holds for all permutations. -/
 @[elab_as_elim]
-theorem swap_induction_on [Finite α] {P : Perm α → Prop} (f : Perm α) :
-    P 1 → (∀ f x y, x ≠ y → P f → P (swap x y * f)) → P f := by
+theorem swap_induction_on [Finite α] {motive : Perm α → Prop} (f : Perm α)
+    (one : motive 1) (swap_mul : ∀ f x y, x ≠ y → motive f → motive (swap x y * f)) : motive f := by
   cases nonempty_fintype α
-  cases' (truncSwapFactors f).out with l hl
-  induction' l with g l ih generalizing f
-  · simp +contextual only [hl.left.symm, List.prod_nil, forall_true_iff]
-  · intro h1 hmul_swap
+  obtain ⟨l, hl⟩ := (truncSwapFactors f).out
+  induction l generalizing f with
+  | nil =>
+    simp only [one, hl.left.symm, List.prod_nil, forall_true_iff]
+  | cons g l ih =>
     rcases hl.2 g (by simp) with ⟨x, y, hxy⟩
     rw [← hl.1, List.prod_cons, hxy.2]
-    exact
-      hmul_swap _ _ _ hxy.1
-        (ih _ ⟨rfl, fun v hv => hl.2 _ (List.mem_cons_of_mem _ hv)⟩ h1 hmul_swap)
+    exact swap_mul _ _ _ hxy.1 (ih _ ⟨rfl, fun v hv => hl.2 _ (List.mem_cons_of_mem _ hv)⟩)
 
 theorem mclosure_isSwap [Finite α] : Submonoid.closure { σ : Perm α | IsSwap σ } = ⊤ := by
   cases nonempty_fintype α
@@ -135,12 +136,12 @@ theorem mclosure_swap_castSucc_succ (n : ℕ) :
 
 /-- Like `swap_induction_on`, but with the composition on the right of `f`.
 
-An induction principle for permutations. If `P` holds for the identity permutation, and
-is preserved under composition with a non-trivial swap, then `P` holds for all permutations. -/
+An induction principle for permutations. If `motive` holds for the identity permutation, and
+is preserved under composition with a non-trivial swap, then `motive` holds for all permutations. -/
 @[elab_as_elim]
-theorem swap_induction_on' [Finite α] {P : Perm α → Prop} (f : Perm α) :
-    P 1 → (∀ f x y, x ≠ y → P f → P (f * swap x y)) → P f := fun h1 IH =>
-  inv_inv f ▸ swap_induction_on f⁻¹ h1 fun f => IH f⁻¹
+theorem swap_induction_on' [Finite α] {motive : Perm α → Prop} (f : Perm α) (one : motive 1)
+    (mul_swap : ∀ f x y, x ≠ y → motive f → motive (f * swap x y)) : motive f :=
+  inv_inv f ▸ swap_induction_on f⁻¹ one fun f => mul_swap f⁻¹
 
 theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swap w x) (swap y z) :=
   isConj_iff.2
@@ -160,7 +161,7 @@ theorem isConj_swap {w x y z : α} (hwx : w ≠ x) (hyz : y ≠ z) : IsConj (swa
 def finPairsLT (n : ℕ) : Finset (Σ_ : Fin n, Fin n) :=
   (univ : Finset (Fin n)).sigma fun a => (range a).attachFin fun _ hm => (mem_range.1 hm).trans a.2
 
-theorem mem_finPairsLT {n : ℕ} {a : Σ_ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
+theorem mem_finPairsLT {n : ℕ} {a : Σ _ : Fin n, Fin n} : a ∈ finPairsLT n ↔ a.2 < a.1 := by
   simp only [finPairsLT, Fin.lt_iff_val_lt_val, true_and, mem_attachFin, mem_range, mem_univ,
     mem_sigma]
 
@@ -429,14 +430,11 @@ theorem sign_abs (f : Perm α) :
     |(Equiv.Perm.sign f : ℤ)| = 1 := by
   rw [Int.abs_eq_natAbs, Int.units_natAbs, Nat.cast_one]
 
-variable (α)
-
+variable (α) in
 theorem sign_surjective [Nontrivial α] : Function.Surjective (sign : Perm α → ℤˣ) := fun a =>
   (Int.units_eq_one_or a).elim (fun h => ⟨1, by simp [h]⟩) fun h =>
     let ⟨x, y, hxy⟩ := exists_pair_ne α
     ⟨swap x y, by rw [sign_swap hxy, h]⟩
-
-variable {α}
 
 theorem eq_sign_of_surjective_hom {s : Perm α →* ℤˣ} (hs : Surjective s) : s = sign :=
   have : ∀ {f}, IsSwap f → s f = -1 := fun {f} ⟨x, y, hxy, hxy'⟩ =>
@@ -566,13 +564,15 @@ theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) 
   suffices sign (sumCongr σa (1 : Perm β)) = sign σa ∧ sign (sumCongr (1 : Perm α) σb) = sign σb
     by rw [← this.1, ← this.2, ← sign_mul, sumCongr_mul, one_mul, mul_one]
   constructor
-  · refine σa.swap_induction_on ?_ fun σa' a₁ a₂ ha ih => ?_
-    · simp
-    · rw [← one_mul (1 : Perm β), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_swap_one,
+  · induction σa using swap_induction_on with
+    | one => simp
+    | swap_mul σa' a₁ a₂ ha ih =>
+      rw [← one_mul (1 : Perm β), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_swap_one,
         sign_swap ha, sign_swap (Sum.inl_injective.ne_iff.mpr ha)]
-  · refine σb.swap_induction_on ?_ fun σb' b₁ b₂ hb ih => ?_
-    · simp
-    · rw [← one_mul (1 : Perm α), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_one_swap,
+  · induction σb using swap_induction_on with
+    | one => simp
+    | swap_mul σb' b₁ b₂ hb ih =>
+      rw [← one_mul (1 : Perm α), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_one_swap,
         sign_swap hb, sign_swap (Sum.inr_injective.ne_iff.mpr hb)]
 
 @[simp]
@@ -593,6 +593,12 @@ theorem sign_ofSubtype {p : α → Prop} [DecidablePred p] (f : Equiv.Perm (Subt
 end congr
 
 end SignType.sign
+
+@[simp]
+theorem viaFintypeEmbedding_sign
+    [Fintype α] [Fintype β] [DecidableEq β] (e : Equiv.Perm α) (f : α ↪ β) :
+    sign (e.viaFintypeEmbedding f) = sign e := by
+  simp [viaFintypeEmbedding]
 
 section Finset
 

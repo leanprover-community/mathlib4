@@ -389,7 +389,7 @@ end OuterMeasure
 section RegularContents
 
 /-- A content `μ` is called regular if for every compact set `K`,
-  `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54-/
+  `μ(K) = inf {μ(K') : K ⊂ int K' ⊂ K'}`. See Paul Halmos (1950), Measure Theory, §54. -/
 def ContentRegular :=
   ∀ ⦃K : TopologicalSpace.Compacts G⦄,
     μ K = ⨅ (K' : TopologicalSpace.Compacts G) (_ : (K : Set G) ⊆ interior (K' : Set G)), μ K'

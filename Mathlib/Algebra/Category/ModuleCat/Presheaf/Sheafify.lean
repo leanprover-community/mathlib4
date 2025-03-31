@@ -65,9 +65,7 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     · exact Presheaf.equalizerSieve_mem J α _ _ hr₀
     · exact Presheaf.equalizerSieve_mem J φ _ _ hm₀
   · intro Z g hg
-    -- Manually apply `elementwise_of%` to generate ConcreteCategory lemmas.
-    rw [← elementwise_of% NatTrans.naturality (D := Ab),
-      ← elementwise_of% NatTrans.naturality (D := Ab)]
+    rw [← NatTrans.naturality_apply (D := Ab), ← NatTrans.naturality_apply (D := Ab)]
     erw [M₀.map_smul, M₀.map_smul, hg.1, hg.2]
     rfl
 
@@ -82,8 +80,7 @@ lemma isCompatible_map_smul_aux {Y Z : C} (f : Y ⟶ X) (g : Z ⟶ Y)
   · rw [hr₀', R.map_comp, RingCat.comp_apply, ← hr₀, ← RingCat.comp_apply, NatTrans.naturality,
       RingCat.comp_apply]
   · rw [hm₀', A.map_comp, AddCommGrp.coe_comp, Function.comp_apply, ← hm₀]
-    -- Manually apply `elementwise_of%` to generate ConcreteCategory lemmas.
-    erw [elementwise_of% NatTrans.naturality φ]
+    erw [NatTrans.naturality_apply φ]
 
 variable (hr₀ : (r₀.map (whiskerRight α (forget _))).IsAmalgamation r)
   (hm₀ : (m₀.map (whiskerRight φ (forget _))).IsAmalgamation m)
@@ -107,8 +104,7 @@ lemma isCompatible_map_smul : ((r₀.smul m₀).map (whiskerRight φ (forget _))
       RingCat.comp_apply]
   have hb₀ : (φ.app (Opposite.op Z)) b₀ = (A.map (f₁.op ≫ g₁.op)) m := by
     dsimp [b₀]
-    -- Manually apply `elementwise_of%` to generate ConcreteCategory lemmas.
-    erw [elementwise_of% NatTrans.naturality φ, hb₁, Functor.map_comp, ConcreteCategory.comp_apply]
+    erw [NatTrans.naturality_apply φ, hb₁, Functor.map_comp, ConcreteCategory.comp_apply]
   have ha₀' : (α.app (Opposite.op Z)) a₀ = (R.map (f₂.op ≫ g₂.op)) r := by
     rw [ha₀, ← op_comp, fac, op_comp]
   have hb₀' : (φ.app (Opposite.op Z)) b₀ = (A.map (f₂.op ≫ g₂.op)) m := by
@@ -163,8 +159,7 @@ def SMulCandidate.mk' (S : Sieve X.unop) (hS : S ∈ J X.unop)
     apply A.isSeparated _ _ (J.pullback_stable f.unop hS)
     rintro Z g hg
     dsimp at hg
-    rw [← ConcreteCategory.comp_apply, ← A.val.map_comp,
-      ← elementwise_of% NatTrans.naturality (D := Ab)]
+    rw [← ConcreteCategory.comp_apply, ← A.val.map_comp, ← NatTrans.naturality_apply (D := Ab)]
     erw [M₀.map_smul] -- Mismatch between `M₀.map` and `M₀.presheaf.map`
     refine (ha _ hg).trans (app_eq_of_isLocallyInjective α φ A.isSeparated _ _ _ _ ?_ ?_)
     · rw [← RingCat.comp_apply, NatTrans.naturality, RingCat.comp_apply, ha₀]

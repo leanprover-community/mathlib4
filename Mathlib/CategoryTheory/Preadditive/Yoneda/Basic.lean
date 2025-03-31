@@ -62,8 +62,8 @@ def preadditiveYoneda : C ⥤ Cᵒᵖ ⥤ AddCommGrp.{v} where
 object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 -/
 @[simps]
-def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X) where
-  obj Y := ModuleCat.of _ (unop X ⟶ Y)
+def preadditiveCoyonedaObj (X : C) : C ⥤ ModuleCat.{v} (End X)ᵐᵒᵖ where
+  obj Y := ModuleCat.of _ (X ⟶ Y)
   map f := ModuleCat.ofHom
     { toFun := fun g => g ≫ f
       map_add' := fun _ _ => add_comp _ _ _ _ _ _
@@ -75,7 +75,7 @@ structure, see `preadditiveCoyonedaObj`.
 -/
 @[simps obj]
 def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{v} where
-  obj X := preadditiveCoyonedaObj X ⋙ forget₂ _ _
+  obj X := preadditiveCoyonedaObj (unop X) ⋙ forget₂ _ _
   map f :=
     { app := fun _ => AddCommGrp.ofHom
         { toFun := fun g => f.unop ≫ g
@@ -88,7 +88,7 @@ instance additive_yonedaObj (X : C) : Functor.Additive (preadditiveYonedaObj X) 
 
 instance additive_yonedaObj' (X : C) : Functor.Additive (preadditiveYoneda.obj X) where
 
-instance additive_coyonedaObj (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyonedaObj X) where
+instance additive_coyonedaObj (X : C) : Functor.Additive (preadditiveCoyonedaObj X) where
 
 instance additive_coyonedaObj' (X : Cᵒᵖ) : Functor.Additive (preadditiveCoyoneda.obj X) where
 

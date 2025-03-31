@@ -3,8 +3,9 @@ Copyright (c) 2025 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll, Patrick Massot, Anatole Dedecker
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
-import Mathlib.Order.LiminfLimsup
+import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Analysis.Normed.Ring.Lemmas
+import Mathlib.Order.Filter.IsBounded
 import Mathlib.Topology.Algebra.UniformField
 
 /-!

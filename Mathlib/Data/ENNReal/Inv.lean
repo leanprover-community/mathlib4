@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.Data.ENNReal.Order
+import Mathlib.Data.ENNReal.Operations
 
 /-!
 # Results about division in extended non-negative reals
@@ -170,9 +170,8 @@ protected lemma mul_div_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 
 protected lemma mul_div_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (b / a) = b :=
   ENNReal.mul_div_cancel' (by simp [ha₀]) (by simp [ha])
 
--- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
-  simp only [div_eq_mul_inv, mul_right_comm, ← mul_assoc]
+  simp only [div_eq_mul_inv, mul_left_comm, mul_comm, mul_assoc]
 
 protected theorem mul_div_right_comm : a * b / c = a / c * b := by
   simp only [div_eq_mul_inv, mul_right_comm]
@@ -322,8 +321,6 @@ theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
 
 @[simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
 
--- Porting note: reordered 4 lemmas
-
 theorem top_div : ∞ / a = if a = ∞ then 0 else ∞ := by simp [div_eq_mul_inv, top_mul']
 
 theorem top_div_of_ne_top (h : a ≠ ∞) : ∞ / a = ∞ := by simp [top_div, h]
@@ -434,6 +431,10 @@ theorem le_of_forall_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r < x
   refine le_of_forall_lt_imp_le_of_dense fun r hr => ?_
   lift r to ℝ≥0 using ne_top_of_lt hr
   exact h r hr
+
+lemma eq_of_forall_nnreal_iff {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, ↑r ≤ x ↔ ↑r ≤ y) : x = y :=
+  le_antisymm (le_of_forall_nnreal_lt fun _r hr ↦ (h _).1 hr.le)
+    (le_of_forall_nnreal_lt fun _r hr ↦ (h _).2 hr.le)
 
 theorem le_of_forall_pos_nnreal_lt {x y : ℝ≥0∞} (h : ∀ r : ℝ≥0, 0 < r → ↑r < x → ↑r ≤ y) : x ≤ y :=
   le_of_forall_nnreal_lt fun r hr =>
@@ -604,7 +605,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
 
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
-  cases' n with n n
+  rcases n with n | n
   · simp only [Int.ofNat_eq_coe, coe_pow, zpow_natCast]
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
@@ -660,7 +661,7 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 
 @[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
-  induction' a with a a <;> induction' b with b b
+  obtain a | a := a <;> obtain b | b := b
   · simp only [Int.ofNat_eq_coe, zpow_natCast]
     exact pow_right_mono₀ hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)

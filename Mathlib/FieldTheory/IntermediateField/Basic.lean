@@ -94,6 +94,14 @@ theorem coe_toSubfield : (S.toSubfield : Set L) = S :=
   rfl
 
 @[simp]
+theorem coe_type_toSubalgebra : (S.toSubalgebra : Type _) = S :=
+  rfl
+
+@[simp]
+theorem coe_type_toSubfield : (S.toSubfield : Type _) = S :=
+  rfl
+
+@[simp]
 theorem mem_mk (s : Subsemiring L) (hK : ∀ x, algebraMap K L x ∈ s) (hi) (x : L) :
     x ∈ IntermediateField.mk (Subalgebra.mk s hK) hi ↔ x ∈ s :=
   Iff.rfl
@@ -614,7 +622,7 @@ theorem mem_lift {F : IntermediateField K L} {E : IntermediateField K F} (x : F)
     x.1 ∈ lift E ↔ x ∈ E :=
   Subtype.val_injective.mem_set_image
 
-/--The algEquiv between an intermediate field and its lift-/
+/-- The algEquiv between an intermediate field and its lift -/
 def liftAlgEquiv {E : IntermediateField K L} (F : IntermediateField K E) : ↥F ≃ₐ[K] lift F where
   toFun x := ⟨x.1.1, (mem_lift x.1).mpr x.2⟩
   invFun x := ⟨⟨x.1, lift_le F x.2⟩, (mem_lift ⟨x.1, lift_le F x.2⟩).mp x.2⟩

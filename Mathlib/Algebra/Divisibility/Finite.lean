@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Defs
 
 /-!
 # Divisibility in finite types

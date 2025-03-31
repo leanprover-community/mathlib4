@@ -95,6 +95,7 @@ variable {X : TopCat.{w}} {C : Type u} [Category.{v} C]
 -- note: this was specialized to `CommRingCat` in #19757
 /-- A subpresheaf with a submonoid structure on each of the components. -/
 structure SubmonoidPresheaf (F : X.Presheaf CommRingCat) where
+  /-- The submonoid structure for each component -/
   obj : ∀ U, Submonoid (F.obj U)
   map : ∀ {U V : (Opens X)ᵒᵖ} (i : U ⟶ V), obj U ≤ (obj V).comap (F.map i).hom
 
@@ -157,7 +158,8 @@ noncomputable def totalQuotientPresheaf : X.Presheaf CommRingCat.{w} :=
 noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
 
--- Porting note: deriving `Epi` failed
+-- The following instance should be constructed by a deriving handler.
+-- https://github.com/leanprover-community/mathlib4/issues/380
 instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by

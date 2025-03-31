@@ -230,8 +230,6 @@ See `mk_zero_right` for the lemma used to be called `mk_zero`. -/
 theorem mk_zero : mk K p 0 = 0 :=
   rfl
 
-@[deprecated (since := "2024-08-16")] alias mk_zero_zero := mk_zero
-
 @[simp]
 theorem mk_zero_right (n : ℕ) : mk K p (n, 0) = 0 := by
   induction' n with n ih
@@ -317,21 +315,21 @@ theorem mk_eq_iff (x y : ℕ × K) :
   · intro H
     replace H := Quot.eqvGen_exact H
     induction H with
-    | rel x y H => cases' H with n x; exact ⟨0, rfl⟩
+    | rel x y H => obtain ⟨n, x⟩ := H; exact ⟨0, rfl⟩
     | refl H => exact ⟨0, rfl⟩
-    | symm x y H ih => cases' ih with w ih; exact ⟨w, ih.symm⟩
+    | symm x y H ih => obtain ⟨w, ih⟩ := ih; exact ⟨w, ih.symm⟩
     | trans x y z H1 H2 ih1 ih2 =>
-      cases' ih1 with z1 ih1
-      cases' ih2 with z2 ih2
+      obtain ⟨z1, ih1⟩ := ih1
+      obtain ⟨z2, ih2⟩ := ih2
       exists z2 + (y.1 + z1)
       rw [← add_assoc, iterate_add_apply, ih1]
       rw [← iterate_add_apply, add_comm, iterate_add_apply, ih2]
       rw [← iterate_add_apply]
       simp only [add_comm, add_left_comm]
   intro H
-  cases' x with m x
-  cases' y with n y
-  cases' H with z H; dsimp only at H
+  obtain ⟨m, x⟩ := x
+  obtain ⟨n, y⟩ := y
+  obtain ⟨z, H⟩ := H; dsimp only at H
   rw [R.sound K p (n + z) m x _ rfl, R.sound K p (m + z) n y _ rfl, H]
   rw [add_assoc, add_comm, add_comm z]
 
@@ -363,7 +361,7 @@ theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
 theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
   · rw [natCast K p 0, natCast K p 0, mk_eq_iff] at H
-    cases' H with z H
+    obtain ⟨z, H⟩ := H
     simpa only [zero_add, iterate_fixed (frobenius_natCast K p _)] using H
   rw [natCast K p 0, natCast K p 0, H]
 

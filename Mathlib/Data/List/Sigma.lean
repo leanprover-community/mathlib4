@@ -141,8 +141,6 @@ variable [DecidableEq α] [DecidableEq α']
 
 /-! ### `dlookup` -/
 
-
--- Porting note: renaming to `dlookup` since `lookup` already exists
 /-- `dlookup a l` is the first value in `l` corresponding to the key `a`,
   or `none` if no such element exists. -/
 def dlookup (a : α) : List (Sigma β) → Option (β a)
@@ -184,7 +182,7 @@ theorem of_mem_dlookup {a : α} {b : β a} :
 
 theorem mem_dlookup {a} {b : β a} {l : List (Sigma β)} (nd : l.NodupKeys) (h : Sigma.mk a b ∈ l) :
     b ∈ dlookup a l := by
-  cases' Option.isSome_iff_exists.mp (dlookup_isSome.mpr (mem_keys_of_mem h)) with b' h'
+  obtain ⟨b', h'⟩ := Option.isSome_iff_exists.mp (dlookup_isSome.mpr (mem_keys_of_mem h))
   cases nd.eq_of_mk_mem h (of_mem_dlookup h')
   exact h'
 
@@ -474,7 +472,7 @@ theorem dlookup_kerase_ne {a a'} {l : List (Sigma β)} (h : a ≠ a') :
   induction l with
   | nil => rfl
   | cons hd tl ih =>
-    cases' hd with ah bh
+    obtain ⟨ah, bh⟩ := hd
     by_cases h₁ : a = ah <;> by_cases h₂ : a' = ah
     · substs h₁ h₂
       cases Ne.irrefl h
@@ -606,7 +604,7 @@ theorem nodupKeys_dedupKeys (l : List (Sigma β)) : NodupKeys (dedupKeys l) := b
 theorem dlookup_dedupKeys (a : α) (l : List (Sigma β)) : dlookup a (dedupKeys l) = dlookup a l := by
   induction' l with l_hd _ l_ih
   · rfl
-  cases' l_hd with a' b
+  obtain ⟨a', b⟩ := l_hd
   by_cases h : a = a'
   · subst a'
     rw [dedupKeys_cons, dlookup_kinsert, dlookup_cons_eq]
@@ -687,7 +685,7 @@ theorem Perm.kunion {l₁ l₂ l₃ l₄ : List (Sigma β)} (nd₃ : l₃.NodupK
 @[simp]
 theorem dlookup_kunion_left {a} {l₁ l₂ : List (Sigma β)} (h : a ∈ l₁.keys) :
     dlookup a (kunion l₁ l₂) = dlookup a l₁ := by
-  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; rcases h with h | h <;> cases' s with a'
+  induction' l₁ with s _ ih generalizing l₂ <;> simp at h; rcases h with h | h <;> obtain ⟨a'⟩ := s
   · subst h
     simp
   · rw [kunion_cons]
@@ -708,7 +706,7 @@ theorem mem_dlookup_kunion {a} {b : β a} {l₁ l₂ : List (Sigma β)} :
   induction l₁ generalizing l₂ with
   | nil => simp
   | cons s _ ih =>
-    cases' s with a'
+    obtain ⟨a'⟩ := s
     by_cases h₁ : a = a'
     · subst h₁
       simp

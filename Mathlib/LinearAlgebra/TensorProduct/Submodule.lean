@@ -5,7 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
 import Mathlib.Algebra.Algebra.Operations
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Lattice
 
 /-!
 

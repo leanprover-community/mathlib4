@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Data.Subtype
+import Mathlib.Tactic.Conv
 import Mathlib.Tactic.MinImports
 
 /-!

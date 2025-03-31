@@ -277,9 +277,9 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
 
 @[simp]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
-  induction n
+  cases n
   · rw [Int.ofNat_eq_coe, zpow_natCast, log_pow, Int.cast_natCast]
-  rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
+  · rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 
 theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
   rw [eq_div_iff, mul_comm, ← Nat.cast_two, ← log_pow, sq_sqrt hx]
@@ -322,13 +322,23 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
 theorem tendsto_log_atTop : Tendsto log atTop atTop :=
   tendsto_comp_exp_atTop.1 <| by simpa only [log_exp] using tendsto_id
 
-theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
-  rw [← show _ = log from funext log_abs]
-  refine Tendsto.comp (g := log) ?_ tendsto_abs_nhdsWithin_zero
+lemma tendsto_log_nhdsGT_zero : Tendsto log (𝓝[>] 0) atBot := by
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 
-lemma tendsto_log_nhdsWithin_zero_right : Tendsto log (𝓝[>] 0) atBot :=
-  tendsto_log_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
+@[deprecated (since := "2025-03-18")]
+alias tendsto_log_nhdsWithin_zero_right := tendsto_log_nhdsGT_zero
+
+theorem tendsto_log_nhdsNE_zero : Tendsto log (𝓝[≠] 0) atBot := by
+  simpa [comp_def] using tendsto_log_nhdsGT_zero.comp tendsto_abs_nhdsNE_zero
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_log_nhdsWithin_zero := tendsto_log_nhdsNE_zero
+
+lemma tendsto_log_nhdsLT_zero : Tendsto log (𝓝[<] 0) atBot :=
+  tendsto_log_nhdsNE_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_lt h
+
+@[deprecated (since := "2025-03-18")]
+alias tendsto_log_nhdsWithin_zero_left := tendsto_log_nhdsLT_zero
 
 theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
@@ -353,8 +363,8 @@ theorem continuousAt_log (hx : x ≠ 0) : ContinuousAt log x :=
 theorem continuousAt_log_iff : ContinuousAt log x ↔ x ≠ 0 := by
   refine ⟨?_, continuousAt_log⟩
   rintro h rfl
-  exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsWithin_zero _
-    (h.tendsto.mono_left inf_le_left)
+  exact not_tendsto_nhds_of_tendsto_atBot tendsto_log_nhdsNE_zero _ <|
+    h.tendsto.mono_left nhdsWithin_le_nhds
 
 theorem log_prod {α : Type*} (s : Finset α) (f : α → ℝ) (hf : ∀ x ∈ s, f x ≠ 0) :
     log (∏ i ∈ s, f i) = ∑ i ∈ s, log (f i) := by

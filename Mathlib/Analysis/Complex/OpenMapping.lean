@@ -137,8 +137,7 @@ theorem AnalyticAt.eventually_constant_or_nhds_le_map_nhds {z₀ : E} (hg : Anal
       apply h1.eqOn_of_preconnected_of_eventuallyEq analyticOnNhd_const e1 (mem_ball_self hr)
       simpa [ray, gray] using h w e2
     have h4 : ‖z - z₀‖ < r := by simpa [dist_eq_norm] using mem_ball.mp hz
-    replace h4 : ↑‖z - z₀‖ ∈ ball (0 : ℂ) r := by
-      simpa only [mem_ball_zero_iff, norm_eq_abs, abs_ofReal, abs_norm]
+    replace h4 : ↑‖z - z₀‖ ∈ ball (0 : ℂ) r := by simpa
     simpa only [ray, gray, w, smul_smul, mul_inv_cancel₀ h', one_smul, add_sub_cancel,
       Function.comp_apply, coe_smul] using h3 (↑‖z - z₀‖) h4
   · right

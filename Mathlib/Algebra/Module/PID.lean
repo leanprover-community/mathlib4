@@ -252,7 +252,7 @@ theorem equiv_directSum_of_isTorsion [h' : Module.Finite R N] (hN : Module.IsTor
           (DFinsupp.mapRange.linearEquiv fun i => (this i).choose_spec.choose_spec.some).trans <|
             (DirectSum.sigmaLcurryEquiv R).symm.trans
               (DFinsupp.mapRange.linearEquiv fun i => quotEquivOfEq _ _ ?_)⟩⟩
-  cases' i with i j
+  obtain ⟨i, j⟩ := i
   simp only
 
 /-- **Structure theorem of finitely generated modules over a PID** : A finitely generated

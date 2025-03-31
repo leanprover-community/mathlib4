@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
-import Mathlib.Algebra.Group.Pointwise.Finset.Basic
+import Mathlib.Algebra.Group.Equiv.Opposite
+import Mathlib.Algebra.Group.TypeTags.Basic
 import Mathlib.Algebra.Group.ULift
+import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Finsupp.Defs
+import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 
 /-!
 # Unique products and related notions
@@ -109,8 +112,8 @@ theorem iff_existsUnique (aA : a0 ∈ A) (bB : b0 ∈ B) :
     fun h ↦ h.elim
       (by
         rintro ⟨x1, x2⟩ _ J x y hx hy l
-        rcases Prod.mk.inj_iff.mp (J (a0, b0) ⟨Finset.mk_mem_product aA bB, rfl⟩) with ⟨rfl, rfl⟩
-        exact Prod.mk.inj_iff.mp (J (x, y) ⟨Finset.mk_mem_product hx hy, l⟩))⟩
+        rcases Prod.mk_inj.mp (J (a0, b0) ⟨Finset.mk_mem_product aA bB, rfl⟩) with ⟨rfl, rfl⟩
+        exact Prod.mk_inj.mp (J (x, y) ⟨Finset.mk_mem_product hx hy, l⟩))⟩
 
 open Finset in
 @[to_additive iff_card_le_one]
@@ -134,7 +137,7 @@ theorem exists_iff_exists_existsUnique :
   ⟨fun ⟨_, _, hA, hB, h⟩ ↦ ⟨_, (iff_existsUnique hA hB).mp h⟩, fun ⟨g, h⟩ ↦ by
     have h' := h
     rcases h' with ⟨⟨a, b⟩, ⟨hab, rfl, -⟩, -⟩
-    cases' Finset.mem_product.mp hab with ha hb
+    obtain ⟨ha, hb⟩ := Finset.mem_product.mp hab
     exact ⟨a, b, ha, hb, (iff_existsUnique ha hb).mpr h⟩⟩
 
 /-- `UniqueMul` is preserved by inverse images under injective, multiplicative maps. -/
@@ -393,7 +396,7 @@ open MulOpposite in
       obtain ⟨b0, hb0, rfl⟩ := mem_map.mp hd
       refine ⟨(_, _), ⟨ha0, hb0⟩, (a, b), ⟨ha, hb⟩, ?_, fun a' b' ha' hb' he => ?_, hu⟩
       · simp_rw [Function.Embedding.coeFn_mk, Ne, inv_mul_eq_one, mul_inv_eq_one] at hne
-        rwa [Ne, Prod.mk.inj_iff, not_and_or, eq_comm]
+        rwa [Ne, Prod.mk_inj, not_and_or, eq_comm]
       specialize hu' (mem_map_of_mem _ ha') (mem_map_of_mem _ hb')
       simp_rw [Function.Embedding.coeFn_mk, mul_left_cancel_iff, mul_right_cancel_iff] at hu'
       rw [mul_assoc, ← mul_assoc a', he, mul_assoc, mul_assoc] at hu'
@@ -451,7 +454,8 @@ open UniqueMul in
     exact ⟨a0, ha0.1, b0, hb0.1, of_image_filter (Pi.evalMulHom G i) ha0.2 hb0.2 hi hu⟩
 
 open ULift in
-@[to_additive] instance [UniqueProds G] [UniqueProds H] : UniqueProds (G × H) := by
+@[to_additive] instance _root_.Prod.instUniqueProds [UniqueProds G] [UniqueProds H] :
+    UniqueProds (G × H) := by
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
@@ -528,7 +532,7 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       refine ⟨(a1, b1), ⟨ha1.1, hb1.1⟩, (a2, b2), ⟨ha2.1, hb2.1⟩, ?_,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha1.2 hb1.2 hi1 hu1,
         UniqueMul.of_image_filter (Pi.evalMulHom G i) ha2.2 hb2.2 hi2 hu2⟩
-      contrapose! hne; rw [Prod.mk.inj_iff] at hne ⊢
+      contrapose! hne; rw [Prod.mk_inj] at hne ⊢
       rw [← ha1.2, ← hb1.2, ← ha2.2, ← hb2.2, hne.1, hne.2]; exact ⟨rfl, rfl⟩
     all_goals rcases hc with hc | hc; · exact ihA _ (hc.2 _)
     · by_cases hA : {a ∈ A | a i = p2.1} = A
@@ -541,7 +545,9 @@ instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUnique
       · exact ihA _ ((A.filter_subset _).ssubset_of_ne hA)
 
 open ULift in
-@[to_additive] instance [TwoUniqueProds G] [TwoUniqueProds H] : TwoUniqueProds (G × H) := by
+@[to_additive]
+instance _root_.Prod.instTwoUniqueProds [TwoUniqueProds G] [TwoUniqueProds H] :
+    TwoUniqueProds (G × H) := by
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
@@ -589,7 +595,7 @@ instance (priority := 100) of_covariant_right [IsRightCancelMul G]
       · exact ⟨mul_right_cancel he, rfl⟩
       · exact ((he0 ▸ mul_lt_mul_left' hl a0).not_le <| le_max' _ _ <| mul_mem_mul ha0 hb).elim
     refine ⟨_, mk_mem_product ha0 hb0, _, mk_mem_product ha1 hb1, fun he ↦ ?_, this, ?_⟩
-    · rw [Prod.mk.inj_iff] at he; rw [he.1, he.2, he1] at he0
+    · rw [Prod.mk_inj] at he; rw [he.1, he.2, he1] at he0
       obtain ⟨⟨a2, b2⟩, h2, hne⟩ := exists_ne_of_one_lt_card hc (a0, b0)
       rw [mem_product] at h2
       refine (min'_lt_max' _ (mul_mem_mul ha0 hb0) (mul_mem_mul h2.1 h2.2) fun he ↦ hne ?_).ne he0

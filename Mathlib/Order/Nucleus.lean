@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chriara Cimino, Christian Krause
 -/
 import Mathlib.Order.Closure
+import Mathlib.Order.Hom.Bounded
 import Mathlib.Order.Hom.Lattice
 
 /-!
@@ -37,8 +38,8 @@ structure Nucleus (X : Type*) [SemilatticeInf X] extends InfHom X X where
   le_apply' (x : X) : x ≤ toFun x
 
 /-- `NucleusClass F X` states that F is a type of nuclei. -/
-class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] extends InfHomClass F X X :
-    Prop where
+class NucleusClass (F X : Type*) [SemilatticeInf X] [FunLike F X X] : Prop
+    extends InfHomClass F X X where
   /-- A nucleus is idempotent. -/
   idempotent (x : X) (f : F) : f (f x) ≤ f x
   /-- A nucleus is inflationary. -/

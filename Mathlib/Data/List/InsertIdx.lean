@@ -100,7 +100,7 @@ theorem getElem_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n +
     (hk : n + k + 1 < (insertIdx n x l).length := (by
       rwa [length_insertIdx_of_le_length (by omega), Nat.succ_lt_succ_iff])) :
     (insertIdx n x l)[n + k + 1] = l[n + k] := by
-  rw [getElem_insertIdx_of_ge (by omega)]
+  rw [getElem_insertIdx_of_gt (by omega)]
   simp only [Nat.add_one_sub_one]
 
 theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k < l.length)
@@ -111,10 +111,11 @@ theorem get_insertIdx_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
 
 set_option linter.unnecessarySimpa false in
 theorem insertIdx_injective (n : ℕ) (x : α) : Function.Injective (insertIdx n x) := by
-  induction' n with n IH
-  · have : insertIdx 0 x = cons x := funext fun _ => rfl
+  induction n with
+  | zero =>
+    have : insertIdx 0 x = cons x := funext fun _ => rfl
     simp [this]
-  · rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
+  | succ n IH => rintro (_ | ⟨a, as⟩) (_ | ⟨b, bs⟩) h <;> simpa [IH.eq_iff] using h
 
 @[deprecated (since := "2024-10-21")] alias insertNth_zero := insertIdx_zero
 @[deprecated (since := "2024-10-21")] alias insertNth_succ_nil := insertIdx_succ_nil

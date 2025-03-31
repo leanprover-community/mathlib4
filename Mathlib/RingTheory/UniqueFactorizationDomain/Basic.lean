@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
 import Mathlib.Algebra.BigOperators.Associated
+import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.ENat.Basic
 import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
@@ -162,9 +162,9 @@ theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CancelCommMon
         have hx0 : x ≠ 0 := fun hx0 => by simp_all
         have ha0 : a ≠ 0 := left_ne_zero_of_mul hab0
         have hb0 : b ≠ 0 := right_ne_zero_of_mul hab0
-        cases' eif x hx0 with fx hfx
-        cases' eif a ha0 with fa hfa
-        cases' eif b hb0 with fb hfb
+        obtain ⟨fx, hfx⟩ := eif x hx0
+        obtain ⟨fa, hfa⟩ := eif a ha0
+        obtain ⟨fb, hfb⟩ := eif b hb0
         have h : Multiset.Rel Associated (p ::ₘ fx) (fa + fb) := by
           apply uif
           · exact fun i hi => (Multiset.mem_cons.1 hi).elim (fun hip => hip.symm ▸ hpi) (hfx.1 _)

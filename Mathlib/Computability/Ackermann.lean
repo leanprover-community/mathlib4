@@ -116,7 +116,7 @@ theorem one_lt_ack_succ_right : ∀ m n, 1 < ack m (n + 1)
   | 0, n => by simp
   | m + 1, n => by
     rw [ack_succ_succ]
-    cases' exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne' with h h
+    obtain ⟨h, h⟩ := exists_eq_succ_of_ne_zero (ack_pos (m + 1) n).ne'
     rw [h]
     apply one_lt_ack_succ_right
 
@@ -216,7 +216,7 @@ theorem ack_le_ack {m₁ m₂ n₁ n₂ : ℕ} (hm : m₁ ≤ m₂) (hn : n₁ �
   (ack_mono_left n₁ hm).trans <| ack_mono_right m₂ hn
 
 theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m + 1) n := by
-  cases' n with n n
+  rcases n with - | n
   · simp
   · rw [ack_succ_succ]
     apply ack_mono_right m (le_trans _ <| add_add_one_le_ack _ n)
@@ -226,7 +226,7 @@ theorem ack_succ_right_le_ack_succ_left (m n : ℕ) : ack m (n + 1) ≤ ack (m +
 private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n + 1) - 3 := by
   induction' n with k hk
   · norm_num
-  · cases' k with k k
+  · rcases k with - | k
     · norm_num
     · rw [add_sq, Nat.pow_succ 2, mul_comm _ 2, two_mul (2 ^ _),
           add_tsub_assoc_of_le, add_comm (2 ^ _), add_assoc]
@@ -287,7 +287,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
   · refine ⟨0, fun n => ?_⟩
     rw [ack_zero, Nat.lt_succ_iff]
     exact unpair_right_le n
-  all_goals cases' IHf with a ha; cases' IHg with b hb
+  all_goals obtain ⟨a, ha⟩ := IHf; obtain ⟨b, hb⟩ := IHg
   -- Pairing:
   · refine
       ⟨max a b + 3, fun n =>
@@ -338,7 +338,7 @@ theorem exists_lt_ack_of_nat_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) :
     exact ⟨max a b + 9, fun n => this.trans_le <| ack_mono_right _ <| unpair_add_le n⟩
 
 theorem not_nat_primrec_ack_self : ¬Nat.Primrec fun n => ack n n := fun h => by
-  cases' exists_lt_ack_of_nat_primrec h with m hm
+  obtain ⟨m, hm⟩ := exists_lt_ack_of_nat_primrec h
   exact (hm m).false
 
 theorem not_primrec_ack_self : ¬Primrec fun n => ack n n := by

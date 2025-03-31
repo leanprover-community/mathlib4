@@ -63,26 +63,26 @@ that `|fₚ(xs)| ≤ c ^ p` for all `p ∈ ℕ` and `x ∈ Ioc 0 1`, then there 
 constant `c'` such that for all nonzero `p ∈ ℕ`, `|P(fₚ, s)| ≤ c' ^ p`.
 -/
 private theorem P_le_aux (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
-    (hc : ∀ p : ℕ, ∀ x ∈ Set.Ioc (0 : ℝ) 1, Complex.abs ((f p).eval (x • s)) ≤ c ^ p) :
+    (hc : ∀ p : ℕ, ∀ x ∈ Set.Ioc (0 : ℝ) 1, ‖(f p).eval (x • s)‖ ≤ c ^ p) :
     ∃ c' ≥ 0, ∀ p : ℕ,
-      Complex.abs (P (f p) s) ≤
-        Real.exp s.re * (Real.exp (Complex.abs s) * c' ^ p * (Complex.abs s)) := by
+      ‖P (f p) s‖ ≤
+        Real.exp s.re * (Real.exp ‖s‖ * c' ^ p * ‖s‖) := by
   refine ⟨|c|, abs_nonneg _, fun p => ?_⟩
-  rw [P_eq_integral_exp_mul_eval (f p) s, mul_comm s, map_mul, map_mul, abs_exp]
+  rw [P_eq_integral_exp_mul_eval (f p) s, mul_comm s, norm_mul, norm_mul, norm_exp]
   gcongr
-  rw [intervalIntegral.integral_of_le zero_le_one, ← norm_eq_abs, ← mul_one (_ * _)]
+  rw [intervalIntegral.integral_of_le zero_le_one, ← mul_one (_ * _)]
   convert MeasureTheory.norm_setIntegral_le_of_norm_le_const' _ _ _
   · rw [Real.volume_Ioc, sub_zero, ENNReal.toReal_ofReal zero_le_one]
   · rw [Real.volume_Ioc, sub_zero]; exact ENNReal.ofReal_lt_top
   · exact measurableSet_Ioc
   intro x hx
-  rw [norm_mul, norm_eq_abs, abs_exp]
+  rw [norm_mul, norm_exp]
   gcongr
   · simp only [Set.mem_Ioc] at hx
-    apply (re_le_abs _).trans
-    rw [← norm_eq_abs, ← norm_eq_abs, norm_neg, norm_smul, Real.norm_of_nonneg hx.1.le]
+    apply (re_le_norm _).trans
+    rw [norm_neg, norm_smul, Real.norm_of_nonneg hx.1.le]
     exact mul_le_of_le_one_left (norm_nonneg _) hx.2
-  · rw [← abs_pow, norm_eq_abs]
+  · rw [← abs_pow]
     exact (hc p x hx).trans (le_abs_self _)
 
 /--
@@ -91,12 +91,12 @@ that `|fₚ(xs)| ≤ c ^ p` for all `p ∈ ℕ` and `x ∈ Ioc 0 1`, then there 
 constant `c'` such that for all nonzero `p ∈ ℕ`, `|P(fₚ, s)| ≤ c' ^ p`.
 -/
 private theorem P_le (f : ℕ → ℂ[X]) (s : ℂ) (c : ℝ)
-    (hc : ∀ p : ℕ, ∀ x ∈ Set.Ioc (0 : ℝ) 1, Complex.abs ((f p).eval (x • s)) ≤ c ^ p) :
-    ∃ c' ≥ 0, ∀ p ≠ 0, Complex.abs (P (f p) s) ≤ c' ^ p := by
+    (hc : ∀ p : ℕ, ∀ x ∈ Set.Ioc (0 : ℝ) 1, ‖(f p).eval (x • s)‖ ≤ c ^ p) :
+    ∃ c' ≥ 0, ∀ p ≠ 0, ‖P (f p) s‖ ≤ c' ^ p := by
   obtain ⟨c', hc', h'⟩ := P_le_aux f s c hc; clear c hc
   let c₁ := max (Real.exp s.re) 1
-  let c₂ := max (Real.exp (Complex.abs s)) 1
-  let c₃ := max (Complex.abs s) 1
+  let c₂ := max (Real.exp ‖s‖) 1
+  let c₃ := max ‖s‖ 1
   use c₁ * (c₂ * c' * c₃), by positivity
   intro p hp
   refine (h' p).trans ?_
@@ -114,28 +114,28 @@ Note: Jacobson writes `h(x)` for `x ^ (q - 1) * p(x) ^ q` and `bⱼ` for its coe
 -/
 private theorem exp_polynomial_approx_aux (f : ℤ[X]) (s : ℂ) :
     ∃ c ≥ 0,
-      ∀ p ≠ 0, Complex.abs (P (map (algebraMap ℤ ℂ) (X ^ (p - 1) * f ^ p)) s) ≤ c ^ p := by
+      ∀ p ≠ 0, ‖P (map (algebraMap ℤ ℂ) (X ^ (p - 1) * f ^ p)) s‖ ≤ c ^ p := by
   have : Bornology.IsBounded
-      ((fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (x * s) f)) '' Set.Ioc 0 1) := by
+      ((fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1) := by
     have h :
-      (fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (x * s) f)) '' Set.Ioc 0 1 ⊆
-        (fun x : ℝ ↦ max (x * abs s) 1 * Complex.abs (aeval (x * s) f)) '' Set.Icc 0 1 :=
+      (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Ioc 0 1 ⊆
+        (fun x : ℝ ↦ max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) '' Set.Icc 0 1 :=
       Set.image_subset _ Set.Ioc_subset_Icc_self
     refine (IsCompact.image isCompact_Icc ?_).isBounded.subset h
     fun_prop
   obtain ⟨c, h⟩ := this.exists_norm_le
   simp_rw [Real.norm_eq_abs] at h
   refine P_le _ s c (fun p x hx => ?_)
-  specialize h (max (x * abs s) 1 * Complex.abs (aeval (x * s) f)) (Set.mem_image_of_mem _ hx)
+  specialize h (max (x * ‖s‖) 1 * ‖aeval (x * s) f‖) (Set.mem_image_of_mem _ hx)
   refine le_trans ?_ (pow_le_pow_left₀ (abs_nonneg _) h _)
-  simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, map_mul,
-    Complex.abs_pow, real_smul, map_mul, abs_ofReal, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
-    Complex.abs_abs, mul_pow, abs_of_pos hx.1]
-  refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (Complex.abs.nonneg _) _)
+  simp_rw [Polynomial.map_mul, Polynomial.map_pow, map_X, eval_mul, eval_pow, eval_X, norm_mul,
+    Complex.norm_pow, real_smul, norm_mul, norm_real, ← eval₂_eq_eval_map, ← aeval_def, abs_mul,
+    abs_norm, mul_pow, Real.norm_of_nonneg hx.1.le]
+  refine mul_le_mul_of_nonneg_right ?_ (pow_nonneg (norm_nonneg _) _)
   rw [← mul_pow, abs_of_nonneg (by positivity), max_def]
   split_ifs with hx1
   · rw [one_pow]
-    exact pow_le_one₀ (mul_nonneg hx.1.le (Complex.abs.nonneg _)) hx1
+    exact pow_le_one₀ (mul_nonneg hx.1.le (norm_nonneg _)) hx1
   · push_neg at hx1
     exact pow_le_pow_right₀ hx1.le (Nat.sub_le _ _)
 
@@ -159,7 +159,7 @@ theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
       ∀ p > (eval 0 f).natAbs, p.Prime →
         ∃ n : ℤ, ¬ ↑p ∣ n ∧ ∃ gp : ℤ[X], gp.natDegree ≤ p * f.natDegree - 1 ∧
           ∀ {r : ℂ}, r ∈ f.aroots ℂ →
-            Complex.abs (n • exp r - p • aeval r gp : ℂ) ≤ c ^ p / (p - 1)! := by
+            ‖n • exp r - p • aeval r gp‖ ≤ c ^ p / (p - 1)! := by
   simp_rw [nsmul_eq_mul, zsmul_eq_mul]
   choose c' c'0 Pp'_le using exp_polynomial_approx_aux f
   use
@@ -188,8 +188,8 @@ theorem exp_polynomial_approx (f : ℤ[X]) (hf : f.eval 0 ≠ 0) :
       ((eval 0 f ^ p * cexp r) * (p - 1)! +
         ↑(p * (p - 1)!) * (eval 0 gp' * cexp r - (aeval r) gp)) := by
     push_cast; ring
-  rw [le_div_iff₀ (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← abs_natCast, ← map_mul,
-    this, Nat.mul_factorial_pred prime_p.pos, mul_sub, ← h]
+  rw [le_div_iff₀ (Nat.cast_pos.mpr (Nat.factorial_pos _) : (0 : ℝ) < _), ← norm_natCast,
+    ← norm_mul, this, Nat.mul_factorial_pred prime_p.ne_zero, mul_sub, ← h]
   have :
       ↑(eval 0 f) ^ p * cexp r * ↑(p - 1)! +
         (↑p ! * (↑(eval 0 gp') * cexp r) - (aeval r) (sumIDeriv (X ^ (p - 1) * f ^ p))) =

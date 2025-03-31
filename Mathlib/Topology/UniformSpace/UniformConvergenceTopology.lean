@@ -389,7 +389,6 @@ protected theorem postcomp_isUniformEmbedding [UniformSpace γ] {f : γ → β}
 @[deprecated (since := "2024-10-01")]
 alias postcomp_uniformEmbedding := UniformFun.postcomp_isUniformEmbedding
 
--- Porting note: had to add a type annotation at `((f ∘ ·) : ((α → γ) → (α → β)))`
 /-- If `u` is a uniform structures on `β` and `f : γ → β`, then
 `𝒰(α, γ, comap f u) = comap (fun g ↦ f ∘ g) 𝒰(α, γ, u₁)`. -/
 protected theorem comap_eq {f : γ → β} :
@@ -1004,7 +1003,7 @@ instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
     rcases cauchy_iff.mp hF |>.2 _ <| UniformOnFun.gen_mem_uniformity _ _ hs hU
       with ⟨V, hV, hVU⟩
     filter_upwards [hV] with f hf x hx
-    refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prod_mk_nhds tendsto_const_nhds) ?_
+    refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prodMk_nhds tendsto_const_nhds) ?_
     filter_upwards [hV] with g' hg' using hVU (mk_mem_prod hg' hf) _ hx
 
 /-- The natural bijection between `α → β × γ` and `(α → β) × (α → γ)`, upgraded to a uniform

@@ -32,7 +32,7 @@ localization, Ore, non-commutative
 
 -/
 
-assert_not_exists MonoidWithZero Ring
+assert_not_exists RelIso MonoidWithZero
 
 universe u
 
