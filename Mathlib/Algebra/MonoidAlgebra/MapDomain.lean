@@ -16,33 +16,29 @@ import Mathlib.LinearAlgebra.Finsupp.LSum
 
 assert_not_exists NonUnitalAlgHom AlgEquiv
 
-noncomputable section
-
+open Function
 open Finsupp hiding single mapDomain
 
-universe u₁ u₂ u₃ u₄
+noncomputable section
 
-variable (k : Type u₁) (G : Type u₂) (H : Type*) {R : Type*}
+variable {k R S G H M N : Type*}
 
 /-! ### Multiplicative monoids -/
 
 namespace MonoidAlgebra
 
-variable {k G}
+section Semiring
+variable [Semiring R] [Semiring S] {f : M → N}
 
-section
+abbrev mapDomain (f : M → N) (v : MonoidAlgebra R M) : MonoidAlgebra R N := Finsupp.mapDomain f v
 
-variable [Semiring k] [NonUnitalNonAssocSemiring R]
+lemma mapDomain_sum (f : M → N) (s : MonoidAlgebra S M) (v : M → S → MonoidAlgebra R M) :
+    mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
-abbrev mapDomain {G' : Type*} (f : G → G') (v : MonoidAlgebra k G) : MonoidAlgebra k G' :=
-  Finsupp.mapDomain f v
+lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
+  Finsupp.mapDomain_injective hf
 
-theorem mapDomain_sum {k' G' : Type*} [Semiring k'] {f : G → G'} {s : MonoidAlgebra k' G}
-    {v : G → k' → MonoidAlgebra k G} :
-    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  Finsupp.mapDomain_sum
-
-end
+end Semiring
 
 
 section MiscTheorems
@@ -91,25 +87,18 @@ end MonoidAlgebra
 
 namespace AddMonoidAlgebra
 
-variable {k G}
+section Semiring
+variable [Semiring R] [Semiring S] {f : M → N}
 
-section
+abbrev mapDomain (f : M → N) (v : R[M]) : R[N] := Finsupp.mapDomain f v
 
-variable [Semiring k] [NonUnitalNonAssocSemiring R]
+lemma mapDomain_sum (f : M → N) (s : S[M]) (v : M → S → R[M]) :
+    mapDomain f (s.sum v) = s.sum fun a b ↦ mapDomain f (v a b) := Finsupp.mapDomain_sum
 
-abbrev mapDomain {G' : Type*} (f : G → G') (v : k[G]) : k[G'] :=
-  Finsupp.mapDomain f v
+lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (R := R) f) :=
+  Finsupp.mapDomain_injective hf
 
-theorem mapDomain_sum {k' G' : Type*} [Semiring k'] {f : G → G'} {s : AddMonoidAlgebra k' G}
-    {v : G → k' → k[G]} :
-    mapDomain f (s.sum v) = s.sum fun a b => mapDomain f (v a b) :=
-  Finsupp.mapDomain_sum
-
-theorem mapDomain_single {G' : Type*} {f : G → G'} {a : G} {b : k} :
-    mapDomain f (single a b) = single (f a) b :=
-  Finsupp.mapDomain_single
-
-end
+end Semiring
 
 section MiscTheorems
 
@@ -184,3 +173,20 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Additive.ofMul]
       convert MonoidAlgebra.mapDomain_mul (β := k) (MulHom.id G) x y }
+
+
+namespace MonoidAlgebra
+variable {R M N : Type*} [Semiring R] {f : M → N}
+
+lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (k := R) f) :=
+  Finsupp.mapDomain_injective hf
+
+end MonoidAlgebra
+
+namespace AddMonoidAlgebra
+variable {R M N : Type*} [Semiring R] {f : M → N}
+
+lemma mapDomain_injective (hf : Injective f) : Injective (mapDomain (k := R) f) :=
+  Finsupp.mapDomain_injective hf
+
+end AddMonoidAlgebra
