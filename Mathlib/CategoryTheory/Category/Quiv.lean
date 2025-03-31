@@ -187,7 +187,7 @@ end
 
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
 @[simps]
-def lift {V : Type u} [Quiver.{v + 1} V] {C : Type u₁} [Category.{max u₁ v₁} C]
+def lift {V : Type u} [Quiver.{v + 1} V] {C : Type u₁} [Category.{v₁} C]
     (F : Prefunctor V C) : Paths V ⥤ C where
   obj X := F.obj X
   map f := composePath (F.mapPath f)
