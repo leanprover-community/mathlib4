@@ -95,8 +95,8 @@ theorem uniformContinuous_neg : UniformContinuous (@Neg.neg ℚ _) :=
   Metric.uniformContinuous_iff.2 fun ε ε0 =>
     ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, dist_eq, cast_neg, neg_sub_neg] using h⟩
 
-instance : UniformAddGroup ℚ :=
-  UniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
+instance : IsUniformAddGroup ℚ :=
+  IsUniformAddGroup.mk' Rat.uniformContinuous_add Rat.uniformContinuous_neg
 
 instance : IsTopologicalAddGroup ℚ := inferInstance
 

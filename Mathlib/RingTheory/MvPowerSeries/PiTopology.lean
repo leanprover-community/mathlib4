@@ -7,7 +7,7 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Topology.Algebra.InfiniteSum.Constructions
 import Mathlib.Topology.Algebra.Ring.Basic
-import Mathlib.Topology.Algebra.UniformGroup.Basic
+import Mathlib.Topology.Algebra.IsUniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Pi
 
 /-! # Product topology on multivariate power series
@@ -44,7 +44,7 @@ TODO: add the similar result for the series of homogeneous components.
 
 - If `R` is a topological (semi)ring, then so is `MvPowerSeries σ R`.
 - If the topology of `R` is T0 or T2, then so is that of `MvPowerSeries σ R`.
-- If `R` is a `UniformAddGroup`, then so is `MvPowerSeries σ R`.
+- If `R` is a `IsUniformAddGroup`, then so is `MvPowerSeries σ R`.
 - If `R` is complete, then so is `MvPowerSeries σ R`.
 
 -/
@@ -215,10 +215,12 @@ theorem uniformContinuous_coeff [Semiring R] (d : σ →₀ ℕ) :
 theorem instCompleteSpace [CompleteSpace R] :
     CompleteSpace (MvPowerSeries σ R) := Pi.complete _
 
-/-- The `UniformAddGroup` structure on `MvPowerSeries` of a `UniformAddGroup` -/
+/-- The `IsUniformAddGroup` structure on `MvPowerSeries` of a `IsUniformAddGroup` -/
 @[scoped instance]
-theorem instUniformAddGroup [AddGroup R] [UniformAddGroup R] :
-    UniformAddGroup (MvPowerSeries σ R) := Pi.instUniformAddGroup
+theorem instIsUniformAddGroup [AddGroup R] [IsUniformAddGroup R] :
+    IsUniformAddGroup (MvPowerSeries σ R) := Pi.instIsUniformAddGroup
+
+@[deprecated (since := "2025-03-27")] alias instUniformAddGroup := instIsUniformAddGroup
 
 end Uniformity
 
