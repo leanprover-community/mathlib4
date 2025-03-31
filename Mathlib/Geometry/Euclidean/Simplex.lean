@@ -66,7 +66,7 @@ end Simplex
 
 namespace Triangle
 
-lemma acuteAngled_iff_angle_and_angle_and_angle {t : Triangle ℝ P} : t.AcuteAngled ↔
+lemma acuteAngled_iff_angle_lt {t : Triangle ℝ P} : t.AcuteAngled ↔
     ∠ (t.points 0) (t.points 1) (t.points 2) < π / 2 ∧
     ∠ (t.points 1) (t.points 2) (t.points 0) < π / 2 ∧
     ∠ (t.points 2) (t.points 0) (t.points 1) < π / 2 := by
