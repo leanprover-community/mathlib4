@@ -61,7 +61,7 @@ section IsBipartiteWith
 are adjacent in `G` then `v ∈ s` and `w ∈ t`, or `v ∈ t` and `w ∈ s`. -/
 structure IsBipartiteWith (G : SimpleGraph V) (s t : Set V) : Prop where
   disjoint : Disjoint s t
-  mem_of_adj ⦃v w⦄ : G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s
+  mem_of_adj ⦃v w : _⦄ : G.Adj v w → v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s
 
 theorem IsBipartiteWith.symm (h : G.IsBipartiteWith s t) : G.IsBipartiteWith t s where
   disjoint := h.disjoint.symm
